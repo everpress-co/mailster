@@ -82,6 +82,11 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
+* fixed: Styles were not applied correctly while sending tests
+* fixed: Subscriber import with coma separated lists causes that new created lists were not assigned correctly
+* improved: datepicker is no longer triggered on datefields if operator is a regular expression
+
+
 = Version 2.2 =
 
 * new: Mailster Dashboard

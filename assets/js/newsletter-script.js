@@ -719,12 +719,18 @@ jQuery(document).ready(function ($) {
 					});
 
 				})
+				.on('change', 'select.condition-operator', function () {
+					$(this).prev('select.condition-field').trigger('change');
+				})
 				.on('change.datefields', 'select.condition-field', function () {
-					var _this = $(this);
+					var _this = $(this),
+						operator = $(this).next('select.condition-operator');
 					if (typeof jQuery.datepicker != 'object') return;
 
 					if (_this.parent().find('input').data("datepicker"))
 						_this.parent().find('input').datepicker('destroy');
+
+					if (/pattern/.test(operator.val())) return;
 
 					if ($.inArray(_this.val(), mailsterdata.datefields) !== -1) {
 
