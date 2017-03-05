@@ -82,8 +82,10 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
+* fixed: bounces weren't handled correctly in some cases
 * fixed: Styles were not applied correctly while sending tests
 * fixed: Subscriber import with coma separated lists causes that new created lists were not assigned correctly
+* improved: URLs for some social services
 * improved: datepicker is no longer triggered on datefields if operator is a regular expression
 
 
@@ -104,6 +106,7 @@ Xaver Birsak – https://revaxarts.com
 * new: Subscriber Button Widget
 * new: share service VK.com, Telegram, Whatsapp
 * new: location hub: translate.mailster.co
+* new: 'mailster_excerpt_length' let you define the length of the excerpt used in your campaigns
 * improved: sending queue
 * improved: loading of language files
 * improved: better ordering of lists
