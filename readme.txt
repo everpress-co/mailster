@@ -89,6 +89,7 @@ Xaver Birsak – https://revaxarts.com
 * fixed: error output on wrong formatted HTML in excerpts
 * added: option to export ratings
 * improved: URLs for some social services
+* improved: backwards compatibility
 * improved: datepicker is no longer triggered on datefields if operator is a regular expression
 
 
