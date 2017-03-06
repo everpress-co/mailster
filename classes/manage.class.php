@@ -889,6 +889,9 @@ class MailsterManage {
 					case 'updated':
 						$val = __( 'Updated', 'mailster' );
 					break;
+					case 'rating':
+						$val = __( 'Rating', 'mailster' );
+					break;
 					default:
 						$val = ( isset( $custom_fields[ $col ] ) ) ? $custom_fields[ $col ]['name'] : '';
 				}
@@ -912,7 +915,7 @@ class MailsterManage {
 
 		$offset = $offset * $limit;
 
-		$field_names = array( 'hash', 'email', 'status', 'added', 'signup', 'confirm', 'updated', 'ip_signup', 'ip_confirm', 'lang' );
+		$field_names = array( 'hash', 'email', 'status', 'added', 'signup', 'confirm', 'updated', 'ip_signup', 'ip_confirm', 'lang', 'rating' );
 		$fields = array_keys( array_intersect_key( array_flip( $field_names ), array_flip( $d['column'] ) ) );
 
 		if ( isset( $d['nolists'] ) ) {
@@ -995,6 +998,9 @@ class MailsterManage {
 					case 'signup':
 					case 'confirm':
 						$val = ! empty( $user->{$col} ) ? ( $dateformat ? date( $dateformat, $user->{$col} ) : $user->{$col} ) : '';
+					break;
+					case 'rating':
+						$val = $user->rating;
 					break;
 					default:
 						$val = isset( $user->{$col} ) ? $user->{$col} : '';

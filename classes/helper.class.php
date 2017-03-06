@@ -1215,7 +1215,7 @@ class MailsterHelper {
 		$html .= '</body></html>';
 
 		$i_error = libxml_use_internal_errors( true );
-		$doc->loadHTML( $data );
+		$doc->loadHTML( $html );
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
 
@@ -1243,9 +1243,6 @@ class MailsterHelper {
 		if ( empty( $object ) ) {
 			$d = html_entity_decode( $serialized_string, ENT_QUOTES, 'UTF-8' );
 
-			/**
-			 *
-			 */
 			$d = preg_replace_callback( '!s:(\d+):"(.*?)";!', function( $matches ) {
 					return 's:' . strlen( $matches[2] ) . ':"' . $matches[2] . '";';
 			}, $d );

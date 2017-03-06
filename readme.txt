@@ -83,8 +83,11 @@ Xaver Birsak – https://revaxarts.com
 == Changelog ==
 
 * fixed: bounces weren't handled correctly in some cases
-* fixed: Styles were not applied correctly while sending tests
+* fixed: styles were not applied correctly while sending tests
 * fixed: Subscriber import with coma separated lists causes that new created lists were not assigned correctly
+* fixed: wrong DKIM record on some installations
+* fixed: error output on wrong formatted HTML in excerpts
+* added: option to export ratings
 * improved: URLs for some social services
 * improved: datepicker is no longer triggered on datefields if operator is a regular expression
 

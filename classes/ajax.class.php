@@ -1092,7 +1092,7 @@ class MailsterAjax {
 
 		$width = ! empty( $_GET['w'] ) ? intval( $_GET['w'] ) : 600;
 		$height = ! empty( $_GET['h'] ) ? intval( $_GET['h'] ) : round( $width / 1.6 );
-		$tag = isset( $_GET['tag'] ) ? '' . esc_attr($_GET['tag']) . '' : '';
+		$tag = isset( $_GET['tag'] ) ? '' . esc_attr( $_GET['tag'] ) . '' : '';
 
 		$text = '{' . $tag . '}';
 		$font_size = max( 11, round( $width / strlen( $text ) ) );
