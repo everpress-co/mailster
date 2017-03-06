@@ -2,8 +2,8 @@
 Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
-Tested up to: 4.7.2
-Stable tag: 2.2
+Tested up to: 4.7.3
+Stable tag: 2.2.1
 Author: revaxarts
 Author URI: https://mailster.co
 
@@ -81,6 +81,8 @@ Xaver Birsak – https://revaxarts.com
 
 
 == Changelog ==
+
+= Version 2.2.1 =
 
 * fixed: bounces weren't handled correctly in some cases
 * fixed: styles were not applied correctly while sending tests
