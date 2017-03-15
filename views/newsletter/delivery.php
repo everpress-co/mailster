@@ -165,7 +165,7 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 		</div>
 
-		<?php $pts = get_post_types( array( 'public' => true ), 'object' ); ?>
+		<?php $pts = mailster( 'helper' )->get_post_types( array(), 'objects' ); ?>
 
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_post_published">
 			<p>
@@ -173,9 +173,6 @@ $sent = $this->get_sent( $post->ID );
 			$count = '<input type="number" name="mailster_data[autoresponder][post_count]" class="small-text" value="' . $autoresponderdata['post_count'] . '">';
 			$type = '<select id="autoresponder-post_type" name="mailster_data[autoresponder][post_type]">';
 			foreach ( $pts as $pt => $data ) {
-				if ( in_array( $pt, array( 'attachment', 'newsletter' ) ) ) {
-					continue;
-				}
 				$type .= '<option value="' . $pt . '"' . selected( $autoresponderdata['post_type'], $pt, false ) . '>' . $data->labels->singular_name . '</option>';
 			}
 			$type .= '</select>';

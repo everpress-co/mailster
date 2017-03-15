@@ -621,7 +621,7 @@ class Mailster {
 			$post = false;
 		}
 
-		$posts[ $key ] = $post;
+		$posts[ $key ] = apply_filters( 'mailster_get_latest_post_' . $post_type, $post, $args, $simple );
 
 		mailster_cache_set( 'get_last_post', $posts );
 

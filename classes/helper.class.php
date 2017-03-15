@@ -1229,7 +1229,31 @@ class MailsterHelper {
 
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $org_string
+	 * @param unknown $length     (optional)
+	 * @param unknown $more       (optional)
+	 * @return unknown
+	 */
+	public function get_post_types( $args = array(), $output = 'names', $operator = 'and' ) {
 
+		$skip = array( 'attachment', 'revision', 'nav_menu_item', 'custom_css', 'customize_changeset', 'newsletter' );
+
+		$pts = get_post_types( $args, $output, $operator );
+		if ( 'objects' == $output ) {
+			foreach ( $skip as $key ) {
+				if ( isset( $pts[ $key ] ) ) {
+					unset( $pts[ $key ] );
+				}
+			}
+		} else {
+			$pts = array_diff( $pts, $skip );
+		}
+
+		return $pts;
+	}
 
 	/**
 	 *

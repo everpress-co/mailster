@@ -501,8 +501,7 @@ class MailsterPlaceholder {
 			return;
 		}
 
-		$pts = get_post_types( array( 'public' => true ) );
-		$pts = array_diff( $pts, array( 'newsletter', 'attachment' ) );
+		$pts = mailster( 'helper' )->get_post_types();
 		$pts = implode( '|', $pts );
 
 		$timeformat = get_option( 'time_format' );
@@ -548,7 +547,7 @@ class MailsterPlaceholder {
 								continue;
 							}
 
-								$post = get_post( $post_id );
+							$post = get_post( $post_id );
 
 						}
 
@@ -580,9 +579,9 @@ class MailsterPlaceholder {
 
 							} elseif ( ! empty( $org_src[0] ) ) {
 
-									$replace_to = '<img ' . $pre_stuff . 'src="' . $org_src[0] . '" ' . $post_stuff . '>';
+								$replace_to = '<img ' . $pre_stuff . 'src="' . $org_src[0] . '" ' . $post_stuff . '>';
 
-									mailster_cache_set( 'mailster_' . $querystring, $replace_to );
+								mailster_cache_set( 'mailster_' . $querystring, $replace_to );
 
 							}
 						} else {
@@ -611,11 +610,14 @@ class MailsterPlaceholder {
 
 				if ( empty( $hits[4][ $i ] ) ) {
 
+					$post_id = $post_or_offset;
+
 					if ( $relative_to_absolute ) {
 						continue;
 					}
 
-					$post = get_post( $post_or_offset );
+					$post = get_post( $post_id );
+					$post = apply_filters( 'mailster_get_post_' . $post_type, $post, $post_id );
 
 					if ( ! $post ) {
 						continue;
@@ -635,8 +637,9 @@ class MailsterPlaceholder {
 					}
 				} else {
 
+					$post_offset = $post_or_offset -1;
 					$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids );
+					$post = mailster()->get_last_post( $post_offset, $post_type, $term_ids );
 
 				}
 
@@ -684,13 +687,19 @@ class MailsterPlaceholder {
 						$extra = $categories;
 					}
 
+					if ( isset( $post->post_link ) ) {
+						$permalink = $post->post_link;
+					} else {
+						$permalink = get_permalink( $post->ID );
+					}
+
 					switch ( $what ) {
 						case 'id':
 							$replace_to = $post->ID;
 							break;
 						case 'link':
 						case 'permalink':
-							$replace_to = get_permalink( $post->ID );
+							$replace_to = $permalink;
 							break;
 						case 'shortlink':
 							$replace_to = wp_get_shortlink( $post->ID );
@@ -750,7 +759,7 @@ class MailsterPlaceholder {
 						case 'facebook':
 						case 'google':
 						case 'linkedin':
-							$replace_to = $this->get_social_service( $what, get_permalink( $post->ID ), get_the_title( $post->ID ) );
+							$replace_to = $this->get_social_service( $what, $permalink, get_the_title( $post->ID ) );
 							break;
 						case 'image':
 							$replace_to = '[' . ( sprintf( __( 'use the tag %s as url in the editbar', 'mailster' ), '"' . $hits[1][ $i ] . '"' ) ) . ']';
