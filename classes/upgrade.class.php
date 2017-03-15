@@ -176,8 +176,8 @@ class MailsterUpgrade {
 
 			$actions = wp_parse_args( array(
 					'pre_mailster_updateslug' => 'Update Plugin Slug',
-					'pre_mailster_form_prepare' => 'Checking Forms',
 					'pre_mailster_backuptables' => 'Backup old Tables',
+					'pre_mailster_form_prepare' => 'Checking Forms',
 					'pre_mailster_copytables' => 'Copy Database Tables',
 					'pre_mailster_options' => 'Copy Options',
 					'pre_mailster_updatedpostmeta' => 'Update Post Meta',
