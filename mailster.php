@@ -13,7 +13,7 @@ if ( defined( 'MAILSTER_VERSION' ) ) {
 	return;
 }
 
-define( 'MAILSTER_VERSION', '2.2.1' );
+define( 'MAILSTER_VERSION', '2.2.2' );
 define( 'MAILSTER_DBVERSION', 20170201 );
 define( 'MAILSTER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MAILSTER_URI', plugin_dir_url( __FILE__ ) );
