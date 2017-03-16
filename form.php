@@ -3,7 +3,7 @@
 $time_start = microtime( true );
 if ( ! defined( 'ABSPATH' ) ) {
 
-	if ( file_exists( '../../wp-load.php' ) ) {
+	if ( file_exists( '../../../wp-load.php' ) ) {
 		require_once '../../../wp-load.php';
 	} elseif ( isset( $_GET['path'] ) && file_exists( $_GET['path'] . 'wp-load.php' ) ) {
 		require_once $_GET['path'] . 'wp-load.php';
