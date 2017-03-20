@@ -717,42 +717,42 @@ class MailsterSubscribers {
 			switch ( $meta->referer ) {
 				case 'import': ?>
 
-							<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( 'import on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
+					<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( 'import on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
 							<?php break;
 				case 'wpuser':
 				case '/wp-admin/user-new.php':
 				case '/wp-login.php?action=register': ?>
-							<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( 'WP user on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
+					<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( 'WP user on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
 									<?php break;
 				case 'backend': ?>
-							<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( 'Backend on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
+					<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( 'Backend on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
 							<?php break;
 				case 'extern': ?>
-							<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( 'an extern form on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
+					<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( 'an extern form on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
 							<?php break;
 				case '/': ?>
-						<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( 'Homepage on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
+					<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( 'Homepage on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
 						<?php break;
 				default:
 					if ( preg_match( '#^wpcomment_(\d+)#', $meta->referer, $match ) ) :
 						$comment = get_comment( $match[1] );?>
 
 						<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <span><?php printf( __( '%1$s on %2$s', 'mailster' ), '<a href="' . get_permalink( $comment->comment_post_ID ) . '#comment-' . $comment->comment_ID . '">' . __( 'Comment', 'mailster' ) . '</a>', date( $timeformat, $subscriber->added + $timeoffset ) ) ?></span>
-						<?php elseif ( preg_match( '#^https?://#', $meta->referer, $match ) ) : ?>
+					<?php elseif ( preg_match( '#^https?://#', $meta->referer, $match ) ) : ?>
 
-			<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <a href="<?php echo $meta->referer ?>"><?php echo $meta->referer ?></a>
+					<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <a href="<?php echo $meta->referer ?>"><?php echo $meta->referer ?></a>
+					<?php else : ?>
 
-		<?php else : ?>
+					<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <?php echo $meta->referer ?>
 
-		<strong><?php esc_html_e( 'via', 'mailster' );?></strong> <?php echo $meta->referer ?>
-
-		<?php endif; ?>
+					<?php endif; ?>
 
 			<?php break;
+
 			}
 			if ( isset( $meta->form ) ) :
 				if ( $form = mailster( 'forms' )->get( $meta->form, false, false ) ) : ?>
-			<br><strong><?php esc_html_e( 'Form', 'mailster' ) ?> #<?php echo $form->ID ?>:</strong> <a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $form->ID ) ?>"><?php echo $form->name ?></a>
+			<br><strong><?php esc_html_e( 'Form', 'mailster' ) ?> #<?php echo $form->ID ?>:</strong> <a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $form->ID ) ?>"><?php echo esc_html( $form->name ) ?></a>
 			<?php endif;
 			endif;
 
@@ -1013,9 +1013,9 @@ class MailsterSubscribers {
 			$ip = mailster_get_ip();
 
 			$entry = wp_parse_args( $entry, array(
-					'ip' => $ip,
-					'ip_signup' => $ip,
-					'ip_confirm' => ( isset( $entry['status'] ) && $entry['status'] == 1 ) ? $ip : null,
+				'ip' => $ip,
+				'ip_signup' => $ip,
+				'ip_confirm' => ( isset( $entry['status'] ) && $entry['status'] == 1 ) ? $ip : null,
 			) );
 
 		}
@@ -1181,7 +1181,7 @@ class MailsterSubscribers {
 			$this->unassign_lists( $subscriber_ids, null, $lists );
 		}
 
-		return mailster( 'lists' )->assign_subscribers( $lists, $subscriber_ids );
+		return mailster( 'lists' )->assign_subscribers( $lists, $subscriber_ids, $remove_old );
 
 	}
 

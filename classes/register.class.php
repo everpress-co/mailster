@@ -32,6 +32,7 @@ class MailsterRegister {
 
 		wp_localize_script( 'mailster-register-script', 'mailsterregisterL10n', array(
 				'wpnonce' => wp_create_nonce( 'mailster_register' ),
+				'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
 		) );
 
 		if ( is_null( $slug ) ) {

@@ -82,6 +82,11 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
+* fixed: issue with custom editor buttons are not displayed
+* fixed: assign subscribers to lists now correctly removes old assignments
+* improved: access to form.php and cron.php if location not default
+* improved: cron job settings page
+
 = Version 2.2.2 =
 
 * added: option to add link to your logo

@@ -1,12 +1,13 @@
 <?php
 
-$time_start = microtime( true );
 if ( ! defined( 'ABSPATH' ) ) {
 
-	if ( file_exists( '../../../wp-load.php' ) ) {
-		require_once '../../../wp-load.php';
-	} elseif ( isset( $_GET['path'] ) && file_exists( $_GET['path'] . 'wp-load.php' ) ) {
-		require_once $_GET['path'] . 'wp-load.php';
+	$path = isset( $_GET['path'] ) && is_dir( $_GET['path'] ) && file_exists( $_GET['path'] . 'wp-load.php' )
+		? strtr( $_GET['path'], array( "\x00" => '\x00', "\n" => '\n', "\r" => '\r', '\\' => '\\\\', "'" => "\'", '"' => '\"', "\x1a" => '\x1a' ) ) . 'wp-load.php'
+		: '../../../wp-load.php';
+
+	if ( file_exists( $path ) ) {
+		require_once $path;
 	} else {
 		die( 'WordPress root not found' );
 	}
