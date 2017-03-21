@@ -43,18 +43,32 @@ jQuery(document).ready(function ($) {
 		location.hash = hash;
 		$('form#mailster-settings-form').attr('action', 'options.php' + hash);
 		if (hash == '#system_info') {
-			var textarea = $('#system_info_content');
-			if ($.trim(textarea.val())) return;
-			textarea.val(mailsterL10n.loading + '...');
-			_ajax('get_system_info', function (response) {
+			var area = $('#system_info_content');
 
-				if (response.log && console)
-					console.log(response.log);
-				textarea.val(response.msg);
-			});
+			test();
+
 		}
 		return false;
 	});
+
+	function test(test_id){
+		_ajax('test', {
+			'test_id': test_id,
+		}, function (response) {
+
+			$(response.message.html).appendTo($('#system_info_content'));
+
+
+			if(response.nexttest){
+				setTimeout(function(){
+					test(response.nexttest);
+				}, 5000);
+			}
+
+		}, function (jqXHR, textStatus, errorThrown) {
+
+		});
+	}
 
 	$('.click-to-select').on('click', function (event) {
 		if (document.selection) {

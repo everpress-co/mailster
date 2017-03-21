@@ -69,6 +69,8 @@ class MailsterAjax {
 		'quick_install',
 		'wizard_save',
 
+		'test',
+
 	);
 
 	private $methods_no_priv = array(
@@ -2525,6 +2527,22 @@ class MailsterAjax {
 				}
 			break;
 		}
+
+		$this->json_return( $return );
+
+	}
+
+
+	private function test() {
+
+		$return['success'] = false;
+
+		$test_id = isset($_POST['test_id']) ? (int) $_POST['test_id'] : 0;
+
+		$test = mailster('test');
+		$return['success'] = $test->run($test_id);
+		$return['message'] = $test->get_message();
+		$return['nexttest'] = $test->get_next();
 
 		$this->json_return( $return );
 

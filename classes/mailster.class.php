@@ -114,6 +114,19 @@ class Mailster {
 	/**
 	 *
 	 *
+	 * @param unknown $test     (optional)
+	 * @return unknown
+	 */
+	public function test( $test = null ) {
+		require_once MAILSTER_DIR . 'classes/tests.class.php';
+
+		return new MailsterTests( $test );
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $slug (optional)
 	 * @param unknown $file (optional)
 	 * @return unknown
