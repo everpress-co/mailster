@@ -1519,6 +1519,8 @@ class MailsterCampaigns {
 			$meta['background'] = $postdata['background'];
 
 			$meta['embed_images'] = isset( $postdata['embed_images'] );
+			$meta['track_opens'] = isset( $postdata['track_opens'] );
+			$meta['track_clicks'] = isset( $postdata['track_clicks'] );
 
 			$meta['head'] = $postdata['head'];
 
@@ -1848,7 +1850,7 @@ class MailsterCampaigns {
 
 		foreach ( $_meta as $k => $v ) {
 			// allowed NULL values
-			if ( $v == '' && ! in_array( $k, array( 'timezone', 'embed_images', 'ignore_lists', 'autoplaintext', 'auto_post_thumbnail' ) ) ) {
+			if ( $v == '' && ! in_array( $k, array( 'timezone', 'embed_images', 'track_opens', 'track_clicks', 'ignore_lists', 'autoplaintext', 'auto_post_thumbnail' ) ) ) {
 				delete_post_meta( $id, '_mailster_' . $k );
 			} else {
 				update_post_meta( $id, '_mailster_' . $k, $v );
@@ -1896,6 +1898,8 @@ class MailsterCampaigns {
 			'background' => null,
 			'colors' => null,
 			'embed_images' => mailster_option( 'embed_images' ),
+			'track_opens' => mailster_option( 'track_opens' ),
+			'track_clicks' => mailster_option( 'track_clicks' ),
 			'autoplaintext' => true,
 		);
 	}
@@ -3928,7 +3932,7 @@ class MailsterCampaigns {
 		$mail->preheader = $campaign_meta['preheader'];
 		$mail->embed_images = $campaign_meta['embed_images'];
 
-		$mail->add_tracking_image = $track;
+		$mail->add_tracking_image = $campaign_meta['track_opens'];
 		$mail->hash = $subscriber->hash;
 		$mail->set_subscriber( $subscriber->ID );
 
@@ -3995,7 +3999,7 @@ class MailsterCampaigns {
 
 		$content = $placeholder->get_content();
 
-		if ( $track ) {
+		if ( $campaign_meta['track_clicks'] ) {
 
 			// replace links
 			$content = mailster()->replace_links( $content, $subscriber->hash, $campaign->ID );
