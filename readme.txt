@@ -84,6 +84,7 @@ Xaver Birsak – https://revaxarts.com
 
 * fixed: issue with custom editor buttons are not displayed
 * fixed: assign subscribers to lists now correctly removes old assignments
+* fixed: unescaped apostrophe on test mails
 * fixed: small bugs
 * improved: access to form.php and cron.php if location not default
 * improved: third party templates support on PHP 7.1
