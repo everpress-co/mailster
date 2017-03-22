@@ -216,13 +216,11 @@ class MailsterAjax {
 		@error_reporting( 0 );
 
 		$id = intval( $_GET['id'] );
-		$template = $_GET['template'];
-		$file = isset( $_GET['file'] ) ? $_GET['file'] : 'index.html';
+		$template = sanitize_file_name( $_GET['template'] );
+		$file = isset( $_GET['templatefile'] ) ? sanitize_file_name( $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = ( $_GET['editorstyle'] == '1' );
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
-
-		mailster( 'campaigns' )->set_template( $template, $file, true );
 
 		if ( ! isset( $meta['file'] ) ) {
 			$meta['file'] = 'index.html';
@@ -284,8 +282,9 @@ class MailsterAjax {
 
 			$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
 
+			$suffix = SCRIPT_DEBUG ? '' : '.min';
 			$html = $placeholder->get_content( false );
-			$html = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
+			$html = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style' . $suffix . '.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
 		}
 
 		$replace = array(

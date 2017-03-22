@@ -181,6 +181,10 @@ class MailsterTemplate {
 				$width = $logo->getAttribute( 'width' );
 				$height = $logo->getAttribute( 'height' );
 
+				if ( ! $src || ! $height || ! $width ) {
+					continue;
+				}
+
 				$new_logo = mailster( 'helper' )->create_image( $logo_id, null, $width * $high_dpi, null, false );
 
 				if ( ! $new_logo ) {
@@ -241,6 +245,10 @@ class MailsterTemplate {
 					}
 
 					$dimensions = getimagesize( $icon );
+
+					if ( ! $dimensions ) {
+						continue;
+					}
 
 					$img = $doc->createElement( 'img' );
 					$link = $doc->createElement( 'a' );

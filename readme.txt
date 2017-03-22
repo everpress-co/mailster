@@ -59,7 +59,7 @@ Don’t send unfinished Newsletters to your Customers which possible end up in t
 
 These Templates are made for the Mailster Newsletter Plugin. They have been fully tested with all major email softwares and providers. They are all available exclusively on ThemeForest.
 
-If you have further questions please visit our [knowledge base](http://rxa.li/support?utm_source=Plugin+Info+Page)
+If you have further questions please visit our [knowledge base](https://kb.mailster.co/?utm_source=Plugin+Info+Page)
 
 Xaver Birsak – https://revaxarts.com
 
@@ -84,7 +84,10 @@ Xaver Birsak – https://revaxarts.com
 
 * fixed: issue with custom editor buttons are not displayed
 * fixed: assign subscribers to lists now correctly removes old assignments
+* fixed: small bugs
 * improved: access to form.php and cron.php if location not default
+* improved: third party templates support on PHP 7.1
+* improved: cron mechanism
 * improved: cron job settings page
 
 = Version 2.2.2 =

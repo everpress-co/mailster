@@ -74,10 +74,6 @@ jQuery(document).ready(function ($) {
 			nav.find('a[href="' + $(this).attr('href') + '"]').trigger('click');
 		});
 
-	if (location.hash == '#forms' && confirm('The forms are no longer on the settings page. Go there?')) {
-		location.href = 'edit.php?post_type=newsletter&page=mailster_forms';
-	}
-
 	(location.hash && nav.find('a[href="' + location.hash + '"]').length) ?
 	nav.find('a[href="' + location.hash + '"]').trigger('click'): nav.find('a').eq(0).trigger('click');
 

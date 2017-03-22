@@ -54,18 +54,24 @@ class MailsterFrontpage {
 
 		$slugs = implode( '|', (array) mailster_option( 'slugs', array( 'confirm', 'subscribe', 'unsubscribe', 'profile' ) ) );
 
-		$pagename = str_replace( 'index.php/', '', untrailingslashit( str_replace( trailingslashit( get_bloginfo( 'url' ) ), '', get_permalink( mailster_option( 'homepage' ) ) ) ) );
+		$homepage = mailster_option( 'homepage' );
+
+		$pagename = str_replace( 'index.php/', '', untrailingslashit( str_replace( trailingslashit( get_bloginfo( 'url' ) ), '', get_permalink( $homepage ) ) ) );
 
 		$rules = array();
 		$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
-		if ( get_option( 'page_on_front' ) == mailster_option( 'homepage' ) && get_option( 'show_on_front' ) == 'page' ) {
-			$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9]*)?' ] = 'index.php?page_id=' . mailster_option( 'homepage' ) . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
+		if ( get_option( 'page_on_front' ) == $homepage && get_option( 'show_on_front' ) == 'page' ) {
+			$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9]*)?' ] = 'index.php?page_id=' . $homepage . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
 		}
 
 		$rules['^(index\.php/)?(mailster|mymail)/([0-9]+)/([a-f0-9]{32})/?([a-zA-Z0-9=_+]+)?/?([0-9]+)?/?'] = 'index.php?_mailster=$matches[3]&_mailster_hash=$matches[4]&_mailster_page=$matches[5]&_mailster_extra=$matches[6]';
 
 		$rules['^(index\.php/)?(mailster|mymail)/(subscribe|update|unsubscribe)/?$'] = 'index.php?_mailster=$matches[3]';
+
+		if ( $secret = mailster_option( 'cron_secret' ) ) {
+			$rules[ '^(index\.php/)?mailster/(' . $secret . ')/?$' ] = 'index.php?_mailster_cron=$matches[2]';
+		}
 
 		return $rules + $wp_rules;
 
@@ -103,6 +109,7 @@ class MailsterFrontpage {
 		$vars[] = '_mailster_page';
 		$vars[] = '_mailster_hash';
 		$vars[] = '_mailster_extra';
+		$vars[] = '_mailster_cron';
 		return $vars;
 
 	}
