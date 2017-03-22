@@ -150,6 +150,11 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
+	$('.webversion-bar-checkbox').on('change', function () {
+		($(this).is(':checked')) ?
+		$('#webversion-bar-options').slideDown(200): $('#webversion-bar-options').slideUp(200);
+	});
+
 	$('#social-services')
 		.on('change', '.social-service-dropdown', function () {
 			var _this = $(this),

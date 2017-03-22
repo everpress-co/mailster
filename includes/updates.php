@@ -498,6 +498,7 @@ if ( $old_version ) {
 		case '2.2.2':
 
 			$mailster_options['_flush_rewrite_rules'] = true;
+			$mailster_options['webversion_bar'] = true;
 
 		default:
 

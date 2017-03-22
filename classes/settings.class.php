@@ -86,14 +86,15 @@ class MailsterSettings {
 			'high_dpi' => true,
 
 			'homepage' => false,
+			'frontpage_public' => false,
+			'webversion_bar' => true,
+			'frontpage_pagination' => true,
 			'share_button' => true,
 			'share_services' => array(
 				'twitter',
 				'facebook',
 				'google',
 			),
-			'frontpage_public' => false,
-			'frontpage_pagination' => true,
 			'slug' => 'newsletter',
 			'slugs' => array(
 				'confirm' => sanitize_title( _x( 'confirm', 'confirm slug', 'mailster' ), 'confirm' ),
@@ -1669,7 +1670,7 @@ class MailsterSettings {
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Self Signed Certificates', 'mailster' ) ?></th>
-			<td><label title="<?php esc_html_e( 'Enabling this option may solve connection problems to SMTP servers', 'mailster' ); ?>"><input type="hidden" class="wasabi" name="mailster_options[allow_self_signed]" value=""><input type="checkbox" name="mailster_options[allow_self_signed]" value="1" <?php checked( mailster_option( 'allow_self_signed' ) );?>> <?php esc_html_e( 'allow self signed certificates', 'mailster' ) ?></label>
+			<td><label title="<?php esc_html_e( 'Enabling this option may solve connection problems to SMTP servers', 'mailster' ); ?>"><input type="hidden" name="mailster_options[allow_self_signed]" value=""><input type="checkbox" name="mailster_options[allow_self_signed]" value="1" <?php checked( mailster_option( 'allow_self_signed' ) );?>> <?php esc_html_e( 'allow self signed certificates', 'mailster' ) ?></label>
 			</td>
 		</tr>
 	</table>

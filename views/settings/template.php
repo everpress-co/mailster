@@ -66,7 +66,7 @@
 		<th scope="row"><?php _e( 'High DPI', 'mailster' ) ?> *
 		</th>
 		<td>
-			<p class="description"><label><input type="hidden" class="wasabi" name="mailster_options[high_dpi]" value=""><input type="checkbox" name="mailster_options[high_dpi]" value="1" <?php checked( mailster_option( 'high_dpi' ) );?>> <?php _e( 'Use High DPI or retina ready images if available.', 'mailster' ) ?></label></p>
+			<p class="description"><label><input type="hidden" name="mailster_options[high_dpi]" value=""><input type="checkbox" name="mailster_options[high_dpi]" value="1" <?php checked( mailster_option( 'high_dpi' ) );?>> <?php _e( 'Use High DPI or retina ready images if available.', 'mailster' ) ?></label></p>
 		</td>
 	</tr>
 	<tr valign="top">

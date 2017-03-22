@@ -478,6 +478,8 @@ class MailsterUpgrade {
 		update_option( 'mailster_setup', time() );
 		update_option( 'mailster_templates', '' );
 
+		mailster_update_option( 'webversion_bar', true );
+
 		if ( wp_next_scheduled( 'mymail_cron_worker' ) ) {
 			wp_clear_scheduled_hook( 'mymail_cron_worker' );
 		}

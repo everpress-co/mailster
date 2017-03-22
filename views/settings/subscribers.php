@@ -3,7 +3,7 @@
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Notification', 'mailster' ) ?></th>
 		<td>
-		<p><label><input type="hidden" class="wasabi" name="mailster_options[subscriber_notification]" value=""><input type="checkbox" name="mailster_options[subscriber_notification]" value="1" <?php checked( mailster_option( 'subscriber_notification' ) );?>> <?php esc_html_e( 'Send a notification of new subscribers to following receivers (comma separated)', 'mailster' ) ?> <input type="text" name="mailster_options[subscriber_notification_receviers]" value="<?php echo esc_attr( mailster_option( 'subscriber_notification_receviers' ) ); ?>" class="regular-text"></label>
+		<p><label><input type="hidden" name="mailster_options[subscriber_notification]" value=""><input type="checkbox" name="mailster_options[subscriber_notification]" value="1" <?php checked( mailster_option( 'subscriber_notification' ) );?>> <?php esc_html_e( 'Send a notification of new subscribers to following receivers (comma separated)', 'mailster' ) ?> <input type="text" name="mailster_options[subscriber_notification_receviers]" value="<?php echo esc_attr( mailster_option( 'subscriber_notification_receviers' ) ); ?>" class="regular-text"></label>
 		<br>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' );?> <select name="mailster_options[subscriber_notification_template]">
 		<?php
 		$selected = mailster_option( 'subscriber_notification_template', 'notification.html' );
@@ -37,7 +37,7 @@
 		<td>
 
 		<p>
-		<label><input type="hidden" class="wasabi" name="mailster_options[unsubscribe_notification]" value=""><input type="checkbox" name="mailster_options[unsubscribe_notification]" value="1" <?php checked( mailster_option( 'unsubscribe_notification' ) );?>> <?php esc_html_e( 'Send a notification if subscribers cancel their subscription to following receivers (comma separated)', 'mailster' ) ?> <input type="text" name="mailster_options[unsubscribe_notification_receviers]" value="<?php echo esc_attr( mailster_option( 'unsubscribe_notification_receviers' ) ); ?>" class="regular-text"></label>
+		<label><input type="hidden" name="mailster_options[unsubscribe_notification]" value=""><input type="checkbox" name="mailster_options[unsubscribe_notification]" value="1" <?php checked( mailster_option( 'unsubscribe_notification' ) );?>> <?php esc_html_e( 'Send a notification if subscribers cancel their subscription to following receivers (comma separated)', 'mailster' ) ?> <input type="text" name="mailster_options[unsubscribe_notification_receviers]" value="<?php echo esc_attr( mailster_option( 'unsubscribe_notification_receviers' ) ); ?>" class="regular-text"></label>
 		<br>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' );?> <select name="mailster_options[unsubscribe_notification_template]">
 		<?php
 		$selected = mailster_option( 'unsubscribe_notification_template', 'notification.html' );
@@ -66,19 +66,19 @@
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Save Subscriber IP', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[track_users]" value=""><input type="checkbox" name="mailster_options[track_users]" value="1" <?php checked( mailster_option( 'track_users' ) ) ?>> <?php esc_html_e( 'Save IP address and time of new subscribers', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[track_users]" value=""><input type="checkbox" name="mailster_options[track_users]" value="1" <?php checked( mailster_option( 'track_users' ) ) ?>> <?php esc_html_e( 'Save IP address and time of new subscribers', 'mailster' ) ?></label>
 		<p class="description"><?php esc_html_e( 'In some countries it\'s required to save the IP address and the sign up time for legal reasons. Please add a note in your privacy policy if you save users data', 'mailster' ) ?></p>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row">Do Not Track</th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[do_not_track]" value=""><input type="checkbox" name="mailster_options[do_not_track]" value="1" <?php checked( mailster_option( 'do_not_track' ) ) ?>> <?php esc_html_e( 'Respect users "Do Not Track" option', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[do_not_track]" value=""><input type="checkbox" name="mailster_options[do_not_track]" value="1" <?php checked( mailster_option( 'do_not_track' ) ) ?>> <?php esc_html_e( 'Respect users "Do Not Track" option', 'mailster' ) ?></label>
 		<p class="description"><?php printf( __( 'If enabled Mailster will respect users option for not getting tracked. Read more on the %s', 'mailster' ), '<a href="http://donottrack.us/" class="external">' . __( 'official website', 'mailster' ) . '</a>' ) ?></p>
 		</td>
 	</tr>
 	<tr>
 		<th scope="row"><?php esc_html_e( 'Single-Opt-Out', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[single_opt_out]" value=""><input type="checkbox" name="mailster_options[single_opt_out]" value="1" <?php checked( mailster_option( 'single_opt_out' ) ) ?>> <?php esc_html_e( 'Subscribers instantly signed out after clicking the unsubscribe link in mails', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[single_opt_out]" value=""><input type="checkbox" name="mailster_options[single_opt_out]" value="1" <?php checked( mailster_option( 'single_opt_out' ) ) ?>> <?php esc_html_e( 'Subscribers instantly signed out after clicking the unsubscribe link in mails', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr>
@@ -151,7 +151,7 @@
 						echo ' style="display:block"';
 }
 ?>>
-				<span>&nbsp;</span> <label><input type="hidden" class="wasabi" name="mailster_options[custom_field][<?php echo $id ?>][default]" value=""><input type="checkbox" name="mailster_options[custom_field][<?php echo $id ?>][default]" value="1" title="<?php esc_html_e( 'this field is selected by default', 'mailster' );?>" <?php if ( isset( $data['default'] ) ) {
+				<span>&nbsp;</span> <label><input type="hidden" name="mailster_options[custom_field][<?php echo $id ?>][default]" value=""><input type="checkbox" name="mailster_options[custom_field][<?php echo $id ?>][default]" value="1" title="<?php esc_html_e( 'this field is selected by default', 'mailster' );?>" <?php if ( isset( $data['default'] ) ) {
 							checked( $data['default'], true );
 }
 ?> <?php if ( ! in_array( $data['type'], array( 'checkbox' ) ) ) {
