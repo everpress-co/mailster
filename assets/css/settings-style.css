@@ -627,6 +627,16 @@ ul.lasthit li{
 	display: block;
 }
 
+.alternative-cron-url{
+	display: none;
+}
+.alternative-cron .alternative-cron-url{
+	display: block;
+}
+.alternative-cron .regular-cron-url{
+	display: none;
+}
+
 .bouncetest_status{
 	display: none;
 }

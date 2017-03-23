@@ -83,7 +83,7 @@ if ( isset( $_GET['template'] ) && current_user_can( 'mailster_change_template' 
 				'action' => 'mailster_get_template',
 				'id' => $post->ID,
 				'template' => $this->get_template(),
-				'file' => $this->get_file(),
+				'templatefile' => $this->get_file(),
 				'editorstyle' => $editable,
 				'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
 				'nocache' => time(),

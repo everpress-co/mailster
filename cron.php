@@ -5,17 +5,18 @@ $time_start = microtime( true );
 header( 'Refresh: 15;url=' . $_SERVER['REQUEST_URI'], true );
 @ini_set( 'display_errors', true );
 
+if ( ! defined( 'DISABLE_WP_CRON' ) ) {
+	define( 'DISABLE_WP_CRON', true );
+}
+
 if ( ! defined( 'ABSPATH' ) ) {
 
-	if ( ! defined( 'DISABLE_WP_CRON' ) ) {
-		define( 'DISABLE_WP_CRON', true );
-	}
+	$path = isset( $_GET['path'] ) && is_dir( $_GET['path'] ) && file_exists( $_GET['path'] . 'wp-load.php' )
+		? strtr( $_GET['path'], array( "\x00" => '\x00', "\n" => '\n', "\r" => '\r', '\\' => '\\\\', "'" => "\'", '"' => '\"', "\x1a" => '\x1a' ) ) . 'wp-load.php'
+		: '../../../wp-load.php';
 
-	@ini_set( 'include_path', '../../../' );
-	if ( file_exists( '../../../wp-load.php' ) ) {
-		require_once '../../../wp-load.php';
-	} elseif ( isset( $_GET['path'] ) && file_exists( $_GET['path'] . 'wp-load.php' ) ) {
-		require_once $_GET['path'] . 'wp-load.php';
+	if ( file_exists( $path ) ) {
+		require_once $path;
 	} else {
 		die( 'WordPress root not found' );
 	}
@@ -59,7 +60,6 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 	}
 
 	if ( mailster_option( 'cron_service' ) != 'cron' ) {
-		// die( 'wp_cron in use!' );
 		echo '<h2>' . esc_html__( 'WordPress Cron in use!', 'mailster' ) . '</h2>';
 	} else {
 

@@ -1,6 +1,6 @@
 <?php
 
-// Version 2.3
+// Version 2.4
 // UpdateCenterPlugin Class
 if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
@@ -30,8 +30,8 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 				$error = sprintf( '[UpdateCenter] You have to define a "plugin" parameter for your plugin in %s on line %d', $caller['file'], $caller['line'] );
 
 				return ( is_admin() )
-				? wp_die( $error )
-				: false;
+					? wp_die( $error )
+					: false;
 
 			}
 
@@ -148,15 +148,24 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
 			$response = self::check( $pluginslug, 'verify' );
 
-			if ( isset( $response['verified'] ) && $response['verified'] ) {
-				return true;
-			}
+			if ( ! is_wp_error( $response ) ) {
 
-			if ( ! $returnWPError ) {
-				return false;
-			}
+				if ( isset( $response['verified'] ) && $response['verified'] ) {
+					return true;
+				}
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return new WP_Error( $response['code'], $response['message'], $response['data'] );
 
-			return new WP_Error( $response['code'], $response['message'], $response['data'] );
+			} else {
+
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return $response;
+
+			}
 
 		}
 
@@ -189,15 +198,24 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
 			$response = self::check( $pluginslug, 'register', $userdata );
 
-			if ( isset( $response['verified'] ) && $response['verified'] ) {
-				return true;
-			}
+			if ( ! is_wp_error( $response ) ) {
 
-			if ( ! $returnWPError ) {
-				return false;
-			}
+				if ( isset( $response['verified'] ) && $response['verified'] ) {
+					return true;
+				}
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return new WP_Error( $response['code'], $response['message'], $response['data'] );
 
-			return new WP_Error( $response['code'], $response['message'], $response['data'] );
+			} else {
+
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return $response;
+
+			}
 
 		}
 
@@ -229,15 +247,24 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
 			$response = self::check( $pluginslug, 'reset' );
 
-			if ( isset( $response['reset'] ) && $response['reset'] ) {
-				return true;
-			}
+			if ( ! is_wp_error( $response ) ) {
 
-			if ( ! $returnWPError ) {
-				return false;
-			}
+				if ( isset( $response['reset'] ) && $response['reset'] ) {
+					return true;
+				}
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return new WP_Error( $response['code'], $response['message'], $response['data'] );
 
-			return new WP_Error( $response['code'], $response['message'], $response['data'] );
+			} else {
+
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return $response;
+
+			}
 
 		}
 
@@ -470,7 +497,7 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
 			}
 
-				return $res;
+			return $res;
 
 		}
 

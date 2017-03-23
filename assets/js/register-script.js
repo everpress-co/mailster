@@ -47,7 +47,12 @@ jQuery(document).ready(function ($) {
 					form.addClass('has-error').find('.error-msg').html(response.error);
 				}
 
-			})
+			}, function (jqXHR, textStatus, errorThrown) {
+
+				form.prop('disabled', false);
+				wrap.removeClass('loading');
+				alert(mailsterregisterL10n.error + "\n\n" + errorThrown);
+			});
 
 			return false;
 
@@ -80,7 +85,12 @@ jQuery(document).ready(function ($) {
 					}
 					form.addClass('has-error').find('.error-msg').html(response.error);
 				}
-			})
+			}, function (jqXHR, textStatus, errorThrown) {
+
+				form.prop('disabled', false);
+				wrap.removeClass('loading');
+				alert(mailsterregisterL10n.error + "\n\n" + errorThrown);
+			});
 
 			return false;
 

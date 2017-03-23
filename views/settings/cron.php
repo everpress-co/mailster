@@ -18,23 +18,31 @@
 			<?php endif; ?>
 		</td>
 	</tr>
-	<tr valign="top" class="cron_opts cron" <?php if ( $cron != 'cron' ) {
-		echo ' style="display:none"';
-}
-?>>
-		<th scope="row"><?php esc_html_e( 'Cron Settings', 'mailster' ) ?></th>
+	<tr valign="top" class="cron_opts cron" <?php if ( $cron != 'cron' ) { echo ' style="display:none"'; } ?>>
+		<th scope="row"><?php esc_html_e( 'Cron Settings', 'mailster' ) ?>
+			<p class="description">
+				<?php printf( __( 'Use the alternative Cron URL if you have troubles with this one by clicking %s.', 'mailster' ), '<a class="switch-cron-url" href="#">' . __( 'here', 'mailster' ) . '</a>' ) ?>
+			</p>
+		</th>
 		<td>
 			<p>
 			<input type="text" name="mailster_options[cron_secret]" value="<?php echo esc_attr( mailster_option( 'cron_secret' ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'a secret hash which is required to execute the cron', 'mailster' ) ?></span>
 			</p>
-			<?php $cron_url = mailster( 'cron' )->url();
-?>
+			<?php $cron_url = mailster( 'cron' )->url(); ?>
+			<?php $cron_url2 = mailster( 'cron' )->url( true ); ?>
 			<p><?php esc_html_e( 'You can keep a browser window open with following URL', 'mailster' ) ?><br>
-			<a href="<?php echo $cron_url ?>" class="external"><code><?php echo $cron_url ?></code></a><br>
+			<div class="verified regular-cron-url"><a href="<?php echo $cron_url ?>" class="external"><code><?php echo $cron_url ?></code></a></div>
+			<div class="verified alternative-cron-url"><a href="<?php echo $cron_url2 ?>" class="external"><code><?php echo $cron_url2 ?></code></a></div>
 			<?php esc_html_e( 'call it directly', 'mailster' ) ?><br>
-			<code>curl --silent <?php echo $cron_url ?></code><br>
+			<div class="regular-cron-url"><code class="click-to-select">curl --silent <?php echo $cron_url ?></code></div>
+			<div class="alternative-cron-url"><code class="click-to-select">curl --silent <?php echo $cron_url2 ?></code></div>
 			<?php esc_html_e( 'or set up a cron', 'mailster' ) ?><br>
-			<code>*/<?php echo mailster_option( 'interval' ) ?> * * * * GET <?php echo $cron_url ?> > /dev/null</code></p>
+			<div class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * GET <?php echo $cron_url ?> > /dev/null</code></div>
+			<div class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * GET <?php echo $cron_url2 ?> > /dev/null</code></div>
+			<?php esc_html_e( 'or', 'mailster' ) ?><br>
+			<div class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * wget -O <?php echo $cron_url ?> > /dev/null</code></div>
+			<div class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * wget -O <?php echo $cron_url2 ?> > /dev/null</code></div>
+			</p>
 			<p class="description"><?php esc_html_e( 'You can setup an interval as low as one minute, but should consider a reasonable value of 5-15 minutes as well.', 'mailster' );?></p>
 			<p class="description"><?php esc_html_e( 'If you need help setting up a cron job please refer to the documentation that your provider offers.', 'mailster' );?></p>
 			<p class="description"><?php printf( __( 'Anyway, chances are high that either %1$s, %2$s or %3$s  documentation will help you.', 'mailster' ), '<a href="https://docs.cpanel.net/display/ALD/Cron+Jobs" class="external">the CPanel</a>', '<a href="http://download1.parallels.com/Plesk/PP10/10.3.1/Doc/en-US/online/plesk-administrator-guide/plesk-control-panel-user-guide/index.htm?fileName=65208.htm" class="external">Plesk</a>', '<a href="http://www.thegeekstuff.com/2011/07/php-cron-job/" class="external">the crontab</a>' ); ?></p>

@@ -383,12 +383,11 @@ class MailsterLists {
 		$entry = (array) $entry;
 
 		$entry = wp_parse_args( $entry, array(
-				// 'ID' => NULL,
-				'parent_id' => 0,
-				'slug' => sanitize_title( $entry['name'] ),
-				'description' => '',
-				'added' => $now,
-				'updated' => $now,
+			'parent_id' => 0,
+			'slug' => sanitize_title( $entry['name'] ),
+			'description' => '',
+			'added' => $now,
+			'updated' => $now,
 		) );
 
 		add_action( 'mailster_update_list', array( &$this, 'update_forms' ) );
@@ -447,9 +446,10 @@ class MailsterLists {
 	 *
 	 * @param unknown $ids
 	 * @param unknown $subscriber_ids
+	 * @param unknown $remove_old     (optional)
 	 * @return unknown
 	 */
-	public function assign_subscribers( $ids, $subscriber_ids ) {
+	public function assign_subscribers( $ids, $subscriber_ids, $remove_old = false ) {
 
 		global $wpdb;
 
@@ -462,6 +462,10 @@ class MailsterLists {
 		}
 
 		$now = time();
+
+		if ( $remove_old ) {
+			$this->unassign_subscribers( $ids, $subscriber_ids );
+		}
 
 		$inserts = array();
 		foreach ( $ids as $list_id ) {
@@ -484,6 +488,50 @@ class MailsterLists {
 			$sql .= ' ' . implode( ',', $insert );
 
 			$sql .= ' ON DUPLICATE KEY UPDATE list_id = values(list_id), subscriber_id = values(subscriber_id)';
+
+			$success = $success && ( false !== $wpdb->query( $sql ) );
+
+		}
+
+		return $success;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $ids
+	 * @param unknown $subscriber_ids
+	 * @return unknown
+	 */
+	public function unassign_subscribers( $ids, $subscriber_ids ) {
+
+		global $wpdb;
+
+		if ( ! is_array( $ids ) ) {
+			$ids = array( (int) $ids );
+		}
+
+		if ( ! is_array( $subscriber_ids ) ) {
+			$subscriber_ids = array( (int) $subscriber_ids );
+		}
+
+		$ids = array_filter( $ids, 'is_numeric' );
+		$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
+
+		$chunks = array_chunk( $subscriber_ids, 200 );
+
+		$success = true;
+
+		foreach ( $chunks as $chunk ) {
+			$sql = "DELETE FROM {$wpdb->prefix}mailster_lists_subscribers WHERE subscriber_id IN";
+
+			$sql .= ' subscriber_id IN (' . implode( ',', $chunk ) . ')';
+
+			if ( ! empty( $ids ) ) {
+				$sql .= ' AND list_id IN (' . implode( ',', $ids ) . ')';
+			};
 
 			$success = $success && ( false !== $wpdb->query( $sql ) );
 
@@ -586,9 +634,9 @@ class MailsterLists {
 		$name = sprintf( __( 'Merged List #%d', 'mailster' ), $merge_list_id );
 
 		$new_id = $this->add( array(
-				'name' => $name,
-				'slug' => sanitize_title( $name ) . '-' . $now,
-				'description' => __( 'A merged list of', 'mailster' ) . ":\n" . implode( ', ', $list_names ),
+			'name' => $name,
+			'slug' => sanitize_title( $name ) . '-' . $now,
+			'description' => __( 'A merged list of', 'mailster' ) . ":\n" . implode( ', ', $list_names ),
 		) );
 
 		if ( ! is_wp_error( $new_id ) ) {
