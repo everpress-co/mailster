@@ -12,9 +12,7 @@
 		<p><strong><?php esc_html_e( 'There was an error retrieving the list from the server', 'mailster' ); ?></strong><br><?php echo esc_html( $addons->get_message() ) ?></p>
 	</div>
 
-<?php wp_die(); ?>
-
-<?php endif; ?>
+<?php else : ?>
 
 	<ul class="addons-wrap">
 		<?php foreach ( $addons as $addon ) : ?>
@@ -28,12 +26,12 @@
 			'utm_source' => 'Mailster Add On Page',
 			'utm_medium' => 'link',
 			'utm_campaign' => 'Mailster Add Ons',
-		), $addon->link ) : '';
+		), $addon->link ) : (isset( $addon->wpslug ) ? 'https://wordpress.org/plugins/' . dirname( $addon->wpslug ) . '/' : '');
 
 		?>
-		<li class="mailster-addon <?php if ( ! empty( $addon->is_free ) ) {	echo ' is-free'; }?><?php if ( ! empty( $addon->is_feature ) ) { echo ' is-feature';}?>">
-			<div class="bgimage" style="background-image:url(<?php echo isset( $addon->image ) ? $addon->image : '' ?>)">
-				<?php if ( isset( $addon->wpslug ) ) : ?>
+		<li class="mailster-addon <?php if ( ! empty( $addon->is_free ) ) {	echo ' is-free'; } ?><?php if ( ! empty( $addon->is_feature ) ) { echo ' is-feature';}?>">
+			<div class="bgimage" style="background-image:url(<?php echo isset( $addon->image ) ? esc_url( $addon->image ) : '' ?>)">
+				<?php if ( isset( $addon->wpslug ) && current_user_can( 'manage_plugins' ) ) : ?>
 					<a href="<?php echo esc_url(add_query_arg(array(
 						'tab' => 'plugin-information',
 						'plugin' => dirname( $addon->wpslug ),
@@ -46,13 +44,13 @@
 					<a href="<?php echo esc_url( $addon->link ) ?>" class="external">&nbsp;</a>
 				<?php endif; ?>
 			</div>
-			<h4><?php echo esc_html( $addon->name ) ?></h4>
+			<h4><?php esc_html_e( $addon->name ) ?></h4>
 			<p class="author"><?php esc_html_e( 'by', 'mailster' ); ?>
 			<?php
 			if ( $addon->author_url ) :
 				echo '<a href="' . esc_url( $addon->author_url ) . '">' . esc_html( $addon->author ) . '</a>';
 			else :
-				echo esc_html( $addon->author );
+				esc_html_e( $addon->author );
 			endif;
 			?>
 			</p>
@@ -79,6 +77,8 @@
 		</li>
 		<?php endforeach; ?>
 	</ul>
+
+<?php endif; ?>
 
 <div id="ajax-response"></div>
 <br class="clear">
