@@ -3,7 +3,7 @@ Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
 Tested up to: 4.7.3
-Stable tag: 2.2.2
+Stable tag: 2.2.3
 Author: revaxarts
 Author URI: https://mailster.co
 
@@ -81,6 +81,8 @@ Xaver Birsak – https://revaxarts.com
 
 
 == Changelog ==
+
+= Version 2.2.3 =
 
 * fixed: issue with custom editor buttons are not displayed
 * fixed: assign subscribers to lists now correctly removes old assignments
