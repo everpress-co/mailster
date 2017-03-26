@@ -39,9 +39,25 @@ class MailsterStatistics {
 
 		$dates = array_keys( $rawdata );
 
-		foreach ( $dates as $i => $date ) {
+		$i = 0;
+		$prev = null;
+
+		foreach ( $rawdata as $date => $count ) {
 			$d = strtotime( $date );
-			$dates[ $i ] = $wp_locale->weekday_abbrev[ $wp_locale->weekday[ date( 'w', $d ) ] ];
+			$str = $wp_locale->weekday_abbrev[ $wp_locale->weekday[ date( 'w', $d ) ] ];
+			if ( ! is_null( $prev ) ) {
+				$grow = $count -$prev;
+				if ( $grow > 0 ) {
+					$str .= ' ▲+' . ($grow);
+				} elseif ( $grow < 0 ) {
+					$str .= ' ▼-' . ($grow);
+				} else {
+					$str .= ' ▶' . ($grow);
+				}
+			}
+			$prev = $count;
+			$dates[ $i ] = $str;
+			$i++;
 		}
 
 		return $dates;
