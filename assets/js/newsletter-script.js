@@ -556,14 +556,13 @@ jQuery(document).ready(function ($) {
 			});
 
 			$('#mailster_attachments')
-				.on('click', '.delete-attachment', function () {
+				.on('click', '.delete-attachment', function (event) {
 					event.preventDefault();
 
 					$(this).parent().remove();
 
 				})
-				.on('click', '.add-attachment', function () {
-
+				.on('click', '.add-attachment', function (event) {
 					event.preventDefault();
 
 					if (!wp.media.frames.mailster_attachments) {

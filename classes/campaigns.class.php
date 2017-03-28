@@ -3938,6 +3938,7 @@ class MailsterCampaigns {
 
 		$mail->set_campaign( $campaign->ID );
 		$placeholder->set_campaign( $campaign->ID );
+		$placeholder->replace_custom_tags( false );
 
 		if ( ! empty( $campaign_meta['attachments'] ) ) {
 			foreach ( (array) $campaign_meta['attachments'] as $attachment_id ) {
@@ -3960,15 +3961,15 @@ class MailsterCampaigns {
 			$placeholder->set_content( $content );
 
 			$placeholder->add( array(
-					'preheader' => $campaign_meta['preheader'],
-					'subject' => $campaign_meta['subject'],
-					'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-					'webversionlink' => get_permalink( $campaign->ID ),
-					'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
-					'unsublink' => $unsubscribelink,
-					'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
-					'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
-					'email' => '<a href="">{emailaddress}</a>',
+				'preheader' => $campaign_meta['preheader'],
+				'subject' => $campaign_meta['subject'],
+				'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
+				'webversionlink' => get_permalink( $campaign->ID ),
+				'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
+				'unsublink' => $unsubscribelink,
+				'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
+				'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
+				'email' => '<a href="">{emailaddress}</a>',
 			) );
 
 			$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
@@ -3982,6 +3983,7 @@ class MailsterCampaigns {
 		$placeholder->set_content( $content );
 
 		// user specific stuff
+		$placeholder->replace_custom_tags( true );
 		$placeholder->set_subscriber( $subscriber->ID );
 
 		$forwardlink = mailster()->get_forward_link( $campaign->ID, $subscriber->email );

@@ -2309,12 +2309,10 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$cache = array();
 		if ( 'ID' == $type ) {
 			$value = intval( $value );
-			$cache = mailster_cache_get( 'subscribers' );
-			if ( isset( $cache[ $value ] ) ) {
-				return $cache[ $value ];
+			if ( $subscriber = mailster_cache_get( 'subscriber_' . $value ) ) {
+				return $subscriber;
 			}
 		}
 
@@ -2340,10 +2338,8 @@ class MailsterSubscribers {
 		$subscriber->confirm = (int) $subscriber->confirm;
 		$subscriber->rating = (float) $subscriber->rating;
 
-		$cache[ $subscriber->ID ] = $subscriber;
-
 		if ( $custom_fields ) {
-			mailster_cache_set( 'subscribers', $cache );
+			mailster_cache_set( 'subscriber_' . $subscriber->ID, $subscriber );
 		}
 
 		return $subscriber;
@@ -2378,7 +2374,9 @@ class MailsterSubscribers {
 			$custom_fields[ $data->meta_key ] = $data->meta_value;
 		}
 
-		$custom_fields['fullname'] = trim( mailster_option( 'name_order' ) ? $custom_fields['lastname'] . ' ' . $custom_fields['firstname'] : $custom_fields['firstname'] . ' ' . $custom_fields['lastname'] );
+		$custom_fields['fullname'] = trim( mailster_option( 'name_order' )
+			? $custom_fields['lastname'] . ' ' . $custom_fields['firstname']
+		: $custom_fields['firstname'] . ' ' . $custom_fields['lastname'] );
 
 		if ( is_null( $field ) ) {
 			return $custom_fields;
@@ -2400,9 +2398,9 @@ class MailsterSubscribers {
 		global $wpdb;
 
 		$fields = wp_parse_args( array(
-				'firstname',
-				'lastname',
-				'fullname',
+			'firstname',
+			'lastname',
+			'fullname',
 		), $wpdb->get_col( "DESCRIBE {$wpdb->prefix}mailster_subscribers" ) );
 
 		if ( ! $custom_fields ) {
@@ -2527,8 +2525,8 @@ class MailsterSubscribers {
 
 		if ( $new ) {
 			$subscriber_id = $this->add_from_wp_user( get_current_user_id(), array(
-					'status' => 1,
-					'referer' => 'backend',
+				'status' => 1,
+				'referer' => 'backend',
 			) );
 		}
 
@@ -2593,8 +2591,8 @@ class MailsterSubscribers {
 		}
 
 		$subscriber_id = $this->add_from_wp_user( $user_id, array(
-				'status' => $status,
-				'referer' => apply_filters( 'mymail_user_register_referer', apply_filters( 'mailster_user_register_referer', $referer ) ),
+			'status' => $status,
+			'referer' => apply_filters( 'mymail_user_register_referer', apply_filters( 'mailster_user_register_referer', $referer ) ),
 		) );
 
 		if ( is_wp_error( $subscriber_id ) ) {
@@ -2621,7 +2619,7 @@ class MailsterSubscribers {
 			return;
 		}
 
-		?><p><label for="mailster_user_newsletter_signup"><input name="mailster_user_newsletter_signup" type="checkbox" id="mailster_user_newsletter_signup" value="1" <?php checked( mailster_option( 'register_signup_checked' ) );?> /> <?php echo mailster_text( 'newsletter_signup' ); ?></label><br><br></p><?php
+		?><p><label for="mailster_user_newsletter_signup"><input name="mailster_user_newsletter_signup" type="checkbox" id="mailster_user_newsletter_signup" value="1" <?php checked( mailster_option( 'register_signup_checked' ) );?> /><?php echo mailster_text( 'newsletter_signup' ); ?></label><br><br></p><?php
 	}
 
 

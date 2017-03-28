@@ -82,6 +82,11 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
+* fixed: adding attachments not possible on Firefox
+* fixed: Subscriber ID was cached on custom dynamic tags in some cases
+* improved: allowing anonymous functions in `mailster_add_tag`
+* improved: subscriber caching
+
 = Version 2.2.3 =
 
 * fixed: issue with custom editor buttons are not displayed

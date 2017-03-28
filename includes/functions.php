@@ -932,8 +932,9 @@ function mailster_get_subscriber( $id_email_or_hash, $type = null ) {
  */
 function mailster_add_tag( $tag, $callbackfunction ) {
 
-	if ( is_array( $callbackfunction ) ) {
+	if ( is_callable( $callbackfunction ) ) {
 
+	} elseif ( is_array( $callbackfunction ) ) {
 		if ( ! method_exists( $callbackfunction[0], $callbackfunction[1] ) ) {
 			return false;
 		}
