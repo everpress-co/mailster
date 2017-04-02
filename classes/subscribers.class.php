@@ -1558,6 +1558,9 @@ class MailsterSubscribers {
 		if ( false === ( $counts = mailster_cache_get( 'get_count_by_status' ) ) ) {
 
 			$sql = "SELECT status, COUNT( * ) AS count FROM {$wpdb->prefix}mailster_subscribers AS a GROUP BY status";
+
+			$sql = apply_filters( 'mailster_subscribers_get_count_by_status', $sql );
+
 			$result = $wpdb->get_results( $sql );
 
 			$counts = array();
@@ -2317,6 +2320,8 @@ class MailsterSubscribers {
 		}
 
 		$sql = "SELECT * FROM {$wpdb->prefix}mailster_subscribers WHERE " . esc_sql( $type ) . " = '" . esc_sql( $value ) . "' LIMIT 1";
+
+		$sql = apply_filters( 'mailster_subscribers_get_by_type_sql', $sql, $type, $value );
 
 		if ( ! ( $subscriber = $wpdb->get_row( $sql ) ) ) {
 			return false;
