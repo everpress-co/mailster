@@ -84,6 +84,8 @@ Xaver Birsak – https://revaxarts.com
 
 * fixed: adding attachments not possible on Firefox
 * fixed: Subscriber ID was cached on custom dynamic tags in some cases
+* updated: order by "Clicks" is now "Clicks Date" in recipients details view
+* improved: all widgets are now wrapped by a div with class "mailster-widget" for better targeting
 * improved: allowing anonymous functions in `mailster_add_tag`
 * improved: subscriber caching
 
