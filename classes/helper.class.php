@@ -200,6 +200,7 @@ class MailsterHelper {
 			$response_body = wp_remote_retrieve_body( $response );
 
 			if ( is_wp_error( $response ) ) {
+				set_transient( 'mailster_addons', $response, 360 );
 				return $response;
 			}
 

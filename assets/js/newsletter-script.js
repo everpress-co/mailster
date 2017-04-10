@@ -2921,9 +2921,12 @@ jQuery(document).ready(function ($) {
 
 						var val = content.replace(/&amp;/g, '&');
 
+						singlelink.val('');
+
 						if (current.element.parent().is('a')) {
 							var href = current.element.parent().attr('href');
 							singlelink.val(href != '#' ? href : '');
+							loadSingleLink();
 
 						} else if (current.element.find('a').length) {
 							var link = current.element.find('a');
