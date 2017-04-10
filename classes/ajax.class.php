@@ -218,13 +218,11 @@ class MailsterAjax {
 		@error_reporting( 0 );
 
 		$id = intval( $_GET['id'] );
-		$template = $_GET['template'];
-		$file = isset( $_GET['file'] ) ? $_GET['file'] : 'index.html';
-		$editorstyle = ( $_GET['editorstyle'] == '1' );
+		$template = sanitize_file_name( $_GET['template'] );
+		$file = isset( $_GET['templatefile'] ) ? sanitize_file_name( $_GET['templatefile'] ) : 'index.html';
+		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
-
-		mailster( 'campaigns' )->set_template( $template, $file, true );
 
 		if ( ! isset( $meta['file'] ) ) {
 			$meta['file'] = 'index.html';
@@ -286,8 +284,9 @@ class MailsterAjax {
 
 			$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
 
+			$suffix = SCRIPT_DEBUG ? '' : '.min';
 			$html = $placeholder->get_content( false );
-			$html = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
+			$html = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style' . $suffix . '.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
 		}
 
 		$replace = array(
@@ -512,14 +511,14 @@ class MailsterAjax {
 				$receivers = explode( ',', stripslashes( $_POST['to'] ) );
 			}
 
-			$subject = $formdata['mailster_data']['subject'];
+			$subject = stripcslashes( $formdata['mailster_data']['subject'] );
 			$from = $formdata['mailster_data']['from_email'];
-			$from_name = $formdata['mailster_data']['from_name'];
+			$from_name = stripcslashes( $formdata['mailster_data']['from_name'] );
 			$reply_to = $formdata['mailster_data']['reply_to'];
 			$embed_images = isset( $formdata['mailster_data']['embed_images'] );
-			$head = isset( $formdata['mailster_data']['head'] ) ? $formdata['mailster_data']['head'] : null;
+			$head = isset( $formdata['mailster_data']['head'] ) ? stripcslashes( $formdata['mailster_data']['head'] ) : null;
 			$content = stripslashes( $_POST['content'] );
-			$preheader = $formdata['mailster_data']['preheader'];
+			$preheader = stripcslashes( $formdata['mailster_data']['preheader'] );
 			$bouncemail = mailster_option( 'bounce' );
 			$attachments = isset( $formdata['mailster_data']['attachments'] ) ? $formdata['mailster_data']['attachments'] : array();
 			$max_size = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );

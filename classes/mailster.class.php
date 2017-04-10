@@ -22,8 +22,7 @@ class Mailster {
 		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'empty' );
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
-		add_action( 'widgets_init', create_function( '', 'register_widget( "Mailster_Signup_Widget" );register_widget( "Mailster_Newsletter_List_Widget" );register_widget( "Mailster_Newsletter_Subscriber_Button_Widget" );register_widget( "Mailster_Newsletter_Subscribers_Count_Widget" );' ) );
+		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
 
 		foreach ( $classes as $class ) {
 			require_once MAILSTER_DIR . "classes/$class.class.php";
@@ -211,6 +210,16 @@ class Mailster {
 	}
 
 
+	public function register_widgets() {
+
+		register_widget( 'Mailster_Signup_Widget' );
+		register_widget( 'Mailster_Newsletter_List_Widget' );
+		register_widget( 'Mailster_Newsletter_Subscriber_Button_Widget' );
+		register_widget( 'Mailster_Newsletter_Subscribers_Count_Widget' );
+
+	}
+
+
 	public function save_admin_notices() {
 
 		global $mailster_notices;
@@ -233,16 +242,12 @@ class Mailster {
 			$msg;
 			$dismiss = isset( $_GET['mailster_remove_notice_all'] ) ? esc_attr( $_GET['mailster_remove_notice_all'] ) : false;
 
-			if ( isset( $_GET['mailster_remove_notice'] ) ) {
-
-				unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
-
-				update_option( 'mailster_notices', $mailster_notices );
-
-			}
-
 			if ( ! is_array( $mailster_notices ) ) {
 				$mailster_notices = array();
+			}
+
+			if ( isset( $_GET['mailster_remove_notice'] ) && isset( $mailster_notices[ $_GET['mailster_remove_notice'] ] ) ) {
+				unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
 			}
 
 			foreach ( $mailster_notices as $id => $notice ) {
@@ -952,6 +957,7 @@ class Mailster {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-addons', MAILSTER_URI . 'assets/css/addons-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-addons', MAILSTER_URI . 'assets/js/addons-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
 	}
 

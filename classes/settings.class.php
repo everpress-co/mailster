@@ -873,6 +873,9 @@ class MailsterSettings {
 					if ( $value == '' ) {
 						$value = md5( uniqid() );
 					}
+					if ( $old != $value ) {
+						$options['_flush_rewrite_rules'] = true;
+					}
 
 				break;
 

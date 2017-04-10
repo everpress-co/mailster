@@ -556,14 +556,13 @@ jQuery(document).ready(function ($) {
 			});
 
 			$('#mailster_attachments')
-				.on('click', '.delete-attachment', function () {
+				.on('click', '.delete-attachment', function (event) {
 					event.preventDefault();
 
 					$(this).parent().remove();
 
 				})
-				.on('click', '.add-attachment', function () {
-
+				.on('click', '.add-attachment', function (event) {
 					event.preventDefault();
 
 					if (!wp.media.frames.mailster_attachments) {
@@ -2922,9 +2921,12 @@ jQuery(document).ready(function ($) {
 
 						var val = content.replace(/&amp;/g, '&');
 
+						singlelink.val('');
+
 						if (current.element.parent().is('a')) {
 							var href = current.element.parent().attr('href');
 							singlelink.val(href != '#' ? href : '');
+							loadSingleLink();
 
 						} else if (current.element.find('a').length) {
 							var link = current.element.find('a');

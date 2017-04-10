@@ -27,6 +27,7 @@ class MailsterCron {
 
 		add_action( 'wp_ajax_mailster_cron', array( &$this, 'cron_worker' ) );
 		add_action( 'wp_ajax_nopriv_mailster_cron', array( &$this, 'cron_worker' ) );
+		add_action( 'template_redirect', array( &$this, 'template_redirect' ), 1 );
 
 	}
 
@@ -350,10 +351,15 @@ class MailsterCron {
 	public function url( $alternative = false ) {
 
 		if ( $alternative ) {
-			return apply_filters( 'mailster_cron_url', add_query_arg( array(
-				'secret' => mailster_option( 'cron_secret' ),
-			), MAILSTER_URI . 'cron.php' ), $alternative );
 
+			if ( mailster_option( 'got_url_rewrite' ) ) {
+				return apply_filters( 'mailster_cron_url', get_home_url( null, 'mailster/' . mailster_option( 'cron_secret' ) ), $alternative );
+			} else {
+				return apply_filters( 'mailster_cron_url', add_query_arg( array(
+					'secret' => mailster_option( 'cron_secret' ),
+				), MAILSTER_URI . 'cron.php' ), $alternative );
+
+			}
 		} else {
 			return apply_filters( 'mailster_cron_url', add_query_arg( array(
 				'action' => 'mailster_cron',
@@ -365,11 +371,30 @@ class MailsterCron {
 	}
 
 
+	public function template_redirect() {
+
+		$secret = get_query_var( '_mailster_cron' );
+
+		if ( $secret ) {
+			if ( ! defined( 'MAILSTER_CRON_SECRET' ) ) {
+				define( 'MAILSTER_CRON_SECRET', $secret );
+			}
+
+			include MAILSTER_DIR . 'cron.php';
+			exit();
+
+		}
+
+	}
+
+
 	public function cron_worker() {
 
 		$secret = isset( $_GET['secret'] ) ? $_GET['secret'] : false;
 
-		define( 'MAILSTER_CRON_SECRET', $secret );
+		if ( ! defined( 'MAILSTER_CRON_SECRET' ) ) {
+			define( 'MAILSTER_CRON_SECRET', $secret );
+		}
 
 		include MAILSTER_DIR . 'cron.php';
 		exit();

@@ -494,6 +494,10 @@ if ( $old_version ) {
 			update_option( 'mailster_license', $mailster_options['purchasecode'] );
 
 		case '2.2':
+		case '2.2.1':
+		case '2.2.2':
+
+			$mailster_options['_flush_rewrite_rules'] = true;
 
 		default:
 
