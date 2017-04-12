@@ -2536,10 +2536,10 @@ class MailsterAjax {
 
 		$return['success'] = false;
 
-		$test_id = isset($_POST['test_id']) ? (int) $_POST['test_id'] : 0;
+		$test_id = isset( $_POST['test_id'] ) ? (int) $_POST['test_id'] : 0;
 
-		$test = mailster('test');
-		$return['success'] = $test->run($test_id);
+		$test = mailster( 'test' );
+		$return['success'] = $test->run( $test_id );
 		$return['message'] = $test->get_message();
 		$return['nexttest'] = $test->get_next();
 

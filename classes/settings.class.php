@@ -1267,7 +1267,7 @@ class MailsterSettings {
 	 * @param unknown $port
 	 * @return unknown
 	 */
-	private function check_port( $host, $port ) {
+	public function check_port( $host, $port ) {
 
 		if ( ! function_exists( 'fsockopen' ) ) {
 			return 'requires fsockopen to check ports.';
@@ -1487,7 +1487,6 @@ class MailsterSettings {
 			'Mailster DB Version' => $db_version,
 			'PHPMailer Version' => $mail->mailer->Version,
 			'Permalink Structure' => get_option( 'permalink_structure' ),
-			'Mailster Licensecode' => get_option( 'mailster_license' ) ? 'defined' : 'Not defined! check "Purchasecode" tab',
 			'--',
 			'Newsletter Homepage' => $homepage . ' (#' . mailster_option( 'homepage' ) . ')',
 			'Endpoints' => $endpoints ? '/' . implode( ', /', $endpoints ) . ' (Check: ' . ( mailster()->check_link_structure() ? 'Passed' : 'Not Passed' ) . ')' : 'No Permalink structure',
@@ -1499,25 +1498,14 @@ class MailsterSettings {
 			'WordPress Cron' => ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? 'Not available - remove DISABLE_WP_CRON constant' : 'Available',
 			'Cron Service' => mailster_option( 'cron_service' ),
 			'Cron URL' => mailster( 'cron' )->url(),
+			'Alternative Cron URL' => mailster( 'cron' )->url( true ),
 			'Cron Interval' => mailster_option( 'interval' ) . ' MIN',
 			'Cron Lasthit' => ! empty( $lasthit['timestamp'] ) ? ( date( 'Y-m-d H:i:s', $lasthit['timestamp'] ) . ', ' . human_time_diff( $lasthit['timestamp'] ) ) : 'NEVER',
 			'--',
 			'Delivery Method' => mailster_option( 'deliverymethod' ),
-			'SMTP Port check' => mailster_option( 'deliverymethod' ) == 'smtp'
-			? mailster_option( 'smtp_host' ) . ':' . mailster_option( 'smtp_port' ) . ' - ' . $this->check_port( mailster_option( 'smtp_host' ), mailster_option( 'smtp_port' ) )
-			: 'no smtp',
 			'Send at once' => mailster_option( 'send_at_once' ),
 			'Send limit' => mailster_option( 'send_limit' ),
 			'Send period' => mailster_option( 'send_period' ),
-			'--',
-			'Test Mail' => $send_success,
-			'--',
-			'Port 110' => $this->check_port( 'pop.gmx.net', 110 ),
-			'Port 995' => $this->check_port( 'pop.gmail.com', 995 ),
-			'Port 993' => $this->check_port( 'smtp.gmail.com', 993 ),
-			'Port 25' => $this->check_port( 'smtp.gmail.com', 25 ),
-			'Port 465' => $this->check_port( 'smtp.gmail.com', 465 ),
-			'Port 587' => $this->check_port( 'smtp.gmail.com', 587 ),
 			'--',
 			'PHP Version' => PHP_VERSION,
 			'MySQL Version' => $wpdb->db_version(),
@@ -1604,7 +1592,7 @@ class MailsterSettings {
 	public function deliverytab_simple() {
 ?>
 		<p class="description">
-		<?php _e( 'use this option if you don\'t have access to a SMTP server or any other provided options', 'mailster' );?>
+		<?php esc_html_e( 'use this option if you don\'t have access to a SMTP server or any other provided options', 'mailster' );?>
 		</p>
 		<?php $basicmethod = mailster_option( 'simplemethod', 'sendmail' );?>
 		<table class="form-table">
@@ -1680,15 +1668,15 @@ class MailsterSettings {
 	public function deliverytab_gmail() {
 ?>
 		<p class="description">
-		<?php _e( 'Gmail has a limit of 500 mails within 24 hours! Also sending a mail can take up to one second which is quite long. This options is only recommended for few subscribers. DKIM works only if set the from address to your Gmail address.', 'mailster' );?>
+		<?php esc_html_e( 'Gmail has a limit of 500 mails within 24 hours! Also sending a mail can take up to one second which is quite long. This options is only recommended for few subscribers. DKIM works only if set the from address to your Gmail address.', 'mailster' );?>
 		</p>
 		<table class="form-table">
 			<tr valign="top">
-				<th scope="row"><?php _e( 'Username', 'mailster' ) ?></th>
+				<th scope="row"><?php esc_html_e( 'Username', 'mailster' ) ?></th>
 				<td><input type="text" name="mailster_options[gmail_user]" value="<?php echo esc_attr( mailster_option( 'gmail_user' ) ); ?>" class="regular-text" placeholder="@gmail.com"></td>
 			</tr>
 			<tr valign="top">
-				<th scope="row"><?php _e( 'Password', 'mailster' ) ?></th>
+				<th scope="row"><?php esc_html_e( 'Password', 'mailster' ) ?></th>
 				<td><input type="password" name="mailster_options[gmail_pwd]" value="<?php echo esc_attr( mailster_option( 'gmail_pwd' ) ); ?>" class="regular-text" autocomplete="new-password"></td>
 			</tr>
 		</table>

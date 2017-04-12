@@ -51,18 +51,17 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
-	function test(test_id){
+	function test(test_id) {
 		_ajax('test', {
 			'test_id': test_id,
 		}, function (response) {
 
-			$(response.message.html).appendTo($('#system_info_content'));
+			$(response.message.html).appendTo($('#system_info_output'));
 
-
-			if(response.nexttest){
-				setTimeout(function(){
+			if (response.nexttest) {
+				setTimeout(function () {
 					test(response.nexttest);
-				}, 5000);
+				}, 300);
 			}
 
 		}, function (jqXHR, textStatus, errorThrown) {
