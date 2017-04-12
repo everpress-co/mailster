@@ -828,7 +828,10 @@ class MailsterHelper {
 			return $this->get_bounce_message( $status, $original );
 		}
 
-		return array( 'title' => __( 'unknown', 'mailster' ), 'descr' => __( 'error is unknown', 'mailster' ) );
+		return array(
+			'title' => '',
+			'descr' => __( 'error is unknown', 'mailster' ),
+		);
 
 	}
 
