@@ -22,8 +22,7 @@ class Mailster {
 		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'empty' );
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
-		add_action( 'widgets_init', create_function( '', 'register_widget( "Mailster_Signup_Widget" );register_widget( "Mailster_Newsletter_List_Widget" );register_widget( "Mailster_Newsletter_Subscriber_Button_Widget" );register_widget( "Mailster_Newsletter_Subscribers_Count_Widget" );' ) );
+		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
 
 		foreach ( $classes as $class ) {
 			require_once MAILSTER_DIR . "classes/$class.class.php";
@@ -198,6 +197,16 @@ class Mailster {
 	}
 
 
+	public function register_widgets() {
+
+		register_widget( 'Mailster_Signup_Widget' );
+		register_widget( 'Mailster_Newsletter_List_Widget' );
+		register_widget( 'Mailster_Newsletter_Subscriber_Button_Widget' );
+		register_widget( 'Mailster_Newsletter_Subscribers_Count_Widget' );
+
+	}
+
+
 	public function save_admin_notices() {
 
 		global $mailster_notices;
@@ -220,16 +229,12 @@ class Mailster {
 			$msg;
 			$dismiss = isset( $_GET['mailster_remove_notice_all'] ) ? esc_attr( $_GET['mailster_remove_notice_all'] ) : false;
 
-			if ( isset( $_GET['mailster_remove_notice'] ) ) {
-
-				unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
-
-				update_option( 'mailster_notices', $mailster_notices );
-
-			}
-
 			if ( ! is_array( $mailster_notices ) ) {
 				$mailster_notices = array();
+			}
+
+			if ( isset( $_GET['mailster_remove_notice'] ) && isset( $mailster_notices[ $_GET['mailster_remove_notice'] ] ) ) {
+				unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
 			}
 
 			foreach ( $mailster_notices as $id => $notice ) {
@@ -1096,7 +1101,7 @@ class Mailster {
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
 		}
-		if ( max( intval( @ini_get( 'memory_limit' ) ), intval( WP_MAX_MEMORY_LIMIT ) ) < 128 ) {
+		if ( max( intval( @ini_get( 'memory_limit' ) ), intval( WP_MEMORY_LIMIT ) ) < 128 ) {
 			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( WP_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		}
 
@@ -1227,7 +1232,7 @@ class Mailster {
 			$collate = $wpdb->get_charset_collate();
 		}
 
-		return array(
+		return apply_filters( 'mailster_table_structure', array(
 
 			"CREATE TABLE {$wpdb->prefix}mailster_subscribers (
                 ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -1386,7 +1391,7 @@ class Mailster {
                 KEY list_id (list_id)
             ) $collate;",
 
-		);
+		), $collate);
 	}
 
 
