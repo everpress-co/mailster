@@ -99,6 +99,7 @@ class Mailster_Signup_Widget extends WP_Widget {
 			echo $before_title . $title . $after_title;
 		}
 
+		echo '<div class="mailster-widget mailster-widget-signup">';
 		if ( $text_before ) {
 			echo '<div class="mailster-widget-text mailster-widget-text-before">' . $text_before . '</div>';
 		}
@@ -108,6 +109,7 @@ class Mailster_Signup_Widget extends WP_Widget {
 		if ( $text_after ) {
 			echo '<div class="mailster-widget-text mailster-widget-text-after">' . $text_after . '</div>';
 		}
+		echo '</div>';
 
 		echo $after_widget;
 	}
@@ -171,6 +173,7 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 			echo $before_title . $title . $after_title;
 }
 ?>
+		<div class="mailster-widget mailster-widget-recent-newsletter">
 		<ul>
 		<?php while ( $r->have_posts() ) : $r->the_post();?>
 			<li><a href="<?php the_permalink() ?>" title="<?php echo esc_attr( get_the_title() ? get_the_title() : get_the_ID() ); ?>"><?php if ( get_the_title() ) {
@@ -181,6 +184,7 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 		?></a></li>
 			<?php endwhile;?>
 		</ul>
+		</div>
 		<?php echo $after_widget; ?>
 <?php
 		// Reset the global $the_post as this query will have stomped on it
@@ -288,9 +292,11 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 		extract( $args );
 ?>
 		<?php echo isset( $before_widget ) ? $before_widget : ''; ?>
+		<?php echo '<div class="mailster-widget mailster-widget-subscribers-count">'; ?>
 		<?php echo isset( $instance['prefix'] ) ? $instance['prefix'] : ''; ?>
 		<?php echo do_shortcode( '[newsletter_subscribers formated="' . $instance['formated'] . '" round="' . $instance['round'] . '"]' ); ?>
 		<?php echo isset( $instance['postfix'] ) ? $instance['postfix'] : ''; ?>
+		<?php echo '</div>'; ?>
 		<?php echo isset( $after_widget ) ? $after_widget : ''; ?>
 <?php
 
@@ -419,9 +425,11 @@ class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
 		<?php if ( ! empty( $instance['title'] ) ) {
 			echo $before_title . $instance['title'] . $after_title;
 } ?>
+		<?php echo '<div class="mailster-widget mailster-widget-subscriber-button">'; ?>
 		<?php echo isset( $instance['prefix'] ) ? $instance['prefix'] : ''; ?>
 		<?php echo do_shortcode( '[newsletter_button id=' . $instance['form'] . ' design="' . $instance['design'] . '' . ($instance['ontop'] ? ' ontop' : '') . '" label="' . $instance['label'] . '" showcount="' . $instance['showcount'] . '" width="' . $instance['width'] . '"]' ); ?>
 		<?php echo isset( $instance['postfix'] ) ? $instance['postfix'] : ''; ?>
+		<?php echo '</div>'; ?>
 		<?php echo isset( $after_widget ) ? $after_widget : ''; ?>
 <?php
 

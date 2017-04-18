@@ -2136,8 +2136,8 @@ jQuery(document).ready(function ($) {
 				_ajax('check_for_posts', {
 					post_type: post_type,
 					relative: relative,
-					extra: extra
-
+					extra: extra,
+					modulename: current.name
 				}, function (response) {
 					loader(false);
 					if (response.success) {
@@ -2163,23 +2163,22 @@ jQuery(document).ready(function ($) {
 				var f = factor.val();
 				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + ((w || imagewidth.val()) * f) + '&h=' + ((h || imageheight.val()) * f) + '&f=' + f;
 			}
-
 			/*
-							else if(m = val.match(/(https?)(.*?)youtube\.com\/watch\?v=([a-zA-Z0-9]+)/)){
-								console.log(val, m);
-								val = m[1]+'://img.youtube.com/vi/'+m[3]+'/maxresdefault.jpg';
-								$.getJSON(m[1]+'://gdata.youtube.com/feeds/api/videos/'+m[3]+'?v=2&alt=jsonc&callback=?', function(response){
-									console.log(response);
-									//imagelink.val();
-									imagelink.val(response.data.player.default.replace('&feature=youtube_gdata_player','&feature=mailster'));
-									imagealt.val(response.data.title);
-									imagepreview.attr('src', response.data.thumbnail.hqDefault);
-									imageurl.attr('src', response.data.thumbnail.hqDefault);
+			else if(m = val.match(/(https?)(.*?)youtube\.com\/watch\?v=([a-zA-Z0-9]+)/)){
+				console.log(val, m);
+				val = m[1]+'://img.youtube.com/vi/'+m[3]+'/maxresdefault.jpg';
+				$.getJSON(m[1]+'://gdata.youtube.com/feeds/api/videos/'+m[3]+'?v=2&alt=jsonc&callback=?', function(response){
+					console.log(response);
+					//imagelink.val();
+					imagelink.val(response.data.player.default.replace('&feature=youtube_gdata_player','&feature=mailster'));
+					imagealt.val(response.data.title);
+					imagepreview.attr('src', response.data.thumbnail.hqDefault);
+					imageurl.attr('src', response.data.thumbnail.hqDefault);
 
-								});
-							}else{
-								console.log('no dynmaic');
-							}
+				});
+			}else{
+				console.log('no dynmaic');
+			}
 			*/
 			return val
 		}
@@ -2403,9 +2402,16 @@ jQuery(document).ready(function ($) {
 
 				if (currenttext) {
 
-					current.elements.headlines.html('');
+					if (currenttext.title) {
 
-					if (currenttext.title) current.elements.headlines.eq(0).html(currenttext.title);
+						if (typeof currenttext.title == "string") {
+							currenttext.title = [currenttext.title];
+						}
+						current.elements.headlines.each(function (i, e) {
+							$(this).html(currenttext.title[i] ? currenttext.title[i] : '');
+						});
+
+					}
 
 					if (currenttext.link) {
 
@@ -2432,78 +2438,100 @@ jQuery(document).ready(function ($) {
 
 					if (current.elements.bodies.length) {
 						var contentcount = current.elements.bodies.length,
-							content = currenttext[contenttype] ? currenttext[contenttype] : '',
-							contentlength = content.length,
-							partlength = ('static' == insertmethod) ? Math.ceil(contentlength / contentcount) : contentlength;
+							org_content = currenttext[contenttype] ? currenttext[contenttype] : '',
+							content = [],
+							contentlength,
+							partlength;
 
-						for (var i = 0; i < contentcount; i++) {
-							current.elements.bodies.eq(i).html(content.substring(i * partlength, i * partlength + partlength));
+						if (typeof org_content == "string") {
+							contentlength = org_content.length,
+								partlength = ('static' == insertmethod) ? Math.ceil(contentlength / contentcount) : contentlength;
+							for (var i = 0; i < contentcount; i++) {
+								content.push(org_content.substring(i * partlength, i * partlength + partlength));
+							}
+						} else {
+							content = org_content;
 						}
+
+						current.elements.bodies.each(function (i, e) {
+							$(this).html(content[i] ? content[i] : '');
+						});
+
 					}
 
 					if (currenttext.image && current.elements.images.length) {
+
+						if (typeof currenttext.image == "string") {
+							currenttext.image = [currenttext.image];
+						}
+
 						loader();
 
-						var imgelement = current.elements.images.eq(0);
-						var f = factor.val();
+						current.elements.images.each(function (i, e) {
 
-						if ('static' == insertmethod) {
-							_ajax('create_image', {
-								id: currenttext.image.id,
-								width: current.elements.images.eq(0).width() * f,
-							}, function (response) {
+							var imgelement = $(this);
+							var f = factor.val();
 
+							if ('static' == insertmethod) {
+								_ajax('create_image', {
+									id: currenttext.image[i].id,
+									width: imgelement.width() * f,
+								}, function (response) {
 
-								if (response.success) {
+									if (response.success) {
+										loader(false);
+
+										imgelement.attr({
+											'data-id': currenttext.image[i].id,
+											'src': response.image.url,
+											'width': Math.round(response.image.width / f),
+											'height': Math.round(response.image.height / f),
+											'alt': currenttext.alt || currenttext.title[i]
+										}).data('id', currenttext.image[i].id);
+
+										if (imgelement.parent().is('a')) {
+											imgelement.unwrap();
+										}
+
+										if (currenttext.link) {
+											imgelement.wrap('<a>');
+											imgelement.parent().attr('href', currenttext.link);
+										}
+									}
+									close();
+								}, function (jqXHR, textStatus, errorThrown) {
+
 									loader(false);
+									alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 
-									imgelement.attr({
-										'data-id': currenttext.image.id,
-										'src': response.image.url,
-										'width': Math.round(response.image.width / f),
-										'height': Math.round(response.image.height / f),
-										'alt': currenttext.alt || currenttext.title
-									}).data('id', currenttext.image.id);
+								});
 
-									if (imgelement.parent().is('a')) {
-										imgelement.unwrap();
-									}
+								return false;
 
-									if (currenttext.link) {
-										imgelement.wrap('<a>');
-										imgelement.parent().attr('href', currenttext.link);
-									}
-								}
-								close();
-							}, function (jqXHR, textStatus, errorThrown) {
+							} else if ('rss' == insertmethod) {
 
-								loader(false);
-								alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
+								var width = imgelement.width();
 
-							});
+								imgelement.removeAttr('height').removeAttr('data-id').attr({
+									'src': dynamicImage(currenttext.image[i].src, width),
+									'width': width,
+									'alt': currenttext.alt || currenttext.title[i]
+								}).removeData('id');
 
-							return false;
+							} else {
 
-						} else if ('rss' == insertmethod) {
+								var width = imgelement.width();
 
-							var width = imgelement.width();
+								imgelement.removeAttr('height').removeAttr('data-id').attr({
+									'src': dynamicImage(currenttext.image[i], width),
+									'width': width,
+									'alt': currenttext.alt || currenttext.title[i]
+								}).removeData('id');
+							}
 
-							imgelement.removeAttr('height').removeAttr('data-id').attr({
-								'src': dynamicImage(currenttext.image.src, width),
-								'width': width,
-								'alt': currenttext.alt || currenttext.title
-							}).removeData('id');
+						});
 
-						} else {
 
-							var width = imgelement.width();
-
-							imgelement.removeAttr('height').removeAttr('data-id').attr({
-								'src': dynamicImage(currenttext.image, width),
-								'width': width,
-								'alt': currenttext.alt || currenttext.title
-							}).removeData('id');
-						}
 					}
 
 					_iframe.contents().find("html")
@@ -2541,8 +2569,6 @@ jQuery(document).ready(function ($) {
 				current.modulebuttons.prependTo(current.element);
 
 			}
-
-
 
 			close();
 			return false;
@@ -2921,9 +2947,12 @@ jQuery(document).ready(function ($) {
 
 						var val = content.replace(/&amp;/g, '&');
 
+						singlelink.val('');
+
 						if (current.element.parent().is('a')) {
 							var href = current.element.parent().attr('href');
 							singlelink.val(href != '#' ? href : '');
+							loadSingleLink();
 
 						} else if (current.element.find('a').length) {
 							var link = current.element.find('a');

@@ -200,6 +200,7 @@ class MailsterHelper {
 			$response_body = wp_remote_retrieve_body( $response );
 
 			if ( is_wp_error( $response ) ) {
+				set_transient( 'mailster_addons', $response, 360 );
 				return $response;
 			}
 
@@ -827,7 +828,10 @@ class MailsterHelper {
 			return $this->get_bounce_message( $status, $original );
 		}
 
-		return array( 'title' => __( 'unknown', 'mailster' ), 'descr' => __( 'error is unknown', 'mailster' ) );
+		return array(
+			'title' => '',
+			'descr' => __( 'error is unknown', 'mailster' ),
+		);
 
 	}
 

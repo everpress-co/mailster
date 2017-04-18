@@ -23,7 +23,6 @@ if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) : ?>
 			<div></div>
 		</div>
 		</div>
-		<span class="loader"></span>
 </div>
 
 <?php if ( ! $this->is_dashboard ) : ?>

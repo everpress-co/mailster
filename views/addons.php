@@ -9,7 +9,7 @@
 <?php if ( is_wp_error( $addons ) ) : ?>
 
 	<div class="error below-h2">
-		<p><strong><?php esc_html_e( 'There was an error retrieving the list from the server', 'mailster' ); ?></strong><br><?php echo esc_html( $addons->get_message() ) ?></p>
+		<p><strong><?php esc_html_e( 'There was an error retrieving the list from the server:', 'mailster' ); ?></strong><br><?php esc_html_e( $addons->get_error_message() ) ?></p>
 	</div>
 
 <?php else : ?>
