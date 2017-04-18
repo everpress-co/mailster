@@ -9,9 +9,9 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	public function __construct() {
 
 		parent::__construct( array(
-				'singular' => __( 'Subscriber', 'mailster' ), // singular name of the listed records
-				'plural' => __( 'Subscribers', 'mailster' ), // plural name of the listed records
-				'ajax' => false, // does this table support ajax?
+			'singular' => __( 'Subscriber', 'mailster' ), // singular name of the listed records
+			'plural' => __( 'Subscribers', 'mailster' ), // plural name of the listed records
+			'ajax' => false, // does this table support ajax?
 		) );
 
 		add_action( 'admin_footer', array( &$this, 'script' ) );
@@ -426,7 +426,9 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		if ( empty( $paged ) || ! is_numeric( $paged ) || $paged <= 0 ) {$paged = 1;}
 
 		if ( ! isset( $_GET['s'] ) ) {
-			$totalitems = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers AS a" . $extrasql );
+			$totalitems_sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers AS a" . $extrasql;
+			$totalitems_sql = apply_filters( 'mailster_subscribers_prepare_items_totalitems_sql', $totalitems_sql );
+			$totalitems = $wpdb->get_var( $totalitems_sql );
 		} else {
 			$allitems = $wpdb->get_results( $sql );
 			$totalitems = count( $allitems );
@@ -448,6 +450,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		if ( isset( $offset ) ) {
 			$sql .= " LIMIT $offset, $perpage";
 		}
+
+		$sql = apply_filters( 'mailster_subscribers_prepare_items_sql', $sql );
 
 		if ( isset( $allitems ) ) {
 			$this->items = isset( $offset ) && isset( $perpage ) ? array_slice( $allitems, (int) $offset, (int) $perpage ) : $allitems;

@@ -1232,7 +1232,7 @@ class Mailster {
 			$collate = $wpdb->get_charset_collate();
 		}
 
-		return array(
+		return apply_filters( 'mailster_table_structure', array(
 
 			"CREATE TABLE {$wpdb->prefix}mailster_subscribers (
                 ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -1391,7 +1391,7 @@ class Mailster {
                 KEY list_id (list_id)
             ) $collate;",
 
-		);
+		), $collate);
 	}
 
 

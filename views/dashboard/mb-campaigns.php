@@ -31,7 +31,7 @@ if ( $campaigns = mailster( 'campaigns' )->get_campaigns( array( 'posts_per_page
 <?php else : ?>
 
 <div class="mailster-welcome-panel">
-	<h4><?php esc_html_e( 'Woha! Seems you havn\'t sent any campaign yet!', 'mailster' );?></h4>
+	<h4><?php esc_html_e( 'Woha! Looks like you havn\'t sent any campaign yet!', 'mailster' );?></h4>
 	<ul>
 		<li><a href="post-new.php?post_type=newsletter"><?php esc_html_e( 'Create a new Campaign', 'mailster' ) ?></a></li>
 		<li><a href="edit.php?post_type=newsletter"><?php esc_html_e( 'Check out existing Campaigns', 'mailster' ) ?></a></li>

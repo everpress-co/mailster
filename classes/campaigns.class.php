@@ -2560,6 +2560,8 @@ class MailsterCampaigns {
 			}
 		}
 
+		$sql = apply_filters( 'mailster_campaign_get_subscribers_by_list_sql', $sql );
+
 		if ( $returnsql ) {
 			return $sql;
 		}
