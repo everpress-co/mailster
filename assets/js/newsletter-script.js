@@ -4124,18 +4124,12 @@ jQuery(document).ready(function ($) {
 
 	window.tb_position = function () {
 		if (!window.TB_WIDTH || !window.TB_HEIGHT) return;
-		var isIE6 = typeof document.body.style.maxHeight === "undefined";
 		jQuery("#TB_window").css({
+			marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px',
 			marginLeft: '-' + parseInt((TB_WIDTH / 2), 10) + 'px',
 			width: TB_WIDTH + 'px'
 		});
-		if (!isIE6) { // take away IE6
-			jQuery("#TB_window").css({
-				marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px'
-			});
-		}
 	}
-
 
 	_init();
 
