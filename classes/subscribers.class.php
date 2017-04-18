@@ -2412,7 +2412,7 @@ class MailsterSubscribers {
 
 		$custom_fields['fullname'] = trim( mailster_option( 'name_order' )
 			? $custom_fields['lastname'] . ' ' . $custom_fields['firstname']
-		: $custom_fields['firstname'] . ' ' . $custom_fields['lastname'] );
+			: $custom_fields['firstname'] . ' ' . $custom_fields['lastname'] );
 
 		if ( is_null( $field ) ) {
 			return $custom_fields;
