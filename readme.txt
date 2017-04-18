@@ -3,7 +3,7 @@ Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
 Tested up to: 4.7.3
-Stable tag: 2.2.3
+Stable tag: 2.2.4
 Author: revaxarts
 Author URI: https://mailster.co
 
@@ -82,6 +82,8 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
+= Version 2.2.4 =
+
 * fixed: adding attachments not possible on Firefox
 * fixed: Subscriber ID was cached on custom dynamic tags in some cases
 * fixed: converting links on single elements no longer pre filled if link is not set
@@ -90,6 +92,7 @@ Xaver Birsak – https://revaxarts.com
 * improved: all widgets are now wrapped by a div with class "mailster-widget" for better targeting
 * new option to get subscribers by md5 hash
 * new "mailster_subscriber_hash" filter to change subscriber hash
+* improved: added various filters to list and subscribers view
 * improved: support of arrays in auto post tag filter
 * improved: allowing anonymous functions in `mailster_add_tag`
 * improved: allowing anonymous functions in `mailster_add_style`
