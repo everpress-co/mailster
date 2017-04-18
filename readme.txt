@@ -86,9 +86,10 @@ Xaver Birsak – https://revaxarts.com
 * fixed: Subscriber ID was cached on custom dynamic tags in some cases
 * fixed: converting links on single elements no longer pre filled if link is not set
 * fixed: smaller bugs
-* updated: order by "Clicks" is now "Clicks Date" in recipients details view
+* updated: order by "Clicks" is now "Click Date" in recipients details view
 * improved: all widgets are now wrapped by a div with class "mailster-widget" for better targeting
 * new option to get subscribers by md5 hash
+* improved: support of arrays in auto post tag filter
 * improved: allowing anonymous functions in `mailster_add_tag`
 * improved: allowing anonymous functions in `mailster_add_style`
 * improved: subscriber caching

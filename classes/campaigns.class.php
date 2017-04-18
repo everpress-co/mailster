@@ -3504,7 +3504,7 @@ class MailsterCampaigns {
 
 		$return = '';
 
-		$limit = 1000;
+		$limit = apply_filters( 'mailster_get_recipients_part', 1000 );
 		$offset = intval( $page ) * $limit;
 
 		$fields = array(

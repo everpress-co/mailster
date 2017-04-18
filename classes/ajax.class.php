@@ -1558,6 +1558,7 @@ class MailsterAjax {
 		$relative = intval( $_POST['relative'] );
 		$offset = $relative + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
+		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
 
 		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, true );
 		$is_post = ! ! $post;
@@ -1577,7 +1578,7 @@ class MailsterAjax {
 			'image' => '{' . $post_type . '_image:' . $options . '}',
 		);
 
-		$return['pattern'] = apply_filters( 'mymail_auto_tag', apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post ), $post_type, $options, $post );
+		$return['pattern'] = apply_filters( 'mymail_auto_tag', apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post, $modulename ), $post_type, $options, $post, $modulename );
 
 		$return['pattern']['tag'] = '{' . $post_type . ':' . $options . '}';
 
