@@ -1462,39 +1462,12 @@ class Mailster {
 			return;
 		}
 
-		// $this->send_welcome_mail();
 		wp_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster_setup' ), 302 );
 
 		exit;
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
-	public function send_welcome_mail() {
-
-		$current_user = wp_get_current_user();
-
-		$n = mailster( 'notification' );
-		$n->to( $current_user->user_email );
-		$n->subject( __( 'Your Mailster Newsletter Plugin is ready!', 'mailster' ) );
-		$n->replace( array(
-				'headline' => '',
-				'baseurl' => admin_url(),
-				'notification' => 'This welcome mail was sent from your website <a href="' . home_url() . '">' . get_bloginfo( 'name' ) . '</a>. This also makes sure you can send emails with your current settings',
-				'name' => $current_user->display_name,
-				'preheader' => 'Thank you, ' . $current_user->display_name . '! ',
-		) );
-		$n->requeue( false );
-		$n->template( 'welcome_mail' );
-
-		return $n->add();
-
-	}
 
 
 	/**

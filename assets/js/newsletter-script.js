@@ -2404,7 +2404,7 @@ jQuery(document).ready(function ($) {
 
 					if (currenttext.title) {
 
-						if (typeof currenttext.title == "string") {
+						if (!$.isArray(currenttext.title)) {
 							currenttext.title = [currenttext.title];
 						}
 						current.elements.headlines.each(function (i, e) {
@@ -2443,7 +2443,7 @@ jQuery(document).ready(function ($) {
 							contentlength,
 							partlength;
 
-						if (typeof org_content == "string") {
+						if (!$.isArray(org_content)) {
 							contentlength = org_content.length,
 								partlength = ('static' == insertmethod) ? Math.ceil(contentlength / contentcount) : contentlength;
 							for (var i = 0; i < contentcount; i++) {
@@ -2461,13 +2461,15 @@ jQuery(document).ready(function ($) {
 
 					if (currenttext.image && current.elements.images.length) {
 
-						if (typeof currenttext.image == "string") {
+						if (!$.isArray(currenttext.image)) {
 							currenttext.image = [currenttext.image];
 						}
 
 						loader();
 
 						current.elements.images.each(function (i, e) {
+
+							if (!currenttext.image[i]) return;
 
 							var imgelement = $(this);
 							var f = factor.val();
