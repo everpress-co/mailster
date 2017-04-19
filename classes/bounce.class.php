@@ -219,7 +219,7 @@ class MailsterBounceHandler {
 
 		$path = '{' . $server . ':' . $port . '/' . $this->service . ( $ssl ? '/ssl' : '' ) . '/novalidate-cert}INBOX';
 
-		require MAILSTER_DIR . 'classes/libs/PhpImap/__autoload.php';
+		require_once MAILSTER_DIR . 'classes/libs/PhpImap/__autoload.php';
 
 		try {
 
@@ -244,7 +244,7 @@ class MailsterBounceHandler {
 
 		$messages = $this->get_messages();
 
-		require MAILSTER_DIR . 'classes/libs/bounce/bounce_driver.class.php';
+		require_once MAILSTER_DIR . 'classes/libs/bounce/bounce_driver.class.php';
 
 		foreach ( $messages as $id => $message ) {
 
@@ -375,7 +375,7 @@ class MailsterBounceLegacyHandler extends MailsterBounceHandler {
 	 */
 	public function connect( $server, $user, $pwd, $port = 110, $ssl = false, $timeout = 60 ) {
 
-		require ABSPATH . WPINC . '/class-pop3.php';
+		require_once ABSPATH . WPINC . '/class-pop3.php';
 		$this->mailbox = new POP3();
 		$this->mailbox->TIMEOUT = $timeout;
 
