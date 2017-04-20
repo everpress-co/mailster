@@ -813,8 +813,38 @@ textarea#content, textarea#excerpt {
 	overflow: hidden;
 }
 #editbar div.type.img .imagewidth, #editbar div.type.img .imageheight {
-	width:53px;
-	text-align:right;
+	width:40%;
+	text-align:center;
+}
+#editbar div.type.img .imagecroplabel {
+	border: 1px dotted #aaa;
+	border-top: 0;
+	display: block;
+	width: 50%;
+	margin: -5px auto 0;
+	height: 17px;
+	text-align: center;
+	border-radius: 5px;
+}
+#editbar div.type.img .imagecroplabel input {
+	visibility: hidden;
+}
+#editbar div.type.img .imagecroplabel input:focus {
+	border-color: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+#editbar div.type.img .imagecroplabel input:before {
+	visibility: visible;
+	content: '\e835';
+	font-size: 18px;
+	margin: 7px 1px;
+}
+#editbar div.type.img .imagecroplabel input:checked:before {
+	visibility: visible;
+	content: '\f127';
+	font-size: 18px;
+	margin: 7px 2px;
 }
 
 #editbar div.type.img .right {
@@ -855,8 +885,11 @@ textarea#content, textarea#excerpt {
 	padding:5px;
 	background-color:#fff;
 	margin:15px 0;
-	float:left;
-	max-width:23%;
+	_float:left;
+	_max-width:23%;
+	max-width:100%;
+	position: relative;
+	height: 320px;
 }
 #editbar div.type.img .imagewrap .jcrop-holder {
 	z-index: 1;
@@ -864,9 +897,9 @@ textarea#content, textarea#excerpt {
 }
 #editbar div.type.img .imagewrap .imagepreview{
 	position: absolute;
-	left: 0;
-	width:23%;
-	max-width:100%;
+	left: 4px;
+	_width:23%;
+	max-width:98%;
 	display:block;
 	cursor:-webkit-zoom-in;
 	cursor:-moz-zoom-in;
@@ -883,18 +916,19 @@ textarea#content, textarea#excerpt {
 	right: 0;
 }
 #editbar div.type.img .imagewrap .imagepreview:hover{
-	box-shadow:0 0 0 1px white, 0 0 0 3px #1E8CBE;
+	_box-shadow:0 0 0 1px white, 0 0 0 3px #1E8CBE;
 }
 #editbar div.type.img .imagewrap .imagepreview.zoom{
 	position:absolute;
-	max-width:100%;
-	width:66%;
+	max-width:200%;
+	width:200%;
 	box-shadow:0 0 0 1px white, 0 0 0 5px #1E8CBE;
 	background-color:#fff;
 	z-index:1000;
 	cursor:-webkit-zoom-out;
 	cursor:-moz-zoom-out;
 	cursor:zoom-out;
+	clip: inherit !important;
 }
 
 #editbar div.type.img .imagelist,#editbar div.type .postlist {

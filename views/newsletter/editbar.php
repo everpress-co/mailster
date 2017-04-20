@@ -161,7 +161,8 @@
 		<div class="type img">
 			<div class="imagecontentwrap">
 				<div class="left">
-					<p><?php esc_html_e( 'Size', 'mailster' );?>: <input type="number" class="imagewidth">&times;<input type="number" class="imageheight">px
+					<p><input type="number" class="imagewidth">&times;<input type="number" class="imageheight">px
+					<label class="imagecroplabel"><input type="checkbox" class="imagecrop mailster-icon"></label>
 					</p>
 					<div class="imagewrap">
 					<img src="" alt="" class="imagepreview">
@@ -169,7 +170,7 @@
 				</div>
 				<div class="right">
 					<p>
-						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_html_e( 'search for images', 'mailster' );?>..." ></label>
+						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'search for images', 'mailster' );?>..." ></label>
 					</p>
 					<div class="imagelist">
 					</div>
@@ -183,7 +184,7 @@
 			</div>
 			<p class="clearfix">
 				<div class="imageurl-popup">
-					<label class="block"><div class="left"><?php esc_html_e( 'Image URL', 'mailster' ) ?></div><div class="right"><input type="text" class="input imageurl" value="" placeholder="http://example.com/image.jpg"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Image URL', 'mailster' ) ?></div><div class="right"><input type="text" class="input imageurl" value="" placeholder="https://example.com/image.jpg"></div></label>
 				</div>
 					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ) ?></div><div class="right"><input type="text" class="input imagealt" value="" placeholder="<?php esc_html_e( 'image description', 'mailster' );?>"></div></label>
 					<label class="block"><div class="left"><?php esc_html_e( 'Link image to the this URL', 'mailster' ) ?></div><div class="right"><input type="text" class="input imagelink" value="" placeholder="<?php esc_html_e( 'insert URL', 'mailster' );?>"></div></label>
@@ -283,7 +284,7 @@
 				<div id="rss_input">
 					<p>
 						<?php esc_html_e( 'Enter feed URL', 'mailster' ) ?><br>
-						<label><input type="text" id="rss_url" class="widefat" placeholder="http://example.com/feed.xml" value=""></label>
+						<label><input type="text" id="rss_url" class="widefat" placeholder="https://example.com/feed.xml" value=""></label>
 					</p>
 					<ul id="recent_feeds">
 					<?php if ( $recent_feeds = get_option( 'mailster_recent_feeds' ) ) : ?>
