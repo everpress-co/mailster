@@ -677,7 +677,7 @@ class MailsterAjax {
 
 				if ( $autoplain ) {
 					$placeholder->set_content( esc_textarea( $plaintext ) );
-					$mail->plaintext = mailster()->plain_text( $placeholder->get_content(), true );
+					$mail->plaintext = mailster( 'helper' )->plain_text( $placeholder->get_content(), true );
 				}
 
 				$placeholder->set_content( $mail->subject );

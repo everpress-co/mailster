@@ -4009,7 +4009,7 @@ class MailsterCampaigns {
 
 		if ( ! $campaign_meta['autoplaintext'] ) {
 			$placeholder->set_content( $campaign->post_excerpt );
-			$mail->plaintext = mailster()->plain_text( $placeholder->get_content(), true );
+			$mail->plaintext = mailster( 'helper' )->plain_text( $placeholder->get_content(), true );
 		}
 
 		$MID = mailster_option( 'ID' );
