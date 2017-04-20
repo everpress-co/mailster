@@ -83,6 +83,7 @@ Xaver Birsak – https://revaxarts.com
 == Changelog ==
 
 * fixed: Thickbox dimensions on form detail page
+* fixed: selecting static posts working again
 
 = Version 2.2.4 =
 
