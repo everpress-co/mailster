@@ -82,7 +82,7 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
-* change: Signup date checkbox on Mange Subscriebr Page now checked by default
+* change: Signup date checkbox on Mange Subscriber Page now checked by default
 * fixed: Thickbox dimensions on form detail page
 * fixed: selecting static posts working again
 
