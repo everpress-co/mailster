@@ -537,7 +537,7 @@ class MailsterMail {
 				$this->mailer->Body = $this->mailer->normalizeBreaks( $this->content );
 			}
 
-			$this->mailer->AltBody = $this->mailer->normalizeBreaks( ! empty( $this->plaintext ) ? $this->plaintext : mailster()->plain_text( $this->content ) );
+			$this->mailer->AltBody = $this->mailer->normalizeBreaks( ! empty( $this->plaintext ) ? $this->plaintext : mailster( 'helper' )->plain_text( $this->content ) );
 
 			( $this->bouncemail )
 				? $this->mailer->ReturnPath = $this->mailer->Sender = $this->bouncemail

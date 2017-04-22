@@ -420,7 +420,7 @@ class MailsterManage {
 
 		$html .= '<h3>' . __( 'Existing subscribers', 'mailster' ) . ':</h3><p><label> <input type="radio" name="existing" value="skip" checked> ' . __( 'skip', 'mailster' ) . ' </label> <label><input type="radio" name="existing" value="overwrite"> ' . __( 'overwrite', 'mailster' ) . ' </label><input type="radio" name="existing" value="merge"> ' . __( 'merge', 'mailster' ) . ' </label></p>';
 		$html .= '<h3>' . __( 'Other', 'mailster' ) . ':</h3><p><label>';
-		$html .= '<p><label><input type="checkbox" id="signup" name="signup">' . __( 'Use a signup date if not defined', 'mailster' ) . ': <input type="text" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate" disabled></label>';
+		$html .= '<p><label><input type="checkbox" id="signup" name="signup" checked>' . __( 'Use a signup date if not defined', 'mailster' ) . ': <input type="text" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate"></label>';
 		$html .= '<br><span class="description">' . __( 'Some Auto responder require a signup date. Define it here if it is not set or missing', 'mailster' ) . '</span></p>';
 		$html .= '<p><label><input type="checkbox" id="performance" name="performance"> ' . __( 'low memory usage (slower)', 'mailster' ) . '</label></p>';
 		$html .= '<input type="hidden" id="identifier" value="' . $identifier . '">';

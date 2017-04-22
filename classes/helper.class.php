@@ -1241,6 +1241,39 @@ class MailsterHelper {
 	}
 
 
+	/**
+	 *
+	 *
+	 * @param unknown $html
+	 * @param unknown $linksonly (optional)
+	 * @return unknown
+	 */
+	public function plain_text( $html, $linksonly = false ) {
+
+		// allow to hook into this method
+		$result = apply_filters( 'mymail_plain_text', apply_filters( 'mailster_plain_text', null, $html, $linksonly ), $html, $linksonly );
+		if ( ! is_null( $result ) ) {
+			return $result;
+		}
+
+		if ( $linksonly ) {
+			$links = '/< *a[^>]*href *= *"([^#]*)"[^>]*>(.*)< *\/ *a *>/Uis';
+			$text = preg_replace( $links, '${2} [${1}]', $html );
+			$text = str_replace( array( ' ', '&nbsp;' ), ' ', strip_tags( $text ) );
+			$text = @html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
+
+			return trim( $text );
+
+		} else {
+			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
+			$htmlconverter = new \Html2Text\Html2Text( $html, array( 'width' => 200 ) );
+
+			return trim( $htmlconverter->get_text() );
+
+		}
+
+	}
+
 
 	/**
 	 *
