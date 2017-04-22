@@ -85,6 +85,7 @@ Xaver Birsak – https://revaxarts.com
 * change: Signup date checkbox on Mange Subscriber Page now checked by default
 * fixed: Thickbox dimensions on form detail page
 * fixed: selecting static posts working again
+* fixed: issue on recipients detail page since last update
 
 = Version 2.2.4 =
 
