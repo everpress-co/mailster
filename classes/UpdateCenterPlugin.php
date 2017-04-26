@@ -768,6 +768,7 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 					'x-ip' => isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : null,
 				),
 				'body' => $body,
+				'timeout' => 20,
 			);
 
 			$response = wp_remote_post( $url, $args );

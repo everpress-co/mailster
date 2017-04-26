@@ -479,6 +479,12 @@ class MailsterTemplates {
 			return 0;
 		}
 
+		$updates = get_option( 'mailster_templates_updates', null );
+
+		if ( ! is_null( $updates ) ) {
+			return intval( $updates );
+		}
+
 		if ( ! $templates = get_option( 'mailster_templates' ) ) {
 			return 0;
 		}
@@ -520,12 +526,12 @@ class MailsterTemplates {
 		wp_register_script( 'mailster-templates', MAILSTER_URI . 'assets/js/templates-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-templates' );
 		wp_localize_script( 'mailster-templates', 'mailsterL10n', array(
-				'delete_template_file' => __( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
-				'enter_template_name' => __( 'Please enter the name of the new template', 'mailster' ),
-				'uploading' => __( 'uploading zip file %s', 'mailster' ),
-				'enter_license' => __( 'Please enter your Purchase Code!', 'mailster' ),
-				'confirm_delete' => __( 'You are about to delete this template "%s"', 'mailster' ),
-				'update_note' => __( 'You are about to OVERWRITE your exiting template files with a new version!', 'mailster' ) . "\n\n" . __( 'Please make sure you have a backup of your files.', 'mailster' ),
+			'delete_template_file' => __( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
+			'enter_template_name' => __( 'Please enter the name of the new template', 'mailster' ),
+			'uploading' => __( 'uploading zip file %s', 'mailster' ),
+			'enter_license' => __( 'Please enter your Purchase Code!', 'mailster' ),
+			'confirm_delete' => __( 'You are about to delete this template "%s"', 'mailster' ),
+			'update_note' => __( 'You are about to OVERWRITE your exiting template files with a new version!', 'mailster' ) . "\n\n" . __( 'Please make sure you have a backup of your files.', 'mailster' ),
 		) );
 
 	}
@@ -992,8 +998,8 @@ class MailsterTemplates {
 		);
 
 		$response = wp_remote_get( $request_url, array(
-				'headers' => $headers,
-				'timeout' => 2,
+			'headers' => $headers,
+			'timeout' => 2,
 		) );
 
 		$response_headers = wp_remote_retrieve_headers( $response );
@@ -1245,7 +1251,7 @@ class MailsterTemplates {
 		}
 
 		// time before next check
-		$pause = 86400;
+		$pause = DAY_IN_SECONDS;
 		$url = 'http://mailster.github.io/v1/templates.json';
 
 		if ( time() - $mailster_templates['timestamp'] <= $pause && ! $force ) {
@@ -1266,9 +1272,19 @@ class MailsterTemplates {
 		}
 
 		update_option( 'mailster_templates', array(
-				'timestamp' => time(),
-				'templates' => $templates,
-		) );
+			'timestamp' => time(),
+			'templates' => $templates,
+		), 'no' );
+
+		$old_count = count( $mailster_templates['templates'] );
+		$new_count = count( $templates );
+		$diff = $new_count - $old_count;
+
+		if ( false && $old_count && $new_count > $old_count ) {
+			mailster_notice( sprintf( _n( '%d new template for Mailster is available!', '%d new templates for Mailster are available!', $diff, 'your_textdomain' ), $diff ) . ' <br><strong><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more&mailster_remove_notice=new_templates' ) . '">' . esc_html__( 'Visit Templates Page', 'mailster' ) . '<a></strong>', 'info', false, 'new_templates' );
+		}
+
+		update_option( 'mailster_templates_updates', array_sum( wp_list_pluck( $templates, 'update' ) ) );
 
 		return ! is_null( $slug ) && isset( $templates[ $slug ] ) ? $templates[ $slug ] : $templates;
 
@@ -1319,9 +1335,10 @@ class MailsterTemplates {
 			'description' => null,
 			'uri' => null,
 			'endpoint' => null,
+			'version' => null,
 			'new_version' => false,
 			'update' => false,
-			'author' => __( 'unknown', 'mailster' ),
+			'author' => false,
 			'author_profile' => '',
 			'homepage' => null,
 			'download_url' => null,
@@ -1368,7 +1385,9 @@ class MailsterTemplates {
 			if ( $response_code != 200 || is_wp_error( $response ) ) {
 				foreach ( $items as $slug => $data ) {
 					if ( isset( $mailster_templates[ $slug ] ) ) {
-						unset( $mailster_templates[ $slug ] );
+						// unset( $mailster_templates[ $slug ] );
+						$mailster_templates[ $slug ] = wp_parse_args( $mailster_templates[ $slug ], $default );
+						$mailster_templates[ $slug ]['endpoint'] = null;
 					}
 				}
 				continue;

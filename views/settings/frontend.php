@@ -35,17 +35,17 @@
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Search Engine Visibility', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[frontpage_public]" value=""><input type="checkbox" name="mailster_options[frontpage_public]" value="1" <?php checked( mailster_option( 'frontpage_public' ) );?>> <?php esc_html_e( 'Discourage search engines from indexing your campaigns', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[frontpage_public]" value=""><input type="checkbox" name="mailster_options[frontpage_public]" value="1" <?php checked( mailster_option( 'frontpage_public' ) );?>> <?php esc_html_e( 'Discourage search engines from indexing your campaigns', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Pagination', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[frontpage_pagination]" value=""><input type="checkbox" name="mailster_options[frontpage_pagination]" value="1" <?php checked( mailster_option( 'frontpage_pagination' ) );?>> <?php esc_html_e( 'Allow users to view the next/last newsletters', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[frontpage_pagination]" value=""><input type="checkbox" name="mailster_options[frontpage_pagination]" value="1" <?php checked( mailster_option( 'frontpage_pagination' ) );?>> <?php esc_html_e( 'Allow users to view the next/last newsletters', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Share Button', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[share_button]" value=""><input type="checkbox" name="mailster_options[share_button]" value="1" <?php checked( mailster_option( 'share_button' ) ) ?>> <?php esc_html_e( 'Offer share option for your customers', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[share_button]" value=""><input type="checkbox" name="mailster_options[share_button]" value="1" <?php checked( mailster_option( 'share_button' ) ) ?>> <?php esc_html_e( 'Offer share option for your customers', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr valign="top">
@@ -143,7 +143,7 @@
 	<?php if ( mailster( 'helper' )->using_permalinks() ) : ?>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Archive', 'mailster' ) ?></th>
-		<td class="homepage-slugs"><p><label><input type="hidden" class="wasabi" name="mailster_options[hasarchive]" value=""><input type="checkbox" name="mailster_options[hasarchive]" class="has-archive-check" value="1" <?php checked( mailster_option( 'hasarchive' ) );?>> <?php esc_html_e( 'enable archive function to display your newsletters in a reverse chronological order', 'mailster' ) ?></label>
+		<td class="homepage-slugs"><p><label><input type="hidden" name="mailster_options[hasarchive]" value=""><input type="checkbox" name="mailster_options[hasarchive]" class="has-archive-check" value="1" <?php checked( mailster_option( 'hasarchive' ) );?>> <?php esc_html_e( 'enable archive function to display your newsletters in a reverse chronological order', 'mailster' ) ?></label>
 			</p>
 		<div class="archive-slug" <?php if ( ! mailster_option( 'hasarchive' ) ) {
 			echo ' style="display:none"';

@@ -401,9 +401,8 @@ class MailsterSettings {
 
 		if ( $new ) {
 			$this->define_settings();
+			mailster_update_option( 'got_url_rewrite', mailster( 'helper' )->got_url_rewrite() );
 		}
-
-		mailster_update_option( 'got_url_rewrite', mailster( 'helper' )->got_url_rewrite() );
 
 		if ( mailster_option( 'cron_lock' ) == 'file' && ! is_dir( MAILSTER_UPLOAD_DIR ) || ! wp_is_writable( MAILSTER_UPLOAD_DIR ) ) {
 			mailster_update_option( 'cron_lock', 'db' );
@@ -1669,7 +1668,7 @@ class MailsterSettings {
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Self Signed Certificates', 'mailster' ) ?></th>
-			<td><label title="<?php esc_html_e( 'Enabling this option may solve connection problems to SMTP servers', 'mailster' ); ?>"><input type="hidden" class="wasabi" name="mailster_options[allow_self_signed]" value=""><input type="checkbox" name="mailster_options[allow_self_signed]" value="1" <?php checked( mailster_option( 'allow_self_signed' ) );?>> <?php esc_html_e( 'allow self signed certificates', 'mailster' ) ?></label>
+			<td><label title="<?php esc_html_e( 'Enabling this option may solve connection problems to SMTP servers', 'mailster' ); ?>"><input type="hidden" name="mailster_options[allow_self_signed]" value=""><input type="checkbox" name="mailster_options[allow_self_signed]" value="1" <?php checked( mailster_option( 'allow_self_signed' ) );?>> <?php esc_html_e( 'allow self signed certificates', 'mailster' ) ?></label>
 			</td>
 		</tr>
 	</table>

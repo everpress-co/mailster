@@ -115,7 +115,6 @@ foreach ( $extra_sections as $id => $name ) {?>
 	<?php do_action( 'mailster_settings' ); ?>
 	<?php do_action( 'mymail_settings' ); ?>
 
-	<input type="text" class="hidden" name="mailster_options[got_url_rewrite]" value="<?php echo esc_attr( mailster_option( 'got_url_rewrite' ) ); ?>">
 	<input type="text" class="hidden" name="mailster_options[profile_form]" value="<?php echo esc_attr( mailster_option( 'profile_form', 0 ) ); ?>">
 	<input type="text" class="hidden" name="mailster_options[ID]" value="<?php echo esc_attr( mailster_option( 'ID' ) ); ?>">
 

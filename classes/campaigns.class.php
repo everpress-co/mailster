@@ -1414,7 +1414,7 @@ class MailsterCampaigns {
 		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], null, $postdata['head'] );
 
 		$post['post_excerpt'] = ! empty( $postdata['autoplaintext'] )
-			? mailster()->plain_text( $post['post_content'] )
+			? mailster( 'helper' )->plain_text( $post['post_content'] )
 			: $post['post_excerpt'];
 
 		if ( ! in_array( $post['post_status'], array( 'pending', 'draft', 'auto-draft', 'trash' ) ) ) {

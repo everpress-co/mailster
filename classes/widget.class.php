@@ -18,7 +18,7 @@ class Mailster_Signup_Widget extends WP_Widget {
 	 */
 	public function form( $instance ) {
 		// outputs the options form on admin
-		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? __( 'Newsletter sign up', 'mailster' ) : $instance['title'], $instance, $this->id_base );
+		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 		$text_before = apply_filters( 'widget_text_before', empty( $instance['text_before'] ) ? '' : $instance['text_before'], $instance, $this->id_base );
 		$form = apply_filters( 'widget_form', empty( $instance['form'] ) ? 0 : $instance['form'], $instance, $this->id_base );
 		$text_after = apply_filters( 'widget_text_after', empty( $instance['text_after'] ) ? '' : $instance['text_after'], $instance, $this->id_base );

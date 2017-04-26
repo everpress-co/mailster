@@ -86,6 +86,9 @@ Xaver Birsak – https://revaxarts.com
 * fixed: Thickbox dimensions on form detail page
 * fixed: selecting static posts working again
 * fixed: issue on recipients detail page since last update
+* fixed: Newsletter sign up widget didn't store empty title
+* improved: URL rewrite support option on settings
+* overall improvements
 
 = Version 2.2.4 =
 

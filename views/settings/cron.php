@@ -30,7 +30,7 @@
 			</p>
 			<?php $cron_url = mailster( 'cron' )->url(); ?>
 			<?php $cron_url2 = mailster( 'cron' )->url( true ); ?>
-			<p><?php esc_html_e( 'You can keep a browser window open with following URL', 'mailster' ) ?><br>
+			<p><?php esc_html_e( 'You can keep a browser window open with following URL', 'mailster' ) ?> (<a class="switch-cron-url" href="#"><?php esc_html_e( 'alternative Cron URL', 'mailster' ) ?></a>)<br>
 			<div class="verified regular-cron-url"><a href="<?php echo $cron_url ?>" class="external"><code><?php echo $cron_url ?></code></a></div>
 			<div class="verified alternative-cron-url"><a href="<?php echo $cron_url2 ?>" class="external"><code><?php echo $cron_url2 ?></code></a></div>
 			<?php esc_html_e( 'call it directly', 'mailster' ) ?><br>

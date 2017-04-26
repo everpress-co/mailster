@@ -200,7 +200,7 @@ class MailsterAjax {
 
 		$html = mailster()->sanitize_content( $html );
 
-		$html = mailster()->plain_text( $html );
+		$html = mailster( 'helper' )->plain_text( $html );
 
 		echo $html;
 
@@ -701,6 +701,7 @@ class MailsterAjax {
 
 					} else {
 
+						$return['success'] = false;
 						$return['msg'] = __( 'You can only perform 10 test within an hour. Please try again later!', 'mailster' );
 
 					}
@@ -744,7 +745,7 @@ class MailsterAjax {
 
 				$response = wp_remote_get( 'http://check.newsletter-plugin.com/' . $id, array(
 					'sslverify' => false,
-					'timeout' => 10,
+					'timeout' => 20,
 				) );
 
 				$code = wp_remote_retrieve_response_code( $response );

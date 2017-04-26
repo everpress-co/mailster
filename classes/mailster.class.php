@@ -1003,8 +1003,6 @@ class Mailster {
 
 		$this->check_compatibility( true, $new );
 
-		$this->dbstructure();
-
 		if ( $new ) {
 
 			if ( is_plugin_active( 'myMail/myMail.php' ) ) {
@@ -1018,8 +1016,11 @@ class Mailster {
 				mailster_update_option( 'update_required', true );
 
 			} else {
+
+				$this->dbstructure();
 				update_option( 'mailster', time() );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+
 			}
 
 			if ( ! is_network_admin() ) {
@@ -1517,7 +1518,7 @@ class Mailster {
 				|| ! preg_match( '#\[newsletter_confirm\]#', $post->post_content )
 				|| ! preg_match( '#\[newsletter_unsubscribe\]#', $post->post_content ) ) {
 
-				mailster_notice( '<strong>' . sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guid', 'mailster' ) . '</a>' ) . '</strong>', 'error', true, 'homepage_info' );
+				mailster_notice( '<strong>' . sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guide', 'mailster' ) . '</a>' ) . '</strong>', 'error', true, 'homepage_info' );
 
 			} else {
 
