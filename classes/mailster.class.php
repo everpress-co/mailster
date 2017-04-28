@@ -543,14 +543,10 @@ class Mailster {
 
 		$key = md5( serialize( array( $offset, $post_type, $term_ids, $simple ) ) );
 
-		$posts = mailster_cache_get( 'get_last_post' );
+		$post = mailster_cache_get( 'get_last_post_' . $key );
 
-		if ( ! $posts ) {
-			$posts = array();
-		}
-
-		if ( isset( $posts[ $key ] ) ) {
-			return $posts[ $key ];
+		if ( $post ) {
+			return $post;
 		}
 
 		$args = array(
@@ -613,6 +609,9 @@ class Mailster {
 						$content = explode( $matches[0], $post->post_content, 2 );
 						$post->post_excerpt = trim( $content[0] );
 					}
+					if ( ! $post->post_excerpt ) {
+						$post->post_excerpt = wp_trim_excerpt( $post->post_content );
+					}
 				}
 
 				if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
@@ -626,9 +625,7 @@ class Mailster {
 			$post = false;
 		}
 
-		$posts[ $key ] = $post;
-
-		mailster_cache_set( 'get_last_post', $posts );
+		mailster_cache_set( 'get_last_post_' . $key , $post );
 
 		return $post;
 	}

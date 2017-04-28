@@ -87,6 +87,9 @@ Xaver Birsak – https://revaxarts.com
 * fixed: selecting static posts working again
 * fixed: issue on recipients detail page since last update
 * fixed: Newsletter sign up widget didn't store empty title
+* fixed: wrong excerpt on web version with dynamic tags in some cases
+* improved: Cron tab commands
+* improved: Cron now supports secret via a header
 * improved: URL rewrite support option on settings
 * overall improvements
 
