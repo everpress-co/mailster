@@ -106,7 +106,7 @@ $utm = array(
 					</th>
 					<td>
 					<?php mailster( 'helper' )->media_editor_link( mailster_option( 'logo', get_theme_mod( 'custom_logo' ) ), 'mailster_options[logo]', 'full' ); ?>
-					<p class="description"><label><input type="hidden" class="wasabi" name="mailster_options[logo_high_dpi]" value=""><input type="checkbox" name="mailster_options[logo_high_dpi]" value="1" <?php checked( mailster_option( 'logo_high_dpi' ) );?>> <?php esc_html_e( 'Use High DPI version if available.', 'mailster' ) ?></label></p>
+					<p class="description"><label><input type="hidden" name="mailster_options[logo_high_dpi]" value=""><input type="checkbox" name="mailster_options[logo_high_dpi]" value="1" <?php checked( mailster_option( 'logo_high_dpi' ) );?>> <?php esc_html_e( 'Use High DPI version if available.', 'mailster' ) ?></label></p>
 					</td>
 				</tr>
 				<tr valign="top">

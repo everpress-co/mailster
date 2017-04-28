@@ -52,6 +52,7 @@ html{background:#f1f1f1}body{background:#fff;color:#444;font-family:-apple-syste
 $secret = mailster_option( 'cron_secret' );
 if ( ( isset( $_GET[ $secret ] ) ) ||
 	( isset( $_GET['secret'] ) && $_GET['secret'] == $secret ) ||
+	( isset( $_SERVER['HTTP_SECRET'] ) && $_SERVER['HTTP_SECRET'] == $secret ) ||
 	( defined( 'MAILSTER_CRON_SECRET' ) && MAILSTER_CRON_SECRET == $secret ) ) :
 
 	// run wp_cron if it should

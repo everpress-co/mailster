@@ -20,9 +20,11 @@ if ( isset( $data['is_free'] ) ) {
 		</a>
 		<div class="meta">
 			<h3><?php echo esc_html( $data['name'] ) ?> <span class="version"><?php echo esc_html( $data['new_version'] ) ?> <span class="installed-version">(<?php esc_html_e( 'your version', 'mailster' );?>: <?php echo $data['version'] ?>)</span></span></h3>
+			<?php if ( $data['author'] ) : ?>
 			<div>
 				<?php esc_html_e( 'by', 'mailster' );?> <?php if ( ! empty( $data['author_profile'] ) ) : ?><a href="<?php echo esc_url( $data['author_profile'] ) ?>"><?php echo esc_html( $data['author'] ) ?></a><?php else : ?> <?php echo esc_html( $data['author'] ) ?><?php endif; ?>
 			</div>
+			<?php endif; ?>
 		</div>
 		<div class="description">
 		<?php if ( isset( $data['description'] ) ) : ?><p><?php echo $data['description'] ?></p><?php endif; ?>
@@ -70,7 +72,7 @@ if ( isset( $data['is_free'] ) ) {
 				<?php elseif ( isset( $data['uri'] ) ) : ?>
 
 					<?php if ( isset( $data['envato_item_id'] ) ) : ?>
-						<?php if ( ! isset( $templates[ $slug ] ) ) : ?>
+						<?php if ( ! isset( $templates[ $slug ] ) && ! is_null( $mailster_templates[ $slug ]['endpoint'] ) ) : ?>
 
 						<li>
 							<a title="<?php esc_html_e( 'download via Envato', 'mailster' );?>" class="envato-activate button" href="<?php echo add_query_arg( array( 'auth' => wp_create_nonce( 'envato-activate' ), 'item_id' => $data['envato_item_id'], 'slug' => $slug, 'returnto' => urlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' ) ) ), $data['endpoint'] ) ?>" data-slug="<?php echo $slug ?>"><?php esc_html_e( 'Download', 'mailster' );?></a>

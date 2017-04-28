@@ -200,7 +200,7 @@ class MailsterAjax {
 
 		$html = mailster()->sanitize_content( $html );
 
-		$html = mailster()->plain_text( $html );
+		$html = mailster( 'helper' )->plain_text( $html );
 
 		echo $html;
 
@@ -677,7 +677,7 @@ class MailsterAjax {
 
 				if ( $autoplain ) {
 					$placeholder->set_content( esc_textarea( $plaintext ) );
-					$mail->plaintext = mailster()->plain_text( $placeholder->get_content(), true );
+					$mail->plaintext = mailster( 'helper' )->plain_text( $placeholder->get_content(), true );
 				}
 
 				$placeholder->set_content( $mail->subject );
@@ -701,6 +701,7 @@ class MailsterAjax {
 
 					} else {
 
+						$return['success'] = false;
 						$return['msg'] = __( 'You can only perform 10 test within an hour. Please try again later!', 'mailster' );
 
 					}
@@ -744,7 +745,7 @@ class MailsterAjax {
 
 				$response = wp_remote_get( 'http://check.newsletter-plugin.com/' . $id, array(
 					'sslverify' => false,
-					'timeout' => 10,
+					'timeout' => 20,
 				) );
 
 				$code = wp_remote_retrieve_response_code( $response );
@@ -2369,15 +2370,25 @@ class MailsterAjax {
 			$return['error'] = __( 'Please enter your Purchase Code!', 'mailster' );
 
 		} elseif ( isset( $_POST['data'] ) ) {
-				parse_str( $_POST['data'], $userdata );
-				$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
+
+			parse_str( $_POST['data'], $userdata );
+			$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
+
 			if ( is_wp_error( $result ) ) {
 				$return['error'] = mailster()->get_update_error( $result );
 				$return['code'] = $result->get_error_code();
 
 			} else {
-				update_option( 'mailster_username', $userdata['username'] );
-				update_option( 'mailster_email', $userdata['email'] );
+				if ( get_option( 'mailster_username' ) !== false ) {
+					update_option( 'mailster_username', $userdata['username'] );
+				} else {
+					add_option( 'mailster_username', $userdata['username'], '', 'no' );
+				}
+				if ( get_option( 'mailster_email' ) !== false ) {
+					update_option( 'mailster_email', $userdata['email'] );
+				} else {
+					add_option( 'mailster_email', $userdata['email'], '', 'no' );
+				}
 				$return['success'] = true;
 				do_action( 'mailster_register', $userdata['username'], $userdata['email'], $purchasecode );
 				do_action( 'mailster_register_' . $slug, $userdata['username'], $userdata['email'], $purchasecode );

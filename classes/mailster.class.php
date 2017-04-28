@@ -545,11 +545,7 @@ class Mailster {
 
 		$posts = mailster_cache_get( 'get_last_post' );
 
-		if ( ! $posts ) {
-			$posts = array();
-		}
-
-		if ( isset( $posts[ $key ] ) ) {
+		if ( $posts && isset( $posts[ $key ] ) ) {
 			return $posts[ $key ];
 		}
 
@@ -612,6 +608,9 @@ class Mailster {
 					if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
 						$content = explode( $matches[0], $post->post_content, 2 );
 						$post->post_excerpt = trim( $content[0] );
+					}
+					if ( ! $post->post_excerpt ) {
+						$post->post_excerpt = wp_trim_excerpt( $post->post_content );
 					}
 				}
 
@@ -725,40 +724,6 @@ class Mailster {
 		$content = $pre_stuff . $content;
 
 		return apply_filters( 'mymail_sanitize_content', apply_filters( 'mailster_sanitize_content', $content ) );
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $html
-	 * @param unknown $linksonly (optional)
-	 * @return unknown
-	 */
-	public function plain_text( $html, $linksonly = false ) {
-
-		// allow to hook into this method
-		$result = apply_filters( 'mymail_plain_text', apply_filters( 'mailster_plain_text', null, $html, $linksonly ), $html, $linksonly );
-		if ( ! is_null( $result ) ) {
-			return $result;
-		}
-
-		if ( $linksonly ) {
-			$links = '/< *a[^>]*href *= *"([^#]*)"[^>]*>(.*)< *\/ *a *>/Uis';
-			$text = preg_replace( $links, '${2} [${1}]', $html );
-			$text = str_replace( array( ' ', '&nbsp;' ), ' ', strip_tags( $text ) );
-			$text = @html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
-
-			return trim( $text );
-
-		} else {
-			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
-			$htmlconverter = new \Html2Text\Html2Text( $html, array( 'width' => 200 ) );
-
-			return trim( $htmlconverter->get_text() );
-
-		}
-
 	}
 
 
@@ -1037,8 +1002,6 @@ class Mailster {
 
 		$this->check_compatibility( true, $new );
 
-		$this->dbstructure();
-
 		if ( $new ) {
 
 			if ( is_plugin_active( 'myMail/myMail.php' ) ) {
@@ -1052,8 +1015,11 @@ class Mailster {
 				mailster_update_option( 'update_required', true );
 
 			} else {
+
+				$this->dbstructure();
 				update_option( 'mailster', time() );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+
 			}
 
 			if ( ! is_network_admin() ) {
@@ -1101,8 +1067,8 @@ class Mailster {
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
 		}
-		if ( max( intval( @ini_get( 'memory_limit' ) ), intval( WP_MEMORY_LIMIT ) ) < 128 ) {
-			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( WP_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
+		if ( max( intval( @ini_get( 'memory_limit' ) ), intval( WP_MAX_MEMORY_LIMIT ) ) < 128 ) {
+			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( WP_MAX_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		}
 
 		$errors->error_count = count( $errors->errors->errors );
@@ -1462,39 +1428,12 @@ class Mailster {
 			return;
 		}
 
-		// $this->send_welcome_mail();
 		wp_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster_setup' ), 302 );
 
 		exit;
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
-	public function send_welcome_mail() {
-
-		$current_user = wp_get_current_user();
-
-		$n = mailster( 'notification' );
-		$n->to( $current_user->user_email );
-		$n->subject( __( 'Your Mailster Newsletter Plugin is ready!', 'mailster' ) );
-		$n->replace( array(
-				'headline' => '',
-				'baseurl' => admin_url(),
-				'notification' => 'This welcome mail was sent from your website <a href="' . home_url() . '">' . get_bloginfo( 'name' ) . '</a>. This also makes sure you can send emails with your current settings',
-				'name' => $current_user->display_name,
-				'preheader' => 'Thank you, ' . $current_user->display_name . '! ',
-		) );
-		$n->requeue( false );
-		$n->template( 'welcome_mail' );
-
-		return $n->add();
-
-	}
 
 
 	/**
@@ -1578,7 +1517,7 @@ class Mailster {
 				|| ! preg_match( '#\[newsletter_confirm\]#', $post->post_content )
 				|| ! preg_match( '#\[newsletter_unsubscribe\]#', $post->post_content ) ) {
 
-				mailster_notice( '<strong>' . sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guid', 'mailster' ) . '</a>' ) . '</strong>', 'error', true, 'homepage_info' );
+				mailster_notice( '<strong>' . sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guide', 'mailster' ) . '</a>' ) . '</strong>', 'error', true, 'homepage_info' );
 
 			} else {
 
