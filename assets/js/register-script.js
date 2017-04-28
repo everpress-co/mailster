@@ -42,7 +42,7 @@ jQuery(document).ready(function ($) {
 				wrap.removeClass('loading');
 				if (response.success) {
 					wrap.addClass('step-2').removeClass('step-1')
-					$('.register_form_2').find('input').eq(0).focus();
+						//$('.register_form_2').find('input').eq(0).focus();
 				} else {
 					form.addClass('has-error').find('.error-msg').html(response.error);
 				}

@@ -24,7 +24,7 @@
 		<label><?php esc_html_e( 'Use version', 'mailster' ) ?>
 		<select name="mailster_options[php_mailer]">
 			<option value="0" <?php selected( ! $phpmailerversion ); ?>><?php esc_html_e( 'included in WordPress', 'mailster' ) ?></option>
-			<option value="latest" <?php selected( 'latest', $phpmailerversion ); ?>><?php printf( __( 'latest (%s)', 'mailster' ), '5.2.22' ); ?></option>
+			<option value="latest" <?php selected( 'latest', $phpmailerversion ); ?>><?php printf( __( 'latest (%s)', 'mailster' ), '5.2.23' ); ?></option>
 		</select></label>
 		</td>
 	</tr>

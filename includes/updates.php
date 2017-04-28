@@ -4,7 +4,7 @@
 This runs if an update was done.
 */
 
-global $mailster_options, $mailster_texts;
+global $mailster_options, $mailster_texts, $wpdb;
 
 $mailster_options = get_option( 'mailster_options', array() );
 $mailster_texts = get_option( 'mailster_texts', array() );
@@ -498,6 +498,11 @@ if ( $old_version ) {
 		case '2.2.2':
 
 			$mailster_options['_flush_rewrite_rules'] = true;
+
+		case '2.2.3':
+		case '2.2.4':
+
+			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_templates', 'mailster_cron_lasthit', 'mailster_username', 'mailster_email')" );
 
 		default:
 

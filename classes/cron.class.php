@@ -410,6 +410,10 @@ class MailsterCron {
 
 		$this->update();
 
+		if ( $new ) {
+			add_option( 'mailster_cron_lasthit', false, '', 'no' );
+		}
+
 	}
 
 

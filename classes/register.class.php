@@ -4,13 +4,7 @@ class MailsterRegister {
 
 	public function __construct() {
 
-		add_action( 'admin_init', array( &$this, 'init' ) );
 		add_action( 'mailster_register_mailster', array( &$this, 'on_register' ), 10, 3 );
-
-	}
-
-
-	public function init() {
 
 	}
 
@@ -55,7 +49,7 @@ class MailsterRegister {
 		$user = get_userdata( $user_id );
 
 		$username = get_option( 'mailster_username', '' );
-		$useremail = get_option( 'mailster_email', $user->data->user_email );
+		$useremail = get_option( 'mailster_email', '' );
 
 		wp_print_styles( 'mailster-register-style' );
 

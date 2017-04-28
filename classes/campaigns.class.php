@@ -152,7 +152,7 @@ class MailsterCampaigns {
 				'labels' => array(
 					'name' => $plural,
 					'singular_name' => $single,
-					'add_new' => __( 'New Campaign', 'mailster' ),
+					'add_new' => sprintf( __( 'New %s', 'mailster' ), $single ),
 					'add_new_item' => __( 'Create A New Campaign', 'mailster' ),
 					'edit_item' => sprintf( __( 'Edit %s', 'mailster' ), $single ),
 					'new_item' => sprintf( __( 'New %s', 'mailster' ), $single ),

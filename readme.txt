@@ -88,6 +88,7 @@ Xaver Birsak – https://revaxarts.com
 * fixed: issue on recipients detail page since last update
 * fixed: Newsletter sign up widget didn't store empty title
 * fixed: wrong excerpt on web version with dynamic tags in some cases
+* updated: PHPMailer to version 5.2.23
 * improved: Cron tab commands
 * improved: Cron now supports secret via a header
 * improved: URL rewrite support option on settings

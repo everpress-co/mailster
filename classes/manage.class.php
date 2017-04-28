@@ -250,7 +250,11 @@ class MailsterManage {
 		}
 
 		$return['memoryusage'] = size_format( memory_get_peak_usage( true ), 2 );
-		update_option( 'mailster_bulk_import', $bulkimport );
+		if ( get_option( 'mailster_bulk_import' ) !== false ) {
+			update_option( 'mailster_bulk_import', $bulkimport );
+		} else {
+			add_option( 'mailster_bulk_import', $bulkimport, '', 'no' );
+		}
 
 		if ( isset( $return ) ) {
 

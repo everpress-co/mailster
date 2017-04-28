@@ -1134,6 +1134,7 @@ class MailsterTemplates {
 
 		if ( $new ) {
 			$this->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 15 );
+			add_option( 'mailster_templates', false, '', 'no' );
 		}
 
 	}
@@ -1274,7 +1275,7 @@ class MailsterTemplates {
 		update_option( 'mailster_templates', array(
 			'timestamp' => time(),
 			'templates' => $templates,
-		), 'no' );
+		) );
 
 		$old_count = count( $mailster_templates['templates'] );
 		$new_count = count( $templates );
