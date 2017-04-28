@@ -2,8 +2,8 @@
 Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
-Tested up to: 4.7.3
-Stable tag: 2.2.4
+Tested up to: 4.7.4
+Stable tag: 2.2.5
 Author: revaxarts
 Author URI: https://mailster.co
 
@@ -81,6 +81,8 @@ Xaver Birsak – https://revaxarts.com
 
 
 == Changelog ==
+
+= Version 2.2.5 =
 
 * change: Signup date checkbox on Mange Subscriber Page now checked by default
 * fixed: Thickbox dimensions on form detail page
