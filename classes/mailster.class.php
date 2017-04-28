@@ -543,10 +543,10 @@ class Mailster {
 
 		$key = md5( serialize( array( $offset, $post_type, $term_ids, $simple ) ) );
 
-		$post = mailster_cache_get( 'get_last_post_' . $key );
+		$posts = mailster_cache_get( 'get_last_post' );
 
-		if ( $post ) {
-			return $post;
+		if ( $posts && isset( $posts[ $key ] ) ) {
+			return $posts[ $key ];
 		}
 
 		$args = array(
@@ -625,7 +625,9 @@ class Mailster {
 			$post = false;
 		}
 
-		mailster_cache_set( 'get_last_post_' . $key , $post );
+		$posts[ $key ] = $post;
+
+		mailster_cache_set( 'get_last_post', $posts );
 
 		return $post;
 	}
