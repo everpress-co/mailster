@@ -131,11 +131,11 @@ class MailsterSubscribers {
 		);
 		$custom_fields = mailster()->get_custom_fields();
 		foreach ( $custom_fields as $key => $field ) {
-			$columns[ $key ] = $field['name'];
+			$columns[ $key ] = strip_tags( $field['name'] );
 		}
 
 		$columns['lists'] = __( 'Lists', 'mailster' );
-		$columns['emails'] = __( 'emails', 'mailster' );
+		$columns['emails'] = __( 'Emails', 'mailster' );
 		$columns['status'] = __( 'Status', 'mailster' );
 		$columns['signup'] = __( 'Subscribed', 'mailster' );
 

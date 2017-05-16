@@ -100,7 +100,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 						</li>
 				<?php endif; ?>
 					<li class="sharebox-panel-option <?php if ( $is_forward ) { echo ' active'; } ?>">
-						<h4><?php printf( __( 'Share with %s', 'mailster' ), __( 'email', 'mailster' ) ); ?></h4>
+						<h4><?php printf( esc_html__( 'Share with %s', 'mailster' ), esc_html__( 'email', 'mailster' ) ); ?></h4>
 						<div>
 							<form id="emailform" novalidate>
 								<p>
@@ -142,7 +142,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 <?php endif; ?>
 	</ul>
 	<div id="iframe-wrap">
-		<iframe src="<?php echo add_query_arg( 'frame', 0, $permalink ) ?>"></iframe>
+		<iframe src="<?php echo add_query_arg( 'frame', 0, $permalink ) ?>" data-no-lazy=""></iframe>
 	</div>
 
 	<?php do_action( 'mailster_wpfooter' ); ?>

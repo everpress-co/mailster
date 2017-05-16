@@ -112,8 +112,8 @@ if ( $is_new ) {
 				<label><?php echo $field->name ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ) ?>:</span>
-				<input class="label widefat" type="text" name="mailster_structure[fields][<?php echo $field->field_id ?>]" data-name="mailster_structure[fields][<?php echo $field->field_id ?>]" value="<?php echo esc_attr( $field->name ) ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' );?>" placeholder="<?php echo $field->name ?>">
-					<span class="alignright required-field"><input type="checkbox" name="mailster_structure[required][<?php echo $field->field_id ?>]" data-name="mailster_structure[required][<?php echo $field->field_id ?>]" class="form-order-check-required" value="1" <?php checked( $field->required ) ?> <?php if ( $field->field_id == 'email' ) {	echo ' disabled'; } ?>> <?php esc_html_e( 'required', 'mailster' );?>
+				<input class="label widefat" type="text" name="mailster_structure[fields][<?php echo $field->field_id ?>]" data-name="mailster_structure[fields][<?php echo $field->field_id ?>]" value="<?php echo esc_attr( $field->name ) ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' );?>" placeholder="<?php echo esc_attr( $field->name ) ?>">
+					<span class="alignright required-field"><input type="checkbox" name="mailster_structure[required][<?php echo $field->field_id ?>]" data-name="mailster_structure[required][<?php echo $field->field_id ?>]" class="form-order-check-required" value="1" <?php checked( $field->required ) ?> <?php if ( $field->field_id == 'email' ) { echo ' disabled'; } ?>> <?php esc_html_e( 'required', 'mailster' );?>
 						<a class="field-remove" title="<?php esc_html_e( 'remove field', 'mailster' );?>">&#10005;</a>
 
 					</span>
@@ -141,7 +141,7 @@ if ( $is_new ) {
 		foreach ( $fields as $field_id => $name ) : ?>
 
 		<li class="field-<?php echo $field_id ?>">
-				<label><?php echo $name ?></label>
+				<label><?php esc_html_e( $name ) ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ) ?>:</span>
 				<input class="label widefat" type="text" data-name="mailster_structure[fields][<?php echo $field_id ?>]" value="<?php echo esc_attr( $name ) ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' );?>" placeholder="<?php echo $name ?>">
@@ -181,7 +181,7 @@ if ( $is_new ) {
 	<p><label><input type="checkbox" id="themestyle" checked> <?php esc_html_e( 'Include your Theme\'s style.css', 'mailster' ) ?></label></p>
 	<p class="description clear"><?php esc_html_e( 'Your form may look different depending on the place you are using it!', 'mailster' ) ?></p>
 	<div id="form-design">
-		<iframe id="form-design-iframe" width="100%" height="500" allowTransparency="true" frameborder="0" scrolling="no" src="<?php echo $this->url( array( 'id' => $id, 'edit' => wp_create_nonce( 'mailsteriframeform' ), 's' => 1, 'path' => ABSPATH ) ); ?>"></iframe>
+		<iframe id="form-design-iframe" width="100%" height="500" allowTransparency="true" frameborder="0" scrolling="no" src="<?php echo $this->url( array( 'id' => $id, 'edit' => wp_create_nonce( 'mailsteriframeform' ), 's' => 1, 'path' => ABSPATH ) ); ?>" data-no-lazy=""></iframe>
 	</div>
 	<div id="form-design-options">
 	<div class="form-design-options-nav">

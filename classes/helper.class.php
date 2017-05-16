@@ -633,7 +633,7 @@ class MailsterHelper {
 			<?php if ( $image_url ) : ?>
 			<img src="<?php echo esc_attr( $image_url[0] ) ?> width="150">
 			<?php endif; ?>
-			<label><?php _e( 'image ID', 'mailster' );?>:
+			<label><?php _e( 'Image ID', 'mailster' );?>:
 			<input class="small-text" type="text" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>"></label>
 
 <?php
@@ -1259,9 +1259,13 @@ class MailsterHelper {
 
 		} else {
 			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
-			$htmlconverter = new \Html2Text\Html2Text( $html, array( 'width' => 200 ) );
+			$htmlconverter = new \Html2Text\Html2Text( $html, array( 'width' => 200, 'do_links' => 'table' ) );
 
-			return trim( $htmlconverter->get_text() );
+			$text = trim( $htmlconverter->get_text() );
+			$text = preg_replace( '/\s*$^\s*/m', "\n", $text );
+			$text = preg_replace( '/[ \t]+/', ' ', $text );
+
+			return $text;
 
 		}
 

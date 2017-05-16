@@ -347,7 +347,7 @@ class MailsterForm {
 						case 'checkbox':
 
 							$fields[ $field->field_id ] .= '<label for="mailster-' . $field->field_id . '-' . $this->ID . '">';
-							$fields[ $field->field_id ] .= '<input type="hidden" name="' . $field->field_id . '" value="0"><input id="mailster-' . $field->field_id . '-' . $this->ID . '" name="' . $field->field_id . '" type="checkbox" value="1" ' . checked( $value || ( ! $value && isset( $data['default'] ) ), true, false ) . ' class="mailster-' . $field->field_id . '' . ( $required ? ' mailster-required' : '' ) . '" aria-required="' . ( $required ? 'true' : 'false' ) . '" aria-label="' . $esc_label . '"> ';
+							$fields[ $field->field_id ] .= '<input type="hidden" name="' . $field->field_id . '" value="0"><input id="mailster-' . $field->field_id . '-' . $this->ID . '" name="' . $field->field_id . '" type="checkbox" value="1" ' . checked( $value || ( ! $value && isset( $data['default'] ) && $data['default']), true, false ) . ' class="mailster-' . $field->field_id . '' . ( $required ? ' mailster-required' : '' ) . '" aria-required="' . ( $required ? 'true' : 'false' ) . '" aria-label="' . $esc_label . '"> ';
 							$fields[ $field->field_id ] .= ' ' . $label;
 							if ( $required && $asterisk ) {
 								$fields[ $field->field_id ] .= ' <span class="mailster-required">*</span>';

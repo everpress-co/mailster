@@ -148,19 +148,19 @@ class MailsterTemplate {
 			mailster( 'templates' )->renew_default_template( 'mymail' );
 		}
 
-		if ( ! file_exists( $file ) ) {
-			return false;
-		}
-
 		if ( ! class_exists( 'DOMDocument' ) ) {
-			die( "PHP Fatal error: Class 'DOMDocument' not found" );
+			wp_die( "PHP Fatal error: Class 'DOMDocument' not found" );
 		}
 
 		$doc = new DOMDocument();
 		$doc->validateOnParse = true;
 		$doc->formatOutput = true;
 
-		$data = file_get_contents( $file );
+		if ( file_exists( $file ) ) {
+			$data = file_get_contents( $file );
+		} else {
+			$data = '{headline}<br>{content}';
+		}
 
 		$i_error = libxml_use_internal_errors( true );
 		$doc->loadHTML( $data );

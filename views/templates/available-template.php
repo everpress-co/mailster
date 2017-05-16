@@ -2,7 +2,7 @@
 
 $licensecode = isset( $licensecodes[ $slug ] ) ? $licensecodes[ $slug ] : '';
 
-$class = array( 'available-template' );
+$class = array( 'mailster-box' );
 if ( $data['update'] ) {
 	$class[] = 'update';
 }
@@ -15,14 +15,14 @@ if ( isset( $data['is_free'] ) ) {
 
 ?>
 	<li class="<?php echo implode( ' ', $class ) ?>" id="template-<?php echo $slug ?>" data-id="<?php echo esc_attr( $slug ) ?>">
-		<a class="external screenshot" title="<?php echo $data['name'] . ' ' . $data['new_version'] . ' ' . __( 'by', 'mailster' ) . ' ' . $data['author'] ?>" <?php echo ! empty( $data['uri'] ) ? 'href="' . esc_url( add_query_arg( array( 'utm_source' => 'Mailster+Templates+Page', 'ref' => 'revaxarts' ), $data['uri'] ) ) . '" ' : '' ?> data-slug="<?php echo esc_attr( $slug ) ?>">
+		<a class="external screenshot" title="<?php echo $data['name'] . ' ' . $data['new_version'] . ' ' . __( 'by', 'mailster' ) . ' ' . $data['author'] ?>" <?php echo ! empty( $data['uri'] ) ? 'href="' . esc_url( add_query_arg( array( 'utm_source' => 'Mailster+Templates+Page' ), $data['uri'] ) ) . '" ' : '' ?> data-slug="<?php echo esc_attr( $slug ) ?>">
 				<img alt="" src="<?php echo esc_url( $data['image'] ) ?>" width="300" height="225">
 		</a>
 		<div class="meta">
 			<h3><?php echo esc_html( $data['name'] ) ?> <span class="version"><?php echo esc_html( $data['new_version'] ) ?> <span class="installed-version">(<?php esc_html_e( 'your version', 'mailster' );?>: <?php echo $data['version'] ?>)</span></span></h3>
 			<?php if ( $data['author'] ) : ?>
 			<div>
-				<?php esc_html_e( 'by', 'mailster' );?> <?php if ( ! empty( $data['author_profile'] ) ) : ?><a href="<?php echo esc_url( $data['author_profile'] ) ?>"><?php echo esc_html( $data['author'] ) ?></a><?php else : ?> <?php echo esc_html( $data['author'] ) ?><?php endif; ?>
+				<?php esc_html_e( 'by', 'mailster' );?> <?php if ( ! empty( $data['author_profile'] ) ) : ?><a class="external" href="<?php echo esc_url( $data['author_profile'] ) ?>"><?php echo esc_html( $data['author'] ) ?></a><?php else : ?> <?php echo esc_html( $data['author'] ) ?><?php endif; ?>
 			</div>
 			<?php endif; ?>
 		</div>
@@ -69,17 +69,17 @@ if ( isset( $data['is_free'] ) ) {
 
 					<?php endif; ?>
 
-				<?php elseif ( isset( $data['uri'] ) ) : ?>
+				<?php elseif ( isset( $data['uri'] ) ) :?>
 
 					<?php if ( isset( $data['envato_item_id'] ) ) : ?>
-						<?php if ( ! isset( $templates[ $slug ] ) && ! is_null( $mailster_templates[ $slug ]['endpoint'] ) ) : ?>
+						<?php if ( ! isset( $templates[ $slug ] ) && isset( $data['endpoint'] ) && ! empty( $data['endpoint'] ) ) : ?>
 
 						<li>
 							<a title="<?php esc_html_e( 'download via Envato', 'mailster' );?>" class="envato-activate button" href="<?php echo add_query_arg( array( 'auth' => wp_create_nonce( 'envato-activate' ), 'item_id' => $data['envato_item_id'], 'slug' => $slug, 'returnto' => urlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' ) ) ), $data['endpoint'] ) ?>" data-slug="<?php echo $slug ?>"><?php esc_html_e( 'Download', 'mailster' );?></a>
 						</li>
 
 						<?php endif; ?>
-					<?php else : ?>
+					<?php elseif ( ! empty( $data['endpoint'] ) ) : ?>
 						<li>
 							<a title="<?php esc_html_e( 'activate with licensecode', 'mailster' );?>" class="activate button" href="edit.php?post_type=newsletter&page=mailster_templates&action=license&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'license-' . $slug ) ?>" data-slug="<?php echo $slug ?>"><?php esc_html_e( 'Activate', 'mailster' );?></a>
 						</li>
@@ -98,7 +98,7 @@ if ( isset( $data['is_free'] ) ) {
 					<?php else : ?>
 
 					<li class="alignright">
-						<a class="external purchase button button-primary" href="<?php echo esc_url( add_query_arg( array( 'utm_source' => 'Mailster+Templates+Page', 'ref' => 'revaxarts' ), $data['uri'] ) ); ?>"><?php esc_html_e( 'Get this Template', 'mailster' );?></a>
+						<a class="external purchase button button-primary" href="<?php echo esc_url( add_query_arg( array( 'utm_source' => 'Mailster+Templates+Page' ), $data['uri'] ) ); ?>"><?php esc_html_e( 'Get this Template', 'mailster' );?></a>
 					</li>
 
 					<?php endif; ?>

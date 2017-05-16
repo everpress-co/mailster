@@ -490,11 +490,22 @@ class Mailster {
 		preg_match_all( '#href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
 		$links = $links[2];
 
+		if ( empty( $links ) ) {
+			return $content;
+		}
+
 		$used = array();
 
 		$new_structure = mailster( 'helper' )->using_permalinks();
 		$base = $this->get_base_link( $campaing_id );
 
+		// add title tag on links
+		// preg_match_all( '#(<a(?!.*?title=([\'"]).*?\2)[^>]*)(>)#', $content, $no_title_links );
+		// $no_title_links = $no_title_links[0];
+		// foreach ( $no_title_links as $link ) {
+		// $new_link = preg_replace( '/href=(\'|")(.*)(\'|")/', 'href="$2" title="$2"', $link );
+		// $content = str_replace( $link, $new_link, $content );
+		// }
 		foreach ( $links as $link ) {
 
 			$link = apply_filters( 'mymail_replace_link', apply_filters( 'mailster_replace_link', $link, $base, $hash ), $base, $hash );
@@ -593,11 +604,9 @@ class Mailster {
 				$tax_query['relation'] = 'AND';
 				$args = wp_parse_args( $args, array( 'tax_query' => $tax_query ) );
 			}
-		} else {
-			$args['update_post_term_cache'] = false;
 		}
 
-		$post = get_posts( $args );
+		$post = get_posts( apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids ) );
 
 		if ( $post ) {
 			$post = $post[0];
@@ -610,12 +619,12 @@ class Mailster {
 						$post->post_excerpt = trim( $content[0] );
 					}
 					if ( ! $post->post_excerpt ) {
-						$post->post_excerpt = wp_trim_excerpt( $post->post_content );
+						$post->post_excerpt = wp_trim_words( $post->post_content );
 					}
 				}
 
 				if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
-					$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );
+					$post->post_excerpt = wp_trim_words( $post->post_content, $length );
 				}
 				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 

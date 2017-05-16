@@ -1309,11 +1309,34 @@ class MailsterTemplates {
 			global $wp_version;
 		}
 
+		$default = array(
+			'name' => __( 'unknown', 'mailster' ),
+			'image' => null,
+			'description' => null,
+			'uri' => null,
+			'endpoint' => null,
+			'version' => null,
+			'new_version' => false,
+			'update' => false,
+			'author' => false,
+			'author_profile' => '',
+			'homepage' => null,
+			'download_url' => null,
+		);
+
+		foreach ( $mailster_templates as $slug => $data ) {
+			$mailster_templates[ $slug ] = wp_parse_args( $mailster_templates[ $slug ], $default );
+		}
+
 		$referer = home_url();
 		$multisite = is_multisite();
 		$versions = $this->get_versions();
 		$collection = array();
 		foreach ( $endpoints as $slug => $endpoint ) {
+
+			if ( empty( $endpoint ) ) {
+				continue;
+			}
 
 			if ( ! isset( $collection[ $endpoint ] ) ) {
 				$collection[ $endpoint ] = array();
@@ -1329,21 +1352,6 @@ class MailsterTemplates {
 
 			$collection[ $endpoint ][ $slug ]['envato_item_id'] = isset( $mailster_templates[ $slug ]['envato_item_id'] ) ? $mailster_templates[ $slug ]['envato_item_id'] : null;
 		}
-
-		$default = array(
-			'name' => __( 'unknown', 'mailster' ),
-			'image' => null,
-			'description' => null,
-			'uri' => null,
-			'endpoint' => null,
-			'version' => null,
-			'new_version' => false,
-			'update' => false,
-			'author' => false,
-			'author_profile' => '',
-			'homepage' => null,
-			'download_url' => null,
-		);
 
 		foreach ( $collection as $endpoint => $items ) {
 
@@ -1361,7 +1369,7 @@ class MailsterTemplates {
 			if ( array_filter( $envato_items ) ) {
 
 				$response = wp_remote_get( add_query_arg( array(
-							'items' => $envato_items,
+					'items' => $envato_items,
 				), $remote_url ), $post );
 
 			} elseif ( preg_match( '/\.json$/', $endpoint ) ) {
@@ -1399,7 +1407,6 @@ class MailsterTemplates {
 				$i = -1;
 				foreach ( $items as $slug => $data ) {
 					$i++;
-					$mailster_templates[ $slug ] = wp_parse_args( $mailster_templates[ $slug ], $default );
 
 					$mailster_templates[ $slug ]['version'] = isset( $versions[ $slug ] ) ? $versions[ $slug ] : null;
 					if ( gettype( $response ) != 'array' || empty( $response[ $i ] ) ) {

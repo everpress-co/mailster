@@ -357,8 +357,6 @@ class MailsterSettings {
 		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_script( 'thickbox' );
 		wp_enqueue_script( 'jquery' );
-		wp_enqueue_script( 'jquery-ui-sortable' );
-		wp_enqueue_script( 'jquery-touch-punch' );
 		wp_enqueue_style( 'mailster-settings-style', MAILSTER_URI . 'assets/css/settings-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 	}

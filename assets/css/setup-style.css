@@ -1,4 +1,4 @@
-.notice, .error, .update-nag{
+.notice, .error, .update-nag, .updated{
 	display: none !important;
 }
 #adminmenu #menu-posts-newsletter .wp-first-item{

@@ -672,21 +672,25 @@ class MailsterQueue {
 
 			$integer = floor( $autoresponder_meta['amount'] );
 			$decimal = $autoresponder_meta['amount'] - $integer;
-
-			$useroffset = strtotime( '+' . $autoresponder_meta['useramount'] . ' ' . $autoresponder_meta['userunit'], 0 );
+			$once = isset( $autoresponder_meta['once'] ) && $autoresponder_meta['once'];
+			$exact_date = isset( $autoresponder_meta['userexactdate'] ) && $autoresponder_meta['userexactdate'];
 			$send_offset = ( strtotime( '+' . $integer . ' ' . $autoresponder_meta['unit'], 0 ) + ( strtotime( '+1 ' . $autoresponder_meta['unit'], 0 ) * $decimal ) ) * $autoresponder_meta['before_after'];
-			$offsettimestamp = strtotime( '+' . ( $send_offset / -3600 ) . ' hours', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
 
 			$subscriber_ids = array();
 			$timestamps = array();
 
-			$once = isset( $autoresponder_meta['once'] ) && $autoresponder_meta['once'];
-
-			$exact_date = isset( $autoresponder_meta['userexactdate'] ) && $autoresponder_meta['userexactdate'];
-
 			if ( $exact_date ) {
+
+				if ( 'day' == $autoresponder_meta['unit'] ) {
+					$offsettimestamp = strtotime( '+' . ( -1 * $send_offset ) . ' seconds', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
+				} else {
+					$offsettimestamp = strtotime( '+' . ( -1 * $send_offset ) . ' seconds', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
+				}
 				$specialcond = " AND x.meta_value = '" . date( 'Y-m-d', $offsettimestamp ) . "'";
+
 			} else {
+
+				$offsettimestamp = strtotime( '+' . ( -1 * $send_offset ) . ' seconds', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
 				$specialcond = $wpdb->prepare( ' AND STR_TO_DATE(x.meta_value, %s) <= %s', '%Y-%m-%d', date( 'Y-m-d', $offsettimestamp ) );
 				switch ( $autoresponder_meta['userunit'] ) {
 					case 'year':

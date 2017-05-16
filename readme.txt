@@ -82,6 +82,19 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
+* fixed: checkboxes were always checked by default
+* fixed: status info on user time based auto responder
+* fixed: save settings button not enabled in some cases
+* improved: html tags in custom field names
+* improved: compatibility with caching plugins
+* improved: excerpts are now generated if not defined via more tag or explicit
+* improved: loading fall back if notification.html is missing
+* improved: removed redundant whitespaces in plain text versions
+* improved: links in plain text version are now grouped together below the content
+* added: 'mailster_get_last_post_args' filter to alter post arguments
+* added: month to user time based autoresponder time frames
+* updated: templates page
+
 = Version 2.2.5 =
 
 * change: Signup date checkbox on Mange Subscriber Page now checked by default

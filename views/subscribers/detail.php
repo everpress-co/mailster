@@ -171,7 +171,7 @@ if ( $is_new ) {
 				foreach ( $customfields as $field => $data ) {
 			?>
 				<div class="detail">
-					<label for="mailster_data_<?php echo $field ?>" class="label-type-<?php echo $data['type'] ?>"><?php echo $data['name'] ?>:</label>
+					<label for="mailster_data_<?php echo $field ?>" class="label-type-<?php echo $data['type'] ?>"><?php echo strip_tags( $data['name'] ) ?>:</label>
 						<code title="<?php printf( __( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{' . $field . '}', '&quot;' . $subscriber->{$field} . '&quot;' ) ?>">{<?php echo $field ?>}</code>
 					<ul class="click-to-edit type-<?php echo $data['type'] ?>">
 				<?php
