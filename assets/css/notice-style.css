@@ -34,6 +34,7 @@ div.mailster-notice .notice-dismiss:before {
 	vertical-align: sub;
 	margin-right: 1px;
 	margin-left: 1px;
+	float: left;
 }
 .branch-3-8 div.mailster-notice .notice-dismiss:before,
 .branch-3-9 div.mailster-notice .notice-dismiss:before,

@@ -2474,13 +2474,13 @@ class MailsterSubscribers {
 			$form_id = '';
 		}
 
-		$baselink = get_permalink( mailster_option( 'homepage' ) );
+		$baselink = get_site_url( null, '/' );
 
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['confirm'] ) ? $slugs['confirm'] : 'confirm';
 
 		$link = ( mailster( 'helper' )->using_permalinks() )
-			? trailingslashit( $baselink ) . trailingslashit( $slug . '/' . $subscriber->hash . '/' . $form_id )
+			? trailingslashit( $baselink ) . trailingslashit( 'mailster/' . $slug . '/' . $subscriber->hash . '/' . $form_id )
 			: add_query_arg( array(
 				'mailster_confirm' => '',
 				'k' => $subscriber->hash,
