@@ -1085,7 +1085,7 @@ class MailsterCampaigns {
 
 		if ( ! in_array( $campaign->post_status, array( 'pending', 'auto-draft', 'trash', 'draft' ) ) ) {
 
-			if ( current_user_can( 'duplicate_newsletters' ) && current_user_can( 'duplicate_others_newsletters', $campaign->ID ) ) {
+			if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() == $campaign->post_author ) || current_user_can( 'duplicate_others_newsletters' ) ) {
 				$actions['duplicate'] = '<a class="duplicate" href="?post_type=newsletter&duplicate=' . $campaign->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '" title="' . sprintf( __( 'Duplicate Campaign %s', 'mailster' ), '&quot;' . $campaign->post_title . '&quot;' ) . '">' . __( 'Duplicate', 'mailster' ) . '</a>';
 			}
 
@@ -1653,7 +1653,11 @@ class MailsterCampaigns {
 
 				} elseif ( ( isset( $postdata ) && empty( $meta['timestamp'] ) ) || $meta['active'] ) {
 					// save in UTC
-					$localtime = strtotime( $postdata['date'] . ' ' . $postdata['time'] );
+					if ( isset( $postdata['date'] ) && isset( $postdata['time'] ) ) {
+						$localtime = strtotime( $postdata['date'] . ' ' . $postdata['time'] );
+					} else {
+						$localtime = $now;
+					}
 					$meta['timestamp'] = max( $now, $localtime - $timeoffset );
 				}
 
@@ -2079,7 +2083,7 @@ class MailsterCampaigns {
 
 		$post = get_post( $id );
 
-		if ( ! current_user_can( 'duplicate_newsletters' ) || ! current_user_can( 'duplicate_others_newsletters', $post->ID ) ) {
+		if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
 			wp_die( __( 'You are not allowed to duplicate campaigns.', 'mailster' ) );
 		}
 

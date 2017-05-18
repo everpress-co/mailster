@@ -3,6 +3,9 @@ div.mailster-notice{
 	position:relative;
 	padding-right: 38px;
 }
+div.mailster-notice.mailster-notice-dismissable{
+	padding-right: 65px;
+}
 div.mailster-notice pre{
 	word-wrap:break-word;
 	white-space: pre-wrap;

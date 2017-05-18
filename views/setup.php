@@ -193,11 +193,11 @@ $utm = array(
 				<?php $url = trailingslashit( get_bloginfo( 'url' ) ); ?>
 				<label><?php echo esc_html_x( 'Location', 'the URL not the place', 'mailster' ) ?>:</label>
 				<span>
-					<a href="<?php echo $url . esc_attr( $homepage['post_name'] ) ?>" class="external"><?php echo $url ?><strong><?php echo $homepage['post_name'] ?></strong>/</a>
+					<a href="<?php echo $url . sanitize_title( $homepage['post_name'] ) ?>" class="external"><?php echo $url ?><strong><?php echo sanitize_title( $homepage['post_name'] ) ?></strong>/</a>
 					<a class="button button-small hide-if-no-js edit-slug"><?php echo __( 'Edit', 'mailster' ) ?></a>
 				</span>
 				<span class="edit-slug-area">
-				<?php echo $url ?><input type="text" name="post_name" value="<?php echo esc_attr( $homepage['post_name'] ); ?>" class="regular-text">/
+				<?php echo $url ?><input type="text" name="post_name" value="<?php echo sanitize_title( $homepage['post_name'] ); ?>" class="regular-text">/
 				</span>
 
 			<?php endif; ?>

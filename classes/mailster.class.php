@@ -256,6 +256,7 @@ class Mailster {
 				}
 
 				$type = esc_attr( $notice['type'] );
+				$dismissable = ! $notice['once'] || is_numeric( $notice['once'] );
 
 				$classes = array( 'notice', 'mailster-notice', 'notice-' . $type );
 				if ( 'success' == $type ) {
@@ -263,6 +264,9 @@ class Mailster {
 				}
 				if ( 'error' == $type ) {
 					$classes[] = 'error';
+				}
+				if ( $dismissable ) {
+					$classes[] = 'mailster-notice-dismissable';
 				}
 
 				$msg = '<div data-id="' . $id . '" id="mailster-notice-' . $id . '" class="' . implode( ' ', $classes ) . '">';
@@ -277,7 +281,7 @@ class Mailster {
 				}
 
 				$msg .= '<p>' . ( $text ? $text : '&nbsp;' ) . '</p>';
-				if ( ! $notice['once'] || is_numeric( $notice['once'] ) ) {
+				if ( $dismissable ) {
 					$msg .= '<a class="notice-dismiss" title="' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '" href="' . add_query_arg( array( 'mailster_remove_notice' => $id ) ) . '">' . esc_attr__( 'Dismiss', 'mailster' ) . '<span class="screen-reader-text">' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '</span></a>';
 
 					if ( is_numeric( $notice['once'] ) && (int) $notice['once'] - time() < 0 ) {
@@ -798,11 +802,11 @@ class Mailster {
 
 	public function special_pages() {
 
-		$page = add_submenu_page( null, 'Setup', 'Setup', 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
+		$page = add_submenu_page( true, __( 'Setup', 'mailster' ), __( 'Setup', 'mailster' ), 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'setup_scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'remove_menu_enties' ) );
 
-		$page = add_submenu_page( null, 'Welcome', 'Welcome', 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
+		$page = add_submenu_page( true, __( 'Welcome', 'mailster' ), __( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Add Ons', 'mailster' ), __( 'Add Ons', 'mailster' ), 'mailster_manage_addons', 'mailster_addons', array( &$this, 'addon_page' ) );
@@ -820,8 +824,6 @@ class Mailster {
 		}
 
 		$submenu['edit.php?post_type=newsletter'] = array();
-
-		add_submenu_page( 'edit.php?post_type=newsletter', __( 'Mailster Setup', 'mailster' ), __( 'Mailster Setup', 'mailster' ), 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
 
 	}
 
@@ -1026,6 +1028,7 @@ class Mailster {
 			} else {
 
 				$this->dbstructure();
+				mailster( 'helper' )->mkdir();
 				update_option( 'mailster', time() );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
@@ -1437,7 +1440,7 @@ class Mailster {
 			return;
 		}
 
-		wp_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster_setup' ), 302 );
+		wp_redirect( admin_url( 'admin.php?page=mailster_setup' ), 302 );
 
 		exit;
 

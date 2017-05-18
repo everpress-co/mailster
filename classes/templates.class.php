@@ -119,7 +119,9 @@ class MailsterTemplates {
 
 		mailster_require_filesystem();
 
-		$uploadfolder = MAILSTER_UPLOAD_DIR . '/uploads/' . uniqid();
+		$uploadfolder = mailster( 'helper' )->mkdir( 'uploads' );
+
+		$uploadfolder = $uploadfolder . uniqid();
 
 		if ( ! is_dir( $uploadfolder ) ) {
 			wp_mkdir_p( $uploadfolder );
@@ -356,7 +358,7 @@ class MailsterTemplates {
 		sort( $files );
 
 		foreach ( $files as $file ) {
-			if ( basename( $file ) == 'index.html' ) {
+			if ( basename( $file ) == 'index.html' && dirname( $file ) != $this->path ) {
 
 				$filename = str_replace( $this->path . '/', '', $file );
 				$slug = dirname( $filename );
@@ -912,9 +914,11 @@ class MailsterTemplates {
 
 		$hash = base_convert( md5_file( $filedir ) , 10, 36 );
 
-		$screenshot_folder = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/';
-		$screenshot_modules_folder = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/modules/' . $hash . '/';
-		$screenshotfile = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/' . $hash . '.jpg';
+		$screenshot_folder_base = mailster( 'helper' )->mkdir( 'screenshots' );
+
+		$screenshot_folder = $screenshot_folder_base . $slug . '/';
+		$screenshot_modules_folder = $screenshot_folder_base . $slug . '/modules/' . $hash . '/';
+		$screenshotfile = $screenshot_folder_base . $slug . '/' . $hash . '.jpg';
 		$screenshoturi = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 
 		mailster_require_filesystem();
@@ -1117,22 +1121,21 @@ class MailsterTemplates {
 	 */
 	public function on_activate( $new ) {
 
-		try {
-			$this->copy_template();
-		} catch ( Exception $e ) {
-			if ( ! wp_next_scheduled( 'mailster_copy_template' ) ) {
-				wp_schedule_single_event( time(), 'mailster_copy_template' );
-			}
-		}
-		try {
-			$this->copy_backgrounds();
-		} catch ( Exception $e ) {
-			if ( ! wp_next_scheduled( 'mailster_copy_backgrounds' ) ) {
-				wp_schedule_single_event( time(), 'mailster_copy_backgrounds' );
-			}
-		}
-
 		if ( $new ) {
+			try {
+				$this->copy_template();
+			} catch ( Exception $e ) {
+				if ( ! wp_next_scheduled( 'mailster_copy_template' ) ) {
+					wp_schedule_single_event( time(), 'mailster_copy_template' );
+				}
+			}
+			try {
+				$this->copy_backgrounds();
+			} catch ( Exception $e ) {
+				if ( ! wp_next_scheduled( 'mailster_copy_backgrounds' ) ) {
+					wp_schedule_single_event( time(), 'mailster_copy_backgrounds' );
+				}
+			}
 			$this->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 15 );
 			add_option( 'mailster_templates', false, '', 'no' );
 		}
@@ -1142,12 +1145,8 @@ class MailsterTemplates {
 
 	public function copy_template() {
 
-		if ( ! is_dir( $this->path ) ) {
-
-			mailster_require_filesystem();
-
-			wp_mkdir_p( $this->path );
-			copy_dir( MAILSTER_DIR . 'templates', $this->path );
+		if ( $path = mailster( 'helper' )->mkdir( 'templates' ) ) {
+			copy_dir( MAILSTER_DIR . 'templates' , $path );
 
 		}
 
@@ -1156,15 +1155,8 @@ class MailsterTemplates {
 
 	public function copy_backgrounds() {
 
-		$path = MAILSTER_UPLOAD_DIR . '/backgrounds';
-
-		if ( ! is_dir( $path ) ) {
-
-			mailster_require_filesystem();
-
-			wp_mkdir_p( $path );
+		if ( $path = mailster( 'helper' )->mkdir( 'backgrounds' ) ) {
 			copy_dir( MAILSTER_DIR . 'assets/img/bg' , $path );
-
 		}
 
 	}
@@ -1301,14 +1293,6 @@ class MailsterTemplates {
 	 */
 	private function get_mailster_templates_info( $mailster_templates, $timeout = 5 ) {
 
-		$endpoints = wp_list_pluck( $mailster_templates, 'endpoint' );
-		$templates = $this->get_templates();
-		include ABSPATH . WPINC . '/version.php';
-
-		if ( ! $wp_version ) {
-			global $wp_version;
-		}
-
 		$default = array(
 			'name' => __( 'unknown', 'mailster' ),
 			'image' => null,
@@ -1326,6 +1310,15 @@ class MailsterTemplates {
 
 		foreach ( $mailster_templates as $slug => $data ) {
 			$mailster_templates[ $slug ] = wp_parse_args( $mailster_templates[ $slug ], $default );
+		}
+
+		$endpoints = wp_list_pluck( $mailster_templates, 'endpoint' );
+		$templates = $this->get_templates();
+
+		include ABSPATH . WPINC . '/version.php';
+
+		if ( ! $wp_version ) {
+			global $wp_version;
 		}
 
 		$referer = home_url();

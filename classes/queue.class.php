@@ -678,19 +678,14 @@ class MailsterQueue {
 
 			$subscriber_ids = array();
 			$timestamps = array();
+			$offsettimestamp = strtotime( '+' . ( -1 * $send_offset ) . ' seconds', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
 
 			if ( $exact_date ) {
 
-				if ( 'day' == $autoresponder_meta['unit'] ) {
-					$offsettimestamp = strtotime( '+' . ( -1 * $send_offset ) . ' seconds', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
-				} else {
-					$offsettimestamp = strtotime( '+' . ( -1 * $send_offset ) . ' seconds', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
-				}
 				$specialcond = " AND x.meta_value = '" . date( 'Y-m-d', $offsettimestamp ) . "'";
 
 			} else {
 
-				$offsettimestamp = strtotime( '+' . ( -1 * $send_offset ) . ' seconds', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
 				$specialcond = $wpdb->prepare( ' AND STR_TO_DATE(x.meta_value, %s) <= %s', '%Y-%m-%d', date( 'Y-m-d', $offsettimestamp ) );
 				switch ( $autoresponder_meta['userunit'] ) {
 					case 'year':
@@ -757,7 +752,7 @@ class MailsterQueue {
 		// remove not sent queues which have a wrong status
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a LEFT JOIN {$wpdb->prefix}mailster_subscribers AS b ON a.subscriber_id = b.ID WHERE (a.sent = 0 OR a.ignore_status = 1) AND b.status != 1" );
 
-		// select all finished campaigns
+		// select all active campaigns
 		$sql = "SELECT posts.ID, queue.sent FROM {$wpdb->prefix}posts AS posts LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON posts.ID = queue.campaign_id LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON actions.subscriber_id = queue.subscriber_id AND actions.campaign_id = queue.campaign_id AND actions.type = 1 WHERE posts.post_status IN ('active') AND posts.post_type = 'newsletter' AND queue.requeued = 0 GROUP BY posts.ID HAVING SUM(queue.sent = 0) = 0 OR queue.sent IS NULL";
 
 		$ids = $wpdb->get_col( $sql );

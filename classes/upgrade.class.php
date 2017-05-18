@@ -156,7 +156,7 @@ class MailsterUpgrade {
 	 */
 	public function admin_menu( $args ) {
 
-		$page = add_submenu_page( null, 'Mailster Update', 'Mailster Update', 'manage_options', 'mailster_update', array( &$this, 'page' ) );
+		$page = add_submenu_page( true, 'Mailster Update', 'Mailster Update', 'manage_options', 'mailster_update', array( &$this, 'page' ) );
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
 
 	}
@@ -800,7 +800,7 @@ class MailsterUpgrade {
 		$content = "<?php\n/*\nPlugin Name: MyMail Legacy Code Helper\nDescription: Helper for legacy external forms and cron of Mailster (former MyMail). You can delete this 'plugin' if you have no external forms or subscriber buttons or you have update them already to the new version.\n */\ndie('There\'s no need to activate this plugin! If you experience any issues upgrading please reach out to us via our member area <a href=\"https://mailster.co/go/register\" target=\"_blank\">here</a>.');\n";
 
 		if ( ! $wp_filesystem->put_contents( WP_PLUGIN_DIR . '/myMail/deprecated.php', $content, FS_CHMOD_FILE ) ) {
-			file_put_contents( WP_PLUGIN_DIR . '/myMail/deprecated.php', $content );
+			mailster( 'helper' )->file_put_contents( WP_PLUGIN_DIR . '/myMail/deprecated.php', $content );
 		}
 
 		if ( file_exists( WP_PLUGIN_DIR . '/myMail/myMail.php' ) ) {

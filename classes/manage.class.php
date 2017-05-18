@@ -484,18 +484,20 @@ class MailsterManage {
 
 		$option_list_ids = array();
 
-		foreach ( (array) $lists as $list ) {
+		if ( isset( $lists ) ) {
+			foreach ( (array) $lists as $list ) {
 
-			$list_id = mailster( 'lists' )->get_by_name( $list, 'ID' );
+				$list_id = mailster( 'lists' )->get_by_name( $list, 'ID' );
 
-			if ( ! $list_id ) {
-				$list_id = mailster( 'lists' )->add( $list );
-				if ( is_wp_error( $list_id ) ) {
-					continue;
+				if ( ! $list_id ) {
+					$list_id = mailster( 'lists' )->add( $list );
+					if ( is_wp_error( $list_id ) ) {
+						continue;
+					}
 				}
-			}
 
-			$option_list_ids[] = $list_id;
+				$option_list_ids[] = $list_id;
+			}
 		}
 
 		$parts_at_once = $bulkdata['performance'] ? 2 : 8;
@@ -1063,7 +1065,7 @@ class MailsterManage {
 
 		try {
 
-			$bytes = file_put_contents( $filename, $output, FILE_APPEND );
+			$bytes = mailster( 'helper' )->file_put_contents( $filename, $output, 'a' );
 
 			$return['total'] = size_format( filesize( $filename ), 2 );
 

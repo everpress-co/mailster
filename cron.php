@@ -109,8 +109,8 @@ var a = <?php echo floor( $interval ) ?>,
 			p = '('+o+')';
 
 		if(x<=0){
-			o = '(&#x27F2;)';
-			p = 'progressing';
+			o = '&#x27F2;';
+			p = <?php esc_html_e( 'progressing', 'mailster' ); ?>;
 			clearInterval(f);
 		}
 	document.title = p+' '+c;

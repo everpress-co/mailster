@@ -96,7 +96,6 @@ jQuery(document).ready(function ($) {
 
 			}
 
-
 			_win.trigger('resize');
 			$("#normal-sortables").on("sortupdate", function (event, ui) {
 				_win.trigger('resize');
@@ -3690,9 +3689,11 @@ jQuery(document).ready(function ($) {
 						});
 
 					})
-					.on('click.mailster', 'td[background]', function (event) {
+					.on('click.mailster', 'td[background], th[background]', function (event) {
 						event.stopPropagation();
-						if (event.target.tagName.toLowerCase() == 'module' || this == cont.find('table').eq(0).find('td')[0]) return;
+						if (event.target.tagName.toLowerCase() == 'module' ||
+							this == cont.find('table').eq(0).find('td')[0] ||
+							this == cont.find('table').eq(0).find('th')[0]) return;
 						var $this = $(this),
 							offset = $this.offset(),
 							top = offset.top + 61,

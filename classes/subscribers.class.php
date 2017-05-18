@@ -340,7 +340,7 @@ class MailsterSubscribers {
 
 			$user_id = intval( $_GET['wp_user'] );
 
-			$subscriber_id = $this->add_from_wp_user( $user_id, array( 'status' => 1, 'referer' => 'wpuser', 'ip' => false ) );
+			$subscriber_id = $this->add_from_wp_user( $user_id, array( 'status' => 1, 'referer' => 'wpuser' ) );
 
 			if ( is_wp_error( $subscriber_id ) ) {
 
@@ -381,7 +381,6 @@ class MailsterSubscribers {
 				if ( $is_new ) {
 					$entry->referer = 'backend';
 					$entry->confirm = 0;
-					$entry->ip = false;
 				}
 
 				$subscriber_id = $is_new
@@ -995,7 +994,7 @@ class MailsterSubscribers {
 				'added' => $now,
 				'signup' => $now,
 				'updated' => $now,
-				'ip' => null,
+				// 'ip' => null,
 				'referer' => wp_get_referer(),
 		) );
 
@@ -1009,7 +1008,7 @@ class MailsterSubscribers {
 			$entry['confirm'] = ( isset( $entry['status'] ) && $entry['status'] == 1 ) ? $now : null;
 		}
 
-		if ( mailster_option( 'track_users' ) && $entry['ip'] !== false ) {
+		if ( mailster_option( 'track_users' ) && isset( $entry['ip'] ) && $entry['ip'] !== false ) {
 
 			$ip = mailster_get_ip();
 
