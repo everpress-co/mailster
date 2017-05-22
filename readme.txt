@@ -3,7 +3,7 @@ Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
 Tested up to: 4.7.5
-Stable tag: 2.2.5
+Stable tag: 2.2.6
 Author: revaxarts
 Author URI: https://mailster.co
 
