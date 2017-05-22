@@ -69,15 +69,30 @@ span.error{
 	float: left;
 	margin-right: 10px;
 }
+.rtl #wordpress-users ul{
+	float: right;
+	margin-right: 0;
+	margin-left: 10px;
+}
 #wordpress-user-roles{
 	float: left;
 	border-right:1px solid #ccc;
 	margin-right: 20px;
 	width:25%;
 }
+.rtl #wordpress-user-roles{
+	float: right;
+	margin-right: 0;
+	margin-left: 20px;
+	border-right:0;
+	border-left:1px solid #ccc;
+}
 #wordpress-user-meta{
 	float: left;
 	width:40%;
+}
+.rtl #wordpress-user-meta{
+	float: right;
 }
 
 #signupdate{
@@ -121,6 +136,9 @@ span.error{
 	cursor:grabbing;
 	cursor:-moz-grab;
 	cursor:-webkit-grab;
+}
+.rtl .export-order li{
+	float: right;
 }
 .export-order li:hover{
 	border: 1px solid #ccc;

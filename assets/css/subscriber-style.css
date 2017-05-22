@@ -188,6 +188,18 @@ label{
 }
 .map{
 	border: 1px solid #D3D6DB;
+	position: relative;
+}
+.map:before{
+	content: attr(data-missingkey);
+	display: block;
+	position: absolute;
+	top:50%;
+	left:50%;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	color: #999;
+	z-index: -1;
 }
 .map img{
 	display: block;
@@ -199,6 +211,8 @@ label{
 	-webkit-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	height: 250px;
+	width: 300px;
 }
 .map.zoomable img{
 	cursor:-webkit-zoom-in;

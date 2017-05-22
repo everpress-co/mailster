@@ -1183,7 +1183,7 @@ class MailsterCampaigns {
 		wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		wp_localize_script( 'mailster-overview', 'mailsterL10n', array(
-				'finish_campaign' => __( 'Do you really like to finish this campaign?', 'mailster' ),
+			'finish_campaign' => __( 'Do you really like to finish this campaign?', 'mailster' ),
 		) );
 	}
 
@@ -2038,10 +2038,9 @@ class MailsterCampaigns {
 		kses_remove_filters();
 
 		wp_update_post( array(
-				'ID' => $id,
-				'post_title' => $post->post_title,
-				'post_content' => $post->post_content,
-
+			'ID' => $id,
+			'post_title' => $post->post_title,
+			'post_content' => $post->post_content,
 		) );
 
 		kses_init_filters();

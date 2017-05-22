@@ -602,20 +602,20 @@ class MailsterSettings {
 
 			if ( empty( $_POST['mailster_settings_data'] ) ) {
 
-				$this->add_settings_error( __( 'No data to import', 'mailster' ) );
+				$this->add_settings_error( __( 'No data to import', 'mailster' ), 'no_data' );
 
 			} else {
 				$settings = $this->import_settings( $_POST['mailster_settings_data'] );
 
 				if ( is_wp_error( $settings ) ) {
 
-					$this->add_settings_error( $settings->get_error_message() );
+					$this->add_settings_error( $settings->get_error_message(), 'import_settings' );
 
 				} else {
 
 					$options = $settings['options'];
 					$_POST['mailster_texts'] = $settings['texts'];
-					$this->add_settings_error( __( 'Settings imported!', 'mailster' ), 'success' );
+					$this->add_settings_error( __( 'Settings imported!', 'mailster' ), 'import_settings', 'updated' );
 
 				}
 			}
@@ -627,7 +627,7 @@ class MailsterSettings {
 			try {
 
 				$res = openssl_pkey_new( array(
-						'private_key_bits' => ( isset( $options['dkim_bitsize'] ) ? (int) $options['dkim_bitsize'] : 512 ),
+					'private_key_bits' => ( isset( $options['dkim_bitsize'] ) ? (int) $options['dkim_bitsize'] : 512 ),
 				) );
 
 				if ( ! $res ) {
@@ -643,7 +643,7 @@ class MailsterSettings {
 					$options['dkim_public_key'] = $dkim_public_key;
 					$options['dkim_private_key'] = $dkim_private_key;
 
-					$this->add_settings_error( __( 'New DKIM keys have been created!', 'mailster' ), 'success' );
+					$this->add_settings_error( __( 'New DKIM keys have been created!', 'mailster' ), 'new_dkim_keys', 'updated' );
 				} else {
 
 					throw new Exception( 'error executing openssl_pkey_get_details', 1 );
@@ -652,7 +652,7 @@ class MailsterSettings {
 
 				$options['dkim_public_key'] = '';
 				$options['dkim_private_key'] = '';
-				$this->add_settings_error( __( 'Not able to create new DKIM keys!', 'mailster' ) . '<br>' . $e->getMessage() );
+				$this->add_settings_error( __( 'Not able to create new DKIM keys!', 'mailster' ) . '<br>' . $e->getMessage(), 'new_dkim_keys' );
 
 			}
 
@@ -667,12 +667,12 @@ class MailsterSettings {
 			if ( move_uploaded_file( $file['tmp_name'], $dest ) ) {
 				if ( is_file( $dest ) ) {
 					$options['countries_db'] = $dest;
-					$this->add_settings_error( sprintf( __( 'File uploaded to %s', 'mailster' ), '"' . $dest . '"' ), 'success' );
+					$this->add_settings_error( sprintf( __( 'File uploaded to %s', 'mailster' ), '"' . $dest . '"' ), 'upload_country_db', 'success' );
 				} else {
 					$options['countries_db'] = '';
 				}
 			} else {
-				$this->add_settings_error( __( 'unable to upload file', 'mailster' ) );
+				$this->add_settings_error( __( 'unable to upload file', 'mailster' ), 'upload_country_db' );
 				$options['countries_db'] = '';
 			}
 		}
@@ -685,12 +685,12 @@ class MailsterSettings {
 			if ( move_uploaded_file( $file['tmp_name'], $dest ) ) {
 				if ( is_file( $dest ) ) {
 					$options['cities_db'] = $dest;
-					$this->add_settings_error( sprintf( __( 'File uploaded to %s', 'mailster' ), '"' . $dest . '"' ), 'success' );
+					$this->add_settings_error( sprintf( __( 'File uploaded to %s', 'mailster' ), '"' . $dest . '"' ), 'upload_city_db', 'success' );
 				} else {
 					$options['cities_db'] = '';
 				}
 			} else {
-				$this->add_settings_error( __( 'unable to upload file', 'mailster' ) );
+				$this->add_settings_error( __( 'unable to upload file', 'mailster' ), 'upload_city_db' );
 				$options['cities_db'] = '';
 			}
 		}
@@ -744,7 +744,7 @@ class MailsterSettings {
 				case 'bounce':
 
 					if ( $value && ! mailster_is_email( $value ) ) {
-						$this->add_settings_error( sprintf( __( '%s is not a valid email address', 'mailster' ), '"' . $value . '"' ) );
+						$this->add_settings_error( sprintf( __( '%s is not a valid email address', 'mailster' ), '"' . $value . '"' ), 'no_valid_email' );
 						$value = $old;
 					}
 				break;
@@ -757,7 +757,7 @@ class MailsterSettings {
 						}
 
 						if ( ! $options['countries_db'] || ! is_file( $options['countries_db'] ) ) {
-							$this->add_settings_error( __( 'No country database found! Please load it!', 'mailster' ) );
+							$this->add_settings_error( __( 'No country database found! Please load it!', 'mailster' ), 'no_country_db' );
 							$value = false;
 						}
 					}
@@ -771,7 +771,7 @@ class MailsterSettings {
 						}
 
 						if ( ! $options['cities_db'] || ! is_file( $options['cities_db'] ) ) {
-							$this->add_settings_error( __( 'No city database found! Please load it!', 'mailster' ) );
+							$this->add_settings_error( __( 'No city database found! Please load it!', 'mailster' ), 'no_city_db' );
 							$value = false;
 						}
 					}
@@ -784,7 +784,7 @@ class MailsterSettings {
 						$options['_flush_rewrite_rules'] = true;
 					}
 					if ( ! get_permalink( $value ) ) {
-						$this->add_settings_error( sprintf( __( 'Please define a homepage for the newsletter on the %s tab!', 'mailster' ), '<a href="#frontend">' . __( 'Front End', 'mailster' ) . '</a>' ) );
+						$this->add_settings_error( sprintf( __( 'Please define a homepage for the newsletter on the %s tab!', 'mailster' ), '<a href="#frontend">' . __( 'Front End', 'mailster' ) . '</a>' ), 'no_homepage' );
 					}
 
 				break;
@@ -816,7 +816,7 @@ class MailsterSettings {
 
 					$page = get_page_by_path( $options['archive_slug'] );
 					if ( $options['hasarchive'] && $page ) {
-						$this->add_settings_error( sprintf( __( 'Please change the slug or permalink of %s since it\'s used by the archive page', 'mailster' ), '<a href="post.php?post=' . $page->ID . '&action=edit">' . $page->post_title . '</a>' ) );
+						$this->add_settings_error( sprintf( __( 'Please change the slug or permalink of %s since it\'s used by the archive page', 'mailster' ), '<a href="post.php?post=' . $page->ID . '&action=edit">' . $page->post_title . '</a>' ), 'hasarchive' );
 					}
 					if ( $old != $value ) {
 						$options['_flush_rewrite_rules'] = true;
@@ -832,12 +832,12 @@ class MailsterSettings {
 					$value = sanitize_title( $value );
 					$page = get_page_by_path( $value );
 					if ( $options['hasarchive'] && $page ) {
-						$this->add_settings_error( sprintf( __( 'Not able to set archive slug to %1$s. Used by %2$s', 'mailster' ), '&quot;<strong>' . $value . '</strong>&quot;', '<a href="post.php?post=' . $page->ID . '&action=edit">' . $page->post_title . '</a>' ) );
+						$this->add_settings_error( sprintf( __( 'Not able to set archive slug to %1$s. Used by %2$s', 'mailster' ), '&quot;<strong>' . $value . '</strong>&quot;', '<a href="post.php?post=' . $page->ID . '&action=edit">' . $page->post_title . '</a>' ), 'archive_slug' );
 						$value = $old;
 					}
 					if ( $old != $value ) {
 						if ( $options['hasarchive'] ) {
-							$this->add_settings_error( sprintf( __( 'Your newsletter archive page is: %s', 'mailster' ), '<a href="' . home_url( $value ) . '" class="external">' . home_url( $value ) . '</a>' ) );
+							$this->add_settings_error( sprintf( __( 'Your newsletter archive page is: %s', 'mailster' ), '<a href="' . home_url( $value ) . '" class="external">' . home_url( $value ) . '</a>' ), 'archive_slug', 'success' );
 						}
 
 						$options['_flush_rewrite_rules'] = true;
@@ -1008,8 +1008,8 @@ class MailsterSettings {
 					if ( $old != $value ) {
 						// at least 1
 						$value = max( $value, 1 );
-						if ( $value >= 300 ) {
-							$this->add_settings_error( sprintf( __( 'sending %s emails at once can cause problems with statistics cause of a server timeout or to much memory usage! You should decrease it if you have problems!', 'mailster' ), $value ) );
+						if ( $value >= 200 ) {
+							$this->add_settings_error( sprintf( __( 'sending %s emails at once can cause problems with statistics cause of a server timeout or to much memory usage! You should decrease it if you have problems!', 'mailster' ), number_format_i18n( $value ) ), 'send_at_once' );
 						}
 					}
 
@@ -1044,7 +1044,7 @@ class MailsterSettings {
 								$options['send_limit'] = 500;
 								$options['send_period'] = 24;
 								update_option( '_transient__mailster_send_period_timeout', false );
-								$this->add_settings_error( sprintf( __( 'Send limit has been adjusted to %d for Gmail', 'mailster' ), 500 ) );
+								$this->add_settings_error( sprintf( __( 'Send limit has been adjusted to %d for Gmail', 'mailster' ), 500 ), 'deliverymethod', 'success' );
 							}
 
 							if ( function_exists( 'fsockopen' ) ) {
@@ -1058,7 +1058,7 @@ class MailsterSettings {
 
 								} else {
 
-									$this->add_settings_error( sprintf( __( 'Not able to connected to %1$s via port %2$s! You may not be able to send mails cause of the locked port %3$s. Please contact your host or choose a different delivery method!', 'mailster' ), '"' . $host . '"', $port, $port ) );
+									$this->add_settings_error( sprintf( __( 'Not able to connected to %1$s via port %2$s! You may not be able to send mails cause of the locked port %3$s. Please contact your host or choose a different delivery method!', 'mailster' ), '"' . $host . '"', $port, $port ), 'deliverymethod' );
 
 								}
 							}
@@ -1080,7 +1080,7 @@ class MailsterSettings {
 
 						} else {
 
-							$this->add_settings_error( sprintf( __( 'Not able to connected to %1$s via port %2$s! You may not be able to send mails cause of the locked port %3$s. Please contact your host or choose a different delivery method!', 'mailster' ), '"' . $host . '"', $port, $port ) );
+							$this->add_settings_error( sprintf( __( 'Not able to connected to %1$s via port %2$s! You may not be able to send mails cause of the locked port %3$s. Please contact your host or choose a different delivery method!', 'mailster' ), '"' . $host . '"', $port, $port ), 'smtp_host' );
 						}
 					}
 
@@ -1126,7 +1126,7 @@ class MailsterSettings {
 					$value = (int) $value;
 					if ( $value < 10 ) {
 						$value = 10;
-						$this->add_settings_error( sprintf( __( 'The caching time for tweets must be at least %d minutes', 'mailster' ), 10 ) );
+						$this->add_settings_error( sprintf( __( 'The caching time for tweets must be at least %d minutes', 'mailster' ), 10 ), 'tweet_cache_time' );
 					}
 
 				break;
@@ -1134,7 +1134,7 @@ class MailsterSettings {
 				case 'dkim':
 
 					if ( ! isset( $options['dkim_private_key'] ) || ! isset( $options['dkim_public_key'] ) ) {
-						$this->add_settings_error( __( 'You have to generate DKIM Keys to use DKIM signed mails!', 'mailster' ) );
+						$this->add_settings_error( __( 'You have to generate DKIM Keys to use DKIM signed mails!', 'mailster' ), 'dkim' );
 					}
 
 				break;
@@ -1197,10 +1197,6 @@ class MailsterSettings {
 
 		$options = apply_filters( 'mymail_verify_options', apply_filters( 'mailster_verify_options', $options ) );
 
-		if ( ! isset( $_POST['mailster_import_data'] ) ) {
-			$this->add_settings_error( __( 'Settings saved!', 'mailster' ), 'success' );
-		}
-
 		return $options;
 
 	}
@@ -1244,13 +1240,14 @@ class MailsterSettings {
 	 * @param unknown $message
 	 * @param unknown $type    (optional)
 	 */
-	public function add_settings_error( $message, $type = 'error' ) {
+	private function add_settings_error( $message, $code = null, $type = 'error' ) {
 
 		if ( isset( $_POST['option_page'] ) && 'mailster_settings' == $_POST['option_page'] ) {
-			if ( 'error' == $type ) {
-				$message = '<strong>' . $message . '</strong>';
+			if ( is_null( $code ) ) {
+				$code = uniqid();
 			}
-			mailster_notice( $message, $type , true );
+			add_settings_error( 'mailster_settings', $code, $message, $type );
+
 		}
 	}
 
@@ -1277,21 +1274,6 @@ class MailsterSettings {
 		is_resource( $conn ) ? fclose( $conn ) : '';
 
 		return $return;
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
-	public function get_problem_plugins() {
-
-		// a list with plugins which causes problems
-		return array(
-			'custom-post-type-permalinks' => 'Permalink structure',
-		);
 
 	}
 
@@ -1360,7 +1342,7 @@ class MailsterSettings {
 			$import['options'] = $_import;
 		}
 
-		if ( version_compare( $import['version'], '2.2' ) > 0 ) {
+		if ( version_compare( $import['version'], '2.2' ) <= 0 ) {
 			return new WP_Error( 'wrong_version', __( 'The version number of the import does not match!', 'mailster' ) );
 		}
 
@@ -1434,7 +1416,6 @@ class MailsterSettings {
 		} else {
 			$send_success = strip_tags( $mail->get_errors() );
 		}
-		$request['cmd'] = '_notify-validate';
 
 		$response = wp_remote_post( 'https://www.paypal.com/cgi-bin/webscr', array(
 			'sslverify' => true,
@@ -1601,7 +1582,7 @@ class MailsterSettings {
 	public function deliverytab_simple() {
 ?>
 		<p class="description">
-		<?php _e( 'use this option if you don\'t have access to a SMTP server or any other provided options', 'mailster' );?>
+		<?php esc_html_e( 'use this option if you don\'t have access to a SMTP server or any other provided options', 'mailster' );?>
 		</p>
 		<?php $basicmethod = mailster_option( 'simplemethod', 'sendmail' );?>
 		<table class="form-table">
@@ -1677,7 +1658,7 @@ class MailsterSettings {
 	public function deliverytab_gmail() {
 ?>
 		<p class="description">
-		<?php _e( 'Gmail has a limit of 500 mails within 24 hours! Also sending a mail can take up to one second which is quite long. This options is only recommended for few subscribers. DKIM works only if set the from address to your Gmail address.', 'mailster' );?>
+		<?php esc_html_e( 'Gmail has a limit of 500 mails within 24 hours! Also sending a mail can take up to one second which is quite long. This options is only recommended for few subscribers. DKIM works only if set the from address to your Gmail address.', 'mailster' );?>
 		</p>
 		<table class="form-table">
 			<tr valign="top">

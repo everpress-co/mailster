@@ -508,6 +508,9 @@ only screen and (                min-resolution: 2dppx) {
 	float: right;
 	min-height: 99%;
 }
+.rtl .thickbox-iframe{
+	float: left;
+}
 #TB_ajaxContent > div{
 	position: relative;
 }

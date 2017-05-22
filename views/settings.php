@@ -29,6 +29,7 @@ if ( $active ) {
 ?>
 <?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>
 <?php settings_fields( 'mailster_settings' ); ?>
+<?php settings_errors(); ?>
 <?php do_settings_sections( 'mailster_settings' ); ?>
 
 <?php

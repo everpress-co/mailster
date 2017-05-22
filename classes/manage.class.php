@@ -713,8 +713,6 @@ class MailsterManage {
 
 			$return['wpusers'] = mailster( 'subscribers' )->wp_id();
 
-			mailster()->optimize_tables();
-
 		} else {
 
 			update_option( 'mailster_bulk_import', $bulkdata );
@@ -1200,7 +1198,7 @@ class MailsterManage {
 
 		if ( $return['success'] ) {
 
-			mailster()->optimize_tables();
+			mailster()->optimize_tables( array( 'subscribers', 'lists' ) );
 			$return['msg'] = sprintf( __( '%s subscribers removed', 'mailster' ), number_format_i18n( $count ) );
 
 		} else {

@@ -1420,11 +1420,17 @@ class Mailster {
 	 *
 	 * @return unknown
 	 */
-	public function optimize_tables() {
+	public function optimize_tables( $tables = null ) {
 
 		global $wpdb;
 
-		return false !== $wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}mailster_" . implode( ", {$wpdb->prefix}mailster_", $this->get_tables() ) );
+		if ( is_null( $tables ) ) {
+			$tables = $this->get_tables();
+		} elseif ( ! is_array( $tables ) ) {
+			$tables = array( $tables );
+		}
+
+		return false !== $wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}mailster_" . implode( ", {$wpdb->prefix}mailster_", $tables ) );
 	}
 
 
