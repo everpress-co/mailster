@@ -633,7 +633,7 @@ class MailsterHelper {
 			<?php if ( $image_url ) : ?>
 			<img src="<?php echo esc_attr( $image_url[0] ) ?> width="150">
 			<?php endif; ?>
-			<label><?php _e( 'Image ID', 'mailster' );?>:
+			<label><?php esc_html_e( 'Image ID', 'mailster' );?>:
 			<input class="small-text" type="text" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>"></label>
 
 <?php
