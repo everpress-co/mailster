@@ -366,9 +366,30 @@ class Mailster {
 	 *
 	 *
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $hash        (optional)
 	 * @return unknown
 	 */
-	public function get_unsubscribe_link( $campaign_id = '' ) {
+	public function get_unsubscribe_link( $campaign_id = '', $hash = '' ) {
+
+		$baselink = get_site_url( null, '/' );
+		$slugs = mailster_option( 'slugs' );
+		$slug = isset( $slugs['unsubscribe'] ) ? $slugs['unsubscribe'] : 'unsubscribe';
+		$path = $slug;
+		if(!empty($hash)){
+			$path .= '/'.$hash;
+		}
+		if(!empty($campaign_id)){
+			$path .= '/'.$campaign_id;
+		}
+
+		$link = ( mailster( 'helper' )->using_permalinks() )
+			? trailingslashit( $baselink ) . trailingslashit( 'mailster/' . $path )
+			: add_query_arg( array(
+				'mailster_unsubscribe' => md5( $campaign_id . '_unsubscribe' ),
+			), $baselink );
+
+		return $link;
+
 
 		$is_permalink = mailster( 'helper' )->using_permalinks();
 
@@ -376,6 +397,9 @@ class Mailster {
 
 		$unsubscribe_homepage = get_page( mailster_option( 'homepage' ) );
 		$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage ) );
+
+
+
 
 		if ( $unsubscribe_homepage ) {
 			$unsubscribe_homepage = get_permalink( mailster_option( 'homepage' ) );
@@ -421,6 +445,26 @@ class Mailster {
 	 * @return unknown
 	 */
 	public function get_profile_link( $campaign_id, $hash = '' ) {
+
+		$baselink = get_site_url( null, '/' );
+		$slugs = mailster_option( 'slugs' );
+		$slug = isset( $slugs['profile'] ) ? $slugs['profile'] : 'profile';
+		$path = $slug;
+		if(!empty($hash)){
+			$path .= '/'.$hash;
+		}
+		if(!empty($campaign_id)){
+			$path .= '/'.$campaign_id;
+		}
+
+		$link = ( mailster( 'helper' )->using_permalinks() )
+			? trailingslashit( $baselink ) . trailingslashit( 'mailster/' . $path )
+			: add_query_arg( array(
+				'mailster_profile' => $hash,
+			), $baselink );
+
+		return $link;
+
 
 		$is_permalink = mailster( 'helper' )->using_permalinks();
 
