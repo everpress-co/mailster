@@ -440,7 +440,7 @@ class MailsterCampaigns {
 			$this->post_data = $this->empty_meta();
 
 			if ( isset( $_GET['template'] ) ) {
-				$file = ( isset( $_GET['file'] ) ) ? $_GET['file'] : 'index.html';
+				$file = ( isset( $_GET['file'] ) ) ? $_GET['file'] : null;
 				if ( isset( $this->post_data['head'] ) ) {
 					unset( $this->post_data['head'] );
 				}
@@ -4245,7 +4245,15 @@ class MailsterCampaigns {
 	 * @param unknown $file   (optional)
 	 * @param unknown $verify (optional)
 	 */
-	public function set_template( $slug, $file = 'index.html', $verify = false ) {
+	public function set_template( $slug, $file = null, $verify = false ) {
+
+		if ( is_null( $file ) ) {
+			$file = 'index.html';
+			if ( is_rtl() ) {
+				$file = 'index-rtl.html';
+				$verify = true;
+			}
+		}
 
 		if ( $verify ) {
 

@@ -1214,12 +1214,21 @@ class MailsterTemplates {
 			$file_data['label'] = __( 'Notification', 'mailster' ) . ( ! empty( $hits[2] )
 				? ' ' . $hits[2] : '' );
 		}
+		if ( preg_match( '#index-rtl(-([0-9.]+))?\.html?#', $basename, $hits ) ) {
+			$file_data['label'] = __( 'Base', 'mailster' ) . ' - ' . _x( 'RTL', 'right-to-left languages', 'mailster' ) . ( ! empty( $hits[2] )
+				? ' ' . $hits[2] : '' );
+		}
+
+		if ( preg_match( '#notification-rtl(-([0-9.]+))?\.html?#', $basename, $hits ) ) {
+			$file_data['label'] = __( 'Notification', 'mailster' ) . ' - ' . _x( 'RTL', 'right-to-left languages', 'mailster' ) . ( ! empty( $hits[2] )
+				? ' ' . $hits[2] : '' );
+		}
 
 		if ( empty( $file_data['label'] ) ) {
 			$file_data['label'] = substr( $basename, 0, strrpos( $basename, '.' ) );
 		}
 
-		$file_data['label'] = str_replace( ' rtl', ' (RTL)', $file_data['label'] );
+		$file_data['label'] = str_replace( '-rtl', ' - ' . _x( 'RTL', 'right-to-left languages', 'mailster' ), ucwords( $file_data['label'] ) );
 
 		mailster_cache_set( $cache_key, $file_data );
 		return $file_data;

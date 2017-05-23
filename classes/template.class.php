@@ -25,8 +25,6 @@ class MailsterTemplate {
 		'version' => 'Version',
 	);
 
-	private $rtl;
-
 	/**
 	 *
 	 *
@@ -35,7 +33,6 @@ class MailsterTemplate {
 	 */
 	public function __construct( $slug = null, $file = 'index.html' ) {
 
-		$this->rtl = is_rtl();
 		$this->file = $file;
 
 		$this->path = MAILSTER_UPLOAD_DIR . '/templates';
@@ -136,13 +133,6 @@ class MailsterTemplate {
 		$this->templateurl = $this->url . '/' . $slug;
 
 		$file = $this->templatepath . '/' . $this->file;
-
-		if ( $this->rtl ) {
-			$rtlfile = str_replace( '.html', '-rtl.html', $file );
-			if ( file_exists( $rtlfile ) ) {
-				$file = $rtlfile;
-			}
-		}
 
 		if ( 'mymail' == $slug && ! file_exists( $file ) ) {
 			mailster( 'templates' )->renew_default_template( 'mymail' );
@@ -361,8 +351,16 @@ class MailsterTemplate {
 			$filename = 'index.html';
 		}
 
+		if ( $name == __( 'Base', 'mailster' ) . ' - ' . _x( 'RTL', 'right-to-left languages', 'mailster' ) ) {
+			$filename = 'index-rtl.html';
+		}
+
 		if ( $name == __( 'Notification', 'mailster' ) ) {
 			$filename = 'notification.html';
+		}
+
+		if ( $name == __( 'Notification', 'mailster' ) . ' - ' . _x( 'RTL', 'right-to-left languages', 'mailster' ) ) {
+			$filename = 'notification-rtl.html';
 		}
 
 		if ( ! $overwrite && file_exists( $this->templatepath . '/' . $filename ) ) {
