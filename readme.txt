@@ -2,8 +2,8 @@
 Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
-Tested up to: 4.7.4
-Stable tag: 2.2.5
+Tested up to: 4.7.5
+Stable tag: 2.2.6
 Author: revaxarts
 Author URI: https://mailster.co
 
@@ -90,9 +90,10 @@ Xaver Birsak – https://revaxarts.com
 * improved: compatibility with caching plugins
 * improved: excerpts are now generated if not defined via more tag or explicit
 * improved: loading fall back if notification.html is missing
-* improved: removed redundant whitespaces in plain text versions
+* improved: removed redundant white spaces in plain text versions
 * improved: links in plain text version are now grouped together below the content
 * improved: compatibility with third party templates
+* improved: CSS rules for RTL languages
 * added: 'mailster_get_last_post_args' filter to alter post arguments
 * added: month to user time based autoresponder time frames
 * updated: templates page

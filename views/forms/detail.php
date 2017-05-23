@@ -91,7 +91,7 @@ if ( $is_new ) {
 </h1>
 <?php endif; ?>
 <div id="titlewrap">
-	<input type="text" class="widefat" name="mailster_data[name]" size="30" value="<?php echo esc_attr( $form->name ) ?>" id="title" spellcheck="true" autocomplete="off" placeholder="<?php esc_html_e( 'Enter Form Name', 'mailster' );?>">
+	<input type="text" class="widefat" name="mailster_data[name]" size="30" value="<?php echo esc_attr( $form->name ) ?>" id="title" spellcheck="true" autocomplete="off" autofocus placeholder="<?php esc_html_e( 'Enter Form Name', 'mailster' );?>">
 
 </div>
 <?php if ( 'structure' == $currentpage ) : ?>
@@ -141,10 +141,10 @@ if ( $is_new ) {
 		foreach ( $fields as $field_id => $name ) : ?>
 
 		<li class="field-<?php echo $field_id ?>">
-				<label><?php esc_html_e( $name ) ?></label>
+				<label><?php echo strip_tags( $name ) ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ) ?>:</span>
-				<input class="label widefat" type="text" data-name="mailster_structure[fields][<?php echo $field_id ?>]" value="<?php echo esc_attr( $name ) ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' );?>" placeholder="<?php echo $name ?>">
+				<input class="label widefat" type="text" data-name="mailster_structure[fields][<?php echo $field_id ?>]" value="<?php echo esc_attr( $name ) ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' );?>" placeholder="<?php echo esc_attr( $name ) ?>">
 					<span class="alignright required-field"><input type="checkbox" data-name="mailster_structure[required][<?php echo $field_id ?>]" class="form-order-check-required" value="1"> <?php esc_html_e( 'required', 'mailster' );?>
 					<a class="field-remove" title="<?php esc_html_e( 'remove field', 'mailster' );?>">&#10005;</a>
 					</span>

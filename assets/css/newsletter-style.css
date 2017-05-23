@@ -136,6 +136,11 @@ textarea#content, textarea#excerpt {
 	top:0px;
 	right:0;
 }
+.rtl #delivery-ajax-loading {
+	margin-left:5px;
+	right:auto;
+	left: 0;
+}
 
 /*----------------------------------------------------------------------*/
 /* Optionbar
@@ -369,7 +374,6 @@ textarea#content, textarea#excerpt {
 	display: none;
 	float: right;
 }
-
 .mailster_template_save .foot {
 	padding: 10px 20px;
 	border-top:1px solid #DFDFDF;
@@ -381,6 +385,11 @@ textarea#content, textarea#excerpt {
 .mailster_template_save .foot button{
 	float: right;
 	margin-left: 6px;
+}
+.rtl .mailster_template_save .foot button{
+	margin-left: 0px;
+	margin-right: 6px;
+	float: left;
 }
 .mailster_template_save .foot.textleft {
 	text-align:left;
@@ -1088,7 +1097,10 @@ textarea#content, textarea#excerpt {
 	padding:3px 6px;
 	z-index:2;
 }
-
+.rtl #editbar div.type .postlist ul li span.post-type {
+	right:auto;
+	left:5px;
+}
 #editbar div.type .postlist ul li em.post-status {
 	font-size: 10px;
 	padding: 3px 6px;
@@ -1251,6 +1263,9 @@ textarea#content, textarea#excerpt {
 	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 	overflow:hidden;
+}
+.rtl #TB_ajaxContent{
+	text-align: right;
 }
 
 .device-wrap{

@@ -97,7 +97,7 @@ if ( $is_new ) {
 			<h3 class="detail">
 				<ul class="click-to-edit type-email">
 					<li><?php echo esc_attr( $subscriber->email ); ?>&nbsp;</li>
-					<li><input id="email" class="" type="email" name="mailster_data[email]" value="<?php echo esc_attr( $subscriber->email ); ?>" placeholder="<?php echo mailster_text( 'email' ) ?>"></li>
+					<li><input id="email" type="email" name="mailster_data[email]" value="<?php echo esc_attr( $subscriber->email ); ?>" placeholder="<?php echo mailster_text( 'email' ) ?>" autofocus></li>
 				</ul>
 				<code title="<?php printf( __( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{emailaddress}', '&quot;' . $subscriber->email . '&quot;' ) ?>">{emailaddress}</code>
 			</h3>
@@ -266,7 +266,7 @@ if ( $is_new ) {
 		<td class="user-meta" align="right">
 			<?php if ( ! $is_new ) : ?>
 				<?php if ( $meta->coords ) : $geo = explode( '|', $meta->geo );?>
-					<div class="map zoomable">
+					<div class="map zoomable" data-missingkey="<?php esc_attr_e( 'Please enter a valid Google API key on the settings page if the map is missing!', 'mailster' ); ?>">
 					<?php $mapurl = add_query_arg( array(
 							'markers' => $meta->coords,
 							'zoom' => $geo[1] ? 5 : 3,

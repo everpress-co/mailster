@@ -216,8 +216,8 @@ class MailsterAjax {
 		@error_reporting( 0 );
 
 		$id = intval( $_GET['id'] );
-		$template = sanitize_file_name( $_GET['template'] );
-		$file = isset( $_GET['templatefile'] ) ? sanitize_file_name( $_GET['templatefile'] ) : 'index.html';
+		$template = str_replace( '/', '', $_GET['template'] );
+		$file = isset( $_GET['templatefile'] ) ? str_replace( '/', '', $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
