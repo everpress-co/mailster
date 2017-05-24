@@ -1054,11 +1054,15 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $user_id
+	 * @param unknown $user_id  (optional)
 	 * @param unknown $userdata (optional)
 	 * @return unknown
 	 */
-	public function add_from_wp_user( $user_id, $userdata = array() ) {
+	public function add_from_wp_user( $user_id = null, $userdata = array() ) {
+
+		if ( is_null( $user_id ) ) {
+			$user_id = get_current_user_id();
+		}
 
 		$user = get_userdata( $user_id );
 		if ( empty( $user ) ) {
@@ -2286,11 +2290,15 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $wpid
+	 * @param unknown $wpid          (optional)
 	 * @param unknown $custom_fields (optional)
 	 * @return unknown
 	 */
-	public function get_by_wpid( $wpid, $custom_fields = false ) {
+	public function get_by_wpid( $wpid = null, $custom_fields = false ) {
+
+		if ( is_null( $wpid ) ) {
+			$wpid = get_current_user_id();
+		}
 
 		return $this->get_by_type( 'wp_id', $wpid, $custom_fields );
 	}

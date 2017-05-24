@@ -902,10 +902,11 @@ jQuery(document).ready(function ($) {
 			$('.mailster-preview-iframe').on('load', function () {
 
 				var $this = $(this),
-					body = $this.contents().find('body');
+					contents = $this.contents(),
+					body = contents.find('body');
 
 				if ($this.is('.mobile')) {
-					var style = body.find('style').text(),
+					var style = contents.find('style').text(),
 						hasqueries = /@media/.test(style);
 
 					if (!hasqueries) {

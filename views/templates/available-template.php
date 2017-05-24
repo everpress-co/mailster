@@ -15,7 +15,7 @@ if ( isset( $data['is_free'] ) ) {
 
 ?>
 	<li class="<?php echo implode( ' ', $class ) ?>" id="template-<?php echo $slug ?>" data-id="<?php echo esc_attr( $slug ) ?>">
-		<a class="external screenshot" title="<?php echo $data['name'] . ' ' . $data['new_version'] . ' ' . esc_attr__( 'by', 'mailster' ) . ' ' . $data['author'] ?>" <?php echo ! empty( $data['uri'] ) ? 'href="' . esc_url( add_query_arg( array( 'utm_source' => 'Mailster+Templates+Page' ), $data['uri'] ) ) . '" ' : '' ?> data-slug="<?php echo esc_attr( $slug ) ?>">
+		<a class="external screenshot" title="<?php echo $data['name'] . ' ' . $data['new_version'] . ' ' . esc_attr__( 'by', 'mailster' ) . ' ' . $data['author'] ?>" <?php echo ! empty( $data['uri'] ) ? 'href="' . esc_url( $data['uri'] ) . '" ' : '' ?> data-slug="<?php echo esc_attr( $slug ) ?>">
 				<img alt="" src="<?php echo esc_url( $data['image'] ) ?>" width="300" height="225">
 		</a>
 		<div class="meta">
@@ -98,7 +98,7 @@ if ( isset( $data['is_free'] ) ) {
 					<?php else : ?>
 
 					<li class="alignright">
-						<a class="external purchase button button-primary" href="<?php echo esc_url( add_query_arg( array( 'utm_source' => 'Mailster+Templates+Page' ), $data['uri'] ) ); ?>"><?php esc_html_e( 'Get this Template', 'mailster' );?></a>
+						<a class="external purchase button button-primary" href="<?php echo esc_url( $data['uri'] ); ?>"><?php esc_html_e( 'Get this Template', 'mailster' );?></a>
 					</li>
 
 					<?php endif; ?>
