@@ -96,7 +96,6 @@ jQuery(document).ready(function ($) {
 
 			}
 
-
 			_win.trigger('resize');
 			$("#normal-sortables").on("sortupdate", function (event, ui) {
 				_win.trigger('resize');
@@ -659,7 +658,7 @@ jQuery(document).ready(function ($) {
 
 					_ajax('get_totals', data, function (response) {
 						_enable();
-						total.removeClass('loading').html(response.totalformated);
+						total.removeClass('loading').html(response.totalformatted);
 
 					}, function (jqXHR, textStatus, errorThrown) {
 						_enable();
@@ -903,10 +902,11 @@ jQuery(document).ready(function ($) {
 			$('.mailster-preview-iframe').on('load', function () {
 
 				var $this = $(this),
-					body = $this.contents().find('body');
+					contents = $this.contents(),
+					body = contents.find('body');
 
 				if ($this.is('.mobile')) {
-					var style = body.find('style').text(),
+					var style = contents.find('style').text(),
 						hasqueries = /@media/.test(style);
 
 					if (!hasqueries) {
@@ -3690,9 +3690,11 @@ jQuery(document).ready(function ($) {
 						});
 
 					})
-					.on('click.mailster', 'td[background]', function (event) {
+					.on('click.mailster', 'td[background], th[background]', function (event) {
 						event.stopPropagation();
-						if (event.target.tagName.toLowerCase() == 'module' || this == cont.find('table').eq(0).find('td')[0]) return;
+						if (event.target.tagName.toLowerCase() == 'module' ||
+							this == cont.find('table').eq(0).find('td')[0] ||
+							this == cont.find('table').eq(0).find('th')[0]) return;
 						var $this = $(this),
 							offset = $this.offset(),
 							top = offset.top + 61,

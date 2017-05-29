@@ -28,14 +28,12 @@
 .click-to-edit li li{
 	display: inherit;
 }
-
 label{
 	font-weight:700;
 }
 .click-to-edit label{
 	font-weight:normal;
 }
-
 h3 input{
 	font-size: 20px;
 	line-height: 1.4em;
@@ -52,12 +50,10 @@ h3 input{
 	border:0;
 	width: 80%;
 }
-
 .stats-wrap #stats td {
 	vertical-align:middle;
 	border:0;
 }
-
 .stats-wrap .big {
 	font-size:18px;
 	font-weight:100;
@@ -72,11 +68,9 @@ h3 input{
 	font-weight:700;
 	text-shadow:1px 1px 0 rgba(255,255,255,1);
 }
-
 .activity-wrap .red{
 	color: #D8605F;
 }
-
 .activity-wrap .mailster-icon-error{
 	color: #D8605F;
 }
@@ -94,12 +88,9 @@ h3 input{
 .activity-wrap .mailster-icon-bounce.hard:before{
 	margin-left:2px;
 }
-
 .activity-wrap .bounce-message{
 	cursor: help;
 }
-
-
 @media screen and (max-width: 782px) {
 	.wrap h2{
 		overflow: hidden;
@@ -109,9 +100,7 @@ h3 input{
 		display: block;
 		margin: 10px 0;
 	}
-
 	.form-table th, .form-table td {
 		display: table-cell;
 	}
-
 }

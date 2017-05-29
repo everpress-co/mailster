@@ -55,7 +55,7 @@ $sent = $this->get_sent( $post->ID );
 			<div id="publishing-action">
 			<?php if ( 'finished' == $post->post_status ) : ?>
 
-				<?php if ( current_user_can( 'duplicate_newsletters' ) && current_user_can( 'duplicate_others_newsletters', $post->ID ) ) : ?>
+				<?php if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() == $post->post_author ) || current_user_can( 'duplicate_others_newsletters' ) ) : ?>
 				<a class="button duplicate" href="edit.php?post_type=newsletter&duplicate=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_nonce' ) ?>"><?php esc_html_e( 'Duplicate', 'mailster' ) ?></a>
 				<?php endif; ?>
 

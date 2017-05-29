@@ -7,6 +7,7 @@ $mailster_autoresponder_info = array(
 		'hour' => __( 'hour(s)', 'mailster' ),
 		'day' => __( 'day(s)', 'mailster' ),
 		'week' => __( 'week(s)', 'mailster' ),
+		'month' => __( 'month(s)', 'mailster' ),
 		'year' => __( 'year(s)', 'mailster' ),
 	),
 

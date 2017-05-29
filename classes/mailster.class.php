@@ -187,6 +187,8 @@ class Mailster {
 			add_filter( 'wp_import_post_data_processed', array( &$this, 'import_post_data' ), 10, 2 );
 			add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
+			add_filter( 'admin_page_access_denied', array( &$this, 'maybe_redirect_special_pages' ) );
+
 			// frontpage stuff (!is_admin())
 		} else {
 
@@ -256,6 +258,7 @@ class Mailster {
 				}
 
 				$type = esc_attr( $notice['type'] );
+				$dismissable = ! $notice['once'] || is_numeric( $notice['once'] );
 
 				$classes = array( 'notice', 'mailster-notice', 'notice-' . $type );
 				if ( 'success' == $type ) {
@@ -263,6 +266,9 @@ class Mailster {
 				}
 				if ( 'error' == $type ) {
 					$classes[] = 'error';
+				}
+				if ( $dismissable ) {
+					$classes[] = 'mailster-notice-dismissable';
 				}
 
 				$msg = '<div data-id="' . $id . '" id="mailster-notice-' . $id . '" class="' . implode( ' ', $classes ) . '">';
@@ -277,7 +283,7 @@ class Mailster {
 				}
 
 				$msg .= '<p>' . ( $text ? $text : '&nbsp;' ) . '</p>';
-				if ( ! $notice['once'] || is_numeric( $notice['once'] ) ) {
+				if ( $dismissable ) {
 					$msg .= '<a class="notice-dismiss" title="' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '" href="' . add_query_arg( array( 'mailster_remove_notice' => $id ) ) . '">' . esc_attr__( 'Dismiss', 'mailster' ) . '<span class="screen-reader-text">' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '</span></a>';
 
 					if ( is_numeric( $notice['once'] ) && (int) $notice['once'] - time() < 0 ) {
@@ -335,6 +341,35 @@ class Mailster {
 			add_action( 'shutdown', array( &$this, 'save_admin_notices' ) );
 
 		}
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function maybe_redirect_special_pages() {
+
+		global $pagenow;
+
+		if ( 'edit.php' != $pagenow ) {
+			return;
+		}
+		if ( is_network_admin() ) {
+			return;
+		}
+		if ( ! isset( $_GET['page'] ) ) {
+			return;
+		}
+		$page = $_GET['page'];
+		if ( ! in_array( $page, array( 'mailster_update', 'mailster_welcome', 'mailster_setup' ) ) ) {
+			return;
+		}
+
+		wp_redirect( 'admin.php?page=' . $page, 302 );
+		exit;
 
 	}
 
@@ -490,11 +525,22 @@ class Mailster {
 		preg_match_all( '#href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
 		$links = $links[2];
 
+		if ( empty( $links ) ) {
+			return $content;
+		}
+
 		$used = array();
 
 		$new_structure = mailster( 'helper' )->using_permalinks();
 		$base = $this->get_base_link( $campaing_id );
 
+		// add title tag on links
+		// preg_match_all( '#(<a(?!.*?title=([\'"]).*?\2)[^>]*)(>)#', $content, $no_title_links );
+		// $no_title_links = $no_title_links[0];
+		// foreach ( $no_title_links as $link ) {
+		// $new_link = preg_replace( '/href=(\'|")(.*)(\'|")/', 'href="$2" title="$2"', $link );
+		// $content = str_replace( $link, $new_link, $content );
+		// }
 		foreach ( $links as $link ) {
 
 			$link = apply_filters( 'mymail_replace_link', apply_filters( 'mailster_replace_link', $link, $base, $hash ), $base, $hash );
@@ -593,11 +639,9 @@ class Mailster {
 				$tax_query['relation'] = 'AND';
 				$args = wp_parse_args( $args, array( 'tax_query' => $tax_query ) );
 			}
-		} else {
-			$args['update_post_term_cache'] = false;
 		}
 
-		$post = get_posts( $args );
+		$post = get_posts( apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids ) );
 
 		if ( $post ) {
 			$post = $post[0];
@@ -610,12 +654,12 @@ class Mailster {
 						$post->post_excerpt = trim( $content[0] );
 					}
 					if ( ! $post->post_excerpt ) {
-						$post->post_excerpt = wp_trim_excerpt( $post->post_content );
+						$post->post_excerpt = wp_trim_words( $post->post_content );
 					}
 				}
 
 				if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
-					$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );
+					$post->post_excerpt = wp_trim_words( $post->post_content, $length );
 				}
 				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
@@ -789,11 +833,11 @@ class Mailster {
 
 	public function special_pages() {
 
-		$page = add_submenu_page( null, 'Setup', 'Setup', 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
+		$page = add_submenu_page( true, __( 'Setup', 'mailster' ), __( 'Setup', 'mailster' ), 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'setup_scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'remove_menu_enties' ) );
 
-		$page = add_submenu_page( null, 'Welcome', 'Welcome', 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
+		$page = add_submenu_page( true, __( 'Welcome', 'mailster' ), __( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Add Ons', 'mailster' ), __( 'Add Ons', 'mailster' ), 'mailster_manage_addons', 'mailster_addons', array( &$this, 'addon_page' ) );
@@ -811,8 +855,6 @@ class Mailster {
 		}
 
 		$submenu['edit.php?post_type=newsletter'] = array();
-
-		add_submenu_page( 'edit.php?post_type=newsletter', __( 'Mailster Setup', 'mailster' ), __( 'Mailster Setup', 'mailster' ), 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
 
 	}
 
@@ -1017,13 +1059,13 @@ class Mailster {
 			} else {
 
 				$this->dbstructure();
+				mailster( 'helper' )->mkdir();
 				update_option( 'mailster', time() );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
-			}
-
-			if ( ! is_network_admin() ) {
-				add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
+				if ( ! is_network_admin() ) {
+					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
+				}
 			}
 		}
 
@@ -1408,11 +1450,17 @@ class Mailster {
 	 *
 	 * @return unknown
 	 */
-	public function optimize_tables() {
+	public function optimize_tables( $tables = null ) {
 
 		global $wpdb;
 
-		return false !== $wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}mailster_" . implode( ", {$wpdb->prefix}mailster_", $this->get_tables() ) );
+		if ( is_null( $tables ) ) {
+			$tables = $this->get_tables();
+		} elseif ( ! is_array( $tables ) ) {
+			$tables = array( $tables );
+		}
+
+		return false !== $wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}mailster_" . implode( ", {$wpdb->prefix}mailster_", $tables ) );
 	}
 
 
@@ -1428,7 +1476,7 @@ class Mailster {
 			return;
 		}
 
-		wp_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster_setup' ), 302 );
+		wp_redirect( admin_url( 'admin.php?page=mailster_setup' ), 302 );
 
 		exit;
 
@@ -1793,17 +1841,22 @@ class Mailster {
 			$verified = 'no';
 			$recheck = DAY_IN_SECONDS;
 
-			$result = UpdateCenterPlugin::verify( MAILSTER_SLUG );
-			if ( ! is_wp_error( $result ) ) {
-				$verified = 'yes';
-			} else {
-				switch ( $result->get_error_code() ) {
-					case 500: // Internal Server Error
-					case 503: // Service Unavailable
-					case 'http_err':
-						$recheck = 900;
-						$verified = $old;
-						break;
+			$license_email = get_option( 'mailster_email' );
+			$license_user = get_option( 'mailster_username' );
+
+			if ( $license_email && $license_user ) {
+				$result = UpdateCenterPlugin::verify( MAILSTER_SLUG );
+				if ( ! is_wp_error( $result ) ) {
+					$verified = 'yes';
+				} else {
+					switch ( $result->get_error_code() ) {
+						case 500: // Internal Server Error
+						case 503: // Service Unavailable
+						case 'http_err':
+							$recheck = 900;
+							$verified = $old;
+							break;
+					}
 				}
 			}
 

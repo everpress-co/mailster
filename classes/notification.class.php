@@ -633,7 +633,7 @@ class MailsterNotification {
 					continue;
 				}
 				?>
-					<tr><td height="20" style="border-top:1px solid #ccc;height:30px"><strong><?php echo $field['name'] ?>:</strong>
+					<tr><td height="20" style="border-top:1px solid #ccc;height:30px"><strong><?php echo strip_tags( $field['name'] ) ?>:</strong>
 				<?php
 				switch ( $field['type'] ) {
 					case 'checkbox':
@@ -669,14 +669,25 @@ class MailsterNotification {
 
 		<?php if ( ( $loc = mailster_ip2City() ) != 'unknown' ) : ?>
 
+			<?php $mapurl = add_query_arg( array(
+					'markers' => $loc->latitude . ',' . $loc->longitude,
+					'zoom' => 4,
+					'size' => '276x200',
+					'visual_refresh' => true,
+					'scale' => 2,
+					'language' => get_locale(),
+					'key' => mailster_option( 'google_api_key' ),
+			), 'https://maps.googleapis.com/maps/api/staticmap' );
+			?>
+
 			<table style="width:100%;table-layout:fixed">
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr>
 					<td>
-						<img src="https://maps.googleapis.com/maps/api/staticmap?markers=<?php echo $loc->latitude ?>,<?php echo $loc->longitude ?>&zoom=4&size=276x200&visual_refresh=true&sensor=false" width="276" heigth="200">
+						<img src="<?php echo esc_url( $mapurl ); ?>" width="276" heigth="200">
 					</td>
 					<td>
-						<img src="https://maps.googleapis.com/maps/api/staticmap?markers=<?php echo $loc->latitude ?>,<?php echo $loc->longitude ?>&zoom=8&size=276x200&visual_refresh=true&sensor=false" width="276" heigth="200">
+						<img src="<?php echo esc_url( add_query_arg( 'zoom', 8, $mapurl ) ); ?>" width="276" heigth="200">
 					</td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
@@ -1045,7 +1056,7 @@ foreach ( $coords as $i => $coord ) {
 					</a>
 				</td>
 				<td valign="top" align="left">
-					<h4 style="margin:0"><?php echo $subscriber->fullname ? '<a href="' . $link . '">' . esc_html( $subscriber->fullname ) . '</a>' : '&nbsp;'; ?></h4>
+					<h4 style="margin:0"><?php echo esc_html( $subscriber->fullname ) ? '<a href="' . $link . '">' . esc_html( $subscriber->fullname ) . '</a>' : '&nbsp;'; ?></h4>
 					<small><?php echo esc_html( $subscriber->email ); ?></small>
 				</td>
 				</tr>

@@ -216,8 +216,8 @@ class MailsterAjax {
 		@error_reporting( 0 );
 
 		$id = intval( $_GET['id'] );
-		$template = sanitize_file_name( $_GET['template'] );
-		$file = isset( $_GET['templatefile'] ) ? sanitize_file_name( $_GET['templatefile'] ) : 'index.html';
+		$template = str_replace( '/', '', $_GET['template'] );
+		$file = isset( $_GET['templatefile'] ) ? str_replace( '/', '', $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
@@ -784,7 +784,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, array( 'operator' => $operator, 'conditions' => $conditions ) );
-		$return['totalformated'] = number_format_i18n( $return['total'] );
+		$return['totalformatted'] = number_format_i18n( $return['total'] );
 
 		$this->json_return( $return );
 
@@ -2259,9 +2259,9 @@ class MailsterAjax {
 						'status' => $campaign->post_status,
 						'ID' => $campaign->ID,
 						'totals' => mailster( 'campaigns' )->get_totals( $id ),
-						'totals_formated' => number_format_i18n( mailster( 'campaigns' )->get_totals( $id ) ),
+						'totals_formatted' => number_format_i18n( mailster( 'campaigns' )->get_totals( $id ) ),
 						'sent' => mailster( 'campaigns' )->get_sent( $id ),
-						'sent_formated' => number_format_i18n( mailster( 'campaigns' )->get_sent( $id ) ),
+						'sent_formatted' => number_format_i18n( mailster( 'campaigns' )->get_sent( $id ) ),
 						'openrate' => mailster( 'campaigns' )->get_open_rate( $id ),
 						'clickrate' => mailster( 'campaigns' )->get_click_rate( $id ),
 						'bouncerate' => mailster( 'campaigns' )->get_bounce_rate( $id ),
@@ -2277,9 +2277,9 @@ class MailsterAjax {
 						'name' => $list->name,
 						'ID' => $list->ID,
 						'totals' => mailster( 'lists' )->get_totals( $id ),
-						'totals_formated' => number_format_i18n( mailster( 'lists' )->get_totals( $id ) ),
+						'totals_formatted' => number_format_i18n( mailster( 'lists' )->get_totals( $id ) ),
 						'sent' => mailster( 'lists' )->get_sent( $id ),
-						'sent_formated' => number_format_i18n( mailster( 'lists' )->get_sent( $id ) ),
+						'sent_formatted' => number_format_i18n( mailster( 'lists' )->get_sent( $id ) ),
 						'openrate' => mailster( 'lists' )->get_open_rate( $id ),
 						'clickrate' => mailster( 'lists' )->get_click_rate( $id ),
 						'bouncerate' => mailster( 'lists' )->get_bounce_rate( $id ),

@@ -156,7 +156,7 @@ class MailsterUpgrade {
 	 */
 	public function admin_menu( $args ) {
 
-		$page = add_submenu_page( null, 'Mailster Update', 'Mailster Update', 'manage_options', 'mailster_update', array( &$this, 'page' ) );
+		$page = add_submenu_page( true, 'Mailster Update', 'Mailster Update', 'manage_options', 'mailster_update', array( &$this, 'page' ) );
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
 
 	}
@@ -165,15 +165,18 @@ class MailsterUpgrade {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-update-script', MAILSTER_URI . 'assets/js/update-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-update-script', MAILSTER_URI . 'assets/js/upgrade-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
 		$db_version = get_option( 'mailster_dbversion', 0 );
 
+		$autostart = true;
+
 		$actions = array();
 
-		// pre - mailstre time
+		// pre - Mailster time
 		if ( get_option( 'mymail' ) || isset( $_GET['mymail'] ) ) {
 
+			$autostart = false;
 			$actions = wp_parse_args( array(
 					'pre_mailster_updateslug' => 'Update Plugin Slug',
 					'pre_mailster_backuptables' => 'Backup old Tables',
@@ -250,6 +253,9 @@ class MailsterUpgrade {
 		), $actions );
 
 		wp_localize_script( 'mailster-update-script', 'mailster_updates', $actions );
+		wp_localize_script( 'mailster-update-script', 'mailster_updates_options', array(
+			'autostart' => $autostart,
+		) );
 		$performance = isset( $_GET['performance'] ) ? max( 1, intval( $_GET['performance'] ) ) : 1;
 		wp_localize_script( 'mailster-update-script', 'mailster_updates_performance', array( $performance ) );
 
@@ -265,7 +271,7 @@ class MailsterUpgrade {
 		<?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>
 
 		<p><strong>Some additional updates are required! Please keep this browser tab open until all updates are finished!</strong></p>
-		<div id="mailster-update-info">
+		<div id="mailster-update-info" style="display: none;">
 			<div class="notice-error error inline"><p>Make sure to create a backup before upgrading MyMail to Mailster. If you experience any issues upgrading please reach out to us via our member area <a href="https://mailster.co/go/register" class="external">here</a>.<br>
 			<strong>Important: No data can get lost thanks to our smart upgrade process.</strong></p></div>
 			<p>
@@ -549,17 +555,20 @@ class MailsterUpgrade {
 
 		foreach ( $tables as $table ) {
 
-			if ( ! $this->table_exists( "{$wpdb->prefix}mailster_{$table}" ) ) {
-				if ( $count = $wpdb->query( "CREATE TABLE {$wpdb->prefix}mailster_{$table} LIKE {$wpdb->prefix}mymail_{$table}" ) ) {
-					echo 'Copy table structure ' . $table . '' . "\n";
-					return false;
+			if ( $this->table_exists( "{$wpdb->prefix}mymail_{$table}" ) ) {
+
+				if ( ! $this->table_exists( "{$wpdb->prefix}mailster_{$table}" ) ) {
+					if ( $count = $wpdb->query( "CREATE TABLE {$wpdb->prefix}mailster_{$table} LIKE {$wpdb->prefix}mymail_{$table}" ) ) {
+						echo 'Copy table structure ' . $table . '' . "\n";
+						return false;
+					}
 				}
-			}
-			if ( $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}mailster_{$table}" ) ) {
-				echo 'Clean ' . $table . '' . "\n";
-			}
-			if ( $wpdb->query( "INSERT {$wpdb->prefix}mailster_{$table} SELECT * FROM {$wpdb->prefix}mymail_{$table}" ) ) {
-				echo 'Copy data ' . $table . '' . "\n";
+				if ( $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}mailster_{$table}" ) ) {
+					echo 'Clean ' . $table . '' . "\n";
+				}
+				if ( $wpdb->query( "INSERT {$wpdb->prefix}mailster_{$table} SELECT * FROM {$wpdb->prefix}mymail_{$table}" ) ) {
+					echo 'Copy data ' . $table . '' . "\n";
+				}
 			}
 		}
 
@@ -791,7 +800,7 @@ class MailsterUpgrade {
 		$content = "<?php\n/*\nPlugin Name: MyMail Legacy Code Helper\nDescription: Helper for legacy external forms and cron of Mailster (former MyMail). You can delete this 'plugin' if you have no external forms or subscriber buttons or you have update them already to the new version.\n */\ndie('There\'s no need to activate this plugin! If you experience any issues upgrading please reach out to us via our member area <a href=\"https://mailster.co/go/register\" target=\"_blank\">here</a>.');\n";
 
 		if ( ! $wp_filesystem->put_contents( WP_PLUGIN_DIR . '/myMail/deprecated.php', $content, FS_CHMOD_FILE ) ) {
-			file_put_contents( WP_PLUGIN_DIR . '/myMail/deprecated.php', $content );
+			mailster( 'helper' )->file_put_contents( WP_PLUGIN_DIR . '/myMail/deprecated.php', $content );
 		}
 
 		if ( file_exists( WP_PLUGIN_DIR . '/myMail/myMail.php' ) ) {

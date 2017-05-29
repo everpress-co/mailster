@@ -186,7 +186,7 @@ jQuery(document).ready(function ($) {
 					link.addClass('status-' + data.status);
 				}
 
-				box.find('.stats-total').html(data.sent_formated);
+				box.find('.stats-total').html(data.sent_formatted);
 				box.find('.stats-open').data('easyPieChart').update(data.openrate * 100);
 				box.find('.stats-clicks').data('easyPieChart').update(data.clickrate * 100);
 				box.find('.stats-unsubscribes').data('easyPieChart').update(data.unsubscriberate * 100);

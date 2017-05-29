@@ -633,7 +633,7 @@ class MailsterHelper {
 			<?php if ( $image_url ) : ?>
 			<img src="<?php echo esc_attr( $image_url[0] ) ?> width="150">
 			<?php endif; ?>
-			<label><?php _e( 'image ID', 'mailster' );?>:
+			<label><?php esc_html_e( 'Image ID', 'mailster' );?>:
 			<input class="small-text" type="text" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>"></label>
 
 <?php
@@ -754,13 +754,13 @@ class MailsterHelper {
 		switch ( $string ) {
 			case 'day':
 				$str = ( $last ? 'yesterday' : 'tomorrow' ) . ' midnight';
-			break;
+				break;
 			case 'week':
 				$str = $last ? 'last sunday -' . ( 7 - get_option( 'start_of_week', 1 ) ) . ' days' : 'next sunday +' . get_option( 'start_of_week', 1 ) . ' days';
-			break;
+				break;
 			case 'month':
 				$str = 'midnight first day of ' . ( $last ? 'last' : 'next' ) . ' month';
-			break;
+				break;
 		}
 
 		$utcMidnight = strtotime( $str, $day );
@@ -835,6 +835,13 @@ class MailsterHelper {
 
 	}
 
+
+	/**
+	 *
+	 *
+	 * @param unknown $content
+	 * @return unknown
+	 */
 	public function prepare_content( $content ) {
 
 		if ( empty( $content ) ) {
@@ -1110,6 +1117,66 @@ class MailsterHelper {
 	/**
 	 *
 	 *
+	 * @param unknown $filename
+	 * @param unknown $data     (optional)
+	 * @param unknown $flags    (optional)
+	 * @return unknown
+	 */
+	public function file_put_contents( $filename, $data = '', $flags = 'w' ) {
+
+		mailster_require_filesystem();
+
+		if ( ! is_dir( dirname( $filename ) ) ) {
+			wp_mkdir_p( dirname( $filename ) );
+		}
+
+		if ( $file_handle = @fopen( $filename, $flags ) ) {
+			fwrite( $file_handle, $data );
+			fclose( $file_handle );
+		}
+
+		return is_file( $filename );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $folder         (optional)
+	 * @param unknown $prevent_access (optional)
+	 * @return unknown
+	 */
+	public function mkdir( $folder = '', $prevent_access = true ) {
+
+		mailster_require_filesystem();
+
+		$path = trailingslashit( trailingslashit( MAILSTER_UPLOAD_DIR ) . $folder );
+
+		if ( ! is_dir( $path ) ) {
+
+			if ( wp_mkdir_p( $path ) ) {
+
+				// if ( $prevent_access ) {
+				// $this->file_put_contents( $path . 'index.html', '' );
+				// $this->file_put_contents( $path . '.htaccess', 'deny from all' );
+				// }
+				return $path;
+
+			}
+
+			return false;
+
+		}
+
+		return $path;
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $host
 	 * @param unknown $type  (optional)
 	 * @param unknown $force (optional)
@@ -1259,9 +1326,13 @@ class MailsterHelper {
 
 		} else {
 			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
-			$htmlconverter = new \Html2Text\Html2Text( $html, array( 'width' => 200 ) );
+			$htmlconverter = new \Html2Text\Html2Text( $html, array( 'width' => 200, 'do_links' => 'table' ) );
 
-			return trim( $htmlconverter->get_text() );
+			$text = trim( $htmlconverter->get_text() );
+			$text = preg_replace( '/\s*$^\s*/m', "\n", $text );
+			$text = preg_replace( '/[ \t]+/', ' ', $text );
+
+			return $text;
 
 		}
 

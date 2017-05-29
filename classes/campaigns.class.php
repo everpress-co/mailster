@@ -807,9 +807,23 @@ class MailsterCampaigns {
 
 								$datefields = mailster()->get_custom_date_fields();
 
-								printf( __( 'send every %1$s %2$s', 'mailster' ), '<strong>' . $autoresponder['useramount'] . '</strong>', '<strong>' . $time_frame_names[ $autoresponder['userunit'] ] . '</strong>' );
+								if ( $autoresponder['userexactdate'] ) :
 
-								echo ' ' . sprintf( __( 'based on the users %1$s value', 'mailster' ), ' <strong>' . ( isset( $datefields[ $autoresponder['uservalue'] ] ) ? $datefields[ $autoresponder['uservalue'] ]['name'] : $autoresponder['uservalue'] ) . '</strong>' );
+									printf( __( 'send %1$s %2$s %3$s', 'mailster' ),
+										'<strong>' . $autoresponder['amount'] . '</strong>',
+										'<strong>' . $time_frame_names[ $autoresponder['unit'] ] . '</strong>',
+										($autoresponder['before_after'] > 0 ? __( 'after', 'mailster' ) : __( 'before', 'mailster' ))
+									);
+
+									echo ' ' . sprintf( __( 'the users %1$s value', 'mailster' ), ' <strong>' . ( isset( $datefields[ $autoresponder['uservalue'] ] ) ? $datefields[ $autoresponder['uservalue'] ]['name'] : $autoresponder['uservalue'] ) . '</strong>' );
+								else :
+									printf( __( 'send every %1$s %2$s', 'mailster' ),
+										'<strong>' . $autoresponder['useramount'] . '</strong>',
+										'<strong>' . $time_frame_names[ $autoresponder['userunit'] ] . '</strong>'
+									);
+									echo ' ' . sprintf( __( 'based on the users %1$s value', 'mailster' ), ' <strong>' . ( isset( $datefields[ $autoresponder['uservalue'] ] ) ? $datefields[ $autoresponder['uservalue'] ]['name'] : $autoresponder['uservalue'] ) . '</strong>' );
+
+								endif;
 
 							} elseif ( 'mailster_autoresponder_followup' == $autoresponder['action'] ) {
 
@@ -1071,7 +1085,7 @@ class MailsterCampaigns {
 
 		if ( ! in_array( $campaign->post_status, array( 'pending', 'auto-draft', 'trash', 'draft' ) ) ) {
 
-			if ( current_user_can( 'duplicate_newsletters' ) && current_user_can( 'duplicate_others_newsletters', $campaign->ID ) ) {
+			if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() == $campaign->post_author ) || current_user_can( 'duplicate_others_newsletters' ) ) {
 				$actions['duplicate'] = '<a class="duplicate" href="?post_type=newsletter&duplicate=' . $campaign->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '" title="' . sprintf( __( 'Duplicate Campaign %s', 'mailster' ), '&quot;' . $campaign->post_title . '&quot;' ) . '">' . __( 'Duplicate', 'mailster' ) . '</a>';
 			}
 
@@ -1169,7 +1183,7 @@ class MailsterCampaigns {
 		wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		wp_localize_script( 'mailster-overview', 'mailsterL10n', array(
-				'finish_campaign' => __( 'Do you really like to finish this campaign?', 'mailster' ),
+			'finish_campaign' => __( 'Do you really like to finish this campaign?', 'mailster' ),
 		) );
 	}
 
@@ -1639,7 +1653,11 @@ class MailsterCampaigns {
 
 				} elseif ( ( isset( $postdata ) && empty( $meta['timestamp'] ) ) || $meta['active'] ) {
 					// save in UTC
-					$localtime = strtotime( $postdata['date'] . ' ' . $postdata['time'] );
+					if ( isset( $postdata['date'] ) && isset( $postdata['time'] ) ) {
+						$localtime = strtotime( $postdata['date'] . ' ' . $postdata['time'] );
+					} else {
+						$localtime = $now;
+					}
 					$meta['timestamp'] = max( $now, $localtime - $timeoffset );
 				}
 
@@ -2020,10 +2038,9 @@ class MailsterCampaigns {
 		kses_remove_filters();
 
 		wp_update_post( array(
-				'ID' => $id,
-				'post_title' => $post->post_title,
-				'post_content' => $post->post_content,
-
+			'ID' => $id,
+			'post_title' => $post->post_title,
+			'post_content' => $post->post_content,
 		) );
 
 		kses_init_filters();
@@ -2065,7 +2082,7 @@ class MailsterCampaigns {
 
 		$post = get_post( $id );
 
-		if ( ! current_user_can( 'duplicate_newsletters' ) || ! current_user_can( 'duplicate_others_newsletters', $post->ID ) ) {
+		if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
 			wp_die( __( 'You are not allowed to duplicate campaigns.', 'mailster' ) );
 		}
 
@@ -4550,7 +4567,7 @@ if ( ! $mailster_revisionnow && isset( $_REQUEST['left'] ) ) {
 
 ?>
 		</h2></th>
-		<td><iframe id="mailster_iframe" src="<?php echo admin_url( 'admin-ajax.php?action=mailster_get_template&id=' . $post->ID . '&revision=' . $mailster_revisionnow . '&template=&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '&editorstyle=0&nocache=' . time() ); ?>" width="50%" height="640" scrolling="auto" frameborder="0"></iframe></td>
+		<td><iframe id="mailster_iframe" src="<?php echo admin_url( 'admin-ajax.php?action=mailster_get_template&id=' . $post->ID . '&revision=' . $mailster_revisionnow . '&template=&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '&editorstyle=0&nocache=' . time() ); ?>" width="50%" height="640" scrolling="auto" frameborder="0" data-no-lazy=""></iframe></td>
 		</tr>
 		<?php
 

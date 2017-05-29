@@ -719,7 +719,7 @@ class MailsterFrontpage {
 			break;
 		}
 
-		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . intval( $height ) . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;"></iframe>';
+		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . intval( $height ) . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
 
 	}
 
@@ -901,7 +901,7 @@ class MailsterFrontpage {
 					'scrolling' => true,
 		), $atts ) );
 
-		return '<iframe class="mailster_frame" src="' . add_query_arg( 'frame', 0, $link ) . '" style="min-width:610px;" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) . '" scrolling="' . ( $scrolling ? 'auto' : 'no' ) ) . '" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;"></iframe>';
+		return '<iframe class="mailster_frame" src="' . add_query_arg( 'frame', 0, $link ) . '" style="min-width:610px;" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) . '" scrolling="' . ( $scrolling ? 'auto' : 'no' ) ) . '" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
 
 	}
 
@@ -966,9 +966,9 @@ class MailsterFrontpage {
 	 */
 	public function newsletter_subscribers( $atts ) {
 		extract( shortcode_atts( array(
-					'formated' => true,
-					'round' => 1,
-					'lists' => null,
+			'formatted' => true,
+			'round' => 1,
+			'lists' => null,
 		), $atts ) );
 
 		$round = max( 1, $round );
@@ -981,7 +981,7 @@ class MailsterFrontpage {
 		}
 
 		$subscribers = ceil( $subscribers / $round ) * $round;
-		if ( $formated ) {
+		if ( $formatted ) {
 			$subscribers = number_format_i18n( $subscribers );
 		}
 
