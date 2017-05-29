@@ -73,11 +73,9 @@
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
-
 iframe[id*="twitter-widget-"] {
 	display: inline;
 }
-
 .mailster-transition{
 	min-height:450px;
 	position: relative;
@@ -88,7 +86,6 @@ iframe[id*="twitter-widget-"] {
 		min-height:150px;
 	}
 }
-
 .mailster-transition .mailster-transition-box {
 	transform: translate(-50%, -50%);
 	top: 45%;
@@ -104,7 +101,6 @@ iframe[id*="twitter-widget-"] {
 	-o-transition: all .25s ease;
 	transition: all .25s ease;
 }
-
 .mailster-transition .mailster-transition-my{
 	-webkit-transform: translateX(100px);
 	-moz-transform: translateX(100px);
