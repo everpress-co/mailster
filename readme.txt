@@ -86,6 +86,7 @@ Xaver Birsak – https://revaxarts.com
 * fixed: status info on user time based auto responder
 * fixed: save settings button not enabled in some cases
 * fixed: duplicating of other campaigns without capabilities
+* fixed: spelling mistakes
 * improved: html tags in custom field names
 * improved: compatibility with caching plugins
 * improved: excerpts are now generated if not defined via more tag or explicit

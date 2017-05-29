@@ -966,9 +966,9 @@ class MailsterFrontpage {
 	 */
 	public function newsletter_subscribers( $atts ) {
 		extract( shortcode_atts( array(
-					'formated' => true,
-					'round' => 1,
-					'lists' => null,
+			'formatted' => true,
+			'round' => 1,
+			'lists' => null,
 		), $atts ) );
 
 		$round = max( 1, $round );
@@ -981,7 +981,7 @@ class MailsterFrontpage {
 		}
 
 		$subscribers = ceil( $subscribers / $round ) * $round;
-		if ( $formated ) {
+		if ( $formatted ) {
 			$subscribers = number_format_i18n( $subscribers );
 		}
 

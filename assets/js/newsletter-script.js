@@ -658,7 +658,7 @@ jQuery(document).ready(function ($) {
 
 					_ajax('get_totals', data, function (response) {
 						_enable();
-						total.removeClass('loading').html(response.totalformated);
+						total.removeClass('loading').html(response.totalformatted);
 
 					}, function (jqXHR, textStatus, errorThrown) {
 						_enable();

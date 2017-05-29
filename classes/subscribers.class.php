@@ -1519,12 +1519,12 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $formated (optional)
-	 * @param unknown $round    (optional)
-	 * @param unknown $status   (optional)
+	 * @param unknown $formatted (optional)
+	 * @param unknown $round     (optional)
+	 * @param unknown $status    (optional)
 	 * @return unknown
 	 */
-	public function get_count( $formated = false, $round = 1, $status = 1 ) {
+	public function get_count( $formatted = false, $round = 1, $status = 1 ) {
 
 		$count = $this->get_count_by_status( $status );
 
@@ -1532,7 +1532,7 @@ class MailsterSubscribers {
 			$count = ceil( $count / $round ) * $round;
 		}
 
-		if ( 'kilo' === $formated ) {
+		if ( 'kilo' === $formatted ) {
 			if ( $count >= 1000000 ) {
 				$count = round( $count / 1000000, 1 ) . 'M';
 			} elseif ( $count >= 10000 ) {
@@ -1540,7 +1540,7 @@ class MailsterSubscribers {
 			} else {
 				$count = number_format_i18n( $count );
 			}
-		} elseif ( $formated ) {
+		} elseif ( $formatted ) {
 			$count = number_format_i18n( $count );
 		}
 

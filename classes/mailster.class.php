@@ -187,6 +187,8 @@ class Mailster {
 			add_filter( 'wp_import_post_data_processed', array( &$this, 'import_post_data' ), 10, 2 );
 			add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
+			add_filter( 'admin_page_access_denied', array( &$this, 'maybe_redirect_special_pages' ) );
+
 			// frontpage stuff (!is_admin())
 		} else {
 
@@ -339,6 +341,35 @@ class Mailster {
 			add_action( 'shutdown', array( &$this, 'save_admin_notices' ) );
 
 		}
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function maybe_redirect_special_pages() {
+
+		global $pagenow;
+
+		if ( 'edit.php' != $pagenow ) {
+			return;
+		}
+		if ( is_network_admin() ) {
+			return;
+		}
+		if ( ! isset( $_GET['page'] ) ) {
+			return;
+		}
+		$page = $_GET['page'];
+		if ( ! in_array( $page, array( 'mailster_update', 'mailster_welcome', 'mailster_setup' ) ) ) {
+			return;
+		}
+
+		wp_redirect( 'admin.php?page=' . $page, 302 );
+		exit;
 
 	}
 
@@ -1032,10 +1063,9 @@ class Mailster {
 				update_option( 'mailster', time() );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
-			}
-
-			if ( ! is_network_admin() ) {
-				add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
+				if ( ! is_network_admin() ) {
+					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
+				}
 			}
 		}
 
@@ -1811,17 +1841,22 @@ class Mailster {
 			$verified = 'no';
 			$recheck = DAY_IN_SECONDS;
 
-			$result = UpdateCenterPlugin::verify( MAILSTER_SLUG );
-			if ( ! is_wp_error( $result ) ) {
-				$verified = 'yes';
-			} else {
-				switch ( $result->get_error_code() ) {
-					case 500: // Internal Server Error
-					case 503: // Service Unavailable
-					case 'http_err':
-						$recheck = 900;
-						$verified = $old;
-						break;
+			$license_email = get_option( 'mailster_email' );
+			$license_user = get_option( 'mailster_username' );
+
+			if ( $license_email && $license_user ) {
+				$result = UpdateCenterPlugin::verify( MAILSTER_SLUG );
+				if ( ! is_wp_error( $result ) ) {
+					$verified = 'yes';
+				} else {
+					switch ( $result->get_error_code() ) {
+						case 500: // Internal Server Error
+						case 503: // Service Unavailable
+						case 'http_err':
+							$recheck = 900;
+							$verified = $old;
+							break;
+					}
 				}
 			}
 
