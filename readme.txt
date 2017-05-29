@@ -82,6 +82,8 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
+= Version 2.2.6 =
+
 * fixed: checkboxes were always checked by default
 * fixed: status info on user time based auto responder
 * fixed: save settings button not enabled in some cases
