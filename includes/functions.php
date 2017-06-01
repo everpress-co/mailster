@@ -963,7 +963,7 @@ function mailster_require_filesystem( $redirect = '', $method = '', $showform = 
 	global $wp_filesystem;
 
 	// force direct method
-	add_filter( 'filesystem_method', create_function( '$a', 'return "direct";' ) );
+	add_filter( 'filesystem_method', function(){ return 'direct'; } );
 
 	if ( ! function_exists( 'request_filesystem_credentials' ) ) {
 

@@ -771,7 +771,7 @@ class MailsterManage {
 
 			try {
 
-				add_filter( 'filesystem_method', create_function( '$a', 'return "direct";' ) );
+				add_filter( 'filesystem_method', function(){ return 'direct'; } );
 				mailster_require_filesystem();
 
 				if ( ! ( $return['success'] = $wp_filesystem->put_contents( $filename, '', FS_CHMOD_FILE ) ) ) {
@@ -1070,7 +1070,7 @@ class MailsterManage {
 			$return['success'] = true;
 			$return['bytes'] = $bytes;
 
-			if ( $bytes === 0 ) {
+			if ( ! $output ) {
 
 				$return['finished'] = true;
 

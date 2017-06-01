@@ -1830,7 +1830,9 @@ class Mailster {
 	public function is_verified( $force = false ) {
 
 		$license = get_option( 'mailster_license' );
-		if ( ! $license ) {
+		$license_email = get_option( 'mailster_email' );
+		$license_user = get_option( 'mailster_username' );
+		if ( ! $license || ! $license_email || ! $license_user ) {
 			return false;
 		}
 
@@ -1841,22 +1843,17 @@ class Mailster {
 			$verified = 'no';
 			$recheck = DAY_IN_SECONDS;
 
-			$license_email = get_option( 'mailster_email' );
-			$license_user = get_option( 'mailster_username' );
-
-			if ( $license_email && $license_user ) {
-				$result = UpdateCenterPlugin::verify( MAILSTER_SLUG );
-				if ( ! is_wp_error( $result ) ) {
-					$verified = 'yes';
-				} else {
-					switch ( $result->get_error_code() ) {
-						case 500: // Internal Server Error
-						case 503: // Service Unavailable
-						case 'http_err':
-							$recheck = 900;
-							$verified = $old;
-							break;
-					}
+			$result = UpdateCenterPlugin::verify( MAILSTER_SLUG );
+			if ( ! is_wp_error( $result ) ) {
+				$verified = 'yes';
+			} else {
+				switch ( $result->get_error_code() ) {
+					case 500: // Internal Server Error
+					case 503: // Service Unavailable
+					case 'http_err':
+						$recheck = 900;
+						$verified = $old;
+						break;
 				}
 			}
 

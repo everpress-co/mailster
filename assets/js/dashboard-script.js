@@ -95,8 +95,14 @@ jQuery(document).ready(function ($) {
 
 
 	$(document)
-		.on('verified.mailster', function () {
+		.on('verified.mailster', function (event, purchasecode, username, email) {
+
+			$('.mailster-purchasecode').html(purchasecode);
+			$('.mailster-username').html(username);
+			$('.mailster-email').html(email);
+
 			$('#mailster-mb-mailster').addClass('verified');
+
 			$('#welcome-panel').delay(2500).fadeTo(400, 0, function () {
 				$('#welcome-panel').slideUp(400);
 			})

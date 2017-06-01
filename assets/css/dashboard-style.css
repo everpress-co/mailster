@@ -86,10 +86,10 @@
 }
 .mailster-dashboard dl dd{
 	margin-left: 55px;
-	color: #aaa;
-}
-.mailster-dashboard dl dd span.version{
 	color:#23282d;
+}
+.mailster-dashboard dl dd span.lighter{
+	color: #aaa;
 }
 .postbox-container{
 }

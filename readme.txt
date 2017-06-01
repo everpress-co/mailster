@@ -2,7 +2,7 @@
 Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
-Tested up to: 4.7.5
+Tested up to: 4.8
 Stable tag: 2.2.7
 Author: revaxarts
 Author URI: https://mailster.co
@@ -83,6 +83,12 @@ Xaver Birsak – https://revaxarts.com
 == Changelog ==
 
 = Version 2.2.7 =
+
+* fixed: exporting subscribers
+* fixed: strip slashes on list descriptions
+* improved: display Mailster username on Dashboard
+* improved: removed usage of 'create_function' for PHP 7.2
+* change: default values on plugin activation
 
 = Version 2.2.6 =
 

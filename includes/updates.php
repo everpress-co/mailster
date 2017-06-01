@@ -502,7 +502,12 @@ if ( $old_version ) {
 		case '2.2.3':
 		case '2.2.4':
 
-			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_templates', 'mailster_cron_lasthit', 'mailster_username', 'mailster_email')" );
+			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_templates', 'mailster_cron_lasthit')" );
+
+		case '2.2.5':
+		case '2.2.6':
+
+			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'yes' WHERE option_name IN ('mailster_username', 'mailster_email')" );
 
 		default:
 
