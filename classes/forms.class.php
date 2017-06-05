@@ -1206,15 +1206,14 @@ class MailsterForms {
 	 */
 	public function on_activate( $new ) {
 
-		// create form if non exists
-		$forms = $this->get_all();
-		if ( empty( $forms ) ) {
+		if ( $new ) {
 			$form_id = $this->add( array(
 				'name' => __( 'Default Form', 'mailster' ),
 				'submit' => __( 'Subscribe', 'mailster' ),
 			) );
 			$this->update_field( $form_id, 'email', __( 'Email', 'mailster' ) );
 			mailster_update_option( 'profile_form', $form_id );
+			$this->assign_lists( $form_id, 1 );
 		}
 
 	}

@@ -250,7 +250,11 @@ class MailsterManage {
 		}
 
 		$return['memoryusage'] = size_format( memory_get_peak_usage( true ), 2 );
-		update_option( 'mailster_bulk_import', $bulkimport );
+		if ( get_option( 'mailster_bulk_import' ) !== false ) {
+			update_option( 'mailster_bulk_import', $bulkimport );
+		} else {
+			add_option( 'mailster_bulk_import', $bulkimport, '', 'no' );
+		}
 
 		if ( isset( $return ) ) {
 
@@ -480,18 +484,20 @@ class MailsterManage {
 
 		$option_list_ids = array();
 
-		foreach ( (array) $lists as $list ) {
+		if ( isset( $lists ) ) {
+			foreach ( (array) $lists as $list ) {
 
-			$list_id = mailster( 'lists' )->get_by_name( $list, 'ID' );
+				$list_id = mailster( 'lists' )->get_by_name( $list, 'ID' );
 
-			if ( ! $list_id ) {
-				$list_id = mailster( 'lists' )->add( $list );
-				if ( is_wp_error( $list_id ) ) {
-					continue;
+				if ( ! $list_id ) {
+					$list_id = mailster( 'lists' )->add( $list );
+					if ( is_wp_error( $list_id ) ) {
+						continue;
+					}
 				}
-			}
 
-			$option_list_ids[] = $list_id;
+				$option_list_ids[] = $list_id;
+			}
 		}
 
 		$parts_at_once = $bulkdata['performance'] ? 2 : 8;
@@ -707,8 +713,6 @@ class MailsterManage {
 
 			$return['wpusers'] = mailster( 'subscribers' )->wp_id();
 
-			mailster()->optimize_tables();
-
 		} else {
 
 			update_option( 'mailster_bulk_import', $bulkdata );
@@ -767,7 +771,7 @@ class MailsterManage {
 
 			try {
 
-				add_filter( 'filesystem_method', create_function( '$a', 'return "direct";' ) );
+				add_filter( 'filesystem_method', function(){ return 'direct'; } );
 				mailster_require_filesystem();
 
 				if ( ! ( $return['success'] = $wp_filesystem->put_contents( $filename, '', FS_CHMOD_FILE ) ) ) {
@@ -1059,26 +1063,22 @@ class MailsterManage {
 
 		try {
 
-			$bytes = file_put_contents( $filename, $output, FILE_APPEND );
-
-			$return['total'] = size_format( filesize( $filename ), 2 );
-
-			$return['success'] = true;
-			$return['bytes'] = $bytes;
-
-			if ( $bytes === 0 ) {
-
+			if ( $output ) {
+				mailster( 'helper' )->file_put_contents( $filename, $output, 'a' );
+				$return['success'] = true;
+			} else {
 				$return['finished'] = true;
 
-				// finished
 				$folder = MAILSTER_UPLOAD_DIR;
 
-				$finalname = dirname( $filename ) . '/mailster_export_' . date( 'Y-m-d-H-i-s' ) . '.' . $outputformat;
+				$finalname = $folder . '/mailster_export_' . date( 'Y-m-d-H-i-s' ) . '.' . $outputformat;
 				$return['success'] = copy( $filename, $finalname );
 				@unlink( $filename );
 				$return['filename'] = admin_url( 'admin-ajax.php?action=mailster_download_export_file&file=' . basename( $finalname ) . '&format=' . $outputformat . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) );
-
 			}
+
+			$return['total'] = size_format( filesize( $filename ), 2 );
+
 		} catch ( Exception $e ) {
 
 			$return['success'] = false;
@@ -1194,7 +1194,7 @@ class MailsterManage {
 
 		if ( $return['success'] ) {
 
-			mailster()->optimize_tables();
+			mailster()->optimize_tables( array( 'subscribers', 'lists' ) );
 			$return['msg'] = sprintf( __( '%s subscribers removed', 'mailster' ), number_format_i18n( $count ) );
 
 		} else {

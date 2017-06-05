@@ -65,7 +65,7 @@ if ( ! isset( $_GET['more'] ) ) :
 	<br class="clear">
 </li>
 </ul>
-<h1><?php esc_html_e( 'Templates', 'mailster' ) ?> <a href="edit.php?post_type=newsletter&page=mailster_templates&more" class="add-new-h2"> <?php esc_html_e( 'More Templates', 'mailster' );?> </a></h1>
+<h1><?php esc_html_e( 'Templates', 'mailster' ) ?> <a class="add-new-h2 upload-template"> <?php esc_html_e( 'Add New', 'mailster' );?> </a></h1>
 <?php
 wp_nonce_field( 'mailster_nonce' );
 if ( $notice ) {
@@ -73,6 +73,7 @@ if ( $notice ) {
 <div class="updated below-h2"><p><?php echo $note ?></p></div>
 <?php }
 }?>
+<div class="upload-field"><?php $t->media_upload_form();?></div>
 <ul id="installed-templates">
 <?php
 $i = 0;
@@ -95,14 +96,16 @@ foreach ( $templates as $slug => $data ) {
 }
 
 if ( current_user_can( 'mailster_upload_templates' ) ) : ?>
-	<li class="upload-field"><?php $t->media_upload_form();?></li>
+	<li class="mailster-box more-templates-field">
+		<div><a href="edit.php?post_type=newsletter&page=mailster_templates&more" class="button button-primary button-hero"> <?php esc_html_e( 'More Templates', 'mailster' );?></a></div>
+	</li>
 <?php endif; ?>
 
 </ul>
 
 <?php else : ?>
 
-<h1><?php esc_html_e( 'More Templates', 'mailster' ) ?> <a href="edit.php?post_type=newsletter&page=mailster_templates" class="add-new-h2"> <?php esc_html_e( 'Back to Overview', 'mailster' );?> </a></h1>
+<h1><?php esc_html_e( 'More Templates', 'mailster' ) ?></h1>
 
 <ul id="available-templates">
 <?php
@@ -113,16 +116,22 @@ if ( empty( $mailster_templates ) ) :
 
 else :
 
+	?>
+	<li class="mailster-box more-templates-field">
+		<div><a href="edit.php?post_type=newsletter&page=mailster_templates" class="button button-primary button-hero"> <?php esc_html_e( 'Back to Overview', 'mailster' );?></a></div>
+	</li>
+<?php
+
 	$existing = @array_intersect_assoc( $mailster_templates, $templates );
 	$others = @array_diff_assoc( $mailster_templates, $existing );
 
 	$mailster_templates = $existing + $others;
 
-	foreach ( $mailster_templates as $slug => $data ) {
+foreach ( $mailster_templates as $slug => $data ) {
 
-		include MAILSTER_DIR . 'views/templates/available-template.php';
+	include MAILSTER_DIR . 'views/templates/available-template.php';
 
-	}
+}
 
 endif;
 
@@ -131,7 +140,7 @@ endif;
 <?php endif; ?>
 <div id="thickboxbox">
 	<ul class="thickbox-filelist"></ul>
-	<iframe class="thickbox-iframe" src=""></iframe>
+	<iframe class="thickbox-iframe" src="" data-no-lazy=""></iframe>
 </div>
 <div id="ajax-response"></div>
 <br class="clear">

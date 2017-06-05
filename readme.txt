@@ -2,8 +2,8 @@
 Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
-Tested up to: 4.7.3
-Stable tag: 2.2.4
+Tested up to: 4.8
+Stable tag: 2.2.7
 Author: revaxarts
 Author URI: https://mailster.co
 
@@ -82,10 +82,48 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
+= Version 2.2.7 =
+
+* fixed: exporting subscribers
+* fixed: strip slashes on list descriptions
+* fixed: SQL issue when un assign lists from subscribers
+* improved: display Mailster username on Dashboard
+* improved: removed usage of 'create_function' for PHP 7.2
+* improved: better sanitation and checks on date fields
+* change: default values on plugin activation
+
+= Version 2.2.6 =
+
+* fixed: checkboxes were always checked by default
+* fixed: status info on user time based auto responder
+* fixed: save settings button not enabled in some cases
+* fixed: duplicating of other campaigns without capabilities
+* fixed: spelling mistakes
+* improved: html tags in custom field names
+* improved: compatibility with caching plugins
+* improved: excerpts are now generated if not defined via more tag or explicit
+* improved: loading fall back if notification.html is missing
+* improved: removed redundant white spaces in plain text versions
+* improved: links in plain text version are now grouped together below the content
+* improved: compatibility with third party templates
+* improved: CSS rules for RTL languages
+* added: 'mailster_get_last_post_args' filter to alter post arguments
+* added: month to user time based autoresponder time frames
+* updated: templates page
+
+= Version 2.2.5 =
+
 * change: Signup date checkbox on Mange Subscriber Page now checked by default
 * fixed: Thickbox dimensions on form detail page
 * fixed: selecting static posts working again
 * fixed: issue on recipients detail page since last update
+* fixed: Newsletter sign up widget didn't store empty title
+* fixed: wrong excerpt on web version with dynamic tags in some cases
+* updated: PHPMailer to version 5.2.23
+* improved: Cron tab commands
+* improved: Cron now supports secret via a header
+* improved: URL rewrite support option on settings
+* overall improvements
 
 = Version 2.2.4 =
 

@@ -1,6 +1,6 @@
 <?php
 
-// Version 2.5
+// Version 2.6
 // UpdateCenterPlugin Class
 if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
@@ -332,13 +332,18 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 					continue;
 				}
 
+				$output = array();
+
 				$nonce = wp_create_nonce( 'upgrade-plugin_' . $data->plugin );
 				foreach ( $notices as $notice ) {
-					echo '<div class="update-nag">' . str_replace(
+					$output[] = str_replace(
 						'%%updateurl%%',
 						admin_url( 'update.php?action=upgrade-plugin&plugin=' . urlencode( $data->plugin ) . '&_wpnonce=' . $nonce ),
-					$notice . '</div>' );
+					$notice);
 				}
+
+				echo '<div class="update-nag update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
+
 			}
 
 		}
@@ -768,6 +773,7 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 					'x-ip' => isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : null,
 				),
 				'body' => $body,
+				'timeout' => 20,
 			);
 
 			$response = wp_remote_post( $url, $args );

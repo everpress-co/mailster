@@ -95,8 +95,14 @@ jQuery(document).ready(function ($) {
 
 
 	$(document)
-		.on('verified.mailster', function () {
+		.on('verified.mailster', function (event, purchasecode, username, email) {
+
+			$('.mailster-purchasecode').html(purchasecode);
+			$('.mailster-username').html(username);
+			$('.mailster-email').html(email);
+
 			$('#mailster-mb-mailster').addClass('verified');
+
 			$('#welcome-panel').delay(2500).fadeTo(400, 0, function () {
 				$('#welcome-panel').slideUp(400);
 			})
@@ -186,7 +192,7 @@ jQuery(document).ready(function ($) {
 					link.addClass('status-' + data.status);
 				}
 
-				box.find('.stats-total').html(data.sent_formated);
+				box.find('.stats-total').html(data.sent_formatted);
 				box.find('.stats-open').data('easyPieChart').update(data.openrate * 100);
 				box.find('.stats-clicks').data('easyPieChart').update(data.clickrate * 100);
 				box.find('.stats-unsubscribes').data('easyPieChart').update(data.unsubscriberate * 100);

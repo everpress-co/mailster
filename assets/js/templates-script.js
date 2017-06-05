@@ -17,11 +17,15 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
+	$('.upload-template').on('click', function () {
+		$('.upload-field').show();
+	})
+
 	$('#mailster_templates')
 		.on('click', '.edit', function () {
 			var $this = $(this),
-				$container = $this.closest('.available-template'),
-				$templates = $('.available-template'),
+				$container = $this.closest('.mailster-box'),
+				$templates = $('.mailster-box'),
 				href = $this.attr('href'),
 				slug = $this.data('slug');
 
@@ -77,7 +81,7 @@ jQuery(document).ready(function ($) {
 		})
 		.on('click', 'a.cancel', function () {
 			templateeditor.slideUp();
-			$('.available-template').removeClass('edit');
+			$('.mailster-box').removeClass('edit');
 			return false;
 		})
 		.on('click', 'button.save, button.saveas', function () {
@@ -178,7 +182,7 @@ jQuery(document).ready(function ($) {
 		.on('click', 'a.update', function () {
 
 			if (confirm(mailsterL10n.update_note)) {
-				$(this).closest('.available-template').addClass('loading');
+				$(this).closest('.mailster-box').addClass('loading');
 				return true;
 			}
 			return false;
@@ -186,14 +190,14 @@ jQuery(document).ready(function ($) {
 		.on('click', 'a.deletion', function () {
 
 			if (confirm(sprintf(mailsterL10n.confirm_delete, $(this).data('name')))) {
-				$(this).closest('.available-template').addClass('loading');
+				$(this).closest('.mailster-box').addClass('loading');
 				return true;
 			}
 			return false;
 		})
 		.on('click', 'a.download, a.activatelink, .save-license', function () {
 
-			$(this).closest('.available-template').addClass('loading');
+			$(this).closest('.mailster-box').addClass('loading');
 		});
 
 

@@ -6,8 +6,6 @@
  * @param unknown $subclass (optional)
  * @return unknown
  */
-
-
 function mailster( $subclass = null ) {
 	global $mailster;
 
@@ -690,15 +688,22 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 	}
 
 	$args = wp_parse_args( $args, array(
-			'text' => '',
-			'type' => 'success',
-			'once' => false,
-			'key' => uniqid(),
-			'cb' => null,
-			'cap' => $capability,
+		'text' => '',
+		'type' => 'success',
+		'once' => false,
+		'key' => uniqid(),
+		'cb' => null,
+		'cap' => $capability,
 	) );
 
-	$mailster_notices = get_option( 'mailster_notices', array() );
+	if ( empty( $args['key'] ) ) {
+		 $args['key'] = uniqid();
+	}
+
+	$mailster_notices = get_option( 'mailster_notices' );
+	if ( ! is_array( $mailster_notices ) ) {
+		$mailster_notices = array();
+	}
 
 	$mailster_notices[ $args['key'] ] = array(
 		'text' => $args['text'],
@@ -963,7 +968,7 @@ function mailster_require_filesystem( $redirect = '', $method = '', $showform = 
 	global $wp_filesystem;
 
 	// force direct method
-	add_filter( 'filesystem_method', create_function( '$a', 'return "direct";' ) );
+	add_filter( 'filesystem_method', function(){ return 'direct'; } );
 
 	if ( ! function_exists( 'request_filesystem_credentials' ) ) {
 

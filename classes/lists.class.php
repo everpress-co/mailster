@@ -187,7 +187,7 @@ class MailsterLists {
 				$empty = $this->get_empty();
 
 				// sanitize input;
-				$entry = (object) ( array_intersect_key( $_POST['mailster_data'], (array) $empty ) );
+				$entry = (object) ( array_intersect_key( stripslashes_deep( $_POST['mailster_data'] ), (array) $empty ) );
 				$list_id = isset( $urlparams['new'] ) ? $this->add( $entry ) : $this->update( $entry );
 
 				if ( is_wp_error( $list_id ) ) {
@@ -525,7 +525,7 @@ class MailsterLists {
 		$success = true;
 
 		foreach ( $chunks as $chunk ) {
-			$sql = "DELETE FROM {$wpdb->prefix}mailster_lists_subscribers WHERE subscriber_id IN";
+			$sql = "DELETE FROM {$wpdb->prefix}mailster_lists_subscribers WHERE";
 
 			$sql .= ' subscriber_id IN (' . implode( ',', $chunk ) . ')';
 
@@ -1256,6 +1256,12 @@ class MailsterLists {
 	 * @param unknown $new
 	 */
 	public function on_activate( $new ) {
+
+		if ( $new ) {
+			$this->add( array(
+				'name' => __( 'Default List', 'mailster' ),
+			), false, get_current_user_id() );
+		}
 
 	}
 

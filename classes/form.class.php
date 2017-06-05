@@ -347,7 +347,7 @@ class MailsterForm {
 						case 'checkbox':
 
 							$fields[ $field->field_id ] .= '<label for="mailster-' . $field->field_id . '-' . $this->ID . '">';
-							$fields[ $field->field_id ] .= '<input type="hidden" name="' . $field->field_id . '" value="0"><input id="mailster-' . $field->field_id . '-' . $this->ID . '" name="' . $field->field_id . '" type="checkbox" value="1" ' . checked( $value || ( ! $value && isset( $data['default'] ) ), true, false ) . ' class="mailster-' . $field->field_id . '' . ( $required ? ' mailster-required' : '' ) . '" aria-required="' . ( $required ? 'true' : 'false' ) . '" aria-label="' . $esc_label . '"> ';
+							$fields[ $field->field_id ] .= '<input type="hidden" name="' . $field->field_id . '" value="0"><input id="mailster-' . $field->field_id . '-' . $this->ID . '" name="' . $field->field_id . '" type="checkbox" value="1" ' . checked( $value || ( ! $value && isset( $data['default'] ) && $data['default']), true, false ) . ' class="mailster-' . $field->field_id . '' . ( $required ? ' mailster-required' : '' ) . '" aria-required="' . ( $required ? 'true' : 'false' ) . '" aria-label="' . $esc_label . '"> ';
 							$fields[ $field->field_id ] .= ' ' . $label;
 							if ( $required && $asterisk ) {
 								$fields[ $field->field_id ] .= ' <span class="mailster-required">*</span>';
@@ -756,7 +756,26 @@ class MailsterForm {
 
 			$value = isset( $formdata[ $field_id ] ) ? $formdata[ $field_id ] : '';
 
-			$this->object['userdata'][ $field_id ] = ( $type == 'textarea' ? stripslashes( $value ) : sanitize_text_field( $value ) );
+			switch ( $type ) {
+				case 'textarea':
+					$value = stripslashes( $value );
+					break;
+				case 'date':
+					$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
+					if ( false !== $timestamp ) {
+						$value = date( 'Y-m-d', $timestamp );
+					} elseif ( is_numeric( $value ) ) {
+						$value = date( 'Y-m-d', $value );
+					} else {
+						$value = '';
+					}
+					break;
+				default:
+					$value = sanitize_text_field( $value );
+					break;
+			}
+
+			$this->object['userdata'][ $field_id ] = $value;
 
 			if ( ( $field_id == 'email' && ! mailster_is_email( trim( $this->object['userdata'][ $field_id ] ) ) )
 				|| ( ! $this->object['userdata'][ $field_id ] && in_array( $field_id, $this->form->required ) ) ) {

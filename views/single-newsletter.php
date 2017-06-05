@@ -41,8 +41,8 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 	<meta property="og:image:height" content="<?php echo intval( $image[2] ) ?>" />
 <?php endif; ?>
 
-	<meta name="twitter:card" content="<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_card',apply_filters( 'mailster_frontpage_twitter_card', 'summary' ) ) ); ?>"/>
-	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_username',apply_filters( 'mailster_frontpage_twitter_username', 'mailsterapp' ) ) ); ?>"/>
+	<meta name="twitter:card" content="<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_card', apply_filters( 'mailster_frontpage_twitter_card', 'summary' ) ) ); ?>"/>
+	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_username', apply_filters( 'mailster_frontpage_twitter_username', 'mailsterapp' ) ) ); ?>"/>
 	<meta name="twitter:title" content="<?php echo esc_attr( $title ) ?>" />
 	<meta name="twitter:description" content="<?php echo esc_attr( $description ); ?>"/>
 
@@ -75,43 +75,32 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 ?>
 			<li class="share header">
 				<a><?php esc_html_e( 'Share', 'mailster' ) ?></a>
-				<div class="sharebox" <?php if ( $is_forward ) {
-					echo ' style="display:block"';
-}
-?>>
+				<div class="sharebox" <?php if ( $is_forward ) { echo ' style="display:block"'; } ?>>
 					<div class="sharebox-inner">
 					<ul class="sharebox-panel">
 				<?php if ( $services = mailster_option( 'share_services' ) ) : ?>
-						<li class="sharebox-panel-option <?php if ( ! $is_forward ) {
-							echo ' active';
-}
-?>">
+						<li class="sharebox-panel-option <?php if ( ! $is_forward ) { echo ' active'; } ?>">
 							<h4><?php printf( __( 'Share this via %s', 'mailster' ), '&hellip;' ) ?></h4>
 							<div>
 								<ul class="social-services">
+								<?php foreach ( $services as $service ) : ?>
 								<?php
-								foreach ( $services as $service ) {
-									if ( ! isset( $social_services[ $service ] ) ) {
-										continue;
-									}
-
-																?>
-																	<li>
-																	<a title="<?php printf( __( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ) ?>" class="<?php echo $service ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? intval( $social_services[ $service ]['width'] ) : 650 ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? intval( $social_services[ $service ]['height'] ) : 405 ?>" >
-									<?php echo $social_services[ $service ]['name'] ?>
-									</a></li>
-									<?php
+								if ( ! isset( $social_services[ $service ] ) ) {
+									continue;
 								}
-?>
+
+								?><li>
+									<a title="<?php printf( __( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ) ?>" class="<?php echo $service ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? intval( $social_services[ $service ]['width'] ) : 650 ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? intval( $social_services[ $service ]['height'] ) : 405 ?>" >
+									<?php echo esc_html( $social_services[ $service ]['name'] ) ?>
+									</a>
+								</li>
+								<?php endforeach; ?>
 								</ul>
 							</div>
 						</li>
 				<?php endif; ?>
-					<li class="sharebox-panel-option <?php if ( $is_forward ) {
-						echo ' active';
-}
-?>">
-						<h4><?php printf( __( 'Share with %s', 'mailster' ), __( 'email', 'mailster' ) ); ?></h4>
+					<li class="sharebox-panel-option <?php if ( $is_forward ) { echo ' active'; } ?>">
+						<h4><?php printf( esc_html__( 'Share with %s', 'mailster' ), esc_html__( 'email', 'mailster' ) ); ?></h4>
 						<div>
 							<form id="emailform" novalidate>
 								<p>
@@ -136,14 +125,14 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 								</p>
 								<p class="info"><?php esc_html_e( 'We respect your privacy. Nothing you enter on this page is saved by anyone', 'mailster' ) ?></p>
 								<?php wp_nonce_field( $permalink );?>
-								<input type="hidden" name="url" id="url" value="<?php echo $permalink ?>">
+								<input type="hidden" name="url" id="url" value="<?php echo esc_attr( $permalink ) ?>">
 							</form>
 						</div>
 					</li>
 					<li class="sharebox-panel-option">
 						<h4><?php esc_html_e( 'Share the link', 'mailster' ) ?></h4>
 						<div>
-					<input type="text" value="<?php echo $permalink ?>" onclick="this.select()">
+					<input type="text" value="<?php echo esc_attr( $permalink ) ?>" onclick="this.select()">
 						</div>
 					</li>
 				</ul>
@@ -153,7 +142,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 <?php endif; ?>
 	</ul>
 	<div id="iframe-wrap">
-		<iframe src="<?php echo add_query_arg( 'frame', 0, $permalink ) ?>"></iframe>
+		<iframe src="<?php echo add_query_arg( 'frame', 0, $permalink ) ?>" data-no-lazy=""></iframe>
 	</div>
 
 	<?php do_action( 'mailster_wpfooter' ); ?>

@@ -675,7 +675,7 @@ class MailsterPlaceholder {
 						}
 
 						$what = 'meta';
-						$extra = $metavalue;
+						$extra = $metakey;
 
 					} elseif ( 0 === strpos( $what, 'category[' ) ) {
 						preg_match( '#category\[(.*)\]#i', $what, $category );
