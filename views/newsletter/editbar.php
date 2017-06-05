@@ -162,7 +162,7 @@
 			<div class="imagecontentwrap">
 				<div class="left">
 					<p><input type="number" class="imagewidth">&times;<input type="number" class="imageheight">px
-					<label class="imagecroplabel"><input type="checkbox" class="imagecrop mailster-icon"></label>
+					<label class="imagecroplabel" title="<?php esc_attr_e( 'Toggle Crop', 'mailster' ) ?>"><input type="checkbox" class="imagecrop"><span class="mailster-icon"></span></label>
 					</p>
 					<div class="imagewrap">
 					<img src="" alt="" class="imagepreview">
@@ -170,12 +170,12 @@
 				</div>
 				<div class="right">
 					<p>
-						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'search for images', 'mailster' );?>..." ></label>
+						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'search for images', 'mailster' );?>&hellip;" ></label>
 					</p>
 					<div class="imagelist">
 					</div>
 					<p>
-						<a class="button button-small add_image"><?php ( ( ! function_exists( 'wp_enqueue_media' ) ) ? esc_html_e( 'Upload', 'mailster' ) : esc_html_e( 'Media Manager', 'mailster' ) ) ?></a>
+						<a class="button button-small add_image"><?php esc_html_e( 'Media Manager', 'mailster' ) ?></a>
 						<a class="button button-small reload"><?php esc_html_e( 'Reload', 'mailster' ) ?></a>
 						<a class="button button-small add_image_url"><?php esc_html_e( 'Insert from URL', 'mailster' ) ?></a>
 					</p>

@@ -2681,8 +2681,6 @@ jQuery(document).ready(function ($) {
 				current.asp = _this.data('asp') || (current.width / current.height);
 
 				currentimage.asp = current.asp;
-
-
 				loader(false);
 
 				if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / current.asp));
@@ -2703,6 +2701,7 @@ jQuery(document).ready(function ($) {
 
 		function adjustImagePreview() {
 			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val()))));
+
 			imagepreview.css({
 				'clip': 'rect(' + (x) + 'px,' + (current.width) + 'px,' + (current.height - x) + 'px,0px)',
 				'margin-top': (-1 * x) + 'px'
@@ -3161,7 +3160,7 @@ jQuery(document).ready(function ($) {
 				if (response.success) {
 					itemcount = response.itemcount;
 					displayPosts(response.html, true);
-					assetslist.find('.selected').trigger('click');
+					//assetslist.find('.selected').trigger('click');
 					if (response.rssinfo) {
 						$('#rss_more').slideDown(200);
 						$('#rss_input').slideUp(200);

@@ -763,34 +763,33 @@ textarea#content, textarea#excerpt {
 	text-align:center;
 }
 #editbar div.type.img .imagecroplabel {
-	border: 1px dotted #aaa;
-	border-top: 0;
 	display: block;
+	text-align: center;
+	overflow: hidden;
+}
+#editbar div.type.img .imagecroplabel input {
+	display: none;
+}
+#editbar div.type.img .imagecroplabel span {
+	display: inline-block;
+	border: 1px dotted #555;
+	border-top: 0;
 	width: 50%;
 	margin: -5px auto 0;
 	height: 17px;
-	text-align: center;
 	border-radius: 5px;
 }
-#editbar div.type.img .imagecroplabel input {
-	visibility: hidden;
-}
-#editbar div.type.img .imagecroplabel input:focus {
-	border-color: none;
-	-webkit-box-shadow: none;
-	box-shadow: none;
-}
-#editbar div.type.img .imagecroplabel input:before {
+#editbar div.type.img .imagecroplabel span:before {
 	visibility: visible;
 	content: '\e835';
 	font-size: 18px;
-	margin: 7px 1px;
+	margin-top: 10px;
 }
-#editbar div.type.img .imagecroplabel input:checked:before {
-	visibility: visible;
+#editbar div.type.img .imagecroplabel :checked + span:before {
 	content: '\f127';
-	font-size: 18px;
-	margin: 7px 2px;
+}
+#editbar div.type.img .imagecroplabel :checked + span {
+	border-color: #ccc;
 }
 #editbar div.type.img .right {
 	-webkit-transition:margin-right .25s ease;
