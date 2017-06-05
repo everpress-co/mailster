@@ -525,7 +525,7 @@ class MailsterLists {
 		$success = true;
 
 		foreach ( $chunks as $chunk ) {
-			$sql = "DELETE FROM {$wpdb->prefix}mailster_lists_subscribers WHERE subscriber_id IN";
+			$sql = "DELETE FROM {$wpdb->prefix}mailster_lists_subscribers WHERE";
 
 			$sql .= ' subscriber_id IN (' . implode( ',', $chunk ) . ')';
 

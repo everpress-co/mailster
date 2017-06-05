@@ -19,7 +19,7 @@ class Mailster {
 		register_activation_hook( MAILSTER_FILE, array( &$this, 'activate' ) );
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
-		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'empty' );
+		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo' );
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
@@ -956,6 +956,22 @@ class Mailster {
 	}
 
 
+	public function install() {
+
+		$isNew = get_option( 'mailster' ) == false;
+
+		$this->on_activate( $isNew );
+
+		foreach ( $this->_classes as $classname => $class ) {
+			if ( method_exists( $class, 'on_activate' ) ) {
+				$class->on_activate( $isNew );
+			}
+		}
+
+		return true;
+	}
+
+
 	public function activate() {
 
 		global $wpdb;
@@ -976,16 +992,8 @@ class Mailster {
 			if ( $blog_id ) {
 				switch_to_blog( $blog_id );
 			}
+			$this->install();
 
-			$isNew = get_option( 'mailster' ) == false;
-
-			$this->on_activate( $isNew );
-
-			foreach ( $this->_classes as $classname => $class ) {
-				if ( method_exists( $class, 'on_activate' ) ) {
-					$class->on_activate( $isNew );
-				}
-			}
 		}
 
 		if ( $blog_id ) {
@@ -1832,6 +1840,7 @@ class Mailster {
 		$license = get_option( 'mailster_license' );
 		$license_email = get_option( 'mailster_email' );
 		$license_user = get_option( 'mailster_username' );
+
 		if ( ! $license || ! $license_email || ! $license_user ) {
 			return false;
 		}
@@ -1846,6 +1855,7 @@ class Mailster {
 			$result = UpdateCenterPlugin::verify( MAILSTER_SLUG );
 			if ( ! is_wp_error( $result ) ) {
 				$verified = 'yes';
+				mailster_remove_notice( 'verify' );
 			} else {
 				switch ( $result->get_error_code() ) {
 					case 500: // Internal Server Error

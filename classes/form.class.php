@@ -756,7 +756,26 @@ class MailsterForm {
 
 			$value = isset( $formdata[ $field_id ] ) ? $formdata[ $field_id ] : '';
 
-			$this->object['userdata'][ $field_id ] = ( $type == 'textarea' ? stripslashes( $value ) : sanitize_text_field( $value ) );
+			switch ( $type ) {
+				case 'textarea':
+					$value = stripslashes( $value );
+					break;
+				case 'date':
+					$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
+					if ( false !== $timestamp ) {
+						$value = date( 'Y-m-d', $timestamp );
+					} elseif ( is_numeric( $value ) ) {
+						$value = date( 'Y-m-d', $value );
+					} else {
+						$value = '';
+					}
+					break;
+				default:
+					$value = sanitize_text_field( $value );
+					break;
+			}
+
+			$this->object['userdata'][ $field_id ] = $value;
 
 			if ( ( $field_id == 'email' && ! mailster_is_email( trim( $this->object['userdata'][ $field_id ] ) ) )
 				|| ( ! $this->object['userdata'][ $field_id ] && in_array( $field_id, $this->form->required ) ) ) {

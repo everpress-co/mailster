@@ -29,15 +29,10 @@ if ( ! defined( 'MAILSTER_UPLOAD_URI' ) ) {
 	define( 'MAILSTER_UPLOAD_URI', trailingslashit( $upload_folder['baseurl'] ) . 'mailster' );
 }
 
-if ( ! file_exists( MAILSTER_DIR . 'includes/functions.php' ) ) {
-	return;
-}
+require_once MAILSTER_DIR . 'includes/check.php';
 require_once MAILSTER_DIR . 'includes/functions.php';
-
-if ( ! function_exists( 'mymail' ) ) {
-	require_once MAILSTER_DIR . 'includes/deprecated.php';
-}
-
+require_once MAILSTER_DIR . 'includes/deprecated.php';
+require_once MAILSTER_DIR . 'includes/3rdparty.php';
 require_once MAILSTER_DIR . 'classes/mailster.class.php';
 
 global $mailster_options, $mailster, $mailster_tags, $mailster_mystyles;

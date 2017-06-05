@@ -1143,7 +1143,13 @@ class MailsterSubscribers {
 					}
 				}
 				$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
-				$value = $timestamp !== false ? date( 'Y-m-d', $timestamp ) : date( 'Y-m-d', strtotime( $value ) );
+				if ( false !== $timestamp ) {
+					$value = date( 'Y-m-d', $timestamp );
+				} elseif ( is_numeric( $value ) ) {
+					$value = date( 'Y-m-d', $value );
+				} else {
+					$value = '';
+				}
 			}
 
 			if ( $value != '' ) {

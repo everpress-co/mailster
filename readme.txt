@@ -86,8 +86,10 @@ Xaver Birsak – https://revaxarts.com
 
 * fixed: exporting subscribers
 * fixed: strip slashes on list descriptions
+* fixed: SQL issue when un assign lists from subscribers
 * improved: display Mailster username on Dashboard
 * improved: removed usage of 'create_function' for PHP 7.2
+* improved: better sanitation and checks on date fields
 * change: default values on plugin activation
 
 = Version 2.2.6 =
