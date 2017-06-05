@@ -1063,26 +1063,22 @@ class MailsterManage {
 
 		try {
 
-			$bytes = mailster( 'helper' )->file_put_contents( $filename, $output, 'a' );
-
-			$return['total'] = size_format( filesize( $filename ), 2 );
-
-			$return['success'] = true;
-			$return['bytes'] = $bytes;
-
-			if ( ! $output ) {
-
+			if ( $output ) {
+				mailster( 'helper' )->file_put_contents( $filename, $output, 'a' );
+				$return['success'] = true;
+			} else {
 				$return['finished'] = true;
 
-				// finished
 				$folder = MAILSTER_UPLOAD_DIR;
 
-				$finalname = dirname( $filename ) . '/mailster_export_' . date( 'Y-m-d-H-i-s' ) . '.' . $outputformat;
+				$finalname = $folder . '/mailster_export_' . date( 'Y-m-d-H-i-s' ) . '.' . $outputformat;
 				$return['success'] = copy( $filename, $finalname );
 				@unlink( $filename );
 				$return['filename'] = admin_url( 'admin-ajax.php?action=mailster_download_export_file&file=' . basename( $finalname ) . '&format=' . $outputformat . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) );
-
 			}
+
+			$return['total'] = size_format( filesize( $filename ), 2 );
+
 		} catch ( Exception $e ) {
 
 			$return['success'] = false;
