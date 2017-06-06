@@ -353,43 +353,73 @@ class MailsterPlaceholder {
 			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true ) : false;
 
 			foreach ( $conditions[0] as $i => $html ) {
+				$element = $conditions[1][ $i ];
 				$key = $conditions[2][ $i ];
 				$operator = $conditions[3][ $i ];
 				$value = $conditions[4][ $i ];
 
-				if ( $operator == '=' && isset( $subscriber->{$key} ) && $subscriber->{$key} == $value ) {
-					continue;
+				// for third party
+				$remove_content = apply_filters( 'mailster_condition', null, $key, $operator, $value, $subscriber, $this->campaignID );
+
+				if ( is_null( $remove_content ) ) {
+
+					if ( ! isset( $subscriber->{$key} ) && $operator != '!=' ) {
+						continue;
+					}
+
+					$remove_content = true;
+
+					switch ( $operator ) {
+						case '=':
+							if ( $subscriber->{$key} == $value ) {
+								$remove_content = false;
+							}
+						break;
+						case '!=':
+							if ( $subscriber->{$key} != $value ) {
+								$remove_content = false;
+							}
+						break;
+						case '^':
+							if ( false !== ( strrpos( $subscriber->{$key}, $value, - strlen( $subscriber->{$key} ) ) ) ) {
+								$remove_content = false;
+							}
+						break;
+						case '$':
+							if ( false !== ( ( $t = strlen( $subscriber->{$key} ) - strlen( $value ) ) >= 0 && strpos( $subscriber->{$key}, $value, $t ) ) ) {
+								$remove_content = false;
+							}
+						break;
+						case 'GT':
+							if ( $subscriber->{$key} > $value ) {
+								$remove_content = false;
+							}
+						break;
+						case 'GTE':
+							if ( $subscriber->{$key} >= $value ) {
+								$remove_content = false;
+							}
+						break;
+						case 'LT':
+							if ( $subscriber->{$key} < $value ) {
+								$remove_content = false;
+							}
+						break;
+						case 'LTE':
+							if ( $subscriber->{$key} <= $value ) {
+								$remove_content = false;
+							}
+						break;
+
+						default:
+							break;
+					}
 				}
 
-				if ( $operator == '!=' && ( ! isset( $subscriber->{$key} ) || $subscriber->{$key} != $value ) ) {
-					continue;
+				// remove if not passes
+				if ( $remove_content ) {
+					$content = str_replace( $html, '', $content );
 				}
-
-				if ( $operator == '^' && isset( $subscriber->{$key} ) && false !== ( strrpos( $subscriber->{$key}, $value, -strlen( $subscriber->{$key} ) ) ) ) {
-					continue;
-				}
-
-				if ( $operator == '$' && isset( $subscriber->{$key} ) && false !== ( ( $t = strlen( $subscriber->{$key} ) - strlen( $value ) ) >= 0 && strpos( $subscriber->{$key}, $value, $t ) ) ) {
-					continue;
-				}
-
-				if ( $operator == 'GT' && isset( $subscriber->{$key} ) && $subscriber->{$key} > $value ) {
-					continue;
-				}
-
-				if ( $operator == 'GTE' && isset( $subscriber->{$key} ) && $subscriber->{$key} >= $value ) {
-					continue;
-				}
-
-				if ( $operator == 'LT' && isset( $subscriber->{$key} ) && $subscriber->{$key} < $value ) {
-					continue;
-				}
-
-				if ( $operator == 'LTE' && isset( $subscriber->{$key} ) && $subscriber->{$key} <= $value ) {
-					continue;
-				}
-
-				$content = str_replace( $html, '', $content );
 			}
 		}
 
