@@ -581,7 +581,6 @@ class MailsterAjax {
 				$mail->hash = str_repeat( '0', 32 );
 
 				$content = mailster()->sanitize_content( $content, null, $head );
-				$content = mailster( 'helper' )->prepare_content( $content );
 
 				$placeholder = mailster( 'placeholder', $content );
 
@@ -666,8 +665,8 @@ class MailsterAjax {
 				) );
 
 				$placeholder->share_service( $campaign_permalink, $subject );
-
-				$content = $placeholder->get_content();
+				$content = $placeholder->get_content( false );
+				$content = mailster( 'helper' )->prepare_content( $content );
 
 				// replace links with fake hash to prevent tracking
 				if ( $replace_links ) {

@@ -91,6 +91,7 @@ Xaver Birsak – https://revaxarts.com
 * improved: display Mailster username on Dashboard
 * improved: removed usage of 'create_function' for PHP 7.2
 * improved: better sanitation and checks on date fields
+* added: 'mailster_keep_tags' filter to keep tags
 * change: default values on plugin activation
 
 = Version 2.2.6 =
