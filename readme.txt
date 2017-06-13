@@ -59,7 +59,7 @@ Don’t send unfinished Newsletters to your Customers which possible end up in t
 
 These Templates are made for the Mailster Newsletter Plugin. They have been fully tested with all major email softwares and providers. They are all available exclusively on ThemeForest.
 
-If you have further questions please visit our [knowledge base](https://kb.mailster.co/?utm_source=Plugin+Info+Page)
+If you have further questions please visit our [knowledge base](https://kb.mailster.co)
 
 Xaver Birsak – https://revaxarts.com
 
@@ -84,15 +84,16 @@ Xaver Birsak – https://revaxarts.com
 
 = Version 2.2.7 =
 
+* fully tested on WordPress 4.8
 * fixed: exporting subscribers
 * fixed: strip slashes on list descriptions
-* fixed: SQL issue when un assign lists from subscribers
+* fixed: SQL issue when unassign lists from subscribers
 * fixed: encoding issue while saving campaigns on some servers
 * improved: display Mailster username on Dashboard
 * improved: removed usage of 'create_function' for PHP 7.2
 * improved: better sanitation and checks on date fields
 * added: 'mailster_keep_tags' filter to keep tags
-* change: default values on plugin activation
+* change: some default values on plugin activation
 
 = Version 2.2.6 =
 

@@ -53,6 +53,13 @@
 	margin-top:-20px;
 	position: absolute;
 }
+.mailster-welcome-wrap.about-wrap .feature-section.one-col, .mailster-welcome-wrap.about-wrap .feature-section.one-col p {
+	max-width: 95% !important;
+}
+.mailster-welcome-wrap.about-wrap .feature-section h2 {
+	text-align: center;
+	width: 100%;
+}
 .mailster-welcome-wrap.about-wrap .feature-section.three-col div {
 	width: 30%;
 	margin-right: 4.9999999%;
@@ -78,6 +85,7 @@ iframe[id*="twitter-widget-"] {
 }
 .mailster-transition{
 	min-height:450px;
+	min-width: 100%;
 	position: relative;
 	background: #fff;
 }
