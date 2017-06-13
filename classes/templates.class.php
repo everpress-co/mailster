@@ -1137,7 +1137,6 @@ class MailsterTemplates {
 				}
 			}
 			$this->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 15 );
-			add_option( 'mailster_templates', false, '', 'no' );
 		}
 
 	}
@@ -1239,6 +1238,7 @@ class MailsterTemplates {
 		$timeout = defined( 'DOING_CRON' ) && DOING_CRON ? 20 : 5;
 		$mailster_templates = get_option( 'mailster_templates', false );
 		if ( ! $mailster_templates ) {
+			add_option( 'mailster_templates', false, '', 'no' );
 			$mailster_templates = array( 'timestamp' => 0, 'templates' => array() );
 			$timeout = 10;
 		}

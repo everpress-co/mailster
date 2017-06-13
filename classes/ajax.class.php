@@ -216,9 +216,10 @@ class MailsterAjax {
 		@error_reporting( 0 );
 
 		$id = intval( $_GET['id'] );
-		$template = str_replace( '/', '', $_GET['template'] );
-		$file = isset( $_GET['templatefile'] ) ? str_replace( '/', '', $_GET['templatefile'] ) : 'index.html';
+		$template = basename( $_GET['template'] );
+		$file = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
+
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
 
@@ -580,7 +581,6 @@ class MailsterAjax {
 				$mail->hash = str_repeat( '0', 32 );
 
 				$content = mailster()->sanitize_content( $content, null, $head );
-				$content = mailster( 'helper' )->prepare_content( $content );
 
 				$placeholder = mailster( 'placeholder', $content );
 
@@ -665,8 +665,8 @@ class MailsterAjax {
 				) );
 
 				$placeholder->share_service( $campaign_permalink, $subject );
-
-				$content = $placeholder->get_content();
+				$content = $placeholder->get_content( false );
+				$content = mailster( 'helper' )->prepare_content( $content );
 
 				// replace links with fake hash to prevent tracking
 				if ( $replace_links ) {
@@ -2379,20 +2379,16 @@ class MailsterAjax {
 				$return['code'] = $result->get_error_code();
 
 			} else {
-				if ( get_option( 'mailster_username' ) !== false ) {
-					update_option( 'mailster_username', $userdata['username'] );
-				} else {
-					add_option( 'mailster_username', $userdata['username'], '', 'no' );
-				}
-				if ( get_option( 'mailster_email' ) !== false ) {
-					update_option( 'mailster_email', $userdata['email'] );
-				} else {
-					add_option( 'mailster_email', $userdata['email'], '', 'no' );
-				}
-				$return['success'] = true;
+				update_option( 'mailster_username', $userdata['username'] );
+				update_option( 'mailster_email', $userdata['email'] );
+
 				do_action( 'mailster_register', $userdata['username'], $userdata['email'], $purchasecode );
 				do_action( 'mailster_register_' . $slug, $userdata['username'], $userdata['email'], $purchasecode );
 
+				$return['username'] = $userdata['username'];
+				$return['email'] = $userdata['email'];
+				$return['purchasecode'] = $purchasecode;
+				$return['success'] = true;
 			}
 		} else {
 			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );

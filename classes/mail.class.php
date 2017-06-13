@@ -103,7 +103,7 @@ class MailsterMail {
 
 		} elseif ( $this->deliverymethod == 'simple' ) {
 
-			$method = mailster_option( 'simplemethod', 'sendmail' );
+			$method = mailster_option( 'simplemethod' );
 
 			if ( $method == 'sendmail' ) {
 				$this->mailer->Sendmail = mailster_option( 'sendmail_path' );

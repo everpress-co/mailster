@@ -1057,7 +1057,7 @@ class MailsterFrontpage {
 	 */
 	private function do_shortcode_wrong( $shorttcode, $atts, $content ) {
 
-		if ( ! is_mailster_newsletter_homepage() ) {
+		if ( ! is_mailster_newsletter_homepage() && is_user_logged_in() ) {
 			$msg = sprintf( __( 'You should use the shortcode %s only on the newsletter homepage!', 'mailster' ), "[$shorttcode]" );
 			_doing_it_wrong( "[$shorttcode]", $msg, '2.1.5' );
 			return '<p>' . $msg . '</p>';
@@ -1076,12 +1076,12 @@ class MailsterFrontpage {
 	public function newsletter_button( $atts, $content ) {
 
 		$args = shortcode_atts( array(
-				'id' => 1,
-				'showcount' => false,
-				'label' => mailster_text( 'submitbutton' ),
-				'design' => 'default',
-				'width' => 480,
-				'endpoint' => MAILSTER_URI . 'form.php',
+			'id' => 1,
+			'showcount' => false,
+			'label' => mailster_text( 'submitbutton' ),
+			'design' => 'default',
+			'width' => 480,
+			'endpoint' => MAILSTER_URI . 'form.php',
 		), $atts );
 
 		return mailster( 'forms' )->get_subscribe_button( $args['id'], $args );

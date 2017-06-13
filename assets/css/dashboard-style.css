@@ -86,10 +86,10 @@
 }
 .mailster-dashboard dl dd{
 	margin-left: 55px;
-	color: #aaa;
-}
-.mailster-dashboard dl dd span.version{
 	color:#23282d;
+}
+.mailster-dashboard dl dd span.lighter{
+	color: #aaa;
 }
 .postbox-container{
 }
@@ -115,6 +115,9 @@
 	.mailster-dashboard #dashboard-widgets #postbox-container-4 .meta-box-sortables:empty {
 		display: none;
 	}
+}
+.mailster-dashboard div.mailster-loading{
+	opacity: 0.8;
 }
 .mailster-dashboard .postbox-container h2.hndle{
 	font-size: 14px;
