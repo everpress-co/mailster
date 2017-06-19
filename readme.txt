@@ -84,6 +84,8 @@ Xaver Birsak – https://revaxarts.com
 
 = Version 2.2.8 =
 
+* improved: get referer on form signup
+
 = Version 2.2.7 =
 
 * fully tested on WordPress 4.8

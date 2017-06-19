@@ -320,7 +320,7 @@ class MailsterAjax {
 		$filename = $t->create_new( $name, $content, $modules, $activemodules, $overwrite );
 
 		if ( $return['success'] = $filename !== false ) {
-			$return['url'] = add_query_arg( array( 'template' => $template, 'file' => $filename, 'message' => 3 ), wp_get_referer() );
+			$return['url'] = add_query_arg( array( 'template' => $template, 'file' => $filename, 'message' => 3 ), mailster_get_referer() );
 		}
 
 		if ( ! $return['success'] ) {
