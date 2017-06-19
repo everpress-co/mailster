@@ -2,8 +2,8 @@
 Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
-Tested up to: 4.7.5
-Stable tag: 2.2.6
+Tested up to: 4.8
+Stable tag: 2.2.8
 Author: revaxarts
 Author URI: https://mailster.co
 
@@ -59,7 +59,7 @@ Don’t send unfinished Newsletters to your Customers which possible end up in t
 
 These Templates are made for the Mailster Newsletter Plugin. They have been fully tested with all major email softwares and providers. They are all available exclusively on ThemeForest.
 
-If you have further questions please visit our [knowledge base](https://kb.mailster.co/?utm_source=Plugin+Info+Page)
+If you have further questions please visit our [knowledge base](https://kb.mailster.co)
 
 Xaver Birsak – https://revaxarts.com
 
@@ -82,10 +82,30 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
+= Version 2.2.8 =
+
+* improved: get referer on form signup
+
+= Version 2.2.7 =
+
+* fully tested on WordPress 4.8
+* fixed: exporting subscribers
+* fixed: strip slashes on list descriptions
+* fixed: SQL issue when unassign lists from subscribers
+* fixed: encoding issue while saving campaigns on some servers
+* improved: display Mailster username on Dashboard
+* improved: removed usage of 'create_function' for PHP 7.2
+* improved: better sanitation and checks on date fields
+* added: 'mailster_keep_tags' filter to keep tags
+* change: some default values on plugin activation
+
+= Version 2.2.6 =
+
 * fixed: checkboxes were always checked by default
 * fixed: status info on user time based auto responder
 * fixed: save settings button not enabled in some cases
 * fixed: duplicating of other campaigns without capabilities
+* fixed: spelling mistakes
 * improved: html tags in custom field names
 * improved: compatibility with caching plugins
 * improved: excerpts are now generated if not defined via more tag or explicit

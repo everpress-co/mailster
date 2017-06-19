@@ -658,7 +658,7 @@ jQuery(document).ready(function ($) {
 
 					_ajax('get_totals', data, function (response) {
 						_enable();
-						total.removeClass('loading').html(response.totalformated);
+						total.removeClass('loading').html(response.totalformatted);
 
 					}, function (jqXHR, textStatus, errorThrown) {
 						_enable();
@@ -902,10 +902,11 @@ jQuery(document).ready(function ($) {
 			$('.mailster-preview-iframe').on('load', function () {
 
 				var $this = $(this),
-					body = $this.contents().find('body');
+					contents = $this.contents(),
+					body = contents.find('body');
 
 				if ($this.is('.mobile')) {
-					var style = body.find('style').text(),
+					var style = contents.find('style').text(),
 						hasqueries = /@media/.test(style);
 
 					if (!hasqueries) {
@@ -2547,8 +2548,11 @@ jQuery(document).ready(function ($) {
 
 			} else if (current.type == 'multi') {
 
-				if (isTinyMCE && tinymce.get('mailster-editor') && !tinymce.get('mailster-editor').isHidden())
-					current.element.html(tinymce.get('mailster-editor').getContent());
+				if (isTinyMCE && tinymce.get('mailster-editor') && !tinymce.get('mailster-editor').isHidden()) {
+					var content = tinymce.get('mailster-editor').getContent();
+					content = content.replace('href="http://{', 'href="{'); //from tinymce if tag is used
+					current.element.html(content);
+				}
 
 			} else if (current.type == 'single') {
 

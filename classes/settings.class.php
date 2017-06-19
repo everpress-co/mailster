@@ -157,6 +157,7 @@ class MailsterSettings {
 			'cron_lock' => 'file',
 
 			'deliverymethod' => 'simple',
+			'simplemethod' => 'mail',
 			'sendmail_path' => '/usr/sbin/sendmail',
 			'smtp' => false,
 			'smtp_host' => '',
@@ -1584,7 +1585,7 @@ class MailsterSettings {
 		<p class="description">
 		<?php esc_html_e( 'use this option if you don\'t have access to a SMTP server or any other provided options', 'mailster' );?>
 		</p>
-		<?php $basicmethod = mailster_option( 'simplemethod', 'sendmail' );?>
+		<?php $basicmethod = mailster_option( 'simplemethod' );?>
 		<table class="form-table">
 			<tr valign="top">
 				<td><label><input type="radio" name="mailster_options[simplemethod]" value="sendmail" <?php checked( $basicmethod, 'sendmail' ) ?> id="sendmail"> Sendmail</label>

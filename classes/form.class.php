@@ -735,7 +735,7 @@ class MailsterForm {
 
 		$referer = isset( $_BASE['_referer'] ) ? $_BASE['_referer'] : $baselink;
 		if ( $referer == 'extern' || isset( $_GET['_extern'] ) ) {
-			$referer = esc_url( wp_get_referer() );
+			$referer = esc_url( mailster_get_referer() );
 		}
 
 		$now = time();
@@ -756,7 +756,26 @@ class MailsterForm {
 
 			$value = isset( $formdata[ $field_id ] ) ? $formdata[ $field_id ] : '';
 
-			$this->object['userdata'][ $field_id ] = ( $type == 'textarea' ? stripslashes( $value ) : sanitize_text_field( $value ) );
+			switch ( $type ) {
+				case 'textarea':
+					$value = stripslashes( $value );
+					break;
+				case 'date':
+					$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
+					if ( false !== $timestamp ) {
+						$value = date( 'Y-m-d', $timestamp );
+					} elseif ( is_numeric( $value ) ) {
+						$value = date( 'Y-m-d', $value );
+					} else {
+						$value = '';
+					}
+					break;
+				default:
+					$value = sanitize_text_field( $value );
+					break;
+			}
+
+			$this->object['userdata'][ $field_id ] = $value;
 
 			if ( ( $field_id == 'email' && ! mailster_is_email( trim( $this->object['userdata'][ $field_id ] ) ) )
 				|| ( ! $this->object['userdata'][ $field_id ] && in_array( $field_id, $this->form->required ) ) ) {
@@ -932,7 +951,7 @@ class MailsterForm {
 				exit;
 			}
 
-			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( wp_get_referer() );
+			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( mailster_get_referer() );
 
 		} else {
 
@@ -941,7 +960,7 @@ class MailsterForm {
 				exit;
 			}
 
-			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( wp_get_referer() );
+			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( mailster_get_referer() );
 
 		}
 
@@ -1213,7 +1232,7 @@ class MailsterForm {
 	 * @return unknown
 	 */
 	private function is_extern() {
-		return parse_url( wp_get_referer(), PHP_URL_HOST ) != parse_url( home_url(), PHP_URL_HOST );
+		return parse_url( mailster_get_referer(), PHP_URL_HOST ) != parse_url( home_url(), PHP_URL_HOST );
 	}
 
 

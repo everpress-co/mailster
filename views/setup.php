@@ -155,7 +155,7 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step" href="#homepage"><?php esc_html_e( 'skip this step', 'mailster' ) ?></a>
+				<a class="button button-large skip-step" href="#homepage"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
 				<a class="button button-large button-primary next-step" href="#homepage"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
 
 			</div>
@@ -215,7 +215,7 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step" href="#delivery"><?php esc_html_e( 'skip this step', 'mailster' ) ?></a>
+				<a class="button button-large skip-step" href="#delivery"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
 				<a class="button button-large button-primary next-step" href="#delivery"><?php echo esc_html( $buttontext ); ?></a>
 
 			</div>
@@ -325,7 +325,7 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step" href="#validation"><?php esc_html_e( 'skip this step', 'mailster' ) ?></a>
+				<a class="button button-large skip-step" href="#validation"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
 				<a class="button button-large button-primary next-step delivery-next-step" href="#validation"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
 
 			</div>
@@ -349,7 +349,7 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step validation-skip-step <?php if ( $is_verified ) { echo 'disabled'; } ?>" href="#finish"><?php esc_html_e( 'skip this step', 'mailster' ) ?></a>
+				<a class="button button-large skip-step validation-skip-step <?php if ( $is_verified ) { echo 'disabled'; } ?>" href="#finish"><?php esc_html_e( 'Remind me later', 'mailster' ) ?></a>
 				<a class="button button-large button-primary next-step validation-next-step <?php if ( ! $is_verified ) { echo 'disabled'; } ?>" href="#finish"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
 
 			</div>

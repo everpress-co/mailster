@@ -530,7 +530,7 @@ class MailsterCampaigns {
 		$messages['newsletter'] = array(
 			0 => '',
 			1 => sprintf( __( 'Campaign updated. %s', 'mailster' ), '<a href="' . esc_url( get_permalink( $post_id ) ) . '">' . __( 'View Newsletter', 'mailster' ) . '</a>' ),
-			2 => sprintf( __( 'Template changed. %1$s', 'mailster' ), '<a href="' . remove_query_arg( 'message', wp_get_referer() ) . '">' . __( 'Go back', 'mailster' ) . '</a>' ),
+			2 => sprintf( __( 'Template changed. %1$s', 'mailster' ), '<a href="' . remove_query_arg( 'message', mailster_get_referer() ) . '">' . __( 'Go back', 'mailster' ) . '</a>' ),
 			3 => __( 'Template saved', 'mailster' ),
 			4 => __( 'Campaign updated.', 'mailster' ),
 			5 => isset( $_GET['revision'] ) ? sprintf( __( 'Campaign restored to revision from %s', 'mailster' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,

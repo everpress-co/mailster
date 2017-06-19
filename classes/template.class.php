@@ -33,7 +33,7 @@ class MailsterTemplate {
 	 */
 	public function __construct( $slug = null, $file = 'index.html' ) {
 
-		$this->file = $file;
+		$this->file = basename( $file );
 
 		$this->path = MAILSTER_UPLOAD_DIR . '/templates';
 		$this->url = MAILSTER_UPLOAD_URI . '/templates';
@@ -128,6 +128,8 @@ class MailsterTemplate {
 	 * @return unknown
 	 */
 	public function load_template( $slug = '' ) {
+
+		$slug = basename( $slug );
 
 		$this->templatepath = $this->path . '/' . $slug;
 		$this->templateurl = $this->url . '/' . $slug;

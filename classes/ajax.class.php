@@ -216,9 +216,10 @@ class MailsterAjax {
 		@error_reporting( 0 );
 
 		$id = intval( $_GET['id'] );
-		$template = str_replace( '/', '', $_GET['template'] );
-		$file = isset( $_GET['templatefile'] ) ? str_replace( '/', '', $_GET['templatefile'] ) : 'index.html';
+		$template = basename( $_GET['template'] );
+		$file = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
+
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
 
@@ -319,7 +320,7 @@ class MailsterAjax {
 		$filename = $t->create_new( $name, $content, $modules, $activemodules, $overwrite );
 
 		if ( $return['success'] = $filename !== false ) {
-			$return['url'] = add_query_arg( array( 'template' => $template, 'file' => $filename, 'message' => 3 ), wp_get_referer() );
+			$return['url'] = add_query_arg( array( 'template' => $template, 'file' => $filename, 'message' => 3 ), mailster_get_referer() );
 		}
 
 		if ( ! $return['success'] ) {
@@ -580,7 +581,6 @@ class MailsterAjax {
 				$mail->hash = str_repeat( '0', 32 );
 
 				$content = mailster()->sanitize_content( $content, null, $head );
-				$content = mailster( 'helper' )->prepare_content( $content );
 
 				$placeholder = mailster( 'placeholder', $content );
 
@@ -665,8 +665,8 @@ class MailsterAjax {
 				) );
 
 				$placeholder->share_service( $campaign_permalink, $subject );
-
-				$content = $placeholder->get_content();
+				$content = $placeholder->get_content( false );
+				$content = mailster( 'helper' )->prepare_content( $content );
 
 				// replace links with fake hash to prevent tracking
 				if ( $replace_links ) {
@@ -784,7 +784,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, array( 'operator' => $operator, 'conditions' => $conditions ) );
-		$return['totalformated'] = number_format_i18n( $return['total'] );
+		$return['totalformatted'] = number_format_i18n( $return['total'] );
 
 		$this->json_return( $return );
 
@@ -2259,9 +2259,9 @@ class MailsterAjax {
 						'status' => $campaign->post_status,
 						'ID' => $campaign->ID,
 						'totals' => mailster( 'campaigns' )->get_totals( $id ),
-						'totals_formated' => number_format_i18n( mailster( 'campaigns' )->get_totals( $id ) ),
+						'totals_formatted' => number_format_i18n( mailster( 'campaigns' )->get_totals( $id ) ),
 						'sent' => mailster( 'campaigns' )->get_sent( $id ),
-						'sent_formated' => number_format_i18n( mailster( 'campaigns' )->get_sent( $id ) ),
+						'sent_formatted' => number_format_i18n( mailster( 'campaigns' )->get_sent( $id ) ),
 						'openrate' => mailster( 'campaigns' )->get_open_rate( $id ),
 						'clickrate' => mailster( 'campaigns' )->get_click_rate( $id ),
 						'bouncerate' => mailster( 'campaigns' )->get_bounce_rate( $id ),
@@ -2277,9 +2277,9 @@ class MailsterAjax {
 						'name' => $list->name,
 						'ID' => $list->ID,
 						'totals' => mailster( 'lists' )->get_totals( $id ),
-						'totals_formated' => number_format_i18n( mailster( 'lists' )->get_totals( $id ) ),
+						'totals_formatted' => number_format_i18n( mailster( 'lists' )->get_totals( $id ) ),
 						'sent' => mailster( 'lists' )->get_sent( $id ),
-						'sent_formated' => number_format_i18n( mailster( 'lists' )->get_sent( $id ) ),
+						'sent_formatted' => number_format_i18n( mailster( 'lists' )->get_sent( $id ) ),
 						'openrate' => mailster( 'lists' )->get_open_rate( $id ),
 						'clickrate' => mailster( 'lists' )->get_click_rate( $id ),
 						'bouncerate' => mailster( 'lists' )->get_bounce_rate( $id ),
@@ -2379,20 +2379,16 @@ class MailsterAjax {
 				$return['code'] = $result->get_error_code();
 
 			} else {
-				if ( get_option( 'mailster_username' ) !== false ) {
-					update_option( 'mailster_username', $userdata['username'] );
-				} else {
-					add_option( 'mailster_username', $userdata['username'], '', 'no' );
-				}
-				if ( get_option( 'mailster_email' ) !== false ) {
-					update_option( 'mailster_email', $userdata['email'] );
-				} else {
-					add_option( 'mailster_email', $userdata['email'], '', 'no' );
-				}
-				$return['success'] = true;
+				update_option( 'mailster_username', $userdata['username'] );
+				update_option( 'mailster_email', $userdata['email'] );
+
 				do_action( 'mailster_register', $userdata['username'], $userdata['email'], $purchasecode );
 				do_action( 'mailster_register_' . $slug, $userdata['username'], $userdata['email'], $purchasecode );
 
+				$return['username'] = $userdata['username'];
+				$return['email'] = $userdata['email'];
+				$return['purchasecode'] = $purchasecode;
+				$return['success'] = true;
 			}
 		} else {
 			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );

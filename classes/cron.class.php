@@ -51,13 +51,7 @@ class MailsterCron {
 			$this->remove_crons();
 		}
 
-		if ( version_compare( PHP_VERSION, '5.3' ) < 0 ) {
-			mailster_notice( '<strong>' . sprintf( 'Mailster requires PHP version 5.3 and above. Your current version is %s so please update or ask your provider to help you with updating!', '<code>' . PHP_VERSION . '</code>' ) . '</strong>', 'error', false, 'minphpversion' );
-		} else {
-			mailster_remove_notice( 'minphpversion' );
-		}
-
-		if ( ! mailster()->is_verified() ) {
+		if ( ! mailster_is_local() && ! mailster()->is_verified() ) {
 			if ( time() - get_option( 'mailster' ) > WEEK_IN_SECONDS
 				&& get_option( 'mailster_setup' ) ) {
 				mailster_notice( '<strong>' . sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'verify', 'mailster_manage_licenses' );

@@ -1054,11 +1054,17 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $user_id
-	 * @param unknown $userdata (optional)
+	 * @param unknown $user_id                 (optional)
+	 * @param unknown $userdata                (optional)
+	 * @param unknown $merge                   (optional)
+	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
-	public function add_from_wp_user( $user_id, $userdata = array() ) {
+	public function add_from_wp_user( $user_id, $userdata = array(), $merge = false, $subscriber_notification = true ) {
+
+		if ( is_null( $user_id ) ) {
+			$user_id = get_current_user_id();
+		}
 
 		$user = get_userdata( $user_id );
 		if ( empty( $user ) ) {
@@ -1093,7 +1099,7 @@ class MailsterSubscribers {
 			'lastname' => $last_name,
 		) );
 
-		$subscriber_id = $this->add( $userdata, true );
+		$subscriber_id = $this->add( $userdata, true, $merge, $subscriber_notification );
 
 		return $subscriber_id;
 
@@ -1139,7 +1145,13 @@ class MailsterSubscribers {
 					}
 				}
 				$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
-				$value = $timestamp !== false ? date( 'Y-m-d', $timestamp ) : date( 'Y-m-d', strtotime( $value ) );
+				if ( false !== $timestamp ) {
+					$value = date( 'Y-m-d', $timestamp );
+				} elseif ( is_numeric( $value ) ) {
+					$value = date( 'Y-m-d', $value );
+				} else {
+					$value = '';
+				}
 			}
 
 			if ( $value != '' ) {
@@ -1515,12 +1527,12 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $formated (optional)
-	 * @param unknown $round    (optional)
-	 * @param unknown $status   (optional)
+	 * @param unknown $formatted (optional)
+	 * @param unknown $round     (optional)
+	 * @param unknown $status    (optional)
 	 * @return unknown
 	 */
-	public function get_count( $formated = false, $round = 1, $status = 1 ) {
+	public function get_count( $formatted = false, $round = 1, $status = 1 ) {
 
 		$count = $this->get_count_by_status( $status );
 
@@ -1528,7 +1540,7 @@ class MailsterSubscribers {
 			$count = ceil( $count / $round ) * $round;
 		}
 
-		if ( 'kilo' === $formated ) {
+		if ( 'kilo' === $formatted ) {
 			if ( $count >= 1000000 ) {
 				$count = round( $count / 1000000, 1 ) . 'M';
 			} elseif ( $count >= 10000 ) {
@@ -1536,7 +1548,7 @@ class MailsterSubscribers {
 			} else {
 				$count = number_format_i18n( $count );
 			}
-		} elseif ( $formated ) {
+		} elseif ( $formatted ) {
 			$count = number_format_i18n( $count );
 		}
 
@@ -2286,11 +2298,15 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $wpid
+	 * @param unknown $wpid          (optional)
 	 * @param unknown $custom_fields (optional)
 	 * @return unknown
 	 */
-	public function get_by_wpid( $wpid, $custom_fields = false ) {
+	public function get_by_wpid( $wpid = null, $custom_fields = false ) {
+
+		if ( is_null( $wpid ) ) {
+			$wpid = get_current_user_id();
+		}
 
 		return $this->get_by_type( 'wp_id', $wpid, $custom_fields );
 	}
@@ -2567,7 +2583,7 @@ class MailsterSubscribers {
 			$subscriber_id = $this->add_from_wp_user( get_current_user_id(), array(
 				'status' => 1,
 				'referer' => 'backend',
-			) );
+			), false, false );
 		}
 
 	}
