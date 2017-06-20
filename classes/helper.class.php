@@ -1302,6 +1302,33 @@ class MailsterHelper {
 
 
 	/**
+	 * get available post types and remove certain ones
+	 *
+	 * @param  array  $args     post query arguments
+	 * @param  string $output   either 'objects' or just names
+	 * @param  string $operator used in native method
+	 * @return array           array of pts or objects
+	 */
+	public function get_post_types( $args = array(), $output = 'names', $operator = 'and' ) {
+
+		$skip = array( 'attachment', 'revision', 'nav_menu_item', 'custom_css', 'customize_changeset', 'newsletter' );
+
+		$pts = get_post_types( $args, $output, $operator );
+		if ( 'objects' == $output ) {
+			foreach ( $skip as $key ) {
+				if ( isset( $pts[ $key ] ) ) {
+					unset( $pts[ $key ] );
+				}
+			}
+		} else {
+			$pts = array_diff( $pts, $skip );
+		}
+
+		return $pts;
+	}
+
+
+	/**
 	 *
 	 *
 	 * @param unknown $html

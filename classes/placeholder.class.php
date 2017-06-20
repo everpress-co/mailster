@@ -38,12 +38,10 @@ class MailsterPlaceholder {
 		$this->add( mailster_option( 'custom_tags', array() ) );
 		$this->add( mailster_option( 'tags', array() ) );
 
-		// mailster_add_tag'url', array( $this, 'urlencode_tags'));
 	}
 
 
-	public function __destruct() {
-	}
+	public function __destruct() {}
 
 
 	/**
@@ -163,16 +161,6 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
-	 * @param unknown $bool (optional)
-	 */
-	public function do_conditions( $bool = true ) {
-		$this->progress_conditions = (bool) $bool;
-	}
-
-
-	/**
-	 *
-	 *
 	 * @param unknown $removeunused         (optional)
 	 * @param unknown $placeholders         (optional)
 	 * @param unknown $relative_to_absolute (optional)
@@ -184,9 +172,8 @@ class MailsterPlaceholder {
 
 		$this->add( $placeholders );
 
-		$this->remove_modules_without_posts();
-
-		if ( $this->progress_conditions && $round == 1 ) {
+		if ( $round == 1 ) {
+			$this->remove_modules_without_posts();
 			$this->conditions();
 		}
 
@@ -235,7 +222,7 @@ class MailsterPlaceholder {
 					// use fallback
 				} elseif ( $removeunused && $round < $this->rounds ) {
 
-						$this->content = str_replace( $search, $fallback, $this->content );
+					$this->content = str_replace( $search, $fallback, $this->content );
 
 				}
 			}
@@ -349,16 +336,11 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
-	 * @param unknown $content (optional)
 	 * @return unknown
 	 */
-	public function conditions( $content = null ) {
+	public function conditions() {
 
-		if ( is_null( $content ) ) {
-			$content = $this->content;
-		}
-
-		if ( preg_match_all( '#<(module|single|multi)[^>]*?condition="([a-z0-9-_]+)([=!GLTE\^$]+)(.*?)".*?</(\\1)>#ms', $content, $conditions ) ) {
+		if ( preg_match_all( '#<(module|single|multi)[^>]*?condition="([a-z0-9-_]+)([=!GLTE\^$]+)(.*?)".*?</(\\1)>#ms', $this->content, $conditions ) ) {
 
 			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true ) : false;
 
@@ -428,12 +410,12 @@ class MailsterPlaceholder {
 
 				// remove if not passes
 				if ( $remove_content ) {
-					$content = str_replace( $html, '', $content );
+					$this->content = str_replace( $html, '', $this->content );
 				}
 			}
 		}
 
-		if ( preg_match_all( '#<if field="([a-z0-9-_]+)" operator="([a-z_]+)+" value="(.*?)">(.*?)</if>#s', $content, $if_conditions ) ) {
+		if ( preg_match_all( '#<if field="([a-z0-9-_]+)" operator="([a-z_]+)+" value="(.*?)">(.*?)</if>#s', $this->content, $if_conditions ) ) {
 
 			$subscriber = $this->subscriberID ? mailster( 'subscribers' )->get( $this->subscriberID, true ) : false;
 
@@ -445,7 +427,7 @@ class MailsterPlaceholder {
 					$html = $if_conditions[4][ $i ];
 					$html = preg_replace( '#<elseif(.*?)<\/elseif>#s', '', $if_conditions[4][ $i ] );
 					$html = preg_replace( '#<else(.*?)<\/else>#s', '', $html );
-					$content = str_replace( $ifhtml, $html, $content );
+					$this->content = str_replace( $ifhtml, $html, $this->content );
 
 				} else {
 
@@ -457,7 +439,7 @@ class MailsterPlaceholder {
 							// elseif condition passed
 							if ( $this->check_condition( $subscriber, $elseif_conditions[1][ $j ], $elseif_conditions[2][ $j ], $elseif_conditions[3][ $j ] ) ) {
 
-								$content = str_replace( $ifhtml, $elseif_conditions[4][ $j ], $content );
+								$this->content = str_replace( $ifhtml, $elseif_conditions[4][ $j ], $this->content );
 
 								break;
 
@@ -465,7 +447,7 @@ class MailsterPlaceholder {
 									// no elseif passes
 								if ( preg_match( '#<else>(.*?)</else>#s', $ifhtml, $else_conditions ) ) {
 
-									$content = str_replace( $ifhtml, $else_conditions[1], $content );
+									$this->content = str_replace( $ifhtml, $else_conditions[1], $this->content );
 
 									break;
 
@@ -476,21 +458,17 @@ class MailsterPlaceholder {
 						// no elsif but else
 					} elseif ( preg_match( '#<else>(.*?)</else>#s', $ifhtml, $else_conditions ) ) {
 
-							$content = str_replace( $ifhtml, $else_conditions[1], $content );
+							$this->content = str_replace( $ifhtml, $else_conditions[1], $this->content );
 
-							// only if statement but didn't pass
+						// only if statement but didn't pass
 					} else {
 
-						$content = str_replace( $ifhtml, '', $content );
+						$this->content = str_replace( $ifhtml, '', $this->content );
 
 					}
 				}
 			}
 		}
-
-		$this->content = $content;
-
-		return $content;
 
 	}
 
@@ -541,8 +519,7 @@ class MailsterPlaceholder {
 			return;
 		}
 
-		$pts = get_post_types( array( 'public' => true ) );
-		$pts = array_diff( $pts, array( 'newsletter', 'attachment' ) );
+		$pts = mailster( 'helper' )->get_post_types();
 		$pts = implode( '|', $pts );
 
 		$timeformat = get_option( 'time_format' );
@@ -853,10 +830,14 @@ class MailsterPlaceholder {
 		*/
 	}
 
+	/**
+	 * removes modules where post tag has no post
+	 *
+	 * @return void
+	 */
 	private function remove_modules_without_posts() {
 
-		$pts = get_post_types( array( 'public' => true ) );
-		$pts = array_diff( $pts, array( 'newsletter', 'attachment' ) );
+		$pts = mailster( 'helper' )->get_post_types();
 		$pts = implode( '|', $pts );
 
 		if ( preg_match_all( '#<(module)[^>]*?data-tag="({((' . $pts . '):(-)?([\d]+)(;([0-9;,]+))?)\})".*?</(\\1)>#ms', $this->content, $hits ) ) {
@@ -865,8 +846,9 @@ class MailsterPlaceholder {
 				$tag = $hits[2][ $i ];
 				$post_or_offset = $hits[6][ $i ];
 				$post_type = $hits[4][ $i ];
+				$indicator = $hits[5][ $i ];
 
-				if ( empty( $hits[5][ $i ] ) ) {
+				if ( empty( $indicator ) ) {
 
 					$post = get_post( $post_or_offset );
 
@@ -877,12 +859,10 @@ class MailsterPlaceholder {
 
 				}
 
-				if ( $post ) {
-					continue;
+				// remove if no post is found
+				if ( ! $post ) {
+					$this->content = str_replace( $html, '', $this->content );
 				}
-
-				// remove if not passes
-				$this->content = str_replace( $html, '', $this->content );
 			}
 		}
 	}
