@@ -184,6 +184,8 @@ class MailsterPlaceholder {
 
 		$this->add( $placeholders );
 
+		$this->remove_modules_without_posts();
+
 		if ( $this->progress_conditions && $round == 1 ) {
 			$this->conditions();
 		}
@@ -849,6 +851,40 @@ class MailsterPlaceholder {
 		}
 		}
 		*/
+	}
+
+	private function remove_modules_without_posts() {
+
+		$pts = get_post_types( array( 'public' => true ) );
+		$pts = array_diff( $pts, array( 'newsletter', 'attachment' ) );
+		$pts = implode( '|', $pts );
+
+		if ( preg_match_all( '#<(module)[^>]*?data-tag="({((' . $pts . '):(-)?([\d]+)(;([0-9;,]+))?)\})".*?</(\\1)>#ms', $this->content, $hits ) ) {
+
+			foreach ( $hits[0] as $i => $html ) {
+				$tag = $hits[2][ $i ];
+				$post_or_offset = $hits[6][ $i ];
+				$post_type = $hits[4][ $i ];
+
+				if ( empty( $hits[5][ $i ] ) ) {
+
+					$post = get_post( $post_or_offset );
+
+				} else {
+
+					$term_ids = ! empty( $hits[8][ $i ] ) ? explode( ';', trim( $hits[8][ $i ] ) ) : array();
+					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids );
+
+				}
+
+				if ( $post ) {
+					continue;
+				}
+
+				// remove if not passes
+				$this->content = str_replace( $html, '', $this->content );
+			}
+		}
 	}
 
 
