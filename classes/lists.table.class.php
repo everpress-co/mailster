@@ -264,14 +264,16 @@ class Mailster_Lists_Table extends WP_List_Table {
 		}
 
 		$this->set_pagination_args( array(
-				'total_items' => $totalitems,
-				'total_pages' => $totalpages,
-				'per_page' => $perpage,
+			'total_items' => $totalitems,
+			'total_pages' => $totalpages,
+			'per_page' => $perpage,
 		) );
 
 		if ( isset( $offset ) ) {
 			$sql .= " LIMIT $offset, $perpage";
 		}
+
+		$sql = apply_filters( 'mailster_lists_prepare_items_sql', $sql );
 
 		if ( isset( $allitems ) ) {
 			$this->items = isset( $offset ) && isset( $perpage ) ? array_slice( $allitems, (int) $offset, (int) $perpage ) : $allitems;

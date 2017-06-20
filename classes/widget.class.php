@@ -18,7 +18,7 @@ class Mailster_Signup_Widget extends WP_Widget {
 	 */
 	public function form( $instance ) {
 		// outputs the options form on admin
-		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? __( 'Newsletter sign up', 'mailster' ) : $instance['title'], $instance, $this->id_base );
+		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 		$text_before = apply_filters( 'widget_text_before', empty( $instance['text_before'] ) ? '' : $instance['text_before'], $instance, $this->id_base );
 		$form = apply_filters( 'widget_form', empty( $instance['form'] ) ? 0 : $instance['form'], $instance, $this->id_base );
 		$text_after = apply_filters( 'widget_text_after', empty( $instance['text_after'] ) ? '' : $instance['text_after'], $instance, $this->id_base );
@@ -99,6 +99,7 @@ class Mailster_Signup_Widget extends WP_Widget {
 			echo $before_title . $title . $after_title;
 		}
 
+		echo '<div class="mailster-widget mailster-widget-signup">';
 		if ( $text_before ) {
 			echo '<div class="mailster-widget-text mailster-widget-text-before">' . $text_before . '</div>';
 		}
@@ -108,6 +109,7 @@ class Mailster_Signup_Widget extends WP_Widget {
 		if ( $text_after ) {
 			echo '<div class="mailster-widget-text mailster-widget-text-after">' . $text_after . '</div>';
 		}
+		echo '</div>';
 
 		echo $after_widget;
 	}
@@ -171,6 +173,7 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 			echo $before_title . $title . $after_title;
 }
 ?>
+		<div class="mailster-widget mailster-widget-recent-newsletter">
 		<ul>
 		<?php while ( $r->have_posts() ) : $r->the_post();?>
 			<li><a href="<?php the_permalink() ?>" title="<?php echo esc_attr( get_the_title() ? get_the_title() : get_the_ID() ); ?>"><?php if ( get_the_title() ) {
@@ -181,6 +184,7 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 		?></a></li>
 			<?php endwhile;?>
 		</ul>
+		</div>
 		<?php echo $after_widget; ?>
 <?php
 		// Reset the global $the_post as this query will have stomped on it
@@ -275,7 +279,7 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 			'widget_id' => $this->id,
 			'prefix' => '',
 			'postfix' => __( 'Subscribers', 'mailster' ),
-			'formated' => true,
+			'formatted' => true,
 			'round' => 1,
 		) );
 
@@ -288,9 +292,11 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 		extract( $args );
 ?>
 		<?php echo isset( $before_widget ) ? $before_widget : ''; ?>
+		<?php echo '<div class="mailster-widget mailster-widget-subscribers-count">'; ?>
 		<?php echo isset( $instance['prefix'] ) ? $instance['prefix'] : ''; ?>
-		<?php echo do_shortcode( '[newsletter_subscribers formated="' . $instance['formated'] . '" round="' . $instance['round'] . '"]' ); ?>
+		<?php echo do_shortcode( '[newsletter_subscribers formatted="' . $instance['formatted'] . '" round="' . $instance['round'] . '"]' ); ?>
 		<?php echo isset( $instance['postfix'] ) ? $instance['postfix'] : ''; ?>
+		<?php echo '</div>'; ?>
 		<?php echo isset( $after_widget ) ? $after_widget : ''; ?>
 <?php
 
@@ -310,7 +316,7 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 		$instance = $old_instance;
 		$instance['prefix'] = $new_instance['prefix'];
 		$instance['postfix'] = $new_instance['postfix'];
-		$instance['formated'] = (bool) $new_instance['formated'];
+		$instance['formatted'] = (bool) $new_instance['formatted'];
 		$instance['round'] = (int) $new_instance['round'];
 		$this->flush_widget_cache();
 
@@ -336,7 +342,7 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 	public function form( $instance ) {
 		$prefix = isset( $instance['prefix'] ) ? $instance['prefix'] : '';
 		$postfix = isset( $instance['postfix'] ) ? $instance['postfix'] : __( 'Subscribers', 'mailster' );
-		$formated = isset( $instance['formated'] ) ? ! ! $instance['formated'] : true;
+		$formatted = isset( $instance['formatted'] ) ? ! ! $instance['formatted'] : true;
 		$round = isset( $instance['round'] ) ? absint( $instance['round'] ) : 1;
 ?>
 		<p><label for="<?php echo $this->get_field_id( 'prefix' ); ?>"><?php esc_html_e( 'Prefix', 'mailster' );?>:</label>
@@ -352,7 +358,7 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 			<option value="1000" <?php selected( $round, 1000 );?>><?php echo number_format( 1000 ) ?></option>
 			<option value="10000" <?php selected( $round, 10000 );?>><?php echo number_format( 10000 ) ?></option>
 		</select></p>
-		<p><label for="<?php echo $this->get_field_id( 'formated' ); ?>"><input id="<?php echo $this->get_field_id( 'formated' ); ?>" name="<?php echo $this->get_field_name( 'formated' ); ?>" type="checkbox" value="1" <?php checked( $formated );?> /><?php esc_html_e( 'format number', 'mailster' );?></label>
+		<p><label for="<?php echo $this->get_field_id( 'formatted' ); ?>"><input id="<?php echo $this->get_field_id( 'formatted' ); ?>" name="<?php echo $this->get_field_name( 'formatted' ); ?>" type="checkbox" value="1" <?php checked( $formatted );?> /><?php esc_html_e( 'format number', 'mailster' );?></label>
 		</p>
 		<?php if ( ! empty( $instance ) ) : ?>
 		<p><strong><?php esc_html_e( 'Preview', 'mailster' );?></strong></p>
@@ -419,9 +425,11 @@ class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
 		<?php if ( ! empty( $instance['title'] ) ) {
 			echo $before_title . $instance['title'] . $after_title;
 } ?>
+		<?php echo '<div class="mailster-widget mailster-widget-subscriber-button">'; ?>
 		<?php echo isset( $instance['prefix'] ) ? $instance['prefix'] : ''; ?>
 		<?php echo do_shortcode( '[newsletter_button id=' . $instance['form'] . ' design="' . $instance['design'] . '' . ($instance['ontop'] ? ' ontop' : '') . '" label="' . $instance['label'] . '" showcount="' . $instance['showcount'] . '" width="' . $instance['width'] . '"]' ); ?>
 		<?php echo isset( $instance['postfix'] ) ? $instance['postfix'] : ''; ?>
+		<?php echo '</div>'; ?>
 		<?php echo isset( $after_widget ) ? $after_widget : ''; ?>
 <?php
 

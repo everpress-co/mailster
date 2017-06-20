@@ -1,12 +1,12 @@
 <p class="description"><?php printf( __( 'Tags are placeholder for your newsletter. You can set them anywhere in your newsletter template with the format %s. Custom field tags are individual for each subscriber.', 'mailster' ), '<code>{tagname}</code>' ); ?></p>
 <p class="description"><?php printf( __( 'You can set alternative content with %1$s which will be uses if %2$s is not defined. All unused tags will get removed in the final message', 'mailster' ), '<code>{tagname|alternative content}</code>', '[tagname]' ); ?></p>
-		<?php $reserved = array( 'unsub', 'unsublink', 'webversion', 'webversionlink', 'forward', 'forwardlink', 'subject', 'preheader', 'profile', 'profilelink', 'headline', 'content', 'link', 'email', 'emailaddress', 'firstname', 'lastname', 'fullname', 'year', 'month', 'day', 'share', 'tweet' ) ?>
+		<?php $reserved = array( 'unsub', 'unsublink', 'webversion', 'webversionlink', 'forward', 'forwardlink', 'subject', 'preheader', 'profile', 'profilelink', 'headline', 'content', 'link', 'email', 'emailaddress', 'firstname', 'lastname', 'fullname', 'year', 'month', 'day', 'share', 'tweet', 'hash', 'wp_id', 'status', 'added', 'updated', 'signup', 'confirm', 'ip_signup', 'ip_confirm', 'rating' ) ?>
 <p id="reserved-tags" data-tags='["<?php echo implode( '","', $reserved ) ?>"]'><?php esc_html_e( 'reserved tags', 'mailster' );?>: <code>{<?php echo implode( '}</code>, <code>{', $reserved ) ?>}</code></p>
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Permanent Tags', 'mailster' ) ?>:</th>
 		<td class="tags">
-		<p class="description"><?php esc_html_e( 'These are permanent tags which cannot get deleted. The CAN-SPAM tag is required in many countries.', 'mailster' );?> <a href="http://en.wikipedia.org/wiki/CAN-SPAM_Act_of_2003" class="external"><?php esc_html_e( 'Read more', 'mailster' );?></a></p>
+		<p class="description"><?php esc_html_e( 'These are permanent tags which cannot get deleted. The CAN-SPAM tag is required in many countries.', 'mailster' );?> <a href="https://en.wikipedia.org/wiki/CAN-SPAM_Act_of_2003" class="external"><?php esc_html_e( 'Read more', 'mailster' );?></a></p>
 <?php if ( $tags = mailster_option( 'tags' ) ) : ?>
 <?php foreach ( $tags as $tag => $content ) { ?>
 		<div class="tag">

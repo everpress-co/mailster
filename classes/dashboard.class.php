@@ -81,7 +81,7 @@ class MailsterDashboard {
 
 		$slug = 'edit.php?post_type=newsletter';
 
-		$page = add_submenu_page( $slug, __( 'Dashboard', 'mailster' ), __( 'Dashboard', 'mailster' ), 'mailster_dashboard', 'mailster_dashboard', array( &$this, 'dashboard' ) );
+		$page = add_submenu_page( $slug, __( 'Mailster Dashboard', 'mailster' ), __( 'Dashboard', 'mailster' ), 'mailster_dashboard', 'mailster_dashboard', array( &$this, 'dashboard' ) );
 		add_action( 'load-' . $page, array( &$this, 'init_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'register_meta_boxes' ) );

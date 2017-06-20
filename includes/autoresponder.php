@@ -7,6 +7,7 @@ $mailster_autoresponder_info = array(
 		'hour' => __( 'hour(s)', 'mailster' ),
 		'day' => __( 'day(s)', 'mailster' ),
 		'week' => __( 'week(s)', 'mailster' ),
+		'month' => __( 'month(s)', 'mailster' ),
 		'year' => __( 'year(s)', 'mailster' ),
 	),
 
@@ -44,4 +45,4 @@ $mailster_autoresponder_info = array(
 );
 
 $mailster_autoresponder_info['units'] = apply_filters( 'mymail_autoresponder_units', apply_filters( 'mailster_autoresponder_units', $mailster_autoresponder_info['units'] ) );
-$mailster_autoresponder_info['actions'] = apply_filters( 'mymail_autoresponder_units', apply_filters( 'mailster_autoresponder_units', $mailster_autoresponder_info['actions'] ) );
+$mailster_autoresponder_info['actions'] = apply_filters( 'mymail_autoresponder_actions', apply_filters( 'mailster_autoresponder_actions', $mailster_autoresponder_info['actions'] ) );
