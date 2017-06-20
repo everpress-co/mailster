@@ -85,6 +85,7 @@ Xaver Birsak – https://revaxarts.com
 = Version 2.3 =
 
 * improved: image procession to support more third party plugins
+* new: option to crop images in the picpicker
 
 = Version 2.2.8 =
 
