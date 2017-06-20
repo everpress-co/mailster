@@ -735,7 +735,7 @@ class MailsterForm {
 
 		$referer = isset( $_BASE['_referer'] ) ? $_BASE['_referer'] : $baselink;
 		if ( $referer == 'extern' || isset( $_GET['_extern'] ) ) {
-			$referer = esc_url( wp_get_referer() );
+			$referer = esc_url( mailster_get_referer() );
 		}
 
 		$now = time();
@@ -951,7 +951,7 @@ class MailsterForm {
 				exit;
 			}
 
-			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( wp_get_referer() );
+			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( mailster_get_referer() );
 
 		} else {
 
@@ -960,7 +960,7 @@ class MailsterForm {
 				exit;
 			}
 
-			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( wp_get_referer() );
+			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( mailster_get_referer() );
 
 		}
 
@@ -1232,7 +1232,7 @@ class MailsterForm {
 	 * @return unknown
 	 */
 	private function is_extern() {
-		return parse_url( wp_get_referer(), PHP_URL_HOST ) != parse_url( home_url(), PHP_URL_HOST );
+		return parse_url( mailster_get_referer(), PHP_URL_HOST ) != parse_url( home_url(), PHP_URL_HOST );
 	}
 
 

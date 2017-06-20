@@ -216,9 +216,10 @@ class MailsterAjax {
 		@error_reporting( 0 );
 
 		$id = intval( $_GET['id'] );
-		$template = str_replace( '/', '', $_GET['template'] );
-		$file = isset( $_GET['templatefile'] ) ? str_replace( '/', '', $_GET['templatefile'] ) : 'index.html';
+		$template = basename( $_GET['template'] );
+		$file = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
+
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
 
@@ -319,7 +320,7 @@ class MailsterAjax {
 		$filename = $t->create_new( $name, $content, $modules, $activemodules, $overwrite );
 
 		if ( $return['success'] = $filename !== false ) {
-			$return['url'] = add_query_arg( array( 'template' => $template, 'file' => $filename, 'message' => 3 ), wp_get_referer() );
+			$return['url'] = add_query_arg( array( 'template' => $template, 'file' => $filename, 'message' => 3 ), mailster_get_referer() );
 		}
 
 		if ( ! $return['success'] ) {
@@ -580,7 +581,6 @@ class MailsterAjax {
 				$mail->hash = str_repeat( '0', 32 );
 
 				$content = mailster()->sanitize_content( $content, null, $head );
-				$content = mailster( 'helper' )->prepare_content( $content );
 
 				$placeholder = mailster( 'placeholder', $content );
 
@@ -665,8 +665,8 @@ class MailsterAjax {
 				) );
 
 				$placeholder->share_service( $campaign_permalink, $subject );
-
-				$content = $placeholder->get_content();
+				$content = $placeholder->get_content( false );
+				$content = mailster( 'helper' )->prepare_content( $content );
 
 				// replace links with fake hash to prevent tracking
 				if ( $replace_links ) {

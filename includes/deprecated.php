@@ -8,9 +8,7 @@ if ( ! function_exists( 'mymail' ) ) :
 		define( 'MYMAIL_VERSION', MAILSTER_VERSION );
 	}
 
-
-	add_action( 'mymail_form_header', 'mymail_check_deprecated_forms' );
-	function mymail_check_deprecated_forms() {
+	add_action( 'mymail_form_header', function() {
 
 		global $pagenow;
 
@@ -23,12 +21,11 @@ if ( ! function_exists( 'mymail' ) ) :
 				$msg = 'An deprecated external form for Mailster has been found at %1$s. Please update the HTML following %2$s.';
 			}
 
-			mymail_notice( '<strong>' . sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank">this guide</a>' ) . '</strong>' , 'error', 3600, 'oldsubscriberbtn' );
+			mailster_notice( '<strong>' . sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank">this guide</a>' ) . '</strong>' , 'error', 3600, 'oldsubscriberbtn' );
 		}
+	});
 
-	}
-	add_action( 'mymail_cron_worker', 'mymail_check_deprecated_cron' );
-	function mymail_check_deprecated_cron() {
+	add_action( 'mymail_cron_worker', function() {
 
 		global $pagenow;
 
@@ -38,10 +35,9 @@ if ( ! function_exists( 'mymail' ) ) :
 
 			$msg = 'The URL to the cron has changed but still get triggered! Please update your cron service to the new URL.</strong></p><a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_settings#cron">Get the new URL</a>';
 
-			mymail_notice( '<strong>' . $msg . '</strong>' , 'error', 3600, 'oldcronurl' );
+			mailster_notice( '<strong>' . $msg . '</strong>' , 'error', 3600, 'oldcronurl' );
 		}
-
-	}
+	});
 
 
 

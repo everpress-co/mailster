@@ -2548,8 +2548,11 @@ jQuery(document).ready(function ($) {
 
 			} else if (current.type == 'multi') {
 
-				if (isTinyMCE && tinymce.get('mailster-editor') && !tinymce.get('mailster-editor').isHidden())
-					current.element.html(tinymce.get('mailster-editor').getContent());
+				if (isTinyMCE && tinymce.get('mailster-editor') && !tinymce.get('mailster-editor').isHidden()) {
+					var content = tinymce.get('mailster-editor').getContent();
+					content = content.replace('href="http://{', 'href="{'); //from tinymce if tag is used
+					current.element.html(content);
+				}
 
 			} else if (current.type == 'single') {
 

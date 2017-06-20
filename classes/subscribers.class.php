@@ -1054,11 +1054,13 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $user_id  (optional)
-	 * @param unknown $userdata (optional)
+	 * @param unknown $user_id                 (optional)
+	 * @param unknown $userdata                (optional)
+	 * @param unknown $merge                   (optional)
+	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
-	public function add_from_wp_user( $user_id = null, $userdata = array() ) {
+	public function add_from_wp_user( $user_id, $userdata = array(), $merge = false, $subscriber_notification = true ) {
 
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
@@ -1097,7 +1099,7 @@ class MailsterSubscribers {
 			'lastname' => $last_name,
 		) );
 
-		$subscriber_id = $this->add( $userdata, true );
+		$subscriber_id = $this->add( $userdata, true, $merge, $subscriber_notification );
 
 		return $subscriber_id;
 
@@ -2581,7 +2583,7 @@ class MailsterSubscribers {
 			$subscriber_id = $this->add_from_wp_user( get_current_user_id(), array(
 				'status' => 1,
 				'referer' => 'backend',
-			) );
+			), false, false );
 		}
 
 	}
