@@ -71,6 +71,8 @@ class MailsterSettings {
 			'send_offset' => 0,
 			'timezone' => false,
 			'embed_images' => false,
+			'track_opens' => true,
+			'track_clicks' => true,
 			'module_thumbnails' => true,
 			'charset' => 'UTF-8',
 			'encoding' => '8bit',

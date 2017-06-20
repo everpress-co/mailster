@@ -983,7 +983,10 @@ class MailsterCampaigns {
 			break;
 
 			case 'open':
-				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
+
+				if ( ! $this->meta( $post->ID, 'track_opens' ) ) {
+					echo '<span class="mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
+				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
 					echo '<span class="s-opens">' . number_format_i18n( $opens ) . '</span>/<span class="tiny s-sent">' . number_format_i18n( $sent ) . '</span>';
 					$rate = round( mailster( 'campaigns' )->get_open_rate( $post->ID ) * 100, 2 );
 					echo "<br><span title='" . sprintf( __( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
@@ -995,7 +998,9 @@ class MailsterCampaigns {
 			break;
 
 			case 'click':
-				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
+				if ( ! $this->meta( $post->ID, 'track_clicks' ) ) {
+					echo '<span class="mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
+				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
 					$rate = round( mailster( 'campaigns' )->get_click_rate( $post->ID ) * 100, 2 );
 					$rate_a = round( mailster( 'campaigns' )->get_adjusted_click_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $clicks );
@@ -1602,6 +1607,30 @@ class MailsterCampaigns {
 					}
 				} elseif ( 'mailster_autoresponder_followup' == $autoresponder['action'] ) {
 
+					$parent_id = isset( $_POST['parent_id'] ) ? intval( $_POST['parent_id'] ) : null;
+
+					switch ( $autoresponder['followup_action'] ) {
+						// sent
+						case '1':
+							break;
+						// open
+						case '2':
+							if ( ! $this->meta( $parent_id, 'track_opens' ) ) {
+								$parent_campaing = get_post( $parent_id );
+								mailster_notice( '<strong>' . sprintf( __( 'Tracking Opens is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaing->ID . '&action=edit' ) . '">' . $parent_campaing->post_title . '</a>' ) . '</strong>', 'error', true );
+							}
+							break;
+						// clicked
+						case '3':
+							if ( ! $this->meta( $_POST['parent_id'], 'track_clicks' ) ) {
+								$parent_campaing = get_post( $parent_id );
+								mailster_notice( '<strong>' . sprintf( __( 'Tracking Clicks is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaing->ID . '&action=edit' ) . '">' . $parent_campaing->post_title . '</a>' ) . '</strong>', 'error', true );
+							}
+							break;
+
+						default:
+							break;
+					}
 				} elseif ( 'mailster_autoresponder_usertime' == $autoresponder['action'] ) {
 
 					$meta['timezone'] = isset( $autoresponder['usertime_timezone'] );
@@ -3527,6 +3556,9 @@ class MailsterCampaigns {
 
 		$return = '';
 
+		$track_opens = $this->meta( $campaign_id, 'track_opens' );
+		$track_clicks = $this->meta( $campaign_id, 'track_clicks' );
+
 		$limit = apply_filters( 'mailster_get_recipients_part', 1000 );
 		$offset = intval( $page ) * $limit;
 
@@ -3544,6 +3576,13 @@ class MailsterCampaigns {
 			'unsubs' => __( 'Unsubscribes', 'mailster' ),
 			'bounces' => __( 'Bounces', 'mailster' ),
 		);
+
+		if ( ! $track_opens ) {
+			unset( $fields['open'], $fields['open_count'] );
+		}
+		if ( ! $track_clicks ) {
+			unset( $fields['clicks'], $fields['click_count'] );
+		}
 
 		if ( ! in_array( $orderby, array_keys( $fields ) ) ) {
 			$orderby = 'sent';
@@ -3574,9 +3613,13 @@ class MailsterCampaigns {
 
 		if ( ! $offset ) {
 			$return .= '<div class="ajax-list-header filter-list"><label>' . __( 'Filter', 'mailster' ) . ': </label> ';
-			$return .= '<label><input type="checkbox" class="recipients-limit show-unopen" value="unopen" ' . checked( $unopen, true, false ) . '> ' . __( 'unopens', 'mailster' ) . ' </label> ';
-			$return .= '<label><input type="checkbox" class="recipients-limit show-open" value="opens" ' . checked( $opens, true, false ) . '> ' . __( 'opens', 'mailster' ) . ' </label> ';
-			$return .= '<label><input type="checkbox" class="recipients-limit show-click" value="clicks"' . checked( $clicks, true, false ) . '> ' . __( 'clicks', 'mailster' ) . ' </label> ';
+			if ( $track_opens ) {
+				$return .= '<label><input type="checkbox" class="recipients-limit show-unopen" value="unopen" ' . checked( $unopen, true, false ) . '> ' . __( 'unopens', 'mailster' ) . ' </label> ';
+				$return .= '<label><input type="checkbox" class="recipients-limit show-open" value="opens" ' . checked( $opens, true, false ) . '> ' . __( 'opens', 'mailster' ) . ' </label> ';
+			}
+			if ( $track_clicks ) {
+				$return .= '<label><input type="checkbox" class="recipients-limit show-click" value="clicks"' . checked( $clicks, true, false ) . '> ' . __( 'clicks', 'mailster' ) . ' </label> ';
+			}
 			$return .= '<label><input type="checkbox" class="recipients-limit show-unsubscribes" value="unsubs"' . checked( $unsubs, true, false ) . '> ' . __( 'unsubscribes', 'mailster' ) . '</label> ';
 			$return .= '<label><input type="checkbox" class="recipients-limit show-bounces" value="bounces"' . checked( $bounces, true, false ) . '> ' . __( 'bounces', 'mailster' ) . ' </label> ';
 			$return .= '<label>' . __( 'order by', 'mailster' ) . ' ';
@@ -3889,7 +3932,7 @@ class MailsterCampaigns {
 	 * @param unknown $log           (optional)
 	 * @return unknown
 	 */
-	public function send_to_subscriber( $campaign_id, $subscriber_id, $track = true, $force = false, $log = false ) {
+	public function send_to_subscriber( $campaign_id, $subscriber_id, $track = null, $force = false, $log = false ) {
 
 		_deprecated_function( __FUNCTION__, '2.2', "mailster('campaigns')->send()" );
 
@@ -3908,7 +3951,7 @@ class MailsterCampaigns {
 	 * @param unknown $log           (optional)
 	 * @return unknown
 	 */
-	public function send( $campaign_id, $subscriber_id, $track = true, $force = false, $log = true ) {
+	public function send( $campaign_id, $subscriber_id, $track = null, $force = false, $log = true ) {
 
 		global $wpdb;
 
@@ -3948,7 +3991,7 @@ class MailsterCampaigns {
 		$mail->preheader = $campaign_meta['preheader'];
 		$mail->embed_images = $campaign_meta['embed_images'];
 
-		$mail->add_tracking_image = $campaign_meta['track_opens'];
+		$mail->add_tracking_image = $track || $campaign_meta['track_opens'];
 		$mail->hash = $subscriber->hash;
 		$mail->set_subscriber( $subscriber->ID );
 
@@ -4017,7 +4060,11 @@ class MailsterCampaigns {
 
 		$content = $placeholder->get_content();
 
-		if ( $campaign_meta['track_clicks'] ) {
+		if ( is_null( $track ) ) {
+			$track = $campaign_meta['track_clicks'];
+		}
+
+		if ( $track ) {
 
 			// replace links
 			$content = mailster()->replace_links( $content, $subscriber->hash, $campaign->ID );

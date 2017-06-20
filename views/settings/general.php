@@ -30,8 +30,8 @@
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Tracking', 'mailster' ) ?> *</th>
 		<td>
-		<p><label><input type="hidden" class="wasabi" name="mailster_options[track_opens]" value=""><input type="checkbox" name="mailster_options[track_opens]" value="1" <?php checked( mailster_option( 'track_opens' ) );?>> <?php esc_html_e( 'Track opens in your campaigns', 'mailster' ) ?></label></p>
-		<p><label><input type="hidden" class="wasabi" name="mailster_options[track_clicks]" value=""><input type="checkbox" name="mailster_options[track_clicks]" value="1" <?php checked( mailster_option( 'track_clicks' ) );?>> <?php esc_html_e( 'Track clicks in your campaigns', 'mailster' ) ?></label></p>
+		<p><label><input type="hidden" name="mailster_options[track_opens]" value=""><input type="checkbox" name="mailster_options[track_opens]" value="1" <?php checked( mailster_option( 'track_opens' ) );?>> <?php esc_html_e( 'Track opens in your campaigns', 'mailster' ) ?></label></p>
+		<p><label><input type="hidden" name="mailster_options[track_clicks]" value=""><input type="checkbox" name="mailster_options[track_clicks]" value="1" <?php checked( mailster_option( 'track_clicks' ) );?>> <?php esc_html_e( 'Track clicks in your campaigns', 'mailster' ) ?></label></p>
 		</td>
 	</tr>
 	<tr valign="top">

@@ -940,7 +940,7 @@ class MailsterQueue {
 					}
 
 					// regular campaign
-					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, true, false, false );
+					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, null, false, false );
 
 					$options = false;
 

@@ -507,6 +507,14 @@ if ( $old_version ) {
 
 			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'yes' WHERE option_name IN ('mailster_username', 'mailster_email')" );
 
+
+
+
+		case '2.2.X':
+
+			$mailster_options['track_opens'] = true;
+			$mailster_options['track_clicks'] = true;
+
 		default:
 
 
