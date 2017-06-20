@@ -7,7 +7,7 @@
 	</tr>
 	<tr valign="top">
 		<th scope="row">&nbsp;</th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[bounce_active]" value=""><input type="checkbox" name="mailster_options[bounce_active]" id="bounce_active" value="1" <?php checked( mailster_option( 'bounce_active' ) );?>> <?php esc_html_e( 'Enable automatic bounce handling', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[bounce_active]" value=""><input type="checkbox" name="mailster_options[bounce_active]" id="bounce_active" value="1" <?php checked( mailster_option( 'bounce_active' ) );?>> <?php esc_html_e( 'Enable automatic bounce handling', 'mailster' ) ?></label>
 		</td>
 	</tr>
 
@@ -34,7 +34,7 @@
 		</tr>
 		<tr valign="top">
 			<th scope="row">SSL</th>
-			<td><label><input type="hidden" class="wasabi" name="mailster_options[bounce_ssl]" value=""><input type="checkbox" name="mailster_options[bounce_ssl]" id="bounce_ssl" value="1" <?php checked( mailster_option( 'bounce_ssl' ) );?>> <?php esc_html_e( 'Use SSL.', 'mailster' ) ?></label>
+			<td><label><input type="hidden" name="mailster_options[bounce_ssl]" value=""><input type="checkbox" name="mailster_options[bounce_ssl]" id="bounce_ssl" value="1" <?php checked( mailster_option( 'bounce_ssl' ) );?>> <?php esc_html_e( 'Use SSL.', 'mailster' ) ?></label>
 			</td>
 		</tr>
 		<tr valign="top">
@@ -51,7 +51,7 @@
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Delete messages', 'mailster' );?></th>
-			<td><label><input type="hidden" class="wasabi" name="mailster_options[bounce_delete]" value=""><input type="checkbox" name="mailster_options[bounce_delete]" value="1" <?php checked( mailster_option( 'bounce_delete' ) ) ?>> <?php esc_html_e( 'Delete messages without tracking code to keep postbox clear (recommended)', 'mailster' ) ?></label>
+			<td><label><input type="hidden" name="mailster_options[bounce_delete]" value=""><input type="checkbox" name="mailster_options[bounce_delete]" value="1" <?php checked( mailster_option( 'bounce_delete' ) ) ?>> <?php esc_html_e( 'Delete messages without tracking code to keep postbox clear (recommended)', 'mailster' ) ?></label>
 			</td>
 		</tr>
 		<tr valign="top" class="wp_cron">

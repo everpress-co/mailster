@@ -36,7 +36,7 @@ class MailsterTemplate {
 	public function __construct( $slug = null, $file = 'index.html' ) {
 
 		$this->rtl = is_rtl();
-		$this->file = $file;
+		$this->file = basename( $file );
 
 		$this->path = MAILSTER_UPLOAD_DIR . '/templates';
 		$this->url = MAILSTER_UPLOAD_URI . '/templates';
@@ -132,6 +132,8 @@ class MailsterTemplate {
 	 */
 	public function load_template( $slug = '' ) {
 
+		$slug = basename( $slug );
+
 		$this->templatepath = $this->path . '/' . $slug;
 		$this->templateurl = $this->url . '/' . $slug;
 
@@ -148,19 +150,19 @@ class MailsterTemplate {
 			mailster( 'templates' )->renew_default_template( 'mymail' );
 		}
 
-		if ( ! file_exists( $file ) ) {
-			return false;
-		}
-
 		if ( ! class_exists( 'DOMDocument' ) ) {
-			die( "PHP Fatal error: Class 'DOMDocument' not found" );
+			wp_die( "PHP Fatal error: Class 'DOMDocument' not found" );
 		}
 
 		$doc = new DOMDocument();
 		$doc->validateOnParse = true;
 		$doc->formatOutput = true;
 
-		$data = file_get_contents( $file );
+		if ( file_exists( $file ) ) {
+			$data = file_get_contents( $file );
+		} else {
+			$data = '{headline}<br>{content}';
+		}
 
 		$i_error = libxml_use_internal_errors( true );
 		$doc->loadHTML( $data );
@@ -180,6 +182,10 @@ class MailsterTemplate {
 				$src = $logo->getAttribute( 'src' );
 				$width = $logo->getAttribute( 'width' );
 				$height = $logo->getAttribute( 'height' );
+
+				if ( ! $src || ! $height || ! $width ) {
+					continue;
+				}
 
 				$new_logo = mailster( 'helper' )->create_image( $logo_id, null, $width * $high_dpi, null, false );
 
@@ -241,6 +247,10 @@ class MailsterTemplate {
 					}
 
 					$dimensions = getimagesize( $icon );
+
+					if ( ! $dimensions ) {
+						continue;
+					}
 
 					$img = $doc->createElement( 'img' );
 					$link = $doc->createElement( 'a' );

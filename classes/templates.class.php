@@ -119,7 +119,9 @@ class MailsterTemplates {
 
 		mailster_require_filesystem();
 
-		$uploadfolder = MAILSTER_UPLOAD_DIR . '/uploads/' . uniqid();
+		$uploadfolder = mailster( 'helper' )->mkdir( 'uploads' );
+
+		$uploadfolder = $uploadfolder . uniqid();
 
 		if ( ! is_dir( $uploadfolder ) ) {
 			wp_mkdir_p( $uploadfolder );
@@ -356,7 +358,7 @@ class MailsterTemplates {
 		sort( $files );
 
 		foreach ( $files as $file ) {
-			if ( basename( $file ) == 'index.html' ) {
+			if ( basename( $file ) == 'index.html' && dirname( $file ) != $this->path ) {
 
 				$filename = str_replace( $this->path . '/', '', $file );
 				$slug = dirname( $filename );
@@ -479,6 +481,12 @@ class MailsterTemplates {
 			return 0;
 		}
 
+		$updates = get_option( 'mailster_templates_updates', null );
+
+		if ( ! is_null( $updates ) ) {
+			return intval( $updates );
+		}
+
 		if ( ! $templates = get_option( 'mailster_templates' ) ) {
 			return 0;
 		}
@@ -520,12 +528,12 @@ class MailsterTemplates {
 		wp_register_script( 'mailster-templates', MAILSTER_URI . 'assets/js/templates-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-templates' );
 		wp_localize_script( 'mailster-templates', 'mailsterL10n', array(
-				'delete_template_file' => __( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
-				'enter_template_name' => __( 'Please enter the name of the new template', 'mailster' ),
-				'uploading' => __( 'uploading zip file %s', 'mailster' ),
-				'enter_license' => __( 'Please enter your Purchase Code!', 'mailster' ),
-				'confirm_delete' => __( 'You are about to delete this template "%s"', 'mailster' ),
-				'update_note' => __( 'You are about to OVERWRITE your exiting template files with a new version!', 'mailster' ) . "\n\n" . __( 'Please make sure you have a backup of your files.', 'mailster' ),
+			'delete_template_file' => __( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
+			'enter_template_name' => __( 'Please enter the name of the new template', 'mailster' ),
+			'uploading' => __( 'uploading zip file %s', 'mailster' ),
+			'enter_license' => __( 'Please enter your Purchase Code!', 'mailster' ),
+			'confirm_delete' => __( 'You are about to delete this template "%s"', 'mailster' ),
+			'update_note' => __( 'You are about to OVERWRITE your exiting template files with a new version!', 'mailster' ) . "\n\n" . __( 'Please make sure you have a backup of your files.', 'mailster' ),
 		) );
 
 	}
@@ -906,9 +914,11 @@ class MailsterTemplates {
 
 		$hash = base_convert( md5_file( $filedir ) , 10, 36 );
 
-		$screenshot_folder = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/';
-		$screenshot_modules_folder = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/modules/' . $hash . '/';
-		$screenshotfile = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/' . $hash . '.jpg';
+		$screenshot_folder_base = mailster( 'helper' )->mkdir( 'screenshots' );
+
+		$screenshot_folder = $screenshot_folder_base . $slug . '/';
+		$screenshot_modules_folder = $screenshot_folder_base . $slug . '/modules/' . $hash . '/';
+		$screenshotfile = $screenshot_folder_base . $slug . '/' . $hash . '.jpg';
 		$screenshoturi = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 
 		mailster_require_filesystem();
@@ -992,8 +1002,8 @@ class MailsterTemplates {
 		);
 
 		$response = wp_remote_get( $request_url, array(
-				'headers' => $headers,
-				'timeout' => 2,
+			'headers' => $headers,
+			'timeout' => 2,
 		) );
 
 		$response_headers = wp_remote_retrieve_headers( $response );
@@ -1111,22 +1121,21 @@ class MailsterTemplates {
 	 */
 	public function on_activate( $new ) {
 
-		try {
-			$this->copy_template();
-		} catch ( Exception $e ) {
-			if ( ! wp_next_scheduled( 'mailster_copy_template' ) ) {
-				wp_schedule_single_event( time(), 'mailster_copy_template' );
-			}
-		}
-		try {
-			$this->copy_backgrounds();
-		} catch ( Exception $e ) {
-			if ( ! wp_next_scheduled( 'mailster_copy_backgrounds' ) ) {
-				wp_schedule_single_event( time(), 'mailster_copy_backgrounds' );
-			}
-		}
-
 		if ( $new ) {
+			try {
+				$this->copy_template();
+			} catch ( Exception $e ) {
+				if ( ! wp_next_scheduled( 'mailster_copy_template' ) ) {
+					wp_schedule_single_event( time(), 'mailster_copy_template' );
+				}
+			}
+			try {
+				$this->copy_backgrounds();
+			} catch ( Exception $e ) {
+				if ( ! wp_next_scheduled( 'mailster_copy_backgrounds' ) ) {
+					wp_schedule_single_event( time(), 'mailster_copy_backgrounds' );
+				}
+			}
 			$this->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 15 );
 		}
 
@@ -1135,12 +1144,8 @@ class MailsterTemplates {
 
 	public function copy_template() {
 
-		if ( ! is_dir( $this->path ) ) {
-
-			mailster_require_filesystem();
-
-			wp_mkdir_p( $this->path );
-			copy_dir( MAILSTER_DIR . 'templates', $this->path );
+		if ( $path = mailster( 'helper' )->mkdir( 'templates' ) ) {
+			copy_dir( MAILSTER_DIR . 'templates' , $path );
 
 		}
 
@@ -1149,15 +1154,8 @@ class MailsterTemplates {
 
 	public function copy_backgrounds() {
 
-		$path = MAILSTER_UPLOAD_DIR . '/backgrounds';
-
-		if ( ! is_dir( $path ) ) {
-
-			mailster_require_filesystem();
-
-			wp_mkdir_p( $path );
+		if ( $path = mailster( 'helper' )->mkdir( 'backgrounds' ) ) {
 			copy_dir( MAILSTER_DIR . 'assets/img/bg' , $path );
-
 		}
 
 	}
@@ -1240,12 +1238,13 @@ class MailsterTemplates {
 		$timeout = defined( 'DOING_CRON' ) && DOING_CRON ? 20 : 5;
 		$mailster_templates = get_option( 'mailster_templates', false );
 		if ( ! $mailster_templates ) {
+			add_option( 'mailster_templates', false, '', 'no' );
 			$mailster_templates = array( 'timestamp' => 0, 'templates' => array() );
 			$timeout = 10;
 		}
 
 		// time before next check
-		$pause = 86400;
+		$pause = DAY_IN_SECONDS;
 		$url = 'http://mailster.github.io/v1/templates.json';
 
 		if ( time() - $mailster_templates['timestamp'] <= $pause && ! $force ) {
@@ -1266,9 +1265,19 @@ class MailsterTemplates {
 		}
 
 		update_option( 'mailster_templates', array(
-				'timestamp' => time(),
-				'templates' => $templates,
+			'timestamp' => time(),
+			'templates' => $templates,
 		) );
+
+		$old_count = count( $mailster_templates['templates'] );
+		$new_count = count( $templates );
+		$diff = $new_count - $old_count;
+
+		if ( false && $old_count && $new_count > $old_count ) {
+			mailster_notice( sprintf( _n( '%d new template for Mailster is available!', '%d new templates for Mailster are available!', $diff, 'your_textdomain' ), $diff ) . ' <br><strong><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more&mailster_remove_notice=new_templates' ) . '">' . esc_html__( 'Visit Templates Page', 'mailster' ) . '<a></strong>', 'info', false, 'new_templates' );
+		}
+
+		update_option( 'mailster_templates_updates', array_sum( wp_list_pluck( $templates, 'update' ) ) );
 
 		return ! is_null( $slug ) && isset( $templates[ $slug ] ) ? $templates[ $slug ] : $templates;
 
@@ -1284,8 +1293,28 @@ class MailsterTemplates {
 	 */
 	private function get_mailster_templates_info( $mailster_templates, $timeout = 5 ) {
 
+		$default = array(
+			'name' => __( 'unknown', 'mailster' ),
+			'image' => null,
+			'description' => null,
+			'uri' => null,
+			'endpoint' => null,
+			'version' => null,
+			'new_version' => false,
+			'update' => false,
+			'author' => false,
+			'author_profile' => '',
+			'homepage' => null,
+			'download_url' => null,
+		);
+
+		foreach ( $mailster_templates as $slug => $data ) {
+			$mailster_templates[ $slug ] = wp_parse_args( $mailster_templates[ $slug ], $default );
+		}
+
 		$endpoints = wp_list_pluck( $mailster_templates, 'endpoint' );
 		$templates = $this->get_templates();
+
 		include ABSPATH . WPINC . '/version.php';
 
 		if ( ! $wp_version ) {
@@ -1297,6 +1326,10 @@ class MailsterTemplates {
 		$versions = $this->get_versions();
 		$collection = array();
 		foreach ( $endpoints as $slug => $endpoint ) {
+
+			if ( empty( $endpoint ) ) {
+				continue;
+			}
 
 			if ( ! isset( $collection[ $endpoint ] ) ) {
 				$collection[ $endpoint ] = array();
@@ -1312,20 +1345,6 @@ class MailsterTemplates {
 
 			$collection[ $endpoint ][ $slug ]['envato_item_id'] = isset( $mailster_templates[ $slug ]['envato_item_id'] ) ? $mailster_templates[ $slug ]['envato_item_id'] : null;
 		}
-
-		$default = array(
-			'name' => __( 'unknown', 'mailster' ),
-			'image' => null,
-			'description' => null,
-			'uri' => null,
-			'endpoint' => null,
-			'new_version' => false,
-			'update' => false,
-			'author' => __( 'unknown', 'mailster' ),
-			'author_profile' => '',
-			'homepage' => null,
-			'download_url' => null,
-		);
 
 		foreach ( $collection as $endpoint => $items ) {
 
@@ -1343,7 +1362,7 @@ class MailsterTemplates {
 			if ( array_filter( $envato_items ) ) {
 
 				$response = wp_remote_get( add_query_arg( array(
-							'items' => $envato_items,
+					'items' => $envato_items,
 				), $remote_url ), $post );
 
 			} elseif ( preg_match( '/\.json$/', $endpoint ) ) {
@@ -1368,7 +1387,9 @@ class MailsterTemplates {
 			if ( $response_code != 200 || is_wp_error( $response ) ) {
 				foreach ( $items as $slug => $data ) {
 					if ( isset( $mailster_templates[ $slug ] ) ) {
-						unset( $mailster_templates[ $slug ] );
+						// unset( $mailster_templates[ $slug ] );
+						$mailster_templates[ $slug ] = wp_parse_args( $mailster_templates[ $slug ], $default );
+						$mailster_templates[ $slug ]['endpoint'] = null;
 					}
 				}
 				continue;
@@ -1379,7 +1400,6 @@ class MailsterTemplates {
 				$i = -1;
 				foreach ( $items as $slug => $data ) {
 					$i++;
-					$mailster_templates[ $slug ] = wp_parse_args( $mailster_templates[ $slug ], $default );
 
 					$mailster_templates[ $slug ]['version'] = isset( $versions[ $slug ] ) ? $versions[ $slug ] : null;
 					if ( gettype( $response ) != 'array' || empty( $response[ $i ] ) ) {

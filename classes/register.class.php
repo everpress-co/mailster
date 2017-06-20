@@ -4,13 +4,7 @@ class MailsterRegister {
 
 	public function __construct() {
 
-		add_action( 'admin_init', array( &$this, 'init' ) );
 		add_action( 'mailster_register_mailster', array( &$this, 'on_register' ), 10, 3 );
-
-	}
-
-
-	public function init() {
 
 	}
 
@@ -32,6 +26,7 @@ class MailsterRegister {
 
 		wp_localize_script( 'mailster-register-script', 'mailsterregisterL10n', array(
 				'wpnonce' => wp_create_nonce( 'mailster_register' ),
+				'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
 		) );
 
 		if ( is_null( $slug ) ) {
@@ -46,15 +41,15 @@ class MailsterRegister {
 		$page = isset( $_GET['page'] ) ? str_replace( 'mailster_', '', $_GET['page'] ) : 'dashboard';
 
 		$args = wp_parse_args( $args, array(
-				'pretext' => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . esc_url( 'https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=' . $page ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
-				'purchasecode' => get_option( 'mailster_license' ),
+			'pretext' => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . esc_url( 'https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=' . $page ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
+			'purchasecode' => get_option( 'mailster_license' ),
 		) );
 
 		$user_id = get_current_user_id();
 		$user = get_userdata( $user_id );
 
-		$username = get_option( 'mailster_username', $user->data->user_login );
-		$useremail = get_option( 'mailster_email', $user->data->user_email );
+		$username = get_option( 'mailster_username', '' );
+		$useremail = get_option( 'mailster_email', '' );
 
 		wp_print_styles( 'mailster-register-style' );
 

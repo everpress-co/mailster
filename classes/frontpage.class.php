@@ -54,18 +54,24 @@ class MailsterFrontpage {
 
 		$slugs = implode( '|', (array) mailster_option( 'slugs', array( 'confirm', 'subscribe', 'unsubscribe', 'profile' ) ) );
 
-		$pagename = str_replace( 'index.php/', '', untrailingslashit( str_replace( trailingslashit( get_bloginfo( 'url' ) ), '', get_permalink( mailster_option( 'homepage' ) ) ) ) );
+		$homepage = mailster_option( 'homepage' );
+
+		$pagename = str_replace( 'index.php/', '', untrailingslashit( str_replace( trailingslashit( get_bloginfo( 'url' ) ), '', get_permalink( $homepage ) ) ) );
 
 		$rules = array();
 		$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
-		if ( get_option( 'page_on_front' ) == mailster_option( 'homepage' ) && get_option( 'show_on_front' ) == 'page' ) {
-			$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9]*)?' ] = 'index.php?page_id=' . mailster_option( 'homepage' ) . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
+		if ( get_option( 'page_on_front' ) == $homepage && get_option( 'show_on_front' ) == 'page' ) {
+			$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9]*)?' ] = 'index.php?page_id=' . $homepage . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
 		}
 
 		$rules['^(index\.php/)?(mailster|mymail)/([0-9]+)/([a-f0-9]{32})/?([a-zA-Z0-9=_+]+)?/?([0-9]+)?/?'] = 'index.php?_mailster=$matches[3]&_mailster_hash=$matches[4]&_mailster_page=$matches[5]&_mailster_extra=$matches[6]';
 
 		$rules['^(index\.php/)?(mailster|mymail)/(subscribe|update|unsubscribe)/?$'] = 'index.php?_mailster=$matches[3]';
+
+		if ( $secret = mailster_option( 'cron_secret' ) ) {
+			$rules[ '^(index\.php/)?mailster/(' . $secret . ')/?$' ] = 'index.php?_mailster_cron=$matches[2]';
+		}
 
 		return $rules + $wp_rules;
 
@@ -103,6 +109,7 @@ class MailsterFrontpage {
 		$vars[] = '_mailster_page';
 		$vars[] = '_mailster_hash';
 		$vars[] = '_mailster_extra';
+		$vars[] = '_mailster_cron';
 		return $vars;
 
 	}
@@ -712,7 +719,7 @@ class MailsterFrontpage {
 			break;
 		}
 
-		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . intval( $height ) . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;"></iframe>';
+		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . intval( $height ) . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
 
 	}
 
@@ -894,7 +901,7 @@ class MailsterFrontpage {
 					'scrolling' => true,
 		), $atts ) );
 
-		return '<iframe class="mailster_frame" src="' . add_query_arg( 'frame', 0, $link ) . '" style="min-width:610px;" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) . '" scrolling="' . ( $scrolling ? 'auto' : 'no' ) ) . '" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;"></iframe>';
+		return '<iframe class="mailster_frame" src="' . add_query_arg( 'frame', 0, $link ) . '" style="min-width:610px;" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) . '" scrolling="' . ( $scrolling ? 'auto' : 'no' ) ) . '" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
 
 	}
 
@@ -959,9 +966,9 @@ class MailsterFrontpage {
 	 */
 	public function newsletter_subscribers( $atts ) {
 		extract( shortcode_atts( array(
-					'formated' => true,
-					'round' => 1,
-					'lists' => null,
+			'formatted' => true,
+			'round' => 1,
+			'lists' => null,
 		), $atts ) );
 
 		$round = max( 1, $round );
@@ -974,7 +981,7 @@ class MailsterFrontpage {
 		}
 
 		$subscribers = ceil( $subscribers / $round ) * $round;
-		if ( $formated ) {
+		if ( $formatted ) {
 			$subscribers = number_format_i18n( $subscribers );
 		}
 
@@ -1050,7 +1057,7 @@ class MailsterFrontpage {
 	 */
 	private function do_shortcode_wrong( $shorttcode, $atts, $content ) {
 
-		if ( ! is_mailster_newsletter_homepage() ) {
+		if ( ! is_mailster_newsletter_homepage() && is_user_logged_in() ) {
 			$msg = sprintf( __( 'You should use the shortcode %s only on the newsletter homepage!', 'mailster' ), "[$shorttcode]" );
 			_doing_it_wrong( "[$shorttcode]", $msg, '2.1.5' );
 			return '<p>' . $msg . '</p>';
@@ -1069,12 +1076,12 @@ class MailsterFrontpage {
 	public function newsletter_button( $atts, $content ) {
 
 		$args = shortcode_atts( array(
-				'id' => 1,
-				'showcount' => false,
-				'label' => mailster_text( 'submitbutton' ),
-				'design' => 'default',
-				'width' => 480,
-				'endpoint' => MAILSTER_URI . 'form.php',
+			'id' => 1,
+			'showcount' => false,
+			'label' => mailster_text( 'submitbutton' ),
+			'design' => 'default',
+			'width' => 480,
+			'endpoint' => MAILSTER_URI . 'form.php',
 		), $atts );
 
 		return mailster( 'forms' )->get_subscribe_button( $args['id'], $args );

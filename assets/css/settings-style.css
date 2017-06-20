@@ -9,7 +9,6 @@
 	font-weight: normal;
 	font-style: normal;
 }
-
 .settings-wrap{
 	border: 1px solid;
 	background-color: #F1F1F1;
@@ -31,7 +30,6 @@
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
-
 .settings-tabs{
 	overflow: hidden;
 	background: #fff;
@@ -145,7 +143,6 @@ div.mainnav li a{
 	height: 20px;
 	margin: 0;
 }
-
 .tiny{
 	font-size: 0.8em;
 }
@@ -158,7 +155,6 @@ div.mainnav li a{
 .list span:last-child:after{
 	content: '';
 }
-
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),only screen and (-o-min-device-pixel-ratio: 32),only screen and (min--moz-device-pixel-ratio: 1.5),only screen and (min-device-pixel-ratio: 1.5) {
 	#mailster-settings-form div.loading,#mailster-settings-form span.loading {
 		-webkit-background-size:20px 20px;
@@ -166,14 +162,12 @@ div.mainnav li a{
 		background-size:20px 20px;
 		background-image:url(../img/loading_2x.gif);
 	}
-
 	.spinner{
 		background: url(../img/loading_2x.gif) no-repeat;
 		-webkit-background-size:20px 20px;
 		-moz-background-size:20px 20px;
 		background-size:20px 20px;
 	}
-
 }
 .settings-tabs .tab{
 	display: none;
@@ -186,7 +180,6 @@ div.mainnav li a{
 	border-bottom:1px solid #ccc;
 	padding-bottom: 3px;
 }
-
 .tag span, .customfield span{
 	display:inline-block;
 	overflow:hidden;
@@ -198,7 +191,6 @@ div.mainnav li a{
 	width:160px;
 	overflow:visible;
 }
-
 .subtab{
 	padding: 20px 10px;
 	display: none;
@@ -219,7 +211,6 @@ textarea.code {
 textarea.code.large-text {
 	width: 100%;
 }
-
 #tab-subscribers .customfield{
 	border: 1px solid #DFDFDF;
 	-webkit-border-radius: 3px;
@@ -245,7 +236,6 @@ table.form-table th{
 #city_db_path:focus, #country_db_path:focus, #city_db_path:hover, #country_db_path:hover{
 	opacity:1;
 }
-
 #social-services li {
 	border: 1px solid #DFDFDF;
 	-webkit-border-radius: 3px;
@@ -263,7 +253,6 @@ table.form-table th{
 	float: right;
 	text-decoration: none;
 }
-
 .frontpage-social-services li {
 	border: 1px solid #DFDFDF;
 	-webkit-border-radius: 3px;
@@ -271,7 +260,6 @@ table.form-table th{
 	display: inline-block;
 	width: 150px;
 }
-
 .frontpage-social-services li label:before {
 	font-family: 'mailster-social';
 	-webkit-text-rendering: optimizeLegibility;
@@ -293,11 +281,9 @@ table.form-table th{
 	width: 20px;
 
 }
-
 .frontpage-social-services li:hover label:before {
 	opacity: 1;
 }
-
 .frontpage-social-services li label {
 	padding: 1px 8px 2px 3px;
 	display: inline-block;
@@ -321,7 +307,6 @@ table.form-table th{
 .frontpage-social-services li.vk label:before { content: '\e80f'; color: #507299; }
 .frontpage-social-services li.whatsapp label:before { content: '\f232'; color: #25d366; }
 .frontpage-social-services li.telegram label:before { content: '\f2c6'; color: #54b3e6; }
-
 .homepage-slugs span{
 	font-size: 13px;
 }
@@ -331,7 +316,6 @@ table.form-table th{
 .homepage-slugs span input{
 	width: 208px;
 }
-
 .customfield-move-up, .customfield-move-down, .customfield-remove{
 	float: right;
 	cursor: pointer;
@@ -346,7 +330,6 @@ table.form-table th{
 .customfield:last-child .customfield-move-down{
 	visibility: hidden;
 }
-
 .customfields img{
 	vertical-align: middle;
 }
@@ -375,7 +358,6 @@ table.form-table th{
 
 	display: none !important;
 }
-
 .mailster_syncitem{
 	margin: 8px 0;
 }
@@ -391,7 +373,6 @@ table.form-table th{
 .mailster_syncitem a.remove-sync-item{
 	cursor: pointer;
 }
-
 .tag input.regular-text, .tag textarea.regular-text{
 	width:500px;
 	vertical-align: top;
@@ -418,7 +399,6 @@ input.tag-key, input.customfield-key{
 #form-tab-0 .default-form-msg{
 	display: block;
 }
-
 .customfield-value-add{
 	cursor: pointer;
 }
@@ -430,73 +410,6 @@ input.tag-key, input.customfield-key{
 }
 .rtl #formsnav .button{
 	float:left;
-}
-.form-order{
-	overflow: hidden;
-	margin: 0;
-	padding-top: 5px;
-}
-.form-order li{
-	padding: 3px 5px;
-	background: #fff;
-	border-radius: 2px;
-	border: 1px solid #DFDFDF;
-	display: block;
-	margin-right:2px;
-}
-.form-order.sortable li{
-	cursor:we-resize;
-	cursor:hand;
-	cursor:grab;
-	cursor:grabbing;
-	cursor:-moz-grab;
-	cursor:-webkit-grab;
-}
-.form-order li input.label{
-	border: 1px solid #fff;
-	outline: none;
-	margin: 0;
-	width: 45%;
-	overflow: visible;
-	background-color: #fff;
-}
-.form-order li:hover input.label{
-	border-color: #ccc;
-}
-.form-order li input.label:hover{
-	background-color: inherit;
-}
-.form-order li input.label:focus{
-	border-color: #aaa;
-	outline: none;
-	background-color: inherit;
-}
-.form-order li:hover{
-	border: 1px solid #ccc;
-	color: #D54E21;
-}
-.form-order li.inactive{
-	border: 1px solid #fff;
-	opacity: 0.5;
-}
-.form-order li.inactive input.label{
-	text-decoration: line-through;
-}
-.form-order li.inactive:hover{
-	opacity: 1;
-}
-.form-order li.inactive:hover input.label{
-	border-color: #fff;
-	text-decoration: none;
-}
-.form-order li.inactive input.label:focus{
-	text-decoration: none;
-}
-.form-order li.ui-sortable-helper{
-	cursor:grabbing;
-	cursor:-moz-grabbing;
-	cursor:-webkit-grabbing;
-	border: 1px solid #ccc;
 }
 .dkim-table{
 	border-radius:3px;
@@ -564,7 +477,6 @@ div.mailster_text label{
 	width: 183px;
 	display: inline-block;
 }
-
 ul.lasthit{
 	margin:0;
 }
@@ -574,7 +486,6 @@ ul.lasthit li{
 	text-overflow: ellipsis;
 	font-size: 12px;
 }
-
 #current-cap{
 	background-color: #777;
 	color: white;
@@ -611,7 +522,6 @@ ul.lasthit li{
 #capabilities-table tbody tr:hover {
 	background-color:#f5f5f5;
 }
-
 #capabilities-table tbody td:hover {
 	color:#fff;
 	background-color:gray;
@@ -626,18 +536,24 @@ ul.lasthit li{
 	height: 100%;
 	display: block;
 }
-
+.alternative-cron-url{
+	display: none;
+}
+.alternative-cron .alternative-cron-url{
+	display: block;
+}
+.alternative-cron .regular-cron-url{
+	display: none;
+}
 .bouncetest_status{
 	display: none;
 }
-
 .dkim-create-keys{
 }
 .dkim-create-keys label{
 	padding-right: 8px;
 	padding-left: 5px;
 }
-
 .not-verified p, .verified p{
 	padding: 0;
 	margin: 0 !important;
@@ -654,7 +570,6 @@ ul.lasthit li{
 	background-color: #E1FFD9;
 	border:1px solid #BADEB1;
 	padding: 0.6em;
-
 }
 #system_info_content{
 	width: 100%;

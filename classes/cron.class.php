@@ -27,6 +27,7 @@ class MailsterCron {
 
 		add_action( 'wp_ajax_mailster_cron', array( &$this, 'cron_worker' ) );
 		add_action( 'wp_ajax_nopriv_mailster_cron', array( &$this, 'cron_worker' ) );
+		add_action( 'template_redirect', array( &$this, 'template_redirect' ), 1 );
 
 	}
 
@@ -50,17 +51,10 @@ class MailsterCron {
 			$this->remove_crons();
 		}
 
-		if ( version_compare( PHP_VERSION, '5.3' ) < 0 ) {
-			mailster_notice( '<strong>' . sprintf( 'Mailster requires PHP version 5.3 and above. Your current version is %s so please update or ask your provider to help you with updating!', '<code>' . PHP_VERSION . '</code>' ) . '</strong>', 'error', false, 'minphpversion' );
-		} else {
-			mailster_remove_notice( 'minphpversion' );
-		}
-
-		if ( ! mailster()->is_verified() ) {
+		if ( ! mailster_is_local() && ! mailster()->is_verified() ) {
 			if ( time() - get_option( 'mailster' ) > WEEK_IN_SECONDS
-				&& get_option( 'mailster_setup' )
-				&& current_user_can( 'mailster_manage_licenses' ) ) {
-				mailster_notice( '<strong>' . sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'verify' );
+				&& get_option( 'mailster_setup' ) ) {
+				mailster_notice( '<strong>' . sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'verify', 'mailster_manage_licenses' );
 			}
 		} else {
 			mailster_remove_notice( 'verify' );
@@ -350,10 +344,15 @@ class MailsterCron {
 	public function url( $alternative = false ) {
 
 		if ( $alternative ) {
-			return apply_filters( 'mailster_cron_url', add_query_arg( array(
-				'secret' => mailster_option( 'cron_secret' ),
-			), MAILSTER_URI . 'cron.php' ), $alternative );
 
+			if ( mailster_option( 'got_url_rewrite' ) ) {
+				return apply_filters( 'mailster_cron_url', get_home_url( null, 'mailster/' . mailster_option( 'cron_secret' ) ), $alternative );
+			} else {
+				return apply_filters( 'mailster_cron_url', add_query_arg( array(
+					'secret' => mailster_option( 'cron_secret' ),
+				), MAILSTER_URI . 'cron.php' ), $alternative );
+
+			}
 		} else {
 			return apply_filters( 'mailster_cron_url', add_query_arg( array(
 				'action' => 'mailster_cron',
@@ -365,11 +364,30 @@ class MailsterCron {
 	}
 
 
+	public function template_redirect() {
+
+		$secret = get_query_var( '_mailster_cron' );
+
+		if ( $secret ) {
+			if ( ! defined( 'MAILSTER_CRON_SECRET' ) ) {
+				define( 'MAILSTER_CRON_SECRET', $secret );
+			}
+
+			include MAILSTER_DIR . 'cron.php';
+			exit();
+
+		}
+
+	}
+
+
 	public function cron_worker() {
 
 		$secret = isset( $_GET['secret'] ) ? $_GET['secret'] : false;
 
-		define( 'MAILSTER_CRON_SECRET', $secret );
+		if ( ! defined( 'MAILSTER_CRON_SECRET' ) ) {
+			define( 'MAILSTER_CRON_SECRET', $secret );
+		}
 
 		include MAILSTER_DIR . 'cron.php';
 		exit();
@@ -385,6 +403,10 @@ class MailsterCron {
 	public function on_activate( $new ) {
 
 		$this->update();
+
+		if ( $new ) {
+			add_option( 'mailster_cron_lasthit', false, '', 'no' );
+		}
 
 	}
 

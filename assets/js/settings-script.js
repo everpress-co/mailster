@@ -56,14 +56,23 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
+	$('.click-to-select').on('click', function (event) {
+		if (document.selection) {
+			var range = document.body.createTextRange();
+			range.moveToElementText(this);
+			range.select();
+		} else if (window.getSelection) {
+			var range = document.createRange();
+			range.selectNode(this);
+			window.getSelection().addRange(range);
+		}
+
+	});
+
 	$('#mailster-settings-form')
 		.on('click', 'a[href^="#"]', function () {
 			nav.find('a[href="' + $(this).attr('href') + '"]').trigger('click');
 		});
-
-	if (location.hash == '#forms' && confirm('The forms are no longer on the settings page. Go there?')) {
-		location.href = 'edit.php?post_type=newsletter&page=mailster_forms';
-	}
 
 	(location.hash && nav.find('a[href="' + location.hash + '"]').length) ?
 	nav.find('a[href="' + location.hash + '"]').trigger('click'): nav.find('a').eq(0).trigger('click');
@@ -285,14 +294,14 @@ jQuery(document).ready(function ($) {
 		});
 	});
 
-	$(".sortable").sortable({
-		containment: "parent"
-	});
-
-
 	$('input.cron_radio').on('change', function () {
 		$('.cron_opts').hide();
 		$('.' + $(this).val()).show();
+	});
+
+	$('.switch-cron-url').on('click', function () {
+		$('.cron_opts').toggleClass('alternative-cron');
+		return false;
 	});
 
 	$('#mailster_add_tag').on('click', function () {

@@ -260,7 +260,8 @@ $sent = $this->get_sent( $post->ID );
 
 			global $wp_locale;
 
-			echo esc_html__( 'send campaigns only on these weekdays', 'mailster' ) . '<br>';
+			esc_html_e( 'send campaigns only on these weekdays', 'mailster' );
+			echo '<br>';
 			$start_at = get_option( 'start_of_week' );
 
 			for ( $i = $start_at; $i < 7 + $start_at; $i++ ) {

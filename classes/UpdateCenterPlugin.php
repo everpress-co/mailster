@@ -1,6 +1,6 @@
 <?php
 
-// Version 2.3
+// Version 2.6
 // UpdateCenterPlugin Class
 if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
@@ -30,8 +30,8 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 				$error = sprintf( '[UpdateCenter] You have to define a "plugin" parameter for your plugin in %s on line %d', $caller['file'], $caller['line'] );
 
 				return ( is_admin() )
-				? wp_die( $error )
-				: false;
+					? wp_die( $error )
+					: false;
 
 			}
 
@@ -148,15 +148,24 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
 			$response = self::check( $pluginslug, 'verify' );
 
-			if ( isset( $response['verified'] ) && $response['verified'] ) {
-				return true;
-			}
+			if ( ! is_wp_error( $response ) ) {
 
-			if ( ! $returnWPError ) {
-				return false;
-			}
+				if ( isset( $response['verified'] ) && $response['verified'] ) {
+					return true;
+				}
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return new WP_Error( $response['code'], $response['message'], $response['data'] );
 
-			return new WP_Error( $response['code'], $response['message'], $response['data'] );
+			} else {
+
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return $response;
+
+			}
 
 		}
 
@@ -189,15 +198,24 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
 			$response = self::check( $pluginslug, 'register', $userdata );
 
-			if ( isset( $response['verified'] ) && $response['verified'] ) {
-				return true;
-			}
+			if ( ! is_wp_error( $response ) ) {
 
-			if ( ! $returnWPError ) {
-				return false;
-			}
+				if ( isset( $response['verified'] ) && $response['verified'] ) {
+					return true;
+				}
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return new WP_Error( $response['code'], $response['message'], $response['data'] );
 
-			return new WP_Error( $response['code'], $response['message'], $response['data'] );
+			} else {
+
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return $response;
+
+			}
 
 		}
 
@@ -229,15 +247,24 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
 			$response = self::check( $pluginslug, 'reset' );
 
-			if ( isset( $response['reset'] ) && $response['reset'] ) {
-				return true;
-			}
+			if ( ! is_wp_error( $response ) ) {
 
-			if ( ! $returnWPError ) {
-				return false;
-			}
+				if ( isset( $response['reset'] ) && $response['reset'] ) {
+					return true;
+				}
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return new WP_Error( $response['code'], $response['message'], $response['data'] );
 
-			return new WP_Error( $response['code'], $response['message'], $response['data'] );
+			} else {
+
+				if ( ! $returnWPError ) {
+					return false;
+				}
+				return $response;
+
+			}
 
 		}
 
@@ -305,13 +332,18 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 					continue;
 				}
 
+				$output = array();
+
 				$nonce = wp_create_nonce( 'upgrade-plugin_' . $data->plugin );
 				foreach ( $notices as $notice ) {
-					echo '<div class="update-nag">' . str_replace(
+					$output[] = str_replace(
 						'%%updateurl%%',
 						admin_url( 'update.php?action=upgrade-plugin&plugin=' . urlencode( $data->plugin ) . '&_wpnonce=' . $nonce ),
-					$notice . '</div>' );
+					$notice);
 				}
+
+				echo '<div class="update-nag update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
+
 			}
 
 		}
@@ -470,7 +502,7 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
 			}
 
-				return $res;
+			return $res;
 
 		}
 
@@ -741,6 +773,7 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 					'x-ip' => isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : null,
 				),
 				'body' => $body,
+				'timeout' => 20,
 			);
 
 			$response = wp_remote_post( $url, $args );
@@ -792,21 +825,22 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 		 */
 		private static function header_infos( $slug ) {
 
-			global $pagenow;
+			global $pagenow, $wpdb;
 
 			include ABSPATH . WPINC . '/version.php';
 
-			if ( ! $wp_version ) {
-				global $wp_version;
-			}
+			$is_multisite = is_multisite();
 
 			$return = array(
 				'licensecode' => isset( self::$plugin_data[ $slug ]->licensecode ) ? self::$plugin_data[ $slug ]->licensecode : null,
 				'version' => self::$plugins[ $slug ]->version,
 				'wp-version' => $wp_version,
-				'referer' => home_url(),
-				'multisite' => is_multisite(),
+				'referer' => $is_multisite ? network_site_url() : home_url(),
+				'multisite' => $is_multisite ? get_blog_count() : false,
 				'auto' => $pagenow == 'wp-cron.php',
+				'php' => phpversion(),
+				'mysql' => method_exists( $wpdb, 'db_version' ) ? $wpdb->db_version() : null,
+				'locale' => get_locale(),
 			);
 
 			if ( isset( self::$plugin_data[ $slug ]->custom ) ) {

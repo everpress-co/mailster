@@ -252,7 +252,15 @@ class MailsterPlaceholder {
 				$this->content = str_replace( $styles[0], '%%%STYLEBLOCK%%%', $this->content );
 			}
 
-			$this->content = preg_replace( '#\{([a-z0-9-_,;:| \[\]]+)\}#i', '', $this->content );
+			$keep = apply_filters( 'mailster_keep_tags', array() );
+			$pattern = '\{([a-z0-9-_,;:| \[\]]+)\}';
+
+			if ( ! empty( $keep ) ) {
+				$keep = '{' . implode( '}|{', (array) $keep ) . '}';
+				$this->content = preg_replace( '#' . $pattern . '(?<!' . $keep . ')#i', '', $this->content );
+			} else {
+				$this->content = preg_replace( '#' . $pattern . '#i', '', $this->content );
+			}
 
 			if ( ! empty( $styles[0] ) ) {
 				$search = explode( '|', str_repeat( '/%%%STYLEBLOCK%%%/|', count( $styles[0] ) - 1 ) . '/%%%STYLEBLOCK%%%/' );
@@ -669,7 +677,7 @@ class MailsterPlaceholder {
 						}
 
 						$what = 'meta';
-						$extra = $metavalue;
+						$extra = $metakey;
 
 					} elseif ( 0 === strpos( $what, 'category[' ) ) {
 						preg_match( '#category\[(.*)\]#i', $what, $category );

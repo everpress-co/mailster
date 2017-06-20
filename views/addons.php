@@ -1,61 +1,56 @@
-
 <div class="wrap">
 
-	<h1>Mailster Newsletter Add Ons</h1>
+	<h1><?php esc_html_e( 'Mailster Newsletter Add Ons', 'mailster' ); ?></h1>
 
-	<h3>Extend the functionality of Mailster</h3>
+	<h3><?php esc_html_e( 'Extend the functionality of Mailster', 'mailster' ); ?></h3>
 
-<?php
+<?php $addons = mailster( 'helper' )->get_addons(); ?>
 
-$addons = mailster( 'helper' )->get_addons();
+<?php if ( is_wp_error( $addons ) ) : ?>
 
-if ( is_wp_error( $addons ) ) : ?>
+	<div class="error below-h2">
+		<p><strong><?php esc_html_e( 'There was an error retrieving the list from the server:', 'mailster' ); ?></strong><br><?php esc_html_e( $addons->get_error_message() ) ?></p>
+	</div>
 
-		<div class="error below-h2"><p><strong>There was an error retrieving the list from the server</strong><br><?php echo $addons->get_message() ?></p></div>'
-
-	<?php
-	wp_die();
-endif;
-
-?>
+<?php else : ?>
 
 	<ul class="addons-wrap">
-		<?php foreach ( $addons as $addon ) {
-			if ( ! empty( $addon->hidden ) ) {
-				continue;
-			}
+		<?php foreach ( $addons as $addon ) : ?>
+		<?php
 
-			$addon->link = isset( $addon->link ) ? add_query_arg( array(
-				'utm_source' => 'Mailster Add On Page',
-				'utm_medium' => 'link',
-				'utm_campaign' => 'Mailster Add Ons',
-			), $addon->link ) : '';
-?>
-		<li class="mailster-addon <?php if ( ! empty( $addon->is_free ) ) {
-			echo ' is-free';
-}
-	?><?php if ( ! empty( $addon->is_feature ) ) {
-		echo ' is-feature';
-	}
-	?>">
-			<div class="bgimage" style="background-image:url(<?php echo isset( $addon->image ) ? $addon->image : '' ?>)">
-				<?php if ( isset( $addon->wpslug ) ) : ?>
-					<a href="plugin-install.php?tab=plugin-information&plugin=<?php echo dirname( $addon->wpslug ) ?>&from=import&TB_iframe=true&width=745&height=745" class="thickbox">&nbsp;</a>
+		if ( ! empty( $addon->hidden ) ) {
+			continue;
+		}
+
+		$addon->link = isset( $addon->link ) ? $addon->link : (isset( $addon->wpslug ) ? 'https://wordpress.org/plugins/' . dirname( $addon->wpslug ) . '/' : '');
+
+		?>
+		<li class="mailster-addon <?php if ( ! empty( $addon->is_free ) ) {	echo ' is-free'; } ?><?php if ( ! empty( $addon->is_feature ) ) { echo ' is-feature';}?>">
+			<div class="bgimage" style="background-image:url(<?php echo isset( $addon->image ) ? esc_url( $addon->image ) : '' ?>)">
+				<?php if ( isset( $addon->wpslug ) && current_user_can( 'manage_plugins' ) ) : ?>
+					<a href="<?php echo esc_url(add_query_arg(array(
+						'tab' => 'plugin-information',
+						'plugin' => dirname( $addon->wpslug ),
+						'from' => 'import',
+						'TB_iframe' => true,
+						'width' => 745,
+						'height' => 745,
+					), network_admin_url( 'plugin-install.php' ))); ?>" class="thickbox">&nbsp;</a>
 				<?php else : ?>
-					<a href="<?php echo $addon->link ?>">&nbsp;</a>
+					<a href="<?php echo esc_url( $addon->link ) ?>" class="external">&nbsp;</a>
 				<?php endif; ?>
 			</div>
-			<h4><?php echo $addon->name ?></h4>
-			<p class="author">by
+			<h4><?php esc_html_e( $addon->name ) ?></h4>
+			<p class="author"><?php esc_html_e( 'by', 'mailster' ); ?>
 			<?php
 			if ( $addon->author_url ) :
-				echo '<a href="' . $addon->author_url . '">' . $addon->author . '</a>';
-		else :
-			echo $addon->author;
-		endif;
-?>
+				echo '<a href="' . esc_url( $addon->author_url ) . '">' . esc_html( $addon->author ) . '</a>';
+			else :
+				esc_html_e( $addon->author );
+			endif;
+			?>
 			</p>
-			<p class="description"><?php echo $addon->description ?></p>
+			<p class="description"><?php echo strip_tags( $addon->description ) ?></p>
 			<div class="action-links">
 			<?php if ( ! empty( $addon->wpslug ) ) : ?>
 
@@ -71,15 +66,15 @@ endif;
 
 			<?php else : ?>
 
-					<a class="button button-primary" href="<?php echo $addon->link ?>"><?php esc_html_e( 'Purchase', 'mailster' );?></a>
+					<a class="button button-primary external" href="<?php echo esc_url( $addon->link ) ?>"><?php esc_html_e( 'More Information', 'mailster' );?></a>
 
 			<?php endif; ?>
 			</div>
 		</li>
-		<?php }?>
+		<?php endforeach; ?>
 	</ul>
 
-
+<?php endif; ?>
 
 <div id="ajax-response"></div>
 <br class="clear">

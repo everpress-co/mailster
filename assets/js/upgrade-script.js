@@ -2,10 +2,6 @@ jQuery(document).ready(function ($) {
 
 	"use strict"
 
-	window.onbeforeunload = function () {
-		return 'You have to finish the update before you can use Mailster!';
-	};
-
 	if (typeof mailster_updates == 'undefined') {
 		return;
 	}
@@ -38,14 +34,29 @@ jQuery(document).ready(function ($) {
 
 	}
 
-	$('#mailster-start-upgrade')
-		.on('click', function () {
-			$('#mailster-update-process').slideDown(200);
-			$('#mailster-update-info').slideUp(200);
-			run(0);
-		})
+	console.log(mailster_updates_options.autostart);
+
+	if (mailster_updates_options.autostart) {
+		$('#mailster-update-process').show();
+		run(0);
+	} else {
+		$('#mailster-update-info').show();
+		$('#mailster-start-upgrade')
+			.on('click', function () {
+				$('#mailster-update-process').slideDown(200);
+				$('#mailster-update-info').slideUp(200);
+				run(0);
+			});
+	}
+
 
 	function run(i, nooutput) {
+
+		if (!i) {
+			window.onbeforeunload = function () {
+				return 'You have to finish the update before you can use Mailster!';
+			};
+		}
 
 		var id = keys[i];
 
@@ -120,8 +131,8 @@ jQuery(document).ready(function ($) {
 
 		window.onbeforeunload = null;
 
-		output('finished', '<strong>alright, all updates have been finished!</strong>', true, 0, true);
-		output('finished_button', '<a href="edit.php?post_type=newsletter&page=mailster_welcome" class="button button-primary">Ok, fine!</a>', true, 0, true);
+		output('finished', '<strong>Alright, all updates have been finished!</strong>', true, 0, true);
+		output('finished_button', '<a href="admin.php?page=mailster_welcome" class="button button-primary">Ok, fine!</a>', true, 0, true);
 
 		$('#mailster-post-upgrade').show();
 

@@ -200,6 +200,7 @@ class MailsterHelper {
 			$response_body = wp_remote_retrieve_body( $response );
 
 			if ( is_wp_error( $response ) ) {
+				set_transient( 'mailster_addons', $response, 360 );
 				return $response;
 			}
 
@@ -632,7 +633,7 @@ class MailsterHelper {
 			<?php if ( $image_url ) : ?>
 			<img src="<?php echo esc_attr( $image_url[0] ) ?> width="150">
 			<?php endif; ?>
-			<label><?php _e( 'image ID', 'mailster' );?>:
+			<label><?php esc_html_e( 'Image ID', 'mailster' );?>:
 			<input class="small-text" type="text" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>"></label>
 
 <?php
@@ -753,13 +754,13 @@ class MailsterHelper {
 		switch ( $string ) {
 			case 'day':
 				$str = ( $last ? 'yesterday' : 'tomorrow' ) . ' midnight';
-			break;
+				break;
 			case 'week':
 				$str = $last ? 'last sunday -' . ( 7 - get_option( 'start_of_week', 1 ) ) . ' days' : 'next sunday +' . get_option( 'start_of_week', 1 ) . ' days';
-			break;
+				break;
 			case 'month':
 				$str = 'midnight first day of ' . ( $last ? 'last' : 'next' ) . ' month';
-			break;
+				break;
 		}
 
 		$utcMidnight = strtotime( $str, $day );
@@ -827,10 +828,20 @@ class MailsterHelper {
 			return $this->get_bounce_message( $status, $original );
 		}
 
-		return array( 'title' => __( 'unknown', 'mailster' ), 'descr' => __( 'error is unknown', 'mailster' ) );
+		return array(
+			'title' => '',
+			'descr' => __( 'error is unknown', 'mailster' ),
+		);
 
 	}
 
+
+	/**
+	 *
+	 *
+	 * @param unknown $content
+	 * @return unknown
+	 */
 	public function prepare_content( $content ) {
 
 		if ( empty( $content ) ) {
@@ -1106,6 +1117,66 @@ class MailsterHelper {
 	/**
 	 *
 	 *
+	 * @param unknown $filename
+	 * @param unknown $data     (optional)
+	 * @param unknown $flags    (optional)
+	 * @return unknown
+	 */
+	public function file_put_contents( $filename, $data = '', $flags = 'w' ) {
+
+		mailster_require_filesystem();
+
+		if ( ! is_dir( dirname( $filename ) ) ) {
+			wp_mkdir_p( dirname( $filename ) );
+		}
+
+		if ( $file_handle = @fopen( $filename, $flags ) ) {
+			fwrite( $file_handle, $data );
+			fclose( $file_handle );
+		}
+
+		return is_file( $filename );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $folder         (optional)
+	 * @param unknown $prevent_access (optional)
+	 * @return unknown
+	 */
+	public function mkdir( $folder = '', $prevent_access = true ) {
+
+		mailster_require_filesystem();
+
+		$path = trailingslashit( trailingslashit( MAILSTER_UPLOAD_DIR ) . $folder );
+
+		if ( ! is_dir( $path ) ) {
+
+			if ( wp_mkdir_p( $path ) ) {
+
+				// if ( $prevent_access ) {
+				// $this->file_put_contents( $path . 'index.html', '' );
+				// $this->file_put_contents( $path . '.htaccess', 'deny from all' );
+				// }
+				return $path;
+
+			}
+
+			return false;
+
+		}
+
+		return $path;
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $host
 	 * @param unknown $type  (optional)
 	 * @param unknown $force (optional)
@@ -1229,6 +1300,7 @@ class MailsterHelper {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1254,6 +1326,45 @@ class MailsterHelper {
 
 		return $pts;
 	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $html
+	 * @param unknown $linksonly (optional)
+	 * @return unknown
+	 */
+	public function plain_text( $html, $linksonly = false ) {
+
+		// allow to hook into this method
+		$result = apply_filters( 'mymail_plain_text', apply_filters( 'mailster_plain_text', null, $html, $linksonly ), $html, $linksonly );
+		if ( ! is_null( $result ) ) {
+			return $result;
+		}
+
+		if ( $linksonly ) {
+			$links = '/< *a[^>]*href *= *"([^#]*)"[^>]*>(.*)< *\/ *a *>/Uis';
+			$text = preg_replace( $links, '${2} [${1}]', $html );
+			$text = str_replace( array( ' ', '&nbsp;' ), ' ', strip_tags( $text ) );
+			$text = @html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
+
+			return trim( $text );
+
+		} else {
+			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
+			$htmlconverter = new \Html2Text\Html2Text( $html, array( 'width' => 200, 'do_links' => 'table' ) );
+
+			$text = trim( $htmlconverter->get_text() );
+			$text = preg_replace( '/\s*$^\s*/mu', "\n\n", $text );
+			$text = preg_replace( '/[ \t]+/u', ' ', $text );
+
+			return $text;
+
+		}
+
+	}
+
 
 	/**
 	 *

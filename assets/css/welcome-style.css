@@ -53,6 +53,13 @@
 	margin-top:-20px;
 	position: absolute;
 }
+.mailster-welcome-wrap.about-wrap .feature-section.one-col, .mailster-welcome-wrap.about-wrap .feature-section.one-col p {
+	max-width: 95% !important;
+}
+.mailster-welcome-wrap.about-wrap .feature-section h2 {
+	text-align: center;
+	width: 100%;
+}
 .mailster-welcome-wrap.about-wrap .feature-section.three-col div {
 	width: 30%;
 	margin-right: 4.9999999%;
@@ -73,13 +80,12 @@
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
-
 iframe[id*="twitter-widget-"] {
 	display: inline;
 }
-
 .mailster-transition{
 	min-height:450px;
+	min-width: 100%;
 	position: relative;
 	background: #fff;
 }
@@ -88,7 +94,6 @@ iframe[id*="twitter-widget-"] {
 		min-height:150px;
 	}
 }
-
 .mailster-transition .mailster-transition-box {
 	transform: translate(-50%, -50%);
 	top: 45%;
@@ -104,7 +109,6 @@ iframe[id*="twitter-widget-"] {
 	-o-transition: all .25s ease;
 	transition: all .25s ease;
 }
-
 .mailster-transition .mailster-transition-my{
 	-webkit-transform: translateX(100px);
 	-moz-transform: translateX(100px);

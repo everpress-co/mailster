@@ -1,7 +1,7 @@
 <?php
 
 if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) : ?>
-<div class="mailster-mb-subscribers loading">
+<div class="mailster-mb-subscribers mailster-loading">
 	<div class="mailster-mb-heading">
 		<select class="mailster-mb-select" id="mailster-subscriber-range">
 			<option value="7 days"><?php esc_html_e( '7 days', 'mailster' );?></option>
@@ -23,7 +23,6 @@ if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) : ?>
 			<div></div>
 		</div>
 		</div>
-		<span class="loader"></span>
 </div>
 
 <?php if ( ! $this->is_dashboard ) : ?>

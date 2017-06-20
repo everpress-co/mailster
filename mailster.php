@@ -3,7 +3,7 @@
 Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
 Description: Advanced Newsletter Plugin for WordPress. Create, Send and Track your Newsletter Campaigns
-Version: 2.2.1
+Version: 2.2.8
 Author: revaxarts.com
 Author URI: https://revaxarts.com
 Text Domain: mailster
@@ -13,7 +13,7 @@ if ( defined( 'MAILSTER_VERSION' ) ) {
 	return;
 }
 
-define( 'MAILSTER_VERSION', '2.2.1' );
+define( 'MAILSTER_VERSION', '2.2.8' );
 define( 'MAILSTER_DBVERSION', 20170201 );
 define( 'MAILSTER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MAILSTER_URI', plugin_dir_url( __FILE__ ) );
@@ -29,15 +29,10 @@ if ( ! defined( 'MAILSTER_UPLOAD_URI' ) ) {
 	define( 'MAILSTER_UPLOAD_URI', trailingslashit( $upload_folder['baseurl'] ) . 'mailster' );
 }
 
-if ( ! file_exists( MAILSTER_DIR . 'includes/functions.php' ) ) {
-	return;
-}
+require_once MAILSTER_DIR . 'includes/check.php';
 require_once MAILSTER_DIR . 'includes/functions.php';
-
-if ( ! function_exists( 'mymail' ) ) {
-	require_once MAILSTER_DIR . 'includes/deprecated.php';
-}
-
+require_once MAILSTER_DIR . 'includes/deprecated.php';
+require_once MAILSTER_DIR . 'includes/3rdparty.php';
 require_once MAILSTER_DIR . 'classes/mailster.class.php';
 
 global $mailster_options, $mailster, $mailster_tags, $mailster_mystyles;

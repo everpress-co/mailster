@@ -83,11 +83,11 @@ if ( isset( $_GET['template'] ) && current_user_can( 'mailster_change_template' 
 				'action' => 'mailster_get_template',
 				'id' => $post->ID,
 				'template' => $this->get_template(),
-				'file' => $this->get_file(),
+				'templatefile' => $this->get_file(),
 				'editorstyle' => $editable,
 				'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
 				'nocache' => time(),
-			), admin_url( 'admin-ajax.php' ) ) ?>" width="100%" height="500" scrolling="no" frameborder="0">
+			), admin_url( 'admin-ajax.php' ) ) ?>" width="100%" height="500" scrolling="no" frameborder="0" data-no-lazy="">
 			</iframe>
 		</div>
 	</div>
@@ -103,7 +103,7 @@ if ( isset( $_GET['template'] ) && current_user_can( 'mailster_change_template' 
 			</div>
 			<div class="desktop-body">
 				<div class="preview-body">
-					<iframe class="mailster-preview-iframe desktop" src="" width="100%" scrolling="auto" frameborder="0"></iframe>
+					<iframe class="mailster-preview-iframe desktop" src="" width="100%" scrolling="auto" frameborder="0" data-no-lazy=""></iframe>
 				</div>
 			</div>
 		</div>
@@ -111,7 +111,7 @@ if ( isset( $_GET['template'] ) && current_user_can( 'mailster_change_template' 
 			<div class="mobile-header"><u></u><i></i></div>
 			<div class="mobile-body">
 				<div class="preview-body">
-					<iframe class="mailster-preview-iframe mobile" src="" width="100%" scrolling="auto" frameborder="0"></iframe>
+					<iframe class="mailster-preview-iframe mobile" src="" width="100%" scrolling="auto" frameborder="0" data-no-lazy=""></iframe>
 				</div>
 			</div>
 			<div class="mobile-footer"><i></i></div>

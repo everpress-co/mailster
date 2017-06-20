@@ -19,44 +19,42 @@
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Delivery by Time Zone', 'mailster' ) ?> *</th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[timezone]" value=""><input type="checkbox" name="mailster_options[timezone]" value="1" <?php checked( mailster_option( 'timezone' ) );?>> <?php esc_html_e( 'Send Campaigns based on the subscribers timezone if known', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[timezone]" value=""><input type="checkbox" name="mailster_options[timezone]" value="1" <?php checked( mailster_option( 'timezone' ) );?>> <?php esc_html_e( 'Send Campaigns based on the subscribers timezone if known', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Embed Images', 'mailster' ) ?> *</th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[embed_images]" value=""><input type="checkbox" name="mailster_options[embed_images]" value="1" <?php checked( mailster_option( 'embed_images' ) );?>> <?php esc_html_e( 'Embed images in the mail', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[embed_images]" value=""><input type="checkbox" name="mailster_options[embed_images]" value="1" <?php checked( mailster_option( 'embed_images' ) );?>> <?php esc_html_e( 'Embed images in the mail', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Module Thumbnails', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[module_thumbnails]" value=""><input type="checkbox" name="mailster_options[module_thumbnails]" value="1" <?php checked( mailster_option( 'module_thumbnails' ) );?>> <?php esc_html_e( 'Show thumbnails of modules in the editor if available', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[module_thumbnails]" value=""><input type="checkbox" name="mailster_options[module_thumbnails]" value="1" <?php checked( mailster_option( 'module_thumbnails' ) );?>> <?php esc_html_e( 'Show thumbnails of modules in the editor if available', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Post List Count', 'mailster' ) ?></th>
 		<td><input type="text" name="mailster_options[post_count]" value="<?php echo esc_attr( mailster_option( 'post_count' ) ); ?>" class="small-text"> <span class="description"><?php esc_html_e( 'Number of posts or images displayed at once in the editbar.', 'mailster' ) ?></span></td>
 	</tr>
-	<?php if ( function_exists( 'find_core_auto_update' ) ) : // only 3.7+ ?>
-				<tr valign="top">
-					<th scope="row"><?php esc_html_e( 'Auto Update', 'mailster' ) ?></th>
-					<td>
-					<?php
-					$is = mailster_option( 'autoupdate', 'minor' );
-					$types = array(
-					'1' => __( 'enabled', 'mailster' ),
-					'0' => __( 'disabled', 'mailster' ),
-					'minor' => __( 'only minor updates', 'mailster' ),
-					);
-?>
-					<select name="mailster_options[autoupdate]">
-						<?php foreach ( $types as $value => $name ) {?>
-						<option value="<?php echo $value; ?>" <?php selected( $is == $value ) ?>><?php echo $name; ?></option>
-						<?php }?>
-					</select>
-					<p class="description"><?php esc_html_e( 'auto updates are recommended for important fixes.', 'mailster' );?></p>
-					</td>
-				</tr>
-				<?php endif; ?>
+	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'Auto Update', 'mailster' ) ?></th>
+		<td>
+		<?php
+		$is = mailster_option( 'autoupdate', 'minor' );
+		$types = array(
+			'1' => __( 'enabled', 'mailster' ),
+			'0' => __( 'disabled', 'mailster' ),
+			'minor' => __( 'only minor updates', 'mailster' ),
+		);
+		?>
+		<select name="mailster_options[autoupdate]">
+			<?php foreach ( $types as $value => $name ) : ?>
+			<option value="<?php echo $value; ?>" <?php selected( $is == $value ) ?>><?php echo esc_html( $name ); ?></option>
+			<?php endforeach; ?>
+		</select>
+		<p class="description"><?php esc_html_e( 'auto updates are recommended for important fixes.', 'mailster' );?></p>
+		</td>
+	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ) ?>
 		<p class="description"><?php esc_html_e( 'decide how Mailster uses the wp_mail function', 'mailster' );?></p></th>
@@ -137,7 +135,7 @@
 		<th scope="row"><?php esc_html_e( 'Track Geolocation', 'mailster' ) ?>
 		<div class="loading geo-ajax-loading"></div></th>
 		<td>
-		<p><label><input type="hidden" class="wasabi" name="mailster_options[trackcountries]" value=""><input type="checkbox" id="mailster_geoip" name="mailster_options[trackcountries]" value="1" <?php checked( $geoip );?>> <?php esc_html_e( 'Track Countries in Campaigns', 'mailster' ) ?></label></p>
+		<p><label><input type="hidden" name="mailster_options[trackcountries]" value=""><input type="checkbox" id="mailster_geoip" name="mailster_options[trackcountries]" value="1" <?php checked( $geoip );?>> <?php esc_html_e( 'Track Countries in Campaigns', 'mailster' ) ?></label></p>
 		<p><button id="load_country_db" class="button-primary" data-type="country" <?php disabled( ! $geoip );?>><?php ( is_file( mailster_option( 'countries_db' ) ) ) ? esc_html_e( 'Update Country Database', 'mailster' ) : esc_html_e( 'Load Country Database', 'mailster' );?></button> <?php esc_html_e( 'or', 'mailster' );?> <a id="upload_country_db_btn" href="#"><?php esc_html_e( 'upload file', 'mailster' );?></a>
 		</p>
 		<p id="upload_country_db" class="hidden">
@@ -146,7 +144,7 @@
 		</p>
 
 		<input id="country_db_path" type="text" name="mailster_options[countries_db]" class="widefat" value="<?php echo mailster_option( 'countries_db' ) ?>" placeholder="<?php echo MAILSTER_UPLOAD_DIR . '/GeoIPv6.dat' ?>">
-		<p><label><input type="hidden" class="wasabi" name="mailster_options[trackcities]" value=""><input type="checkbox" id="mailster_geoipcity" name="mailster_options[trackcities]" value="1" <?php checked( $geoipcity );?><?php disabled( ! $geoip );?>> <?php esc_html_e( 'Track Cities in Campaigns', 'mailster' ) ?></label></p>
+		<p><label><input type="hidden" name="mailster_options[trackcities]" value=""><input type="checkbox" id="mailster_geoipcity" name="mailster_options[trackcities]" value="1" <?php checked( $geoipcity );?><?php disabled( ! $geoip );?>> <?php esc_html_e( 'Track Cities in Campaigns', 'mailster' ) ?></label></p>
 		<p><button id="load_city_db" class="button-primary" data-type="city" <?php disabled( ! $geoipcity );?>><?php ( is_file( mailster_option( 'cities_db' ) ) ) ? esc_html_e( 'Update City Database', 'mailster' ) : esc_html_e( 'Load City Database', 'mailster' );?></button> <?php esc_html_e( 'or', 'mailster' );?> <a id="upload_city_db_btn" href="#"><?php esc_html_e( 'upload file', 'mailster' );?></a>
 		</p>
 		<p id="upload_city_db" class="hidden">
