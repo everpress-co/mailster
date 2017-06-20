@@ -39,6 +39,8 @@ function mailster_option( $option, $fallback = null ) {
 /**
  *
  *
+ * @param unknown $option   (optional)
+ * @param unknown $fallback (optional)
  * @return unknown
  */
 function mailster_options( $option = null, $fallback = null ) {
@@ -697,7 +699,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 	) );
 
 	if ( empty( $args['key'] ) ) {
-		 $args['key'] = uniqid();
+		$args['key'] = uniqid();
 	}
 
 	$mailster_notices = get_option( 'mailster_notices' );
@@ -910,6 +912,27 @@ function mailster_add_style( $callbackfunction ) {
 }
 
 
+
+
+/**
+ *
+ *
+ * @return unknown
+ */
+function mailster_get_referer() {
+	if ( $referer = wp_get_referer() ) {
+		return $referer;
+	}
+	if ( $referer = wp_get_raw_referer() ) {
+		return $referer;
+	}
+	if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+		return $_SERVER['HTTP_REFERER'];
+	}
+	return false;
+}
+
+
 /**
  *
  *
@@ -968,7 +991,7 @@ function mailster_require_filesystem( $redirect = '', $method = '', $showform = 
 	global $wp_filesystem;
 
 	// force direct method
-	add_filter( 'filesystem_method', function(){ return 'direct'; } );
+	add_filter( 'filesystem_method', function() { return 'direct'; } );
 
 	if ( ! function_exists( 'request_filesystem_credentials' ) ) {
 

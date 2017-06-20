@@ -1211,9 +1211,11 @@ class MailsterForms {
 				'name' => __( 'Default Form', 'mailster' ),
 				'submit' => __( 'Subscribe', 'mailster' ),
 			) );
-			$this->update_field( $form_id, 'email', __( 'Email', 'mailster' ) );
-			mailster_update_option( 'profile_form', $form_id );
-			$this->assign_lists( $form_id, 1 );
+			if ( ! is_wp_error( $form_id ) ) {
+				$this->update_field( $form_id, 'email', __( 'Email', 'mailster' ) );
+				mailster_update_option( 'profile_form', $form_id );
+				$this->assign_lists( $form_id, 1 );
+			}
 		}
 
 	}

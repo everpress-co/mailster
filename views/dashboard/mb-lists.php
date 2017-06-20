@@ -1,7 +1,7 @@
 <?php
 
 if ( $lists = mailster( 'lists' )->get() ) : ?>
-<div class="mailster-mb-lists loading">
+<div class="mailster-mb-lists mailster-loading">
 	<div class="mailster-mb-heading">
 		<select class="mailster-mb-select">
 		<?php foreach ( $lists as $list ) {?>

@@ -97,26 +97,26 @@ ul li.header {
 .rtl ul li.header {
 	float: right;
 }
-ul li.header a {
+ul li.header > a {
 	font-size:14px;
 	height:18px;
 	display:block;
 	padding:16px 12px;
 	text-align:center;
 }
-ul li.header.subject a{
+ul li.header.subject > a{
 	text-overflow: ellipsis;
 	max-width: 200px;
 	overflow: hidden;
 	white-space: nowrap;
 }
-ul li.header.next a:before{
+ul li.header.next > a:before{
 	content: '❯';
 }
-ul li.header.previous a:before{
+ul li.header.previous > a:before{
 	content: '❮';
 }
-ul li a{
+ul li > a{
 	display:block;
 	-webkit-transition:background-color .10s ease-in-out;
 	-moz-transition:background-color .10s ease-in-out;
@@ -124,10 +124,10 @@ ul li a{
 	-o-transition:background-color .10s ease-in-out;
 	transition:background-color .10s ease-in-out;
 }
-ul li a:hover {
+ul li > a:hover {
 	background-color:#fff;
 }
-ul li.button a {
+ul li.button > a {
 	min-width: 20px;
 	font-weight:700;
 }
@@ -338,6 +338,13 @@ ul li.share .sharebox-inner .ajax-loading {
 	margin:14px 2px;
 	visibility:hidden;
 	float:right;
+}
+ul li.share .powered-by {
+	text-align: right;
+	font-size: 10px;
+}
+.rtl ul li.share .powered-by {
+	text-align: left;
 }
 @media all and (max-width: 601px)  {
 

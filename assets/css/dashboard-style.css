@@ -116,6 +116,9 @@
 		display: none;
 	}
 }
+.mailster-dashboard div.mailster-loading{
+	opacity: 0.8;
+}
 .mailster-dashboard .postbox-container h2.hndle{
 	font-size: 14px;
 	padding: 8px 12px;
