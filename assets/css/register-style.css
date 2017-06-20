@@ -27,7 +27,6 @@
 .register_form_wrap.step-1 form.register_form, .register_form_wrap.step-2 form.register_form_2, .register_form_wrap.step-3 form.registration_complete{
 	display: block;
 }
-
 .register_form_wrap input[type="text"], .register_form_wrap input[type="email"], .register_form_wrap input[type="submit"]{
 	width: 100%;
 	font-size: 20px;
@@ -35,7 +34,6 @@
 	margin-bottom: 10px;
 	vertical-align: bottom;
 }
-
 .register_form_wrap .howto{
 	width: 80%;
 	margin: 0.6em auto 0;
@@ -94,7 +92,6 @@
 	z-index: 1000;
 	opacity: 1;
 }
-
 .register_form_wrap form.register_form_2{
 	top:-14px;
 }
@@ -119,8 +116,6 @@
 .register_form_wrap.loading form{
 	-webkit-filter:blur(2px);
 }
-
-
 @-moz-keyframes
 dothabottomcheck {  0% {
 	height: 0;
@@ -178,7 +173,6 @@ dothatopcheck {  0% {
 	height: 120px;
 }
 }
-
 .register_form_wrap .registration_complete div {
 	position: relative;
 	text-align: center;
@@ -193,7 +187,6 @@ dothatopcheck {  0% {
 	height:80px;
 	width:100px;
 }
-
 .register_form_wrap .registration_complete div.registration_complete_check::before,
 .register_form_wrap .registration_complete div.registration_complete_check::after {
 	-moz-box-sizing: border-box;
@@ -215,7 +208,6 @@ dothatopcheck {  0% {
 	-moz-transition: opacity ease .5;
 	transition: opacity ease .5;
 }
-
 .register_form_wrap .registration_complete div.registration_complete_check::before {
 	top: 72px;
 	left: 41px;
@@ -226,7 +218,6 @@ dothatopcheck {  0% {
 	-webkit-transform: rotate(-135deg);
 	transform: rotate(-135deg);
 }
-
 .register_form_wrap .registration_complete div.registration_complete_check::after {
 	top: 37px;
 	left: 5px;
@@ -236,9 +227,7 @@ dothatopcheck {  0% {
 	-webkit-transform: rotate(-45deg);
 	transform: rotate(-45deg);
 }
-
 .register_form_wrap .registration_complete div.registration_complete_check{ border-color: #5BCD6A; }
-
 .register_form_wrap .registration_complete div.registration_complete_check::after {
 	height: 50px;
 	-moz-animation: dothabottomcheck 0.2s ease 0s forwards;
@@ -246,7 +235,6 @@ dothatopcheck {  0% {
 	-webkit-animation: dothabottomcheck 0.2s ease 0s forwards;
 	animation: dothabottomcheck 0.2s ease 0s forwards;
 }
-
 .register_form_wrap .registration_complete div.registration_complete_check::before {
 	height: 120px;
 	-moz-animation: dothatopcheck 0.4s ease 0s forwards;

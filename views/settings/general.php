@@ -36,27 +36,25 @@
 		<th scope="row"><?php esc_html_e( 'Post List Count', 'mailster' ) ?></th>
 		<td><input type="text" name="mailster_options[post_count]" value="<?php echo esc_attr( mailster_option( 'post_count' ) ); ?>" class="small-text"> <span class="description"><?php esc_html_e( 'Number of posts or images displayed at once in the editbar.', 'mailster' ) ?></span></td>
 	</tr>
-	<?php if ( function_exists( 'find_core_auto_update' ) ) : // only 3.7+ ?>
-				<tr valign="top">
-					<th scope="row"><?php esc_html_e( 'Auto Update', 'mailster' ) ?></th>
-					<td>
-					<?php
-					$is = mailster_option( 'autoupdate', 'minor' );
-					$types = array(
-					'1' => __( 'enabled', 'mailster' ),
-					'0' => __( 'disabled', 'mailster' ),
-					'minor' => __( 'only minor updates', 'mailster' ),
-					);
-?>
-					<select name="mailster_options[autoupdate]">
-						<?php foreach ( $types as $value => $name ) {?>
-						<option value="<?php echo $value; ?>" <?php selected( $is == $value ) ?>><?php echo $name; ?></option>
-						<?php }?>
-					</select>
-					<p class="description"><?php esc_html_e( 'auto updates are recommended for important fixes.', 'mailster' );?></p>
-					</td>
-				</tr>
-				<?php endif; ?>
+	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'Auto Update', 'mailster' ) ?></th>
+		<td>
+		<?php
+		$is = mailster_option( 'autoupdate', 'minor' );
+		$types = array(
+			'1' => __( 'enabled', 'mailster' ),
+			'0' => __( 'disabled', 'mailster' ),
+			'minor' => __( 'only minor updates', 'mailster' ),
+		);
+		?>
+		<select name="mailster_options[autoupdate]">
+			<?php foreach ( $types as $value => $name ) : ?>
+			<option value="<?php echo $value; ?>" <?php selected( $is == $value ) ?>><?php echo esc_html( $name ); ?></option>
+			<?php endforeach; ?>
+		</select>
+		<p class="description"><?php esc_html_e( 'auto updates are recommended for important fixes.', 'mailster' );?></p>
+		</td>
+	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ) ?>
 		<p class="description"><?php esc_html_e( 'decide how Mailster uses the wp_mail function', 'mailster' );?></p></th>

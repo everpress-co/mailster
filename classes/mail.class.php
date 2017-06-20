@@ -103,7 +103,7 @@ class MailsterMail {
 
 		} elseif ( $this->deliverymethod == 'simple' ) {
 
-			$method = mailster_option( 'simplemethod', 'sendmail' );
+			$method = mailster_option( 'simplemethod' );
 
 			if ( $method == 'sendmail' ) {
 				$this->mailer->Sendmail = mailster_option( 'sendmail_path' );
@@ -537,7 +537,7 @@ class MailsterMail {
 				$this->mailer->Body = $this->mailer->normalizeBreaks( $this->content );
 			}
 
-			$this->mailer->AltBody = $this->mailer->normalizeBreaks( ! empty( $this->plaintext ) ? $this->plaintext : mailster()->plain_text( $this->content ) );
+			$this->mailer->AltBody = $this->mailer->normalizeBreaks( ! empty( $this->plaintext ) ? $this->plaintext : mailster( 'helper' )->plain_text( $this->content ) );
 
 			( $this->bouncemail )
 				? $this->mailer->ReturnPath = $this->mailer->Sender = $this->bouncemail

@@ -7,15 +7,9 @@
 		<?php
 		$templates = mailster( 'templates' )->get_templates();
 		$selected = mailster_option( 'default_template' );
-		foreach ( $templates as $slug => $data ) {
-				?>
-					<option value="<?php echo $slug ?>"<?php if ( $slug == $selected ) {
-						echo ' selected';
-}
-			?>><?php echo esc_attr( $data['name'] ) ?></option>
-		<?php
-		}
-?>
+		foreach ( $templates as $slug => $data ) : ?>
+			<option value="<?php echo $slug ?>"<?php if ( $slug == $selected ) { echo ' selected'; } ?>><?php echo esc_attr( $data['name'] ) ?></option>
+		<?php endforeach; ?>
 		</select> <a href="edit.php?post_type=newsletter&page=mailster_templates"><?php _e( 'show Templates', 'mailster' );?></a> | <a href="edit.php?post_type=newsletter&page=mailster_templates&more"><?php _e( 'get more', 'mailster' ) ?></a>
 		</p></td>
 	</tr>

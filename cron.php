@@ -52,6 +52,7 @@ html{background:#f1f1f1}body{background:#fff;color:#444;font-family:-apple-syste
 $secret = mailster_option( 'cron_secret' );
 if ( ( isset( $_GET[ $secret ] ) ) ||
 	( isset( $_GET['secret'] ) && $_GET['secret'] == $secret ) ||
+	( isset( $_SERVER['HTTP_SECRET'] ) && $_SERVER['HTTP_SECRET'] == $secret ) ||
 	( defined( 'MAILSTER_CRON_SECRET' ) && MAILSTER_CRON_SECRET == $secret ) ) :
 
 	// run wp_cron if it should
@@ -108,8 +109,8 @@ var a = <?php echo floor( $interval ) ?>,
 			p = '('+o+')';
 
 		if(x<=0){
-			o = '(&#x27F2;)';
-			p = 'progressing';
+			o = '&#x27F2;';
+			p = <?php esc_html_e( 'progressing', 'mailster' ); ?>;
 			clearInterval(f);
 		}
 	document.title = p+' '+c;

@@ -35,12 +35,10 @@
 	.mailster-flag-32{
 		background-image:url(../img/flags_64.png);
 	}
-
 }
 .rtl .mailster-flag, .rtl .mailster-flag-16, .rtl .mailster-flag-24, .rtl .mailster-flag-32{
 	text-indent: 99999px;
 }
-
 .flag-unknown{background-position:0px 0px;}
 .mailster-flag-24.flag-unknown{background-position:0px 0px;}
 .mailster-flag-32.flag-unknown{background-position:0px 0px;}

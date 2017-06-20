@@ -3,6 +3,13 @@ div.mailster-notice{
 	position:relative;
 	padding-right: 38px;
 }
+div.mailster-notice.mailster-notice-dismissable{
+	padding-right: 100px;
+}
+.rtl div.mailster-notice.mailster-notice-dismissable{
+	padding-right: 0;
+	padding-left: 100px;
+}
 div.mailster-notice pre{
 	word-wrap:break-word;
 	white-space: pre-wrap;
@@ -13,13 +20,14 @@ div.mailster-notice .notice-dismiss {
 	right: 1px;
 	border: none;
 	margin: 0;
-	padding: 9px 14px;
+	padding: 9px 14px 9px 0;
 	color: #b4b9be;
 	cursor: pointer;
 	display: none;
 	text-decoration: none;
 }
 .rtl div.mailster-notice .notice-dismiss {
+	padding: 9px 0 9px 14px;
 	right: auto;
 	left: 1px;
 }

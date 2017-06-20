@@ -9,7 +9,7 @@
 	<div class="mailster-badge"><?php printf( esc_html__( 'Version %s', 'mailster' ), MAILSTER_VERSION ); ?></div>
 
 	<h2 class="nav-tab-wrapper">
-		<a href="edit.php?post_type=newsletter&page=mailster_welcome" class="nav-tab nav-tab-active"><?php esc_html_e( 'What\'s New', 'mailster' ); ?></a>
+		<a href="admin.php?page=mailster_welcome" class="nav-tab nav-tab-active"><?php esc_html_e( 'What\'s New', 'mailster' ); ?></a>
 		<?php if ( current_user_can( 'mailster_manage_templates' ) ) : ?>
 		<a href="edit.php?post_type=newsletter&page=mailster_templates&more" class="nav-tab"><?php esc_html_e( 'Templates', 'mailster' ); ?></a>
 		<?php endif; ?>
@@ -57,7 +57,7 @@
 				</div>
 				<h3>Setup Wizard</h3>
 				<p>Getting started with Mailster was never as easy as this. Go through the Wizard and start sending emails to grow your business.</p>
-				<div class="return-to-dashboard"><a href="edit.php?post_type=newsletter&page=mailster_setup">Start Wizard</a></div>
+				<div class="return-to-dashboard"><a href="admin.php?page=mailster_setup">Start Wizard</a></div>
 			</div>
 			<div class="col">
 				<div class="media-container">
@@ -155,8 +155,6 @@
 		</div>
 
 <div class="clear"></div>
-
-
 
 <div id="ajax-response"></div>
 <br class="clear">

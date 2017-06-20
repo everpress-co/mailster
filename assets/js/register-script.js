@@ -42,7 +42,7 @@ jQuery(document).ready(function ($) {
 				wrap.removeClass('loading');
 				if (response.success) {
 					wrap.addClass('step-2').removeClass('step-1')
-					$('.register_form_2').find('input').eq(0).focus();
+						//$('.register_form_2').find('input').eq(0).focus();
 				} else {
 					form.addClass('has-error').find('.error-msg').html(response.error);
 				}
@@ -77,7 +77,7 @@ jQuery(document).ready(function ($) {
 				wrap.removeClass('loading');
 				if (response.success) {
 					wrap.addClass('step-3').removeClass('step-2')
-					$(document).trigger('verified.' + slug);
+					$(document).trigger('verified.' + slug, [response.purchasecode, response.username, response.email]);
 				} else {
 					if (response.code == 406) {
 						form = wrap.find('.register_form');

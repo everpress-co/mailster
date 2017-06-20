@@ -74,7 +74,7 @@ if ( $is_new ) {
 			<h3 class="detail">
 				<ul class="click-to-edit">
 					<li><?php echo esc_attr( $list->name ); ?>&nbsp;</li>
-					<li><input id="name" class="widefat" type="text" name="mailster_data[name]" value="<?php echo esc_attr( $list->name ); ?>" placeholder="<?php esc_html_e( 'Name of the List', 'mailster' ) ?>"></li>
+					<li><input id="name" class="widefat" type="text" name="mailster_data[name]" value="<?php echo esc_attr( $list->name ); ?>" placeholder="<?php esc_html_e( 'Name of the List', 'mailster' ) ?>" autofocus></li>
 				</ul>
 			</h3>
 		</td>

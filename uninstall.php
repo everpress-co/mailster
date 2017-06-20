@@ -95,9 +95,6 @@ foreach ( $blogids as $blog_id ) {
 	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_forms_lists" );
 	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_form_fields" );
 
-	// optimize DB
-	$wpdb->query( "OPTIMIZE TABLE `$wpdb->options`" );
-
 	require_once $path . '/includes/functions.php';
 
 	// remove folder in the upload directory

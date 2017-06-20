@@ -299,10 +299,6 @@ jQuery(document).ready(function ($) {
 		});
 	});
 
-	$(".sortable").sortable({
-		containment: "parent"
-	});
-
 	$('input.cron_radio').on('change', function () {
 		$('.cron_opts').hide();
 		$('.' + $(this).val()).show();
