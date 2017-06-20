@@ -3,7 +3,7 @@ Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
 Tested up to: 4.8
-Stable tag: 2.2.8
+Stable tag: 2.3
 Author: revaxarts
 Author URI: https://mailster.co
 
@@ -81,6 +81,10 @@ Xaver Birsak – https://revaxarts.com
 
 
 == Changelog ==
+
+= Version 2.3 =
+
+* new: Option to hide the Webcersio Bar
 
 = Version 2.2.8 =
 
