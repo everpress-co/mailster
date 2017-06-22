@@ -19,11 +19,11 @@
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Split campaigns', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[split_campaigns]" value=""><input type="checkbox" name="mailster_options[split_campaigns]" value="1" <?php checked( mailster_option( 'split_campaigns' ) ) ?>> <?php esc_html_e( 'send campaigns simultaneously instead of one after the other', 'mailster' ) ?></label> </td>
+		<td><label><input type="hidden" name="mailster_options[split_campaigns]" value=""><input type="checkbox" name="mailster_options[split_campaigns]" value="1" <?php checked( mailster_option( 'split_campaigns' ) ) ?>> <?php esc_html_e( 'send campaigns simultaneously instead of one after the other', 'mailster' ) ?></label> </td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Pause campaigns', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[pause_campaigns]" value=""><input type="checkbox" name="mailster_options[pause_campaigns]" value="1" <?php checked( mailster_option( 'pause_campaigns' ) );?>> <?php esc_html_e( 'pause campaigns if an error occurs', 'mailster' ) ?></label><p class="description"><?php esc_html_e( 'Mailster will change the status to "pause" if an error occur otherwise it tries to finish the campaign', 'mailster' );?></p></td>
+		<td><label><input type="hidden" name="mailster_options[pause_campaigns]" value=""><input type="checkbox" name="mailster_options[pause_campaigns]" value="1" <?php checked( mailster_option( 'pause_campaigns' ) );?>> <?php esc_html_e( 'pause campaigns if an error occurs', 'mailster' ) ?></label><p class="description"><?php esc_html_e( 'Mailster will change the status to "pause" if an error occur otherwise it tries to finish the campaign', 'mailster' );?></p></td>
 	</tr>
 	<tr valign="top">
 		<tr valign="top">

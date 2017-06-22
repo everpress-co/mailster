@@ -131,11 +131,11 @@ class MailsterSubscribers {
 		);
 		$custom_fields = mailster()->get_custom_fields();
 		foreach ( $custom_fields as $key => $field ) {
-			$columns[ $key ] = $field['name'];
+			$columns[ $key ] = strip_tags( $field['name'] );
 		}
 
 		$columns['lists'] = __( 'Lists', 'mailster' );
-		$columns['emails'] = __( 'emails', 'mailster' );
+		$columns['emails'] = __( 'Emails', 'mailster' );
 		$columns['status'] = __( 'Status', 'mailster' );
 		$columns['signup'] = __( 'Subscribed', 'mailster' );
 
@@ -340,7 +340,7 @@ class MailsterSubscribers {
 
 			$user_id = intval( $_GET['wp_user'] );
 
-			$subscriber_id = $this->add_from_wp_user( $user_id, array( 'status' => 1, 'referer' => 'wpuser', 'ip' => false ) );
+			$subscriber_id = $this->add_from_wp_user( $user_id, array( 'status' => 1, 'referer' => 'wpuser' ) );
 
 			if ( is_wp_error( $subscriber_id ) ) {
 
@@ -381,7 +381,6 @@ class MailsterSubscribers {
 				if ( $is_new ) {
 					$entry->referer = 'backend';
 					$entry->confirm = 0;
-					$entry->ip = false;
 				}
 
 				$subscriber_id = $is_new
@@ -995,7 +994,7 @@ class MailsterSubscribers {
 				'added' => $now,
 				'signup' => $now,
 				'updated' => $now,
-				'ip' => null,
+				// 'ip' => null,
 				'referer' => wp_get_referer(),
 		) );
 
@@ -1009,7 +1008,7 @@ class MailsterSubscribers {
 			$entry['confirm'] = ( isset( $entry['status'] ) && $entry['status'] == 1 ) ? $now : null;
 		}
 
-		if ( mailster_option( 'track_users' ) && $entry['ip'] !== false ) {
+		if ( mailster_option( 'track_users' ) && isset( $entry['ip'] ) && $entry['ip'] !== false ) {
 
 			$ip = mailster_get_ip();
 
@@ -1055,11 +1054,17 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $user_id
-	 * @param unknown $userdata (optional)
+	 * @param unknown $user_id                 (optional)
+	 * @param unknown $userdata                (optional)
+	 * @param unknown $merge                   (optional)
+	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
-	public function add_from_wp_user( $user_id, $userdata = array() ) {
+	public function add_from_wp_user( $user_id, $userdata = array(), $merge = false, $subscriber_notification = true ) {
+
+		if ( is_null( $user_id ) ) {
+			$user_id = get_current_user_id();
+		}
 
 		$user = get_userdata( $user_id );
 		if ( empty( $user ) ) {
@@ -1094,7 +1099,7 @@ class MailsterSubscribers {
 			'lastname' => $last_name,
 		) );
 
-		$subscriber_id = $this->add( $userdata, true );
+		$subscriber_id = $this->add( $userdata, true, $merge, $subscriber_notification );
 
 		return $subscriber_id;
 
@@ -1140,7 +1145,13 @@ class MailsterSubscribers {
 					}
 				}
 				$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
-				$value = $timestamp !== false ? date( 'Y-m-d', $timestamp ) : date( 'Y-m-d', strtotime( $value ) );
+				if ( false !== $timestamp ) {
+					$value = date( 'Y-m-d', $timestamp );
+				} elseif ( is_numeric( $value ) ) {
+					$value = date( 'Y-m-d', $value );
+				} else {
+					$value = '';
+				}
 			}
 
 			if ( $value != '' ) {
@@ -1516,12 +1527,12 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $formated (optional)
-	 * @param unknown $round    (optional)
-	 * @param unknown $status   (optional)
+	 * @param unknown $formatted (optional)
+	 * @param unknown $round     (optional)
+	 * @param unknown $status    (optional)
 	 * @return unknown
 	 */
-	public function get_count( $formated = false, $round = 1, $status = 1 ) {
+	public function get_count( $formatted = false, $round = 1, $status = 1 ) {
 
 		$count = $this->get_count_by_status( $status );
 
@@ -1529,7 +1540,7 @@ class MailsterSubscribers {
 			$count = ceil( $count / $round ) * $round;
 		}
 
-		if ( 'kilo' === $formated ) {
+		if ( 'kilo' === $formatted ) {
 			if ( $count >= 1000000 ) {
 				$count = round( $count / 1000000, 1 ) . 'M';
 			} elseif ( $count >= 10000 ) {
@@ -1537,7 +1548,7 @@ class MailsterSubscribers {
 			} else {
 				$count = number_format_i18n( $count );
 			}
-		} elseif ( $formated ) {
+		} elseif ( $formatted ) {
 			$count = number_format_i18n( $count );
 		}
 
@@ -1559,6 +1570,9 @@ class MailsterSubscribers {
 		if ( false === ( $counts = mailster_cache_get( 'get_count_by_status' ) ) ) {
 
 			$sql = "SELECT status, COUNT( * ) AS count FROM {$wpdb->prefix}mailster_subscribers AS a GROUP BY status";
+
+			$sql = apply_filters( 'mailster_subscribers_get_count_by_status', $sql );
+
 			$result = $wpdb->get_results( $sql );
 
 			$counts = array();
@@ -2284,11 +2298,15 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $wpid
+	 * @param unknown $wpid          (optional)
 	 * @param unknown $custom_fields (optional)
 	 * @return unknown
 	 */
-	public function get_by_wpid( $wpid, $custom_fields = false ) {
+	public function get_by_wpid( $wpid = null, $custom_fields = false ) {
+
+		if ( is_null( $wpid ) ) {
+			$wpid = get_current_user_id();
+		}
 
 		return $this->get_by_type( 'wp_id', $wpid, $custom_fields );
 	}
@@ -2353,6 +2371,8 @@ class MailsterSubscribers {
 		}
 
 		$sql = "SELECT * FROM {$wpdb->prefix}mailster_subscribers WHERE " . $type . " = '" . esc_sql( $value ) . "' LIMIT 1";
+
+		$sql = apply_filters( 'mailster_subscribers_get_by_type_sql', $sql, $type, $value );
 
 		if ( ! ( $subscriber = $wpdb->get_row( $sql ) ) ) {
 			return false;
@@ -2563,7 +2583,7 @@ class MailsterSubscribers {
 			$subscriber_id = $this->add_from_wp_user( get_current_user_id(), array(
 				'status' => 1,
 				'referer' => 'backend',
-			) );
+			), false, false );
 		}
 
 	}

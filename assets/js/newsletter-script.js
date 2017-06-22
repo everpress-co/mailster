@@ -96,7 +96,6 @@ jQuery(document).ready(function ($) {
 
 			}
 
-
 			_win.trigger('resize');
 			$("#normal-sortables").on("sortupdate", function (event, ui) {
 				_win.trigger('resize');
@@ -659,7 +658,7 @@ jQuery(document).ready(function ($) {
 
 					_ajax('get_totals', data, function (response) {
 						_enable();
-						total.removeClass('loading').html(response.totalformated);
+						total.removeClass('loading').html(response.totalformatted);
 
 					}, function (jqXHR, textStatus, errorThrown) {
 						_enable();
@@ -903,10 +902,11 @@ jQuery(document).ready(function ($) {
 			$('.mailster-preview-iframe').on('load', function () {
 
 				var $this = $(this),
-					body = $this.contents().find('body');
+					contents = $this.contents(),
+					body = contents.find('body');
 
 				if ($this.is('.mobile')) {
-					var style = body.find('style').text(),
+					var style = contents.find('style').text(),
 						hasqueries = /@media/.test(style);
 
 					if (!hasqueries) {
@@ -2136,8 +2136,8 @@ jQuery(document).ready(function ($) {
 				_ajax('check_for_posts', {
 					post_type: post_type,
 					relative: relative,
-					extra: extra
-
+					extra: extra,
+					modulename: current.name
 				}, function (response) {
 					loader(false);
 					if (response.success) {
@@ -2163,23 +2163,22 @@ jQuery(document).ready(function ($) {
 				var f = factor.val();
 				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + ((w || imagewidth.val()) * f) + '&h=' + ((h || imageheight.val()) * f) + '&f=' + f;
 			}
-
 			/*
-							else if(m = val.match(/(https?)(.*?)youtube\.com\/watch\?v=([a-zA-Z0-9]+)/)){
-								console.log(val, m);
-								val = m[1]+'://img.youtube.com/vi/'+m[3]+'/maxresdefault.jpg';
-								$.getJSON(m[1]+'://gdata.youtube.com/feeds/api/videos/'+m[3]+'?v=2&alt=jsonc&callback=?', function(response){
-									console.log(response);
-									//imagelink.val();
-									imagelink.val(response.data.player.default.replace('&feature=youtube_gdata_player','&feature=mailster'));
-									imagealt.val(response.data.title);
-									imagepreview.attr('src', response.data.thumbnail.hqDefault);
-									imageurl.attr('src', response.data.thumbnail.hqDefault);
+			else if(m = val.match(/(https?)(.*?)youtube\.com\/watch\?v=([a-zA-Z0-9]+)/)){
+				console.log(val, m);
+				val = m[1]+'://img.youtube.com/vi/'+m[3]+'/maxresdefault.jpg';
+				$.getJSON(m[1]+'://gdata.youtube.com/feeds/api/videos/'+m[3]+'?v=2&alt=jsonc&callback=?', function(response){
+					console.log(response);
+					//imagelink.val();
+					imagelink.val(response.data.player.default.replace('&feature=youtube_gdata_player','&feature=mailster'));
+					imagealt.val(response.data.title);
+					imagepreview.attr('src', response.data.thumbnail.hqDefault);
+					imageurl.attr('src', response.data.thumbnail.hqDefault);
 
-								});
-							}else{
-								console.log('no dynmaic');
-							}
+				});
+			}else{
+				console.log('no dynmaic');
+			}
 			*/
 			return val
 		}
@@ -2403,9 +2402,16 @@ jQuery(document).ready(function ($) {
 
 				if (currenttext) {
 
-					current.elements.headlines.html('');
+					if (currenttext.title) {
 
-					if (currenttext.title) current.elements.headlines.eq(0).html(currenttext.title);
+						if (!$.isArray(currenttext.title)) {
+							currenttext.title = [currenttext.title];
+						}
+						current.elements.headlines.each(function (i, e) {
+							$(this).html(currenttext.title[i] ? currenttext.title[i] : '');
+						});
+
+					}
 
 					if (currenttext.link) {
 
@@ -2432,78 +2438,102 @@ jQuery(document).ready(function ($) {
 
 					if (current.elements.bodies.length) {
 						var contentcount = current.elements.bodies.length,
-							content = currenttext[contenttype] ? currenttext[contenttype] : '',
-							contentlength = content.length,
-							partlength = ('static' == insertmethod) ? Math.ceil(contentlength / contentcount) : contentlength;
+							org_content = currenttext[contenttype] ? currenttext[contenttype] : '',
+							content = [],
+							contentlength,
+							partlength;
 
-						for (var i = 0; i < contentcount; i++) {
-							current.elements.bodies.eq(i).html(content.substring(i * partlength, i * partlength + partlength));
+						if (!$.isArray(org_content)) {
+							contentlength = org_content.length,
+								partlength = ('static' == insertmethod) ? Math.ceil(contentlength / contentcount) : contentlength;
+							for (var i = 0; i < contentcount; i++) {
+								content.push(org_content.substring(i * partlength, i * partlength + partlength));
+							}
+						} else {
+							content = org_content;
 						}
+
+						current.elements.bodies.each(function (i, e) {
+							$(this).html(content[i] ? content[i] : '');
+						});
+
 					}
 
 					if (currenttext.image && current.elements.images.length) {
+
+						if (!$.isArray(currenttext.image)) {
+							currenttext.image = [currenttext.image];
+						}
+
 						loader();
 
-						var imgelement = current.elements.images.eq(0);
-						var f = factor.val();
+						current.elements.images.each(function (i, e) {
 
-						if ('static' == insertmethod) {
-							_ajax('create_image', {
-								id: currenttext.image.id,
-								width: current.elements.images.eq(0).width() * f,
-							}, function (response) {
+							if (!currenttext.image[i]) return;
 
+							var imgelement = $(this);
+							var f = factor.val();
 
-								if (response.success) {
+							if ('static' == insertmethod) {
+								_ajax('create_image', {
+									id: currenttext.image[i].id,
+									width: imgelement.width() * f,
+								}, function (response) {
+
+									if (response.success) {
+										loader(false);
+
+										imgelement.attr({
+											'data-id': currenttext.image[i].id,
+											'src': response.image.url,
+											'width': Math.round(response.image.width / f),
+											'height': Math.round(response.image.height / f),
+											'alt': currenttext.alt || currenttext.title[i]
+										}).data('id', currenttext.image[i].id);
+
+										if (imgelement.parent().is('a')) {
+											imgelement.unwrap();
+										}
+
+										if (currenttext.link) {
+											imgelement.wrap('<a>');
+											imgelement.parent().attr('href', currenttext.link);
+										}
+									}
+									close();
+								}, function (jqXHR, textStatus, errorThrown) {
+
 									loader(false);
+									alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 
-									imgelement.attr({
-										'data-id': currenttext.image.id,
-										'src': response.image.url,
-										'width': Math.round(response.image.width / f),
-										'height': Math.round(response.image.height / f),
-										'alt': currenttext.alt || currenttext.title
-									}).data('id', currenttext.image.id);
+								});
 
-									if (imgelement.parent().is('a')) {
-										imgelement.unwrap();
-									}
+								return false;
 
-									if (currenttext.link) {
-										imgelement.wrap('<a>');
-										imgelement.parent().attr('href', currenttext.link);
-									}
-								}
-								close();
-							}, function (jqXHR, textStatus, errorThrown) {
+							} else if ('rss' == insertmethod) {
 
-								loader(false);
-								alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
+								var width = imgelement.width();
 
-							});
+								imgelement.removeAttr('height').removeAttr('data-id').attr({
+									'src': dynamicImage(currenttext.image[i].src, width),
+									'width': width,
+									'alt': currenttext.alt || currenttext.title[i]
+								}).removeData('id');
 
-							return false;
+							} else {
 
-						} else if ('rss' == insertmethod) {
+								var width = imgelement.width();
 
-							var width = imgelement.width();
+								imgelement.removeAttr('height').removeAttr('data-id').attr({
+									'src': dynamicImage(currenttext.image[i], width),
+									'width': width,
+									'alt': currenttext.alt || currenttext.title[i]
+								}).removeData('id');
+							}
 
-							imgelement.removeAttr('height').removeAttr('data-id').attr({
-								'src': dynamicImage(currenttext.image.src, width),
-								'width': width,
-								'alt': currenttext.alt || currenttext.title
-							}).removeData('id');
+						});
 
-						} else {
 
-							var width = imgelement.width();
-
-							imgelement.removeAttr('height').removeAttr('data-id').attr({
-								'src': dynamicImage(currenttext.image, width),
-								'width': width,
-								'alt': currenttext.alt || currenttext.title
-							}).removeData('id');
-						}
 					}
 
 					_iframe.contents().find("html")
@@ -2518,8 +2548,11 @@ jQuery(document).ready(function ($) {
 
 			} else if (current.type == 'multi') {
 
-				if (isTinyMCE && tinymce.get('mailster-editor') && !tinymce.get('mailster-editor').isHidden())
-					current.element.html(tinymce.get('mailster-editor').getContent());
+				if (isTinyMCE && tinymce.get('mailster-editor') && !tinymce.get('mailster-editor').isHidden()) {
+					var content = tinymce.get('mailster-editor').getContent();
+					content = content.replace('href="http://{', 'href="{'); //from tinymce if tag is used
+					current.element.html(content);
+				}
 
 			} else if (current.type == 'single') {
 
@@ -2541,8 +2574,6 @@ jQuery(document).ready(function ($) {
 				current.modulebuttons.prependTo(current.element);
 
 			}
-
-
 
 			close();
 			return false;
@@ -3662,9 +3693,11 @@ jQuery(document).ready(function ($) {
 						});
 
 					})
-					.on('click.mailster', 'td[background]', function (event) {
+					.on('click.mailster', 'td[background], th[background]', function (event) {
 						event.stopPropagation();
-						if (event.target.tagName.toLowerCase() == 'module' || this == cont.find('table').eq(0).find('td')[0]) return;
+						if (event.target.tagName.toLowerCase() == 'module' ||
+							this == cont.find('table').eq(0).find('td')[0] ||
+							this == cont.find('table').eq(0).find('th')[0]) return;
 						var $this = $(this),
 							offset = $this.offset(),
 							top = offset.top + 61,
@@ -4098,18 +4131,12 @@ jQuery(document).ready(function ($) {
 
 	window.tb_position = function () {
 		if (!window.TB_WIDTH || !window.TB_HEIGHT) return;
-		var isIE6 = typeof document.body.style.maxHeight === "undefined";
 		jQuery("#TB_window").css({
+			marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px',
 			marginLeft: '-' + parseInt((TB_WIDTH / 2), 10) + 'px',
 			width: TB_WIDTH + 'px'
 		});
-		if (!isIE6) { // take away IE6
-			jQuery("#TB_window").css({
-				marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px'
-			});
-		}
 	}
-
 
 	_init();
 

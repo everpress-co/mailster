@@ -103,7 +103,7 @@ class MailsterMail {
 
 		} elseif ( $this->deliverymethod == 'simple' ) {
 
-			$method = mailster_option( 'simplemethod', 'sendmail' );
+			$method = mailster_option( 'simplemethod' );
 
 			if ( $method == 'sendmail' ) {
 				$this->mailer->Sendmail = mailster_option( 'sendmail_path' );
@@ -370,15 +370,16 @@ class MailsterMail {
 	 * @param unknown $replace  (optional)
 	 * @param unknown $force    (optional)
 	 * @param unknown $file     (optional)
+	 * @param unknown $template (optional)
 	 * @return unknown
 	 */
-	public function send_notification( $content, $headline = null, $replace = array(), $force = false, $file = 'notification.html' ) {
+	public function send_notification( $content, $headline = null, $replace = array(), $force = false, $file = 'notification.html', $template = null ) {
 
 		if ( is_null( $headline ) ) {
 			$headline = $this->subject;
 		}
 
-		$template = mailster_option( 'default_template' );
+		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 
 		if ( $template ) {
 			$template = mailster( 'template', $template, $file );
@@ -537,7 +538,7 @@ class MailsterMail {
 				$this->mailer->Body = $this->mailer->normalizeBreaks( $this->content );
 			}
 
-			$this->mailer->AltBody = $this->mailer->normalizeBreaks( ! empty( $this->plaintext ) ? $this->plaintext : mailster()->plain_text( $this->content ) );
+			$this->mailer->AltBody = $this->mailer->normalizeBreaks( ! empty( $this->plaintext ) ? $this->plaintext : mailster( 'helper' )->plain_text( $this->content ) );
 
 			( $this->bouncemail )
 				? $this->mailer->ReturnPath = $this->mailer->Sender = $this->bouncemail

@@ -2,8 +2,8 @@
 Contributors: revaxarts
 Tags: mailster, mymail, newsletter, email, revaxarts
 Requires at least: 3.8
-Tested up to: 4.7.3
-Stable tag: 2.2.3
+Tested up to: 4.8
+Stable tag: 2.2.8
 Author: revaxarts
 Author URI: https://mailster.co
 
@@ -59,7 +59,7 @@ Don’t send unfinished Newsletters to your Customers which possible end up in t
 
 These Templates are made for the Mailster Newsletter Plugin. They have been fully tested with all major email softwares and providers. They are all available exclusively on ThemeForest.
 
-If you have further questions please visit our [knowledge base](https://kb.mailster.co/?utm_source=Plugin+Info+Page)
+If you have further questions please visit our [knowledge base](https://kb.mailster.co)
 
 Xaver Birsak – https://revaxarts.com
 
@@ -82,12 +82,69 @@ Xaver Birsak – https://revaxarts.com
 
 == Changelog ==
 
+= Version 2.2.8 =
+
+* fixed: radio and dropdown values weren't populated on profile in some cases
+* improved: get referer on form signup
+
+= Version 2.2.7 =
+
+* fully tested on WordPress 4.8
+* fixed: exporting subscribers
+* fixed: strip slashes on list descriptions
+* fixed: SQL issue when unassign lists from subscribers
+* fixed: encoding issue while saving campaigns on some servers
+* improved: display Mailster username on Dashboard
+* improved: removed usage of 'create_function' for PHP 7.2
+* improved: better sanitation and checks on date fields
+* added: 'mailster_keep_tags' filter to keep tags
+* change: some default values on plugin activation
+
+= Version 2.2.6 =
+
+* fixed: checkboxes were always checked by default
+* fixed: status info on user time based auto responder
+* fixed: save settings button not enabled in some cases
+* fixed: duplicating of other campaigns without capabilities
+* fixed: spelling mistakes
+* improved: html tags in custom field names
+* improved: compatibility with caching plugins
+* improved: excerpts are now generated if not defined via more tag or explicit
+* improved: loading fall back if notification.html is missing
+* improved: removed redundant white spaces in plain text versions
+* improved: links in plain text version are now grouped together below the content
+* improved: compatibility with third party templates
+* improved: CSS rules for RTL languages
+* added: 'mailster_get_last_post_args' filter to alter post arguments
+* added: month to user time based autoresponder time frames
+* updated: templates page
+
+= Version 2.2.5 =
+
+* change: Signup date checkbox on Mange Subscriber Page now checked by default
+* fixed: Thickbox dimensions on form detail page
+* fixed: selecting static posts working again
+* fixed: issue on recipients detail page since last update
+* fixed: Newsletter sign up widget didn't store empty title
+* fixed: wrong excerpt on web version with dynamic tags in some cases
+* updated: PHPMailer to version 5.2.23
+* improved: Cron tab commands
+* improved: Cron now supports secret via a header
+* improved: URL rewrite support option on settings
+* overall improvements
+
+= Version 2.2.4 =
+
 * fixed: adding attachments not possible on Firefox
 * fixed: Subscriber ID was cached on custom dynamic tags in some cases
 * fixed: converting links on single elements no longer pre filled if link is not set
-* updated: order by "Clicks" is now "Clicks Date" in recipients details view
+* fixed: smaller bugs
+* updated: order by "Clicks" is now "Click Date" in recipients details view
 * improved: all widgets are now wrapped by a div with class "mailster-widget" for better targeting
 * new option to get subscribers by md5 hash
+* new "mailster_subscriber_hash" filter to change subscriber hash
+* improved: added various filters to list and subscribers view
+* improved: support of arrays in auto post tag filter
 * improved: allowing anonymous functions in `mailster_add_tag`
 * improved: allowing anonymous functions in `mailster_add_style`
 * improved: subscriber caching

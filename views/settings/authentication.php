@@ -60,7 +60,7 @@ if ( $found ) : ?>
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><h4>DKIM</h4></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[dkim]" value=""><input type="checkbox" name="mailster_options[dkim]" id="mailster_dkim" value="1" <?php checked( $dkim ) ?>> <?php esc_html_e( 'Use DomainKeys Identified Mail', 'mailster' ) ?>. <a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail" class="external"><?php esc_html_e( 'read more', 'mailster' ) ?></a></label> </td>
+		<td><label><input type="hidden" name="mailster_options[dkim]" value=""><input type="checkbox" name="mailster_options[dkim]" id="mailster_dkim" value="1" <?php checked( $dkim ) ?>> <?php esc_html_e( 'Use DomainKeys Identified Mail', 'mailster' ) ?>. <a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail" class="external"><?php esc_html_e( 'read more', 'mailster' ) ?></a></label> </td>
 	</tr>
 </table>
 <div class="dkim-info" <?php if ( ! $dkim ) { echo ' style="display:none"'; } ?>>

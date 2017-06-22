@@ -70,8 +70,8 @@ if ( $translations ) {
 			<?php esc_html_e( 'change language of texts if available to', 'mailster' );?>
 <?php
 
-$dir = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';
-$files = array();
+			$dir = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';
+			$files = array();
 
 if ( is_dir( $dir ) ) {
 	$files = list_files( $dir );
@@ -81,14 +81,9 @@ if ( is_dir( $dir ) ) {
 ?>
 					<select name="language-file">
 						<option<?php selected( preg_match( '#^en_#', $locale ) );?> value="en_US"><?php esc_html_e( 'English', 'mailster' );?> (en_US)</option>
-<?php
-foreach ( $files as $file ) {
-	$lang = str_replace( array( '.po', 'mailster-' ), '', basename( $file ) );
-?>
+						<?php foreach ( $files as $file ) { $lang = str_replace( array( '.po', 'mailster-' ), '', basename( $file ) ); ?>
 						<option<?php selected( $lang == $locale );?> value="<?php echo $lang; ?>"><?php echo $lang; ?></option>
-						<?php
-}
-?>
+						<?php } ?>
 					</select>
 			<button name="change-language" class="button"><?php esc_html_e( 'change language', 'mailster' );?></button>
 			<br class="clearfix">
