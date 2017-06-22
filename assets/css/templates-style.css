@@ -372,6 +372,25 @@ only screen and (                min-resolution: 2dppx) {
 	background-color: #F26B6B;
 	content: 'fresh';
 }
+.mailster-box.is-unsupported > *{
+	opacity: 0.2;
+}
+.mailster-box.is-unsupported:before{
+	content: attr(data-support);
+	display: block;
+	position: absolute;
+	top:40%;
+	left:50%;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	color: #444;
+	z-index: 100;
+	background: none;
+	font-size: 20px;
+	line-height: 1.2em;
+	width: 90%;
+}
+
 .mailster-box.edit:after{
 	content: 'edit';
 }

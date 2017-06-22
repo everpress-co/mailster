@@ -320,7 +320,7 @@ class MailsterForm {
 
 							$fields[ $field->field_id ] .= '<select id="mailster-' . $field->field_id . '-' . $this->ID . '" name="' . $field->field_id . '" class="input mailster-' . $field->field_id . '' . ( $required ? ' mailster-required' : '' ) . '" aria-required="' . ( $required ? 'true' : 'false' ) . '" aria-label="' . $esc_label . '">';
 							foreach ( $data['values'] as $v ) {
-								if ( ! isset( $data['default'] ) ) {
+								if ( ! isset( $data['default'] ) || ! $data['default'] ) {
 									$data['default'] = $value;
 								}
 
@@ -334,7 +334,7 @@ class MailsterForm {
 							$fields[ $field->field_id ] .= '<ul class="mailster-list">';
 							$i = 0;
 							foreach ( $data['values'] as $v ) {
-								if ( ! isset( $data['default'] ) ) {
+								if ( ! isset( $data['default'] ) || ! $data['default'] ) {
 									$data['default'] = $value;
 								}
 

@@ -84,6 +84,7 @@ Xaver Birsak – https://revaxarts.com
 
 = Version 2.2.8 =
 
+* fixed: radio and dropdown values weren't populated on profile in some cases
 * improved: get referer on form signup
 
 = Version 2.2.7 =
