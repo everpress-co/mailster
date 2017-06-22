@@ -1,6 +1,6 @@
 <?php
 
-// Version 2.6
+// Version 2.7
 // UpdateCenterPlugin Class
 if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
@@ -427,12 +427,13 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 				// remove updatecenter plugins from the wordpress check
 				$original = json_decode( $r['body']['plugins'], true );
 
-				$plugins = $original['plugins'];
+				$plugins = ! empty( $original['plugins'] ) ? $original['plugins'] : array();
+				$active = ! empty( $original['active'] ) ? $original['active'] : array();
 				$uc_plugins = array_keys( self::$plugin_data );
 
 				$r['body']['plugins'] = json_encode( array(
 					'plugins' => array_intersect_key( $plugins, array_flip( array_keys( array_diff_key( $plugins, array_flip( $uc_plugins ) ) ) ) ),
-					'active' => array_merge( array_diff( array_merge( array_diff( $original['active'], $uc_plugins ) ), $uc_plugins ) ),
+					'active' => array_merge( array_diff( array_merge( array_diff( $active, $uc_plugins ) ), $uc_plugins ) ),
 				) );
 
 				return $r;

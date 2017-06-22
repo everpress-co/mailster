@@ -13,7 +13,7 @@ jQuery(document).ready(function ($) {
 
 
 	$('a.external').on('click', function () {
-		window.open(this.href);
+		if (this.href) window.open(this.href);
 		return false;
 	});
 

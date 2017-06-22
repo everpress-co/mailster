@@ -603,13 +603,15 @@ class MailsterUpgrade {
 			delete_option( '_mailster_formstructure' );
 			$form_id = $wpdb->insert_id;
 
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_form_fields SET form_id = %d WHERE form_id = 0", $form_id ) );
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_forms_lists SET form_id = %d WHERE form_id = 0", $form_id ) );
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_content` = replace(post_content, %s, %s)", '[newsletter_signup_form id=0]', '[newsletter_signup_form id=' . $form_id . ']' ) );
+			if ( is_numeric( $form_id ) ) {
+				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_form_fields SET form_id = %d WHERE form_id = 0", $form_id ) );
+				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_forms_lists SET form_id = %d WHERE form_id = 0", $form_id ) );
+				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_content` = replace(post_content, %s, %s)", '[newsletter_signup_form id=0]', '[newsletter_signup_form id=' . $form_id . ']' ) );
 
-			$old_profile_form = mailster_option( 'profile_form' );
-			if ( 0 == $old_profile_form ) {
-				mailster_update_option( 'profile_form', $form_id );
+				$old_profile_form = mailster_option( 'profile_form' );
+				if ( 0 == $old_profile_form ) {
+					mailster_update_option( 'profile_form', $form_id );
+				}
 			}
 		}
 

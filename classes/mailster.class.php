@@ -1729,20 +1729,28 @@ class Mailster {
 	 * @param unknown $headers     (optional)
 	 * @param unknown $attachments (optional)
 	 * @param unknown $file        (optional)
+	 * @param unknown $template    (optional)
 	 * @return unknown
 	 */
-	public function wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $file = null ) {
+	public function wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $file = null, $template = null ) {
 
 		if ( is_array( $headers ) ) {
 			$headers = implode( "\r\n", $headers ) . "\r\n";
 		}
 
 		$message = $this->wp_mail_map_links( $message );
+
 		// only if content type is not html
 		if ( ! preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
 			$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
 			$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
 			$message = wpautop( $message, true );
+		}
+		if ( preg_match( '#x-mailster-template:(.*)#i', $headers, $hits ) ) {
+			$template = trim( $hits[1] );
+		}
+		if ( preg_match( '#x-mailster-template-file:(.*)#i', $headers, $hits ) ) {
+			$file = trim( $hits[1] );
 		}
 
 		$current_filter = current_filter();
@@ -1755,7 +1763,7 @@ class Mailster {
 			}
 		}
 
-		$template = mailster_option( 'default_template' );
+		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 		$template = apply_filters( 'mailster_wp_mail_template', $template, $caller, $current_filter );
 
 		$file = ! is_null( $file ) ? $file : mailster_option( 'system_mail_template', 'notification.html' );
@@ -1781,7 +1789,7 @@ class Mailster {
 		$message = apply_filters( 'mymail_send_message', apply_filters( 'mailster_send_message', $message ) );
 		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $subject ) );
 
-		return $mail->send_notification( $message, $headline, $replace, false, $file );
+		return $mail->send_notification( $message, $headline, $replace, false, $file, $template );
 
 	}
 
