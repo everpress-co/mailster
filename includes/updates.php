@@ -496,7 +496,6 @@ if ( $old_version ) {
 		case '2.2.2':
 
 			$mailster_options['_flush_rewrite_rules'] = true;
-			$mailster_options['webversion_bar'] = true;
 
 		case '2.2.3':
 		case '2.2.4':
@@ -507,6 +506,10 @@ if ( $old_version ) {
 		case '2.2.6':
 
 			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'yes' WHERE option_name IN ('mailster_username', 'mailster_email')" );
+
+		case '2.2.x':
+
+			$mailster_options['webversion_bar'] = true;
 
 		default:
 
