@@ -1,0 +1,55 @@
+#system_info_content{
+	width: 100%;
+	height: 600px;
+	resize: none;
+	white-space: pre;
+}
+
+.mailster-test-result{
+	background: #fff;
+	border-left: 4px solid #fff;
+	-webkit-box-shadow: 0 1px 1px 0 rgba( 0, 0, 0, 0.1 );
+	box-shadow: 0 1px 1px 0 rgba( 0, 0, 0, 0.1 );
+	margin: 5px 0px;
+	padding: 12px 12px;
+}
+.mailster-test-result h4{
+	margin:0;
+}
+.mailster-test-result h4:before{
+	font-family: 'mailster-icons' !important;
+	padding-right:10px;
+	font-size: 20px;
+	font-style: normal;
+	font-weight: normal;
+	speak: none;
+	display: inline-block !important;
+	vertical-align: bottom;
+}
+.mailster-test-result.mailster-test-is-success h4:before{
+	color: #46b450;
+	content: '\e804';
+}
+.mailster-test-result.mailster-test-is-error h4:before{
+	color: #dc3232;
+	content: '\e80b';
+}
+.mailster-test-result.mailster-test-is-warning h4:before{
+	color: #ffb900;
+	content: '\e812';
+}
+.mailster-test-result.mailster-test-is-notice h4:before{
+	color: #00a0d2;
+	content: '\e834';
+}
+
+
+
+
+.mailster-test-result .mailster-test-result-more{
+	padding-left: 27px;
+	font-style: italic;
+}
+.mailster-test-result .mailster-test-result-more:empty{
+	display: none;
+}

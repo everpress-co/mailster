@@ -162,6 +162,15 @@ class MailsterTests {
 
 		}
 	}
+	private function test_verfied_installation() {
+
+		if ( mailster()->is_verified() ) {
+			$this->success( 'Thank you!' );
+		} else {
+			$this->error( 'Your Mailster installation is not verified! Please register via your <a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">dashboard</a>.' );
+		}
+
+	}
 	private function test_dom_document_extension() {
 		if ( ! class_exists( 'DOMDocument' ) ) {
 			$this->error( 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank">DOMDocument</a> library.' );
@@ -182,25 +191,28 @@ class MailsterTests {
 	private function test_content_directory() {
 		$content_dir = dirname( MAILSTER_UPLOAD_DIR );
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
-			$this->warning( sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
+			$this->warning( sprintf( 'Your content folder in %s is not writable.', '"' . $content_dir . '"' ) );
 		} else {
-			$this->success( sprintf( 'Your content folder in %s is writeable.', '"' . $content_dir . '"' ) );
+			$this->success( sprintf( 'Your content folder in %s is writable.', '"' . $content_dir . '"' ) );
 
 		}
 	}
 	private function test_memory_limit() {
 		if ( max( intval( @ini_get( 'memory_limit' ) ), intval( WP_MAX_MEMORY_LIMIT ) ) < 128 ) {
 			$this->warning( 'Your Memory Limit is ' . size_format( WP_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
+		} else {
+			$this->success( 'Your Memory Limit is ' . size_format( WP_MEMORY_LIMIT * 1048576 ) );
 		}
 	}
 
 	private function test_plugin_location() {
 		if ( MAILSTER_SLUG != 'mailster/mailster.php' ) {
 			$this->warning( 'You have changed the plugin location of Mailster. This can cause problems while updating the plugin.' );
+		} else {
 		}
 	}
 
-	private function test_mailster_folder_in_root() {
+	private function test_no_mailster_folder_in_root() {
 		if ( is_dir( ABSPATH . 'mailster' ) ) {
 			$this->error( 'There\'s a folder called \'mailster\' in ' . ABSPATH . ' which causes a conflict with campaign links! Please remove or rename this folder.' );
 		}
@@ -220,6 +232,8 @@ class MailsterTests {
 
 		if ( ! mailster( 'cron' )->is_locked() ) {
 			$this->warning( 'Cron Lock mechanism is not working with the current method. Read more about this <a href="https://kb.mailster.co/what-is-a-cron-lock/" target="_blank">here</a>.' );
+		} else {
+			$this->success( ' No Cron Lock in place!' );
 		}
 		mailster( 'cron' )->unlock();
 
@@ -285,23 +299,57 @@ class MailsterTests {
 	private function test_db_version() {
 
 		if ( get_option( 'mailster_dbversion' ) != MAILSTER_DBVERSION ) {
-			$this->warning( 'Your current DB version is ' . get_option( 'mailster_dbversion' ) . ' and should be ' . MAILSTER_DBVERSION . '. Please visit the <a href="' . admin_url( '/admin.php?page=mailster_update' ) . '">update page</a> to run necessary updates.' );
+			$this->error( 'Your current DB version is ' . get_option( 'mailster_dbversion' ) . ' and should be ' . MAILSTER_DBVERSION . '. Please visit the <a href="' . admin_url( 'admin.php?page=mailster_update' ) . '">update page</a> to run necessary updates.' );
 
 		}
 
 	}
 
-	private function test_ports() {
+	private function test_port_110() {
 
-		$this->notice( mailster( 'settings' )->check_port( 'pop.gmx.net', 110 ) );
-		$this->notice( mailster( 'settings' )->check_port( 'pop.gmail.com', 995 ) );
-		$this->notice( mailster( 'settings' )->check_port( 'smtp.gmail.com', 993 ) );
-		$this->notice( mailster( 'settings' )->check_port( 'smtp.gmail.com', 25 ) );
-		$this->notice( mailster( 'settings' )->check_port( 'smtp.gmail.com', 465 ) );
-		$this->notice( mailster( 'settings' )->check_port( 'smtp.gmail.com', 587 ) );
+		$this->port_test( 110, 'pop.gmx.net' );
 
 	}
+	private function test_port_995() {
 
+		$this->port_test( 995, 'pop.gmail.com' );
+
+	}
+	private function test_port_993() {
+
+		$this->port_test( 993, 'smtp.gmail.com' );
+
+	}
+	private function test_port_25() {
+
+		$this->port_test( 25, 'smtp.gmail.com' );
+
+	}
+	private function test_port_2525() {
+
+		$this->port_test( 2525, 'smtp.sparkpostmail.com' );
+
+	}
+	private function test_port_465() {
+
+		$this->port_test( 465, 'smtp.gmail.com' );
+
+	}
+	private function test_port_587() {
+
+		$this->port_test( 587, 'smtp.gmail.com' );
+
+	}
+	private function port_test( $port, $domain ) {
+
+		$result = mailster( 'settings' )->check_port( $domain, $port );
+		if ( strpos( $result, 'open' ) !== false ) {
+			$this->success( sprintf( 'Port %d is open an can be used! <code>' . $result . '</code>', $port ) );
+		} else {
+			$this->warning( $result );
+		}
+
+	}
 
 	private function test_permalink_structure() {
 
@@ -314,13 +362,4 @@ class MailsterTests {
 	}
 
 
-	private function test_verfied_installation() {
-
-		if ( mailster()->is_verified() ) {
-			$this->success( 'Thank you!' );
-		} else {
-			$this->error( 'Your Mailster installation is not verified! Please register via your <a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">dashboard</a>.' );
-		}
-
-	}
 }
