@@ -86,6 +86,7 @@ Xaver Birsak – https://revaxarts.com
 
 * fixed: radio and dropdown values weren't populated on profile in some cases
 * improved: get referer on form signup
+* added: option for legacy POP3 method on bounce settings
 
 = Version 2.2.7 =
 

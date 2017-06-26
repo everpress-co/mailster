@@ -25,6 +25,7 @@
 			<label><input type="radio" name="mailster_options[bounce_service]" value="pop3" <?php checked( mailster_option( 'bounce_service' ), 'pop3' ) ?>> POP3 </label>&nbsp;
 			<label><input type="radio" name="mailster_options[bounce_service]" value="imap" <?php checked( mailster_option( 'bounce_service' ), 'imap' ) ?>> IMAP </label>&nbsp;
 			<label><input type="radio" name="mailster_options[bounce_service]" value="nntp" <?php checked( mailster_option( 'bounce_service' ), 'nntp' ) ?>> NNTP </label>&nbsp;
+			<label><input type="radio" name="mailster_options[bounce_service]" value="" <?php checked( ! mailster_option( 'bounce_service' ) ) ?>> POP3 (legacy)</label>
 			</td>
 		</tr>
 	<?php endif; ?>
