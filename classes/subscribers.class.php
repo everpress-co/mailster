@@ -2243,12 +2243,11 @@ class MailsterSubscribers {
 	 * @param unknown $args (optional)
 	 * @return unknown
 	 */
-	public function query( $args = null ) {
+	public function query( $args = array() ) {
 
 		require_once MAILSTER_DIR . 'classes/subscriber.query.class.php';
-		$query = new MailsterSubscriberQuery( $args );
-
-		return $query;
+		$query = MailsterSubscriberQuery::get_instance( );
+		return $query->run( $args );
 
 	}
 

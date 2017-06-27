@@ -2,62 +2,78 @@
 
 class MailsterSubscriberQuery {
 
+	private $last_result;
+	private $last_error;
+	private $last_query;
 
-	public function __construct( $args = null ) {
+	private $defaults = array(
+		'select' => null,
+		'conditions' => null,
+		'status' => null,
+		'return_ids' => false,
+		'return_count' => false,
+		'ignore_sent' => false,
+		'ignore_queue' => false,
+		'limit' => null,
+		'offset' => null,
+		'orderby' => null,
+		'order' => null,
+		'return_sql' => false,
+		'lists' => false,
+		'lists__not_in' => null,
+		'fields' => null,
+		'meta' => null,
+		'sent' => null,
+		'sent__not_in' => null,
+		'open' => null,
+		'open__not_in' => null,
+		'click' => null,
+		'click__not_in' => null,
+	);
+
+	private static $_instance = null;
+
+	private function __construct( $args = null ) {
 
 		if ( ! is_null( $args ) ) {
-			return $this->query( $args );
+			return $this->run( $args );
 		}
 
 	}
+	public function __destruct() {
 
-	public function query( $args = array() ) {
+		echo '<pre>' . print_r( $this, true ) . '</pre>';
+
+	}
+
+	public static function get_instance( $args = null ) {
+		if ( ! isset( self::$_instance ) ) {
+			self::$_instance = new self();
+		}
+		return self::$_instance;
+	}
+
+	public function __get( $name ) {
+
+		if ( ! isset( $this->$name ) ) {
+			$this->{$name} = $this->{'get_' . $name}();
+		}
+
+		return $this->{$name};
+
+	}
+
+	public function run( $args = array() ) {
 
 		global $wpdb;
 
-		$defaults = array(
-			'select' => null,
-			'conditions' => null,
-			'status' => null,
-			'return_ids' => false,
-			'return_count' => false,
-			'ignore_sent' => false,
-			'ignore_queue' => false,
-			'limit' => null,
-			'offset' => null,
-			'orderby' => null,
-			'order' => null,
-			'return_sql' => false,
-			'lists' => false,
-			'lists__not_in' => null,
-			'fields' => null,
-			'meta' => null,
-			'sent' => null,
-			'sent__not_in' => null,
-			'open' => null,
-			'open__not_in' => null,
-			'click' => null,
-			'click__not_in' => null,
-		);
-
-		$args = wp_parse_args( $args, $defaults );
-
-		$custom_fields = mailster()->get_custom_fields( true );
-		$custom_fields = wp_parse_args( array( 'firstname', 'lastname' ), (array) $custom_fields );
-		$custom_date_fields = mailster()->get_custom_date_fields( true );
-		$timefields = array( 'added', 'updated', 'signup', 'confirm' );
-
-		$meta_fields = array( 'form', 'referer', 'client', 'clienttype', 'coords', 'geo', 'lang', 'timeoffset' );
-
-		$wp_user_meta = wp_parse_args( array( 'wp_user_level', 'wp_capabilities' ), mailster( 'helper' )->get_wpuser_meta_fields() );
-		// removing custom fields from wp user meta to prevent conflicts
-		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), $custom_fields ) );
+		$args = wp_parse_args( $args, $this->defaults );
 
 		if ( 'all' == $args['fields'] ) {
-			$args['fields'] = $custom_fields;
+			$args['fields'] = $this->custom_fields;
 		}
 		if ( 'all' == $args['meta'] ) {
-			$args['meta'] = $meta_fields;
+			$args['meta'] = $this->meta_fields;
 		}
 
 		if ( $args['return_ids'] ) {
@@ -188,7 +204,7 @@ class MailsterSubscriberQuery {
 
 		$joins = array();
 
-		$meta_and_fields = wp_parse_args( $args['fields'], $args['meta'] );
+		$meta_and_fields = array_unique( wp_parse_args( $args['fields'], $args['meta'] ) );
 
 		if ( ! empty( $meta_and_fields ) ) {
 
@@ -196,14 +212,14 @@ class MailsterSubscriberQuery {
 
 				$field = esc_sql( $field );
 
-				if ( in_array( $field, $custom_fields ) ) {
+				if ( in_array( $field, $this->custom_fields ) ) {
 
 					$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS `field_$field` ON `field_$field`.subscriber_id = subscribers.ID AND `field_$field`.meta_key = '$field'";
 
-				} elseif ( in_array( $field, $wp_user_meta ) ) {
+				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$joins[] = "LEFT JOIN {$wpdb->usermeta} AS `meta_wp_$field` ON `meta_wp_$field`.user_id = subscribers.wp_id AND `meta_wp_$field`.meta_key = '" . str_replace( 'wp_', $wpdb->prefix, $field ) . "'";
 
-				} elseif ( in_array( $field, $meta_fields ) ) {
+				} elseif ( in_array( $field, $this->meta_fields ) ) {
 
 					$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS `meta_$field` ON `meta_$field`.subscriber_id = subscribers.ID AND `meta_$field`.meta_key = '$field'";
 				}
@@ -212,20 +228,28 @@ class MailsterSubscriberQuery {
 
 		if ( ! empty( $args['conditions']['conditions'] ) && is_array( $args['conditions'] ) ) {
 
-			foreach ( $args['conditions']['conditions'] as $options ) {
+			if ( ! isset( $args['conditions']['conditions'][0]['conditions'] ) ) {
+				$args['conditions']['conditions'] = array( array( 'operator' => $args['conditions']['operator'], 'conditions' => $args['conditions']['conditions'] ) );
+			}
 
-				$field = esc_sql( $options['field'] );
+			foreach ( $args['conditions']['conditions'] as $i => $conditions ) {
 
-				if ( in_array( $field, $custom_fields ) ) {
+				foreach ( $conditions['conditions'] as $options ) {
 
-					$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS `field_$field` ON `field_$field`.subscriber_id = subscribers.ID AND `field_$field`.meta_key = '$field'";
+					$field = esc_sql( $options['field'] );
 
-				} elseif ( in_array( $field, $wp_user_meta ) ) {
-					$joins[] = "LEFT JOIN {$wpdb->usermeta} AS `meta_wp_$field` ON `meta_wp_$field`.user_id = subscribers.wp_id AND `meta_wp_$field`.meta_key = '" . str_replace( 'wp_', $wpdb->prefix, $field ) . "'";
+					if ( in_array( $field, $this->custom_fields ) ) {
 
-				} elseif ( in_array( $field, $meta_fields ) ) {
+						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS `field_$field` ON `field_$field`.subscriber_id = subscribers.ID AND `field_$field`.meta_key = '$field'";
 
-					$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS `meta_$field` ON `meta_$field`.subscriber_id = subscribers.ID AND `meta_$field`.meta_key = '$field'";
+					} elseif ( in_array( $field, $this->wp_user_meta ) ) {
+						$joins[] = "LEFT JOIN {$wpdb->usermeta} AS `meta_wp_$field` ON `meta_wp_$field`.user_id = subscribers.wp_id AND `meta_wp_$field`.meta_key = '" . str_replace( 'wp_', $wpdb->prefix, $field ) . "'";
+
+					} elseif ( in_array( $field, $this->meta_fields ) ) {
+
+						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS `meta_$field` ON `meta_$field`.subscriber_id = subscribers.ID AND `meta_$field`.meta_key = '$field'";
+
+					}
 				}
 			}
 		}
@@ -234,7 +258,7 @@ class MailsterSubscriberQuery {
 			$join .= "\n" . implode( "\n", array_unique( $joins ) );
 		}
 
-			$where .= ' WHERE 1';
+		$where = ' WHERE 1';
 		if ( $args['lists'] !== false ) {
 			// unassigned members if NULL
 			if ( is_array( $args['lists'] ) ) {
@@ -286,10 +310,6 @@ class MailsterSubscriberQuery {
 
 		if ( ! empty( $args['conditions']['conditions'] ) && is_array( $args['conditions'] ) ) {
 
-			if ( ! isset( $args['conditions']['conditions'][0]['conditions'] ) ) {
-				$args['conditions']['conditions'] = array( array( 'operator' => $args['conditions']['operator'], 'conditions' => $args['conditions']['conditions'] ) );
-			}
-
 			$cond = array();
 			$operator = $args['conditions']['operator'];
 
@@ -300,209 +320,8 @@ class MailsterSubscriberQuery {
 
 				foreach ( $conditions['conditions'] as $options ) {
 
-					$field = esc_sql( $options['field'] );
-					$value = esc_sql( stripslashes( $options['value'] ) );
-					$field_operator = esc_sql( stripslashes( $options['operator'] ) );
-					$is_empty = '' == $value;
-					$extra = '';
-					$positive = false;
+					$sub_cond[] = $this->get_condition( $options['field'], $options['operator'], $options['value'] );
 
-					switch ( $field ) {
-						case 'rating':
-							$value = str_replace( ',', '.', $value );
-							if ( strpos( $value, '%' ) !== false || $value > 5 ) {
-								$value = floatval( $value ) / 100;
-							} elseif ( $value >= 1 ) {
-								$value = floatval( $value ) * 0.2;
-							}
-							break;
-					}
-
-					switch ( $field_operator ) {
-						case '=':
-						case 'is':
-							$positive = true;
-						case '!=':
-						case 'is_not':
-
-							if ( in_array( $field, $custom_date_fields ) ) {
-								$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
-							} elseif ( in_array( $field, $timefields ) ) {
-								$f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
-							} elseif ( in_array( $field, $custom_fields ) ) {
-								$f = "`field_$field`.meta_value";
-							} elseif ( in_array( $field, $meta_fields ) ) {
-								$f = "`meta_$field`.meta_value";
-							} elseif ( in_array( $field, $wp_user_meta ) ) {
-								$f = "`meta_wp_$field`.meta_value";
-								if ( $field == 'wp_capabilities' ) {
-									$value = 's:' . strlen( $value ) . ':"' . strtolower( $value ) . '";';
-									$sub_cond[] = "`meta_wp_$field`.meta_value " . ( in_array( $field_operator, array( 'is', '=' ) ) ? 'LIKE' : 'NOT LIKE' ) . " '%$value%'";
-									break;
-								}
-							} else {
-								$f = "subscribers.$field";
-							}
-
-							$c = $f . ' ' . ( $positive ? '=' : '!=' ) . " '$value'";
-							if ( $is_empty && $positive ) {
-								$c .= ' OR ' . $f . ' IS NULL';
-							}
-
-							$sub_cond[] = $c;
-							break;
-
-						case '<>':
-						case 'contains':
-							$positive = true;
-						case '!<>':
-						case 'contains_not':
-							if ( $field == 'wp_capabilities' ) {
-								$value = "'a:%" . strtolower( $value ) . "%'";
-							} else {
-								$value = "'%$value%'";
-							}
-							if ( in_array( $field, $custom_fields ) ) {
-								$f = "`field_$field`.meta_value";
-							} elseif ( in_array( $field, $meta_fields ) ) {
-								$f = "`meta_$field`.meta_value";
-							} elseif ( in_array( $field, $wp_user_meta ) ) {
-								$f = "`meta_wp_$field`.meta_value";
-							} else {
-								$f = "subscribers.$field";
-							}
-
-							$c = $f . ' ' . ( $positive ? 'LIKE' : 'NOT LIKE' ) . " $value";
-							if ( $is_empty && $positive ) {
-								$c .= ' OR ' . $f . ' IS NULL';
-							}
-
-							$sub_cond[] = $c;
-							break;
-
-						case '^':
-						case 'begin_with':
-							if ( $field == 'wp_capabilities' ) {
-								$value = "'%\"" . strtolower( $value ) . "%'";
-							} else {
-								$value = "'$value%'";
-							}
-							if ( in_array( $field, $custom_fields ) ) {
-								$f = "`field_$field`.meta_value";
-							} elseif ( in_array( $field, $meta_fields ) ) {
-								$f = "`meta_$field`.meta_value";
-							} elseif ( in_array( $field, $wp_user_meta ) ) {
-								$f = "`meta_wp_$field`.meta_value";
-							} else {
-								$f = "subscribers.$field";
-							}
-
-								$c = $f . " LIKE $value";
-
-								$sub_cond[] = $c;
-							break;
-
-						case '$':
-						case 'end_with':
-							if ( $field == 'wp_capabilities' ) {
-								$value = "'%" . strtolower( $value ) . "\"%'";
-							} else {
-								$value = "'%$value'";
-							}
-
-							if ( in_array( $field, $custom_fields ) ) {
-								$f = "`field_$field`.meta_value";
-							} elseif ( in_array( $field, $meta_fields ) ) {
-								$f = "`meta_$field`.meta_value";
-							} elseif ( in_array( $field, $wp_user_meta ) ) {
-								$f = "`meta_wp_$field`.meta_value";
-							} else {
-								$f = "subscribers.$field";
-							}
-
-							$c = $f . " LIKE $value";
-
-							$sub_cond[] = $c;
-							break;
-
-						case '>=':
-						case 'is_greater_equal':
-						case '<=':
-						case 'is_smaller_equal':
-							$extra = '=';
-						case '>':
-						case 'is_greater':
-						case '<':
-						case 'is_smaller':
-
-							if ( in_array( $field, $custom_date_fields ) ) {
-								$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
-								$value = "'$value'";
-							} elseif ( in_array( $field, $timefields ) ) {
-								$f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
-								$value = "'$value'";
-							} elseif ( in_array( $field, $custom_fields ) ) {
-								$f = "`field_$field`.meta_value";
-								$value = is_numeric( $value ) ? floatval( $value ) : "'$value'";
-							} elseif ( in_array( $field, $meta_fields ) ) {
-								$f = "`meta_$field`.meta_value";
-								$value = is_numeric( $value ) ? floatval( $value ) : "'$value'";
-							} elseif ( in_array( $field, $wp_user_meta ) ) {
-								$f = "`meta_wp_$field`.meta_value";
-								if ( $field == 'wp_capabilities' ) {
-									$value = "'NOTPOSSIBLE'";
-								}
-							} else {
-								$f = "subscribers.$field";
-								$value = floatval( $value );
-							}
-
-							$c = $f . ' ' . ( in_array( $field_operator, array( 'is_greater', 'is_greater_equal', '>', '>=' ) ) ? '>' . $extra : '<' . $extra ) . " $value";
-
-							$sub_cond[] = $c;
-							break;
-
-						case '%':
-						case 'pattern':
-							$positive = true;
-						case '!%':
-						case 'not_pattern':
-							if ( in_array( $field, $custom_date_fields ) ) {
-								$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
-							} elseif ( in_array( $field, $timefields ) ) {
-								$f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
-							} elseif ( in_array( $field, $custom_fields ) ) {
-								$f = "`field_$field`.meta_value";
-							} elseif ( in_array( $field, $meta_fields ) ) {
-								$f = "`meta_$field`.meta_value";
-							} elseif ( in_array( $field, $wp_user_meta ) ) {
-								$f = "`meta_wp_$field`.meta_value";
-							} else {
-								$f = "subscribers.$field";
-								if ( $field == 'wp_capabilities' ) {
-									$value = "'NOTPOSSIBLE'";
-									break;
-								}
-							}
-							if ( $is_empty ) {
-								$value = '.';
-							}
-
-							$is_empty = '.' == $value;
-
-							if ( ! $positive ) {
-								$extra = 'NOT ';
-							}
-
-							$c = $f . ' ' . $extra . "REGEXP '$value'";
-							if ( $is_empty && $positive ) {
-								$c .= ' OR ' . $f . ' IS NULL';
-							}
-
-							$sub_cond[] = $c;
-							break;
-
-					}
 				}
 
 				$cond[] = '(' . implode( ' ' . $sub_operator . ' ', $sub_cond ) . ')';
@@ -553,8 +372,304 @@ class MailsterSubscriberQuery {
 			$result = $wpdb->get_results( $sql );
 		}
 
+		$this->last_error = $wpdb->last_error;
+		$this->last_result = $result;
+		$this->last_query = $wpdb->last_query;
+
 		return $result;
 
+	}
+
+
+	private function get_condition( $field, $operator, $value ) {
+
+		// sanitation
+		$field = esc_sql( $field );
+		$value = esc_sql( stripslashes( $value ) );
+		$operator = $this->get_field_operator( $operator );
+
+		$is_empty = '' == $value;
+		$extra = '';
+		$positive = false;
+
+		// data sanitation
+		switch ( $field ) {
+			case 'rating':
+				$value = str_replace( ',', '.', $value );
+				if ( strpos( $value, '%' ) !== false || $value > 5 ) {
+					$value = floatval( $value ) / 100;
+				} elseif ( $value >= 1 ) {
+					$value = floatval( $value ) * 0.2;
+				}
+				break;
+			case 'coords':
+				echo '<pre>' . print_r( $value, true ) . '</pre>';
+				break;
+			case 'lang':
+				echo '<pre>' . print_r( $value, true ) . '</pre>';
+				break;
+			case 'geo':
+				if ( '=' == $operator ) {
+					return " (`meta_$field`.meta_value LIKE '$value|%' OR `meta_$field`.meta_value LIKE '%|$value') ";
+				}
+				if ( '!=' == $operator ) {
+					return " (`meta_$field`.meta_value NOT LIKE '$value|%' AND `meta_$field`.meta_value NOT LIKE '%|$value') ";
+				}
+		}
+
+		switch ( $operator ) {
+			case '=':
+			case 'is':
+				$positive = true;
+			case '!=':
+			case 'is_not':
+
+				if ( in_array( $field, $this->custom_date_fields ) ) {
+					$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
+				} elseif ( in_array( $field, $this->time_fields ) ) {
+					$f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
+				} elseif ( in_array( $field, $this->custom_fields ) ) {
+					$f = "`field_$field`.meta_value";
+				} elseif ( in_array( $field, $this->meta_fields ) ) {
+					$f = "`meta_$field`.meta_value";
+				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
+					$f = "`meta_wp_$field`.meta_value";
+					if ( $field == 'wp_capabilities' ) {
+						$value = 's:' . strlen( $value ) . ':"' . strtolower( $value ) . '";';
+						return "`meta_wp_$field`.meta_value " . ( in_array( $operator, array( 'is', '=' ) ) ? 'LIKE' : 'NOT LIKE' ) . " '%$value%'";
+						break;
+					}
+				} else {
+					$f = "subscribers.$field";
+				}
+
+				$c = $f . ' ' . ( $positive ? '=' : '!=' ) . " '$value'";
+				if ( $is_empty && $positive ) {
+					$c .= ' OR ' . $f . ' IS NULL';
+				}
+
+				return $c;
+				break;
+
+			case '<>':
+			case 'contains':
+				$positive = true;
+			case '!<>':
+			case 'contains_not':
+				if ( $field == 'wp_capabilities' ) {
+					$value = "'a:%" . strtolower( $value ) . "%'";
+				} else {
+					$value = "'%$value%'";
+				}
+				if ( in_array( $field, $this->custom_fields ) ) {
+					$f = "`field_$field`.meta_value";
+				} elseif ( in_array( $field, $this->meta_fields ) ) {
+					$f = "`meta_$field`.meta_value";
+				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
+					$f = "`meta_wp_$field`.meta_value";
+				} else {
+					$f = "subscribers.$field";
+				}
+
+				$c = $f . ' ' . ( $positive ? 'LIKE' : 'NOT LIKE' ) . " $value";
+				if ( $is_empty && $positive ) {
+					$c .= ' OR ' . $f . ' IS NULL';
+				}
+
+				return $c;
+				break;
+
+			case '^':
+			case 'begin_with':
+				if ( $field == 'wp_capabilities' ) {
+					$value = "'%\"" . strtolower( $value ) . "%'";
+				} else {
+					$value = "'$value%'";
+				}
+				if ( in_array( $field, $this->custom_fields ) ) {
+					$f = "`field_$field`.meta_value";
+				} elseif ( in_array( $field, $this->meta_fields ) ) {
+					$f = "`meta_$field`.meta_value";
+				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
+					$f = "`meta_wp_$field`.meta_value";
+				} else {
+					$f = "subscribers.$field";
+				}
+
+				$c = $f . " LIKE $value";
+
+				return $c;
+				break;
+
+			case '$':
+			case 'end_with':
+				if ( $field == 'wp_capabilities' ) {
+					$value = "'%" . strtolower( $value ) . "\"%'";
+				} else {
+					$value = "'%$value'";
+				}
+
+				if ( in_array( $field, $this->custom_fields ) ) {
+					$f = "`field_$field`.meta_value";
+				} elseif ( in_array( $field, $this->meta_fields ) ) {
+					$f = "`meta_$field`.meta_value";
+				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
+					$f = "`meta_wp_$field`.meta_value";
+				} else {
+					$f = "subscribers.$field";
+				}
+
+				$c = $f . " LIKE $value";
+
+				return $c;
+				break;
+
+			case '>=':
+			case 'is_greater_equal':
+			case '<=':
+			case 'is_smaller_equal':
+				$extra = '=';
+			case '>':
+			case 'is_greater':
+			case '<':
+			case 'is_smaller':
+
+				if ( in_array( $field, $this->custom_date_fields ) ) {
+					$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
+					$value = "'$value'";
+				} elseif ( in_array( $field, $this->time_fields ) ) {
+					$f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
+					$value = "'$value'";
+				} elseif ( in_array( $field, $this->custom_fields ) ) {
+					$f = "`field_$field`.meta_value";
+					$value = is_numeric( $value ) ? floatval( $value ) : "'$value'";
+				} elseif ( in_array( $field, $this->meta_fields ) ) {
+					$f = "`meta_$field`.meta_value";
+					$value = is_numeric( $value ) ? floatval( $value ) : "'$value'";
+				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
+					$f = "`meta_wp_$field`.meta_value";
+					if ( $field == 'wp_capabilities' ) {
+						$value = "'NOTPOSSIBLE'";
+					}
+				} else {
+					$f = "subscribers.$field";
+					$value = floatval( $value );
+				}
+
+				$c = $f . ' ' . ( in_array( $operator, array( 'is_greater', 'is_greater_equal', '>', '>=' ) ) ? '>' . $extra : '<' . $extra ) . " $value";
+
+				return $c;
+				break;
+
+			case '%':
+			case 'pattern':
+				$positive = true;
+			case '!%':
+			case 'not_pattern':
+				if ( in_array( $field, $this->custom_date_fields ) ) {
+					$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
+				} elseif ( in_array( $field, $this->time_fields ) ) {
+					$f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
+				} elseif ( in_array( $field, $this->custom_fields ) ) {
+					$f = "`field_$field`.meta_value";
+				} elseif ( in_array( $field, $this->meta_fields ) ) {
+					$f = "`meta_$field`.meta_value";
+				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
+					$f = "`meta_wp_$field`.meta_value";
+				} else {
+					$f = "subscribers.$field";
+					if ( $field == 'wp_capabilities' ) {
+						$value = "'NOTPOSSIBLE'";
+						break;
+					}
+				}
+				if ( $is_empty ) {
+					$value = '.';
+				}
+
+				$is_empty = '.' == $value;
+
+				if ( ! $positive ) {
+					$extra = 'NOT ';
+				}
+
+				$c = $f . ' ' . $extra . "REGEXP '$value'";
+				if ( $is_empty && $positive ) {
+					$c .= ' OR ' . $f . ' IS NULL';
+				}
+
+				return $c;
+				break;
+
+		}
+
+	}
+
+	private function get_field_operator( $operator ) {
+		$operator = esc_sql( stripslashes( $operator ) );
+
+		switch ( $operator ) {
+			case 'is':
+				return '=';
+			case 'is_not':
+				return '!=';
+			case 'contains':
+				return '<>';
+			case 'contains_not':
+				return '!<>';
+			case 'begin_with':
+				return '^';
+			case 'end_with':
+				return '$';
+			case 'is_greater_equal':
+				return '>=';
+			case 'is_smaller_equal':
+				return '<=';
+			case 'is_greater':
+				return '>';
+			case 'is_smaller':
+				return '<';
+			case 'pattern':
+				return '%';
+			case 'not_pattern':
+				return '!%';
+		}
+
+		return $operator;
+
+	}
+
+	private function get_custom_fields() {
+		$custom_fields = mailster()->get_custom_fields( true );
+		$custom_fields = wp_parse_args( array( 'firstname', 'lastname' ), (array) $custom_fields );
+
+		return $custom_fields;
+	}
+
+	private function get_custom_date_fields() {
+		$custom_date_fields = mailster()->get_custom_date_fields( true );
+
+		return $custom_date_fields;
+	}
+
+	private function get_time_fields() {
+		$time_fields = array( 'added', 'updated', 'signup', 'confirm' );
+
+		return $time_fields;
+	}
+
+	private function get_meta_fields() {
+		$meta_fields = array( 'form', 'referer', 'client', 'clienttype', 'coords', 'geo', 'lang', 'timeoffset' );
+
+		return $meta_fields;
+	}
+
+	private function get_wp_user_meta() {
+		$wp_user_meta = wp_parse_args( array( 'wp_user_level', 'wp_capabilities' ), mailster( 'helper' )->get_wpuser_meta_fields() );
+		// removing custom fields from wp user meta to prevent conflicts
+		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), $this->custom_fields ) );
+
+		return $wp_user_meta;
 	}
 
 
