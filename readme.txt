@@ -87,6 +87,8 @@ Xaver Birsak – https://everpress.io
 * fixed: radio and dropdown values weren't populated on profile in some cases
 * improved: get referer on form signup
 * added: option for legacy POP3 method on bounce settings
+* added: 'mailster_get_signups_sql' filter
+* changed: 'mailster_unsubscribe_link' hook position and added campaign_id to arguments
 
 = Version 2.2.7 =
 

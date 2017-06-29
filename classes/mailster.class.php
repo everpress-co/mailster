@@ -405,11 +405,10 @@ class Mailster {
 
 		$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
 
-		$unsubscribe_homepage = get_page( mailster_option( 'homepage' ) );
-		$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage ) );
+		$unsubscribe_homepage = get_post( mailster_option( 'homepage' ) );
 
 		if ( $unsubscribe_homepage ) {
-			$unsubscribe_homepage = get_permalink( mailster_option( 'homepage' ) );
+			$unsubscribe_homepage = get_permalink( $unsubscribe_homepage );
 		} else {
 			$unsubscribe_homepage = get_bloginfo( 'url' );
 		}
@@ -420,6 +419,8 @@ class Mailster {
 		if ( ! $is_permalink ) {
 			$unsubscribe_homepage = str_replace( trailingslashit( get_bloginfo( 'url' ) ), untrailingslashit( get_bloginfo( 'url' ) ) . $prefix, $unsubscribe_homepage );
 		}
+
+		$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage, $campaign_id ) );
 
 		return $is_permalink
 			? trailingslashit( $unsubscribe_homepage ) . $slug
