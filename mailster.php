@@ -4,8 +4,8 @@ Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
 Description: Advanced Newsletter Plugin for WordPress. Create, Send and Track your Newsletter Campaigns
 Version: 2.2.8
-Author: revaxarts.com
-Author URI: https://revaxarts.com
+Author: EverPress
+Author URI: https://everpress.io
 Text Domain: mailster
 */
 

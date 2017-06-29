@@ -558,10 +558,7 @@ class MailsterTemplates {
 					case 'Could not find item with provided item id or purchase code':
 						$template = $this->get_mailster_templates( $_GET['mailster_slug'] );
 						$error = '<strong>' . __( 'You haven\'t purchased this template with this account!', 'mailster' ) . '</strong>';
-						$error .= ' <a class="external" href="' . esc_attr( add_query_arg( array(
-								'utm_source' => 'Mailster+Templates+Page',
-								'ref' => 'revaxarts',
-						), $template['uri'] ) ) . '">' . __( 'Get this Template', 'mailster' ) . '</a>';
+						$error .= ' <a class="external" href="' . esc_attr( $template['uri'] ) . '">' . __( 'Get this Template', 'mailster' ) . '</a>';
 					break;
 					default:
 						$error = sprintf( 'There was an error loading the template: %s', '<strong>' . $error . '</strong>' );
