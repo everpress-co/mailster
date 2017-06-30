@@ -74,7 +74,7 @@ $method = mailster_option( 'deliverymethod', 'simple' );
 ?>
 	<a class="<?php echo implode( ' ', $classes ) ?>" href="#<?php echo esc_attr( $id ) ?>"><?php echo esc_html( $name ) ?></a>
 	<?php }?>
-	<a href="plugin-install.php?tab=search&s=mailster+revaxarts&plugin-search-input=Search+Plugins" class="alignright"><?php esc_html_e( 'search for more delivery methods', 'mailster' );?></a>
+	<a href="plugin-install.php?tab=search&s=mailster+everpress&plugin-search-input=Search+Plugins" class="alignright"><?php esc_html_e( 'search for more delivery methods', 'mailster' );?></a>
 </div>
 
 <input type="hidden" name="mailster_options[deliverymethod]" id="deliverymethod" value="<?php echo esc_attr( $method ); ?>" class="regular-text">
