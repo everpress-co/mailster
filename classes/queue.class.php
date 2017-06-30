@@ -929,6 +929,8 @@ class MailsterQueue {
 
 				$send_start_time = microtime( true );
 
+				$data = apply_filters( 'mailster_queue_campaign_subscriber_data', $data );
+
 				if ( $data->campaign_id ) {
 
 					// check if status hasn't changed yet
