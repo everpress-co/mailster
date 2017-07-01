@@ -426,7 +426,7 @@ if ( $old_version ) {
 			$t = mailster( 'translations' )->get_translation_data();
 
 			if ( ! empty( $t ) ) {
-				mailster_notice( '<strong>' . sprintf( 'An important change to localizations in Mailster has been made. <a href="%s">read more</a>', 'https://kb.mailster.co/translations-in-mailster/' ) . '</strong>', '', false, 'mailstertranslation' );
+				mailster_notice( sprintf( 'An important change to localizations in Mailster has been made. <a href="%s">read more</a>', 'https://kb.mailster.co/translations-in-mailster/' ), '', false, 'mailstertranslation' );
 			}
 
 			unset( $mailster_options['texts'] );
@@ -472,7 +472,7 @@ if ( $old_version ) {
 		case '2.1.30':
 
 			if ( isset( $mailster_options['php_mailer'] ) && $mailster_options['php_mailer'] ) {
-				mailster_notice( '<strong>' . sprintf( 'PHPMailer has been updated to 5.2.21. <a href="%s">read more</a>', 'https://github.com/PHPMailer/PHPMailer/releases/tag/v5.2.20' ) . '</strong>', '', false, 'phpmailer' );
+				mailster_notice( sprintf( 'PHPMailer has been updated to 5.2.21. <a href="%s">read more</a>', 'https://github.com/PHPMailer/PHPMailer/releases/tag/v5.2.20' ), '', false, 'phpmailer' );
 				$mailster_options['php_mailer'] = 'latest';
 			}
 

@@ -571,3 +571,9 @@ ul.lasthit li{
 	border:1px solid #BADEB1;
 	padding: 0.6em;
 }
+#system_info_content{
+	width: 100%;
+	height: 600px;
+	resize: none;
+	white-space: pre;
+}

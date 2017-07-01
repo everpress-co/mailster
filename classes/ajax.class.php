@@ -2544,12 +2544,15 @@ class MailsterAjax {
 
 		$return['success'] = false;
 
-		$test_id = isset( $_POST['test_id'] ) ? (int) $_POST['test_id'] : 0;
+		$test_id = isset( $_POST['test_id'] ) ? $_POST['test_id'] : null;
 
 		$test = mailster( 'test' );
 		$return['success'] = $test->run( $test_id );
 		$return['message'] = $test->get_message();
 		$return['nexttest'] = $test->get_next();
+		$return['total'] = $test->get_total();
+		$return['current'] = $test->get_current();
+		$return['type'] = $test->get_current_type();
 
 		$this->json_return( $return );
 

@@ -21,7 +21,7 @@ if ( ! function_exists( 'mymail' ) ) :
 				$msg = 'An deprecated external form for Mailster has been found at %1$s. Please update the HTML following %2$s.';
 			}
 
-			mailster_notice( '<strong>' . sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank">this guide</a>' ) . '</strong>' , 'error', 3600, 'oldsubscriberbtn' );
+			mailster_notice( sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank">this guide</a>' ), 'error', 3600, 'oldsubscriberbtn' );
 		}
 	});
 
@@ -35,7 +35,7 @@ if ( ! function_exists( 'mymail' ) ) :
 
 			$msg = 'The URL to the cron has changed but still get triggered! Please update your cron service to the new URL.</strong></p><a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_settings#cron">Get the new URL</a>';
 
-			mailster_notice( '<strong>' . $msg . '</strong>' , 'error', 3600, 'oldcronurl' );
+			mailster_notice( $msg, 'error', 3600, 'oldcronurl' );
 		}
 	});
 

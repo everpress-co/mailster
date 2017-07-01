@@ -278,7 +278,7 @@ class MailsterSettings {
 
 		$mailster_options = mailster( 'helper' )->unserialize( $serialized_string );
 		if ( update_option( 'mailster_options', $mailster_options ) ) {
-			mailster_notice( '<strong>' . sprintf( __( 'There was a problem in your Mailster settings which has been automatically fixed! Either way it\'s good to check %s if everything is in place.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=error_settings">' . __( 'the settings page', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'error_settings' );
+			mailster_notice( sprintf( __( 'There was a problem in your Mailster settings which has been automatically fixed! Either way it\'s good to check %s if everything is in place.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=error_settings">' . __( 'the settings page', 'mailster' ) . '</a>' ), 'error', false, 'error_settings' );
 		}
 
 	}

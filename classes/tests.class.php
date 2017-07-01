@@ -2,22 +2,32 @@
 
 class MailsterTests {
 
-
 	private $message;
 	private $tests;
 	private $current;
+	private $next;
+	private $total;
 
 	private $errors;
 
-	public function __construct( $test ) {
+	public function __construct( $test = null ) {
 
-		$this->tests = $this->get_tests();
+		if ( ! is_null( $test ) ) {
+			$this->tests = is_array( $test ) ? array_keys( $test ) : array( $test => 0 );
+		} else {
+			$this->tests = $this->get_tests();
+		}
+		$this->total = count( $this->tests );
 		$this->errors = array(
+			'count' => 0,
 			'error_count' => 0,
 			'warning_count' => 0,
-			'notice' => new WP_Error(),
+			'notice_count' => 0,
+			'success_count' => 0,
+			'all' => new WP_Error(),
 			'error' => new WP_Error(),
 			'warning' => new WP_Error(),
+			'notice' => new WP_Error(),
 			'success' => new WP_Error(),
 		);
 
@@ -25,9 +35,21 @@ class MailsterTests {
 
 	public function __call( $method, $args ) {
 
+		switch ( $method ) {
+			case 'error':
+			case 'warning':
+			case 'notice':
+			case 'success':
+				call_user_func_array( array( &$this, $method ), $args );
+				break;
+		}
 	}
 
-	public function run( $test_id, $args = array() ) {
+	public function run( $test_id = null, $args = array() ) {
+
+		if ( $test_id == null ) {
+			$test_id = key( $this->tests );
+		}
 
 		if ( isset( $this->tests[ $test_id ] ) ) {
 
@@ -35,12 +57,22 @@ class MailsterTests {
 			$this->last_error_test = null;
 			$this->last_error_message = null;
 			$this->last_error_type = 'success';
+			$this->last_error_link = null;
 
 			$this->current_id = $test_id;
 			$this->current = $this->tests[ $test_id ];
 
-			call_user_func_array( array( &$this, $this->current ), $args );
-
+			try {
+				if ( is_callable( $this->current ) ) {
+					call_user_func_array( $this->current, array( $this ) );
+				} elseif ( method_exists( $this, 'test_' . $test_id ) ) {
+					call_user_func_array( array( &$this, 'test_' . $test_id ), $args );
+				} else {
+					$this->warning( 'Test \'' . $test_id . '\' does not exist!' );
+				}
+			} catch (Exception $e) {
+				$this->error( $e );
+			}
 			return ! ($this->last_error_test == $test_id);
 
 		}
@@ -49,9 +81,14 @@ class MailsterTests {
 	}
 
 	public function get_tests() {
+
 		$tests = get_class_methods( $this );
 		$tests = preg_grep( '/^test_/', $tests );
-		return array_values( $tests );
+		$tests = array_values( $tests );
+		$tests = preg_replace( '/^test_/', '', $tests );
+		$tests = array_flip( $tests );
+
+		return apply_filters( 'mailster_tests', $tests );
 
 	}
 
@@ -59,57 +96,79 @@ class MailsterTests {
 
 		$time = date( 'Y-m-d H:i:s' );
 
+		$html = '<div class="mailster-test-result mailster-test-is-' . $this->last_error_type . '"><h4>' . $this->nicename( $this->current_id ) . ($this->last_error_link ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $this->last_error_link ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . '</h4><p class="mailster-test-result-more">' . nl2br( $this->last_error_message ) . '</p></div>';
+		$text = '[' . $this->last_error_type . '] ' . $this->current_id . ': ' . strip_tags( $this->last_error_message );
+
 		return array(
-			'test' => $this->current,
+			'test' => $this->current_id,
 			'time' => $time,
-			'html' => '<div class="mailster-test-result mailster-test-is-' . $this->last_error_type . '"><h4>' . $this->nicename( $this->current ) . '</h4><p class="mailster-test-result-more">' . $this->last_error_message . '</p></div>',
+			'html' => $html,
+			'text' => $text,
 		);
 	}
 
 	public function nicename( $test ) {
 		$test = ucwords( str_replace( array( 'test_', '_' ), array( '', ' ' ), $test ) );
-		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ' ), array( 'PHP', 'WordPress', 'WP ' ), $test );
+		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ', 'Db' ), array( 'PHP', 'WordPress', 'WP ', 'DB ' ), $test );
 		return $test;
 	}
 
 	public function get_next() {
 
-		if ( isset( $this->tests[ $this->current_id + 1 ] ) ) {
-			return $this->current_id + 1;
+		foreach ( $this->tests as $key => $value ) {
+			unset( $this->tests[ $key ] );
+
+			if ( $key == $this->current_id ) {
+				break;
+			}
 		}
-		return null;
+		$next = key( $this->tests );
+		return $next;
+	}
+
+	public function get_current() {
+		return $this->nicename( $this->current_id );
+	}
+	public function get_current_type() {
+		return $this->last_error_type;
+	}
+
+	public function get_total() {
+
+		return $this->total;
+
 	}
 
 
 
-	private function error( $msg ) {
+	private function error( $msg, $link = null ) {
 
-		$this->failure( 'error', $msg );
-
-	}
-
-
-	private function warning( $msg ) {
-
-		$this->failure( 'warning', $msg );
+		$this->failure( 'error', $msg, $link );
 
 	}
 
 
-	private function notice( $msg ) {
+	private function warning( $msg, $link = null ) {
 
-		$this->failure( 'notice', $msg );
-
-	}
-
-	private function success( $msg ) {
-
-		$this->failure( 'success', $msg );
+		$this->failure( 'warning', $msg, $link );
 
 	}
 
 
-	private function failure( $type, $msg ) {
+	private function notice( $msg, $link = null ) {
+
+		$this->failure( 'notice', $msg, $link );
+
+	}
+
+	private function success( $msg, $link = null ) {
+
+		$this->failure( 'success', $msg, $link );
+
+	}
+
+
+	private function failure( $type, $msg, $link = null ) {
 
 		$backtrace = debug_backtrace();
 		$test_id = $backtrace[2]['function'];
@@ -118,14 +177,31 @@ class MailsterTests {
 			$test_id = uniqid();
 		}
 
-		$failure = array( 'msg' => $msg );
-
-		$this->errors[ $type ]->add( $test_id, $failure );
+		$data = array( 'link' => $link );
+		$this->errors['all']->add( $test_id, $msg, $data );
+		$this->errors[ $type ]->add( $test_id, $msg, $data );
+		$this->errors['count']++;
+		$this->errors[ $type . '_count' ]++;
 		$this->last_is_error = true;
 		$this->last_error_type = $type;
 		$this->last_error_test = $test_id;
 		$this->last_error_message = $msg;
+		$this->last_error_link = $link;
 
+	}
+
+	public function get() {
+		return $this->errors['count'] ? $this->errors['all']: true;
+	}
+
+	public function has( $type = null ) {
+		if ( is_null( $type ) ) {
+			return $this->errors['count'];
+		} elseif ( isset( $this->errors[ $type ] ) ) {
+			return $this->errors[ $type . '_count' ];
+		}
+
+		return false;
 	}
 
 
@@ -150,6 +226,8 @@ class MailsterTests {
 	private function test_php_version() {
 		if ( version_compare( PHP_VERSION, '5.3' ) < 0 ) {
 			$this->error( sprintf( 'Mailster requires PHP version 5.3 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
+		} elseif ( version_compare( PHP_VERSION, '7.0' ) < 0 ) {
+			$this->warning( sprintf( 'Mailster recommends PHP version 7.0 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
 		} else {
 			$this->success( 'You have version ' . PHP_VERSION );
 		}
@@ -157,6 +235,8 @@ class MailsterTests {
 	private function test_wordpress_version() {
 		if ( version_compare( get_bloginfo( 'version' ), '3.8' ) < 0 ) {
 			$this->error( sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', get_bloginfo( 'version' ) ) );
+		} elseif ( version_compare( get_bloginfo( 'version' ), '4.8' ) < 0 ) {
+			$this->warning( sprintf( 'Your WordPress site is not up-to-date. Your current version is %s.', get_bloginfo( 'version' ) ) );
 		} else {
 			$this->success( 'You have version ' . get_bloginfo( 'version' ) );
 
@@ -164,10 +244,21 @@ class MailsterTests {
 	}
 	private function test_verfied_installation() {
 
-		if ( mailster()->is_verified() ) {
-			$this->success( 'Thank you!' );
-		} else {
+		if ( ! mailster()->is_verified() ) {
 			$this->error( 'Your Mailster installation is not verified! Please register via your <a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">dashboard</a>.' );
+		} else {
+			$this->success( 'Thank you!' );
+		}
+
+	}
+	private function test_update_available() {
+
+		$plugin_info = mailster()->plugin_info();
+
+		if ( $plugin_info->update ) {
+			$this->warning( sprintf( 'A new version of Mailster is available! Please %1$s to version %2$s', '<a href="update.php?action=upgrade-plugin&plugin=' . urlencode( MAILSTER_SLUG ) . '&_wpnonce=' . wp_create_nonce( 'upgrade-plugin_' . MAILSTER_SLUG ) . '">update now</a>', $plugin_info->new_version ) );
+		} else {
+			$this->success( 'You are running the latest version of Mailster!' );
 		}
 
 	}
@@ -178,11 +269,9 @@ class MailsterTests {
 	}
 	private function test_wp_debug() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$this->warning( 'WP_DEBUG is enabled and should be disabled on a production site. Read more about it <a href="https://codex.wordpress.org/WP_DEBUG" target="_blank">here</a>.' );
+			$this->warning( 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
 		}
 	}
-
-
 	private function test_fsockopen_extension() {
 		if ( ! function_exists( 'fsockopen' ) ) {
 			$this->warning( 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank">fsockopen</a>.' );
@@ -199,31 +288,48 @@ class MailsterTests {
 	}
 	private function test_memory_limit() {
 		if ( max( intval( @ini_get( 'memory_limit' ) ), intval( WP_MAX_MEMORY_LIMIT ) ) < 128 ) {
-			$this->warning( 'Your Memory Limit is ' . size_format( WP_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
+			$this->warning( 'Your Memory Limit is ' . size_format( (int) WP_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		} else {
-			$this->success( 'Your Memory Limit is ' . size_format( WP_MEMORY_LIMIT * 1048576 ) );
+			$this->success( 'Your Memory Limit is ' . size_format( (int) WP_MEMORY_LIMIT * 1048576 ) );
 		}
 	}
-
 	private function test_plugin_location() {
 		if ( MAILSTER_SLUG != 'mailster/mailster.php' ) {
 			$this->warning( 'You have changed the plugin location of Mailster. This can cause problems while updating the plugin.' );
 		} else {
 		}
 	}
-
-	private function test_no_mailster_folder_in_root() {
-		if ( is_dir( ABSPATH . 'mailster' ) ) {
-			$this->error( 'There\'s a folder called \'mailster\' in ' . ABSPATH . ' which causes a conflict with campaign links! Please remove or rename this folder.' );
+	private function test_mailster_folder_in_root() {
+		if ( file_exists( ABSPATH . 'mailster' ) || is_dir( ABSPATH . 'mailster' ) ) {
+			$this->error( 'There\'s a file or folder called \'mailster\' in ' . ABSPATH . ' which causes a conflict with campaign links! Please remove or rename this folder.' );
 		}
 	}
 	private function test_working_cron() {
 
 		$last_hit = get_option( 'mailster_cron_lasthit' );
 		if ( ! $last_hit ) {
-			$this->warning( 'Your cron is maybe not working. Please check <a href="https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/" target="_blank">this article</a> on our knowledge base.' );
+			$this->error( 'Your cron is not working. Please check your settings <a href="edit.php?post_type=newsletter&page=mailster_settings#cron">here</a>.', 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' );
 		} else {
-			$this->success( sprintf( __( 'Last hit was %s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) );
+
+			$interval = mailster_option( 'interval' ) * 60;
+			$cron_service = mailster_option( 'cron_service' );
+
+			// get real delay...
+			$real_delay = max( $interval, $last_hit['timestamp'] - $last_hit['oldtimestamp'] );
+			$current_delay = time() - $last_hit['timestamp'];
+
+			// ..and compare it with the interval (3 times) - also something in the queue
+			if ( ( $current_delay > $real_delay * 3 || ! $real_delay && ! $current_delay ) ) :
+
+				if ( $cron_service == 'wp-cron' && defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+					$this->error( sprintf( __( 'The WordPress Cron is disabled! Please remove the %s constant from your wp-config.php file or switch to a real cron job!', 'mailster' ), '<code>DISABLE_WP_CRON</code>' ) );
+				} else {
+					$this->warning( 'Your cron is maybe not working. Please check your settings <a href="edit.php?post_type=newsletter&page=mailster_settings#cron">here</a>.', 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' );
+				} else :
+					$this->success( sprintf( __( 'Last hit was %s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) );
+
+			endif;
+
 		}
 	}
 	private function test_cron_lock() {
@@ -231,14 +337,13 @@ class MailsterTests {
 		mailster( 'cron' )->lock();
 
 		if ( ! mailster( 'cron' )->is_locked() ) {
-			$this->warning( 'Cron Lock mechanism is not working with the current method. Read more about this <a href="https://kb.mailster.co/what-is-a-cron-lock/" target="_blank">here</a>.' );
+			$this->warning( 'Cron Lock mechanism is not working with the current method.', 'https://kb.mailster.co/what-is-a-cron-lock/' );
 		} else {
-			$this->success( ' No Cron Lock in place!' );
+			$this->success( 'No Cron Lock in place!' );
 		}
 		mailster( 'cron' )->unlock();
 
 	}
-
 	private function test_update_server_connection() {
 
 		$response = wp_remote_post( 'https://update.mailster.co/' );
@@ -251,9 +356,6 @@ class MailsterTests {
 			$this->error( 'does not work: ' . $code );
 		}
 	}
-
-
-
 	private function test_wp_remote_post() {
 		$response = wp_remote_post( 'https://www.paypal.com/cgi-bin/webscr', array(
 			'sslverify' => true,
@@ -271,8 +373,6 @@ class MailsterTests {
 		}
 
 	}
-
-
 	private function test_mailfunction() {
 		$mail = mailster( 'mail' );
 		$mail->to = 'deadend@newsletter-plugin.com';
@@ -284,27 +384,32 @@ class MailsterTests {
 			$msg = 'You are not able to send mails with the current delivery settings!';
 
 			if ( false !== stripos( $error_message, 'smtp connect()' ) ) {
-				$this->error( $msg . '<br>' . $error_message . '<br>Get more info <a href="https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/" target="_blank">here</a>.' );
+				$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/' );
 			} elseif ( false !== stripos( $error_message, 'data not accepted' ) ) {
-				$this->error( $msg . '<br>' . $error_message . '<br>Get more info <a href="https://kb.mailster.co/smtp-error-data-not-accepted/" target="_blank">here</a>.' );
+				$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-data-not-accepted/' );
 			} else {
 				$this->error( $msg . '<br>' . $error_message );
 			}
-
-			// $this->error( strip_tags( $mail->get_errors() ));
 		}
 
 	}
-
 	private function test_db_version() {
-
 		if ( get_option( 'mailster_dbversion' ) != MAILSTER_DBVERSION ) {
 			$this->error( 'Your current DB version is ' . get_option( 'mailster_dbversion' ) . ' and should be ' . MAILSTER_DBVERSION . '. Please visit the <a href="' . admin_url( 'admin.php?page=mailster_update' ) . '">update page</a> to run necessary updates.' );
 
 		}
-
 	}
+	private function test_delivery_port() {
+		if ( 'smtp' == mailster_option( 'deliverymethod' ) ) {
+			$this->port_test( mailster_option( 'smtp_port' ), mailster_option( 'smtp_host' ), true );
+		}
+	}
+	private function test_bounce_port() {
 
+		if ( mailster_option( 'bounce_active' ) ) {
+			$this->port_test( mailster_option( 'bounce_port' ), mailster_option( 'bounce_server' ), true );
+		}
+	}
 	private function test_port_110() {
 
 		$this->port_test( 110, 'pop.gmx.net' );
@@ -340,17 +445,6 @@ class MailsterTests {
 		$this->port_test( 587, 'smtp.gmail.com' );
 
 	}
-	private function port_test( $port, $domain ) {
-
-		$result = mailster( 'settings' )->check_port( $domain, $port );
-		if ( strpos( $result, 'open' ) !== false ) {
-			$this->success( sprintf( 'Port %d is open an can be used! <code>' . $result . '</code>', $port ) );
-		} else {
-			$this->warning( $result );
-		}
-
-	}
-
 	private function test_permalink_structure() {
 
 		if ( ! mailster( 'helper' )->using_permalinks() ) {
@@ -360,6 +454,40 @@ class MailsterTests {
 		}
 
 	}
+	private function test_newsletter_homepage() {
 
+		$hp = get_post( mailster_option( 'homepage' ) );
+
+		if ( ! $hp || $hp->post_status == 'trash' ) {
+
+			$this->error( sprintf( __( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . __( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', 1, admin_url() ) . '">' . __( 'create it right now', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+
+		} elseif ( $hp->post_status != 'publish' ) {
+
+			$this->error( sprintf( __( 'Your newsletter homepage is not visible. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=newsletter_homepage">' . __( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+
+		}
+
+	}
+
+
+
+
+
+	private function port_test( $port, $domain, $strict = false ) {
+
+		$result = mailster( 'settings' )->check_port( $domain, $port );
+		if ( strpos( $result, 'open' ) !== false ) {
+			$this->success( sprintf( 'Port %s is open an can be used!', '<strong>' . $port . '</strong>' ) . ' <code>' . $result . '</code>' );
+		} else {
+			$message = sprintf( 'Port %s is NOT open an cannot be used!', '<strong>' . $port . '</strong>' ) . ' <code>' . $result . '</code>';
+			if ( $strict ) {
+				$this->error( $message );
+			} else {
+				$this->warning( $message );
+			}
+		}
+
+	}
 
 }

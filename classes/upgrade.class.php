@@ -103,7 +103,7 @@ class MailsterUpgrade {
 	public function deactivate_mymail( $info = true ) {
 		if ( is_plugin_active( 'myMail/myMail.php' ) ) {
 			if ( $info ) {
-				mailster_notice( '<strong>MyMail is now Mailster - Plugin deactivated.</strong>', 'error', true );
+				mailster_notice( 'MyMail is now Mailster - Plugin deactivated', 'error', true );
 			}
 			deactivate_plugins( 'myMail/myMail.php' );
 		}

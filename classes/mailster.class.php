@@ -113,13 +113,19 @@ class Mailster {
 	/**
 	 *
 	 *
-	 * @param unknown $test     (optional)
+	 * @param unknown $test
 	 * @return unknown
 	 */
 	public function test( $test = null ) {
 		require_once MAILSTER_DIR . 'classes/tests.class.php';
 
-		return new MailsterTests( $test );
+		$testobj = new MailsterTests( );
+		if ( is_null( $test ) ) {
+			return $testobj;
+		}
+		$testobj->run( $test );
+		return $testobj->get();
+
 	}
 
 
@@ -293,6 +299,10 @@ class Mailster {
 
 				if ( $text === false ) {
 					continue;
+				}
+
+				if ( 'error' == $type ) {
+					$text = '<strong>' . $text . '</strong>';
 				}
 
 				$msg .= '<p>' . ( $text ? $text : '&nbsp;' ) . '</p>';
@@ -795,6 +805,7 @@ class Mailster {
 	public function add_action_link( $links, $file ) {
 
 		if ( $file == MAILSTER_SLUG ) {
+			array_unshift( $links, '<a href="admin.php?page=mailster_tests">' . __( 'Self Test', 'mailster' ) . '</a>' );
 			array_unshift( $links, '<a href="edit.php?post_type=newsletter&page=mailster_addons">' . __( 'Add Ons', 'mailster' ) . '</a>' );
 			array_unshift( $links, '<a href="edit.php?post_type=newsletter&page=mailster_settings">' . __( 'Settings', 'mailster' ) . '</a>' );
 			array_unshift( $links, '<a href="admin.php?page=mailster_setup">' . __( 'Wizard', 'mailster' ) . '</a>' );
@@ -975,7 +986,12 @@ class Mailster {
 
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
-		wp_localize_script( 'mailster-tests', 'mailsterL10n', array() );
+		wp_localize_script( 'mailster-tests', 'mailsterL10n', array(
+			'restart_test' => __( 'Restart Test', 'mailster' ),
+			'running_test' => __( 'Running Test %1$s of %2$s: %3$s', 'mailster' ),
+			'tests_finished' => __( 'Tests are finished with %1$s Errors, %2$s Warnings and %3$s Notices.', 'mailster' ),
+			'support' => __( 'Need Support?', 'mailster' ),
+		) );
 
 	}
 
@@ -1096,7 +1112,7 @@ class Mailster {
 			if ( is_plugin_active( 'myMail/myMail.php' ) ) {
 
 				if ( deactivate_plugins( 'myMail/myMail.php', true, is_network_admin() ) ) {
-					mailster_notice( '<strong>MyMail is now Mailster! The old version has been deactivated and can get removed!</strong>', 'error', false, 'warnings' );
+					mailster_notice( 'MyMail is now Mailster! The old version has been deactivated and can get removed!', 'error', false, 'warnings' );
 					mailster_update_option( 'update_required', true );
 				}
 			} elseif ( get_option( 'mymail' ) ) {
@@ -1167,10 +1183,10 @@ class Mailster {
 
 			if ( $errors->error_count ) {
 
-				$html = '<strong>' . implode( '<br>', $errors->errors->get_error_messages() ) . '</strong>';
+				$html = implode( '<br>', $errors->errors->get_error_messages() );
 
 				if ( $die ) {
-					die( '<div style="font-family:sans-serif;">' . $html . '</div>' );
+					die( '<div style="font-family:sans-serif;"><strong>' . $html . '</strong</div>' );
 				} else {
 					mailster_notice( $html, 'error', false, 'errors' );
 				}
@@ -1180,7 +1196,7 @@ class Mailster {
 
 			if ( $errors->warning_count ) {
 
-				$html = '<strong>' . implode( '<br>', $errors->warnings->get_error_messages() ) . '</strong>';
+				$html = implode( '<br>', $errors->warnings->get_error_messages() );
 				mailster_notice( $html, 'error', false, 'warnings' );
 
 			} else {
@@ -1575,19 +1591,12 @@ class Mailster {
 			return;
 		};
 
-		$hp = get_post( mailster_option( 'homepage' ) );
+		$result = mailster()->test( 'newsletter_homepage' );
 
-		mailster_remove_notice( 'no_homepage' );
-		mailster_remove_notice( 'wrong_homepage_status' );
-
-		if ( ! $hp || $hp->post_status == 'trash' ) {
-
-			mailster_notice( sprintf( '<strong>' . __( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=no_homepage#frontend">' . __( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', 1, admin_url() ) . '">' . __( 'create it right now', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'no_homepage' );
-
-		} elseif ( $hp->post_status != 'publish' ) {
-
-			mailster_notice( sprintf( '<strong>' . __( 'Your newsletter homepage is not visible. Please %s the page', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=mailster_wrong_homepage_status">' . __( 'update', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'wrong_homepage_status', $hp->post_author );
-
+		if ( is_wp_error( $result ) ) {
+			mailster_notice( $result->get_error_message(), 'error', false, 'newsletter_homepage' );
+		} else {
+			mailster_remove_notice( 'newsletter_homepage' );
 		}
 
 	}
@@ -1612,7 +1621,7 @@ class Mailster {
 				|| ! preg_match( '#\[newsletter_confirm\]#', $post->post_content )
 				|| ! preg_match( '#\[newsletter_unsubscribe\]#', $post->post_content ) ) {
 
-				mailster_notice( '<strong>' . sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guide', 'mailster' ) . '</a>' ) . '</strong>', 'error', true, 'homepage_info' );
+				mailster_notice( sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guide', 'mailster' ) . '</a>' ), 'error', true, 'homepage_info' );
 
 			} else {
 
@@ -2018,7 +2027,7 @@ class Mailster {
 			$postdata['post_content'] = str_replace( $old_home_url, trailingslashit( home_url() ), $postdata['post_content'] );
 		}
 
-		mailster_notice( '<strong>' . __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ) . '</strong>', 'error', false, 'import_campaings' );
+		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaings' );
 
 		return $postdata;
 
