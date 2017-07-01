@@ -1776,6 +1776,8 @@ class Mailster {
 
 		$mail->apply_raw_headers( $headers );
 
+		$to = array_map( 'trim', explode( ',', $to ) );
+
 		$mail->to = $to;
 		$mail->message = $message;
 		$mail->subject = $subject;

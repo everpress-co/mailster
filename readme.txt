@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.2.8 =
 
 * fixed: radio and dropdown values weren't populated on profile in some cases
+* fixed: wp_mail now supports coma separated emails if used by Mailster
 * improved: get referer on form signup
 * added: option for legacy POP3 method on bounce settings
 * added: 'mailster_get_signups_sql', 'mailster_queue_campaign_subscriber_data' filters
