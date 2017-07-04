@@ -73,7 +73,7 @@ if ( $is_new ) {
 	<tr>
 		<td scope="row" class="avatar-wrap">
 			<div class="avatar<?php if ( $subscriber->wp_id ) {	echo ' wp-user'; } ?>" title="<?php esc_html_e( 'Source', 'mailster' ) ?>: Gravatar.com" style="background-image:url(<?php echo $this->get_gravatar_uri( $subscriber->email, 400 ); ?>)"></div>
-			<p class="info"><?php esc_html_e( 'Source', 'mailster' ) ?>: <a href="http://gravatar.com">Gravatar.com</a></p>
+			<p class="info"><?php esc_html_e( 'Source', 'mailster' ) ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
 			<?php if ( ! $is_new ) : ?>
 
 			<h4 title="<?php esc_html_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ) ?>"><?php esc_html_e( 'User Rating', 'mailster' );?>:<br />
