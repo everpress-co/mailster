@@ -29,6 +29,10 @@ class MailsterSubscriberQuery {
 		'open__not_in' => null,
 		'click' => null,
 		'click__not_in' => null,
+		's' => null,
+		'search_fields' => false,
+		'strict' => false,
+		'sentence' => false,
 	);
 
 	private static $_instance = null;
@@ -40,11 +44,7 @@ class MailsterSubscriberQuery {
 		}
 
 	}
-	public function __destruct() {
-
-		echo '<pre>' . print_r( $this, true ) . '</pre>';
-
-	}
+	public function __destruct() {}
 
 	public static function get_instance( $args = null ) {
 		if ( ! isset( self::$_instance ) ) {
@@ -67,10 +67,18 @@ class MailsterSubscriberQuery {
 
 		global $wpdb;
 
+		if ( is_string( $args ) ) {
+			$args = str_replace( '+', '%2B', $args );
+		}
+
 		$args = wp_parse_args( $args, $this->defaults );
+
+		$name_order = mailster_option( 'name_order' );
 
 		if ( 'all' == $args['fields'] ) {
 			$args['fields'] = $this->custom_fields;
+			array_unshift( $args['fields'], 'fullname' );
+			$args['select'] = array( 'subscribers.*' );
 		}
 		if ( 'all' == $args['meta'] ) {
 			$args['meta'] = $this->meta_fields;
@@ -80,14 +88,21 @@ class MailsterSubscriberQuery {
 			$args['select'] = array( 'subscribers.ID' );
 		} elseif ( $args['return_count'] ) {
 			$args['select'] = array( 'COUNT(DISTINCT subscribers.ID)' );
-		} elseif ( is_null( $args['select'] ) ) {
+		} elseif ( empty( $args['fields'] ) ) {
 			$args['select'] = array( 'subscribers.*' );
+		} elseif ( is_null( $args['select'] ) ) {
+			$args['select'] = array();
 		}
 
 		if ( is_null( $args['status'] ) ) {
-			$args['status'] = array( 1 );
+			if ( ! $args['s'] ) {
+				$args['status'] = array( 1 );
+			}
 		}
 
+		if ( $args['status'] && ! is_array( $args['status'] ) ) {
+			$args['status'] = explode( ',', $args['status'] );
+		}
 		if ( $args['select'] && ! is_array( $args['select'] ) ) {
 			$args['select'] = explode( ',', $args['select'] );
 		}
@@ -133,23 +148,41 @@ class MailsterSubscriberQuery {
 		if ( $args['click__not_in'] && ! is_array( $args['click__not_in'] ) ) {
 			$args['click__not_in'] = explode( ',', $args['click__not_in'] );
 		}
+		if ( $args['search_fields'] && ! is_array( $args['search_fields'] ) ) {
+			$args['search_fields'] = explode( ',', $args['search_fields'] );
+		}
 
-		if ( ! empty( $args['fields'] ) ) {
-			foreach ( $args['fields'] as $field ) {
-				if ( 'fullname' == $field ) {
-					$args['fields'][] = 'firstname';
-					$args['fields'][] = 'lastname';
-					$args['select'][] = (mailster_option( 'name_order' ) ? "CONCAT(`field_firstname`.meta_value, ' ', `field_lastname`.meta_value)" : "CONCAT(`field_lastname`.meta_value, ' ', `field_firstname`.meta_value)" ) . ' AS fullname';
-				} else {
-					$args['select'][] = "`field_$field`.meta_value AS `$field`";
+		if ( ! $args['return_count'] ) {
+			if ( ! empty( $args['fields'] ) ) {
+				foreach ( $args['fields'] as $field ) {
+					if ( 'fullname' == $field ) {
+						$args['fields'][] = 'firstname';
+						$args['fields'][] = 'lastname';
+						$args['select'][] = ( ! $name_order ? "CONCAT(`field_firstname`.meta_value, ' ', `field_lastname`.meta_value)" : "CONCAT(`field_lastname`.meta_value, ' ', `field_firstname`.meta_value)" ) . ' AS fullname';
+					} elseif ( in_array( strtolower( $field ), $this->fields ) ) {
+						$args['select'][] = "subscribers.$field";
+					} else {
+						$args['select'][] = "`field_$field`.meta_value AS `$field`";
+					}
+				}
+			}
+			if ( ! empty( $args['meta'] ) ) {
+				foreach ( $args['meta'] as $field ) {
+					if ( 'lat' == $field ) {
+						$args['select'][] = "CAST(SUBSTRING_INDEX(`meta_lat`.meta_value, ',', 1) AS DECIMAL(10,2)) AS `lat`";
+					} elseif ( 'lng' == $field ) {
+						$args['select'][] = "CAST(SUBSTRING_INDEX(`meta_lng`.meta_value, ',', -1) AS DECIMAL(10,2)) AS `lng`";
+					} else {
+						$args['select'][] = "`meta_$field`.meta_value AS `$field`";
+					}
 				}
 			}
 		}
 
-		if ( ! empty( $args['meta'] ) ) {
-			foreach ( $args['meta'] as $field ) {
-				$args['select'][] = "`meta_$field`.meta_value AS `$field`";
-			}
+		$cache_key = 'subscriber_query_' . md5( serialize( $args ) );
+
+		if ( $result = mailster_cache_get( $cache_key ) ) {
+			return $result;
 		}
 
 		$select = 'SELECT ' . implode( ', ', $args['select'] );
@@ -204,7 +237,18 @@ class MailsterSubscriberQuery {
 
 		$joins = array();
 
-		$meta_and_fields = array_unique( wp_parse_args( $args['fields'], $args['meta'] ) );
+		$meta_and_fields = wp_parse_args( $args['fields'], $args['meta'] );
+
+		if ( $args['s'] ) {
+			$search_fields = $args['search_fields'] ? $args['search_fields'] : array_merge( array( 'email', 'hash', 'fullname' ), $this->custom_fields );
+			$meta_and_fields = array_merge( $search_fields, $meta_and_fields );
+		} else {
+		}
+
+		if ( in_array( 'fullname', $meta_and_fields ) ) {
+			$meta_and_fields[] = 'firstname';
+			$meta_and_fields[] = 'lastname';
+		}
 
 		if ( ! empty( $meta_and_fields ) ) {
 
@@ -212,7 +256,11 @@ class MailsterSubscriberQuery {
 
 				$field = esc_sql( $field );
 
-				if ( in_array( $field, $this->custom_fields ) ) {
+				if ( in_array( $field, array( 'lat', 'lng' ) ) ) {
+
+					$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS `meta_$field` ON `meta_$field`.subscriber_id = subscribers.ID AND `meta_$field`.meta_key = 'coords'";
+
+				} elseif ( in_array( $field, $this->custom_fields ) ) {
 
 					$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS `field_$field` ON `field_$field`.subscriber_id = subscribers.ID AND `field_$field`.meta_key = '$field'";
 
@@ -238,7 +286,11 @@ class MailsterSubscriberQuery {
 
 					$field = esc_sql( $options['field'] );
 
-					if ( in_array( $field, $this->custom_fields ) ) {
+					if ( in_array( $field, array( 'lat', 'lng' ) ) ) {
+
+						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS `meta_coords` ON `meta_coords`.subscriber_id = subscribers.ID AND `meta_coords`.meta_key = 'coords'";
+
+					} elseif ( in_array( $field, $this->custom_fields ) ) {
 
 						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS `field_$field` ON `field_$field`.subscriber_id = subscribers.ID AND `field_$field`.meta_key = '$field'";
 
@@ -258,7 +310,7 @@ class MailsterSubscriberQuery {
 			$join .= "\n" . implode( "\n", array_unique( $joins ) );
 		}
 
-		$where = ' WHERE 1';
+		$where = ' WHERE 1=1';
 		if ( $args['lists'] !== false ) {
 			// unassigned members if NULL
 			if ( is_array( $args['lists'] ) ) {
@@ -268,7 +320,7 @@ class MailsterSubscriberQuery {
 			$where .= ( is_null( $args['lists'] ) ) ? ' AND lists_subscribers.list_id IS NULL' : ( empty( $args['lists'] ) ? ' AND lists_subscribers.list_id = 0' : ' AND lists_subscribers.list_id IN(' . implode( ',', $args['lists'] ) . ')' );
 		}
 
-		if ( is_array( $args['status'] ) ) {
+		if ( $args['status'] ) {
 			$where .= ' AND subscribers.status IN (' . implode( ',', array_filter( $args['status'], 'is_numeric' ) ) . ')';
 		}
 
@@ -333,24 +385,159 @@ class MailsterSubscriberQuery {
 			}
 		}
 
-			$group = '';
-		if ( $args['return_ids'] ) {
+		if ( $args['s'] ) {
+
+			$raw_search = trim( $args['s'] );
+			$raw_search = addcslashes( $raw_search, '%[]_' );
+			$search_terms = array();
+			$not_search_terms = array();
+			$wildcard = $args['strict'] ? '' : '%';
+
+			if ( $args['sentence'] ) {
+
+				$search_terms = array( $raw_search );
+
+			} else {
+
+				if ( preg_match_all( '/("|\')(.+?)(\1)/', $raw_search, $quotes ) ) {
+					$search_terms = array_merge( $search_terms, $quotes[2] );
+					$raw_search = trim( str_replace( $quotes[0], '', $raw_search ) );
+				}
+
+				$search_terms = array_merge( $search_terms, explode( ' ', $raw_search ) );
+				$search_terms = array_filter( $search_terms );
+
+				$search_terms = str_replace( array( '*', '?' ), array( '%', '_' ), $search_terms );
+
+				$not_search_terms = array_values( preg_grep( '/^-/', $search_terms ) );
+				$search_terms = array_values( array_diff( $search_terms, $not_search_terms ) );
+				$not_search_terms = preg_replace( '/^-/', '', $not_search_terms );
+			}
+
+			if ( ! empty( $search_terms ) ) {
+
+				$search_terms = array_map( 'trim', $search_terms );
+
+				foreach ( $search_terms as $i => $term ) {
+
+					$searches = array();
+					if ( empty( $term ) ) {
+						continue;
+					}
+
+					$operator = 'OR';
+					if ( ! $i || strpos( $term, '+' ) === 0 ) {
+						$term = ltrim( $term, '+' );
+						$operator = 'AND';
+					}
+
+					foreach ( $search_fields as $search_field ) {
+
+						if ( 'fullname' == $search_field ) {
+							if ( ! $name_order ) {
+								$searches[] = "(CONCAT(`field_firstname`.meta_value, ' ', `field_lastname`.meta_value) LIKE '$wildcard$term$wildcard')";
+							} else {
+								$searches[] = "(CONCAT(`field_lastname`.meta_value, ' ', `field_firstname`.meta_value) LIKE '$wildcard$term$wildcard')";
+							}
+						} elseif ( in_array( $search_field, $this->custom_fields ) ) {
+
+							$searches[] = "(`field_$search_field`.meta_value LIKE '$wildcard$term$wildcard')";
+
+						} elseif ( in_array( $search_field, $this->wp_user_meta ) ) {
+
+							$searches[] = "(`meta_wp_$search_field`.meta_value LIKE '$wildcard$term$wildcard')";
+
+						} elseif ( in_array( $search_field, $this->meta_fields ) ) {
+
+							$searches[] = "(`meta_$search_field`.meta_value LIKE '$wildcard$term$wildcard')";
+
+						} else {
+
+							$searches[] = "(subscribers.$search_field LIKE '$wildcard$term$wildcard')";
+
+						}
+					}
+
+					$where .= " $operator ( " . implode( "\n" . ' OR ', $searches ) . ' )';
+				}
+			}
+
+			if ( ! empty( $not_search_terms ) ) {
+
+				$not_search_terms = array_map( 'trim', $not_search_terms );
+				$searches = array();
+
+				foreach ( $not_search_terms as $i => $term ) {
+					if ( empty( $term ) ) {
+						continue;
+					}
+
+					foreach ( $search_fields as $search_field ) {
+
+						if ( 'fullname' == $search_field ) {
+							if ( ! $name_order ) {
+								$searches[] = "(CONCAT(`field_firstname`.meta_value, ' ', `field_lastname`.meta_value) NOT LIKE '$wildcard$term$wildcard' OR CONCAT(`field_firstname`.meta_value, ' ', `field_lastname`.meta_value) IS NULL)";
+							} else {
+								$searches[] = "(CONCAT(`field_lastname`.meta_value, ' ', `field_firstname`.meta_value) NOT LIKE '$wildcard$term$wildcard' OR CONCAT(`field_lastname`.meta_value, ' ', `field_firstname`.meta_value) IS NULL)";
+							}
+						} elseif ( in_array( $search_field, $this->custom_fields ) ) {
+
+							$searches[] = "(`field_$search_field`.meta_value NOT LIKE '$wildcard$term$wildcard' OR `field_$search_field`.meta_value IS NULL)";
+
+						} elseif ( in_array( $search_field, $this->wp_user_meta ) ) {
+
+							$searches[] = "(`meta_wp_$search_field`.meta_value NOT LIKE '$wildcard$term$wildcard' OR `meta_wp_$search_field`.meta_value IS NULL)";
+
+						} elseif ( in_array( $search_field, $this->meta_fields ) ) {
+
+							$searches[] = "(`meta_$search_field`.meta_value NOT LIKE '$wildcard$term$wildcard' OR `meta_$search_field`.meta_value IS NULL)";
+
+						} else {
+
+							$searches[] = "(subscribers.$search_field NOT LIKE '$wildcard$term$wildcard')";
+
+						}
+					}
+				}
+
+				$where .= ' AND ( ' . implode( "\n" . ' AND ', $searches ) . ' )';
+
+			}
+		}
+
+		$group = '';
+		if ( ! $args['return_count'] ) {
 			$group .= ' GROUP BY subscribers.ID';
 		}
 
-			$order = '';
-		if ( $args['orderby'] ) {
+		$order = '';
+		if ( $args['orderby'] && ! $args['return_count'] ) {
 			$order .= ' ORDER BY';
-			$ordering = strtoupper( $args['order'] ? $args['order'] : 'ASC' );
+			$ordering = isset( $args['order'][0] ) ? strtoupper( $args['order'][0] ) : 'ASC';
 			$orders = array();
 			foreach ( $args['orderby'] as $i => $orderby ) {
 				$ordering = isset( $args['order'][ $i ] ) ? strtoupper( $args['order'][ $i ] ) : $ordering;
-				$orders[] = " $orderby $ordering";
+				if ( in_array( $orderby, $this->custom_fields ) ) {
+
+					$orders[] = " `field_$orderby`.meta_value $ordering";
+
+				} elseif ( in_array( $orderby, $this->wp_user_meta ) ) {
+
+					$orders[] = " `meta_wp_$orderby`.meta_value $ordering";
+
+				} elseif ( in_array( $orderby, $this->meta_fields ) ) {
+
+					$orders[] = " `meta_$orderby`.meta_value $ordering";
+
+				} else {
+
+					$orders[] = " subscribers.$orderby $ordering";
+				}
 			}
 			$order .= implode( ',', $orders );
 		}
 
-			$limit = '';
+		$limit = '';
 		if ( $args['limit'] ) {
 			$limit .= ' LIMIT ' . intval( $args['offset'] ) . ', ' . intval( $args['limit'] );
 		}
@@ -361,22 +548,46 @@ class MailsterSubscriberQuery {
 		$sql = apply_filters( 'mailster_campaign_get_subscribers_by_list_sql', $sql );
 
 		if ( $args['return_sql'] ) {
-			return $sql;
-		}
-
-		if ( $args['return_ids'] ) {
-			$result = $wpdb->get_col( $sql );
-		} elseif ( $args['return_count'] ) {
-			$result = $wpdb->get_var( $sql );
+			$result = $this->last_query = $sql;
+			$this->last_error = null;
+			$this->last_result = null;
 		} else {
-			$result = $wpdb->get_results( $sql );
+			if ( $args['return_ids'] ) {
+				$result = $wpdb->get_col( $sql );
+			} elseif ( $args['return_count'] ) {
+				$result = $wpdb->get_var( $sql );
+			} else {
+				$result = $this->cast( $wpdb->get_results( $sql ) );
+			}
+			$this->last_query = $wpdb->last_query;
+			$this->last_error = $wpdb->last_error;
+			$this->last_result = $result;
 		}
 
-		$this->last_error = $wpdb->last_error;
-		$this->last_result = $result;
-		$this->last_query = $wpdb->last_query;
+		// echo '<pre>' . print_r( $sql, true ) . '</pre>';
+		// echo '<pre>' . print_r( $this->last_error, true ) . '</pre>';
+		mailster_cache_set( $cache_key, $result );
 
 		return $result;
+
+	}
+
+
+	private function cast( $result ) {
+
+		$className = 'MailsterSubscriber';
+		$return = array();
+
+		foreach ( $result as $key => $value ) {
+			$return[] = unserialize(sprintf(
+				'O:%d:"%s"%s',
+				strlen( $className ),
+				$className,
+				strstr( strstr( serialize( $value ), '"' ), ':' )
+			));
+		}
+
+		return $return;
 
 	}
 
@@ -391,6 +602,7 @@ class MailsterSubscriberQuery {
 		$is_empty = '' == $value;
 		$extra = '';
 		$positive = false;
+		$f = false;
 
 		// data sanitation
 		switch ( $field ) {
@@ -402,11 +614,11 @@ class MailsterSubscriberQuery {
 					$value = floatval( $value ) * 0.2;
 				}
 				break;
-			case 'coords':
-				echo '<pre>' . print_r( $value, true ) . '</pre>';
+			case 'lat':
+				$f = "CAST(SUBSTRING_INDEX(`meta_coords`.meta_value, ',', 1) AS DECIMAL(10,2))";
 				break;
-			case 'lang':
-				echo '<pre>' . print_r( $value, true ) . '</pre>';
+			case 'lng':
+				$f = "CAST(SUBSTRING_INDEX(`meta_coords`.meta_value, ',', -1) AS DECIMAL(10,2))";
 				break;
 			case 'geo':
 				if ( '=' == $operator ) {
@@ -424,7 +636,8 @@ class MailsterSubscriberQuery {
 			case '!=':
 			case 'is_not':
 
-				if ( in_array( $field, $this->custom_date_fields ) ) {
+				if ( $f ) {
+				} elseif ( in_array( $field, $this->custom_date_fields ) ) {
 					$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
 				} elseif ( in_array( $field, $this->time_fields ) ) {
 					$f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
@@ -461,7 +674,8 @@ class MailsterSubscriberQuery {
 				} else {
 					$value = "'%$value%'";
 				}
-				if ( in_array( $field, $this->custom_fields ) ) {
+				if ( $f ) {
+				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f = "`field_$field`.meta_value";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
 					$f = "`meta_$field`.meta_value";
@@ -486,7 +700,8 @@ class MailsterSubscriberQuery {
 				} else {
 					$value = "'$value%'";
 				}
-				if ( in_array( $field, $this->custom_fields ) ) {
+				if ( $f ) {
+				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f = "`field_$field`.meta_value";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
 					$f = "`meta_$field`.meta_value";
@@ -509,7 +724,8 @@ class MailsterSubscriberQuery {
 					$value = "'%$value'";
 				}
 
-				if ( in_array( $field, $this->custom_fields ) ) {
+				if ( $f ) {
+				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f = "`field_$field`.meta_value";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
 					$f = "`meta_$field`.meta_value";
@@ -534,7 +750,8 @@ class MailsterSubscriberQuery {
 			case '<':
 			case 'is_smaller':
 
-				if ( in_array( $field, $this->custom_date_fields ) ) {
+				if ( $f ) {
+				} elseif ( in_array( $field, $this->custom_date_fields ) ) {
 					$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
 					$value = "'$value'";
 				} elseif ( in_array( $field, $this->time_fields ) ) {
@@ -566,7 +783,9 @@ class MailsterSubscriberQuery {
 				$positive = true;
 			case '!%':
 			case 'not_pattern':
-				if ( in_array( $field, $this->custom_date_fields ) ) {
+
+				if ( $f ) {
+				} elseif ( in_array( $field, $this->custom_date_fields ) ) {
 					$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
 				} elseif ( in_array( $field, $this->time_fields ) ) {
 					$f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
@@ -652,6 +871,12 @@ class MailsterSubscriberQuery {
 		return $custom_date_fields;
 	}
 
+	private function get_fields() {
+		$fields = array( 'id', 'hash', 'email', 'wp_id', 'status', 'added', 'updated', 'signup', 'confirm', 'ip_signup', 'ip_confirm', 'rating' );
+
+		return $fields;
+	}
+
 	private function get_time_fields() {
 		$time_fields = array( 'added', 'updated', 'signup', 'confirm' );
 
@@ -659,7 +884,7 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_meta_fields() {
-		$meta_fields = array( 'form', 'referer', 'client', 'clienttype', 'coords', 'geo', 'lang', 'timeoffset' );
+		$meta_fields = array( 'form', 'referer', 'client', 'clienttype', 'coords', 'geo', 'lang', 'timeoffset', 'lat', 'lng' );
 
 		return $meta_fields;
 	}
@@ -673,4 +898,13 @@ class MailsterSubscriberQuery {
 	}
 
 
+}
+
+/**
+ *
+ */
+class MailsterSubscriber {
+
+	function __construct() {
+	}
 }

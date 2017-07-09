@@ -30,9 +30,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$counts = mailster( 'subscribers' )->get_count_by_status();
 		$statuses = mailster( 'subscribers' )->get_status();
 		$statuses_nice = mailster( 'subscribers' )->get_status( null, true );
-		$link = 'edit.php?post_type=newsletter&page=mailster_subscribers';
+		$link = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
+		$link = add_query_arg( array() );
 
-		$views = array( 'view-all' => '<a href="' . $link . '">' . __( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( array_sum( $counts ) ) . ')</span></a>' );
+		$views = array( 'view-all' => '<a href="' . remove_query_arg( 'status', $link ) . '">' . __( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( array_sum( $counts ) ) . ')</span></a>' );
 
 		foreach ( $counts as $id => $count ) {
 			$views[ 'view-' . $statuses[ $id ] ] = '<a href="' . add_query_arg( array( 'status' => $id ), $link ) . '">' . $statuses_nice[ $id ] . ' <span class="count">(' . number_format_i18n( $count ) . ')</span></a>';
@@ -100,7 +101,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	<p class="search-box">
 		<label class="screen-reader-text" for="sa-search-input"><?php echo $text; ?></label>
 		<input type="search" id="<?php echo $input_id ?>" name="s" value="<?php if ( isset( $_GET['s'] ) ) {
-			echo esc_attr( $_GET['s'] );
+			echo esc_attr( stripslashes( $_GET['s'] ) );
 }
 		?>">
 		<input type="submit" name="" id="search-submit" class="button" value="<?php echo esc_attr( $text ); ?>">
@@ -178,13 +179,13 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				if ( in_array( $column_name, array_keys( $custom_fields ) ) ) {
 					switch ( $custom_fields[ $column_name ]['type'] ) {
 						case 'checkbox':
-						return $item->{'_' . $column_name} ? '&#10004;' : '&#10005;';
+						return $item->{$column_name} ? '&#10004;' : '&#10005;';
 						break;
 						case 'date':
-						return $item->{'_' . $column_name} ? date_i18n( get_option( 'date_format' ), strtotime( $item->{'_' . $column_name} ) ) : '';
+						return $item->{$column_name} ? date_i18n( get_option( 'date_format' ), strtotime( $item->{$column_name} ) ) : '';
 						break;
 						default:
-						return $item->{'_' . $column_name};
+						return $item->{$column_name};
 					}
 				}
 			return print_r( $item, true ); // Show the whole array for troubleshooting purposes
@@ -273,6 +274,18 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	/**
 	 *
 	 *
+	 * @param unknown $which (optional)
+	 */
+	public function extra_tablenav( $which = '' ) {
+		echo '<div class="alignleft">';
+		echo '<a class="button">Filters</a>';
+		echo '</div>';
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $item
 	 * @return unknown
 	 */
@@ -310,8 +323,58 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
-		$custom_field_names = mailster()->get_custom_fields( true );
-		$custom_field_names = array_splice( $custom_field_names, 0, 58 );
+		$fields = array_keys( array_diff_key( $columns, array_flip( array_merge( $hidden, array( 'cb', 'name', 'avatar', 'emails' ) ) ) ) );
+
+		$args = array();
+
+		$status = isset( $_GET['status'] ) ? intval( $_GET['status'] ) : false;
+		$args['status'] = $status;
+		$search = isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null;
+		$args['s'] = $search;
+
+		// How many to display per page?
+		if ( ! ($limit = (int) get_user_option( 'mailster_subscribers_per_page' )) ) {
+			$limit = 50;
+		}
+
+		$offset = isset( $_GET['paged'] ) ? ( intval( $_GET['paged'] ) - 1 ) * $limit : 0;
+
+		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
+		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
+
+		switch ( $orderby ) {
+			case 'name':
+			case 'lastname':
+				$orderby = array( 'lastname', 'firstname' );
+		break;
+			case 'firstname':
+				$orderby = array( 'firstname', 'lastname' );
+		break;
+			default:
+		}
+
+		$items = mailster( 'subscribers' )->query( wp_parse_args( $args, array(
+			'orderby' => $orderby,
+			'order' => $order,
+			'fields' => 'all',
+			'limit' => $limit,
+			'offset' => $offset,
+		)) );
+
+		// $this->items = array_slice($items, $offset, $limit);
+		$this->items = $items;
+
+		$totalitems = mailster( 'subscribers' )->query( wp_parse_args( 'return_count=1', $args ) );
+
+		$totalpages = ceil( $totalitems / $limit );
+
+		$this->set_pagination_args( array(
+			'total_items' => $totalitems,
+			'total_pages' => $totalpages,
+			'per_page' => $limit,
+		) );
+
+		return;
 
 		$lists = isset( $_GET['lists'] ) ? array_filter( $_GET['lists'], 'is_numeric' ) : array();
 

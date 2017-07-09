@@ -11,7 +11,7 @@
 	<a href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=export" class="add-new-h2"><?php esc_html_e( 'Export', 'mailster' );?></a>
 <?php endif; ?>
 <?php if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) : ?>
-	<span class="subtitle"><?php printf( __( 'Search result for %s', 'mailster' ), '&quot;' . esc_html( $_GET['s'] ) . '&quot;' ) ?></span>
+	<span class="subtitle"><?php printf( __( 'Search result for %s', 'mailster' ), '&quot;' . esc_html( stripslashes( $_GET['s'] ) ) . '&quot;' ) ?></span>
 	<?php endif; ?>
 </h1>
 <?php
@@ -21,7 +21,7 @@ $table = new Mailster_Subscribers_Table();
 $table->prepare_items();
 $table->search_box( __( 'Search Subscribers', 'mailster' ), 's' );
 $table->views();
-?><form method="post" action="" id="subscribers-overview-form">
+?>
 <?php
 
 $counts = $this->get_count_by_status();
@@ -37,6 +37,7 @@ if ( isset( $_GET['status'] ) && isset( $counts[ $_GET['status'] ] ) ) :
 
 endif;
 ?>
+<form method="post" action="" id="subscribers-overview-form">
 <input type="hidden" name="all_subscribers" id="all_subscribers" data-label="<?php echo esc_attr( $text ) ?>" data-count="<?php echo $count ?>" value="0">
 <?php $table->display(); ?>
 </form>
