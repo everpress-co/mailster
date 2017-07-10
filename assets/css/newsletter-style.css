@@ -14,7 +14,7 @@
 .postbox{
 	display:none;
 }
-[id^="mailster_"].postbox, #postimagediv.postbox, #authordiv.postbox {
+[id^="mailster_"].postbox, #postimagediv.postbox, #authordiv.postbox, #newsletter_categorydiv.postbox, #tagsdiv-newsletter_tags.postbox {
 	display:inherit;
 }
 [id^="wpseo"], .yoast-seo-score{

@@ -11,6 +11,7 @@ class MailsterCampaigns {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ) );
 		add_action( 'init', array( &$this, 'register_post_type' ) );
+		add_action( 'init', array( &$this, 'register_taxonomies' ) );
 		add_action( 'init', array( &$this, 'register_post_status' ) );
 
 		if ( $hooks = get_option( 'mailster_hooks', false ) ) {
@@ -191,6 +192,29 @@ class MailsterCampaigns {
 				'register_meta_box_cb' => array( &$this, 'meta_boxes' ),
 
 		) );
+
+	}
+
+
+	public function register_taxonomies() {
+
+		$args = array(
+			'hierarchical'      => true,
+			'show_ui'           => true,
+			'update_count_callback' => '_update_generic_term_count',
+			'query_var'         => true,
+		);
+
+		register_taxonomy( 'newsletter_category', 'newsletter', $args );
+
+		$args = array(
+			'hierarchical'          => false,
+			'show_ui'               => true,
+			'update_count_callback' => '_update_generic_term_count',
+			'query_var'             => true,
+		);
+
+		register_taxonomy( 'newsletter_tags', 'newsletter', $args );
 
 	}
 

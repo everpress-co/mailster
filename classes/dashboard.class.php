@@ -86,9 +86,9 @@ class MailsterDashboard {
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'register_meta_boxes' ) );
 
-		if ( isset( $submenu[ $slug ][11] ) ) {
-			$submenu[ $slug ][0] = $submenu[ $slug ][11];
-			unset( $submenu[ $slug ][11] );
+		if ( isset( $submenu[ $slug ][17] ) ) {
+			$submenu[ $slug ][0] = $submenu[ $slug ][17];
+			unset( $submenu[ $slug ][17] );
 			ksort( $submenu[ $slug ] );
 		}
 
