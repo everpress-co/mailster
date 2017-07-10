@@ -1,3 +1,1 @@
-<input type="text" class="regular-text" value="<?php echo esc_attr( $value ); ?>">
-
-<?php echo '<pre>' . print_r( $condition, true ) . '</pre>'; ?>
+<input type="text" class="widefat condition-value" value="<?php echo esc_attr( $value ); ?>" name="mailster_conditions[<?php echo $i; ?>][value]">
