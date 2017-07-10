@@ -96,6 +96,19 @@ class Mailster {
 	/**
 	 *
 	 *
+	 * @param unknown $content (optional)
+	 * @return unknown
+	 */
+	public function conditions( $conditions = array(), $operator = 'AND' ) {
+		require_once MAILSTER_DIR . 'classes/conditions.class.php';
+
+		return new MailsterConditions( $conditions, $operator );
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $file     (optional)
 	 * @param unknown $template (optional)
 	 * @return unknown
@@ -895,6 +908,9 @@ class Mailster {
 	public function admin_scripts_styles( $hook ) {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_register_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array(), MAILSTER_VERSION, true );
+		wp_register_style( 'mailster-select2', MAILSTER_URI . 'assets/css/libs/select2' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		wp_enqueue_style( 'mailster-icons', MAILSTER_URI . 'assets/css/icons' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_style( 'mailster-admin', MAILSTER_URI . 'assets/css/admin' . $suffix . '.css', array( 'mailster-icons' ), MAILSTER_VERSION );

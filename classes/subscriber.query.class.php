@@ -828,30 +828,30 @@ class MailsterSubscriberQuery {
 		$operator = esc_sql( stripslashes( $operator ) );
 
 		switch ( $operator ) {
-			case 'is':
-				return '=';
-			case 'is_not':
-				return '!=';
-			case 'contains':
-				return '<>';
-			case 'contains_not':
-				return '!<>';
-			case 'begin_with':
-				return '^';
-			case 'end_with':
-				return '$';
-			case 'is_greater_equal':
-				return '>=';
-			case 'is_smaller_equal':
-				return '<=';
-			case 'is_greater':
-				return '>';
-			case 'is_smaller':
-				return '<';
-			case 'pattern':
-				return '%';
-			case 'not_pattern':
-				return '!%';
+			case '=':
+				return 'is';
+			case '!=':
+				return 'is_not';
+			case '<>':
+				return 'contains';
+			case '!<>':
+				return 'contains_not';
+			case '^':
+				return 'begin_with';
+			case '$':
+				return 'end_with';
+			case '>=':
+				return 'is_greater_equal';
+			case '<=':
+				return 'is_smaller_equal';
+			case '>':
+				return 'is_greater';
+			case '<':
+				return 'is_smaller';
+			case '%':
+				return 'pattern';
+			case '!%':
+				return 'not_pattern';
 		}
 
 		return $operator;

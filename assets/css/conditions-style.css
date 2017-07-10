@@ -1,0 +1,26 @@
+.mailster-conditions, .mailster-conditions .mailster-conditions-group, .mailster-conditions .mailster-conditions-group .mailster-condition{
+	border:1px solid #DFDFDF;
+	-webkit-border-radius:3px;
+	border-radius:3px;
+	margin:3px 0;
+	padding:5px;
+	overflow:hidden;
+	display: block;
+	float: none;
+	clear: both;
+}
+.mailster-conditions{
+	margin: 0;
+}
+.mailster-conditions .mailster-conditions-group{
+}
+.mailster-conditions .mailster-conditions-group .mailster-condition{
+}
+.mailster-conditions .remove-condition{
+	float: right;
+	cursor: pointer;
+	display: none;
+}
+.mailster-conditions .mailster-condition:hover .remove-condition{
+	display: block;
+}
