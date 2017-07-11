@@ -125,7 +125,20 @@ class MailsterCampaigns {
 			return;
 		}
 
-		$all_subscribers = $this->get_subscribers( $campaign_id, null, true, (bool) $meta['autoresponder']['once'] );
+		if ( $this->meta( $campaign_id, 'ignore_lists' ) ) {
+			$lists = false;
+		} else {
+			$lists = $this->meta( $campaign_id, 'lists' );
+		}
+
+		$conditions = $this->meta( $campaign_id, 'list_conditions' );
+
+		$all_subscribers = mailster( 'subscribers' )->query(array(
+			'lists' => $lists,
+			'conditions' => $conditions,
+			'return_ids' => true,
+			'sent__not_in' => $meta['autoresponder']['once'] ? $campaign_id : false,
+		));
 
 		$subscribers = empty( $subscriber_ids )
 			? $all_subscribers
@@ -2495,8 +2508,8 @@ class MailsterCampaigns {
 			'status' => $statuses,
 			'return_ids' => $return_ids,
 			'return_count' => ! $return_ids,
-			'ignore_sent' => $ignore_sent ? $id : false,
-			'ignore_queue' => $ignore_queue ? $id : false,
+			'sent__not_in' => $ignore_sent ? $id : false,
+			'queue__not_in' => $ignore_queue ? $id : false,
 			'limit' => $limit,
 			'offset' => $offset,
 			'return_sql' => $returnsql,
@@ -2528,8 +2541,8 @@ class MailsterCampaigns {
 			'status' => $statuses,
 			'return_ids' => $return_ids,
 			'return_count' => ! $return_ids,
-			'ignore_sent' => $ignore_sent,
-			'ignore_queue' => $ignore_queue,
+			'sent__not_in' => $ignore_sent,
+			'queue__not_in' => $ignore_queue,
 			'limit' => $limit,
 			'offset' => $offset,
 			'return_sql' => $returnsql,

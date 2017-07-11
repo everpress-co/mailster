@@ -385,70 +385,81 @@ class MailsterQueue {
 
 				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 
-				$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(IF(a.confirm, a.confirm, a.signup)) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d AND b.type = 1 LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
+				$conditions = array(
+					array(
+						'operator' => 'OR',
+						'conditions' => array(
+							array(
+								'field' => 'confirm',
+								'operator' => '!=',
+								'value' => '0',
+							),
+							array(
+								'field' => 'signup',
+								'operator' => '!=',
+								'value' => '0',
+							),
+						),
+					),
+					array(
+						'operator' => 'AND',
+						'conditions' => array(
+							array(
+								'field' => 'signup',
+								'operator' => '>=',
+								'value' => intval( $meta['timestamp'] ),
+							),
+						),
+					),
+				);
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
-					$sql .= mailster( 'campaigns' )->get_sql_join_by_condition( $meta['list_conditions'] );
+					$conditions[] = $meta['list_conditions'];
 				}
 
-				$sql .= ' WHERE (a.confirm != 0 OR a.signup != 0)';
+				$args = array(
+					'select' => array( 'subscribers.ID', "UNIX_TIMESTAMP(FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup)) + INTERVAL $offset) AS autoresponder_timestamp" ),
+					'sent__not_in' => $campaign->ID,
+					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
+					'conditions' => array(
+						'operator' => 'AND',
+						'conditions' => $conditions,
+					),
+					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
+					'orderby' => 'autoresponder_timestamp',
+				);
 
-				$sql .= $wpdb->prepare( ' AND a.signup >= %d', $meta['timestamp'] );
+				$subscribers = mailster( 'subscribers' )->query( $args );
 
-				$to = $now - $offset + 3600;
-
-				$sql .= ' AND a.status = 1 AND b.subscriber_id IS NULL';
-
-				if ( ! empty( $meta['list_conditions'] ) ) {
-					$sql .= mailster( 'campaigns' )->get_sql_by_condition( $meta['list_conditions'] );
-				}
-
-				if ( empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] ) ) {
-					$meta['lists'] = array_filter( $meta['lists'], 'is_numeric' );
-					$sql .= ' AND ab.list_id IN(' . implode( ', ', $meta['lists'] ) . ')';
-				}
-
-				$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $to );
-
-				if ( $subscribers = $wpdb->get_results( $sql ) ) {
+				if ( ! empty( $subscribers ) ) {
 					$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
-					$timestamps = wp_list_pluck( $subscribers, 'timestamp' );
+					$timestamps = wp_list_pluck( $subscribers, 'autoresponder_timestamp' );
 
 					$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, 15 );
 				}
 			} elseif ( 'mailster_subscriber_unsubscribed' == $autoresponder_meta['action'] ) {
 
-					$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
+				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 
-					$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(b.timestamp) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.type = 4 LEFT JOIN {$wpdb->prefix}mailster_actions AS c ON a.ID = c.subscriber_id AND c.type = 1 AND c.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
+				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null ;
 
-				if ( ! empty( $meta['list_conditions'] ) ) {
-					$sql .= mailster( 'campaigns' )->get_sql_join_by_condition( $meta['list_conditions'] );
-				}
+				$args = array(
+					'select' => array( 'subscribers.ID', "UNIX_TIMESTAMP(FROM_UNIXTIME(actions_unsubscribe.timestamp) + INTERVAL $offset) AS autoresponder_timestamp" ),
+					'status' => 2,
+					'unsubscribe' => -1,
+					'sent__not_in' => $campaign->ID,
+					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
+					'conditions' => $conditions,
+					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
+					'orderby' => 'autoresponder_timestamp',
+				);
 
-					$sql .= ' WHERE 1';
+				$subscribers = mailster( 'subscribers' )->query( $args );
 
-					$sql .= $wpdb->prepare( ' AND b.timestamp >= %d', $meta['timestamp'] );
-
-					$to = $now - $offset + 3600;
-
-					$sql .= ' AND a.status = 2 AND b.subscriber_id IS NOT NULL AND c.timestamp IS NULL';
-
-				if ( ! empty( $meta['list_conditions'] ) ) {
-					$sql .= mailster( 'campaigns' )->get_sql_by_condition( $meta['list_conditions'] );
-				}
-
-				if ( empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] ) ) {
-					$meta['lists'] = array_filter( $meta['lists'], 'is_numeric' );
-					$sql .= ' AND ab.list_id IN(' . implode( ', ', $meta['lists'] ) . ')';
-				}
-
-					$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $to );
-
-				if ( $subscribers = $wpdb->get_results( $sql ) ) {
+				if ( ! empty( $subscribers ) ) {
 
 					$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
-					$timestamps = wp_list_pluck( $subscribers, 'timestamp' );
+					$timestamps = wp_list_pluck( $subscribers, 'autoresponder_timestamp' );
 
 					$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, 15, false, true );
 				}
@@ -456,31 +467,70 @@ class MailsterQueue {
 
 				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 
-				$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(b.timestamp) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.type = %d AND b.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_actions AS c ON a.ID = c.subscriber_id AND c.type = 1 AND c.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $autoresponder_meta['followup_action'], $campaign->post_parent, $campaign->ID );
+				$conditions = array(
+							array(
+								'operator' => 'OR',
+								'conditions' => array(
+									array(
+										'field' => 'confirm',
+										'operator' => '!=',
+										'value' => '0',
+									),
+									array(
+										'field' => 'signup',
+										'operator' => '!=',
+										'value' => '0',
+									),
+								),
+							),
+							array(
+								'operator' => 'AND',
+								'conditions' => array(
+									array(
+										'field' => 'signup',
+										'operator' => '>=',
+										'value' => intval( $meta['timestamp'] ),
+									),
+								),
+							),
+						);
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
-					$sql .= mailster( 'campaigns' )->get_sql_join_by_condition( $meta['list_conditions'] );
+					$conditions[] = $meta['list_conditions'];
 				}
 
-				$sql .= ' WHERE 1';
+				$args = array(
+					'select' => array( 'subscribers.ID' ),
+					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
+					'conditions' => array(
+						'operator' => 'AND',
+						'conditions' => $conditions,
+					),
+					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
+					'orderby' => 'autoresponder_timestamp',
+				);
 
-				$sql .= ' AND a.status = 1 AND b.subscriber_id IS NOT NULL AND c.subscriber_id IS NULL';
-
-				if ( ! empty( $meta['list_conditions'] ) ) {
-					$sql .= mailster( 'campaigns' )->get_sql_by_condition( $meta['list_conditions'] );
+				switch ( $autoresponder_meta['followup_action'] ) {
+					case 1:
+						$args['select'][] = "UNIX_TIMESTAMP(FROM_UNIXTIME(actions_sent.timestamp) + INTERVAL $offset) AS autoresponder_timestamp";
+						$args['sent'] = $campaign->post_parent;
+						break;
+					case 2:
+						$args['select'][] = "UNIX_TIMESTAMP(FROM_UNIXTIME(actions_open.timestamp) + INTERVAL $offset) AS autoresponder_timestamp";
+						$args['open'] = $campaign->post_parent;
+						break;
+					case 3:
+						$args['select'][] = "UNIX_TIMESTAMP(FROM_UNIXTIME(actions_click.timestamp) + INTERVAL $offset) AS autoresponder_timestamp";
+						$args['click'] = $campaign->post_parent;
+						break;
 				}
 
-				if ( empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] ) ) {
-					$meta['lists'] = array_filter( $meta['lists'], 'is_numeric' );
-					$sql .= ' AND ab.list_id IN(' . implode( ', ', $meta['lists'] ) . ')';
-				}
+				$subscribers = mailster( 'subscribers' )->query( $args );
 
-				$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $now + 3600 );
-
-				if ( $subscribers = $wpdb->get_results( $sql ) ) {
+				if ( ! empty( $subscribers ) ) {
 
 					$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
-					$timestamps = wp_list_pluck( $subscribers, 'timestamp' );
+					$timestamps = wp_list_pluck( $subscribers, 'autoresponder_timestamp' );
 
 					$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, 15, false );
 				}
@@ -680,9 +730,15 @@ class MailsterQueue {
 			$timestamps = array();
 			$offsettimestamp = strtotime( '+' . ( -1 * $send_offset ) . ' seconds', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
 
+			echo '<pre>' . print_r( $offsettimestamp, true ) . '</pre>';
+
 			if ( $exact_date ) {
 
-				$specialcond = " AND x.meta_value = '" . date( 'Y-m-d', $offsettimestamp ) . "'";
+				$cond = array(
+					'field' => $autoresponder_meta['uservalue'],
+					'operator' => '=',
+					'value' => date( 'Y-m-d', $offsettimestamp ),
+				);
 
 			} else {
 
@@ -690,33 +746,68 @@ class MailsterQueue {
 				switch ( $autoresponder_meta['userunit'] ) {
 					case 'year':
 						$specialcond .= " AND x.meta_value LIKE '%" . date( '-m-d', $offsettimestamp ) . "'";
+						$cond = array(
+							'field' => $autoresponder_meta['uservalue'],
+							'operator' => '$',
+							'value' => date( '-m-d', $offsettimestamp ),
+						);
 					break;
 					case 'month':
 						$specialcond .= " AND x.meta_value LIKE '%" . date( '-d', $offsettimestamp ) . "'";
+						$cond = array(
+									'field' => $autoresponder_meta['uservalue'],
+									'operator' => '$',
+									'value' => date( '-d', $offsettimestamp ),
+								);
 					break;
 					default:
 						$specialcond .= " AND x.meta_value != ''";
+						$cond = array(
+							'field' => $autoresponder_meta['uservalue'],
+							'operator' => '!=',
+							'value' => '',
+						);
 					break;
 				}
 			}
 
-			// get SQL only
-			$sql = mailster( 'campaigns' )->get_subscribers( $campaign->ID, null, true, $once, false, null, 0, true );
+			if ( $meta['ignore_lists'] ) {
+				$lists = false;
+			} else {
+				$lists = $meta['lists'];
+			}
 
-			// do some magic replace
-			$replace = array(
-				'SELECT a.ID' => 'SELECT a.ID, x.meta_value AS date',
-				'WHERE 1' => "LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS x ON a.ID = x.subscriber_id WHERE 1" . $wpdb->prepare( ' AND x.meta_key = %s', $autoresponder_meta['uservalue'] ) . $specialcond,
-				'ORDER BY a.ID' => 'ORDER BY x.meta_value',
+			$extracondition = array(
+				'operator' => 'AND',
+				'conditions' => array( $cond ),
 			);
 
-			$sql = str_replace( array_keys( $replace ), $replace, $sql );
+			if ( ! empty( $meta['list_conditions'] ) ) {
+				$conditions = $meta['list_conditions'];
+				if ( ! isset( $conditions['conditions'][0]['conditions'] ) ) {
+					$conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );
+					$conditions['operator'] = 'AND';
+				}
+				$conditions['conditions'][] = $extracondition;
 
-			$subscribers = $wpdb->get_results( $sql );
+			} else {
+				$conditions = $extracondition;
+				$conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );
+				$conditions['operator'] = 'AND';
+			}
+
+			$subscribers = mailster( 'subscribers' )->query(array(
+				'fields' => array( 'ID', $autoresponder_meta['uservalue'] ),
+				'lists' => $lists,
+				'conditions' => $conditions,
+				'sent__not_in' => $once ? $campaign->ID : false,
+				'queue__not_in' => $campaign->ID,
+				'orderby' => $autoresponder_meta['uservalue'],
+			));
 
 			foreach ( $subscribers as $subscriber ) {
 
-				$nextdate = strtotime( $subscriber->date ) + $send_offset - $timeoffset;
+				$nextdate = strtotime( $subscriber->{$autoresponder_meta['uservalue']} ) + $send_offset - $timeoffset;
 
 				// in the past already so get next date in future
 				if ( $nextdate - $now < 0 && ! $exact_date ) {
