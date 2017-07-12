@@ -878,8 +878,7 @@ class MailsterHelper {
 		// custom styles
 		$content = $this->add_mailster_styles( $content );
 
-		// //Inline CSS
-		// if ( $inline )
+		// Inline CSS
 		$content = $this->inline_style( $content );
 
 		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
@@ -922,10 +921,7 @@ class MailsterHelper {
 	public function inline_style( $content ) {
 
 		// get all style blocks
-		preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles );
-
-		// found!
-		if ( ! empty( $originalstyles[0] ) ) {
+		if ( preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles ) ) {
 
 			@error_reporting( E_ERROR | E_PARSE );
 			@ini_set( 'display_errors', '0' );
@@ -933,7 +929,7 @@ class MailsterHelper {
 			// strip media queries
 			foreach ( $originalstyles[2] as $i => $styleblock ) {
 				$mediaBlocks = $this->parseMediaBlocks( $styleblock );
-				foreach ( $mediaBlocks as $mediaBlock ) {
+				if ( ! empty( $mediaBlocks ) ) {
 					$originalstyles[2][ $i ] = str_replace( $mediaBlocks, '', $originalstyles[2][ $i ] );
 				}
 			}

@@ -2902,6 +2902,7 @@ jQuery(document).ready(function ($) {
 
 					$('#button-type-bar').find('a').eq(0).trigger('click');
 					buttonlabel.val($.trim(el.text())).focus().select();
+					buttonlink.val(current.element.attr('href'));
 					bar.find('ul.buttons').hide();
 				}
 

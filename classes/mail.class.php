@@ -370,15 +370,16 @@ class MailsterMail {
 	 * @param unknown $replace  (optional)
 	 * @param unknown $force    (optional)
 	 * @param unknown $file     (optional)
+	 * @param unknown $template (optional)
 	 * @return unknown
 	 */
-	public function send_notification( $content, $headline = null, $replace = array(), $force = false, $file = 'notification.html' ) {
+	public function send_notification( $content, $headline = null, $replace = array(), $force = false, $file = 'notification.html', $template = null ) {
 
 		if ( is_null( $headline ) ) {
 			$headline = $this->subject;
 		}
 
-		$template = mailster_option( 'default_template' );
+		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 
 		if ( $template ) {
 			$template = mailster( 'template', $template, $file );

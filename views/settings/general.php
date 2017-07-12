@@ -140,7 +140,7 @@
 		</p>
 		<p id="upload_country_db" class="hidden">
 			<input type="file" name="country_db_file"> <input type="submit" class="button" value="<?php esc_html_e( 'Upload', 'mailster' ) ?>" />
-			<br><span class="description"><?php esc_html_e( 'upload the GeoIPv6.dat you can find in the package here:', 'mailster' );?> <a href="http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz">http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz</a></span>
+			<br><span class="description"><?php esc_html_e( 'upload the GeoIPv6.dat you can find in the package here:', 'mailster' );?> <a href="https://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz">https://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz</a></span>
 		</p>
 
 		<input id="country_db_path" type="text" name="mailster_options[countries_db]" class="widefat" value="<?php echo mailster_option( 'countries_db' ) ?>" placeholder="<?php echo MAILSTER_UPLOAD_DIR . '/GeoIPv6.dat' ?>">
@@ -149,7 +149,7 @@
 		</p>
 		<p id="upload_city_db" class="hidden">
 			<input type="file" name="city_db_file"> <input type="submit" class="button" value="<?php esc_html_e( 'Upload', 'mailster' ) ?>" />
-			<br><span class="description"><?php esc_html_e( 'upload the GeoLiteCity.dat you can find in the package here:', 'mailster' );?> <a href="http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz">http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz</a></span>
+			<br><span class="description"><?php esc_html_e( 'upload the GeoLiteCity.dat you can find in the package here:', 'mailster' );?> <a href="https://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz">https://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz</a></span>
 		</p>
 		<p class="description"><?php esc_html_e( 'The city DB is about 12 MB. It can take a while to load it', 'mailster' );?></p>
 		<input id="city_db_path" type="text" name="mailster_options[cities_db]" class="widefat" value="<?php echo mailster_option( 'cities_db' ) ?>" placeholder="<?php echo MAILSTER_UPLOAD_DIR . '/GeoIPCity.dat' ?>">
