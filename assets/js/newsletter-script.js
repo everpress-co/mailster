@@ -680,6 +680,8 @@ jQuery(document).ready(function ($) {
 						.removeClass('operator-is-OR operator-is-AND')
 						.addClass('operator-is-' + $(this).val());
 
+				}).on('click', '.change-receivers', function () {
+					tb_show(mailsterL10n.save_template, '#TB_inline?x=1&width=680&height=480&inlineId=receivers-dialog', null);
 				});
 
 			$('#mailster_total').on('click', function () {

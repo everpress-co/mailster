@@ -26,7 +26,20 @@ class MailsterConditions {
 		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'jquery', 'mailster-select2' ), MAILSTER_VERSION, true );
 		wp_localize_script( 'mailster-conditions', 'mailsterL10n', array() );
 
+		if ( empty( $conditions ) ) {
+			$conditions = array();
+		}
+
 		include MAILSTER_DIR . 'views/conditions/conditions.php';
+
+	}
+
+	public function render( $conditions = array(), $operator = 'AND' ) {
+
+		if ( empty( $conditions ) ) {
+			$conditions = array();
+		}
+		include MAILSTER_DIR . 'views/conditions/render.php';
 
 	}
 
@@ -39,7 +52,7 @@ class MailsterConditions {
 
 	private function get_custom_fields() {
 		$custom_fields = mailster()->get_custom_fields( );
-		$custom_fields = wp_parse_args( array( 'firstname' => 'Firsname', 'lastname' => 'Sfsdf' ), (array) $custom_fields );
+		$custom_fields = wp_parse_args( array( 'firstname' => array( 'name' => mailster_text( 'firstname' ) ), 'lastname' => array( 'name' => mailster_text( 'lastname' ) ) ), (array) $custom_fields );
 
 		return $custom_fields;
 	}
@@ -139,6 +152,29 @@ class MailsterConditions {
 		}
 
 		return $operator;
+
+	}
+
+
+	private function nice_name( $string, $type = null ) {
+
+		switch ( $type ) {
+			case 'field':
+				if ( isset( $this->fields[ $string ] ) ) {
+					return $this->fields[ $string ];
+				}
+				break;
+			case 'operator':
+				if ( isset( $this->operators[ $string ] ) ) {
+					return $this->operators[ $string ];
+				}
+				break;
+			case 'value':
+				break;
+
+		}
+
+		return $string;
 
 	}
 

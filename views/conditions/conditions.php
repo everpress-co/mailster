@@ -12,9 +12,7 @@
 		$field = $condition['field'];
 		$field_operator = $this->get_field_operator( $condition['operator'] );
 		?>
-	<div class="mailster-conditions-group">
-
-		<div class="mailster-condition mailster-condition-operator-is-<?php echo 'AND' == $operator ? 'and' : 'or' ?>">
+		<div class="mailster-condition mailster-condition-operator-is-<?php echo 'AND' == $field_operator ? 'and' : 'or' ?>">
 			<div class="mailster-condition-operators">
 				<label class="mailster-condition-operator-and"><?php esc_attr_e( 'and', 'mailster' );?></label>
 				<label class="mailster-condition-operator-or"><?php esc_attr_e( 'or', 'mailster' );?></label>
@@ -69,7 +67,6 @@
 			include $path;
 		?>
 			</div>
-		</div>
 
 	</div>
 
