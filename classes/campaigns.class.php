@@ -133,16 +133,13 @@ class MailsterCampaigns {
 
 		$conditions = $this->meta( $campaign_id, 'list_conditions' );
 
-		$all_subscribers = mailster( 'subscribers' )->query(array(
+		$subscribers = mailster( 'subscribers' )->query(array(
 			'lists' => $lists,
 			'conditions' => $conditions,
 			'return_ids' => true,
 			'sent__not_in' => $meta['autoresponder']['once'] ? $campaign_id : false,
+			'include' => $subscriber_ids,
 		));
-
-		$subscribers = empty( $subscriber_ids )
-			? $all_subscribers
-			: array_values( array_intersect( $all_subscribers, is_array( $subscriber_ids ) ? $subscriber_ids : array( $subscriber_ids ) ) );
 
 		$timestamp = strtotime( '+ ' . $meta['autoresponder']['amount'] . ' ' . $meta['autoresponder']['unit'] );
 

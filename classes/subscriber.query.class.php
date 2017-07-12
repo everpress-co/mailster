@@ -10,36 +10,48 @@ class MailsterSubscriberQuery {
 		'select' => null,
 		'conditions' => null,
 		'status' => null,
-		'return_ids' => false,
-		'return_count' => false,
-		'limit' => null,
-		'offset' => null,
+		'having' => null,
 		'orderby' => null,
 		'order' => null,
-		'having' => null,
+		'limit' => null,
+		'offset' => null,
+
+		'return_ids' => false,
+		'return_count' => false,
 		'return_sql' => false,
-		'lists' => false,
-		'lists__not_in' => null,
+
+		'include' => null,
+		'exclude' => null,
+
 		'fields' => null,
 		'meta' => null,
+
+		'lists' => false,
+		'lists__not_in' => null,
+
 		'sent' => null,
 		'sent__not_in' => null,
 		'sent_since' => null,
 		'sent__not_since' => null,
+
 		'open' => null,
 		'open__not_in' => null,
 		'open_since' => null,
 		'open__not_since' => null,
+
 		'click' => null,
 		'click__not_in' => null,
 		'click_since' => null,
 		'click__not_since' => null,
 		'click_link' => null,
 		'click__not_link' => null,
+
 		'unsubscribe' => null,
 		'unsubscribe__not_in' => null,
+
 		'queue' => false,
 		'queue__not_in' => false,
+
 		's' => null,
 		'search_fields' => false,
 		'strict' => false,
@@ -114,6 +126,16 @@ class MailsterSubscriberQuery {
 		if ( $args['status'] && ! is_array( $args['status'] ) ) {
 			$args['status'] = explode( ',', $args['status'] );
 		}
+		if ( $args['include'] && ! is_array( $args['include'] ) ) {
+			$args['include'] = explode( ',', $args['include'] );
+		}
+			$args['include'] = $this->id_parse( $args['include'] );
+
+		if ( $args['exclude'] && ! is_array( $args['exclude'] ) ) {
+			$args['exclude'] = explode( ',', $args['exclude'] );
+		}
+			$args['exclude'] = $this->id_parse( $args['exclude'] );
+
 		if ( $args['select'] && ! is_array( $args['select'] ) ) {
 			$args['select'] = explode( ',', $args['select'] );
 		}
@@ -383,6 +405,14 @@ class MailsterSubscriberQuery {
 			$where .= ' AND subscribers.status IN (' . implode( ',', array_filter( $args['status'], 'is_numeric' ) ) . ')';
 		}
 
+		if ( $args['include'] ) {
+			$where .= ' AND subscribers.ID IN (' . implode( ',', array_filter( $args['include'], 'is_numeric' ) ) . ')';
+		}
+
+		if ( $args['exclude'] ) {
+			$where .= ' AND subscribers.ID NOT IN (' . implode( ',', array_filter( $args['exclude'], 'is_numeric' ) ) . ')';
+		}
+
 		if ( $args['lists__not_in'] ) {
 			$where .= ' AND lists_subscribers.list_id IS NULL';
 		}
@@ -436,11 +466,11 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $args['click_link'] ) {
-			$where .= ' AND links.link IN (\'' . implode( '\',\'', $args['click_link'] ) . '\')';
+			$where .= ' AND links.link IN ( \'' . implode( '\' , \'', $args['click_link'] ) . '\' )';
 		}
 
 		if ( $args['click__not_link'] ) {
-			$where .= ' AND links.link NOT IN (\'' . implode( '\',\'', $args['click__not_link'] ) . '\')';
+			$where .= ' AND links.link NOT IN ( \'' . implode( '\' , \'', $args['click__not_link'] ) . '\' )';
 		}
 
 		if ( $args['unsubscribe'] ) {
@@ -707,8 +737,13 @@ class MailsterSubscriberQuery {
 			error_log( $this->last_error );
 		}
 
-		// echo '<pre>' . print_r( $sql, true ) . '</pre>';
-		// echo '<pre>' . print_r( $this->last_error, true ) . '</pre>';
+		global $pagenow;
+		if ( in_array( $pagenow, array( 'admin-ajax.php', 'tools.php' ) ) ) {
+			echo '<pre>' . print_r( $sql, true ) . '</pre>';
+		}
+
+		echo $this->last_error;
+
 		mailster_cache_set( $cache_key, $result );
 
 		return $result;
@@ -785,6 +820,7 @@ class MailsterSubscriberQuery {
 				} elseif ( in_array( $field, $this->time_fields ) ) {
 					// $f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
 					$f = "subscribers.$field";
+					$value = $this->get_timestamp( $value );
 				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f = "`field_$field`.meta_value";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
@@ -901,7 +937,8 @@ class MailsterSubscriberQuery {
 				} elseif ( in_array( $field, $this->time_fields ) ) {
 					// $f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
 					$f = "subscribers.$field";
-					$value = "'$value'";
+					// $value = "'$value'";
+					$value = $this->get_timestamp( $value );
 				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f = "`field_$field`.meta_value";
 					$value = is_numeric( $value ) ? floatval( $value ) : "'$value'";
@@ -935,6 +972,7 @@ class MailsterSubscriberQuery {
 				} elseif ( in_array( $field, $this->time_fields ) ) {
 					// $f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
 					$f = "subscribers.$field";
+					$value = $this->get_timestamp( $value );
 				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f = "`field_$field`.meta_value";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
@@ -1057,6 +1095,30 @@ class MailsterSubscriberQuery {
 		}
 
 		return date( $format, $timestamp );
+	}
+
+	private function id_parse( $ids ) {
+
+		if ( empty( $ids ) ) {
+			return $ids;
+		}
+
+		$return = array();
+		foreach ( $ids as $id ) {
+			if ( false !== strpos( $id, '-' ) ) {
+				$splitted = explode( '-', $id );
+				$min = min( $splitted );
+				$max = max( $splitted );
+				for ( $i = $min; $i <= $max; $i++ ) {
+					$return[] = $i;
+				}
+			} else {
+				$return[] = $id;
+			}
+		}
+
+		return array_values( array_unique( $return ) );
+
 	}
 
 

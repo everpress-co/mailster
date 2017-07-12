@@ -144,13 +144,16 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $item->{'email'} . '</a>';
 				}
 
-					$stars = ( round( $item->rating / 10, 2 ) * 50 );
-					$full = max( 0, min( 5, floor( $stars ) ) );
-					$half = max( 0, min( 5, round( $stars - $full ) ) );
-					$empty = max( 0, min( 5, 5 - $full - $half ) );
-			return $html . '<div class="userrating" title="' . ( $item->rating * 100 ) . '%">' . str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
-				. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
-				. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty ) . '</div>';
+				$stars = ( round( $item->rating / 10, 2 ) * 50 );
+				$full = max( 0, min( 5, floor( $stars ) ) );
+				$half = max( 0, min( 5, round( $stars - $full ) ) );
+				$empty = max( 0, min( 5, 5 - $full - $half ) );
+
+				return $html . '<div class="userrating" title="' . ( $item->rating * 100 ) . '%">'
+					. str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
+					. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
+					. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty )
+					. '</div>';
 
 			case 'lists':
 
