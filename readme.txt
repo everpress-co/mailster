@@ -1,11 +1,11 @@
 === Mailster - Email Newsletter Plugin for WordPress ===
-Contributors: revaxarts
-Tags: mailster, mymail, newsletter, email, revaxarts
+Contributors: EverPress, revaxarts
+Tags: mailster, mymail, newsletter, email, email marketing
 Requires at least: 3.8
 Tested up to: 4.8
 Stable tag: 2.2.8
-Author: revaxarts
-Author URI: https://mailster.co
+Author: EverPress
+Author URI: https://everpress.io
 
 == Description ==
 
@@ -61,7 +61,7 @@ These Templates are made for the Mailster Newsletter Plugin. They have been full
 
 If you have further questions please visit our [knowledge base](https://kb.mailster.co)
 
-Xaver Birsak – https://revaxarts.com
+Xaver Birsak – https://everpress.io
 
 
 = Linus =
@@ -85,8 +85,13 @@ Xaver Birsak – https://revaxarts.com
 = Version 2.2.8 =
 
 * fixed: radio and dropdown values weren't populated on profile in some cases
+* fixed: wp_mail now supports coma separated emails if used by Mailster
+* fixed: PHP notice with autoresponders on PHP 7.1
+* fixed: link for buttons were pre filled with the URL from the previous selected button
 * improved: get referer on form signup
 * added: option for legacy POP3 method on bounce settings
+* added: 'mailster_get_signups_sql', 'mailster_queue_campaign_subscriber_data' filters
+* changed: 'mailster_unsubscribe_link' hook position and added campaign_id to arguments
 
 = Version 2.2.7 =
 

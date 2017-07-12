@@ -1,6 +1,6 @@
 <?php
 
-//modified for the Mailster Newsletter plugin by revaxarts
+// modified for the Mailster Newsletter plugin by EverPress
 
 /* geoipcity.inc
  *

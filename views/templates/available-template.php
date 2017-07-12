@@ -47,9 +47,9 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 		</div>
 		<div class="action-links">
 			<ul>
-				<?php if ( ! $data['is_free'] || ! empty( $licensecode ) ) : ?>
+				<?php if ( $data['is_free'] || ! empty( $licensecode ) ) : ?>
 
-					<?php if ( $data['is_free'] ) : ?>
+					<?php if ( ! $data['is_free'] ) : ?>
 
 						<li>
 							<a title="<?php esc_html_e( 'activate with licensecode', 'mailster' );?>" class="activate button" href="edit.php?post_type=newsletter&page=mailster_templates&action=license&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'license-' . $slug ) ?>" data-slug="<?php echo $slug ?>" data-license="<?php echo $licensecode ?>"> <?php esc_html_e( 'Change Code', 'mailster' );?></a>
