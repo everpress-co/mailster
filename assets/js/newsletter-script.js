@@ -137,6 +137,7 @@ jQuery(document).ready(function ($) {
 				_win.trigger('resize');
 			});
 
+		$('select.select2').show().select2();
 
 		if (!_disabled) {
 
@@ -682,6 +683,7 @@ jQuery(document).ready(function ($) {
 
 				}).on('click', '.change-receivers', function () {
 					tb_show(mailsterL10n.save_template, '#TB_inline?x=1&width=680&height=480&inlineId=receivers-dialog', null);
+					return false;
 				});
 
 			$('#mailster_total').on('click', function () {

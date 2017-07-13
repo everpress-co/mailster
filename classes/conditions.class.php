@@ -163,10 +163,19 @@ class MailsterConditions {
 				if ( isset( $this->fields[ $string ] ) ) {
 					return $this->fields[ $string ];
 				}
+				if ( isset( $this->custom_fields[ $string ] ) ) {
+					return $this->custom_fields[ $string ]['name'];
+				}
 				break;
 			case 'operator':
 				if ( isset( $this->operators[ $string ] ) ) {
 					return $this->operators[ $string ];
+				}
+				if ( 'AND' == $string ) {
+					return __( 'and', 'mailster' );
+				}
+				if ( 'OR' == $string ) {
+					return __( 'or', 'mailster' );
 				}
 				break;
 			case 'value':
