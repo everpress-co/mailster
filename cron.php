@@ -110,7 +110,7 @@ var a = <?php echo floor( $interval ) ?>,
 
 		if(x<=0){
 			o = '&#x27F2;';
-			p = <?php esc_html_e( 'progressing', 'mailster' ); ?>;
+			p = '<?php esc_html_e( 'progressing', 'mailster' ); ?>';
 			clearInterval(f);
 		}
 	document.title = p+' '+c;
