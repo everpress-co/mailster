@@ -2,30 +2,51 @@ jQuery(document).ready(function ($) {
 
 	"use strict"
 
-	//$("select").select2();
+	var conditions = $('.mailster-conditions'),
+		cond = $('.mailster-condition'),
+		condition,
+		value_fields;
 
-	$('.mailster-conditions')
+	cond.eq(0).appendTo($('.mailster-condition-container'));
+
+	$('.mailster-conditions-thickbox')
 		.on('click', '.add-condition', function () {
 			var cond = $('.mailster-condition'),
-				id = cond.length,
-				clone = cond.last().clone();
+				id = cond.length - 1,
+				clone = cond.eq(0).clone();
 
-			clone.hide().removeAttr('id').insertAfter(cond.last()).slideDown(200);
+			clone.hide().removeAttr('id').appendTo(conditions).slideDown(200);
 			$.each(clone.find('input, select'), function () {
 				var name = $(this).val('').attr('name');
-				$(this).attr('name', name.replace(/\[\d+\]/, '[' + id + ']'));
+				$(this).attr('name', name.replace(/\[\d+\]/, '[' + id + ']')).trigger('change');
 			});
-
-			console.log($('.mailster-conditions').serialize());
-
-			//serialize();
+			clone.find('.datepicker').datepicker();
+			clone.find('select.select2').select2();
+			clone.find('.condition-field').focus();
 
 		})
+
+
+	conditions
 		.on('click', '.remove-condition', function () {
 			$(this).parent().slideUp(200, function () {
 				$(this).remove();
 			});
-		});
+		})
+		.on('change', '.condition-field', function () {
+
+			condition = $(this).closest('.mailster-condition');
+
+			var value = $(this).val();
+			condition.find('div.mailster-conditions-value-field').hide().find('.condition-value').prop('disabled', true);
+
+			if (condition.find('div.mailster-conditions-value-field[data-fields*="' + value + '"]').show().find('.condition-value').prop('disabled', false).focus().select().length) {} else {
+				condition.find('div.mailster-conditions-value-field-default').show().find('.condition-value').prop('disabled', false).focus().select();
+			}
+
+		})
+		.on('change', '.condition-operator', function () {})
+		.on('change', '.condition-value', function () {});
 
 	function serialize() {
 		var str = 'conditions=';

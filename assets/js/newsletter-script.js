@@ -137,7 +137,7 @@ jQuery(document).ready(function ($) {
 				_win.trigger('resize');
 			});
 
-		$('select.select2').show().select2();
+		//$('select.select2').show().select2();
 
 		if (!_disabled) {
 
@@ -444,7 +444,7 @@ jQuery(document).ready(function ($) {
 				});
 
 			if (typeof jQuery.datepicker == 'object') {
-				$('input.datepicker').datepicker({
+				$('input._datepicker').datepicker({
 					dateFormat: 'yy-mm-dd',
 					minDate: new Date(),
 					firstDay: mailsterL10n.start_of_week,

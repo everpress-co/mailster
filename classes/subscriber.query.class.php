@@ -8,13 +8,15 @@ class MailsterSubscriberQuery {
 
 	private $defaults = array(
 		'select' => null,
-		'conditions' => null,
 		'status' => null,
 		'having' => null,
 		'orderby' => null,
 		'order' => null,
 		'limit' => null,
 		'offset' => null,
+
+		'operator' => 'OR',
+		'conditions' => null,
 
 		'return_ids' => false,
 		'return_count' => false,
@@ -144,6 +146,9 @@ class MailsterSubscriberQuery {
 		}
 		if ( $args['meta'] && ! is_array( $args['meta'] ) ) {
 			$args['meta'] = explode( ',', $args['meta'] );
+		}
+		if ( 'OR' != $args['operator'] ) {
+			$args['operator'] = 'AND' === strtoupper( $args['operator'] ) ? 'AND' : 'OR' ;
 		}
 		if ( $args['orderby'] && ! is_array( $args['orderby'] ) ) {
 			$args['orderby'] = explode( ',', $args['orderby'] );
@@ -355,13 +360,13 @@ class MailsterSubscriberQuery {
 			}
 		}
 
-		if ( ! empty( $args['conditions']['conditions'] ) && is_array( $args['conditions'] ) ) {
+		if ( $args['conditions'] ) {
 
-			if ( ! isset( $args['conditions']['conditions'][0]['conditions'] ) ) {
-				$args['conditions']['conditions'] = array( array( 'operator' => $args['conditions']['operator'], 'conditions' => $args['conditions']['conditions'] ) );
+			if ( ! isset( $args['conditions'][0]['conditions'] ) ) {
+				$args['conditions'] = array( array( 'operator' => $args['operator'], 'conditions' => $args['conditions'] ) );
 			}
 
-			foreach ( $args['conditions']['conditions'] as $i => $conditions ) {
+			foreach ( $args['conditions'] as $i => $conditions ) {
 
 				foreach ( $conditions['conditions'] as $options ) {
 
@@ -388,7 +393,7 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( ! empty( $joins ) ) {
-			$join .= "\n" . implode( "\n", array_unique( $joins ) );
+			$join .= ' ' . implode( "\n", array_unique( $joins ) );
 		}
 
 		$where = ' WHERE 1=1';
@@ -489,12 +494,12 @@ class MailsterSubscriberQuery {
 			$where .= ' AND queue.subscriber_id IS NULL';
 		}
 
-		if ( ! empty( $args['conditions']['conditions'] ) && is_array( $args['conditions'] ) ) {
+		if ( $args['conditions'] ) {
 
 			$cond = array();
-			$operator = $args['conditions']['operator'];
+			$operator = $args['operator'];
 
-			foreach ( $args['conditions']['conditions'] as $i => $conditions ) {
+			foreach ( $args['conditions'] as $i => $conditions ) {
 
 				$sub_cond = array();
 				$sub_operator = $conditions['operator'];

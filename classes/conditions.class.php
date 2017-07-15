@@ -89,7 +89,18 @@ class MailsterConditions {
 	}
 
 	private function get_meta_fields() {
-		$meta_fields = array( 'form', 'referer', 'client', 'clienttype', 'coords', 'geo', 'lang', 'timeoffset', 'lat', 'lng' );
+		$meta_fields = array(
+			'form' => __( 'Form', 'mailster' ),
+			'referer' => __( 'Referer', 'mailster' ),
+			'client' => __( 'Client', 'mailster' ),
+			'clienttype' => __( 'Clienttype', 'mailster' ),
+			'coords' => __( 'Coords', 'mailster' ),
+			'geo' => __( 'Geo', 'mailster' ),
+			'lang' => __( 'Language', 'mailster' ),
+			'timeoffset' => __( 'Timeoffset', 'mailster' ),
+			'lat' => __( 'Latitude', 'mailster' ),
+			'lng' => __( 'Longitude', 'mailster' ),
+		);
 
 		return $meta_fields;
 	}
@@ -102,6 +113,19 @@ class MailsterConditions {
 		return $wp_user_meta;
 	}
 
+	private function get_campaign_related() {
+		return array(
+			'sent' => __( 'has received', 'mailster' ),
+			'sent__not_in' => __( 'has not receiverd', 'mailster' ),
+			'open' => __( 'has opened', 'mailster' ),
+			'open__not_in' => __( 'has not opened', 'mailster' ),
+			'click' => __( 'has clicked', 'mailster' ),
+			'click__not_in' => __( 'has not clicked', 'mailster' ),
+			'click_link' => __( 'clicked link', 'mailster' ),
+			'click_link__not_in' => __( 'didn\'t clicked link', 'mailster' ),
+		);
+
+	}
 	private function get_operators() {
 		return array(
 			'is' => __( 'is', 'mailster' ),

@@ -14,28 +14,16 @@ $total = $this->get_totals( $post->ID );
 ?>
 <div>
 	<div id="receivers-dialog" style="display:none;">
-		<div>
-			<div id="list-checkboxes">
-			<label><input type="checkbox" id="all_lists"> <?php esc_html_e( 'toggle all', 'mailster' );?></label>
-				<div>
-					<ul class="default">
-						<?php
-						$checked = wp_parse_args( isset( $_GET['lists'] ) ? $_GET['lists'] : array(), $this->post_data['lists'] );
-
-						mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', true, $checked );
-
-						?>
-					</ul>
-
-				</div>
+		<div class="mailster-conditions-thickbox">
+			<div class="inner">
+				<p class="description">Define the conditions for your Receivers here</p>
+				<?php mailster( 'conditions' )->view( isset( $listdata['conditions'] ) ? $listdata['conditions'] : array(), $listdata['operator'] ); ?>
 			</div>
-			<ul>
-				<li><label><input id="ignore_lists" type="checkbox" name="mailster_data[ignore_lists]" value="1" <?php checked( $ignore_lists ) ?>> <?php esc_html_e( 'List doesn\'t matter', 'mailster' );?> </label></li>
-			</ul>
-			<?php mailster( 'conditions' )->view( isset( $listdata['conditions'] ) ? $listdata['conditions'] : array(), $listdata['operator'] ); ?>
-			<div class="buttons clearfix">
+			<div class="foot">
+				<p class="description alignleft"></p>
 				<button class="button button-primary save"><?php esc_html_e( 'Save', 'mailster' ) ?></button>
 				<button class="button cancel"><?php esc_html_e( 'Cancel', 'mailster' ) ?></button>
+				<span class="spinner" id="conditions-ajax-loading"></span>
 			</div>
 		</div>
 	</div>
@@ -50,6 +38,13 @@ $total = $this->get_totals( $post->ID );
 			$checked = wp_parse_args( isset( $_GET['lists'] ) ? $_GET['lists'] : array(), $this->post_data['lists'] );
 
 			mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', true, $checked, 'select' );
+?>
+			<label><input type="checkbox" id="all_lists"> <?php esc_html_e( 'toggle all', 'mailster' );?></label>
+			<ul>
+				<li><label><input id="ignore_lists" type="checkbox" name="mailster_data[ignore_lists]" value="1" <?php checked( $ignore_lists ) ?>> <?php esc_html_e( 'List doesn\'t matter', 'mailster' );?> </label></li>
+			</ul>
+
+<?php
 
 		else :
 
@@ -81,8 +76,8 @@ $total = $this->get_totals( $post->ID );
 	<?php mailster( 'conditions' )->render( isset( $listdata['conditions'] ) ? $listdata['conditions'] : array(), $listdata['operator'] ); ?>
 	</div>
 
-	<p class="">
-		<button class="button change-receivers"><?php esc_html_e( 'Change Conditions','mailster' ); ?></button>
+	<p class="textright">
+		<button class="button button-small change-receivers"><?php esc_html_e( 'Change Conditions','mailster' ); ?></button>
 	</p>
 
 </div>
