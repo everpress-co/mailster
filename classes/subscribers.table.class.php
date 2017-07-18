@@ -353,6 +353,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		}
 
 		$items = mailster( 'subscribers' )->query( wp_parse_args( $args, array(
+			'calc_found_rows' => true,
 			'orderby' => $orderby,
 			'order' => $order,
 			'fields' => 'all',
@@ -361,8 +362,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		)) );
 
 		$this->items = $items;
-
-		$totalitems = mailster( 'subscribers' )->query( wp_parse_args( 'return_count=1', $args ) );
+		$totalitems = $wpdb->get_var( 'SELECT FOUND_ROWS();' );
 
 		$totalpages = ceil( $totalitems / $limit );
 

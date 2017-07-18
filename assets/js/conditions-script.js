@@ -39,13 +39,19 @@ jQuery(document).ready(function ($) {
 
 			var value = $(this).val();
 			condition.find('div.mailster-conditions-value-field').hide().find('.condition-value').prop('disabled', true);
+			condition.find('div.mailster-conditions-operator-field').hide().find('.condition-operator').prop('disabled', true);
 
 			if (condition.find('div.mailster-conditions-value-field[data-fields*="' + value + '"]').show().find('.condition-value').prop('disabled', false).focus().select().length) {} else {
 				condition.find('div.mailster-conditions-value-field-default').show().find('.condition-value').prop('disabled', false).focus().select();
 			}
+			if (condition.find('div.mailster-conditions-operator-field[data-fields*="' + value + '"]').show().find('.condition-operator').prop('disabled', false).length) {} else {
+				condition.find('div.mailster-conditions-operator-field-default').show().find('.condition-operator').prop('disabled', false);
+			}
 
 		})
-		.on('change', '.condition-operator', function () {})
+		.on('change', '.condition-operator', function () {
+
+		})
 		.on('change', '.condition-value', function () {});
 
 	function serialize() {

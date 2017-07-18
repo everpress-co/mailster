@@ -28,7 +28,7 @@
 	float: right;
 	margin-left: 6px;
 }
-.mailster-conditions, .mailster-conditions .mailster-condition, .mailster-conditions .mailster-condition-empty{
+.mailster-conditions .mailster-condition, .mailster-conditions .mailster-condition-empty{
 	border:1px solid #DFDFDF;
 	-webkit-border-radius:3px;
 	border-radius:3px;
@@ -40,7 +40,7 @@
 }
 .mailster-conditions{
 	margin: 10px 0;
-	height: 70%;
+	height: 60%;
 	overflow: auto;
 }
 .mailster-conditions:empty:before{
@@ -60,13 +60,30 @@
 .mailster-conditions .mailster-condition-head select{
 	_width: 48%;
 }
-.mailster-conditions .mailster-conditions-value-fields select, .mailster-conditions .mailster-conditions-value-fields input{
-	min-width: 48%;
+.mailster-conditions .mailster-condition:after{
+	display: table;
+	content:'';
+	clear: both;
+	float: none;
+}
+.mailster-conditions-field-fields, .mailster-conditions-operator-fields, .mailster-conditions-value-fields{
+	float: left;
+	max-width: 48%;
+	padding-right: 4px;
+}
+.mailster-conditions-operator-fields{
+	max-width: 140px;
+}
+.mailster-conditions-value-fields{
+	padding: 2px 0;
+}
+.mailster-conditions select, .mailster-conditions input{
+	max-width: 100%
 }
 .mailster-conditions .mailster-condition{
 	background-color: #fff;
 	position: relative;
-	margin: 8px 0 12px;
+	margin: 2px 0 16px;
 }
 .mailster-conditions .mailster-condition-empty{
 	background-color: none;
@@ -101,6 +118,7 @@
 	text-transform: uppercase;
 	color: #999;
 	font-size: 15px;
+	line-height: 1em;
 }
 .mailster-conditions .mailster-condition-operator-is-and label.mailster-condition-operator-or,
 .mailster-conditions .mailster-condition-operator-is-or label.mailster-condition-operator-and

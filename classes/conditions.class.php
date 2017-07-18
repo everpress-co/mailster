@@ -106,7 +106,7 @@ class MailsterConditions {
 	}
 
 	private function get_wp_user_meta() {
-		$wp_user_meta = wp_parse_args( array( 'wp_user_level', 'wp_capabilities' ), mailster( 'helper' )->get_wpuser_meta_fields() );
+		$wp_user_meta = wp_parse_args( array( 'wp_user_level' => 'User Lever', 'wp_capabilities' => 'User Role' ), mailster( 'helper' )->get_wpuser_meta_fields() );
 		// removing custom fields from wp user meta to prevent conflicts
 		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), $this->custom_fields ) );
 
