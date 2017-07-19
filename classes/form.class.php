@@ -666,8 +666,8 @@ class MailsterForm {
 
 		global $post;
 		$form_id = '';
-		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#', $post->post_content, $form_id ) ) {
-			$form_id = intval( $form_id[1] );
+		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#i', $post->post_content, $matches ) ) {
+			$form_id = intval( $matches[1] );
 			$this->id( $form_id );
 		}
 

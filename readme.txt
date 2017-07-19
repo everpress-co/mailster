@@ -89,6 +89,8 @@ Xaver Birsak – https://everpress.io
 * fixed: PHP notice with autoresponders on PHP 7.1
 * fixed: link for buttons were pre filled with the URL from the previous selected button
 * fixed: PHP notices on Cron lock
+* fixed: issue with defined constants if GEO library is loaded in a third party plugin
+* improved: form profile compatibility with certain themes
 * improved: get referer on form signup
 * improved: pre cache queries on autoresponder overview
 * added: option for legacy POP3 method on bounce settings
