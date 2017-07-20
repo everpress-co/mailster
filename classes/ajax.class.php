@@ -593,7 +593,14 @@ class MailsterAjax {
 				$mail->add_header( 'X-Mailster-Campaign', $ID );
 				$mail->add_header( 'X-Mailster-ID', $MID );
 
-				$listunsubscribe = '<' . $unsubscribelink . '>';
+				$listunsubscribe = '';
+				if ( $mail->bouncemail ) {
+					$listunsubscribe_mail = $mail->bouncemail;
+					$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
+					$listunsubscribe_body = "X-Mailster: $mail->hash\nX-Mailster-Campaign: $ID\nX-Mailster-ID: $MID\n\n";
+					$listunsubscribe .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
+				}
+				$listunsubscribe .= '<' . $unsubscribelink . '>';
 
 				$mail->add_header( 'List-Unsubscribe', $listunsubscribe );
 

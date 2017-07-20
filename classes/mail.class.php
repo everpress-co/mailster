@@ -338,7 +338,7 @@ class MailsterMail {
 	 * @param unknown $value
 	 */
 	public function add_header( $key, $value ) {
-		$this->headers[ $key ] = (string) $value;
+		$this->headers[ $key ] = str_replace( array( "\n", ' ' ), array( '%0D%0A', '%20' ), (string) $value );
 	}
 
 

@@ -79,7 +79,14 @@ class MailsterBounceHandler {
 
 			$bouncehandler = new Bouncehandler();
 			$bounceresult = $bouncehandler->parse_email( $message );
-			$bounceresult = (object) $bounceresult[0];
+
+			if ( ! empty( $bounceresult ) ) {
+				$bounceresult = (object) $bounceresult[0];
+				$action = $bounceresult->action;
+				$status = $bounceresult->status;
+			} else {
+				$action = 'unsubscribe';
+			}
 
 			$subscriber = mailster( 'subscribers' )->get_by_hash( $hash[2], false );
 			$campaign = ! empty( $camp ) ? mailster( 'campaigns' )->get( intval( $camp[2] ) ) : null;
@@ -87,19 +94,23 @@ class MailsterBounceHandler {
 			if ( $subscriber ) {
 
 				$campaign_id = $campaign ? $campaign->ID : 0;
-				switch ( $bounceresult->action ) {
+				switch ( $action ) {
 					case 'success':
 					break;
 
+					case 'unsubscribe':
+						// unsubscribe
+						mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $campaign_id );
+					break;
 					case 'failed':
 						// hardbounce
-						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, true, $bounceresult->status );
+						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, true, $status );
 					break;
 
 					case 'transient':
 					default:
 						// softbounce
-						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, false, $bounceresult->status );
+						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, false, $status );
 
 				}
 			}
