@@ -1322,7 +1322,7 @@ class MailsterHelper {
 
 		} else {
 			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
-			$htmlconverter = new \Html2Text\Html2Text( $html, array( 'width' => 200, 'do_links' => 'table' ) );
+			$htmlconverter = new \MailsterHtml2Text\Html2Text( $html, array( 'width' => 200, 'do_links' => 'table' ) );
 
 			$text = trim( $htmlconverter->get_text() );
 			$text = preg_replace( '/\s*$^\s*/mu', "\n\n", $text );

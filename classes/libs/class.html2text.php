@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  */
 
-namespace Html2Text;
+namespace MailsterHtml2Text;
 
 class Html2Text {
 

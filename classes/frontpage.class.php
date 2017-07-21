@@ -251,7 +251,7 @@ class MailsterFrontpage {
 
 		} elseif ( isset( $wp->query_vars['_mailster_page'] ) ) {
 
-			$this->do_mailster_require_filesystem();
+			$this->do_homepage();
 
 		} else {
 
@@ -380,7 +380,7 @@ class MailsterFrontpage {
 	}
 
 
-	private function do_mailster_require_filesystem() {
+	private function do_homepage() {
 
 		global $wp;
 
