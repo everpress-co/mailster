@@ -72,10 +72,13 @@ jQuery(document).ready(function ($) {
 				progressbar.width(((++tests_run) / response.total * 100) + '%');
 				testinfo.html(sprintf(mailsterL10n.running_test, tests_run, response.total, response.current));
 			} else {
-				start_button.html(mailsterL10n.restart_test).show();
-				progress.hide();
-				progressbar.width(0);
-				testinfo.html(sprintf(mailsterL10n.tests_finished, errors.error, errors.warning, errors.notice));
+				progressbar.width('100%');
+				setTimeout(function () {
+					start_button.html(mailsterL10n.restart_test).show();
+					progress.hide();
+					progressbar.width(0);
+					testinfo.html(sprintf(mailsterL10n.tests_finished, errors.error, errors.warning, errors.notice));
+				}, 500);
 			}
 
 			if (response.nexttest) {
