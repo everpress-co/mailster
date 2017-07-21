@@ -1051,7 +1051,7 @@ class MailsterForms {
 			$i = 100;
 
 			foreach ( $result as $row ) {
-				preg_match_all( '#\[newsletter_signup_form((.*)id="?(\d+)"?)?#', $row->post_content, $matches );
+				preg_match_all( '#\[newsletter_signup_form((.*)id="?(\d+)"?)?#i', $row->post_content, $matches );
 				foreach ( $matches[3] as $found_form_id ) {
 					if ( ! $found_form_id ) {
 						$found_form_id = 0;

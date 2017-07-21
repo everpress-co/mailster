@@ -251,7 +251,7 @@ class MailsterFrontpage {
 
 		} elseif ( isset( $wp->query_vars['_mailster_page'] ) ) {
 
-			$this->do_mailster_require_filesystem();
+			$this->do_homepage();
 
 		} else {
 
@@ -380,7 +380,7 @@ class MailsterFrontpage {
 	}
 
 
-	private function do_mailster_require_filesystem() {
+	private function do_homepage() {
 
 		global $wp;
 
@@ -850,22 +850,26 @@ class MailsterFrontpage {
 
 				$form = mailster( 'form' )->id( mailster_option( 'profile_form', 1 ) );
 				$form->is_profile();
-			return $form->render();
+
+				return $form->render( false );
 
 			break;
 
 			case 'unsubscribe':
 
 				$pattern = '\[(\[?)(newsletter_unsubscribe)(?![\w-])([^\]\/]*(?:\/(?!\])[^\]\/]*)*?)(?:(\/)\]|\](?:([^\[]*+(?:\[(?!\/\2\])[^\[]*+)*+)\[\/\2\])?)(\]?)';
-
+				$return = '';
 				if ( preg_match( '/' . $pattern . '/s', $content, $matches ) ) {
-					echo do_shortcode( wpautop( $matches[5] ) );
+					$return .= do_shortcode( wpautop( $matches[5] ) );
 				}
 
 				$form = mailster( 'form' );
 				$form->is_unsubscribe();
 				$form->campaign_id( isset( $wp->query_vars['_mailster'] ) ? $wp->query_vars['_mailster'] : $wp->query_vars['_mailster_extra'] );
-			return $form->render();
+
+				$return .= $form->render( false );
+
+				return $return;
 
 			break;
 

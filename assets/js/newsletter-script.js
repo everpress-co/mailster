@@ -2871,6 +2871,7 @@ jQuery(document).ready(function ($) {
 
 					$('#button-type-bar').find('a').eq(0).trigger('click');
 					buttonlabel.val($.trim(el.text())).focus().select();
+					buttonlink.val(current.element.attr('href'));
 					bar.find('ul.buttons').hide();
 				}
 
@@ -4010,12 +4011,12 @@ jQuery(document).ready(function ($) {
 
 	function _time() {
 
-		var t, x, h, m, usertime = new Date(),
+		var t, x, h, m, l, usertime = new Date(),
 			elements = $('.time'),
 			deliverytime = $('.deliverytime').eq(0),
 			activecheck = $('#mailster_data_active'),
 			servertime = parseInt(elements.data('timestamp'), 10) * 1000,
-			seconds = true,
+			seconds = false,
 			offset = servertime - usertime.getTime() + (usertime.getTimezoneOffset() * 60000);
 
 		var delay = (seconds) ? 1000 : 20000;
@@ -4033,7 +4034,8 @@ jQuery(document).ready(function ($) {
 			x.push(t.getHours());
 			x.push(t.getMinutes());
 			if (seconds) x.push(t.getSeconds());
-			for (var i = 0; i < 3; i++) {
+			l = x.length;
+			for (var i = 0; i < l; i++) {
 				x[i] = zero(x[i]);
 			};
 			elements.html(x.join('<span class="blink">:</span>'));
@@ -4043,7 +4045,10 @@ jQuery(document).ready(function ($) {
 		}
 
 		function zero(value) {
-			return (value < 10) ? '0' + value : value;
+			if (value < 10) {
+				value = '0' + value;
+			}
+			return value;
 		}
 
 		set();

@@ -464,15 +464,18 @@ class MailsterCampaigns {
 	public function preload( $query ) {
 
 		global $wp_query;
-		$ids = wp_list_pluck( $wp_query->posts, 'ID' );
-		if ( empty( $ids ) ) {
+
+		if ( isset( $wp_query->query['post_status'] ) && 'autoresponder' == $wp_query->query['post_status'] ) {
 			return;
 		}
+		if ( empty( $wp_query->posts ) ) {
+			return;
+		}
+		$ids = wp_list_pluck( $wp_query->posts, 'ID' );
 
 		// preload meta from the displayed campaigns
 		$meta = $this->meta( $ids );
 		mailster( 'actions' )->get_by_campaign( $ids );
-
 	}
 
 
@@ -1776,7 +1779,7 @@ class MailsterCampaigns {
 			return $defaults;
 		}
 
-		$sql = "SELECT post_id AS ID, REPLACE(meta_key, '_mailster_', '') AS meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key LIKE '_mailster_%'";
+		$sql = "SELECT post_id AS ID, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key LIKE '_mailster_%'";
 
 		if ( isset( $ids ) ) {
 			$sql .= ' AND post_id IN (' . implode( ',', array_filter( $ids, 'is_numeric' ) ) . ')';
@@ -1789,11 +1792,8 @@ class MailsterCampaigns {
 				$meta[ $metadata->ID ] = $defaults;
 			}
 
-			$meta[ $metadata->ID ][ $metadata->meta_key ] = $metadata->meta_value;
-			// $meta = $row;
-			// $lists = explode('|', $row['lists'] );
-			// array_shift($lists);
-			// $meta[$metadata->ID]['lists'] = $lists;
+			$meta[ $metadata->ID ][ str_replace( '_mailster_', '', $metadata->meta_key ) ] = $metadata->meta_value;
+
 			if ( ! empty( $meta[ $metadata->ID ]['lists'] ) ) {
 				$meta[ $metadata->ID ]['lists'] = maybe_unserialize( $meta[ $metadata->ID ]['lists'] );
 			}

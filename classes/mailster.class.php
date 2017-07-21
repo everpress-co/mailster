@@ -1124,6 +1124,8 @@ class Mailster {
 				$this->dbstructure();
 				mailster( 'helper' )->mkdir();
 				update_option( 'mailster', time() );
+				update_option( 'mailster_license', '' );
+				update_option( 'mailster_username', '' );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 				if ( ! is_network_admin() ) {
@@ -1822,6 +1824,8 @@ class Mailster {
 		$mail->from_name = apply_filters( 'wp_mail_from_name', mailster_option( 'from_name' ) );
 
 		$mail->apply_raw_headers( $headers );
+
+		$to = array_map( 'trim', explode( ',', $to ) );
 
 		$mail->to = $to;
 		$mail->message = $message;

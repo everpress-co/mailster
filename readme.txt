@@ -85,7 +85,15 @@ Xaver Birsak – https://everpress.io
 = Version 2.2.8 =
 
 * fixed: radio and dropdown values weren't populated on profile in some cases
+* fixed: wp_mail now supports coma separated emails if used by Mailster
+* fixed: PHP notice with autoresponders on PHP 7.1
+* fixed: link for buttons were pre filled with the URL from the previous selected button
+* fixed: PHP notices on Cron lock
+* fixed: issue with defined constants if GEO library is loaded in a third party plugin
+* improved: using SQL_CALC_FOUND_ROWS on subscribers overview to speed up queries
+* improved: form profile compatibility with certain themes
 * improved: get referer on form signup
+* improved: pre cache queries on autoresponder overview
 * added: option for legacy POP3 method on bounce settings
 * added: 'mailster_get_signups_sql', 'mailster_queue_campaign_subscriber_data' filters
 * changed: 'mailster_unsubscribe_link' hook position and added campaign_id to arguments

@@ -395,8 +395,6 @@ class MailsterQueue {
 
 				$sql .= $wpdb->prepare( ' AND a.signup >= %d', $meta['timestamp'] );
 
-				$to = $now - $offset + 3600;
-
 				$sql .= ' AND a.status = 1 AND b.subscriber_id IS NULL';
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
@@ -408,7 +406,7 @@ class MailsterQueue {
 					$sql .= ' AND ab.list_id IN(' . implode( ', ', $meta['lists'] ) . ')';
 				}
 
-				$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $to );
+				$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $now + 3600 );
 
 				if ( $subscribers = $wpdb->get_results( $sql ) ) {
 					$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
@@ -418,21 +416,19 @@ class MailsterQueue {
 				}
 			} elseif ( 'mailster_subscriber_unsubscribed' == $autoresponder_meta['action'] ) {
 
-					$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
+				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 
-					$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(b.timestamp) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.type = 4 LEFT JOIN {$wpdb->prefix}mailster_actions AS c ON a.ID = c.subscriber_id AND c.type = 1 AND c.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
+				$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(b.timestamp) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.type = 4 LEFT JOIN {$wpdb->prefix}mailster_actions AS c ON a.ID = c.subscriber_id AND c.type = 1 AND c.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
 					$sql .= mailster( 'campaigns' )->get_sql_join_by_condition( $meta['list_conditions'] );
 				}
 
-					$sql .= ' WHERE 1';
+				$sql .= ' WHERE 1';
 
-					$sql .= $wpdb->prepare( ' AND b.timestamp >= %d', $meta['timestamp'] );
+				$sql .= $wpdb->prepare( ' AND b.timestamp >= %d', $meta['timestamp'] );
 
-					$to = $now - $offset + 3600;
-
-					$sql .= ' AND a.status = 2 AND b.subscriber_id IS NOT NULL AND c.timestamp IS NULL';
+				$sql .= ' AND a.status = 2 AND b.subscriber_id IS NOT NULL AND c.timestamp IS NULL';
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
 					$sql .= mailster( 'campaigns' )->get_sql_by_condition( $meta['list_conditions'] );
@@ -443,7 +439,7 @@ class MailsterQueue {
 					$sql .= ' AND ab.list_id IN(' . implode( ', ', $meta['lists'] ) . ')';
 				}
 
-					$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $to );
+				$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $now + 3600 );
 
 				if ( $subscribers = $wpdb->get_results( $sql ) ) {
 

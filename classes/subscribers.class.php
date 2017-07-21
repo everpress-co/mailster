@@ -2202,9 +2202,9 @@ class MailsterSubscribers {
 			$timestamp = $now ? time() : max( time(), $entry->signup ) + ( $entry->resend_time * 3600 * $entry->try );
 
 			if ( mailster( 'notification' )->add( $timestamp, array(
-						'subscriber_id' => $entry->ID,
-						'template' => 'confirmation',
-						'form' => $entry->form_id,
+					'subscriber_id' => $entry->ID,
+					'template' => 'confirmation',
+					'form' => $entry->form_id,
 			) ) ) {
 				$this->update_meta( $entry->ID, 0, 'confirmation', ++$entry->try );
 				$count++;
