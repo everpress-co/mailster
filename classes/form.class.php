@@ -817,13 +817,13 @@ class MailsterForm {
 
 					if ( $overwrite && $subscriber = mailster( 'subscribers' )->get_by_mail( $entry['email'] ) ) {
 						$entry = wp_parse_args( array(
-							// change status if other than pending, subscribed or unsubscribed
-							'status' => $subscriber->status >= 3 ? 2 : $subscriber->status,
+							// set status to the form default if it's not "subscribed"
+							'status' => $subscriber->status != 1 ? $entry['status'] : $subscriber->status,
 							'ID' => $subscriber->ID,
 						), $entry );
 
 							$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
-							$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+							$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
 
 					} else {
 
@@ -840,7 +840,7 @@ class MailsterForm {
 					$subscriber = mailster( 'subscribers' )->get_by_hash( $this->hash, true );
 					$entry = wp_parse_args( array(
 						// change status if other than pending, subscribed or unsubscribed
-						'status' => $subscriber->status >= 3 ? 2 : $subscriber->status,
+						'status' => $subscriber->status >= 2 ? 1 : $subscriber->status,
 						'ID' => $subscriber->ID,
 					), $entry );
 

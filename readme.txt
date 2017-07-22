@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.io
 * fixed: link for buttons were pre filled with the URL from the previous selected button
 * fixed: PHP notices on Cron lock
 * fixed: issue with defined constants if GEO library is loaded in a third party plugin
+* improved: ever re-signup will respect the forms double-opt-in setting
 * improved: using SQL_CALC_FOUND_ROWS on subscribers overview to speed up queries
 * improved: form profile compatibility with certain themes
 * improved: get referer on form signup
