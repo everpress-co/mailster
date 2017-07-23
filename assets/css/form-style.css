@@ -40,6 +40,9 @@ textarea{
 	position: relative;
 	z-index: 2;
 }
+.useit-nav .nav-intro{
+	display: none;
+}
 .useit-nav .contextual-help-tabs li{
 	margin-left:-2px;
 }

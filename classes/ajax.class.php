@@ -2523,6 +2523,7 @@ class MailsterAjax {
 			break;
 			case 'finish':
 				update_option( 'mailster_setup', time() );
+				flush_rewrite_rules();
 			break;
 			case 'delivery':
 			default:

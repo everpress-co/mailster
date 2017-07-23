@@ -799,7 +799,7 @@ class MailsterForm {
 			$email = $this->object['userdata']['email'];
 
 			$entry = wp_parse_args( array(
-					'lang' => mailster_get_lang(),
+				'lang' => mailster_get_lang(),
 			), $this->object['userdata'] );
 
 			switch ( $submissiontype ) {
