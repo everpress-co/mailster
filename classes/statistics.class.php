@@ -6,8 +6,71 @@ class MailsterStatistics {
 
 	public function __construct() {
 
+		add_action( 'plugins_loaded', array( &$this, 'init' ) );
+
 	}
 
+	public function init() {
+
+		if ( is_admin() ) {
+			add_action( 'admin_menu', array( &$this, 'add_menu' ), 40 );
+		}
+
+	}
+
+
+	public function add_menu() {
+
+		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Statistics', 'mailster' ), __( 'Statistics', 'mailster' ), 'mailster_statistics', 'mailster_statistics', array( &$this, 'statistics' ) );
+		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
+		add_action( 'load-' . $page, array( &$this, 'register_meta_boxes' ) );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $range (optional)
+	 * @return unknown
+	 */
+	public function statistics() {
+
+		$this->screen = get_current_screen();
+
+		include MAILSTER_DIR . 'views/statistics.php';
+
+	}
+
+	public function sample_metabox() {
+		echo 'Test';
+	}
+
+	public function scripts_styles() {
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_script( 'mailster-statistics-script', MAILSTER_URI . 'assets/js/statistics-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_localize_script( 'mailster-statistics-script', 'mailsterL10n', array() );
+		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'jquery-ui-sortable' );
+		wp_enqueue_script( 'jquery-touch-punch' );
+
+		wp_enqueue_style( 'mailster-manage-style', MAILSTER_URI . 'assets/css/statistics-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+		wp_enqueue_style( 'jquery-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css' );
+		wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css' );
+
+		wp_enqueue_script( 'jquery-ui-datepicker' );
+
+	}
+
+	public function register_meta_boxes() {
+
+		$this->register_meta_box( 'metabox1', __( 'MetaBox 1', 'mailster' ), array( &$this, 'sample_metabox' ) );
+		$this->register_meta_box( 'metabox2', __( 'MetaBox 2', 'mailster' ), array( &$this, 'sample_metabox' ), 'side' );
+
+	}
 
 	/**
 	 *
@@ -26,6 +89,41 @@ class MailsterStatistics {
 
 	}
 
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 * @param unknown $title
+	 * @param unknown $callback
+	 * @param unknown $context       (optional)
+	 * @param unknown $priority      (optional)
+	 * @param unknown $callback_args (optional)
+	 */
+	public function register_meta_box( $id, $title, $callback, $context = 'normal', $priority = 'default', $callback_args = null ) {
+
+		$id = 'mailster-mb-' . sanitize_key( $id );
+		$screen = get_current_screen();
+
+		add_meta_box( $id, $title, $callback, $screen, $context, $priority, $callback_args );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 * @param unknown $context (optional)
+	 */
+	public function unregister_meta_box( $id, $context = 'normal' ) {
+
+		$id = 'mailster-mb-' . sanitize_key( $id );
+		$screen = get_current_screen();
+
+		remove_meta_box( $id, $screen, $context );
+
+	}
 
 	/**
 	 *

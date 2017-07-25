@@ -1,0 +1,7 @@
+.mailster-statistics .postbox:before{
+	content:'';
+	display: block;
+}
+.mailster-statistics .postbox .inside{
+	min-height: 200px;
+}

@@ -182,6 +182,11 @@ $mailster_capabilities = array(
 		'roles' => array( 'editor' ),
 	),
 
+	'mailster_statistics' => array(
+		'title' => __( 'access statistics', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
 	'mailster_manage_capabilities' => array(
 		'title' => __( 'manage capabilities', 'mailster' ),
 		'roles' => array(),
