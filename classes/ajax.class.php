@@ -590,9 +590,6 @@ class MailsterAjax {
 				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
 				$forwardlink = mailster()->get_forward_link( $ID, $to );
 
-				$mail->add_header( 'X-Mailster-Campaign', $ID );
-				$mail->add_header( 'X-Mailster-ID', $MID );
-
 				$listunsubscribe = '';
 				if ( $mail->bouncemail ) {
 					$listunsubscribe_mail = $mail->bouncemail;
@@ -602,7 +599,18 @@ class MailsterAjax {
 				}
 				$listunsubscribe .= '<' . $unsubscribelink . '>';
 
-				$mail->add_header( 'List-Unsubscribe', $listunsubscribe );
+				$headers = array(
+					'X-Mailster-Campaign' => $ID,
+					'X-Mailster-ID' => $MID,
+					'List-Unsubscribe' => $listunsubscribe,
+					'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+				);
+
+				if ( 'autoresponder' != get_post_status( $ID ) ) {
+					$headers['Precedence'] = 'bulk';
+				}
+
+				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $campaign, $subscriber ) );
 
 				// check for subscriber by mail
 				$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
