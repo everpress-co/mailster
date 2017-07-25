@@ -46,6 +46,10 @@ class MailsterStatistics {
 		echo 'Test';
 	}
 
+	public function campaigns() {
+		include MAILSTER_DIR . 'views/statistics/mb-campaigns.php';
+	}
+
 	public function scripts_styles() {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
@@ -69,6 +73,7 @@ class MailsterStatistics {
 
 		$this->register_meta_box( 'metabox1', __( 'MetaBox 1', 'mailster' ), array( &$this, 'sample_metabox' ) );
 		$this->register_meta_box( 'metabox2', __( 'MetaBox 2', 'mailster' ), array( &$this, 'sample_metabox' ), 'side' );
+		$this->register_meta_box( 'campaigns', __( 'Campaigns', 'mailster' ), array( &$this, 'campaigns' ), 'side' );
 
 	}
 
