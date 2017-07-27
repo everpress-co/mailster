@@ -963,20 +963,6 @@ function is_mailster_newsletter_homepage() {
 }
 
 
-/**
- *
- *
- * @return unknown
- */
-function is_mailster_dashboard() {
-
-	$screen = get_current_screen();
-
-	return $screen && $screen->id == 'newsletter_page_mailster_dashboard';
-
-}
-
-
 
 /**
  *
