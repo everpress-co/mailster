@@ -99,6 +99,7 @@ Xaver Birsak – https://everpress.io
 * improved: get referer on form signup
 * improved: pre cache queries on autoresponder overview
 * added: option for legacy POP3 method on bounce settings
+* added: 'mailster_update_option_*' filter to alter option on save
 * added: 'mailster_get_signups_sql', 'mailster_queue_campaign_subscriber_data' filters
 * changed: 'mailster_unsubscribe_link' hook position and added campaign_id to arguments
 
