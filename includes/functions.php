@@ -179,7 +179,7 @@ function mailster_update_option( $option, $value, $temp = false ) {
 		$temp = (bool) $value;
 		$mailster_options = wp_parse_args( $option, $mailster_options );
 	} else {
-		$mailster_options[ $option ] = apply_filters( 'mailster_option_' . $option, $value, $temp );
+		$mailster_options[ $option ] = apply_filters( 'mailster_update_option_' . $option, $value, $temp );
 	}
 
 	if ( $temp ) {
