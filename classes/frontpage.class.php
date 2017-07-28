@@ -601,26 +601,8 @@ class MailsterFrontpage {
 					$placeholder = mailster( 'placeholder', $content );
 					$placeholder->excerpt_filters( false );
 					$placeholder->set_campaign( get_the_ID() );
-					$unsubscribe_homepage = ( get_page( mailster_option( 'homepage' ) ) ) ? get_permalink( mailster_option( 'homepage' ) ) : get_bloginfo( 'url' );
-					$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage ) );
 
-					$unsubscribelink = mailster()->get_unsubscribe_link( get_the_ID() );
-					$forwardlink = mailster()->get_forward_link( get_the_ID() );
-					$profilelink = mailster()->get_profile_link( get_the_ID() );
-
-					$placeholder->add( array(
-						'preheader' => $meta['preheader'],
-						'subject' => $meta['subject'],
-						'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-						'webversionlink' => get_permalink( get_the_ID() ),
-						'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
-						'unsublink' => $unsubscribelink,
-						'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
-						'forwardlink' => $forwardlink,
-						'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
-						'profilelink' => $profilelink,
-						'email' => antispambot( 'some@example.com' ),
-					) );
+					$placeholder->add_defaults( get_the_ID() );
 
 					$placeholder->share_service( get_permalink( get_the_ID() ), get_the_title() );
 

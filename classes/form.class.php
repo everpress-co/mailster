@@ -802,6 +802,8 @@ class MailsterForm {
 				'lang' => mailster_get_lang(),
 			), $this->object['userdata'] );
 
+			$remove_old_lists = false;
+
 			switch ( $submissiontype ) {
 
 				case 'subscribe':
@@ -822,8 +824,8 @@ class MailsterForm {
 							'ID' => $subscriber->ID,
 						), $entry );
 
-							$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
-							$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
 
 					} else {
 
@@ -844,9 +846,12 @@ class MailsterForm {
 						'ID' => $subscriber->ID,
 					), $entry );
 
-						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+					$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
 
-						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+					$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+
+					// remove old lists only if user choice on this form
+					$remove_old_lists = $this->form->userschoice;
 
 				break;
 			}
@@ -880,7 +885,7 @@ class MailsterForm {
 								}
 							}
 
-							mailster( 'subscribers' )->assign_lists( $exists->ID, $this->object['lists'], $submissiontype == 'update' );
+							mailster( 'subscribers' )->assign_lists( $exists->ID, $this->object['lists'], $remove_old_lists );
 
 						}
 
@@ -896,7 +901,7 @@ class MailsterForm {
 				}
 			} else {
 
-				mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], $submissiontype == 'update' );
+				mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], $remove_old_lists );
 
 				$target = add_query_arg( array(
 						'subscribe' => '',
