@@ -243,7 +243,7 @@ class MailsterSubscribers {
 			case 'send_campaign':
 				$listid = mailster( 'lists' )->add_segment();
 
-				if ( $this->assign_lists( $subscriber_ids, $listid ) ) {
+				if ( $this->assign_lists( $subscriber_ids, $listid, false, true ) ) {
 					$success_message = sprintf( __( '%d Subscribers have been assigned to a new list', 'mailster' ), count( $subscriber_ids ) );
 				}
 			break;
@@ -291,12 +291,12 @@ class MailsterSubscribers {
 				if ( preg_match( '#^add_list_(\d+)#', $action, $match ) ) {
 					if ( $list = mailster( 'lists' )->get( $match[1] ) ) {
 
-						$this->assign_lists( $subscriber_ids, $list->ID );
+						$this->assign_lists( $subscriber_ids, $list->ID, false, true );
 						$success_message = sprintf( __( '%1$d Subscribers added to list %2$s', 'mailster' ), count( $subscriber_ids ), '"<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '">' . $list->name . '</a>"' );
 					}
 				} elseif ( preg_match( '#^remove_list_(\d+)#', $action, $match ) ) {
 					if ( $list = mailster( 'lists' )->get( $match[1] ) ) {
-						$this->unassign_lists( $subscriber_ids, $list->ID );
+						$this->unassign_lists( $subscriber_ids, $list->ID, false, true );
 						$success_message = sprintf( __( '%1$d Subscribers removed from list %2$s', 'mailster' ), count( $subscriber_ids ), '"<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '">' . $list->name . '</a>"' );
 					}
 				}
@@ -410,16 +410,24 @@ class MailsterSubscribers {
 					}
 
 					if ( isset( $_POST['mailster_lists'] ) ) {
-						$this->assign_lists( $subscriber->ID, array_filter( $_POST['mailster_lists'], 'is_numeric' ), true );
+						$lists = array_filter( $_POST['mailster_lists'], 'is_numeric' );
 					} else {
-						$this->unassign_lists( $subscriber->ID );
+						$lists = array();
+					}
+					$current_lists = $this->get_lists( $subscriber->ID, true );
+
+					if ( $unasssign = array_diff( $current_lists, $lists ) ) {
+						$this->unassign_lists( $subscriber->ID, $unasssign );
+					}
+					if ( $assign = array_diff( $lists, $current_lists ) ) {
+						$this->assign_lists( $subscriber->ID, $assign, false, true );
 					}
 
-						mailster_notice( $is_new ? __( 'Subscriber added', 'mailster' ) : __( 'Subscriber saved', 'mailster' ), 'success', true );
-						do_action( 'mailster_subscriber_save', $subscriber->ID );
-						do_action( 'mymail_subscriber_save', $subscriber->ID );
-						wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
-						exit;
+					mailster_notice( $is_new ? __( 'Subscriber added', 'mailster' ) : __( 'Subscriber saved', 'mailster' ), 'success', true );
+					do_action( 'mailster_subscriber_save', $subscriber->ID );
+					do_action( 'mymail_subscriber_save', $subscriber->ID );
+					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
+					exit;
 
 				} elseif ( isset( $_POST['delete'] ) ) :
 
@@ -1178,9 +1186,10 @@ class MailsterSubscribers {
 	 * @param unknown $subscriber_ids
 	 * @param unknown $lists
 	 * @param unknown $remove_old     (optional)
+	 * @param unknown $added     (optional)
 	 * @return unknown
 	 */
-	public function assign_lists( $subscriber_ids, $lists, $remove_old = false ) {
+	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {
 
 		global $wpdb;
 
@@ -1193,7 +1202,7 @@ class MailsterSubscribers {
 			$this->unassign_lists( $subscriber_ids, null, $lists );
 		}
 
-		return mailster( 'lists' )->assign_subscribers( $lists, $subscriber_ids, $remove_old );
+		return mailster( 'lists' )->assign_subscribers( $lists, $subscriber_ids, $remove_old, $added );
 
 	}
 
@@ -2014,6 +2023,18 @@ class MailsterSubscribers {
 
 		if ( ! $subscriber ) {
 			return false;
+		}
+
+		if ( mailster( 'campaigns' )->list_based_opt_out( $campaign_id ) ) {
+
+			$lists = mailster( 'campaigns' )->get_lists( $post->ID, true );
+			if ( $this->unassign_lists( $subscriber->ID, $lists ) ) {
+				do_action( 'mailster_list_unsubscribe', $subscriber->ID, $campaign_id, $lists );
+				return true;
+			}
+
+			return false;
+
 		}
 
 		if ( $subscriber->status == 2 ) {

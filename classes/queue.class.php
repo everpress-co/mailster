@@ -384,16 +384,29 @@ class MailsterQueue {
 			if ( 'mailster_subscriber_insert' == $autoresponder_meta['action'] ) {
 
 				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
+				$list_based = mailster( 'campaigns' )->list_based_opt_out( $campaign->ID );
 
-				$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(IF(a.confirm, a.confirm, a.signup)) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d AND b.type = 1 LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
+				if ( $list_based ) {
+
+					$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(ab.added) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d AND b.type = 1 LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
+
+				} else {
+					$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(IF(a.confirm, a.confirm, a.signup)) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d AND b.type = 1 LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
+				}
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
 					$sql .= mailster( 'campaigns' )->get_sql_join_by_condition( $meta['list_conditions'] );
 				}
 
-				$sql .= ' WHERE (a.confirm != 0 OR a.signup != 0)';
+				if ( $list_based ) {
+					$sql .= ' WHERE ab.added != 0';
 
-				$sql .= $wpdb->prepare( ' AND a.signup >= %d', $meta['timestamp'] );
+					$sql .= $wpdb->prepare( ' AND ab.added >= %d', $meta['timestamp'] );
+				} else {
+					$sql .= ' WHERE (a.confirm != 0 OR a.signup != 0)';
+
+					$sql .= $wpdb->prepare( ' AND a.signup >= %d', $meta['timestamp'] );
+				}
 
 				$sql .= ' AND a.status = 1 AND b.subscriber_id IS NULL';
 

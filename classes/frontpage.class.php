@@ -442,7 +442,7 @@ class MailsterFrontpage {
 				}
 
 				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
-				$form = mailster( 'forms' )->get( $form_id, false, false );
+				$form = mailster( 'forms' )->get( $form_id, false, true );
 
 				$target = ! empty( $form->confirmredirect ) ? $form->confirmredirect : $this->get_link( 'subscribe', $subscriber->hash, true );
 
@@ -451,17 +451,17 @@ class MailsterFrontpage {
 
 					$ip = mailster_option( 'track_users' ) ? mailster_get_ip() : null;
 					$user_meta = array(
-					'ID' => $subscriber->ID,
-					'confirm' => time(),
-					'status' => 1,
-					'ip_confirm' => $ip,
-					'ip' => $ip,
-					'lang' => mailster_get_lang(),
+						'ID' => $subscriber->ID,
+						'confirm' => time(),
+						'status' => 1,
+						'ip_confirm' => $ip,
+						'ip' => $ip,
+						'lang' => mailster_get_lang(),
 					);
 
 					if ( 'unknown' !== ( $geo = mailster_ip2City() ) ) {
 
-							$user_meta['geo'] = $geo->country_code . '|' . $geo->city;
+						$user_meta['geo'] = $geo->country_code . '|' . $geo->city;
 						if ( $geo->city ) {
 							$user_meta['coords'] = floatval( $geo->latitude ) . ',' . floatval( $geo->longitude );
 						}
@@ -481,6 +481,8 @@ class MailsterFrontpage {
 							exit;
 					}
 				}
+
+				mailster( 'lists' )->confirm_subscribers( $form->lists, $subscriber->ID );
 
 				$redirect_to = apply_filters( 'mymail_confirm_target', apply_filters( 'mailster_confirm_target', $target, $subscriber->ID ), $subscriber->ID );
 

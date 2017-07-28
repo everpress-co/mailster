@@ -446,10 +446,52 @@ class MailsterLists {
 	 *
 	 * @param unknown $ids
 	 * @param unknown $subscriber_ids
-	 * @param unknown $remove_old     (optional)
+	 * @param unknown $force     (optional)
 	 * @return unknown
 	 */
-	public function assign_subscribers( $ids, $subscriber_ids, $remove_old = false ) {
+	public function confirm_subscribers( $ids, $subscriber_ids, $force = false ) {
+
+		global $wpdb;
+
+		if ( ! is_array( $ids ) ) {
+			$ids = array( (int) $ids );
+		}
+
+		if ( empty( $ids ) ) {
+			return true;
+		}
+
+		if ( ! is_array( $subscriber_ids ) ) {
+			$subscriber_ids = array( (int) $subscriber_ids );
+		}
+
+		if ( empty( $subscriber_ids ) ) {
+			return true;
+		}
+
+		$confirmed = time();
+
+		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE list_id IN (" . implode( ', ', $ids ) . ') AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
+
+		if ( ! $force ) {
+			$sql .= ' AND added = 0';
+		}
+
+		return false !== $wpdb->query( $wpdb->prepare( $sql, $confirmed ) );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $ids
+	 * @param unknown $subscriber_ids
+	 * @param unknown $remove_old     (optional)
+	 * @param unknown $added     (optional)
+	 * @return unknown
+	 */
+	public function assign_subscribers( $ids, $subscriber_ids, $remove_old = false, $added = null ) {
 
 		global $wpdb;
 
@@ -461,7 +503,11 @@ class MailsterLists {
 			$subscriber_ids = array( (int) $subscriber_ids );
 		}
 
-		$now = time();
+		if ( is_null( $added ) ) {
+			$added = 0;
+		} elseif ( true === $added ) {
+			$added = time();
+		}
 
 		if ( $remove_old ) {
 			$this->unassign_subscribers( $ids, $subscriber_ids );
@@ -470,7 +516,7 @@ class MailsterLists {
 		$inserts = array();
 		foreach ( $ids as $list_id ) {
 			foreach ( $subscriber_ids as $subscriber_id ) {
-				$inserts[] = $wpdb->prepare( '(%d, %d, %d)', $list_id, $subscriber_id, $now );
+				$inserts[] = $wpdb->prepare( '(%d, %d, %d)', $list_id, $subscriber_id, $added );
 			}
 		}
 
