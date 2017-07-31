@@ -101,6 +101,8 @@ Xaver Birsak – https://everpress.io
 * added: option for legacy POP3 method on bounce settings
 * added: 'mailster_update_option_*' filter to alter option on save
 * added: 'mailster_get_signups_sql', 'mailster_queue_campaign_subscriber_data' filters
+* added: 'mailster_cookie_time' filter to adjust Mailster cookie expiration time
+* added: 'mailster_get_current_user' and 'mailster_get_current_user_id' methods
 * changed: 'mailster_unsubscribe_link' hook position and added campaign_id to arguments
 
 = Version 2.2.7 =

@@ -322,7 +322,9 @@ class MailsterFrontpage {
 					wp_die( 'Invalid URL' );
 				}
 
-				setcookie( 'mailster', $subscriber->hash, time() + 1800, COOKIEPATH, COOKIE_DOMAIN );
+				$cookietime = apply_filters( 'mailster_cookie_time', 1 * HOUR_IN_SECONDS );
+
+				setcookie( 'mailster', $subscriber->hash, time() + $cookietime, COOKIEPATH, COOKIE_DOMAIN );
 
 				$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID );
 

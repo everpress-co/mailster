@@ -194,6 +194,32 @@ function mailster_update_option( $option, $value, $temp = false ) {
 /**
  *
  *
+ * @param unknown $custom_fields (optional)
+ * @return unknown
+ */
+function mailster_get_current_user( $custom_fields = true ) {
+
+	return mailster( 'subscribers' )->get_current_user( $custom_fields );
+
+}
+
+
+/**
+ *
+ *
+ * @return unknown
+ */
+function mailster_get_current_user_id() {
+
+	return mailster( 'subscribers' )->get_current_user_id( );
+
+}
+
+
+
+/**
+ *
+ *
  * @param unknown $id          (optional)
  * @param unknown $echo        (optional)
  * @param unknown $classes     (optional)
