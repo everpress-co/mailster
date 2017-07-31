@@ -442,7 +442,12 @@ class MailsterFrontpage {
 				}
 
 				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
-				$form = mailster( 'forms' )->get( $form_id, false, true );
+				if ( ! $form_id ) {
+					$form = mailster( 'forms' )->get( null, false, true );
+					$form = $form[0];
+				} else {
+					$form = mailster( 'forms' )->get( $form_id, false, true );
+				}
 
 				$target = ! empty( $form->confirmredirect ) ? $form->confirmredirect : $this->get_link( 'subscribe', $subscriber->hash, true );
 

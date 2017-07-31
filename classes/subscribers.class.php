@@ -15,7 +15,7 @@ class MailsterSubscribers {
 
 	public function init() {
 
-		add_action( 'mailster_cron', array( &$this, 'send_confirmations' ) );
+		add_action( 'mailster_cron_worker', array( &$this, 'send_confirmations' ) );
 		add_action( 'mailster_subscriber_subscribed', array( &$this, 'remove_pending_confirmations' ) );
 
 		add_action( 'mailster_subscriber_notification', array( &$this, 'subscriber_delayed_notification' ) );
@@ -957,10 +957,9 @@ class MailsterSubscribers {
 				}
 
 				if ( isset( $data['status'] ) ) {
-					if ( $data['status'] == 0 ) {
-						$this->send_confirmations( $subscriber_id, true );
-					}
-
+					// if ( $data['status'] == 0 ) {
+						$this->send_confirmations( $subscriber_id, true, true );
+					// }
 					if ( $data['status'] == 1 && $subscriber_notification ) {
 						$this->subscriber_notification( $subscriber_id );
 					}
@@ -2027,7 +2026,7 @@ class MailsterSubscribers {
 
 		if ( mailster( 'campaigns' )->list_based_opt_out( $campaign_id ) ) {
 
-			$lists = mailster( 'campaigns' )->get_lists( $post->ID, true );
+			$lists = mailster( 'campaigns' )->get_lists( $campaign_id, true );
 			if ( $this->unassign_lists( $subscriber->ID, $lists ) ) {
 				do_action( 'mailster_list_unsubscribe', $subscriber->ID, $campaign_id, $lists );
 				return true;
@@ -2205,14 +2204,34 @@ class MailsterSubscribers {
 		// get all pending subscribers which are not queued already
 		$sql = "SELECT a.ID, a.signup, IFNULL( b.meta_value, 0 ) AS try, f.resend, f.resend_count, f.resend_time, IFNULL( f.ID, $fallback_form_id ) AS form_id FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS b ON a.ID = b.subscriber_id AND b.meta_key = 'confirmation' LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS c ON a.ID = c.subscriber_id AND c.meta_key = 'form' LEFT JOIN {$wpdb->prefix}mailster_queue AS d ON a.ID = d.subscriber_id AND d.campaign_id = 0 LEFT JOIN {$wpdb->prefix}mailster_forms AS f ON f.ID = IFNULL( c.meta_value, $fallback_form_id ) WHERE a.status = 0 AND ( d.subscriber_id IS NULL OR d.sent != 0 )";
 
+		$sql = 'SELECT a.ID, a.signup, IFNULL( b.meta_value, 0 ) AS try, f.resend, f.resend_count, f.resend_time, IFNULL( f.ID, 1 ) AS form_id FROM wp_mailster_subscribers AS a';
+		$sql .= ' LEFT JOIN wp_mailster_lists_subscribers AS x ON a.ID = x.subscriber_id AND x.added = 0';
+		$sql .= " LEFT JOIN wp_mailster_subscriber_meta AS b ON a.ID = b.subscriber_id AND b.meta_key = 'confirmation'";
+		$sql .= " LEFT JOIN wp_mailster_subscriber_meta AS c ON a.ID = c.subscriber_id AND c.meta_key = 'form'";
+		$sql .= ' LEFT JOIN wp_mailster_queue AS d ON a.ID = d.subscriber_id AND d.campaign_id = 0';
+		$sql .= ' LEFT JOIN wp_mailster_forms AS f ON f.ID = IFNULL( c.meta_value, 1 )';
+
+		$sql .= ' WHERE 1=1';
+
+		// status is either pending or list assignment is pending
+		$sql .= ' AND (a.status = 0 OR x.added = 0)';
+		// queue doesn't exist or has been sent already (and not removed from queue)
+		$sql .= ' AND (d.subscriber_id IS NULL OR d.sent != 0)';
+		// try is less den the count from the form settings
 		if ( ! $force ) {
-			$sql .= ' AND f.resend = 1 AND IFNULL( b.meta_value, 0 ) <= f.resend_count';
+			$sql .= ' AND (IFNULL( b.meta_value, 0 ) <= f.resend_count)';
+			$sql .= ' AND (f.resend = 1 OR IFNULL( b.meta_value, 0 ) = 0)';
+		}
+		// resend is enabled or it's the first try
+		if ( ! $force ) {
 		}
 
 		if ( ! is_null( $ids ) ) {
 			$ids = ! is_array( $ids ) ? array( intval( $ids ) ) : array_filter( $ids, 'is_numeric' );
 			$sql .= ' AND a.ID IN (' . implode( ',', $ids ) . ')';
 		}
+
+		$sql .= ' GROUP BY a.ID';
 
 		$entries = $wpdb->get_results( $sql );
 

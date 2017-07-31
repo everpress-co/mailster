@@ -350,7 +350,7 @@ class MailsterLists {
 			$list_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : intval( $data['ID'] );
 
 			if ( ! empty( $subscriber_ids ) ) {
-				$this->assign_subscribers( $list_id, $subscriber_ids );
+				$this->assign_subscribers( $list_id, $subscriber_ids, false, true );
 			}
 
 			do_action( 'mailster_update_list', $list_id );
@@ -508,6 +508,9 @@ class MailsterLists {
 		} elseif ( true === $added ) {
 			$added = time();
 		}
+
+		$ids = array_filter( $ids );
+		$subscriber_ids = array_filter( $subscriber_ids );
 
 		if ( $remove_old ) {
 			$this->unassign_subscribers( $ids, $subscriber_ids );

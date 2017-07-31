@@ -150,6 +150,7 @@ class MailsterPlaceholder {
 			'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
 			'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
 			'email' => '<a href="">{emailaddress}</a>',
+			'lists' => mailster( 'campaigns' )->get_formated_lists( $campaign_id ),
 			'unsublink' => $unsubscribelink,
 			'forwardlink' => $forwardlink,
 			'profilelink' => $profilelink,

@@ -391,6 +391,7 @@ class MailsterQueue {
 					$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(ab.added) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d AND b.type = 1 LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
 
 				} else {
+
 					$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(IF(a.confirm, a.confirm, a.signup)) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d AND b.type = 1 LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
 				}
 
