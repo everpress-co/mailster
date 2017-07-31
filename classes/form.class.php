@@ -320,7 +320,7 @@ class MailsterForm {
 
 							$fields[ $field->field_id ] .= '<select id="mailster-' . $field->field_id . '-' . $this->ID . '" name="' . $field->field_id . '" class="input mailster-' . $field->field_id . '' . ( $required ? ' mailster-required' : '' ) . '" aria-required="' . ( $required ? 'true' : 'false' ) . '" aria-label="' . $esc_label . '">';
 							foreach ( $data['values'] as $v ) {
-								if ( ! isset( $data['default'] ) ) {
+								if ( ! isset( $data['default'] ) || ! $data['default'] ) {
 									$data['default'] = $value;
 								}
 
@@ -334,7 +334,7 @@ class MailsterForm {
 							$fields[ $field->field_id ] .= '<ul class="mailster-list">';
 							$i = 0;
 							foreach ( $data['values'] as $v ) {
-								if ( ! isset( $data['default'] ) ) {
+								if ( ! isset( $data['default'] ) || ! $data['default'] ) {
 									$data['default'] = $value;
 								}
 
@@ -666,8 +666,8 @@ class MailsterForm {
 
 		global $post;
 		$form_id = '';
-		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#', $post->post_content, $form_id ) ) {
-			$form_id = intval( $form_id[1] );
+		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#i', $post->post_content, $matches ) ) {
+			$form_id = intval( $matches[1] );
 			$this->id( $form_id );
 		}
 
@@ -735,7 +735,7 @@ class MailsterForm {
 
 		$referer = isset( $_BASE['_referer'] ) ? $_BASE['_referer'] : $baselink;
 		if ( $referer == 'extern' || isset( $_GET['_extern'] ) ) {
-			$referer = esc_url( wp_get_referer() );
+			$referer = esc_url( mailster_get_referer() );
 		}
 
 		$now = time();
@@ -799,8 +799,10 @@ class MailsterForm {
 			$email = $this->object['userdata']['email'];
 
 			$entry = wp_parse_args( array(
-					'lang' => mailster_get_lang(),
+				'lang' => mailster_get_lang(),
 			), $this->object['userdata'] );
+
+			$remove_old_lists = false;
 
 			switch ( $submissiontype ) {
 
@@ -817,13 +819,13 @@ class MailsterForm {
 
 					if ( $overwrite && $subscriber = mailster( 'subscribers' )->get_by_mail( $entry['email'] ) ) {
 						$entry = wp_parse_args( array(
-							// change status if other than pending, subscribed or unsubscribed
-							'status' => $subscriber->status >= 3 ? 2 : $subscriber->status,
+							// set status to the form default if it's not "subscribed"
+							'status' => $subscriber->status != 1 ? $entry['status'] : $subscriber->status,
 							'ID' => $subscriber->ID,
 						), $entry );
 
-							$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
-							$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
 
 					} else {
 
@@ -840,13 +842,16 @@ class MailsterForm {
 					$subscriber = mailster( 'subscribers' )->get_by_hash( $this->hash, true );
 					$entry = wp_parse_args( array(
 						// change status if other than pending, subscribed or unsubscribed
-						'status' => $subscriber->status >= 3 ? 2 : $subscriber->status,
+						'status' => $subscriber->status >= 2 ? 1 : $subscriber->status,
 						'ID' => $subscriber->ID,
 					), $entry );
 
-						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+					$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
 
-						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+					$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+
+					// remove old lists only if user choice on this form
+					$remove_old_lists = $this->form->userschoice;
 
 				break;
 			}
@@ -880,7 +885,7 @@ class MailsterForm {
 								}
 							}
 
-							mailster( 'subscribers' )->assign_lists( $exists->ID, $this->object['lists'], $submissiontype == 'update' );
+							mailster( 'subscribers' )->assign_lists( $exists->ID, $this->object['lists'], $remove_old_lists );
 
 						}
 
@@ -896,7 +901,7 @@ class MailsterForm {
 				}
 			} else {
 
-				mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], $submissiontype == 'update' );
+				mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], $remove_old_lists );
 
 				$target = add_query_arg( array(
 						'subscribe' => '',
@@ -951,7 +956,7 @@ class MailsterForm {
 				exit;
 			}
 
-			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( wp_get_referer() );
+			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( mailster_get_referer() );
 
 		} else {
 
@@ -960,7 +965,7 @@ class MailsterForm {
 				exit;
 			}
 
-			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( wp_get_referer() );
+			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( mailster_get_referer() );
 
 		}
 
@@ -1232,7 +1237,7 @@ class MailsterForm {
 	 * @return unknown
 	 */
 	private function is_extern() {
-		return parse_url( wp_get_referer(), PHP_URL_HOST ) != parse_url( home_url(), PHP_URL_HOST );
+		return parse_url( mailster_get_referer(), PHP_URL_HOST ) != parse_url( home_url(), PHP_URL_HOST );
 	}
 
 

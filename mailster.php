@@ -3,9 +3,9 @@
 Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
 Description: Advanced Newsletter Plugin for WordPress. Create, Send and Track your Newsletter Campaigns
-Version: 2.2.7
-Author: revaxarts.com
-Author URI: https://revaxarts.com
+Version: 2.2.8
+Author: EverPress
+Author URI: https://everpress.io
 Text Domain: mailster
 */
 
@@ -13,7 +13,7 @@ if ( defined( 'MAILSTER_VERSION' ) ) {
 	return;
 }
 
-define( 'MAILSTER_VERSION', '2.2.7' );
+define( 'MAILSTER_VERSION', '2.2.8' );
 define( 'MAILSTER_DBVERSION', 20170201 );
 define( 'MAILSTER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MAILSTER_URI', plugin_dir_url( __FILE__ ) );

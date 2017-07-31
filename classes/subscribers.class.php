@@ -1054,11 +1054,13 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $user_id  (optional)
-	 * @param unknown $userdata (optional)
+	 * @param unknown $user_id                 (optional)
+	 * @param unknown $userdata                (optional)
+	 * @param unknown $merge                   (optional)
+	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
-	public function add_from_wp_user( $user_id = null, $userdata = array() ) {
+	public function add_from_wp_user( $user_id, $userdata = array(), $merge = false, $subscriber_notification = true ) {
 
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
@@ -1097,7 +1099,7 @@ class MailsterSubscribers {
 			'lastname' => $last_name,
 		) );
 
-		$subscriber_id = $this->add( $userdata, true );
+		$subscriber_id = $this->add( $userdata, true, $merge, $subscriber_notification );
 
 		return $subscriber_id;
 
@@ -2200,9 +2202,9 @@ class MailsterSubscribers {
 			$timestamp = $now ? time() : max( time(), $entry->signup ) + ( $entry->resend_time * 3600 * $entry->try );
 
 			if ( mailster( 'notification' )->add( $timestamp, array(
-						'subscriber_id' => $entry->ID,
-						'template' => 'confirmation',
-						'form' => $entry->form_id,
+					'subscriber_id' => $entry->ID,
+					'template' => 'confirmation',
+					'form' => $entry->form_id,
 			) ) ) {
 				$this->update_meta( $entry->ID, 0, 'confirmation', ++$entry->try );
 				$count++;
@@ -2249,6 +2251,46 @@ class MailsterSubscribers {
 		if ( is_numeric( $ID ) ) {
 			return $this->get_by_type( 'ID', $ID, $custom_fields );
 		}
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $custom_fields (optional)
+	 * @return unknown
+	 */
+	public function get_current_user( $custom_fields = true ) {
+
+		$subscriber = false;
+
+		if ( isset( $_COOKIE ) && isset( $_COOKIE['mailster'] ) ) {
+			$hash = $_COOKIE['mailster'];
+			$subscriber = mailster( 'subscribers' )->get_by_hash( $hash, $custom_fields );
+		}
+
+		if ( empty( $subscriber ) ) {
+			$subscriber = $this->get_by_wpid( null, $custom_fields );
+		}
+
+		return $subscriber;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function get_current_user_id() {
+
+		if ( $subscriber = $this->get_current_user( false ) ) {
+			return $subscriber->ID;
+		}
+
+		return false;
 
 	}
 
@@ -2581,7 +2623,7 @@ class MailsterSubscribers {
 			$subscriber_id = $this->add_from_wp_user( get_current_user_id(), array(
 				'status' => 1,
 				'referer' => 'backend',
-			) );
+			), false, false );
 		}
 
 	}

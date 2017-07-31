@@ -464,15 +464,18 @@ class MailsterCampaigns {
 	public function preload( $query ) {
 
 		global $wp_query;
-		$ids = wp_list_pluck( $wp_query->posts, 'ID' );
-		if ( empty( $ids ) ) {
+
+		if ( isset( $wp_query->query['post_status'] ) && 'autoresponder' == $wp_query->query['post_status'] ) {
 			return;
 		}
+		if ( empty( $wp_query->posts ) ) {
+			return;
+		}
+		$ids = wp_list_pluck( $wp_query->posts, 'ID' );
 
 		// preload meta from the displayed campaigns
 		$meta = $this->meta( $ids );
 		mailster( 'actions' )->get_by_campaign( $ids );
-
 	}
 
 
@@ -530,7 +533,7 @@ class MailsterCampaigns {
 		$messages['newsletter'] = array(
 			0 => '',
 			1 => sprintf( __( 'Campaign updated. %s', 'mailster' ), '<a href="' . esc_url( get_permalink( $post_id ) ) . '">' . __( 'View Newsletter', 'mailster' ) . '</a>' ),
-			2 => sprintf( __( 'Template changed. %1$s', 'mailster' ), '<a href="' . remove_query_arg( 'message', wp_get_referer() ) . '">' . __( 'Go back', 'mailster' ) . '</a>' ),
+			2 => sprintf( __( 'Template changed. %1$s', 'mailster' ), '<a href="' . remove_query_arg( 'message', mailster_get_referer() ) . '">' . __( 'Go back', 'mailster' ) . '</a>' ),
 			3 => __( 'Template saved', 'mailster' ),
 			4 => __( 'Campaign updated.', 'mailster' ),
 			5 => isset( $_GET['revision'] ) ? sprintf( __( 'Campaign restored to revision from %s', 'mailster' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
@@ -1776,7 +1779,7 @@ class MailsterCampaigns {
 			return $defaults;
 		}
 
-		$sql = "SELECT post_id AS ID, REPLACE(meta_key, '_mailster_', '') AS meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key LIKE '_mailster_%'";
+		$sql = "SELECT post_id AS ID, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key LIKE '_mailster_%'";
 
 		if ( isset( $ids ) ) {
 			$sql .= ' AND post_id IN (' . implode( ',', array_filter( $ids, 'is_numeric' ) ) . ')';
@@ -1789,11 +1792,8 @@ class MailsterCampaigns {
 				$meta[ $metadata->ID ] = $defaults;
 			}
 
-			$meta[ $metadata->ID ][ $metadata->meta_key ] = $metadata->meta_value;
-			// $meta = $row;
-			// $lists = explode('|', $row['lists'] );
-			// array_shift($lists);
-			// $meta[$metadata->ID]['lists'] = $lists;
+			$meta[ $metadata->ID ][ str_replace( '_mailster_', '', $metadata->meta_key ) ] = $metadata->meta_value;
+
 			if ( ! empty( $meta[ $metadata->ID ]['lists'] ) ) {
 				$meta[ $metadata->ID ]['lists'] = maybe_unserialize( $meta[ $metadata->ID ]['lists'] );
 			}
@@ -2278,6 +2278,30 @@ class MailsterCampaigns {
 
 		return ( $campaign && $campaign->post_type == 'newsletter' ) ? $campaign : false;
 
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 * @return unknown
+	 */
+	public function get_formated_lists( $id ) {
+
+		if ( $this->meta( $id, 'ignore_lists' ) ) {
+			return '';
+		}
+
+		$lists = $this->get_lists( $id );
+
+		if ( empty( $lists ) ) {
+			return '';
+		}
+
+		$names = wp_list_pluck( $lists, 'name' );
+
+		return implode( ', ', $names );
 	}
 
 
@@ -3950,8 +3974,6 @@ class MailsterCampaigns {
 
 		$placeholder = mailster( 'placeholder' );
 
-		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign->ID );
-
 		$mail->set_campaign( $campaign->ID );
 		$placeholder->set_campaign( $campaign->ID );
 		$placeholder->replace_custom_tags( false );
@@ -3976,17 +3998,7 @@ class MailsterCampaigns {
 
 			$placeholder->set_content( $content );
 
-			$placeholder->add( array(
-				'preheader' => $campaign_meta['preheader'],
-				'subject' => $campaign_meta['subject'],
-				'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-				'webversionlink' => get_permalink( $campaign->ID ),
-				'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
-				'unsublink' => $unsubscribelink,
-				'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
-				'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
-				'email' => '<a href="">{emailaddress}</a>',
-			) );
+			$placeholder->add_defaults( $campaign->ID );
 
 			$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
 			$content = $placeholder->get_content( false );
@@ -4026,6 +4038,8 @@ class MailsterCampaigns {
 			$placeholder->set_content( $campaign->post_excerpt );
 			$mail->plaintext = mailster( 'helper' )->plain_text( $placeholder->get_content(), true );
 		}
+
+		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign->ID );
 
 		$MID = mailster_option( 'ID' );
 

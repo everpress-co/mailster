@@ -16,34 +16,18 @@ class MailsterPlaceholder {
 	 *
 	 *
 	 * @param unknown $content (optional)
-	 * @param unknown $basic   (optional)
 	 */
-	public function __construct( $content = '', $basic = null ) {
+	public function __construct( $content = '', $deprecated = null ) {
+
 		$this->content = $content;
 
-		// hardcoded tags
-		if ( ! is_array( $basic ) ) {
-			$time = date( 'Y|m|d|H|m', current_time( 'timestamp' ) );
-			$time = explode( '|', $time );
-			$basic = array(
-				'year' => $time[0],
-				'month' => $time[1],
-				'day' => $time[2],
-				'hour' => $time[3],
-				'minute' => $time[4],
-			);
-		}
-
-		$this->add( $basic );
 		$this->add( mailster_option( 'custom_tags', array() ) );
 		$this->add( mailster_option( 'tags', array() ) );
 
-		// mailster_add_tag'url', array( $this, 'urlencode_tags'));
 	}
 
 
-	public function __destruct() {
-	}
+	public function __destruct() { }
 
 
 	/**
@@ -137,6 +121,48 @@ class MailsterPlaceholder {
 	 */
 	public function excerpt_filters( $do = true ) {
 		$this->apply_the_excerpt_filters = $do;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $campaign_id
+	 * @param unknown $args    (optional)
+	 * @return unknown
+	 */
+	public function add_defaults( $campaign_id, $args = array() ) {
+
+		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign_id );
+		$forwardlink = mailster()->get_forward_link( $campaign_id );
+		$profilelink = mailster()->get_profile_link( $campaign_id );
+
+		$meta = mailster( 'campaigns' )->meta( $campaign_id );
+
+		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
+
+		$defaults = array(
+			'preheader' => $meta['preheader'],
+			'subject' => $meta['subject'],
+			'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
+			'webversionlink' => get_permalink( $campaign_id ),
+			'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
+			'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
+			'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
+			'email' => '<a href="">{emailaddress}</a>',
+			'unsublink' => $unsubscribelink,
+			'forwardlink' => $forwardlink,
+			'profilelink' => $profilelink,
+			'year' => $time[0],
+			'month' => $time[1],
+			'day' => $time[2],
+			'hour' => $time[3],
+			'minute' => $time[4],
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
+		$this->add( apply_filters( 'mailster_placeholder_defaults', $args ) );
 	}
 
 
