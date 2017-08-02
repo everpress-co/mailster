@@ -2258,6 +2258,46 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
+	 * @param unknown $custom_fields (optional)
+	 * @return unknown
+	 */
+	public function get_current_user( $custom_fields = true ) {
+
+		$subscriber = false;
+
+		if ( isset( $_COOKIE ) && isset( $_COOKIE['mailster'] ) ) {
+			$hash = $_COOKIE['mailster'];
+			$subscriber = mailster( 'subscribers' )->get_by_hash( $hash, $custom_fields );
+		}
+
+		if ( empty( $subscriber ) ) {
+			$subscriber = $this->get_by_wpid( null, $custom_fields );
+		}
+
+		return $subscriber;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function get_current_user_id() {
+
+		if ( $subscriber = $this->get_current_user( false ) ) {
+			return $subscriber->ID;
+		}
+
+		return false;
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $mail
 	 * @param unknown $custom_fields (optional)
 	 * @return unknown

@@ -14,6 +14,8 @@ $new_version = MAILSTER_VERSION;
 $texts = isset( $mailster_options['text'] ) && ! empty( $mailster_options['text'] ) ? $mailster_options['text'] : $mailster_texts;
 $show_update_notice = false;
 
+// update db structure
+mailster()->dbstructure();
 
 if ( $old_version ) {
 
@@ -527,9 +529,6 @@ update_option( 'mailster_texts', $mailster_texts );
 
 // update caps
 mailster( 'settings' )->update_capabilities();
-
-// update db structure
-mailster()->dbstructure();
 
 // clear cache
 mailster_clear_cache( '' );
