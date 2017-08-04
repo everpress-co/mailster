@@ -1934,11 +1934,12 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $id
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $status      (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe( $id, $campaign_id = null ) {
+	public function unsubscribe( $id, $campaign_id = null, $status = null ) {
 
-		return $this->unsubscribe_by_type( 'id', $id, $campaign_id );
+		return $this->unsubscribe_by_type( 'id', $id, $campaign_id, $status );
 
 	}
 
@@ -1948,11 +1949,12 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $hash
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $status      (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe_by_hash( $hash, $campaign_id = null ) {
+	public function unsubscribe_by_hash( $hash, $campaign_id = null, $status = null ) {
 
-		return $this->unsubscribe_by_type( 'hash', $hash, $campaign_id );
+		return $this->unsubscribe_by_type( 'hash', $hash, $campaign_id, $status );
 
 	}
 
@@ -1962,11 +1964,12 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $md5
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $status      (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe_by_md5( $md5, $campaign_id = null ) {
+	public function unsubscribe_by_md5( $md5, $campaign_id = null, $status = null ) {
 
-		return $this->unsubscribe_by_type( 'md5', $email, $campaign_id );
+		return $this->unsubscribe_by_type( 'md5', $email, $campaign_id, $status );
 
 	}
 
@@ -1976,11 +1979,12 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $email
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $status      (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe_by_mail( $email, $campaign_id = null ) {
+	public function unsubscribe_by_mail( $email, $campaign_id = null, $status = null ) {
 
-		return $this->unsubscribe_by_type( 'email', $email, $campaign_id );
+		return $this->unsubscribe_by_type( 'email', $email, $campaign_id, $status );
 
 	}
 
@@ -1991,9 +1995,10 @@ class MailsterSubscribers {
 	 * @param unknown $type
 	 * @param unknown $value
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $status      (optional)
 	 * @return unknown
 	 */
-	private function unsubscribe_by_type( $type, $value, $campaign_id = null ) {
+	private function unsubscribe_by_type( $type, $value, $campaign_id = null, $status = null ) {
 
 		global $wpdb;
 
@@ -2022,8 +2027,8 @@ class MailsterSubscribers {
 
 		if ( $this->change_status( $subscriber->ID, 2 ) ) {
 
-			do_action( 'mailster_unsubscribe', $subscriber->ID, $campaign_id );
-			do_action( 'mymail_unsubscribe', $subscriber->ID, $campaign_id );
+			do_action( 'mailster_unsubscribe', $subscriber->ID, $campaign_id, $status );
+			do_action( 'mymail_unsubscribe', $subscriber->ID, $campaign_id, $status );
 
 			$this->subscriber_unsubscribe_notification( $subscriber->ID );
 

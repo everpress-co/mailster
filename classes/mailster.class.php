@@ -1324,6 +1324,7 @@ class Mailster {
                 count int(11) unsigned NOT NULL DEFAULT 0,
                 type tinyint(1) NOT NULL DEFAULT 0,
                 link_id bigint(20) unsigned NOT NULL DEFAULT 0,
+                message_id varchar(13) NOT NULL DEFAULT '',
                 UNIQUE KEY id (subscriber_id,campaign_id,type,link_id),
                 KEY subscriber_id (subscriber_id),
                 KEY campaign_id (campaign_id),
