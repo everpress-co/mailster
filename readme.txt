@@ -84,7 +84,6 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.9 =
 
-* added: send action now stores internal message ID
 * change: send method now returns internal message ID (not true anymore)
 
 = Version 2.2.8 =

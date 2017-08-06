@@ -12,7 +12,7 @@ class MailsterActions {
 
 	public function init() {
 
-		add_action( 'mailster_send', array( &$this, 'send' ), 10, 3 );
+		add_action( 'mailster_send', array( &$this, 'send' ), 10, 2 );
 		add_action( 'mailster_open', array( &$this, 'open' ), 10, 3 );
 		add_action( 'mailster_click', array( &$this, 'click' ), 10, 4 );
 		add_action( 'mailster_unsubscribe', array( &$this, 'unsubscribe' ), 10, 3 );
@@ -53,15 +53,13 @@ class MailsterActions {
 	 *
 	 * @param unknown $subscriber_id
 	 * @param unknown $campaign_id
-	 * @param unknown $message_id
 	 * @return unknown
 	 */
-	public function send( $subscriber_id, $campaign_id, $message_id ) {
+	public function send( $subscriber_id, $campaign_id ) {
 
 		return $this->add_action( array(
 				'subscriber_id' => $subscriber_id,
 				'campaign_id' => $campaign_id,
-				'message_id' => true !== $message_id ? $message_id : null,
 				'type' => 1,
 		), true );
 
@@ -255,7 +253,7 @@ class MailsterActions {
 
 		$sql .= " VALUES ('" . implode( "','", array_values( $args ) ) . "') ON DUPLICATE KEY UPDATE";
 
-		$sql .= ( $explicit ) ? ' timestamp = timestamp, count = count+1, message_id = values(message_id)' : ' count = values(count), message_id = values(message_id)';
+		$sql .= ( $explicit ) ? ' timestamp = timestamp, count = count+1' : ' count = values(count)';
 
 		if ( false !== $wpdb->query( $sql ) ) {
 			if ( $args['type'] != 1 && $explicit ) {
