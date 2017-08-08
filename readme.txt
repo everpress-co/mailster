@@ -84,7 +84,10 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.9 =
 
-* change: send method now returns internal message ID (not true anymore)
+* fixed: some tags with alternative content were not replaced when sending a test campaign
+* improved: unsubscribe action can now contain a status for more info
+* change: send method now returns internal message ID
+* change: test mails to unknown email addresses are no longer assigned to the current user to prevent false mailbox actions
 
 = Version 2.2.8 =
 

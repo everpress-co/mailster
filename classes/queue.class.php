@@ -937,8 +937,8 @@ class MailsterQueue {
 						continue;
 					}
 
-					// regular campaign
-					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, true, false, true );
+					// regular campaign - do not log since we log later in this process
+					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, true, false, false );
 
 					$options = false;
 
@@ -964,6 +964,9 @@ class MailsterQueue {
 
 					if ( ! $options ) {
 						$this->cron_log( $i + 1, $data->subscriber_id . ' ' . $data->email, $data->campaign_id, $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
+
+						do_action( 'mailster_send', $data->subscriber_id, $data->campaign_id, $options );
+						do_action( 'mymail_send', $data->subscriber_id, $data->campaign_id, $options );
 
 					} else {
 
