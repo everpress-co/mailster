@@ -1578,7 +1578,7 @@ textarea#content, textarea#excerpt {
 	visibility:visible;
 }
 #recipients-list .receiver-detail-data ul li{
-	white-space: initial;
+	white-space: pre-line;
 }
 #click-list, #error-list{
 	margin-top:5px;

@@ -84,6 +84,7 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.9 =
 
+* added: support for the SparkPost add on
 * fixed: some tags with alternative content were not replaced when sending a test campaign
 * improved: unsubscribe action can now contain a status for more info
 * change: send method now returns internal message ID

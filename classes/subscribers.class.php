@@ -2602,6 +2602,14 @@ class MailsterSubscribers {
 
 		$html .= '</li>';
 
+		if ( $actions->clicks ) {
+			$html .= '<li><ul>';
+			foreach ( $actions->clicks as $link => $count ) {
+				$html .= '<li class=""><a href="' . $link . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( _n( '%s click', '%s clicks', intval( $count ), 'mailster' ), $count ) . ')</span></li>';
+			}
+			$html .= '</ul></li>';
+		}
+
 		if ( $actions->unsubscribes ) {
 			$message = mailster( 'helper' )->get_unsubscribe_message( $this->meta( $id, 'unsubscribe', $campaign_id ) );
 			$html .= '<li>' . sprintf( __( 'Unsubscribes on %s', 'mailster' ), date( $timeformat, $actions->unsubscribes + $timeoffset ) . ', ' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $actions->unsubscribes ) ) ) . '<br>' . esc_html( $message ) . '</li>';
@@ -2613,14 +2621,6 @@ class MailsterSubscribers {
 		} elseif ( $actions->softbounces ) {
 			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
 			$html .= '<li><label class="red">' . sprintf( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ), $actions->softbounces_total ) . '</label><br>' . esc_html( $message ) . '</li>';
-		}
-
-		if ( $actions->clicks ) {
-			$html .= '<li><ul>';
-			foreach ( $actions->clicks as $link => $count ) {
-				$html .= '<li class=""><a href="' . $link . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( _n( '%s click', '%s clicks', intval( $count ), 'mailster' ), $count ) . ')</span></li>';
-			}
-			$html .= '</ul></li>';
 		}
 
 		$html .= '</ul>';
