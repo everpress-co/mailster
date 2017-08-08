@@ -2,8 +2,8 @@
 Contributors: EverPress, revaxarts
 Tags: mailster, mymail, newsletter, email, email marketing
 Requires at least: 3.8
-Tested up to: 4.8
-Stable tag: 2.2.9
+Tested up to: 4.8.1
+Stable tag: 2.2.10
 Author: EverPress
 Author URI: https://everpress.io
 
@@ -81,6 +81,8 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.2.10 =
 
 = Version 2.2.9 =
 
