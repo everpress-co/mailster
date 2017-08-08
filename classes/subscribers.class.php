@@ -3,7 +3,7 @@
 class MailsterSubscribers {
 
 	// allowed keys in meta table
-	private $meta_keys = array( 'bounce', 'geo', 'coords', 'client', 'clienttype', 'clientversion', 'lang', 'ip', 'confirmation', 'error', 'referer', 'timeoffset', 'form' );
+	private $meta_keys = array( 'bounce', 'geo', 'coords', 'client', 'clienttype', 'clientversion', 'lang', 'ip', 'confirmation', 'error', 'referer', 'timeoffset', 'form', 'unsubscribe' );
 	private $single_meta_keys = array( 'ip', 'lang', 'timeoffset', 'form' );
 
 	public function __construct() {
@@ -1934,11 +1934,12 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $id
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $status      (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe( $id, $campaign_id = null ) {
+	public function unsubscribe( $id, $campaign_id = null, $status = null ) {
 
-		return $this->unsubscribe_by_type( 'id', $id, $campaign_id );
+		return $this->unsubscribe_by_type( 'id', $id, $campaign_id, $status );
 
 	}
 
@@ -1948,11 +1949,12 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $hash
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $status      (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe_by_hash( $hash, $campaign_id = null ) {
+	public function unsubscribe_by_hash( $hash, $campaign_id = null, $status = null ) {
 
-		return $this->unsubscribe_by_type( 'hash', $hash, $campaign_id );
+		return $this->unsubscribe_by_type( 'hash', $hash, $campaign_id, $status );
 
 	}
 
@@ -1962,11 +1964,12 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $md5
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $status      (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe_by_md5( $md5, $campaign_id = null ) {
+	public function unsubscribe_by_md5( $md5, $campaign_id = null, $status = null ) {
 
-		return $this->unsubscribe_by_type( 'md5', $email, $campaign_id );
+		return $this->unsubscribe_by_type( 'md5', $email, $campaign_id, $status );
 
 	}
 
@@ -1976,11 +1979,12 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $email
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $status      (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe_by_mail( $email, $campaign_id = null ) {
+	public function unsubscribe_by_mail( $email, $campaign_id = null, $status = null ) {
 
-		return $this->unsubscribe_by_type( 'email', $email, $campaign_id );
+		return $this->unsubscribe_by_type( 'email', $email, $campaign_id, $status );
 
 	}
 
@@ -1991,9 +1995,10 @@ class MailsterSubscribers {
 	 * @param unknown $type
 	 * @param unknown $value
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $status      (optional)
 	 * @return unknown
 	 */
-	private function unsubscribe_by_type( $type, $value, $campaign_id = null ) {
+	private function unsubscribe_by_type( $type, $value, $campaign_id = null, $status = null ) {
 
 		global $wpdb;
 
@@ -2022,8 +2027,13 @@ class MailsterSubscribers {
 
 		if ( $this->change_status( $subscriber->ID, 2 ) ) {
 
-			do_action( 'mailster_unsubscribe', $subscriber->ID, $campaign_id );
-			do_action( 'mymail_unsubscribe', $subscriber->ID, $campaign_id );
+			do_action( 'mailster_unsubscribe', $subscriber->ID, $campaign_id, $status );
+			do_action( 'mymail_unsubscribe', $subscriber->ID, $campaign_id, $status );
+
+			if ( $status ) {
+
+				$this->update_meta( $subscriber->ID, $campaign_id, 'unsubscribe', $status );
+			}
 
 			$this->subscriber_unsubscribe_notification( $subscriber->ID );
 
@@ -2582,19 +2592,15 @@ class MailsterSubscribers {
 			$html .= sprintf( __( 'with %s', 'mailster' ), '<strong>' . $meta['client'] . '</strong>' );
 		}
 
-		if ( $meta['geo'] ) :
+		if ( $meta['geo'] ) {
 			$geo = explode( '|', $meta['geo'] );
 			if ( $geo[1] ) {
 				$html .= ' ' . sprintf( _x( 'in %1$s, %2$s', 'in [city], [country]', 'mailster' ), '<strong>' . $geo[1] . '</strong>', '<span class="mailster-flag flag-' . strtolower( $geo[0] ) . '"></span> <strong>' . $geo[0] . '</strong>' );
 			}
-
-		endif;
+		}
 		$html .= '</p>';
 
 		$html .= '</li>';
-		if ( $actions->bounces ) {
-			$html .= '<li><label class="red">' . sprintf( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ), $actions->softbounces_total ) . '</label> <strong class="red">' . sprintf( __( 'Hard bounced at %s', 'mailster' ), date( $timeformat, $actions->bounces + $timeoffset ) . ', ' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $actions->bounces ) ) ) . '</strong> </li>';
-		}
 
 		if ( $actions->clicks ) {
 			$html .= '<li><ul>';
@@ -2602,6 +2608,19 @@ class MailsterSubscribers {
 				$html .= '<li class=""><a href="' . $link . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( _n( '%s click', '%s clicks', intval( $count ), 'mailster' ), $count ) . ')</span></li>';
 			}
 			$html .= '</ul></li>';
+		}
+
+		if ( $actions->unsubscribes ) {
+			$message = mailster( 'helper' )->get_unsubscribe_message( $this->meta( $id, 'unsubscribe', $campaign_id ) );
+			$html .= '<li>' . sprintf( __( 'Unsubscribes on %s', 'mailster' ), date( $timeformat, $actions->unsubscribes + $timeoffset ) . ', ' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $actions->unsubscribes ) ) ) . '<br>' . esc_html( $message ) . '</li>';
+		}
+
+		if ( $actions->bounces ) {
+			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
+			$html .= '<li><label class="red">' . sprintf( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ), $actions->softbounces_total ) . '</label> <strong class="red">' . sprintf( __( 'Hard bounced at %s', 'mailster' ), date( $timeformat, $actions->bounces + $timeoffset ) . ', ' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $actions->bounces ) ) ) . '</strong><br>' . esc_html( $message ) . '</li>';
+		} elseif ( $actions->softbounces ) {
+			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
+			$html .= '<li><label class="red">' . sprintf( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ), $actions->softbounces_total ) . '</label><br>' . esc_html( $message ) . '</li>';
 		}
 
 		$html .= '</ul>';

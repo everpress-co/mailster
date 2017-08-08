@@ -3,7 +3,7 @@ Contributors: EverPress, revaxarts
 Tags: mailster, mymail, newsletter, email, email marketing
 Requires at least: 3.8
 Tested up to: 4.8
-Stable tag: 2.2.8
+Stable tag: 2.2.9
 Author: EverPress
 Author URI: https://everpress.io
 
@@ -81,6 +81,15 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.2.9 =
+
+* added: support for the SparkPost add on
+* fixed: some tags with alternative content were not replaced when sending a test campaign
+* fixed: module screenshots returned error if more than 30 modules in template
+* improved: unsubscribe action can now contain a status for more info
+* change: send method now returns internal message ID
+* change: test mails to unknown email addresses are no longer assigned to the current user to prevent false mailbox actions
 
 = Version 2.2.8 =
 

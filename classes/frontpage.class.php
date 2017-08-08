@@ -453,12 +453,12 @@ class MailsterFrontpage {
 
 					$ip = mailster_option( 'track_users' ) ? mailster_get_ip() : null;
 					$user_meta = array(
-					'ID' => $subscriber->ID,
-					'confirm' => time(),
-					'status' => 1,
-					'ip_confirm' => $ip,
-					'ip' => $ip,
-					'lang' => mailster_get_lang(),
+						'ID' => $subscriber->ID,
+						'confirm' => time(),
+						'status' => 1,
+						'ip_confirm' => $ip,
+						'ip' => $ip,
+						'lang' => mailster_get_lang(),
 					);
 
 					if ( 'unknown' !== ( $geo = mailster_ip2City() ) ) {
