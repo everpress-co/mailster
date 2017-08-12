@@ -934,6 +934,11 @@ class MailsterSubscribers {
 					$meta['timeoffset'] = intval( $geo->timeoffset );
 				}
 			}
+			if ( isset( $meta['form'] ) ) {
+				if ( $lists = mailster( 'forms' )->get_lists( $meta['form'], true ) ) {
+					$this->assign_lists( $subscriber_id, $lists );
+				}
+			}
 
 			$this->add_custom_value( $subscriber_id, $customfields, null, ! $merge );
 			$this->update_meta( $subscriber_id, 0, $meta );
@@ -985,9 +990,7 @@ class MailsterSubscribers {
 
 		$now = time();
 
-		$entry = is_string( $entry ) ? (object) array( 'email' => $entry ) : (object) $entry;
-
-		$entry = (array) $entry;
+		$entry = is_string( $entry ) ? array( 'email' => $entry ) : (array) $entry;
 
 		$entry = wp_parse_args( $entry, array(
 				'hash' => $this->hash( $entry['email'] ),
@@ -1060,7 +1063,7 @@ class MailsterSubscribers {
 	 * @param unknown $subscriber_notification (optional)
 	 * @return unknown
 	 */
-	public function add_from_wp_user( $user_id, $userdata = array(), $merge = false, $subscriber_notification = true ) {
+	public function add_from_wp_user( $user_id = null, $userdata = array(), $merge = false, $subscriber_notification = true ) {
 
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();

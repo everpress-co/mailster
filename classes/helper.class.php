@@ -603,7 +603,7 @@ class MailsterHelper {
 	 */
 	public function using_permalinks() {
 		global $wp_rewrite;
-		return is_object( $wp_rewrite ) && $wp_rewrite->using_permalinks();
+		return apply_filters( 'mailster_using_permalinks', is_object( $wp_rewrite ) && $wp_rewrite->using_permalinks() );
 	}
 
 
