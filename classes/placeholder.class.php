@@ -543,7 +543,7 @@ class MailsterPlaceholder {
 		$dateformat = get_option( 'date_format' );
 
 		// placeholder images
-		if ( $count = preg_match_all( '#<(img|td|th)(.*)(src|background)="(' . admin_url( 'admin-ajax.php' ) . '\?action=mailster_image_placeholder([^"]+))"(.*?)>#', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#<(img|td|th|v:fill)(.*)(src|background)="(' . admin_url( 'admin-ajax.php' ) . '\?action=mailster_image_placeholder([^"]+))"(.*?)>#', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
@@ -554,6 +554,7 @@ class MailsterPlaceholder {
 				$imagestring = $hits[4][ $i ];
 				$querystring = str_replace( '&amp;', '&', $hits[5][ $i ] );
 				$post_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[6][ $i ] );
+				$is_img_tag = 'img' == $tag;
 
 				parse_str( $querystring, $query );
 
@@ -564,9 +565,9 @@ class MailsterPlaceholder {
 					if ( false === $replace_to ) {
 
 						$parts = explode( ':', trim( $query['tag'] ) );
-						$width = isset( $query['w'] ) ? intval( $query['w'] ) : null;
-						$height = isset( $query['h'] ) ? intval( $query['h'] ) : null;
-						$factor = isset( $query['f'] ) ? intval( $query['f'] ) : 1;
+						$factor = isset( $query['f'] ) && $is_img_tag ? intval( $query['f'] ) : 1;
+						$width = isset( $query['w'] ) ? intval( $query['w'] ) * $factor : null;
+						$height = isset( $query['h'] ) ? intval( $query['h'] ) * $factor : null;
 						$crop = isset( $query['c'] ) && $height ? ! ! ( $query['c'] ) : false;
 
 						// cropping requires height
@@ -612,19 +613,22 @@ class MailsterPlaceholder {
 							}
 
 							if ( ! empty( $org_src ) ) {
+
 								if ( $org_src[1] && $org_src[2] ) {
 									$asp = $org_src[1] / $org_src[2];
 									$height = $height ? $height : round( ($width / $asp) / $factor );
-									$post_stuff = 'height="' . $height . '" ' . $post_stuff;
 									$img = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height, $crop );
+								} else {
+									$img = array( 'url' => $org_src[0] );
 								}
 
-								if ( 'img' == $tag ) {
-									$replace_to = '<img ' . $pre_stuff . 'src="' . $org_src[0] . '" ' . $post_stuff . '>';
+								if ( $is_img_tag ) {
+									$post_stuff = 'height="' . $height . '" ' . $post_stuff;
+									$replace_to = '<img ' . $pre_stuff . 'src="' . $img['url'] . '" ' . $post_stuff . '>';
 								} else {
 									$pre_stuff = str_replace( $imagestring, $img['url'], $pre_stuff );
 									$post_stuff = str_replace( $imagestring, $img['url'], $post_stuff );
-									$replace_to = '<' . $tag . ' ' . $pre_stuff . 'background="' . $org_src[0] . '" ' . $post_stuff . '>';
+									$replace_to = '<' . $tag . ' ' . $pre_stuff . 'background="' . $img['url'] . '" ' . $post_stuff . '>';
 								}
 							}
 

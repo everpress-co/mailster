@@ -2168,7 +2168,7 @@ jQuery(document).ready(function ($) {
 			var m;
 			if (/^\{([a-z0-9-_]+)_image:-?[0-9,;]+(\|\d+)?\}$/.test(val)) {
 				var f = factor.val();
-				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + ((w || imagewidth.val()) * f) + '&h=' + ((h || imageheight.val()) * f) + '&c=' + (imagecrop.prop(':checked') ? 1 : 0) + '&f=' + f;
+				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + ((w || imagewidth.val())) + '&h=' + ((h || imageheight.val())) + '&c=' + (imagecrop.prop(':checked') ? 1 : 0) + '&f=' + f;
 			}
 			/*
 			else if(m = val.match(/(https?)(.*?)youtube\.com\/watch\?v=([a-zA-Z0-9]+)/)){
@@ -2530,7 +2530,7 @@ jQuery(document).ready(function ($) {
 													'background': response.image.url,
 												})
 												.data('id', currenttext.image[i].id)
-												.css('background-image', 'url(\'' + response.image.url + '\')');
+												.css('background-image', '');
 											current.element.html(_replace(current.element.html(), orgurl, response.image.url));
 										}
 									}
@@ -2560,13 +2560,15 @@ jQuery(document).ready(function ($) {
 										})
 										.removeData('id');
 								} else {
+									var orgurl = imgelement.attr('background');
 									imgelement
 										.removeAttr('data-id')
 										.attr({
 											'background': dynamicImage(currenttext.image[i], width)
 										})
 										.removeData('id')
-										.css('background-image', 'url(\'' + dynamicImage(currenttext.image[i], width) + '\')');
+										.css('background-image', '');
+									current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width)));
 								}
 							}
 
