@@ -2144,7 +2144,8 @@ jQuery(document).ready(function ($) {
 					post_type: post_type,
 					relative: relative,
 					extra: extra,
-					modulename: current.name
+					modulename: current.name,
+					expect: current.elements.expects
 				}, function (response) {
 					loader(false);
 					if (response.success) {
@@ -2172,10 +2173,8 @@ jQuery(document).ready(function ($) {
 			}
 			/*
 			else if(m = val.match(/(https?)(.*?)youtube\.com\/watch\?v=([a-zA-Z0-9]+)/)){
-				console.log(val, m);
 				val = m[1]+'://img.youtube.com/vi/'+m[3]+'/maxresdefault.jpg';
 				$.getJSON(m[1]+'://gdata.youtube.com/feeds/api/videos/'+m[3]+'?v=2&alt=jsonc&callback=?', function(response){
-					console.log(response);
 					//imagelink.val();
 					imagelink.val(response.data.player.default.replace('&feature=youtube_gdata_player','&feature=mailster'));
 					imagealt.val(response.data.title);
@@ -2184,7 +2183,6 @@ jQuery(document).ready(function ($) {
 
 				});
 			}else{
-				console.log('no dynmaic');
 			}
 			*/
 			return val
@@ -2409,7 +2407,7 @@ jQuery(document).ready(function ($) {
 				} else if ('rss' == insertmethod) {
 
 					var contenttype = $('.embed_options_content_rss:checked').val();
-					current.element.removeAttr('data-tag').removeData('tag');
+					current.element.removeAttr('data-tag').removeData('tag').attr('data-rss', $('#rss_url').val());
 
 				} else {
 
@@ -2422,11 +2420,13 @@ jQuery(document).ready(function ($) {
 
 					if (currenttext.title) {
 
-						if (!$.isArray(currenttext.title)) {
-							currenttext.title = [currenttext.title];
-						}
-						current.elements.headlines.each(function (i, e) {
-							$(this).html(currenttext.title[i] ? currenttext.title[i] : '');
+						current.elements.single.each(function (i, e) {
+							var _this = $(this),
+								expected = _this.attr('expect') || 'title';
+							if (!$.isArray(currenttext[expected])) {
+								currenttext[expected] = [currenttext[expected]];
+							}
+							_this.html(currenttext[expected].shift());
 						});
 
 					}
@@ -2438,8 +2438,7 @@ jQuery(document).ready(function ($) {
 							current.elements.buttons.not(':last').remove();
 						} else {
 
-							current.elements.bodies.last().after('<buttons><table class="textbutton" align="left"><tr><td align="center" width="auto"><a href="' + currenttext.link + '" title="' + mailsterL10n.read_more + '" editable label="' + mailsterL10n.read_more + '">' + mailsterL10n.read_more + '</a></td></tr></table></buttons>');
-
+							current.elements.multi.last().after('<buttons><table class="textbutton" align="left"><tr><td align="center" width="auto"><a href="' + currenttext.link + '" title="' + mailsterL10n.read_more + '" editable label="' + mailsterL10n.read_more + '">' + mailsterL10n.read_more + '</a></td></tr></table></buttons>');
 						}
 
 					} else {
@@ -2454,8 +2453,8 @@ jQuery(document).ready(function ($) {
 
 					}
 
-					if (current.elements.bodies.length) {
-						var contentcount = current.elements.bodies.length,
+					if (current.elements.multi.length) {
+						var contentcount = current.elements.multi.length,
 							org_content = currenttext[contenttype] ? currenttext[contenttype] : '',
 							content = [],
 							contentlength,
@@ -2471,7 +2470,7 @@ jQuery(document).ready(function ($) {
 							content = org_content;
 						}
 
-						current.elements.bodies.each(function (i, e) {
+						current.elements.multi.each(function (i, e) {
 							$(this).html(content[i] ? content[i] : '');
 						});
 
@@ -2735,27 +2734,15 @@ jQuery(document).ready(function ($) {
 
 				loader();
 				_ajax('get_post', {
-					id: id
+					id: id,
+					expect: current.elements.expects
 				}, function (response) {
 					loader(false);
 					base.find('li.selected').removeClass('selected');
 					_this.addClass('selected')
 					if (response.success) {
-						currenttext = {
-							title: response.title,
-							alt: response.alt,
-							link: response.link,
-							content: response.content,
-							excerpt: response.excerpt,
-							image: response.image ? {
-								id: response.image.id,
-								src: response.image.src,
-								name: response.image.name
-							} : false
-						};
-
+						currenttext = response.pattern;
 						base.find('.editbarinfo').html(mailsterL10n.curr_selected + ': <span>' + currenttext.title + '</span>');
-
 					}
 				}, function (jqXHR, textStatus, errorThrown) {
 
@@ -3060,10 +3047,13 @@ jQuery(document).ready(function ($) {
 					assetslist = base.find('.postlist').eq(0);
 					loadPosts();
 					current.elements = {
-						headlines: current.element.find('single'),
-						bodies: current.element.find('multi'),
+						single: current.element.find('single'),
+						multi: current.element.find('multi'),
 						buttons: current.element.find('a[editable]'),
-						images: current.element.find('img[editable]')
+						images: current.element.find('img[editable]'),
+						expects: current.element.find('[expect]').map(function () {
+							return $(this).attr('expect');
+						}).toArray()
 					}
 
 				} else if (type == 'codeview') {
@@ -3072,7 +3062,6 @@ jQuery(document).ready(function ($) {
 						if (codeview) {
 							codeview.clearHistory();
 						}
-
 
 						codeview = codeview || CodeMirror.fromTextArea(textarea.get(0), {
 							mode: {
