@@ -17,6 +17,11 @@ class MailsterForms {
 
 		if ( is_admin() ) {
 
+			add_action( 'mailster_use_it_form_tab_intro', array( &$this, 'use_it_form_tab_intro' ) );
+			add_action( 'mailster_use_it_form_tab_shortcode', array( &$this, 'use_it_form_tab_shortcode' ) );
+			add_action( 'mailster_use_it_form_tab_subscriber-button', array( &$this, 'use_it_form_tab_subscriber_button' ) );
+			add_action( 'mailster_use_it_form_tab_form-html', array( &$this, 'use_it_form_tab_form_html' ) );
+
 		} else {
 
 			add_action( 'mailster_form_header', array( &$this, 'set_form_request' ) );
@@ -1051,7 +1056,7 @@ class MailsterForms {
 			$i = 100;
 
 			foreach ( $result as $row ) {
-				preg_match_all( '#\[newsletter_signup_form((.*)id="?(\d+)"?)?#', $row->post_content, $matches );
+				preg_match_all( '#\[newsletter_signup_form((.*)id="?(\d+)"?)?#i', $row->post_content, $matches );
 				foreach ( $matches[3] as $found_form_id ) {
 					if ( ! $found_form_id ) {
 						$found_form_id = 0;
@@ -1218,6 +1223,132 @@ class MailsterForms {
 			}
 		}
 
+	}
+
+
+	public function use_it_form_tab_intro( $form ) {
+		?>
+		<h4>&hellip; <?php esc_html_e( 'Shortcode', 'mailster' ) ?></h4>
+		<p class="description"><?php esc_html_e( 'Use a shortcode on a blog post, page or wherever they are excepted.', 'mailster' ) ?> <?php printf( __( 'Read more about shortcodes at %s', 'mailster' ), '<a href="https://codex.wordpress.org/Shortcode">WordPress Codex</a>' ) ?></p>
+
+		<h4>&hellip; <?php esc_html_e( 'Widget', 'mailster' ) ?></h4>
+		<p class="description"><?php printf( __( 'Use this form as a %s in one of your sidebars', 'mailster' ), '<a href="widgets.php">' . __( 'widget', 'mailster' ) . '</a>' ) ?>.</p>
+
+		<h4>&hellip; <?php esc_html_e( 'Subscriber Button', 'mailster' ) ?></h4>
+		<p class="description"><?php esc_html_e( 'Embed your form on any site, no matter if it is your current or a third party one. It\'s similar to the Twitter button.', 'mailster' ) ?></p>
+
+		<h4>&hellip; HTML</h4>
+		<p class="description"><?php esc_html_e( 'Use your form via the HTML markup. This is often required by third party plugins. You can choose between an iframe or the raw HTML.', 'mailster' ) ?></p>
+		<?php
+
+	}
+
+	public function use_it_form_tab_shortcode( $form ) {
+		?>
+		<input type="text" class="code widefat" value="[newsletter_signup_form id=<?php echo intval( $form->ID ) ?>]">
+		<p class="description"><?php esc_html_e( 'Use this shortcode wherever they are excepted.', 'mailster' ) ?></p>
+		<?php
+	}
+
+	public function use_it_form_tab_subscriber_button( $form ) {
+		?>
+		<p class="description"><?php esc_html_e( 'Embed a button where users can subscribe on any website', 'mailster' ) ?></p>
+
+		<?php
+		$subscribercount = mailster( 'subscribers' )->get_count( 'kilo' );
+		$embeddedcode = mailster( 'forms' )->get_subscribe_button();
+		?>
+
+		<div class="wrapper">
+
+			<h4><?php esc_html_e( 'Button Style', 'mailster' ) ?></h4>
+			<?php $styles = array( 'default', 'wp', 'twitter', 'flat', 'minimal' ) ?>
+			<ul class="subscriber-button-style">
+			<?php foreach ( $styles as $i => $style ) { ?>
+				<li><label>
+				<input type="radio" name="subscriber-button-style" value="<?php echo esc_attr( $style ) ?>" <?php checked( ! $i );?>>
+				<div class="btn-widget design-<?php echo $style ?> count">
+					<div class="btn-count"><i></i><u></u><a><?php echo $subscribercount ?></a></div>
+					<a class="btn"><?php echo esc_html( $form->submit ); ?></a>
+				</div>
+				</label></li>
+			<?php } ?>
+			</ul>
+
+		<div class="clear"></div>
+
+		<div class="wrapper-left">
+
+			<h4><?php esc_html_e( 'Button Options', 'mailster' ) ?></h4>
+
+			<div class="button-options-wrap">
+
+				<p><?php esc_html_e( 'Popup width', 'mailster' ) ?>:
+					<input type="text" id="buttonwidth" placeholder="480" value="480" class="small-text"></p>
+
+				<h4><?php esc_html_e( 'Label', 'mailster' ) ?></h4>
+				<p><label><input type="radio" name="buttonlabel" value="default" checked>
+				<?php esc_html_e( 'Use Form Default', 'mailster' ) ?></label></p>
+				<p><input type="radio" name="buttonlabel" value="custom">
+				<input type="text" id="buttonlabel" placeholder="<?php echo esc_attr( $form->submit ); ?>" value="<?php echo esc_attr( $form->submit ); ?>"></p>
+
+				<h4><?php esc_html_e( 'Subscriber Count', 'mailster' ) ?></h4>
+				<p><label><input type="checkbox" id="showcount" checked> <?php esc_html_e( 'Display subscriber count', 'mailster' ) ?></label></p>
+				<p><label><input type="checkbox" id="ontop"> <?php esc_html_e( 'Count above Button', 'mailster' ) ?></label></p>
+
+				</div>
+
+			</div>
+
+			<div class="wrapper-right">
+
+				<h4><?php esc_html_e( 'Preview and Code', 'mailster' ) ?></h4>
+
+				<p><?php esc_html_e( 'Test your button', 'mailster' ) ?> &hellip;</p>
+					<div class="button-preview">
+						<?php echo $embeddedcode; ?>
+					</div>
+
+				<p>&hellip; <?php esc_html_e( 'embed it somewhere', 'mailster' ) ?> &hellip;</p>
+					<div class="code-preview">
+						<textarea class="code" readonly></textarea>
+					</div>
+				<p>&hellip; <?php esc_html_e( 'or use this shortcode on your site', 'mailster' ) ?></p>
+					<div class="shortcode-preview">
+						<input type="text" class="widefat code" readonly>
+					</div>
+
+			</div>
+		</div>
+		<?php
+	}
+
+	public function use_it_form_tab_form_html( $form ) {
+		?>
+		<h4><?php esc_html_e( 'iFrame Version', 'mailster' ) ?></h4>
+
+		<?php $embedcode = '<iframe width="%s" height="%s" allowTransparency="true" frameborder="0" scrolling="no" style="border:none" src="' . $this->url( array( 'id' => $form->ID ) ) . '%s"></iframe>'; ?>
+
+		<div>
+			<label><?php esc_html_e( 'width', 'mailster' );?>: <input type="text" class="small-text embed-form-input" value="100%"></label>
+			<label><?php esc_html_e( 'height', 'mailster' );?>: <input type="text" class="small-text embed-form-input" value="500"></label>
+			<label title="<?php esc_html_e( 'check this option to include the style.css of your theme into the form', 'mailster' );?>"><input type="checkbox" value="1" class="embed-form-input" checked> <?php esc_html_e( 'include themes style.css', 'mailster' );?></label>
+			<textarea class="widefat code embed-form-output" data-embedcode="<?php echo esc_attr( $embedcode ) ?>"><?php echo esc_textarea( $embedcode ) ?></textarea>
+		</div>
+
+		<h4><?php esc_html_e( 'HTML Version', 'mailster' ) ?></h4>
+
+		<div>
+		<?php
+			$form->add_class( 'extern' );
+			$form->prefill( false );
+			$form->ajax( false );
+			$form->embed_style( false );
+			$form->referer( 'extern' );
+		?>
+			<textarea class="widefat code form-output"><?php echo esc_textarea( $form->render( false ) ) ?></textarea>
+		</div>
+		<?php
 	}
 
 

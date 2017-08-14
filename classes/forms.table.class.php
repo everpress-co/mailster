@@ -105,7 +105,7 @@ class Mailster_Forms_Table extends WP_List_Table {
 
 				echo '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $item->ID ) . '" title="' . $item->name . '">' . ( $item->name ? $item->name : '<span class="grey">' . __( 'undefined', 'mailster' ) . '</span>' ) . '</a> <strong>(#' . $item->ID . ')</strong>';
 
-				if ( mailster_option( 'profile_form', 0 ) == $item->ID ) {
+				if ( mailster_option( 'profile_form', 1 ) == $item->ID ) {
 					echo '<span class="dashicons-before dashicons-admin-users" title="' . __( 'This form is used for user profile updates', 'mailster' ) . '"></span>';
 				}
 

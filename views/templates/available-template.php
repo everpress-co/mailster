@@ -6,15 +6,18 @@ $class = array( 'mailster-box' );
 if ( $data['update'] ) {
 	$class[] = 'update';
 }
-if ( isset( $data['is_feature'] ) ) {
+if ( $data['is_feature'] ) {
 	$class[] = 'is-feature';
 }
-if ( isset( $data['is_free'] ) ) {
+if ( $data['is_free'] ) {
 	$class[] = 'is-free';
+}
+if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) ) {
+	$class[] = 'is-unsupported';
 }
 
 ?>
-	<li class="<?php echo implode( ' ', $class ) ?>" id="template-<?php echo $slug ?>" data-id="<?php echo esc_attr( $slug ) ?>">
+	<li class="<?php echo implode( ' ', $class ) ?>" id="template-<?php echo $slug ?>" data-id="<?php echo esc_attr( $slug ) ?>" data-support="<?php echo esc_attr( sprintf( __( 'This Template requires at least version %s of Mailster.', 'mailster' ), $data['requires'] ) ); ?>">
 		<a class="external screenshot" title="<?php echo $data['name'] . ' ' . $data['new_version'] . ' ' . esc_attr__( 'by', 'mailster' ) . ' ' . $data['author'] ?>" <?php echo ! empty( $data['uri'] ) ? 'href="' . esc_url( $data['uri'] ) . '" ' : '' ?> data-slug="<?php echo esc_attr( $slug ) ?>">
 				<img alt="" src="<?php echo esc_url( $data['image'] ) ?>" width="300" height="225">
 		</a>
@@ -29,6 +32,7 @@ if ( isset( $data['is_free'] ) ) {
 		<div class="description">
 		<?php if ( isset( $data['description'] ) ) : ?><p><?php echo $data['description'] ?></p><?php endif; ?>
 		</div>
+		<?php if ( ! $unsupported ) : ?>
 		<div class="licensecode">
 			<form action="edit.php?post_type=newsletter&page=mailster_templates&more" method="get">
 			<input type="hidden" name="post_type" = value="newsletter">
@@ -43,9 +47,9 @@ if ( isset( $data['is_free'] ) ) {
 		</div>
 		<div class="action-links">
 			<ul>
-				<?php if ( ! empty( $data['is_free'] ) || ! empty( $licensecode ) ) : ?>
+				<?php if ( $data['is_free'] || ! empty( $licensecode ) ) : ?>
 
-					<?php if ( empty( $data['is_free'] ) ) : ?>
+					<?php if ( ! $data['is_free'] ) : ?>
 
 						<li>
 							<a title="<?php esc_html_e( 'activate with licensecode', 'mailster' );?>" class="activate button" href="edit.php?post_type=newsletter&page=mailster_templates&action=license&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'license-' . $slug ) ?>" data-slug="<?php echo $slug ?>" data-license="<?php echo $licensecode ?>"> <?php esc_html_e( 'Change Code', 'mailster' );?></a>
@@ -106,5 +110,6 @@ if ( isset( $data['is_free'] ) ) {
 				<?php endif; ?>
 			</ul>
 		</div>
+		<?php endif; ?>
 		<div class="loader"></div>
 	</li>

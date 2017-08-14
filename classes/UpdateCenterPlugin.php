@@ -1,6 +1,6 @@
 <?php
 
-// Version 2.6
+// Version 3.0
 // UpdateCenterPlugin Class
 if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 
@@ -418,39 +418,44 @@ if ( ! class_exists( 'UpdateCenterPlugin' ) ) :
 		 */
 		public function http_request_args( $r, $url ) {
 
-			if ( false !== strpos( $url, 'api.wordpress.org/plugins/update-check' ) ) {
-
-				if ( ! isset( $r['body']['plugins'] ) ) {
-					return $r;
-				}
-
-				// remove updatecenter plugins from the wordpress check
-				$original = json_decode( $r['body']['plugins'], true );
-
-				$plugins = $original['plugins'];
-				$uc_plugins = array_keys( self::$plugin_data );
-
-				$r['body']['plugins'] = json_encode( array(
-					'plugins' => array_intersect_key( $plugins, array_flip( array_keys( array_diff_key( $plugins, array_flip( $uc_plugins ) ) ) ) ),
-					'active' => array_merge( array_diff( array_merge( array_diff( $original['active'], $uc_plugins ) ), $uc_plugins ) ),
-				) );
-
+			// remove updatecenter plugins from the WordPress check
+			// if ( false !== strpos( $url, 'api.wordpress.org/plugins/update-check' ) ) {
+			// if ( ! isset( $r['body']['plugins'] ) || empty( self::$plugin_data ) ) {
+			// return $r;
+			// }
+			// $plugins = json_decode( $r['body']['plugins'], true );
+			// $installed = $plugins['plugins'];
+			// $active = $plugins['active'];
+			// $uc_plugins = wp_list_pluck( self::$plugin_data, 'plugin' );
+			// foreach ( $uc_plugins as $slug => $plugin ) {
+			// if ( isset( $installed[ $plugin ] ) ) {
+			// unset( $installed[ $plugin ] );
+			// }
+			// if ( ($key = array_search( $plugin, $active )) !== false ) {
+			// unset( $active[ $key ] );
+			// }
+			// }
+			// $r['body']['plugins'] = json_encode( array(
+			// 'plugins' => $installed,
+			// 'active' => $active,
+			// ) );
+			// return $r;
+			// }
+			if ( empty( self::$plugins ) ) {
 				return $r;
-
 			}
 
-			foreach ( self::$plugins as $slug => $plugin ) {
-				if ( $url == $plugin->package && isset( self::$plugins[ $slug ] ) ) {
+			$plugin_urls = wp_list_pluck( self::$plugins, 'package' );
 
-					if ( ! isset( $r['headers'] ) ) {
-						$r['headers'] = array();
-					}
-
-					$r['headers']['x-updatecenter'] = serialize( self::header_infos( $slug ) );
-					return $r;
+			if ( ($slug = array_search( $url, $plugin_urls )) !== false ) {
+				if ( ! isset( $r['headers'] ) ) {
+					$r['headers'] = array();
 				}
+				$r['headers']['x-updatecenter'] = serialize( self::header_infos( $slug ) );
 			}
+
 			return $r;
+
 		}
 
 
