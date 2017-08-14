@@ -559,10 +559,17 @@ class MailsterPlaceholder {
 					$replace_to = mailster_cache_get( 'mailster_' . $querystring );
 
 					if ( false === $replace_to ) {
+
 						$parts = explode( ':', trim( $query['tag'] ) );
 						$width = isset( $query['w'] ) ? intval( $query['w'] ) : null;
-						// $height = isset($query['h']) ? intval($query['h']) : NULL;
+						$height = isset( $query['h'] ) ? intval( $query['h'] ) : null;
 						$factor = isset( $query['f'] ) ? intval( $query['f'] ) : 1;
+						$crop = isset( $query['c'] ) && $height ? ! ! ( $query['c'] ) : false;
+
+						// cropping requires height
+						if ( ! $crop ) {
+							$height = null;
+						}
 
 						$post_type = str_replace( '_image', '', $parts[0] );
 
@@ -604,9 +611,11 @@ class MailsterPlaceholder {
 
 							if ( ! empty( $org_src ) && $org_src[1] && $org_src[2] ) {
 
-								$img = mailster( 'helper' )->create_image( null, $org_src[0], $width );
+								$img = mailster( 'helper' )->create_image( null, $org_src[0], $width, $height, $crop );
 								$asp = $org_src[1] / $org_src[2];
-								$height = $width / $asp;
+								if ( ! $height ) {
+									$height = $width / $asp;
+								}
 
 								$replace_to = '<img ' . $pre_stuff . 'src="' . $img['url'] . '" height="' . round( $height / $factor ) . '"' . $post_stuff . '>';
 

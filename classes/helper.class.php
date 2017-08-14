@@ -14,6 +14,11 @@ class MailsterHelper {
 	 */
 	public function create_image( $attach_id = null, $img_url = null, $width, $height = null, $crop = false ) {
 
+		$image = apply_filters( 'mailster_pre_create_image', null, $attach_id, $img_url, $width, $height, $crop );
+		if ( ! is_null( $image ) ) {
+			return $image;
+		}
+
 		if ( $attach_id ) {
 
 			$attach_id = intval( $attach_id );
@@ -42,14 +47,13 @@ class MailsterHelper {
 				/* todo: reconize URLs */
 				if ( ! file_exists( $actual_file_path ) ) {
 
-					return array(
+					return apply_filters( 'mailster_create_image', array(
 						'id' => $attach_id,
 						'url' => $img_url,
 						'width' => $width,
 						'height' => null,
 						'asp' => null,
-						'_' => 1,
-					);
+					), $attach_id, $img_url, $width, $height, $crop);
 
 				}
 			}
@@ -57,12 +61,11 @@ class MailsterHelper {
 			$actual_file_path = ltrim( $file_path['path'], '/' );
 			$actual_file_path = rtrim( ABSPATH, '/' ) . $file_path['path'];
 
-			if ( file_exists( $actual_file_path ) ) {
-				$orig_size = getimagesize( $actual_file_path );
-			} else {
+			if ( ! file_exists( $actual_file_path ) ) {
 				$actual_file_path = ABSPATH . str_replace( site_url( '/' ), '', $img_url );
-				$orig_size = getimagesize( $actual_file_path );
 			}
+
+			$orig_size = getimagesize( $actual_file_path );
 
 			$image_src[0] = $img_url;
 			$image_src[1] = $orig_size[0];
@@ -74,56 +77,59 @@ class MailsterHelper {
 			$height = round( $width / ( $image_src[1] / $image_src[2] ) );
 		}
 
+		// $size_id = '_mailster-' . $width . 'x' . $height . '.' . $crop;
+		// $size_id = 'mailster-'.$width;
+		// $meta_data = wp_get_attachment_metadata( $attach_id );
+		// $meta_data['sizes'][$size_id] = array(
+		// 'width' => $width,
+		// 'height' => $height,
+		// 'crop' => $crop,
+		// );
+		// add_filter( '_intermediate_image_sizes_advanced', function() use($size_id, $width, $height, $crop){
+		// return array($size_id => array(
+		// 'width' => $width,
+		// 'height' => $height,
+		// 'crop' => $crop,
+		// ));
+		// } );
+		// add_image_size( $size_id, $width, $height, $crop );
+		// $data = wp_generate_attachment_metadata( $attach_id, $actual_file_path );
+		// echo '<pre>'.print_r($data, true).'</pre>';
+		// echo '<pre>'.print_r($meta_data, true).'</pre>';
+		// wp_update_attachment_metadata( $attach_id, $data );
+		// update_post_meta( $attach_id, '_wp_attachment_metadata', $meta_data );
+		// return;
 		$file_info = pathinfo( $actual_file_path );
 		$extension = $file_info['extension'];
 
-		$no_ext_path = $file_info['dirname'] . '/' . $file_info['filename'];
+		$no_ext_path = trailingslashit( $file_info['dirname'] ) . $file_info['filename'];
 
-		$cropped_img_path = $no_ext_path . '-' . $width . 'x' . $height . '.' . $extension;
+		// $cropped_img_path = $no_ext_path . '-' . $width . 'x' . $height . '.' . $extension;
+		// if ( file_exists( $cropped_img_path ) ) {
+		// $cropped_img_url = str_replace( basename( $image_src[0] ), basename( $cropped_img_path ), $image_src[0] );
+		// return array(
+		// 'id' => $attach_id,
+		// 'url' => $cropped_img_url,
+		// 'width' => $width,
+		// 'height' => $height,
+		// 'asp' => $height ? $width / $height : null,
+		// '_' => 2,
+		// );
+		// }
+		$new_img_size = array( $width, $height );
+		if ( ! $crop ) {
+			$new_img_size = wp_constrain_dimensions( $image_src[1], $image_src[2], $width, $height );
+		}
+		$resized_img_path = $no_ext_path . '-' . $new_img_size[0] . 'x' . $new_img_size[1] . '.' . $extension;
+		$new_img = str_replace( basename( $image_src[0] ), basename( $resized_img_path ), $image_src[0] );
 
-		if ( $image_src[1] > $width || $image_src[2] > $height ) {
+		if ( ! file_exists( $resized_img_path ) ) {
 
-			if ( file_exists( $cropped_img_path ) ) {
-				$cropped_img_url = str_replace( basename( $image_src[0] ), basename( $cropped_img_path ), $image_src[0] );
-
-				return array(
-					'id' => $attach_id,
-					'url' => $cropped_img_url,
-					'width' => $width,
-					'height' => $height,
-					'asp' => $height ? $width / $height : null,
-					'_' => 2,
-				);
-			}
-
-			if ( $crop == false ) {
-
-				$proportional_size = wp_constrain_dimensions( $image_src[1], $image_src[2], $width, $height );
-				$resized_img_path = $no_ext_path . '-' . $proportional_size[0] . 'x' . $proportional_size[1] . '.' . $extension;
-
-				if ( file_exists( $resized_img_path ) ) {
-					$resized_img_url = str_replace( basename( $image_src[0] ), basename( $resized_img_path ), $image_src[0] );
-
-					return array(
-						'id' => $attach_id,
-						'url' => $resized_img_url,
-						'width' => $proportional_size[0],
-						'height' => $proportional_size[1],
-						'asp' => $proportional_size[1] ? $proportional_size[0] / $proportional_size[1] : null,
-						'_' => 3,
-					);
-				}
-			}
-
-			if ( function_exists( 'wp_get_image_editor' ) ) {
-				$image = wp_get_image_editor( $actual_file_path );
-				if ( ! is_wp_error( $image ) ) {
-					$image->resize( $width, $height, $crop );
-					$imageobj = $image->save();
-					$new_img_path = ! is_wp_error( $imageobj ) ? $imageobj['path'] : $actual_file_path;
-				} else {
-					$new_img_path = image_resize( $actual_file_path, $width, $height, $crop );
-				}
+			$image = wp_get_image_editor( $actual_file_path );
+			if ( ! is_wp_error( $image ) ) {
+				$image->resize( $width, $height, $crop );
+				$imageobj = $image->save();
+				$new_img_path = ! is_wp_error( $imageobj ) ? $imageobj['path'] : $actual_file_path;
 			} else {
 				$new_img_path = image_resize( $actual_file_path, $width, $height, $crop );
 			}
@@ -135,27 +141,28 @@ class MailsterHelper {
 			$new_img_size = getimagesize( $new_img_path );
 			$new_img = str_replace( basename( $image_src[0] ), basename( $new_img_path ), $image_src[0] );
 
-			return array(
-				'id' => $attach_id,
-				'url' => $new_img,
-				'width' => $new_img_size[0],
-				'height' => $new_img_size[1],
-				'asp' => $new_img_size[1] ? $new_img_size[0] / $new_img_size[1] : null,
-				'_' => 4,
+			$meta_data = wp_get_attachment_metadata( $attach_id );
+			$size_id = '_mailster-' . $width . 'x' . $height . '|' . $crop;
+			$meta_data['sizes'][ $size_id ] = array(
+				'file' => basename( $new_img_path ),
+				'width' => $width,
+				'height' => $height,
+				'mime-type' => $new_img_size['mime'],
 			);
+			wp_update_attachment_metadata( $attach_id, $meta_data );
 
 		}
 
-		return array(
+		return apply_filters( 'mailster_create_image', array(
 			'id' => $attach_id,
-			'url' => $image_src[0],
-			'width' => $image_src[1],
-			'height' => $image_src[2],
-			'asp' => $image_src[2] ? $image_src[1] / $image_src[2] : null,
-			'_' => 5,
-		);
+			'url' => $new_img,
+			'width' => $new_img_size[0],
+			'height' => $new_img_size[1],
+			'asp' => $new_img_size[1] ? $new_img_size[0] / $new_img_size[1] : null,
+		), $attach_id, $img_url, $width, $height, $crop);
 
 	}
+
 
 
 	/**

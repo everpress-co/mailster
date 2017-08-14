@@ -3,7 +3,7 @@ Contributors: EverPress, revaxarts
 Tags: mailster, mymail, newsletter, email, email marketing
 Requires at least: 3.8
 Tested up to: 4.8.1
-Stable tag: 2.2.10
+Stable tag: 2.3
 Author: EverPress
 Author URI: https://everpress.io
 
@@ -81,6 +81,11 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.3 =
+
+* improved: image procession to support more third party plugins
+* new: option to crop images in the picpicker
 
 = Version 2.2.10 =
 

@@ -1029,7 +1029,7 @@ class MailsterAjax {
 			$src = isset( $_POST['src'] ) ? ( $_POST['src'] ) : null;
 			$crop = isset( $_POST['crop'] ) ? ( $_POST['crop'] == 'true' ) : false;
 			$width = isset( $_POST['width'] ) ? intval( $_POST['width'] ) : null;
-			$height = isset( $_POST['height'] ) ? intval( $_POST['height'] ) : null;
+			$height = isset( $_POST['height'] ) && $crop ? intval( $_POST['height'] ) : null;
 
 			$return['success'] = ! ! ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop ) );
 		}
