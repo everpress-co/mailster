@@ -562,14 +562,6 @@ class MailsterAjax {
 
 				// check for subscriber by mail
 				$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
-				if ( ! $subscriber ) {
-
-					$current_user = wp_get_current_user();
-
-					// check subscriber by wp user
-					$subscriber = mailster( 'subscribers' )->get_by_wpid( $current_user->ID, true );
-
-				}
 
 				if ( $subscriber ) {
 
@@ -589,7 +581,7 @@ class MailsterAjax {
 					$mail->set_subscriber( $subscriber->ID );
 					$placeholder->set_subscriber( $subscriber->ID );
 
-				} elseif ( $current_user ) {
+				} elseif ( $current_user = wp_get_current_user() ) {
 
 					$profilelink = mailster()->get_profile_link( $ID, '' );
 
@@ -601,6 +593,7 @@ class MailsterAjax {
 					);
 				} else {
 					// no subscriber found for data
+					$names = null;
 				}
 
 				if ( $names ) {
@@ -619,7 +612,7 @@ class MailsterAjax {
 				) );
 
 				$placeholder->share_service( $campaign_permalink, $subject );
-				$content = $placeholder->get_content( false );
+				$content = $placeholder->get_content();
 				$content = mailster( 'helper' )->prepare_content( $content );
 
 				// replace links with fake hash to prevent tracking

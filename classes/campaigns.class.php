@@ -4063,11 +4063,11 @@ class MailsterCampaigns {
 
 		if ( $result && ! is_wp_error( $result ) ) {
 			if ( $log ) {
-				do_action( 'mailster_send', $subscriber->ID, $campaign->ID );
-				do_action( 'mymail_send', $subscriber->ID, $campaign->ID );
+				do_action( 'mailster_send', $subscriber->ID, $campaign->ID, $result );
+				do_action( 'mymail_send', $subscriber->ID, $campaign->ID, $result );
 			}
 
-			return true;
+			return $result;
 		}
 
 		if ( is_wp_error( $result ) ) {
