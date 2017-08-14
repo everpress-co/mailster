@@ -2503,21 +2503,35 @@ jQuery(document).ready(function ($) {
 									if (response.success) {
 										loader(false);
 
-										imgelement.attr({
-											'data-id': currenttext.image[i].id,
-											'src': response.image.url,
-											'width': Math.round(response.image.width / f),
-											'height': Math.round(response.image.height / f),
-											'alt': currenttext.alt || currenttext.title[i]
-										}).data('id', currenttext.image[i].id);
+										if ('img' == imgelement.prop('tagName').toLowerCase()) {
+											imgelement
+												.attr({
+													'data-id': currenttext.image[i].id,
+													'src': response.image.url,
+													'width': Math.round(response.image.width / f),
+													'height': Math.round(response.image.height / f),
+													'alt': currenttext.alt || currenttext.title[i]
+												})
+												.data('id', currenttext.image[i].id);
 
-										if (imgelement.parent().is('a')) {
-											imgelement.unwrap();
-										}
+											if (imgelement.parent().is('a')) {
+												imgelement.unwrap();
+											}
 
-										if (currenttext.link) {
-											imgelement.wrap('<a>');
-											imgelement.parent().attr('href', currenttext.link);
+											if (currenttext.link) {
+												imgelement.wrap('<a>');
+												imgelement.parent().attr('href', currenttext.link);
+											}
+										} else {
+											var orgurl = imgelement.attr('background');
+											imgelement
+												.attr({
+													'data-id': currenttext.image[i].id,
+													'background': response.image.url,
+												})
+												.data('id', currenttext.image[i].id)
+												.css('background-image', 'url(\'' + response.image.url + '\')');
+											current.element.html(_replace(current.element.html(), orgurl, response.image.url));
 										}
 									}
 									close();
@@ -2530,25 +2544,30 @@ jQuery(document).ready(function ($) {
 
 								return false;
 
-							} else if ('rss' == insertmethod) {
-
-								var width = imgelement.width();
-
-								imgelement.removeAttr('height').removeAttr('data-id').attr({
-									'src': dynamicImage(currenttext.image[i].src, width),
-									'width': width,
-									'alt': currenttext.alt || currenttext.title[i]
-								}).removeData('id');
-
+								// rss and dynamic
 							} else {
 
 								var width = imgelement.width();
 
-								imgelement.removeAttr('height').removeAttr('data-id').attr({
-									'src': dynamicImage(currenttext.image[i], width),
-									'width': width,
-									'alt': currenttext.alt || currenttext.title[i]
-								}).removeData('id');
+								if ('img' == imgelement.prop('tagName').toLowerCase()) {
+									imgelement
+										.removeAttr('height')
+										.removeAttr('data-id')
+										.attr({
+											'src': dynamicImage(currenttext.image[i], width),
+											'width': width,
+											'alt': currenttext.alt || currenttext.title[i]
+										})
+										.removeData('id');
+								} else {
+									imgelement
+										.removeAttr('data-id')
+										.attr({
+											'background': dynamicImage(currenttext.image[i], width)
+										})
+										.removeData('id')
+										.css('background-image', 'url(\'' + dynamicImage(currenttext.image[i], width) + '\')');
+								}
 							}
 
 						});
@@ -3011,7 +3030,11 @@ jQuery(document).ready(function ($) {
 					var src = el.attr('src') || el.attr('background');
 					var url = isDynamicImage(src) || '';
 
-					if (el.parent().is('a')) imagelink.val(el.parent().attr('href').replace('%7B', '{').replace('%7D', '}'));
+					if (el.parent().is('a')) {
+						imagelink.val(el.parent().attr('href').replace('%7B', '{').replace('%7D', '}'));
+					} else {
+						imagelink.val('');
+					}
 
 					imagealt.val(el.attr('alt'));
 					imageurl.val(url);
@@ -3059,7 +3082,7 @@ jQuery(document).ready(function ($) {
 						headlines: current.element.find('single'),
 						bodies: current.element.find('multi'),
 						buttons: current.element.find('a[editable]'),
-						images: current.element.find('img[editable]')
+						images: current.element.find('img[editable], td[background], th[background]')
 					}
 
 				} else if (type == 'codeview') {
@@ -4046,12 +4069,12 @@ jQuery(document).ready(function ($) {
 
 	function _time() {
 
-		var t, x, h, m, usertime = new Date(),
+		var t, x, h, m, l, usertime = new Date(),
 			elements = $('.time'),
 			deliverytime = $('.deliverytime').eq(0),
 			activecheck = $('#mailster_data_active'),
 			servertime = parseInt(elements.data('timestamp'), 10) * 1000,
-			seconds = true,
+			seconds = false,
 			offset = servertime - usertime.getTime() + (usertime.getTimezoneOffset() * 60000);
 
 		var delay = (seconds) ? 1000 : 20000;
@@ -4069,7 +4092,8 @@ jQuery(document).ready(function ($) {
 			x.push(t.getHours());
 			x.push(t.getMinutes());
 			if (seconds) x.push(t.getSeconds());
-			for (var i = 0; i < 3; i++) {
+			l = x.length;
+			for (var i = 0; i < l; i++) {
 				x[i] = zero(x[i]);
 			};
 			elements.html(x.join('<span class="blink">:</span>'));
@@ -4079,7 +4103,10 @@ jQuery(document).ready(function ($) {
 		}
 
 		function zero(value) {
-			return (value < 10) ? '0' + value : value;
+			if (value < 10) {
+				value = '0' + value;
+			}
+			return value;
 		}
 
 		set();

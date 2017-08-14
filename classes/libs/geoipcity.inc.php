@@ -77,6 +77,10 @@ if ( !class_exists( 'geoipdnsrecord' ) ) {
 class mailster_CityIP {
 
 	public $geoIP;
+	public $GEOIP_STANDARD = 0;
+	public $GEOIP_MEMORY_CACHE = 1;
+	public $GEOIP_SHARED_MEMORY = 2;
+	public $GEOIP_CITY_EDITION_REV1 = 2;
 
 	/**
 	 *
@@ -86,7 +90,7 @@ class mailster_CityIP {
 	 */
 	public function __construct( $filename, $flags = '' ) {
 		if ( empty( $flags ) ) {
-			$flags = GEOIP_STANDARD;
+			$flags = $this->GEOIP_STANDARD;
 		}
 
 		$this->geoIP = new mailster_GeoIP( $filename, $flags );
@@ -181,9 +185,9 @@ class mailster_CityIP {
 
 		$record_pointer = $seek_country + ( 2 * $this->geoIP->record_length - 1 ) * $this->geoIP->databaseSegments;
 
-		if ( $this->geoIP->flags & GEOIP_MEMORY_CACHE ) {
+		if ( $this->geoIP->flags & $this->GEOIP_MEMORY_CACHE ) {
 			$record_buf = substr( $this->geoIP->memory_buffer, $record_pointer, FULL_RECORD_LENGTH );
-		} elseif ( $this->geoIP->flags & GEOIP_SHARED_MEMORY ) {
+		} elseif ( $this->geoIP->flags & $this->GEOIP_SHARED_MEMORY ) {
 			$record_buf = @shmop_read( $this->geoIP->shmid, $record_pointer, FULL_RECORD_LENGTH );
 		} else {
 			fseek( $this->geoIP->filehandle, $record_pointer, SEEK_SET );
@@ -244,7 +248,7 @@ class mailster_CityIP {
 			$longitude += ( $char << ( $j * 8 ) );
 		}
 		$record->longitude = ( $longitude / 10000 ) - 180;
-		if ( GEOIP_CITY_EDITION_REV1 == $this->geoIP->databaseType ) {
+		if ( $this->GEOIP_CITY_EDITION_REV1 == $this->geoIP->databaseType ) {
 			$metroarea_combo = 0;
 			if ( $record->country_code == "US" ) {
 				for ( $j = 0; $j < 3; ++$j ) {

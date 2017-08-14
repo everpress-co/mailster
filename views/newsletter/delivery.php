@@ -35,7 +35,7 @@ $sent = $this->get_sent( $post->ID );
 
 		printf( esc_html__( 'Server time: %1$s %2$s', 'mailster' ),
 			'<span title="' . date( $timeformat, $now + $timeoffset ) . '">' . date( 'Y-m-d', $now + $timeoffset ) . '</span>',
-			'<span class="time" data-timestamp="' . ( $now + $timeoffset ) . '">' . date( 'H:i:s', $now + $timeoffset ) . '</span>'
+			'<span class="time" data-timestamp="' . ( $now + $timeoffset ) . '">' . date( 'H:i', $now + $timeoffset ) . '</span>'
 		);
 
 	elseif ( 'finished' == $post->post_status ) :
