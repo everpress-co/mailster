@@ -558,10 +558,7 @@ class MailsterTemplates {
 					case 'Could not find item with provided item id or purchase code':
 						$template = $this->get_mailster_templates( $_GET['mailster_slug'] );
 						$error = '<strong>' . __( 'You haven\'t purchased this template with this account!', 'mailster' ) . '</strong>';
-						$error .= ' <a class="external" href="' . esc_attr( add_query_arg( array(
-								'utm_source' => 'Mailster+Templates+Page',
-								'ref' => 'revaxarts',
-						), $template['uri'] ) ) . '">' . __( 'Get this Template', 'mailster' ) . '</a>';
+						$error .= ' <a class="external" href="' . esc_attr( $template['uri'] ) . '">' . __( 'Get this Template', 'mailster' ) . '</a>';
 					break;
 					default:
 						$error = sprintf( 'There was an error loading the template: %s', '<strong>' . $error . '</strong>' );
@@ -991,6 +988,11 @@ class MailsterTemplates {
 
 		$file_size = strlen( $raw );
 		$hash = md5( $modules_html );
+		$blocked = get_transient( '_mailster_screenshot_error' );
+
+		if ( $blocked && isset( $blocked[ $hash ] ) ) {
+			return;
+		}
 
 		$headers = array(
 			'accept' => 'application/json',
@@ -1016,10 +1018,10 @@ class MailsterTemplates {
 			$headers['content-length'] = $file_size;
 
 			$response = wp_remote_post( $request_url, array(
-					'headers' => $headers,
-					'body' => $raw,
-					'timeout' => $async ? 1 : 20,
-					'blocking' => $async ? false : true,
+				'headers' => $headers,
+				'body' => $raw,
+				'timeout' => $async ? 1 : 20,
+				'blocking' => $async ? false : true,
 			) );
 
 			unset( $raw );
@@ -1038,9 +1040,20 @@ class MailsterTemplates {
 		if ( 200 != $response_code ) {
 
 			switch ( $response_code ) {
+				case 201:
+					$this->schedule_screenshot( $slug, $file, true, 20, $async );
+				break;
 				case 500:
 				case 503:
 					$this->schedule_screenshot( $slug, $file, true, 1800, $async );
+				break;
+				case 406:
+					if ( ! is_array( $blocked ) ) {
+						$blocked = array();
+					}
+					$blocked[ $hash ] = time();
+					set_transient( '_mailster_screenshot_error', $blocked );
+					mailster_notice( sprintf( __( 'Not able to create module screen shots of %1$s. Read more about this %2$s.', 'mailster' ), $slug . '/' . $file, '<a href="https://kb.mailster.co/where-are-the-module-screen-shots/" class="external">' . __( 'here', 'mailster' ) . '</a>' ), 'error', false, 'screenshot_error' );
 				break;
 			}
 

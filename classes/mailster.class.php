@@ -406,10 +406,9 @@ class Mailster {
 		$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
 
 		$unsubscribe_homepage = get_page( mailster_option( 'homepage' ) );
-		$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage ) );
 
 		if ( $unsubscribe_homepage ) {
-			$unsubscribe_homepage = get_permalink( mailster_option( 'homepage' ) );
+			$unsubscribe_homepage = get_permalink( $unsubscribe_homepage );
 		} else {
 			$unsubscribe_homepage = get_bloginfo( 'url' );
 		}
@@ -420,6 +419,8 @@ class Mailster {
 		if ( ! $is_permalink ) {
 			$unsubscribe_homepage = str_replace( trailingslashit( get_bloginfo( 'url' ) ), untrailingslashit( get_bloginfo( 'url' ) ) . $prefix, $unsubscribe_homepage );
 		}
+
+		$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage, $campaign_id ) );
 
 		return $is_permalink
 			? trailingslashit( $unsubscribe_homepage ) . $slug
@@ -1069,6 +1070,8 @@ class Mailster {
 				$this->dbstructure();
 				mailster( 'helper' )->mkdir();
 				update_option( 'mailster', time() );
+				update_option( 'mailster_license', '' );
+				update_option( 'mailster_username', '' );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 				if ( ! is_network_admin() ) {
@@ -1774,6 +1777,8 @@ class Mailster {
 		$mail->from_name = apply_filters( 'wp_mail_from_name', mailster_option( 'from_name' ) );
 
 		$mail->apply_raw_headers( $headers );
+
+		$to = array_map( 'trim', explode( ',', $to ) );
 
 		$mail->to = $to;
 		$mail->message = $message;

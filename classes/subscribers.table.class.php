@@ -321,7 +321,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			? "TRIM(CONCAT(IFNULL(lastname.meta_value, ''), ' ', IFNULL(firstname.meta_value, '')))"
 			: "TRIM(CONCAT(IFNULL(firstname.meta_value, ''), ' ', IFNULL(lastname.meta_value, '')))";
 
-		$sql = "SELECT a.*, firstname.meta_value AS firstname, lastname.meta_value AS lastname, $fullnamestring AS fullname";
+		$sql = "SELECT SQL_CALC_FOUND_ROWS a.ID, a.*, firstname.meta_value AS firstname, lastname.meta_value AS lastname, $fullnamestring AS fullname";
 		foreach ( $custom_field_names as $i => $name ) {
 			$sql .= ", meta_$i.meta_value AS '_$name'";
 		}
@@ -425,27 +425,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		// Page Number
 		if ( empty( $paged ) || ! is_numeric( $paged ) || $paged <= 0 ) {$paged = 1;}
 
-		if ( ! isset( $_GET['s'] ) ) {
-			$totalitems_sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers AS a" . $extrasql;
-			$totalitems_sql = apply_filters( 'mailster_subscribers_prepare_items_totalitems_sql', $totalitems_sql );
-			$totalitems = $wpdb->get_var( $totalitems_sql );
-		} else {
-			$allitems = $wpdb->get_results( $sql );
-			$totalitems = count( $allitems );
-		}
-
-		// How many pages do we have in total?
-		$totalpages = ceil( $totalitems / $perpage );
 		// adjust the query to take pagination into account
 		if ( ! empty( $paged ) && ! empty( $perpage ) ) {
 			$offset = ( $paged - 1 ) * $perpage;
 		}
-
-		$this->set_pagination_args( array(
-			'total_items' => $totalitems,
-			'total_pages' => $totalpages,
-			'per_page' => $perpage,
-		) );
 
 		if ( isset( $offset ) ) {
 			$sql .= " LIMIT $offset, $perpage";
@@ -453,13 +436,20 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		$sql = apply_filters( 'mailster_subscribers_prepare_items_sql', $sql );
 
-		if ( isset( $allitems ) ) {
-			$this->items = isset( $offset ) && isset( $perpage ) ? array_slice( $allitems, (int) $offset, (int) $perpage ) : $allitems;
-		} else {
-			$this->items = $wpdb->get_results( $sql );
-		}
+		$this->items = $wpdb->get_results( $sql );
 
-		// cache the lists for the current subscribers
+		$totalitems = $wpdb->get_var( 'SELECT FOUND_ROWS();' );
+
+		// How many pages do we have in total?
+		$totalpages = ceil( $totalitems / $perpage );
+
+		$this->set_pagination_args( array(
+			'total_items' => $totalitems,
+			'total_pages' => $totalpages,
+			'per_page' => $perpage,
+		) );
+
+		// cache the lists and actions for the current subscribers
 		if ( $current_ids = wp_list_pluck( $this->items, 'ID' ) ) {
 
 			// mailster('actions')->get_by_subscriber($current_ids);
@@ -467,6 +457,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 			$cache = array();
 			$lists = $wpdb->get_results( $sql );
+
 			foreach ( $lists as $list ) {
 				if ( ! isset( $cache[ $list->subscriber_id ] ) ) {
 					$cache[ $list->subscriber_id ] = array();
@@ -476,6 +467,9 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			}
 
 			mailster_cache_set( 'subscribers_lists', $cache );
+
+			mailster( 'actions' )->get_by_subscriber( $current_ids );
+
 		}
 
 	}
