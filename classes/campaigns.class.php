@@ -2295,6 +2295,30 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @return unknown
+	 */
+	public function get_formated_lists( $id ) {
+
+		if ( $this->meta( $id, 'ignore_lists' ) ) {
+			return '';
+		}
+
+		$lists = $this->get_lists( $id );
+
+		if ( empty( $lists ) ) {
+			return '';
+		}
+
+		$names = wp_list_pluck( $lists, 'name' );
+
+		return implode( ', ', $names );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
 	 * @param unknown $ids_only (optional)
 	 * @return unknown
 	 */
@@ -3628,8 +3652,6 @@ class MailsterCampaigns {
 
 		$placeholder = mailster( 'placeholder' );
 
-		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign->ID );
-
 		$mail->set_campaign( $campaign->ID );
 		$placeholder->set_campaign( $campaign->ID );
 		$placeholder->replace_custom_tags( false );
@@ -3654,17 +3676,7 @@ class MailsterCampaigns {
 
 			$placeholder->set_content( $content );
 
-			$placeholder->add( array(
-				'preheader' => $campaign_meta['preheader'],
-				'subject' => $campaign_meta['subject'],
-				'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-				'webversionlink' => get_permalink( $campaign->ID ),
-				'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
-				'unsublink' => $unsubscribelink,
-				'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
-				'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
-				'email' => '<a href="">{emailaddress}</a>',
-			) );
+			$placeholder->add_defaults( $campaign->ID );
 
 			$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
 			$content = $placeholder->get_content( false );
@@ -3705,6 +3717,8 @@ class MailsterCampaigns {
 			$mail->plaintext = mailster( 'helper' )->plain_text( $placeholder->get_content(), true );
 		}
 
+		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign->ID );
+
 		$MID = mailster_option( 'ID' );
 
 		$mail->add_header( 'X-Mailster', $subscriber->hash );
@@ -3727,11 +3741,11 @@ class MailsterCampaigns {
 
 		if ( $result && ! is_wp_error( $result ) ) {
 			if ( $log ) {
-				do_action( 'mailster_send', $subscriber->ID, $campaign->ID );
-				do_action( 'mymail_send', $subscriber->ID, $campaign->ID );
+				do_action( 'mailster_send', $subscriber->ID, $campaign->ID, $result );
+				do_action( 'mymail_send', $subscriber->ID, $campaign->ID, $result );
 			}
 
-			return true;
+			return $result;
 		}
 
 		if ( is_wp_error( $result ) ) {

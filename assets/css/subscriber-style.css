@@ -281,8 +281,8 @@ h3 input{
 .activity-wrap .mailster-icon-bounce.hard:before{
 	margin-left:2px;
 }
-.activity-wrap .bounce-message{
-	cursor: help;
+.activity-wrap .unsubscribe-message, .activity-wrap .bounce-message, .activity-wrap .error-message{
+	white-space: pre-line;
 }
 @media screen and (max-width: 782px) {
 	.wrap h2{

@@ -433,18 +433,25 @@ if ( ! $is_new ) :
 						<td width="50%">
 						<?php if ( $activity->campaign_status == 'trash' ) : ?>
 							<?php esc_html_e( 'campaign deleted', 'mailster' );?>
+
 						<?php elseif ( $activity->type == 1 && current_user_can( 'publish_newsletters' ) ) : ?>
 							<a href="<?php echo add_query_arg( array( 'resendcampaign' => 1, '_wpnonce' => wp_create_nonce( 'mailster-resend-campaign' ), 'campaign_id' => $activity->campaign_id ) ); ?>" class="button button-small" onclick="return confirm('<?php printf( esc_attr__( 'Do you really like to resend campaign %1$s to %2$s?', 'mailster' ), "\\n\'" . $activity->campaign_title . "\'", "\'" . $nicename . "\'" ); ?>');">
 							<?php esc_html_e( 'resend this campaign', 'mailster' );?>
 							</a>
+
 						<?php elseif ( $activity->link && $activity->type == 3 ) : ?>
 							<a href="<?php echo $activity->link ?>"><?php echo $activity->link ?></a>
-						<?php elseif ( ( $activity->type == 5 || $activity->type == 6 )
-			&& $bouncestatus = $this->meta( $subscriber->ID, 'bounce', $activity->campaign_id ) ) :
-							$message = mailster( 'helper' )->get_bounce_message( $bouncestatus );?>
-								<p class="bounce-message"><span title="<?php echo esc_attr( $message['descr'] ); ?>"><code>[<?php echo $bouncestatus ?>]</code> <strong><?php echo $message['title']; ?></strong></span></p>
-							<?php elseif ( $activity->error && $activity->type == 7 ) : ?>
-							<strong class="red"><?php echo $activity->error ?></strong>
+
+						<?php elseif ( $activity->type == 4 && $unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id ) ) :
+							$message = mailster( 'helper' )->get_unsubscribe_message( $unsub_status ); ?>
+							<p class="unsubscribe-message code">[<?php echo esc_html( $unsub_status ) ?>] <?php echo esc_html( $message ); ?></p>
+
+						<?php elseif ( ( $activity->type == 5 || $activity->type == 6 ) && $bounce_status = $this->meta( $subscriber->ID, 'bounce', $activity->campaign_id ) ) :
+							$message = mailster( 'helper' )->get_bounce_message( $bounce_status ); ?>
+							<p class="bounce-message code"><?php echo esc_html( $message ); ?></p>
+
+						<?php elseif ( $activity->error && $activity->type == 7 ) : ?>
+							<p class="error-message code"><strong class="red"><?php echo $activity->error ?></strong></p>
 						<?php endif; ?>
 						</td>
 					</tr>

@@ -2,8 +2,8 @@
 Contributors: EverPress, revaxarts
 Tags: mailster, mymail, newsletter, email, email marketing
 Requires at least: 3.8
-Tested up to: 4.8
-Stable tag: 2.2.8
+Tested up to: 4.8.1
+Stable tag: 2.2.10
 Author: EverPress
 Author URI: https://everpress.io
 
@@ -65,22 +65,36 @@ Xaver Birsak – https://everpress.io
 
 
 = Linus =
-[!(https://mailster.github.io/preview/linus.jpg)](http://rxa.li/linus?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/linus.jpg)](https://rxa.li/linus?utm_source=Plugin+Info+Page)
 = Metro =
-[!(https://mailster.github.io/preview/metro.jpg)](http://rxa.li/metro?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/metro.jpg)](https://rxa.li/metro?utm_source=Plugin+Info+Page)
 = My Business =
-[!(https://mailster.github.io/preview/business.jpg)](http://rxa.li/business?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/business.jpg)](https://rxa.li/business?utm_source=Plugin+Info+Page)
 = Loose Leaf =
-[!(https://mailster.github.io/preview/looseleaf.jpg)](http://rxa.li/looseleaf?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/looseleaf.jpg)](https://rxa.li/looseleaf?utm_source=Plugin+Info+Page)
 = Market =
-[!(https://mailster.github.io/preview/market.jpg)](http://rxa.li/market?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/market.jpg)](https://rxa.li/market?utm_source=Plugin+Info+Page)
 = Skyline =
-[!(https://mailster.github.io/preview/skyline.jpg)](http://rxa.li/skyline?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/skyline.jpg)](https://rxa.li/skyline?utm_source=Plugin+Info+Page)
 = Letterpress =
-[!(https://mailster.github.io/preview/letterpress.jpg)](http://rxa.li/letterpress?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/letterpress.jpg)](https://rxa.li/letterpress?utm_source=Plugin+Info+Page)
 
 
 == Changelog ==
+
+= Version 2.2.10 =
+
+* improved: lists assigned to a form are now respected if form id is set explicitly on subscriber submission
+* added: 'mailster_using_permalinks' filter
+
+= Version 2.2.9 =
+
+* added: support for the SparkPost add on
+* fixed: some tags with alternative content were not replaced when sending a test campaign
+* fixed: module screenshots returned error if more than 30 modules in template
+* improved: unsubscribe action can now contain a status for more info
+* change: send method now returns internal message ID
+* change: test mails to unknown email addresses are no longer assigned to the current user to prevent false mailbox actions
 
 = Version 2.2.8 =
 
@@ -88,10 +102,21 @@ Xaver Birsak – https://everpress.io
 * fixed: wp_mail now supports coma separated emails if used by Mailster
 * fixed: PHP notice with autoresponders on PHP 7.1
 * fixed: link for buttons were pre filled with the URL from the previous selected button
+* fixed: PHP notices on Cron lock
+* fixed: issue with defined constants if GEO library is loaded in a third party plugin
+* fixed: display issue of emojis in tinymce of multi elements
+* fixed: link of images wasn't populated correctly
+* fixed: reading filesize on missing file during export
+* improved: ever re-signup will respect the forms double-opt-in setting
+* improved: using SQL_CALC_FOUND_ROWS on subscribers overview to speed up queries
+* improved: form profile compatibility with certain themes
 * improved: get referer on form signup
 * improved: pre cache queries on autoresponder overview
 * added: option for legacy POP3 method on bounce settings
+* added: 'mailster_update_option_*' filter to alter option on save
 * added: 'mailster_get_signups_sql', 'mailster_queue_campaign_subscriber_data' filters
+* added: 'mailster_cookie_time' filter to adjust Mailster cookie expiration time
+* added: 'mailster_get_current_user' and 'mailster_get_current_user_id' methods
 * changed: 'mailster_unsubscribe_link' hook position and added campaign_id to arguments
 
 = Version 2.2.7 =

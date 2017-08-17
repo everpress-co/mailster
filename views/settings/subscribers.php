@@ -10,18 +10,12 @@
 		foreach ( $templatefiles as $slug => $filedata ) {
 			if ( $slug == 'index.html' ) {
 				continue;
-			}
-
-				?>
-					<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo $slug ?>)</option>
-		<?php
-		}
-?>
+			} ?>
+				<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo $slug ?>)</option>
+		<?php } ?>
 		</select>
 		<br>&nbsp;&nbsp;<?php esc_html_e( 'send', 'mailster' );?> <select name="mailster_options[subscriber_notification_delay]">
-		<?php
-		$selected = mailster_option( 'subscriber_notification_delay' );
-?>
+		<?php $selected = mailster_option( 'subscriber_notification_delay' ); ?>
 			<option value="0"<?php selected( ! $selected ) ?>><?php esc_html_e( 'immediately', 'mailster' );?></option>
 			<option value="day"<?php selected( 'day' == $selected ) ?>><?php esc_html_e( 'daily', 'mailster' );?></option>
 			<option value="week"<?php selected( 'week' == $selected ) ?>><?php esc_html_e( 'weekly', 'mailster' );?></option>
@@ -35,7 +29,6 @@
 	<tr valign="top">
 		<th scope="row">&nbsp;</th>
 		<td>
-
 		<p>
 		<label><input type="hidden" name="mailster_options[unsubscribe_notification]" value=""><input type="checkbox" name="mailster_options[unsubscribe_notification]" value="1" <?php checked( mailster_option( 'unsubscribe_notification' ) );?>> <?php esc_html_e( 'Send a notification if subscribers cancel their subscription to following receivers (comma separated)', 'mailster' ) ?> <input type="text" name="mailster_options[unsubscribe_notification_receviers]" value="<?php echo esc_attr( mailster_option( 'unsubscribe_notification_receviers' ) ); ?>" class="regular-text"></label>
 		<br>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' );?> <select name="mailster_options[unsubscribe_notification_template]">
@@ -44,18 +37,12 @@
 		foreach ( $templatefiles as $slug => $filedata ) {
 			if ( $slug == 'index.html' ) {
 				continue;
-			}
-
-				?>
-					<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo $slug ?>)</option>
-		<?php
-		}
-?>
+			} ?>
+			<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo $slug ?>)</option>
+		<?php } ?>
 		</select>
 		<br>&nbsp;&nbsp;<?php esc_html_e( 'send', 'mailster' );?> <select name="mailster_options[unsubscribe_notification_delay]">
-		<?php
-		$selected = mailster_option( 'unsubscribe_notification_delay' );
-?>
+		<?php $selected = mailster_option( 'unsubscribe_notification_delay' ); ?>
 			<option value="0"<?php selected( ! $selected ) ?>><?php esc_html_e( 'immediately', 'mailster' );?></option>
 			<option value="day"<?php selected( 'day' == $selected ) ?>><?php esc_html_e( 'daily', 'mailster' );?></option>
 			<option value="week"<?php selected( 'week' == $selected ) ?>><?php esc_html_e( 'weekly', 'mailster' );?></option>
@@ -120,49 +107,30 @@
 				<?php
 				foreach ( $types as $value => $name ) {
 					echo '<option value="' . $value . '" ' . selected( $data['type'], $value, false ) . '>' . $name . '</option>';
-
 				}
-
 				?>
 				</select></div>
-			<ul class="customfield-additional customfield-dropdown customfield-radio" <?php if ( in_array( $data['type'], array( 'dropdown', 'radio' ) ) ) {
-						echo ' style="display:block"';
-}
-?>>
+			<ul class="customfield-additional customfield-dropdown customfield-radio" <?php if ( in_array( $data['type'], array( 'dropdown', 'radio' ) ) ) { echo ' style="display:block"'; } ?>>
 				<li>
 					<ul class="customfield-values">
 				<?php
 				$values = ! empty( $data['values'] ) ? $data['values'] : array( '' );
-				foreach ( $values as $value ) {
-				?>
-					<li><span>&nbsp;</span> <span class="customfield-value-box"><input type="text" name="mailster_options[custom_field][<?php echo $id ?>][values][]" class="regular-text customfield-value" value="<?php echo $value; ?>"> <label><input type="radio" name="mailster_options[custom_field][<?php echo $id ?>][default]" value="<?php echo $value ?>" title="<?php esc_html_e( 'this field is selected by default', 'mailster' );?>" <?php if ( isset( $data['default'] ) ) {
-								checked( $data['default'], $value );
-}
-	?><?php if ( ! in_array( $data['type'], array( 'dropdown', 'radio' ) ) ) {
-		echo ' disabled';
-	}
-	?>> <?php esc_html_e( 'default', 'mailster' );?></label> &nbsp; <a class="customfield-value-remove" title="<?php esc_html_e( 'remove field', 'mailster' );?>">&#10005;</a></span></li>
-				<?php }?>
+				foreach ( $values as $value ) { ?>
+					<li><span>&nbsp;</span> <span class="customfield-value-box"><input type="text" name="mailster_options[custom_field][<?php echo $id ?>][values][]" class="regular-text customfield-value" value="<?php echo $value; ?>"> <label><input type="radio" name="mailster_options[custom_field][<?php echo $id ?>][default]" value="<?php echo $value ?>" title="<?php esc_html_e( 'this field is selected by default', 'mailster' );?>" <?php if ( isset( $data['default'] ) ) { checked( $data['default'], $value ); } ?><?php if ( ! in_array( $data['type'], array( 'dropdown', 'radio' ) ) ) {	echo ' disabled';}?>>
+						<?php esc_html_e( 'default', 'mailster' );?></label> &nbsp; <a class="customfield-value-remove" title="<?php esc_html_e( 'remove field', 'mailster' );?>">&#10005;</a></span></li>
+				<?php } ?>
 					</ul>
 				<span>&nbsp;</span> <a class="customfield-value-add"><?php esc_html_e( 'add field', 'mailster' );?></a>
 				</li>
 			</ul>
-			<div class="customfield-additional customfield-checkbox" <?php if ( in_array( $data['type'], array( 'checkbox' ) ) ) {
-						echo ' style="display:block"';
-}
-?>>
-				<span>&nbsp;</span> <label><input type="hidden" name="mailster_options[custom_field][<?php echo $id ?>][default]" value=""><input type="checkbox" name="mailster_options[custom_field][<?php echo $id ?>][default]" value="1" title="<?php esc_html_e( 'this field is selected by default', 'mailster' );?>" <?php if ( isset( $data['default'] ) ) {
-							checked( $data['default'], true );
-}
-?> <?php if ( ! in_array( $data['type'], array( 'checkbox' ) ) ) {
-	echo ' disabled';
-}
-?>> <?php esc_html_e( 'checked by default', 'mailster' );?></label>
+			<div class="customfield-additional customfield-checkbox" <?php if ( in_array( $data['type'], array( 'checkbox' ) ) ) { echo ' style="display:block"'; } ?>>
+				<span>&nbsp;</span> <label><input type="hidden" name="mailster_options[custom_field][<?php echo $id ?>][default]" value=""><input type="checkbox" name="mailster_options[custom_field][<?php echo $id ?>][default]" value="1" title="<?php esc_html_e( 'this field is selected by default', 'mailster' );?>" <?php if ( isset( $data['default'] ) ) { checked( $data['default'], true ); } ?> <?php if ( ! in_array( $data['type'], array( 'checkbox' ) ) ) { echo ' disabled'; } ?>>
+				<?php esc_html_e( 'checked by default', 'mailster' );?></label>
 			</div>
 			<a class="customfield-remove"><?php esc_html_e( 'remove field', 'mailster' );?></a>
 			<br>
 		</div>
-			<?php
+<?php
 			}
 		}
 ?>

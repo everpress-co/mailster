@@ -2984,7 +2984,11 @@ jQuery(document).ready(function ($) {
 					var src = el.attr('src') || el.attr('background');
 					var url = isDynamicImage(src) || '';
 
-					if (el.parent().is('a')) imagelink.val(el.parent().attr('href').replace('%7B', '{').replace('%7D', '}'));
+					if (el.parent().is('a')) {
+						imagelink.val(el.parent().attr('href').replace('%7B', '{').replace('%7D', '}'));
+					} else {
+						imagelink.val('');
+					}
 
 					imagealt.val(el.attr('alt'));
 					imageurl.val(url);
