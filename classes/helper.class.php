@@ -603,7 +603,7 @@ class MailsterHelper {
 	 */
 	public function using_permalinks() {
 		global $wp_rewrite;
-		return is_object( $wp_rewrite ) && $wp_rewrite->using_permalinks();
+		return apply_filters( 'mailster_using_permalinks', is_object( $wp_rewrite ) && $wp_rewrite->using_permalinks() );
 	}
 
 
@@ -811,6 +811,11 @@ class MailsterHelper {
 	 */
 	public function get_bounce_message( $status, $original = null ) {
 
+		$res = apply_filters( 'mailster_get_bounce_message', null, $status, $original );
+		if ( ! is_null( $res ) ) {
+			return $res;
+		}
+
 		include MAILSTER_DIR . 'classes/libs/bounce/bounce_statuscodes.php';
 
 		if ( is_null( $original ) ) {
@@ -818,20 +823,53 @@ class MailsterHelper {
 		}
 
 		if ( isset( $status_code_classes[ $status ] ) ) {
-			return $status_code_classes[ $status ];
+			$message = $status_code_classes[ $status ];
+			return '[' . $message['title'] . '] ' . $message['descr'];
 		}
 		if ( isset( $status_code_subclasses[ $status ] ) ) {
-			return $status_code_subclasses[ $status ];
+			$message = $status_code_subclasses[ $status ];
+			return '[' . $message['title'] . '] ' . $message['descr'];
 		}
 
 		if ( $status = substr( $status, 0, strrpos( $status, '.' ) ) ) {
 			return $this->get_bounce_message( $status, $original );
 		}
 
-		return array(
-			'title' => '',
-			'descr' => __( 'error is unknown', 'mailster' ),
-		);
+		return $original;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $status
+	 * @param unknown $original (optional)
+	 * @return unknown
+	 */
+	public function get_unsubscribe_message( $status, $original = null ) {
+
+		$res = apply_filters( 'mailster_get_unsubscribe_message', null, $status, $original );
+		if ( ! is_null( $res ) ) {
+			return $res;
+		}
+
+		if ( is_null( $original ) ) {
+			$original = $status;
+		}
+
+		switch ( $status ) {
+			case 'list_unsubscribe':
+				return  __( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
+			case 'link_unsubscribe':
+				return __( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
+			case 'email_unsubscribe':
+				return __( 'The user canceled the subscription via the website.', 'mailster' );
+			case 'spam_complaint':
+				return __( 'The user marked this message as Spam in the Mail application.', 'mailster' );
+		}
+
+		return $status;
 
 	}
 
@@ -871,8 +909,7 @@ class MailsterHelper {
 		// custom styles
 		$content = $this->add_mailster_styles( $content );
 
-		// //Inline CSS
-		// if ( $inline )
+		// Inline CSS
 		$content = $this->inline_style( $content );
 
 		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
@@ -915,10 +952,7 @@ class MailsterHelper {
 	public function inline_style( $content ) {
 
 		// get all style blocks
-		preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles );
-
-		// found!
-		if ( ! empty( $originalstyles[0] ) ) {
+		if ( preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles ) ) {
 
 			@error_reporting( E_ERROR | E_PARSE );
 			@ini_set( 'display_errors', '0' );
@@ -926,7 +960,7 @@ class MailsterHelper {
 			// strip media queries
 			foreach ( $originalstyles[2] as $i => $styleblock ) {
 				$mediaBlocks = $this->parseMediaBlocks( $styleblock );
-				foreach ( $mediaBlocks as $mediaBlock ) {
+				if ( ! empty( $mediaBlocks ) ) {
 					$originalstyles[2][ $i ] = str_replace( $mediaBlocks, '', $originalstyles[2][ $i ] );
 				}
 			}
@@ -1326,11 +1360,11 @@ class MailsterHelper {
 
 		} else {
 			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
-			$htmlconverter = new \Html2Text\Html2Text( $html, array( 'width' => 200, 'do_links' => 'table' ) );
+			$htmlconverter = new \MailsterHtml2Text\Html2Text( $html, array( 'width' => 200, 'do_links' => 'table' ) );
 
 			$text = trim( $htmlconverter->get_text() );
-			$text = preg_replace( '/\s*$^\s*/m', "\n", $text );
-			$text = preg_replace( '/[ \t]+/', ' ', $text );
+			$text = preg_replace( '/\s*$^\s*/mu', "\n\n", $text );
+			$text = preg_replace( '/[ \t]+/u', ' ', $text );
 
 			return $text;
 

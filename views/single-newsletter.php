@@ -70,9 +70,8 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 		<li class="button header next"><?php next_post_link( '%link', '' ) ?></li>
 <?php endif; ?>
 		<li class="button header closeframe"><a title="remove frame" href="<?php echo add_query_arg( 'frame', 0, $permalink ) ?>">&#10005;</a></li>
-<?php if ( mailster_option( 'share_button' ) && ! $preview && ! post_password_required() ) :
-	$is_forward = isset( $_GET['mailster_forward'] ) ? $_GET['mailster_forward'] : '';
-?>
+<?php if ( mailster_option( 'share_button' ) && ! $preview && ! post_password_required() ) : ?>
+	<?php $is_forward = isset( $_GET['mailster_forward'] ) ? $_GET['mailster_forward'] : ''; ?>
 			<li class="share header">
 				<a><?php esc_html_e( 'Share', 'mailster' ) ?></a>
 				<div class="sharebox" <?php if ( $is_forward ) { echo ' style="display:block"'; } ?>>
@@ -132,7 +131,10 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 					<li class="sharebox-panel-option">
 						<h4><?php esc_html_e( 'Share the link', 'mailster' ) ?></h4>
 						<div>
-					<input type="text" value="<?php echo esc_attr( $permalink ) ?>" onclick="this.select()">
+							<input type="text" value="<?php echo esc_attr( $permalink ) ?>" onclick="this.select()">
+							<?php if ( ! apply_filters( 'mailster_hide_poweredby', false ) ) : ?>
+							<div class="powered-by">powered by <a href="https://mailster.co">Mailster</a></div>
+							<?php endif; ?>
 						</div>
 					</li>
 				</ul>

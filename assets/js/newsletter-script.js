@@ -658,7 +658,7 @@ jQuery(document).ready(function ($) {
 
 					_ajax('get_totals', data, function (response) {
 						_enable();
-						total.removeClass('loading').html(response.totalformated);
+						total.removeClass('loading').html(response.totalformatted);
 
 					}, function (jqXHR, textStatus, errorThrown) {
 						_enable();
@@ -902,10 +902,11 @@ jQuery(document).ready(function ($) {
 			$('.mailster-preview-iframe').on('load', function () {
 
 				var $this = $(this),
-					body = $this.contents().find('body');
+					contents = $this.contents(),
+					body = contents.find('body');
 
 				if ($this.is('.mobile')) {
-					var style = body.find('style').text(),
+					var style = contents.find('style').text(),
 						hasqueries = /@media/.test(style);
 
 					if (!hasqueries) {
@@ -2547,8 +2548,11 @@ jQuery(document).ready(function ($) {
 
 			} else if (current.type == 'multi') {
 
-				if (isTinyMCE && tinymce.get('mailster-editor') && !tinymce.get('mailster-editor').isHidden())
-					current.element.html(tinymce.get('mailster-editor').getContent());
+				if (isTinyMCE && tinymce.get('mailster-editor') && !tinymce.get('mailster-editor').isHidden()) {
+					var content = tinymce.get('mailster-editor').getContent();
+					content = content.replace('href="http://{', 'href="{'); //from tinymce if tag is used
+					current.element.html(content);
+				}
 
 			} else if (current.type == 'single') {
 
@@ -2867,6 +2871,7 @@ jQuery(document).ready(function ($) {
 
 					$('#button-type-bar').find('a').eq(0).trigger('click');
 					buttonlabel.val($.trim(el.text())).focus().select();
+					buttonlink.val(current.element.attr('href'));
 					bar.find('ul.buttons').hide();
 				}
 
@@ -2975,7 +2980,11 @@ jQuery(document).ready(function ($) {
 					var src = el.attr('src') || el.attr('background');
 					var url = isDynamicImage(src) || '';
 
-					if (el.parent().is('a')) imagelink.val(el.parent().attr('href').replace('%7B', '{').replace('%7D', '}'));
+					if (el.parent().is('a')) {
+						imagelink.val(el.parent().attr('href').replace('%7B', '{').replace('%7D', '}'));
+					} else {
+						imagelink.val('');
+					}
 
 					imagealt.val(el.attr('alt'));
 					imageurl.val(url);
@@ -4006,12 +4015,12 @@ jQuery(document).ready(function ($) {
 
 	function _time() {
 
-		var t, x, h, m, usertime = new Date(),
+		var t, x, h, m, l, usertime = new Date(),
 			elements = $('.time'),
 			deliverytime = $('.deliverytime').eq(0),
 			activecheck = $('#mailster_data_active'),
 			servertime = parseInt(elements.data('timestamp'), 10) * 1000,
-			seconds = true,
+			seconds = false,
 			offset = servertime - usertime.getTime() + (usertime.getTimezoneOffset() * 60000);
 
 		var delay = (seconds) ? 1000 : 20000;
@@ -4029,7 +4038,8 @@ jQuery(document).ready(function ($) {
 			x.push(t.getHours());
 			x.push(t.getMinutes());
 			if (seconds) x.push(t.getSeconds());
-			for (var i = 0; i < 3; i++) {
+			l = x.length;
+			for (var i = 0; i < l; i++) {
 				x[i] = zero(x[i]);
 			};
 			elements.html(x.join('<span class="blink">:</span>'));
@@ -4039,7 +4049,10 @@ jQuery(document).ready(function ($) {
 		}
 
 		function zero(value) {
-			return (value < 10) ? '0' + value : value;
+			if (value < 10) {
+				value = '0' + value;
+			}
+			return value;
 		}
 
 		set();

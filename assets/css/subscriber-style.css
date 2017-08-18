@@ -1,7 +1,6 @@
 .wrap h2{
 	margin-bottom: 30px;
 }
-
 .detail .click-to-edit{
 	margin: 0;
 	display: inline-block;
@@ -86,14 +85,12 @@ h3.detail .click-to-edit{
 .click-to-edit li li{
 	display: inherit;
 }
-
 label{
 	font-weight:700;
 }
 .click-to-edit label{
 	font-weight:normal;
 }
-
 .form-table td.avatar-wrap{
 	width: 230px;
 	vertical-align: top;
@@ -119,16 +116,13 @@ label{
 	cursor: pointer;
 	margin-right: 20px;
 }
-
 .custom-field-wrap{
 	margin-top: 36px;
 }
-
 .form-table td{
 	vertical-align: top;
 	padding:0;
 }
-
 .avatar{
 	display: block;
 	width:200px;
@@ -155,7 +149,6 @@ label{
 	-webkit-border-radius: 50%;
 	border-radius: 50%;
 }
-
 .user-info{
 
 }
@@ -181,7 +174,6 @@ label{
 .user-info ul.type-list span:last-child:after{
 	content: '';
 }
-
 .user-meta{
 	min-height: 200px;
 	width: 300px;
@@ -224,25 +216,21 @@ label{
 	cursor:-moz-zoom-out;
 	cursor:zoom-out;
 }
-
 h3 input{
 	font-size: 20px;
 	line-height: 1.4em;
 	width: 100%;
 }
-
 .stats-wrap #stats {
 	margin-top:20px;
 	margin-bottom:20px;
 	border:0;
 	width: 80%;
 }
-
 .stats-wrap #stats td {
 	vertical-align:middle;
 	border:0;
 }
-
 .stats-wrap .big {
 	font-size:18px;
 	font-weight:100;
@@ -257,7 +245,6 @@ h3 input{
 	font-weight:700;
 	text-shadow:1px 1px 0 rgba(255,255,255,1);
 }
-
 .mailster-icon.client-desktop:before{
 	content:'\e811';
 }
@@ -267,8 +254,6 @@ h3 input{
 .mailster-icon.client-webmail:before{
 	content:'\e828';
 }
-
-
 .activity-wrap{
 	float: none;
 	clear: both;
@@ -279,7 +264,6 @@ h3 input{
 .activity-wrap .red{
 	color: #D8605F;
 }
-
 .activity-wrap .mailster-icon-error{
 	color: #D8605F;
 }
@@ -297,11 +281,9 @@ h3 input{
 .activity-wrap .mailster-icon-bounce.hard:before{
 	margin-left:2px;
 }
-
-.activity-wrap .bounce-message{
-	cursor: help;
+.activity-wrap .unsubscribe-message, .activity-wrap .bounce-message, .activity-wrap .error-message{
+	white-space: pre-line;
 }
-
 @media screen and (max-width: 782px) {
 	.wrap h2{
 		overflow: hidden;
@@ -311,14 +293,11 @@ h3 input{
 		display: block;
 		margin: 10px 0;
 	}
-
 	#mailster_firstname, #mailster_lastname{
 		width: 49%;
 		display: inline-block;
 	}
-
 	.user-meta {
 		min-height: auto;
 	}
-
 }

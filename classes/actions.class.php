@@ -15,7 +15,7 @@ class MailsterActions {
 		add_action( 'mailster_send', array( &$this, 'send' ), 10, 2 );
 		add_action( 'mailster_open', array( &$this, 'open' ), 10, 3 );
 		add_action( 'mailster_click', array( &$this, 'click' ), 10, 4 );
-		add_action( 'mailster_unsubscribe', array( &$this, 'unsubscribe' ), 10, 2 );
+		add_action( 'mailster_unsubscribe', array( &$this, 'unsubscribe' ), 10, 3 );
 		add_action( 'mailster_bounce', array( &$this, 'bounce' ), 10, 3 );
 		add_action( 'mailster_subscriber_error', array( &$this, 'error' ), 10, 3 );
 		add_action( 'mailster_cron', array( &$this, 'cleanup' ) );
@@ -118,7 +118,7 @@ class MailsterActions {
 	 * @param unknown $campaign_id
 	 * @return unknown
 	 */
-	public function unsubscribe( $subscriber_id, $campaign_id ) {
+	public function unsubscribe( $subscriber_id, $campaign_id, $status = null ) {
 
 		return $this->add_action( array(
 				'subscriber_id' => $subscriber_id,

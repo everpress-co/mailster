@@ -25,6 +25,7 @@
 			<label><input type="radio" name="mailster_options[bounce_service]" value="pop3" <?php checked( mailster_option( 'bounce_service' ), 'pop3' ) ?>> POP3 </label>&nbsp;
 			<label><input type="radio" name="mailster_options[bounce_service]" value="imap" <?php checked( mailster_option( 'bounce_service' ), 'imap' ) ?>> IMAP </label>&nbsp;
 			<label><input type="radio" name="mailster_options[bounce_service]" value="nntp" <?php checked( mailster_option( 'bounce_service' ), 'nntp' ) ?>> NNTP </label>&nbsp;
+			<label><input type="radio" name="mailster_options[bounce_service]" value="" <?php checked( ! mailster_option( 'bounce_service' ) ) ?>> POP3 (legacy)</label>
 			</td>
 		</tr>
 	<?php endif; ?>
@@ -57,18 +58,20 @@
 		<tr valign="top" class="wp_cron">
 			<th scope="row"><?php esc_html_e( 'Soft Bounces', 'mailster' ) ?></th>
 			<td><p><?php printf( __( 'Resend soft bounced mails after %s minutes', 'mailster' ), '<input type="text" name="mailster_options[bounce_delay]" value="' . mailster_option( 'bounce_delay' ) . '" class="small-text">' ) ?></p>
-			<p><?php
+			<p>
+<?php
 			$dropdown = '<select name="mailster_options[bounce_attempts]" class="postform">';
 			$value = mailster_option( 'bounce_attempts' );
-			for ( $i = 1; $i <= 10; $i++ ) {
-				$selected = ( $value == $i ) ? ' selected' : '';
-				$dropdown .= '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
-			}
+for ( $i = 1; $i <= 10; $i++ ) {
+	$selected = ( $value == $i ) ? ' selected' : '';
+	$dropdown .= '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
+}
 			$dropdown .= '</select>';
 
 			printf( __( '%s attempts to deliver message until hardbounce', 'mailster' ), $dropdown );
-
-?></p></td>
+?>
+			</p>
+			</td>
 		</tr>
 	</table>
 	<table class="form-table">

@@ -14,6 +14,8 @@ $new_version = MAILSTER_VERSION;
 $texts = isset( $mailster_options['text'] ) && ! empty( $mailster_options['text'] ) ? $mailster_options['text'] : $mailster_texts;
 $show_update_notice = false;
 
+// update db structure
+mailster()->dbstructure();
 
 if ( $old_version ) {
 
@@ -322,13 +324,13 @@ if ( $old_version ) {
 		case '2.0.9':
 
 			$mailster_options['slugs'] = array(
-			'confirm' => 'confirm',
-			'subscribe' => 'subscribe',
-			'unsubscribe' => 'unsubscribe',
-			'profile' => 'profile',
-				);
+				'confirm' => 'confirm',
+				'subscribe' => 'subscribe',
+				'unsubscribe' => 'unsubscribe',
+				'profile' => 'profile',
+			);
 
-				$mailster_options['_flush_rewrite_rules'] = true;
+			$mailster_options['_flush_rewrite_rules'] = true;
 		case '2.0.10':
 		case '2.0.11':
 		case '2.0.12':
@@ -392,9 +394,7 @@ if ( $old_version ) {
 		case '2.1Beta17':
 		case '2.1Beta18':
 
-
 		case '2.1':
-
 
 		case '2.1.1':
 
@@ -489,7 +489,7 @@ if ( $old_version ) {
 			update_option( 'mailster_templates', '' );
 			update_option( 'mailster_cron_lasthit', '' );
 			delete_option( 'mailster_purchasecode_disabled' );
-			mailster_update_option( 'welcome', true );
+			$mailster_options['welcome'] = true;
 			$mailster_options['_flush_rewrite_rules'] = true;
 			update_option( 'mailster_license', $mailster_options['purchasecode'] );
 
@@ -502,7 +502,12 @@ if ( $old_version ) {
 		case '2.2.3':
 		case '2.2.4':
 
-			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_templates', 'mailster_cron_lasthit', 'mailster_username', 'mailster_email')" );
+			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_templates', 'mailster_cron_lasthit')" );
+
+		case '2.2.5':
+		case '2.2.6':
+
+			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'yes' WHERE option_name IN ('mailster_username', 'mailster_email')" );
 
 		default:
 
@@ -524,9 +529,6 @@ update_option( 'mailster_texts', $mailster_texts );
 
 // update caps
 mailster( 'settings' )->update_capabilities();
-
-// update db structure
-mailster()->dbstructure();
 
 // clear cache
 mailster_clear_cache( '' );

@@ -1,6 +1,6 @@
 <?php
 
-if ( $translations ) {
+if ( $translations ) :
 	$url = add_query_arg( array(
 			'action' => 'do-translation-upgrade',
 			'_wpnonce' => wp_create_nonce( 'upgrade-translations' ),
@@ -8,14 +8,14 @@ if ( $translations ) {
 ?>
 	<div class="error inline"><p><strong><?php esc_html_e( 'an update to your language is available!', 'mailster' ) ?></strong> <a class="button button-primary button-small" href="<?php echo esc_url( $url ) ?>"><?php esc_html_e( 'update now', 'mailster' );?></a></p></div>
 	<?php
-}
-?>
+endif; ?>
 <table class="form-table">
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Subscription Form', 'mailster' ) ?><p class="description"><?php esc_html_e( 'Define messages for the subscription form', 'mailster' );?>.<br><?php if ( mailster_option( 'homepage' ) ) {
-			printf( __( 'Some text can get defined on the %s as well', 'mailster' ), '<a href="post.php?post=' . mailster_option( 'homepage' ) . '&action=edit">Newsletter Homepage</a>' );
-}
-?></p></th>
+		<th scope="row"><?php esc_html_e( 'Subscription Form', 'mailster' ) ?><p class="description"><?php esc_html_e( 'Define messages for the subscription form', 'mailster' );?>.<br>
+<?php if ( mailster_option( 'homepage' ) ) :
+		printf( __( 'Some text can get defined on the %s as well', 'mailster' ), '<a href="post.php?post=' . mailster_option( 'homepage' ) . '&action=edit">Newsletter Homepage</a>' );
+endif; ?>
+</p></th>
 		<td>
 		<div class="mailster_text"><label><?php esc_html_e( 'Confirmation', 'mailster' );?>:</label> <input type="text" name="mailster_texts[confirmation]" value="<?php echo esc_attr( mailster_text( 'confirmation' ) ); ?>" class="regular-text"></div>
 		<div class="mailster_text"><label><?php esc_html_e( 'Successful', 'mailster' );?>:</label> <input type="text" name="mailster_texts[success]" value="<?php echo esc_attr( mailster_text( 'success' ) ); ?>" class="regular-text"></div>
@@ -70,8 +70,8 @@ if ( $translations ) {
 			<?php esc_html_e( 'change language of texts if available to', 'mailster' );?>
 <?php
 
-$dir = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';
-$files = array();
+	$dir = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';
+	$files = array();
 
 if ( is_dir( $dir ) ) {
 	$files = list_files( $dir );
@@ -79,17 +79,12 @@ if ( is_dir( $dir ) ) {
 }
 
 ?>
-					<select name="language-file">
-						<option<?php selected( preg_match( '#^en_#', $locale ) );?> value="en_US"><?php esc_html_e( 'English', 'mailster' );?> (en_US)</option>
-<?php
-foreach ( $files as $file ) {
-	$lang = str_replace( array( '.po', 'mailster-' ), '', basename( $file ) );
-?>
-						<option<?php selected( $lang == $locale );?> value="<?php echo $lang; ?>"><?php echo $lang; ?></option>
-						<?php
-}
-?>
-					</select>
+			<select name="language-file">
+				<option<?php selected( preg_match( '#^en_#', $locale ) );?> value="en_US"><?php esc_html_e( 'English', 'mailster' );?> (en_US)</option>
+				<?php foreach ( $files as $file ) { $lang = str_replace( array( '.po', 'mailster-' ), '', basename( $file ) ); ?>
+				<option<?php selected( $lang == $locale );?> value="<?php echo $lang; ?>"><?php echo $lang; ?></option>
+				<?php } ?>
+			</select>
 			<button name="change-language" class="button"><?php esc_html_e( 'change language', 'mailster' );?></button>
 			<br class="clearfix">
 			</p>

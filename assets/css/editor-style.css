@@ -1,7 +1,6 @@
 .mailster-loading, .mailster-loading *{
 	cursor:progress !important;
 }
-
 module{
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
@@ -11,9 +10,6 @@ module{
 	user-select: none;
 	position: relative;
 }
-/*----------------------------------------------------------------------*/
-/* Button
-/*----------------------------------------------------------------------*/
 a.mailster-btn,a.mailster-btn:hover,a.mailster-btn:active{
 	color:#686868;
 	position:absolute;
@@ -41,14 +37,11 @@ a.mailster-btn.duplicate:before { content: '\e817'; }
 a.mailster-btn.up:before { content: '\e816'; }
 a.mailster-btn.down:before { content: '\e815'; }
 a.mailster-btn.remove:before { content: '\e82a'; }
-
 a.mailster-btn.editbutton:before { content: '\e80c'; }
 a.mailster-btn.addbutton:before { content: '\e81a'; }
 a.mailster-btn.addrepeater:before { content: '\e81a'; }
 a.mailster-btn.removerepeater:before { content: '\e81b'; }
-
 a.mailster-btn { padding: 1px 4px; }
-
 .modulebuttons {
 	-webkit-transition:all .15s ease-in-out;
 	-moz-transition:all .15s ease-in-out;
@@ -58,8 +51,6 @@ a.mailster-btn { padding: 1px 4px; }
 	position: absolute;
 	right:-31px;
 	text-align: right;
-	_width: 100%;
-	_height:0px;
 	z-index: 100;
 	top: 50%;
 	-webkit-transform:translateY(-50%);
@@ -86,11 +77,9 @@ a.mailster-btn { padding: 1px 4px; }
 	border-left:0;
 	border-right:1px solid #DFDFDF;
 }
-
 .modulebuttons a:first-child {
 	border-top:1px solid #DFDFDF;
 }
-
 .modulebuttons a:last-child {
 	border-bottom:1px solid #DFDFDF;
 }
@@ -139,14 +128,12 @@ a.mailster-btn { padding: 1px 4px; }
 .moduleselector span {
 	border-bottom:1px solid #EFEFEF;
 }
-
 .moduleselector li {
 	height:inherit;
 	list-style-type:none;
 	margin:0;
 	padding:0;
 }
-
 .moduleselector li a.mailster-btn {
 	display:block;
 	white-space:nowrap;
@@ -161,18 +148,14 @@ a.mailster-btn { padding: 1px 4px; }
 	text-align:center;
 	text-overflow:ellipsis;
 }
-
 .moduleselector li:first-child a.mailster-btn {
 }
-
 .moduleselector li a.mailster-btn.custom-module {
 	background: #F8F8F8;
 }
-
 .moduleselector li a.mailster-btn:hover {
 	background: #f1f1f1;
 }
-
 modules, module, multi {
 	display:block;
 }
@@ -197,7 +180,6 @@ module:hover {
 	box-shadow: inset 0 0 0 1px #DFDFDD;
 	background-image:url(../img/modulebg.png);
 }
-
 module:hover .modulebuttons,.ie module .modulebuttons {
 	right:0px;
 	opacity:1;
@@ -206,7 +188,6 @@ module:hover .modulebuttons.modulebuttons-rtl {
 	right:inherit;
 	left:0px;
 }
-
 module:first-child .modulebuttons a.up, module:last-child .modulebuttons a.down {
 	display:none;
 }
@@ -216,7 +197,6 @@ body:hover module[condition],body:hover single[condition],body:hover multi[condi
 module[condition]{
 	margin-right: 1px;
 }
-
 .mailster-highlight, a.mailster-highlight img {
 	overflow: visible;
 	outline: 1px dotted red;
@@ -224,7 +204,6 @@ module[condition]{
 a.mailster-highlight {
 	outline: none;
 }
-
 multi, single, img[editable], a[editable] img, table.textbutton a[editable], td[background]{
 	-webkit-transition:all .15s ease-in-out;
 	-moz-transition:all .15s ease-in-out;
@@ -235,7 +214,6 @@ multi, single, img[editable], a[editable] img, table.textbutton a[editable], td[
 	-webkit-backface-visibility: hidden; /* Chrome, Safari, Opera */
 	backface-visibility: hidden;
 }
-
 multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, table.textbutton a[editable]:hover, table td table td[background]:hover,module table td[background]:hover{
 	outline: 1px dotted red;
 	cursor:pointer;
@@ -267,7 +245,6 @@ body:hover single:empty:after{
 img[editable]{
 	z-index: 10;
 }
-
 modules.ui-sortable module{
 	-webkit-transition:padding .25s ease-in-out, margin .25s ease-in-out, -webkit-transform .15s ease-in-out;
 	-moz-transition:padding .25s ease-in-out, margin .25s ease-in-out, -moz-transform .15s ease-in-out;
@@ -374,11 +351,7 @@ body.drag-active modules dropzone.visible{
 	height: 80px;
 	line-height: 80px;
 	opacity: 0.6;
-/*	-webkit-transform:scale(1.5);
-	-moz-transform:scale(1.5);
-	transform:scale(1.5);
-*/}
-
+}
 body.drag-active modules module:hover {
 	box-shadow: none;
 	background-image:none;
@@ -386,7 +359,6 @@ body.drag-active modules module:hover {
 body.drag-active modules module:hover .modulebuttons, body.drag-active.ie modules module .modulebuttons {
 	display: none;
 }
-
 modules.ui-sortable module{
 	cursor:ns-resize;
 	cursor:hand;
@@ -395,7 +367,6 @@ modules.ui-sortable module{
 	cursor:-moz-grab;
 	cursor:-webkit-grab;
 }
-
 modules.ui-sortable module table{
 	cursor: inherit !important;
 }
@@ -404,7 +375,6 @@ modules.ui-sortable module.ui-draggable-dragging{
 	cursor:-moz-grabbing;
 	cursor:-webkit-grabbing;
 }
-
 .ui-dragging img[editable]{
 	outline: 3px dashed #b1b1b1;
 	opacity: 0.7;
@@ -417,7 +387,6 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 	outline: 3px dashed gray;
 	opacity: 1;
 }
-
 .ui-dragging img[editable].ui-draggable-dragging{
 	outline: 0;
 	-webkit-box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5),0px 0px 13px rgba(0, 0, 0, 0.8);
@@ -427,14 +396,12 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 	-ms-transform:scale(1.03);
 	transform:scale(1.03);
 }
-
 .ui-draggable-dragging{
 	-webkit-transition:none !important;
 	-moz-transition:none !important;
 	-ms-transition:none !important;
 	transition:none !important;
 }
-
 .sortable-placeholder{
 	outline: 1px dotted #999;
 	background-image:url(../img/modulebg.png);
@@ -445,7 +412,6 @@ img{
 	-ms-transition:height .25s ease-in-out, width .25s ease-in-out;
 	transition:height .25s ease-in-out, width .25s ease-in-out;
 }
-
 img.mailster-loading{
 	opacity: 0.7;
 	-webkit-filter: blur(2px);
@@ -463,8 +429,6 @@ modules.ui-sortable.dragging module.ui-sortable-helper{
 	-ms-transform:scale(1.03);
 	transform:scale(1.03);
 }
-
-
 .mailster-upload-info{
 	position: absolute;
 	top: -99999px;

@@ -10,11 +10,9 @@
 .mailster-tags-icon:before {
 	content: '\e830';
 }
-
 #adminmenu #menu-posts-newsletter .wp-menu-image img {
 	width:16px;
 }
-
 #dashboard_right_now a.mailster-campaigns:before {
 	font: normal 16px/1 'mailster-icons';
 	content: '\e800';

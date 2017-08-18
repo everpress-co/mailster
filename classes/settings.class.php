@@ -4,44 +4,44 @@ class MailsterSettings {
 
 	public function __construct() {
 
-		add_action( 'init', array( &$this, 'init' ) );
+		add_action( 'admin_init', array( &$this, 'admin_init' ) );
+		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 70 );
+		add_action( 'admin_init', array( &$this, 'register_settings' ) );
+		add_action( 'admin_init', array( &$this, 'actions' ) );
 
 	}
 
 
 
-	public function init() {
+	public function init() {}
 
-		if ( is_admin() ) {
 
-			add_action( 'admin_menu', array( &$this, 'admin_menu' ), 70 );
-			add_action( 'admin_init', array( &$this, 'register_settings' ) );
-			add_action( 'admin_init', array( &$this, 'actions' ) );
 
-			add_action( 'mailster_deliverymethod_tab_simple', array( &$this, 'deliverytab_simple' ) );
-			add_action( 'mailster_deliverymethod_tab_smtp', array( &$this, 'deliverytab_smtp' ) );
-			add_action( 'mailster_deliverymethod_tab_gmail', array( &$this, 'deliverytab_gmail' ) );
+	public function admin_init() {
 
-			if ( isset( $_GET['mailster_create_homepage'] ) && $_GET['mailster_create_homepage'] ) {
+		add_action( 'mailster_deliverymethod_tab_simple', array( &$this, 'deliverytab_simple' ) );
+		add_action( 'mailster_deliverymethod_tab_smtp', array( &$this, 'deliverytab_smtp' ) );
+		add_action( 'mailster_deliverymethod_tab_gmail', array( &$this, 'deliverytab_gmail' ) );
 
-				if ( $homepage = mailster_option( 'homepage' ) ) {
+		if ( isset( $_GET['mailster_create_homepage'] ) && $_GET['mailster_create_homepage'] ) {
 
-					mailster_notice( __( 'Homepage already created!', 'mailster' ), '', true );
-					wp_redirect( 'post.php?post=' . $homepage . '&action=edit' );
+			if ( $homepage = mailster_option( 'homepage' ) ) {
+
+				mailster_notice( __( 'Homepage already created!', 'mailster' ), '', true );
+				wp_redirect( 'post.php?post=' . $homepage . '&action=edit' );
+				exit;
+
+			} else {
+
+				include MAILSTER_DIR . 'includes/static.php';
+
+				if ( $id = wp_insert_post( $mailster_homepage ) ) {
+					mailster_notice( __( 'Homepage created', 'mailster' ), '', true );
+					mailster_update_option( 'homepage', $id );
+					mailster_remove_notice( 'no_homepage' );
+					mailster_remove_notice( 'wrong_homepage_status' );
+					wp_redirect( 'post.php?post=' . $id . '&action=edit&message=10' );
 					exit;
-
-				} else {
-
-					include MAILSTER_DIR . 'includes/static.php';
-
-					if ( $id = wp_insert_post( $mailster_homepage ) ) {
-						mailster_notice( __( 'Homepage created', 'mailster' ), '', true );
-						mailster_update_option( 'homepage', $id );
-						mailster_remove_notice( 'no_homepage' );
-						mailster_remove_notice( 'wrong_homepage_status' );
-						wp_redirect( 'post.php?post=' . $id . '&action=edit&message=10' );
-						exit;
-					}
 				}
 			}
 		}
@@ -157,6 +157,7 @@ class MailsterSettings {
 			'cron_lock' => 'file',
 
 			'deliverymethod' => 'simple',
+			'simplemethod' => 'mail',
 			'sendmail_path' => '/usr/sbin/sendmail',
 			'smtp' => false,
 			'smtp_host' => '',
@@ -1584,7 +1585,7 @@ class MailsterSettings {
 		<p class="description">
 		<?php esc_html_e( 'use this option if you don\'t have access to a SMTP server or any other provided options', 'mailster' );?>
 		</p>
-		<?php $basicmethod = mailster_option( 'simplemethod', 'sendmail' );?>
+		<?php $basicmethod = mailster_option( 'simplemethod' );?>
 		<table class="form-table">
 			<tr valign="top">
 				<td><label><input type="radio" name="mailster_options[simplemethod]" value="sendmail" <?php checked( $basicmethod, 'sendmail' ) ?> id="sendmail"> Sendmail</label>

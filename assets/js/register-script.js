@@ -77,7 +77,7 @@ jQuery(document).ready(function ($) {
 				wrap.removeClass('loading');
 				if (response.success) {
 					wrap.addClass('step-3').removeClass('step-2')
-					$(document).trigger('verified.' + slug);
+					$(document).trigger('verified.' + slug, [response.purchasecode, response.username, response.email]);
 				} else {
 					if (response.code == 406) {
 						form = wrap.find('.register_form');

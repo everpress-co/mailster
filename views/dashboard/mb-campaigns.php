@@ -1,7 +1,7 @@
 <?php
 
 if ( $campaigns = mailster( 'campaigns' )->get_campaigns( array( 'posts_per_page' => 25, 'post_status' => array( 'finished', 'active' ) ) ) ) : ?>
-<div class="mailster-mb-campaigns loading">
+<div class="mailster-mb-campaigns mailster-loading">
 	<div class="mailster-mb-heading">
 		<select class="mailster-mb-select">
 		<?php foreach ( $campaigns as $campaign ) {?>
