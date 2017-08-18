@@ -263,6 +263,9 @@ img {
 	max-width: 580px;
 	vertical-align: middle;
 }
+img.emoji {
+	max-width: 16px;
+}
 .wp-caption {
 	background: transparent;
 	border: none;

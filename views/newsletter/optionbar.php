@@ -45,8 +45,14 @@ $file = $this->get_file();
 							<?php
 							foreach ( $all_files[ $slug ] as $name => $data ) {
 								$value = $slug . '/' . $name;
+								$is_current = ($current == $value);
+								$url = ! $is_current ? add_query_arg( array(
+									'template' => $slug,
+									'file' => $name,
+									'message' => 2,
+								), admin_url( 'post.php?post=' . $post->ID . '&action=edit' ) ) : '#';
 								?>
-								<li><a class="file<?php if ( $current == $value ) {	echo ' active'; }?>" <?php if ( $current != $value ) {	echo 'href="//' . add_query_arg( array( 'template' => $slug, 'file' => $name, 'message' => 2 ), $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) . '"'; } ?>><?php echo esc_html( $data['label'] ); ?></a></li>
+								<li><a class="file<?php if ( $is_current ) { echo ' active'; }?>" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $data['label'] ); ?></a></li>
 							<?php }	?>
 								</ul>
 							</li>

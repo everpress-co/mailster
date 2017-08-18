@@ -51,8 +51,6 @@ a.mailster-btn { padding: 1px 4px; }
 	position: absolute;
 	right:-31px;
 	text-align: right;
-	_width: 100%;
-	_height:0px;
 	z-index: 100;
 	top: 50%;
 	-webkit-transform:translateY(-50%);
