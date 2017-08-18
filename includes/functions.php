@@ -984,7 +984,7 @@ function is_mailster_newsletter_homepage() {
 
 	global $post;
 
-	return isset( $post ) && $post->ID == mailster_option( 'homepage' );
+	return apply_filters( 'is_mailster_newsletter_homepage', isset( $post ) && $post->ID == mailster_option( 'homepage' ), $post );
 
 }
 

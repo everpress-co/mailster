@@ -406,11 +406,11 @@ class Mailster {
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['unsubscribe'] ) ? $slugs['unsubscribe'] : 'unsubscribe';
 		$path = $slug;
-		if(!empty($hash)){
-			$path .= '/'.$hash;
+		if ( ! empty( $hash ) ) {
+			$path .= '/' . $hash;
 		}
-		if(!empty($campaign_id)){
-			$path .= '/'.$campaign_id;
+		if ( ! empty( $campaign_id ) ) {
+			$path .= '/' . $campaign_id;
 		}
 
 		$link = ( mailster( 'helper' )->using_permalinks() )
@@ -421,15 +421,11 @@ class Mailster {
 
 		return $link;
 
-
 		$is_permalink = mailster( 'helper' )->using_permalinks();
 
 		$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
 
 		$unsubscribe_homepage = get_page( mailster_option( 'homepage' ) );
-
-
-
 
 		if ( $unsubscribe_homepage ) {
 			$unsubscribe_homepage = get_permalink( $unsubscribe_homepage );
@@ -482,11 +478,11 @@ class Mailster {
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['profile'] ) ? $slugs['profile'] : 'profile';
 		$path = $slug;
-		if(!empty($hash)){
-			$path .= '/'.$hash;
+		if ( ! empty( $hash ) ) {
+			$path .= '/' . $hash;
 		}
-		if(!empty($campaign_id)){
-			$path .= '/'.$campaign_id;
+		if ( ! empty( $campaign_id ) ) {
+			$path .= '/' . $campaign_id;
 		}
 
 		$link = ( mailster( 'helper' )->using_permalinks() )
@@ -496,7 +492,6 @@ class Mailster {
 			), $baselink );
 
 		return $link;
-
 
 		$is_permalink = mailster( 'helper' )->using_permalinks();
 
