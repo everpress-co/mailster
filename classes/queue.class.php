@@ -982,7 +982,7 @@ class MailsterQueue {
 					$this->cron_log( $i + 1, '<span class="error">' . $data->subscriber_id . ' ' . $data->email . '</span>', $data->campaign_id ? $data->campaign_id : $options['template'], $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
 					$this->cron_log( '', '&nbsp;<span class="error">' . $result->get_error_message() . '</span>', '', '', '' );
 
-					// user_error
+						// user_error
 					if ( $result->get_error_code() == 'user_error' ) {
 
 						$error = $data->_count >= $this->max_retry_after_error;
@@ -1010,7 +1010,7 @@ class MailsterQueue {
 							do_action( 'mymail_notification_error', $data->subscriber_id, $result->get_error_message() );
 						}
 
-							// campaign_error
+						// campaign_error
 					} elseif ( $result->get_error_code() == 'error' ) {
 
 						$campaign = mailster( 'campaigns' )->get( $data->campaign_id );
@@ -1029,10 +1029,16 @@ class MailsterQueue {
 
 							}
 						}
-						array_push( $campaign_errors, $data->campaign_id );
 
+						array_push( $campaign_errors, $data->campaign_id );
 						do_action( 'mailster_campaign_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
 						do_action( 'mymail_campaign_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
+
+						// system_error
+					} elseif ( $result->get_error_code() == 'system_error' ) {
+
+						array_push( $campaign_errors, $data->campaign_id );
+						do_action( 'mailster_system_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
 
 					}
 				}
