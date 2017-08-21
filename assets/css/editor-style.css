@@ -15,16 +15,20 @@ a.mailster-btn,a.mailster-btn:hover,a.mailster-btn:active{
 	position:absolute;
 	cursor:pointer;
 	text-decoration:none;
-	font:14px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font:16px "Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-weight:400;
 	text-align:center;
 	border:1px solid #DFDFDF;
-	background:#fff;
+	_background:#fff;
+	_background-color:rgba(43, 179, 231, 0.1);
 	outline: 0;
-	min-width: 10px;
+	_min-width: 10px;
+	min-width: 12px;
 }
 a.mailster-btn:hover {
-	background:#F5F5F5;
+	_background:#F5F5F5;
+	background: #2BB3E7;
+	color: #fff;
 	z-index:1000;
 }
 a.mailster-btn:before {
@@ -43,13 +47,14 @@ a.mailster-btn.addrepeater:before { content: '\e81a'; }
 a.mailster-btn.removerepeater:before { content: '\e81b'; }
 a.mailster-btn { padding: 1px 4px; }
 .modulebuttons {
-	-webkit-transition:all .15s ease-in-out;
+/*	-webkit-transition:all .15s ease-in-out;
 	-moz-transition:all .15s ease-in-out;
 	-ms-transition:all .15s ease-in-out;
 	transition:all .15s ease-in-out;
-	opacity: 0;
+*/	opacity: 0;
 	position: absolute;
-	right:-31px;
+	_right:-31px;
+	right:0;
 	text-align: right;
 	z-index: 100;
 	top: 50%;
@@ -63,25 +68,30 @@ a.mailster-btn { padding: 1px 4px; }
 	left:-31px;
 }
 .modulebuttons a.mailster-btn {
-	padding: 5px 6px;
+	_padding: 5px 6px;
+	padding: 7px 8px;
 	display:block;
 	position:relative;
 	margin:0;
-	height:18px;
+	height:20px;
 	border: 0;
-	border-left:1px solid #DFDFDF;
-	line-height:18px;
-	width:18px;
+	_border-left:1px solid #DFDFDF;
+	_border-left:2px solid #2BB3E7;
+	line-height:20px;
+	width:20px;
 }
 .modulebuttons.modulebuttons-rtl a.mailster-btn {
 	border-left:0;
-	border-right:1px solid #DFDFDF;
+	_border-right:1px solid #DFDFDF;
+	_border-right:2px solid #2BB3E7;
 }
 .modulebuttons a:first-child {
-	border-top:1px solid #DFDFDF;
+	_border-top:1px solid #DFDFDF;
+	_border-top:2px solid #2BB3E7;
 }
 .modulebuttons a:last-child {
-	border-bottom:1px solid #DFDFDF;
+	_border-bottom:1px solid #DFDFDF;
+	_border-bottom:2px solid #2BB3E7;
 }
 .modulebuttons input.modulelabel {
 	-webkit-transition:all .15s ease-in-out;
@@ -177,11 +187,33 @@ else {
 }
 
 module:hover {
-	box-shadow: inset 0 0 0 1px #DFDFDD;
-	background-image:url(../img/modulebg.png);
+	outline:2px solid #2BB3E7;
+	outline-offset: 2px;
+	background-color:rgba(43, 179, 231, 0.1);
+	z-index: 9000;
+}
+module:hover:before, multi:hover:before, single:hover:before, img[editable]:hover:before, a[editable]:hover:before, a[editable]:hover:before, td[background]:hover:before {
+	content: attr(label);
+	display: block;
+	background-color: #2BB3E7;
+	color: #fff;
+	position: absolute;
+	top: -21px;
+	left: -4px;
+	height: 11px;
+	font-size: 10px;
+	text-transform: uppercase;
+	line-height: 1em;
+	padding: 4px;
+	white-space: nowrap;
+}
+module:hover:before {
+	top:-2px;
+	left:-2px;
 }
 module:hover .modulebuttons,.ie module .modulebuttons {
-	right:0px;
+	_right:0px;
+	right:2px;
 	opacity:1;
 }
 module:hover .modulebuttons.modulebuttons-rtl {
@@ -205,22 +237,19 @@ a.mailster-highlight {
 	outline: none;
 }
 multi, single, img[editable], a[editable] img, table.textbutton a[editable], td[background]{
-	-webkit-transition:all .15s ease-in-out;
-	-moz-transition:all .15s ease-in-out;
-	-ms-transition:all .15s ease-in-out;
-	transition:all .15s ease-in-out;
 	webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
 	-webkit-backface-visibility: hidden; /* Chrome, Safari, Opera */
 	backface-visibility: hidden;
 }
 multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, table.textbutton a[editable]:hover, table td table td[background]:hover,module table td[background]:hover{
-	outline: 1px dotted red;
+	_outline: 1px dotted red;
+	outline: 2px solid #2BB3E7;
+	outline-offset: 2px;
 	cursor:pointer;
 	z-index: 11;
-	-webkit-box-shadow: 0 0 10px rgba( 190, 30, 30, 0.8 );
-	box-shadow: 0 0 10px rgba( 190, 30, 30, 0.8 );
-	outline-offset: 1px;
+	_-webkit-box-shadow: 0 0 10px rgba( 190, 30, 30, 0.8 );
+	_box-shadow: 0 0 10px rgba( 190, 30, 30, 0.8 );
 }
 body.mailster-loading{
 	opacity: 0.2;
@@ -257,8 +286,11 @@ modules.ui-sortable.dragging module{
 	padding-bottom: 3px;
 	margin-top: 2px;
 	margin-bottom: 2px;
-	-webkit-box-shadow: 0px 0 1px rgba(0, 0, 0, 0.1), 0px 0 3px rgba(0, 0, 0, 0.1);
-	box-shadow: 0px 0 1px rgba(0, 0, 0, 0.1), 0px 0 3px rgba(0, 0, 0, 0.1);
+	_-webkit-box-shadow: 0px 0 1px rgba(0, 0, 0, 0.1), 0px 0 3px rgba(0, 0, 0, 0.1);
+	_box-shadow: 0px 0 1px rgba(0, 0, 0, 0.1), 0px 0 3px rgba(0, 0, 0, 0.1);
+}
+html{
+	margin: 4px !important;
 }
 body{
 	-webkit-transition:all .15s linear;
@@ -306,19 +338,23 @@ modules:empty:after, dropzone{
 	-moz-transition:all .15s linear;
 	-ms-transition:all .15s linear;
 	transition:all .15s linear;
-	box-shadow: inset 0 0 0 1px #DFDFDD;
-	background-image:url(../img/modulebg.png);
+	_box-shadow: inset 0 0 0 1px #DFDFDD;
+	_background-image:url(../img/modulebg.png);
 	background-color: #fff;
+	outline:1px solid #2BB3E7;
+	outline-offset: -1px;
+	background-color:rgba(43, 179, 231, 0.1);
 	position: relative;
 	margin: 0;
 }
 body.drag-active modules:empty:after, body.drag-active modules dropzone:before{
 	content: "\e815";
 	font-family: "mailster-icons";
+	color: #2BB3E7;
 	font-size: 18px;
 	height: 80px;
 	line-height: 80px;
-	opacity: 0.6;
+	opacity: 0.8;
 	margin: 0;
 	-webkit-transition:all .15s linear;
 	-moz-transition:all .15s linear;
@@ -326,6 +362,9 @@ body.drag-active modules:empty:after, body.drag-active modules dropzone:before{
 	transition:all .15s linear;
 }
 body.drag-active modules dropzone.drag-over{
+	outline:2px solid #2BB3E7;
+	outline-offset: -2px;
+	background-color:rgba(43, 179, 231, 0.3);
 	opacity: 1;
 }
 body.drag-active modules dropzone.drag-over:before{
@@ -404,7 +443,10 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 }
 .sortable-placeholder{
 	outline: 1px dotted #999;
-	background-image:url(../img/modulebg.png);
+	_background-image:url(../img/modulebg.png);
+	outline:2px dotted #2BB3E7;
+	outline-offset: -2px;
+	background-color:rgba(43, 179, 231, 0.3);
 }
 img{
 	-webkit-transition:height .25s ease-in-out, width .25s ease-in-out;
