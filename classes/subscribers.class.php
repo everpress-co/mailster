@@ -998,7 +998,7 @@ class MailsterSubscribers {
 				'signup' => $now,
 				'updated' => $now,
 				// 'ip' => null,
-				'referer' => wp_get_referer(),
+				'referer' => mailster_get_referer(),
 		) );
 
 		if ( isset( $entry['status'] ) && $entry['status'] == -1 ) {
