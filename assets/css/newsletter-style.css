@@ -146,13 +146,13 @@ textarea#content, textarea#excerpt {
 	margin-top: 23px;
 }
 .fixed-optionbar .has-modules .optionbar:after{
-	margin-right: 30px;
+	margin-right: 32px;
 }
 .fixed-optionbar .show-modules .optionbar:after{
 	margin-right: 169px;
 }
 .fixed-optionbar .has-modules.show-modules .optionbar:after{
-	margin-right: 200px;
+	margin-right: 202px;
 }
 .rtl.fixed-optionbar .has-modules .optionbar:after{
 	margin-right: 0;
@@ -2426,11 +2426,13 @@ a.mailster-btn.editbutton {
 	transition:margin-left .15s ease-in-out;
 	border: 1px solid;
 	border-color:#fff #fff #DFDFDF #DFDFDF;
+	background: #fff;
 	padding: 5px;
 	z-index: 98;
-	margin-left: -42px;
+	margin-left: -44px;
 	margin-top: 2px;
 	display: block !important;
+	color:#a8a8a8;
 }
 .rtl #mailster_template a.toggle-modules{
 	-webkit-transition:margin-right .15s ease-in-out;
@@ -2440,17 +2442,18 @@ a.mailster-btn.editbutton {
 	transition:margin-right .15s ease-in-out;
 	border-color:#fff #DFDFDF #DFDFDF #fff;
 	margin-left: 0;
-	margin-right: -42px;
+	margin-right: -44px;
 }
 #mailster_template a.toggle-modules:hover{
+	color:#686868;
 	border-color:#DFDFDF;
 }
 #mailster_template .show-modules a.toggle-modules{
-	margin-left: -32px;
+	margin-left: -34px;
 }
 .rtl #mailster_template .show-modules a.toggle-modules{
 	margin-left: 0;
-	margin-right: -32px;
+	margin-right: -34px;
 }
 #mailster_template a.toggle-modules:before{
 	content:'\e81a';
@@ -2509,12 +2512,12 @@ a.mailster-btn.editbutton {
 	cursor:progress !important;
 }
 .fixed-optionbar #module-selector{
-	right:321px;
+	right:323px;
 	top: 90px;
 	position: fixed;
 }
 .rtl.fixed-optionbar #module-selector{
-	left:321px;
+	left:323px;
 	right:initial;
 }
 .fixed-optionbar #module-selector .inner{
