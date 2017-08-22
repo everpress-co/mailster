@@ -15,7 +15,7 @@ jQuery(document).ready(function ($) {
 				id = cond.length - 1,
 				clone = cond.eq(0).clone();
 
-			clone.hide().removeAttr('id').appendTo(conditions).slideDown(200);
+			clone.removeAttr('id').appendTo(conditions);
 			$.each(clone.find('input, select'), function () {
 				var name = $(this).val('').attr('name');
 				$(this).attr('name', name.replace(/\[\d+\]/, '[' + id + ']')).trigger('change');

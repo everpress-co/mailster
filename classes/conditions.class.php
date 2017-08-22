@@ -77,6 +77,7 @@ class MailsterConditions {
 			'ip_signup' => __( 'IP on Signup', 'mailster' ),
 			'ip_confirm' => __( 'IP on confirmation', 'mailster' ),
 			'rating' => __( 'Rating', 'mailster' ),
+			'lang' => __( 'Language', 'mailster' ),
 		);
 
 		return $fields;

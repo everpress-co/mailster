@@ -257,8 +257,6 @@ class MailsterSubscriberQuery {
 			$this->add_condition( '_click__not_link', '=', $this->get_timestamp( $this->args['click__not_link'] ) );
 		}
 
-		echo '<pre>' . print_r( $this->args, true ) . '</pre>';
-
 		if ( ! $this->args['return_count'] ) {
 			if ( ! empty( $this->args['fields'] ) ) {
 				foreach ( $this->args['fields'] as $field ) {
