@@ -4032,7 +4032,7 @@ class MailsterCampaigns {
 
 		}
 
-		$mail->content = $content;
+		$mail->content = apply_filters( 'mailster_campaign_content', $content, $campaign, $subscriber );
 
 		if ( ! $campaign_meta['autoplaintext'] ) {
 			$placeholder->set_content( $campaign->post_excerpt );
