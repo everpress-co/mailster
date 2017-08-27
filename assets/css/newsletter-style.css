@@ -1781,7 +1781,7 @@ textarea#content, textarea#excerpt {
 	right:0;
 	left:0;
 	bottom:0;
-	background-image:url(../img/modulebg.png);
+	background-image:url(../img/inactive.png);
 	z-index: 100;
 }
 .timezone-enabled .utcoffset {

@@ -3,7 +3,9 @@ jQuery(document).ready(function ($) {
 	"use strict"
 
 	var body = $('body'),
-		uploader, container, modules, images, buttons;
+		uploader, container, modules, images, buttons, currenttinymce, _isActivationClick;
+
+	window.ajaxurl = window.ajaxurl || window.mailsterdata.ajaxurl;
 
 	body.addClass('mailster-loading');
 
@@ -12,7 +14,8 @@ jQuery(document).ready(function ($) {
 			.on('click', 'a', function (event) {
 				event.preventDefault();
 			});
-		_refreshMain();
+		_trigger('refresh');
+
 	});
 
 	function _refresh() {
@@ -25,9 +28,72 @@ jQuery(document).ready(function ($) {
 		_sortable();
 		_draggable();
 		_upload();
+		_inlineeditor();
 
 		body.removeClass('mailster-loading');
 		return;
+	}
+
+	function _inlineeditor() {
+
+		var l10n = mailster_mce_button.l10n,
+			tags = mailster_mce_button.tags,
+			designs = mailster_mce_button.designs,
+			tiny = mailsterdata.tinymce,
+			change = false;
+
+		tinymce.init($.extend(tiny.args, tiny.multi, {
+			setup: function (editor) {
+				_setup(editor, 'multi');
+			}
+		}));
+		tinymce.init($.extend(tiny.args, tiny.single, {
+			setup: function (editor) {
+				_setup(editor, 'single');
+			}
+		}));
+
+
+		function _setup(editor, type) {
+
+			editor.addButton('mailster_mce_button', {
+				title: l10n.title,
+				type: 'menubutton',
+				icon: 'icon mailster-tags-icon',
+				menu: $.map(tags, function (group, id) {
+					return {
+						text: group.name,
+						menu: $.map(group.tags, function (name, id) {
+							return {
+								text: name,
+								onclick: function () {
+									editor.insertContent('{' + id + '} ');
+								}
+							};
+
+						})
+					};
+				})
+			});
+
+			editor.on('change', function (e) {
+				_trigger('save');
+				change = true;
+			});
+			editor.on('click', function (e) {
+				editor.focus();
+			});
+			editor.on('focus', function (e) {
+				_trigger('hidebuttons');
+				if (container.data('uiSortable')) container.sortable('destroy');
+			});
+			editor.on('blur', function (e) {
+				_trigger('refresh');
+				_sortable();
+			});
+
+		}
+
 	}
 
 	function _sortable() {
@@ -40,12 +106,12 @@ jQuery(document).ready(function ($) {
 				event.stopPropagation();
 				container.removeClass('dragging');
 				setTimeout(function () {
-					_refreshMain();
+					_trigger('refresh');
 				}, 200);
 			},
 			start: function (event, ui) {
 				event.stopPropagation();
-				_hideButtons();
+				_trigger('hidebuttons');
 				container.addClass('dragging');
 			},
 			containment: 'parent',
@@ -66,12 +132,12 @@ jQuery(document).ready(function ($) {
 				event.stopPropagation();
 				container.removeClass('dragging');
 				setTimeout(function () {
-					_refreshMain();
+					_trigger('refresh');
 				}, 200);
 			},
 			start: function (event, ui) {
 				event.stopPropagation();
-				_hideButtons();
+				_trigger('hidebuttons');
 				container.addClass('dragging');
 			},
 			containment: 'body',
@@ -113,7 +179,7 @@ jQuery(document).ready(function ($) {
 				},
 				stop: function () {
 					body.removeClass('ui-dragging');
-					_refreshMain();
+					_trigger('refresh');
 
 				}
 			}).droppable({
@@ -197,7 +263,7 @@ jQuery(document).ready(function ($) {
 										'height': Math.round(response.image.height / target_f)
 									}).data('id', org_id).removeClass('mailster-loading');
 
-									_refreshMain();
+									_trigger('refresh');
 
 								}, function (jqXHR, textStatus, errorThrown) {
 
@@ -217,7 +283,7 @@ jQuery(document).ready(function ($) {
 
 							}
 
-							if (!org_id && !target_id) _refreshMain();
+							if (!org_id && !target_id) _trigger('refresh');
 
 						});
 					});
@@ -368,7 +434,7 @@ jQuery(document).ready(function ($) {
 							clearTimeout(delay);
 							source._preview.fadeOut(function () {
 								$(this).remove();
-								_refreshMain();
+								_trigger('refresh');
 							});
 						});
 
@@ -386,7 +452,7 @@ jQuery(document).ready(function ($) {
 						delay = setTimeout(function () {
 							source._preview.fadeOut(function () {
 								$(this).remove();
-								_refreshMain();
+								_trigger('refresh');
 							});
 						}, 3000);
 					} catch (err) {
@@ -409,19 +475,18 @@ jQuery(document).ready(function ($) {
 
 	}
 
-	window.mailster_refresh = function () {
-		_refresh();
-	}
-	window.mailster_onsave = function () {
-		_refresh();
-	}
 
-	function _hideButtons() {
-		if (parent.window.mailster_hideButtons) parent.window.mailster_hideButtons();
-	}
+	$(window).on('Mailster:refresh', function () {
+		_refresh();
+	})
 
-	function _refreshMain() {
-		if (parent.window.mailster_refresh) parent.window.mailster_refresh()
+
+	function _trigger(triggerevent, args) {
+		if (!window.Mailster) {
+			window.Mailster = parent.window.Mailster;
+		}
+		if (!window.Mailster) return;
+		window.Mailster.trigger(triggerevent, args);
 	}
 
 	function _getRealDimensions(el, callback) {

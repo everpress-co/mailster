@@ -68,7 +68,7 @@ class MailsterTinymce {
 	 *
 	 * @param unknown $settings
 	 */
-	public function editbar_translations( $settings ) {
+	public function editbar_translations( $settings = null ) {
 
 		global $mailster_tags;
 

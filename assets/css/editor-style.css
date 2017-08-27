@@ -292,6 +292,12 @@ body.mailster-loading multi:hover, body.mailster-loading single:hover, body.mail
 multi, single, img[editable], a[editable] img, table.textbutton a[editable]{
 	position: relative;
 }
+multi[contenteditable], single[contenteditable]{
+	cursor: text;
+}
+multi[contenteditable]:focus, single[contenteditable]:focus{
+	outline:none;
+}
 body:hover single:empty{
 	outline: 1px dotted #2BB3E7;
 	display: inline-block;
@@ -505,4 +511,29 @@ modules.ui-sortable.dragging module.ui-sortable-helper{
 }
 .mailster-upload-info.error .mailster-upload-info-text{
 	background: #f33;
+}
+.mce-ico.mailster-tags-icon {
+	vertical-align: baseline;
+}
+.mce-ico.mailster-tags-icon:before {
+	font: normal 16px/1 'mailster-icons' !important;
+	content: '\e830';
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+single > p{
+	display: inline;
+	padding: 0 !important;
+	margin: 0 !important;
+	line-height: 1 !important;
+}
+.ui-helper-hidden-accessible, .screen-reader-text{
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
 }

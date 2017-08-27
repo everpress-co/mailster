@@ -34,8 +34,24 @@ jQuery(document).ready(function ($) {
 	//init the whole thing
 	function _init() {
 
-		_disable(true);
+		_trigger('disable');
 		_time();
+
+		window.Mailster = window.Mailster || {
+			refresh: function () {
+				_trigger('refresh');
+			},
+			hidebuttons: function () {
+				_container.find('.content.mailster-btn').remove();
+			},
+			save: function () {
+				_trigger('save');
+			},
+			trigger: function (event, args) {
+				_trigger(event, args);
+			},
+			autosave: '',
+		};
 
 		//set the document of the iframe cross browser like
 		_idoc = (_iframe[0].contentWindow || _iframe[0].contentDocument);
@@ -56,11 +72,11 @@ jQuery(document).ready(function ($) {
 				if (!modules) modules = new _modules();
 			} else {}
 
-			_enable();
+			_trigger('enable');
 			iframeloaded = true;
-			_refresh();
-			_resize(0, 0);
-			_save();
+			_trigger('resize');
+			_trigger('refresh');
+			_trigger('save');
 
 			clearInterval(iframeloadinterval);
 
@@ -70,10 +86,10 @@ jQuery(document).ready(function ($) {
 
 			if (typeof wp != 'undefined') {
 				if (wp.autosave && wp.autosave.server && typeof wp.autosave.server.postChanged == 'function') {
-					window.mailster_autosave = _getAutosaveString();
+					window.Mailster.autosave = _getAutosaveString();
 					//overwrite autosave
 					wp.autosave.server.postChanged = function () {
-						return window.mailster_autosave != _getAutosaveString();
+						return window.Mailster.autosave != _getAutosaveString();
 					}
 				}
 			}
@@ -96,23 +112,18 @@ jQuery(document).ready(function ($) {
 
 			}
 
-			_win.trigger('resize');
+			_trigger('resize');
 			$("#normal-sortables").on("sortupdate", function (event, ui) {
-				_win.trigger('resize');
+				_trigger('resize');
 			});
 
 			_template_wrap.removeClass('load');
 
 		});
 
-		_win.on('resize.mailster', _refresh);
-		window.mailster_refresh = function () {
-			_refresh();
-			_save();
-		}
-		window.mailster_hideButtons = function () {
-			_container.find('.content.mailster-btn').remove();
-		}
+		_win.on('resize.mailster', function () {
+			_trigger('refresh');
+		});
 
 		//switch to autoresponder if referer is right or post_status us set
 		if (/post_status=autoresponder/.test($('#referredby').val()) || /post_status=autoresponder/.test(location.search)) {
@@ -134,7 +145,7 @@ jQuery(document).ready(function ($) {
 				return false;
 			})
 			.on('change', 'input[name=screen_columns]', function () {
-				_win.trigger('resize');
+				_trigger('resize');
 			});
 
 
@@ -152,7 +163,7 @@ jQuery(document).ready(function ($) {
 
 			$('#post').on('submit', function () {
 				if (isDisabled) return false;
-				_save();
+				_trigger('save');
 			});
 
 			$('.sendnow-button').on('click', function () {
@@ -161,7 +172,7 @@ jQuery(document).ready(function ($) {
 
 			$('#local-storage-notice')
 				.on('click', '.restore-backup, .undo-restore-backup', function () {
-					_disable();
+					_trigger('disable');
 					setTimeout(function () {
 						var content = _content.val();
 						if (!content) {
@@ -169,8 +180,8 @@ jQuery(document).ready(function ($) {
 							_iframe[0].contentWindow.location.reload();
 						} else {
 							_setContent(content, false);
-							_enable();
-							_refresh();
+							_trigger('enable');
+							_trigger('refresh');
 						}
 						$('#local-storage-notice').slideUp();
 					}, 100);
@@ -263,7 +274,7 @@ jQuery(document).ready(function ($) {
 						'display': 'inline'
 					});
 				$this.prop('disabled', true);
-				_save();
+				_trigger('save');
 				_ajax('send_test', {
 					formdata: $('#post').serialize(),
 					to: $('#mailster_testmail').val(),
@@ -298,7 +309,7 @@ jQuery(document).ready(function ($) {
 
 				$('.score').html('');
 
-				_save();
+				_trigger('save');
 
 				progressbar.css({
 					'width': '0'
@@ -654,14 +665,14 @@ jQuery(document).ready(function ($) {
 
 					total.addClass('loading');
 
-					_disable();
+					_trigger('disable');
 
 					_ajax('get_totals', data, function (response) {
-						_enable();
+						_trigger('enable');
 						total.removeClass('loading').html(response.totalformatted);
 
 					}, function (jqXHR, textStatus, errorThrown) {
-						_enable();
+						_trigger('enable');
 						total.removeClass('loading').html('?');
 						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					});
@@ -760,14 +771,14 @@ jQuery(document).ready(function ($) {
 				var colorfields = $('#mailster_options').find('input.color'),
 					li = $(this).find('li.colorschema-field');
 
-				_disable();
+				_trigger('disable');
 
 				$.each(li, function (i) {
 					var color = li.eq(i).data('hex');
 					colorfields.eq(i).wpColorPicker('color', color);
 				});
 
-				_enable();
+				_trigger('enable');
 
 			}).on('click', 'a.savecolorschema', function () {
 				var colors = $.map($('#mailster_options').find('.color'), function (e) {
@@ -887,14 +898,14 @@ jQuery(document).ready(function ($) {
 				var data = $(this).data();
 
 				data.element.clone().insertAfter(data.element);
-				_refresh();
+				_trigger('refresh');
 
 				return false;
 			}).on('click', 'a.removerepeater', function () {
 				var data = $(this).data();
 
 				data.element.remove();
-				_refresh();
+				_trigger('refresh');
 
 				return false;
 			});
@@ -1564,10 +1575,10 @@ jQuery(document).ready(function ($) {
 
 		function save() {
 
-			_disable();
+			_trigger('disable');
 			var name = $('#new_template_name').val();
 			if (!name) return false;
-			_save();
+			_trigger('save');
 			var loader = $('#new_template-ajax-loading').css({
 					'display': 'inline'
 				}),
@@ -1610,6 +1621,7 @@ jQuery(document).ready(function ($) {
 				_content.val(_undo[_currentundo]);
 				_obar.find('a.redo').removeClass('disabled');
 				if (!_currentundo) $(this).addClass('disabled');
+				_trigger('refresh');
 			}
 
 			return false;
@@ -1625,6 +1637,7 @@ jQuery(document).ready(function ($) {
 				_content.val(_undo[_currentundo]);
 				_obar.find('a.undo').removeClass('disabled');
 				if (_currentundo >= length - 1) $(this).addClass('disabled');
+				_trigger('refresh');
 			}
 
 			return false;
@@ -1638,14 +1651,16 @@ jQuery(document).ready(function ($) {
 				modulecontainer.slideUp(function () {
 					modules.remove();
 					modulecontainer.html('').show();
-					_refresh();
-					_save();
+					_trigger('refresh');
+					_trigger('save');
 				});
 			}
 			return false;
 		}
 
 		function preview() {
+
+			_trigger('save');
 
 			var _this = $(this),
 				content = _getContent(),
@@ -1706,7 +1721,7 @@ jQuery(document).ready(function ($) {
 			if (!isRaw) {
 
 				_obar.find('a.code').addClass('loading');
-				_disable();
+				_trigger('disable');
 
 				$.getScript(mailsterdata.url + 'assets/js/libs/codemirror.min.js', function () {
 					_ajax('toggle_codeview', {
@@ -1739,7 +1754,7 @@ jQuery(document).ready(function ($) {
 
 					}, function (jqXHR, textStatus, errorThrown) {
 						_obar.find('a.code').addClass('active').removeClass('loading');
-						_enable();
+						_trigger('enable');
 						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					});
 				});
@@ -1754,8 +1769,8 @@ jQuery(document).ready(function ($) {
 				_obar.find('a.code').removeClass('active');
 				_obar.find('a').not('a.redo, a.undo, a.code').removeClass('disabled');
 				_container.removeClass('noeditbuttons');
-				_enable();
-				_refresh();
+				_trigger('enable');
+				_trigger('refresh');
 
 			}
 			return false;
@@ -1780,7 +1795,7 @@ jQuery(document).ready(function ($) {
 				_obar.find('a.plaintext').removeClass('active');
 				_obar.find('a').not('a.redo, a.undo, a.plaintext, a.preview').removeClass('disabled');
 				_container.removeClass('noeditbuttons');
-				_refresh();
+				_trigger('refresh');
 
 			}
 			return false;
@@ -2084,7 +2099,6 @@ jQuery(document).ready(function ($) {
 				});
 
 			img[0].onload = function () {
-				//_refresh();
 				img.attr({
 					'width': w,
 					'height': h,
@@ -2273,7 +2287,7 @@ jQuery(document).ready(function ($) {
 							if (is_img) {
 								current.element.one('load', function () {
 									current.element.removeClass('mailster-loading');
-									_save();
+									_trigger('save');
 								});
 
 								current.element.attr({
@@ -2539,7 +2553,7 @@ jQuery(document).ready(function ($) {
 					_iframe.contents().find("html")
 						.find("img").each(function () {
 							this.onload = function () {
-								_refresh();
+								_trigger('refresh');
 							};
 						});
 
@@ -3274,8 +3288,8 @@ jQuery(document).ready(function ($) {
 			bar.removeClass('current-' + current.type).hide();
 			loader(false);
 			$('#single-link').hide();
-			_save();
-			_refresh();
+			_trigger('save');
+			_trigger('refresh');
 			return false;
 
 		}
@@ -3314,16 +3328,16 @@ jQuery(document).ready(function ($) {
 		function up() {
 			var module = $(this).parent().parent().parent();
 			module.insertBefore(module.prev('module'));
-			_refresh();
-			_save();
+			_trigger('refresh');
+			_trigger('save');
 			return false;
 		}
 
 		function down() {
 			var module = $(this).parent().parent().parent();
 			module.insertAfter(module.next('module'));
-			_refresh();
-			_save();
+			_trigger('refresh');
+			_trigger('save');
 			return false;
 		}
 
@@ -3335,12 +3349,12 @@ jQuery(document).ready(function ($) {
 
 			clone.insertAfter(module);
 
-			_resize(0, 0);
+			_trigger('resize');
 
 			clone.slideDown(function () {
 				clone.css('display', 'block');
-				_refresh();
-				_save();
+				_trigger('refresh');
+				_trigger('save');
 			});
 
 			var offset = clone.offset().top + _container.offset().top - (_win.height() / 2) - clone.outerHeight();
@@ -3383,8 +3397,8 @@ jQuery(document).ready(function ($) {
 					module.remove();
 					modules = _iframe.contents().find('module');
 					if (!modules.length) container.html('');
-					_refresh();
-					_save();
+					_trigger('refresh');
+					_trigger('save');
 				});
 			});
 			return false;
@@ -3400,12 +3414,12 @@ jQuery(document).ready(function ($) {
 			(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element)) :
 			clone.hide().appendTo(container);
 
-			_resize(0, 0);
+			_trigger('resize');
 
 			clone.slideDown(200, function () {
 				clone.addClass('active').css('display', 'block');
-				_refresh();
-				_save();
+				_trigger('refresh');
+				_trigger('save');
 			});
 
 			if (!noscroll) {
@@ -3434,7 +3448,7 @@ jQuery(document).ready(function ($) {
 			_template_wrap.toggleClass('show-modules');
 			show_modules = !show_modules;
 			window.setUserSetting('mailstershowmodules', show_modules ? 1 : 0);
-			_refresh();
+			_trigger('refresh');
 		}
 
 		function init() {
@@ -3569,7 +3583,7 @@ jQuery(document).ready(function ($) {
 
 			}
 
-			_refresh();
+			//_trigger('refresh');
 
 		}
 
@@ -3596,33 +3610,33 @@ jQuery(document).ready(function ($) {
 			});
 	}
 
-	function _refresh() {
+	$(window)
+
+	.on('Mailster:refresh', function () {
 		clearTimeout(refreshtimout);
 		refreshtimout = setTimeout(function () {
-			_resize();
+			_trigger('resize');
 
 			if (!_disabled) {
-				if (_iframe[0].contentWindow.window.mailster_refresh) _iframe[0].contentWindow.window.mailster_refresh();
 				_editButtons();
 			} else {
 				_clickBadges();
 			}
 		}, 10);
-	}
+	})
 
-	function _resize(extra, delay) {
+	.on('Mailster:resize', function (event) {
+		var delay = 0,
+			extra = 0;
 		if (!iframeloaded) return false;
 		setTimeout(function () {
 			if (!_iframe[0].contentWindow.document.body) return;
 			var height = _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
 			_iframe.attr("height", Math.max(500, height + 10 + (extra || 0)));
 		}, delay ? delay : 500);
-	}
+	})
 
-	//write the html into the content;
-
-	function _save() {
-
+	.on('Mailster:save', function () {
 		if (!_disabled && iframeloaded) {
 
 			var content = _getFrameContent();
@@ -3648,6 +3662,58 @@ jQuery(document).ready(function ($) {
 			}
 
 		}
+	})
+
+	.on('Mailster:disable', function () {
+		isDisabled = true;
+		$('.button').prop('disabled', true);
+		$('input').prop('disabled', true);
+	})
+
+	.on('Mailster:enable', function () {
+		$('.button').prop('disabled', false);
+		$('input').prop('disabled', false);
+		isDisabled = false;
+	})
+
+	.on('Mailster:hidebuttons', function () {
+		_container.find('.content.mailster-btn').remove();
+	})
+
+	.on('Mailster:xxx', function () {});
+
+	function _trigger(triggerevent, args) {
+
+		var args = [];
+		Array.prototype.push.apply(args, arguments);
+		var triggerevent = args.shift();
+		console.log('Trigger: ' + triggerevent, args);
+
+		var event = new CustomEvent('Mailster:' + triggerevent, {
+			data: args
+		});
+
+		window.dispatchEvent(event);
+		_iframe[0].contentWindow.window.dispatchEvent(event);
+
+		return;
+		if (document.createEvent) {
+			e = document.createEvent("HTMLEvents");
+			e.initEvent('Mailster:' + triggerevent, true, true);
+		} else {
+			e = document.createEventObject();
+			e.eventType = 'Mailster:' + triggerevent;
+		}
+
+		e.eventName = 'Mailster:' + triggerevent;
+
+		if (document.createEvent) {
+			window.dispatchEvent(e);
+			_iframe[0].contentWindow.window.dispatchEvent(e);
+		} else {
+			window.fireEvent("on" + e.eventType, e);
+			_iframe[0].contentWindow.window.fireEvent("on" + e.eventType, e);
+		}
 	}
 
 	function _editButtons() {
@@ -3665,23 +3731,23 @@ jQuery(document).ready(function ($) {
 
 				cont
 					.off('.mailster')
-					.on('click.mailster', 'multi, single', function (event) {
-						event.stopPropagation();
-						var $this = $(this),
-							offset = $this.offset(),
-							top = offset.top + 40,
-							left = offset.left,
-							name = $this.attr('label'),
-							type = $this.prop('tagName').toLowerCase();
+					// .on('click.mailster', 'multi, single', function (event) {
+					// 	event.stopPropagation();
+					// 	var $this = $(this),
+					// 		offset = $this.offset(),
+					// 		top = offset.top + 40,
+					// 		left = offset.left,
+					// 		name = $this.attr('label'),
+					// 		type = $this.prop('tagName').toLowerCase();
 
-						editbar.open({
-							'offset': offset,
-							'type': type,
-							'name': name,
-							'element': $this
-						});
-					})
-					.on('click.mailster', 'img[editable]', function (event) {
+				// 	editbar.open({
+				// 		'offset': offset,
+				// 		'type': type,
+				// 		'name': name,
+				// 		'element': $this
+				// 	});
+				// })
+				.on('click.mailster', 'img[editable]', function (event) {
 						event.stopPropagation();
 						var $this = $(this),
 							offset = $this.offset(),
@@ -3899,39 +3965,29 @@ jQuery(document).ready(function ($) {
 		return;
 	}
 
-	function _disable(buttononly) {
-		isDisabled = true;
-		$('#publishing-action').find('input').prop('disabled', true);
-		$('.button').prop('disabled', true);
-		if (buttononly !== true) $('input').prop('disabled', true);
-	}
-
-	function _enable() {
-		$('#publishing-action').find('input').prop('disabled', false);
-		$('.button').prop('disabled', false);
-		$('input').prop('disabled', false);
-		isDisabled = false;
-	}
-
 	function _getFrameContent() {
 
-		var body = _iframe[0].contentWindow.document.body;
+		var body = _iframe[0].contentWindow.document.body,
+			clone, content, bodyattributes, attrcount, s = '';
 
 		if (typeof body == 'null' || !body) return '';
-		var content = $.trim(body.innerHTML);
 
-		var bodyattributes = body.attributes,
-			attrcount = bodyattributes.length,
-			s = '';
+		clone = $('<div>' + body.innerHTML + '</div>');
+
+		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, div.modulebuttons, mailster, #mailster-editorimage-upload-button').remove();
+		clone.find('single, multi').removeAttr('style class id');
+		content = $.trim(clone.html());
+
+		bodyattributes = body.attributes;
+		attrcount = bodyattributes.length;
 
 		while (attrcount--) {
 			s = ' ' + bodyattributes[attrcount].name + '="' + bodyattributes[attrcount].value + '"' + s;
 		}
 
 		s = s
-			.replace('position: relative;', '')
-			.replace(' class=""', '')
-			.replace(' style=""', '');
+			.replace(/(webkit|wp\-editor|mceContentBody|position: relative;|modal-open)/g, '')
+			.replace(/(class="(\s*)"|style="(\s*)")/g, '')
 
 		return _head.val() + "\n<body" + s + ">\n" + content + "\n</body>\n</html>";
 	}
@@ -3969,7 +4025,7 @@ jQuery(document).ready(function ($) {
 			}, delay || 100);
 		}
 
-		if (typeof saveit == 'undefined' || saveit === true) _save();
+		if (typeof saveit == 'undefined' || saveit === true) _trigger('save');
 	}
 
 	function _filterHTML(html) {
