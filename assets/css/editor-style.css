@@ -350,9 +350,9 @@ modules:empty:after, dropzone{
 	-ms-transition:all .15s linear;
 	transition:all .15s linear;
 	background-color: #fff;
-	outline:1px solid #2BB3E7;
+	outline:1px solid rgba(43, 179, 231, 0.3);
 	outline-offset: -1px;
-	background-color:rgba(43, 179, 231, 0.1);
+	background-color:rgba(43, 179, 231, 0.3);
 	position: relative;
 	margin: 0;
 }
@@ -512,20 +512,15 @@ modules.ui-sortable.dragging module.ui-sortable-helper{
 .mailster-upload-info.error .mailster-upload-info-text{
 	background: #f33;
 }
-.mce-ico.mailster-tags-icon {
-	vertical-align: baseline;
-}
-.mce-ico.mailster-tags-icon:before {
+.mce-ico.mailster-tags-icon:before, .mce-ico.mailster-remove-icon:before {
 	font: normal 16px/1 'mailster-icons' !important;
 	content: '\e830';
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
-single > p{
-	display: inline;
-	padding: 0 !important;
-	margin: 0 !important;
-	line-height: 1 !important;
+.mce-ico.mailster-remove-icon:before {
+	content: '\e82a';
+	color: red;
 }
 .ui-helper-hidden-accessible, .screen-reader-text{
 	border: 0;
@@ -536,4 +531,28 @@ single > p{
 	padding: 0;
 	position: absolute;
 	width: 1px;
+}
+div.wp-link-input {
+	float: left;
+	margin: 2px;
+	max-width: 694px;
+}
+div.wp-link-input input[type="text"] {
+	border: 1px solid #ddd;
+	-webkit-box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.07 );
+	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.07 );
+	background-color: #fff;
+	color: #32373c;
+	outline: none;
+	-webkit-transition: 0.05s border-color ease-in-out;
+	transition: 0.05s border-color ease-in-out;
+}
+.mce-toolbar .mce-ico.dashicons-editor-break {
+	line-height: 7px;
+	width: 20px;
+	height: 15px;
+	vertical-align: sub;
+}
+ul.ui-autocomplete{
+	font:14px "Helvetica Neue",Helvetica,Arial,sans-serif;
 }

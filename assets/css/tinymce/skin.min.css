@@ -1977,15 +1977,6 @@ i.mce-i-resize {
 	text-align: right;
 	direction: rtl
 }
-.mce-i-cut:before {
-	content: "\f217"
-}
-.mce-i-paste:before {
-	content: "\f217"
-}
-.mce-i-copy:before {
-	content: "\f217"
-}
 .mce-i-insert {
 	font-size: 14px
 }

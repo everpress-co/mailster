@@ -3731,23 +3731,7 @@ jQuery(document).ready(function ($) {
 
 				cont
 					.off('.mailster')
-					// .on('click.mailster', 'multi, single', function (event) {
-					// 	event.stopPropagation();
-					// 	var $this = $(this),
-					// 		offset = $this.offset(),
-					// 		top = offset.top + 40,
-					// 		left = offset.left,
-					// 		name = $this.attr('label'),
-					// 		type = $this.prop('tagName').toLowerCase();
-
-				// 	editbar.open({
-				// 		'offset': offset,
-				// 		'type': type,
-				// 		'name': name,
-				// 		'element': $this
-				// 	});
-				// })
-				.on('click.mailster', 'img[editable]', function (event) {
+					.on('click.mailster', 'img[editable]', function (event) {
 						event.stopPropagation();
 						var $this = $(this),
 							offset = $this.offset(),
@@ -3826,6 +3810,25 @@ jQuery(document).ready(function ($) {
 
 			});
 
+			if (!mailsterdata.inline) {
+				cont
+					.on('click.mailster', 'multi, single', function (event) {
+						event.stopPropagation();
+						var $this = $(this),
+							offset = $this.offset(),
+							top = offset.top + 40,
+							left = offset.left,
+							name = $this.attr('label'),
+							type = $this.prop('tagName').toLowerCase();
+
+						editbar.open({
+							'offset': offset,
+							'type': type,
+							'name': name,
+							'element': $this
+						});
+					});
+			}
 			$.each(repeatable, function () {
 				var $this = $(this),
 					name = $this.attr('label'),

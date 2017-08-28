@@ -11,7 +11,9 @@ class MailsterTinymce {
 
 	public function init() {
 
-		add_filter( 'mce_external_plugins', array( &$this, 'add_tinymce_plugin' ), 10, 3 );
+		if ( is_admin() ) {
+			add_filter( 'mce_external_plugins', array( &$this, 'add_tinymce_plugin' ), 10, 3 );
+		}
 
 	}
 
@@ -135,9 +137,14 @@ class MailsterTinymce {
 		echo '<script type="text/javascript">';
 		echo 'mailster_mce_button = ' . json_encode( array(
 				'l10n' => array(
-					'title' => __( 'Mailster Tags', 'mailster' ),
-					'tag' => __( 'Tag', 'mailster' ),
-					'tags' => __( 'Tags', 'mailster' ),
+					'tags' => array(
+						'title' => __( 'Mailster Tags', 'mailster' ),
+						'tag' => __( 'Tag', 'mailster' ),
+						'tags' => __( 'Tags', 'mailster' ),
+					),
+					'remove' => array(
+						'title' => __( 'Remove Block', 'mailster' ),
+					),
 				),
 				'tags' => $tags,
 		) );

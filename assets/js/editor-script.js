@@ -28,7 +28,7 @@ jQuery(document).ready(function ($) {
 		_sortable();
 		_draggable();
 		_upload();
-		_inlineeditor();
+		if (typeof tinymce != 'undefined') _inlineeditor();
 
 		body.removeClass('mailster-loading');
 		return;
@@ -43,21 +43,33 @@ jQuery(document).ready(function ($) {
 			change = false;
 
 		tinymce.init($.extend(tiny.args, tiny.multi, {
+			urlconverter_callback: _urlconverter,
 			setup: function (editor) {
 				_setup(editor, 'multi');
 			}
 		}));
 		tinymce.init($.extend(tiny.args, tiny.single, {
+			urlconverter_callback: _urlconverter,
 			setup: function (editor) {
 				_setup(editor, 'single');
 			}
 		}));
 
+		function _urlconverter(url, node, on_save, name) {
+			if ('_wp_link_placeholder' == url) {
+				return url;
+			} else if (/{.+}/g.test(url)) {
+				return url.replace(/^https?:\/\//, '');
+			} else if (/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(url)) {
+				return 'mailto:' + url;
+			}
+			return this.documentBaseURI.toAbsolute(url, tiny.remove_script_host);
+		}
 
 		function _setup(editor, type) {
 
 			editor.addButton('mailster_mce_button', {
-				title: l10n.title,
+				title: l10n.tags.title,
 				type: 'menubutton',
 				icon: 'icon mailster-tags-icon',
 				menu: $.map(tags, function (group, id) {
@@ -74,6 +86,14 @@ jQuery(document).ready(function ($) {
 						})
 					};
 				})
+			});
+			editor.addButton('mailster_remove_element', {
+				title: l10n.remove.title,
+				icon: 'icon mailster-remove-icon',
+				onclick: function () {
+					editor.targetElm.remove();
+					editor.remove();
+				}
 			});
 
 			editor.on('change', function (e) {
