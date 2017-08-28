@@ -84,6 +84,9 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.10 =
 
+* fixed: Editor button now only available in the backend
+* fixed: Excerpts were missing when View mode is Excerpt View
+* fixed: missing `wp_get_raw_referer` on WP < 4.5
 * improved: lists assigned to a form are now respected if form id is set explicitly on subscriber submission
 * added: 'mailster_campaign_content' filter to alter the content of campaigns
 * added: 'mailster_using_permalinks' filter
