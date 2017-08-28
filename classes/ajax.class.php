@@ -618,7 +618,7 @@ class MailsterAjax {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
-				$mail->content = $content;
+				$mail->content = apply_filters( 'mailster_campaign_content', $content, get_post( $ID ), $subscriber );
 
 				if ( $autoplain ) {
 					$placeholder->set_content( esc_textarea( $plaintext ) );
