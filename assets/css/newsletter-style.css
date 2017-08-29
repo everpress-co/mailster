@@ -146,13 +146,13 @@ textarea#content, textarea#excerpt {
 	margin-top: 23px;
 }
 .fixed-optionbar .has-modules .optionbar:after{
-	margin-right: 32px;
+	margin-right: 29px;
 }
 .fixed-optionbar .show-modules .optionbar:after{
 	margin-right: 169px;
 }
 .fixed-optionbar .has-modules.show-modules .optionbar:after{
-	margin-right: 202px;
+	margin-right: 199px;
 }
 .rtl.fixed-optionbar .has-modules .optionbar:after{
 	margin-right: 0;
@@ -186,9 +186,12 @@ textarea#content, textarea#excerpt {
 	margin:0;
 	border-left:0;
 	border-right:0;
+	margin-left:1px;
 }
 .rtl .optionbar ul li {
 	float:right;
+	margin-left:0px;
+	margin-right:1px;
 }
 .optionbar ul li.no-border-left {
 	border-left:0 !important;
@@ -2513,12 +2516,12 @@ a.mailster-btn.editbutton {
 	cursor:progress !important;
 }
 .fixed-optionbar #module-selector{
-	right:323px;
+	right:321px;
 	top: 90px;
 	position: fixed;
 }
 .rtl.fixed-optionbar #module-selector{
-	left:323px;
+	left:321px;
 	right:initial;
 }
 .fixed-optionbar #module-selector .inner{

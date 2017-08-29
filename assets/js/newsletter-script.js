@@ -37,22 +37,6 @@ jQuery(document).ready(function ($) {
 		_trigger('disable');
 		_time();
 
-		window.Mailster = window.Mailster || {
-			refresh: function () {
-				_trigger('refresh');
-			},
-			hidebuttons: function () {
-				_container.find('.content.mailster-btn').remove();
-			},
-			save: function () {
-				_trigger('save');
-			},
-			trigger: function (event, args) {
-				_trigger(event, args);
-			},
-			autosave: '',
-		};
-
 		//set the document of the iframe cross browser like
 		_idoc = (_iframe[0].contentWindow || _iframe[0].contentDocument);
 		if (_idoc.document) _idoc = _idoc.document;
@@ -70,6 +54,22 @@ jQuery(document).ready(function ($) {
 				if (!optionbar) optionbar = new _optionbar();
 				if (!editbar) editbar = new _editbar();
 				if (!modules) modules = new _modules();
+				window.Mailster = window.Mailster || {
+					refresh: function () {
+						_trigger('refresh');
+					},
+					hidebuttons: function () {
+						_container.find('.content.mailster-btn').remove();
+					},
+					save: function () {
+						_trigger('save');
+					},
+					trigger: function (event, args) {
+						_trigger(event, args);
+					},
+					editbar: editbar,
+					autosave: '',
+				};
 			} else {}
 
 			_trigger('enable');
@@ -881,34 +881,34 @@ jQuery(document).ready(function ($) {
 				});
 			});
 
-			_container.on('click', 'a.addbutton', function () {
-				var data = $(this).data(),
-					element = data.element.find('img').length ?
-					'<a href="" editable label="Button"><img alt=""></a>' :
-					'<a href="" editable label="Button"></a>';
+			// _container.on('click', 'a.addbutton', function () {
+			// 	var data = $(this).data(),
+			// 		element = data.element.find('img').length ?
+			// 		'<a href="" editable label="Button"><img alt=""></a>' :
+			// 		'<a href="" editable label="Button"></a>';
 
-				editbar.open({
-					type: 'btn',
-					offset: data.offset,
-					element: $(element).appendTo(data.element),
-					name: data.name
-				});
-				return false;
-			}).on('click', 'a.addrepeater', function () {
-				var data = $(this).data();
+			// 	editbar.open({
+			// 		type: 'btn',
+			// 		offset: data.offset,
+			// 		element: $(element).appendTo(data.element),
+			// 		name: data.name
+			// 	});
+			// 	return false;
+			// }).on('click', 'a.addrepeater', function () {
+			// 	var data = $(this).data();
 
-				data.element.clone().insertAfter(data.element);
-				_trigger('refresh');
+			// 	data.element.clone().insertAfter(data.element);
+			// 	_trigger('refresh');
 
-				return false;
-			}).on('click', 'a.removerepeater', function () {
-				var data = $(this).data();
+			// 	return false;
+			// }).on('click', 'a.removerepeater', function () {
+			// 	var data = $(this).data();
 
-				data.element.remove();
-				_trigger('refresh');
+			// 	data.element.remove();
+			// 	_trigger('refresh');
 
-				return false;
-			});
+			// 	return false;
+			// });
 
 			$('.mailster-preview-iframe').on('load', function () {
 
@@ -2919,9 +2919,9 @@ jQuery(document).ready(function ($) {
 				var textarea = base.find('textarea'),
 					clone = el.clone();
 
-				current.modulebuttons = clone.find('.modulebuttons');
+				current.modulebuttons = clone.find('modulebuttons');
 
-				clone.find('.modulebuttons').remove();
+				clone.find('modulebuttons, button').remove();
 
 				var html = $.trim(clone.html());
 				textarea.html(html);
@@ -3448,7 +3448,9 @@ jQuery(document).ready(function ($) {
 			_template_wrap.toggleClass('show-modules');
 			show_modules = !show_modules;
 			window.setUserSetting('mailstershowmodules', show_modules ? 1 : 0);
-			_trigger('refresh');
+			setTimeout(function () {
+				_trigger('resize');
+			}, 200);
 		}
 
 		function init() {
@@ -3497,7 +3499,7 @@ jQuery(document).ready(function ($) {
 						codeview = mailsterdata.codeview ? '<a class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></a>' : '',
 						auto = ($this.is('[auto]') ? '<a class="mailster-btn auto" title="' + mailsterL10n.auto + '"></a>' : '');
 
-					$('<div class="modulebuttons ' + (mailsterdata.isrtl ? 'modulebuttons-rtl' : '') + '">' + '<span>' + auto + '<a class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></a><a class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></a><a class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></a>' + codeview + '<a class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></a></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></div>').prependTo($this);
+					$('<modulebuttons class="' + (mailsterdata.isrtl ? 'modulebuttons-rtl' : '') + '">' + '<span>' + auto + '<a class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></a><a class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></a><a class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></a>' + codeview + '<a class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></a></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
 
 
 					if (!$this.parent().length) {
@@ -3719,8 +3721,6 @@ jQuery(document).ready(function ($) {
 	function _editButtons() {
 		_container.find('.content.mailster-btn').remove();
 		var cont = _iframe.contents().find('html');
-		var buttoncontainer = cont.find('buttons'),
-			repeatable = cont.find('[repeatable]');
 
 		if (!cont) return;
 
@@ -3791,24 +3791,24 @@ jQuery(document).ready(function ($) {
 			} //!$._data( cont[0], "events" )
 
 
-			$.each(buttoncontainer, function () {
+			// $.each(buttoncontainer, function () {
 
-				var $this = $(this),
-					name = $this.attr('label'),
-					offset = this.getBoundingClientRect(),
-					top = offset.top + 46,
-					left = offset.right + 16,
-					btn;
+			// 	var $this = $(this),
+			// 		name = $this.attr('label'),
+			// 		offset = this.getBoundingClientRect(),
+			// 		top = offset.top + 46,
+			// 		left = offset.right + 16,
+			// 		btn;
 
-				btn = $('<a class="addbutton content mailster-btn" title="' + mailsterL10n.add_button + '"></a>').css({
-					top: top,
-					left: left
-				}).appendTo(_container);
+			// 	btn = $('<a class="addbutton content mailster-btn" title="' + mailsterL10n.add_button + '"></a>').css({
+			// 		top: top,
+			// 		left: left
+			// 	}).appendTo(_container);
 
-				btn.data('offset', offset).data('name', name);
-				btn.data('element', $this);
+			// 	btn.data('offset', offset).data('name', name);
+			// 	btn.data('element', $this);
 
-			});
+			// });
 
 			if (!mailsterdata.inline) {
 				cont
@@ -3829,31 +3829,31 @@ jQuery(document).ready(function ($) {
 						});
 					});
 			}
-			$.each(repeatable, function () {
-				var $this = $(this),
-					name = $this.attr('label'),
-					offset = this.getBoundingClientRect(),
-					top = offset.top + 48,
-					left = offset.right,
-					btn;
+			// $.each(repeatable, function () {
+			// 	var $this = $(this),
+			// 		name = $this.attr('label'),
+			// 		offset = this.getBoundingClientRect(),
+			// 		top = offset.top + 48,
+			// 		left = offset.right,
+			// 		btn;
 
-				btn = $('<a class="addrepeater content mailster-btn" title="' + sprintf(mailsterL10n.add_s, name) + '"></a>').css({
-					top: top - 3,
-					left: left + 18
-				}).appendTo(_container);
+			// 	btn = $('<a class="addrepeater content mailster-btn" title="' + sprintf(mailsterL10n.add_s, name) + '"></a>').css({
+			// 		top: top - 3,
+			// 		left: left + 18
+			// 	}).appendTo(_container);
 
-				btn.data('offset', offset).data('name', name);
-				btn.data('element', $this);
+			// 	btn.data('offset', offset).data('name', name);
+			// 	btn.data('element', $this);
 
-				btn = $('<a class="removerepeater content mailster-btn" title="' + sprintf(mailsterL10n.remove_s, name) + '"></a>').css({
-					top: top + 18,
-					left: left + 18
-				}).appendTo(_container);
+			// 	btn = $('<a class="removerepeater content mailster-btn" title="' + sprintf(mailsterL10n.remove_s, name) + '"></a>').css({
+			// 		top: top + 18,
+			// 		left: left + 18
+			// 	}).appendTo(_container);
 
-				btn.data('offset', offset).data('name', name);
-				btn.data('element', $this);
+			// 	btn.data('offset', offset).data('name', name);
+			// 	btn.data('element', $this);
 
-			});
+			// });
 
 			_container.removeClass('noeditbuttons');
 
@@ -3977,7 +3977,7 @@ jQuery(document).ready(function ($) {
 
 		clone = $('<div>' + body.innerHTML + '</div>');
 
-		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, div.modulebuttons, mailster, #mailster-editorimage-upload-button').remove();
+		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
 		clone.find('single, multi').removeAttr('style class id');
 		content = $.trim(clone.html());
 

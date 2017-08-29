@@ -3,19 +3,52 @@ jQuery(document).ready(function ($) {
 	"use strict"
 
 	var body = $('body'),
-		uploader, container, modules, images, buttons, currenttinymce, _isActivationClick;
+		uploader, container, modules, images, buttons, repeatable, currenttinymce, selection;
 
 	window.ajaxurl = window.ajaxurl || window.mailsterdata.ajaxurl;
 
 	body.addClass('mailster-loading');
 
 	$(window).on('load', function () {
+
 		body
 			.on('click', 'a', function (event) {
 				event.preventDefault();
-			});
-		_trigger('refresh');
+			})
+			.on('click', 'button.addbutton', function () {
+				var data = $(this).data(),
+					element = data.element.find('img').length ?
+					'<a href="" editable label="Button"><img alt=""></a>' :
+					'<a href="" editable label="Button"></a>';
 
+				parent.window.Mailster.editbar.open({
+					type: 'btn',
+					offset: data.offset,
+					element: $(element).appendTo(data.element),
+					name: data.name
+				});
+				return false;
+			})
+			.on('click', 'button.addrepeater', function () {
+				var data = $(this).data();
+
+				data.element.clone().insertAfter(data.element);
+				_trigger('save');
+				_trigger('refresh');
+
+				return false;
+			})
+			.on('click', 'button.removerepeater', function () {
+				var data = $(this).data();
+
+				data.element.remove();
+				_trigger('save');
+				_trigger('refresh');
+
+				return false;
+			});
+
+		body.find('.modulebuttons').remove();
 	});
 
 	function _refresh() {
@@ -23,7 +56,8 @@ jQuery(document).ready(function ($) {
 		container = $('modules');
 		modules = container.find('module');
 		images = $('img[editable]');
-		buttons = $('buttons');
+		buttons = $('buttons'),
+			repeatable = $('[repeatable]');
 
 		_sortable();
 		_draggable();
@@ -32,6 +66,10 @@ jQuery(document).ready(function ($) {
 
 		body.removeClass('mailster-loading');
 		return;
+	}
+
+	function _resize() {
+		_buttons();
 	}
 
 	function _inlineeditor() {
@@ -79,7 +117,23 @@ jQuery(document).ready(function ($) {
 							return {
 								text: name,
 								onclick: function () {
-									editor.insertContent('{' + id + '} ');
+									var poststuff = '';
+									switch (id) {
+									case 'webversion':
+									case 'unsub':
+									case 'forward':
+									case 'profile':
+										poststuff = 'link';
+									case 'homepage':
+										if (selection = editor.selection.getContent({
+												format: "text"
+											})) {
+											editor.insertContent('<a href="{' + id + poststuff + '}">' + selection + '</a>');
+											break;
+										}
+									default:
+										editor.insertContent('{' + id + '} ');
+									}
 								}
 							};
 
@@ -87,6 +141,7 @@ jQuery(document).ready(function ($) {
 					};
 				})
 			});
+
 			editor.addButton('mailster_remove_element', {
 				title: l10n.remove.title,
 				icon: 'icon mailster-remove-icon',
@@ -119,30 +174,30 @@ jQuery(document).ready(function ($) {
 	function _sortable() {
 
 		if (container.data('sortable')) container.sortable('destroy');
-		if (buttons.data('sortable')) buttons.sortable('destroy');
+		// if (buttons.data('sortable')) buttons.sortable('destroy');
 
-		buttons.sortable({
-			stop: function (event, ui) {
-				event.stopPropagation();
-				container.removeClass('dragging');
-				setTimeout(function () {
-					_trigger('refresh');
-				}, 200);
-			},
-			start: function (event, ui) {
-				event.stopPropagation();
-				_trigger('hidebuttons');
-				container.addClass('dragging');
-			},
-			containment: 'parent',
-			revert: 100,
-			placeholder: "sortable-placeholder",
-			items: "> a",
-			distance: 5,
-			forcePlaceholderSize: true,
-			helper: 'clone',
-			zIndex: 10000
-		});
+		// buttons.sortable({
+		// 	stop: function (event, ui) {
+		// 		event.stopPropagation();
+		// 		container.removeClass('dragging');
+		// 		setTimeout(function () {
+		// 			_trigger('refresh');
+		// 		}, 200);
+		// 	},
+		// 	start: function (event, ui) {
+		// 		event.stopPropagation();
+		// 		_trigger('hidebuttons');
+		// 		container.addClass('dragging');
+		// 	},
+		// 	containment: 'parent',
+		// 	revert: 100,
+		// 	placeholder: "sortable-placeholder",
+		// 	items: "> a",
+		// 	distance: 5,
+		// 	forcePlaceholderSize: true,
+		// 	helper: 'clone',
+		// 	zIndex: 10000
+		// });
 
 
 		if (modules.length < 2) return;
@@ -310,6 +365,61 @@ jQuery(document).ready(function ($) {
 
 				}
 			});
+
+	}
+
+	function _buttons() {
+
+		$.each(buttons, function () {
+
+			var $this = $(this),
+				name = $this.attr('label'),
+				offset = this.getBoundingClientRect(),
+				top = offset.top + 0,
+				left = offset.right + 0,
+				btn;
+
+			if ($this.data('has-buttons')) return;
+
+			btn = $('<button class="addbutton mailster-btn-inline mailster-icon" title="' + mailsterL10n.add_button + '"></button>').prependTo($this);
+
+			btn.data('offset', offset).data('name', name);
+			btn.data('element', $this);
+
+			$this.data('has-buttons', true);
+
+		});
+
+		$('button.addrepeater, button.removerepeater').remove();
+
+		$.each(repeatable, function () {
+			var $this = $(this),
+				module = $this.closest('module'),
+				name = $this.attr('label'),
+				moduleoffset = module[0].getBoundingClientRect(),
+				offset = this.getBoundingClientRect(),
+				top = offset.top - moduleoffset.top,
+				left = offset.right,
+				btn;
+
+			btn = $('<button class="addrepeater mailster-btn-inline mailster-icon" title=""></button>').css({
+				top: top,
+				left: left
+			}).appendTo(module);
+
+			btn.data('offset', offset).data('name', name);
+			btn.data('element', $this);
+
+			btn = $('<button class="removerepeater mailster-btn-inline mailster-icon" title=""></button>').css({
+				top: top + 20,
+				left: left
+			}).appendTo(module);
+
+			btn.data('offset', offset).data('name', name);
+			btn.data('element', $this);
+
+		});
+
 
 	}
 
@@ -496,9 +606,13 @@ jQuery(document).ready(function ($) {
 	}
 
 
-	$(window).on('Mailster:refresh', function () {
-		_refresh();
-	})
+	$(window)
+		.on('Mailster:refresh', function () {
+			_refresh();
+		})
+		.on('Mailster:resize', function () {
+			_resize();
+		})
 
 
 	function _trigger(triggerevent, args) {
@@ -549,6 +663,18 @@ jQuery(document).ready(function ($) {
 			},
 			dataType: dataType ? dataType : "JSON"
 		});
+	}
+
+	function sprintf() {
+		var a = Array.prototype.slice.call(arguments),
+			str = a.shift(),
+			total = a.length,
+			reg;
+		for (var i = 0; i < total; i++) {
+			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
+			str = str.replace(reg, a[i]);
+		}
+		return str;
 	}
 
 });

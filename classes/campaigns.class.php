@@ -4540,7 +4540,8 @@ class MailsterCampaigns {
 			$toolbar3 = (string) apply_filters( 'mymail_editor_toolbar3', apply_filters( 'mailster_editor_toolbar3', '' ) );
 			$toolbar4 = (string) apply_filters( 'mymail_editor_toolbar4', apply_filters( 'mailster_editor_toolbar4', '' ) );
 
-			$single_toolbar = (string) apply_filters( 'mailster_editor_single_toolbar', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat,|,mailster_remove_element' );
+			$single_toolbar = (string) apply_filters( 'mailster_editor_single_toolbar', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,link,unlink,|,removeformat,|,mailster_remove_element' );
+
 			$mailsterdata['tinymce'] = array(
 					'args' => array(
 						'forced_root_block' => false,

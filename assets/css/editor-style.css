@@ -31,21 +31,15 @@ module{
 	position: relative;
 }
 a.mailster-btn,a.mailster-btn:hover,a.mailster-btn:active{
-	color:#686868;
-	position:absolute;
+	color: #a8a8a8;
 	cursor:pointer;
 	text-decoration:none;
-	font:16px "Helvetica Neue",Helvetica,Arial,sans-serif;
-	font-weight:400;
 	text-align:center;
-	border:1px solid #DFDFDF;
 	outline: 0;
 	min-width: 12px;
 }
 a.mailster-btn:hover {
-	background: #2BB3E7;
-	color: #fff;
-	z-index:1000;
+	color:#686868;
 }
 a.mailster-btn:before {
 	font-family: 'mailster-icons';
@@ -62,43 +56,108 @@ a.mailster-btn.addbutton:before { content: '\e81a'; }
 a.mailster-btn.addrepeater:before { content: '\e81a'; }
 a.mailster-btn.removerepeater:before { content: '\e81b'; }
 a.mailster-btn { padding: 1px 4px; }
-.modulebuttons {
+
+buttons{
+	position: relative;
+}
+button.mailster-btn-inline{
+	position: absolute;
+	width: 25px;
+	right:-30px;
+	top: 3px;
+	cursor: pointer;
+	border: 1px solid #e5e5e5;
+	background: #fff;
+	-webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+	padding:0;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+	min-height: 18px;
+	line-height: 16px;
+	border-radius: 2px;
+	font-size: 10px;
+	font-weight: 100;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: center;
+}
+button.mailster-btn-inline:before{
+}
+
+button.mailster-btn-inline:focus{
+	outline: none;
+}
+module button.mailster-btn-inline{
+	display: none;
+}
+module:hover button.mailster-btn-inline{
+	display: block;
+}
+button.mailster-btn-inline.addrepeater{
+}
+button.mailster-btn-inline.removerepeater{
+	top: 20px;
+}
+button.mailster-btn-inline.addbutton:before{
+	content: "\e81a";
+}
+button.mailster-btn-inline.addrepeater:before{
+	content: "\e81a";
+}
+button.mailster-btn-inline.removerepeater:before{
+	content: "\e81b";
+}
+modulebuttons {
 	-webkit-transition:all .15s ease-in-out;
+	-moz-transition:all .15s ease-in-out;
 	-ms-transition:all .15s ease-in-out;
 	transition:all .15s ease-in-out;
 	opacity: 0;
 	position: absolute;
-	right:0;
+	right:-31px;
 	text-align: right;
 	z-index: 100;
 	top: 50%;
 	-webkit-transform:translateY(-50%);
+	-moz-transform:translateY(-50%);
 	-ms-transform:translateY(-50%);
 	transform:translateY(-50%);
+	display: block;
 }
-.modulebuttons.modulebuttons-rtl {
+modulebuttons.modulebuttons-rtl {
 	right:inherit;
 	left:-31px;
 }
-.modulebuttons a.mailster-btn {
-	padding: 7px 8px;
+modulebuttons a.mailster-btn {
+	padding: 5px 6px;
 	display:block;
 	position:relative;
 	margin:0;
-	height:20px;
+	height:18px;
 	border: 0;
-	line-height:20px;
-	width:20px;
+	border-left:1px solid #DFDFDF;
+	background: #fff;
+	line-height:18px;
+	width:18px;
 }
-.modulebuttons.modulebuttons-rtl a.mailster-btn {
+modulebuttons.modulebuttons-rtl a.mailster-btn {
 	border-left:0;
+	border-right:1px solid #DFDFDF;
 }
-.modulebuttons a:first-child {
+modulebuttons a:first-child {
+	border-top:1px solid #DFDFDF;
+	border-radius: 2px 0 0 0;
 }
-.modulebuttons a:last-child {
+modulebuttons a:last-child {
+	border-bottom:1px solid #DFDFDF;
+	border-radius: 0 0 0 2px;
 }
-.modulebuttons input.modulelabel {
+modulebuttons input.modulelabel {
 	-webkit-transition:all .15s ease-in-out;
+	-moz-transition:all .15s ease-in-out;
 	-ms-transition:all .15s ease-in-out;
 	transition:all .15s ease-in-out;
 	display: block;
@@ -112,62 +171,20 @@ a.mailster-btn { padding: 1px 4px; }
 	right:-83px;
 	position: absolute;
 }
-.modulebuttons.modulebuttons-rtl input.modulelabel {
+modulebuttons.modulebuttons-rtl input.modulelabel {
 	right:inherit;
 	left:-83px;
 }
-.modulebuttons input.modulelabel:hover, .modulebuttons input.modulelabel:focus {
+modulebuttons input.modulelabel:hover, modulebuttons input.modulelabel:focus {
 	right:0;
 	color: #333;
 	outline: 1px solid #DFDFDF;
 	outline-offset:0;
 	background: #fff;
 }
-.modulebuttons.modulebuttons-rtl input.modulelabel:hover, .modulebuttons.modulebuttons-rtl input.modulelabel:focus {
+modulebuttons.modulebuttons-rtl input.modulelabel:hover, modulebuttons.modulebuttons-rtl input.modulelabel:focus {
 	right:inherit;
 	left:0;
-}
-.moduleselector {
-	margin:0;
-	margin-top:15px;
-	list-style:none;
-	padding:0;
-	position:absolute;
-	right:10px;
-	width:170px;
-	display:none;
-	border:1px solid #DFDFDF;
-}
-.moduleselector span {
-	border-bottom:1px solid #EFEFEF;
-}
-.moduleselector li {
-	height:inherit;
-	list-style-type:none;
-	margin:0;
-	padding:0;
-}
-.moduleselector li a.mailster-btn {
-	display:block;
-	white-space:nowrap;
-	overflow:hidden;
-	font-size:12px;
-	line-height:1;
-	padding:4px 5px;
-	position:relative;
-	cursor:pointer;
-	z-index:20;
-	border:0;
-	text-align:center;
-	text-overflow:ellipsis;
-}
-.moduleselector li:first-child a.mailster-btn {
-}
-.moduleselector li a.mailster-btn.custom-module {
-	background: #F8F8F8;
-}
-.moduleselector li a.mailster-btn:hover {
-	background: #f1f1f1;
 }
 modules, module, multi {
 	display:block;
@@ -189,8 +206,6 @@ else {
 	color: #ccc;
 }
 module:hover {
-	_outline:2px solid #2BB3E7;
-	_outline-offset: 2px;
 	background-color:rgba(43, 179, 231, 0.1);
 	-webkit-box-shadow:0px 0px 0px 2px rgba(43, 179, 231, 0.8);
 	box-shadow:0px 0px 0px 2px rgba(43, 179, 231, 0.8);
@@ -246,15 +261,15 @@ module[label]:hover:before {
 	-ms-transform:translate(-1px, -1px);
 	transform:translate(-1px, -1px);
 }
-module:hover .modulebuttons,.ie module .modulebuttons {
-	right:2px;
+module:hover modulebuttons,.ie module modulebuttons {
+	right:-2px;
 	opacity:1;
 }
-module:hover .modulebuttons.modulebuttons-rtl {
+module:hover modulebuttons.modulebuttons-rtl {
 	right:inherit;
-	left:0px;
+	left:-2px;
 }
-module:first-child .modulebuttons a.up, module:last-child .modulebuttons a.down {
+module:first-child modulebuttons a.up, module:last-child modulebuttons a.down {
 	display:none;
 }
 module[condition]{
@@ -274,8 +289,6 @@ multi, single, img[editable], a[editable] img, table.textbutton a[editable], td[
 	backface-visibility: hidden;
 }
 multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, table.textbutton a[editable]:hover, table td table td[background]:hover,module table td[background]:hover{
-	_outline: 2px solid #2BB3E7;
-	_outline-offset: 2px;
 	box-shadow:0px 0px 0px 2px #2BB3E7;
 	cursor:pointer;
 	z-index: 11;
@@ -536,6 +549,13 @@ div.wp-link-input {
 	float: left;
 	margin: 2px;
 	max-width: 694px;
+}
+div.wp-link-preview {
+	float: left;
+	margin: 11px;
+	max-width: 90%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 div.wp-link-input input[type="text"] {
 	border: 1px solid #ddd;
