@@ -1,6 +1,4 @@
-
 <table class="form-table">
-
 	<tr valign="top">
 		<th scope="row"><?php _e( 'Default Template', 'mailster' ) ?></th>
 		<td><p><select name="mailster_options[default_template]" class="postform">

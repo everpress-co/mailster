@@ -48,7 +48,6 @@ Don’t send unfinished Newsletters to your Customers which possible end up in t
 * Background Image support
 * Quick Preview
 * Email Spam check
-* Revisions support (native)
 * Multi language Support (over 10 languages included)
 * SMTP support
 * DomainKeys Identified Mail Support
@@ -85,8 +84,9 @@ Xaver Birsak – https://everpress.io
 = Version 2.2.10 =
 
 * fixed: Editor button now only available in the backend
-* fixed: Excerpts were missing when View mode is Excerpt View
+* fixed: Excerpts were missing when view mode is Excerpt View
 * fixed: missing `wp_get_raw_referer` on WP < 4.5
+* fixed: choosing default values for dropdowns and radio custom fields
 * improved: lists assigned to a form are now respected if form id is set explicitly on subscriber submission
 * added: 'mailster_campaign_content' filter to alter the content of campaigns
 * added: 'mailster_using_permalinks' filter

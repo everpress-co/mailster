@@ -1,4 +1,3 @@
-
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Notification', 'mailster' ) ?></th>
@@ -86,19 +85,17 @@
 		<td>
 		<input type="hidden" name="mailster_options[custom_field][0]" value="empty">
 			<div class="customfields">
-		<?php
-		if ( $customfields ) {
-			$types = array(
+		<?php if ( $customfields ) : ?>
+		<?php $types = array(
 				'textfield' => __( 'Textfield', 'mailster' ),
 				'textarea' => __( 'Textarea', 'mailster' ),
 				'dropdown' => __( 'Dropdown Menu', 'mailster' ),
 				'radio' => __( 'Radio Buttons', 'mailster' ),
 				'checkbox' => __( 'Checkbox', 'mailster' ),
 				'date' => __( 'Date', 'mailster' ),
-					);
-			foreach ( $customfields as $id => $data ) {
-				?>
-				<div class="customfield">
+			);
+		foreach ( $customfields as $id => $data ) : ?>
+			<div class="customfield">
 				<a class="customfield-move-up" title="<?php esc_html_e( 'move up', 'mailster' );?>">&#9650;</a>
 				<a class="customfield-move-down" title="<?php esc_html_e( 'move down', 'mailster' );?>">&#9660;</a>
 				<div><span class="label"><?php esc_html_e( 'Field Name', 'mailster' );?>:</span><label><input type="text" name="mailster_options[custom_field][<?php echo $id ?>][name]" value="<?php echo esc_attr( $data['name'] ) ?>" class="regular-text customfield-name"></label></div>
@@ -109,10 +106,11 @@
 					echo '<option value="' . $value . '" ' . selected( $data['type'], $value, false ) . '>' . $name . '</option>';
 				}
 				?>
-				</select></div>
+				</select>
+			</div>
 			<ul class="customfield-additional customfield-dropdown customfield-radio" <?php if ( in_array( $data['type'], array( 'dropdown', 'radio' ) ) ) { echo ' style="display:block"'; } ?>>
 				<li>
-					<ul class="customfield-values">
+				<ul class="customfield-values">
 				<?php
 				$values = ! empty( $data['values'] ) ? $data['values'] : array( '' );
 				foreach ( $values as $value ) { ?>
@@ -123,17 +121,17 @@
 				<span>&nbsp;</span> <a class="customfield-value-add"><?php esc_html_e( 'add field', 'mailster' );?></a>
 				</li>
 			</ul>
-			<div class="customfield-additional customfield-checkbox" <?php if ( in_array( $data['type'], array( 'checkbox' ) ) ) { echo ' style="display:block"'; } ?>>
-				<span>&nbsp;</span> <label><input type="hidden" name="mailster_options[custom_field][<?php echo $id ?>][default]" value=""><input type="checkbox" name="mailster_options[custom_field][<?php echo $id ?>][default]" value="1" title="<?php esc_html_e( 'this field is selected by default', 'mailster' );?>" <?php if ( isset( $data['default'] ) ) { checked( $data['default'], true ); } ?> <?php if ( ! in_array( $data['type'], array( 'checkbox' ) ) ) { echo ' disabled'; } ?>>
+			<?php if ( 'checkbox' == $data['type'] ) : ?>
+			<div class="customfield-additional customfield-checkbox" style="display:block">
+				<span>&nbsp;</span> <label><input type="hidden" name="mailster_options[custom_field][<?php echo $id ?>][default]" value=""><input type="checkbox" name="mailster_options[custom_field][<?php echo $id ?>][default]" value="1" title="<?php esc_html_e( 'this field is selected by default', 'mailster' );?>" <?php if ( isset( $data['default'] ) ) { checked( $data['default'], true ); } ?>>
 				<?php esc_html_e( 'checked by default', 'mailster' );?></label>
 			</div>
+			<?php endif; ?>
 			<a class="customfield-remove"><?php esc_html_e( 'remove field', 'mailster' );?></a>
 			<br>
 		</div>
-<?php
-			}
-		}
-?>
+<?php endforeach; ?>
+<?php endif; ?>
 			</div>
 			<input type="button" value="<?php esc_html_e( 'add', 'mailster' ) ?>" class="button" id="mailster_add_field">
 		</td>
