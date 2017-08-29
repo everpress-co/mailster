@@ -28,7 +28,23 @@ jQuery(document).ready(function ($) {
 		timeout, refreshtimout, modules, optionbar, charts, editbar, animateDOM = $.browser.webkit ? _body : $('html'),
 		getSelect, selectRange, isDisabled = false,
 		is_touch_device = 'ontouchstart' in document.documentElement,
-		isTinyMCE = typeof tinymce == 'object';
+		isTinyMCE = typeof tinymce == 'object',
+		codemirror, codemirrorargs = {
+			mode: {
+				name: "htmlmixed",
+				scriptTypes: [{
+					matches: /\/x-handlebars-template|\/x-mustache/i,
+					mode: null
+				}, {
+					matches: /(text|application)\/(x-)?vb(a|script)/i,
+					mode: "vbscript"
+				}]
+			},
+			tabMode: "indent",
+			lineNumbers: true,
+			viewportMargin: Infinity,
+			autofocus: true
+		};
 
 
 	//init the whole thing
@@ -57,9 +73,6 @@ jQuery(document).ready(function ($) {
 				window.Mailster = window.Mailster || {
 					refresh: function () {
 						_trigger('refresh');
-					},
-					hidebuttons: function () {
-						_container.find('.content.mailster-btn').remove();
 					},
 					save: function () {
 						_trigger('save');
@@ -1523,8 +1536,7 @@ jQuery(document).ready(function ($) {
 
 	var _optionbar = function () {
 
-		var codemirror,
-			containeroffset = _container.offset();
+		var containeroffset = _container.offset();
 
 		function init() {
 			_obar
@@ -1615,7 +1627,7 @@ jQuery(document).ready(function ($) {
 		function undo() {
 
 			if (_currentundo) {
-				_container.addClass('noeditbuttons');
+				//_container.addClass('noeditbuttons');
 				_currentundo--;
 				_setContent(_undo[_currentundo], 100, false);
 				_content.val(_undo[_currentundo]);
@@ -1631,7 +1643,7 @@ jQuery(document).ready(function ($) {
 			var length = _undo.length;
 
 			if (_currentundo < length - 1) {
-				_container.addClass('noeditbuttons');
+				//_container.addClass('noeditbuttons');
 				_currentundo++;
 				_setContent(_undo[_currentundo], 100, false);
 				_content.val(_undo[_currentundo]);
@@ -1645,7 +1657,7 @@ jQuery(document).ready(function ($) {
 
 		function clear() {
 			if (confirm(mailsterL10n.remove_all_modules)) {
-				_container.addClass('noeditbuttons');
+				//_container.addClass('noeditbuttons');
 				var modules = _iframe.contents().find('module');
 				var modulecontainer = _iframe.contents().find('modules');
 				modulecontainer.slideUp(function () {
@@ -1723,40 +1735,23 @@ jQuery(document).ready(function ($) {
 				_obar.find('a.code').addClass('loading');
 				_trigger('disable');
 
-				$.getScript(mailsterdata.url + 'assets/js/libs/codemirror.min.js', function () {
-					_ajax('toggle_codeview', {
-						content: _getContent(),
-						head: _head.val(),
-						_wpnonce: wpnonce
-					}, function (response) {
-						_obar.find('a.code').addClass('active').removeClass('loading');
-						_html.hide();
-						_content.val(response.content);
-						_obar.find('a').not('a.redo, a.undo, a.code').addClass('disabled');
-						_container.addClass('noeditbuttons');
+				_ajax('toggle_codeview', {
+					content: _getContent(),
+					head: _head.val(),
+					_wpnonce: wpnonce
+				}, function (response) {
+					_obar.find('a.code').addClass('active').removeClass('loading');
+					_html.hide();
+					_content.val(response.content);
+					_obar.find('a').not('a.redo, a.undo, a.code').addClass('disabled');
+					//_container.addClass('noeditbuttons');
 
-						codemirror = CodeMirror.fromTextArea(_content.get(0), {
-							mode: {
-								name: "htmlmixed",
-								scriptTypes: [{
-									matches: /\/x-handlebars-template|\/x-mustache/i,
-									mode: null
-								}, {
-									matches: /(text|application)\/(x-)?vb(a|script)/i,
-									mode: "vbscript"
-								}]
-							},
-							tabMode: "indent",
-							lineNumbers: true,
-							viewportMargin: Infinity,
-							autofocus: true
-						});
+					codemirror = CodeMirror.fromTextArea(_content.get(0), codemirrorargs);
 
-					}, function (jqXHR, textStatus, errorThrown) {
-						_obar.find('a.code').addClass('active').removeClass('loading');
-						_trigger('enable');
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
-					});
+				}, function (jqXHR, textStatus, errorThrown) {
+					_obar.find('a.code').addClass('active').removeClass('loading');
+					_trigger('enable');
+					alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 				});
 
 			} else {
@@ -1768,7 +1763,7 @@ jQuery(document).ready(function ($) {
 				$('.CodeMirror').remove();
 				_obar.find('a.code').removeClass('active');
 				_obar.find('a').not('a.redo, a.undo, a.code').removeClass('disabled');
-				_container.removeClass('noeditbuttons');
+				//_container.removeClass('noeditbuttons');
 				_trigger('enable');
 				_trigger('refresh');
 
@@ -1786,7 +1781,7 @@ jQuery(document).ready(function ($) {
 				_excerpt.show();
 				_plaintext.show();
 				_obar.find('a').not('a.redo, a.undo, a.plaintext, a.preview').addClass('disabled');
-				_container.addClass('noeditbuttons');
+				//_container.addClass('noeditbuttons');
 
 			} else {
 
@@ -1794,7 +1789,7 @@ jQuery(document).ready(function ($) {
 				_plaintext.hide();
 				_obar.find('a.plaintext').removeClass('active');
 				_obar.find('a').not('a.redo, a.undo, a.plaintext, a.preview').removeClass('disabled');
-				_container.removeClass('noeditbuttons');
+				//_container.removeClass('noeditbuttons');
 				_trigger('refresh');
 
 			}
@@ -1860,7 +1855,6 @@ jQuery(document).ready(function ($) {
 			buttontabs = bar.find('ul.buttons'),
 			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, searchTimeout, checkRSSfeedInterval, rssURL = 'x',
 			searchstring = '',
-			codeview,
 			editor = $('#wp-mailster-editor-wrap'),
 			postsearch = $('#post-search'),
 			imagesearch = $('#image-search');
@@ -2583,7 +2577,7 @@ jQuery(document).ready(function ($) {
 
 			} else if (current.type == 'codeview') {
 
-				var html = codeview.getValue();
+				var html = codemirror.getValue();
 				current.element.html(_filterHTML(html));
 				current.modulebuttons.prependTo(current.element);
 
@@ -2652,6 +2646,8 @@ jQuery(document).ready(function ($) {
 				id = _this.data('id'),
 				name = _this.data('name'),
 				src = _this.data('src');
+
+			if (!id) return;
 
 			currentimage = {
 				id: id,
@@ -2871,7 +2867,6 @@ jQuery(document).ready(function ($) {
 					}
 
 					buttonlabel.val(el.find('img').attr('alt'));
-
 					_getRealDimensions(el.find('img'), function (w, h, f) {
 						var h = f >= 1.5;
 						factor.val(f);
@@ -2922,14 +2917,15 @@ jQuery(document).ready(function ($) {
 				current.modulebuttons = clone.find('modulebuttons');
 
 				clone.find('modulebuttons, button').remove();
+				clone.find('single, multi')
+					.removeAttr('contenteditable spellcheck id style class');
 
 				var html = $.trim(clone.html());
-				textarea.html(html);
-				$.getScript(mailsterdata.url + 'assets/js/libs/codemirror.min.js', function () {});
+				textarea.show().html(html);
 
 			}
 
-			_container.addClass('noeditbuttons');
+			//_container.addClass('noeditbuttons');
 
 			offset = _container.offset().top + (current.offset.top - (_win.height() / 2) + (current.height / 2));
 
@@ -3048,32 +3044,11 @@ jQuery(document).ready(function ($) {
 
 				} else if (type == 'codeview') {
 
-					$.getScript(mailsterdata.url + 'assets/js/libs/codemirror.min.js', function () {
-						if (codeview) {
-							codeview.clearHistory();
-						}
-
-
-						codeview = codeview || CodeMirror.fromTextArea(textarea.get(0), {
-							mode: {
-								name: "htmlmixed",
-								scriptTypes: [{
-									matches: /\/x-handlebars-template|\/x-mustache/i,
-									mode: null
-								}, {
-									matches: /(text|application)\/(x-)?vb(a|script)/i,
-									mode: "vbscript"
-								}]
-							},
-							tabMode: "indent",
-							lineNumbers: true,
-							viewportMargin: Infinity,
-							autofocus: true
-						});
-
-						codeview.setValue(html);
-
-					});
+					if (codemirror) {
+						codemirror.clearHistory();
+						codemirror.setValue('');
+						base.find('.CodeMirror').remove();
+					}
 
 				}
 
@@ -3101,6 +3076,10 @@ jQuery(document).ready(function ($) {
 							tinymce.get('mailster-editor').setContent(content);
 							tinymce.execCommand('mceFocus', false, 'mailster-editor');
 						}
+
+					} else if (type == 'codeview') {
+
+						codemirror = CodeMirror.fromTextArea(textarea.get(0), codemirrorargs);
 
 					}
 
@@ -3345,7 +3324,7 @@ jQuery(document).ready(function ($) {
 			var module = $(this).parent().parent().parent(),
 				clone = module.clone().hide();
 
-			_container.addClass('noeditbuttons');
+			//_container.addClass('noeditbuttons');
 
 			clone.insertAfter(module);
 
@@ -3392,7 +3371,7 @@ jQuery(document).ready(function ($) {
 		function remove() {
 			var module = $(this).parent().parent().parent();
 			module.fadeTo(100, 0, function () {
-				_container.addClass('noeditbuttons');
+				//_container.addClass('noeditbuttons');
 				module.slideUp(200, function () {
 					module.remove();
 					modules = _iframe.contents().find('module');
@@ -3408,7 +3387,7 @@ jQuery(document).ready(function ($) {
 
 			if (!modulesOBJ[id]) return false;
 			var clone = modulesOBJ[id].el.clone();
-			_container.addClass('noeditbuttons');
+			//_container.addClass('noeditbuttons');
 
 			(element) ?
 			(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element)) :
@@ -3499,7 +3478,7 @@ jQuery(document).ready(function ($) {
 						codeview = mailsterdata.codeview ? '<a class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></a>' : '',
 						auto = ($this.is('[auto]') ? '<a class="mailster-btn auto" title="' + mailsterL10n.auto + '"></a>' : '');
 
-					$('<modulebuttons class="' + (mailsterdata.isrtl ? 'modulebuttons-rtl' : '') + '">' + '<span>' + auto + '<a class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></a><a class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></a><a class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></a>' + codeview + '<a class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></a></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
+					$('<modulebuttons>' + '<span>' + auto + '<a class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></a><a class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></a><a class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></a>' + codeview + '<a class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></a></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
 
 
 					if (!$this.parent().length) {
@@ -3527,7 +3506,7 @@ jQuery(document).ready(function ($) {
 						window.mailster_is_modulde_dragging = true;
 
 						event.originalEvent.dataTransfer.setData('Text', this.id);
-						_container.addClass('noeditbuttons');
+						//_container.addClass('noeditbuttons');
 						body.addClass('drag-active');
 						moduleid = $(event.target).data('id');
 
@@ -3676,10 +3655,6 @@ jQuery(document).ready(function ($) {
 		$('.button').prop('disabled', false);
 		$('input').prop('disabled', false);
 		isDisabled = false;
-	})
-
-	.on('Mailster:hidebuttons', function () {
-		_container.find('.content.mailster-btn').remove();
 	})
 
 	.on('Mailster:xxx', function () {});
@@ -3855,7 +3830,7 @@ jQuery(document).ready(function ($) {
 
 			// });
 
-			_container.removeClass('noeditbuttons');
+			//_container.removeClass('noeditbuttons');
 
 		}, 500);
 

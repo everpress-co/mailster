@@ -82,15 +82,11 @@ jQuery(document).ready(function ($) {
 
 		tinymce.init($.extend(tiny.args, tiny.multi, {
 			urlconverter_callback: _urlconverter,
-			setup: function (editor) {
-				_setup(editor, 'multi');
-			}
+			setup: _setup
 		}));
 		tinymce.init($.extend(tiny.args, tiny.single, {
 			urlconverter_callback: _urlconverter,
-			setup: function (editor) {
-				_setup(editor, 'single');
-			}
+			setup: _setup
 		}));
 
 		function _urlconverter(url, node, on_save, name) {
@@ -104,7 +100,7 @@ jQuery(document).ready(function ($) {
 			return this.documentBaseURI.toAbsolute(url, tiny.remove_script_host);
 		}
 
-		function _setup(editor, type) {
+		function _setup(editor) {
 
 			editor.addButton('mailster_mce_button', {
 				title: l10n.tags.title,
@@ -151,18 +147,19 @@ jQuery(document).ready(function ($) {
 				}
 			});
 
-			editor.on('change', function (e) {
+			editor.on('change', function (event) {
 				_trigger('save');
 				change = true;
 			});
-			editor.on('click', function (e) {
+    		editor.on('click', function (event) {
+				event.stopPropagation();
 				editor.focus();
 			});
-			editor.on('focus', function (e) {
-				_trigger('hidebuttons');
+			editor.on('focus', function (event) {
+				event.stopPropagation();
 				if (container.data('uiSortable')) container.sortable('destroy');
 			});
-			editor.on('blur', function (e) {
+			editor.on('blur', function (event) {
 				_trigger('refresh');
 				_sortable();
 			});
@@ -212,7 +209,6 @@ jQuery(document).ready(function ($) {
 			},
 			start: function (event, ui) {
 				event.stopPropagation();
-				_trigger('hidebuttons');
 				container.addClass('dragging');
 			},
 			containment: 'body',

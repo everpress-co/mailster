@@ -278,6 +278,9 @@ class MailsterAjax {
 			'http://dummy.newsletter-plugin.com' => 'https://dummy.newsletter-plugin.com',
 		);
 		$replace = apply_filters( 'mymail_get_template_replace', apply_filters( 'mailster_get_template_replace', $replace ) );
+		if ( is_rtl() ) {
+			$replace['<html'] = '<html mailster-is-rtl';
+		}
 
 		$html = strtr( $html, $replace );
 		echo $html;
