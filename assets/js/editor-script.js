@@ -1,13 +1,14 @@
+document.getElementsByTagName("html")[0].className += ' mailster-loading';
 jQuery(document).ready(function ($) {
 
 	"use strict"
 
-	var body = $('body'),
-		uploader, container, modules, images, buttons, repeatable, currenttinymce, selection;
+	var html = $('html'),
+		body = $('body'),
+		uploader, container, modules, images, buttons, repeatable, selection,
+		isTinymce = typeof tinymce != 'undefined';
 
 	window.ajaxurl = window.ajaxurl || window.mailsterdata.ajaxurl;
-
-	body.addClass('mailster-loading');
 
 	$(window).on('load', function () {
 
@@ -48,7 +49,11 @@ jQuery(document).ready(function ($) {
 				return false;
 			});
 
-		body.find('.modulebuttons').remove();
+		//legacy buttons
+		body.find('div.modulebuttons').remove();
+		(mailsterdata.isrtl) ?
+		html.attr('mailster-is-rtl', ''): html.removeAttr('mailster-is-rtl');
+
 	});
 
 	function _refresh() {
@@ -62,10 +67,10 @@ jQuery(document).ready(function ($) {
 		_sortable();
 		_draggable();
 		_upload();
-		if (typeof tinymce != 'undefined') _inlineeditor();
+		if (isTinymce) _inlineeditor();
 
-		body.removeClass('mailster-loading');
-		return;
+		html.removeClass('mailster-loading');
+
 	}
 
 	function _resize() {
@@ -109,12 +114,12 @@ jQuery(document).ready(function ($) {
 				menu: $.map(tags, function (group, id) {
 					return {
 						text: group.name,
-						menu: $.map(group.tags, function (name, id) {
+						menu: $.map(group.tags, function (name, tag) {
 							return {
 								text: name,
 								onclick: function () {
 									var poststuff = '';
-									switch (id) {
+									switch (tag) {
 									case 'webversion':
 									case 'unsub':
 									case 'forward':
@@ -124,11 +129,11 @@ jQuery(document).ready(function ($) {
 										if (selection = editor.selection.getContent({
 												format: "text"
 											})) {
-											editor.insertContent('<a href="{' + id + poststuff + '}">' + selection + '</a>');
+											editor.insertContent('<a href="{' + tag + poststuff + '}">' + selection + '</a>');
 											break;
 										}
 									default:
-										editor.insertContent('{' + id + '} ');
+										editor.insertContent('{' + tag + '} ');
 									}
 								}
 							};
@@ -148,10 +153,18 @@ jQuery(document).ready(function ($) {
 			});
 
 			editor.on('change', function (event) {
+				var content = event.level.content,
+					c = content.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/g);
+				if (c) {
+					for (var i = c.length - 1; i >= 0; i--) {
+						content = content.replace(c[i], _hex(c[i]));
+					}
+					this.bodyElement.innerHTML = content;
+				}
 				_trigger('save');
 				change = true;
 			});
-    		editor.on('click', function (event) {
+			editor.on('click', function (event) {
 				event.stopPropagation();
 				editor.focus();
 			});
@@ -165,6 +178,18 @@ jQuery(document).ready(function ($) {
 			});
 
 		}
+
+	}
+
+	function _hex(str) {
+		var colors = str.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/);
+
+		function hex(val) {
+			val = parseInt(val, 10).toString(16);
+
+			return val.length > 1 ? val : '0' + val; // 0 -> 00
+		}
+		return colors ? '#' + hex(colors[1]) + hex(colors[2]) + hex(colors[3]) : str;
 
 	}
 

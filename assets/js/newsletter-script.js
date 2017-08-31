@@ -2918,7 +2918,7 @@ jQuery(document).ready(function ($) {
 
 				clone.find('modulebuttons, button').remove();
 				clone.find('single, multi')
-					.removeAttr('contenteditable spellcheck id style class');
+					.removeAttr('contenteditable spellcheck id dir style class');
 
 				var html = $.trim(clone.html());
 				textarea.show().html(html);
@@ -3953,7 +3953,7 @@ jQuery(document).ready(function ($) {
 		clone = $('<div>' + body.innerHTML + '</div>');
 
 		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
-		clone.find('single, multi').removeAttr('style class id');
+		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class');
 		content = $.trim(clone.html());
 
 		bodyattributes = body.attributes;

@@ -1,5 +1,7 @@
 html{
 	margin: 2px !important;
+	width: auto !important;
+	max-width: 100% !important;
 }
 body{
 	-webkit-transition:all .15s linear;
@@ -18,9 +20,6 @@ body.drag-active modules module{
 }
 body:hover module[condition],body:hover single[condition],body:hover multi[condition]{
 	outline: 1px dotted blue;
-}
-.mailster-loading, .mailster-loading *{
-	cursor:progress !important;
 }
 module{
 	-webkit-touch-callout: none;
@@ -231,7 +230,7 @@ th[background][label]:before {
 	-ms-transform:translate(4px, -15px);
 	transform:translate(4px, -15px);
 	height: 7px;
-	font-size: 8px;
+	font:8px "Helvetica Neue",Helvetica,Arial,sans-serif;
 	text-transform: uppercase;
 	line-height: 1em;
 	letter-spacing: 0.1em;
@@ -326,14 +325,39 @@ multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, table.tex
 	cursor:pointer;
 	z-index: 11;
 }
-body.mailster-loading{
-	opacity: 0.2;
+html.mailster-loading{
+	 -webkit-filter: blur(3px);
+	 filter: blur(3px);
 }
-body.mailster-loading multi:hover, body.mailster-loading single:hover, body.mailster-loading img[editable]:hover, body.mailster-loading a[editable]:hover img, body.mailster-loading table.textbutton a[editable]:hover, body.mailster-loading td[background]:hover, table.bodytbl td[background]:first-child{
-	outline: none;
-	-webkit-box-shadow: none;
-	box-shadow: none;
-	cursor: default;
+html.mailster-loading:before{
+	content: '';
+	text-decoration: inherit;
+	font-weight: normal;
+	font-style: normal;
+	vertical-align: top;
+	text-align: center;
+	display: block;
+	background-color: white;
+	opacity: 0.4;
+	position: absolute;
+	left:0;
+	right:0;
+	bottom:0;
+	top:0;
+	cursor:progress !important;
+	z-index: 1000000;
+}
+_html.mailster-loading:after{
+	content: '\e814';
+	font-family: "mailster-icons";
+	position: absolute;
+	cursor:progress !important;
+	z-index: 1000001;
+	top: 50%;
+	bottom: 0;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 50px;
 }
 multi, single, img[editable], a[editable] img, table.textbutton a[editable]{
 	position: relative;
@@ -341,7 +365,7 @@ multi, single, img[editable], a[editable] img, table.textbutton a[editable]{
 multi[contenteditable], single[contenteditable]{
 	cursor: text;
 }
-multi[contenteditable]:focus, single[contenteditable]:focus{
+multi[contenteditable]:focus, single[contenteditable]:focus, a[editable]:focus{
 	outline:none;
 }
 body:hover single:empty{

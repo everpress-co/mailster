@@ -4511,6 +4511,7 @@ class MailsterCampaigns {
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'url' => MAILSTER_URI,
 			'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
+			'isrtl' => is_rtl(),
 			'plupload' => array(
 				'runtimes' => 'html5,flash',
 				'browse_button' => 'mailster-editorimage-upload-button',
@@ -4538,9 +4539,10 @@ class MailsterCampaigns {
 			$toolbar1 = (string) apply_filters( 'mymail_editor_toolbar1', apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat,|,mailster_remove_element' ) );
 			$toolbar2 = (string) apply_filters( 'mymail_editor_toolbar2', apply_filters( 'mailster_editor_toolbar2', 'bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify' ) );
 			$toolbar3 = (string) apply_filters( 'mymail_editor_toolbar3', apply_filters( 'mailster_editor_toolbar3', '' ) );
-			$toolbar4 = (string) apply_filters( 'mymail_editor_toolbar4', apply_filters( 'mailster_editor_toolbar4', '' ) );
 
-			$single_toolbar = (string) apply_filters( 'mailster_editor_single_toolbar', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,link,unlink,|,removeformat,|,mailster_remove_element' );
+			$single_toolbar1 = (string) apply_filters( 'mailster_editor_single_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,link,unlink,|,removeformat,|,mailster_remove_element' );
+			$single_toolbar2 = (string) apply_filters( 'mailster_editor_single_toolbar2', '' );
+			$single_toolbar3 = (string) apply_filters( 'mailster_editor_single_toolbar3', '' );
 
 			$mailsterdata['tinymce'] = array(
 					'args' => apply_filters( 'mailster_editor_tinymce_args', array(
@@ -4552,7 +4554,7 @@ class MailsterCampaigns {
 						'menubar' => false,
 						'branding' => false,
 						'valid_elements' => 'p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br',
-						'invalid_elements' => 'script',
+						'invalid_elements' => 'script,iframe',
 						'block_formats' => 'Paragraph=p',
 						'relative_urls' => false,
 						'remove_script_host' => false,
@@ -4561,17 +4563,14 @@ class MailsterCampaigns {
 						'directionality' => (is_rtl() ? 'rtl' : 'ltr'),
 						'fontsize_formats' => '8px 10px 12px 14px 18px 24px 36px',
 						'skin_url' => MAILSTER_URI . 'assets/css/tinymce',
-						//'language' => 'de',
-
-						'plugins' => 'textcolor colorpicker charmap colorpicker hr lists media paste tabfocus textcolor fullscreen wordpress wplink wpdialogs wpview',
+						'plugins' => 'textcolor colorpicker charmap hr lists paste wordpress wplink wpdialogs',
 					)),
 					'single' => array(
 						'selector' => 'single',
 						'custom_elements' => 'single',
-						'toolbar1' => $single_toolbar,
-						'toolbar2' => '',
-						'toolbar3' => '',
-						'toolbar4' => '',
+						'toolbar1' => $single_toolbar1,
+						'toolbar2' => $single_toolbar2,
+						'toolbar3' => $single_toolbar3,
 					),
 					'multi' => array(
 						'selector' => 'multi',
@@ -4579,7 +4578,6 @@ class MailsterCampaigns {
 						'toolbar1' => $toolbar1,
 						'toolbar2' => $toolbar2,
 						'toolbar3' => $toolbar3,
-						'toolbar4' => $toolbar4,
 					),
 			);
 		}
@@ -4602,7 +4600,7 @@ class MailsterCampaigns {
 		if ( $inline ) {
 			wp_print_styles( 'dashicons' );
 			// if ( ! class_exists( '_WP_Editors', false ) ) {
-			// 	require( ABSPATH . WPINC . '/class-wp-editor.php' );
+			// require( ABSPATH . WPINC . '/class-wp-editor.php' );
 			// }
 			// _WP_Editors::print_tinymce_scripts();
 			// wp_print_styles( 'wp-editor-forms' );
@@ -4612,7 +4610,6 @@ class MailsterCampaigns {
 			wp_print_scripts( 'utils' );
 			// wp_print_scripts( 'wplink' );
 			mailster( 'tinymce' )->editbar_translations();
-
 
 			wp_print_scripts( 'mailster-tinymce' );
 		}
