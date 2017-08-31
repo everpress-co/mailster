@@ -87,6 +87,7 @@ Xaver Birsak – https://everpress.io
 * fixed: Excerpts were missing when view mode is Excerpt View
 * fixed: missing `wp_get_raw_referer` on WP < 4.5
 * fixed: choosing default values for dropdowns and radio custom fields
+* fixed: multiple attached attachments
 * improved: lists assigned to a form are now respected if form id is set explicitly on subscriber submission
 * added: 'mailster_campaign_content' filter to alter the content of campaigns
 * added: 'mailster_using_permalinks' filter

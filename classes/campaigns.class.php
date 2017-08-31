@@ -3986,6 +3986,7 @@ class MailsterCampaigns {
 		$placeholder->replace_custom_tags( false );
 
 		if ( ! empty( $campaign_meta['attachments'] ) ) {
+			$mail->attachments = array();
 			foreach ( (array) $campaign_meta['attachments'] as $attachment_id ) {
 				if ( ! $attachment_id ) {
 					continue;
