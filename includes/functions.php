@@ -949,11 +949,10 @@ function mailster_get_referer() {
 	if ( $referer = wp_get_referer() ) {
 		return $referer;
 	}
-	if ( $referer = wp_get_raw_referer() ) {
-		return $referer;
-	}
-	if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-		return $_SERVER['HTTP_REFERER'];
+	if ( ! empty( $_REQUEST['_wp_http_referer'] ) ) {
+		return wp_unslash( $_REQUEST['_wp_http_referer'] );
+	} elseif ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+		return wp_unslash( $_SERVER['HTTP_REFERER'] );
 	}
 	return false;
 }
