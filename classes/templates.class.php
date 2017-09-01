@@ -1000,6 +1000,7 @@ class MailsterTemplates {
 			'x-mailster-hash' => $hash,
 			'x-mailster-version' => MAILSTER_VERSION,
 			'x-mailster-site' => get_bloginfo( 'url' ),
+			'x-mailster-license' => get_option( 'mailster_license' ),
 			'x-mailster-url' => $fileuri,
 		);
 
