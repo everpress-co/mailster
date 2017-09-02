@@ -487,7 +487,7 @@ class MailsterAjax {
 			$attachments = isset( $formdata['mailster_data']['attachments'] ) ? $formdata['mailster_data']['attachments'] : array();
 			$max_size = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );
 
-			$autoplain = isset( $formdata['mailster_data']['autoplain'] );
+			$autoplain = isset( $formdata['mailster_data']['autoplaintext'] );
 			$plaintext = stripslashes( $_POST['plaintext'] );
 			// if ( function_exists( 'wp_encode_emoji' ) ) {
 			// $subject = wp_decode_emoji( $subject );
@@ -618,9 +618,9 @@ class MailsterAjax {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
-				$mail->content = $content;
+				$mail->content = apply_filters( 'mailster_campaign_content', $content, get_post( $ID ), $subscriber );
 
-				if ( $autoplain ) {
+				if ( ! $autoplain ) {
 					$placeholder->set_content( esc_textarea( $plaintext ) );
 					$mail->plaintext = mailster( 'helper' )->plain_text( $placeholder->get_content(), true );
 				}

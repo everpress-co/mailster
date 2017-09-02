@@ -1,5 +1,4 @@
 <?php
-
 if ( $translations ) :
 	$url = add_query_arg( array(
 			'action' => 'do-translation-upgrade',

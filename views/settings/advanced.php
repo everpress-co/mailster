@@ -1,6 +1,4 @@
-
 <p class="description"><?php esc_html_e( 'Some of these settings may affect your website. In normal circumstance it is not required to change anything on this page.', 'mailster' ) ?></p>
-
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Disable Cache', 'mailster' ) ?></th>
