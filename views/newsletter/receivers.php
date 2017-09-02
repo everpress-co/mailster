@@ -37,7 +37,7 @@ $total = $this->get_totals( $post->ID );
 
 			$checked = wp_parse_args( isset( $_GET['lists'] ) ? $_GET['lists'] : array(), $this->post_data['lists'] );
 
-			mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', true, $checked, 'select' );
+			mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', true, $checked );
 ?>
 			<label><input type="checkbox" id="all_lists"> <?php esc_html_e( 'toggle all', 'mailster' );?></label>
 			<ul>

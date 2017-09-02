@@ -22,24 +22,6 @@ $table->prepare_items();
 $table->search_box( __( 'Search Subscribers', 'mailster' ), 's' );
 $table->views();
 
-mailster( 'conditions' )->view(array(
-				array(
-					'field' => 'lastname',
-					'operator' => '^',
-					'value' => 'a',
-				),
-				array(
-					'field' => 'lang',
-					'operator' => '=',
-					'value' => 'en_EN',
-				),
-				array(
-					'field' => 'wp_capabilities',
-					'operator' => '=',
-					'value' => 'editor',
-				),
-));
-
 $counts = $this->get_count_by_status();
 if ( isset( $_GET['status'] ) && isset( $counts[ $_GET['status'] ] ) ) :
 

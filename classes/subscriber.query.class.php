@@ -694,8 +694,6 @@ class MailsterSubscriberQuery {
 					$orders[] = "$orderby $ordering";
 				}
 			}
-
-			$order .= implode( ',', $orders );
 		}
 
 		$select = 'SELECT ';
