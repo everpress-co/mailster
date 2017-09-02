@@ -1677,6 +1677,7 @@ jQuery(document).ready(function ($) {
 			var _this = $(this),
 				content = _getContent(),
 				subject = _subject.val(),
+				preheader = _preheader.val(),
 				title = _title.val();
 
 			if (_obar.find('a.preview').is('.loading')) return false;
@@ -1687,7 +1688,8 @@ jQuery(document).ready(function ($) {
 				content: content,
 				head: _head.val(),
 				issue: $('#mailster_autoresponder_issue').val(),
-				subject: subject
+				subject: subject,
+				preheader: preheader
 			}, function (response) {
 				_obar.find('a.preview').removeClass('loading');
 

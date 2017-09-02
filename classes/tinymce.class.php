@@ -103,6 +103,8 @@ class MailsterTinymce {
 				'webversion' => __( 'Webversion', 'mailster' ),
 				'unsub' => __( 'Unsubscribe Link', 'mailster' ),
 				'forward' => __( 'Forward', 'mailster' ),
+				'subject' => __( 'Subject', 'mailster' ),
+				'preheader' => __( 'Preheader', 'mailster' ),
 			),
 		);
 
