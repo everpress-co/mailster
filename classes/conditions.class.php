@@ -22,9 +22,8 @@ class MailsterConditions {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array( 'mailster-select2' ), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'jquery', 'mailster-select2' ), MAILSTER_VERSION, true );
-		wp_localize_script( 'mailster-conditions', 'mailsterL10n', array() );
+		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
 		if ( empty( $conditions ) ) {
 			$conditions = array();
@@ -34,12 +33,25 @@ class MailsterConditions {
 
 	}
 
-	public function render( $conditions = array(), $operator = 'AND' ) {
+	public function render( $conditions = array(), $operator = 'AND', $echo = true ) {
 
 		if ( empty( $conditions ) ) {
 			$conditions = array();
 		}
+
+		ob_start();
+
 		include MAILSTER_DIR . 'views/conditions/render.php';
+
+		$output = ob_get_contents();
+
+		ob_end_clean();
+
+		if ( ! $echo ) {
+			return $output;
+		}
+
+		echo $output;
 
 	}
 
@@ -85,6 +97,7 @@ class MailsterConditions {
 
 	private function get_time_fields() {
 		$time_fields = array( 'added', 'updated', 'signup', 'confirm' );
+		$time_fields = array_merge( $time_fields,  $this->custom_date_fields );
 
 		return $time_fields;
 	}
@@ -109,21 +122,22 @@ class MailsterConditions {
 	private function get_wp_user_meta() {
 		$wp_user_meta = wp_parse_args( array( 'wp_user_level' => 'User Lever', 'wp_capabilities' => 'User Role' ), mailster( 'helper' )->get_wpuser_meta_fields() );
 		// removing custom fields from wp user meta to prevent conflicts
-		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), $this->custom_fields ) );
+		// error_log($this->custom_fields);
+		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), array_keys( $this->custom_fields ) ) );
 
 		return $wp_user_meta;
 	}
 
 	private function get_campaign_related() {
 		return array(
-			'sent' => __( 'has received', 'mailster' ),
-			'sent__not_in' => __( 'has not receiverd', 'mailster' ),
-			'open' => __( 'has opened', 'mailster' ),
-			'open__not_in' => __( 'has not opened', 'mailster' ),
-			'click' => __( 'has clicked', 'mailster' ),
-			'click__not_in' => __( 'has not clicked', 'mailster' ),
-			'click_link' => __( 'clicked link', 'mailster' ),
-			'click_link__not_in' => __( 'didn\'t clicked link', 'mailster' ),
+			'_sent' => __( 'has received', 'mailster' ),
+			'_sent__not_in' => __( 'has not receiverd', 'mailster' ),
+			'_open' => __( 'has opened', 'mailster' ),
+			'_open__not_in' => __( 'has not opened', 'mailster' ),
+			'_click' => __( 'has clicked', 'mailster' ),
+			'_click__not_in' => __( 'has not clicked', 'mailster' ),
+			'_click_link' => __( 'clicked link', 'mailster' ),
+			'_click_link__not_in' => __( 'didn\'t clicked link', 'mailster' ),
 		);
 
 	}
@@ -141,6 +155,24 @@ class MailsterConditions {
 			'is_smaller_equal' => __( 'is smaller or equal', 'mailster' ),
 			'pattern' => __( 'match regex pattern', 'mailster' ),
 			'not_pattern' => __( 'does not match regex pattern', 'mailster' ),
+		);
+
+	}
+	private function get_bool_operators() {
+		return array(
+			'is' => __( 'is', 'mailster' ),
+			'is_not' => __( 'is not', 'mailster' ),
+		);
+
+	}
+	private function get_date_operators() {
+		return array(
+			'is' => __( 'is on the', 'mailster' ),
+			'is_not' => __( 'is not on the', 'mailster' ),
+			'is_greater' => __( 'is after', 'mailster' ),
+			'is_smaller' => __( 'is before', 'mailster' ),
+			'is_greater_equal' => __( 'is after or on the', 'mailster' ),
+			'is_smaller_equal' => __( 'is before or on the', 'mailster' ),
 		);
 
 	}
@@ -181,7 +213,41 @@ class MailsterConditions {
 	}
 
 
-	private function nice_name( $string, $type = null ) {
+	private function print_condition( $condition, $formated = true ) {
+
+		$return = array(
+			'field' => '<strong>' . $this->nice_name( $condition['field'], 'field', $condition['field'] ) . '</strong>',
+			'operator' => '',
+			'value' => '',
+		);
+
+		if ( isset( $this->campaign_related[ $condition['field'] ] ) ) {
+			if ( ! is_array( $condition['value'] ) ) {
+				$condition['value'] = array( $condition['value'] );
+			}
+			// foreach ($condition['value'] as $key => $value) {
+			// if ( strpos( $condition['field'], '_click_link' ) !== false ) {
+			// $return['value'] .= '<a href="' . esc_url( $value ) . '">' . esc_url( $value ) . '</a>';
+			// } else {
+			// $return['value'] .= '<a href="' . admin_url( 'post.php?post=' . $value . '&action=edit' ) . '">' . get_the_title( $value ) . '</a>';
+			// }
+			// }
+			if ( strpos( $condition['field'], '_click_link' ) !== false ) {
+				$return['value'] = implode( ' ' . __( 'or', 'mailster' ) . ' ', array_map( 'esc_url', $condition['value'] ) );
+			} else {
+				$return['value'] = '&quot;' . implode( '&quot; ' . __( 'or', 'mailster' ) . ' &quot;', array_map( 'get_the_title', $condition['value'] ) ) . '&quot;';
+			}
+		} else {
+			$return['operator'] = '<em>' . $this->nice_name( $condition['operator'], 'operator', $condition['field'] ) . '</em>';
+			$return['value'] = '&quot;<strong>' . $this->nice_name( $condition['value'], 'value', $condition['field'] ) . '</strong>&quot;';
+		}
+
+		return $formated ? $return : strip_tags( $return );
+
+	}
+
+
+	private function nice_name( $string, $type = null, $field = null ) {
 
 		switch ( $type ) {
 			case 'field':
@@ -191,8 +257,14 @@ class MailsterConditions {
 				if ( isset( $this->custom_fields[ $string ] ) ) {
 					return $this->custom_fields[ $string ]['name'];
 				}
+				if ( isset( $this->campaign_related[ $string ] ) ) {
+					return $this->campaign_related[ $string ];
+				}
 				break;
 			case 'operator':
+				if ( in_array( $field, $this->time_fields ) && isset( $this->date_operators[ $string ] ) ) {
+					return $this->date_operators[ $string ];
+				}
 				if ( isset( $this->operators[ $string ] ) ) {
 					return $this->operators[ $string ];
 				}
@@ -204,6 +276,9 @@ class MailsterConditions {
 				}
 				break;
 			case 'value':
+				if ( in_array( $field, $this->time_fields ) ) {
+					return date( get_option( 'date_format' ), strtotime( $string ) );
+				}
 				break;
 
 		}

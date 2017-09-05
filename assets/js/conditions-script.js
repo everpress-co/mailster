@@ -10,27 +10,47 @@ jQuery(document).ready(function ($) {
 	cond.eq(0).appendTo($('.mailster-condition-container'));
 
 	$('.mailster-conditions-thickbox')
+		.on('change', '.mailster-list-operator', function () {
+			conditions.removeClass('mailster-condition-operator-is-and mailster-condition-operator-is-or').addClass('mailster-condition-operator-is-' + $(this).val().toLowerCase());
+			window.mailster_updateReceiversCount();
+		})
 		.on('click', '.add-condition', function () {
-			var cond = $('.mailster-condition'),
-				id = cond.length - 1,
+			var id = cond.length,
 				clone = cond.eq(0).clone();
 
 			clone.removeAttr('id').appendTo(conditions);
 			$.each(clone.find('input, select'), function () {
-				var name = $(this).val('').attr('name');
-				$(this).attr('name', name.replace(/\[\d+\]/, '[' + id + ']')).trigger('change');
+				var _this = $(this),
+					name = _this.attr('name');
+				_this.attr('name', name.replace(/\[\d+\]/, '[' + id + ']')).prop('disabled', false);
 			});
-			clone.find('.datepicker').datepicker();
-			clone.find('select.select2').select2();
-			clone.find('.condition-field').focus();
+			clone.find('.datepicker').datepicker({
+				dateFormat: 'yy-mm-dd',
+				minDate: new Date(),
+				firstDay: mailsterL10n.start_of_week,
+				showWeek: true,
+				dayNames: mailsterL10n.day_names,
+				dayNamesMin: mailsterL10n.day_names_min,
+				monthNames: mailsterL10n.month_names,
+				prevText: mailsterL10n.prev,
+				nextText: mailsterL10n.next,
+				showAnim: 'fadeIn',
+			});
+			clone.find('.condition-field').val('').focus();
+			//clone.find('select.select2').select2();
 
+			cond = $('.mailster-condition');
 		})
+		.on('click', '.close', function () {
+			tb_remove();
+		});
 
 
 	conditions
 		.on('click', '.remove-condition', function () {
 			$(this).parent().slideUp(200, function () {
 				$(this).remove();
+				window.mailster_updateReceiversCount();
 			});
 		})
 		.on('change', '.condition-field', function () {
@@ -38,21 +58,35 @@ jQuery(document).ready(function ($) {
 			condition = $(this).closest('.mailster-condition');
 
 			var value = $(this).val();
-			condition.find('div.mailster-conditions-value-field').hide().find('.condition-value').prop('disabled', true);
-			condition.find('div.mailster-conditions-operator-field').hide().find('.condition-operator').prop('disabled', true);
+			condition.find('div.mailster-conditions-value-field').removeClass('active').find('.condition-value').prop('disabled', true);
+			condition.find('div.mailster-conditions-operator-field').removeClass('active').find('.condition-operator').prop('disabled', true);
 
-			if (condition.find('div.mailster-conditions-value-field[data-fields*="' + value + '"]').show().find('.condition-value').prop('disabled', false).focus().select().length) {} else {
-				condition.find('div.mailster-conditions-value-field-default').show().find('.condition-value').prop('disabled', false).focus().select();
+			if (condition.find('div.mailster-conditions-value-field[data-fields*="' + value + ',"]').addClass('active').find('.condition-value').prop('disabled', false).length) {
+				//condition.find('div.mailster-conditions-value-field[data-fields*="' + value + '"]').show().find('.condition-value').prop('disabled', false);
+			} else {
+				condition.find('div.mailster-conditions-value-field-default').addClass('active').find('.condition-value').prop('disabled', false);
 			}
-			if (condition.find('div.mailster-conditions-operator-field[data-fields*="' + value + '"]').show().find('.condition-operator').prop('disabled', false).length) {} else {
-				condition.find('div.mailster-conditions-operator-field-default').show().find('.condition-operator').prop('disabled', false);
+			if (condition.find('div.mailster-conditions-operator-field[data-fields*="' + value + ',"]').addClass('active').find('.condition-operator').prop('disabled', false).length) {
+				//
+			} else {
+				condition.find('div.mailster-conditions-operator-field-default').addClass('active').find('.condition-operator').prop('disabled', false);
 			}
+			window.mailster_updateReceiversCount();
 
 		})
 		.on('change', '.condition-operator', function () {
-
+			window.mailster_updateReceiversCount();
 		})
-		.on('change', '.condition-value', function () {});
+		.on('change', '.condition-value', function () {
+			window.mailster_updateReceiversCount();
+		})
+		.on('click', '.mailster-condition-add-multiselect', function () {
+			$(this).parent().clone().insertAfter($(this).parent()).find('.condition-value').select().focus();
+		})
+		.on('change', '.mailster-conditions-value-field-multiselect > .condition-value', function () {
+			if (0 == $(this).val() && $(this).parent().parent().find('.condition-value').size() > 1) $(this).parent().remove();
+		})
+		.find('.condition-field').prop('disabled', false).trigger('change');
 
 	function serialize() {
 		var str = 'conditions=';

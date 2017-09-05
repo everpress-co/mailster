@@ -61,7 +61,7 @@ class MailsterSubscriberQuery {
 		'click_before' => null,
 		'click_after' => null,
 		'click_link' => null,
-		'click__not_link' => null,
+		'click_link__not_in' => null,
 	);
 
 	private static $_instance = null;
@@ -253,8 +253,8 @@ class MailsterSubscriberQuery {
 			$this->add_condition( '_click_link', '=', $this->get_timestamp( $this->args['click_link'] ) );
 		}
 
-		if ( $this->args['click__not_link'] ) {
-			$this->add_condition( '_click__not_link', '=', $this->get_timestamp( $this->args['click__not_link'] ) );
+		if ( $this->args['click_link__not_in'] ) {
+			$this->add_condition( '_click_link__not_in', '=', $this->get_timestamp( $this->args['click_link__not_in'] ) );
 		}
 
 		if ( ! $this->args['return_count'] ) {
@@ -387,84 +387,83 @@ class MailsterSubscriberQuery {
 
 						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS `meta_$field` ON `meta_$field`.subscriber_id = subscribers.ID AND `meta_$field`.meta_key = '$field'";
 
-					} elseif ( '_' == substr( $field, 0,1 ) ) {
+					}
 
-						$value = esc_sql( $condition['value'] );
+					if ( ! in_array( $field, $this->action_fields ) ) {
+
+						$sub_cond[] = $this->get_condition( $condition['field'], $condition['operator'], $condition['value'] );
+
+					} else {
+
+						$value = $condition['value'];
+						if ( ! is_array( $value ) ) {
+							$value = explode( ',', $value );
+						}
+						$value = array_map( 'esc_sql', $value );
+						$alias = 'actions' . $field . '_' . md5( serialize( $value ) );
 						if ( 0 === strpos( $field, '_sent' ) ) {
 
-							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS actions$field ON actions$field.type = 1 AND subscribers.ID = actions$field.subscriber_id";
+							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS $alias ON $alias.type = 1 AND subscribers.ID = $alias.subscriber_id";
 							if ( ('_sent' == $field || '_sent__not_in' == $field) && $value && $value != -1 ) {
-								if ( ! is_array( $value ) ) {
-									$value = explode( ',', $value );
-								}
-								$join .= " AND actions$field.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
+								$join .= " AND $alias.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
 							}
 
 							if ( '_sent' === $field ) {
-								$wheres[] = "AND actions$field.subscriber_id IS NOT NULL";
+								$sub_cond[] = "$alias.subscriber_id IS NOT NULL";
 							} elseif ( '_sent__not_in' === $field ) {
-								$wheres[] = "AND actions$field.subscriber_id IS NULL";
+								$sub_cond[] = "$alias.subscriber_id IS NULL";
 							} elseif ( '_sent_before' === $field ) {
-								$wheres[] = "AND actions$field.timestamp <= " . $this->get_timestamp( $value );
+								$sub_cond[] = "$alias.timestamp <= " . $this->get_timestamp( $value );
 							} elseif ( '_sent_after' === $field ) {
-								$wheres[] = "AND actions$field.timestamp >= " . $this->get_timestamp( $value );
+								$sub_cond[] = "$alias.timestamp >= " . $this->get_timestamp( $value );
 							}
 
 							$joins[] = $join;
 
 						} elseif ( 0 === strpos( $field, '_open' ) ) {
 
-							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS actions$field ON actions$field.type = 2 AND subscribers.ID = actions$field.subscriber_id";
+							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS $alias ON $alias.type = 2 AND subscribers.ID = $alias.subscriber_id";
 							if ( ('_open' === $field || '_open__not_in' === $field) && $value && $value != -1 ) {
-								if ( ! is_array( $value ) ) {
-									$value = explode( ',', $value );
-								}
-								$join .= " AND actions$field.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
+								$join .= " AND $alias.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
 							}
 
 							if ( '_open' === $field ) {
-								$wheres[] = "AND actions$field.subscriber_id IS NOT NULL";
+								$sub_cond[] = "$alias.subscriber_id IS NOT NULL";
 							} elseif ( '_open__not_in' === $field ) {
-								$wheres[] = "AND actions$field.subscriber_id IS NULL";
+								$sub_cond[] = "$alias.subscriber_id IS NULL";
 							} elseif ( '_open_before' === $field ) {
-								$wheres[] = "AND actions$field.timestamp <= " . $this->get_timestamp( $value );
+								$sub_cond[] = "$alias.timestamp <= " . $this->get_timestamp( $value );
 							} elseif ( '_open_after' === $field ) {
-								$wheres[] = "AND actions$field.timestamp >= " . $this->get_timestamp( $value );
+								$sub_cond[] = "$alias.timestamp >= " . $this->get_timestamp( $value );
 							}
 
 							$joins[] = $join;
 
 						} elseif ( 0 === strpos( $field, '_click' ) ) {
 
-							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS actions$field ON actions$field.type = 3 AND subscribers.ID = actions$field.subscriber_id";
+							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS $alias ON $alias.type = 3 AND subscribers.ID = $alias.subscriber_id";
 							if ( ('_click' === $field || '_click__not_in' === $field) && $value && $value != -1 ) {
-								if ( ! is_array( $value ) ) {
-									$value = explode( ',', $value );
-								}
-								$join .= " AND actions$field.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
+								$join .= " AND $alias.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
 							}
 							$joins[] = $join;
 
 							if ( '_click' === $field ) {
-								$wheres[] = "AND actions$field.subscriber_id IS NOT NULL";
+								$sub_cond[] = "$alias.subscriber_id IS NOT NULL";
 							} elseif ( '_click__not_in' === $field ) {
-								$wheres[] = "AND actions$field.subscriber_id IS NULL";
+								$sub_cond[] = "$alias.subscriber_id IS NULL";
 							} elseif ( '_click_before' === $field ) {
-								$wheres[] = "AND actions$field.timestamp <= " . $this->get_timestamp( $value );
+								$sub_cond[] = "$alias.timestamp <= " . $this->get_timestamp( $value );
 							} elseif ( '_click_after' === $field ) {
-								$wheres[] = "AND actions$field.timestamp >= " . $this->get_timestamp( $value );
+								$sub_cond[] = "$alias.timestamp >= " . $this->get_timestamp( $value );
 							} elseif ( '_click_link' === $field ) {
-								$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_links AS $field ON actions$field.link_id = $field.ID AND $field.link = '" . esc_sql( $value ) . "'";
-								$wheres[] = "AND actions$field.subscriber_id IS NOT NULL";
-							} elseif ( '_click__not_link' === $field ) {
-								$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_links AS $field ON actions$field.link_id = $field.ID AND $field.link = '" . esc_sql( $value ) . "'";
-								$wheres[] = "AND actions$field.link_id IS NULL";
+								$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_links AS $field ON $alias.link_id = $field.ID AND $field.link IN ('" . implode( "','", $value ) . "')";
+								$sub_cond[] = "$alias.subscriber_id IS NOT NULL";
+							} elseif ( '_click_link__not_in' === $field ) {
+								$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_links AS $field ON $alias.link_id = $field.ID AND $field.link IN ('" . implode( "','", $value ) . "')";
+								$sub_cond[] = "$alias.link_id IS NULL";
 							}
 						}
 					}
-
-					$sub_cond[] = $this->get_condition( $condition['field'], $condition['operator'], $condition['value'] );
-
 				}
 				$sub_cond = array_filter( $sub_cond );
 				if ( ! empty( $sub_cond ) ) {
@@ -763,7 +762,7 @@ class MailsterSubscriberQuery {
 		}
 
 		global $pagenow;
-		if ( in_array( $pagenow, array( 'admin-ajax.php', 'tools.php' ) ) ) {
+		if ( in_array( $pagenow, array( '_admin-ajax.php', 'tools.php' ) ) ) {
 			echo '<pre>' . print_r( $sql, true ) . '</pre>';
 			$qu = end( $wpdb->queries );
 			echo '<pre>' . print_r( $qu[1], true ) . '</pre>';
@@ -803,10 +802,6 @@ class MailsterSubscriberQuery {
 		$field = esc_sql( $field );
 		$value = esc_sql( stripslashes( $value ) );
 		$operator = $this->get_field_operator( $operator );
-
-		if ( in_array( $field, $this->action_fields ) ) {
-			return '';
-		}
 
 		$is_empty = '' == $value;
 		$extra = '';
@@ -1113,7 +1108,7 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_action_fields() {
-		$action_fields = array( '_sent', '_sent__not_in', '_sent_before', '_sent_after', '_open', '_open__not_in', '_open_before', '_open_after', '_click', '_click__not_in', '_click_before', '_click_after', '_click_link', '_click__not_link' );
+		$action_fields = array( '_sent', '_sent__not_in', '_sent_before', '_sent_after', '_open', '_open__not_in', '_open_before', '_open_after', '_click', '_click__not_in', '_click_before', '_click_after', '_click_link', '_click_link__not_in' );
 
 		return $action_fields;
 	}

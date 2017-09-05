@@ -971,7 +971,7 @@ class MailsterLists {
 				}
 				echo '</ul>';
 			} else {
-				echo '<select class="select2 widefat" multiple name="' . $name . '">';
+				echo '<select class="widefat" multiple name="' . $name . '">';
 				foreach ( $lists as $list ) {
 					echo '<option value="' . $list->ID . '" ' . selected( in_array( $list->ID, $checked ), true, false ) . '>' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . $list->name . '' . ( $show_count ? ' (' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')' : '' ) . '</option>';
 				}

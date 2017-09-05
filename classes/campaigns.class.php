@@ -891,55 +891,9 @@ class MailsterCampaigns {
 
 							if ( $meta['list_conditions'] ) {
 
-								$fields = array(
-									'email' => mailster_text( 'email' ),
-									'firstname' => mailster_text( 'firstname' ),
-									'lastname' => mailster_text( 'lastname' ),
-									'ip' => __( 'IP Address', 'mailster' ),
-									'signup' => __( 'Signup Date', 'mailster' ),
-									'ip_signup' => __( 'Signup IP', 'mailster' ),
-									'confirm' => __( 'Confirm Date', 'mailster' ),
-									'ip_confirm' => __( 'Confirm IP', 'mailster' ),
-									'rating' => __( 'Rating', 'mailster' ),
-								);
-
-								$wp_meta = wp_parse_args( mailster( 'helper' )->get_wpuser_meta_fields(), array(
-									'wp_capabilities' => __( 'User Role', 'mailster' ),
-									'wp_user_level' => __( 'User Level', 'mailster' ),
-								) );
-
-								$customfields = mailster()->get_custom_fields();
-
-								foreach ( $customfields as $field => $data ) {
-									$fields[ $field ] = $data['name'];
-								}
-
 								echo '<br>' . __( 'only if', 'mailster' ) . '<br>';
 
-								$conditions = array();
-								$operators = array(
-									'is' => __( 'is', 'mailster' ),
-									'is_not' => __( 'is not', 'mailster' ),
-									'contains' => __( 'contains', 'mailster' ),
-									'contains_not' => __( 'contains not', 'mailster' ),
-									'begin_with' => __( 'begins with', 'mailster' ),
-									'end_with' => __( 'ends with', 'mailster' ),
-									'is_greater' => __( 'is greater', 'mailster' ),
-									'is_smaller' => __( 'is smaller', 'mailster' ),
-									'pattern' => __( 'match regex pattern', 'mailster' ),
-									'not_pattern' => __( 'does not match regex pattern', 'mailster' ),
-								);
-
-								foreach ( $meta['list_conditions']['conditions'] as $i => $condition ) {
-									if ( ( ! isset( $fields[ $condition['field'] ] ) && ( ! isset( $wp_meta[ $condition['field'] ] ) ) ) ) {
-										echo '<span class="mailster-icon warning"></span> ' . sprintf( __( '%s is missing!', 'mailster' ), '"' . $condition['field'] . '"' ) . '<br>';
-										continue;
-									}
-									$conditions[] = '<strong>' . $fields[ $condition['field'] ] . '</strong> ' . $operators[ $condition['operator'] ] . ' "<strong>' . $condition['value'] . '</strong>"';
-								}
-
-								echo implode( '<br>' . __( strtolower( $meta['list_conditions']['operator'] ), 'mailster' ) . ' ', $conditions );
-
+								mailster( 'conditions' )->render( $meta['list_conditions']['conditions'], $condition['operator'] );
 							}
 
 							echo '</span>';
@@ -984,6 +938,7 @@ class MailsterCampaigns {
 					echo implode( ' | ', $actions );
 					echo '</div>';
 				}
+
 			break;
 
 			case 'total':
@@ -1316,6 +1271,7 @@ class MailsterCampaigns {
 				'send_now' => __( 'Do you really like to send this campaign now?', 'mailster' ),
 				'select_image' => __( 'Select Image', 'mailster' ),
 				'add_attachment' => __( 'Add Attachment', 'mailster' ),
+				'edit_conditions' => __( 'Edit Conditions', 'mailster' ),
 		) );
 
 		wp_localize_script( 'mailster-script', 'mailsterdata', array(
@@ -1700,7 +1656,16 @@ class MailsterCampaigns {
 
 		}
 
-		if ( isset( $postdata['list_conditions'] ) ) {
+		if ( isset( $postdata['list']['conditions'] ) ) {
+
+			$postdata['list']['conditions'] = array_values( $postdata['list']['conditions'] );
+			foreach ( $postdata['list']['conditions'] as $i => $cond ) {
+				if ( is_array( $postdata['list']['conditions'][ $i ]['value'] ) ) {
+					$postdata['list']['conditions'][ $i ]['value'] = array_values( array_unique( $postdata['list']['conditions'][ $i ]['value'] ) );
+				} else {
+
+				}
+			}
 
 			$meta['list_conditions'] = $postdata['list'];
 
