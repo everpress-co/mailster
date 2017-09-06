@@ -83,6 +83,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.11 =
 
+* improved: translation checks and loading
+
 = Version 2.2.10 =
 
 * fixed: Editor button now only available in the backend

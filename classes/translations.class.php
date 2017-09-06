@@ -61,16 +61,23 @@ class MailsterTranslations {
 	 */
 	public function get_translation_data( $force = false ) {
 
-		if ( $force || ( false === ( $data = get_transient( '_mailster_translation' ) ) ) ) {
+		$object = get_option( 'mailster_translation' );
+		$now = time();
+
+		// if force, not set yet or expired
+		if ( $force || ! $object || $now - $object['expires'] >= 0 ) {
 
 			// check if a newer version is available once a day
 			$recheckafter = 86400;
-			$data = false;
+			$object = array(
+				'expires' => $now + 86400, // check if a newer version is available once a day
+				'data' => false,
+			);
 
 			$locale = get_locale();
 
 			if ( 'en_US' == $locale ) {
-				set_transient( '_mailster_translation', array(), $recheckafter );
+				update_option( 'mailster_translation', $object );
 				return false;
 			}
 
@@ -85,7 +92,8 @@ class MailsterTranslations {
 			$response = wp_remote_get( $url );
 			$body = wp_remote_retrieve_body( $response );
 			if ( empty( $body ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
-				set_transient( '_mailster_translation', array(), 3600 );
+				$object['expires'] = $now + 3600;
+				update_option( 'mailster_translation', $object );
 				return false;
 			}
 
@@ -107,7 +115,7 @@ class MailsterTranslations {
 
 				$lastmodified = strtotime( $translation_set->last_modified );
 				if ( $lastmodified - $filemtime > 0 ) {
-					$data = array(
+					$object['data'] = array(
 						'type' => 'plugin',
 						'slug' => 'mailster',
 						'language' => $locale,
@@ -120,10 +128,10 @@ class MailsterTranslations {
 				}
 			}
 
-			set_transient( '_mailster_translation', $data, $recheckafter );
+			update_option( 'mailster_translation', $object );
 		}
 
-		return is_array( $data ) ? ( ! empty( $data ) ? $data : null ) : false;
+		return is_array( $object['data'] ) ? ( ! empty( $object['data'] ) ? $object['data'] : null ) : false;
 
 	}
 

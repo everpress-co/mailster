@@ -1572,7 +1572,7 @@ class MailsterSubscribers {
 
 		if ( false === ( $counts = mailster_cache_get( 'get_count_by_status' ) ) ) {
 
-			$sql = "SELECT status, COUNT( * ) AS count FROM {$wpdb->prefix}mailster_subscribers AS a GROUP BY status";
+			$sql = "SELECT status, COUNT( a.ID ) AS count FROM {$wpdb->prefix}mailster_subscribers AS a GROUP BY status";
 
 			$sql = apply_filters( 'mailster_subscribers_get_count_by_status', $sql );
 
