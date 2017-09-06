@@ -6,7 +6,7 @@ jQuery(document).ready(function ($) {
 		isMobile = $(document.body).hasClass('mobile'),
 		isWPDashboard = $(document.body).hasClass('index-php'),
 		$handleButtons = $('.postbox .handlediv'),
-		subscribers = $('.mailster-db-subscribers'),
+		subscribers = $('.mailster-mb-subscribers'),
 		subscriberselect = $('#mailster-subscriber-range'),
 		chartelement = $('#subscriber-chart-wrap'),
 		canvas = $('#subscriber-chart'),
@@ -52,7 +52,7 @@ jQuery(document).ready(function ($) {
 	}).trigger('change');
 
 	$('a.external').on('click', function () {
-		window.open(this.href);
+		if (this.href) window.open(this.href);
 		return false;
 	});
 
@@ -95,8 +95,14 @@ jQuery(document).ready(function ($) {
 
 
 	$(document)
-		.on('verified.mailster', function () {
+		.on('verified.mailster', function (event, purchasecode, username, email) {
+
+			$('.mailster-purchasecode').html(purchasecode);
+			$('.mailster-username').html(username);
+			$('.mailster-email').html(email);
+
 			$('#mailster-mb-mailster').addClass('verified');
+
 			$('#welcome-panel').delay(2500).fadeTo(400, 0, function () {
 				$('#welcome-panel').slideUp(400);
 			})
@@ -167,7 +173,7 @@ jQuery(document).ready(function ($) {
 		function loadEntry(ID, silent) {
 
 			if (!silent) {
-				box.addClass('loading');
+				box.addClass('mailster-loading');
 			}
 
 			_ajax('get_dashboard_data', {
@@ -186,14 +192,14 @@ jQuery(document).ready(function ($) {
 					link.addClass('status-' + data.status);
 				}
 
-				box.find('.stats-total').html(data.sent_formated);
+				box.find('.stats-total').html(data.sent_formatted);
 				box.find('.stats-open').data('easyPieChart').update(data.openrate * 100);
 				box.find('.stats-clicks').data('easyPieChart').update(data.clickrate * 100);
 				box.find('.stats-unsubscribes').data('easyPieChart').update(data.unsubscriberate * 100);
 				box.find('.stats-bounces').data('easyPieChart').update(data.bouncerate * 100);
 
 				current = data.ID;
-				box.removeClass('loading');
+				box.removeClass('mailster-loading');
 
 			});
 		}
@@ -205,14 +211,14 @@ jQuery(document).ready(function ($) {
 
 	function drawChart(sets, scale, limit, offset) {
 
-		subscribers.addClass('loading');
+		subscribers.addClass('mailster-loading');
 
 		_ajax('get_dashboard_chart', {
 			range: subscriberselect.val()
 		}, function (response) {
 
 			resetChart();
-			subscribers.removeClass('loading');
+			subscribers.removeClass('mailster-loading');
 
 			if (!chart) {
 				chart = new Chart(ctx, {

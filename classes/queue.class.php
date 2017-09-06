@@ -395,8 +395,6 @@ class MailsterQueue {
 
 				$sql .= $wpdb->prepare( ' AND a.signup >= %d', $meta['timestamp'] );
 
-				$to = $now - $offset + 3600;
-
 				$sql .= ' AND a.status = 1 AND b.subscriber_id IS NULL';
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
@@ -408,7 +406,7 @@ class MailsterQueue {
 					$sql .= ' AND ab.list_id IN(' . implode( ', ', $meta['lists'] ) . ')';
 				}
 
-				$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $to );
+				$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $now + 3600 );
 
 				if ( $subscribers = $wpdb->get_results( $sql ) ) {
 					$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
@@ -418,21 +416,19 @@ class MailsterQueue {
 				}
 			} elseif ( 'mailster_subscriber_unsubscribed' == $autoresponder_meta['action'] ) {
 
-					$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
+				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 
-					$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(b.timestamp) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.type = 4 LEFT JOIN {$wpdb->prefix}mailster_actions AS c ON a.ID = c.subscriber_id AND c.type = 1 AND c.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
+				$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(b.timestamp) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.type = 4 LEFT JOIN {$wpdb->prefix}mailster_actions AS c ON a.ID = c.subscriber_id AND c.type = 1 AND c.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
 					$sql .= mailster( 'campaigns' )->get_sql_join_by_condition( $meta['list_conditions'] );
 				}
 
-					$sql .= ' WHERE 1';
+				$sql .= ' WHERE 1';
 
-					$sql .= $wpdb->prepare( ' AND b.timestamp >= %d', $meta['timestamp'] );
+				$sql .= $wpdb->prepare( ' AND b.timestamp >= %d', $meta['timestamp'] );
 
-					$to = $now - $offset + 3600;
-
-					$sql .= ' AND a.status = 2 AND b.subscriber_id IS NOT NULL AND c.timestamp IS NULL';
+				$sql .= ' AND a.status = 2 AND b.subscriber_id IS NOT NULL AND c.timestamp IS NULL';
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
 					$sql .= mailster( 'campaigns' )->get_sql_by_condition( $meta['list_conditions'] );
@@ -443,7 +439,7 @@ class MailsterQueue {
 					$sql .= ' AND ab.list_id IN(' . implode( ', ', $meta['lists'] ) . ')';
 				}
 
-					$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $to );
+				$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $now + 3600 );
 
 				if ( $subscribers = $wpdb->get_results( $sql ) ) {
 
@@ -672,21 +668,20 @@ class MailsterQueue {
 
 			$integer = floor( $autoresponder_meta['amount'] );
 			$decimal = $autoresponder_meta['amount'] - $integer;
-
-			$useroffset = strtotime( '+' . $autoresponder_meta['useramount'] . ' ' . $autoresponder_meta['userunit'], 0 );
+			$once = isset( $autoresponder_meta['once'] ) && $autoresponder_meta['once'];
+			$exact_date = isset( $autoresponder_meta['userexactdate'] ) && $autoresponder_meta['userexactdate'];
 			$send_offset = ( strtotime( '+' . $integer . ' ' . $autoresponder_meta['unit'], 0 ) + ( strtotime( '+1 ' . $autoresponder_meta['unit'], 0 ) * $decimal ) ) * $autoresponder_meta['before_after'];
-			$offsettimestamp = strtotime( '+' . ( $send_offset / -3600 ) . ' hours', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
 
 			$subscriber_ids = array();
 			$timestamps = array();
-
-			$once = isset( $autoresponder_meta['once'] ) && $autoresponder_meta['once'];
-
-			$exact_date = isset( $autoresponder_meta['userexactdate'] ) && $autoresponder_meta['userexactdate'];
+			$offsettimestamp = strtotime( '+' . ( -1 * $send_offset ) . ' seconds', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
 
 			if ( $exact_date ) {
+
 				$specialcond = " AND x.meta_value = '" . date( 'Y-m-d', $offsettimestamp ) . "'";
+
 			} else {
+
 				$specialcond = $wpdb->prepare( ' AND STR_TO_DATE(x.meta_value, %s) <= %s', '%Y-%m-%d', date( 'Y-m-d', $offsettimestamp ) );
 				switch ( $autoresponder_meta['userunit'] ) {
 					case 'year':
@@ -753,7 +748,7 @@ class MailsterQueue {
 		// remove not sent queues which have a wrong status
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a LEFT JOIN {$wpdb->prefix}mailster_subscribers AS b ON a.subscriber_id = b.ID WHERE (a.sent = 0 OR a.ignore_status = 1) AND b.status != 1" );
 
-		// select all finished campaigns
+		// select all active campaigns
 		$sql = "SELECT posts.ID, queue.sent FROM {$wpdb->prefix}posts AS posts LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON posts.ID = queue.campaign_id LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON actions.subscriber_id = queue.subscriber_id AND actions.campaign_id = queue.campaign_id AND actions.type = 1 WHERE posts.post_status IN ('active') AND posts.post_type = 'newsletter' AND queue.requeued = 0 GROUP BY posts.ID HAVING SUM(queue.sent = 0) = 0 OR queue.sent IS NULL";
 
 		$ids = $wpdb->get_col( $sql );
@@ -930,6 +925,8 @@ class MailsterQueue {
 
 				$send_start_time = microtime( true );
 
+				$data = apply_filters( 'mailster_queue_campaign_subscriber_data', $data );
+
 				if ( $data->campaign_id ) {
 
 					// check if status hasn't changed yet
@@ -940,7 +937,7 @@ class MailsterQueue {
 						continue;
 					}
 
-					// regular campaign
+					// regular campaign - do not log since we log later in this process
 					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, true, false, false );
 
 					$options = false;
@@ -972,6 +969,7 @@ class MailsterQueue {
 						do_action( 'mymail_send', $data->subscriber_id, $data->campaign_id, $options );
 
 					} else {
+
 						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
 
 					}

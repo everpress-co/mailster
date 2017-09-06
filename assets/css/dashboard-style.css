@@ -26,13 +26,11 @@
 	-o-transition: opacity 1.15s ease-in;
 	transition: opacity 1.15s ease-in;
 }
-
 .mailster-dashboard .register_form_wrap{
 	height: 260px;
 	width: 70%;
 	margin: 0 auto;
 }
-
 .mailster-dashboard #subscriber-chart-wrap{
 	padding: 20px 0;
 }
@@ -49,7 +47,6 @@
 .mailster-dashboard #dashboard-widgets-wrap{
 	margin-top: 5px;
 }
-
 .mailster-dashboard .welcome-panel .welcome-panel-column:first-child{
 	width: 54%;
 }
@@ -74,13 +71,10 @@
 	padding: 11px 12px 12px;
 	vertical-align: bottom;
 }
-
-
 .mailster-dashboard dl{
 	z-index: 1;
 	position: relative;
 }
-
 .mailster-dashboard dl dt{
 	font-weight: 700;
 	margin-left: 55px;
@@ -92,24 +86,20 @@
 }
 .mailster-dashboard dl dd{
 	margin-left: 55px;
-	color: #aaa;
-}
-.mailster-dashboard dl dd span.version{
 	color:#23282d;
 }
-
+.mailster-dashboard dl dd span.lighter{
+	color: #aaa;
+}
 .postbox-container{
-
 }
 .postbox-container .meta-box-sortables{
 }
-
 @media screen and (max-width: 1500px) {
 
 	.mailster-dashboard #dashboard-widgets .meta-box-sortables:empty {
 		min-height: 0px;
 	}
-
 }
 @media screen and (min-width: 1500px) {
 
@@ -126,7 +116,9 @@
 		display: none;
 	}
 }
-
+.mailster-dashboard div.mailster-loading{
+	opacity: 0.8;
+}
 .mailster-dashboard .postbox-container h2.hndle{
 	font-size: 14px;
 	padding: 8px 12px;
@@ -157,7 +149,6 @@
 .mailster-dashboard .mailster-icon-finished.mailster-icon:before{
 	transform: translateY(0px);
 }
-
 .mailster-mb-heading{
 	padding: 6px 0 10px;
 }
@@ -168,6 +159,13 @@
 	text-overflow:ellipsis;
 	overflow:hidden;
 	white-space: nowrap;
+}
+.mailster-mb-link{
+	display: inline-block;
+	max-width: 40%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 .mailster-mb-link:before{
 	font: normal 16px/1 'mailster-icons';
@@ -182,15 +180,14 @@
 	content: '\e804';
 	color: #3AB61B;
 }
-
-.mailster-mb-select{
+.meta-box-sortables select.mailster-mb-select{
 	float: right;
 	margin-top: -6px;
+	max-width: 33%;
 }
 .rtl .mailster-mb-select{
 	float: left;
 }
-
 .mailster-mb-stats{
 
 }
@@ -222,10 +219,7 @@
 	font-weight:700;
 
 }
-
-
 /* My Mailster */
-
 .mailster-dashboard .postbox .inside .locked h2:before{
 	font-family: 'mailster-icons';
 	content: "\e833";
@@ -236,7 +230,6 @@
 .mailster-dashboard .is-verified .postbox .inside .locked h2:before{
 	content: "\f13e";
 }
-
 .mailster-dashboard .postbox .inside .locked h2{
 	transform: translateY(140%);
 	margin: 0 auto;
@@ -257,15 +250,12 @@
 .postbox .update-button{
 	font-weight: 700;
 }
-
-
 .mailster-dashboard .postbox.has-update{
 	overflow: hidden;
 	-webkit-box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 	box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 	border-color: #F26B6B;
 }
-
 .mailster-dashboard .postbox.has-update:after{
 	position: absolute;
 	top: 33px;
@@ -304,10 +294,7 @@
 	right: inherit;
 	left: 43px;
 }
-
-
-/* addons*/
-
+/* Add-Ons */
 .mailster-dashboard #addons-panel{
 	margin-top: 0;
 }

@@ -2,7 +2,6 @@
 	overflow: hidden;
 	margin-right: -20px;
 }
-
 .addons-wrap .mailster-addon{
 	float: left;
 	width: 338px;
@@ -78,11 +77,9 @@
 	display: block;
 	height: 100%;
 }
-
 .addons-wrap .mailster-addon p.author{
 	font-size: 11px;
 }
-
 .addons-wrap .mailster-addon p{
 	max-height: 77px;
 	overflow: hidden;

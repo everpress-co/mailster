@@ -323,7 +323,7 @@ jQuery(document).ready(function ($) {
 
 				if (!finished) do_export(offset + 1, limit, count, data);
 
-				progressbar.stop().animate({
+				progressbar.animate({
 					'width': (percentage) + '%'
 				}, {
 					duration: finished ? 100 : (new Date().getTime() - t) * 0.9,
@@ -386,7 +386,8 @@ jQuery(document).ready(function ($) {
 			if (response.success) {
 
 				if (!finished) do_import(id + 1, options);
-				progressbar.stop().animate({
+
+				progressbar.animate({
 					'width': (percentage) + '%'
 				}, {
 					duration: finished ? 100 : (new Date().getTime() - t) * 0.9,

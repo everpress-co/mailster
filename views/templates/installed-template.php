@@ -5,7 +5,7 @@ $envato_item_id = isset( $mailster_templates[ $slug ]['envato_item_id'] ) ? $mai
 
 $is_free = isset( $mailster_templates[ $slug ] ) && isset( $mailster_templates[ $slug ]['is_free'] );
 
-$class = array( 'available-template' );
+$class = array( 'mailster-box' );
 if ( $update ) {
 	$class[] = 'update';
 }
@@ -44,7 +44,7 @@ if ( $new == $slug ) {
 				<?php endif; ?>
 			</h3>
 			<div>
-				<?php esc_html_e( 'by', 'mailster' );?> <?php if ( ! empty( $data['author_uri'] ) ) : ?><a href="<?php echo esc_html( $data['author_uri'] ) ?>"><?php echo esc_html( $data['author'] )  ?></a><?php else : ?> <?php echo esc_html( $data['author'] ) ?><?php endif; ?>
+				<?php esc_html_e( 'by', 'mailster' );?> <?php if ( ! empty( $data['author_uri'] ) ) : ?><a class="external" href="<?php echo esc_html( $data['author_uri'] ) ?>"><?php echo esc_html( $data['author'] )  ?></a><?php else : ?> <?php echo esc_html( $data['author'] ) ?><?php endif; ?>
 			</div>
 		</div>
 		<?php if ( ! empty( $data['description'] ) ) : ?>

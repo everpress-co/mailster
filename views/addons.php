@@ -9,7 +9,7 @@
 <?php if ( is_wp_error( $addons ) ) : ?>
 
 	<div class="error below-h2">
-		<p><strong><?php esc_html_e( 'There was an error retrieving the list from the server', 'mailster' ); ?></strong><br><?php echo esc_html( $addons->get_message() ) ?></p>
+		<p><strong><?php esc_html_e( 'There was an error retrieving the list from the server:', 'mailster' ); ?></strong><br><?php esc_html_e( $addons->get_error_message() ) ?></p>
 	</div>
 
 <?php else : ?>
@@ -22,11 +22,7 @@
 			continue;
 		}
 
-		$addon->link = isset( $addon->link ) ? add_query_arg( array(
-			'utm_source' => 'Mailster Add On Page',
-			'utm_medium' => 'link',
-			'utm_campaign' => 'Mailster Add Ons',
-		), $addon->link ) : (isset( $addon->wpslug ) ? 'https://wordpress.org/plugins/' . dirname( $addon->wpslug ) . '/' : '');
+		$addon->link = isset( $addon->link ) ? $addon->link : (isset( $addon->wpslug ) ? 'https://wordpress.org/plugins/' . dirname( $addon->wpslug ) . '/' : '');
 
 		?>
 		<li class="mailster-addon <?php if ( ! empty( $addon->is_free ) ) {	echo ' is-free'; } ?><?php if ( ! empty( $addon->is_feature ) ) { echo ' is-feature';}?>">
@@ -54,7 +50,7 @@
 			endif;
 			?>
 			</p>
-			<p class="description"><?php echo esc_html( strip_tags( $addon->description ) ) ?></p>
+			<p class="description"><?php echo strip_tags( $addon->description ) ?></p>
 			<div class="action-links">
 			<?php if ( ! empty( $addon->wpslug ) ) : ?>
 
@@ -70,7 +66,7 @@
 
 			<?php else : ?>
 
-					<a class="button button-primary" href="<?php echo esc_url( $addon->link ) ?>"><?php esc_html_e( 'Purchase', 'mailster' );?></a>
+					<a class="button button-primary external" href="<?php echo esc_url( $addon->link ) ?>"><?php esc_html_e( 'More Information', 'mailster' );?></a>
 
 			<?php endif; ?>
 			</div>

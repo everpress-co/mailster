@@ -19,11 +19,10 @@ class Mailster {
 		register_activation_hook( MAILSTER_FILE, array( &$this, 'activate' ) );
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
-		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'empty' );
+		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo' );
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
-		add_action( 'widgets_init', create_function( '', 'register_widget( "Mailster_Signup_Widget" );register_widget( "Mailster_Newsletter_List_Widget" );register_widget( "Mailster_Newsletter_Subscriber_Button_Widget" );register_widget( "Mailster_Newsletter_Subscribers_Count_Widget" );' ) );
+		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
 
 		foreach ( $classes as $class ) {
 			require_once MAILSTER_DIR . "classes/$class.class.php";
@@ -188,12 +187,24 @@ class Mailster {
 			add_filter( 'wp_import_post_data_processed', array( &$this, 'import_post_data' ), 10, 2 );
 			add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
+			add_filter( 'admin_page_access_denied', array( &$this, 'maybe_redirect_special_pages' ) );
+
 			// frontpage stuff (!is_admin())
 		} else {
 
 		}
 
 		do_action( 'mailster', $this );
+
+	}
+
+
+	public function register_widgets() {
+
+		register_widget( 'Mailster_Signup_Widget' );
+		register_widget( 'Mailster_Newsletter_List_Widget' );
+		register_widget( 'Mailster_Newsletter_Subscriber_Button_Widget' );
+		register_widget( 'Mailster_Newsletter_Subscribers_Count_Widget' );
 
 	}
 
@@ -220,16 +231,12 @@ class Mailster {
 			$msg;
 			$dismiss = isset( $_GET['mailster_remove_notice_all'] ) ? esc_attr( $_GET['mailster_remove_notice_all'] ) : false;
 
-			if ( isset( $_GET['mailster_remove_notice'] ) ) {
-
-				unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
-
-				update_option( 'mailster_notices', $mailster_notices );
-
-			}
-
 			if ( ! is_array( $mailster_notices ) ) {
 				$mailster_notices = array();
+			}
+
+			if ( isset( $_GET['mailster_remove_notice'] ) && isset( $mailster_notices[ $_GET['mailster_remove_notice'] ] ) ) {
+				unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
 			}
 
 			foreach ( $mailster_notices as $id => $notice ) {
@@ -251,6 +258,7 @@ class Mailster {
 				}
 
 				$type = esc_attr( $notice['type'] );
+				$dismissable = ! $notice['once'] || is_numeric( $notice['once'] );
 
 				$classes = array( 'notice', 'mailster-notice', 'notice-' . $type );
 				if ( 'success' == $type ) {
@@ -258,6 +266,9 @@ class Mailster {
 				}
 				if ( 'error' == $type ) {
 					$classes[] = 'error';
+				}
+				if ( $dismissable ) {
+					$classes[] = 'mailster-notice-dismissable';
 				}
 
 				$msg = '<div data-id="' . $id . '" id="mailster-notice-' . $id . '" class="' . implode( ' ', $classes ) . '">';
@@ -272,7 +283,7 @@ class Mailster {
 				}
 
 				$msg .= '<p>' . ( $text ? $text : '&nbsp;' ) . '</p>';
-				if ( ! $notice['once'] || is_numeric( $notice['once'] ) ) {
+				if ( $dismissable ) {
 					$msg .= '<a class="notice-dismiss" title="' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '" href="' . add_query_arg( array( 'mailster_remove_notice' => $id ) ) . '">' . esc_attr__( 'Dismiss', 'mailster' ) . '<span class="screen-reader-text">' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '</span></a>';
 
 					if ( is_numeric( $notice['once'] ) && (int) $notice['once'] - time() < 0 ) {
@@ -337,6 +348,35 @@ class Mailster {
 	/**
 	 *
 	 *
+	 * @return unknown
+	 */
+	public function maybe_redirect_special_pages() {
+
+		global $pagenow;
+
+		if ( 'edit.php' != $pagenow ) {
+			return;
+		}
+		if ( is_network_admin() ) {
+			return;
+		}
+		if ( ! isset( $_GET['page'] ) ) {
+			return;
+		}
+		$page = $_GET['page'];
+		if ( ! in_array( $page, array( 'mailster_update', 'mailster_welcome', 'mailster_setup' ) ) ) {
+			return;
+		}
+
+		wp_redirect( 'admin.php?page=' . $page, 302 );
+		exit;
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $campaign_id (optional)
 	 * @return unknown
 	 */
@@ -366,10 +406,9 @@ class Mailster {
 		$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
 
 		$unsubscribe_homepage = get_page( mailster_option( 'homepage' ) );
-		$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage ) );
 
 		if ( $unsubscribe_homepage ) {
-			$unsubscribe_homepage = get_permalink( mailster_option( 'homepage' ) );
+			$unsubscribe_homepage = get_permalink( $unsubscribe_homepage );
 		} else {
 			$unsubscribe_homepage = get_bloginfo( 'url' );
 		}
@@ -380,6 +419,8 @@ class Mailster {
 		if ( ! $is_permalink ) {
 			$unsubscribe_homepage = str_replace( trailingslashit( get_bloginfo( 'url' ) ), untrailingslashit( get_bloginfo( 'url' ) ) . $prefix, $unsubscribe_homepage );
 		}
+
+		$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage, $campaign_id ) );
 
 		return $is_permalink
 			? trailingslashit( $unsubscribe_homepage ) . $slug
@@ -485,11 +526,22 @@ class Mailster {
 		preg_match_all( '#href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
 		$links = $links[2];
 
+		if ( empty( $links ) ) {
+			return $content;
+		}
+
 		$used = array();
 
 		$new_structure = mailster( 'helper' )->using_permalinks();
 		$base = $this->get_base_link( $campaing_id );
 
+		// add title tag on links
+		// preg_match_all( '#(<a(?!.*?title=([\'"]).*?\2)[^>]*)(>)#', $content, $no_title_links );
+		// $no_title_links = $no_title_links[0];
+		// foreach ( $no_title_links as $link ) {
+		// $new_link = preg_replace( '/href=(\'|")(.*)(\'|")/', 'href="$2" title="$2"', $link );
+		// $content = str_replace( $link, $new_link, $content );
+		// }
 		foreach ( $links as $link ) {
 
 			$link = apply_filters( 'mymail_replace_link', apply_filters( 'mailster_replace_link', $link, $base, $hash ), $base, $hash );
@@ -540,11 +592,7 @@ class Mailster {
 
 		$posts = mailster_cache_get( 'get_last_post' );
 
-		if ( ! $posts ) {
-			$posts = array();
-		}
-
-		if ( isset( $posts[ $key ] ) ) {
+		if ( $posts && isset( $posts[ $key ] ) ) {
 			return $posts[ $key ];
 		}
 
@@ -592,11 +640,9 @@ class Mailster {
 				$tax_query['relation'] = 'AND';
 				$args = wp_parse_args( $args, array( 'tax_query' => $tax_query ) );
 			}
-		} else {
-			$args['update_post_term_cache'] = false;
 		}
 
-		$post = get_posts( $args );
+		$post = get_posts( apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids ) );
 
 		if ( $post ) {
 			$post = $post[0];
@@ -608,10 +654,13 @@ class Mailster {
 						$content = explode( $matches[0], $post->post_content, 2 );
 						$post->post_excerpt = trim( $content[0] );
 					}
+					if ( ! $post->post_excerpt ) {
+						$post->post_excerpt = wp_trim_words( $post->post_content );
+					}
 				}
 
 				if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
-					$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );
+					$post->post_excerpt = wp_trim_words( $post->post_content, $length );
 				}
 				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
@@ -726,40 +775,6 @@ class Mailster {
 	/**
 	 *
 	 *
-	 * @param unknown $html
-	 * @param unknown $linksonly (optional)
-	 * @return unknown
-	 */
-	public function plain_text( $html, $linksonly = false ) {
-
-		// allow to hook into this method
-		$result = apply_filters( 'mymail_plain_text', apply_filters( 'mailster_plain_text', null, $html, $linksonly ), $html, $linksonly );
-		if ( ! is_null( $result ) ) {
-			return $result;
-		}
-
-		if ( $linksonly ) {
-			$links = '/< *a[^>]*href *= *"([^#]*)"[^>]*>(.*)< *\/ *a *>/Uis';
-			$text = preg_replace( $links, '${2} [${1}]', $html );
-			$text = str_replace( array( ' ', '&nbsp;' ), ' ', strip_tags( $text ) );
-			$text = @html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
-
-			return trim( $text );
-
-		} else {
-			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
-			$htmlconverter = new \Html2Text\Html2Text( $html, array( 'width' => 200 ) );
-
-			return trim( $htmlconverter->get_text() );
-
-		}
-
-	}
-
-
-	/**
-	 *
-	 *
 	 * @param unknown $links
 	 * @param unknown $file
 	 * @return unknown
@@ -819,11 +834,11 @@ class Mailster {
 
 	public function special_pages() {
 
-		$page = add_submenu_page( null, 'Setup', 'Setup', 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
+		$page = add_submenu_page( true, __( 'Setup', 'mailster' ), __( 'Setup', 'mailster' ), 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'setup_scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'remove_menu_enties' ) );
 
-		$page = add_submenu_page( null, 'Welcome', 'Welcome', 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
+		$page = add_submenu_page( true, __( 'Welcome', 'mailster' ), __( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Add Ons', 'mailster' ), __( 'Add Ons', 'mailster' ), 'mailster_manage_addons', 'mailster_addons', array( &$this, 'addon_page' ) );
@@ -841,8 +856,6 @@ class Mailster {
 		}
 
 		$submenu['edit.php?post_type=newsletter'] = array();
-
-		add_submenu_page( 'edit.php?post_type=newsletter', __( 'Mailster Setup', 'mailster' ), __( 'Mailster Setup', 'mailster' ), 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
 
 	}
 
@@ -944,6 +957,22 @@ class Mailster {
 	}
 
 
+	public function install() {
+
+		$isNew = get_option( 'mailster' ) == false;
+
+		$this->on_activate( $isNew );
+
+		foreach ( $this->_classes as $classname => $class ) {
+			if ( method_exists( $class, 'on_activate' ) ) {
+				$class->on_activate( $isNew );
+			}
+		}
+
+		return true;
+	}
+
+
 	public function activate() {
 
 		global $wpdb;
@@ -964,16 +993,8 @@ class Mailster {
 			if ( $blog_id ) {
 				switch_to_blog( $blog_id );
 			}
+			$this->install();
 
-			$isNew = get_option( 'mailster' ) == false;
-
-			$this->on_activate( $isNew );
-
-			foreach ( $this->_classes as $classname => $class ) {
-				if ( method_exists( $class, 'on_activate' ) ) {
-					$class->on_activate( $isNew );
-				}
-			}
 		}
 
 		if ( $blog_id ) {
@@ -1032,8 +1053,6 @@ class Mailster {
 
 		$this->check_compatibility( true, $new );
 
-		$this->dbstructure();
-
 		if ( $new ) {
 
 			if ( is_plugin_active( 'myMail/myMail.php' ) ) {
@@ -1047,12 +1066,17 @@ class Mailster {
 				mailster_update_option( 'update_required', true );
 
 			} else {
-				update_option( 'mailster', time() );
-				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
-			}
 
-			if ( ! is_network_admin() ) {
-				add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
+				$this->dbstructure();
+				mailster( 'helper' )->mkdir();
+				update_option( 'mailster', time() );
+				update_option( 'mailster_license', '' );
+				update_option( 'mailster_username', '' );
+				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+
+				if ( ! is_network_admin() ) {
+					add_action( 'activated_plugin', array( &$this, 'activation_redirect' ) );
+				}
 			}
 		}
 
@@ -1097,7 +1121,7 @@ class Mailster {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
 		}
 		if ( max( intval( @ini_get( 'memory_limit' ) ), intval( WP_MAX_MEMORY_LIMIT ) ) < 128 ) {
-			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( WP_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
+			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( WP_MAX_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		}
 
 		$errors->error_count = count( $errors->errors->errors );
@@ -1227,7 +1251,7 @@ class Mailster {
 			$collate = $wpdb->get_charset_collate();
 		}
 
-		return array(
+		return apply_filters( 'mailster_table_structure', array(
 
 			"CREATE TABLE {$wpdb->prefix}mailster_subscribers (
                 ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -1386,7 +1410,7 @@ class Mailster {
                 KEY list_id (list_id)
             ) $collate;",
 
-		);
+		), $collate);
 	}
 
 
@@ -1437,11 +1461,17 @@ class Mailster {
 	 *
 	 * @return unknown
 	 */
-	public function optimize_tables() {
+	public function optimize_tables( $tables = null ) {
 
 		global $wpdb;
 
-		return false !== $wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}mailster_" . implode( ", {$wpdb->prefix}mailster_", $this->get_tables() ) );
+		if ( is_null( $tables ) ) {
+			$tables = $this->get_tables();
+		} elseif ( ! is_array( $tables ) ) {
+			$tables = array( $tables );
+		}
+
+		return false !== $wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}mailster_" . implode( ", {$wpdb->prefix}mailster_", $tables ) );
 	}
 
 
@@ -1457,39 +1487,12 @@ class Mailster {
 			return;
 		}
 
-		// $this->send_welcome_mail();
-		wp_redirect( admin_url( 'edit.php?post_type=newsletter&page=mailster_setup' ), 302 );
+		wp_redirect( admin_url( 'admin.php?page=mailster_setup' ), 302 );
 
 		exit;
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
-	public function send_welcome_mail() {
-
-		$current_user = wp_get_current_user();
-
-		$n = mailster( 'notification' );
-		$n->to( $current_user->user_email );
-		$n->subject( __( 'Your Mailster Newsletter Plugin is ready!', 'mailster' ) );
-		$n->replace( array(
-				'headline' => '',
-				'baseurl' => admin_url(),
-				'notification' => 'This welcome mail was sent from your website <a href="' . home_url() . '">' . get_bloginfo( 'name' ) . '</a>. This also makes sure you can send emails with your current settings',
-				'name' => $current_user->display_name,
-				'preheader' => 'Thank you, ' . $current_user->display_name . '! ',
-		) );
-		$n->requeue( false );
-		$n->template( 'welcome_mail' );
-
-		return $n->add();
-
-	}
 
 
 	/**
@@ -1573,7 +1576,7 @@ class Mailster {
 				|| ! preg_match( '#\[newsletter_confirm\]#', $post->post_content )
 				|| ! preg_match( '#\[newsletter_unsubscribe\]#', $post->post_content ) ) {
 
-				mailster_notice( '<strong>' . sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guid', 'mailster' ) . '</a>' ) . '</strong>', 'error', true, 'homepage_info' );
+				mailster_notice( '<strong>' . sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guide', 'mailster' ) . '</a>' ) . '</strong>', 'error', true, 'homepage_info' );
 
 			} else {
 
@@ -1729,20 +1732,28 @@ class Mailster {
 	 * @param unknown $headers     (optional)
 	 * @param unknown $attachments (optional)
 	 * @param unknown $file        (optional)
+	 * @param unknown $template    (optional)
 	 * @return unknown
 	 */
-	public function wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $file = null ) {
+	public function wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $file = null, $template = null ) {
 
 		if ( is_array( $headers ) ) {
 			$headers = implode( "\r\n", $headers ) . "\r\n";
 		}
 
 		$message = $this->wp_mail_map_links( $message );
+
 		// only if content type is not html
 		if ( ! preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
 			$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
 			$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
 			$message = wpautop( $message, true );
+		}
+		if ( preg_match( '#x-mailster-template:(.*)#i', $headers, $hits ) ) {
+			$template = trim( $hits[1] );
+		}
+		if ( preg_match( '#x-mailster-template-file:(.*)#i', $headers, $hits ) ) {
+			$file = trim( $hits[1] );
 		}
 
 		$current_filter = current_filter();
@@ -1755,7 +1766,7 @@ class Mailster {
 			}
 		}
 
-		$template = mailster_option( 'default_template' );
+		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 		$template = apply_filters( 'mailster_wp_mail_template', $template, $caller, $current_filter );
 
 		$file = ! is_null( $file ) ? $file : mailster_option( 'system_mail_template', 'notification.html' );
@@ -1766,6 +1777,8 @@ class Mailster {
 		$mail->from_name = apply_filters( 'wp_mail_from_name', mailster_option( 'from_name' ) );
 
 		$mail->apply_raw_headers( $headers );
+
+		$to = array_map( 'trim', explode( ',', $to ) );
 
 		$mail->to = $to;
 		$mail->message = $message;
@@ -1781,7 +1794,7 @@ class Mailster {
 		$message = apply_filters( 'mymail_send_message', apply_filters( 'mailster_send_message', $message ) );
 		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $subject ) );
 
-		return $mail->send_notification( $message, $headline, $replace, false, $file );
+		return $mail->send_notification( $message, $headline, $replace, false, $file, $template );
 
 	}
 
@@ -1838,7 +1851,10 @@ class Mailster {
 	public function is_verified( $force = false ) {
 
 		$license = get_option( 'mailster_license' );
-		if ( ! $license ) {
+		$license_email = get_option( 'mailster_email' );
+		$license_user = get_option( 'mailster_username' );
+
+		if ( ! $license || ! $license_email || ! $license_user ) {
 			return false;
 		}
 
@@ -1852,6 +1868,7 @@ class Mailster {
 			$result = UpdateCenterPlugin::verify( MAILSTER_SLUG );
 			if ( ! is_wp_error( $result ) ) {
 				$verified = 'yes';
+				mailster_remove_notice( 'verify' );
 			} else {
 				switch ( $result->get_error_code() ) {
 					case 500: // Internal Server Error

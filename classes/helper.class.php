@@ -200,6 +200,7 @@ class MailsterHelper {
 			$response_body = wp_remote_retrieve_body( $response );
 
 			if ( is_wp_error( $response ) ) {
+				set_transient( 'mailster_addons', $response, 360 );
 				return $response;
 			}
 
@@ -602,7 +603,7 @@ class MailsterHelper {
 	 */
 	public function using_permalinks() {
 		global $wp_rewrite;
-		return is_object( $wp_rewrite ) && $wp_rewrite->using_permalinks();
+		return apply_filters( 'mailster_using_permalinks', is_object( $wp_rewrite ) && $wp_rewrite->using_permalinks() );
 	}
 
 
@@ -632,7 +633,7 @@ class MailsterHelper {
 			<?php if ( $image_url ) : ?>
 			<img src="<?php echo esc_attr( $image_url[0] ) ?> width="150">
 			<?php endif; ?>
-			<label><?php _e( 'image ID', 'mailster' );?>:
+			<label><?php esc_html_e( 'Image ID', 'mailster' );?>:
 			<input class="small-text" type="text" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>"></label>
 
 <?php
@@ -753,13 +754,13 @@ class MailsterHelper {
 		switch ( $string ) {
 			case 'day':
 				$str = ( $last ? 'yesterday' : 'tomorrow' ) . ' midnight';
-			break;
+				break;
 			case 'week':
 				$str = $last ? 'last sunday -' . ( 7 - get_option( 'start_of_week', 1 ) ) . ' days' : 'next sunday +' . get_option( 'start_of_week', 1 ) . ' days';
-			break;
+				break;
 			case 'month':
 				$str = 'midnight first day of ' . ( $last ? 'last' : 'next' ) . ' month';
-			break;
+				break;
 		}
 
 		$utcMidnight = strtotime( $str, $day );
@@ -810,6 +811,11 @@ class MailsterHelper {
 	 */
 	public function get_bounce_message( $status, $original = null ) {
 
+		$res = apply_filters( 'mailster_get_bounce_message', null, $status, $original );
+		if ( ! is_null( $res ) ) {
+			return $res;
+		}
+
 		include MAILSTER_DIR . 'classes/libs/bounce/bounce_statuscodes.php';
 
 		if ( is_null( $original ) ) {
@@ -817,20 +823,63 @@ class MailsterHelper {
 		}
 
 		if ( isset( $status_code_classes[ $status ] ) ) {
-			return $status_code_classes[ $status ];
+			$message = $status_code_classes[ $status ];
+			return '[' . $message['title'] . '] ' . $message['descr'];
 		}
 		if ( isset( $status_code_subclasses[ $status ] ) ) {
-			return $status_code_subclasses[ $status ];
+			$message = $status_code_subclasses[ $status ];
+			return '[' . $message['title'] . '] ' . $message['descr'];
 		}
 
 		if ( $status = substr( $status, 0, strrpos( $status, '.' ) ) ) {
 			return $this->get_bounce_message( $status, $original );
 		}
 
-		return array( 'title' => __( 'unknown', 'mailster' ), 'descr' => __( 'error is unknown', 'mailster' ) );
+		return $original;
 
 	}
 
+
+	/**
+	 *
+	 *
+	 * @param unknown $status
+	 * @param unknown $original (optional)
+	 * @return unknown
+	 */
+	public function get_unsubscribe_message( $status, $original = null ) {
+
+		$res = apply_filters( 'mailster_get_unsubscribe_message', null, $status, $original );
+		if ( ! is_null( $res ) ) {
+			return $res;
+		}
+
+		if ( is_null( $original ) ) {
+			$original = $status;
+		}
+
+		switch ( $status ) {
+			case 'list_unsubscribe':
+				return  __( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
+			case 'link_unsubscribe':
+				return __( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
+			case 'email_unsubscribe':
+				return __( 'The user canceled the subscription via the website.', 'mailster' );
+			case 'spam_complaint':
+				return __( 'The user marked this message as Spam in the Mail application.', 'mailster' );
+		}
+
+		return $status;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $content
+	 * @return unknown
+	 */
 	public function prepare_content( $content ) {
 
 		if ( empty( $content ) ) {
@@ -860,8 +909,7 @@ class MailsterHelper {
 		// custom styles
 		$content = $this->add_mailster_styles( $content );
 
-		// //Inline CSS
-		// if ( $inline )
+		// Inline CSS
 		$content = $this->inline_style( $content );
 
 		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
@@ -904,10 +952,7 @@ class MailsterHelper {
 	public function inline_style( $content ) {
 
 		// get all style blocks
-		preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles );
-
-		// found!
-		if ( ! empty( $originalstyles[0] ) ) {
+		if ( preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles ) ) {
 
 			@error_reporting( E_ERROR | E_PARSE );
 			@ini_set( 'display_errors', '0' );
@@ -915,7 +960,7 @@ class MailsterHelper {
 			// strip media queries
 			foreach ( $originalstyles[2] as $i => $styleblock ) {
 				$mediaBlocks = $this->parseMediaBlocks( $styleblock );
-				foreach ( $mediaBlocks as $mediaBlock ) {
+				if ( ! empty( $mediaBlocks ) ) {
 					$originalstyles[2][ $i ] = str_replace( $mediaBlocks, '', $originalstyles[2][ $i ] );
 				}
 			}
@@ -1106,6 +1151,66 @@ class MailsterHelper {
 	/**
 	 *
 	 *
+	 * @param unknown $filename
+	 * @param unknown $data     (optional)
+	 * @param unknown $flags    (optional)
+	 * @return unknown
+	 */
+	public function file_put_contents( $filename, $data = '', $flags = 'w' ) {
+
+		mailster_require_filesystem();
+
+		if ( ! is_dir( dirname( $filename ) ) ) {
+			wp_mkdir_p( dirname( $filename ) );
+		}
+
+		if ( $file_handle = @fopen( $filename, $flags ) ) {
+			fwrite( $file_handle, $data );
+			fclose( $file_handle );
+		}
+
+		return is_file( $filename );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $folder         (optional)
+	 * @param unknown $prevent_access (optional)
+	 * @return unknown
+	 */
+	public function mkdir( $folder = '', $prevent_access = true ) {
+
+		mailster_require_filesystem();
+
+		$path = trailingslashit( trailingslashit( MAILSTER_UPLOAD_DIR ) . $folder );
+
+		if ( ! is_dir( $path ) ) {
+
+			if ( wp_mkdir_p( $path ) ) {
+
+				// if ( $prevent_access ) {
+				// $this->file_put_contents( $path . 'index.html', '' );
+				// $this->file_put_contents( $path . '.htaccess', 'deny from all' );
+				// }
+				return $path;
+
+			}
+
+			return false;
+
+		}
+
+		return $path;
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $host
 	 * @param unknown $type  (optional)
 	 * @param unknown $force (optional)
@@ -1229,6 +1334,43 @@ class MailsterHelper {
 
 	}
 
+
+	/**
+	 *
+	 *
+	 * @param unknown $html
+	 * @param unknown $linksonly (optional)
+	 * @return unknown
+	 */
+	public function plain_text( $html, $linksonly = false ) {
+
+		// allow to hook into this method
+		$result = apply_filters( 'mymail_plain_text', apply_filters( 'mailster_plain_text', null, $html, $linksonly ), $html, $linksonly );
+		if ( ! is_null( $result ) ) {
+			return $result;
+		}
+
+		if ( $linksonly ) {
+			$links = '/< *a[^>]*href *= *"([^#]*)"[^>]*>(.*)< *\/ *a *>/Uis';
+			$text = preg_replace( $links, '${2} [${1}]', $html );
+			$text = str_replace( array( ' ', '&nbsp;' ), ' ', strip_tags( $text ) );
+			$text = @html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
+
+			return trim( $text );
+
+		} else {
+			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
+			$htmlconverter = new \MailsterHtml2Text\Html2Text( $html, array( 'width' => 200, 'do_links' => 'table' ) );
+
+			$text = trim( $htmlconverter->get_text() );
+			$text = preg_replace( '/\s*$^\s*/mu', "\n\n", $text );
+			$text = preg_replace( '/[ \t]+/u', ' ', $text );
+
+			return $text;
+
+		}
+
+	}
 
 
 	/**

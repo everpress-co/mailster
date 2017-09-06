@@ -1,6 +1,4 @@
-
 <table class="form-table">
-
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'From Name', 'mailster' ) ?> *</th>
 		<td><input type="text" name="mailster_options[from_name]" value="<?php echo esc_attr( mailster_option( 'from_name' ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'The sender name which is displayed in the from field', 'mailster' ) ?></span></td>
@@ -19,17 +17,17 @@
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Delivery by Time Zone', 'mailster' ) ?> *</th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[timezone]" value=""><input type="checkbox" name="mailster_options[timezone]" value="1" <?php checked( mailster_option( 'timezone' ) );?>> <?php esc_html_e( 'Send Campaigns based on the subscribers timezone if known', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[timezone]" value=""><input type="checkbox" name="mailster_options[timezone]" value="1" <?php checked( mailster_option( 'timezone' ) );?>> <?php esc_html_e( 'Send Campaigns based on the subscribers timezone if known', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Embed Images', 'mailster' ) ?> *</th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[embed_images]" value=""><input type="checkbox" name="mailster_options[embed_images]" value="1" <?php checked( mailster_option( 'embed_images' ) );?>> <?php esc_html_e( 'Embed images in the mail', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[embed_images]" value=""><input type="checkbox" name="mailster_options[embed_images]" value="1" <?php checked( mailster_option( 'embed_images' ) );?>> <?php esc_html_e( 'Embed images in the mail', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Module Thumbnails', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[module_thumbnails]" value=""><input type="checkbox" name="mailster_options[module_thumbnails]" value="1" <?php checked( mailster_option( 'module_thumbnails' ) );?>> <?php esc_html_e( 'Show thumbnails of modules in the editor if available', 'mailster' ) ?></label>
+		<td><label><input type="hidden" name="mailster_options[module_thumbnails]" value=""><input type="checkbox" name="mailster_options[module_thumbnails]" value="1" <?php checked( mailster_option( 'module_thumbnails' ) );?>> <?php esc_html_e( 'Show thumbnails of modules in the editor if available', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr valign="top">
@@ -84,22 +82,22 @@
 		<?php
 		$is = mailster_option( 'charset', 'UTF-8' );
 		$charsets = array(
-		'UTF-8' => 'Unicode 8',
-		'ISO-8859-1' => 'Western European',
-		'ISO-8859-2' => 'Central European',
-		'ISO-8859-3' => 'South European',
-		'ISO-8859-4' => 'North European',
-		'ISO-8859-5' => 'Latin/Cyrillic',
-		'ISO-8859-6' => 'Latin/Arabic',
-		'ISO-8859-7' => 'Latin/Greek',
-		'ISO-8859-8' => 'Latin/Hebrew',
-		'ISO-8859-9' => 'Turkish',
-		'ISO-8859-10' => 'Nordic',
-		'ISO-8859-11' => 'Latin/Thai',
-		'ISO-8859-13' => 'Baltic Rim',
-		'ISO-8859-14' => 'Celtic',
-		'ISO-8859-15' => 'Western European revision',
-		'ISO-8859-16' => 'South-Eastern European',
+			'UTF-8' => 'Unicode 8',
+			'ISO-8859-1' => 'Western European',
+			'ISO-8859-2' => 'Central European',
+			'ISO-8859-3' => 'South European',
+			'ISO-8859-4' => 'North European',
+			'ISO-8859-5' => 'Latin/Cyrillic',
+			'ISO-8859-6' => 'Latin/Arabic',
+			'ISO-8859-7' => 'Latin/Greek',
+			'ISO-8859-8' => 'Latin/Hebrew',
+			'ISO-8859-9' => 'Turkish',
+			'ISO-8859-10' => 'Nordic',
+			'ISO-8859-11' => 'Latin/Thai',
+			'ISO-8859-13' => 'Baltic Rim',
+			'ISO-8859-14' => 'Celtic',
+			'ISO-8859-15' => 'Western European revision',
+			'ISO-8859-16' => 'South-Eastern European',
 		) ?>
 		<select name="mailster_options[charset]">
 			<?php foreach ( $charsets as $code => $region ) {?>
@@ -109,47 +107,47 @@
 		<?php
 		$is = mailster_option( 'encoding', '8bit' );
 		$encoding = array(
-		'8bit' => '8bit',
-		'7bit' => '7bit',
-		'binary' => 'binary',
-		'base64' => 'base64',
-		'quoted-printable' => 'quoted-printable',
+			'8bit' => '8bit',
+			'7bit' => '7bit',
+			'binary' => 'binary',
+			'base64' => 'base64',
+			'quoted-printable' => 'quoted-printable',
 		) ?> /
 		<select name="mailster_options[encoding]">
-			<?php foreach ( $encoding as $code ) {?>
+			<?php foreach ( $encoding as $code ) { ?>
 			<option value="<?php echo $code; ?>" <?php selected( $is == $code ) ?>><?php echo $code; ?></option>
-			<?php }?>
+			<?php } ?>
 		</select>
 		<p class="description"><?php esc_html_e( 'change Charset and encoding of your mails if you have problems with some characters', 'mailster' );?></p>
 		</td>
 	</tr>
-	<?php
+<?php
 	$geoip = mailster_option( 'trackcountries' );
 	$geoipcity = mailster_option( 'trackcities' );
-	if ( isset( $_GET['nogeo'] ) ) {
-		$geoip = $geoipcity = false;
-	}
+if ( isset( $_GET['nogeo'] ) ) {
+	$geoip = $geoipcity = false;
+}
 
 ?>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Track Geolocation', 'mailster' ) ?>
 		<div class="loading geo-ajax-loading"></div></th>
 		<td>
-		<p><label><input type="hidden" class="wasabi" name="mailster_options[trackcountries]" value=""><input type="checkbox" id="mailster_geoip" name="mailster_options[trackcountries]" value="1" <?php checked( $geoip );?>> <?php esc_html_e( 'Track Countries in Campaigns', 'mailster' ) ?></label></p>
+		<p><label><input type="hidden" name="mailster_options[trackcountries]" value=""><input type="checkbox" id="mailster_geoip" name="mailster_options[trackcountries]" value="1" <?php checked( $geoip );?>> <?php esc_html_e( 'Track Countries in Campaigns', 'mailster' ) ?></label></p>
 		<p><button id="load_country_db" class="button-primary" data-type="country" <?php disabled( ! $geoip );?>><?php ( is_file( mailster_option( 'countries_db' ) ) ) ? esc_html_e( 'Update Country Database', 'mailster' ) : esc_html_e( 'Load Country Database', 'mailster' );?></button> <?php esc_html_e( 'or', 'mailster' );?> <a id="upload_country_db_btn" href="#"><?php esc_html_e( 'upload file', 'mailster' );?></a>
 		</p>
 		<p id="upload_country_db" class="hidden">
 			<input type="file" name="country_db_file"> <input type="submit" class="button" value="<?php esc_html_e( 'Upload', 'mailster' ) ?>" />
-			<br><span class="description"><?php esc_html_e( 'upload the GeoIPv6.dat you can find in the package here:', 'mailster' );?> <a href="http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz">http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz</a></span>
+			<br><span class="description"><?php esc_html_e( 'upload the GeoIPv6.dat you can find in the package here:', 'mailster' );?> <a href="https://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz">https://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz</a></span>
 		</p>
 
 		<input id="country_db_path" type="text" name="mailster_options[countries_db]" class="widefat" value="<?php echo mailster_option( 'countries_db' ) ?>" placeholder="<?php echo MAILSTER_UPLOAD_DIR . '/GeoIPv6.dat' ?>">
-		<p><label><input type="hidden" class="wasabi" name="mailster_options[trackcities]" value=""><input type="checkbox" id="mailster_geoipcity" name="mailster_options[trackcities]" value="1" <?php checked( $geoipcity );?><?php disabled( ! $geoip );?>> <?php esc_html_e( 'Track Cities in Campaigns', 'mailster' ) ?></label></p>
+		<p><label><input type="hidden" name="mailster_options[trackcities]" value=""><input type="checkbox" id="mailster_geoipcity" name="mailster_options[trackcities]" value="1" <?php checked( $geoipcity );?><?php disabled( ! $geoip );?>> <?php esc_html_e( 'Track Cities in Campaigns', 'mailster' ) ?></label></p>
 		<p><button id="load_city_db" class="button-primary" data-type="city" <?php disabled( ! $geoipcity );?>><?php ( is_file( mailster_option( 'cities_db' ) ) ) ? esc_html_e( 'Update City Database', 'mailster' ) : esc_html_e( 'Load City Database', 'mailster' );?></button> <?php esc_html_e( 'or', 'mailster' );?> <a id="upload_city_db_btn" href="#"><?php esc_html_e( 'upload file', 'mailster' );?></a>
 		</p>
 		<p id="upload_city_db" class="hidden">
 			<input type="file" name="city_db_file"> <input type="submit" class="button" value="<?php esc_html_e( 'Upload', 'mailster' ) ?>" />
-			<br><span class="description"><?php esc_html_e( 'upload the GeoLiteCity.dat you can find in the package here:', 'mailster' );?> <a href="http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz">http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz</a></span>
+			<br><span class="description"><?php esc_html_e( 'upload the GeoLiteCity.dat you can find in the package here:', 'mailster' );?> <a href="https://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz">https://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz</a></span>
 		</p>
 		<p class="description"><?php esc_html_e( 'The city DB is about 12 MB. It can take a while to load it', 'mailster' );?></p>
 		<input id="city_db_path" type="text" name="mailster_options[cities_db]" class="widefat" value="<?php echo mailster_option( 'cities_db' ) ?>" placeholder="<?php echo MAILSTER_UPLOAD_DIR . '/GeoIPCity.dat' ?>">

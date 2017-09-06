@@ -1,4 +1,3 @@
-
 <table class="form-table">
 	<tr valign="top" class="wp_cron">
 		<th scope="row"><?php esc_html_e( 'Interval for sending emails', 'mailster' ) ?></th>
@@ -30,18 +29,18 @@
 			</p>
 			<?php $cron_url = mailster( 'cron' )->url(); ?>
 			<?php $cron_url2 = mailster( 'cron' )->url( true ); ?>
-			<p><?php esc_html_e( 'You can keep a browser window open with following URL', 'mailster' ) ?><br>
+			<p><?php esc_html_e( 'You can keep a browser window open with following URL', 'mailster' ) ?> (<a class="switch-cron-url" href="#"><?php esc_html_e( 'alternative Cron URL', 'mailster' ) ?></a>)<br>
 			<div class="verified regular-cron-url"><a href="<?php echo $cron_url ?>" class="external"><code><?php echo $cron_url ?></code></a></div>
 			<div class="verified alternative-cron-url"><a href="<?php echo $cron_url2 ?>" class="external"><code><?php echo $cron_url2 ?></code></a></div>
 			<?php esc_html_e( 'call it directly', 'mailster' ) ?><br>
-			<div class="regular-cron-url"><code class="click-to-select">curl --silent <?php echo $cron_url ?></code></div>
-			<div class="alternative-cron-url"><code class="click-to-select">curl --silent <?php echo $cron_url2 ?></code></div>
+			<div class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * curl --silent '<?php echo $cron_url ?>'</code></div>
+			<div class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * curl --silent '<?php echo $cron_url2 ?>'</code></div>
 			<?php esc_html_e( 'or set up a cron', 'mailster' ) ?><br>
-			<div class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * GET <?php echo $cron_url ?> > /dev/null</code></div>
-			<div class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * GET <?php echo $cron_url2 ?> > /dev/null</code></div>
+			<div class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * GET '<?php echo $cron_url ?>' > /dev/null</code></div>
+			<div class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * GET '<?php echo $cron_url2 ?>' > /dev/null</code></div>
 			<?php esc_html_e( 'or', 'mailster' ) ?><br>
-			<div class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * wget -O <?php echo $cron_url ?> > /dev/null</code></div>
-			<div class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * wget -O <?php echo $cron_url2 ?> > /dev/null</code></div>
+			<div class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * wget -O- '<?php echo $cron_url ?>' > /dev/null</code></div>
+			<div class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * wget -O- '<?php echo $cron_url2 ?>' > /dev/null</code></div>
 			</p>
 			<p class="description"><?php esc_html_e( 'You can setup an interval as low as one minute, but should consider a reasonable value of 5-15 minutes as well.', 'mailster' );?></p>
 			<p class="description"><?php esc_html_e( 'If you need help setting up a cron job please refer to the documentation that your provider offers.', 'mailster' );?></p>

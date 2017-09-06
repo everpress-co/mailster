@@ -1,13 +1,3 @@
-<?php
-/**
- * /tmp/phptidy-sublime-buffer.php
- *
- * @author Xaver Birsak (https://revaxarts.com)
- * @package
- */
-
-
-?>
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php _e( 'Export', 'mailster' ) ?>

@@ -2,7 +2,6 @@
 .get-more-referer{margin-left: 15px}
 .nowrap{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;display:inline-block;width:100%;}
 .tiny{font-size:10px;}
-
 .bulk-update-info.spinner{
 	padding-left: 23px;
 	width: auto;
@@ -12,7 +11,6 @@
 	vertical-align: middle;
 	margin-top: 4px;
 }
-
 .widefat .column-avatar{width:46px;}
 .widefat .column-userrating{width:85px;}
 .widefat .column-email{width:260px;}
@@ -32,7 +30,6 @@
 	margin-bottom: 4px;
 }
 .userrating .mailster-icon{
-
 }
 .userrating .mailster-icon:before{
 	margin:0;
@@ -54,14 +51,12 @@
 .wp-list-table ul{
 	margin: 0;
 }
-
 .wp-list-table th.manage-column span{
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	max-width: 85%;
 }
-
 a.name{
 	font-weight: 700;
 	font-size: 1.2em;

@@ -1,11 +1,3 @@
-<?php
-/**
- *
- *
- * @author Xaver Birsak (https://revaxarts.com)
- * @package
- */
-?>
 <div class="mailster-dashboard">
 <?php
 

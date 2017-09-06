@@ -251,7 +251,7 @@ class MailsterFrontpage {
 
 		} elseif ( isset( $wp->query_vars['_mailster_page'] ) ) {
 
-			$this->do_mailster_require_filesystem();
+			$this->do_homepage();
 
 		} else {
 
@@ -322,7 +322,9 @@ class MailsterFrontpage {
 					wp_die( 'Invalid URL' );
 				}
 
-				setcookie( 'mailster', $subscriber->hash, time() + 1800, COOKIEPATH, COOKIE_DOMAIN );
+				$cookietime = apply_filters( 'mailster_cookie_time', 1 * HOUR_IN_SECONDS );
+
+				setcookie( 'mailster', $subscriber->hash, time() + $cookietime, COOKIEPATH, COOKIE_DOMAIN );
 
 				$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID );
 
@@ -380,7 +382,7 @@ class MailsterFrontpage {
 	}
 
 
-	private function do_mailster_require_filesystem() {
+	private function do_homepage() {
 
 		global $wp;
 
@@ -451,12 +453,12 @@ class MailsterFrontpage {
 
 					$ip = mailster_option( 'track_users' ) ? mailster_get_ip() : null;
 					$user_meta = array(
-					'ID' => $subscriber->ID,
-					'confirm' => time(),
-					'status' => 1,
-					'ip_confirm' => $ip,
-					'ip' => $ip,
-					'lang' => mailster_get_lang(),
+						'ID' => $subscriber->ID,
+						'confirm' => time(),
+						'status' => 1,
+						'ip_confirm' => $ip,
+						'ip' => $ip,
+						'lang' => mailster_get_lang(),
 					);
 
 					if ( 'unknown' !== ( $geo = mailster_ip2City() ) ) {
@@ -601,26 +603,8 @@ class MailsterFrontpage {
 					$placeholder = mailster( 'placeholder', $content );
 					$placeholder->excerpt_filters( false );
 					$placeholder->set_campaign( get_the_ID() );
-					$unsubscribe_homepage = ( get_page( mailster_option( 'homepage' ) ) ) ? get_permalink( mailster_option( 'homepage' ) ) : get_bloginfo( 'url' );
-					$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage ) );
 
-					$unsubscribelink = mailster()->get_unsubscribe_link( get_the_ID() );
-					$forwardlink = mailster()->get_forward_link( get_the_ID() );
-					$profilelink = mailster()->get_profile_link( get_the_ID() );
-
-					$placeholder->add( array(
-						'preheader' => $meta['preheader'],
-						'subject' => $meta['subject'],
-						'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-						'webversionlink' => get_permalink( get_the_ID() ),
-						'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
-						'unsublink' => $unsubscribelink,
-						'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
-						'forwardlink' => $forwardlink,
-						'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
-						'profilelink' => $profilelink,
-						'email' => antispambot( 'some@example.com' ),
-					) );
+					$placeholder->add_defaults( get_the_ID() );
 
 					$placeholder->share_service( get_permalink( get_the_ID() ), get_the_title() );
 
@@ -719,7 +703,7 @@ class MailsterFrontpage {
 			break;
 		}
 
-		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . intval( $height ) . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;"></iframe>';
+		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . intval( $height ) . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
 
 	}
 
@@ -850,22 +834,26 @@ class MailsterFrontpage {
 
 				$form = mailster( 'form' )->id( mailster_option( 'profile_form', 1 ) );
 				$form->is_profile();
-			return $form->render();
+
+				return $form->render( false );
 
 			break;
 
 			case 'unsubscribe':
 
 				$pattern = '\[(\[?)(newsletter_unsubscribe)(?![\w-])([^\]\/]*(?:\/(?!\])[^\]\/]*)*?)(?:(\/)\]|\](?:([^\[]*+(?:\[(?!\/\2\])[^\[]*+)*+)\[\/\2\])?)(\]?)';
-
+				$return = '';
 				if ( preg_match( '/' . $pattern . '/s', $content, $matches ) ) {
-					echo do_shortcode( wpautop( $matches[5] ) );
+					$return .= do_shortcode( wpautop( $matches[5] ) );
 				}
 
 				$form = mailster( 'form' );
 				$form->is_unsubscribe();
 				$form->campaign_id( isset( $wp->query_vars['_mailster'] ) ? $wp->query_vars['_mailster'] : $wp->query_vars['_mailster_extra'] );
-			return $form->render();
+
+				$return .= $form->render( false );
+
+				return $return;
 
 			break;
 
@@ -901,7 +889,7 @@ class MailsterFrontpage {
 					'scrolling' => true,
 		), $atts ) );
 
-		return '<iframe class="mailster_frame" src="' . add_query_arg( 'frame', 0, $link ) . '" style="min-width:610px;" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) . '" scrolling="' . ( $scrolling ? 'auto' : 'no' ) ) . '" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;"></iframe>';
+		return '<iframe class="mailster_frame" src="' . add_query_arg( 'frame', 0, $link ) . '" style="min-width:610px;" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) . '" scrolling="' . ( $scrolling ? 'auto' : 'no' ) ) . '" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
 
 	}
 
@@ -966,9 +954,9 @@ class MailsterFrontpage {
 	 */
 	public function newsletter_subscribers( $atts ) {
 		extract( shortcode_atts( array(
-					'formated' => true,
-					'round' => 1,
-					'lists' => null,
+			'formatted' => true,
+			'round' => 1,
+			'lists' => null,
 		), $atts ) );
 
 		$round = max( 1, $round );
@@ -981,7 +969,7 @@ class MailsterFrontpage {
 		}
 
 		$subscribers = ceil( $subscribers / $round ) * $round;
-		if ( $formated ) {
+		if ( $formatted ) {
 			$subscribers = number_format_i18n( $subscribers );
 		}
 
@@ -1057,7 +1045,7 @@ class MailsterFrontpage {
 	 */
 	private function do_shortcode_wrong( $shorttcode, $atts, $content ) {
 
-		if ( ! is_mailster_newsletter_homepage() ) {
+		if ( ! is_mailster_newsletter_homepage() && is_user_logged_in() ) {
 			$msg = sprintf( __( 'You should use the shortcode %s only on the newsletter homepage!', 'mailster' ), "[$shorttcode]" );
 			_doing_it_wrong( "[$shorttcode]", $msg, '2.1.5' );
 			return '<p>' . $msg . '</p>';
@@ -1076,12 +1064,12 @@ class MailsterFrontpage {
 	public function newsletter_button( $atts, $content ) {
 
 		$args = shortcode_atts( array(
-				'id' => 1,
-				'showcount' => false,
-				'label' => mailster_text( 'submitbutton' ),
-				'design' => 'default',
-				'width' => 480,
-				'endpoint' => MAILSTER_URI . 'form.php',
+			'id' => 1,
+			'showcount' => false,
+			'label' => mailster_text( 'submitbutton' ),
+			'design' => 'default',
+			'width' => 480,
+			'endpoint' => MAILSTER_URI . 'form.php',
 		), $atts );
 
 		return mailster( 'forms' )->get_subscribe_button( $args['id'], $args );

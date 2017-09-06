@@ -200,7 +200,7 @@ class MailsterAjax {
 
 		$html = mailster()->sanitize_content( $html );
 
-		$html = mailster()->plain_text( $html );
+		$html = mailster( 'helper' )->plain_text( $html );
 
 		echo $html;
 
@@ -216,9 +216,10 @@ class MailsterAjax {
 		@error_reporting( 0 );
 
 		$id = intval( $_GET['id'] );
-		$template = sanitize_file_name( $_GET['template'] );
-		$file = isset( $_GET['templatefile'] ) ? sanitize_file_name( $_GET['templatefile'] ) : 'index.html';
-		$editorstyle = ( $_GET['editorstyle'] == '1' );
+		$template = basename( $_GET['template'] );
+		$file = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
+		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
+
 		$meta = mailster( 'campaigns' )->meta( $id );
 		$head = isset( $meta['head'] ) ? $meta['head'] : null;
 
@@ -251,22 +252,8 @@ class MailsterAjax {
 
 			$placeholder->set_campaign( $campaign->ID );
 
-			$unsubscribelink = mailster()->get_unsubscribe_link( $campaign->ID );
-			$forwardlink = mailster()->get_forward_link( $campaign->ID, $current_user->user_email );
-			$profilelink = mailster()->get_profile_link( $campaign->ID, '' );
-
-			$placeholder->add( array(
-				'issue' => 0,
+			$placeholder->add_defaults( $campaign->ID, array(
 				'subject' => $subject,
-				'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-				'webversionlink' => get_permalink( $campaign->ID ),
-				'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
-				'unsublink' => $unsubscribelink,
-				'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
-				'forwardlink' => $forwardlink,
-				'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
-				'profilelink' => $profilelink,
-				'email' => '<a href="">{emailaddress}</a>',
 				'emailaddress' => $current_user->user_email,
 			) );
 
@@ -319,7 +306,7 @@ class MailsterAjax {
 		$filename = $t->create_new( $name, $content, $modules, $activemodules, $overwrite );
 
 		if ( $return['success'] = $filename !== false ) {
-			$return['url'] = add_query_arg( array( 'template' => $template, 'file' => $filename, 'message' => 3 ), wp_get_referer() );
+			$return['url'] = add_query_arg( array( 'template' => $template, 'file' => $filename, 'message' => 3 ), mailster_get_referer() );
 		}
 
 		if ( ! $return['success'] ) {
@@ -363,10 +350,6 @@ class MailsterAjax {
 
 		$placeholder->set_campaign( $ID );
 
-		$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
-		$forwardlink = mailster()->get_forward_link( $ID, '' );
-		$profilelink = mailster()->get_profile_link( $ID, '' );
-
 		$current_user = wp_get_current_user();
 
 		if ( ! $userid ) {
@@ -378,10 +361,6 @@ class MailsterAjax {
 		if ( $userid ) {
 
 			if ( $subscriber = mailster( 'subscribers' )->get( $userid, true ) ) {
-
-				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
-				$forwardlink = mailster()->get_forward_link( $ID, $subscriber->email );
-				$profilelink = mailster()->get_profile_link( $ID, $subscriber->hash );
 
 				$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
 
@@ -396,10 +375,6 @@ class MailsterAjax {
 
 			} else {
 
-				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
-				$forwardlink = mailster()->get_forward_link( $ID, $to[0] );
-				$profilelink = mailster()->get_profile_link( $ID, '' );
-
 				$firstname = ( $current_user->user_firstname ) ? $current_user->user_firstname : $current_user->display_name;
 				$names = array(
 					'firstname' => $firstname,
@@ -412,18 +387,9 @@ class MailsterAjax {
 
 		}
 
-		$placeholder->add( array(
+		$placeholder->add_defaults( $ID, array(
 			'issue' => $issue,
 			'subject' => $subject,
-			'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-			'webversionlink' => get_permalink( $ID ),
-			'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
-			'unsublink' => $unsubscribelink,
-			'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
-			'forwardlink' => $forwardlink,
-			'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
-			'profilelink' => $profilelink,
-			'email' => '<a href="">{emailaddress}</a>',
 			'emailaddress' => $current_user->user_email,
 		) );
 
@@ -521,7 +487,7 @@ class MailsterAjax {
 			$attachments = isset( $formdata['mailster_data']['attachments'] ) ? $formdata['mailster_data']['attachments'] : array();
 			$max_size = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );
 
-			$autoplain = isset( $formdata['mailster_data']['autoplain'] );
+			$autoplain = isset( $formdata['mailster_data']['autoplaintext'] );
 			$plaintext = stripslashes( $_POST['plaintext'] );
 			// if ( function_exists( 'wp_encode_emoji' ) ) {
 			// $subject = wp_decode_emoji( $subject );
@@ -532,9 +498,6 @@ class MailsterAjax {
 
 			$ID = intval( $formdata['post_ID'] );
 			$issue = $formdata['mailster_data']['autoresponder']['issue'];
-
-			$unsubscribe_homepage = ( get_page( mailster_option( 'homepage' ) ) ) ? get_permalink( mailster_option( 'homepage' ) ) : get_bloginfo( 'url' );
-			$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage ) );
 
 			$campaign_permalink = get_permalink( $ID );
 
@@ -580,7 +543,6 @@ class MailsterAjax {
 				$mail->hash = str_repeat( '0', 32 );
 
 				$content = mailster()->sanitize_content( $content, null, $head );
-				$content = mailster( 'helper' )->prepare_content( $content );
 
 				$placeholder = mailster( 'placeholder', $content );
 
@@ -588,7 +550,6 @@ class MailsterAjax {
 				$placeholder->set_campaign( $ID );
 
 				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
-				$forwardlink = mailster()->get_forward_link( $ID, $to );
 
 				$mail->add_header( 'X-Mailster-Campaign', $ID );
 				$mail->add_header( 'X-Mailster-ID', $MID );
@@ -599,14 +560,6 @@ class MailsterAjax {
 
 				// check for subscriber by mail
 				$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
-				if ( ! $subscriber ) {
-
-					$current_user = wp_get_current_user();
-
-					// check subscriber by wp user
-					$subscriber = mailster( 'subscribers' )->get_by_wpid( $current_user->ID, true );
-
-				}
 
 				if ( $subscriber ) {
 
@@ -626,7 +579,7 @@ class MailsterAjax {
 					$mail->set_subscriber( $subscriber->ID );
 					$placeholder->set_subscriber( $subscriber->ID );
 
-				} elseif ( $current_user ) {
+				} elseif ( $current_user = wp_get_current_user() ) {
 
 					$profilelink = mailster()->get_profile_link( $ID, '' );
 
@@ -638,6 +591,7 @@ class MailsterAjax {
 					);
 				} else {
 					// no subscriber found for data
+					$names = null;
 				}
 
 				if ( $names ) {
@@ -648,36 +602,27 @@ class MailsterAjax {
 					$mail->attachments = $attach;
 				}
 
-				$placeholder->add( array(
+				$placeholder->add_defaults( $ID, array(
 					'issue' => $issue,
 					'subject' => $subject,
 					'preheader' => $preheader,
-					'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-					'webversionlink' => $campaign_permalink,
-					'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
-					'unsublink' => $unsubscribelink,
-					'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
-					'forwardlink' => $forwardlink,
-					'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
-					'profilelink' => $profilelink,
-					'email' => '<a href="">{emailaddress}</a>',
 					'emailaddress' => $to,
 				) );
 
 				$placeholder->share_service( $campaign_permalink, $subject );
-
 				$content = $placeholder->get_content();
+				$content = mailster( 'helper' )->prepare_content( $content );
 
 				// replace links with fake hash to prevent tracking
 				if ( $replace_links ) {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
-				$mail->content = $content;
+				$mail->content = apply_filters( 'mailster_campaign_content', $content, get_post( $ID ), $subscriber );
 
-				if ( $autoplain ) {
+				if ( ! $autoplain ) {
 					$placeholder->set_content( esc_textarea( $plaintext ) );
-					$mail->plaintext = mailster()->plain_text( $placeholder->get_content(), true );
+					$mail->plaintext = mailster( 'helper' )->plain_text( $placeholder->get_content(), true );
 				}
 
 				$placeholder->set_content( $mail->subject );
@@ -701,6 +646,7 @@ class MailsterAjax {
 
 					} else {
 
+						$return['success'] = false;
 						$return['msg'] = __( 'You can only perform 10 test within an hour. Please try again later!', 'mailster' );
 
 					}
@@ -744,7 +690,7 @@ class MailsterAjax {
 
 				$response = wp_remote_get( 'http://check.newsletter-plugin.com/' . $id, array(
 					'sslverify' => false,
-					'timeout' => 10,
+					'timeout' => 20,
 				) );
 
 				$code = wp_remote_retrieve_response_code( $response );
@@ -783,7 +729,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, array( 'operator' => $operator, 'conditions' => $conditions ) );
-		$return['totalformated'] = number_format_i18n( $return['total'] );
+		$return['totalformatted'] = number_format_i18n( $return['total'] );
 
 		$this->json_return( $return );
 
@@ -1558,6 +1504,7 @@ class MailsterAjax {
 		$relative = intval( $_POST['relative'] );
 		$offset = $relative + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
+		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
 
 		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, true );
 		$is_post = ! ! $post;
@@ -1577,7 +1524,7 @@ class MailsterAjax {
 			'image' => '{' . $post_type . '_image:' . $options . '}',
 		);
 
-		$return['pattern'] = apply_filters( 'mymail_auto_tag', apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post ), $post_type, $options, $post );
+		$return['pattern'] = apply_filters( 'mymail_auto_tag', apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post, $modulename ), $post_type, $options, $post, $modulename );
 
 		$return['pattern']['tag'] = '{' . $post_type . ':' . $options . '}';
 
@@ -2257,9 +2204,9 @@ class MailsterAjax {
 						'status' => $campaign->post_status,
 						'ID' => $campaign->ID,
 						'totals' => mailster( 'campaigns' )->get_totals( $id ),
-						'totals_formated' => number_format_i18n( mailster( 'campaigns' )->get_totals( $id ) ),
+						'totals_formatted' => number_format_i18n( mailster( 'campaigns' )->get_totals( $id ) ),
 						'sent' => mailster( 'campaigns' )->get_sent( $id ),
-						'sent_formated' => number_format_i18n( mailster( 'campaigns' )->get_sent( $id ) ),
+						'sent_formatted' => number_format_i18n( mailster( 'campaigns' )->get_sent( $id ) ),
 						'openrate' => mailster( 'campaigns' )->get_open_rate( $id ),
 						'clickrate' => mailster( 'campaigns' )->get_click_rate( $id ),
 						'bouncerate' => mailster( 'campaigns' )->get_bounce_rate( $id ),
@@ -2275,9 +2222,9 @@ class MailsterAjax {
 						'name' => $list->name,
 						'ID' => $list->ID,
 						'totals' => mailster( 'lists' )->get_totals( $id ),
-						'totals_formated' => number_format_i18n( mailster( 'lists' )->get_totals( $id ) ),
+						'totals_formatted' => number_format_i18n( mailster( 'lists' )->get_totals( $id ) ),
 						'sent' => mailster( 'lists' )->get_sent( $id ),
-						'sent_formated' => number_format_i18n( mailster( 'lists' )->get_sent( $id ) ),
+						'sent_formatted' => number_format_i18n( mailster( 'lists' )->get_sent( $id ) ),
 						'openrate' => mailster( 'lists' )->get_open_rate( $id ),
 						'clickrate' => mailster( 'lists' )->get_click_rate( $id ),
 						'bouncerate' => mailster( 'lists' )->get_bounce_rate( $id ),
@@ -2368,8 +2315,10 @@ class MailsterAjax {
 			$return['error'] = __( 'Please enter your Purchase Code!', 'mailster' );
 
 		} elseif ( isset( $_POST['data'] ) ) {
-				parse_str( $_POST['data'], $userdata );
-				$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
+
+			parse_str( $_POST['data'], $userdata );
+			$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
+
 			if ( is_wp_error( $result ) ) {
 				$return['error'] = mailster()->get_update_error( $result );
 				$return['code'] = $result->get_error_code();
@@ -2377,10 +2326,14 @@ class MailsterAjax {
 			} else {
 				update_option( 'mailster_username', $userdata['username'] );
 				update_option( 'mailster_email', $userdata['email'] );
-				$return['success'] = true;
+
 				do_action( 'mailster_register', $userdata['username'], $userdata['email'], $purchasecode );
 				do_action( 'mailster_register_' . $slug, $userdata['username'], $userdata['email'], $purchasecode );
 
+				$return['username'] = $userdata['username'];
+				$return['email'] = $userdata['email'];
+				$return['purchasecode'] = $purchasecode;
+				$return['success'] = true;
 			}
 		} else {
 			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );
@@ -2515,6 +2468,7 @@ class MailsterAjax {
 			break;
 			case 'finish':
 				update_option( 'mailster_setup', time() );
+				flush_rewrite_rules();
 			break;
 			case 'delivery':
 			default:

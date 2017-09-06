@@ -35,7 +35,7 @@ $sent = $this->get_sent( $post->ID );
 
 		printf( esc_html__( 'Server time: %1$s %2$s', 'mailster' ),
 			'<span title="' . date( $timeformat, $now + $timeoffset ) . '">' . date( 'Y-m-d', $now + $timeoffset ) . '</span>',
-			'<span class="time" data-timestamp="' . ( $now + $timeoffset ) . '">' . date( 'H:i:s', $now + $timeoffset ) . '</span>'
+			'<span class="time" data-timestamp="' . ( $now + $timeoffset ) . '">' . date( 'H:i', $now + $timeoffset ) . '</span>'
 		);
 
 	elseif ( 'finished' == $post->post_status ) :
@@ -263,7 +263,8 @@ $sent = $this->get_sent( $post->ID );
 
 			global $wp_locale;
 
-			echo esc_html__( 'send campaigns only on these weekdays', 'mailster' ) . '<br>';
+			esc_html_e( 'send campaigns only on these weekdays', 'mailster' );
+			echo '<br>';
 			$start_at = get_option( 'start_of_week' );
 
 			for ( $i = $start_at; $i < 7 + $start_at; $i++ ) {

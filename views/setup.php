@@ -106,7 +106,7 @@ $utm = array(
 					</th>
 					<td>
 					<?php mailster( 'helper' )->media_editor_link( mailster_option( 'logo', get_theme_mod( 'custom_logo' ) ), 'mailster_options[logo]', 'full' ); ?>
-					<p class="description"><label><input type="hidden" class="wasabi" name="mailster_options[logo_high_dpi]" value=""><input type="checkbox" name="mailster_options[logo_high_dpi]" value="1" <?php checked( mailster_option( 'logo_high_dpi' ) );?>> <?php esc_html_e( 'Use High DPI version if available.', 'mailster' ) ?></label></p>
+					<p class="description"><label><input type="hidden" name="mailster_options[logo_high_dpi]" value=""><input type="checkbox" name="mailster_options[logo_high_dpi]" value="1" <?php checked( mailster_option( 'logo_high_dpi' ) );?>> <?php esc_html_e( 'Use High DPI version if available.', 'mailster' ) ?></label></p>
 					</td>
 				</tr>
 				<tr valign="top">
@@ -155,7 +155,7 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step" href="#homepage"><?php esc_html_e( 'skip this step', 'mailster' ) ?></a>
+				<a class="button button-large skip-step" href="#homepage"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
 				<a class="button button-large button-primary next-step" href="#homepage"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
 
 			</div>
@@ -193,11 +193,11 @@ $utm = array(
 				<?php $url = trailingslashit( get_bloginfo( 'url' ) ); ?>
 				<label><?php echo esc_html_x( 'Location', 'the URL not the place', 'mailster' ) ?>:</label>
 				<span>
-					<a href="<?php echo $url . esc_attr( $homepage['post_name'] ) ?>" class="external"><?php echo $url ?><strong><?php echo $homepage['post_name'] ?></strong>/</a>
+					<a href="<?php echo $url . sanitize_title( $homepage['post_name'] ) ?>" class="external"><?php echo $url ?><strong><?php echo sanitize_title( $homepage['post_name'] ) ?></strong>/</a>
 					<a class="button button-small hide-if-no-js edit-slug"><?php echo __( 'Edit', 'mailster' ) ?></a>
 				</span>
 				<span class="edit-slug-area">
-				<?php echo $url ?><input type="text" name="post_name" value="<?php echo esc_attr( $homepage['post_name'] ); ?>" class="regular-text">/
+				<?php echo $url ?><input type="text" name="post_name" value="<?php echo sanitize_title( $homepage['post_name'] ); ?>" class="regular-text">/
 				</span>
 
 			<?php endif; ?>
@@ -215,7 +215,7 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step" href="#delivery"><?php esc_html_e( 'skip this step', 'mailster' ) ?></a>
+				<a class="button button-large skip-step" href="#delivery"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
 				<a class="button button-large button-primary next-step" href="#delivery"><?php echo esc_html( $buttontext ); ?></a>
 
 			</div>
@@ -239,6 +239,7 @@ $utm = array(
 				<a class="nav-tab<?php if ( 'smtp' == $method ) {echo ' nav-tab-active'; } ?>" href="#smtp">SMTP</a>
 				<a class="nav-tab<?php if ( 'gmail' == $method ) {echo ' nav-tab-active'; } ?>" href="#gmail">GMail</a>
 				<a class="nav-tab<?php if ( 'amazonses' == $method ) {echo ' nav-tab-active'; } ?>" href="#amazonses">AmazonSES</a>
+				<a class="nav-tab<?php if ( 'sparkpost' == $method ) {echo ' nav-tab-active'; } ?>" href="#sparkpost">SparkPost</a>
 				<a class="nav-tab<?php if ( 'sendgrid' == $method ) {echo ' nav-tab-active'; } ?>" href="#sendgrid">SendGrid</a>
 				<a class="nav-tab<?php if ( 'mandrill' == $method ) {echo ' nav-tab-active'; } ?>" href="#mandrill">Mandrill</a>
 				<a class="nav-tab<?php if ( 'dummymailer' == $method ) {echo ' nav-tab-active'; } ?>" href="#dummymailer">DummyMailer</a>
@@ -267,6 +268,21 @@ $utm = array(
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-amazonses" data-method="amazonses">
 				<?php echo in_array( 'mailster-amazonses', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'Amazon SES' ) ?>
+				</a>
+				<?php endif; ?>
+			</div>
+			<div class="deliverytab" id="deliverytab-sparkpost" <?php if ( 'sparkpost' == $method ) { echo 'style="display:block"'; } ?>>
+				<?php if ( in_array( 'mailster-sparkpost', $active_pluginslugs ) ) :
+					do_action( 'mailster_deliverymethod_tab_sparkpost' );
+				else : ?>
+				<div class="wp-plugin">
+				<a href="https://wordpress.org/plugins/mailster-sparkpost/" class="external">
+					<img src="//ps.w.org/mailster-sparkpost/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION ?>" width="772" height="250">
+					<span>Mailster SparkPost Integration</span>
+				</a>
+				</div>
+				<a class="button button-primary quick-install" data-plugin="mailster-sparkpost" data-method="sparkpost">
+				<?php echo in_array( 'mailster-sparkpost', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'SparkPost' ) ?>
 				</a>
 				<?php endif; ?>
 			</div>
@@ -325,7 +341,7 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step" href="#validation"><?php esc_html_e( 'skip this step', 'mailster' ) ?></a>
+				<a class="button button-large skip-step" href="#validation"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
 				<a class="button button-large button-primary next-step delivery-next-step" href="#validation"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
 
 			</div>
@@ -349,7 +365,7 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step validation-skip-step <?php if ( $is_verified ) { echo 'disabled'; } ?>" href="#finish"><?php esc_html_e( 'skip this step', 'mailster' ) ?></a>
+				<a class="button button-large skip-step validation-skip-step <?php if ( $is_verified ) { echo 'disabled'; } ?>" href="#finish"><?php esc_html_e( 'Remind me later', 'mailster' ) ?></a>
 				<a class="button button-large button-primary next-step validation-next-step <?php if ( ! $is_verified ) { echo 'disabled'; } ?>" href="#finish"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
 
 			</div>

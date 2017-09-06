@@ -1,29 +1,28 @@
-
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Number of mails sent', 'mailster' ) ?></th>
 		<td><p><?php printf( __( 'Send max %1$s emails at once and max %2$s within %3$s hours', 'mailster' ), '<input type="text" name="mailster_options[send_at_once]" value="' . mailster_option( 'send_at_once' ) . '" class="small-text">', '<input type="text" name="mailster_options[send_limit]" value="' . mailster_option( 'send_limit' ) . '" class="small-text">', '<input type="text" name="mailster_options[send_period]" value="' . mailster_option( 'send_period' ) . '" class="small-text">' ) ?></p>
 		<p class="description"><?php esc_html_e( 'Depending on your hosting provider you can increase these values', 'mailster' ) ?></p>
-		<?php
+<?php
 		$sent_this_period = get_transient( '_mailster_send_period', 0 );
 		$mails_left = max( 0, mailster_option( 'send_limit' ) - $sent_this_period );
 		$next_reset = get_option( '_transient_timeout__mailster_send_period_timeout' );
 
-		if ( ! $next_reset || $next_reset < time() ) {
-			$next_reset = time() + mailster_option( 'send_period' ) * 3600;
-			$mails_left = mailster_option( 'send_limit' );
-		}
+if ( ! $next_reset || $next_reset < time() ) {
+	$next_reset = time() + mailster_option( 'send_period' ) * 3600;
+	$mails_left = mailster_option( 'send_limit' );
+}
 ?>
 		<p class="description"><?php printf( __( 'You can still send %1$s mails within the next %2$s', 'mailster' ), '<strong>' . number_format_i18n( $mails_left ) . '</strong>', '<strong title="' . date_i18n( $timeformat, $next_reset + $timeoffset, true ) . '">' . human_time_diff( $next_reset ) . '</strong>' ); ?> &ndash; <a href="edit.php?post_type=newsletter&page=mailster_settings&reset-limits=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-limits' ) ?>"><?php esc_html_e( 'reset these limits', 'mailster' );?></a></p>
 
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Split campaigns', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[split_campaigns]" value=""><input type="checkbox" name="mailster_options[split_campaigns]" value="1" <?php checked( mailster_option( 'split_campaigns' ) ) ?>> <?php esc_html_e( 'send campaigns simultaneously instead of one after the other', 'mailster' ) ?></label> </td>
+		<td><label><input type="hidden" name="mailster_options[split_campaigns]" value=""><input type="checkbox" name="mailster_options[split_campaigns]" value="1" <?php checked( mailster_option( 'split_campaigns' ) ) ?>> <?php esc_html_e( 'send campaigns simultaneously instead of one after the other', 'mailster' ) ?></label> </td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Pause campaigns', 'mailster' ) ?></th>
-		<td><label><input type="hidden" class="wasabi" name="mailster_options[pause_campaigns]" value=""><input type="checkbox" name="mailster_options[pause_campaigns]" value="1" <?php checked( mailster_option( 'pause_campaigns' ) );?>> <?php esc_html_e( 'pause campaigns if an error occurs', 'mailster' ) ?></label><p class="description"><?php esc_html_e( 'Mailster will change the status to "pause" if an error occur otherwise it tries to finish the campaign', 'mailster' );?></p></td>
+		<td><label><input type="hidden" name="mailster_options[pause_campaigns]" value=""><input type="checkbox" name="mailster_options[pause_campaigns]" value="1" <?php checked( mailster_option( 'pause_campaigns' ) );?>> <?php esc_html_e( 'pause campaigns if an error occurs', 'mailster' ) ?></label><p class="description"><?php esc_html_e( 'Mailster will change the status to "pause" if an error occur otherwise it tries to finish the campaign', 'mailster' );?></p></td>
 	</tr>
 	<tr valign="top">
 		<tr valign="top">
@@ -74,7 +73,7 @@ $method = mailster_option( 'deliverymethod', 'simple' );
 ?>
 	<a class="<?php echo implode( ' ', $classes ) ?>" href="#<?php echo esc_attr( $id ) ?>"><?php echo esc_html( $name ) ?></a>
 	<?php }?>
-	<a href="plugin-install.php?tab=search&s=mailster+revaxarts&plugin-search-input=Search+Plugins" class="alignright"><?php esc_html_e( 'search for more delivery methods', 'mailster' );?></a>
+	<a href="plugin-install.php?tab=search&s=mailster+everpress&plugin-search-input=Search+Plugins" class="alignright"><?php esc_html_e( 'search for more delivery methods', 'mailster' );?></a>
 </div>
 
 <input type="hidden" name="mailster_options[deliverymethod]" id="deliverymethod" value="<?php echo esc_attr( $method ); ?>" class="regular-text">

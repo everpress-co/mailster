@@ -55,11 +55,13 @@ $is_autoresponder = 'autoresponder' == $post->post_status;
 					<input name="mailster_data[attachments][]" value="<?php echo intval( $attachment_id ) ?>" type="hidden" >
 				</li>
 			<?php endforeach; ?>
-		<?php endif; ?>
+		<?php else : ?>
 
 		<p class="description">
 			<?php esc_html_e( 'This campaign doesn\'t have any attachment.', 'mailster' ); ?>
 		</p>
+
+		<?php endif; ?>
 
 	</ul>
 

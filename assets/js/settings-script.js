@@ -10,7 +10,7 @@ jQuery(document).ready(function ($) {
 		reservedtags = $('#reserved-tags').data('tags');
 
 	$('a.external').on('click', function () {
-		window.open(this.href);
+		if (this.href) window.open(this.href);
 		return false;
 	});
 
@@ -292,10 +292,6 @@ jQuery(document).ready(function ($) {
 			status.html(textStatus + ' ' + jqXHR.status + ': ' + errorThrown);
 
 		});
-	});
-
-	$(".sortable").sortable({
-		containment: "parent"
 	});
 
 	$('input.cron_radio').on('change', function () {

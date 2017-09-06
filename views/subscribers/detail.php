@@ -73,7 +73,7 @@ if ( $is_new ) {
 	<tr>
 		<td scope="row" class="avatar-wrap">
 			<div class="avatar<?php if ( $subscriber->wp_id ) {	echo ' wp-user'; } ?>" title="<?php esc_html_e( 'Source', 'mailster' ) ?>: Gravatar.com" style="background-image:url(<?php echo $this->get_gravatar_uri( $subscriber->email, 400 ); ?>)"></div>
-			<p class="info"><?php esc_html_e( 'Source', 'mailster' ) ?>: <a href="http://gravatar.com">Gravatar.com</a></p>
+			<p class="info"><?php esc_html_e( 'Source', 'mailster' ) ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
 			<?php if ( ! $is_new ) : ?>
 
 			<h4 title="<?php esc_html_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ) ?>"><?php esc_html_e( 'User Rating', 'mailster' );?>:<br />
@@ -97,7 +97,7 @@ if ( $is_new ) {
 			<h3 class="detail">
 				<ul class="click-to-edit type-email">
 					<li><?php echo esc_attr( $subscriber->email ); ?>&nbsp;</li>
-					<li><input id="email" class="" type="email" name="mailster_data[email]" value="<?php echo esc_attr( $subscriber->email ); ?>" placeholder="<?php echo mailster_text( 'email' ) ?>"></li>
+					<li><input id="email" type="email" name="mailster_data[email]" value="<?php echo esc_attr( $subscriber->email ); ?>" placeholder="<?php echo mailster_text( 'email' ) ?>" autofocus></li>
 				</ul>
 				<code title="<?php printf( __( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{emailaddress}', '&quot;' . $subscriber->email . '&quot;' ) ?>">{emailaddress}</code>
 			</h3>
@@ -171,7 +171,7 @@ if ( $is_new ) {
 				foreach ( $customfields as $field => $data ) {
 			?>
 				<div class="detail">
-					<label for="mailster_data_<?php echo $field ?>" class="label-type-<?php echo $data['type'] ?>"><?php echo $data['name'] ?>:</label>
+					<label for="mailster_data_<?php echo $field ?>" class="label-type-<?php echo $data['type'] ?>"><?php echo strip_tags( $data['name'] ) ?>:</label>
 						<code title="<?php printf( __( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{' . $field . '}', '&quot;' . $subscriber->{$field} . '&quot;' ) ?>">{<?php echo $field ?>}</code>
 					<ul class="click-to-edit type-<?php echo $data['type'] ?>">
 				<?php
@@ -266,7 +266,7 @@ if ( $is_new ) {
 		<td class="user-meta" align="right">
 			<?php if ( ! $is_new ) : ?>
 				<?php if ( $meta->coords ) : $geo = explode( '|', $meta->geo );?>
-					<div class="map zoomable">
+					<div class="map zoomable" data-missingkey="<?php esc_attr_e( 'Please enter a valid Google API key on the settings page if the map is missing!', 'mailster' ); ?>">
 					<?php $mapurl = add_query_arg( array(
 							'markers' => $meta->coords,
 							'zoom' => $geo[1] ? 5 : 3,
@@ -433,18 +433,25 @@ if ( ! $is_new ) :
 						<td width="50%">
 						<?php if ( $activity->campaign_status == 'trash' ) : ?>
 							<?php esc_html_e( 'campaign deleted', 'mailster' );?>
+
 						<?php elseif ( $activity->type == 1 && current_user_can( 'publish_newsletters' ) ) : ?>
 							<a href="<?php echo add_query_arg( array( 'resendcampaign' => 1, '_wpnonce' => wp_create_nonce( 'mailster-resend-campaign' ), 'campaign_id' => $activity->campaign_id ) ); ?>" class="button button-small" onclick="return confirm('<?php printf( esc_attr__( 'Do you really like to resend campaign %1$s to %2$s?', 'mailster' ), "\\n\'" . $activity->campaign_title . "\'", "\'" . $nicename . "\'" ); ?>');">
 							<?php esc_html_e( 'resend this campaign', 'mailster' );?>
 							</a>
+
 						<?php elseif ( $activity->link && $activity->type == 3 ) : ?>
 							<a href="<?php echo $activity->link ?>"><?php echo $activity->link ?></a>
-						<?php elseif ( ( $activity->type == 5 || $activity->type == 6 )
-			&& $bouncestatus = $this->meta( $subscriber->ID, 'bounce', $activity->campaign_id ) ) :
-							$message = mailster( 'helper' )->get_bounce_message( $bouncestatus );?>
-								<p class="bounce-message"><span title="<?php echo esc_attr( $message['descr'] ); ?>"><code>[<?php echo $bouncestatus ?>]</code> <strong><?php echo $message['title']; ?></strong></span></p>
-							<?php elseif ( $activity->error && $activity->type == 7 ) : ?>
-							<strong class="red"><?php echo $activity->error ?></strong>
+
+						<?php elseif ( $activity->type == 4 && $unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id ) ) :
+							$message = mailster( 'helper' )->get_unsubscribe_message( $unsub_status ); ?>
+							<p class="unsubscribe-message code">[<?php echo esc_html( $unsub_status ) ?>] <?php echo esc_html( $message ); ?></p>
+
+						<?php elseif ( ( $activity->type == 5 || $activity->type == 6 ) && $bounce_status = $this->meta( $subscriber->ID, 'bounce', $activity->campaign_id ) ) :
+							$message = mailster( 'helper' )->get_bounce_message( $bounce_status ); ?>
+							<p class="bounce-message code"><?php echo esc_html( $message ); ?></p>
+
+						<?php elseif ( $activity->error && $activity->type == 7 ) : ?>
+							<p class="error-message code"><strong class="red"><?php echo $activity->error ?></strong></p>
 						<?php endif; ?>
 						</td>
 					</tr>

@@ -1,12 +1,10 @@
 table.wp-list-table{}
-
 table tr.type-newsletter.loading{
 	opacity: 0.5;
 }
 table tr th.manage-column{
 	white-space: nowrap;
 }
-
 .nonessential{
 	padding: 0;
 	cursor:help;
@@ -93,7 +91,6 @@ table.wp-list-table .column-total a, table.wp-list-table .column-open a, table.w
 	color: #aaa;
 	font-style: italic;
 }
-
 .mailster-icon{
 	background-position: 999px 999px;
 	font-size:120%;
@@ -115,7 +112,6 @@ table.wp-list-table .column-total a, table.wp-list-table .column-open a, table.w
 .mailster-icon.inactive:before{content: '\e81d'; color:#D54E21}
 .mailster-icon.warning:before{content: '\e812';}
 .mailster-icon.warning:before{content: '\e812';}
-
 @media screen and (max-width: 782px){
 
 table.wp-list-table .column-total, table.wp-list-table .column-open, table.wp-list-table .column-click, table.wp-list-table .column-unsubs, table.wp-list-table .column-bounces{
@@ -123,7 +119,6 @@ table.wp-list-table .column-total, table.wp-list-table .column-open, table.wp-li
 	min-width:auto;
 	text-align:left;
 }
-
 table.wp-list-table td br{
 	display: none;
 }
@@ -134,7 +129,6 @@ table.wp-list-table td span{
 	padding: 0 1px;
 }
 }
-
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
 	only screen and (-o-min-device-pixel-ratio: 3/2),
 	only screen and (min--moz-device-pixel-ratio: 1.5),
@@ -145,7 +139,6 @@ table.wp-list-table td span{
 			-moz-background-size:16px 16px;
 			background-size:16px 16px;
 		}
-
 		table.wp-list-table tr.status-active div.campaign-progress span.bar{
 			background: url(../img/progress_2x.gif);
 			-webkit-background-size:15px 20px;
