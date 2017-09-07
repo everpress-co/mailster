@@ -36,6 +36,8 @@ class MailsterCampaigns {
 
 		if ( is_admin() ) {
 
+			$this->get_structure( 4 );
+
 			add_action( 'paused_to_trash', array( &$this, 'paused_to_trash' ) );
 			add_action( 'active_to_trash', array( &$this, 'active_to_trash' ) );
 			add_action( 'queued_to_trash', array( &$this, 'queued_to_trash' ) );
@@ -2287,6 +2289,90 @@ class MailsterCampaigns {
 
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $id (optional)
+	 * @return unknown
+	 */
+	public function get_structure( $id = null ) {
+
+		// return;
+		$object = new StdClass();
+
+		$object->modules = array();
+
+		$doc = new DOMDocument();
+		$doc->validateOnParse = true;
+		$doc->formatOutput = true;
+
+		$data = $this->get_template_by_id( $id );
+
+		$i_error = libxml_use_internal_errors( true );
+		$doc->loadHTML( $data );
+		libxml_clear_errors();
+		libxml_use_internal_errors( $i_error );
+
+		$xpath = new DOMXpath( $doc );
+
+		$modules = $xpath->query( '//*/module' );
+
+		foreach ( $modules as $module ) {
+			$obj_module = array(
+				'label' => $module->getAttribute( 'label' ),
+				'single' => array(),
+				'multi' => array(),
+				'img' => array(),
+			);
+			$module_doc = new DOMDocument();
+			$module_doc->appendChild( $module_doc->importNode( $module, true ) );
+			$module_xpath = new DOMXPath( $module_doc );
+			$singles = $module_xpath->query( '//*/single' );
+			foreach ( $singles as $single ) {
+				$innerHTML = '';
+			    $children  = $single->childNodes;
+			    foreach ( $children as $child ) {
+			        $innerHTML .= $single->ownerDocument->saveXML( $child );
+			    }
+				$obj_module['single'][] = array(
+					'label' => $single->getAttribute( 'label' ),
+					'content' => trim( $innerHTML ),
+				);
+			}
+			$multis = $module_xpath->query( '//*/multi' );
+			foreach ( $multis as $multi ) {
+				$innerHTML = '';
+			    $children  = $multi->childNodes;
+			    foreach ( $children as $child ) {
+			        $innerHTML .= $multi->ownerDocument->saveXML( $child );
+			    }
+				$obj_module['multi'][] = array(
+					'label' => $multi->getAttribute( 'label' ),
+					'content' => trim( $innerHTML ),
+				);
+			}
+			$imgs = $module_xpath->query( '//*/img[@editable]' );
+			foreach ( $imgs as $img ) {
+				$obj_module['img'][] = array(
+					'label' => $img->getAttribute( 'label' ),
+					'src' => $img->getAttribute( 'src' ),
+					'width' => $img->getAttribute( 'width' ),
+					'height' => $img->getAttribute( 'height' ),
+					'content' => $img->ownerDocument->saveXML( $img ),
+				);
+			}
+
+			$object->modules[] = $obj_module;
+		}
+
+		echo '<pre>' . esc_html( print_r( $object, true ) ) . '</pre>';
+		// echo '<pre>'.esc_html(print_r($html, true)).'</pre>';
+		die();
+
+		return ( $campaign && $campaign->post_type == 'newsletter' ) ? $campaign : false;
+
+	}
+
 
 	/**
 	 *
@@ -4420,12 +4506,12 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
-	 * @param unknown $file
+	 * @param unknown $file        (optional)
 	 * @param unknown $modules     (optional)
 	 * @param unknown $editorstyle (optional)
 	 * @return unknown
 	 */
-	public function get_template_by_id( $id, $file, $modules = true, $editorstyle = false ) {
+	public function get_template_by_id( $id, $file = 'index.html', $modules = true, $editorstyle = false ) {
 
 		$post = get_post( $id );
 		// must be a newsletter and have a content
