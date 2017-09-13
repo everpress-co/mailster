@@ -27,7 +27,7 @@ class MailsterTranslations {
 
 		add_filter( 'site_transient_update_plugins', array( &$this, 'update_plugins_filter' ), 1 );
 		add_action( 'delete_site_transient_update_plugins', array( &$this, 're_check' ) );
-
+		add_action( 'update_option_WPLANG', array( &$this, 're_check' ) );
 	}
 
 
@@ -44,7 +44,7 @@ class MailsterTranslations {
 		}
 
 		$data = $this->get_translation_data();
-
+		// echo '<pre>'.print_r($data, true).'</pre>';die();
 		if ( ! empty( $data ) ) {
 			$value->translations[] = $data;
 		}
@@ -67,14 +67,13 @@ class MailsterTranslations {
 		// if force, not set yet or expired
 		if ( $force || ! $object || $now - $object['expires'] >= 0 ) {
 
-			// check if a newer version is available once a day
-			$recheckafter = 86400;
 			$object = array(
 				'expires' => $now + 86400, // check if a newer version is available once a day
 				'data' => false,
 			);
 
 			$locale = get_locale();
+			$base_locale = preg_replace( '/([a-z]+)_([A-Z]+)_(.*)/', '$1_$2', $locale );
 
 			if ( 'en_US' == $locale ) {
 				update_option( 'mailster_translation', $object );
@@ -91,6 +90,7 @@ class MailsterTranslations {
 
 			$response = wp_remote_get( $url );
 			$body = wp_remote_retrieve_body( $response );
+
 			if ( empty( $body ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 				$object['expires'] = $now + 3600;
 				update_option( 'mailster_translation', $object );
@@ -100,32 +100,34 @@ class MailsterTranslations {
 			$body = json_decode( $body );
 
 			$translation_set = null;
+			$lastmodified = 0;
 
 			foreach ( $body->translation_sets as $set ) {
 				if ( ! isset( $set->wp_locale ) ) {
 					$set->wp_locale = $set->locale;
 				}
+				if ( $set->wp_locale == $base_locale ) {
+					$translation_set = $set;
+					$lastmodified = strtotime( $set->last_modified );
+				}
 				if ( $set->wp_locale == $locale ) {
 					$translation_set = $set;
+					$lastmodified = strtotime( $set->last_modified );
 					break;
 				}
 			}
 
-			if ( $translation_set ) {
-
-				$lastmodified = strtotime( $translation_set->last_modified );
-				if ( $lastmodified - $filemtime > 0 ) {
-					$object['data'] = array(
-						'type' => 'plugin',
-						'slug' => 'mailster',
-						'language' => $locale,
-						'version' => MAILSTER_VERSION,
-						'updated' => date( 'Y-m-d H:i:s', $lastmodified ),
-						'current' => $filemtime,
-						'package' => $package,
-						'autoupdate' => (bool) mailster_option( 'autoupdate' ),
-					);
-				}
+			if ( $translation_set && $lastmodified - $filemtime > 0 ) {
+				$object['data'] = array(
+					'type' => 'plugin',
+					'slug' => 'mailster',
+					'language' => $locale,
+					'version' => MAILSTER_VERSION,
+					'updated' => date( 'Y-m-d H:i:s', $lastmodified ),
+					'current' => $filemtime,
+					'package' => $package,
+					'autoupdate' => (bool) mailster_option( 'autoupdate' ),
+				);
 			}
 
 			update_option( 'mailster_translation', $object );
@@ -152,7 +154,7 @@ class MailsterTranslations {
 
 
 	public function re_check() {
-		$this->get_translation_data( true );
+		update_option( 'mailster_translation', array( 'expires' => 0 ) );
 	}
 
 

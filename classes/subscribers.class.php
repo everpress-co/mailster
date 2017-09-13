@@ -935,8 +935,10 @@ class MailsterSubscribers {
 				}
 			}
 			if ( isset( $meta['form'] ) ) {
-				if ( $lists = mailster( 'forms' )->get_lists( $meta['form'], true ) ) {
-					$this->assign_lists( $subscriber_id, $lists );
+				$form = mailster( 'forms' )->get( $meta['form'], false );
+				// if form exists and is not a user choice and has lists
+				if ( $form && ! $form->userschoice && ! empty( $form->lists ) ) {
+					$this->assign_lists( $subscriber_id, $form->lists );
 				}
 			}
 

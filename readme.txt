@@ -84,6 +84,9 @@ Xaver Birsak – https://everpress.io
 = Version 2.2.11 =
 
 * improved: translation checks and loading
+* improved: loading of translations
+* fixed: assigned unchecked lists on form submission if user choice is enabled
+* fixed: PHP warning on bounce handler
 
 = Version 2.2.10 =
 
