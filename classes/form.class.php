@@ -787,7 +787,7 @@ class MailsterForm {
 
 		$this->object['lists'] = $this->form->userschoice
 			? ( isset( $_POST['lists'] )
-			? (array) $_POST['lists'] : array() )
+			?  array_filter( (array) $_POST['lists'] ) : array() )
 			: $this->form->lists;
 
 		// to hook into the system
