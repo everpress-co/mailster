@@ -656,10 +656,10 @@ class MailsterLists {
 	 *
 	 *
 	 * @param unknown $ids
-	 * @param unknown $newname (optional)
+	 * @param unknown $name (optional)
 	 * @return unknown
 	 */
-	public function merge( $ids, $newname = null ) {
+	public function merge( $ids, $name = null ) {
 
 		global $wpdb;
 
@@ -669,7 +669,7 @@ class MailsterLists {
 		}
 
 		$now = time();
-		$ids = is_numeric( $ids ) ? array( $ids ) : $ids;
+		$ids = is_numeric( $ids ) ? array( (int) $ids ) : array_filter( $ids, 'is_numeric' );
 		$lists = $this->get( $ids );
 
 		if ( empty( $lists ) ) {
@@ -680,7 +680,9 @@ class MailsterLists {
 		$segment_id = get_option( 'mailster_list_segment_id', 1 );
 		$merge_list_id = get_option( 'mailster_merged_list_id', 1 );
 
-		$name = sprintf( __( 'Merged List #%d', 'mailster' ), $merge_list_id );
+		if ( is_null( $name ) ) {
+			$name = sprintf( __( 'Merged List #%d', 'mailster' ), $merge_list_id );
+		}
 
 		$new_id = $this->add( array(
 			'name' => $name,
@@ -691,7 +693,7 @@ class MailsterLists {
 		if ( ! is_wp_error( $new_id ) ) {
 
 			// move connections
-			$sql = "UPDATE IGNORE {$wpdb->prefix}mailster_lists_subscribers SET list_id = %d, added = %d WHERE list_id IN (" . implode( ', ', array_filter( $ids, 'is_numeric' ) ) . ')';
+			$sql = "UPDATE IGNORE {$wpdb->prefix}mailster_lists_subscribers SET list_id = %d, added = %d WHERE list_id IN (" . implode( ', ', $ids ) . ')';
 			$wpdb->query( $wpdb->prepare( $sql, $new_id, $now ) );
 
 			$this->remove( $ids, false );

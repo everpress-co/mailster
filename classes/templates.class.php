@@ -1000,6 +1000,7 @@ class MailsterTemplates {
 			'x-mailster-hash' => $hash,
 			'x-mailster-version' => MAILSTER_VERSION,
 			'x-mailster-site' => get_bloginfo( 'url' ),
+			'x-mailster-license' => get_option( 'mailster_license' ),
 			'x-mailster-url' => $fileuri,
 		);
 
@@ -1040,6 +1041,9 @@ class MailsterTemplates {
 		if ( 200 != $response_code ) {
 
 			switch ( $response_code ) {
+				case 201:
+					$this->schedule_screenshot( $slug, $file, true, 20, $async );
+				break;
 				case 500:
 				case 503:
 					$this->schedule_screenshot( $slug, $file, true, 1800, $async );

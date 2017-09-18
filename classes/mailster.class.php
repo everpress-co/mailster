@@ -405,7 +405,7 @@ class Mailster {
 
 		$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
 
-		$unsubscribe_homepage = get_post( mailster_option( 'homepage' ) );
+		$unsubscribe_homepage = get_page( mailster_option( 'homepage' ) );
 
 		if ( $unsubscribe_homepage ) {
 			$unsubscribe_homepage = get_permalink( $unsubscribe_homepage );
@@ -1072,6 +1072,7 @@ class Mailster {
 				update_option( 'mailster', time() );
 				update_option( 'mailster_license', '' );
 				update_option( 'mailster_username', '' );
+				update_option( 'mailster_hooks', '' );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 				if ( ! is_network_admin() ) {

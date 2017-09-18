@@ -64,7 +64,7 @@ class MailsterCampaigns {
 
 				case 'edit.php':
 					add_action( 'wp_loaded', array( &$this, 'edit_hook' ) );
-					add_action( 'get_the_excerpt', '__return_empty_string' );
+					add_action( 'get_the_excerpt', array( &$this, 'get_the_excerpt' ) );
 					add_action( 'admin_enqueue_scripts', array( &$this, 'edit_assets' ), 10, 1 );
 				break;
 
@@ -323,7 +323,14 @@ class MailsterCampaigns {
 	}
 
 
-	// HOOKS
+	public function get_the_excerpt( $excerpt ) {
+		if ( isset( $_GET['post_type'] ) && 'newsletter' == $_GET['post_type'] ) {
+			return '';
+		}
+		return $excerpt;
+	}
+
+
 	public function edit_hook() {
 
 		if ( isset( $_GET['post_type'] ) && 'newsletter' == $_GET['post_type'] ) {
@@ -4002,6 +4009,7 @@ class MailsterCampaigns {
 		$placeholder->replace_custom_tags( false );
 
 		if ( ! empty( $campaign_meta['attachments'] ) ) {
+			$mail->attachments = array();
 			foreach ( (array) $campaign_meta['attachments'] as $attachment_id ) {
 				if ( ! $attachment_id ) {
 					continue;
@@ -4055,7 +4063,7 @@ class MailsterCampaigns {
 
 		}
 
-		$mail->content = $content;
+		$mail->content = apply_filters( 'mailster_campaign_content', $content, $campaign, $subscriber );
 
 		if ( ! $campaign_meta['autoplaintext'] ) {
 			$placeholder->set_content( $campaign->post_excerpt );
@@ -4086,11 +4094,11 @@ class MailsterCampaigns {
 
 		if ( $result && ! is_wp_error( $result ) ) {
 			if ( $log ) {
-				do_action( 'mailster_send', $subscriber->ID, $campaign->ID );
-				do_action( 'mymail_send', $subscriber->ID, $campaign->ID );
+				do_action( 'mailster_send', $subscriber->ID, $campaign->ID, $result );
+				do_action( 'mymail_send', $subscriber->ID, $campaign->ID, $result );
 			}
 
-			return true;
+			return $result;
 		}
 
 		if ( is_wp_error( $result ) ) {

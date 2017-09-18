@@ -194,6 +194,32 @@ function mailster_update_option( $option, $value, $temp = false ) {
 /**
  *
  *
+ * @param unknown $custom_fields (optional)
+ * @return unknown
+ */
+function mailster_get_current_user( $custom_fields = true ) {
+
+	return mailster( 'subscribers' )->get_current_user( $custom_fields );
+
+}
+
+
+/**
+ *
+ *
+ * @return unknown
+ */
+function mailster_get_current_user_id() {
+
+	return mailster( 'subscribers' )->get_current_user_id( );
+
+}
+
+
+
+/**
+ *
+ *
  * @param unknown $id          (optional)
  * @param unknown $echo        (optional)
  * @param unknown $classes     (optional)
@@ -923,11 +949,10 @@ function mailster_get_referer() {
 	if ( $referer = wp_get_referer() ) {
 		return $referer;
 	}
-	if ( $referer = wp_get_raw_referer() ) {
-		return $referer;
-	}
-	if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-		return $_SERVER['HTTP_REFERER'];
+	if ( ! empty( $_REQUEST['_wp_http_referer'] ) ) {
+		return wp_unslash( $_REQUEST['_wp_http_referer'] );
+	} elseif ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+		return wp_unslash( $_SERVER['HTTP_REFERER'] );
 	}
 	return false;
 }

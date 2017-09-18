@@ -787,7 +787,7 @@ class MailsterForm {
 
 		$this->object['lists'] = $this->form->userschoice
 			? ( isset( $_POST['lists'] )
-			? (array) $_POST['lists'] : array() )
+			?  array_filter( (array) $_POST['lists'] ) : array() )
 			: $this->form->lists;
 
 		// to hook into the system
@@ -1133,9 +1133,9 @@ class MailsterForm {
 		$campaign_id = ! empty( $_BASE['campaign'] ) ? intval( $_BASE['campaign'] ) : null;
 
 		if ( isset( $_BASE['email'] ) ) {
-			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id );
+			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id, 'email_unsubscribe' );
 		} elseif ( isset( $_BASE['hash'] ) ) {
-				$return['success'] = mailster( 'subscribers' )->unsubscribe_by_hash( $_BASE['hash'], $campaign_id );
+			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_hash( $_BASE['hash'], $campaign_id, 'link_unsubscribe' );
 		} else {
 			// wp_redirect(mailster()->get_unsubscribe_link());
 			// exit;
