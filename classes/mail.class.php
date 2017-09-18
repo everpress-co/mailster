@@ -33,6 +33,7 @@ class MailsterMail {
 
 	private $campaignID = null;
 	private $subscriberID = null;
+	private $messageID = null;
 
 	public $text = '';
 
@@ -457,7 +458,11 @@ class MailsterMail {
 
 		}
 
-		return $this->sent;
+		if ( $this->sent ) {
+			return $this->messageID;
+		} else {
+			return false;
+		}
 
 	}
 
@@ -505,6 +510,7 @@ class MailsterMail {
 
 		try {
 
+			$this->messageID = null;
 			$this->last_error = null;
 
 			// Empty out the values that may be set
@@ -573,11 +579,12 @@ class MailsterMail {
 
 			}
 
-			$this->mailer->MessageID = sprintf( '<%s@%s>',
-				uniqid() . '-' . $this->hash . '-' . $this->campaignID . '-' . mailster_option( 'ID' ),
+			$this->messageID = uniqid();
+			$this->mailer->messageID = sprintf( '<%s@%s>',
+				$this->messageID . '-' . $this->hash . '-' . $this->campaignID . '-' . mailster_option( 'ID' ),
 			$this->hostname );
 
-			$this->add_header( 'X-Message-ID', $this->mailer->MessageID );
+			$this->add_header( 'X-Message-ID', $this->mailer->messageID );
 
 			$this->set_headers();
 

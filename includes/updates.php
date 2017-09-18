@@ -14,6 +14,8 @@ $new_version = MAILSTER_VERSION;
 $texts = isset( $mailster_options['text'] ) && ! empty( $mailster_options['text'] ) ? $mailster_options['text'] : $mailster_texts;
 $show_update_notice = false;
 
+// update db structure
+mailster()->dbstructure();
 
 if ( $old_version ) {
 
@@ -507,6 +509,13 @@ if ( $old_version ) {
 
 			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'yes' WHERE option_name IN ('mailster_username', 'mailster_email')" );
 
+		case '2.2.7':
+		case '2.2.8':
+		case '2.2.9':
+		case '2.2.10':
+
+			update_option( 'mailster_hooks', get_option( 'mailster_hooks', '' ) );
+
 		default:
 
 
@@ -527,9 +536,6 @@ update_option( 'mailster_texts', $mailster_texts );
 
 // update caps
 mailster( 'settings' )->update_capabilities();
-
-// update db structure
-mailster()->dbstructure();
 
 // clear cache
 mailster_clear_cache( '' );

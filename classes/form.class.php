@@ -787,7 +787,7 @@ class MailsterForm {
 
 		$this->object['lists'] = $this->form->userschoice
 			? ( isset( $_POST['lists'] )
-			? (array) $_POST['lists'] : array() )
+			?  array_filter( (array) $_POST['lists'] ) : array() )
 			: $this->form->lists;
 
 		// to hook into the system
@@ -799,8 +799,10 @@ class MailsterForm {
 			$email = $this->object['userdata']['email'];
 
 			$entry = wp_parse_args( array(
-					'lang' => mailster_get_lang(),
+				'lang' => mailster_get_lang(),
 			), $this->object['userdata'] );
+
+			$remove_old_lists = false;
 
 			switch ( $submissiontype ) {
 
@@ -817,13 +819,13 @@ class MailsterForm {
 
 					if ( $overwrite && $subscriber = mailster( 'subscribers' )->get_by_mail( $entry['email'] ) ) {
 						$entry = wp_parse_args( array(
-							// change status if other than pending, subscribed or unsubscribed
-							'status' => $subscriber->status >= 3 ? 2 : $subscriber->status,
+							// set status to the form default if it's not "subscribed"
+							'status' => $subscriber->status != 1 ? $entry['status'] : $subscriber->status,
 							'ID' => $subscriber->ID,
 						), $entry );
 
-							$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
-							$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
 
 					} else {
 
@@ -840,13 +842,16 @@ class MailsterForm {
 					$subscriber = mailster( 'subscribers' )->get_by_hash( $this->hash, true );
 					$entry = wp_parse_args( array(
 						// change status if other than pending, subscribed or unsubscribed
-						'status' => $subscriber->status >= 3 ? 2 : $subscriber->status,
+						'status' => $subscriber->status >= 2 ? 1 : $subscriber->status,
 						'ID' => $subscriber->ID,
 					), $entry );
 
-						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+					$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
 
-						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+					$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+
+					// remove old lists only if user choice on this form
+					$remove_old_lists = $this->form->userschoice;
 
 				break;
 			}
@@ -880,7 +885,7 @@ class MailsterForm {
 								}
 							}
 
-							mailster( 'subscribers' )->assign_lists( $exists->ID, $this->object['lists'], $submissiontype == 'update' );
+							mailster( 'subscribers' )->assign_lists( $exists->ID, $this->object['lists'], $remove_old_lists );
 
 						}
 
@@ -896,7 +901,7 @@ class MailsterForm {
 				}
 			} else {
 
-				mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], $submissiontype == 'update' );
+				mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], $remove_old_lists );
 
 				$target = add_query_arg( array(
 						'subscribe' => '',
@@ -1128,9 +1133,9 @@ class MailsterForm {
 		$campaign_id = ! empty( $_BASE['campaign'] ) ? intval( $_BASE['campaign'] ) : null;
 
 		if ( isset( $_BASE['email'] ) ) {
-			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id );
+			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id, 'email_unsubscribe' );
 		} elseif ( isset( $_BASE['hash'] ) ) {
-				$return['success'] = mailster( 'subscribers' )->unsubscribe_by_hash( $_BASE['hash'], $campaign_id );
+			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_hash( $_BASE['hash'], $campaign_id, 'link_unsubscribe' );
 		} else {
 			// wp_redirect(mailster()->get_unsubscribe_link());
 			// exit;

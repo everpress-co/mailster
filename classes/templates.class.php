@@ -988,6 +988,11 @@ class MailsterTemplates {
 
 		$file_size = strlen( $raw );
 		$hash = md5( $modules_html );
+		$blocked = get_transient( '_mailster_screenshot_error' );
+
+		if ( $blocked && isset( $blocked[ $hash ] ) ) {
+			return;
+		}
 
 		$headers = array(
 			'accept' => 'application/json',
@@ -995,6 +1000,7 @@ class MailsterTemplates {
 			'x-mailster-hash' => $hash,
 			'x-mailster-version' => MAILSTER_VERSION,
 			'x-mailster-site' => get_bloginfo( 'url' ),
+			'x-mailster-license' => get_option( 'mailster_license' ),
 			'x-mailster-url' => $fileuri,
 		);
 
@@ -1013,10 +1019,10 @@ class MailsterTemplates {
 			$headers['content-length'] = $file_size;
 
 			$response = wp_remote_post( $request_url, array(
-					'headers' => $headers,
-					'body' => $raw,
-					'timeout' => $async ? 1 : 20,
-					'blocking' => $async ? false : true,
+				'headers' => $headers,
+				'body' => $raw,
+				'timeout' => $async ? 1 : 20,
+				'blocking' => $async ? false : true,
 			) );
 
 			unset( $raw );
@@ -1035,9 +1041,20 @@ class MailsterTemplates {
 		if ( 200 != $response_code ) {
 
 			switch ( $response_code ) {
+				case 201:
+					$this->schedule_screenshot( $slug, $file, true, 20, $async );
+				break;
 				case 500:
 				case 503:
 					$this->schedule_screenshot( $slug, $file, true, 1800, $async );
+				break;
+				case 406:
+					if ( ! is_array( $blocked ) ) {
+						$blocked = array();
+					}
+					$blocked[ $hash ] = time();
+					set_transient( '_mailster_screenshot_error', $blocked );
+					mailster_notice( sprintf( __( 'Not able to create module screen shots of %1$s. Read more about this %2$s.', 'mailster' ), $slug . '/' . $file, '<a href="https://kb.mailster.co/where-are-the-module-screen-shots/" class="external">' . __( 'here', 'mailster' ) . '</a>' ), 'error', false, 'screenshot_error' );
 				break;
 			}
 

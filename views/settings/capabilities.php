@@ -1,7 +1,5 @@
-
 <p class="description"><?php esc_html_e( 'Define capabilities for each user role. To add new roles you can use a third party plugin. Administrator has always all privileges', 'mailster' );?></p>
 <div id="current-cap"></div>
-
 <table class="form-table"><?php
 
 unset( $roles['administrator'] );
@@ -16,19 +14,21 @@ unset( $roles['administrator'] );
 				foreach ( $roles as $role => $name ) {
 					echo '<th><input type="hidden" name="mailster_options[roles][' . $role . '][]" value="">' . $name . ' <input type="checkbox" class="selectall" value="' . $role . '" title="' . __( 'toggle all', 'mailster' ) . '"></th>';
 
-				}?>			</tr>
+				}?>
+				</tr>
 			</thead>
 			<tbody>
 <?php include MAILSTER_DIR . 'includes/capability.php'; ?>
 
-<?php foreach ( $mailster_capabilities as $capability => $data ) { ?>
+	<?php foreach ( $mailster_capabilities as $capability => $data ) { ?>
 			<tr><th><?php echo $data['title'] ?></th>
-		<?php foreach ( $roles as $role => $name ) {
-			$r = get_role( $role );
+		<?php foreach ( $roles as $role => $name ) { ?>
+		<?php $r = get_role( $role );
 			echo '<td><label title="' . sprintf( __( '%1$s can %2$s', 'mailster' ), $name, $data['title'] ) . '"><input name="mailster_options[roles][' . $role . '][]" type="checkbox" class="cap-check-' . $role . '" value="' . $capability . '" ' . checked( ! empty( $r->capabilities[ $capability ] ), 1, false ) . ' ' . ( $role == 'administrator' ? 'readonly' : '' ) . '></label></td>';
-}?>
+		?>
+		<?php } ?>
 			</tr>
-<?php }?>
+	<?php } ?>
 			</tbody>
 		</table>
 	</td>

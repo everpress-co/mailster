@@ -8,7 +8,7 @@
 	font-weight: normal;
 	font-style: normal;
 }
-html.mailster-emebed-form, .mailster-emebed-form body{
+html.mailster-embeded-form, .mailster-embeded-form body{
 	margin:0 !important;
 	padding:0 !important;
 	min-width: 500px;

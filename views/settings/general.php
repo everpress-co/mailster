@@ -1,6 +1,4 @@
-
 <table class="form-table">
-
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'From Name', 'mailster' ) ?> *</th>
 		<td><input type="text" name="mailster_options[from_name]" value="<?php echo esc_attr( mailster_option( 'from_name' ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'The sender name which is displayed in the from field', 'mailster' ) ?></span></td>
@@ -84,22 +82,22 @@
 		<?php
 		$is = mailster_option( 'charset', 'UTF-8' );
 		$charsets = array(
-		'UTF-8' => 'Unicode 8',
-		'ISO-8859-1' => 'Western European',
-		'ISO-8859-2' => 'Central European',
-		'ISO-8859-3' => 'South European',
-		'ISO-8859-4' => 'North European',
-		'ISO-8859-5' => 'Latin/Cyrillic',
-		'ISO-8859-6' => 'Latin/Arabic',
-		'ISO-8859-7' => 'Latin/Greek',
-		'ISO-8859-8' => 'Latin/Hebrew',
-		'ISO-8859-9' => 'Turkish',
-		'ISO-8859-10' => 'Nordic',
-		'ISO-8859-11' => 'Latin/Thai',
-		'ISO-8859-13' => 'Baltic Rim',
-		'ISO-8859-14' => 'Celtic',
-		'ISO-8859-15' => 'Western European revision',
-		'ISO-8859-16' => 'South-Eastern European',
+			'UTF-8' => 'Unicode 8',
+			'ISO-8859-1' => 'Western European',
+			'ISO-8859-2' => 'Central European',
+			'ISO-8859-3' => 'South European',
+			'ISO-8859-4' => 'North European',
+			'ISO-8859-5' => 'Latin/Cyrillic',
+			'ISO-8859-6' => 'Latin/Arabic',
+			'ISO-8859-7' => 'Latin/Greek',
+			'ISO-8859-8' => 'Latin/Hebrew',
+			'ISO-8859-9' => 'Turkish',
+			'ISO-8859-10' => 'Nordic',
+			'ISO-8859-11' => 'Latin/Thai',
+			'ISO-8859-13' => 'Baltic Rim',
+			'ISO-8859-14' => 'Celtic',
+			'ISO-8859-15' => 'Western European revision',
+			'ISO-8859-16' => 'South-Eastern European',
 		) ?>
 		<select name="mailster_options[charset]">
 			<?php foreach ( $charsets as $code => $region ) {?>
@@ -109,26 +107,26 @@
 		<?php
 		$is = mailster_option( 'encoding', '8bit' );
 		$encoding = array(
-		'8bit' => '8bit',
-		'7bit' => '7bit',
-		'binary' => 'binary',
-		'base64' => 'base64',
-		'quoted-printable' => 'quoted-printable',
+			'8bit' => '8bit',
+			'7bit' => '7bit',
+			'binary' => 'binary',
+			'base64' => 'base64',
+			'quoted-printable' => 'quoted-printable',
 		) ?> /
 		<select name="mailster_options[encoding]">
-			<?php foreach ( $encoding as $code ) {?>
+			<?php foreach ( $encoding as $code ) { ?>
 			<option value="<?php echo $code; ?>" <?php selected( $is == $code ) ?>><?php echo $code; ?></option>
-			<?php }?>
+			<?php } ?>
 		</select>
 		<p class="description"><?php esc_html_e( 'change Charset and encoding of your mails if you have problems with some characters', 'mailster' );?></p>
 		</td>
 	</tr>
-	<?php
+<?php
 	$geoip = mailster_option( 'trackcountries' );
 	$geoipcity = mailster_option( 'trackcities' );
-	if ( isset( $_GET['nogeo'] ) ) {
-		$geoip = $geoipcity = false;
-	}
+if ( isset( $_GET['nogeo'] ) ) {
+	$geoip = $geoipcity = false;
+}
 
 ?>
 	<tr valign="top">

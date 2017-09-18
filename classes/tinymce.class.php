@@ -11,7 +11,9 @@ class MailsterTinymce {
 
 	public function init() {
 
-		add_filter( 'mce_external_plugins', array( &$this, 'add_tinymce_plugin' ), 10, 3 );
+		if ( is_admin() ) {
+			add_filter( 'mce_external_plugins', array( &$this, 'add_tinymce_plugin' ), 10, 3 );
+		}
 
 	}
 

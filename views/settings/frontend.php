@@ -1,6 +1,4 @@
-
 <table class="form-table">
-
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ) ?></th>
 		<td><select name="mailster_options[homepage]" class="postform">
@@ -8,18 +6,11 @@
 		<?php
 		$pages = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish,private,draft', 'posts_per_page' => -1 ) );
 		$mailster_require_filesystem = mailster_option( 'homepage' );
-		foreach ( $pages as $page ) {
-				?>
-					<option value="<?php echo $page->ID ?>"<?php if ( $page->ID == $mailster_require_filesystem ) {
-						echo ' selected';
-}
-			?>><?php echo esc_attr( $page->post_title );if ( $page->post_status != 'publish' ) {
-		echo ' (' . $wp_post_statuses[ $page->post_status ]->label . ')';
-			}
-			?></option>
-				<?php
-		}
-?>
+		foreach ( $pages as $page ) { ?>
+			<option value="<?php echo $page->ID ?>"<?php if ( $page->ID == $mailster_require_filesystem ) {	echo ' selected'; }	?>>
+			<?php echo esc_attr( $page->post_title );if ( $page->post_status != 'publish' ) { echo ' (' . $wp_post_statuses[ $page->post_status ]->label . ')';	}?>
+			</option>
+		<?php } ?>
 		</select>
 		<?php if ( $mailster_require_filesystem ) : ?>
 		<span class="description">
@@ -56,12 +47,9 @@
 
 		$services = mailster_option( 'share_services', array() );
 
-		foreach ( $social_services as $service => $data ) {
-				?>
-					<li class="<?php echo $service ?>"><label><input type="checkbox" name="mailster_options[share_services][]" value="<?php echo $service ?>" <?php checked( in_array( $service, $services ) );?>> <?php echo $data['name']; ?></label></li>
-		<?php
-		}
-?>
+		foreach ( $social_services as $service => $data ) {	?>
+			<li class="<?php echo $service ?>"><label><input type="checkbox" name="mailster_options[share_services][]" value="<?php echo $service ?>" <?php checked( in_array( $service, $services ) );?>> <?php echo $data['name']; ?></label></li>
+		<?php } ?>
 		</ul></td>
 	</tr>
 	<tr valign="top">
@@ -145,13 +133,10 @@
 		<th scope="row"><?php esc_html_e( 'Archive', 'mailster' ) ?></th>
 		<td class="homepage-slugs"><p><label><input type="hidden" name="mailster_options[hasarchive]" value=""><input type="checkbox" name="mailster_options[hasarchive]" class="has-archive-check" value="1" <?php checked( mailster_option( 'hasarchive' ) );?>> <?php esc_html_e( 'enable archive function to display your newsletters in a reverse chronological order', 'mailster' ) ?></label>
 			</p>
-		<div class="archive-slug" <?php if ( ! mailster_option( 'hasarchive' ) ) {
-			echo ' style="display:none"';
-}
-?>>
-		<p>
-		<label><?php esc_html_e( 'Archive Slug', 'mailster' ) ?>:</label><br>
-			<?php
+		<div class="archive-slug" <?php if ( ! mailster_option( 'hasarchive' ) ) { echo ' style="display:none"'; } ?>>
+			<p>
+			<label><?php esc_html_e( 'Archive Slug', 'mailster' ) ?>:</label><br>
+<?php
 			$homepage = home_url( '/' );
 			$slug = mailster_option( 'archive_slug', 'newsletter' );
 ?>
@@ -162,15 +147,15 @@
 			<span class="edit-slug-area">
 			<?php echo $homepage ?><input type="text" name="mailster_options[archive_slug]" value="<?php echo esc_attr( $slug ); ?>" class="small-text">/
 			</span>
-		</p>
-		<p><label><?php esc_html_e( 'show only', 'mailster' );
-		$archive_types = mailster_option( 'archive_types', array( 'finished', 'active' ) );?>: </label>
-		<label> <input type="checkbox" name="mailster_options[archive_types][]" value="finished" <?php checked( in_array( 'finished', $archive_types ) );?>> <?php esc_html_e( 'finished', 'mailster' );?> </label>
-		<label> <input type="checkbox" name="mailster_options[archive_types][]" value="active" <?php checked( in_array( 'active', $archive_types ) );?>> <?php esc_html_e( 'active', 'mailster' );?> </label>
-		<label> <input type="checkbox" name="mailster_options[archive_types][]" value="paused" <?php checked( in_array( 'paused', $archive_types ) );?>> <?php esc_html_e( 'paused', 'mailster' );?> </label>
-		<label> <input type="checkbox" name="mailster_options[archive_types][]" value="queued" <?php checked( in_array( 'queued', $archive_types ) );?>> <?php esc_html_e( 'queued', 'mailster' );?> </label>
-		</p>
-	</div>
+			</p>
+			<p><label><?php esc_html_e( 'show only', 'mailster' );
+			$archive_types = mailster_option( 'archive_types', array( 'finished', 'active' ) );?>: </label>
+			<label> <input type="checkbox" name="mailster_options[archive_types][]" value="finished" <?php checked( in_array( 'finished', $archive_types ) );?>> <?php esc_html_e( 'finished', 'mailster' );?> </label>
+			<label> <input type="checkbox" name="mailster_options[archive_types][]" value="active" <?php checked( in_array( 'active', $archive_types ) );?>> <?php esc_html_e( 'active', 'mailster' );?> </label>
+			<label> <input type="checkbox" name="mailster_options[archive_types][]" value="paused" <?php checked( in_array( 'paused', $archive_types ) );?>> <?php esc_html_e( 'paused', 'mailster' );?> </label>
+			<label> <input type="checkbox" name="mailster_options[archive_types][]" value="queued" <?php checked( in_array( 'queued', $archive_types ) );?>> <?php esc_html_e( 'queued', 'mailster' );?> </label>
+			</p>
+		</div>
 		</td>
 	</tr>
 	<?php else : ?>

@@ -179,7 +179,7 @@ function mailster_update_option( $option, $value, $temp = false ) {
 		$temp = (bool) $value;
 		$mailster_options = wp_parse_args( $option, $mailster_options );
 	} else {
-		$mailster_options[ $option ] = $value;
+		$mailster_options[ $option ] = apply_filters( 'mailster_update_option_' . $option, $value, $temp );
 	}
 
 	if ( $temp ) {
@@ -189,6 +189,32 @@ function mailster_update_option( $option, $value, $temp = false ) {
 
 	return update_option( 'mailster_options', $mailster_options );
 }
+
+
+/**
+ *
+ *
+ * @param unknown $custom_fields (optional)
+ * @return unknown
+ */
+function mailster_get_current_user( $custom_fields = true ) {
+
+	return mailster( 'subscribers' )->get_current_user( $custom_fields );
+
+}
+
+
+/**
+ *
+ *
+ * @return unknown
+ */
+function mailster_get_current_user_id() {
+
+	return mailster( 'subscribers' )->get_current_user_id( );
+
+}
+
 
 
 /**
@@ -923,11 +949,10 @@ function mailster_get_referer() {
 	if ( $referer = wp_get_referer() ) {
 		return $referer;
 	}
-	if ( $referer = wp_get_raw_referer() ) {
-		return $referer;
-	}
-	if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-		return $_SERVER['HTTP_REFERER'];
+	if ( ! empty( $_REQUEST['_wp_http_referer'] ) ) {
+		return wp_unslash( $_REQUEST['_wp_http_referer'] );
+	} elseif ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+		return wp_unslash( $_SERVER['HTTP_REFERER'] );
 	}
 	return false;
 }
@@ -959,20 +984,6 @@ function is_mailster_newsletter_homepage() {
 	global $post;
 
 	return isset( $post ) && $post->ID == mailster_option( 'homepage' );
-
-}
-
-
-/**
- *
- *
- * @return unknown
- */
-function is_mailster_dashboard() {
-
-	$screen = get_current_screen();
-
-	return $screen && $screen->id == 'newsletter_page_mailster_dashboard';
 
 }
 
