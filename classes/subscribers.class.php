@@ -935,8 +935,10 @@ class MailsterSubscribers {
 				}
 			}
 			if ( isset( $meta['form'] ) ) {
-				if ( $lists = mailster( 'forms' )->get_lists( $meta['form'], true ) ) {
-					$this->assign_lists( $subscriber_id, $lists );
+				$form = mailster( 'forms' )->get( $meta['form'], false );
+				// if form exists and is not a user choice and has lists
+				if ( $form && ! $form->userschoice && ! empty( $form->lists ) ) {
+					$this->assign_lists( $subscriber_id, $form->lists );
 				}
 			}
 
@@ -1129,7 +1131,7 @@ class MailsterSubscribers {
 		}
 
 		if ( $clear ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d", $subscriber_id ) );
+			$this->remove_custom_value( $subscriber_id );
 		}
 
 		$sql = "INSERT INTO {$wpdb->prefix}mailster_subscriber_fields
@@ -1171,6 +1173,26 @@ class MailsterSubscribers {
 		$sql .= ' ON DUPLICATE KEY UPDATE subscriber_id = values(subscriber_id), meta_key = values(meta_key), meta_value = values(meta_value)';
 
 		return false !== $wpdb->query( $sql );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_id
+	 * @param unknown $key           (optional)
+	 * @return unknown
+	 */
+	public function remove_custom_value( $subscriber_id, $key = null ) {
+
+		global $wpdb;
+
+		$sql = "DELETE FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d";
+		if ( ! is_null( $key ) ) {
+			$sql .= $wpdb->prepare( ' AND meta_key = %s', (string) $key );
+		}
+
+		return false !== $wpdb->query( $wpdb->prepare( $sql, $subscriber_id ) );
 
 	}
 
@@ -1572,7 +1594,7 @@ class MailsterSubscribers {
 
 		if ( false === ( $counts = mailster_cache_get( 'get_count_by_status' ) ) ) {
 
-			$sql = "SELECT status, COUNT( * ) AS count FROM {$wpdb->prefix}mailster_subscribers AS a GROUP BY status";
+			$sql = "SELECT status, COUNT( a.ID ) AS count FROM {$wpdb->prefix}mailster_subscribers AS a GROUP BY status";
 
 			$sql = apply_filters( 'mailster_subscribers_get_count_by_status', $sql );
 

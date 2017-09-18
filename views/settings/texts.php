@@ -1,13 +1,3 @@
-<?php
-if ( $translations ) :
-	$url = add_query_arg( array(
-			'action' => 'do-translation-upgrade',
-			'_wpnonce' => wp_create_nonce( 'upgrade-translations' ),
-	), network_admin_url( 'update-core.php' ) );
-?>
-	<div class="error inline"><p><strong><?php esc_html_e( 'an update to your language is available!', 'mailster' ) ?></strong> <a class="button button-primary button-small" href="<?php echo esc_url( $url ) ?>"><?php esc_html_e( 'update now', 'mailster' );?></a></p></div>
-	<?php
-endif; ?>
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Subscription Form', 'mailster' ) ?><p class="description"><?php esc_html_e( 'Define messages for the subscription form', 'mailster' );?>.<br>
