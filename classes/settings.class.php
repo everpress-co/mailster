@@ -209,30 +209,30 @@ class MailsterSettings {
 	 *
 	 * @return unknown
 	 */
-	public function get_default_texts() {
+	public function get_default_texts( $domain = 'mailster' ) {
 
 		return array(
-			'confirmation' => __( 'Please confirm your subscription!', 'mailster' ),
-			'success' => __( 'Thanks for your interest!', 'mailster' ),
-			'error' => __( 'Following fields are missing or incorrect', 'mailster' ),
-			'newsletter_signup' => __( 'Sign up to our newsletter', 'mailster' ),
-			'unsubscribe' => __( 'You have successfully unsubscribed!', 'mailster' ),
-			'unsubscribeerror' => __( 'An error occurred! Please try again later!', 'mailster' ),
-			'profile_update' => __( 'Profile updated!', 'mailster' ),
-			'email' => __( 'Email', 'mailster' ),
-			'firstname' => __( 'First Name', 'mailster' ),
-			'lastname' => __( 'Last Name', 'mailster' ),
-			'lists' => __( 'Lists', 'mailster' ),
-			'submitbutton' => __( 'Subscribe', 'mailster' ),
-			'profilebutton' => __( 'Update Profile', 'mailster' ),
-			'unsubscribebutton' => __( 'Yes, unsubscribe me', 'mailster' ),
-			'unsubscribelink' => _x( 'unsubscribe', 'unsubscribelink', 'mailster' ),
-			'webversion' => __( 'webversion', 'mailster' ),
-			'forward' => __( 'forward to a friend', 'mailster' ),
-			'profile' => __( 'update profile', 'mailster' ),
-			'already_registered' => __( 'You are already registered', 'mailster' ),
-			'new_confirmation_sent' => __( 'A new confirmation message has been sent', 'mailster' ),
-			'enter_email' => __( 'Please enter your email address', 'mailster' ),
+			'confirmation' => __( 'Please confirm your subscription!', $domain ),
+			'success' => __( 'Thanks for your interest!', $domain ),
+			'error' => __( 'Following fields are missing or incorrect', $domain ),
+			'newsletter_signup' => __( 'Sign up to our newsletter', $domain ),
+			'unsubscribe' => __( 'You have successfully unsubscribed!', $domain ),
+			'unsubscribeerror' => __( 'An error occurred! Please try again later!', $domain ),
+			'profile_update' => __( 'Profile updated!', $domain ),
+			'email' => __( 'Email', $domain ),
+			'firstname' => __( 'First Name', $domain ),
+			'lastname' => __( 'Last Name', $domain ),
+			'lists' => __( 'Lists', $domain ),
+			'submitbutton' => __( 'Subscribe', $domain ),
+			'profilebutton' => __( 'Update Profile', $domain ),
+			'unsubscribebutton' => __( 'Yes, unsubscribe me', $domain ),
+			'unsubscribelink' => _x( 'unsubscribe', 'unsubscribelink', $domain ),
+			'webversion' => __( 'webversion', $domain ),
+			'forward' => __( 'forward to a friend', $domain ),
+			'profile' => __( 'update profile', $domain ),
+			'already_registered' => __( 'You are already registered', $domain ),
+			'new_confirmation_sent' => __( 'A new confirmation message has been sent', $domain ),
+			'enter_email' => __( 'Please enter your email address', $domain ),
 		);
 
 	}
@@ -1214,21 +1214,24 @@ class MailsterSettings {
 	 */
 	public function verify_texts( $texts ) {
 
+		global $mailster_texts;
+
 		// change language
 		if ( isset( $_POST['change-language'] ) && isset( $_POST['language-file'] ) ) {
 
 			$dir = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR . '/plugins/' : MAILSTER_DIR . '/languages/';
 			$file = $dir . 'mailster-' . esc_attr( $_POST['language-file'] ) . '.mo';
 
-			global $l10n, $mailster_texts;
+			unload_textdomain( 'mailster' );
+			if ( file_exists( $file ) ) {
+				load_textdomain( 'mailster', $file );
+				$mailster_texts = $texts = $this->get_default_texts();
+			} else {
+				// load defaults with undefined textdomain
+				$mailster_texts = $texts = $this->get_default_texts( 'mailster_en_US' );
 
-			if ( isset( $l10n['mailster'] ) ) {
-				unset( $l10n['mailster'] );
 			}
 
-			load_textdomain( 'mailster', $file );
-
-			$mailster_texts = $texts = $this->get_default_texts();
 			load_plugin_textdomain( 'mailster', false, basename( MAILSTER_DIR ) . '/languages' );
 
 		}

@@ -1,6 +1,4 @@
-
 <table class="form-table">
-
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'From Name', 'mailster' ) ?> *</th>
 		<td><input type="text" name="mailster_options[from_name]" value="<?php echo esc_attr( mailster_option( 'from_name' ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'The sender name which is displayed in the from field', 'mailster' ) ?></span></td>

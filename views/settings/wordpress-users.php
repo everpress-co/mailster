@@ -1,4 +1,3 @@
-
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Sync WordPress Users', 'mailster' ) ?></th>

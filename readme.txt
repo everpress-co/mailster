@@ -1,11 +1,11 @@
 === Mailster - Email Newsletter Plugin for WordPress ===
 Contributors: EverPress, revaxarts
-Tags: mailster, mymail, newsletter, email, email marketing
+Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.8.1
-Stable tag: 2.2.10
+Stable tag: 2.2.12
 Author: EverPress
-Author URI: https://everpress.io
+Author URI: https://mailster.co
 
 == Description ==
 
@@ -48,7 +48,6 @@ Don’t send unfinished Newsletters to your Customers which possible end up in t
 * Background Image support
 * Quick Preview
 * Email Spam check
-* Revisions support (native)
 * Multi language Support (over 10 languages included)
 * SMTP support
 * DomainKeys Identified Mail Support
@@ -82,9 +81,28 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+= Version 2.2.12 =
+
+
+= Version 2.2.11 =
+
+* improved: translation checks and loading
+* improved: loading of translations
+* fixed: assigned unchecked lists on form submission if user choice is enabled
+* fixed: PHP warning on bounce handler
+* added: `remove_custom_value` method to remove meta values of subscribers
+* added: Mailgun delivery option to setup
+
 = Version 2.2.10 =
 
+* fixed: Editor button now only available in the backend
+* fixed: Excerpts were missing when view mode is Excerpt View
+* fixed: missing `wp_get_raw_referer` on WP < 4.5
+* fixed: choosing default values for dropdowns and radio custom fields
+* fixed: multiple attached attachments
+* fixed: plain text option wasn't respected during test campaigns
 * improved: lists assigned to a form are now respected if form id is set explicitly on subscriber submission
+* added: 'mailster_campaign_content' filter to alter the content of campaigns
 * added: 'mailster_using_permalinks' filter
 
 = Version 2.2.9 =

@@ -1,4 +1,3 @@
-
 <p class="description"><?php printf( __( 'Please check out %s if you have problems with the plugin', 'mailster' ), '<a href="https://rxa.li/support?utm_source=Mailster+System+Info+Page" class="external">' . __( 'our Knowledge base', 'mailster' ) . '</a>' ); ?></p>
 <textarea id="system_info_content" readonly class="code">
 </textarea>
