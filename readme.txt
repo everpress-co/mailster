@@ -87,6 +87,8 @@ Xaver Birsak – https://everpress.io
 * improved: loading of translations
 * fixed: assigned unchecked lists on form submission if user choice is enabled
 * fixed: PHP warning on bounce handler
+* added: `remove_custom_value` method to remove meta values of subscribers
+* added: Mailgun delivery option to setup
 
 = Version 2.2.10 =
 

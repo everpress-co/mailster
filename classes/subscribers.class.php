@@ -1131,7 +1131,7 @@ class MailsterSubscribers {
 		}
 
 		if ( $clear ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d", $subscriber_id ) );
+			$this->remove_custom_value( $subscriber_id );
 		}
 
 		$sql = "INSERT INTO {$wpdb->prefix}mailster_subscriber_fields
@@ -1173,6 +1173,26 @@ class MailsterSubscribers {
 		$sql .= ' ON DUPLICATE KEY UPDATE subscriber_id = values(subscriber_id), meta_key = values(meta_key), meta_value = values(meta_value)';
 
 		return false !== $wpdb->query( $sql );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_id
+	 * @param unknown $key           (optional)
+	 * @return unknown
+	 */
+	public function remove_custom_value( $subscriber_id, $key = null ) {
+
+		global $wpdb;
+
+		$sql = "DELETE FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d";
+		if ( ! is_null( $key ) ) {
+			$sql .= $wpdb->prepare( ' AND meta_key = %s', (string) $key );
+		}
+
+		return false !== $wpdb->query( $wpdb->prepare( $sql, $subscriber_id ) );
 
 	}
 
