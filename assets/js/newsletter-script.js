@@ -2164,30 +2164,16 @@ jQuery(document).ready(function ($) {
 			return false;
 		}
 
-		function dynamicImage(val, w, h) {
-			var m;
+		function dynamicImage(val, w, h, c) {
+			w = w || imagewidth.val();
+			h = h || imageheight.val();
+			c = typeof c == 'undefined' ? imagecrop.prop(':checked') : c;
 			if (/^\{([a-z0-9-_]+)_image:-?[0-9,;]+(\|\d+)?\}$/.test(val)) {
 				var f = factor.val();
-				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + ((w || imagewidth.val())) + '&h=' + ((h || imageheight.val())) + '&c=' + (imagecrop.prop(':checked') ? 1 : 0) + '&f=' + f;
-			}
-			/*
-			else if(m = val.match(/(https?)(.*?)youtube\.com\/watch\?v=([a-zA-Z0-9]+)/)){
-				console.log(val, m);
-				val = m[1]+'://img.youtube.com/vi/'+m[3]+'/maxresdefault.jpg';
-				$.getJSON(m[1]+'://gdata.youtube.com/feeds/api/videos/'+m[3]+'?v=2&alt=jsonc&callback=?', function(response){
-					console.log(response);
-					//imagelink.val();
-					imagelink.val(response.data.player.default.replace('&feature=youtube_gdata_player','&feature=mailster'));
-					imagealt.val(response.data.title);
-					imagepreview.attr('src', response.data.thumbnail.hqDefault);
-					imageurl.attr('src', response.data.thumbnail.hqDefault);
 
-				});
-			}else{
-				console.log('no dynmaic');
+				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + (w) + '&h=' + (h) + '&c=' + (c ? 1 : 0) + '&f=' + f;
 			}
-			*/
-			return val
+			return val;
 		}
 
 		function isDynamicImage(val) {
@@ -2545,16 +2531,18 @@ jQuery(document).ready(function ($) {
 								return false;
 
 								// rss and dynamic
-							} else {
+							} else if ('dynamic' == insertmethod || 'rss' == insertmethod) {
 
-								var width = imgelement.width();
+								var width = imgelement.width(),
+									crop = imgelement.data('crop'),
+									height = crop ? imgelement.height() : null;
 
 								if ('img' == imgelement.prop('tagName').toLowerCase()) {
 									imgelement
 										.removeAttr('height')
 										.removeAttr('data-id')
 										.attr({
-											'src': dynamicImage(currenttext.image[i], width),
+											'src': dynamicImage(currenttext.image[i], width, height, crop),
 											'width': width,
 											'alt': currenttext.alt || currenttext.title[i]
 										})
@@ -2568,8 +2556,9 @@ jQuery(document).ready(function ($) {
 										})
 										.removeData('id')
 										.css('background-image', '');
-									current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width)));
+									current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop)));
 								}
+
 							}
 
 						});
