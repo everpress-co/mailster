@@ -43,6 +43,12 @@ class MailsterTests {
 				call_user_func_array( array( &$this, $method ), $args );
 				break;
 		}
+
+		if ( method_exists( $this, 'test_' . $method ) ) {
+			$this->run( $method );
+			return ! $this->last_is_error;
+		}
+
 	}
 
 	public function run( $test_id = null, $args = array() ) {
@@ -182,7 +188,8 @@ class MailsterTests {
 		$this->errors[ $type ]->add( $test_id, $msg, $data );
 		$this->errors['count']++;
 		$this->errors[ $type . '_count' ]++;
-		$this->last_is_error = true;
+
+		$this->last_is_error = 'success' != $type;
 		$this->last_error_type = $type;
 		$this->last_error_test = $test_id;
 		$this->last_error_message = $msg;
@@ -235,7 +242,7 @@ class MailsterTests {
 	private function test_wordpress_version() {
 		if ( version_compare( get_bloginfo( 'version' ), '3.8' ) < 0 ) {
 			$this->error( sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', get_bloginfo( 'version' ) ) );
-		} elseif ( version_compare( get_bloginfo( 'version' ), '4.8' ) < 0 ) {
+		} elseif ( version_compare( get_bloginfo( 'version' ), '4.9' ) < 0 ) {
 			$this->warning( sprintf( 'Your WordPress site is not up-to-date. Your current version is %s.', get_bloginfo( 'version' ) ) );
 		} else {
 			$this->success( 'You have version ' . get_bloginfo( 'version' ) );
@@ -466,6 +473,15 @@ class MailsterTests {
 
 			$this->error( sprintf( __( 'Your newsletter homepage is not visible. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=newsletter_homepage">' . __( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
 
+		}
+
+	}
+	private function test_form_exist() {
+
+		$forms = mailster( 'forms' )->get_all();
+
+		if ( ! count( $forms ) ) {
+			$this->error( sprintf( __( 'You have no form! Mailster requires at least one form for the newsletter homepage. %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_forms&new">' . __( 'Create a new form now', 'mailster' ) . '</a>' ) );
 		}
 
 	}
