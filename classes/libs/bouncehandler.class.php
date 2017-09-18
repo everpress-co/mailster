@@ -203,7 +203,7 @@ class MailsterBounceLegacyHandler extends MailsterBounceHandler {
 
 		require_once ABSPATH . WPINC . '/class-pop3.php';
 		$this->mailbox = new POP3();
-		$this->mailbox->TIMEOUT = $timeout;
+		$this->mailbox->TIMEOUT = (int) $timeout;
 
 		if ( $ssl ) {
 			$server = 'ssl://' . $server;

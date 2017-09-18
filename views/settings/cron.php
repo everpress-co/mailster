@@ -1,4 +1,3 @@
-
 <table class="form-table">
 	<tr valign="top" class="wp_cron">
 		<th scope="row"><?php esc_html_e( 'Interval for sending emails', 'mailster' ) ?></th>

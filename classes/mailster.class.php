@@ -1126,6 +1126,7 @@ class Mailster {
 				update_option( 'mailster', time() );
 				update_option( 'mailster_license', '' );
 				update_option( 'mailster_username', '' );
+				update_option( 'mailster_hooks', '' );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 				if ( ! is_network_admin() ) {

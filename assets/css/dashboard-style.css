@@ -160,6 +160,13 @@
 	overflow:hidden;
 	white-space: nowrap;
 }
+.mailster-mb-link{
+	display: inline-block;
+	max-width: 40%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
 .mailster-mb-link:before{
 	font: normal 16px/1 'mailster-icons';
 	content: '';
@@ -173,9 +180,10 @@
 	content: '\e804';
 	color: #3AB61B;
 }
-.mailster-mb-select{
+.meta-box-sortables select.mailster-mb-select{
 	float: right;
 	margin-top: -6px;
+	max-width: 33%;
 }
 .rtl .mailster-mb-select{
 	float: left;
