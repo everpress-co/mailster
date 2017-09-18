@@ -44,7 +44,7 @@ class MailsterTranslations {
 		}
 
 		$data = $this->get_translation_data();
-		// echo '<pre>'.print_r($data, true).'</pre>';die();
+
 		if ( ! empty( $data ) ) {
 			$value->translations[] = $data;
 		}

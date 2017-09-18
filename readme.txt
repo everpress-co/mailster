@@ -3,7 +3,7 @@ Contributors: EverPress, revaxarts
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.8.1
-Stable tag: 2.2.11
+Stable tag: 2.2.12
 Author: EverPress
 Author URI: https://mailster.co
 
@@ -80,6 +80,9 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.2.12 =
+
 
 = Version 2.2.11 =
 
