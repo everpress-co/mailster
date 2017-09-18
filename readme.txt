@@ -3,7 +3,7 @@ Contributors: EverPress, revaxarts
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.8.1
-Stable tag: 2.2.10
+Stable tag: 2.2.11
 Author: EverPress
 Author URI: https://mailster.co
 
@@ -80,6 +80,15 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.2.11 =
+
+* improved: translation checks and loading
+* improved: loading of translations
+* fixed: assigned unchecked lists on form submission if user choice is enabled
+* fixed: PHP warning on bounce handler
+* added: `remove_custom_value` method to remove meta values of subscribers
+* added: Mailgun delivery option to setup
 
 = Version 2.2.10 =
 
