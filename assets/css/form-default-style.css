@@ -1,9 +1,9 @@
-.mailster-emebed-form body{
+.mailster-embeded-form body{
 	background: none;
 	padding:0;
 	margin:0;
 }
-.mailster-emebed-form .mailster-form-body{
+.mailster-embeded-form .mailster-form-body{
 	padding:5px !important;
 	margin:auto !important;
 }
@@ -58,7 +58,7 @@
 	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
-.mailster-emebed-form .mailster-form{
+.mailster-embeded-form .mailster-form{
 	margin-bottom:3px;
 }
 .mailster-form .mailster-wrapper{
