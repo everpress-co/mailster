@@ -1,7 +1,5 @@
-
 <p class="description"><?php esc_html_e( 'Define capabilities for each user role. To add new roles you can use a third party plugin. Administrator has always all privileges', 'mailster' );?></p>
 <div id="current-cap"></div>
-
 <table class="form-table"><?php
 
 unset( $roles['administrator'] );

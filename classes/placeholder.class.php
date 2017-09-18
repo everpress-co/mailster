@@ -145,14 +145,14 @@ class MailsterPlaceholder {
 			'preheader' => $meta['preheader'],
 			'subject' => $meta['subject'],
 			'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-			'webversionlink' => get_permalink( $campaign_id ),
 			'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
 			'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
 			'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
-			'email' => '<a href="">{emailaddress}</a>',
+			'webversionlink' => get_permalink( $campaign_id ),
 			'unsublink' => $unsubscribelink,
 			'forwardlink' => $forwardlink,
 			'profilelink' => $profilelink,
+			'email' => '<a href="">{emailaddress}</a>',
 			'year' => $time[0],
 			'month' => $time[1],
 			'day' => $time[2],
@@ -283,9 +283,9 @@ class MailsterPlaceholder {
 
 			if ( ! empty( $keep ) ) {
 				$keep = '{' . implode( '}|{', (array) $keep ) . '}';
-				$this->content = preg_replace( '#' . $pattern . '(?<!' . $keep . ')#i', '', $this->content );
+				$this->content = preg_replace( '/' . $pattern . '(?<!' . $keep . ')/i', '', $this->content );
 			} else {
-				$this->content = preg_replace( '#' . $pattern . '#i', '', $this->content );
+				$this->content = preg_replace( '/' . $pattern . '/i', '', $this->content );
 			}
 
 			if ( ! empty( $styles[0] ) ) {

@@ -1,6 +1,4 @@
-
 <table class="form-table">
-
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ) ?></th>
 		<td><select name="mailster_options[homepage]" class="postform">
