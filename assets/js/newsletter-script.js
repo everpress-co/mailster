@@ -2165,11 +2165,11 @@ jQuery(document).ready(function ($) {
 			return false;
 		}
 
-		function dynamicImage(val, w, h) {
+		function dynamicImage(val, w, h, c) {
 			var m;
 			if (/^\{([a-z0-9-_]+)_image:-?[0-9,;]+(\|\d+)?\}$/.test(val)) {
 				var f = factor.val();
-				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + ((w || imagewidth.val()) * f) + '&h=' + ((h || imageheight.val()) * f) + '&c=' + (imagecrop.prop(':checked') ? 1 : 0) + '&f=' + f;
+				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + ((w || imagewidth.val()) * f) + '&h=' + ((h || imageheight.val()) * f) + '&c=' + ((c || imagecrop.prop(':checked')) ? 1 : 0) + '&f=' + f;
 			}
 			/*
 			else if(m = val.match(/(https?)(.*?)youtube\.com\/watch\?v=([a-zA-Z0-9]+)/)){
@@ -2529,25 +2529,18 @@ jQuery(document).ready(function ($) {
 
 								return false;
 
-							} else if ('rss' == insertmethod) {
+							} else if ('dynamic' == insertmethod || 'rss' == insertmethod) {
 
-								var width = imgelement.width();
+								var width = imgelement.width(),
+									crop = imgelement.data('crop'),
+									height = crop ? imgelement.height() : null;
 
 								imgelement.removeAttr('height').removeAttr('data-id').attr({
-									'src': dynamicImage(currenttext.image[i].src, width),
+									'src': dynamicImage(currenttext.image[i], width, height, crop),
 									'width': width,
 									'alt': currenttext.alt || currenttext.title[i]
 								}).removeData('id');
 
-							} else {
-
-								var width = imgelement.width();
-
-								imgelement.removeAttr('height').removeAttr('data-id').attr({
-									'src': dynamicImage(currenttext.image[i], width),
-									'width': width,
-									'alt': currenttext.alt || currenttext.title[i]
-								}).removeData('id');
 							}
 
 						});
