@@ -36,7 +36,7 @@ class MailsterCampaigns {
 
 		if ( is_admin() ) {
 
-			$this->get_structure( 4 );
+			$this->get_structure( 6 );
 
 			add_action( 'paused_to_trash', array( &$this, 'paused_to_trash' ) );
 			add_action( 'active_to_trash', array( &$this, 'active_to_trash' ) );
@@ -2315,61 +2315,104 @@ class MailsterCampaigns {
 
 		$xpath = new DOMXpath( $doc );
 
-		$modules = $xpath->query( '//*/module' );
+		$module_containers = $xpath->query( '//*/modules' );
+		foreach ( $module_containers as $container_id => $module_container ) {
 
-		foreach ( $modules as $module ) {
-			$obj_module = array(
-				'label' => $module->getAttribute( 'label' ),
-				'single' => array(),
-				'multi' => array(),
-				'img' => array(),
-			);
-			$module_doc = new DOMDocument();
-			$module_doc->appendChild( $module_doc->importNode( $module, true ) );
-			$module_xpath = new DOMXPath( $module_doc );
-			$singles = $module_xpath->query( '//*/single' );
-			foreach ( $singles as $single ) {
-				$innerHTML = '';
-			    $children  = $single->childNodes;
-			    foreach ( $children as $child ) {
-			        $innerHTML .= $single->ownerDocument->saveXML( $child );
-			    }
-				$obj_module['single'][] = array(
-					'label' => $single->getAttribute( 'label' ),
-					'content' => trim( $innerHTML ),
-				);
-			}
-			$multis = $module_xpath->query( '//*/multi' );
-			foreach ( $multis as $multi ) {
-				$innerHTML = '';
-			    $children  = $multi->childNodes;
-			    foreach ( $children as $child ) {
-			        $innerHTML .= $multi->ownerDocument->saveXML( $child );
-			    }
-				$obj_module['multi'][] = array(
-					'label' => $multi->getAttribute( 'label' ),
-					'content' => trim( $innerHTML ),
-				);
-			}
-			$imgs = $module_xpath->query( '//*/img[@editable]' );
-			foreach ( $imgs as $img ) {
-				$obj_module['img'][] = array(
-					'label' => $img->getAttribute( 'label' ),
-					'src' => $img->getAttribute( 'src' ),
-					'width' => $img->getAttribute( 'width' ),
-					'height' => $img->getAttribute( 'height' ),
-					'content' => $img->ownerDocument->saveXML( $img ),
-				);
-			}
+			$module_container_doc = new DOMDocument();
+			$module_container_doc->appendChild( $module_container_doc->importNode( $module_container, true ) );
+			$module_container_xpath = new DOMXPath( $module_container_doc );
 
-			$object->modules[] = $obj_module;
+			$modules = $module_container_xpath->query( '//*/module' );
+
+			foreach ( $modules as $module ) {
+				$obj_module = array(
+					'label' => $module->getAttribute( 'label' ),
+					'slug' => sanitize_title( $module->getAttribute( 'label' ) ),
+				);
+				if ( $module->hasAttribute( 'auto' ) ) {
+					$obj_module['auto'] = true;
+				}
+				if ( $module->hasAttribute( 'data-tag' ) ) {
+					$obj_module['tag'] = $module->getAttribute( 'data-tag' );
+				}
+				if ( $container_id ) {
+					$obj_module['container'] = $container_id;
+				}
+				$module_doc = new DOMDocument();
+				$module_doc->appendChild( $module_doc->importNode( $module, true ) );
+				$module_xpath = new DOMXPath( $module_doc );
+
+				foreach ( $module_xpath->query( '//*/single' ) as $i => $single ) {
+					if ( ! $i ) {
+						$obj_module['single'] = array();
+					}
+					$innerHTML = '';
+				    $children  = $single->childNodes;
+				    foreach ( $children as $child ) {
+				        $innerHTML .= $single->ownerDocument->saveXML( $child );
+				    }
+					$obj_module['single'][] = array(
+						'label' => $single->getAttribute( 'label' ),
+						'content' => trim( $innerHTML ),
+					);
+				}
+
+				foreach ( $module_xpath->query( '//*/multi' ) as $i => $multi ) {
+					$innerHTML = '';
+				    $children  = $multi->childNodes;
+				    foreach ( $children as $child ) {
+				        $innerHTML .= $multi->ownerDocument->saveXML( $child );
+				    }
+					if ( ! $i ) {
+						$obj_module['multi'] = array();
+					}
+					$obj_module['multi'][] = array(
+						'label' => $multi->getAttribute( 'label' ),
+						'content' => trim( $innerHTML ),
+					);
+				}
+
+				foreach ( $module_xpath->query( '//*/img[@editable]' ) as $i => $img ) {
+					if ( ! $i ) {
+						$obj_module['img'] = array();
+					}
+
+					$src = $img->getAttribute( 'src' );
+					if ( strpos( $src, admin_url( 'admin-ajax.php?action=mailster_image_placeholder' ) ) !== false ) {
+						parse_str( $src, $query );
+						$src = '{' . $query['tag'] . '}';
+					}
+					$obj_module['img'][] = array(
+						'label' => $img->getAttribute( 'label' ),
+						'src' => $src,
+						'alt' => $img->getAttribute( 'alt' ),
+						'crop' => $img->getAttribute( 'data-crop' ),
+						'width' => $img->getAttribute( 'width' ),
+						'height' => $img->getAttribute( 'height' ),
+						'content' => $img->ownerDocument->saveXML( $img ),
+					);
+				}
+
+				foreach ( $module_xpath->query( '//*/a[@editable]' ) as $i => $btn ) {
+					if ( ! $i ) {
+						$obj_module['buttons'] = array();
+					}
+					$obj_module['buttons'][] = array(
+						'label' => $btn->getAttribute( 'label' ),
+						'href' => $btn->getAttribute( 'href' ),
+						// 'width' => $btn->getAttribute( 'width' ),
+						// 'height' => $btn->getAttribute( 'height' ),
+						'text' => strip_tags( $btn->ownerDocument->saveXML( $btn ) ),
+						'content' => $btn->ownerDocument->saveXML( $btn ),
+					);
+				}
+
+				$object->modules[] = $obj_module;
+			}
 		}
 
-		echo '<pre>' . esc_html( print_r( $object, true ) ) . '</pre>';
-		// echo '<pre>'.esc_html(print_r($html, true)).'</pre>';
+		echo '<pre>' . esc_html( print_r( ($object), true ) ) . '</pre>';
 		die();
-
-		return ( $campaign && $campaign->post_type == 'newsletter' ) ? $campaign : false;
 
 	}
 
