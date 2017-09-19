@@ -1,11 +1,11 @@
-html.mailster-emebed-form, html.mailster-emebed-form body,.mailster-form-body{
+html.mailster-embeded-form, html.mailster-embeded-form body,.mailster-form-body{
 	cursor: default;
 	height: 100%;
 	min-height: 100%;
 	-webkit-font-smoothing: antialiased;
 	margin:0;
 }
-html.mailster-emebed-form body{
+html.mailster-embeded-form body{
 	font-size: 15px;
 	font-family:'Helvetica Neue',Arial,sans-serif;
 }
@@ -20,7 +20,7 @@ html.mailster-emebed-form body{
 	transition:opacity .15s ease-in-out;
 	opacity:0;
 }
-html.mailster-emebed-form body:before, html.mailster-emebed-form body:after{
+html.mailster-embeded-form body:before, html.mailster-embeded-form body:after{
 	display: none;
 }
 .mailster-form-wrap{
@@ -36,7 +36,7 @@ html.mailster-emebed-form body:before, html.mailster-emebed-form body:after{
 	padding: 1px 3px 5px;
 	-webkit-overflow-scrolling: touch;
 }
-html.mailster-emebed-form.unload .mailster-form-wrap{
+html.mailster-embeded-form.unload .mailster-form-wrap{
 	overflow: hidden;
 }
 .mailster-form-inner{
@@ -58,20 +58,20 @@ html.mailster-emebed-form.unload .mailster-form-wrap{
 	border: 1px solid #999;
 	border-radius: 2px;
 }
-html.mailster-emebed-form.loaded .mailster-form-body{
+html.mailster-embeded-form.loaded .mailster-form-body{
 	opacity:1;
 }
-html.mailster-emebed-form.unload .mailster-form-body {
+html.mailster-embeded-form.unload .mailster-form-body {
 	opacity:0;
 }
-html.mailster-emebed-form.loaded .mailster-form-inner{
+html.mailster-embeded-form.loaded .mailster-form-inner{
 	-webkit-transform: scale(1) rotate(0.0001deg);
 	-moz-transform: scale(1) rotate(0.0001deg);
 	-ms-transform: scale(1) rotate(0.0001deg);
 	transform: scale(1) rotate(0.0001deg);
 	opacity:1;
 }
-html.mailster-emebed-form.unload .mailster-form-inner{
+html.mailster-embeded-form.unload .mailster-form-inner{
 	-webkit-box-shadow: 0 0px 0px rgba(0,0,0,0.26);
 	box-shadow: 0 0px 0px rgba(0,0,0,0.26);
 	-webkit-transform: translateY(10%);
