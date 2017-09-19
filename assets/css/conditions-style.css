@@ -63,11 +63,6 @@
 .mailster-condition-container{
 	display: none;
 }
-.mailster-condition-render{
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
 .mailster-conditions .mailster-condition:after{
 	display: table;
 	content:'';
@@ -141,6 +136,23 @@
 .mailster-conditions .datepicker.condition-value{
 	width: 100px;
 }
+.mailster-condition .mailster-conditions-value-field p, .mailster-condition .mailster-conditions-value-field ul{
+	margin: 0;
+}
+.mailster-condition .mailster-rating span{
+	color: #e6b800;
+	display: inline-block;
+	font-size: 16px;
+	cursor: pointer;
+	padding: 3px 0;
+}
+.mailster-condition .mailster-rating span:before{
+	content: '\e82e';
+}
+.mailster-condition .mailster-rating span.enabled:before{
+	content: '\e82d';
+}
+
 .mailster-conditions .mailster-conditions-value-field-multiselect:first-child{
 	display: inline-block;
 }

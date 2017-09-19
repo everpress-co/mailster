@@ -447,33 +447,36 @@ jQuery(document).ready(function ($) {
 				});
 
 			if (typeof jQuery.datepicker == 'object') {
-				$('input.datepicker').datepicker({
-					dateFormat: 'yy-mm-dd',
-					minDate: new Date(),
-					firstDay: mailsterL10n.start_of_week,
-					showWeek: true,
-					dayNames: mailsterL10n.day_names,
-					dayNamesMin: mailsterL10n.day_names_min,
-					monthNames: mailsterL10n.month_names,
-					prevText: mailsterL10n.prev,
-					nextText: mailsterL10n.next,
-					showAnim: 'fadeIn',
-					onClose: function () {
-						var date = $(this).datepicker('getDate');
-						$('.deliverydate').html($(this).val());
-					}
-				});
+				$('#mailster_delivery')
+					.find('input.datepicker').datepicker({
+						dateFormat: 'yy-mm-dd',
+						minDate: new Date(),
+						firstDay: mailsterL10n.start_of_week,
+						showWeek: true,
+						dayNames: mailsterL10n.day_names,
+						dayNamesMin: mailsterL10n.day_names_min,
+						monthNames: mailsterL10n.month_names,
+						prevText: mailsterL10n.prev,
+						nextText: mailsterL10n.next,
+						showAnim: 'fadeIn',
+						onClose: function () {
+							var date = $(this).datepicker('getDate');
+							$('.deliverydate').html($(this).val());
+						}
+					});
 
 				$('input.datepicker.nolimit').datepicker("option", "minDate", null);
 
 
 			} else {
 
-				$('input.datepicker').prop('readonly', false);
+				$('#mailster_delivery')
+					.find('input.datepicker').prop('readonly', false);
 
 			}
 
-			$('input.datepicker')
+			$('#mailster_delivery')
+				.find('input.datepicker')
 				.on('focus', function () {
 					$(this).removeClass('inactive').trigger('click');
 				})
@@ -633,7 +636,7 @@ jQuery(document).ready(function ($) {
 					_updateReceiversCount();
 				})
 				.on('click', '.edit-conditions', function () {
-					tb_show(mailsterL10n.edit_conditions, '#TB_inline?x=1&width=680&height=520&inlineId=receivers-dialog', null);
+					tb_show(mailsterL10n.edit_conditions, '#TB_inline?x=1&width=720&height=520&inlineId=receivers-dialog', null);
 					return false;
 				});
 

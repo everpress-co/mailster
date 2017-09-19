@@ -64,7 +64,12 @@ class MailsterConditions {
 
 	private function get_custom_fields() {
 		$custom_fields = mailster()->get_custom_fields( );
-		$custom_fields = wp_parse_args( array( 'firstname' => array( 'name' => mailster_text( 'firstname' ) ), 'lastname' => array( 'name' => mailster_text( 'lastname' ) ) ), (array) $custom_fields );
+		$custom_fields = wp_parse_args((array) $custom_fields,  array(
+			'email' => array( 'name' => mailster_text( 'email' ) ),
+			'firstname' => array( 'name' => mailster_text( 'firstname' ) ),
+			'lastname' => array( 'name' => mailster_text( 'lastname' ) ),
+			'rating' => array( 'name' => __( 'Rating', 'mailster' ) ),
+		));
 
 		return $custom_fields;
 	}
@@ -81,15 +86,15 @@ class MailsterConditions {
 			'hash' => __( 'Hash', 'mailster' ),
 			'email' => __( 'Email', 'mailster' ),
 			'wp_id' => __( 'WordPress User ID', 'mailster' ),
-			'status' => __( 'Status', 'mailster' ),
+			// 'status' => __( 'Status', 'mailster' ),
 			'added' => __( 'Added', 'mailster' ),
 			'updated' => __( 'Updated', 'mailster' ),
 			'signup' => __( 'Signup', 'mailster' ),
 			'confirm' => __( 'Confirm', 'mailster' ),
 			'ip_signup' => __( 'IP on Signup', 'mailster' ),
 			'ip_confirm' => __( 'IP on confirmation', 'mailster' ),
-			'rating' => __( 'Rating', 'mailster' ),
-			'lang' => __( 'Language', 'mailster' ),
+			// 'rating' => __( 'Rating', 'mailster' ),
+			// 'lang' => __( 'Language', 'mailster' ),
 		);
 
 		return $fields;
@@ -108,12 +113,12 @@ class MailsterConditions {
 			'referer' => __( 'Referer', 'mailster' ),
 			'client' => __( 'Client', 'mailster' ),
 			'clienttype' => __( 'Clienttype', 'mailster' ),
-			'coords' => __( 'Coords', 'mailster' ),
-			'geo' => __( 'Geo', 'mailster' ),
-			'lang' => __( 'Language', 'mailster' ),
-			'timeoffset' => __( 'Timeoffset', 'mailster' ),
-			'lat' => __( 'Latitude', 'mailster' ),
-			'lng' => __( 'Longitude', 'mailster' ),
+			// 'coords' => __( 'Coords', 'mailster' ),
+			// 'geo' => __( 'Geo', 'mailster' ),
+			// 'lang' => __( 'Language', 'mailster' ),
+			// 'timeoffset' => __( 'Timeoffset', 'mailster' ),
+			// 'lat' => __( 'Latitude', 'mailster' ),
+			// 'lng' => __( 'Longitude', 'mailster' ),
 		);
 
 		return $meta_fields;
@@ -155,6 +160,17 @@ class MailsterConditions {
 			'is_smaller_equal' => __( 'is smaller or equal', 'mailster' ),
 			'pattern' => __( 'match regex pattern', 'mailster' ),
 			'not_pattern' => __( 'does not match regex pattern', 'mailster' ),
+		);
+
+	}
+	private function get_simple_operators() {
+		return array(
+			'is' => __( 'is', 'mailster' ),
+			'is_not' => __( 'is not', 'mailster' ),
+			'is_greater' => __( 'is greater', 'mailster' ),
+			'is_smaller' => __( 'is smaller', 'mailster' ),
+			'is_greater_equal' => __( 'is greater or equal', 'mailster' ),
+			'is_smaller_equal' => __( 'is smaller or equal', 'mailster' ),
 		);
 
 	}
@@ -225,18 +241,22 @@ class MailsterConditions {
 			if ( ! is_array( $condition['value'] ) ) {
 				$condition['value'] = array( $condition['value'] );
 			}
-			// foreach ($condition['value'] as $key => $value) {
-			// if ( strpos( $condition['field'], '_click_link' ) !== false ) {
-			// $return['value'] .= '<a href="' . esc_url( $value ) . '">' . esc_url( $value ) . '</a>';
-			// } else {
-			// $return['value'] .= '<a href="' . admin_url( 'post.php?post=' . $value . '&action=edit' ) . '">' . get_the_title( $value ) . '</a>';
-			// }
-			// }
 			if ( strpos( $condition['field'], '_click_link' ) !== false ) {
 				$return['value'] = implode( ' ' . __( 'or', 'mailster' ) . ' ', array_map( 'esc_url', $condition['value'] ) );
 			} else {
-				$return['value'] = '&quot;' . implode( '&quot; ' . __( 'or', 'mailster' ) . ' &quot;', array_map( 'get_the_title', $condition['value'] ) ) . '&quot;';
+				$return['value'] = '&quot;' . implode( '&quot; ' . __( 'or', 'mailster' ) . ' &quot;', array_map( array( $this, 'get_campaign_title' ), $condition['value'] ) ) . '&quot;';
 			}
+		} elseif ( 'rating' == $condition['field'] ) {
+			$stars = ( round( $this->sanitize_rating( $condition['value'] ) / 10, 2 ) * 50 );
+			$full = max( 0, min( 5, floor( $stars ) ) );
+			$half = max( 0, min( 5, round( $stars - $full ) ) );
+			$empty = max( 0, min( 5, 5 - $full - $half ) );
+			$return['operator'] = '<em>' . $this->nice_name( $condition['operator'], 'operator', $condition['field'] ) . '</em>';
+			$return['value'] = '<span class="screen-reader-text">' . sprintf( __( '%d stars', 'mailster' ), $full ) . '</span>'
+			. str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
+			. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
+			. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty );
+
 		} else {
 			$return['operator'] = '<em>' . $this->nice_name( $condition['operator'], 'operator', $condition['field'] ) . '</em>';
 			$return['value'] = '&quot;<strong>' . $this->nice_name( $condition['value'], 'value', $condition['field'] ) . '</strong>&quot;';
@@ -244,6 +264,26 @@ class MailsterConditions {
 
 		return $formated ? $return : strip_tags( $return );
 
+	}
+
+
+	private function sanitize_rating( $value ) {
+		$value = str_replace( ',', '.', $value );
+		if ( strpos( $value, '%' ) !== false || $value > 5 ) {
+			$value = floatval( $value ) / 100;
+		} elseif ( $value > 1 ) {
+			$value = floatval( $value ) * 0.2;
+		}
+		return $value;
+	}
+
+	public function get_campaign_title( $post ) {
+
+		$title = get_the_title( $post );
+		if ( empty( $title ) ) {
+			$title = '#' . $post;
+		}
+		return $title;
 	}
 
 

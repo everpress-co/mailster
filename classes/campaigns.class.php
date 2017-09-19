@@ -893,7 +893,7 @@ class MailsterCampaigns {
 
 								echo '<br>' . __( 'only if', 'mailster' ) . '<br>';
 
-								mailster( 'conditions' )->render( $meta['list_conditions']['conditions'], $condition['operator'] );
+								mailster( 'conditions' )->render( $meta['list_conditions']['conditions'], $meta['list_conditions']['operator'] );
 							}
 
 							echo '</span>';
@@ -1660,7 +1660,9 @@ class MailsterCampaigns {
 
 			$postdata['list']['conditions'] = array_values( $postdata['list']['conditions'] );
 			foreach ( $postdata['list']['conditions'] as $i => $cond ) {
-				if ( is_array( $postdata['list']['conditions'][ $i ]['value'] ) ) {
+				if ( ! isset( $postdata['list']['conditions'][ $i ]['field'] ) ) {
+					unset( $postdata['list']['conditions'][ $i ] );
+				} elseif ( is_array( $postdata['list']['conditions'][ $i ]['value'] ) ) {
 					$postdata['list']['conditions'][ $i ]['value'] = array_values( array_unique( $postdata['list']['conditions'][ $i ]['value'] ) );
 				} else {
 

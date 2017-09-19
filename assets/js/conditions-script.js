@@ -8,6 +8,7 @@ jQuery(document).ready(function ($) {
 		value_fields;
 
 	cond.eq(0).appendTo($('.mailster-condition-container'));
+	datepicker();
 
 	$('.mailster-conditions-thickbox')
 		.on('change', '.mailster-list-operator', function () {
@@ -24,21 +25,9 @@ jQuery(document).ready(function ($) {
 					name = _this.attr('name');
 				_this.attr('name', name.replace(/\[\d+\]/, '[' + id + ']')).prop('disabled', false);
 			});
-			clone.find('.datepicker').datepicker({
-				dateFormat: 'yy-mm-dd',
-				minDate: new Date(),
-				firstDay: mailsterL10n.start_of_week,
-				showWeek: true,
-				dayNames: mailsterL10n.day_names,
-				dayNamesMin: mailsterL10n.day_names_min,
-				monthNames: mailsterL10n.month_names,
-				prevText: mailsterL10n.prev,
-				nextText: mailsterL10n.next,
-				showAnim: 'fadeIn',
-			});
 			clone.find('.condition-field').val('').focus();
 			//clone.find('select.select2').select2();
-
+			datepicker();
 			cond = $('.mailster-condition');
 		})
 		.on('click', '.close', function () {
@@ -86,6 +75,14 @@ jQuery(document).ready(function ($) {
 		.on('change', '.mailster-conditions-value-field-multiselect > .condition-value', function () {
 			if (0 == $(this).val() && $(this).parent().parent().find('.condition-value').size() > 1) $(this).parent().remove();
 		})
+		.on('click', '.mailster-rating > span', function (event) {
+			var _this = $(this),
+				_prev = _this.prevAll(),
+				_all = _this.siblings();
+			_all.removeClass('enabled');
+			_prev.add(_this).addClass('enabled');
+			_this.parent().parent().find('.condition-value').val((_prev.length + 1) / 5).trigger('change');
+		})
 		.find('.condition-field').prop('disabled', false).trigger('change');
 
 	function serialize() {
@@ -100,6 +97,22 @@ jQuery(document).ready(function ($) {
 
 		console.log(encodeURIComponent(str));
 
+	}
+
+
+	function datepicker() {
+		$('.mailster-conditions').find('.datepicker').datepicker({
+			dateFormat: 'yy-mm-dd',
+			//minDate: new Date(),
+			firstDay: mailsterL10n.start_of_week,
+			showWeek: true,
+			dayNames: mailsterL10n.day_names,
+			dayNamesMin: mailsterL10n.day_names_min,
+			monthNames: mailsterL10n.month_names,
+			prevText: mailsterL10n.prev,
+			nextText: mailsterL10n.next,
+			showAnim: 'fadeIn',
+		});
 	}
 
 
