@@ -131,24 +131,30 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		switch ( $column_name ) {
 
-			case 'avatar':
-			return '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '"><span class="mailster-avatar-40' . ( $item->wp_id ? ' wp-user' : '' ) . '" style="background-image:url(' . mailster( 'subscribers' )->get_gravatar_uri( $item->email, 80 ) . ')"></span></a>';
-
 			case 'name':
+
+				if ( ! mailster_option( 'disable_avatar' ) ) {
+					$avatar = '<div class="mailster-avatar"><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '"><span class="mailster-avatar-40' . ( $item->wp_id ? ' wp-user' : '' ) . '" style="background-image:url(' . mailster( 'subscribers' )->get_gravatar_uri( $item->email, 80 ) . ')"></span></a></div>';
+				} else {
+					$avatar = '';
+				}
 
 				if ( $item->fullname ) {
 					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '">' . $item->fullname . '</a><br><a class="email" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $item->{'email'} . '</a>';
 				} else {
-					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $item->{'email'} . '</a>';
+					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $item->{'email'} . '</a><br><span class="email">&nbsp;</span>';
 				}
 
-					$stars = ( round( $item->rating / 10, 2 ) * 50 );
-					$full = max( 0, min( 5, floor( $stars ) ) );
-					$half = max( 0, min( 5, round( $stars - $full ) ) );
-					$empty = max( 0, min( 5, 5 - $full - $half ) );
-			return $html . '<div class="userrating" title="' . ( $item->rating * 100 ) . '%">' . str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
+				$stars = ( round( $item->rating / 10, 2 ) * 50 );
+				$full = max( 0, min( 5, floor( $stars ) ) );
+				$half = max( 0, min( 5, round( $stars - $full ) ) );
+				$empty = max( 0, min( 5, 5 - $full - $half ) );
+
+				$userrating = '<div class="userrating" title="' . ( $item->rating * 100 ) . '%">' . str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty ) . '</div>';
+
+			return $avatar . '<div class="mailster-name">' . $html . $userrating . '</div>';
 
 			case 'lists':
 

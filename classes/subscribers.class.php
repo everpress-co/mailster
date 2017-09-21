@@ -126,7 +126,6 @@ class MailsterSubscribers {
 
 		$columns = array(
 			'cb' => '<input type="checkbox" />',
-			'avatar' => '',
 			'name' => __( 'Name', 'mailster' ),
 		);
 		$custom_fields = mailster()->get_custom_fields();
@@ -2603,9 +2602,15 @@ class MailsterSubscribers {
 
 		$return['success'] = true;
 
-		$html = '<div class="user_image" title="' . __( 'Source', 'mailster' ) . ': Gravatar.com" data-email="' . $subscriber->email . '" style="background-image:url(' . $this->get_gravatar_uri( $subscriber->email, 240 ) . ')"></div>';
+		$avatar = ! mailster_option( 'disable_avatar' );
 
-		$html .= '<div class="receiver-detail-data">';
+		$html = '';
+
+		if ( $avatar ) :
+			$html .= '<div class="user_image" title="' . __( 'Source', 'mailster' ) . ': Gravatar.com" data-email="' . $subscriber->email . '" style="background-image:url(' . $this->get_gravatar_uri( $subscriber->email, 240 ) . ')"></div>';
+		endif;
+
+		$html .= '<div class="receiver-detail-data ' . ($avatar ? 'has-avatar' : '') . '">';
 		$html .= '<h4>' . ( $subscriber->fullname ? $subscriber->fullname : $subscriber->email ) . ' <a href="edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID . '">' . __( 'edit', 'mailster' ) . '</a></h4>';
 		$html .= '<ul>';
 

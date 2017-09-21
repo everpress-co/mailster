@@ -13,10 +13,15 @@
 }
 .widefat .column-avatar{width:46px;}
 .widefat .column-userrating{width:85px;}
-.widefat .column-email{width:260px;}
+.widefat .column-name{white-space:nowrap;overflow:hidden;}
 .widefat .column-emails{width:50px;text-align:right;}
 .widefat .column-status{width:100px;}
 .widefat .column-signup{width:130px;}
+.mailster-avatar{
+	display: inline-block;
+	transform: translateY(-8px);
+	margin-right: 8px;
+}
 .mailster-avatar-40{
 	display: block;
 	width:40px;
@@ -28,6 +33,9 @@
 	background-repeat: no-repeat;
 	background-size: 40px 40px;
 	margin-bottom: 4px;
+}
+.mailster-name{
+	display: inline-block;
 }
 .userrating .mailster-icon{
 }

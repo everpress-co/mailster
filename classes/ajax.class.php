@@ -1967,8 +1967,12 @@ class MailsterAjax {
 
 		$email = esc_attr( $_POST['email'] );
 
-		$return['success'] = true;
-		$return['url'] = mailster( 'subscribers' )->get_gravatar_uri( $email, 400 );
+		if ( mailster_option( 'disable_avatar' ) ) {
+			$return['url'] = null;
+		} else {
+			$return['success'] = true;
+			$return['url'] = mailster( 'subscribers' )->get_gravatar_uri( $email, 400 );
+		}
 
 		$this->json_return( $return );
 
