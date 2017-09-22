@@ -77,9 +77,7 @@ jQuery(document).ready(function ($) {
 					save: function () {
 						_trigger('save');
 					},
-					trigger: function (event, args) {
-						_trigger(event, args);
-					},
+					trigger: _trigger,
 					editbar: editbar,
 					autosave: '',
 				};
@@ -3608,7 +3606,7 @@ jQuery(document).ready(function ($) {
 		}, 10);
 	})
 
-	.on('Mailster:resize', function (event) {
+	.on('Mailster:resize', function () {
 		var delay = 0,
 			extra = 0;
 		if (!iframeloaded) return false;
@@ -3659,40 +3657,22 @@ jQuery(document).ready(function ($) {
 		isDisabled = false;
 	})
 
+	.on('Mailster:selectModule', function (event) {
+		var module = event.detail[0];
+	})
+
 	.on('Mailster:xxx', function () {});
 
-	function _trigger(triggerevent, args) {
+	function _trigger() {
 
-		var args = [];
-		Array.prototype.push.apply(args, arguments);
-		var triggerevent = args.shift();
-		console.log('Trigger: ' + triggerevent, args);
-
+		var triggerevent = arguments[0];
+		var args = arguments[1] || null;
 		var event = new CustomEvent('Mailster:' + triggerevent, {
-			data: args
+			'detail': args,
 		});
 
 		window.dispatchEvent(event);
 		_iframe[0].contentWindow.window.dispatchEvent(event);
-
-		return;
-		if (document.createEvent) {
-			e = document.createEvent("HTMLEvents");
-			e.initEvent('Mailster:' + triggerevent, true, true);
-		} else {
-			e = document.createEventObject();
-			e.eventType = 'Mailster:' + triggerevent;
-		}
-
-		e.eventName = 'Mailster:' + triggerevent;
-
-		if (document.createEvent) {
-			window.dispatchEvent(e);
-			_iframe[0].contentWindow.window.dispatchEvent(e);
-		} else {
-			window.fireEvent("on" + e.eventType, e);
-			_iframe[0].contentWindow.window.fireEvent("on" + e.eventType, e);
-		}
 	}
 
 	function _editButtons() {
@@ -3955,7 +3935,7 @@ jQuery(document).ready(function ($) {
 		clone = $('<div>' + body.innerHTML + '</div>');
 
 		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
-		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class');
+		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class active');
 		content = $.trim(clone.html());
 
 		bodyattributes = body.attributes;

@@ -92,7 +92,7 @@ button.mailster-btn-inline:focus{
 module button.mailster-btn-inline{
 	display: none;
 }
-module:hover button.mailster-btn-inline{
+module:hover button.mailster-btn-inline, module[active] button.mailster-btn-inline{
 	display: block;
 }
 button.mailster-btn-inline.addrepeater{
@@ -119,12 +119,15 @@ modulebuttons {
 	right:-31px;
 	text-align: right;
 	z-index: 100;
-	top: 50%;
-	-webkit-transform:translateY(-50%);
-	-moz-transform:translateY(-50%);
-	-ms-transform:translateY(-50%);
-	transform:translateY(-50%);
+	_top: 50%;
+	_-webkit-transform:translateY(-50%);
+	_-moz-transform:translateY(-50%);
+	_-ms-transform:translateY(-50%);
+	_transform:translateY(-50%);
 	display: block;
+}
+module[active] modulebuttons{
+	transform:translateY(-30px);
 }
 [mailster-is-rtl] modulebuttons {
 	right:inherit;
@@ -132,26 +135,29 @@ modulebuttons {
 }
 modulebuttons a.mailster-btn {
 	padding: 5px 6px;
-	display:block;
+	_display:block;
+	display:inline-block;
 	position:relative;
 	margin:0;
 	height:18px;
 	border: 0;
-	border-left:1px solid #DFDFDF;
-	background: #fff;
+	_border-left:1px solid #DFDFDF;
+	_background: #fff;
+	background: rgba(43, 179, 231, 0.8);
+	color:#fff;
 	line-height:18px;
 	width:18px;
 }
 [mailster-is-rtl] modulebuttons a.mailster-btn {
 	border-left:0;
-	border-right:1px solid #DFDFDF;
+	_border-right:1px solid #DFDFDF;
 }
 modulebuttons a:first-child {
-	border-top:1px solid #DFDFDF;
+	_border-top:1px solid #DFDFDF;
 	border-radius: 2px 0 0 0;
 }
 modulebuttons a:last-child {
-	border-bottom:1px solid #DFDFDF;
+	_border-bottom:1px solid #DFDFDF;
 	border-radius: 0 0 0 2px;
 }
 modulebuttons input.modulelabel {
@@ -204,13 +210,17 @@ elseif {
 else {
 	color: #ccc;
 }
-module:hover {
+module:hover, module[active] {
 	background-color:rgba(43, 179, 231, 0.1);
 	-webkit-box-shadow:0px 0px 0px 2px rgba(43, 179, 231, 0.8);
 	box-shadow:0px 0px 0px 2px rgba(43, 179, 231, 0.8);
 	z-index: 9000;
 }
+module[active] {
+	background-color:rgba(43, 179, 231, 0.2);
+}
 module[label]:before,
+module[label][active]:before,
 multi[label]:before,
 single[label]:before,
 img[editable][label]:before,
@@ -238,6 +248,7 @@ th[background][label]:before {
 	white-space: nowrap;
 }
 [mailster-is-rtl] module[label]:before,
+[mailster-is-rtl] module[label][active]:before,
 [mailster-is-rtl] multi[label]:before,
 [mailster-is-rtl] single[label]:before,
 [mailster-is-rtl] img[editable][label]:before,
@@ -250,6 +261,7 @@ th[background][label]:before {
 	right:0;
 }
 module[label]:hover:before,
+module[label][active]:before,
 multi[label]:hover:before,
 single[label]:hover:before,
 img[editable][label]:hover:before,
@@ -262,6 +274,7 @@ th[background][label]:hover:before {
 	opacity: 1;
 }
 [mailster-is-rtl] module[label]:hover:before,
+[mailster-is-rtl] module[label][active]:before,
 [mailster-is-rtl] multi[label]:hover:before,
 [mailster-is-rtl] single[label]:hover:before,
 [mailster-is-rtl] img[editable][label]:hover:before,
@@ -282,24 +295,24 @@ module[label]:before {
 	-ms-transform:translate(6px, -1px);
 	transform:translate(6px, -1px);
 }
-module[label]:hover:before {
+module[label]:hover:before, module[label][active]:before {
 	opacity: 0.8;
 	-webkit-transform:translate(-1px, -1px);
 	-ms-transform:translate(-1px, -1px);
 	transform:translate(-1px, -1px);
 }
-[mailster-is-rtl] module[label]:hover:before {
+[mailster-is-rtl] module[label]:hover:before, [mailster-is-rtl] module[label][active]:before {
 	-webkit-transform:translate(1px, -1px);
 	-ms-transform:translate(1px, -1px);
 	transform:translate(1px, -1px);
 }
-module:hover modulebuttons,.ie module modulebuttons {
-	right:-2px;
+module:hover modulebuttons,module[active] modulebuttons,.ie module modulebuttons {
+	_right:-2px;
 	opacity:1;
 }
-[mailster-is-rtl] module:hover modulebuttons {
+[mailster-is-rtl] module:hover modulebuttons, [mailster-is-rtl] module[active] modulebuttons {
 	right:inherit;
-	left:-2px;
+	_left:-2px;
 }
 module:first-child modulebuttons a.up, module:last-child modulebuttons a.down {
 	display:none;
@@ -468,11 +481,11 @@ body.drag-active modules dropzone.visible{
 	line-height: 80px;
 	opacity: 0.6;
 }
-body.drag-active modules module:hover {
+body.drag-active modules module:hover, body.drag-active modules module[active] {
 	box-shadow: none;
 	background-image:none;
 }
-body.drag-active modules module:hover .modulebuttons, body.drag-active.ie modules module .modulebuttons {
+body.drag-active modules module:hover modulebuttons, body.drag-active modules module[active] modulebuttons, body.drag-active.ie modules module modulebuttons {
 	display: none;
 }
 modules.ui-sortable module{

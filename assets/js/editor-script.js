@@ -6,6 +6,7 @@ jQuery(document).ready(function ($) {
 	var html = $('html'),
 		body = $('body'),
 		uploader, container, modules, images, buttons, repeatable, selection,
+		currentmodule,
 		isTinymce = typeof tinymce != 'undefined';
 
 	window.ajaxurl = window.ajaxurl || window.mailsterdata.ajaxurl;
@@ -15,6 +16,15 @@ jQuery(document).ready(function ($) {
 		body
 			.on('click', 'a', function (event) {
 				event.preventDefault();
+			})
+			.on('click', function (event) {
+				if (currentmodule) {
+					currentmodule.removeAttr('active');
+				}
+			})
+			.on('click', 'module', function (event) {
+				event.stopPropagation();
+				_trigger('selectModule', $(this));
 			})
 			.on('click', 'button.addbutton', function () {
 				var data = $(this).data(),
@@ -228,6 +238,7 @@ jQuery(document).ready(function ($) {
 			stop: function (event, ui) {
 				event.stopPropagation();
 				container.removeClass('dragging');
+				//_trigger('selectModule', ui.item);
 				setTimeout(function () {
 					_trigger('refresh');
 				}, 200);
@@ -634,13 +645,22 @@ jQuery(document).ready(function ($) {
 		.on('Mailster:resize', function () {
 			_resize();
 		})
+		.on('Mailster:selectModule', function (event) {
+			var module = event.detail[0];
+			if (currentmodule) {
+				currentmodule.removeAttr('active');
+			}
+			currentmodule = module;
+			currentmodule.attr('active', true);
+		})
 
-
-	function _trigger(triggerevent, args) {
+	function _trigger() {
 		if (!window.Mailster) {
 			window.Mailster = parent.window.Mailster;
 		}
 		if (!window.Mailster) return;
+		var args = jQuery.makeArray(arguments);
+		var triggerevent = args.shift();
 		window.Mailster.trigger(triggerevent, args);
 	}
 
