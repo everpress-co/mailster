@@ -23,8 +23,10 @@ jQuery(document).ready(function ($) {
 				}
 			})
 			.on('click', 'module', function (event) {
-				event.stopPropagation();
-				_trigger('selectModule', $(this));
+				if ('MODULE' == event.target.nodeName) {
+					event.stopPropagation();
+					_trigger('selectModule', $(this));
+				}
 			})
 			.on('click', 'button.addbutton', function () {
 				var data = $(this).data(),
@@ -175,6 +177,7 @@ jQuery(document).ready(function ($) {
 				change = true;
 			});
 			editor.on('click', function (event) {
+				_trigger('selectModule', $(event.currentTarget).closest('module'));
 				event.stopPropagation();
 				editor.focus();
 			});
@@ -646,7 +649,7 @@ jQuery(document).ready(function ($) {
 			_resize();
 		})
 		.on('Mailster:selectModule', function (event) {
-			var module = event.detail[0];
+			var module = $(event.detail[0]);
 			if (currentmodule) {
 				currentmodule.removeAttr('active');
 			}

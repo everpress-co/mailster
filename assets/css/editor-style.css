@@ -116,7 +116,8 @@ modulebuttons {
 	transition:all .15s ease-in-out;
 	opacity: 0;
 	position: absolute;
-	right:-31px;
+	_right:-31px;
+	right:0px;
 	text-align: right;
 	z-index: 100;
 	_top: 50%;
@@ -127,14 +128,16 @@ modulebuttons {
 	display: block;
 }
 module[active] modulebuttons{
-	transform:translateY(-30px);
+	transform:translateY(-35px);
 }
 [mailster-is-rtl] modulebuttons {
 	right:inherit;
-	left:-31px;
+	_left:-31px;
+	left:0;
 }
 modulebuttons a.mailster-btn {
-	padding: 5px 6px;
+	_padding: 5px 6px;
+	padding: 8px 9px;
 	_display:block;
 	display:inline-block;
 	position:relative;
@@ -149,16 +152,16 @@ modulebuttons a.mailster-btn {
 	width:18px;
 }
 [mailster-is-rtl] modulebuttons a.mailster-btn {
-	border-left:0;
+	_border-left:0;
 	_border-right:1px solid #DFDFDF;
 }
 modulebuttons a:first-child {
 	_border-top:1px solid #DFDFDF;
-	border-radius: 2px 0 0 0;
+	_border-radius: 2px 0 0 0;
 }
 modulebuttons a:last-child {
 	_border-bottom:1px solid #DFDFDF;
-	border-radius: 0 0 0 2px;
+	_border-radius: 0 0 0 2px;
 }
 modulebuttons input.modulelabel {
 	-webkit-transition:all .15s ease-in-out;
@@ -214,7 +217,7 @@ module:hover, module[active] {
 	background-color:rgba(43, 179, 231, 0.1);
 	-webkit-box-shadow:0px 0px 0px 2px rgba(43, 179, 231, 0.8);
 	box-shadow:0px 0px 0px 2px rgba(43, 179, 231, 0.8);
-	z-index: 9000;
+	z-index: 9100;
 }
 module[active] {
 	background-color:rgba(43, 179, 231, 0.2);
@@ -552,6 +555,9 @@ modules.ui-sortable.dragging module.ui-sortable-helper{
 	-webkit-transform:scale(1.03);
 	-ms-transform:scale(1.03);
 	transform:scale(1.03);
+}
+modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
+	display: none;
 }
 .mailster-upload-info{
 	position: absolute;

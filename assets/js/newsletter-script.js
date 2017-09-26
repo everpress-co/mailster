@@ -2754,6 +2754,7 @@ jQuery(document).ready(function ($) {
 
 			current = data;
 			var el = data.element,
+				module = el.closest('module'),
 				top = (type != 'img') ? data.offset.top : 0,
 				name = data.name || '',
 				type = data.type,
@@ -2774,6 +2775,8 @@ jQuery(document).ready(function ($) {
 			current.content = content;
 
 			currenttag = current.element.data('tag');
+
+			_trigger('selectModule', module);
 
 			if (condition.length) {
 
@@ -3322,7 +3325,7 @@ jQuery(document).ready(function ($) {
 
 		function duplicate() {
 			var module = $(this).parent().parent().parent(),
-				clone = module.clone().hide();
+				clone = module.clone().removeAttr('active').hide();
 
 			//_container.addClass('noeditbuttons');
 
