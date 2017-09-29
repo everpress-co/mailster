@@ -543,14 +543,18 @@ class MailsterPlaceholder {
 		$dateformat = get_option( 'date_format' );
 
 		// placeholder images
-		if ( $count = preg_match_all( '#<img(.*)src="' . admin_url( 'admin-ajax.php' ) . '\?action=mailster_image_placeholder([^"]+)"(.*)>#', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#<img(.*)src="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
 				$search = $hits[0][ $i ];
+				// check if string is still there
+				if ( $i && false === strrpos( $this->content, $search ) ) {
+					continue;
+				}
 				$pre_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[1][ $i ] );
-				$post_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[3][ $i ] );
-				$querystring = str_replace( '&amp;', '&', $hits[2][ $i ] );
+				$querystring = str_replace( '&amp;', '&', $hits[3][ $i ] );
+				$post_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[4][ $i ] );
 
 				parse_str( $querystring, $query );
 
@@ -582,7 +586,7 @@ class MailsterPlaceholder {
 								continue;
 							}
 
-								$post = get_post( $post_id );
+							$post = get_post( $post_id );
 
 						}
 
@@ -614,9 +618,9 @@ class MailsterPlaceholder {
 
 							} elseif ( ! empty( $org_src[0] ) ) {
 
-									$replace_to = '<img ' . $pre_stuff . 'src="' . $org_src[0] . '" ' . $post_stuff . '>';
+								$replace_to = '<img ' . $pre_stuff . 'src="' . $org_src[0] . '" ' . $post_stuff . '>';
 
-									mailster_cache_set( 'mailster_' . $querystring, $replace_to );
+								mailster_cache_set( 'mailster_' . $querystring, $replace_to );
 
 							}
 						} else {

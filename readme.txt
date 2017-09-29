@@ -83,6 +83,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.12 =
 
+* fixed: editbar position issue on Chrome 61
+* improved: placeholder image handling
 
 = Version 2.2.11 =
 
