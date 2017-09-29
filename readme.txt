@@ -2,7 +2,7 @@
 Contributors: EverPress, revaxarts
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.8.1
+Tested up to: 4.8.2
 Stable tag: 2.2.12
 Author: EverPress
 Author URI: https://mailster.co
@@ -84,7 +84,9 @@ Xaver Birsak – https://everpress.io
 = Version 2.2.12 =
 
 * fixed: editbar position issue on Chrome 61
+* fixed: background image not editable if its the first of the template
 * improved: placeholder image handling
+* removed: deprecated jQuery methods
 
 = Version 2.2.11 =
 

@@ -27,6 +27,9 @@ jQuery(document).ready(function ($) {
 		wpnonce = $('#mailster_nonce').val(),
 		iframeloaded = false,
 		timeout, refreshtimout, modules, optionbar, charts, editbar, animateDOM = $('html,body'),
+		isWebkit = 'WebkitAppearance' in document.documentElement.style,
+		isMozilla = (/firefox/i).test(navigator.userAgent),
+		isMSIE = (/msie|trident/i).test(navigator.userAgent),
 		getSelect, selectRange, isDisabled = false,
 		is_touch_device = 'ontouchstart' in document.documentElement,
 		isTinyMCE = typeof tinymce == 'object';
@@ -120,7 +123,7 @@ jQuery(document).ready(function ($) {
 			$('#mailster_delivery').find('a[href="#autoresponder"]').click();
 		}
 
-		if ($.browser.msie) _body.addClass('ie');
+		if (isMSIE) _body.addClass('ie');
 		if (is_touch_device) _body.addClass('touch');
 
 
@@ -3703,8 +3706,7 @@ jQuery(document).ready(function ($) {
 					.on('click.mailster', 'td[background], th[background]', function (event) {
 						event.stopPropagation();
 						if (event.target.tagName.toLowerCase() == 'module' ||
-							this == cont.find('table').eq(0).find('td')[0] ||
-							this == cont.find('table').eq(0).find('th')[0]) return;
+							$(this).height() == cont.height()) return;
 						var $this = $(this),
 							offset = $this.offset(),
 							top = offset.top + 61,
@@ -3949,7 +3951,7 @@ jQuery(document).ready(function ($) {
 			head = parts ? $.trim(parts[1]) : '',
 			bodyattributes = parts ? $('<div' + (parts[2] || '') + '></div>')[0].attributes : '',
 			attrcount = bodyattributes.length,
-			doc = ($.browser.webkit || $.browser.mozilla) ? _iframe[0].contentWindow.document : _idoc,
+			doc = (isWebkit || isMozilla) ? _iframe[0].contentWindow.document : _idoc,
 			//headscripts = $(doc).find('head').find('script'),
 			headstyles = $(doc).find('head').find('link'),
 			headdoc = doc.getElementsByTagName('head')[0];
