@@ -2294,7 +2294,9 @@ jQuery(document).ready(function ($) {
 
 								current.element.removeClass('mailster-loading');
 								var html = current.element.html();
-								current.element.html(_replace(html, orgimageurl.val(), currentimage.url));
+								if(!html.match(/<modules/)){
+									current.element.html(_replace(html, orgimageurl.val(), currentimage.url));
+								}
 
 							}
 							current.element.removeAttr(attribute).attr(attribute, currentimage.url);
@@ -3712,9 +3714,8 @@ jQuery(document).ready(function ($) {
 					})
 					.on('click.mailster', 'td[background], th[background]', function (event) {
 						event.stopPropagation();
-						if (event.target.tagName.toLowerCase() == 'module' ||
-							this == cont.find('table').eq(0).find('td')[0] ||
-							this == cont.find('table').eq(0).find('th')[0]) return;
+						// todo: check if it's the very fist td/th
+						if (!event.target.hasAttribute('background') || event.target.tagName.toLowerCase() == 'module') return;
 						var $this = $(this),
 							offset = $this.offset(),
 							top = offset.top + 61,
@@ -3882,7 +3883,7 @@ jQuery(document).ready(function ($) {
 			return str;
 		do {
 			str = str.replace(match, repl);
-		} while (str.indexOf(match) !== -1);
+		} while (match && str.indexOf(match) !== -1);
 		return str;
 	}
 
