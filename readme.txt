@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 * fixed: editbar position issue on Chrome 61
 * fixed: background image not editable if its the first of the template
 * improved: placeholder image handling
+* improved: loading of user met values
 * removed: deprecated jQuery methods
 
 = Version 2.2.11 =
