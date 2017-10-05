@@ -516,8 +516,13 @@ if ( $old_version ) {
 
 			update_option( 'mailster_hooks', get_option( 'mailster_hooks', '' ) );
 
+		case '2.2.11':
+		case '2.2.12':
+
 		default:
 
+			do_action( 'mailster_update', $old_version, $new_version );
+			do_action( 'mailster_update_' . $old_version, $new_version );
 
 
 	}

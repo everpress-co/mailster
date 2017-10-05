@@ -3,6 +3,7 @@ jQuery(document).ready(function ($) {
 	"use strict"
 
 	var _win = $(window),
+		_doc = $(document),
 		_body = $('body'),
 		_iframe = $('#mailster_iframe'),
 		_template_wrap = $('#template-wrap'),
@@ -25,7 +26,10 @@ jQuery(document).ready(function ($) {
 		_mailsterdata = $('[name^="mailster_data"]'),
 		wpnonce = $('#mailster_nonce').val(),
 		iframeloaded = false,
-		timeout, refreshtimout, modules, optionbar, charts, editbar, animateDOM = $.browser.webkit ? _body : $('html'),
+		timeout, refreshtimout, modules, optionbar, charts, editbar, animateDOM = $('html,body'),
+		isWebkit = 'WebkitAppearance' in document.documentElement.style,
+		isMozilla = (/firefox/i).test(navigator.userAgent),
+		isMSIE = (/msie|trident/i).test(navigator.userAgent),
 		getSelect, selectRange, isDisabled = false,
 		is_touch_device = 'ontouchstart' in document.documentElement,
 		isTinyMCE = typeof tinymce == 'object';
@@ -114,12 +118,12 @@ jQuery(document).ready(function ($) {
 			_container.find('.content.mailster-btn').remove();
 		}
 
-		//switch to autoresponder if referer is right or post_status us set
+		//switch to autoresponder if referer is right or post_status is set
 		if (/post_status=autoresponder/.test($('#referredby').val()) || /post_status=autoresponder/.test(location.search)) {
 			$('#mailster_delivery').find('a[href="#autoresponder"]').click();
 		}
 
-		if ($.browser.msie) _body.addClass('ie');
+		if (isMSIE) _body.addClass('ie');
 		if (is_touch_device) _body.addClass('touch');
 
 
@@ -480,7 +484,7 @@ jQuery(document).ready(function ($) {
 				.on('change', function () {});
 
 			$('input.deliverytime').on('blur', function () {
-				$(document).unbind('.mailster_deliverytime');
+				_doc.unbind('.mailster_deliverytime');
 			}).on('focus, click', function (event) {
 				var $this = $(this),
 					input = $(this)[0],
@@ -495,7 +499,7 @@ jQuery(document).ready(function ($) {
 						endPos = 5;
 				}
 
-				$(document).unbind('.mailster_deliverytime').on('keypress.mailster_deliverytime', function (event) {
+				_doc.unbind('.mailster_deliverytime').on('keypress.mailster_deliverytime', function (event) {
 					if (event.keyCode == 9) {
 						return (c = !c) ? !selectRange(input, 3, 5) : (event.shiftKey) ? !selectRange(input, 0, 2) : true;
 					}
@@ -950,7 +954,7 @@ jQuery(document).ready(function ($) {
 
 			if (typeof wp != 'undefined' && wp.heartbeat) {
 
-				$(document)
+				_doc
 					.on('heartbeat-send', function (e, data) {
 
 						if (data['wp_autosave']) {
@@ -1444,7 +1448,7 @@ jQuery(document).ready(function ($) {
 
 			if (typeof wp != 'undefined' && wp.heartbeat) {
 
-				$(document)
+				_doc
 					.on('heartbeat-send', function (e, data) {
 
 						if (data['wp_autosave'])
@@ -1681,7 +1685,7 @@ jQuery(document).ready(function ($) {
 		function focusName() {
 			$('#new_template_name')
 				.on('focus', function () {
-					$(document).unbind('keypress.mailster').bind('keypress.mailster', function (event) {
+					_doc.unbind('keypress.mailster').bind('keypress.mailster', function (event) {
 						if (event.keyCode == 13) {
 							save();
 							return false;
@@ -1689,7 +1693,7 @@ jQuery(document).ready(function ($) {
 					});
 				}).select().focus()
 				.on('blur', function () {
-					$(document).unbind('keypress.mailster');
+					_doc.unbind('keypress.mailster');
 				});
 		}
 
@@ -2921,6 +2925,7 @@ jQuery(document).ready(function ($) {
 
 			offset = Math.max(_container.offset().top - 200, offset);
 
+
 			_scroll(offset, function () {
 
 				bar.find('h4.editbar-title').html(name);
@@ -2929,7 +2934,7 @@ jQuery(document).ready(function ($) {
 				bar.find('div.' + type).show();
 
 				//center the bar
-				var baroffset = animateDOM.scrollTop() + (_win.height() / 2) - _container.offset().top - (bar.height() / 2);
+				var baroffset = _doc.scrollTop() + (_win.height() / 2) - _container.offset().top - (bar.height() / 2);
 
 				bar.css({
 					top: baroffset
@@ -3701,8 +3706,7 @@ jQuery(document).ready(function ($) {
 					.on('click.mailster', 'td[background], th[background]', function (event) {
 						event.stopPropagation();
 						if (event.target.tagName.toLowerCase() == 'module' ||
-							this == cont.find('table').eq(0).find('td')[0] ||
-							this == cont.find('table').eq(0).find('th')[0]) return;
+							$(this).height() == cont.height()) return;
 						var $this = $(this),
 							offset = $this.offset(),
 							top = offset.top + 61,
@@ -3947,7 +3951,7 @@ jQuery(document).ready(function ($) {
 			head = parts ? $.trim(parts[1]) : '',
 			bodyattributes = parts ? $('<div' + (parts[2] || '') + '></div>')[0].attributes : '',
 			attrcount = bodyattributes.length,
-			doc = ($.browser.webkit || $.browser.mozilla) ? _iframe[0].contentWindow.document : _idoc,
+			doc = (isWebkit || isMozilla) ? _iframe[0].contentWindow.document : _idoc,
 			//headscripts = $(doc).find('head').find('script'),
 			headstyles = $(doc).find('head').find('link'),
 			headdoc = doc.getElementsByTagName('head')[0];

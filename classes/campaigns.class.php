@@ -752,6 +752,7 @@ class MailsterCampaigns {
 							echo '<span class="autoresponder-' . $active . '">';
 
 							$time_frame_names = array(
+								'minute' => __( 'minute(s)', 'mailster' ),
 								'hour' => __( 'hour(s)', 'mailster' ),
 								'day' => __( 'day(s)', 'mailster' ),
 								'week' => __( 'week(s)', 'mailster' ),
