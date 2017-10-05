@@ -6,6 +6,7 @@ Tested up to: 4.8.2
 Stable tag: 2.2.12
 Author: EverPress
 Author URI: https://mailster.co
+Requires PHP: 5.3
 
 == Description ==
 
