@@ -2297,7 +2297,7 @@ jQuery(document).ready(function ($) {
 
 								current.element.removeClass('mailster-loading');
 								var html = current.element.html();
-								if(!html.match(/<modules/)){
+								if (!html.match(/<modules/)) {
 									current.element.html(_replace(html, orgimageurl.val(), currentimage.url));
 								}
 
@@ -3687,7 +3687,8 @@ jQuery(document).ready(function ($) {
 
 	function _editButtons() {
 		_container.find('.content.mailster-btn').remove();
-		var cont = _iframe.contents().find('html');
+		var cont = _iframe.contents().find('html'),
+			modulehelper = null;
 
 		if (!cont) return;
 
@@ -3715,11 +3716,14 @@ jQuery(document).ready(function ($) {
 						});
 
 					})
-					.on('click.mailster', 'td[background], th[background]', function (event) {
+					.on('click.mailster', 'module td[background],module th[background]', function (event) {
+						modulehelper = true;
+						$(this).trigger(dblclick.mailster);
+					})
+					.on('dblclick.mailster', 'td[background], th[background]', function (event) {
 						event.stopPropagation();
-						// todo: check if it's the very fist td/th
-						if (event.target.tagName.toLowerCase() == 'module' ||
-							$(this).height() == cont.height()) return;
+						if (!modulehelper && event.target != this) return;
+						modulehelper = null;
 
 						var $this = $(this),
 							offset = $this.offset(),

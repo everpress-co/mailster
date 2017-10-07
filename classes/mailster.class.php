@@ -741,6 +741,9 @@ class Mailster {
 		$content = str_replace( '<body >', '<body>', $content );
 		$content = str_replace( ' src="//', ' src="' . $protocol . '://', $content );
 		$content = str_replace( ' href="//', ' href="' . $protocol . '://', $content );
+		$content = str_replace( '</module><module', '</module>' . "\n" . '<module', $content );
+		$content = str_replace( '<modules><module', '<modules>' . "\n" . '<module', $content );
+		$content = str_replace( '</module></modules>', '</module>' . "\n" . '</modules>', $content );
 		$content = preg_replace( '#<script[^>]*?>.*?</script>#si', '', $content );
 		$content = str_replace( array( 'mailster-highlight', 'mailster-loading', 'ui-draggable', ' -handle', ' contenteditable="true"', ' spellcheck="false"' ), '', $content );
 

@@ -2,6 +2,7 @@ html{
 	margin: 2px !important;
 	width: auto !important;
 	max-width: 100% !important;
+	background:url(../img/trans_bg.png) repeat center center #fff !important;
 }
 body{
 	-webkit-transition:all .15s linear;
@@ -299,7 +300,7 @@ module[label]:before {
 	transform:translate(6px, -1px);
 }
 module[label]:hover:before, module[label][active]:before {
-	opacity: 0.8;
+	opacity: 0.9;
 	-webkit-transform:translate(-1px, -1px);
 	-ms-transform:translate(-1px, -1px);
 	transform:translate(-1px, -1px);
@@ -336,7 +337,7 @@ multi, single, img[editable], a[editable] img, table.textbutton a[editable], td[
 	-webkit-backface-visibility: hidden; /* Chrome, Safari, Opera */
 	backface-visibility: hidden;
 }
-multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, table.textbutton a[editable]:hover, table td table td[background]:hover,module table td[background]:hover{
+multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, table.textbutton a[editable]:hover, module table td[background]:hover, module table th[background]:hover{
 	box-shadow:0px 0px 0px 2px #2BB3E7;
 	cursor:pointer;
 	z-index: 11;
