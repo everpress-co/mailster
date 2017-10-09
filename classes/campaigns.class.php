@@ -1555,8 +1555,6 @@ class MailsterCampaigns {
 				}
 			}
 
-			$meta['background'] = $postdata['background'];
-
 			$meta['embed_images'] = isset( $postdata['embed_images'] );
 			$meta['track_opens'] = isset( $postdata['track_opens'] );
 			$meta['track_clicks'] = isset( $postdata['track_clicks'] );
@@ -1959,7 +1957,6 @@ class MailsterCampaigns {
 			'autoresponder' => null,
 			'list_conditions' => null,
 			'head' => null,
-			'background' => null,
 			'colors' => null,
 			'embed_images' => mailster_option( 'embed_images' ),
 			'track_opens' => mailster_option( 'track_opens' ),

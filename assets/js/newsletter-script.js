@@ -2185,6 +2185,7 @@ jQuery(document).ready(function ($) {
 				var f = factor.val();
 
 				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + (w) + '&h=' + (h) + '&c=' + (c ? 1 : 0) + '&f=' + f;
+			}
 			return val;
 		}
 
@@ -3084,7 +3085,7 @@ jQuery(document).ready(function ($) {
 						single: current.element.find('single'),
 						multi: current.element.find('multi'),
 						buttons: current.element.find('a[editable]'),
-						images: current.element.find('img[editable], td[background], th[background]')
+						images: current.element.find('img[editable], td[background], th[background]'),
 						expects: current.element.find('[expect]').map(function () {
 							return $(this).attr('expect');
 						}).toArray()
