@@ -240,12 +240,14 @@ class MailsterTests {
 		}
 	}
 	private function test_wordpress_version() {
-		if ( version_compare( get_bloginfo( 'version' ), '3.8' ) < 0 ) {
-			$this->error( sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', get_bloginfo( 'version' ) ) );
-		} elseif ( version_compare( get_bloginfo( 'version' ), '4.9' ) < 0 ) {
-			$this->warning( sprintf( 'Your WordPress site is not up-to-date. Your current version is %s.', get_bloginfo( 'version' ) ) );
+		$update = get_preferred_from_update_core();
+		$current = get_bloginfo( 'version' );
+		if ( version_compare( $current, '3.8' ) < 0 ) {
+			$this->error( sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', $current ) );
+		} elseif ( $update && $update->response == 'upgrade' ) {
+			$this->warning( sprintf( 'Your WordPress site is not up-to-date! Version %1$s is available. Your current version is %2$s.', $update->current, $current ) );
 		} else {
-			$this->success( 'You have version ' . get_bloginfo( 'version' ) );
+			$this->success( 'You have version ' . $current );
 
 		}
 	}
