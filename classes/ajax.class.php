@@ -1033,7 +1033,7 @@ class MailsterAjax {
 			$src = isset( $_POST['src'] ) ? ( $_POST['src'] ) : null;
 			$crop = isset( $_POST['crop'] ) ? ( $_POST['crop'] == 'true' ) : false;
 			$width = isset( $_POST['width'] ) ? intval( $_POST['width'] ) : null;
-			$height = isset( $_POST['height'] ) ? intval( $_POST['height'] ) : null;
+			$height = isset( $_POST['height'] ) && $crop ? intval( $_POST['height'] ) : null;
 
 			$return['success'] = ! ! ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop ) );
 		}
@@ -1045,8 +1045,9 @@ class MailsterAjax {
 
 	private function image_placeholder() {
 
-		$width = ! empty( $_GET['w'] ) ? intval( $_GET['w'] ) : 600;
-		$height = ! empty( $_GET['h'] ) ? intval( $_GET['h'] ) : round( $width / 1.6 );
+		$factor = ! empty( $_GET['f'] ) ? intval( $_GET['f'] ) : 1;
+		$width = $factor * ( ! empty( $_GET['w'] ) ? intval( $_GET['w'] ) : 600);
+		$height = $factor * ( ! empty( $_GET['h'] ) ? intval( $_GET['h'] ) : round( $width / 1.6 ));
 		$tag = isset( $_GET['tag'] ) ? '' . esc_attr( $_GET['tag'] ) . '' : '';
 
 		$text = '{' . $tag . '}';

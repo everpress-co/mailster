@@ -543,18 +543,23 @@ class MailsterPlaceholder {
 		$dateformat = get_option( 'date_format' );
 
 		// placeholder images
-		if ( $count = preg_match_all( '#<img(.*)src="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#<(img|td|th|v:fill)(.*)(src|background)="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
 				$search = $hits[0][ $i ];
+
 				// check if string is still there
 				if ( $i && false === strrpos( $this->content, $search ) ) {
 					continue;
 				}
-				$pre_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[1][ $i ] );
-				$querystring = str_replace( '&amp;', '&', $hits[3][ $i ] );
-				$post_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[4][ $i ] );
+				$tag = $hits[1][ $i ];
+				$pre_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[2][ $i ] );
+				$attribute = $hits[3][ $i ];
+				$imagestring = $hits[4][ $i ];
+				$querystring = str_replace( '&amp;', '&', $hits[5][ $i ] );
+				$post_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[6][ $i ] );
+				$is_img_tag = 'img' == $tag;
 
 				parse_str( $querystring, $query );
 
@@ -563,10 +568,17 @@ class MailsterPlaceholder {
 					$replace_to = mailster_cache_get( 'mailster_' . $querystring );
 
 					if ( false === $replace_to ) {
+
 						$parts = explode( ':', trim( $query['tag'] ) );
-						$width = isset( $query['w'] ) ? intval( $query['w'] ) : null;
-						// $height = isset($query['h']) ? intval($query['h']) : NULL;
-						$factor = isset( $query['f'] ) ? intval( $query['f'] ) : 1;
+						$factor = isset( $query['f'] ) && $is_img_tag ? intval( $query['f'] ) : 1;
+						$width = isset( $query['w'] ) ? intval( $query['w'] ) * $factor : null;
+						$height = isset( $query['h'] ) ? intval( $query['h'] ) * $factor : null;
+						$crop = isset( $query['c'] ) && $height ? ! ! ( $query['c'] ) : false;
+
+						// cropping requires height
+						if ( ! $crop ) {
+							$height = null;
+						}
 
 						$post_type = str_replace( '_image', '', $parts[0] );
 
@@ -601,28 +613,34 @@ class MailsterPlaceholder {
 							}
 
 							if ( empty( $org_src ) && $fallback_id ) {
+								$thumb_id = $fallback_id;
 
-								$org_src = wp_get_attachment_image_src( $fallback_id, 'full' );
-
-							}
-
-							if ( ! empty( $org_src ) && $org_src[1] && $org_src[2] ) {
-
-								$img = mailster( 'helper' )->create_image( null, $org_src[0], $width );
-								$asp = $org_src[1] / $org_src[2];
-								$height = $width / $asp;
-
-								$replace_to = '<img ' . $pre_stuff . 'src="' . $img['url'] . '" height="' . round( $height / $factor ) . '"' . $post_stuff . '>';
-
-								mailster_cache_set( 'mailster_' . $querystring, $replace_to );
-
-							} elseif ( ! empty( $org_src[0] ) ) {
-
-								$replace_to = '<img ' . $pre_stuff . 'src="' . $org_src[0] . '" ' . $post_stuff . '>';
-
-								mailster_cache_set( 'mailster_' . $querystring, $replace_to );
+								$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
 
 							}
+
+							if ( ! empty( $org_src ) ) {
+
+								if ( $org_src[1] && $org_src[2] ) {
+									$asp = $org_src[1] / $org_src[2];
+									$height = $height ? $height : round( ($width / $asp) / $factor );
+									$img = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height, $crop );
+								} else {
+									$img = array( 'url' => $org_src[0] );
+								}
+
+								if ( $is_img_tag ) {
+									$post_stuff = 'height="' . $height . '" ' . $post_stuff;
+									$replace_to = '<img ' . $pre_stuff . 'src="' . $img['url'] . '" ' . $post_stuff . '>';
+								} else {
+									$pre_stuff = str_replace( $imagestring, $img['url'], $pre_stuff );
+									$post_stuff = str_replace( $imagestring, $img['url'], $post_stuff );
+									$replace_to = '<' . $tag . ' ' . $pre_stuff . 'background="' . $img['url'] . '" ' . $post_stuff . '>';
+								}
+							}
+
+							mailster_cache_set( 'mailster_' . $querystring, $replace_to );
+
 						} else {
 
 							$replace_to = str_replace( 'tag=' . $query['tag'], 'tag=' . $post_type . '_image:' . $post->ID, $search );

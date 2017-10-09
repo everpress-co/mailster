@@ -86,6 +86,8 @@ Xaver Birsak – https://everpress.io
 
 * new: Option to hide the Webversion Bar
 * new: option to disable tracking on campaign based basis
+* improved: image procession to support more third party plugins
+* new: option to crop images in the picpicker
 
 = Version 2.2.13 =
 
