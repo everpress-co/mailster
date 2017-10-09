@@ -19,7 +19,7 @@ jQuery(document).ready(function ($) {
 			})
 			.on('click', function (event) {
 				if (currentmodule) {
-					currentmodule.removeAttr('active');
+					currentmodule.removeAttr('selected');
 				}
 			})
 			.on('click', 'module', function (event) {
@@ -183,6 +183,7 @@ jQuery(document).ready(function ($) {
 			});
 			editor.on('focus', function (event) {
 				event.stopPropagation();
+				editor.selection.select(editor.getBody(), true);
 				if (container.data('uiSortable')) container.sortable('destroy');
 			});
 			editor.on('blur', function (event) {
@@ -651,10 +652,10 @@ jQuery(document).ready(function ($) {
 		.on('Mailster:selectModule', function (event) {
 			var module = $(event.detail[0]);
 			if (currentmodule) {
-				currentmodule.removeAttr('active');
+				currentmodule.removeAttr('selected');
 			}
 			currentmodule = module;
-			currentmodule.attr('active', true);
+			currentmodule.attr('selected', true);
 		})
 
 	function _trigger() {

@@ -874,26 +874,26 @@ jQuery(document).ready(function ($) {
 				var val = $(this).val();
 				_changeElements(val);
 
-			}).on('click', 'ul.backgrounds ul a', function () {
-				$('ul.backgrounds').find('a').removeClass('active');
-				var base = $(this).parent().parent().data('base'),
-					val = $(this).addClass('active').data('file');
+				// }).on('click', 'ul.backgrounds ul a', function () {
+				// 	$('ul.backgrounds').find('a').removeClass('active');
+				// 	var base = $(this).parent().parent().data('base'),
+				// 		val = $(this).addClass('active').data('file');
 
-				if (!val) base = '';
-				$('#mailster_background').val(base + val);
-				_changeBG(base + val);
+				// 	if (!val) base = '';
+				// 	$('#mailster_background').val(base + val);
+				// 	_changeBG(base + val);
 
-			}).on('mouseenter', 'ul.backgrounds a', function () {
-				var base = $(this).parent().parent().data('base'),
-					file = $(this).data('file');
+				// }).on('mouseenter', 'ul.backgrounds a', function () {
+				// 	var base = $(this).parent().parent().data('base'),
+				// 		file = $(this).data('file');
 
-				if (file) $('ul.backgrounds a').eq(0).css({
-					'background-image': 'url(' + base + $(this).data('file') + ')'
-				});
-			}).on('mouseleave', 'ul.backgrounds a', function () {
-				$('ul.backgrounds a').eq(0).css({
-					'background-image': 'url(' + $.trim($('#mailster_background').val()) + ')'
-				});
+				// 	if (file) $('ul.backgrounds a').eq(0).css({
+				// 		'background-image': 'url(' + base + $(this).data('file') + ')'
+				// 	});
+				// }).on('mouseleave', 'ul.backgrounds a', function () {
+				// 	$('ul.backgrounds a').eq(0).css({
+				// 		'background-image': 'url(' + $.trim($('#mailster_background').val()) + ')'
+				// 	});
 			});
 
 			// _container.on('click', 'a.addbutton', function () {
@@ -2297,8 +2297,10 @@ jQuery(document).ready(function ($) {
 
 								current.element.removeClass('mailster-loading');
 								var html = current.element.html();
-								if (!html.match(/<modules/)) {
+								if (orgimageurl.val() && !html.match(/<modules/)) {
 									current.element.html(_replace(html, orgimageurl.val(), currentimage.url));
+									//remove id to re trigger tinymce
+									current.element.find('single, multi').removeAttr('id');
 								}
 
 							}
@@ -3332,7 +3334,7 @@ jQuery(document).ready(function ($) {
 
 		function duplicate() {
 			var module = $(this).parent().parent().parent(),
-				clone = module.clone().removeAttr('active').hide();
+				clone = module.clone().removeAttr('selected').hide();
 
 			//_container.addClass('noeditbuttons');
 
@@ -3623,7 +3625,7 @@ jQuery(document).ready(function ($) {
 		setTimeout(function () {
 			if (!_iframe[0].contentWindow.document.body) return;
 			var height = _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
-			_iframe.attr("height", Math.max(500, height + 10 + (extra || 0)));
+			_iframe.attr("height", Math.max(500, height + 4 + (extra || 0)));
 		}, delay ? delay : 500);
 	})
 
@@ -3717,12 +3719,15 @@ jQuery(document).ready(function ($) {
 
 					})
 					.on('click.mailster', 'module td[background],module th[background]', function (event) {
+						event.stopPropagation();
 						modulehelper = true;
-						$(this).trigger(dblclick.mailster);
+						//$(this).trigger(dblclick.mailster);
 					})
-					.on('dblclick.mailster', 'td[background], th[background]', function (event) {
+					.on('click.mailster', 'td[background], th[background]', function (event) {
 						event.stopPropagation();
 						if (!modulehelper && event.target != this) return;
+						//if(/single|multi|module/i.test(event.target.nodeName)) return;
+						//console.log(/single|multi|module/i.test(event.target.nodeName), event.target.nodeName, event);
 						modulehelper = null;
 
 						var $this = $(this),
@@ -3896,34 +3901,34 @@ jQuery(document).ready(function ($) {
 		return str;
 	}
 
-	function _changeBG(file) {
-		var raw = _getContent(),
-			html = raw.replace(/body{background-image:url\(.*}/i, '');
+	// function _changeBG(file) {
+	// 	var raw = _getContent(),
+	// 		html = raw.replace(/body{background-image:url\(.*}/i, '');
 
-		if (file) {
-			var s = (file) ? "\tbody{background-image:url('" + file + "');background-repeat:repeat-y no-repeat;background-position:top center;}" : '',
-				html = html.replace(/<style.*?>/i, '<style type="text/css">' + s)
-				//.replace(/<td /i, '<td background="'+base+file+'"');
-				.replace(/<td/i, '<td background="' + file + '"');
-			//.replace(/background="([^"]*)"/i,'background="'+base+file+'"');
-			$('ul.backgrounds > li > a').css({
-				'background-image': "url('" + file + "')"
-			});
-		} else {
+	// 	if (file) {
+	// 		// var s = (file) ? "\tbody{background-image:url('" + file + "');background-repeat:repeat-y no-repeat;background-position:top center;}" : '',
+	// 		// 	html = html.replace(/<style.*?>/i, '<style type="text/css">' + s)
+	// 		// 	//.replace(/<td /i, '<td background="'+base+file+'"');
+	// 		// 	.replace(/<td/i, '<td background="' + file + '"');
+	// 		// //.replace(/background="([^"]*)"/i,'background="'+base+file+'"');
+	// 		// $('ul.backgrounds > li > a').css({
+	// 		// 	'background-image': "url('" + file + "')"
+	// 		// });
+	// 	} else {
 
-			var parts = html.match(/<td(.*)background="[^"]*"(.*)/i);
+	// 		var parts = html.match(/<td(.*)background="[^"]*"(.*)/i);
 
-			if (parts) html = html.replace(parts[0], '<td ' + parts[1] + ' ' + parts[2]);
-			//.replace(/<td(.*)background="([^"]*)"/i,'<td ');
-			$('ul.backgrounds > li > a').css({
-				'background-image': "none"
-			});
-			//.replace(/background="([^"]*)"/i,'background=""');
-		}
+	// 		if (parts) html = html.replace(parts[0], '<td ' + parts[1] + ' ' + parts[2]);
+	// 		//.replace(/<td(.*)background="([^"]*)"/i,'<td ');
+	// 		$('ul.backgrounds > li > a').css({
+	// 			'background-image': "none"
+	// 		});
+	// 		//.replace(/background="([^"]*)"/i,'background=""');
+	// 	}
 
-		_setContent(html);
-		return;
-	}
+	// 	_setContent(html);
+	// 	return;
+	// }
 
 	function _changeElements(version) {
 		var raw = _getContent(),
@@ -3950,7 +3955,7 @@ jQuery(document).ready(function ($) {
 		clone = $('<div>' + body.innerHTML + '</div>');
 
 		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
-		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class active');
+		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
 		content = $.trim(clone.html());
 
 		bodyattributes = body.attributes;
