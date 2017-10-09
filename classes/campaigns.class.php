@@ -4008,10 +4008,15 @@ class MailsterCampaigns {
 			return new WP_Error( 'no_subscriber', __( 'No subscriber found', 'mailster' ) );
 		}
 
-		if ( ! in_array( $subscriber->status, array( 0, 1, 2 ) ) && ! $force ) {
+		if ( ! $force && ! in_array( $subscriber->status, array( 0, 1, 2 ) ) ) {
 			return new WP_Error( 'user_unsubscribed', __( 'User has not subscribed', 'mailster' ) );
 		}
 
+		if ( ! $force && ! mailster( 'helper' )->in_timeframe() ) {
+
+			return new WP_Error( 'system_error', 'Not in Time Frame' );
+
+		}
 		$campaign_meta = $this->meta( $campaign->ID );
 
 		$mail = mailster( 'mail' );
@@ -4150,6 +4155,15 @@ class MailsterCampaigns {
 			}
 
 			return new WP_Error( 'user_error', $mail->last_error->getMessage() );
+		}
+
+		if ( $mail->is_system_error() ) {
+			if ( $log ) {
+				do_action( 'mailster_subscriber_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
+				do_action( 'mymail_subscriber_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
+			}
+
+			return new WP_Error( 'system_error', $mail->last_error->getMessage() );
 		}
 
 		if ( $mail->last_error ) {

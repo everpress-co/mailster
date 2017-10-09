@@ -143,13 +143,17 @@ class MailsterMail {
 
 		$this->send_limit = mailster_option( 'send_limit' );
 
-		$ubscriber_errors = array(
+		$subscriber_errors = array(
 			'SMTP Error: The following recipients failed',
 			'The following From address failed',
 			'Invalid address:',
 			'SMTP Error: Data not accepted',
 		);
-		$this->subscriber_errors = apply_filters( 'mymail_subscriber_errors', apply_filters( 'mailster_subscriber_errors', $ubscriber_errors ) );
+		$this->subscriber_errors = apply_filters( 'mymail_subscriber_errors', apply_filters( 'mailster_subscriber_errors', $subscriber_errors ) );
+		$system_errors = array(
+			'Not in Time Frame',
+		);
+		$this->system_errors = apply_filters( 'mailster_system_errors', $system_errors );
 
 		if ( ! get_transient( '_mailster_send_period_timeout' ) ) {
 			set_transient( '_mailster_send_period_timeout', true, mailster_option( 'send_period' ) * 3600 );
@@ -634,6 +638,36 @@ class MailsterMail {
 		// check for subscriber error
 		foreach ( $this->subscriber_errors as $subscriber_error ) {
 			if ( stripos( $errormsg, $subscriber_error ) !== false ) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $error (optional)
+	 * @return unknown
+	 */
+	public function is_system_error( $error = null ) {
+
+		if ( is_null( $error ) ) {
+			$error = $this->last_error;
+		}
+
+		if ( empty( $error ) ) {
+			return false;
+		}
+
+		$errormsg = $error->getMessage();
+
+		// check for subscriber error
+		foreach ( $this->system_errors as $system_errors ) {
+			if ( stripos( $errormsg, $system_errors ) !== false ) {
 				return true;
 			}
 		}

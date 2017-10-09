@@ -1253,6 +1253,30 @@ class MailsterHelper {
 	}
 
 
+	public function in_timeframe( $timestamp = null ) {
+
+		$from = mailster_option( 'time_frame_from', 0 );
+		$to = mailster_option( 'time_frame_to', 0 );
+		$days = mailster_option( 'time_frame_day' );
+		if ( is_null( $timestamp ) ) {
+			$timestamp = current_time( 'timestamp' );
+		}
+		$hour = date( 'G', $timestamp );
+		$day = date( 'w', $timestamp );
+
+		// further check if not 24h
+		if ( abs( $from - $to ) ) {
+			if ( $to < $from ) {
+				$to += 24;
+			}
+			if ( $from > $hour || $hour >= $to ) {
+				return false;
+			}
+		}
+		return ! is_array( $days ) || in_array( $day, $days );
+
+	}
+
 	/**
 	 *
 	 *
