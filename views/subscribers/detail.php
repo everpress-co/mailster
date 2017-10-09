@@ -72,26 +72,27 @@ if ( $is_new ) {
 <table class="form-table">
 	<tr>
 		<td scope="row" class="avatar-wrap">
-			<div class="avatar<?php if ( $subscriber->wp_id ) {	echo ' wp-user'; } ?>" title="<?php esc_html_e( 'Source', 'mailster' ) ?>: Gravatar.com" style="background-image:url(<?php echo $this->get_gravatar_uri( $subscriber->email, 400 ); ?>)"></div>
-			<p class="info"><?php esc_html_e( 'Source', 'mailster' ) ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
+			<?php if ( ! mailster_option( 'disable_avatar' ) ) : ?>
+				<div class="avatar<?php if ( $subscriber->wp_id ) {	echo ' wp-user'; } ?>" title="<?php esc_html_e( 'Source', 'mailster' ) ?>: Gravatar.com" style="background-image:url(<?php echo $this->get_gravatar_uri( $subscriber->email, 400 ); ?>)"></div>
+				<p class="info"><?php esc_html_e( 'Source', 'mailster' ) ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
+			<?php endif; ?>
 			<?php if ( ! $is_new ) : ?>
 
-			<h4 title="<?php esc_html_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ) ?>"><?php esc_html_e( 'User Rating', 'mailster' );?>:<br />
-			<?php
-				$stars = ( round( $subscriber->rating / 10, 2 ) * 50 );
-				$full = max( 0, min( 5, floor( $stars ) ) );
-				$half = max( 0, min( 5, round( $stars - $full ) ) );
-				$empty = max( 0, min( 5, 5 - $full - $half ) );
-			?>
-			<?php
-			echo str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
-			. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
-			. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty )
-			?>
-			</h4>
+				<h4 title="<?php esc_html_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ) ?>"><?php esc_html_e( 'User Rating', 'mailster' );?>:<br />
+				<?php
+					$stars = ( round( $subscriber->rating / 10, 2 ) * 50 );
+					$full = max( 0, min( 5, floor( $stars ) ) );
+					$half = max( 0, min( 5, round( $stars - $full ) ) );
+					$empty = max( 0, min( 5, 5 - $full - $half ) );
+				?>
+				<?php
+				echo str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
+				. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
+				. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty )
+				?>
+				</h4>
 
-		<?php endif; ?>
-
+			<?php endif; ?>
 		</td>
 		<td class="user-info">
 			<h3 class="detail">

@@ -1598,7 +1598,7 @@ textarea#content, textarea#excerpt {
 	background-repeat:no-repeat;
 	background-size:120px 120px;
 }
-#recipients-list .receiver-detail-data{
+#recipients-list .receiver-detail-data.has-avatar{
 	margin-left:150px;
 }
 #recipients-list .receiver-detail-data h4{

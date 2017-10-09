@@ -57,6 +57,11 @@
 		</td>
 	</tr>
 	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'Disable User Avatar', 'mailster' ) ?></th>
+		<td><label><input type="hidden" name="mailster_options[disable_avatar]" value=""><input type="checkbox" name="mailster_options[disable_avatar]" value="1" <?php checked( mailster_option( 'disable_avatar' ) ) ?>> <?php esc_html_e( 'Disable users avatar across your Mailster installation.', 'mailster' ) ?></label>
+		</td>
+	</tr>
+	<tr valign="top">
 		<th scope="row">Do Not Track</th>
 		<td><label><input type="hidden" name="mailster_options[do_not_track]" value=""><input type="checkbox" name="mailster_options[do_not_track]" value="1" <?php checked( mailster_option( 'do_not_track' ) ) ?>> <?php esc_html_e( 'Respect users "Do Not Track" option', 'mailster' ) ?></label>
 		<p class="description"><?php printf( __( 'If enabled Mailster will respect users option for not getting tracked. Read more on the %s', 'mailster' ), '<a href="http://donottrack.us/" class="external">' . __( 'official website', 'mailster' ) . '</a>' ) ?></p>
