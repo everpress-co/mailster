@@ -513,6 +513,12 @@ class MailsterForm {
 			$html .= '<input name="_hash" type="hidden" value="' . esc_attr( $this->hash ) . '">' . "\n";
 		}
 
+		if ( ! is_admin() ) {
+			$html .= '<input name="_nonce" type="hidden" value="' . wp_create_nonce( 'mailster-form-nonce' ) . '">' . "\n";
+		} elseif ( $post_nonce = mailster_option( 'post_nonce' ) ) {
+			$html .= '<input name="_nonce" type="hidden" value="' . esc_attr( $post_nonce ) . '">' . "\n";
+		}
+
 		$html .= '<input name="formid" type="hidden" value="' . $this->ID . '">' . "\n";
 
 		return $html;
@@ -725,6 +731,16 @@ class MailsterForm {
 
 			if ( ! empty( $honeypot ) ) {
 				die( 1 );
+			}
+		}
+
+		$_nonce = isset( $_BASE['_nonce'] ) ? $_BASE['_nonce'] : null;
+		$post_nonce = mailster_option( 'post_nonce' );
+
+		if ( $_nonce || $post_nonce ) {
+			if ( wp_verify_nonce( $_nonce, 'mailster-form-nonce' ) || $post_nonce == $_nonce ) {
+			} else {
+				$this->object['errors']['_nonce'] = __( 'Security Nonce is invalid!', 'mailster' );
 			}
 		}
 

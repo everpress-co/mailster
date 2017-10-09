@@ -189,8 +189,9 @@ class MailsterSettings {
 
 			'disable_cache' => false,
 			'remove_data' => false,
-
 			'got_url_rewrite' => mailster( 'helper' )->got_url_rewrite(),
+			'post_nonce' => wp_create_nonce( uniqid() ),
+
 			'welcome' => false,
 			'setup' => true,
 

@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.13 =
 
+* added: additional security steps on form submission
+
 = Version 2.2.12 =
 
 * fixed: editbar position issue on Chrome 61
