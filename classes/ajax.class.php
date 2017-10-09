@@ -1379,6 +1379,7 @@ class MailsterAjax {
 
 		if ( is_numeric( $_POST['id'] ) ) {
 			$post = get_post( intval( $_POST['id'] ) );
+			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : null;
 
 			if ( $post ) {
 				if ( ! $post->post_excerpt ) {
@@ -1416,21 +1417,22 @@ class MailsterAjax {
 				$excerpt = ( $strip_shortcodes ) ? strip_shortcodes( $excerpt ) : do_shortcode( $excerpt );
 
 				$data = array(
-					'title' => $post->post_title,
+					'title' => array( $post->post_title, 'asdas' ),
 					'alt' => $post->post_title,
-					'content' => $content,
+					'content' => array( $content, 'sfgdfg' ),
 					'excerpt' => $excerpt,
 					'link' => get_permalink( $post->ID ),
 					'image' => $image,
 				);
-				$data = apply_filters( 'mymail_auto_post', apply_filters( 'mailster_auto_post', $data, $post ), $post );
 
-				$return['title'] = $data['title'];
-				$return['alt'] = $data['alt'];
-				$return['content'] = $data['content'];
-				$return['excerpt'] = $data['excerpt'];
-				$return['link'] = $data['link'];
-				$return['image'] = $data['image'];
+				foreach ( $expects as $expect ) {
+					if ( isset( $data[ $expect ] ) ) {
+						continue;
+					}
+					$data[ $expect ] = mailster( 'placeholder' )->get_replace( $post, $expect );
+				}
+
+				$return['pattern'] = apply_filters( 'mymail_auto_post', apply_filters( 'mailster_auto_post', $data, $post ), $post );
 				$return['success'] = true;
 
 			}
@@ -1440,6 +1442,7 @@ class MailsterAjax {
 			$id = intval( array_pop( $url ) );
 			$url = implode( '#', $url );
 			$rss = fetch_feed( $url );
+			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : null;
 
 			if ( ! is_wp_error( $rss ) ) {
 
@@ -1482,14 +1485,15 @@ class MailsterAjax {
 					'link' => $item->get_permalink(),
 					'image' => $image,
 				);
-				$data = apply_filters( 'mymail_auto_rss', apply_filters( 'mailster_auto_rss', $data, $url ), $url );
 
-				$return['title'] = $data['title'];
-				$return['alt'] = $data['alt'];
-				$return['content'] = $data['content'];
-				$return['excerpt'] = $data['excerpt'];
-				$return['link'] = $data['link'];
-				$return['image'] = $data['image'];
+				foreach ( $expects as $expect ) {
+					if ( isset( $data[ $expect ] ) ) {
+						continue;
+					}
+					$data[ $expect ] = method_exists( $item, 'get_' . $expect ) ? $item->{'get_' . $expect}() : '';
+				}
+
+				$return['pattern'] = apply_filters( 'mymail_auto_rss', apply_filters( 'mailster_auto_rss', $data, $url ), $url );
 				$return['success'] = true;
 
 			}
@@ -1512,6 +1516,7 @@ class MailsterAjax {
 		$offset = $relative + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
+		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : null;
 
 		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, true );
 		$is_post = ! ! $post;
@@ -1530,6 +1535,13 @@ class MailsterAjax {
 			'link' => '{' . $post_type . '_link:' . $options . '}',
 			'image' => '{' . $post_type . '_image:' . $options . '}',
 		);
+
+		foreach ( $expects as $expect ) {
+			if ( isset( $pattern[ $expect ] ) ) {
+				continue;
+			}
+			$pattern[ $expect ] = '{' . $post_type . '_' . $expect . ':' . $options . '}';
+		}
 
 		$return['pattern'] = apply_filters( 'mymail_auto_tag', apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post, $modulename ), $post_type, $options, $post, $modulename );
 

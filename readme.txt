@@ -110,7 +110,6 @@ Xaver Birsak – https://everpress.io
 * added: `remove_custom_value` method to remove meta values of subscribers
 * added: Mailgun delivery option to setup
 
-
 = Version 2.2.10 =
 
 * fixed: Editor button now only available in the backend
@@ -131,7 +130,6 @@ Xaver Birsak – https://everpress.io
 * improved: unsubscribe action can now contain a status for more info
 * change: send method now returns internal message ID
 * change: test mails to unknown email addresses are no longer assigned to the current user to prevent false mailbox actions
->>>>>>> origin/develop
 
 = Version 2.2.8 =
 
