@@ -125,11 +125,21 @@ class MailsterCampaigns {
 			return;
 		}
 
-		$all_subscribers = $this->get_subscribers( $campaign_id, null, true, (bool) $meta['autoresponder']['once'] );
+		if ( $this->meta( $campaign_id, 'ignore_lists' ) ) {
+			$lists = false;
+		} else {
+			$lists = $this->meta( $campaign_id, 'lists' );
+		}
 
-		$subscribers = empty( $subscriber_ids )
-			? $all_subscribers
-			: array_values( array_intersect( $all_subscribers, is_array( $subscriber_ids ) ? $subscriber_ids : array( $subscriber_ids ) ) );
+		$conditions = $this->meta( $campaign_id, 'list_conditions' );
+
+		$subscribers = mailster( 'subscribers' )->query(array(
+			'lists' => $lists,
+			'conditions' => $conditions,
+			'return_ids' => true,
+			'sent__not_in' => $meta['autoresponder']['once'] ? $campaign_id : false,
+			'include' => $subscriber_ids,
+		));
 
 		$timestamp = strtotime( '+ ' . $meta['autoresponder']['amount'] . ' ' . $meta['autoresponder']['unit'] );
 
@@ -882,55 +892,9 @@ class MailsterCampaigns {
 
 							if ( $meta['list_conditions'] ) {
 
-								$fields = array(
-									'email' => mailster_text( 'email' ),
-									'firstname' => mailster_text( 'firstname' ),
-									'lastname' => mailster_text( 'lastname' ),
-									'ip' => __( 'IP Address', 'mailster' ),
-									'signup' => __( 'Signup Date', 'mailster' ),
-									'ip_signup' => __( 'Signup IP', 'mailster' ),
-									'confirm' => __( 'Confirm Date', 'mailster' ),
-									'ip_confirm' => __( 'Confirm IP', 'mailster' ),
-									'rating' => __( 'Rating', 'mailster' ),
-								);
-
-								$wp_meta = wp_parse_args( mailster( 'helper' )->get_wpuser_meta_fields(), array(
-									'wp_capabilities' => __( 'User Role', 'mailster' ),
-									'wp_user_level' => __( 'User Level', 'mailster' ),
-								) );
-
-								$customfields = mailster()->get_custom_fields();
-
-								foreach ( $customfields as $field => $data ) {
-									$fields[ $field ] = $data['name'];
-								}
-
 								echo '<br>' . __( 'only if', 'mailster' ) . '<br>';
 
-								$conditions = array();
-								$operators = array(
-									'is' => __( 'is', 'mailster' ),
-									'is_not' => __( 'is not', 'mailster' ),
-									'contains' => __( 'contains', 'mailster' ),
-									'contains_not' => __( 'contains not', 'mailster' ),
-									'begin_with' => __( 'begins with', 'mailster' ),
-									'end_with' => __( 'ends with', 'mailster' ),
-									'is_greater' => __( 'is greater', 'mailster' ),
-									'is_smaller' => __( 'is smaller', 'mailster' ),
-									'pattern' => __( 'match regex pattern', 'mailster' ),
-									'not_pattern' => __( 'does not match regex pattern', 'mailster' ),
-								);
-
-								foreach ( $meta['list_conditions']['conditions'] as $i => $condition ) {
-									if ( ( ! isset( $fields[ $condition['field'] ] ) && ( ! isset( $wp_meta[ $condition['field'] ] ) ) ) ) {
-										echo '<span class="mailster-icon warning"></span> ' . sprintf( __( '%s is missing!', 'mailster' ), '"' . $condition['field'] . '"' ) . '<br>';
-										continue;
-									}
-									$conditions[] = '<strong>' . $fields[ $condition['field'] ] . '</strong> ' . $operators[ $condition['operator'] ] . ' "<strong>' . $condition['value'] . '</strong>"';
-								}
-
-								echo implode( '<br>' . __( strtolower( $meta['list_conditions']['operator'] ), 'mailster' ) . ' ', $conditions );
-
+								mailster( 'conditions' )->render( $meta['list_conditions']['conditions'], $meta['list_conditions']['operator'] );
 							}
 
 							echo '</span>';
@@ -975,6 +939,7 @@ class MailsterCampaigns {
 					echo implode( ' | ', $actions );
 					echo '</div>';
 				}
+
 			break;
 
 			case 'total':
@@ -1311,6 +1276,7 @@ class MailsterCampaigns {
 				'send_now' => __( 'Do you really like to send this campaign now?', 'mailster' ),
 				'select_image' => __( 'Select Image', 'mailster' ),
 				'add_attachment' => __( 'Add Attachment', 'mailster' ),
+				'edit_conditions' => __( 'Edit Conditions', 'mailster' ),
 		) );
 
 		wp_localize_script( 'mailster-script', 'mailsterdata', array(
@@ -1729,8 +1695,18 @@ class MailsterCampaigns {
 
 		}
 
-		if ( isset( $postdata['list_conditions'] ) ) {
+		if ( isset( $postdata['list']['conditions'] ) ) {
 
+			$postdata['list']['conditions'] = array_values( $postdata['list']['conditions'] );
+			foreach ( $postdata['list']['conditions'] as $i => $cond ) {
+				if ( ! isset( $postdata['list']['conditions'][ $i ]['field'] ) ) {
+					unset( $postdata['list']['conditions'][ $i ] );
+				} elseif ( is_array( $postdata['list']['conditions'][ $i ]['value'] ) ) {
+					$postdata['list']['conditions'][ $i ]['value'] = array_values( array_unique( $postdata['list']['conditions'][ $i ]['value'] ) );
+				} else {
+
+				}
+			}
 			$meta['list_conditions'] = $postdata['list'];
 
 		} else {
@@ -2560,7 +2536,18 @@ class MailsterCampaigns {
 
 		$conditions = $this->meta( $id, 'list_conditions' );
 
-		return $this->get_subscribers_by_lists( $lists, $conditions, $statuses, $return_ids, $ignore_sent ? $id : false, $ignore_queue ? $id : false, $limit, $offset, $returnsql );
+		return mailster( 'subscribers' )->query(array(
+			'lists' => $lists,
+			'conditions' => $conditions,
+			'status' => $statuses,
+			'return_ids' => $return_ids,
+			'return_count' => ! $return_ids,
+			'sent__not_in' => $ignore_sent ? $id : false,
+			'queue__not_in' => $ignore_queue ? $id : false,
+			'limit' => $limit,
+			'offset' => $offset,
+			'return_sql' => $returnsql,
+		));
 	}
 
 
@@ -2580,85 +2567,20 @@ class MailsterCampaigns {
 	 */
 	public function get_subscribers_by_lists( $lists = false, $conditions = null, $statuses = null, $return_ids = false, $ignore_sent = false, $ignore_queue = false, $limit = null, $offset = 0, $returnsql = false ) {
 
-		global $wpdb;
+		_deprecated_function( __FUNCTION__, '2.3', 'mailster(\'subscribers\')->query()' );
 
-		$cache_key = 'get_subscriber_by_lists';
-		$key = md5( serialize( array( $lists, $conditions, $statuses, $return_ids, $ignore_sent, $ignore_queue, $limit, $offset, $returnsql ) ) );
-
-		$subscribers = mailster_cache_get( $cache_key );
-
-		if ( ! $subscribers ) {
-			$subscribers = array();
-		}
-
-		if ( isset( $subscribers[ $key ] ) ) {
-			return $subscribers[ $key ];
-		}
-
-		if ( is_null( $statuses ) ) {
-			$statuses = array( 1 );
-		}
-
-		$sql = 'SELECT ' . ( $return_ids ? 'a.ID' : 'COUNT(DISTINCT a.ID)' ) . " FROM {$wpdb->prefix}mailster_subscribers AS a";
-
-		if ( $lists !== false ) {
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id";
-		}
-
-		if ( $ignore_sent ) {
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = " . intval( $ignore_sent ) . ' AND b.type = 1';
-		}
-
-		if ( $ignore_queue ) {
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_queue AS c ON a.ID = c.subscriber_id AND c.campaign_id = " . intval( $ignore_queue );
-		}
-
-		$sql .= $this->get_sql_join_by_condition( $conditions );
-
-		$sql .= ' WHERE 1';
-
-		if ( $lists !== false ) {
-			// unassigned members if NULL
-			if ( is_array( $lists ) ) {
-				$lists = array_filter( $lists, 'is_numeric' );
-			}
-
-			$sql .= ( is_null( $lists ) ) ? ' AND ab.list_id IS NULL' : ( empty( $lists ) ? ' AND ab.list_id = 0' : ' AND ab.list_id IN(' . implode( ',', $lists ) . ')' );
-		}
-
-		if ( is_array( $statuses ) ) {
-			$sql .= ' AND a.status IN (' . implode( ',', array_filter( $statuses, 'is_numeric' ) ) . ')';
-		}
-
-		if ( $ignore_sent ) {
-			$sql .= ' AND b.subscriber_id IS NULL';
-		}
-
-		if ( $ignore_queue ) {
-			$sql .= ' AND c.subscriber_id IS NULL';
-		}
-
-		$sql .= $this->get_sql_by_condition( $conditions );
-
-		if ( $return_ids ) {
-			$sql .= ' GROUP BY a.ID ORDER BY a.ID ASC';
-
-			if ( ! is_null( $limit ) ) {
-				$sql .= ' LIMIT ' . intval( $offset ) . ', ' . intval( $limit );
-			}
-		}
-
-		$sql = apply_filters( 'mailster_campaign_get_subscribers_by_list_sql', $sql );
-
-		if ( $returnsql ) {
-			return $sql;
-		}
-
-		$subscribers[ $key ] = $return_ids ? $wpdb->get_col( $sql ) : $wpdb->get_var( $sql );
-
-		mailster_cache_set( $cache_key, $subscribers );
-
-		return $subscribers[ $key ];
+		return mailster( 'subscribers' )->query(array(
+			'lists' => $lists,
+			'conditions' => $conditions,
+			'status' => $statuses,
+			'return_ids' => $return_ids,
+			'return_count' => ! $return_ids,
+			'sent__not_in' => $ignore_sent,
+			'queue__not_in' => $ignore_queue,
+			'limit' => $limit,
+			'offset' => $offset,
+			'return_sql' => $returnsql,
+		));
 
 	}
 
@@ -2830,11 +2752,12 @@ class MailsterCampaigns {
 	 */
 	public function get_totals_by_lists( $lists = false, $conditions = null, $statuses = null ) {
 
-		$subscribers_count = $this->get_subscribers_by_lists( $lists, $conditions, $statuses );
-
-		return $subscribers_count;
-
-		return count( $subscribers );
+		return mailster( 'subscribers' )->query(array(
+			'lists' => $lists,
+			'conditions' => $conditions,
+			'status' => $statuses,
+			'return_count' => true,
+		));
 
 	}
 
@@ -3214,285 +3137,6 @@ class MailsterCampaigns {
 
 		return $geo_data;
 
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $conditions
-	 * @return unknown
-	 */
-	public function get_sql_join_by_condition( $conditions ) {
-
-		global $wpdb;
-
-		$joins = array();
-		$sql = '';
-
-		if ( empty( $conditions['conditions'] ) || ! is_array( $conditions ) ) {
-			return $sql;
-		}
-
-		$custom_fields = mailster()->get_custom_fields( true );
-		$custom_fields = wp_parse_args( array( 'firstname', 'lastname' ), (array) $custom_fields );
-		$meta_fields = array( 'form', 'referer' );
-
-		$wp_user_meta = wp_parse_args( array( 'wp_user_level', 'wp_capabilities' ), mailster( 'helper' )->get_wpuser_meta_fields() );
-		// removing custom fields from wp user meta to prevent conflicts
-		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), $custom_fields ) );
-
-		foreach ( $conditions['conditions'] as $options ) {
-
-			$field = esc_sql( $options['field'] );
-
-			if ( in_array( $field, $custom_fields ) ) {
-
-				$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS `field_$field` ON `field_$field`.subscriber_id = a.ID AND `field_$field`.meta_key = '$field'";
-
-			} elseif ( in_array( $field, $wp_user_meta ) ) {
-				$joins[] = "LEFT JOIN {$wpdb->usermeta} AS `meta_wp_$field` ON `meta_wp_$field`.user_id = a.wp_id AND `meta_wp_$field`.meta_key = '" . str_replace( 'wp_', $wpdb->prefix, $field ) . "'";
-
-			} elseif ( in_array( $field, $meta_fields ) ) {
-
-				$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS `meta_$field` ON `meta_$field`.subscriber_id = a.ID AND `meta_$field`.meta_key = '$field'";
-			}
-		}
-
-		if ( ! empty( $joins ) ) {
-			$sql = ' ' . implode( ' ', array_unique( $joins ) );
-		}
-
-		return $sql;
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $conditions
-	 * @param unknown $tablealias (optional)
-	 * @return unknown
-	 */
-	public function get_sql_by_condition( $conditions, $tablealias = 'a' ) {
-
-		$cond = array();
-		$sql = '';
-
-		if ( empty( $conditions['conditions'] ) || ! is_array( $conditions ) ) {
-			return $sql;
-		}
-
-		$custom_fields = mailster()->get_custom_fields( true );
-		$custom_fields = array_merge( array( 'firstname', 'lastname' ), $custom_fields );
-
-		$wp_user_meta = array_merge( array( 'wp_user_level', 'wp_capabilities' ), mailster( 'helper' )->get_wpuser_meta_fields() );
-		// removing custom fields from wp user meta to prevent conflicts
-		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), $custom_fields ) );
-
-		$meta_fields = array( 'form', 'referer' );
-		$custom_date_fields = mailster()->get_custom_date_fields( true );
-		$timefields = array( 'added', 'updated', 'signup', 'confirm' );
-
-		foreach ( $conditions['conditions'] as $options ) {
-
-			$field = esc_sql( $options['field'] );
-			$value = esc_sql( stripslashes( $options['value'] ) );
-			$is_empty = '' == $value;
-			$extra = '';
-			$positive = false;
-
-			switch ( $field ) {
-				case 'rating':
-					$value = str_replace( ',', '.', $value );
-					if ( strpos( $value, '%' ) !== false || $value > 5 ) {
-						$value = floatval( $value ) / 100;
-					} elseif ( $value >= 1 ) {
-						$value = floatval( $value ) * 0.2;
-					}
-				break;
-			}
-
-			switch ( $options['operator'] ) {
-				case 'is':
-					$positive = true;
-				case 'is_not':
-
-					if ( in_array( $field, $custom_date_fields ) ) {
-						$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
-					} elseif ( in_array( $field, $timefields ) ) {
-						$f = "STR_TO_DATE(FROM_UNIXTIME($tablealias.$field),'%Y-%m-%d')";
-					} elseif ( in_array( $field, $custom_fields ) ) {
-						$f = "`field_$field`.meta_value";
-					} elseif ( in_array( $field, $meta_fields ) ) {
-						$f = "`meta_$field`.meta_value";
-					} elseif ( in_array( $field, $wp_user_meta ) ) {
-						$f = "`meta_wp_$field`.meta_value";
-						if ( $field == 'wp_capabilities' ) {
-							$value = 's:' . strlen( $value ) . ':"' . strtolower( $value ) . '";';
-							$cond[] = "`meta_wp_$field`.meta_value " . ( $options['operator'] == 'is' ? 'LIKE' : 'NOT LIKE' ) . " '%$value%'";
-							break;
-						}
-					} else {
-						$f = "$tablealias.$field";
-					}
-
-					$c = $f . ' ' . ( $positive ? '=' : '!=' ) . " '$value'";
-					if ( $is_empty && $positive ) {
-						$c .= ' OR ' . $f . ' IS NULL';
-					}
-
-					$cond[] = $c;
-				break;
-
-				case 'contains':
-					$positive = true;
-				case 'contains_not':
-					if ( $field == 'wp_capabilities' ) {
-						$value = "'a:%" . strtolower( $value ) . "%'";
-					} else {
-						$value = "'%$value%'";
-					}
-					if ( in_array( $field, $custom_fields ) ) {
-						$f = "`field_$field`.meta_value";
-					} elseif ( in_array( $field, $meta_fields ) ) {
-						$f = "`meta_$field`.meta_value";
-					} elseif ( in_array( $field, $wp_user_meta ) ) {
-						$f = "`meta_wp_$field`.meta_value";
-					} else {
-						$f = "$tablealias.$field";
-					}
-
-					$c = $f . ' ' . ( $positive ? 'LIKE' : 'NOT LIKE' ) . " $value";
-					if ( $is_empty && $positive ) {
-						$c .= ' OR ' . $f . ' IS NULL';
-					}
-
-					$cond[] = $c;
-				break;
-
-				case 'begin_with':
-					if ( $field == 'wp_capabilities' ) {
-						$value = "'%\"" . strtolower( $value ) . "%'";
-					} else {
-						$value = "'$value%'";
-					}
-					if ( in_array( $field, $custom_fields ) ) {
-						$f = "`field_$field`.meta_value";
-					} elseif ( in_array( $field, $meta_fields ) ) {
-						$f = "`meta_$field`.meta_value";
-					} elseif ( in_array( $field, $wp_user_meta ) ) {
-						$f = "`meta_wp_$field`.meta_value";
-					} else {
-						$f = "$tablealias.$field";
-					}
-
-					$c = $f . " LIKE $value";
-
-					$cond[] = $c;
-				break;
-
-				case 'end_with':
-					if ( $field == 'wp_capabilities' ) {
-						$value = "'%" . strtolower( $value ) . "\"%'";
-					} else {
-						$value = "'%$value'";
-					}
-
-					if ( in_array( $field, $custom_fields ) ) {
-						$f = "`field_$field`.meta_value";
-					} elseif ( in_array( $field, $meta_fields ) ) {
-						$f = "`meta_$field`.meta_value";
-					} elseif ( in_array( $field, $wp_user_meta ) ) {
-						$f = "`meta_wp_$field`.meta_value";
-					} else {
-						$f = "$tablealias.$field";
-					}
-
-					$c = $f . " LIKE $value";
-
-					$cond[] = $c;
-				break;
-
-				case 'is_greater_equal':
-				case 'is_smaller_equal':
-					$extra = '=';
-				case 'is_greater':
-				case 'is_smaller':
-
-					if ( in_array( $field, $custom_date_fields ) ) {
-						$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
-						$value = "'$value'";
-					} elseif ( in_array( $field, $timefields ) ) {
-						$f = "STR_TO_DATE(FROM_UNIXTIME($tablealias.$field),'%Y-%m-%d')";
-						$value = "'$value'";
-					} elseif ( in_array( $field, $custom_fields ) ) {
-						$f = "`field_$field`.meta_value";
-						$value = is_numeric( $value ) ? floatval( $value ) : "'$value'";
-					} elseif ( in_array( $field, $meta_fields ) ) {
-						$f = "`meta_$field`.meta_value";
-						$value = is_numeric( $value ) ? floatval( $value ) : "'$value'";
-					} elseif ( in_array( $field, $wp_user_meta ) ) {
-						$f = "`meta_wp_$field`.meta_value";
-						if ( $field == 'wp_capabilities' ) {
-							$value = "'NOTPOSSIBLE'";
-						}
-					} else {
-						$f = "$tablealias.$field";
-						$value = floatval( $value );
-					}
-
-					$c = $f . ' ' . ( $options['operator'] == 'is_greater' || $options['operator'] == 'is_greater_equal' ? '>' . $extra : '<' . $extra ) . " $value";
-
-					$cond[] = $c;
-				break;
-
-				case 'pattern':
-					$positive = true;
-				case 'not_pattern':
-					if ( in_array( $field, $custom_date_fields ) ) {
-						$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
-					} elseif ( in_array( $field, $timefields ) ) {
-						$f = "STR_TO_DATE(FROM_UNIXTIME($tablealias.$field),'%Y-%m-%d')";
-					} elseif ( in_array( $field, $custom_fields ) ) {
-						$f = "`field_$field`.meta_value";
-					} elseif ( in_array( $field, $meta_fields ) ) {
-						$f = "`meta_$field`.meta_value";
-					} elseif ( in_array( $field, $wp_user_meta ) ) {
-						$f = "`meta_wp_$field`.meta_value";
-					} else {
-						$f = "$tablealias.$field";
-						if ( $field == 'wp_capabilities' ) {
-							$value = "'NOTPOSSIBLE'";
-							break;
-						}
-					}
-					if ( $is_empty ) {
-						$value = '.';
-					}
-
-					$is_empty = '.' == $value;
-
-					if ( ! $positive ) {
-						$extra = 'NOT ';
-					}
-
-					$c = $f . ' ' . $extra . "REGEXP '$value'";
-					if ( $is_empty && $positive ) {
-						$c .= ' OR ' . $f . ' IS NULL';
-					}
-
-					$cond[] = $c;
-				break;
-
-			}
-		}
-
-		if ( ! empty( $cond ) ) {
-			$sql .= ' AND (' . implode( ' ' . $conditions['operator'] . ' ', $cond ) . ')';
-		}
-
-		return $sql;
 	}
 
 

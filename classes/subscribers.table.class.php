@@ -30,9 +30,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$counts = mailster( 'subscribers' )->get_count_by_status();
 		$statuses = mailster( 'subscribers' )->get_status();
 		$statuses_nice = mailster( 'subscribers' )->get_status( null, true );
-		$link = 'edit.php?post_type=newsletter&page=mailster_subscribers';
+		$link = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
+		$link = add_query_arg( array() );
 
-		$views = array( 'view-all' => '<a href="' . $link . '">' . __( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( array_sum( $counts ) ) . ')</span></a>' );
+		$views = array( 'view-all' => '<a href="' . remove_query_arg( 'status', $link ) . '">' . __( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( array_sum( $counts ) ) . ')</span></a>' );
 
 		foreach ( $counts as $id => $count ) {
 			$views[ 'view-' . $statuses[ $id ] ] = '<a href="' . add_query_arg( array( 'status' => $id ), $link ) . '">' . $statuses_nice[ $id ] . ' <span class="count">(' . number_format_i18n( $count ) . ')</span></a>';
@@ -100,10 +101,11 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	<p class="search-box">
 		<label class="screen-reader-text" for="sa-search-input"><?php echo $text; ?></label>
 		<input type="search" id="<?php echo $input_id ?>" name="s" value="<?php if ( isset( $_GET['s'] ) ) {
-			echo esc_attr( $_GET['s'] );
+			echo esc_attr( stripslashes( $_GET['s'] ) );
 }
 		?>">
 		<input type="submit" name="" id="search-submit" class="button" value="<?php echo esc_attr( $text ); ?>">
+		<br><label><input type="checkbox" name="strict" value="1"<?php checked( isset( $_GET['strict'] ) ); ?>>strict</label>
 	</p>
 	</form>
 <?php
@@ -150,7 +152,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				$half = max( 0, min( 5, round( $stars - $full ) ) );
 				$empty = max( 0, min( 5, 5 - $full - $half ) );
 
-				$userrating = '<div class="userrating" title="' . ( $item->rating * 100 ) . '%">' . str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
+				$userrating = '<div class="userrating" title="' . ( $item->rating * 100 ) . '%">'
+				. str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty ) . '</div>';
 
@@ -184,13 +187,13 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				if ( in_array( $column_name, array_keys( $custom_fields ) ) ) {
 					switch ( $custom_fields[ $column_name ]['type'] ) {
 						case 'checkbox':
-						return $item->{'_' . $column_name} ? '&#10004;' : '&#10005;';
+						return $item->{$column_name} ? '&#10004;' : '&#10005;';
 						break;
 						case 'date':
-						return $item->{'_' . $column_name} ? date_i18n( get_option( 'date_format' ), strtotime( $item->{'_' . $column_name} ) ) : '';
+						return $item->{$column_name} ? date_i18n( get_option( 'date_format' ), strtotime( $item->{$column_name} ) ) : '';
 						break;
 						default:
-						return $item->{'_' . $column_name};
+						return $item->{$column_name};
 					}
 				}
 			return print_r( $item, true ); // Show the whole array for troubleshooting purposes
@@ -279,6 +282,18 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	/**
 	 *
 	 *
+	 * @param unknown $which (optional)
+	 */
+	public function extra_tablenav( $which = '' ) {
+		echo '<div class="alignleft">';
+		echo '<a class="button">Filters</a>';
+		echo '</div>';
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $item
 	 * @return unknown
 	 */
@@ -316,167 +331,50 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
-		$custom_field_names = mailster()->get_custom_fields( true );
-		$custom_field_names = array_splice( $custom_field_names, 0, 58 );
+		$args = array(
+			'status' => isset( $_GET['status'] ) ? intval( $_GET['status'] ) : false,
+			's'      => isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null,
+			'strict' => isset( $_GET['strict'] ) ? boolval( $_GET['strict'] ) : false,
+		);
 
-		$lists = isset( $_GET['lists'] ) ? array_filter( $_GET['lists'], 'is_numeric' ) : array();
-
-		$extrasql = '';
-
-		$fullnamestring = mailster_option( 'name_order' )
-			? "TRIM(CONCAT(IFNULL(lastname.meta_value, ''), ' ', IFNULL(firstname.meta_value, '')))"
-			: "TRIM(CONCAT(IFNULL(firstname.meta_value, ''), ' ', IFNULL(lastname.meta_value, '')))";
-
-		$sql = "SELECT SQL_CALC_FOUND_ROWS a.ID, a.*, firstname.meta_value AS firstname, lastname.meta_value AS lastname, $fullnamestring AS fullname";
-		foreach ( $custom_field_names as $i => $name ) {
-			$sql .= ", meta_$i.meta_value AS '_$name'";
+		// How many to display per page?
+		if ( ! ($limit = (int) get_user_option( 'mailster_subscribers_per_page' )) ) {
+			$limit = 50;
 		}
 
-		if ( ! empty( $lists ) ) {
-			$sql .= ', lists.list_id AS list_id';
-		}
-
-		$sql .= " FROM {$wpdb->prefix}mailster_subscribers as a";
-
-		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS firstname ON firstname.subscriber_id = a.ID AND firstname.meta_key = 'firstname'";
-		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS lastname ON lastname.subscriber_id = a.ID AND lastname.meta_key = 'lastname'";
-
-		foreach ( $custom_field_names as $i => $name ) {
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS meta_$i ON meta_$i.subscriber_id = a.ID AND meta_$i.meta_key = '$name'";
-		}
-
-		if ( ! empty( $lists ) ) {
-			$extrasql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists ON a.ID = lists.subscriber_id";
-		}
-
-		// $sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_lists as c on c.id = ab.list_id";
-		$extrasql .= ' WHERE 1';
-
-		if ( isset( $_GET['status'] ) ) {
-			$extrasql .= ' AND a.status = ' . intval( $_GET['status'] );
-		}
-		if ( isset( $_GET['since'] ) ) {
-			$since = strtotime( $_GET['since'] );
-			$extrasql .= $wpdb->prepare( ' AND (a.signup >= %d || a.confirm >= %d)', $since, $since );
-		}
-		if ( ! empty( $lists ) ) {
-			$extrasql .= ' AND lists.list_id IN (' . implode( ',', $lists ) . ')';
-		}
-
-		if ( isset( $_GET['s'] ) ) {
-			$search = trim( addcslashes( esc_sql( $_GET['s'] ), '%_' ) );
-			$search = explode( ' ', $search );
-
-			$extrasql .= ' AND (';
-			$terms = array();
-			foreach ( $search as $term ) {
-
-				if ( substr( $term, 0, 1 ) == '-' ) {
-					$term = substr( $term, 1 );
-					$operator = 'AND';
-					$like = 'NOT LIKE';
-					$end = '(1=1)';
-				} else {
-					$operator = 'OR';
-					$like = 'LIKE';
-					$end = '(1=0)';
-				}
-
-				$termsql = ' ( ';
-				$termsql .= " (a.email $like '%" . $term . "%') $operator ";
-				$termsql .= " (a.hash $like '" . $term . "') $operator ";
-				$termsql .= " (firstname.meta_value $like '%" . $term . "%') $operator ";
-				$termsql .= " (lastname.meta_value $like '%" . $term . "%') $operator ";
-				foreach ( $custom_field_names as $i => $name ) {
-					$termsql .= " (meta_$i.meta_value $like '%" . $term . "%') $operator ";
-				}
-				$termsql .= " $end )";
-
-				$terms[] = $termsql;
-
-			}
-
-			$extrasql .= implode( ' AND ', $terms ) . ')';
-
-		}
-
-		$sql .= $extrasql;
-
+		$offset = isset( $_GET['paged'] ) ? ( intval( $_GET['paged'] ) - 1 ) * $limit : 0;
 		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
 		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
+
 		switch ( $orderby ) {
 			case 'name':
 			case 'lastname':
-				$orderby = 'lastname.meta_value ' . $order . ', firstname.meta_value';
-			break;
+				$orderby = array( 'lastname', 'firstname' );
+				break;
 			case 'firstname':
-				$orderby = 'firstname.meta_value ' . $order . ', lastname.meta_value';
-			break;
-			default:
-				$orderby = ( false !== ( $found = array_search( $orderby, $custom_field_names ) ) ) ? 'meta_' . $found . '.meta_value' : 'a.' . $orderby;
+				$orderby = array( 'firstname', 'lastname' );
+				break;
 		}
 
-		if ( ! empty( $orderby ) & ! empty( $order ) ) {
-			$sql .= ' ORDER BY ' . $orderby . ' ' . $order . ', ID ' . $order;
-		}
+		$items = mailster( 'subscribers' )->query( wp_parse_args( $args, array(
+			'calc_found_rows' => true,
+			'orderby' => $orderby,
+			'order' => $order,
+			'fields' => 'all',
+			'limit' => $limit,
+			'offset' => $offset,
+		)) );
 
-		// How many to display per page?
-		$perpage = (int) get_user_option( 'mailster_subscribers_per_page' );
-		if ( ! $perpage ) {
-			$perpage = 50;
-		}
-
-		// Which page is this?
-		$paged = ! empty( $_GET['paged'] ) ? esc_sql( $_GET['paged'] ) : '';
-		// Page Number
-		if ( empty( $paged ) || ! is_numeric( $paged ) || $paged <= 0 ) {$paged = 1;}
-
-		// adjust the query to take pagination into account
-		if ( ! empty( $paged ) && ! empty( $perpage ) ) {
-			$offset = ( $paged - 1 ) * $perpage;
-		}
-
-		if ( isset( $offset ) ) {
-			$sql .= " LIMIT $offset, $perpage";
-		}
-
-		$sql = apply_filters( 'mailster_subscribers_prepare_items_sql', $sql );
-
-		$this->items = $wpdb->get_results( $sql );
-
+		$this->items = $items;
 		$totalitems = $wpdb->get_var( 'SELECT FOUND_ROWS();' );
 
-		// How many pages do we have in total?
-		$totalpages = ceil( $totalitems / $perpage );
+		$totalpages = ceil( $totalitems / $limit );
 
 		$this->set_pagination_args( array(
 			'total_items' => $totalitems,
 			'total_pages' => $totalpages,
-			'per_page' => $perpage,
+			'per_page' => $limit,
 		) );
-
-		// cache the lists and actions for the current subscribers
-		if ( $current_ids = wp_list_pluck( $this->items, 'ID' ) ) {
-
-			// mailster('actions')->get_by_subscriber($current_ids);
-			$sql = "SELECT ab.subscriber_id, a.* FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.list_id WHERE ab.subscriber_id IN (" . implode( ',', $current_ids ) . ')';
-
-			$cache = array();
-			$lists = $wpdb->get_results( $sql );
-
-			foreach ( $lists as $list ) {
-				if ( ! isset( $cache[ $list->subscriber_id ] ) ) {
-					$cache[ $list->subscriber_id ] = array();
-				}
-
-				$cache[ $list->subscriber_id ][] = $list;
-			}
-
-			mailster_cache_set( 'subscribers_lists', $cache );
-
-			mailster( 'actions' )->get_by_subscriber( $current_ids );
-
-		}
 
 	}
 

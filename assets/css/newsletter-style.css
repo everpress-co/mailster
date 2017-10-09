@@ -1936,17 +1936,18 @@ label.weekday input{
 #mailster_testmail{
 	margin:0.3em 0;
 }
-#mailster_total{
+.mailster-total{
 	text-indent:-99999px;
 	font-size:16px;
 	font-weight:700;
 	visibility:visible;
 	cursor: pointer;
 }
-#mailster_total.loading{
+.mailster-total.loading{
 	height: auto;
+	opacity: 0.5;
 }
-.rtl #mailster_total{
+.rtl .mailster-total{
 	text-indent:99999px;
 }
 .progress{
@@ -2049,6 +2050,33 @@ label.weekday input{
 	margin:3px 0;
 	width:95%;
 	border-color:#DFDFDF;
+}
+#mailster_conditions{
+	border:1px solid #DFDFDF;
+	border-radius:2px;
+	padding: 12px;
+	min-height: 18px;
+	position: relative;
+}
+#mailster_conditions .mailster-conditions-render:empty:before{
+	content: attr(data-emptytext);
+	display: block;
+	position: absolute;
+	top:50%;
+	left:50%;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	color: #999;
+	white-space: nowrap;
+}
+.mailster-condition-render{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.mailster-condition-render .mailster-condition-operators{
+	color: #989898;
+	font-size: 10px;
 }
 .create-new-list-wrap{
 	display:none;

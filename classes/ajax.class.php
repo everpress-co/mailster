@@ -735,6 +735,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, array( 'operator' => $operator, 'conditions' => $conditions ) );
+		$return['conditions'] = mailster( 'conditions' )->render( $conditions, $operator, false );
 		$return['totalformatted'] = number_format_i18n( $return['total'] );
 
 		$this->json_return( $return );

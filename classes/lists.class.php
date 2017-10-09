@@ -956,7 +956,7 @@ class MailsterLists {
 	 * @param unknown $show_count (optional)
 	 * @param unknown $checked    (optional)
 	 */
-	public function print_it( $id = null, $status = null, $name = 'mailster_lists', $show_count = true, $checked = array() ) {
+	public function print_it( $id = null, $status = null, $name = 'mailster_lists', $show_count = true, $checked = array(), $type = 'checkbox' ) {
 
 		if ( $lists = $this->get( $id, $status, ! ! $show_count ) ) {
 
@@ -964,12 +964,19 @@ class MailsterLists {
 				$checked = array( $checked );
 			}
 
-			echo '<ul>';
-			foreach ( $lists as $list ) {
-				echo '<li><label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="' . $name . '[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . ( $show_count ? ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')</span>' : '' ) . '</label></li>';
+			if ( $type == 'checkbox' ) {
+				echo '<ul>';
+				foreach ( $lists as $list ) {
+					echo '<li><label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="' . $name . '[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . ( $show_count ? ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')</span>' : '' ) . '</label></li>';
+				}
+				echo '</ul>';
+			} else {
+				echo '<select class="widefat" multiple name="' . $name . '">';
+				foreach ( $lists as $list ) {
+					echo '<option value="' . $list->ID . '" ' . selected( in_array( $list->ID, $checked ), true, false ) . '>' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . $list->name . '' . ( $show_count ? ' (' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')' : '' ) . '</option>';
+				}
+				echo '</select>';
 			}
-			echo '</ul>';
-
 		} else {
 			echo '<ul><li>' . __( 'No Lists found!', 'mailster' ) . '</li><li><a href="edit.php?post_type=newsletter&page=mailster_lists&new">' . __( 'Create a List now', 'mailster' ) . '</a></li></ul>';
 		}

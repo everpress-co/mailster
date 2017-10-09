@@ -2277,6 +2277,21 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
+	 * @param unknown $args (optional)
+	 * @return unknown
+	 */
+	public function query( $args = array() ) {
+
+		require_once MAILSTER_DIR . 'classes/subscriber.query.class.php';
+		$query = MailsterSubscriberQuery::get_instance( );
+		return $query->run( $args );
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $ID            (optional)
 	 * @param unknown $custom_fields (optional)
 	 * @return unknown

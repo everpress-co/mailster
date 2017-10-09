@@ -1172,7 +1172,11 @@ class MailsterManage {
 
 			$count += mailster( 'lists' )->count( false, $statuses );
 
-			$subscriber_ids = mailster( 'campaigns' )->get_subscribers_by_lists( null, null, $statuses, true );
+			$subscriber_ids = mailster( 'subscribers' )->query(array(
+				'lists' => null,
+				'status' => $statuses,
+				'return_ids' => true,
+			));
 
 			$return['success'] = mailster( 'subscribers' )->remove( $subscriber_ids, $statuses, isset( $d['remove_actions'] ) );
 
@@ -1182,7 +1186,11 @@ class MailsterManage {
 
 			$count += mailster( 'lists' )->count( $listids, $statuses );
 
-			$subscriber_ids = mailster( 'campaigns' )->get_subscribers_by_lists( $listids, null, $statuses, true );
+			$subscriber_ids = mailster( 'subscribers' )->query(array(
+				'lists' => $listids,
+				'status' => $statuses,
+				'return_ids' => true,
+			));
 
 			$return['success'] = mailster( 'subscribers' )->remove( $subscriber_ids, $statuses, isset( $d['remove_actions'] ) );
 

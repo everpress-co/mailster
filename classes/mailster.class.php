@@ -96,6 +96,19 @@ class Mailster {
 	/**
 	 *
 	 *
+	 * @param unknown $content (optional)
+	 * @return unknown
+	 */
+	public function conditions( $conditions = array(), $operator = 'AND' ) {
+		require_once MAILSTER_DIR . 'classes/conditions.class.php';
+
+		return new MailsterConditions( $conditions, $operator );
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $file     (optional)
 	 * @param unknown $template (optional)
 	 * @return unknown
