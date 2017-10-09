@@ -14,6 +14,16 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 		<input name="mailster_data[embed_images]" id="mailster_data_embed_images" value="1" type="checkbox" <?php echo ( isset( $this->post_data['embed_images'] ) ) ? ( ( $this->post_data['embed_images'] ) ? 'checked' : '' ) : ( mailster_option( 'embed_images' ) ? 'checked' : '' ) ?> <?php echo ( $editable ) ? 'disabled' : '' ?>> <?php esc_html_e( 'Embed Images', 'mailster' ) ?>
 		</label>
 	</p>
+	<p>
+		<label>
+		<input name="mailster_data[track_opens]" id="mailster_data_track_opens" value="1" type="checkbox" <?php echo ( isset( $this->post_data['track_opens'] ) ) ? ( ( $this->post_data['track_opens'] ) ? 'checked' : '' ) : ( mailster_option( 'track_opens' ) ? 'checked' : '' ) ?> <?php echo ( $editable ) ? 'disabled' : '' ?>> <?php esc_html_e( 'Track Opens', 'mailster' ) ?>
+		</label>
+	</p>
+	<p>
+		<label>
+		<input name="mailster_data[track_clicks]" id="mailster_data_track_clicks" value="1" type="checkbox" <?php echo ( isset( $this->post_data['track_clicks'] ) ) ? ( ( $this->post_data['track_clicks'] ) ? 'checked' : '' ) : ( mailster_option( 'track_clicks' ) ? 'checked' : '' ) ?> <?php echo ( $editable ) ? 'disabled' : '' ?>> <?php esc_html_e( 'Track Clicks', 'mailster' ) ?>
+		</label>
+	</p>
 	<label><?php esc_html_e( 'Colors', 'mailster' );?></label> <a class="savecolorschema"><?php esc_html_e( 'save this schema', 'mailster' ) ?></a>
 
 <?php
@@ -150,6 +160,12 @@ foreach ( $current_colors as $i => $color ) {
 
 	<p>
 		<?php if ( $this->post_data['embed_images'] ) { ?>&#10004;<?php } else { ?>&#10005;<?php }?> <?php esc_html_e( 'Embedded Images', 'mailster' ) ?>
+	</p>
+	<p>
+		<?php if ( $this->post_data['track_opens'] ) { ?>&#10004;<?php } else { ?>&#10005;<?php }?> <?php esc_html_e( 'Track Opens', 'mailster' ) ?>
+	</p>
+	<p>
+		<?php if ( $this->post_data['track_clicks'] ) { ?>&#10004;<?php } else { ?>&#10005;<?php }?> <?php esc_html_e( 'Track Clicks', 'mailster' ) ?>
 	</p>
 	<label><?php esc_html_e( 'Colors Schema', 'mailster' ) ?></label><br>
 	<ul class="colorschema finished">

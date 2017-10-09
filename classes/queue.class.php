@@ -937,8 +937,8 @@ class MailsterQueue {
 						continue;
 					}
 
-					// regular campaign - do not log since we log later in this process
-					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, true, false, false );
+					// regular campaign
+					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, null, false, false );
 
 					$options = false;
 

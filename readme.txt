@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.3 =
 
 * new: Option to hide the Webversion Bar
+* new: option to disable tracking on campaign based basis
 
 = Version 2.2.13 =
 

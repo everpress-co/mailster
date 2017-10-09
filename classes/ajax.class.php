@@ -484,6 +484,8 @@ class MailsterAjax {
 			$from_name = stripcslashes( $formdata['mailster_data']['from_name'] );
 			$reply_to = $formdata['mailster_data']['reply_to'];
 			$embed_images = isset( $formdata['mailster_data']['embed_images'] );
+			$track_opens = isset( $formdata['mailster_data']['track_opens'] );
+			$track_clicks = isset( $formdata['mailster_data']['track_clicks'] );
 			$head = isset( $formdata['mailster_data']['head'] ) ? stripcslashes( $formdata['mailster_data']['head'] ) : null;
 			$content = stripslashes( $_POST['content'] );
 			$preheader = stripcslashes( $formdata['mailster_data']['preheader'] );
@@ -504,8 +506,6 @@ class MailsterAjax {
 			$issue = $formdata['mailster_data']['autoresponder']['issue'];
 
 			$campaign_permalink = get_permalink( $ID );
-
-			$replace_links = true;
 
 			$attach = array();
 
@@ -618,7 +618,7 @@ class MailsterAjax {
 				$content = mailster( 'helper' )->prepare_content( $content );
 
 				// replace links with fake hash to prevent tracking
-				if ( $replace_links ) {
+				if ( $track_clicks ) {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
@@ -632,7 +632,7 @@ class MailsterAjax {
 				$placeholder->set_content( $mail->subject );
 				$mail->subject = $placeholder->get_content();
 
-				$mail->add_tracking_image = false;
+				$mail->add_tracking_image = $track_opens;
 
 				if ( $spam_test ) {
 

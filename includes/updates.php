@@ -521,6 +521,8 @@ if ( $old_version ) {
 		case '2.2.x':
 
 			$mailster_options['webversion_bar'] = true;
+			$mailster_options['track_opens'] = true;
+			$mailster_options['track_clicks'] = true;
 
 		default:
 
