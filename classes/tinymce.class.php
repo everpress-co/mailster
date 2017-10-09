@@ -34,18 +34,20 @@ class MailsterTinymce {
 
 			if ( 'newsletter' == $post->post_type ) {
 
-				$plugin_array['mailster_mce_button'] = MAILSTER_URI . 'assets/js/tinymce-editbar-button' . $suffix . '.js';
+				if ( ! mailster( 'campaigns' )->inline_editor() ) {
+					$plugin_array['mailster_mce_button'] = MAILSTER_URI . 'assets/js/tinymce-editbar-button' . $suffix . '.js';
 
-				add_action( 'before_wp_tiny_mce', array( &$this, 'editbar_translations' ) );
+					add_action( 'before_wp_tiny_mce', array( &$this, 'editbar_translations' ) );
+					add_filter( 'mce_buttons', array( &$this, 'register_mce_button' ) );
 
+				}
 			} else {
 				$plugin_array['mailster_mce_button'] = MAILSTER_URI . 'assets/js/tinymce-button' . $suffix . '.js';
 
 				add_action( 'before_wp_tiny_mce', array( &$this, 'translations' ) );
+				add_filter( 'mce_buttons', array( &$this, 'register_mce_button' ) );
 
 			}
-			add_filter( 'mce_buttons', array( &$this, 'register_mce_button' ) );
-
 		}
 
 		return $plugin_array;
@@ -70,7 +72,7 @@ class MailsterTinymce {
 	 *
 	 * @param unknown $settings
 	 */
-	public function editbar_translations( $settings ) {
+	public function editbar_translations( $settings = null ) {
 
 		global $mailster_tags;
 
@@ -85,7 +87,7 @@ class MailsterTinymce {
 		$customfields = mailster()->get_custom_fields();
 
 		foreach ( $customfields as $key => $data ) {
-			$user[ $key ] = $data['name'];
+			$user[ $key ] = strip_tags( $data['name'] );
 		}
 
 		$tags = array();
@@ -93,7 +95,6 @@ class MailsterTinymce {
 		$tags['user'] = array(
 			'name' => __( 'User', 'mailster' ),
 			'tags' => $user,
-
 		);
 
 		$tags['campaign'] = array(
@@ -102,6 +103,8 @@ class MailsterTinymce {
 				'webversion' => __( 'Webversion', 'mailster' ),
 				'unsub' => __( 'Unsubscribe Link', 'mailster' ),
 				'forward' => __( 'Forward', 'mailster' ),
+				'subject' => __( 'Subject', 'mailster' ),
+				'preheader' => __( 'Preheader', 'mailster' ),
 			),
 		);
 
@@ -137,9 +140,14 @@ class MailsterTinymce {
 		echo '<script type="text/javascript">';
 		echo 'mailster_mce_button = ' . json_encode( array(
 				'l10n' => array(
-					'title' => __( 'Mailster Tags', 'mailster' ),
-					'tag' => __( 'Tag', 'mailster' ),
-					'tags' => __( 'Tags', 'mailster' ),
+					'tags' => array(
+						'title' => __( 'Mailster Tags', 'mailster' ),
+						'tag' => __( 'Tag', 'mailster' ),
+						'tags' => __( 'Tags', 'mailster' ),
+					),
+					'remove' => array(
+						'title' => __( 'Remove Block', 'mailster' ),
+					),
 				),
 				'tags' => $tags,
 		) );
@@ -209,7 +217,7 @@ class MailsterTinymce {
 		$return = array();
 
 		foreach ( $array as $tag => $data ) {
-			$return[ $tag ] = ucwords( str_replace( array( '-', '_' ), ' ', $tag ) );
+			$return[ $tag ] = ucwords( str_replace( array( '-', '_' ), ' ', strip_tags( $tag ) ) );
 		}
 
 		return $return;

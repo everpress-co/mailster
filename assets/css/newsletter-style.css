@@ -146,13 +146,13 @@ textarea#content, textarea#excerpt {
 	margin-top: 23px;
 }
 .fixed-optionbar .has-modules .optionbar:after{
-	margin-right: 30px;
+	margin-right: 29px;
 }
 .fixed-optionbar .show-modules .optionbar:after{
 	margin-right: 169px;
 }
 .fixed-optionbar .has-modules.show-modules .optionbar:after{
-	margin-right: 200px;
+	margin-right: 199px;
 }
 .rtl.fixed-optionbar .has-modules .optionbar:after{
 	margin-right: 0;
@@ -186,9 +186,12 @@ textarea#content, textarea#excerpt {
 	margin:0;
 	border-left:0;
 	border-right:0;
+	margin-left:1px;
 }
 .rtl .optionbar ul li {
 	float:right;
+	margin-left:0px;
+	margin-right:1px;
 }
 .optionbar ul li.no-border-left {
 	border-left:0 !important;
@@ -1781,7 +1784,7 @@ textarea#content, textarea#excerpt {
 	right:0;
 	left:0;
 	bottom:0;
-	background-image:url(../img/modulebg.png);
+	background-image:url(../img/inactive.png);
 	z-index: 100;
 }
 .timezone-enabled .utcoffset {
@@ -2105,7 +2108,7 @@ a.savecolorschema, a.colorschema-delete-all {
 	cursor:pointer;
 	font-size:10px;
 }
-ul.colorschema,ul.backgrounds {
+ul.colorschema {
 	margin:5px 0;
 	border:1px solid #DFDFDF;
 	overflow:hidden;
@@ -2165,6 +2168,7 @@ ul.colorschema li a.colorschema-delete{
 	line-height: 1em;
 	display: block;
 }
+/*
 ul.backgrounds {
 	border:0;
 	width:100%;
@@ -2228,6 +2232,7 @@ ul.backgrounds li a.active {
 ul.backgrounds.finished li:hover a{
 	border:1px solid #D3D6DB;
 }
+*/
 /*----------------------------------------------------------------------*/
 /* Attachments
 /*----------------------------------------------------------------------*/
@@ -2392,9 +2397,6 @@ a.mailster-btn.editbutton {
 .fixed-optionbar #mailster_iframe{
 	margin-top: 38px;
 }
-#mailster_template .inside.noeditbuttons a.content.mailster-btn, #mailster_template .inside.noeditbuttons .edit-sign {
-	display:none !important;
-}
 #mailster_template #iframe-wrap {
 	-webkit-transition:margin-right .15s ease-in-out;
 	-moz-transition:margin-right .15s ease-in-out;
@@ -2426,11 +2428,14 @@ a.mailster-btn.editbutton {
 	transition:margin-left .15s ease-in-out;
 	border: 1px solid;
 	border-color:#fff #fff #DFDFDF #DFDFDF;
+	background: #fff;
 	padding: 5px;
 	z-index: 98;
-	margin-left: -42px;
+	margin-left: -40px;
 	margin-top: 2px;
 	display: block !important;
+	color:#a8a8a8;
+	position: absolute;
 }
 .rtl #mailster_template a.toggle-modules{
 	-webkit-transition:margin-right .15s ease-in-out;
@@ -2440,17 +2445,18 @@ a.mailster-btn.editbutton {
 	transition:margin-right .15s ease-in-out;
 	border-color:#fff #DFDFDF #DFDFDF #fff;
 	margin-left: 0;
-	margin-right: -42px;
+	margin-right: -40px;
 }
 #mailster_template a.toggle-modules:hover{
-	border-color:#DFDFDF;
+	color:#686868;
+	_border-color:#DFDFDF;
 }
 #mailster_template .show-modules a.toggle-modules{
-	margin-left: -32px;
+	margin-left: -30px;
 }
 .rtl #mailster_template .show-modules a.toggle-modules{
 	margin-left: 0;
-	margin-right: -32px;
+	margin-right: -30px;
 }
 #mailster_template a.toggle-modules:before{
 	content:'\e81a';
@@ -2563,6 +2569,7 @@ a.mailster-btn.editbutton {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	width: 160px;
+	text-align: center;
 }
 #module-selector ul li a.mailster-btn.has-screenshot {
 	background-size: 100%;

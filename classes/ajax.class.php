@@ -340,6 +340,7 @@ class MailsterAjax {
 		$content = isset( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : '';
 		$ID = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
 		$subject = isset( $_POST['subject'] ) ? stripslashes( $_POST['subject'] ) : '';
+		$preheader = isset( $_POST['preheader'] ) ? stripslashes( $_POST['preheader'] ) : '';
 		$issue = isset( $_POST['issue'] ) ? intval( $_POST['issue'] ) : 1;
 		$head = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
 		$userid = isset( $_POST['userid'] ) ? intval( $_POST['userid'] ) : null;
@@ -390,6 +391,7 @@ class MailsterAjax {
 		$placeholder->add_defaults( $ID, array(
 			'issue' => $issue,
 			'subject' => $subject,
+			'preheader' => $preheader,
 			'emailaddress' => $current_user->user_email,
 		) );
 

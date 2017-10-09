@@ -115,7 +115,6 @@
 	$toolbar1 = (string) apply_filters( 'mymail_editor_toolbar1', apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat' ) );
 	$toolbar2 = (string) apply_filters( 'mymail_editor_toolbar2', apply_filters( 'mailster_editor_toolbar2', '' ) );
 	$toolbar3 = (string) apply_filters( 'mymail_editor_toolbar3', apply_filters( 'mailster_editor_toolbar3', '' ) );
-	$toolbar4 = (string) apply_filters( 'mymail_editor_toolbar4', apply_filters( 'mailster_editor_toolbar4', '' ) );
 
 	if ( ($toolbar2 || $toolbar3) && false === strpos( $toolbar1, 'wp_adv' ) ) {
 		$toolbar1 .= ',|,wp_adv';
@@ -146,11 +145,9 @@
 			'theme_advanced_buttons1' => $toolbar1,
 			'theme_advanced_buttons2' => $toolbar2,
 			'theme_advanced_buttons3' => $toolbar3,
-			'theme_advanced_buttons4' => $toolbar4,
 			'toolbar1' => $toolbar1,
 			'toolbar2' => $toolbar2,
 			'toolbar3' => $toolbar3,
-			'toolbar4' => $toolbar4,
 			'apply_source_formatting' => true,
 			'content_css' => MAILSTER_URI . 'assets/css/tinymce-style.css?v=' . MAILSTER_VERSION,
 		),

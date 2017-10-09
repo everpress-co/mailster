@@ -94,6 +94,9 @@ foreach ( $current_colors as $i => $color ) {
 		<?php endforeach; ?>
 	<?php endif; ?>
 
+	<?php /*
+	?>
+
 	<hr>
 	<label><?php esc_html_e( 'Background', 'mailster' ) ?></label><br>
 
@@ -141,6 +144,8 @@ foreach ( $current_colors as $i => $color ) {
 	</ul>
 	<p class="howto tiny"><?php esc_html_e( 'background images are not displayed on all clients!', 'mailster' ) ?></p>
 
+	<?php */ ?>
+
 <?php else : ?>
 
 	<p>
@@ -154,6 +159,8 @@ foreach ( $current_colors as $i => $color ) {
 		<li data-hex="<?php echo $color ?>" style="background-color:<?php echo $color ?>"></li>
 	<?php endforeach; ?>
 	</ul>
+	<?php /*
+	?>
 	<?php if ( $this->post_data['background'] ) {
 		$file = $this->post_data['background'];
 		?>
@@ -163,5 +170,6 @@ foreach ( $current_colors as $i => $color ) {
 		<li><a title="<?php echo basename( $file ); ?>" style="background-image:url(<?php echo $file ?>)"></a></li>
 	</ul>
 	<?php } ?>
+	<?php */ ?>
 
 <?php endif; ?>

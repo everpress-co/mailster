@@ -736,15 +736,16 @@ class Mailster {
 			}
 		}
 
-		$body = preg_replace( '#<div ?[^>]+?class=\"modulebuttons(.*)<\/div>#i', '', $body );
-		$body = trim( preg_replace( '#<button[^>]*?>.*?</button>#i', '', $body ) );
 		$content = $head . "\n<body$bodyattributes>\n" . apply_filters( 'mymail_sanitize_content_body', apply_filters( 'mailster_sanitize_content_body', $body ) ) . "\n</body></html>";
 
 		$content = str_replace( '<body >', '<body>', $content );
 		$content = str_replace( ' src="//', ' src="' . $protocol . '://', $content );
 		$content = str_replace( ' href="//', ' href="' . $protocol . '://', $content );
+		$content = str_replace( '</module><module', '</module>' . "\n" . '<module', $content );
+		$content = str_replace( '<modules><module', '<modules>' . "\n" . '<module', $content );
+		$content = str_replace( '</module></modules>', '</module>' . "\n" . '</modules>', $content );
 		$content = preg_replace( '#<script[^>]*?>.*?</script>#si', '', $content );
-		$content = str_replace( array( 'mailster-highlight', 'mailster-loading', 'ui-draggable', ' -handle' ), '', $content );
+		$content = str_replace( array( 'mailster-highlight', 'mailster-loading', 'ui-draggable', ' -handle', ' contenteditable="true"', ' spellcheck="false"' ), '', $content );
 
 		$allowed_tags = array( 'address', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else' );
 
