@@ -493,6 +493,8 @@ class MailsterUpgrade {
 		update_option( 'mailster_templates', '' );
 		$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_templates', 'mailster_cron_lasthit')" );
 
+		mailster_update_option( 'webversion_bar', true );
+
 		if ( wp_next_scheduled( 'mymail_cron_worker' ) ) {
 			wp_clear_scheduled_hook( 'mymail_cron_worker' );
 		}

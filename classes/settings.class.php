@@ -86,14 +86,15 @@ class MailsterSettings {
 			'high_dpi' => true,
 
 			'homepage' => false,
+			'frontpage_public' => false,
+			'webversion_bar' => true,
+			'frontpage_pagination' => true,
 			'share_button' => true,
 			'share_services' => array(
 				'twitter',
 				'facebook',
 				'google',
 			),
-			'frontpage_public' => false,
-			'frontpage_pagination' => true,
 			'slug' => 'newsletter',
 			'slugs' => array(
 				'confirm' => sanitize_title( _x( 'confirm', 'confirm slug', 'mailster' ), 'confirm' ),

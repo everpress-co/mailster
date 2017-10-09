@@ -569,7 +569,7 @@ class MailsterFrontpage {
 
 				$meta = mailster( 'campaigns' )->meta( get_the_ID() );
 
-				if ( isset( $_GET['frame'] ) && $_GET['frame'] == '0' ) {
+				if ( ! mailster_option( 'webversion_bar' ) || (isset( $_GET['frame'] ) && $_GET['frame'] == '0' ) ) {
 
 					// remove oembed
 					if ( isset( $GLOBALS['wp_embed'] ) ) {

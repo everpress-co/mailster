@@ -518,6 +518,9 @@ if ( $old_version ) {
 
 		case '2.2.11':
 		case '2.2.12':
+		case '2.2.x':
+
+			$mailster_options['webversion_bar'] = true;
 
 		default:
 
