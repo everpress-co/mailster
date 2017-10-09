@@ -728,6 +728,10 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		$args['key'] = uniqid();
 	}
 
+	if ( is_numeric( $args['once'] ) && $args['once'] < 1500000000 ) {
+		$args['once'] = time() + $args['once'];
+	}
+
 	$mailster_notices = get_option( 'mailster_notices' );
 	if ( ! is_array( $mailster_notices ) ) {
 		$mailster_notices = array();
