@@ -51,6 +51,7 @@ if ( mailster()->is_verified() ) {
 	<dd>
 		<a href="https://docs.revaxarts.com/mailster/" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
 		<a href="https://kb.mailster.co/" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a> |
-		<a href="https://mailster.co/login/" class="external"><?php esc_html_e( 'Support', 'mailster' ); ?></a>
+		<a href="https://mailster.co/login/" class="external"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
+		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a>
 	</dd>
 </dl>

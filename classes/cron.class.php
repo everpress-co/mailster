@@ -54,7 +54,7 @@ class MailsterCron {
 		if ( ! mailster_is_local() && ! mailster()->is_verified() ) {
 			if ( time() - get_option( 'mailster' ) > WEEK_IN_SECONDS
 				&& get_option( 'mailster_setup' ) ) {
-				mailster_notice( '<strong>' . sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'verify', 'mailster_manage_licenses' );
+				mailster_notice( sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ), 'error', false, 'verify', 'mailster_manage_licenses' );
 			}
 		} else {
 			mailster_remove_notice( 'verify' );
@@ -91,7 +91,7 @@ class MailsterCron {
 
 		if ( ! is_null( $error ) && $error['type'] == 1 ) {
 
-			mailster_notice( '<strong>' . sprintf( __( 'It looks like your last cronjob hasn\'t been finished! Increase the %1$s, add %2$s to your wp-config.php or reduce the %3$s in the settings', 'mailster' ), "'max_execution_time'", '<code>define("WP_MEMORY_LIMIT", "256M");</code>', '<a href="edit.php?post_type=newsletter&page=mailster_settings#delivery">' . __( 'Number of mails sent', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'cron_unfinished' );
+			mailster_notice( sprintf( __( 'It looks like your last cronjob hasn\'t been finished! Increase the %1$s, add %2$s to your wp-config.php or reduce the %3$s in the settings', 'mailster' ), "'max_execution_time'", '<code>define("WP_MEMORY_LIMIT", "256M");</code>', '<a href="edit.php?post_type=newsletter&page=mailster_settings#delivery">' . __( 'Number of mails sent', 'mailster' ) . '</a>' ), 'error', false, 'cron_unfinished' );
 
 		} else {
 
