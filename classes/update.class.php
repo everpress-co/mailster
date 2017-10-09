@@ -6,6 +6,7 @@ class MailsterUpdate {
 	public function __construct() {
 
 		add_filter( 'upgrader_pre_download', array( &$this, 'upgrader_pre_download' ), 10, 3 );
+		add_action( 'in_plugin_update_message-' . MAILSTER_SLUG, array( &$this, 'add_license_info' ), 10, 2 );
 
 		if ( ! class_exists( 'UpdateCenterPlugin' ) ) {
 			require_once MAILSTER_DIR . 'classes/UpdateCenterPlugin.php';
@@ -138,6 +139,23 @@ class MailsterUpdate {
 		$actions['mailster_get_license'] = '<a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=action+link">' . __( 'Buy a new Mailster License', 'mailster' ) . '</a>';
 
 		return $actions;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $actions
+	 * @return unknown
+	 */
+	public function add_license_info( $plugin_data, $response ) {
+
+		if ( ! mailster()->is_verified() ) {
+
+			echo '<br><strong style="padding-left:26px;">' . sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' );
+
+		}
 
 	}
 
