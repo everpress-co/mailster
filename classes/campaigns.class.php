@@ -3758,18 +3758,29 @@ class MailsterCampaigns {
 
 		$MID = mailster_option( 'ID' );
 
-		$mail->add_header( 'X-Mailster', $subscriber->hash );
-		$mail->add_header( 'X-Mailster-Campaign', $campaign->ID );
-		$mail->add_header( 'X-Mailster-ID', $MID );
+		$listunsubscribe = '';
+		if ( $mail->bouncemail ) {
+			$listunsubscribe_mail = $mail->bouncemail;
+			$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
+			$listunsubscribe_body = "X-Mailster: $subscriber->hash\nX-Mailster-Campaign: {$campaign->ID}\nX-Mailster-ID: $MID\n\n";
+			$listunsubscribe .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
+		}
+		$listunsubscribe .= '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $subscriber->hash, $campaign->ID ) . '>';
+		$listunsubscribe .= '<' . $unsubscribelink . '>';
 
-		$listunsubscribe = '<' . $unsubscribelink . '>';
+		$headers = array(
+			'X-Mailster' => $subscriber->hash,
+			'X-Mailster-Campaign' => $campaign->ID,
+			'X-Mailster-ID' => $MID,
+			'List-Unsubscribe' => $listunsubscribe,
+			'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+		);
 
-		// $listunsubscribebody = implode("\n", array(
-		// 'X-Mailster: '.$subscriber->hash,
-		// 'X-Mailster-Campaign: '.$campaign->ID,
-		// 'X-Mailster-ID: '.$MID,
-		// ));
-		$mail->add_header( 'List-Unsubscribe', $listunsubscribe );
+		if ( 'autoresponder' != get_post_status( $ID ) ) {
+			$headers['Precedence'] = 'bulk';
+		}
+
+		$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $campaign, $subscriber ) );
 
 		$placeholder->set_content( $mail->subject );
 		$mail->subject = $placeholder->get_content();

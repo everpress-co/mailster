@@ -557,12 +557,27 @@ class MailsterAjax {
 
 				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
 
-				$mail->add_header( 'X-Mailster-Campaign', $ID );
-				$mail->add_header( 'X-Mailster-ID', $MID );
+				$listunsubscribe = '';
+				if ( $mail->bouncemail ) {
+					$listunsubscribe_mail = $mail->bouncemail;
+					$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
+					$listunsubscribe_body = "X-Mailster: $mail->hash\nX-Mailster-Campaign: $ID\nX-Mailster-ID: $MID\n\n";
+					$listunsubscribe .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
+				}
+				$listunsubscribe .= '<' . $unsubscribelink . '>';
 
-				$listunsubscribe = '<' . $unsubscribelink . '>';
+				$headers = array(
+					'X-Mailster-Campaign' => $ID,
+					'X-Mailster-ID' => $MID,
+					'List-Unsubscribe' => $listunsubscribe,
+					'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+				);
 
-				$mail->add_header( 'List-Unsubscribe', $listunsubscribe );
+				if ( 'autoresponder' != get_post_status( $ID ) ) {
+					$headers['Precedence'] = 'bulk';
+				}
+
+				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $campaign, $subscriber ) );
 
 				// check for subscriber by mail
 				$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
