@@ -3600,7 +3600,7 @@ jQuery(document).ready(function ($) {
 		isDisabled = true;
 		$('#publishing-action').find('input:visible').prop('disable', true);
 		$('.button').prop('disable', true);
-		if (buttononly !== true) $('input:visible').prop('disable', true);
+		$('input:visible').prop('disable', true);
 	})
 
 	.on('Mailster:enable', function () {
