@@ -2329,14 +2329,14 @@ class MailsterAjax {
 				$return['code'] = $result->get_error_code();
 
 			} else {
-				update_option( 'mailster_username', $userdata['username'] );
-				update_option( 'mailster_email', $userdata['email'] );
+				update_option( 'mailster_username', $result['username'] );
+				update_option( 'mailster_email', $result['email'] );
 
-				do_action( 'mailster_register', $userdata['username'], $userdata['email'], $purchasecode );
-				do_action( 'mailster_register_' . $slug, $userdata['username'], $userdata['email'], $purchasecode );
+				do_action( 'mailster_register', $result['username'], $result['email'], $purchasecode );
+				do_action( 'mailster_register_' . $slug, $result['username'], $result['email'], $purchasecode );
 
-				$return['username'] = $userdata['username'];
-				$return['email'] = $userdata['email'];
+				$return['username'] = $result['username'];
+				$return['email'] = $result['email'];
 				$return['purchasecode'] = $purchasecode;
 				$return['success'] = true;
 			}

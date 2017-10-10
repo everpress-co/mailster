@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.13 =
 
+* fixed: resending of transactional mails
+* fixed: registration not stored if username was missing
 * added: additional security steps on form submission
 
 = Version 2.2.12 =

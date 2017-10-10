@@ -257,7 +257,7 @@ class MailsterQueue {
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id AND p.post_status = 'autoresponder' WHERE sent != 0 AND sent < " . ( time() - 86400 ) );
 
 		// remove all entries from the queue where campaign has been removed
-		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id AND p.post_type = 'newsletter' WHERE p.ID IS NULL" );
+		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id AND p.post_type = 'newsletter' WHERE p.ID IS NULL AND a.campaign_id != 0" );
 
 		// remove some entrys which are not removed from the queue and are already sent
 		// $wpdb->query("DELETE a FROM {$wpd->prefix}mailster_queue AS a LEFT JOIN {$wpd->prefix}mailster_actions AS b ON a.subscriber_id = b.subscriber_id AND a.campaign_id = b.campaign_id AND b.type = 1 WHERE a.options = '' AND b.subscriber_id IS NOT NULL AND a.requeued = 0")

@@ -281,6 +281,9 @@ class Mailster {
 				if ( $text === false ) {
 					continue;
 				}
+				if ( ! is_string( $text ) ) {
+					$text = print_r( $text, true );
+				}
 
 				$msg .= '<p>' . ( $text ? $text : '&nbsp;' ) . '</p>';
 				if ( $dismissable ) {
