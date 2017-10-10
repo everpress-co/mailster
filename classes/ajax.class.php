@@ -577,7 +577,7 @@ class MailsterAjax {
 					$headers['Precedence'] = 'bulk';
 				}
 
-				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $campaign, $subscriber ) );
+				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $ID, null ) );
 
 				// check for subscriber by mail
 				$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
