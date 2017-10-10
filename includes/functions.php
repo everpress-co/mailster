@@ -31,7 +31,11 @@ function mailster( $subclass = null ) {
 function mailster_option( $option, $fallback = null ) {
 
 	global $mailster_options;
-	return isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $fallback;
+
+	$value = isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $fallback;
+	$value = apply_filters( 'mailster_option', $value, $option, $fallback );
+	$value = apply_filters( 'mailster_option_'.$option, $value, $fallback );
+	return $value;
 
 }
 
