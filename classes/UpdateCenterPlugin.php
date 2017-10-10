@@ -153,7 +153,7 @@ class UpdateCenterPlugin {
 		if ( ! is_wp_error( $response ) ) {
 
 			if ( isset( $response['verified'] ) && $response['verified'] ) {
-				return true;
+				return $response['data'];
 			}
 			if ( ! $returnWPError ) {
 				return false;
@@ -203,7 +203,7 @@ class UpdateCenterPlugin {
 		if ( ! is_wp_error( $response ) ) {
 
 			if ( isset( $response['verified'] ) && $response['verified'] ) {
-				return true;
+				return $response['data'];
 			}
 			if ( ! $returnWPError ) {
 				return false;
@@ -252,7 +252,7 @@ class UpdateCenterPlugin {
 		if ( ! is_wp_error( $response ) ) {
 
 			if ( isset( $response['reset'] ) && $response['reset'] ) {
-				return true;
+				return $response['data'];
 			}
 			if ( ! $returnWPError ) {
 				return false;

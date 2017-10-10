@@ -313,6 +313,9 @@ class Mailster {
 				if ( $text === false ) {
 					continue;
 				}
+				if ( ! is_string( $text ) ) {
+					$text = print_r( $text, true );
+				}
 
 				if ( 'error' == $type ) {
 					$text = '<strong>' . $text . '</strong>';
