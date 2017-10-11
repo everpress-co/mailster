@@ -34,13 +34,11 @@ class MailsterTinymce {
 
 			if ( 'newsletter' == $post->post_type ) {
 
-				if ( ! mailster( 'campaigns' )->inline_editor() ) {
-					$plugin_array['mailster_mce_button'] = MAILSTER_URI . 'assets/js/tinymce-editbar-button' . $suffix . '.js';
+				$plugin_array['mailster_mce_button'] = MAILSTER_URI . 'assets/js/tinymce-editbar-button' . $suffix . '.js';
 
-					add_action( 'before_wp_tiny_mce', array( &$this, 'editbar_translations' ) );
-					add_filter( 'mce_buttons', array( &$this, 'register_mce_button' ) );
+				add_action( 'before_wp_tiny_mce', array( &$this, 'editbar_translations' ) );
+				add_filter( 'mce_buttons', array( &$this, 'register_mce_button' ) );
 
-				}
 			} else {
 				$plugin_array['mailster_mce_button'] = MAILSTER_URI . 'assets/js/tinymce-button' . $suffix . '.js';
 

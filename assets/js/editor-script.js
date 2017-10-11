@@ -7,7 +7,9 @@ jQuery(document).ready(function ($) {
 		body = $('body'),
 		uploader, container, modules, images, buttons, repeatable, selection,
 		currentmodule,
-		isTinymce = typeof tinymce != 'undefined';
+		isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
+		//inline editing not working on Safari (https://github.com/tinymce/tinymce/issues/3232)
+		isTinymce = typeof tinymce != 'undefined' && !isSafari;
 
 	window.ajaxurl = window.ajaxurl || window.mailsterdata.ajaxurl;
 

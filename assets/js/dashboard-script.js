@@ -40,10 +40,10 @@ jQuery(document).ready(function ($) {
 						round: 'day',
 						tooltipFormat: 'll HH:mm'
 					}
-					}],
+				}],
 				yAxes: [{
 					ticks: {
-						callback: function(value){
+						callback: function (value) {
 							return _format(value, true);
 						},
 					}

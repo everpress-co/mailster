@@ -28,6 +28,7 @@ jQuery(document).ready(function ($) {
 		iframeloaded = false,
 		timeout, refreshtimout, modules, optionbar, charts, editbar, animateDOM = $('html,body'),
 		isWebkit = 'WebkitAppearance' in document.documentElement.style,
+		isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
 		isMozilla = (/firefox/i).test(navigator.userAgent),
 		isMSIE = (/msie|trident/i).test(navigator.userAgent),
 		getSelect, selectRange, isDisabled = false,
@@ -50,6 +51,8 @@ jQuery(document).ready(function ($) {
 			autofocus: true
 		};
 
+	//inline editing not working on Safari (https://github.com/tinymce/tinymce/issues/3232)
+	mailsterdata.inline = mailsterdata.inline && !isSafari;
 
 	//init the whole thing
 	function _init() {
@@ -60,6 +63,7 @@ jQuery(document).ready(function ($) {
 		//set the document of the iframe cross browser like
 		_idoc = (_iframe[0].contentWindow || _iframe[0].contentDocument);
 		if (_idoc.document) _idoc = _idoc.document;
+
 
 		_events();
 
@@ -2535,7 +2539,11 @@ jQuery(document).ready(function ($) {
 				var wrap = current.element.closest('table.textbutton');
 				if (wrap.length) wrap.remove();
 			}
-			current.element.remove();
+			if ('img' == current.type && 'img' != current.tag) {
+				current.element.attr('background', '');
+			} else {
+				current.element.remove();
+			}
 			close();
 			return false;
 		}
@@ -2710,6 +2718,7 @@ jQuery(document).ready(function ($) {
 			current.height = el.height();
 			current.asp = current.width / current.height;
 			current.crop = el.data('crop') ? el.data('crop') : false;
+			current.tag = el.prop('tagName').toLowerCase();
 
 			current.content = content;
 
@@ -3529,12 +3538,13 @@ jQuery(document).ready(function ($) {
 
 
 	function _scroll(pos, callback, speed) {
-		if (isNaN(speed)) speed = 400;
-		if (animateDOM.scrollTop() == pos) {
+		pos = Math.round(pos);
+		if (isNaN(speed)) speed = 200;
+		if (animateDOM.scrollTop() == pos || document.scrollingElement.scrollTop == pos) {
 			callback && callback();
 			return
 		}
-		animateDOM.animate({
+		animateDOM.stop().animate({
 				'scrollTop': pos
 			}, speed, callback &&
 			function () {
