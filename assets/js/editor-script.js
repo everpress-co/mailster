@@ -7,9 +7,17 @@ jQuery(document).ready(function ($) {
 		body = $('body'),
 		uploader, container, modules, images, buttons, repeatable, selection,
 		currentmodule,
-		isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
 		//inline editing not working on Safari (https://github.com/tinymce/tinymce/issues/3232)
-		isTinymce = typeof tinymce != 'undefined' && !isSafari;
+		isTinymce = typeof tinymce != 'undefined';
+
+	//not in an iframe
+	if (parent.window == window) {
+
+		var campaign_id;
+		if (campaign_id = location.search.match(/id=(\d+)/i)[1]) {
+			window.location = location.protocol + '//' + location.host + location.pathname.replace('admin-ajax.php', 'post.php') + '?post=' + campaign_id + '&action=edit';
+		}
+	}
 
 	window.ajaxurl = window.ajaxurl || window.mailsterdata.ajaxurl;
 
@@ -163,6 +171,7 @@ jQuery(document).ready(function ($) {
 				onclick: function () {
 					editor.targetElm.remove();
 					editor.remove();
+					_trigger('save');
 				}
 			});
 

@@ -44,12 +44,14 @@ body.drag-active modules module{
 body:hover module[condition],body:hover single[condition],body:hover multi[condition]{
 	outline: 1px dotted blue;
 }
-module{
+/*module{
 	-webkit-touch-callout: none;
-	-webkit-user-select: none;
+	-webkit-user-select: text !important;
 	-khtml-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}*/
+module{
 	position: relative;
 }
 a.mailster-btn,a.mailster-btn:hover,a.mailster-btn:active{

@@ -28,7 +28,6 @@ jQuery(document).ready(function ($) {
 		iframeloaded = false,
 		timeout, refreshtimout, modules, optionbar, charts, editbar, animateDOM = $('html,body'),
 		isWebkit = 'WebkitAppearance' in document.documentElement.style,
-		isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
 		isMozilla = (/firefox/i).test(navigator.userAgent),
 		isMSIE = (/msie|trident/i).test(navigator.userAgent),
 		getSelect, selectRange, isDisabled = false,
@@ -52,7 +51,6 @@ jQuery(document).ready(function ($) {
 		};
 
 	//inline editing not working on Safari (https://github.com/tinymce/tinymce/issues/3232)
-	mailsterdata.inline = mailsterdata.inline && !isSafari;
 
 	//init the whole thing
 	function _init() {
