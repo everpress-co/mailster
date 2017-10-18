@@ -13,6 +13,7 @@ class MailsterSubscriberQuery {
 	private $defaults = array(
 		'select' => null,
 		'status' => null,
+		'status__not_in' => null,
 		'having' => null,
 		'orderby' => null,
 		'order' => null,
@@ -129,15 +130,20 @@ class MailsterSubscriberQuery {
 			$this->args['select'] = array();
 		}
 
-		if ( is_null( $this->args['status'] ) ) {
+		if ( $this->args['status'] !== false && is_null( $this->args['status'] ) ) {
 			if ( ! $this->args['s'] ) {
 				$this->args['status'] = array( 1 );
 			}
 		}
 
-		if ( $this->args['status'] && ! is_array( $this->args['status'] ) ) {
+		if ( $this->args['status'] !== false && ! is_null( $this->args['status'] ) && ! is_array( $this->args['status'] ) ) {
 			$this->args['status'] = explode( ',', $this->args['status'] );
 		}
+
+		if ( $this->args['status__not_in'] !== false && ! is_null( $this->args['status__not_in'] ) && ! is_array( $this->args['status__not_in'] ) ) {
+			$this->args['status__not_in'] = explode( ',', $this->args['status__not_in'] );
+		}
+
 		if ( $this->args['include'] && ! is_array( $this->args['include'] ) ) {
 			$this->args['include'] = explode( ',', $this->args['include'] );
 		}
@@ -484,8 +490,12 @@ class MailsterSubscriberQuery {
 			$wheres[] = (is_null( $this->args['lists'] ) ) ? 'AND lists_subscribers.list_id IS NULL' : ( empty( $this->args['lists'] ) ? 'AND lists_subscribers.list_id = 0' : 'AND lists_subscribers.list_id IN(' . implode( ',', $this->args['lists'] ) . ')' );
 		}
 
-		if ( $this->args['status'] ) {
+		if ( $this->args['status'] !== false && ! is_null( $this->args['status'] ) ) {
 			$wheres[] = 'AND subscribers.status IN (' . implode( ',', array_filter( $this->args['status'], 'is_numeric' ) ) . ')';
+		}
+
+		if ( $this->args['status__not_in'] !== false && ! is_null( $this->args['status__not_in'] ) ) {
+			$wheres[] = 'AND subscribers.status NOT IN (' . implode( ',', array_filter( $this->args['status__not_in'], 'is_numeric' ) ) . ')';
 		}
 
 		if ( $this->args['include'] ) {
@@ -762,6 +772,7 @@ class MailsterSubscriberQuery {
 		}
 
 		global $pagenow;
+
 		if ( in_array( $pagenow, array( '_admin-ajax.php', 'tools.php' ) ) ) {
 			echo '<pre>' . print_r( $sql, true ) . '</pre>';
 			$qu = end( $wpdb->queries );

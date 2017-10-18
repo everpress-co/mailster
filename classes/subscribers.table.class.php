@@ -6,6 +6,10 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 class Mailster_Subscribers_Table extends WP_List_Table {
 
+	public $total_items;
+	public $total_pages;
+	public $per_page;
+
 	public function __construct() {
 
 		parent::__construct( array(
@@ -31,9 +35,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$statuses = mailster( 'subscribers' )->get_status();
 		$statuses_nice = mailster( 'subscribers' )->get_status( null, true );
 		$link = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
-		$link = add_query_arg( array() );
-
-		$views = array( 'view-all' => '<a href="' . remove_query_arg( 'status', $link ) . '">' . __( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( array_sum( $counts ) ) . ')</span></a>' );
+		// $link = add_query_arg( array() );
+		$views = array(
+			'view-all' => '<a href="' . remove_query_arg( 'status', $link ) . '">' . __( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( array_sum( $counts ) ) . ')</span></a>',
+		);
 
 		foreach ( $counts as $id => $count ) {
 			$views[ 'view-' . $statuses[ $id ] ] = '<a href="' . add_query_arg( array( 'status' => $id ), $link ) . '">' . $statuses_nice[ $id ] . ' <span class="count">(' . number_format_i18n( $count ) . ')</span></a>';
@@ -105,7 +110,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 }
 		?>">
 		<input type="submit" name="" id="search-submit" class="button" value="<?php echo esc_attr( $text ); ?>">
-		<br><label><input type="checkbox" name="strict" value="1"<?php checked( isset( $_GET['strict'] ) ); ?>>strict</label>
 	</p>
 	</form>
 <?php
@@ -284,11 +288,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 *
 	 * @param unknown $which (optional)
 	 */
-	public function extra_tablenav( $which = '' ) {
-		echo '<div class="alignleft">';
-		echo '<a class="button">Filters</a>';
-		echo '</div>';
-	}
+	public function extra_tablenav( $which = '' ) {}
 
 
 	/**
@@ -299,7 +299,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	public function column_cb( $item ) {
 		return sprintf(
-			'<input type="checkbox" name="subscribers[]" value="%s" />', $item->ID
+			'<input type="checkbox" name="subscribers[]" value="%s" class="subscriber_cb" />', $item->ID
 		);
 	}
 
@@ -335,11 +335,12 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			'status' => isset( $_GET['status'] ) ? intval( $_GET['status'] ) : false,
 			's'      => isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null,
 			'strict' => isset( $_GET['strict'] ) ? boolval( $_GET['strict'] ) : false,
+			'lists' => isset( $_GET['lists'] ) ? ($_GET['lists'] ) : false,
 		);
 
 		// How many to display per page?
-		if ( ! ($limit = (int) get_user_option( 'mailster_subscribers_per_page' )) ) {
-			$limit = 50;
+		if ( ! ($this->per_page = (int) get_user_option( 'mailster_subscribers_per_page' )) ) {
+			$this->per_page = 50;
 		}
 
 		$offset = isset( $_GET['paged'] ) ? ( intval( $_GET['paged'] ) - 1 ) * $limit : 0;
@@ -361,19 +362,19 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			'orderby' => $orderby,
 			'order' => $order,
 			'fields' => 'all',
-			'limit' => $limit,
+			'limit' => $this->per_page,
 			'offset' => $offset,
 		)) );
 
 		$this->items = $items;
-		$totalitems = $wpdb->get_var( 'SELECT FOUND_ROWS();' );
+		$this->total_items = $wpdb->get_var( 'SELECT FOUND_ROWS();' );
 
-		$totalpages = ceil( $totalitems / $limit );
+		$this->total_pages = ceil( $this->total_items / $this->per_page );
 
 		$this->set_pagination_args( array(
-			'total_items' => $totalitems,
-			'total_pages' => $totalpages,
-			'per_page' => $limit,
+			'total_items' => $this->total_items,
+			'total_pages' => $this->total_pages,
+			'per_page' => $this->per_page,
 		) );
 
 	}

@@ -151,12 +151,9 @@ class MailsterSubscribers {
 		if ( isset( $_POST['post_data'] ) ) {
 			$is_ajax = true;
 			$page = isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 0;
+			$limit = isset( $_POST['per_page'] ) ? intval( $_POST['per_page'] ) : 40;
 			$total = isset( $_POST['count'] ) ? intval( $_POST['count'] ) : false;
 			parse_str( $_POST['post_data'], $_POST );
-		}
-
-		if ( empty( $_POST['subscribers'] ) ) {
-			return;
 		}
 
 		if ( isset( $_POST['action'] ) && -1 != $_POST['action'] ) {
@@ -177,33 +174,43 @@ class MailsterSubscribers {
 		$message_postfix = '';
 
 		if ( isset( $_POST['all_subscribers'] ) && $_POST['all_subscribers'] ) {
+			$args = $_GET;
+
 			$status = isset( $_GET['status'] ) ? intval( $_GET['status'] ) : false;
-			$limit = isset( $_POST['subscribers'] ) ? count( $_POST['subscribers'] ) : 100;
+			$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
+			$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
 			$offset = $page * $limit;
 
-			$not_in_status = false;
 			if ( in_array( $action, array( 'subscribed', 'unsubscribed', 'pending' ) ) ) {
 				$offset = 0;
 				if ( ! $status ) {
 
-					$status = $this->get_status_by_name( $action );
-					$not_in_status = true;
+					$args['status__not_in'] = $this->get_status_by_name( $action );
 
 				}
 			} elseif ( 'delete' == $action ) {
 				$offset = 0;
 			}
 
-			$subscriber_ids = $this->get_ids( $status, $limit, $offset, $not_in_status );
-
-			$finished = ( count( $subscriber_ids ) < $limit );
+			$subscriber_ids = mailster( 'subscribers' )->query( wp_parse_args( $args, array(
+				'status' => $status,
+				'limit' => $limit,
+				'offset' => $offset,
+				'orderby' => $orderby,
+				'order' => $order,
+				'return_ids' => true,
+			)) );
 
 			$page++;
+			$finished = ( $page == ceil( $total / $limit ));
+
 			$message_postfix = ' [' . sprintf( '%s/%s', number_format_i18n( $page ), number_format_i18n( ceil( $total / $limit ) ) ) . ']';
 
 		} else {
+			if ( empty( $_POST['subscribers'] ) ) {
+				return;
+			}
 			$subscriber_ids = array_filter( $_POST['subscribers'], 'is_numeric' );
-
 		}
 
 		switch ( $action ) {
@@ -216,7 +223,8 @@ class MailsterSubscribers {
 						$error_message = sprintf( __( 'There was an error while deleting subscribers: %s', 'mailster' ), $success->get_error_message() );
 
 					} elseif ( $success ) {
-						$error_message = sprintf( __( '%d Subscribers have been removed', 'mailster' ), count( $subscriber_ids ) );
+						$count = count( $subscriber_ids );
+						$error_message = sprintf( __( '%d Subscribers have been removed', 'mailster' ), $count );
 					}
 				}
 			break;
@@ -243,7 +251,8 @@ class MailsterSubscribers {
 				$listid = mailster( 'lists' )->add_segment();
 
 				if ( $this->assign_lists( $subscriber_ids, $listid ) ) {
-					$success_message = sprintf( __( '%d Subscribers have been assigned to a new list', 'mailster' ), count( $subscriber_ids ) );
+					$count = count( $subscriber_ids );
+					$success_message = sprintf( __( '%d Subscribers have been assigned to a new list', 'mailster' ), $count );
 				}
 			break;
 
@@ -303,13 +312,12 @@ class MailsterSubscribers {
 			break;
 
 		}
-
 		if ( $success_message ) {
-			mailster_notice( $success_message . $message_postfix, 'success', true );
+			mailster_notice( $success_message . $message_postfix, 'success', true, 'subscriber_bulk_success', true, true );
 		}
 
 		if ( $error_message ) {
-			mailster_notice( $error_message . $message_postfix, 'error', true );
+			mailster_notice( $error_message . $message_postfix, 'error', true, 'subscriber_bulk_error', true, true );
 		}
 
 		if ( isset( $is_ajax ) ) {

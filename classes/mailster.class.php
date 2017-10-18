@@ -303,7 +303,7 @@ class Mailster {
 					$classes[] = 'mailster-notice-dismissable';
 				}
 
-				$msg = '<div data-id="' . $id . '" id="mailster-notice-' . $id . '" class="' . implode( ' ', $classes ) . '">';
+				$msg = '<div data-id="' . $id . '" id="mailster-notice-' . $id . '" class="' . implode( ' ', $classes ) . '" style="display:none">';
 
 				$text = ( isset( $notice['text'] ) ? $notice['text'] : '' );
 				$text = isset( $notice['cb'] ) && function_exists( $notice['cb'] )

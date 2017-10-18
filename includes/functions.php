@@ -691,9 +691,10 @@ function mailster_clear_cache( $part = '', $deprecated = false ) {
  * @param unknown $once       (optional)
  * @param unknown $key        (optional)
  * @param unknown $capability (optional)
+ * @param unknown $append     (optional)
  * @return unknown
  */
-function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true ) {
+function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true, $append = false ) {
 
 	global $mailster_notices;
 
@@ -741,6 +742,10 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		$mailster_notices = array();
 	}
 
+	if ( $append && isset( $mailster_notices[ $args['key'] ] ) ) {
+		$args['text'] = $mailster_notices[ $args['key'] ]['text'] . '<br>' . $args['text'];
+	}
+
 	$mailster_notices[ $args['key'] ] = array(
 		'text' => $args['text'],
 		'type' => $args['type'],
@@ -757,6 +762,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 	return $args['key'];
 
 }
+
 
 
 /**

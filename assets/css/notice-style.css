@@ -3,6 +3,13 @@ div.mailster-notice{
 	position:relative;
 	padding-right: 38px;
 }
+.wrap div.mailster-notice{
+	display: block !important;
+}
+div.mailster-notice > p{
+	max-height:280px;
+	overflow: auto;
+}
 div.mailster-notice.mailster-notice-dismissable{
 	padding-right: 100px;
 }
