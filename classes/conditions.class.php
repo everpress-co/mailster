@@ -268,6 +268,9 @@ class MailsterConditions {
 
 
 	private function sanitize_rating( $value ) {
+		if ( ! $value ) {
+			return 0;
+		}
 		$value = str_replace( ',', '.', $value );
 		if ( strpos( $value, '%' ) !== false || $value > 5 ) {
 			$value = floatval( $value ) / 100;

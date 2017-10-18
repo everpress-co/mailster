@@ -730,8 +730,6 @@ class MailsterQueue {
 			$timestamps = array();
 			$offsettimestamp = strtotime( '+' . ( -1 * $send_offset ) . ' seconds', strtotime( 'tomorrow midnight' ) ) + $timeoffset;
 
-			echo '<pre>' . print_r( $offsettimestamp, true ) . '</pre>';
-
 			if ( $exact_date ) {
 
 				$cond = array(
@@ -936,7 +934,7 @@ class MailsterQueue {
 
 		@ignore_user_abort( true );
 		@set_time_limit( 0 );
-
+		// @ini_set('memory_limit', '20M');
 		$send_at_once = mailster_option( 'send_at_once' );
 		$max_bounces = mailster_option( 'bounce_attempts' );
 		$max_execution_time = mailster_option( 'max_execution_time', 0 );
@@ -971,8 +969,7 @@ class MailsterQueue {
 			$sql .= " FROM {$wpdb->prefix}mailster_queue AS queue";
 			$sql .= " LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id";
 			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id";
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON actions.subscriber_id = queue.subscriber_id AND actions.campaign_id = queue.campaign_id AND actions.type = 1";
-
+			// $sql .= " LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON actions.subscriber_id = queue.subscriber_id AND actions.campaign_id = queue.campaign_id AND actions.type = 1";
 			// time is in the past and errors are within the range
 			$sql .= ' WHERE queue.timestamp <= ' . intval( $microtime ) . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error}";
 
@@ -985,6 +982,7 @@ class MailsterQueue {
 			// subscriber exists or is not subscriber_id
 			$sql .= ' AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0)';
 
+			// $sql .= ' AND (actions.subscriber_id IS NULL OR queue.requeued = 1)';
 			$sql .= ' ORDER BY queue.priority ASC, subscribers.rating DESC';
 
 			$sql .= ! mailster_option( 'split_campaigns' ) ? ', queue.campaign_id ASC' : '';
@@ -1028,12 +1026,19 @@ class MailsterQueue {
 					// if(!$wpdb->get_var($wpdb->prepare("SELECT ID FROM {$wpdb->posts} WHERE ID = %d AND post_status NOT IN ('paused', 'finished' ) AND post_type = 'newsletter'", $data->campaign_id)) && $data->_requeued == 0){
 					// array_push($campaign_errors, $data->campaign_id);
 					// }
+					if ( ! $data->_requeued ) {
+						// prevent to send duplicates within one minute
+						if ( $duplicate = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_actions WHERE campaign_id = %d AND subscriber_id = %d AND type = %d && timestamp > %d", $data->campaign_id, $data->subscriber_id, 1, time() - 60 ) ) ) {
+							continue;
+						}
+					}
+
 					if ( in_array( $data->campaign_id, $campaign_errors ) ) {
 						continue;
 					}
 
 					// regular campaign
-					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, null, false, false );
+					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, null, false, true );
 
 					$options = false;
 
@@ -1049,20 +1054,19 @@ class MailsterQueue {
 
 				}
 
-				$took = microtime( true ) - $send_start_time;
-				$mail_send_time += $took;
-
 				// success
 				if ( ! is_wp_error( $result ) ) {
+
+					$took = microtime( true ) - $send_start_time;
+					$mail_send_time += $took;
 
 					$wpdb->query( $wpdb->prepare( $queue_update_sql, time(), 0, $data->_priority, $data->_count, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options ) );
 
 					if ( ! $options ) {
 						$this->cron_log( $i + 1, $data->subscriber_id . ' ' . $data->email, $data->campaign_id, $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
 
-						do_action( 'mailster_send', $data->subscriber_id, $data->campaign_id, $options );
-						do_action( 'mymail_send', $data->subscriber_id, $data->campaign_id, $options );
-
+						// do_action( 'mailster_send', $data->subscriber_id, $data->campaign_id, $options );
+						// do_action( 'mymail_send', $data->subscriber_id, $data->campaign_id, $options );
 					} else {
 
 						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
@@ -1153,6 +1157,8 @@ class MailsterQueue {
 		if ( $max_memory_usage ) {
 			$this->cron_log( 'max. memory usage', '<strong>' . size_format( $max_memory_usage, 2 ) . '</strong>' );
 		}
+
+		echo '<pre>' . print_r( size_format( $max_memory_usage, 2 ), true ) . '</pre>';
 
 		$this->cron_log( 'sent this turn', $sent_this_turn );
 

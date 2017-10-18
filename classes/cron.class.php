@@ -343,7 +343,7 @@ class MailsterCron {
 	 */
 	public function url( $alternative = false ) {
 
-		if ( $alternative ) {
+		if ( ! $alternative ) {
 
 			if ( mailster_option( 'got_url_rewrite' ) ) {
 				return apply_filters( 'mailster_cron_url', get_home_url( null, 'mailster/' . mailster_option( 'cron_secret' ) ), $alternative );
@@ -360,6 +360,19 @@ class MailsterCron {
 			), admin_url( 'admin-ajax.php' ) ), $alternative );
 
 		}
+
+	}
+
+
+	public function path( $arguments = false ) {
+
+		$path = MAILSTER_DIR . 'cron.php';
+
+		if ( $arguments ) {
+			$path .= ' ' . mailster_option( 'cron_secret' );
+		}
+
+		return $path;
 
 	}
 

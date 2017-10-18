@@ -50,8 +50,6 @@ jQuery(document).ready(function ($) {
 			autofocus: true
 		};
 
-	//inline editing not working on Safari (https://github.com/tinymce/tinymce/issues/3232)
-
 	//init the whole thing
 	function _init() {
 

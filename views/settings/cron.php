@@ -29,46 +29,49 @@
 			</p>
 			<?php $cron_url = mailster( 'cron' )->url(); ?>
 			<?php $cron_url2 = mailster( 'cron' )->url( true ); ?>
-			<p><?php esc_html_e( 'You can keep a browser window open with following URL', 'mailster' ) ?> (<a class="switch-cron-url" href="#"><?php esc_html_e( 'alternative Cron URL', 'mailster' ) ?></a>)<br>
+			<?php $cron_path = mailster( 'cron' )->path( true ); ?>
+			<p><?php esc_html_e( 'You can keep a browser window open with following URL', 'mailster' ) ?> (<a class="switch-cron-url" href="#"><?php esc_html_e( 'alternative Cron URL', 'mailster' ) ?></a>)</p>
 			<div class="verified regular-cron-url"><a href="<?php echo $cron_url ?>" class="external"><code><?php echo $cron_url ?></code></a></div>
 			<div class="verified alternative-cron-url"><a href="<?php echo $cron_url2 ?>" class="external"><code><?php echo $cron_url2 ?></code></a></div>
-			<?php esc_html_e( 'call it directly', 'mailster' ) ?><br>
-			<div class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * curl --silent '<?php echo $cron_url ?>'</code></div>
-			<div class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * curl --silent '<?php echo $cron_url2 ?>'</code></div>
-			<?php esc_html_e( 'or set up a cron', 'mailster' ) ?><br>
-			<div class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * GET '<?php echo $cron_url ?>' > /dev/null</code></div>
-			<div class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * GET '<?php echo $cron_url2 ?>' > /dev/null</code></div>
-			<?php esc_html_e( 'or', 'mailster' ) ?><br>
-			<div class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * wget -O- '<?php echo $cron_url ?>' > /dev/null</code></div>
-			<div class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * wget -O- '<?php echo $cron_url2 ?>' > /dev/null</code></div>
-			</p>
+			<p><?php esc_html_e( 'or setup a crontab with one of the following commands:', 'mailster' ) ?></p>
+			<ul>
+			<li class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * curl --silent '<?php echo $cron_url ?>'</code></li>
+			<li class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * curl --silent '<?php echo $cron_url2 ?>'</code></li>
+			<li class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * GET '<?php echo $cron_url ?>' > /dev/null</code></li>
+			<li class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * GET '<?php echo $cron_url2 ?>' > /dev/null</code></li>
+			<li class="regular-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * wget -O- '<?php echo $cron_url ?>' > /dev/null</code></li>
+			<li class="alternative-cron-url"><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * wget -O- '<?php echo $cron_url2 ?>' > /dev/null</code></li>
+			<li><code class="click-to-select">*/<?php echo mailster_option( 'interval' ) ?> * * * * php <?php echo $cron_path ?> > /dev/null</code></li>
+			</ul>
 			<p class="description"><?php esc_html_e( 'You can setup an interval as low as one minute, but should consider a reasonable value of 5-15 minutes as well.', 'mailster' );?></p>
 			<p class="description"><?php esc_html_e( 'If you need help setting up a cron job please refer to the documentation that your provider offers.', 'mailster' );?></p>
 			<p class="description"><?php printf( __( 'Anyway, chances are high that either %1$s, %2$s or %3$s  documentation will help you.', 'mailster' ), '<a href="https://docs.cpanel.net/display/ALD/Cron+Jobs" class="external">the CPanel</a>', '<a href="http://download1.parallels.com/Plesk/PP10/10.3.1/Doc/en-US/online/plesk-administrator-guide/plesk-control-panel-user-guide/index.htm?fileName=65208.htm" class="external">Plesk</a>', '<a href="http://www.thegeekstuff.com/2011/07/php-cron-job/" class="external">the crontab</a>' ); ?></p>
+			<p class="description"><?php printf( __( 'You can also find additional help on our %s.', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-a-cron-job/" class="external">' . __( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
 		</td>
 	</tr>
+	<?php $last_hit = get_option( 'mailster_cron_lasthit' ); ?>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Cron Lock', 'mailster' ) ?></th>
 		<td>
-
+			<?php if ( $last_hit && time() - $last_hit['timestamp'] > 720 && mailster( 'cron' )->is_locked() ) : ?>
+				<div class="error inline">
+				<p><?php printf( __( 'Looks like your Cron Lock is still in place after %1$s! Read more about why this can happen %2$s.', 'mailster' ), '<strong>' . human_time_diff( $last_hit['timestamp'] ) . '</strong>', '<a href="https://kb.mailster.co/what-is-a-cron-lock/" class="external">' . __( 'here', 'mailster' ) . '</a>' ); ?></p>
+				</div>
+			<?php endif; ?>
 			<?php $cron_lock = mailster_option( 'cron_lock' ); ?>
 			<select name="mailster_options[cron_lock]">
-				<option value="file" <?php selected( $cron_lock, 'file' ); ?>><?php _e( 'File based', 'mailster' ) ?></option>
-				<option value="db" <?php selected( $cron_lock, 'db' ); ?>><?php _e( 'Database based', 'mailster' ) ?></option>
+				<option value="file" <?php selected( $cron_lock, 'file' ); ?>><?php esc_html_e( 'File based', 'mailster' ) ?></option>
+				<option value="db" <?php selected( $cron_lock, 'db' ); ?>><?php esc_html_e( 'Database based', 'mailster' ) ?></option>
 			</select>
+			<?php if ( mailster( 'cron' )->is_locked() ) : ?>
+			<a href="edit.php?post_type=newsletter&page=mailster_settings&release-cronlock=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-release-cronlock' ) ?>"><?php esc_html_e( 'Release Cron Lock', 'mailster' );?></a>
+		<?php endif; ?>
 			<p class="description"><?php esc_html_e( 'A Cron Lock ensures your cron is not overlapping and causing duplicate emails. Select which method you like to use.', 'mailster' ); ?></p>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Last hit', 'mailster' ) ?></th>
 		<td>
-		<?php $last_hit = get_option( 'mailster_cron_lasthit' );
-		if ( $last_hit && time() - $last_hit['timestamp'] > 720 && mailster( 'cron' )->is_locked() ) : ?>
-			<div class="error inline">
-			<p><?php printf( __( 'Looks like your Cron Lock is still in place after %1$s! Read more about why this can happen %2$s.', 'mailster' ), '<strong>' . human_time_diff( $last_hit['timestamp'] ) . '</strong>', '<a href="https://kb.mailster.co/what-is-a-cron-lock/" class="external">' . __( 'here', 'mailster' ) . '</a>' ); ?></p>
-			</div>
-			<?php endif; ?>
-
 		<ul class="lasthit highlight">
 		<?php if ( $last_hit ) :
 				$interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 );
@@ -82,14 +85,13 @@
 			<?php endif; ?>
 			<?php if ( $last_hit['timemax'] ) : ?>
 			<li><?php echo __( 'Max Execution Time', 'mailster' ) . ': ' . round( $last_hit['timemax'], 3 ) . ' ' . _x( 'sec', 'short for second', 'mailster' ); ?></li>
+			<li><a href="edit.php?post_type=newsletter&page=mailster_settings&reset-lasthit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-lasthit' ) ?>"><?php esc_html_e( 'Reset', 'mailster' );?></a></li>
 			<?php endif; ?>
 		<?php else : ?>
 			<li><strong><?php esc_html_e( 'never', 'mailster' ) ?></strong>
 			(<a href="https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/" class="external"><?php esc_html_e( 'why?', 'mailster' ) ?></a>)</li>
 		<?php endif; ?>
-
 		</ul>
-
 		</td>
 	</tr>
 </table>

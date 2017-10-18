@@ -38,7 +38,7 @@ if ( ! $next_reset || $next_reset < time() ) {
 				<option value="<?php echo $i ?>" <?php selected( $selected, $i ); ?>><?php echo ($i < 10) ? '0' . $i : $i ?>:00</option>
 			<?php endfor; ?>
 			</select>
-		 	<span class="utcoffset"><?php echo  ( ( $timeoffset > 0 ) ? 'UTC + ' . ( $timeoffset / 3600 ) : 'ss' ) ?></span></p>
+		 	<span class="utcoffset"><?php echo  ( ( $timeoffset > 0 ) ? 'UTC + ' . ( $timeoffset / 3600 ) : '' ) ?></span></p>
 			<p><?php esc_html_e( 'only on', 'mailster' );?>
 			<?php
 			$start_at = get_option( 'start_of_week' );

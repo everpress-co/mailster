@@ -792,7 +792,7 @@ class MailsterMail {
 	private function ServerHostname() {
 		if ( $this->Hostname != '' ) {
 			$result = $this->Hostname;
-		} elseif ( $_SERVER['SERVER_NAME'] != '' ) {
+		} elseif ( isset( $_SERVER['SERVER_NAME'] ) && $_SERVER['SERVER_NAME'] != '' ) {
 			$result = $_SERVER['SERVER_NAME'];
 		} else {
 			$result = 'localhost.localdomain';

@@ -3654,10 +3654,9 @@ class MailsterCampaigns {
 		}
 
 		if ( ! $force && ! mailster( 'helper' )->in_timeframe() ) {
-
 			return new WP_Error( 'system_error', 'Not in Time Frame' );
-
 		}
+
 		$campaign_meta = $this->meta( $campaign->ID );
 
 		$mail = mailster( 'mail' );
@@ -3811,8 +3810,8 @@ class MailsterCampaigns {
 
 		if ( $mail->is_system_error() ) {
 			if ( $log ) {
-				do_action( 'mailster_subscriber_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
-				do_action( 'mymail_subscriber_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
+				do_action( 'mailster_system_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
+				do_action( 'mymail_system_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
 			}
 
 			return new WP_Error( 'system_error', $mail->last_error->getMessage() );

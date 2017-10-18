@@ -367,7 +367,7 @@ class MailsterSubscriberQuery {
 			foreach ( $this->args['conditions'] as $i => $conditions ) {
 
 				$sub_cond = array();
-				$sub_operator = $conditions['operator'];
+				$sub_operator = isset( $conditions['operator'] ) ? $conditions['operator'] : 'AND';
 				foreach ( $conditions['conditions'] as $condition ) {
 
 					$field = esc_sql( $condition['field'] );

@@ -305,6 +305,14 @@ class MailsterSettings {
 			$this->reset_limits( true );
 		}
 
+		if ( isset( $_GET['release-cronlock'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'mailster-release-cronlock' ) ) {
+			$this->release_cronlock( true );
+		}
+
+		if ( isset( $_GET['reset-lasthit'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'mailster-reset-lasthit' ) ) {
+			$this->reset_lasthit( true );
+		}
+
 	}
 
 
@@ -486,6 +494,27 @@ class MailsterSettings {
 				wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#capabilities' );
 				exit;
 			}
+		}
+
+	}
+
+
+	public function release_cronlock( $redirect = false ) {
+
+		mailster( 'cron' )->unlock();
+		if ( $redirect ) {
+			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
+			exit;
+		}
+
+	}
+
+	public function reset_lasthit( $redirect = false ) {
+
+		update_option( 'mailster_cron_lasthit', false );
+		if ( $redirect ) {
+			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
+			exit;
 		}
 
 	}

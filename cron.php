@@ -1,8 +1,11 @@
 <?php
 
 $time_start = microtime( true );
+$request_url = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
 
-header( 'Refresh: 15;url=' . $_SERVER['REQUEST_URI'], true );
+if ( $request_url ) {
+	header( 'Refresh: 15;url=' . $request_url, true );
+}
 @ini_set( 'display_errors', true );
 
 if ( ! defined( 'DISABLE_WP_CRON' ) ) {
@@ -13,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	$path = isset( $_GET['path'] ) && is_dir( $_GET['path'] ) && file_exists( $_GET['path'] . 'wp-load.php' )
 		? strtr( $_GET['path'], array( "\x00" => '\x00', "\n" => '\n', "\r" => '\r', '\\' => '\\\\', "'" => "\'", '"' => '\"', "\x1a" => '\x1a' ) ) . 'wp-load.php'
-		: '../../../wp-load.php';
+		: realpath( dirname( $_SERVER['SCRIPT_NAME'] ) . '/../../../wp-load.php' );
 
 	if ( file_exists( $path ) ) {
 		require_once $path;
@@ -27,9 +30,16 @@ if ( ! defined( 'MAILSTER_VERSION' ) ) {
 }
 
 $interval = isset( $_GET['interval'] ) ? intval( $_GET['interval'] ) : mailster_option( 'interval', 5 ) * 60;
-header( "Refresh: $interval;url=" . $_SERVER['REQUEST_URI'], true );
+if ( $request_url ) {
+	@header( "Refresh: $interval;url=" . $request_url, true );
+}
 
 $text_direction = function_exists( 'is_rtl' ) && is_rtl() ? 'rtl' : 'ltr';
+$simple_output = true;
+
+if ( $simple_output ) {
+	ob_start();
+}
 
 ?>
 <!DOCTYPE html>
@@ -53,6 +63,7 @@ $secret = mailster_option( 'cron_secret' );
 if ( ( isset( $_GET[ $secret ] ) ) ||
 	( isset( $_GET['secret'] ) && $_GET['secret'] == $secret ) ||
 	( isset( $_SERVER['HTTP_SECRET'] ) && $_SERVER['HTTP_SECRET'] == $secret ) ||
+	( isset( $argv[1] ) && $argv[1] == $secret ) ||
 	( defined( 'MAILSTER_CRON_SECRET' ) && MAILSTER_CRON_SECRET == $secret ) ) :
 
 	// run wp_cron if it should
@@ -74,7 +85,6 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 	</script>
 	<div id="info"><p><?php esc_html_e( 'progressing', 'mailster' ); ?>&hellip;</p></div>
 	<?php
-	flush();
 	do_action( 'mailster_cron_worker' );
 	do_action( 'mymail_cron_worker' );
 ?>
@@ -119,3 +129,11 @@ var a = <?php echo floor( $interval ) ?>,
 </script>
 </body>
 </html>
+<?php
+if ( $simple_output ) {
+	$output = ob_get_contents();
+	ob_end_clean();
+	$output = preg_replace( '#<a[^>]*?>.*?</a>#si', '', $output );
+	$output = mailster( 'helper' )->plain_text( $output );
+	echo $output;
+}
