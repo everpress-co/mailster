@@ -248,9 +248,9 @@ class MailsterSubscribers {
 			case 'send_campaign':
 				$listid = mailster( 'lists' )->add_segment();
 
-				if ( $this->assign_lists( $subscriber_ids, $listid ) ) {
+				if ( $this->assign_lists( $subscriber_ids, $listid, false, true ) ) {
 					$count = count( $subscriber_ids );
-					$success_message = sprintf( __( '%d Subscribers have been assigned to a new list', 'mailster' ), $count );
+					$success_message = sprintf( __( '%d Subscribers have been assigned to a new list', 'mailster' ), $coun );
 				}
 			break;
 
@@ -297,12 +297,12 @@ class MailsterSubscribers {
 				if ( preg_match( '#^add_list_(\d+)#', $action, $match ) ) {
 					if ( $list = mailster( 'lists' )->get( $match[1] ) ) {
 
-						$this->assign_lists( $subscriber_ids, $list->ID );
+						$this->assign_lists( $subscriber_ids, $list->ID, false, true );
 						$success_message = sprintf( __( '%1$d Subscribers added to list %2$s', 'mailster' ), count( $subscriber_ids ), '"<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '">' . $list->name . '</a>"' );
 					}
 				} elseif ( preg_match( '#^remove_list_(\d+)#', $action, $match ) ) {
 					if ( $list = mailster( 'lists' )->get( $match[1] ) ) {
-						$this->unassign_lists( $subscriber_ids, $list->ID );
+						$this->unassign_lists( $subscriber_ids, $list->ID, false, true );
 						$success_message = sprintf( __( '%1$d Subscribers removed from list %2$s', 'mailster' ), count( $subscriber_ids ), '"<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '">' . $list->name . '</a>"' );
 					}
 				}
@@ -415,16 +415,24 @@ class MailsterSubscribers {
 					}
 
 					if ( isset( $_POST['mailster_lists'] ) ) {
-						$this->assign_lists( $subscriber->ID, array_filter( $_POST['mailster_lists'], 'is_numeric' ), true );
+						$lists = array_filter( $_POST['mailster_lists'], 'is_numeric' );
 					} else {
-						$this->unassign_lists( $subscriber->ID );
+						$lists = array();
+					}
+					$current_lists = $this->get_lists( $subscriber->ID, true );
+
+					if ( $unasssign = array_diff( $current_lists, $lists ) ) {
+						$this->unassign_lists( $subscriber->ID, $unasssign );
+					}
+					if ( $assign = array_diff( $lists, $current_lists ) ) {
+						$this->assign_lists( $subscriber->ID, $assign, false, true );
 					}
 
-						mailster_notice( $is_new ? __( 'Subscriber added', 'mailster' ) : __( 'Subscriber saved', 'mailster' ), 'success', true );
-						do_action( 'mailster_subscriber_save', $subscriber->ID );
-						do_action( 'mymail_subscriber_save', $subscriber->ID );
-						wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
-						exit;
+					mailster_notice( $is_new ? __( 'Subscriber added', 'mailster' ) : __( 'Subscriber saved', 'mailster' ), 'success', true );
+					do_action( 'mailster_subscriber_save', $subscriber->ID );
+					do_action( 'mymail_subscriber_save', $subscriber->ID );
+					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
+					exit;
 
 				} elseif ( isset( $_POST['delete'] ) ) :
 
@@ -961,10 +969,9 @@ class MailsterSubscribers {
 				}
 
 				if ( isset( $data['status'] ) ) {
-					if ( $data['status'] == 0 ) {
-						$this->send_confirmations( $subscriber_id, true );
-					}
-
+					// if ( $data['status'] == 0 ) {
+						$this->send_confirmations( $subscriber_id, true, true );
+					// }
 					if ( $data['status'] == 1 && $subscriber_notification ) {
 						$this->subscriber_notification( $subscriber_id );
 					}
@@ -1211,9 +1218,10 @@ class MailsterSubscribers {
 	 * @param unknown $subscriber_ids
 	 * @param unknown $lists
 	 * @param unknown $remove_old     (optional)
+	 * @param unknown $added     (optional)
 	 * @return unknown
 	 */
-	public function assign_lists( $subscriber_ids, $lists, $remove_old = false ) {
+	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {
 
 		global $wpdb;
 
@@ -1226,7 +1234,7 @@ class MailsterSubscribers {
 			$this->unassign_lists( $subscriber_ids, null, $lists );
 		}
 
-		return mailster( 'lists' )->assign_subscribers( $lists, $subscriber_ids, $remove_old );
+		return mailster( 'lists' )->assign_subscribers( $lists, $subscriber_ids, $remove_old, $added );
 
 	}
 
@@ -2054,6 +2062,18 @@ class MailsterSubscribers {
 			return false;
 		}
 
+		if ( mailster( 'campaigns' )->list_based_opt_out( $campaign_id ) ) {
+
+			$lists = mailster( 'campaigns' )->get_lists( $campaign_id, true );
+			if ( $this->unassign_lists( $subscriber->ID, $lists ) ) {
+				do_action( 'mailster_list_unsubscribe', $subscriber->ID, $campaign_id, $lists );
+				return true;
+			}
+
+			return false;
+
+		}
+
 		if ( $subscriber->status == 2 ) {
 			return true;
 		}
@@ -2227,14 +2247,34 @@ class MailsterSubscribers {
 		// get all pending subscribers which are not queued already
 		$sql = "SELECT a.ID, a.signup, IFNULL( b.meta_value, 0 ) AS try, f.resend, f.resend_count, f.resend_time, IFNULL( f.ID, $fallback_form_id ) AS form_id FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS b ON a.ID = b.subscriber_id AND b.meta_key = 'confirmation' LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS c ON a.ID = c.subscriber_id AND c.meta_key = 'form' LEFT JOIN {$wpdb->prefix}mailster_queue AS d ON a.ID = d.subscriber_id AND d.campaign_id = 0 LEFT JOIN {$wpdb->prefix}mailster_forms AS f ON f.ID = IFNULL( c.meta_value, $fallback_form_id ) WHERE a.status = 0 AND ( d.subscriber_id IS NULL OR d.sent != 0 )";
 
+		$sql = 'SELECT a.ID, a.signup, IFNULL( b.meta_value, 0 ) AS try, f.resend, f.resend_count, f.resend_time, IFNULL( f.ID, 1 ) AS form_id FROM wp_mailster_subscribers AS a';
+		$sql .= ' LEFT JOIN wp_mailster_lists_subscribers AS x ON a.ID = x.subscriber_id AND x.added = 0';
+		$sql .= " LEFT JOIN wp_mailster_subscriber_meta AS b ON a.ID = b.subscriber_id AND b.meta_key = 'confirmation'";
+		$sql .= " LEFT JOIN wp_mailster_subscriber_meta AS c ON a.ID = c.subscriber_id AND c.meta_key = 'form'";
+		$sql .= ' LEFT JOIN wp_mailster_queue AS d ON a.ID = d.subscriber_id AND d.campaign_id = 0';
+		$sql .= ' LEFT JOIN wp_mailster_forms AS f ON f.ID = IFNULL( c.meta_value, 1 )';
+
+		$sql .= ' WHERE 1=1';
+
+		// status is either pending or list assignment is pending
+		$sql .= ' AND (a.status = 0 OR x.added = 0)';
+		// queue doesn't exist or has been sent already (and not removed from queue)
+		$sql .= ' AND (d.subscriber_id IS NULL OR d.sent != 0)';
+		// try is less den the count from the form settings
 		if ( ! $force ) {
-			$sql .= ' AND f.resend = 1 AND IFNULL( b.meta_value, 0 ) <= f.resend_count';
+			$sql .= ' AND (IFNULL( b.meta_value, 0 ) <= f.resend_count)';
+			$sql .= ' AND (f.resend = 1 OR IFNULL( b.meta_value, 0 ) = 0)';
+		}
+		// resend is enabled or it's the first try
+		if ( ! $force ) {
 		}
 
 		if ( ! is_null( $ids ) ) {
 			$ids = ! is_array( $ids ) ? array( intval( $ids ) ) : array_filter( $ids, 'is_numeric' );
 			$sql .= ' AND a.ID IN (' . implode( ',', $ids ) . ')';
 		}
+
+		$sql .= ' GROUP BY a.ID';
 
 		$entries = $wpdb->get_results( $sql );
 

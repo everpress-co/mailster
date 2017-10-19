@@ -68,6 +68,11 @@
 		</td>
 	</tr>
 	<tr>
+		<th scope="row"><?php esc_html_e( 'List Based Subscription', 'mailster' ) ?></th>
+		<td><label><input type="hidden" name="mailster_options[list_based_opt_in]" value=""><input type="checkbox" name="mailster_options[list_based_opt_in]" value="1" <?php checked( mailster_option( 'list_based_opt_in' ) ) ?>> <?php esc_html_e( 'Subscribers sign up on a per list basis instead of globally.', 'mailster' ) ?></label>
+		</td>
+	</tr>
+	<tr>
 		<th scope="row"><?php esc_html_e( 'Single-Opt-Out', 'mailster' ) ?></th>
 		<td><label><input type="hidden" name="mailster_options[single_opt_out]" value=""><input type="checkbox" name="mailster_options[single_opt_out]" value="1" <?php checked( mailster_option( 'single_opt_out' ) ) ?>> <?php esc_html_e( 'Subscribers instantly signed out after clicking the unsubscribe link in mails', 'mailster' ) ?></label>
 		</td>

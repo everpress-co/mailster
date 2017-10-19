@@ -410,7 +410,7 @@ class MailsterForm {
 							$checked = in_array( $list->ID, $userlists );
 						}
 
-						$fields['lists'] .= '<li><label title="' . esc_attr( $list->description ) . '"><input type="hidden" name="lists[' . $i . ']" value="0"><input class="mailster-list mailster-list-' . $list->slug . '" type="checkbox" name="lists[' . $i . ']" value="' . $list->ID . '" ' . checked( $checked, true, false ) . ' aria-label="' . esc_attr( $list->name ) . '"> ' . $list->name;
+						$fields['lists'] .= '<li><label title="' . esc_attr( $list->description ) . '"><input type="hidden" name="lists[' . $i . ']" value=""><input class="mailster-list mailster-list-' . $list->slug . '" type="checkbox" name="lists[' . $i . ']" value="' . $list->ID . '" ' . checked( $checked, true, false ) . ' aria-label="' . esc_attr( $list->name ) . '"> ' . $list->name;
 						if ( $list->description ) {
 							$fields['lists'] .= ' <span class="mailster-list-description mailster-list-description-' . $list->ID . '">' . $list->description . '</span>';
 						}
@@ -901,7 +901,7 @@ class MailsterForm {
 								}
 							}
 
-							mailster( 'subscribers' )->assign_lists( $exists->ID, $this->object['lists'], $remove_old_lists );
+							mailster( 'subscribers' )->assign_lists( $exists->ID, $this->object['lists'], $remove_old_lists, ! $double_opt_in );
 
 						}
 
@@ -917,7 +917,7 @@ class MailsterForm {
 				}
 			} else {
 
-				mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], $remove_old_lists );
+				mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], $remove_old_lists, ! $double_opt_in );
 
 				$target = add_query_arg( array(
 						'subscribe' => '',
@@ -1063,7 +1063,7 @@ class MailsterForm {
 			} else {
 
 				if ( isset( $form->userschoice ) ) {
-					mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], true );
+					mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], true, true );
 				}
 
 				$target = add_query_arg( array(

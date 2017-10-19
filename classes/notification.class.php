@@ -230,10 +230,10 @@ class MailsterNotification {
 
 					$link = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id );
 
-			return wp_parse_args( array(
-					'link' => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
-					'linkaddress' => $link,
-			), $content );
+				return wp_parse_args( array(
+						'link' => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
+						'linkaddress' => $link,
+				), $content );
 
 			case 'confirmation_attachments':
 				$form = mailster( 'forms' )->get( $options['form'], false, false );

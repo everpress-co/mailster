@@ -1766,6 +1766,29 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @return unknown
+	 */
+	public function list_based_opt_out( $id ) {
+
+		if ( ! mailster_options( 'list_based_opt_in' ) ) {
+			return false;
+		}
+
+		$meta = $this->meta( $id );
+
+		if ( ! $meta ) {
+			return false;
+		}
+
+		return empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
 	 * @param unknown $key (optional)
 	 * @return unknown
 	 */

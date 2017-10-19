@@ -152,6 +152,7 @@ class MailsterPlaceholder {
 			'unsublink' => $unsubscribelink,
 			'forwardlink' => $forwardlink,
 			'profilelink' => $profilelink,
+			'lists' => mailster( 'campaigns' )->get_formated_lists( $campaign_id ),
 			'email' => '<a href="">{emailaddress}</a>',
 			'year' => $time[0],
 			'month' => $time[1],
