@@ -1277,14 +1277,15 @@ class MailsterCampaigns {
 				'select_image' => __( 'Select Image', 'mailster' ),
 				'add_attachment' => __( 'Add Attachment', 'mailster' ),
 				'edit_conditions' => __( 'Edit Conditions', 'mailster' ),
+				'remove_conditions' => __( 'Do you really like to remove all conditions?', 'mailster' ),
 		) );
 
 		wp_localize_script( 'mailster-script', 'mailsterdata', array(
-				'ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'url' => MAILSTER_URI,
-				'inline' => $this->inline_editor(),
-				'codeview' => current_user_can( 'mailster_see_codeview' ),
-				'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),
+			'url' => MAILSTER_URI,
+			'inline' => $this->inline_editor(),
+			'codeview' => current_user_can( 'mailster_see_codeview' ),
+			'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
 		) );
 
 		wp_enqueue_style( 'mailster-style', MAILSTER_URI . 'assets/css/newsletter-style' . $suffix . '.css', array(), MAILSTER_VERSION );
@@ -2366,7 +2367,7 @@ class MailsterCampaigns {
 			$list_ids = wp_parse_args( $list_ids, $this->meta( $id, 'lists' ) );
 		}
 
-		return $this->update_meta( $id, 'lists', $list_ids );
+		return $this->update_meta( $id, 'lists', array_unique( $list_ids ) );
 
 	}
 

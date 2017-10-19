@@ -137,10 +137,10 @@ class MailsterConditions {
 		return array(
 			'_sent' => __( 'has received', 'mailster' ),
 			'_sent__not_in' => __( 'has not receiverd', 'mailster' ),
-			'_open' => __( 'has opened', 'mailster' ),
-			'_open__not_in' => __( 'has not opened', 'mailster' ),
-			'_click' => __( 'has clicked', 'mailster' ),
-			'_click__not_in' => __( 'has not clicked', 'mailster' ),
+			'_open' => __( 'has received and opened', 'mailster' ),
+			'_open__not_in' => __( 'has received but not opened', 'mailster' ),
+			'_click' => __( 'has received and clicked', 'mailster' ),
+			'_click__not_in' => __( 'has received and not clicked', 'mailster' ),
 			'_click_link' => __( 'clicked link', 'mailster' ),
 			'_click_link__not_in' => __( 'didn\'t clicked link', 'mailster' ),
 		);
@@ -189,6 +189,8 @@ class MailsterConditions {
 			'is_smaller' => __( 'is before', 'mailster' ),
 			'is_greater_equal' => __( 'is after or on the', 'mailster' ),
 			'is_smaller_equal' => __( 'is before or on the', 'mailster' ),
+			// 'pattern' => __( 'match regex pattern', 'mailster' ),
+			// 'not_pattern' => __( 'does not match regex pattern', 'mailster' ),
 		);
 
 	}
@@ -303,6 +305,12 @@ class MailsterConditions {
 				if ( isset( $this->campaign_related[ $string ] ) ) {
 					return $this->campaign_related[ $string ];
 				}
+				if ( isset( $this->meta_fields[ $string ] ) ) {
+					return $this->meta_fields[ $string ];
+				}
+				if ( isset( $this->wp_user_meta[ $string ] ) ) {
+					return $this->wp_user_meta[ $string ];
+				}
 				break;
 			case 'operator':
 				if ( in_array( $field, $this->time_fields ) && isset( $this->date_operators[ $string ] ) ) {
@@ -321,6 +329,11 @@ class MailsterConditions {
 			case 'value':
 				if ( in_array( $field, $this->time_fields ) ) {
 					return date( get_option( 'date_format' ), strtotime( $string ) );
+				}
+				if ( $field == 'form' ) {
+					if ( $form = mailster( 'forms' )->get( (int) $string, false, false ) ) {
+						return $form->name;
+					}
 				}
 				break;
 

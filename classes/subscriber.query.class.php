@@ -121,7 +121,7 @@ class MailsterSubscriberQuery {
 		if ( $this->args['return_ids'] ) {
 			$this->args['select'] = array( 'subscribers.ID' );
 		} elseif ( $this->args['return_count'] ) {
-			$this->args['select'] = array( 'COUNT(*)' );
+			$this->args['select'] = array( 'COUNT(DISTINCT subscribers.ID)' );
 			$this->args['fields'] = null;
 			$this->args['meta'] = null;
 		} elseif ( empty( $this->args['fields'] ) && empty( $this->args['select'] ) ) {
@@ -293,7 +293,7 @@ class MailsterSubscriberQuery {
 			}
 		}
 
-		$cache_key = 'subscriber_query_' . md5( serialize( $this->args ) );
+		$cache_key = 'query_' . md5( serialize( $this->args ) );
 
 		if ( $result = mailster_cache_get( $cache_key ) ) {
 			return $result;
@@ -372,9 +372,28 @@ class MailsterSubscriberQuery {
 
 			foreach ( $this->args['conditions'] as $i => $conditions ) {
 
+				foreach ( $conditions['conditions'] as $j => $condition ) {
+
+					$field = esc_sql( $condition['field'] );
+					// requires campaign to be sent
+					if ( in_array( $field, array( '_open__not_in', '_click__not_in' ) ) ) {
+						$this->add_condition( '_sent', '=', $condition['value'] );
+					}
+				}
+			}
+
+			$serialized = serialize( $this->args['conditions'] );
+
+			if ( strpos( $serialized, 's:13:"_open__not_in"' ) !== false ) {
+				$this->add_condition( '_sent', '=', 92 );
+			}
+
+			foreach ( $this->args['conditions'] as $i => $conditions ) {
+
 				$sub_cond = array();
 				$sub_operator = isset( $conditions['operator'] ) ? $conditions['operator'] : 'AND';
-				foreach ( $conditions['conditions'] as $condition ) {
+
+				foreach ( $conditions['conditions'] as $j => $condition ) {
 
 					$field = esc_sql( $condition['field'] );
 
@@ -406,7 +425,7 @@ class MailsterSubscriberQuery {
 							$value = explode( ',', $value );
 						}
 						$value = array_map( 'esc_sql', $value );
-						$alias = 'actions' . $field . '_' . md5( serialize( $value ) );
+						$alias = 'actions' . $field . '_' . $i . '_' . $j;
 						if ( 0 === strpos( $field, '_sent' ) ) {
 
 							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS $alias ON $alias.type = 1 AND subscribers.ID = $alias.subscriber_id";
@@ -487,7 +506,7 @@ class MailsterSubscriberQuery {
 				$this->args['lists'] = array_filter( $this->args['lists'], 'is_numeric' );
 			}
 
-			$wheres[] = (is_null( $this->args['lists'] ) ) ? 'AND lists_subscribers.list_id IS NULL' : ( empty( $this->args['lists'] ) ? 'AND lists_subscribers.list_id = 0' : 'AND lists_subscribers.list_id IN(' . implode( ',', $this->args['lists'] ) . ')' );
+			$wheres[] = (is_null( $this->args['lists'] ) ) ? 'AND lists_subscribers.list_id IS NULL' : ( empty( $this->args['lists'] ) ? 'AND lists_subscribers.list_id = 0' : 'AND lists_subscribers.list_id IN (' . implode( ',', $this->args['lists'] ) . ')' );
 		}
 
 		if ( $this->args['status'] !== false && ! is_null( $this->args['status'] ) ) {
@@ -773,6 +792,8 @@ class MailsterSubscriberQuery {
 
 		global $pagenow;
 
+		// error_log( $sql );
+
 		if ( in_array( $pagenow, array( '_admin-ajax.php', 'tools.php' ) ) ) {
 			echo '<pre>' . print_r( $sql, true ) . '</pre>';
 			$qu = end( $wpdb->queries );
@@ -855,9 +876,8 @@ class MailsterSubscriberQuery {
 				} elseif ( in_array( $field, $this->custom_date_fields ) ) {
 					$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
 				} elseif ( in_array( $field, $this->time_fields ) ) {
-					// $f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
-					$f = "subscribers.$field";
-					$value = $this->get_timestamp( $value );
+					$f = "FROM_UNIXTIME(subscribers.$field, '%Y-%m-%d')";
+					$value = $this->get_timestamp( $value, 'Y-m-d' );
 				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f = "`field_$field`.meta_value";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
@@ -875,7 +895,7 @@ class MailsterSubscriberQuery {
 
 				$c = $f . ' ' . ( $positive ? '=' : '!=' ) . " '$value'";
 				if ( $is_empty && $positive ) {
-					$c .= ' OR ' . $f . ' IS NULL';
+					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
 
 				return $c;
@@ -904,7 +924,7 @@ class MailsterSubscriberQuery {
 
 				$c = $f . ' ' . ( $positive ? 'LIKE' : 'NOT LIKE' ) . " $value";
 				if ( $is_empty && $positive ) {
-					$c .= ' OR ' . $f . ' IS NULL';
+					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
 
 				return $c;
@@ -972,10 +992,8 @@ class MailsterSubscriberQuery {
 					$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
 					$value = "'$value'";
 				} elseif ( in_array( $field, $this->time_fields ) ) {
-					// $f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
-					$f = "subscribers.$field";
-					// $value = "'$value'";
-					$value = $this->get_timestamp( $value );
+					$f = "FROM_UNIXTIME(subscribers.$field, '%Y-%m-%d')";
+					$value = "'" . $this->get_timestamp( $value, 'Y-m-d' ) . "'";
 				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f = "`field_$field`.meta_value";
 					$value = is_numeric( $value ) ? floatval( $value ) : "'$value'";
@@ -1007,9 +1025,7 @@ class MailsterSubscriberQuery {
 				} elseif ( in_array( $field, $this->custom_date_fields ) ) {
 					$f = "STR_TO_DATE(`field_$field`.meta_value,'%Y-%m-%d')";
 				} elseif ( in_array( $field, $this->time_fields ) ) {
-					// $f = "STR_TO_DATE(FROM_UNIXTIME(subscribers.$field),'%Y-%m-%d')";
-					$f = "subscribers.$field";
-					$value = $this->get_timestamp( $value );
+					$f = "FROM_UNIXTIME(subscribers.$field, '%Y-%m-%d')";
 				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f = "`field_$field`.meta_value";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
@@ -1035,7 +1051,7 @@ class MailsterSubscriberQuery {
 
 				$c = $f . ' ' . $extra . "REGEXP '$value'";
 				if ( $is_empty && $positive ) {
-					$c .= ' OR ' . $f . ' IS NULL';
+					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
 
 				return $c;

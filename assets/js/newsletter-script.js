@@ -661,6 +661,13 @@ jQuery(document).ready(function ($) {
 				.on('click', '.edit-conditions', function () {
 					tb_show(mailsterL10n.edit_conditions, '#TB_inline?x=1&width=720&height=520&inlineId=receivers-dialog', null);
 					return false;
+				})
+				.on('click', '.remove-conditions', function () {
+					if (confirm(mailsterL10n.remove_conditions)) {
+						$('#receivers-dialog').find('.mailster-conditions').empty();
+						_trigger('updateCount');
+					}
+					return false;
 				});
 
 			$('.mailster-total').on('click', function () {
@@ -3604,15 +3611,15 @@ jQuery(document).ready(function ($) {
 
 	.on('Mailster:disable', function () {
 		isDisabled = true;
-		$('#publishing-action').find('input:visible').prop('disable', true);
-		$('.button').prop('disable', true);
-		$('input:visible').prop('disable', true);
+		$('#publishing-action').find('input:visible').prop('disabled', true);
+		$('.button').prop('disabled', true);
+		$('input:visible').prop('disabled', true);
 	})
 
 	.on('Mailster:enable', function () {
-		$('#publishing-action').find('input:visible').prop('disable', false);
-		$('.button').prop('disable', false);
-		$('input:visible').prop('disable', false);
+		$('#publishing-action').find('input:visible').prop('disabled', false);
+		$('.button').prop('disabled', false);
+		$('input:visible').prop('disabled', false);
 		isDisabled = false;
 	})
 

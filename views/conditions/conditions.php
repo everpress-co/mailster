@@ -12,7 +12,7 @@ if ( empty( $conditions ) ) {
 	));
 
 	$forms = mailster( 'forms' )->get_all();
-	$all_campaigns = mailster( 'campaigns' )->get_campaigns( array( 'post__not_in' => array( $post->ID ) ) );
+	$all_campaigns = mailster( 'campaigns' )->get_campaigns( array( 'post__not_in' => array( $post->ID ), 'orderby' => 'post_title' ) );
 	$all_campaigns_stati = wp_list_pluck( $all_campaigns, 'post_status' );
 	asort( $all_campaigns_stati );
 	$statuses = mailster( 'subscribers' )->get_status( null, true );
@@ -43,17 +43,17 @@ foreach ( $conditions as $i => $condition ) :
 				<select name="mailster_data[list][conditions][<?php echo $i; ?>][field]" class="condition-field" disabled>
 
 					<optgroup label="<?php esc_html_e( 'Fields', 'mailster' );?>">
-				<?php
-				foreach ( $this->fields as $key => $name ) {
-					echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
-				} ?>
+					<?php
+					foreach ( $this->fields as $key => $name ) {
+						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
+					} ?>
 					</optgroup>
 
 					<optgroup label="<?php esc_html_e( 'User related', 'mailster' );?>">
-				<?php
-				foreach ( $this->custom_fields as $key => $customfield ) {
-					echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $customfield['name'] . '</option>';
-				} ?>
+					<?php
+					foreach ( $this->custom_fields as $key => $customfield ) {
+						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $customfield['name'] . '</option>';
+					} ?>
 					</optgroup>
 
 					<optgroup label="<?php esc_html_e( 'Campaign related', 'mailster' );?>">

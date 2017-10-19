@@ -1206,8 +1206,8 @@ textarea#content, textarea#excerpt {
 #editbar div.type.btn ul.buttons li a img{
 	cursor:pointer;
 }
-#TB_ajaxContent{
-	padding:0;
+.post-type-newsletter #TB_ajaxContent{
+	padding:0 !important;
 	min-width:100%;
 	max-width:100%;
 	margin-bottom:-4px;

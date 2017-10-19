@@ -184,9 +184,7 @@ class MailsterSubscribers {
 			if ( in_array( $action, array( 'subscribed', 'unsubscribed', 'pending' ) ) ) {
 				$offset = 0;
 				if ( ! $status ) {
-
 					$args['status__not_in'] = $this->get_status_by_name( $action );
-
 				}
 			} elseif ( 'delete' == $action ) {
 				$offset = 0;
@@ -323,12 +321,12 @@ class MailsterSubscribers {
 		if ( isset( $is_ajax ) ) {
 
 			wp_send_json( array(
-					'finished' => $finished,
-					'total' => $total,
-					'page' => $page,
-					'message' => $finished ? __( 'finished', 'mailster' ) : '<span title="' . __( 'Check the browser console for more info!', 'mailster' ) . '">' . sprintf( __( 'processing page %1$s of %2$s', 'mailster' ), number_format_i18n( $page + 1 ), number_format_i18n( ceil( $total / $limit ) ) ) . '&hellip;</span>',
-					'success_message' => $success_message,
-					'error_message' => $error_message,
+				'finished' => $finished,
+				'total' => $total,
+				'page' => $page,
+				'message' => $finished ? '<span>' . __( 'Finished!', 'mailster' ) . '</span>' : '<span title="' . __( 'Check the browser console for more info!', 'mailster' ) . '">' . sprintf( __( 'processing page %1$s of %2$s', 'mailster' ), number_format_i18n( $page + 1 ), number_format_i18n( ceil( $total / $limit ) ) ) . '&hellip;</span>',
+				'success_message' => $success_message,
+				'error_message' => $error_message,
 			) );
 
 		} else {
