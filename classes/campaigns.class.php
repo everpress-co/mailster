@@ -1433,7 +1433,7 @@ class MailsterCampaigns {
 
 		}
 
-		if ( $post['post_status'] == 'autoresponder' && $postdata['autoresponder']['action'] != 'mailster_autoresponder_followup' ) {
+		if ( $post['post_status'] == 'autoresponder' && isset( $postdata['autoresponder'] ) && $postdata['autoresponder']['action'] != 'mailster_autoresponder_followup' ) {
 			$post['post_parent'] = 0;
 		}
 

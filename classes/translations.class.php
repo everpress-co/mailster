@@ -14,6 +14,19 @@ class MailsterTranslations {
 
 	public function init() {
 
+		$this->load();
+		add_filter( 'site_transient_update_plugins', array( &$this, 'update_plugins_filter' ), 1 );
+		add_action( 'delete_site_transient_update_plugins', array( &$this, 're_check' ) );
+		add_action( 'update_option_WPLANG', array( &$this, 're_check' ) );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function load() {
 		if ( is_dir( MAILSTER_UPLOAD_DIR . '/languages' ) ) {
 			$custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo';
 			if ( file_exists( $custom ) ) {
@@ -24,10 +37,6 @@ class MailsterTranslations {
 		} else {
 			load_plugin_textdomain( 'mailster' );
 		}
-
-		add_filter( 'site_transient_update_plugins', array( &$this, 'update_plugins_filter' ), 1 );
-		add_action( 'delete_site_transient_update_plugins', array( &$this, 're_check' ) );
-		add_action( 'update_option_WPLANG', array( &$this, 're_check' ) );
 	}
 
 
@@ -147,6 +156,7 @@ class MailsterTranslations {
 
 		try {
 			$this->download_language();
+			mailster( 'settings' )->define_texts( true );
 		} catch ( Exception $e ) {
 		}
 
@@ -174,6 +184,7 @@ class MailsterTranslations {
 
 		if ( ! empty( $result[0] ) ) {
 
+			$this->load();
 			return true;
 
 		}

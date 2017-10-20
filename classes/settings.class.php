@@ -116,6 +116,7 @@ class MailsterSettings {
 			'unsubscribe_notification_template' => 'notification.html',
 			'track_users' => false,
 			'do_not_track' => false,
+			'list_based_opt_in' => true,
 			'single_opt_out' => false,
 			'custom_field' => array(),
 			'sync' => false,
@@ -269,6 +270,22 @@ class MailsterSettings {
 
 	}
 
+	public function define_texts( $overwrite = false ) {
+
+		global $mailster_texts;
+
+		$texts = $this->get_default_texts();
+
+		if ( ! $overwrite ) {
+			$mailster_texts = wp_parse_args( $mailster_texts, $texts );
+		} else {
+			$mailster_texts = $texts;
+		}
+
+		update_option( 'mailster_texts', $mailster_texts );
+
+	}
+
 
 	public function maybe_repair_settings() {
 
@@ -415,6 +432,7 @@ class MailsterSettings {
 
 		if ( $new ) {
 			$this->define_settings();
+			$this->define_texts();
 			mailster_update_option( 'got_url_rewrite', mailster( 'helper' )->got_url_rewrite() );
 		}
 
@@ -893,11 +911,10 @@ class MailsterSettings {
 						update_option( 'mailster_cron_lasthit', false );
 					}
 
-					wp_clear_scheduled_hook( 'mailster_cron_worker' );
 					if ( $value == 'wp_cron' ) {
-						if ( ! wp_next_scheduled( 'mailster_cron_worker' ) ) {
-							wp_schedule_event( floor( time() / 300 ) * 300, 'mailster_cron_interval', 'mailster_cron_worker' );
-						}
+						mailster( 'cron' )->schedule();
+					} else {
+						mailster( 'cron' )->unschedule();
 					}
 
 				break;

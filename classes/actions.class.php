@@ -19,7 +19,7 @@ class MailsterActions {
 		add_action( 'mailster_list_unsubscribe', array( &$this, 'unsubscribe' ), 10, 3 );
 		add_action( 'mailster_bounce', array( &$this, 'bounce' ), 10, 3 );
 		add_action( 'mailster_subscriber_error', array( &$this, 'error' ), 10, 3 );
-		add_action( 'mailster_cron', array( &$this, 'cleanup' ) );
+		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ) );
 
 	}
 

@@ -801,10 +801,11 @@ class MailsterForm {
 
 		$this->object['userdata']['email'] = trim( $this->object['userdata']['email'] );
 
-		$this->object['lists'] = $this->form->userschoice
-			? ( isset( $_POST['lists'] )
-			?  array_filter( (array) $_POST['lists'] ) : array() )
-			: $this->form->lists;
+		if ( $this->form->userschoice ) {
+			$this->object['lists'] = isset( $_BASE['lists'] ) ? array_filter( (array) $_BASE['lists'] ) : array() ;
+		} else {
+			$this->object['lists'] = $this->form->lists;
+		}
 
 		// to hook into the system
 		$this->object = apply_filters( 'mymail_submit', apply_filters( 'mailster_submit', $this->object ) );
@@ -850,12 +851,19 @@ class MailsterForm {
 
 					}
 
+					$assign_lists = $this->object['lists'];
+
 				break;
 
 				case 'update':
 
 					$this->set_hash();
 					$subscriber = mailster( 'subscribers' )->get_by_hash( $this->hash, true );
+					$assigned_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID, true );
+
+					$unassign_lists = array_diff( $assigned_lists, $this->object['lists'] );
+					$assign_lists = array_diff( $this->object['lists'], $assigned_lists );
+
 					$entry = wp_parse_args( array(
 						// change status if other than pending, subscribed or unsubscribed
 						'status' => $subscriber->status >= 2 ? 1 : $subscriber->status,
@@ -865,9 +873,6 @@ class MailsterForm {
 					$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
 
 					$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
-
-					// remove old lists only if user choice on this form
-					$remove_old_lists = $this->form->userschoice;
 
 				break;
 			}
@@ -901,8 +906,13 @@ class MailsterForm {
 								}
 							}
 
-							mailster( 'subscribers' )->assign_lists( $exists->ID, $this->object['lists'], $remove_old_lists, ! $double_opt_in );
-
+							if ( ! empty( $assign_lists ) ) {
+								mailster( 'subscribers' )->assign_lists( $exists->ID, $assign_lists, $remove_old_lists, ! $double_opt_in );
+								mailster( 'subscribers' )->send_confirmations( $exists->ID, true, true );
+							}
+							if ( ! empty( $unassign_lists ) ) {
+								mailster( 'subscribers' )->unassign_lists( $exists->ID, $unassign_lists );
+							}
 						}
 
 					break;
@@ -917,7 +927,13 @@ class MailsterForm {
 				}
 			} else {
 
-				mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], $remove_old_lists, ! $double_opt_in );
+				if ( ! empty( $assign_lists ) ) {
+					mailster( 'subscribers' )->assign_lists( $subscriber_id, $assign_lists, $remove_old_lists, ! $double_opt_in );
+					mailster( 'subscribers' )->send_confirmations( $subscriber_id, true, true );
+				}
+				if ( ! empty( $unassign_lists ) ) {
+					mailster( 'subscribers' )->unassign_lists( $subscriber_id, $unassign_lists );
+				}
 
 				$target = add_query_arg( array(
 						'subscribe' => '',
@@ -996,7 +1012,7 @@ class MailsterForm {
 	 *
 	 * @return unknown
 	 */
-	public function update() {
+	public function update_OLD() {
 
 		$baselink = get_permalink( mailster_option( 'homepage' ) );
 		if ( ! $baselink ) {
@@ -1063,7 +1079,7 @@ class MailsterForm {
 			} else {
 
 				if ( isset( $form->userschoice ) ) {
-					mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], true, true );
+					mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], false, true );
 				}
 
 				$target = add_query_arg( array(

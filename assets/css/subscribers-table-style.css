@@ -19,8 +19,9 @@
 .widefat .column-signup{width:130px;}
 .mailster-avatar{
 	display: inline-block;
-	transform: translateY(-8px);
+	transform: translateY(6px);
 	margin-right: 8px;
+	vertical-align: top;
 }
 .mailster-avatar-40{
 	display: block;
@@ -45,6 +46,11 @@
 }
 .wp-list-table tr:hover .userrating .mailster-icon:before{
 	color: #e6b800;
+}
+.wp-list-table .table-data{
+	max-height: 100px;
+	overflow: auto;
+	width: fit-content;
 }
 .mailster-avatar-40.wp-user:before{
 	font-family: 'dashicons';
@@ -78,4 +84,8 @@ a.email{
 	overflow: hidden;
 	width: 100%;
 	display: inline-block;
+}
+@media screen and (max-width: 782px){
+
+.widefat .column-emails{width:50px;text-align:left;}
 }

@@ -228,7 +228,9 @@ class MailsterNotification {
 					$form_id = null;
 				}
 
-					$link = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id );
+				$list_ids = isset( $options['list_ids'] ) ? $options['list_ids'] : null;
+
+				$link = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id, $list_ids );
 
 				return wp_parse_args( array(
 						'link' => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',

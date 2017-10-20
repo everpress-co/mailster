@@ -15,17 +15,19 @@ class MailsterQueue {
 
 		add_action( 'mailster_cron', array( &$this, 'update_status' ), 10 );
 		add_action( 'mailster_cron', array( &$this, 'update' ), 20 );
-		add_action( 'mailster_cron', array( &$this, 'autoresponder_timebased' ), 30 );
-		add_action( 'mailster_cron', array( &$this, 'autoresponder_usertime' ), 30 );
-		add_action( 'mailster_cron', array( &$this, 'autoresponder' ), 30 );
-		add_action( 'mailster_cron', array( &$this, 'cleanup' ), 50 );
+		// add_action( 'mailster_cron', array( &$this, 'autoresponder_timebased' ), 30 );
+		// add_action( 'mailster_cron', array( &$this, 'autoresponder_usertime' ), 30 );
+		// add_action( 'mailster_cron', array( &$this, 'autoresponder' ), 30 );
+		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ), 50 );
 
 		add_action( 'mailster_cron_worker', array( &$this, 'update_status' ), 10 );
 		add_action( 'mailster_cron_worker', array( &$this, 'update' ), 20 );
-		add_action( 'mailster_cron_worker', array( &$this, 'autoresponder' ), 30 );
 		add_action( 'mailster_cron_worker', array( &$this, 'progress' ), 50 );
 		add_action( 'mailster_cron_worker', array( &$this, 'finish_campaigns' ), 100 );
-		add_action( 'mailster_cron_worker', array( &$this, 'autoresponder_timebased' ), 110 );
+
+		add_action( 'mailster_cron_autoresponder', array( &$this, 'autoresponder_timebased' ), 30 );
+		add_action( 'mailster_cron_autoresponder', array( &$this, 'autoresponder_usertime' ), 30 );
+		add_action( 'mailster_cron_autoresponder', array( &$this, 'autoresponder' ), 30 );
 
 		add_action( 'mailster_update_queue', array( &$this, 'autoresponder' ), 30 );
 		add_action( 'mailster_update_queue', array( &$this, 'update_status' ), 30 );
@@ -386,57 +388,30 @@ class MailsterQueue {
 				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 				$list_based = mailster( 'campaigns' )->list_based_opt_out( $campaign->ID );
 
-				$conditions = array(
-					array(
-						'operator' => 'OR',
-						'conditions' => array(
-							array(
-								'field' => 'confirm',
-								'operator' => '!=',
-								'value' => '0',
-							),
-							array(
-								'field' => 'signup',
-								'operator' => '!=',
-								'value' => '0',
-							),
-						),
-					),
-					array(
-						'operator' => 'AND',
-						'conditions' => array(
-							array(
-								'field' => 'signup',
-								'operator' => '>=',
-								'value' => intval( $meta['timestamp'] ),
-							),
-						),
-					),
-				);
-/*
-=======
-2.3_List-Based-Unsubscription
-				if ( $list_based ) {
-
-					$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(ab.added) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d AND b.type = 1 LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
-
-				} else {
-
-					$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(IF(a.confirm, a.confirm, a.signup)) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d AND b.type = 1 LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
-				}
-*/
+				$conditions = array();
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
 					$conditions[] = $meta['list_conditions'];
 				}
 
 				$args = array(
-					'select' => array( 'subscribers.ID', "UNIX_TIMESTAMP(FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup)) + INTERVAL $offset) AS autoresponder_timestamp" ),
+					'select' => array(
+						'subscribers.ID',
+						// "UNIX_TIMESTAMP(FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup)) + INTERVAL $offset) AS autoresponder_timestamp",
+						"UNIX_TIMESTAMP ( FROM_UNIXTIME( lists_subscribers.added ) + INTERVAL $offset ) AS autoresponder_timestamp",
+						'lists_subscribers.added',
+					),
 					'sent__not_in' => $campaign->ID,
-					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
+					'queue__not_in' => $campaign->ID,
+					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : true,
 					'conditions' => array(
 						'operator' => 'AND',
 						'conditions' => $conditions,
+					),
+					'where' => array(
+						'(subscribers.confirm != 0 OR subscribers.signup != 0)',
+						'(subscribers.signup >= ' . intval( $meta['timestamp'] ) . ' OR lists_subscribers.added >= ' . intval( $meta['timestamp'] ) . ')',
+						'lists_subscribers.added != 0',
 					),
 					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
 					'orderby' => 'autoresponder_timestamp',
@@ -445,34 +420,7 @@ class MailsterQueue {
 				$subscribers = mailster( 'subscribers' )->query( $args );
 
 				if ( ! empty( $subscribers ) ) {
-/*
-=======
-2.3_List-Based-Unsubscription
-				if ( $list_based ) {
-					$sql .= ' WHERE ab.added != 0';
 
-					$sql .= $wpdb->prepare( ' AND ab.added >= %d', $meta['timestamp'] );
-				} else {
-					$sql .= ' WHERE (a.confirm != 0 OR a.signup != 0)';
-
-					$sql .= $wpdb->prepare( ' AND a.signup >= %d', $meta['timestamp'] );
-				}
-
-				$sql .= ' AND a.status = 1 AND b.subscriber_id IS NULL';
-
-				if ( ! empty( $meta['list_conditions'] ) ) {
-					$sql .= mailster( 'campaigns' )->get_sql_by_condition( $meta['list_conditions'] );
-				}
-
-				if ( empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] ) ) {
-					$meta['lists'] = array_filter( $meta['lists'], 'is_numeric' );
-					$sql .= ' AND ab.list_id IN(' . implode( ', ', $meta['lists'] ) . ')';
-				}
-
-				$sql .= $wpdb->prepare( ' HAVING timestamp <= %d', $now + 3600 );
-
-				if ( $subscribers = $wpdb->get_results( $sql ) ) {
-*/
 					$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
 					$timestamps = wp_list_pluck( $subscribers, 'autoresponder_timestamp' );
 
@@ -485,10 +433,11 @@ class MailsterQueue {
 				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null ;
 
 				$args = array(
-					'select' => array( 'subscribers.ID', "UNIX_TIMESTAMP(FROM_UNIXTIME(actions_unsubscribe.timestamp) + INTERVAL $offset) AS autoresponder_timestamp" ),
+					'select' => array( 'subscribers.ID', "UNIX_TIMESTAMP ( FROM_UNIXTIME( actions_unsubscribe.timestamp ) + INTERVAL $offset ) AS autoresponder_timestamp" ),
 					'status' => 2,
 					'unsubscribe' => -1,
 					'sent__not_in' => $campaign->ID,
+					'queue__not_in' => $campaign->ID,
 					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
 					'conditions' => $conditions,
 					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
@@ -508,33 +457,7 @@ class MailsterQueue {
 
 				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 
-				$conditions = array(
-							array(
-								'operator' => 'OR',
-								'conditions' => array(
-									array(
-										'field' => 'confirm',
-										'operator' => '!=',
-										'value' => '0',
-									),
-									array(
-										'field' => 'signup',
-										'operator' => '!=',
-										'value' => '0',
-									),
-								),
-							),
-							array(
-								'operator' => 'AND',
-								'conditions' => array(
-									array(
-										'field' => 'signup',
-										'operator' => '>=',
-										'value' => intval( $meta['timestamp'] ),
-									),
-								),
-							),
-						);
+				$conditions = array();
 
 				if ( ! empty( $meta['list_conditions'] ) ) {
 					$conditions[] = $meta['list_conditions'];
@@ -542,6 +465,8 @@ class MailsterQueue {
 
 				$args = array(
 					'select' => array( 'subscribers.ID' ),
+					'sent__not_in' => $campaign->ID,
+					'queue__not_in' => $campaign->ID,
 					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
 					'conditions' => array(
 						'operator' => 'AND',
@@ -553,15 +478,15 @@ class MailsterQueue {
 
 				switch ( $autoresponder_meta['followup_action'] ) {
 					case 1:
-						$args['select'][] = "UNIX_TIMESTAMP(FROM_UNIXTIME(actions_sent.timestamp) + INTERVAL $offset) AS autoresponder_timestamp";
+						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_sent_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
 						$args['sent'] = $campaign->post_parent;
 						break;
 					case 2:
-						$args['select'][] = "UNIX_TIMESTAMP(FROM_UNIXTIME(actions_open.timestamp) + INTERVAL $offset) AS autoresponder_timestamp";
+						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_open_0_1.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
 						$args['open'] = $campaign->post_parent;
 						break;
 					case 3:
-						$args['select'][] = "UNIX_TIMESTAMP(FROM_UNIXTIME(actions_click.timestamp) + INTERVAL $offset) AS autoresponder_timestamp";
+						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_click_0_1.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
 						$args['click'] = $campaign->post_parent;
 						break;
 				}
@@ -1198,8 +1123,6 @@ class MailsterQueue {
 		if ( $max_memory_usage ) {
 			$this->cron_log( 'max. memory usage', '<strong>' . size_format( $max_memory_usage, 2 ) . '</strong>' );
 		}
-
-		echo '<pre>' . print_r( size_format( $max_memory_usage, 2 ), true ) . '</pre>';
 
 		$this->cron_log( 'sent this turn', $sent_this_turn );
 

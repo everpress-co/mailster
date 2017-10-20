@@ -14,6 +14,7 @@ class MailsterSubscriberQuery {
 		'select' => null,
 		'status' => null,
 		'status__not_in' => null,
+		'where' => null,
 		'having' => null,
 		'orderby' => null,
 		'order' => null,
@@ -157,6 +158,9 @@ class MailsterSubscriberQuery {
 		if ( $this->args['select'] && ! is_array( $this->args['select'] ) ) {
 			$this->args['select'] = explode( ',', $this->args['select'] );
 		}
+		if ( $this->args['where'] && ! is_array( $this->args['where'] ) ) {
+			$this->args['where'] = array( $this->args['where'] );
+		}
 		if ( $this->args['fields'] && ! is_array( $this->args['fields'] ) ) {
 			$this->args['fields'] = explode( ',', $this->args['fields'] );
 		}
@@ -178,7 +182,7 @@ class MailsterSubscriberQuery {
 		if ( $this->args['queue__not_in'] && ! is_array( $this->args['queue__not_in'] ) ) {
 			$this->args['queue__not_in'] = explode( ',', $this->args['queue__not_in'] );
 		}
-		if ( $this->args['lists'] && ! is_array( $this->args['lists'] ) ) {
+		if ( $this->args['lists'] && $this->args['lists'] !== true && ! is_array( $this->args['lists'] ) ) {
 			$this->args['lists'] = explode( ',', $this->args['lists'] );
 		}
 		if ( $this->args['lists__not_in'] && ! is_array( $this->args['lists__not_in'] ) ) {
@@ -201,18 +205,18 @@ class MailsterSubscriberQuery {
 				$this->args['conditions'] = $this->args['conditions']['conditions'];
 			}
 
-			if ( ! isset( $this->args['conditions'][0]['conditions'] ) ) {
+			if ( ! isset( $this->args['conditions'][0]['conditions'] ) && ! empty( $this->args['conditions'] ) ) {
 				$this->args['conditions'] = array( array( 'operator' => $this->args['operator'], 'conditions' => $this->args['conditions'] ) );
 			}
 			// $this->args['operator'] = 'AND';
 		}
 
 		if ( $this->args['sent'] ) {
-			$this->add_condition( '_sent', '=', $this->get_timestamp( $this->args['sent'] ) );
+			$this->add_condition( '_sent', '=', $this->id_parse( $this->args['sent'] ) );
 		}
 
 		if ( $this->args['sent__not_in'] ) {
-			$this->add_condition( '_sent__not_in', '=', $this->get_timestamp( $this->args['sent__not_in'] ) );
+			$this->add_condition( '_sent__not_in', '=', $this->id_parse( $this->args['sent__not_in'] ) );
 		}
 
 		if ( $this->args['sent_before'] ) {
@@ -224,11 +228,11 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['open'] ) {
-			$this->add_condition( '_open', '=', $this->get_timestamp( $this->args['open'] ) );
+			$this->add_condition( '_open', '=', $this->id_parse( $this->args['open'] ) );
 		}
 
 		if ( $this->args['open__not_in'] ) {
-			$this->add_condition( '_open__not_in', '=', $this->get_timestamp( $this->args['open__not_in'] ) );
+			$this->add_condition( '_open__not_in', '=', $this->id_parse( $this->args['open__not_in'] ) );
 		}
 
 		if ( $this->args['open_before'] ) {
@@ -240,11 +244,11 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['click'] ) {
-			$this->add_condition( '_click', '=', $this->get_timestamp( $this->args['click'] ) );
+			$this->add_condition( '_click', '=', $this->id_parse( $this->args['click'] ) );
 		}
 
 		if ( $this->args['click__not_in'] ) {
-			$this->add_condition( '_click__not_in', '=', $this->get_timestamp( $this->args['click__not_in'] ) );
+			$this->add_condition( '_click__not_in', '=', $this->id_parse( $this->args['click__not_in'] ) );
 		}
 
 		if ( $this->args['click_before'] ) {
@@ -256,11 +260,11 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['click_link'] ) {
-			$this->add_condition( '_click_link', '=', $this->get_timestamp( $this->args['click_link'] ) );
+			$this->add_condition( '_click_link', '=', ( $this->args['click_link'] ) );
 		}
 
 		if ( $this->args['click_link__not_in'] ) {
-			$this->add_condition( '_click_link__not_in', '=', $this->get_timestamp( $this->args['click_link__not_in'] ) );
+			$this->add_condition( '_click_link__not_in', '=', ( $this->args['click_link__not_in'] ) );
 		}
 
 		if ( ! $this->args['return_count'] ) {
@@ -300,7 +304,7 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['lists'] !== false || $this->args['lists__not_in'] ) {
-			$join = "LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON subscribers.ID = lists_subscribers.subscriber_id";
+			$join = "LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON subscribers.ID = lists_subscribers.subscriber_id AND lists_subscribers.added != 0";
 			if ( $this->args['lists__not_in'] && $this->args['lists__not_in'][0] != -1 ) {
 				 $join .= ' AND lists_subscribers.list_id IN (' . implode( ',', array_filter( $this->args['lists__not_in'], 'is_numeric' ) ) . ')';
 			}
@@ -380,12 +384,6 @@ class MailsterSubscriberQuery {
 						$this->add_condition( '_sent', '=', $condition['value'] );
 					}
 				}
-			}
-
-			$serialized = serialize( $this->args['conditions'] );
-
-			if ( strpos( $serialized, 's:13:"_open__not_in"' ) !== false ) {
-				$this->add_condition( '_sent', '=', 92 );
 			}
 
 			foreach ( $this->args['conditions'] as $i => $conditions ) {
@@ -500,7 +498,7 @@ class MailsterSubscriberQuery {
 			}
 		}
 
-		if ( $this->args['lists'] !== false ) {
+		if ( $this->args['lists'] !== false && $this->args['lists'] !== true ) {
 			// unassigned members if NULL
 			if ( is_array( $this->args['lists'] ) ) {
 				$this->args['lists'] = array_filter( $this->args['lists'], 'is_numeric' );
@@ -740,6 +738,9 @@ class MailsterSubscriberQuery {
 		}
 
 		$where = '';
+		if ( $this->args['where'] ) {
+			$wheres[] = 'AND ( ' . implode( ' AND ', array_unique( $this->args['where'] ) ) . " )\n";
+		}
 		if ( ! empty( $wheres ) ) {
 			$where = ' WHERE 1=1 ' . implode( "\n  ", array_unique( $wheres ) ) . "\n";
 		}
@@ -793,7 +794,6 @@ class MailsterSubscriberQuery {
 		global $pagenow;
 
 		// error_log( $sql );
-
 		if ( in_array( $pagenow, array( '_admin-ajax.php', 'tools.php' ) ) ) {
 			echo '<pre>' . print_r( $sql, true ) . '</pre>';
 			$qu = end( $wpdb->queries );
@@ -1148,14 +1148,14 @@ class MailsterSubscriberQuery {
 		);
 
 		if ( is_null( $this->extra_conditions ) ) {
-			$this->extra_conditions = count( $this->args['conditions'] );
-			$this->args['conditions'][ $this->extra_conditions ] = array(
+			$this->extra_conditions = true;
+			array_unshift($this->args['conditions'], array(
 				'operator' => 'AND',
 				'conditions' => array(),
-			);
+			));
 		}
 
-		$this->args['conditions'][ $this->extra_conditions ]['conditions'][] = $condition;
+		$this->args['conditions'][0]['conditions'][] = $condition;
 
 	}
 
@@ -1181,9 +1181,15 @@ class MailsterSubscriberQuery {
 			return $ids;
 		}
 
+		if ( ! is_array( $ids ) ) {
+			$ids = array( $ids );
+		}
+
 		$return = array();
 		foreach ( $ids as $id ) {
-			if ( false !== strpos( $id, '-' ) ) {
+			if ( is_numeric( $id ) ) {
+				$return[] = $id;
+			} elseif ( false !== strpos( $id, '-' ) ) {
 				$splitted = explode( '-', $id );
 				$min = min( $splitted );
 				$max = max( $splitted );
@@ -1191,7 +1197,6 @@ class MailsterSubscriberQuery {
 					$return[] = $i;
 				}
 			} else {
-				$return[] = $id;
 			}
 		}
 

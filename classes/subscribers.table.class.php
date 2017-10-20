@@ -161,7 +161,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty ) . '</div>';
 
-			return $avatar . '<div class="mailster-name">' . $html . $userrating . '</div>';
+			return '<div class="table-data">' . $avatar . '<div class="mailster-name">' . $html . $userrating . '</div></div>';
 
 			case 'lists':
 
@@ -172,32 +172,32 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				foreach ( $lists as $i => $list ) {
 					$elements[] = '<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '" title="' . $list->description . '">' . $list->name . '</a>';
 				}
-			return implode( ', ', $elements );
+			return '<div class="table-data">' . implode( ', ', $elements ) . '</div>';
 
 			case 'emails':
 
-			return number_format_i18n( mailster( 'subscribers' )->get_sent( $item->ID, true ) );
+			return '<div class="table-data">' . number_format_i18n( mailster( 'subscribers' )->get_sent( $item->ID, true ) ) . '</div>';
 
 			case 'status':
 
-			return '<span class="nowrap tiny">' . mailster( 'subscribers' )->get_status( $item->{$column_name}, true ) . '</span>';
+			return '<div class="table-data"><span class="nowrap tiny">' . mailster( 'subscribers' )->get_status( $item->{$column_name}, true ) . '</span></div>';
 
 			case 'signup':
 				$timestring = ( ! $item->{$column_name} ) ? __( 'unknown', 'mailster' ) : date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
-			return $timestring;
+			return '<div class="table-data">' . $timestring . '</div>';
 
 			default:
 				$custom_fields = mailster()->get_custom_fields();
 				if ( in_array( $column_name, array_keys( $custom_fields ) ) ) {
 					switch ( $custom_fields[ $column_name ]['type'] ) {
 						case 'checkbox':
-						return $item->{$column_name} ? '&#10004;' : '&#10005;';
+						return '<div class="table-data">' . ($item->{$column_name} ? '&#10004;' : '&#10005;') . '</div>';
 						break;
 						case 'date':
-						return $item->{$column_name} ? date_i18n( get_option( 'date_format' ), strtotime( $item->{$column_name} ) ) : '';
+						return '<div class="table-data">' . ($item->{$column_name} ? date_i18n( get_option( 'date_format' ), strtotime( $item->{$column_name} ) ) : '') . '</div>';
 						break;
 						default:
-						return $item->{$column_name};
+						return '<div class="table-data">' . ($item->{$column_name}) . '</div>';
 					}
 				}
 			return print_r( $item, true ); // Show the whole array for troubleshooting purposes

@@ -35,7 +35,7 @@ if ( $request_url ) {
 }
 
 $text_direction = function_exists( 'is_rtl' ) && is_rtl() ? 'rtl' : 'ltr';
-$simple_output = true;
+$simple_output = false;
 
 if ( $simple_output ) {
 	ob_start();
@@ -66,7 +66,7 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 	( isset( $argv[1] ) && $argv[1] == $secret ) ||
 	( defined( 'MAILSTER_CRON_SECRET' ) && MAILSTER_CRON_SECRET == $secret ) ) :
 
-	// run wp_cron if it should
+	// spawn wp_cron if it should
 	if ( wp_next_scheduled( 'mailster_cron' ) - $time_start < 0 ) {
 		spawn_cron();
 	}
@@ -84,8 +84,25 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 
 	</script>
 	<div id="info"><p><?php esc_html_e( 'progressing', 'mailster' ); ?>&hellip;</p></div>
-	<?php
+<?php
+
+if ( isset( $argv[2] ) ) {
+	$worker = $argv[2];
+} else {
+	$worker = get_query_var( '_mailster_extra' );
+}
+if ( empty( $worker ) ) {
+	do_action( 'mailster_cron_autoresponder' );
 	do_action( 'mailster_cron_worker' );
+	do_action( 'mailster_cron_bounce' );
+	do_action( 'mailster_cron_cleanup' );
+} elseif ( in_array( $worker, array( 'autoresponder', 'worker', 'bounce', 'cleanup' ) ) ) {
+	echo '<h2>' . esc_html__( 'Single Cron', 'mailster' ) . ': ' . ucwords( $worker ) . '</h2>';
+	do_action( 'mailster_cron_' . $worker );
+} else {
+	echo '<h2>' . esc_html__( 'Invalid Cron Worker!', 'mailster' ) . '</h2>';
+}
+
 	do_action( 'mymail_cron_worker' );
 ?>
 	<p>
@@ -130,10 +147,10 @@ var a = <?php echo floor( $interval ) ?>,
 </body>
 </html>
 <?php
-if ( $simple_output ) {
+if ( $simple_output ) :
 	$output = ob_get_contents();
 	ob_end_clean();
 	$output = preg_replace( '#<a[^>]*?>.*?</a>#si', '', $output );
 	$output = mailster( 'helper' )->plain_text( $output );
 	echo $output;
-}
+endif;
