@@ -31,7 +31,7 @@
 	</div>
 	<div class="subtab" id="subtab-textoutput">
 		<div class="tests-textoutput-wrap"><textarea class="tests-textoutput" data-pretext="<?php echo esc_attr( $textoutput ) ?>"></textarea></div>
-		<p class="description"><?php esc_html_e( 'To copy the system info, click below then press Ctrl + C (PC) or Cmd + C (Mac).', 'mailster' );?></p>
+		<a class="clipboard" data-clipboard-target=".tests-textoutput"><?php esc_html_e( 'Copy Info to Clipboard', 'mailster' ) ?></a>
 	</div>
 
 </div>

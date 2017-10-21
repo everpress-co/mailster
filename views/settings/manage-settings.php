@@ -5,7 +5,8 @@
 		<?php esc_html_e( 'Use this data to copy your settings between Mailster installations. This data contains sensitive information like passwords so don\'t share them. Capabilities are not included.', 'mailster' );?>
 		</p>
 		</th>
-		<td><textarea rows="10" cols="40" class="large-text code"><?php echo $this->export_settings(); ?></textarea>
+		<td><textarea rows="10" cols="40" class="large-text code" id="settings-export-data"><?php echo $this->export_settings(); ?></textarea>
+		<p><a class="clipboard" data-clipboard-target="#settings-export-data"><?php esc_html_e( 'Copy to Clipboard', 'mailster' ) ?></a></p>
 		</td>
 	</tr>
 	<tr valign="top">

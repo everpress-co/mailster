@@ -7,4 +7,4 @@
 </div>
 <textarea id="system_info_content" readonly class="code">
 </textarea>
-<p class="description"><?php esc_html_e( 'To copy the system info, click below then press Ctrl + C (PC) or Cmd + C (Mac).', 'mailster' );?></p>
+<a class="clipboard" data-clipboard-target="#system_info_content"><?php esc_html_e( 'Copy Info to Clipboard', 'mailster' ) ?></a>
