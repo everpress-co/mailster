@@ -511,7 +511,7 @@ jQuery(document).ready(function ($) {
 				callback && callback();
 			} else {
 				setTimeout(function () {
-					bounce_test_check(identifier, ++count, callback);
+					bounce_test_check(identifier, ++count, formdata, callback);
 				}, 1000);
 			}
 
