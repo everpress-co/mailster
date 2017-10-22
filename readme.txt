@@ -91,8 +91,10 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.13 =
 
+* fixed: issue with stripped tags on template save
 * fixed: resending of transactional mails
 * fixed: registration not stored if username was missing
+* fixed: bounce test failed on some servers
 * added: additional security steps on form submission
 
 = Version 2.2.12 =
