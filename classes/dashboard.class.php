@@ -228,6 +228,8 @@ class MailsterDashboard {
 		wp_localize_script( 'mailster-dashboard-script', 'mailsterdashboardL10n', apply_filters( 'mailster-dashboard-script_mailsterL10n', array(
 			'subscribers' => __( '%s Subscribers', 'mailster' ),
 			'reset_license' => __( 'Do you really like to reset your license for this site?', 'mailster' ),
+			'check_again' => __( 'Check Again', 'mailster' ),
+			'checking' => __( 'Checking...', 'mailster' ),
 		) ) );
 	}
 
