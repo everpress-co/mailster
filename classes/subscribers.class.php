@@ -1025,7 +1025,10 @@ class MailsterSubscribers {
 
 		}
 
-		return $this->update( $entry, $overwrite, $merge, $subscriber_notification );
+		if ( $subscriber_id = $this->update( $entry, $overwrite, $merge, $subscriber_notification ) ) {
+			do_action( 'mailster_add_subscriber', $subscriber_id );
+		}
+		return $subscriber_id;
 
 	}
 

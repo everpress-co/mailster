@@ -117,6 +117,20 @@ jQuery(document).ready(function ($) {
 		.on('click', '.locked', function () {
 			$('.purchasecode').focus().select();
 		})
+		.on('click', '.check-for-update', function () {
+			var _this = $(this);
+			_this.html(mailsterdashboardL10n.checking);
+			_ajax('check_for_update', {}, function (response) {
+				_this.html(mailsterdashboardL10n.check_again);
+				if (response.success) {
+					$('#mailster-mb-mailster')[response.update ? 'addClass' : 'removeClass']('has-update')
+					$('.update-version').html(response.version);
+					$('.update-last-check').html(response.last_update);
+
+				}
+			});
+			return false;
+		})
 		.on('click', '.reset-license', function () {
 
 			if (!confirm(mailsterdashboardL10n.reset_license)) {

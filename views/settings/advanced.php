@@ -16,6 +16,11 @@
 		</td>
 	</tr>
 	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'Form POST protection', 'mailster' ) ?></th>
+		<td><input type="text" name="mailster_options[post_nonce]" value="<?php echo esc_attr( mailster_option( 'post_nonce' ) ); ?>" class="regular-text">
+			<p class="description"><?php esc_html_e( 'A unique string to prevent form submissions via POST. Pass this value in a \'_nonce\' variable. Keep empty to disable test.', 'mailster' ) ?></p></td>
+	</tr>
+	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'PHP Mailer', 'mailster' ) ?></th>
 		<td>
 		<?php $phpmailerversion = mailster_option( 'php_mailer' ); ?>

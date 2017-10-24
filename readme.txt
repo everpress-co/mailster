@@ -3,7 +3,7 @@ Contributors: EverPress, revaxarts
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.8.2
-Stable tag: 2.2.12
+Stable tag: 2.2.13
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3
@@ -81,6 +81,15 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.2.13 =
+
+* fixed: issue with stripped tags on template save
+* fixed: resending of transactional mails
+* fixed: registration not stored if username was missing
+* fixed: bounce test failed on some servers
+* added: additional security steps on form submission
+* added: option to recheck for updates on the dashboard
 
 = Version 2.2.12 =
 
