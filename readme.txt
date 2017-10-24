@@ -89,6 +89,8 @@ Xaver Birsak – https://everpress.io
 * improved: image procession to support more third party plugins
 * new: option to crop images in the picpicker
 
+= Version 2.2.14 =
+
 = Version 2.2.13 =
 
 * fixed: issue with stripped tags on template save
@@ -96,6 +98,7 @@ Xaver Birsak – https://everpress.io
 * fixed: registration not stored if username was missing
 * fixed: bounce test failed on some servers
 * added: additional security steps on form submission
+* added: option to recheck for updates on the dashboard
 
 = Version 2.2.12 =
 
