@@ -64,6 +64,7 @@ class MailsterAjax {
 
 		'register',
 		'envato_verify',
+		'check_for_update',
 		'check_language',
 		'load_language',
 		'quick_install',
@@ -2387,6 +2388,24 @@ class MailsterAjax {
 
 			wp_redirect( $url );
 			exit;
+		}
+
+		$this->json_return( $return );
+	}
+
+
+	private function check_for_update() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		if ( $plugin_info = mailster()->plugin_info( null, true ) ) {
+			$return['update'] = $plugin_info->update;
+			$return['version'] = $plugin_info->new_version;
+			$return['last_update'] = human_time_diff( $plugin_info->last_update );
+			$return['plugin_info'] = $plugin_info;
+
+			$return['success'] = true;
 		}
 
 		$this->json_return( $return );

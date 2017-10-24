@@ -247,6 +247,12 @@
 .postbox.verified .valid{
 	display: inherit;
 }
+.postbox .update-available, .postbox.has-update .update-not-available{
+	display: none;
+}
+.postbox.has-update .update-available{
+	display: block;
+}
 .postbox .update-button{
 	font-weight: 700;
 }
