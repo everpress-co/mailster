@@ -12,6 +12,7 @@ if ( empty( $conditions ) ) {
 	));
 
 	$forms = mailster( 'forms' )->get_all();
+	$lists = mailster( 'lists' )->get();
 	$all_campaigns = mailster( 'campaigns' )->get_campaigns( array( 'post__not_in' => array( $post->ID ), 'orderby' => 'post_title' ) );
 	$all_campaigns_stati = wp_list_pluck( $all_campaigns, 'post_status' );
 	asort( $all_campaigns_stati );
@@ -59,6 +60,13 @@ foreach ( $conditions as $i => $condition ) :
 					<optgroup label="<?php esc_html_e( 'Campaign related', 'mailster' );?>">
 					<?php
 					foreach ( $this->campaign_related as $key => $name ) {
+						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
+					} ?>
+					</optgroup>
+
+					<optgroup label="<?php esc_html_e( 'List related', 'mailster' );?>">
+					<?php
+					foreach ( $this->list_related as $key => $name ) {
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
 					} ?>
 					</optgroup>
@@ -115,7 +123,7 @@ foreach ( $conditions as $i => $condition ) :
 					endforeach; ?>
 					</select>
 				</div>
-				<div class="mailster-conditions-operator-field" data-fields="_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,_click_link,_click_link__not_in,">
+				<div class="mailster-conditions-operator-field" data-fields="_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,_click_link,_click_link__not_in,_lists__not_in,">
 					<input type="hidden" name="mailster_data[list][conditions][<?php echo $i; ?>][operator]" class="condition-operator" disabled value="is">
 				</div>
 			</div>
@@ -183,32 +191,52 @@ foreach ( $conditions as $i => $condition ) :
 				</div>
 				<div class="mailster-conditions-value-field" data-fields="_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,">
 				<?php if ( $all_campaigns ) : ?>
-				<?php foreach ( $value_arr as $k => $v ) : ?>
-					<div class="mailster-conditions-value-field-multiselect">
-						<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
-						<select name="mailster_data[list][conditions][<?php echo $i; ?>][value][]" class="condition-value" disabled>
-							<option value="0">--</option>
-							<?php
-							$status = '';
-							foreach ( $all_campaigns_stati as $j => $c ) {
-								$c = $all_campaigns[ $j ];
-								if ( $status != $c->post_status ) {
-									if ( $status ) {
-										echo '</optgroup>';
+					<?php foreach ( $value_arr as $k => $v ) : ?>
+						<div class="mailster-conditions-value-field-multiselect">
+							<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
+							<select name="mailster_data[list][conditions][<?php echo $i; ?>][value][]" class="condition-value" disabled>
+								<option value="0">--</option>
+								<?php
+								$status = '';
+								foreach ( $all_campaigns_stati as $j => $c ) {
+									$c = $all_campaigns[ $j ];
+									if ( $status != $c->post_status ) {
+										if ( $status ) {
+											echo '</optgroup>';
+										}
+										echo '<optgroup label="' . $wp_post_statuses[ $c->post_status ]->label . '">';
+										$status = $c->post_status;
 									}
-									echo '<optgroup label="' . $wp_post_statuses[ $c->post_status ]->label . '">';
-									$status = $c->post_status;
-								}
-								?><option value="<?php echo $c->ID ?>" <?php selected( $v, $c->ID );?>><?php echo ($c->post_title ? esc_html( $c->post_title ) : '[' . esc_html__( 'no title', 'mailster' ) . ']') . ' (# ' . $c->ID . ')' ?></option><?php
-							} ?>
-							</optgroup>
-						</select>
-					<button class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></button>
-					</div>
-				<?php endforeach; ?>
+									?><option value="<?php echo $c->ID ?>" <?php selected( $v, $c->ID );?>><?php echo ($c->post_title ? esc_html( $c->post_title ) : '[' . esc_html__( 'no title', 'mailster' ) . ']') . ' (# ' . $c->ID . ')' ?></option><?php
+								} ?>
+								</optgroup>
+							</select>
+						<button class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></button>
+						</div>
+					<?php endforeach; ?>
 				<?php else : ?>
-				<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="mailster_data[list][conditions][<?php echo $i; ?>][value]"></p>
-			<?php endif; ?>
+					<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="mailster_data[list][conditions][<?php echo $i; ?>][value]"></p>
+				<?php endif; ?>
+				</div>
+				<div class="mailster-conditions-value-field" data-fields="_lists__not_in,">
+				<?php if ( $lists ) : ?>
+					<?php foreach ( $value_arr as $k => $v ) : ?>
+						<div class="mailster-conditions-value-field-multiselect">
+							<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
+							<select name="mailster_data[list][conditions][<?php echo $i; ?>][value][]" class="condition-value" disabled>
+								<option value="0">--</option>
+								<?php
+								$status = '';
+								foreach ( $lists as $j => $list ) { ?>
+								<option value="<?php echo $list->ID ?>" <?php selected( $v, $list->ID );?>><?php echo ($list->name ? esc_html( $list->name ) : '[' . esc_html__( 'no title', 'mailster' ) . ']') ?></option>
+								<?php } ?>
+							</select>
+						<button class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></button>
+						</div>
+					<?php endforeach; ?>
+				<?php else : ?>
+					<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="mailster_data[list][conditions][<?php echo $i; ?>][value]"></p>
+				<?php endif; ?>
 				</div>
 				<div class="mailster-conditions-value-field" data-fields="_click_link,_click_link__not_in,">
 				<?php foreach ( $value_arr as $k => $v ) : ?>

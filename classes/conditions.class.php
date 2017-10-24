@@ -146,6 +146,12 @@ class MailsterConditions {
 		);
 
 	}
+	private function get_list_related() {
+		return array(
+			'_lists__not_in' => __( 'is not in List', 'mailster' ),
+		);
+
+	}
 	private function get_operators() {
 		return array(
 			'is' => __( 'is', 'mailster' ),
@@ -248,6 +254,11 @@ class MailsterConditions {
 			} else {
 				$return['value'] = '&quot;' . implode( '&quot; ' . __( 'or', 'mailster' ) . ' &quot;', array_map( array( $this, 'get_campaign_title' ), $condition['value'] ) ) . '&quot;';
 			}
+		} elseif ( isset( $this->list_related[ $condition['field'] ] ) ) {
+			if ( ! is_array( $condition['value'] ) ) {
+				$condition['value'] = array( $condition['value'] );
+			}
+			$return['value'] = '&quot;' . implode( '&quot; ' . __( 'or', 'mailster' ) . ' &quot;', array_map( array( $this, 'get_list_title' ), $condition['value'] ) ) . '&quot;';
 		} elseif ( 'rating' == $condition['field'] ) {
 			$stars = ( round( $this->sanitize_rating( $condition['value'] ) / 10, 2 ) * 50 );
 			$full = max( 0, min( 5, floor( $stars ) ) );
@@ -291,6 +302,14 @@ class MailsterConditions {
 		return $title;
 	}
 
+	public function get_list_title( $list_id ) {
+
+		if ( $list = mailster( 'lists' )->get( $list_id ) ) {
+			return $list->name;
+		}
+		return $list_id;
+	}
+
 
 	private function nice_name( $string, $type = null, $field = null ) {
 
@@ -304,6 +323,9 @@ class MailsterConditions {
 				}
 				if ( isset( $this->campaign_related[ $string ] ) ) {
 					return $this->campaign_related[ $string ];
+				}
+				if ( isset( $this->list_related[ $string ] ) ) {
+					return $this->list_related[ $string ];
 				}
 				if ( isset( $this->meta_fields[ $string ] ) ) {
 					return $this->meta_fields[ $string ];
