@@ -311,6 +311,8 @@ class MailsterTests {
 	private function test_mailster_folder_in_root() {
 		if ( file_exists( ABSPATH . 'mailster' ) || is_dir( ABSPATH . 'mailster' ) ) {
 			$this->error( 'There\'s a file or folder called \'mailster\' in ' . ABSPATH . ' which causes a conflict with campaign links! Please remove or rename this folder.' );
+		} else {
+			$this->success( 'There\'s no file or folder called \'mailster\' in ' . ABSPATH . '.' );
 		}
 	}
 	private function test_working_cron() {

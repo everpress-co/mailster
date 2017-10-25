@@ -229,11 +229,11 @@ class MailsterCron {
 
 				$this->update();
 
-		else :
+			else :
 
-			mailster_remove_notice( 'check_cron' );
+				mailster_remove_notice( 'check_cron' );
 
-		endif;
+			endif;
 
 		endif;
 

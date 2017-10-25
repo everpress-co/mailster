@@ -1163,7 +1163,8 @@ class Mailster {
 
 	public function on_deactivate() {
 
-		flush_rewrite_rules();
+		$this->reset_license();
+
 	}
 
 
@@ -1920,10 +1921,30 @@ class Mailster {
 	/**
 	 *
 	 *
+	 * @param unknown $license (optional)
+	 * @return unknown
+	 */
+	public function reset_license( $license = null ) {
+
+		if ( is_null( $license ) ) {
+			$license = get_option( 'mailster_license' );
+		}
+
+		return UpdateCenterPlugin::reset( MAILSTER_SLUG, $license );
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $force (optional)
 	 * @return unknown
 	 */
 	public function is_verified( $force = false ) {
+
+		// beta always
+		return true;
 
 		$license = get_option( 'mailster_license' );
 		$license_email = get_option( 'mailster_email' );
