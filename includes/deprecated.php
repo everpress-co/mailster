@@ -156,7 +156,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail( $subclass = null ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster' );
 		return mailster( $subclass );
 	}
 
@@ -169,7 +169,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_option( $option, $fallback = null ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_option' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_option' );
 		return mailster_option( $option, $fallback );
 	}
 
@@ -180,7 +180,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_options() {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_options' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_options' );
 		return mailster_options();
 	}
 
@@ -195,7 +195,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_cache_add( $key, $data, $expire = 0 ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_cache_add' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_cache_add' );
 		return mailster_cache_add( $key, $data, $expire );
 	}
 
@@ -209,7 +209,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_cache_set( $key, $data, $expire = 0 ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_cache_set' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_cache_set' );
 		return mailster_cache_set( $key, $data, $expire );
 	}
 
@@ -223,7 +223,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_cache_get( $key, $force = false, &$found = null ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_cache_get' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_cache_get' );
 		return mailster_cache_get( $key, $force, $found );
 	}
 
@@ -235,7 +235,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_cache_delete( $key ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_cache_delete' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_cache_delete' );
 		return mailster_cache_delete( $key );
 	}
 
@@ -248,7 +248,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_text( $option, $fallback = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_text' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_text' );
 		return mailster_text( $option, $fallback );
 	}
 
@@ -259,7 +259,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_texts() {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_texts' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_texts' );
 		return mailster_texts();
 	}
 
@@ -273,7 +273,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_update_option( $option, $value, $temp = false ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_update_option' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_update_option' );
 		return mailster_update_option( $option, $value, $temp );
 	}
 
@@ -291,7 +291,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_send( $headline, $content, $to = '', $replace = array(), $attachments = array(), $template = 'notification.html', $headers = array() ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_send' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_send' );
 		return mailster_send( $headline, $content, $to, $replace, $atachments, $template, $headers );
 
 	}
@@ -309,7 +309,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $template = 'notification.html' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster()->wp_mail' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster()->wp_mail' );
 		return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments = array(), $template );
 	}
 
@@ -325,7 +325,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_send_campaign_to_subscriber( $campaign, $subscriber, $track = false, $forcesend = false, $force = false ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_send_campaign_to_subscriber' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_send_campaign_to_subscriber' );
 		return mailster_send_campaign_to_subscriber( $campaign, $subscriber, $track, $forcesend, $force );
 
 	}
@@ -341,7 +341,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_form( $id = 0, $echo = true, $classes = '', $depreciated = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_form' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_form' );
 		return mailster_form( $id, $echo, $classes, $depreciated );
 
 	}
@@ -354,7 +354,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_active_campaigns( $args = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_active_campaigns' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_active_campaigns' );
 		return mailster_get_active_campaigns( $args );
 	}
 
@@ -366,7 +366,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_paused_campaigns( $args = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_paused_campaigns' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_paused_campaigns' );
 		return mailster_get_paused_campaigns( $args );
 	}
 
@@ -378,7 +378,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_queued_campaigns( $args = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_queued_campaigns' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_queued_campaigns' );
 		return mailster_get_queued_campaigns( $args );
 	}
 
@@ -390,7 +390,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_draft_campaigns( $args = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_draft_campaigns' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_draft_campaigns' );
 		return mailster_get_draft_campaigns( $args );
 	}
 
@@ -402,7 +402,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_finished_campaigns( $args = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_finished_campaigns' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_finished_campaigns' );
 		return mailster_get_finished_campaigns( $args );
 	}
 
@@ -414,7 +414,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_pending_campaigns( $args = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_pending_campaigns' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_pending_campaigns' );
 		return mailster_get_pending_campaigns( $args );
 	}
 
@@ -426,7 +426,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_autoresponder_campaigns( $args = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_autoresponder_campaigns' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_autoresponder_campaigns' );
 		return mailster_get_autoresponder_campaigns( $args );
 	}
 
@@ -438,7 +438,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_campaigns( $args = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_campaigns' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_campaigns' );
 		return mailster_get_campaigns( $args );
 	}
 
@@ -450,7 +450,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_list_newsletter( $args = '' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_list_newsletter' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_list_newsletter' );
 		return mailster_list_newsletter( $args );
 	}
 
@@ -463,7 +463,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_ip2Country( $ip = '', $get = 'code' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_ip2Country' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_ip2Country' );
 		return mailster_ip2Country( $ip, $get );
 	}
 
@@ -476,7 +476,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_ip2City( $ip = '', $get = null ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_ip2City' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_ip2City' );
 		return mailster_ip2City( $ip, $get );
 	}
 
@@ -487,7 +487,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_ip() {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_ip' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_ip' );
 		return mailster_get_ip();
 	}
 
@@ -498,7 +498,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_is_local() {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_is_local' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_is_local' );
 		return mailster_is_local();
 	}
 
@@ -510,7 +510,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_validate_ip( $ip ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_validate_ip' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_validate_ip' );
 		return mailster_validate_ip( $ip );
 	}
 
@@ -522,7 +522,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_lang( $fallback = false ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_lang' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_lang' );
 		return mailster_get_lang( $fallback );
 	}
 
@@ -534,7 +534,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_user_client( $string = null ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_user_client' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_user_client' );
 		return mailster_get_user_client( $string );
 	}
 
@@ -552,7 +552,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_subscribe( $email, $userdata = array(), $lists = array(), $double_opt_in = null, $overwrite = true, $mergelists = null, $template = 'notification.html' ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_subscribe' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_subscribe' );
 		return mailster_subscribe( $email, $userdata, $lists, $double_op_in, $overwrite, $mergelists, $template );
 
 	}
@@ -567,7 +567,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_unsubscribe( $email_hash_id, $campaign_id = null, $logit = true ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_unsubscribe' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_unsubscribe' );
 		return mailster_unsubscribe( $email_hash_id, $campaign_id, $logit );
 
 	}
@@ -579,7 +579,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_subscribed_subscribers() {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_subscribed_subscribers' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_subscribed_subscribers' );
 		return mailster_get_subscribed_subscribers();
 	}
 
@@ -590,7 +590,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_unsubscribed_subscribers() {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_unsubscribed_subscribers' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_unsubscribed_subscribers' );
 		return mailster_get_unsubscribed_subscribers();
 	}
 
@@ -601,7 +601,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_hardbounced_subscribers() {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_hardbounced_subscribers' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_hardbounced_subscribers' );
 		return mailster_get_hardbounced_subscribers();
 	}
 
@@ -613,7 +613,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_subscribers( $status = null ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_subscribers' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_subscribers' );
 		return mailster_get_subscribers( $status );
 	}
 
@@ -626,7 +626,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_clear_cache( $part = '', $deprecated = false ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_clear_cache' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_clear_cache' );
 		return mailster_clear_cache( $part, $deprecated );
 	}
 
@@ -642,7 +642,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_notice( $args, $type = '', $once = false, $key = null, $capability = true ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_notice' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_notice' );
 		return mailster_notice( $args, $type, $once, $key, $capability );
 	}
 
@@ -654,7 +654,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_remove_notice( $key ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_remove_notice' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_remove_notice' );
 		return mailster_remove_notice( $key );
 	}
 
@@ -666,7 +666,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_is_email( $email ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_is_email' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_is_email' );
 		return mailster_is_email( $email );
 	}
 
@@ -679,7 +679,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_get_subscriber( $id_email_or_hash, $type = null ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_get_subscriber' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_get_subscriber' );
 		return mailster_get_subscriber( $id_email_or_hash, $type );
 	}
 
@@ -692,7 +692,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_add_tag( $tag, $callbackfunction ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_add_tag' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_add_tag' );
 		return mailster_add_tag( $tag, $callbackfunction );
 	}
 
@@ -704,7 +704,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_remove_tag( $tag ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_remove_tag' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_remove_tag' );
 		return mailster_remove_tag( $tag );
 	}
 
@@ -716,7 +716,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_add_style( $callbackfunction ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_add_style' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_add_style' );
 		return mailster_add_style( $callbackfunction );
 	}
 
@@ -728,7 +728,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_update_notice( $text ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_update_notice' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_update_notice' );
 		return mailster_update_notice( $text );
 	}
 
@@ -739,7 +739,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function is_mymail_newsletter_homepage() {
-		// _deprecated_function( __FUNCTION__, '2.2', 'is_mailster_newsletter_homepage' );
+		_deprecated_function( __FUNCTION__, '2.2', 'is_mailster_newsletter_homepage' );
 		return is_mailster_newsletter_homepage();
 	}
 
@@ -753,7 +753,7 @@ if ( ! function_exists( 'mymail' ) ) :
 	 * @return unknown
 	 */
 	function mymail_require_filesystem( $redirect = '', $method = '', $showform = true ) {
-		// _deprecated_function( __FUNCTION__, '2.2', 'mailster_require_filesystem' );
+		_deprecated_function( __FUNCTION__, '2.2', 'mailster_require_filesystem' );
 		return mailster_require_filesystem( $redirect, $method, $showform );
 	}
 
