@@ -96,7 +96,8 @@ Xaver Birsak – https://everpress.io
 * new: subscriber query class for better list segmentation
 * new: cron command page
 * new: `{lists}` tag to display campaign related lists
-* new: `mailster_option`and `mailster_option_[option]` filter
+* new: `mailster_option` and `mailster_option_[option]` filter
+* new: Export format: xls
 * improved: list segmentation
 * improved: campaign editor for faster campaign creation with inline editing
 * improved: image procession to support more third party plugins

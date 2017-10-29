@@ -855,6 +855,9 @@ class MailsterManage {
 					case '_number':
 						$val = '#';
 					break;
+					case 'ID':
+						$val = __( 'ID', 'mailster' );
+					break;
 					case 'email':
 					case 'firstname':
 					case 'lastname':
@@ -869,7 +872,7 @@ class MailsterManage {
 					case 'status':
 						$val = __( 'Status', 'mailster' );
 					break;
-					case 'statuscode':
+					case '_statuscode':
 						$val = __( 'Statuscode', 'mailster' );
 					break;
 					case 'ip':
@@ -897,7 +900,7 @@ class MailsterManage {
 						$val = __( 'Rating', 'mailster' );
 					break;
 					default:
-						$val = ( isset( $custom_fields[ $col ] ) ) ? $custom_fields[ $col ]['name'] : '';
+						$val = ( isset( $custom_fields[ $col ] ) ) ? $custom_fields[ $col ]['name'] : ucwords( $col );
 				}
 				if ( function_exists( 'mb_convert_encoding' ) ) {
 					$val = mb_convert_encoding( $val, $encoding, 'UTF-8' );
@@ -919,51 +922,28 @@ class MailsterManage {
 
 		$offset = $offset * $limit;
 
-		$field_names = array( 'hash', 'email', 'status', 'added', 'signup', 'confirm', 'updated', 'ip_signup', 'ip_confirm', 'lang', 'rating' );
-		$fields = array_keys( array_intersect_key( array_flip( $field_names ), array_flip( $d['column'] ) ) );
+		$all_fields = isset( $d['column'] ) ? (array) $d['column'] : array();
+		$special = array_values( preg_grep( '/^_/', $all_fields ) );
+		$fields = array_values( preg_grep( '/^(?!_)/', $all_fields ) );
 
+		$args = array(
+			'lists' => $listids,
+			'status' => $statuses,
+			'fields' => $fields,
+			// 'meta' => $meta,
+			'limit' => $limit,
+			'offset' => $offset,
+		);
+
+		$data = mailster( 'subscribers' )->query( $args );
+
+		// return;
 		if ( isset( $d['nolists'] ) ) {
 
-			$sql = 'SELECT a.ID, a.' . implode( ', a.', $fields ) . ', ab.list_id';
+			$args['lists'] = null;
+			$data2 = mailster( 'subscribers' )->query( $args );
 
-			foreach ( $custom_field_names as $i => $name ) {
-				$sql .= ", meta_$i.meta_value AS '$name'";
-			}
-
-			$sql .= " FROM {$wpdb->prefix}mailster_subscribers as a LEFT JOIN ({$wpdb->prefix}mailster_lists AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.list_id) ON a.ID = ab.subscriber_id";
-
-			foreach ( $custom_field_names as $i => $name ) {
-				$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS meta_$i ON meta_$i.subscriber_id = a.ID AND meta_$i.meta_key = '$name'";
-			}
-
-			$sql .= ' WHERE 1=1 AND a.status IN (' . implode( ',', $statuses ) . ") AND b.ID IS NULL GROUP BY a.ID LIMIT $offset, $limit";
-
-			$data = $wpdb->get_results( $sql );
-
-		}
-
-		if ( ! empty( $listids ) ) {
-
-			$sql = 'SELECT a.ID, a.' . implode( ', a.', $fields ) . ', ab.list_id';
-
-			foreach ( $custom_field_names as $i => $name ) {
-				$sql .= ", meta_$i.meta_value AS '$name'";
-			}
-
-			$sql .= " FROM {$wpdb->prefix}mailster_subscribers as a LEFT JOIN ({$wpdb->prefix}mailster_lists AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.list_id) ON a.ID = ab.subscriber_id";
-
-			foreach ( $custom_field_names as $i => $name ) {
-				$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS meta_$i ON meta_$i.subscriber_id = a.ID AND meta_$i.meta_key = '$name'";
-			}
-
-			$sql .= ' WHERE 1=1 AND a.status IN (' . implode( ',', $statuses ) . ') AND ab.list_id IN (' . implode( ',', $listids ) . ") GROUP BY a.ID LIMIT $offset, $limit";
-
-			$data2 = $wpdb->get_results( $sql );
-			if ( ! empty( $data ) ) {
-				$data = array_merge( $data, $data2 );
-			} else {
-				$data = $data2;
-			}
+			$data = array_merge( $data, $data2 );
 		}
 
 		$counter = 1 + $offset;
@@ -972,12 +952,16 @@ class MailsterManage {
 
 		foreach ( $data as $user ) {
 
-			$row = array();
+			$row = array_flip( $all_fields );
 
-			foreach ( $d['column'] as $col ) {
-				switch ( $col ) {
+			foreach ( $row as $key => $empty ) {
+
+				switch ( $key ) {
 					case '_number':
 						$val = $counter;
+					break;
+					case 'id':
+						$val = $user->ID;
 					break;
 					case 'email':
 						$val = $user->email;
@@ -989,30 +973,30 @@ class MailsterManage {
 					case 'status':
 						$val = $statusnames[ $user->status ];
 					break;
-					case 'statuscode':
+					case '_statuscode':
 						$val = $user->status;
 					break;
 					case 'ip':
 					case 'ip_signup':
 					case 'ip_comfirm':
-						$val = isset( $user->{$col} ) ? $user->{$col} : '';
+						$val = isset( $user->{$key} ) ? $user->{$key} : '';
 					break;
 					case 'added':
 					case 'updated':
 					case 'signup':
 					case 'confirm':
-						$val = ! empty( $user->{$col} ) ? ( $dateformat ? date( $dateformat, $user->{$col} ) : $user->{$col} ) : '';
+						$val = ! empty( $user->{$key} ) ? ( $dateformat ? date( $dateformat, $user->{$key} ) : $user->{$key} ) : '';
 					break;
 					case 'rating':
 						$val = $user->rating;
 					break;
 					default:
-						$val = isset( $user->{$col} ) ? $user->{$col} : '';
-						if ( $dateformat && in_array( $col, $custom_date_fields ) ) {
-							$val = date( $dateformat, strtotime( $user->{$col} ) );
+						$val = isset( $user->{$key} ) ? $user->{$key} : '';
+						if ( $dateformat && in_array( $key, $custom_date_fields ) ) {
+							$val = date( $dateformat, strtotime( $user->{$key} ) );
 						}
 
-						// remove linebreaks
+						// remove line breaks
 						$val = preg_replace( "/[\n\r]/", ' ', $val );
 				}
 
@@ -1023,10 +1007,10 @@ class MailsterManage {
 				switch ( $separator ) {
 					case ',':
 					case "\t":
-						$row[] = str_replace( $separator, ' ', $val );
+						$row[ $key ] = str_replace( $separator, ' ', $val );
 					break;
 					default:
-						$row[] = str_replace( $separator, ',', $val );
+						$row[ $key ] = str_replace( $separator, ',', $val );
 				}
 			}
 
@@ -1041,21 +1025,42 @@ class MailsterManage {
 
 			if ( $useheader ) {
 				$firstrow = array_shift( $raw_data );
-				$output .= '<tr>';
-				foreach ( $firstrow as $r ) {
-					$output .= '<th>' . esc_html( $r ) . '</th>';
+				$output .= '<tr>' . "\n";
+				foreach ( $firstrow as $key => $r ) {
+					$output .= '<th>' . strip_tags( $r ) . '</th>' . "\n";
 				}
-				$output .= "</tr>\n";
+				$output .= '</tr>' . "\n";
 			}
 			foreach ( $raw_data as $row ) {
-				$output .= '<tr>';
-				foreach ( $row as $r ) {
-					$output .= '<td>' . esc_html( $r ) . '</td>';
+				$output .= '<tr>' . "\n";
+				foreach ( $row as $key => $r ) {
+					$output .= '<td>' . esc_html( $r ) . '</td>' . "\n";
 				}
-				$output .= "</tr>\n";
+				$output .= '</tr>' . "\n";
+			}
+		} elseif ( 'xls' == $outputformat ) {
+
+			if ( $useheader ) {
+				$firstrow = array_shift( $raw_data );
+				$output .= '<mailster:Row mailster:StyleID="1">' . "\n";
+				foreach ( $firstrow as $key => $r ) {
+					$output .= '<mailster:Cell><mailster:Data mailster:Type="String">' . strip_tags( $r ) . '</mailster:Data></mailster:Cell>' . "\n";
+				}
+				$output .= '</mailster:Row>' . "\n";
+			}
+			foreach ( $raw_data as $row ) {
+				$output .= '<mailster:Row>' . "\n";
+
+				foreach ( $row as $key => $r ) {
+					$type = 'String';
+					if ( is_numeric( $r ) ) {
+						$type = 'Number';
+					}
+					$output .= '<mailster:Cell><mailster:Data mailster:Type="' . $type . '">' . esc_html( $r ) . '</mailster:Data></mailster:Cell>' . "\n";
+				}
+				$output .= '</mailster:Row>' . "\n";
 			}
 		} else {
-
 			foreach ( $raw_data as $row ) {
 				$output .= implode( $separator, $row ) . "\n";
 			}
@@ -1114,28 +1119,40 @@ class MailsterManage {
 
 		switch ( $format ) {
 			case 'html':
-				header( 'Content-Type: text/html; name="' . $filename . '.html"' );
+				header( 'Content-Type: text/html; name="' . $filename . '"' );
 			break;
+			case 'xls':
+				header( 'Content-Type: application/vnd.ms-excel; name="' . $filename . '"' );
 			case 'csv':
-				header( 'Content-Type: text/csv; name="' . $filename . '.csv"' );
+				header( 'Content-Type: text/csv; name="' . $filename . '"' );
 				header( 'Content-Transfer-Encoding: binary' );
 			break;
 			default;
 			die( 'format not allowed' );
 		}
 
-		header( 'Content-Disposition: attachment; filename="' . basename( $file ) . '"' );
+		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 		header( 'Content-Length: ' . filesize( $file ) );
 		header( 'Connection: close' );
 
-		if ( $format == 'html' ) {
-			echo '<table>';
+		if ( 'html' == $format ) {
+			echo '<table>' . "\n";
+		} elseif ( 'xls' == $format ) {
+			echo '<?xml version="1.0"?>' . "\n";
+			echo '<mailster:Workbook xmlns:mailster="urn:schemas-microsoft-com:office:spreadsheet">' . "\n";
+			echo '<mailster:Styles><mailster:Style mailster:ID="1"><mailster:Font mailster:Bold="1"/></mailster:Style></mailster:Styles>' . "\n";
+			echo '<mailster:Worksheet mailster:Name="' . esc_attr__( 'Mailster Subscribers' ,'mailster' ) . '">' . "\n";
+			echo '<mailster:Table>' . "\n";
 		}
 
 		readfile( $file );
 
-		if ( $format == 'html' ) {
+		if ( 'html' == $format ) {
 			echo '</table>';
+		} elseif ( 'xls' == $format ) {
+			echo '</mailster:Table>' . "\n";
+			echo '</mailster:Worksheet>' . "\n";
+			echo '</mailster:Workbook>';
 		}
 
 		mailster_require_filesystem();

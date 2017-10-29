@@ -326,7 +326,7 @@ jQuery(document).ready(function ($) {
 				progressbar.animate({
 					'width': (percentage) + '%'
 				}, {
-					duration: finished ? 100 : (new Date().getTime() - t) * 0.9,
+					duration: 1000,
 					easing: 'swing',
 					queue: false,
 					step: function (percentage) {

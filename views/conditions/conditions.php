@@ -159,7 +159,7 @@ foreach ( $conditions as $i => $condition ) :
 				<div class="mailster-conditions-value-field" data-fields="<?php echo implode( ',', $this->time_fields ) ?>,">
 					<input type="text" class="regular-text datepicker condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="mailster_data[list][conditions][<?php echo $i; ?>][value]">
 				</div>
-				<div class="mailster-conditions-value-field" data-fields="wp_id,">
+				<div class="mailster-conditions-value-field" data-fields="id,wp_id,">
 					<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="mailster_data[list][conditions][<?php echo $i; ?>][value]">
 				</div>
 				<div class="mailster-conditions-value-field" data-fields="wp_capabilities,">

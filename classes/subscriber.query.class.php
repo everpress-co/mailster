@@ -804,16 +804,7 @@ class MailsterSubscriberQuery {
 			}
 		}
 
-		global $pagenow;
-
-		if ( in_array( $pagenow, array( '_admin-ajax.php', 'tools.php' ) ) ) {
-			echo '<pre>' . print_r( $sql, true ) . '</pre>';
-			$qu = end( $wpdb->queries );
-			echo '<pre>' . print_r( $qu[1], true ) . '</pre>';
-			// echo '<pre>'.print_r(end($wpdb->queries), true).'</pre>';
-			echo $this->last_error;
-		}
-
+		// error_log( $sql );
 		mailster_cache_set( $cache_key, $result );
 
 		return $result;
@@ -1121,7 +1112,7 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_fields() {
-		$fields = array( 'ID', 'hash', 'email', 'wp_id', 'status', 'added', 'updated', 'signup', 'confirm', 'ip_signup', 'ip_confirm', 'rating' );
+		$fields = array( 'id', 'hash', 'email', 'wp_id', 'status', 'added', 'updated', 'signup', 'confirm', 'ip_signup', 'ip_confirm', 'rating' );
 
 		return $fields;
 	}
