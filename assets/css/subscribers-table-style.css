@@ -50,7 +50,6 @@
 .wp-list-table .table-data{
 	max-height: 100px;
 	overflow: auto;
-	width: fit-content;
 }
 .mailster-avatar-40.wp-user:before{
 	font-family: 'dashicons';

@@ -792,20 +792,20 @@ class MailsterSubscriberQuery {
 			} elseif ( $this->args['return_count'] ) {
 				$result = $wpdb->get_var( $sql );
 			} else {
-				$result = $this->cast( $wpdb->get_results( $sql ) );
+				$result = $wpdb->get_results( $sql );
+				// $result = $this->cast( $wpdb->get_results( $sql ) );
 			}
 			$this->last_query = $wpdb->last_query;
 			$this->last_error = $wpdb->last_error;
 			$this->last_result = $result;
-		}
 
-		if ( $this->last_error && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( $this->last_error );
+			if ( $this->last_error && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( $this->last_error );
+			}
 		}
 
 		global $pagenow;
 
-		// error_log( $sql );
 		if ( in_array( $pagenow, array( '_admin-ajax.php', 'tools.php' ) ) ) {
 			echo '<pre>' . print_r( $sql, true ) . '</pre>';
 			$qu = end( $wpdb->queries );
@@ -841,8 +841,6 @@ class MailsterSubscriberQuery {
 
 
 	private function get_condition( $field, $operator, $value ) {
-
-		echo '<pre>' . print_r( func_get_args(), true ) . '</pre>';
 
 		// sanitation
 		$field = esc_sql( $field );
@@ -1160,6 +1158,10 @@ class MailsterSubscriberQuery {
 			'operator' => '=',
 			'value' => $value,
 		);
+
+		if ( ! $this->args['conditions'] ) {
+			$this->args['conditions'] = array();
+		}
 
 		if ( is_null( $this->extra_conditions ) ) {
 			$this->extra_conditions = true;

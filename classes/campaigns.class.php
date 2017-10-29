@@ -3187,44 +3187,43 @@ class MailsterCampaigns {
 			return false;
 		}
 
+		$args = array();
+
 		switch ( $option ) {
 			case 'sent';
+				$args['sent'] = $campaign->ID;
+			break;
 			case 'not_sent';
-
-				$sql = $wpdb->prepare( "SELECT a.ID FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d WHERE b.campaign_id IS NOT NULL AND b.type = 1 GROUP BY a.ID", $campaign->ID );
-
+				$args['sent__not_in'] = $campaign->ID;
 			break;
 			case 'open':
+				$args['open'] = $campaign->ID;
+			break;
 			case 'not_open':
-
-				$sql = $wpdb->prepare( "SELECT a.ID FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d WHERE b.campaign_id IS NOT NULL AND b.type = 2 GROUP BY a.ID", $campaign->ID );
+				$args['open__not_in'] = $campaign->ID;
 
 			break;
 			case 'click':
-
-				$sql = $wpdb->prepare( "SELECT a.ID FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d WHERE b.campaign_id IS NOT NULL AND b.type = 3 GROUP BY a.ID", $campaign->ID );
+				$args['open'] = $campaign->ID;
+				$args['click'] = $campaign->ID;
 
 			break;
 			case 'open_not_click':
-
-				$sql = $wpdb->prepare( "SELECT a.ID, c.type FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_actions AS c ON a.ID = c.subscriber_id AND c.campaign_id = %d WHERE b.campaign_id IS NOT NULL AND b.type = 2 OR c.type = 3 GROUP BY a.ID HAVING c.type != 3", $campaign->ID, $campaign->ID );
-
+				$args['open'] = $campaign->ID;
+				$args['click__not_in'] = $campaign->ID;
 			break;
 			default:
-				$sql .= ' WHERE 1';
 			break;
-		}
-
-		$subscribers = $wpdb->get_col( $sql );
-
-		if ( in_array( $option, array( 'not_sent', 'not_open' ) ) ) {
-			$all = $this->get_subscribers( $campaign->ID, null, true );
-			$subscribers = array_values( array_diff( $all, $subscribers ) );
 		}
 
 		if ( $countonly ) {
-			return count( $subscribers );
+			$args['return_count'] = true;
+			return mailster( 'subscribers' )->query( $args );
 		}
+
+		$args['return_ids'] = true;
+
+		$subscribers = mailster( 'subscribers' )->query( $args );
 
 		$options = array(
 			'sent' => __( 'who have received', 'mailster' ),

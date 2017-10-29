@@ -69,7 +69,7 @@ jQuery(document).ready(function ($) {
 			if (!response.finished) {
 				setTimeout(function () {
 					do_batch(data, response.page, cb);
-				}, 300);
+				}, response.delay ? response.delay : 300);
 			} else {
 				cb && cb();
 			}

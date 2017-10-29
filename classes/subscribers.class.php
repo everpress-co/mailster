@@ -327,6 +327,7 @@ class MailsterSubscribers {
 				'message' => $finished ? '<span>' . __( 'Finished!', 'mailster' ) . '</span>' : '<span title="' . __( 'Check the browser console for more info!', 'mailster' ) . '">' . sprintf( __( 'processing page %1$s of %2$s', 'mailster' ), number_format_i18n( $page + 1 ), number_format_i18n( ceil( $total / $limit ) ) ) . '&hellip;</span>',
 				'success_message' => $success_message,
 				'error_message' => $error_message,
+				'delay' => 30,
 			) );
 
 		} else {
@@ -2565,26 +2566,32 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$custom_field_names = mailster()->get_custom_fields( true );
+		if ( false === ( $custom_fields = mailster_cache_get( 'get_custom_fields_' . $subscriber_id ) ) ) {
 
-		$custom_fields = array_fill_keys( $custom_field_names, null );
-		$custom_fields['firstname'] = '';
-		$custom_fields['lastname'] = '';
-		$custom_fields['fullname'] = '';
+			$custom_field_names = mailster()->get_custom_fields( true );
 
-		// $sql = $wpdb->prepare( "SELECT b.meta_key, b.meta_value FROM {$wpdb->prefix}mailster_subscriber_fields AS b WHERE b.subscriber_id = %d UNION SELECT c.meta_key, c.meta_value FROM {$wpdb->prefix}mailster_subscriber_meta AS c WHERE c.subscriber_id = %d", $subscriber_id, $subscriber_id );
-		$sql = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d", $subscriber_id );
+			$custom_fields = array_fill_keys( $custom_field_names, null );
+			$custom_fields['firstname'] = '';
+			$custom_fields['lastname'] = '';
+			$custom_fields['fullname'] = '';
 
-		$meta_data = $wpdb->get_results( $sql );
+			// $sql = $wpdb->prepare( "SELECT b.meta_key, b.meta_value FROM {$wpdb->prefix}mailster_subscriber_fields AS b WHERE b.subscriber_id = %d UNION SELECT c.meta_key, c.meta_value FROM {$wpdb->prefix}mailster_subscriber_meta AS c WHERE c.subscriber_id = %d", $subscriber_id, $subscriber_id );
+			$sql = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d", $subscriber_id );
 
-		foreach ( $meta_data as $i => $data ) {
-			$custom_fields[ $data->meta_key ] = $data->meta_value;
+			$meta_data = $wpdb->get_results( $sql );
+
+			foreach ( $meta_data as $i => $data ) {
+				$custom_fields[ $data->meta_key ] = $data->meta_value;
+			}
+
+			$custom_fields['fullname'] = trim( mailster_option( 'name_order' )
+				? $custom_fields['lastname'] . ' ' . $custom_fields['firstname']
+			: $custom_fields['firstname'] . ' ' . $custom_fields['lastname'] );
+
+			if ( is_null( $field ) ) {
+				mailster_cache_set( 'get_custom_fields_' . $subscriber_id, $custom_fields );
+			}
 		}
-
-		$custom_fields['fullname'] = trim( mailster_option( 'name_order' )
-			? $custom_fields['lastname'] . ' ' . $custom_fields['firstname']
-		: $custom_fields['firstname'] . ' ' . $custom_fields['lastname'] );
-
 		if ( is_null( $field ) ) {
 			return $custom_fields;
 		}

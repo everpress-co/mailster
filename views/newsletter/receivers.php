@@ -32,15 +32,15 @@ $total = $this->get_totals( $post->ID );
 	<div>
 		<p class="lists">
 
-				<?php $checked = wp_parse_args( isset( $_GET['lists'] ) ? $_GET['lists'] : array(), $this->post_data['lists'] ); ?>
+			<?php $checked = wp_parse_args( isset( $_GET['lists'] ) ? $_GET['lists'] : array(), $this->post_data['lists'] ); ?>
 
-				<div id="list-checkboxes" <?php if ( $ignore_lists ) {echo 'style="display:none"';} ?>>
-				<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', true, $checked ); ?>
-					<label><input type="checkbox" id="all_lists"> <?php esc_html_e( 'toggle all', 'mailster' );?></label>
-				</div>
-				<ul>
-					<li><label><input id="ignore_lists" type="checkbox" name="mailster_data[ignore_lists]" value="1" <?php checked( $ignore_lists ) ?>> <?php esc_html_e( 'List doesn\'t matter', 'mailster' );?> </label></li>
-				</ul>
+			<div id="list-checkboxes" <?php if ( $ignore_lists ) {echo 'style="display:none"';} ?>>
+			<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', true, $checked ); ?>
+				<label><input type="checkbox" id="all_lists"> <?php esc_html_e( 'toggle all', 'mailster' );?></label>
+			</div>
+			<ul>
+				<li><label><input id="ignore_lists" type="checkbox" name="mailster_data[ignore_lists]" value="1" <?php checked( $ignore_lists ) ?>> <?php esc_html_e( 'List doesn\'t matter', 'mailster' );?> </label></li>
+			</ul>
 
 		</p>
 		<p><strong><?php esc_html_e( 'Conditions','mailster' ); ?>:</strong>

@@ -3611,15 +3611,13 @@ jQuery(document).ready(function ($) {
 
 	.on('Mailster:disable', function () {
 		isDisabled = true;
-		$('#publishing-action').find('input:visible').prop('disabled', true);
 		$('.button').prop('disabled', true);
 		$('input:visible').prop('disabled', true);
 	})
 
 	.on('Mailster:enable', function () {
-		$('#publishing-action').find('input:visible').prop('disabled', false);
 		$('.button').prop('disabled', false);
-		$('input:visible').prop('disabled', false);
+		$('input:visible, input.wp-color-picker').prop('disabled', false);
 		isDisabled = false;
 	})
 
