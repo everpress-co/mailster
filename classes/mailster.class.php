@@ -96,6 +96,19 @@ class Mailster {
 	/**
 	 *
 	 *
+	 * @param unknown $content (optional)
+	 * @return unknown
+	 */
+	public function conditions( $conditions = array(), $operator = 'AND' ) {
+		require_once MAILSTER_DIR . 'classes/conditions.class.php';
+
+		return new MailsterConditions( $conditions, $operator );
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $file     (optional)
 	 * @param unknown $template (optional)
 	 * @return unknown
@@ -107,6 +120,25 @@ class Mailster {
 		}
 
 		return MailsterNotification::get_instance( $template, $file );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $test
+	 * @return unknown
+	 */
+	public function test( $test = null ) {
+		require_once MAILSTER_DIR . 'classes/tests.class.php';
+
+		$testobj = new MailsterTests( );
+		if ( is_null( $test ) ) {
+			return $testobj;
+		}
+		$testobj->run( $test );
+		return $testobj->get();
+
 	}
 
 
@@ -271,7 +303,7 @@ class Mailster {
 					$classes[] = 'mailster-notice-dismissable';
 				}
 
-				$msg = '<div data-id="' . $id . '" id="mailster-notice-' . $id . '" class="' . implode( ' ', $classes ) . '">';
+				$msg = '<div data-id="' . $id . '" id="mailster-notice-' . $id . '" class="' . implode( ' ', $classes ) . '" style="display:none">';
 
 				$text = ( isset( $notice['text'] ) ? $notice['text'] : '' );
 				$text = isset( $notice['cb'] ) && function_exists( $notice['cb'] )
@@ -283,6 +315,10 @@ class Mailster {
 				}
 				if ( ! is_string( $text ) ) {
 					$text = print_r( $text, true );
+				}
+
+				if ( 'error' == $type ) {
+					$text = '<strong>' . $text . '</strong>';
 				}
 
 				$msg .= '<p>' . ( $text ? $text : '&nbsp;' ) . '</p>';
@@ -367,7 +403,7 @@ class Mailster {
 			return;
 		}
 		$page = $_GET['page'];
-		if ( ! in_array( $page, array( 'mailster_update', 'mailster_welcome', 'mailster_setup' ) ) ) {
+		if ( ! in_array( $page, array( 'mailster_update', 'mailster_welcome', 'mailster_setup', 'mailster_tests' ) ) ) {
 			return;
 		}
 
@@ -778,15 +814,16 @@ class Mailster {
 			}
 		}
 
-		$body = preg_replace( '#<div ?[^>]+?class=\"modulebuttons(.*)<\/div>#i', '', $body );
-		$body = trim( preg_replace( '#<button[^>]*?>.*?</button>#i', '', $body ) );
 		$content = $head . "\n<body$bodyattributes>\n" . apply_filters( 'mymail_sanitize_content_body', apply_filters( 'mailster_sanitize_content_body', $body ) ) . "\n</body></html>";
 
 		$content = str_replace( '<body >', '<body>', $content );
 		$content = str_replace( ' src="//', ' src="' . $protocol . '://', $content );
 		$content = str_replace( ' href="//', ' href="' . $protocol . '://', $content );
+		$content = str_replace( '</module><module', '</module>' . "\n" . '<module', $content );
+		$content = str_replace( '<modules><module', '<modules>' . "\n" . '<module', $content );
+		$content = str_replace( '</module></modules>', '</module>' . "\n" . '</modules>', $content );
 		$content = preg_replace( '#<script[^>]*?>.*?</script>#si', '', $content );
-		$content = str_replace( array( 'mailster-highlight', 'mailster-loading', 'ui-draggable', ' -handle' ), '', $content );
+		$content = str_replace( array( 'mailster-highlight', 'mailster-loading', 'ui-draggable', ' -handle', ' contenteditable="true"', ' spellcheck="false"' ), '', $content );
 
 		$allowed_tags = array( 'address', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else' );
 
@@ -824,6 +861,7 @@ class Mailster {
 	public function add_action_link( $links, $file ) {
 
 		if ( $file == MAILSTER_SLUG ) {
+			array_unshift( $links, '<a href="admin.php?page=mailster_tests">' . __( 'Self Test', 'mailster' ) . '</a>' );
 			array_unshift( $links, '<a href="edit.php?post_type=newsletter&page=mailster_addons">' . __( 'Add Ons', 'mailster' ) . '</a>' );
 			array_unshift( $links, '<a href="edit.php?post_type=newsletter&page=mailster_settings">' . __( 'Settings', 'mailster' ) . '</a>' );
 			array_unshift( $links, '<a href="admin.php?page=mailster_setup">' . __( 'Wizard', 'mailster' ) . '</a>' );
@@ -876,12 +914,15 @@ class Mailster {
 
 	public function special_pages() {
 
-		$page = add_submenu_page( true, __( 'Setup', 'mailster' ), __( 'Setup', 'mailster' ), 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
+		$page = add_submenu_page( true, __( 'Mailster Setup', 'mailster' ), __( 'Setup', 'mailster' ), 'read', 'mailster_setup', array( &$this, 'setup_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'setup_scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'remove_menu_enties' ) );
 
-		$page = add_submenu_page( true, __( 'Welcome', 'mailster' ), __( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
+		$page = add_submenu_page( true, __( 'Welcome to Mailster', 'mailster' ), __( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
+
+		$page = add_submenu_page( true, __( 'Mailster Tests', 'mailster' ), __( 'Tests', 'mailster' ), 'read', 'mailster_tests', array( &$this, 'tests_page' ) );
+		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Add Ons', 'mailster' ), __( 'Add Ons', 'mailster' ), 'mailster_manage_addons', 'mailster_addons', array( &$this, 'addon_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'addon_scripts_styles' ) );
@@ -919,6 +960,13 @@ class Mailster {
 
 	}
 
+	public function tests_page() {
+
+		remove_action( 'admin_notices', array( &$this, 'admin_notices' ) );
+		include MAILSTER_DIR . 'views/tests.php';
+
+	}
+
 
 	public function addon_page() {
 
@@ -941,6 +989,12 @@ class Mailster {
 
 		wp_enqueue_style( 'mailster-icons', MAILSTER_URI . 'assets/css/icons' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_style( 'mailster-admin', MAILSTER_URI . 'assets/css/admin' . $suffix . '.css', array( 'mailster-icons' ), MAILSTER_VERSION );
+
+		wp_register_script( 'mailster-clipboard', MAILSTER_URI . 'assets/js/libs/clipboard' . $suffix . '.js', array(), MAILSTER_VERSION );
+		wp_register_script( 'mailster-clipboard-script', MAILSTER_URI . 'assets/js/clipboard-script' . $suffix . '.js', array( 'mailster-clipboard' ), MAILSTER_VERSION );
+		wp_localize_script( 'mailster-clipboard-script', 'mailsterClipboardL10', array(
+				'copied' => __( 'Copied!', 'mailster' ),
+		) );
 
 	}
 
@@ -980,6 +1034,26 @@ class Mailster {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-welcome', MAILSTER_URI . 'assets/css/welcome-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $hook
+	 */
+	public function tests_scripts_styles( $hook ) {
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION );
+		wp_localize_script( 'mailster-tests', 'mailsterL10n', array(
+			'restart_test' => __( 'Restart Test', 'mailster' ),
+			'running_test' => __( 'Running Test %1$s of %2$s: %3$s', 'mailster' ),
+			'tests_finished' => __( 'Tests are finished with %1$s Errors, %2$s Warnings and %3$s Notices.', 'mailster' ),
+			'support' => __( 'Need Support?', 'mailster' ),
+		) );
 
 	}
 
@@ -1100,7 +1174,7 @@ class Mailster {
 			if ( is_plugin_active( 'myMail/myMail.php' ) ) {
 
 				if ( deactivate_plugins( 'myMail/myMail.php', true, is_network_admin() ) ) {
-					mailster_notice( '<strong>MyMail is now Mailster! The old version has been deactivated and can get removed!</strong>', 'error', false, 'warnings' );
+					mailster_notice( 'MyMail is now Mailster! The old version has been deactivated and can get removed!', 'error', false, 'warnings' );
 					mailster_update_option( 'update_required', true );
 				}
 			} elseif ( get_option( 'mymail' ) ) {
@@ -1128,7 +1202,8 @@ class Mailster {
 
 	public function on_deactivate() {
 
-		flush_rewrite_rules();
+		$this->reset_license();
+
 	}
 
 
@@ -1174,10 +1249,10 @@ class Mailster {
 
 			if ( $errors->error_count ) {
 
-				$html = '<strong>' . implode( '<br>', $errors->errors->get_error_messages() ) . '</strong>';
+				$html = implode( '<br>', $errors->errors->get_error_messages() );
 
 				if ( $die ) {
-					die( '<div style="font-family:sans-serif;">' . $html . '</div>' );
+					die( '<div style="font-family:sans-serif;"><strong>' . $html . '</strong</div>' );
 				} else {
 					mailster_notice( $html, 'error', false, 'errors' );
 				}
@@ -1187,7 +1262,7 @@ class Mailster {
 
 			if ( $errors->warning_count ) {
 
-				$html = '<strong>' . implode( '<br>', $errors->warnings->get_error_messages() ) . '</strong>';
+				$html = implode( '<br>', $errors->warnings->get_error_messages() );
 				mailster_notice( $html, 'error', false, 'warnings' );
 
 			} else {
@@ -1582,19 +1657,12 @@ class Mailster {
 			return;
 		};
 
-		$hp = get_post( mailster_option( 'homepage' ) );
+		$result = mailster()->test( 'newsletter_homepage' );
 
-		mailster_remove_notice( 'no_homepage' );
-		mailster_remove_notice( 'wrong_homepage_status' );
-
-		if ( ! $hp || $hp->post_status == 'trash' ) {
-
-			mailster_notice( sprintf( '<strong>' . __( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=no_homepage#frontend">' . __( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', 1, admin_url() ) . '">' . __( 'create it right now', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'no_homepage' );
-
-		} elseif ( $hp->post_status != 'publish' ) {
-
-			mailster_notice( sprintf( '<strong>' . __( 'Your newsletter homepage is not visible. Please %s the page', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=mailster_wrong_homepage_status">' . __( 'update', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'wrong_homepage_status', $hp->post_author );
-
+		if ( is_wp_error( $result ) ) {
+			mailster_notice( $result->get_error_message(), 'error', false, 'newsletter_homepage' );
+		} else {
+			mailster_remove_notice( 'newsletter_homepage' );
 		}
 
 	}
@@ -1619,7 +1687,7 @@ class Mailster {
 				|| ! preg_match( '#\[newsletter_confirm\]#', $post->post_content )
 				|| ! preg_match( '#\[newsletter_unsubscribe\]#', $post->post_content ) ) {
 
-				mailster_notice( '<strong>' . sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guide', 'mailster' ) . '</a>' ) . '</strong>', 'error', true, 'homepage_info' );
+				mailster_notice( sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guide', 'mailster' ) . '</a>' ), 'error', true, 'homepage_info' );
 
 			} else {
 
@@ -1892,10 +1960,30 @@ class Mailster {
 	/**
 	 *
 	 *
+	 * @param unknown $license (optional)
+	 * @return unknown
+	 */
+	public function reset_license( $license = null ) {
+
+		if ( is_null( $license ) ) {
+			$license = get_option( 'mailster_license' );
+		}
+
+		return UpdateCenterPlugin::reset( MAILSTER_SLUG, $license );
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $force (optional)
 	 * @return unknown
 	 */
 	public function is_verified( $force = false ) {
+
+		// beta always
+		return true;
 
 		$license = get_option( 'mailster_license' );
 		$license_email = get_option( 'mailster_email' );
@@ -2031,7 +2119,7 @@ class Mailster {
 			$postdata['post_content'] = str_replace( $old_home_url, trailingslashit( home_url() ), $postdata['post_content'] );
 		}
 
-		mailster_notice( '<strong>' . __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ) . '</strong>', 'error', false, 'import_campaings' );
+		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaings' );
 
 		return $postdata;
 

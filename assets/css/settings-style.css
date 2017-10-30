@@ -536,6 +536,10 @@ ul.lasthit li{
 	height: 100%;
 	display: block;
 }
+a.clipboard{
+	cursor: pointer;
+	font-size: smaller;
+}
 .alternative-cron-url{
 	display: none;
 }

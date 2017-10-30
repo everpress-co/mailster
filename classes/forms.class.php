@@ -1217,9 +1217,24 @@ class MailsterForms {
 				'submit' => __( 'Subscribe', 'mailster' ),
 			) );
 			if ( ! is_wp_error( $form_id ) ) {
-				$this->update_field( $form_id, 'email', __( 'Email', 'mailster' ) );
-				mailster_update_option( 'profile_form', $form_id );
+				$this->update_fields( $form_id, array(
+					'email' => __( 'Email', 'mailster' ),
+				));
 				$this->assign_lists( $form_id, 1 );
+			}
+			$profile_form_id = $this->add( array(
+				'name' => __( 'Profile', 'mailster' ),
+				'submit' => __( 'Subscribe', 'mailster' ),
+				'userschoice' => true,
+			) );
+			if ( ! is_wp_error( $profile_form_id ) ) {
+				$this->update_fields( $profile_form_id, array(
+					'email' => __( 'Email', 'mailster' ),
+					'firstname' => __( 'First Name', 'mailster' ),
+					'lastname' => __( 'Last Name', 'mailster' ),
+				));
+				mailster_update_option( 'profile_form', $profile_form_id );
+				$this->assign_lists( $profile_form_id, 1 );
 			}
 		}
 

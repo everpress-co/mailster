@@ -45,16 +45,12 @@ class MailsterCron {
 		do_action( 'mailster_resend_confirmations' );
 		do_action( 'mymail_resend_confirmations' );
 
-		if ( mailster( 'queue' )->size( time() + 3600 ) ) {
-			$this->update();
-		} else {
-			$this->remove_crons();
-		}
+		$this->update();
 
 		if ( ! mailster_is_local() && ! mailster()->is_verified() ) {
 			if ( time() - get_option( 'mailster' ) > WEEK_IN_SECONDS
 				&& get_option( 'mailster_setup' ) ) {
-				mailster_notice( '<strong>' . sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'verify', 'mailster_manage_licenses' );
+				mailster_notice( sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ), 'error', false, 'verify', 'mailster_manage_licenses' );
 			}
 		} else {
 			mailster_remove_notice( 'verify' );
@@ -91,7 +87,7 @@ class MailsterCron {
 
 		if ( ! is_null( $error ) && $error['type'] == 1 ) {
 
-			mailster_notice( '<strong>' . sprintf( __( 'It looks like your last cronjob hasn\'t been finished! Increase the %1$s, add %2$s to your wp-config.php or reduce the %3$s in the settings', 'mailster' ), "'max_execution_time'", '<code>define("WP_MEMORY_LIMIT", "256M");</code>', '<a href="edit.php?post_type=newsletter&page=mailster_settings#delivery">' . __( 'Number of mails sent', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'cron_unfinished' );
+			mailster_notice( sprintf( __( 'It looks like your last cronjob hasn\'t been finished! Increase the %1$s, add %2$s to your wp-config.php or reduce the %3$s in the settings', 'mailster' ), "'max_execution_time'", '<code>define("WP_MEMORY_LIMIT", "256M");</code>', '<a href="edit.php?post_type=newsletter&page=mailster_settings#delivery">' . __( 'Number of mails sent', 'mailster' ) . '</a>' ), 'error', false, 'cron_unfinished' );
 
 		} else {
 
@@ -122,18 +118,44 @@ class MailsterCron {
 
 		// remove the WordPress cron if "normal" cron is used
 		if ( mailster_option( 'cron_service' ) != 'wp_cron' ) {
-			wp_clear_scheduled_hook( 'mailster_cron_worker' );
+			$this->unschedule();
 			return false;
 		}
 
-		// add worker only once
-		if ( ! wp_next_scheduled( 'mailster_cron_worker' ) ) {
-			wp_schedule_event( floor( time() / 300 ) * 300, 'mailster_cron_interval', 'mailster_cron_worker' );
-			return true;
-		}
+		$this->schedule();
 
 		return false;
 
+	}
+
+
+	public function schedule( $unschedule = false ) {
+
+		if ( $unschedule ) {
+			$this->unschedule();
+		}
+
+		// add worker only once
+		if ( ! wp_next_scheduled( 'mailster_cron_autoresponder' ) ) {
+			wp_schedule_event( floor( time() / 300 ) * 300 - 30, 'mailster_cron_interval', 'mailster_cron_autoresponder' );
+		}
+		if ( ! wp_next_scheduled( 'mailster_cron_bounce' ) ) {
+			wp_schedule_event( floor( time() / 300 ) * 300 - 30, 'mailster_cron_interval', 'mailster_cron_bounce' );
+		}
+		if ( ! wp_next_scheduled( 'mailster_cron_worker' ) ) {
+			wp_schedule_event( floor( time() / 300 ) * 300, 'mailster_cron_interval', 'mailster_cron_worker' );
+		}
+		if ( ! wp_next_scheduled( 'mailster_cron_cleanup' ) ) {
+			wp_schedule_event( strtotime( 'midnight' ) - 180, 'hourly', 'mailster_cron_cleanup' );
+		}
+	}
+
+
+	public function unschedule() {
+		wp_clear_scheduled_hook( 'mailster_cron_autoresponder' );
+		wp_clear_scheduled_hook( 'mailster_cron_bounce' );
+		wp_clear_scheduled_hook( 'mailster_cron_worker' );
+		wp_clear_scheduled_hook( 'mailster_cron_cleanup' );
 	}
 
 
@@ -207,11 +229,11 @@ class MailsterCron {
 
 				$this->update();
 
-		else :
+			else :
 
-			mailster_remove_notice( 'check_cron' );
+				mailster_remove_notice( 'check_cron' );
 
-		endif;
+			endif;
 
 		endif;
 
@@ -343,7 +365,7 @@ class MailsterCron {
 	 */
 	public function url( $alternative = false ) {
 
-		if ( $alternative ) {
+		if ( ! $alternative ) {
 
 			if ( mailster_option( 'got_url_rewrite' ) ) {
 				return apply_filters( 'mailster_cron_url', get_home_url( null, 'mailster/' . mailster_option( 'cron_secret' ) ), $alternative );
@@ -364,18 +386,23 @@ class MailsterCron {
 	}
 
 
+	public function path( $arguments = false ) {
+
+		$path = MAILSTER_DIR . 'cron.php';
+
+		if ( $arguments ) {
+			$path .= ' ' . mailster_option( 'cron_secret' );
+		}
+
+		return $path;
+
+	}
+
+
 	public function template_redirect() {
 
-		$secret = get_query_var( '_mailster_cron' );
-
-		if ( $secret ) {
-			if ( ! defined( 'MAILSTER_CRON_SECRET' ) ) {
-				define( 'MAILSTER_CRON_SECRET', $secret );
-			}
-
-			include MAILSTER_DIR . 'cron.php';
-			exit();
-
+		if ( $secret = get_query_var( '_mailster_cron' ) ) {
+			$this->cron_page( $secret );
 		}
 
 	}
@@ -384,6 +411,11 @@ class MailsterCron {
 	public function cron_worker() {
 
 		$secret = isset( $_GET['secret'] ) ? $_GET['secret'] : false;
+		$this->cron_page( $secret );
+
+	}
+
+	public function cron_page( $secret ) {
 
 		if ( ! defined( 'MAILSTER_CRON_SECRET' ) ) {
 			define( 'MAILSTER_CRON_SECRET', $secret );

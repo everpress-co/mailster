@@ -57,7 +57,7 @@
 }
 .user-info .click-to-edit.type-textarea li:first-child{
 	max-height: 286px;
-	overflow: hidden;
+	overflow: auto;
 }
 h3.detail .click-to-edit{
 	width: 70%;

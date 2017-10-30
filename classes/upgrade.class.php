@@ -103,7 +103,7 @@ class MailsterUpgrade {
 	public function deactivate_mymail( $info = true ) {
 		if ( is_plugin_active( 'myMail/myMail.php' ) ) {
 			if ( $info ) {
-				mailster_notice( '<strong>MyMail is now Mailster - Plugin deactivated.</strong>', 'error', true );
+				mailster_notice( 'MyMail is now Mailster - Plugin deactivated', 'error', true );
 			}
 			deactivate_plugins( 'myMail/myMail.php' );
 		}
@@ -492,6 +492,8 @@ class MailsterUpgrade {
 		update_option( 'mailster_setup', time() );
 		update_option( 'mailster_templates', '' );
 		$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_templates', 'mailster_cron_lasthit')" );
+
+		mailster_update_option( 'webversion_bar', true );
 
 		if ( wp_next_scheduled( 'mymail_cron_worker' ) ) {
 			wp_clear_scheduled_hook( 'mymail_cron_worker' );

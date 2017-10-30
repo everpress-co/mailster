@@ -70,6 +70,8 @@ class MailsterAjax {
 		'quick_install',
 		'wizard_save',
 
+		'test',
+
 	);
 
 	private $methods_no_priv = array(
@@ -341,6 +343,7 @@ class MailsterAjax {
 		$content = isset( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : '';
 		$ID = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
 		$subject = isset( $_POST['subject'] ) ? stripslashes( $_POST['subject'] ) : '';
+		$preheader = isset( $_POST['preheader'] ) ? stripslashes( $_POST['preheader'] ) : '';
 		$issue = isset( $_POST['issue'] ) ? intval( $_POST['issue'] ) : 1;
 		$head = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
 		$userid = isset( $_POST['userid'] ) ? intval( $_POST['userid'] ) : null;
@@ -391,6 +394,7 @@ class MailsterAjax {
 		$placeholder->add_defaults( $ID, array(
 			'issue' => $issue,
 			'subject' => $subject,
+			'preheader' => $preheader,
 			'emailaddress' => $current_user->user_email,
 		) );
 
@@ -483,6 +487,8 @@ class MailsterAjax {
 			$from_name = stripcslashes( $formdata['mailster_data']['from_name'] );
 			$reply_to = $formdata['mailster_data']['reply_to'];
 			$embed_images = isset( $formdata['mailster_data']['embed_images'] );
+			$track_opens = isset( $formdata['mailster_data']['track_opens'] );
+			$track_clicks = isset( $formdata['mailster_data']['track_clicks'] );
 			$head = isset( $formdata['mailster_data']['head'] ) ? stripcslashes( $formdata['mailster_data']['head'] ) : null;
 			$content = stripslashes( $_POST['content'] );
 			$preheader = stripcslashes( $formdata['mailster_data']['preheader'] );
@@ -503,8 +509,6 @@ class MailsterAjax {
 			$issue = $formdata['mailster_data']['autoresponder']['issue'];
 
 			$campaign_permalink = get_permalink( $ID );
-
-			$replace_links = true;
 
 			$attach = array();
 
@@ -554,12 +558,27 @@ class MailsterAjax {
 
 				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
 
-				$mail->add_header( 'X-Mailster-Campaign', $ID );
-				$mail->add_header( 'X-Mailster-ID', $MID );
+				$listunsubscribe = '';
+				if ( $mail->bouncemail ) {
+					$listunsubscribe_mail = $mail->bouncemail;
+					$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
+					$listunsubscribe_body = "X-Mailster: $mail->hash\nX-Mailster-Campaign: $ID\nX-Mailster-ID: $MID\n\n";
+					$listunsubscribe .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
+				}
+				$listunsubscribe .= '<' . $unsubscribelink . '>';
 
-				$listunsubscribe = '<' . $unsubscribelink . '>';
+				$headers = array(
+					'X-Mailster-Campaign' => $ID,
+					'X-Mailster-ID' => $MID,
+					'List-Unsubscribe' => $listunsubscribe,
+					'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+				);
 
-				$mail->add_header( 'List-Unsubscribe', $listunsubscribe );
+				if ( 'autoresponder' != get_post_status( $ID ) ) {
+					$headers['Precedence'] = 'bulk';
+				}
+
+				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $ID, null ) );
 
 				// check for subscriber by mail
 				$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
@@ -617,7 +636,7 @@ class MailsterAjax {
 				$content = mailster( 'helper' )->prepare_content( $content );
 
 				// replace links with fake hash to prevent tracking
-				if ( $replace_links ) {
+				if ( $track_clicks ) {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
@@ -631,7 +650,7 @@ class MailsterAjax {
 				$placeholder->set_content( $mail->subject );
 				$mail->subject = $placeholder->get_content();
 
-				$mail->add_tracking_image = false;
+				$mail->add_tracking_image = $track_opens;
 
 				if ( $spam_test ) {
 
@@ -732,6 +751,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, array( 'operator' => $operator, 'conditions' => $conditions ) );
+		$return['conditions'] = mailster( 'conditions' )->render( $conditions, $operator, false );
 		$return['totalformatted'] = number_format_i18n( $return['total'] );
 
 		$this->json_return( $return );
@@ -1032,7 +1052,7 @@ class MailsterAjax {
 			$src = isset( $_POST['src'] ) ? ( $_POST['src'] ) : null;
 			$crop = isset( $_POST['crop'] ) ? ( $_POST['crop'] == 'true' ) : false;
 			$width = isset( $_POST['width'] ) ? intval( $_POST['width'] ) : null;
-			$height = isset( $_POST['height'] ) ? intval( $_POST['height'] ) : null;
+			$height = isset( $_POST['height'] ) && $crop ? intval( $_POST['height'] ) : null;
 
 			$return['success'] = ! ! ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop ) );
 		}
@@ -1044,8 +1064,9 @@ class MailsterAjax {
 
 	private function image_placeholder() {
 
-		$width = ! empty( $_GET['w'] ) ? intval( $_GET['w'] ) : 600;
-		$height = ! empty( $_GET['h'] ) ? intval( $_GET['h'] ) : round( $width / 1.6 );
+		$factor = ! empty( $_GET['f'] ) ? intval( $_GET['f'] ) : 1;
+		$width = $factor * ( ! empty( $_GET['w'] ) ? intval( $_GET['w'] ) : 600);
+		$height = $factor * ( ! empty( $_GET['h'] ) ? intval( $_GET['h'] ) : round( $width / 1.6 ));
 		$tag = isset( $_GET['tag'] ) ? '' . esc_attr( $_GET['tag'] ) . '' : '';
 
 		$text = '{' . $tag . '}';
@@ -1375,6 +1396,7 @@ class MailsterAjax {
 
 		if ( is_numeric( $_POST['id'] ) ) {
 			$post = get_post( intval( $_POST['id'] ) );
+			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : null;
 
 			if ( $post ) {
 				if ( ! $post->post_excerpt ) {
@@ -1412,21 +1434,22 @@ class MailsterAjax {
 				$excerpt = ( $strip_shortcodes ) ? strip_shortcodes( $excerpt ) : do_shortcode( $excerpt );
 
 				$data = array(
-					'title' => $post->post_title,
+					'title' => array( $post->post_title, 'asdas' ),
 					'alt' => $post->post_title,
-					'content' => $content,
+					'content' => array( $content, 'sfgdfg' ),
 					'excerpt' => $excerpt,
 					'link' => get_permalink( $post->ID ),
 					'image' => $image,
 				);
-				$data = apply_filters( 'mymail_auto_post', apply_filters( 'mailster_auto_post', $data, $post ), $post );
 
-				$return['title'] = $data['title'];
-				$return['alt'] = $data['alt'];
-				$return['content'] = $data['content'];
-				$return['excerpt'] = $data['excerpt'];
-				$return['link'] = $data['link'];
-				$return['image'] = $data['image'];
+				foreach ( $expects as $expect ) {
+					if ( isset( $data[ $expect ] ) ) {
+						continue;
+					}
+					$data[ $expect ] = mailster( 'placeholder' )->get_replace( $post, $expect );
+				}
+
+				$return['pattern'] = apply_filters( 'mymail_auto_post', apply_filters( 'mailster_auto_post', $data, $post ), $post );
 				$return['success'] = true;
 
 			}
@@ -1436,6 +1459,7 @@ class MailsterAjax {
 			$id = intval( array_pop( $url ) );
 			$url = implode( '#', $url );
 			$rss = fetch_feed( $url );
+			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : null;
 
 			if ( ! is_wp_error( $rss ) ) {
 
@@ -1478,14 +1502,15 @@ class MailsterAjax {
 					'link' => $item->get_permalink(),
 					'image' => $image,
 				);
-				$data = apply_filters( 'mymail_auto_rss', apply_filters( 'mailster_auto_rss', $data, $url ), $url );
 
-				$return['title'] = $data['title'];
-				$return['alt'] = $data['alt'];
-				$return['content'] = $data['content'];
-				$return['excerpt'] = $data['excerpt'];
-				$return['link'] = $data['link'];
-				$return['image'] = $data['image'];
+				foreach ( $expects as $expect ) {
+					if ( isset( $data[ $expect ] ) ) {
+						continue;
+					}
+					$data[ $expect ] = method_exists( $item, 'get_' . $expect ) ? $item->{'get_' . $expect}() : '';
+				}
+
+				$return['pattern'] = apply_filters( 'mymail_auto_rss', apply_filters( 'mailster_auto_rss', $data, $url ), $url );
 				$return['success'] = true;
 
 			}
@@ -1508,6 +1533,7 @@ class MailsterAjax {
 		$offset = $relative + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
+		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : null;
 
 		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, true );
 		$is_post = ! ! $post;
@@ -1526,6 +1552,13 @@ class MailsterAjax {
 			'link' => '{' . $post_type . '_link:' . $options . '}',
 			'image' => '{' . $post_type . '_image:' . $options . '}',
 		);
+
+		foreach ( $expects as $expect ) {
+			if ( isset( $pattern[ $expect ] ) ) {
+				continue;
+			}
+			$pattern[ $expect ] = '{' . $post_type . '_' . $expect . ':' . $options . '}';
+		}
 
 		$return['pattern'] = apply_filters( 'mymail_auto_tag', apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post, $modulename ), $post_type, $options, $post, $modulename );
 
@@ -1968,8 +2001,12 @@ class MailsterAjax {
 
 		$email = esc_attr( $_POST['email'] );
 
-		$return['success'] = true;
-		$return['url'] = mailster( 'subscribers' )->get_gravatar_uri( $email, 400 );
+		if ( mailster_option( 'disable_avatar' ) ) {
+			$return['url'] = null;
+		} else {
+			$return['success'] = true;
+			$return['url'] = mailster( 'subscribers' )->get_gravatar_uri( $email, 400 );
+		}
 
 		$this->json_return( $return );
 
@@ -2502,6 +2539,25 @@ class MailsterAjax {
 				}
 			break;
 		}
+
+		$this->json_return( $return );
+
+	}
+
+
+	private function test() {
+
+		$return['success'] = false;
+
+		$test_id = isset( $_POST['test_id'] ) ? $_POST['test_id'] : null;
+
+		$test = mailster( 'test' );
+		$return['success'] = $test->run( $test_id );
+		$return['message'] = $test->get_message();
+		$return['nexttest'] = $test->get_next();
+		$return['total'] = $test->get_total();
+		$return['current'] = $test->get_current();
+		$return['type'] = $test->get_current_type();
 
 		$this->json_return( $return );
 

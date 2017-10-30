@@ -112,6 +112,14 @@ table.wp-list-table .column-total a, table.wp-list-table .column-open a, table.w
 .mailster-icon.inactive:before{content: '\e81d'; color:#D54E21}
 .mailster-icon.warning:before{content: '\e812';}
 .mailster-icon.warning:before{content: '\e812';}
+
+.mailster-condition-render{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-size: smaller;
+}
+
 @media screen and (max-width: 782px){
 
 table.wp-list-table .column-total, table.wp-list-table .column-open, table.wp-list-table .column-click, table.wp-list-table .column-unsubs, table.wp-list-table .column-bounces{

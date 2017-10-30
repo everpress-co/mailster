@@ -228,12 +228,14 @@ class MailsterNotification {
 					$form_id = null;
 				}
 
-					$link = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id );
+				$list_ids = isset( $options['list_ids'] ) ? $options['list_ids'] : null;
 
-			return wp_parse_args( array(
-					'link' => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
-					'linkaddress' => $link,
-			), $content );
+				$link = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id, $list_ids );
+
+				return wp_parse_args( array(
+						'link' => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
+						'linkaddress' => $link,
+				), $content );
 
 			case 'confirmation_attachments':
 				$form = mailster( 'forms' )->get( $options['form'], false, false );
@@ -608,6 +610,9 @@ class MailsterNotification {
 		$custom_fields = mailster()->get_custom_fields();
 
 ?>
+
+	<?php if ( ! mailster_option( 'disable_avatar' ) ) : ?>
+
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
@@ -617,6 +622,8 @@ class MailsterNotification {
 			</td>
 			</tr>
 		</table>
+
+	<?php endif; ?>
 
 		<table style="width:100%;table-layout:fixed"><tr><td valign="top" align="center">&nbsp;</td></tr></table>
 
@@ -774,20 +781,22 @@ class MailsterNotification {
 				<tr>
 					<td width="264" valign="top" align="left" class="m-b">
 					<table cellpadding="0" cellspacing="0">
-					<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
-					<tr>
-					<td valign="top" align="center" width="80">
-						<div style="border-radius:50%;width:60px;height:60px;background-color:#fafafa">
-						<a href="<?php echo $link ?>">
-						<img src="<?php echo mailster( 'subscribers' )->get_gravatar_uri( $subscriber->email, 120 ) ?>" width="60" style="border-radius:50%;display:block;width:60px;overflow:hidden">
-						</div>
-						</a>
-					</td>
-					<td valign="top" align="left">
-						<h4 style="margin:0"><?php echo $subscriber->fullname ? '<a href="' . $link . '">' . esc_html( $subscriber->fullname ) . '</a>' : '&nbsp;'; ?></h4>
-						<small><?php echo esc_html( $subscriber->email ); ?></small>
-					</td>
-					</tr>
+						<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
+						<tr>
+						<?php if ( ! mailster_option( 'disable_avatar' ) ) : ?>
+						<td valign="top" align="center" width="80">
+							<div style="border-radius:50%;width:60px;height:60px;background-color:#fafafa">
+							<a href="<?php echo $link ?>">
+							<img src="<?php echo mailster( 'subscribers' )->get_gravatar_uri( $subscriber->email, 120 ) ?>" width="60" style="border-radius:50%;display:block;width:60px;overflow:hidden">
+							</div>
+							</a>
+						</td>
+						<?php endif; ?>
+						<td valign="top" align="left">
+							<h4 style="margin:0"><?php echo $subscriber->fullname ? '<a href="' . $link . '">' . esc_html( $subscriber->fullname ) . '</a>' : '&nbsp;'; ?></h4>
+							<small><?php echo esc_html( $subscriber->email ); ?></small>
+						</td>
+						</tr>
 						<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
 					</table>
 					</td>
@@ -948,6 +957,8 @@ foreach ( $coords as $i => $coord ) {
 		$custom_fields = mailster()->get_custom_fields();
 
 ?>
+		<?php if ( ! mailster_option( 'disable_avatar' ) ) : ?>
+
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
@@ -957,6 +968,8 @@ foreach ( $coords as $i => $coord ) {
 			</td>
 			</tr>
 		</table>
+
+		<?php endif; ?>
 
 		<table style="width:100%;table-layout:fixed"><tr><td valign="top" align="center">&nbsp;</td></tr></table>
 
@@ -1048,6 +1061,7 @@ foreach ( $coords as $i => $coord ) {
 				<table cellpadding="0" cellspacing="0">
 				<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
 				<tr>
+				<?php if ( ! mailster_option( 'disable_avatar' ) ) : ?>
 				<td valign="top" align="center" width="80">
 					<div style="border-radius:50%;width:60px;height:60px;background-color:#fafafa">
 					<a href="<?php echo $link ?>">
@@ -1055,6 +1069,7 @@ foreach ( $coords as $i => $coord ) {
 					</div>
 					</a>
 				</td>
+				<?php endif; ?>
 				<td valign="top" align="left">
 					<h4 style="margin:0"><?php echo esc_html( $subscriber->fullname ) ? '<a href="' . $link . '">' . esc_html( $subscriber->fullname ) . '</a>' : '&nbsp;'; ?></h4>
 					<small><?php echo esc_html( $subscriber->email ); ?></small>

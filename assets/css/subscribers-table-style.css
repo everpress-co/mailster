@@ -13,10 +13,16 @@
 }
 .widefat .column-avatar{width:46px;}
 .widefat .column-userrating{width:85px;}
-.widefat .column-email{width:260px;}
+.widefat .column-name{white-space:nowrap;overflow:hidden;}
 .widefat .column-emails{width:50px;text-align:right;}
 .widefat .column-status{width:100px;}
 .widefat .column-signup{width:130px;}
+.mailster-avatar{
+	display: inline-block;
+	transform: translateY(6px);
+	margin-right: 8px;
+	vertical-align: top;
+}
 .mailster-avatar-40{
 	display: block;
 	width:40px;
@@ -29,6 +35,9 @@
 	background-size: 40px 40px;
 	margin-bottom: 4px;
 }
+.mailster-name{
+	display: inline-block;
+}
 .userrating .mailster-icon{
 }
 .userrating .mailster-icon:before{
@@ -37,6 +46,10 @@
 }
 .wp-list-table tr:hover .userrating .mailster-icon:before{
 	color: #e6b800;
+}
+.wp-list-table .table-data{
+	max-height: 100px;
+	overflow: auto;
 }
 .mailster-avatar-40.wp-user:before{
 	font-family: 'dashicons';
@@ -70,4 +83,8 @@ a.email{
 	overflow: hidden;
 	width: 100%;
 	display: inline-block;
+}
+@media screen and (max-width: 782px){
+
+.widefat .column-emails{width:50px;text-align:left;}
 }

@@ -392,7 +392,7 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 		</div>
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_autoresponder_followup">
-			<?php if ( $all_campaigns = $this->get_campaigns( array( 'post__not_in' => array( $post->ID ) ) ) ) :
+			<?php if ( $all_campaigns = $this->get_campaigns( array( 'post__not_in' => array( $post->ID ), 'orderby' => 'post_title' ) ) ) :
 
 				// bypass post_status sort limitation.
 				$all_campaings_stati = wp_list_pluck( $all_campaigns, 'post_status' );

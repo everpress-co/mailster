@@ -1,0 +1,368 @@
+<?php
+
+class MailsterConditions {
+
+	public function __construct( $conditions = array(), $operator = 'AND' ) {
+
+	}
+
+
+	public function __get( $name ) {
+
+		if ( ! isset( $this->$name ) ) {
+			$this->{$name} = $this->{'get_' . $name}();
+		}
+
+		return $this->{$name};
+
+	}
+
+
+	public function view( $conditions = array(), $operator = 'AND' ) {
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+
+		if ( empty( $conditions ) ) {
+			$conditions = array();
+		}
+
+		include MAILSTER_DIR . 'views/conditions/conditions.php';
+
+	}
+
+	public function render( $conditions = array(), $operator = 'AND', $echo = true ) {
+
+		if ( empty( $conditions ) ) {
+			$conditions = array();
+		}
+
+		ob_start();
+
+		include MAILSTER_DIR . 'views/conditions/render.php';
+
+		$output = ob_get_contents();
+
+		ob_end_clean();
+
+		if ( ! $echo ) {
+			return $output;
+		}
+
+		echo $output;
+
+	}
+
+	public function fielddropdown() {
+		include MAILSTER_DIR . 'views/conditions/fielddropdown.php';
+	}
+	public function operatordropdown() {
+		include MAILSTER_DIR . 'views/conditions/operatordropdown.php';
+	}
+
+	private function get_custom_fields() {
+		$custom_fields = mailster()->get_custom_fields( );
+		$custom_fields = wp_parse_args((array) $custom_fields,  array(
+			'email' => array( 'name' => mailster_text( 'email' ) ),
+			'firstname' => array( 'name' => mailster_text( 'firstname' ) ),
+			'lastname' => array( 'name' => mailster_text( 'lastname' ) ),
+			'rating' => array( 'name' => __( 'Rating', 'mailster' ) ),
+		));
+
+		return $custom_fields;
+	}
+
+	private function get_custom_date_fields() {
+		$custom_date_fields = mailster()->get_custom_date_fields( true );
+
+		return $custom_date_fields;
+	}
+
+	private function get_fields() {
+		$fields = array(
+			'id' => __( 'ID', 'mailster' ),
+			'hash' => __( 'Hash', 'mailster' ),
+			'email' => __( 'Email', 'mailster' ),
+			'wp_id' => __( 'WordPress User ID', 'mailster' ),
+			// 'status' => __( 'Status', 'mailster' ),
+			'added' => __( 'Added', 'mailster' ),
+			'updated' => __( 'Updated', 'mailster' ),
+			'signup' => __( 'Signup', 'mailster' ),
+			'confirm' => __( 'Confirm', 'mailster' ),
+			'ip_signup' => __( 'IP on Signup', 'mailster' ),
+			'ip_confirm' => __( 'IP on confirmation', 'mailster' ),
+			// 'rating' => __( 'Rating', 'mailster' ),
+			// 'lang' => __( 'Language', 'mailster' ),
+		);
+
+		return $fields;
+	}
+
+	private function get_time_fields() {
+		$time_fields = array( 'added', 'updated', 'signup', 'confirm' );
+		$time_fields = array_merge( $time_fields,  $this->custom_date_fields );
+
+		return $time_fields;
+	}
+
+	private function get_meta_fields() {
+		$meta_fields = array(
+			'form' => __( 'Form', 'mailster' ),
+			'referer' => __( 'Referer', 'mailster' ),
+			'client' => __( 'Client', 'mailster' ),
+			'clienttype' => __( 'Clienttype', 'mailster' ),
+			// 'coords' => __( 'Coords', 'mailster' ),
+			// 'geo' => __( 'Geo', 'mailster' ),
+			// 'lang' => __( 'Language', 'mailster' ),
+			// 'timeoffset' => __( 'Timeoffset', 'mailster' ),
+			// 'lat' => __( 'Latitude', 'mailster' ),
+			// 'lng' => __( 'Longitude', 'mailster' ),
+		);
+
+		return $meta_fields;
+	}
+
+	private function get_wp_user_meta() {
+		$wp_user_meta = wp_parse_args( array( 'wp_user_level' => 'User Lever', 'wp_capabilities' => 'User Role' ), mailster( 'helper' )->get_wpuser_meta_fields() );
+		// removing custom fields from wp user meta to prevent conflicts
+		// error_log($this->custom_fields);
+		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), array_keys( $this->custom_fields ) ) );
+
+		return $wp_user_meta;
+	}
+
+	private function get_campaign_related() {
+		return array(
+			'_sent' => __( 'has received', 'mailster' ),
+			'_sent__not_in' => __( 'has not receiverd', 'mailster' ),
+			'_open' => __( 'has received and opened', 'mailster' ),
+			'_open__not_in' => __( 'has received but not opened', 'mailster' ),
+			'_click' => __( 'has received and clicked', 'mailster' ),
+			'_click__not_in' => __( 'has received and not clicked', 'mailster' ),
+			'_click_link' => __( 'clicked link', 'mailster' ),
+			'_click_link__not_in' => __( 'didn\'t clicked link', 'mailster' ),
+		);
+
+	}
+	private function get_list_related() {
+		return array(
+			'_lists__not_in' => __( 'is not in List', 'mailster' ),
+		);
+
+	}
+	private function get_operators() {
+		return array(
+			'is' => __( 'is', 'mailster' ),
+			'is_not' => __( 'is not', 'mailster' ),
+			'contains' => __( 'contains', 'mailster' ),
+			'contains_not' => __( 'contains not', 'mailster' ),
+			'begin_with' => __( 'begins with', 'mailster' ),
+			'end_with' => __( 'ends with', 'mailster' ),
+			'is_greater' => __( 'is greater', 'mailster' ),
+			'is_smaller' => __( 'is smaller', 'mailster' ),
+			'is_greater_equal' => __( 'is greater or equal', 'mailster' ),
+			'is_smaller_equal' => __( 'is smaller or equal', 'mailster' ),
+			'pattern' => __( 'match regex pattern', 'mailster' ),
+			'not_pattern' => __( 'does not match regex pattern', 'mailster' ),
+		);
+
+	}
+	private function get_simple_operators() {
+		return array(
+			'is' => __( 'is', 'mailster' ),
+			'is_not' => __( 'is not', 'mailster' ),
+			'is_greater' => __( 'is greater', 'mailster' ),
+			'is_smaller' => __( 'is smaller', 'mailster' ),
+			'is_greater_equal' => __( 'is greater or equal', 'mailster' ),
+			'is_smaller_equal' => __( 'is smaller or equal', 'mailster' ),
+		);
+
+	}
+	private function get_bool_operators() {
+		return array(
+			'is' => __( 'is', 'mailster' ),
+			'is_not' => __( 'is not', 'mailster' ),
+		);
+
+	}
+	private function get_date_operators() {
+		return array(
+			'is' => __( 'is on the', 'mailster' ),
+			'is_not' => __( 'is not on the', 'mailster' ),
+			'is_greater' => __( 'is after', 'mailster' ),
+			'is_smaller' => __( 'is before', 'mailster' ),
+			'is_greater_equal' => __( 'is after or on the', 'mailster' ),
+			'is_smaller_equal' => __( 'is before or on the', 'mailster' ),
+			// 'pattern' => __( 'match regex pattern', 'mailster' ),
+			// 'not_pattern' => __( 'does not match regex pattern', 'mailster' ),
+		);
+
+	}
+
+
+	private function get_field_operator( $operator ) {
+		$operator = esc_sql( stripslashes( $operator ) );
+
+		switch ( $operator ) {
+			case '=':
+				return 'is';
+			case '!=':
+				return 'is_not';
+			case '<>':
+				return 'contains';
+			case '!<>':
+				return 'contains_not';
+			case '^':
+				return 'begin_with';
+			case '$':
+				return 'end_with';
+			case '>=':
+				return 'is_greater_equal';
+			case '<=':
+				return 'is_smaller_equal';
+			case '>':
+				return 'is_greater';
+			case '<':
+				return 'is_smaller';
+			case '%':
+				return 'pattern';
+			case '!%':
+				return 'not_pattern';
+		}
+
+		return $operator;
+
+	}
+
+
+	private function print_condition( $condition, $formated = true ) {
+
+		$return = array(
+			'field' => '<strong>' . $this->nice_name( $condition['field'], 'field', $condition['field'] ) . '</strong>',
+			'operator' => '',
+			'value' => '',
+		);
+
+		if ( isset( $this->campaign_related[ $condition['field'] ] ) ) {
+			if ( ! is_array( $condition['value'] ) ) {
+				$condition['value'] = array( $condition['value'] );
+			}
+			if ( strpos( $condition['field'], '_click_link' ) !== false ) {
+				$return['value'] = implode( ' ' . __( 'or', 'mailster' ) . ' ', array_map( 'esc_url', $condition['value'] ) );
+			} else {
+				$return['value'] = '&quot;' . implode( '&quot; ' . __( 'or', 'mailster' ) . ' &quot;', array_map( array( $this, 'get_campaign_title' ), $condition['value'] ) ) . '&quot;';
+			}
+		} elseif ( isset( $this->list_related[ $condition['field'] ] ) ) {
+			if ( ! is_array( $condition['value'] ) ) {
+				$condition['value'] = array( $condition['value'] );
+			}
+			$return['value'] = '&quot;' . implode( '&quot; ' . __( 'or', 'mailster' ) . ' &quot;', array_map( array( $this, 'get_list_title' ), $condition['value'] ) ) . '&quot;';
+		} elseif ( 'rating' == $condition['field'] ) {
+			$stars = ( round( $this->sanitize_rating( $condition['value'] ) / 10, 2 ) * 50 );
+			$full = max( 0, min( 5, floor( $stars ) ) );
+			$half = max( 0, min( 5, round( $stars - $full ) ) );
+			$empty = max( 0, min( 5, 5 - $full - $half ) );
+			$return['operator'] = '<em>' . $this->nice_name( $condition['operator'], 'operator', $condition['field'] ) . '</em>';
+			$return['value'] = '<span class="screen-reader-text">' . sprintf( __( '%d stars', 'mailster' ), $full ) . '</span>'
+			. str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
+			. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
+			. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty );
+
+		} else {
+			$return['operator'] = '<em>' . $this->nice_name( $condition['operator'], 'operator', $condition['field'] ) . '</em>';
+			$return['value'] = '&quot;<strong>' . $this->nice_name( $condition['value'], 'value', $condition['field'] ) . '</strong>&quot;';
+		}
+
+		return $formated ? $return : strip_tags( $return );
+
+	}
+
+
+	private function sanitize_rating( $value ) {
+		if ( ! $value ) {
+			return 0;
+		}
+		$value = str_replace( ',', '.', $value );
+		if ( strpos( $value, '%' ) !== false || $value > 5 ) {
+			$value = floatval( $value ) / 100;
+		} elseif ( $value > 1 ) {
+			$value = floatval( $value ) * 0.2;
+		}
+		return $value;
+	}
+
+	public function get_campaign_title( $post ) {
+
+		$title = get_the_title( $post );
+		if ( empty( $title ) ) {
+			$title = '#' . $post;
+		}
+		return $title;
+	}
+
+	public function get_list_title( $list_id ) {
+
+		if ( $list = mailster( 'lists' )->get( $list_id ) ) {
+			return $list->name;
+		}
+		return $list_id;
+	}
+
+
+	private function nice_name( $string, $type = null, $field = null ) {
+
+		switch ( $type ) {
+			case 'field':
+				if ( isset( $this->fields[ $string ] ) ) {
+					return $this->fields[ $string ];
+				}
+				if ( isset( $this->custom_fields[ $string ] ) ) {
+					return $this->custom_fields[ $string ]['name'];
+				}
+				if ( isset( $this->campaign_related[ $string ] ) ) {
+					return $this->campaign_related[ $string ];
+				}
+				if ( isset( $this->list_related[ $string ] ) ) {
+					return $this->list_related[ $string ];
+				}
+				if ( isset( $this->meta_fields[ $string ] ) ) {
+					return $this->meta_fields[ $string ];
+				}
+				if ( isset( $this->wp_user_meta[ $string ] ) ) {
+					return $this->wp_user_meta[ $string ];
+				}
+				break;
+			case 'operator':
+				if ( in_array( $field, $this->time_fields ) && isset( $this->date_operators[ $string ] ) ) {
+					return $this->date_operators[ $string ];
+				}
+				if ( isset( $this->operators[ $string ] ) ) {
+					return $this->operators[ $string ];
+				}
+				if ( 'AND' == $string ) {
+					return __( 'and', 'mailster' );
+				}
+				if ( 'OR' == $string ) {
+					return __( 'or', 'mailster' );
+				}
+				break;
+			case 'value':
+				if ( in_array( $field, $this->time_fields ) ) {
+					return date( get_option( 'date_format' ), strtotime( $string ) );
+				}
+				if ( $field == 'form' ) {
+					if ( $form = mailster( 'forms' )->get( (int) $string, false, false ) ) {
+						return $form->name;
+					}
+				}
+				break;
+
+		}
+
+		return $string;
+
+	}
+
+}

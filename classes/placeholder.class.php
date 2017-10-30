@@ -152,6 +152,7 @@ class MailsterPlaceholder {
 			'unsublink' => $unsubscribelink,
 			'forwardlink' => $forwardlink,
 			'profilelink' => $profilelink,
+			'lists' => mailster( 'campaigns' )->get_formated_lists( $campaign_id ),
 			'email' => '<a href="">{emailaddress}</a>',
 			'year' => $time[0],
 			'month' => $time[1],
@@ -543,18 +544,23 @@ class MailsterPlaceholder {
 		$dateformat = get_option( 'date_format' );
 
 		// placeholder images
-		if ( $count = preg_match_all( '#<img(.*)src="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#<(img|td|th|v:fill)(.*)(src|background)="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
 				$search = $hits[0][ $i ];
+
 				// check if string is still there
 				if ( $i && false === strrpos( $this->content, $search ) ) {
 					continue;
 				}
-				$pre_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[1][ $i ] );
-				$querystring = str_replace( '&amp;', '&', $hits[3][ $i ] );
-				$post_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[4][ $i ] );
+				$tag = $hits[1][ $i ];
+				$pre_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[2][ $i ] );
+				$attribute = $hits[3][ $i ];
+				$imagestring = $hits[4][ $i ];
+				$querystring = str_replace( '&amp;', '&', $hits[5][ $i ] );
+				$post_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[6][ $i ] );
+				$is_img_tag = 'img' == $tag;
 
 				parse_str( $querystring, $query );
 
@@ -563,10 +569,17 @@ class MailsterPlaceholder {
 					$replace_to = mailster_cache_get( 'mailster_' . $querystring );
 
 					if ( false === $replace_to ) {
+
 						$parts = explode( ':', trim( $query['tag'] ) );
-						$width = isset( $query['w'] ) ? intval( $query['w'] ) : null;
-						// $height = isset($query['h']) ? intval($query['h']) : NULL;
-						$factor = isset( $query['f'] ) ? intval( $query['f'] ) : 1;
+						$factor = isset( $query['f'] ) && $is_img_tag ? intval( $query['f'] ) : 1;
+						$width = isset( $query['w'] ) ? intval( $query['w'] ) * $factor : null;
+						$height = isset( $query['h'] ) ? intval( $query['h'] ) * $factor : null;
+						$crop = isset( $query['c'] ) && $height ? ! ! ( $query['c'] ) : false;
+
+						// cropping requires height
+						if ( ! $crop ) {
+							$height = null;
+						}
 
 						$post_type = str_replace( '_image', '', $parts[0] );
 
@@ -601,28 +614,34 @@ class MailsterPlaceholder {
 							}
 
 							if ( empty( $org_src ) && $fallback_id ) {
+								$thumb_id = $fallback_id;
 
-								$org_src = wp_get_attachment_image_src( $fallback_id, 'full' );
-
-							}
-
-							if ( ! empty( $org_src ) && $org_src[1] && $org_src[2] ) {
-
-								$img = mailster( 'helper' )->create_image( null, $org_src[0], $width );
-								$asp = $org_src[1] / $org_src[2];
-								$height = $width / $asp;
-
-								$replace_to = '<img ' . $pre_stuff . 'src="' . $img['url'] . '" height="' . round( $height / $factor ) . '"' . $post_stuff . '>';
-
-								mailster_cache_set( 'mailster_' . $querystring, $replace_to );
-
-							} elseif ( ! empty( $org_src[0] ) ) {
-
-								$replace_to = '<img ' . $pre_stuff . 'src="' . $org_src[0] . '" ' . $post_stuff . '>';
-
-								mailster_cache_set( 'mailster_' . $querystring, $replace_to );
+								$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
 
 							}
+
+							if ( ! empty( $org_src ) ) {
+
+								if ( $org_src[1] && $org_src[2] ) {
+									$asp = $org_src[1] / $org_src[2];
+									$height = $height ? $height : round( ($width / $asp) / $factor );
+									$img = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height, $crop );
+								} else {
+									$img = array( 'url' => $org_src[0] );
+								}
+
+								if ( $is_img_tag ) {
+									$post_stuff = 'height="' . $height . '" ' . $post_stuff;
+									$replace_to = '<img ' . $pre_stuff . 'src="' . $img['url'] . '" ' . $post_stuff . '>';
+								} else {
+									$pre_stuff = str_replace( $imagestring, $img['url'], $pre_stuff );
+									$post_stuff = str_replace( $imagestring, $img['url'], $post_stuff );
+									$replace_to = '<' . $tag . ' ' . $pre_stuff . 'background="' . $img['url'] . '" ' . $post_stuff . '>';
+								}
+							}
+
+							mailster_cache_set( 'mailster_' . $querystring, $replace_to );
+
 						} else {
 
 							$replace_to = str_replace( 'tag=' . $query['tag'], 'tag=' . $post_type . '_image:' . $post->ID, $search );
@@ -684,124 +703,13 @@ class MailsterPlaceholder {
 
 				} elseif ( $post ) {
 
-						$what = $hits[3][ $i ];
-						$extra = null;
+					$what = $hits[3][ $i ];
 
-					if ( 0 === strpos( $what, 'author' ) ) {
-						$author = get_user_by( 'id', $post->post_author );
-						$extra = $author;
+					$replace_to = $this->get_replace( $post, $what );
 
-					} elseif ( 0 === strpos( $what, 'meta[' ) ) {
-						preg_match( '#meta\[(.*)\]#i', $what, $metakey );
-						if ( ! isset( $metakey[1] ) ) {
-							continue;
-						}
-
-						$metakey = trim( $metakey[1] );
-						$metavalue = get_post_meta( $post->ID, $metakey, true );
-						if ( is_null( $metavalue ) ) {
-							continue;
-						}
-
-						$what = 'meta';
-						$extra = $metakey;
-
-					} elseif ( 0 === strpos( $what, 'category[' ) ) {
-						preg_match( '#category\[(.*)\]#i', $what, $category );
-						if ( ! isset( $category[1] ) ) {
-							continue;
-						}
-
-						$category = trim( $category[1] );
-						$categories = get_the_term_list( $post->ID, $category, '', ', ' );
-						if ( is_wp_error( $categories ) ) {
-							continue;
-						}
-
-						$what = 'category';
-						$extra = $categories;
+					if ( is_null( $replace_to ) ) {
+						continue;
 					}
-
-					switch ( $what ) {
-						case 'id':
-							$replace_to = $post->ID;
-							break;
-						case 'link':
-						case 'permalink':
-							$replace_to = get_permalink( $post->ID );
-							break;
-						case 'shortlink':
-							$replace_to = wp_get_shortlink( $post->ID );
-							break;
-						case 'author':
-							if ( $author->data->user_url ) {
-								$replace_to = '<a href="' . $author->data->user_url . '">' . $author->data->display_name . '</a>';
-							} else {
-								$replace_to = $author->data->display_name;
-							}
-							break;
-						case 'author_name':
-							$replace_to = $author->data->display_name;
-							break;
-						case 'author_nicename':
-							$replace_to = $author->data->user_nicename;
-							break;
-						case 'author_email':
-							$replace_to = $author->data->user_email;
-							break;
-						case 'author_url':
-							$replace_to = $author->data->user_url;
-							break;
-						case 'date':
-						case 'date_gmt':
-						case 'modified':
-						case 'modified_gmt':
-							$replace_to = date( $dateformat, strtotime( $post->{'post_' . $what} ) );
-							break;
-						case 'time':
-							$what = 'date';
-						case 'time_gmt':
-							$what = isset( $what ) ? $what : 'date_gmt';
-						case 'modified_time':
-							$what = isset( $what ) ? $what : 'modified';
-						case 'modified_time_gmt':
-							$what = isset( $what ) ? $what : 'modified_gmt';
-							$replace_to = date( $timeformat, strtotime( $post->{'post_' . $what} ) );
-							break;
-						case 'excerpt':
-							if ( ! empty( $post->{'post_excerpt'} ) ) {
-								$replace_to = wpautop( $post->{'post_excerpt'} );
-							} else {
-								$replace_to = mailster( 'helper' )->get_excerpt( $post->{'post_content'} );
-							}
-							break;
-						case 'content':
-							$replace_to = ( $post->{'post_content'} );
-							break;
-						case 'meta':
-							$replace_to = maybe_unserialize( $metavalue );
-							break;
-						case 'category':
-							$replace_to = $categories;
-							break;
-						case 'twitter':
-						case 'facebook':
-						case 'google':
-						case 'linkedin':
-							$replace_to = $this->get_social_service( $what, get_permalink( $post->ID ), get_the_title( $post->ID ) );
-							break;
-						case 'image':
-							$replace_to = '[' . ( sprintf( __( 'use the tag %s as url in the editbar', 'mailster' ), '"' . $hits[1][ $i ] . '"' ) ) . ']';
-							break;
-						default:
-							$replace_to = isset( $post->{'post_' . $what} )
-								? $post->{'post_' . $what}
-								: $post->{$what};
-
-					}
-
-						$replace_to = apply_filters( 'mymail_replace_' . $post_type . '_' . $what, apply_filters( 'mailster_replace_' . $post_type . '_' . $what, $replace_to, $post, $extra ), $post, $extra );
-
 				} else {
 					$replace_to = '';
 				}
@@ -823,6 +731,141 @@ class MailsterPlaceholder {
 				}
 			}
 		}
+
+	}
+
+
+	public function get_replace( $post, $what ) {
+
+		$extra = null;
+		$post_type = $post->post_type;
+		$timeformat = get_option( 'time_format' );
+		$dateformat = get_option( 'date_format' );
+
+		if ( 0 === strpos( $what, 'author' ) ) {
+			$author = get_user_by( 'id', $post->post_author );
+			$extra = $author;
+
+		} elseif ( 0 === strpos( $what, 'meta[' ) ) {
+			preg_match( '#meta\[(.*)\]#i', $what, $metakey );
+			if ( ! isset( $metakey[1] ) ) {
+				return null;
+			}
+
+			$metakey = trim( $metakey[1] );
+			$metavalue = get_post_meta( $post->ID, $metakey, true );
+			if ( is_null( $metavalue ) ) {
+				return null;
+			}
+
+			$what = 'meta';
+			$extra = $metakey;
+
+		} elseif ( 0 === strpos( $what, 'category' ) ) {
+			preg_match( '#category\[(.*)\]#i', $what, $category );
+			if ( isset( $category[1] ) ) {
+				$category = trim( $category[1] );
+			} else {
+				$category = 'category';
+			}
+			$categories = get_the_term_list( $post->ID, $category, '', ', ' );
+
+			if ( is_wp_error( $categories ) ) {
+				return null;
+			}
+
+			if ( 'category_strip' != $what ) {
+				$what = 'category';
+			}
+			$extra = $categories;
+		}
+
+		switch ( $what ) {
+			case 'id':
+				$replace_to = $post->ID;
+				break;
+			case 'link':
+			case 'permalink':
+				$replace_to = get_permalink( $post->ID );
+				break;
+			case 'shortlink':
+				$replace_to = wp_get_shortlink( $post->ID );
+				break;
+			case 'author':
+			case 'author_strip':
+				if ( $author->data->user_url && $what != 'author_strip' ) {
+					$replace_to = '<a href="' . $author->data->user_url . '">' . $author->data->display_name . '</a>';
+				} else {
+					$replace_to = $author->data->display_name;
+				}
+				break;
+			case 'author_name':
+				$replace_to = $author->data->display_name;
+				break;
+			case 'author_nicename':
+				$replace_to = $author->data->user_nicename;
+				break;
+			case 'author_email':
+				$replace_to = $author->data->user_email;
+				break;
+			case 'author_url':
+				$replace_to = $author->data->user_url;
+				break;
+			case 'date':
+			case 'date_gmt':
+			case 'modified':
+			case 'modified_gmt':
+				$replace_to = date( $dateformat, strtotime( $post->{'post_' . $what} ) );
+				break;
+			case 'time':
+				$what = 'date';
+			case 'time_gmt':
+				$what = isset( $what ) ? $what : 'date_gmt';
+			case 'modified_time':
+				$what = isset( $what ) ? $what : 'modified';
+			case 'modified_time_gmt':
+				$what = isset( $what ) ? $what : 'modified_gmt';
+				$replace_to = date( $timeformat, strtotime( $post->{'post_' . $what} ) );
+				break;
+			case 'excerpt':
+				if ( ! empty( $post->{'post_excerpt'} ) ) {
+					$replace_to = wpautop( $post->{'post_excerpt'} );
+				} else {
+					$replace_to = mailster( 'helper' )->get_excerpt( $post->{'post_content'} );
+				}
+				break;
+			case 'content':
+				$replace_to = ( $post->{'post_content'} );
+				break;
+			case 'meta':
+				$replace_to = maybe_unserialize( $metavalue );
+				break;
+			case 'category':
+				$replace_to = $categories;
+				break;
+			case 'category_strip':
+				$replace_to = strip_tags( $categories );
+				break;
+			case 'twitter':
+			case 'facebook':
+			case 'google':
+			case 'linkedin':
+				$replace_to = $this->get_social_service( $what, get_permalink( $post->ID ), get_the_title( $post->ID ) );
+				break;
+			case 'image':
+				$replace_to = '[' . ( sprintf( __( 'use the tag %s as url in the editbar', 'mailster' ), '"' . $hits[1][ $i ] . '"' ) ) . ']';
+				break;
+			default:
+				if ( isset( $post->{'post_' . $what} ) ) {
+					$replace_to = $post->{'post_' . $what};
+				} elseif ( isset( $post->{$what} ) ) {
+					$replace_to = $post->{$what};
+				} else {
+					$replace_to = '';
+				}
+		}
+
+		return apply_filters( 'mymail_replace_' . $post_type . '_' . $what, apply_filters( 'mailster_replace_' . $post_type . '_' . $what, $replace_to, $post, $extra ), $post, $extra );
 
 	}
 

@@ -3,7 +3,7 @@ Contributors: EverPress, revaxarts
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.8.2
-Stable tag: 2.2.14
+Stable tag: 2.3
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3
@@ -82,197 +82,41 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
-= Version 2.2.14 =
+= Version 2.3 =
 
-= Version 2.2.13 =
-
-* fixed: issue with stripped tags on template save
-* fixed: resending of transactional mails
-* fixed: registration not stored if username was missing
-* fixed: bounce test failed on some servers
-* added: additional security steps on form submission
-* added: option to recheck for updates on the dashboard
-
-= Version 2.2.12 =
-
-* fixed: editbar position issue on Chrome 61
-* fixed: background image not editable if its the first of the template
-* improved: placeholder image handling
-* improved: loading of user met values
-* removed: deprecated jQuery methods
-
-= Version 2.2.11 =
-
-* improved: translation checks and loading
-* improved: loading of translations
-* fixed: assigned unchecked lists on form submission if user choice is enabled
-* fixed: PHP warning on bounce handler
-* added: `remove_custom_value` method to remove meta values of subscribers
-* added: Mailgun delivery option to setup
-
-= Version 2.2.10 =
-
-* fixed: Editor button now only available in the backend
-* fixed: Excerpts were missing when view mode is Excerpt View
-* fixed: missing `wp_get_raw_referer` on WP < 4.5
-* fixed: choosing default values for dropdowns and radio custom fields
-* fixed: multiple attached attachments
-* fixed: plain text option wasn't respected during test campaigns
-* improved: lists assigned to a form are now respected if form id is set explicitly on subscriber submission
-* added: 'mailster_campaign_content' filter to alter the content of campaigns
-* added: 'mailster_using_permalinks' filter
-
-= Version 2.2.9 =
-
-* added: support for the SparkPost add on
-* fixed: some tags with alternative content were not replaced when sending a test campaign
-* fixed: module screenshots returned error if more than 30 modules in template
-* improved: unsubscribe action can now contain a status for more info
-* change: send method now returns internal message ID
-* change: test mails to unknown email addresses are no longer assigned to the current user to prevent false mailbox actions
-
-= Version 2.2.8 =
-
-* fixed: radio and dropdown values weren't populated on profile in some cases
-* fixed: wp_mail now supports coma separated emails if used by Mailster
-* fixed: PHP notice with autoresponders on PHP 7.1
-* fixed: link for buttons were pre filled with the URL from the previous selected button
-* fixed: PHP notices on Cron lock
-* fixed: issue with defined constants if GEO library is loaded in a third party plugin
-* fixed: display issue of emojis in tinymce of multi elements
-* fixed: link of images wasn't populated correctly
-* fixed: reading filesize on missing file during export
-* improved: ever re-signup will respect the forms double-opt-in setting
-* improved: using SQL_CALC_FOUND_ROWS on subscribers overview to speed up queries
-* improved: form profile compatibility with certain themes
-* improved: get referer on form signup
-* improved: pre cache queries on autoresponder overview
-* added: option for legacy POP3 method on bounce settings
-* added: 'mailster_update_option_*' filter to alter option on save
-* added: 'mailster_get_signups_sql', 'mailster_queue_campaign_subscriber_data' filters
-* added: 'mailster_cookie_time' filter to adjust Mailster cookie expiration time
-* added: 'mailster_get_current_user' and 'mailster_get_current_user_id' methods
-* changed: 'mailster_unsubscribe_link' hook position and added campaign_id to arguments
-
-= Version 2.2.7 =
-
-* fully tested on WordPress 4.8
-* fixed: exporting subscribers
-* fixed: strip slashes on list descriptions
-* fixed: SQL issue when unassign lists from subscribers
-* fixed: encoding issue while saving campaigns on some servers
-* improved: display Mailster username on Dashboard
-* improved: removed usage of 'create_function' for PHP 7.2
-* improved: better sanitation and checks on date fields
-* added: 'mailster_keep_tags' filter to keep tags
-* change: some default values on plugin activation
-
-= Version 2.2.6 =
-
-* fixed: checkboxes were always checked by default
-* fixed: status info on user time based auto responder
-* fixed: save settings button not enabled in some cases
-* fixed: duplicating of other campaigns without capabilities
-* fixed: spelling mistakes
-* improved: html tags in custom field names
-* improved: compatibility with caching plugins
-* improved: excerpts are now generated if not defined via more tag or explicit
-* improved: loading fall back if notification.html is missing
-* improved: removed redundant white spaces in plain text versions
-* improved: links in plain text version are now grouped together below the content
-* improved: compatibility with third party templates
-* improved: CSS rules for RTL languages
-* added: 'mailster_get_last_post_args' filter to alter post arguments
-* added: month to user time based autoresponder time frames
-* updated: templates page
-
-= Version 2.2.5 =
-
-* change: Signup date checkbox on Mange Subscriber Page now checked by default
-* fixed: Thickbox dimensions on form detail page
-* fixed: selecting static posts working again
-* fixed: issue on recipients detail page since last update
-* fixed: Newsletter sign up widget didn't store empty title
-* fixed: wrong excerpt on web version with dynamic tags in some cases
-* updated: PHPMailer to version 5.2.23
-* improved: Cron tab commands
-* improved: Cron now supports secret via a header
-* improved: URL rewrite support option on settings
-* overall improvements
-
-= Version 2.2.4 =
-
-* fixed: adding attachments not possible on Firefox
-* fixed: Subscriber ID was cached on custom dynamic tags in some cases
-* fixed: converting links on single elements no longer pre filled if link is not set
-* fixed: smaller bugs
-* updated: order by "Clicks" is now "Click Date" in recipients details view
-* improved: all widgets are now wrapped by a div with class "mailster-widget" for better targeting
-* new option to get subscribers by md5 hash
-* new "mailster_subscriber_hash" filter to change subscriber hash
-* improved: added various filters to list and subscribers view
-* improved: support of arrays in auto post tag filter
-* improved: allowing anonymous functions in `mailster_add_tag`
-* improved: allowing anonymous functions in `mailster_add_style`
-* improved: subscriber caching
-* improved: loading of widgets
-
-= Version 2.2.3 =
-
-* fixed: issue with custom editor buttons are not displayed
-* fixed: assign subscribers to lists now correctly removes old assignments
-* fixed: unescaped apostrophe on test mails
-* fixed: small bugs
-* improved: access to form.php and cron.php if location not default
-* improved: third party templates support on PHP 7.1
+* new: option to hide the Webversion Bar
+* new: option to disable tracking on campaign based basis
+* new: option to disable user avatars
+* new: time frame based delivery for campaigns
+* new: Mailster test suite to test compatibility
+* new: option to crop images in the picpicker
+* new: elements can now expect fields in templates with `<single expect="title"></single>`
+* new: option to disable Webversion bar
+* new: option for list based subscription
+* new: subscriber query class for better list segmentation
+* new: cron command page
+* new: `{lists}` tag to display campaign related lists
+* new: `mailster_option` and `mailster_option_[option]` filter
+* new: Export format: xls
+* improved: list segmentation
+* improved: campaign editor for faster campaign creation with inline editing
+* improved: image procession to support more third party plugins
+* improved: info message oon form submission now placed on after the form depending on scroll position.
+* improved: background images behavior in editor
+* improved: faster editor behavior
+* improved: batch action on subscribers
+* improved: multiple cron processes
+* improved: image creation process to better support third party plugins
 * improved: cron mechanism
-* improved: cron job settings page
+* improved: hadnling of placehoder images on td, th and v:fill
+* added: copy-to-clipboard functionality
+* added: subscriber crows indicator on dashboard widget
+* added: Additional mail headers
+* added: option to release cron lock
+* added: option to reset cron last hit
+* updated: PHPMailer to version 5.2.25
+* deprecated MyMail methods
 
-= Version 2.2.2 =
-
-* added: option to add link to your logo
-* fixed: issue in segmentation if WP user meta field matches a reserved Mailster fields
-* fixed: changing order of WP dashboard widgets wasn't stored
-* improved: checks for path if plugin directory is not at it's default locations
-* improved: dismiss option on dashboard notifications
-* improved: update mechanism
-
-= Version 2.2.1 =
-
-* fixed: bounces weren't handled correctly in some cases
-* fixed: styles were not applied correctly while sending tests
-* fixed: Subscriber import with coma separated lists causes that new created lists were not assigned correctly
-* fixed: wrong DKIM record on some installations
-* fixed: error output on wrong formatted HTML in excerpts
-* added: option to export ratings
-* improved: URLs for some social services
-* improved: backwards compatibility
-* improved: datepicker is no longer triggered on datefields if operator is a regular expression
-
-= Version 2.2 =
-
-* new: Mailster Dashboard
-* new: Setup Wizard
-* new: Editor Button to quickly add common tags to your campaigns
-* new: Editor Button to add forms to your post and pages
-* new: Templates Settings allow you to define default logo and social media links
-* new: add attachments to your campaigns
-* new: Bounce servers now supports IMAP servers
-* new: Bulk Actions for subscribers can now process all subscribers
-* new: a screenshot.jpg file can now be used for the screenshot in templates folder
-* new: Manage Settings to export and import your settings
-* new: receivers email address now contains full name of subscribers
-* new tag: 'author'. usage `{post_author:-1}`
-* new: Subscriber Button Widget
-* new: share service VK.com, Telegram, Whatsapp
-* new: localization hub: translate.mailster.co
-* new: 'mailster_excerpt_length' let you define the length of the excerpt used in your campaigns
-* improved: sending queue
-* improved: loading of language files
-* improved: better ordering of lists
-* updated: The included template has been updated
-* change: background images are now located in the uploads directory
-* change: settings are now in the plugins menu
 
 For further details please visit [the changelog on the Mailster Homepage](https://mailster.co/changelog/)
 
