@@ -509,8 +509,20 @@ if ( $old_version ) {
 
 			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'yes' WHERE option_name IN ('mailster_username', 'mailster_email')" );
 
+		case '2.2.7':
+		case '2.2.8':
+		case '2.2.9':
+		case '2.2.10':
+
+			update_option( 'mailster_hooks', get_option( 'mailster_hooks', '' ) );
+
+		case '2.2.11':
+		case '2.2.12':
+
 		default:
 
+			do_action( 'mailster_update', $old_version, $new_version );
+			do_action( 'mailster_update_' . $old_version, $new_version );
 
 
 	}

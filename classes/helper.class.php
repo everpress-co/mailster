@@ -161,20 +161,24 @@ class MailsterHelper {
 	/**
 	 *
 	 *
+	 * @param unknown $force (optional)
 	 * @return unknown
 	 */
-	public function get_wpuser_meta_fields() {
+	public function get_wpuser_meta_fields( $force = false ) {
 
 		global $wpdb;
 
-		$cache_key = 'wpuser_meta_fields';
+		$cache_key = 'mailster_wpuser_meta_fields';
 
-		if ( false === ( $meta_values = mailster_cache_get( $cache_key ) ) ) {
+		if ( $force || false === ( $meta_values = get_transient( $cache_key ) ) ) {
 			$exclude = array( 'comment_shortcuts', 'first_name', 'last_name', 'nickname', 'use_ssl', 'default_password_nag', 'dismissed_wp_pointers', 'rich_editing', 'show_admin_bar_front', 'show_welcome_panel', 'admin_color', 'screen_layout_dashboard', 'screen_layout_newsletter' );
 
-			$meta_values = $wpdb->get_col( "SELECT meta_key FROM {$wpdb->usermeta} WHERE meta_value NOT LIKE '%{%}%' AND meta_key NOT LIKE '{$wpdb->base_prefix}%' AND meta_key NOT IN ('" . implode( "', '", $exclude ) . "') GROUP BY meta_key ASC" );
+			$meta_values = $wpdb->get_col( "SELECT meta_key FROM {$wpdb->usermeta} WHERE meta_value NOT LIKE '%:{%' GROUP BY meta_key ASC" );
+			$meta_values = preg_grep( '/^(?!wp_)/', $meta_values );
+			$meta_values = array_diff( $meta_values, $exclude );
+			$meta_values = array_values( $meta_values );
 
-			mailster_cache_set( $cache_key, $meta_values );
+			set_transient( $cache_key, $meta_values, DAY_IN_SECONDS );
 
 		}
 

@@ -145,14 +145,14 @@ class MailsterPlaceholder {
 			'preheader' => $meta['preheader'],
 			'subject' => $meta['subject'],
 			'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-			'webversionlink' => get_permalink( $campaign_id ),
 			'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
 			'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
 			'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
-			'email' => '<a href="">{emailaddress}</a>',
+			'webversionlink' => get_permalink( $campaign_id ),
 			'unsublink' => $unsubscribelink,
 			'forwardlink' => $forwardlink,
 			'profilelink' => $profilelink,
+			'email' => '<a href="">{emailaddress}</a>',
 			'year' => $time[0],
 			'month' => $time[1],
 			'day' => $time[2],
@@ -283,9 +283,9 @@ class MailsterPlaceholder {
 
 			if ( ! empty( $keep ) ) {
 				$keep = '{' . implode( '}|{', (array) $keep ) . '}';
-				$this->content = preg_replace( '#' . $pattern . '(?<!' . $keep . ')#i', '', $this->content );
+				$this->content = preg_replace( '/' . $pattern . '(?<!' . $keep . ')/i', '', $this->content );
 			} else {
-				$this->content = preg_replace( '#' . $pattern . '#i', '', $this->content );
+				$this->content = preg_replace( '/' . $pattern . '/i', '', $this->content );
 			}
 
 			if ( ! empty( $styles[0] ) ) {
@@ -543,14 +543,18 @@ class MailsterPlaceholder {
 		$dateformat = get_option( 'date_format' );
 
 		// placeholder images
-		if ( $count = preg_match_all( '#<img(.*)src="' . admin_url( 'admin-ajax.php' ) . '\?action=mailster_image_placeholder([^"]+)"(.*)>#', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#<img(.*)src="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
 				$search = $hits[0][ $i ];
+				// check if string is still there
+				if ( $i && false === strrpos( $this->content, $search ) ) {
+					continue;
+				}
 				$pre_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[1][ $i ] );
-				$post_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[3][ $i ] );
-				$querystring = str_replace( '&amp;', '&', $hits[2][ $i ] );
+				$querystring = str_replace( '&amp;', '&', $hits[3][ $i ] );
+				$post_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[4][ $i ] );
 
 				parse_str( $querystring, $query );
 
@@ -582,7 +586,7 @@ class MailsterPlaceholder {
 								continue;
 							}
 
-								$post = get_post( $post_id );
+							$post = get_post( $post_id );
 
 						}
 
@@ -614,9 +618,9 @@ class MailsterPlaceholder {
 
 							} elseif ( ! empty( $org_src[0] ) ) {
 
-									$replace_to = '<img ' . $pre_stuff . 'src="' . $org_src[0] . '" ' . $post_stuff . '>';
+								$replace_to = '<img ' . $pre_stuff . 'src="' . $org_src[0] . '" ' . $post_stuff . '>';
 
-									mailster_cache_set( 'mailster_' . $querystring, $replace_to );
+								mailster_cache_set( 'mailster_' . $querystring, $replace_to );
 
 							}
 						} else {

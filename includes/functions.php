@@ -728,6 +728,10 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		$args['key'] = uniqid();
 	}
 
+	if ( is_numeric( $args['once'] ) && $args['once'] < 1500000000 ) {
+		$args['once'] = time() + $args['once'];
+	}
+
 	$mailster_notices = get_option( 'mailster_notices' );
 	if ( ! is_array( $mailster_notices ) ) {
 		$mailster_notices = array();
@@ -949,11 +953,10 @@ function mailster_get_referer() {
 	if ( $referer = wp_get_referer() ) {
 		return $referer;
 	}
-	if ( $referer = wp_get_raw_referer() ) {
-		return $referer;
-	}
-	if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-		return $_SERVER['HTTP_REFERER'];
+	if ( ! empty( $_REQUEST['_wp_http_referer'] ) ) {
+		return wp_unslash( $_REQUEST['_wp_http_referer'] );
+	} elseif ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+		return wp_unslash( $_SERVER['HTTP_REFERER'] );
 	}
 	return false;
 }

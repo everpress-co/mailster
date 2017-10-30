@@ -1,6 +1,4 @@
-
 <p class="description"><?php esc_html_e( 'Some of these settings may affect your website. In normal circumstance it is not required to change anything on this page.', 'mailster' ) ?></p>
-
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Disable Cache', 'mailster' ) ?></th>
@@ -16,6 +14,11 @@
 		<th scope="row"><?php esc_html_e( 'URL Rewrite', 'mailster' ) ?></th>
 		<td><label><input type="hidden" name="mailster_options[got_url_rewrite]" value=""><input type="checkbox" name="mailster_options[got_url_rewrite]" value="1" <?php checked( mailster_option( 'got_url_rewrite' ) );?>> <?php esc_html_e( 'Website supports URL rewrite', 'mailster' ) ?> <p class="description"><?php esc_html_e( 'Mailster detects this setting by default so change only if detection fails.', 'mailster' ); ?></p></label>
 		</td>
+	</tr>
+	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'Form POST protection', 'mailster' ) ?></th>
+		<td><input type="text" name="mailster_options[post_nonce]" value="<?php echo esc_attr( mailster_option( 'post_nonce' ) ); ?>" class="regular-text">
+			<p class="description"><?php esc_html_e( 'A unique string to prevent form submissions via POST. Pass this value in a \'_nonce\' variable. Keep empty to disable test.', 'mailster' ) ?></p></td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'PHP Mailer', 'mailster' ) ?></th>

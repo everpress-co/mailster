@@ -281,6 +281,9 @@ class Mailster {
 				if ( $text === false ) {
 					continue;
 				}
+				if ( ! is_string( $text ) ) {
+					$text = print_r( $text, true );
+				}
 
 				$msg .= '<p>' . ( $text ? $text : '&nbsp;' ) . '</p>';
 				if ( $dismissable ) {
@@ -1111,6 +1114,7 @@ class Mailster {
 				update_option( 'mailster', time() );
 				update_option( 'mailster_license', '' );
 				update_option( 'mailster_username', '' );
+				update_option( 'mailster_hooks', '' );
 				update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 				if ( ! is_network_admin() ) {
@@ -1842,10 +1846,14 @@ class Mailster {
 	 *
 	 *
 	 * @param unknown $field (optional)
+	 * @param unknown $force (optional)
 	 * @return unknown
 	 */
-	public function plugin_info( $field = null ) {
+	public function plugin_info( $field = null, $force = false ) {
 
+		if ( $force ) {
+			do_action( 'updatecenterplugin_check' );
+		}
 		$plugins = get_site_transient( 'update_plugins' );
 
 		if ( isset( $plugins->response[ MAILSTER_SLUG ] ) ) {

@@ -64,6 +64,7 @@ class MailsterAjax {
 
 		'register',
 		'envato_verify',
+		'check_for_update',
 		'check_language',
 		'load_language',
 		'quick_install',
@@ -194,7 +195,7 @@ class MailsterAjax {
 
 	private function get_plaintext() {
 
-		$this->ajax_nonce( 'not allowed' );
+		$this->ajax_nonce( );
 
 		$html = isset( $_POST['html'] ) ? $_POST['html'] : '';
 
@@ -211,7 +212,7 @@ class MailsterAjax {
 
 	private function get_template() {
 
-		$this->ajax_nonce( '<script type="text/javascript">if(parent.window)parent.location.reload();</script>' );
+		$this->ajax_nonce( );
 
 		@error_reporting( 0 );
 
@@ -416,7 +417,7 @@ class MailsterAjax {
 
 	private function get_preview() {
 
-		$this->ajax_nonce( 'not allowed' );
+		$this->ajax_nonce( );
 
 		$hash = $_GET['hash'];
 
@@ -433,9 +434,10 @@ class MailsterAjax {
 
 	private function send_test() {
 
-		$return['success'] = true;
-
-		$this->ajax_nonce( json_encode( $return ) );
+		$this->ajax_nonce( json_encode( array(
+			'success' => false,
+			'msg' => __( 'Nonce invalid! Please reload site.', 'mailster' ),
+		) ) );
 
 		if ( isset( $_POST['test'] ) ) {
 
@@ -462,6 +464,7 @@ class MailsterAjax {
 
 		} else {
 
+			$return['success'] = true;
 			parse_str( $_POST['formdata'], $formdata );
 
 			$spam_test = isset( $_POST['spamtest'] );
@@ -487,7 +490,7 @@ class MailsterAjax {
 			$attachments = isset( $formdata['mailster_data']['attachments'] ) ? $formdata['mailster_data']['attachments'] : array();
 			$max_size = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );
 
-			$autoplain = isset( $formdata['mailster_data']['autoplain'] );
+			$autoplain = isset( $formdata['mailster_data']['autoplaintext'] );
 			$plaintext = stripslashes( $_POST['plaintext'] );
 			// if ( function_exists( 'wp_encode_emoji' ) ) {
 			// $subject = wp_decode_emoji( $subject );
@@ -618,9 +621,9 @@ class MailsterAjax {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
-				$mail->content = $content;
+				$mail->content = apply_filters( 'mailster_campaign_content', $content, get_post( $ID ), $subscriber );
 
-				if ( $autoplain ) {
+				if ( ! $autoplain ) {
 					$placeholder->set_content( esc_textarea( $plaintext ) );
 					$mail->plaintext = mailster( 'helper' )->plain_text( $placeholder->get_content(), true );
 				}
@@ -1622,6 +1625,9 @@ class MailsterAjax {
 	 */
 	private function ajax_nonce( $return = null, $nonce = 'mailster_nonce' ) {
 		if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], $nonce ) ) {
+			if ( is_null( $return ) ) {
+				$return = __( 'Your nonce is expired! Please reload the site.', 'mailster' );
+			}
 			if ( is_string( $return ) ) {
 				wp_die( $return );
 			} else {
@@ -2324,14 +2330,14 @@ class MailsterAjax {
 				$return['code'] = $result->get_error_code();
 
 			} else {
-				update_option( 'mailster_username', $userdata['username'] );
-				update_option( 'mailster_email', $userdata['email'] );
+				update_option( 'mailster_username', $result['username'] );
+				update_option( 'mailster_email', $result['email'] );
 
-				do_action( 'mailster_register', $userdata['username'], $userdata['email'], $purchasecode );
-				do_action( 'mailster_register_' . $slug, $userdata['username'], $userdata['email'], $purchasecode );
+				do_action( 'mailster_register', $result['username'], $result['email'], $purchasecode );
+				do_action( 'mailster_register_' . $slug, $result['username'], $result['email'], $purchasecode );
 
-				$return['username'] = $userdata['username'];
-				$return['email'] = $userdata['email'];
+				$return['username'] = $result['username'];
+				$return['email'] = $result['email'];
 				$return['purchasecode'] = $purchasecode;
 				$return['success'] = true;
 			}
@@ -2382,6 +2388,24 @@ class MailsterAjax {
 
 			wp_redirect( $url );
 			exit;
+		}
+
+		$this->json_return( $return );
+	}
+
+
+	private function check_for_update() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		if ( $plugin_info = mailster()->plugin_info( null, true ) ) {
+			$return['update'] = $plugin_info->update;
+			$return['version'] = $plugin_info->new_version;
+			$return['last_update'] = human_time_diff( $plugin_info->last_update );
+			$return['plugin_info'] = $plugin_info;
+
+			$return['success'] = true;
 		}
 
 		$this->json_return( $return );
