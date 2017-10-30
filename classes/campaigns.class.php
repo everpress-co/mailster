@@ -1299,7 +1299,8 @@ class MailsterCampaigns {
 	 * @return unknown
 	 */
 	public function inline_editor() {
-		return apply_filters( 'mailster_inline_editor', true );
+		global $wp_version;
+		return apply_filters( 'mailster_inline_editor', version_compare( '4.6', $wp_version, '<=' ) );
 	}
 
 

@@ -417,56 +417,59 @@ jQuery(document).ready(function ($) {
 
 	function _buttons() {
 
-		$.each(buttons, function () {
+		if (buttons) {
+			$.each(buttons, function () {
 
-			var $this = $(this),
-				name = $this.attr('label'),
-				offset = this.getBoundingClientRect(),
-				top = offset.top + 0,
-				left = offset.right + 0,
-				btn;
+				var $this = $(this),
+					name = $this.attr('label'),
+					offset = this.getBoundingClientRect(),
+					top = offset.top + 0,
+					left = offset.right + 0,
+					btn;
 
-			if ($this.data('has-buttons')) return;
+				if ($this.data('has-buttons')) return;
 
-			btn = $('<button class="addbutton mailster-btn-inline mailster-icon" title="' + mailsterL10n.add_button + '"></button>').prependTo($this);
+				btn = $('<button class="addbutton mailster-btn-inline mailster-icon" title="' + mailsterL10n.add_button + '"></button>').prependTo($this);
 
-			btn.data('offset', offset).data('name', name);
-			btn.data('element', $this);
+				btn.data('offset', offset).data('name', name);
+				btn.data('element', $this);
 
-			$this.data('has-buttons', true);
+				$this.data('has-buttons', true);
 
-		});
+			});
+		}
 
 		$('button.addrepeater, button.removerepeater').remove();
 
-		$.each(repeatable, function () {
-			var $this = $(this),
-				module = $this.closest('module'),
-				name = $this.attr('label'),
-				moduleoffset = module[0].getBoundingClientRect(),
-				offset = this.getBoundingClientRect(),
-				top = offset.top - moduleoffset.top,
-				left = offset.right,
-				btn;
+		if (repeatable) {
+			$.each(repeatable, function () {
+				var $this = $(this),
+					module = $this.closest('module'),
+					name = $this.attr('label'),
+					moduleoffset = module[0].getBoundingClientRect(),
+					offset = this.getBoundingClientRect(),
+					top = offset.top - moduleoffset.top,
+					left = offset.right,
+					btn;
 
-			btn = $('<button class="addrepeater mailster-btn-inline mailster-icon" title=""></button>').css({
-				top: top,
-				left: left
-			}).appendTo(module);
+				btn = $('<button class="addrepeater mailster-btn-inline mailster-icon" title=""></button>').css({
+					top: top,
+					left: left
+				}).appendTo(module);
 
-			btn.data('offset', offset).data('name', name);
-			btn.data('element', $this);
+				btn.data('offset', offset).data('name', name);
+				btn.data('element', $this);
 
-			btn = $('<button class="removerepeater mailster-btn-inline mailster-icon" title=""></button>').css({
-				top: top + 20,
-				left: left
-			}).appendTo(module);
+				btn = $('<button class="removerepeater mailster-btn-inline mailster-icon" title=""></button>').css({
+					top: top + 20,
+					left: left
+				}).appendTo(module);
 
-			btn.data('offset', offset).data('name', name);
-			btn.data('element', $this);
+				btn.data('offset', offset).data('name', name);
+				btn.data('element', $this);
 
-		});
-
+			});
+		}
 
 	}
 
@@ -661,6 +664,7 @@ jQuery(document).ready(function ($) {
 			_resize();
 		})
 		.on('Mailster:selectModule', function (event) {
+			if (!event.detail) return;
 			var module = $(event.detail[0]);
 			if (currentmodule) {
 				currentmodule.removeAttr('selected');

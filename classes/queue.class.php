@@ -385,7 +385,7 @@ class MailsterQueue {
 
 			if ( 'mailster_subscriber_insert' == $autoresponder_meta['action'] ) {
 
-				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
+				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
 				$list_based = mailster( 'campaigns' )->list_based_opt_out( $campaign->ID );
 
 				$conditions = array();
@@ -397,7 +397,6 @@ class MailsterQueue {
 				$args = array(
 					'select' => array(
 						'subscribers.ID',
-						// "UNIX_TIMESTAMP(FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup)) + INTERVAL $offset) AS autoresponder_timestamp",
 						"UNIX_TIMESTAMP ( FROM_UNIXTIME( lists_subscribers.added ) + INTERVAL $offset ) AS autoresponder_timestamp",
 						'lists_subscribers.added',
 					),
@@ -428,7 +427,7 @@ class MailsterQueue {
 				}
 			} elseif ( 'mailster_subscriber_unsubscribed' == $autoresponder_meta['action'] ) {
 
-				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
+				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
 
 				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null ;
 
@@ -455,7 +454,7 @@ class MailsterQueue {
 				}
 			} elseif ( 'mailster_autoresponder_followup' == $autoresponder_meta['action'] && $campaign->post_parent ) {
 
-				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
+				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
 
 				$conditions = array();
 
@@ -880,7 +879,9 @@ class MailsterQueue {
 		if ( empty( $last_hit ) ) {
 			$last_hit = array(
 				'timestamp' => $microtime,
+				'time' => 0,
 				'timemax' => 0,
+				'mail' => 0,
 			);
 		}
 
@@ -889,8 +890,9 @@ class MailsterQueue {
 			'timestamp' => $microtime,
 			'user' => isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : 'unknown',
 			'oldtimestamp' => $last_hit['timestamp'],
-			'time' => 0,
+			'time' => $last_hit['timemax'],
 			'timemax' => $last_hit['timemax'],
+			'mail' => $last_hit['mail'],
 		);
 
 		update_option( 'mailster_cron_lasthit', $last_hit );
@@ -1127,8 +1129,11 @@ class MailsterQueue {
 		$this->cron_log( 'sent this turn', $sent_this_turn );
 
 		if ( $sent_this_turn ) {
-			$this->cron_log( 'time', round( $took, 2 ) . ' sec., (' . round( $mail_send_time / $sent_this_turn, 4 ) . ' sec./mail)' );
+			$mailtook = round( $took / $sent_this_turn, 4 );
+			$this->cron_log( 'time', round( $took, 2 ) . ' sec., (' . $mailtook . ' sec./mail)' );
 			mailster_remove_notice( 'max_execution_time' );
+			$last_hit['timemax'] = max( $last_hit['timemax'], $took );
+			$last_hit['mail'] = $mailtook;
 		}
 
 		if ( is_user_logged_in() ) {
@@ -1138,7 +1143,6 @@ class MailsterQueue {
 		mailster( 'cron' )->unlock( $process_id );
 
 		$last_hit['time'] = $took;
-		$last_hit['timemax'] = max( $last_hit['timemax'], $took );
 		update_option( 'mailster_cron_lasthit', $last_hit );
 
 		do_action( 'mailster_cron_finished' );

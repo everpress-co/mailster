@@ -871,8 +871,6 @@ class MailsterSubscribers {
 
 		$entry = (array) $entry;
 
-		$bulkimport = defined( 'MAILSTER_DO_BULKIMPORT' ) && MAILSTER_DO_BULKIMPORT;
-
 		if ( isset( $entry['email'] ) ) {
 			$entry['email'] = trim( strtolower( $entry['email'] ) );
 		}
@@ -934,6 +932,7 @@ class MailsterSubscribers {
 		if ( false !== $wpdb->query( $sql ) ) {
 
 			$subscriber_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : intval( $data['ID'] );
+			$bulkimport = defined( 'MAILSTER_DO_BULKIMPORT' ) && MAILSTER_DO_BULKIMPORT;
 
 			if ( ! $bulkimport ) {
 				mailster_cache_delete( 'subscriber_' . $subscriber_id );
@@ -986,7 +985,24 @@ class MailsterSubscribers {
 
 		} else {
 
-			return new WP_Error( 'email_exists', $wpdb->last_error );
+			if ( isset( $wpdb->use_mysqli ) && $wpdb->use_mysqli ) {
+				if ( $wpdb->dbh instanceof mysqli ) {
+					$mysql_errno = mysqli_errno( $wpdb->dbh );
+				} else {
+					$mysql_errno = 2006;
+				}
+			} else {
+				if ( is_resource( $wpdb->dbh ) ) {
+					$mysql_errno = mysql_errno( $wpdb->dbh );
+				} else {
+					$mysql_errno = 2006;
+				}
+			}
+
+			if ( $mysql_errno == 1062 ) {
+				return new WP_Error( 'email_exists', sprintf( __( 'The email "%s" already exists.', 'mailster' ), $entry['email'] ) );
+			}
+			return new WP_Error( $mysql_errno, $wpdb->last_error );
 		}
 
 	}
@@ -1038,7 +1054,9 @@ class MailsterSubscribers {
 
 		}
 
-		if ( $subscriber_id = $this->update( $entry, $overwrite, $merge, $subscriber_notification ) ) {
+		$subscriber_id = $this->update( $entry, $overwrite, $merge, $subscriber_notification );
+
+		if ( ! is_wp_error( $subscriber_id ) ) {
 			do_action( 'mailster_add_subscriber', $subscriber_id );
 		}
 		return $subscriber_id;

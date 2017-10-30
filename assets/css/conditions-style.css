@@ -71,7 +71,7 @@
 }
 .mailster-conditions-field-fields, .mailster-conditions-operator-fields, .mailster-conditions-value-fields{
 	float: left;
-	max-width: 48%;
+	max-width: 40%;
 	padding-right: 4px;
 }
 .mailster-conditions-operator-fields{

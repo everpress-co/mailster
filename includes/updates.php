@@ -524,6 +524,8 @@ if ( $old_version ) {
 			$mailster_options['track_opens'] = true;
 			$mailster_options['track_clicks'] = true;
 
+			update_option( 'mailster_cron_lasthit', false );
+
 		default:
 
 			do_action( 'mailster_update', $old_version, $new_version );

@@ -81,12 +81,15 @@
 			<li><?php echo $last_hit['user'] ?></li>
 			<li><?php echo date( $timeformat, $last_hit['timestamp'] + $timeoffset ) . ', <strong>' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) . '</strong>' ?></li>
 			<?php if ( $interv ) : ?>
-			<li><?php echo __( 'Interval', 'mailster' ) . ': <strong>' . $interv . ' ' . _x( 'min', 'short for minute', 'mailster' ) . '</strong>'; ?></li>
+			<li><?php echo esc_html__( 'Interval', 'mailster' ) . ': <strong>' . $interv . ' ' . _x( 'min', 'short for minute', 'mailster' ) . '</strong>'; ?></li>
+			<?php endif; ?>
+			<?php if ( $last_hit['mail'] ) : ?>
+			<li><?php echo esc_html__( 'Throughput', 'mailster' ) . ': ' . round( $last_hit['mail'], 3 ) . ' ' . _x( 'sec', 'short for second', 'mailster' ); echo '/' . esc_html__( 'mail', 'mailster' ) ?> (<?php printf( _n( '%s mail per second', '%s mails per second', floor( 1 / $last_hit['mail'] ), 'mailster' ), floor( 1 / $last_hit['mail'] ) ) ?>)</li>
 			<?php endif; ?>
 			<?php if ( $last_hit['timemax'] ) : ?>
-			<li><?php echo __( 'Max Execution Time', 'mailster' ) . ': ' . round( $last_hit['timemax'], 3 ) . ' ' . _x( 'sec', 'short for second', 'mailster' ); ?></li>
-			<li><a href="edit.php?post_type=newsletter&page=mailster_settings&reset-lasthit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-lasthit' ) ?>"><?php esc_html_e( 'Reset', 'mailster' );?></a></li>
+			<li><?php echo esc_html__( 'Max Execution Time', 'mailster' ) . ': ' . round( $last_hit['timemax'], 3 ) . ' ' . _x( 'sec', 'short for second', 'mailster' ); ?></li>
 			<?php endif; ?>
+			<li><a href="edit.php?post_type=newsletter&page=mailster_settings&reset-lasthit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-lasthit' ) ?>"><?php esc_html_e( 'Reset', 'mailster' );?></a></li>
 		<?php else : ?>
 			<li><strong><?php esc_html_e( 'never', 'mailster' ) ?></strong>
 			(<a href="https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/" class="external"><?php esc_html_e( 'why?', 'mailster' ) ?></a>)</li>

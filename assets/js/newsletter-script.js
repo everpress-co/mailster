@@ -3622,6 +3622,7 @@ jQuery(document).ready(function ($) {
 	})
 
 	.on('Mailster:selectModule', function (event) {
+		if (!event.detail) return;
 		var module = event.detail[0];
 	})
 
