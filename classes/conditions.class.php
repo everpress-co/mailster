@@ -115,7 +115,7 @@ class MailsterConditions {
 			'clienttype' => __( 'Clienttype', 'mailster' ),
 			// 'coords' => __( 'Coords', 'mailster' ),
 			// 'geo' => __( 'Geo', 'mailster' ),
-			// 'lang' => __( 'Language', 'mailster' ),
+			'lang' => __( 'Language', 'mailster' ),
 			// 'timeoffset' => __( 'Timeoffset', 'mailster' ),
 			// 'lat' => __( 'Latitude', 'mailster' ),
 			// 'lng' => __( 'Longitude', 'mailster' ),
