@@ -84,6 +84,9 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.14 =
 
+* fixed: ratings with '%' in segmentation causes not expected behavior in WordPress 4.8.3+
+* fixed: missing escaping in segmentation rules where LIKE is used
+
 = Version 2.2.13 =
 
 * fixed: issue with stripped tags on template save
