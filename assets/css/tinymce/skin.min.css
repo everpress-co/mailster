@@ -24,15 +24,11 @@
 	line-height: normal;
 	font-weight: normal;
 	text-align: left;
-	-moz-box-sizing: content-box;
-	-webkit-box-sizing: content-box;
 	box-sizing: content-box;
 	direction: ltr;
 	max-width: none
 }
 .mce-widget button {
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
 	box-sizing: border-box
 }
 .mce-container *[unselectable] {

@@ -271,12 +271,10 @@ textarea#content, textarea#excerpt {
 	border: 1px solid #999;
 	border-radius: 2px;
 	color: #23282d;
-	-webkit-box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba( 0, 0, 0, 0.08 );
 	box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba( 0, 0, 0, 0.08 );
 }
 .optionbar ul li a:active, .optionbar ul li a.active, .optionbar ul li span:active {
 	background-color:#ebebeb !important;
-	-webkit-box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.3 );
 	box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.3 );
 }
 .optionbar ul li select {
@@ -641,14 +639,10 @@ textarea#content, textarea#excerpt {
 	border-bottom:1px solid #fff;
 }
 #editbar.high-dpi .btnsrc img{
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 	width:100%;
 }
 #editbar.high-dpi .btnsrc{
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 	width:50%;
 }
@@ -725,15 +719,11 @@ textarea#content, textarea#excerpt {
 #editbar div.type input.input {
 	background-color:#F9F9F9;
 	border:1px solid #DFDFDF;
-	-webkit-border-radius:3px;
-	-moz-border-radius:3px;
 	border-radius:3px;
 	width:100%;
 	padding:3px;
 	font-size:16px;
 	font-weight:100;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
 #editbar.has-conditions div.type .type-input {
@@ -883,8 +873,6 @@ textarea#content, textarea#excerpt {
 	overflow:auto;
 	padding:5px;
 	box-shadow:inset 0px 0px 3px rgba(0,0,0,0.5);
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
 #editbar div.type .postlist {
@@ -990,8 +978,6 @@ textarea#content, textarea#excerpt {
 }
 #editbar .tab, #editbar .link-wrap .postlist{
 	padding:5px;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 	border:1px solid #D3D6DB;
 	background-color:#fff;
@@ -1031,7 +1017,6 @@ textarea#content, textarea#excerpt {
 }
 .dynamic_embed_options_taxonomy_container{
 	border: 1px solid #DFDFDF;
-	-webkit-border-radius: 3px;
 	border-radius: 3px;
 	margin: 3px 10px 3px 0;
 	padding: 8px 5px;
@@ -1195,13 +1180,9 @@ textarea#content, textarea#excerpt {
 }
 #editbar div.type.btn ul.buttons li a:hover {
 	box-shadow:0 1px 2px rgba(0,0,0,0.5), 0 0 0 1px white, 0 0 0 2px #1E8CBE;
-	-moz-box-shadow:0 1px 2px rgba(0,0,0,0.5), 0 0 0 1px white, 0 0 0 2px #1E8CBE;
-	-webkit-box-shadow:0 1px 2px rgba(0,0,0,0.5), 0 0 0 1px white, 0 0 0 2px #1E8CBE;
 }
 #editbar div.type.btn ul.buttons li a.active {
 	box-shadow:0 1px 2px rgba(0,0,0,0.1), 0 0 0 1px white, 0 0 0 3px #1E8CBE;
-	-moz-box-shadow:0 1px 2px rgba(0,0,0,0.1), 0 0 0 1px white, 0 0 0 3px #1E8CBE;
-	-webkit-box-shadow:0 1px 2px rgba(0,0,0,0.1), 0 0 0 1px white, 0 0 0 3px #1E8CBE;
 }
 #editbar div.type.btn ul.buttons li a img{
 	cursor:pointer;
@@ -1211,8 +1192,6 @@ textarea#content, textarea#excerpt {
 	min-width:100%;
 	max-width:100%;
 	margin-bottom:-4px;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 	overflow:hidden;
 }
@@ -1591,8 +1570,6 @@ textarea#content, textarea#excerpt {
 	float:left;
 	border:1px solid #D3D6DB;
 	box-shadow:0px 2px 5px rgba(0,0,0,0.1);
-	-moz-box-shadow:0px 2px 5px rgba(0,0,0,0.1);
-	-webkit-box-shadow:0px 2px 5px rgba(0,0,0,0.1);
 	background-color:#fff;
 	background-position:center center;
 	background-repeat:no-repeat;
@@ -1630,8 +1607,6 @@ textarea#content, textarea#excerpt {
 	float: left;
 	text-align: center;
 	line-height: 70px;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
 #mailster_details #stats li:first-child {
@@ -1862,7 +1837,6 @@ textarea#content, textarea#excerpt {
 }
 .mailster_autoresponder_condition{
 	border:1px solid #DFDFDF;
-	-webkit-border-radius:3px;
 	border-radius:3px;
 	margin:3px 0;
 	padding:5px;
@@ -2026,7 +2000,6 @@ label.weekday input{
 }
 .mailster_list_condition{
 	border:1px solid #DFDFDF;
-	-webkit-border-radius:3px;
 	border-radius:3px;
 	margin:3px 0;
 	padding:5px;
@@ -2145,8 +2118,6 @@ ul.colors.has-labels li label {
 	display:block;
 }
 ul.colors li {
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 	display: inline-block;
 }
@@ -2246,8 +2217,6 @@ ul.backgrounds:hover ul{
 	display:block;
 }
 ul.backgrounds li{
-	-webkit-border-radius:2px;
-	-moz-border-radius:2px;
 	border-radius:2px;
 	display:block;
 	width:100%;
@@ -2266,8 +2235,6 @@ ul.backgrounds li a{
 	text-overflow:ellipsis;
 	overflow:hidden;
 	cursor:pointer;
-	-webkit-border-radius:2px;
-	-moz-border-radius:2px;
 	border-radius:2px;
 	height:50px;
 	display:block;
@@ -2310,7 +2277,6 @@ ul.backgrounds.finished li:hover a{
 	margin-right: 2%;
 	height: 110px;
 	position: relative;
-	-webkit-box-shadow: inset 0 0 15px rgba( 0, 0, 0, 0.1 ), inset 0 0 0 1px rgba( 0, 0, 0, 0.05 );
 	box-shadow: inset 0 0 15px rgba( 0, 0, 0, 0.1 ), inset 0 0 0 1px rgba( 0, 0, 0, 0.05 );
 	background: #eee;
 	float: left;
@@ -2356,7 +2322,6 @@ ul.backgrounds.finished li:hover a{
 	font-size: 12px;
 	padding: 5px 10px;
 	background: rgba( 255, 255, 255, 0.8 );
-	-webkit-box-shadow: inset 0 0 0 1px rgba( 0, 0, 0, 0.15 );
 	box-shadow: inset 0 0 0 1px rgba( 0, 0, 0, 0.15 );
 }
 /*----------------------------------------------------------------------*/
@@ -2392,8 +2357,6 @@ a.mailster-btn.editbutton {
 #clickmap-stats{
 	background:#fff;
 	padding: 6px 10px;
-	-webkit-box-shadow:1px 1px 3px 0 rgba(0,0,0,0.5);
-	-moz-box-shadow:1px 1px 3px 0 rgba(0,0,0,0.5);
 	box-shadow:1px 1px 3px 0 rgba(0,0,0,0.5);
 	position: absolute;
 	display: none;
@@ -2419,8 +2382,6 @@ a.mailster-btn.editbutton {
 	background:#f33;
 	width:70px;
 	background:#383838;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 	font-size:10px;
 	color:#f9f9f9;
@@ -2445,8 +2406,6 @@ a.mailster-btn.editbutton {
 	text-align:right;
 	color:#383838;
 	background:#f9f9f9;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
 .clickbadge.clickbadge-outside span {
@@ -2613,14 +2572,11 @@ a.mailster-btn.editbutton {
 }
 #module-selector ul li a.mailster-btn {
 	border: 1px solid #e5e5e5;
-	-webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 	display:block;
 	position: static;
 	padding:0;
 	margin: 2px 10px 2px 10px;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 	min-height: 24px;
 	line-height: 24px;
@@ -2645,7 +2601,6 @@ a.mailster-btn.editbutton {
 	background-color: #fafafa !important;
 	border: 1px solid #999;
 	color: #23282d;
-	-webkit-box-shadow: inset 0 1px 0 rgba( 255,255,255, 0.2 ), 0 1px 0 rgba( 0, 0, 0, 0.08 );
 	box-shadow: inset 0 1px 0 rgba( 255,255,255, 0.2 ), 0 1px 0 rgba( 0, 0, 0, 0.08 );
 }
 #module-selector ul li.ui-draggable-dragging{

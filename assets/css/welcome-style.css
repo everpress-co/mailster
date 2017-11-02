@@ -14,7 +14,6 @@
 	display: inline-block;
 	width: 150px;
 	text-rendering: optimizeLegibility;
-	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,.2);
 	box-shadow: 0 1px 3px rgba(0,0,0,.2);
 	background: #2BB3E7 url(../img/logo.png) no-repeat 50% 34%;
 	background-size: 50%;
@@ -77,7 +76,6 @@
 	margin-left: 0;
 }
 .nav-tab-wrapper a:focus{
-	-webkit-box-shadow: none;
 	box-shadow: none;
 }
 iframe[id*="twitter-widget-"] {

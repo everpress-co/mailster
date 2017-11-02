@@ -200,8 +200,6 @@
 	display: block;
 	float: left;
 	text-align: center;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
 .mailster-mb-stats ul.labels li{
@@ -258,7 +256,6 @@
 }
 .mailster-dashboard .postbox.has-update{
 	overflow: hidden;
-	-webkit-box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 	box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 	border-color: #F26B6B;
 }

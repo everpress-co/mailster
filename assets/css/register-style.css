@@ -97,7 +97,6 @@
 }
 .register_form_wrap form.has-error input[type="text"], .register_form_wrap form.has-error input[type="email"]{
 	border-color:#F26B6B;
-	-webkit-box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 	box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 }
 .register_form_wrap form .error-msg{
@@ -189,8 +188,6 @@ dothatopcheck {  0% {
 }
 .register_form_wrap .registration_complete div.registration_complete_check::before,
 .register_form_wrap .registration_complete div.registration_complete_check::after {
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 	position: absolute;
 	height: 0;
