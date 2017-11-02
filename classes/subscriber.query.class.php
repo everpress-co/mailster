@@ -936,7 +936,7 @@ class MailsterSubscriberQuery {
 
 			case '^':
 			case 'begin_with':
-					$value = addcslashes( $value, '_%\\' );
+				$value = addcslashes( $value, '_%\\' );
 				if ( $field == 'wp_capabilities' ) {
 					$value = "'%\"" . strtolower( $value ) . "%'";
 				} else {
@@ -960,7 +960,7 @@ class MailsterSubscriberQuery {
 
 			case '$':
 			case 'end_with':
-					$value = addcslashes( $value, '_%\\' );
+				$value = addcslashes( $value, '_%\\' );
 				if ( $field == 'wp_capabilities' ) {
 					$value = "'%" . strtolower( $value ) . "\"%'";
 				} else {
@@ -1049,8 +1049,6 @@ class MailsterSubscriberQuery {
 					$value = '.';
 				}
 
-				$is_empty = '.' == $value;
-
 				if ( ! $positive ) {
 					$extra = 'NOT ';
 				}
@@ -1068,7 +1066,6 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_field_operator( $operator ) {
-		$operator = esc_sql( stripslashes( $operator ) );
 
 		switch ( $operator ) {
 			case '=':
