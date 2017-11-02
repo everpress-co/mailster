@@ -383,7 +383,7 @@ class MailsterQueue {
 
 			if ( 'mailster_subscriber_insert' == $autoresponder_meta['action'] ) {
 
-				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
+				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
 
 				$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(IF(a.confirm, a.confirm, a.signup)) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.campaign_id = %d AND b.type = 1 LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
 
@@ -416,7 +416,7 @@ class MailsterQueue {
 				}
 			} elseif ( 'mailster_subscriber_unsubscribed' == $autoresponder_meta['action'] ) {
 
-				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
+				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
 
 				$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(b.timestamp) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.type = 4 LEFT JOIN {$wpdb->prefix}mailster_actions AS c ON a.ID = c.subscriber_id AND c.type = 1 AND c.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $campaign->ID );
 
@@ -450,7 +450,7 @@ class MailsterQueue {
 				}
 			} elseif ( 'mailster_autoresponder_followup' == $autoresponder_meta['action'] && $campaign->post_parent ) {
 
-				$offset = $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
+				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
 
 				$sql = $wpdb->prepare( "SELECT a.ID, UNIX_TIMESTAMP(FROM_UNIXTIME(b.timestamp) + INTERVAL $offset) AS timestamp FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_id AND b.type = %d AND b.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_actions AS c ON a.ID = c.subscriber_id AND c.type = 1 AND c.campaign_id = %d LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.subscriber_id", $autoresponder_meta['followup_action'], $campaign->post_parent, $campaign->ID );
 
@@ -821,7 +821,9 @@ class MailsterQueue {
 		if ( empty( $last_hit ) ) {
 			$last_hit = array(
 				'timestamp' => $microtime,
+				'time' => 0,
 				'timemax' => 0,
+				'mail' => 0,
 			);
 		}
 
@@ -832,6 +834,7 @@ class MailsterQueue {
 			'oldtimestamp' => $last_hit['timestamp'],
 			'time' => 0,
 			'timemax' => $last_hit['timemax'],
+			'mail' => $last_hit['mail'],
 		);
 
 		update_option( 'mailster_cron_lasthit', $last_hit );
@@ -1056,9 +1059,13 @@ class MailsterQueue {
 		$this->cron_log( 'sent this turn', $sent_this_turn );
 
 		if ( $sent_this_turn ) {
-			$this->cron_log( 'time', round( $took, 2 ) . ' sec., (' . round( $mail_send_time / $sent_this_turn, 4 ) . ' sec./mail)' );
-			mailster_remove_notice( 'max_execution_time' );
+			$mailtook = round( $took / $sent_this_turn, 4 );
+			$this->cron_log( 'time', round( $took, 2 ) . ' sec., (' . $mailtook . ' sec./mail)' );
+			$last_hit['timemax'] = max( $last_hit['timemax'], $took );
+			$last_hit['mail'] = $mailtook;
 		}
+
+		mailster_remove_notice( 'max_execution_time' );
 
 		if ( is_user_logged_in() ) {
 			$this->show_cron_log();
@@ -1067,7 +1074,6 @@ class MailsterQueue {
 		mailster( 'cron' )->unlock( $process_id );
 
 		$last_hit['time'] = $took;
-		$last_hit['timemax'] = max( $last_hit['timemax'], $took );
 		update_option( 'mailster_cron_lasthit', $last_hit );
 
 		do_action( 'mailster_cron_finished' );
