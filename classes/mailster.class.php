@@ -583,29 +583,29 @@ class Mailster {
 		// }
 		foreach ( $links as $link ) {
 
-			$link = apply_filters( 'mymail_replace_link', apply_filters( 'mailster_replace_link', $link, $base, $hash ), $base, $hash );
-
 			if ( $new_structure ) {
-				$replace = trailingslashit( $base ) . $hash . '/' . rtrim( strtr( base64_encode( $link ), '+/', '-_' ), '=' );
+				$new_link = trailingslashit( $base ) . $hash . '/' . rtrim( strtr( base64_encode( $link ), '+/', '-_' ), '=' );
 
 				! isset( $used[ $link ] )
 					? $used[ $link ] = 1
-					: $replace .= '/' . ( $used[ $link ]++ );
+					: $new_link .= '/' . ( $used[ $link ]++ );
 
 			} else {
 
 				$link = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $link );
 				$target = rtrim( strtr( base64_encode( $link ), '+/', '-_' ), '=' );
-				$replace = $base . '&k=' . $hash . '&t=' . $target;
+				$new_link = $base . '&k=' . $hash . '&t=' . $target;
 				! isset( $used[ $link ] )
 					? $used[ $link ] = 1
-					: $replace .= '&c=' . ( $used[ $link ]++ );
+					: $new_link .= '&c=' . ( $used[ $link ]++ );
 
 			}
 
 			$link = '"' . $link . '"';
+			$new_link = apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaing_id );
+
 			if ( ( $pos = strpos( $content, $link ) ) !== false ) {
-				$content = substr_replace( $content, '"' . $replace . '"', $pos, strlen( $link ) );
+				$content = substr_replace( $content, '"' . $new_link . '"', $pos, strlen( $link ) );
 			}
 		}
 

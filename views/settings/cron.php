@@ -84,7 +84,8 @@
 			<li><?php echo esc_html__( 'Interval', 'mailster' ) . ': <strong>' . $interv . ' ' . _x( 'min', 'short for minute', 'mailster' ) . '</strong>'; ?></li>
 			<?php endif; ?>
 			<?php if ( $last_hit['mail'] ) : ?>
-			<li><?php echo esc_html__( 'Throughput', 'mailster' ) . ': ' . round( $last_hit['mail'], 3 ) . ' ' . _x( 'sec', 'short for second', 'mailster' ); echo '/' . esc_html__( 'mail', 'mailster' ) ?> (<?php printf( _n( '%s mail per second', '%s mails per second', floor( 1 / $last_hit['mail'] ), 'mailster' ), floor( 1 / $last_hit['mail'] ) ) ?>)</li>
+			<?php $mails_per_sec = round( 1 / $last_hit['mail'], 2 ); ?>
+			<li><?php echo esc_html__( 'Throughput', 'mailster' ) . ': ' . round( $last_hit['mail'], 3 ) . ' ' . _x( 'sec', 'short for second', 'mailster' ); echo '/' . esc_html__( 'mail', 'mailster' ) ?> (<?php printf( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ), $mails_per_sec ) ?>)</li>
 			<?php endif; ?>
 			<?php if ( $last_hit['timemax'] ) : ?>
 			<li><?php echo esc_html__( 'Max Execution Time', 'mailster' ) . ': ' . round( $last_hit['timemax'], 3 ) . ' ' . _x( 'sec', 'short for second', 'mailster' ); ?></li>

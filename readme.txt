@@ -98,6 +98,7 @@ Xaver Birsak – https://everpress.io
 * new: `{lists}` tag to display campaign related lists
 * new: `mailster_option` and `mailster_option_[option]` filter
 * new: Export format: xls
+* change: `mailster_replace_link` now targets the output link
 * improved: list segmentation
 * improved: campaign editor for faster campaign creation with inline editing
 * improved: image procession to support more third party plugins

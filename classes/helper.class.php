@@ -520,7 +520,12 @@ class MailsterHelper {
 			while ( ! in_array( $dayofweek, $weekdays ) ) {
 
 				// try next $time_frame
-				$nextdate = strtotime( "+{$interval} {$time_frame}", $nextdate );
+				// if week go day by day otherwise infinity loop
+				if ( 'week' == $time_frame ) {
+					$nextdate = strtotime( '+1 day', $nextdate );
+				} else {
+					$nextdate = strtotime( "+{$interval} {$time_frame}", $nextdate );
+				}
 				$dayofweek = date( 'w', $nextdate );
 
 				// force a break to prevent infinity loops

@@ -355,6 +355,23 @@ class MailsterTests {
 		mailster( 'cron' )->unlock();
 
 	}
+	private function test_mail_throughput() {
+		if ( $last_hit = get_option( 'mailster_cron_lasthit' ) ) {
+
+			if ( ! isset( $last_hit['mail'] ) ) {
+				return;
+			}
+			$mails_per_sec = round( 1 / $last_hit['mail'], 2 );
+			$mails_per_sec = sprintf( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ), $mails_per_sec );
+
+			if ( $last_hit['mail'] > 1 ) {
+				$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+			} else {
+				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+			}
+		}
+
+	}
 	private function test_update_server_connection() {
 
 		$response = wp_remote_post( 'https://update.mailster.co/' );
@@ -367,11 +384,10 @@ class MailsterTests {
 			$this->error( 'does not work: ' . $code );
 		}
 	}
-	private function test_wp_remote_post() {
-		$response = wp_remote_post( 'https://www.paypal.com/cgi-bin/webscr', array(
+	private function test_TLS() {
+		$response = wp_remote_post( 'https://www.howsmyssl.com/a/check', array(
 			'sslverify' => true,
 			'timeout' => 5,
-			'body' => array( 'cmd' => '_notify-validate' ),
 		) );
 
 		$code = wp_remote_retrieve_response_code( $response );
@@ -379,6 +395,18 @@ class MailsterTests {
 		if ( is_wp_error( $response ) ) {
 			$this->error( 'does not work: ' . $response->get_error_message() );
 		} elseif ( $code >= 200 && $code < 300 ) {
+			$body = json_decode( wp_remote_retrieve_body( $response ) );
+			switch ( $body->rating ) {
+				case 'Probably Okay':
+					$this->success( 'Version: ' . $body->tls_version . '; ' . $body->rating );
+					break;
+				case 'Improvable':
+					$this->warning( 'Version: ' . $body->tls_version . '; ' . $body->rating );
+					break;
+				case 'Bad':
+					$this->error( 'Version: ' . $body->tls_version . '; ' . $body->rating );
+					break;
+			}
 		} else {
 			$this->error( 'does not work: ' . $code );
 		}
