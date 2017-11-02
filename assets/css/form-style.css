@@ -370,9 +370,7 @@ body fieldset fieldset legend{
 	height: 30px;
 }
 .button-preview{
-	-moz-box-shadow:    inset 0 0 10px rgba(0,0,0,0.3);
-	-webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
-	box-shadow:         inset 0 0 10px rgba(0,0,0,0.3);
+	box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
 	background-color: #fdfdfd;
 	height: 150px;
 	overflow: hidden;
@@ -403,4 +401,8 @@ body fieldset fieldset legend{
 .rtl #TB_closeWindowButton{
 	left:0;
 	right:auto;
+}
+.clipboard{
+	font-size: 12px;
+	cursor: pointer;
 }

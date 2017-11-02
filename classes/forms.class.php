@@ -18,9 +18,11 @@ class MailsterForms {
 		if ( is_admin() ) {
 
 			add_action( 'mailster_use_it_form_tab_intro', array( &$this, 'use_it_form_tab_intro' ) );
-			add_action( 'mailster_use_it_form_tab_shortcode', array( &$this, 'use_it_form_tab_shortcode' ) );
+			add_action( 'mailster_use_it_form_tab_code', array( &$this, 'use_it_form_tab_code' ) );
 			add_action( 'mailster_use_it_form_tab_subscriber-button', array( &$this, 'use_it_form_tab_subscriber_button' ) );
 			add_action( 'mailster_use_it_form_tab_form-html', array( &$this, 'use_it_form_tab_form_html' ) );
+
+			add_action( 'wp_loaded', array( &$this, 'edit_hook' ) );
 
 		} else {
 
@@ -243,7 +245,7 @@ class MailsterForms {
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'jquery-ui-datepicker' );
 
-			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION );
 
 			wp_enqueue_style( 'mailster-form-detail', MAILSTER_URI . 'assets/css/form-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_localize_script( 'mailster-form-detail', 'mailsterL10n', array(
@@ -255,6 +257,7 @@ class MailsterForms {
 			wp_localize_script( 'mailster-form-detail', 'mailsterdata', array(
 				'embedcode' => $this->get_empty_subscribe_button(),
 			) );
+
 
 		else :
 
@@ -331,6 +334,26 @@ class MailsterForms {
 
 	}
 
+	public function edit_hook() {
+
+		if ( isset( $_GET['page'] ) && 'mailster_forms' == $_GET['page'] ) {
+
+			// duplicate form
+			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
+					$id = intval( $_GET['duplicate'] );
+					$id = $this->duplicate( $id );
+
+			}
+
+			if ( isset( $id ) && ! isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
+				( isset( $_GET['ID'] ) )
+					? wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
+					: wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
+				exit;
+			}
+		}
+
+	}
 
 	public function edit_entry() {
 
@@ -612,6 +635,10 @@ class MailsterForms {
 				'updated' => $now,
 		) );
 
+		if ( ! empty( $entry['style'] ) && ! is_string( $entry['style'] ) ) {
+			$entry['style'] = json_encode( $entry['style'] );
+		}
+
 		$wpdb->suppress_errors();
 
 		if ( $wpdb->insert( "{$wpdb->prefix}mailster_forms", $entry ) ) {
@@ -628,6 +655,54 @@ class MailsterForms {
 			return new WP_Error( 'form_exists', $wpdb->last_error );
 		}
 
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 * @return unknown
+	 */
+	public function duplicate( $id ) {
+
+		if ( ! current_user_can( 'mailster_add_forms' ) ) {
+			wp_die( __( 'You are not allowed to add forms.', 'mailster' ) );
+		}
+
+		if ( $form = $this->get( $id ) ) {
+
+			$fields = wp_list_pluck( $form->fields, 'name' );
+			$error_msg = wp_list_pluck( $form->fields, 'error_msg' );
+			$required = $form->required;
+			$lists = $form->lists;
+
+			unset( $form->ID );
+			unset( $form->fields );
+			unset( $form->required );
+			unset( $form->lists );
+			unset( $form->added );
+			unset( $form->updated );
+			unset( $form->stylesheet );
+
+			if ( preg_match( '# \((\d+)\)$#', $form->name, $hits ) ) {
+				$form->name = trim( preg_replace( '#(.*) \(\d+\)$#', '$1 (' . ( ++$hits[1] ) . ')', $form->name ) );
+			} elseif ( $form->name ) {
+				$form->name .= ' (2)';
+			}
+
+			$new_id = $this->add( $form );
+			if ( ! is_wp_error( $new_id ) ) {
+				$this->assign_lists( $new_id, $lists );
+				$this->update_fields( $new_id, $fields, $required, $error_msg );
+
+				do_action( 'mailster_form_duplicate', $id, $new_id );
+			}
+
+			return $new_id;
+
+		}
+		return false;
 	}
 
 
@@ -1258,10 +1333,24 @@ class MailsterForms {
 
 	}
 
-	public function use_it_form_tab_shortcode( $form ) {
+	public function use_it_form_tab_code( $form ) {
 		?>
-		<input type="text" class="code widefat" value="[newsletter_signup_form id=<?php echo intval( $form->ID ) ?>]">
-		<p class="description"><?php esc_html_e( 'Use this shortcode wherever they are excepted.', 'mailster' ) ?></p>
+		<h4><?php esc_html_e( 'Shortcode', 'mailster' ) ?></h4>
+		<p>
+			<code id="form-shortcode" class="regular-text">[newsletter_signup_form id=<?php echo intval( $form->ID ) ?>]</code> <a class="clipboard" data-clipboard-target="#form-shortcode"><?php esc_html_e( 'copy', 'mailster' ) ?></a>
+			<br><span class="description"><?php esc_html_e( 'Use this shortcode wherever they are excepted.', 'mailster' ) ?></span>
+		</p>
+
+		<h4><?php esc_html_e( 'PHP', 'mailster' ) ?></h4>
+		<p>
+			<code id="form-php-1" class="regular-text">&lt;?php echo mailster_form( <?php echo intval( $form->ID ) ?> ); ?&gt;</code> <a class="clipboard" data-clipboard-target="#form-php-1"><?php esc_html_e( 'copy', 'mailster' ) ?></a>
+		</p>
+		<p>
+			<code id="form-php-2" class="regular-text">echo mailster_form( <?php echo intval( $form->ID ) ?> );</code> <a class="clipboard" data-clipboard-target="#form-php-2"><?php esc_html_e( 'copy', 'mailster' ) ?></a>
+		</p>
+		<p>
+			<code id="form-php-3" class="regular-text">$form_html = mailster_form( <?php echo intval( $form->ID ) ?> );</code> <a class="clipboard" data-clipboard-target="#form-php-3"><?php esc_html_e( 'copy', 'mailster' ) ?></a>
+		</p>
 		<?php
 	}
 
@@ -1324,15 +1413,18 @@ class MailsterForms {
 						<?php echo $embeddedcode; ?>
 					</div>
 
-				<p>&hellip; <?php esc_html_e( 'embed it somewhere', 'mailster' ) ?> &hellip;</p>
+				<p>&hellip; <?php esc_html_e( 'embed it somewhere', 'mailster' ) ?> &hellip;
 					<div class="code-preview">
-						<textarea class="code" readonly></textarea>
+						<textarea id="form-embed-code" class="code" readonly></textarea>
+						<a class="clipboard" data-clipboard-target="#form-embed-code"><?php esc_html_e( 'copy code to clipboard', 'mailster' ) ?></a>
 					</div>
-				<p>&hellip; <?php esc_html_e( 'or use this shortcode on your site', 'mailster' ) ?></p>
+				</p>
+				<p>&hellip; <?php esc_html_e( 'or use this shortcode on your site', 'mailster' ) ?>
 					<div class="shortcode-preview">
-						<input type="text" class="widefat code" readonly>
+						<input id="form-shortcode-code" type="text" class="widefat code" readonly>
+						<a class="clipboard" data-clipboard-target="#form-shortcode-code"><?php esc_html_e( 'copy code to clipboard', 'mailster' ) ?></a>
 					</div>
-
+				</p>
 			</div>
 		</div>
 		<?php

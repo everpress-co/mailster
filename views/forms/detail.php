@@ -437,7 +437,7 @@ if ( $is_new ) {
 
 		$form_use_it_tabs = array(
 			'intro' => __( 'Use your form as', 'mailster' ) . '&hellip;',
-			'shortcode' => __( 'Shortcode', 'mailster' ),
+			'code' => __( 'Shortcode or PHP', 'mailster' ),
 			'subscriber-button' => __( 'Subscriber Button', 'mailster' ),
 			'form-html' => __( 'Form HTML', 'mailster' ),
 		);
