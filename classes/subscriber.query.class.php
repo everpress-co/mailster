@@ -888,7 +888,7 @@ class MailsterSubscriberQuery {
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
 					if ( $field == 'wp_capabilities' ) {
-						$value = 's:' . strlen( $value ) . ':"' . strtolower( addcslashes( $value, '%_' ) ) . '";';
+						$value = 's:' . strlen( $value ) . ':"' . strtolower( addcslashes( $value, '_%\\' ) ) . '";';
 						return "`meta_wp_$field`.meta_value " . ( in_array( $operator, array( 'is', '=' ) ) ? 'LIKE' : 'NOT LIKE' ) . " '%$value%'";
 						break;
 					}
@@ -909,7 +909,7 @@ class MailsterSubscriberQuery {
 				$positive = true;
 			case '!<>':
 			case 'contains_not':
-				$value = addcslashes( $value, '%_' );
+				$value = addcslashes( $value, '_%\\' );
 				if ( $field == 'wp_capabilities' ) {
 					$value = "'a:%" . strtolower( $value ) . "%'";
 				} else {
@@ -936,7 +936,7 @@ class MailsterSubscriberQuery {
 
 			case '^':
 			case 'begin_with':
-					$value = addcslashes( $value, '%_' );
+					$value = addcslashes( $value, '_%\\' );
 				if ( $field == 'wp_capabilities' ) {
 					$value = "'%\"" . strtolower( $value ) . "%'";
 				} else {
@@ -960,7 +960,7 @@ class MailsterSubscriberQuery {
 
 			case '$':
 			case 'end_with':
-					$value = addcslashes( $value, '%_' );
+					$value = addcslashes( $value, '_%\\' );
 				if ( $field == 'wp_capabilities' ) {
 					$value = "'%" . strtolower( $value ) . "\"%'";
 				} else {
