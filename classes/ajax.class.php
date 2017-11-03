@@ -2556,6 +2556,7 @@ class MailsterAjax {
 		$return['message'] = $test->get_message();
 		$return['nexttest'] = $test->get_next();
 		$return['total'] = $test->get_total();
+		$return['errors'] = $test->get_error_counts();
 		$return['current'] = $test->get_current();
 		$return['type'] = $test->get_current_type();
 

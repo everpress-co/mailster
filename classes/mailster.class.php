@@ -1944,8 +1944,7 @@ class Mailster {
 	public function is_verified( $force = false ) {
 
 		// beta always
-		return true;
-
+		// return true;
 		$license = get_option( 'mailster_license' );
 		$license_email = get_option( 'mailster_email' );
 		$license_user = get_option( 'mailster_username' );

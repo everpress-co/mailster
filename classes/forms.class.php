@@ -258,7 +258,6 @@ class MailsterForms {
 				'embedcode' => $this->get_empty_subscribe_button(),
 			) );
 
-
 		else :
 
 			wp_enqueue_style( 'mailster-forms-table', MAILSTER_URI . 'assets/css/forms-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
@@ -1337,19 +1336,19 @@ class MailsterForms {
 		?>
 		<h4><?php esc_html_e( 'Shortcode', 'mailster' ) ?></h4>
 		<p>
-			<code id="form-shortcode" class="regular-text">[newsletter_signup_form id=<?php echo intval( $form->ID ) ?>]</code> <a class="clipboard" data-clipboard-target="#form-shortcode"><?php esc_html_e( 'copy', 'mailster' ) ?></a>
+			<code id="form-shortcode" class="regular-text">[newsletter_signup_form id=<?php echo intval( $form->ID ) ?>]</code> <a class="clipboard" data-clipboard-target="#form-shortcode"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 			<br><span class="description"><?php esc_html_e( 'Use this shortcode wherever they are excepted.', 'mailster' ) ?></span>
 		</p>
 
 		<h4><?php esc_html_e( 'PHP', 'mailster' ) ?></h4>
 		<p>
-			<code id="form-php-1" class="regular-text">&lt;?php echo mailster_form( <?php echo intval( $form->ID ) ?> ); ?&gt;</code> <a class="clipboard" data-clipboard-target="#form-php-1"><?php esc_html_e( 'copy', 'mailster' ) ?></a>
+			<code id="form-php-1" class="regular-text">&lt;?php echo mailster_form( <?php echo intval( $form->ID ) ?> ); ?&gt;</code> <a class="clipboard" data-clipboard-target="#form-php-1"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 		</p>
 		<p>
-			<code id="form-php-2" class="regular-text">echo mailster_form( <?php echo intval( $form->ID ) ?> );</code> <a class="clipboard" data-clipboard-target="#form-php-2"><?php esc_html_e( 'copy', 'mailster' ) ?></a>
+			<code id="form-php-2" class="regular-text">echo mailster_form( <?php echo intval( $form->ID ) ?> );</code> <a class="clipboard" data-clipboard-target="#form-php-2"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 		</p>
 		<p>
-			<code id="form-php-3" class="regular-text">$form_html = mailster_form( <?php echo intval( $form->ID ) ?> );</code> <a class="clipboard" data-clipboard-target="#form-php-3"><?php esc_html_e( 'copy', 'mailster' ) ?></a>
+			<code id="form-php-3" class="regular-text">$form_html = mailster_form( <?php echo intval( $form->ID ) ?> );</code> <a class="clipboard" data-clipboard-target="#form-php-3"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 		</p>
 		<?php
 	}
@@ -1416,13 +1415,13 @@ class MailsterForms {
 				<p>&hellip; <?php esc_html_e( 'embed it somewhere', 'mailster' ) ?> &hellip;
 					<div class="code-preview">
 						<textarea id="form-embed-code" class="code" readonly></textarea>
-						<a class="clipboard" data-clipboard-target="#form-embed-code"><?php esc_html_e( 'copy code to clipboard', 'mailster' ) ?></a>
+						<a class="clipboard" data-clipboard-target="#form-embed-code"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 					</div>
 				</p>
 				<p>&hellip; <?php esc_html_e( 'or use this shortcode on your site', 'mailster' ) ?>
 					<div class="shortcode-preview">
 						<input id="form-shortcode-code" type="text" class="widefat code" readonly>
-						<a class="clipboard" data-clipboard-target="#form-shortcode-code"><?php esc_html_e( 'copy code to clipboard', 'mailster' ) ?></a>
+						<a class="clipboard" data-clipboard-target="#form-shortcode-code"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 					</div>
 				</p>
 			</div>
@@ -1440,7 +1439,8 @@ class MailsterForms {
 			<label><?php esc_html_e( 'width', 'mailster' );?>: <input type="text" class="small-text embed-form-input" value="100%"></label>
 			<label><?php esc_html_e( 'height', 'mailster' );?>: <input type="text" class="small-text embed-form-input" value="500"></label>
 			<label title="<?php esc_html_e( 'check this option to include the style.css of your theme into the form', 'mailster' );?>"><input type="checkbox" value="1" class="embed-form-input" checked> <?php esc_html_e( 'include themes style.css', 'mailster' );?></label>
-			<textarea class="widefat code embed-form-output" data-embedcode="<?php echo esc_attr( $embedcode ) ?>"><?php echo esc_textarea( $embedcode ) ?></textarea>
+			<textarea id="form-iframe" class="widefat code embed-form-output" data-embedcode="<?php echo esc_attr( $embedcode ) ?>"><?php echo esc_textarea( $embedcode ) ?></textarea>
+			<a class="clipboard" data-clipboard-target="#form-iframe"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 		</div>
 
 		<h4><?php esc_html_e( 'HTML Version', 'mailster' ) ?></h4>
@@ -1453,7 +1453,8 @@ class MailsterForms {
 			$form->embed_style( false );
 			$form->referer( 'extern' );
 		?>
-			<textarea class="widefat code form-output"><?php echo esc_textarea( $form->render( false ) ) ?></textarea>
+			<textarea id="form-html" class="widefat code form-output"><?php echo esc_textarea( $form->render( false ) ) ?></textarea>
+			<a class="clipboard" data-clipboard-target="#form-html"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 		</div>
 		<?php
 	}

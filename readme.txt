@@ -98,7 +98,7 @@ Xaver Birsak – https://everpress.io
 * new: `{lists}` tag to display campaign related lists
 * new: `mailster_option` and `mailster_option_[option]` filter
 * new: Export format: xls
-* new: Option to duplicate form
+* new: Option to duplicate forms
 * change: `mailster_replace_link` now targets the output link
 * improved: list segmentation
 * improved: campaign editor for faster campaign creation with inline editing
@@ -110,7 +110,7 @@ Xaver Birsak – https://everpress.io
 * improved: multiple cron processes
 * improved: image creation process to better support third party plugins
 * improved: cron mechanism
-* improved: hadnling of placehoder images on td, th and v:fill
+* improved: handling of placehoder images on td, th and v:fill
 * added: copy-to-clipboard functionality
 * added: subscriber crows indicator on dashboard widget
 * added: Additional mail headers

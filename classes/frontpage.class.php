@@ -319,7 +319,7 @@ class MailsterFrontpage {
 			if ( $target ) {
 
 				if ( ! preg_match( '#^https?:#', $target ) ) {
-					wp_die( 'Invalid URL' );
+					wp_die( sprintf( __( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 				}
 
 				$cookietime = apply_filters( 'mailster_cookie_time', 1 * HOUR_IN_SECONDS );
