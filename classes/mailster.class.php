@@ -1924,12 +1924,45 @@ class Mailster {
 	 * @param unknown $license (optional)
 	 * @return unknown
 	 */
+	public function maybe_register( $license = null, $license_email = null, $license_user = null ) {
+
+		if ( ! $license ) {
+			$license = get_option( 'mailster_license' );
+		}
+		if ( ! $license_email ) {
+			$license_email = get_option( 'mailster_email' );
+		}
+		if ( ! $license_user ) {
+			$license_user = get_option( 'mailster_username' );
+		}
+
+		if ( ! $license || ! $license_email || ! $license_user ) {
+			return false;
+		}
+
+		$userdata = array(
+			'username' => $license_user,
+			'email' => $license_email,
+		);
+
+		delete_transient( 'mailster_verified' );
+		return UpdateCenterPlugin::register( MAILSTER_SLUG, $userdata, $license );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $license (optional)
+	 * @return unknown
+	 */
 	public function reset_license( $license = null ) {
 
-		if ( is_null( $license ) ) {
+		if ( ! $license ) {
 			$license = get_option( 'mailster_license' );
 		}
 
+		delete_transient( 'mailster_verified' );
 		return UpdateCenterPlugin::reset( MAILSTER_SLUG, $license );
 
 	}
@@ -1963,7 +1996,6 @@ class Mailster {
 			$result = UpdateCenterPlugin::verify( MAILSTER_SLUG );
 			if ( ! is_wp_error( $result ) ) {
 				$verified = 'yes';
-				mailster_remove_notice( 'verify' );
 			} else {
 				switch ( $result->get_error_code() ) {
 					case 500: // Internal Server Error
@@ -1972,7 +2004,17 @@ class Mailster {
 						$recheck = 900;
 						$verified = $old;
 						break;
+					case 681: // no user assigned
+						$register = $this->maybe_register();
+						if ( $register && ! is_wp_error( $register ) ) {
+							$verified = 'yes';
+						}
+						break;
 				}
+			}
+
+			if ( 'yes' == $verified ) {
+				mailster_remove_notice( 'verify' );
 			}
 
 			set_transient( 'mailster_verified', $verified, $recheck );
