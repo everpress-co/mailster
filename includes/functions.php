@@ -215,7 +215,7 @@ function mailster_get_current_user( $custom_fields = true ) {
  */
 function mailster_get_current_user_id() {
 
-	return mailster( 'subscribers' )->get_current_user_id( );
+	return mailster( 'subscribers' )->get_current_user_id();
 
 }
 

@@ -43,19 +43,28 @@
 
 <?php endif; ?>
 
-		<div class="feature-section one-col">
+		<div class="feature-section one-col main-feature">
 			<h2>Updated Editor</h2>
 			<p>The new Editor helps to crate your campaigns faster and provides more options. You can now edit your text inline and see the result immediately.</p>
 			<video loop muted preload="auto" autoplay src="https://mailster.github.io/videos/mailster_editor.mp4" poster="https://mailster.github.io/videos/mailster_editor.png">
-						<source src="https://mailster.github.io/videos/mailster_editor.mp4" type="video/mp4">
-					</video>
+				<source src="https://mailster.github.io/videos/mailster_editor.mp4" type="video/mp4">
+			</video>
 			<div class="return-to-dashboard align-center"><a href="post-new.php?post_type=newsletter">Create a new Campaign</a></div>
 		</div>
 
 		<div class="feature-section two-col">
 			<div class="col">
 				<div class="media-container">
-					<img src="https://mailster.github.io/welcome/segmentation.png" width="505" height="284">
+				<?php
+				echo wp_video_shortcode( array(
+					'mp4'      => 'https://mailster.github.io/videos/segmentation.mp4',
+					'poster'   => 'https://mailster.github.io/videos/segmentation.png',
+					'width'    => 505,
+					'height'   => 284,
+					'autoplay' => true,
+					'loop'     => true,
+				) );
+				?>
 				</div>
 				<h3>Improved Segmentation</h3>
 				<p>Target your audience even better with improved segmentation.</p>
@@ -63,7 +72,7 @@
 			</div>
 			<div class="col">
 				<div class="media-container">
-					<img src="https://dummy.newsletter-plugin.com/505x284.jpg" width="505" height="284">
+					<img src="" width="505" height="284">
 				</div>
 				<h3>List based subscription</h3>
 				<p>Mailster now handles list based subscription next to global subscription.</p>
@@ -79,7 +88,16 @@
 			</div>
 			<div class="col">
 				<div class="media-container">
-					<img src="https://dummy.newsletter-plugin.com/505x284.jpg" width="505" height="284">
+				<?php
+				echo wp_video_shortcode( array(
+					'mp4'      => 'https://mailster.github.io/videos/image_crop.mp4',
+					'poster'   => 'https://mailster.github.io/videos/image_crop.png',
+					'width'    => 505,
+					'height'   => 284,
+					'autoplay' => true,
+					'loop'     => true,
+				) );
+				?>
 				</div>
 				<h3>Improved Image Handling</h3>
 				<p>The Mailster PicPicker allows to quickly select and crop images. It now also works better with third party plugins.</p>

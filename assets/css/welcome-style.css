@@ -63,37 +63,6 @@ audio, video {
 	margin-bottom: 0;
 }
 
-/* WordPress Version Badge */
-
-.wp-badge {
-	background: #0073aa url(../images/w-logo-white.png?ver=20160308) no-repeat;
-	background-position: center 25px;
-	-webkit-background-size: 80px 80px;
-	background-size: 80px 80px;
-	color: #fff;
-	font-size: 14px;
-	text-align: center;
-	font-weight: 600;
-	margin: 5px 0 0;
-	padding-top: 120px;
-	height: 40px;
-	display: inline-block;
-	width: 140px;
-	text-rendering: optimizeLegibility;
-	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-	box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-.svg .wp-badge {
-	background-image: url(../images/wordpress-logo-white.svg?ver=20160308);
-}
-
-.wrap.mailster-welcome-wrap .wp-badge {
-	position: absolute;
-	top: 0;
-	right: 0;
-}
-
 /* Tabs */
 
 .wrap.mailster-welcome-wrap .nav-tab {
@@ -321,6 +290,11 @@ audio, video {
 
 .wrap.mailster-welcome-wrap .feature-section .media-container {
 	overflow: hidden;
+}
+
+.wrap.mailster-welcome-wrap .feature-section .media-container img {
+	min-height: 284px;
+	background-color: #585858;
 }
 
 .wrap.mailster-welcome-wrap .feature-section img {

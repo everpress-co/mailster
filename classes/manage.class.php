@@ -28,7 +28,7 @@ class MailsterManage {
 
 	public function add_menu() {
 
-		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Manage Subscribers', 'mailster' ), __( 'Manage Subscribers', 'mailster' ), 'mailster_manage_subscribers', 'mailster_subscriber-manage', array( &$this, 'subscriber_manage' ) );
+		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Manage Subscribers', 'mailster' ), __( 'Manage Subscribers', 'mailster' ), 'mailster_manage_subscribers', 'mailster_manage_subscribers', array( &$this, 'subscriber_manage' ) );
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
 
 	}

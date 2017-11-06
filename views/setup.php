@@ -404,7 +404,7 @@ $utm = array(
 					<li><a href="edit.php?post_type=newsletter&page=mailster_settings"><?php esc_html_e( 'Complete your settings', 'mailster' ) ?></a></li>
 					<li><a href="post-new.php?post_type=newsletter"><?php esc_html_e( 'Create your first campaign', 'mailster' ) ?></a></li>
 					<li><a href="edit.php?post_type=newsletter&page=mailster_forms"><?php esc_html_e( 'Update your forms', 'mailster' ) ?></a></li>
-					<li><a href="edit.php?post_type=newsletter&page=mailster_subscriber-manage"><?php esc_html_e( 'Import your existing subscribers', 'mailster' ) ?></a></li>
+					<li><a href="edit.php?post_type=newsletter&page=mailster_manage_subscribers"><?php esc_html_e( 'Import your existing subscribers', 'mailster' ) ?></a></li>
 					<li><a href="edit.php?post_type=newsletter&page=mailster_templates"><?php esc_html_e( 'Check out the templates', 'mailster' ) ?></a></li>
 					<li><a href="edit.php?post_type=newsletter&page=mailster_addons"><?php esc_html_e( 'Extend Mailster', 'mailster' ) ?></a></li>
 				</ol>
