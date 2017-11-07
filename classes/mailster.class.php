@@ -584,7 +584,7 @@ class Mailster {
 		foreach ( $links as $link ) {
 
 			if ( $new_structure ) {
-				$new_link = trailingslashit( $base ) . $hash . '/' . rtrim( strtr( base64_encode( $link ), '+/', '-_' ), '=' );
+				$new_link = trailingslashit( $base ) . $hash . '/' . $this->encode_link( $link );
 
 				! isset( $used[ $link ] )
 					? $used[ $link ] = 1
@@ -593,7 +593,7 @@ class Mailster {
 			} else {
 
 				$link = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $link );
-				$target = rtrim( strtr( base64_encode( $link ), '+/', '-_' ), '=' );
+				$target = $this->encode_link( $link );
 				$new_link = $base . '&k=' . $hash . '&t=' . $target;
 				! isset( $used[ $link ] )
 					? $used[ $link ] = 1
@@ -611,6 +611,27 @@ class Mailster {
 
 		return $content;
 
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $link (optional)
+	 * @return unknown
+	 */
+	public function encode_link( $link ) {
+		return apply_filters( 'mailster_encode_link', rtrim( strtr( base64_encode( $link ), '+/', '-_' ), '=' ), $link );
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $decode_link (optional)
+	 * @return unknown
+	 */
+	public function decode_link( $encoded_link ) {
+		return apply_filters( 'mailster_encode_link', base64_decode( strtr( $encoded_link, '-_', '+/' ) ), $encoded_link );
 	}
 
 

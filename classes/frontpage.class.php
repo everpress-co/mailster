@@ -299,7 +299,7 @@ class MailsterFrontpage {
 	private function do_tracking_actions() {
 
 		$campaign_id = intval( get_query_var( '_mailster', 0 ) );
-		$target = base64_decode( strtr( get_query_var( '_mailster_page' ), '-_', '+/' ) );
+		$target = mailster()->decode_link( get_query_var( '_mailster_page' ) );
 		$hash = get_query_var( '_mailster_hash' );
 		$index = get_query_var( '_mailster_extra' );
 		$redirect_to = null;

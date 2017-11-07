@@ -1954,11 +1954,11 @@ label.weekday input{
 	white-space:nowrap;
 }
 .progress span.bar{
-	-webkit-transition:width 2.25s ease;
-	-moz-transition:width 2.25s ease;
-	-ms-transition:width 2.25s ease;
-	-o-transition:width 2.25s ease;
-	transition:width 2.25s ease;
+	-webkit-transition:width 1.25s ease;
+	-moz-transition:width 1.25s ease;
+	-ms-transition:width 1.25s ease;
+	-o-transition:width 1.25s ease;
+	transition:width 1.25s ease;
 	overflow:visible;
 }
 .progress span.bar{
