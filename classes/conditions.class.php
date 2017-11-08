@@ -94,7 +94,6 @@ class MailsterConditions {
 			'ip_signup' => __( 'IP on Signup', 'mailster' ),
 			'ip_confirm' => __( 'IP on confirmation', 'mailster' ),
 			// 'rating' => __( 'Rating', 'mailster' ),
-			// 'lang' => __( 'Language', 'mailster' ),
 		);
 
 		return $fields;
@@ -177,6 +176,19 @@ class MailsterConditions {
 			'is_smaller' => __( 'is smaller', 'mailster' ),
 			'is_greater_equal' => __( 'is greater or equal', 'mailster' ),
 			'is_smaller_equal' => __( 'is smaller or equal', 'mailster' ),
+		);
+
+	}
+	private function get_string_operators() {
+		return array(
+			'is' => __( 'is', 'mailster' ),
+			'is_not' => __( 'is not', 'mailster' ),
+			'contains' => __( 'contains', 'mailster' ),
+			'contains_not' => __( 'contains not', 'mailster' ),
+			'begin_with' => __( 'begins with', 'mailster' ),
+			'end_with' => __( 'ends with', 'mailster' ),
+			'pattern' => __( 'match regex pattern', 'mailster' ),
+			'not_pattern' => __( 'does not match regex pattern', 'mailster' ),
 		);
 
 	}

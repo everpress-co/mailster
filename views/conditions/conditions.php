@@ -107,6 +107,14 @@ foreach ( $conditions as $i => $condition ) :
 					endforeach; ?>
 					</select>
 				</div>
+				<div class="mailster-conditions-operator-field" data-fields=",lang,client,referer,firstname,lastname,email,">
+					<select name="mailster_data[list][conditions][<?php echo $i; ?>][operator]" class="condition-operator" disabled>
+					<?php
+					foreach ( $this->string_operators as $key => $name ) :
+						echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
+					endforeach; ?>
+					</select>
+				</div>
 				<div class="mailster-conditions-operator-field" data-fields=",wp_capabilities,status,form,clienttype,">
 					<select name="mailster_data[list][conditions][<?php echo $i; ?>][operator]" class="condition-operator" disabled>
 					<?php
@@ -254,5 +262,3 @@ foreach ( $conditions as $i => $condition ) :
 	<div class="mailster-condition-empty">
 		<a class="button add-condition"><?php esc_html_e( 'Add Condition', 'mailster' ); ?></a>
 	</div>
-
-
