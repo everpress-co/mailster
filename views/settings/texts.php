@@ -61,6 +61,7 @@ endif; ?>
 
 	$dir = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';
 	$files = array();
+	$locale = get_locale();
 
 if ( is_dir( $dir ) ) {
 	$files = list_files( $dir );

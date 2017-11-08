@@ -1,6 +1,6 @@
 <?php
 
-global $wpdb, $current_user, $wp_post_statuses, $wp_roles, $locale;
+global $wpdb, $current_user, $wp_post_statuses, $wp_roles;
 
 $customfields = mailster()->get_custom_fields();
 $roles = $wp_roles->get_names();
@@ -38,7 +38,7 @@ $sections = array(
 	'frontend' => esc_html__( 'Front End', 'mailster' ),
 	'subscribers' => esc_html__( 'Subscribers', 'mailster' ),
 	'wordpress-users' => esc_html__( 'WordPress Users', 'mailster' ),
-	'texts' => esc_html__( 'Texts', 'mailster' ),
+	'texts' => esc_html__( 'Text Strings', 'mailster' ),
 	'tags' => esc_html__( 'Tags', 'mailster' ),
 	'delivery' => esc_html__( 'Delivery', 'mailster' ),
 	'cron' => esc_html__( 'Cron', 'mailster' ),
