@@ -24,11 +24,11 @@ class MailsterTests {
 			'warning_count' => 0,
 			'notice_count' => 0,
 			'success_count' => 0,
-			'all' => new WP_Error(),
-			'error' => new WP_Error(),
-			'warning' => new WP_Error(),
-			'notice' => new WP_Error(),
-			'success' => new WP_Error(),
+			'all' => array(),
+			'error' => array(),
+			'warning' => array(),
+			'notice' => array(),
+			'success' => array(),
 		);
 
 	}
@@ -101,9 +101,25 @@ class MailsterTests {
 	public function get_message() {
 
 		$time = date( 'Y-m-d H:i:s' );
+		$html = '';
+		$text = '';
+		$maxlen = max( array_map( 'strlen', array_keys( $this->get_tests() ) ) );
 
-		$html = '<div class="mailster-test-result mailster-test-is-' . $this->last_error_type . '"><h4>' . $this->nicename( $this->current_id ) . ($this->last_error_link ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $this->last_error_link ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . '</h4><p class="mailster-test-result-more">' . nl2br( $this->last_error_message ) . '</p></div>';
-		$text = '[' . $this->last_error_type . '] ' . $this->current_id . ': ' . strip_tags( $this->last_error_message );
+		foreach ( array( 'error', 'warning', 'notice', 'success' ) as $type ) {
+			if ( ! $this->errors[ $type . '_count' ] ) {
+				continue;
+			}
+			foreach ( $this->errors[ $type ] as $test_id => $test_errors ) {
+
+				foreach ( $test_errors as $i => $error ) {
+					$name = $this->nicename( $test_id );
+					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ($error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . '</h4><p class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</p></div>';
+					if ( $type != 'success' ) {
+						$text .= '[' . $type . str_repeat( ' ', 7 - strlen( $type ) ) . '] ' . $test_id . str_repeat( ' ', $maxlen - strlen( $test_id ) ) . ': ' . strip_tags( $error['msg'] ) . "\n";
+					}
+				}
+			}
+		}
 
 		return array(
 			'test' => $this->current_id,
@@ -142,6 +158,16 @@ class MailsterTests {
 	public function get_total() {
 
 		return $this->total;
+
+	}
+	public function get_error_counts() {
+
+		return array(
+			'error' => $this->errors['error_count'],
+			'warning' => $this->errors['warning_count'],
+			'notice' => $this->errors['notice_count'],
+			'success' => $this->errors['success_count'],
+		);
 
 	}
 
@@ -184,8 +210,22 @@ class MailsterTests {
 		}
 
 		$data = array( 'link' => $link );
-		$this->errors['all']->add( $test_id, $msg, $data );
-		$this->errors[ $type ]->add( $test_id, $msg, $data );
+		// $this->errors['all']->add( $test_id, $msg, $data );
+		// $this->errors[ $type ]->add( $test_id, $msg, $data );
+		if ( ! isset( $this->errors['all'][ $test_id ] ) ) {
+			$this->errors['all'][ $test_id ] = array();
+		}
+		$this->errors['all'][ $test_id ][] = array(
+			'msg' => $msg,
+			'data' => $data,
+		);
+		if ( ! isset( $this->errors[ $type ][ $test_id ] ) ) {
+			$this->errors[ $type ][ $test_id ] = array();
+		}
+		$this->errors[ $type ][ $test_id ][] = array(
+			'msg' => $msg,
+			'data' => $data,
+		);
 		$this->errors['count']++;
 		$this->errors[ $type . '_count' ]++;
 
@@ -219,15 +259,22 @@ class MailsterTests {
 
 
 	private function _test_error() {
-			$this->error( 'This is a error error' );
+		$this->error( 'This is an error error' );
 	}
 	private function _test_notice() {
-			$this->notice( 'This is a notice error' );
+		$this->notice( 'This is a notice error' );
 	}
 	private function _test_warning() {
-			$this->warning( 'This is a warning error' );
+		$this->warning( 'This is a warning error' );
 	}
 	private function _test_success() {
+		$this->success( 'This is a success error' );
+	}
+	private function _test_multiple() {
+		$this->error( 'This is a error error' );
+		$this->notice( 'This is a notice error' );
+		$this->warning( 'This is a warning error' );
+		$this->success( 'This is a success error' );
 	}
 
 	private function test_php_version() {
@@ -355,6 +402,59 @@ class MailsterTests {
 		mailster( 'cron' )->unlock();
 
 	}
+	private function test_mail_throughput() {
+		if ( $last_hit = get_option( 'mailster_cron_lasthit' ) ) {
+
+			if ( ! isset( $last_hit['mail'] ) ) {
+				return;
+			}
+			$mails_per_sec = round( 1 / $last_hit['mail'], 2 );
+			$mails_per_sec = sprintf( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ), $mails_per_sec );
+
+			if ( $last_hit['mail'] > 1 ) {
+				$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+			} else {
+				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+			}
+		}
+
+	}
+	private function test_newsletter_homepage() {
+
+		$hp = get_post( mailster_option( 'homepage' ) );
+
+		if ( ! $hp || $hp->post_status == 'trash' ) {
+
+			$this->error( sprintf( __( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . __( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', 1, admin_url() ) . '">' . __( 'create it right now', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+			return;
+
+		} elseif ( $hp->post_status != 'publish' ) {
+
+			$this->error( sprintf( __( 'Your newsletter homepage is not visible. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=newsletter_homepage">' . __( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+
+		}
+
+		if ( ! preg_match( '#\[newsletter_signup\]#', $hp->post_content )
+			|| ! preg_match( '#\[newsletter_signup_form#', $hp->post_content )
+			|| ! preg_match( '#\[newsletter_confirm\]#', $hp->post_content )
+			|| ! preg_match( '#\[newsletter_unsubscribe\]#', $hp->post_content ) ) {
+
+			$this->error( sprintf( __( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . __( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+
+		} else {
+
+		}
+
+	}
+	private function test_form_exist() {
+
+		$forms = mailster( 'forms' )->get_all();
+
+		if ( ! count( $forms ) ) {
+			$this->error( sprintf( __( 'You have no form! Mailster requires at least one form for the newsletter homepage. %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_forms&new">' . __( 'Create a new form now', 'mailster' ) . '</a>' ) );
+		}
+
+	}
 	private function test_update_server_connection() {
 
 		$response = wp_remote_post( 'https://update.mailster.co/' );
@@ -367,11 +467,10 @@ class MailsterTests {
 			$this->error( 'does not work: ' . $code );
 		}
 	}
-	private function test_wp_remote_post() {
-		$response = wp_remote_post( 'https://www.paypal.com/cgi-bin/webscr', array(
+	private function test_TLS() {
+		$response = wp_remote_post( 'https://www.howsmyssl.com/a/check', array(
 			'sslverify' => true,
 			'timeout' => 5,
-			'body' => array( 'cmd' => '_notify-validate' ),
 		) );
 
 		$code = wp_remote_retrieve_response_code( $response );
@@ -379,6 +478,18 @@ class MailsterTests {
 		if ( is_wp_error( $response ) ) {
 			$this->error( 'does not work: ' . $response->get_error_message() );
 		} elseif ( $code >= 200 && $code < 300 ) {
+			$body = json_decode( wp_remote_retrieve_body( $response ) );
+			switch ( $body->rating ) {
+				case 'Probably Okay':
+					$this->success( 'Version: ' . $body->tls_version . '; ' . $body->rating );
+					break;
+				case 'Improvable':
+					$this->warning( 'Version: ' . $body->tls_version . '; ' . $body->rating );
+					break;
+				case 'Bad':
+					$this->error( 'Version: ' . $body->tls_version . '; ' . $body->rating );
+					break;
+			}
 		} else {
 			$this->error( 'does not work: ' . $code );
 		}
@@ -462,30 +573,6 @@ class MailsterTests {
 			$this->notice( 'You are not using a permalink structure. Define one <a href="' . admin_url( 'options-permalink.php' ) . '">here</a>.' );
 		} elseif ( ! mailster()->check_link_structure() ) {
 			$this->error( 'A problem with you permalink structure. Please check the slugs on the <a href="' . admin_url( 'admin.php?page=mailster_settings#frontend' ) . '">frontend tab</a>.' );
-		}
-
-	}
-	private function test_newsletter_homepage() {
-
-		$hp = get_post( mailster_option( 'homepage' ) );
-
-		if ( ! $hp || $hp->post_status == 'trash' ) {
-
-			$this->error( sprintf( __( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . __( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', 1, admin_url() ) . '">' . __( 'create it right now', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
-
-		} elseif ( $hp->post_status != 'publish' ) {
-
-			$this->error( sprintf( __( 'Your newsletter homepage is not visible. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit&mailster_remove_notice=newsletter_homepage">' . __( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
-
-		}
-
-	}
-	private function test_form_exist() {
-
-		$forms = mailster( 'forms' )->get_all();
-
-		if ( ! count( $forms ) ) {
-			$this->error( sprintf( __( 'You have no form! Mailster requires at least one form for the newsletter homepage. %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_forms&new">' . __( 'Create a new form now', 'mailster' ) . '</a>' ) );
 		}
 
 	}

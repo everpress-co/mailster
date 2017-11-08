@@ -12,10 +12,10 @@ $table->prepare_items();
 	<a href="edit.php?post_type=newsletter&page=mailster_subscribers&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>
 <?php if ( current_user_can( 'mailster_import_subscribers' ) ) : ?>
-	<a href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=import" class="add-new-h2"><?php esc_html_e( 'Import', 'mailster' );?></a>
+	<a href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=import" class="add-new-h2"><?php esc_html_e( 'Import', 'mailster' );?></a>
 <?php endif; ?>
 <?php if ( current_user_can( 'mailster_export_subscribers' ) ) : ?>
-	<a href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=export" class="add-new-h2"><?php esc_html_e( 'Export', 'mailster' );?></a>
+	<a href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export" class="add-new-h2"><?php esc_html_e( 'Export', 'mailster' );?></a>
 <?php endif; ?>
 <?php if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) : ?>
 	<span class="subtitle"><?php printf( __( 'Search result for %s', 'mailster' ), '&quot;' . esc_html( stripslashes( $_GET['s'] ) ) . '&quot;' ) ?></span>

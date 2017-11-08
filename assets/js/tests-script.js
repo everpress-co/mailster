@@ -61,12 +61,13 @@ jQuery(document).ready(function ($) {
 			'test_id': test_id,
 		}, function (response) {
 
-			errors[response.type]++;
+			errors['error'] += response.errors.error;
+			errors['warning'] += response.errors.warning;
+			errors['notice'] += response.errors.notice;
+			errors['success'] += response.errors.success;
 
 			$(response.message.html).appendTo(output);
-			if ('success' != response.type) {
-				textoutput.val(textoutput.val() + response.message.text + '\n');
-			}
+			textoutput.val(textoutput.val() + response.message.text);
 
 			if (response.nexttest) {
 				progressbar.width(((++tests_run) / response.total * 100) + '%');

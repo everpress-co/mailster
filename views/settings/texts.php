@@ -59,9 +59,9 @@ endif; ?>
 			<?php esc_html_e( 'change language of texts if available to', 'mailster' );?>
 			<?php
 
-				$dir = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';
-				$files = array();
-				$locale = get_locale();
+			$dir = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';
+			$files = array();
+			$locale = get_locale();
 
 			if ( is_dir( $dir ) ) {
 				$files = list_files( $dir );

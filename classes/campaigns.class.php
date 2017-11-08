@@ -58,32 +58,11 @@ class MailsterCampaigns {
 			add_filter( 'admin_post_thumbnail_html', array( &$this, 'add_post_thumbnail_link' ), 10, 2 );
 			add_filter( 'admin_post_thumbnail_size', array( &$this, 'admin_post_thumbnail_size' ), 10, 3 );
 
-			global $pagenow;
+			add_action( 'wp_loaded', array( &$this, 'edit_hook' ) );
+			add_action( 'get_the_excerpt', array( &$this, 'get_the_excerpt' ) );
+			add_action( 'admin_enqueue_scripts', array( &$this, 'assets' ) );
 
-			switch ( $pagenow ) {
-
-				case 'edit.php':
-					add_action( 'wp_loaded', array( &$this, 'edit_hook' ) );
-					add_action( 'get_the_excerpt', array( &$this, 'get_the_excerpt' ) );
-					add_action( 'admin_enqueue_scripts', array( &$this, 'edit_assets' ), 10, 1 );
-				break;
-
-				case 'post-new.php':
-					add_action( 'wp_loaded', array( &$this, 'post_new_hook' ) );
-					add_action( 'admin_enqueue_scripts', array( &$this, 'post_edit_assets' ), 10, 1 );
-				break;
-
-				case 'post.php':
-					add_action( 'pre_get_posts', array( &$this, 'post_hook' ) );
-					add_action( 'admin_enqueue_scripts', array( &$this, 'post_edit_assets' ), 10, 1 );
-				break;
-
-				case 'revision.php':
-					add_filter( '_wp_post_revision_field_post_content', array( &$this, 'revision_field_post_content' ), 10, 2 );
-
-				break;
-
-			}
+			// add_filter( '_wp_post_revision_field_post_content', array( &$this, 'revision_field_post_content' ), 10, 2 );
 		}
 
 	}
@@ -343,48 +322,35 @@ class MailsterCampaigns {
 
 	public function edit_hook() {
 
-		if ( isset( $_GET['post_type'] ) && 'newsletter' == $_GET['post_type'] ) {
+		if ( isset( $_GET['post_type'] ) && 'newsletter' == $_GET['post_type'] && ! isset( $_GET['page'] ) ) {
 
 			// duplicate campaign
-			if ( isset( $_GET['duplicate'] ) ) {
-				if ( wp_verify_nonce( $_GET['_wpnonce'], 'mailster_nonce' ) ) {
+			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
 					$id = intval( $_GET['duplicate'] );
 					$id = $this->duplicate( $id );
-				}
 
 				// pause campaign
-			} elseif ( isset( $_GET['pause'] ) ) {
-				if ( wp_verify_nonce( $_GET['_wpnonce'], 'mailster_nonce' ) ) {
+			} elseif ( isset( $_GET['pause'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_pause_nonce' ) ) {
 					$id = intval( $_GET['pause'] );
 					$this->pause( $id );
-				}
 
 				// continue/start campaign
-			} elseif ( isset( $_GET['start'] ) ) {
-				if ( wp_verify_nonce( $_GET['_wpnonce'], 'mailster_nonce' ) ) {
+			} elseif ( isset( $_GET['start'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_start_nonce' ) ) {
 					$id = intval( $_GET['start'] );
 					$this->start( $id );
-				}
 				// finish campaign
-			} elseif ( isset( $_GET['finish'] ) ) {
-				if ( wp_verify_nonce( $_GET['_wpnonce'], 'mailster_nonce' ) ) {
+			} elseif ( isset( $_GET['finish'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_finish_nonce' ) ) {
 					$id = intval( $_GET['finish'] );
 					$this->finish( $id );
-				}
 				// activate autoresponder
-			} elseif ( isset( $_GET['activate'] ) ) {
-				if ( wp_verify_nonce( $_GET['_wpnonce'], 'mailster_nonce' ) ) {
+			} elseif ( isset( $_GET['activate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_activate_nonce' ) ) {
 					$id = intval( $_GET['activate'] );
 					$this->activate( $id );
-				}
 
 				// deactivate autoresponder
-			} elseif ( isset( $_GET['deactivate'] ) ) {
-				if ( wp_verify_nonce( $_GET['_wpnonce'], 'mailster_nonce' ) ) {
+			} elseif ( isset( $_GET['deactivate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_deactivate_nonce' ) ) {
 					$id = intval( $_GET['deactivate'] );
 					$this->deactivate( $id );
-
-				}
 			}
 
 			if ( isset( $id ) && ! isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
@@ -407,69 +373,6 @@ class MailsterCampaigns {
 
 		}
 
-	}
-
-
-	public function post_hook() {
-
-		global $post;
-		// only on edit old newsletter and save
-		if ( isset( $post ) && 'newsletter' == $post->post_type ) {
-
-			add_filter( 'enter_title_here', array( &$this, 'title' ) );
-
-			add_action( 'dbx_post_sidebar', array( mailster( 'ajax' ), 'add_ajax_nonce' ) );
-
-			$this->post_data = $this->meta( $post->ID );
-
-			add_action( 'submitpost_box', array( &$this, 'notice' ) );
-
-			if ( isset( $_GET['template'] ) ) {
-				$file = ( isset( $_GET['file'] ) ) ? $_GET['file'] : 'index.html';
-				if ( isset( $this->post_data['head'] ) ) {
-					unset( $this->post_data['head'] );
-				}
-
-				// $this->templateobj = mailster('template', $_GET['template'], $file);
-				$this->set_template( $_GET['template'], $file, true );
-			} elseif ( isset( $this->post_data['template'] ) ) {
-
-				// $this->templateobj = mailster('template', $this->post_data['template'], $this->post_data['file']);
-				$this->set_template( $this->post_data['template'], $this->post_data['file'] );
-			} else {
-
-				// $this->templateobj = mailster('template', mailster_option('default_template'), $this->post_data['file']);
-				$this->set_template( mailster_option( 'default_template' ), $this->post_data['file'] );
-
-			}
-		}
-	}
-
-
-	public function post_new_hook() {
-
-		if ( isset( $_GET['post_type'] ) && 'newsletter' == $_GET['post_type'] ) {
-
-			add_filter( 'enter_title_here', array( &$this, 'title' ) );
-
-			add_action( 'dbx_post_sidebar', array( mailster( 'ajax' ), 'add_ajax_nonce' ) );
-
-			$this->post_data = $this->empty_meta();
-
-			if ( isset( $_GET['template'] ) ) {
-				$file = ( isset( $_GET['file'] ) ) ? $_GET['file'] : 'index.html';
-				if ( isset( $this->post_data['head'] ) ) {
-					unset( $this->post_data['head'] );
-				}
-
-				// $this->templateobj = mailster('template', $file, $_GET['template']);
-				$this->set_template( $_GET['template'], $file, true );
-			} else {
-
-				// $this->templateobj = mailster('template', $this->post_data['file'],  mailster_option('default_template'));
-				$this->set_template( mailster_option( 'default_template' ) );
-			}
-		}
 	}
 
 
@@ -904,9 +807,9 @@ class MailsterCampaigns {
 								$actions = array();
 
 								if ( $active != 'active' ) {
-									$actions['activate'] = '<a class="start live-action" href="?post_type=newsletter&activate=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '" title="' . __( 'activate', 'mailster' ) . '">' . __( 'activate', 'mailster' ) . '</a>&nbsp;';
+									$actions['activate'] = '<a class="start live-action" href="?post_type=newsletter&activate=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_activate_nonce' ) . '" title="' . __( 'activate', 'mailster' ) . '">' . __( 'activate', 'mailster' ) . '</a>&nbsp;';
 								} else {
-									$actions['deactivate'] = '<a class="start live-action" href="?post_type=newsletter&deactivate=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '" title="' . __( 'deactivate', 'mailster' ) . '">' . __( 'deactivate', 'mailster' ) . '</a>&nbsp;';
+									$actions['deactivate'] = '<a class="start live-action" href="?post_type=newsletter&deactivate=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_deactivate_nonce' ) . '" title="' . __( 'deactivate', 'mailster' ) . '">' . __( 'deactivate', 'mailster' ) . '</a>&nbsp;';
 								}
 								echo implode( ' | ', $actions );
 								echo '</div>';
@@ -922,19 +825,19 @@ class MailsterCampaigns {
 					echo '<div class="row-actions">';
 					$actions = array();
 					if ( $post->post_status == 'queued' ) {
-						$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '" title="' . __( 'Start Campaign now', 'mailster' ) . '">' . __( 'Start now', 'mailster' ) . '</a>&nbsp;';
+						$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . __( 'Start Campaign now', 'mailster' ) . '">' . __( 'Start now', 'mailster' ) . '</a>&nbsp;';
 					}
 					if ( in_array( $post->post_status, array( 'active', 'queued' ) ) && $status != 'finished' ) {
-						$actions['pause'] = '<a class="pause live-action" href="?post_type=newsletter&pause=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '" title="' . __( 'Pause Campaign', 'mailster' ) . '">' . __( 'Pause', 'mailster' ) . '</a>&nbsp;';
+						$actions['pause'] = '<a class="pause live-action" href="?post_type=newsletter&pause=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_pause_nonce' ) . '" title="' . __( 'Pause Campaign', 'mailster' ) . '">' . __( 'Pause', 'mailster' ) . '</a>&nbsp;';
 					} elseif ( $post->post_status == 'paused' && $totals ) {
 						if ( ! empty( $meta['timestamp'] ) ) {
-							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '" title="' . __( 'Resume Campaign', 'mailster' ) . '">' . __( 'Resume', 'mailster' ) . '</a>&nbsp;';
+							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . __( 'Resume Campaign', 'mailster' ) . '">' . __( 'Resume', 'mailster' ) . '</a>&nbsp;';
 						} else {
-							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '" title="' . __( 'Start Campaign', 'mailster' ) . '">' . __( 'Start', 'mailster' ) . '</a>&nbsp;';
+							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . __( 'Start Campaign', 'mailster' ) . '">' . __( 'Start', 'mailster' ) . '</a>&nbsp;';
 						}
 					}
 					if ( in_array( $post->post_status, array( 'active', 'paused' ) ) ) {
-						$actions['finish'] = '<a class="finish live-action" href="?post_type=newsletter&finish=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '" title="' . __( 'Finish Campaign', 'mailster' ) . '">' . __( 'Finish', 'mailster' ) . '</a>&nbsp;';
+						$actions['finish'] = '<a class="finish live-action" href="?post_type=newsletter&finish=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_finish_nonce' ) . '" title="' . __( 'Finish Campaign', 'mailster' ) . '">' . __( 'Finish', 'mailster' ) . '</a>&nbsp;';
 					}
 					echo implode( ' | ', $actions );
 					echo '</div>';
@@ -1067,7 +970,7 @@ class MailsterCampaigns {
 		if ( ! in_array( $campaign->post_status, array( 'pending', 'auto-draft', 'trash', 'draft' ) ) ) {
 
 			if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() == $campaign->post_author ) || current_user_can( 'duplicate_others_newsletters' ) ) {
-				$actions['duplicate'] = '<a class="duplicate" href="?post_type=newsletter&duplicate=' . $campaign->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '" title="' . sprintf( __( 'Duplicate Campaign %s', 'mailster' ), '&quot;' . $campaign->post_title . '&quot;' ) . '">' . __( 'Duplicate', 'mailster' ) . '</a>';
+				$actions['duplicate'] = '<a class="duplicate" href="?post_type=newsletter&duplicate=' . $campaign->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_duplicate_nonce' ) . '" title="' . sprintf( __( 'Duplicate Campaign %s', 'mailster' ), '&quot;' . $campaign->post_title . '&quot;' ) . '">' . __( 'Duplicate', 'mailster' ) . '</a>';
 			}
 
 			if ( ( current_user_can( 'publish_newsletters' ) && get_current_user_id() == $campaign->post_author ) || current_user_can( 'edit_others_newsletters' ) ) {
@@ -1149,81 +1052,93 @@ class MailsterCampaigns {
 	}
 
 
-	public function edit_assets() {
+	public function assets() {
 
 		$screen = get_current_screen();
 
-		if ( $screen->id != 'edit-newsletter' ) {
-			return;
-		}
-
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-overview', MAILSTER_URI . 'assets/js/overview-script' . $suffix . '.js', array(), MAILSTER_VERSION, true );
+		if ( 'edit-newsletter' == $screen->id ) {
+			wp_enqueue_script( 'mailster-overview', MAILSTER_URI . 'assets/js/overview-script' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 
-		wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-		wp_localize_script( 'mailster-overview', 'mailsterL10n', array(
-			'finish_campaign' => __( 'Do you really like to finish this campaign?', 'mailster' ),
-		) );
-	}
+			wp_localize_script( 'mailster-overview', 'mailsterL10n', array(
+				'finish_campaign' => __( 'Do you really like to finish this campaign?', 'mailster' ),
+			) );
 
+		} elseif ( 'newsletter' == $screen->id ) {
 
-	public function post_edit_assets() {
+			global $post, $wp_locale;
+			add_filter( 'enter_title_here', array( &$this, 'title' ) );
 
-		global $post, $wp_locale;
+			add_action( 'dbx_post_sidebar', array( mailster( 'ajax' ), 'add_ajax_nonce' ) );
 
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
+			$this->post_data = $this->meta( $post->ID );
+			if ( empty( $this->post_data ) ) {
+				$this->post_data = $this->empty_meta();
+			}
 
-		if ( ! isset( $post ) || $post->post_type != 'newsletter' ) {
-			return;
-		}
+			add_action( 'submitpost_box', array( &$this, 'notice' ) );
 
-		wp_enqueue_script( 'mailster-script', MAILSTER_URI . 'assets/js/newsletter-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+			if ( isset( $_GET['template'] ) ) {
+				$file = ( isset( $_GET['file'] ) ) ? $_GET['file'] : 'index.html';
+				if ( isset( $this->post_data['head'] ) ) {
+					unset( $this->post_data['head'] );
+				}
 
-		if ( in_array( $post->post_status, array( 'active', 'finished' ) ) || isset( $_GET['showstats'] ) ) {
+				$this->set_template( $_GET['template'], $file, true );
+			} elseif ( isset( $this->post_data['template'] ) ) {
+				$this->set_template( $this->post_data['template'], $this->post_data['file'] );
+			} else {
+				$this->set_template( mailster_option( 'default_template' ), $this->post_data['file'] );
+			}
 
-			wp_enqueue_script( 'google-jsapi', 'https://www.google.com/jsapi' );
+			wp_enqueue_script( 'mailster-script', MAILSTER_URI . 'assets/js/newsletter-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
-			wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+			if ( in_array( $post->post_status, array( 'active', 'finished' ) ) || isset( $_GET['showstats'] ) ) {
 
-			wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
-
-		} else {
-
-			if ( $post->post_status == 'autoresponder' ) {
 				wp_enqueue_script( 'google-jsapi', 'https://www.google.com/jsapi' );
+
 				wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+
 				wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+			} else {
+
+				if ( $post->post_status == 'autoresponder' ) {
+					wp_enqueue_script( 'google-jsapi', 'https://www.google.com/jsapi' );
+					wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+					wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
+				}
+
+				wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
+				wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+				if ( user_can_richedit() ) {
+					wp_enqueue_script( 'editor' );
+				}
+
+				wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
+				wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+				wp_enqueue_script( 'jquery' );
+				wp_enqueue_script( 'jquery-ui-datepicker' );
+				wp_enqueue_script( 'jquery-ui-draggable' );
+
+				wp_enqueue_style( 'thickbox' );
+				wp_enqueue_script( 'thickbox' );
+
+				wp_enqueue_media();
+
 			}
 
-			wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
-			wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			if ( user_can_richedit() ) {
-				wp_enqueue_script( 'editor' );
-			}
+			wp_enqueue_style( 'wp-color-picker' );
+			wp_enqueue_script( 'wp-color-picker' );
 
-			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
-
-			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'jquery-ui-datepicker' );
-			wp_enqueue_script( 'jquery-ui-draggable' );
-
-			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_script( 'thickbox' );
-
-			wp_enqueue_media();
-
-		}
-
-		wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
-
-		wp_enqueue_style( 'wp-color-picker' );
-		wp_enqueue_script( 'wp-color-picker' );
-
-		wp_localize_script( 'mailster-script', 'mailsterL10n', array(
+			wp_localize_script( 'mailster-script', 'mailsterL10n', array(
 				'loading' => __( 'loading', 'mailster' ),
 				'add' => __( 'add', 'mailster' ),
 				'or' => __( 'or', 'mailster' ),
@@ -1278,18 +1193,19 @@ class MailsterCampaigns {
 				'add_attachment' => __( 'Add Attachment', 'mailster' ),
 				'edit_conditions' => __( 'Edit Conditions', 'mailster' ),
 				'remove_conditions' => __( 'Do you really like to remove all conditions?', 'mailster' ),
-		) );
+			) );
 
-		wp_localize_script( 'mailster-script', 'mailsterdata', array(
-			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'url' => MAILSTER_URI,
-			'inline' => $this->inline_editor(),
-			'codeview' => current_user_can( 'mailster_see_codeview' ),
-			'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
-		) );
+			wp_localize_script( 'mailster-script', 'mailsterdata', array(
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'url' => MAILSTER_URI,
+				'inline' => $this->inline_editor(),
+				'codeview' => current_user_can( 'mailster_see_codeview' ),
+				'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
+			) );
 
-		wp_enqueue_style( 'mailster-newsletter', MAILSTER_URI . 'assets/css/newsletter-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_style( 'mailster-newsletter', MAILSTER_URI . 'assets/css/newsletter-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
+		}
 	}
 
 

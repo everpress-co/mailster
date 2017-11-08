@@ -56,7 +56,7 @@ $sent = $this->get_sent( $post->ID );
 			<?php if ( 'finished' == $post->post_status ) : ?>
 
 				<?php if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() == $post->post_author ) || current_user_can( 'duplicate_others_newsletters' ) ) : ?>
-				<a class="button duplicate" href="edit.php?post_type=newsletter&duplicate=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_nonce' ) ?>"><?php esc_html_e( 'Duplicate', 'mailster' ) ?></a>
+				<a class="button duplicate" href="edit.php?post_type=newsletter&duplicate=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_duplicate_nonce' ) ?>"><?php esc_html_e( 'Duplicate', 'mailster' ) ?></a>
 				<?php endif; ?>
 
 			<?php elseif ( ! in_array( $post->post_status, array( 'publish', 'future', 'private', 'paused' ) ) || 0 == $post->ID ) : ?>
@@ -66,14 +66,14 @@ $sent = $this->get_sent( $post->ID );
 					<?php if ( $can_publish && in_array( $post->post_status, array( 'paused', 'autoresponder' ) ) ) : ?>
 					<a class="button" href="post.php?post=<?php echo $post->ID ?>&action=edit"><?php esc_html_e( 'Edit', 'mailster' ) ?></a>
 					<?php else : ?>
-					<a class="button pause" href="edit.php?post_type=newsletter&pause=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_nonce' ) ?>"><?php esc_html_e( 'Pause', 'mailster' ) ?></a>
+					<a class="button pause" href="edit.php?post_type=newsletter&pause=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_pause_nonce' ) ?>"><?php esc_html_e( 'Pause', 'mailster' ) ?></a>
 					<?php endif; ?>
 
 				<?php elseif ( $can_publish ) : ?>
 
 					<?php if ( 'active' == $post->post_status ) : ?>
 
-						<a class="button pause" href="edit.php?post_type=newsletter&pause=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_nonce' ) ?>"><?php esc_html_e( 'Pause', 'mailster' ) ?></a>
+						<a class="button pause" href="edit.php?post_type=newsletter&pause=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_pause_nonce' ) ?>"><?php esc_html_e( 'Pause', 'mailster' ) ?></a>
 
 					<?php elseif ( 'queued' == $post->post_status ) : ?>
 

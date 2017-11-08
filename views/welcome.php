@@ -1,4 +1,4 @@
-<div class="wrap about-wrap mailster-welcome-wrap">
+<div class="wrap mailster-welcome-wrap">
 
 	<h1><?php printf( esc_html__( 'Welcome to %s', 'mailster' ), 'Mailster 2.3 beta' ); ?></h1>
 
@@ -8,7 +8,7 @@
 
 	<div class="mailster-badge"><?php printf( esc_html__( 'Version %s', 'mailster' ), MAILSTER_VERSION ); ?></div>
 
-	<h2 class="nav-tab-wrapper">
+	<div class="nav-tab-wrapper">
 		<a href="admin.php?page=mailster_welcome" class="nav-tab nav-tab-active"><?php esc_html_e( 'What\'s New', 'mailster' ); ?></a>
 		<?php if ( current_user_can( 'mailster_manage_templates' ) ) : ?>
 		<a href="edit.php?post_type=newsletter&page=mailster_templates&more" class="nav-tab"><?php esc_html_e( 'Templates', 'mailster' ); ?></a>
@@ -17,7 +17,7 @@
 		<a href="edit.php?post_type=newsletter&page=mailster_addons" class="nav-tab"><?php esc_html_e( 'Add Ons', 'mailster' ); ?></a>
 		<?php endif; ?>
 
-	</h2>
+	</div>
 
 <?php if ( get_transient( '_mailster_mymail' ) ) : ?>
 
@@ -43,45 +43,65 @@
 
 <?php endif; ?>
 
-		<div class="feature-section one-col">
+		<div class="feature-section one-col main-feature">
 			<h2>Updated Editor</h2>
-			<p>The new Editor blablabla.</p>
-			<img src="https://dummy.newsletter-plugin.com/600x340.jpg" width="1050" height="740">
+			<p>The new Editor helps to crate your campaigns faster and provides more options. You can now edit your text inline and see the result immediately.</p>
+			<video loop muted preload="auto" autoplay src="https://mailster.github.io/videos/mailster_editor.mp4" poster="https://mailster.github.io/videos/mailster_editor.png">
+				<source src="https://mailster.github.io/videos/mailster_editor.mp4" type="video/mp4">
+			</video>
 			<div class="return-to-dashboard align-center"><a href="post-new.php?post_type=newsletter">Create a new Campaign</a></div>
 		</div>
 
 		<div class="feature-section two-col">
 			<div class="col">
 				<div class="media-container">
-					<img src="https://dummy.newsletter-plugin.com/505x284.jpg" width="505" height="284">
+				<?php
+				echo wp_video_shortcode( array(
+					'mp4'      => 'https://mailster.github.io/videos/segmentation.mp4',
+					'poster'   => 'https://mailster.github.io/videos/segmentation.png',
+					'width'    => 505,
+					'height'   => 284,
+					'autoplay' => true,
+					'loop'     => true,
+				) );
+				?>
 				</div>
 				<h3>Improved Segmentation</h3>
-				<p>XXX</p>
-				<div class="return-to-dashboard"><a href="admin.php?page=mailster_setup">Start Wizard</a></div>
-			</div>
-			<div class="col">
-				<div class="media-container">
-					<img src="https://dummy.newsletter-plugin.com/505x284.jpg" width="505" height="284">
-				</div>
-				<h3>Disable Tracking</h3>
-				<p>XXX</p>
+				<p>Target your audience even better with improved segmentation.</p>
 				<div class="return-to-dashboard"></div>
 			</div>
 			<div class="col">
 				<div class="media-container">
-					<img src="https://dummy.newsletter-plugin.com/505x284.jpg" width="505" height="284">
+					<img src="" width="505" height="284">
+				</div>
+				<h3>List based subscription</h3>
+				<p>Mailster now handles list based subscription next to global subscription.</p>
+				<div class="return-to-dashboard"></div>
+			</div>
+			<div class="col">
+				<div class="media-container">
+					<img src="https://mailster.github.io/welcome/time_frame.jpg" width="505" height="284">
 				</div>
 				<h3>Delivery Time Frame</h3>
-				<p>XXX</p>
+				<p>Mailster can now send campaign in a defined time frame.</p>
 				<div class="return-to-dashboard"></div>
 			</div>
 			<div class="col">
 				<div class="media-container">
-					<img src="https://dummy.newsletter-plugin.com/505x284.jpg" width="505" height="284">
+				<?php
+				echo wp_video_shortcode( array(
+					'mp4'      => 'https://mailster.github.io/videos/image_crop.mp4',
+					'poster'   => 'https://mailster.github.io/videos/image_crop.png',
+					'width'    => 505,
+					'height'   => 284,
+					'autoplay' => true,
+					'loop'     => true,
+				) );
+				?>
 				</div>
 				<h3>Improved Image Handling</h3>
-				<p>XXX.</p>
-				<div class="return-to-dashboard"><a href="edit.php?post_type=newsletter&page=mailster_subscribers">Goto Subscribers</a></div>
+				<p>The Mailster PicPicker allows to quickly select and crop images. It now also works better with third party plugins.</p>
+				<div class="return-to-dashboard"></div>
 			</div>
 		</div>
 
@@ -95,24 +115,42 @@
 					<p>Notifications are now shown to the targeted users.</p>
 				</div>
 				<div class="col">
-					<h4>IMAP Bounces</h4>
-					<p>IMAP servers are now supported in addition to POP3.</p>
+					<h4>Disable Tracking</h4>
+					<p>Disable tracking globally or on a campaign basis.</p>
 				</div>
 				<div class="col">
 					<h4>Custom Template Screenshot</h4>
 					<p>A screenshot.jpg file can now be used for the screenshots in template folders.</p>
 				</div>
+			</div>
+			<div class="feature-section under-the-hood three-col">
 				<div class="col">
-					<h4>More Template options</h4>
-					<p>XXX.</p>
+					<h4>Optional Web version bar</h4>
+					<p>You can now disable the web version bar.</p>
 				</div>
 				<div class="col">
 					<h4>Tests</h4>
-					<p>XXX.</p>
+					<p>A dedicate test page helps to identify problems faster.</p>
 				</div>
 				<div class="col">
-					<h4></h4>
-					<p></p>
+					<h4>XLS Export</h4>
+					<p>Export your subscribers in native Excel format.</p>
+				</div>
+				<div class="col">
+					<h4>Cron</h4>
+					<p>The cron mechanism has been improved by splitting into multiple processes.</p>
+				</div>
+				<div class="col">
+					<h4>Subscriber Grow indicator</h4>
+					<p>You can now see exactly your subscriber gain on the WordPress dashboard.</p>
+				</div>
+				<div class="col">
+					<h4>New <code>{lists}</code> tag</h4>
+					<p>Display the lists of your campaign.</p>
+				</div>
+				<div class="col">
+					<h4>Disable user Avatar</h4>
+					<p>For more privacy you can now disable user avatars across Mailster</p>
 				</div>
 			</div>
 

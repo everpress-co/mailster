@@ -38,7 +38,6 @@ body.drag-active modules module{
 	padding-bottom: 0px;
 	margin-top: 0px;
 	margin-bottom: 0px;
-	-webkit-box-shadow: none;
 	box-shadow: none;
 }
 body:hover module[condition],body:hover single[condition],body:hover multi[condition]{
@@ -94,11 +93,8 @@ button.mailster-btn-inline{
 	cursor: pointer;
 	border: 1px solid #e5e5e5;
 	background: #fff;
-	-webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 	padding:0;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 	min-height: 18px;
 	line-height: 16px;
@@ -245,7 +241,6 @@ else {
 }
 module:hover, module[selected] {
 	background-color:rgba(43, 179, 231, 0.1);
-	-webkit-box-shadow:0px 0px 0px 2px rgba(43, 179, 231, 0.8);
 	box-shadow:0px 0px 0px 2px rgba(43, 179, 231, 0.8);
 	z-index: 9100;
 }
@@ -543,7 +538,6 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 }
 .ui-dragging img[editable].ui-draggable-dragging{
 	outline: 0;
-	-webkit-box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5),0px 0px 13px rgba(0, 0, 0, 0.8);
 	box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5),0px 0px 13px rgba(0, 0, 0, 0.8);
 	-webkit-transform:scale(1.03);
 	-ms-transform:scale(1.03);
@@ -572,7 +566,6 @@ img.mailster-loading{
 modules.ui-sortable.dragging module.ui-sortable-helper{
 	opacity: 0.9;
 	filter:alpha(90);
-	-webkit-box-shadow: 0 5px 18px rgba(0,0,0,.22),0 9px 45px rgba(0,0,0,.25);
 	box-shadow: 0 5px 18px rgba(0,0,0,.22),0 9px 45px rgba(0,0,0,.25);
 	-webkit-transform:scale(1.03);
 	-ms-transform:scale(1.03);
@@ -657,7 +650,6 @@ div.wp-link-preview {
 }
 div.wp-link-input input[type="text"] {
 	border: 1px solid #ddd;
-	-webkit-box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.07 );
 	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.07 );
 	background-color: #fff;
 	color: #32373c;

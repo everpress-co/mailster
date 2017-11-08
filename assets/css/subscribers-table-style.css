@@ -58,7 +58,6 @@
 	line-height: 69px;
 	font-size: 100%;
 	background-color: rgba(255,255,255,0.9);
-	-webkit-border-radius: 50%;
 	border-radius: 50%;
 }
 .wp-list-table ul{

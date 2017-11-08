@@ -50,14 +50,10 @@ jQuery(document).ready(function ($) {
 			condition.find('div.mailster-conditions-value-field').removeClass('active').find('.condition-value').prop('disabled', true);
 			condition.find('div.mailster-conditions-operator-field').removeClass('active').find('.condition-operator').prop('disabled', true);
 
-			if (condition.find('div.mailster-conditions-value-field[data-fields*="' + value + ',"]').addClass('active').find('.condition-value').prop('disabled', false).length) {
-				//condition.find('div.mailster-conditions-value-field[data-fields*="' + value + '"]').show().find('.condition-value').prop('disabled', false);
-			} else {
+			if (condition.find('div.mailster-conditions-value-field[data-fields*=",' + value + ',"]').addClass('active').find('.condition-value').prop('disabled', false).length) {} else {
 				condition.find('div.mailster-conditions-value-field-default').addClass('active').find('.condition-value').prop('disabled', false);
 			}
-			if (condition.find('div.mailster-conditions-operator-field[data-fields*="' + value + ',"]').addClass('active').find('.condition-operator').prop('disabled', false).length) {
-				//
-			} else {
+			if (condition.find('div.mailster-conditions-operator-field[data-fields*=",' + value + ',"]').addClass('active').find('.condition-operator').prop('disabled', false).length) {} else {
 				condition.find('div.mailster-conditions-operator-field-default').addClass('active').find('.condition-operator').prop('disabled', false);
 			}
 			_trigger('updateCount');
@@ -94,8 +90,6 @@ jQuery(document).ready(function ($) {
 			str += $(this).find('.condition-value').val();
 			str += '|';
 		})
-
-		console.log(encodeURIComponent(str));
 
 	}
 

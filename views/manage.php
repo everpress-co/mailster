@@ -9,15 +9,15 @@ $currentstep = isset( $_GET['step'] ) ? intval( $_GET['step'] ) : 1;
 <h2 class="nav-tab-wrapper">
 
 	<?php if ( current_user_can( 'mailster_import_subscribers' ) ) : ?>
-	<a class="nav-tab <?php echo ( 'import' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=import"><?php esc_html_e( 'Import', 'mailster' ) ?></a>
+	<a class="nav-tab <?php echo ( 'import' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=import"><?php esc_html_e( 'Import', 'mailster' ) ?></a>
 	<?php endif; ?>
 
 	<?php if ( current_user_can( 'mailster_export_subscribers' ) ) : ?>
-	<a class="nav-tab <?php echo ( 'export' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=export"><?php esc_html_e( 'Export', 'mailster' ) ?></a>
+	<a class="nav-tab <?php echo ( 'export' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export"><?php esc_html_e( 'Export', 'mailster' ) ?></a>
 	<?php endif; ?>
 
 	<?php if ( current_user_can( 'mailster_bulk_delete_subscribers' ) ) : ?>
-	<a class="nav-tab <?php echo ( 'delete' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=delete"><?php esc_html_e( 'Delete', 'mailster' ) ?></a>
+	<a class="nav-tab <?php echo ( 'delete' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=delete"><?php esc_html_e( 'Delete', 'mailster' ) ?></a>
 	<?php endif; ?>
 
 </h2>
@@ -276,17 +276,17 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					);
 					?>
 				<ul class="export-order">
-					<li><input type="checkbox" name="column[]" value="_number" checked> #</li>
+					<li><input type="checkbox" name="column[]" value="_number"> #</li>
 				<?php foreach ( $columns as $id => $name ) {?>
 					<li><input type="checkbox" name="column[]" value="<?php echo $id ?>" checked> <?php echo esc_html( $name ) ?></li>
 				<?php }?>
 				<?php foreach ( $customfields as $id => $data ) {?>
-					<li><input type="checkbox" name="column[]" value="<?php echo $id ?>" checked> <?php echo esc_html( strip_tags( $data['name'] ) ) ?></li>
+					<li><input type="checkbox" name="column[]" value="<?php echo $id ?>"> <?php echo esc_html( strip_tags( $data['name'] ) ) ?></li>
 				<?php }?>
 					<li><input type="checkbox" name="column[]" value="_statuscode"> <?php esc_html_e( 'Statuscode', 'mailster' ) ?></li>
 					<li><input type="checkbox" name="column[]" value="_listnames"> <?php esc_html_e( 'Listnames', 'mailster' ) ?></li>
 				<?php foreach ( $meta as $id => $name ) {?>
-					<li><input type="checkbox" name="column[]" value="<?php echo $id ?>" checked> <?php echo esc_html( $name ) ?></li>
+					<li><input type="checkbox" name="column[]" value="<?php echo $id ?>"> <?php echo esc_html( $name ) ?></li>
 				<?php }?>
 				</ul>
 				<p>
