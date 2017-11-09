@@ -7,7 +7,7 @@ class MailsterPlaceholder {
 	private $rounds = 2;
 	private $campaignID = null;
 	private $subscriberID = null;
-	private $progress_conditions = true;
+	private $progress_conditions = false;
 	private $replace_custom = true;
 	private $social_services;
 	private $apply_the_excerpt_filters = true;
@@ -211,8 +211,11 @@ class MailsterPlaceholder {
 
 		$this->add( $placeholders );
 
-		if ( $this->progress_conditions && $round == 1 ) {
-			$this->conditions();
+		if ( 1 == $round ) {
+			$this->remove_modules();
+			if ( $this->progress_conditions ) {
+				$this->conditions();
+			}
 		}
 
 		$this->replace_dynamic( $relative_to_absolute );
@@ -260,7 +263,7 @@ class MailsterPlaceholder {
 					// use fallback
 				} elseif ( $removeunused && $round < $this->rounds ) {
 
-						$this->content = str_replace( $search, $fallback, $this->content );
+					$this->content = str_replace( $search, $fallback, $this->content );
 
 				}
 			}
@@ -367,6 +370,50 @@ class MailsterPlaceholder {
 		$content = apply_filters( 'mymail_share_button_' . $service, apply_filters( 'mailster_share_button_' . $service, $content ) );
 
 		return '<a href="' . $_url . '" class="social">' . $content . '</a>' . "\n";
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $content (optional)
+	 * @return unknown
+	 */
+	public function remove_modules( $content = null ) {
+
+		if ( is_null( $content ) ) {
+			$content = $this->content;
+		}
+
+		$pts = mailster( 'helper' )->get_post_types();
+		$pts = implode( '|', $pts );
+
+		if ( preg_match_all( '#<module[^>]*?data-tag="{((' . $pts . '):(-)?([\d]+)(;([0-9;,]+))?)\}"(.*?)".*?</module>#ms', $content, $modules ) ) {
+
+			foreach ( $modules[0] as $i => $html ) {
+
+				$search = $modules[0][ $i ];
+				$tag = $modules[1][ $i ];
+				$post_type = $modules[2][ $i ];
+				$post_or_offset = $modules[4][ $i ];
+
+				if ( empty( $modules[3][ $i ] ) ) {
+					$post = get_post( $post_or_offset );
+				} else {
+					$term_ids = ! empty( $modules[6][ $i ] ) ? explode( ';', trim( $modules[6][ $i ] ) ) : array();
+					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids );
+				}
+
+				if ( ! $post ) {
+					$content = str_replace( $search, '', $content );
+				}
+			}
+		}
+
+		$this->content = $content;
+
+		return $content;
 
 	}
 
@@ -509,7 +556,7 @@ class MailsterPlaceholder {
 		switch ( $operator ) {
 			case 'is':return $subscriber->{$field} == $value;
 			case 'is_not':return $subscriber->{$field} != $value;
-			case 'begin_with':return false !== ( strrpos( $subscriber->{$key}, $value, -strlen( $subscriber->{$key} ) ) );
+			case 'begin_with':return false !== ( strrpos( $subscriber->{$key}, $value, - strlen( $subscriber->{$key} ) ) );
 			case 'end_with':return false !== ( ( $t = strlen( $subscriber->{$key} ) - strlen( $value ) ) >= 0 && strpos( $subscriber->{$key}, $value, $t ) );
 			case 'is_greater':return $subscriber->{$key} > $value;
 			case 'is_greater_equal':return $subscriber->{$key} >= $value;
@@ -536,8 +583,7 @@ class MailsterPlaceholder {
 			return;
 		}
 
-		$pts = get_post_types( array( 'public' => true ) );
-		$pts = array_diff( $pts, array( 'newsletter', 'attachment' ) );
+		$pts = mailster( 'helper' )->get_post_types();
 		$pts = implode( '|', $pts );
 
 		$timeformat = get_option( 'time_format' );

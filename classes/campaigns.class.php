@@ -675,7 +675,7 @@ class MailsterCampaigns {
 
 							if ( 'mailster_autoresponder_timebased' == $autoresponder['action'] ) {
 
-								$pts = get_post_types( array( 'public' => true ), 'object' );
+								$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
 
 								if ( $meta['timestamp'] && $meta['timestamp'] - $now < 0 ) {
 									mailster( 'queue' )->autoresponder_timebased( $post->ID );

@@ -1339,6 +1339,27 @@ class MailsterHelper {
 	/**
 	 *
 	 *
+	 * @param unknown $public_only (optional)
+	 * @param unknown $output      (optional)
+	 * @param unknown $exclude     (optional)
+	 * @return unknown
+	 */
+	public function get_post_types( $public_only = true, $output = 'names', $exclude = array( 'attachment', 'newsletter' ) ) {
+
+		$post_types = get_post_types( array( 'public' => $public_only ), $output );
+
+		if ( ! empty( $exclude ) ) {
+			$post_types = array_diff_key( $post_types, array_flip( $exclude ) );
+		}
+
+		return $post_types;
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $org_string
 	 * @param unknown $length     (optional)
 	 * @param unknown $more       (optional)

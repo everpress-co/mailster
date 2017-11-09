@@ -206,11 +206,8 @@
 				</p>
 				<p id="post_type_select" class="alignright">
 				<?php
-				$pts = get_post_types( array( 'public' => true ), 'objects' );
+				$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
 				foreach ( $pts as $pt => $data ) {
-					if ( in_array( $pt, array( 'attachment', 'newsletter' ) ) ) {
-						continue;
-					}
 					?>
 					<label><input type="checkbox" name="post_types[]" value="<?php echo $pt ?>" <?php checked( 'post' == $pt, true );?>> <?php echo $data->labels->name ?> </label>
 				<?php } ?>

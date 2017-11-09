@@ -1214,7 +1214,7 @@ class MailsterAjax {
 				$html = '';
 				if ( $_POST['type'] == 'post' ) {
 
-					$pts = get_post_types( array(), 'objects' );
+					$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
 
 					foreach ( $posts as $post ) {
 						if ( ! isset( $return['itemcount'][ $post->post_type ] ) ) {

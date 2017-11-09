@@ -2000,7 +2000,7 @@ jQuery(document).ready(function ($) {
 
 		function dynamicImage(val, w, h, c) {
 			w = w || imagewidth.val();
-			h = h || imageheight.val();
+			h = h || imageheight.val() || Math.round(w / 1.6);
 			c = typeof c == 'undefined' ? imagecrop.prop(':checked') : c;
 			if (/^\{([a-z0-9-_]+)_image:-?[0-9,;]+(\|\d+)?\}$/.test(val)) {
 				var f = factor.val();

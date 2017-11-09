@@ -102,15 +102,17 @@ Xaver Birsak – https://everpress.io
 * change: `mailster_replace_link` now targets the output link
 * improved: list segmentation
 * improved: campaign editor for faster campaign creation with inline editing
+* Improved: modules with tags where the post not exists will get removed
 * improved: image procession to support more third party plugins
-* improved: info message oon form submission now placed on after the form depending on scroll position.
+* improved: info message on form submission now placed on after the form depending on scroll position.
 * improved: background images behavior in editor
 * improved: faster editor behavior
 * improved: batch action on subscribers
 * improved: multiple cron processes
 * improved: image creation process to better support third party plugins
 * improved: cron mechanism
-* improved: handling of placehoder images on td, th and v:fill
+* improved: export column selection
+* improved: handling of placeholder images on td, th and v:fill
 * added: copy-to-clipboard functionality
 * added: subscriber crows indicator on dashboard widget
 * added: Additional mail headers
@@ -120,6 +122,6 @@ Xaver Birsak – https://everpress.io
 * deprecated MyMail methods
 
 
-For further details please visit [the changelog on the Mailster Homepage](https://mailster.co/changelog/)
+For further details please visit [the change log on the Mailster Homepage](https://mailster.co/changelog/)
 
 

@@ -205,9 +205,30 @@ jQuery(document).ready(function ($) {
 			return false;
 		});
 
-	$(".export-order").sortable({
-		containment: "parent"
-	});
+	$(".export-order")
+		.sortable({
+			connectWith: '.export-order',
+			_placeholder: "ui-state-highlight",
+			containment: ".export-order-wrap",
+			receive: function (event, ui) {
+				ui.item.find('input').prop('checked', ui.item.closest('.export-order').is('.selected'));
+			},
+		})
+		.on('change', 'input', function () {
+			var _this = $(this);
+
+			_this.parent().appendTo(_this.is(':checked') ? $('.export-order.selected') : $('.export-order.unselected'))
+		});
+
+	$('.export-order-wrap')
+		.on('click', '.export-order-add', function () {
+			$(".export-order.unselected").find('li').appendTo('.export-order.selected').find('input').prop('checked', true);
+			return false;
+		})
+		.on('click', '.export-order-remove', function () {
+			$(".export-order.selected").find('li').appendTo('.export-order.unselected').find('input').prop('checked', false);
+			return false;
+		})
 
 	$('#export-subscribers').on('submit', function () {
 

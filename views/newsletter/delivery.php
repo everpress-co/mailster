@@ -165,7 +165,7 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 		</div>
 
-		<?php $pts = get_post_types( array( 'public' => true ), 'object' ); ?>
+		<?php $pts = mailster( 'helper' )->get_post_types( true, 'object' ); ?>
 
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_post_published">
 			<p>

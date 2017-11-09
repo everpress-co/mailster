@@ -113,24 +113,45 @@ span.error{
 .submit-button-box{
 	text-align: right;
 }
-.export-order{
+.export-order-wrap{
 	overflow: hidden;
-
+}
+.export-order-middle{
+	float: left;
+	overflow: hidden;
+	transform: translateY(100%);
+	padding: 10px;
+}
+.export-order-middle button{
+	display: block;
+	width: 35px;
+	margin: 4px 0;
+}
+.export-order{
+	float: left;
+	overflow: auto;
+	border-radius: 2px;
+	border: 1px solid #DFDFDF;
+	width: 200px;
+	padding: 10px;
+	height: 300px;
 }
 .export-order li{
-	float: left;
 	padding: 6px 9px;
 	background: #fff;
 	border-radius: 2px;
 	border: 1px solid #DFDFDF;
 	display: block;
-	margin-right:2px;
+	margin: 4px 1px;
 	cursor:we-resize;
 	cursor:hand;
 	cursor:grab;
 	cursor:grabbing;
 	cursor:-moz-grab;
 	cursor:-webkit-grab;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 .rtl .export-order li{
 	float: right;
@@ -154,7 +175,7 @@ span.error{
 .progress{
 	width:100%;
 	height:40px;
-	background:#fefefe;
+	background:#ededed;
 	overflow:hidden;
 	font-size:10px;
 	position:relative;
