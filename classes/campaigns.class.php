@@ -892,6 +892,7 @@ class MailsterCampaigns {
 									'confirm' => __( 'Confirm Date', 'mailster' ),
 									'ip_confirm' => __( 'Confirm IP', 'mailster' ),
 									'rating' => __( 'Rating', 'mailster' ),
+									'form' => __( 'Form', 'mailster' ),
 								);
 
 								$wp_meta = wp_parse_args( mailster( 'helper' )->get_wpuser_meta_fields(), array(

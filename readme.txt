@@ -87,6 +87,7 @@ Xaver Birsak – https://everpress.io
 * fixed: ratings with '%' in segmentation causes not expected behavior in WordPress 4.8.3+
 * fixed: missing escaping in segmentation rules where LIKE is used
 * fixed: get next date on weekly autoresponder if weekday is not the current one
+* fixed: missing form field on autoresponder overview
 
 = Version 2.2.13 =
 
