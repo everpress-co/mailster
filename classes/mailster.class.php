@@ -441,6 +441,33 @@ class Mailster {
 	 */
 	public function get_unsubscribe_link( $campaign_id = '', $hash = '' ) {
 
+		$is_permalink = mailster( 'helper' )->using_permalinks();
+		if ( is_admin() ) {
+
+			$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
+
+			$unsubscribe_homepage = get_page( mailster_option( 'homepage' ) );
+
+			if ( $unsubscribe_homepage ) {
+				$unsubscribe_homepage = get_permalink( $unsubscribe_homepage );
+			} else {
+				$unsubscribe_homepage = get_bloginfo( 'url' );
+			}
+
+			$slugs = mailster_option( 'slugs' );
+			$slug = trailingslashit( isset( $slugs['unsubscribe'] ) ? $slugs['unsubscribe'] : 'unsubscribe' );
+
+			if ( ! $is_permalink ) {
+				$unsubscribe_homepage = str_replace( trailingslashit( get_bloginfo( 'url' ) ), untrailingslashit( get_bloginfo( 'url' ) ) . $prefix, $unsubscribe_homepage );
+			}
+
+			$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage, $campaign_id ) );
+
+			return $is_permalink
+				? trailingslashit( $unsubscribe_homepage ) . $slug
+				: add_query_arg( 'mailster_unsubscribe', md5( $campaign_id . '_unsubscribe' ), $unsubscribe_homepage );
+		}
+
 		$baselink = get_site_url( null, '/' );
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['unsubscribe'] ) ? $slugs['unsubscribe'] : 'unsubscribe';
@@ -452,38 +479,13 @@ class Mailster {
 			$path .= '/' . $campaign_id;
 		}
 
-		$link = ( mailster( 'helper' )->using_permalinks() )
+		$link = ( $is_permalink )
 			? trailingslashit( $baselink ) . trailingslashit( 'mailster/' . $path )
 			: add_query_arg( array(
 				'mailster_unsubscribe' => md5( $campaign_id . '_unsubscribe' ),
 			), $baselink );
 
 		return $link;
-
-		$is_permalink = mailster( 'helper' )->using_permalinks();
-
-		$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
-
-		$unsubscribe_homepage = get_page( mailster_option( 'homepage' ) );
-
-		if ( $unsubscribe_homepage ) {
-			$unsubscribe_homepage = get_permalink( $unsubscribe_homepage );
-		} else {
-			$unsubscribe_homepage = get_bloginfo( 'url' );
-		}
-
-		$slugs = mailster_option( 'slugs' );
-		$slug = isset( $slugs['unsubscribe'] ) ? $slugs['unsubscribe'] : 'unsubscribe';
-
-		if ( ! $is_permalink ) {
-			$unsubscribe_homepage = str_replace( trailingslashit( get_bloginfo( 'url' ) ), untrailingslashit( get_bloginfo( 'url' ) ) . $prefix, $unsubscribe_homepage );
-		}
-
-		$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage, $campaign_id ) );
-
-		return $is_permalink
-			? trailingslashit( $unsubscribe_homepage ) . $slug
-			: add_query_arg( 'mailster_unsubscribe', md5( $campaign_id . '_unsubscribe' ), $unsubscribe_homepage );
 
 	}
 
@@ -513,6 +515,27 @@ class Mailster {
 	 */
 	public function get_profile_link( $campaign_id, $hash = '' ) {
 
+		$is_permalink = mailster( 'helper' )->using_permalinks();
+		if ( is_admin() ) {
+
+			$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
+
+			$homepage = get_page( mailster_option( 'homepage' ) )
+				? get_permalink( mailster_option( 'homepage' ) )
+				: get_bloginfo( 'url' );
+
+			$slugs = mailster_option( 'slugs' );
+			$slug = trailingslashit( isset( $slugs['profile'] ) ? $slugs['profile'] : 'profile' );
+
+			if ( ! $is_permalink ) {
+				$homepage = str_replace( trailingslashit( get_bloginfo( 'url' ) ), untrailingslashit( get_bloginfo( 'url' ) ) . $prefix, $homepage );
+			}
+
+			return $is_permalink
+				? trailingslashit( $homepage ) . $slug
+				: add_query_arg( 'mailster_profile', $hash, $homepage );
+		}
+
 		$baselink = get_site_url( null, '/' );
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['profile'] ) ? $slugs['profile'] : 'profile';
@@ -524,32 +547,13 @@ class Mailster {
 			$path .= '/' . $campaign_id;
 		}
 
-		$link = ( mailster( 'helper' )->using_permalinks() )
+		$link = ( $is_permalink)
 			? trailingslashit( $baselink ) . trailingslashit( 'mailster/' . $path )
 			: add_query_arg( array(
 				'mailster_profile' => $hash,
 			), $baselink );
 
 		return $link;
-
-		$is_permalink = mailster( 'helper' )->using_permalinks();
-
-		$prefix = ! mailster_option( 'got_url_rewrite' ) ? '/index.php' : '/';
-
-		$homepage = get_page( mailster_option( 'homepage' ) )
-			? get_permalink( mailster_option( 'homepage' ) )
-			: get_bloginfo( 'url' );
-
-		$slugs = mailster_option( 'slugs' );
-		$slug = isset( $slugs['profile'] ) ? $slugs['profile'] : 'profile';
-
-		if ( ! $is_permalink ) {
-			$homepage = str_replace( trailingslashit( get_bloginfo( 'url' ) ), untrailingslashit( get_bloginfo( 'url' ) ) . $prefix, $homepage );
-		}
-
-		return $is_permalink
-			? trailingslashit( $homepage ) . $slug
-			: add_query_arg( 'mailster_profile', $hash, $homepage );
 
 	}
 

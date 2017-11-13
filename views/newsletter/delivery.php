@@ -434,9 +434,31 @@ $sent = $this->get_sent( $post->ID );
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_autoresponder_hook">
 			<p>
 				<label>
-				<?php esc_html_e( 'Hook used to trigger campaign', 'mailster' ); ?> (<abbr title="<?php esc_attr_e( 'use `do_action("hook_name")`, or `do_action("hook_name", $subscriber_id)` to trigger this campaign', 'mailster' );?>">?</abbr>)
-					<input type="text" class="widefat code" name="mailster_data[autoresponder][hook]" value="<?php echo $autoresponderdata['hook'] ?>" placeholder="hook_name">
+				<?php esc_html_e( 'Action used to trigger campaign', 'mailster' ); ?> (<abbr title="<?php esc_attr_e( 'use `do_action("hook_name")`, or `do_action("hook_name", $subscriber_id)` to trigger this campaign', 'mailster' );?>">?</abbr>)
 				</label>
+			</p>
+			<?php
+				$hooks = apply_filters( 'mailster_action_hooks', array(
+					// 'mailster_clicked_link_in_campaing' => __( 'user clicked link in a campaign', 'mailster' ),
+				) );
+			if ( $autoresponderdata['hook'] && ! isset( $hooks[ $autoresponderdata['hook'] ] ) ) {
+				$hooks[ $autoresponderdata['hook'] ] = $autoresponderdata['hook'];
+			}
+			?>
+			<?php if ( $hooks  ) : ?>
+			<p>
+				<label>
+					<select class="widefat mailster-action-hooks">
+						<option value=""><?php esc_html_e( 'Choose', 'mailster' ) ?></option>
+						<?php foreach ( $hooks as $hook => $name ) : ?>
+							<option value="<?php echo esc_attr( $hook )?>" <?php selected( $hook, $autoresponderdata['hook'] ) ?>><?php echo esc_html( $name ) ?></option>
+						<?php endforeach; ?>
+					</select>
+				</label>
+			</p>
+				<?php endif; ?>
+			<p>
+				<input type="text" class="widefat code mailster-action-hook" name="mailster_data[autoresponder][hook]" value="<?php echo $autoresponderdata['hook'] ?>" placeholder="hook_name">
 			</p>
 			<p>
 				<label>

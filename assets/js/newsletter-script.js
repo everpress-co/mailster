@@ -510,6 +510,22 @@ jQuery(document).ready(function ($) {
 				$('.mailster_autoresponder_timebased-end-schedule-field').slideDown(): $('.mailster_autoresponder_timebased-end-schedule-field').slideUp();
 			})
 
+			.on('change', '.mailster-action-hooks', function () {
+				var val = $(this).val();
+				$('.mailster-action-hook').val(val);
+				if (!val) {
+					$('.mailster-action-hook').focus();
+				}
+			})
+
+			.on('change', '.mailster-action-hook', function () {
+				var val = $(this).val();
+				if (!$(".mailster-action-hooks option[value='" + val + "']").length) {
+					$('.mailster-action-hooks').append('<option>' + val + '</option>');
+				}
+				$('.mailster-action-hooks').val(val);
+			})
+
 			.on('click', '.mailster-total', function () {
 				_trigger('updateCount');
 			})
@@ -1327,10 +1343,10 @@ jQuery(document).ready(function ($) {
 							$('.hb-' + type).html((this.percentage * 100).toFixed(2) + '%');
 						});
 
-						charts.eq(0).data('easyPieChart').update(Math.round(_data.open_rate));
-						charts.eq(1).data('easyPieChart').update(Math.round(_data.click_rate));
-						charts.eq(2).data('easyPieChart').update(Math.round(_data.unsub_rate));
-						charts.eq(3).data('easyPieChart').update(Math.round(_data.bounce_rate));
+						if ($('#stats_opens').length) $('#stats_opens').data('easyPieChart').update(Math.round(_data.open_rate));
+						if ($('#stats_clicks').length) $('#stats_clicks').data('easyPieChart').update(Math.round(_data.click_rate));
+						if ($('#stats_unsubscribes').length) $('#stats_unsubscribes').data('easyPieChart').update(Math.round(_data.unsub_rate));
+						if ($('#stats_bounces').length) $('#stats_bounces').data('easyPieChart').update(Math.round(_data.bounce_rate));
 
 						progress.find('.bar').width(p + '%');
 						progress.find('span').eq(1).html(_data.sent_formatted);

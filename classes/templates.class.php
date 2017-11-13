@@ -267,9 +267,6 @@ class MailsterTemplates {
 
 			if ( $templateslug ) {
 
-				// force a reload
-				$this->get_mailster_templates( $templateslug, true );
-
 				return $data;
 			}
 		}

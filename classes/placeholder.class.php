@@ -7,6 +7,7 @@ class MailsterPlaceholder {
 	private $rounds = 2;
 	private $campaignID = null;
 	private $subscriberID = null;
+	private $subscriberHash = null;
 	private $progress_conditions = false;
 	private $replace_custom = true;
 	private $social_services;
@@ -89,6 +90,16 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
+	 * @param unknown $hash
+	 */
+	public function set_hash( $hash ) {
+		$this->subscriberHash = $hash;
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $bool (optional)
 	 */
 	public function replace_custom_tags( $bool = true ) {
@@ -133,9 +144,9 @@ class MailsterPlaceholder {
 	 */
 	public function add_defaults( $campaign_id, $args = array() ) {
 
-		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign_id );
+		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign_id, $this->subscriberHash );
 		$forwardlink = mailster()->get_forward_link( $campaign_id );
-		$profilelink = mailster()->get_profile_link( $campaign_id );
+		$profilelink = mailster()->get_profile_link( $campaign_id, $this->subscriberHash );
 
 		$meta = mailster( 'campaigns' )->meta( $campaign_id );
 

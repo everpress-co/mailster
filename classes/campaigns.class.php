@@ -15,8 +15,6 @@ class MailsterCampaigns {
 
 		if ( $hooks = get_option( 'mailster_hooks', false ) ) {
 
-			add_action( 'mailster_autoresponder_hook', array( &$this, 'autoresponder_hook' ), 10, 2 );
-
 			foreach ( (array) $hooks as $campaign_id => $hook ) {
 				if ( $hook ) {
 					add_action( $hook, array( &$this, 'autoresponder_hook_' . $campaign_id ), 10, 5 );
@@ -77,14 +75,14 @@ class MailsterCampaigns {
 	 */
 	public function __call( $func, $args ) {
 
-		if ( substr( $func, 0, 18 ) == 'autoresponder_hook' ) {
+		if ( substr( $func, 0, 19 ) == 'autoresponder_hook_' ) {
 
 			$campaign_id = intval( substr( $func, 19 ) );
 
-			$subscribers = isset( $args[0] ) ? $args[0] : null;
+			$subscribers = isset( $args[0] ) ? array_shift( $args ) : null;
 
-			do_action( 'mailster_autoresponder_hook', $campaign_id, $subscribers );
-			do_action( 'mymail_autoresponder_hook', $campaign_id, $subscribers );
+			$this->autoresponder_hook( $campaign_id, $subscribers, $args );
+
 		}
 
 	}
@@ -95,8 +93,9 @@ class MailsterCampaigns {
 	 *
 	 * @param unknown $campaign_id
 	 * @param unknown $subscriber_ids (optional)
+	 * @param unknown $args           (optional)
 	 */
-	public function autoresponder_hook( $campaign_id, $subscriber_ids = null ) {
+	public function autoresponder_hook( $campaign_id, $subscriber_ids = null, $args = array() ) {
 
 		$meta = $this->meta( $campaign_id );
 
@@ -104,27 +103,25 @@ class MailsterCampaigns {
 			return;
 		}
 
-		if ( $this->meta( $campaign_id, 'ignore_lists' ) ) {
-			$lists = false;
-		} else {
-			$lists = $this->meta( $campaign_id, 'lists' );
-		}
-
-		$conditions = $this->meta( $campaign_id, 'list_conditions' );
-
-		$subscribers = mailster( 'subscribers' )->query(array(
-			'lists' => $lists,
-			'conditions' => $conditions,
-			'return_ids' => true,
+		$query_args = array(
+			'lists' => $meta['ignore_lists'] ? false : $meta['lists'],
+			'conditions' => $meta['list_conditions'],
+			'queue__not_in' => $campaign_id,
 			'sent__not_in' => $meta['autoresponder']['once'] ? $campaign_id : false,
 			'include' => $subscriber_ids,
-		));
+		);
+
+		$query_args = apply_filters( 'mailster_autoresponder_hook_args', $query_args, $campaign_id, $subscriber_ids, $args );
+		$query_args = apply_filters( 'mailster_autoresponder_hook_args_' . current_filter(), $query_args, $campaign_id, $subscriber_ids, $args );
+
+		$query_args['return_ids'] = true;
+
+		$subscribers = mailster( 'subscribers' )->query( $query_args );
 
 		$timestamp = strtotime( '+ ' . $meta['autoresponder']['amount'] . ' ' . $meta['autoresponder']['unit'] );
 
 		$priority = $meta['autoresponder']['priority'];
 
-		// mailster('queue')->remove($campaign_id, $subscribers);
 		mailster( 'queue' )->bulk_add( $campaign_id, $subscribers, $timestamp, $priority, false, false, true );
 
 	}
@@ -1526,7 +1523,7 @@ class MailsterCampaigns {
 						case '3':
 							if ( ! $this->meta( $_POST['parent_id'], 'track_clicks' ) ) {
 								$parent_campaing = get_post( $parent_id );
-								mailster_notice( '<strong>' . sprintf( __( 'Tracking Clicks is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaing->ID . '&action=edit' ) . '">' . $parent_campaing->post_title . '</a>' ) . '</strong>', 'error', true );
+								mailster_notice( sprintf( __( 'Tracking Clicks is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaing->ID . '&action=edit' ) . '">' . $parent_campaing->post_title . '</a>' ), 'error', true );
 							}
 							break;
 
@@ -1541,6 +1538,9 @@ class MailsterCampaigns {
 				} elseif ( 'mailster_autoresponder_hook' == $autoresponder['action'] ) {
 
 					$hooks = get_option( 'mailster_hooks', array() );
+					if ( ! is_array( $hooks ) ) {
+						$hooks = array();
+					}
 					$hooks[ $post->ID ] = $autoresponder['hook'];
 					if ( ! $meta['active'] ) {
 						unset( $hooks[ $post->ID ] );
@@ -1548,7 +1548,9 @@ class MailsterCampaigns {
 
 					update_option( 'mailster_hooks', $hooks );
 					$autoresponder['once'] = isset( $autoresponder['hook_once'] );
-
+					if ( empty( $autoresponder['hook'] ) ) {
+						mailster_notice( __( 'Please define a hook which should trigger the campaign!', 'mailster' ), 'error', true );
+					}
 				} else {
 
 					$meta['timezone'] = isset( $autoresponder['post_published_timezone'] );
@@ -3625,6 +3627,7 @@ class MailsterCampaigns {
 
 		$mail->set_campaign( $campaign->ID );
 		$placeholder->set_campaign( $campaign->ID );
+		$placeholder->set_hash( $subscriber->hash );
 		$placeholder->replace_custom_tags( false );
 
 		if ( ! empty( $campaign_meta['attachments'] ) ) {
@@ -3680,8 +3683,7 @@ class MailsterCampaigns {
 		}
 
 		if ( $track ) {
-
-			// replace links
+			// always replace links
 			$content = mailster()->replace_links( $content, $subscriber->hash, $campaign->ID );
 
 		}
