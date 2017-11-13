@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * fixed: missing escaping in segmentation rules where LIKE is used
 * fixed: get next date on weekly autoresponder if weekday is not the current one
 * fixed: missing form field on autoresponder overview
+* fixed: updating third party templates via templates page
 
 = Version 2.2.13 =
 

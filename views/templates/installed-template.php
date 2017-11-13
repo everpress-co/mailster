@@ -3,7 +3,7 @@ $update = isset( $mailster_templates[ $slug ] ) && $mailster_templates[ $slug ][
 $licensecode = isset( $licensecodes[ $slug ] ) ? $licensecodes[ $slug ] : '';
 $envato_item_id = isset( $mailster_templates[ $slug ]['envato_item_id'] ) ? $mailster_templates[ $slug ]['envato_item_id'] : null;
 
-$is_free = isset( $mailster_templates[ $slug ] ) && isset( $mailster_templates[ $slug ]['is_free'] );
+$is_free = isset( $mailster_templates[ $slug ] ) && isset( $mailster_templates[ $slug ]['is_free'] ) && $mailster_templates[ $slug ]['is_free'];
 
 $class = array( 'mailster-box' );
 if ( $update ) {
