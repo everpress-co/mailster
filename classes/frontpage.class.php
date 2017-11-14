@@ -61,7 +61,8 @@ class MailsterFrontpage {
 		$rules = array();
 		$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
-		$rules['^(index\.php/)?(mailster|mymail)/(subscribe|update|unsubscribe)/?$'] = 'index.php?_mailster=$matches[3]';
+		// $rules['^(index\.php/)?(mailster|mymail)/(subscribe|update|unsubscribe)/?$'] = 'index.php?_mailster=$matches[3]';
+		$rules['^(index\.php/)?(mailster|mymail)/(subscribe)/?$'] = 'index.php?_mailster=$matches[3]';
 		$rules[ '(index\.php/)?(mailster)/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
 		if ( get_option( 'page_on_front' ) == $homepage && get_option( 'show_on_front' ) == 'page' ) {
@@ -244,7 +245,7 @@ class MailsterFrontpage {
 		}
 
 		if ( get_query_var( '_mailster' ) ) {
-			if ( in_array( get_query_var( '_mailster' ), array( 'subscribe', 'update', 'unsubscribe' ) ) ) {
+			if ( in_array( get_query_var( '_mailster' ), array( 'subscribe', '___update', '___unsubscribe' ) ) ) {
 				$this->do_post_actions();
 
 			} else {
@@ -886,7 +887,14 @@ class MailsterFrontpage {
 					$return .= do_shortcode( wpautop( $matches[5] ) );
 				}
 
-				$form = mailster( 'form' );
+				if ( preg_match( '/\[newsletter_signup_form id=("|\')?(\d+)("|\')?\]/', $content, $form_id ) ) {
+					$form_id = intval( $form_id );
+				} else {
+					global $wpdb;
+					$form_id = (int) $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" );
+				}
+
+				$form = mailster( 'form' )->id( $form_id );
 				$form->is_unsubscribe();
 				$form->campaign_id( get_query_var( '_mailster', get_query_var( '_mailster_extra' ) ) );
 

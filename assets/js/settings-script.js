@@ -442,7 +442,7 @@ jQuery(document).ready(function ($) {
 				_base = _this.parent().parent().parent(),
 				val = _sanitize(_this.val());
 
-			if (!val) _this.parent().parent().remove();
+			if (!val) _base.remove();
 
 			_this.val(val);
 			_base.find('.customfield-name').attr('name', 'mailster_options[custom_field][' + val + '][name]');
@@ -534,7 +534,7 @@ jQuery(document).ready(function ($) {
 	}
 
 	function _sanitize(string) {
-		var tag = $.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '');
+		var tag = $.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '').replace(/^[_]*/, '').replace(/[_]*$/, '');
 		if ($.inArray(tag, reservedtags) != -1) {
 			alert(sprintf(mailsterL10n.reserved_tag, '"' + tag + '"'));
 			tag += '-a';

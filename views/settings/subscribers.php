@@ -81,8 +81,8 @@
 		<th scope="row"><?php esc_html_e( 'Name Order', 'mailster' ) ?></th>
 		<td>
 		<select name="mailster_options[name_order]">
-			<option value="0"<?php selected( ! mailster_option( 'name_order' ) );?>><?php echo __( 'Firstname', 'mailster' ) . ' ' . __( 'Lastname', 'mailster' ) ?></option>
-			<option value="1"<?php selected( mailster_option( 'name_order' ) );?>><?php echo __( 'Lastname', 'mailster' ) . ' ' . __( 'Firstname', 'mailster' ) ?></option>
+			<option value="0"<?php selected( ! mailster_option( 'name_order' ) );?>><?php esc_html_e( 'Firstname', 'mailster' ) ?> <?php esc_html_e( 'Lastname', 'mailster' ) ?></option>
+			<option value="1"<?php selected( mailster_option( 'name_order' ) );?>><?php esc_html_e( 'Lastname', 'mailster' ) ?> <?php esc_html_e( 'Firstname', 'mailster' ) ?></option>
 		</select>
 		<p class="description"><?php printf( __( 'Define in which order names appear in your language or country. This is used for the %s tag.', 'mailster' ), '<code>{fullname}</code>' );?></p>
 		</td>
@@ -90,7 +90,7 @@
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Custom Fields', 'mailster' ) ?>:
 			<p class="description"><?php esc_html_e( 'Custom field tags are individual tags for each subscriber. You can ask for them on subscription and/or make it a required field.', 'mailster' );?></p>
-			<p class="description"><?php esc_html_e( 'You have to enable Custom fields for each form:', 'mailster' );?> <a href="#forms"><?php esc_html_e( 'Forms', 'mailster' );?></a></p>
+			<p class="description"><?php esc_html_e( 'You have to enable Custom fields for each form:', 'mailster' );?><br><a href="edit.php?post_type=newsletter&page=mailster_forms"><?php esc_html_e( 'Forms', 'mailster' );?></a></p>
 		</th>
 		<td>
 		<input type="hidden" name="mailster_options[custom_field][0]" value="empty">
@@ -113,7 +113,7 @@
 				<div><span class="label"><?php esc_html_e( 'Type', 'mailster' );?>:</span><select class="customfield-type" name="mailster_options[custom_field][<?php echo $id ?>][type]">
 				<?php
 				foreach ( $types as $value => $name ) {
-					echo '<option value="' . $value . '" ' . selected( $data['type'], $value, false ) . '>' . $name . '</option>';
+					echo '<option value="' . $value . '" ' . selected( $data['type'], $value, false ) . '>' . esc_attr( $name ) . '</option>';
 				}
 				?>
 				</select>
