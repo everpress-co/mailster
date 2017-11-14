@@ -301,6 +301,8 @@ class MailsterSubscriberQuery {
 			}
 		}
 
+		$this->args = apply_filters( 'mailster_subscriber_query_args', $this->args );
+
 		$cache_key = 'query_' . md5( serialize( $this->args ) );
 
 		if ( $result = mailster_cache_get( $cache_key ) ) {
@@ -346,7 +348,6 @@ class MailsterSubscriberQuery {
 		if ( $this->args['s'] ) {
 			$search_fields = $this->args['search_fields'] ? $this->args['search_fields'] : array_merge( array( 'email', 'hash', 'fullname' ), $this->custom_fields );
 			$meta_and_fields = array_merge( $search_fields, $meta_and_fields );
-		} else {
 		}
 
 		if ( in_array( 'fullname', $meta_and_fields ) ) {
@@ -703,6 +704,10 @@ class MailsterSubscriberQuery {
 			}
 		}
 
+		if ( $this->args['where'] ) {
+			$wheres[] = 'AND ( ' . implode( ' AND ', array_unique( $this->args['where'] ) ) . " )\n";
+		}
+
 		if ( $this->args['orderby'] && ! $this->args['return_count'] ) {
 
 			$ordering = isset( $this->args['order'][0] ) ? strtoupper( $this->args['order'][0] ) : 'ASC';
@@ -734,13 +739,13 @@ class MailsterSubscriberQuery {
 			}
 		}
 
-		$select = 'SELECT ';
+		$select = 'SELECT';
 
 		if ( $this->args['calc_found_rows'] ) {
-			$select .= 'SQL_CALC_FOUND_ROWS subscribers.ID, ';
+			$select .= ' SQL_CALC_FOUND_ROWS subscribers.ID,';
 		}
 
-		$select .= implode( ', ', $this->args['select'] ) . "\n";
+		$select .= ' ' . implode( ', ', $this->args['select'] ) . "\n";
 
 		$from = " FROM {$wpdb->prefix}mailster_subscribers AS subscribers" . "\n";
 
@@ -750,9 +755,6 @@ class MailsterSubscriberQuery {
 		}
 
 		$where = '';
-		if ( $this->args['where'] ) {
-			$wheres[] = 'AND ( ' . implode( ' AND ', array_unique( $this->args['where'] ) ) . " )\n";
-		}
 		if ( ! empty( $wheres ) ) {
 			$where = ' WHERE 1=1 ' . implode( "\n  ", array_unique( $wheres ) ) . "\n";
 		}
@@ -781,6 +783,8 @@ class MailsterSubscriberQuery {
 
 		// legacy filter
 		$sql = apply_filters( 'mailster_campaign_get_subscribers_by_list_sql', $sql );
+
+		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql );
 
 		if ( $this->args['return_sql'] ) {
 			$result = $this->last_query = $sql;
