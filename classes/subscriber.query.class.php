@@ -277,7 +277,7 @@ class MailsterSubscriberQuery {
 					if ( 'fullname' == $field ) {
 						$this->args['fields'][] = 'firstname';
 						$this->args['fields'][] = 'lastname';
-						$this->args['select'][] = ( ! $name_order ? "CONCAT(`field_firstname`.meta_value, ' ', `field_lastname`.meta_value)" : "CONCAT(`field_lastname`.meta_value, ' ', `field_firstname`.meta_value)" ) . ' AS fullname';
+						$this->args['select'][] = ( ! $name_order ? "CONCAT_WS(' ', `field_firstname`.meta_value, `field_lastname`.meta_value)" : "CONCAT_WS(' ', `field_lastname`.meta_value, `field_firstname`.meta_value)" ) . ' AS fullname';
 					} elseif ( in_array( strtolower( $field ), $this->fields ) ) {
 						$this->args['select'][] = "subscribers.$field";
 					} else {
@@ -606,9 +606,9 @@ class MailsterSubscriberQuery {
 
 						if ( 'fullname' == $search_field ) {
 							if ( ! $name_order ) {
-								$searches[] = "(CONCAT(`field_firstname`.meta_value, ' ', `field_lastname`.meta_value) LIKE '$wildcard$term$wildcard')";
+								$searches[] = "(CONCAT_WS(' ', `field_firstname`.meta_value, `field_lastname`.meta_value) LIKE '$wildcard$term$wildcard')";
 							} else {
-								$searches[] = "(CONCAT(`field_lastname`.meta_value, ' ', `field_firstname`.meta_value) LIKE '$wildcard$term$wildcard')";
+								$searches[] = "(CONCAT_WS(' ', `field_lastname`.meta_value, `field_firstname`.meta_value) LIKE '$wildcard$term$wildcard')";
 							}
 						} elseif ( in_array( $search_field, $this->custom_fields ) ) {
 
@@ -636,9 +636,9 @@ class MailsterSubscriberQuery {
 
 					if ( 'fullname' == $search_field ) {
 						if ( ! $name_order ) {
-							$search_orders[] = "WHEN (CONCAT(`field_firstname`.meta_value, ' ', `field_lastname`.meta_value) LIKE '%$concated_search_terms%') THEN 1";
+							$search_orders[] = "WHEN (CONCAT_WS(' ', `field_firstname`.meta_value, `field_lastname`.meta_value) LIKE '%$concated_search_terms%') THEN 1";
 						} else {
-							$search_orders[] = "WHEN (CONCAT(`field_lastname`.meta_value, ' ', `field_firstname`.meta_value) LIKE '%$concated_search_terms%') THEN 1";
+							$search_orders[] = "WHEN (CONCAT_WS(' ', `field_lastname`.meta_value, `field_firstname`.meta_value) LIKE '%$concated_search_terms%') THEN 1";
 						}
 					} elseif ( in_array( $search_field, $this->custom_fields ) ) {
 
@@ -674,9 +674,9 @@ class MailsterSubscriberQuery {
 
 						if ( 'fullname' == $search_field ) {
 							if ( ! $name_order ) {
-								$searches[] = "(CONCAT(`field_firstname`.meta_value, ' ', `field_lastname`.meta_value) NOT LIKE '$wildcard$term$wildcard' OR CONCAT(`field_firstname`.meta_value, ' ', `field_lastname`.meta_value) IS NULL)";
+								$searches[] = "(CONCAT_WS(' ', `field_firstname`.meta_value, `field_lastname`.meta_value) NOT LIKE '$wildcard$term$wildcard' OR CONCAT_WS(' ', `field_firstname`.meta_value, `field_lastname`.meta_value) IS NULL)";
 							} else {
-								$searches[] = "(CONCAT(`field_lastname`.meta_value, ' ', `field_firstname`.meta_value) NOT LIKE '$wildcard$term$wildcard' OR CONCAT(`field_lastname`.meta_value, ' ', `field_firstname`.meta_value) IS NULL)";
+								$searches[] = "(CONCAT_WS(' ', `field_lastname`.meta_value, `field_firstname`.meta_value) NOT LIKE '$wildcard$term$wildcard' OR CONCAT_WS(' ', `field_lastname`.meta_value, `field_firstname`.meta_value) IS NULL)";
 							}
 						} elseif ( in_array( $search_field, $this->custom_fields ) ) {
 
