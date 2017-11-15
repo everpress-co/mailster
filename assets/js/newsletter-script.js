@@ -2978,7 +2978,7 @@ jQuery(document).ready(function ($) {
 
 				loader(false);
 
-			}, Math.abs(offset - animateDOM.scrollTop()));
+			}, 100);
 
 
 		}
