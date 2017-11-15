@@ -89,6 +89,7 @@ Xaver Birsak – https://everpress.io
 * fixed: get next date on weekly autoresponder if weekday is not the current one
 * fixed: missing form field on autoresponder overview
 * fixed: updating third party templates via templates page
+* updated: included template to 6.1
 
 = Version 2.2.13 =
 
