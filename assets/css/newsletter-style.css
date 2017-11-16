@@ -29,7 +29,7 @@
 #mailster_submitdiv.postbox .inside #draft{
 	float: left;
 }
-#local-storage-notice, .wrap .notice.notice-warning{display: none !important;}
+/*#local-storage-notice, .wrap .notice.notice-warning{display: none !important;}*/
 .focus-on #normal-sortables, .focus-on #normal-sortables div#mailster_template, .focus-on #normal-sortables div#mailster_template > *, .focus-on div.updated, .focus-on .postbox-container > *{
 	opacity: 1;
 }

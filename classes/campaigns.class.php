@@ -1310,7 +1310,6 @@ class MailsterCampaigns {
 		if ( $is_autosave && 'newsletter' != get_post_type( $is_autosave ) ) {
 			return $post;
 		}
-
 		// no autosave and no newsletter
 		if ( ! $is_autosave && 'newsletter' != $post['post_type'] ) {
 			return $post;
@@ -1366,7 +1365,7 @@ class MailsterCampaigns {
 	 */
 	public function save_campaign( $post_id, $post, $update = null ) {
 
-		if ( ! isset( $post ) || $post->post_type != 'newsletter' ) {
+		if ( ! isset( $post ) ) {
 			return $post;
 		}
 
@@ -1380,7 +1379,9 @@ class MailsterCampaigns {
 		} elseif ( isset( $_POST['mailster_data'] ) ) {
 
 			$postdata = $_POST['mailster_data'];
-
+			if ( $post->post_type != 'newsletter' ) {
+				return $post;
+			}
 		} else {
 			return $post;
 		}
@@ -1400,6 +1401,7 @@ class MailsterCampaigns {
 			// $postdata['preheader'] = wp_encode_emoji( $postdata['preheader'] );
 			// $postdata['from_name'] = wp_encode_emoji( $postdata['from_name'] );
 			// }
+			error_log( '<pre>' . print_r( $postdata, true ) . '</pre>' );
 			$meta['subject'] = $postdata['subject'];
 			$meta['preheader'] = $postdata['preheader'];
 			$meta['template'] = $postdata['template'];

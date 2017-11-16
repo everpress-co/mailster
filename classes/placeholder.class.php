@@ -595,7 +595,6 @@ class MailsterPlaceholder {
 		}
 
 		$pts = mailster( 'helper' )->get_post_types();
-		$pts = implode( '|', $pts );
 
 		$timeformat = get_option( 'time_format' );
 		$dateformat = get_option( 'date_format' );
@@ -632,37 +631,47 @@ class MailsterPlaceholder {
 						$width = isset( $query['w'] ) ? intval( $query['w'] ) * $factor : null;
 						$height = isset( $query['h'] ) ? intval( $query['h'] ) * $factor : null;
 						$crop = isset( $query['c'] ) && $height ? ! ! ( $query['c'] ) : false;
-
-						// cropping requires height
-						if ( ! $crop ) {
-							$height = null;
-						}
-
 						$post_type = str_replace( '_image', '', $parts[0] );
+						$is_post = $post_type != $parts[0] && in_array( $post_type, $pts );
+						$org_src = false;
 
-						$extra = explode( '|', $parts[1] );
-						$term_ids = explode( ';', $extra[0] );
-						$fallback_id = isset( $extra[1] ) ? intval( $extra[1] ) : mailster_option( 'fallback_image' );
-
-						$post_id = intval( array_shift( $term_ids ) );
-
-						if ( $post_id < 0 ) {
-
-							$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids );
-
-						} elseif ( $post_id > 0 ) {
-
-							if ( $relative_to_absolute ) {
-								continue;
+						if ( $is_post ) {
+							// cropping requires height
+							if ( ! $crop ) {
+								$height = null;
 							}
+							$extra = explode( '|', $parts[1] );
+							$term_ids = explode( ';', $extra[0] );
+							$fallback_id = isset( $extra[1] ) ? intval( $extra[1] ) : mailster_option( 'fallback_image' );
+							$post_id = intval( array_shift( $term_ids ) );
 
-							$post = get_post( $post_id );
+							if ( $post_id < 0 ) {
 
+								$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids );
+
+							} elseif ( $post_id > 0 ) {
+
+								if ( $relative_to_absolute ) {
+									continue;
+								}
+
+								$post = get_post( $post_id );
+
+							}
+						} else {
+							$fallback_id = mailster_option( 'fallback_image' );
+							$post = null;
+							$thumb_id = null;
+							$src = apply_filters( 'mailster_image_placeholder', $query['tag'], $width, $height, $crop, $this->campaignID, $this->subscriberID );
+							if ( $src && $src != $query['tag'] ) {
+								if ( ! is_array( $src ) ) {
+									$src = array( $src, $width, $height );
+								}
+								$org_src = $src;
+							}
 						}
 
 						if ( ! $relative_to_absolute ) {
-
-							$org_src = false;
 
 							if ( ! empty( $post ) ) {
 								$thumb_id = get_post_thumbnail_id( $post->ID );
@@ -713,6 +722,8 @@ class MailsterPlaceholder {
 				}
 			}
 		}
+
+		$pts = implode( '|', $pts );
 
 		// all dynamic post type tags
 		if ( $count = preg_match_all( '#\{((' . $pts . ')_([^}]+):(-)?([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {

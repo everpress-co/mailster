@@ -1396,7 +1396,7 @@ class MailsterAjax {
 
 		if ( is_numeric( $_POST['id'] ) ) {
 			$post = get_post( intval( $_POST['id'] ) );
-			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : null;
+			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 
 			if ( $post ) {
 				if ( ! $post->post_excerpt ) {
@@ -1459,7 +1459,7 @@ class MailsterAjax {
 			$id = intval( array_pop( $url ) );
 			$url = implode( '#', $url );
 			$rss = fetch_feed( $url );
-			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : null;
+			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 
 			if ( ! is_wp_error( $rss ) ) {
 
@@ -1533,7 +1533,7 @@ class MailsterAjax {
 		$offset = $relative + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
-		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : null;
+		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 
 		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, true );
 		$is_post = ! ! $post;

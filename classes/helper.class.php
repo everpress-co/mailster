@@ -40,10 +40,28 @@ class MailsterHelper {
 			$file_path = parse_url( $img_url );
 
 			if ( file_exists( $img_url ) ) {
+
 				$actual_file_path = $img_url;
 				$img_url = str_replace( ABSPATH, site_url( '/' ), $img_url );
+			} elseif ( strpos( $img_url, admin_url( 'admin-ajax' ) ) === 0 ) {
+
+				parse_str( $file_path['query'], $query );
+				$width = $query['w'];
+				$height = $query['h'];
+				$crop = $query['c'];
+
+				return apply_filters( 'mailster_create_image', array(
+					'id' => $attach_id,
+					'url' => $img_url,
+					'width' => $width,
+					'height' => $height,
+					'asp' => $width / $height,
+				), $attach_id, $img_url, $width, $height, $crop);
+
 			} else {
+
 				$actual_file_path = realpath( $_SERVER['DOCUMENT_ROOT'] ) . $file_path['path'];
+
 				/* todo: reconize URLs */
 				if ( ! file_exists( $actual_file_path ) ) {
 

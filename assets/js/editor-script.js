@@ -73,8 +73,7 @@ jQuery(document).ready(function ($) {
 
 		//legacy buttons
 		body.find('div.modulebuttons').remove();
-		(mailsterdata.isrtl) ?
-		html.attr('mailster-is-rtl', ''): html.removeAttr('mailster-is-rtl');
+		(mailsterdata.isrtl) ? html.attr('mailster-is-rtl', ''): html.removeAttr('mailster-is-rtl');
 
 	});
 
@@ -83,8 +82,8 @@ jQuery(document).ready(function ($) {
 		container = $('modules');
 		modules = container.find('module');
 		images = $('img[editable]');
-		buttons = $('buttons'),
-			repeatable = $('[repeatable]');
+		buttons = $('buttons');
+		repeatable = $('[repeatable]');
 
 		_sortable();
 		_draggable();
@@ -175,32 +174,33 @@ jQuery(document).ready(function ($) {
 				}
 			});
 
-			editor.on('change', function (event) {
-				var content = event.level.content,
-					c = content.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/g);
-				if (c) {
-					for (var i = c.length - 1; i >= 0; i--) {
-						content = content.replace(c[i], _hex(c[i]));
+			editor
+				.on('change', function (event) {
+					var content = event.level.content,
+						c = content.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/g);
+					if (c) {
+						for (var i = c.length - 1; i >= 0; i--) {
+							content = content.replace(c[i], _hex(c[i]));
+						}
+						this.bodyElement.innerHTML = content;
 					}
-					this.bodyElement.innerHTML = content;
-				}
-				_trigger('save');
-				change = true;
-			});
-			editor.on('click', function (event) {
-				_trigger('selectModule', $(event.currentTarget).closest('module'));
-				event.stopPropagation();
-				editor.focus();
-			});
-			editor.on('focus', function (event) {
-				event.stopPropagation();
-				editor.selection.select(editor.getBody(), true);
-				if (container.data('uiSortable')) container.sortable('destroy');
-			});
-			editor.on('blur', function (event) {
-				_trigger('refresh');
-				_sortable();
-			});
+					_trigger('save');
+					change = true;
+				})
+				.on('click', function (event) {
+					_trigger('selectModule', $(event.currentTarget).closest('module'));
+					event.stopPropagation();
+					editor.focus();
+				})
+				.on('focus', function (event) {
+					event.stopPropagation();
+					editor.selection.select(editor.getBody(), true);
+					if (container.data('uiSortable')) container.sortable('destroy');
+				})
+				.on('blur', function (event) {
+					_trigger('refresh');
+					_sortable();
+				});
 
 		}
 
@@ -304,7 +304,8 @@ jQuery(document).ready(function ($) {
 					_trigger('refresh');
 
 				}
-			}).droppable({
+			})
+			.droppable({
 				addClasses: false,
 				over: function (event, ui) {
 					$(event.target).addClass('ui-drag-over');
