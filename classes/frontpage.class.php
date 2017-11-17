@@ -421,6 +421,7 @@ class MailsterFrontpage {
 
 				$profile_url = $this->get_link( 'profile', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
 
+
 				// if tracking is disabled
 				if ( strpos( $profile_url, $wp->request ) === false ) {
 					$this->setcookie( get_query_var( '_mailster_hash' ) );
@@ -437,7 +438,7 @@ class MailsterFrontpage {
 
 					if ( is_user_logged_in() ) {
 						if ( $subscriber = mailster( 'subscribers' )->get_by_wpid( get_current_user_id() ) ) {
-							get_query_var( '_mailster_hash', md5( wp_create_nonce( 'mailster_nonce' ) . $subscriber->hash ) );
+							set_query_var( '_mailster_hash', $subscriber->hash );
 						}
 					}
 

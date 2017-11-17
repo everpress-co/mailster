@@ -60,7 +60,6 @@ class MailsterCampaigns {
 			add_action( 'get_the_excerpt', array( &$this, 'get_the_excerpt' ) );
 			add_action( 'admin_enqueue_scripts', array( &$this, 'assets' ) );
 
-			// add_filter( '_wp_post_revision_field_post_content', array( &$this, 'revision_field_post_content' ), 10, 2 );
 		}
 
 	}
@@ -1401,7 +1400,6 @@ class MailsterCampaigns {
 			// $postdata['preheader'] = wp_encode_emoji( $postdata['preheader'] );
 			// $postdata['from_name'] = wp_encode_emoji( $postdata['from_name'] );
 			// }
-			error_log( '<pre>' . print_r( $postdata, true ) . '</pre>' );
 			$meta['subject'] = $postdata['subject'];
 			$meta['preheader'] = $postdata['preheader'];
 			$meta['template'] = $postdata['template'];
@@ -4320,55 +4318,6 @@ class MailsterCampaigns {
 
 		return $content;
 
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $content
-	 * @param unknown $field
-	 * @return unknown
-	 */
-	public function revision_field_post_content( $content, $field ) {
-
-		global $post, $mailster_revisionnow;
-
-		if ( $post->post_type != 'newsletter' ) {
-			return $content;
-		}
-
-		$data = get_post_meta( $post->ID, 'mailster-data', true );
-		$ids = ( isset( $_REQUEST['revision'] ) ) ? array(
-			(int) $_REQUEST['revision'],
-		) : array(
-			(int) $_REQUEST['left'],
-			(int) $_REQUEST['right'],
-		);
-
-?>
-		<tr id="revision-field-<?php echo $field; ?>-preview">
-		<th scope="row"><h2>
-<?php
-
-if ( ! $mailster_revisionnow && isset( $_REQUEST['left'] ) ) {
-	printf( __( 'Older: %s', 'mailster' ), wp_post_revision_title( get_post( $_REQUEST['left'] ) ) );
-} elseif ( $mailster_revisionnow && isset( $_REQUEST['right'] ) ) {
-	printf( __( 'Newer: %s', 'mailster' ), wp_post_revision_title( get_post( $_REQUEST['left'] ) ) );
-} else {
-	esc_html_e( 'Preview', 'mailster' );
-}
-		$mailster_revisionnow = ( ! $mailster_revisionnow ) ? $ids[0] : ( isset( $ids[1] ) ? $ids[1] : $mailster_revisionnow );
-
-?>
-		</h2></th>
-		<td><iframe id="mailster_iframe" src="<?php echo admin_url( 'admin-ajax.php?action=mailster_get_template&id=' . $post->ID . '&revision=' . $mailster_revisionnow . '&template=&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) . '&editorstyle=0&nocache=' . time() ); ?>" width="50%" height="640" scrolling="auto" frameborder="0" data-no-lazy=""></iframe></td>
-		</tr>
-		<?php
-
-		$head = isset( $data['head'] ) ? $data['head'] : null;
-
-		return mailster()->sanitize_content( $content, null, $head );
 	}
 
 

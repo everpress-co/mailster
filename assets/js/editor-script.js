@@ -187,6 +187,9 @@ jQuery(document).ready(function ($) {
 					_trigger('save');
 					change = true;
 				})
+				.on('keyup', function (event) {
+					$(event.currentTarget).prop('spellcheck', true);
+				})
 				.on('click', function (event) {
 					_trigger('selectModule', $(event.currentTarget).closest('module'));
 					event.stopPropagation();

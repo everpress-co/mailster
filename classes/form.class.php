@@ -190,9 +190,6 @@ class MailsterForm {
 		add_action( 'wp_footer', array( &$this, 'print_script' ) );
 		add_action( 'admin_footer', array( &$this, 'print_script' ) );
 
-		// if ( $this->unsubscribe ) {
-		// return $this->unsubscribe_form();
-		// }
 		if ( $this->prefill ) {
 
 			$current_user = wp_get_current_user();

@@ -84,6 +84,15 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+* improved: autosave mechanism
+* improved: editor
+
+= Version 2.3.beta.2 =
+
+* improved: subscriber query
+
+= Version 2.3.beta.1 =
+
 * new: option to hide the Webversion Bar
 * new: option to disable tracking on campaign based basis
 * new: option to disable user avatars

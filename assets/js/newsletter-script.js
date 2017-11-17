@@ -2371,7 +2371,7 @@ jQuery(document).ready(function ($) {
 			} else if (current.type == 'codeview') {
 
 				var html = codemirror.getValue();
-				current.element.html(_filterHTML(html));
+				current.element.html(html);
 				current.modulebuttons.prependTo(current.element);
 
 			}
@@ -3445,6 +3445,7 @@ jQuery(document).ready(function ($) {
 				if (_currentundo) _obar.find('a.undo').removeClass('disabled');
 				_obar.find('a.redo').addClass('disabled');
 
+				wp.autosave.local.save();
 			}
 
 		}
@@ -3816,11 +3817,10 @@ jQuery(document).ready(function ($) {
 		attrcount = bodyattributes.length;
 
 		while (attrcount--) {
-			s = ' ' + bodyattributes[attrcount].name + '="' + bodyattributes[attrcount].value + '"' + s;
+			s = ' ' + bodyattributes[attrcount].name + '="' + $.trim(bodyattributes[attrcount].value) + '"' + s;
 		}
-
 		s = s
-			.replace(/(webkit|wp\-editor|mceContentBody|position: relative;|modal-open)/g, '')
+			.replace(/(webkit|wp\-editor|mceContentBody|position: relative;|modal-open| spellcheck="(true|false)")/g, '')
 			.replace(/(class="(\s*)"|style="(\s*)")/g, '')
 
 		return _head.val() + "\n<body" + s + ">\n" + content + "\n</body>\n</html>";
@@ -3846,7 +3846,7 @@ jQuery(document).ready(function ($) {
 		headdoc.innerHTML = head.replace(/([^]*)<head([^>]*)?>([^]*)<\/head>([^]*)/m, '$3');
 		$(headdoc).append(headstyles);
 
-		doc.body.innerHTML = _filterHTML(content);
+		doc.body.innerHTML = content;
 
 		while (attrcount--) {
 			doc.body.setAttribute(bodyattributes[attrcount].name, bodyattributes[attrcount].value)
@@ -3860,10 +3860,6 @@ jQuery(document).ready(function ($) {
 		}
 
 		if (typeof saveit == 'undefined' || saveit === true) _trigger('save');
-	}
-
-	function _filterHTML(html) {
-		return html;
 	}
 
 	function _getAutosaveString() {
