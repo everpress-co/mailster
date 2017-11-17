@@ -518,6 +518,11 @@ if ( $old_version ) {
 
 		case '2.2.11':
 		case '2.2.12':
+		case '2.2.13':
+
+			mailster_notice( '<strong>Experience the future of Mailster.</strong><br>Try the next version of Mailster <a href="https://rxa.li/betademo" target="_blank">right now</a>.', 'info', false, 'mailsterbeta' );
+
+		case '2.2.14':
 
 		default:
 

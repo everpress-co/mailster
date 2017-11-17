@@ -2,8 +2,8 @@
 Contributors: EverPress, revaxarts
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.8.2
-Stable tag: 2.2.13
+Tested up to: 4.9
+Stable tag: 2.2.14
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3
@@ -81,6 +81,15 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.2.14 =
+
+* fixed: ratings with '%' in segmentation causes not expected behavior in WordPress 4.8.3+
+* fixed: missing escaping in segmentation rules where LIKE is used
+* fixed: get next date on weekly autoresponder if weekday is not the current one
+* fixed: missing form field on autoresponder overview
+* fixed: updating third party templates via templates page
+* updated: included template to 6.1
 
 = Version 2.2.13 =
 

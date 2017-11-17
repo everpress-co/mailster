@@ -29,7 +29,7 @@ foreach ( $blogids as $blog_id ) {
 		$mailster_options = get_option( 'mailster_options' );
 	}
 	// stop if data should be kept
-	if ( ! isset( $mailster_options['remove_data'] ) ) {
+	if ( ! $mailster_options['remove_data'] ) {
 		continue;
 	}
 

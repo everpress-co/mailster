@@ -892,6 +892,7 @@ class MailsterCampaigns {
 									'confirm' => __( 'Confirm Date', 'mailster' ),
 									'ip_confirm' => __( 'Confirm IP', 'mailster' ),
 									'rating' => __( 'Rating', 'mailster' ),
+									'form' => __( 'Form', 'mailster' ),
 								);
 
 								$wp_meta = wp_parse_args( mailster( 'helper' )->get_wpuser_meta_fields(), array(
@@ -3258,7 +3259,7 @@ class MailsterCampaigns {
 		foreach ( $conditions['conditions'] as $options ) {
 
 			$field = esc_sql( $options['field'] );
-			$value = esc_sql( stripslashes( $options['value'] ) );
+			$value = addslashes( stripslashes( $options['value'] ) );
 			$is_empty = '' == $value;
 			$extra = '';
 			$positive = false;
@@ -3290,7 +3291,7 @@ class MailsterCampaigns {
 					} elseif ( in_array( $field, $wp_user_meta ) ) {
 						$f = "`meta_wp_$field`.meta_value";
 						if ( $field == 'wp_capabilities' ) {
-							$value = 's:' . strlen( $value ) . ':"' . strtolower( $value ) . '";';
+							$value = 's:' . strlen( $value ) . ':"' . strtolower( addcslashes( $value, '_%\\' ) ) . '";';
 							$cond[] = "`meta_wp_$field`.meta_value " . ( $options['operator'] == 'is' ? 'LIKE' : 'NOT LIKE' ) . " '%$value%'";
 							break;
 						}
@@ -3312,6 +3313,7 @@ class MailsterCampaigns {
 					if ( $field == 'wp_capabilities' ) {
 						$value = "'a:%" . strtolower( $value ) . "%'";
 					} else {
+						$value = addcslashes( $value, '_%\\' );
 						$value = "'%$value%'";
 					}
 					if ( in_array( $field, $custom_fields ) ) {
@@ -3336,6 +3338,7 @@ class MailsterCampaigns {
 					if ( $field == 'wp_capabilities' ) {
 						$value = "'%\"" . strtolower( $value ) . "%'";
 					} else {
+						$value = addcslashes( $value, '_%\\' );
 						$value = "'$value%'";
 					}
 					if ( in_array( $field, $custom_fields ) ) {
@@ -3357,6 +3360,7 @@ class MailsterCampaigns {
 					if ( $field == 'wp_capabilities' ) {
 						$value = "'%" . strtolower( $value ) . "\"%'";
 					} else {
+						$value = addcslashes( $value, '_%\\' );
 						$value = "'%$value'";
 					}
 

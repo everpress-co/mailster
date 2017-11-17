@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.1
+// Version 3.2
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -54,8 +54,7 @@ class UpdateCenterPlugin {
 
 		add_filter( 'updatecenter_verify', array( 'UpdateCenterPlugin', 'verify' ), 10, 2 );
 
-		register_activation_hook( $plugin_data->plugin, array( 'UpdateCenterPlugin', 'clear_options' ) );
-		register_deactivation_hook( $plugin_data->plugin, array( 'UpdateCenterPlugin', 'clear_options' ) );
+		register_deactivation_hook( $plugin_data->plugin, array( 'UpdateCenterPlugin', 'deactivate' ) );
 
 		return self::$_instance;
 	}
@@ -78,7 +77,7 @@ class UpdateCenterPlugin {
 
 		add_action( 'wp_update_plugins', array( &$this, 'check_periodic_updates' ), 99 );
 		add_action( 'updatecenterplugin_check', array( &$this, 'check_periodic_updates' ) );
-		add_filter( 'upgrader_post_install', array( &$this, 'check_periodic_updates' ), 99 );
+		add_filter( 'upgrader_post_install', array( &$this, 'upgrader_post_install' ), 99, 3 );
 
 		add_filter( 'auto_update_plugin', array( &$this, 'auto_update' ), 10, 2 );
 
@@ -615,17 +614,27 @@ class UpdateCenterPlugin {
 	 *
 	 * @return unknown
 	 */
+	public function upgrader_post_install( $bool, $hook_extra, $result ) {
+
+		if ( isset( $hook_extra['plugin'] ) && isset( self::$plugins[ dirname( $hook_extra['plugin'] ) ] ) ) {
+			unset( self::$plugins[ dirname( $hook_extra['plugin'] ) ] );
+			self::save_options();
+		}
+		return $bool;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
 	public function get_collection() {
 
-		switch ( current_filter() ) {
-			case 'updatecenterplugin_check';
+		$timeout = 12 * HOUR_IN_SECONDS;
+
+		if ( 'updatecenterplugin_check' == current_filter() ) {
 				$timeout = 60;
-				break;
-			case 'upgrader_post_install';
-				$timeout = 0;
-				break;
-			default:
-				$timeout = 43200;
 		}
 
 		$collection = array();
@@ -642,6 +651,28 @@ class UpdateCenterPlugin {
 	}
 
 
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public static function deactivate() {
+
+		$plugin = str_replace( 'deactivate_', '', current_filter() );
+
+		if ( isset( self::$plugins[ dirname( $plugin ) ] ) ) {
+			unset( self::$plugins[ dirname( $plugin ) ] );
+			self::save_options();
+		}
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
 	public static function clear_options() {
 
 		self::$plugins = array();
