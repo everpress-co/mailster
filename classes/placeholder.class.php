@@ -171,6 +171,10 @@ class MailsterPlaceholder {
 			'hour' => $time[3],
 			'minute' => $time[4],
 		);
+		if ( $meta['nowebversion'] ) {
+			$defaults['webversion'] = '';
+			$defaults['webversionlink'] = '';
+		}
 
 		$args = wp_parse_args( $args, $defaults );
 

@@ -19,16 +19,12 @@ $sent = $this->get_sent( $post->ID );
 
 		<div id="delete-action">
 			<?php
-			if ( current_user_can( 'delete_post', $post->ID ) ) :
-
-				if ( ! EMPTY_TRASH_DAYS ) {
-					$delete_text = __( 'Delete Permanently', 'mailster' );
-				} else {
-					$delete_text = __( 'Move to Trash', 'mailster' );
-				}
-
-				?>
-				<a class="submitdelete deletion" href="<?php echo get_delete_post_link( $post->ID ); ?>"><?php echo $delete_text; ?></a>
+			if ( current_user_can( 'delete_post', $post->ID ) ) : ?>
+			<p class="clear" id="delete-field">
+				<a class="submitdelete deletion" href="<?php echo get_delete_post_link( $post->ID ); ?>">
+					<?php ( ! EMPTY_TRASH_DAYS ) ? esc_html_e( 'Delete Permanently', 'mailster' ) : esc_html_e( 'Move to Trash', 'mailster' ); ?>
+				</a>
+			</p>
 			<?php endif; ?>
 			</div>
 
@@ -36,7 +32,7 @@ $sent = $this->get_sent( $post->ID );
 			<?php if ( ! in_array( $post->post_status, array( 'active', 'finished' ) ) && ! isset( $_GET['showstats'] ) ) : ?>
 
 			<p class="clear" id="password-field">
-				<label for="post_password"><input type="checkbox" name="use_pwd" id="use_pwd" value="1" <?php checked( ! ! $post->post_password ); ?>> <?php esc_html_e( 'Password', 'mailster' ) ?></label>
+				<label for="use_pwd"><input type="checkbox" name="use_pwd" id="use_pwd" value="1" <?php checked( ! ! $post->post_password ); ?>> <?php esc_html_e( 'Password', 'mailster' ) ?></label>
 				<span id="password-wrap" <?php if ( ! $post->post_password ) { echo 'style="display:none;"'; } ?>>
 					<input type="hidden" name="post_password" value="">
 					<input type="text" class="widefat" name="post_password" id="post_password" value="<?php echo $post->post_password ?>" maxlength="20"><br>
@@ -44,8 +40,10 @@ $sent = $this->get_sent( $post->ID );
 				</span>
 			</p>
 
+			<p class="clear" id="webversion-field">
+				<label for="use_webversion"><input type="checkbox" id="use_webversion" name="mailster_data[nowebversion]" value="1" <?php checked( ! $this->post_data['nowebversion'] ); ?>> <?php esc_html_e( 'enable Webversion', 'mailster' ) ?></label>
+			</p>
 			<?php elseif ( ! ! $post->post_password ) : ?>
-
 			<p class="description alignright"><?php esc_html_e( 'password protected', 'mailster' ); ?></p>
 			<?php endif; ?>
 

@@ -42,6 +42,7 @@ class MailsterCampaigns {
 
 			add_action( 'admin_menu', array( &$this, 'remove_meta_boxs' ) );
 			add_action( 'admin_menu', array( &$this, 'autoresponder_menu' ), 20 );
+			add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
 			add_action( 'save_post', array( &$this, 'save_campaign' ), 10, 3 );
 			add_filter( 'wp_insert_post_data', array( &$this, 'wp_insert_post_data' ), 1, 2 );
@@ -235,6 +236,18 @@ class MailsterCampaigns {
 		remove_meta_box( 'submitdiv', 'newsletter', 'core' );
 	}
 
+
+	public function display_post_states( $post_states, $post ) {
+
+		if ( $post->post_type == 'newsletter' ) {
+			if ( $this->meta( $post->ID, 'nowebversion' ) ) {
+				$post_states['mailster_no_webversion'] = __( 'Private', 'mailster' );
+			}
+		}
+
+		return $post_states;
+
+	}
 
 	public function autoresponder_menu() {
 
@@ -1410,6 +1423,7 @@ class MailsterCampaigns {
 			$meta['from_email'] = $postdata['from_email'];
 			$meta['reply_to'] = $postdata['reply_to'];
 			$meta['timezone'] = isset( $postdata['timezone'] ) && $postdata['timezone'];
+			$meta['nowebversion'] = ! isset( $postdata['nowebversion'] );
 
 			if ( isset( $postdata['newsletter_color'] ) ) {
 				$meta['colors'] = $postdata['newsletter_color'];
@@ -1881,6 +1895,7 @@ class MailsterCampaigns {
 			'track_opens' => mailster_option( 'track_opens' ),
 			'track_clicks' => mailster_option( 'track_clicks' ),
 			'autoplaintext' => true,
+			'nowebversion' => false,
 		);
 	}
 

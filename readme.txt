@@ -108,6 +108,7 @@ Xaver Birsak – https://everpress.io
 * new: `mailster_option` and `mailster_option_[option]` filter
 * new: Export format: xls
 * new: Option to duplicate forms
+* new: Option to disable Webversion
 * change: `mailster_replace_link` now targets the output link
 * improved: list segmentation
 * improved: campaign editor for faster campaign creation with inline editing

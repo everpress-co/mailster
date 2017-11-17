@@ -588,24 +588,13 @@ class MailsterFrontpage {
 
 	private function do_frontpage() {
 
-		if ( get_query_var( 'preview' ) ) {
-			$preview = true;
-			$args['post_type'] = 'newsletter';
-			$args['p'] = get_query_var( 'p' );
-
-		} else {
-			$preview = false;
-			$args['post_type'] = 'newsletter';
-			$args['post_status'] = array( 'finished', 'active' );
-		}
-
-		$args['posts_per_page'] = -1;
-		$args['paged'] = get_query_var( 'paged',1 );
-		$args['orderby'] = 'menu_order';
-
 		if ( have_posts() ) : while ( have_posts() ) : the_post();
 
 				$meta = mailster( 'campaigns' )->meta( get_the_ID() );
+
+				if ( $meta['nowebversion'] && get_current_user_id() != get_the_author_meta( 'ID' ) ) {
+					$this->do_404();
+				}
 
 				if ( ! mailster_option( 'webversion_bar' ) || (isset( $_GET['frame'] ) && $_GET['frame'] == '0' ) ) {
 
@@ -664,11 +653,13 @@ class MailsterFrontpage {
 				} else {
 
 					add_filter( 'get_previous_post_where', array( &$this, 'get_post_where' ) );
+					add_filter( 'get_previous_post_join', array( &$this, 'get_post_join' ) );
 					add_filter( 'get_next_post_where', array( &$this, 'get_post_where' ) );
+					add_filter( 'get_next_post_join', array( &$this, 'get_post_join' ) );
 
 					$url = add_query_arg( 'frame', 0, get_permalink() );
 
-					if ( $preview ) {
+					if ( $preview = get_query_var( 'preview' ) ) {
 						$url = add_query_arg( 'preview', 1, $url );
 					}
 
@@ -690,13 +681,9 @@ class MailsterFrontpage {
 		endwhile;
 
 		else :
+
 			// NOT FOUND
-			global $wp_query;
-			$wp_query->set_404();
-			status_header( 404 );
-			nocache_headers();
-			get_template_part( 404 );
-			exit;
+			$this->do_404();
 
 		endif;
 
@@ -795,7 +782,11 @@ class MailsterFrontpage {
 	 * @return unknown
 	 */
 	public function get_post_where( $sql ) {
-		return str_replace( "post_status = 'publish'", "post_status IN ('finished', 'active') AND post_password = ''", $sql );
+		return str_replace( "post_status = 'publish'", "post_status IN ('finished', 'active' ,'queued') AND post_password = '' AND (pmeta.meta_key = 1 OR pmeta.meta_key IS NULL OR p.post_author = " . get_current_user_id() . ')', $sql );
+	}
+	public function get_post_join( $sql ) {
+		global $wpdb;
+		return $sql .= " LEFT JOIN $wpdb->postmeta as pmeta ON pmeta.post_id = p.ID AND pmeta.meta_key = '_mailster_nowebversion'";
 	}
 
 
@@ -1159,6 +1150,15 @@ class MailsterFrontpage {
 
 		return $rep;
 
+	}
+
+	private function do_404() {
+		global $wp_query;
+		$wp_query->set_404();
+		status_header( 404 );
+		nocache_headers();
+		get_template_part( 404 );
+		exit;
 	}
 
 
