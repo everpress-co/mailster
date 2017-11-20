@@ -1888,8 +1888,8 @@ jQuery(document).ready(function ($) {
 		function checkForPosts() {
 			clearInterval(checkForPostsTimeout);
 			loader();
-			$('#dynamic_embed_options').find('h4.current-match').html('&hellip;');
-			$('#dynamic_embed_options').find('div.current-tag').html('&hellip;');
+			bar.find('.current-title').html('&hellip;');
+			bar.find('.current-content').html('&hellip;');
 			checkForPostsTimeout = setTimeout(function () {
 
 				var post_type = bar.find('#dynamic_embed_options_post_type').val(),
@@ -1919,8 +1919,8 @@ jQuery(document).ready(function ($) {
 					loader(false);
 					if (response.success) {
 						currenttext = response.pattern;
-						$('#dynamic_embed_options').find('h4.current-match').html(response.title);
-						$('#dynamic_embed_options').find('div.current-tag').text(response.pattern.title + "\n\n" + response.pattern[content]);
+						bar.find('.current-title').html(response.title);
+						bar.find('.current-content').text(response.pattern.title + "\n\n" + response.pattern[content]);
 					}
 				}, function (jqXHR, textStatus, errorThrown) {
 
@@ -2525,12 +2525,16 @@ jQuery(document).ready(function ($) {
 					id: id,
 					expect: current.elements.expects
 				}, function (response) {
+					console.log(response);
 					loader(false);
 					base.find('li.selected').removeClass('selected');
 					_this.addClass('selected')
 					if (response.success) {
 						currenttext = response.pattern;
-						base.find('.editbarinfo').html(mailsterL10n.curr_selected + ': <span>' + currenttext.title + '</span>');
+						//base.find('.editbarinfo').html(mailsterL10n.curr_selected + ': <span>' + currenttext.title + '</span>');
+						base.find('.current-title').html(currenttext.title);
+						base.find('.current-excerpt').html(currenttext.excerpt);
+						base.find('.current-content').html(currenttext.content);
 					}
 				}, function (jqXHR, textStatus, errorThrown) {
 

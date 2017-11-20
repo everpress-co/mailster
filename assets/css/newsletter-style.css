@@ -887,7 +887,47 @@ textarea#content, textarea#excerpt {
 	box-shadow:inset 0px 0px 3px rgba(0,0,0,0.5);
 	box-sizing:border-box;
 }
-#editbar div.type .postlist {
+#editbar #content-type-bar{
+}
+#editbar #content-type-bar a{
+	font-weight: normal;
+    padding: 0px 10px;
+    font-size: 12px;
+}
+#editbar #content-type-bar span{
+	float: left;
+}
+#editbar div.type .postlist-wrap {
+	width: 48%;
+	float: left;
+	margin-right: 2%;
+}
+#editbar div.type .post-preview {
+	width: 50%;
+	padding: 10px;
+	float: right;
+	position: relative;
+	height: 400px;
+	box-sizing:border-box;
+}
+#editbar div.type .current-title {
+	font-size: 25px;
+	font-weight: 100;
+	margin-top: 0;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	width: 100%;
+	line-height: 30px;
+	margin-bottom:0;
+}
+#editbar div.type .current-content {
+	max-height: 330px;
+	overflow: auto;
+}
+#editbar div.type .insert-options {
+	padding:0 10px;
+	clear: both;
 }
 #editbar div.type.img .imagelist {
 	background-color:#fff;
@@ -960,6 +1000,10 @@ textarea#content, textarea#excerpt {
 	margin-left:52px;
 	padding:2px;
 	cursor:pointer;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-width: 77%;
 }
 .rtl #editbar div.type .postlist ul li strong,.rtl #editbar div.type .postlist ul li span {
 	margin-left:0px;
@@ -991,7 +1035,7 @@ textarea#content, textarea#excerpt {
 #editbar .tab, #editbar .link-wrap .postlist{
 	padding:5px;
 	box-sizing:border-box;
-	border:1px solid #D3D6DB;
+	border-top:1px solid #D3D6DB;
 	background-color:#fff;
 	z-index:3;
 	margin-bottom:4px;
@@ -1012,9 +1056,6 @@ textarea#content, textarea#excerpt {
 	max-height: 120px;
 	overflow: auto;
 	white-space: pre;
-}
-#editbar .tab p{
-	padding:0 5px;
 }
 #editbar .dynamic_embed_options_taxonomies{
 	padding:0 5px;

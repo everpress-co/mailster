@@ -201,28 +201,102 @@
 			<div id="module_content" class="tab">
 
 				<div id="static_embed_options">
-					<p class="">
-						<?php esc_html_e( 'Insert Content', 'mailster' ) ?>
-						<label title="<?php esc_html_e( 'use the excerpt if exists otherwise use the content', 'mailster' );?>"><input type="radio" name="content_type" class="" value="static" checked> <?php esc_html_e( 'Static', 'mailster' );?> </label>
-						<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="content_type" class="" value="dynamic"> <?php esc_html_e( 'Dynamic', 'mailster' );?> </label>
-					</p>
-					<p class="editbarinfo"><?php esc_html_e( 'Select a post', 'mailster' ) ?></p>
-					<p class="alignleft">
-						<label title="<?php esc_html_e( 'use the excerpt if exists otherwise use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="excerpt" checked> <?php esc_html_e( 'excerpt', 'mailster' );?> </label>
-						<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="content"> <?php esc_html_e( 'full content', 'mailster' );?> </label>
-					</p>
-					<p id="post_type_select" class="alignright">
-					<?php
-					$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
-					foreach ( $pts as $pt => $data ) {
-						?>
-						<label><input type="checkbox" name="post_types[]" value="<?php echo $pt ?>" <?php checked( 'post' == $pt, true );?>> <?php echo $data->labels->name ?> </label>
-					<?php } ?>
-					</p>
-					<p>
-						<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'search for posts', 'mailster' );?>..." ></label>
-					</p>
-					<div class="postlist">
+					<div class="postlist-wrap">
+					<div id="content-type-bar" class="nav-tab-wrapper hide-if-no-js">
+						<span><?php esc_html_e( 'Insert Content', 'mailster' ) ?></span>
+						<a class="nav-tab nav-tab-active" href="#content_type_static" data-type="static"><?php esc_html_e( 'Static', 'mailster' );?></a>
+						<a class="nav-tab" href="#content_type_dynamic" data-type="dynamic"><?php esc_html_e( 'Dynamic', 'mailster' );?></a>
+						<a class="nav-tab" href="#content_type_rss" data-type="rss"><?php esc_html_e( 'RSS', 'mailster' );?></a>
+					</div>
+						<div id="content_type_static" class="content-type">
+							<p id="post_type_select" class="alignright">
+							<?php
+							$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
+							foreach ( $pts as $pt => $data ) {
+								?>
+								<label><input type="checkbox" name="post_types[]" value="<?php echo $pt ?>" <?php checked( 'post' == $pt, true );?>> <?php echo $data->labels->name ?> </label>
+							<?php } ?>
+							</p>
+							<p>
+								<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'search for posts', 'mailster' );?>..." ></label>
+							</p>
+							<div class="postlist">
+							</div>
+						</div>
+						<div id="content_type_dynamic" class="content-type">
+							<p>
+							<?php
+								$content = '<select id="dynamic_embed_options_content" class="check-for-posts"><option value="excerpt">' . __( 'the excerpt', 'mailster' ) . '</option><option value="content">' . __( 'the full content', 'mailster' ) . '</option></select>';
+
+								$relative = '<select id="dynamic_embed_options_relative" class="check-for-posts">';
+								$relativenames = array(
+									-1 => __( 'the latest', 'mailster' ),
+									-2 => __( 'the second latest', 'mailster' ),
+									-3 => __( 'the third latest', 'mailster' ),
+									-4 => __( 'the fourth latest', 'mailster' ),
+									-5 => __( 'the fifth latest', 'mailster' ),
+									-6 => __( 'the sixth latest', 'mailster' ),
+									-7 => __( 'the seventh latest', 'mailster' ),
+									-8 => __( 'the eighth latest', 'mailster' ),
+									-9 => __( 'the ninth latest', 'mailster' ),
+									-10 => __( 'the tenth latest', 'mailster' ),
+									-11 => __( 'the eleventh latest', 'mailster' ),
+									-12 => __( 'the twelfth latest', 'mailster' ),
+								);
+
+								foreach ( $relativenames as $key => $name ) {
+									$relative .= '<option value="' . $key . '">' . $name . '</option>';
+								}
+
+								$relative .= '</select>';
+								$post_types = '<select id="dynamic_embed_options_post_type">';
+								foreach ( $pts as $pt => $data ) {
+									if ( in_array( $pt, array( 'attachment', 'newsletter' ) ) ) {
+										continue;
+									}
+
+									$post_types .= '<option value="' . $pt . '">' . $data->labels->singular_name . '</option>';
+								}
+								$post_types .= '</select>';
+
+								printf( _x( 'Insert %1$s of %2$s %3$s', 'Insert [excerpt] of [latest] [post]', 'mailster' ), $content, $relative, $post_types );
+							?>
+
+							</p>
+							<div class="right">
+								<div class="current-preview">
+								<label><?php esc_html_e( 'Current Match', 'mailster' ) ?></label>
+								<h4 class="current-match">&hellip;</h4>
+								<div class="current-tag code">&hellip;</div>
+								</div>
+							</div>
+							<div class="left">
+							<div id="dynamic_embed_options_cats"></div>
+							</div>
+							<p class="description clear"><?php esc_html_e( 'dynamic content get replaced with the proper content as soon as the campaign get send. Check the quick preview to see the current status of dynamic elements', 'mailster' );?></p>
+						</div>
+						<div id="content_type_rss" class="content-type">content_type_rss
+						</div>
+
+					</div>
+					<div class="post-preview">
+						<p>Preview</p>
+						<h4 class="current-title"><?php esc_html_e( 'Select a post', 'mailster' ) ?></h4>
+						<div class="current-content">
+							<div class="current-content"></div>
+							<div class="current-excerpt"></div>
+						</div>
+					</div>
+					<div class="insert-options">
+						<p class="alignleft">
+							<?php esc_html_e( 'Insert Content', 'mailster' ) ?>
+							<label title="<?php esc_html_e( 'use the excerpt if exists otherwise use the content', 'mailster' );?>"><input type="radio" name="content_type" class="" value="static" checked> <?php esc_html_e( 'Static', 'mailster' );?> </label>
+							<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="content_type" class="" value="dynamic"> <?php esc_html_e( 'Dynamic', 'mailster' );?> </label>
+						</p>
+						<p class="alignright">
+							<label title="<?php esc_html_e( 'use the excerpt if exists otherwise use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="excerpt" checked> <?php esc_html_e( 'excerpt', 'mailster' );?> </label>
+							<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="content"> <?php esc_html_e( 'full content', 'mailster' );?> </label>
+						</p>
 					</div>
 				</div>
 
@@ -235,56 +309,6 @@
 
 			<div id="dynamic_embed_options" class="clear tab" style="display:none;">
 
-				<p>
-				<?php
-					$content = '<select id="dynamic_embed_options_content" class="check-for-posts"><option value="excerpt">' . __( 'the excerpt', 'mailster' ) . '</option><option value="content">' . __( 'the full content', 'mailster' ) . '</option></select>';
-
-					$relative = '<select id="dynamic_embed_options_relative" class="check-for-posts">';
-					$relativenames = array(
-						-1 => __( 'the latest', 'mailster' ),
-						-2 => __( 'the second latest', 'mailster' ),
-						-3 => __( 'the third latest', 'mailster' ),
-						-4 => __( 'the fourth latest', 'mailster' ),
-						-5 => __( 'the fifth latest', 'mailster' ),
-						-6 => __( 'the sixth latest', 'mailster' ),
-						-7 => __( 'the seventh latest', 'mailster' ),
-						-8 => __( 'the eighth latest', 'mailster' ),
-						-9 => __( 'the ninth latest', 'mailster' ),
-						-10 => __( 'the tenth latest', 'mailster' ),
-						-11 => __( 'the eleventh latest', 'mailster' ),
-						-12 => __( 'the twelfth latest', 'mailster' ),
-					);
-
-					foreach ( $relativenames as $key => $name ) {
-						$relative .= '<option value="' . $key . '">' . $name . '</option>';
-					}
-
-					$relative .= '</select>';
-					$post_types = '<select id="dynamic_embed_options_post_type">';
-					foreach ( $pts as $pt => $data ) {
-						if ( in_array( $pt, array( 'attachment', 'newsletter' ) ) ) {
-							continue;
-						}
-
-						$post_types .= '<option value="' . $pt . '">' . $data->labels->singular_name . '</option>';
-					}
-					$post_types .= '</select>';
-
-					printf( _x( 'Insert %1$s of %2$s %3$s', 'Insert [excerpt] of [latest] [post]', 'mailster' ), $content, $relative, $post_types );
-				?>
-
-				</p>
-				<div class="right">
-					<div class="current-preview">
-					<label><?php esc_html_e( 'Current Match', 'mailster' ) ?></label>
-					<h4 class="current-match">&hellip;</h4>
-					<div class="current-tag code">&hellip;</div>
-					</div>
-				</div>
-				<div class="left">
-				<div id="dynamic_embed_options_cats"></div>
-				</div>
-				<p class="description clear"><?php esc_html_e( 'dynamic content get replaced with the proper content as soon as the campaign get send. Check the quick preview to see the current status of dynamic elements', 'mailster' );?></p>
 			</div>
 
 			<div id="rss_embed_options" class="tab">
