@@ -210,7 +210,6 @@ class MailsterLists {
 
 					mailster_notice( isset( $urlparams['new'] ) ? __( 'List added', 'mailster' ) : __( 'List saved', 'mailster' ), 'success', true );
 					do_action( 'mailster_list_save', $list_id );
-					do_action( 'mymail_list_save', $list_id );
 					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID );
 					exit;
 				} elseif ( $_POST['delete'] || $_POST['delete_subscribers'] ) :
@@ -222,7 +221,6 @@ class MailsterLists {
 						if ( $this->remove( $list->ID, $delete_subscribers ) ) {
 							mailster_notice( sprintf( __( 'List %s has been removed', 'mailster' ), '<strong>&quot;' . $list->name . '&quot;</strong>' ), 'error', true );
 							do_action( 'mailster_list_delete', $list->ID );
-							do_action( 'mymail_list_delete', $list->ID );
 							wp_redirect( 'edit.php?post_type=newsletter&page=mailster_lists' );
 							exit;
 						}
@@ -354,7 +352,6 @@ class MailsterLists {
 			}
 
 			do_action( 'mailster_update_list', $list_id );
-			do_action( 'mymail_update_list', $list_id );
 
 			return $list_id;
 

@@ -340,13 +340,11 @@ class MailsterFrontpage {
 
 				if ( $meta['track_clicks'] ) {
 					do_action( 'mailster_click', $subscriber->ID, $campaign->ID, $target, $index );
-					do_action( 'mymail_click', $subscriber->ID, $campaign->ID, $target, $index );
 				}
 			} else {
 
 				if ( $meta['track_opens'] ) {
 					do_action( 'mailster_open', $subscriber->ID, $campaign->ID );
-					do_action( 'mymail_open', $subscriber->ID, $campaign->ID );
 				}
 			}
 
@@ -396,7 +394,6 @@ class MailsterFrontpage {
 			case 'subscribe':
 
 				do_action( 'mailster_homepage_subscribe' );
-				do_action( 'mymail_homepage_subscribe' );
 
 			break;
 
@@ -413,7 +410,6 @@ class MailsterFrontpage {
 				}
 
 				do_action( 'mailster_homepage_unsubscribe' );
-				do_action( 'mymail_homepage_unsubscribe' );
 
 			break;
 
@@ -430,7 +426,6 @@ class MailsterFrontpage {
 				}
 
 				do_action( 'mailster_homepage_profile' );
-				do_action( 'mymail_homepage_profile' );
 
 				// redirect if no hash is set
 				if ( empty( get_query_var( '_mailster_hash' ) ) ) {
@@ -453,7 +448,6 @@ class MailsterFrontpage {
 			case 'confirm':
 
 				do_action( 'mailster_homepage_confirm' );
-				do_action( 'mymail_homepage_confirm' );
 
 				$subscriber = mailster( 'subscribers' )->get_by_hash( get_query_var( '_mailster_hash' ) );
 				// redirect if no such subscriber
@@ -510,9 +504,7 @@ class MailsterFrontpage {
 
 						if ( ! is_wp_error( $subscriber_id ) ) {
 							do_action( 'mailster_subscriber_subscribed', $subscriber->ID );
-							do_action( 'mymail_subscriber_subscribed', $subscriber->ID );
 							// old hook for backward compatibility
-							do_action( 'mymail_subscriber_insert', $subscriber->ID );
 						}
 					} else {
 

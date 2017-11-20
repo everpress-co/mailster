@@ -125,7 +125,6 @@ class MailsterMail {
 		}
 
 		do_action( 'mailster_initsend', $this );
-		do_action( 'mymail_initsend', $this );
 
 		if ( $this->dkim ) {
 			$this->mailer->DKIM_selector = mailster_option( 'dkim_selector' );
@@ -446,13 +445,11 @@ class MailsterMail {
 		$this->content = str_replace( '</tr>', "</tr>\n", $this->content );
 
 		do_action( 'mailster_presend', $this );
-		do_action( 'mymail_presend', $this );
 		if ( ! $this->pre_send ) {
 			return false;
 		}
 
 		do_action( 'mailster_dosend', $this );
-		do_action( 'mymail_dosend', $this );
 
 		if ( $this->sent ) {
 

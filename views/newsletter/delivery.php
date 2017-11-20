@@ -478,7 +478,6 @@ $sent = $this->get_sent( $post->ID );
 		</div>
 
 		<?php do_action( 'mailster_autoresponder_more' ); ?>
-		<?php do_action( 'mymail_autoresponder_more' ); ?>
 
 	</div>
 	</div>

@@ -613,7 +613,6 @@ class MailsterQueue {
 					mailster_notice( sprintf( __( 'New campaign %s has been created!', 'mailster' ), '<strong>"<a href="post.php?post=' . $newCamp->ID . '&action=edit">' . $newCamp->post_title . '</a>"</strong>' ), 'error', true, 'autoresponder_' . $new_id, $newCamp->post_author );
 
 					do_action( 'mailster_autoresponder_timebased', $campaign->ID, $new_id );
-					do_action( 'mymail_autoresponder_timebased', $campaign->ID, $new_id );
 				}
 			}
 
@@ -793,7 +792,6 @@ class MailsterQueue {
 				$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, 15 );
 
 				do_action( 'mailster_autoresponder_usertime', $campaign->ID, $subscriber_ids );
-				do_action( 'mymail_autoresponder_usertime', $campaign->ID, $subscriber_ids );
 			}
 		}
 	}
@@ -1034,7 +1032,6 @@ class MailsterQueue {
 						$this->cron_log( $i + 1, $data->subscriber_id . ' ' . $data->email, $data->campaign_id, $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
 
 						// do_action( 'mailster_send', $data->subscriber_id, $data->campaign_id, $options );
-						// do_action( 'mymail_send', $data->subscriber_id, $data->campaign_id, $options );
 					} else {
 
 						$this->cron_log( $i + 1, print_r( $options, true ), $options['template'], $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
@@ -1058,7 +1055,6 @@ class MailsterQueue {
 
 						if ( $error ) {
 							do_action( 'mailster_subscriber_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
-							do_action( 'mymail_subscriber_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
 
 							mailster( 'subscribers' )->change_status( $data->subscriber_id, 4 );
 						}
@@ -1074,7 +1070,6 @@ class MailsterQueue {
 							mailster_notice( sprintf( __( 'Notification %1$s has thrown an error: %2$s', 'mailster' ), '<strong>&quot;' . $options['template'] . '&quot;</strong>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', false );
 
 							do_action( 'mailster_notification_error', $data->subscriber_id, $result->get_error_message() );
-							do_action( 'mymail_notification_error', $data->subscriber_id, $result->get_error_message() );
 						}
 
 						// campaign_error
@@ -1099,7 +1094,6 @@ class MailsterQueue {
 
 						array_push( $campaign_errors, $data->campaign_id );
 						do_action( 'mailster_campaign_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
-						do_action( 'mymail_campaign_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
 
 						// system_error
 					} elseif ( $result->get_error_code() == 'system_error' ) {
@@ -1146,7 +1140,6 @@ class MailsterQueue {
 		update_option( 'mailster_cron_lasthit', $last_hit );
 
 		do_action( 'mailster_cron_finished' );
-		do_action( 'mymail_cron_finished' );
 
 		return true;
 

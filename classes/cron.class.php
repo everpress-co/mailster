@@ -39,11 +39,9 @@ class MailsterCron {
 
 		// check for bounced emails
 		do_action( 'mailster_check_bounces' );
-		do_action( 'mymail_check_bounces' );
 
 		// send confirmations again
 		do_action( 'mailster_resend_confirmations' );
-		do_action( 'mymail_resend_confirmations' );
 
 		$this->update();
 
