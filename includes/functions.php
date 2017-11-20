@@ -755,6 +755,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 	);
 
 	do_action( 'mailster_notice', $args['text'], $args['type'], $args['key'] );
+	do_action( 'mymail_notice', $args['text'], $args['type'], $args['key'] );
 
 	update_option( 'mailster_notices', $mailster_notices );
 
@@ -781,6 +782,7 @@ function mailster_remove_notice( $key ) {
 		unset( $mailster_notices[ $key ] );
 
 		do_action( 'mailster_remove_notice', $key );
+		do_action( 'mymail_remove_notice', $key );
 
 		return update_option( 'mailster_notices', $mailster_notices );
 	}

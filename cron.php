@@ -102,6 +102,8 @@ if ( empty( $worker ) ) {
 } else {
 	echo '<h2>' . esc_html__( 'Invalid Cron Worker!', 'mailster' ) . '</h2>';
 }
+
+	do_action( 'mymail_cron_worker' );
 ?>
 	<p>
 		<a onclick="location.reload();clearInterval(i);" class="button" id="button"><?php esc_html_e( 'reload', 'mailster' ); ?></a>

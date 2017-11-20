@@ -69,6 +69,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 			<li><a href="#<?php echo $id; ?>" class="nav-<?php echo $id; ?>"><?php echo $name; ?></a></li>
 		<?php }?>
 		<?php do_action( 'mailster_settings_tabs' ); ?>
+		<?php do_action( 'mymail_settings_tabs' ); ?>
 		</ul>
 		</div>
 	</div>
@@ -81,6 +82,8 @@ if ( ! current_user_can( 'manage_options' ) ) {
 		<h3><?php echo esc_html( strip_tags( $name ) ); ?></h3>
 		<?php do_action( 'mailster_section_tab' ); ?>
 		<?php do_action( 'mailster_section_tab_' . $id ); ?>
+		<?php do_action( 'mymail_section_tab' ); ?>
+		<?php do_action( 'mymail_section_tab_' . $id ); ?>
 
 		<?php if ( file_exists( MAILSTER_DIR . 'views/settings/' . $id . '.php' ) ) {
 			include MAILSTER_DIR . 'views/settings/' . $id . '.php';
@@ -98,6 +101,8 @@ foreach ( $extra_sections as $id => $name ) {?>
 		<h3><?php echo esc_html( strip_tags( $name ) ); ?></h3>
 		<?php do_action( 'mailster_section_tab' ); ?>
 		<?php do_action( 'mailster_section_tab_' . $id ); ?>
+		<?php do_action( 'mymail_section_tab' ); ?>
+		<?php do_action( 'mymail_section_tab_' . $id ); ?>
 	</div>
 	<?php }?>
 		<p class="submitbutton">
@@ -108,6 +113,7 @@ foreach ( $extra_sections as $id => $name ) {?>
 	</div>
 
 	<?php do_action( 'mailster_settings' ); ?>
+	<?php do_action( 'mymail_settings' ); ?>
 
 	<input type="text" class="hidden" name="mailster_options[profile_form]" value="<?php echo esc_attr( mailster_option( 'profile_form', 1 ) ); ?>">
 	<input type="text" class="hidden" name="mailster_options[ID]" value="<?php echo esc_attr( mailster_option( 'ID' ) ); ?>">

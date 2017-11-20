@@ -134,6 +134,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 
 
 <?php do_action( 'mailster_import_tab' ); ?>
+<?php do_action( 'mymail_import_tab' ); ?>
 
 
 <?php elseif ( 'export' == $currentpage && current_user_can( 'mailster_export_subscribers' ) ) : ?>
