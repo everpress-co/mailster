@@ -193,31 +193,45 @@
 		<div class="type auto">
 
 			<div id="embedoption-bar" class="nav-tab-wrapper hide-if-no-js">
-				<a class="nav-tab nav-tab-active" href="#static_embed_options" data-type="static"><?php esc_html_e( 'static', 'mailster' );?></a>
-				<a class="nav-tab" href="#dynamic_embed_options" data-type="dynamic"><?php esc_html_e( 'dynamic', 'mailster' );?></a>
-				<a class="nav-tab" href="#rss_embed_options" data-type="rss"><?php esc_html_e( 'RSS', 'mailster' );?></a>
+				<a class="nav-tab nav-tab-active" href="#module_content" data-type="static"><?php esc_html_e( 'Content', 'mailster' );?></a>
+				<a class="nav-tab" href="#module_options" data-type="dynamic"><?php esc_html_e( 'Options', 'mailster' );?></a>
+				<a class="nav-tab" href="#module_conditions" data-type="rss"><?php esc_html_e( 'Conditions', 'mailster' );?></a>
 			</div>
 
-			<div id="static_embed_options" class="tab">
-				<p class="editbarinfo"><?php esc_html_e( 'Select a post', 'mailster' ) ?></p>
-				<p class="alignleft">
-					<label title="<?php esc_html_e( 'use the excerpt if exists otherwise use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="excerpt" checked> <?php esc_html_e( 'excerpt', 'mailster' );?> </label>
-					<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="content"> <?php esc_html_e( 'full content', 'mailster' );?> </label>
-				</p>
-				<p id="post_type_select" class="alignright">
-				<?php
-				$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
-				foreach ( $pts as $pt => $data ) {
-					?>
-					<label><input type="checkbox" name="post_types[]" value="<?php echo $pt ?>" <?php checked( 'post' == $pt, true );?>> <?php echo $data->labels->name ?> </label>
-				<?php } ?>
-				</p>
-				<p>
-					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'search for posts', 'mailster' );?>..." ></label>
-				</p>
-				<div class="postlist">
+			<div id="module_content" class="tab">
+
+				<div id="static_embed_options">
+					<p class="">
+						<?php esc_html_e( 'Insert Content', 'mailster' ) ?>
+						<label title="<?php esc_html_e( 'use the excerpt if exists otherwise use the content', 'mailster' );?>"><input type="radio" name="content_type" class="" value="static" checked> <?php esc_html_e( 'Static', 'mailster' );?> </label>
+						<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="content_type" class="" value="dynamic"> <?php esc_html_e( 'Dynamic', 'mailster' );?> </label>
+					</p>
+					<p class="editbarinfo"><?php esc_html_e( 'Select a post', 'mailster' ) ?></p>
+					<p class="alignleft">
+						<label title="<?php esc_html_e( 'use the excerpt if exists otherwise use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="excerpt" checked> <?php esc_html_e( 'excerpt', 'mailster' );?> </label>
+						<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="content"> <?php esc_html_e( 'full content', 'mailster' );?> </label>
+					</p>
+					<p id="post_type_select" class="alignright">
+					<?php
+					$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
+					foreach ( $pts as $pt => $data ) {
+						?>
+						<label><input type="checkbox" name="post_types[]" value="<?php echo $pt ?>" <?php checked( 'post' == $pt, true );?>> <?php echo $data->labels->name ?> </label>
+					<?php } ?>
+					</p>
+					<p>
+						<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'search for posts', 'mailster' );?>..." ></label>
+					</p>
+					<div class="postlist">
+					</div>
 				</div>
+
 			</div>
+			<div id="module_options" class="tab">module_options
+			</div>
+			<div id="module_conditions" class="tab">module_conditions
+			</div>
+
 
 			<div id="dynamic_embed_options" class="clear tab" style="display:none;">
 

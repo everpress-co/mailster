@@ -1434,9 +1434,9 @@ class MailsterAjax {
 				$excerpt = ( $strip_shortcodes ) ? strip_shortcodes( $excerpt ) : do_shortcode( $excerpt );
 
 				$data = array(
-					'title' => array( $post->post_title, 'asdas' ),
+					'title' => $post->post_title,
 					'alt' => $post->post_title,
-					'content' => array( $content, 'sfgdfg' ),
+					'content' => $content,
 					'excerpt' => $excerpt,
 					'link' => get_permalink( $post->ID ),
 					'image' => $image,
