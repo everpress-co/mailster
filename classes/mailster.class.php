@@ -565,7 +565,7 @@ class Mailster {
 	 */
 	public function check_link_structure() {
 
-		$args = array();
+		$args = array( 'sslverify' => false );
 
 		// only if permalink structure is used
 		if ( mailster( 'helper' )->using_permalinks() ) {
@@ -583,7 +583,7 @@ class Mailster {
 				$response = wp_remote_get( $url, $args );
 
 				$code = wp_remote_retrieve_response_code( $response );
-				if ( $code != 200 ) {
+				if ( $code && $code != 200 ) {
 					return false;
 				}
 			}

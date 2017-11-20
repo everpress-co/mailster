@@ -8,36 +8,38 @@ if ( ! function_exists( 'mymail' ) ) :
 		define( 'MYMAIL_VERSION', MAILSTER_VERSION );
 	}
 
-	add_action( 'mymail_form_header', function() {
+	if ( ! defined( 'DOING_AJAX' ) ) {
+		add_action( 'mymail_form_header', function() {
 
-		global $pagenow;
+			global $pagenow;
 
-		if ( strpos( $_SERVER['REQUEST_URI'], 'myMail/form.php' ) !== false && isset( $_SERVER['HTTP_REFERER'] ) && 'form.php' == $pagenow ) {
+			if ( strpos( $_SERVER['REQUEST_URI'], 'myMail/form.php' ) !== false && isset( $_SERVER['HTTP_REFERER'] ) && 'form.php' == $pagenow ) {
 
-			$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
-			if ( isset( $_GET['button'] ) ) {
-				$msg = 'A deprecated Subscriber Button for Mailster has been found at %1$s. Please update the HTML following %2$s.';
-			} else {
-				$msg = 'An deprecated external form for Mailster has been found at %1$s. Please update the HTML following %2$s.';
+				$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
+				if ( isset( $_GET['button'] ) ) {
+					$msg = 'A deprecated Subscriber Button for Mailster has been found at %1$s. Please update the HTML following %2$s.';
+				} else {
+					$msg = 'An deprecated external form for Mailster has been found at %1$s. Please update the HTML following %2$s.';
+				}
+
+				mailster_notice( sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank">this guide</a>' ), 'error', 3600, 'oldsubscriberbtn' );
 			}
+		});
 
-			mailster_notice( sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank">this guide</a>' ), 'error', 3600, 'oldsubscriberbtn' );
-		}
-	});
+		add_action( 'mymail_cron_worker', function() {
 
-	add_action( 'mymail_cron_worker', function() {
+			global $pagenow;
 
-		global $pagenow;
+			if ( strpos( $_SERVER['REQUEST_URI'], 'myMail/cron.php' ) !== false && isset( $_SERVER['HTTP_REFERER'] ) && 'cron.php' == $pagenow ) {
 
-		if ( strpos( $_SERVER['REQUEST_URI'], 'myMail/cron.php' ) !== false && isset( $_SERVER['HTTP_REFERER'] ) && 'cron.php' == $pagenow ) {
+				$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
 
-			$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
+				$msg = 'The URL to the cron has changed but still get triggered! Please update your cron service to the new URL.</strong></p><a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_settings#cron">Get the new URL</a>';
 
-			$msg = 'The URL to the cron has changed but still get triggered! Please update your cron service to the new URL.</strong></p><a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_settings#cron">Get the new URL</a>';
-
-			mailster_notice( $msg, 'error', 3600, 'oldcronurl' );
-		}
-	});
+				mailster_notice( $msg, 'error', 3600, 'oldcronurl' );
+			}
+		});
+	}
 
 
 
@@ -123,7 +125,7 @@ if ( ! function_exists( 'mymail' ) ) :
 
 
 	/**
-	 * depreciated
+	 * deprecated
 	 *
 	 * @param unknown $campaign
 	 * @param unknown $subscriber

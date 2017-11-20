@@ -131,7 +131,7 @@ class MailsterTests {
 
 	public function nicename( $test ) {
 		$test = ucwords( str_replace( array( 'test_', '_' ), array( '', ' ' ), $test ) );
-		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ', 'Db' ), array( 'PHP', 'WordPress', 'WP ', 'DB ' ), $test );
+		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ', 'Db', 'Mymail' ), array( 'PHP', 'WordPress', 'WP ', 'DB ', 'MyMail' ), $test );
 		return $test;
 	}
 
@@ -255,9 +255,6 @@ class MailsterTests {
 
 
 
-
-
-
 	private function _test_error() {
 		$this->error( 'This is an error error' );
 	}
@@ -285,6 +282,23 @@ class MailsterTests {
 		} else {
 			$this->success( 'You have version ' . PHP_VERSION );
 		}
+	}
+	private function test_deprecated_hooks() {
+
+		global $wp_filter;
+		$hooks = array_values( preg_grep( '/^mymail_/', array_keys( $wp_filter ) ) );
+
+		if ( ! empty( $hooks ) ) {
+			$msg = '<p>Following deprecated MyMail hooks were found and should get replaced:</p><ul>';
+			foreach ( $hooks as $hook ) {
+				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code></li>';
+			}
+			$msg .= '</ul>';
+
+			$this->warning( $msg );
+
+		}
+
 	}
 	private function test_wordpress_version() {
 		$update = get_preferred_from_update_core();
