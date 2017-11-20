@@ -84,6 +84,7 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+* improved: RTL version
 * improved: autosave mechanism
 * improved: editor
 

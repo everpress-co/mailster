@@ -119,7 +119,15 @@ table.wp-list-table .column-total a, table.wp-list-table .column-open a, table.w
 	text-overflow: ellipsis;
 	font-size: smaller;
 }
-
+.mailster-condition-render span.mailster-condition-type {
+	float: left;
+	padding-right: 4px;
+}
+.rtl .mailster-condition-render span.mailster-condition-type {
+	float: right;
+	padding-right: 0;
+	padding-left: 4px;
+}
 @media screen and (max-width: 782px){
 
 table.wp-list-table .column-total, table.wp-list-table .column-open, table.wp-list-table .column-click, table.wp-list-table .column-unsubs, table.wp-list-table .column-bounces{

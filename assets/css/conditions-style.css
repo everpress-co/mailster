@@ -26,6 +26,11 @@
 	float: right;
 	margin-left: 6px;
 }
+.rtl .mailster-conditions-thickbox .button{
+	float: left;
+	margin-left: 0;
+	margin-right: 6px;
+}
 .mailster-conditions-saved{
 	text-align: right;
 }
@@ -71,6 +76,12 @@
 	max-width: 40%;
 	padding-right: 4px;
 }
+.rtl .mailster-conditions-field-fields,.rtl .mailster-conditions-operator-fields,.rtl .mailster-conditions-value-fields{
+	float: right;
+	max-width: 40%;
+	padding-right: 0px;
+	padding-left: 4px;
+}
 .mailster-conditions-operator-fields{
 	max-width: 140px;
 }
@@ -101,6 +112,9 @@
 	cursor: pointer;
 	display: none;
 	margin-bottom: 10px;
+}
+.rtl .mailster-conditions .remove-condition{
+	float: left;
 }
 .mailster-conditions .mailster-condition:hover .remove-condition{
 	display: block;
@@ -135,6 +149,15 @@
 }
 .mailster-condition .mailster-conditions-value-field p, .mailster-condition .mailster-conditions-value-field ul{
 	margin: 0;
+}
+.mailster-condition-render span.mailster-condition-type {
+	float: left;
+	padding-right: 4px;
+}
+.rtl .mailster-condition-render span.mailster-condition-type {
+	float: right;
+	padding-right: 0;
+	padding-left: 4px;
 }
 .mailster-condition .mailster-rating span{
 	color: #e6b800;

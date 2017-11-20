@@ -291,6 +291,12 @@ textarea{
 .form-design-options-tabs{
 	padding: 10px 20px;
 }
+.wp-picker-container{
+	display: inline-block;
+}
+#form-design-options .wp-picker-container label{
+	width: auto;
+}
 #custom-style-wrap .wrapper-left{
 	width: 60%;
 }
@@ -340,7 +346,6 @@ body fieldset fieldset legend{
 .subscriber-button-style{
 	clear: both;
 	width: 100%;
-
 }
 .subscriber-button-style li{
 	display: block;

@@ -421,7 +421,6 @@ class MailsterFrontpage {
 
 				$profile_url = $this->get_link( 'profile', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
 
-
 				// if tracking is disabled
 				if ( strpos( $profile_url, $wp->request ) === false ) {
 					$this->setcookie( get_query_var( '_mailster_hash' ) );

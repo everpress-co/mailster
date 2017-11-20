@@ -26,9 +26,6 @@
 #mailster_submitdiv.postbox .inside #misc-publishing-actions{
 	padding: 0 12px 12px;
 }
-#mailster_submitdiv.postbox .inside #draft{
-	float: left;
-}
 /*#local-storage-notice, .wrap .notice.notice-warning{display: none !important;}*/
 .focus-on #normal-sortables, .focus-on #normal-sortables div#mailster_template, .focus-on #normal-sortables div#mailster_template > *, .focus-on div.updated, .focus-on .postbox-container > *{
 	opacity: 1;
@@ -64,18 +61,33 @@ a{
 	float:left;
 	margin-top:4px;
 	margin-right:3px;
-
 }
 #publishing-action .button-primary{
 	float:right;
 	margin-left:4px;
-
+}
+.rtl #publishing-action .button-primary{
+	float:left;
+	margin-left:0;
+	margin-right:4px;
 }
 #publishing-action .button{
 	float:right;
 }
+.rtl #publishing-action .button{
+	float:left;
+}
 #publishing-action .button.statistics{
 	float:left;
+}
+.rtl #publishing-action .button.statistics{
+	float:right;
+}
+#publishing-action #draft{
+	float: left;
+}
+.rtl #publishing-action #draft{
+	float: right;
 }
 #publishing-action #password-wrap{
 	display: block;
@@ -1870,6 +1882,9 @@ a.remove-condition{
 .mailster_sendtest{
 	float:right;
 }
+.rtl .mailster_sendtest{
+	float:left;
+}
 input.deliverydate,input.deliverytime {
 	width:94px;
 	font-size:16px;
@@ -2281,6 +2296,11 @@ ul.backgrounds.finished li:hover a{
 	background: #eee;
 	float: left;
 	overflow: hidden;
+}
+.rtl .mailster-attachments .mailster-attachment{
+	margin-right: 0;
+	margin-left: 2%;
+	float: right;
 }
 .mailster-attachments .mailster-attachment .delete-attachment{
 	position: absolute;

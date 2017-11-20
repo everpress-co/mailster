@@ -1428,7 +1428,7 @@ class MailsterTemplates {
 						$mailster_templates[ $slug ]['new_version'] = esc_attr( strip_tags( $response[ $i ]['version'] ) );
 					}
 
-					$mailster_templates[ $slug ]['update'] = isset( $data['version'] ) && version_compare( $response[ $i ]['version'], $data['version'], '>' );
+					$mailster_templates[ $slug ]['update'] = isset( $data['version'] ) && version_compare( rtrim( $response[ $i ]['version'], '.0' ), $data['version'], '>' );
 					if ( isset( $response[ $i ]['author'] ) ) {
 						$mailster_templates[ $slug ]['author'] = esc_attr( strip_tags( $response[ $i ]['author'] ) );
 					}
