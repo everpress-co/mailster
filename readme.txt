@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.2.15 =
 
 * fixed: visual issue with color picker on WP 4.9
+* fixes: Newsletter Homepage is no longer cached with WP Rocket
 
 = Version 2.2.14 =
 
