@@ -190,6 +190,10 @@ class MailsterForm {
 		add_action( 'wp_footer', array( &$this, 'print_script' ) );
 		add_action( 'admin_footer', array( &$this, 'print_script' ) );
 
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true );
+		}
+
 		if ( $this->prefill ) {
 
 			$current_user = wp_get_current_user();
