@@ -231,6 +231,7 @@ class MailsterPlaceholder {
 			if ( $this->progress_conditions ) {
 				$this->conditions();
 			}
+			// $this->content = preg_replace( '/ href="({(.*?)})"/', ' href="$1" data-tag="$2"', $this->content );
 		}
 
 		$this->replace_dynamic( $relative_to_absolute );
