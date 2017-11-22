@@ -14,7 +14,6 @@ class MailsterForm {
 
 	private $form = null;
 	private $campaignID = null;
-	private $cache = true;
 	private $honeypot = true;
 	private $hash = null;
 	private $profile = false;
@@ -204,8 +203,6 @@ class MailsterForm {
 				if ( ! $this->object['userdata']['firstname'] ) {
 					$this->object['userdata']['firstname'] = $current_user->display_name;
 				}
-
-				$this->cache( false );
 			}
 		}
 		if ( $this->profile || $this->unsubscribe ) {
@@ -482,7 +479,6 @@ class MailsterForm {
 		}
 		$fields['_submit'] .= '</div>';
 
-		// if($cache) set_transient( $transient, $fields );
 		$fields = apply_filters( 'mymail_form_fields', apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form ), $this->ID, $this->form );
 
 		if ( $this->honeypot ) {

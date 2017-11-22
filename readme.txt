@@ -84,15 +84,21 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+* bug fixes
+* editor improvements
+* added: custom field API
+
+= Version 2. 3.beta.3 =
+
 * improved: RTL version
 * improved: autosave mechanism
 * improved: editor
 
-= Version 2.3.beta.2 =
+= Version 2. 3.beta.2 =
 
 * improved: subscriber query
 
-= Version 2.3.beta.1 =
+= Version 2. 3.beta.1 =
 
 * new: option to hide the Webversion Bar
 * new: option to disable tracking on campaign based basis

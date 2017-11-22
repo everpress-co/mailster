@@ -1654,6 +1654,35 @@ class Mailster {
 
 	}
 
+	public function add_custom_field( $name, $type = null, $values = null, $default = null, $id = null ) {
+
+		return $this->update_custom_field( $name, $type, $values, $default, $id, false );
+
+	}
+
+	public function update_custom_field( $name, $type = null, $values = null, $default = null, $id = null, $overwrite = true ) {
+
+		$field = array(
+			'name' => (string) $name,
+			'type' => is_null( $type ) ? 'textfield' : (string) $type,
+			'values' => is_null( $values ) ? array() : (array) $values,
+			'default' => $default,
+		);
+
+		$id = is_null( $id ) ? (string) $name : $id;
+		$id = sanitize_title( $id );
+
+		$fields = mailster_option( 'custom_field', array() );
+		if ( ! $overwrite && isset( $fields[ $id ] ) ) {
+			return false;
+		}
+		$fields[ $id ] = $field;
+		mailster_update_option( 'custom_field', $fields );
+
+		return $field;
+
+	}
+
 
 	/**
 	 *

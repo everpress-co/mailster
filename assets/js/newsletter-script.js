@@ -290,7 +290,6 @@ jQuery(document).ready(function ($) {
 					}, function (jqXHR, textStatus, errorThrown) {
 
 						loader(false);
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 
 					});
 				})
@@ -686,7 +685,6 @@ jQuery(document).ready(function ($) {
 						}
 					}, function (jqXHR, textStatus, errorThrown) {
 						loader.hide();
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					})
 
 				})
@@ -710,7 +708,6 @@ jQuery(document).ready(function ($) {
 							}
 						}, function (jqXHR, textStatus, errorThrown) {
 							loader.hide();
-							alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 						});
 
 					}
@@ -737,7 +734,6 @@ jQuery(document).ready(function ($) {
 							}
 						}, function (jqXHR, textStatus, errorThrown) {
 							loader.hide();
-							alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 						});
 
 					}
@@ -766,7 +762,6 @@ jQuery(document).ready(function ($) {
 						_excerpt.val(response);
 					}, function (jqXHR, textStatus, errorThrown) {
 						_excerpt.val(oldval);
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					}, 'HTML');
 				})
 				.on('change', '#plaintext', function () {
@@ -803,7 +798,6 @@ jQuery(document).ready(function ($) {
 						list.html(response.html).slideDown(100);
 					}, function (jqXHR, textStatus, errorThrown) {
 						loader.hide();
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					})
 					return false;
 				})
@@ -827,7 +821,6 @@ jQuery(document).ready(function ($) {
 						list.html(response.html).slideDown(100);
 					}, function (jqXHR, textStatus, errorThrown) {
 						loader.hide();
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					})
 					return false;
 				})
@@ -851,7 +844,6 @@ jQuery(document).ready(function ($) {
 						list.html(response.html).slideDown(100);
 					}, function (jqXHR, textStatus, errorThrown) {
 						loader.hide();
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					})
 					return false;
 				})
@@ -1005,7 +997,6 @@ jQuery(document).ready(function ($) {
 						});
 					}, function (jqXHR, textStatus, errorThrown) {
 						loader.hide();
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					})
 					return false;
 				})
@@ -1029,7 +1020,6 @@ jQuery(document).ready(function ($) {
 						list.html(response.html).slideDown(100);
 					}, function (jqXHR, textStatus, errorThrown) {
 						loader.hide();
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					})
 					return false;
 				})
@@ -1062,7 +1052,6 @@ jQuery(document).ready(function ($) {
 						}
 					}, function (jqXHR, textStatus, errorThrown) {
 						detailbox.removeClass('loading');
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					});
 
 					return false;
@@ -1099,7 +1088,6 @@ jQuery(document).ready(function ($) {
 						list.html(response.html).slideDown(100);
 					}, function (jqXHR, textStatus, errorThrown) {
 						loader.hide();
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					})
 					return false;
 				})
@@ -1124,7 +1112,6 @@ jQuery(document).ready(function ($) {
 						}
 					}, function (jqXHR, textStatus, errorThrown) {
 						detailbox.removeClass('loading');
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					});
 
 					return false;
@@ -1191,7 +1178,6 @@ jQuery(document).ready(function ($) {
 						}, function (jqXHR, textStatus, errorThrown) {
 							loader.removeClass('loading');
 							//detailbox.removeClass('loading');
-							alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 						});
 					}
 
@@ -1215,7 +1201,6 @@ jQuery(document).ready(function ($) {
 					}, function (jqXHR, textStatus, errorThrown) {
 						listtype.prop('disabled', false);
 						loader.removeClass('loading').html('');
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 					});
 				})
 				.on('click', '.mailster-total', function () {
@@ -1383,7 +1368,6 @@ jQuery(document).ready(function ($) {
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
 				loader.hide();
-				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 			});
 			return false;
 		}
@@ -1459,7 +1443,6 @@ jQuery(document).ready(function ($) {
 
 			}, function (jqXHR, textStatus, errorThrown) {
 				_obar.find('a.preview').removeClass('loading');
-				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 			});
 
 		}
@@ -1513,7 +1496,6 @@ jQuery(document).ready(function ($) {
 				}, function (jqXHR, textStatus, errorThrown) {
 					_obar.find('a.code').addClass('active').removeClass('loading');
 					_trigger('enable');
-					alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 				});
 
 			} else {
@@ -1745,7 +1727,6 @@ jQuery(document).ready(function ($) {
 				}, function (jqXHR, textStatus, errorThrown) {
 
 					loader(false);
-					alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 
 				});
 
@@ -1925,7 +1906,6 @@ jQuery(document).ready(function ($) {
 				}, function (jqXHR, textStatus, errorThrown) {
 
 					loader(false);
-					alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 
 				});
 
@@ -2074,7 +2054,6 @@ jQuery(document).ready(function ($) {
 					}, function (jqXHR, textStatus, errorThrown) {
 
 						loader(false);
-						alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 
 					});
 
@@ -2295,7 +2274,6 @@ jQuery(document).ready(function ($) {
 								}, function (jqXHR, textStatus, errorThrown) {
 
 									loader(false);
-									alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 
 								});
 
@@ -2536,7 +2514,6 @@ jQuery(document).ready(function ($) {
 
 					loader(false);
 					base.find('li.selected').removeClass('selected');
-					alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 
 				});
 
@@ -2944,7 +2921,6 @@ jQuery(document).ready(function ($) {
 			}, function (jqXHR, textStatus, errorThrown) {
 
 				loader(false);
-				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 
 			});
 		}
@@ -2974,7 +2950,6 @@ jQuery(document).ready(function ($) {
 			}, function (jqXHR, textStatus, errorThrown) {
 
 				loader(false);
-				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 
 			});
 			return false;
@@ -3107,7 +3082,7 @@ jQuery(document).ready(function ($) {
 
 		function addmodule() {
 			var module = selector.data('current');
-			insert($(this).data('id'), ((module && module.is('module')) ? module : false), true);
+			insert($(this).data('id'), ((module && module.is('module')) ? module : false), true, true);
 			return false;
 		}
 
@@ -3131,32 +3106,18 @@ jQuery(document).ready(function ($) {
 			var module = $(this).parent().parent().parent(),
 				clone = module.clone().removeAttr('selected').hide();
 
-			clone.insertAfter(module);
-
-			_trigger('resize');
-
-			clone.slideDown(function () {
-				clone.css('display', 'block');
-				_trigger('refresh');
-				_trigger('save');
-			});
-
-			var offset = clone.offset().top + _container.offset().top - (_win.height() / 2) - clone.outerHeight();
-			offset = Math.max(_container.offset().top, offset);
-
-			_scroll(offset);
+			insert(clone, module, false, true);
 			return false;
 		}
 
 		function auto() {
 			var module = $(this).parent().parent().parent();
-			var data = {
+			editbar.open({
 				element: module,
 				name: module.attr('label'),
 				type: 'auto',
 				offset: module.offset()
-			}
-			editbar.open(data);
+			});
 			return false;
 		}
 
@@ -3176,7 +3137,7 @@ jQuery(document).ready(function ($) {
 		function remove() {
 			var module = $(this).parent().parent().parent();
 			module.fadeTo(100, 0, function () {
-				module.slideUp(200, function () {
+				module.slideUp(100, function () {
 					module.remove();
 					modules = _iframe.contents().find('module');
 					if (!modules.length) container.html('');
@@ -3187,26 +3148,35 @@ jQuery(document).ready(function ($) {
 			return false;
 		}
 
-		function insert(id, element, before, noscroll) {
+		function insert(id_or_clone, element, before, scroll) {
 
-			if (!modulesOBJ[id]) return false;
-			var clone = modulesOBJ[id].el.clone();
+			var clone;
+
+			if (modulesOBJ[id_or_clone]) {
+				clone = modulesOBJ[id_or_clone].el.clone();
+			} else if (id_or_clone instanceof jQuery) {
+				clone = $(id_or_clone);
+				clone.find('single, multi, buttons').removeAttr('contenteditable spellcheck id dir style class');
+			} else {
+				return false;
+			}
 
 			if (!element && !container.length) return false;
 
-			(element) ?
-			(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element)) :
-			clone.hide().appendTo(container);
+			if (element) {
+				(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
+			} else {
+				clone.hide().appendTo(container);
+			}
 
-			_trigger('resize');
-
-			clone.slideDown(200, function () {
-				clone.addClass('active').css('display', 'block');
+			clone.slideDown(100, function () {
+				clone.css('display', 'block');
+				_trigger('resize');
 				_trigger('refresh');
 				_trigger('save');
 			});
 
-			if (!noscroll) {
+			if (scroll) {
 				var offset = clone.offset().top + _container.offset().top - (_win.height() / 2) - clone.outerHeight();
 				offset = Math.max(_container.offset().top, offset);
 
@@ -3218,13 +3188,12 @@ jQuery(document).ready(function ($) {
 		function codeView() {
 
 			var module = $(this).parent().parent().parent();
-			var data = {
+			editbar.open({
 				element: module,
 				name: module.attr('label'),
 				type: 'codeview',
 				offset: module.offset()
-			}
-			editbar.open(data);
+			});
 			return false;
 		}
 
@@ -3238,13 +3207,11 @@ jQuery(document).ready(function ($) {
 		}
 
 		function init() {
-
 			_container
 				.on('click', 'a.toggle-modules', toggleModules)
 				.on('click', 'a.addmodule', addmodule);
 
 			refresh();
-
 		}
 
 		function refresh() {
@@ -3333,7 +3300,7 @@ jQuery(document).ready(function ($) {
 								event.preventDefault();
 							})
 							.on('drop.mailster', function (event) {
-								insert(moduleid, modules.length ? (currentmodule && currentmodule[0] === container ? false : currentmodule) : false, pre_dropzone[0] === event.target, true);
+								insert(moduleid, modules.length ? (currentmodule && currentmodule[0] === container ? false : currentmodule) : false, pre_dropzone[0] === event.target, false, true);
 								modules = _iframe.contents().find('module');
 								event.preventDefault();
 							});
@@ -3445,7 +3412,7 @@ jQuery(document).ready(function ($) {
 				if (_currentundo) _obar.find('a.undo').removeClass('disabled');
 				_obar.find('a.redo').addClass('disabled');
 
-				wp.autosave.local.save();
+				if (wp && w.autosave) wp.autosave.local.save();
 			}
 
 		}
@@ -3525,7 +3492,6 @@ jQuery(document).ready(function ($) {
 		}, function (jqXHR, textStatus, errorThrown) {
 			_trigger('enable');
 			total.removeClass('loading').html('?');
-			alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console);
 		});
 	})
 
@@ -3875,6 +3841,8 @@ jQuery(document).ready(function ($) {
 			callback = data;
 			data = {};
 		}
+
+		dataType = dataType ? dataType : "JSON";
 		$.ajax({
 			type: 'POST',
 			url: ajaxurl,
@@ -3886,12 +3854,21 @@ jQuery(document).ready(function ($) {
 				callback && callback.call(this, data, textStatus, jqXHR);
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
+				var response = $.trim(jqXHR.responseText);
 				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
+				if (console) console.error(response);
+				if ('JSON' == dataType) {
+					var json = response.match(/{(.*)}/);
+					if (json && callback) {
+						callback.call(this, $.parseJSON(json[0]));
+						return;
+					}
+				}
 				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
+				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console)
 
 			},
-			dataType: dataType ? dataType : "JSON"
+			dataType: dataType
 		});
 	}
 
