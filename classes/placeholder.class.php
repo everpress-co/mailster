@@ -664,6 +664,7 @@ class MailsterPlaceholder {
 
 							}
 						} else {
+
 							$fallback_id = mailster_option( 'fallback_image' );
 							$post = null;
 							$thumb_id = null;
@@ -709,6 +710,14 @@ class MailsterPlaceholder {
 									$post_stuff = str_replace( $imagestring, $img['url'], $post_stuff );
 									$replace_to = '<' . $tag . ' ' . $pre_stuff . 'background="' . $img['url'] . '" ' . $post_stuff . '>';
 								}
+							} else {
+								if ( $is_img_tag ) {
+									$replace_to = '';
+								} else {
+									$pre_stuff = str_replace( $imagestring, '', $pre_stuff );
+									$post_stuff = str_replace( $imagestring, '', $post_stuff );
+									$replace_to = '<' . $tag . ' ' . $pre_stuff . 'background="" ' . $post_stuff . '>';
+								}
 							}
 
 							mailster_cache_set( 'mailster_' . $querystring, $replace_to );
@@ -720,7 +729,7 @@ class MailsterPlaceholder {
 						}
 					}
 
-					if ( $replace_to ) {
+					if ( false !== $replace_to ) {
 						$replace_to = apply_filters( 'mymail_replace_image', apply_filters( 'mailster_replace_image', $replace_to, $search ), $search );
 						$this->content = str_replace( $search, $replace_to, $this->content );
 					}

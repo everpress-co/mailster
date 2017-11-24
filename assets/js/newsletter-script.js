@@ -3412,7 +3412,7 @@ jQuery(document).ready(function ($) {
 				if (_currentundo) _obar.find('a.undo').removeClass('disabled');
 				_obar.find('a.redo').addClass('disabled');
 
-				if (wp && w.autosave) wp.autosave.local.save();
+				if (wp && wp.autosave) wp.autosave.local.save();
 			}
 
 		}
@@ -3858,9 +3858,14 @@ jQuery(document).ready(function ($) {
 				if (textStatus == 'error' && !errorThrown) return;
 				if (console) console.error(response);
 				if ('JSON' == dataType) {
-					var json = response.match(/{(.*)}/);
+					var json = response.match(/{(.*)}$/);
 					if (json && callback) {
-						callback.call(this, $.parseJSON(json[0]));
+						try {
+							json = $.parseJSON(json[0]);
+							callback.call(this, json);
+						} catch (e) {
+							if (console) console.error(e);
+						}
 						return;
 					}
 				}
