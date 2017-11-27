@@ -631,13 +631,14 @@ class MailsterCampaigns {
 						break;
 						case 'active':
 							if ( $totals ) {
-								echo '<span class="mailster-icon progressing"></span> ' . ( $sent == $totals ? __( 'completing job', 'mailster' ) : __( 'progressing', 'mailster' ) ) . '&hellip;' . ( $meta['timezone'] ? ' <span class="timezonebased"  title="' . __( 'This campaign is based on subscribers timezone and problably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '' );
+								echo '<span class="mailster-icon progressing"></span> ' . ( $sent == $totals ? __( 'completing job', 'mailster' ) : __( 'progressing', 'mailster' ) ) . '&hellip;' . ( $meta['timezone'] ? ' <span class="timezonebased"  title="' . __( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '' );
 								$p = $totals ? round( $sent / $totals * 100 ) : 0;
 								echo "<br><div class='campaign-progress'><span class='bar' style='width:" . $p . "%'></span><span>&nbsp;" . sprintf( __( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) . "</span><var>$p%</var></div>";
 							} elseif ( is_null( $totals ) ) {
 							} else {
 								echo '<span class="mailster-icon no-receiver"></span> ' . __( 'no receivers!', 'mailster' );
 							}
+							echo '<div class="campaign-status"></div>';
 						break;
 						case 'queued':
 							echo '<span class="mailster-icon queued"></span> ';
@@ -646,8 +647,9 @@ class MailsterCampaigns {
 								$timestamp = min( mailster( 'subscribers' )->get_timeoffset_timestamps( $sub, $timestamp ) );
 								endif;
 							printf( __( 'starts in %s', 'mailster' ), ( $timestamp - $now > 60 ) ? human_time_diff( $timestamp ) : __( 'less than a minute', 'mailster' ) );
-							echo $meta['timezone'] ? ' <span class="timezonebased"  title="' . __( 'This campaign is based on subscribers timezone and problably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '';
+							echo $meta['timezone'] ? ' <span class="timezonebased"  title="' . __( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '';
 							echo "<br><span class='nonessential'>(" . date( $timeformat, $timestamp + $timeoffset ) . ')</span>';
+							echo '<div class="campaign-status"></div>';
 						break;
 						case 'finished':
 							echo '<span class="mailster-icon finished"></span> ' . __( 'Finished', 'mailster' );
@@ -680,7 +682,7 @@ class MailsterCampaigns {
 								'week' => __( 'week(s)', 'mailster' ),
 								'month' => __( 'month(s)', 'mailster' ),
 								'year' => __( 'year(s)', 'mailster' ),
-								);
+							);
 
 							if ( 'mailster_autoresponder_timebased' == $autoresponder['action'] ) {
 
@@ -830,6 +832,7 @@ class MailsterCampaigns {
 					$status = get_post_status_object( $post->post_status );
 					echo $status->label;
 				}
+
 				if ( ( current_user_can( 'publish_newsletters' ) && get_current_user_id() == $post->post_author ) || current_user_can( 'edit_others_newsletters' ) ) {
 					echo '<div class="row-actions">';
 					$actions = array();
@@ -1417,7 +1420,7 @@ class MailsterCampaigns {
 			$meta['preheader'] = $postdata['preheader'];
 			$meta['template'] = $postdata['template'];
 			$meta['file'] = $postdata['file'];
-			$meta['lists'] = isset( $postdata['lists'] ) ? (array) $postdata['lists'] : array();
+			$meta['lists'] = isset( $postdata['lists'] ) ? (array) $postdata['lists'] : null;
 			$meta['ignore_lists'] = isset( $postdata['ignore_lists'] ) && $postdata['ignore_lists'];
 			$meta['from_name'] = $postdata['from_name'];
 			$meta['from_email'] = $postdata['from_email'];
@@ -1429,12 +1432,13 @@ class MailsterCampaigns {
 				$meta['colors'] = $postdata['newsletter_color'];
 			}
 
-			$meta['attachments'] = array();
 			if ( isset( $postdata['attachments'] ) ) {
+				$meta['attachments'] = array();
 				$total_size = 0;
 				$max_size = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );
 				foreach ( $postdata['attachments'] as $attachment_id ) {
-					if ( ! $attachment_id ) { continue;
+					if ( ! $attachment_id ) {
+						continue;
 					}
 					$file = get_attached_file( $attachment_id );
 					if ( @is_file( $file ) ) {
@@ -3422,6 +3426,11 @@ class MailsterCampaigns {
 
 		$return = array();
 
+		$cron_status = mailster( 'cron' )->check();
+		if ( is_wp_error( $cron_status ) ) {
+			mailster_notice( $cron_status->get_error_message(), 'error', false, 'check_cron' );
+		}
+
 		switch ( $data['mailster']['page'] ) {
 
 			case 'overview':
@@ -3443,12 +3452,20 @@ class MailsterCampaigns {
 					$meta = $this->meta( $id );
 					$totals = $this->get_totals( $id );
 					$sent = $this->get_sent( $id );
+					$sent_formatted = sprintf( __( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
+					if ( is_wp_error( $cron_status ) ) {
+						$status_title = __( 'Sending Problem!', 'mailster' ) . ' <a href="' . admin_url( 'admin.php?page=mailster_tests&autostart' ) . '" class="button button-small">' . __( 'Self Test', 'mailster' ) . '</a>';
+					} else {
+						$status_title = $sent_formatted;
+					}
 
 					$return[ $id ] = array(
+						'cron' => ! is_wp_error( $cron_status ),
 						'status' => $post->post_status,
+						'status_title' => $status_title,
 						'total' => $totals,
 						'sent' => $sent,
-						'sent_formatted' => '&nbsp;' . sprintf( __( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ),
+						'sent_formatted' => '&nbsp;' . $sent_formatted,
 						'column-status' => $this->get_columns_content( 'status' ),
 						'column-total' => $this->get_columns_content( 'total' ),
 						'column-open' => $this->get_columns_content( 'open' ),
@@ -3519,6 +3536,7 @@ class MailsterCampaigns {
 					endif;
 
 				$return[ $id ] = array(
+					'cron' => ! is_wp_error( $cron_status ),
 					'status' => $post->post_status,
 					'total' => $post->post_type == 'autoresponder' ? $sent : $totals,
 					'sent' => $sent,
@@ -3552,8 +3570,8 @@ class MailsterCampaigns {
 
 		$response['mailster'] = $return;
 
-		// check for missing cron
-		mailster( 'cron' )->check();
+		// maybe change status
+		mailster( 'queue' )->update();
 		// maybe change status
 		mailster( 'queue' )->update_status();
 

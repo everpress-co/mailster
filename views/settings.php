@@ -15,15 +15,9 @@ $roles = $wp_roles->get_names();
 <h1><?php esc_html_e( 'Newsletter Settings', 'mailster' ) ?></h1>
 <?php
 
-$active = count( mailster_get_active_campaigns() );
-
 $templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
 $timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
-
-if ( $active ) {
-	echo '<div class="error inline"><p>' . sprintf( _n( '%d campaign is active. You should pause it before you change the settings!', '%d campaigns are active. You should pause them before you change the settings!', $active, 'mailster' ), $active ) . '</p></div>';
-}
 
 ?>
 <?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>

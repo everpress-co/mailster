@@ -13,9 +13,7 @@ class MailsterCron {
 
 		add_filter( 'cron_schedules', array( &$this, 'filter_cron_schedules' ) );
 		add_action( 'mailster_cron', array( &$this, 'hourly_cronjob' ) );
-		add_action( 'mailster_cron', array( &$this, 'check' ) );
 		add_action( 'mailster_cron_worker', array( &$this, 'handler' ), -1 );
-		add_action( 'mailster_cron_worker', array( &$this, 'check' ), 99 );
 
 		add_action( 'mailster_campaign_pause', array( &$this, 'update' ) );
 		add_action( 'mailster_campaign_start', array( &$this, 'update' ) );
@@ -190,28 +188,30 @@ class MailsterCron {
 	}
 
 
-	public function check() {
+	public function check( $strict = false ) {
 
 		global $wpdb;
 
 		$now = time();
 		$cron_service = mailster_option( 'cron_service' );
 
-		if ( ! mailster( 'queue' )->size() ) :
+		if ( ! mailster( 'queue' )->size() && ! $strict ) :
 
 			mailster_remove_notice( 'check_cron' );
+
+			return true;
 
 		else :
 
 			$interval = mailster_option( 'interval' ) * 60;
-			$last_hit = get_option( 'mailster_cron_lasthit', array(
-				'ip' => mailster_get_ip(),
-				'timestamp' => $now,
-				'oldtimestamp' => $now - $interval,
-			) );
+			$last_hit = get_option( 'mailster_cron_lasthit' );
 
-			if ( ! isset( $last_hit['timestamp'] ) ) {
-				return;
+			if ( ! $last_hit ) {
+				if ( is_array( $last_hit ) ) {
+					return new WP_Error( 'cron_error', sprintf( __( 'Your Cron page hasn\'t get triggered recently. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'settings page', 'mailster' ) . '</strong></a>.' ) );
+				}
+
+				return new WP_Error( 'cron_error', sprintf( __( 'The Cron Process is not setup correctly. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'settings page', 'mailster' ) . '</strong></a>.' ) );
 			}
 
 			// get real delay...
@@ -221,17 +221,14 @@ class MailsterCron {
 			// ..and compare it with the interval (3 times) - also something in the queue
 			if ( ( $current_delay > $real_delay * 3 || ! $real_delay && ! $current_delay ) ) :
 
-				if ( $cron_service == 'wp-cron' && defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
-					mailster_notice( sprintf( __( 'The WordPress Cron is disabled! Please remove the %s constant from your wp-config.php file or switch to a real cron job!', 'mailster' ), '<code>DISABLE_WP_CRON</code>' ), 'error', false, 'check_cron' );
-				} else {
-					mailster_notice( sprintf( __( 'Are your campaigns not sending? You may have to check your %1$s', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=check_cron#cron"><strong>' . __( 'cron settings', 'mailster' ) . '</strong></a>' ), 'error', false, 'check_cron' );
-				}
-
 				$this->update();
+
+				return new WP_Error( 'cron_warning', sprintf( __( 'Are your campaigns not sending? You may have to check your %1$s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'cron settings', 'mailster' ) . '</strong></a>' ) );
 
 			else :
 
 				mailster_remove_notice( 'check_cron' );
+				return true;
 
 			endif;
 

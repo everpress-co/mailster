@@ -57,6 +57,9 @@ jQuery(document).ready(function ($) {
 
 					if (!data) return;
 
+					row.find('.column-status')[data.cron ? 'removeClass' : 'addClass']('cron-issue');
+					row.find('.campaign-status').html(data.cron ? '' : data.status_title);
+
 					$.each(data, function (key, value) {
 						if (current && current[id][key] == value) return;
 

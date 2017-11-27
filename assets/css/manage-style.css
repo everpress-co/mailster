@@ -181,8 +181,8 @@ span.error{
 	position:relative;
 	text-align:right;
 	line-height:20px;
-	display: none;
 	margin-top: 24px;
+	border-radius: 4px;
 }
 .progress span.bar{
 	display:block;
@@ -194,27 +194,16 @@ span.error{
 	bottom:0;
 	left:0;
 	overflow:visible;
+	border-radius: 4px;
 }
 .progress span.bar{
 	background: url(../img/progress_2x.gif);
 }
 .progress.paused span.bar,
 .progress.error span.bar{
-	background: #e3eaed;
-	background: -moz-linear-gradient(top,  #e3eaed 0%, #c8d7dc 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e3eaed), color-stop(100%,#c8d7dc));
-	background: -webkit-linear-gradient(top,  #e3eaed 0%,#c8d7dc 100%);
-	background: -o-linear-gradient(top,  #e3eaed 0%,#c8d7dc 100%);
-	background: -ms-linear-gradient(top,  #e3eaed 0%,#c8d7dc 100%);
-	background: linear-gradient(top,  #e3eaed 0%,#c8d7dc 100%);
+	background: #D54E21;
 	opacity:0.8;
 }
-.progress.finished span.bar{
-	background: #c7e9c4;
-	background: -moz-linear-gradient(top, #c7e9c4 0%, #aacca7 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c7e9c4), color-stop(100%,#aacca7));
-	background: -webkit-linear-gradient(top, #c7e9c4 0%,#aacca7 100%);
-	background: -o-linear-gradient(top, #c7e9c4 0%,#aacca7 100%);
-	background: -ms-linear-gradient(top, #c7e9c4 0%,#aacca7 100%);
-	background: linear-gradient(top, #c7e9c4 0%,#aacca7 100%);
+.progress.finished{
+	display: none;
 }

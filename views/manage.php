@@ -376,7 +376,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 
 <?php endif; ?>
 
-	<div id="progress" class="progress"><span class="bar" style="width:0%"><span></span></span></div>
+	<div id="progress" class="progress hidden"><span class="bar" style="width:0%"><span></span></span></div>
 
 </div>
 

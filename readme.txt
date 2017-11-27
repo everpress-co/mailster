@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * editor improvements
 * added: custom field API
 * dynamic post images with no image are now removed
+* new progress bar and cron check improvements
 
 = Version 2. 3.beta.3 =
 

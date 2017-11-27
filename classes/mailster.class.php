@@ -292,7 +292,7 @@ class Mailster {
 				$type = esc_attr( $notice['type'] );
 				$dismissable = ! $notice['once'] || is_numeric( $notice['once'] );
 
-				$classes = array( 'notice', 'mailster-notice', 'notice-' . $type );
+				$classes = array( 'hidden', 'notice', 'mailster-notice', 'notice-' . $type );
 				if ( 'success' == $type ) {
 					$classes[] = 'updated';
 				}
@@ -303,7 +303,7 @@ class Mailster {
 					$classes[] = 'mailster-notice-dismissable';
 				}
 
-				$msg = '<div data-id="' . $id . '" id="mailster-notice-' . $id . '" class="' . implode( ' ', $classes ) . '" style="display:none">';
+				$msg = '<div data-id="' . $id . '" id="mailster-notice-' . $id . '" class="' . implode( ' ', $classes ) . '">';
 
 				$text = ( isset( $notice['text'] ) ? $notice['text'] : '' );
 				$text = isset( $notice['cb'] ) && function_exists( $notice['cb'] )

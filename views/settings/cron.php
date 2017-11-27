@@ -1,3 +1,9 @@
+<?php
+	$cron_status = mailster( 'cron' )->check();
+if ( is_wp_error( $cron_status ) ) : ?>
+	<div class="error inline"><p><strong><?php echo $cron_status->get_error_message() ?></strong></p></div>
+	<?php endif;
+?>
 <table class="form-table">
 	<tr valign="top" class="wp_cron">
 		<th scope="row"><?php esc_html_e( 'Interval for sending emails', 'mailster' ) ?></th>
@@ -8,9 +14,6 @@
 		<td>
 			<?php $cron = mailster_option( 'cron_service' );?>
 			<label><input type="radio" class="cron_radio" name="mailster_options[cron_service]" value="wp_cron" <?php checked( $cron == 'wp_cron' );?> > <?php esc_html_e( 'Use the wp_cron function to send newsletters', 'mailster' ) ?></label><br>
-			<?php if ( ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ) : ?>
-			<div class="error inline"><p><strong><?php printf( __( 'WordPress cron is disabled! Uncomment the %s constant in the wp-config.php or use a real cron instead', 'mailster' ), '<code>DISABLE_WP_CRON</code>' ); ?></strong></p></div>
-			<?php endif; ?>
 			<label><input type="radio" class="cron_radio" name="mailster_options[cron_service]" value="cron" <?php checked( $cron == 'cron' ) ?> > <?php esc_html_e( 'Use a real cron to send newsletters', 'mailster' ) ?></label> <span class="description"><?php esc_html_e( 'reccomended for many subscribers', 'mailster' ) ?></span>
 			<?php if ( file_exists( MAILSTER_UPLOAD_DIR . '/CRON_LOCK' ) && ( time() - filemtime( MAILSTER_UPLOAD_DIR . '/CRON_LOCK' ) ) < 10 ) : ?>
 			<div class="error inline"><p><strong><?php esc_html_e( 'Cron is currently running!', 'mailster' );?></strong></p></div>
@@ -45,7 +48,6 @@
 			</ul>
 			<p class="description"><?php esc_html_e( 'You can setup an interval as low as one minute, but should consider a reasonable value of 5-15 minutes as well.', 'mailster' );?></p>
 			<p class="description"><?php esc_html_e( 'If you need help setting up a cron job please refer to the documentation that your provider offers.', 'mailster' );?></p>
-			<p class="description"><?php printf( __( 'Anyway, chances are high that either %1$s, %2$s or %3$s  documentation will help you.', 'mailster' ), '<a href="https://docs.cpanel.net/display/ALD/Cron+Jobs" class="external">the CPanel</a>', '<a href="http://download1.parallels.com/Plesk/PP10/10.3.1/Doc/en-US/online/plesk-administrator-guide/plesk-control-panel-user-guide/index.htm?fileName=65208.htm" class="external">Plesk</a>', '<a href="http://www.thegeekstuff.com/2011/07/php-cron-job/" class="external">the crontab</a>' ); ?></p>
 			<p class="description"><?php printf( __( 'You can also find additional help on our %s.', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-a-cron-job/" class="external">' . __( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
 		</td>
 	</tr>

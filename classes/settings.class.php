@@ -529,7 +529,7 @@ class MailsterSettings {
 
 	public function reset_lasthit( $redirect = false ) {
 
-		update_option( 'mailster_cron_lasthit', false );
+		update_option( 'mailster_cron_lasthit', array() );
 		if ( $redirect ) {
 			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
 			exit;
@@ -934,7 +934,6 @@ class MailsterSettings {
 
 					if ( $old != $value ) {
 
-						update_option( 'mailster_cron_lasthit', false );
 						switch ( $old ) {
 							case 'file':
 								$lockfiles = glob( MAILSTER_UPLOAD_DIR . '/CRON_*.lockfile' );
@@ -1530,7 +1529,6 @@ class MailsterSettings {
 			'Track Cities' => mailster_option( 'trackcities' ) ? 'Yes' : 'No',
 			'City DB' => file_exists( mailster_option( 'cities_db' ) ) ? 'DB exists (' . date( 'Y-m-d H:i:s', filemtime( mailster_option( 'cities_db' ) ) ) . ', ' . human_time_diff( filemtime( mailster_option( 'cities_db' ) ) ) . ')' : 'DB is missing',
 			'--',
-			'WordPress Cron' => ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? 'Not available - remove DISABLE_WP_CRON constant' : 'Available',
 			'Cron Service' => mailster_option( 'cron_service' ),
 			'Cron URL' => mailster( 'cron' )->url(),
 			'Alternative Cron URL' => mailster( 'cron' )->url( true ),

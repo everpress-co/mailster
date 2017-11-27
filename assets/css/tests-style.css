@@ -1,3 +1,6 @@
+.notice, .error, .update-nag{
+	display: none !important;
+}
 .mailster-test-result{
 	background: #fff;
 	border-left: 4px solid #fff;
@@ -98,6 +101,7 @@
 	line-height:20px;
 	display: none;
 	margin-top: 24px;
+	border-radius: 4px;
 }
 .progress span.bar{
 	display:block;
@@ -114,6 +118,7 @@
 	-ms-transition:width .6s ease-in-out;
 	-o-transition:width .6s ease-in-out;
 	transition:width .6s ease-in-out;
+	border-radius: 4px;
 
 }
 .progress span.bar{

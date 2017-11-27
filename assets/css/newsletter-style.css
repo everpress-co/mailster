@@ -1948,6 +1948,7 @@ label.weekday input{
 	position:relative;
 	text-align:right;
 	line-height:20px;
+	border-radius: 2px;
 }
 .progress var{
 	padding-right:2px;
@@ -1975,6 +1976,7 @@ label.weekday input{
 	-o-transition:width 1.25s ease;
 	transition:width 1.25s ease;
 	overflow:visible;
+	border-radius: 2px;
 }
 .progress span.bar{
 	text-shadow:none;

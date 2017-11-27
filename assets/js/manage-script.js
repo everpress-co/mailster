@@ -47,7 +47,7 @@ jQuery(document).ready(function ($) {
 			});
 
 			uploader.bind('BeforeUpload', function (up, file) {
-				progress.show().removeClass('finished error');
+				progress.removeClass('finished error hidden');
 				importstatus.html('uploading');
 			});
 
@@ -119,7 +119,7 @@ jQuery(document).ready(function ($) {
 
 
 
-			progress.show();
+			progress.removeClass('hidden');
 			progressbar.stop().width(0);
 			$('.step1').slideUp();
 			$('.step2-body').html('<br><br>').parent().show();
@@ -234,7 +234,7 @@ jQuery(document).ready(function ($) {
 
 		var data = $(this).serialize();
 
-		progress.show().removeClass('finished error');
+		progress.removeClass('finished error hidden');
 
 		$('.step1').slideUp();
 		$('.step2').slideDown();
@@ -279,7 +279,7 @@ jQuery(document).ready(function ($) {
 
 			var data = $(this).serialize();
 
-			progress.show().removeClass('finished error');
+			progress.removeClass('finished error hidden');
 
 			$('.step1').slideUp();
 			progressbar.stop().animate({
@@ -358,7 +358,7 @@ jQuery(document).ready(function ($) {
 						if (finished) {
 							window.onbeforeunload = null;
 							progress.addClass('finished');
-							$('.step2-body').html(mailsterL10n.download_finished);
+							$('.step2-body').html(mailsterL10n.export_finished);
 
 							exportstatus.html(mailsterL10n.downloading);
 							if (response.filename) setTimeout(function () {
@@ -445,7 +445,7 @@ jQuery(document).ready(function ($) {
 		_ajax('get_import_data', {
 			identifier: importidentifier
 		}, function (response) {
-			progress.hide().removeClass('finished');
+			progress.addClass('hidden');
 
 			$('.step1').slideUp();
 			$('.step2-body').html(response.html).parent().show();

@@ -115,7 +115,7 @@ class MailsterTests {
 					$name = $this->nicename( $test_id );
 					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ($error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . '</h4><p class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</p></div>';
 					if ( $type != 'success' ) {
-						$text .= '[' . $type . str_repeat( ' ', 7 - strlen( $type ) ) . '] ' . $test_id . str_repeat( ' ', $maxlen - strlen( $test_id ) ) . ': ' . strip_tags( $error['msg'] ) . "\n";
+						$text .= '[' . $type . '] ' . $test_id . ': ' . strip_tags( $error['msg'] ) . "\n";
 					}
 				}
 			}
@@ -278,7 +278,7 @@ class MailsterTests {
 		if ( version_compare( PHP_VERSION, '5.3' ) < 0 ) {
 			$this->error( sprintf( 'Mailster requires PHP version 5.3 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
 		} elseif ( version_compare( PHP_VERSION, '7.0' ) < 0 ) {
-			$this->warning( sprintf( 'Mailster recommends PHP version 7.0 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
+			$this->notice( sprintf( 'Mailster recommends PHP version 7.0 or higher. Your current version is %s. Please update or ask your hosting provider to help you updating.', PHP_VERSION ) );
 		} else {
 			$this->success( 'You have version ' . PHP_VERSION );
 		}
@@ -339,7 +339,7 @@ class MailsterTests {
 	}
 	private function test_wp_debug() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$this->warning( 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
+			$this->notice( 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
 		}
 	}
 	private function test_fsockopen_extension() {
@@ -378,31 +378,25 @@ class MailsterTests {
 	}
 	private function test_working_cron() {
 
-		$last_hit = get_option( 'mailster_cron_lasthit' );
-		if ( ! $last_hit ) {
-			$this->error( 'Your cron is not working. Please check your settings <a href="edit.php?post_type=newsletter&page=mailster_settings#cron">here</a>.', 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' );
+		$cron_status = mailster( 'cron' )->check( true );
+
+		if ( is_wp_error( $cron_status ) ) {
+			switch ( $cron_status->get_error_code() ) {
+				case 'cron_error':
+					$this->error( $cron_status->get_error_message(), 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' );
+					break;
+				default:
+					$this->warning( $cron_status->get_error_message(), 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' );
+					break;
+			}
 		} else {
-
-			$interval = mailster_option( 'interval' ) * 60;
-			$cron_service = mailster_option( 'cron_service' );
-
-			// get real delay...
-			$real_delay = max( $interval, $last_hit['timestamp'] - $last_hit['oldtimestamp'] );
-			$current_delay = time() - $last_hit['timestamp'];
-
-			// ..and compare it with the interval (3 times) - also something in the queue
-			if ( ( $current_delay > $real_delay * 3 || ! $real_delay && ! $current_delay ) ) :
-
-				if ( $cron_service == 'wp-cron' && defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
-					$this->error( sprintf( __( 'The WordPress Cron is disabled! Please remove the %s constant from your wp-config.php file or switch to a real cron job!', 'mailster' ), '<code>DISABLE_WP_CRON</code>' ) );
-				} else {
-					$this->warning( 'Your cron is maybe not working. Please check your settings <a href="edit.php?post_type=newsletter&page=mailster_settings#cron">here</a>.', 'https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/' );
-				} else :
-					$this->success( sprintf( __( 'Last hit was %s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) );
-
-			endif;
-
+			if ( $last_hit = get_option( 'mailster_cron_lasthit' ) ) {
+				$this->success( sprintf( __( 'Last hit was %s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) );
+			}
 		}
+
+		return;
+
 	}
 	private function test_cron_lock() {
 
@@ -419,7 +413,7 @@ class MailsterTests {
 	private function test_mail_throughput() {
 		if ( $last_hit = get_option( 'mailster_cron_lasthit' ) ) {
 
-			if ( ! isset( $last_hit['mail'] ) ) {
+			if ( ! isset( $last_hit['mail'] ) || ! $last_hit['mail'] ) {
 				return;
 			}
 			$mails_per_sec = round( 1 / $last_hit['mail'], 2 );

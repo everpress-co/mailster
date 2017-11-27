@@ -2,7 +2,6 @@ jQuery(document).ready(function ($) {
 
 	"use strict"
 
-	//general vars
 	var wpnonce = $('#mailster_nonce').val(),
 		start_button = $('.start-test'),
 		output = $('.tests-output'),
@@ -34,12 +33,12 @@ jQuery(document).ready(function ($) {
 			'success': 0,
 		};
 		return false;
-	})
+	});
 
 	output.on('click', 'a', function () {
 		if (this.href) window.open(this.href);
 		return false;
-	})
+	});
 
 	tests
 		.on('change', 'input', function () {
@@ -54,6 +53,9 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
+	if (/autostart/.test(location.search)) {
+		start_button.trigger('click');
+	}
 
 	function test(test_id) {
 

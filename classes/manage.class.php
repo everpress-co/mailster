@@ -51,7 +51,7 @@ class MailsterManage {
 				'error_importing' => __( 'There was a problem during importing contacts. Please check the error logs for more information!', 'mailster' ),
 				'prepare_download' => __( 'Preparing Download...%s', 'mailster' ),
 				'write_file' => __( 'writing file: %s', 'mailster' ),
-				'download_finished' => __( 'Download finished', 'mailster' ),
+				'export_finished' => __( 'Export finished', 'mailster' ),
 				'downloading' => __( 'Downloading...', 'mailster' ),
 				'error_export' => __( 'There was an error while exporting', 'mailster' ),
 				'confirm_import' => __( 'Do you really like to import these contacts?', 'mailster' ),
@@ -1215,7 +1215,7 @@ class MailsterManage {
 
 			$return['success'] = mailster( 'subscribers' )->remove( $subscriber_ids, $statuses, isset( $d['remove_actions'] ) );
 
-			if ( $return['success'] && ! empty( $listids ) ) {
+			if ( $return['success'] && ! empty( $listids ) && isset( $d['remove_lists'] ) ) {
 
 				mailster( 'lists' )->remove( $listids );
 

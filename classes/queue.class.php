@@ -1022,10 +1022,11 @@ class MailsterQueue {
 
 				}
 
+				$took = microtime( true ) - $send_start_time;
+
 				// success
 				if ( ! is_wp_error( $result ) ) {
 
-					$took = microtime( true ) - $send_start_time;
 					$mail_send_time += $took;
 
 					$wpdb->query( $wpdb->prepare( $queue_update_sql, time(), 0, $data->_priority, $data->_count, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options ) );
@@ -1120,14 +1121,13 @@ class MailsterQueue {
 
 		$max_memory_usage = memory_get_peak_usage( true );
 
-		$took = ( microtime( true ) - $microtime );
-
 		if ( $max_memory_usage ) {
 			$this->cron_log( 'max. memory usage', '<strong>' . size_format( $max_memory_usage, 2 ) . '</strong>' );
 		}
 
 		$this->cron_log( 'sent this turn', $sent_this_turn );
 
+		$took = ( microtime( true ) - $microtime );
 		if ( $sent_this_turn ) {
 			$mailtook = round( $took / $sent_this_turn, 4 );
 			$this->cron_log( 'time', round( $took, 2 ) . ' sec., (' . $mailtook . ' sec./mail)' );
