@@ -1914,6 +1914,7 @@ jQuery(document).ready(function ($) {
 						img.onload = function () {
 							imagepreview.attr('src', url);
 							currentimage = {
+								src: url,
 								width: img.width,
 								height: img.height,
 								asp: img.width / img.height
@@ -3002,6 +3003,7 @@ jQuery(document).ready(function ($) {
 					assetstype = 'attachment';
 					assetslist = base.find('.imagelist');
 					currentimage = {
+						src: src,
 						id: el.data('id'),
 						width: el.width() * fac,
 						height: el.height() * fac
@@ -3232,6 +3234,9 @@ jQuery(document).ready(function ($) {
 
 		function openURL() {
 			$('.imageurl-popup').toggle();
+			if (!imageurl.val() && currentimage.src.indexOf(location.origin) == -1 && currentimage.src.indexOf('dummy.newsletter-plugin.com') == -1) {
+				imageurl.val(currentimage.src);
+			}
 			imageurl.focus().select();
 			return false;
 		}
