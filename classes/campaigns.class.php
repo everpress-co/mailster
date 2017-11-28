@@ -60,9 +60,23 @@ class MailsterCampaigns {
 			add_action( 'wp_loaded', array( &$this, 'edit_hook' ) );
 			add_action( 'get_the_excerpt', array( &$this, 'get_the_excerpt' ) );
 			add_action( 'admin_enqueue_scripts', array( &$this, 'assets' ) );
+			add_filter( 'update_post_metadata', array( &$this, 'prevent_edit_lock' ), 10, 5 );
 
 		}
 
+	}
+
+
+	public function prevent_edit_lock( $bool, $object_id, $meta_key, $meta_value, $prev_value ) {
+
+		if ( is_null( $bool ) && '_edit_lock' == $meta_key ) {
+			$post = get_post( $object_id );
+			if ( 'newsletter' == $post->post_type && in_array( $post->post_status, array( 'finished', 'active' ) ) ) {
+				delete_post_meta( $object_id, '_edit_lock' );
+				return false;
+			}
+		}
+		return $bool;
 	}
 
 
@@ -1108,6 +1122,8 @@ class MailsterCampaigns {
 
 			wp_enqueue_script( 'mailster-script', MAILSTER_URI . 'assets/js/newsletter-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
+			wp_enqueue_style( 'mailster-newsletter', MAILSTER_URI . 'assets/css/newsletter-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+
 			if ( in_array( $post->post_status, array( 'active', 'finished' ) ) || isset( $_GET['showstats'] ) ) {
 
 				wp_enqueue_script( 'google-jsapi', 'https://www.google.com/jsapi' );
@@ -1115,6 +1131,8 @@ class MailsterCampaigns {
 				wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
 				wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+				wp_add_inline_style( 'mailster-newsletter', '#local-storage-notice{display:none !important}' );
 
 			} else {
 
@@ -1214,8 +1232,6 @@ class MailsterCampaigns {
 				'codeview' => current_user_can( 'mailster_see_codeview' ),
 				'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
 			) );
-
-			wp_enqueue_style( 'mailster-newsletter', MAILSTER_URI . 'assets/css/newsletter-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		}
 	}

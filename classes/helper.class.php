@@ -1475,4 +1475,48 @@ class MailsterHelper {
 	}
 
 
+	/**
+	 *
+	 *
+	 * @param unknown $content
+	 * @param unknown $args    (optional)
+	 * @return unknown
+	 */
+	public function dialog( $content, $args = array() ) {
+
+		$defaults = array(
+			'id' => uniqid(),
+			'button_label' => __( 'Ok, got it!', 'mailster' ),
+			'classes' => array(),
+		);
+
+		if ( is_string( $args ) ) {
+			$args = array( 'id' => $args );
+		}
+
+		$args = wp_parse_args( $args, $defaults );
+		$args['id'] = 'mailster-' . $args['id'];
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_script( 'mailster-dialog', MAILSTER_URI . 'assets/js/dialog-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+		wp_enqueue_style( 'mailster-dialog', MAILSTER_URI . 'assets/css/dialog-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+?>
+		<div id="<?php echo esc_attr( $args['id'] ) ?>" class="mailster-notification-dialog notification-dialog-wrap <?php echo esc_attr( $args['id'] ) ?> hidden <?php echo implode( ' ', $args['classes'] ) ?>">
+			<div class="notification-dialog-background"></div>
+			<div class="notification-dialog" role="dialog" aria-labelledby="<?php echo esc_attr( $args['id'] ) ?>" tabindex="0">
+				<div class="notification-dialog-content <?php echo esc_attr( $args['id'] ) ?>-content">
+					<?php echo $content; ?>
+				</div>
+				<div class="notification-dialog-footer">
+					<button type="button" class="<?php echo esc_attr( $args['id'] ) ?>-submit notification-dialog-submit button button-primary"><?php echo esc_html( $args['button_label'] ) ?></button>
+				</div>
+			</div>
+		</div>
+<?php
+
+	}
+
+
 }
