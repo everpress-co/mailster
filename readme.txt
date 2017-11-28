@@ -87,6 +87,8 @@ Xaver Birsak – https://everpress.io
 * fixed: visual issue with color picker on WP 4.9
 * fixed: lists were always deleted from the manage subscribers tab
 * fixed: issue with external image URLs not saving
+* fixed: height not updated if image url is used in editor
+* improved: scrolling speed in editor
 * improved: Caching is now disabled on any page with a form
 
 = Version 2.2.14 =

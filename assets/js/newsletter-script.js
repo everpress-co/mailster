@@ -1913,6 +1913,7 @@ jQuery(document).ready(function ($) {
 						loader();
 						img.onload = function () {
 							imagepreview.attr('src', url);
+							imageheight.val(Math.round(img.width / (img.width / img.height)));
 							currentimage = {
 								src: url,
 								width: img.width,
@@ -3102,7 +3103,7 @@ jQuery(document).ready(function ($) {
 
 				loader(false);
 
-			}, Math.abs(offset - animateDOM.scrollTop()));
+			}, 100);
 
 
 		}
