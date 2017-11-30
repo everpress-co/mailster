@@ -1463,51 +1463,12 @@ class MailsterSettings {
 		global $wpdb;
 
 		$mail = mailster( 'mail' );
-		$mail->to = 'deadend@newsletter-plugin.com';
-		$mail->subject = 'test';
-		$mail->debug();
-
-		if ( $mail->send_notification( 'Sendtest', 'this test message can get deleted', array( 'notification' => '' ), false ) ) {
-			$send_success = 'OK';
-		} else {
-			$send_success = strip_tags( $mail->get_errors() );
-		}
-
-		$response = wp_remote_post( 'https://www.paypal.com/cgi-bin/webscr', array(
-			'sslverify' => true,
-			'timeout' => 5,
-			'body' => array( 'cmd' => '_notify-validate' ),
-		) );
-
-		$code = wp_remote_retrieve_response_code( $response );
-
-		if ( is_wp_error( $response ) ) {
-			$wp_remote_post = 'does not work: ' . $response->get_error_message();
-		} elseif ( $code >= 200 && $code < 300 ) {
-			$wp_remote_post = 'works';
-		} else {
-			$wp_remote_post = 'does not work: ' . $code;
-		}
-
-		$response = wp_remote_post( 'https://update.mailster.co/' );
-		$code = wp_remote_retrieve_response_code( $response );
-
-		if ( is_wp_error( $response ) ) {
-			$update_server = '' . $response->get_error_message() . ' - Please allow connection to update.mailster.co!';
-		} elseif ( $code >= 200 && $code < 300 ) {
-			$update_server = 'works';
-		} else {
-			$update_server = 'does not work: ' . $code;
-		}
-
-		$lasthit = get_option( 'mailster_cron_lasthit', array() );
 
 		$db_version = get_option( 'mailster_dbversion' ) == MAILSTER_DBVERSION
 			? MAILSTER_DBVERSION
 			: get_option( 'mailster_dbversion' ) . ' (should be ' . MAILSTER_DBVERSION . ')';
 
 		$homepage = get_permalink( mailster_option( 'homepage' ) );
-		$endpoints = mailster( 'helper' )->using_permalinks() ? array_values( mailster_option( 'slugs' ) ) : false;
 
 		$wp_id = mailster( 'subscribers' )->wp_id() === false ? 'ERROR: ' . $wpdb->last_error : 'OK';
 
@@ -1523,7 +1484,7 @@ class MailsterSettings {
 			'Permalink Structure' => get_option( 'permalink_structure' ),
 			'--',
 			'Newsletter Homepage' => $homepage . ' (#' . mailster_option( 'homepage' ) . ')',
-			'Endpoints' => $endpoints ? '/' . implode( ', /', $endpoints ) . ' (Check: ' . ( mailster()->check_link_structure() ? 'Passed' : 'Not Passed' ) . ')' : 'No Permalink structure',
+			// 'Endpoints' => $endpoints ? '/' . implode( ', /', $endpoints ) . ' (Check: ' . ( mailster()->check_link_structure() ? 'Passed' : 'Not Passed' ) . ')' : 'No Permalink structure',
 			'Track Countries' => mailster_option( 'trackcountries' ) ? 'Yes' : 'No',
 			'Country DB' => file_exists( mailster_option( 'countries_db' ) ) ? 'DB exists (' . date( 'Y-m-d H:i:s', filemtime( mailster_option( 'countries_db' ) ) ) . ', ' . human_time_diff( filemtime( mailster_option( 'countries_db' ) ) ) . ')' : 'DB is missing',
 			'Track Cities' => mailster_option( 'trackcities' ) ? 'Yes' : 'No',
@@ -1552,7 +1513,7 @@ class MailsterSettings {
 			'PHP Time Limit' => ini_get( 'max_execution_time' ) . ' sec',
 			'PHP Max Input Vars' => ini_get( 'max_input_vars' ),
 			'--',
-			'WP_DEBUG' => defined( 'WP_DEBUG' ) ? WP_DEBUG ? 'Enabled' : 'Disabled' : 'Not set',
+			'WP_DEBUG' => defined( 'WP_DEBUG' ) ? (WP_DEBUG ? 'Enabled' : 'Disabled') : 'Not set',
 			'DISPLAY ERRORS' => ( ini_get( 'display_errors' ) ) ? 'On (' . ini_get( 'display_errors' ) . ')' : 'N/A',
 			'--',
 			'WP Table Prefix' => 'Length: ' . strlen( $wpdb->prefix ) . ' Status:' . ( strlen( $wpdb->prefix ) > 16 ? ' ERROR: Too Long' : ' Acceptable' ),
@@ -1568,17 +1529,13 @@ class MailsterSettings {
 			'--',
 			'WordPress Memory Limit' => ( size_format( WP_MEMORY_LIMIT * 1048576 ) ),
 			'WordPress Upload Size' => ( size_format( wp_max_upload_size() ) ),
-			'Content Directory' => is_dir( MAILSTER_UPLOAD_DIR ) && wp_is_writable( MAILSTER_UPLOAD_DIR ) ? 'writeable' : 'NOT writeable. Make sure ' . MAILSTER_UPLOAD_DIR . ' has chmod 750',
+			// 'Content Directory' => is_dir( MAILSTER_UPLOAD_DIR ) && wp_is_writable( MAILSTER_UPLOAD_DIR ) ? 'writeable' : 'NOT writeable. Make sure ' . MAILSTER_UPLOAD_DIR . ' has chmod 750',
 			'Filesystem Method' => get_filesystem_method(),
-			'FSOCKOPEN' => ( function_exists( 'fsockopen' ) ) ? 'Your server supports fsockopen.' : 'Your server does not support fsockopen.',
-			'DOMDocument' => ( class_exists( 'DOMDocument' ) ) ? 'DOMDocument extension installed' : 'DOMDocument is missing!',
-			'SUHOSIN Installed' => extension_loaded( 'suhosin' ) ? 'Yes' : 'No',
+			// 'FSOCKOPEN' => ( function_exists( 'fsockopen' ) ) ? 'Your server supports fsockopen.' : 'Your server does not support fsockopen.',
+			// 'DOMDocument' => ( class_exists( 'DOMDocument' ) ) ? 'DOMDocument extension installed' : 'DOMDocument is missing!',
+			// 'SUHOSIN Installed' => extension_loaded( 'suhosin' ) ? 'Yes' : 'No',
 			'SSL SUPPORT' => extension_loaded( 'openssl' ) ? 'SSL extension loaded' : 'SSL extension NOT loaded',
 			'MB String' => extension_loaded( 'mbstring' ) ? 'MB String extensions loaded' : 'MB String extensions NOT loaded',
-			'--',
-			'wp_remote_post' => $wp_remote_post,
-			'External HTTP Requests' => ( defined( 'WP_HTTP_BLOCK_EXTERNAL' ) && WP_HTTP_BLOCK_EXTERNAL ) ? 'blocked' : 'not blocked',
-			'Update Server Access' => $update_server,
 			'--',
 			'TEMPLATES' => '',
 			'--',

@@ -42,17 +42,6 @@ jQuery(document).ready(function ($) {
 		$('#tab-' + hash.substr(1)).show();
 		location.hash = hash;
 		$('form#mailster-settings-form').attr('action', 'options.php' + hash);
-		if (hash == '#system_info') {
-			var textarea = $('#system_info_content');
-			if ($.trim(textarea.val())) return;
-			textarea.val(mailsterL10n.loading + '...');
-			_ajax('get_system_info', function (response) {
-
-				if (response.log && console)
-					console.log(response.log);
-				textarea.val(response.msg);
-			});
-		}
 		return false;
 	});
 
@@ -80,7 +69,6 @@ jQuery(document).ready(function ($) {
 	$('.system_mail').on('change', function () {
 		$('.system_mail_template').prop('disabled', $(this).val() == 0);
 	});
-
 
 	$('#mailster_geoip').on('change', function () {
 		($(this).is(':checked')) ?

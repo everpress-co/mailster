@@ -1572,6 +1572,7 @@ class Mailster {
 		global $wpdb;
 
 		$tables = $this->get_table_structure( $set_charset );
+		$return = '';
 
 		if ( ! function_exists( 'dbDelta' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -1584,18 +1585,22 @@ class Mailster {
 		}
 
 		foreach ( $tables as $tablequery ) {
-			$results[] = dbDelta( $tablequery, $execute );
-		}
-
-		if ( $output ) {
-			foreach ( $results as $result ) {
-				if ( $result ) {
-					echo implode( "\n", $result ) . "\n";
-				}
+			if ( $result = dbDelta( $tablequery, $execute ) ) {
+				$results[] = array(
+					'error' => $wpdb->last_error,
+					'output' => implode( ', ', $result ),
+				);
 			}
 		}
 
-		return true;
+		foreach ( $results as $result ) {
+			$return .= ( ! empty( $result['error'] ) ? $result['error'] . ' => ' : '') . $result['output'] . "\n";
+		}
+		if ( $output ) {
+			echo $return;
+		}
+
+		return empty( $return ) ? true : $return;
 
 	}
 
@@ -2070,8 +2075,6 @@ class Mailster {
 	 */
 	public function is_verified( $force = false ) {
 
-		// beta always
-		// return true;
 		$license = get_option( 'mailster_license' );
 		$license_email = get_option( 'mailster_email' );
 		$license_user = get_option( 'mailster_username' );

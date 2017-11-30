@@ -49,12 +49,28 @@ jQuery(document).ready(function ($) {
 		outputnav.find('a').removeClass('nav-tab-active');
 		outputtabs.hide();
 		var hash = $(this).addClass('nav-tab-active').attr('href');
+		location.hash = hash;
 		$('#subtab-' + hash.substr(1)).show();
+		if (hash == '#systeminfo') {
+			var textarea = $('#system_info_content');
+			if ($.trim(textarea.val())) return;
+			textarea.val('...');
+			_ajax('get_system_info', function (response) {
+
+				if (response.log && console)
+					console.log(response.log);
+				textarea.val(response.msg);
+			});
+		}
 		return false;
 	});
 
+
 	if (/autostart/.test(location.search)) {
 		start_button.trigger('click');
+	} else {
+		(location.hash && outputnav.find('a[href="' + location.hash + '"]').length) ?
+		outputnav.find('a[href="' + location.hash + '"]').trigger('click'): outputnav.find('a').eq(0).trigger('click');
 	}
 
 	function test(test_id) {

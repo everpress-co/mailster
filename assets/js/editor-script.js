@@ -40,9 +40,13 @@ jQuery(document).ready(function ($) {
 			})
 			.on('click', 'button.addbutton', function () {
 				var data = $(this).data(),
+					element = $($('<div/>').html(data.element.data('tmpl')).text());
+
+				if (!element.length) {
 					element = data.element.find('img').length ?
-					'<a href="" editable label="Button"><img alt=""></a>' :
-					'<a href="" editable label="Button"></a>';
+						'<a href="" editable label="Button"><img alt=""></a>' :
+						'<a href="" editable label="Button"></a>';
+				}
 
 				parent.window.Mailster.editbar.open({
 					type: 'btn',
@@ -429,7 +433,7 @@ jQuery(document).ready(function ($) {
 					offset = this.getBoundingClientRect(),
 					top = offset.top + 0,
 					left = offset.right + 0,
-					btn;
+					btn, tmpl;
 
 				if ($this.data('has-buttons')) return;
 
@@ -439,6 +443,19 @@ jQuery(document).ready(function ($) {
 				btn.data('element', $this);
 
 				$this.data('has-buttons', true);
+
+				if (!(tmpl = $this.data('tmpl'))) {
+					if ($this.find('.textbutton').length) {
+						tmpl = $this.find('.textbutton').last();
+					} else if ($this.find('img').length) {
+						tmpl = $this.find('a[editable]').last();
+					} else {
+						tmpl = $('<a href="" editable label="Button"></a>');
+					}
+					tmpl = $('<div/>').text(tmpl[0].outerHTML).html();
+				}
+
+				$this.attr('data-tmpl', tmpl).data('tmpl', tmpl);
 
 			});
 		}

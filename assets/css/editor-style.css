@@ -355,13 +355,13 @@ module[condition]{
 a.mailster-highlight {
 	outline: none;
 }
-multi, single, img[editable], a[editable] img, table.textbutton a[editable], td[background]{
+multi, single, img[editable], a[editable] img, .textbutton a[editable], td[background]{
 	webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
 	-webkit-backface-visibility: hidden; /* Chrome, Safari, Opera */
 	backface-visibility: hidden;
 }
-multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, table.textbutton a[editable]:hover, module table td[background]:hover, module table th[background]:hover{
+multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, .textbutton a[editable]:hover, module table td[background]:hover, module table th[background]:hover{
 	box-shadow:0px 0px 0px 2px #2BB3E7;
 	cursor:pointer;
 	z-index: 11;
@@ -392,7 +392,7 @@ td[background]:before, th[background]:before{
 td[background]:hover:before, th[background]:hover:before{
 	display: block;
 }
-multi, single, img[editable], a[editable] img, table.textbutton a[editable]{
+multi, single, img[editable], a[editable] img, .textbutton a[editable]{
 	position: relative;
 }
 multi[contenteditable], single[contenteditable]{

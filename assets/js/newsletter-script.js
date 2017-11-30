@@ -1661,6 +1661,7 @@ jQuery(document).ready(function ($) {
 						loader();
 						img.onload = function () {
 							imagepreview.attr('src', url);
+							imageheight.val(Math.round(img.width / (img.width / img.height)));
 							currentimage = {
 								width: img.width,
 								height: img.height,
@@ -1832,7 +1833,7 @@ jQuery(document).ready(function ($) {
 				img = $('<img>', {
 					'src': 'https://dummy.newsletter-plugin.com/' + (w * f) + 'x' + (h * f) + '.jpg',
 					'alt': current.content,
-					'title': current.content,
+					//'title': current.content,
 					'label': current.content,
 					'width': w,
 					'height': h,
@@ -2034,11 +2035,20 @@ jQuery(document).ready(function ($) {
 							} else {
 
 								current.element.removeClass('mailster-loading');
-								var html = current.element.html();
-								if (orgimageurl.val() && !html.match(/<modules/)) {
-									current.element.html(_replace(html, orgimageurl.val(), currentimage.url));
-									//remove id to re trigger tinymce
-									current.element.find('single, multi').removeAttr('id');
+								var html = current.element.html(),
+									is_root = html.match(/<modules/),
+									reg;
+
+								if (orgimageurl.val()) {
+									if (is_root) {
+										if (is_root = html.match(new RegExp('<v:background(.*)<\/v:background>', 's'))) {
+											current.element.html(_replace(html, is_root[0], _replace(is_root[0], orgimageurl.val(), currentimage.url)));
+										}
+									} else {
+										current.element.html(_replace(html, orgimageurl.val(), currentimage.url));
+										//remove id to re trigger tinymce
+										current.element.find('single, multi').removeAttr('id');
+									}
 								}
 
 							}
@@ -2088,7 +2098,7 @@ jQuery(document).ready(function ($) {
 					img.onload = function () {
 
 						if (!current.element.find('img').length) {
-							var wrap = current.element.closest('table.textbutton');
+							var wrap = current.element.closest('.textbutton');
 							var element = $('<a href="" editable label="' + current.name + '"><img></a>');
 							(wrap.length) ? wrap.replaceWith(element): current.element.replaceWith(element);
 							current.element = element;
@@ -2097,8 +2107,8 @@ jQuery(document).ready(function ($) {
 							'src': btnsrc,
 							'width': Math.round((img.width || current.element.width()) / f),
 							'height': Math.round((img.height || current.element.height()) / f),
+							//'title': buttonalt.val()
 							'alt': buttonalt.val(),
-							'title': buttonalt.val()
 						});
 
 						(link) ? current.element.attr('href', link): current.element.remove();
@@ -2108,12 +2118,15 @@ jQuery(document).ready(function ($) {
 
 				} else {
 
-					var wrap = current.element.closest('table.textbutton'),
+					var wrap = current.element.closest('.textbutton'),
 						label = buttonlabel.val();
 
 					if (!wrap.length) {
 						current.element.replaceWith('<table class="textbutton" align="left"><tr><td align="center" width="auto"><a href="' + link + '" editable label="' + label + '">' + label + '</a></td></tr></table>')
 					} else {
+						if (current.element[0] == wrap[0]) {
+							current.element = wrap.find('a');
+						}
 						current.element.text(label);
 					}
 
@@ -2181,7 +2194,7 @@ jQuery(document).ready(function ($) {
 					} else {
 
 						if (current.elements.buttons.parent().length && current.elements.buttons.parent()[0].nodeName == 'TD') {
-							current.elements.buttons.closest('table.textbutton').remove();
+							current.elements.buttons.closest('.textbutton').remove();
 						} else if (current.elements.buttons.length) {
 							if (current.elements.buttons.last().find('img').length) {
 								current.elements.buttons.remove();
@@ -2360,12 +2373,18 @@ jQuery(document).ready(function ($) {
 
 		function remove() {
 			if (current.element.parent().is('a')) current.element.unwrap();
-			if (!current.element.parent().is('td')) current.element.unwrap();
+			//if (!current.element.parent().is('td')) current.element.unwrap();
 			if ('btn' == current.type) {
-				var wrap = current.element.closest('table.textbutton');
-				if (wrap.length) wrap.remove();
-			}
-			if ('img' == current.type && 'img' != current.tag) {
+				var wrap = current.element.closest('.textbutton');
+				if (!wrap.length) {
+					wrap = current.element;
+				}
+				if (wrap.parent().children().length > 2) {
+					wrap.remove();
+				} else {
+					wrap.remove();
+				}
+			} else if ('img' == current.type && 'img' != current.tag) {
 				current.element.attr('background', '');
 			} else {
 				current.element.remove();
@@ -2380,10 +2399,10 @@ jQuery(document).ready(function ($) {
 				break;
 			case 'btn':
 				if (!current.element.attr('href')) {
-					var wrap = current.element.closest('table.textbutton');
+					var wrap = current.element.closest('.textbutton');
 					if (wrap.length) wrap.remove();
-					current.element.remove();
 				}
+				current.element.remove();
 				break;
 			default:
 				current.element.html(current.content);

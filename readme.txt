@@ -2,7 +2,7 @@
 Contributors: EverPress, revaxarts
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9
+Tested up to: 4.9.1
 Stable tag: 2.3
 Author: EverPress
 Author URI: https://mailster.co
@@ -89,6 +89,8 @@ Xaver Birsak – https://everpress.io
 * added: custom field API
 * dynamic post images with no image are now removed
 * new progress bar and cron check improvements
+* improved handling of buttons in editor
+* moved system info page to test page
 
 = Version 2. 3.beta.3 =
 

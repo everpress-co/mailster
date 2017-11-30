@@ -347,6 +347,36 @@ class MailsterTests {
 			$this->warning( 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank">fsockopen</a>.' );
 		}
 	}
+	private function test_database_structure() {
+
+		global $wpdb;
+
+		$result = mailster()->dbstructure( false, true, true, false );
+
+		if ( true !== $result ) {
+			$second_result = mailster()->dbstructure( false, true, true, false );
+			if ( $result === $second_result ) {
+				$this->error( $result );
+			} else {
+				$this->notice( $result );
+			}
+		}
+
+		if ( false === mailster( 'subscribers' )->wp_id() ) {
+			$status = $wpdb->get_row( $wpdb->prepare( 'SHOW TABLE STATUS LIKE %s', $wpdb->users ) );
+			if ( isset( $status->Collation ) ) {
+				$tables = mailster()->get_tables( true );
+
+				foreach ( $tables as $table ) {
+					$sql = sprintf( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
+					if ( false !== $wpdb->query( $sql ) ) {
+						$this->notice( "'$table' converted to {$status->Collation}" );
+					}
+				}
+			}
+		}
+
+	}
 	private function test_content_directory() {
 		$content_dir = dirname( MAILSTER_UPLOAD_DIR );
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
@@ -464,6 +494,10 @@ class MailsterTests {
 
 	}
 	private function test_update_server_connection() {
+
+		if ( defined( 'WP_HTTP_BLOCK_EXTERNAL' ) && WP_HTTP_BLOCK_EXTERNAL ) {
+			$this->error( 'Constant WP_HTTP_BLOCK_EXTERNAL defined' );
+		}
 
 		$response = wp_remote_post( 'https://update.mailster.co/' );
 		$code = wp_remote_retrieve_response_code( $response );
