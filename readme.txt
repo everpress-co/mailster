@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.io
 * fixed: height not updated if image url is used in editor
 * improved: scrolling speed in editor
 * improved: Caching is now disabled on any page with a form
+* improved: newsletter homepage selector on setting with sites over 100 pages
 
 = Version 2.2.14 =
 
