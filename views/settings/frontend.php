@@ -1,15 +1,20 @@
 <table class="form-table">
 	<tr valign="top">
+		<?php $mailster_homepage = mailster_option( 'homepage' ); ?>
 		<th scope="row"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ) ?></th>
-		<td><select name="mailster_options[homepage]" class="postform">
-			<option value="0"><?php esc_html_e( 'Choose', 'mailster' ) ?></option>
-		<?php
-		$pages = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish,private,draft', 'posts_per_page' => -1 ) );
-		$mailster_homepage = mailster_option( 'homepage' );
-		foreach ( $pages as $page ) { ?>
-			<option value="<?php echo $page->ID ?>"<?php if ( $page->ID == $mailster_homepage ) {	echo ' selected'; }	?>><?php echo esc_attr( $page->post_title );if ( $page->post_status != 'publish' ) { echo ' (' . $wp_post_statuses[ $page->post_status ]->label . ')'; }?></option>
-		<?php } ?>
-		</select>
+		<td>
+		<?php if ( array_sum( (array) wp_count_posts( 'page' ) ) > 100 ) : ?>
+			<p><?php esc_html_e( 'Page ID:', 'mailster' );?> <input type="text" name="mailster_options[homepage]" value="<?php echo $mailster_homepage; ?>" class="small-text"> <span class="description"><?php esc_html_e( 'Find your Page ID in the address bar of the edit screen of this page.', 'mailster' );?></span></p>
+		<?php else : ?>
+			<?php $pages = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish,private,draft', 'posts_per_page' => -1 ) ); ?>
+			<select name="mailster_options[homepage]" class="postform">
+				<option value="0"><?php esc_html_e( 'Choose', 'mailster' ) ?></option>
+			<?php foreach ( $pages as $page ) { ?>
+				<option value="<?php echo $page->ID ?>"<?php if ( $page->ID == $mailster_homepage ) {	echo ' selected'; }	?>><?php echo esc_attr( $page->post_title );if ( $page->post_status != 'publish' ) { echo ' (' . $wp_post_statuses[ $page->post_status ]->label . ')'; }?></option>
+			<?php } ?>
+			</select>
+		<?php endif; ?>
+
 		<?php if ( $mailster_homepage ) : ?>
 		<span class="description">
 			<a href="post.php?post=<?php echo intval( $mailster_homepage ); ?>&action=edit"><?php esc_html_e( 'edit', 'mailster' );?></a>
