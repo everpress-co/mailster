@@ -8,13 +8,9 @@ class MailsterSettings {
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 70 );
 		add_action( 'admin_init', array( &$this, 'register_settings' ) );
 		add_action( 'admin_init', array( &$this, 'actions' ) );
+		add_action( 'admin_init', array( &$this, 'maybe_create_homepage' ) );
 
 	}
-
-
-
-	public function init() {}
-
 
 
 	public function admin_init() {
@@ -22,8 +18,16 @@ class MailsterSettings {
 		add_action( 'mailster_deliverymethod_tab_simple', array( &$this, 'deliverytab_simple' ) );
 		add_action( 'mailster_deliverymethod_tab_smtp', array( &$this, 'deliverytab_smtp' ) );
 		add_action( 'mailster_deliverymethod_tab_gmail', array( &$this, 'deliverytab_gmail' ) );
+	}
 
-		if ( isset( $_GET['mailster_create_homepage'] ) && $_GET['mailster_create_homepage'] ) {
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function maybe_create_homepage() {
+		if ( isset( $_GET['mailster_create_homepage'] ) && wp_verify_nonce( $_GET['mailster_create_homepage'], 'mailster_create_homepage' ) ) {
 
 			if ( $homepage = mailster_option( 'homepage' ) ) {
 
@@ -36,7 +40,7 @@ class MailsterSettings {
 				include MAILSTER_DIR . 'includes/static.php';
 
 				if ( $id = wp_insert_post( $mailster_homepage ) ) {
-					mailster_notice( __( 'Homepage created', 'mailster' ), '', true );
+					mailster_notice( __( 'Homepage created!', 'mailster' ), 'info', true );
 					mailster_update_option( 'homepage', $id );
 					mailster_remove_notice( 'no_homepage' );
 					mailster_remove_notice( 'wrong_homepage_status' );
@@ -45,7 +49,6 @@ class MailsterSettings {
 				}
 			}
 		}
-
 	}
 
 

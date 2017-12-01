@@ -283,23 +283,6 @@ class MailsterTests {
 			$this->success( 'You have version ' . PHP_VERSION );
 		}
 	}
-	private function test_deprecated_hooks() {
-
-		global $wp_filter;
-		$hooks = array_values( preg_grep( '/^mymail_/', array_keys( $wp_filter ) ) );
-
-		if ( ! empty( $hooks ) ) {
-			$msg = '<p>Following deprecated MyMail hooks were found and should get replaced:</p><ul>';
-			foreach ( $hooks as $hook ) {
-				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code></li>';
-			}
-			$msg .= '</ul>';
-
-			$this->warning( $msg );
-
-		}
-
-	}
 	private function test_wordpress_version() {
 		$update = get_preferred_from_update_core();
 		$current = get_bloginfo( 'version' );
@@ -332,14 +315,36 @@ class MailsterTests {
 		}
 
 	}
-	private function test_dom_document_extension() {
-		if ( ! class_exists( 'DOMDocument' ) ) {
-			$this->error( 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank">DOMDocument</a> library.' );
+	private function test_deprecated_hooks() {
+
+		global $wp_filter;
+		$hooks = array_values( preg_grep( '/^mymail_/', array_keys( $wp_filter ) ) );
+
+		if ( ! empty( $hooks ) ) {
+			$msg = '<p>Following deprecated MyMail hooks were found and should get replaced:</p><ul>';
+			foreach ( $hooks as $hook ) {
+				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code></li>';
+			}
+			$msg .= '</ul>';
+
+			$this->warning( $msg );
+
+		}
+
+	}
+	private function test_custom_language() {
+		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo' ) ) {
+				$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );
 		}
 	}
 	private function test_wp_debug() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$this->notice( 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
+			$this->warning( 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
+		}
+	}
+	private function test_dom_document_extension() {
+		if ( ! class_exists( 'DOMDocument' ) ) {
+			$this->error( 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank">DOMDocument</a> library.' );
 		}
 	}
 	private function test_fsockopen_extension() {
@@ -463,7 +468,7 @@ class MailsterTests {
 
 		if ( ! $hp || $hp->post_status == 'trash' ) {
 
-			$this->error( sprintf( __( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . __( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', 1, admin_url() ) . '">' . __( 'create it right now', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+			$this->error( sprintf( __( 'You haven\'t defined a homepage for the newsletter. This is required to make the subscription form work correctly. Please check the %1$s or %2$s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#frontend">' . __( 'frontend settings page', 'mailster' ) . '</a>', '<a href="' . add_query_arg( 'mailster_create_homepage', wp_create_nonce( 'mailster_create_homepage' ), admin_url() ) . '">' . __( 'create it right now', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
 			return;
 
 		} elseif ( $hp->post_status != 'publish' ) {

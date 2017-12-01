@@ -23,7 +23,7 @@
 
 			</span>
 		<?php else : ?>
-		<span class="description"><a href="?mailster_create_homepage=1"><?php esc_html_e( 'create it right now', 'mailster' );?></a></span>
+		<span class="description"><a href="<?php echo add_query_arg( 'mailster_create_homepage', wp_create_nonce( 'mailster_create_homepage' ), admin_url() ) ?>"><?php esc_html_e( 'create it right now', 'mailster' );?></a></span>
 		<?php endif; ?>
 		</td>
 	</tr>
