@@ -95,6 +95,7 @@ $sent = $this->get_sent( $post->ID );
 		'post_count' => 0,
 		'post_count_status' => 0,
 		'issue' => 1,
+		'since' => false,
 		'interval' => 1,
 		'time_frame' => 'day',
 		'timezone' => false,
@@ -277,7 +278,7 @@ $sent = $this->get_sent( $post->ID );
 			}
 			?>
 			</p>
-			<label><input type="checkbox" name="mailster_data[autoresponder][time_conditions]" id="time_extra" value="1" <?php checked( isset( $autoresponderdata['time_conditions'] ) ) ?>> <?php esc_html_e( 'only if', 'mailster' );?></label>
+			<p><label><input type="checkbox" name="mailster_data[autoresponder][time_conditions]" id="time_extra" value="1" <?php checked( isset( $autoresponderdata['time_conditions'] ) ) ?>> <?php esc_html_e( 'only if', 'mailster' );?></label></p>
 			<div id="autoresponderfield-mailster_timebased_advanced"<?php if ( ! isset( $autoresponderdata['time_conditions'] ) ) {	echo ' style="display:none"'; } ?>>
 				<p>
 				<?php
@@ -294,6 +295,7 @@ $sent = $this->get_sent( $post->ID );
 				?>
 				</p>
 			</div>
+			<p><label><input type="checkbox" name="mailster_data[autoresponder][since]" value="<?php echo esc_attr( $autoresponderdata['since'] ) ?>" <?php checked( ! ! $autoresponderdata['since'] ) ?>> <?php esc_html_e( 'only if new content is available.', 'mailster' );?></label></p>
 		</div>
 
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_post_published autoresponderfield-mailster_autoresponder_timebased">

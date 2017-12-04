@@ -12,6 +12,7 @@ class MailsterPlaceholder {
 	private $replace_custom = true;
 	private $social_services;
 	private $apply_the_excerpt_filters = true;
+	private $last_post_args = null;
 
 	/**
 	 *
@@ -74,6 +75,13 @@ class MailsterPlaceholder {
 	 */
 	public function set_campaign( $id ) {
 		$this->campaignID = $id;
+		$autoresponder = mailster( 'campaigns' )->meta( $id, 'autoresponder' );
+		if ( $autoresponder && isset( $autoresponder['since'] ) ) {
+			$timeoffset = mailster( 'helper' )->gmt_offset( true );
+			$this->set_last_post_args( array(
+				'date_query' => array( 'after' => date( 'Y-m-d H:i:s', $autoresponder['since'] + $timeoffset ) ),
+			) );
+		}
 	}
 
 
@@ -84,6 +92,15 @@ class MailsterPlaceholder {
 	 */
 	public function set_subscriber( $id ) {
 		$this->subscriberID = $id;
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $args
+	 */
+	public function set_last_post_args( $args ) {
+		$this->last_post_args = wp_parse_args( $args, $this->last_post_args );
 	}
 
 
@@ -418,7 +435,7 @@ class MailsterPlaceholder {
 					$post = get_post( $post_or_offset );
 				} else {
 					$term_ids = ! empty( $modules[6][ $i ] ) ? explode( ';', trim( $modules[6][ $i ] ) ) : array();
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids );
+					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args );
 				}
 
 				if ( ! $post ) {
@@ -652,7 +669,7 @@ class MailsterPlaceholder {
 
 							if ( $post_id < 0 ) {
 
-								$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids );
+								$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids, $this->last_post_args );
 
 							} elseif ( $post_id > 0 ) {
 
@@ -775,7 +792,7 @@ class MailsterPlaceholder {
 				} else {
 
 					$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids );
+					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args );
 
 				}
 

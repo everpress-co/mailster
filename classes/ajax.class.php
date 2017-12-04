@@ -1535,7 +1535,7 @@ class MailsterAjax {
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
 		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 
-		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, true );
+		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, null, true );
 		$is_post = ! ! $post;
 
 		$return['title'] = $is_post

@@ -1522,6 +1522,8 @@ class MailsterCampaigns {
 					$autoresponder['interval'] = max( 1, intval( $autoresponder['interval'] ) );
 					$meta['timezone'] = isset( $autoresponder['timebased_timezone'] );
 
+					$autoresponder['since'] = isset( $autoresponder['since'] ) ? ($autoresponder['since'] ? $autoresponder['since'] : $now) : false;
+
 					$localtime = strtotime( $postdata['autoresponder_date'] . ' ' . $postdata['autoresponder_time'] );
 
 					$autoresponder['weekdays'] = ( isset( $autoresponder['weekdays'] )
@@ -2170,18 +2172,18 @@ class MailsterCampaigns {
 	 */
 	public function autoresponder_to_campaign( $id, $delay = 0, $issue = '' ) {
 
-		$post = get_post( $id );
-		if ( $post->post_status != 'autoresponder' ) {
+		$campaign = get_post( $id );
+		if ( ! $campaign || $campaign->post_status != 'autoresponder' ) {
 			return false;
 		}
 
-		$id = $post->ID;
+		$id = $campaign->ID;
 
 		$now = time();
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
-		$lists = $this->get_lists( $post->ID, true );
-		$meta = $this->meta( $post->ID );
+		$lists = $this->get_lists( $campaign->ID, true );
+		$meta = $this->meta( $campaign->ID );
 
 		$meta['autoresponder'] = $meta['sent'] = $meta['errors'] = $meta['finished'] = null;
 
@@ -2189,28 +2191,35 @@ class MailsterCampaigns {
 
 		$meta['timestamp'] = max( $now, $now + $delay );
 
-		unset( $post->ID );
-		unset( $post->guid );
-		unset( $post->post_name );
-		unset( $post->post_date );
-		unset( $post->post_date_gmt );
-		unset( $post->post_modified );
-		unset( $post->post_modified_gmt );
+		unset( $campaign->ID );
+		unset( $campaign->guid );
+		unset( $campaign->post_name );
+		unset( $campaign->post_date );
+		unset( $campaign->post_date_gmt );
+		unset( $campaign->post_modified );
+		unset( $campaign->post_modified_gmt );
 
-		$post->post_status = $meta['timestamp'] <= $now ? 'active' : 'queued';
+		$campaign->post_status = $meta['timestamp'] <= $now ? 'active' : 'queued';
 
 		$placeholder = mailster( 'placeholder' );
+		$placeholder->set_campaign( $id );
 
+		// if ( isset( $meta['since'] ) ) {
+		// $timeoffset = mailster( 'helper' )->gmt_offset( true );
+		// $placeholder->set_last_post_args( array(
+		// 'date_query' => array( 'after' => date( 'Y-m-d H:i:s', $meta['since'] + $timeoffset ) ),
+		// ) );
+		// }
 		$placeholder->do_conditions( false );
 
 		$placeholder->clear_placeholder();
 		$placeholder->add( array( 'issue' => $issue ) );
 
-		$placeholder->set_content( $post->post_title );
-		$post->post_title = $placeholder->get_content( false );
+		$placeholder->set_content( $campaign->post_title );
+		$campaign->post_title = $placeholder->get_content( false );
 
-		$placeholder->set_content( $post->post_content );
-		$post->post_content = $placeholder->get_content( false, array(), true );
+		$placeholder->set_content( $campaign->post_content );
+		$campaign->post_content = $placeholder->get_content( false, array(), true );
 
 		$placeholder->set_content( $meta['subject'] );
 		$meta['subject'] = $placeholder->get_content( false, array(), true );
@@ -2224,7 +2233,7 @@ class MailsterCampaigns {
 		remove_action( 'save_post', array( &$this, 'save_campaign' ), 10, 3 );
 		kses_remove_filters();
 
-		$new_id = wp_insert_post( $post );
+		$new_id = wp_insert_post( $campaign );
 
 		kses_init_filters();
 		add_action( 'save_post', array( &$this, 'save_campaign' ), 10, 3 );
@@ -2449,13 +2458,19 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $args (optional)
+	 * @param unknown $type (optional)
 	 * @return unknown
 	 */
-	public function get_autoresponder( $args = '' ) {
+	public function get_autoresponder( $args = '', $type = null ) {
 		$defaults = array(
 			'post_status' => 'autoresponder',
 		);
 		$args = wp_parse_args( $args, $defaults );
+		if ( ! is_null( $type ) ) {
+			$args['meta_key'] = '_mailster_autoresponder';
+			$args['meta_compare'] = 'LIKE';
+			$args['meta_value'] = '"mailster_' . $type . '"';
+		}
 
 		return $this->get_campaigns( $args );
 	}
@@ -3679,6 +3694,12 @@ class MailsterCampaigns {
 		$placeholder->set_hash( $subscriber->hash );
 		$placeholder->replace_custom_tags( false );
 
+		// if ( isset( $campaign_meta['since'] ) ) {
+		// $timeoffset = mailster( 'helper' )->gmt_offset( true );
+		// $placeholder->set_last_post_args( array(
+		// 'date_query' => array( 'after' => date( 'Y-m-d H:i:s', $campaign_meta['since'] + $timeoffset ) ),
+		// ) );
+		// }
 		if ( ! empty( $campaign_meta['attachments'] ) ) {
 			$mail->attachments = array();
 			foreach ( (array) $campaign_meta['attachments'] as $attachment_id ) {

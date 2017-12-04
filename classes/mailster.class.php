@@ -684,14 +684,15 @@ class Mailster {
 	 * @param unknown $offset    (optional)
 	 * @param unknown $post_type (optional)
 	 * @param unknown $term_ids  (optional)
+	 * @param unknown $args      (optional)
 	 * @param unknown $simple    (optional)
 	 * @return unknown
 	 */
-	public function get_last_post( $offset = 0, $post_type = 'post', $term_ids = array(), $simple = false ) {
+	public function get_last_post( $offset = 0, $post_type = 'post', $term_ids = array(), $args = array(), $simple = false ) {
 
 		global $wpdb;
 
-		$key = md5( serialize( array( $offset, $post_type, $term_ids, $simple ) ) );
+		$key = md5( serialize( array( $offset, $post_type, $term_ids, $args, $simple ) ) );
 
 		$posts = mailster_cache_get( 'get_last_post' );
 
@@ -699,7 +700,7 @@ class Mailster {
 			return $posts[ $key ];
 		}
 
-		$args = array(
+		$defaults = array(
 			'posts_per_page' => 1,
 			'numberposts' => 1,
 			'post_type' => $post_type,
@@ -709,15 +710,18 @@ class Mailster {
 			'cache_results' => false,
 		);
 
-		$exclude = mailster_cache_get( 'get_last_post_ignore' );
+		if ( ! isset( $args['post__not_in'] ) ) {
+			$exclude = mailster_cache_get( 'get_last_post_ignore' );
 
-		if ( ! $exclude ) {
-			$exclude = $wpdb->get_col( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'mailster_ignore' AND meta_value != '0'" );
-		}
+			if ( ! $exclude ) {
+				$exclude = $wpdb->get_col( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'mailster_ignore' AND meta_value != '0'" );
+			}
 
-		if ( ! empty( $exclude ) ) {
-			$args['post__not_in'] = (array) $exclude;
+			if ( ! empty( $exclude ) ) {
+				$args['post__not_in'] = (array) $exclude;
+			}
 		}
+		$args = wp_parse_args( $args, $defaults );
 
 		mailster_cache_set( 'get_last_post_ignore', $exclude );
 
