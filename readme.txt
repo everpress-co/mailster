@@ -84,6 +84,7 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+* updated segmentation screen with more possibilities
 * bug fixes
 * editor improvements
 * added: custom field API

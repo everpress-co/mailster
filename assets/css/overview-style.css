@@ -7,6 +7,8 @@ table tr th.manage-column{
 }
 .nonessential{
 	padding: 0;
+}
+.nonessential[title]{
 	cursor:help;
 }
 .campaign-progress{
@@ -95,10 +97,16 @@ table.wp-list-table .column-total a, table.wp-list-table .column-open a, table.w
 	text-overflow:ellipsis;
 	text-align:right;
 }
-.aautoresponder-active, .aautoresponder-inactive{
+.campaign-conditions{
 	line-height: 1.4em !important;
+	color: #999;
+	font-size: 12px;
 }
-.autoresponder-inactive{
+.campaign-conditions a{
+	color: inherit;
+}
+.campaign-conditions.inactive{
+	line-height: 1.4em !important;
 	color: #aaa;
 	font-style: italic;
 }

@@ -6,7 +6,6 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
 
-$listdata = wp_parse_args( $this->post_data['list_conditions'], array( 'operator' => 'OR' ) );
 $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data['ignore_lists'] : false;
 
 $total = $this->get_totals( $post->ID );
@@ -17,7 +16,7 @@ $total = $this->get_totals( $post->ID );
 	<div id="receivers-dialog" style="display:none;">
 		<div class="mailster-conditions-thickbox">
 			<div class="inner">
-				<?php mailster( 'conditions' )->view( isset( $listdata['conditions'] ) ? $listdata['conditions'] : array(), $listdata['operator'] ); ?>
+				<?php mailster( 'conditions' )->view( $this->post_data['list_conditions'] ); ?>
 			</div>
 			<div class="foot">
 				<div class="alignleft"><?php esc_html_e( 'Total receivers', 'mailster' );?>: <span class="mailster-total"><?php echo number_format_i18n( $total ) ?></span></div>
@@ -45,7 +44,7 @@ $total = $this->get_totals( $post->ID );
 		</p>
 		<p><strong><?php esc_html_e( 'Conditions','mailster' ); ?>:</strong>
 			<div id="mailster_conditions">
-			<?php mailster( 'conditions' )->render( isset( $listdata['conditions'] ) ? $listdata['conditions'] : array(), $listdata['operator'] ); ?>
+			<?php mailster( 'conditions' )->render( $this->post_data['list_conditions'] ); ?>
 			</div>
 		</p>
 	</div>
@@ -81,9 +80,9 @@ $total = $this->get_totals( $post->ID );
 
 		endif; ?>
 	</p>
-		<?php if ( isset( $listdata['conditions'] ) ) : ?>
+		<?php if ( isset( $this->post_data['list_conditions'] ) ) : ?>
 		<p><strong><?php esc_html_e( 'only if', 'mailster' ); ?>:</strong>
-			<?php mailster( 'conditions' )->render( $listdata['conditions'], $listdata['operator'] ); ?>
+			<?php mailster( 'conditions' )->render( $this->post_data['list_conditions'] ); ?>
 		</p>
 		<?php endif; ?>
 	<?php endif; ?>

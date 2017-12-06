@@ -3,27 +3,45 @@ jQuery(document).ready(function ($) {
 	"use strict"
 
 	var conditions = $('.mailster-conditions'),
+		groups = $('.mailster-condition-group'),
 		cond = $('.mailster-condition'),
 		condition,
 		value_fields;
 
-	cond.eq(0).appendTo($('.mailster-condition-container'));
+	groups.eq(0).appendTo($('.mailster-condition-container'));
 	datepicker();
 
 	$('.mailster-conditions-thickbox')
-		.on('change', '.mailster-list-operator', function () {
-			conditions.removeClass('mailster-condition-operator-is-and mailster-condition-operator-is-or').addClass('mailster-condition-operator-is-' + $(this).val().toLowerCase());
-			_trigger('updateCount');
-		})
+		// .on('change', '.mailster-list-operator', function () {
+		// 	conditions.removeClass('mailster-condition-operator-is-and mailster-condition-operator-is-or').addClass('mailster-condition-operator-is-' + $(this).val().toLowerCase());
+		// 	_trigger('updateCount');
+		// })
 		.on('click', '.add-condition', function () {
-			var id = cond.length,
-				clone = cond.eq(0).clone();
+			var id = groups.length,
+				clone = groups.eq(0).clone();
 
-			clone.removeAttr('id').appendTo(conditions);
+			clone.removeAttr('id').appendTo(conditions).data('id', id);
 			$.each(clone.find('input, select'), function () {
 				var _this = $(this),
 					name = _this.attr('name');
 				_this.attr('name', name.replace(/\[\d+\]/, '[' + id + ']')).prop('disabled', false);
+			});
+			clone.find('.condition-field').val('').focus();
+			//clone.find('select.select2').select2();
+			datepicker();
+			groups = $('.mailster-condition-group');
+			cond = $('.mailster-condition');
+		})
+		.on('click', '.add-or-condition', function () {
+			var cont = $(this).parent(),
+				id = cont.find('.mailster-condition').last().data('id'),
+				clone = cond.eq(0).clone();
+
+			clone.removeAttr('id').appendTo(cont).data('id', ++id);
+			$.each(clone.find('input, select'), function () {
+				var _this = $(this),
+					name = _this.attr('name');
+				_this.attr('name', name.replace(/\[\d+\]\[\d+\]/, '[' + cont.data('id') + '][' + id + ']')).prop('disabled', false);
 			});
 			clone.find('.condition-field').val('').focus();
 			//clone.find('select.select2').select2();
@@ -37,7 +55,11 @@ jQuery(document).ready(function ($) {
 
 	conditions
 		.on('click', '.remove-condition', function () {
-			$(this).parent().slideUp(200, function () {
+			var c = $(this).parent();
+			if (c.parent().find('.mailster-condition').length == 1) {
+				c = c.parent();
+			}
+			c.slideUp(100, function () {
 				$(this).remove();
 				_trigger('updateCount');
 			});

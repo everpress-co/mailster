@@ -623,6 +623,9 @@ class MailsterCampaigns {
 
 				$timestamp = isset( $meta['timestamp'] ) ? $meta['timestamp'] : $now;
 				$timeoffset = mailster( 'helper' )->gmt_offset( true );
+				$actions = array();
+				$is_active = $meta['active'];
+				$active = $is_active ? 'active' : 'inactive';
 
 				if ( ! in_array( $post->post_status, array( 'pending', 'auto-draft' ) ) ) {
 
@@ -642,7 +645,7 @@ class MailsterCampaigns {
 							} else {
 								echo '<br><span class="mailster-icon no-receiver"></span> ' . __( 'no receivers!', 'mailster' );
 							}
-						break;
+					break;
 						case 'active':
 							if ( $totals ) {
 								echo '<span class="mailster-icon progressing"></span> ' . ( $sent == $totals ? __( 'completing job', 'mailster' ) : __( 'progressing', 'mailster' ) ) . '&hellip;' . ( $meta['timezone'] ? ' <span class="timezonebased"  title="' . __( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '' );
@@ -667,7 +670,7 @@ class MailsterCampaigns {
 						break;
 						case 'finished':
 							echo '<span class="mailster-icon finished"></span> ' . __( 'Finished', 'mailster' );
-							echo "<br><span class='nonessential'>(" . date( $timeformat, $meta['finished'] + $timeoffset ) . ')</span>';
+							echo '<br><span class="nonessential">(' . date( $timeformat, $meta['finished'] + $timeoffset ) . ')</span>';
 						break;
 						case 'draft':
 							echo '<span class="mailster-icon draft"></span> ' . $wp_post_statuses['draft']->label;
@@ -676,9 +679,6 @@ class MailsterCampaigns {
 							echo $wp_post_statuses['trash']->label;
 						break;
 						case 'autoresponder':
-
-							$is_active = $meta['active'];
-							$active = $is_active ? 'active' : 'inactive';
 
 							include MAILSTER_DIR . 'includes/autoresponder.php';
 
@@ -801,43 +801,14 @@ class MailsterCampaigns {
 
 							}
 
-							if ( ! $meta['ignore_lists'] ) {
-
-								$lists = $this->get_lists( $post->ID );
-
-								if ( ! empty( $lists ) ) {
-									echo '<br>' . __( 'assigned lists', 'mailster' ) . ':<br>';
-									foreach ( $lists as $i => $list ) {
-										echo '<strong class="nowrap"><a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '">' . $list->name . '</a></strong>';
-										if ( $i + 1 < count( $lists ) ) {
-											echo ', ';
-										}
-									}
-								} else {
-									echo '<br><span class="mailster-icon warning"></span> ' . __( 'no lists selected', 'mailster' );
-								}
-							}
-
-							if ( $meta['list_conditions'] ) {
-
-								echo '<br>' . __( 'only if', 'mailster' ) . '<br>';
-
-								mailster( 'conditions' )->render( $meta['list_conditions']['conditions'], $meta['list_conditions']['operator'] );
-							}
-
 							echo '</span>';
 
 							if ( ( current_user_can( 'mailster_edit_autoresponders' ) && ( get_current_user_id() == $post->post_author || current_user_can( 'mailster_edit_others_autoresponders' ) ) ) ) {
-								echo '<div class="row-actions">';
-								$actions = array();
-
 								if ( $active != 'active' ) {
 									$actions['activate'] = '<a class="start live-action" href="?post_type=newsletter&activate=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_activate_nonce' ) . '" title="' . __( 'activate', 'mailster' ) . '">' . __( 'activate', 'mailster' ) . '</a>&nbsp;';
 								} else {
 									$actions['deactivate'] = '<a class="start live-action" href="?post_type=newsletter&deactivate=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_deactivate_nonce' ) . '" title="' . __( 'deactivate', 'mailster' ) . '">' . __( 'deactivate', 'mailster' ) . '</a>&nbsp;';
 								}
-								echo implode( ' | ', $actions );
-								echo '</div>';
 							}
 
 						break;
@@ -847,9 +818,35 @@ class MailsterCampaigns {
 					echo $status->label;
 				}
 
+				echo '<div class="campaign-conditions ' . $active . '">';
+
+				if ( ! $meta['ignore_lists'] ) {
+
+					$lists = $this->get_lists( $post->ID );
+
+					if ( ! empty( $lists ) ) {
+						echo __( 'assigned lists', 'mailster' ) . ':<br>';
+						foreach ( $lists as $i => $list ) {
+							echo '<strong class="nowrap"><a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '">' . $list->name . '</a></strong>';
+							if ( $i + 1 < count( $lists ) ) {
+								echo ', ';
+							}
+						}
+					} else {
+						echo '<br><span class="mailster-icon warning"></span> ' . __( 'no lists selected', 'mailster' );
+					}
+					echo '<br>';
+				}
+
+				if ( $meta['list_conditions'] ) {
+
+					echo __( 'only if', 'mailster' ) . '<br>';
+
+					mailster( 'conditions' )->render( $meta['list_conditions'] );
+				}
+				echo '</div>';
+
 				if ( ( current_user_can( 'publish_newsletters' ) && get_current_user_id() == $post->post_author ) || current_user_can( 'edit_others_newsletters' ) ) {
-					echo '<div class="row-actions">';
-					$actions = array();
 					if ( $post->post_status == 'queued' ) {
 						$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . __( 'Start Campaign now', 'mailster' ) . '">' . __( 'Start now', 'mailster' ) . '</a>&nbsp;';
 					}
@@ -862,13 +859,15 @@ class MailsterCampaigns {
 							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . __( 'Start Campaign', 'mailster' ) . '">' . __( 'Start', 'mailster' ) . '</a>&nbsp;';
 						}
 					}
-					if ( in_array( $post->post_status, array( 'active', 'paused' ) ) ) {
+					if ( $totals && in_array( $post->post_status, array( 'active', 'paused' ) ) ) {
 						$actions['finish'] = '<a class="finish live-action" href="?post_type=newsletter&finish=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_finish_nonce' ) . '" title="' . __( 'Finish Campaign', 'mailster' ) . '">' . __( 'Finish', 'mailster' ) . '</a>&nbsp;';
 					}
+				}
+				if ( ! empty( $actions ) ) {
+					echo '<div class="row-actions">';
 					echo implode( ' | ', $actions );
 					echo '</div>';
 				}
-
 			break;
 
 			case 'total':
@@ -1651,19 +1650,21 @@ class MailsterCampaigns {
 
 		}
 
-		if ( isset( $postdata['list']['conditions'] ) ) {
+		if ( isset( $postdata['conditions'] ) ) {
 
-			$postdata['list']['conditions'] = array_values( $postdata['list']['conditions'] );
-			foreach ( $postdata['list']['conditions'] as $i => $cond ) {
-				if ( ! isset( $postdata['list']['conditions'][ $i ]['field'] ) ) {
-					unset( $postdata['list']['conditions'][ $i ] );
-				} elseif ( is_array( $postdata['list']['conditions'][ $i ]['value'] ) ) {
-					$postdata['list']['conditions'][ $i ]['value'] = array_values( array_unique( $postdata['list']['conditions'][ $i ]['value'] ) );
-				} else {
+			$postdata['conditions'] = array_values( $postdata['conditions'] );
+			foreach ( $postdata['conditions'] as $i => $and_cond ) {
+				foreach ( $and_cond as $j => $cond ) {
+					if ( ! isset( $postdata['conditions'][ $i ][ $j ]['field'] ) ) {
+						unset( $postdata['conditions'][ $i ][ $j ] );
+					} elseif ( is_array( $postdata['conditions'][ $i ][ $j ]['value'] ) ) {
+						$postdata['conditions'][ $i ][ $j ]['value'] = array_values( array_unique( $postdata['conditions'][ $i ][ $j ]['value'] ) );
+					} else {
 
+					}
 				}
 			}
-			$meta['list_conditions'] = $postdata['list'];
+			$meta['list_conditions'] = $postdata['conditions'];
 
 		} else {
 
@@ -1809,6 +1810,18 @@ class MailsterCampaigns {
 
 			if ( ! empty( $meta[ $metadata->ID ]['list_conditions'] ) ) {
 				$meta[ $metadata->ID ]['list_conditions'] = maybe_unserialize( $meta[ $metadata->ID ]['list_conditions'] );
+
+				if ( isset( $meta[ $metadata->ID ]['list_conditions']['operator'] ) ) {
+					if ( 'OR' == $meta[ $metadata->ID ]['list_conditions']['operator'] ) {
+						$meta[ $metadata->ID ]['list_conditions'] = array( $meta[ $metadata->ID ]['list_conditions']['conditions'] );
+					} else {
+						$cond = array();
+						foreach ( $meta[ $metadata->ID ]['list_conditions']['conditions'] as $c ) {
+							$cond[] = array( $c );
+						}
+						$meta[ $metadata->ID ]['list_conditions'] = $cond;
+					}
+				}
 			}
 
 			if ( ! empty( $meta[ $metadata->ID ]['attachments'] ) ) {
@@ -3787,11 +3800,11 @@ class MailsterCampaigns {
 			'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
 		);
 
-		if ( 'autoresponder' != get_post_status( $ID ) ) {
+		if ( 'autoresponder' != get_post_status( $campaign->ID ) ) {
 			$headers['Precedence'] = 'bulk';
 		}
 
-		$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $campaign, $subscriber ) );
+		$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $campaign->ID, $subscriber->ID ) );
 
 		$placeholder->set_content( $mail->subject );
 		$mail->subject = $placeholder->get_content();

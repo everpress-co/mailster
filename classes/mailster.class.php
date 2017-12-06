@@ -99,10 +99,10 @@ class Mailster {
 	 * @param unknown $content (optional)
 	 * @return unknown
 	 */
-	public function conditions( $conditions = array(), $operator = 'AND' ) {
+	public function conditions( $conditions = array() ) {
 		require_once MAILSTER_DIR . 'classes/conditions.class.php';
 
-		return new MailsterConditions( $conditions, $operator );
+		return new MailsterConditions( $conditions );
 	}
 
 

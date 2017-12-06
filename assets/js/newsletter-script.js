@@ -3470,7 +3470,9 @@ jQuery(document).ready(function ($) {
 			extra = $('#list_extra'),
 			data = {},
 			total = $('.mailster-total'),
-			cond = $('#mailster_conditions');
+			cond = $('#mailster_conditions'),
+			groups = $('.mailster-condition-group'),
+			i = 0;
 
 		$.each(listinputs, function () {
 			var id = $(this).val();
@@ -3480,27 +3482,33 @@ jQuery(document).ready(function ($) {
 		data.lists = lists;
 		data.ignore_lists = $('#ignore_lists').is(':checked');
 
-		$.each($('.mailster-condition'), function () {
-			var _this = $(this),
-				value,
-				field = _this.find('.condition-field').val(),
-				operator = _this.find('.mailster-conditions-operator-field.active').find('.condition-operator').val();
+		$.each(groups, function () {
+			var c = $(this).find('.mailster-condition');
+			$.each(c, function () {
+				var _this = $(this),
+					value,
+					field = _this.find('.condition-field').val(),
+					operator = _this.find('.mailster-conditions-operator-field.active').find('.condition-operator').val();
 
-			if (!operator || !field) return;
+				if (!operator || !field) return;
 
-			value = _this.find('.mailster-conditions-value-field.active').find('.condition-value').map(function () {
-				return $(this).val();
-			}).toArray();
-			if (value.length == 1) {
-				value = value[0];
-			}
+				value = _this.find('.mailster-conditions-value-field.active').find('.condition-value').map(function () {
+					return $(this).val();
+				}).toArray();
+				if (value.length == 1) {
+					value = value[0];
+				}
+				if (!conditions[i]) {
+					conditions[i] = [];
+				}
 
-			conditions.push({
-				field: field,
-				operator: operator,
-				value: value,
+				conditions[i].push({
+					field: field,
+					operator: operator,
+					value: value,
+				});
 			});
-
+			i++;
 		});
 
 		data.operator = $('select.mailster-list-operator').val();

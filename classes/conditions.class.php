@@ -2,7 +2,7 @@
 
 class MailsterConditions {
 
-	public function __construct( $conditions = array(), $operator = 'AND' ) {
+	public function __construct( $conditions = array() ) {
 
 	}
 
@@ -18,7 +18,7 @@ class MailsterConditions {
 	}
 
 
-	public function view( $conditions = array(), $operator = 'AND' ) {
+	public function view( $conditions = array(), $echo = true ) {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
@@ -29,23 +29,35 @@ class MailsterConditions {
 			$conditions = array();
 		}
 
+		ob_start();
 		include MAILSTER_DIR . 'views/conditions/conditions.php';
+		$output = ob_get_contents();
+		ob_end_clean();
+
+		if ( ! $echo ) {
+			return $output;
+		}
+
+		echo $output;
 
 	}
 
-	public function render( $conditions = array(), $operator = 'AND', $echo = true ) {
+	public function render( $conditions = array(), $echo = true, $plain = false ) {
 
 		if ( empty( $conditions ) ) {
 			$conditions = array();
 		}
 
 		ob_start();
-
 		include MAILSTER_DIR . 'views/conditions/render.php';
-
 		$output = ob_get_contents();
-
 		ob_end_clean();
+
+		if ( $plain ) {
+			$output = trim( strip_tags( $output ) );
+			$output = preg_replace( '/\s*$^\s*/mu', "\n\n", $output );
+			$output = preg_replace( '/[ \t]+/u', ' ', $output );
+		}
 
 		if ( ! $echo ) {
 			return $output;
@@ -212,8 +224,15 @@ class MailsterConditions {
 		);
 
 	}
+	private function get_special_campaigns() {
+		return array(
+			'_last_5' => __( 'Any of the Last 5 Campaigns', 'mailster' ),
+			'_last_7day' => __( 'Any Campaigns within the last 7 days', 'mailster' ),
+			'_last_1month' => __( 'Any Campaigns within the last 1 month', 'mailster' ),
+			'_last_3month' => __( 'Any Campaigns within the last 3 months', 'mailster' ),
+		);
 
-
+	}
 	private function get_field_operator( $operator ) {
 		$operator = esc_sql( stripslashes( $operator ) );
 
@@ -306,6 +325,10 @@ class MailsterConditions {
 	}
 
 	public function get_campaign_title( $post ) {
+
+		if ( isset( $this->special_campaigns[ $post ] ) ) {
+			return $this->special_campaigns[ $post ];
+		}
 
 		$title = get_the_title( $post );
 		if ( empty( $title ) ) {

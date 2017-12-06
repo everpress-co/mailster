@@ -37,20 +37,53 @@
 .mailster-conditions-saved select{
 	width: 40%;
 }
-.mailster-conditions .mailster-condition, .mailster-conditions .mailster-condition-empty{
+.mailster-conditions .mailster-condition-group{
 	border:1px solid #DFDFDF;
+	background: #fdfdfd;
 	border-radius:3px;
-	margin:3px 0;
-	padding:10px;
+	margin:8px 0 25px;
+	padding:0 10px 36px;
 	display: block;
-	float: none;
-	clear: both;
+	position: relative;
+}
+.mailster-conditions .mailster-condition-group:after, .mailster-conditions .mailster-condition:after{
+	content: attr(data-operator);
+	position: absolute;
+	left: 30px;
+	padding: 3px 1px;
+	text-transform: uppercase;
+	color: #999;
+	font-size: 16px;
+	line-height: 1em;
+	transform: translateX(-50%);
+	z-index: 1;
+	bottom:-25px;
+}
+.mailster-conditions .mailster-condition:after{
+	background-color: #fff;
+	font-size: 14px;
+	bottom:-10px;
+	left: 20px;
+}
+.mailster-conditions .mailster-condition-group:last-child:after, .mailster-conditions .mailster-condition:last-child:after{
+	display: none;
+}
+.mailster-conditions .mailster-condition-group:last-child, .mailster-conditions .mailster-condition:last-child{
+	margin-bottom: 0;
+}
+.mailster-conditions .mailster-condition, .mailster-conditions .mailster-condition-empty{
+	border-bottom:1px dotted #DFDFDF;
+	background-color: #fff;
+	position: relative;
+	padding: 10px 0 10px;
+}
+.mailster-conditions .mailster-condition:last-child, .mailster-conditions .mailster-condition-empty:last-child{
+	_border-bottom:0;
 }
 .mailster-conditions{
 	margin: 10px 0;
-	height: 70%;
+	height: 83%;
 	overflow: auto;
-	padding: 5px;
 }
 .mailster-conditions:empty:before{
 	content: attr(data-emptytext);
@@ -65,7 +98,7 @@
 .mailster-condition-container{
 	display: none;
 }
-.mailster-conditions .mailster-condition:after{
+_.mailster-conditions .mailster-condition:after{
 	display: table;
 	content:'';
 	clear: both;
@@ -73,12 +106,11 @@
 }
 .mailster-conditions-field-fields, .mailster-conditions-operator-fields, .mailster-conditions-value-fields{
 	float: left;
-	max-width: 40%;
+	max-width: 38%;
 	padding-right: 4px;
 }
 .rtl .mailster-conditions-field-fields,.rtl .mailster-conditions-operator-fields,.rtl .mailster-conditions-value-fields{
 	float: right;
-	max-width: 40%;
 	padding-right: 0px;
 	padding-left: 4px;
 }
@@ -97,11 +129,6 @@
 .mailster-conditions select, .mailster-conditions input{
 	max-width: 100%
 }
-.mailster-conditions .mailster-condition{
-	background-color: #fff;
-	position: relative;
-	margin: 2px 0 4px;
-}
 .mailster-conditions .mailster-condition-empty{
 	background-color: none;
 	border:1px dotted #DFDFDF;
@@ -110,39 +137,20 @@
 .mailster-conditions .remove-condition{
 	float: right;
 	cursor: pointer;
-	display: none;
+	visibility: hidden;
 	margin-bottom: 10px;
+	padding: 0 4px;
 }
 .rtl .mailster-conditions .remove-condition{
 	float: left;
 }
 .mailster-conditions .mailster-condition:hover .remove-condition{
-	display: block;
+	visibility: visible;
 }
-.mailster-condition:first-child .mailster-condition-operators{
-	display: none;
-}
-.mailster-conditions .mailster-condition-operators{
+.mailster-conditions .add-or-condition{
 	position: absolute;
-	left: 50%;
-	top: -14px
-}
-.mailster-conditions .mailster-condition-operators label{
-	position: absolute;
-	top: 0;
-	left: 0;
-	background-color: #fff;
-	padding: 3px 1px;
-	text-transform: uppercase;
-	color: #999;
-	font-size: 15px;
-	line-height: 1em;
-	transform: translateX(-50%);
-}
-.mailster-conditions.mailster-condition-operator-is-and label.mailster-condition-operator-or,
-.mailster-conditions.mailster-condition-operator-is-or label.mailster-condition-operator-and
-{
-	display: none;
+	bottom: 6px;
+	z-index: 1;
 }
 .mailster-conditions .datepicker.condition-value{
 	width: 100px;

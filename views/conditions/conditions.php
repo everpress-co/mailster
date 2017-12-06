@@ -1,14 +1,11 @@
 <?php
 global $post, $wp_post_statuses;
 
-if ( empty( $conditions ) ) {
-	$conditions = array();
-}
-
-	array_unshift($conditions, array(
+	array_unshift($conditions, array(array(
 		'field' => '',
 		'operator' => '',
 		'value' => '',
+		),
 	));
 
 	$forms = mailster( 'forms' )->get_all();
@@ -19,29 +16,18 @@ if ( empty( $conditions ) ) {
 	$statuses = mailster( 'subscribers' )->get_status( null, true );
 
 ?>
-<div class="mailster-conditions-operator-selector">
-	<p><?php esc_attr_e( 'Send Campaign only to subscribers if', 'mailster' );?>
-	<select class="mailster-list-operator" class="widefat" name="mailster_data[list][operator]">
-		<option value="OR"<?php selected( $operator, 'OR' ) ?> title="<?php esc_html_e( 'or', 'mailster' );?>"><?php esc_html_e( 'one of the conditions is true', 'mailster' );?></option>
-		<option value="AND"<?php selected( $operator, 'AND' ) ?> title="<?php esc_html_e( 'and', 'mailster' );?>"><?php esc_html_e( 'all of the conditions are true', 'mailster' );?></option>
-	</select>
-	</p>
-</div>
 <div class="mailster-condition-container"></div>
-<div class="mailster-conditions mailster-condition-operator-is-<?php echo 'AND' == $operator ? 'and' : 'or' ?>" data-emptytext="<?php esc_attr_e( 'Please add your first condition.', 'mailster' ); ?>"><?php
-foreach ( $conditions as $i => $condition ) :
+<div class="mailster-conditions" data-emptytext="<?php esc_attr_e( 'Please add your first condition.', 'mailster' ); ?>"><?php
+foreach ( $conditions as $i => $condition_group ) : ?><div class="mailster-condition-group" data-id="<?php echo $i ?>" data-operator="<?php esc_attr_e( 'and', 'mailster' );?>">
+		<a class="add-or-condition button button-small"><?php esc_html_e( 'Add Condition', 'mailster' );?></a>
+<?php foreach ( $condition_group as $j => $condition ) :
 		$value = $condition['value'];
 		$field = $condition['field'];
 		$field_operator = $this->get_field_operator( $condition['operator'] );
-		?><div class="mailster-condition">
-			<div class="mailster-condition-operators">
-				<label class="mailster-condition-operator-and"><?php esc_attr_e( 'and', 'mailster' );?></label>
-				<label class="mailster-condition-operator-or"><?php esc_attr_e( 'or', 'mailster' );?></label>
-			</div>
-			<a class="remove-condition" title="<?php esc_html_e( 'remove condition', 'mailster' );?>">&#10005;</a>
-
+		?><div class="mailster-condition" data-id="<?php echo $j ?>" data-operator="<?php esc_attr_e( 'or', 'mailster' );?>">
+			<a class="remove-condition" title="<?php esc_attr_e( 'remove condition', 'mailster' );?>">&#10005;</a>
 			<div class="mailster-conditions-field-fields">
-				<select name="mailster_data[list][conditions][<?php echo $i; ?>][field]" class="condition-field" disabled>
+				<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][field]" class="condition-field" disabled>
 
 					<optgroup label="<?php esc_html_e( 'Fields', 'mailster' );?>">
 					<?php
@@ -92,7 +78,7 @@ foreach ( $conditions as $i => $condition ) :
 
 			<div class="mailster-conditions-operator-fields">
 				<div class="mailster-conditions-operator-field mailster-conditions-operator-field-default">
-					<select name="mailster_data[list][conditions][<?php echo $i; ?>][operator]" class="condition-operator" disabled>
+					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
 					<?php
 					foreach ( $this->operators as $key => $name ) :
 						echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
@@ -100,7 +86,7 @@ foreach ( $conditions as $i => $condition ) :
 					</select>
 				</div>
 				<div class="mailster-conditions-operator-field" data-fields=",rating,">
-					<select name="mailster_data[list][conditions][<?php echo $i; ?>][operator]" class="condition-operator" disabled>
+					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
 					<?php
 					foreach ( $this->simple_operators as $key => $name ) :
 						echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
@@ -108,7 +94,7 @@ foreach ( $conditions as $i => $condition ) :
 					</select>
 				</div>
 				<div class="mailster-conditions-operator-field" data-fields=",lang,client,referer,firstname,lastname,email,">
-					<select name="mailster_data[list][conditions][<?php echo $i; ?>][operator]" class="condition-operator" disabled>
+					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
 					<?php
 					foreach ( $this->string_operators as $key => $name ) :
 						echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
@@ -116,7 +102,7 @@ foreach ( $conditions as $i => $condition ) :
 					</select>
 				</div>
 				<div class="mailster-conditions-operator-field" data-fields=",wp_capabilities,status,form,clienttype,">
-					<select name="mailster_data[list][conditions][<?php echo $i; ?>][operator]" class="condition-operator" disabled>
+					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
 					<?php
 					foreach ( $this->bool_operators as $key => $name ) :
 						echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
@@ -124,7 +110,7 @@ foreach ( $conditions as $i => $condition ) :
 					</select>
 				</div>
 				<div class="mailster-conditions-operator-field" data-fields=",<?php echo implode( ',', $this->time_fields ) ?>,">
-					<select name="mailster_data[list][conditions][<?php echo $i; ?>][operator]" class="condition-operator" disabled>
+					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
 					<?php
 					foreach ( $this->date_operators as $key => $name ) :
 						echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
@@ -132,7 +118,7 @@ foreach ( $conditions as $i => $condition ) :
 					</select>
 				</div>
 				<div class="mailster-conditions-operator-field" data-fields=",_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,_click_link,_click_link__not_in,_lists__not_in,">
-					<input type="hidden" name="mailster_data[list][conditions][<?php echo $i; ?>][operator]" class="condition-operator" disabled value="is">
+					<input type="hidden" name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled value="is">
 				</div>
 			</div>
 
@@ -146,7 +132,7 @@ foreach ( $conditions as $i => $condition ) :
 				}
 				?>
 				<div class="mailster-conditions-value-field mailster-conditions-value-field-default">
-					<input type="text" class="widefat condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="mailster_data[list][conditions][<?php echo $i; ?>][value]">
+					<input type="text" class="widefat condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]">
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",rating,">
 					<?php
@@ -162,28 +148,28 @@ foreach ( $conditions as $i => $condition ) :
 					. str_repeat( '<span class="mailster-icon"></span>', $empty )
 					?>
 					</div>
-					<input type="hidden" class="condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="mailster_data[list][conditions][<?php echo $i; ?>][value]">
+					<input type="hidden" class="condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]">
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",<?php echo implode( ',', $this->time_fields ) ?>,">
-					<input type="text" class="regular-text datepicker condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="mailster_data[list][conditions][<?php echo $i; ?>][value]">
+					<input type="text" class="regular-text datepicker condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]">
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",id,wp_id,">
-					<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="mailster_data[list][conditions][<?php echo $i; ?>][value]">
+					<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]">
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",wp_capabilities,">
-					<select name="mailster_data[list][conditions][<?php echo $i; ?>][value]" class="condition-value" disabled>
+					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]" class="condition-value" disabled>
 						<?php echo wp_dropdown_roles( $value ) ?>
 					</select>
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",status,">
-					<select name="mailster_data[list][conditions][<?php echo $i; ?>][value]" class="condition-value" disabled>
+					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]" class="condition-value" disabled>
 						<?php foreach ( $statuses as $key => $name ) : ?>
 							<option value="<?php echo intval( $key ) ?>" <?php selected( $key, $value ); ?>><?php echo esc_html( $name ) ?></option>
 						<?php endforeach; ?>
 					</select>
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",form,">
-					<select name="mailster_data[list][conditions][<?php echo $i; ?>][value]" class="condition-value" disabled>
+					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]" class="condition-value" disabled>
 					<?php
 					foreach ( $forms as $form ) :
 						echo '<option value="' . $form->ID . '"' . selected( $form->ID, $value, false ) . '>#' . $form->ID . ' ' . $form->name . '</option>';
@@ -191,7 +177,7 @@ foreach ( $conditions as $i => $condition ) :
 					</select>
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",clienttype,">
-					<select name="mailster_data[list][conditions][<?php echo $i; ?>][value]" class="condition-value" disabled>
+					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]" class="condition-value" disabled>
 						<option value="desktop"<?php selected( $value, 'desktop' ) ?>><?php esc_html_e( 'Desktop', 'mailster' ); ?></option>
 						<option value="webmail"<?php selected( $value, 'webmail' ) ?>><?php esc_html_e( 'Webmail', 'mailster' ); ?></option>
 						<option value="mobile"<?php selected( $value, 'mobile' ) ?>><?php esc_html_e( 'Mobile', 'mailster' ); ?></option>
@@ -202,8 +188,14 @@ foreach ( $conditions as $i => $condition ) :
 					<?php foreach ( $value_arr as $k => $v ) : ?>
 						<div class="mailster-conditions-value-field-multiselect">
 							<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
-							<select name="mailster_data[list][conditions][<?php echo $i; ?>][value][]" class="condition-value" disabled>
+							<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value][]" class="condition-value" disabled>
 								<option value="0">--</option>
+								<optgroup label="<?php esc_attr_e( 'Aggregate Campaigns', 'mailster' ) ?>">
+							<?php
+							foreach ( $this->special_campaigns as $key => $name ) :
+								echo '<option value="' . $key . '"' . selected( $v, $key, false ) . '>' . $name . '</option>';
+								endforeach; ?>
+								</optgroup>
 								<?php
 								$status = '';
 								foreach ( $all_campaigns_stati as $j => $c ) {
@@ -223,7 +215,7 @@ foreach ( $conditions as $i => $condition ) :
 						</div>
 					<?php endforeach; ?>
 				<?php else : ?>
-					<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="mailster_data[list][conditions][<?php echo $i; ?>][value]"></p>
+					<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]"></p>
 				<?php endif; ?>
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",_lists__not_in,">
@@ -231,7 +223,7 @@ foreach ( $conditions as $i => $condition ) :
 					<?php foreach ( $value_arr as $k => $v ) : ?>
 						<div class="mailster-conditions-value-field-multiselect">
 							<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
-							<select name="mailster_data[list][conditions][<?php echo $i; ?>][value][]" class="condition-value" disabled>
+							<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value][]" class="condition-value" disabled>
 								<option value="0">--</option>
 								<?php
 								$status = '';
@@ -243,22 +235,22 @@ foreach ( $conditions as $i => $condition ) :
 						</div>
 					<?php endforeach; ?>
 				<?php else : ?>
-					<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="mailster_data[list][conditions][<?php echo $i; ?>][value]"></p>
+					<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]"></p>
 				<?php endif; ?>
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",_click_link,_click_link__not_in,">
 				<?php foreach ( $value_arr as $k => $v ) : ?>
 					<div class="mailster-conditions-value-field-multiselect">
 					<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
-						<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $v ); ?>" name="mailster_data[list][conditions][<?php echo $i; ?>][value][]" placeholder="https://example.com">
+						<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $v ); ?>" name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value][]" placeholder="https://example.com">
 					<button class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></button>
 					</div>
 				<?php endforeach; ?>
 				</div>
 			</div>
-
-	</div><?php endforeach; ?></div>
+			<div class="clear"></div>
+	</div><?php endforeach; ?></div><?php endforeach; ?></div>
+		<a class="button add-condition"><?php esc_html_e( 'Add Condition', 'mailster' ); ?></a>
 
 	<div class="mailster-condition-empty">
-		<a class="button add-condition"><?php esc_html_e( 'Add Condition', 'mailster' ); ?></a>
 	</div>

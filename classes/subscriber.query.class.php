@@ -6,8 +6,6 @@ class MailsterSubscriberQuery {
 	private $last_error;
 	private $last_query;
 
-	private $extra_conditions = null;
-
 	private $args = array();
 
 	private $defaults = array(
@@ -25,7 +23,7 @@ class MailsterSubscriberQuery {
 		'return_count' => false,
 		'return_sql' => false,
 
-		'operator' => 'AND',
+		'operator' => null,
 		'conditions' => null,
 
 		'include' => null,
@@ -199,16 +197,18 @@ class MailsterSubscriberQuery {
 		}
 		if ( $this->args['conditions'] ) {
 
-			// old
-			if ( isset( $this->args['conditions']['conditions'] ) ) {
-				$this->args['operator'] = $this->args['conditions']['operator'];
-				$this->args['conditions'] = $this->args['conditions']['conditions'];
+			// sanitize
+			if ( ! isset( $this->args['conditions'][0][0] ) ) {
+				if ( 'OR' == $this->args['operator'] ) {
+					$this->args['conditions'] = array( $this->args['conditions'] );
+				} else {
+					$c = array();
+					foreach ( $this->args['conditions'] as $cond ) {
+						$c[] = array( $cond );
+					}
+					$this->args['conditions'] = $c;
+				}
 			}
-
-			if ( ! isset( $this->args['conditions'][0]['conditions'] ) && ! empty( $this->args['conditions'] ) ) {
-				$this->args['conditions'] = array( array( 'operator' => $this->args['operator'], 'conditions' => $this->args['conditions'] ) );
-			}
-			// $this->args['operator'] = 'AND';
 		}
 
 		if ( $this->args['sent'] ) {
@@ -383,11 +383,11 @@ class MailsterSubscriberQuery {
 
 			$cond = array();
 
-			foreach ( $this->args['conditions'] as $i => $conditions ) {
+			foreach ( $this->args['conditions'] as $i => $and_conditions ) {
 
-				foreach ( $conditions['conditions'] as $j => $condition ) {
+				foreach ( $and_conditions as $j => $condition ) {
 
-					$field = esc_sql( $condition['field'] );
+					$field = $condition['field'];
 					// requires campaign to be sent
 					if ( in_array( $field, array( '_open__not_in', '_click__not_in' ) ) ) {
 						$this->add_condition( '_sent', '=', $condition['value'] );
@@ -395,14 +395,13 @@ class MailsterSubscriberQuery {
 				}
 			}
 
-			foreach ( $this->args['conditions'] as $i => $conditions ) {
+			foreach ( $this->args['conditions'] as $i => $and_conditions ) {
 
 				$sub_cond = array();
-				$sub_operator = isset( $conditions['operator'] ) ? $conditions['operator'] : 'AND';
 
-				foreach ( $conditions['conditions'] as $j => $condition ) {
+				foreach ( $and_conditions as $j => $condition ) {
 
-					$field = esc_sql( $condition['field'] );
+					$field = $condition['field'];
 
 					if ( in_array( $field, array( 'lat', 'lng' ) ) ) {
 
@@ -430,6 +429,49 @@ class MailsterSubscriberQuery {
 						$value = $condition['value'];
 						if ( ! is_array( $value ) ) {
 							$value = explode( ',', $value );
+						}
+						if ( false !== ($pos = array_search( '_last_5', $value ) ) ) {
+							unset( $value[ $pos ] );
+							$value = array_merge( $value, mailster( 'campaigns' )->get_finished(array(
+								'posts_per_page' => 5,
+								'fields' => 'ids',
+							)));
+						}
+						if ( false !== ($pos = array_search( '_last_7day', $value ) ) ) {
+							unset( $value[ $pos ] );
+							$value = array_merge( $value, mailster( 'campaigns' )->get_finished(array(
+								'date_query' => array(
+								     array(
+								         'after'     => '-7 days',
+								         'inclusive' => true,
+								     ),
+								 ),
+								'fields' => 'ids',
+							)));
+						}
+						if ( false !== ($pos = array_search( '_last_1month', $value ) ) ) {
+							unset( $value[ $pos ] );
+							$value = array_merge( $value, mailster( 'campaigns' )->get_finished(array(
+								'date_query' => array(
+								     array(
+								         'after'     => '-1 month',
+								         'inclusive' => true,
+								     ),
+								 ),
+								'fields' => 'ids',
+							)));
+						}
+						if ( false !== ($pos = array_search( '_last_3month', $value ) ) ) {
+							unset( $value[ $pos ] );
+							$value = array_merge( $value, mailster( 'campaigns' )->get_finished(array(
+								'date_query' => array(
+								     array(
+								         'after'     => '-3 month',
+								         'inclusive' => true,
+								     ),
+								 ),
+								'fields' => 'ids',
+							)));
 						}
 						$value = array_map( 'esc_sql', $value );
 						$alias = 'actions' . $field . '_' . $i . '_' . $j;
@@ -504,11 +546,11 @@ class MailsterSubscriberQuery {
 				}
 				$sub_cond = array_filter( $sub_cond );
 				if ( ! empty( $sub_cond ) ) {
-					$cond[] = '( ' . implode( ' ' . $sub_operator . ' ', $sub_cond ) . ' )';
+					$cond[] = '( ' . implode( ' OR ', $sub_cond ) . ' )';
 				}
 			}
 			if ( ! empty( $cond ) ) {
-				$wheres[] = 'AND ( ' . implode( ' ' . $this->args['operator'] . ' ', $cond ) . ' )';
+				$wheres[] = 'AND ( ' . implode( ' AND ', $cond ) . ' )';
 			}
 		}
 
@@ -808,7 +850,6 @@ class MailsterSubscriberQuery {
 			}
 		}
 
-		// error_log( $sql );
 		mailster_cache_set( $cache_key, $result );
 
 		return $result;
@@ -1158,15 +1199,7 @@ class MailsterSubscriberQuery {
 			$this->args['conditions'] = array();
 		}
 
-		if ( is_null( $this->extra_conditions ) ) {
-			$this->extra_conditions = true;
-			array_unshift($this->args['conditions'], array(
-				'operator' => 'AND',
-				'conditions' => array(),
-			));
-		}
-
-		$this->args['conditions'][0]['conditions'][] = $condition;
+		array_unshift( $this->args['conditions'], array( $condition ) );
 
 	}
 

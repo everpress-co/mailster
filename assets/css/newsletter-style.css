@@ -1866,19 +1866,6 @@ textarea#content, textarea#excerpt {
 	width:95%;
 	border-color:#DFDFDF;
 }
-a.add-condition, a.remove-condition{
-	cursor:pointer;
-	text-align:right;
-	overflow:hidden;
-	display:inline-block;
-	float:right;
-}
-a.remove-condition{
-	display:none;
-}
-.mailster_list_condition:hover a.remove-condition{
-	display:inline-block;
-}
 .mailster_sendtest{
 	float:right;
 }
@@ -2042,9 +2029,6 @@ label.weekday input{
 	border-color:#DFDFDF;
 }
 #mailster_conditions{
-	border:1px solid #DFDFDF;
-	border-radius:2px;
-	padding: 12px;
 	min-height: 18px;
 	position: relative;
 }
@@ -2059,15 +2043,26 @@ label.weekday input{
 	color: #999;
 	white-space: nowrap;
 }
+.mailster-condition-render-group{
+	border:1px solid #DFDFDF;
+	padding: 3px 6px;
+	border-radius:2px;
+	background: #fdfdfd;
+	margin: 1px 0 2px;
+}
+.mailster-condition-operators{
+	color: #989898;
+	font-size: 12px;
+}
 .mailster-condition-render{
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 .mailster-condition-render .mailster-condition-operators{
-	color: #989898;
 	font-size: 10px;
 }
+
 .create-new-list-wrap{
 	display:none;
 	border-top:1px solid #DFDFDF;
