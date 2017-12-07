@@ -83,6 +83,7 @@ class MailsterTranslations {
 
 			$locale = get_locale();
 			$base_locale = preg_replace( '/([a-z]+)_([A-Z]+)_(.*)/', '$1_$2', $locale );
+			$root_locale = preg_replace( '/([a-z]+)_([A-Z]+)/', '$1', $base_locale );
 
 			if ( 'en_US' == $locale ) {
 				update_option( 'mailster_translation', $object );
@@ -114,6 +115,10 @@ class MailsterTranslations {
 			foreach ( $body->translation_sets as $set ) {
 				if ( ! isset( $set->wp_locale ) ) {
 					$set->wp_locale = $set->locale;
+				}
+				if ( $set->locale == $root_locale ) {
+					$translation_set = $set;
+					$lastmodified = strtotime( $set->last_modified );
 				}
 				if ( $set->wp_locale == $base_locale ) {
 					$translation_set = $set;
