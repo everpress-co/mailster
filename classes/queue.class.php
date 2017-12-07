@@ -388,11 +388,7 @@ class MailsterQueue {
 				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
 				$list_based = mailster( 'campaigns' )->list_based_opt_out( $campaign->ID );
 
-				$conditions = array();
-
-				if ( ! empty( $meta['list_conditions'] ) ) {
-					$conditions[] = $meta['list_conditions'];
-				}
+				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null;
 
 				$args = array(
 					'select' => array(
@@ -403,10 +399,7 @@ class MailsterQueue {
 					'sent__not_in' => $campaign->ID,
 					'queue__not_in' => $campaign->ID,
 					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : true,
-					'conditions' => array(
-						'operator' => 'AND',
-						'conditions' => $conditions,
-					),
+					'conditions' => $conditions,
 					'where' => array(
 						'(subscribers.confirm != 0 OR subscribers.signup != 0)',
 						'(subscribers.signup >= ' . intval( $meta['timestamp'] ) . ' OR lists_subscribers.added >= ' . intval( $meta['timestamp'] ) . ')',
@@ -429,7 +422,7 @@ class MailsterQueue {
 
 				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
 
-				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null ;
+				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null;
 
 				$args = array(
 					'select' => array( 'subscribers.ID', "UNIX_TIMESTAMP ( FROM_UNIXTIME( actions_unsubscribe.timestamp ) + INTERVAL $offset ) AS autoresponder_timestamp" ),
@@ -456,21 +449,14 @@ class MailsterQueue {
 
 				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
 
-				$conditions = array();
-
-				if ( ! empty( $meta['list_conditions'] ) ) {
-					$conditions[] = $meta['list_conditions'];
-				}
+				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null;
 
 				$args = array(
 					'select' => array( 'subscribers.ID' ),
 					'sent__not_in' => $campaign->ID,
 					'queue__not_in' => $campaign->ID,
 					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
-					'conditions' => array(
-						'operator' => 'AND',
-						'conditions' => $conditions,
-					),
+					'conditions' => $conditions,
 					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
 					'orderby' => 'autoresponder_timestamp',
 				);
@@ -485,7 +471,7 @@ class MailsterQueue {
 						$args['open'] = $campaign->post_parent;
 						break;
 					case 3:
-						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_click_0_1.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
+						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_click_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
 						$args['click'] = $campaign->post_parent;
 						break;
 				}
@@ -763,25 +749,21 @@ class MailsterQueue {
 				$lists = $meta['lists'];
 			}
 
-			$extracondition = array(
-				'operator' => 'AND',
-				'conditions' => array( $cond ),
-			);
+			$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : array();
 
-			if ( ! empty( $meta['list_conditions'] ) ) {
-				$conditions = $meta['list_conditions'];
-				if ( ! isset( $conditions['conditions'][0]['conditions'] ) ) {
-					$conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );
-					$conditions['operator'] = 'AND';
-				}
-				$conditions['conditions'][] = $extracondition;
-
-			} else {
-				$conditions = $extracondition;
-				$conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );
-				$conditions['operator'] = 'AND';
-			}
-
+			$conditions[] = array( $cond );
+			// echo '<pre>'.print_r($meta['list_conditions'], true).'</pre>';
+			// if ( ! empty( $meta['list_conditions'] ) ) {
+			// if ( ! isset( $conditions['conditions'][0]['conditions'] ) ) {
+			// $conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );
+			// $conditions['operator'] = 'AND';
+			// }
+			// $conditions['conditions'][] = $extracondition;
+			// } else {
+			// $conditions = $extracondition;
+			// $conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );
+			// $conditions['operator'] = 'AND';
+			// }
 			$subscribers = mailster( 'subscribers' )->query(array(
 				'fields' => array( 'ID', $autoresponder_meta['uservalue'] ),
 				'lists' => $lists,

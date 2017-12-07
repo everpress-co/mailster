@@ -593,29 +593,24 @@ class MailsterCampaigns {
 	 */
 	public function columns_content( $column ) {
 
-		global $post, $wpdb, $wp_post_statuses;
+		global $post, $wp_post_statuses;
+
+		$now = time();
+		$is_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
+		$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+
+		if ( ! $is_ajax && $column != 'status' ) {
+			echo '&ndash;';
+			return;
+		}
 
 		$error = ini_get( 'error_reporting' );
 		error_reporting( E_ERROR );
 
-		$now = time();
-		$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
-
 		$meta = $this->meta( $post->ID );
 
-		global $pagenow;
-
 		$totals = $this->get_totals( $post->ID );
-		$errors = $this->get_errors( $post->ID );
 		$sent = $this->get_sent( $post->ID );
-		$sent_total = $this->get_sent( $post->ID, true );
-
-		$opens = $this->get_opens( $post->ID );
-		$open_totals = $this->get_opens( $post->ID, true );
-		$clicks = $this->get_clicks( $post->ID );
-		$click_totals = $this->get_clicks( $post->ID, true );
-		$bounces = $this->get_bounces( $post->ID );
-		$unsubscribes = $this->get_unsubscribes( $post->ID );
 
 		switch ( $column ) {
 
@@ -875,11 +870,13 @@ class MailsterCampaigns {
 				if ( 'finished' == $post->post_status ) {
 					echo number_format_i18n( $sent );
 				} elseif ( 'autoresponder' == $post->post_status ) {
+					$sent_total = $this->get_sent( $post->ID, true );
 					echo number_format_i18n( $sent_total );
 				} else {
 					echo number_format_i18n( $totals );
 				}
 
+				$errors = $this->get_errors( $post->ID );
 				if ( ! empty( $errors ) ) {
 					echo '&nbsp;(<a href="edit.php?post_type=newsletter&page=mailster_subscribers&status=4" class="errors" title="' . sprintf( __( '%d emails have not been sent', 'mailster' ), $errors ) . '">+' . $errors . '</a>)';
 				}
@@ -891,6 +888,7 @@ class MailsterCampaigns {
 				if ( ! $this->meta( $post->ID, 'track_opens' ) ) {
 					echo '<span class="mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
 				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
+					$opens = $this->get_opens( $post->ID );
 					echo '<span class="s-opens">' . number_format_i18n( $opens ) . '</span>/<span class="tiny s-sent">' . number_format_i18n( $sent ) . '</span>';
 					$rate = round( mailster( 'campaigns' )->get_open_rate( $post->ID ) * 100, 2 );
 					echo "<br><span title='" . sprintf( __( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
@@ -905,8 +903,9 @@ class MailsterCampaigns {
 				if ( ! $this->meta( $post->ID, 'track_clicks' ) ) {
 					echo '<span class="mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
 				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
-					$rate = round( mailster( 'campaigns' )->get_click_rate( $post->ID ) * 100, 2 );
-					$rate_a = round( mailster( 'campaigns' )->get_adjusted_click_rate( $post->ID ) * 100, 2 );
+					$clicks = $this->get_clicks( $post->ID );
+					$rate = round( $this->get_click_rate( $post->ID ) * 100, 2 );
+					$rate_a = round( $this->get_adjusted_click_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $clicks );
 					if ( $rate ) {
 						echo "<br><span class='nonessential'>(<span title='" . sprintf( __( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
@@ -927,8 +926,9 @@ class MailsterCampaigns {
 
 			case 'unsubs':
 				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
-					$rate = round( mailster( 'campaigns' )->get_unsubscribe_rate( $post->ID ) * 100, 2 );
-					$rate_a = round( mailster( 'campaigns' )->get_adjusted_unsubscribe_rate( $post->ID ) * 100, 2 );
+					$unsubscribes = $this->get_unsubscribes( $post->ID );
+					$rate = round( $this->get_unsubscribe_rate( $post->ID ) * 100, 2 );
+					$rate_a = round( $this->get_adjusted_unsubscribe_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $unsubscribes );
 					if ( $rate ) {
 						echo "<br><span class='nonessential'>(<span title='" . sprintf( __( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
@@ -949,6 +949,7 @@ class MailsterCampaigns {
 
 			case 'bounces':
 				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
+					$bounces = $this->get_bounces( $post->ID );
 					$rate = round( mailster( 'campaigns' )->get_bounce_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $bounces );
 					echo "<br><span title='" . sprintf( __( '%s of totals', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
@@ -1652,8 +1653,7 @@ class MailsterCampaigns {
 
 		if ( isset( $postdata['conditions'] ) ) {
 
-			$postdata['conditions'] = array_values( $postdata['conditions'] );
-			foreach ( $postdata['conditions'] as $i => $and_cond ) {
+			foreach ( (array) $postdata['conditions'] as $i => $and_cond ) {
 				foreach ( $and_cond as $j => $cond ) {
 					if ( ! isset( $postdata['conditions'][ $i ][ $j ]['field'] ) ) {
 						unset( $postdata['conditions'][ $i ][ $j ] );
@@ -1664,7 +1664,7 @@ class MailsterCampaigns {
 					}
 				}
 			}
-			$meta['list_conditions'] = $postdata['conditions'];
+			$meta['list_conditions'] = array_values( array_filter( $postdata['conditions'] ) );
 
 		} else {
 
@@ -2343,7 +2343,7 @@ class MailsterCampaigns {
 			return $list_ids;
 		}
 
-		return mailster( 'lists' )->get( $list_ids );
+		return mailster( 'lists' )->get( $list_ids, false );
 
 	}
 

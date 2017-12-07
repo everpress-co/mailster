@@ -84,6 +84,13 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+= Version 2. 3.beta.8 =
+
+* fixed: query issue on some autoresponders
+* improved: ajax loading on newsletter overview
+
+= Version 2. 3.beta.7 =
+
 * updated segmentation screen with more possibilities
 * bug fixes
 * editor improvements
