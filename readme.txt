@@ -89,8 +89,10 @@ Xaver Birsak – https://everpress.io
 * fixed: issue with external image URLs not saving
 * fixed: height not updated if image url is used in editor
 * improved: scrolling speed in editor
+* improved: list query
 * improved: Caching is now disabled on any page with a form
 * improved: newsletter homepage selector on setting with sites over 100 pages
+* improved: translation fetching
 
 = Version 2.2.14 =
 

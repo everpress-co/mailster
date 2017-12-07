@@ -14,6 +14,19 @@ class MailsterTranslations {
 
 	public function init() {
 
+		$this->load();
+		add_filter( 'site_transient_update_plugins', array( &$this, 'update_plugins_filter' ), 1 );
+		add_action( 'delete_site_transient_update_plugins', array( &$this, 're_check' ) );
+		add_action( 'update_option_WPLANG', array( &$this, 're_check' ) );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function load() {
 		if ( is_dir( MAILSTER_UPLOAD_DIR . '/languages' ) ) {
 			$custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo';
 			if ( file_exists( $custom ) ) {
@@ -24,10 +37,6 @@ class MailsterTranslations {
 		} else {
 			load_plugin_textdomain( 'mailster' );
 		}
-
-		add_filter( 'site_transient_update_plugins', array( &$this, 'update_plugins_filter' ), 1 );
-		add_action( 'delete_site_transient_update_plugins', array( &$this, 're_check' ) );
-		add_action( 'update_option_WPLANG', array( &$this, 're_check' ) );
 	}
 
 
@@ -74,6 +83,7 @@ class MailsterTranslations {
 
 			$locale = get_locale();
 			$base_locale = preg_replace( '/([a-z]+)_([A-Z]+)_(.*)/', '$1_$2', $locale );
+			$root_locale = preg_replace( '/([a-z]+)_([A-Z]+)/', '$1', $base_locale );
 
 			if ( 'en_US' == $locale ) {
 				update_option( 'mailster_translation', $object );
@@ -105,6 +115,10 @@ class MailsterTranslations {
 			foreach ( $body->translation_sets as $set ) {
 				if ( ! isset( $set->wp_locale ) ) {
 					$set->wp_locale = $set->locale;
+				}
+				if ( $set->locale == $root_locale ) {
+					$translation_set = $set;
+					$lastmodified = strtotime( $set->last_modified );
 				}
 				if ( $set->wp_locale == $base_locale ) {
 					$translation_set = $set;
@@ -174,6 +188,7 @@ class MailsterTranslations {
 
 		if ( ! empty( $result[0] ) ) {
 
+			$this->load();
 			return true;
 
 		}
