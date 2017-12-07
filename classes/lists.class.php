@@ -776,8 +776,6 @@ class MailsterLists {
 
 			$lists = array();
 
-			echo '<pre>' . print_r( $counts, true ) . '</pre>';
-
 			if ( is_null( $id ) ) {
 
 				// if ( $counts ) {

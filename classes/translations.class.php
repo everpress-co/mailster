@@ -79,6 +79,7 @@ class MailsterTranslations {
 			$object = array(
 				'expires' => $now + 86400, // check if a newer version is available once a day
 				'data' => false,
+				'set' => null,
 			);
 
 			$locale = get_locale();
@@ -129,6 +130,10 @@ class MailsterTranslations {
 					$lastmodified = strtotime( $set->last_modified );
 					break;
 				}
+			}
+
+			if ( $translation_set ) {
+				$object['set'] = $translation_set;
 			}
 
 			if ( $translation_set && $lastmodified - $filemtime > 0 ) {
