@@ -92,6 +92,7 @@ class MailsterFrontpage {
 
 		if ( $post_id == mailster_option( 'homepage' ) ) {
 			flush_rewrite_rules();
+			do_action( 'mailster_update_homepage', $post );
 		}
 
 	}

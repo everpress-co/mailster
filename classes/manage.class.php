@@ -1186,7 +1186,7 @@ class MailsterManage {
 
 			$return['success'] = mailster( 'subscribers' )->remove( $subscriber_ids, $statuses, isset( $d['remove_actions'] ) );
 
-			if ( $return['success'] && ! empty( $listids ) ) {
+			if ( $return['success'] && ! empty( $listids ) && isset( $d['remove_lists'] ) ) {
 
 				mailster( 'lists' )->remove( $listids );
 

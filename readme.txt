@@ -2,8 +2,8 @@
 Contributors: EverPress, revaxarts
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9
-Stable tag: 2.2.14
+Tested up to: 4.9.1
+Stable tag: 2.2.15
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3
@@ -81,6 +81,19 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.2.15 =
+
+* fixed: visual issue with color picker on WP 4.9
+* fixed: lists were always deleted from the manage subscribers tab
+* fixed: issue with external image URLs not saving
+* fixed: height not updated if image url is used in editor
+* fixed: issue with Gravatar URLs
+* improved: scrolling speed in editor
+* improved: list query
+* improved: Caching is now disabled on any page with a form
+* improved: newsletter homepage selector on setting with sites over 100 pages
+* improved: translation fetching
 
 = Version 2.2.14 =
 

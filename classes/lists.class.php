@@ -760,7 +760,9 @@ class MailsterLists {
 				$ids = array_filter( $ids, 'is_numeric' );
 
 				if ( ! empty( $ids ) ) {
-					$sql = "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ')) ON a.ID = ab.list_id WHERE a.ID IN(' . implode( ', ', $ids ) . ') GROUP BY a.ID';
+					$sql = ( $counts )
+						? "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ')) ON a.ID = ab.list_id WHERE a.ID IN(' . implode( ', ', $ids ) . ') GROUP BY a.ID'
+						: "SELECT a.* FROM {$wpdb->prefix}mailster_lists AS a WHERE a.ID IN(" . implode( ', ', $ids ) . ')';
 					$sql = apply_filters( 'mailster_list_get_sql', $sql, $ids, $statuses, $counts );
 					$lists = $wpdb->get_results( $sql );
 				}
