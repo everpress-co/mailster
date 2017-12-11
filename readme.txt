@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * fixed: lists were always deleted from the manage subscribers tab
 * fixed: issue with external image URLs not saving
 * fixed: height not updated if image url is used in editor
+* fixed: issue with Gravatar URLs
 * improved: scrolling speed in editor
 * improved: list query
 * improved: Caching is now disabled on any page with a form
