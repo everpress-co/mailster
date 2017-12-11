@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.2
+// Version 3.3
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -23,10 +23,6 @@ class UpdateCenterPlugin {
 	 */
 	public static function add( $args = array() ) {
 
-		if ( isset( $args['slug'] ) ) {
-			$args['plugin'] = $args['slug'];
-		}
-
 		if ( ! isset( $args['plugin'] ) ) {
 			$caller = array_shift( debug_backtrace() );
 			$error = sprintf( '[UpdateCenter] You have to define a "plugin" parameter for your plugin in %s on line %d', $caller['file'], $caller['line'] );
@@ -43,10 +39,8 @@ class UpdateCenterPlugin {
 
 		$plugin_data = (object) wp_parse_args( $args, array(
 			'remote_url' => null,
-			'slug' => null,
+			'slug' => strtolower( dirname( $args['plugin'] ) ),
 		) );
-
-		$plugin_data->slug = strtolower( dirname( $plugin_data->plugin ) );
 
 		$plugin_data->remote_url = trailingslashit( $plugin_data->remote_url );
 

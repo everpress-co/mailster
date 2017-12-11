@@ -12,11 +12,9 @@ class MailsterRegister {
 	/**
 	 *
 	 *
-	 * @param unknown $slug     (optional)
-	 * @param unknown $verified (optional)
 	 * @param unknown $args     (optional)
 	 */
-	public function form( $slug = null, $verified = null, $args = array() ) {
+	public function form( $args = array() ) {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
@@ -29,14 +27,8 @@ class MailsterRegister {
 				'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
 		) );
 
-		if ( is_null( $slug ) ) {
-			$slug = MAILSTER_SLUG;
-		}
-		$slug = strtolower( dirname( $slug ) );
-
-		if ( is_null( $verified ) ) {
-			$verified = mailster()->is_verified();
-		}
+		$slug = 'mailster';
+		$verified = mailster()->is_verified();
 
 		$page = isset( $_GET['page'] ) ? str_replace( 'mailster_', '', $_GET['page'] ) : 'dashboard';
 

@@ -2049,7 +2049,7 @@ class Mailster {
 		);
 
 		delete_transient( 'mailster_verified' );
-		return UpdateCenterPlugin::register( MAILSTER_SLUG, $userdata, $license );
+		return UpdateCenterPlugin::register( 'mailster', $userdata, $license );
 
 	}
 
@@ -2066,7 +2066,7 @@ class Mailster {
 		}
 
 		delete_transient( 'mailster_verified' );
-		return UpdateCenterPlugin::reset( MAILSTER_SLUG, $license );
+		return UpdateCenterPlugin::reset( 'mailster', $license );
 
 	}
 
@@ -2094,7 +2094,7 @@ class Mailster {
 			$verified = 'no';
 			$recheck = DAY_IN_SECONDS;
 
-			$result = UpdateCenterPlugin::verify( MAILSTER_SLUG );
+			$result = UpdateCenterPlugin::verify( 'mailster' );
 			if ( ! is_wp_error( $result ) ) {
 				$verified = 'yes';
 			} else {
