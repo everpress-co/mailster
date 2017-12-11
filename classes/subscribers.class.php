@@ -2712,7 +2712,7 @@ class MailsterSubscribers {
 
 		$return['success'] = true;
 
-		$avatar = ! mailster_option( 'disable_avatar' );
+		$avatar = get_option( 'show_avatars' );
 
 		$html = '';
 

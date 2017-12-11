@@ -2003,11 +2003,11 @@ class MailsterAjax {
 
 		$email = esc_attr( $_POST['email'] );
 
-		if ( mailster_option( 'disable_avatar' ) ) {
-			$return['url'] = null;
-		} else {
+		if ( get_option( 'show_avatars' ) ) {
 			$return['success'] = true;
 			$return['url'] = mailster( 'subscribers' )->get_gravatar_uri( $email, 400 );
+		} else {
+			$return['url'] = null;
 		}
 
 		$this->json_return( $return );

@@ -72,7 +72,7 @@ if ( $is_new ) {
 <table class="form-table">
 	<tr>
 		<td scope="row" class="avatar-wrap">
-			<?php if ( ! mailster_option( 'disable_avatar' ) ) : ?>
+			<?php if ( get_option( 'show_avatars' ) ) : ?>
 				<div class="avatar<?php if ( $subscriber->wp_id ) {	echo ' wp-user'; } ?>" title="<?php esc_html_e( 'Source', 'mailster' ) ?>: Gravatar.com" style="background-image:url(<?php echo $this->get_gravatar_uri( $subscriber->email, 400 ); ?>)"></div>
 				<p class="info"><?php esc_html_e( 'Source', 'mailster' ) ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
 			<?php endif; ?>

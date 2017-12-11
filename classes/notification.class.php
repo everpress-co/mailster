@@ -611,7 +611,7 @@ class MailsterNotification {
 
 ?>
 
-	<?php if ( ! mailster_option( 'disable_avatar' ) ) : ?>
+	<?php if ( get_option( 'show_avatars' ) ) : ?>
 
 		<table style="width:100%;table-layout:fixed">
 			<tr>
@@ -783,7 +783,7 @@ class MailsterNotification {
 					<table cellpadding="0" cellspacing="0">
 						<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
 						<tr>
-						<?php if ( ! mailster_option( 'disable_avatar' ) ) : ?>
+						<?php if ( get_option( 'show_avatars' ) ) : ?>
 						<td valign="top" align="center" width="80">
 							<div style="border-radius:50%;width:60px;height:60px;background-color:#fafafa">
 							<a href="<?php echo $link ?>">
@@ -957,7 +957,7 @@ foreach ( $coords as $i => $coord ) {
 		$custom_fields = mailster()->get_custom_fields();
 
 ?>
-		<?php if ( ! mailster_option( 'disable_avatar' ) ) : ?>
+		<?php if ( get_option( 'show_avatars' ) ) : ?>
 
 		<table style="width:100%;table-layout:fixed">
 			<tr>
@@ -1061,7 +1061,7 @@ foreach ( $coords as $i => $coord ) {
 				<table cellpadding="0" cellspacing="0">
 				<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
 				<tr>
-				<?php if ( ! mailster_option( 'disable_avatar' ) ) : ?>
+				<?php if ( get_option( 'show_avatars' ) ) : ?>
 				<td valign="top" align="center" width="80">
 					<div style="border-radius:50%;width:60px;height:60px;background-color:#fafafa">
 					<a href="<?php echo $link ?>">
