@@ -96,7 +96,7 @@ if ( empty( $worker ) ) {
 	do_action( 'mailster_cron_worker' );
 	do_action( 'mailster_cron_bounce' );
 	do_action( 'mailster_cron_cleanup' );
-} elseif ( in_array( $worker, array( 'autoresponder', 'worker', 'bounce', 'cleanup' ) ) ) {
+} elseif ( in_array( $worker, apply_filters( 'mailster_cron_workers', array( 'autoresponder', 'worker', 'bounce', 'cleanup' ) ) ) ) {
 	echo '<h2>' . esc_html__( 'Single Cron', 'mailster' ) . ': ' . ucwords( $worker ) . '</h2>';
 	do_action( 'mailster_cron_' . $worker );
 } else {

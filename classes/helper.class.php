@@ -95,45 +95,11 @@ class MailsterHelper {
 			$height = round( $width / ( $image_src[1] / $image_src[2] ) );
 		}
 
-		// $size_id = '_mailster-' . $width . 'x' . $height . '.' . $crop;
-		// $size_id = 'mailster-'.$width;
-		// $meta_data = wp_get_attachment_metadata( $attach_id );
-		// $meta_data['sizes'][$size_id] = array(
-		// 'width' => $width,
-		// 'height' => $height,
-		// 'crop' => $crop,
-		// );
-		// add_filter( '_intermediate_image_sizes_advanced', function() use($size_id, $width, $height, $crop){
-		// return array($size_id => array(
-		// 'width' => $width,
-		// 'height' => $height,
-		// 'crop' => $crop,
-		// ));
-		// } );
-		// add_image_size( $size_id, $width, $height, $crop );
-		// $data = wp_generate_attachment_metadata( $attach_id, $actual_file_path );
-		// echo '<pre>'.print_r($data, true).'</pre>';
-		// echo '<pre>'.print_r($meta_data, true).'</pre>';
-		// wp_update_attachment_metadata( $attach_id, $data );
-		// update_post_meta( $attach_id, '_wp_attachment_metadata', $meta_data );
-		// return;
 		$file_info = pathinfo( $actual_file_path );
 		$extension = $file_info['extension'];
 
 		$no_ext_path = trailingslashit( $file_info['dirname'] ) . $file_info['filename'];
 
-		// $cropped_img_path = $no_ext_path . '-' . $width . 'x' . $height . '.' . $extension;
-		// if ( file_exists( $cropped_img_path ) ) {
-		// $cropped_img_url = str_replace( basename( $image_src[0] ), basename( $cropped_img_path ), $image_src[0] );
-		// return array(
-		// 'id' => $attach_id,
-		// 'url' => $cropped_img_url,
-		// 'width' => $width,
-		// 'height' => $height,
-		// 'asp' => $height ? $width / $height : null,
-		// '_' => 2,
-		// );
-		// }
 		$new_img_size = array( $width, $height );
 		if ( ! $crop ) {
 			$new_img_size = wp_constrain_dimensions( $image_src[1], $image_src[2], $width, $height );
@@ -1383,29 +1349,35 @@ class MailsterHelper {
 	 * @param unknown $more       (optional)
 	 * @return unknown
 	 */
-	public function get_excerpt( $org_string, $length = 55, $more = null ) {
+	public function get_excerpt( $org_string, $length = 5, $more = null ) {
 
 		$excerpt = apply_filters( 'mymail_pre_get_excerpt', apply_filters( 'mailster_pre_get_excerpt', null, $org_string, $length, $more ), $org_string, $length, $more );
 		if ( is_string( $excerpt ) ) {
 			return $excerpt;
 		}
 
-		$maybe_broken_html = html_entity_decode( wp_trim_words( htmlentities( $org_string ), $length, $more ) );
+		$string = str_replace( "\n", '%%%NEWLINE%%%', $org_string );
+		$string = html_entity_decode( wp_trim_words( htmlentities( $string ), $length, $more ) );
+		$maybe_broken_html = str_replace( '%%%NEWLINE%%%', "\n", $string );
 
-		$doc = new DOMDocument();
-		// Note the meta charset is used to prevent UTF-8 data from being interpreted as Latin1, thus corrupting it
-		$html = '<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"></head><body>';
-		$html .= $maybe_broken_html;
-		$html .= '</body></html>';
+		if ( $maybe_broken_html !== $org_string ) {
+			$doc = new DOMDocument();
+			// Note the meta charset is used to prevent UTF-8 data from being interpreted as Latin1, thus corrupting it
+			$html = '<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"></head><body>';
+			$html .= $maybe_broken_html;
+			$html .= '</body></html>';
 
-		$i_error = libxml_use_internal_errors( true );
-		$doc->loadHTML( $html );
-		libxml_clear_errors();
-		libxml_use_internal_errors( $i_error );
+			$i_error = libxml_use_internal_errors( true );
+			$doc->loadHTML( $html );
+			libxml_clear_errors();
+			libxml_use_internal_errors( $i_error );
 
-		$body = $doc->getElementsByTagName( 'body' )->item( 0 );
+			$body = $doc->getElementsByTagName( 'body' )->item( 0 );
 
-		$excerpt = $doc->saveHTML( $body );
+			$excerpt = $doc->saveHTML( $body );
+		} else {
+			$excerpt = $org_string;
+		}
 
 		$excerpt = trim( strip_tags( $excerpt, '<p><br><a><strong><em><i><b><ul><ol><li><span>' ) );
 

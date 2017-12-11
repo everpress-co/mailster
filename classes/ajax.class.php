@@ -746,7 +746,7 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$lists = ( $_POST['ignore_lists'] == 'true' ) ? false : ( isset( $_POST['lists'] ) ? $_POST['lists'] : array() );
-		$conditions = isset( $_POST['conditions'] ) ? array_values( array_filter( $_POST['conditions'] ) ) : false;
+		$conditions = isset( $_POST['conditions'] ) ? stripslashes_deep( array_values( array_filter( $_POST['conditions'] ) ) ) : false;
 
 		$return['success'] = true;
 		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, $conditions );
@@ -1402,6 +1402,9 @@ class MailsterAjax {
 					if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
 						$content = explode( $matches[0], $post->post_content, 2 );
 						$post->post_excerpt = trim( $content[0] );
+					}
+					if ( ! $post->post_excerpt ) {
+						$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content );
 					}
 				}
 

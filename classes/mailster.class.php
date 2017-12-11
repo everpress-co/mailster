@@ -762,7 +762,7 @@ class Mailster {
 						$post->post_excerpt = trim( $content[0] );
 					}
 					if ( ! $post->post_excerpt ) {
-						$post->post_excerpt = wp_trim_words( $post->post_content );
+						$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content );
 					}
 				}
 

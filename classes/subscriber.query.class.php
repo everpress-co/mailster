@@ -197,6 +197,8 @@ class MailsterSubscriberQuery {
 		}
 		if ( $this->args['conditions'] ) {
 
+			 $this->args['conditions'] = array_values( $this->args['conditions'] );
+
 			// sanitize
 			if ( ! isset( $this->args['conditions'][0][0] ) ) {
 				if ( 'OR' == $this->args['operator'] ) {
@@ -387,10 +389,12 @@ class MailsterSubscriberQuery {
 
 				foreach ( $and_conditions as $j => $condition ) {
 
-					$field = $condition['field'];
+					$field = isset( $condition['field'] ) ? $condition['field'] : $condition[0];
+					$operator = isset( $condition['operator'] ) ? $condition['operator'] : $condition[1];
+					$value = isset( $condition['value'] ) ? $condition['value'] : $condition[2];
 					// requires campaign to be sent
 					if ( in_array( $field, array( '_open__not_in', '_click__not_in' ) ) ) {
-						$this->add_condition( '_sent', '=', $condition['value'] );
+						$this->add_condition( '_sent', '=', $value );
 					}
 				}
 			}
@@ -401,7 +405,9 @@ class MailsterSubscriberQuery {
 
 				foreach ( $and_conditions as $j => $condition ) {
 
-					$field = $condition['field'];
+					$field = isset( $condition['field'] ) ? $condition['field'] : $condition[0];
+					$operator = isset( $condition['operator'] ) ? $condition['operator'] : $condition[1];
+					$value = isset( $condition['value'] ) ? $condition['value'] : $condition[2];
 
 					if ( in_array( $field, array( 'lat', 'lng' ) ) ) {
 
@@ -422,59 +428,50 @@ class MailsterSubscriberQuery {
 
 					if ( ! in_array( $field, $this->action_fields ) ) {
 
-						$sub_cond[] = $this->get_condition( $condition['field'], $condition['operator'], $condition['value'] );
+						$sub_cond[] = $this->get_condition( $field, $operator, $value );
 
 					} else {
 
-						$value = $condition['value'];
 						if ( ! is_array( $value ) ) {
 							$value = explode( ',', $value );
 						}
 						if ( false !== ($pos = array_search( '_last_5', $value ) ) ) {
 							unset( $value[ $pos ] );
-							$value = array_merge( $value, mailster( 'campaigns' )->get_finished(array(
+							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_finished(array(
 								'posts_per_page' => 5,
 								'fields' => 'ids',
 							)));
 						}
 						if ( false !== ($pos = array_search( '_last_7day', $value ) ) ) {
 							unset( $value[ $pos ] );
-							$value = array_merge( $value, mailster( 'campaigns' )->get_finished(array(
-								'date_query' => array(
-								     array(
-								         'after'     => '-7 days',
-								         'inclusive' => true,
-								     ),
-								 ),
+							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_finished(array(
+								'meta_key' => '_mailster_finished',
+								'meta_compare' => '>',
+								'meta_value' => strtotime( '-7 days' ),
 								'fields' => 'ids',
 							)));
+
 						}
 						if ( false !== ($pos = array_search( '_last_1month', $value ) ) ) {
 							unset( $value[ $pos ] );
-							$value = array_merge( $value, mailster( 'campaigns' )->get_finished(array(
-								'date_query' => array(
-								     array(
-								         'after'     => '-1 month',
-								         'inclusive' => true,
-								     ),
-								 ),
+							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_finished(array(
+								'meta_key' => '_mailster_finished',
+								'meta_compare' => '>',
+								'meta_value' => strtotime( '-1 month' ),
 								'fields' => 'ids',
 							)));
 						}
 						if ( false !== ($pos = array_search( '_last_3month', $value ) ) ) {
 							unset( $value[ $pos ] );
-							$value = array_merge( $value, mailster( 'campaigns' )->get_finished(array(
-								'date_query' => array(
-								     array(
-								         'after'     => '-3 month',
-								         'inclusive' => true,
-								     ),
-								 ),
+							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_finished(array(
+								'meta_key' => '_mailster_finished',
+								'meta_compare' => '>',
+								'meta_value' => strtotime( '-3 month' ),
 								'fields' => 'ids',
 							)));
 						}
-						$value = array_map( 'esc_sql', $value );
 						$alias = 'actions' . $field . '_' . $i . '_' . $j;
+						$value = array_unique( $value );
 
 						if ( $field == '_lists__not_in' ) {
 

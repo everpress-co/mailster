@@ -609,9 +609,6 @@ class MailsterCampaigns {
 
 		$meta = $this->meta( $post->ID );
 
-		$totals = $this->get_totals( $post->ID );
-		$sent = $this->get_sent( $post->ID );
-
 		switch ( $column ) {
 
 			case 'status':
@@ -630,19 +627,20 @@ class MailsterCampaigns {
 					switch ( $status ) {
 						case 'paused':
 							echo '<span class="mailster-icon paused"></span> ';
-							echo ( ! $sent ) ? $wp_post_statuses['paused']->label : __( 'Paused', 'mailster' );
-							if ( $totals ) {
-								if ( $sent ) {
+							esc_html_e( 'Paused', 'mailster' );
+							if ( $totals = $this->get_totals( $post->ID ) ) {
+								if ( $sent = $this->get_sent( $post->ID ) ) {
 									$p = round( $sent / $totals * 100 );
 									echo "<br><div class='campaign-progress'><span class='bar' style='width:" . $p . "%'></span><span>&nbsp;" . sprintf( __( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) . "</span><var>$p%</var></div>";
 								}
 							} elseif ( is_null( $totals ) ) {
 							} else {
-								echo '<br><span class="mailster-icon no-receiver"></span> ' . __( 'no receivers!', 'mailster' );
+								echo '<br><span class="mailster-icon no-receiver"></span> ' . esc_html__( 'no receivers!', 'mailster' );
 							}
 					break;
 						case 'active':
-							if ( $totals ) {
+							if ( $totals = $this->get_totals( $post->ID ) ) {
+								$sent = $this->get_sent( $post->ID );
 								echo '<span class="mailster-icon progressing"></span> ' . ( $sent == $totals ? __( 'completing job', 'mailster' ) : __( 'progressing', 'mailster' ) ) . '&hellip;' . ( $meta['timezone'] ? ' <span class="timezonebased"  title="' . __( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '' );
 								$p = $totals ? round( $sent / $totals * 100 ) : 0;
 								echo "<br><div class='campaign-progress'><span class='bar' style='width:" . $p . "%'></span><span>&nbsp;" . sprintf( __( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) . "</span><var>$p%</var></div>";
@@ -659,12 +657,12 @@ class MailsterCampaigns {
 								$timestamp = min( mailster( 'subscribers' )->get_timeoffset_timestamps( $sub, $timestamp ) );
 								endif;
 							printf( __( 'starts in %s', 'mailster' ), ( $timestamp - $now > 60 ) ? human_time_diff( $timestamp ) : __( 'less than a minute', 'mailster' ) );
-							echo $meta['timezone'] ? ' <span class="timezonebased"  title="' . __( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '';
+							echo $meta['timezone'] ? ' <span class="timezonebased"  title="' . esc_attr__( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '';
 							echo "<br><span class='nonessential'>(" . date( $timeformat, $timestamp + $timeoffset ) . ')</span>';
 							echo '<div class="campaign-status"></div>';
 						break;
 						case 'finished':
-							echo '<span class="mailster-icon finished"></span> ' . __( 'Finished', 'mailster' );
+							echo '<span class="mailster-icon finished"></span> ' . esc_html__( 'Finished', 'mailster' );
 							echo '<br><span class="nonessential">(' . date( $timeformat, $meta['finished'] + $timeoffset ) . ')</span>';
 						break;
 						case 'draft':
@@ -679,7 +677,7 @@ class MailsterCampaigns {
 
 							$autoresponder = $meta['autoresponder'];
 
-							echo '<span class="mailster-icon ' . $active . '"></span> ' . ( $is_active ? __( 'active', 'mailster' ) : __( 'inactive', 'mailster' ) );
+							echo '<span class="mailster-icon ' . $active . '"></span> ' . ( $is_active ? esc_html__( 'active', 'mailster' ) : esc_html__( 'inactive', 'mailster' ) );
 							echo '<br>';
 
 							echo '<span class="autoresponder-' . $active . '">';
@@ -721,7 +719,7 @@ class MailsterCampaigns {
 
 								if ( isset( $autoresponder['endtimestamp'] ) ) {
 									echo '<br>';
-									printf( __( 'until %s', 'mailster' ),
+									printf( esc_html__( 'until %s', 'mailster' ),
 										' <strong>' . date( $timeformat, $autoresponder['endtimestamp'] + $timeoffset ) . '</strong>'
 									);
 								}
@@ -743,7 +741,7 @@ class MailsterCampaigns {
 									}
 
 									echo '<br>';
-									printf( _x( 'only on %s', 'only one [weekdays]', 'mailster' ),
+									printf( _x( 'only on %s', 'only on [weekdays]', 'mailster' ),
 										' <strong>' . implode( ', ', $days ) . '</strong>'
 									);
 								}
@@ -753,19 +751,19 @@ class MailsterCampaigns {
 
 								if ( $autoresponder['userexactdate'] ) :
 
-									printf( __( 'send %1$s %2$s %3$s', 'mailster' ),
+									printf( esc_html__( 'send %1$s %2$s %3$s', 'mailster' ),
 										'<strong>' . $autoresponder['amount'] . '</strong>',
 										'<strong>' . $time_frame_names[ $autoresponder['unit'] ] . '</strong>',
 										($autoresponder['before_after'] > 0 ? __( 'after', 'mailster' ) : __( 'before', 'mailster' ))
 									);
 
-									echo ' ' . sprintf( __( 'the users %1$s value', 'mailster' ), ' <strong>' . ( isset( $datefields[ $autoresponder['uservalue'] ] ) ? $datefields[ $autoresponder['uservalue'] ]['name'] : $autoresponder['uservalue'] ) . '</strong>' );
+									echo ' ' . sprintf( esc_html__( 'the users %1$s value', 'mailster' ), ' <strong>' . ( isset( $datefields[ $autoresponder['uservalue'] ] ) ? $datefields[ $autoresponder['uservalue'] ]['name'] : $autoresponder['uservalue'] ) . '</strong>' );
 								else :
 									printf( __( 'send every %1$s %2$s', 'mailster' ),
 										'<strong>' . $autoresponder['useramount'] . '</strong>',
 										'<strong>' . $time_frame_names[ $autoresponder['userunit'] ] . '</strong>'
 									);
-									echo ' ' . sprintf( __( 'based on the users %1$s value', 'mailster' ), ' <strong>' . ( isset( $datefields[ $autoresponder['uservalue'] ] ) ? $datefields[ $autoresponder['uservalue'] ]['name'] : $autoresponder['uservalue'] ) . '</strong>' );
+									echo ' ' . sprintf( esc_html__( 'based on the users %1$s value', 'mailster' ), ' <strong>' . ( isset( $datefields[ $autoresponder['uservalue'] ] ) ? $datefields[ $autoresponder['uservalue'] ]['name'] : $autoresponder['uservalue'] ) . '</strong>' );
 
 								endif;
 
@@ -773,24 +771,24 @@ class MailsterCampaigns {
 
 								if ( $campaign = $this->get( $post->post_parent ) ) {
 									$types = array(
-										1 => __( 'has been sent', 'mailster' ),
-										2 => __( 'has been opened', 'mailster' ),
-										3 => __( 'has been clicked', 'mailster' ),
+										1 => esc_html__( 'has been sent', 'mailster' ),
+										2 => esc_html__( 'has been opened', 'mailster' ),
+										3 => esc_html__( 'has been clicked', 'mailster' ),
 									);
 									printf( __( 'send %1$s %2$s %3$s', 'mailster' ),
-										( $autoresponder['amount'] ? '<strong>' . $autoresponder['amount'] . '</strong> ' . $mailster_autoresponder_info['units'][ $autoresponder['unit'] ] : __( 'immediately', 'mailster' ) ),
-										__( 'after', 'mailster' ),
+										( $autoresponder['amount'] ? '<strong>' . $autoresponder['amount'] . '</strong> ' . $mailster_autoresponder_info['units'][ $autoresponder['unit'] ] : esc_html__( 'immediately', 'mailster' ) ),
+										esc_html__( 'after', 'mailster' ),
 										' <strong><a href="post.php?post=' . $campaign->ID . '&action=edit">' . $campaign->post_title . '</a></strong> ' . $types[ $autoresponder['followup_action'] ]
 									);
 
 								} else {
-									echo '<br><span class="mailster-icon warning"></span> ' . __( 'Campaign does not exist', 'mailster' );
+									echo '<br><span class="mailster-icon warning"></span> ' . esc_html__( 'Campaign does not exist', 'mailster' );
 								}
 							} else {
 
 								printf( __( 'send %1$s %2$s %3$s', 'mailster' ),
-									( $autoresponder['amount'] ? '<strong>' . $autoresponder['amount'] . '</strong> ' . $mailster_autoresponder_info['units'][ $autoresponder['unit'] ] : __( 'immediately', 'mailster' ) ),
-									__( 'after', 'mailster' ),
+									( $autoresponder['amount'] ? '<strong>' . $autoresponder['amount'] . '</strong> ' . $mailster_autoresponder_info['units'][ $autoresponder['unit'] ] : esc_html__( 'immediately', 'mailster' ) ),
+									esc_html__( 'after', 'mailster' ),
 									' <strong>' . $mailster_autoresponder_info['actions'][ $autoresponder['action'] ]['label'] . '</strong>'
 								);
 
@@ -800,9 +798,9 @@ class MailsterCampaigns {
 
 							if ( ( current_user_can( 'mailster_edit_autoresponders' ) && ( get_current_user_id() == $post->post_author || current_user_can( 'mailster_edit_others_autoresponders' ) ) ) ) {
 								if ( $active != 'active' ) {
-									$actions['activate'] = '<a class="start live-action" href="?post_type=newsletter&activate=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_activate_nonce' ) . '" title="' . __( 'activate', 'mailster' ) . '">' . __( 'activate', 'mailster' ) . '</a>&nbsp;';
+									$actions['activate'] = '<a class="start live-action" href="?post_type=newsletter&activate=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_activate_nonce' ) . '" title="' . esc_attr__( 'activate', 'mailster' ) . '">' . __( 'activate', 'mailster' ) . '</a>&nbsp;';
 								} else {
-									$actions['deactivate'] = '<a class="start live-action" href="?post_type=newsletter&deactivate=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_deactivate_nonce' ) . '" title="' . __( 'deactivate', 'mailster' ) . '">' . __( 'deactivate', 'mailster' ) . '</a>&nbsp;';
+									$actions['deactivate'] = '<a class="start live-action" href="?post_type=newsletter&deactivate=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_deactivate_nonce' ) . '" title="' . esc_attr__( 'deactivate', 'mailster' ) . '">' . __( 'deactivate', 'mailster' ) . '</a>&nbsp;';
 								}
 							}
 
@@ -828,14 +826,14 @@ class MailsterCampaigns {
 							}
 						}
 					} else {
-						echo '<br><span class="mailster-icon warning"></span> ' . __( 'no lists selected', 'mailster' );
+						echo '<br><span class="mailster-icon warning"></span> ' . esc_html__( 'no lists selected', 'mailster' );
 					}
 					echo '<br>';
 				}
 
 				if ( $meta['list_conditions'] ) {
 
-					echo __( 'only if', 'mailster' ) . '<br>';
+					echo esc_html__( 'only if', 'mailster' ) . '<br>';
 
 					mailster( 'conditions' )->render( $meta['list_conditions'] );
 				}
@@ -843,19 +841,19 @@ class MailsterCampaigns {
 
 				if ( ( current_user_can( 'publish_newsletters' ) && get_current_user_id() == $post->post_author ) || current_user_can( 'edit_others_newsletters' ) ) {
 					if ( $post->post_status == 'queued' ) {
-						$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . __( 'Start Campaign now', 'mailster' ) . '">' . __( 'Start now', 'mailster' ) . '</a>&nbsp;';
+						$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . esc_attr__( 'Start Campaign now', 'mailster' ) . '">' . esc_html__( 'Start now', 'mailster' ) . '</a>&nbsp;';
 					}
 					if ( in_array( $post->post_status, array( 'active', 'queued' ) ) && $status != 'finished' ) {
-						$actions['pause'] = '<a class="pause live-action" href="?post_type=newsletter&pause=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_pause_nonce' ) . '" title="' . __( 'Pause Campaign', 'mailster' ) . '">' . __( 'Pause', 'mailster' ) . '</a>&nbsp;';
+						$actions['pause'] = '<a class="pause live-action" href="?post_type=newsletter&pause=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_pause_nonce' ) . '" title="' . esc_attr__( 'Pause Campaign', 'mailster' ) . '">' . esc_html__( 'Pause', 'mailster' ) . '</a>&nbsp;';
 					} elseif ( $post->post_status == 'paused' && $totals ) {
 						if ( ! empty( $meta['timestamp'] ) ) {
-							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . __( 'Resume Campaign', 'mailster' ) . '">' . __( 'Resume', 'mailster' ) . '</a>&nbsp;';
+							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . esc_attr__( 'Resume Campaign', 'mailster' ) . '">' . esc_html__( 'Resume', 'mailster' ) . '</a>&nbsp;';
 						} else {
-							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . __( 'Start Campaign', 'mailster' ) . '">' . __( 'Start', 'mailster' ) . '</a>&nbsp;';
+							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . esc_attr__( 'Start Campaign', 'mailster' ) . '">' . esc_html__( 'Start', 'mailster' ) . '</a>&nbsp;';
 						}
 					}
-					if ( $totals && in_array( $post->post_status, array( 'active', 'paused' ) ) ) {
-						$actions['finish'] = '<a class="finish live-action" href="?post_type=newsletter&finish=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . $_GET['post_status'] : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_finish_nonce' ) . '" title="' . __( 'Finish Campaign', 'mailster' ) . '">' . __( 'Finish', 'mailster' ) . '</a>&nbsp;';
+					if ( in_array( $post->post_status, array( 'active', 'paused' ) ) && $totals ) {
+						$actions['finish'] = '<a class="finish live-action" href="?post_type=newsletter&finish=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_finish_nonce' ) . '" title="' . esc_attr__( 'Finish Campaign', 'mailster' ) . '">' . esc_html__( 'Finish', 'mailster' ) . '</a>&nbsp;';
 					}
 				}
 				if ( ! empty( $actions ) ) {
@@ -868,17 +866,16 @@ class MailsterCampaigns {
 			case 'total':
 
 				if ( 'finished' == $post->post_status ) {
-					echo number_format_i18n( $sent );
+					echo number_format_i18n( $this->get_sent( $post->ID ) );
 				} elseif ( 'autoresponder' == $post->post_status ) {
-					$sent_total = $this->get_sent( $post->ID, true );
-					echo number_format_i18n( $sent_total );
+					echo number_format_i18n( $this->get_sent( $post->ID, true ) );
 				} else {
-					echo number_format_i18n( $totals );
+					echo number_format_i18n( $this->get_totals( $post->ID ) );
 				}
 
 				$errors = $this->get_errors( $post->ID );
 				if ( ! empty( $errors ) ) {
-					echo '&nbsp;(<a href="edit.php?post_type=newsletter&page=mailster_subscribers&status=4" class="errors" title="' . sprintf( __( '%d emails have not been sent', 'mailster' ), $errors ) . '">+' . $errors . '</a>)';
+					echo '&nbsp;(<a href="edit.php?post_type=newsletter&page=mailster_subscribers&status=4" class="errors" title="' . sprintf( esc_html__( '%d emails have not been sent', 'mailster' ), $errors ) . '">+' . $errors . '</a>)';
 				}
 
 			break;
@@ -888,10 +885,9 @@ class MailsterCampaigns {
 				if ( ! $this->meta( $post->ID, 'track_opens' ) ) {
 					echo '<span class="mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
 				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
-					$opens = $this->get_opens( $post->ID );
-					echo '<span class="s-opens">' . number_format_i18n( $opens ) . '</span>/<span class="tiny s-sent">' . number_format_i18n( $sent ) . '</span>';
-					$rate = round( mailster( 'campaigns' )->get_open_rate( $post->ID ) * 100, 2 );
-					echo "<br><span title='" . sprintf( __( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
+					echo '<span class="s-opens">' . number_format_i18n( $this->get_opens( $post->ID ) ) . '</span>/<span class="tiny s-sent">' . number_format_i18n( $this->get_sent( $post->ID ) ) . '</span>';
+					$rate = round( $this->get_open_rate( $post->ID ) * 100, 2 );
+					echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
 					echo ' (' . $rate . '%)';
 					echo '</span>';
 				} else {
@@ -908,14 +904,14 @@ class MailsterCampaigns {
 					$rate_a = round( $this->get_adjusted_click_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $clicks );
 					if ( $rate ) {
-						echo "<br><span class='nonessential'>(<span title='" . sprintf( __( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
+						echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
 						echo '' . $rate . '%';
 						echo '</span>|';
-						echo "<span title='" . sprintf( __( '%s of opens', 'mailster' ), $rate_a . '%' ) . "'>";
+						echo "<span title='" . sprintf( esc_attr__( '%s of opens', 'mailster' ), $rate_a . '%' ) . "'>";
 						echo '' . $rate_a . '%';
 						echo '</span>)</span>';
 					} else {
-						echo "<br><span title='" . sprintf( __( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
+						echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
 						echo ' (' . $rate . '%)';
 						echo '</span>';
 					}
@@ -931,14 +927,14 @@ class MailsterCampaigns {
 					$rate_a = round( $this->get_adjusted_unsubscribe_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $unsubscribes );
 					if ( $rate ) {
-						echo "<br><span class='nonessential'>(<span title='" . sprintf( __( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
+						echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
 						echo '' . $rate . '%';
 						echo '</span>|';
-						echo "<span title='" . sprintf( __( '%s of opens', 'mailster' ), $rate_a . '%' ) . "'>";
+						echo "<span title='" . sprintf( esc_attr__( '%s of opens', 'mailster' ), $rate_a . '%' ) . "'>";
 						echo '' . $rate_a . '%';
 						echo '</span>)</span>';
 					} else {
-						echo "<br><span title='" . sprintf( __( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
+						echo "<br><span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
 						echo ' (' . $rate . '%)';
 						echo '</span>';
 					}
@@ -950,9 +946,9 @@ class MailsterCampaigns {
 			case 'bounces':
 				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
 					$bounces = $this->get_bounces( $post->ID );
-					$rate = round( mailster( 'campaigns' )->get_bounce_rate( $post->ID ) * 100, 2 );
+					$rate = round( $this->get_bounce_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $bounces );
-					echo "<br><span title='" . sprintf( __( '%s of totals', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
+					echo "<br><span title='" . sprintf( esc_attr__( '%s of totals', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
 					echo ' (' . $rate . '%)';
 					echo '</span>';
 				} else {

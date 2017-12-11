@@ -270,40 +270,46 @@ class MailsterConditions {
 
 	private function print_condition( $condition, $formated = true ) {
 
+		$field = isset( $condition['field'] ) ? $condition['field'] : $condition[0];
+		$operator = isset( $condition['operator'] ) ? $condition['operator'] : $condition[1];
+		$value = stripslashes_deep( isset( $condition['value'] ) ? $condition['value'] : $condition[2] );
+
 		$return = array(
-			'field' => '<strong>' . $this->nice_name( $condition['field'], 'field', $condition['field'] ) . '</strong>',
+			'field' => '<strong>' . $this->nice_name( $field, 'field', $field ) . '</strong>',
 			'operator' => '',
 			'value' => '',
 		);
+		$opening_quote = _x( '&#8220;', 'opening curly double quote', 'mailster' );
+		$closing_quote = _x( '&#8221;', 'closing curly double quote', 'mailster' );
 
-		if ( isset( $this->campaign_related[ $condition['field'] ] ) ) {
-			if ( ! is_array( $condition['value'] ) ) {
-				$condition['value'] = array( $condition['value'] );
+		if ( isset( $this->campaign_related[ $field ] ) ) {
+			if ( ! is_array( $value ) ) {
+				$value = array( $value );
 			}
-			if ( strpos( $condition['field'], '_click_link' ) !== false ) {
-				$return['value'] = implode( ' ' . __( 'or', 'mailster' ) . ' ', array_map( 'esc_url', $condition['value'] ) );
+			if ( strpos( $field, '_click_link' ) !== false ) {
+				$return['value'] = implode( ' ' . esc_html__( 'or', 'mailster' ) . ' ', array_map( 'esc_url', $value ) );
 			} else {
-				$return['value'] = '&quot;' . implode( '&quot; ' . __( 'or', 'mailster' ) . ' &quot;', array_map( array( $this, 'get_campaign_title' ), $condition['value'] ) ) . '&quot;';
+				$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_campaign_title' ), $value ) ) . $closing_quote;
 			}
-		} elseif ( isset( $this->list_related[ $condition['field'] ] ) ) {
-			if ( ! is_array( $condition['value'] ) ) {
-				$condition['value'] = array( $condition['value'] );
+		} elseif ( isset( $this->list_related[ $field ] ) ) {
+			if ( ! is_array( $value ) ) {
+				$value = array( $value );
 			}
-			$return['value'] = '&quot;' . implode( '&quot; ' . __( 'or', 'mailster' ) . ' &quot;', array_map( array( $this, 'get_list_title' ), $condition['value'] ) ) . '&quot;';
-		} elseif ( 'rating' == $condition['field'] ) {
-			$stars = ( round( $this->sanitize_rating( $condition['value'] ) / 10, 2 ) * 50 );
+			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_list_title' ), $value ) ) . $closing_quote;
+		} elseif ( 'rating' == $field ) {
+			$stars = ( round( $this->sanitize_rating( $value ) / 10, 2 ) * 50 );
 			$full = max( 0, min( 5, floor( $stars ) ) );
 			$half = max( 0, min( 5, round( $stars - $full ) ) );
 			$empty = max( 0, min( 5, 5 - $full - $half ) );
-			$return['operator'] = '<em>' . $this->nice_name( $condition['operator'], 'operator', $condition['field'] ) . '</em>';
-			$return['value'] = '<span class="screen-reader-text">' . sprintf( __( '%d stars', 'mailster' ), $full ) . '</span>'
+			$return['operator'] = '<em>' . $this->nice_name( $operator, 'operator', $field ) . '</em>';
+			$return['value'] = '<span class="screen-reader-text">' . sprintf( esc_html__( '%d stars', 'mailster' ), $full ) . '</span>'
 			. str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
 			. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
 			. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty );
 
 		} else {
-			$return['operator'] = '<em>' . $this->nice_name( $condition['operator'], 'operator', $condition['field'] ) . '</em>';
-			$return['value'] = '&quot;<strong>' . $this->nice_name( $condition['value'], 'value', $condition['field'] ) . '</strong>&quot;';
+			$return['operator'] = '<em>' . $this->nice_name( $operator, 'operator', $field ) . '</em>';
+			$return['value'] = $opening_quote . '<strong>' . $this->nice_name( $value, 'value', $field ) . '</strong>' . $closing_quote;
 		}
 
 		return $formated ? $return : strip_tags( $return );

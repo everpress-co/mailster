@@ -106,7 +106,7 @@ jQuery(document).ready(function ($) {
 							var el = row.find('.' + key);
 							if (!el.is(':visible')) break;
 							el.fadeTo(10, 0.01, function () {
-								el.html(value).delay(20 * (i++)).fadeTo(200, 1);
+								el.html(value).delay(10 * (i++)).fadeTo(200, 1);
 							});
 
 						}
@@ -127,15 +127,17 @@ jQuery(document).ready(function ($) {
 	wp.heartbeat.interval('fast');
 	if (wp.heartbeat.connectNow) wp.heartbeat.connectNow();
 
-	function isElementInViewport(el) {
+	function isElementInViewport(el, offset) {
 
 		var rect = el.getBoundingClientRect();
 
+		if (!offset) offset = 0;
+
 		return (
-			rect.top >= 0 &&
-			rect.left >= 0 &&
-			rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-			rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+			rect.top + offset >= 0 &&
+			rect.left + offset >= 0 &&
+			rect.bottom - offset <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
+			rect.right - offset <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
 		);
 	}
 

@@ -752,7 +752,6 @@ class MailsterQueue {
 			$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : array();
 
 			$conditions[] = array( $cond );
-			// echo '<pre>'.print_r($meta['list_conditions'], true).'</pre>';
 			// if ( ! empty( $meta['list_conditions'] ) ) {
 			// if ( ! isset( $conditions['conditions'][0]['conditions'] ) ) {
 			// $conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );

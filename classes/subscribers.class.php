@@ -2671,7 +2671,8 @@ class MailsterSubscribers {
 			$list_ids = array( $list_ids );
 		}
 
-		$baselink = get_permalink( mailster_option( 'homepage' ) );
+		// $baselink = get_permalink( mailster_option( 'homepage' ) );
+		$baselink = home_url();
 
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['confirm'] ) ? $slugs['confirm'] : 'confirm';
@@ -3110,14 +3111,14 @@ class MailsterSubscribers {
 		$hash = md5( $email );
 		// create a number from 01 to 09 based on the email address
 		$id = '0' . ( round( abs( crc32( $hash ) ) % 9 ) + 1 );
-		$default = ( is_ssl() ? 'https:' : 'http:' ) . '//mailster.github.io/user/user' . $id . '.gif';
+		$default = 'https://mailster.github.io/user/user' . $id . '.gif';
 
 		$image = get_avatar( $email, $size, $default );
 
 		if ( preg_match( '/src=["\'](.*)["\']/Ui', $image, $match ) ) {
 			$url = htmlspecialchars_decode( $match[1] );
 		} else {
-			$url = ( is_ssl() ? 'https' : 'http' ) . '://' . ( $id % 2 ) . 'gravatar.com/avatar/' . $hash . '?d=' . urlencode( $default ) . '&s=' . $size;
+			$url = 'https://' . ( $id % 2 ) . 'gravatar.com/avatar/' . $hash . '?d=' . urlencode( $default ) . '&s=' . $size;
 		}
 
 		return $url;

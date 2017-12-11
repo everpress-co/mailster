@@ -26,7 +26,7 @@ jQuery(document).ready(function ($) {
 		_mailsterdata = $('[name^="mailster_data"]'),
 		wpnonce = $('#mailster_nonce').val(),
 		iframeloaded = false,
-		timeout, refreshtimout, modules, optionbar, charts, editbar, animateDOM = $('html,body'),
+		timeout, refreshtimout, updatecounttimeout, modules, optionbar, charts, editbar, animateDOM = $('html,body'),
 		isWebkit = 'WebkitAppearance' in document.documentElement.style,
 		isMozilla = (/firefox/i).test(navigator.userAgent),
 		isMSIE = (/msie|trident/i).test(navigator.userAgent),
@@ -66,6 +66,18 @@ jQuery(document).ready(function ($) {
 			if (!iframeloaded) _iframe.trigger('load');
 		}, 5000);
 
+		window.Mailster = window.Mailster || {
+			refresh: function () {
+				_trigger('refresh');
+			},
+			save: function () {
+				_trigger('save');
+			},
+			trigger: _trigger,
+			editbar: editbar,
+			autosave: '',
+		};
+
 		_iframe
 			.on('load', function () {
 
@@ -76,18 +88,6 @@ jQuery(document).ready(function ($) {
 					if (!modules) modules = new _modules();
 
 				} else {}
-
-				window.Mailster = window.Mailster || {
-					refresh: function () {
-						_trigger('refresh');
-					},
-					save: function () {
-						_trigger('save');
-					},
-					trigger: _trigger,
-					editbar: editbar,
-					autosave: '',
-				};
 
 				_trigger('enable');
 				_trigger('resize');
@@ -767,7 +767,6 @@ jQuery(document).ready(function ($) {
 					var checked = $(this).is(':checked');
 					_excerpt.prop('disabled', checked)[checked ? 'addClass' : 'removeClass']('disabled');
 				});
-
 
 		} else {
 
@@ -3462,71 +3461,73 @@ jQuery(document).ready(function ($) {
 	})
 
 	.on('Mailster:updateCount', function () {
-		if (!iframeloaded) return;
-		var lists = [],
-			conditions = [],
-			inputs = $('#list-checkboxes').find('input, select'),
-			listinputs = $('#list-checkboxes').find('input.list'),
-			extra = $('#list_extra'),
-			data = {},
-			total = $('.mailster-total'),
-			cond = $('#mailster_conditions'),
-			groups = $('.mailster-condition-group'),
-			i = 0;
+		clearTimeout(updatecounttimeout);
+		updatecounttimeout = setTimeout(function () {
+			var lists = [],
+				conditions = [],
+				inputs = $('#list-checkboxes').find('input, select'),
+				listinputs = $('#list-checkboxes').find('input.list'),
+				extra = $('#list_extra'),
+				data = {},
+				total = $('.mailster-total'),
+				cond = $('#mailster_conditions'),
+				groups = $('.mailster-conditions > .mailster-condition-group'),
+				i = 0;
 
-		$.each(listinputs, function () {
-			var id = $(this).val();
-			if ($(this).is(':checked')) lists.push(id);
-		});
-
-		data.lists = lists;
-		data.ignore_lists = $('#ignore_lists').is(':checked');
-
-		$.each(groups, function () {
-			var c = $(this).find('.mailster-condition');
-			$.each(c, function () {
-				var _this = $(this),
-					value,
-					field = _this.find('.condition-field').val(),
-					operator = _this.find('.mailster-conditions-operator-field.active').find('.condition-operator').val();
-
-				if (!operator || !field) return;
-
-				value = _this.find('.mailster-conditions-value-field.active').find('.condition-value').map(function () {
-					return $(this).val();
-				}).toArray();
-				if (value.length == 1) {
-					value = value[0];
-				}
-				if (!conditions[i]) {
-					conditions[i] = [];
-				}
-
-				conditions[i].push({
-					field: field,
-					operator: operator,
-					value: value,
-				});
+			$.each(listinputs, function () {
+				var id = $(this).val();
+				if ($(this).is(':checked')) lists.push(id);
 			});
-			i++;
-		});
 
-		data.operator = $('select.mailster-list-operator').val();
-		data.conditions = conditions;
+			data.lists = lists;
+			data.ignore_lists = $('#ignore_lists').is(':checked');
 
-		total.addClass('loading');
+			$.each(groups, function () {
+				var c = $(this).find('.mailster-condition');
+				$.each(c, function () {
+					var _this = $(this),
+						value,
+						field = _this.find('.condition-field').val(),
+						operator = _this.find('.mailster-conditions-operator-field.active').find('.condition-operator').val();
 
-		_trigger('disable');
+					if (!operator || !field) return;
 
-		_ajax('get_totals', data, function (response) {
-			_trigger('enable');
-			total.removeClass('loading').html(response.totalformatted);
-			cond.html(response.conditions);
+					value = _this.find('.mailster-conditions-value-field.active').find('.condition-value').map(function () {
+						return $(this).val();
+					}).toArray();
+					if (value.length == 1) {
+						value = value[0];
+					}
+					if (!conditions[i]) {
+						conditions[i] = [];
+					}
 
-		}, function (jqXHR, textStatus, errorThrown) {
-			_trigger('enable');
-			total.removeClass('loading').html('?');
-		});
+					conditions[i].push({
+						field: field,
+						operator: operator,
+						value: value,
+					});
+				});
+				i++;
+			});
+
+			data.operator = $('select.mailster-list-operator').val();
+			data.conditions = conditions;
+
+			total.addClass('loading');
+
+			_trigger('disable');
+
+			_ajax('get_totals', data, function (response) {
+				_trigger('enable');
+				total.removeClass('loading').html(response.totalformatted);
+				cond.html(response.conditions);
+
+			}, function (jqXHR, textStatus, errorThrown) {
+				_trigger('enable');
+				total.removeClass('loading').html('?');
+			});
+		}, 10);
 	})
 
 	.on('Mailster:xxx', function () {

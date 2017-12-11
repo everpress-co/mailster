@@ -84,6 +84,16 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+= Version 2. 3.beta.10 =
+
+* improved: performance on newsletter overview page
+* fixed: confirmation link
+* various bug fixes and improvements
+
+= Version 2. 3.beta.9 =
+
+* redirection bug fixed
+
 = Version 2. 3.beta.8 =
 
 * fixed: query issue on some autoresponders

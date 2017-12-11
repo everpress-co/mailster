@@ -8,8 +8,6 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 
 $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data['ignore_lists'] : false;
 
-$total = $this->get_totals( $post->ID );
-
 ?>
 <?php if ( $editable ) : ?>
 <div>
@@ -19,7 +17,7 @@ $total = $this->get_totals( $post->ID );
 				<?php mailster( 'conditions' )->view( $this->post_data['list_conditions'] ); ?>
 			</div>
 			<div class="foot">
-				<div class="alignleft"><?php esc_html_e( 'Total receivers', 'mailster' );?>: <span class="mailster-total"><?php echo number_format_i18n( $total ) ?></span></div>
+				<div class="alignleft"><?php esc_html_e( 'Total receivers', 'mailster' );?>: <span class="mailster-total">&ndash;</span></div>
 				<div class="alignright">
 				<button class="button button-primary close"><?php esc_html_e( 'Close', 'mailster' ) ?></button>
 				<span class="spinner" id="conditions-ajax-loading"></span>
@@ -53,7 +51,7 @@ $total = $this->get_totals( $post->ID );
 	</p>
 
 </div>
-<p class="totals"><?php esc_html_e( 'Total receivers', 'mailster' );?>: <span class="mailster-total"><?php echo number_format_i18n( $total ) ?></span></p>
+<p class="totals"><?php esc_html_e( 'Total receivers', 'mailster' );?>: <span class="mailster-total">&ndash;</span></p>
 	<?php else : ?>
 	<p>
 	<?php if ( $ignore_lists ) :

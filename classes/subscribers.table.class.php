@@ -93,6 +93,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			return;
 		}
 
+		mailster( 'conditions' )->render( $_GET['conditions'] );
+
 ?>
 	<form id="searchform" action method="get">
 	<?php if ( isset( $_GET['post_type'] ) ) : ?><input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ) ?>"><?php endif; ?>
@@ -336,6 +338,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			's'      => isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null,
 			'strict' => isset( $_GET['strict'] ) ? boolval( $_GET['strict'] ) : false,
 			'lists' => isset( $_GET['lists'] ) ? ($_GET['lists'] ) : false,
+			'conditions' => isset( $_GET['conditions'] ) ? $_GET['conditions'] : null,
 		);
 
 		// How many to display per page?

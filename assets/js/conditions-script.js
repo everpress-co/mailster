@@ -4,9 +4,7 @@ jQuery(document).ready(function ($) {
 
 	var conditions = $('.mailster-conditions'),
 		groups = $('.mailster-condition-group'),
-		cond = $('.mailster-condition'),
-		condition,
-		value_fields;
+		cond = $('.mailster-condition');
 
 	groups.eq(0).appendTo($('.mailster-condition-container'));
 	datepicker();
@@ -66,16 +64,16 @@ jQuery(document).ready(function ($) {
 		})
 		.on('change', '.condition-field', function () {
 
-			condition = $(this).closest('.mailster-condition');
+			var condition = $(this).closest('.mailster-condition'),
+				field = $(this).val();
 
-			var value = $(this).val();
 			condition.find('div.mailster-conditions-value-field').removeClass('active').find('.condition-value').prop('disabled', true);
 			condition.find('div.mailster-conditions-operator-field').removeClass('active').find('.condition-operator').prop('disabled', true);
 
-			if (condition.find('div.mailster-conditions-value-field[data-fields*=",' + value + ',"]').addClass('active').find('.condition-value').prop('disabled', false).length) {} else {
+			if (!condition.find('div.mailster-conditions-value-field[data-fields*=",' + field + ',"]').addClass('active').find('.condition-value').prop('disabled', false).length) {
 				condition.find('div.mailster-conditions-value-field-default').addClass('active').find('.condition-value').prop('disabled', false);
 			}
-			if (condition.find('div.mailster-conditions-operator-field[data-fields*=",' + value + ',"]').addClass('active').find('.condition-operator').prop('disabled', false).length) {} else {
+			if (!condition.find('div.mailster-conditions-operator-field[data-fields*=",' + field + ',"]').addClass('active').find('.condition-operator').prop('disabled', false).length) {
 				condition.find('div.mailster-conditions-operator-field-default').addClass('active').find('.condition-operator').prop('disabled', false);
 			}
 			_trigger('updateCount');
@@ -103,23 +101,61 @@ jQuery(document).ready(function ($) {
 		})
 		.find('.condition-field').prop('disabled', false).trigger('change');
 
-	function serialize() {
-		var str = 'conditions=';
+	_trigger('updateCount');
 
-		$('.mailster-condition').each(function () {
-			str += $(this).find('.condition-field').val();
-			str += $(this).find('.condition-operator').val();
-			str += $(this).find('.condition-value').val();
-			str += '|';
-		})
+	// function serialize() {
+	// 	var str = 'conditions=',
+	// 		conditions = [],
+	// 		groups = $('.mailster-conditions > .mailster-condition-group'),
+	// 		i = 0;
 
-	}
+	// 	$.each(groups, function () {
+	// 		var c = $(this).find('.mailster-condition');
+	// 		$.each(c, function () {
+	// 			var _this = $(this),
+	// 				value = null,
+	// 				field = _this.find('.condition-field').val(),
+	// 				operator = _this.find('.mailster-conditions-operator-field.active').find('.condition-operator').val();
 
+	// 			if (!operator || !field) return;
+
+	// 			value = _this.find('.mailster-conditions-value-field.active').find('.condition-value').map(function () {
+	// 				return $(this).val();
+	// 			}).toArray();
+	// 			if (value.length == 1) {
+	// 				value = value[0];
+	// 			}
+	// 			if (!conditions[i]) {
+	// 				conditions[i] = [];
+	// 			}
+	// 			conditions[i].push([
+	// 				field,
+	// 				operator,
+	// 				value,
+	// 			]);
+	// 		});
+	// 		i++;
+	// 	});
+
+	// 	// $('.mailster-condition').each(function () {
+	// 	// 	str += $(this).find('.condition-field').val();
+	// 	// 	str += $(this).find('.condition-operator').val();
+	// 	// 	str += $(this).find('.condition-value').val();
+	// 	// 	str += '|';
+	// 	// })
+
+	// 	console.log(conditions,
+	// 		JSON.stringify(conditions),
+	// 		jQuery.param({
+	// 			'conditions': conditions
+	// 		}),
+	// 	);
+
+	// }
 
 	function datepicker() {
 		$('.mailster-conditions').find('.datepicker').datepicker({
 			dateFormat: 'yy-mm-dd',
-			//minDate: new Date(),
 			firstDay: mailsterL10n.start_of_week,
 			showWeek: true,
 			dayNames: mailsterL10n.day_names,
