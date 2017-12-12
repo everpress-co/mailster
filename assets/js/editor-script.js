@@ -40,7 +40,7 @@ jQuery(document).ready(function ($) {
 			})
 			.on('click', 'button.addbutton', function () {
 				var data = $(this).data(),
-					element = $($('<div/>').html(data.element.data('tmpl')).text());
+					element = $($('<div/>').html(decodeURIComponent(data.element.data('tmpl'))).text());
 
 				if (!element.length) {
 					element = data.element.find('img').length ?
@@ -452,7 +452,7 @@ jQuery(document).ready(function ($) {
 					} else {
 						tmpl = $('<a href="" editable label="Button"></a>');
 					}
-					tmpl = $('<div/>').text(tmpl[0].outerHTML).html();
+					tmpl = $('<div/>').text(encodeURIComponent(tmpl[0].outerHTML)).html();
 				}
 
 				$this.attr('data-tmpl', tmpl).data('tmpl', tmpl);

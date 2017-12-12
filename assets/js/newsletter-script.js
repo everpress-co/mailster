@@ -74,7 +74,6 @@ jQuery(document).ready(function ($) {
 				_trigger('save');
 			},
 			trigger: _trigger,
-			editbar: editbar,
 			autosave: '',
 		};
 
@@ -86,6 +85,8 @@ jQuery(document).ready(function ($) {
 					if (!optionbar) optionbar = new _optionbar();
 					if (!editbar) editbar = new _editbar();
 					if (!modules) modules = new _modules();
+
+					window.Mailster.editbar = editbar;
 
 				} else {}
 

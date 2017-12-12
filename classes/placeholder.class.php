@@ -782,6 +782,9 @@ class MailsterPlaceholder {
 							$content = explode( $matches[0], $post->post_content, 2 );
 							$post->post_excerpt = trim( $content[0] );
 						}
+						if ( ! $post->post_excerpt ) {
+							$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content );
+						}
 					}
 					if ( $this->apply_the_excerpt_filters ) {
 						if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
@@ -934,7 +937,7 @@ class MailsterPlaceholder {
 				}
 				break;
 			case 'content':
-				$replace_to = ( $post->{'post_content'} );
+				$replace_to = wpautop( $post->{'post_content'} );
 				break;
 			case 'meta':
 				$replace_to = maybe_unserialize( $metavalue );

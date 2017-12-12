@@ -1349,7 +1349,7 @@ class MailsterHelper {
 	 * @param unknown $more       (optional)
 	 * @return unknown
 	 */
-	public function get_excerpt( $org_string, $length = 5, $more = null ) {
+	public function get_excerpt( $org_string, $length = 55, $more = null ) {
 
 		$excerpt = apply_filters( 'mymail_pre_get_excerpt', apply_filters( 'mailster_pre_get_excerpt', null, $org_string, $length, $more ), $org_string, $length, $more );
 		if ( is_string( $excerpt ) ) {
