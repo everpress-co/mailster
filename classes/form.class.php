@@ -228,13 +228,15 @@ class MailsterForm {
 			}
 		}
 
+		$this->add_class( 'mailster-form-' . $this->ID );
+
 		$html = '';
 		// $html .= '<!-- Begin Mailster Form -->'."\n";
-		$html .= '%%STYLES%%';
+		$html .= '<!--Mailster:styles-->';
 
-		$html .= '<form action="%%FORMACTION%%" method="post" class="mailster-form-%%FORMID%% %%CLASSES%%">';
-		$html .= '%%INFOS%%';
-		$html .= '%%HIDDENFIELDS%%';
+		$html .= '<form action="<!--Mailster:formaction-->" method="post" class="<!--Mailster:classes-->">';
+		$html .= '<!--Mailster:infos-->';
+		$html .= '<!--Mailster:hiddenfields-->';
 
 		$customfields = mailster()->get_custom_fields();
 		$inline = $this->form->inline;
@@ -495,12 +497,11 @@ class MailsterForm {
 		$html .= '</form>' . "\n";
 
 		// $html .= '<!-- End Mailster Form -->';
-		$html = str_replace( '%%FORMACTION%%', $this->get_form_action( $this->profile ? 'mailster_profile_submit' : 'mailster_form_submit' ), $html );
-		$html = str_replace( '%%CLASSES%%', esc_attr( implode( ' ', $this->classes ) ), $html );
-		$html = str_replace( '%%FORMID%%', $this->ID, $html );
-		$html = str_replace( '%%STYLES%%', $this->get_styles(), $html );
-		$html = str_replace( '%%HIDDENFIELDS%%', $this->get_hidden_fields(), $html );
-		$html = str_replace( '%%INFOS%%', $this->get_info(), $html );
+		$html = str_replace( '<!--Mailster:formaction-->', $this->get_form_action( $this->profile ? 'mailster_profile_submit' : 'mailster_form_submit' ), $html );
+		$html = str_replace( '<!--Mailster:classes-->', esc_attr( implode( ' ', $this->classes ) ), $html );
+		$html = str_replace( '<!--Mailster:styles-->', $this->get_styles(), $html );
+		$html = str_replace( '<!--Mailster:hiddenfields-->', $this->get_hidden_fields(), $html );
+		$html = str_replace( '<!--Mailster:infos-->', $this->get_info(), $html );
 
 		$html = apply_filters( 'mymail_form', apply_filters( 'mailster_form', $html, $this->ID, $this->form ), $this->ID, $this->form );
 

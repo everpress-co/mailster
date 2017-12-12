@@ -1349,16 +1349,20 @@ class MailsterHelper {
 	 * @param unknown $more       (optional)
 	 * @return unknown
 	 */
-	public function get_excerpt( $org_string, $length = 55, $more = null ) {
+	public function get_excerpt( $org_string, $length = null, $more = null ) {
+
+		if ( is_null( $length ) ) {
+			$length = 55;
+		}
 
 		$excerpt = apply_filters( 'mymail_pre_get_excerpt', apply_filters( 'mailster_pre_get_excerpt', null, $org_string, $length, $more ), $org_string, $length, $more );
 		if ( is_string( $excerpt ) ) {
 			return $excerpt;
 		}
 
-		$string = str_replace( "\n", '%%%NEWLINE%%%', $org_string );
+		$string = str_replace( "\n", '<!--Mailster:newline-->', $org_string );
 		$string = html_entity_decode( wp_trim_words( htmlentities( $string ), $length, $more ) );
-		$maybe_broken_html = str_replace( '%%%NEWLINE%%%', "\n", $string );
+		$maybe_broken_html = str_replace( '<!--Mailster:newline-->', "\n", $string );
 
 		if ( $maybe_broken_html !== $org_string ) {
 			$doc = new DOMDocument();

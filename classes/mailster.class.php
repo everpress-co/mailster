@@ -761,14 +761,10 @@ class Mailster {
 						$content = explode( $matches[0], $post->post_content, 2 );
 						$post->post_excerpt = trim( $content[0] );
 					}
-					if ( ! $post->post_excerpt ) {
-						$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content );
-					}
 				}
 
-				if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
-					$post->post_excerpt = wp_trim_words( $post->post_content, $length );
-				}
+				$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content), apply_filters( 'mailster_excerpt_length', null ) );
+
 				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
 				$post->post_content = apply_filters( 'the_content', $post->post_content );

@@ -312,7 +312,7 @@ class MailsterPlaceholder {
 		if ( $removeunused ) {
 
 			if ( preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $styles ) ) {
-				$this->content = str_replace( $styles[0], '%%%STYLEBLOCK%%%', $this->content );
+				$this->content = str_replace( $styles[0], '<!--Mailster:styleblock-->', $this->content );
 			}
 
 			$keep = apply_filters( 'mailster_keep_tags', array() );
@@ -326,7 +326,7 @@ class MailsterPlaceholder {
 			}
 
 			if ( ! empty( $styles[0] ) ) {
-				$search = explode( '|', str_repeat( '/%%%STYLEBLOCK%%%/|', count( $styles[0] ) - 1 ) . '/%%%STYLEBLOCK%%%/' );
+				$search = explode( '|', str_repeat( '/<!--Mailster:styleblock-->/|', count( $styles[0] ) - 1 ) . '/<!--Mailster:styleblock-->/' );
 				$this->content = preg_replace( $search, $styles[0], $this->content, 1 );
 			}
 		}
@@ -1017,31 +1017,29 @@ class MailsterPlaceholder {
 
 				return __( 'Please enter your Twitter application credentials on the settings page', 'mailster' );
 
-			} else {
-
-				require_once MAILSTER_DIR . 'classes/libs/twitter.class.php';
-
-				$twitter = new TwitterApiClass( $token, $token_secret, $consumer_key, $consumer_secret );
-
-				if ( is_numeric( $username ) ) {
-					$method = 'statuses/show/' . $username;
-
-					$args = array();
-				} else {
-					$method = 'statuses/user_timeline';
-
-					$args = array(
-						'screen_name' => $username,
-						'count' => 1,
-						'include_rts' => false,
-						'exclude_replies' => true,
-						'include_entities' => true,
-					);
-				}
-
-				$response = $twitter->query( $method, $args );
-
 			}
+
+			require_once MAILSTER_DIR . 'classes/libs/twitter.class.php';
+
+			$twitter = new TwitterApiClass( $token, $token_secret, $consumer_key, $consumer_secret );
+
+			if ( is_numeric( $username ) ) {
+				$method = 'statuses/show/' . $username;
+
+				$args = array();
+			} else {
+				$method = 'statuses/user_timeline';
+
+				$args = array(
+					'screen_name' => $username,
+					'count' => 1,
+					'include_rts' => false,
+					'exclude_replies' => true,
+					'include_entities' => true,
+				);
+			}
+
+			$response = $twitter->query( $method, $args );
 
 			if ( is_wp_error( $response ) ) {
 				return $fallback;
