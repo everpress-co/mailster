@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.16 =
 
+* improved: Excerpt and Content of posts look the same no matter which type of embedding were used
+
 = Version 2.2.15 =
 
 * fixed: visual issue with color picker on WP 4.9
