@@ -17,6 +17,7 @@ $file = $this->get_file();
 		<?php if ( current_user_can( 'mailster_change_plaintext' ) ) : ?>
 		<li><a class="mailster-icon plaintext" title="<?php esc_html_e( 'toggle HTML/Plain-Text view', 'mailster' ) ?>">&nbsp;</a></li>
 		<?php endif; ?>
+		<li><a class="mailster-icon import-template" title="<?php esc_html_e( 'Import template', 'mailster' ) ?>">&nbsp;</a></li>
 		<li class="no-border-right"><a class="mailster-icon preview" title="<?php esc_html_e( 'preview', 'mailster' ) ?>">&nbsp;</a></li>
 	</ul>
 	<ul class="alignright">
@@ -65,7 +66,7 @@ $file = $this->get_file();
 	</ul>
 </div>
 <div id="mailster_template_save" style="display:none;">
-	<div class="mailster_template_save">
+	<div class="mailster-thickbox mailster_template_save">
 			<div class="inner">
 				<p>
 					<label><?php esc_html_e( 'Name', 'mailster' );?><br><input type="text" class="widefat" id="new_template_name" placeholder="<?php esc_html_e( 'template name', 'mailster' );?>" value="<?php echo $all_files[ $template ][ $file ]['label']; ?>"></label>
@@ -98,8 +99,20 @@ $file = $this->get_file();
 				<p class="description alignleft">&nbsp;<?php printf( __( 'based on %1$s from %2$s', 'mailster' ), '<strong>&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot;</strong>', '<strong>&quot;' . $all_files[ $template ][ $file ]['name'] . '&quot;</strong>' ); ?>
 				</p>
 				<button class="button button-primary save-template"><?php esc_html_e( 'Save', 'mailster' );?></button>
-				<button class="button save-template-cancel"><?php esc_html_e( 'Cancel', 'mailster' );?></button>
+				<button class="button close-thickbox"><?php esc_html_e( 'Cancel', 'mailster' );?></button>
 				<span class="spinner" id="new_template-ajax-loading"></span>
+			</div>
+	</div>
+</div>
+<div id="mailster_template_import" style="display:none;">
+	<div class="mailster-thickbox mailster_template_import">
+			<div class="inner">
+				<textarea id="mailster_template_import_code"></textarea>
+			</div>
+			<div class="foot">
+				<button class="button button-primary import-template"><?php esc_html_e( 'Import', 'mailster' );?></button>
+				<button class="button close-thickbox"><?php esc_html_e( 'Cancel', 'mailster' );?></button>
+				<span class="spinner" id="import_template-ajax-loading"></span>
 			</div>
 	</div>
 </div>

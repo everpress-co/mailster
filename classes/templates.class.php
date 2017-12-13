@@ -1565,4 +1565,148 @@ class MailsterTemplates {
 	}
 
 
+	/**
+	 *
+	 *
+	 * @param unknown $errors (optional)
+	 */
+	public function import( $data ) {
+
+		$doc = new DOMDocument();
+		$doc->validateOnParse = true;
+		$doc->formatOutput = true;
+
+		if ( filter_var( $data, FILTER_VALIDATE_URL ) ) {
+			$response = wp_remote_get( $data );
+			$code = wp_remote_retrieve_response_code( $response );
+			$data = wp_remote_retrieve_body( $response );
+		}
+
+		$data = preg_replace( '/mc:(edit|repeatable|label)/', 'mc_$1', $data );
+		$data = strtr( $data, array(
+			'*|MC:SUBJECT|*' => '{subject}',
+			'*|UNSUB|*' => '{unsublink}',
+			'*|UPDATE_PROFILE|*' => '{profilelink}',
+			'*|FORWARD|*' => '{forwardlink}',
+			'*|LIST:DESCRIPTION|*' => '{can-spam}',
+			'*|CURRENT_YEAR|*' => '{year}',
+			'*|MC:DATE|*' => '{date}',
+			'*|LIST:COMPANY|*' => '{company}',
+			'*|LIST:NAME|*' => '{lists}',
+			'*|HTML:LIST_ADDRESS_HTML|*' => '{address}',
+			'*|MC_PREVIEW_TEXT|*' => '{preheader}',
+			'*|FNAME|*' => '{firstname}',
+			'*|LNAME|*' => '{lastname}',
+			'*|EMAIL|*' => '{emailaddress}',
+		) );
+		$data = preg_replace( '/\*\|([A-Z0-9:_\[\]|]+)\|\*/', '', $data );
+
+		$i_error = libxml_use_internal_errors( true );
+		$doc->loadHTML( $data );
+		libxml_clear_errors();
+		libxml_use_internal_errors( $i_error );
+
+		$xpath = new DOMXPath( $doc );
+		$images = $xpath->query( "//*/img['@mc:edit']" );
+		$images = $xpath->query( '//*/img' );
+
+		$editables = $xpath->query( '//*/*[@mc_edit]' );
+		foreach ( $editables as $editable ) {
+
+			echo '<pre>' . print_r( $editable->nodeName, true ) . '</pre>';
+
+			if ( 'img' == $editable->nodeName ) {
+				if ( $editable->getAttribute( 'mc_edit' ) ) {
+					$editable->removeAttribute( 'mc_edit' );
+					$editable->setAttribute( 'editable', '' );
+				}
+				if ( $label = $editable->getAttribute( 'mc_label' ) ) {
+					$editable->removeAttribute( 'mc_label' );
+					$editable->setAttribute( 'label', $label );
+				}
+
+				$parent = $editable->parentNode;
+				$parent->appendChild( $editable );
+
+			} elseif ( in_array( $editable->nodeName, array( 'div' ) ) ) {
+
+				if ( $editable->getAttribute( 'mc_edit' ) ) {
+					$editable->removeAttribute( 'mc_edit' );
+				}
+				if ( $label = $editable->getAttribute( 'mc_label' ) ) {
+					$editable->removeAttribute( 'mc_label' );
+				}
+
+				$multi = $doc->createElement( 'multi' );
+				$multi->setAttribute( 'label', $label );
+				$clone = $doc->createDocumentFragment();
+				$clone->appendChild( $editable->cloneNode( true ) );
+				$multi->appendChild( $clone );
+				$parent = $editable->parentNode;
+				$parent->removeChild( $editable );
+				$parent->appendChild( $multi );
+			}
+		}
+		$modules = $xpath->query( '//*/*[@mc_repeatable]' );
+		foreach ( $modules as $module ) {
+
+			if ( $module->getAttribute( 'mc_repeatable' ) ) {
+				$module->removeAttribute( 'mc_repeatable' );
+			}
+			$multi = $doc->createElement( 'module' );
+			if ( $label = $module->getAttribute( 'mc_label' ) ) {
+				$module->removeAttribute( 'mc_label' );
+				$multi->setAttribute( 'label', $label );
+			}
+			$parent = $module->parentNode;
+			if ( $parent->nodeName == 'table' ) {
+				$module = $parent;
+				$parent = $parent->parentNode;
+			}
+			$clone = $doc->createDocumentFragment();
+			$clone->appendChild( $module->cloneNode( true ) );
+			$multi->appendChild( $clone );
+			$parent->removeChild( $module );
+			$parent->appendChild( $multi );
+
+		}
+
+		$raw = $doc->saveHTML();
+
+		echo '<pre>' . print_r( esc_html( $raw ), true ) . '</pre>';
+		// MailChimp
+	}
+
+	private function get_html_from_nodes( $nodes, $separator = '' ) {
+
+		$parts = array();
+
+		if ( ! $nodes ) {
+			return '';
+		}
+
+		foreach ( $nodes as $node ) {
+			$parts[] = $this->get_html_from_node( $node );
+		}
+
+		return implode( $separator, $parts );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $node
+	 * @return unknown
+	 */
+	private function get_html_from_node( $node ) {
+
+		$html = $node->ownerDocument->saveXML( $node );
+
+		// remove CDATA elements (keep content)
+		$html = preg_replace( '~<!\[CDATA\[\s*|\s*\]\]>~', '', $html );
+		return $html;
+
+	}
+
 }

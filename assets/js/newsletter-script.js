@@ -1293,6 +1293,7 @@ jQuery(document).ready(function ($) {
 				.on('click', 'a.template', showFiles)
 				// .on('click', 'button.save-template', save)
 				// .on('mouseenter', 'a.save-template', focusName)
+				.on('click', 'a.import-template', openImportDialog)
 				.on('click', 'a.save-template', openSaveDialog)
 				.on('click', 'a.clear-modules', clear)
 				.on('click', 'a.preview', preview)
@@ -1304,7 +1305,8 @@ jQuery(document).ready(function ($) {
 
 			_body
 				.on('click', 'button.save-template', save)
-				.on('click', 'button.save-template-cancel', tb_remove);
+				.on('click', 'button.import-template', importTemplate)
+				.on('click', 'button.close-thickbox', tb_remove);
 			_win
 				.on('scroll.optionbar', function () {
 					var scrolltop = _win.scrollTop();
@@ -1333,6 +1335,20 @@ jQuery(document).ready(function ($) {
 			$('#new_template_name').focus().select();
 
 			return false;
+		}
+
+		function openImportDialog() {
+
+			tb_show(mailsterL10n.save_template, '#TB_inline?x=1&width=480&height=320&inlineId=mailster_template_import', null);
+
+			return false;
+		}
+
+		function importTemplate() {
+
+			var code = $('#mailster_template_import_code').val();
+
+			console.log(code);
 		}
 
 		function save() {

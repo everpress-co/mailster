@@ -268,6 +268,7 @@ textarea#content, textarea#excerpt {
 .optionbar ul li a.mailster-icon.code.active:before{content:'\e810';}
 .optionbar ul li a.mailster-icon.plaintext:before{content:'\e829';}
 .optionbar ul li a.mailster-icon.plaintext.active:before{content:'\e810';}
+.optionbar ul li a.mailster-icon.import-template:before{content:'\e806';}
 .optionbar ul li a.mailster-icon.preview:before{content:'\e806';}
 .optionbar ul li a.mailster-icon.dfw:before{content:'\e82b';}
 .optionbar ul li a.mailster-icon.dfw.active:before{content:'\e82c';}
@@ -343,9 +344,29 @@ textarea#content, textarea#excerpt {
 	margin:0;
 	padding:10px;
 }
-.mailster_template_save .inner {
+.mailster-thickbox .inner {
 	position: relative;
 	padding: 0px 20px;
+}
+.mailster-thickbox .foot {
+	padding: 10px 20px;
+	border-top:1px solid #DFDFDF;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+.mailster-thickbox .foot button{
+	float: right;
+	margin-left: 6px;
+}
+.rtl .mailster-thickbox .foot button{
+	margin-left: 0px;
+	margin-right: 6px;
+	float: left;
+}
+.mailster-thickbox .foot.textleft {
+	text-align:left;
 }
 .mailster_template_save #new_template_name{
 	font-size:1.8em;
@@ -357,26 +378,6 @@ textarea#content, textarea#excerpt {
 	visibility: visible;
 	display: none;
 	float: right;
-}
-.mailster_template_save .foot {
-	padding: 10px 20px;
-	border-top:1px solid #DFDFDF;
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-}
-.mailster_template_save .foot button{
-	float: right;
-	margin-left: 6px;
-}
-.rtl .mailster_template_save .foot button{
-	margin-left: 0px;
-	margin-right: 6px;
-	float: left;
-}
-.mailster_template_save .foot.textleft {
-	text-align:left;
 }
 .optionbar ul li:hover div {
 	display:block;
