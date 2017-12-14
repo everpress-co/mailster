@@ -217,11 +217,11 @@ jQuery(document).ready(function ($) {
 
 	$('.mailster_sendtest').on('click', function () {
 		var $this = $(this),
-			loader = $('.test-ajax-loading').css({
+			cont = $this.closest('.mailster-testmail'),
+			loader = cont.find('.test-ajax-loading').css({
 				'visibility': 'visible'
 			}),
-			basic = $this.data('role') == 'basic',
-			to = (basic) ? $('#mailster_testmail').val() : $('#mailster_authenticationmail').val(),
+			to = cont.find('input.mailster-testmail-email').val(),
 			formdata = $('form#mailster-settings-form').serialize();
 
 		$this.prop('disabled', true);
@@ -229,7 +229,7 @@ jQuery(document).ready(function ($) {
 		_ajax('send_test', {
 			test: true,
 			formdata: formdata,
-			basic: basic,
+			basic: true,
 			to: to
 
 		}, function (response) {
