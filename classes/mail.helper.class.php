@@ -7,7 +7,7 @@ if ( $phpmailerversion = mailster_option( 'php_mailer' ) ) :
 	}
 
 	if ( ! class_exists( 'SMTP_mailster' ) ) {
-		require_once MAILSTER_DIR . 'classes/libs/phpmailer//class.smtp.php';
+		require_once MAILSTER_DIR . 'classes/libs/phpmailer/class.smtp.php';
 	}
 
 	class _mailster_SMTP extends SMTP_mailster {};
