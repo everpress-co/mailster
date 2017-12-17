@@ -1096,7 +1096,7 @@ if ( ! function_exists( 'http_negotiate_language' ) ) :
 
 			$qvalue = 1.0;
 			if ( ! empty( $arr[5] ) ) {
-				$qvalue = floatval( $arr[5] );
+				$qvalue = (float) $arr[5];
 			}
 
 			// find q-maximal language

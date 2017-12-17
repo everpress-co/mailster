@@ -1499,7 +1499,7 @@ class MailsterCampaigns {
 
 				$meta['active'] = isset( $postdata['active_autoresponder'] ) && current_user_can( 'publish_newsletters' );
 
-				$autoresponder['amount'] = max( 0, floatval( $autoresponder['amount'] ) );
+				$autoresponder['amount'] = max( 0, (float) $autoresponder['amount'] );
 
 				if ( in_array( $autoresponder['action'], array( 'mailster_subscriber_insert', 'mailster_subscriber_unsubscribed' ) ) ) {
 					unset( $autoresponder['terms'] );
@@ -3128,8 +3128,8 @@ class MailsterCampaigns {
 				$coords = $row->coords ? explode( ',', $row->coords ) : array( 0, 0 );
 
 				$geo_data[ $geo[0] ][] = array(
-					floatval( $coords[0] ),
-					floatval( $coords[1] ),
+					(float) $coords[0],
+					(float) $coords[1],
 					$geo[1],
 					(int) $row->count,
 					$row->count . ' ' . _n( 'opened', 'opens', $row->count, 'mailster' ),

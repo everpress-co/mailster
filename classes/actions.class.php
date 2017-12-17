@@ -192,7 +192,7 @@ class MailsterActions {
 
 			$user_meta['geo'] = $geo->country_code . '|' . $geo->city;
 			if ( $geo->city ) {
-				$user_meta['coords'] = floatval( $geo->latitude ) . ',' . floatval( $geo->longitude );
+				$user_meta['coords'] = (float) $geo->latitude . ',' . (float) $geo->longitude;
 				$user_meta['timeoffset'] = (int) $geo->timeoffset;
 			}
 		}

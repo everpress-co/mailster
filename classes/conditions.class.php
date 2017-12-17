@@ -318,14 +318,14 @@ class MailsterConditions {
 
 
 	private function sanitize_rating( $value ) {
-		if ( ! $value || ! floatval( $value ) ) {
+		if ( ! $value || ! (float) $value ) {
 			return 0;
 		}
 		$value = str_replace( ',', '.', $value );
 		if ( strpos( $value, '%' ) !== false || $value > 5 ) {
-			$value = floatval( $value ) / 100;
+			$value = (float) $value / 100;
 		} elseif ( $value > 1 ) {
-			$value = floatval( $value ) * 0.2;
+			$value = (float) $value * 0.2;
 		}
 		return $value;
 	}

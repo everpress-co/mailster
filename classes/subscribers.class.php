@@ -943,7 +943,7 @@ class MailsterSubscribers {
 
 				$meta['geo'] = $geo->country_code . '|' . $geo->city;
 				if ( $geo->city ) {
-					$meta['coords'] = floatval( $geo->latitude ) . ',' . floatval( $geo->longitude );
+					$meta['coords'] = (float) $geo->latitude . ',' . (float) $geo->longitude;
 					$meta['timeoffset'] = (int) $geo->timeoffset;
 				}
 			}

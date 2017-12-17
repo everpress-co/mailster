@@ -890,9 +890,9 @@ class MailsterSubscriberQuery {
 			case 'rating':
 				$value = str_replace( ',', '.', $value );
 				if ( strpos( $value, '%' ) !== false || $value > 5 ) {
-					$value = floatval( $value ) / 100;
+					$value = (float) $value / 100;
 				} elseif ( $value >= 1 ) {
-					$value = floatval( $value ) * 0.2;
+					$value = (float) $value * 0.2;
 				}
 				break;
 			case 'lat':
@@ -1044,10 +1044,10 @@ class MailsterSubscriberQuery {
 					$value = "'" . $this->get_timestamp( $value, 'Y-m-d' ) . "'";
 				} elseif ( in_array( $field, $this->custom_fields ) ) {
 					$f = "`field_$field`.meta_value";
-					$value = is_numeric( $value ) ? floatval( $value ) : "'$value'";
+					$value = is_numeric( $value ) ? (float) $value : "'$value'";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
 					$f = "`meta_$field`.meta_value";
-					$value = is_numeric( $value ) ? floatval( $value ) : "'$value'";
+					$value = is_numeric( $value ) ? (float) $value : "'$value'";
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
 					if ( $field == 'wp_capabilities' ) {
@@ -1055,7 +1055,7 @@ class MailsterSubscriberQuery {
 					}
 				} else {
 					$f = "subscribers.$field";
-					$value = floatval( $value );
+					$value = (float) $value;
 				}
 
 				$c = $f . ' ' . ( in_array( $operator, array( 'is_greater', 'is_greater_equal', '>', '>=' ) ) ? '>' . $extra : '<' . $extra ) . " $value";
