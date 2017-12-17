@@ -481,7 +481,7 @@ class MailsterTemplates {
 		$updates = get_option( 'mailster_templates_updates', null );
 
 		if ( ! is_null( $updates ) ) {
-			return intval( $updates );
+			return (int) $updates;
 		}
 
 		if ( ! $templates = get_option( 'mailster_templates' ) ) {

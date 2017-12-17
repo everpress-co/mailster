@@ -583,7 +583,7 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
 
 	foreach ( $lists as $list ) {
 		if ( is_numeric( $list ) ) {
-			$new_lists[] = intval( $list );
+			$new_lists[] = (int) $list;
 		} else {
 			if ( $list_id = mailster( 'lists' )->get_by_name( $list, 'ID' ) ) {
 				$new_lists[] = $list_id;

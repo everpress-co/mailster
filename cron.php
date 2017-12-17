@@ -29,7 +29,7 @@ if ( ! defined( 'MAILSTER_VERSION' ) ) {
 	wp_die( 'Please activate the Mailster Plugin!' );
 }
 
-$interval = isset( $_GET['interval'] ) ? intval( $_GET['interval'] ) : mailster_option( 'interval', 5 ) * 60;
+$interval = isset( $_GET['interval'] ) ? (int) $_GET['interval'] : mailster_option( 'interval', 5 ) * 60;
 if ( $request_url ) {
 	@header( "Refresh: $interval;url=" . $request_url, true );
 }

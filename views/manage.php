@@ -1,7 +1,7 @@
 <?php
 
 $currentpage = isset( $_GET['tab'] ) ? esc_attr( $_GET['tab'] ) : 'import';
-$currentstep = isset( $_GET['step'] ) ? intval( $_GET['step'] ) : 1;
+$currentstep = isset( $_GET['step'] ) ? (int) $_GET['step'] : 1;
 
 ?>
 <div class="wrap mailster-manage">

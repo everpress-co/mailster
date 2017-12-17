@@ -753,10 +753,10 @@ class MailsterSettings {
 			}
 		}
 
-		$options['send_offset'] = max( 0, intval( $options['send_offset'] ) );
-		$options['post_count'] = max( 1, intval( $options['post_count'] ) );
-		$options['bounce_check'] = max( 1, intval( $options['bounce_check'] ) );
-		$options['bounce_delay'] = max( 1, intval( $options['bounce_delay'] ) );
+		$options['send_offset'] = max( 0, (int) $options['send_offset'] );
+		$options['post_count'] = max( 1, (int) $options['post_count'] );
+		$options['bounce_check'] = max( 1, (int) $options['bounce_check'] );
+		$options['bounce_delay'] = max( 1, (int) $options['bounce_delay'] );
 
 		if ( ! $options['send_at_once'] ) {
 			$options['send_at_once'] = 10;
@@ -1127,7 +1127,7 @@ class MailsterSettings {
 
 					if ( function_exists( 'fsockopen' ) && $options['deliverymethod'] == 'smtp' ) {
 						$host = trim( $options['smtp_host'] );
-						$port = intval( $options['smtp_port'] );
+						$port = (int) $options['smtp_port'];
 						$conn = @fsockopen( $host, $port, $errno, $errstr, 5 );
 
 						if ( is_resource( $conn ) ) {
@@ -1529,7 +1529,7 @@ class MailsterSettings {
 			'Use Cookies' => ini_get( 'session.use_cookies' ) ? 'On' : 'Off',
 			'Use Only Cookies' => ini_get( 'session.use_only_cookies' ) ? 'On' : 'Off',
 			'--',
-			'WordPress Memory Limit' => ( size_format( intval( WP_MEMORY_LIMIT ) * 1048576 ) ),
+			'WordPress Memory Limit' => ( size_format( (int) WP_MEMORY_LIMIT * 1048576 ) ),
 			'WordPress Upload Size' => ( size_format( wp_max_upload_size() ) ),
 			// 'Content Directory' => is_dir( MAILSTER_UPLOAD_DIR ) && wp_is_writable( MAILSTER_UPLOAD_DIR ) ? 'writeable' : 'NOT writeable. Make sure ' . MAILSTER_UPLOAD_DIR . ' has chmod 750',
 			'Filesystem Method' => get_filesystem_method(),
@@ -1611,7 +1611,7 @@ class MailsterSettings {
 	<table class="form-table">
 		<tr valign="top">
 			<th scope="row">SMTP Host : Port</th>
-			<td><input type="text" name="mailster_options[smtp_host]" value="<?php echo esc_attr( mailster_option( 'smtp_host' ) ); ?>" class="regular-text ">:<input type="text" name="mailster_options[smtp_port]" id="mailster_smtp_port" value="<?php echo intval( mailster_option( 'smtp_port' ) ); ?>" class="small-text smtp"></td>
+			<td><input type="text" name="mailster_options[smtp_host]" value="<?php echo esc_attr( mailster_option( 'smtp_host' ) ); ?>" class="regular-text ">:<input type="text" name="mailster_options[smtp_port]" id="mailster_smtp_port" value="<?php echo (int) mailster_option( 'smtp_port' ); ?>" class="small-text smtp"></td>
 		</tr>
 		<tr valign="top">
 			<th scope="row">Timeout</th>

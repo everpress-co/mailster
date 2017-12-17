@@ -54,7 +54,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 	public function no_items() {
 
-		$status = isset( $_GET['status'] ) ? intval( $_GET['status'] ) : null;
+		$status = isset( $_GET['status'] ) ? (int) $_GET['status'] : null;
 
 		switch ( $status ) {
 			case '0': // pending
@@ -334,7 +334,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
 		$args = array(
-			'status' => isset( $_GET['status'] ) ? intval( $_GET['status'] ) : false,
+			'status' => isset( $_GET['status'] ) ? (int) $_GET['status'] : false,
 			's'      => isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null,
 			'strict' => isset( $_GET['strict'] ) ? boolval( $_GET['strict'] ) : false,
 			'lists' => isset( $_GET['lists'] ) ? ($_GET['lists'] ) : false,
@@ -346,7 +346,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			$this->per_page = 50;
 		}
 
-		$offset = isset( $_GET['paged'] ) ? ( intval( $_GET['paged'] ) - 1 ) * $limit : 0;
+		$offset = isset( $_GET['paged'] ) ? ( (int) $_GET['paged'] - 1 ) * $limit : 0;
 		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
 		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
 

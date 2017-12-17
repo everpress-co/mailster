@@ -89,7 +89,7 @@ class MailsterBounceHandler {
 			}
 
 			$subscriber = mailster( 'subscribers' )->get_by_hash( $hash[2], false );
-			$campaign = ! empty( $camp ) ? mailster( 'campaigns' )->get( intval( $camp[2] ) ) : null;
+			$campaign = ! empty( $camp ) ? mailster( 'campaigns' )->get( (int) $camp[2] ) : null;
 
 			if ( $subscriber ) {
 

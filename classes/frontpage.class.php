@@ -186,8 +186,8 @@ class MailsterFrontpage {
 
 			$target = isset( $_GET['t'] ) ? str_replace( '&amp;', '&', preg_replace( '/\s+/', '', $_GET['t'] ) ) : null;
 			$hash = isset( $_GET['k'] ) ? preg_replace( '/\s+/', '', $_GET['k'] ) : null;
-			$count = isset( $_GET['c'] ) ? intval( $_GET['c'] ) : 0;
-			$campaign_id = intval( $_GET['mailster'] );
+			$count = isset( $_GET['c'] ) ? (int) $_GET['c'] : 0;
+			$campaign_id = (int) $_GET['mailster'];
 			if ( isset( $_GET['s'] ) ) {
 				$target = ( ! empty( $_GET['s'] ) ? 'https://' : 'http://' ) . $target;
 			}
@@ -302,7 +302,7 @@ class MailsterFrontpage {
 
 	private function do_tracking_actions() {
 
-		$campaign_id = intval( get_query_var( '_mailster', 0 ) );
+		$campaign_id = (int) get_query_var( '_mailster', 0 );
 		$target = mailster()->decode_link( get_query_var( '_mailster_page' ) );
 		$hash = get_query_var( '_mailster_hash' );
 		$index = get_query_var( '_mailster_extra' );
@@ -731,7 +731,7 @@ class MailsterFrontpage {
 			break;
 		}
 
-		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . intval( $height ) . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
+		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . (int) $height . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
 
 	}
 
@@ -880,7 +880,7 @@ class MailsterFrontpage {
 				}
 
 				if ( preg_match( '/\[newsletter_signup_form id=("|\')?(\d+)("|\')?\]/', $content, $form_id ) ) {
-					$form_id = intval( $form_id );
+					$form_id = (int) $form_id;
 				} else {
 					global $wpdb;
 					$form_id = (int) $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" );

@@ -215,7 +215,7 @@ class MailsterLists {
 					exit;
 				} elseif ( $_POST['delete'] || $_POST['delete_subscribers'] ) :
 
-					if ( $list = $this->get( intval( $_POST['mailster_data']['ID'] ), false ) ) {
+					if ( $list = $this->get( (int) $_POST['mailster_data']['ID'], false ) ) {
 
 						$delete_subscribers = isset( $_POST['delete_subscribers'] );
 
@@ -347,7 +347,7 @@ class MailsterLists {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
-			$list_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : intval( $data['ID'] );
+			$list_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
 
 			if ( ! empty( $subscriber_ids ) ) {
 				$this->assign_subscribers( $list_id, $subscriber_ids, false, true );
@@ -911,7 +911,7 @@ class MailsterLists {
 
 		$result = $wpdb->get_var( $sql );
 
-		return $result ? intval( $result ) : 0;
+		return $result ? (int) $result : 0;
 
 	}
 
@@ -979,9 +979,9 @@ class MailsterLists {
 					$list_counts[ $list->ID ] = 0;
 				}
 
-				$list_counts[ $list->ID ] += intval( $list->count );
+				$list_counts[ $list->ID ] += (int) $list->count;
 				if ( $list->parent_id ) {
-					$list_counts[ $list->parent_id ] += intval( $list->count );
+					$list_counts[ $list->parent_id ] += (int) $list->count;
 				}
 			}
 
@@ -993,7 +993,7 @@ class MailsterLists {
 			return $list_counts;
 		}
 
-		return isset( $list_counts[ $list_id ] ) && isset( $list_counts[ $list_id ] ) ? intval( $list_counts[ $list_id ] ) : 0;
+		return isset( $list_counts[ $list_id ] ) && isset( $list_counts[ $list_id ] ) ? (int) $list_counts[ $list_id ] : 0;
 
 	}
 

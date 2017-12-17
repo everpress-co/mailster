@@ -164,7 +164,7 @@ foreach ( $conditions as $i => $condition_group ) : ?><div class="mailster-condi
 				<div class="mailster-conditions-value-field" data-fields=",status,">
 					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value]" class="condition-value" disabled>
 						<?php foreach ( $statuses as $key => $name ) : ?>
-							<option value="<?php echo intval( $key ) ?>" <?php selected( $key, $value ); ?>><?php echo esc_html( $name ) ?></option>
+							<option value="<?php echo (int) $key ?>" <?php selected( $key, $value ); ?>><?php echo esc_html( $name ) ?></option>
 						<?php endforeach; ?>
 					</select>
 				</div>

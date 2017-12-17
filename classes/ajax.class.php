@@ -218,7 +218,7 @@ class MailsterAjax {
 
 		@error_reporting( 0 );
 
-		$id = intval( $_GET['id'] );
+		$id = (int) $_GET['id'];
 		$template = basename( $_GET['template'] );
 		$file = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
@@ -341,12 +341,12 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$content = isset( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : '';
-		$ID = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
+		$ID = isset( $_POST['id'] ) ? (int) $_POST['id'] : 0;
 		$subject = isset( $_POST['subject'] ) ? stripslashes( $_POST['subject'] ) : '';
 		$preheader = isset( $_POST['preheader'] ) ? stripslashes( $_POST['preheader'] ) : '';
-		$issue = isset( $_POST['issue'] ) ? intval( $_POST['issue'] ) : 1;
+		$issue = isset( $_POST['issue'] ) ? (int) $_POST['issue'] : 1;
 		$head = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
-		$userid = isset( $_POST['userid'] ) ? intval( $_POST['userid'] ) : null;
+		$userid = isset( $_POST['userid'] ) ? (int) $_POST['userid'] : null;
 
 		$html = mailster()->sanitize_content( $content, true, $head );
 
@@ -505,7 +505,7 @@ class MailsterAjax {
 			// }
 			$MID = mailster_option( 'ID' );
 
-			$ID = intval( $formdata['post_ID'] );
+			$ID = (int) $formdata['post_ID'];
 			$issue = $formdata['mailster_data']['autoresponder']['issue'];
 
 			$campaign_permalink = get_permalink( $ID );
@@ -1029,8 +1029,8 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$subscriber_id = intval( $_POST['id'] );
-		$campaign_id = intval( $_POST['campaignid'] );
+		$subscriber_id = (int) $_POST['id'];
+		$campaign_id = (int) $_POST['campaignid'];
 
 		$return['html'] = mailster( 'subscribers' )->get_recipient_detail( $subscriber_id, $campaign_id );
 		$return['success'] = ! ! $return['html'];
@@ -1047,11 +1047,11 @@ class MailsterAjax {
 
 		if ( isset( $_POST['id'] ) ) {
 
-			$id = intval( $_POST['id'] );
+			$id = (int) $_POST['id'];
 			$src = isset( $_POST['src'] ) ? ( $_POST['src'] ) : null;
 			$crop = isset( $_POST['crop'] ) ? ( $_POST['crop'] == 'true' ) : false;
-			$width = isset( $_POST['width'] ) ? intval( $_POST['width'] ) : null;
-			$height = isset( $_POST['height'] ) && $crop ? intval( $_POST['height'] ) : null;
+			$width = isset( $_POST['width'] ) ? (int) $_POST['width'] : null;
+			$height = isset( $_POST['height'] ) && $crop ? (int) $_POST['height'] : null;
 
 			$return['success'] = ! ! ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop ) );
 		}
@@ -1063,9 +1063,9 @@ class MailsterAjax {
 
 	private function image_placeholder() {
 
-		$factor = ! empty( $_GET['f'] ) ? intval( $_GET['f'] ) : 1;
-		$width = $factor * ( ! empty( $_GET['w'] ) ? intval( $_GET['w'] ) : 600);
-		$height = $factor * ( ! empty( $_GET['h'] ) ? intval( $_GET['h'] ) : round( $width / 1.6 ));
+		$factor = ! empty( $_GET['f'] ) ? (int) $_GET['f'] : 1;
+		$width = $factor * ( ! empty( $_GET['w'] ) ? (int) $_GET['w'] : 600);
+		$height = $factor * ( ! empty( $_GET['h'] ) ? (int) $_GET['h'] : round( $width / 1.6 ));
 		$tag = isset( $_GET['tag'] ) ? '' . esc_attr( $_GET['tag'] ) . '' : '';
 
 		$text = '{' . $tag . '}';
@@ -1124,14 +1124,14 @@ class MailsterAjax {
 		global $wp_post_statuses;
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$offset = intval( $_POST['offset'] );
+		$offset = (int) $_POST['offset'];
 		$post_count = mailster_option( 'post_count', 30 );
 		$search = $_POST['search'];
 
 		if ( in_array( $_POST['type'], array( 'post', 'attachment' ) ) ) {
 
 			$post_type = esc_attr( $_POST['type'] );
-			$current_id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : null;
+			$current_id = isset( $_POST['id'] ) ? (int) $_POST['id'] : null;
 
 			$defaults = array(
 				'post_type' => $post_type,
@@ -1394,7 +1394,7 @@ class MailsterAjax {
 		$strip_shortcodes = apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) );
 
 		if ( is_numeric( $_POST['id'] ) ) {
-			$post = get_post( intval( $_POST['id'] ) );
+			$post = get_post( (int) $_POST['id'] );
 			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 
 			if ( $post ) {
@@ -1458,7 +1458,7 @@ class MailsterAjax {
 		} else {
 
 			$url = explode( '#', esc_url( $_POST['id'] ) );
-			$id = intval( array_pop( $url ) );
+			$id = (int) array_pop( $url );
 			$url = implode( '#', $url );
 			$rss = fetch_feed( $url );
 			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
@@ -1531,7 +1531,7 @@ class MailsterAjax {
 		$return['success'] = true;
 
 		$post_type = sanitize_key( $_POST['post_type'] );
-		$relative = intval( $_POST['relative'] );
+		$relative = (int) $_POST['relative'];
 		$offset = $relative + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
@@ -1867,7 +1867,7 @@ class MailsterAjax {
 
 		$return['success'] = false;
 		$limit = 100;
-		$offset = isset( $_POST['offset'] ) ? intval( $_POST['offset'] ) : 0;
+		$offset = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
 
 		$return['count'] = mailster( 'subscribers' )->sync_all_subscriber( $limit, $offset );
 		$return['success'] = true;
@@ -1882,7 +1882,7 @@ class MailsterAjax {
 
 		$return['success'] = false;
 		$limit = 100;
-		$offset = isset( $_POST['offset'] ) ? intval( $_POST['offset'] ) : 0;
+		$offset = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
 
 		$return['count'] = mailster( 'subscribers' )->sync_all_wp_user( $limit, $offset );
 		$return['success'] = true;
@@ -1930,7 +1930,7 @@ class MailsterAjax {
 			mailster_update_option( $formdata['mailster_options'], true );
 		}
 
-		$passes = intval( $_POST['passes'] );
+		$passes = (int) $_POST['passes'];
 		$identifier = $_POST['identifier'];
 
 		$return['success'] = true;
@@ -2039,7 +2039,7 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$name = stripslashes( $_POST['name'] );
-		$campaign_id = intval( $_POST['id'] );
+		$campaign_id = (int) $_POST['id'];
 		$listtype = $_POST['listtype'];
 
 		$return['success'] = mailster( 'campaigns' )->create_list_from_option( $name, $campaign_id, $listtype );
@@ -2056,7 +2056,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$campaign_id = intval( $_POST['id'] );
+		$campaign_id = (int) $_POST['id'];
 		$listtype = esc_attr( $_POST['listtype'] );
 
 		$return['count'] = mailster( 'campaigns' )->create_list_from_option( '', $campaign_id, $listtype, true );
@@ -2078,10 +2078,10 @@ class MailsterAjax {
 
 		@set_time_limit( 0 );
 
-		if ( intval( $max_execution_time ) < 300 ) {
+		if ( (int) $max_execution_time < 300 ) {
 			@ini_set( 'max_execution_time', 300 );
 		}
-		if ( intval( $memory_limit ) < 256 ) {
+		if ( (int) $memory_limit < 256 ) {
 			@ini_set( 'memory_limit', '256M' );
 		}
 
@@ -2091,9 +2091,9 @@ class MailsterAjax {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 			}
 
-			$width = intval( $_POST['width'] );
-			$height = intval( $_POST['height'] );
-			$factor = intval( $_POST['factor'] );
+			$width = (int) $_POST['width'];
+			$height = (int) $_POST['height'];
+			$factor = (int) $_POST['factor'];
 
 			$wp_upload_dir = wp_upload_dir();
 			$image = false;
@@ -2131,7 +2131,7 @@ class MailsterAjax {
 
 				if ( $add_to_library ) {
 
-					$post_id = isset( $_POST['ID'] ) ? intval( $_POST['ID'] ) : 0;
+					$post_id = isset( $_POST['ID'] ) ? (int) $_POST['ID'] : 0;
 
 					$attachment = array(
 						'guid' => $wp_upload_dir['url'] . '/' . $filename,
@@ -2184,10 +2184,10 @@ class MailsterAjax {
 
 		@set_time_limit( 0 );
 
-		if ( intval( $max_execution_time ) < 300 ) {
+		if ( (int) $max_execution_time < 300 ) {
 			@ini_set( 'max_execution_time', 300 );
 		}
-		if ( intval( $memory_limit ) < 256 ) {
+		if ( (int) $memory_limit < 256 ) {
 			@ini_set( 'memory_limit', '256M' );
 		}
 
@@ -2239,7 +2239,7 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$type = $_POST['type'];
-		$id = intval( $_POST['id'] );
+		$id = (int) $_POST['id'];
 
 		switch ( $type ) {
 			case 'campaigns':

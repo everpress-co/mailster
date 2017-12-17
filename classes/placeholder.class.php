@@ -649,9 +649,9 @@ class MailsterPlaceholder {
 					if ( false === $replace_to ) {
 
 						$parts = explode( ':', trim( $query['tag'] ) );
-						$factor = isset( $query['f'] ) && $is_img_tag ? intval( $query['f'] ) : 1;
-						$width = isset( $query['w'] ) ? intval( $query['w'] ) * $factor : null;
-						$height = isset( $query['h'] ) ? intval( $query['h'] ) * $factor : null;
+						$factor = isset( $query['f'] ) && $is_img_tag ? (int) $query['f'] : 1;
+						$width = isset( $query['w'] ) ? (int) $query['w'] * $factor : null;
+						$height = isset( $query['h'] ) ? (int) $query['h'] * $factor : null;
 						$crop = isset( $query['c'] ) && $height ? ! ! ( $query['c'] ) : false;
 						$post_type = str_replace( '_image', '', $parts[0] );
 						$is_post = $post_type != $parts[0] && in_array( $post_type, $pts );
@@ -664,8 +664,8 @@ class MailsterPlaceholder {
 							}
 							$extra = explode( '|', $parts[1] );
 							$term_ids = explode( ';', $extra[0] );
-							$fallback_id = isset( $extra[1] ) ? intval( $extra[1] ) : mailster_option( 'fallback_image' );
-							$post_id = intval( array_shift( $term_ids ) );
+							$fallback_id = isset( $extra[1] ) ? (int) $extra[1] : mailster_option( 'fallback_image' );
+							$post_id = (int) array_shift( $term_ids );
 
 							if ( $post_id < 0 ) {
 

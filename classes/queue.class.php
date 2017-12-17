@@ -144,7 +144,7 @@ class MailsterQueue {
 
 		$now = time();
 
-		$campaign_id = intval( $campaign_id );
+		$campaign_id = (int) $campaign_id;
 		$subscribers = array_filter( $subscribers, 'is_numeric' );
 
 		if ( empty( $subscribers ) ) {
@@ -231,7 +231,7 @@ class MailsterQueue {
 
 		global $wpdb;
 
-		$campaign_id = intval( $campaign_id );
+		$campaign_id = (int) $campaign_id;
 		$subscribers = array_filter( $subscribers, 'is_numeric' );
 
 		if ( empty( $subscribers ) ) {
@@ -402,7 +402,7 @@ class MailsterQueue {
 					'conditions' => $conditions,
 					'where' => array(
 						'(subscribers.confirm != 0 OR subscribers.signup != 0)',
-						'(subscribers.signup >= ' . intval( $meta['timestamp'] ) . ' OR lists_subscribers.added >= ' . intval( $meta['timestamp'] ) . ')',
+						'(subscribers.signup >= ' . (int) $meta['timestamp'] . ' OR lists_subscribers.added >= ' . (int) $meta['timestamp'] . ')',
 						'lists_subscribers.added != 0',
 					),
 					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
@@ -927,7 +927,7 @@ class MailsterQueue {
 		$this->cron_log( 'Local Time', '<strong>' . date( 'Y-m-d H:i:s', time() + $timeoffset ) . '</strong>' );
 
 		if ( $memory_limit ) {
-			$this->cron_log( 'memory limit', '<strong>' . intval( $memory_limit ) . ' MB</strong>' );
+			$this->cron_log( 'memory limit', '<strong>' . (int) $memory_limit . ' MB</strong>' );
 		}
 
 		$this->cron_log( 'max_execution_time', '<strong>' . $max_execution_time_ini . ' seconds</strong>' );
@@ -943,7 +943,7 @@ class MailsterQueue {
 			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id";
 			// $sql .= " LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON actions.subscriber_id = queue.subscriber_id AND actions.campaign_id = queue.campaign_id AND actions.type = 1";
 			// time is in the past and errors are within the range
-			$sql .= ' WHERE queue.timestamp <= ' . intval( $microtime ) . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error}";
+			$sql .= ' WHERE queue.timestamp <= ' . (int) $microtime . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error}";
 
 			// post status is important or is '0' (transactional email)
 			$sql .= " AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder') OR queue.campaign_id = 0)";
@@ -1171,9 +1171,9 @@ class MailsterQueue {
 			$microtime = microtime( true );
 		}
 
-		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id WHERE queue.timestamp <= " . intval( $microtime ) . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error} AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder') OR queue.campaign_id = 0) AND (subscribers.status = 1 OR queue.ignore_status = 1) AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0)";
+		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id WHERE queue.timestamp <= " . (int) $microtime . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error} AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder') OR queue.campaign_id = 0) AND (subscribers.status = 1 OR queue.ignore_status = 1) AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0)";
 
-		return intval( $wpdb->get_var( $sql ) );
+		return (int) $wpdb->get_var( $sql );
 	}
 
 
@@ -1317,7 +1317,7 @@ class MailsterQueue {
 			$job_counts = array();
 
 			foreach ( $result as $row ) {
-				$job_counts[ $row->ID ] = intval( $row->count );
+				$job_counts[ $row->ID ] = (int) $row->count;
 			}
 
 			mailster_cache_add( 'job_counts_' . $timestamp, $job_counts );

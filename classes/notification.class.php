@@ -95,12 +95,12 @@ class MailsterNotification {
 
 		$options = wp_parse_args( $args, $defaults );
 
-		$subscriber_id = intval( $options['subscriber_id'] );
+		$subscriber_id = (int) $options['subscriber_id'];
 
 		// send now
 		if ( $timestamp <= $now ) {
 			// sendnow
-			$result = $this->send( intval( $subscriber_id ), $options );
+			$result = $this->send( (int) $subscriber_id, $options );
 
 			// queue it if there was a problem
 			if ( is_wp_error( $result ) ) {
@@ -923,7 +923,7 @@ foreach ( $coords as $i => $coord ) {
 					<?php esc_html_e( 'from other countries', 'mailster' ) ?>
 				</td>
 				<td align="right" width="15%">
-					<strong><?php echo number_format_i18n( intval( $other ) ); ?></strong>
+					<strong><?php echo number_format_i18n( (int) $other ); ?></strong>
 				</td>
 				<td>&nbsp;</td>
 				</tr>

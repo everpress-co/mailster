@@ -1,6 +1,6 @@
 <?php
 
-$id = isset( $_GET['ID'] ) ? intval( $_GET['ID'] ) : null;
+$id = isset( $_GET['ID'] ) ? (int) $_GET['ID'] : null;
 
 $is_new = isset( $_GET['new'] );
 
@@ -132,7 +132,7 @@ if ( $is_new ) {
 								continue;
 							}
 							?>
-							<option value="<?php echo intval( $id ) ?>" <?php selected( $id, $subscriber->status ) ?> ><?php echo $status ?></option>
+							<option value="<?php echo (int) $id ?>" <?php selected( $id, $subscriber->status ) ?> ><?php echo $status ?></option>
 						<?php } ?>
 						</select>
 						<span class="description info"><?php esc_html_e( 'choosing "pending" as status will force a confirmation message to the subscriber', 'mailster' );?></span>

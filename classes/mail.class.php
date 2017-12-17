@@ -291,8 +291,8 @@ class MailsterMail {
 	 * @param unknown $id
 	 */
 	public function set_campaign( $id ) {
-		$this->campaignID = intval( $id );
-		$this->baselink = mailster()->get_base_link( intval( $id ) );
+		$this->campaignID = (int) $id;
+		$this->baselink = mailster()->get_base_link( (int) $id );
 	}
 
 
@@ -302,7 +302,7 @@ class MailsterMail {
 	 * @param unknown $id
 	 */
 	public function set_subscriber( $id ) {
-		$this->subscriberID = intval( $id );
+		$this->subscriberID = (int) $id;
 	}
 
 

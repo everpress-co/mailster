@@ -193,7 +193,7 @@ class MailsterActions {
 			$user_meta['geo'] = $geo->country_code . '|' . $geo->city;
 			if ( $geo->city ) {
 				$user_meta['coords'] = floatval( $geo->latitude ) . ',' . floatval( $geo->longitude );
-				$user_meta['timeoffset'] = intval( $geo->timeoffset );
+				$user_meta['timeoffset'] = (int) $geo->timeoffset;
 			}
 		}
 
@@ -280,7 +280,7 @@ class MailsterActions {
 
 		global $wpdb;
 
-		$campaign_id = intval( $campaign_id );
+		$campaign_id = (int) $campaign_id;
 		$subscribers = array_filter( $subscribers, 'is_numeric' );
 
 		if ( empty( $subscribers ) ) {
@@ -398,55 +398,55 @@ class MailsterActions {
 
 			// sent
 			if ( 1 == $row->type ) {
-				$action_counts[ $row->ID ]['sent'] = intval( $row->count );
-				$action_counts[ $row->ID ]['sent_total'] = intval( $row->total );
+				$action_counts[ $row->ID ]['sent'] = (int) $row->count;
+				$action_counts[ $row->ID ]['sent_total'] = (int) $row->total;
 				if ( $hasparent ) {
-					$action_counts[ $parent_ids[ $row->ID ] ]['sent'] += intval( $row->count );
-					$action_counts[ $parent_ids[ $row->ID ] ]['sent_total'] += intval( $row->total );
+					$action_counts[ $parent_ids[ $row->ID ] ]['sent'] += (int) $row->count;
+					$action_counts[ $parent_ids[ $row->ID ] ]['sent_total'] += (int) $row->total;
 				}
 			} // opens
 			elseif ( 2 == $row->type ) {
-					$action_counts[ $row->ID ]['opens'] = intval( $row->count );
-					$action_counts[ $row->ID ]['opens_total'] = intval( $row->total );
+					$action_counts[ $row->ID ]['opens'] = (int) $row->count;
+					$action_counts[ $row->ID ]['opens_total'] = (int) $row->total;
 				if ( $hasparent ) {
-					$action_counts[ $parent_ids[ $row->ID ] ]['opens'] += intval( $row->count );
-					$action_counts[ $parent_ids[ $row->ID ] ]['opens_total'] += intval( $row->total );
+					$action_counts[ $parent_ids[ $row->ID ] ]['opens'] += (int) $row->count;
+					$action_counts[ $parent_ids[ $row->ID ] ]['opens_total'] += (int) $row->total;
 				}
 			} // clicks
 			elseif ( 3 == $row->type ) {
-					$action_counts[ $row->ID ]['clicks'] = intval( $row->count );
-					$action_counts[ $row->ID ]['clicks_total'] = intval( $row->total );
+					$action_counts[ $row->ID ]['clicks'] = (int) $row->count;
+					$action_counts[ $row->ID ]['clicks_total'] = (int) $row->total;
 				if ( $hasparent ) {
-					$action_counts[ $parent_ids[ $row->ID ] ]['clicks'] += intval( $row->count );
-					$action_counts[ $parent_ids[ $row->ID ] ]['clicks_total'] += intval( $row->total );
+					$action_counts[ $parent_ids[ $row->ID ] ]['clicks'] += (int) $row->count;
+					$action_counts[ $parent_ids[ $row->ID ] ]['clicks_total'] += (int) $row->total;
 				}
 			} // unsubscribes
 			elseif ( 4 == $row->type ) {
-					$action_counts[ $row->ID ]['unsubscribes'] = intval( $row->count );
+					$action_counts[ $row->ID ]['unsubscribes'] = (int) $row->count;
 				if ( $hasparent ) {
-					$action_counts[ $parent_ids[ $row->ID ] ]['unsubscribes'] += intval( $row->count );
+					$action_counts[ $parent_ids[ $row->ID ] ]['unsubscribes'] += (int) $row->count;
 				}
 			} // softbounces
 			elseif ( 5 == $row->type ) {
-					$action_counts[ $row->ID ]['softbounces'] = intval( $row->count );
+					$action_counts[ $row->ID ]['softbounces'] = (int) $row->count;
 				if ( $hasparent ) {
-					$action_counts[ $parent_ids[ $row->ID ] ]['softbounces'] += intval( $row->count );
+					$action_counts[ $parent_ids[ $row->ID ] ]['softbounces'] += (int) $row->count;
 				}
 			} // bounces
 			elseif ( 6 == $row->type ) {
-					$action_counts[ $row->ID ]['bounces'] = intval( $row->count );
-					$action_counts[ $row->ID ]['sent'] -= intval( $row->count );
+					$action_counts[ $row->ID ]['bounces'] = (int) $row->count;
+					$action_counts[ $row->ID ]['sent'] -= (int) $row->count;
 				if ( $hasparent ) {
-					$action_counts[ $parent_ids[ $row->ID ] ]['bounces'] += intval( $row->count );
-					$action_counts[ $parent_ids[ $row->ID ] ]['sent'] -= intval( $row->count );
+					$action_counts[ $parent_ids[ $row->ID ] ]['bounces'] += (int) $row->count;
+					$action_counts[ $parent_ids[ $row->ID ] ]['sent'] -= (int) $row->count;
 				}
 			} // error
 			elseif ( 7 == $row->type ) {
 					$action_counts[ $row->ID ]['errors'] = floor( $row->count );
 					$action_counts[ $row->ID ]['errors_total'] = floor( $row->total );
 				if ( $hasparent ) {
-					$action_counts[ $parent_ids[ $row->ID ] ]['errors'] += intval( $row->count );
-					$action_counts[ $parent_ids[ $row->ID ] ]['errors_total'] += intval( $row->total );
+					$action_counts[ $parent_ids[ $row->ID ] ]['errors'] += (int) $row->count;
+					$action_counts[ $parent_ids[ $row->ID ] ]['errors_total'] += (int) $row->total;
 				}
 			}
 		}
@@ -536,25 +536,25 @@ class MailsterActions {
 
 			// sent
 			if ( 1 == $row->type ) {
-				$action_counts[ $row->ID ]['sent'] += intval( $row->count );
-				$action_counts[ $row->ID ]['sent_total'] += intval( $row->total );
+				$action_counts[ $row->ID ]['sent'] += (int) $row->count;
+				$action_counts[ $row->ID ]['sent_total'] += (int) $row->total;
 			} // opens
 			elseif ( 2 == $row->type ) {
-					$action_counts[ $row->ID ]['opens'] += intval( $row->count );
-					$action_counts[ $row->ID ]['opens_total'] += intval( $row->total );
+					$action_counts[ $row->ID ]['opens'] += (int) $row->count;
+					$action_counts[ $row->ID ]['opens_total'] += (int) $row->total;
 			} // clicks
 			elseif ( 3 == $row->type ) {
-					$action_counts[ $row->ID ]['clicks'] += intval( $row->count );
-					$action_counts[ $row->ID ]['clicks_total'] += intval( $row->total );
+					$action_counts[ $row->ID ]['clicks'] += (int) $row->count;
+					$action_counts[ $row->ID ]['clicks_total'] += (int) $row->total;
 			} // unsubscribes
 			elseif ( 4 == $row->type ) {
-					$action_counts[ $row->ID ]['unsubscribes'] += intval( $row->count );
+					$action_counts[ $row->ID ]['unsubscribes'] += (int) $row->count;
 			} // softbounces
 			elseif ( 5 == $row->type ) {
-					$action_counts[ $row->ID ]['softbounces'] += intval( $row->count );
+					$action_counts[ $row->ID ]['softbounces'] += (int) $row->count;
 			} // bounces
 			elseif ( 6 == $row->type ) {
-					$action_counts[ $row->ID ]['bounces'] += intval( $row->count );
+					$action_counts[ $row->ID ]['bounces'] += (int) $row->count;
 			} // error
 			elseif ( 7 == $row->type ) {
 					$action_counts[ $row->ID ]['errors'] += floor( $row->count );
@@ -625,7 +625,7 @@ class MailsterActions {
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS b ON a.subscriber_id = b.subscriber_id WHERE a.campaign_id != 0";
 
 		if ( $strict ) {
-			$sql .= ' AND b.list_id = ' . intval( $list_id );
+			$sql .= ' AND b.list_id = ' . (int) $list_id;
 		}
 
 		$sql .= ' GROUP BY b.list_id, a.type, a.campaign_id';
@@ -646,25 +646,25 @@ class MailsterActions {
 
 			// sent
 			if ( 1 == $row->type ) {
-				$action_counts[ $row->ID ]['sent'] += intval( $row->count );
-				$action_counts[ $row->ID ]['sent_total'] += intval( $row->total );
+				$action_counts[ $row->ID ]['sent'] += (int) $row->count;
+				$action_counts[ $row->ID ]['sent_total'] += (int) $row->total;
 			} // opens
 			elseif ( 2 == $row->type ) {
-					$action_counts[ $row->ID ]['opens'] += intval( $row->count );
-					$action_counts[ $row->ID ]['opens_total'] += intval( $row->total );
+					$action_counts[ $row->ID ]['opens'] += (int) $row->count;
+					$action_counts[ $row->ID ]['opens_total'] += (int) $row->total;
 			} // clicks
 			elseif ( 3 == $row->type ) {
-					$action_counts[ $row->ID ]['clicks'] += intval( $row->count );
-					$action_counts[ $row->ID ]['clicks_total'] += intval( $row->total );
+					$action_counts[ $row->ID ]['clicks'] += (int) $row->count;
+					$action_counts[ $row->ID ]['clicks_total'] += (int) $row->total;
 			} // unsubscribes
 			elseif ( 4 == $row->type ) {
-					$action_counts[ $row->ID ]['unsubscribes'] += intval( $row->count );
+					$action_counts[ $row->ID ]['unsubscribes'] += (int) $row->count;
 			} // softbounces
 			elseif ( 5 == $row->type ) {
-					$action_counts[ $row->ID ]['softbounces'] += intval( $row->count );
+					$action_counts[ $row->ID ]['softbounces'] += (int) $row->count;
 			} // bounces
 			elseif ( 6 == $row->type ) {
-					$action_counts[ $row->ID ]['bounces'] += intval( $row->count );
+					$action_counts[ $row->ID ]['bounces'] += (int) $row->count;
 			} // error
 			elseif ( 7 == $row->type ) {
 					$action_counts[ $row->ID ]['errors'] += floor( $row->count );
@@ -796,7 +796,7 @@ class MailsterActions {
 
 		foreach ( $result as $row ) {
 			foreach ( $sets as $set ) {
-				$datasets[ $set ][ $row->date ] = intval( $row->{$set} );
+				$datasets[ $set ][ $row->date ] = (int) $row->{$set};
 			}
 		}
 
@@ -916,22 +916,22 @@ class MailsterActions {
 
 				// sent
 				if ( 1 == $row->type ) {
-					$actions[ $timestr ]['sent'] = intval( $row->count );
+					$actions[ $timestr ]['sent'] = (int) $row->count;
 				} // opens
 				elseif ( 2 == $row->type ) {
-						$actions[ $timestr ]['opens'] = intval( $row->count );
+						$actions[ $timestr ]['opens'] = (int) $row->count;
 				} // clicks
 				elseif ( 3 == $row->type ) {
-						$actions[ $timestr ]['clicks'] = intval( $row->count );
+						$actions[ $timestr ]['clicks'] = (int) $row->count;
 				} // unsubscribes
 				elseif ( 4 == $row->type ) {
-						$actions[ $timestr ]['unsubscribes'] = intval( $row->count );
+						$actions[ $timestr ]['unsubscribes'] = (int) $row->count;
 				} // softbounces
 				elseif ( 5 == $row->type ) {
-						$actions[ $timestr ]['softbounces'] = intval( $row->count );
+						$actions[ $timestr ]['softbounces'] = (int) $row->count;
 				} // bounces
 				elseif ( 6 == $row->type ) {
-						$actions[ $timestr ]['bounces'] = intval( $row->count );
+						$actions[ $timestr ]['bounces'] = (int) $row->count;
 				} // error
 				elseif ( 7 == $row->type ) {
 						$actions[ $timestr ]['errors'] = floor( $row->count );
@@ -952,7 +952,7 @@ class MailsterActions {
 					continue;
 				}
 
-				$actions[ $timestr ]['signups'] = intval( $row->count );
+				$actions[ $timestr ]['signups'] = (int) $row->count;
 			}
 
 			if ( ! $desc ) {
@@ -1004,7 +1004,7 @@ class MailsterActions {
 
 			// if not cached just get from the current user
 			if ( ! $cache && $subscriber_id ) {
-				$sql .= ' AND a.subscriber_id = ' . intval( $subscriber_id );
+				$sql .= ' AND a.subscriber_id = ' . (int) $subscriber_id;
 			}
 
 			$sql .= ' GROUP BY a.type, a.link_id, a.subscriber_id, a.campaign_id';
@@ -1019,26 +1019,26 @@ class MailsterActions {
 
 				// sent
 				if ( 1 == $row->type ) {
-					$actions[ $row->ID ]['sent'] = intval( $row->timestamp );
-					$actions[ $row->ID ]['sent_total'] = intval( $row->total );
+					$actions[ $row->ID ]['sent'] = (int) $row->timestamp;
+					$actions[ $row->ID ]['sent_total'] = (int) $row->total;
 				} // opens
 				elseif ( 2 == $row->type ) {
-						$actions[ $row->ID ]['opens'] = intval( $row->timestamp );
-						$actions[ $row->ID ]['opens_total'] = intval( $row->total );
+						$actions[ $row->ID ]['opens'] = (int) $row->timestamp;
+						$actions[ $row->ID ]['opens_total'] = (int) $row->total;
 				} // clicks
 				elseif ( 3 == $row->type ) {
-						$actions[ $row->ID ]['clicks'][ $row->link ] = intval( $row->total );
-						$actions[ $row->ID ]['clicks_total'] += intval( $row->total );
+						$actions[ $row->ID ]['clicks'][ $row->link ] = (int) $row->total;
+						$actions[ $row->ID ]['clicks_total'] += (int) $row->total;
 				} // unsubscribes
 				elseif ( 4 == $row->type ) {
-						$actions[ $row->ID ]['unsubscribes'] = intval( $row->timestamp );
+						$actions[ $row->ID ]['unsubscribes'] = (int) $row->timestamp;
 				} // softbounces
 				elseif ( 5 == $row->type ) {
-						$actions[ $row->ID ]['softbounces'] = intval( $row->timestamp );
-						$actions[ $row->ID ]['softbounces_total'] += intval( $row->total );
+						$actions[ $row->ID ]['softbounces'] = (int) $row->timestamp;
+						$actions[ $row->ID ]['softbounces_total'] += (int) $row->total;
 				} // bounces
 				elseif ( 6 == $row->type ) {
-						$actions[ $row->ID ]['bounces'] = intval( $row->timestamp );
+						$actions[ $row->ID ]['bounces'] = (int) $row->timestamp;
 				} // error
 				elseif ( 7 == $row->type ) {
 						$actions[ $row->ID ]['errors'] = floor( $row->timestamp );
@@ -1216,11 +1216,11 @@ class MailsterActions {
 		$sql = "SELECT p.post_title AS campaign_title, p.post_status AS campaign_status, a.*, b.link, error.meta_value AS error FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_links AS b ON b.ID = a.link_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS error ON error.subscriber_id = a.subscriber_id AND error.campaign_id = a.campaign_id AND error.meta_key = 'error' LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id WHERE 1";
 
 		if ( ! is_null( $campaign_id ) ) {
-			$sql .= ' AND a.campaign_id = ' . intval( $campaign_id );
+			$sql .= ' AND a.campaign_id = ' . (int) $campaign_id;
 		}
 
 		if ( ! is_null( $subscriber_id ) ) {
-			$sql .= ' AND a.subscriber_id = ' . intval( $subscriber_id );
+			$sql .= ' AND a.subscriber_id = ' . (int) $subscriber_id;
 		}
 
 		if ( ! is_null( $exclude ) ) {
@@ -1230,7 +1230,7 @@ class MailsterActions {
 		$sql .= ' ORDER BY a.timestamp DESC, a.type DESC';
 
 		if ( ! is_null( $limit ) ) {
-			$sql .= ' LIMIT ' . intval( $limit );
+			$sql .= ' LIMIT ' . (int) $limit;
 		}
 
 		$actions = $wpdb->get_results( $sql );
@@ -1257,13 +1257,13 @@ class MailsterActions {
 		$sql = "SELECT p.post_title AS campaign_title, a.*, b.link FROM {$wpdb->prefix}mailster_actions AS a INNER JOIN (SELECT min(timestamp) as max_ts, type FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.subscriber_id = ab.subscriber_id WHERE 1";
 
 		if ( ! is_null( $list_id ) ) {
-			$sql .= ' AND ab.list_id = ' . intval( $list_id );
+			$sql .= ' AND ab.list_id = ' . (int) $list_id;
 		}
 
 		$sql .= " GROUP BY type, link_id) AS a2 ON a.timestamp = a2.max_ts and a.type = a2.type LEFT JOIN {$wpdb->prefix}mailster_links AS b ON b.ID = a.link_id LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.subscriber_id = ab.subscriber_id WHERE 1";
 
 		if ( ! is_null( $list_id ) ) {
-			$sql .= ' AND ab.list_id = ' . intval( $list_id );
+			$sql .= ' AND ab.list_id = ' . (int) $list_id;
 		}
 
 		if ( ! is_null( $exclude ) ) {
@@ -1273,7 +1273,7 @@ class MailsterActions {
 		$sql .= ' GROUP BY a.type, a.link_id ORDER BY a.timestamp DESC, a.type DESC';
 
 		if ( ! is_null( $limit ) ) {
-			$sql .= ' LIMIT ' . intval( $limit );
+			$sql .= ' LIMIT ' . (int) $limit;
 		}
 
 		$actions = $wpdb->get_results( $sql );
@@ -1294,13 +1294,13 @@ class MailsterActions {
 
 		global $wpdb;
 
-		if ( $id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}mailster_links WHERE `link` = %s AND `i` = %d LIMIT 1", $link, intval( $index ) ) ) ) {
+		if ( $id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}mailster_links WHERE `link` = %s AND `i` = %d LIMIT 1", $link, (int) $index ) ) ) {
 
-			return intval( $id );
+			return (int) $id;
 
 		} elseif ( $wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->prefix}mailster_links (`link`, `i`) VALUES (%s, %d)", $link, $index ) ) ) {
 
-			return intval( $wpdb->insert_id );
+			return (int) $wpdb->insert_id;
 
 		}
 

@@ -21,7 +21,7 @@ class MailsterHelper {
 
 		if ( $attach_id ) {
 
-			$attach_id = intval( $attach_id );
+			$attach_id = (int) $attach_id;
 
 			$image_src = wp_get_attachment_image_src( $attach_id, 'full' );
 			if ( ! $image_src ) {
@@ -614,7 +614,7 @@ class MailsterHelper {
 	 */
 	public function get_first_form_id() {
 		global $wpdb;
-		return intval( $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" ) );
+		return (int) $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" );
 	}
 
 

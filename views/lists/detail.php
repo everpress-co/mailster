@@ -1,6 +1,6 @@
 <?php
 
-$id = isset( $_GET['ID'] ) ? intval( $_GET['ID'] ) : null;
+$id = isset( $_GET['ID'] ) ? (int) $_GET['ID'] : null;
 
 $is_new = isset( $_GET['new'] );
 

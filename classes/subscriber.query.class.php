@@ -815,7 +815,7 @@ class MailsterSubscriberQuery {
 
 		$limit = '';
 		if ( $this->args['limit'] && ! $this->args['return_count'] ) {
-			$limit = ' LIMIT ' . intval( $this->args['offset'] ) . ', ' . intval( $this->args['limit'] );
+			$limit = ' LIMIT ' . (int) $this->args['offset'] . ', ' . (int) $this->args['limit'];
 		}
 
 		$sql = $select . $from . $join . $where . $group . $having . $order . $limit;

@@ -150,9 +150,9 @@ class MailsterSubscribers {
 
 		if ( isset( $_POST['post_data'] ) ) {
 			$is_ajax = true;
-			$page = isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 0;
-			$limit = isset( $_POST['per_page'] ) ? intval( $_POST['per_page'] ) : 40;
-			$total = isset( $_POST['count'] ) ? intval( $_POST['count'] ) : false;
+			$page = isset( $_POST['page'] ) ? (int) $_POST['page'] : 0;
+			$limit = isset( $_POST['per_page'] ) ? (int) $_POST['per_page'] : 40;
+			$total = isset( $_POST['count'] ) ? (int) $_POST['count'] : false;
 			parse_str( $_POST['post_data'], $_POST );
 		}
 
@@ -176,7 +176,7 @@ class MailsterSubscribers {
 		if ( isset( $_POST['all_subscribers'] ) && $_POST['all_subscribers'] ) {
 			$args = $_GET;
 
-			$status = isset( $_GET['status'] ) ? intval( $_GET['status'] ) : false;
+			$status = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
 			$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
 			$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
 			$offset = $page * $limit;
@@ -344,7 +344,7 @@ class MailsterSubscribers {
 
 		if ( isset( $_GET['new'] ) && isset( $_GET['wp_user'] ) ) {
 
-			$user_id = intval( $_GET['wp_user'] );
+			$user_id = (int) $_GET['wp_user'];
 
 			$subscriber_id = $this->add_from_wp_user( $user_id, array( 'status' => 1, 'referer' => 'wpuser' ) );
 
@@ -441,7 +441,7 @@ class MailsterSubscribers {
 						wp_die( __( 'You are not allowed to delete subscribers!', 'mailster' ) );
 					}
 
-					if ( $subscriber = $this->get( intval( $_POST['mailster_data']['ID'] ), true ) ) {
+					if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true ) ) {
 						$success = $this->remove( $subscriber->ID );
 						if ( ! $success ) {
 							mailster_notice( __( 'There was an error while deleting subscribers!', 'mailster' ), 'error', true );
@@ -459,7 +459,7 @@ class MailsterSubscribers {
 
 			elseif ( isset( $_POST['confirmation'] ) ) :
 
-				if ( $subscriber = $this->get( intval( $_POST['mailster_data']['ID'] ), true ) ) {
+				if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true ) ) {
 					if ( $this->send_confirmations( $subscriber->ID, true, true ) ) {
 						mailster_notice( __( 'Confirmation has been sent', 'mailster' ), 'success', true );
 					}
@@ -476,8 +476,8 @@ class MailsterSubscribers {
 				wp_die( __( 'You are not allowed to publish campaigns!', 'mailster' ) );
 			}
 
-			$subscriber_id = isset( $_GET['ID'] ) ? intval( $_GET['ID'] ) : null;
-			$campaign_id = isset( $_GET['campaign_id'] ) ? intval( $_GET['campaign_id'] ) : null;
+			$subscriber_id = isset( $_GET['ID'] ) ? (int) $_GET['ID'] : null;
+			$campaign_id = isset( $_GET['campaign_id'] ) ? (int) $_GET['campaign_id'] : null;
 
 			if ( $subscriber_id && $campaign_id && $subscriber = $this->get( $subscriber_id, true ) ) {
 
@@ -509,7 +509,7 @@ class MailsterSubscribers {
 		$sql = "SELECT ID FROM {$wpdb->prefix}mailster_subscribers WHERE wp_id != 0";
 
 		if ( ! is_null( $limit ) ) {
-			$sql .= ' LIMIT ' . intval( $offset ) . ', ' . intval( $limit );
+			$sql .= ' LIMIT ' . (int) $offset . ', ' . (int) $limit;
 		}
 
 		$subscriber_ids = $wpdb->get_col( $sql );
@@ -597,7 +597,7 @@ class MailsterSubscribers {
 
 		$sql = "SELECT wp_id AS ID FROM {$wpdb->prefix}mailster_subscribers WHERE wp_id != 0";
 		if ( ! is_null( $limit ) ) {
-			$sql .= ' LIMIT ' . intval( $offset ) . ', ' . intval( $limit );
+			$sql .= ' LIMIT ' . (int) $offset . ', ' . (int) $limit;
 		}
 
 		$user_ids = $wpdb->get_col( $sql );
@@ -931,7 +931,7 @@ class MailsterSubscribers {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
-			$subscriber_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : intval( $data['ID'] );
+			$subscriber_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
 			$bulkimport = defined( 'MAILSTER_DO_BULKIMPORT' ) && MAILSTER_DO_BULKIMPORT;
 
 			if ( ! $bulkimport ) {
@@ -944,7 +944,7 @@ class MailsterSubscribers {
 				$meta['geo'] = $geo->country_code . '|' . $geo->city;
 				if ( $geo->city ) {
 					$meta['coords'] = floatval( $geo->latitude ) . ',' . floatval( $geo->longitude );
-					$meta['timeoffset'] = intval( $geo->timeoffset );
+					$meta['timeoffset'] = (int) $geo->timeoffset;
 				}
 			}
 			if ( isset( $meta['form'] ) ) {
@@ -1244,9 +1244,9 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( intval( $subscriber_ids ) ) : array_filter( $subscriber_ids, 'is_numeric' );
+		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
 		if ( ! is_array( $lists ) ) {
-			$lists = array( intval( $lists ) );
+			$lists = array( (int) $lists );
 		}
 
 		if ( $remove_old ) {
@@ -1270,7 +1270,7 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( intval( $subscriber_ids ) ) : array_filter( $subscriber_ids, 'is_numeric' );
+		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
 
 		$sql = "DELETE FROM {$wpdb->prefix}mailster_lists_subscribers WHERE subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ')';
 
@@ -1313,8 +1313,8 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( intval( $subscriber_ids ) ) : array_filter( $subscriber_ids, 'is_numeric' );
-		$statuses = ! is_null( $status ) ? ( ! is_array( $status ) ? array( intval( $status ) ) : array_filter( $status, 'is_numeric' ) ) : null;
+		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
+		$statuses = ! is_null( $status ) ? ( ! is_array( $status ) ? array( (int) $status ) : array_filter( $status, 'is_numeric' ) ) : null;
 
 		if ( empty( $subscriber_ids ) ) {
 			return true;
@@ -2064,7 +2064,7 @@ class MailsterSubscribers {
 
 		switch ( $type ) {
 			case 'id':
-				$subscriber = $this->get( intval( $value ), false );
+				$subscriber = $this->get( (int) $value, false );
 			break;
 			case 'hash':
 				$subscriber = $this->get_by_hash( $value, false );
@@ -2288,7 +2288,7 @@ class MailsterSubscribers {
 		}
 
 		if ( ! is_null( $ids ) ) {
-			$ids = ! is_array( $ids ) ? array( intval( $ids ) ) : array_filter( $ids, 'is_numeric' );
+			$ids = ! is_array( $ids ) ? array( (int) $ids ) : array_filter( $ids, 'is_numeric' );
 			$ids = array_filter( $ids );
 			if ( ! empty( $ids ) ) {
 				$sql .= ' AND subscribers.ID IN (' . implode( ',', $ids ) . ')';
@@ -2345,7 +2345,7 @@ class MailsterSubscribers {
 		$sql = "DELETE a,b FROM {$wpdb->prefix}mailster_queue AS a LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS b ON a.subscriber_id = b.subscriber_id AND b.meta_key = 'confirmation' WHERE a.campaign_id = 0 AND a.options LIKE '%s:8:\"template\";s:12:\"confirmation\";%'";
 
 		if ( ! is_null( $subscriber_id ) ) {
-			$sql .= ' AND a.subscriber_id = ' . intval( $subscriber_id );
+			$sql .= ' AND a.subscriber_id = ' . (int) $subscriber_id;
 		}
 
 		return false !== $wpdb->query( $sql );
@@ -2508,7 +2508,7 @@ class MailsterSubscribers {
 		$sql .= ' WHERE status ' . ( $not_in_status ? 'NOT IN' : 'IN' ) . ' (' . implode( ', ', $statuses ) . ')';
 
 		if ( ! is_null( $limit ) ) {
-			$sql .= ' LIMIT ' . intval( $offset ) . ', ' . intval( $limit );
+			$sql .= ' LIMIT ' . (int) $offset . ', ' . (int) $limit;
 		}
 
 		return $wpdb->get_col( $sql );
@@ -2529,7 +2529,7 @@ class MailsterSubscribers {
 		global $wpdb;
 
 		if ( 'ID' == $type ) {
-			$value = intval( $value );
+			$value = (int) $value;
 			if ( $subscriber = mailster_cache_get( 'subscriber_' . $value ) ) {
 				return $subscriber;
 			}
@@ -2745,7 +2745,7 @@ class MailsterSubscribers {
 		if ( $actions->clicks ) {
 			$html .= '<li><ul>';
 			foreach ( $actions->clicks as $link => $count ) {
-				$html .= '<li class=""><a href="' . $link . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( _n( '%s click', '%s clicks', intval( $count ), 'mailster' ), $count ) . ')</span></li>';
+				$html .= '<li class=""><a href="' . $link . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( _n( '%s click', '%s clicks', (int) $count, 'mailster' ), $count ) . ')</span></li>';
 			}
 			$html .= '</ul></li>';
 		}
@@ -3284,7 +3284,7 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( intval( $subscriber_ids ) ) : array_filter( $subscriber_ids, 'is_numeric' );
+		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
 
 		$count = 0;
 

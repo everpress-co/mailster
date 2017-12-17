@@ -1,6 +1,6 @@
 <?php
 
-$id = isset( $_GET['ID'] ) ? intval( $_GET['ID'] ) : null;
+$id = isset( $_GET['ID'] ) ? (int) $_GET['ID'] : null;
 
 $currentpage = isset( $_GET['tab'] ) ? $_GET['tab'] : 'structure';
 
@@ -70,7 +70,7 @@ if ( $is_new ) {
 } else {
 	esc_html_e( 'Edit Form', 'mailster' );
 ?>
-<input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo intval( $form->ID ) ?>">
+<input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo (int) $form->ID ?>">
 <?php if ( current_user_can( 'mailster_add_forms' ) ) : ?>
 	<a href="edit.php?post_type=newsletter&page=mailster_forms&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>

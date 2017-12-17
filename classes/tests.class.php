@@ -392,7 +392,7 @@ class MailsterTests {
 		}
 	}
 	private function test_memory_limit() {
-		if ( max( intval( @ini_get( 'memory_limit' ) ), intval( WP_MAX_MEMORY_LIMIT ) ) < 128 ) {
+		if ( max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT ) < 128 ) {
 			$this->warning( 'Your Memory Limit is ' . size_format( (int) WP_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		} else {
 			$this->success( 'Your Memory Limit is ' . size_format( (int) WP_MEMORY_LIMIT * 1048576 ) );

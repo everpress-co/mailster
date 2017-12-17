@@ -37,8 +37,8 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 	<meta property="og:site_name" content="<?php echo esc_attr( $blogname ) ?>" />
 <?php if ( $post_thumbnail_id ) : ?>
 	<meta property="og:image" content="<?php echo esc_attr( $image[0] ) ?>" />
-	<meta property="og:image:width" content="<?php echo intval( $image[1] ) ?>" />
-	<meta property="og:image:height" content="<?php echo intval( $image[2] ) ?>" />
+	<meta property="og:image:width" content="<?php echo (int) $image[1] ?>" />
+	<meta property="og:image:height" content="<?php echo (int) $image[2] ?>" />
 <?php endif; ?>
 
 	<meta name="twitter:card" content="<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_card', apply_filters( 'mailster_frontpage_twitter_card', 'summary' ) ) ); ?>"/>
@@ -89,7 +89,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 								}
 
 								?><li>
-									<a title="<?php printf( __( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ) ?>" class="<?php echo $service ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? intval( $social_services[ $service ]['width'] ) : 650 ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? intval( $social_services[ $service ]['height'] ) : 405 ?>" >
+									<a title="<?php printf( __( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ) ?>" class="<?php echo $service ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? (int) $social_services[ $service ]['width'] : 650 ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? (int) $social_services[ $service ]['height'] : 405 ?>" >
 									<?php echo esc_html( $social_services[ $service ]['name'] ) ?>
 									</a>
 								</li>

@@ -91,7 +91,7 @@ class MailsterCampaigns {
 
 		if ( substr( $func, 0, 19 ) == 'autoresponder_hook_' ) {
 
-			$campaign_id = intval( substr( $func, 19 ) );
+			$campaign_id = (int) substr( $func, 19 );
 
 			$subscribers = isset( $args[0] ) ? array_shift( $args ) : null;
 
@@ -349,30 +349,30 @@ class MailsterCampaigns {
 
 			// duplicate campaign
 			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
-					$id = intval( $_GET['duplicate'] );
+					$id = (int) $_GET['duplicate'];
 					$id = $this->duplicate( $id );
 
 				// pause campaign
 			} elseif ( isset( $_GET['pause'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_pause_nonce' ) ) {
-					$id = intval( $_GET['pause'] );
+					$id = (int) $_GET['pause'];
 					$this->pause( $id );
 
 				// continue/start campaign
 			} elseif ( isset( $_GET['start'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_start_nonce' ) ) {
-					$id = intval( $_GET['start'] );
+					$id = (int) $_GET['start'];
 					$this->start( $id );
 				// finish campaign
 			} elseif ( isset( $_GET['finish'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_finish_nonce' ) ) {
-					$id = intval( $_GET['finish'] );
+					$id = (int) $_GET['finish'];
 					$this->finish( $id );
 				// activate autoresponder
 			} elseif ( isset( $_GET['activate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_activate_nonce' ) ) {
-					$id = intval( $_GET['activate'] );
+					$id = (int) $_GET['activate'];
 					$this->activate( $id );
 
 				// deactivate autoresponder
 			} elseif ( isset( $_GET['deactivate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_deactivate_nonce' ) ) {
-					$id = intval( $_GET['deactivate'] );
+					$id = (int) $_GET['deactivate'];
 					$this->deactivate( $id );
 			}
 
@@ -1515,7 +1515,7 @@ class MailsterCampaigns {
 
 				if ( 'mailster_autoresponder_timebased' == $autoresponder['action'] ) {
 
-					$autoresponder['interval'] = max( 1, intval( $autoresponder['interval'] ) );
+					$autoresponder['interval'] = max( 1, (int) $autoresponder['interval'] );
 					$meta['timezone'] = isset( $autoresponder['timebased_timezone'] );
 
 					$autoresponder['since'] = isset( $autoresponder['since'] ) ? ($autoresponder['since'] ? $autoresponder['since'] : $now) : false;
@@ -1538,7 +1538,7 @@ class MailsterCampaigns {
 					}
 				} elseif ( 'mailster_autoresponder_followup' == $autoresponder['action'] ) {
 
-					$parent_id = isset( $_POST['parent_id'] ) ? intval( $_POST['parent_id'] ) : null;
+					$parent_id = isset( $_POST['parent_id'] ) ? (int) $_POST['parent_id'] : null;
 
 					switch ( $autoresponder['followup_action'] ) {
 						// sent
@@ -3131,7 +3131,7 @@ class MailsterCampaigns {
 					floatval( $coords[0] ),
 					floatval( $coords[1] ),
 					$geo[1],
-					intval( $row->count ),
+					(int) $row->count,
 					$row->count . ' ' . _n( 'opened', 'opens', $row->count, 'mailster' ),
 				);
 			}
@@ -3243,7 +3243,7 @@ class MailsterCampaigns {
 		$track_clicks = $this->meta( $campaign_id, 'track_clicks' );
 
 		$limit = apply_filters( 'mailster_get_recipients_part', 1000 );
-		$offset = intval( $page ) * $limit;
+		$offset = (int) $page * $limit;
 
 		$fields = array(
 			'ID' => __( 'ID', 'mailster' ),
@@ -3519,7 +3519,7 @@ class MailsterCampaigns {
 
 			case 'edit':
 
-				$id = intval( $_POST['data']['mailster']['id'] );
+				$id = (int) $_POST['data']['mailster']['id'];
 
 				$post = $this->get( $id );
 				if ( ! $post ) {
@@ -4267,7 +4267,7 @@ class MailsterCampaigns {
 				'urlstream_upload' => true,
 				'multipart_params' => array(
 					'action' => 'mailster_editor_image_upload_handler',
-					'ID' => isset( $_GET['id'] ) ? intval( $_GET['id'] ) : null,
+					'ID' => isset( $_GET['id'] ) ? (int) $_GET['id'] : null,
 					'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
 				),
 				'multi_selection' => false,

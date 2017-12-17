@@ -301,7 +301,7 @@ class MailsterForm {
 
 				case '_status':
 
-					$subscriber_status = isset( $this->object['userdata']['status'] ) ? intval( $this->object['userdata']['status'] ) : 1;
+					$subscriber_status = isset( $this->object['userdata']['status'] ) ? (int) $this->object['userdata']['status'] : 1;
 
 					$fields[ $field->field_id ] = '<div class="mailster-wrapper mailster-' . $field->field_id . '-wrapper' . $class . '">';
 
@@ -638,7 +638,7 @@ class MailsterForm {
 	 * @param unknown $ID
 	 */
 	public function campaign_id( $ID ) {
-		$this->campaignID = intval( $ID );
+		$this->campaignID = (int) $ID;
 	}
 
 
@@ -734,7 +734,7 @@ class MailsterForm {
 		global $post;
 		$form_id = '';
 		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#i', $post->post_content, $matches ) ) {
-			$form_id = intval( $matches[1] );
+			$form_id = (int) $matches[1];
 			$this->id( $form_id );
 		}
 
@@ -816,7 +816,7 @@ class MailsterForm {
 
 		$now = time();
 
-		$this->id( isset( $_BASE['formid'] ) ? intval( $_BASE['formid'] ) : 1 );
+		$this->id( isset( $_BASE['formid'] ) ? (int) $_BASE['formid'] : 1 );
 
 		$double_opt_in = $this->form->doubleoptin;
 		$overwrite = $this->form->overwrite;
@@ -919,7 +919,7 @@ class MailsterForm {
 
 				case 'unsubscribe':
 
-					$campaign_id = ! empty( $_BASE['campaign'] ) ? intval( $_BASE['campaign'] ) : null;
+					$campaign_id = ! empty( $_BASE['campaign'] ) ? (int) $_BASE['campaign'] : null;
 					$subscriber_id = $subscriber = null;
 
 					if ( isset( $_BASE['email'] ) ) {
@@ -963,7 +963,7 @@ class MailsterForm {
 					// change status if other than pending, subscribed or unsubscribed
 					$status = $subscriber->status >= 3 ? 1 : $subscriber->status;
 					if ( isset( $_BASE['_status'] ) ) {
-						if ( $status == 0 && intval( $_BASE['_status'] ) == 1 ) {
+						if ( $status == 0 && (int) $_BASE['_status'] == 1 ) {
 
 							if ( mailster_option( 'track_users' ) ) {
 								$ip = mailster_get_ip();
@@ -973,7 +973,7 @@ class MailsterForm {
 							$entry['confirm'] = time();
 
 						}
-						$status = intval( $_BASE['_status'] );
+						$status = (int) $_BASE['_status'];
 					}
 
 					$entry = wp_parse_args( array(
@@ -1276,7 +1276,7 @@ class MailsterForm {
 			wp_die( 'no data' );
 		};
 
-		$campaign_id = ! empty( $_BASE['campaign'] ) ? intval( $_BASE['campaign'] ) : null;
+		$campaign_id = ! empty( $_BASE['campaign'] ) ? (int) $_BASE['campaign'] : null;
 
 		if ( isset( $_BASE['email'] ) ) {
 			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id, 'email_unsubscribe' );

@@ -91,10 +91,10 @@ class MailsterManage {
 
 		@set_time_limit( 0 );
 
-		if ( intval( $max_execution_time ) < 300 ) {
+		if ( (int) $max_execution_time < 300 ) {
 			@ini_set( 'max_execution_time', 300 );
 		}
-		if ( intval( $memory_limit ) < 256 ) {
+		if ( (int) $memory_limit < 256 ) {
 			@ini_set( 'memory_limit', '256M' );
 		}
 
@@ -452,10 +452,10 @@ class MailsterManage {
 
 		@set_time_limit( 0 );
 
-		if ( intval( $max_execution_time ) < 300 ) {
+		if ( (int) $max_execution_time < 300 ) {
 			@ini_set( 'max_execution_time', 300 );
 		}
-		if ( intval( $memory_limit ) < 256 ) {
+		if ( (int) $memory_limit < 256 ) {
 			@ini_set( 'memory_limit', '256M' );
 		}
 
@@ -503,7 +503,7 @@ class MailsterManage {
 		$parts_at_once = $bulkdata['performance'] ? 2 : 8;
 		$list_cache = array();
 
-		$bulkdata['current'] = intval( $_POST['id'] );
+		$bulkdata['current'] = (int) $_POST['id'];
 
 		$sql = "SELECT data FROM {$wpdb->prefix}mailster_temp_import WHERE identifier = %s ORDER BY ID ASC LIMIT %d, $parts_at_once";
 
@@ -606,7 +606,7 @@ class MailsterManage {
 
 					// apply global status
 					if ( $bulkdata['status'] == -1 && is_numeric( $insert['status'] ) ) {
-						$insert['status'] = intval( $insert['status'] );
+						$insert['status'] = (int) $insert['status'];
 					} else {
 						$insert['status'] = $bulkdata['status'];
 					}
@@ -827,8 +827,8 @@ class MailsterManage {
 
 		parse_str( $_POST['data'], $d );
 
-		$offset = intval( $_POST['offset'] );
-		$limit = intval( $_POST['limit'] );
+		$offset = (int) $_POST['offset'];
+		$limit = (int) $_POST['limit'];
 		$raw_data = array();
 
 		$listids = isset( $d['lists'] ) ? array_filter( $d['lists'], 'is_numeric' ) : array();
