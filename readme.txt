@@ -84,6 +84,9 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+* updated segmentation screen with more possibilities
+* various bug fixes and improvements
+
 = Version 2. 3.beta.10 =
 
 * improved: performance on newsletter overview page
