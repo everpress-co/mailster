@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 
 * updated segmentation screen with more possibilities
 * various bug fixes and improvements
+* fixed: conflict with some third party delivery plugins
 
 = Version 2. 3.beta.10 =
 

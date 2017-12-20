@@ -535,6 +535,7 @@ if ( $old_version ) {
 	}
 
 	update_option( 'mailster_version_old', $old_version );
+	update_option( 'mailster_updated', time() );
 
 }
 

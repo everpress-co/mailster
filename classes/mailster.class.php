@@ -1212,6 +1212,7 @@ class Mailster {
 				$this->dbstructure();
 				mailster( 'helper' )->mkdir();
 				update_option( 'mailster', time() );
+				update_option( 'mailster_updated', time() );
 				update_option( 'mailster_license', '' );
 				update_option( 'mailster_username', '' );
 				update_option( 'mailster_hooks', '' );
