@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.2.16 =
 
 * fixed: Double id on settings page
+* fixed: conflict with some third party delivery plugins
 * improved: Excerpt and Content of posts look the same no matter which type of embedding were used
 
 = Version 2.2.15 =

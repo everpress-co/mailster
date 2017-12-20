@@ -19,8 +19,10 @@ else :
 	global $phpmailer;
 	if ( ! is_object( $phpmailer ) || ! $phpmailer instanceof PHPMailer ) {
 		require_once ABSPATH . WPINC . '/class-phpmailer.php';
-		require_once ABSPATH . WPINC . '/class-smtp.php';
 		$phpmailer = new PHPMailer( true );
+	}
+	if ( ! class_exists( 'SMTP' ) ) {
+		require_once ABSPATH . WPINC . '/class-smtp.php';
 	}
 
 	class _mailster_SMTP extends SMTP {};
