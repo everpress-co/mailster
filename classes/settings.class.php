@@ -1480,7 +1480,7 @@ class MailsterSettings {
 			'HOME_URL' => home_url(),
 			'--',
 			'Mailster Version' => MAILSTER_VERSION,
-			'Updated From' => get_option( 'mailster_version_old', 'N/A' ),
+			'Updated From' => get_option( 'mailster_version_old', 'N/A' ) . ' (' . date( 'Y-m-d H:i:s', get_option( 'mailster_updated' ) ) . ')',
 			'WordPress Version' => get_bloginfo( 'version' ),
 			'Mailster DB Version' => $db_version,
 			'PHPMailer Version' => $mail->mailer->Version,

@@ -692,7 +692,7 @@ class MailsterHelper {
 ?>
 
 			<div class="<?php echo esc_attr( implode( ' ', $classes ) ) ?>" title="<?php esc_attr_e( 'Change Image', 'mailster' ); ?>" data-title="<?php esc_attr_e( 'Add Image', 'mailster' ); ?>">
-				<img class="media-editor-link-img" src="<?php echo esc_attr( $image_url ) ?>">
+				<img class="media-editor-link-img" <?php if ( $image_url ) : ?>src="<?php echo esc_attr( $image_url ) ?>"<?php endif; ?>>
 				<a class="media-editor-link-select button" href="#"><?php esc_html_e( 'Select Image', 'mailster' ); ?></a>
 				<a class="media-editor-link-remove" href="#" title="<?php esc_attr_e( 'Remove Image', 'mailster' ); ?>">&#10005;</a>
 				<input class="media-editor-link-input" type="hidden" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>">
