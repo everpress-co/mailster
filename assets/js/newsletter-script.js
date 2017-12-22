@@ -3625,7 +3625,7 @@ jQuery(document).ready(function ($) {
 		if (!iframeloaded) return false;
 		setTimeout(function () {
 			if (!_iframe[0].contentWindow.document.body) return;
-			var height = _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
+			var height = _iframe.contents().height() || _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
 			_iframe.attr("height", Math.max(500, height + 10 + (extra || 0)));
 		}, delay ? delay : 500);
 	}

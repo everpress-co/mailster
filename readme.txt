@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 
 * fixed: Double id on settings page
 * fixed: conflict with some third party delivery plugins
+* fixed: editor did not expand to correct height on some third party templates
 * improved: Excerpt and Content of posts look the same no matter which type of embedding were used
 
 = Version 2.2.15 =
