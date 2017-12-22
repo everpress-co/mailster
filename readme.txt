@@ -3,10 +3,10 @@ Contributors: EverPress, revaxarts
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.1
-Stable tag: 2.2.15
+Stable tag: 2.2.16
 Author: EverPress
 Author URI: https://mailster.co
-Requires PHP: 5.3
+Requires PHP: 5.3.6
 
 == Description ==
 
@@ -81,6 +81,13 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.2.16 =
+
+* fixed: Double id on settings page
+* fixed: conflict with some third party delivery plugins
+* fixed: editor did not expand to correct height on some third party templates
+* improved: Excerpt and Content of posts look the same no matter which type of embedding were used
 
 = Version 2.2.15 =
 

@@ -1313,14 +1313,20 @@ class MailsterHelper {
 	 * @param unknown $more       (optional)
 	 * @return unknown
 	 */
-	public function get_excerpt( $org_string, $length = 55, $more = null ) {
+	public function get_excerpt( $org_string, $length = null, $more = null ) {
+
+		if ( is_null( $length ) ) {
+			$length = 55;
+		}
 
 		$excerpt = apply_filters( 'mymail_pre_get_excerpt', apply_filters( 'mailster_pre_get_excerpt', null, $org_string, $length, $more ), $org_string, $length, $more );
 		if ( is_string( $excerpt ) ) {
 			return $excerpt;
 		}
 
-		$maybe_broken_html = html_entity_decode( wp_trim_words( htmlentities( $org_string ), $length, $more ) );
+		$string = str_replace( "\n", '<!--newline-->', $org_string );
+		$string = html_entity_decode( wp_trim_words( htmlentities( $string ), $length, $more ) );
+		$maybe_broken_html = str_replace( '<!--newline-->', "\n", $string );
 
 		$doc = new DOMDocument();
 		// Note the meta charset is used to prevent UTF-8 data from being interpreted as Latin1, thus corrupting it
