@@ -48,6 +48,11 @@ class MailsterSubscriberQuery {
 
 		'calc_found_rows' => false,
 
+		'signup_after' => null,
+		'signup_before' => null,
+		'confirm_after' => null,
+		'confirm_before' => null,
+
 		'sent' => null,
 		'sent__not_in' => null,
 		'sent_before' => null,
@@ -211,6 +216,19 @@ class MailsterSubscriberQuery {
 					$this->args['conditions'] = $c;
 				}
 			}
+		}
+
+		if ( $this->args['signup_after'] ) {
+			$this->add_condition( 'signup', '>=', $this->get_timestamp( $this->args['signup_after'] ) );
+		}
+		if ( $this->args['signup_before'] ) {
+			$this->add_condition( 'signup', '<=', $this->get_timestamp( $this->args['signup_before'] ) );
+		}
+		if ( $this->args['confirm_after'] ) {
+			$this->add_condition( 'confirm', '>=', $this->get_timestamp( $this->args['confirm_after'] ) );
+		}
+		if ( $this->args['confirm_before'] ) {
+			$this->add_condition( 'confirm', '<=', $this->get_timestamp( $this->args['signup_before'] ) );
 		}
 
 		if ( $this->args['sent'] ) {
@@ -825,6 +843,7 @@ class MailsterSubscriberQuery {
 
 		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql );
 
+		// error_log($sql);
 		if ( $this->args['return_sql'] ) {
 			$result = $this->last_query = $sql;
 			$this->last_error = null;
@@ -1188,7 +1207,7 @@ class MailsterSubscriberQuery {
 	private function add_condition( $field, $operator, $value ) {
 		$condition = array(
 			'field' => $field,
-			'operator' => '=',
+			'operator' => $operator,
 			'value' => $value,
 		);
 

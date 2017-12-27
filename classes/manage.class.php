@@ -675,7 +675,7 @@ class MailsterManage {
 						if ( ! empty( $list_ids ) ) {
 							$list_ids = array_unique( $list_ids );
 							$added = null;
-							if ( mailster_option( 'list_based_opt_in' ) && $insert['status'] != 0 ) {
+							if ( $insert['status'] != 0 ) {
 								$added = isset( $insert['signup'] ) ? $insert['signup'] : time();
 							}
 							mailster( 'subscribers' )->assign_lists( $subscriber_id, $list_ids, $bulkdata['existing'] == 'overwrite', $added );

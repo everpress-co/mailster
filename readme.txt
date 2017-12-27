@@ -84,9 +84,16 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+= Version 2. 3.beta.12 =
+
+* fixed: conflict with some third party delivery plugins
+* fixed: signup timestamp for lists not stored on import
+* various bug fixes and improvements
+
+= Version 2. 3.beta.11 =
+
 * updated segmentation screen with more possibilities
 * various bug fixes and improvements
-* fixed: conflict with some third party delivery plugins
 
 = Version 2. 3.beta.10 =
 
