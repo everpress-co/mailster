@@ -60,6 +60,7 @@ class MailsterSettings {
 	public function get_defaults() {
 
 		$current_user = wp_get_current_user();
+		$email = $current_user->user_email ? $current_user->user_email : get_bloginfo( 'admin_email' );
 
 		global $wp_roles;
 
@@ -69,8 +70,8 @@ class MailsterSettings {
 
 		return array(
 			'from_name' => get_bloginfo( 'name' ),
-			'from' => $current_user->user_email,
-			'reply_to' => $current_user->user_email,
+			'from' => $email,
+			'reply_to' => $email,
 			'send_offset' => 0,
 			'timezone' => false,
 			'embed_images' => false,
@@ -111,11 +112,11 @@ class MailsterSettings {
 			'archive_slug' => 'newsletter',
 			'archive_types' => array( 'finished', 'active' ),
 			'subscriber_notification' => true,
-			'subscriber_notification_receviers' => $current_user->user_email,
+			'subscriber_notification_receviers' => $email,
 			'subscriber_notification_template' => 'notification.html',
 			'unsubscribe_notification' => false,
 			'unsubscribe_notification_receviers' => false,
-			'unsubscribe_notification_receviers' => $current_user->user_email,
+			'unsubscribe_notification_receviers' => $email,
 			'unsubscribe_notification_template' => 'notification.html',
 			'track_users' => false,
 			'do_not_track' => false,

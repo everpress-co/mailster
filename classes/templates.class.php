@@ -1157,7 +1157,6 @@ class MailsterTemplates {
 
 		if ( $path = mailster( 'helper' )->mkdir( 'templates' ) ) {
 			copy_dir( MAILSTER_DIR . 'templates' , $path );
-
 		}
 
 	}
