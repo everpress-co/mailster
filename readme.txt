@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.17 =
 
+* added: filter 'mailster_donotcache' to bypass DONOTCACHE constant
+
 = Version 2.2.16 =
 
 * fixed: Double id on settings page

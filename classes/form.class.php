@@ -188,7 +188,7 @@ class MailsterForm {
 		add_action( 'wp_footer', array( &$this, 'print_script' ) );
 		add_action( 'admin_footer', array( &$this, 'print_script' ) );
 
-		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		if ( ! defined( 'DONOTCACHEPAGE' ) && apply_filters( 'mailster_donotcache', true ) ) {
 			define( 'DONOTCACHEPAGE', true );
 		}
 
