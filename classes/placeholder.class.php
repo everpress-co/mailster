@@ -161,10 +161,6 @@ class MailsterPlaceholder {
 	 */
 	public function add_defaults( $campaign_id, $args = array() ) {
 
-		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign_id, $this->subscriberHash );
-		$forwardlink = mailster()->get_forward_link( $campaign_id );
-		$profilelink = mailster()->get_profile_link( $campaign_id, $this->subscriberHash );
-
 		$meta = mailster( 'campaigns' )->meta( $campaign_id );
 
 		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
@@ -172,14 +168,11 @@ class MailsterPlaceholder {
 		$defaults = array(
 			'preheader' => $meta['preheader'],
 			'subject' => $meta['subject'],
-			'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-			'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
-			'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
-			'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
+			'webversion' => '<a href="{webversionlink}">{webversionlinktext}</a>',
+			'unsub' => '<a href="{unsublink}">{unsublinktext}</a>',
+			'forward' => '<a href="{forwardlink}">{forwardlinktext}</a>',
+			'profile' => '<a href="{profilelink}">{profilelinktext}</a>',
 			'webversionlink' => get_permalink( $campaign_id ),
-			'unsublink' => $unsubscribelink,
-			'forwardlink' => $forwardlink,
-			'profilelink' => $profilelink,
 			'lists' => mailster( 'campaigns' )->get_formated_lists( $campaign_id ),
 			'email' => '<a href="">{emailaddress}</a>',
 			'year' => $time[0],
@@ -195,7 +188,36 @@ class MailsterPlaceholder {
 
 		$args = wp_parse_args( $args, $defaults );
 
-		$this->add( apply_filters( 'mailster_placeholder_defaults', $args ) );
+		$this->add( apply_filters( 'mailster_placeholder_defaults', $args, $campaign_id ) );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $campaign_id
+	 * @param unknown $args    (optional)
+	 * @return unknown
+	 */
+	public function add_custom( $campaign_id, $args = array() ) {
+
+		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign_id, $this->subscriberHash );
+		$forwardlink = mailster()->get_forward_link( $campaign_id );
+		$profilelink = mailster()->get_profile_link( $campaign_id, $this->subscriberHash );
+
+		$defaults = array(
+			'webversionlinktext' => mailster_text( 'webversion' ),
+			'unsublinktext' => mailster_text( 'unsubscribelink' ),
+			'forwardlinktext' => mailster_text( 'forward' ),
+			'profilelinktext' => mailster_text( 'profile' ),
+			'unsublink' => $unsubscribelink,
+			'forwardlink' => $forwardlink,
+			'profilelink' => $profilelink,
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
+		$this->add( apply_filters( 'mailster_placeholder_custom', $args, $campaign_id, $this->subscriberID ) );
 	}
 
 

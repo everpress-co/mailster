@@ -2179,7 +2179,7 @@ class Mailster {
 	 */
 	public function display_post_states( $post_states, $post ) {
 
-		if ( $post->ID == mailster_option( 'homepage' ) ) {
+		if ( is_mailster_newsletter_homepage() ) {
 			$post_states['mailster_is_homepage'] = __( 'Newsletter Homepage', 'mailster' );
 		}
 

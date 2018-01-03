@@ -206,7 +206,10 @@ class MailsterForm {
 			}
 		}
 		if ( $this->profile || $this->unsubscribe ) {
+
 			if ( $subscriber = mailster( 'subscribers' )->get_by_hash( $this->hash, true ) ) {
+				$this->object['userdata'] = (array) $subscriber;
+			} elseif ( $subscriber = mailster( 'subscribers' )->get_by_wpid( null, true ) ) {
 				$this->object['userdata'] = (array) $subscriber;
 			}
 		}
@@ -567,6 +570,10 @@ class MailsterForm {
 			$html .= '<input name="_hash" type="hidden" value="' . esc_attr( $this->hash ) . '">' . "\n";
 		}
 
+		if ( $this->campaignID ) {
+			$html .= '<input name="_campaign_id" type="hidden" value="' . esc_attr( $this->campaignID ) . '">' . "\n";
+		}
+
 		if ( ! is_admin() ) {
 			$html .= '<input name="_nonce" type="hidden" value="' . wp_create_nonce( 'mailster-form-nonce' ) . '">' . "\n";
 		} elseif ( $post_nonce = mailster_option( 'post_nonce' ) ) {
@@ -919,7 +926,7 @@ class MailsterForm {
 
 				case 'unsubscribe':
 
-					$campaign_id = ! empty( $_BASE['campaign'] ) ? (int) $_BASE['campaign'] : null;
+					$campaign_id = ! empty( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null;
 					$subscriber_id = $subscriber = null;
 
 					if ( isset( $_BASE['email'] ) ) {
@@ -954,39 +961,47 @@ class MailsterForm {
 
 					$this->set_hash( $_BASE['_hash'] );
 
-					$subscriber = mailster( 'subscribers' )->get_by_hash( $this->hash, true );
-					$assigned_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID, true );
+					if ( ! ( $subscriber = mailster( 'subscribers' )->get_by_hash( $this->hash, true ) ) ) {
+						$subscriber = mailster( 'subscribers' )->get_by_wpid( null, true );
+					}
 
-					$unassign_lists = array_diff( $assigned_lists, $this->object['lists'] );
-					$assign_lists = array_diff( $this->object['lists'], $assigned_lists );
+					if ( $subscriber ) {
+						$assigned_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID, true );
 
-					// change status if other than pending, subscribed or unsubscribed
-					$status = $subscriber->status >= 3 ? 1 : $subscriber->status;
-					if ( isset( $_BASE['_status'] ) ) {
-						if ( $status == 0 && (int) $_BASE['_status'] == 1 ) {
+						$unassign_lists = array_diff( $assigned_lists, $this->object['lists'] );
+						$assign_lists = array_diff( $this->object['lists'], $assigned_lists );
 
-							if ( mailster_option( 'track_users' ) ) {
-								$ip = mailster_get_ip();
-								$entry['ip'] = $ip;
-								$entry['ip_confirm'] = $ip;
+						// change status if other than pending, subscribed or unsubscribed
+						$status = $subscriber->status >= 3 ? 1 : $subscriber->status;
+						if ( isset( $_BASE['_status'] ) ) {
+							if ( $status == 0 && (int) $_BASE['_status'] == 1 ) {
+
+								if ( mailster_option( 'track_users' ) ) {
+									$ip = mailster_get_ip();
+									$entry['ip'] = $ip;
+									$entry['ip_confirm'] = $ip;
+								}
+								$entry['confirm'] = time();
+
 							}
-							$entry['confirm'] = time();
-
+							$status = (int) $_BASE['_status'];
 						}
-						$status = (int) $_BASE['_status'];
+
+						$entry = wp_parse_args( array(
+							'status' => $status,
+							'ID' => $subscriber->ID,
+						), $entry );
+
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+						if ( is_wp_error( $subscriber_id ) ) {
+							$subscriber_id = $subscriber->ID;
+						}
+
+						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+
+					} else {
+						$subscriber_id = new WP_Error( 'error', __( 'There was an error updating the user', 'mailster' ) );
 					}
-
-					$entry = wp_parse_args( array(
-						'status' => $status,
-						'ID' => $subscriber->ID,
-					), $entry );
-
-					$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
-					if ( is_wp_error( $subscriber_id ) ) {
-						$subscriber_id = $subscriber->ID;
-					}
-
-					$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
 
 				break;
 			}
@@ -1276,7 +1291,7 @@ class MailsterForm {
 			wp_die( 'no data' );
 		};
 
-		$campaign_id = ! empty( $_BASE['campaign'] ) ? (int) $_BASE['campaign'] : null;
+		$campaign_id = ! empty( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null;
 
 		if ( isset( $_BASE['email'] ) ) {
 			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id, 'email_unsubscribe' );

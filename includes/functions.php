@@ -991,13 +991,20 @@ function mailster_update_notice( $text ) {
 /**
  *
  *
+ * @param unknown $post_id (optional)
  * @return unknown
  */
-function is_mailster_newsletter_homepage() {
+function is_mailster_newsletter_homepage( $post_id = null ) {
 
 	global $post;
+	if ( is_null( $post_id ) ) {
+		$the_post = $post;
+		$post_id = isset( $post ) ? $post->ID : null;
+	} else {
+		$the_post = get_post( $post_id );
+	}
 
-	return apply_filters( 'is_mailster_newsletter_homepage', isset( $post ) && $post->ID == mailster_option( 'homepage' ), $post );
+	return apply_filters( 'is_mailster_newsletter_homepage', $post_id == mailster_option( 'homepage' ), $the_post );
 
 }
 

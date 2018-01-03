@@ -93,7 +93,9 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			return;
 		}
 
-		mailster( 'conditions' )->render( $_GET['conditions'] );
+		if ( isset( $_GET['conditions'] ) ) {
+			mailster( 'conditions' )->render( $_GET['conditions'] );
+		}
 
 ?>
 	<form id="searchform" action method="get">

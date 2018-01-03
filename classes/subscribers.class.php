@@ -2060,8 +2060,6 @@ class MailsterSubscribers {
 	 */
 	private function unsubscribe_by_type( $type, $value, $campaign_id = null, $status = null ) {
 
-		global $wpdb;
-
 		switch ( $type ) {
 			case 'id':
 				$subscriber = $this->get( (int) $value, false );
@@ -2085,7 +2083,13 @@ class MailsterSubscribers {
 
 			$lists = mailster( 'campaigns' )->get_lists( $campaign_id, true );
 			if ( $this->unassign_lists( $subscriber->ID, $lists ) ) {
-				do_action( 'mailster_list_unsubscribe', $subscriber->ID, $campaign_id, $lists );
+				$status .= '_list';
+				do_action( 'mailster_list_unsubscribe', $subscriber->ID, $campaign_id, $lists, $status );
+
+				if ( $status ) {
+					$this->update_meta( $subscriber->ID, $campaign_id, 'unsubscribe', $status );
+				}
+				$this->subscriber_unsubscribe_notification( $subscriber->ID, null, $lists );
 				return true;
 			}
 
@@ -2103,12 +2107,10 @@ class MailsterSubscribers {
 			do_action( 'mymail_unsubscribe', $subscriber->ID, $campaign_id, $status );
 
 			if ( $status ) {
-
 				$this->update_meta( $subscriber->ID, $campaign_id, 'unsubscribe', $status );
 			}
 
 			$this->subscriber_unsubscribe_notification( $subscriber->ID );
-
 			return true;
 
 		}
@@ -2188,9 +2190,10 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $id
 	 * @param unknown $timestamp (optional)
+	 * @param unknown $lists     (optional)
 	 * @return unknown
 	 */
-	public function subscriber_unsubscribe_notification( $id, $timestamp = null ) {
+	public function subscriber_unsubscribe_notification( $id, $timestamp = null, $lists = null ) {
 
 		if ( defined( 'MAILSTER_DO_BULKIMPORT' ) && MAILSTER_DO_BULKIMPORT ) {
 			return false;

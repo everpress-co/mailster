@@ -860,12 +860,16 @@ class MailsterHelper {
 
 		switch ( $status ) {
 			case 'list_unsubscribe':
+			case 'list_unsubscribe_list':
 				return  __( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
 			case 'link_unsubscribe':
+			case 'link_unsubscribe_list':
 				return __( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
 			case 'email_unsubscribe':
+			case 'email_unsubscribe_list':
 				return __( 'The user canceled the subscription via the website.', 'mailster' );
 			case 'spam_complaint':
+			case 'spam_complaint_list':
 				return __( 'The user marked this message as Spam in the Mail application.', 'mailster' );
 		}
 

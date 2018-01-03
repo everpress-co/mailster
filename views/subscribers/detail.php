@@ -409,7 +409,12 @@ if ( ! $is_new ) :
 								break;
 							case 4:
 									echo '<span class="mailster-icon mailster-icon-unsubscribe"></span></td><td>';
+									$unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id );
+								if ( 'link_unsubscribe_list' == $unsub_status ) {
+									echo __( 'unsubscribed from a list', 'mailster' );
+								} else {
 									echo __( 'unsubscribed your newsletter', 'mailster' );
+								}
 								break;
 							case 5:
 									echo '<span class="mailster-icon mailster-icon-bounce"></span></td><td>';

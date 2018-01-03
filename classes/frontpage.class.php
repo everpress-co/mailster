@@ -598,6 +598,8 @@ class MailsterFrontpage {
 
 				if ( ! mailster_option( 'webversion_bar' ) || (isset( $_GET['frame'] ) && $_GET['frame'] == '0' ) ) {
 
+					do_action( 'mailster_frontpage' );
+
 					// remove oembed
 					if ( isset( $GLOBALS['wp_embed'] ) ) {
 						remove_filter( 'the_content', array( $GLOBALS['wp_embed'], 'run_shortcode' ), 8 );
@@ -634,6 +636,7 @@ class MailsterFrontpage {
 					$placeholder->set_campaign( get_the_ID() );
 
 					$placeholder->add_defaults( get_the_ID() );
+					$placeholder->add_custom( get_the_ID() );
 
 					$placeholder->share_service( get_permalink( get_the_ID() ), get_the_title() );
 
@@ -656,6 +659,8 @@ class MailsterFrontpage {
 					add_filter( 'get_previous_post_join', array( &$this, 'get_post_join' ) );
 					add_filter( 'get_next_post_where', array( &$this, 'get_post_where' ) );
 					add_filter( 'get_next_post_join', array( &$this, 'get_post_join' ) );
+
+					do_action( 'mailster_frontpage_frame' );
 
 					$url = add_query_arg( 'frame', 0, get_permalink() );
 
@@ -913,9 +918,9 @@ class MailsterFrontpage {
 	 */
 	public function setcookie( $hash, $timeout = 3600 ) {
 
-			$cookietime = apply_filters( 'mailster_cookie_time', $timeout );
+		$cookietime = apply_filters( 'mailster_cookie_time', $timeout );
 
-			return setcookie( 'mailster', $hash, time() + $cookietime, COOKIEPATH, COOKIE_DOMAIN );
+		return setcookie( 'mailster', $hash, time() + $cookietime, COOKIEPATH, COOKIE_DOMAIN );
 
 	}
 
@@ -957,21 +962,21 @@ class MailsterFrontpage {
 	 */
 	public function newsletter_list( $atts, $content ) {
 		extract( shortcode_atts( array(
-					'date' => false,
-					'count' => 10,
-					'status' => array( 'finished', 'active' ),
-					'order' => 'desc',
-					'orderby' => 'date',
+			'date' => false,
+			'count' => 10,
+			'status' => array( 'finished', 'active' ),
+			'order' => 'desc',
+			'orderby' => 'date',
 		), $atts ) );
 
 		$r = new WP_Query( array(
-				'post_type' => 'newsletter',
-				'posts_per_page' => $count,
-				'no_found_rows' => true,
-				'post_status' => $status,
-				'ignore_sticky_posts' => true,
-				'order' => $order,
-				'orderby' => $orderby,
+			'post_type' => 'newsletter',
+			'posts_per_page' => $count,
+			'no_found_rows' => true,
+			'post_status' => $status,
+			'ignore_sticky_posts' => true,
+			'order' => $order,
+			'orderby' => $orderby,
 		) );
 
 		$return = '';

@@ -16,7 +16,7 @@ class MailsterActions {
 		add_action( 'mailster_open', array( &$this, 'open' ), 10, 3 );
 		add_action( 'mailster_click', array( &$this, 'click' ), 10, 4 );
 		add_action( 'mailster_unsubscribe', array( &$this, 'unsubscribe' ), 10, 3 );
-		add_action( 'mailster_list_unsubscribe', array( &$this, 'unsubscribe' ), 10, 3 );
+		add_action( 'mailster_list_unsubscribe', array( &$this, 'list_unsubscribe' ), 10, 4 );
 		add_action( 'mailster_bounce', array( &$this, 'bounce' ), 10, 3 );
 		add_action( 'mailster_subscriber_error', array( &$this, 'error' ), 10, 3 );
 		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ) );
@@ -117,6 +117,7 @@ class MailsterActions {
 	 *
 	 * @param unknown $subscriber_id
 	 * @param unknown $campaign_id
+	 * @param unknown $status (optional)
 	 * @return unknown
 	 */
 	public function unsubscribe( $subscriber_id, $campaign_id, $status = null ) {
@@ -126,6 +127,22 @@ class MailsterActions {
 				'campaign_id' => $campaign_id,
 				'type' => 4,
 		) );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_id
+	 * @param unknown $campaign_id
+	 * @param unknown $lists
+	 * @param unknown $status (optional)
+	 * @return unknown
+	 */
+	public function list_unsubscribe( $subscriber_id, $campaign_id, $lists, $status = null ) {
+
+		return $this->unsubscribe( $subscriber_id, $campaign_id, $status );
 
 	}
 
@@ -184,7 +201,7 @@ class MailsterActions {
 		}
 
 		$user_meta = array(
-			'lang' => mailster_get_lang(),
+			// 'lang' => mailster_get_lang(),
 			'ip' => mailster_get_ip(),
 		);
 

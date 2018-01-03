@@ -1726,6 +1726,10 @@ class MailsterCampaigns {
 			return false;
 		}
 
+		if ( empty( $id ) ) {
+			return false;
+		}
+
 		$meta = $this->meta( $id );
 
 		if ( ! $meta ) {
@@ -3744,16 +3748,14 @@ class MailsterCampaigns {
 
 		// user specific stuff
 		$placeholder->replace_custom_tags( true );
+
 		$placeholder->set_subscriber( $subscriber->ID );
-
-		$forwardlink = mailster()->get_forward_link( $campaign->ID, $subscriber->email );
-		$profilelink = mailster()->get_profile_link( $campaign->ID, $subscriber->hash );
-
-		$placeholder->add( wp_parse_args( array(
+		$placeholder->add_custom( $campaign->ID, array(
 			'emailaddress' => $subscriber->email,
-			'forwardlink' => $forwardlink,
-			'profilelink' => $profilelink,
-		), (array) $subscriber ) );
+		));
+
+		// add subscriber info
+		$placeholder->add( (array) $subscriber );
 
 		$content = $placeholder->get_content();
 

@@ -395,6 +395,9 @@ class MailsterAjax {
 			'issue' => $issue,
 			'subject' => $subject,
 			'preheader' => $preheader,
+		) );
+
+		$placeholder->add_custom( $ID, array(
 			'emailaddress' => $current_user->user_email,
 		) );
 
