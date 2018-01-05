@@ -133,11 +133,12 @@ jQuery(document).ready(function ($) {
 
 		if (!offset) offset = 0;
 
+		//only need top and bottom
 		return (
+			//rect.left + offset >= 0 &&
 			rect.top + offset >= 0 &&
-			rect.left + offset >= 0 &&
-			rect.bottom - offset <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-			rect.right - offset <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+			//rect.right - offset <= (window.innerWidth || document.documentElement.clientWidth) && /*or $(window).width() */
+			rect.top - offset <= (window.innerHeight || document.documentElement.clientHeight) /*or $(window).height() */
 		);
 	}
 

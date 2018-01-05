@@ -1467,8 +1467,7 @@ jQuery(document).ready(function ($) {
 
 				_ajax('toggle_codeview', {
 					content: _getContent(),
-					head: _head.val(),
-					_wpnonce: wpnonce
+					head: _head.val()
 				}, function (response) {
 					_obar.find('a.code').addClass('active').removeClass('loading');
 					_html.hide();
@@ -1483,17 +1482,30 @@ jQuery(document).ready(function ($) {
 				});
 
 			} else {
-				var content = codemirror.getValue();
+				var structure = _getHTMLStructure(codemirror.getValue());
 				codemirror.clearHistory();
-				_setContent(content, 100, true);
-				_html.show();
-				_content.hide();
-				$('.CodeMirror').remove();
-				_obar.find('a.code').removeClass('active');
-				_obar.find('a').not('a.redo, a.undo, a.code').removeClass('disabled');
-				//_container.removeClass('noeditbuttons');
-				_trigger('enable');
-				_trigger('refresh');
+
+				_obar.find('a.code').addClass('loading');
+				_trigger('disable');
+
+				_ajax('toggle_codeview', {
+					content: structure.content,
+					head: structure.head
+				}, function (response) {
+					_setContent(response.content, 100, true);
+					_html.show();
+					_content.hide();
+					$('.CodeMirror').remove();
+					_obar.find('a.code').removeClass('active').removeClass('loading');
+					_obar.find('a').not('a.redo, a.undo, a.code').removeClass('disabled');
+
+					_trigger('enable');
+					_trigger('refresh');
+
+				}, function (jqXHR, textStatus, errorThrown) {
+					_obar.find('a.code').addClass('active').removeClass('loading');
+					_trigger('enable');
+				});
 
 			}
 			return false;
@@ -1516,7 +1528,7 @@ jQuery(document).ready(function ($) {
 				_plaintext.hide();
 				_obar.find('a.plaintext').removeClass('active');
 				_obar.find('a').not('a.redo, a.undo, a.plaintext, a.preview').removeClass('disabled');
-				//_container.removeClass('noeditbuttons');
+
 				_trigger('refresh');
 
 			}
@@ -3675,7 +3687,7 @@ jQuery(document).ready(function ($) {
 
 			// });
 
-			//_container.removeClass('noeditbuttons');
+
 
 		}, 500);
 
@@ -3798,6 +3810,8 @@ jQuery(document).ready(function ($) {
 		clone = $('<div>' + body.innerHTML + '</div>');
 
 		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
+		//remove some third party elements
+		clone.find('#droplr-chrome-extension-is-installed').remove();
 		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
 		content = $.trim(clone.html());
 
@@ -3811,30 +3825,39 @@ jQuery(document).ready(function ($) {
 			.replace(/(webkit|wp\-editor|mceContentBody|position: relative;|modal-open| spellcheck="(true|false)")/g, '')
 			.replace(/(class="(\s*)"|style="(\s*)")/g, '')
 
-		return _head.val() + "\n<body" + s + ">\n" + content + "\n</body>\n</html>";
+		return _head.val() + "\n<body" + $.trim(s) + ">\n" + content + "\n</body>\n</html>";
 	}
 
 	function _getContent() {
 		return _content.val() || _getFrameContent();
 	}
 
+	function _getHTMLStructure(html) {
+		var parts = html.match(/([^]*)<body([^>]*)?>([^]*)<\/body>([^]*)/m);
+
+		return {
+			parts: parts,
+			content: parts ? parts[3] : '<multi>' + html + '</multi>',
+			head: parts ? $.trim(parts[1]) : '',
+			bodyattributes: parts ? $('<div' + (parts[2] || '') + '></div>')[0].attributes : ''
+		};
+	}
+
 	function _setContent(content, delay, saveit) {
 
-		var parts = content.match(/([^]*)<body([^>]*)?>([^]*)<\/body>([^]*)/m),
-			content = parts ? parts[3] : '<multi>' + content + '</multi>',
-			head = parts ? $.trim(parts[1]) : '',
-			bodyattributes = parts ? $('<div' + (parts[2] || '') + '></div>')[0].attributes : '',
-			attrcount = bodyattributes.length,
+		var structure = _getHTMLStructure(content);
+
+		var attrcount = structure.bodyattributes.length,
 			doc = (isWebkit || isMozilla) ? _iframe[0].contentWindow.document : _idoc,
 			//headscripts = $(doc).find('head').find('script'),
 			headstyles = $(doc).find('head').find('link'),
 			headdoc = doc.getElementsByTagName('head')[0];
 
-		_head.val(head);
-		headdoc.innerHTML = head.replace(/([^]*)<head([^>]*)?>([^]*)<\/head>([^]*)/m, '$3');
+		_head.val(structure.head);
+		headdoc.innerHTML = structure.head.replace(/([^]*)<head([^>]*)?>([^]*)<\/head>([^]*)/m, '$3');
 		$(headdoc).append(headstyles);
 
-		doc.body.innerHTML = content;
+		doc.body.innerHTML = structure.content;
 
 		while (attrcount--) {
 			doc.body.setAttribute(bodyattributes[attrcount].name, bodyattributes[attrcount].value)

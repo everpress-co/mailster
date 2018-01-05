@@ -839,7 +839,7 @@ class Mailster {
 			}
 		}
 
-		$content = $head . "\n<body$bodyattributes>\n" . apply_filters( 'mymail_sanitize_content_body', apply_filters( 'mailster_sanitize_content_body', $body ) ) . "\n</body></html>";
+		$content = $head . "\n<body$bodyattributes>" . apply_filters( 'mymail_sanitize_content_body', apply_filters( 'mailster_sanitize_content_body', $body ) ) . "</body>\n</html>";
 
 		$content = str_replace( '<body >', '<body>', $content );
 		$content = str_replace( ' src="//', ' src="' . $protocol . '://', $content );

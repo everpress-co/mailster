@@ -1804,10 +1804,6 @@ class MailsterCampaigns {
 				$meta[ $metadata->ID ]['colors'] = maybe_unserialize( $meta[ $metadata->ID ]['colors'] );
 			}
 
-			if ( ! empty( $meta[ $metadata->ID ]['autoresponder'] ) ) {
-				$meta[ $metadata->ID ]['autoresponder'] = maybe_unserialize( $meta[ $metadata->ID ]['autoresponder'] );
-			}
-
 			if ( ! empty( $meta[ $metadata->ID ]['list_conditions'] ) ) {
 				$meta[ $metadata->ID ]['list_conditions'] = maybe_unserialize( $meta[ $metadata->ID ]['list_conditions'] );
 
@@ -1824,6 +1820,18 @@ class MailsterCampaigns {
 				}
 			}
 
+			if ( ! empty( $meta[ $metadata->ID ]['autoresponder'] ) ) {
+				$meta[ $metadata->ID ]['autoresponder'] = maybe_unserialize( $meta[ $metadata->ID ]['autoresponder'] );
+				// if ( $meta[ $metadata->ID ]['autoresponder']['action'] == 'mailster_subscriber_insert' ) {
+				// $meta[ $metadata->ID ]['list_conditions'][] = array(
+				// array(
+				// 'field' => 'signup',
+				// 'operator' => 'is_greater',
+				// 'value' => date( 'Y-m-d', $meta[ $metadata->ID ]['timestamp'] ),
+				// ),
+				// );
+				// }
+			}
 			if ( ! empty( $meta[ $metadata->ID ]['attachments'] ) ) {
 				$meta[ $metadata->ID ]['attachments'] = maybe_unserialize( $meta[ $metadata->ID ]['attachments'] );
 			}

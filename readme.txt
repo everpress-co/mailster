@@ -84,6 +84,11 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+* prevent autosave trigger on page load
+* added option caching parameter
+
+= Version 2. 3.beta.13 =
+
 * better WPML compatibility
 * various bug fixes and improvements
 
