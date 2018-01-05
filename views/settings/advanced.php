@@ -1,9 +1,9 @@
 <p class="description"><?php esc_html_e( 'Some of these settings may affect your website. In normal circumstance it is not required to change anything on this page.', 'mailster' ) ?></p>
 <table class="form-table">
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Disable Cache', 'mailster' ) ?></th>
+		<th scope="row"><?php esc_html_e( 'Cache', 'mailster' ) ?></th>
 		<td>
-			<label><input type="hidden" name="mailster_options[disable_cache_frontpage]" value=""><input type="checkbox" name="mailster_options[disable_cache_frontpage]" value="1" <?php checked( mailster_option( 'disable_cache_frontpage' ) );?>> <?php esc_html_e( 'Disable Form Caching', 'mailster' ) ?></label> <p class="description"><?php esc_html_e( 'Enable this option if you have issue with the security nonce on Mailster forms', 'mailster' ); ?></p>
+			<label><input type="hidden" name="mailster_options[disable_cache_frontpage]" value=""><input type="checkbox" name="mailster_options[disable_cache_frontpage]" value="1" <?php checked( mailster_option( 'disable_cache_frontpage' ) );?>> <?php esc_html_e( 'Disable Form Caching', 'mailster' ) ?></label> <p class="description"><?php esc_html_e( 'Enable this option if you have issue with the security nonce on Mailster forms.', 'mailster' ); ?></p>
 			<br><label><input type="hidden" name="mailster_options[disable_cache]" value=""><input type="checkbox" name="mailster_options[disable_cache]" value="1" <?php checked( mailster_option( 'disable_cache' ) );?>> <?php esc_html_e( 'Disable Object Cache for Mailster', 'mailster' ) ?></label> <p class="description"><?php esc_html_e( 'If enabled Mailster doesn\'t use cache anymore. This causes an increase in page load time! This option is not recommended!', 'mailster' ); ?></p>
 		</td>
 	</tr>
