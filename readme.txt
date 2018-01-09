@@ -84,9 +84,14 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+= Version 2. 3.beta.15 =
+
+* fixed escaping on the editor
+
+= Version 2. 3.beta.14 =
+
 * prevent autosave trigger on page load
 * added option caching parameter
-* fixed escaping on the editor
 
 = Version 2. 3.beta.13 =
 
