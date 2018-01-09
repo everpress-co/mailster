@@ -95,7 +95,7 @@ jQuery(document).ready(function ($) {
 				iframeloaded = true;
 				clearInterval(iframeloadinterval);
 
-				wp.autosave.getCompareString = _getAutosaveString();
+				//wp.autosave.getCompareString = _getAutosaveString;
 
 				_ibody = _iframe.contents().find('body');
 
@@ -1458,9 +1458,9 @@ jQuery(document).ready(function ($) {
 		}
 
 		function codeView() {
-			var isRaw = !_iframe.is(':visible');
+			var isCodeview = !_iframe.is(':visible');
 
-			if (!isRaw) {
+			if (!isCodeview) {
 
 				_obar.find('a.code').addClass('loading');
 				_trigger('disable');
@@ -1493,6 +1493,7 @@ jQuery(document).ready(function ($) {
 					head: structure.head
 				}, function (response) {
 					_setContent(response.content, 100, true);
+					console.log(response.content);
 					_html.show();
 					_content.hide();
 					$('.CodeMirror').remove();
@@ -3866,7 +3867,7 @@ jQuery(document).ready(function ($) {
 		if (delay !== false) {
 			clearTimeout(timeout);
 			timeout = setTimeout(function () {
-				modules.refresh();
+				modules.refresh && modules.refresh();
 			}, delay || 100);
 		}
 

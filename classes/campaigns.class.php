@@ -2347,6 +2347,10 @@ class MailsterCampaigns {
 
 		$list_ids = $this->meta( $id, 'lists' );
 
+		if ( empty( $list_ids ) ) {
+			return array();
+		}
+
 		if ( $ids_only ) {
 			return $list_ids;
 		}
