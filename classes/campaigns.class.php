@@ -4353,18 +4353,9 @@ class MailsterCampaigns {
 
 		if ( $inline ) {
 			wp_print_styles( 'dashicons' );
-			// if ( ! class_exists( '_WP_Editors', false ) ) {
-			// require( ABSPATH . WPINC . '/class-wp-editor.php' );
-			// }
-			// _WP_Editors::print_tinymce_scripts();
-			// wp_print_styles( 'wp-editor-forms' );
 			wp_print_styles( 'wp-editor' );
-			// wp_print_scripts( 'wpdialogs' );
-			// wp_print_scripts( 'wp-backbone' );
 			wp_print_scripts( 'utils' );
-			// wp_print_scripts( 'wplink' );
 			mailster( 'tinymce' )->editbar_translations();
-
 			wp_print_scripts( 'mailster-tinymce' );
 		}
 
@@ -4379,6 +4370,8 @@ class MailsterCampaigns {
 		wp_print_scripts( 'jquery-touch-punch' );
 		wp_print_scripts( 'plupload-all' );
 		wp_print_scripts( 'mailster-editor-script' );
+
+		do_action( 'mailster_iframe_script_styles' );
 
 		$script_styles = ob_get_contents();
 
@@ -4403,6 +4396,8 @@ class MailsterCampaigns {
 		echo '<mailster>';
 
 		wp_nonce_field( 'internal-linking', '_ajax_linking_nonce', false );
+
+		do_action( 'mailster_iframe_body' );
 
 		echo '</mailster>';
 

@@ -1153,13 +1153,13 @@ class MailsterAjax {
 			}
 
 			if ( $post_type == 'post' ) {
-				parse_str( $_POST['posttypes'] );
+				parse_str( $_POST['posttypes'], $post_types );
 
 				$post_types = isset( $post_types ) ? (array) $post_types : array( -1 );
 
 				$args = wp_parse_args( array(
-						'post_type' => $post_types,
-						'post_status' => array( 'publish', 'future', 'draft' ),
+					'post_type' => $post_types,
+					'post_status' => array( 'publish', 'future', 'draft' ),
 				), $defaults );
 
 				$post_counts = 0;
@@ -1170,8 +1170,8 @@ class MailsterAjax {
 			} else {
 
 				$args = wp_parse_args( array(
-						'post_status' => 'inherit',
-						'post_mime_type' => ( $post_type == 'attachment' ) ? array( 'image/jpeg', 'image/gif', 'image/png', 'image/tiff', 'image/bmp' ) : null,
+					'post_status' => 'inherit',
+					'post_mime_type' => ( $post_type == 'attachment' ) ? array( 'image/jpeg', 'image/gif', 'image/png', 'image/tiff', 'image/bmp' ) : null,
 				), $defaults );
 
 				$post_counts = wp_count_posts( $post_type );

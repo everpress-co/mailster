@@ -865,8 +865,12 @@ class MailsterSettings {
 					if ( serialize( $old ) != serialize( $value ) ) {
 						foreach ( $value as $key => $v ) {
 							$v = sanitize_title( $v );
-							$value[ $key ] = ( empty( $v ) ? $key : $v );
+							if ( empty( $v ) ) {
+								$v = $key;
+							}
+							$value[ $key ] = $v;
 						}
+
 						$options['_flush_rewrite_rules'] = true;
 					}
 				break;

@@ -479,8 +479,8 @@ class MailsterManage {
 		$bulkdata['performance'] = ! ! ( $bulkdata['performance'] === 'true' );
 		$bulkdata['signupdate'] = $bulkdata['signupdate'];
 
-		parse_str( $bulkdata['order'] );
-		parse_str( $bulkdata['lists'] );
+		parse_str( $bulkdata['order'], $order );
+		parse_str( $bulkdata['lists'], $lists );
 
 		$option_list_ids = array();
 
