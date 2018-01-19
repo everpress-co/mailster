@@ -801,12 +801,11 @@ class Mailster {
 			}
 		}
 
-		$content = stripslashes( $content );
 		$bodyattributes = '';
 		$pre_stuff = '';
 		$protocol = ( is_ssl() ? 'https' : 'http' );
 
-		preg_match( '#^(.*)?<head([^>]*)>(.*?)<\/head>#is', is_null( $customhead ) ? $content : stripslashes( $customhead ), $matches );
+		preg_match( '#^(.*)?<head([^>]*)>(.*?)<\/head>#is', (is_null( $customhead ) ? $content : $customhead), $matches );
 		if ( ! empty( $matches ) ) {
 			$pre_stuff = $matches[1];
 			$head = '<head' . $matches[2] . '>' . $matches[3] . '</head>';
@@ -847,7 +846,6 @@ class Mailster {
 		$content = str_replace( '</module><module', '</module>' . "\n" . '<module', $content );
 		$content = str_replace( '<modules><module', '<modules>' . "\n" . '<module', $content );
 		$content = str_replace( '</module></modules>', '</module>' . "\n" . '</modules>', $content );
-		// $content = str_replace( '&nbsp;', ' ', $content );
 		$content = preg_replace( '#<script[^>]*?>.*?</script>#si', '', $content );
 		$content = str_replace( array( 'mailster-highlight', 'mailster-loading', 'ui-draggable', ' -handle', ' contenteditable="true"', ' spellcheck="false"' ), '', $content );
 

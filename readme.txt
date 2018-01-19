@@ -82,7 +82,12 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+
 = Version 2.3 =
+
+* change: sanitize_content no longer uses stripslashes
+
+= Version 2. 3.beta.16 =
 
 * various bug fixes and improvements
 * fixes compatibility issue with PHP 7.2

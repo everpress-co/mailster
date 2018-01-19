@@ -333,8 +333,11 @@ class MailsterPlaceholder {
 		// remove unused placeholders
 		if ( $removeunused ) {
 
+			// temporary remove style blocks
 			if ( preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $styles ) ) {
-				$this->content = str_replace( $styles[0], '<!--Mailster:styleblock-->', $this->content );
+				foreach ( $styles[0] as $i => $style ) {
+					$this->content = str_replace( $style, '<!--Mailster:styleblock' . $i . '-->', $this->content );
+				}
 			}
 
 			$keep = apply_filters( 'mailster_keep_tags', array() );
@@ -348,8 +351,9 @@ class MailsterPlaceholder {
 			}
 
 			if ( ! empty( $styles[0] ) ) {
-				$search = explode( '|', str_repeat( '/<!--Mailster:styleblock-->/|', count( $styles[0] ) - 1 ) . '/<!--Mailster:styleblock-->/' );
-				$this->content = preg_replace( $search, $styles[0], $this->content, 1 );
+				foreach ( $styles[0] as $i => $style ) {
+					$this->content = str_replace( '<!--Mailster:styleblock' . $i . '-->', $style, $this->content );
+				}
 			}
 		}
 

@@ -121,4 +121,4 @@ if ( isset( $_GET['template'] ) && current_user_can( 'mailster_change_template' 
 </div>
 <textarea id="content" class="hidden" autocomplete="off" name="content"><?php echo esc_textarea( $post->post_content ) ?></textarea>
 <textarea id="modules" class="hidden" autocomplete="off"><?php echo esc_textarea( $modules ) ?></textarea>
-<textarea id="head" name="mailster_data[head]" class="hidden" autocomplete="off"><?php echo isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head(); ?></textarea>
+<textarea id="head" name="mailster_data[head]" class="hidden" autocomplete="off"><?php echo esc_textarea( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>

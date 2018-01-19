@@ -326,9 +326,9 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$head = isset( $_POST['head'] ) ? ( $_POST['head'] ) : null;
+		$head = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
 
-		$return['content'] = mailster()->sanitize_content( $_POST['content'], null, $head );
+		$return['content'] = mailster()->sanitize_content( stripslashes( $_POST['content'] ), null, $head );
 
 		$this->json_return( $return );
 
