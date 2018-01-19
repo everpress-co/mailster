@@ -696,12 +696,12 @@ class Mailster {
 			}
 		}
 
-		$content = stripslashes( $content );
+		// $content = stripslashes( $content );
 		$bodyattributes = '';
 		$pre_stuff = '';
 		$protocol = ( is_ssl() ? 'https' : 'http' );
 
-		preg_match( '#^(.*)?<head([^>]*)>(.*?)<\/head>#is', is_null( $customhead ) ? $content : stripslashes( $customhead ), $matches );
+		preg_match( '#^(.*)?<head([^>]*)>(.*?)<\/head>#is', (is_null( $customhead ) ? $content : $customhead), $matches );
 		if ( ! empty( $matches ) ) {
 			$pre_stuff = $matches[1];
 			$head = '<head' . $matches[2] . '>' . $matches[3] . '</head>';
