@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.2.17 =
 
 * added: optional caching parameter for forms
+* change: sanitize_content no longer uses stripslashes
 
 = Version 2.2.16 =
 
