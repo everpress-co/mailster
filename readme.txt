@@ -85,6 +85,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+= Version 2. 3.beta.17 =
+
 * change: sanitize_content no longer uses stripslashes
 
 = Version 2. 3.beta.16 =
