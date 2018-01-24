@@ -7,7 +7,6 @@ jQuery(document).ready(function ($) {
 		body = $('body'),
 		uploader, container, modules, images, buttons, repeatable, selection,
 		currentmodule,
-		//inline editing not working on Safari (https://github.com/tinymce/tinymce/issues/3232)
 		isTinymce = typeof tinymce != 'undefined';
 
 	//not in an iframe

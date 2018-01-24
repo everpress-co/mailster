@@ -843,7 +843,7 @@ class MailsterSubscriberQuery {
 
 		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql );
 
-		// error_log($sql);
+		// error_log( $sql );
 		if ( $this->args['return_sql'] ) {
 			$result = $this->last_query = $sql;
 			$this->last_error = null;
@@ -958,7 +958,7 @@ class MailsterSubscriberQuery {
 				}
 
 				$c = $f . ' ' . ( $positive ? '=' : '!=' ) . " '$value'";
-				if ( $is_empty && $positive ) {
+				if ( $is_empty && $positive || ! $positive ) {
 					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
 
@@ -988,7 +988,7 @@ class MailsterSubscriberQuery {
 				}
 
 				$c = $f . ' ' . ( $positive ? 'LIKE' : 'NOT LIKE' ) . " $value";
-				if ( $is_empty && $positive ) {
+				if ( $is_empty && $positive || ! $positive ) {
 					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
 
@@ -1115,7 +1115,7 @@ class MailsterSubscriberQuery {
 				}
 
 				$c = $f . ' ' . $extra . "REGEXP '$value'";
-				if ( $is_empty && $positive ) {
+				if ( $is_empty && $positive || ! $positive ) {
 					$c = '( ' . $c . ' OR ' . $f . ' IS NULL )';
 				}
 

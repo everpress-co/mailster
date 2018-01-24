@@ -2125,6 +2125,19 @@ class Mailster {
 	/**
 	 *
 	 *
+	 * @return unknown
+	 */
+	public function is_outdated() {
+
+		// make sure Mailster has been updated within a year
+		return defined( 'MAILSTER_BUILT' ) && MAILSTER_BUILT && MAILSTER_BUILT + YEAR_IN_SECONDS < time();
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $post_id
 	 * @param unknown $part     (optional)
 	 * @param unknown $meta_key

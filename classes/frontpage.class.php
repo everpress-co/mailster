@@ -241,7 +241,7 @@ class MailsterFrontpage {
 		}
 
 		// convert custom slugs
-		if ( get_query_var( '_mailster_page' ) && ! get_query_var( '_mailster_page' ) && mailster( 'helper' )->using_permalinks() ) {
+		if ( get_query_var( '_mailster_page' ) && mailster( 'helper' )->using_permalinks() ) {
 			set_query_var( '_mailster_page', $this->get_page_by_slug( get_query_var( '_mailster_page' ) ) );
 		}
 
@@ -824,8 +824,6 @@ class MailsterFrontpage {
 	 */
 	public function do_shortcode( $atts, $content ) {
 
-		global $post;
-
 		$content = get_the_content();
 
 		// signup form
@@ -884,7 +882,7 @@ class MailsterFrontpage {
 					$return .= do_shortcode( wpautop( $matches[5] ) );
 				}
 
-				if ( preg_match( '/\[newsletter_signup_form id=("|\')?(\d+)("|\')?\]/', $content, $form_id ) ) {
+				if ( preg_match( '/\[newsletter_signup_form id=("|\')?(\d+)("|\')?\]/i', $content, $form_id ) ) {
 					$form_id = (int) $form_id;
 				} else {
 					global $wpdb;

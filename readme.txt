@@ -85,6 +85,9 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+* improved subscriber query
+* fixed: issue with custom subpage slugs on newsletter homepage
+
 = Version 2. 3.beta.17 =
 
 * change: sanitize_content no longer uses stripslashes

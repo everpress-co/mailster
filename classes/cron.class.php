@@ -53,6 +53,11 @@ class MailsterCron {
 		} else {
 			mailster_remove_notice( 'verify' );
 		}
+		if ( mailster()->is_outdated() ) {
+			mailster_notice( sprintf( __( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ), 'error', false, 'outdated', 'mailster_manage_licenses' );
+		} else {
+			mailster_remove_notice( 'outdated' );
+		}
 
 	}
 

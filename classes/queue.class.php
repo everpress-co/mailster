@@ -598,8 +598,6 @@ class MailsterQueue {
 				// ) );
 				$html = $placeholder->get_content( false );
 
-				error_log( $campaign->ID . "\n\n" . $html );
-
 				if ( ! preg_match( '/<\/module>/', $html ) ) {
 					mailster_notice( sprintf( __( 'No new campaign for %s has been created!', 'mailster' ), '<strong>"<a href="post.php?post=' . $campaign->ID . '&action=edit">' . $campaign->post_title . '</a>"</strong>' ), 'error', true, 'autoresponder_' . $campaign->ID, $campaign->post_author );
 					$doit = false;
