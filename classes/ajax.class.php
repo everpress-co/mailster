@@ -478,14 +478,14 @@ class MailsterAjax {
 				$receivers = explode( ',', stripslashes( $_POST['to'] ) );
 			}
 
-			$subject = stripcslashes( $formdata['mailster_data']['subject'] );
+			$subject = stripslashes( $formdata['mailster_data']['subject'] );
 			$from = $formdata['mailster_data']['from_email'];
-			$from_name = stripcslashes( $formdata['mailster_data']['from_name'] );
+			$from_name = stripslashes( $formdata['mailster_data']['from_name'] );
 			$reply_to = $formdata['mailster_data']['reply_to'];
 			$embed_images = isset( $formdata['mailster_data']['embed_images'] );
-			$head = isset( $formdata['mailster_data']['head'] ) ? stripcslashes( $formdata['mailster_data']['head'] ) : null;
 			$content = stripslashes( $_POST['content'] );
-			$preheader = stripcslashes( $formdata['mailster_data']['preheader'] );
+			$head = stripslashes( $_POST['head'] );
+			$preheader = stripslashes( $formdata['mailster_data']['preheader'] );
 			$bouncemail = mailster_option( 'bounce' );
 			$attachments = isset( $formdata['mailster_data']['attachments'] ) ? $formdata['mailster_data']['attachments'] : array();
 			$max_size = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );

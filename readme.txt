@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.2.18 =
 
+* fixed: problem with slashes in head section during test campaign
+
 = Version 2.2.17 =
 
 * added: optional caching parameter for forms

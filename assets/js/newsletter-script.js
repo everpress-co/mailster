@@ -268,11 +268,14 @@ jQuery(document).ready(function ($) {
 					});
 				$this.prop('disabled', true);
 				_save();
+
 				_ajax('send_test', {
 					formdata: $('#post').serialize(),
 					to: $('#mailster_testmail').val(),
 					content: _content.val(),
+					head: _head.val(),
 					plaintext: _excerpt.val()
+
 				}, function (response) {
 
 					loader.hide();
@@ -315,6 +318,7 @@ jQuery(document).ready(function ($) {
 					formdata: $('#post').serialize(),
 					to: $('#mailster_testmail').val(),
 					content: _content.val(),
+					head: _head.val(),
 					plaintext: _excerpt.val()
 
 				}, function (response) {
