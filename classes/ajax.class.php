@@ -197,7 +197,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce( );
 
-		$html = isset( $_POST['html'] ) ? $_POST['html'] : '';
+		$html = isset( $_POST['html'] ) ? stripslashes( $_POST['html'] ) : '';
 
 		$html = mailster()->sanitize_content( $html );
 
