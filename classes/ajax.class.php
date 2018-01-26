@@ -297,7 +297,7 @@ class MailsterAjax {
 
 		$this->ajax_filesystem();
 
-		$content = mailster()->sanitize_content( $_POST['content'], null, ( isset( $_POST['head'] ) ? $_POST['head'] : null ) );
+		$content = mailster()->sanitize_content( stripslashes( $_POST['content'] ), null, ( isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null ) );
 
 		$name = esc_attr( $_POST['name'] );
 		$template = esc_attr( $_POST['template'] );
