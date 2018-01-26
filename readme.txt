@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.2.18 =
 
 * fixed: problem with slashes in head section during test campaign
+* fixed: problem on template save
 
 = Version 2.2.17 =
 
