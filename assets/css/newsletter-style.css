@@ -2119,11 +2119,9 @@ ul.colors {
 ul.colors li label {
 	font-size:10px;
 	display:none;
-	width:80%;
 	text-overflow:ellipsis;
 	overflow:hidden;
 	white-space:nowrap;
-	height:15px;
 	cursor:default;
 }
 ul.colors.has-labels li label {
