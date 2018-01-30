@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 
 * fixed: problem with slashes in head section during test campaign
 * fixed: problem on template save
+* fixed: display issue on color pickers in editor
 
 = Version 2.2.17 =
 
