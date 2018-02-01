@@ -85,6 +85,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3 =
 
+= Version 2. 3.beta.18 =
+
 * fixed: problem with slashes in head section during test campaign
 * improved subscriber query
 * fixed: issue with custom subpage slugs on newsletter homepage
