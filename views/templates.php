@@ -107,7 +107,6 @@ if ( current_user_can( 'mailster_upload_templates' ) ) : ?>
 
 <h1><?php esc_html_e( 'More Templates', 'mailster' ) ?></h1>
 
-<ul id="available-templates">
 <?php
 
 if ( empty( $mailster_templates ) ) :
@@ -117,6 +116,7 @@ if ( empty( $mailster_templates ) ) :
 else :
 
 	?>
+<ul id="available-templates">
 	<li class="mailster-box more-templates-field">
 		<div><a href="edit.php?post_type=newsletter&page=mailster_templates" class="button button-primary button-hero"> <?php esc_html_e( 'Back to Overview', 'mailster' );?></a></div>
 	</li>
@@ -132,11 +132,13 @@ foreach ( $mailster_templates as $slug => $data ) {
 	include MAILSTER_DIR . 'views/templates/available-template.php';
 
 }
-
-endif;
-
 ?>
 </ul>
+<div class="clear affiliate-note">
+	Disclosure: Some of the links on this page are affiliate links. This means if you click on the link and purchase the item, we may receive an affiliate commission.
+</div>
+<?php endif; ?>
+
 <?php endif; ?>
 <div id="thickboxbox">
 	<ul class="thickbox-filelist"></ul>
