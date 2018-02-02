@@ -51,13 +51,23 @@ jQuery(document).ready(function ($) {
 				form_fields.find('input').each(function () {
 					$(this).removeAttr('name');
 				});
-
 			},
 			update: function (event, ui) {
 				requireSave();
 			},
 			remove: function (event, ui) {}
 		});
+
+	form_fields
+		.on('.form-field', 'click', function(){
+			console.log('Adsasd');
+			form_structure.find('input').each(function () {
+				$(this).attr('name', $(this).data('name'));
+			});
+			form_fields.find('input').each(function () {
+				$(this).removeAttr('name');
+			});
+		})
 
 	form_structure
 		.on('click', '.submitbutton input', function (event) {
