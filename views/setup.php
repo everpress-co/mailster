@@ -230,7 +230,7 @@ $utm = array(
 
 			<form class="mailster-setup-step-form">
 
-			<p><?php esc_html_e( 'Choose how you Mailster should send your campaigns. It\'s recommend to go with a dedicate ESP to prevent rejections and server blocking.', 'mailster' ) ?></p>
+			<p><?php esc_html_e( 'Choose how Mailster should send your campaigns. It\'s recommend to go with a dedicate ESP to prevent rejections and server blocking.', 'mailster' ) ?></p>
 
 			<?php $method = mailster_option( 'deliverymethod', 'simple' ); ?>
 

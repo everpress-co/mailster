@@ -307,8 +307,8 @@ class MailsterActions {
 
 		global $wpdb;
 
-		// delete all softbounces where a harbounce exists
-		$wpdb->query( "DELETE b FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.campaign_id = b.campaign_id AND a.subscriber_id = b.subscriber_id AND a.link_id = b.link_id WHERE a.type = 5 AND b.type = 4" );
+		// delete all softbounces where a hardbounce exists
+		$wpdb->query( "DELETE b FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.campaign_id = b.campaign_id AND a.subscriber_id = b.subscriber_id AND a.link_id = b.link_id WHERE a.type = 6 AND b.type = 5" );
 
 	}
 
