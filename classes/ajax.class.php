@@ -1156,9 +1156,12 @@ class MailsterAjax {
 			}
 
 			if ( $post_type == 'post' ) {
-				parse_str( $_POST['posttypes'], $post_types );
-
-				$post_types = isset( $post_types ) ? (array) $post_types : array( -1 );
+				parse_str( $_POST['posttypes'], $pt );
+				if ( isset( $pt['post_types'] ) ) {
+					$post_types = (array) $pt['post_types'];
+				} else {
+					$post_types = array( -1 );
+				}
 
 				$args = wp_parse_args( array(
 					'post_type' => $post_types,
@@ -1167,6 +1170,9 @@ class MailsterAjax {
 
 				$post_counts = 0;
 				foreach ( $post_types as $type ) {
+					if ( $type == -1 ) {
+						continue;
+					}
 					$counts = wp_count_posts( $type );
 					$post_counts += $counts->publish + $counts->future;
 				}
