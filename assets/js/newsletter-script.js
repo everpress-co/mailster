@@ -3932,7 +3932,7 @@ jQuery(document).ready(function ($) {
 		var body = _iframe[0].contentWindow.document.body;
 
 		if (typeof body == 'null' || !body) return '';
-		var content = $.trim(body.innerHTML);
+		var content = $.trim(body.innerHTML.replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 
 		var bodyattributes = body.attributes,
 			attrcount = bodyattributes.length,
