@@ -1497,7 +1497,6 @@ jQuery(document).ready(function ($) {
 					head: structure.head
 				}, function (response) {
 					_setContent(response.content, 100, true);
-					console.log(response.content);
 					_html.show();
 					_content.hide();
 					$('.CodeMirror').remove();
@@ -2785,12 +2784,6 @@ jQuery(document).ready(function ($) {
 					var src = el.attr('src') || el.attr('background');
 					var url = isDynamicImage(src) || '';
 
-					// console.log(src.indexOf(location.origin));
-
-					// if(src.indexOf(location.origin) == -1){
-					// 	url = src;
-					// }
-
 					if (el.parent().is('a')) {
 						imagelink.val(el.parent().attr('href').replace('%7B', '{').replace('%7D', '}'));
 					} else {
@@ -3818,7 +3811,8 @@ jQuery(document).ready(function ($) {
 		//remove some third party elements
 		clone.find('#droplr-chrome-extension-is-installed').remove();
 		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
-		content = $.trim(clone.html());
+		content = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
+
 
 		bodyattributes = body.attributes;
 		attrcount = bodyattributes.length;
@@ -3826,11 +3820,11 @@ jQuery(document).ready(function ($) {
 		while (attrcount--) {
 			s = ' ' + bodyattributes[attrcount].name + '="' + $.trim(bodyattributes[attrcount].value) + '"' + s;
 		}
-		s = s
+		s = $.trim(s
 			.replace(/(webkit|wp\-editor|mceContentBody|position: relative;|modal-open| spellcheck="(true|false)")/g, '')
-			.replace(/(class="(\s*)"|style="(\s*)")/g, '')
+			.replace(/(class="(\s*)"|style="(\s*)")/g, ''));
 
-		return _head.val() + "\n<body" + $.trim(s) + ">\n" + content + "\n</body>\n</html>";
+		return _head.val() + "\n<body" + (s ? ' ' + s : '') + ">\n" + content + "\n</body>\n</html>";
 	}
 
 	function _getContent() {
