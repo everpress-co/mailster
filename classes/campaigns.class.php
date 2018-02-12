@@ -4306,7 +4306,7 @@ class MailsterCampaigns {
 						'inline' => true,
 						'menubar' => false,
 						'branding' => false,
-						'valid_elements' => 'p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br',
+						// 'valid_elements' => 'p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br',
 						'invalid_elements' => 'script,iframe,frameset,applet,embed',
 						'block_formats' => 'Paragraph=p',
 						'relative_urls' => false,
