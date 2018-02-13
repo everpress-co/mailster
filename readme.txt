@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * fixed: loading of posts in editor
 * fixed: stripped `&zwnj;` character in editor
 * fixed: data errors on import
+* change: meta nowebversion => webversion
 * improved: finished/active campaigns can now get saved
 
 = Version 2. 3.beta.18 =

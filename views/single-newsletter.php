@@ -62,7 +62,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 <?php if ( get_previous_post() && mailster_option( 'frontpage_pagination' ) ) : ?>
 			<li class="button header previous"><?php previous_post_link( '%link', '' ) ?></li>
 <?php endif; ?>
-		<li class="subject header"><a href="<?php echo $permalink ?>"><?php if ( $meta['nowebversion'] ) : ?><strong>[ <?php esc_html_e( 'Private', 'mailster' ); ?> ]</strong><?php endif; ?> <?php echo esc_html( $title ); ?></a></li>
+		<li class="subject header"><a href="<?php echo $permalink ?>"><?php if ( ! $meta['webversion'] ) : ?><strong>[ <?php esc_html_e( 'Private', 'mailster' ); ?> ]</strong><?php endif; ?> <?php echo esc_html( $title ); ?></a></li>
 <?php if ( current_user_can( 'edit_post', $post_id ) ) : ?>
 		<li class="editlink header"><a href="<?php echo admin_url( 'post.php?post=' . $post_id . '&action=edit' ); ?>"><?php esc_html_e( 'Edit', 'mailster' );?></a></li>
 <?php endif; ?>

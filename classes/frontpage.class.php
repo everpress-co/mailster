@@ -592,7 +592,7 @@ class MailsterFrontpage {
 
 				$meta = mailster( 'campaigns' )->meta( get_the_ID() );
 
-				if ( $meta['nowebversion'] && get_current_user_id() != get_the_author_meta( 'ID' ) ) {
+				if ( ! $meta['webversion'] && get_current_user_id() != get_the_author_meta( 'ID' ) ) {
 					$this->do_404();
 				}
 
@@ -789,11 +789,19 @@ class MailsterFrontpage {
 	 * @return unknown
 	 */
 	public function get_post_where( $sql ) {
-		return str_replace( "post_status = 'publish'", "post_status IN ('finished', 'active' ,'queued') AND post_password = '' AND (pmeta.meta_key = 1 OR pmeta.meta_key IS NULL OR p.post_author = " . get_current_user_id() . ')', $sql );
+		return str_replace( "post_status = 'publish'", "post_status IN ('finished', 'active' ,'queued') AND post_password = '' AND (pmeta.meta_value = 1 OR pmeta.meta_key IS NULL OR p.post_author = " . get_current_user_id() . ')', $sql );
 	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $sql
+	 * @return unknown
+	 */
 	public function get_post_join( $sql ) {
 		global $wpdb;
-		return $sql .= " LEFT JOIN $wpdb->postmeta as pmeta ON pmeta.post_id = p.ID AND pmeta.meta_key = '_mailster_nowebversion'";
+		return $sql .= " LEFT JOIN $wpdb->postmeta as pmeta ON pmeta.post_id = p.ID AND pmeta.meta_key = '_mailster_webversion'";
 	}
 
 

@@ -8,7 +8,7 @@ table tr th.manage-column{
 .nonessential{
 	padding: 0;
 }
-.nonessential[title]{
+.nonessential[title], .nonessential span[title]{
 	cursor:help;
 }
 .campaign-progress{

@@ -181,7 +181,7 @@ class MailsterPlaceholder {
 			'hour' => $time[3],
 			'minute' => $time[4],
 		);
-		if ( $meta['nowebversion'] ) {
+		if ( ! $meta['webversion'] ) {
 			$defaults['webversion'] = '';
 			$defaults['webversionlink'] = '';
 		}

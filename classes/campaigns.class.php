@@ -254,7 +254,7 @@ class MailsterCampaigns {
 	public function display_post_states( $post_states, $post ) {
 
 		if ( $post->post_type == 'newsletter' ) {
-			if ( $this->meta( $post->ID, 'nowebversion' ) ) {
+			if ( ! $this->meta( $post->ID, 'webversion' ) ) {
 				$post_states['mailster_no_webversion'] = __( 'Private', 'mailster' );
 			}
 		}
@@ -1098,7 +1098,7 @@ class MailsterCampaigns {
 
 			$this->post_data = $this->meta( $post->ID );
 			if ( empty( $this->post_data ) ) {
-				$this->post_data = $this->empty_meta();
+				$this->post_data = $this->meta_defaults();
 			}
 
 			add_action( 'submitpost_box', array( &$this, 'notice' ) );
@@ -1428,7 +1428,7 @@ class MailsterCampaigns {
 		$meta = $this->meta( $post_id );
 		if ( in_array( $post->post_status, array( 'active', 'finished' ) ) ) {
 
-			$meta['nowebversion'] = ! isset( $postdata['nowebversion'] );
+			$meta['webversion'] = isset( $postdata['webversion'] );
 			$this->update_meta( $post_id, $meta );
 			return $post;
 		}
@@ -1450,7 +1450,7 @@ class MailsterCampaigns {
 			$meta['from_email'] = $postdata['from_email'];
 			$meta['reply_to'] = $postdata['reply_to'];
 			$meta['timezone'] = isset( $postdata['timezone'] ) && $postdata['timezone'];
-			$meta['nowebversion'] = ! isset( $postdata['nowebversion'] );
+			$meta['webversion'] = isset( $postdata['webversion'] );
 
 			if ( isset( $postdata['newsletter_color'] ) ) {
 				$meta['colors'] = $postdata['newsletter_color'];
@@ -1787,7 +1787,7 @@ class MailsterCampaigns {
 			$ids = $id;
 		}
 
-		$defaults = $this->empty_meta();
+		$defaults = $this->meta_defaults();
 
 		if ( is_null( $id ) && is_null( $key ) ) {
 			return $defaults;
@@ -1898,9 +1898,14 @@ class MailsterCampaigns {
 			$_meta = array( $key => $value );
 		}
 
+		$nullvalues = array( 'timezone', 'embed_images', 'track_opens', 'track_clicks', 'ignore_lists', 'autoplaintext', 'auto_post_thumbnail', 'webversion' );
+
 		foreach ( $_meta as $k => $v ) {
 			// allowed NULL values
-			if ( $v == '' && ! in_array( $k, array( 'timezone', 'embed_images', 'track_opens', 'track_clicks', 'ignore_lists', 'autoplaintext', 'auto_post_thumbnail' ) ) ) {
+			if ( $v == '' && ! in_array( $k, $nullvalues ) ) {
+				delete_post_meta( $id, '_mailster_' . $k );
+				// default is true => don't save
+			} elseif ( $v != '' && in_array( $k, array( 'webversion', 'autoplaintext' ) ) ) {
 				delete_post_meta( $id, '_mailster_' . $k );
 			} else {
 				update_post_meta( $id, '_mailster_' . $k, $v );
@@ -1920,12 +1925,11 @@ class MailsterCampaigns {
 	/**
 	 *
 	 *
-	 * @param unknown $id  (optional)
 	 * @param unknown $key (optional)
 	 * @return unknown
 	 */
-	private function empty_meta( $id = null, $key = null ) {
-		return array(
+	private function meta_defaults( $key = null ) {
+		$defaults = array(
 			'parent_id' => null,
 			'timestamp' => null,
 			'finished' => null,
@@ -1950,8 +1954,15 @@ class MailsterCampaigns {
 			'track_opens' => mailster_option( 'track_opens' ),
 			'track_clicks' => mailster_option( 'track_clicks' ),
 			'autoplaintext' => true,
-			'nowebversion' => false,
+			'webversion' => true,
 		);
+
+		if ( ! is_null( $key ) ) {
+			return isset( $defaults[ $key ] ) ? $defaults[ $key ] : null;
+		}
+
+		return $defaults;
+
 	}
 
 
