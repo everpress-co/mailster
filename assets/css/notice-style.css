@@ -1,13 +1,13 @@
 div.mailster-notice{
-	word-wrap:break-word;
-	position:relative;
+	word-wrap: break-word;
+	position: relative;
 	padding-right: 38px;
 }
 .wrap div.mailster-notice, .branch-3-8 div.mailster-notice, .branch-3-9 div.mailster-notice, .branch-4 div.mailster-notice, .branch-4-1 div.mailster-notice, .branch-4-2 div.mailster-notice, .branch-4-3 div.mailster-notice{
 	display: block;
 }
 div.mailster-notice > p{
-	max-height:280px;
+	max-height: 280px;
 	overflow: auto;
 }
 div.mailster-notice.mailster-notice-dismissable{
@@ -18,7 +18,7 @@ div.mailster-notice.mailster-notice-dismissable{
 	padding-left: 100px;
 }
 div.mailster-notice pre{
-	word-wrap:break-word;
+	word-wrap: break-word;
 	white-space: pre-wrap;
 }
 div.mailster-notice .notice-dismiss {

@@ -2,7 +2,7 @@
 	display: none;
 }
 .mailster-dashboard .postbox:before{
-	content:'';
+	content: '';
 	display: block;
 }
 .mailster-dashboard .postbox .inside{
@@ -78,15 +78,15 @@
 .mailster-dashboard dl dt{
 	font-weight: 700;
 	margin-left: 55px;
-	margin-top:8px;
-	margin-bottom:4px;
+	margin-top: 8px;
+	margin-bottom: 4px;
 }
 .mailster-dashboard dl dt a{
 	color: #444;
 }
 .mailster-dashboard dl dd{
 	margin-left: 55px;
-	color:#23282d;
+	color: #23282d;
 }
 .mailster-dashboard dl dd span.lighter{
 	color: #aaa;
@@ -153,11 +153,11 @@
 	padding: 6px 0 10px;
 }
 .mailster-mb-label{
-	vertical-align:top;
+	vertical-align: top;
 	display: inline-block;
-	max-width:50%;
-	text-overflow:ellipsis;
-	overflow:hidden;
+	max-width: 50%;
+	text-overflow: ellipsis;
+	overflow: hidden;
 	white-space: nowrap;
 }
 .mailster-mb-link{
@@ -171,7 +171,7 @@
 	font: normal 16px/1 'mailster-icons';
 	content: '';
 	margin: 0 4px 0 5px;
-	color:#585858;
+	color: #585858;
 }
 .mailster-mb-link.status-active:before{
 	content: '\e80f';
@@ -195,15 +195,15 @@
 	overflow: hidden;
 }
 .mailster-mb-stats ul li{
-	height:75px;
+	height: 75px;
 	width: 20%;
 	display: block;
 	float: left;
 	text-align: center;
-	box-sizing:border-box;
+	box-sizing: border-box;
 }
 .mailster-mb-stats ul.labels li{
-	height:25px;
+	height: 25px;
 }
 .rtl .mailster-mb-statsli{
 	float: right;
@@ -212,9 +212,9 @@
 	margin: 0 auto;
 }
 .mailster-mb-stats .stats-total{
-	line-height:3.5em;
-	font-size:22px;
-	font-weight:700;
+	line-height: 3.5em;
+	font-size: 22px;
+	font-weight: 700;
 
 }
 /* My Mailster */

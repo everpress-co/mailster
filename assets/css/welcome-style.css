@@ -17,7 +17,7 @@
 	box-shadow: 0 1px 3px rgba(0,0,0,.2);
 	background: #2BB3E7 url(../img/logo.png) no-repeat 50% 34%;
 	background-size: 50%;
-	color:#fff;
+	color: #fff;
 }
 .rtl .mailster-badge{
 	right: inherit;

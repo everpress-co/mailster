@@ -36,7 +36,7 @@
 	display: block;
 }
 .preview a.remove-file:hover{
-	color:#21759B;
+	color: #21759B;
 }
 #available-templates{
 	margin-right: 0;
@@ -62,7 +62,7 @@ h3 .update_available {
 }
 #templateeditor{
 	display: block;
-	display:none;
+	display: none;
 	border: 1px solid #DEDEDB;
 	top: -21px;
 	padding: 10px;
@@ -74,10 +74,10 @@ h3 .update_available {
 }
 #templateeditor .inner {
 	padding: 5px;
-	border-left:1px solid #DEDEDB;
-	border-right:1px solid #DEDEDB;
-	border-bottom:1px solid #DEDEDB;
-	border-top:1px solid #DEDEDB;
+	border-left: 1px solid #DEDEDB;
+	border-right: 1px solid #DEDEDB;
+	border-bottom: 1px solid #DEDEDB;
+	border-top: 1px solid #DEDEDB;
 	overflow: hidden;
 }
 #templateeditor.loading .inner{
@@ -92,34 +92,34 @@ h3 .update_available {
 	text-decoration: none;
 }
 #templateeditor a.remove-file {
-	color:red;
-	cursor:pointer;
-	font-size:15px;
-	bottom:18px;
-	left:18px;
+	color: red;
+	cursor: pointer;
+	font-size: 15px;
+	bottom: 18px;
+	left: 18px;
 	padding: 2px 0px 2px 2px;
 	opacity: 0.5;
 }
-#templateeditor a.remove-file:before{content:'\e82a';}
+#templateeditor a.remove-file:before{content: '\e82a';}
 #templateeditor a.remove-file:hover {
 	opacity: 1;
 }
 #templateeditor textarea.editor{
-	width:100%;
-	height:570px;
-	font-family:"Courier New", Courier, monospace;
-	background-image:url(../img/pre_bg.png);
-	background-attachment:scroll;
-	overflow:auto;
-	line-height:19px;
-	padding:0;
+	width: 100%;
+	height: 570px;
+	font-family: "Courier New", Courier, monospace;
+	background-image: url(../img/pre_bg.png);
+	background-attachment: scroll;
+	overflow: auto;
+	line-height: 19px;
+	padding: 0;
 	margin: 0;
-	resize:none;
+	resize: none;
 	outline: none;
 }
 #templateeditor .CodeMirror{
 	height: 600px;
-	border:1px solid #ccc;
+	border: 1px solid #ccc;
 }
 #templateeditor .CodeMirror-scroll {
 	overflow: auto;
@@ -133,15 +133,15 @@ h3 .update_available {
 	visibility: visible;
 }
 button.button-primary.duplicate{
-	margin:20px;
+	margin: 20px;
 	display: inline-block;
 }
 #templateeditor .edit-buttons{
-	float:right;
-	margin:20px;
+	float: right;
+	margin: 20px;
 }
 .rtl #templateeditor .edit-buttons{
-	float:left;
+	float: left;
 }
 #templateeditor .edit-buttons .message{
 	padding-right: 5px;
@@ -153,15 +153,15 @@ button.button-primary.duplicate{
 	height: 460px;
 	margin-right: 20px;
 	margin-bottom: 20px;
-	border:1px solid #DEDEDB;
-	background-color:#f7f7f7;
+	border: 1px solid #DEDEDB;
+	background-color: #f7f7f7;
 	position: relative;
 	overflow: hidden;
-	-webkit-transition:border-color .25s ease-in-out, background-color .25s ease-in-out;
-	-moz-transition:border-color .25s ease-in-out, background-color .25s ease-in-out;
-	-ms-transition:border-color .25s ease-in-out, background-color .25s ease-in-out;
-	-o-transition:border-color .25s ease-in-out, background-color .25s ease-in-out;
-	transition:border-color .25s ease-in-out, background-color .25s ease-in-out;
+	-webkit-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
+	-moz-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
+	-ms-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
+	-o-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
+	transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
 	z-index: 2;
 }
 @media only screen and (max-width: 782px){
@@ -178,12 +178,12 @@ button.button-primary.duplicate{
 	display: none;
 	height: 100%;
 	width: 100%;
-	top:0;
+	top: 0;
 	position: absolute;
-	background-repeat:no-repeat;
-	background-position:center center;
+	background-repeat: no-repeat;
+	background-position: center center;
 	background-size: 20px 20px;
-	background-image:url('../img/loading.gif');
+	background-image: url('../img/loading.gif');
 	background-color: rgba(255,255,255,0.5);
 }
 @media
@@ -194,7 +194,7 @@ only screen and (        min-device-pixel-ratio: 2),
 only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx) {
 	.mailster-box .loader{
-		background-image:url('../img/loading_2x.gif');
+		background-image: url('../img/loading_2x.gif');
 	}
 }
 .mailster-box.loading .loader{
@@ -236,10 +236,10 @@ only screen and (                min-resolution: 2dppx) {
 	-webkit-transition: opacity 0.1s ease-in-out;
 	transition: opacity 0.1s ease-in-out;
 	white-space: nowrap;
-	text-decoration:none;
+	text-decoration: none;
 }
 .mailster-box .screenshot a.thickbox-preview{
-	top:40%;
+	top: 40%;
 }
 .mailster-box .screenshot:hover a {
 	opacity: 1;
@@ -262,11 +262,11 @@ only screen and (                min-resolution: 2dppx) {
 	margin: 0 19px;
 	max-height: 100px;
 	overflow: auto;
-	-webkit-transition:max-height .25s ease-in-out;
-	-moz-transition:max-height .25s ease-in-out;
-	-ms-transition:max-height .25s ease-in-out;
-	-o-transition:max-height .25s ease-in-out;
-	transition:max-height .25s ease-in-out;
+	-webkit-transition: max-height .25s ease-in-out;
+	-moz-transition: max-height .25s ease-in-out;
+	-ms-transition: max-height .25s ease-in-out;
+	-o-transition: max-height .25s ease-in-out;
+	transition: max-height .25s ease-in-out;
 }
 .add-license .description{
 	max-height: 16px;
@@ -277,11 +277,11 @@ only screen and (                min-resolution: 2dppx) {
 	height: 28px;
 	padding: 19px;
 	opacity: 0;
-	-webkit-transition:opacity .25s ease-in-out;
-	-moz-transition:opacity .25s ease-in-out;
-	-ms-transition:opacity .25s ease-in-out;
-	-o-transition:opacity .25s ease-in-out;
-	transition:opacity .25s ease-in-out;
+	-webkit-transition: opacity .25s ease-in-out;
+	-moz-transition: opacity .25s ease-in-out;
+	-ms-transition: opacity .25s ease-in-out;
+	-o-transition: opacity .25s ease-in-out;
+	transition: opacity .25s ease-in-out;
 }
 .mailster-box .licensecode input.license{
 	float: left;
@@ -326,13 +326,13 @@ only screen and (                min-resolution: 2dppx) {
 	color: #F00;
 }
 .mailster-box.is-default{
-	background-color:#fff;
+	background-color: #fff;
 }
 .mailster-box .action-links a.purchase{
 	float: right;
 }
 .mailster-box:hover{
-	background-color:#fff;
+	background-color: #fff;
 	border-color: #5b9dd9;
 	box-shadow: 0 0 2px rgba( 30, 140, 190, 0.8 );
 }
@@ -376,8 +376,8 @@ only screen and (                min-resolution: 2dppx) {
 	content: attr(data-support);
 	display: block;
 	position: absolute;
-	top:40%;
-	left:50%;
+	top: 40%;
+	left: 50%;
 	transform: translate(-50%,-50%);
 	text-align: center;
 	color: #444;
@@ -401,8 +401,8 @@ only screen and (                min-resolution: 2dppx) {
 }
 .mailster-box.edit{
 	border: 1px solid #d1d1d1;
-	background-color:#fff;
-	border-bottom:1px solid #fff;
+	background-color: #fff;
+	border-bottom: 1px solid #fff;
 }
 .mailster-box a.edit.disabled{
 	color: #ccc;
@@ -425,7 +425,7 @@ only screen and (                min-resolution: 2dppx) {
 }
 @media only screen and (max-width: 782px){
 	.more-templates-field{
-		height:80px;
+		height: 80px;
 	}
 }
 .more-templates-field div{
@@ -442,22 +442,22 @@ only screen and (                min-resolution: 2dppx) {
 	margin-left: 20px;
 }
 .update-badge{
-	background:#464646;
-	border-radius:50%;
-	position:absolute;
-	right:5px;
-	top:4px;
-	padding:3px 5px;
-	text-align:center;
-	color:#fff;
-	font-size:9px;
-	font-weight:700;
-	box-shadow:0 1px 0 0 rgba(255, 255, 255, 0.5);
+	background: #464646;
+	border-radius: 50%;
+	position: absolute;
+	right: 5px;
+	top: 4px;
+	padding: 3px 5px;
+	text-align: center;
+	color: #fff;
+	font-size: 9px;
+	font-weight: 700;
+	box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.5);
 }
 .affiliate-note{
-	color:#aaa;
-	font-style:italic;
-	font-size:12px;
+	color: #aaa;
+	font-style: italic;
+	font-size: 12px;
 }
 #thickboxbox{
 	display: none;
@@ -467,8 +467,8 @@ only screen and (                min-resolution: 2dppx) {
 	float: left;
 	height: 670px;
 	overflow: auto;
-	position:absolute;
-	top:17px;
+	position: absolute;
+	top: 17px;
 }
 .thickbox-filelist li{
 	width: 95%;
@@ -484,7 +484,7 @@ only screen and (                min-resolution: 2dppx) {
 	max-width: 100%;
 }
 .thickbox-filelist li a.thickbox-remove-file{
-	color:red;
+	color: red;
 	text-decoration: none;
 	position: absolute;
 	right: 3px;
@@ -498,7 +498,7 @@ only screen and (                min-resolution: 2dppx) {
 	display: block;
 }
 .thickbox-filelist li a.thickbox-remove-file:before{
-	content:'\e82a';
+	content: '\e82a';
 }
 .thickbox-filelist li span{
 	position: absolute;

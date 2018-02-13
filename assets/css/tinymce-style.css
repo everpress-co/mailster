@@ -4,7 +4,7 @@ html .mceContentBody {
 }
 body {
 	color: #444;
-	font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-weight: 300;
 	line-height: 1.5em;
@@ -206,7 +206,7 @@ a:focus {
 a:active,
 a:hover {
 	outline: 0;
-	text-decoration:underline;;
+	text-decoration: underline;;
 }
 .alignleft {
 	float: left;
