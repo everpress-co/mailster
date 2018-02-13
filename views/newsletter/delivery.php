@@ -40,7 +40,7 @@ $sent = $this->get_sent( $post->ID );
 
 	elseif ( 'finished' == $post->post_status ) :
 
-		printf( esc_html__( 'This campaign has been sent on %s. You cannot edit it anymore', 'mailster' ), '<strong>' . date( $timeformat, $this->post_data['finished'] + $timeoffset ) . '</strong>' );
+		printf( esc_html__( 'This campaign has been sent on %s.', 'mailster' ), '<strong>' . date( $timeformat, $this->post_data['finished'] + $timeoffset ) . '</strong>' );
 
 	endif; ?>
 	</p>

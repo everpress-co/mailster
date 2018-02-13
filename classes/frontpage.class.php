@@ -687,6 +687,8 @@ class MailsterFrontpage {
 
 		else :
 
+			wp_old_slug_redirect();
+
 			// NOT FOUND
 			$this->do_404();
 

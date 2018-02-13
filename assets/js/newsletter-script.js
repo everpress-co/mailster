@@ -100,7 +100,7 @@ jQuery(document).ready(function ($) {
 				_ibody = _iframe.contents().find('body');
 
 				if (_disabled) {
-					_title.prop('disabled', true);
+					//_title.prop('disabled', true);
 					//overwrite autosave function since we don't need it
 					window.autosave = wp.autosave = function () {
 						return true;
@@ -154,6 +154,12 @@ jQuery(document).ready(function ($) {
 		.on('change', 'input[name=screen_columns]', function () {
 			_trigger('resize');
 		});
+
+		$('#mailster_submitdiv')
+			.on('change', '#use_pwd', function () {
+				$('#password-wrap').slideToggle(200).find('input').focus().select();
+				$('#post_password').prop('disabled', !$(this).is(':checked'));
+			})
 
 
 		if (!_disabled) {
@@ -236,10 +242,6 @@ jQuery(document).ready(function ($) {
 
 			//submit box
 			$('#mailster_submitdiv')
-				.on('change', '#use_pwd', function () {
-					$('#password-wrap').slideToggle(200).find('input').focus().select();
-					$('#post_password').prop('disabled', !$(this).is(':checked'));
-				})
 				.on('#post', 'submit', function () {
 					if (isDisabled) return false;
 					_trigger('save');
@@ -760,9 +762,9 @@ jQuery(document).ready(function ($) {
 
 		} else {
 
-			_title.prop('disabled', true);
+			// _title.prop('disabled', true);
 
-			$('#change-permalinks').remove();
+			//$('#change-permalinks').remove();
 			if (typeof autosavePeriodical != 'undefined') autosavePeriodical.repeat = false;
 
 			$('#mailster_details')

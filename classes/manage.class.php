@@ -480,7 +480,9 @@ class MailsterManage {
 		$bulkdata['signupdate'] = $bulkdata['signupdate'];
 
 		parse_str( $bulkdata['order'], $order );
+		$order = isset( $order['order'] ) ? $order['order'] : array();
 		parse_str( $bulkdata['lists'], $lists );
+		$lists = isset( $lists['lists'] ) ? $lists['lists'] : array();
 
 		$option_list_ids = array();
 
@@ -548,6 +550,9 @@ class MailsterManage {
 					for ( $col = 0; $col < $line_count; $col++ ) {
 
 						$d = trim( $data[ $col ] );
+						if ( ! isset( $order[ $col ] ) ) {
+							continue;
+						}
 						switch ( $order[ $col ] ) {
 
 							case 'email':
@@ -624,7 +629,7 @@ class MailsterManage {
 					}
 
 					if ( ! mailster_is_email( $insert['email'] ) ) {
-						$erroremails[ $insert['email'] ] = __( 'invalid email address', 'mailster' );
+						$erroremails[ $insert['email'] ] = __( 'Email address is invalid.', 'mailster' );
 						$bulkdata['errors']++;
 						continue;
 					}
@@ -704,8 +709,8 @@ class MailsterManage {
 				$table = '<p>' . __( 'The following addresses were not imported', 'mailster' ) . ':</p>';
 				$table .= '<table class="wp-list-table widefat fixed">';
 				$table .= '<thead><tr><td width="5%">#</td><td>' . mailster_text( 'email' ) . '</td><td>' . __( 'Reason', 'mailster' ) . '</td></tr></thead><tbody>';
-				foreach ( $erroremails as $email => $e ) {
-					$table .= '<tr' . ( $i % 2 ? '' : ' class="alternate"' ) . '><td>' . ( ++$i ) . '</td><td>' . $email . '</td><td>' . $e . '</td></tr></thead>';
+				foreach ( $erroremails as $email => $reason ) {
+					$table .= '<tr' . ( $i % 2 ? '' : ' class="alternate"' ) . '><td>' . ( ++$i ) . '</td><td>' . esc_html( $email ) . '</td><td>' . esc_html( $reason ) . '</td></tr></thead>';
 				}
 				$table .= '</tbody></table>';
 				$return['html'] .= $table;

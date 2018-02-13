@@ -1371,6 +1371,12 @@ class MailsterCampaigns {
 
 			$post['post_status'] = isset( $_POST['mailster_data']['active'] ) ? 'queued' : $post['post_status'];
 
+			// overcome post status issue where old slugs only for published post are stored
+			$fakepost = (object) $post;
+			$fakepost->post_status = 'publish';
+
+			wp_check_for_changed_slugs( $postarr['ID'], $fakepost, get_post( $postarr['ID'] ) );
+
 		}
 
 		if ( $post['post_status'] == 'autoresponder' && isset( $postdata['autoresponder'] ) && $postdata['autoresponder']['action'] != 'mailster_autoresponder_followup' ) {
@@ -1413,13 +1419,19 @@ class MailsterCampaigns {
 			return $post;
 		}
 
-		$timeoffset = mailster( 'helper' )->gmt_offset( true );
-		$now = time();
-
 		// activate kses filter
 		kses_init_filters();
 
+		$timeoffset = mailster( 'helper' )->gmt_offset( true );
+		$now = time();
+
 		$meta = $this->meta( $post_id );
+		if ( in_array( $post->post_status, array( 'active', 'finished' ) ) ) {
+
+			$meta['nowebversion'] = ! isset( $postdata['nowebversion'] );
+			$this->update_meta( $post_id, $meta );
+			return $post;
+		}
 
 		if ( isset( $postdata ) ) {
 

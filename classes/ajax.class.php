@@ -257,17 +257,19 @@ class MailsterAjax {
 
 			$placeholder->add_defaults( $campaign->ID, array(
 				'subject' => $subject,
+			) );
+			$placeholder->add_custom( $campaign->ID, array(
 				'emailaddress' => $current_user->user_email,
 			) );
 
 			if ( 0 != $current_user->ID ) {
 				$firstname = ( $current_user->user_firstname ) ? $current_user->user_firstname : $current_user->display_name;
 
-				$placeholder->add( array(
-					'firstname' => $firstname,
-					'lastname' => $current_user->user_lastname,
-					'fullname' => mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname ),
-				) );
+				// $placeholder->add( array(
+				// 'firstname' => $firstname,
+				// 'lastname' => $current_user->user_lastname,
+				// 'fullname' => mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname ),
+				// ) );
 			}
 
 			$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
