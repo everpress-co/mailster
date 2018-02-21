@@ -47,7 +47,7 @@
 }
 
 .mailster-test-result .mailster-test-result-more{
-	padding-left: 27px;
+	padding: 10px 0 8px 30px;
 	font-style: italic;
 }
 .mailster-test-result .mailster-test-result-more:empty{
@@ -63,7 +63,7 @@
 	display: none;
 }
 .tests-output, .tests-textoutput-wrap{
-	height: 370px;
+	height: 420px;
 	overflow: auto;
 	padding: 5px;
 	box-shadow: inset 0px 0px 3px rgba(0,0,0,0.5);

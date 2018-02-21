@@ -872,11 +872,12 @@ class MailsterSubscribers {
 		$entry = (array) $entry;
 
 		if ( isset( $entry['email'] ) ) {
-			$entry['email'] = trim( strtolower( $entry['email'] ) );
-		}
-
-		if ( isset( $entry['email'] ) && ! mailster_is_email( $entry['email'] ) ) {
-			return new WP_Error( 'invalid_email', __( 'invalid email address', 'mailster' ) );
+			if ( ! mailster_is_email( $entry['email'] ) ) {
+				return new WP_Error( 'invalid_email', __( 'invalid email address', 'mailster' ) );
+			}
+			// local part must be case sensitive while domain must be lowercase (RFC 5321)
+			$emailparts = explode( '@', $entry['email'] );
+			$entry['email'] = trim( $emailparts[0] . '@' . strtolower( $emailparts[1] ) );
 		}
 
 		$field_names = array( 'ID' => '%d', 'hash' => '%s', 'email' => '%s', 'status' => '%d', 'added' => '%d', 'signup' => '%d', 'confirm' => '%d', 'updated' => '%d', 'ip_signup' => '%s', 'ip_confirm' => '%s', 'wp_id' => '%d', 'rating' => '%f' );

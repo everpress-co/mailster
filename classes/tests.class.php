@@ -113,7 +113,7 @@ class MailsterTests {
 
 				foreach ( $test_errors as $i => $error ) {
 					$name = $this->nicename( $test_id );
-					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ($error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . '</h4><p class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</p></div>';
+					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ($error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . '</h4><div class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</div></div>';
 					if ( $type != 'success' ) {
 						$text .= '[' . $type . '] ' . $test_id . ': ' . strip_tags( $error['msg'] ) . "\n";
 					}
@@ -202,8 +202,9 @@ class MailsterTests {
 
 	private function failure( $type, $msg, $link = null ) {
 
-		$backtrace = debug_backtrace();
-		$test_id = $backtrace[2]['function'];
+		// $backtrace = debug_backtrace();
+		// $test_id = $backtrace[2]['function'];
+		$test_id = $this->current_id;
 
 		if ( is_null( $test_id ) ) {
 			$test_id = uniqid();
@@ -288,7 +289,7 @@ class MailsterTests {
 		$current = get_bloginfo( 'version' );
 		if ( version_compare( $current, '3.8' ) < 0 ) {
 			$this->error( sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', $current ) );
-		} elseif ( $update && $update->response == 'upgrade' ) {
+		} elseif ( $update && $update->response == 'upgrade' && version_compare( $update->current, $current ) ) {
 			$this->warning( sprintf( 'Your WordPress site is not up-to-date! Version %1$s is available. Your current version is %2$s.', $update->current, $current ) );
 		} else {
 			$this->success( 'You have version ' . $current );
@@ -321,9 +322,9 @@ class MailsterTests {
 		$hooks = array_values( preg_grep( '/^mymail_/', array_keys( $wp_filter ) ) );
 
 		if ( ! empty( $hooks ) ) {
-			$msg = '<p>Following deprecated MyMail hooks were found and should get replaced:</p><ul>';
+			$msg = 'Following deprecated MyMail hooks were found and should get replaced:<ul>';
 			foreach ( $hooks as $hook ) {
-				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code></li>';
+				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code> </li>';
 			}
 			$msg .= '</ul>';
 
@@ -334,7 +335,7 @@ class MailsterTests {
 	}
 	private function test_custom_language() {
 		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo' ) ) {
-				$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );
+			$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );
 		}
 	}
 	private function test_wp_debug() {
