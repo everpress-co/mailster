@@ -198,8 +198,8 @@ foreach ( $conditions as $i => $condition_group ) : ?><div class="mailster-condi
 								</optgroup>
 								<?php
 								$status = '';
-								foreach ( $all_campaigns_stati as $j => $c ) {
-									$c = $all_campaigns[ $j ];
+								foreach ( $all_campaigns_stati as $cj => $c ) {
+									$c = $all_campaigns[ $cj ];
 									if ( $status != $c->post_status ) {
 										if ( $status ) {
 											echo '</optgroup>';
@@ -227,7 +227,7 @@ foreach ( $conditions as $i => $condition_group ) : ?><div class="mailster-condi
 								<option value="0">--</option>
 								<?php
 								$status = '';
-								foreach ( $lists as $j => $list ) { ?>
+								foreach ( $lists as $lj => $list ) { ?>
 								<option value="<?php echo $list->ID ?>" <?php selected( $v, $list->ID );?>><?php echo ($list->name ? esc_html( $list->name ) : '[' . esc_html__( 'no title', 'mailster' ) . ']') ?></option>
 								<?php } ?>
 							</select>
