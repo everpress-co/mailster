@@ -107,7 +107,7 @@ class MailsterHelper {
 		$resized_img_path = $no_ext_path . '-' . $new_img_size[0] . 'x' . $new_img_size[1] . '.' . $extension;
 		$new_img = str_replace( basename( $image_src[0] ), basename( $resized_img_path ), $image_src[0] );
 
-		if ( ! file_exists( $resized_img_path ) ) {
+		if ( ! file_exists( $resized_img_path ) && file_exists( $actual_file_path ) ) {
 
 			$image = wp_get_image_editor( $actual_file_path );
 			if ( ! is_wp_error( $image ) ) {

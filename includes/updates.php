@@ -527,12 +527,14 @@ if ( $old_version ) {
 		case '2.2.19':
 		case '2.2.x':
 
+			// since 2.3
 			$mailster_options['webversion_bar'] = true;
 			$mailster_options['track_opens'] = true;
 			$mailster_options['track_clicks'] = true;
 
 			update_option( 'mailster_cron_lasthit', false );
 
+			// allow NULL values on two columns
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `campaign_id` `campaign_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 
