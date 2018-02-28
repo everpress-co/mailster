@@ -1461,8 +1461,8 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_actions (
-                subscriber_id bigint(20) unsigned NOT NULL DEFAULT 0,
-                campaign_id bigint(20) unsigned NOT NULL DEFAULT 0,
+                subscriber_id bigint(20) unsigned NULL DEFAULT NULL,
+                campaign_id bigint(20) unsigned NULL DEFAULT NULL,
                 timestamp int(11) unsigned NOT NULL DEFAULT 0,
                 count int(11) unsigned NOT NULL DEFAULT 0,
                 type tinyint(1) NOT NULL DEFAULT 0,

@@ -518,6 +518,12 @@ if ( $old_version ) {
 
 		case '2.2.11':
 		case '2.2.12':
+		case '2.2.13':
+		case '2.2.14':
+		case '2.2.15':
+		case '2.2.16':
+		case '2.2.17':
+		case '2.2.18':
 		case '2.2.x':
 
 			$mailster_options['webversion_bar'] = true;
@@ -525,6 +531,9 @@ if ( $old_version ) {
 			$mailster_options['track_clicks'] = true;
 
 			update_option( 'mailster_cron_lasthit', false );
+
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `campaign_id` `campaign_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 
 		default:
 
