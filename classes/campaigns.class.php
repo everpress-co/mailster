@@ -281,7 +281,6 @@ class MailsterCampaigns {
 	public function newsletter_details() {
 		global $post;
 		global $post_id;
-
 		include MAILSTER_DIR . 'views/newsletter/details.php';
 	}
 

@@ -118,7 +118,7 @@ jQuery(document).ready(function ($) {
 
 				_trigger('resize');
 				_trigger('refresh');
-				_trigger('save');
+				//_trigger('save');
 				$("#normal-sortables").on("sortupdate", function (event, ui) {
 					_trigger('resize');
 				});

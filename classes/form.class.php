@@ -253,6 +253,7 @@ class MailsterForm {
 			} else {
 				$this->form->fields = array_intersect_key( $this->form->fields, array_flip( array( 'email' ) ) );
 			}
+			$this->form->userschoice = false;
 		}
 
 		if ( $this->profile ) {
@@ -966,10 +967,17 @@ class MailsterForm {
 					}
 
 					if ( $subscriber ) {
-						$assigned_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID, true );
+						$unassign_lists = null;
+						$assign_lists = null;
+						if ( $this->form->userschoice ) {
+							$assigned_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID, true );
 
-						$unassign_lists = array_diff( $assigned_lists, $this->object['lists'] );
-						$assign_lists = array_diff( $this->object['lists'], $assigned_lists );
+							$unassign_lists = array_diff( $assigned_lists, $this->object['lists'] );
+							$fix_lists = array_diff( $assigned_lists, $this->form->lists );
+							$unassign_lists = array_diff( $unassign_lists, $fix_lists );
+
+							$assign_lists = array_diff( $this->object['lists'], $assigned_lists );
+						}
 
 						// change status if other than pending, subscribed or unsubscribed
 						$status = $subscriber->status >= 3 ? 1 : $subscriber->status;
