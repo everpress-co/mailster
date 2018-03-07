@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.2.19 =
 
 * fixed: stripped `&zwnj;` character in editor
+* fixed: style blocks with conditional tags for Outlook no longer get in-lined
 
 = Version 2.2.18 =
 
