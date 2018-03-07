@@ -955,6 +955,14 @@ class MailsterHelper {
 	 */
 	public function inline_style( $content ) {
 
+		// save comments with conditional stuff
+		preg_match_all( '#<!--\s?\[\s?if(.*)?>(.*)?<!\[endif\]-->#sU', $content, $comments );
+
+		$commentid = uniqid();
+		foreach ( $comments[0] as $i => $comment ) {
+			$content = str_replace( $comment, 'HTML_COMMENT_' . $i . '_' . $commentid, $content );
+		}
+
 		// get all style blocks
 		if ( preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles ) ) {
 
@@ -985,6 +993,10 @@ class MailsterHelper {
 			}
 			$content = $html;
 
+		}
+
+		foreach ( $comments[0] as $i => $comment ) {
+			$content = str_replace( 'HTML_COMMENT_' . $i . '_' . $commentid, $comment, $content );
 		}
 
 		return $content;

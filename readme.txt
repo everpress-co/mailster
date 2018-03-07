@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.io
 * fixed: data errors on import
 * change: meta nowebversion => webversion
 * improved: finished/active campaigns can now get saved
+* fixed: style blocks with conditional tags for Outlook no longer get in-lined
 
 = Version 2. 3.beta.18 =
 
