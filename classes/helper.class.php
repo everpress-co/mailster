@@ -918,7 +918,7 @@ class MailsterHelper {
 
 		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
 
-		return $content;
+		return apply_filters( 'mailster_prepare_content', $content );
 
 	}
 
