@@ -137,7 +137,7 @@ jQuery(document).ready(function ($) {
 				performance: performance
 			});
 
-			importstatus.html(sprintf(mailsterL10n.import_contacts, ''));
+			importstatus.html(mailsterL10n.prepare_import);
 
 			window.onbeforeunload = function () {
 				return mailsterL10n.onbeforeunloadimport;
