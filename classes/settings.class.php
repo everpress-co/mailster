@@ -165,7 +165,7 @@ class MailsterSettings {
 			'max_execution_time' => 0,
 			'cron_service' => 'wp_cron',
 			'cron_secret' => md5( uniqid() ),
-			'cron_lock' => 'file',
+			'cron_lock' => 'db',
 
 			'deliverymethod' => 'simple',
 			'simplemethod' => 'mail',

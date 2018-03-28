@@ -1,6 +1,6 @@
 <div class="wrap mailster-welcome-wrap">
 
-	<h1><?php printf( esc_html__( 'Welcome to %s', 'mailster' ), 'Mailster 2.3 beta' ); ?></h1>
+	<h1><?php printf( esc_html__( 'Welcome to %s', 'mailster' ), 'Mailster 2.3' ); ?></h1>
 
 	<div class="about-text">
 		<?php esc_html_e( 'Easily create, send and track your Newsletter Campaigns', 'mailster' ); ?><br>
@@ -72,14 +72,6 @@
 			</div>
 			<div class="col">
 				<div class="media-container">
-					<img src="" width="505" height="284">
-				</div>
-				<h3>List based subscription</h3>
-				<p>Mailster now handles list based subscription next to global subscription.</p>
-				<div class="return-to-dashboard"></div>
-			</div>
-			<div class="col">
-				<div class="media-container">
 					<img src="https://mailster.github.io/welcome/time_frame.jpg" width="505" height="284">
 				</div>
 				<h3>Delivery Time Frame</h3>
@@ -103,11 +95,32 @@
 				<p>The Mailster PicPicker allows to quickly select and crop images. It now also works better with third party plugins.</p>
 				<div class="return-to-dashboard"></div>
 			</div>
+			<div class="col">
+				<div class="media-container">
+					<img src="https://mailster.github.io/welcome/subscriber_query.jpg" width="505" height="284">
+				</div>
+				<h3>Subscriber Query Class</h3>
+				<p>Similar to the WP_Query you can now simple query your subscribers.</p>
+				<div class="return-to-dashboard"></div>
+			</div>
+		</div>
+
+		<div class="feature-section two-col">
+			<div class="col">
+				<h3>List Based Subscription</h3>
+				<p>Mailster now handles list based subscription next to global subscription.</p>
+				<div class="return-to-dashboard"></div>
+			</div>
+			<div class="col">
+				<h3>Optional Web Version</h3>
+				<p>Disable the web version individually for your campaigns an auto responders.</p>
+				<div class="return-to-dashboard"></div>
+			</div>
 		</div>
 
 
 		<div class="changelog">
-			<h2>Under the Hood</h2>
+			<h2>Further Improvements</h2>
 
 			<div class="feature-section under-the-hood three-col">
 				<div class="col">
