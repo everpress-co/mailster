@@ -30,6 +30,7 @@ $sections = array(
 	'general' => esc_html__( 'General', 'mailster' ),
 	'template' => esc_html__( 'Template', 'mailster' ),
 	'frontend' => esc_html__( 'Front End', 'mailster' ),
+	'privacy' => esc_html__( 'Privacy', 'mailster' ),
 	'subscribers' => esc_html__( 'Subscribers', 'mailster' ),
 	'wordpress-users' => esc_html__( 'WordPress Users', 'mailster' ),
 	'texts' => esc_html__( 'Text Strings', 'mailster' ),

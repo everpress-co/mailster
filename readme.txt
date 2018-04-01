@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.io
 * change: meta nowebversion => webversion
 * improved: finished/active campaigns can now get saved
 * fixed: style blocks with conditional tags for Outlook no longer get in-lined
+* new privacy settings page
 
 = Version 2. 3.beta.18 =
 

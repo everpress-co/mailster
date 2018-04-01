@@ -1336,7 +1336,7 @@ class MailsterSubscribers {
 		}
 
 		// delete from subscribers, lists_subscribers, subscriber_fields, subscriber_meta, queue
-		$sql = 'DELETE a,b,c,' . ( $remove_actions ? 'd,' : '' ) . "e,f FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS b ON ( a.ID = b.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS c ON ( a.ID = c.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS d ON ( a.ID = d.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS e ON ( a.ID = e.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS f ON ( a.ID = f.subscriber_id ) WHERE a.ID IN (" . implode( ',', $subscriber_ids ) . ')';
+		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . "subscriber_meta,queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . implode( ',', $subscriber_ids ) . ')';
 
 		if ( $statuses ) {
 			$sql .= ' AND a.status IN (' . implode( ',', $statuses ) . ')';

@@ -312,56 +312,51 @@ class MailsterFrontpage {
 		$campaign = mailster( 'campaigns' )->get( $campaign_id, false );
 		$meta = mailster( 'campaigns' )->meta( $campaign_id );
 
-		if ( $subscriber ) {
+		if ( ! $subscriber ) {
 
-			$subscriber_id = $subscriber->ID;
+			$subscriber = (object) array(
+				'ID' => null,
+				'hash' => $hash,
+			);
+		}
 
-			if ( $target ) {
+		if ( $target ) {
 
-				if ( ! preg_match( '#^https?:#', $target ) ) {
-					wp_die( sprintf( __( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
-				}
-
-				$this->setcookie( $subscriber->hash );
-
-				$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID );
-
-				$redirect_to = $target;
-
-				// append hash and campaign_id if unsubscribe link
-				if ( mailster()->get_unsubscribe_link( $campaign_id, $hash ) == $redirect_to ) :
-					$redirect_to = $this->get_link( 'unsubscribe', $subscriber->hash, get_query_var( '_mailster' ) );
-					$target = $this->get_link( 'unsubscribe' );
-
-				elseif ( mailster()->get_profile_link( $campaign_id, $hash ) == $redirect_to ) :
-					$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . $subscriber->hash ), get_query_var( '_mailster' ) );
-					$target = $this->get_link( 'profile' );
-
-				endif;
-
-				if ( $meta['track_clicks'] ) {
-					do_action( 'mailster_click', $subscriber->ID, $campaign->ID, $target, $index );
-					do_action( 'mymail_click', $subscriber->ID, $campaign->ID, $target, $index );
-				}
-			} else {
-
-				if ( $meta['track_opens'] ) {
-					do_action( 'mailster_open', $subscriber->ID, $campaign->ID );
-					do_action( 'mymail_open', $subscriber->ID, $campaign->ID );
-				}
+			if ( ! preg_match( '#^https?:#', $target ) ) {
+				wp_die( sprintf( __( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 			}
 
-			if ( ! $redirect_to ) {
-				$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID ) : false;
-			}
+			$this->setcookie( $subscriber->hash );
 
-			// user doesn't exists
+			$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID );
+
+			$redirect_to = $target;
+
+			// append hash and campaign_id if unsubscribe link
+			if ( mailster()->get_unsubscribe_link( $campaign_id, $hash ) == $redirect_to ) :
+				$redirect_to = $this->get_link( 'unsubscribe', $subscriber->hash, get_query_var( '_mailster' ) );
+				$target = $this->get_link( 'unsubscribe' );
+
+			elseif ( mailster()->get_profile_link( $campaign_id, $hash ) == $redirect_to ) :
+				$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . $subscriber->hash ), get_query_var( '_mailster' ) );
+				$target = $this->get_link( 'profile' );
+
+			endif;
+
+			if ( $meta['track_clicks'] ) {
+				do_action( 'mailster_click', $subscriber->ID, $campaign->ID, $target, $index );
+				do_action( 'mymail_click', $subscriber->ID, $campaign->ID, $target, $index );
+			}
 		} else {
 
-			$subscriber_id = null;
+			if ( $meta['track_opens'] ) {
+				do_action( 'mailster_open', $subscriber->ID, $campaign->ID );
+				do_action( 'mymail_open', $subscriber->ID, $campaign->ID );
+			}
+		}
 
+		if ( ! $redirect_to ) {
 			$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID ) : false;
-
 		}
 
 		// no target => tracking image
@@ -374,7 +369,7 @@ class MailsterFrontpage {
 
 		} else {
 			// redirect in any case with 307 (temporary moved) to force tracking
-			$to = apply_filters( 'mymail_redirect_to', apply_filters( 'mailster_redirect_to', $redirect_to, $campaign_id, $subscriber_id ), $campaign_id, $subscriber_id );
+			$to = apply_filters( 'mymail_redirect_to', apply_filters( 'mailster_redirect_to', $redirect_to, $campaign_id, $subscriber->ID ), $campaign_id, $subscriber->ID );
 			$to = str_replace( '&amp;', '&', $to );
 			header( 'Location: ' . $to, true, 307 );
 		}
