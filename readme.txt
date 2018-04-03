@@ -1,5 +1,5 @@
 === Mailster - Email Newsletter Plugin for WordPress ===
-Contributors: EverPress, revaxarts
+Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.4
@@ -82,94 +82,7 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
-
 = Version 2.3 =
-
-* fixed: loading of posts in editor
-* fixed: stripped `&zwnj;` character in editor
-* fixed: data errors on import
-* change: meta nowebversion => webversion
-* improved: finished/active campaigns can now get saved
-* fixed: style blocks with conditional tags for Outlook no longer get in-lined
-* new privacy settings page
-
-= Version 2. 3.beta.18 =
-
-* fixed: problem with slashes in head section during test campaign
-* improved subscriber query
-* fixed: issue with custom subpage slugs on newsletter homepage
-
-= Version 2. 3.beta.17 =
-
-* change: sanitize_content no longer uses stripslashes
-
-= Version 2. 3.beta.16 =
-
-* various bug fixes and improvements
-* fixes compatibility issue with PHP 7.2
-
-= Version 2. 3.beta.15 =
-
-* fixed escaping on the editor
-
-= Version 2. 3.beta.14 =
-
-* prevent autosave trigger on page load
-* added option caching parameter
-
-= Version 2. 3.beta.13 =
-
-* better WPML compatibility
-* various bug fixes and improvements
-
-= Version 2. 3.beta.12 =
-
-* fixed: conflict with some third party delivery plugins
-* fixed: signup timestamp for lists not stored on import
-* various bug fixes and improvements
-
-= Version 2. 3.beta.11 =
-
-* updated segmentation screen with more possibilities
-* various bug fixes and improvements
-
-= Version 2. 3.beta.10 =
-
-* improved: performance on newsletter overview page
-* fixed: confirmation link
-* various bug fixes and improvements
-
-= Version 2. 3.beta.9 =
-
-* redirection bug fixed
-
-= Version 2. 3.beta.8 =
-
-* fixed: query issue on some autoresponders
-* improved: ajax loading on newsletter overview
-
-= Version 2. 3.beta.7 =
-
-* updated segmentation screen with more possibilities
-* bug fixes
-* editor improvements
-* added: custom field API
-* dynamic post images with no image are now removed
-* new progress bar and cron check improvements
-* improved handling of buttons in editor
-* moved system info page to test page
-
-= Version 2. 3.beta.3 =
-
-* improved: RTL version
-* improved: autosave mechanism
-* improved: editor
-
-= Version 2. 3.beta.2 =
-
-* improved: subscriber query
-
-= Version 2. 3.beta.1 =
 
 * new: option to hide the Webversion Bar
 * new: option to disable tracking on campaign based basis
@@ -187,6 +100,7 @@ Xaver Birsak – https://everpress.io
 * new: Export format: xls
 * new: Option to duplicate forms
 * new: Option to disable Webversion
+* new: privacy settings page
 * change: `mailster_replace_link` now targets the output link
 * improved: list segmentation
 * improved: campaign editor for faster campaign creation with inline editing
@@ -206,7 +120,7 @@ Xaver Birsak – https://everpress.io
 * added: Additional mail headers
 * added: option to release cron lock
 * added: option to reset cron last hit
-* updated: PHPMailer to version 5.2.25
+* updated: PHPMailer to version 5.2.26
 * deprecated MyMail methods
 
 
