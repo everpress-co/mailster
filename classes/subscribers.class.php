@@ -379,10 +379,7 @@ class MailsterSubscribers {
 					wp_die( __( 'You are not allowed to edit subscribers!', 'mailster' ) );
 				}
 
-				$empty = $this->get_empty();
-
-				// sanitize input;
-				$entry = (object) stripslashes_deep( array_intersect_key( $_POST['mailster_data'], (array) $empty ) );
+				$entry = (object) stripslashes_deep( $_POST['mailster_data'] );
 
 				if ( $is_new ) {
 					$entry->referer = 'backend';

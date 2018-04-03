@@ -91,7 +91,6 @@ if ( $is_new ) {
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty )
 				?>
 				</h4>
-
 			<?php endif; ?>
 		</td>
 		<td class="user-info">
@@ -242,6 +241,7 @@ if ( $is_new ) {
 			?>
 
 			</div>
+			<?php do_action( 'mailster_subscriber_after_meta', $subscriber ) ?>
 			<div class="detail v-top">
 				<label><?php esc_html_e( 'Lists', 'mailster' );?>:</label>
 				<ul class="click-to-edit type-list">
