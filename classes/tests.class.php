@@ -515,7 +515,7 @@ class MailsterTests {
 			$this->error( 'does not work: ' . $code );
 		}
 	}
-	private function test_TLS() {
+	private function _test_TLS() {
 		$response = wp_remote_post( 'https://www.howsmyssl.com/a/check', array(
 			'sslverify' => true,
 			'timeout' => 5,
