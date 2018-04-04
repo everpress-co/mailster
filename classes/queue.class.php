@@ -599,7 +599,6 @@ class MailsterQueue {
 				$html = $placeholder->get_content( false );
 
 				if ( ! preg_match( '/<\/module>/', $html ) ) {
-					mailster_notice( sprintf( __( 'No new campaign for %s has been created!', 'mailster' ), '<strong>"<a href="post.php?post=' . $campaign->ID . '&action=edit">' . $campaign->post_title . '</a>"</strong>' ), 'error', true, 'autoresponder_' . $campaign->ID, $campaign->post_author );
 					$doit = false;
 					$schedule_new = true;
 				} else {
