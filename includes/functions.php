@@ -31,7 +31,11 @@ function mailster( $subclass = null ) {
 function mailster_option( $option, $fallback = null ) {
 
 	global $mailster_options;
-	return isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $fallback;
+
+	$value = isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $fallback;
+	$value = apply_filters( 'mailster_option', $value, $option, $fallback );
+	$value = apply_filters( 'mailster_option_' . $option, $value, $fallback );
+	return $value;
 
 }
 
@@ -211,7 +215,7 @@ function mailster_get_current_user( $custom_fields = true ) {
  */
 function mailster_get_current_user_id() {
 
-	return mailster( 'subscribers' )->get_current_user_id( );
+	return mailster( 'subscribers' )->get_current_user_id();
 
 }
 
@@ -579,7 +583,7 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
 
 	foreach ( $lists as $list ) {
 		if ( is_numeric( $list ) ) {
-			$new_lists[] = intval( $list );
+			$new_lists[] = (int) $list;
 		} else {
 			if ( $list_id = mailster( 'lists' )->get_by_name( $list, 'ID' ) ) {
 				$new_lists[] = $list_id;
@@ -687,9 +691,10 @@ function mailster_clear_cache( $part = '', $deprecated = false ) {
  * @param unknown $once       (optional)
  * @param unknown $key        (optional)
  * @param unknown $capability (optional)
+ * @param unknown $append     (optional)
  * @return unknown
  */
-function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true ) {
+function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true, $append = false ) {
 
 	global $mailster_notices;
 
@@ -737,6 +742,10 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		$mailster_notices = array();
 	}
 
+	if ( $append && isset( $mailster_notices[ $args['key'] ] ) ) {
+		$args['text'] = $mailster_notices[ $args['key'] ]['text'] . '<br>' . $args['text'];
+	}
+
 	$mailster_notices[ $args['key'] ] = array(
 		'text' => $args['text'],
 		'type' => $args['type'],
@@ -753,6 +762,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 	return $args['key'];
 
 }
+
 
 
 /**
@@ -981,13 +991,20 @@ function mailster_update_notice( $text ) {
 /**
  *
  *
+ * @param unknown $post_id (optional)
  * @return unknown
  */
-function is_mailster_newsletter_homepage() {
+function is_mailster_newsletter_homepage( $post_id = null ) {
 
 	global $post;
+	if ( is_null( $post_id ) ) {
+		$the_post = $post;
+		$post_id = isset( $post ) ? $post->ID : null;
+	} else {
+		$the_post = get_post( $post_id );
+	}
 
-	return isset( $post ) && $post->ID == mailster_option( 'homepage' );
+	return apply_filters( 'is_mailster_newsletter_homepage', $post_id == mailster_option( 'homepage' ), $the_post );
 
 }
 
@@ -1086,7 +1103,7 @@ if ( ! function_exists( 'http_negotiate_language' ) ) :
 
 			$qvalue = 1.0;
 			if ( ! empty( $arr[5] ) ) {
-				$qvalue = floatval( $arr[5] );
+				$qvalue = (float) $arr[5];
 			}
 
 			// find q-maximal language

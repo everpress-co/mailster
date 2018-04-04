@@ -1,15 +1,11 @@
 .ui-datepicker {
 	padding: 0;
 	border: 1px solid #ddd;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
 	border-radius: 0;
 }
 .ui-datepicker * {
 	padding: 0;
 	font-family: "Open Sans", sans-serif;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
 	border-radius: 0;
 }
 .ui-datepicker table {
@@ -26,8 +22,6 @@
 	background: #222;
 	border-color: transparent;
 	cursor: pointer;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
 	border-radius: 0;
 }
 .ui-datepicker thead {

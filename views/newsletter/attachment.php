@@ -25,7 +25,7 @@ $is_autoresponder = 'autoresponder' == $post->post_status;
 				<a href="" class="delete-attachment" title="<?php echo esc_attr__( 'Remove Attachment', 'mailster' ); ?>">&#10005;</a>
 				<?php echo wp_get_attachment_image( $attachment_id, 'thumbnail', true ) ?>
 				<div class="mailster-attachment-label"><?php echo esc_html( basename( $file ) ) ?></div>
-				<input name="mailster_data[attachments][]" value="<?php echo intval( $attachment_id ) ?>" type="hidden" >
+				<input name="mailster_data[attachments][]" value="<?php echo (int) $attachment_id ?>" type="hidden" >
 			</li>
 		<?php endforeach; ?>
 	<?php endif; ?>
@@ -52,7 +52,7 @@ $is_autoresponder = 'autoresponder' == $post->post_status;
 					<a href="" class="delete-attachment" title="<?php echo esc_attr__( 'Remove Attachment', 'mailster' ); ?>">&#10005;</a>
 					<?php echo wp_get_attachment_image( $attachment_id, 'thumbnail', true ) ?>
 					<div class="mailster-attachment-label"><?php echo esc_html( basename( $file ) ) ?></div>
-					<input name="mailster_data[attachments][]" value="<?php echo intval( $attachment_id ) ?>" type="hidden" >
+					<input name="mailster_data[attachments][]" value="<?php echo (int) $attachment_id ?>" type="hidden" >
 				</li>
 			<?php endforeach; ?>
 		<?php else : ?>

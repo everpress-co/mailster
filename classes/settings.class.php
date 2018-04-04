@@ -8,13 +8,9 @@ class MailsterSettings {
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 70 );
 		add_action( 'admin_init', array( &$this, 'register_settings' ) );
 		add_action( 'admin_init', array( &$this, 'actions' ) );
+		add_action( 'admin_init', array( &$this, 'maybe_create_homepage' ) );
 
 	}
-
-
-
-	public function init() {}
-
 
 
 	public function admin_init() {
@@ -22,8 +18,16 @@ class MailsterSettings {
 		add_action( 'mailster_deliverymethod_tab_simple', array( &$this, 'deliverytab_simple' ) );
 		add_action( 'mailster_deliverymethod_tab_smtp', array( &$this, 'deliverytab_smtp' ) );
 		add_action( 'mailster_deliverymethod_tab_gmail', array( &$this, 'deliverytab_gmail' ) );
+	}
 
-		if ( isset( $_GET['mailster_create_homepage'] ) && $_GET['mailster_create_homepage'] ) {
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function maybe_create_homepage() {
+		if ( isset( $_GET['mailster_create_homepage'] ) && wp_verify_nonce( $_GET['mailster_create_homepage'], 'mailster_create_homepage' ) ) {
 
 			if ( $homepage = mailster_option( 'homepage' ) ) {
 
@@ -36,7 +40,7 @@ class MailsterSettings {
 				include MAILSTER_DIR . 'includes/static.php';
 
 				if ( $id = wp_insert_post( $mailster_homepage ) ) {
-					mailster_notice( __( 'Homepage created', 'mailster' ), '', true );
+					mailster_notice( __( 'Homepage created!', 'mailster' ), 'info', true );
 					mailster_update_option( 'homepage', $id );
 					mailster_remove_notice( 'no_homepage' );
 					mailster_remove_notice( 'wrong_homepage_status' );
@@ -45,7 +49,6 @@ class MailsterSettings {
 				}
 			}
 		}
-
 	}
 
 
@@ -57,6 +60,7 @@ class MailsterSettings {
 	public function get_defaults() {
 
 		$current_user = wp_get_current_user();
+		$email = $current_user->user_email ? $current_user->user_email : get_bloginfo( 'admin_email' );
 
 		global $wp_roles;
 
@@ -66,11 +70,13 @@ class MailsterSettings {
 
 		return array(
 			'from_name' => get_bloginfo( 'name' ),
-			'from' => $current_user->user_email,
-			'reply_to' => $current_user->user_email,
+			'from' => $email,
+			'reply_to' => $email,
 			'send_offset' => 0,
 			'timezone' => false,
 			'embed_images' => false,
+			'track_opens' => true,
+			'track_clicks' => true,
 			'module_thumbnails' => true,
 			'charset' => 'UTF-8',
 			'encoding' => '8bit',
@@ -86,14 +92,15 @@ class MailsterSettings {
 			'high_dpi' => true,
 
 			'homepage' => false,
+			'frontpage_public' => false,
+			'webversion_bar' => true,
+			'frontpage_pagination' => true,
 			'share_button' => true,
 			'share_services' => array(
 				'twitter',
 				'facebook',
 				'google',
 			),
-			'frontpage_public' => false,
-			'frontpage_pagination' => true,
 			'slug' => 'newsletter',
 			'slugs' => array(
 				'confirm' => sanitize_title( _x( 'confirm', 'confirm slug', 'mailster' ), 'confirm' ),
@@ -105,14 +112,15 @@ class MailsterSettings {
 			'archive_slug' => 'newsletter',
 			'archive_types' => array( 'finished', 'active' ),
 			'subscriber_notification' => true,
-			'subscriber_notification_receviers' => $current_user->user_email,
+			'subscriber_notification_receviers' => $email,
 			'subscriber_notification_template' => 'notification.html',
 			'unsubscribe_notification' => false,
 			'unsubscribe_notification_receviers' => false,
-			'unsubscribe_notification_receviers' => $current_user->user_email,
+			'unsubscribe_notification_receviers' => $email,
 			'unsubscribe_notification_template' => 'notification.html',
 			'track_users' => false,
 			'do_not_track' => false,
+			'list_based_opt_in' => true,
 			'single_opt_out' => false,
 			'custom_field' => array(),
 			'sync' => false,
@@ -148,13 +156,16 @@ class MailsterSettings {
 			'send_at_once' => 20,
 			'send_limit' => 10000,
 			'send_period' => 24,
+			'time_frame_from' => 0,
+			'time_frame_to' => 0,
+			'time_frame_day' => null,
 			'split_campaigns' => true,
 			'pause_campaigns' => false,
 			'send_delay' => 0,
 			'max_execution_time' => 0,
 			'cron_service' => 'wp_cron',
 			'cron_secret' => md5( uniqid() ),
-			'cron_lock' => 'file',
+			'cron_lock' => 'db',
 
 			'deliverymethod' => 'simple',
 			'simplemethod' => 'mail',
@@ -263,6 +274,22 @@ class MailsterSettings {
 
 	}
 
+	public function define_texts( $overwrite = false ) {
+
+		global $mailster_texts;
+
+		$texts = $this->get_default_texts();
+
+		if ( ! $overwrite ) {
+			$mailster_texts = wp_parse_args( $mailster_texts, $texts );
+		} else {
+			$mailster_texts = $texts;
+		}
+
+		update_option( 'mailster_texts', $mailster_texts );
+
+	}
+
 
 	public function maybe_repair_settings() {
 
@@ -279,7 +306,7 @@ class MailsterSettings {
 
 		$mailster_options = mailster( 'helper' )->unserialize( $serialized_string );
 		if ( update_option( 'mailster_options', $mailster_options ) ) {
-			mailster_notice( '<strong>' . sprintf( __( 'There was a problem in your Mailster settings which has been automatically fixed! Either way it\'s good to check %s if everything is in place.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=error_settings">' . __( 'the settings page', 'mailster' ) . '</a>' ) . '</strong>', 'error', false, 'error_settings' );
+			mailster_notice( sprintf( __( 'There was a problem in your Mailster settings which has been automatically fixed! Either way it\'s good to check %s if everything is in place.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=error_settings">' . __( 'the settings page', 'mailster' ) . '</a>' ), 'error', false, 'error_settings' );
 		}
 
 	}
@@ -297,6 +324,14 @@ class MailsterSettings {
 
 		if ( isset( $_GET['reset-limits'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'mailster-reset-limits' ) ) {
 			$this->reset_limits( true );
+		}
+
+		if ( isset( $_GET['release-cronlock'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'mailster-release-cronlock' ) ) {
+			$this->release_cronlock( true );
+		}
+
+		if ( isset( $_GET['reset-lasthit'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'mailster-reset-lasthit' ) ) {
+			$this->reset_lasthit( true );
 		}
 
 	}
@@ -327,7 +362,7 @@ class MailsterSettings {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION );
 		wp_localize_script( 'mailster-settings-script', 'mailsterL10n', array(
 				'add' => __( 'add', 'mailster' ),
 				'fieldname' => __( 'Field Name', 'mailster' ),
@@ -401,6 +436,7 @@ class MailsterSettings {
 
 		if ( $new ) {
 			$this->define_settings();
+			$this->define_texts();
 			mailster_update_option( 'got_url_rewrite', mailster( 'helper' )->got_url_rewrite() );
 		}
 
@@ -480,6 +516,27 @@ class MailsterSettings {
 				wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#capabilities' );
 				exit;
 			}
+		}
+
+	}
+
+
+	public function release_cronlock( $redirect = false ) {
+
+		mailster( 'cron' )->unlock();
+		if ( $redirect ) {
+			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
+			exit;
+		}
+
+	}
+
+	public function reset_lasthit( $redirect = false ) {
+
+		update_option( 'mailster_cron_lasthit', array() );
+		if ( $redirect ) {
+			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
+			exit;
 		}
 
 	}
@@ -697,10 +754,10 @@ class MailsterSettings {
 			}
 		}
 
-		$options['send_offset'] = max( 0, intval( $options['send_offset'] ) );
-		$options['post_count'] = max( 1, intval( $options['post_count'] ) );
-		$options['bounce_check'] = max( 1, intval( $options['bounce_check'] ) );
-		$options['bounce_delay'] = max( 1, intval( $options['bounce_delay'] ) );
+		$options['send_offset'] = max( 0, (int) $options['send_offset'] );
+		$options['post_count'] = max( 1, (int) $options['post_count'] );
+		$options['bounce_check'] = max( 1, (int) $options['bounce_check'] );
+		$options['bounce_delay'] = max( 1, (int) $options['bounce_delay'] );
 
 		if ( ! $options['send_at_once'] ) {
 			$options['send_at_once'] = 10;
@@ -808,8 +865,12 @@ class MailsterSettings {
 					if ( serialize( $old ) != serialize( $value ) ) {
 						foreach ( $value as $key => $v ) {
 							$v = sanitize_title( $v );
-							$value[ $key ] = ( empty( $v ) ? $key : $v );
+							if ( empty( $v ) ) {
+								$v = $key;
+							}
+							$value[ $key ] = $v;
 						}
+
 						$options['_flush_rewrite_rules'] = true;
 					}
 				break;
@@ -858,11 +919,10 @@ class MailsterSettings {
 						update_option( 'mailster_cron_lasthit', false );
 					}
 
-					wp_clear_scheduled_hook( 'mailster_cron_worker' );
 					if ( $value == 'wp_cron' ) {
-						if ( ! wp_next_scheduled( 'mailster_cron_worker' ) ) {
-							wp_schedule_event( floor( time() / 300 ) * 300, 'mailster_cron_interval', 'mailster_cron_worker' );
-						}
+						mailster( 'cron' )->schedule();
+					} else {
+						mailster( 'cron' )->unschedule();
 					}
 
 				break;
@@ -882,7 +942,6 @@ class MailsterSettings {
 
 					if ( $old != $value ) {
 
-						update_option( 'mailster_cron_lasthit', false );
 						switch ( $old ) {
 							case 'file':
 								$lockfiles = glob( MAILSTER_UPLOAD_DIR . '/CRON_*.lockfile' );
@@ -1073,7 +1132,7 @@ class MailsterSettings {
 
 					if ( function_exists( 'fsockopen' ) && $options['deliverymethod'] == 'smtp' ) {
 						$host = trim( $options['smtp_host'] );
-						$port = intval( $options['smtp_port'] );
+						$port = (int) $options['smtp_port'];
 						$conn = @fsockopen( $host, $port, $errno, $errstr, 5 );
 
 						if ( is_resource( $conn ) ) {
@@ -1266,7 +1325,7 @@ class MailsterSettings {
 	 * @param unknown $port
 	 * @return unknown
 	 */
-	private function check_port( $host, $port ) {
+	public function check_port( $host, $port ) {
 
 		if ( ! function_exists( 'fsockopen' ) ) {
 			return 'requires fsockopen to check ports.';
@@ -1412,51 +1471,12 @@ class MailsterSettings {
 		global $wpdb;
 
 		$mail = mailster( 'mail' );
-		$mail->to = 'deadend@newsletter-plugin.com';
-		$mail->subject = 'test';
-		$mail->debug();
-
-		if ( $mail->send_notification( 'Sendtest', 'this test message can get deleted', array( 'notification' => '' ), false ) ) {
-			$send_success = 'OK';
-		} else {
-			$send_success = strip_tags( $mail->get_errors() );
-		}
-
-		$response = wp_remote_post( 'https://www.paypal.com/cgi-bin/webscr', array(
-			'sslverify' => true,
-			'timeout' => 5,
-			'body' => array( 'cmd' => '_notify-validate' ),
-		) );
-
-		$code = wp_remote_retrieve_response_code( $response );
-
-		if ( is_wp_error( $response ) ) {
-			$wp_remote_post = 'does not work: ' . $response->get_error_message();
-		} elseif ( $code >= 200 && $code < 300 ) {
-			$wp_remote_post = 'works';
-		} else {
-			$wp_remote_post = 'does not work: ' . $code;
-		}
-
-		$response = wp_remote_post( 'https://update.mailster.co/' );
-		$code = wp_remote_retrieve_response_code( $response );
-
-		if ( is_wp_error( $response ) ) {
-			$update_server = '' . $response->get_error_message() . ' - Please allow connection to update.mailster.co!';
-		} elseif ( $code >= 200 && $code < 300 ) {
-			$update_server = 'works';
-		} else {
-			$update_server = 'does not work: ' . $code;
-		}
-
-		$lasthit = get_option( 'mailster_cron_lasthit', array() );
 
 		$db_version = get_option( 'mailster_dbversion' ) == MAILSTER_DBVERSION
 			? MAILSTER_DBVERSION
 			: get_option( 'mailster_dbversion' ) . ' (should be ' . MAILSTER_DBVERSION . ')';
 
 		$homepage = get_permalink( mailster_option( 'homepage' ) );
-		$endpoints = mailster( 'helper' )->using_permalinks() ? array_values( mailster_option( 'slugs' ) ) : false;
 
 		$wp_id = mailster( 'subscribers' )->wp_id() === false ? 'ERROR: ' . $wpdb->last_error : 'OK';
 
@@ -1465,42 +1485,27 @@ class MailsterSettings {
 			'HOME_URL' => home_url(),
 			'--',
 			'Mailster Version' => MAILSTER_VERSION,
-			'Updated From' => get_option( 'mailster_version_old', 'N/A' ),
+			'Updated From' => get_option( 'mailster_version_old', 'N/A' ) . ' (' . date( 'r', get_option( 'mailster_updated' ) ) . ')',
 			'WordPress Version' => get_bloginfo( 'version' ),
 			'Mailster DB Version' => $db_version,
 			'PHPMailer Version' => $mail->mailer->Version,
 			'Permalink Structure' => get_option( 'permalink_structure' ),
-			'Mailster Licensecode' => get_option( 'mailster_license' ) ? 'defined' : 'Not defined! check "Purchasecode" tab',
 			'--',
 			'Newsletter Homepage' => $homepage . ' (#' . mailster_option( 'homepage' ) . ')',
-			'Endpoints' => $endpoints ? '/' . implode( ', /', $endpoints ) . ' (Check: ' . ( mailster()->check_link_structure() ? 'Passed' : 'Not Passed' ) . ')' : 'No Permalink structure',
 			'Track Countries' => mailster_option( 'trackcountries' ) ? 'Yes' : 'No',
-			'Country DB' => file_exists( mailster_option( 'countries_db' ) ) ? 'DB exists (' . date( 'Y-m-d H:i:s', filemtime( mailster_option( 'countries_db' ) ) ) . ', ' . human_time_diff( filemtime( mailster_option( 'countries_db' ) ) ) . ')' : 'DB is missing',
+			'Country DB' => file_exists( mailster_option( 'countries_db' ) ) ? 'DB exists (' . date( 'r', filemtime( mailster_option( 'countries_db' ) ) ) . ', ' . human_time_diff( filemtime( mailster_option( 'countries_db' ) ) ) . ')' : 'DB is missing',
 			'Track Cities' => mailster_option( 'trackcities' ) ? 'Yes' : 'No',
-			'City DB' => file_exists( mailster_option( 'cities_db' ) ) ? 'DB exists (' . date( 'Y-m-d H:i:s', filemtime( mailster_option( 'cities_db' ) ) ) . ', ' . human_time_diff( filemtime( mailster_option( 'cities_db' ) ) ) . ')' : 'DB is missing',
+			'City DB' => file_exists( mailster_option( 'cities_db' ) ) ? 'DB exists (' . date( 'r', filemtime( mailster_option( 'cities_db' ) ) ) . ', ' . human_time_diff( filemtime( mailster_option( 'cities_db' ) ) ) . ')' : 'DB is missing',
 			'--',
-			'WordPress Cron' => ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? 'Not available - remove DISABLE_WP_CRON constant' : 'Available',
 			'Cron Service' => mailster_option( 'cron_service' ),
 			'Cron URL' => mailster( 'cron' )->url(),
+			'Alternative Cron URL' => mailster( 'cron' )->url( true ),
 			'Cron Interval' => mailster_option( 'interval' ) . ' MIN',
-			'Cron Lasthit' => ! empty( $lasthit['timestamp'] ) ? ( date( 'Y-m-d H:i:s', $lasthit['timestamp'] ) . ', ' . human_time_diff( $lasthit['timestamp'] ) ) : 'NEVER',
 			'--',
 			'Delivery Method' => mailster_option( 'deliverymethod' ),
-			'SMTP Port check' => mailster_option( 'deliverymethod' ) == 'smtp'
-			? mailster_option( 'smtp_host' ) . ':' . mailster_option( 'smtp_port' ) . ' - ' . $this->check_port( mailster_option( 'smtp_host' ), mailster_option( 'smtp_port' ) )
-			: 'no smtp',
 			'Send at once' => mailster_option( 'send_at_once' ),
 			'Send limit' => mailster_option( 'send_limit' ),
 			'Send period' => mailster_option( 'send_period' ),
-			'--',
-			'Test Mail' => $send_success,
-			'--',
-			'Port 110' => $this->check_port( 'pop.gmx.net', 110 ),
-			'Port 995' => $this->check_port( 'pop.gmail.com', 995 ),
-			'Port 993' => $this->check_port( 'smtp.gmail.com', 993 ),
-			'Port 25' => $this->check_port( 'smtp.gmail.com', 25 ),
-			'Port 465' => $this->check_port( 'smtp.gmail.com', 465 ),
-			'Port 587' => $this->check_port( 'smtp.gmail.com', 587 ),
 			'--',
 			'PHP Version' => PHP_VERSION,
 			'MySQL Version' => $wpdb->db_version(),
@@ -1514,7 +1519,7 @@ class MailsterSettings {
 			'PHP Time Limit' => ini_get( 'max_execution_time' ) . ' sec',
 			'PHP Max Input Vars' => ini_get( 'max_input_vars' ),
 			'--',
-			'WP_DEBUG' => defined( 'WP_DEBUG' ) ? WP_DEBUG ? 'Enabled' : 'Disabled' : 'Not set',
+			'WP_DEBUG' => defined( 'WP_DEBUG' ) ? (WP_DEBUG ? 'Enabled' : 'Disabled') : 'Not set',
 			'DISPLAY ERRORS' => ( ini_get( 'display_errors' ) ) ? 'On (' . ini_get( 'display_errors' ) . ')' : 'N/A',
 			'--',
 			'WP Table Prefix' => 'Length: ' . strlen( $wpdb->prefix ) . ' Status:' . ( strlen( $wpdb->prefix ) > 16 ? ' ERROR: Too Long' : ' Acceptable' ),
@@ -1528,19 +1533,11 @@ class MailsterSettings {
 			'Use Cookies' => ini_get( 'session.use_cookies' ) ? 'On' : 'Off',
 			'Use Only Cookies' => ini_get( 'session.use_only_cookies' ) ? 'On' : 'Off',
 			'--',
-			'WordPress Memory Limit' => ( size_format( WP_MEMORY_LIMIT * 1048576 ) ),
+			'WordPress Memory Limit' => ( size_format( (int) WP_MEMORY_LIMIT * 1048576 ) ),
 			'WordPress Upload Size' => ( size_format( wp_max_upload_size() ) ),
-			'Content Directory' => is_dir( MAILSTER_UPLOAD_DIR ) && wp_is_writable( MAILSTER_UPLOAD_DIR ) ? 'writeable' : 'NOT writeable. Make sure ' . MAILSTER_UPLOAD_DIR . ' has chmod 750',
 			'Filesystem Method' => get_filesystem_method(),
-			'FSOCKOPEN' => ( function_exists( 'fsockopen' ) ) ? 'Your server supports fsockopen.' : 'Your server does not support fsockopen.',
-			'DOMDocument' => ( class_exists( 'DOMDocument' ) ) ? 'DOMDocument extension installed' : 'DOMDocument is missing!',
-			'SUHOSIN Installed' => extension_loaded( 'suhosin' ) ? 'Yes' : 'No',
 			'SSL SUPPORT' => extension_loaded( 'openssl' ) ? 'SSL extension loaded' : 'SSL extension NOT loaded',
 			'MB String' => extension_loaded( 'mbstring' ) ? 'MB String extensions loaded' : 'MB String extensions NOT loaded',
-			'--',
-			'wp_remote_post' => $wp_remote_post,
-			'External HTTP Requests' => ( defined( 'WP_HTTP_BLOCK_EXTERNAL' ) && WP_HTTP_BLOCK_EXTERNAL ) ? 'blocked' : 'not blocked',
-			'Update Server Access' => $update_server,
 			'--',
 			'TEMPLATES' => '',
 			'--',
@@ -1614,7 +1611,7 @@ class MailsterSettings {
 	<table class="form-table">
 		<tr valign="top">
 			<th scope="row">SMTP Host : Port</th>
-			<td><input type="text" name="mailster_options[smtp_host]" value="<?php echo esc_attr( mailster_option( 'smtp_host' ) ); ?>" class="regular-text ">:<input type="text" name="mailster_options[smtp_port]" id="mailster_smtp_port" value="<?php echo intval( mailster_option( 'smtp_port' ) ); ?>" class="small-text smtp"></td>
+			<td><input type="text" name="mailster_options[smtp_host]" value="<?php echo esc_attr( mailster_option( 'smtp_host' ) ); ?>" class="regular-text ">:<input type="text" name="mailster_options[smtp_port]" id="mailster_smtp_port" value="<?php echo (int) mailster_option( 'smtp_port' ); ?>" class="small-text smtp"></td>
 		</tr>
 		<tr valign="top">
 			<th scope="row">Timeout</th>
@@ -1667,11 +1664,11 @@ class MailsterSettings {
 		</p>
 		<table class="form-table">
 			<tr valign="top">
-				<th scope="row"><?php _e( 'Username', 'mailster' ) ?></th>
+				<th scope="row"><?php esc_html_e( 'Username', 'mailster' ) ?></th>
 				<td><input type="text" name="mailster_options[gmail_user]" value="<?php echo esc_attr( mailster_option( 'gmail_user' ) ); ?>" class="regular-text" placeholder="@gmail.com"></td>
 			</tr>
 			<tr valign="top">
-				<th scope="row"><?php _e( 'Password', 'mailster' ) ?></th>
+				<th scope="row"><?php esc_html_e( 'Password', 'mailster' ) ?></th>
 				<td><input type="password" name="mailster_options[gmail_pwd]" value="<?php echo esc_attr( mailster_option( 'gmail_pwd' ) ); ?>" class="regular-text" autocomplete="new-password"></td>
 			</tr>
 		</table>

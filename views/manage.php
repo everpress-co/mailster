@@ -1,23 +1,32 @@
 <?php
 
 $currentpage = isset( $_GET['tab'] ) ? esc_attr( $_GET['tab'] ) : 'import';
-$currentstep = isset( $_GET['step'] ) ? intval( $_GET['step'] ) : 1;
+$currentstep = isset( $_GET['step'] ) ? (int) $_GET['step'] : 1;
 
 ?>
 <div class="wrap mailster-manage">
+<?php if ( 'import' == $currentpage ) : ?>
+<h1><?php esc_html_e( 'Import Subscribers', 'mailster' ); ?></h1>
+<?php elseif ( 'export' == $currentpage ) : ?>
+<h1><?php esc_html_e( 'Export Subscribers', 'mailster' ); ?></h1>
+<?php elseif ( 'delete' == $currentpage ) : ?>
+<h1><?php esc_html_e( 'Delete Subscribers', 'mailster' ); ?></h1>
+<?php else : ?>
 <h1><?php esc_html_e( 'Manage Subscribers', 'mailster' ); ?></h1>
+<?php endif; ?>
+
 <h2 class="nav-tab-wrapper">
 
 	<?php if ( current_user_can( 'mailster_import_subscribers' ) ) : ?>
-	<a class="nav-tab <?php echo ( 'import' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=import"><?php esc_html_e( 'Import', 'mailster' ) ?></a>
+	<a class="nav-tab <?php echo ( 'import' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=import"><?php esc_html_e( 'Import', 'mailster' ) ?></a>
 	<?php endif; ?>
 
 	<?php if ( current_user_can( 'mailster_export_subscribers' ) ) : ?>
-	<a class="nav-tab <?php echo ( 'export' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=export"><?php esc_html_e( 'Export', 'mailster' ) ?></a>
+	<a class="nav-tab <?php echo ( 'export' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export"><?php esc_html_e( 'Export', 'mailster' ) ?></a>
 	<?php endif; ?>
 
 	<?php if ( current_user_can( 'mailster_bulk_delete_subscribers' ) ) : ?>
-	<a class="nav-tab <?php echo ( 'delete' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=delete"><?php esc_html_e( 'Delete', 'mailster' ) ?></a>
+	<a class="nav-tab <?php echo ( 'delete' == $currentpage ) ? 'nav-tab-active' : '' ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=delete"><?php esc_html_e( 'Delete', 'mailster' ) ?></a>
 	<?php endif; ?>
 
 </h2>
@@ -25,7 +34,6 @@ $currentstep = isset( $_GET['step'] ) ? intval( $_GET['step'] ) : 1;
 <?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false );?>
 
 <?php if ( 'import' == $currentpage && current_user_can( 'mailster_import_subscribers' ) ) : ?>
-
 
 	<div class="step1">
 		<div class="step1-body">
@@ -131,7 +139,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 
 <?php elseif ( 'export' == $currentpage && current_user_can( 'mailster_export_subscribers' ) ) : ?>
 
-		<h2 class="export-status"><?php esc_html_e( 'Export Subscribers', 'mailster' ) ?></h2>
+		<h2 class="export-status"></h2>
 			<?php
 
 			$lists = mailster( 'lists' )->get( null, false );
@@ -142,9 +150,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 		<div class="step1">
 			<form method="post" id="export-subscribers">
 			<?php wp_nonce_field( 'mailster_nonce' );?>
-			<h3>
-			<?php esc_html_e( 'which are in one of these lists', 'mailster' );?>:
-			</h3>
+			<h3><?php esc_html_e( 'which are in one of these lists', 'mailster' );?>:</h3>
 			<?php if ( ! empty( $lists ) ) : ?>
 			<ul>
 			<li><label><input type="checkbox" class="list-toggle" checked> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></li>
@@ -158,9 +164,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 				<li><label><input type="checkbox" name="nolists" value="1" checked> <?php echo __( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . __( 'total', 'mailster' ) . ')</span>' ?></label></li>
 			</ul>
 			<?php endif; ?>
-			<h3>
-			<?php esc_html_e( 'and have one of these statuses', 'mailster' );?>:<br>
-			</h3>
+			<h3><?php esc_html_e( 'and have one of these statuses', 'mailster' );?>:</h3>
 			<p>
 				<?php foreach ( mailster( 'subscribers' )->get_status( null, true ) as $i => $name ) {?>
 				<label><input type="checkbox" name="status[]" value="<?php echo $i ?>" checked> <?php echo $name; ?> </label>
@@ -192,20 +196,21 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					</label>
 				</p>
 				<p>
-				<label><?php esc_html_e( 'Output Format', 'mailster' ) ?>:
-				<select name="outputformat">
-					<option value="csv" selected><?php esc_html_e( 'CSV', 'mailster' );?></option>
-					<option value="html" ><?php esc_html_e( 'HTML', 'mailster' );?></option>
-					</select>
+					<label><?php esc_html_e( 'Output Format', 'mailster' ) ?>:
+					<select name="outputformat">
+						<option value="xls" selected><?php esc_html_e( 'Excel Spreadsheet', 'mailster' );?></option>
+						<option value="csv"><?php esc_html_e( 'CSV', 'mailster' );?></option>
+						<option value="html" ><?php esc_html_e( 'HTML', 'mailster' );?></option>
+						</select>
 					</label>
 				</p>
 				<p>
-				<label><?php esc_html_e( 'Separator for CSV output', 'mailster' ) ?>:
-				<select name="separator">
-					<option value=";" selected>;</option>
-					<option value="," >,</option>
-					<option value="|" >|</option>
-					<option value="tab" ><?php esc_html_e( '[Tab]', 'mailster' );?></option>
+					<label><?php esc_html_e( 'Separator for CSV output', 'mailster' ) ?>:
+					<select name="separator">
+						<option value=";" selected>;</option>
+						<option value="," >,</option>
+						<option value="|" >|</option>
+						<option value="tab" ><?php esc_html_e( '[Tab]', 'mailster' );?></option>
 					</select>
 					</label>
 				</p>
@@ -231,67 +236,74 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 						'ISO-8859-16' => 'South-Eastern European',
 							);
 					?>
-				<select name="encoding">
-					<?php foreach ( $charsets as $code => $region ) {?>
-					<option value="<?php echo $code; ?>"><?php echo $code; ?> - <?php echo $region; ?></option>
+					<select name="encoding">
+						<?php foreach ( $charsets as $code => $region ) {?>
+						<option value="<?php echo $code; ?>"><?php echo $code; ?> - <?php echo $region; ?></option>
+						<?php }?>
+					</select>
+					</label>
+				</p>
+				<p>
+					<label><?php esc_html_e( 'MySQL Server Performance', 'mailster' ) ?>:
+					<select name="performance" class="performance">
+						<option value="100"><?php esc_html_e( 'low', 'mailster' );?></option>
+						<option value="1000" selected><?php esc_html_e( 'normal', 'mailster' );?></option>
+						<option value="5000"><?php esc_html_e( 'high', 'mailster' );?></option>
+						<option value="20000"><?php esc_html_e( 'super high', 'mailster' );?></option>
+						<option value="50000"><?php esc_html_e( 'super extreme high', 'mailster' );?></option>
+					</select>
+					</label>
+				</p>
+				<h3><?php esc_html_e( 'Define order and included columns', 'mailster' );?>:</h3>
+					<?php
+
+					$columns = array(
+						'ID' => __( 'ID', 'mailster' ),
+						'email' => mailster_text( 'email' ),
+						'firstname' => mailster_text( 'firstname' ),
+						'lastname' => mailster_text( 'lastname' ),
+					);
+
+					$customfields = mailster()->get_custom_fields();
+
+					$meta = array(
+						'hash' => __( 'Hash', 'mailster' ),
+						'status' => __( 'Status', 'mailster' ),
+						'added' => __( 'Added', 'mailster' ),
+						'updated' => __( 'Updated', 'mailster' ),
+						// 'ip' => __('IP Address', 'mailster'),
+						'signup' => __( 'Signup Date', 'mailster' ),
+						'ip_signup' => __( 'Signup IP', 'mailster' ),
+						'confirm' => __( 'Confirm Date', 'mailster' ),
+						'ip_confirm' => __( 'Confirm IP', 'mailster' ),
+						'rating' => __( 'Rating', 'mailster' ),
+					);
+					?>
+				<div class="export-order-wrap">
+					<ul class="export-order unselected">
+						<li><input type="checkbox" name="column[]" value="_number"> #</li>
+					<?php foreach ( $customfields as $id => $data ) {?>
+						<li><input type="checkbox" name="column[]" value="<?php echo $id ?>"> <?php echo esc_html( strip_tags( $data['name'] ) ) ?></li>
 					<?php }?>
-				</select>
-				</label>
-						</p>
-						<p>
-				<label><?php esc_html_e( 'MySQL Server Performance', 'mailster' ) ?>:
-				<select name="performance" class="performance">
-					<option value="1000"><?php esc_html_e( 'low', 'mailster' );?></option>
-					<option value="5000" selected><?php esc_html_e( 'normal', 'mailster' );?></option>
-					<option value="10000"><?php esc_html_e( 'high', 'mailster' );?></option>
-					<option value="20000"><?php esc_html_e( 'super high', 'mailster' );?></option>
-					<option value="50000"><?php esc_html_e( 'super extreme high', 'mailster' );?></option>
-				</select>
-				</label>
-						</p>
-						<h3>
-						<?php esc_html_e( 'Define order and included columns', 'mailster' );?>:<br>
-						</h3>
-						<?php
-
-						$columns = array(
-							'email' => mailster_text( 'email' ),
-							'hash' => __( 'Hash', 'mailster' ),
-							'firstname' => mailster_text( 'firstname' ),
-							'lastname' => mailster_text( 'lastname' ),
-						);
-
-						$customfields = mailster()->get_custom_fields();
-
-						$meta = array(
-							'status' => __( 'Status', 'mailster' ),
-							'statuscode' => __( 'Statuscode', 'mailster' ),
-							'added' => __( 'Added', 'mailster' ),
-							'updated' => __( 'Updated', 'mailster' ),
-							// 'ip' => __('IP Address', 'mailster'),
-							'signup' => __( 'Signup Date', 'mailster' ),
-							'ip_signup' => __( 'Signup IP', 'mailster' ),
-							'confirm' => __( 'Confirm Date', 'mailster' ),
-							'ip_confirm' => __( 'Confirm IP', 'mailster' ),
-							'rating' => __( 'Rating', 'mailster' ),
-						);
-						?>
-			<ul class="export-order">
-				<li><input type="checkbox" name="column[]" value="_number"> #</li>
-			<?php foreach ( $columns as $id => $name ) {?>
-				<li><input type="checkbox" name="column[]" value="<?php echo $id ?>" checked> <?php echo $name ?></li>
-			<?php }?>
-			<?php foreach ( $customfields as $id => $data ) {?>
-				<li><input type="checkbox" name="column[]" value="<?php echo $id ?>" checked> <?php echo $data['name'] ?></li>
-			<?php }?>
-				<li><input type="checkbox" name="column[]" value="_listnames" checked> <?php echo __( 'Listnames', 'mailster' ) ?></li>
-			<?php foreach ( $meta as $id => $name ) {?>
-				<li><input type="checkbox" name="column[]" value="<?php echo $id ?>"> <?php echo $name ?></li>
-			<?php }?>
-			</ul>
-			<p>
-				<input class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Download Subscribers', 'mailster' ) ?>" />
-			</p>
+						<li><input type="checkbox" name="column[]" value="_statuscode"> <?php esc_html_e( 'Statuscode', 'mailster' ) ?></li>
+						<li><input type="checkbox" name="column[]" value="_listnames"> <?php esc_html_e( 'Listnames', 'mailster' ) ?></li>
+					<?php foreach ( $meta as $id => $name ) {?>
+						<li><input type="checkbox" name="column[]" value="<?php echo $id ?>"> <?php echo esc_html( $name ) ?></li>
+					<?php }?>
+					</ul>
+					<div class="export-order-middle">
+						<button class="export-order-add">&gt;&gt;</button>
+						<button class="export-order-remove">&lt;&lt;</button>
+					</div>
+					<ul class="export-order selected">
+					<?php foreach ( $columns as $id => $name ) {?>
+						<li><input type="checkbox" name="column[]" value="<?php echo $id ?>" checked> <?php echo esc_html( $name ) ?></li>
+					<?php }?>
+					</ul>
+				</div>
+				<p>
+					<input class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Download Subscribers', 'mailster' ) ?>" />
+				</p>
 			</form>
 			</div>
 
@@ -299,15 +311,15 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 				<div class="step2-body"></div>
 			</div>
 
-				<?php else : ?>
+		<?php else : ?>
 
-		<p><?php esc_html_e( 'no subscriber found', 'mailster' );?></p>
+		<p><?php esc_html_e( 'No Subscriber found!', 'mailster' );?></p>
 
 		<?php endif; ?>
 
 		<?php elseif ( 'delete' == $currentpage && current_user_can( 'mailster_bulk_delete_subscribers' ) ) : ?>
 
-			<h2 class="delete-status"><?php esc_html_e( 'Delete Subscribers', 'mailster' ) ?></h2>
+			<h2 class="delete-status"></h2>
 			<?php
 
 			$lists = mailster( 'lists' )->get( null, false );
@@ -319,9 +331,8 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 				<form method="post" id="delete-subscribers">
 				<?php wp_nonce_field( 'mailster_nonce' );?>
 
-				<h3>
-				<?php esc_html_e( 'which are in one of these lists', 'mailster' );?>:
-				</h3>
+				<h3><?php esc_html_e( 'which are in one of these lists', 'mailster' );?>:</h3>
+
 				<?php if ( ! empty( $lists ) ) : ?>
 				<ul>
 				<li><label><input type="checkbox" class="list-toggle"> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></li>
@@ -355,7 +366,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 				</form>
 			</div>
 							<?php else : ?>
-		<p><?php esc_html_e( 'no subscriber found', 'mailster' );?></p>
+		<p><?php esc_html_e( 'No Subscriber found!', 'mailster' );?></p>
 
 	<?php endif; ?>
 
@@ -365,7 +376,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 
 <?php endif; ?>
 
-	<div id="progress" class="progress"><span class="bar" style="width:0%"><span></span></span></div>
+	<div id="progress" class="progress hidden"><span class="bar" style="width:0%"><span></span></span></div>
 
 </div>
 

@@ -51,7 +51,6 @@ jQuery(document).ready(function ($) {
 				form_fields.find('input').each(function () {
 					$(this).removeAttr('name');
 				});
-
 			},
 			update: function (event, ui) {
 				requireSave();

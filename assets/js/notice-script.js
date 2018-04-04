@@ -5,11 +5,11 @@ jQuery(document).ready(function ($) {
 	var notices = $('.mailster-notice');
 
 	notices
-		.on('click', '.notice-dismiss', function (event) {
+		.on('click', '.notice-dismiss, .dismiss', function (event) {
 
 			event.preventDefault();
 
-			var el = $(this).parent(),
+			var el = $(this).closest('.mailster-notice'),
 				id = el.data('id'),
 				type = !event.altKey ? 'notice_dismiss' : 'notice_dismiss_all';
 

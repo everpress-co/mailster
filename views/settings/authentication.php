@@ -47,7 +47,7 @@ if ( $found ) : ?>
 ?>
 	<dl>
 		<dt><strong><?php echo $spf_domain; ?></strong> IN TXT</dt>
-			<dd><textarea class="widefat" rows="1" id="spf-record" readonly><?php echo esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) ?></textarea></dd>
+			<dd><textarea class="widefat" rows="1" id="spf-record" readonly><?php echo esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) ?></textarea><a class="clipboard" data-clipboard-target="#spf-record"><?php esc_html_e( 'copy', 'mailster' ) ?></a></dd>
 	</dl>
 	</div>
 
@@ -99,7 +99,7 @@ if ( $found ) : ?>
 			</p>
 			<dl>
 				<dt><strong><?php echo $dkim_selector . '._domainkey.' . $dkim_domain  ?></strong> IN TXT</dt>
-					<dd><textarea class="widefat" rows="4" readonly><?php echo esc_textarea( $record ) ?></textarea></dd>
+					<dd><textarea class="widefat" rows="4" id="dkim-record" readonly><?php echo esc_textarea( $record ) ?></textarea><a class="clipboard" data-clipboard-target="#dkim-record"><?php esc_html_e( 'copy', 'mailster' ) ?></a></dd>
 			</dl>
 		</div>
 
@@ -171,9 +171,10 @@ if ( $found ) : ?>
 <table class="form-table" id="dkim_keys_active">
 	<tr valign="top">
 		<th scope="row">DKIM Public Key</th>
-		<td><textarea name="mailster_options[dkim_public_key]" rows="10" cols="40" class="large-text code" placeholder="-----BEGIN PUBLIC KEY-----
+		<td><textarea name="mailster_options[dkim_public_key]" id="dkim-public-key" rows="10" cols="40" class="large-text code" placeholder="-----BEGIN PUBLIC KEY-----
 ...
 -----END PUBLIC KEY-----"><?php echo esc_attr( mailster_option( 'dkim_public_key' ) ); ?></textarea>
+		<a class="clipboard" data-clipboard-target="#dkim-public-key"><?php esc_html_e( 'copy', 'mailster' ) ?></a>
 	</tr>
 	<tr valign="top">
 		<th scope="row">DKIM Private Key
@@ -181,9 +182,10 @@ if ( $found ) : ?>
 		<?php esc_html_e( 'Private keys should be kept private. Don\'t share them or post it somewhere', 'mailster' );?>
 		</p>
 		</th>
-		<td><textarea name="mailster_options[dkim_private_key]" rows="10" cols="40" class="large-text code" placeholder="-----BEGIN PRIVATE KEY-----
+		<td><textarea name="mailster_options[dkim_private_key]" id="dkim-private-key" rows="10" cols="40" class="large-text code" placeholder="-----BEGIN PRIVATE KEY-----
 ...
 -----END PRIVATE KEY-----"><?php echo esc_attr( mailster_option( 'dkim_private_key' ) ); ?></textarea>
+		<a class="clipboard" data-clipboard-target="#dkim-private-key"><?php esc_html_e( 'copy', 'mailster' ) ?></a>
 		<input type="hidden" name="mailster_options[dkim_private_hash]" value="<?php echo esc_attr( mailster_option( 'dkim_private_hash' ) ); ?>" class="regular-text dkim"></td>
 	</tr>
 </table>
