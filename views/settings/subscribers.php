@@ -50,16 +50,9 @@
 		</p>
 		</td>
 	</tr>
-	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Save Subscriber IP', 'mailster' ) ?></th>
-		<td><label><input type="hidden" name="mailster_options[track_users]" value=""><input type="checkbox" name="mailster_options[track_users]" value="1" <?php checked( mailster_option( 'track_users' ) ) ?>> <?php esc_html_e( 'Save IP address and time of new subscribers', 'mailster' ) ?></label>
-		<p class="description"><?php esc_html_e( 'In some countries it\'s required to save the IP address and the sign up time for legal reasons. Please add a note in your privacy policy if you save users data', 'mailster' ) ?></p>
-		</td>
-	</tr>
-	<tr valign="top">
-		<th scope="row">Do Not Track</th>
-		<td><label><input type="hidden" name="mailster_options[do_not_track]" value=""><input type="checkbox" name="mailster_options[do_not_track]" value="1" <?php checked( mailster_option( 'do_not_track' ) ) ?>> <?php esc_html_e( 'Respect users "Do Not Track" option', 'mailster' ) ?></label>
-		<p class="description"><?php printf( __( 'If enabled Mailster will respect users option for not getting tracked. Read more on the %s', 'mailster' ), '<a href="http://donottrack.us/" class="external">' . __( 'official website', 'mailster' ) . '</a>' ) ?></p>
+	<tr>
+		<th scope="row"><?php esc_html_e( 'List Based Subscription', 'mailster' ) ?></th>
+		<td><label><input type="hidden" name="mailster_options[list_based_opt_in]" value=""><input type="checkbox" name="mailster_options[list_based_opt_in]" value="1" <?php checked( mailster_option( 'list_based_opt_in' ) ) ?>> <?php esc_html_e( 'Subscribers sign up on a per list basis instead of globally.', 'mailster' ) ?></label>
 		</td>
 	</tr>
 	<tr>
@@ -71,8 +64,8 @@
 		<th scope="row"><?php esc_html_e( 'Name Order', 'mailster' ) ?></th>
 		<td>
 		<select name="mailster_options[name_order]">
-			<option value="0"<?php selected( ! mailster_option( 'name_order' ) );?>><?php echo __( 'Firstname', 'mailster' ) . ' ' . __( 'Lastname', 'mailster' ) ?></option>
-			<option value="1"<?php selected( mailster_option( 'name_order' ) );?>><?php echo __( 'Lastname', 'mailster' ) . ' ' . __( 'Firstname', 'mailster' ) ?></option>
+			<option value="0"<?php selected( ! mailster_option( 'name_order' ) );?>><?php esc_html_e( 'Firstname', 'mailster' ) ?> <?php esc_html_e( 'Lastname', 'mailster' ) ?></option>
+			<option value="1"<?php selected( mailster_option( 'name_order' ) );?>><?php esc_html_e( 'Lastname', 'mailster' ) ?> <?php esc_html_e( 'Firstname', 'mailster' ) ?></option>
 		</select>
 		<p class="description"><?php printf( __( 'Define in which order names appear in your language or country. This is used for the %s tag.', 'mailster' ), '<code>{fullname}</code>' );?></p>
 		</td>
@@ -80,7 +73,7 @@
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Custom Fields', 'mailster' ) ?>:
 			<p class="description"><?php esc_html_e( 'Custom field tags are individual tags for each subscriber. You can ask for them on subscription and/or make it a required field.', 'mailster' );?></p>
-			<p class="description"><?php esc_html_e( 'You have to enable Custom fields for each form:', 'mailster' );?> <a href="#forms"><?php esc_html_e( 'Forms', 'mailster' );?></a></p>
+			<p class="description"><?php esc_html_e( 'You have to enable Custom fields for each form:', 'mailster' );?><br><a href="edit.php?post_type=newsletter&page=mailster_forms"><?php esc_html_e( 'Forms', 'mailster' );?></a></p>
 		</th>
 		<td>
 		<input type="hidden" name="mailster_options[custom_field][0]" value="empty">
@@ -103,7 +96,7 @@
 				<div><span class="label"><?php esc_html_e( 'Type', 'mailster' );?>:</span><select class="customfield-type" name="mailster_options[custom_field][<?php echo $id ?>][type]">
 				<?php
 				foreach ( $types as $value => $name ) {
-					echo '<option value="' . $value . '" ' . selected( $data['type'], $value, false ) . '>' . $name . '</option>';
+					echo '<option value="' . $value . '" ' . selected( $data['type'], $value, false ) . '>' . esc_attr( $name ) . '</option>';
 				}
 				?>
 				</select>

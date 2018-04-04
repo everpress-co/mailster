@@ -428,7 +428,7 @@ if ( $old_version ) {
 			$t = mailster( 'translations' )->get_translation_data();
 
 			if ( ! empty( $t ) ) {
-				mailster_notice( '<strong>' . sprintf( 'An important change to localizations in Mailster has been made. <a href="%s">read more</a>', 'https://kb.mailster.co/translations-in-mailster/' ) . '</strong>', '', false, 'mailstertranslation' );
+				mailster_notice( sprintf( 'An important change to localizations in Mailster has been made. <a href="%s">read more</a>', 'https://kb.mailster.co/translations-in-mailster/' ), '', false, 'mailstertranslation' );
 			}
 
 			unset( $mailster_options['texts'] );
@@ -474,7 +474,7 @@ if ( $old_version ) {
 		case '2.1.30':
 
 			if ( isset( $mailster_options['php_mailer'] ) && $mailster_options['php_mailer'] ) {
-				mailster_notice( '<strong>' . sprintf( 'PHPMailer has been updated to 5.2.21. <a href="%s">read more</a>', 'https://github.com/PHPMailer/PHPMailer/releases/tag/v5.2.20' ) . '</strong>', '', false, 'phpmailer' );
+				mailster_notice( sprintf( 'PHPMailer has been updated to 5.2.21. <a href="%s">read more</a>', 'https://github.com/PHPMailer/PHPMailer/releases/tag/v5.2.20' ), '', false, 'phpmailer' );
 				$mailster_options['php_mailer'] = 'latest';
 			}
 
@@ -519,10 +519,28 @@ if ( $old_version ) {
 		case '2.2.11':
 		case '2.2.12':
 		case '2.2.13':
-
-			mailster_notice( '<strong>Experience the future of Mailster.</strong><br>Try the next version of Mailster <a href="https://rxa.li/betademo" target="_blank">right now</a>.', 'info', false, 'mailsterbeta' );
-
 		case '2.2.14':
+		case '2.2.15':
+		case '2.2.16':
+		case '2.2.17':
+		case '2.2.18':
+		case '2.2.19':
+		case '2.2.x':
+
+			// since 2.3
+			$mailster_options['webversion_bar'] = true;
+			$mailster_options['track_opens'] = true;
+			$mailster_options['track_clicks'] = true;
+
+			update_option( 'mailster_cron_lasthit', false );
+
+			// allow NULL values on two columns
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `campaign_id` `campaign_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
+
+			$mailster_options['welcome'] = true;
+			$mailster_options['_flush_rewrite_rules'] = true;
+			$show_update_notice = true;
 
 		default:
 
@@ -533,6 +551,7 @@ if ( $old_version ) {
 	}
 
 	update_option( 'mailster_version_old', $old_version );
+	update_option( 'mailster_updated', time() );
 
 }
 

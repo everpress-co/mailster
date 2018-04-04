@@ -1,6 +1,6 @@
 <?php
 
-$id = isset( $_GET['ID'] ) ? intval( $_GET['ID'] ) : null;
+$id = isset( $_GET['ID'] ) ? (int) $_GET['ID'] : null;
 
 $is_new = isset( $_GET['new'] );
 
@@ -72,26 +72,26 @@ if ( $is_new ) {
 <table class="form-table">
 	<tr>
 		<td scope="row" class="avatar-wrap">
-			<div class="avatar<?php if ( $subscriber->wp_id ) {	echo ' wp-user'; } ?>" title="<?php esc_html_e( 'Source', 'mailster' ) ?>: Gravatar.com" style="background-image:url(<?php echo $this->get_gravatar_uri( $subscriber->email, 400 ); ?>)"></div>
-			<p class="info"><?php esc_html_e( 'Source', 'mailster' ) ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
+			<?php if ( get_option( 'show_avatars' ) ) : ?>
+				<div class="avatar<?php if ( $subscriber->wp_id ) {	echo ' wp-user'; } ?>" title="<?php esc_html_e( 'Source', 'mailster' ) ?>: Gravatar.com" style="background-image:url(<?php echo $this->get_gravatar_uri( $subscriber->email, 400 ); ?>)"></div>
+				<p class="info"><?php esc_html_e( 'Source', 'mailster' ) ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
+			<?php endif; ?>
 			<?php if ( ! $is_new ) : ?>
 
-			<h4 title="<?php esc_html_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ) ?>"><?php esc_html_e( 'User Rating', 'mailster' );?>:<br />
-			<?php
-				$stars = ( round( $subscriber->rating / 10, 2 ) * 50 );
-				$full = max( 0, min( 5, floor( $stars ) ) );
-				$half = max( 0, min( 5, round( $stars - $full ) ) );
-				$empty = max( 0, min( 5, 5 - $full - $half ) );
-			?>
-			<?php
-			echo str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
-			. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
-			. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty )
-			?>
-			</h4>
-
-		<?php endif; ?>
-
+				<h4 title="<?php esc_html_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ) ?>"><?php esc_html_e( 'User Rating', 'mailster' );?>:<br />
+				<?php
+					$stars = ( round( $subscriber->rating / 10, 2 ) * 50 );
+					$full = max( 0, min( 5, floor( $stars ) ) );
+					$half = max( 0, min( 5, round( $stars - $full ) ) );
+					$empty = max( 0, min( 5, 5 - $full - $half ) );
+				?>
+				<?php
+				echo str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
+				. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
+				. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty )
+				?>
+				</h4>
+			<?php endif; ?>
 		</td>
 		<td class="user-info">
 			<h3 class="detail">
@@ -131,7 +131,7 @@ if ( $is_new ) {
 								continue;
 							}
 							?>
-							<option value="<?php echo intval( $id ) ?>" <?php selected( $id, $subscriber->status ) ?> ><?php echo $status ?></option>
+							<option value="<?php echo (int) $id ?>" <?php selected( $id, $subscriber->status ) ?> ><?php echo $status ?></option>
 						<?php } ?>
 						</select>
 						<span class="description info"><?php esc_html_e( 'choosing "pending" as status will force a confirmation message to the subscriber', 'mailster' );?></span>
@@ -241,6 +241,7 @@ if ( $is_new ) {
 			?>
 
 			</div>
+			<?php do_action( 'mailster_subscriber_after_meta', $subscriber ) ?>
 			<div class="detail v-top">
 				<label><?php esc_html_e( 'Lists', 'mailster' );?>:</label>
 				<ul class="click-to-edit type-list">
@@ -408,7 +409,12 @@ if ( ! $is_new ) :
 								break;
 							case 4:
 									echo '<span class="mailster-icon mailster-icon-unsubscribe"></span></td><td>';
+									$unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id );
+								if ( 'link_unsubscribe_list' == $unsub_status ) {
+									echo __( 'unsubscribed from a list', 'mailster' );
+								} else {
 									echo __( 'unsubscribed your newsletter', 'mailster' );
+								}
 								break;
 							case 5:
 									echo '<span class="mailster-icon mailster-icon-bounce"></span></td><td>';

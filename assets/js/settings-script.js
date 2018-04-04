@@ -42,17 +42,6 @@ jQuery(document).ready(function ($) {
 		$('#tab-' + hash.substr(1)).show();
 		location.hash = hash;
 		$('form#mailster-settings-form').attr('action', 'options.php' + hash);
-		if (hash == '#system_info') {
-			var textarea = $('#system_info_content');
-			if ($.trim(textarea.val())) return;
-			textarea.val(mailsterL10n.loading + '...');
-			_ajax('get_system_info', function (response) {
-
-				if (response.log && console)
-					console.log(response.log);
-				textarea.val(response.msg);
-			});
-		}
 		return false;
 	});
 
@@ -80,7 +69,6 @@ jQuery(document).ready(function ($) {
 	$('.system_mail').on('change', function () {
 		$('.system_mail_template').prop('disabled', $(this).val() == 0);
 	});
-
 
 	$('#mailster_geoip').on('change', function () {
 		($(this).is(':checked')) ?
@@ -148,6 +136,11 @@ jQuery(document).ready(function ($) {
 	$('#upload_city_db_btn').on('click', function () {
 		$('#upload_city_db').removeClass('hidden');
 		return false;
+	});
+
+	$('.webversion-bar-checkbox').on('change', function () {
+		($(this).is(':checked')) ?
+		$('#webversion-bar-options').slideDown(200): $('#webversion-bar-options').slideUp(200);
 	});
 
 	$('#social-services')
@@ -437,7 +430,7 @@ jQuery(document).ready(function ($) {
 				_base = _this.parent().parent().parent(),
 				val = _sanitize(_this.val());
 
-			if (!val) _this.parent().parent().remove();
+			if (!val) _base.remove();
 
 			_this.val(val);
 			_base.find('.customfield-name').attr('name', 'mailster_options[custom_field][' + val + '][name]');
@@ -529,7 +522,7 @@ jQuery(document).ready(function ($) {
 	}
 
 	function _sanitize(string) {
-		var tag = $.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '');
+		var tag = $.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '').replace(/^[_]*/, '').replace(/[_]*$/, '');
 		if ($.inArray(tag, reservedtags) != -1) {
 			alert(sprintf(mailsterL10n.reserved_tag, '"' + tag + '"'));
 			tag += '-a';

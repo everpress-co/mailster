@@ -59,19 +59,23 @@ class MailsterFrontpage {
 		$pagename = str_replace( 'index.php/', '', untrailingslashit( str_replace( trailingslashit( get_bloginfo( 'url' ) ), '', get_permalink( $homepage ) ) ) );
 
 		$rules = array();
-		$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
+		$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
+
+		// $rules['^(index\.php/)?(mailster|mymail)/(subscribe|update|unsubscribe)/?$'] = 'index.php?_mailster=$matches[3]';
+		$rules['^(index\.php/)?(mailster|mymail)/(subscribe)/?$'] = 'index.php?_mailster=$matches[3]';
+		$rules[ '(index\.php/)?(mailster)/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
 		if ( get_option( 'page_on_front' ) == $homepage && get_option( 'show_on_front' ) == 'page' ) {
-			$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9]*)?' ] = 'index.php?page_id=' . $homepage . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
+			$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?page_id=' . $homepage . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
 		}
 
 		$rules['^(index\.php/)?(mailster|mymail)/([0-9]+)/([a-f0-9]{32})/?([a-zA-Z0-9=_+]+)?/?([0-9]+)?/?'] = 'index.php?_mailster=$matches[3]&_mailster_hash=$matches[4]&_mailster_page=$matches[5]&_mailster_extra=$matches[6]';
 
-		$rules['^(index\.php/)?(mailster|mymail)/(subscribe|update|unsubscribe)/?$'] = 'index.php?_mailster=$matches[3]';
-
 		if ( $secret = mailster_option( 'cron_secret' ) ) {
-			$rules[ '^(index\.php/)?mailster/(' . $secret . ')/?$' ] = 'index.php?_mailster_cron=$matches[2]';
+			$rules[ '^(index\.php/)?mailster/(' . $secret . ')/?([0-9a-z]+)?/?$' ] = 'index.php?_mailster_cron=$matches[2]&_mailster_extra=$matches[3]';
 		}
+
+		$rules = apply_filters( 'mailster_rewrite_rules', $rules );
 
 		return $rules + $wp_rules;
 
@@ -144,7 +148,7 @@ class MailsterFrontpage {
 
 		if ( $is_permalink ) {
 
-			return trailingslashit( $homepage ) . trailingslashit( $subpage . '/' . $hash . '/' . $extra );
+			return trailingslashit( $homepage ) . trailingslashit( $subpage . '/' . ($hash ? $hash . '/' : '') . $extra );
 
 		} else {
 
@@ -167,9 +171,8 @@ class MailsterFrontpage {
 
 	public function template_redirect() {
 
-		global $wp, $post;
-
 		if ( is_404() ) {
+			global $wp;
 			if ( preg_match( '#^(index\.php/)?mailster/#', $wp->request ) && ! isset( $_REQUEST['mailster_error'] ) ) {
 				flush_rewrite_rules();
 				$redirect_to = add_query_arg( array( 'mailster_error' => 1 ), home_url( $wp->request ) );
@@ -183,8 +186,8 @@ class MailsterFrontpage {
 
 			$target = isset( $_GET['t'] ) ? str_replace( '&amp;', '&', preg_replace( '/\s+/', '', $_GET['t'] ) ) : null;
 			$hash = isset( $_GET['k'] ) ? preg_replace( '/\s+/', '', $_GET['k'] ) : null;
-			$count = isset( $_GET['c'] ) ? intval( $_GET['c'] ) : 0;
-			$campaign_id = intval( $_GET['mailster'] );
+			$count = isset( $_GET['c'] ) ? (int) $_GET['c'] : 0;
+			$campaign_id = (int) $_GET['mailster'];
 			if ( isset( $_GET['s'] ) ) {
 				$target = ( ! empty( $_GET['s'] ) ? 'https://' : 'http://' ) . $target;
 			}
@@ -201,10 +204,10 @@ class MailsterFrontpage {
 				$target = untrailingslashit( $this->get_link( 'profile' ) );
 			}
 
-			$wp->query_vars['_mailster'] = $campaign_id;
-			$wp->query_vars['_mailster_page'] = rtrim( strtr( base64_encode( $target ), '+/', '-_' ), '=' );
-			$wp->query_vars['_mailster_hash'] = $hash;
-			$wp->query_vars['_mailster_extra'] = $count;
+			set_query_var( '_mailster', $campaign_id );
+			set_query_var( '_mailster_page', rtrim( strtr( base64_encode( $target ), '+/', '-_' ), '=' ) );
+			set_query_var( '_mailster_hash', $hash );
+			set_query_var( '_mailster_extra', $count );
 
 		}
 
@@ -213,8 +216,8 @@ class MailsterFrontpage {
 				wp_redirect( $this->get_link( 'unsubscribe', $_GET['mailster_unsubscribe'], $_GET['k'] ), 301 );
 				exit;
 			} else {
-				$wp->query_vars['_mailster_page'] = 'unsubscribe';
-				$wp->query_vars['_mailster_hash'] = isset( $_GET['k'] ) ? preg_replace( '/\s+/', '', $_GET['k'] ) : null;
+				set_query_var( '_mailster_page', 'unsubscribe' );
+				set_query_var( '_mailster_hash', isset( $_GET['k'] ) ? preg_replace( '/\s+/', '', $_GET['k'] ) : null );
 
 			}
 		} elseif ( isset( $_GET['mailster_profile'] ) ) {
@@ -222,8 +225,8 @@ class MailsterFrontpage {
 				wp_redirect( $this->get_link( 'profile', $_GET['mailster_profile'] ), 301 );
 				exit;
 			} else {
-				$wp->query_vars['_mailster_page'] = 'profile';
-				$wp->query_vars['_mailster_hash'] = isset( $_GET['k'] ) ? preg_replace( '/\s+/', '', $_GET['k'] ) : null;
+				set_query_var( '_mailster_page', 'profile' );
+				set_query_var( '_mailster_hash', isset( $_GET['k'] ) ? preg_replace( '/\s+/', '', $_GET['k'] ) : null );
 
 			}
 		} elseif ( isset( $_GET['mailster_confirm'] ) ) {
@@ -231,26 +234,25 @@ class MailsterFrontpage {
 				wp_redirect( $this->get_link( 'confirm', $_GET['mailster_confirm'] ), 301 );
 				exit;
 			} else {
-				$wp->query_vars['_mailster_page'] = 'confirm';
-				$wp->query_vars['_mailster_hash'] = isset( $_GET['k'] ) ? preg_replace( '/\s+/', '', $_GET['k'] ) : null;
+				set_query_var( '_mailster_page', 'confirm' );
+				set_query_var( '_mailster_hash', isset( $_GET['k'] ) ? preg_replace( '/\s+/', '', $_GET['k'] ) : null );
 
 			}
 		}
 
 		// convert custom slugs
-		if ( isset( $wp->query_vars['_mailster_page'] ) && ! empty( $wp->query_vars['_mailster_page'] ) && mailster( 'helper' )->using_permalinks() ) {
-			$wp->query_vars['_mailster_page'] = $this->get_page_by_slug( $wp->query_vars['_mailster_page'] );
+		if ( get_query_var( '_mailster_page' ) && mailster( 'helper' )->using_permalinks() ) {
+			set_query_var( '_mailster_page', $this->get_page_by_slug( get_query_var( '_mailster_page' ) ) );
 		}
 
-		if ( isset( $wp->query_vars['_mailster'] ) && in_array( $wp->query_vars['_mailster'], array( 'subscribe', 'update', 'unsubscribe' ) ) ) {
+		if ( get_query_var( '_mailster' ) ) {
+			if ( in_array( get_query_var( '_mailster' ), array( 'subscribe', '___update', '___unsubscribe' ) ) ) {
+				$this->do_post_actions();
 
-			$this->do_post_actions();
-
-		} elseif ( isset( $wp->query_vars['_mailster'] ) ) {
-
+			} else {
 				$this->do_tracking_actions();
-
-		} elseif ( isset( $wp->query_vars['_mailster_page'] ) ) {
+			}
+		} elseif ( get_query_var( '_mailster_page' ) ) {
 
 			$this->do_homepage();
 
@@ -259,7 +261,7 @@ class MailsterFrontpage {
 		}
 
 		// front page & archive page
-		if ( isset( $wp->query_vars['post_type'] ) && $wp->query_vars['post_type'] == 'newsletter' ) {
+		if ( get_query_var( 'post_type' ) == 'newsletter' ) {
 
 			if ( is_archive() ) {
 
@@ -270,22 +272,20 @@ class MailsterFrontpage {
 
 			} elseif ( function_exists( 'is_embed' ) && is_embed() ) {
 
-					// alter the embed content
-					add_filter( 'the_excerpt_embed', array( &$this, 'the_excerpt_embed' ), -1 );
+				// alter the embed content
+				add_filter( 'the_excerpt_embed', array( &$this, 'the_excerpt_embed' ), -1 );
 
 			} else {
+
 				$this->do_frontpage();
 			}
 		}
-
 	}
 
 
 	private function do_post_actions() {
 
-		global $wp;
-
-		switch ( $wp->query_vars['_mailster'] ) {
+		switch ( get_query_var( '_mailster' ) ) {
 			case 'subscribe':
 				mailster( 'form' )->submit();
 			break;
@@ -302,65 +302,61 @@ class MailsterFrontpage {
 
 	private function do_tracking_actions() {
 
-		global $wp;
-
-		$campaign_id = intval( $wp->query_vars['_mailster'] );
-		$target = base64_decode( strtr( $wp->query_vars['_mailster_page'], '-_', '+/' ) );
-		$hash = $wp->query_vars['_mailster_hash'];
-		$index = $wp->query_vars['_mailster_extra'];
+		$campaign_id = (int) get_query_var( '_mailster', 0 );
+		$target = mailster()->decode_link( get_query_var( '_mailster_page' ) );
+		$hash = get_query_var( '_mailster_hash' );
+		$index = get_query_var( '_mailster_extra' );
 		$redirect_to = null;
 
 		$subscriber = mailster( 'subscribers' )->get_by_hash( $hash, false );
 		$campaign = mailster( 'campaigns' )->get( $campaign_id, false );
+		$meta = mailster( 'campaigns' )->meta( $campaign_id );
 
-		if ( $subscriber ) {
+		if ( ! $subscriber ) {
 
-			$subscriber_id = $subscriber->ID;
+			$subscriber = (object) array(
+				'ID' => null,
+				'hash' => $hash,
+			);
+		}
 
-			if ( $target ) {
+		if ( $target ) {
 
-				if ( ! preg_match( '#^https?:#', $target ) ) {
-					wp_die( 'Invalid URL' );
-				}
+			if ( ! preg_match( '#^https?:#', $target ) ) {
+				wp_die( sprintf( __( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
+			}
 
-				$cookietime = apply_filters( 'mailster_cookie_time', 1 * HOUR_IN_SECONDS );
+			$this->setcookie( $subscriber->hash );
 
-				setcookie( 'mailster', $subscriber->hash, time() + $cookietime, COOKIEPATH, COOKIE_DOMAIN );
+			$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID );
 
-				$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID );
+			$redirect_to = $target;
 
+			// append hash and campaign_id if unsubscribe link
+			if ( mailster()->get_unsubscribe_link( $campaign_id, $hash ) == $redirect_to ) :
+				$redirect_to = $this->get_link( 'unsubscribe', $subscriber->hash, get_query_var( '_mailster' ) );
+				$target = $this->get_link( 'unsubscribe' );
+
+			elseif ( mailster()->get_profile_link( $campaign_id, $hash ) == $redirect_to ) :
+				$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . $subscriber->hash ), get_query_var( '_mailster' ) );
+				$target = $this->get_link( 'profile' );
+
+			endif;
+
+			if ( $meta['track_clicks'] ) {
 				do_action( 'mailster_click', $subscriber->ID, $campaign->ID, $target, $index );
 				do_action( 'mymail_click', $subscriber->ID, $campaign->ID, $target, $index );
-
-				$redirect_to = $target;
-
-				// append hash and campaign_id if unsubscribe link
-				if ( untrailingslashit( $this->get_link( 'unsubscribe' ) ) == $redirect_to ) :
-					$redirect_to = $this->get_link( 'unsubscribe', $subscriber->hash, $wp->query_vars['_mailster'] );
-
-				elseif ( untrailingslashit( $this->get_link( 'profile' ) ) == $redirect_to ) :
-					$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . $subscriber->hash ), $wp->query_vars['_mailster'] );
-
-				endif;
-
-			} else {
-
-				do_action( 'mailster_open', $subscriber->ID, $campaign->ID );
-				do_action( 'mymail_open', $subscriber->ID, $campaign->ID );
-
 			}
-
-			if ( ! $redirect_to ) {
-				$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID ) : false;
-			}
-
-			// user doesn't exists
 		} else {
 
-			$subscriber_id = null;
+			if ( $meta['track_opens'] ) {
+				do_action( 'mailster_open', $subscriber->ID, $campaign->ID );
+				do_action( 'mymail_open', $subscriber->ID, $campaign->ID );
+			}
+		}
 
+		if ( ! $redirect_to ) {
 			$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID ) : false;
-
 		}
 
 		// no target => tracking image
@@ -373,10 +369,9 @@ class MailsterFrontpage {
 
 		} else {
 			// redirect in any case with 307 (temporary moved) to force tracking
-			$to = apply_filters( 'mymail_redirect_to', apply_filters( 'mailster_redirect_to', $redirect_to, $campaign_id, $subscriber_id ), $campaign_id, $subscriber_id );
+			$to = apply_filters( 'mymail_redirect_to', apply_filters( 'mailster_redirect_to', $redirect_to, $campaign_id, $subscriber->ID ), $campaign_id, $subscriber->ID );
 			$to = str_replace( '&amp;', '&', $to );
 			header( 'Location: ' . $to, true, 307 );
-
 		}
 
 		exit;
@@ -392,7 +387,7 @@ class MailsterFrontpage {
 			remove_action( 'template_redirect', 'redirect_canonical' );
 		}
 
-		switch ( $wp->query_vars['_mailster_page'] ) {
+		switch ( get_query_var( '_mailster_page' ) ) {
 
 			case 'subscribe':
 
@@ -403,6 +398,16 @@ class MailsterFrontpage {
 
 			case 'unsubscribe':
 
+				$unsubscribe_url = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
+
+				// if tracking is disabled
+				if ( strpos( $unsubscribe_url, $wp->request ) === false ) {
+					$this->setcookie( get_query_var( '_mailster_hash' ) );
+					$redirect_to = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ) , get_query_var( '_mailster_extra' ) );
+					wp_redirect( $redirect_to, 301 );
+					exit;
+				}
+
 				do_action( 'mailster_homepage_unsubscribe' );
 				do_action( 'mymail_homepage_unsubscribe' );
 
@@ -410,19 +415,29 @@ class MailsterFrontpage {
 
 			case 'profile':
 
+				$profile_url = $this->get_link( 'profile', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
+
+				// if tracking is disabled
+				if ( strpos( $profile_url, $wp->request ) === false ) {
+					$this->setcookie( get_query_var( '_mailster_hash' ) );
+					$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . get_query_var( '_mailster_hash' ) ), get_query_var( '_mailster_extra' ) );
+					wp_redirect( $redirect_to, 301 );
+					exit;
+				}
+
 				do_action( 'mailster_homepage_profile' );
 				do_action( 'mymail_homepage_profile' );
 
 				// redirect if no hash is set
-				if ( empty( $wp->query_vars['_mailster_hash'] ) ) {
+				if ( empty( get_query_var( '_mailster_hash' ) ) ) {
 
 					if ( is_user_logged_in() ) {
 						if ( $subscriber = mailster( 'subscribers' )->get_by_wpid( get_current_user_id() ) ) {
-							$wp->query_vars['_mailster_hash'] = md5( wp_create_nonce( 'mailster_nonce' ) . $subscriber->hash );
+							set_query_var( '_mailster_hash', $subscriber->hash );
 						}
 					}
 
-					if ( empty( $wp->query_vars['_mailster_hash'] ) ) {
+					if ( empty( get_query_var( '_mailster_hash' ) ) ) {
 
 						wp_redirect( $this->get_link(), 301 );
 						exit;
@@ -436,7 +451,7 @@ class MailsterFrontpage {
 				do_action( 'mailster_homepage_confirm' );
 				do_action( 'mymail_homepage_confirm' );
 
-				$subscriber = mailster( 'subscribers' )->get_by_hash( $wp->query_vars['_mailster_hash'] );
+				$subscriber = mailster( 'subscribers' )->get_by_hash( get_query_var( '_mailster_hash' ) );
 				// redirect if no such subscriber
 				if ( ! $subscriber ) {
 
@@ -444,8 +459,25 @@ class MailsterFrontpage {
 					exit;
 				}
 
-				$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
-				$form = mailster( 'forms' )->get( $form_id, false, false );
+				$extra = explode( '/', get_query_var( '_mailster_extra' ) );
+				if ( isset( $extra[0] ) ) {
+					$form_id = array_shift( $extra );
+				} else {
+					$form_id = mailster( 'subscribers' )->meta( $subscriber->ID, 'form' );
+				}
+
+				if ( ! $form_id ) {
+					$form = mailster( 'forms' )->get( null, false, true );
+					$form = $form[0];
+				} else {
+					$form = mailster( 'forms' )->get( $form_id, false, true );
+				}
+
+				if ( isset( $extra[0] ) ) {
+					$list_ids = $extra;
+				} else {
+					$list_ids = $form->lists;
+				}
 
 				$target = ! empty( $form->confirmredirect ) ? $form->confirmredirect : $this->get_link( 'subscribe', $subscriber->hash, true );
 
@@ -464,9 +496,9 @@ class MailsterFrontpage {
 
 					if ( 'unknown' !== ( $geo = mailster_ip2City() ) ) {
 
-							$user_meta['geo'] = $geo->country_code . '|' . $geo->city;
+						$user_meta['geo'] = $geo->country_code . '|' . $geo->city;
 						if ( $geo->city ) {
-							$user_meta['coords'] = floatval( $geo->latitude ) . ',' . floatval( $geo->longitude );
+							$user_meta['coords'] = (float) $geo->latitude . ',' . (float) $geo->longitude;
 						}
 					}
 
@@ -480,10 +512,12 @@ class MailsterFrontpage {
 						}
 					} else {
 
-							wp_redirect( $this->get_link(), 301 );
-							exit;
+						wp_redirect( $this->get_link(), 301 );
+						exit;
 					}
 				}
+
+				mailster( 'lists' )->confirm_subscribers( $list_ids, $subscriber->ID );
 
 				$redirect_to = apply_filters( 'mymail_confirm_target', apply_filters( 'mailster_confirm_target', $target, $subscriber->ID ), $subscriber->ID );
 
@@ -549,28 +583,17 @@ class MailsterFrontpage {
 
 	private function do_frontpage() {
 
-		global $wp, $post;
-
-		if ( isset( $wp->query_vars['preview'] ) ) {
-			$preview = true;
-			$args['post_type'] = 'newsletter';
-			$args['p'] = $wp->query_vars['p'];
-
-		} else {
-			$preview = false;
-			$args['post_type'] = 'newsletter';
-			$args['post_status'] = array( 'finished', 'active' );
-		}
-
-		$args['posts_per_page'] = -1;
-		$args['paged'] = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1;
-		$args['orderby'] = 'menu_order';
-
 		if ( have_posts() ) : while ( have_posts() ) : the_post();
 
 				$meta = mailster( 'campaigns' )->meta( get_the_ID() );
 
-				if ( isset( $_GET['frame'] ) && $_GET['frame'] == '0' ) {
+				if ( ! $meta['webversion'] && get_current_user_id() != get_the_author_meta( 'ID' ) ) {
+					$this->do_404();
+				}
+
+				if ( ! mailster_option( 'webversion_bar' ) || (isset( $_GET['frame'] ) && $_GET['frame'] == '0' ) ) {
+
+					do_action( 'mailster_frontpage' );
 
 					// remove oembed
 					if ( isset( $GLOBALS['wp_embed'] ) ) {
@@ -579,6 +602,8 @@ class MailsterFrontpage {
 					}
 
 					if ( post_password_required() ) {
+
+						global $post;
 
 						// unlock post if pwd hash is provided
 						if ( isset( $_GET['pwd'] ) && $_GET['pwd'] == md5( $post->post_password . AUTH_KEY ) ) {
@@ -606,6 +631,7 @@ class MailsterFrontpage {
 					$placeholder->set_campaign( get_the_ID() );
 
 					$placeholder->add_defaults( get_the_ID() );
+					$placeholder->add_custom( get_the_ID() );
 
 					$placeholder->share_service( get_permalink( get_the_ID() ), get_the_title() );
 
@@ -625,11 +651,15 @@ class MailsterFrontpage {
 				} else {
 
 					add_filter( 'get_previous_post_where', array( &$this, 'get_post_where' ) );
+					add_filter( 'get_previous_post_join', array( &$this, 'get_post_join' ) );
 					add_filter( 'get_next_post_where', array( &$this, 'get_post_where' ) );
+					add_filter( 'get_next_post_join', array( &$this, 'get_post_join' ) );
+
+					do_action( 'mailster_frontpage_frame' );
 
 					$url = add_query_arg( 'frame', 0, get_permalink() );
 
-					if ( $preview ) {
+					if ( $preview = get_query_var( 'preview' ) ) {
 						$url = add_query_arg( 'preview', 1, $url );
 					}
 
@@ -651,12 +681,11 @@ class MailsterFrontpage {
 		endwhile;
 
 		else :
+
+			wp_old_slug_redirect();
+
 			// NOT FOUND
-			global $wp_query;
-			$wp_query->set_404();
-			status_header( 404 );
-			get_template_part( 404 );
-			exit;
+			$this->do_404();
 
 		endif;
 
@@ -704,7 +733,7 @@ class MailsterFrontpage {
 			break;
 		}
 
-		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . intval( $height ) . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
+		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . (int) $height . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
 
 	}
 
@@ -755,7 +784,19 @@ class MailsterFrontpage {
 	 * @return unknown
 	 */
 	public function get_post_where( $sql ) {
-		return str_replace( "post_status = 'publish'", "post_status IN ('finished', 'active') AND post_password = ''", $sql );
+		return str_replace( "post_status = 'publish'", "post_status IN ('finished', 'active' ,'queued') AND post_password = '' AND (pmeta.meta_value = 1 OR pmeta.meta_key IS NULL OR p.post_author = " . get_current_user_id() . ')', $sql );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $sql
+	 * @return unknown
+	 */
+	public function get_post_join( $sql ) {
+		global $wpdb;
+		return $sql .= " LEFT JOIN $wpdb->postmeta as pmeta ON pmeta.post_id = p.ID AND pmeta.meta_key = '_mailster_webversion'";
 	}
 
 
@@ -788,12 +829,10 @@ class MailsterFrontpage {
 	 */
 	public function do_shortcode( $atts, $content ) {
 
-		global $wp, $post;
-
 		$content = get_the_content();
 
 		// signup form
-		if ( ! isset( $wp->query_vars['_mailster_page'] ) ) {
+		if ( ! get_query_var( '_mailster_page' ) ) {
 
 			$pattern = '\[(\[?)(newsletter_signup)(?![\w-])([^\]\/]*(?:\/(?!\])[^\]\/]*)*?)(?:(\/)\]|\](?:([^\[]*+(?:\[(?!\/\2\])[^\[]*+)*+)\[\/\2\])?)(\]?)';
 
@@ -805,7 +844,7 @@ class MailsterFrontpage {
 
 		}
 
-		switch ( $wp->query_vars['_mailster_page'] ) {
+		switch ( get_query_var( '_mailster_page' ) ) {
 
 			case 'confirm':
 
@@ -813,21 +852,21 @@ class MailsterFrontpage {
 
 			case 'subscribe':
 
-				$subscriber = mailster( 'subscribers' )->get_by_hash( $wp->query_vars['_mailster_hash'] );
+				if ( $hash = get_query_var( '_mailster_hash' ) ) {
+					$subscriber = mailster( 'subscribers' )->get_by_hash( $hash );
 
-				if ( $subscriber->status == 1 ) {
+					if ( $subscriber->status != 1 ) {
 
-					$pattern = '\[(\[?)(newsletter_confirm)(?![\w-])([^\]\/]*(?:\/(?!\])[^\]\/]*)*?)(?:(\/)\]|\](?:([^\[]*+(?:\[(?!\/\2\])[^\[]*+)*+)\[\/\2\])?)(\]?)';
+						return mailster_text( 'unsubscribeerror' );
 
-					preg_match( '/' . $pattern . '/s', $content, $matches );
-
-					return ! empty( $matches[5] ) ? do_shortcode( $matches[5] ) : mailster_text( 'success' );
-
-				} else {
-
-					return mailster_text( 'unsubscribeerror' );
-
+					}
 				}
+
+				$pattern = '\[(\[?)(newsletter_confirm)(?![\w-])([^\]\/]*(?:\/(?!\])[^\]\/]*)*?)(?:(\/)\]|\](?:([^\[]*+(?:\[(?!\/\2\])[^\[]*+)*+)\[\/\2\])?)(\]?)';
+
+				preg_match( '/' . $pattern . '/s', $content, $matches );
+
+				return ! empty( $matches[5] ) ? do_shortcode( $matches[5] ) : mailster_text( 'success' );
 
 			break;
 
@@ -848,9 +887,16 @@ class MailsterFrontpage {
 					$return .= do_shortcode( wpautop( $matches[5] ) );
 				}
 
-				$form = mailster( 'form' );
+				if ( preg_match( '/\[newsletter_signup_form id=("|\')?(\d+)("|\')?\]/i', $content, $form_id ) ) {
+					$form_id = (int) $form_id;
+				} else {
+					global $wpdb;
+					$form_id = (int) $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" );
+				}
+
+				$form = mailster( 'form' )->id( $form_id );
 				$form->is_unsubscribe();
-				$form->campaign_id( isset( $wp->query_vars['_mailster'] ) ? $wp->query_vars['_mailster'] : $wp->query_vars['_mailster_extra'] );
+				$form->campaign_id( get_query_var( '_mailster', get_query_var( '_mailster_extra' ) ) );
 
 				$return .= $form->render( false );
 
@@ -863,6 +909,21 @@ class MailsterFrontpage {
 			return do_shortcode( $content );
 
 		}
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $hash
+	 * @return unknown
+	 */
+	public function setcookie( $hash, $timeout = 3600 ) {
+
+		$cookietime = apply_filters( 'mailster_cookie_time', $timeout );
+
+		return setcookie( 'mailster', $hash, time() + $cookietime, COOKIEPATH, COOKIE_DOMAIN );
 
 	}
 
@@ -904,21 +965,21 @@ class MailsterFrontpage {
 	 */
 	public function newsletter_list( $atts, $content ) {
 		extract( shortcode_atts( array(
-					'date' => false,
-					'count' => 10,
-					'status' => array( 'finished', 'active' ),
-					'order' => 'desc',
-					'orderby' => 'date',
+			'date' => false,
+			'count' => 10,
+			'status' => array( 'finished', 'active' ),
+			'order' => 'desc',
+			'orderby' => 'date',
 		), $atts ) );
 
 		$r = new WP_Query( array(
-				'post_type' => 'newsletter',
-				'posts_per_page' => $count,
-				'no_found_rows' => true,
-				'post_status' => $status,
-				'ignore_sticky_posts' => true,
-				'order' => $order,
-				'orderby' => $orderby,
+			'post_type' => 'newsletter',
+			'posts_per_page' => $count,
+			'no_found_rows' => true,
+			'post_status' => $status,
+			'ignore_sticky_posts' => true,
+			'order' => $order,
+			'orderby' => $orderby,
 		) );
 
 		$return = '';
@@ -1097,6 +1158,15 @@ class MailsterFrontpage {
 
 		return $rep;
 
+	}
+
+	private function do_404() {
+		global $wp_query;
+		$wp_query->set_404();
+		status_header( 404 );
+		nocache_headers();
+		get_template_part( 404 );
+		exit;
 	}
 
 

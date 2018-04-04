@@ -20,7 +20,7 @@ jQuery(document).ready(function ($) {
 		})
 		.on('click', '.howto-purchasecode', function () {
 
-			popup(this.href, 600, 350, 'mailster_how_to_puchasecode');
+			Mailster.dialog('registration-dialog');
 			return false;
 		})
 		.on('submit', '.register_form', function () {

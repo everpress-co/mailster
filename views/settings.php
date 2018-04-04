@@ -1,6 +1,6 @@
 <?php
 
-global $wpdb, $current_user, $wp_post_statuses, $wp_roles, $locale;
+global $wpdb, $current_user, $wp_post_statuses, $wp_roles;
 
 $customfields = mailster()->get_custom_fields();
 $roles = $wp_roles->get_names();
@@ -15,15 +15,9 @@ $roles = $wp_roles->get_names();
 <h1><?php esc_html_e( 'Newsletter Settings', 'mailster' ) ?></h1>
 <?php
 
-$active = count( mailster_get_active_campaigns() );
-
 $templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
 $timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
-
-if ( $active ) {
-	echo '<div class="error inline"><p>' . sprintf( _n( '%d campaign is active. You should pause it before you change the settings!', '%d campaigns are active. You should pause them before you change the settings!', $active, 'mailster' ), $active ) . '</p></div>';
-}
 
 ?>
 <?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>
@@ -36,9 +30,10 @@ $sections = array(
 	'general' => esc_html__( 'General', 'mailster' ),
 	'template' => esc_html__( 'Template', 'mailster' ),
 	'frontend' => esc_html__( 'Front End', 'mailster' ),
+	'privacy' => esc_html__( 'Privacy', 'mailster' ),
 	'subscribers' => esc_html__( 'Subscribers', 'mailster' ),
 	'wordpress-users' => esc_html__( 'WordPress Users', 'mailster' ),
-	'texts' => esc_html__( 'Texts', 'mailster' ),
+	'texts' => esc_html__( 'Text Strings', 'mailster' ),
 	'tags' => esc_html__( 'Tags', 'mailster' ),
 	'delivery' => esc_html__( 'Delivery', 'mailster' ),
 	'cron' => esc_html__( 'Cron', 'mailster' ),

@@ -5,7 +5,7 @@ if ( $campaigns = mailster( 'campaigns' )->get_campaigns( array( 'posts_per_page
 	<div class="mailster-mb-heading">
 		<select class="mailster-mb-select">
 		<?php foreach ( $campaigns as $campaign ) {?>
-			<option value="<?php echo intval( $campaign->ID ) ?>"><?php esc_html_e( $campaign->post_title ) ?></option>
+			<option value="<?php echo (int) $campaign->ID ?>"><?php esc_html_e( $campaign->post_title ) ?></option>
 		<?php }?>
 		</select>
 		<span class="mailster-mb-label"><?php esc_html_e( 'Campaign', 'mailster' ) ?></span>: <a class="mailster-mb-link" href="post.php?post=%d&action=edit" title="<?php esc_html_e( 'edit', 'mailster' ) ?>"><?php esc_html_e( $campaign->post_title ) ?></a>

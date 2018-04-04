@@ -98,7 +98,6 @@ jQuery(document).ready(function ($) {
 
 	MailsterPointer.iframe = $('#mailster_iframe').contents();
 	$('#mailster_iframe').load(function () {
-		console.log('Asdasdasd');
 		MailsterPointer.iframe = $('#mailster_iframe').contents();
 	});
 
