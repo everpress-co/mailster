@@ -2,7 +2,7 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9.4
+Tested up to: 4.9.5
 Stable tag: 2.3
 Author: EverPress
 Author URI: https://mailster.co

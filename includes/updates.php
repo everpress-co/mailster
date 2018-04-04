@@ -538,6 +538,10 @@ if ( $old_version ) {
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `campaign_id` `campaign_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 
+			$mailster_options['welcome'] = true;
+			$mailster_options['_flush_rewrite_rules'] = true;
+			$show_update_notice = true;
+
 		default:
 
 			do_action( 'mailster_update', $old_version, $new_version );
