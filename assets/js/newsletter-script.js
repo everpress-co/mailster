@@ -3261,7 +3261,8 @@ jQuery(document).ready(function ($) {
 
 			var html = '',
 				x = '',
-				i = 0;
+				i = 0,
+				mc = 0;
 
 			//reset
 			modulesOBJ = [];
@@ -3269,7 +3270,7 @@ jQuery(document).ready(function ($) {
 			$.each(elements, function (j) {
 				var $this = $(this);
 				if ($this.is('module')) {
-					var name = $this.attr('label'),
+					var name = $this.attr('label') || sprintf(mailsterL10n.module, '#' + (++mc)),
 						codeview = mailsterdata.codeview ? '<a class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></a>' : '',
 						auto = ($this.is('[auto]') ? '<a class="mailster-btn auto" title="' + mailsterL10n.auto + '"></a>' : '');
 

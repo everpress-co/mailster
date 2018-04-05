@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.1 =
 
 * fixed: error: Can't use function return value in write context
+* improved: display info if module has no label
 
 = Version 2.3 =
 
