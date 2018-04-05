@@ -1174,6 +1174,7 @@ class MailsterCampaigns {
 				'remove_all_modules' => __( 'Do you really like to remove all modules?', 'mailster' ),
 				'save_template' => __( 'Save Template File', 'mailster' ),
 				'add_module' => __( 'Add Module', 'mailster' ),
+				'module' => __( 'Module %s', 'mailster' ),
 				'codeview' => __( 'Codeview', 'mailster' ),
 				'module_label' => __( 'Name of the module (click to edit)', 'mailster' ),
 				'edit' => __( 'Edit', 'mailster' ),

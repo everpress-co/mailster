@@ -476,7 +476,12 @@ class MailsterTemplate {
 
 		for ( $i = 0; $i < $count; $i++ ) {
 			$label = $modules->item( $i )->getAttribute( 'label' );
-			$list[] = ( isset( $labels[ strtolower( $label ) ] ) ? $labels[ strtolower( $label ) ] : $label );
+			if ( isset( $labels[ strtolower( $label ) ] ) ) {
+				$label = $labels[ strtolower( $label ) ];
+			} elseif ( empty( $label ) ) {
+				$label = sprintf( __( 'Module %s', 'mailster' ), '#' . ($i + 1) );
+			}
+			$list[] = $label;
 		}
 
 		return $list;

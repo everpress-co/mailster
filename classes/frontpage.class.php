@@ -427,9 +427,10 @@ class MailsterFrontpage {
 
 				do_action( 'mailster_homepage_profile' );
 				do_action( 'mymail_homepage_profile' );
+				$hash = get_query_var( '_mailster_hash' );
 
 				// redirect if no hash is set
-				if ( empty( get_query_var( '_mailster_hash' ) ) ) {
+				if ( empty( $hash ) ) {
 
 					if ( is_user_logged_in() ) {
 						if ( $subscriber = mailster( 'subscribers' )->get_by_wpid( get_current_user_id() ) ) {
@@ -437,7 +438,7 @@ class MailsterFrontpage {
 						}
 					}
 
-					if ( empty( get_query_var( '_mailster_hash' ) ) ) {
+					if ( empty( $hash ) ) {
 
 						wp_redirect( $this->get_link(), 301 );
 						exit;
