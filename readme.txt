@@ -84,6 +84,12 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.2 =
 
+* fixed: pagination on subscribers overview page
+* fixed: profile for logged in users working again
+* fixed: confirmation message was sent on single opt in
+* fixed: subscribers detail page sometimes empty
+* fixed: missing images on some third party template
+
 = Version 2.3.1 =
 
 * fixed: error: Can't use function return value in write context

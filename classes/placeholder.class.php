@@ -648,7 +648,7 @@ class MailsterPlaceholder {
 		$dateformat = get_option( 'date_format' );
 
 		// placeholder images
-		if ( $count = preg_match_all( '#<(img|td|th|v:fill)(.*)(src|background)="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#<(img|td|th|v:fill)([^>]*)(src|background)="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
@@ -754,6 +754,7 @@ class MailsterPlaceholder {
 									$replace_to = '<' . $tag . ' ' . $pre_stuff . 'background="' . $img['url'] . '" ' . $post_stuff . '>';
 								}
 							} else {
+
 								if ( $is_img_tag ) {
 									$replace_to = '';
 								} else {

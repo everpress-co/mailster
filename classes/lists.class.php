@@ -453,28 +453,86 @@ class MailsterLists {
 
 		global $wpdb;
 
-		if ( ! is_array( $ids ) ) {
-			$ids = array( (int) $ids );
-		}
+		if ( ! is_null( $ids ) ) {
+			if ( ! is_array( $ids ) ) {
+				$ids = array( (int) $ids );
+			}
 
-		if ( empty( $ids ) ) {
-			return true;
+			if ( empty( $ids ) ) {
+				return true;
+			}
 		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			if ( ! is_array( $subscriber_ids ) ) {
+				$subscriber_ids = array( (int) $subscriber_ids );
+			}
 
-		if ( ! is_array( $subscriber_ids ) ) {
-			$subscriber_ids = array( (int) $subscriber_ids );
-		}
-
-		if ( empty( $subscriber_ids ) ) {
-			return true;
+			if ( empty( $subscriber_ids ) ) {
+				return true;
+			}
 		}
 
 		$confirmed = time();
 
-		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE list_id IN (" . implode( ', ', $ids ) . ') AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
+		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE 1=1";
 
+		if ( ! is_null( $ids ) ) {
+			$sql .= ' AND list_id IN (' . implode( ', ', $ids ) . ')';
+		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			$sql .= ' AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
+		}
 		if ( ! $force ) {
 			$sql .= ' AND added = 0';
+		}
+
+		return false !== $wpdb->query( $wpdb->prepare( $sql, $confirmed ) );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $ids
+	 * @param unknown $subscriber_ids
+	 * @param unknown $force     (optional)
+	 * @return unknown
+	 */
+	public function unconfirm_subscribers( $ids, $subscriber_ids, $force = false ) {
+
+		global $wpdb;
+
+		if ( ! is_null( $ids ) ) {
+			if ( ! is_array( $ids ) ) {
+				$ids = array( (int) $ids );
+			}
+
+			if ( empty( $ids ) ) {
+				return true;
+			}
+		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			if ( ! is_array( $subscriber_ids ) ) {
+				$subscriber_ids = array( (int) $subscriber_ids );
+			}
+
+			if ( empty( $subscriber_ids ) ) {
+				return true;
+			}
+		}
+
+		$confirmed = 0;
+
+		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE 1=1";
+
+		if ( ! is_null( $ids ) ) {
+			$sql .= ' AND list_id IN (' . implode( ', ', $ids ) . ')';
+		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			$sql .= ' AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
+		}
+		if ( ! $force ) {
+			$sql .= ' AND added != 0';
 		}
 
 		return false !== $wpdb->query( $wpdb->prepare( $sql, $confirmed ) );

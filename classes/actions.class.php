@@ -275,7 +275,7 @@ class MailsterActions {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 			if ( $args['type'] != 1 && $explicit ) {
-				mailster( 'subscribers' )->update_rate( $args['subscriber_id'] );
+				// mailster( 'subscribers' )->update_rate( $args['subscriber_id'] );
 			}
 
 			return true;
@@ -287,7 +287,7 @@ class MailsterActions {
 
 
 	/**
-	 * clear queue with all susbcirbers in $campaign_id but NOT in subscribers
+	 * clear queue with all subscribers in $campaign_id but NOT in subscribers
 	 *
 	 * @param unknown $campaign_id
 	 * @param unknown $subscribers
@@ -500,6 +500,7 @@ class MailsterActions {
 		global $wpdb;
 
 		$cache_key = 'action_counts_by_subscriber';
+		$subscriber_ids = array();
 
 		$action_counts = mailster_cache_get( $cache_key );
 		if ( ! $action_counts ) {
