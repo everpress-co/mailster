@@ -385,7 +385,7 @@ class MailsterQueue {
 
 			if ( 'mailster_subscriber_insert' == $autoresponder_meta['action'] ) {
 
-				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
+				$offset = (int) $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 				$list_based = mailster( 'campaigns' )->list_based_opt_out( $campaign->ID );
 
 				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null;
@@ -420,7 +420,7 @@ class MailsterQueue {
 				}
 			} elseif ( 'mailster_subscriber_unsubscribed' == $autoresponder_meta['action'] ) {
 
-				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
+				$offset = (int) $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 
 				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null;
 
@@ -447,13 +447,13 @@ class MailsterQueue {
 				}
 			} elseif ( 'mailster_autoresponder_followup' == $autoresponder_meta['action'] && $campaign->post_parent ) {
 
-				$offset = esc_sql( $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] ) );
+				$offset = (int) $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 
 				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null;
 
 				$args = array(
 					'select' => array( 'subscribers.ID' ),
-					// 'sent__not_in' => $campaign->ID,
+					'sent__not_in' => $campaign->ID,
 					// 'queue__not_in' => $campaign->ID,
 					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
 					'conditions' => $conditions,
@@ -463,7 +463,7 @@ class MailsterQueue {
 
 				switch ( $autoresponder_meta['followup_action'] ) {
 					case 1:
-						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_sent_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
+						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_sent_1_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
 						$args['sent'] = $campaign->post_parent;
 						break;
 					case 2:

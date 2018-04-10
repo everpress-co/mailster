@@ -890,7 +890,7 @@ class MailsterFrontpage {
 				}
 
 				if ( preg_match( '/\[newsletter_signup_form id=("|\')?(\d+)("|\')?\]/i', $content, $form_id ) ) {
-					$form_id = (int) $form_id;
+					$form_id = (int) $form_id[2];
 				} else {
 					global $wpdb;
 					$form_id = (int) $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" );
