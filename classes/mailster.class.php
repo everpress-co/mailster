@@ -1732,10 +1732,9 @@ class Mailster {
 	/**
 	 *
 	 *
-	 * @param unknown $post_type
 	 * @param unknown $post
 	 */
-	public function add_homepage_info( $post_type, $post ) {
+	public function add_homepage_info( $post ) {
 
 		if ( mailster_option( 'homepage' ) == $post->ID ) {
 

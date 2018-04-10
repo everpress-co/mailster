@@ -84,6 +84,9 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.3 =
 
+* fixed: pages were not editable
+* fixed: small bug fixes
+
 = Version 2.3.2 =
 
 * fixed: pagination on subscribers overview page
