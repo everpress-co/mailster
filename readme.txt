@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.5
-Stable tag: 2.3.3
+Stable tag: 2.3.4
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -82,6 +82,8 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+= Version 2.3.4 =
+
 = Version 2.3.3 =
 
 * fixed: pages were not editable
@@ -95,7 +97,7 @@ Xaver Birsak – https://everpress.io
 * fixed: profile for logged in users working again
 * fixed: confirmation message was sent on single opt in
 * fixed: subscribers detail page sometimes empty
-* fixed: missing images on some third party template
+* fixed: missing images on some third party templates
 
 = Version 2.3.1 =
 
