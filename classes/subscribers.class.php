@@ -371,6 +371,8 @@ class MailsterSubscribers {
 
 				$is_new = isset( $urlparams['new'] );
 
+				$old_subscriber_data = $this->get( (int) $_POST['mailster_data']['ID'], true );
+
 				if ( $is_new && ! current_user_can( 'mailster_add_subscribers' ) ) {
 					wp_die( __( 'You are not allowed to add subscribers!', 'mailster' ) );
 				}
@@ -424,6 +426,16 @@ class MailsterSubscribers {
 					}
 					if ( $assign = array_diff( $lists, $current_lists ) ) {
 						$this->assign_lists( $subscriber->ID, $assign, false, true );
+					}
+
+					if ( $subscriber->status != $old_subscriber_data->status ) {
+						if ( mailster_option( 'list_based_opt_in' ) ) {
+							if ( 1 == $subscriber->status ) {
+								mailster( 'lists' )->confirm_subscribers( null,  $subscriber->ID );
+							} elseif ( 0 == $subscriber->status ) {
+								mailster( 'lists' )->unconfirm_subscribers( null, $subscriber->ID );
+							}
+						}
 					}
 
 					mailster_notice( $is_new ? __( 'Subscriber added', 'mailster' ) : __( 'Subscriber saved', 'mailster' ), 'success', true );
@@ -949,7 +961,7 @@ class MailsterSubscribers {
 				$form = mailster( 'forms' )->get( $meta['form'], false );
 				// if form exists and is not a user choice and has lists
 				if ( $form && ! $form->userschoice && ! empty( $form->lists ) ) {
-					$this->assign_lists( $subscriber_id, $form->lists );
+					$this->assign_lists( $subscriber_id, $form->lists, false, $data['status'] == 0 ? false : true );
 				}
 			}
 
@@ -2860,7 +2872,7 @@ class MailsterSubscribers {
 			$lists = $is_register ? mailster_option( 'register_signup_lists', array() ) : mailster_option( 'register_other_lists', array() );
 
 			if ( ! empty( $lists ) ) {
-				$this->assign_lists( $subscriber_id, $lists );
+				$this->assign_lists( $subscriber_id, $lists, false, $status ? true : false );
 			}
 
 			return true;
@@ -3308,6 +3320,14 @@ class MailsterSubscribers {
 				if ( ! $silent ) {
 					do_action( 'mailster_subscriber_change_status', $new_status, $old_status, $subscriber );
 					do_action( 'mymail_subscriber_change_status', $new_status, $old_status, $subscriber );
+				}
+
+				if ( mailster_option( 'list_based_opt_in' ) ) {
+					if ( 1 == $new_status ) {
+						mailster( 'lists' )->confirm_subscribers( null, $subscriber_id );
+					} elseif ( 0 == $new_status ) {
+						mailster( 'lists' )->unconfirm_subscribers( null, $subscriber_id );
+					}
 				}
 
 				$count++;

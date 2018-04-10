@@ -348,8 +348,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			$this->per_page = 50;
 		}
 
-		$offset = isset( $_GET['paged'] ) ? ( (int) $_GET['paged'] - 1 ) * $limit : 0;
-		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
+		$offset = isset( $_GET['paged'] ) ? ( (int) $_GET['paged'] - 1 ) * $this->per_page : 0;
+		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'id';
 		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
 
 		switch ( $orderby ) {

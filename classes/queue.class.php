@@ -453,8 +453,8 @@ class MailsterQueue {
 
 				$args = array(
 					'select' => array( 'subscribers.ID' ),
-					'sent__not_in' => $campaign->ID,
-					'queue__not_in' => $campaign->ID,
+					// 'sent__not_in' => $campaign->ID,
+					// 'queue__not_in' => $campaign->ID,
 					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
 					'conditions' => $conditions,
 					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
@@ -467,7 +467,7 @@ class MailsterQueue {
 						$args['sent'] = $campaign->post_parent;
 						break;
 					case 2:
-						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_open_0_1.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
+						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_open_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
 						$args['open'] = $campaign->post_parent;
 						break;
 					case 3:

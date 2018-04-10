@@ -434,6 +434,7 @@ class MailsterFrontpage {
 
 					if ( is_user_logged_in() ) {
 						if ( $subscriber = mailster( 'subscribers' )->get_by_wpid( get_current_user_id() ) ) {
+							$hash = $subscriber->hash;
 							set_query_var( '_mailster_hash', $subscriber->hash );
 						}
 					}

@@ -214,7 +214,7 @@ class Mailster {
 
 			add_filter( 'install_plugin_complete_actions', array( &$this, 'add_install_plugin_complete_actions' ), 10, 3 );
 
-			add_filter( 'add_meta_boxes', array( &$this, 'add_homepage_info' ), 10, 3 );
+			add_filter( 'add_meta_boxes_page', array( &$this, 'add_homepage_info' ), 10, 2 );
 
 			add_filter( 'wp_import_post_data_processed', array( &$this, 'import_post_data' ), 10, 2 );
 			add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
@@ -1736,10 +1736,6 @@ class Mailster {
 	 * @param unknown $post
 	 */
 	public function add_homepage_info( $post_type, $post ) {
-
-		if ( $post_type != 'page' ) {
-			return;
-		}
 
 		if ( mailster_option( 'homepage' ) == $post->ID ) {
 

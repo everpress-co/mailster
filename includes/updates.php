@@ -524,7 +524,6 @@ if ( $old_version ) {
 		case '2.2.16':
 		case '2.2.17':
 		case '2.2.18':
-		case '2.2.19':
 		case '2.2.x':
 
 			// since 2.3
@@ -541,6 +540,9 @@ if ( $old_version ) {
 			$mailster_options['welcome'] = true;
 			$mailster_options['_flush_rewrite_rules'] = true;
 			$show_update_notice = true;
+
+		case '2.3':
+		case '2.3.1':
 
 		default:
 

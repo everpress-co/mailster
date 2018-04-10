@@ -1066,7 +1066,9 @@ class MailsterForm {
 
 				if ( ! empty( $assign_lists ) ) {
 					mailster( 'subscribers' )->assign_lists( $subscriber_id, $assign_lists, $remove_old_lists, ! $double_opt_in );
-					mailster( 'subscribers' )->send_confirmations( $subscriber_id, true, true );
+					if ( 'update' == $submissiontype ) {
+						mailster( 'subscribers' )->send_confirmations( $subscriber_id, true, true );
+					}
 				}
 				if ( ! empty( $unassign_lists ) ) {
 					mailster( 'subscribers' )->unassign_lists( $subscriber_id, $unassign_lists );
