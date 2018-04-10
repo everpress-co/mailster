@@ -85,6 +85,8 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.3 =
 
 * fixed: pages were not editable
+* fixed: error if `wp_get_attachment_metadata` returns false
+* fixed: autoresponder query issue
 * fixed: small bug fixes
 
 = Version 2.3.2 =
