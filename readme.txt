@@ -89,6 +89,7 @@ Xaver Birsak – https://everpress.io
 * fixed: Outlook conditional tags were removed
 * improved: better error handling on export
 * improved: more info for list confirmations
+* added: `{lists}` tag is now working in confirmation messages
 
 = Version 2.3.3 =
 
