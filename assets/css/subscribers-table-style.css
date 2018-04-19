@@ -49,7 +49,7 @@
 }
 .wp-list-table .table-data{
 	max-height: 100px;
-	overflow: auto;
+	overflow: hidden;
 }
 .mailster-avatar-40.wp-user:before{
 	font-family: 'dashicons';
@@ -59,6 +59,10 @@
 	font-size: 100%;
 	background-color: rgba(255,255,255,0.9);
 	border-radius: 50%;
+}
+.not-confirmed{
+	font-style: italic;
+	color: #999;
 }
 .wp-list-table ul{
 	margin: 0;

@@ -171,6 +171,15 @@ label{
 .user-info ul.type-list span:last-child:after{
 	content: '';
 }
+.not-confirmed{
+	font-style: italic;
+	color: #999;
+}
+.confirmation-status{
+	font-style: italic;
+	color: #999;
+	font-size: 14px;
+}
 .user-meta{
 	min-height: 200px;
 	width: 300px;

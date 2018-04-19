@@ -247,9 +247,13 @@ if ( $is_new ) {
 				<ul class="click-to-edit type-list">
 				<li>
 				<?php
+				$confirmed = array();
 				if ( $lists = $this->get_lists( $subscriber->ID ) ) :
-					foreach ( $lists as $i => $list ) {
-						echo '<span title="' . $list->description . '">' . $list->name . '</span>';
+					foreach ( $lists as $list ) {
+						if ( $list->confirmed ) {
+							$confirmed[ $list->ID ] = $list->confirmed;
+						}
+						echo '<span title="' . $list->description . '" class="' . ($list->confirmed ? 'confirmed' : 'not-confirmed') . '">' . $list->name . '</span>';
 					} else :
 						echo '<span class="description">' . __( 'User has not been assigned to a list', 'mailster' ) . '</span>';
 
@@ -258,7 +262,17 @@ if ( $is_new ) {
 				<li>
 				<?php
 				$checked = wp_list_pluck( $lists, 'ID' );
-				mailster( 'lists' )->print_it( null, null, 'mailster_lists', false, $checked );
+				$all_lists = mailster( 'lists' )->get();
+				echo '<ul>';
+				foreach ( $all_lists as $list ) {
+					echo '<li>';
+					echo '<label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="mailster_lists[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . '</label>';
+					if ( in_array( $list->ID, $checked ) ) {
+						echo '<span class="confirmation-status">' . (isset( $confirmed[ $list->ID ] ) ? sprintf( __( 'Confirmed on the %s', 'mailster' ), date( $timeformat, $confirmed[ $list->ID ] ) ) : __( 'not confirmed', 'mailster' )) . '</span>';
+					}
+					echo '</li>';
+				}
+				echo '</ul>';
 				?>
 				</li>
 				</ul>

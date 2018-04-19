@@ -1960,7 +1960,7 @@ class MailsterSubscribers {
 			return $cache[ $id ];
 		}
 
-		$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.list_id WHERE ab.subscriber_id = %d";
+		$sql = "SELECT a.*, ab.added AS confirmed FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.list_id WHERE ab.subscriber_id = %d";
 
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 

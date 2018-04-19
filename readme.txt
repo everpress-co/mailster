@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * fixed: buttons no longer get removed after click on cancel
 * fixed: Outlook conditional tags were removed
 * improved: better error handling on export
+* improved: more info for list confirmations
 
 = Version 2.3.3 =
 

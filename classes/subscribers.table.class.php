@@ -174,7 +174,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				$elements = array();
 
 				foreach ( $lists as $i => $list ) {
-					$elements[] = '<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '" title="' . $list->description . '">' . $list->name . '</a>';
+					$elements[] = '<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '" title="' . ($list->confirmed ? esc_attr__( 'confirmed', 'mailster' ) :  esc_attr__( 'not confirmed', 'mailster' )) . '" class="' . ($list->confirmed ? 'confirmed' : 'not-confirmed') . '">' . esc_html( $list->name ) . '</a>';
 				}
 			return '<div class="table-data">' . implode( ', ', $elements ) . '</div>';
 
