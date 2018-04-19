@@ -1109,6 +1109,7 @@ class MailsterCampaigns {
 				}
 
 				$this->set_template( $_GET['template'], $file, true );
+				$post->post_content = '';
 			} elseif ( isset( $this->post_data['template'] ) ) {
 				$this->set_template( $this->post_data['template'], $this->post_data['file'] );
 			} else {

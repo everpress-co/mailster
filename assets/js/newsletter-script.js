@@ -118,7 +118,9 @@ jQuery(document).ready(function ($) {
 
 				_trigger('resize');
 				_trigger('refresh');
-				//_trigger('save');
+				if (!_content.val()) {
+					_trigger('save');
+				}
 				$("#normal-sortables").on("sortupdate", function (event, ui) {
 					_trigger('resize');
 				});
@@ -1291,7 +1293,8 @@ jQuery(document).ready(function ($) {
 				.on('click', 'a.redo', redo)
 				.on('click', 'a.code', codeView)
 				.on('click', 'a.plaintext', plainText)
-				.on('click', 'a.dfw', dfw);
+				.on('click', 'a.dfw', dfw)
+				.on('click', 'a.file', changeTemplate);
 
 			_body
 				.on('click', 'button.save-template', save)
@@ -1366,11 +1369,11 @@ jQuery(document).ready(function ($) {
 
 			if (_currentundo) {
 				_currentundo--;
-				_setContent(_undo[_currentundo], 100, false);
-				_content.val(_undo[_currentundo]);
+				_setContent(_undo[_currentundo], 100, true);
+				_trigger('refresh');
+				//_content.val(_undo[_currentundo]);
 				_obar.find('a.redo').removeClass('disabled');
 				if (!_currentundo) $(this).addClass('disabled');
-				_trigger('refresh');
 			}
 
 			return false;
@@ -1381,11 +1384,11 @@ jQuery(document).ready(function ($) {
 
 			if (_currentundo < length - 1) {
 				_currentundo++;
-				_setContent(_undo[_currentundo], 100, false);
-				_content.val(_undo[_currentundo]);
+				_setContent(_undo[_currentundo], 100, true);
+				_trigger('refresh');
+				//_content.val(_undo[_currentundo]);
 				_obar.find('a.undo').removeClass('disabled');
 				if (_currentundo >= length - 1) $(this).addClass('disabled');
-				_trigger('refresh');
 			}
 
 			return false;
@@ -1559,6 +1562,12 @@ jQuery(document).ready(function ($) {
 				_obar.find('a.dfw').removeClass('active');
 			}
 			return false;
+		}
+
+		function changeTemplate(event) {
+
+			window.onbeforeunload = null;
+
 		}
 
 		init();
@@ -2399,14 +2408,14 @@ jQuery(document).ready(function ($) {
 		function cancel() {
 			switch (current.type) {
 			case 'img':
-				break;
 			case 'btn':
-				if (!current.element.attr('href')) {
-					var wrap = current.element.closest('.textbutton');
-					if (wrap.length) wrap.remove();
-				}
-				current.element.remove();
 				break;
+				// if (!current.element.attr('href')) {
+				// 	var wrap = current.element.closest('.textbutton');
+				// 	if (wrap.length) wrap.remove();
+				// }
+				// current.element.remove();
+				// break;
 			default:
 				current.element.html(current.content);
 			}
@@ -3430,7 +3439,7 @@ jQuery(document).ready(function ($) {
 
 				_undo = _undo.splice(0, _currentundo + 1);
 
-				_undo.push(_head.val() + content);
+				_undo.push(content);
 				if (length >= mailsterL10n.undosteps) _undo.shift();
 				_currentundo = _undo.length - 1;
 
@@ -3817,11 +3826,13 @@ jQuery(document).ready(function ($) {
 		content = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 
 
-		bodyattributes = body.attributes;
+		bodyattributes = body.attributes || [];
 		attrcount = bodyattributes.length;
 
-		while (attrcount--) {
-			s = ' ' + bodyattributes[attrcount].name + '="' + $.trim(bodyattributes[attrcount].value) + '"' + s;
+		if (attrcount) {
+			while (attrcount--) {
+				s = ' ' + bodyattributes[attrcount].name + '="' + $.trim(bodyattributes[attrcount].value) + '"' + s;
+			}
 		}
 		s = $.trim(s
 			.replace(/(webkit|wp\-editor|mceContentBody|position: relative;|modal-open| spellcheck="(true|false)")/g, '')
@@ -3861,14 +3872,16 @@ jQuery(document).ready(function ($) {
 
 		doc.body.innerHTML = structure.content;
 
-		while (attrcount--) {
-			doc.body.setAttribute(bodyattributes[attrcount].name, bodyattributes[attrcount].value)
+		if (attrcount) {
+			while (attrcount--) {
+				doc.body.setAttribute(structure.bodyattributes[attrcount].name, structure.bodyattributes[attrcount].value)
+			}
 		}
 
 		if (delay !== false) {
 			clearTimeout(timeout);
 			timeout = setTimeout(function () {
-				modules.refresh && modules.refresh();
+				modules && modules.refresh && modules.refresh();
 			}, delay || 100);
 		}
 

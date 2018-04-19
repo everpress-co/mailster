@@ -373,6 +373,8 @@ jQuery(document).ready(function ($) {
 
 			} else {
 
+				progressbar.stop();
+				progress.addClass('error');
 				window.onbeforeunload = null;
 				exportstatus.html(mailsterL10n.error_export);
 				$('.step2-body').html(response.msg);

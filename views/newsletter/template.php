@@ -10,14 +10,6 @@ $modules = $this->replace_colors( $this->templateobj->get_modules_html() );
 $templates = mailster( 'templates' )->get_templates();
 $all_files = mailster( 'templates' )->get_all_files();
 
-// templateswitcher was used.
-if ( isset( $_GET['template'] ) && current_user_can( 'mailster_change_template' ) ) {
-	$this->set_template( $_GET['template'], $this->get_file(), true );
-	// saved campaign.
-} elseif ( isset( $this->details['template'] ) ) {
-	$this->set_template( $this->details['template'], $this->get_file(), true );
-}
-
 ?>
 <div id="template-wrap" class="load <?php if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $modules ) ) {	echo ' show-modules'; } if ( $editable && ! empty( $modules ) ) { echo ' has-modules'; }?>">
 
@@ -37,7 +29,7 @@ if ( isset( $_GET['template'] ) && current_user_can( 'mailster_change_template' 
 		<p><strong class="link"></strong></p>
 		<p><?php esc_html_e( 'Clicks', 'mailster' );?>: <strong class="clicks">0</strong><br><?php esc_html_e( 'Total', 'mailster' );?>: <strong class="total">0</strong></p>
 	</div>
-	<textarea id="content" name="content" class="hidden" autocomplete="off" ><?php echo esc_textarea( $post->post_content ) ?></textarea>
+	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_content ) ?></textarea>
 	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_excerpt ) ?></textarea>
 
 <?php endif; ?>
@@ -119,6 +111,6 @@ if ( isset( $_GET['template'] ) && current_user_can( 'mailster_change_template' 
 		</div>
 	</div>
 </div>
-<textarea id="content" class="hidden" autocomplete="off" name="content"><?php echo esc_textarea( $post->post_content ) ?></textarea>
-<textarea id="modules" class="hidden" autocomplete="off"><?php echo esc_textarea( $modules ) ?></textarea>
-<textarea id="head" name="mailster_data[head]" class="hidden" autocomplete="off"><?php echo esc_textarea( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>
+<textarea id="content" autocomplete="off" name="content"><?php echo esc_textarea( $post->post_content ) ?></textarea>
+<textarea id="modules" autocomplete="off"><?php echo esc_textarea( $modules ) ?></textarea>
+<textarea id="head" name="mailster_data[head]" autocomplete="off"><?php echo esc_textarea( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>

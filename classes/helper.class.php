@@ -961,7 +961,7 @@ class MailsterHelper {
 
 		$commentid = uniqid();
 		foreach ( $comments[0] as $i => $comment ) {
-			$content = str_replace( $comment, 'HTML_COMMENT_' . $i . '_' . $commentid, $content );
+			$content = str_replace( $comment, '<!--Mailster:html_comment_' . $i . '_' . $commentid . '-->', $content );
 		}
 
 		// get all style blocks
@@ -997,7 +997,7 @@ class MailsterHelper {
 		}
 
 		foreach ( $comments[0] as $i => $comment ) {
-			$content = str_replace( 'HTML_COMMENT_' . $i . '_' . $commentid, $comment, $content );
+			$content = str_replace( '<!--Mailster:html_comment_' . $i . '_' . $commentid . '-->', $comment, $content );
 		}
 
 		return $content;

@@ -84,6 +84,11 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.4 =
 
+* fixed: prevent style blocks moved to body tag
+* fixed: buttons no longer get removed after click on cancel
+* fixed: Outlook conditional tags were removed
+* improved: better error handling on export
+
 = Version 2.3.3 =
 
 * fixed: pages were not editable
