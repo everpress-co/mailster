@@ -2504,6 +2504,10 @@ class MailsterSubscribers {
 			$wpid = get_current_user_id();
 		}
 
+		if ( ! $wpid ) {
+			return false;
+		}
+
 		return $this->get_by_type( 'wp_id', $wpid, $custom_fields );
 	}
 

@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * fixed: buttons no longer get removed after click on cancel
 * fixed: Outlook conditional tags were removed
 * fixed: body attributes added via codeview are now preserved
+* fixed: small bug fixes
 * improved: better error handling on export
 * improved: more info for list confirmations
 * added: bulk option to confirm subscriptions
