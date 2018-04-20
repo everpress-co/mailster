@@ -268,7 +268,7 @@ if ( $is_new ) {
 					echo '<li>';
 					echo '<label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="mailster_lists[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . '</label>';
 					if ( in_array( $list->ID, $checked ) ) {
-						echo '<span class="confirmation-status">' . (isset( $confirmed[ $list->ID ] ) ? __( 'confirmed at', 'mailster' ) . ': ' . date( $timeformat, $confirmed[ $list->ID ] ) : __( 'not confirmed', 'mailster' )) . '</span>';
+						echo '<span class="confirmation-status">' . (isset( $confirmed[ $list->ID ] ) ? __( 'confirmed at', 'mailster' ) . ': ' . date( $timeformat, $confirmed[ $list->ID ] + $timeoffset ) : __( 'not confirmed', 'mailster' )) . '</span>';
 					}
 					echo '</li>';
 				}

@@ -99,7 +99,7 @@ a{
 #postimagediv.postbox .spinner{
 	display: inline-block;
 }
-textarea#content, textarea#excerpt {
+textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	width: 100%;
 	height: 570px;
 	font-family: "Courier New",Courier,monospace;
@@ -111,7 +111,7 @@ textarea#content, textarea#excerpt {
 	resize: none;
 }
 textarea#content, textarea#excerpt, textarea#modules, textarea#head {
-	_display: none;
+	display: none;
 }
 #plain-text-wrap{
 	display: none;
@@ -792,10 +792,10 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	font-size: 18px;
 	margin-top: 10px;
 }
-#editbar div.type.img .imagecroplabel : checked + span:before {
+#editbar div.type.img .imagecroplabel.not-cropped span:before {
 	content: '\f127';
 }
-#editbar div.type.img .imagecroplabel : checked + span {
+#editbar div.type.img .imagecroplabel.not-cropped span {
 	border-color: #ccc;
 }
 #editbar div.type.img .right {
@@ -2597,7 +2597,7 @@ a.mailster-btn.editbutton {
 	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 	display: block;
 	position: static;
-	padding: 0;
+	padding: 0 3px;
 	margin: 2px 10px 2px 10px;
 	box-sizing: border-box;
 	min-height: 24px;

@@ -87,8 +87,10 @@ Xaver Birsak – https://everpress.io
 * fixed: prevent style blocks moved to body tag
 * fixed: buttons no longer get removed after click on cancel
 * fixed: Outlook conditional tags were removed
+* fixed: body attributes added via codeview are now preserved
 * improved: better error handling on export
 * improved: more info for list confirmations
+* added: bulk option to confirm subscriptions
 * added: `{lists}` tag is now working in confirmation messages
 
 = Version 2.3.3 =

@@ -277,12 +277,16 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		$add = '';
 		$remove = '';
+		$confirm = '<option value="confirm_list_all">&nbsp;' . esc_html__( 'all', 'mailster' ) . '</option>';
+		$unconfirm = '<option value="unconfirm_list_all">&nbsp;' . esc_html__( 'all', 'mailster' ) . '</option>';
 		foreach ( $lists as $list ) {
 			$add .= '<option value="add_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';
 			$remove .= '<option value="remove_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';
+			$confirm .= '<option value="confirm_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';
+			$unconfirm .= '<option value="unconfirm_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';
 		}
 
-		echo str_replace( '</select>', '<optgroup label="' . __( 'add to list', 'mailster' ) . '">' . $add . '</optgroup><optgroup label="' . __( 'remove from list', 'mailster' ) . '">' . $remove . '</optgroup></select>', $actions );
+		echo str_replace( '</select>', '<optgroup label="' . __( 'add to list', 'mailster' ) . '">' . $add . '</optgroup><optgroup label="' . __( 'remove from list', 'mailster' ) . '">' . $remove . '</optgroup><optgroup label="' . __( 'confirm list', 'mailster' ) . '">' . $confirm . '</optgroup><optgroup label="' . __( 'unconfirm list', 'mailster' ) . '">' . $unconfirm . '</optgroup></select>', $actions );
 
 	}
 
