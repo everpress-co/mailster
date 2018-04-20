@@ -3849,7 +3849,7 @@ jQuery(document).ready(function ($) {
 			}
 		}
 		s = $.trim(s
-			.replace(/(webkit|wp\-editor|mceContentBody|position: relative;|cursor: auto;|modal-open| spellcheck="(true|false)")/g, '')
+			.replace(/(webkit |wp\-editor|mceContentBody|position: relative;|cursor: auto;|modal-open| spellcheck="(true|false)")/g, '')
 			.replace(/(class="(\s*)"|style="(\s*)")/g, ''));
 
 		return _head.val() + "\n<body" + (s ? ' ' + s : '') + ">\n" + content + "\n</body>\n</html>";
