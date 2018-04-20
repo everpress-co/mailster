@@ -857,7 +857,7 @@ class Mailster {
 
 		$allowed_tags = '<' . implode( '><', $allowed_tags ) . '>';
 
-		// save comments with conditional stuff
+		// save comments with conditional stuff to prevent getting deleted by strip tags
 		preg_match_all( '#<!--\s?\[\s?if(.*)?>(.*)?<!\[endif\]-->#sU', $content, $comments );
 
 		$commentid = uniqid();

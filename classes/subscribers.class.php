@@ -294,16 +294,29 @@ class MailsterSubscribers {
 
 			default:
 
-				if ( preg_match( '#^add_list_(\d+)#', $action, $match ) ) {
-					if ( $list = mailster( 'lists' )->get( $match[1] ) ) {
-
+				if ( preg_match( '#^add_list_(\w+)#', $action, $match ) ) {
+					$ids = 'all' == $match[1] ? null : (int) $match[1];
+					if ( $list = mailster( 'lists' )->get( $ids ) ) {
 						$this->assign_lists( $subscriber_ids, $list->ID, false, true );
 						$success_message = sprintf( __( '%1$d Subscribers added to list %2$s', 'mailster' ), count( $subscriber_ids ), '"<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '">' . $list->name . '</a>"' );
 					}
-				} elseif ( preg_match( '#^remove_list_(\d+)#', $action, $match ) ) {
-					if ( $list = mailster( 'lists' )->get( $match[1] ) ) {
+				} elseif ( preg_match( '#^remove_list_(\w+)#', $action, $match ) ) {
+					$ids = 'all' == $match[1] ? null : (int) $match[1];
+					if ( $list = mailster( 'lists' )->get( $ids ) ) {
 						$this->unassign_lists( $subscriber_ids, $list->ID, false, true );
 						$success_message = sprintf( __( '%1$d Subscribers removed from list %2$s', 'mailster' ), count( $subscriber_ids ), '"<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '">' . $list->name . '</a>"' );
+					}
+				} elseif ( preg_match( '#^confirm_list_(\w+)#', $action, $match ) ) {
+					$ids = 'all' == $match[1] ? null : (int) $match[1];
+					if ( $list = mailster( 'lists' )->get( $ids ) ) {
+						mailster( 'lists' )->confirm_subscribers( $list->ID, $subscriber_ids );
+						$success_message = sprintf( __( '%1$d Subscribers confirmed to %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list ) );
+					}
+				} elseif ( preg_match( '#^unconfirm_list_(\w+)#', $action, $match ) ) {
+					$ids = 'all' == $match[1] ? null : (int) $match[1];
+					if ( $list = mailster( 'lists' )->get( $ids ) ) {
+						mailster( 'lists' )->unconfirm_subscribers( $list->ID, $subscriber_ids );
+						$success_message = sprintf( __( '%1$d Subscribers unconfirmed from %2$s lists', 'mailster' ), count( $subscriber_ids ), count( $list ) );
 					}
 				}
 
@@ -1960,7 +1973,7 @@ class MailsterSubscribers {
 			return $cache[ $id ];
 		}
 
-		$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.list_id WHERE ab.subscriber_id = %d";
+		$sql = "SELECT a.*, ab.added AS confirmed FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON a.ID = ab.list_id WHERE ab.subscriber_id = %d";
 
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
@@ -2489,6 +2502,10 @@ class MailsterSubscribers {
 
 		if ( is_null( $wpid ) ) {
 			$wpid = get_current_user_id();
+		}
+
+		if ( ! $wpid ) {
+			return false;
 		}
 
 		return $this->get_by_type( 'wp_id', $wpid, $custom_fields );

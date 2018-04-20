@@ -222,11 +222,14 @@ class MailsterNotification {
 
 			case 'confirmation_replace':
 				if ( isset( $options['form'] ) ) {
-					$form = mailster( 'forms' )->get( $options['form'], false, false );
+					$form = mailster( 'forms' )->get( $options['form'], false, true );
 					$form_id = $form->ID;
 				} else {
 					$form_id = null;
 				}
+
+				$subscriber_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID );
+				$list_names = wp_list_pluck( $subscriber_lists, 'name' );
 
 				$list_ids = isset( $options['list_ids'] ) ? $options['list_ids'] : null;
 
@@ -235,6 +238,7 @@ class MailsterNotification {
 				return wp_parse_args( array(
 						'link' => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
 						'linkaddress' => $link,
+						'lists' => implode( ', ', $list_names ),
 				), $content );
 
 			case 'confirmation_attachments':

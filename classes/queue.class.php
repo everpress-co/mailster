@@ -454,7 +454,7 @@ class MailsterQueue {
 				$args = array(
 					'select' => array( 'subscribers.ID' ),
 					'sent__not_in' => $campaign->ID,
-					// 'queue__not_in' => $campaign->ID,
+					'queue__not_in' => $campaign->ID,
 					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
 					'conditions' => $conditions,
 					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),

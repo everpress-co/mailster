@@ -118,12 +118,17 @@ jQuery(document).ready(function ($) {
 
 				_trigger('resize');
 				_trigger('refresh');
-				//_trigger('save');
+				if (!_content.val()) {
+					_trigger('save');
+				}
 				$("#normal-sortables").on("sortupdate", function (event, ui) {
 					_trigger('resize');
 				});
 
 				_template_wrap.removeClass('load');
+
+				// add current content to undo list
+				_undo.push(_getFrameContent());
 
 			});
 
@@ -261,7 +266,7 @@ jQuery(document).ready(function ($) {
 				})
 				.on('change', 'input.userexactdate', function () {
 					var wrap = $(this).parent().parent().parent();
-					wrap.find('span').toggleClass('disabled');
+					wrap.find('span')._Class('disabled');
 				})
 				.on('change', '#autoresponder-post_type', function () {
 					var cats = $('#autoresponder-taxonomies');
@@ -1291,7 +1296,8 @@ jQuery(document).ready(function ($) {
 				.on('click', 'a.redo', redo)
 				.on('click', 'a.code', codeView)
 				.on('click', 'a.plaintext', plainText)
-				.on('click', 'a.dfw', dfw);
+				.on('click', 'a.dfw', dfw)
+				.on('click', 'a.file', changeTemplate);
 
 			_body
 				.on('click', 'button.save-template', save)
@@ -1368,9 +1374,9 @@ jQuery(document).ready(function ($) {
 				_currentundo--;
 				_setContent(_undo[_currentundo], 100, false);
 				_content.val(_undo[_currentundo]);
+				_trigger('refresh');
 				_obar.find('a.redo').removeClass('disabled');
 				if (!_currentundo) $(this).addClass('disabled');
-				_trigger('refresh');
 			}
 
 			return false;
@@ -1383,9 +1389,9 @@ jQuery(document).ready(function ($) {
 				_currentundo++;
 				_setContent(_undo[_currentundo], 100, false);
 				_content.val(_undo[_currentundo]);
+				_trigger('refresh');
 				_obar.find('a.undo').removeClass('disabled');
 				if (_currentundo >= length - 1) $(this).addClass('disabled');
-				_trigger('refresh');
 			}
 
 			return false;
@@ -1465,15 +1471,19 @@ jQuery(document).ready(function ($) {
 
 		function codeView() {
 			var isCodeview = !_iframe.is(':visible');
+			var structure;
 
 			if (!isCodeview) {
+
+				structure = _getHTMLStructure(_getFrameContent());
 
 				_obar.find('a.code').addClass('loading');
 				_trigger('disable');
 
 				_ajax('toggle_codeview', {
-					content: _getContent(),
-					head: _head.val()
+					bodyattributes: structure.parts[2],
+					content: structure.content,
+					head: structure.head
 				}, function (response) {
 					_obar.find('a.code').addClass('active').removeClass('loading');
 					_html.hide();
@@ -1488,13 +1498,14 @@ jQuery(document).ready(function ($) {
 				});
 
 			} else {
-				var structure = _getHTMLStructure(codemirror.getValue());
+				structure = _getHTMLStructure(codemirror.getValue());
 				codemirror.clearHistory();
 
 				_obar.find('a.code').addClass('loading');
 				_trigger('disable');
 
 				_ajax('toggle_codeview', {
+					bodyattributes: structure.parts[2],
 					content: structure.content,
 					head: structure.head
 				}, function (response) {
@@ -1559,6 +1570,12 @@ jQuery(document).ready(function ($) {
 				_obar.find('a.dfw').removeClass('active');
 			}
 			return false;
+		}
+
+		function changeTemplate(event) {
+
+			window.onbeforeunload = null;
+
 		}
 
 		init();
@@ -1689,7 +1706,12 @@ jQuery(document).ready(function ($) {
 				adjustImagePreview();
 			});
 			imagecrop.on('change', function () {
-				if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / currentimage.asp));
+				if (!imagecrop.is(':checked')) {
+					imageheight.val(Math.round(imagewidth.val() / currentimage.asp));
+					imagecrop.parent().removeClass('not-cropped');
+				} else {
+					imagecrop.parent().addClass('not-cropped');
+				}
 				adjustImagePreview();
 			});
 
@@ -2399,14 +2421,14 @@ jQuery(document).ready(function ($) {
 		function cancel() {
 			switch (current.type) {
 			case 'img':
-				break;
 			case 'btn':
-				if (!current.element.attr('href')) {
-					var wrap = current.element.closest('.textbutton');
-					if (wrap.length) wrap.remove();
-				}
-				current.element.remove();
 				break;
+				// if (!current.element.attr('href')) {
+				// 	var wrap = current.element.closest('.textbutton');
+				// 	if (wrap.length) wrap.remove();
+				// }
+				// current.element.remove();
+				// break;
 			default:
 				current.element.html(current.content);
 			}
@@ -2629,7 +2651,8 @@ jQuery(document).ready(function ($) {
 
 			if (type == 'img') {
 
-				imagecrop.prop('checked', current.crop);
+				imagecrop.prop('checked', current.crop).parent()[current.crop ? 'addClass' : 'removeClass']('not-cropped');
+
 				factor.val(1);
 				_getRealDimensions(el, function (w, h, f) {
 					var h = f >= 1.5;
@@ -3420,7 +3443,7 @@ jQuery(document).ready(function ($) {
 			var content = _getFrameContent();
 
 			var length = _undo.length,
-				lastundo = _undo[length];
+				lastundo = _undo[length - 1];
 
 			if (lastundo != content) {
 
@@ -3430,7 +3453,7 @@ jQuery(document).ready(function ($) {
 
 				_undo = _undo.splice(0, _currentundo + 1);
 
-				_undo.push(_head.val() + content);
+				_undo.push(content);
 				if (length >= mailsterL10n.undosteps) _undo.shift();
 				_currentundo = _undo.length - 1;
 
@@ -3817,14 +3840,16 @@ jQuery(document).ready(function ($) {
 		content = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 
 
-		bodyattributes = body.attributes;
+		bodyattributes = body.attributes || [];
 		attrcount = bodyattributes.length;
 
-		while (attrcount--) {
-			s = ' ' + bodyattributes[attrcount].name + '="' + $.trim(bodyattributes[attrcount].value) + '"' + s;
+		if (attrcount) {
+			while (attrcount--) {
+				s = ' ' + bodyattributes[attrcount].name + '="' + $.trim(bodyattributes[attrcount].value) + '"' + s;
+			}
 		}
 		s = $.trim(s
-			.replace(/(webkit|wp\-editor|mceContentBody|position: relative;|modal-open| spellcheck="(true|false)")/g, '')
+			.replace(/(webkit |wp\-editor|mceContentBody|position: relative;|cursor: auto;|modal-open| spellcheck="(true|false)")/g, '')
 			.replace(/(class="(\s*)"|style="(\s*)")/g, ''));
 
 		return _head.val() + "\n<body" + (s ? ' ' + s : '') + ">\n" + content + "\n</body>\n</html>";
@@ -3861,14 +3886,16 @@ jQuery(document).ready(function ($) {
 
 		doc.body.innerHTML = structure.content;
 
-		while (attrcount--) {
-			doc.body.setAttribute(bodyattributes[attrcount].name, bodyattributes[attrcount].value)
+		if (attrcount) {
+			while (attrcount--) {
+				doc.body.setAttribute(structure.bodyattributes[attrcount].name, structure.bodyattributes[attrcount].value)
+			}
 		}
 
 		if (delay !== false) {
 			clearTimeout(timeout);
 			timeout = setTimeout(function () {
-				modules.refresh && modules.refresh();
+				modules && modules.refresh && modules.refresh();
 			}, delay || 100);
 		}
 

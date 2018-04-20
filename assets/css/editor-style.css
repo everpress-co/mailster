@@ -2,7 +2,7 @@ html{
 	padding: 2px !important;
 	width: auto !important;
 	max-width: 100% !important;
-	background: url(../img/trans_bg.png) repeat center center #fff !important;
+	background: url(../img/trans_bg.png) repeat left top #fff !important;
 }
 html.mailster-loading{
 	 -webkit-filter: blur(3px);
