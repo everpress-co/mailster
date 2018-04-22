@@ -231,7 +231,7 @@ class MailsterNotification {
 				$subscriber_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID );
 				$list_names = wp_list_pluck( $subscriber_lists, 'name' );
 
-				$list_ids = isset( $options['list_ids'] ) ? $options['list_ids'] : null;
+				$list_ids = isset( $options['list_ids'] ) ? array_filter( $options['list_ids'] ) : null;
 
 				$link = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id, $list_ids );
 

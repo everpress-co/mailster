@@ -1929,7 +1929,7 @@ class MailsterCampaigns {
 	 * @param unknown $key (optional)
 	 * @return unknown
 	 */
-	private function meta_defaults( $key = null ) {
+	public function meta_defaults( $key = null ) {
 		$defaults = array(
 			'parent_id' => null,
 			'timestamp' => null,
