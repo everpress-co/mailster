@@ -947,11 +947,11 @@ class Mailster {
 		$page = add_submenu_page( true, __( 'Welcome to Mailster', 'mailster' ), __( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
 
-		$page = add_submenu_page( true, __( 'Mailster Tests', 'mailster' ), __( 'Tests', 'mailster' ), 'read', 'mailster_tests', array( &$this, 'tests_page' ) );
-		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
-
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Add Ons', 'mailster' ), __( 'Add Ons', 'mailster' ), 'mailster_manage_addons', 'mailster_addons', array( &$this, 'addon_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'addon_scripts_styles' ) );
+
+		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, __( 'Mailster Tests', 'mailster' ), __( 'Self Tests', 'mailster' ), 'read', 'mailster_tests', array( &$this, 'tests_page' ) );
+		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
 
 	}
 

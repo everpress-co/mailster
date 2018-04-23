@@ -86,6 +86,8 @@ Xaver Birsak – https://everpress.io
 
 * fixed: list assignments for some third party add ons
 * fixed: small bug fixes
+* added: more tests
+* change: display Self Test menu entry if `WP_DEBUG` is enabled
 
 = Version 2.3.4 =
 
