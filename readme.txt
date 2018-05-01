@@ -87,6 +87,9 @@ Xaver Birsak – https://everpress.io
 * fixed: list assignments for some third party add ons
 * fixed: small bug fixes
 * fixed: changes were not saved if only modules were rearranged
+* fixed: ajax requests not working in some browser environments
+* fixed: improved display of subscribers overview page with many custom fields
+* fixes: export of subscribers not working on some servers
 * added: more tests
 * change: display Self Test menu entry if `WP_DEBUG` is enabled
 

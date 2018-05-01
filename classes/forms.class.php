@@ -344,7 +344,7 @@ class MailsterForms {
 
 			}
 
-			if ( isset( $id ) && ! isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
+			if ( isset( $id ) && ! (isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] )) ) {
 				( isset( $_GET['ID'] ) )
 					? wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
 					: wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );

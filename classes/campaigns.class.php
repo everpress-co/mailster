@@ -375,7 +375,7 @@ class MailsterCampaigns {
 					$this->deactivate( $id );
 			}
 
-			if ( isset( $id ) && ! isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
+			if ( isset( $id ) && ! ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) {
 				$status = ( isset( $_GET['post_status'] ) ) ? '&post_status=' . $_GET['post_status'] : '';
 				( isset( $_GET['edit'] ) )
 					? wp_redirect( 'post.php?post=' . $id . '&action=edit' )

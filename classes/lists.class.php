@@ -562,7 +562,7 @@ class MailsterLists {
 		}
 
 		if ( is_null( $added ) ) {
-			$added = 0;
+			$added = mailster_option( 'list_based_opt_in' ) ? 0 : time();
 		} elseif ( true === $added ) {
 			$added = time();
 		}
@@ -599,6 +599,11 @@ class MailsterLists {
 			$success = $success && ( false !== $wpdb->query( $sql ) );
 
 		}
+
+		// set the status for the list from the global status from the user
+		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers AS l LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = l.subscriber_id SET l.added = s.confirm WHERE l.subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ') AND l.added = 0 AND s.status != 0';
+
+		$success = $success && ( false !== $wpdb->query( $sql ) );
 
 		return $success;
 

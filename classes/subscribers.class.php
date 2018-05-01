@@ -564,6 +564,8 @@ class MailsterSubscribers {
 			return;
 		}
 
+		// delete cache
+		mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
 		$subscriber = $this->get( $subscriber_id, true );
 
 		if ( ! $subscriber->wp_id ) {
@@ -1273,8 +1275,6 @@ class MailsterSubscribers {
 	 * @return unknown
 	 */
 	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {
-
-		global $wpdb;
 
 		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
 		if ( ! is_array( $lists ) ) {
