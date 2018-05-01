@@ -47,6 +47,9 @@
 .wp-list-table tr:hover .userrating .mailster-icon:before{
 	color: #e6b800;
 }
+table.fixed.wp-list-table{
+	table-layout: auto;
+}
 .wp-list-table .table-data{
 	max-height: 100px;
 	overflow: hidden;

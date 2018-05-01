@@ -855,7 +855,7 @@ class MailsterSubscriberQuery {
 				$result = $wpdb->get_var( $sql );
 			} else {
 				$result = $wpdb->get_results( $sql );
-				// $result = $this->cast( $wpdb->get_results( $sql ) );
+				// $result = $this->cast( $result ) );
 			}
 			$this->last_query = $wpdb->last_query;
 			$this->last_error = $wpdb->last_error;

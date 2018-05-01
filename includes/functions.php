@@ -565,8 +565,10 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
 			'email' => $email,
 	), $userdata );
 
+	$added = null;
 	if ( ! is_null( $double_opt_in ) ) {
 		$entry['status'] = $double_opt_in ? 0 : 1;
+		$added = $double_opt_in ? 0 : 1;
 	}
 
 	$subscriber_id = mailster( 'subscribers' )->add( $entry, $overwrite );
@@ -590,8 +592,7 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
 			}
 		}
 	}
-
-	mailster( 'subscribers' )->assign_lists( $subscriber_id, $new_lists, $mergelists );
+	mailster( 'subscribers' )->assign_lists( $subscriber_id, $new_lists, $mergelists, $added );
 
 	return true;
 

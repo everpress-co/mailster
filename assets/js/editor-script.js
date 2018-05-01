@@ -266,6 +266,7 @@ jQuery(document).ready(function ($) {
 				//_trigger('selectModule', ui.item);
 				setTimeout(function () {
 					_trigger('refresh');
+					_trigger('save');
 				}, 200);
 			},
 			start: function (event, ui) {

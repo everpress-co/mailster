@@ -316,6 +316,61 @@ class MailsterTests {
 		}
 
 	}
+	private function test_content_directory() {
+		$content_dir = MAILSTER_UPLOAD_DIR;
+		if ( ! is_dir( dirname( $content_dir ) ) ) {
+			wp_mkdir_p( dirname( $content_dir ) );
+		}
+		if ( ! is_dir( dirname( $content_dir ) ) || ! wp_is_writable( dirname( $content_dir ) ) ) {
+			$this->warning( sprintf( 'Your content folder in %s is not writable.', '"' . dirname( $content_dir ) . '"' ) );
+		} else {
+			$this->success( sprintf( 'Your content folder in %s is writable.', '"' . dirname( $content_dir ) . '"' ) );
+		}
+
+		if ( ! is_dir( $content_dir ) ) {
+			wp_mkdir_p( $content_dir );
+		}
+		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
+			$this->warning( sprintf( 'Your Mailster content folder in %s is not writable.', '"' . $content_dir . '"' ) );
+		} else {
+			$this->success( sprintf( 'Your Mailster content folder in %s is writable.', '"' . $content_dir . '"' ) );
+		}
+
+	}
+	private function test_default_template() {
+
+		$default = 'mymail';
+		$template = mailster_option( 'default_template' );
+		$template_dir = trailingslashit( MAILSTER_UPLOAD_DIR ) . 'templates/' . $template;
+
+		if ( ! is_dir( dirname( $template_dir ) ) ) {
+			wp_mkdir_p( dirname( $template_dir ) );
+		}
+		if ( ! is_dir( dirname( $template_dir ) ) || ! wp_is_writable( dirname( $template_dir ) ) ) {
+			$this->warning( sprintf( 'Your Template folder %s doesn\'t exists or is not writeable.', '"' . dirname( $template_dir ) . '"' ) );
+
+		} else {
+			$this->success( sprintf( 'Your Template folder %s exists.', '"' . dirname( $template_dir ) . '"' ) );
+		}
+		if ( ! is_dir( $template_dir ) || ! wp_is_writable( $template_dir ) ) {
+			$default_template_dir = trailingslashit( MAILSTER_UPLOAD_DIR ) . 'templates/' . $default;
+			if ( ! is_dir( $default_template_dir ) || ! wp_is_writable( $default_template_dir ) ) {
+				$result = mailster( 'templates' )->renew_default_template( $default );
+				if ( is_wp_error( $result ) ) {
+					$this->warning( sprintf( 'Your Template folder %s doesn\'t exists or is not writeable.', '"' . $template_dir . '"' ) );
+					$this->error( 'Not able to download default template.' );
+				} else {
+					$this->notice( sprintf( 'Default template loaded to %s.', '"' . $default_template_dir . '"' ) );
+					if ( mailster_update_option( 'default_template', $default ) ) {
+						$this->notice( sprintf( 'Default template changed to %s.', '"' . $default . '"' ) );
+					}
+				}
+			}
+		} else {
+			$this->success( sprintf( 'Your Template folder %s exists.', '"' . $template_dir . '"' ) );
+		}
+
+	}
 	private function test_deprecated_hooks() {
 
 		global $wp_filter;
@@ -382,15 +437,6 @@ class MailsterTests {
 			}
 		}
 
-	}
-	private function test_content_directory() {
-		$content_dir = dirname( MAILSTER_UPLOAD_DIR );
-		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
-			$this->warning( sprintf( 'Your content folder in %s is not writable.', '"' . $content_dir . '"' ) );
-		} else {
-			$this->success( sprintf( 'Your content folder in %s is writable.', '"' . $content_dir . '"' ) );
-
-		}
 	}
 	private function test_memory_limit() {
 		if ( max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT ) < 128 ) {

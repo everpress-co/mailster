@@ -310,7 +310,13 @@ class MailsterFrontpage {
 
 		$subscriber = mailster( 'subscribers' )->get_by_hash( $hash, false );
 		$campaign = mailster( 'campaigns' )->get( $campaign_id, false );
-		$meta = mailster( 'campaigns' )->meta( $campaign_id );
+		if ( ! $campaign ) {
+			$campaign_id = null;
+			$meta = mailster( 'campaigns' )->meta_defaults();
+		} else {
+			$campaign_id = $campaign->ID;
+			$meta = mailster( 'campaigns' )->meta( $campaign_id );
+		}
 
 		if ( ! $subscriber ) {
 
@@ -328,7 +334,7 @@ class MailsterFrontpage {
 
 			$this->setcookie( $subscriber->hash );
 
-			$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID );
+			$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id ), $campaign_id );
 
 			$redirect_to = $target;
 
@@ -344,19 +350,19 @@ class MailsterFrontpage {
 			endif;
 
 			if ( $meta['track_clicks'] ) {
-				do_action( 'mailster_click', $subscriber->ID, $campaign->ID, $target, $index );
-				do_action( 'mymail_click', $subscriber->ID, $campaign->ID, $target, $index );
+				do_action( 'mailster_click', $subscriber->ID, $campaign_id, $target, $index );
+				do_action( 'mymail_click', $subscriber->ID, $campaign_id, $target, $index );
 			}
 		} else {
 
 			if ( $meta['track_opens'] ) {
-				do_action( 'mailster_open', $subscriber->ID, $campaign->ID );
-				do_action( 'mymail_open', $subscriber->ID, $campaign->ID );
+				do_action( 'mailster_open', $subscriber->ID, $campaign_id );
+				do_action( 'mymail_open', $subscriber->ID, $campaign_id );
 			}
 		}
 
 		if ( ! $redirect_to ) {
-			$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign->ID ), $campaign->ID ) : false;
+			$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id ), $campaign_id ) : false;
 		}
 
 		// no target => tracking image
@@ -478,7 +484,8 @@ class MailsterFrontpage {
 				if ( isset( $extra[0] ) ) {
 					$list_ids = $extra;
 				} else {
-					$list_ids = $form->lists;
+					// confirm all lists
+					$list_ids = null;
 				}
 
 				$target = ! empty( $form->confirmredirect ) ? $form->confirmredirect : $this->get_link( 'subscribe', $subscriber->hash, true );

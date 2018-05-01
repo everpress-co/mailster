@@ -564,6 +564,8 @@ class MailsterSubscribers {
 			return;
 		}
 
+		// delete cache
+		mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
 		$subscriber = $this->get( $subscriber_id, true );
 
 		if ( ! $subscriber->wp_id ) {
@@ -909,12 +911,18 @@ class MailsterSubscribers {
 		$data = array();
 		$meta = array();
 		$customfields = array();
+		$lists = null;
 
 		$entry = $this->verify( $entry );
 		if ( is_wp_error( $entry ) ) {
 			return $entry;
 		} elseif ( $entry === false ) {
 			return new WP_Error( 'not_verified', __( 'Subscriber failed verification', 'mailster' ) );
+		}
+
+		if ( isset( $entry['_lists'] ) ) {
+			$lists = $entry['_lists'];
+			unset( $entry['_lists'] );
 		}
 
 		foreach ( $entry as $key => $value ) {
@@ -976,6 +984,9 @@ class MailsterSubscribers {
 				if ( $form && ! $form->userschoice && ! empty( $form->lists ) ) {
 					$this->assign_lists( $subscriber_id, $form->lists, false, $data['status'] == 0 ? false : true );
 				}
+			}
+			if ( $lists ) {
+				$this->assign_lists( $subscriber_id, $lists, false, $data['status'] == 0 ? false : true );
 			}
 
 			$this->add_custom_value( $subscriber_id, $customfields, null, ! $merge );
@@ -1264,8 +1275,6 @@ class MailsterSubscribers {
 	 * @return unknown
 	 */
 	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {
-
-		global $wpdb;
 
 		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
 		if ( ! is_array( $lists ) ) {
@@ -2342,10 +2351,10 @@ class MailsterSubscribers {
 			$timestamp = $now ? time() : max( time(), $subscriber->signup ) + ( $subscriber->resend_time * 3600 * $subscriber->try );
 
 			if ( mailster( 'notification' )->add( $timestamp, array(
-					'subscriber_id' => $subscriber->ID,
-					'template' => 'confirmation',
-					'form' => $subscriber->form_id,
-					'list_ids' => $subscriber->list_ids,
+				'subscriber_id' => $subscriber->ID,
+				'template' => 'confirmation',
+				'form' => $subscriber->form_id,
+				'list_ids' => $subscriber->list_ids,
 			) ) ) {
 				$this->update_meta( $subscriber->ID, 0, 'confirmation', ++$subscriber->try );
 				$count++;
@@ -2871,13 +2880,16 @@ class MailsterSubscribers {
 				return;
 			}
 
-			$referer = null;
+			$referer = 'other';
 
 		}
+
+		$lists = $is_register ? mailster_option( 'register_signup_lists', array() ) : mailster_option( 'register_other_lists', array() );
 
 		$subscriber_id = $this->add_from_wp_user( $user_id, array(
 			'status' => $status,
 			'referer' => apply_filters( 'mymail_user_register_referer', apply_filters( 'mailster_user_register_referer', $referer ) ),
+			'_lists' => $lists,
 		) );
 
 		if ( is_wp_error( $subscriber_id ) ) {
@@ -2885,12 +2897,6 @@ class MailsterSubscribers {
 			return false;
 
 		} else {
-
-			$lists = $is_register ? mailster_option( 'register_signup_lists', array() ) : mailster_option( 'register_other_lists', array() );
-
-			if ( ! empty( $lists ) ) {
-				$this->assign_lists( $subscriber_id, $lists, false, $status ? true : false );
-			}
 
 			return true;
 		}
@@ -2957,9 +2963,11 @@ class MailsterSubscribers {
 					$lists = mailster_option( 'register_comment_form_lists', array() );
 					$lists = apply_filters( 'mymail_comment_post_lists', apply_filters( 'mailster_comment_post_lists', $lists, $comment, $comment_approved ), $comment, $comment_approved );
 
+					$status = mailster_option( 'register_comment_form_confirmation' ) ? 0 : 1;
+
 					$userdata = array(
 						'email' => $comment->comment_author_email,
-						'status' => mailster_option( 'register_comment_form_confirmation' ) ? 0 : 1,
+						'status' => $status,
 						'firstname' => $comment->comment_author,
 						'referer' => 'wpcomment_' . $comment->comment_ID,
 					);
@@ -2968,7 +2976,7 @@ class MailsterSubscribers {
 					$subscriber_id = $this->add( $userdata );
 
 					if ( $subscriber_id && ! is_wp_error( $subscriber_id ) && ! empty( $lists ) ) {
-						$this->assign_lists( $subscriber_id, $lists );
+						$this->assign_lists( $subscriber_id, $lists, false, $status );
 					}
 				}
 			} elseif ( ! in_array( $comment_approved . '', array( '1', 'approve' ) ) ) {
@@ -3001,9 +3009,11 @@ class MailsterSubscribers {
 				$lists = mailster_option( 'register_comment_form_lists', array() );
 				$lists = apply_filters( 'mymail_comment_post_lists', apply_filters( 'mailster_comment_post_lists', $lists, $comment, $comment_approved ), $comment, $comment_approved );
 
+				$status = mailster_option( 'register_comment_form_confirmation' ) ? 0 : 1;
+
 				$userdata = array(
 					'email' => $comment->comment_author_email,
-					'status' => mailster_option( 'register_comment_form_confirmation' ) ? 0 : 1,
+					'status' => $status,
 					'firstname' => $comment->comment_author,
 					'referer' => 'wpcomment_' . $comment->comment_ID,
 					'signup' => strtotime( $comment->comment_date_gmt ),
@@ -3013,7 +3023,7 @@ class MailsterSubscribers {
 				$subscriber_id = $this->add( $userdata );
 
 				if ( $subscriber_id && ! is_wp_error( $subscriber_id ) && ! empty( $lists ) ) {
-					$this->assign_lists( $subscriber_id, $lists );
+					$this->assign_lists( $subscriber_id, $lists, false, $status );
 				}
 
 				delete_comment_meta( $comment_id, 'newsletter_signup' );

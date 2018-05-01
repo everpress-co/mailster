@@ -1112,7 +1112,7 @@ class MailsterForm {
 		}
 
 		// ajax request
-		if ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) :
+		if ( (isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] )) ) :
 
 			@header( 'Content-type: application/json' );
 			echo json_encode( $return );
@@ -1168,7 +1168,7 @@ class MailsterForm {
 		}
 
 		// redirect if no ajax request
-		if ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
+		if ( (isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] )) ) {
 
 			$return['html'] = $return['success']
 				? mailster_text( 'unsubscribe' )

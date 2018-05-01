@@ -622,7 +622,7 @@ class MailsterQueue {
 			if ( $schedule_new ) {
 				$nextdate = mailster( 'helper' )->get_next_date_in_future( $starttime, $autoresponder_meta['interval'], $autoresponder_meta['time_frame'], $autoresponder_meta['weekdays'] );
 
-				if ( isset( $autoresponder_meta['since'] ) ) {
+				if ( isset( $autoresponder_meta['since'] ) && $autoresponder_meta['since'] ) {
 					$autoresponder_meta['since'] = $now;
 				}
 
