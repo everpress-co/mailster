@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.6 =
 
+* fixed: odd offset issue on hover in editor
+
 = Version 2.3.5 =
 
 * fixed: list assignments for some third party add ons

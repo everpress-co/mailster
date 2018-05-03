@@ -3433,7 +3433,7 @@ jQuery(document).ready(function ($) {
 			if (!_iframe[0].contentWindow.document.body) return;
 			var height = _iframe.contents().height() || _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
 
-			_iframe.attr("height", Math.max(500, height + 4 + (extra || 0)));
+			_iframe.attr("height", Math.max(500, height + (extra || 0)));
 		}, delay ? delay : 500);
 	})
 
