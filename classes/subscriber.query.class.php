@@ -442,6 +442,21 @@ class MailsterSubscriberQuery {
 
 						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS `meta_$field` ON `meta_$field`.subscriber_id = subscribers.ID AND `meta_$field`.meta_key = '$field'";
 
+						if ( 'geo' == $field ) {
+							if ( ! is_array( $value ) ) {
+								$value = array( $value );
+							}
+							$continents = mailster( 'geo' )->get_continents( true );
+
+							foreach ( $continents as $code => $continent ) {
+								if ( ($pos = array_search( $code, $value )) !== false ) {
+									unset( $value[ $pos ] );
+									$value = array_merge( $value, mailster( 'geo' )->get_continent_members( $code ) );
+								}
+							}
+
+							$value = implode( '|', array_unique( $value ) );
+						}
 					}
 
 					if ( ! in_array( $field, $this->action_fields ) ) {
@@ -894,6 +909,15 @@ class MailsterSubscriberQuery {
 
 	private function get_condition( $field, $operator, $value ) {
 
+		if ( is_array( $value ) ) {
+			$x = array();
+			foreach ( $value as $entry ) {
+				$x[] = $this->get_condition( $field, $operator, $entry );
+			}
+
+			return '(' . implode( ' OR ', array_unique( $x ) ) . ')';
+		}
+
 		// sanitation
 		$field = esc_sql( $field );
 		$value = addslashes( stripslashes( $value ) );
@@ -921,11 +945,11 @@ class MailsterSubscriberQuery {
 				$f = "CAST(SUBSTRING_INDEX(`meta_coords`.meta_value, ',', -1) AS DECIMAL(10,4))";
 				break;
 			case 'geo':
-				if ( '=' == $operator ) {
-					return " (`meta_$field`.meta_value LIKE '$value|%' OR `meta_$field`.meta_value LIKE '%|$value') ";
+				if ( 'is' == $operator ) {
+					return "`meta_$field`.meta_value REGEXP '($value)\|%'";
 				}
-				if ( '!=' == $operator ) {
-					return " (`meta_$field`.meta_value NOT LIKE '$value|%' AND `meta_$field`.meta_value NOT LIKE '%|$value') ";
+				if ( 'is_not' == $operator ) {
+					return "`meta_$field`.meta_value NOT REGEXP '($value)\|%'";
 				}
 		}
 

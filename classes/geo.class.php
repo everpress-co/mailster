@@ -51,6 +51,10 @@ class MailsterGeo {
 	 */
 	public function code2Country( $code ) {
 
+		if ( 0 === strpos( $code, '_' ) ) {
+			$continents = $this->get_continents( true );
+			return isset( $continents[ $code ] ) ? $continents[ $code ] : 'unknown';
+		}
 		require_once MAILSTER_DIR . 'classes/libs/Ip2Country.php';
 		$i = new Ip2Country();
 		return $i->country( $code );
@@ -93,13 +97,28 @@ class MailsterGeo {
 	/**
 	 *
 	 *
+	 * @param unknown $sorted
+	 * @param unknown $european_union
 	 * @return unknown
 	 */
-	public function get_countries() {
+	public function get_countries( $sorted = false, $european_union = false ) {
 
 		require_once MAILSTER_DIR . 'classes/libs/Ip2Country.php';
 		$ip2Country = new Ip2Country();
-		return $ip2Country->get_countries();
+		$countries = $ip2Country->get_countries();
+		if ( ! $sorted ) {
+			return $countries;
+		}
+		asort( $countries );
+		$continents = $this->get_continents( $european_union );
+
+		$sorted = array();
+
+		foreach ( $continents as $continent_code => $name ) {
+			$sorted[ $name ] = array_intersect_key( $countries, array_flip( $this->get_continent_members( $continent_code ) ) );
+		}
+
+		return $sorted;
 
 	}
 
@@ -125,6 +144,64 @@ class MailsterGeo {
 		} else {
 			return 0;
 		}
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $european_union
+	 * @return unknown
+	 */
+	public function get_continents( $european_union = false ) {
+
+		$continents = array(
+			'_EU' => __( 'Europe', 'mailster' ),
+			'_AS' => __( 'Asia/Pacific Region', 'mailster' ),
+			'_NA' => __( 'North America', 'mailster' ),
+			'_SA' => __( 'South America', 'mailster' ),
+			'_AF' => __( 'Africa', 'mailster' ),
+			'_OC' => __( 'Oceania/Australia', 'mailster' ),
+		);
+
+		if ( $european_union ) {
+			$continents['_EN'] = __( 'European Union', 'mailster' );
+		}
+
+		asort( $continents );
+
+		return $continents;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $continent
+	 * @return unknown
+	 */
+	public function get_continent_members( $continent ) {
+
+		switch ( $continent ) {
+			case '_EN':
+			return array( 'AT','BE','BG','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB' );
+			case '_EU':
+				return array( 'AL','AD','AT','BY','BE','BA','BG','HR','CY','CZ','DK','EE','FO','FI','FR','DE','GI','GR','HU','IS','IE','IM','IT','RS','LV','LI','LT','LU','MK','MT','MD','MC','ME','NL','NO','PL','PT','RO','RU','SM','RS','SK','SI','ES','SE','CH','UA','GB','VA','RS' );
+			case '_AS':
+			return array( 'AF','AM','AZ','BH','BD','BT','BN','KH','CN','CX','CC','IO','GE','HK','IN','ID','IR','IQ','IL','JP','JO','KZ','KW','KG','LA','LB','MO','MY','MV','MN','MM','NP','KP','OM','PK','PS','PH','QA','SA','SG','KR','LK','SY','TW','TJ','TH','TR','TM','AE','UZ','VN','YE' );
+			case '_NA':
+			return array( 'AI','AG','AW','BS','BB','BZ','BM','BQ','VG','CA','KY','CR','CU','CW','DM','DO','SV','GL','GD','GP','GT','HT','HN','JM','MQ','MX','PM','MS','CW','KN','NI','PA','PR','BQ','BQ','SX','KN','LC','PM','VC','TT','TC','US','VI' );
+			case '_SA':
+			return array( 'AR','BO','BR','CL','CO','EC','FK','GF','GY','GY','PY','PE','SR','UY','VE' );
+			case '_AF':
+			return array( 'DZ','AO','SH','BJ','BW','BF','BI','CM','CV','CF','TD','KM','CG','CD','DJ','EG','GQ','ER','SZ','ET','GA','GM','GH','GN','GW','CI','KE','LS','LR','LY','MG','MW','ML','MR','MU','YT','MA','MZ','NA','NE','NG','ST','RE','RW','ST','SN','SC','SL','SO','ZA','SS','SH','SD','SZ','TZ','TG','TN','UG','CD','ZM','TZ','ZW' );
+			case '_OC':
+			return array( 'AS','AU','NZ','CK','TL','FM','FJ','PF','GU','KI','MP','MH','UM','NR','NC','NZ','NU','NF','PW','PG','MP','WS','SB','TK','TO','TV','VU','UM','WF' );
+		}
+
+		return array();
 
 	}
 

@@ -84,6 +84,7 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.6 =
 
+* new: Location based Segmentations
 * fixed: odd offset issue on hover in editor
 
 = Version 2.3.5 =

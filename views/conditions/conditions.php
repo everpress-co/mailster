@@ -14,6 +14,8 @@ global $post, $wp_post_statuses;
 	$all_campaigns_stati = wp_list_pluck( $all_campaigns, 'post_status' );
 	asort( $all_campaigns_stati );
 	$statuses = mailster( 'subscribers' )->get_status( null, true );
+	$countries = mailster( 'geo' )->get_countries( true );
+	$continents = mailster( 'geo' )->get_continents( true );
 
 ?>
 <div class="mailster-condition-container"></div>
@@ -101,7 +103,7 @@ foreach ( $conditions as $i => $condition_group ) : ?><div class="mailster-condi
 					endforeach; ?>
 					</select>
 				</div>
-				<div class="mailster-conditions-operator-field" data-fields=",wp_capabilities,status,form,clienttype,">
+				<div class="mailster-conditions-operator-field" data-fields=",wp_capabilities,status,form,clienttype,geo,">
 					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
 					<?php
 					foreach ( $this->bool_operators as $key => $name ) :
@@ -211,7 +213,8 @@ foreach ( $conditions as $i => $condition_group ) : ?><div class="mailster-condi
 								} ?>
 								</optgroup>
 							</select>
-						<button class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></button>
+						<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+						<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
 						</div>
 					<?php endforeach; ?>
 				<?php else : ?>
@@ -231,7 +234,8 @@ foreach ( $conditions as $i => $condition_group ) : ?><div class="mailster-condi
 								<option value="<?php echo $list->ID ?>" <?php selected( $v, $list->ID );?>><?php echo ($list->name ? esc_html( $list->name ) : '[' . esc_html__( 'no title', 'mailster' ) . ']') ?></option>
 								<?php } ?>
 							</select>
-						<button class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></button>
+						<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+						<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
 						</div>
 					<?php endforeach; ?>
 				<?php else : ?>
@@ -243,7 +247,33 @@ foreach ( $conditions as $i => $condition_group ) : ?><div class="mailster-condi
 					<div class="mailster-conditions-value-field-multiselect">
 					<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
 						<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $v ); ?>" name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value][]" placeholder="https://example.com">
-					<button class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></button>
+					<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+					<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
+					</div>
+				<?php endforeach; ?>
+				</div>
+				<div class="mailster-conditions-value-field" data-fields=",geo,">
+				<?php foreach ( $value_arr as $k => $v ) : ?>
+					<div class="mailster-conditions-value-field-multiselect">
+					<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
+					<select name="mailster_data[conditions][<?php echo $i ?>][<?php echo $j; ?>][value][]" class="condition-value" disabled>
+						<option value="0">--</option>
+						<optgroup label="<?php esc_attr_e( 'Continents', 'mailster' );?>">
+						<?php foreach ( $continents as $code => $continent ) : ?>
+							<option value="<?php echo $code ?>" <?php selected( $v, $code );?>><?php echo $continent ?></option>
+						<?php endforeach; ?>
+						</optgroup>
+						<?php
+						foreach ( $countries as $continent => $sub_countries ) : ?>
+						<optgroup label="<?php echo $continent ;?>">
+							<?php foreach ( $sub_countries as $code => $country ) : ?>
+							<option value="<?php echo $code ?>" <?php selected( $v, $code );?>><?php echo $country ?></option>
+							<?php endforeach; ?>
+						</optgroup>
+					<?php endforeach; ?>
+					</select>
+					<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+					<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
 					</div>
 				<?php endforeach; ?>
 				</div>

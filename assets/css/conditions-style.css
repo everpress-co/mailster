@@ -185,11 +185,24 @@ _.mailster-conditions .mailster-condition:after{
 	display: inline-block;
 }
 .mailster-conditions .mailster-conditions-value-field-multiselect .condition-value{
-	width: 200px;
+	width: 180px;
 }
-.mailster-conditions .mailster-conditions-value-field-multiselect button, .mailster-conditions .mailster-conditions-value-field-multiselect:first-child span{
+.mailster-conditions .mailster-conditions-value-field-multiselect a.mailster-condition-add-multiselect, .mailster-conditions .mailster-conditions-value-field-multiselect:first-child span{
 	visibility: hidden;
 }
-.mailster-conditions .mailster-conditions-value-field-multiselect:last-child button{
+.mailster-conditions .mailster-conditions-value-field-multiselect a{
+	cursor: pointer;
+}
+.mailster-conditions .mailster-conditions-value-field-multiselect:hover a.mailster-condition-remove-multiselect{
 	visibility: visible;
+}
+.mailster-conditions .mailster-conditions-value-field-multiselect a.mailster-condition-remove-multiselect{
+	visibility: hidden;
+}
+
+.mailster-conditions .mailster-conditions-value-field-multiselect:last-child a.mailster-condition-add-multiselect{
+	visibility: visible;
+}
+.mailster-conditions .mailster-conditions-value-field-multiselect:first-child a.mailster-condition-remove-multiselect{
+	visibility: hidden !important;
 }

@@ -87,6 +87,12 @@ jQuery(document).ready(function ($) {
 		})
 		.on('click', '.mailster-condition-add-multiselect', function () {
 			$(this).parent().clone().insertAfter($(this).parent()).find('.condition-value').select().focus();
+			return false;
+		})
+		.on('click', '.mailster-condition-remove-multiselect', function () {
+			$(this).parent().remove();
+			_trigger('updateCount');
+			return false;
 		})
 		.on('change', '.mailster-conditions-value-field-multiselect > .condition-value', function () {
 			if (0 == $(this).val() && $(this).parent().parent().find('.condition-value').size() > 1) $(this).parent().remove();
@@ -103,55 +109,6 @@ jQuery(document).ready(function ($) {
 
 	_trigger('updateCount');
 
-	// function serialize() {
-	// 	var str = 'conditions=',
-	// 		conditions = [],
-	// 		groups = $('.mailster-conditions > .mailster-condition-group'),
-	// 		i = 0;
-
-	// 	$.each(groups, function () {
-	// 		var c = $(this).find('.mailster-condition');
-	// 		$.each(c, function () {
-	// 			var _this = $(this),
-	// 				value = null,
-	// 				field = _this.find('.condition-field').val(),
-	// 				operator = _this.find('.mailster-conditions-operator-field.active').find('.condition-operator').val();
-
-	// 			if (!operator || !field) return;
-
-	// 			value = _this.find('.mailster-conditions-value-field.active').find('.condition-value').map(function () {
-	// 				return $(this).val();
-	// 			}).toArray();
-	// 			if (value.length == 1) {
-	// 				value = value[0];
-	// 			}
-	// 			if (!conditions[i]) {
-	// 				conditions[i] = [];
-	// 			}
-	// 			conditions[i].push([
-	// 				field,
-	// 				operator,
-	// 				value,
-	// 			]);
-	// 		});
-	// 		i++;
-	// 	});
-
-	// 	// $('.mailster-condition').each(function () {
-	// 	// 	str += $(this).find('.condition-field').val();
-	// 	// 	str += $(this).find('.condition-operator').val();
-	// 	// 	str += $(this).find('.condition-value').val();
-	// 	// 	str += '|';
-	// 	// })
-
-	// 	console.log(conditions,
-	// 		JSON.stringify(conditions),
-	// 		jQuery.param({
-	// 			'conditions': conditions
-	// 		}),
-	// 	);
-
-	// }
 
 	function datepicker() {
 		$('.mailster-conditions').find('.datepicker').datepicker({
@@ -186,15 +143,6 @@ jQuery(document).ready(function ($) {
 		var triggerevent = args.shift();
 		window.Mailster.trigger(triggerevent, args);
 	}
-
-	// window.tb_position = function () {
-	// 	if (!window.TB_WIDTH || !window.TB_HEIGHT) return;
-	// 	jQuery("#TB_window").css({
-	// 		marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px',
-	// 		marginLeft: '-' + parseInt((TB_WIDTH / 2), 10) + 'px',
-	// 		width: TB_WIDTH + 'px'
-	// 	});
-	// }
 
 
 });

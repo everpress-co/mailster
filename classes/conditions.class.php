@@ -125,7 +125,7 @@ class MailsterConditions {
 			'client' => __( 'Client', 'mailster' ),
 			'clienttype' => __( 'Clienttype', 'mailster' ),
 			// 'coords' => __( 'Coords', 'mailster' ),
-			// 'geo' => __( 'Geo', 'mailster' ),
+			'geo' => __( 'Location', 'mailster' ),
 			'lang' => __( 'Language', 'mailster' ),
 			// 'timeoffset' => __( 'Timeoffset', 'mailster' ),
 			// 'lat' => __( 'Latitude', 'mailster' ),
@@ -296,6 +296,12 @@ class MailsterConditions {
 				$value = array( $value );
 			}
 			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_list_title' ), $value ) ) . $closing_quote;
+		} elseif ( 'geo' == $field ) {
+			if ( ! is_array( $value ) ) {
+				$value = array( $value );
+			}
+			$return['operator'] = '<em>' . $this->nice_name( $operator, 'operator', $field ) . '</em>';
+			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_country_name' ), $value ) ) . $closing_quote;
 		} elseif ( 'rating' == $field ) {
 			$stars = ( round( $this->sanitize_rating( $value ) / 10, 2 ) * 50 );
 			$full = max( 0, min( 5, floor( $stars ) ) );
@@ -349,6 +355,11 @@ class MailsterConditions {
 			return $list->name;
 		}
 		return $list_id;
+	}
+
+	public function get_country_name( $code ) {
+
+		return mailster( 'geo' )->code2Country( $code );
 	}
 
 
