@@ -124,7 +124,9 @@ class MailsterManage {
 				exit;
 			}
 
-			$raw_data = esc_attr( stripslashes( $_POST['data'] ) );
+			$raw_data = esc_textarea( stripslashes( $_POST['data'] ) );
+			// single quotes cause problems
+			$raw_data = str_replace('&#039;', "'", $raw_data);
 			$return['success'] = true;
 
 		} elseif ( isset( $_POST['wordpressusers'] ) ) {

@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 
 * new: Location based Segmentations
 * fixed: odd offset issue on hover in editor
+* fixed: importing emails with single quotes
 
 = Version 2.3.5 =
 
