@@ -28,6 +28,7 @@ class MailsterSubscribers {
 		add_action( 'user_register', array( &$this, 'user_register' ) );
 		add_action( 'register_form', array( &$this, 'register_form' ) );
 		add_action( 'deleted_user', array( &$this, 'delete_subscriber_from_wpuser' ), 10, 2 );
+		add_action( 'remove_user_from_blog', array( &$this, 'delete_subscriber_from_wpuser' ), 10, 2 );
 
 		add_action( 'comment_form_logged_in_after', array( &$this, 'comment_form_checkbox' ) );
 		add_action( 'comment_form_after_fields', array( &$this, 'comment_form_checkbox' ) );

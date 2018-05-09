@@ -87,6 +87,7 @@ Xaver Birsak – https://everpress.io
 * new: Location based Segmentations
 * fixed: odd offset issue on hover in editor
 * fixed: importing emails with single quotes
+* fixed: removing a user from a blog on a multi site now correctly removes subscriber
 
 = Version 2.3.5 =
 
