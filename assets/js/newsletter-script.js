@@ -3863,7 +3863,7 @@ jQuery(document).ready(function ($) {
 		var parts = html.match(/([^]*)<body([^>]*)?>([^]*)<\/body>([^]*)/m);
 
 		return {
-			parts: parts,
+			parts: parts ? parts : ['', '', '', '<multi>' + html + '</multi>'],
 			content: parts ? parts[3] : '<multi>' + html + '</multi>',
 			head: parts ? $.trim(parts[1]) : '',
 			bodyattributes: parts ? $('<div' + (parts[2] || '') + '></div>')[0].attributes : ''

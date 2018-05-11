@@ -395,7 +395,7 @@ class MailsterTests {
 	}
 	private function test_wp_debug() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$this->warning( 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
+			$this->failure( (mailster_is_local() ? 'notice' : 'warning' ),'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
 		}
 	}
 	private function test_dom_document_extension() {
@@ -448,7 +448,6 @@ class MailsterTests {
 	private function test_plugin_location() {
 		if ( MAILSTER_SLUG != 'mailster/mailster.php' ) {
 			$this->warning( 'You have changed the plugin location of Mailster. This can cause problems while updating the plugin.' );
-		} else {
 		}
 	}
 	private function test_mailster_folder_in_root() {
@@ -476,9 +475,7 @@ class MailsterTests {
 				$this->success( sprintf( __( 'Last hit was %s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) );
 			}
 		}
-
 		return;
-
 	}
 	private function test_cron_lock() {
 
@@ -507,7 +504,6 @@ class MailsterTests {
 				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
 			}
 		}
-
 	}
 	private function test_newsletter_homepage() {
 
@@ -534,7 +530,6 @@ class MailsterTests {
 		} else {
 
 		}
-
 	}
 	private function test_form_exist() {
 
@@ -685,7 +680,7 @@ class MailsterTests {
 			if ( $strict ) {
 				$this->error( $message );
 			} else {
-				$this->warning( $message );
+				$this->notice( $message );
 			}
 		}
 

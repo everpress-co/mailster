@@ -268,6 +268,7 @@ class MailsterForm {
 			$required = isset( $field->required ) && $field->required;
 
 			$label = ! empty( $field->name ) ? $field->name : mailster_text( $field->field_id );
+			$label = apply_filters( 'mailster_form_field_label_' . $field_id, $label, $field );
 			$esc_label = esc_attr( strip_tags( $label ) );
 
 			$value = ( isset( $this->object['userdata'][ $field->field_id ] )

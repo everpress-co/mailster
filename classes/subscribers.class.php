@@ -402,6 +402,11 @@ class MailsterSubscribers {
 					$entry->confirm = 0;
 				}
 
+				// maybe send confirmation if status wasn't pending
+				if ( $old_subscriber_data->status != 0 ) {
+					$entry->confirmation = 0;
+				}
+
 				$subscriber_id = $is_new
 				? $this->add( $entry )
 				: $this->update( $entry );
@@ -423,10 +428,6 @@ class MailsterSubscribers {
 				} else {
 
 					$subscriber = $this->get( $subscriber_id, true );
-
-					if ( $subscriber->status == 0 ) {
-						$this->update_meta( $subscriber->ID, 0, 'confirmation', 0 );
-					}
 
 					if ( isset( $_POST['mailster_lists'] ) ) {
 						$lists = array_filter( $_POST['mailster_lists'], 'is_numeric' );
@@ -1005,7 +1006,7 @@ class MailsterSubscribers {
 
 				if ( isset( $data['status'] ) ) {
 					if ( $data['status'] == 0 ) {
-						$this->send_confirmations( $subscriber_id, true, true );
+						$this->send_confirmations( $subscriber_id, false, true );
 					}
 					if ( $data['status'] == 1 && $subscriber_notification ) {
 						$this->subscriber_notification( $subscriber_id );

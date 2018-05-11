@@ -85,8 +85,10 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.6 =
 
 * new: Location based Segmentations
+* new filter: `mailster_form_field_label_[field_id]` to alter the label of form fields
 * fixed: odd offset issue on hover in editor
 * fixed: importing emails with single quotes
+* fixed: JS error when switching back from codeview with no head section
 * fixed: removing a user from a blog on a multi site now correctly removes subscriber
 
 = Version 2.3.5 =
