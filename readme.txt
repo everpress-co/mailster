@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 
 * new: Location based Segmentations
 * new filter: `mailster_form_field_label_[field_id]` to alter the label of form fields
+* improved: simplified location based tracking with auto update
 * fixed: odd offset issue on hover in editor
 * fixed: importing emails with single quotes
 * fixed: JS error when switching back from codeview with no head section

@@ -77,13 +77,12 @@ class MailsterSettings {
 			'embed_images' => false,
 			'track_opens' => true,
 			'track_clicks' => true,
+			'track_location' => false,
 			'module_thumbnails' => true,
 			'charset' => 'UTF-8',
 			'encoding' => '8bit',
 			'post_count' => 30,
 			'autoupdate' => 'minor',
-			'trackcountries' => false,
-			'trackcities' => false,
 
 			'system_mail' => false,
 
@@ -656,6 +655,8 @@ class MailsterSettings {
 			$options = wp_parse_args( $_POST['mymail_options'], $options );
 		}
 
+		$old_options = get_option( 'mailster_options', array() );
+
 		// import data
 		if ( isset( $_POST['mailster_import_data'] ) ) {
 
@@ -717,43 +718,6 @@ class MailsterSettings {
 
 		}
 
-		// uploaded country database
-		if ( ! empty( $_FILES['country_db_file']['name'] ) ) {
-
-			$file = $_FILES['country_db_file'];
-
-			$dest = MAILSTER_UPLOAD_DIR . '/' . $file['name'];
-			if ( move_uploaded_file( $file['tmp_name'], $dest ) ) {
-				if ( is_file( $dest ) ) {
-					$options['countries_db'] = $dest;
-					$this->add_settings_error( sprintf( __( 'File uploaded to %s', 'mailster' ), '"' . $dest . '"' ), 'upload_country_db', 'success' );
-				} else {
-					$options['countries_db'] = '';
-				}
-			} else {
-				$this->add_settings_error( __( 'unable to upload file', 'mailster' ), 'upload_country_db' );
-				$options['countries_db'] = '';
-			}
-		}
-
-		// uploaded city database
-		if ( ! empty( $_FILES['city_db_file']['name'] ) ) {
-			$file = $_FILES['city_db_file'];
-
-			$dest = MAILSTER_UPLOAD_DIR . '/' . $file['name'];
-			if ( move_uploaded_file( $file['tmp_name'], $dest ) ) {
-				if ( is_file( $dest ) ) {
-					$options['cities_db'] = $dest;
-					$this->add_settings_error( sprintf( __( 'File uploaded to %s', 'mailster' ), '"' . $dest . '"' ), 'upload_city_db', 'success' );
-				} else {
-					$options['cities_db'] = '';
-				}
-			} else {
-				$this->add_settings_error( __( 'unable to upload file', 'mailster' ), 'upload_city_db' );
-				$options['cities_db'] = '';
-			}
-		}
-
 		$options['send_offset'] = max( 0, (int) $options['send_offset'] );
 		$options['post_count'] = max( 1, (int) $options['post_count'] );
 		$options['bounce_check'] = max( 1, (int) $options['bounce_check'] );
@@ -794,7 +758,7 @@ class MailsterSettings {
 				continue;
 			}
 
-			$old = mailster_option( $id );
+			$old = isset( $old_options[ $id ] ) ? $old_options[ $id ] : null;
 
 			switch ( $id ) {
 
@@ -806,34 +770,44 @@ class MailsterSettings {
 						$this->add_settings_error( sprintf( __( '%s is not a valid email address', 'mailster' ), '"' . $value . '"' ), 'no_valid_email' );
 						$value = $old;
 					}
+
 				break;
 
-				case 'trackcountries':
+				case 'track_location':
 
 					if ( $value ) {
-						if ( empty( $options['countries_db'] ) ) {
-							$options['countries_db'] = MAILSTER_UPLOAD_DIR . '/GeoIPv6.dat';
-						}
 
-						if ( ! $options['countries_db'] || ! is_file( $options['countries_db'] ) ) {
-							$this->add_settings_error( __( 'No country database found! Please load it!', 'mailster' ), 'no_country_db' );
-							$value = false;
+						if ( $value != $old ) {
+							if ( $options['track_location_update'] ) {
+								wp_schedule_event( time(), 'daily', 'mailster_location_update' );
+							} else {
+								wp_schedule_single_event( time(), 'mailster_location_update' );
+							}
+						}
+					} else {
+
+						if ( wp_next_scheduled( 'mailster_location_update' ) ) {
+							wp_clear_scheduled_hook( 'mailster_location_update' );
 						}
 					}
+
 				break;
 
-				case 'trackcities':
+				case 'track_location_update':
 
-					if ( $value ) {
-						if ( empty( $options['cities_db'] ) ) {
-							$options['cities_db'] = MAILSTER_UPLOAD_DIR . '/GeoIPCity.dat';
+					if ( $value != $old ) {
+						if ( wp_next_scheduled( 'mailster_location_update' ) ) {
+							wp_clear_scheduled_hook( 'mailster_location_update' );
 						}
 
-						if ( ! $options['cities_db'] || ! is_file( $options['cities_db'] ) ) {
-							$this->add_settings_error( __( 'No city database found! Please load it!', 'mailster' ), 'no_city_db' );
-							$value = false;
+						if ( $value ) {
+							wp_schedule_event( time(), 'daily', 'mailster_location_update' );
+						} else {
+							wp_schedule_single_event( time(), 'mailster_location_update' );
+
 						}
 					}
+
 				break;
 
 				case 'homepage':
@@ -1432,7 +1406,7 @@ class MailsterSettings {
 			$options['unsubscribe_notification_template'] = $old_options['unsubscribe_notification_template'];
 		}
 
-		if ( $options['trackcountries'] && isset( $old_options['countries_db'] ) ) {
+		if ( $options['track_location'] && isset( $old_options['countries_db'] ) ) {
 			$options['countries_db'] = $old_options['countries_db'];
 		}
 		if ( $options['trackcities'] && isset( $old_options['cities_db'] ) ) {
@@ -1492,7 +1466,7 @@ class MailsterSettings {
 			'Permalink Structure' => get_option( 'permalink_structure' ),
 			'--',
 			'Newsletter Homepage' => $homepage . ' (#' . mailster_option( 'homepage' ) . ')',
-			'Track Countries' => mailster_option( 'trackcountries' ) ? 'Yes' : 'No',
+			'Track Countries' => mailster_option( 'track_location' ) ? 'Yes' : 'No',
 			'Country DB' => file_exists( mailster_option( 'countries_db' ) ) ? 'DB exists (' . date( 'r', filemtime( mailster_option( 'countries_db' ) ) ) . ', ' . human_time_diff( filemtime( mailster_option( 'countries_db' ) ) ) . ')' : 'DB is missing',
 			'Track Cities' => mailster_option( 'trackcities' ) ? 'Yes' : 'No',
 			'City DB' => file_exists( mailster_option( 'cities_db' ) ) ? 'DB exists (' . date( 'r', filemtime( mailster_option( 'cities_db' ) ) ) . ', ' . human_time_diff( filemtime( mailster_option( 'cities_db' ) ) ) . ')' : 'DB is missing',

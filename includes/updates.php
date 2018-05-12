@@ -543,6 +543,13 @@ if ( $old_version ) {
 
 		case '2.3':
 		case '2.3.1':
+		case '2.3.2':
+		case '2.3.3':
+		case '2.3.4':
+		case '2.3.5':
+
+			$mailster_options['track_location'] = $mailster_options['trackcountries'];
+
 
 		default:
 

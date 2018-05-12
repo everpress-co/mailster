@@ -4,8 +4,7 @@ class MailsterGeo {
 
 	public function __construct() {
 
-		// every 12 hours
-		add_action( 'wp_update_plugins', array( &$this, 'renew_ips' ), 99 );
+		add_action( 'mailster_location_update', array( &$this, 'maybe_update' ) );
 
 	}
 
@@ -16,27 +15,73 @@ class MailsterGeo {
 	 * @param unknown $force (optional)
 	 * @return unknown
 	 */
-	public function renew_ips( $force = false ) {
+	public function maybe_update( $force = false ) {
+
+		if ( mailster_option( 'track_location' ) ) {
+			return $this->update( $force );
+		} else {
+			if ( wp_next_scheduled( 'mailster_location_update' ) ) {
+				wp_clear_scheduled_hook( 'mailster_location_update' );
+			}
+		}
+		return false;
+	}
+
+
+	public function ip2Country() {
+		require_once MAILSTER_DIR . 'classes/libs/Ip2Country.php';
+		$ip2Country = new Ip2Country( $this->get_file_path( 'country' ) );
+
+		return $ip2Country;
+	}
+	public function Ip2City() {
+		require_once MAILSTER_DIR . 'classes/libs/Ip2City.php';
+		$Ip2City = new Ip2City( $this->get_file_path( 'city' ) );
+
+		return $Ip2City;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $which
+	 * @return unknown
+	 */
+	public function get_file_path( $which ) {
+
+		switch ( $which ) {
+			case 'country':
+			case 'countries':
+				return apply_filters( 'mailster_location_db_file_country', MAILSTER_UPLOAD_DIR . '/GeoIPv6.dat' );
+			case 'city':
+			case 'cities':
+				return apply_filters( 'mailster_location_db_file_city', MAILSTER_UPLOAD_DIR . '/GeoIPCity.dat' );
+				break;
+		}
+		return false;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $force (optional)
+	 * @return unknown
+	 */
+	public function update( $force = false ) {
 
 		$success = true;
 
-		if ( mailster_option( 'trackcountries' ) ) {
+		// get new ip database
+		$ip2Country = $this->Ip2Country();
 
-			// get new ip database
-			require_once MAILSTER_DIR . 'classes/libs/Ip2Country.php';
-			$ip2Country = new Ip2Country();
+		$success = $success && $ip2Country->update( $force );
 
-			$success = $success && $ip2Country->renew( $force );
-		}
+		// get new ip database
+		$Ip2City = $this->Ip2City();
 
-		if ( mailster_option( 'trackcities' ) ) {
-
-			// get new ip database
-			require_once MAILSTER_DIR . 'classes/libs/Ip2City.php';
-			$Ip2City = new Ip2City();
-
-			$success = $success && $Ip2City->renew( $force );
-		}
+		$success = $success && $Ip2City->update( $force );
 
 		return $success;
 
@@ -55,8 +100,7 @@ class MailsterGeo {
 			$continents = $this->get_continents( true );
 			return isset( $continents[ $code ] ) ? $continents[ $code ] : 'unknown';
 		}
-		require_once MAILSTER_DIR . 'classes/libs/Ip2Country.php';
-		$i = new Ip2Country();
+		$i = $this->Ip2Country();
 		return $i->country( $code );
 
 	}
@@ -77,9 +121,8 @@ class MailsterGeo {
 				$ip = mailster_get_ip();
 			}
 
-			require_once MAILSTER_DIR . 'classes/libs/Ip2City.php';
-			$i = new Ip2City();
-			$code = $i->get( $ip, $part );
+			$Ip2City = $this->Ip2City();
+			$code = $Ip2City->get( $ip, $part );
 
 			if ( is_null( $part ) && is_object( $code ) ) {
 				$code->timeoffset = $this->get_timeoffset( $code->country_code, $code->region );
@@ -103,8 +146,7 @@ class MailsterGeo {
 	 */
 	public function get_countries( $sorted = false, $european_union = false ) {
 
-		require_once MAILSTER_DIR . 'classes/libs/Ip2Country.php';
-		$ip2Country = new Ip2Country();
+		$ip2Country = $this->Ip2Country();
 		$countries = $ip2Country->get_countries();
 		if ( ! $sorted ) {
 			return $countries;
