@@ -1843,6 +1843,7 @@ class MailsterAjax {
 
 		if ( mailster( 'geo' )->update( true ) ) {
 			$return['success'] = true;
+			$return['update'] = esc_html__( 'Last update', 'mailster' ) . ': ' . esc_html__( 'right now', 'mailster' );
 			$return['msg'] = __( 'Location Database success loaded!', 'mailster' );
 		} else {
 			$return['msg'] = __( 'Couldn\'t load Location Database', 'mailster' );

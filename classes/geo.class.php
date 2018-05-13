@@ -5,6 +5,7 @@ class MailsterGeo {
 	public function __construct() {
 
 		add_action( 'mailster_location_update', array( &$this, 'maybe_update' ) );
+		add_action( 'mailster_cron', array( &$this, 'maybe_set_cron' ) );
 
 	}
 
@@ -20,11 +21,45 @@ class MailsterGeo {
 		if ( mailster_option( 'track_location' ) ) {
 			return $this->update( $force );
 		} else {
-			if ( wp_next_scheduled( 'mailster_location_update' ) ) {
-				wp_clear_scheduled_hook( 'mailster_location_update' );
-			}
+			$this->clear_cron();
 		}
 		return false;
+	}
+
+
+	public function maybe_set_cron() {
+
+		if ( mailster_option( 'track_location' ) ) {
+			if ( mailster_option( 'track_location_update' ) ) {
+				$this->set_cron( 'daily' );
+			}
+		} else {
+			$this->clear_cron();
+		}
+
+	}
+
+
+	public function set_cron( $type = 'single' ) {
+
+		if ( wp_next_scheduled( 'mailster_location_update' ) ) {
+			return;
+		}
+		switch ( $type ) {
+			case 'single':
+				wp_schedule_single_event( time(), 'mailster_location_update' );
+				break;
+			case 'daily':
+				wp_schedule_event( time(), 'daily', 'mailster_location_update' );
+				break;
+		}
+	}
+
+
+	public function clear_cron() {
+		if ( wp_next_scheduled( 'mailster_location_update' ) ) {
+			wp_clear_scheduled_hook( 'mailster_location_update' );
+		}
 	}
 
 

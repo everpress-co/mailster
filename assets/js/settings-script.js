@@ -85,6 +85,7 @@ jQuery(document).ready(function ($) {
 				'visibility': 'hidden'
 			});
 			$this.prop('disabled', false).html(response.buttontext);
+			if (response.update) $('#location_last_update').html(response.update);
 			var msg = $('<div class="' + ((!response.success) ? 'error' : 'updated') + '"><p>' + response.msg + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(4000).fadeTo(200, 0).delay(200).slideUp(200, function () {
 				msg.remove();
 			});

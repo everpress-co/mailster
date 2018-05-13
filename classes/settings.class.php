@@ -779,16 +779,14 @@ class MailsterSettings {
 
 						if ( $value != $old ) {
 							if ( $options['track_location_update'] ) {
-								wp_schedule_event( time(), 'daily', 'mailster_location_update' );
+								mailster( 'geo' )->set_cron( 'daily' );
 							} else {
-								wp_schedule_single_event( time(), 'mailster_location_update' );
+								mailster( 'geo' )->set_cron();
 							}
 						}
 					} else {
 
-						if ( wp_next_scheduled( 'mailster_location_update' ) ) {
-							wp_clear_scheduled_hook( 'mailster_location_update' );
-						}
+						mailster( 'geo' )->clear_cron();
 					}
 
 				break;
@@ -796,14 +794,12 @@ class MailsterSettings {
 				case 'track_location_update':
 
 					if ( $value != $old ) {
-						if ( wp_next_scheduled( 'mailster_location_update' ) ) {
-							wp_clear_scheduled_hook( 'mailster_location_update' );
-						}
+						mailster( 'geo' )->clear_cron();
 
 						if ( $value ) {
-							wp_schedule_event( time(), 'daily', 'mailster_location_update' );
+							mailster( 'geo' )->set_cron( 'daily' );
 						} else {
-							wp_schedule_single_event( time(), 'mailster_location_update' );
+							mailster( 'geo' )->set_cron();
 
 						}
 					}
@@ -1406,13 +1402,6 @@ class MailsterSettings {
 			$options['unsubscribe_notification_template'] = $old_options['unsubscribe_notification_template'];
 		}
 
-		if ( $options['track_location'] && isset( $old_options['countries_db'] ) ) {
-			$options['countries_db'] = $old_options['countries_db'];
-		}
-		if ( $options['trackcities'] && isset( $old_options['cities_db'] ) ) {
-			$options['cities_db'] = $old_options['cities_db'];
-		}
-
 		$options['ID'] = $old_options['ID'];
 		if ( isset( $old_options['fallback_image'] ) ) {
 			$options['fallback_image'] = $old_options['fallback_image'];
@@ -1466,10 +1455,9 @@ class MailsterSettings {
 			'Permalink Structure' => get_option( 'permalink_structure' ),
 			'--',
 			'Newsletter Homepage' => $homepage . ' (#' . mailster_option( 'homepage' ) . ')',
-			'Track Countries' => mailster_option( 'track_location' ) ? 'Yes' : 'No',
-			'Country DB' => file_exists( mailster_option( 'countries_db' ) ) ? 'DB exists (' . date( 'r', filemtime( mailster_option( 'countries_db' ) ) ) . ', ' . human_time_diff( filemtime( mailster_option( 'countries_db' ) ) ) . ')' : 'DB is missing',
-			'Track Cities' => mailster_option( 'trackcities' ) ? 'Yes' : 'No',
-			'City DB' => file_exists( mailster_option( 'cities_db' ) ) ? 'DB exists (' . date( 'r', filemtime( mailster_option( 'cities_db' ) ) ) . ', ' . human_time_diff( filemtime( mailster_option( 'cities_db' ) ) ) . ')' : 'DB is missing',
+			'Track Opens' => mailster_option( 'track_opens' ) ? 'Yes' : 'No',
+			'Track Clicks' => mailster_option( 'track_clicks' ) ? 'Yes' : 'No',
+			'Track Location' => mailster_option( 'track_location' ) ? 'Yes' : 'No',
 			'--',
 			'Cron Service' => mailster_option( 'cron_service' ),
 			'Cron URL' => mailster( 'cron' )->url(),
