@@ -1097,7 +1097,7 @@ class MailsterForm {
 				);
 			}
 
-			if ( $this->form->redirect ) {
+			if ( $this->form->redirect && 'unsubscribe' != $submissiontype ) {
 				$return = wp_parse_args( array( 'redirect' => $this->form->redirect ), $return );
 			}
 
