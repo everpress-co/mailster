@@ -442,7 +442,7 @@ function mailster_ip2Country( $ip = '', $get = 'code' ) {
  */
 function mailster_ip2City( $ip = '', $get = null ) {
 
-	if ( ! mailster_option( 'trackcities' ) ) {
+	if ( ! mailster_option( 'track_location' ) ) {
 		return 'unknown';
 	}
 
