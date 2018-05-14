@@ -191,6 +191,14 @@ class Mailster {
 		return new MailsterHelper();
 	}
 
+	public function is( $page ) {
+
+		$screen = get_current_screen();
+
+		return $screen && 'admin_page_mailster_' . $page == $screen->id;
+
+	}
+
 
 
 	public function init() {

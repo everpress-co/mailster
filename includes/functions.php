@@ -408,7 +408,7 @@ function mailster_list_newsletter( $args = '' ) {
  */
 function mailster_ip2Country( $ip = '', $get = 'code' ) {
 
-	if ( ! mailster_option( 'trackcountries' ) ) {
+	if ( ! mailster_option( 'track_location' ) ) {
 		return 'unknown';
 	}
 
@@ -418,9 +418,9 @@ function mailster_ip2Country( $ip = '', $get = 'code' ) {
 			$ip = mailster_get_ip();
 		}
 
-		require_once MAILSTER_DIR . 'classes/libs/Ip2Country.php';
-		$i = new Ip2Country();
-		$code = $i->get( $ip, $get );
+		$ip2Country = mailster( 'geo' )->Ip2Country();
+
+		$code = $ip2Country->get( $ip, $get );
 
 		if ( ! $code ) {
 			$code = mailster_ip2City( $ip, $get ? 'country_' . $get : null );
