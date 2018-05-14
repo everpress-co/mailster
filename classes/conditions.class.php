@@ -18,27 +18,22 @@ class MailsterConditions {
 	}
 
 
-	public function view( $conditions = array(), $echo = true ) {
+	public function view( $conditions = array(), $inputname = null ) {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
+		if ( is_null( $inputname ) ) {
+			$inputname = 'mailster_data[conditions]';
+		}
+
 		if ( empty( $conditions ) ) {
 			$conditions = array();
 		}
 
-		ob_start();
 		include MAILSTER_DIR . 'views/conditions/conditions.php';
-		$output = ob_get_contents();
-		ob_end_clean();
-
-		if ( ! $echo ) {
-			return $output;
-		}
-
-		echo $output;
 
 	}
 

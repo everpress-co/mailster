@@ -113,6 +113,9 @@ span.error{
 .submit-button-box{
 	text-align: right;
 }
+.mailster-conditions{
+	width: 720px;
+}
 .export-order-wrap{
 	overflow: hidden;
 }
