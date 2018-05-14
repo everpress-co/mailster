@@ -50,10 +50,10 @@ class MailsterManage {
 				'estimate_time' => __( 'Estimate time left: %s minutes', 'mailster' ),
 				'continues_in' => __( 'Continues in %s seconds', 'mailster' ),
 				'error_importing' => __( 'There was a problem during importing contacts. Please check the error logs for more information!', 'mailster' ),
-				'prepare_download' => __( 'Preparing Download...%s', 'mailster' ),
+				'prepare_download' => __( 'Preparing Download for %1$s Subscribers...%2$s', 'mailster' ),
 				'write_file' => __( 'Writing file: %s', 'mailster' ),
 				'export_finished' => __( 'Export finished', 'mailster' ),
-				'downloading' => __( 'Downloading...', 'mailster' ),
+				'downloading' => __( 'Downloading %s Subscribers...', 'mailster' ),
 				'error_export' => __( 'There was an error while exporting', 'mailster' ),
 				'confirm_import' => __( 'Do you really like to import these contacts?', 'mailster' ),
 				'import_complete' => __( 'Import complete!', 'mailster' ),
@@ -758,20 +758,29 @@ class MailsterManage {
 
 		$listids = isset( $d['lists'] ) ? array_filter( $d['lists'], 'is_numeric' ) : array();
 		$statuses = isset( $d['status'] ) ? array_filter( $d['status'], 'is_numeric' ) : array();
+		$conditions = isset( $d['conditions'] ) ? (array) $d['conditions'] : array();
 
-		$count = 0;
+		$args = array(
+			'lists' => $listids,
+			'status' => $statuses,
+			'conditions' => $conditions,
+			'return_ids' => true,
+		);
 
-		if ( isset( $d['nolists'] ) ) {
-			$count += mailster( 'lists' )->count( false, $statuses );
+		$data = mailster( 'subscribers' )->query( $args );
+
+		if ( $d['nolists'] ) {
+
+			$args['lists'] = null;
+			$data2 = mailster( 'subscribers' )->query( $args );
+
+			$data = array_unique( array_merge( $data, $data2 ) );
+
 		}
 
-		if ( ! empty( $listids ) ) {
-			$count += mailster( 'lists' )->count( $listids, $statuses );
-		}
+		$return['count'] = count( $data );
 
-		$return['count'] = $count;
-
-		if ( $count ) {
+		if ( $return['count'] ) {
 
 			if ( ! is_dir( MAILSTER_UPLOAD_DIR ) ) {
 				wp_mkdir_p( MAILSTER_UPLOAD_DIR );
@@ -780,6 +789,8 @@ class MailsterManage {
 			$filename = MAILSTER_UPLOAD_DIR . '/~mailster_export_' . date( 'Y-m-d-H-i-s' ) . '.tmp';
 
 			update_option( 'mailster_export_filename', $filename );
+			unset( $d['_wpnonce'], $d['_wp_http_referer'] );
+			update_user_option( get_current_user_id(), 'mailster_export_settings', $d );
 
 			try {
 
@@ -788,6 +799,8 @@ class MailsterManage {
 
 				if ( ! ( $return['success'] = $wp_filesystem->put_contents( $filename, '', FS_CHMOD_FILE ) ) ) {
 					$return['msg'] = sprintf( __( 'Not able to create file in %s. Please make sure WordPress can write files to your filesystem!', 'mailster' ), MAILSTER_UPLOAD_DIR );
+				} else {
+
 				}
 			} catch ( Exception $e ) {
 
@@ -797,7 +810,7 @@ class MailsterManage {
 
 		} else {
 
-			$return['msg'] = __( 'no subscribers found', 'mailster' );
+			$return['msg'] = __( 'No Subscribers found!', 'mailster' );
 		}
 
 		@header( 'Content-type: application/json' );
@@ -851,7 +864,7 @@ class MailsterManage {
 
 		$dateformat = $d['dateformat'];
 
-		$useheader = $offset === 0 && isset( $d['header'] );
+		$useheader = $offset === 0 && $d['header'];
 
 		$custom_fields = mailster()->get_custom_fields();
 		$custom_date_fields = mailster()->get_custom_date_fields();
@@ -937,12 +950,13 @@ class MailsterManage {
 		$all_fields = isset( $d['column'] ) ? (array) $d['column'] : array();
 		$special = array_values( preg_grep( '/^_/', $all_fields ) );
 		$fields = array_values( preg_grep( '/^(?!_)/', $all_fields ) );
+		$conditions = isset( $d['conditions'] ) ? (array) $d['conditions'] : array();
 
 		$args = array(
 			'lists' => $listids,
 			'status' => $statuses,
 			'fields' => $fields,
-			// 'meta' => $meta,
+			'conditions' => $conditions,
 			'limit' => $limit,
 			'offset' => $offset,
 		);
@@ -1197,16 +1211,18 @@ class MailsterManage {
 		$count = 0;
 		$listids = isset( $d['lists'] ) ? array_filter( $d['lists'], 'is_numeric' ) : array();
 		$statuses = isset( $d['status'] ) ? array_filter( $d['status'], 'is_numeric' ) : null;
+		$conditions = isset( $d['conditions'] ) ? $d['conditions'] : null;
 
 		if ( isset( $d['nolists'] ) ) {
-
-			$count += mailster( 'lists' )->count( false, $statuses );
 
 			$subscriber_ids = mailster( 'subscribers' )->query(array(
 				'lists' => null,
 				'status' => $statuses,
+				'conditions' => $conditions,
 				'return_ids' => true,
 			));
+
+			$count += count( $subscriber_ids );
 
 			$return['success'] = mailster( 'subscribers' )->remove( $subscriber_ids, $statuses, isset( $d['remove_actions'] ) );
 
@@ -1214,13 +1230,14 @@ class MailsterManage {
 
 		if ( ! empty( $listids ) ) {
 
-			$count += mailster( 'lists' )->count( $listids, $statuses );
-
 			$subscriber_ids = mailster( 'subscribers' )->query(array(
 				'lists' => $listids,
 				'status' => $statuses,
+				'conditions' => $conditions,
 				'return_ids' => true,
 			));
+
+			$count += count( $subscriber_ids );
 
 			$return['success'] = mailster( 'subscribers' )->remove( $subscriber_ids, $statuses, isset( $d['remove_actions'] ) );
 
@@ -1231,14 +1248,14 @@ class MailsterManage {
 			}
 		}
 
-		if ( $return['success'] ) {
+		if ( $return['success'] && $count ) {
 
 			mailster()->optimize_tables( array( 'subscribers', 'lists' ) );
-			$return['msg'] = sprintf( __( '%s subscribers removed', 'mailster' ), number_format_i18n( $count ) );
+			$return['msg'] = sprintf( _n( '%s Subscriber removed', '%s Subscribers removed', $count, 'mailster' ), number_format_i18n( $count ) );
 
 		} else {
 
-			$return['msg'] = __( 'no subscribers removed', 'mailster' );
+			$return['msg'] = __( 'No Subscribers removed', 'mailster' );
 		}
 
 		@header( 'Content-type: application/json' );

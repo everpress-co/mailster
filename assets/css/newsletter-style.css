@@ -538,7 +538,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 #editbar .conditions{
 	display: none;
 	width: 320px;
-		left: 0;
+	left: 0;
 }
 #editbar .type .conditions{
 	display: block;
@@ -2006,6 +2006,16 @@ label.weekday input{
 	padding: 5px;
 	position: relative;
 }
+.mailster-conditions:empty:before{
+	content: attr(data-emptytext);
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	color: #999;
+}
 #mailster_list_condition_0 .remove-condition, #mailster_list_condition_0 div.mailster-list-operator{
 	display: none;
 }
@@ -2025,11 +2035,11 @@ label.weekday input{
 	width: 95%;
 	border-color: #DFDFDF;
 }
-#mailster_conditions{
+#mailster_conditions_render{
 	min-height: 18px;
 	position: relative;
 }
-#mailster_conditions .mailster-conditions-render:empty:before{
+#mailster_conditions_render .mailster-conditions-render:empty:before, .mailster-conditions .mailster-conditions-wrap:empty:before{
 	content: attr(data-emptytext);
 	display: block;
 	position: absolute;

@@ -638,6 +638,9 @@ jQuery(document).ready(function ($) {
 					_trigger('updateCount');
 				});
 
+			$('.close-conditions').on('click', tb_remove);
+
+
 
 			$('#mailster_options')
 				.on('click', '.wp-color-result', function () {
@@ -3493,8 +3496,8 @@ jQuery(document).ready(function ($) {
 				extra = $('#list_extra'),
 				data = {},
 				total = $('.mailster-total'),
-				cond = $('#mailster_conditions'),
-				groups = $('.mailster-conditions > .mailster-condition-group'),
+				cond = $('#mailster_conditions_render'),
+				groups = $('.mailster-conditions-wrap > .mailster-condition-group'),
 				i = 0;
 
 			$.each(listinputs, function () {

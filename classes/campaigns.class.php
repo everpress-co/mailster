@@ -1132,6 +1132,10 @@ class MailsterCampaigns {
 
 			} else {
 
+				if ( isset( $_GET['conditions'] ) && empty( $this->post_data['list_conditions'] ) ) {
+					$this->post_data['list_conditions'] = (array) $_GET['conditions'];
+				}
+
 				if ( $post->post_status == 'autoresponder' ) {
 					wp_enqueue_script( 'google-jsapi', 'https://www.google.com/jsapi' );
 					wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );

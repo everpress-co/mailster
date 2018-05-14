@@ -86,6 +86,9 @@ Xaver Birsak – https://everpress.io
 
 * new: Location based Segmentations
 * new filter: `mailster_form_field_label_[field_id]` to alter the label of form fields
+* improved: Export page now offers conditional export and saves defined settings.
+* improved: Delete page now offers conditional deletion.
+* change: active campaigns are now included in aggregated items in conditions
 * fixed: odd offset issue on hover in editor
 * fixed: importing emails with single quotes
 * fixed: JS error when switching back from codeview with no head section

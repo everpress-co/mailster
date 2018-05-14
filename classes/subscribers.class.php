@@ -1358,10 +1358,10 @@ class MailsterSubscribers {
 
 			// get all wp users except the current user
 			$current_user_id = get_current_user_id();
-			$sql = "SELECT wp_id FROM {$wpdb->prefix}mailster_subscribers AS a WHERE a.wp_id != 0 AND a.wp_id != %d AND a.ID IN (" . implode( ',', $subscriber_ids ) . ')';
+			$sql = "SELECT wp_id FROM {$wpdb->prefix}mailster_subscribers AS subscribers WHERE subscribers.wp_id != 0 AND subscribers.wp_id != %d AND subscribers.ID IN (" . implode( ',', $subscriber_ids ) . ')';
 
 			if ( $statuses ) {
-				$sql .= ' AND a.status IN (' . implode( ',', $statuses ) . ')';
+				$sql .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
 			}
 
 			$wp_ids_to_delete = $wpdb->get_col( $wpdb->prepare( $sql, $current_user_id ) );
@@ -1372,7 +1372,7 @@ class MailsterSubscribers {
 		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . "subscriber_meta,queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . implode( ',', $subscriber_ids ) . ')';
 
 		if ( $statuses ) {
-			$sql .= ' AND a.status IN (' . implode( ',', $statuses ) . ')';
+			$sql .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
 		}
 
 		if ( $success = ( false !== $wpdb->query( $sql ) ) ) {
