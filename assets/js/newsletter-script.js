@@ -638,6 +638,9 @@ jQuery(document).ready(function ($) {
 					_trigger('updateCount');
 				});
 
+			$('.close-conditions').on('click', tb_remove);
+
+
 
 			$('#mailster_options')
 				.on('click', '.wp-color-result', function () {
@@ -3433,7 +3436,7 @@ jQuery(document).ready(function ($) {
 			if (!_iframe[0].contentWindow.document.body) return;
 			var height = _iframe.contents().height() || _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
 
-			_iframe.attr("height", Math.max(500, height + 4 + (extra || 0)));
+			_iframe.attr("height", Math.max(500, height + (extra || 0)));
 		}, delay ? delay : 500);
 	})
 
@@ -3493,8 +3496,8 @@ jQuery(document).ready(function ($) {
 				extra = $('#list_extra'),
 				data = {},
 				total = $('.mailster-total'),
-				cond = $('#mailster_conditions'),
-				groups = $('.mailster-conditions > .mailster-condition-group'),
+				cond = $('#mailster_conditions_render'),
+				groups = $('.mailster-conditions-wrap > .mailster-condition-group'),
 				i = 0;
 
 			$.each(listinputs, function () {
@@ -3863,7 +3866,7 @@ jQuery(document).ready(function ($) {
 		var parts = html.match(/([^]*)<body([^>]*)?>([^]*)<\/body>([^]*)/m);
 
 		return {
-			parts: parts,
+			parts: parts ? parts : ['', '', '', '<multi>' + html + '</multi>'],
 			content: parts ? parts[3] : '<multi>' + html + '</multi>',
 			head: parts ? $.trim(parts[1]) : '',
 			bodyattributes: parts ? $('<div' + (parts[2] || '') + '></div>')[0].attributes : ''

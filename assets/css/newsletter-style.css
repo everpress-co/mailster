@@ -26,7 +26,6 @@
 #mailster_submitdiv.postbox .inside #misc-publishing-actions{
 	padding: 0 12px 12px;
 }
-/*#local-storage-notice, .wrap .notice.notice-warning{display: none !important;}*/
 .focus-on #normal-sortables, .focus-on #normal-sortables div#mailster_template, .focus-on #normal-sortables div#mailster_template > *, .focus-on div.updated, .focus-on .postbox-container > *{
 	opacity: 1;
 }
@@ -539,7 +538,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 #editbar .conditions{
 	display: none;
 	width: 320px;
-		left: 0;
+	left: 0;
 }
 #editbar .type .conditions{
 	display: block;
@@ -836,8 +835,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	padding: 5px;
 	background-color: #fff;
 	margin: 15px 0;
-	_float: left;
-	_max-width: 23%;
 	max-width: 100%;
 	position: relative;
 	height: 320px;
@@ -849,7 +846,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 #editbar div.type.img .imagewrap .imagepreview{
 	position: absolute;
 	left: 4px;
-	_width: 23%;
 	max-width: 98%;
 	display: block;
 	cursor: -webkit-zoom-in;
@@ -867,7 +863,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	right: 0;
 }
 #editbar div.type.img .imagewrap .imagepreview:hover{
-	_box-shadow: 0 0 0 1px white, 0 0 0 3px #1E8CBE;
 }
 #editbar div.type.img .imagewrap .imagepreview.zoom{
 	position: absolute;
@@ -2011,6 +2006,16 @@ label.weekday input{
 	padding: 5px;
 	position: relative;
 }
+.mailster-conditions:empty:before{
+	content: attr(data-emptytext);
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	color: #999;
+}
 #mailster_list_condition_0 .remove-condition, #mailster_list_condition_0 div.mailster-list-operator{
 	display: none;
 }
@@ -2030,11 +2035,11 @@ label.weekday input{
 	width: 95%;
 	border-color: #DFDFDF;
 }
-#mailster_conditions{
+#mailster_conditions_render{
 	min-height: 18px;
 	position: relative;
 }
-#mailster_conditions .mailster-conditions-render:empty:before{
+#mailster_conditions_render .mailster-conditions-render:empty:before, .mailster-conditions .mailster-conditions-wrap:empty:before{
 	content: attr(data-emptytext);
 	display: block;
 	position: absolute;
@@ -2212,67 +2217,7 @@ ul.colorschema li a.colorschema-delete{
 	line-height: 1em;
 	display: block;
 }
-/*
-ul.backgrounds {
-	border: 0;
-	width: 100%;
-	overflow: visible;
-}
-ul.backgrounds ul{
-	position: relative;
-	width: 100%;
-	overflow: auto;
-	display: none;
-	margin-bottom: 8px;
-}
-ul.backgrounds:hover ul{
-	display: block;
-}
-ul.backgrounds li{
-	border-radius: 2px;
-	display: block;
-	width: 100%;
-	border: 0;
-}
-ul.backgrounds li ul li{
-	width: 23%;
-	height: 30px;
-	display: inline-block;
-	margin: 0;
-	padding: 0;
-}
-ul.backgrounds li a{
-	line-height: 2em;
-	text-align: center;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	cursor: pointer;
-	border-radius: 2px;
-	height: 50px;
-	display: block;
-	border: 1px solid #D3D6DB;
-	background-color: #fff;
-	background-position: center center;
-	margin: 0 5px 5px 0;
-}
-ul.backgrounds li ul li a{
-	height: 25px;
-}
-ul.backgrounds.finished li a{
-	cursor: default;
-	height: 70px;
-	width: 250px;
-}
-ul.backgrounds li a:hover {
-	border: 1px solid #606064;
-}
-ul.backgrounds li a.active {
-	border: 1px solid #21759B;
-}
-ul.backgrounds.finished li:hover a{
-	border: 1px solid #D3D6DB;
-}
-*/
+
 /*----------------------------------------------------------------------*/
 /* Attachments
 /*----------------------------------------------------------------------*/
@@ -2441,6 +2386,7 @@ a.mailster-btn.editbutton {
 	-o-transition: margin-right .15s ease-in-out;
 	transition: margin-right .15s ease-in-out;
 	margin-right: 0px;
+	border: 1px solid #DFDFDF;
 }
 .rtl #mailster_template #iframe-wrap {
 	-webkit-transition: margin-left .15s ease-in-out;
@@ -2469,7 +2415,7 @@ a.mailster-btn.editbutton {
 	padding: 5px;
 	z-index: 98;
 	margin-left: -40px;
-	margin-top: 2px;
+	margin-top: -2px;
 	color: #a8a8a8;
 	position: absolute;
 	display: block;
@@ -2507,12 +2453,13 @@ a.mailster-btn.editbutton {
 	content: '\e819'
 }
 #mailster_template .inside iframe#mailster_iframe {
-	border: 1px solid #DFDFDF;
 	-webkit-transition: height .25s ease-in-out;
 	-moz-transition: height .25s ease-in-out;
 	-ms-transition: height .25s ease-in-out;
 	-o-transition: height .25s ease-in-out;
 	transition: height .25s ease-in-out;
+	margin-top: -3px;
+	margin-bottom: -4px;
 }
 #mailster_template .inside #template-wrap.load{
 	cursor: progress !important;

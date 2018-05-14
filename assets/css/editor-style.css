@@ -26,11 +26,6 @@ html.mailster-loading:before{
 	cursor: progress !important;
 	z-index: 1000000;
 }
-body{
-/*	-webkit-transition: all .15s linear;
-	-ms-transition: all .15s linear;
-	transition: all .15s linear;
-*/}
 body.drag-active.drag-over{
 }
 body.drag-active modules module{
@@ -43,13 +38,6 @@ body.drag-active modules module{
 body:hover module[condition],body:hover single[condition],body:hover multi[condition]{
 	outline: 1px dotted blue;
 }
-/*module{
-	-webkit-touch-callout: none;
-	-webkit-user-select: text !important;
-	-khtml-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}*/
 module{
 	position: relative;
 }
@@ -63,8 +51,6 @@ a.mailster-btn,a.mailster-btn:hover,a.mailster-btn:active{
 }
 a.mailster-btn:hover {
 	color: #fff;
-	_border: 2px solid #fff;
-	_padding: 6px 7px;
 }
 a.mailster-btn:before {
 	font-family: 'mailster-icons';
@@ -139,15 +125,9 @@ modulebuttons {
 	transition: all .15s ease-in-out;
 	opacity: 0;
 	position: absolute;
-	_right: -31px;
 	right: 0px;
 	text-align: right;
 	z-index: 100;
-	_top: 50%;
-	_-webkit-transform: translateY(-50%);
-	_-moz-transform: translateY(-50%);
-	_-ms-transform: translateY(-50%);
-	_transform: translateY(-50%);
 	display: block;
 }
 module[selected] modulebuttons{
@@ -155,20 +135,15 @@ module[selected] modulebuttons{
 }
 [mailster-is-rtl] modulebuttons {
 	right: inherit;
-	_left: -31px;
 	left: 0;
 }
 modulebuttons a.mailster-btn {
-	_padding: 5px 6px;
 	padding: 8px 9px;
-	_display: block;
 	display: inline-block;
 	position: relative;
 	margin: 0;
 	height: 18px;
 	border: 0;
-	_border-left: 1px solid #DFDFDF;
-	_background: #fff;
 	background: rgba(43, 179, 231, 0.8);
 	line-height: 18px;
 	width: 18px;
@@ -178,16 +153,10 @@ modulebuttons:hover a.mailster-btn {
 	background: rgb(43, 179, 231);
 }
 [mailster-is-rtl] modulebuttons a.mailster-btn {
-	_border-left: 0;
-	_border-right: 1px solid #DFDFDF;
 }
 modulebuttons a:first-child {
-	_border-top: 1px solid #DFDFDF;
-	_border-radius: 2px 0 0 0;
 }
 modulebuttons a:last-child {
-	_border-bottom: 1px solid #DFDFDF;
-	_border-radius: 0 0 0 2px;
 }
 modulebuttons input.modulelabel {
 	-webkit-transition: all .15s ease-in-out;
@@ -335,12 +304,10 @@ module[label]:hover:before, module[label][selected]:before {
 	transform: translate(1px, -1px);
 }
 module:hover modulebuttons,module[selected] modulebuttons,.ie module modulebuttons {
-	_right: -2px;
 	opacity: 1;
 }
 [mailster-is-rtl] module:hover modulebuttons, [mailster-is-rtl] module[selected] modulebuttons {
 	right: inherit;
-	_left: -2px;
 }
 module:first-child modulebuttons a.up, module:last-child modulebuttons a.down {
 	display: none;

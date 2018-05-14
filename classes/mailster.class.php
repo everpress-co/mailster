@@ -191,6 +191,14 @@ class Mailster {
 		return new MailsterHelper();
 	}
 
+	public function is( $page ) {
+
+		$screen = get_current_screen();
+
+		return $screen && 'admin_page_mailster_' . $page == $screen->id;
+
+	}
+
 
 
 	public function init() {
@@ -1339,7 +1347,7 @@ class Mailster {
 			case 500: // Internal Server Error
 			case 503: // Service Unavailable
 			case 'http_err':
-				$error_msg = __( 'Envato servers are currently down. Please try again later!', 'mailster' );
+				$error_msg = __( 'Authentication servers are currently down. Please try again later!', 'mailster' );
 			break;
 
 			case 406: // already assigned

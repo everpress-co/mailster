@@ -19,7 +19,7 @@ $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data
 			<div class="foot">
 				<div class="alignleft"><?php esc_html_e( 'Total receivers', 'mailster' );?>: <span class="mailster-total">&ndash;</span></div>
 				<div class="alignright">
-				<button class="button button-primary close"><?php esc_html_e( 'Close', 'mailster' ) ?></button>
+				<button class="button button-primary close-conditions"><?php esc_html_e( 'Close', 'mailster' ) ?></button>
 				<span class="spinner" id="conditions-ajax-loading"></span>
 				</div>
 			</div>
@@ -41,7 +41,7 @@ $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data
 
 		</p>
 		<p><strong><?php esc_html_e( 'Conditions','mailster' ); ?>:</strong>
-			<div id="mailster_conditions">
+			<div id="mailster_conditions_render">
 			<?php mailster( 'conditions' )->render( $this->post_data['list_conditions'] ); ?>
 			</div>
 		</p>

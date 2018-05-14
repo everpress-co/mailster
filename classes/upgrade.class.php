@@ -662,10 +662,6 @@ class MailsterUpgrade {
 			if ( ! $wp_filesystem->move( $old_location, $new_location, true ) ) {
 				@rename( $old_location, $new_location );
 			}
-
-			mailster_update_option( 'countries_db', str_replace( $old_location, $new_location, mailster_option( 'countries_db' ) ) );
-			mailster_update_option( 'cities_db', str_replace( $old_location, $new_location, mailster_option( 'cities_db' ) ) );
-
 		}
 
 		if ( is_dir( $new_location . '_bak' ) ) {

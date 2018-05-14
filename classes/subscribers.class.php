@@ -28,6 +28,7 @@ class MailsterSubscribers {
 		add_action( 'user_register', array( &$this, 'user_register' ) );
 		add_action( 'register_form', array( &$this, 'register_form' ) );
 		add_action( 'deleted_user', array( &$this, 'delete_subscriber_from_wpuser' ), 10, 2 );
+		add_action( 'remove_user_from_blog', array( &$this, 'delete_subscriber_from_wpuser' ), 10, 2 );
 
 		add_action( 'comment_form_logged_in_after', array( &$this, 'comment_form_checkbox' ) );
 		add_action( 'comment_form_after_fields', array( &$this, 'comment_form_checkbox' ) );
@@ -401,6 +402,11 @@ class MailsterSubscribers {
 					$entry->confirm = 0;
 				}
 
+				// maybe send confirmation if status wasn't pending
+				if ( $old_subscriber_data->status != 0 ) {
+					$entry->confirmation = 0;
+				}
+
 				$subscriber_id = $is_new
 				? $this->add( $entry )
 				: $this->update( $entry );
@@ -422,10 +428,6 @@ class MailsterSubscribers {
 				} else {
 
 					$subscriber = $this->get( $subscriber_id, true );
-
-					if ( $subscriber->status == 0 ) {
-						$this->update_meta( $subscriber->ID, 0, 'confirmation', 0 );
-					}
 
 					if ( isset( $_POST['mailster_lists'] ) ) {
 						$lists = array_filter( $_POST['mailster_lists'], 'is_numeric' );
@@ -1004,7 +1006,7 @@ class MailsterSubscribers {
 
 				if ( isset( $data['status'] ) ) {
 					if ( $data['status'] == 0 ) {
-						$this->send_confirmations( $subscriber_id, true, true );
+						$this->send_confirmations( $subscriber_id, false, true );
 					}
 					if ( $data['status'] == 1 && $subscriber_notification ) {
 						$this->subscriber_notification( $subscriber_id );
@@ -1356,10 +1358,10 @@ class MailsterSubscribers {
 
 			// get all wp users except the current user
 			$current_user_id = get_current_user_id();
-			$sql = "SELECT wp_id FROM {$wpdb->prefix}mailster_subscribers AS a WHERE a.wp_id != 0 AND a.wp_id != %d AND a.ID IN (" . implode( ',', $subscriber_ids ) . ')';
+			$sql = "SELECT wp_id FROM {$wpdb->prefix}mailster_subscribers AS subscribers WHERE subscribers.wp_id != 0 AND subscribers.wp_id != %d AND subscribers.ID IN (" . implode( ',', $subscriber_ids ) . ')';
 
 			if ( $statuses ) {
-				$sql .= ' AND a.status IN (' . implode( ',', $statuses ) . ')';
+				$sql .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
 			}
 
 			$wp_ids_to_delete = $wpdb->get_col( $wpdb->prepare( $sql, $current_user_id ) );
@@ -1370,7 +1372,7 @@ class MailsterSubscribers {
 		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . "subscriber_meta,queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . implode( ',', $subscriber_ids ) . ')';
 
 		if ( $statuses ) {
-			$sql .= ' AND a.status IN (' . implode( ',', $statuses ) . ')';
+			$sql .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
 		}
 
 		if ( $success = ( false !== $wpdb->query( $sql ) ) ) {

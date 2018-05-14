@@ -1839,39 +1839,14 @@ class MailsterAjax {
 	private function load_geo_data() {
 		$return['success'] = false;
 
-		$type = esc_attr( $_POST['type'] );
+		$this->ajax_nonce( json_encode( $return ) );
 
-		if ( $type == 'country' ) {
-
-			require_once MAILSTER_DIR . 'classes/libs/Ip2Country.php';
-			$ip2Country = new Ip2Country();
-
-			$result = $ip2Country->renew( true );
-			if ( is_wp_error( $result ) ) {
-				$return['msg'] = __( 'Couldn\'t load Country DB', 'mailster' ) . ' [' . $result->get_error_message() . ']';
-			} else {
-				$return['success'] = true;
-				$return['msg'] = __( 'Country DB successfully loaded!', 'mailster' );
-				$return['path'] = $result;
-				$return['buttontext'] = __( 'Update Country Database', 'mailster' );
-				mailster_update_option( 'countries_db', $result );
-			}
-		} elseif ( $type == 'city' ) {
-				require_once MAILSTER_DIR . 'classes/libs/Ip2City.php';
-				$ip2City = new Ip2City();
-
-				$result = $ip2City->renew( true );
-			if ( is_wp_error( $result ) ) {
-				$return['msg'] = __( 'Couldn\'t load City DB', 'mailster' ) . ' [' . $result->get_error_message() . ']';
-			} else {
-				$return['success'] = true;
-				$return['msg'] = __( 'City DB successfully loaded!', 'mailster' );
-				$return['path'] = $result;
-				$return['buttontext'] = __( 'Update City Database', 'mailster' );
-				mailster_update_option( 'cities_db', $result );
-			}
+		if ( mailster( 'geo' )->update( true ) ) {
+			$return['success'] = true;
+			$return['update'] = esc_html__( 'Last update', 'mailster' ) . ': ' . esc_html__( 'right now', 'mailster' );
+			$return['msg'] = __( 'Location Database success loaded!', 'mailster' );
 		} else {
-			$return['msg'] = 'not allowed';
+			$return['msg'] = __( 'Couldn\'t load Location Database', 'mailster' );
 		}
 
 		$this->json_return( $return );

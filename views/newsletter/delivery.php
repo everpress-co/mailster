@@ -57,7 +57,7 @@ $sent = $this->get_sent( $post->ID );
 			'<input name="mailster_data[date]" class="datepicker deliverydate inactive" type="text" value="' . date( 'Y-m-d', $timestamp + $timeoffset ) . '" maxlength="10" readonly' . ( ( ( ! $this->post_data['active'] && ! $is_autoresponder ) || $editable ) ? ' disabled' : '' ) . '>',
 			'<input name="mailster_data[time]" maxlength="5" class="deliverytime inactive" type="text" value="' . date( 'H:i', $timestamp + $timeoffset ) . '" ' . ( ( ( ! $this->post_data['active'] && ! $is_autoresponder ) || ! $editable ) ? ' disabled' : '' ) . '> <span class="utcoffset">' . ( ( $timeoffset > 0 ) ? 'UTC + ' . ( $timeoffset / 3600 ) : '' ) . '</span>'
 		);
-		if ( mailster_option( 'trackcities' ) ) : ?>
+		if ( mailster_option( 'track_location' ) ) : ?>
 			<br><label title="<?php esc_html_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ) ?>">
 			<input type="checkbox" class="timezone" name="mailster_data[timezone]" value="1" <?php checked( $this->post_data['timezone'] );?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ) ?>
 			</label>
@@ -184,7 +184,7 @@ $sent = $this->get_sent( $post->ID );
 			?>
 			</p>
 			<p>
-			<?php if ( mailster_option( 'trackcities' ) ) :	?>
+			<?php if ( mailster_option( 'track_location' ) ) :	?>
 				<label title="<?php esc_html_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ) ?>">
 				<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][post_published_timezone]" value="1" <?php checked( $this->post_data['timezone'] );?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ) ?>
 				</label>
@@ -238,7 +238,7 @@ $sent = $this->get_sent( $post->ID );
 				$autoresponderdata['endschedule'] = isset( $autoresponderdata['endschedule'] );
 				?>
 
-		<?php if ( mailster_option( 'trackcities' ) ) : ?>
+		<?php if ( mailster_option( 'track_location' ) ) : ?>
 			<label title="<?php esc_html_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ) ?>">
 			<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][timebased_timezone]" value="1" <?php checked( $this->post_data['timezone'] );?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ) ?>
 			</label>
@@ -381,7 +381,7 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 			<p>
 			<?php
-			if ( mailster_option( 'trackcities' ) ) : ?>
+			if ( mailster_option( 'track_location' ) ) : ?>
 				<label title="<?php esc_html_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ) ?>">
 					<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][usertime_timezone]" value="1" <?php checked( $this->post_data['timezone'] );?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ) ?>
 				</label>

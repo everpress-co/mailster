@@ -407,9 +407,14 @@ class MailsterSubscriberQuery {
 
 				foreach ( $and_conditions as $j => $condition ) {
 
-					$field = isset( $condition['field'] ) ? $condition['field'] : $condition[0];
-					$operator = isset( $condition['operator'] ) ? $condition['operator'] : $condition[1];
-					$value = isset( $condition['value'] ) ? $condition['value'] : $condition[2];
+					$field = isset( $condition['field'] ) ? $condition['field'] : (isset( $condition[0] ) ? $condition[0] : null);
+					$operator = isset( $condition['operator'] ) ? $condition['operator'] : (isset( $condition[1] ) ? $condition[1] : null);
+					$value = isset( $condition['value'] ) ? $condition['value'] : (isset( $condition[2] ) ? $condition[2] : null);
+					// something is not set => skip
+					if ( is_null( $field ) || is_null( $operator ) || is_null( $value ) ) {
+						unset( $this->args['conditions'][ $i ][ $j ] );
+						continue;
+					}
 					// requires campaign to be sent
 					if ( in_array( $field, array( '_open__not_in', '_click__not_in' ) ) ) {
 						$this->add_condition( '_sent', '=', $value );
@@ -442,6 +447,21 @@ class MailsterSubscriberQuery {
 
 						$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS `meta_$field` ON `meta_$field`.subscriber_id = subscribers.ID AND `meta_$field`.meta_key = '$field'";
 
+						if ( 'geo' == $field ) {
+							if ( ! is_array( $value ) ) {
+								$value = array( $value );
+							}
+							$continents = mailster( 'geo' )->get_continents( true );
+
+							foreach ( $continents as $code => $continent ) {
+								if ( ($pos = array_search( $code, $value )) !== false ) {
+									unset( $value[ $pos ] );
+									$value = array_merge( $value, mailster( 'geo' )->get_continent_members( $code ) );
+								}
+							}
+
+							$value = implode( '|', array_unique( $value ) );
+						}
 					}
 
 					if ( ! in_array( $field, $this->action_fields ) ) {
@@ -455,14 +475,16 @@ class MailsterSubscriberQuery {
 						}
 						if ( false !== ($pos = array_search( '_last_5', $value ) ) ) {
 							unset( $value[ $pos ] );
-							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_finished(array(
+							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
+								'post_status' => array( 'active', 'finished' ),
 								'posts_per_page' => 5,
 								'fields' => 'ids',
 							)));
 						}
 						if ( false !== ($pos = array_search( '_last_7day', $value ) ) ) {
 							unset( $value[ $pos ] );
-							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_finished(array(
+							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
+								'post_status' => array( 'active', 'finished' ),
 								'meta_key' => '_mailster_finished',
 								'meta_compare' => '>',
 								'meta_value' => strtotime( '-7 days' ),
@@ -472,7 +494,8 @@ class MailsterSubscriberQuery {
 						}
 						if ( false !== ($pos = array_search( '_last_1month', $value ) ) ) {
 							unset( $value[ $pos ] );
-							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_finished(array(
+							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
+								'post_status' => array( 'active', 'finished' ),
 								'meta_key' => '_mailster_finished',
 								'meta_compare' => '>',
 								'meta_value' => strtotime( '-1 month' ),
@@ -481,7 +504,8 @@ class MailsterSubscriberQuery {
 						}
 						if ( false !== ($pos = array_search( '_last_3month', $value ) ) ) {
 							unset( $value[ $pos ] );
-							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_finished(array(
+							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
+								'post_status' => array( 'active', 'finished' ),
 								'meta_key' => '_mailster_finished',
 								'meta_compare' => '>',
 								'meta_value' => strtotime( '-3 month' ),
@@ -894,6 +918,15 @@ class MailsterSubscriberQuery {
 
 	private function get_condition( $field, $operator, $value ) {
 
+		if ( is_array( $value ) ) {
+			$x = array();
+			foreach ( $value as $entry ) {
+				$x[] = $this->get_condition( $field, $operator, $entry );
+			}
+
+			return '(' . implode( ' OR ', array_unique( $x ) ) . ')';
+		}
+
 		// sanitation
 		$field = esc_sql( $field );
 		$value = addslashes( stripslashes( $value ) );
@@ -921,11 +954,11 @@ class MailsterSubscriberQuery {
 				$f = "CAST(SUBSTRING_INDEX(`meta_coords`.meta_value, ',', -1) AS DECIMAL(10,4))";
 				break;
 			case 'geo':
-				if ( '=' == $operator ) {
-					return " (`meta_$field`.meta_value LIKE '$value|%' OR `meta_$field`.meta_value LIKE '%|$value') ";
+				if ( 'is' == $operator ) {
+					return "`meta_$field`.meta_value REGEXP '($value)\|%'";
 				}
-				if ( '!=' == $operator ) {
-					return " (`meta_$field`.meta_value NOT LIKE '$value|%' AND `meta_$field`.meta_value NOT LIKE '%|$value') ";
+				if ( 'is_not' == $operator ) {
+					return "(`meta_$field`.meta_value NOT REGEXP '($value)\|%' OR `meta_$field`.meta_value IS NULL)";
 				}
 		}
 

@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.5
-Stable tag: 2.3.5
+Stable tag: 2.3.6
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -81,6 +81,20 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.3.6 =
+
+* new: Location based Segmentations
+* new filter: `mailster_form_field_label_[field_id]` to alter the label of form fields
+* improved: simplified location based tracking with auto update
+* improved: Export page now offers conditional export and saves defined settings.
+* improved: Delete page now offers conditional deletion.
+* change: active campaigns are now included in aggregated items in conditions
+* fixed: odd offset issue on hover in editor
+* fixed: importing emails with single quotes
+* fixed: JS error when switching back from codeview with no head section
+* fixed: do not redirect after unsubscribe
+* fixed: removing a user from a blog on a multi site now correctly removes subscriber
 
 = Version 2.3.5 =
 

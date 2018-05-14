@@ -223,14 +223,6 @@ table.form-table th{
 .spf-info{
 	margin-bottom: 40px;
 }
-#city_db_path, #country_db_path{
-	opacity: 0.2;
-	font-size: 11px;
-	width: 80%;
-}
-#city_db_path:focus, #country_db_path:focus, #city_db_path:hover, #country_db_path:hover{
-	opacity: 1;
-}
 #social-services li {
 	border: 1px solid #DFDFDF;
 	border-radius: 3px;
