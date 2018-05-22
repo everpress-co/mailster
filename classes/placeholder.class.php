@@ -644,8 +644,8 @@ class MailsterPlaceholder {
 
 		$pts = mailster( 'helper' )->get_post_types();
 
-		$timeformat = get_option( 'time_format' );
-		$dateformat = get_option( 'date_format' );
+		$timeformat = mailster( 'helper' )->timeformat();
+		$dateformat = mailster( 'helper' )->dateformat();
 
 		// placeholder images
 		if ( $count = preg_match_all( '#<(img|td|th|v:fill)([^>]*)(src|background)="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
@@ -868,8 +868,8 @@ class MailsterPlaceholder {
 
 		$extra = null;
 		$post_type = $post->post_type;
-		$timeformat = get_option( 'time_format' );
-		$dateformat = get_option( 'date_format' );
+		$timeformat = mailster( 'helper' )->timeformat();
+		$dateformat = mailster( 'helper' )->dateformat();
 
 		if ( 0 === strpos( $what, 'author' ) ) {
 			$author = get_user_by( 'id', $post->post_author );

@@ -655,7 +655,7 @@ class MailsterNotification {
 						break;
 					case 'date':
 						echo $subscriber->{$id} && is_integer( strtotime( $subscriber->{$id} ) )
-							? date( get_option( 'date_format' ), strtotime( $subscriber->{$id} ) )
+							? date( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$id} ) )
 							: $subscriber->{$id};
 						break;
 					default:
@@ -737,7 +737,7 @@ class MailsterNotification {
 
 		$subscribers = $wpdb->get_results( $sql );
 
-		$date_format = get_option( 'date_format' );
+		$date_format = mailster( 'helper' )->dateformat();
 
 		$count = count( $subscribers );
 		if ( ! $count ) {
@@ -1016,7 +1016,7 @@ foreach ( $coords as $i => $coord ) {
 
 		$subscribers = $wpdb->get_results( $sql );
 
-		$date_format = get_option( 'date_format' );
+		$date_format = mailster( 'helper' )->dateformat();
 
 		$count = count( $subscribers );
 		if ( ! $count ) {

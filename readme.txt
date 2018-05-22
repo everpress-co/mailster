@@ -85,8 +85,11 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.7 =
 
 * new: option to add GDPR compliance forms on the privacy settings page.
-* new: search field for modules
-* new: `mailster_profile_form` and `mailster_unsubscribe_form` filter
+* added: search field for modules
+* added: `mailster_profile_form` and `mailster_unsubscribe_form` filter
+* added: information to privacy policy text in WordPress 4.9.6
+* added: added Mailster data to Export Personal Data option in WordPress 4.9.6
+* added: added Mailster data to Erase Personal Data option in WordPress 4.9.6
 
 = Version 2.3.6 =
 

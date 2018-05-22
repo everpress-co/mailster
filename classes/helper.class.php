@@ -740,6 +740,56 @@ class MailsterHelper {
 	/**
 	 *
 	 *
+	 * @return unknown
+	 */
+	public function dateformat() {
+
+		$format = get_option( 'date_format' );
+
+		return apply_filters( 'mailster_dateformat', $format );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function timeformat() {
+
+		$format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+
+		return apply_filters( 'mailster_timeformat', $format );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $value
+	 * @param unknown $format   (optional)
+	 * @return unknown
+	 */
+	public function do_timestamp( $value, $format = null ) {
+		if ( is_null( $format ) ) {
+			$format = $this->timeformat();
+		}
+		$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
+		if ( false !== $timestamp ) {
+			$value = date( $format, $timestamp );
+		} elseif ( is_numeric( $value ) ) {
+			$value = date( $format, $value );
+		} else {
+			$value = '';
+		}
+
+		return $value;
+	}
+
+	/**
+	 *
+	 *
 	 * @param unknown $string
 	 * @param unknown $last   (optional)
 	 * @return unknown

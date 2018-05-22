@@ -16,7 +16,7 @@ $roles = $wp_roles->get_names();
 <?php
 
 $templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 ?>

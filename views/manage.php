@@ -204,10 +204,10 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					<label><?php esc_html_e( 'Date Format', 'mailster' ) ?>:
 					<select name="dateformat">
 					<option value="0" <?php selected( $user_settings['dateformat'], 0 ) ?>>timestamp - (<?php echo current_time( 'timestamp' ) ?>)</option>
-					<option value="<?php $d = get_option( 'date_format' ) . ' ' . get_option( 'time_format' ); echo $d ?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
+					<option value="<?php $d = mailster( 'helper' )->timeformat(); echo $d ?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
-					<option value="<?php $d = get_option( 'date_format' ); echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
+					<option value="<?php $d = mailster( 'helper' )->dateformat(); echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
 					<option value="<?php $d = 'Y-d-m H:i:s'; echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
