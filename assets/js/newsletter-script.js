@@ -638,6 +638,9 @@ jQuery(document).ready(function ($) {
 					_trigger('updateCount');
 				});
 
+			$('.close-conditions').on('click', tb_remove);
+
+
 
 			$('#mailster_options')
 				.on('click', '.wp-color-result', function () {
@@ -2741,7 +2744,7 @@ jQuery(document).ready(function ($) {
 				clone.find('single, multi')
 					.removeAttr('contenteditable spellcheck id dir style class');
 
-				var html = $.trim(clone.html());
+				var html = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 				textarea.show().html(html);
 
 			}
@@ -3119,6 +3122,8 @@ jQuery(document).ready(function ($) {
 
 		var metabox = $('#mailster_template'),
 			selector = $('#module-selector'),
+			search = $('#module-search'),
+			module_thumbs = selector.find('li'),
 			toggle = $('a.toggle-modules'),
 			container = _iframe.contents().find('modules'),
 			body = _iframe.contents().find('body'),
@@ -3252,10 +3257,27 @@ jQuery(document).ready(function ($) {
 			}, 200);
 		}
 
+		function searchModules() {
+
+			module_thumbs.hide();
+			selector.find("li:contains('" + $(this).val() + "')").show();
+
+		}
+
 		function init() {
 			_container
 				.on('click', 'a.toggle-modules', toggleModules)
 				.on('click', 'a.addmodule', addmodule);
+
+			search
+				.on('keyup', searchModules)
+				.on('focus', function () {
+					search.select();
+				});
+			$('#module-search-remove').on('click', function () {
+				search.val('').trigger('keyup').focus();
+				return false;
+			})
 
 			refresh();
 		}
@@ -3493,8 +3515,8 @@ jQuery(document).ready(function ($) {
 				extra = $('#list_extra'),
 				data = {},
 				total = $('.mailster-total'),
-				cond = $('#mailster_conditions'),
-				groups = $('.mailster-conditions > .mailster-condition-group'),
+				cond = $('#mailster_conditions_render'),
+				groups = $('.mailster-conditions-wrap > .mailster-condition-group'),
 				i = 0;
 
 			$.each(listinputs, function () {

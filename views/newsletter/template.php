@@ -48,22 +48,27 @@ $all_files = mailster( 'templates' )->get_all_files();
 		if ( $editable && ! empty( $modules ) ) :
 			$module_list = $this->templateobj->get_module_list();
 			$screenshots = $this->templateobj->get_module_screenshots();
-			$has_screenshots = ! empty( $screenshots );
 			$screenshot_modules_folder = MAILSTER_UPLOAD_DIR . '/screenshots/' . $this->get_template() . '/modules/';
 			$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $this->get_template() . '/modules/';
 		?>
 			<div id="module-selector">
 				<a class="toggle-modules mailster-btn mailster-icon" title="<?php esc_attr_e( 'Modules', 'mailster' ) ?>"></a>
+				<div id="module-search-wrap">
+					<input type="text" class="widefat" id="module-search" placeholder="<?php esc_attr_e( 'Search Modules...', 'mailster' ) ?>">
+					<a id="module-search-remove" href="#" title="<?php esc_attr_e( 'clear search', 'mailster' );?>">&#10005;</a>
+				</div>
 				<div class="inner">
 					<ul>
 					<?php
 					foreach ( $module_list as $i => $module ) {
 
-						if ( $has_screenshots && isset( $screenshots[ $i ] ) && file_exists( $screenshot_modules_folder . $screenshots[ $i ] ) ) {
+						if ( isset( $screenshots[ $i ] ) && file_exists( $screenshot_modules_folder . $screenshots[ $i ] ) ) {
 							$has_screenshots = getimagesize( $screenshot_modules_folder . $screenshots[ $i ] );
+						} else {
+							$has_screenshots = false;
 						}
 
-						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / 2 ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( __( 'Click to add %s', 'mailster' ), '"' . $module . '"' ) ) . '" data-id="' . $i . '">' . esc_html( $module ) . '</a></li>';
+						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / 2 ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( __( 'Click to add %s', 'mailster' ), '"' . $module . '"' ) ) . '" data-id="' . $i . '"><span>' . esc_html( $module ) . '</span><span class="hidden">' . esc_html( strtolower( $module ) ) . '</span></a></li>';
 					} ?>
 					</ul>
 				</div>

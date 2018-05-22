@@ -205,6 +205,10 @@ jQuery(document).ready(function ($) {
 			return false;
 		});
 
+	$('select[name="outputformat"]').on('change', function () {
+		$('#csv-separator')[$(this).val() == 'csv' ? 'show' : 'hide']();
+	});
+
 	$(".export-order")
 		.sortable({
 			connectWith: '.export-order',
@@ -234,11 +238,7 @@ jQuery(document).ready(function ($) {
 
 		var data = $(this).serialize();
 
-		progress.removeClass('finished error hidden');
 
-		$('.step1').slideUp();
-		$('.step2').slideDown();
-		$('.step2-body').html(sprintf(mailsterL10n.write_file, '0.00 Kb'));
 		_ajax('export_contacts', {
 			data: data,
 		}, function (response) {
@@ -251,6 +251,10 @@ jQuery(document).ready(function ($) {
 
 				var limit = $('.performance').val();
 
+				$('.step2').slideDown();
+				$('.step2-body').html(sprintf(mailsterL10n.write_file, '0.00 Kb'));
+				progress.removeClass('finished error hidden');
+				progressbar.stop().width(0);
 				do_export(0, limit, response.count, data);
 
 			} else {
@@ -281,7 +285,6 @@ jQuery(document).ready(function ($) {
 
 			progress.removeClass('finished error hidden');
 
-			$('.step1').slideUp();
 			progressbar.stop().animate({
 				'width': '99%'
 			}, 25000);
@@ -330,7 +333,7 @@ jQuery(document).ready(function ($) {
 		var t = new Date().getTime(),
 			percentage = (Math.min(1, (limit * offset) / count) * 100);
 
-		exportstatus.html(sprintf(mailsterL10n.prepare_download, ''));
+		exportstatus.html(sprintf(mailsterL10n.prepare_download, count, ''));
 
 		_ajax('do_export', {
 			limit: limit,
@@ -351,16 +354,16 @@ jQuery(document).ready(function ($) {
 					easing: 'swing',
 					queue: false,
 					step: function (percentage) {
-						exportstatus.html(sprintf(mailsterL10n.prepare_download, Math.ceil(percentage) + '%'));
+						exportstatus.html(sprintf(mailsterL10n.prepare_download, count, Math.ceil(percentage) + '%'));
 					},
 					complete: function () {
-						exportstatus.html(sprintf(mailsterL10n.prepare_download, Math.ceil(percentage) + '%'));
+						exportstatus.html(sprintf(mailsterL10n.prepare_download, count, Math.ceil(percentage) + '%'));
 						if (finished) {
 							window.onbeforeunload = null;
 							progress.addClass('finished');
 							$('.step2-body').html(mailsterL10n.export_finished);
 
-							exportstatus.html(mailsterL10n.downloading);
+							exportstatus.html(sprintf(mailsterL10n.downloading, count));
 							if (response.filename) setTimeout(function () {
 								document.location = response.filename
 							}, 1000);

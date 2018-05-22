@@ -17,6 +17,10 @@ $show_update_notice = false;
 // update db structure
 mailster()->dbstructure();
 
+$default_options = mailster( 'settings' )->get_defaults();
+$default_texts = mailster( 'settings' )->get_default_texts();
+
+
 if ( $old_version ) {
 
 	switch ( $old_version ) {
@@ -421,9 +425,7 @@ if ( $old_version ) {
 
 		case '2.1.9':
 
-			$defaults = mailster( 'settings' )->get_default_texts();
-
-			$texts = wp_parse_args( $texts, $defaults );
+			$texts = wp_parse_args( $texts, $default_texts );
 
 			$t = mailster( 'translations' )->get_translation_data();
 
@@ -543,6 +545,18 @@ if ( $old_version ) {
 
 		case '2.3':
 		case '2.3.1':
+		case '2.3.2':
+		case '2.3.3':
+		case '2.3.4':
+		case '2.3.5':
+
+			$mailster_options['track_location'] = $mailster_options['trackcountries'];
+
+		case '2.3.6':
+
+			$mailster_options['gdpr_link'] = $default_options['gdpr_link'];
+			$mailster_options['gdpr_text'] = $default_options['gdpr_text'];
+			$mailster_options['gdpr_error'] = $default_options['gdpr_error'];
 
 		default:
 
