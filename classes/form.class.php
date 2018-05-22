@@ -508,6 +508,13 @@ class MailsterForm {
 		$html = str_replace( '<!--Mailster:hiddenfields-->', $this->get_hidden_fields(), $html );
 		$html = str_replace( '<!--Mailster:infos-->', $this->get_info(), $html );
 
+		if( $this->profile ){
+			$html = apply_filters( 'mailster_profile_form', $html, $this->ID, $this->form );
+		}
+		if( $this->unsubscribe ){
+			$html = apply_filters( 'mailster_unsubscribe_form', $html, $this->ID, $this->form );
+		}
+
 		$html = apply_filters( 'mymail_form', apply_filters( 'mailster_form', $html, $this->ID, $this->form ), $this->ID, $this->form );
 
 		if ( ! $echo ) {

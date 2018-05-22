@@ -769,7 +769,7 @@ class MailsterManage {
 
 		$data = mailster( 'subscribers' )->query( $args );
 
-		if ( $d['nolists'] ) {
+		if ( isset( $d['nolists'] ) && $d['nolists'] ) {
 
 			$args['lists'] = null;
 			$data2 = mailster( 'subscribers' )->query( $args );

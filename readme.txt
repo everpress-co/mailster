@@ -2,7 +2,7 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9.5
+Tested up to: 4.9.6
 Stable tag: 2.3.7
 Author: EverPress
 Author URI: https://mailster.co
@@ -83,6 +83,9 @@ Xaver Birsak – https://everpress.io
 == Changelog ==
 
 = Version 2.3.7 =
+
+* new: search field for modules
+* new: `mailster_profile_form` and `mailster_unsubscribe_form` filter
 
 = Version 2.3.6 =
 
