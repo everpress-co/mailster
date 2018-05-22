@@ -13,7 +13,7 @@ $timestamp = ( ! empty( $this->post_data['timestamp'] ) ) ? $this->post_data['ti
 
 $timestamp = ( ! $this->post_data['active'] ) ? max( $now + ( 60 * mailster_option( 'send_offset' ) ), $timestamp ) : $timestamp;
 
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 $current_user = wp_get_current_user();

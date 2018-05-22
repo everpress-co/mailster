@@ -187,7 +187,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			return '<div class="table-data"><span class="nowrap tiny">' . mailster( 'subscribers' )->get_status( $item->{$column_name}, true ) . '</span></div>';
 
 			case 'signup':
-				$timestring = ( ! $item->{$column_name} ) ? __( 'unknown', 'mailster' ) : date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
+				$timestring = ( ! $item->{$column_name} ) ? __( 'unknown', 'mailster' ) : date_i18n( mailster( 'helper' )->timeformat(), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
 			return '<div class="table-data">' . $timestring . '</div>';
 
 			default:
@@ -198,7 +198,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 						return '<div class="table-data">' . ($item->{$column_name} ? '&#10004;' : '&#10005;') . '</div>';
 						break;
 						case 'date':
-						return '<div class="table-data">' . ($item->{$column_name} ? date_i18n( get_option( 'date_format' ), strtotime( $item->{$column_name} ) ) : '') . '</div>';
+						return '<div class="table-data">' . ($item->{$column_name} ? date_i18n( mailster( 'helper' )->dateformat(), strtotime( $item->{$column_name} ) ) : '') . '</div>';
 						break;
 						default:
 						return '<div class="table-data">' . ($item->{$column_name}) . '</div>';

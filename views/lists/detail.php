@@ -24,7 +24,7 @@ if ( ! $is_new ) {
 	}
 }
 
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 $now = time();

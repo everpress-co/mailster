@@ -867,15 +867,7 @@ class MailsterForm {
 					$value = stripslashes( $value );
 					break;
 				case 'date':
-					$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
-					if ( false !== $timestamp ) {
-						$value = date( 'Y-m-d', $timestamp );
-					} elseif ( is_numeric( $value ) ) {
-						$value = date( 'Y-m-d', $value );
-					} else {
-						$value = '';
-					}
-					break;
+					$value = mailster( 'helper' )->do_timestamp( $value, 'Y-m-d' );
 				default:
 					$value = sanitize_text_field( $value );
 					break;

@@ -104,7 +104,7 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 			case 'updated':
 			case 'added':
-				$timestring = date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
+				$timestring = date_i18n( mailster( 'helper' )->timeformat(), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
 			return $timestring;
 
 			case 'subscribers':

@@ -748,7 +748,7 @@ class MailsterSubscribers {
 		}
 
 		$meta = (object) $this->meta( $subscriber->ID );
-		$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		$timeformat = mailster( 'helper' )->timeformat();
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 		if ( isset( $meta->referer ) ) :
@@ -1208,7 +1208,7 @@ class MailsterSubscribers {
         (subscriber_id, meta_key, meta_value) VALUES ";
 
 		$inserts = array();
-		$british_date_format = get_option( 'date_format' ) == 'd/m/Y';
+		$british_date_format = mailster( 'helper' )->dateformat() == 'd/m/Y';
 
 		$customfields = mailster()->get_custom_fields();
 
@@ -1219,14 +1219,7 @@ class MailsterSubscribers {
 						$value = $d[3] . '-' . $d[2] . '-' . $d[1];
 					}
 				}
-				$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
-				if ( false !== $timestamp ) {
-					$value = date( 'Y-m-d', $timestamp );
-				} elseif ( is_numeric( $value ) ) {
-					$value = date( 'Y-m-d', $value );
-				} else {
-					$value = '';
-				}
+				$value = mailster( 'helper' )->do_timestamp( $value, 'Y-m-d' );
 			}
 
 			if ( $value != '' ) {
@@ -2744,7 +2737,7 @@ class MailsterSubscribers {
 
 		$subscriber = $this->get( $id, true );
 
-		$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		$timeformat = mailster( 'helper' )->timeformat();
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 		$actions = (object) mailster( 'actions' )->get_campaign_actions( $campaign_id, $id, null, false );

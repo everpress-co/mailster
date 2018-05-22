@@ -878,7 +878,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		$timeformat = mailster( 'helper' )->timeformat();
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 		$campaign_ID = (int) $_POST['id'];
@@ -1253,7 +1253,7 @@ class MailsterAjax {
 						$html .= '<span class="post-type">' . $pts[ $post->post_type ]->labels->singular_name . '</span>';
 						$html .= '<strong>' . $post->post_title . '' . ( $post->post_status != 'publish' ? ' <em class="post-status wp-ui-highlight">' . $wp_post_statuses[ $post->post_status ]->label . '</em>' : '' ) . '</strong>';
 						$html .= '<span class="excerpt">' . trim( wp_trim_words( strip_shortcodes( $post->post_content ), 25 ) ) . '</span>';
-						$html .= '<span class="date">' . date_i18n( get_option( 'date_format' ), strtotime( $post->post_date ) ) . '</span>';
+						$html .= '<span class="date">' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $post->post_date ) ) . '</span>';
 						$html .= '</li>';
 					}
 				} elseif ( $_POST['type'] == 'attachment' ) {
@@ -1367,7 +1367,7 @@ class MailsterAjax {
 						: $html .= '<div class="no-feature"></div>';
 					$html .= '<strong>' . $item->get_title() . '</strong>';
 					$html .= '<span>' . trim( wp_trim_words( strip_shortcodes( $item->get_description() ), 18 ) ) . '</span>';
-					$html .= '<span>' . date_i18n( get_option( 'date_format' ), strtotime( $item->get_date() ) ) . '</span>';
+					$html .= '<span>' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $item->get_date() ) ) . '</span>';
 					$html .= '</li>';
 				}
 
