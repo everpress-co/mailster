@@ -62,6 +62,11 @@ class MailsterSettings {
 		$current_user = wp_get_current_user();
 		$email = $current_user->user_email ? $current_user->user_email : get_bloginfo( 'admin_email' );
 
+		$gdpr_link = '';
+		if ( $wp_page_for_privacy_policy = (int) get_option( 'wp_page_for_privacy_policy' ) ) {
+			$gdpr_link = get_permalink( $wp_page_for_privacy_policy );
+		}
+
 		global $wp_roles;
 
 		$host = ! mailster_is_local() ? $_SERVER['HTTP_HOST'] : '';
@@ -78,6 +83,10 @@ class MailsterSettings {
 			'track_opens' => true,
 			'track_clicks' => true,
 			'track_location' => false,
+			'gdpr_forms' => false,
+			'gdpr_link' => $gdpr_link,
+			'gdpr_text' => __( 'I agree to the privacy policy and terms.', 'mailster' ),
+			'gdpr_error' => __( 'You have to agree to the privacy policy and terms!', 'mailster' ),
 			'module_thumbnails' => true,
 			'charset' => 'UTF-8',
 			'encoding' => '8bit',

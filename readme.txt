@@ -84,6 +84,7 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.7 =
 
+* new: option to add GDPR compliance forms on the privacy settings page.
 * new: search field for modules
 * new: `mailster_profile_form` and `mailster_unsubscribe_form` filter
 
