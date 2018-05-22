@@ -26,7 +26,7 @@ class MailsterPrivacy {
 		$content .=
 			'<h3 class="wp-policy-help">' . __( 'Newsletter', 'mailster' ) . '</h3>';
 		$content .=
-			'<p class="wp-policy-help">' . __( 'If you have signed up for our newsletter you may receive emails from us. This includes but not limited to transactional emails or marketing emails.', 'mailster' ) . '</p>';
+			'<p class="wp-policy-help">' . __( 'If you have signed up for our newsletter you may receive emails from us. This includes but not limited to transactional emails and marketing emails.', 'mailster' ) . '</p>';
 		$content .=
 			'<p class="wp-policy-help">' . __( 'We\'ll only send emails which you have explicitly or implicitly (registration, product purchase etc.) signed up to.', 'mailster' ) . '</p>';
 
@@ -45,7 +45,7 @@ class MailsterPrivacy {
 		}
 		if ( mailster_option( 'track_users' ) ) {
 			$tracked_fields[] = __( 'your current IP address and timestamp of signup', 'mailster' );
-			$tracked_fields[] = __( 'your IP address and timestamp after you have confirmed your subscription', 'mailster' );
+			$tracked_fields[] = __( 'your IP address and timestamp when you have confirmed your subscription', 'mailster' );
 		}
 
 		$content .=
