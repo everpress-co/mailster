@@ -17,8 +17,10 @@
 	$all_campaigns_stati = wp_list_pluck( $all_campaigns, 'post_status' );
 	asort( $all_campaigns_stati );
 	$statuses = mailster( 'subscribers' )->get_status( null, true );
-	$countries = mailster( 'geo' )->get_countries( true );
-	$continents = mailster( 'geo' )->get_continents( true );
+	if ( $geo = mailster_option( 'track_location' ) ) {
+		$countries = mailster( 'geo' )->get_countries( true );
+		$continents = mailster( 'geo' )->get_continents( true );
+	}
 
 ?>
 <div class="mailster-conditions">
@@ -256,6 +258,7 @@
 					</div>
 				<?php endforeach; ?>
 					</div>
+				<?php if ( $geo ) : ?>
 					<div class="mailster-conditions-value-field" data-fields=",geo,">
 					<?php foreach ( $value_arr as $k => $v ) : ?>
 					<div class="mailster-conditions-value-field-multiselect">
@@ -281,6 +284,7 @@
 					</div>
 				<?php endforeach; ?>
 					</div>
+				<?php endif; ?>
 				</div>
 				<div class="clear"></div>
 		</div><?php endforeach; ?></div><?php endforeach; ?></div>
