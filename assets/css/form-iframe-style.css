@@ -9,6 +9,12 @@ html.mailster-embeded-form body{
 	font-size: 15px;
 	font-family: 'Helvetica Neue',Arial,sans-serif;
 }
+a {
+	color: #2BB3E7;
+	transition-property: border, background, color;
+	transition-duration: .05s;
+	transition-timing-function: ease-in-out;
+}
 .mailster-form-body{
 	background: rgba(0,0,0,.35);
 	background: -webkit-radial-gradient(50% 50%,rgba(0,0,0,.2),rgba(0,0,0,.5) 100%);

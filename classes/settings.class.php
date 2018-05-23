@@ -85,6 +85,8 @@ class MailsterSettings {
 			'track_location' => false,
 			'gdpr_forms' => false,
 			'gdpr_link' => $gdpr_link,
+			'gdpr_text' => __( 'I agree to the privacy policy and terms.', 'mailster' ),
+			'gdpr_error' => __( 'You have to agree to the privacy policy and terms!', 'mailster' ),
 			'module_thumbnails' => true,
 			'charset' => 'UTF-8',
 			'encoding' => '8bit',
@@ -248,8 +250,6 @@ class MailsterSettings {
 			'already_registered' => __( 'You are already registered', $domain ),
 			'new_confirmation_sent' => __( 'A new confirmation message has been sent', $domain ),
 			'enter_email' => __( 'Please enter your email address', $domain ),
-			'gdpr_text' => __( 'I agree to the privacy policy and terms.', $domain ),
-			'gdpr_error' => __( 'You have to agree to the privacy policy and terms!', $domain ),
 		);
 
 	}
