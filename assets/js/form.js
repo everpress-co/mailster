@@ -35,7 +35,7 @@ jQuery(document).ready(function (jQuery) {
 
 			form.find('.submit-button').prop('disabled', false);
 
-			if(response.html) info.html(response.html);
+			if (response.html) info.html(response.html);
 			if (jQuery(document).scrollTop() < form.offset().top) {
 				info.prependTo(form);
 			} else {
