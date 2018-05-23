@@ -99,6 +99,8 @@ if ( empty( $worker ) ) {
 } elseif ( in_array( $worker, apply_filters( 'mailster_cron_workers', array( 'autoresponder', 'worker', 'bounce', 'cleanup' ) ) ) ) {
 	echo '<h2>' . esc_html__( 'Single Cron', 'mailster' ) . ': ' . ucwords( $worker ) . '</h2>';
 	do_action( 'mailster_cron_' . $worker );
+} elseif ( is_numeric( $worker ) ) {
+	do_action( 'mailster_cron_worker', null, (int) $worker );
 } else {
 	echo '<h2>' . esc_html__( 'Invalid Cron Worker!', 'mailster' ) . '</h2>';
 }

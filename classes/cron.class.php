@@ -214,33 +214,36 @@ class MailsterCron {
 		else :
 
 			$interval = mailster_option( 'interval' ) * 60;
-			$last_hit = get_option( 'mailster_cron_lasthit' );
+			$last_hit_array = get_option( 'mailster_cron_lasthit', array() );
+			foreach ( $last_hit_array as $process_id => $last_hit ) :
 
-			if ( ! $last_hit ) {
-				if ( is_array( $last_hit ) ) {
-					return new WP_Error( 'cron_error', sprintf( __( 'Your Cron page hasn\'t get triggered recently. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'settings page', 'mailster' ) . '</strong></a>.' ) );
+				if ( ! $last_hit ) {
+					if ( is_array( $last_hit ) ) {
+						return new WP_Error( 'cron_error', sprintf( __( 'Your Cron page hasn\'t get triggered recently. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'settings page', 'mailster' ) . '</strong></a>.' ) );
+					}
+
+					return new WP_Error( 'cron_error', sprintf( __( 'The Cron Process is not setup correctly. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'settings page', 'mailster' ) . '</strong></a>.' ) );
 				}
 
-				return new WP_Error( 'cron_error', sprintf( __( 'The Cron Process is not setup correctly. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'settings page', 'mailster' ) . '</strong></a>.' ) );
-			}
+				// get real delay...
+				$real_delay = max( $interval, $last_hit['timestamp'] - $last_hit['oldtimestamp'] );
+				$current_delay = $now - $last_hit['timestamp'];
 
-			// get real delay...
-			$real_delay = max( $interval, $last_hit['timestamp'] - $last_hit['oldtimestamp'] );
-			$current_delay = $now - $last_hit['timestamp'];
+				// ..and compare it with the interval (3 times) - also something in the queue
+				if ( ( $current_delay > $real_delay * 3 || ! $real_delay && ! $current_delay ) ) :
 
-			// ..and compare it with the interval (3 times) - also something in the queue
-			if ( ( $current_delay > $real_delay * 3 || ! $real_delay && ! $current_delay ) ) :
+					$this->update();
 
-				$this->update();
+					return new WP_Error( 'cron_warning', sprintf( __( 'Are your campaigns not sending? You may have to check your %1$s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'cron settings', 'mailster' ) . '</strong></a>' ) );
 
-				return new WP_Error( 'cron_warning', sprintf( __( 'Are your campaigns not sending? You may have to check your %1$s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'cron settings', 'mailster' ) . '</strong></a>' ) );
+				else :
 
-			else :
+					mailster_remove_notice( 'check_cron' );
+					return true;
 
-				mailster_remove_notice( 'check_cron' );
-				return true;
+				endif;
 
-			endif;
+			endforeach;
 
 		endif;
 
@@ -277,14 +280,18 @@ class MailsterCron {
 			if ( file_exists( $lockfile ) ) {
 				// return false;
 				// Is running?
-				$this->pid = file_get_contents( $lockfile );
-				if ( $this->is_locked( $key ) ) {
-					return $this->pid;
-				} else {
-				}
+				/*
+				 $this->pid = file_get_contents( $lockfile );
+				if ( $this->is_locked( $key ) ) { */
+					// return $this->pid;
+					return $key;
+				/*
+				 } else {
+				} */
 			}
 
-			$this->pid = @getmypid();
+			// $this->pid = @getmypid();
+			$this->pid = $key;
 			register_shutdown_function( array( $this, 'unlock' ), $key );
 			file_put_contents( $lockfile, $this->pid );
 			return true;

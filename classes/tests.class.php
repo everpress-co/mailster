@@ -471,8 +471,10 @@ class MailsterTests {
 					break;
 			}
 		} else {
-			if ( $last_hit = get_option( 'mailster_cron_lasthit' ) ) {
-				$this->success( sprintf( __( 'Last hit was %s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) );
+			if ( $last_hit_array = get_option( 'mailster_cron_lasthit' ) ) {
+				foreach ( $last_hit_array as $process_id => $last_hit ) {
+					$this->success( sprintf( __( 'Last hit was %s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) );
+				}
 			}
 		}
 		return;
@@ -490,18 +492,20 @@ class MailsterTests {
 
 	}
 	private function test_mail_throughput() {
-		if ( $last_hit = get_option( 'mailster_cron_lasthit' ) ) {
+		if ( $last_hit_array = get_option( 'mailster_cron_lasthit' ) ) {
+			foreach ( $last_hit_array as $process_id => $last_hit ) {
 
-			if ( ! isset( $last_hit['mail'] ) || ! $last_hit['mail'] ) {
-				return;
-			}
-			$mails_per_sec = round( 1 / $last_hit['mail'], 2 );
-			$mails_per_sec = sprintf( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ), $mails_per_sec );
+				if ( ! isset( $last_hit['mail'] ) || ! $last_hit['mail'] ) {
+					return;
+				}
+				$mails_per_sec = round( 1 / $last_hit['mail'], 2 );
+				$mails_per_sec = sprintf( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ), $mails_per_sec );
 
-			if ( $last_hit['mail'] > 1 ) {
-				$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
-			} else {
-				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+				if ( $last_hit['mail'] > 1 ) {
+					$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+				} else {
+					$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
+				}
 			}
 		}
 	}

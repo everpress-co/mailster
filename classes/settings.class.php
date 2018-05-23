@@ -335,11 +335,11 @@ class MailsterSettings {
 		}
 
 		if ( isset( $_GET['release-cronlock'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'mailster-release-cronlock' ) ) {
-			$this->release_cronlock( true );
+			$this->release_cronlock( true, (int) $_GET['release-cronlock'] );
 		}
 
 		if ( isset( $_GET['reset-lasthit'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'mailster-reset-lasthit' ) ) {
-			$this->reset_lasthit( true );
+			$this->reset_lasthit( true, (int) $_GET['reset-lasthit'] );
 		}
 
 	}
@@ -529,9 +529,9 @@ class MailsterSettings {
 	}
 
 
-	public function release_cronlock( $redirect = false ) {
+	public function release_cronlock( $redirect = false, $process_id = 0 ) {
 
-		mailster( 'cron' )->unlock();
+		mailster( 'cron' )->unlock( $process_id );
 		if ( $redirect ) {
 			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
 			exit;
@@ -539,9 +539,14 @@ class MailsterSettings {
 
 	}
 
-	public function reset_lasthit( $redirect = false ) {
+	public function reset_lasthit( $redirect = false, $process_id = 0 ) {
 
-		update_option( 'mailster_cron_lasthit', array() );
+		$last_hit_array = get_option( 'mailster_cron_lasthit', array() );
+		if ( isset( $last_hit_array[ $process_id ] ) ) {
+			$last_hit_array[ $process_id ] = array();
+			unset( $last_hit_array[ $process_id ] );
+			update_option( 'mailster_cron_lasthit', $last_hit_array );
+		}
 		if ( $redirect ) {
 			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
 			exit;
@@ -904,6 +909,18 @@ class MailsterSettings {
 						mailster( 'cron' )->unschedule();
 					}
 
+				break;
+
+				case 'cron_processes':
+
+					if ( $old != $value ) {
+						if ( mailster( 'queue' )->size() ) {
+							$value = $old;
+							$this->add_settings_error( __( 'Not able to update process count. Please wait until the queue is empty.', 'mailster' ), 'dkim' );
+						} else {
+							update_option( 'mailster_cron_lasthit', false );
+						}
+					}
 				break;
 
 				case 'cron_secret':
