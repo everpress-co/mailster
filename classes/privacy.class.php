@@ -56,7 +56,7 @@ class MailsterPrivacy {
 		if ( 'simple' == ($deliverymethod = mailster_option( 'deliverymethod' )) ) {
 			$content .= __( 'our own server.', 'mailster' );
 		} elseif ( 'smtp' == $deliverymethod ) {
-			$content .= mailster_option( 'smtp_host' );
+			$content .= sprintf( __( 'via SMTP host %s', 'mailster' ), mailster_option( 'smtp_host' ) );
 		} elseif ( 'gmail' == $deliverymethod ) {
 			$content .= sprintf( __( 'a service called %s', 'mailster' ), 'Gmail by Google' );
 		} else {
@@ -110,130 +110,126 @@ class MailsterPrivacy {
 
 	public function data_export( $email_address, $page = 1 ) {
 
-		$subscriber = mailster( 'subscribers' )->get_by_mail( $email_address, true );
-
-		if ( ! $subscriber ) {
-			return false;
-		}
-
-		$meta = mailster( 'subscribers' )->meta( $subscriber->ID );
-
 		$export_items = array();
-		$data = array();
 
-		// general data
-		foreach ( $subscriber as $key => $value ) {
-			if ( empty( $value ) ) {
-				continue;
-			}
-			if ( in_array( $key, array( 'added', 'updated', 'signup', 'confirm' ) ) ) {
-				$value = mailster( 'helper' )->do_timestamp( $value );
-			}
-			$data[] = array(
-				'name'  => $key,
-				'value' => $value,
-			);
-		}
+		if ( $subscriber = mailster( 'subscribers' )->get_by_mail( $email_address, true ) ) {
 
-		// meta data
-		foreach ( $meta as $key => $value ) {
-			if ( empty( $value ) ) {
-				continue;
-			}
-			$data[] = array(
-				'name'  => $key,
-				'value' => $value,
-			);
-		}
-
-		$export_items[] = array(
-			'group_id'    => 'mailster',
-			'group_label' => 'Mailster',
-			'item_id'     => 'mailster-' . $subscriber->ID,
-			'data'        => $data,
-		);
-
-		if ( $lists = mailster( 'subscribers' )->get_lists( $subscriber->ID ) ) {
+			$meta = mailster( 'subscribers' )->meta( $subscriber->ID );
 
 			$data = array();
-			// lists
-			foreach ( $lists as $key => $value ) {
+
+			// general data
+			foreach ( $subscriber as $key => $value ) {
+				if ( empty( $value ) ) {
+					continue;
+				}
+				if ( in_array( $key, array( 'added', 'updated', 'signup', 'confirm' ) ) ) {
+					$value = mailster( 'helper' )->do_timestamp( $value );
+				}
 				$data[] = array(
-					'name'  => __( 'List Name', 'mailster' ),
-					'value' => $value->name,
+					'name'  => $key,
+					'value' => $value,
 				);
+			}
+
+			// meta data
+			foreach ( $meta as $key => $value ) {
+				if ( empty( $value ) ) {
+					continue;
+				}
 				$data[] = array(
-					'name'  => __( 'Description', 'mailster' ),
-					'value' => $value->description,
-				);
-				$data[] = array(
-					'name'  => __( 'Added', 'mailster' ),
-					'value' => mailster( 'helper' )->do_timestamp( $value->added ),
-				);
-				$data[] = array(
-					'name'  => __( 'Confirmed', 'mailster' ),
-					'value' => mailster( 'helper' )->do_timestamp( $value->confirmed ),
+					'name'  => $key,
+					'value' => $value,
 				);
 			}
 
 			$export_items[] = array(
-				'group_id'    => 'mailster_lists',
-				'group_label' => 'Mailster Lists',
-				'item_id'     => 'mailster-lists-' . $subscriber->ID,
+				'group_id'    => 'mailster',
+				'group_label' => 'Mailster',
+				'item_id'     => 'mailster-' . $subscriber->ID,
 				'data'        => $data,
 			);
 
-		}
+			if ( $lists = mailster( 'subscribers' )->get_lists( $subscriber->ID ) ) {
 
-		if ( $activity = mailster( 'actions' )->get_activity( null, $subscriber->ID ) ) {
-			$data = array();
-			$campaigns = array();
-
-			// activity
-			foreach ( $activity as $key => $value ) {
-
-				if ( ! isset( $campaigns[ $value->campaign_id ] ) ) {
-					$campaigns[ $value->campaign_id ] = array(
-						'group_id'    => 'mailster_campaign_' . $value->campaign_id,
-						'group_label' => 'Mailster Campaign "' . $value->campaign_title . '"',
-						'item_id'     => 'mailster-campaign-' . $value->campaign_id,
-						'data'        => array(),
+				$data = array();
+				// lists
+				foreach ( $lists as $key => $value ) {
+					$data[] = array(
+						'name'  => __( 'List Name', 'mailster' ),
+						'value' => $value->name,
+					);
+					$data[] = array(
+						'name'  => __( 'Description', 'mailster' ),
+						'value' => $value->description,
+					);
+					$data[] = array(
+						'name'  => __( 'Added', 'mailster' ),
+						'value' => mailster( 'helper' )->do_timestamp( $value->added ),
+					);
+					$data[] = array(
+						'name'  => __( 'Confirmed', 'mailster' ),
+						'value' => mailster( 'helper' )->do_timestamp( $value->confirmed ),
 					);
 				}
 
-				switch ( $value->type ) {
-					case 1: // sent
-						$campaigns[ $value->campaign_id ]['data'][] = array(
-							'name'  => __( 'Sent', 'mailster' ),
-							'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ),
-						);
-						break;
-					case 2: // opened
-						$campaigns[ $value->campaign_id ]['data'][] = array(
-							'name'  => __( 'Opened', 'mailster' ),
-							'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ),
-						);
-						break;
-					case 3:  // clicked
-						$campaigns[ $value->campaign_id ]['data'][] = array(
-							'name'  => __( 'Clicked', 'mailster' ),
-							'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ) . ' (' . $value->link . ')',
-						);
-						break;
-					case 4:  // clicked
-						$campaigns[ $value->campaign_id ]['data'][] = array(
-							'name'  => __( 'Unsubscribe', 'mailster' ),
-							'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ),
-						);
-						break;
+				$export_items[] = array(
+					'group_id'    => 'mailster_lists',
+					'group_label' => 'Mailster Lists',
+					'item_id'     => 'mailster-lists-' . $subscriber->ID,
+					'data'        => $data,
+				);
 
-				}
 			}
 
-			$campaigns = array_values( $campaigns );
+			if ( $activity = mailster( 'actions' )->get_activity( null, $subscriber->ID ) ) {
+				$data = array();
+				$campaigns = array();
 
-			$export_items = array_merge( $export_items,  $campaigns );
+				// activity
+				foreach ( $activity as $key => $value ) {
 
+					if ( ! isset( $campaigns[ $value->campaign_id ] ) ) {
+						$campaigns[ $value->campaign_id ] = array(
+							'group_id'    => 'mailster_campaign_' . $value->campaign_id,
+							'group_label' => 'Mailster Campaign "' . $value->campaign_title . '"',
+							'item_id'     => 'mailster-campaign-' . $value->campaign_id,
+							'data'        => array(),
+						);
+					}
+
+					switch ( $value->type ) {
+						case 1: // sent
+							$campaigns[ $value->campaign_id ]['data'][] = array(
+								'name'  => __( 'Sent', 'mailster' ),
+								'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ),
+							);
+							break;
+						case 2: // opened
+							$campaigns[ $value->campaign_id ]['data'][] = array(
+								'name'  => __( 'Opened', 'mailster' ),
+								'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ),
+							);
+							break;
+						case 3:  // clicked
+							$campaigns[ $value->campaign_id ]['data'][] = array(
+								'name'  => __( 'Clicked', 'mailster' ),
+								'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ) . ' (' . $value->link . ')',
+							);
+							break;
+						case 4:  // clicked
+							$campaigns[ $value->campaign_id ]['data'][] = array(
+								'name'  => __( 'Unsubscribe', 'mailster' ),
+								'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ),
+							);
+							break;
+
+					}
+				}
+
+				$export_items = array_merge( $export_items,  array_values( $campaigns ) );
+
+			}
 		}
 
 		return array(
@@ -257,7 +253,12 @@ class MailsterPrivacy {
 		$subscriber = mailster( 'subscribers' )->get_by_mail( $email_address );
 
 		if ( ! $subscriber ) {
-			return false;
+			return array(
+				'items_removed'  => false,
+				'items_retained' => false,
+				'messages'       => array(),
+				'done'           => true,
+			);
 		}
 
 		$messages = array();

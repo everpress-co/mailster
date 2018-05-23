@@ -555,8 +555,8 @@ if ( $old_version ) {
 		case '2.3.6':
 
 			$mailster_options['gdpr_link'] = $default_options['gdpr_link'];
-			$mailster_options['gdpr_text'] = $default_options['gdpr_text'];
-			$mailster_options['gdpr_error'] = $default_options['gdpr_error'];
+			$mailster_texts['gdpr_text'] = $default_texts['gdpr_text'];
+			$mailster_texts['gdpr_error'] = $default_texts['gdpr_error'];
 
 		default:
 

@@ -478,7 +478,7 @@ class MailsterForm {
 		}
 
 		if ( ! $this->profile && ! $this->unsubscribe && mailster_option( 'gdpr_forms' ) ) {
-			$label = mailster_option( 'gdpr_text' );
+			$label = mailster_text( 'gdpr_text' );
 			$fields['_gdpr'] = '<div class="mailster-wrapper mailster-_gdpr-wrapper">';
 			$fields['_gdpr'] .= '<label for="mailster-_gdpr-' . $this->ID . '">';
 			$fields['_gdpr'] .= '<input type="hidden" name="_gdpr" value="0"><input id="mailster-_gdpr-' . $this->ID . '" name="_gdpr" type="checkbox" value="1" class="mailster-_gdpr mailster-required" aria-required="true" aria-label="' . esc_attr( $label ) . '"> ';
@@ -892,7 +892,7 @@ class MailsterForm {
 		}
 
 		if ( isset( $_BASE['_gdpr'] ) && empty( $_BASE['_gdpr'] ) ) {
-			$this->object['errors']['_gdpr'] = mailster_option( 'gdpr_error' );
+			$this->object['errors']['_gdpr'] = mailster_text( 'gdpr_error' );
 		}
 
 		// to hook into the system

@@ -52,16 +52,16 @@ $utm = array(
 				<dd><?php esc_html_e( 'Mailster needs some essential informations like your personal information and also some legal stuff.', 'mailster' ) ?></dd>
 			</dl>
 			<dl>
-				<dt><?php esc_html_e( 'Privacy', 'mailster' ) ?></dt>
-				<dd><?php esc_html_e( 'Mailster takes the privacy of your subscribers information seriously. Define which information Mailster should save.', 'mailster' ) ?></dd>
-			</dl>
-			<dl>
 				<dt><?php esc_html_e( 'Newsletter Homepage Setup', 'mailster' ) ?></dt>
 				<dd><?php esc_html_e( 'This is where your subscribers signup, manage or cancel their subscriptions.', 'mailster' ) ?></dd>
 			</dl>
 			<dl>
 				<dt><?php esc_html_e( 'Delivery Options', 'mailster' ) ?></dt>
 				<dd><?php esc_html_e( 'How Mailster should delivery you campaigns.', 'mailster' ) ?></dd>
+			</dl>
+			<dl>
+				<dt><?php esc_html_e( 'Privacy', 'mailster' ) ?></dt>
+				<dd><?php esc_html_e( 'Mailster takes the privacy of your subscribers information seriously. Define which information Mailster should save.', 'mailster' ) ?></dd>
 			</dl>
 			<dl>
 				<dt><?php esc_html_e( 'Validation', 'mailster' ) ?></dt>

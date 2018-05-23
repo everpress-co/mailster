@@ -43,21 +43,27 @@
 	<tr valign="top">
 		<th scope="row">Do Not Track</th>
 		<td><label><input type="hidden" name="mailster_options[do_not_track]" value=""><input type="checkbox" name="mailster_options[do_not_track]" value="1" <?php checked( mailster_option( 'do_not_track' ) ) ?>> <?php esc_html_e( 'Respect users "Do Not Track" option', 'mailster' ) ?></label>
-		<p class="description"><?php printf( __( 'If enabled Mailster will respect users option for not getting tracked. Read more on the %s', 'mailster' ), '<a href="http://donottrack.us/" class="external">' . __( 'official website', 'mailster' ) . '</a>' ) ?></p>
+		<p class="description"><?php printf( esc_html__( 'If enabled Mailster will respect users option for not getting tracked. Read more on the %s', 'mailster' ), '<a href="http://donottrack.us/" class="external">' . esc_html__( 'official website', 'mailster' ) . '</a>' ) ?></p>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'GDPR Compliance Forms', 'mailster' ) ?></th>
 		<td><label><input type="hidden" name="mailster_options[gdpr_forms]" value=""><input type="checkbox" name="mailster_options[gdpr_forms]" value="1" <?php checked( mailster_option( 'gdpr_forms' ) ) ?>> <?php esc_html_e( 'Add a checkbox on your forms for user consent.', 'mailster' ) ?></label>
-		<p class="description"><?php printf( __( 'Users must check this checkbox to submit the form. Read more on the %s', 'mailster' ), '<a href="http://donottrack.us/" class="external">' . __( 'official website', 'mailster' ) . '</a>' ) ?></p>
+		<p class="description"><?php esc_html_e( 'Users must check this checkbox to submit the form.', 'mailster' ) ?></p>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"></th>
 		<td>
-		<div><p class="description"><?php esc_html_e( 'Define a custom terms confirmation text.', 'mailster' ) ?></p><input type="text" name="mailster_options[gdpr_text]" value="<?php echo esc_attr( mailster_option( 'gdpr_text' ) ); ?>" class="large-text"> </div>
-		<div><p class="description"><?php esc_html_e( 'Define the error text if the checkbox is unchecked.', 'mailster' ) ?></p><input type="text" name="mailster_options[gdpr_error]" value="<?php echo esc_attr( mailster_option( 'gdpr_error' ) ); ?>" class="large-text"> </div>
-		<div><p class="description"><?php esc_html_e( 'Link to your privacy policy page.', 'mailster' ) ?></p><input type="text" name="mailster_options[gdpr_link]" value="<?php echo esc_attr( mailster_option( 'gdpr_link' ) ); ?>" class="large-text"> </div>
+		<p><?php esc_html_e( 'Define a custom terms confirmation text.', 'mailster' ) ?>
+			<input type="text" name="mailster_texts[gdpr_text]" value="<?php echo esc_attr( mailster_text( 'gdpr_text' ) ); ?>" class="large-text">
+		</p>
+		<p><?php esc_html_e( 'Define the error text if the checkbox is unchecked.', 'mailster' ) ?>
+			<input type="text" name="mailster_texts[gdpr_error]" value="<?php echo esc_attr( mailster_text( 'gdpr_error' ) ); ?>" class="large-text">
+		</p>
+		<p><?php esc_html_e( 'Link to your privacy policy page.', 'mailster' ) ?>
+			<input type="text" name="mailster_options[gdpr_link]" value="<?php echo esc_attr( mailster_option( 'gdpr_link' ) ); ?>" class="large-text">
+		</p>
 		</td>
 	</tr>
 	<tr valign="top">
