@@ -70,14 +70,11 @@ if ( is_wp_error( $cron_status ) ) : ?>
 		<th scope="row"><?php printf( esc_html__( 'Last hit %s', 'mailster' ), $process_id ? '#' . $process_id : '' ) ?></th>
 		<td>
 
-			<?php if ( $last_hit && time() - $last_hit['timestamp'] > 720 && mailster( 'cron' )->is_locked() ) : ?>
+			<?php if ( $last_hit && time() - $last_hit['timestamp'] > 720 && mailster( 'cron' )->is_locked($process_id) ) : ?>
 				<div class="error inline">
 				<p><?php printf( __( 'Looks like your Cron Lock is still in place after %1$s! Read more about why this can happen %2$s.', 'mailster' ), '<strong>' . human_time_diff( $last_hit['timestamp'] ) . '</strong>', '<a href="https://kb.mailster.co/what-is-a-cron-lock/" class="external">' . __( 'here', 'mailster' ) . '</a>' ); ?></p>
 				</div>
 			<?php endif; ?>
-			<?php if ( mailster( 'cron' )->is_locked() ) : ?>
-			<a href="edit.php?post_type=newsletter&page=mailster_settings&release-cronlock=<?php echo (int) $process_id ?>&_wpnonce=<?php echo wp_create_nonce( 'mailster-release-cronlock' ) ?>"><?php esc_html_e( 'Release Cron Lock', 'mailster' );?></a>
-		<?php endif; ?>
 		<ul class="lasthit highlight">
 		<?php if ( $last_hit ) :
 				$interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 );
@@ -96,7 +93,11 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			<?php if ( $last_hit['timemax'] ) : ?>
 			<li><?php echo esc_html__( 'Max Execution Time', 'mailster' ) . ': ' . round( $last_hit['timemax'], 3 ) . ' ' . _x( 'sec', 'short for second', 'mailster' ); ?></li>
 			<?php endif; ?>
-			<li><a href="edit.php?post_type=newsletter&page=mailster_settings&reset-lasthit=<?php echo (int) $process_id ?>&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-lasthit' ) ?>"><?php esc_html_e( 'Reset', 'mailster' );?></a></li>
+			<li><a href="edit.php?post_type=newsletter&page=mailster_settings&reset-lasthit=<?php echo (int) $process_id ?>&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-lasthit' ) ?>"><?php esc_html_e( 'Reset', 'mailster' );?></a>
+				<?php if ( mailster( 'cron' )->is_locked($process_id) ) : ?>
+				<a href="edit.php?post_type=newsletter&page=mailster_settings&release-cronlock=<?php echo (int) $process_id ?>&_wpnonce=<?php echo wp_create_nonce( 'mailster-release-cronlock' ) ?>"><?php esc_html_e( 'Release Cron Lock', 'mailster' );?></a>
+			<?php endif; ?>
+			</li>
 		<?php else : ?>
 			<li><strong><?php esc_html_e( 'never', 'mailster' ) ?></strong>
 			(<a href="https://kb.mailster.co/how-do-i-know-if-my-cron-is-working-correctly/" class="external"><?php esc_html_e( 'why?', 'mailster' ) ?></a>)</li>
