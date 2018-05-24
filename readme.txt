@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.6
-Stable tag: 2.3.7
+Stable tag: 2.3.8
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -82,6 +82,7 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+= Version 2.3.8 =
 = Version 2.3.7 =
 
 * new: option to add GDPR compliance forms on the privacy settings page.
