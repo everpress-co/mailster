@@ -767,6 +767,8 @@ class MailsterManage {
 			'return_ids' => true,
 		);
 
+		$args = apply_filters( 'mailster_export_args', $args, $d );
+
 		$data = mailster( 'subscribers' )->query( $args );
 
 		if ( isset( $d['nolists'] ) && $d['nolists'] ) {
@@ -927,6 +929,9 @@ class MailsterManage {
 					default:
 						$val = ( isset( $custom_fields[ $col ] ) ) ? $custom_fields[ $col ]['name'] : ucwords( $col );
 				}
+
+				$val = apply_filters( 'mailster_export_heading_' . $col, $val, $d );
+
 				if ( function_exists( 'mb_convert_encoding' ) ) {
 					$val = mb_convert_encoding( $val, $encoding, 'UTF-8' );
 				}
@@ -960,6 +965,8 @@ class MailsterManage {
 			'limit' => $limit,
 			'offset' => $offset,
 		);
+
+		$args = apply_filters( 'mailster_export_args', $args, $d );
 
 		$data = mailster( 'subscribers' )->query( $args );
 
@@ -1025,6 +1032,8 @@ class MailsterManage {
 						// remove line breaks
 						$val = preg_replace( "/[\n\r]/", ' ', $val );
 				}
+
+				$val = apply_filters( 'mailster_export_field_' . $key, $val, $d );
 
 				if ( function_exists( 'mb_convert_encoding' ) ) {
 					$val = mb_convert_encoding( $val, $encoding, 'UTF-8' );

@@ -10,6 +10,7 @@ class MailsterSubscriberQuery {
 
 	private $defaults = array(
 		'select' => null,
+		'join' => null,
 		'status' => null,
 		'status__not_in' => null,
 		'where' => null,
@@ -163,6 +164,9 @@ class MailsterSubscriberQuery {
 		}
 		if ( $this->args['where'] && ! is_array( $this->args['where'] ) ) {
 			$this->args['where'] = array( $this->args['where'] );
+		}
+		if ( $this->args['join'] && ! is_array( $this->args['join'] ) ) {
+			$this->args['join'] = array( $this->args['join'] );
 		}
 		if ( $this->args['fields'] && ! is_array( $this->args['fields'] ) ) {
 			$this->args['fields'] = explode( ',', $this->args['fields'] );
@@ -783,6 +787,10 @@ class MailsterSubscriberQuery {
 				$wheres[] = 'AND ( ' . implode( "\n" . ' AND ', $searches ) . ' )';
 
 			}
+		}
+
+		if ( $this->args['join'] ) {
+			$joins[] = implode( "\n ", array_unique( $this->args['join'] ) ) . "\n";
 		}
 
 		if ( $this->args['where'] ) {

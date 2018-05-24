@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.io
 * added: information to privacy policy text in WordPress 4.9.6
 * added: added Mailster data to Export Personal Data option in WordPress 4.9.6
 * added: added Mailster data to Erase Personal Data option in WordPress 4.9.6
+* fixes: various small bugs
 
 = Version 2.3.6 =
 
