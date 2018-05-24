@@ -432,7 +432,7 @@ class MailsterCampaigns {
 
 		switch ( $post->post_status ) {
 			case 'finished':
-				$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+				$timeformat = mailster( 'helper' )->timeformat();
 				$timeoffset = mailster( 'helper' )->gmt_offset( true );
 				$msg = sprintf( __( 'This Campaign was sent on %s', 'mailster' ), '<span class="nowrap">' . date( $timeformat, $this->meta( $post->ID, 'finished' ) + $timeoffset ) . '</span>' );
 			break;
@@ -596,7 +596,7 @@ class MailsterCampaigns {
 
 		$now = time();
 		$is_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
-		$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		$timeformat = mailster( 'helper' )->timeformat();
 
 		if ( ! $is_ajax && $column != 'status' ) {
 			echo '&ndash;';
@@ -3327,7 +3327,7 @@ class MailsterCampaigns {
 
 		$count = 0;
 
-		$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		$timeformat = mailster( 'helper' )->timeformat();
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 		$subscribers_count = count( $subscribers );

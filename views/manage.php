@@ -204,10 +204,10 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					<label><?php esc_html_e( 'Date Format', 'mailster' ) ?>:
 					<select name="dateformat">
 					<option value="0" <?php selected( $user_settings['dateformat'], 0 ) ?>>timestamp - (<?php echo current_time( 'timestamp' ) ?>)</option>
-					<option value="<?php $d = get_option( 'date_format' ) . ' ' . get_option( 'time_format' ); echo $d ?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
+					<option value="<?php $d = mailster( 'helper' )->timeformat(); echo $d ?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
-					<option value="<?php $d = get_option( 'date_format' ); echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
+					<option value="<?php $d = mailster( 'helper' )->dateformat(); echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
 					<option value="<?php $d = 'Y-d-m H:i:s'; echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
@@ -309,6 +309,8 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 
 					$fields = array( '_number' => '#' ) + $columns + $customfields + $extra + $meta;
 
+					$fields = apply_filters( 'mailster_export_fields', $fields );
+
 					?>
 				<div class="export-order-wrap">
 					<ul class="export-order unselected">
@@ -322,9 +324,10 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 						<button class="export-order-remove">&lt;&lt;</button>
 					</div>
 					<ul class="export-order selected">
-					<?php foreach ( $user_settings['column'] as $id ) {?>
+					<?php foreach ( $user_settings['column'] as $id ) : ?>
+						<?php if ( ! isset( $fields[ $id ] ) ) { continue; } ?>
 						<li><input type="checkbox" name="column[]" value="<?php echo $id ?>" checked> <?php echo esc_html( $fields[ $id ] ) ?></li>
-					<?php }?>
+					<?php endforeach; ?>
 					</ul>
 				</div>
 				<p>

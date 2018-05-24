@@ -2522,16 +2522,39 @@ a.mailster-btn.editbutton {
 	left: 21px;
 	right: initial;
 }
+.show-modules #module-selector #module-search-wrap{
+	width: 170px;
+}
+#module-selector #module-search-wrap{
+	-webkit-transition: width .15s ease-in-out;
+	-moz-transition: width .15s ease-in-out;
+	-ms-transition: width .15s ease-in-out;
+	-o-transition: width .15s ease-in-out;
+	transition: width .15s ease-in-out;
+	width: 0;
+	overflow: hidden;
+}
+#module-selector #module-search-wrap #module-search{
+	margin: 1px 11px;
+	width: 158px;
+}
+#module-selector #module-search-wrap #module-search-remove{
+	text-decoration: none;
+	position: absolute;
+	right: 14px;
+	top: 2px;
+	padding: 2px;
+	display: none;
+}
+#module-selector #module-search-wrap:hover #module-search-remove{
+	display: block;
+}
+
 #module-selector ul {
-	-webkit-transition: opacity .1s ease-in-out;
-	-moz-transition: opacity .1s ease-in-out;
-	-ms-transition: opacity .1s ease-in-out;
-	-o-transition: opacity .1s ease-in-out;
-	transition: opacity .1s ease-in-out;
 	margin: 0;
 	padding: 0;
 }
-#mailster_template #template-wrap.load #module-selector ul {
+#mailster_template #template-wrap.load #module-selector {
 	opacity: 0.2;
 }
 #module-selector ul li {
@@ -2560,11 +2583,27 @@ a.mailster-btn.editbutton {
 #module-selector ul li a.mailster-btn.has-screenshot {
 	background-size: 100%;
 	background-position: 50% 50%;
-	text-indent: -500px;
 	background-repeat: no-repeat;
+	position: relative;
 }
-.rtl #module-selector ul li a.mailster-btn.has-screenshot {
-	text-indent: 500px;
+#module-selector ul li a.mailster-btn.has-screenshot span {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: rgba(43, 43, 43, 0.6);
+	color: #fff;
+	border-radius: 0 0 2px 2px;
+	line-height: 22px;
+	opacity: 0;
+	-webkit-transition: all .25s ease;
+	-moz-transition: all .25s ease;
+	-ms-transition: all .25s ease;
+	-o-transition: all .25s ease;
+	transition: all .25s ease;
+}
+#module-selector ul li:hover a.mailster-btn.has-screenshot span {
+	opacity: 1;
 }
 #module-selector ul li:hover a.mailster-btn {
 	background-color: #fafafa !important;

@@ -1073,7 +1073,9 @@ class MailsterQueue {
 							$wpdb->query( $wpdb->prepare( $queue_update_sql, 0, $data->_count, 15, $data->_count + 1, $data->subscriber_id, $data->campaign_id, $data->_requeued, $data->_options ) );
 
 						if ( $error ) {
-							mailster_notice( sprintf( __( 'Notification %1$s has thrown an error: %2$s', 'mailster' ), '<strong>&quot;' . $options['template'] . '&quot;</strong>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', false, 'notification_error_' . $options['template'] );
+							if ( isset( $options['template'] ) && $options['template'] ) {
+								mailster_notice( sprintf( __( 'Notification %1$s has thrown an error: %2$s', 'mailster' ), '<strong>&quot;' . $options['template'] . '&quot;</strong>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', false, 'notification_error_' . $options['template'] );
+							}
 
 							do_action( 'mailster_notification_error', $data->subscriber_id, $result->get_error_message() );
 							do_action( 'mymail_notification_error', $data->subscriber_id, $result->get_error_message() );

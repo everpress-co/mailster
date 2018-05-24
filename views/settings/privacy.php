@@ -26,8 +26,8 @@
 		<strong><?php esc_html_e( 'Your city', 'mailster' ) ?>:</strong> <?php echo mailster_ip2City( '', 'city' ) ?>
 	<?php endif; ?>
 		</p>
-		<p><button id="load_location_db" class="button-primary" <?php disabled( ! $geoip );?>><?php  esc_html_e( 'Update Location Database', 'mailster' );?></button>&nbsp;<span class="loading geo-ajax-loading"></span>
-			<em id="location_last_update"><?php esc_html_e( 'Last update', 'mailster' ) ?>: <?php echo human_time_diff( filemtime( $geo_db_file_cities ) ) ?> <?php esc_html_e( 'ago', 'mailster' ) ?></em>
+		<p><button id="load_location_db" class="button-primary" <?php disabled( ! $geoip );?>><?php esc_html_e( 'Update Location Database', 'mailster' );?></button>&nbsp;<span class="loading geo-ajax-loading"></span>
+			<em id="location_last_update"><?php esc_html_e( 'Last update', 'mailster' ) ?>: <?php printf( esc_html__( '%s ago', 'mailster' ), human_time_diff( filemtime( $geo_db_file_cities ) ) )?></em>
 		</p>
 	<?php
 	endif;
@@ -43,7 +43,27 @@
 	<tr valign="top">
 		<th scope="row">Do Not Track</th>
 		<td><label><input type="hidden" name="mailster_options[do_not_track]" value=""><input type="checkbox" name="mailster_options[do_not_track]" value="1" <?php checked( mailster_option( 'do_not_track' ) ) ?>> <?php esc_html_e( 'Respect users "Do Not Track" option', 'mailster' ) ?></label>
-		<p class="description"><?php printf( __( 'If enabled Mailster will respect users option for not getting tracked. Read more on the %s', 'mailster' ), '<a href="http://donottrack.us/" class="external">' . __( 'official website', 'mailster' ) . '</a>' ) ?></p>
+		<p class="description"><?php printf( esc_html__( 'If enabled Mailster will respect users option for not getting tracked. Read more on the %s', 'mailster' ), '<a href="http://donottrack.us/" class="external">' . esc_html__( 'official website', 'mailster' ) . '</a>' ) ?></p>
+		</td>
+	</tr>
+	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'GDPR Compliance Forms', 'mailster' ) ?></th>
+		<td><label><input type="hidden" name="mailster_options[gdpr_forms]" value=""><input type="checkbox" name="mailster_options[gdpr_forms]" value="1" <?php checked( mailster_option( 'gdpr_forms' ) ) ?>> <?php esc_html_e( 'Add a checkbox on your forms for user consent.', 'mailster' ) ?></label>
+		<p class="description"><?php esc_html_e( 'Users must check this checkbox to submit the form.', 'mailster' ) ?></p>
+		</td>
+	</tr>
+	<tr valign="top">
+		<th scope="row"></th>
+		<td>
+		<p><?php esc_html_e( 'Define a custom terms confirmation text.', 'mailster' ) ?>
+			<input type="text" name="mailster_options[gdpr_text]" value="<?php echo esc_attr( mailster_option( 'gdpr_text' ) ); ?>" class="large-text">
+		</p>
+		<p><?php esc_html_e( 'Define the error text if the checkbox is unchecked.', 'mailster' ) ?>
+			<input type="text" name="mailster_options[gdpr_error]" value="<?php echo esc_attr( mailster_option( 'gdpr_error' ) ); ?>" class="large-text">
+		</p>
+		<p><?php esc_html_e( 'Link to your privacy policy page.', 'mailster' ) ?>
+			<input type="text" name="mailster_options[gdpr_link]" value="<?php echo esc_attr( mailster_option( 'gdpr_link' ) ); ?>" class="large-text">
+		</p>
 		</td>
 	</tr>
 	<tr valign="top">

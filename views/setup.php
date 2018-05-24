@@ -4,7 +4,7 @@
 
 <?php
 
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 $is_verified = mailster()->is_verified();
@@ -52,16 +52,16 @@ $utm = array(
 				<dd><?php esc_html_e( 'Mailster needs some essential informations like your personal information and also some legal stuff.', 'mailster' ) ?></dd>
 			</dl>
 			<dl>
-				<dt><?php esc_html_e( 'Privacy', 'mailster' ) ?></dt>
-				<dd><?php esc_html_e( 'Mailster takes the privacy of your subscribers information seriously. Define which information Mailster should save.', 'mailster' ) ?></dd>
-			</dl>
-			<dl>
 				<dt><?php esc_html_e( 'Newsletter Homepage Setup', 'mailster' ) ?></dt>
 				<dd><?php esc_html_e( 'This is where your subscribers signup, manage or cancel their subscriptions.', 'mailster' ) ?></dd>
 			</dl>
 			<dl>
 				<dt><?php esc_html_e( 'Delivery Options', 'mailster' ) ?></dt>
 				<dd><?php esc_html_e( 'How Mailster should delivery you campaigns.', 'mailster' ) ?></dd>
+			</dl>
+			<dl>
+				<dt><?php esc_html_e( 'Privacy', 'mailster' ) ?></dt>
+				<dd><?php esc_html_e( 'Mailster takes the privacy of your subscribers information seriously. Define which information Mailster should save.', 'mailster' ) ?></dd>
 			</dl>
 			<dl>
 				<dt><?php esc_html_e( 'Validation', 'mailster' ) ?></dt>
@@ -380,8 +380,9 @@ $utm = array(
 
 			<form class="mailster-setup-step-form">
 
-			<p><?php esc_html_e( 'Mailster can track specific behaviors and the location of your subscribers to target your audience better. In most countries you must get the consent of the subscriber if you sent them marketing emails. Please get in touch with your lawyer for legal advice. in your country', 'mailster' ) ?></p>
-			<p><?php esc_html_e( 'If you have users in the European Union you have to comply with the General Data Protection Regulation (GDPR). Please check our knowledge base on how Mailster can help you.', 'mailster' ) ?> <a href="https://kb.mailster.co/tag/gdpr/" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ) ?></a></p>
+			<p><?php esc_html_e( 'Mailster can track specific behaviors and the location of your subscribers to target your audience better. In most countries you must get the consent of the subscriber if you sent them marketing emails. Please get in touch with your lawyer for legal advice in your country.', 'mailster' ) ?></p>
+			<p><?php esc_html_e( 'If you have users in the European Union you have to comply with the General Data Protection Regulation (GDPR). Please check our knowledge base on how Mailster can help you.', 'mailster' ) ?></p>
+			<p><a href="https://kb.mailster.co/tag/gdpr/" class="external button button-primary"><?php esc_html_e( 'Knowledge Base', 'mailster' ) ?></a></p>
 
 			<?php include MAILSTER_DIR . '/views/settings/privacy.php' ?>
 

@@ -397,7 +397,7 @@ class MailsterConditions {
 				break;
 			case 'value':
 				if ( in_array( $field, $this->time_fields ) ) {
-					return date( get_option( 'date_format' ), strtotime( $string ) );
+					return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
 				}
 				if ( $field == 'form' ) {
 					if ( $form = mailster( 'forms' )->get( (int) $string, false, false ) ) {

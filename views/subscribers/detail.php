@@ -28,7 +28,7 @@ if ( ! $is_new ) {
 
 $customfields = mailster()->get_custom_fields();
 
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 $now = time();
@@ -212,7 +212,7 @@ if ( $is_new ) {
 
 					case 'date':
 				?>
-						<li><?php echo $subscriber->{$field} ? '<p>' . date( get_option( 'date_format' ), strtotime( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
+						<li><?php echo $subscriber->{$field} ? '<p>' . date( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
 						<li><input type="text" id="mailster_data_<?php echo $field ?>" name="mailster_data[<?php echo $field ?>]" value="<?php echo esc_attr( $subscriber->{$field} ); ?>" class="regular-text input datepicker"></li>
 							<?php
 					break;
@@ -319,7 +319,7 @@ if ( $is_new ) {
 				<?php echo __( 'from', 'mailster' ) . ' <span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] );	?>
 				<?php endif; ?>
 					<?php if ( ! is_null( $meta->timeoffset ) ) : $t = time() + ( $meta->timeoffset * 3600 ) ?>
-						<?php echo '<br>' . __( 'Local Time', 'mailster' ) . ': <span title="' . date( $timeformat, $t ) . '">' . date( get_option( 'time_format' ), $t ) . '</span>'; ?>
+						<?php echo '<br>' . esc_html__( 'Local Time', 'mailster' ) . ': <span title="' . date( $timeformat, $t ) . '">' . date( $timeformat, $t ) . '</span>'; ?>
 						<?php echo '<br>UTC ' . ( $meta->timeoffset < 0 ? '' : '+' ) . $meta->timeoffset ?>
 					<?php endif; ?>
 				</p>

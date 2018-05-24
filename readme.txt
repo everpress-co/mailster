@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9.5
-Stable tag: 2.3.6
+Tested up to: 4.9.6
+Stable tag: 2.3.7
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -81,6 +81,16 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.3.7 =
+
+* new: option to add GDPR compliance forms on the privacy settings page.
+* added: search field for modules
+* added: `mailster_profile_form` and `mailster_unsubscribe_form` filter
+* added: information to privacy policy text in WordPress 4.9.6
+* added: added Mailster data to Export Personal Data option in WordPress 4.9.6
+* added: added Mailster data to Erase Personal Data option in WordPress 4.9.6
+* fixes: various small bugs
 
 = Version 2.3.6 =
 

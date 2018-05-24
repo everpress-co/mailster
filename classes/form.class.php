@@ -477,6 +477,20 @@ class MailsterForm {
 			$buttonlabel = strip_tags( $this->form->submit );
 		}
 
+		if ( ! $this->profile && ! $this->unsubscribe && mailster_option( 'gdpr_forms' ) ) {
+			$label = mailster_option( 'gdpr_text' );
+			$fields['_gdpr'] = '<div class="mailster-wrapper mailster-_gdpr-wrapper">';
+			$fields['_gdpr'] .= '<label for="mailster-_gdpr-' . $this->ID . '">';
+			$fields['_gdpr'] .= '<input type="hidden" name="_gdpr" value="0"><input id="mailster-_gdpr-' . $this->ID . '" name="_gdpr" type="checkbox" value="1" class="mailster-_gdpr mailster-required" aria-required="true" aria-label="' . esc_attr( $label ) . '"> ';
+			$fields['_gdpr'] .= ' ' . $label;
+			if ( mailster_option( 'gdpr_link' ) ) {
+				$fields['_gdpr'] .= ' (<a href="' . mailster_option( 'gdpr_link' ) . '">' . esc_html__( 'Link', 'mailster' ) . '</a>)';
+			}
+
+			$fields['_gdpr'] .= '</label>';
+			$fields['_gdpr'] .= '</div>';
+		}
+
 		$fields['_submit'] = '<div class="mailster-wrapper mailster-submit-wrapper form-submit">';
 
 		if ( apply_filters( 'mailster_form_button_as_input', true, $this->ID, $this->form ) ) {
@@ -507,6 +521,13 @@ class MailsterForm {
 		$html = str_replace( '<!--Mailster:styles-->', $this->get_styles(), $html );
 		$html = str_replace( '<!--Mailster:hiddenfields-->', $this->get_hidden_fields(), $html );
 		$html = str_replace( '<!--Mailster:infos-->', $this->get_info(), $html );
+
+		if ( $this->profile ) {
+			$html = apply_filters( 'mailster_profile_form', $html, $this->ID, $this->form );
+		}
+		if ( $this->unsubscribe ) {
+			$html = apply_filters( 'mailster_unsubscribe_form', $html, $this->ID, $this->form );
+		}
 
 		$html = apply_filters( 'mymail_form', apply_filters( 'mailster_form', $html, $this->ID, $this->form ), $this->ID, $this->form );
 
@@ -846,15 +867,7 @@ class MailsterForm {
 					$value = stripslashes( $value );
 					break;
 				case 'date':
-					$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
-					if ( false !== $timestamp ) {
-						$value = date( 'Y-m-d', $timestamp );
-					} elseif ( is_numeric( $value ) ) {
-						$value = date( 'Y-m-d', $value );
-					} else {
-						$value = '';
-					}
-					break;
+					$value = mailster( 'helper' )->do_timestamp( $value, 'Y-m-d' );
 				default:
 					$value = sanitize_text_field( $value );
 					break;
@@ -876,6 +889,10 @@ class MailsterForm {
 			$this->object['lists'] = isset( $_BASE['lists'] ) ? array_filter( (array) $_BASE['lists'] ) : array() ;
 		} else {
 			$this->object['lists'] = $this->form->lists;
+		}
+
+		if ( isset( $_BASE['_gdpr'] ) && empty( $_BASE['_gdpr'] ) ) {
+			$this->object['errors']['_gdpr'] = mailster_option( 'gdpr_error' );
 		}
 
 		// to hook into the system

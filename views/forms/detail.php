@@ -31,7 +31,7 @@ if ( ! $is_new ) {
 		$form = (object) wp_parse_args( $_POST['mailster_data'], (array) $form );
 	}
 }
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 $customfields = mailster()->get_custom_fields();
 
