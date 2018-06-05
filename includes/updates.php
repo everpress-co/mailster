@@ -558,6 +558,13 @@ if ( $old_version ) {
 			$mailster_options['gdpr_text'] = $default_options['gdpr_text'];
 			$mailster_options['gdpr_error'] = $default_options['gdpr_error'];
 
+		case '2.3.7':
+
+			mailster( 'helper' )->mkdir( '', true );
+			mailster( 'helper' )->mkdir( 'templates', true );
+			mailster( 'helper' )->mkdir( 'screenshots', true );
+			mailster( 'helper' )->mkdir( 'backgrounds', true );
+
 		default:
 
 			do_action( 'mailster_update', $old_version, $new_version );

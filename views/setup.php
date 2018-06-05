@@ -121,6 +121,12 @@ $utm = array(
 					<th scope="row"><?php esc_html_e( 'Logo Link', 'mailster' ) ?></th>
 					<td><input type="text" name="mailster_options[logo_link]" value="<?php echo esc_attr( mailster_option( 'logo_link' ) ); ?>" class="regular-text"> <p class="description"><?php esc_html_e( 'A link for your logo.', 'mailster' ) ?></p></td>
 				</tr>
+				<tr valign="top">
+					<th scope="row"><?php esc_html_e( 'Module Thumbnails', 'mailster' ) ?></th>
+					<td><label><input type="hidden" name="mailster_options[module_thumbnails]" value=""><input type="checkbox" name="mailster_options[module_thumbnails]" value="1" <?php checked( mailster_option( 'module_thumbnails' ) );?>> <?php esc_html_e( 'Show thumbnails of modules in the editor if available', 'mailster' ) ?> *</label>
+						<p class="description">* <?php esc_html_e( 'this option will send the HTML of your template files to our screen shot server which generates the thumbnails for you.', 'mailster' ) ?></p>
+					</td>
+				</tr>
 
 			</table>
 			<?php $tags = mailster_option( 'tags' );?>

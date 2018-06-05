@@ -107,7 +107,7 @@ class MailsterConditions {
 	}
 
 	private function get_time_fields() {
-		$time_fields = array( 'added', 'updated', 'signup', 'confirm' );
+		$time_fields = array( 'added', 'updated', 'signup', 'confirm', 'gdpr' );
 		$time_fields = array_merge( $time_fields,  $this->custom_date_fields );
 
 		return $time_fields;
@@ -125,6 +125,7 @@ class MailsterConditions {
 			// 'timeoffset' => __( 'Timeoffset', 'mailster' ),
 			// 'lat' => __( 'Latitude', 'mailster' ),
 			// 'lng' => __( 'Longitude', 'mailster' ),
+			 'gdpr' => __( 'GDPR Consent given', 'mailster' ),
 		);
 
 		return $meta_fields;

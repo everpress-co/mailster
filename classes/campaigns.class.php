@@ -3546,6 +3546,7 @@ class MailsterCampaigns {
 					$return[ $id ] = array(
 						'cron' => ! is_wp_error( $cron_status ),
 						'status' => $post->post_status,
+						'is_active' => $meta['active'],
 						'status_title' => $status_title,
 						'total' => $totals,
 						'sent' => $sent,
@@ -3782,6 +3783,8 @@ class MailsterCampaigns {
 
 			mailster_cache_set( 'campaign_send_' . $campaign->ID, $content );
 
+		} else {
+			$placeholder->add_defaults( $campaign->ID );
 		}
 
 		$placeholder->set_content( $content );

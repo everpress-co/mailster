@@ -82,7 +82,7 @@ jQuery(document).ready(function ($) {
 					$.each(rowdata, function (key, value) {
 						if (!first && current[id][key] == value) return;
 
-						var statuschange = current[id] && current[id].status && rowdata.status != current[id].status;
+						var statuschange = current[id] && current[id].status && (rowdata.status != current[id].status || rowdata.is_active != current[id].is_active);
 
 						switch (key) {
 						case 'status':

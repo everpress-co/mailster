@@ -83,6 +83,14 @@ Xaver Birsak – https://everpress.io
 == Changelog ==
 
 = Version 2.3.8 =
+
+* fixed: caching issue on tags in subject line
+* fixed: subscriber based autoresponder if "lists do not matter"
+* new: Condition: GDPR Consent given
+* added: meta data can now get exported
+* added: `mailster_subscriber_rating` filter
+* change: ratings now updated via cron to reduce server load on large databases
+
 = Version 2.3.7 =
 
 * new: option to add GDPR compliance forms on the privacy settings page.

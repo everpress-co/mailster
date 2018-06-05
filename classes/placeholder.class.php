@@ -104,6 +104,11 @@ class MailsterPlaceholder {
 	}
 
 
+	public function remove_last_post_args() {
+		$this->last_post_args = null;
+	}
+
+
 	/**
 	 *
 	 *

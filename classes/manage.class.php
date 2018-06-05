@@ -869,6 +869,7 @@ class MailsterManage {
 		$useheader = $offset === 0 && $d['header'];
 
 		$custom_fields = mailster()->get_custom_fields();
+		$meta_keys = mailster( 'subscribers' )->get_meta_keys();
 		$custom_date_fields = mailster()->get_custom_date_fields();
 		$custom_field_names = array_merge( array( 'firstname', 'lastname' ), array_keys( $custom_fields ) );
 		$custom_field_names = array_keys( array_intersect_key( array_flip( $custom_field_names ), array_flip( $d['column'] ) ) );
@@ -927,7 +928,13 @@ class MailsterManage {
 						$val = __( 'Rating', 'mailster' );
 					break;
 					default:
-						$val = ( isset( $custom_fields[ $col ] ) ) ? $custom_fields[ $col ]['name'] : ucwords( $col );
+						if ( isset( $custom_fields[ $col ] ) ) {
+							$val = $custom_fields[ $col ]['name'];
+						} elseif ( $meta_keys[ $col ] ) {
+							$val = $meta_keys[ $col ];
+						} else {
+							$val = ucwords( $col );
+						}
 				}
 
 				$val = apply_filters( 'mailster_export_heading_' . $col, $val, $d );
@@ -954,13 +961,16 @@ class MailsterManage {
 
 		$all_fields = isset( $d['column'] ) ? (array) $d['column'] : array();
 		$special = array_values( preg_grep( '/^_/', $all_fields ) );
-		$fields = array_values( preg_grep( '/^(?!_)/', $all_fields ) );
+		$fields = preg_grep( '/^(?!_)/', $all_fields );
+		$meta = array_values( array_intersect( $fields, mailster( 'subscribers' )->get_meta_keys( true ) ) );
+		$fields = array_values( array_diff( $fields, $meta ) );
 		$conditions = isset( $d['conditions'] ) ? (array) $d['conditions'] : array();
 
 		$args = array(
 			'lists' => $listids,
 			'status' => $statuses,
 			'fields' => $fields,
+			'meta' => $meta,
 			'conditions' => $conditions,
 			'limit' => $limit,
 			'offset' => $offset,
@@ -1018,6 +1028,7 @@ class MailsterManage {
 					case 'updated':
 					case 'signup':
 					case 'confirm':
+					case 'gdpr':
 						$val = ! empty( $user->{$key} ) ? ( $dateformat ? date( $dateformat, $user->{$key} ) : $user->{$key} ) : '';
 					break;
 					case 'rating':

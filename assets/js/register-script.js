@@ -79,7 +79,7 @@ jQuery(document).ready(function ($) {
 					wrap.addClass('step-3').removeClass('step-2')
 					$(document).trigger('verified.' + slug, [response.purchasecode, response.username, response.email]);
 				} else {
-					if (response.code == 406) {
+					if (response.code == 406 || response.code == 679 || response.code == 680) {
 						form = wrap.find('.register_form');
 						form.parent().removeClass('step-2').addClass('step-1');
 					}

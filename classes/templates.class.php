@@ -1147,7 +1147,6 @@ class MailsterTemplates {
 					wp_schedule_single_event( time(), 'mailster_copy_backgrounds' );
 				}
 			}
-			$this->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 15 );
 		}
 
 	}
