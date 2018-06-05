@@ -1256,20 +1256,16 @@ class MailsterHelper {
 
 		if ( ! is_dir( $path ) ) {
 
-			if ( wp_mkdir_p( $path ) ) {
-
-				// if ( $prevent_access ) {
-				// $this->file_put_contents( $path . 'index.html', '' );
-				// $this->file_put_contents( $path . '.htaccess', 'deny from all' );
-				// }
-				return $path;
-
+			if ( ! wp_mkdir_p( $path ) ) {
+				return false;
 			}
-
-			return false;
-
 		}
 
+		if ( $prevent_access ) {
+			if ( ! file_exists( $path . 'index.html' ) ) {
+				$this->file_put_contents( $path . 'index.html', '<!DOCTYPE html><html><head><title>.</title><meta name="robots" content="noindex,nofollow"></head></html>' );
+			}
+		}
 		return $path;
 
 	}

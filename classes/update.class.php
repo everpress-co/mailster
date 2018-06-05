@@ -75,7 +75,7 @@ class MailsterUpdate {
 
 					case 500: // Internal Server Error
 					case 503: // Service Unavailable
-						$error = __( 'Envato servers are currently down. Please try again later!', 'mailster' );
+						$error = __( 'Authentication servers are currently down. Please try again later!', 'mailster' );
 					break;
 
 					default:

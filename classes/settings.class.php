@@ -87,7 +87,7 @@ class MailsterSettings {
 			'gdpr_link' => $gdpr_link,
 			'gdpr_text' => __( 'I agree to the privacy policy and terms.', 'mailster' ),
 			'gdpr_error' => __( 'You have to agree to the privacy policy and terms!', 'mailster' ),
-			'module_thumbnails' => true,
+			'module_thumbnails' => false,
 			'charset' => 'UTF-8',
 			'encoding' => '8bit',
 			'post_count' => 30,

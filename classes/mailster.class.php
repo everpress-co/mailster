@@ -818,6 +818,11 @@ class Mailster {
 		preg_match( '#^(.*)?<head([^>]*)>(.*?)<\/head>#is', (is_null( $customhead ) ? $content : $customhead), $matches );
 		if ( ! empty( $matches ) ) {
 			$pre_stuff = $matches[1];
+			// remove multiple heads
+			if ( substr_count( $pre_stuff, '<!DOCTYPE' ) > 1 ) {
+				$pos = strrpos( $pre_stuff, '<!DOCTYPE' );
+				$pre_stuff = substr( $pre_stuff, strrpos( $pre_stuff, '<!DOCTYPE' ) );
+			}
 			$head = '<head' . $matches[2] . '>' . $matches[3] . '</head>';
 		} else {
 			$pre_stuff = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' . "\n" . '<html xmlns="http://www.w3.org/1999/xhtml">' . "\n";

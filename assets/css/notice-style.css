@@ -55,6 +55,6 @@ div.mailster-notice .notice-dismiss:before {
 {
 	content: '✕';
 }
-div.mailster-notice#mailster-notice-verify .notice-dismiss{
+_div.mailster-notice#mailster-notice-verify .notice-dismiss{
 	display: none;
 }

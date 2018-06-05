@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.6
-Stable tag: 2.3.7
+Stable tag: 2.3.8
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -81,6 +81,15 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.3.8 =
+
+* fixed: caching issue on tags in subject line
+* fixed: subscriber based autoresponder if "lists do not matter"
+* new: Condition: GDPR Consent given
+* added: meta data can now get exported
+* added: `mailster_subscriber_rating` filter
+* change: ratings now updated via cron to reduce server load on large databases
 
 = Version 2.3.7 =
 

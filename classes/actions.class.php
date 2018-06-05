@@ -275,7 +275,7 @@ class MailsterActions {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 			if ( $args['type'] != 1 && $explicit ) {
-				// mailster( 'subscribers' )->update_rate( $args['subscriber_id'] );
+				wp_schedule_single_event( time() + 120, 'mailster_update_rating', array( $args['subscriber_id'] ) );
 			}
 
 			return true;

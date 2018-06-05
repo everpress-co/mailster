@@ -147,16 +147,19 @@ if ( $is_new ) {
 
 				<div><?php $this->output_referer( $subscriber->ID );?></div>
 
+				<?php if ( $meta->gdpr ) :  ?>
+				<strong><?php esc_html_e( 'Consent given (GDPR)', 'mailster' );?>:</strong> <?php echo date( $timeformat, $meta->gdpr + $timeoffset ) ?>
+				<?php endif;  ?>
 				<a class="show-more-info alignright"><?php esc_html_e( 'more', 'mailster' );?></a>
 				<ul class="more-info">
 					<li><strong><?php esc_html_e( 'confirmed at', 'mailster' );?>:</strong> <?php echo $subscriber->confirm
 					? date( $timeformat, $subscriber->confirm + $timeoffset ) . ', ' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->confirm ) ) . ( $subscriber->ip_confirm ? ' ' . sprintf( __( 'with IP %s', 'mailster' ), $subscriber->ip_confirm ) : '' )
 					: __( 'unknown', 'mailster' ) ?>
 					</li>
-					<li><strong><?php esc_html_e( 'latest known IP', 'mailster' );?>:</strong> <?php echo $meta->ip
-					? $meta->ip
-					: __( 'unknown', 'mailster' ) ?>
-					</li>
+					<?php if ( $meta->gdpr ) :  ?>
+					<li><strong><?php esc_html_e( 'Consent given (GDPR)', 'mailster' );?>:</strong> <?php echo date( $timeformat, $meta->gdpr + $timeoffset ) ?></li>
+					<?php endif;  ?>
+					<li><strong><?php esc_html_e( 'latest known IP', 'mailster' );?>:</strong> <?php echo $meta->ip ? $meta->ip	: __( 'unknown', 'mailster' ) ?></li>
 				</ul>
 			</div>
 			<div class="info">

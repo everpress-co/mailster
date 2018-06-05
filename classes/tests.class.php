@@ -527,9 +527,15 @@ class MailsterTests {
 
 			$this->error( sprintf( __( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . __( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
 
-		} else {
-
 		}
+
+		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#i', $hp->post_content, $matches ) ) {
+			$form_id = (int) $matches[1];
+			if ( ! mailster( 'forms' )->get( $form_id ) ) {
+				$this->error( sprintf( __( 'The form with id %1$s doesn\'t exist. Please update %2$s.', 'mailster' ), $form_id . ' (<code>' . $matches[0] . ']</code>)', '<a href="post.php?post=' . $hp->ID . '&action=edit">' . __( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+			}
+		}
+
 	}
 	private function test_form_exist() {
 

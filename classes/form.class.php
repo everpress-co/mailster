@@ -248,12 +248,29 @@ class MailsterForm {
 		$fields = array();
 
 		if ( $this->unsubscribe ) {
+
+			$single_opt_out = mailster_option( 'single_opt_out' );
+			$buttonlabel = mailster_text( 'unsubscribebutton', __( 'Unsubscribe', 'mailster' ) );
+
+			// instant unsubscribe
+			if ( $subscriber && $single_opt_out ) {
+
+				if ( mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $this->campaignID ) ) {
+					$buttonlabel = $this->form->submit;
+					$this->form->fields = array();
+					$this->set_success( mailster_text( 'unsubscribe' ) );
+				} else {
+					$this->set_error( mailster_text( 'unsubscribeerror' ) );
+				}
+			}
 			if ( get_query_var( '_mailster_hash' ) ) {
 				$this->form->fields = array();
 			} else {
 				$this->form->fields = array_intersect_key( $this->form->fields, array_flip( array( 'email' ) ) );
 			}
 			$this->form->userschoice = false;
+		} else {
+			$buttonlabel = strip_tags( $this->form->submit );
 		}
 
 		if ( $this->profile ) {
@@ -469,12 +486,6 @@ class MailsterForm {
 
 				$fields['lists'] .= '</div>';
 			}
-		}
-
-		if ( $this->unsubscribe ) {
-			$buttonlabel = mailster_text( 'unsubscribebutton', __( 'Unsubscribe', 'mailster' ) );
-		} else {
-			$buttonlabel = strip_tags( $this->form->submit );
 		}
 
 		if ( ! $this->profile && ! $this->unsubscribe && mailster_option( 'gdpr_forms' ) ) {
@@ -891,8 +902,12 @@ class MailsterForm {
 			$this->object['lists'] = $this->form->lists;
 		}
 
-		if ( isset( $_BASE['_gdpr'] ) && empty( $_BASE['_gdpr'] ) ) {
-			$this->object['errors']['_gdpr'] = mailster_option( 'gdpr_error' );
+		if ( isset( $_BASE['_gdpr'] ) ) {
+			if ( empty( $_BASE['_gdpr'] ) ) {
+				$this->object['errors']['_gdpr'] = mailster_option( 'gdpr_error' );
+			} else {
+				$this->object['userdata']['gdpr'] = $now;
+			}
 		}
 
 		// to hook into the system

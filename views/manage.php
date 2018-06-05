@@ -307,6 +307,8 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 						'rating' => __( 'Rating', 'mailster' ),
 					);
 
+					$meta = $meta + mailster( 'subscribers' )->get_meta_keys();
+
 					$fields = array( '_number' => '#' ) + $columns + $customfields + $extra + $meta;
 
 					$fields = apply_filters( 'mailster_export_fields', $fields );

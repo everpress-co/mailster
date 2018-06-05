@@ -159,7 +159,7 @@
 					<input type="hidden" class="condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]">
 					</div>
 					<div class="mailster-conditions-value-field" data-fields=",<?php echo implode( ',', $this->time_fields ) ?>,">
-					<input type="text" class="regular-text datepicker condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]">
+					<input type="text" class="regular-text datepicker condition-value" disabled autocomplete="off" value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]">
 					</div>
 					<div class="mailster-conditions-value-field" data-fields=",id,wp_id,">
 					<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]">

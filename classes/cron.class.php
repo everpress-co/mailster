@@ -27,7 +27,10 @@ class MailsterCron {
 		add_action( 'wp_ajax_nopriv_mailster_cron', array( &$this, 'cron_worker' ) );
 		add_action( 'template_redirect', array( &$this, 'template_redirect' ), 1 );
 
+		add_action( 'wp_version_check', array( &$this, 'verified_notice' ) );
+
 	}
+
 
 
 	/**
@@ -44,6 +47,10 @@ class MailsterCron {
 		do_action( 'mymail_resend_confirmations' );
 
 		$this->update();
+
+	}
+
+	public function verified_notice() {
 
 		if ( mailster_is_local() ) {
 			return;
@@ -63,9 +70,7 @@ class MailsterCron {
 		} else {
 			mailster_remove_notice( 'outdated' );
 		}
-
 	}
-
 
 	/**
 	 *
