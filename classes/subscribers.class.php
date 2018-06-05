@@ -1431,7 +1431,7 @@ class MailsterSubscribers {
 			'confirmation' => __( 'Confirmation', 'mailster' ),
 			'error' => __( 'Error', 'mailster' ),
 			'referer' => __( 'Referer', 'mailster' ),
-			'timeoffset' => __( 'Timeoffset', 'mailster' ),
+			'timeoffset' => __( 'Timeoffset to UTC', 'mailster' ),
 			'form' => __( 'Form', 'mailster' ),
 			'unsubscribe' => __( 'Unsubscribe', 'mailster' ),
 			'gdpr' => __( 'GDPR Timestamp', 'mailster' ),
