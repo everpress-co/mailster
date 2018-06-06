@@ -215,7 +215,7 @@ class MailsterLists {
 					exit;
 				} elseif ( $_POST['delete'] || $_POST['delete_subscribers'] ) :
 
-					if ( $list = $this->get( intval( $_POST['mailster_data']['ID'] ), false ) ) {
+					if ( $list = $this->get( (int) $_POST['mailster_data']['ID'], false ) ) {
 
 						$delete_subscribers = isset( $_POST['delete_subscribers'] );
 
@@ -347,7 +347,7 @@ class MailsterLists {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
-			$list_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : intval( $data['ID'] );
+			$list_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
 
 			if ( ! empty( $subscriber_ids ) ) {
 				$this->assign_subscribers( $list_id, $subscriber_ids, false, true );
@@ -453,28 +453,86 @@ class MailsterLists {
 
 		global $wpdb;
 
-		if ( ! is_array( $ids ) ) {
-			$ids = array( (int) $ids );
-		}
+		if ( ! is_null( $ids ) ) {
+			if ( ! is_array( $ids ) ) {
+				$ids = array( (int) $ids );
+			}
 
-		if ( empty( $ids ) ) {
-			return true;
+			if ( empty( $ids ) ) {
+				return true;
+			}
 		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			if ( ! is_array( $subscriber_ids ) ) {
+				$subscriber_ids = array( (int) $subscriber_ids );
+			}
 
-		if ( ! is_array( $subscriber_ids ) ) {
-			$subscriber_ids = array( (int) $subscriber_ids );
-		}
-
-		if ( empty( $subscriber_ids ) ) {
-			return true;
+			if ( empty( $subscriber_ids ) ) {
+				return true;
+			}
 		}
 
 		$confirmed = time();
 
-		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE list_id IN (" . implode( ', ', $ids ) . ') AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
+		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE 1=1";
 
+		if ( ! is_null( $ids ) ) {
+			$sql .= ' AND list_id IN (' . implode( ', ', $ids ) . ')';
+		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			$sql .= ' AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
+		}
 		if ( ! $force ) {
 			$sql .= ' AND added = 0';
+		}
+
+		return false !== $wpdb->query( $wpdb->prepare( $sql, $confirmed ) );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $ids
+	 * @param unknown $subscriber_ids
+	 * @param unknown $force     (optional)
+	 * @return unknown
+	 */
+	public function unconfirm_subscribers( $ids, $subscriber_ids, $force = false ) {
+
+		global $wpdb;
+
+		if ( ! is_null( $ids ) ) {
+			if ( ! is_array( $ids ) ) {
+				$ids = array( (int) $ids );
+			}
+
+			if ( empty( $ids ) ) {
+				return true;
+			}
+		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			if ( ! is_array( $subscriber_ids ) ) {
+				$subscriber_ids = array( (int) $subscriber_ids );
+			}
+
+			if ( empty( $subscriber_ids ) ) {
+				return true;
+			}
+		}
+
+		$confirmed = 0;
+
+		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE 1=1";
+
+		if ( ! is_null( $ids ) ) {
+			$sql .= ' AND list_id IN (' . implode( ', ', $ids ) . ')';
+		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			$sql .= ' AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
+		}
+		if ( ! $force ) {
+			$sql .= ' AND added != 0';
 		}
 
 		return false !== $wpdb->query( $wpdb->prepare( $sql, $confirmed ) );
@@ -504,7 +562,7 @@ class MailsterLists {
 		}
 
 		if ( is_null( $added ) ) {
-			$added = 0;
+			$added = mailster_option( 'list_based_opt_in' ) ? 0 : time();
 		} elseif ( true === $added ) {
 			$added = time();
 		}
@@ -541,6 +599,11 @@ class MailsterLists {
 			$success = $success && ( false !== $wpdb->query( $sql ) );
 
 		}
+
+		// set the status for the list from the global status from the user
+		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers AS l LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = l.subscriber_id SET l.added = s.confirm WHERE l.subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ') AND l.added = 0 AND s.status != 0';
+
+		$success = $success && ( false !== $wpdb->query( $sql ) );
 
 		return $success;
 
@@ -911,7 +974,7 @@ class MailsterLists {
 
 		$result = $wpdb->get_var( $sql );
 
-		return $result ? intval( $result ) : 0;
+		return $result ? (int) $result : 0;
 
 	}
 
@@ -979,9 +1042,9 @@ class MailsterLists {
 					$list_counts[ $list->ID ] = 0;
 				}
 
-				$list_counts[ $list->ID ] += intval( $list->count );
+				$list_counts[ $list->ID ] += (int) $list->count;
 				if ( $list->parent_id ) {
-					$list_counts[ $list->parent_id ] += intval( $list->count );
+					$list_counts[ $list->parent_id ] += (int) $list->count;
 				}
 			}
 
@@ -993,7 +1056,7 @@ class MailsterLists {
 			return $list_counts;
 		}
 
-		return isset( $list_counts[ $list_id ] ) && isset( $list_counts[ $list_id ] ) ? intval( $list_counts[ $list_id ] ) : 0;
+		return isset( $list_counts[ $list_id ] ) && isset( $list_counts[ $list_id ] ) ? (int) $list_counts[ $list_id ] : 0;
 
 	}
 

@@ -104,6 +104,11 @@ class MailsterPlaceholder {
 	}
 
 
+	public function remove_last_post_args() {
+		$this->last_post_args = null;
+	}
+
+
 	/**
 	 *
 	 *
@@ -161,10 +166,6 @@ class MailsterPlaceholder {
 	 */
 	public function add_defaults( $campaign_id, $args = array() ) {
 
-		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign_id, $this->subscriberHash );
-		$forwardlink = mailster()->get_forward_link( $campaign_id );
-		$profilelink = mailster()->get_profile_link( $campaign_id, $this->subscriberHash );
-
 		$meta = mailster( 'campaigns' )->meta( $campaign_id );
 
 		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
@@ -172,14 +173,11 @@ class MailsterPlaceholder {
 		$defaults = array(
 			'preheader' => $meta['preheader'],
 			'subject' => $meta['subject'],
-			'webversion' => '<a href="{webversionlink}">' . mailster_text( 'webversion' ) . '</a>',
-			'unsub' => '<a href="{unsublink}">' . mailster_text( 'unsubscribelink' ) . '</a>',
-			'forward' => '<a href="{forwardlink}">' . mailster_text( 'forward' ) . '</a>',
-			'profile' => '<a href="{profilelink}">' . mailster_text( 'profile' ) . '</a>',
+			'webversion' => '<a href="{webversionlink}">{webversionlinktext}</a>',
+			'unsub' => '<a href="{unsublink}">{unsublinktext}</a>',
+			'forward' => '<a href="{forwardlink}">{forwardlinktext}</a>',
+			'profile' => '<a href="{profilelink}">{profilelinktext}</a>',
 			'webversionlink' => get_permalink( $campaign_id ),
-			'unsublink' => $unsubscribelink,
-			'forwardlink' => $forwardlink,
-			'profilelink' => $profilelink,
 			'lists' => mailster( 'campaigns' )->get_formated_lists( $campaign_id ),
 			'email' => '<a href="">{emailaddress}</a>',
 			'year' => $time[0],
@@ -188,14 +186,43 @@ class MailsterPlaceholder {
 			'hour' => $time[3],
 			'minute' => $time[4],
 		);
-		if ( $meta['nowebversion'] ) {
+		if ( ! $meta['webversion'] ) {
 			$defaults['webversion'] = '';
 			$defaults['webversionlink'] = '';
 		}
 
 		$args = wp_parse_args( $args, $defaults );
 
-		$this->add( apply_filters( 'mailster_placeholder_defaults', $args ) );
+		$this->add( apply_filters( 'mailster_placeholder_defaults', $args, $campaign_id ) );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $campaign_id
+	 * @param unknown $args    (optional)
+	 * @return unknown
+	 */
+	public function add_custom( $campaign_id, $args = array() ) {
+
+		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign_id, $this->subscriberHash );
+		$forwardlink = mailster()->get_forward_link( $campaign_id );
+		$profilelink = mailster()->get_profile_link( $campaign_id, $this->subscriberHash );
+
+		$defaults = array(
+			'webversionlinktext' => mailster_text( 'webversion' ),
+			'unsublinktext' => mailster_text( 'unsubscribelink' ),
+			'forwardlinktext' => mailster_text( 'forward' ),
+			'profilelinktext' => mailster_text( 'profile' ),
+			'unsublink' => $unsubscribelink,
+			'forwardlink' => $forwardlink,
+			'profilelink' => $profilelink,
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
+		$this->add( apply_filters( 'mailster_placeholder_custom', $args, $campaign_id, $this->subscriberID ) );
 	}
 
 
@@ -311,8 +338,11 @@ class MailsterPlaceholder {
 		// remove unused placeholders
 		if ( $removeunused ) {
 
+			// temporary remove style blocks
 			if ( preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $styles ) ) {
-				$this->content = str_replace( $styles[0], '<!--Mailster:styleblock-->', $this->content );
+				foreach ( $styles[0] as $i => $style ) {
+					$this->content = str_replace( $style, '<!--Mailster:styleblock' . $i . '-->', $this->content );
+				}
 			}
 
 			$keep = apply_filters( 'mailster_keep_tags', array() );
@@ -326,8 +356,9 @@ class MailsterPlaceholder {
 			}
 
 			if ( ! empty( $styles[0] ) ) {
-				$search = explode( '|', str_repeat( '/<!--Mailster:styleblock-->/|', count( $styles[0] ) - 1 ) . '/<!--Mailster:styleblock-->/' );
-				$this->content = preg_replace( $search, $styles[0], $this->content, 1 );
+				foreach ( $styles[0] as $i => $style ) {
+					$this->content = str_replace( '<!--Mailster:styleblock' . $i . '-->', $style, $this->content );
+				}
 			}
 		}
 
@@ -618,11 +649,11 @@ class MailsterPlaceholder {
 
 		$pts = mailster( 'helper' )->get_post_types();
 
-		$timeformat = get_option( 'time_format' );
-		$dateformat = get_option( 'date_format' );
+		$timeformat = mailster( 'helper' )->timeformat();
+		$dateformat = mailster( 'helper' )->dateformat();
 
 		// placeholder images
-		if ( $count = preg_match_all( '#<(img|td|th|v:fill)(.*)(src|background)="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#<(img|td|th|v:fill)([^>]*)(src|background)="(.*)\?action=mailster_image_placeholder([^"]+)"([^>]*)>#', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
@@ -649,9 +680,9 @@ class MailsterPlaceholder {
 					if ( false === $replace_to ) {
 
 						$parts = explode( ':', trim( $query['tag'] ) );
-						$factor = isset( $query['f'] ) && $is_img_tag ? intval( $query['f'] ) : 1;
-						$width = isset( $query['w'] ) ? intval( $query['w'] ) * $factor : null;
-						$height = isset( $query['h'] ) ? intval( $query['h'] ) * $factor : null;
+						$factor = isset( $query['f'] ) && $is_img_tag ? (int) $query['f'] : 1;
+						$width = isset( $query['w'] ) ? (int) $query['w'] * $factor : null;
+						$height = isset( $query['h'] ) ? (int) $query['h'] * $factor : null;
 						$crop = isset( $query['c'] ) && $height ? ! ! ( $query['c'] ) : false;
 						$post_type = str_replace( '_image', '', $parts[0] );
 						$is_post = $post_type != $parts[0] && in_array( $post_type, $pts );
@@ -664,8 +695,8 @@ class MailsterPlaceholder {
 							}
 							$extra = explode( '|', $parts[1] );
 							$term_ids = explode( ';', $extra[0] );
-							$fallback_id = isset( $extra[1] ) ? intval( $extra[1] ) : mailster_option( 'fallback_image' );
-							$post_id = intval( array_shift( $term_ids ) );
+							$fallback_id = isset( $extra[1] ) ? (int) $extra[1] : mailster_option( 'fallback_image' );
+							$post_id = (int) array_shift( $term_ids );
 
 							if ( $post_id < 0 ) {
 
@@ -728,6 +759,7 @@ class MailsterPlaceholder {
 									$replace_to = '<' . $tag . ' ' . $pre_stuff . 'background="' . $img['url'] . '" ' . $post_stuff . '>';
 								}
 							} else {
+
 								if ( $is_img_tag ) {
 									$replace_to = '';
 								} else {
@@ -841,8 +873,8 @@ class MailsterPlaceholder {
 
 		$extra = null;
 		$post_type = $post->post_type;
-		$timeformat = get_option( 'time_format' );
-		$dateformat = get_option( 'date_format' );
+		$timeformat = mailster( 'helper' )->timeformat();
+		$dateformat = mailster( 'helper' )->dateformat();
 
 		if ( 0 === strpos( $what, 'author' ) ) {
 			$author = get_user_by( 'id', $post->post_author );

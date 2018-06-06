@@ -21,7 +21,7 @@ class MailsterHelper {
 
 		if ( $attach_id ) {
 
-			$attach_id = intval( $attach_id );
+			$attach_id = (int) $attach_id;
 
 			$image_src = wp_get_attachment_image_src( $attach_id, 'full' );
 			if ( ! $image_src ) {
@@ -107,7 +107,7 @@ class MailsterHelper {
 		$resized_img_path = $no_ext_path . '-' . $new_img_size[0] . 'x' . $new_img_size[1] . '.' . $extension;
 		$new_img = str_replace( basename( $image_src[0] ), basename( $resized_img_path ), $image_src[0] );
 
-		if ( ! file_exists( $resized_img_path ) ) {
+		if ( ! file_exists( $resized_img_path ) && file_exists( $actual_file_path ) ) {
 
 			$image = wp_get_image_editor( $actual_file_path );
 			if ( ! is_wp_error( $image ) ) {
@@ -126,15 +126,16 @@ class MailsterHelper {
 			$new_img = str_replace( basename( $image_src[0] ), basename( $new_img_path ), $image_src[0] );
 
 			$meta_data = wp_get_attachment_metadata( $attach_id );
-			$size_id = '_mailster-' . $width . 'x' . $height . '|' . $crop;
-			$meta_data['sizes'][ $size_id ] = array(
-				'file' => basename( $new_img_path ),
-				'width' => $width,
-				'height' => $height,
-				'mime-type' => $new_img_size['mime'],
-			);
-			wp_update_attachment_metadata( $attach_id, $meta_data );
-
+			if ( $meta_data ) {
+				$size_id = '_mailster-' . $width . 'x' . $height . '|' . $crop;
+				$meta_data['sizes'][ $size_id ] = array(
+					'file' => basename( $new_img_path ),
+					'width' => $width,
+					'height' => $height,
+					'mime-type' => $new_img_size['mime'],
+				);
+				wp_update_attachment_metadata( $attach_id, $meta_data );
+			}
 		}
 
 		return apply_filters( 'mailster_create_image', array(
@@ -165,7 +166,7 @@ class MailsterHelper {
 			$exclude = array( 'comment_shortcuts', 'first_name', 'last_name', 'nickname', 'use_ssl', 'default_password_nag', 'dismissed_wp_pointers', 'rich_editing', 'show_admin_bar_front', 'show_welcome_panel', 'admin_color', 'screen_layout_dashboard', 'screen_layout_newsletter' );
 
 			$meta_values = $wpdb->get_col( "SELECT meta_key FROM {$wpdb->usermeta} WHERE meta_value NOT LIKE '%:{%' GROUP BY meta_key ASC" );
-			$meta_values = preg_grep( '/^(?!wp_)/', $meta_values );
+			$meta_values = preg_grep( '/^(?!' . preg_quote( $wpdb->prefix ) . ')/', $meta_values );
 			$meta_values = array_diff( $meta_values, $exclude );
 			$meta_values = array_values( $meta_values );
 
@@ -614,7 +615,7 @@ class MailsterHelper {
 	 */
 	public function get_first_form_id() {
 		global $wpdb;
-		return intval( $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" ) );
+		return (int) $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" );
 	}
 
 
@@ -692,7 +693,7 @@ class MailsterHelper {
 ?>
 
 			<div class="<?php echo esc_attr( implode( ' ', $classes ) ) ?>" title="<?php esc_attr_e( 'Change Image', 'mailster' ); ?>" data-title="<?php esc_attr_e( 'Add Image', 'mailster' ); ?>">
-				<img class="media-editor-link-img" src="<?php echo esc_attr( $image_url ) ?>">
+				<img class="media-editor-link-img" <?php if ( $image_url ) : ?>src="<?php echo esc_attr( $image_url ) ?>"<?php endif; ?>>
 				<a class="media-editor-link-select button" href="#"><?php esc_html_e( 'Select Image', 'mailster' ); ?></a>
 				<a class="media-editor-link-remove" href="#" title="<?php esc_attr_e( 'Remove Image', 'mailster' ); ?>">&#10005;</a>
 				<input class="media-editor-link-input" type="hidden" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>">
@@ -735,6 +736,56 @@ class MailsterHelper {
 		return $in_seconds ? $offset * 3600 : (int) $offset;
 	}
 
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function dateformat() {
+
+		$format = get_option( 'date_format' );
+
+		return apply_filters( 'mailster_dateformat', $format );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function timeformat() {
+
+		$format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+
+		return apply_filters( 'mailster_timeformat', $format );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $value
+	 * @param unknown $format   (optional)
+	 * @return unknown
+	 */
+	public function do_timestamp( $value, $format = null ) {
+		if ( is_null( $format ) ) {
+			$format = $this->timeformat();
+		}
+		$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
+		if ( false !== $timestamp ) {
+			$value = date( $format, $timestamp );
+		} elseif ( is_numeric( $value ) ) {
+			$value = date( $format, $value );
+		} else {
+			$value = '';
+		}
+
+		return $value;
+	}
 
 	/**
 	 *
@@ -860,12 +911,16 @@ class MailsterHelper {
 
 		switch ( $status ) {
 			case 'list_unsubscribe':
+			case 'list_unsubscribe_list':
 				return  __( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
 			case 'link_unsubscribe':
+			case 'link_unsubscribe_list':
 				return __( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
 			case 'email_unsubscribe':
+			case 'email_unsubscribe_list':
 				return __( 'The user canceled the subscription via the website.', 'mailster' );
 			case 'spam_complaint':
+			case 'spam_complaint_list':
 				return __( 'The user marked this message as Spam in the Mail application.', 'mailster' );
 		}
 
@@ -914,7 +969,7 @@ class MailsterHelper {
 
 		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
 
-		return $content;
+		return apply_filters( 'mailster_prepare_content', $content );
 
 	}
 
@@ -951,6 +1006,14 @@ class MailsterHelper {
 	 */
 	public function inline_style( $content ) {
 
+		// save comments with conditional stuff
+		preg_match_all( '#<!--\s?\[\s?if(.*)?>(.*)?<!\[endif\]-->#sU', $content, $comments );
+
+		$commentid = uniqid();
+		foreach ( $comments[0] as $i => $comment ) {
+			$content = str_replace( $comment, '<!--Mailster:html_comment_' . $i . '_' . $commentid . '-->', $content );
+		}
+
 		// get all style blocks
 		if ( preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles ) ) {
 
@@ -981,6 +1044,10 @@ class MailsterHelper {
 			}
 			$content = $html;
 
+		}
+
+		foreach ( $comments[0] as $i => $comment ) {
+			$content = str_replace( '<!--Mailster:html_comment_' . $i . '_' . $commentid . '-->', $comment, $content );
 		}
 
 		return $content;
@@ -1189,20 +1256,16 @@ class MailsterHelper {
 
 		if ( ! is_dir( $path ) ) {
 
-			if ( wp_mkdir_p( $path ) ) {
-
-				// if ( $prevent_access ) {
-				// $this->file_put_contents( $path . 'index.html', '' );
-				// $this->file_put_contents( $path . '.htaccess', 'deny from all' );
-				// }
-				return $path;
-
+			if ( ! wp_mkdir_p( $path ) ) {
+				return false;
 			}
-
-			return false;
-
 		}
 
+		if ( $prevent_access ) {
+			if ( ! file_exists( $path . 'index.html' ) ) {
+				$this->file_put_contents( $path . 'index.html', '<!DOCTYPE html><html><head><title>.</title><meta name="robots" content="noindex,nofollow"></head></html>' );
+			}
+		}
 		return $path;
 
 	}

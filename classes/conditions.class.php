@@ -18,27 +18,22 @@ class MailsterConditions {
 	}
 
 
-	public function view( $conditions = array(), $echo = true ) {
+	public function view( $conditions = array(), $inputname = null ) {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-conditions', MAILSTER_URI . 'assets/js/conditions-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
+		if ( is_null( $inputname ) ) {
+			$inputname = 'mailster_data[conditions]';
+		}
+
 		if ( empty( $conditions ) ) {
 			$conditions = array();
 		}
 
-		ob_start();
 		include MAILSTER_DIR . 'views/conditions/conditions.php';
-		$output = ob_get_contents();
-		ob_end_clean();
-
-		if ( ! $echo ) {
-			return $output;
-		}
-
-		echo $output;
 
 	}
 
@@ -112,7 +107,7 @@ class MailsterConditions {
 	}
 
 	private function get_time_fields() {
-		$time_fields = array( 'added', 'updated', 'signup', 'confirm' );
+		$time_fields = array( 'added', 'updated', 'signup', 'confirm', 'gdpr' );
 		$time_fields = array_merge( $time_fields,  $this->custom_date_fields );
 
 		return $time_fields;
@@ -125,11 +120,12 @@ class MailsterConditions {
 			'client' => __( 'Client', 'mailster' ),
 			'clienttype' => __( 'Clienttype', 'mailster' ),
 			// 'coords' => __( 'Coords', 'mailster' ),
-			// 'geo' => __( 'Geo', 'mailster' ),
+			'geo' => __( 'Location', 'mailster' ),
 			'lang' => __( 'Language', 'mailster' ),
 			// 'timeoffset' => __( 'Timeoffset', 'mailster' ),
 			// 'lat' => __( 'Latitude', 'mailster' ),
 			// 'lng' => __( 'Longitude', 'mailster' ),
+			 'gdpr' => __( 'GDPR Consent given', 'mailster' ),
 		);
 
 		return $meta_fields;
@@ -296,6 +292,12 @@ class MailsterConditions {
 				$value = array( $value );
 			}
 			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_list_title' ), $value ) ) . $closing_quote;
+		} elseif ( 'geo' == $field ) {
+			if ( ! is_array( $value ) ) {
+				$value = array( $value );
+			}
+			$return['operator'] = '<em>' . $this->nice_name( $operator, 'operator', $field ) . '</em>';
+			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_country_name' ), $value ) ) . $closing_quote;
 		} elseif ( 'rating' == $field ) {
 			$stars = ( round( $this->sanitize_rating( $value ) / 10, 2 ) * 50 );
 			$full = max( 0, min( 5, floor( $stars ) ) );
@@ -318,14 +320,14 @@ class MailsterConditions {
 
 
 	private function sanitize_rating( $value ) {
-		if ( ! $value || ! floatval( $value ) ) {
+		if ( ! $value || ! (float) $value ) {
 			return 0;
 		}
 		$value = str_replace( ',', '.', $value );
 		if ( strpos( $value, '%' ) !== false || $value > 5 ) {
-			$value = floatval( $value ) / 100;
+			$value = (float) $value / 100;
 		} elseif ( $value > 1 ) {
-			$value = floatval( $value ) * 0.2;
+			$value = (float) $value * 0.2;
 		}
 		return $value;
 	}
@@ -349,6 +351,11 @@ class MailsterConditions {
 			return $list->name;
 		}
 		return $list_id;
+	}
+
+	public function get_country_name( $code ) {
+
+		return mailster( 'geo' )->code2Country( $code );
 	}
 
 
@@ -391,7 +398,7 @@ class MailsterConditions {
 				break;
 			case 'value':
 				if ( in_array( $field, $this->time_fields ) ) {
-					return date( get_option( 'date_format' ), strtotime( $string ) );
+					return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
 				}
 				if ( $field == 'form' ) {
 					if ( $form = mailster( 'forms' )->get( (int) $string, false, false ) ) {

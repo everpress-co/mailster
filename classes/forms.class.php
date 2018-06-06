@@ -48,11 +48,11 @@ class MailsterForms {
 			'is_button' => isset( $_GET['button'] ),
 			'is_iframe' => $formpage && ( isset( $_GET['iframe'] ) && $_GET['iframe'] == 1 && ! isset( $_GET['button'] ) ),
 			'use_style' => ( ( isset( $_GET['style'] ) && $_GET['style'] == 1 ) || ( isset( $_GET['s'] ) && $_GET['s'] == 1 ) ),
-			'form_id' => ( isset( $_GET['id'] ) ? intval( $_GET['id'] ) : 1 ),
-			'showcount' => ( isset( $_GET['showcount'] ) ? intval( $_GET['showcount'] ) : 0 ),
+			'form_id' => ( isset( $_GET['id'] ) ? (int) $_GET['id'] : 1 ),
+			'showcount' => ( isset( $_GET['showcount'] ) ? (int) $_GET['showcount'] : 0 ),
 			'width' => ( isset( $_GET['width'] ) ? $_GET['width'] : 480 ),
 			'buttonstyle' => ( isset( $_GET['design'] ) ? $_GET['design'] : 'default' ),
-			'button_id' => ( isset( $_GET['button'] ) ? intval( $_GET['button'] ) : '' ),
+			'button_id' => ( isset( $_GET['button'] ) ? (int) $_GET['button'] : '' ),
 			'origin' => ( isset( $_GET['origin'] ) ? $_GET['origin'] : '' ),
 			'buttonlabel' => ( isset( $_GET['label'] ) ? esc_attr( strip_tags( urldecode( $_GET['label'] ) ) ) : 'Subscribe' ),
 
@@ -99,7 +99,7 @@ class MailsterForms {
 			do_action( 'mymail_form_head_iframe' );
 			wp_register_style( 'mailster-form-iframe-style', MAILSTER_URI . 'assets/css/form-iframe-style' . $suffix . '.css', array( 'mailster-form-default-style' ), MAILSTER_VERSION );
 			mailster( 'helper' )->wp_print_embedded_styles( 'mailster-form-iframe-style' );
-			$width = preg_match( '#\d+%#', $width ) ? intval( $width ) . '%' : intval( $width ) . 'px';
+			$width = preg_match( '#\d+%#', $width ) ? (int) $width . '%' : (int) $width . 'px';
 			echo '<style type="text/css">.mailster-form-wrap{width:' . $width . '}</style>';
 
 		} else {
@@ -339,12 +339,12 @@ class MailsterForms {
 
 			// duplicate form
 			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
-					$id = intval( $_GET['duplicate'] );
+					$id = (int) $_GET['duplicate'];
 					$id = $this->duplicate( $id );
 
 			}
 
-			if ( isset( $id ) && ! isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
+			if ( isset( $id ) && ! (isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] )) ) {
 				( isset( $_GET['ID'] ) )
 					? wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $id )
 					: wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
@@ -439,7 +439,7 @@ class MailsterForms {
 
 			elseif ( isset( $_POST['delete'] ) ) :
 
-				if ( current_user_can( 'mailster_delete_forms' ) && $form = $this->get( intval( $_POST['mailster_data']['ID'] ) ) ) {
+				if ( current_user_can( 'mailster_delete_forms' ) && $form = $this->get( (int) $_POST['mailster_data']['ID'] ) ) {
 					$success = $this->remove( $form->ID );
 					if ( is_wp_error( $success ) ) {
 						mailster_notice( sprintf( __( 'There was an error while deleting forms: %s', 'mailster' ), $success->get_error_message() ), 'error', true );
@@ -570,7 +570,7 @@ class MailsterForms {
 
 		if ( false !== $wpdb->update( "{$wpdb->prefix}mailster_forms", $data, array( 'ID' => $data['ID'] ) ) ) {
 
-			$form_id = intval( $data['ID'] );
+			$form_id = (int) $data['ID'];
 
 			if ( $lists ) {
 				$this->assign_lists( $form_id, $lists, true );
@@ -773,7 +773,7 @@ class MailsterForms {
 
 		global $wpdb;
 
-		$form_ids = ! is_array( $form_ids ) ? array( intval( $form_ids ) ) : array_filter( $form_ids, 'is_numeric' );
+		$form_ids = ! is_array( $form_ids ) ? array( (int) $form_ids ) : array_filter( $form_ids, 'is_numeric' );
 
 		$sql = "DELETE FROM {$wpdb->prefix}mailster_forms_lists WHERE form_id IN (" . implode( ', ', $form_ids ) . ')';
 
@@ -914,7 +914,7 @@ class MailsterForms {
 
 		global $wpdb;
 
-		$form_ids = ! is_array( $form_ids ) ? array( intval( $form_ids ) ) : array_filter( $form_ids, 'is_numeric' );
+		$form_ids = ! is_array( $form_ids ) ? array( (int) $form_ids ) : array_filter( $form_ids, 'is_numeric' );
 
 		// delete from forms, form_fields
 		$sql = "DELETE a,b FROM {$wpdb->prefix}mailster_forms AS a LEFT JOIN {$wpdb->prefix}mailster_form_fields AS b ON ( a.ID = b.form_id ) WHERE a.ID IN (" . implode( ',', $form_ids ) . ')';
@@ -1336,19 +1336,19 @@ class MailsterForms {
 		?>
 		<h4><?php esc_html_e( 'Shortcode', 'mailster' ) ?></h4>
 		<p>
-			<code id="form-shortcode" class="regular-text">[newsletter_signup_form id=<?php echo intval( $form->ID ) ?>]</code> <a class="clipboard" data-clipboard-target="#form-shortcode"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
+			<code id="form-shortcode" class="regular-text">[newsletter_signup_form id=<?php echo (int) $form->ID ?>]</code> <a class="clipboard" data-clipboard-target="#form-shortcode"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 			<br><span class="description"><?php esc_html_e( 'Use this shortcode wherever they are excepted.', 'mailster' ) ?></span>
 		</p>
 
 		<h4><?php esc_html_e( 'PHP', 'mailster' ) ?></h4>
 		<p>
-			<code id="form-php-1" class="regular-text">&lt;?php echo mailster_form( <?php echo intval( $form->ID ) ?> ); ?&gt;</code> <a class="clipboard" data-clipboard-target="#form-php-1"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
+			<code id="form-php-1" class="regular-text">&lt;?php echo mailster_form( <?php echo (int) $form->ID ?> ); ?&gt;</code> <a class="clipboard" data-clipboard-target="#form-php-1"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 		</p>
 		<p>
-			<code id="form-php-2" class="regular-text">echo mailster_form( <?php echo intval( $form->ID ) ?> );</code> <a class="clipboard" data-clipboard-target="#form-php-2"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
+			<code id="form-php-2" class="regular-text">echo mailster_form( <?php echo (int) $form->ID ?> );</code> <a class="clipboard" data-clipboard-target="#form-php-2"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 		</p>
 		<p>
-			<code id="form-php-3" class="regular-text">$form_html = mailster_form( <?php echo intval( $form->ID ) ?> );</code> <a class="clipboard" data-clipboard-target="#form-php-3"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
+			<code id="form-php-3" class="regular-text">$form_html = mailster_form( <?php echo (int) $form->ID ?> );</code> <a class="clipboard" data-clipboard-target="#form-php-3"><?php esc_html_e( 'copy to clipboard', 'mailster' ) ?></a>
 		</p>
 		<?php
 	}

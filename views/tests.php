@@ -9,7 +9,7 @@
 <div class="<?php echo implode( ' ', $classes ) ?>">
 <h1><?php esc_html_e( 'Mailster Tests', 'mailster' ); ?></h1>
 
-<p><?php esc_html_e( 'Mailster will now run some tests to ensure everything is running smoothly. Please keep this browser window open until all tests are finished', 'mailster' ); ?></p>
+<p><?php esc_html_e( 'Mailster will now run some tests to ensure everything is running smoothly. Please keep this browser window open until all tests are finished.', 'mailster' ); ?></p>
 
 <div class="tests-wrap no-success">
 	<a class="button button-primary button-hero start-test"><?php esc_html_e( __( 'Start Tests', 'mailster' ) ) ?></a>

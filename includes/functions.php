@@ -408,7 +408,7 @@ function mailster_list_newsletter( $args = '' ) {
  */
 function mailster_ip2Country( $ip = '', $get = 'code' ) {
 
-	if ( ! mailster_option( 'trackcountries' ) ) {
+	if ( ! mailster_option( 'track_location' ) ) {
 		return 'unknown';
 	}
 
@@ -418,9 +418,9 @@ function mailster_ip2Country( $ip = '', $get = 'code' ) {
 			$ip = mailster_get_ip();
 		}
 
-		require_once MAILSTER_DIR . 'classes/libs/Ip2Country.php';
-		$i = new Ip2Country();
-		$code = $i->get( $ip, $get );
+		$ip2Country = mailster( 'geo' )->Ip2Country();
+
+		$code = $ip2Country->get( $ip, $get );
 
 		if ( ! $code ) {
 			$code = mailster_ip2City( $ip, $get ? 'country_' . $get : null );
@@ -442,7 +442,7 @@ function mailster_ip2Country( $ip = '', $get = 'code' ) {
  */
 function mailster_ip2City( $ip = '', $get = null ) {
 
-	if ( ! mailster_option( 'trackcities' ) ) {
+	if ( ! mailster_option( 'track_location' ) ) {
 		return 'unknown';
 	}
 
@@ -565,8 +565,10 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
 			'email' => $email,
 	), $userdata );
 
+	$added = null;
 	if ( ! is_null( $double_opt_in ) ) {
 		$entry['status'] = $double_opt_in ? 0 : 1;
+		$added = $double_opt_in ? 0 : 1;
 	}
 
 	$subscriber_id = mailster( 'subscribers' )->add( $entry, $overwrite );
@@ -583,15 +585,14 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
 
 	foreach ( $lists as $list ) {
 		if ( is_numeric( $list ) ) {
-			$new_lists[] = intval( $list );
+			$new_lists[] = (int) $list;
 		} else {
 			if ( $list_id = mailster( 'lists' )->get_by_name( $list, 'ID' ) ) {
 				$new_lists[] = $list_id;
 			}
 		}
 	}
-
-	mailster( 'subscribers' )->assign_lists( $subscriber_id, $new_lists, $mergelists );
+	mailster( 'subscribers' )->assign_lists( $subscriber_id, $new_lists, $mergelists, $added );
 
 	return true;
 
@@ -991,13 +992,20 @@ function mailster_update_notice( $text ) {
 /**
  *
  *
+ * @param unknown $post_id (optional)
  * @return unknown
  */
-function is_mailster_newsletter_homepage() {
+function is_mailster_newsletter_homepage( $post_id = null ) {
 
 	global $post;
+	if ( is_null( $post_id ) ) {
+		$the_post = $post;
+		$post_id = isset( $post ) ? $post->ID : null;
+	} else {
+		$the_post = get_post( $post_id );
+	}
 
-	return apply_filters( 'is_mailster_newsletter_homepage', isset( $post ) && $post->ID == mailster_option( 'homepage' ), $post );
+	return apply_filters( 'is_mailster_newsletter_homepage', $post_id == mailster_option( 'homepage' ), $the_post );
 
 }
 
@@ -1096,7 +1104,7 @@ if ( ! function_exists( 'http_negotiate_language' ) ) :
 
 			$qvalue = 1.0;
 			if ( ! empty( $arr[5] ) ) {
-				$qvalue = floatval( $arr[5] );
+				$qvalue = (float) $arr[5];
 			}
 
 			// find q-maximal language

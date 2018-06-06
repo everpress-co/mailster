@@ -31,7 +31,7 @@ if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) : ?>
 <a class="" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export"><?php esc_html_e( 'Export', 'mailster' ) ?></a>
 <?php esc_html_e( 'or', 'mailster' ) ?>
 
-<a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_subscriber&new"><?php esc_html_e( 'Add Subscriber', 'mailster' ) ?></a>
+<a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_subscribers&new"><?php esc_html_e( 'Add Subscriber', 'mailster' ) ?></a>
 </p>
 <?php endif; ?>
 

@@ -122,7 +122,7 @@ class MailsterUpgrade {
 		$return['success'] = false;
 
 		$id = $_POST['id'];
-		$this->performance = isset( $_POST['performance'] ) ? intval( $_POST['performance'] ) : $this->performance;
+		$this->performance = isset( $_POST['performance'] ) ? (int) $_POST['performance'] : $this->performance;
 
 		if ( method_exists( $this, 'do_' . $id ) ) {
 			$return['success'] = true;
@@ -264,7 +264,7 @@ class MailsterUpgrade {
 		wp_localize_script( 'mailster-update-script', 'mailster_updates_options', array(
 			'autostart' => $autostart,
 		) );
-		$performance = isset( $_GET['performance'] ) ? max( 1, intval( $_GET['performance'] ) ) : 1;
+		$performance = isset( $_GET['performance'] ) ? max( 1, (int) $_GET['performance'] ) : 1;
 		wp_localize_script( 'mailster-update-script', 'mailster_updates_performance', array( $performance ) );
 
 		remove_action( 'admin_enqueue_scripts', 'wp_auth_check_load' );
@@ -662,10 +662,6 @@ class MailsterUpgrade {
 			if ( ! $wp_filesystem->move( $old_location, $new_location, true ) ) {
 				@rename( $old_location, $new_location );
 			}
-
-			mailster_update_option( 'countries_db', str_replace( $old_location, $new_location, mailster_option( 'countries_db' ) ) );
-			mailster_update_option( 'cities_db', str_replace( $old_location, $new_location, mailster_option( 'cities_db' ) ) );
-
 		}
 
 		if ( is_dir( $new_location . '_bak' ) ) {
@@ -1288,7 +1284,7 @@ class MailsterUpgrade {
 
 		$now = time();
 
-		$id = intval( $id );
+		$id = (int) $id;
 
 		$sql = "SELECT a.meta_value AS meta FROM {$wpdb->postmeta} AS a LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS b ON b.subscriber_id = a.post_id WHERE a.meta_key = 'mailster-userdata' AND b.subscriber_id IS NULL AND a.post_id = %d LIMIT 1";
 

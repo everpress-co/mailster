@@ -31,7 +31,7 @@ class PHPMailer_mailster
      * The PHPMailer Version number.
      * @var string
      */
-    public $Version = '5.2.25';
+    public $Version = '5.2.26';
 
     /**
      * Email priority.
@@ -659,6 +659,8 @@ class PHPMailer_mailster
         if ($exceptions !== null) {
             $this->exceptions = (boolean)$exceptions;
         }
+        //Pick an appropriate debug output format automatically
+        $this->Debugoutput = (strpos(PHP_SAPI, 'cli') !== false ? 'echo' : 'html');
     }
 
     /**
@@ -1517,7 +1519,7 @@ class PHPMailer_mailster
     public function getSMTPInstance()
     {
         if (!is_object($this->smtp)) {
-            $this->smtp = new SMTP_mailster;
+            $this->smtp = new SMTP;
         }
         return $this->smtp;
     }

@@ -95,12 +95,12 @@ class MailsterNotification {
 
 		$options = wp_parse_args( $args, $defaults );
 
-		$subscriber_id = intval( $options['subscriber_id'] );
+		$subscriber_id = (int) $options['subscriber_id'];
 
 		// send now
 		if ( $timestamp <= $now ) {
 			// sendnow
-			$result = $this->send( intval( $subscriber_id ), $options );
+			$result = $this->send( (int) $subscriber_id, $options );
 
 			// queue it if there was a problem
 			if ( is_wp_error( $result ) ) {
@@ -222,19 +222,23 @@ class MailsterNotification {
 
 			case 'confirmation_replace':
 				if ( isset( $options['form'] ) ) {
-					$form = mailster( 'forms' )->get( $options['form'], false, false );
+					$form = mailster( 'forms' )->get( $options['form'], false, true );
 					$form_id = $form->ID;
 				} else {
 					$form_id = null;
 				}
 
-				$list_ids = isset( $options['list_ids'] ) ? $options['list_ids'] : null;
+				$subscriber_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID );
+				$list_names = wp_list_pluck( $subscriber_lists, 'name' );
+
+				$list_ids = isset( $options['list_ids'] ) ? array_filter( $options['list_ids'] ) : null;
 
 				$link = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id, $list_ids );
 
 				return wp_parse_args( array(
 						'link' => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
 						'linkaddress' => $link,
+						'lists' => implode( ', ', $list_names ),
 				), $content );
 
 			case 'confirmation_attachments':
@@ -651,7 +655,7 @@ class MailsterNotification {
 						break;
 					case 'date':
 						echo $subscriber->{$id} && is_integer( strtotime( $subscriber->{$id} ) )
-							? date( get_option( 'date_format' ), strtotime( $subscriber->{$id} ) )
+							? date( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$id} ) )
 							: $subscriber->{$id};
 						break;
 					default:
@@ -733,7 +737,7 @@ class MailsterNotification {
 
 		$subscribers = $wpdb->get_results( $sql );
 
-		$date_format = get_option( 'date_format' );
+		$date_format = mailster( 'helper' )->dateformat();
 
 		$count = count( $subscribers );
 		if ( ! $count ) {
@@ -923,7 +927,7 @@ foreach ( $coords as $i => $coord ) {
 					<?php esc_html_e( 'from other countries', 'mailster' ) ?>
 				</td>
 				<td align="right" width="15%">
-					<strong><?php echo number_format_i18n( intval( $other ) ); ?></strong>
+					<strong><?php echo number_format_i18n( (int) $other ); ?></strong>
 				</td>
 				<td>&nbsp;</td>
 				</tr>
@@ -1012,7 +1016,7 @@ foreach ( $coords as $i => $coord ) {
 
 		$subscribers = $wpdb->get_results( $sql );
 
-		$date_format = get_option( 'date_format' );
+		$date_format = mailster( 'helper' )->dateformat();
 
 		$count = count( $subscribers );
 		if ( ! $count ) {

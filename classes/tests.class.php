@@ -113,7 +113,7 @@ class MailsterTests {
 
 				foreach ( $test_errors as $i => $error ) {
 					$name = $this->nicename( $test_id );
-					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ($error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . '</h4><p class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</p></div>';
+					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ($error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . '</h4><div class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</div></div>';
 					if ( $type != 'success' ) {
 						$text .= '[' . $type . '] ' . $test_id . ': ' . strip_tags( $error['msg'] ) . "\n";
 					}
@@ -202,8 +202,9 @@ class MailsterTests {
 
 	private function failure( $type, $msg, $link = null ) {
 
-		$backtrace = debug_backtrace();
-		$test_id = $backtrace[2]['function'];
+		// $backtrace = debug_backtrace();
+		// $test_id = $backtrace[2]['function'];
+		$test_id = $this->current_id;
 
 		if ( is_null( $test_id ) ) {
 			$test_id = uniqid();
@@ -288,7 +289,7 @@ class MailsterTests {
 		$current = get_bloginfo( 'version' );
 		if ( version_compare( $current, '3.8' ) < 0 ) {
 			$this->error( sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', $current ) );
-		} elseif ( $update && $update->response == 'upgrade' ) {
+		} elseif ( $update && $update->response == 'upgrade' && version_compare( $update->current, $current ) ) {
 			$this->warning( sprintf( 'Your WordPress site is not up-to-date! Version %1$s is available. Your current version is %2$s.', $update->current, $current ) );
 		} else {
 			$this->success( 'You have version ' . $current );
@@ -315,15 +316,70 @@ class MailsterTests {
 		}
 
 	}
+	private function test_content_directory() {
+		$content_dir = MAILSTER_UPLOAD_DIR;
+		if ( ! is_dir( dirname( $content_dir ) ) ) {
+			wp_mkdir_p( dirname( $content_dir ) );
+		}
+		if ( ! is_dir( dirname( $content_dir ) ) || ! wp_is_writable( dirname( $content_dir ) ) ) {
+			$this->warning( sprintf( 'Your content folder in %s is not writable.', '"' . dirname( $content_dir ) . '"' ) );
+		} else {
+			$this->success( sprintf( 'Your content folder in %s is writable.', '"' . dirname( $content_dir ) . '"' ) );
+		}
+
+		if ( ! is_dir( $content_dir ) ) {
+			wp_mkdir_p( $content_dir );
+		}
+		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
+			$this->warning( sprintf( 'Your Mailster content folder in %s is not writable.', '"' . $content_dir . '"' ) );
+		} else {
+			$this->success( sprintf( 'Your Mailster content folder in %s is writable.', '"' . $content_dir . '"' ) );
+		}
+
+	}
+	private function test_default_template() {
+
+		$default = 'mymail';
+		$template = mailster_option( 'default_template' );
+		$template_dir = trailingslashit( MAILSTER_UPLOAD_DIR ) . 'templates/' . $template;
+
+		if ( ! is_dir( dirname( $template_dir ) ) ) {
+			wp_mkdir_p( dirname( $template_dir ) );
+		}
+		if ( ! is_dir( dirname( $template_dir ) ) || ! wp_is_writable( dirname( $template_dir ) ) ) {
+			$this->warning( sprintf( 'Your Template folder %s doesn\'t exists or is not writeable.', '"' . dirname( $template_dir ) . '"' ) );
+
+		} else {
+			$this->success( sprintf( 'Your Template folder %s exists.', '"' . dirname( $template_dir ) . '"' ) );
+		}
+		if ( ! is_dir( $template_dir ) || ! wp_is_writable( $template_dir ) ) {
+			$default_template_dir = trailingslashit( MAILSTER_UPLOAD_DIR ) . 'templates/' . $default;
+			if ( ! is_dir( $default_template_dir ) || ! wp_is_writable( $default_template_dir ) ) {
+				$result = mailster( 'templates' )->renew_default_template( $default );
+				if ( is_wp_error( $result ) ) {
+					$this->warning( sprintf( 'Your Template folder %s doesn\'t exists or is not writeable.', '"' . $template_dir . '"' ) );
+					$this->error( 'Not able to download default template.' );
+				} else {
+					$this->notice( sprintf( 'Default template loaded to %s.', '"' . $default_template_dir . '"' ) );
+					if ( mailster_update_option( 'default_template', $default ) ) {
+						$this->notice( sprintf( 'Default template changed to %s.', '"' . $default . '"' ) );
+					}
+				}
+			}
+		} else {
+			$this->success( sprintf( 'Your Template folder %s exists.', '"' . $template_dir . '"' ) );
+		}
+
+	}
 	private function test_deprecated_hooks() {
 
 		global $wp_filter;
 		$hooks = array_values( preg_grep( '/^mymail_/', array_keys( $wp_filter ) ) );
 
 		if ( ! empty( $hooks ) ) {
-			$msg = '<p>Following deprecated MyMail hooks were found and should get replaced:</p><ul>';
+			$msg = 'Following deprecated MyMail hooks were found and should get replaced:<ul>';
 			foreach ( $hooks as $hook ) {
-				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code></li>';
+				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code> </li>';
 			}
 			$msg .= '</ul>';
 
@@ -334,12 +390,12 @@ class MailsterTests {
 	}
 	private function test_custom_language() {
 		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo' ) ) {
-				$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );
+			$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );
 		}
 	}
 	private function test_wp_debug() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$this->warning( 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
+			$this->failure( (mailster_is_local() ? 'notice' : 'warning' ),'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
 		}
 	}
 	private function test_dom_document_extension() {
@@ -382,17 +438,8 @@ class MailsterTests {
 		}
 
 	}
-	private function test_content_directory() {
-		$content_dir = dirname( MAILSTER_UPLOAD_DIR );
-		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
-			$this->warning( sprintf( 'Your content folder in %s is not writable.', '"' . $content_dir . '"' ) );
-		} else {
-			$this->success( sprintf( 'Your content folder in %s is writable.', '"' . $content_dir . '"' ) );
-
-		}
-	}
 	private function test_memory_limit() {
-		if ( max( intval( @ini_get( 'memory_limit' ) ), intval( WP_MAX_MEMORY_LIMIT ) ) < 128 ) {
+		if ( max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT ) < 128 ) {
 			$this->warning( 'Your Memory Limit is ' . size_format( (int) WP_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		} else {
 			$this->success( 'Your Memory Limit is ' . size_format( (int) WP_MEMORY_LIMIT * 1048576 ) );
@@ -401,7 +448,6 @@ class MailsterTests {
 	private function test_plugin_location() {
 		if ( MAILSTER_SLUG != 'mailster/mailster.php' ) {
 			$this->warning( 'You have changed the plugin location of Mailster. This can cause problems while updating the plugin.' );
-		} else {
 		}
 	}
 	private function test_mailster_folder_in_root() {
@@ -429,9 +475,7 @@ class MailsterTests {
 				$this->success( sprintf( __( 'Last hit was %s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) );
 			}
 		}
-
 		return;
-
 	}
 	private function test_cron_lock() {
 
@@ -460,7 +504,6 @@ class MailsterTests {
 				$this->success( 'Your mail throughput is ok. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );
 			}
 		}
-
 	}
 	private function test_newsletter_homepage() {
 
@@ -484,8 +527,13 @@ class MailsterTests {
 
 			$this->error( sprintf( __( 'Your newsletter homepage is not setup correctly. Please update %s.', 'mailster' ), '<a href="post.php?post=' . $hp->ID . '&action=edit">' . __( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
 
-		} else {
+		}
 
+		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#i', $hp->post_content, $matches ) ) {
+			$form_id = (int) $matches[1];
+			if ( ! mailster( 'forms' )->get( $form_id ) ) {
+				$this->error( sprintf( __( 'The form with id %1$s doesn\'t exist. Please update %2$s.', 'mailster' ), $form_id . ' (<code>' . $matches[0] . ']</code>)', '<a href="post.php?post=' . $hp->ID . '&action=edit">' . __( 'this page', 'mailster' ) . '</a>' ), 'https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/' );
+			}
 		}
 
 	}
@@ -514,7 +562,7 @@ class MailsterTests {
 			$this->error( 'does not work: ' . $code );
 		}
 	}
-	private function test_TLS() {
+	private function _test_TLS() {
 		$response = wp_remote_post( 'https://www.howsmyssl.com/a/check', array(
 			'sslverify' => true,
 			'timeout' => 5,
@@ -638,7 +686,7 @@ class MailsterTests {
 			if ( $strict ) {
 				$this->error( $message );
 			} else {
-				$this->warning( $message );
+				$this->notice( $message );
 			}
 		}
 

@@ -54,7 +54,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 	public function no_items() {
 
-		$status = isset( $_GET['status'] ) ? intval( $_GET['status'] ) : null;
+		$status = isset( $_GET['status'] ) ? (int) $_GET['status'] : null;
 
 		switch ( $status ) {
 			case '0': // pending
@@ -93,7 +93,9 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			return;
 		}
 
-		mailster( 'conditions' )->render( $_GET['conditions'] );
+		if ( isset( $_GET['conditions'] ) ) {
+			mailster( 'conditions' )->render( $_GET['conditions'] );
+		}
 
 ?>
 	<form id="searchform" action method="get">
@@ -102,7 +104,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	<?php if ( isset( $_GET['paged'] ) ) : ?><input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ) ?>"><?php endif; ?>
 	<?php if ( isset( $_GET['status'] ) ) : ?><input type="hidden" name="status" value="<?php echo esc_attr( $_GET['status'] ) ?>"><?php endif; ?>
 	<?php if ( isset( $_GET['lists'] ) ) :
-		foreach ( array_filter( $_GET['lists'], 'is_numeric' ) as $list_id ) {?>
+		foreach ( array_filter( (array) $_GET['lists'], 'is_numeric' ) as $list_id ) {?>
 	            <input type="hidden" name="lists[]" value="<?php echo $list_id ?>">
 	        <?php }endif;?>
 	<p class="search-box">
@@ -172,7 +174,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				$elements = array();
 
 				foreach ( $lists as $i => $list ) {
-					$elements[] = '<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '" title="' . $list->description . '">' . $list->name . '</a>';
+					$elements[] = '<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '" title="' . ($list->confirmed ? esc_attr__( 'confirmed', 'mailster' ) :  esc_attr__( 'not confirmed', 'mailster' )) . '" class="' . ($list->confirmed ? 'confirmed' : 'not-confirmed') . '">' . esc_html( $list->name ) . '</a>';
 				}
 			return '<div class="table-data">' . implode( ', ', $elements ) . '</div>';
 
@@ -185,7 +187,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			return '<div class="table-data"><span class="nowrap tiny">' . mailster( 'subscribers' )->get_status( $item->{$column_name}, true ) . '</span></div>';
 
 			case 'signup':
-				$timestring = ( ! $item->{$column_name} ) ? __( 'unknown', 'mailster' ) : date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
+				$timestring = ( ! $item->{$column_name} ) ? __( 'unknown', 'mailster' ) : date_i18n( mailster( 'helper' )->timeformat(), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
 			return '<div class="table-data">' . $timestring . '</div>';
 
 			default:
@@ -196,7 +198,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 						return '<div class="table-data">' . ($item->{$column_name} ? '&#10004;' : '&#10005;') . '</div>';
 						break;
 						case 'date':
-						return '<div class="table-data">' . ($item->{$column_name} ? date_i18n( get_option( 'date_format' ), strtotime( $item->{$column_name} ) ) : '') . '</div>';
+						return '<div class="table-data">' . ($item->{$column_name} ? date_i18n( mailster( 'helper' )->dateformat(), strtotime( $item->{$column_name} ) ) : '') . '</div>';
 						break;
 						default:
 						return '<div class="table-data">' . ($item->{$column_name}) . '</div>';
@@ -275,12 +277,16 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		$add = '';
 		$remove = '';
+		$confirm = '<option value="confirm_list_all">&nbsp;' . esc_html__( 'all', 'mailster' ) . '</option>';
+		$unconfirm = '<option value="unconfirm_list_all">&nbsp;' . esc_html__( 'all', 'mailster' ) . '</option>';
 		foreach ( $lists as $list ) {
 			$add .= '<option value="add_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';
 			$remove .= '<option value="remove_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';
+			$confirm .= '<option value="confirm_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';
+			$unconfirm .= '<option value="unconfirm_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';
 		}
 
-		echo str_replace( '</select>', '<optgroup label="' . __( 'add to list', 'mailster' ) . '">' . $add . '</optgroup><optgroup label="' . __( 'remove from list', 'mailster' ) . '">' . $remove . '</optgroup></select>', $actions );
+		echo str_replace( '</select>', '<optgroup label="' . __( 'add to list', 'mailster' ) . '">' . $add . '</optgroup><optgroup label="' . __( 'remove from list', 'mailster' ) . '">' . $remove . '</optgroup><optgroup label="' . __( 'confirm list', 'mailster' ) . '">' . $confirm . '</optgroup><optgroup label="' . __( 'unconfirm list', 'mailster' ) . '">' . $unconfirm . '</optgroup></select>', $actions );
 
 	}
 
@@ -334,7 +340,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
 		$args = array(
-			'status' => isset( $_GET['status'] ) ? intval( $_GET['status'] ) : false,
+			'status' => isset( $_GET['status'] ) ? (int) $_GET['status'] : false,
 			's'      => isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null,
 			'strict' => isset( $_GET['strict'] ) ? boolval( $_GET['strict'] ) : false,
 			'lists' => isset( $_GET['lists'] ) ? ($_GET['lists'] ) : false,
@@ -346,8 +352,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			$this->per_page = 50;
 		}
 
-		$offset = isset( $_GET['paged'] ) ? ( intval( $_GET['paged'] ) - 1 ) * $limit : 0;
-		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
+		$offset = isset( $_GET['paged'] ) ? ( (int) $_GET['paged'] - 1 ) * $this->per_page : 0;
+		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'id';
 		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
 
 		switch ( $orderby ) {

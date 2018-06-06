@@ -7,7 +7,6 @@ jQuery(document).ready(function ($) {
 		body = $('body'),
 		uploader, container, modules, images, buttons, repeatable, selection,
 		currentmodule,
-		//inline editing not working on Safari (https://github.com/tinymce/tinymce/issues/3232)
 		isTinymce = typeof tinymce != 'undefined';
 
 	//not in an iframe
@@ -108,6 +107,7 @@ jQuery(document).ready(function ($) {
 			tags = mailster_mce_button.tags,
 			designs = mailster_mce_button.designs,
 			tiny = mailsterdata.tinymce,
+			changetimeout,
 			change = false;
 
 		tinymce.init($.extend(tiny.args, tiny.multi, {
@@ -180,16 +180,19 @@ jQuery(document).ready(function ($) {
 
 			editor
 				.on('change', function (event) {
-					var content = event.level.content,
-						c = content.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/g);
-					if (c) {
-						for (var i = c.length - 1; i >= 0; i--) {
-							content = content.replace(c[i], _hex(c[i]));
+					clearTimeout(changetimeout);
+					changetimeout = setTimeout(function () {
+						var content = event.level.content,
+							c = content.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/g);
+						if (c) {
+							for (var i = c.length - 1; i >= 0; i--) {
+								content = content.replace(c[i], _hex(c[i]));
+							}
+							this.bodyElement.innerHTML = content;
 						}
-						this.bodyElement.innerHTML = content;
-					}
-					_trigger('save');
-					change = true;
+						_trigger('save');
+						change = true;
+					}, 100)
 				})
 				.on('keyup', function (event) {
 					$(event.currentTarget).prop('spellcheck', true);
@@ -263,6 +266,7 @@ jQuery(document).ready(function ($) {
 				//_trigger('selectModule', ui.item);
 				setTimeout(function () {
 					_trigger('refresh');
+					_trigger('save');
 				}, 200);
 			},
 			start: function (event, ui) {

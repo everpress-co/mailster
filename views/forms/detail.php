@@ -1,6 +1,6 @@
 <?php
 
-$id = isset( $_GET['ID'] ) ? intval( $_GET['ID'] ) : null;
+$id = isset( $_GET['ID'] ) ? (int) $_GET['ID'] : null;
 
 $currentpage = isset( $_GET['tab'] ) ? $_GET['tab'] : 'structure';
 
@@ -31,7 +31,7 @@ if ( ! $is_new ) {
 		$form = (object) wp_parse_args( $_POST['mailster_data'], (array) $form );
 	}
 }
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 $customfields = mailster()->get_custom_fields();
 
@@ -70,7 +70,7 @@ if ( $is_new ) {
 } else {
 	esc_html_e( 'Edit Form', 'mailster' );
 ?>
-<input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo intval( $form->ID ) ?>">
+<input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo (int) $form->ID ?>">
 <?php if ( current_user_can( 'mailster_add_forms' ) ) : ?>
 	<a href="edit.php?post_type=newsletter&page=mailster_forms&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>
@@ -108,7 +108,7 @@ if ( $is_new ) {
 
 		<ul class="form-order sortable">
 		<?php foreach ( $form->fields as $field ) : ?>
-		<li class="field-<?php echo $field->field_id ?>">
+			<li class="field-<?php echo $field->field_id ?> form-field">
 				<label><?php echo $field->name ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ) ?>:</span>
@@ -122,7 +122,7 @@ if ( $is_new ) {
 				<span class="label"><?php esc_html_e( 'Error Message', 'mailster' ) ?>:</span>
 				<input class="label widefat error-msg" type="text" name="mailster_structure[error_msg][<?php echo $field->field_id ?>]" data-name="mailster_structure[error_msg][<?php echo $field->field_id ?>]" value="<?php echo esc_attr( $field->error_msg ) ?>" title="<?php esc_html_e( 'define an error message for this field', 'mailster' );?>" placeholder="<?php esc_html_e( 'Error Message (optional)', 'mailster' ) ?>">
 				</div>
-				</li>
+			</li>
 			<?php endforeach; ?>
 		</ul>
 				<h4><label><?php esc_html_e( 'Button Label', 'mailster' );?>: <input type="text" name="mailster_data[submit]" class="widefat regular-text" value="<?php echo esc_attr( $form->submit ); ?>" placeholder="<?php echo mailster_text( 'submitbutton' ) ?>" ></label></h4>
@@ -140,7 +140,7 @@ if ( $is_new ) {
 
 		foreach ( $fields as $field_id => $name ) : ?>
 
-		<li class="field-<?php echo $field_id ?>">
+			<li class="field-<?php echo $field_id ?> form-field">
 				<label><?php echo strip_tags( $name ) ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ) ?>:</span>
@@ -153,7 +153,7 @@ if ( $is_new ) {
 				<span class="label"><?php esc_html_e( 'Error Message', 'mailster' ) ?>:</span>
 				<input class="label widefat error-msg" type="text" name="mailster_structure[error_msg][<?php echo $field_id ?>]" data-name="mailster_structure[error_msg][<?php echo $field_id ?>]" value="" title="<?php esc_html_e( 'define an error message for this field', 'mailster' );?>" placeholder="<?php esc_html_e( 'Error Message (optional)', 'mailster' ) ?>">
 				</div>
-				</li>
+			</li>
 		<?php endforeach; ?>
 		</ul>
 				<p class="description"><?php printf( __( 'Add more custom fields on the %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings#subscribers">' . __( 'Settings Page', 'mailster' ) . '</a>' ) ?></p>
@@ -275,6 +275,7 @@ if ( $is_new ) {
 			</optgroup>
 			<optgroup label="<?php esc_html_e( 'Other', 'mailster' ) ?>">
 			<option value=" label .mailster-required"><?php esc_html_e( 'Required Asterisk', 'mailster' ) ?></option>
+			<option value=" .mailster-submit-wrapper .submit-button"><?php esc_html_e( 'Submit Button', 'mailster' ) ?></option>
 			</optgroup>
 		</select>
 		</div>

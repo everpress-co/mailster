@@ -17,6 +17,10 @@ $show_update_notice = false;
 // update db structure
 mailster()->dbstructure();
 
+$default_options = mailster( 'settings' )->get_defaults();
+$default_texts = mailster( 'settings' )->get_default_texts();
+
+
 if ( $old_version ) {
 
 	switch ( $old_version ) {
@@ -421,9 +425,7 @@ if ( $old_version ) {
 
 		case '2.1.9':
 
-			$defaults = mailster( 'settings' )->get_default_texts();
-
-			$texts = wp_parse_args( $texts, $defaults );
+			$texts = wp_parse_args( $texts, $default_texts );
 
 			$t = mailster( 'translations' )->get_translation_data();
 
@@ -518,13 +520,50 @@ if ( $old_version ) {
 
 		case '2.2.11':
 		case '2.2.12':
+		case '2.2.13':
+		case '2.2.14':
+		case '2.2.15':
+		case '2.2.16':
+		case '2.2.17':
+		case '2.2.18':
 		case '2.2.x':
 
+			// since 2.3
 			$mailster_options['webversion_bar'] = true;
 			$mailster_options['track_opens'] = true;
 			$mailster_options['track_clicks'] = true;
 
 			update_option( 'mailster_cron_lasthit', false );
+
+			// allow NULL values on two columns
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `campaign_id` `campaign_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
+
+			$mailster_options['welcome'] = true;
+			$mailster_options['_flush_rewrite_rules'] = true;
+			$show_update_notice = true;
+
+		case '2.3':
+		case '2.3.1':
+		case '2.3.2':
+		case '2.3.3':
+		case '2.3.4':
+		case '2.3.5':
+
+			$mailster_options['track_location'] = $mailster_options['trackcountries'];
+
+		case '2.3.6':
+
+			$mailster_options['gdpr_link'] = $default_options['gdpr_link'];
+			$mailster_options['gdpr_text'] = $default_options['gdpr_text'];
+			$mailster_options['gdpr_error'] = $default_options['gdpr_error'];
+
+		case '2.3.7':
+
+			mailster( 'helper' )->mkdir( '', true );
+			mailster( 'helper' )->mkdir( 'templates', true );
+			mailster( 'helper' )->mkdir( 'screenshots', true );
+			mailster( 'helper' )->mkdir( 'backgrounds', true );
 
 		default:
 
@@ -535,6 +574,7 @@ if ( $old_version ) {
 	}
 
 	update_option( 'mailster_version_old', $old_version );
+	update_option( 'mailster_updated', time() );
 
 }
 

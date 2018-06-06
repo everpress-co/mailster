@@ -1,12 +1,12 @@
 === Mailster - Email Newsletter Plugin for WordPress ===
-Contributors: EverPress, revaxarts
+Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9.1
-Stable tag: 2.3
+Tested up to: 4.9.6
+Stable tag: 2.3.9
 Author: EverPress
 Author URI: https://mailster.co
-Requires PHP: 5.3
+Requires PHP: 5.3.6
 
 == Description ==
 
@@ -82,45 +82,85 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+= Version 2.3.9 =
+
+= Version 2.3.8 =
+
+* fixed: caching issue on tags in subject line
+* fixed: subscriber based autoresponder if "lists do not matter"
+* new: Condition: GDPR Consent given
+* added: meta data can now get exported
+* added: `mailster_subscriber_rating` filter
+* change: ratings now updated via cron to reduce server load on large databases
+
+= Version 2.3.7 =
+
+* new: option to add GDPR compliance forms on the privacy settings page.
+* added: search field for modules
+* added: `mailster_profile_form` and `mailster_unsubscribe_form` filter
+* added: information to privacy policy text in WordPress 4.9.6
+* added: added Mailster data to Export Personal Data option in WordPress 4.9.6
+* added: added Mailster data to Erase Personal Data option in WordPress 4.9.6
+* fixes: various small bugs
+
+= Version 2.3.6 =
+
+* new: Location based Segmentations
+* new filter: `mailster_form_field_label_[field_id]` to alter the label of form fields
+* improved: simplified location based tracking with auto update
+* improved: Export page now offers conditional export and saves defined settings.
+* improved: Delete page now offers conditional deletion.
+* change: active campaigns are now included in aggregated items in conditions
+* fixed: odd offset issue on hover in editor
+* fixed: importing emails with single quotes
+* fixed: JS error when switching back from codeview with no head section
+* fixed: do not redirect after unsubscribe
+* fixed: removing a user from a blog on a multi site now correctly removes subscriber
+
+= Version 2.3.5 =
+
+* fixed: list assignments for some third party add ons
+* fixed: small bug fixes
+* fixed: changes were not saved if only modules were rearranged
+* fixed: ajax requests not working in some browser environments
+* fixed: improved display of subscribers overview page with many custom fields
+* fixes: export of subscribers not working on some servers
+* added: more tests
+* change: display Self Test menu entry if `WP_DEBUG` is enabled
+
+= Version 2.3.4 =
+
+* fixed: prevent style blocks moved to body tag
+* fixed: buttons no longer get removed after click on cancel
+* fixed: Outlook conditional tags were removed
+* fixed: body attributes added via codeview are now preserved
+* fixed: small bug fixes
+* improved: better error handling on export
+* improved: more info for list confirmations
+* added: bulk option to confirm subscriptions
+* added: `{lists}` tag is now working in confirmation messages
+
+= Version 2.3.3 =
+
+* fixed: pages were not editable
+* fixed: error if `wp_get_attachment_metadata` returns false
+* fixed: autoresponder query issue
+* fixed: small bug fixes
+
+= Version 2.3.2 =
+
+* fixed: pagination on subscribers overview page
+* fixed: profile for logged in users working again
+* fixed: confirmation message was sent on single opt in
+* fixed: subscribers detail page sometimes empty
+* fixed: missing images on some third party templates
+
+= Version 2.3.1 =
+
+* fixed: error: Can't use function return value in write context
+* improved: display info if module has no label
+
 = Version 2.3 =
-
-= Version 2. 3.beta.10 =
-
-* improved: performance on newsletter overview page
-* fixed: confirmation link
-* various bug fixes and improvements
-
-= Version 2. 3.beta.9 =
-
-* redirection bug fixed
-
-= Version 2. 3.beta.8 =
-
-* fixed: query issue on some autoresponders
-* improved: ajax loading on newsletter overview
-
-= Version 2. 3.beta.7 =
-
-* updated segmentation screen with more possibilities
-* bug fixes
-* editor improvements
-* added: custom field API
-* dynamic post images with no image are now removed
-* new progress bar and cron check improvements
-* improved handling of buttons in editor
-* moved system info page to test page
-
-= Version 2. 3.beta.3 =
-
-* improved: RTL version
-* improved: autosave mechanism
-* improved: editor
-
-= Version 2. 3.beta.2 =
-
-* improved: subscriber query
-
-= Version 2. 3.beta.1 =
 
 * new: option to hide the Webversion Bar
 * new: option to disable tracking on campaign based basis
@@ -138,6 +178,7 @@ Xaver Birsak – https://everpress.io
 * new: Export format: xls
 * new: Option to duplicate forms
 * new: Option to disable Webversion
+* new: privacy settings page
 * change: `mailster_replace_link` now targets the output link
 * improved: list segmentation
 * improved: campaign editor for faster campaign creation with inline editing
@@ -157,7 +198,7 @@ Xaver Birsak – https://everpress.io
 * added: Additional mail headers
 * added: option to release cron lock
 * added: option to reset cron last hit
-* updated: PHPMailer to version 5.2.25
+* updated: PHPMailer to version 5.2.26
 * deprecated MyMail methods
 
 

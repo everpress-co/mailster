@@ -82,7 +82,7 @@ jQuery(document).ready(function ($) {
 					$.each(rowdata, function (key, value) {
 						if (!first && current[id][key] == value) return;
 
-						var statuschange = current[id] && current[id].status && rowdata.status != current[id].status;
+						var statuschange = current[id] && current[id].status && (rowdata.status != current[id].status || rowdata.is_active != current[id].is_active);
 
 						switch (key) {
 						case 'status':
@@ -133,11 +133,12 @@ jQuery(document).ready(function ($) {
 
 		if (!offset) offset = 0;
 
+		//only need top and bottom
 		return (
+			//rect.left + offset >= 0 &&
 			rect.top + offset >= 0 &&
-			rect.left + offset >= 0 &&
-			rect.bottom - offset <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-			rect.right - offset <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+			//rect.right - offset <= (window.innerWidth || document.documentElement.clientWidth) && /*or $(window).width() */
+			rect.top - offset <= (window.innerHeight || document.documentElement.clientHeight) /*or $(window).height() */
 		);
 	}
 

@@ -70,47 +70,25 @@ jQuery(document).ready(function ($) {
 		$('.system_mail_template').prop('disabled', $(this).val() == 0);
 	});
 
-	$('#mailster_geoip').on('change', function () {
-		($(this).is(':checked')) ?
-		$('#mailster_geoipcity').prop('disabled', false): $('#mailster_geoipcity').prop('disabled', true).prop('checked', false);
-	});
-	$('#mailster_geoip').on('change', function () {
-		($(this).is(':checked')) ?
-		$('#load_country_db').prop('disabled', false): $('#load_country_db').prop('disabled', true).prop('checked', false);
-	});
-	$('#mailster_geoipcity').on('change', function () {
-		($(this).is(':checked')) ?
-		$('#load_city_db').prop('disabled', false): $('#load_city_db').prop('disabled', true).prop('checked', false);
-	});
-
-	$('#load_country_db, #load_city_db').on('click', function () {
+	$('#load_location_db').on('click', function () {
 		var $this = $(this),
 			loader = $('.geo-ajax-loading').css({
 				'visibility': 'visible'
-			}),
-			type = $this.data('type');
+			});
 
 		$('button').prop('disabled', true);
 
-		_ajax('load_geo_data', {
-			type: type
-
-		}, function (response) {
+		_ajax('load_geo_data', function (response) {
 
 			$('button').prop('disabled', false);
 			loader.css({
 				'visibility': 'hidden'
 			});
 			$this.prop('disabled', false).html(response.buttontext);
+			if (response.update) $('#location_last_update').html(response.update);
 			var msg = $('<div class="' + ((!response.success) ? 'error' : 'updated') + '"><p>' + response.msg + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(4000).fadeTo(200, 0).delay(200).slideUp(200, function () {
 				msg.remove();
 			});
-
-			if (response.success) {
-				if (response.path) {
-					$('#' + type + '_db_path').val(response.path);
-				}
-			}
 
 		}, function (jqXHR, textStatus, errorThrown) {
 
@@ -125,16 +103,6 @@ jQuery(document).ready(function ($) {
 
 		});
 
-		return false;
-	});
-
-	$('#upload_country_db_btn').on('click', function () {
-		$('#upload_country_db').removeClass('hidden');
-		return false;
-	});
-
-	$('#upload_city_db_btn').on('click', function () {
-		$('#upload_city_db').removeClass('hidden');
 		return false;
 	});
 
@@ -217,11 +185,11 @@ jQuery(document).ready(function ($) {
 
 	$('.mailster_sendtest').on('click', function () {
 		var $this = $(this),
-			loader = $('.test-ajax-loading').css({
+			cont = $this.closest('.mailster-testmail'),
+			loader = cont.find('.test-ajax-loading').css({
 				'visibility': 'visible'
 			}),
-			basic = $this.data('role') == 'basic',
-			to = (basic) ? $('#mailster_testmail').val() : $('#mailster_authenticationmail').val(),
+			to = cont.find('input.mailster-testmail-email').val(),
 			formdata = $('form#mailster-settings-form').serialize();
 
 		$this.prop('disabled', true);
@@ -229,7 +197,7 @@ jQuery(document).ready(function ($) {
 		_ajax('send_test', {
 			test: true,
 			formdata: formdata,
-			basic: basic,
+			basic: true,
 			to: to
 
 		}, function (response) {

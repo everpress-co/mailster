@@ -2,7 +2,7 @@ html{
 	padding: 2px !important;
 	width: auto !important;
 	max-width: 100% !important;
-	background:url(../img/trans_bg.png) repeat center center #fff !important;
+	background: url(../img/trans_bg.png) repeat left top #fff !important;
 }
 html.mailster-loading{
 	 -webkit-filter: blur(3px);
@@ -19,18 +19,13 @@ html.mailster-loading:before{
 	background-color: white;
 	opacity: 0.4;
 	position: absolute;
-	left:0;
-	right:0;
-	bottom:0;
-	top:0;
-	cursor:progress !important;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	cursor: progress !important;
 	z-index: 1000000;
 }
-body{
-/*	-webkit-transition:all .15s linear;
-	-ms-transition:all .15s linear;
-	transition:all .15s linear;
-*/}
 body.drag-active.drag-over{
 }
 body.drag-active modules module{
@@ -43,28 +38,19 @@ body.drag-active modules module{
 body:hover module[condition],body:hover single[condition],body:hover multi[condition]{
 	outline: 1px dotted blue;
 }
-/*module{
-	-webkit-touch-callout: none;
-	-webkit-user-select: text !important;
-	-khtml-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}*/
 module{
 	position: relative;
 }
 a.mailster-btn,a.mailster-btn:hover,a.mailster-btn:active{
 	color: #eaeaea;
-	cursor:pointer;
-	text-decoration:none;
-	text-align:center;
+	cursor: pointer;
+	text-decoration: none;
+	text-align: center;
 	outline: 0;
 	min-width: 12px;
 }
 a.mailster-btn:hover {
 	color: #fff;
-	_border: 2px solid #fff;
-	_padding: 6px 7px;
 }
 a.mailster-btn:before {
 	font-family: 'mailster-icons';
@@ -88,14 +74,14 @@ buttons{
 button.mailster-btn-inline{
 	position: absolute;
 	width: 25px;
-	right:-30px;
+	right: -30px;
 	top: 3px;
 	cursor: pointer;
 	border: 1px solid #e5e5e5;
 	background: #fff;
 	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
-	padding:0;
-	box-sizing:border-box;
+	padding: 0;
+	box-sizing: border-box;
 	min-height: 18px;
 	line-height: 16px;
 	border-radius: 2px;
@@ -133,67 +119,50 @@ button.mailster-btn-inline.removerepeater:before{
 	content: "\e81b";
 }
 modulebuttons {
-	-webkit-transition:all .15s ease-in-out;
-	-moz-transition:all .15s ease-in-out;
-	-ms-transition:all .15s ease-in-out;
-	transition:all .15s ease-in-out;
+	-webkit-transition: all .15s ease-in-out;
+	-moz-transition: all .15s ease-in-out;
+	-ms-transition: all .15s ease-in-out;
+	transition: all .15s ease-in-out;
 	opacity: 0;
 	position: absolute;
-	_right:-31px;
-	right:0px;
+	right: 0px;
 	text-align: right;
 	z-index: 100;
-	_top: 50%;
-	_-webkit-transform:translateY(-50%);
-	_-moz-transform:translateY(-50%);
-	_-ms-transform:translateY(-50%);
-	_transform:translateY(-50%);
 	display: block;
 }
 module[selected] modulebuttons{
-	transform:translateY(-35px);
+	transform: translateY(-35px);
 }
 [mailster-is-rtl] modulebuttons {
-	right:inherit;
-	_left:-31px;
-	left:0;
+	right: inherit;
+	left: 0;
 }
 modulebuttons a.mailster-btn {
-	_padding: 5px 6px;
 	padding: 8px 9px;
-	_display:block;
-	display:inline-block;
-	position:relative;
-	margin:0;
-	height:18px;
+	display: inline-block;
+	position: relative;
+	margin: 0;
+	height: 18px;
 	border: 0;
-	_border-left:1px solid #DFDFDF;
-	_background: #fff;
 	background: rgba(43, 179, 231, 0.8);
-	line-height:18px;
-	width:18px;
-	font-size:12px;
+	line-height: 18px;
+	width: 18px;
+	font-size: 12px;
 }
 modulebuttons:hover a.mailster-btn {
 	background: rgb(43, 179, 231);
 }
 [mailster-is-rtl] modulebuttons a.mailster-btn {
-	_border-left:0;
-	_border-right:1px solid #DFDFDF;
 }
 modulebuttons a:first-child {
-	_border-top:1px solid #DFDFDF;
-	_border-radius: 2px 0 0 0;
 }
 modulebuttons a:last-child {
-	_border-bottom:1px solid #DFDFDF;
-	_border-radius: 0 0 0 2px;
 }
 modulebuttons input.modulelabel {
-	-webkit-transition:all .15s ease-in-out;
-	-moz-transition:all .15s ease-in-out;
-	-ms-transition:all .15s ease-in-out;
-	transition:all .15s ease-in-out;
+	-webkit-transition: all .15s ease-in-out;
+	-moz-transition: all .15s ease-in-out;
+	-ms-transition: all .15s ease-in-out;
+	transition: all .15s ease-in-out;
 	display: block;
 	width: 110px;
 	border: 0;
@@ -202,32 +171,32 @@ modulebuttons input.modulelabel {
 	outline: none;
 	color: #aaa;
 	margin: 0;
-	right:-83px;
+	right: -83px;
 	position: absolute;
 }
 [mailster-is-rtl] modulebuttons input.modulelabel {
-	right:inherit;
-	left:-83px;
+	right: inherit;
+	left: -83px;
 }
 modulebuttons input.modulelabel:hover, modulebuttons input.modulelabel:focus {
-	right:0;
+	right: 0;
 	color: #333;
 	outline: 1px solid #DFDFDF;
-	outline-offset:0;
+	outline-offset: 0;
 	background: #fff;
 }
 [mailster-is-rtl] modulebuttons input.modulelabel:hover, [mailster-is-rtl] modulebuttons input.modulelabel:focus {
-	right:inherit;
-	left:0;
+	right: inherit;
+	left: 0;
 }
 modules, module, multi {
-	display:block;
+	display: block;
 }
 buttons, single {
-	display:inline-block;
+	display: inline-block;
 }
 if, elseif, else {
-	display:inline-block;
+	display: inline-block;
 }
 elseif, else {
 	opacity: 0.5;
@@ -240,12 +209,12 @@ else {
 	color: #ccc;
 }
 module:hover, module[selected] {
-	background-color:rgba(43, 179, 231, 0.1);
-	box-shadow:0px 0px 0px 2px rgba(43, 179, 231, 0.8);
+	background-color: rgba(43, 179, 231, 0.1);
+	box-shadow: 0px 0px 0px 2px rgba(43, 179, 231, 0.8);
 	z-index: 9100;
 }
 module[selected] {
-	background-color:rgba(43, 179, 231, 0.2);
+	background-color: rgba(43, 179, 231, 0.2);
 }
 module[label]:before,
 module[label][selected]:before,
@@ -261,14 +230,14 @@ th[background][label]:before {
 	background-color: #2BB3E7;
 	color: #fff;
 	position: absolute;
-	-webkit-transition:all .15s linear;
-	-ms-transition:all .15s linear;
-	transition:all .15s linear;
-	-webkit-transform:translate(4px, -15px);
-	-ms-transform:translate(4px, -15px);
-	transform:translate(4px, -15px);
+	-webkit-transition: all .15s linear;
+	-ms-transition: all .15s linear;
+	transition: all .15s linear;
+	-webkit-transform: translate(4px, -15px);
+	-ms-transform: translate(4px, -15px);
+	transform: translate(4px, -15px);
 	height: 7px;
-	font:8px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font: 8px "Helvetica Neue",Helvetica,Arial,sans-serif;
 	text-transform: uppercase;
 	line-height: 1em;
 	letter-spacing: 0.1em;
@@ -283,10 +252,10 @@ th[background][label]:before {
 [mailster-is-rtl] a[editable][label]:before,
 [mailster-is-rtl] td[background][label]:before,
 [mailster-is-rtl] th[background][label]:before {
-	-webkit-transform:translate(-4px, -15px);
-	-ms-transform:translate(-4px, -15px);
-	transform:translate(-4px, -15px);
-	right:0;
+	-webkit-transform: translate(-4px, -15px);
+	-ms-transform: translate(-4px, -15px);
+	transform: translate(-4px, -15px);
+	right: 0;
 }
 module[label]:hover:before,
 module[label][selected]:before,
@@ -296,9 +265,9 @@ img[editable][label]:hover:before,
 a[editable][label]:hover:before,
 td[background][label]:hover:before,
 th[background][label]:hover:before {
-	-webkit-transform:translate(-2px, -15px);
-	-ms-transform:translate(-2px, -15px);
-	transform:translate(-2px, -15px);
+	-webkit-transform: translate(-2px, -15px);
+	-ms-transform: translate(-2px, -15px);
+	transform: translate(-2px, -15px);
 	opacity: 1;
 }
 [mailster-is-rtl] module[label]:hover:before,
@@ -309,41 +278,39 @@ th[background][label]:hover:before {
 [mailster-is-rtl] a[editable][label]:hover:before,
 [mailster-is-rtl] td[background][label]:hover:before,
 [mailster-is-rtl] th[background][label]:hover:before {
-	-webkit-transform:translate(2px, -15px);
-	-ms-transform:translate(2px, -15px);
-	transform:translate(2px, -15px);
+	-webkit-transform: translate(2px, -15px);
+	-ms-transform: translate(2px, -15px);
+	transform: translate(2px, -15px);
 }
 module[label]:before {
-	-webkit-transform:translate(-6px, -1px);
-	-ms-transform:translate(-6px, -1px);
-	transform:translate(-6px, -1px);
+	-webkit-transform: translate(-6px, -1px);
+	-ms-transform: translate(-6px, -1px);
+	transform: translate(-6px, -1px);
 }
 [mailster-is-rtl] module[label]:before {
-	-webkit-transform:translate(6px, -1px);
-	-ms-transform:translate(6px, -1px);
-	transform:translate(6px, -1px);
+	-webkit-transform: translate(6px, -1px);
+	-ms-transform: translate(6px, -1px);
+	transform: translate(6px, -1px);
 }
 module[label]:hover:before, module[label][selected]:before {
 	opacity: 0.9;
-	-webkit-transform:translate(-1px, -1px);
-	-ms-transform:translate(-1px, -1px);
-	transform:translate(-1px, -1px);
+	-webkit-transform: translate(-1px, -1px);
+	-ms-transform: translate(-1px, -1px);
+	transform: translate(-1px, -1px);
 }
 [mailster-is-rtl] module[label]:hover:before, [mailster-is-rtl] module[label][selected]:before {
-	-webkit-transform:translate(1px, -1px);
-	-ms-transform:translate(1px, -1px);
-	transform:translate(1px, -1px);
+	-webkit-transform: translate(1px, -1px);
+	-ms-transform: translate(1px, -1px);
+	transform: translate(1px, -1px);
 }
 module:hover modulebuttons,module[selected] modulebuttons,.ie module modulebuttons {
-	_right:-2px;
-	opacity:1;
+	opacity: 1;
 }
 [mailster-is-rtl] module:hover modulebuttons, [mailster-is-rtl] module[selected] modulebuttons {
-	right:inherit;
-	_left:-2px;
+	right: inherit;
 }
 module:first-child modulebuttons a.up, module:last-child modulebuttons a.down {
-	display:none;
+	display: none;
 }
 module[condition]{
 	margin-right: 1px;
@@ -362,8 +329,8 @@ multi, single, img[editable], a[editable] img, .textbutton a[editable], td[backg
 	backface-visibility: hidden;
 }
 multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, .textbutton a[editable]:hover, module table td[background]:hover, module table th[background]:hover{
-	box-shadow:0px 0px 0px 2px #2BB3E7;
-	cursor:pointer;
+	box-shadow: 0px 0px 0px 2px #2BB3E7;
+	cursor: pointer;
 	z-index: 11;
 }
 td[background]:before, th[background]:before{
@@ -371,17 +338,17 @@ td[background]:before, th[background]:before{
 	font-family: "mailster-icons";
 	display: none;
 	position: absolute;
-	width:16px;
-	height:16px;
-	line-height:16px;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
 	text-align: center;
-	left:-2px;
-	top:14px;
-	right:auto;
-	padding:3px;
-	opacity:0.9;
-	background:rgba(43, 179, 231, 0.8);
-	color:#fff;
+	left: -2px;
+	top: 14px;
+	right: auto;
+	padding: 3px;
+	opacity: 0.9;
+	background: rgba(43, 179, 231, 0.8);
+	color: #fff;
 	pointer-events: all;
 	cursor: pointer;
 }
@@ -399,7 +366,7 @@ multi[contenteditable], single[contenteditable]{
 	cursor: text;
 }
 multi[contenteditable]:focus, single[contenteditable]:focus, a[editable]:focus{
-	outline:none;
+	outline: none;
 }
 body:hover single:empty{
 	outline: 1px dotted #2BB3E7;
@@ -413,9 +380,9 @@ img[editable]{
 	z-index: 10;
 }
 modules.ui-sortable module{
-	-webkit-transition:padding .25s ease-in-out, margin .25s ease-in-out, -webkit-transform .15s ease-in-out;
-	-ms-transition:padding .25s ease-in-out, margin .25s ease-in-out, -ms-transform .15s ease-in-out;
-	transition:padding .25s ease-in-out, margin .25s ease-in-out, transform .15s ease-in-out;
+	-webkit-transition: padding .25s ease-in-out, margin .25s ease-in-out, -webkit-transform .15s ease-in-out;
+	-ms-transition: padding .25s ease-in-out, margin .25s ease-in-out, -ms-transform .15s ease-in-out;
+	transition: padding .25s ease-in-out, margin .25s ease-in-out, transform .15s ease-in-out;
 
 }
 modules.ui-sortable.dragging module{
@@ -425,14 +392,14 @@ modules.ui-sortable.dragging module{
 	margin-bottom: 2px;
 }
 module.drag-up{
-	-webkit-transform:translateY(-80px);
-	-ms-transform:translateY(-80px);
-	transform:translateY(-80px);
+	-webkit-transform: translateY(-80px);
+	-ms-transform: translateY(-80px);
+	transform: translateY(-80px);
 }
 module.drag-down{
-	-webkit-transform:translateY(80px);
-	-ms-transform:translateY(80px);
-	transform:translateY(80px);
+	-webkit-transform: translateY(80px);
+	-ms-transform: translateY(80px);
+	transform: translateY(80px);
 }
 modules:empty:after, dropzone{
 	content: "\e815";
@@ -448,14 +415,14 @@ modules:empty:after, dropzone{
 	height: 0;
 	margin-top: 0;
 	text-decoration: underline;
-	color:#2BB3E7;
-	-webkit-transition:all .15s linear;
-	-ms-transition:all .15s linear;
-	transition:all .15s linear;
+	color: #2BB3E7;
+	-webkit-transition: all .15s linear;
+	-ms-transition: all .15s linear;
+	transition: all .15s linear;
 	background-color: #fff;
-	outline:1px solid rgba(43, 179, 231, 0.3);
+	outline: 1px solid rgba(43, 179, 231, 0.3);
 	outline-offset: -1px;
-	background-color:rgba(43, 179, 231, 0.3);
+	background-color: rgba(43, 179, 231, 0.3);
 	position: relative;
 	margin: 0;
 }
@@ -468,14 +435,14 @@ body.drag-active modules:empty:after, body.drag-active modules dropzone:before{
 	line-height: 80px;
 	opacity: 0.8;
 	margin: 0;
-	-webkit-transition:all .15s linear;
-	-ms-transition:all .15s linear;
-	transition:all .15s linear;
+	-webkit-transition: all .15s linear;
+	-ms-transition: all .15s linear;
+	transition: all .15s linear;
 }
 body.drag-active modules dropzone.drag-over{
-	outline:2px solid #2BB3E7;
+	outline: 2px solid #2BB3E7;
 	outline-offset: -2px;
-	background-color:rgba(43, 179, 231, 0.3);
+	background-color: rgba(43, 179, 231, 0.3);
 	opacity: 1;
 }
 body.drag-active modules dropzone.drag-over:before{
@@ -483,17 +450,17 @@ body.drag-active modules dropzone.drag-over:before{
 	opacity: 1;
 }
 body.drag-active modules dropzone:first-child{
-	margin-top:-80px;
+	margin-top: -80px;
 }
 body.drag-active modules dropzone{
-	-webkit-transition:all .15s linear;
-	-ms-transition:all .15s linear;
-	transition:all .15s linear;
+	-webkit-transition: all .15s linear;
+	-ms-transition: all .15s linear;
+	transition: all .15s linear;
 	height: 0px;
 	position: absolute;
 	width: 100%;
-	left:0
-	right:0;
+	left: 0
+	right: 0;
 }
 body.drag-active modules dropzone.visible{
 	font-size: 2em;
@@ -503,26 +470,26 @@ body.drag-active modules dropzone.visible{
 }
 body.drag-active modules module:hover, body.drag-active modules module[selected] {
 	box-shadow: none;
-	background-image:none;
+	background-image: none;
 }
 body.drag-active modules module:hover modulebuttons, body.drag-active modules module[selected] modulebuttons, body.drag-active.ie modules module modulebuttons {
 	display: none;
 }
 modules.ui-sortable module{
-	cursor:ns-resize;
-	cursor:hand;
-	cursor:grab;
-	cursor:grabbing;
+	cursor: ns-resize;
+	cursor: hand;
+	cursor: grab;
+	cursor: grabbing;
 	curso
-	cursor:-webkit-grab;
+	cursor: -webkit-grab;
 }
 modules.ui-sortable module table{
 	cursor: inherit !important;
 }
 modules.ui-sortable module.ui-draggable-dragging{
-	cursor:grabbing;
+	cursor: grabbing;
 	curso
-	cursor:-webkit-grabbing;
+	cursor: -webkit-grabbing;
 }
 .ui-dragging img[editable]{
 	outline: 3px dashed #b1b1b1;
@@ -539,24 +506,24 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 .ui-dragging img[editable].ui-draggable-dragging{
 	outline: 0;
 	box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5),0px 0px 13px rgba(0, 0, 0, 0.8);
-	-webkit-transform:scale(1.03);
-	-ms-transform:scale(1.03);
-	transform:scale(1.03);
+	-webkit-transform: scale(1.03);
+	-ms-transform: scale(1.03);
+	transform: scale(1.03);
 }
 .ui-draggable-dragging{
-	-webkit-transition:none !important;
-	-ms-transition:none !important;
-	transition:none !important;
+	-webkit-transition: none !important;
+	-ms-transition: none !important;
+	transition: none !important;
 }
 .sortable-placeholder{
-	outline:2px dotted #2BB3E7;
+	outline: 2px dotted #2BB3E7;
 	outline-offset: -2px;
-	background-color:rgba(43, 179, 231, 0.3);
+	background-color: rgba(43, 179, 231, 0.3);
 }
 img{
-	-webkit-transition:height .25s ease-in-out, width .25s ease-in-out;
-	-ms-transition:height .25s ease-in-out, width .25s ease-in-out;
-	transition:height .25s ease-in-out, width .25s ease-in-out;
+	-webkit-transition: height .25s ease-in-out, width .25s ease-in-out;
+	-ms-transition: height .25s ease-in-out, width .25s ease-in-out;
+	transition: height .25s ease-in-out, width .25s ease-in-out;
 }
 img.mailster-loading{
 	opacity: 0.7;
@@ -565,11 +532,11 @@ img.mailster-loading{
 }
 modules.ui-sortable.dragging module.ui-sortable-helper{
 	opacity: 0.9;
-	filter:alpha(90);
+	filter: alpha(90);
 	box-shadow: 0 5px 18px rgba(0,0,0,.22),0 9px 45px rgba(0,0,0,.25);
-	-webkit-transform:scale(1.03);
-	-ms-transform:scale(1.03);
-	transform:scale(1.03);
+	-webkit-transform: scale(1.03);
+	-ms-transform: scale(1.03);
+	transform: scale(1.03);
 }
 modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	display: none;
@@ -580,9 +547,9 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	left: 0px;
 	z-index: 1000000;
 	overflow: hidden;
-	-webkit-transition:height .25s ease-in-out, width .25s ease-in-out;
-	-ms-transition:height .25s ease-in-out, width .25s ease-in-out;
-	transition:height .25s ease-in-out, width .25s ease-in-out;
+	-webkit-transition: height .25s ease-in-out, width .25s ease-in-out;
+	-ms-transition: height .25s ease-in-out, width .25s ease-in-out;
+	transition: height .25s ease-in-out, width .25s ease-in-out;
 }
 .mailster-upload-info .mailster-upload-info-bar{
 	position: absolute;
@@ -598,8 +565,8 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	filter: blur(4px);
 }
 .mailster-upload-info .mailster-upload-info-text{
-	font:20px "Helvetica Neue",Helvetica,Arial,sans-serif;
-	font-weight:400;
+	font: 20px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-weight: 400;
 	position: absolute;
 	display: inline-block;
 	width: 100%;
@@ -611,7 +578,7 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	right: 50%;
 	top: 50%;
 	color: #fff;
-	text-shadow:-1px -1px 0 #333,1px -1px 0 #333,-1px 1px 0 #333,1px 1px 0 #333;
+	text-shadow: -1px -1px 0 #333,1px -1px 0 #333,-1px 1px 0 #333,1px 1px 0 #333;
 }
 .mailster-upload-info.error .mailster-upload-info-text{
 	background: #f33;
@@ -664,5 +631,5 @@ div.wp-link-input input[type="text"] {
 	vertical-align: sub;
 }
 ul.ui-autocomplete{
-	font:14px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font: 14px "Helvetica Neue",Helvetica,Arial,sans-serif;
 }

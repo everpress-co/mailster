@@ -42,17 +42,18 @@ class MailsterManage {
 		wp_localize_script( 'mailster-manage-script', 'mailsterL10n', array(
 				'select_status' => __( 'Please select the status for the importing contacts!', 'mailster' ),
 				'select_emailcolumn' => __( 'Please select at least the column with the email addresses!', 'mailster' ),
-				'prepare_data' => __( 'preparing data', 'mailster' ),
-				'uploading' => __( 'uploading...%s', 'mailster' ),
+				'prepare_data' => __( 'Preparing Data', 'mailster' ),
+				'uploading' => __( 'Uploading...%s', 'mailster' ),
 				'import_contacts' => __( 'Importing Contacts...%s', 'mailster' ),
+				'prepare_import' => __( 'Preparing Import...', 'mailster' ),
 				'current_stats' => __( 'Currently %1$s of %2$s imported with %3$s errors. %4$s memory usage', 'mailster' ),
 				'estimate_time' => __( 'Estimate time left: %s minutes', 'mailster' ),
-				'continues_in' => __( 'continues in %s seconds', 'mailster' ),
+				'continues_in' => __( 'Continues in %s seconds', 'mailster' ),
 				'error_importing' => __( 'There was a problem during importing contacts. Please check the error logs for more information!', 'mailster' ),
-				'prepare_download' => __( 'Preparing Download...%s', 'mailster' ),
-				'write_file' => __( 'writing file: %s', 'mailster' ),
+				'prepare_download' => __( 'Preparing Download for %1$s Subscribers...%2$s', 'mailster' ),
+				'write_file' => __( 'Writing file: %s', 'mailster' ),
 				'export_finished' => __( 'Export finished', 'mailster' ),
-				'downloading' => __( 'Downloading...', 'mailster' ),
+				'downloading' => __( 'Downloading %s Subscribers...', 'mailster' ),
 				'error_export' => __( 'There was an error while exporting', 'mailster' ),
 				'confirm_import' => __( 'Do you really like to import these contacts?', 'mailster' ),
 				'import_complete' => __( 'Import complete!', 'mailster' ),
@@ -91,10 +92,10 @@ class MailsterManage {
 
 		@set_time_limit( 0 );
 
-		if ( intval( $max_execution_time ) < 300 ) {
+		if ( (int) $max_execution_time < 300 ) {
 			@ini_set( 'max_execution_time', 300 );
 		}
-		if ( intval( $memory_limit ) < 256 ) {
+		if ( (int) $memory_limit < 256 ) {
 			@ini_set( 'memory_limit', '256M' );
 		}
 
@@ -123,7 +124,9 @@ class MailsterManage {
 				exit;
 			}
 
-			$raw_data = esc_attr( stripslashes( $_POST['data'] ) );
+			$raw_data = esc_textarea( stripslashes( $_POST['data'] ) );
+			// single quotes cause problems
+			$raw_data = str_replace( '&#039;', "'", $raw_data );
 			$return['success'] = true;
 
 		} elseif ( isset( $_POST['wordpressusers'] ) ) {
@@ -452,10 +455,10 @@ class MailsterManage {
 
 		@set_time_limit( 0 );
 
-		if ( intval( $max_execution_time ) < 300 ) {
+		if ( (int) $max_execution_time < 300 ) {
 			@ini_set( 'max_execution_time', 300 );
 		}
-		if ( intval( $memory_limit ) < 256 ) {
+		if ( (int) $memory_limit < 256 ) {
 			@ini_set( 'memory_limit', '256M' );
 		}
 
@@ -479,8 +482,10 @@ class MailsterManage {
 		$bulkdata['performance'] = ! ! ( $bulkdata['performance'] === 'true' );
 		$bulkdata['signupdate'] = $bulkdata['signupdate'];
 
-		parse_str( $bulkdata['order'] );
-		parse_str( $bulkdata['lists'] );
+		parse_str( $bulkdata['order'], $order );
+		$order = isset( $order['order'] ) ? $order['order'] : array();
+		parse_str( $bulkdata['lists'], $lists );
+		$lists = isset( $lists['lists'] ) ? $lists['lists'] : array();
 
 		$option_list_ids = array();
 
@@ -503,7 +508,7 @@ class MailsterManage {
 		$parts_at_once = $bulkdata['performance'] ? 2 : 8;
 		$list_cache = array();
 
-		$bulkdata['current'] = intval( $_POST['id'] );
+		$bulkdata['current'] = (int) $_POST['id'];
 
 		$sql = "SELECT data FROM {$wpdb->prefix}mailster_temp_import WHERE identifier = %s ORDER BY ID ASC LIMIT %d, $parts_at_once";
 
@@ -548,6 +553,9 @@ class MailsterManage {
 					for ( $col = 0; $col < $line_count; $col++ ) {
 
 						$d = trim( $data[ $col ] );
+						if ( ! isset( $order[ $col ] ) ) {
+							continue;
+						}
 						switch ( $order[ $col ] ) {
 
 							case 'email':
@@ -606,7 +614,7 @@ class MailsterManage {
 
 					// apply global status
 					if ( $bulkdata['status'] == -1 && is_numeric( $insert['status'] ) ) {
-						$insert['status'] = intval( $insert['status'] );
+						$insert['status'] = (int) $insert['status'];
 					} else {
 						$insert['status'] = $bulkdata['status'];
 					}
@@ -624,7 +632,7 @@ class MailsterManage {
 					}
 
 					if ( ! mailster_is_email( $insert['email'] ) ) {
-						$erroremails[ $insert['email'] ] = __( 'invalid email address', 'mailster' );
+						$erroremails[ $insert['email'] ] = __( 'Email address is invalid.', 'mailster' );
 						$bulkdata['errors']++;
 						continue;
 					}
@@ -675,7 +683,7 @@ class MailsterManage {
 						if ( ! empty( $list_ids ) ) {
 							$list_ids = array_unique( $list_ids );
 							$added = null;
-							if ( mailster_option( 'list_based_opt_in' ) && $insert['status'] != 0 ) {
+							if ( $insert['status'] != 0 ) {
 								$added = isset( $insert['signup'] ) ? $insert['signup'] : time();
 							}
 							mailster( 'subscribers' )->assign_lists( $subscriber_id, $list_ids, $bulkdata['existing'] == 'overwrite', $added );
@@ -704,8 +712,8 @@ class MailsterManage {
 				$table = '<p>' . __( 'The following addresses were not imported', 'mailster' ) . ':</p>';
 				$table .= '<table class="wp-list-table widefat fixed">';
 				$table .= '<thead><tr><td width="5%">#</td><td>' . mailster_text( 'email' ) . '</td><td>' . __( 'Reason', 'mailster' ) . '</td></tr></thead><tbody>';
-				foreach ( $erroremails as $email => $e ) {
-					$table .= '<tr' . ( $i % 2 ? '' : ' class="alternate"' ) . '><td>' . ( ++$i ) . '</td><td>' . $email . '</td><td>' . $e . '</td></tr></thead>';
+				foreach ( $erroremails as $email => $reason ) {
+					$table .= '<tr' . ( $i % 2 ? '' : ' class="alternate"' ) . '><td>' . ( ++$i ) . '</td><td>' . esc_html( $email ) . '</td><td>' . esc_html( $reason ) . '</td></tr></thead>';
 				}
 				$table .= '</tbody></table>';
 				$return['html'] .= $table;
@@ -750,20 +758,31 @@ class MailsterManage {
 
 		$listids = isset( $d['lists'] ) ? array_filter( $d['lists'], 'is_numeric' ) : array();
 		$statuses = isset( $d['status'] ) ? array_filter( $d['status'], 'is_numeric' ) : array();
+		$conditions = isset( $d['conditions'] ) ? (array) $d['conditions'] : array();
 
-		$count = 0;
+		$args = array(
+			'lists' => $listids,
+			'status' => $statuses,
+			'conditions' => $conditions,
+			'return_ids' => true,
+		);
 
-		if ( isset( $d['nolists'] ) ) {
-			$count += mailster( 'lists' )->count( false, $statuses );
+		$args = apply_filters( 'mailster_export_args', $args, $d );
+
+		$data = mailster( 'subscribers' )->query( $args );
+
+		if ( isset( $d['nolists'] ) && $d['nolists'] ) {
+
+			$args['lists'] = null;
+			$data2 = mailster( 'subscribers' )->query( $args );
+
+			$data = array_unique( array_merge( $data, $data2 ) );
+
 		}
 
-		if ( ! empty( $listids ) ) {
-			$count += mailster( 'lists' )->count( $listids, $statuses );
-		}
+		$return['count'] = count( $data );
 
-		$return['count'] = $count;
-
-		if ( $count ) {
+		if ( $return['count'] ) {
 
 			if ( ! is_dir( MAILSTER_UPLOAD_DIR ) ) {
 				wp_mkdir_p( MAILSTER_UPLOAD_DIR );
@@ -772,6 +791,8 @@ class MailsterManage {
 			$filename = MAILSTER_UPLOAD_DIR . '/~mailster_export_' . date( 'Y-m-d-H-i-s' ) . '.tmp';
 
 			update_option( 'mailster_export_filename', $filename );
+			unset( $d['_wpnonce'], $d['_wp_http_referer'] );
+			update_user_option( get_current_user_id(), 'mailster_export_settings', $d );
 
 			try {
 
@@ -780,6 +801,8 @@ class MailsterManage {
 
 				if ( ! ( $return['success'] = $wp_filesystem->put_contents( $filename, '', FS_CHMOD_FILE ) ) ) {
 					$return['msg'] = sprintf( __( 'Not able to create file in %s. Please make sure WordPress can write files to your filesystem!', 'mailster' ), MAILSTER_UPLOAD_DIR );
+				} else {
+
 				}
 			} catch ( Exception $e ) {
 
@@ -789,7 +812,7 @@ class MailsterManage {
 
 		} else {
 
-			$return['msg'] = __( 'no subscribers found', 'mailster' );
+			$return['msg'] = __( 'No Subscribers found!', 'mailster' );
 		}
 
 		@header( 'Content-type: application/json' );
@@ -827,8 +850,8 @@ class MailsterManage {
 
 		parse_str( $_POST['data'], $d );
 
-		$offset = intval( $_POST['offset'] );
-		$limit = intval( $_POST['limit'] );
+		$offset = (int) $_POST['offset'];
+		$limit = (int) $_POST['limit'];
 		$raw_data = array();
 
 		$listids = isset( $d['lists'] ) ? array_filter( $d['lists'], 'is_numeric' ) : array();
@@ -843,9 +866,10 @@ class MailsterManage {
 
 		$dateformat = $d['dateformat'];
 
-		$useheader = $offset === 0 && isset( $d['header'] );
+		$useheader = $offset === 0 && $d['header'];
 
 		$custom_fields = mailster()->get_custom_fields();
+		$meta_keys = mailster( 'subscribers' )->get_meta_keys();
 		$custom_date_fields = mailster()->get_custom_date_fields();
 		$custom_field_names = array_merge( array( 'firstname', 'lastname' ), array_keys( $custom_fields ) );
 		$custom_field_names = array_keys( array_intersect_key( array_flip( $custom_field_names ), array_flip( $d['column'] ) ) );
@@ -904,8 +928,17 @@ class MailsterManage {
 						$val = __( 'Rating', 'mailster' );
 					break;
 					default:
-						$val = ( isset( $custom_fields[ $col ] ) ) ? $custom_fields[ $col ]['name'] : ucwords( $col );
+						if ( isset( $custom_fields[ $col ] ) ) {
+							$val = $custom_fields[ $col ]['name'];
+						} elseif ( $meta_keys[ $col ] ) {
+							$val = $meta_keys[ $col ];
+						} else {
+							$val = ucwords( $col );
+						}
 				}
+
+				$val = apply_filters( 'mailster_export_heading_' . $col, $val, $d );
+
 				if ( function_exists( 'mb_convert_encoding' ) ) {
 					$val = mb_convert_encoding( $val, $encoding, 'UTF-8' );
 				}
@@ -928,16 +961,22 @@ class MailsterManage {
 
 		$all_fields = isset( $d['column'] ) ? (array) $d['column'] : array();
 		$special = array_values( preg_grep( '/^_/', $all_fields ) );
-		$fields = array_values( preg_grep( '/^(?!_)/', $all_fields ) );
+		$fields = preg_grep( '/^(?!_)/', $all_fields );
+		$meta = array_values( array_intersect( $fields, mailster( 'subscribers' )->get_meta_keys( true ) ) );
+		$fields = array_values( array_diff( $fields, $meta ) );
+		$conditions = isset( $d['conditions'] ) ? (array) $d['conditions'] : array();
 
 		$args = array(
 			'lists' => $listids,
 			'status' => $statuses,
 			'fields' => $fields,
-			// 'meta' => $meta,
+			'meta' => $meta,
+			'conditions' => $conditions,
 			'limit' => $limit,
 			'offset' => $offset,
 		);
+
+		$args = apply_filters( 'mailster_export_args', $args, $d );
 
 		$data = mailster( 'subscribers' )->query( $args );
 
@@ -989,6 +1028,7 @@ class MailsterManage {
 					case 'updated':
 					case 'signup':
 					case 'confirm':
+					case 'gdpr':
 						$val = ! empty( $user->{$key} ) ? ( $dateformat ? date( $dateformat, $user->{$key} ) : $user->{$key} ) : '';
 					break;
 					case 'rating':
@@ -1003,6 +1043,8 @@ class MailsterManage {
 						// remove line breaks
 						$val = preg_replace( "/[\n\r]/", ' ', $val );
 				}
+
+				$val = apply_filters( 'mailster_export_field_' . $key, $val, $d );
 
 				if ( function_exists( 'mb_convert_encoding' ) ) {
 					$val = mb_convert_encoding( $val, $encoding, 'UTF-8' );
@@ -1083,6 +1125,7 @@ class MailsterManage {
 				$finalname = MAILSTER_UPLOAD_DIR . '/mailster_export_' . date( 'Y-m-d-H-i-s' ) . '.' . $outputformat;
 				$return['success'] = copy( $filename, $finalname );
 				$file_size = @filesize( $filename );
+				update_option( 'mailster_export_filename', $finalname );
 				@unlink( $filename );
 				$return['filename'] = admin_url( 'admin-ajax.php?action=mailster_download_export_file&file=' . basename( $finalname ) . '&format=' . $outputformat . '&_wpnonce=' . wp_create_nonce( 'mailster_nonce' ) );
 			}
@@ -1188,16 +1231,18 @@ class MailsterManage {
 		$count = 0;
 		$listids = isset( $d['lists'] ) ? array_filter( $d['lists'], 'is_numeric' ) : array();
 		$statuses = isset( $d['status'] ) ? array_filter( $d['status'], 'is_numeric' ) : null;
+		$conditions = isset( $d['conditions'] ) ? $d['conditions'] : null;
 
 		if ( isset( $d['nolists'] ) ) {
-
-			$count += mailster( 'lists' )->count( false, $statuses );
 
 			$subscriber_ids = mailster( 'subscribers' )->query(array(
 				'lists' => null,
 				'status' => $statuses,
+				'conditions' => $conditions,
 				'return_ids' => true,
 			));
+
+			$count += count( $subscriber_ids );
 
 			$return['success'] = mailster( 'subscribers' )->remove( $subscriber_ids, $statuses, isset( $d['remove_actions'] ) );
 
@@ -1205,13 +1250,14 @@ class MailsterManage {
 
 		if ( ! empty( $listids ) ) {
 
-			$count += mailster( 'lists' )->count( $listids, $statuses );
-
 			$subscriber_ids = mailster( 'subscribers' )->query(array(
 				'lists' => $listids,
 				'status' => $statuses,
+				'conditions' => $conditions,
 				'return_ids' => true,
 			));
+
+			$count += count( $subscriber_ids );
 
 			$return['success'] = mailster( 'subscribers' )->remove( $subscriber_ids, $statuses, isset( $d['remove_actions'] ) );
 
@@ -1222,14 +1268,14 @@ class MailsterManage {
 			}
 		}
 
-		if ( $return['success'] ) {
+		if ( $return['success'] && $count ) {
 
 			mailster()->optimize_tables( array( 'subscribers', 'lists' ) );
-			$return['msg'] = sprintf( __( '%s subscribers removed', 'mailster' ), number_format_i18n( $count ) );
+			$return['msg'] = sprintf( _n( '%s Subscriber removed', '%s Subscribers removed', $count, 'mailster' ), number_format_i18n( $count ) );
 
 		} else {
 
-			$return['msg'] = __( 'no subscribers removed', 'mailster' );
+			$return['msg'] = __( 'No Subscribers removed', 'mailster' );
 		}
 
 		@header( 'Content-type: application/json' );

@@ -17,7 +17,7 @@
 
 		<?php if ( $mailster_homepage ) : ?>
 		<span class="description">
-			<a href="post.php?post=<?php echo intval( $mailster_homepage ); ?>&action=edit"><?php esc_html_e( 'edit', 'mailster' );?></a>
+			<a href="post.php?post=<?php echo (int) $mailster_homepage; ?>&action=edit"><?php esc_html_e( 'edit', 'mailster' );?></a>
 			<?php esc_html_e( 'or', 'mailster' ) ?>
 			<a href="<?php echo get_permalink( $mailster_homepage ); ?>" class="external"><?php esc_html_e( 'visit', 'mailster' );?></a>
 

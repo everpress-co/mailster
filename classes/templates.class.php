@@ -481,7 +481,7 @@ class MailsterTemplates {
 		$updates = get_option( 'mailster_templates_updates', null );
 
 		if ( ! is_null( $updates ) ) {
-			return intval( $updates );
+			return (int) $updates;
 		}
 
 		if ( ! $templates = get_option( 'mailster_templates' ) ) {
@@ -1147,7 +1147,6 @@ class MailsterTemplates {
 					wp_schedule_single_event( time(), 'mailster_copy_backgrounds' );
 				}
 			}
-			$this->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 15 );
 		}
 
 	}
@@ -1157,7 +1156,6 @@ class MailsterTemplates {
 
 		if ( $path = mailster( 'helper' )->mkdir( 'templates' ) ) {
 			copy_dir( MAILSTER_DIR . 'templates' , $path );
-
 		}
 
 	}

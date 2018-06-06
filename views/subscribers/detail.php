@@ -1,6 +1,6 @@
 <?php
 
-$id = isset( $_GET['ID'] ) ? intval( $_GET['ID'] ) : null;
+$id = isset( $_GET['ID'] ) ? (int) $_GET['ID'] : null;
 
 $is_new = isset( $_GET['new'] );
 
@@ -28,7 +28,7 @@ if ( ! $is_new ) {
 
 $customfields = mailster()->get_custom_fields();
 
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 $now = time();
@@ -91,7 +91,6 @@ if ( $is_new ) {
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty )
 				?>
 				</h4>
-
 			<?php endif; ?>
 		</td>
 		<td class="user-info">
@@ -132,7 +131,7 @@ if ( $is_new ) {
 								continue;
 							}
 							?>
-							<option value="<?php echo intval( $id ) ?>" <?php selected( $id, $subscriber->status ) ?> ><?php echo $status ?></option>
+							<option value="<?php echo (int) $id ?>" <?php selected( $id, $subscriber->status ) ?> ><?php echo $status ?></option>
 						<?php } ?>
 						</select>
 						<span class="description info"><?php esc_html_e( 'choosing "pending" as status will force a confirmation message to the subscriber', 'mailster' );?></span>
@@ -148,16 +147,19 @@ if ( $is_new ) {
 
 				<div><?php $this->output_referer( $subscriber->ID );?></div>
 
+				<?php if ( $meta->gdpr ) :  ?>
+				<strong><?php esc_html_e( 'Consent given (GDPR)', 'mailster' );?>:</strong> <?php echo date( $timeformat, $meta->gdpr + $timeoffset ) ?>
+				<?php endif;  ?>
 				<a class="show-more-info alignright"><?php esc_html_e( 'more', 'mailster' );?></a>
 				<ul class="more-info">
 					<li><strong><?php esc_html_e( 'confirmed at', 'mailster' );?>:</strong> <?php echo $subscriber->confirm
 					? date( $timeformat, $subscriber->confirm + $timeoffset ) . ', ' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->confirm ) ) . ( $subscriber->ip_confirm ? ' ' . sprintf( __( 'with IP %s', 'mailster' ), $subscriber->ip_confirm ) : '' )
 					: __( 'unknown', 'mailster' ) ?>
 					</li>
-					<li><strong><?php esc_html_e( 'latest known IP', 'mailster' );?>:</strong> <?php echo $meta->ip
-					? $meta->ip
-					: __( 'unknown', 'mailster' ) ?>
-					</li>
+					<?php if ( $meta->gdpr ) :  ?>
+					<li><strong><?php esc_html_e( 'Consent given (GDPR)', 'mailster' );?>:</strong> <?php echo date( $timeformat, $meta->gdpr + $timeoffset ) ?></li>
+					<?php endif;  ?>
+					<li><strong><?php esc_html_e( 'latest known IP', 'mailster' );?>:</strong> <?php echo $meta->ip ? $meta->ip	: __( 'unknown', 'mailster' ) ?></li>
 				</ul>
 			</div>
 			<div class="info">
@@ -213,7 +215,7 @@ if ( $is_new ) {
 
 					case 'date':
 				?>
-						<li><?php echo $subscriber->{$field} ? '<p>' . date( get_option( 'date_format' ), strtotime( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
+						<li><?php echo $subscriber->{$field} ? '<p>' . date( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
 						<li><input type="text" id="mailster_data_<?php echo $field ?>" name="mailster_data[<?php echo $field ?>]" value="<?php echo esc_attr( $subscriber->{$field} ); ?>" class="regular-text input datepicker"></li>
 							<?php
 					break;
@@ -242,14 +244,19 @@ if ( $is_new ) {
 			?>
 
 			</div>
+			<?php do_action( 'mailster_subscriber_after_meta', $subscriber ) ?>
 			<div class="detail v-top">
 				<label><?php esc_html_e( 'Lists', 'mailster' );?>:</label>
 				<ul class="click-to-edit type-list">
 				<li>
 				<?php
+				$confirmed = array();
 				if ( $lists = $this->get_lists( $subscriber->ID ) ) :
-					foreach ( $lists as $i => $list ) {
-						echo '<span title="' . $list->description . '">' . $list->name . '</span>';
+					foreach ( $lists as $list ) {
+						if ( $list->confirmed ) {
+							$confirmed[ $list->ID ] = $list->confirmed;
+						}
+						echo '<span title="' . $list->description . '" class="' . ($list->confirmed ? 'confirmed' : 'not-confirmed') . '">' . $list->name . '</span>';
 					} else :
 						echo '<span class="description">' . __( 'User has not been assigned to a list', 'mailster' ) . '</span>';
 
@@ -258,7 +265,17 @@ if ( $is_new ) {
 				<li>
 				<?php
 				$checked = wp_list_pluck( $lists, 'ID' );
-				mailster( 'lists' )->print_it( null, null, 'mailster_lists', false, $checked );
+				$all_lists = mailster( 'lists' )->get();
+				echo '<ul>';
+				foreach ( $all_lists as $list ) {
+					echo '<li>';
+					echo '<label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="mailster_lists[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . '</label>';
+					if ( in_array( $list->ID, $checked ) ) {
+						echo '<span class="confirmation-status">' . (isset( $confirmed[ $list->ID ] ) ? __( 'confirmed at', 'mailster' ) . ': ' . date( $timeformat, $confirmed[ $list->ID ] + $timeoffset ) : __( 'not confirmed', 'mailster' )) . '</span>';
+					}
+					echo '</li>';
+				}
+				echo '</ul>';
 				?>
 				</li>
 				</ul>
@@ -305,7 +322,7 @@ if ( $is_new ) {
 				<?php echo __( 'from', 'mailster' ) . ' <span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] );	?>
 				<?php endif; ?>
 					<?php if ( ! is_null( $meta->timeoffset ) ) : $t = time() + ( $meta->timeoffset * 3600 ) ?>
-						<?php echo '<br>' . __( 'Local Time', 'mailster' ) . ': <span title="' . date( $timeformat, $t ) . '">' . date( get_option( 'time_format' ), $t ) . '</span>'; ?>
+						<?php echo '<br>' . esc_html__( 'Local Time', 'mailster' ) . ': <span title="' . date( $timeformat, $t ) . '">' . date( $timeformat, $t ) . '</span>'; ?>
 						<?php echo '<br>UTC ' . ( $meta->timeoffset < 0 ? '' : '+' ) . $meta->timeoffset ?>
 					<?php endif; ?>
 				</p>
@@ -409,7 +426,12 @@ if ( ! $is_new ) :
 								break;
 							case 4:
 									echo '<span class="mailster-icon mailster-icon-unsubscribe"></span></td><td>';
+									$unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id );
+								if ( 'link_unsubscribe_list' == $unsub_status ) {
+									echo __( 'unsubscribed from a list', 'mailster' );
+								} else {
 									echo __( 'unsubscribed your newsletter', 'mailster' );
+								}
 								break;
 							case 5:
 									echo '<span class="mailster-icon mailster-icon-bounce"></span></td><td>';

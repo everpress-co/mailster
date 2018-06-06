@@ -4,6 +4,9 @@
 
 <?php
 
+$timeformat = mailster( 'helper' )->timeformat();
+$timeoffset = mailster( 'helper' )->gmt_offset( true );
+
 $is_verified = mailster()->is_verified();
 $active_plugins = get_option( 'active_plugins', array() );
 $active_pluginslugs = preg_replace( '/^(.*)\/.*$/', '$1', $active_plugins );
@@ -21,6 +24,7 @@ $utm = array(
 		<li><a href="#basics"><?php esc_html_e( 'Basics', 'mailster' );?></a></li>
 		<li><a href="#homepage"><?php esc_html_e( 'Homepage', 'mailster' );?></a></li>
 		<li><a href="#delivery"><?php esc_html_e( 'Delivery', 'mailster' );?></a></li>
+		<li><a href="#privacy"><?php esc_html_e( 'Privacy', 'mailster' );?></a></li>
 		<li><a href="#validation"><?php esc_html_e( 'Validation', 'mailster' );?></a></li>
 		<li class="not-hidden"><a href="#finish"><?php esc_html_e( 'Ready!', 'mailster' );?></a></li>
 	</ol>
@@ -41,7 +45,7 @@ $utm = array(
 
 			<p><?php esc_html_e( 'This wizard helps you to setup Mailster. All options available can be found later in the settings. You can always skip each step and adjust your settings later if you\'re not sure.', 'mailster' ) ?></p>
 
-			<p><?php printf( esc_html__( 'The wizard is separated into %d different steps:', 'mailster' ), 4 ); ?></p>
+			<p><?php printf( esc_html__( 'The wizard is separated into %d different steps:', 'mailster' ), 5 ); ?></p>
 
 			<dl>
 				<dt><?php esc_html_e( 'Basic Information', 'mailster' ) ?></dt>
@@ -54,6 +58,10 @@ $utm = array(
 			<dl>
 				<dt><?php esc_html_e( 'Delivery Options', 'mailster' ) ?></dt>
 				<dd><?php esc_html_e( 'How Mailster should delivery you campaigns.', 'mailster' ) ?></dd>
+			</dl>
+			<dl>
+				<dt><?php esc_html_e( 'Privacy', 'mailster' ) ?></dt>
+				<dd><?php esc_html_e( 'Mailster takes the privacy of your subscribers information seriously. Define which information Mailster should save.', 'mailster' ) ?></dd>
 			</dl>
 			<dl>
 				<dt><?php esc_html_e( 'Validation', 'mailster' ) ?></dt>
@@ -112,6 +120,12 @@ $utm = array(
 				<tr valign="top">
 					<th scope="row"><?php esc_html_e( 'Logo Link', 'mailster' ) ?></th>
 					<td><input type="text" name="mailster_options[logo_link]" value="<?php echo esc_attr( mailster_option( 'logo_link' ) ); ?>" class="regular-text"> <p class="description"><?php esc_html_e( 'A link for your logo.', 'mailster' ) ?></p></td>
+				</tr>
+				<tr valign="top">
+					<th scope="row"><?php esc_html_e( 'Module Thumbnails', 'mailster' ) ?></th>
+					<td><label><input type="hidden" name="mailster_options[module_thumbnails]" value=""><input type="checkbox" name="mailster_options[module_thumbnails]" value="1" <?php checked( mailster_option( 'module_thumbnails' ) );?>> <?php esc_html_e( 'Show thumbnails of modules in the editor if available', 'mailster' ) ?> *</label>
+						<p class="description">* <?php esc_html_e( 'this option will send the HTML of your template files to our screen shot server which generates the thumbnails for you.', 'mailster' ) ?></p>
+					</td>
 				</tr>
 
 			</table>
@@ -230,7 +244,7 @@ $utm = array(
 
 			<form class="mailster-setup-step-form">
 
-			<p><?php esc_html_e( 'Choose how you Mailster should send your campaigns. It\'s recommend to go with a dedicate ESP to prevent rejections and server blocking.', 'mailster' ) ?></p>
+			<p><?php esc_html_e( 'Choose how Mailster should send your campaigns. It\'s recommend to go with a dedicate ESP to prevent rejections and server blocking.', 'mailster' ) ?></p>
 
 			<?php $method = mailster_option( 'deliverymethod', 'simple' ); ?>
 
@@ -357,8 +371,38 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
+				<a class="button button-large skip-step" href="#privacy"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
+				<a class="button button-large button-primary next-step delivery-next-step" href="#privacy"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
+
+			</div>
+
+		</div>
+
+		<div class="mailster-setup-step" id="step_privacy">
+
+			<h2><?php esc_html_e( 'Privacy', 'mailster' );?></h2>
+
+			<div class="mailster-setup-step-body">
+
+			<form class="mailster-setup-step-form">
+
+			<p><?php esc_html_e( 'Mailster can track specific behaviors and the location of your subscribers to target your audience better. In most countries you must get the consent of the subscriber if you sent them marketing emails. Please get in touch with your lawyer for legal advice in your country.', 'mailster' ) ?></p>
+			<p><?php esc_html_e( 'If you have users in the European Union you have to comply with the General Data Protection Regulation (GDPR). Please check our knowledge base on how Mailster can help you.', 'mailster' ) ?></p>
+			<p><a href="https://kb.mailster.co/tag/gdpr/" class="external button button-primary"><?php esc_html_e( 'Knowledge Base', 'mailster' ) ?></a></p>
+
+			<?php include MAILSTER_DIR . '/views/settings/privacy.php' ?>
+
+			</div>
+
+			</form>
+
+			<div class="mailster-setup-step-buttons">
+
+				<span class="alignleft status"></span>
+				<i class="spinner"></i>
+
 				<a class="button button-large skip-step" href="#validation"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
-				<a class="button button-large button-primary next-step delivery-next-step" href="#validation"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
+				<a class="button button-large button-primary next-step" href="#validation"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
 
 			</div>
 

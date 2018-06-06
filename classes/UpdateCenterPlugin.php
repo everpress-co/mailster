@@ -390,7 +390,7 @@ class UpdateCenterPlugin {
 			$new = explode( '.', rtrim( $new_version, '.0' ) );
 			$old = explode( '.', rtrim( $old_version, '.0' ) );
 
-			$is_major_update = version_compare( $new[1], $old[1], '>' ) || version_compare( intval( $new_version ), intval( $old_version ), '>' );
+			$is_major_update = version_compare( $new[1], $old[1], '>' ) || version_compare( (int) $new_version, (int) $old_version, '>' );
 
 			$is_minor_update = ( ! $is_major_update && version_compare( strstr( $new_version, '.' ), strstr( $old_version, '.' ), '>' ) );
 
