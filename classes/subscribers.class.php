@@ -1466,7 +1466,7 @@ class MailsterSubscribers {
 		if ( false === ( $meta = mailster_cache_get( 'subscriber_meta_' . $id . $campaign_id ) ) ) {
 
 			$default = array_fill_keys( $this->get_meta_keys( true ), null );
-			// $default['timeoffset'] = NULL;
+
 			$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_subscriber_meta AS a WHERE a.subscriber_id = %d AND a.campaign_id = %d";
 
 			$result = $wpdb->get_results( $wpdb->prepare( $sql, $id, $campaign_id ) );
@@ -1597,7 +1597,7 @@ class MailsterSubscribers {
 
 			$rating = (float) apply_filters( 'mailster_subscriber_rating', $rating, $id );
 			$rating = (float) apply_filters( 'mailster_subscriber_rating_' . $id, $rating );
-			$rating = max( 0.1, min( $rating,1 ) );
+			$rating = max( 0.1, min( $rating, 1 ) );
 
 			$sql = "UPDATE {$wpdb->prefix}mailster_subscribers AS a SET a.rating = %f WHERE a.ID = %d AND a.rating != %f";
 			$wpdb->query( $wpdb->prepare( $sql, $rating, $id, $rating ) );
