@@ -1339,16 +1339,36 @@ jQuery(document).ready(function ($) {
 
 		function openImportDialog() {
 
-			tb_show(mailsterL10n.save_template, '#TB_inline?x=1&width=480&height=320&inlineId=mailster_template_import', null);
+			tb_show(mailsterL10n.import_template, '#TB_inline?x=1&width=680&height=520&inlineId=mailster_template_import', null);
 
 			return false;
 		}
 
 		function importTemplate() {
 
-			var code = $('#mailster_template_import_code').val();
+			var code = $('#mailster_template_import_code').val(),
+				type = $('input[name="template_import"]:checked').val(),
+				loader = $('.thickbox-ajax-loading');
 
-			console.log(code);
+			loader.css({
+				'display': 'inline'
+			});
+
+			_ajax('import_template', {
+				type: type,
+				html: $('#mailster_template_import_html').val(),
+				url: $('#mailster_template_import_url').val()
+			}, function (response) {
+				loader.hide();
+				if (response.success) {
+					console.log(response);
+				} else {
+					alert(response.msg);
+				}
+			}, function (jqXHR, textStatus, errorThrown) {
+				loader.hide();
+			});
+
 		}
 
 		function save() {

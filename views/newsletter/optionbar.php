@@ -100,19 +100,30 @@ $file = $this->get_file();
 				</p>
 				<button class="button button-primary save-template"><?php esc_html_e( 'Save', 'mailster' );?></button>
 				<button class="button close-thickbox"><?php esc_html_e( 'Cancel', 'mailster' );?></button>
-				<span class="spinner" id="new_template-ajax-loading"></span>
+				<span class="spinner thickbox-ajax-loading"></span>
 			</div>
 	</div>
 </div>
 <div id="mailster_template_import" style="display:none;">
 	<div class="mailster-thickbox mailster_template_import">
 			<div class="inner">
-				<textarea id="mailster_template_import_code"></textarea>
+				<div>
+					<h4><label><input type="radio" name="template_import" checked value="html"> <?php esc_html_e( 'Upload HTML', 'mailster' ); ?></label></h4>
+					<p>
+						<textarea id="mailster_template_import_html" class="code"></textarea>
+					</p>
+						<h4><label><input type="radio" name="template_import" value="url"> <?php esc_html_e( 'Import from the web', 'mailster' ); ?></label></h4>
+					<p>
+						<input id="mailster_template_import_url" type="url" class="widefat" placeholder="https://" value="https://wp.revaxarts.com/latest/wp-content/uploads/mailster/templates/sartre/index.html">
+					<span class="description"><?php esc_html_e( 'This is the current address of your campaign on the web.', 'mailster' ); ?></span>			</p>
+
+				</div>
 			</div>
 			<div class="foot">
+				<p class="description alignleft"></p>
 				<button class="button button-primary import-template"><?php esc_html_e( 'Import', 'mailster' );?></button>
 				<button class="button close-thickbox"><?php esc_html_e( 'Cancel', 'mailster' );?></button>
-				<span class="spinner" id="import_template-ajax-loading"></span>
+				<span class="spinner thickbox-ajax-loading"></span>
 			</div>
 	</div>
 </div>

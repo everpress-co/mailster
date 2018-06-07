@@ -9,6 +9,7 @@ class MailsterAjax {
 		// edit screen
 		'get_template',
 		'get_plaintext',
+		'import_template',
 		'create_new_template',
 		'set_preview',
 		'get_preview',
@@ -290,6 +291,22 @@ class MailsterAjax {
 		echo $html;
 
 		exit;
+
+	}
+
+
+	private function import_template() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$type = esc_attr( $_POST['type'] );
+		$url = esc_attr( $_POST['url'] );
+		$html = esc_attr( $_POST['html'] );
+
+		mailster( 'templates' )->download( $url );
+
+		$this->json_return( $return );
 
 	}
 

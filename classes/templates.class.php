@@ -107,6 +107,86 @@ class MailsterTemplates {
 	/**
 	 *
 	 *
+	 */
+	public function download( $url, $template = null, $overwrite = false, $backup_old = false ) {
+
+		if ( is_null( $template ) ) {
+			$template = mailster_option( 'default_template' );
+			$template = 'johnny';
+		}
+
+		$template = sanitize_file_name( $template );
+
+		$download_assets = true;
+
+		$file = basename( $url );
+		$base = dirname( $url );
+		$file = '_index.html';
+
+		global $wp_filesystem;
+
+		mailster_require_filesystem();
+
+		if ( ! function_exists( 'download_url' ) ) {
+			include ABSPATH . 'wp-admin/includes/file.php';
+		}
+
+		$tempfile = download_url( $url );
+
+		if ( ! is_wp_error( $tempfile ) ) {
+
+			$upload_dir = 'uploads/' . $template . '/';
+
+			$uploadfolder = mailster( 'helper' )->mkdir( $upload_dir, false );
+			$file = mailster( 'helper' )->maybe_increment( $uploadfolder . $file, 'file' );
+
+			if ( ! $wp_filesystem->copy( $tempfile, $file ) ) {
+				copy( $tempfile, $file );
+			}
+
+			$org_html = $html = $wp_filesystem->get_contents( $file );
+
+			preg_match_all( "/(src|background)=[\"'](.*)[\"']/Ui", $html, $images );
+			$images = array_unique( $images[2] );
+
+			foreach ( $images as $image ) {
+				if ( substr( $image, 0, 7 ) == 'http://' || substr( $image, 0, 8 ) == 'https://' ) {
+					continue;
+				}
+				$assets_url = $base . '/' . $image;
+
+				$assets_file = $uploadfolder . ($image);
+				$folder = mailster( 'helper' )->mkdir( $upload_dir . dirname( $image ), false );
+
+				// download assets
+				if ( true ) {
+					$tempfile = download_url( $assets_url );
+					if ( ! is_wp_error( $tempfile ) ) {
+						if ( ! $wp_filesystem->copy( $tempfile, $assets_file ) ) {
+							copy( $tempfile, $assets_file );
+						}
+					}
+				} else {
+					$html = str_replace( $image, $base . '/' . $image, $html );
+				}
+			}
+
+			if ( $org_html != $html ) {
+				mailster( 'helper' )->file_put_contents( $file, $html );
+			}
+
+			error_log( $html );
+
+		}
+
+		error_log( $file );
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $templatefile
 	 * @param unknown $renamefolder (optional)
 	 * @param unknown $overwrite    (optional)
@@ -1568,7 +1648,7 @@ class MailsterTemplates {
 	 *
 	 * @param unknown $errors (optional)
 	 */
-	public function import( $data ) {
+	public function import_OLD( $data ) {
 
 		$doc = new DOMDocument();
 		$doc->validateOnParse = true;

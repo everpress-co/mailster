@@ -269,6 +269,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 .optionbar ul li a.mailster-icon.code.active:before{content: '\e810';}
 .optionbar ul li a.mailster-icon.plaintext:before{content: '\e829';}
 .optionbar ul li a.mailster-icon.plaintext.active:before{content: '\e810';}
+.optionbar ul li a.mailster-icon.import-template:before{content: '\e806';}
 .optionbar ul li a.mailster-icon.preview:before{content: '\e806';}
 .optionbar ul li a.mailster-icon.dfw:before{content: '\e82b';}
 .optionbar ul li a.mailster-icon.dfw.active:before{content: '\e82c';}
@@ -348,18 +349,24 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	position: relative;
 	padding: 0px 20px;
 }
-.mailster_template_save #new_template_name{
+.mailster-thickbox #new_template_name{
 	font-size: 1.8em;
 }
-.mailster_template_save #new_template_saveas_dropdown{
+.mailster-thickbox #new_template_saveas_dropdown{
 	width: 280px;
 }
-.mailster_template_save #new_template-ajax-loading{
+.mailster-thickbox #mailster_template_import_html{
+	width: 100%;
+	height: 200px;
+	resize: none;
+}
+
+.mailster-thickbox .thickbox-ajax-loading{
 	visibility: visible;
 	display: none;
 	float: right;
 }
-.mailster_template_save .foot {
+.mailster-thickbox .foot {
 	padding: 10px 20px;
 	border-top: 1px solid #DFDFDF;
 	position: absolute;
@@ -376,16 +383,16 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	margin-right: 6px;
 	float: left;
 }
-.mailster_template_save .foot.textleft {
+.mailster-thickbox .foot.textleft {
 	text-align: left;
 }
-.mailster_template_save #new_template_name{
+.mailster-thickbox #new_template_name{
 	font-size:1.8em;
 }
-.mailster_template_save #new_template_saveas_dropdown{
+.mailster-thickbox #new_template_saveas_dropdown{
 	width: 280px;
 }
-.mailster_template_save #new_template-ajax-loading{
+.mailster-thickbox .thickbox-ajax-loading{
 	visibility: visible;
 	display: none;
 	float: right;
@@ -457,10 +464,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	background-color: #777;
 	font-weight: bold;
 	color: #333;
-}
-#new_template-ajax-loading{
-	float: left;
-	margin-top: 6px;
 }
 /*----------------------------------------------------------------------*/
 /* Editbar

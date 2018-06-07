@@ -302,6 +302,50 @@ class MailsterHelper {
 	 * @param unknown $countonly (optional)
 	 * @return unknown
 	 */
+	public function maybe_increment( $input, $type = 'file' ) {
+
+		$output = $input;
+
+		switch ( $type ) {
+			case 'file':
+			 	if ( file_exists( $input ) ) {
+				 	$file_name = basename( $input );
+				    $directory = dirname( $input ) . DIRECTORY_SEPARATOR;
+
+				    $i = 2;
+				    while ( file_exists( $directory . $file_name ) ) {
+				        $parts = explode( '.', $file_name );
+				        $parts[0] = preg_replace( '/\(([0-9]*)\)$/', '', $parts[0] );
+				        $parts[0] .= '(' . $i . ')';
+
+				        $new_file_name = implode( '.', $parts );
+				        if ( ! file_exists( $new_file_name ) ) {
+				            $file_name = $new_file_name;
+				        }
+				        $i++;
+				    }
+				    $output = $directory . $file_name;
+			 	}
+
+				break;
+
+			default:
+				// code...
+				break;
+		}
+
+		return $output;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $args      (optional)
+	 * @param unknown $countonly (optional)
+	 * @return unknown
+	 */
 	public function link_query( $args = array(), $countonly = false ) {
 
 		global $wpdb;
