@@ -1079,6 +1079,9 @@ class MailsterSubscribers {
 
 		if ( mailster_option( 'track_users' ) && isset( $entry['ip'] ) && $entry['ip'] !== false ) {
 
+			if ( $entry['ip'] === true ) {
+				unset( $entry['ip'] );
+			}
 			$ip = mailster_get_ip();
 
 			$entry = wp_parse_args( $entry, array(

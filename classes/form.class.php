@@ -935,6 +935,7 @@ class MailsterForm {
 						'lang' => mailster_get_lang(),
 						'referer' => $referer,
 						'form' => $this->ID,
+						'ip' => (bool) mailster_option( 'track_users' ),
 					), $this->object['userdata'] );
 
 					if ( $overwrite && $subscriber = mailster( 'subscribers' )->get_by_mail( $entry['email'] ) ) {

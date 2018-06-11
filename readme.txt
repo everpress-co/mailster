@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 
 * fixed: manage subscribers with no list assigned included users within a list
 * fixed: some JS issues on IE 11
+* fixed: IP addressed not stored on form submission
 
 = Version 2.3.8 =
 
