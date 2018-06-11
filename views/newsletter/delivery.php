@@ -246,18 +246,17 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 			<p>
 			<label><input type="checkbox" name="mailster_data[autoresponder][endschedule]" class="mailster_autoresponder_timebased-end-schedule" <?php checked( $autoresponderdata['endschedule'] );?> value="1"> <?php esc_html_e( 'end schedule', 'mailster' );?></label>
-			<div class="mailster_autoresponder_timebased-end-schedule-field" <?php if ( ! $autoresponderdata['endschedule'] ) { echo ' style="display:none"'; } ?>>
-				<?php
-				$timestamp = max( $timestamp, $autoresponderdata['endtimestamp'] );
+				<span class="mailster_autoresponder_timebased-end-schedule-field" <?php if ( ! $autoresponderdata['endschedule'] ) { echo ' style="display:none"'; } ?>>
+					<?php
+					$timestamp = max( $timestamp, $autoresponderdata['endtimestamp'] );
 
-				printf( _x( 'on %1$s @ %2$s', 'send campaign "on" (date) "at" (time)', 'mailster' ),
-					'<input name="mailster_data[autoresponder_enddate]" class="datepicker deliverydate inactive" type="text" value="' . date( 'Y-m-d', $timestamp + $timeoffset ) . '" maxlength="10" readonly>',
-					'<input name="mailster_data[autoresponder_endtime]" maxlength="5" class="deliverytime inactive" type="text" value="' . date( 'H:i', $timestamp + $timeoffset ) . '"> <span class="utcoffset">UTC ' . ( $timeoffset ? '+' : '' ) . ( $timeoffset / 3600 ) . '</span>'
-				);
-				?>
-				<span class="description"><?php esc_html_e( 'set an end date for your campaign', 'mailster' );?></span>
-				</div>
-
+					printf( _x( 'on %1$s @ %2$s', 'send campaign "on" (date) "at" (time)', 'mailster' ),
+						'<input name="mailster_data[autoresponder_enddate]" class="datepicker deliverydate inactive" type="text" value="' . date( 'Y-m-d', $timestamp + $timeoffset ) . '" maxlength="10" readonly>',
+						'<input name="mailster_data[autoresponder_endtime]" maxlength="5" class="deliverytime inactive" type="text" value="' . date( 'H:i', $timestamp + $timeoffset ) . '"> <span class="utcoffset">UTC ' . ( $timeoffset ? '+' : '' ) . ( $timeoffset / 3600 ) . '</span>'
+					);
+					?>
+					<span class="description"><?php esc_html_e( 'set an end date for your campaign', 'mailster' );?></span>
+				</span>
 			</p>
 			<p>
 			<?php
@@ -486,7 +485,7 @@ $sent = $this->get_sent( $post->ID );
 	</div>
 	</div>
 <?php endif; ?>
-	<p>
+	<div>
 		<input type="text" value="<?php echo esc_attr( $current_user->user_email ) ?>" autocomplete="off" id="mailster_testmail" class="widefat" aria-label="<?php esc_attr_e( 'Send Test', 'mailster' );?>">
 		<button type="button" class="button mailster_spamscore" title="<?php esc_html_e( 'check your spam score', 'mailster' );?> (beta)">Spam Score</button>
 		<span class="spinner" id="delivery-ajax-loading"></span>
@@ -496,7 +495,7 @@ $sent = $this->get_sent( $post->ID );
 		<div class="progress"><span class="bar" style="width:1%"></span></div>
 		<div class="score"></div>
 		</div>
-	</p>
+	</div>
 
 <?php elseif ( 'active' == $post->post_status ) : ?>
 	<p>

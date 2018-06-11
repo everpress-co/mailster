@@ -2382,14 +2382,13 @@ class MailsterAjax {
 				}
 			}
 		} else {
-			// $result = UpdateCenterPlugin::verify( $slug, $purchasecode );
-			// if ( is_wp_error( $result ) && 681 != $result->get_error_code() ) {
-			// $return['error'] = mailster()->get_update_error( $result );
-			// $return['code'] = $result->get_error_code();
-			// } else {
-			// $return['success'] = true;
-			// }
-			$return['success'] = true;
+			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );
+			if ( is_wp_error( $result ) && 681 != $result->get_error_code() ) {
+				$return['error'] = mailster()->get_update_error( $result );
+				$return['code'] = $result->get_error_code();
+			} else {
+				$return['success'] = true;
+			}
 		}
 
 		$this->json_return( $return );

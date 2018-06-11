@@ -3420,7 +3420,7 @@ jQuery(document).ready(function ($) {
 	function _scroll(pos, callback, speed) {
 		pos = Math.round(pos);
 		if (isNaN(speed)) speed = 200;
-		if (animateDOM.scrollTop() == pos || document.scrollingElement.scrollTop == pos) {
+		if (!isMSIE && (animateDOM.scrollTop() == pos || document.scrollingElement.scrollTop == pos)) {
 			callback && callback();
 			return
 		}

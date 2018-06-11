@@ -2111,10 +2111,10 @@ class Mailster {
 						$verified = $old;
 						break;
 					case 681: // no user assigned
-						$register = $this->maybe_register();
-						if ( $register && ! is_wp_error( $register ) ) {
-							$verified = 'yes';
-						}
+						// $register = $this->maybe_register();
+						// if ( $register && ! is_wp_error( $register ) ) {
+						// $verified = 'yes';
+						// }
 						break;
 				}
 			}

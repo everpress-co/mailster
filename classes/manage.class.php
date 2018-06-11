@@ -773,7 +773,7 @@ class MailsterManage {
 
 		if ( isset( $d['nolists'] ) && $d['nolists'] ) {
 
-			$args['lists'] = null;
+			$args['lists'] = -1;
 			$data2 = mailster( 'subscribers' )->query( $args );
 
 			$data = array_unique( array_merge( $data, $data2 ) );
@@ -981,9 +981,9 @@ class MailsterManage {
 		$data = mailster( 'subscribers' )->query( $args );
 
 		// return;
-		if ( isset( $d['nolists'] ) ) {
+		if ( isset( $d['nolists'] ) && $d['nolists'] ) {
 
-			$args['lists'] = null;
+			$args['lists'] = -1;
 			$data2 = mailster( 'subscribers' )->query( $args );
 
 			$data = array_merge( $data, $data2 );
@@ -1236,7 +1236,7 @@ class MailsterManage {
 		if ( isset( $d['nolists'] ) ) {
 
 			$subscriber_ids = mailster( 'subscribers' )->query(array(
-				'lists' => null,
+				'lists' => -1,
 				'status' => $statuses,
 				'conditions' => $conditions,
 				'return_ids' => true,

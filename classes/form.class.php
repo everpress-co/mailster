@@ -944,8 +944,15 @@ class MailsterForm {
 							'ID' => $subscriber->ID,
 						), $entry );
 
+						if ( isset( $entry['form'] ) ) {
+							unset( $entry['form'] );
+						}
+
 						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
 						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
+						$message = $double_opt_in ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
+
+						$submissiontype = 'update';
 
 					} else {
 
@@ -1033,6 +1040,10 @@ class MailsterForm {
 							'ID' => $subscriber->ID,
 						), $entry );
 
+						if ( isset( $entry['form'] ) ) {
+							unset( $entry['form'] );
+						}
+
 						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
 						if ( is_wp_error( $subscriber_id ) ) {
 							$subscriber_id = $subscriber->ID;
@@ -1076,13 +1087,13 @@ class MailsterForm {
 								}
 							}
 
-							if ( ! empty( $assign_lists ) ) {
-								mailster( 'subscribers' )->assign_lists( $exists->ID, $assign_lists, $remove_old_lists, ! $double_opt_in );
-								mailster( 'subscribers' )->send_confirmations( $exists->ID, true, true );
-							}
-							if ( ! empty( $unassign_lists ) ) {
-								mailster( 'subscribers' )->unassign_lists( $exists->ID, $unassign_lists );
-							}
+							// if ( ! empty( $assign_lists ) ) {
+							// mailster( 'subscribers' )->assign_lists( $exists->ID, $assign_lists, $remove_old_lists, ! $double_opt_in );
+							// mailster( 'subscribers' )->send_confirmations( $exists->ID, true, true );
+							// }
+							// if ( ! empty( $unassign_lists ) ) {
+							// mailster( 'subscribers' )->unassign_lists( $exists->ID, $unassign_lists );
+							// }
 						}
 
 					break;
@@ -1100,7 +1111,7 @@ class MailsterForm {
 				if ( ! empty( $assign_lists ) ) {
 					mailster( 'subscribers' )->assign_lists( $subscriber_id, $assign_lists, $remove_old_lists, ! $double_opt_in );
 					if ( 'update' == $submissiontype ) {
-						mailster( 'subscribers' )->send_confirmations( $subscriber_id, true, true );
+						mailster( 'subscribers' )->send_confirmations( $subscriber_id, true, true, $this->form->ID );
 					}
 				}
 				if ( ! empty( $unassign_lists ) ) {

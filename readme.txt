@@ -84,6 +84,9 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.9 =
 
+* fixed: manage subscribers with no list assigned included users within a list
+* fixed: some JS issues on IE 11
+
 = Version 2.3.8 =
 
 * fixed: caching issue on tags in subject line

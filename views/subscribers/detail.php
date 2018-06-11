@@ -107,11 +107,11 @@ if ( $is_new ) {
 					<li><?php echo esc_attr( $subscriber->fullname ); ?>&nbsp;</li>
 					<li>
 				<?php if ( mailster_option( 'name_order' ) ) : ?>
-				<input id="mailster_lastname" class="" type="text" name="mailster_data[lastname]"value="<?php echo esc_attr( $subscriber->lastname ); ?>" placeholder="<?php echo mailster_text( 'lastname' ) ?>">
+				<input id="mailster_lastname" class="" type="text" name="mailster_data[lastname]" value="<?php echo esc_attr( $subscriber->lastname ); ?>" placeholder="<?php echo mailster_text( 'lastname' ) ?>">
 				<input id="mailster_firstname" type="text" name="mailster_data[firstname]" value="<?php echo esc_attr( $subscriber->firstname ); ?>" placeholder="<?php echo mailster_text( 'firstname' ) ?>">
 				<?php else : ?>
 				<input id="mailster_firstname" type="text" name="mailster_data[firstname]" value="<?php echo esc_attr( $subscriber->firstname ); ?>" placeholder="<?php echo mailster_text( 'firstname' ) ?>">
-				<input id="mailster_lastname" class="" type="text" name="mailster_data[lastname]"value="<?php echo esc_attr( $subscriber->lastname ); ?>" placeholder="<?php echo mailster_text( 'lastname' ) ?>">
+				<input id="mailster_lastname" class="" type="text" name="mailster_data[lastname]" value="<?php echo esc_attr( $subscriber->lastname ); ?>" placeholder="<?php echo mailster_text( 'lastname' ) ?>">
 				<?php endif; ?>
 					</li>
 				</ul>
@@ -156,9 +156,6 @@ if ( $is_new ) {
 					? date( $timeformat, $subscriber->confirm + $timeoffset ) . ', ' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->confirm ) ) . ( $subscriber->ip_confirm ? ' ' . sprintf( __( 'with IP %s', 'mailster' ), $subscriber->ip_confirm ) : '' )
 					: __( 'unknown', 'mailster' ) ?>
 					</li>
-					<?php if ( $meta->gdpr ) :  ?>
-					<li><strong><?php esc_html_e( 'Consent given (GDPR)', 'mailster' );?>:</strong> <?php echo date( $timeformat, $meta->gdpr + $timeoffset ) ?></li>
-					<?php endif;  ?>
 					<li><strong><?php esc_html_e( 'latest known IP', 'mailster' );?>:</strong> <?php echo $meta->ip ? $meta->ip	: __( 'unknown', 'mailster' ) ?></li>
 				</ul>
 			</div>

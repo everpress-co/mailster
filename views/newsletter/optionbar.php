@@ -87,7 +87,7 @@ $file = $this->get_file();
 				</p>
 				<?php if ( ! empty( $modules ) ) : ?>
 				<p>
-					<label><input type="checkbox" id="new_template_modules" value="1"> <?php printf( __( 'include original modules from %s', 'mailster' ), '&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot' );?></label>
+					<label><input type="checkbox" id="new_template_modules" value="1"> <?php printf( __( 'include original modules from %s', 'mailster' ), '&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot;' );?></label>
 					<span class="help" title="<?php esc_html_e( 'will append the existing modules to your custom ones', 'mailster' ) ?>">(?)</span><br>
 					<label><input type="checkbox" id="new_template_active_modules" value="1"> <?php esc_html_e( 'show custom modules by default', 'mailster' );?></label><br>
 				</p>

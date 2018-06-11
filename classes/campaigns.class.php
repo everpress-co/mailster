@@ -1244,6 +1244,10 @@ class MailsterCampaigns {
 	 * @return unknown
 	 */
 	public function inline_editor() {
+		// no IE 11
+		if ( strpos( $_SERVER['HTTP_USER_AGENT'], 'Trident/7.0; rv:11.0' ) !== false ) {
+			return false;
+		}
 		global $wp_version;
 		return apply_filters( 'mailster_inline_editor', version_compare( '4.6', $wp_version, '<=' ) );
 	}

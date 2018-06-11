@@ -27,7 +27,7 @@ $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data
 	</div>
 
 	<div>
-		<p class="lists">
+		<div class="lists">
 
 			<?php $checked = wp_parse_args( isset( $_GET['lists'] ) ? $_GET['lists'] : array(), $this->post_data['lists'] ); ?>
 
@@ -39,12 +39,12 @@ $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data
 				<li><label><input id="ignore_lists" type="checkbox" name="mailster_data[ignore_lists]" value="1" <?php checked( $ignore_lists ) ?>> <?php esc_html_e( 'List doesn\'t matter', 'mailster' );?> </label></li>
 			</ul>
 
-		</p>
-		<p><strong><?php esc_html_e( 'Conditions','mailster' ); ?>:</strong>
+		</div>
+		<div><strong><?php esc_html_e( 'Conditions','mailster' ); ?>:</strong>
 			<div id="mailster_conditions_render">
 			<?php mailster( 'conditions' )->render( $this->post_data['list_conditions'] ); ?>
 			</div>
-		</p>
+		</div>
 	</div>
 	<p>
 		<button class="button edit-conditions"><?php esc_html_e( 'Edit Conditions','mailster' ); ?></button> <?php esc_html_e( 'or','mailster' ); ?> <a class="remove-conditions" href="#"><?php esc_html_e( 'remove all','mailster' ); ?></a>
