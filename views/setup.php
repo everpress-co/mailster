@@ -19,12 +19,18 @@ $utm = array(
 	'utm_medium' => 'link',
 );
 
+$extensions = array(
+	'contact-form-7/wp-contact-form-7.php' => array( 'mailster-contact-form-7', 'fakerpress/fakerpress.php' ),
+	'woocommerce/wp-contact-form-7.php' => array( 'mailster-contact-form-7','ssmailster-contact-form-7' ),
+);
+
 ?>
 	<ol class="mailster-setup-steps-nav">
 		<li><a href="#basics"><?php esc_html_e( 'Basics', 'mailster' );?></a></li>
 		<li><a href="#homepage"><?php esc_html_e( 'Homepage', 'mailster' );?></a></li>
 		<li><a href="#delivery"><?php esc_html_e( 'Delivery', 'mailster' );?></a></li>
 		<li><a href="#privacy"><?php esc_html_e( 'Privacy', 'mailster' );?></a></li>
+		<li><a href="#extensions"><?php esc_html_e( 'Extensions', 'mailster' );?></a></li>
 		<li><a href="#validation"><?php esc_html_e( 'Validation', 'mailster' );?></a></li>
 		<li class="not-hidden"><a href="#finish"><?php esc_html_e( 'Ready!', 'mailster' );?></a></li>
 	</ol>
@@ -401,12 +407,86 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step" href="#validation"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
-				<a class="button button-large button-primary next-step" href="#validation"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
+				<a class="button button-large skip-step" href="#extensions"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
+				<a class="button button-large button-primary next-step" href="#extensions"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
 
 			</div>
 
 		</div>
+
+		<div class="mailster-setup-step" id="step_extensions">
+
+			<h2><?php esc_html_e( 'Recommended Extensions', 'mailster' );?></h2>
+
+			<div class="mailster-setup-step-body">
+
+			<form class="mailster-setup-step-form">
+
+			<p><?php esc_html_e( 'Choose how Mailster should send your campaigns. It\'s recommend to go with a dedicate ESP to prevent rejections and server blocking.', 'mailster' ) ?></p>
+
+			<?php $active_plugins = get_option( 'active_plugins', array() ); ?>
+
+			<?php $addons = array_intersect_key( $extensions, array_flip( $active_plugins ) );
+
+			echo '<pre>' . print_r( $addons, true ) . '</pre>';
+			?>
+
+			<ul class="recommendations-wrap">
+				<?php foreach ( $addons as $plugin_slug => $recommendations ) : ?>
+					<?php $plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_slug ) ?>
+					based on <?php echo $plugin_data['Name'] ?>
+					<?php foreach ( $recommendations as $recommendation ) : ?>
+				<li class="mailster-recommendation">
+					<div>
+						<h4><?php esc_html_e( $addon->name ) ?></h4>
+						<p class="author"><?php esc_html_e( 'by', 'mailster' ); ?>
+						<?php
+						if ( $addon->author_url ) :
+							echo '<a href="' . esc_url( $addon->author_url ) . '">' . esc_html( $addon->author ) . '</a>';
+						else :
+							esc_html_e( $addon->author );
+						endif;
+						?>
+						</p>
+					</div>
+				</li>
+					<?php endforeach; ?>
+				<?php endforeach; ?>
+			</ul>
+
+
+			<div class="extension" id="extension-dummymailer" <?php if ( 'dummymailer' == $method ) { echo 'style="display:block"'; } ?>>
+				<?php if ( in_array( 'mailster-dummy-mailer', $active_pluginslugs ) ) :
+					do_action( 'mailster_deliverymethod_tab_dummymailer' );
+				else : ?>
+				<div class="wp-plugin">
+				<a href="https://wordpress.org/plugins/mailster-dummy-mailer/" class="external">
+					<img src="//ps.w.org/mailster-dummy-mailer/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION ?>" width="772" height="250">
+					<span>Mailster Dummy Mailer</span>
+				</a>
+				</div>
+				<a class="button button-primary quick-install" data-plugin="mailster-dummy-mailer" data-method="dummymailer">
+				<?php echo in_array( 'mailster-dummy-mailer', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'Dummy Mailer' ) ?>
+				</a>
+				<?php endif; ?>
+			</div>
+
+			</form>
+
+			</div>
+
+			<div class="mailster-setup-step-buttons">
+
+				<span class="alignleft status"></span>
+				<i class="spinner"></i>
+
+				<a class="button button-large skip-step" href="#validation"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
+				<a class="button button-large button-primary next-step delivery-next-step" href="#validation"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
+
+			</div>
+
+		</div>
+
 
 		<div class="mailster-setup-step" id="step_validation">
 
