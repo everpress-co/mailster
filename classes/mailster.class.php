@@ -691,18 +691,21 @@ class Mailster {
 	/**
 	 *
 	 *
-	 * @param unknown $offset    (optional)
-	 * @param unknown $post_type (optional)
-	 * @param unknown $term_ids  (optional)
-	 * @param unknown $args      (optional)
-	 * @param unknown $simple    (optional)
+	 * @param unknown $offset        (optional)
+	 * @param unknown $post_type     (optional)
+	 * @param unknown $term_ids      (optional)
+	 * @param unknown $args          (optional)
+	 * @param unknown $campaign_id   (optional)
+	 * @param unknown $subscriber_id (optional)
 	 * @return unknown
 	 */
-	public function get_last_post( $offset = 0, $post_type = 'post', $term_ids = array(), $args = array(), $simple = false ) {
+	public function get_last_post( $offset = 0, $post_type = 'post', $term_ids = array(), $args = array(), $campaign_id = null, $subscriber_id = null ) {
 
 		global $wpdb;
 
-		$key = md5( serialize( array( $offset, $post_type, $term_ids, $args, $simple ) ) );
+		$args = apply_filters( 'mailster_pre_get_last_post_args', $args, $offset, $post_type, $term_ids, $campaign_id, $subscriber_id );
+
+		$key = md5( serialize( array( $offset, $post_type, $term_ids, $args, $campaign_id, $subscriber_id ) ) );
 
 		$posts = mailster_cache_get( 'get_last_post' );
 
@@ -759,33 +762,35 @@ class Mailster {
 			}
 		}
 
-		$post = get_posts( apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids ) );
+		$args = apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids, $campaign_id, $subscriber_id );
+
+		$post = get_posts( $args );
 
 		if ( $post ) {
 			$post = $post[0];
 
-			if ( ! $simple ) {
-
-				if ( ! $post->post_excerpt ) {
-					if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
-						$content = explode( $matches[0], $post->post_content, 2 );
-						$post->post_excerpt = trim( $content[0] );
-					}
+			if ( ! $post->post_excerpt ) {
+				if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
+					$content = explode( $matches[0], $post->post_content, 2 );
+					$post->post_excerpt = trim( $content[0] );
 				}
-
-				$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content), apply_filters( 'mailster_excerpt_length', null ) );
-
-				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
-
-				$post->post_content = apply_filters( 'the_content', $post->post_content );
 			}
+
+			$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content), apply_filters( 'mailster_excerpt_length', null ) );
+
+			$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
+
+			$post->post_content = apply_filters( 'the_content', $post->post_content );
+
 		} else {
 			$post = false;
 		}
 
-		$posts[ $key ] = $post;
+		if ( ! isset( $args['cache_results'] ) || $args['cache_results'] !== false ) {
+			$posts[ $key ] = $post;
 
-		mailster_cache_set( 'get_last_post', $posts );
+			mailster_cache_set( 'get_last_post', $posts );
+		}
 
 		return $post;
 	}

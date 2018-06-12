@@ -1546,16 +1546,16 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$return['success'] = true;
-
+		$campaign_id = (int) $_POST['id'];
 		$post_type = sanitize_key( $_POST['post_type'] );
 		$relative = (int) $_POST['relative'];
 		$offset = $relative + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
 		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
+		$args = array();
 
-		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, null, true );
+		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, $args, $campaign_id );
 		$is_post = ! ! $post;
 
 		$return['title'] = $is_post
@@ -1583,6 +1583,8 @@ class MailsterAjax {
 		$return['pattern'] = apply_filters( 'mymail_auto_tag', apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post, $modulename ), $post_type, $options, $post, $modulename );
 
 		$return['pattern']['tag'] = '{' . $post_type . ':' . $options . '}';
+
+		$return['success'] = true;
 
 		$this->json_return( $return );
 

@@ -388,6 +388,16 @@ class MailsterTests {
 		}
 
 	}
+	private function test_support_account_found() {
+
+		$support_emails = array( 'help@everpress.io', 'help@revaxarts.com', 'support@mailster.co' );
+
+		foreach ( $support_emails as $email ) {
+			if ( $user = get_user_by( 'email', $email ) ) {
+				$this->warning( sprintf( 'Please remove any unused Support account: %s', '<a href="' . admin_url( 'users.php?s=' . urlencode( $user->user_email ) ) . '">' . $user->user_email . '</a>' ) );
+			}
+		}
+	}
 	private function test_custom_language() {
 		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo' ) ) {
 			$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );

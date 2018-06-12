@@ -1919,6 +1919,7 @@ jQuery(document).ready(function ($) {
 				});
 
 				_ajax('check_for_posts', {
+					id: campaign_id,
 					post_type: post_type,
 					relative: relative,
 					extra: extra,
