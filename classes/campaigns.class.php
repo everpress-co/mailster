@@ -1485,6 +1485,8 @@ class MailsterCampaigns {
 						mailster_notice( __( 'Attachment doesn\'t exist or isn\'t readable!', 'mailster' ), 'error', true );
 					}
 				}
+			}else{
+				$meta['attachments'] = array();
 			}
 
 			$meta['embed_images'] = isset( $postdata['embed_images'] );

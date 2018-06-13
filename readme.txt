@@ -87,6 +87,8 @@ Xaver Birsak – https://everpress.io
 * fixed: manage subscribers with no list assigned included users within a list
 * fixed: some JS issues on IE 11
 * fixed: IP addressed not stored on form submission
+* fixed: not able to remove attachments
+* added: `get_last_post` now includes subscriber and campaign id
 
 = Version 2.3.8 =
 
