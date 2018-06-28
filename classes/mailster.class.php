@@ -1756,15 +1756,16 @@ class Mailster {
 
 		if ( mailster_option( 'homepage' ) == $post->ID ) {
 
-			if ( ! preg_match( '#\[newsletter_signup\]#', $post->post_content )
-				|| ! preg_match( '#\[newsletter_signup_form#', $post->post_content )
-				|| ! preg_match( '#\[newsletter_confirm\]#', $post->post_content )
-				|| ! preg_match( '#\[newsletter_unsubscribe\]#', $post->post_content ) ) {
+			$result = mailster()->test( 'newsletter_homepage' );
 
-				mailster_notice( sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guide', 'mailster' ) . '</a>' ), 'error', true, 'homepage_info' );
-
-			} else {
-
+			if ( is_array( $result ) ) {
+				foreach ( $result['newsletter_homepage'] as $error ) {
+					$msg = $error['msg'];
+					if ( isset( $error['data']['link'] ) ) {
+						$msg .= ' (<a href="' . esc_url( $error['data']['link'] ) . '">' . esc_html__( 'Read more', 'mailster' ) . '</a>)';
+					}
+					mailster_notice( $msg, 'error', true, 'homepage_info', true, true );
+				}
 			}
 		}
 
