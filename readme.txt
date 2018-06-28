@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * fixed: some JS issues on IE 11
 * fixed: IP addressed not stored on form submission
 * fixed: not able to remove attachments
+* fixed: wp_mail not working if receivers is not an array
 * added: `get_last_post` now includes subscriber and campaign id
 
 = Version 2.3.8 =

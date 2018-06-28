@@ -3584,9 +3584,17 @@ jQuery(document).ready(function ($) {
 
 		var triggerevent = arguments[0];
 		var args = arguments[1] || null;
-		var event = new CustomEvent('Mailster:' + triggerevent, {
-			'detail': args,
-		});
+		var event;
+		if (isMSIE) {
+			event = document.createEvent("CustomEvent");
+			event.initCustomEvent('Mailster:' + triggerevent, false, false, {
+				'detail': args,
+			});
+		} else {
+			event = new CustomEvent('Mailster:' + triggerevent, {
+				'detail': args,
+			});
+		}
 
 		window.dispatchEvent(event);
 		_iframe[0].contentWindow.window.dispatchEvent(event);

@@ -1963,6 +1963,9 @@ class Mailster {
 
 		$mail->apply_raw_headers( $headers );
 
+		if ( ! is_array( $to ) ) {
+			$to = array( $to );
+		}
 		$to = array_map( 'trim', explode( ',', $to ) );
 
 		$mail->to = $to;
