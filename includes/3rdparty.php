@@ -28,8 +28,6 @@ add_action( 'mailster_update_homepage', function( $post ) {
 
 // WP Offload S3
 // add_action( 'as3cf_init', function( $as3cf ) {
-
-// 	// remove this filter so images paths stay the same
-// 	remove_filter( 'content_save_pre', array( $as3cf->filter_s3, 'filter_post' ) );
-
+// remove this filter so images paths stay the same
+// remove_filter( 'content_save_pre', array( $as3cf->filter_s3, 'filter_post' ) );
 // });

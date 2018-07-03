@@ -466,8 +466,7 @@ $utm = array(
 			</div>
 			<p><?php printf( esc_html__( 'Still need help? Go ask on the %s further questions.', 'mailster' ), '<a href="' . add_query_arg( $utm, 'https://kb.mailster.co/' ) . '" class="external">' . esc_html__( 'knowledge base', 'mailster' ) . '</a>' ) ?></p>
 
-			<h4><?php esc_html_e( 'Follow us', 'mailster' ) ?></h4>
-			<div>
+			<div class="social-media-buttons">
 				<div id="fb-root"></div>
 					<a href="https://twitter.com/mailster?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-size="large" data-show-count="false">Follow @mailster</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 				<script>(function(d, s, id) {
