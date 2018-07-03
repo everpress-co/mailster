@@ -544,7 +544,7 @@ class MailsterTemplates {
 
 		if ( wp_verify_nonce( $_GET['mailster_nonce'], 'envato-activate' ) ) {
 
-			$redirect_to = 'edit.php?post_type=newsletter&page=mailster_templates&more';
+			$redirect = admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more' );
 
 			if ( isset( $_GET['mailster_error'] ) ) {
 
@@ -566,17 +566,18 @@ class MailsterTemplates {
 
 				$result = $this->unzip_template( $tempfile, $slug, true, true );
 				if ( is_wp_error( $result ) ) {
-					mailster_notice( sprintf( 'There was an error loading the template: %s', '<strong>' . $result->get_error_message() . '</strong>' ), 'error', true );
+					mailster_notice( sprintf( 'There was an error loading the template: %s', $result->get_error_message() ), 'error', true );
 				} else {
 					mailster_notice( __( 'Template successful loaded!', 'mailster' ), 'success', true );
-					$redirect_to = admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more' );
+					$redirect = admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' );
+					$redirect = add_query_arg( array( 'new' => $slug ), $redirect );
 					// force a reload
-					// update_option( 'mailster_templates', false );
+					update_option( 'mailster_templates', false );
 				}
 			}
 		}
 
-		wp_redirect( $redirect_to );
+		wp_redirect( $redirect );
 		exit;
 
 	}
@@ -1414,10 +1415,9 @@ class MailsterTemplates {
 						unset( $mailster_templates[ $slug ] );
 						continue;
 					}
-					if ( isset( $response[ $i ]['name'] ) ) {
-						$mailster_templates[ $slug ]['name'] = esc_attr( strip_tags( $response[ $i ]['name'] ) );
-					}
-
+					// if ( isset( $response[ $i ]['name'] ) ) {
+					// $mailster_templates[ $slug ]['name'] = esc_attr( strip_tags( $response[ $i ]['name'] ) );
+					// }
 					if ( isset( $response[ $i ]['version'] ) ) {
 						$mailster_templates[ $slug ]['new_version'] = esc_attr( strip_tags( $response[ $i ]['version'] ) );
 					}
@@ -1431,14 +1431,12 @@ class MailsterTemplates {
 						$mailster_templates[ $slug ]['author_profile'] = esc_url( strip_tags( $response[ $i ]['author_profile'] ) );
 					}
 
-					if ( isset( $response[ $i ]['homepage'] ) ) {
-						$mailster_templates[ $slug ]['homepage'] = esc_url( strip_tags( $response[ $i ]['homepage'] ) );
-					}
-
-					if ( isset( $response[ $i ]['description'] ) ) {
-						$mailster_templates[ $slug ]['description'] = strip_tags( $response[ $i ]['description'], '<a><strong>' );
-					}
-
+					// if ( isset( $response[ $i ]['homepage'] ) ) {
+					// $mailster_templates[ $slug ]['homepage'] = esc_url( strip_tags( $response[ $i ]['homepage'] ) );
+					// }
+					// if ( isset( $response[ $i ]['description'] ) ) {
+					// $mailster_templates[ $slug ]['description'] = strip_tags( $response[ $i ]['description'], '<a><strong>' );
+					// }
 					if ( isset( $response[ $i ]['download_link'] ) ) {
 						$mailster_templates[ $slug ]['download_url'] = esc_url( strip_tags( $response[ $i ]['download_link'] ) );
 					}

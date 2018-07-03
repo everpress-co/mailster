@@ -1763,7 +1763,7 @@ class MailsterAjax {
 			$path = mailster( 'templates', $return['slug'] )->get_path();
 			$file = $path . '/' . $return['slug'] . '/' . $return['file'];
 
-			$content = mailster()->sanitize_content( $content );
+			$content = mailster()->sanitize_content( $content, false, null, true );
 
 			if ( $wp_filesystem->put_contents( $file, $content, FS_CHMOD_FILE ) ) {
 				$filename = $file;

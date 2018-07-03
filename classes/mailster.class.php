@@ -802,9 +802,10 @@ class Mailster {
 	 * @param unknown $content
 	 * @param unknown $userstyle  (optional)
 	 * @param unknown $customhead (optional)
+	 * @param unknown $preserve_comments (optional)
 	 * @return unknown
 	 */
-	public function sanitize_content( $content, $userstyle = false, $customhead = null ) {
+	public function sanitize_content( $content, $userstyle = false, $customhead = null, $preserve_comments = false ) {
 		if ( empty( $content ) ) {
 			return '';
 		}
@@ -820,7 +821,7 @@ class Mailster {
 		$pre_stuff = '';
 		$protocol = ( is_ssl() ? 'https' : 'http' );
 
-		preg_match( '#^(.*)?<head([^>]*)>(.*?)<\/head>#is', (is_null( $customhead ) ? $content : $customhead), $matches );
+		preg_match( '#^(.*?)<head([^>]*)>(.*?)<\/head>#is', (is_null( $customhead ) ? $content : $customhead), $matches );
 		if ( ! empty( $matches ) ) {
 			$pre_stuff = $matches[1];
 			// remove multiple heads
@@ -834,7 +835,7 @@ class Mailster {
 			$head = '<head>' . "\n\t" . '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' . "\n\t" . '<meta name="viewport" content="width=device-width" />' . "\n\t" . '<title>{subject}</title>' . "\n" . '</head>';
 		}
 
-		preg_match( '#<body([^>]*)>(.*?)<\/body>#is', $content, $matches );
+		preg_match( '#<body([^>]*)>(.*)<\/body>#is', $content, $matches );
 		if ( ! empty( $matches ) ) {
 			$bodyattributes = $matches[1];
 			$bodyattributes = ' ' . trim( str_replace( array( 'position: relative;', 'mailster-loading', ' class=""', ' style=""' ), '', $bodyattributes ) );
@@ -875,8 +876,14 @@ class Mailster {
 
 		$allowed_tags = '<' . implode( '><', $allowed_tags ) . '>';
 
-		// save comments with conditional stuff to prevent getting deleted by strip tags
-		preg_match_all( '#<!--\s?\[\s?if(.*)?>(.*)?<!\[endif\]-->#sU', $content, $comments );
+		if ( $preserve_comments ) {
+			// preserve all comments
+			preg_match_all( '#<!--(.*)?-->#sU', $content, $comments );
+		} else {
+			// save comments with conditional stuff to prevent getting deleted by strip tags
+			preg_match_all( '#<!--\s?\[\s?if(.*)?>(.*)?<!\[endif\]-->#sU', $content, $comments );
+
+		}
 
 		$commentid = uniqid();
 		foreach ( $comments[0] as $i => $comment ) {
