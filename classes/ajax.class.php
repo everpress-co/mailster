@@ -407,7 +407,7 @@ class MailsterAjax {
 			'emailaddress' => $current_user->user_email,
 		) );
 
-		$placeholder->share_service( '{webversionlink}', esc_attr( $_POST['subject'] ) );
+		$placeholder->share_service( '{webversionlink}', $subject );
 		$content = $placeholder->get_content();
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );

@@ -167,6 +167,9 @@ class MailsterPlaceholder {
 	public function add_defaults( $campaign_id, $args = array() ) {
 
 		$meta = mailster( 'campaigns' )->meta( $campaign_id );
+		if ( ! $meta ) {
+			$meta = mailster( 'campaigns' )->meta_defaults();
+		}
 
 		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
 
@@ -186,6 +189,7 @@ class MailsterPlaceholder {
 			'hour' => $time[3],
 			'minute' => $time[4],
 		);
+
 		if ( ! $meta['webversion'] ) {
 			$defaults['webversion'] = '';
 			$defaults['webversionlink'] = '';

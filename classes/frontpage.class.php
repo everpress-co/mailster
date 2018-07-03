@@ -362,7 +362,7 @@ class MailsterFrontpage {
 		}
 
 		if ( ! $redirect_to ) {
-			$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id ), $campaign_id ) : false;
+			$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id, $subscriber->ID ), $campaign_id, $subscriber->ID ) : false;
 		}
 
 		// no target => tracking image

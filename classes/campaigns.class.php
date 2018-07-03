@@ -1782,6 +1782,10 @@ class MailsterCampaigns {
 			$meta = array();
 		}
 
+		if ( 0 === $id ) {
+			return $this->meta_defaults();
+		}
+
 		if ( is_numeric( $id ) ) {
 
 			if ( isset( $meta[ $id ] ) ) {
@@ -1966,6 +1970,7 @@ class MailsterCampaigns {
 			'track_clicks' => mailster_option( 'track_clicks' ),
 			'autoplaintext' => true,
 			'webversion' => true,
+			'auto_post_thumbnail' => false,
 		);
 
 		if ( ! is_null( $key ) ) {

@@ -19,7 +19,7 @@ class Mailster {
 		register_activation_hook( MAILSTER_FILE, array( &$this, 'activate' ) );
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
-		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy' );
+		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy', 'empty' );
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
@@ -2044,13 +2044,13 @@ class Mailster {
 	public function maybe_register( $license = null, $license_email = null, $license_user = null ) {
 
 		if ( ! $license ) {
-			$license = get_option( 'mailster_license' );
+			$license = $this->license();
 		}
 		if ( ! $license_email ) {
-			$license_email = get_option( 'mailster_email' );
+			$license_email = $this->email();
 		}
 		if ( ! $license_user ) {
-			$license_user = get_option( 'mailster_username' );
+			$license_user = $this->username();
 		}
 
 		if ( ! $license || ! $license_email || ! $license_user ) {
@@ -2067,6 +2067,27 @@ class Mailster {
 
 	}
 
+	public function license( $fallback = '' ) {
+		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE ) {
+			return MAILSTER_LICENSE;
+		}
+		return get_option( 'mailster_license', $fallback );
+	}
+
+	public function email( $fallback = '' ) {
+		if ( defined( 'MAILSTER_EMAIL' ) && MAILSTER_EMAIL ) {
+			return MAILSTER_EMAIL;
+		}
+		return get_option( 'mailster_email', $fallback );
+	}
+
+	public function username( $fallback = '' ) {
+		if ( defined( 'MAILSTER_USERNAME' ) && MAILSTER_USERNAME ) {
+			return MAILSTER_USERNAME;
+		}
+		return get_option( 'mailster_username', $fallback );
+	}
+
 	/**
 	 *
 	 *
@@ -2076,7 +2097,11 @@ class Mailster {
 	public function reset_license( $license = null ) {
 
 		if ( ! $license ) {
-			$license = get_option( 'mailster_license' );
+			$license = $this->license();
+		}
+
+		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE && $this->is_verified() ) {
+			return new WP_Error( 'defined_constants', sprintf( __( 'The License is defined as constant %s. You have to remove it before you can reset your license.', 'mailster' ), '<code>MAILSTER_LICENSE</code>' ) );
 		}
 
 		delete_transient( 'mailster_verified' );
@@ -2093,9 +2118,9 @@ class Mailster {
 	 */
 	public function is_verified( $force = false ) {
 
-		$license = get_option( 'mailster_license' );
-		$license_email = get_option( 'mailster_email' );
-		$license_user = get_option( 'mailster_username' );
+		$license = $this->license();
+		$license_email = $this->email();
+		$license_user = $this->username();
 
 		if ( ! $license || ! $license_email || ! $license_user ) {
 			return false;
