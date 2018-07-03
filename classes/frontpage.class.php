@@ -639,6 +639,20 @@ class MailsterFrontpage {
 					$placeholder->excerpt_filters( false );
 					$placeholder->set_campaign( get_the_ID() );
 
+					if ( mailster_option( 'tags_webversion' ) ) {
+						$subscriber = mailster( 'subscribers' )->get_current_user();
+						$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
+
+						$placeholder->set_subscriber( $subscriber->ID );
+						$placeholder->add( $userdata );
+
+						$placeholder->add( array(
+							'firstname' => $subscriber->firstname,
+							'lastname' => $subscriber->lastname,
+							'fullname' => $subscriber->fullname,
+						) );
+					}
+
 					$placeholder->add_defaults( get_the_ID() );
 					$placeholder->add_custom( get_the_ID() );
 

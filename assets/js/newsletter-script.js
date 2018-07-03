@@ -2046,7 +2046,10 @@ jQuery(document).ready(function ($) {
 							currentimage.name = imagealt.val();
 
 							if (is_img) {
-								current.element.one('load', function () {
+								current.element.one('load error', function (event) {
+									if ('error' == event.type) {
+										alert(sprintf(mailsterL10n.invalid_image, response.image.url));
+									}
 									current.element.removeClass('mailster-loading');
 									_trigger('save');
 								});

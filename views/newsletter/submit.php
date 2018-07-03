@@ -19,17 +19,17 @@ $sent = $this->get_sent( $post->ID );
 
 			<span class="spinner ajax-loading" id="ajax-loading"></span>
 
-			<p class="clear" id="password-field">
+			<p class="clear" id="webversion-field" title="<?php esc_attr_e( 'Offer a public web version for this campaign. If disabled this campaign will be marked as "private"', 'mailster' ) ?>">
+				<label for="use_webversion"><input type="checkbox" id="use_webversion" name="mailster_data[webversion]" value="1" <?php checked( $this->post_data['webversion'] ); ?>> <?php esc_html_e( 'Web version', 'mailster' ) ?></label>
+			</p>
+
+			<p class="clear" id="password-field" title="<?php esc_attr_e( 'Protect the web version with a password.', 'mailster' ) ?>">
 				<label for="use_pwd"><input type="checkbox" name="use_pwd" id="use_pwd" value="1" <?php checked( ! ! $post->post_password ); ?>> <?php esc_html_e( 'Password', 'mailster' ) ?></label>
 				<span id="password-wrap" <?php if ( ! $post->post_password ) { echo 'style="display:none;"'; } ?>>
 					<input type="hidden" name="post_password" value="">
 					<input type="text" class="widefat" name="post_password" id="post_password" value="<?php echo $post->post_password ?>" maxlength="20"><br>
 					<span class="description"><?php esc_html_e( 'Protect the web version with a password.', 'mailster' ) ?></span>
 				</span>
-			</p>
-
-			<p class="clear" id="webversion-field">
-				<label for="use_webversion"><input type="checkbox" id="use_webversion" name="mailster_data[webversion]" value="1" <?php checked( $this->post_data['webversion'] ); ?>> <?php esc_html_e( 'Web version', 'mailster' ) ?></label>
 			</p>
 
 			<div id="delete-action">
