@@ -255,7 +255,7 @@ class MailsterForm {
 			// instant unsubscribe
 			if ( $subscriber && $single_opt_out ) {
 
-				if ( mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $this->campaignID ) ) {
+				if ( mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $this->campaignID, 'link_unsubscribe' ) ) {
 					$buttonlabel = $this->form->submit;
 					$this->form->fields = array();
 					$this->set_success( mailster_text( 'unsubscribe' ) );
@@ -510,6 +510,11 @@ class MailsterForm {
 			$fields['_submit'] .= '<button name="submit" class="submit-button button" aria-label="' . esc_attr( $buttonlabel ) . '">' . esc_attr( $buttonlabel ) . '</button>';
 		}
 		$fields['_submit'] .= '</div>';
+
+		// remove submit button on single opt out
+		if ( $this->unsubscribe && $subscriber && $single_opt_out ) {
+			unset( $fields['_submit'] );
+		}
 
 		$fields = apply_filters( 'mymail_form_fields', apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form ), $this->ID, $this->form );
 

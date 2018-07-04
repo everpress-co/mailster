@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.io
 * fixed: wp_mail not working if receivers is not an array
 * fixed: webversion tag was not displayed if campaign hasn't been saved yet
 * fixed: redirection issue if baseurl contains query arguments
+* fixed: button is no longer available on the unsubscribe form with single opt out
 * added: `get_last_post` now includes subscriber and campaign id
 * added: option to enable custom tags on web version
 

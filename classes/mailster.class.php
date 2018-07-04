@@ -483,7 +483,7 @@ class Mailster {
 				? trailingslashit( $unsubscribe_homepage ) . $slug
 				: add_query_arg( 'mailster_unsubscribe', md5( $campaign_id . '_unsubscribe' ), $unsubscribe_homepage );
 
-			return add_query_arg( $query_string, $url );
+			return ! empty( $query_string ) ? add_query_arg( $query_string, $url ) : $url;
 		}
 
 		$baselink = get_home_url( null, '/' );
@@ -511,7 +511,7 @@ class Mailster {
 				'mailster_unsubscribe' => md5( $campaign_id . '_unsubscribe' ),
 			), $baselink );
 
-		return add_query_arg( $query_string, $url );
+		return ! empty( $query_string ) ? add_query_arg( $query_string, $url ) : $url;
 
 	}
 

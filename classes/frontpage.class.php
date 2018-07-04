@@ -173,7 +173,7 @@ class MailsterFrontpage {
 
 		}
 
-		return add_query_arg( $query_string, $url );
+		return ! empty( $query_string ) ? add_query_arg( $query_string, $url ) : $url;
 
 	}
 

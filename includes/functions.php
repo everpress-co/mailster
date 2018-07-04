@@ -604,22 +604,22 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
  *
  * @param unknown $email_hash_id
  * @param unknown $campaign_id   (optional)
- * @param unknown $logit         (optional)
+ * @param unknown $status        (optional)
  * @return unknown
  */
-function mailster_unsubscribe( $email_hash_id, $campaign_id = null, $logit = true ) {
+function mailster_unsubscribe( $email_hash_id, $campaign_id = null, $status = null ) {
 
-	if ( is_int( $email_hash_id ) ) {
+	if ( is_numeric( $email_hash_id ) ) {
 
-		return mailster( 'subscribers' )->unsubscribe( $email_hash_id, $campaign_id );
+		return mailster( 'subscribers' )->unsubscribe( $email_hash_id, $campaign_id, $status );
 
 	} elseif ( preg_match( '#^[0-9a-f]{32}$#', $email_hash_id ) ) {
 
-		return mailster( 'subscribers' )->unsubscribe_by_hash( $email_hash_id, $campaign_id );
+		return mailster( 'subscribers' )->unsubscribe_by_hash( $email_hash_id, $campaign_id, $status );
 
 	} else {
 
-		return mailster( 'subscribers' )->unsubscribe_by_mail( $email_hash_id, $campaign_id );
+		return mailster( 'subscribers' )->unsubscribe_by_mail( $email_hash_id, $campaign_id, $status );
 	}
 
 }
