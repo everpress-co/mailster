@@ -146,9 +146,16 @@ class MailsterFrontpage {
 
 		$subpage = $this->get_page_by_slug( $subpage );
 
+		wp_parse_str( (string) parse_url( $homepage, PHP_URL_QUERY ), $query_string );
+
+		// remove all query strings
+		if ( ! empty( $query_string ) ) {
+			$homepage = remove_query_arg( array_keys( $query_string ), $homepage );
+		}
+
 		if ( $is_permalink ) {
 
-			return trailingslashit( $homepage ) . trailingslashit( $subpage . '/' . ($hash ? $hash . '/' : '') . $extra );
+			$url = trailingslashit( $homepage ) . trailingslashit( $subpage . '/' . ($hash ? $hash . '/' : '') . $extra );
 
 		} else {
 
@@ -162,9 +169,11 @@ class MailsterFrontpage {
 				$query = wp_parse_args( $query, array( 'page_id' => mailster_option( 'homepage' ) ) );
 			}
 
-			return add_query_arg( $query, $homepage );
+			$url = add_query_arg( $query, $homepage );
 
 		}
+
+		return add_query_arg( $query_string, $url );
 
 	}
 

@@ -472,12 +472,29 @@ class Mailster {
 
 			$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage, $campaign_id ) );
 
-			return $is_permalink
+			wp_parse_str( (string) parse_url( $unsubscribe_homepage, PHP_URL_QUERY ), $query_string );
+
+			// remove all query strings
+			if ( ! empty( $query_string ) ) {
+				$unsubscribe_homepage = remove_query_arg( array_keys( $query_string ), $unsubscribe_homepage );
+			}
+
+			$url = $is_permalink
 				? trailingslashit( $unsubscribe_homepage ) . $slug
 				: add_query_arg( 'mailster_unsubscribe', md5( $campaign_id . '_unsubscribe' ), $unsubscribe_homepage );
+
+			return add_query_arg( $query_string, $url );
 		}
 
 		$baselink = get_home_url( null, '/' );
+
+		wp_parse_str( (string) parse_url( $baselink, PHP_URL_QUERY ), $query_string );
+
+		// remove all query strings
+		if ( ! empty( $query_string ) ) {
+			$baselink = remove_query_arg( array_keys( $query_string ), $baselink );
+		}
+
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['unsubscribe'] ) ? $slugs['unsubscribe'] : 'unsubscribe';
 		$path = $slug;
@@ -488,13 +505,13 @@ class Mailster {
 			$path .= '/' . $campaign_id;
 		}
 
-		$link = ( $is_permalink )
+		$url = $is_permalink
 			? trailingslashit( $baselink ) . trailingslashit( 'mailster/' . $path )
 			: add_query_arg( array(
 				'mailster_unsubscribe' => md5( $campaign_id . '_unsubscribe' ),
 			), $baselink );
 
-		return $link;
+		return add_query_arg( $query_string, $url );
 
 	}
 
