@@ -204,3 +204,7 @@
 #mailster-setup .register_form_wrap .howto{
 	font-size: 14px;
 }
+
+#mailster-setup .twitter-follow-button, #maislter-setup .fb_iframe_widget{
+	vertical-align: bottom;
+}

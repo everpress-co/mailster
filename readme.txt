@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.6
-Stable tag: 2.3.8
+Stable tag: 2.3.9
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -81,6 +81,19 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.3.9 =
+
+* fixed: manage subscribers with no list assigned included users within a list
+* fixed: some JS issues on IE 11
+* fixed: IP addressed not stored on form submission
+* fixed: not able to remove attachments
+* fixed: wp_mail not working if receivers is not an array
+* fixed: webversion tag was not displayed if campaign hasn't been saved yet
+* fixed: redirection issue if baseurl contains query arguments
+* fixed: button is no longer available on the unsubscribe form with single opt out
+* added: `get_last_post` now includes subscriber and campaign id
+* added: option to enable custom tags on web version
 
 = Version 2.3.8 =
 

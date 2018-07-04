@@ -401,7 +401,7 @@ class MailsterSubscribers {
 				}
 
 				// maybe send confirmation if status wasn't pending
-				if ( $old_subscriber_data->status != 0 ) {
+				if ( $old_subscriber_data && $old_subscriber_data->status != 0 ) {
 					$entry->confirmation = 0;
 				}
 
@@ -1079,6 +1079,9 @@ class MailsterSubscribers {
 
 		if ( mailster_option( 'track_users' ) && isset( $entry['ip'] ) && $entry['ip'] !== false ) {
 
+			if ( $entry['ip'] === true ) {
+				unset( $entry['ip'] );
+			}
 			$ip = mailster_get_ip();
 
 			$entry = wp_parse_args( $entry, array(
@@ -1431,7 +1434,7 @@ class MailsterSubscribers {
 			'confirmation' => __( 'Confirmation', 'mailster' ),
 			'error' => __( 'Error', 'mailster' ),
 			'referer' => __( 'Referer', 'mailster' ),
-			'timeoffset' => __( 'Timeoffset', 'mailster' ),
+			'timeoffset' => __( 'Timeoffset to UTC', 'mailster' ),
 			'form' => __( 'Form', 'mailster' ),
 			'unsubscribe' => __( 'Unsubscribe', 'mailster' ),
 			'gdpr' => __( 'GDPR Timestamp', 'mailster' ),
@@ -1466,7 +1469,7 @@ class MailsterSubscribers {
 		if ( false === ( $meta = mailster_cache_get( 'subscriber_meta_' . $id . $campaign_id ) ) ) {
 
 			$default = array_fill_keys( $this->get_meta_keys( true ), null );
-			// $default['timeoffset'] = NULL;
+
 			$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_subscriber_meta AS a WHERE a.subscriber_id = %d AND a.campaign_id = %d";
 
 			$result = $wpdb->get_results( $wpdb->prepare( $sql, $id, $campaign_id ) );
@@ -1597,7 +1600,7 @@ class MailsterSubscribers {
 
 			$rating = (float) apply_filters( 'mailster_subscriber_rating', $rating, $id );
 			$rating = (float) apply_filters( 'mailster_subscriber_rating_' . $id, $rating );
-			$rating = max( 0.1, min( $rating,1 ) );
+			$rating = max( 0.1, min( $rating, 1 ) );
 
 			$sql = "UPDATE {$wpdb->prefix}mailster_subscribers AS a SET a.rating = %f WHERE a.ID = %d AND a.rating != %f";
 			$wpdb->query( $wpdb->prepare( $sql, $rating, $id, $rating ) );
@@ -2324,9 +2327,10 @@ class MailsterSubscribers {
 	 * @param unknown $ids   (optional)
 	 * @param unknown $force (optional)
 	 * @param unknown $now   (optional)
+	 * @param unknown $user_form_id   (optional)
 	 * @return unknown
 	 */
-	public function send_confirmations( $ids = null, $force = false, $now = false ) {
+	public function send_confirmations( $ids = null, $force = false, $now = false, $user_form_id = null ) {
 
 		global $wpdb;
 
@@ -2388,7 +2392,7 @@ class MailsterSubscribers {
 			if ( mailster( 'notification' )->add( $timestamp, array(
 				'subscriber_id' => $subscriber->ID,
 				'template' => 'confirmation',
-				'form' => $subscriber->form_id,
+				'form' => ! is_null( $user_form_id ) ? (int) $user_form_id : $subscriber->form_id,
 				'list_ids' => $subscriber->list_ids,
 			) ) ) {
 				$this->update_meta( $subscriber->ID, 0, 'confirmation', ++$subscriber->try );

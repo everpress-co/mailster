@@ -12,6 +12,9 @@ if ( $data['is_feature'] ) {
 if ( $data['is_free'] ) {
 	$class[] = 'is-free';
 }
+if ( $data['hidden'] ) {
+	$class[] = 'hidden';
+}
 if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) ) {
 	$class[] = 'is-unsupported';
 }

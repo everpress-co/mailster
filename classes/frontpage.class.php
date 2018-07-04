@@ -146,9 +146,16 @@ class MailsterFrontpage {
 
 		$subpage = $this->get_page_by_slug( $subpage );
 
+		wp_parse_str( (string) parse_url( $homepage, PHP_URL_QUERY ), $query_string );
+
+		// remove all query strings
+		if ( ! empty( $query_string ) ) {
+			$homepage = remove_query_arg( array_keys( $query_string ), $homepage );
+		}
+
 		if ( $is_permalink ) {
 
-			return trailingslashit( $homepage ) . trailingslashit( $subpage . '/' . ($hash ? $hash . '/' : '') . $extra );
+			$url = trailingslashit( $homepage ) . trailingslashit( $subpage . '/' . ($hash ? $hash . '/' : '') . $extra );
 
 		} else {
 
@@ -162,9 +169,11 @@ class MailsterFrontpage {
 				$query = wp_parse_args( $query, array( 'page_id' => mailster_option( 'homepage' ) ) );
 			}
 
-			return add_query_arg( $query, $homepage );
+			$url = add_query_arg( $query, $homepage );
 
 		}
+
+		return ! empty( $query_string ) ? add_query_arg( $query_string, $url ) : $url;
 
 	}
 
@@ -362,7 +371,7 @@ class MailsterFrontpage {
 		}
 
 		if ( ! $redirect_to ) {
-			$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id ), $campaign_id ) : false;
+			$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id, $subscriber->ID ), $campaign_id, $subscriber->ID ) : false;
 		}
 
 		// no target => tracking image
@@ -638,6 +647,20 @@ class MailsterFrontpage {
 					$placeholder = mailster( 'placeholder', $content );
 					$placeholder->excerpt_filters( false );
 					$placeholder->set_campaign( get_the_ID() );
+
+					if ( mailster_option( 'tags_webversion' ) ) {
+						$subscriber = mailster( 'subscribers' )->get_current_user();
+						$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
+
+						$placeholder->set_subscriber( $subscriber->ID );
+						$placeholder->add( $userdata );
+
+						$placeholder->add( array(
+							'firstname' => $subscriber->firstname,
+							'lastname' => $subscriber->lastname,
+							'fullname' => $subscriber->fullname,
+						) );
+					}
 
 					$placeholder->add_defaults( get_the_ID() );
 					$placeholder->add_custom( get_the_ID() );

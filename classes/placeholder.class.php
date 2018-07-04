@@ -167,6 +167,9 @@ class MailsterPlaceholder {
 	public function add_defaults( $campaign_id, $args = array() ) {
 
 		$meta = mailster( 'campaigns' )->meta( $campaign_id );
+		if ( ! $meta ) {
+			$meta = mailster( 'campaigns' )->meta_defaults();
+		}
 
 		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
 
@@ -186,6 +189,7 @@ class MailsterPlaceholder {
 			'hour' => $time[3],
 			'minute' => $time[4],
 		);
+
 		if ( ! $meta['webversion'] ) {
 			$defaults['webversion'] = '';
 			$defaults['webversionlink'] = '';
@@ -466,7 +470,7 @@ class MailsterPlaceholder {
 					$post = get_post( $post_or_offset );
 				} else {
 					$term_ids = ! empty( $modules[6][ $i ] ) ? explode( ';', trim( $modules[6][ $i ] ) ) : array();
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args );
+					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 				}
 
 				if ( ! $post ) {
@@ -700,7 +704,7 @@ class MailsterPlaceholder {
 
 							if ( $post_id < 0 ) {
 
-								$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids, $this->last_post_args );
+								$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 							} elseif ( $post_id > 0 ) {
 
@@ -827,7 +831,7 @@ class MailsterPlaceholder {
 				} else {
 
 					$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args );
+					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 				}
 

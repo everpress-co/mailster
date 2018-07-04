@@ -1982,6 +1982,7 @@ label.weekday input{
 	font-style: italic;
 }
 #spam_score_progress{
+	margin: 0.3em 0;
 	display: none;
 }
 /*----------------------------------------------------------------------*/

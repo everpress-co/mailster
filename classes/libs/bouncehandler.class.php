@@ -100,7 +100,7 @@ class MailsterBounceHandler {
 
 					case 'unsubscribe':
 						// unsubscribe
-						mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $campaign_id );
+						mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $campaign_id, 'list_unsubscribe' );
 					break;
 					case 'failed':
 						// hardbounce

@@ -5,8 +5,8 @@
 	$license_user = '';
 
 if ( mailster()->is_verified() ) {
-	$license_email = get_option( 'mailster_email', '' );
-	$license_user = get_option( 'mailster_username', '' );
+	$license_user = mailster()->username( '' );
+	$license_email = mailster()->email( '' );
 }
 
 ?>

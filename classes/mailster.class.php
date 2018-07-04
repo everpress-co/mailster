@@ -19,7 +19,7 @@ class Mailster {
 		register_activation_hook( MAILSTER_FILE, array( &$this, 'activate' ) );
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
-		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy' );
+		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy', 'empty' );
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
@@ -472,12 +472,29 @@ class Mailster {
 
 			$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage, $campaign_id ) );
 
-			return $is_permalink
+			wp_parse_str( (string) parse_url( $unsubscribe_homepage, PHP_URL_QUERY ), $query_string );
+
+			// remove all query strings
+			if ( ! empty( $query_string ) ) {
+				$unsubscribe_homepage = remove_query_arg( array_keys( $query_string ), $unsubscribe_homepage );
+			}
+
+			$url = $is_permalink
 				? trailingslashit( $unsubscribe_homepage ) . $slug
 				: add_query_arg( 'mailster_unsubscribe', md5( $campaign_id . '_unsubscribe' ), $unsubscribe_homepage );
+
+			return ! empty( $query_string ) ? add_query_arg( $query_string, $url ) : $url;
 		}
 
 		$baselink = get_home_url( null, '/' );
+
+		wp_parse_str( (string) parse_url( $baselink, PHP_URL_QUERY ), $query_string );
+
+		// remove all query strings
+		if ( ! empty( $query_string ) ) {
+			$baselink = remove_query_arg( array_keys( $query_string ), $baselink );
+		}
+
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['unsubscribe'] ) ? $slugs['unsubscribe'] : 'unsubscribe';
 		$path = $slug;
@@ -488,13 +505,13 @@ class Mailster {
 			$path .= '/' . $campaign_id;
 		}
 
-		$link = ( $is_permalink )
+		$url = $is_permalink
 			? trailingslashit( $baselink ) . trailingslashit( 'mailster/' . $path )
 			: add_query_arg( array(
 				'mailster_unsubscribe' => md5( $campaign_id . '_unsubscribe' ),
 			), $baselink );
 
-		return $link;
+		return ! empty( $query_string ) ? add_query_arg( $query_string, $url ) : $url;
 
 	}
 
@@ -691,18 +708,21 @@ class Mailster {
 	/**
 	 *
 	 *
-	 * @param unknown $offset    (optional)
-	 * @param unknown $post_type (optional)
-	 * @param unknown $term_ids  (optional)
-	 * @param unknown $args      (optional)
-	 * @param unknown $simple    (optional)
+	 * @param unknown $offset        (optional)
+	 * @param unknown $post_type     (optional)
+	 * @param unknown $term_ids      (optional)
+	 * @param unknown $args          (optional)
+	 * @param unknown $campaign_id   (optional)
+	 * @param unknown $subscriber_id (optional)
 	 * @return unknown
 	 */
-	public function get_last_post( $offset = 0, $post_type = 'post', $term_ids = array(), $args = array(), $simple = false ) {
+	public function get_last_post( $offset = 0, $post_type = 'post', $term_ids = array(), $args = array(), $campaign_id = null, $subscriber_id = null ) {
 
 		global $wpdb;
 
-		$key = md5( serialize( array( $offset, $post_type, $term_ids, $args, $simple ) ) );
+		$args = apply_filters( 'mailster_pre_get_last_post_args', $args, $offset, $post_type, $term_ids, $campaign_id, $subscriber_id );
+
+		$key = md5( serialize( array( $offset, $post_type, $term_ids, $args, $campaign_id, $subscriber_id ) ) );
 
 		$posts = mailster_cache_get( 'get_last_post' );
 
@@ -759,33 +779,35 @@ class Mailster {
 			}
 		}
 
-		$post = get_posts( apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids ) );
+		$args = apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids, $campaign_id, $subscriber_id );
+
+		$post = get_posts( $args );
 
 		if ( $post ) {
 			$post = $post[0];
 
-			if ( ! $simple ) {
-
-				if ( ! $post->post_excerpt ) {
-					if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
-						$content = explode( $matches[0], $post->post_content, 2 );
-						$post->post_excerpt = trim( $content[0] );
-					}
+			if ( ! $post->post_excerpt ) {
+				if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
+					$content = explode( $matches[0], $post->post_content, 2 );
+					$post->post_excerpt = trim( $content[0] );
 				}
-
-				$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content), apply_filters( 'mailster_excerpt_length', null ) );
-
-				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
-
-				$post->post_content = apply_filters( 'the_content', $post->post_content );
 			}
+
+			$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content), apply_filters( 'mailster_excerpt_length', null ) );
+
+			$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
+
+			$post->post_content = apply_filters( 'the_content', $post->post_content );
+
 		} else {
 			$post = false;
 		}
 
-		$posts[ $key ] = $post;
+		if ( ! isset( $args['cache_results'] ) || $args['cache_results'] !== false ) {
+			$posts[ $key ] = $post;
 
-		mailster_cache_set( 'get_last_post', $posts );
+			mailster_cache_set( 'get_last_post', $posts );
+		}
 
 		return $post;
 	}
@@ -797,9 +819,10 @@ class Mailster {
 	 * @param unknown $content
 	 * @param unknown $userstyle  (optional)
 	 * @param unknown $customhead (optional)
+	 * @param unknown $preserve_comments (optional)
 	 * @return unknown
 	 */
-	public function sanitize_content( $content, $userstyle = false, $customhead = null ) {
+	public function sanitize_content( $content, $userstyle = false, $customhead = null, $preserve_comments = false ) {
 		if ( empty( $content ) ) {
 			return '';
 		}
@@ -815,7 +838,7 @@ class Mailster {
 		$pre_stuff = '';
 		$protocol = ( is_ssl() ? 'https' : 'http' );
 
-		preg_match( '#^(.*)?<head([^>]*)>(.*?)<\/head>#is', (is_null( $customhead ) ? $content : $customhead), $matches );
+		preg_match( '#^(.*?)<head([^>]*)>(.*?)<\/head>#is', (is_null( $customhead ) ? $content : $customhead), $matches );
 		if ( ! empty( $matches ) ) {
 			$pre_stuff = $matches[1];
 			// remove multiple heads
@@ -829,7 +852,7 @@ class Mailster {
 			$head = '<head>' . "\n\t" . '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' . "\n\t" . '<meta name="viewport" content="width=device-width" />' . "\n\t" . '<title>{subject}</title>' . "\n" . '</head>';
 		}
 
-		preg_match( '#<body([^>]*)>(.*?)<\/body>#is', $content, $matches );
+		preg_match( '#<body([^>]*)>(.*)<\/body>#is', $content, $matches );
 		if ( ! empty( $matches ) ) {
 			$bodyattributes = $matches[1];
 			$bodyattributes = ' ' . trim( str_replace( array( 'position: relative;', 'mailster-loading', ' class=""', ' style=""' ), '', $bodyattributes ) );
@@ -870,8 +893,14 @@ class Mailster {
 
 		$allowed_tags = '<' . implode( '><', $allowed_tags ) . '>';
 
-		// save comments with conditional stuff to prevent getting deleted by strip tags
-		preg_match_all( '#<!--\s?\[\s?if(.*)?>(.*)?<!\[endif\]-->#sU', $content, $comments );
+		if ( $preserve_comments ) {
+			// preserve all comments
+			preg_match_all( '#<!--(.*)?-->#sU', $content, $comments );
+		} else {
+			// save comments with conditional stuff to prevent getting deleted by strip tags
+			preg_match_all( '#<!--\s?\[\s?if(.*)?>(.*)?<!\[endif\]-->#sU', $content, $comments );
+
+		}
 
 		$commentid = uniqid();
 		foreach ( $comments[0] as $i => $comment ) {
@@ -1751,15 +1780,16 @@ class Mailster {
 
 		if ( mailster_option( 'homepage' ) == $post->ID ) {
 
-			if ( ! preg_match( '#\[newsletter_signup\]#', $post->post_content )
-				|| ! preg_match( '#\[newsletter_signup_form#', $post->post_content )
-				|| ! preg_match( '#\[newsletter_confirm\]#', $post->post_content )
-				|| ! preg_match( '#\[newsletter_unsubscribe\]#', $post->post_content ) ) {
+			$result = mailster()->test( 'newsletter_homepage' );
 
-				mailster_notice( sprintf( __( 'This is your newsletter homepage but it seems it is not set up correctly! Please follow %s for help!', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-the-newsletter-homepage/">' . __( 'this guide', 'mailster' ) . '</a>' ), 'error', true, 'homepage_info' );
-
-			} else {
-
+			if ( is_array( $result ) ) {
+				foreach ( $result['newsletter_homepage'] as $error ) {
+					$msg = $error['msg'];
+					if ( isset( $error['data']['link'] ) ) {
+						$msg .= ' (<a href="' . esc_url( $error['data']['link'] ) . '">' . esc_html__( 'Read more', 'mailster' ) . '</a>)';
+					}
+					mailster_notice( $msg, 'error', true, 'homepage_info', true, true );
+				}
 			}
 		}
 
@@ -1958,6 +1988,9 @@ class Mailster {
 
 		$mail->apply_raw_headers( $headers );
 
+		if ( ! is_array( $to ) ) {
+			$to = array( $to );
+		}
 		$to = array_map( 'trim', explode( ',', $to ) );
 
 		$mail->to = $to;
@@ -2035,13 +2068,13 @@ class Mailster {
 	public function maybe_register( $license = null, $license_email = null, $license_user = null ) {
 
 		if ( ! $license ) {
-			$license = get_option( 'mailster_license' );
+			$license = $this->license();
 		}
 		if ( ! $license_email ) {
-			$license_email = get_option( 'mailster_email' );
+			$license_email = $this->email();
 		}
 		if ( ! $license_user ) {
-			$license_user = get_option( 'mailster_username' );
+			$license_user = $this->username();
 		}
 
 		if ( ! $license || ! $license_email || ! $license_user ) {
@@ -2058,6 +2091,27 @@ class Mailster {
 
 	}
 
+	public function license( $fallback = '' ) {
+		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE ) {
+			return MAILSTER_LICENSE;
+		}
+		return get_option( 'mailster_license', $fallback );
+	}
+
+	public function email( $fallback = '' ) {
+		if ( defined( 'MAILSTER_EMAIL' ) && MAILSTER_EMAIL ) {
+			return MAILSTER_EMAIL;
+		}
+		return get_option( 'mailster_email', $fallback );
+	}
+
+	public function username( $fallback = '' ) {
+		if ( defined( 'MAILSTER_USERNAME' ) && MAILSTER_USERNAME ) {
+			return MAILSTER_USERNAME;
+		}
+		return get_option( 'mailster_username', $fallback );
+	}
+
 	/**
 	 *
 	 *
@@ -2067,7 +2121,11 @@ class Mailster {
 	public function reset_license( $license = null ) {
 
 		if ( ! $license ) {
-			$license = get_option( 'mailster_license' );
+			$license = $this->license();
+		}
+
+		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE && $this->is_verified() ) {
+			return new WP_Error( 'defined_constants', sprintf( __( 'The License is defined as constant %s. You have to remove it before you can reset your license.', 'mailster' ), '<code>MAILSTER_LICENSE</code>' ) );
 		}
 
 		delete_transient( 'mailster_verified' );
@@ -2084,9 +2142,9 @@ class Mailster {
 	 */
 	public function is_verified( $force = false ) {
 
-		$license = get_option( 'mailster_license' );
-		$license_email = get_option( 'mailster_email' );
-		$license_user = get_option( 'mailster_username' );
+		$license = $this->license();
+		$license_email = $this->email();
+		$license_user = $this->username();
 
 		if ( ! $license || ! $license_email || ! $license_user ) {
 			return false;
@@ -2111,10 +2169,10 @@ class Mailster {
 						$verified = $old;
 						break;
 					case 681: // no user assigned
-						$register = $this->maybe_register();
-						if ( $register && ! is_wp_error( $register ) ) {
-							$verified = 'yes';
-						}
+						// $register = $this->maybe_register();
+						// if ( $register && ! is_wp_error( $register ) ) {
+						// $verified = 'yes';
+						// }
 						break;
 				}
 			}
