@@ -637,37 +637,37 @@ class MailsterTests {
 			$this->port_test( mailster_option( 'bounce_port' ), mailster_option( 'bounce_server' ), true );
 		}
 	}
-	private function test_port_110() {
+	private function _test_port_110() {
 
 		$this->port_test( 110, 'pop.gmx.net' );
 
 	}
-	private function test_port_995() {
+	private function _test_port_995() {
 
 		$this->port_test( 995, 'pop.gmail.com' );
 
 	}
-	private function test_port_993() {
+	private function _test_port_993() {
 
 		$this->port_test( 993, 'smtp.gmail.com' );
 
 	}
-	private function test_port_25() {
+	private function _test_port_25() {
 
 		$this->port_test( 25, 'smtp.gmail.com' );
 
 	}
-	private function test_port_2525() {
+	private function _test_port_2525() {
 
 		$this->port_test( 2525, 'smtp.sparkpostmail.com' );
 
 	}
-	private function test_port_465() {
+	private function _test_port_465() {
 
 		$this->port_test( 465, 'smtp.gmail.com' );
 
 	}
-	private function test_port_587() {
+	private function _test_port_587() {
 
 		$this->port_test( 587, 'smtp.gmail.com' );
 
