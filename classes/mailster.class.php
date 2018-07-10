@@ -708,6 +708,59 @@ class Mailster {
 	/**
 	 *
 	 *
+	 * @param unknown $identifier    (optional)
+	 * @param unknown $post_type     (optional)
+	 * @param unknown $term_ids      (optional)
+	 * @param unknown $args          (optional)
+	 * @param unknown $campaign_id   (optional)
+	 * @param unknown $subscriber_id (optional)
+	 * @return unknown
+	 */
+	public function get_random_post( $identifier = 0, $post_type = 'post', $term_ids = array(), $args = array(), $campaign_id = null, $subscriber_id = null, $try = 0 ) {
+
+		if ( $try >= 10 ) {
+			return false;
+		}
+
+		$args = apply_filters( 'mailster_get_random_post_args', $args, $identifier, $post_type, $term_ids, $campaign_id, $subscriber_id );
+
+		if ( ! isset( $args['orderby'] ) ) {
+			$args['orderby'] = 'rand';
+		}
+
+		$key = md5( serialize( array( $identifier, $post_type, $term_ids, $args, $campaign_id ) ) );
+		$args['mailster_identifier'] = $key;
+
+		$posts = mailster_cache_get( 'get_random_post' );
+
+		if ( $posts && isset( $posts[ $campaign_id ] ) && isset( $posts[ $campaign_id ][ $key ] ) ) {
+			return $posts[ $campaign_id ][ $key ];
+		}
+
+		$post = $this->get_last_post( 0, $post_type, $term_ids, $args, $campaign_id, $subscriber_id );
+
+		if ( ! isset( $posts[ $campaign_id ] ) ) {
+			$posts[ $campaign_id ] = $stored = array();
+		} else {
+			$stored = wp_list_pluck( $posts[ $campaign_id ], 'ID' );
+		}
+
+		if ( ($pos = array_search( $post->ID, $stored )) !== false ) {
+			return $this->get_random_post( ++$identifier, $post_type, $term_ids, $args, $campaign_id, $subscriber_id, ++$try );
+		} else {
+			$posts[ $campaign_id ][ $key ] = $post;
+		}
+
+		mailster_cache_set( 'get_random_post', $posts );
+
+		return $post;
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $offset        (optional)
 	 * @param unknown $post_type     (optional)
 	 * @param unknown $term_ids      (optional)
@@ -737,7 +790,7 @@ class Mailster {
 			'offset' => $offset,
 			'update_post_meta_cache' => false,
 			'no_found_rows' => true,
-			'cache_results' => false,
+			// 'cache_results' => true,
 		);
 
 		if ( ! isset( $args['post__not_in'] ) ) {

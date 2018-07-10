@@ -457,7 +457,7 @@ class MailsterPlaceholder {
 		$pts = mailster( 'helper' )->get_post_types();
 		$pts = implode( '|', $pts );
 
-		if ( preg_match_all( '#<module[^>]*?data-tag="{((' . $pts . '):(-)?([\d]+)(;([0-9;,]+))?)\}"(.*?)".*?</module>#ms', $content, $modules ) ) {
+		if ( preg_match_all( '#<module[^>]*?data-tag="{((' . $pts . '):(-|~)?([\d]+)(;([0-9;,]+))?)\}"(.*?)".*?</module>#ms', $content, $modules ) ) {
 
 			foreach ( $modules[0] as $i => $html ) {
 
@@ -465,12 +465,17 @@ class MailsterPlaceholder {
 				$tag = $modules[1][ $i ];
 				$post_type = $modules[2][ $i ];
 				$post_or_offset = $modules[4][ $i ];
+				$type = $modules[3][ $i ];
 
-				if ( empty( $modules[3][ $i ] ) ) {
+				if ( empty( $type ) ) {
 					$post = get_post( $post_or_offset );
 				} else {
 					$term_ids = ! empty( $modules[6][ $i ] ) ? explode( ';', trim( $modules[6][ $i ] ) ) : array();
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					if ( '~' == $type ) {
+						$post = mailster()->get_random_post( $post_or_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					} else {
+						$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					}
 				}
 
 				if ( ! $post ) {
@@ -700,19 +705,23 @@ class MailsterPlaceholder {
 							$extra = explode( '|', $parts[1] );
 							$term_ids = explode( ';', $extra[0] );
 							$fallback_id = isset( $extra[1] ) ? (int) $extra[1] : mailster_option( 'fallback_image' );
-							$post_id = (int) array_shift( $term_ids );
+							$post_id_or_identifier = array_shift( $term_ids );
 
-							if ( $post_id < 0 ) {
+							if ( 0 === strpos( $post_id_or_identifier, '~' ) ) {
 
-								$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+								$post = mailster()->get_random_post( substr( $post_id_or_identifier, 1 ), $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
-							} elseif ( $post_id > 0 ) {
+							} elseif ( $post_id_or_identifier < 0 ) {
+
+								$post = mailster()->get_last_post( abs( $post_id_or_identifier ) - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+
+							} elseif ( $post_id_or_identifier > 0 ) {
 
 								if ( $relative_to_absolute ) {
 									continue;
 								}
 
-								$post = get_post( $post_id );
+								$post = get_post( $post_id_or_identifier );
 
 							}
 						} else {
@@ -791,6 +800,27 @@ class MailsterPlaceholder {
 		}
 
 		$pts = implode( '|', $pts );
+
+		// all random post type tags => convert to absolute tags
+		if ( $count = preg_match_all( '#\{((' . $pts . ')_([^}]+):(~)([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {
+
+			for ( $i = 0; $i < $count; $i++ ) {
+
+				$search = $hits[0][ $i ];
+				$identifier = $hits[5][ $i ];
+				$post_type = $hits[2][ $i ];
+				$what = $hits[3][ $i ];
+				$type = $hits[4][ $i ];
+				$term_ids = ! empty(  $hits[7][ $i ] ) ? explode( ';', trim(  $hits[7][ $i ] ) ) : array();
+
+				if ( $post = mailster()->get_random_post( $identifier, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID ) ) {
+					$post_id = $post->ID;
+					$replace_to = "{{$post_type}_{$what}:{$post_id}}";
+					$this->content = str_replace( $search, $replace_to, $this->content );
+				}
+
+			}
+		}
 
 		// all dynamic post type tags
 		if ( $count = preg_match_all( '#\{((' . $pts . ')_([^}]+):(-)?([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {

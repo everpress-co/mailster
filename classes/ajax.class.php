@@ -1548,21 +1548,26 @@ class MailsterAjax {
 
 		$campaign_id = (int) $_POST['id'];
 		$post_type = sanitize_key( $_POST['post_type'] );
-		$relative = (int) $_POST['relative'];
-		$offset = $relative + 1;
+		$relative_or_identifier = stripslashes( $_POST['relative'] );
+		$offset = $relative_or_identifier + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
 		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 		$args = array();
 
-		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, $args, $campaign_id );
+		if ( 0 === strpos( $relative_or_identifier, '~' ) ) {
+			$post = mailster()->get_random_post( substr( $relative_or_identifier, 1 ), $post_type, $term_ids, $args, $campaign_id );
+		} else {
+			$post = mailster()->get_last_post( $relative_or_identifier + 1, $post_type, $term_ids, $args, $campaign_id );
+		}
+
 		$is_post = ! ! $post;
 
 		$return['title'] = $is_post
 			? '<a href="post.php?post=' . $post->ID . '&action=edit" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : __( 'no title', 'mailster' ) ) . '</a>'
 			: __( 'no match for your selection!', 'mailster' ) . ' <a href="post-new.php?post_type=' . $post_type . '" class="external">' . __( 'create a new one', 'mailster' ) . '</a>?';
 
-		$options = $relative . ( ! empty( $term_ids ) ? ';' . implode( ';', $term_ids ) : '' );
+		$options = $relative_or_identifier . ( ! empty( $term_ids ) ? ';' . implode( ';', $term_ids ) : '' );
 
 		$pattern = array(
 			'title' => '{' . $post_type . '_title:' . $options . '}',
