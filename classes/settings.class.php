@@ -83,11 +83,12 @@ class MailsterSettings {
 			'track_opens' => true,
 			'track_clicks' => true,
 			'track_location' => false,
+			'tags_webversion' => false,
 			'gdpr_forms' => false,
 			'gdpr_link' => $gdpr_link,
 			'gdpr_text' => __( 'I agree to the privacy policy and terms.', 'mailster' ),
 			'gdpr_error' => __( 'You have to agree to the privacy policy and terms!', 'mailster' ),
-			'module_thumbnails' => true,
+			'module_thumbnails' => false,
 			'charset' => 'UTF-8',
 			'encoding' => '8bit',
 			'post_count' => 30,
@@ -884,7 +885,7 @@ class MailsterSettings {
 					}
 					if ( $old != $value ) {
 						if ( $options['hasarchive'] ) {
-							$this->add_settings_error( sprintf( __( 'Your newsletter archive page is: %s', 'mailster' ), '<a href="' . home_url( $value ) . '" class="external">' . home_url( $value ) . '</a>' ), 'archive_slug', 'success' );
+							$this->add_settings_error( sprintf( __( 'Your newsletter archive page is: %s', 'mailster' ), '<a href="' . home_url( $value ) . '" class="external">' . home_url( $value ) . '</a>' ), 'archive_slug', 'updated' );
 						}
 
 						$options['_flush_rewrite_rules'] = true;
@@ -894,6 +895,11 @@ class MailsterSettings {
 				case 'interval':
 
 					$value = max( 0.1, $value );
+					if ( $old != $value ) {
+						if ( 'wp_cron' == $options['cron_service'] ) {
+							mailster( 'cron' )->schedule( true );
+						}
+					}
 
 				break;
 
@@ -903,7 +909,7 @@ class MailsterSettings {
 						update_option( 'mailster_cron_lasthit', false );
 					}
 
-					if ( $value == 'wp_cron' ) {
+					if ( 'wp_cron' == $value ) {
 						mailster( 'cron' )->schedule();
 					} else {
 						mailster( 'cron' )->unschedule();
@@ -925,7 +931,7 @@ class MailsterSettings {
 
 				case 'cron_secret':
 
-					if ( $value == '' ) {
+					if ( '' == $value ) {
 						$value = md5( uniqid() );
 					}
 					if ( $old != $value ) {
@@ -957,7 +963,7 @@ class MailsterSettings {
 
 				case 'custom_field':
 
-					if ( isset( $value[0] ) && $value[0] == 'empty' ) {
+					if ( isset( $value[0] ) && 'empty' == $value[0] ) {
 						unset( $value[0] );
 					}
 
@@ -1064,7 +1070,7 @@ class MailsterSettings {
 
 					if ( $old != $value ) {
 						// at least 1
-						$value = max( $value, 1 );
+						$value = max( (int) $value, 1 );
 						if ( $value >= 200 ) {
 							$this->add_settings_error( sprintf( __( 'sending %s emails at once can cause problems with statistics cause of a server timeout or to much memory usage! You should decrease it if you have problems!', 'mailster' ), number_format_i18n( $value ) ), 'send_at_once' );
 						}
@@ -1073,9 +1079,10 @@ class MailsterSettings {
 				break;
 
 				case 'send_delay':
+				case 'max_execution_time':
 
 					// at least 0
-					$value = max( $value, 0 );
+					$value = max( (int) $value, 0 );
 
 				break;
 
@@ -1096,12 +1103,24 @@ class MailsterSettings {
 
 					if ( $old != $value ) {
 
-						if ( $value == 'gmail' ) {
+						if ( 'gmail' == $value ) {
 							if ( $options['send_limit'] != 500 ) {
 								$options['send_limit'] = 500;
 								$options['send_period'] = 24;
 								update_option( '_transient__mailster_send_period_timeout', false );
-								$this->add_settings_error( sprintf( __( 'Send limit has been adjusted to %d for Gmail', 'mailster' ), 500 ), 'deliverymethod', 'success' );
+								$this->add_settings_error( sprintf( __( 'Send limit has been adjusted to %d for Gmail', 'mailster' ), 500 ), 'deliverymethod', 'updated' );
+							}
+
+							if ( $options['gmail_user'] ) {
+								if ( $options['from_name'] && $options['gmail_user'] != $options['from_name'] ) {
+									$this->add_settings_error( sprintf( __( 'Please make sure you are sending from your Gmail address %s', 'mailster' ), $options['gmail_user'] ), 'gmail_user_from_name', 'error' );
+								}
+								if ( $options['reply_to'] && $options['gmail_user'] != $options['reply_to'] ) {
+									$this->add_settings_error( sprintf( __( 'Please make sure you the Reply to address is the same as your Gmail address %s', 'mailster' ), $options['gmail_user_reply_to'] ), 'gmail_user', 'error' );
+								}
+								if ( $options['bounce'] && $options['gmail_user'] != $options['bounce'] ) {
+									$this->add_settings_error( sprintf( __( 'Please make sure you the bounce address is the same as your Gmail address %s', 'mailster' ), $options['gmail_user_bounce'] ), 'gmail_user', 'error' );
+								}
 							}
 
 							if ( function_exists( 'fsockopen' ) ) {

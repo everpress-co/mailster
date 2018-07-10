@@ -14,7 +14,7 @@ class MailsterPrivacy {
 		add_action( 'wp_privacy_personal_data_exporters', array( &$this, 'register_exporter' ) );
 		add_action( 'wp_privacy_personal_data_erasers', array( &$this, 'register_eraser' ) );
 		if ( function_exists( 'wp_add_privacy_policy_content' ) ) {
-			wp_add_privacy_policy_content( __( 'Mailster' ), $this->privacy_content() );
+			wp_add_privacy_policy_content( 'Mailster', $this->privacy_content() );
 		}
 
 	}

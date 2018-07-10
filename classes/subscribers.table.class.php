@@ -104,7 +104,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	<?php if ( isset( $_GET['paged'] ) ) : ?><input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ) ?>"><?php endif; ?>
 	<?php if ( isset( $_GET['status'] ) ) : ?><input type="hidden" name="status" value="<?php echo esc_attr( $_GET['status'] ) ?>"><?php endif; ?>
 	<?php if ( isset( $_GET['lists'] ) ) :
-		foreach ( array_filter( $_GET['lists'], 'is_numeric' ) as $list_id ) {?>
+		foreach ( array_filter( (array) $_GET['lists'], 'is_numeric' ) as $list_id ) {?>
 	            <input type="hidden" name="lists[]" value="<?php echo $list_id ?>">
 	        <?php }endif;?>
 	<p class="search-box">

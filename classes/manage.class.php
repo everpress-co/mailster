@@ -767,11 +767,13 @@ class MailsterManage {
 			'return_ids' => true,
 		);
 
+		$args = apply_filters( 'mailster_export_args', $args, $d );
+
 		$data = mailster( 'subscribers' )->query( $args );
 
 		if ( isset( $d['nolists'] ) && $d['nolists'] ) {
 
-			$args['lists'] = null;
+			$args['lists'] = -1;
 			$data2 = mailster( 'subscribers' )->query( $args );
 
 			$data = array_unique( array_merge( $data, $data2 ) );
@@ -867,6 +869,7 @@ class MailsterManage {
 		$useheader = $offset === 0 && $d['header'];
 
 		$custom_fields = mailster()->get_custom_fields();
+		$meta_keys = mailster( 'subscribers' )->get_meta_keys();
 		$custom_date_fields = mailster()->get_custom_date_fields();
 		$custom_field_names = array_merge( array( 'firstname', 'lastname' ), array_keys( $custom_fields ) );
 		$custom_field_names = array_keys( array_intersect_key( array_flip( $custom_field_names ), array_flip( $d['column'] ) ) );
@@ -925,8 +928,17 @@ class MailsterManage {
 						$val = __( 'Rating', 'mailster' );
 					break;
 					default:
-						$val = ( isset( $custom_fields[ $col ] ) ) ? $custom_fields[ $col ]['name'] : ucwords( $col );
+						if ( isset( $custom_fields[ $col ] ) ) {
+							$val = $custom_fields[ $col ]['name'];
+						} elseif ( $meta_keys[ $col ] ) {
+							$val = $meta_keys[ $col ];
+						} else {
+							$val = ucwords( $col );
+						}
 				}
+
+				$val = apply_filters( 'mailster_export_heading_' . $col, $val, $d );
+
 				if ( function_exists( 'mb_convert_encoding' ) ) {
 					$val = mb_convert_encoding( $val, $encoding, 'UTF-8' );
 				}
@@ -949,24 +961,29 @@ class MailsterManage {
 
 		$all_fields = isset( $d['column'] ) ? (array) $d['column'] : array();
 		$special = array_values( preg_grep( '/^_/', $all_fields ) );
-		$fields = array_values( preg_grep( '/^(?!_)/', $all_fields ) );
+		$fields = preg_grep( '/^(?!_)/', $all_fields );
+		$meta = array_values( array_intersect( $fields, mailster( 'subscribers' )->get_meta_keys( true ) ) );
+		$fields = array_values( array_diff( $fields, $meta ) );
 		$conditions = isset( $d['conditions'] ) ? (array) $d['conditions'] : array();
 
 		$args = array(
 			'lists' => $listids,
 			'status' => $statuses,
 			'fields' => $fields,
+			'meta' => $meta,
 			'conditions' => $conditions,
 			'limit' => $limit,
 			'offset' => $offset,
 		);
 
+		$args = apply_filters( 'mailster_export_args', $args, $d );
+
 		$data = mailster( 'subscribers' )->query( $args );
 
 		// return;
-		if ( isset( $d['nolists'] ) ) {
+		if ( isset( $d['nolists'] ) && $d['nolists'] ) {
 
-			$args['lists'] = null;
+			$args['lists'] = -1;
 			$data2 = mailster( 'subscribers' )->query( $args );
 
 			$data = array_merge( $data, $data2 );
@@ -1011,6 +1028,7 @@ class MailsterManage {
 					case 'updated':
 					case 'signup':
 					case 'confirm':
+					case 'gdpr':
 						$val = ! empty( $user->{$key} ) ? ( $dateformat ? date( $dateformat, $user->{$key} ) : $user->{$key} ) : '';
 					break;
 					case 'rating':
@@ -1025,6 +1043,8 @@ class MailsterManage {
 						// remove line breaks
 						$val = preg_replace( "/[\n\r]/", ' ', $val );
 				}
+
+				$val = apply_filters( 'mailster_export_field_' . $key, $val, $d );
 
 				if ( function_exists( 'mb_convert_encoding' ) ) {
 					$val = mb_convert_encoding( $val, $encoding, 'UTF-8' );
@@ -1216,7 +1236,7 @@ class MailsterManage {
 		if ( isset( $d['nolists'] ) ) {
 
 			$subscriber_ids = mailster( 'subscribers' )->query(array(
-				'lists' => null,
+				'lists' => -1,
 				'status' => $statuses,
 				'conditions' => $conditions,
 				'return_ids' => true,

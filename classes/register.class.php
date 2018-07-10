@@ -34,14 +34,14 @@ class MailsterRegister {
 
 		$args = wp_parse_args( $args, array(
 			'pretext' => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . esc_url( 'https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=' . $page ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
-			'purchasecode' => get_option( 'mailster_license' ),
+			'purchasecode' => mailster()->license(),
 		) );
 
 		$user_id = get_current_user_id();
 		$user = get_userdata( $user_id );
 
-		$username = get_option( 'mailster_username', '' );
-		$useremail = get_option( 'mailster_email', '' );
+		$username = mailster()->username( '' );
+		$useremail = mailster()->email( '' );
 
 		wp_print_styles( 'mailster-register-style' );
 
@@ -57,7 +57,7 @@ class MailsterRegister {
 				<div class="howto"><?php echo $args['pretext'] ?></div>
 				<div class="error-msg">&nbsp;</div>
 				<input type="text" class="widefat register-form-purchasecode" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="purchasecode" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="36" value="<?php echo esc_attr( $args['purchasecode'] ) ?>">
-				<input type="submit" class="button button-hero button-primary dashboard-register" value="<?php esc_attr_e( 'Register', 'mailster' ) ?>">
+				<input type="submit" class="button button-hero button-primary dashboard-register" value="<?php esc_attr_e( 'Next Step', 'mailster' ) ?>">
 				<div class="howto">
 					<a href="https://mailster.github.io/images/purchasecode.gif" class="howto-purchasecode"><?php esc_html_e( 'Where can I find my item purchase code?', 'mailster' ); ?></a>
 					<!-- &ndash;
@@ -69,8 +69,8 @@ class MailsterRegister {
 				<div class="error-msg">&nbsp;</div>
 				<input type="text" class="widefat username" placeholder="<?php _e( 'Username', 'mailster' ); ?>" name="username" value="<?php echo esc_attr( $username ) ?>">
 				<input type="email" class="widefat email" placeholder="Email" name="email" value="<?php echo esc_attr( $useremail ) ?>">
+				<div class="howto tos-field"><input type="checkbox" name="tos" value="<?php echo time() ?>"> <?php printf( esc_html__( 'I agree to the %1$s and the %2$s by completing the registration.','mailster' ), '<a href="https://mailster.co/legal/tos/" class="external">' . esc_html__( 'Terms of service', 'mailster' ) . '</a>', '<a href="https://mailster.co/legal/privacy-policy/" class="external">' . esc_html__( 'Privacy Policy', 'mailster' ) . '</a>' ); ?></div>
 				<input type="submit" class="button button-hero button-primary" value="<?php esc_attr_e( 'Complete Registration', 'mailster' ) ?>">
-				<div class="howto"><label>* <?php esc_html_e( 'By completing this registration you\'ll receive an invitation to join our exclusive email list which provides you with updates related to Mailster.', 'mailster' ); ?></label></div>
 			</form>
 			<form class="registration_complete">
 				<div class="registration_complete_check"></div>

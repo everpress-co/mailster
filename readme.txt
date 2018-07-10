@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9.6
-Stable tag: 2.3.7
+Tested up to: 4.9.7
+Stable tag: 2.3.10
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -82,6 +82,33 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+= Version 2.3.10 =
+
+* fixed: array_map warning in wp_mail wrapper
+* fixed: honeypot was pre-filled on Google Chrome with autofill
+
+= Version 2.3.9 =
+
+* fixed: manage subscribers with no list assigned included users within a list
+* fixed: some JS issues on IE 11
+* fixed: IP addressed not stored on form submission
+* fixed: not able to remove attachments
+* fixed: wp_mail not working if receivers is not an array
+* fixed: webversion tag was not displayed if campaign hasn't been saved yet
+* fixed: redirection issue if baseurl contains query arguments
+* fixed: button is no longer available on the unsubscribe form with single opt out
+* added: `get_last_post` now includes subscriber and campaign id
+* added: option to enable custom tags on web version
+
+= Version 2.3.8 =
+
+* fixed: caching issue on tags in subject line
+* fixed: subscriber based autoresponder if "lists do not matter"
+* new: Condition: GDPR Consent given
+* added: meta data can now get exported
+* added: `mailster_subscriber_rating` filter
+* change: ratings now updated via cron to reduce server load on large databases
+
 = Version 2.3.7 =
 
 * new: option to add GDPR compliance forms on the privacy settings page.
@@ -90,6 +117,7 @@ Xaver Birsak – https://everpress.io
 * added: information to privacy policy text in WordPress 4.9.6
 * added: added Mailster data to Export Personal Data option in WordPress 4.9.6
 * added: added Mailster data to Erase Personal Data option in WordPress 4.9.6
+* fixes: various small bugs
 
 = Version 2.3.6 =
 

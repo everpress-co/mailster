@@ -179,14 +179,14 @@
 				</div>
 			<br class="clear">
 			</div>
-			<p class="clearfix">
+			<div class="clearfix">
 				<div class="imageurl-popup">
 					<label class="block"><div class="left"><?php esc_html_e( 'Image URL', 'mailster' ) ?></div><div class="right"><input type="text" class="input imageurl" value="" placeholder="https://example.com/image.jpg"></div></label>
 				</div>
 					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ) ?></div><div class="right"><input type="text" class="input imagealt" value="" placeholder="<?php esc_html_e( 'image description', 'mailster' );?>"></div></label>
 					<label class="block"><div class="left"><?php esc_html_e( 'Link image to the this URL', 'mailster' ) ?></div><div class="right"><input type="text" class="input imagelink" value="" placeholder="<?php esc_html_e( 'insert URL', 'mailster' );?>"></div></label>
 					<input type="hidden" class="input orgimageurl" value="">
-			</p>
+			</div>
 			<br class="clear">
 		</div>
 

@@ -668,7 +668,7 @@ class MailsterNotification {
 					<?php if ( $lists = mailster( 'subscribers' )->get_lists( $subscriber->ID ) ) : ?>
 				<tr><td height="30" style="border-top:1px solid #ccc;height:30px"><strong><?php esc_html_e( 'Lists', 'mailster' ) ?>:</strong>
 					<?php foreach ( $lists as $i => $list ) { ?>
-							<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID ) ?>"><?php echo $list->name ?></a><?php if ( $i + 1 < count( $list ) ) {echo ', '; } ?>
+							<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID ) ?>"><?php echo $list->name ?></a><?php if ( $i + 1 < count( $lists ) ) {echo ', '; } ?>
 					<?php } ?>
 				</td></tr>
 					<?php endif; ?>

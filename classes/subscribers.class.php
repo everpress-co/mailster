@@ -2,10 +2,6 @@
 
 class MailsterSubscribers {
 
-	// allowed keys in meta table
-	private $meta_keys = array( 'bounce', 'geo', 'coords', 'client', 'clienttype', 'clientversion', 'lang', 'ip', 'confirmation', 'error', 'referer', 'timeoffset', 'form', 'unsubscribe' );
-	private $single_meta_keys = array( 'ip', 'lang', 'timeoffset', 'form' );
-
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ) );
@@ -36,6 +32,8 @@ class MailsterSubscribers {
 		add_action( 'wp_set_comment_status', array( &$this, 'wp_set_comment_status' ), 10, 2 );
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 20 );
+
+		add_action( 'mailster_update_rating', array( &$this, 'update_rating' ) );
 
 		if ( is_admin() ) {
 
@@ -403,7 +401,7 @@ class MailsterSubscribers {
 				}
 
 				// maybe send confirmation if status wasn't pending
-				if ( $old_subscriber_data->status != 0 ) {
+				if ( $old_subscriber_data && $old_subscriber_data->status != 0 ) {
 					$entry->confirmation = 0;
 				}
 
@@ -914,6 +912,7 @@ class MailsterSubscribers {
 		$meta = array();
 		$customfields = array();
 		$lists = null;
+		$meta_keys = $this->get_meta_keys( true );
 
 		$entry = $this->verify( $entry );
 		if ( is_wp_error( $entry ) ) {
@@ -934,7 +933,7 @@ class MailsterSubscribers {
 				}
 
 				$data[ $key ] = $value;
-			} elseif ( in_array( $key, $this->meta_keys ) ) {
+			} elseif ( in_array( $key, $meta_keys ) ) {
 				$meta[ $key ] = $value;
 			} else {
 				$customfields[ $key ] = $value;
@@ -1080,6 +1079,9 @@ class MailsterSubscribers {
 
 		if ( mailster_option( 'track_users' ) && isset( $entry['ip'] ) && $entry['ip'] !== false ) {
 
+			if ( $entry['ip'] === true ) {
+				unset( $entry['ip'] );
+			}
 			$ip = mailster_get_ip();
 
 			$entry = wp_parse_args( $entry, array(
@@ -1417,6 +1419,42 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
+	 * @return unknown
+	 */
+	public function get_meta_keys( $keys_only = false ) {
+		$meta_keys = array(
+			'bounce' => __( 'Bounce', 'mailster' ),
+			'geo' => __( 'Location', 'mailster' ),
+			'coords' => __( 'Coordinates', 'mailster' ),
+			'client' => __( 'Client', 'mailster' ),
+			'clienttype' => __( 'Type of Client', 'mailster' ),
+			'clientversion' => __( 'Clientversion', 'mailster' ),
+			'lang' => __( 'Language', 'mailster' ),
+			'ip' => __( 'IP address', 'mailster' ),
+			'confirmation' => __( 'Confirmation', 'mailster' ),
+			'error' => __( 'Error', 'mailster' ),
+			'referer' => __( 'Referer', 'mailster' ),
+			'timeoffset' => __( 'Timeoffset to UTC', 'mailster' ),
+			'form' => __( 'Form', 'mailster' ),
+			'unsubscribe' => __( 'Unsubscribe', 'mailster' ),
+			'gdpr' => __( 'GDPR Timestamp', 'mailster' ),
+		);
+		return $keys_only ? array_keys( $meta_keys ) : $meta_keys;
+	}
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function get_single_meta_keys() {
+		return array( 'ip', 'lang', 'timeoffset', 'form' );
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $id
 	 * @param unknown $key         (optional)
 	 * @param unknown $campaign_id (optional)
@@ -1430,8 +1468,8 @@ class MailsterSubscribers {
 
 		if ( false === ( $meta = mailster_cache_get( 'subscriber_meta_' . $id . $campaign_id ) ) ) {
 
-			$default = array_fill_keys( $this->meta_keys, null );
-			// $default['timeoffset'] = NULL;
+			$default = array_fill_keys( $this->get_meta_keys( true ), null );
+
 			$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_subscriber_meta AS a WHERE a.subscriber_id = %d AND a.campaign_id = %d";
 
 			$result = $wpdb->get_results( $wpdb->prepare( $sql, $id, $campaign_id ) );
@@ -1478,8 +1516,10 @@ class MailsterSubscribers {
 		}
 
 		$oldmeta = $this->meta( $id );
+		$meta_keys = $this->get_meta_keys( true );
+		$single_meta_keys = $this->get_single_meta_keys();
 
-		$insert = array_intersect_key( (array) $meta, array_flip( $this->meta_keys ) );
+		$insert = array_intersect_key( (array) $meta, array_flip( $meta_keys ) );
 
 		$sql = "INSERT INTO {$wpdb->prefix}mailster_subscriber_meta (subscriber_id, campaign_id, meta_key, meta_value)";
 
@@ -1494,7 +1534,7 @@ class MailsterSubscribers {
 				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}mailster_subscriber_meta WHERE subscriber_id = %d AND meta_key = %s", $id, $key ) );
 				continue;
 			}
-			$single_meta = in_array( $key, $this->single_meta_keys );
+			$single_meta = in_array( $key, $single_meta_keys );
 			if ( ! $single_meta ) {
 				$inserts[] = $wpdb->prepare( '(%d, %d, %s, %s)', $id, $campaign_id, $key, $value );
 			}
@@ -1528,7 +1568,7 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $ids
 	 */
-	public function update_rate( $ids ) {
+	public function update_rating( $ids ) {
 
 		global $wpdb;
 
@@ -1538,29 +1578,32 @@ class MailsterSubscribers {
 
 		foreach ( $ids as $id ) {
 			$actions = mailster( 'actions' )->get_by_subscriber( $id, null, false, true );
-			$rate = 0.25;
+			$rating = 0.25;
 			if ( $this->get_sent( $id ) ) {
 				$openrate = $this->get_open_rate( $id );
 				$aclickrate = $this->get_adjusted_click_rate( $id );
-				$rate = max( $rate, ( $openrate + $aclickrate ) / 2 );
+
+				$rating = max( $rating, ( $openrate + $aclickrate ) / 2 );
 
 				if ( $actions['softbounces'] ) {
-					$rate -= ( $actions['softbounces'] / 20 );
+					$rating -= ( $actions['softbounces'] / 20 );
 				}
 
 				if ( $actions['bounces'] ) {
-					$rate -= ( $actions['bounces'] / 5 );
+					$rating -= ( $actions['bounces'] / 5 );
 				}
 
 				if ( $actions['unsubscribes'] ) {
-					$rate -= 0.3;
+					$rating -= 0.3;
 				}
-
-				$rate = max( 0.1, $rate );
-
 			}
+
+			$rating = (float) apply_filters( 'mailster_subscriber_rating', $rating, $id );
+			$rating = (float) apply_filters( 'mailster_subscriber_rating_' . $id, $rating );
+			$rating = max( 0.1, min( $rating, 1 ) );
+
 			$sql = "UPDATE {$wpdb->prefix}mailster_subscribers AS a SET a.rating = %f WHERE a.ID = %d AND a.rating != %f";
-			$wpdb->query( $wpdb->prepare( $sql, $rate, $id, $rate ) );
+			$wpdb->query( $wpdb->prepare( $sql, $rating, $id, $rating ) );
 
 		}
 
@@ -2284,9 +2327,10 @@ class MailsterSubscribers {
 	 * @param unknown $ids   (optional)
 	 * @param unknown $force (optional)
 	 * @param unknown $now   (optional)
+	 * @param unknown $user_form_id   (optional)
 	 * @return unknown
 	 */
-	public function send_confirmations( $ids = null, $force = false, $now = false ) {
+	public function send_confirmations( $ids = null, $force = false, $now = false, $user_form_id = null ) {
 
 		global $wpdb;
 
@@ -2348,7 +2392,7 @@ class MailsterSubscribers {
 			if ( mailster( 'notification' )->add( $timestamp, array(
 				'subscriber_id' => $subscriber->ID,
 				'template' => 'confirmation',
-				'form' => $subscriber->form_id,
+				'form' => ! is_null( $user_form_id ) ? (int) $user_form_id : $subscriber->form_id,
 				'list_ids' => $subscriber->list_ids,
 			) ) ) {
 				$this->update_meta( $subscriber->ID, 0, 'confirmation', ++$subscriber->try );

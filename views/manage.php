@@ -307,7 +307,11 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 						'rating' => __( 'Rating', 'mailster' ),
 					);
 
+					$meta = $meta + mailster( 'subscribers' )->get_meta_keys();
+
 					$fields = array( '_number' => '#' ) + $columns + $customfields + $extra + $meta;
+
+					$fields = apply_filters( 'mailster_export_fields', $fields );
 
 					?>
 				<div class="export-order-wrap">
@@ -322,9 +326,10 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 						<button class="export-order-remove">&lt;&lt;</button>
 					</div>
 					<ul class="export-order selected">
-					<?php foreach ( $user_settings['column'] as $id ) {?>
+					<?php foreach ( $user_settings['column'] as $id ) : ?>
+						<?php if ( ! isset( $fields[ $id ] ) ) { continue; } ?>
 						<li><input type="checkbox" name="column[]" value="<?php echo $id ?>" checked> <?php echo esc_html( $fields[ $id ] ) ?></li>
-					<?php }?>
+					<?php endforeach; ?>
 					</ul>
 				</div>
 				<p>

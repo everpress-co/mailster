@@ -255,6 +255,8 @@ class MailsterAjax {
 
 			$placeholder->set_campaign( $campaign->ID );
 
+			$placeholder->remove_last_post_args();
+
 			$placeholder->add_defaults( $campaign->ID, array(
 				'subject' => $subject,
 			) );
@@ -405,7 +407,7 @@ class MailsterAjax {
 			'emailaddress' => $current_user->user_email,
 		) );
 
-		$placeholder->share_service( '{webversionlink}', esc_attr( $_POST['subject'] ) );
+		$placeholder->share_service( '{webversionlink}', $subject );
 		$content = $placeholder->get_content();
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
@@ -1544,16 +1546,16 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$return['success'] = true;
-
+		$campaign_id = (int) $_POST['id'];
 		$post_type = sanitize_key( $_POST['post_type'] );
 		$relative = (int) $_POST['relative'];
 		$offset = $relative + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
 		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
+		$args = array();
 
-		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, null, true );
+		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, $args, $campaign_id );
 		$is_post = ! ! $post;
 
 		$return['title'] = $is_post
@@ -1581,6 +1583,8 @@ class MailsterAjax {
 		$return['pattern'] = apply_filters( 'mymail_auto_tag', apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post, $modulename ), $post_type, $options, $post, $modulename );
 
 		$return['pattern']['tag'] = '{' . $post_type . ':' . $options . '}';
+
+		$return['success'] = true;
 
 		$this->json_return( $return );
 
@@ -1759,7 +1763,7 @@ class MailsterAjax {
 			$path = mailster( 'templates', $return['slug'] )->get_path();
 			$file = $path . '/' . $return['slug'] . '/' . $return['file'];
 
-			$content = mailster()->sanitize_content( $content );
+			$content = mailster()->sanitize_content( $content, false, null, true );
 
 			if ( $wp_filesystem->put_contents( $file, $content, FS_CHMOD_FILE ) ) {
 				$filename = $file;
@@ -2353,23 +2357,31 @@ class MailsterAjax {
 		} elseif ( isset( $_POST['data'] ) ) {
 
 			parse_str( $_POST['data'], $userdata );
-			$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
 
-			if ( is_wp_error( $result ) ) {
-				$return['error'] = mailster()->get_update_error( $result );
-				$return['code'] = $result->get_error_code();
-
+			if ( empty( $userdata['email'] ) ) {
+				$return['error'] = __( 'Please enter your email address', 'mailster' );
+			} elseif ( ! isset( $userdata['tos'] ) ) {
+				$return['error'] = __( 'You have to accept the terms of service.', 'mailster' );
 			} else {
-				update_option( 'mailster_username', $result['username'] );
-				update_option( 'mailster_email', $result['email'] );
+				$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
 
-				do_action( 'mailster_register', $result['username'], $result['email'], $purchasecode );
-				do_action( 'mailster_register_' . $slug, $result['username'], $result['email'], $purchasecode );
+				if ( is_wp_error( $result ) ) {
+					$return['error'] = mailster()->get_update_error( $result );
+					$return['code'] = $result->get_error_code();
 
-				$return['username'] = $result['username'];
-				$return['email'] = $result['email'];
-				$return['purchasecode'] = $purchasecode;
-				$return['success'] = true;
+				} else {
+					update_option( 'mailster_username', $result['username'] );
+					update_option( 'mailster_email', $result['email'] );
+					update_option( 'mailster_tos_accepted', $userdata['tos'] );
+
+					do_action( 'mailster_register', $result['username'], $result['email'], $purchasecode );
+					do_action( 'mailster_register_' . $slug, $result['username'], $result['email'], $purchasecode );
+
+					$return['username'] = $result['username'];
+					$return['email'] = $result['email'];
+					$return['purchasecode'] = $purchasecode;
+					$return['success'] = true;
+				}
 			}
 		} else {
 			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );
@@ -2521,6 +2533,8 @@ class MailsterAjax {
 			case 'validation':
 			break;
 			case 'finish':
+			 	// maybe
+			 	mailster( 'templates' )->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 1 );
 				update_option( 'mailster_setup', time() );
 				flush_rewrite_rules();
 			break;

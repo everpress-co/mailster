@@ -39,13 +39,7 @@ jQuery(document).ready(function ($) {
 			})
 			.on('click', 'button.addbutton', function () {
 				var data = $(this).data(),
-					element = $($('<div/>').html(decodeURIComponent(data.element.data('tmpl'))).text());
-
-				if (!element.length) {
-					element = data.element.find('img').length ?
-						'<a href="" editable label="Button"><img alt=""></a>' :
-						'<a href="" editable label="Button"></a>';
-				}
+					element = decodeURIComponent(data.element.data('tmpl')) || '<a href="" editable label="Button"></a>';
 
 				parent.window.Mailster.editbar.open({
 					type: 'btn',

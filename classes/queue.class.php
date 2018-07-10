@@ -383,31 +383,46 @@ class MailsterQueue {
 				continue;
 			}
 
+			// time when user no longer get the campaign
+			$do_not_send_after = apply_filters( 'mailster_autoresponder_do_not_send_after', WEEK_IN_SECONDS, $campaign, $meta );
+			$queue_upfront = 3600;
+
 			if ( 'mailster_subscriber_insert' == $autoresponder_meta['action'] ) {
 
 				$offset = (int) $autoresponder_meta['amount'] . ' ' . strtoupper( $autoresponder_meta['unit'] );
 				$list_based = mailster( 'campaigns' )->list_based_opt_out( $campaign->ID );
+
+				$ignore_lists = $meta['ignore_lists'];
+				$lists = ! $ignore_lists ? (array) $meta['lists'] : true;
 
 				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null;
 
 				$args = array(
 					'select' => array(
 						'subscribers.ID',
-						"UNIX_TIMESTAMP ( FROM_UNIXTIME( lists_subscribers.added ) + INTERVAL $offset ) AS autoresponder_timestamp",
-						'lists_subscribers.added',
+						"UNIX_TIMESTAMP ( FROM_UNIXTIME( IFNULL(lists_subscribers.added, IF(subscribers.confirm, subscribers.confirm, subscribers.signup)) ) + INTERVAL $offset ) AS autoresponder_timestamp",
 					),
 					'sent__not_in' => $campaign->ID,
 					'queue__not_in' => $campaign->ID,
-					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : true,
+					'lists' => $lists,
 					'conditions' => $conditions,
 					'where' => array(
 						'(subscribers.confirm != 0 OR subscribers.signup != 0)',
-						'(subscribers.signup >= ' . (int) $meta['timestamp'] . ' OR lists_subscribers.added >= ' . (int) $meta['timestamp'] . ')',
-						'lists_subscribers.added != 0',
 					),
-					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
+					'having' => array( 'autoresponder_timestamp <= ' . ($now + $queue_upfront) ),
 					'orderby' => 'autoresponder_timestamp',
 				);
+
+				if ( $do_not_send_after ) {
+					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
+				}
+
+				if ( $ignore_lists ) {
+					$args['where'][] = '(subscribers.signup >= ' . (int) $meta['timestamp'] . ')';
+				} else {
+					$args['where'][] = '(subscribers.signup >= ' . (int) $meta['timestamp'] . ' OR lists_subscribers.added >= ' . (int) $meta['timestamp'] . ')';
+					$args['where'][] = 'lists_subscribers.added != 0';
+				}
 
 				$subscribers = mailster( 'subscribers' )->query( $args );
 
@@ -432,9 +447,13 @@ class MailsterQueue {
 					'queue__not_in' => $campaign->ID,
 					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
 					'conditions' => $conditions,
-					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
+					'having' => array( 'autoresponder_timestamp <= ' . ($now + $queue_upfront) ),
 					'orderby' => 'autoresponder_timestamp',
 				);
+
+				if ( $do_not_send_after ) {
+					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
+				}
 
 				$subscribers = mailster( 'subscribers' )->query( $args );
 
@@ -457,7 +476,7 @@ class MailsterQueue {
 					'queue__not_in' => $campaign->ID,
 					'lists' => (empty( $meta['ignore_lists'] ) && ! empty( $meta['lists'] )) ? $meta['lists'] : false,
 					'conditions' => $conditions,
-					'having' => 'autoresponder_timestamp <= ' . ($now + 3600),
+					'having' => array( 'autoresponder_timestamp <= ' . ($now + $queue_upfront) ),
 					'orderby' => 'autoresponder_timestamp',
 				);
 
@@ -474,6 +493,10 @@ class MailsterQueue {
 						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_click_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
 						$args['click'] = $campaign->post_parent;
 						break;
+				}
+
+				if ( $do_not_send_after ) {
+					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
 				}
 
 				$subscribers = mailster( 'subscribers' )->query( $args );
@@ -1124,7 +1147,7 @@ class MailsterQueue {
 
 						if ( $error ) {
 							if ( isset( $options['template'] ) && $options['template'] ) {
-								mailster_notice( sprintf( __( 'Notification %1$s has thrown an error: %2$s', 'mailster' ), '<strong>&quot;' . $options['template'] . '&quot;</strong>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', false, 'notification_error_' . $options['template'] );
+								mailster_notice( sprintf( __( 'Notification %1$s has thrown an error: %2$s', 'mailster' ), '<strong>&quot;' . $options['template'] . '&quot;</strong>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', 7200, 'notification_error_' . $options['template'] );
 							}
 
 							do_action( 'mailster_notification_error', $data->subscriber_id, $result->get_error_message() );
@@ -1143,7 +1166,7 @@ class MailsterQueue {
 
 							if ( mailster_option( 'pause_campaigns' ) ) {
 								mailster( 'campaigns' )->change_status( $campaign, 'paused' );
-								mailster_notice( sprintf( __( 'Campaign %1$s has been paused cause of a sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', false, 'camp_error_' . $campaign->ID, $campaign->post_author );
+								mailster_notice( sprintf( __( 'Campaign %1$s has been paused cause of a sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', 7200, 'camp_error_' . $campaign->ID, $campaign->post_author );
 
 							} else {
 								mailster_notice( sprintf( __( 'Campaign %1$s has some delay cause of a sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'success', true, 'camp_error_' . $campaign->ID, $campaign->post_author );

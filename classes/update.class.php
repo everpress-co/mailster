@@ -5,15 +5,21 @@ class MailsterUpdate {
 
 	public function __construct() {
 
+		add_filter( 'plugins_loaded', array( &$this, 'init' ) );
+
 		add_filter( 'upgrader_pre_download', array( &$this, 'upgrader_pre_download' ), 10, 3 );
 		add_action( 'after_plugin_row_' . MAILSTER_SLUG, array( &$this, 'add_license_info' ), 10, 3 );
 
+	}
+
+
+	public function init() {
 		if ( ! class_exists( 'UpdateCenterPlugin' ) ) {
 			require_once MAILSTER_DIR . 'classes/UpdateCenterPlugin.php';
 		}
 
 		UpdateCenterPlugin::add( array(
-			'licensecode' => get_option( 'mailster_license' ),
+			'licensecode' => mailster()->license(),
 			'remote_url' => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
 			'plugin' => MAILSTER_SLUG,
 			'slug' => 'mailster',
@@ -75,7 +81,7 @@ class MailsterUpdate {
 
 					case 500: // Internal Server Error
 					case 503: // Service Unavailable
-						$error = __( 'Envato servers are currently down. Please try again later!', 'mailster' );
+						$error = __( 'Authentication servers are currently down. Please try again later!', 'mailster' );
 					break;
 
 					default:
