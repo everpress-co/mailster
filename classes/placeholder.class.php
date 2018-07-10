@@ -811,14 +811,13 @@ class MailsterPlaceholder {
 				$post_type = $hits[2][ $i ];
 				$what = $hits[3][ $i ];
 				$type = $hits[4][ $i ];
-				$term_ids = ! empty(  $hits[7][ $i ] ) ? explode( ';', trim(  $hits[7][ $i ] ) ) : array();
+				$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
 
 				if ( $post = mailster()->get_random_post( $identifier, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID ) ) {
 					$post_id = $post->ID;
 					$replace_to = "{{$post_type}_{$what}:{$post_id}}";
 					$this->content = str_replace( $search, $replace_to, $this->content );
 				}
-
 			}
 		}
 
