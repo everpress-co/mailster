@@ -1381,11 +1381,12 @@ class MailsterCampaigns {
 			$post['post_status'] = isset( $_POST['mailster_data']['active'] ) ? 'queued' : $post['post_status'];
 
 			// overcome post status issue where old slugs only for published post are stored
-			$fakepost = (object) $post;
-			$fakepost->post_status = 'publish';
+			if ( $postarr['ID'] ) {
+				$fakepost = (object) $post;
+				$fakepost->post_status = 'publish';
 
-			wp_check_for_changed_slugs( $postarr['ID'], $fakepost, get_post( $postarr['ID'] ) );
-
+				wp_check_for_changed_slugs( $postarr['ID'], $fakepost, get_post( $postarr['ID'] ) );
+			}
 		}
 
 		if ( $post['post_status'] == 'autoresponder' && isset( $postdata['autoresponder'] ) && $postdata['autoresponder']['action'] != 'mailster_autoresponder_followup' ) {
