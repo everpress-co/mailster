@@ -1336,7 +1336,7 @@ class MailsterCampaigns {
 	 */
 	public function wp_insert_post_data( $post, $postarr ) {
 
-		if ( ! isset( $post ) ) {
+		if ( ! isset( $post ) || ! $postarr['ID'] ) {
 			return $post;
 		}
 

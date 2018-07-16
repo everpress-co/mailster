@@ -801,42 +801,29 @@ class MailsterPlaceholder {
 
 		$pts = implode( '|', $pts );
 
-		// all random post type tags => convert to absolute tags
-		if ( $count = preg_match_all( '#\{((' . $pts . ')_([^}]+):(~)([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {
-
-			for ( $i = 0; $i < $count; $i++ ) {
-
-				$search = $hits[0][ $i ];
-				$identifier = $hits[5][ $i ];
-				$post_type = $hits[2][ $i ];
-				$what = $hits[3][ $i ];
-				$type = $hits[4][ $i ];
-				$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
-
-				if ( $post = mailster()->get_random_post( $identifier, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID ) ) {
-					$post_id = $post->ID;
-					$replace_to = "{{$post_type}_{$what}:{$post_id}}";
-					$this->content = str_replace( $search, $replace_to, $this->content );
-				}
-			}
-		}
-
 		// all dynamic post type tags
-		if ( $count = preg_match_all( '#\{((' . $pts . ')_([^}]+):(-)?([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#\{((' . $pts . ')_([^}]+):(-|~)?([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
 				$search = $hits[0][ $i ];
 				$post_or_offset = $hits[5][ $i ];
 				$post_type = $hits[2][ $i ];
+				$type = $hits[4][ $i ];
+				$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
+				$is_random = '~' == $type;
 
-				if ( empty( $hits[4][ $i ] ) ) {
+				if ( empty( $type ) || $is_random ) {
 
 					if ( $relative_to_absolute ) {
 						continue;
 					}
 
-					$post = get_post( $post_or_offset );
+					if ( $is_random ) {
+						$post = mailster()->get_random_post( $post_or_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					} else {
+						$post = get_post( $post_or_offset );
+					}
 
 					if ( ! $post ) {
 						continue;
@@ -859,7 +846,6 @@ class MailsterPlaceholder {
 					}
 				} else {
 
-					$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
 					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 				}

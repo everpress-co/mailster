@@ -722,10 +722,14 @@ class Mailster {
 			return false;
 		}
 
+		$seed = apply_filters( 'mailster_get_random_post_seed', 0 );
+
+		$rand = (int) $seed . (int) $campaign_id . (int) $identifier;
+
 		$args = apply_filters( 'mailster_get_random_post_args', $args, $identifier, $post_type, $term_ids, $campaign_id, $subscriber_id );
 
 		if ( ! isset( $args['orderby'] ) ) {
-			$args['orderby'] = 'rand';
+			$args['orderby'] = 'RAND(' . $rand . ')';
 		}
 
 		$key = md5( serialize( array( $identifier, $post_type, $term_ids, $args, $campaign_id ) ) );
