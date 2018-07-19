@@ -14,7 +14,7 @@ class MailsterForm {
 
 	private $form = null;
 	private $campaignID = null;
-	private $honeypot = true;
+	private $honeypot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135
 	private $hash = null;
 	private $profile = false;
 	private $unsubscribe = false;

@@ -598,7 +598,7 @@ class MailsterCampaigns {
 		$is_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
 		$timeformat = mailster( 'helper' )->timeformat();
 
-		if ( ! $is_ajax && $column != 'status' ) {
+		if ( ! $is_ajax && $column != 'status' && wp_script_is( 'heartbeat', 'registered' ) ) {
 			echo '&ndash;';
 			return;
 		}

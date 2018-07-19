@@ -263,8 +263,8 @@ class MailsterActions {
 		$now = time();
 
 		$args = wp_parse_args( $args, array(
-				'timestamp' => $now,
-				'count' => 1,
+			'timestamp' => $now,
+			'count' => 1,
 		) );
 
 		$sql = "INSERT INTO {$wpdb->prefix}mailster_actions (" . implode( ', ', array_keys( $args ) ) . ')';
@@ -274,7 +274,7 @@ class MailsterActions {
 		$sql .= ( $explicit ) ? ' timestamp = timestamp, count = count+1' : ' count = values(count)';
 
 		if ( false !== $wpdb->query( $sql ) ) {
-			if ( $args['type'] != 1 && $explicit ) {
+			if ( $args['type'] != 1 && $explicit && isset( $args['subscriber_id'] ) ) {
 				wp_schedule_single_event( time() + 120, 'mailster_update_rating', array( $args['subscriber_id'] ) );
 			}
 
@@ -521,7 +521,7 @@ class MailsterActions {
 
 		} elseif ( is_array( $subscriber_id ) ) {
 
-			$subscriber_ids = $subscriber_id;
+			$subscriber_ids = array_filter( $subscriber_id, 'is_numeric' );
 
 		}
 
@@ -530,7 +530,7 @@ class MailsterActions {
 		$sql = "SELECT a.campaign_id, a.subscriber_id AS ID, type, COUNT(DISTINCT a.subscriber_id) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a";
 
 		// $sql = "SELECT a.campaign_id, a.subscriber_id AS ID, type, IF(a.subscriber_id, COUNT(DISTINCT a.subscriber_id), SUM(a.count)) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a";
-		if ( isset( $subscriber_ids ) ) {
+		if ( ! empty( $subscriber_ids ) ) {
 			$sql .= ' WHERE a.subscriber_id IN (' . implode( ',', $subscriber_ids ) . ')';
 		}
 

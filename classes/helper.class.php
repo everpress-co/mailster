@@ -115,10 +115,6 @@ class MailsterHelper {
 				$imageobj = $image->save();
 				$new_img_path = ! is_wp_error( $imageobj ) ? $imageobj['path'] : $actual_file_path;
 			} else {
-				$new_img_path = image_resize( $actual_file_path, $width, $height, $crop );
-			}
-
-			if ( is_wp_error( $new_img_path ) ) {
 				$new_img_path = $actual_file_path;
 			}
 
