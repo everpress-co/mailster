@@ -84,6 +84,7 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.10 =
 
+* new: you can now use `[newsletter_profile]` and `[newsletter_unsubscribe]` everywhere where short codes are accepted
 * fixed: array_map warning in wp_mail wrapper
 * fixed: honeypot was pre-filled on Google Chrome with autofill
 * fixed: Some tags where not displayed on notifications
