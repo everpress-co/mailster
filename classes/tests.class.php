@@ -403,6 +403,26 @@ class MailsterTests {
 			$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );
 		}
 	}
+	private function test_geo_database() {
+
+		if ( mailster_option( 'track_location' ) ) {
+
+			$geo = mailster( 'geo' );
+
+			$warnings = array();
+
+			if ( ! file_exists( $path = $geo->get_file_path( 'country' ) ) ) {
+				$warnings[] = sprintf( 'The Country Database was not found in %s', $path );
+			}
+			if ( ! file_exists( $path = $geo->get_file_path( 'city' ) ) ) {
+				$warnings[] = sprintf( 'The City Database was not found in %s', $path );
+			}
+
+			if ( ! empty( $warnings ) ) {
+				$this->warning( implode( '<br>', $warnings ), admin_url( 'edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#privacy' ) );
+			}
+		}
+	}
 	private function test_wp_debug() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			$this->failure( (mailster_is_local() ? 'notice' : 'warning' ),'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
