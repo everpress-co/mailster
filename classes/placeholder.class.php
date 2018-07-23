@@ -160,28 +160,15 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
-	 * @param unknown $campaign_id
-	 * @param unknown $args    (optional)
+	 * @param unknown $campaign_id (optional)
+	 * @param unknown $args        (optional)
 	 * @return unknown
 	 */
-	public function add_defaults( $campaign_id, $args = array() ) {
-
-		$meta = mailster( 'campaigns' )->meta( $campaign_id );
-		if ( ! $meta ) {
-			$meta = mailster( 'campaigns' )->meta_defaults();
-		}
+	public function add_defaults( $campaign_id = null, $args = array() ) {
 
 		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
 
 		$defaults = array(
-			'preheader' => $meta['preheader'],
-			'subject' => $meta['subject'],
-			'webversion' => '<a href="{webversionlink}">{webversionlinktext}</a>',
-			'unsub' => '<a href="{unsublink}">{unsublinktext}</a>',
-			'forward' => '<a href="{forwardlink}">{forwardlinktext}</a>',
-			'profile' => '<a href="{profilelink}">{profilelinktext}</a>',
-			'webversionlink' => get_permalink( $campaign_id ),
-			'lists' => mailster( 'campaigns' )->get_formated_lists( $campaign_id ),
 			'email' => '<a href="">{emailaddress}</a>',
 			'year' => $time[0],
 			'month' => $time[1],
@@ -190,9 +177,27 @@ class MailsterPlaceholder {
 			'minute' => $time[4],
 		);
 
-		if ( ! $meta['webversion'] ) {
-			$defaults['webversion'] = '';
-			$defaults['webversionlink'] = '';
+		if ( $campaign_id ) {
+			$meta = mailster( 'campaigns' )->meta( $campaign_id );
+			if ( ! $meta ) {
+				$meta = mailster( 'campaigns' )->meta_defaults();
+			}
+
+			$defaults = wp_parse_args( array(
+				'preheader' => $meta['preheader'],
+				'subject' => $meta['subject'],
+				'webversion' => '<a href="{webversionlink}">{webversionlinktext}</a>',
+				'unsub' => '<a href="{unsublink}">{unsublinktext}</a>',
+				'forward' => '<a href="{forwardlink}">{forwardlinktext}</a>',
+				'profile' => '<a href="{profilelink}">{profilelinktext}</a>',
+				'webversionlink' => get_permalink( $campaign_id ),
+				'lists' => mailster( 'campaigns' )->get_formated_lists( $campaign_id ),
+			), $defaults );
+
+			if ( ! $meta['webversion'] ) {
+				$defaults['webversion'] = '';
+				$defaults['webversionlink'] = '';
+			}
 		}
 
 		$args = wp_parse_args( $args, $defaults );

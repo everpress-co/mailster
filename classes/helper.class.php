@@ -1182,9 +1182,21 @@ class MailsterHelper {
 		}
 
 		$path = untrailingslashit( ABSPATH );
+		$before = '';
+		$after = '';
 
 		foreach ( $wp_styles->registered[ $handle ]->deps as $h ) {
 			$this->wp_print_embedded_styles( $h );
+		}
+		foreach ( $wp_styles->registered[ $handle ]->extra as $type => $styles ) {
+			switch ( $type ) {
+				case 'before':
+					$before .= implode( ' ', $styles );
+					break;
+				case 'after':
+					$after .= implode( ' ', $styles );
+					break;
+			}
 		}
 
 		ob_start();
@@ -1206,7 +1218,7 @@ class MailsterHelper {
 			$output = str_replace( 'url(' . $urls[1][ $i ] . $urls[2][ $i ] . $urls[3][ $i ] . ')', 'url(' . $urls[1][ $i ] . $base . $urls[2][ $i ] . $urls[3][ $i ] . ')', $output );
 		}
 
-		echo "<style id='$handle' type='text/css'>$output</style>";
+		echo "<style id='$handle' type='text/css'>{$before}{$output}{$after}</style>";
 
 	}
 

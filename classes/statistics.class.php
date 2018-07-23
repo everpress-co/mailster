@@ -121,9 +121,9 @@ class MailsterStatistics {
 		$dates = $this->get_calendar_table( $from, $to );
 		$count = count( $dates );
 
-		$count_before = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers WHERE status = 1 AND IF(confirm, confirm, signup) < %d", $from ) );
+		$count_before = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) < %d", $from ) );
 
-		$sql = "SELECT @n:=@n + IFNULL(total,0) total FROM (SELECT {$this->calendar_table}.date, total FROM {$this->calendar_table} LEFT JOIN (SELECT FROM_UNIXTIME(IF(confirm, confirm, signup), '%Y-%m-%d') date, count(*) total FROM {$wpdb->prefix}mailster_subscribers WHERE status = 1 GROUP BY date ) t2 ON {$this->calendar_table}.date= t2.date ORDER BY date) t3 CROSS JOIN (SELECT @n:=$count_before) n LIMIT 0, $count";
+		$sql = "SELECT @n:=@n + IFNULL(total,0) total FROM (SELECT {$this->calendar_table}.date, total FROM {$this->calendar_table} LEFT JOIN (SELECT FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup), '%Y-%m-%d') date, COUNT(*) AS total FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) GROUP BY date ) t2 ON {$this->calendar_table}.date= t2.date ORDER BY date) t3 CROSS JOIN (SELECT @n:=$count_before) n LIMIT 0, $count";
 
 		$sql = apply_filters( 'mailster_get_signups_sql', $sql, $from, $to );
 

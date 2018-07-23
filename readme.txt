@@ -86,9 +86,12 @@ Xaver Birsak – https://everpress.io
 
 * fixed: array_map warning in wp_mail wrapper
 * fixed: honeypot was pre-filled on Google Chrome with autofill
+* fixed: Some tags where not displayed on notifications
+* fixed: Gravatar changes on third party apps were not respected
 * fixed: smaller issues
 * improved: better support for maislter_subscriber of third party apps with wrong data type
 * improved: show stats on campaign overview if heartbeat API is disabled (no live reload)
+* improved: better handling of inline styles for subscriber buttons
 * disabled: honeypot mechnism to prevent Chrome browsers to fill out the honeypot field
 
 = Version 2.3.9 =
