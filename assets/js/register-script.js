@@ -23,7 +23,7 @@ jQuery(document).ready(function ($) {
 			return false;
 		})
 		.on('change', '.tos', function () {
-			$(this).val(Math.round(new Date().getTime()/1000));
+			$(this).val(Math.round(new Date().getTime() / 1000));
 		})
 		.on('submit', '.register_form', function () {
 
