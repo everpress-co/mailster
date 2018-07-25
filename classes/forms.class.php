@@ -74,13 +74,14 @@ class MailsterForms {
 		}
 		if ( $is_button ) {
 
-			do_action( 'mailster_form_head_button' );
-			do_action( 'mymail_form_head_button' );
 			$buttonstyle = explode( ' ', $buttonstyle );
-
 			wp_register_style( 'mailster-form-button-base-style', MAILSTER_URI . 'assets/css/button-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_register_style( 'mailster-form-button-style', MAILSTER_URI . 'assets/css/button-' . $buttonstyle[0] . '-style' . $suffix . '.css', array( 'mailster-form-button-base-style' ), MAILSTER_VERSION );
-			// wp_print_styles('form-button-style');
+
+			do_action( 'mailster_form_head_button' );
+			do_action( 'mymail_form_head_button' );
+
+			// wp_print_styles('mailster-form-button-style');
 			mailster( 'helper' )->wp_print_embedded_styles( 'mailster-form-button-style' );
 
 		} elseif ( $is_editable ) {
@@ -95,9 +96,9 @@ class MailsterForms {
 
 		} elseif ( $is_iframe ) {
 
+			wp_register_style( 'mailster-form-iframe-style', MAILSTER_URI . 'assets/css/form-iframe-style' . $suffix . '.css', array( 'mailster-form-default-style' ), MAILSTER_VERSION );
 			do_action( 'mailster_form_head_iframe' );
 			do_action( 'mymail_form_head_iframe' );
-			wp_register_style( 'mailster-form-iframe-style', MAILSTER_URI . 'assets/css/form-iframe-style' . $suffix . '.css', array( 'mailster-form-default-style' ), MAILSTER_VERSION );
 			mailster( 'helper' )->wp_print_embedded_styles( 'mailster-form-iframe-style' );
 			$width = preg_match( '#\d+%#', $width ) ? (int) $width . '%' : (int) $width . 'px';
 			echo '<style type="text/css">.mailster-form-wrap{width:' . $width . '}</style>';

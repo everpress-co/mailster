@@ -3197,8 +3197,8 @@ class MailsterSubscribers {
 		if ( preg_match( '/src=["\'](.*)["\']/Ui', $image, $match ) ) {
 			$url = htmlspecialchars_decode( $match[1] );
 		} else {
-		}
 			$url = 'https://' . ( $id % 3 ) . '.gravatar.com/avatar/' . $hash . '?d=' . urlencode( $default ) . '&s=' . $size;
+		}
 
 		return $url;
 

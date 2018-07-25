@@ -4,7 +4,6 @@ jQuery(document).ready(function ($) {
 
 	var wpnonce = mailsterregisterL10n.wpnonce;
 
-
 	$('.register_form_wrap')
 		.on('focus', 'input', function () {
 			$(this).attr('data-placeholder', $(this).attr('placeholder'));
@@ -22,6 +21,9 @@ jQuery(document).ready(function ($) {
 
 			Mailster.dialog('registration-dialog');
 			return false;
+		})
+		.on('change', '.tos', function () {
+			$(this).val(Math.round(new Date().getTime()/1000));
 		})
 		.on('submit', '.register_form', function () {
 

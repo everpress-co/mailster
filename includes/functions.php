@@ -562,13 +562,13 @@ function mailster_get_user_client( $string = null ) {
 function mailster_subscribe( $email, $userdata = array(), $lists = array(), $double_opt_in = null, $overwrite = true, $mergelists = null, $template = 'notification.html' ) {
 
 	$entry = wp_parse_args( array(
-			'email' => $email,
+		'email' => $email,
 	), $userdata );
 
 	$added = null;
 	if ( ! is_null( $double_opt_in ) ) {
 		$entry['status'] = $double_opt_in ? 0 : 1;
-		$added = $double_opt_in ? 0 : 1;
+		$added = mailster_option( 'list_based_opt_in' ) ? ($double_opt_in ? false : true) : time();
 	}
 
 	$subscriber_id = mailster( 'subscribers' )->add( $entry, $overwrite );

@@ -1988,10 +1988,10 @@ class Mailster {
 
 		$mail->apply_raw_headers( $headers );
 
-		if ( ! is_array( $to ) ) {
-			$to = array( $to );
+		if ( is_string( $to ) ) {
+			$to = explode( ',', $to );
 		}
-		$to = array_map( 'trim', explode( ',', $to ) );
+		$to = array_map( 'trim', $to );
 
 		$mail->to = $to;
 		$mail->message = $message;

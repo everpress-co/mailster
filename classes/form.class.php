@@ -14,7 +14,7 @@ class MailsterForm {
 
 	private $form = null;
 	private $campaignID = null;
-	private $honeypot = true;
+	private $honeypot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135
 	private $hash = null;
 	private $profile = false;
 	private $unsubscribe = false;
@@ -521,7 +521,7 @@ class MailsterForm {
 		if ( $this->honeypot ) {
 			$position = rand( count( $fields ), 0 ) - 1;
 			$fields = array_slice( $fields, 0, $position, true ) +
-				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="off"></label>' ) +
+				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="off" autofill="off"></label>' ) +
 				array_slice( $fields, $position, null, true );
 		}
 
@@ -836,7 +836,7 @@ class MailsterForm {
 			$honeypot = isset( $_BASE[ 'n_' . $honeypotnonce . '_email' ] ) ? $_BASE[ 'n_' . $honeypotnonce . '_email' ] : null;
 
 			if ( ! empty( $honeypot ) ) {
-				die( 1 );
+				$this->object['errors']['_honeypot'] = __( 'Honeypot is for bears only!', 'mailster' );
 			}
 		}
 
