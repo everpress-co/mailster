@@ -116,7 +116,7 @@ jQuery(document).ready(function ($) {
 		function _urlconverter(url, node, on_save, name) {
 			if ('_wp_link_placeholder' == url) {
 				return url;
-			} else if (/{.+}/g.test(url)) {
+			} else if (/^https?:\/\/{.+}/g.test(url)) {
 				return url.replace(/^https?:\/\//, '');
 			} else if (/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(url)) {
 				return 'mailto:' + url;

@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.io
 * fixed: Some tags where not displayed on notifications
 * fixed: Gravatar changes on third party apps were not respected
 * fixed: error if location database is missing
+* fixed: tags in links causes a protocol removal
 * fixed: smaller issues
 * improved: better support for maislter_subscriber of third party apps with wrong data type
 * improved: show stats on campaign overview if heartbeat API is disabled (no live reload)

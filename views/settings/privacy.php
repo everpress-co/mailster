@@ -31,7 +31,7 @@
 		</p>
 	<?php else : ?>
 		<div class="error inline"><p><?php esc_html_e( 'Looks like the location database hasn\'t been loaded yet!', 'mailster' ) ?></p></div>
-		<p><button id="load_location_db" class="button-primary" <?php disabled( ! $geoip );?>><?php esc_html_e( 'Load Location Database manually', 'mailster' );?></button>&nbsp;<span class="loading geo-ajax-loading"></span>
+		<p><button id="load_location_db" class="button-primary"><?php esc_html_e( 'Load Location Database manually', 'mailster' );?></button>&nbsp;<span class="loading geo-ajax-loading"></span>
 			<em id="location_last_update"></em>
 		</p>
 	<?php endif; ?>
