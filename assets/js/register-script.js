@@ -23,6 +23,9 @@ jQuery(document).ready(function ($) {
 			Mailster.dialog('registration-dialog');
 			return false;
 		})
+		.on('change', '.tos', function () {
+			$(this).val(Math.floor(Date.now() / 1000));
+		})
 		.on('submit', '.register_form', function () {
 
 			var form = $(this),
