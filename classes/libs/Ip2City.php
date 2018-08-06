@@ -5,10 +5,10 @@ class Ip2City {
 	// maxmind doesn't provide a zip version so I've uploaded it to bitbucket (updated weekly)
 	public $zip = 'https://mailster.github.io/GeoIPCity.zip';
 	private $dbfile;
-	private $gi;
+	public $gi;
 	private $renew = false;
 
-	public function __construct($dbfile) {
+	public function __construct( $dbfile ) {
 
 		require_once MAILSTER_DIR . 'classes/libs/geoipcity.inc.php';
 
