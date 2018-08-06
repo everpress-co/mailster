@@ -166,6 +166,11 @@ $mailster_capabilities = array(
 		'roles' => array( 'editor' ),
 	),
 
+	'mailster_import_templates' => array(
+		'title' => __( 'import templates', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
 	'mailster_update_templates' => array(
 		'title' => __( 'update templates', 'mailster' ),
 		'roles' => array(),

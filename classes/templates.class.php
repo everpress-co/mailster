@@ -108,7 +108,7 @@ class MailsterTemplates {
 	 *
 	 *
 	 */
-	public function download( $url, $template = null, $overwrite = false, $backup_old = false ) {
+	public function download( $url, $template = null, $overwrite = false, $backup_old = false, $download_assets = true ) {
 
 		if ( is_null( $template ) ) {
 			$template = mailster_option( 'default_template' );
@@ -150,6 +150,7 @@ class MailsterTemplates {
 			$images = array_unique( $images[2] );
 
 			foreach ( $images as $image ) {
+				//no absolute images
 				if ( substr( $image, 0, 7 ) == 'http://' || substr( $image, 0, 8 ) == 'https://' ) {
 					continue;
 				}
@@ -159,7 +160,7 @@ class MailsterTemplates {
 				$folder = mailster( 'helper' )->mkdir( $upload_dir . dirname( $image ), false );
 
 				// download assets
-				if ( true ) {
+				if ( $download_asset ) {
 					$tempfile = download_url( $assets_url );
 					if ( ! is_wp_error( $tempfile ) ) {
 						if ( ! $wp_filesystem->copy( $tempfile, $assets_file ) ) {

@@ -17,13 +17,15 @@ $file = $this->get_file();
 		<?php if ( current_user_can( 'mailster_change_plaintext' ) ) : ?>
 		<li><a class="mailster-icon plaintext" title="<?php esc_html_e( 'toggle HTML/Plain-Text view', 'mailster' ) ?>">&nbsp;</a></li>
 		<?php endif; ?>
-		<li><a class="mailster-icon import-template" title="<?php esc_html_e( 'Import template', 'mailster' ) ?>">&nbsp;</a></li>
 		<li class="no-border-right"><a class="mailster-icon preview" title="<?php esc_html_e( 'preview', 'mailster' ) ?>">&nbsp;</a></li>
 	</ul>
 	<ul class="alignright">
 		<li><a class="mailster-icon dfw" title="<?php esc_html_e( 'Distraction-free edit mode', 'mailster' ) ?>">&nbsp;</a></li>
 		<?php if ( $templates && current_user_can( 'mailster_save_template' ) ) : ?>
 		<li><a class="mailster-icon save-template" title="<?php esc_html_e( 'save template', 'mailster' ) ?>">&nbsp;</a></li>
+		<?php endif; ?>
+		<?php if ( current_user_can( 'mailster_import_templates' ) ) : ?>
+		<li><a class="mailster-icon import-template" title="<?php esc_html_e( 'Import template', 'mailster' ) ?>">&nbsp;</a></li>
 		<?php endif; ?>
 		<?php if ( $templates && current_user_can( 'mailster_change_template' ) ) :
 			$single = count( $templates ) == 1;
@@ -112,10 +114,11 @@ $file = $this->get_file();
 					<p>
 						<textarea id="mailster_template_import_html" class="code"></textarea>
 					</p>
-						<h4><label><input type="radio" name="template_import" value="url"> <?php esc_html_e( 'Import from the web', 'mailster' ); ?></label></h4>
+						<h4><label><input type="radio" name="template_import" value="url"> <?php esc_html_e( 'Import from the web via URL', 'mailster' ); ?></label></h4>
 					<p>
 						<input id="mailster_template_import_url" type="url" class="widefat" placeholder="https://" value="https://wp.revaxarts.com/latest/wp-content/uploads/mailster/templates/sartre/index.html">
-					<span class="description"><?php esc_html_e( 'This is the current address of your campaign on the web.', 'mailster' ); ?></span>			</p>
+					</p>
+					<p class="description"><?php esc_html_e( 'Imported templates may not work with the Mailster editor out of the box. Make sure the template follows best practice for Mailster templates.', 'mailster' ); ?></p>
 
 				</div>
 			</div>
