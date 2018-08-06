@@ -1549,7 +1549,6 @@ class MailsterAjax {
 		$campaign_id = (int) $_POST['id'];
 		$post_type = sanitize_key( $_POST['post_type'] );
 		$relative_or_identifier = stripslashes( $_POST['relative'] );
-		$offset = $relative_or_identifier + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
 		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
