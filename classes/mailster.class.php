@@ -262,13 +262,12 @@ class Mailster {
 
 		global $mailster_notices;
 
-		if ( $mailster_notices = get_option( 'mailster_notices', array() ) ) {
+		if ( $mailster_notices = get_option( 'mailster_notices' ) ) {
 
 			$successes = array();
 			$errors = array();
 			$infos = array();
 			$warnings = array();
-			$msg;
 			$dismiss = isset( $_GET['mailster_remove_notice_all'] ) ? esc_attr( $_GET['mailster_remove_notice_all'] ) : false;
 
 			if ( ! is_array( $mailster_notices ) ) {
@@ -296,6 +295,12 @@ class Mailster {
 						}
 					}
 				}
+				if ( isset( $notice['screen'] ) && ! empty( $notice['screen'] ) ) {
+					$screen = get_current_screen();
+					if ( $screen->id != $notice['screen'] ) {
+						continue;
+					}
+				}
 
 				$type = esc_attr( $notice['type'] );
 				$dismissable = ! $notice['once'] || is_numeric( $notice['once'] );
@@ -311,7 +316,7 @@ class Mailster {
 					$classes[] = 'mailster-notice-dismissable';
 				}
 
-				$msg = '<div data-id="' . $id . '" id="mailster-notice-' . $id . '" class="' . implode( ' ', $classes ) . '">';
+				$msg = '<div data-id="' . esc_attr( $id ) . '" id="mailster-notice-' . esc_attr( $id ) . '" class="' . implode( ' ', $classes ) . '">';
 
 				$text = ( isset( $notice['text'] ) ? $notice['text'] : '' );
 				$text = isset( $notice['cb'] ) && function_exists( $notice['cb'] )
@@ -329,7 +334,7 @@ class Mailster {
 					$text = '<strong>' . $text . '</strong>';
 				}
 
-				$msg .= '<p>' . ( $text ? $text : '&nbsp;' ) . '</p>';
+				$msg .= ( $text ? $text : '&nbsp;' );
 				if ( $dismissable ) {
 					$msg .= '<a class="notice-dismiss" title="' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '" href="' . add_query_arg( array( 'mailster_remove_notice' => $id ) ) . '">' . esc_attr__( 'Dismiss', 'mailster' ) . '<span class="screen-reader-text">' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '</span></a>';
 

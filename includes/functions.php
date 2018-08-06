@@ -692,10 +692,11 @@ function mailster_clear_cache( $part = '', $deprecated = false ) {
  * @param unknown $once       (optional)
  * @param unknown $key        (optional)
  * @param unknown $capability (optional)
+ * @param unknown $screen     (optional)
  * @param unknown $append     (optional)
  * @return unknown
  */
-function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true, $append = false ) {
+function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true, $screen = null, $append = false ) {
 
 	global $mailster_notices;
 
@@ -728,6 +729,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		'key' => uniqid(),
 		'cb' => null,
 		'cap' => $capability,
+		'screen' => $screen,
 	) );
 
 	if ( empty( $args['key'] ) ) {
@@ -753,6 +755,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		'once' => $args['once'],
 		'cb' => $args['cb'],
 		'cap' => $args['cap'],
+		'screen' => $args['screen'],
 	);
 
 	do_action( 'mailster_notice', $args['text'], $args['type'], $args['key'] );
