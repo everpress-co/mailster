@@ -598,7 +598,7 @@ class MailsterCampaigns {
 		$is_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
 		$timeformat = mailster( 'helper' )->timeformat();
 
-		if ( ! $is_ajax && $column != 'status' ) {
+		if ( ! $is_ajax && $column != 'status' && wp_script_is( 'heartbeat', 'registered' ) ) {
 			echo '&ndash;';
 			return;
 		}
@@ -1245,6 +1245,10 @@ class MailsterCampaigns {
 	 * @return unknown
 	 */
 	public function inline_editor() {
+		// no IE 11
+		if ( strpos( $_SERVER['HTTP_USER_AGENT'], 'Trident/7.0; rv:11.0' ) !== false ) {
+			return false;
+		}
 		global $wp_version;
 		return apply_filters( 'mailster_inline_editor', version_compare( '4.6', $wp_version, '<=' ) );
 	}
@@ -1378,11 +1382,12 @@ class MailsterCampaigns {
 			$post['post_status'] = isset( $_POST['mailster_data']['active'] ) ? 'queued' : $post['post_status'];
 
 			// overcome post status issue where old slugs only for published post are stored
-			$fakepost = (object) $post;
-			$fakepost->post_status = 'publish';
+			if ( $postarr['ID'] ) {
+				$fakepost = (object) $post;
+				$fakepost->post_status = 'publish';
 
-			wp_check_for_changed_slugs( $postarr['ID'], $fakepost, get_post( $postarr['ID'] ) );
-
+				wp_check_for_changed_slugs( $postarr['ID'], $fakepost, get_post( $postarr['ID'] ) );
+			}
 		}
 
 		if ( $post['post_status'] == 'autoresponder' && isset( $postdata['autoresponder'] ) && $postdata['autoresponder']['action'] != 'mailster_autoresponder_followup' ) {
@@ -1482,6 +1487,8 @@ class MailsterCampaigns {
 						mailster_notice( __( 'Attachment doesn\'t exist or isn\'t readable!', 'mailster' ), 'error', true );
 					}
 				}
+			} else {
+				$meta['attachments'] = array();
 			}
 
 			$meta['embed_images'] = isset( $postdata['embed_images'] );
@@ -1777,6 +1784,10 @@ class MailsterCampaigns {
 			$meta = array();
 		}
 
+		if ( 0 === $id ) {
+			return $this->meta_defaults();
+		}
+
 		if ( is_numeric( $id ) ) {
 
 			if ( isset( $meta[ $id ] ) ) {
@@ -1961,6 +1972,7 @@ class MailsterCampaigns {
 			'track_clicks' => mailster_option( 'track_clicks' ),
 			'autoplaintext' => true,
 			'webversion' => true,
+			'auto_post_thumbnail' => false,
 		);
 
 		if ( ! is_null( $key ) ) {

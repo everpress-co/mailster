@@ -83,6 +83,7 @@ class MailsterSettings {
 			'track_opens' => true,
 			'track_clicks' => true,
 			'track_location' => false,
+			'tags_webversion' => false,
 			'gdpr_forms' => false,
 			'gdpr_link' => $gdpr_link,
 			'gdpr_text' => __( 'I agree to the privacy policy and terms.', 'mailster' ),

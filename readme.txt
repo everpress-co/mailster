@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9.6
-Stable tag: 2.3.9
+Tested up to: 4.9.8
+Stable tag: 2.3.11
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -82,7 +82,38 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+= Version 2.3.11 =
+
+* fixed: added "source" tag in allowed tags
+* fixed: smaller issues
+
+= Version 2.3.10 =
+
+* new: you can now use `[newsletter_profile]` and `[newsletter_unsubscribe]` everywhere where short codes are accepted
+* fixed: array_map warning in wp_mail wrapper
+* fixed: honeypot was pre-filled on Google Chrome with autofill
+* fixed: Some tags where not displayed on notifications
+* fixed: Gravatar changes on third party apps were not respected
+* fixed: error if location database is missing
+* fixed: tags in links causes a protocol removal
+* fixed: smaller issues
+* improved: better support for mailster_subscriber of third party apps with wrong data type
+* improved: show stats on campaign overview if heartbeat API is disabled (no live reload)
+* improved: better handling of inline styles for subscriber buttons
+* disabled: honeypot mechanism to prevent Chrome browsers to fill out the honeypot field
+
 = Version 2.3.9 =
+
+* fixed: manage subscribers with no list assigned included users within a list
+* fixed: some JS issues on IE 11
+* fixed: IP addressed not stored on form submission
+* fixed: not able to remove attachments
+* fixed: wp_mail not working if receivers is not an array
+* fixed: webversion tag was not displayed if campaign hasn't been saved yet
+* fixed: redirection issue if baseurl contains query arguments
+* fixed: button is no longer available on the unsubscribe form with single opt out
+* added: `get_last_post` now includes subscriber and campaign id
+* added: option to enable custom tags on web version
 
 = Version 2.3.8 =
 

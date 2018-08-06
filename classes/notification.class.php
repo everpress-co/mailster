@@ -430,21 +430,23 @@ class MailsterNotification {
 
 		$placeholder = mailster( 'placeholder', $raw );
 
+		$placeholder->add_defaults();
+
 		if ( $subscriber ) {
 			$this->mail->hash = $subscriber->hash;
 			$this->mail->add_header( 'X-Mailster', $subscriber->hash );
 			$placeholder->add( $userdata );
 			$placeholder->add( array(
-					'emailaddress' => $subscriber->email,
-					'hash' => $subscriber->hash,
+				'emailaddress' => $subscriber->email,
+				'hash' => $subscriber->hash,
 			) );
 		}
 
 		$placeholder->add( array(
-				'subject' => $this->subject,
-				'preheader' => $this->preheader,
-				'headline' => $this->headline,
-				'content' => $this->message,
+			'subject' => $this->subject,
+			'preheader' => $this->preheader,
+			'headline' => $this->headline,
+			'content' => $this->message,
 		) );
 
 		$placeholder->add( $this->replace );
@@ -668,7 +670,7 @@ class MailsterNotification {
 					<?php if ( $lists = mailster( 'subscribers' )->get_lists( $subscriber->ID ) ) : ?>
 				<tr><td height="30" style="border-top:1px solid #ccc;height:30px"><strong><?php esc_html_e( 'Lists', 'mailster' ) ?>:</strong>
 					<?php foreach ( $lists as $i => $list ) { ?>
-							<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID ) ?>"><?php echo $list->name ?></a><?php if ( $i + 1 < count( $list ) ) {echo ', '; } ?>
+							<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID ) ?>"><?php echo $list->name ?></a><?php if ( $i + 1 < count( $lists ) ) {echo ', '; } ?>
 					<?php } ?>
 				</td></tr>
 					<?php endif; ?>

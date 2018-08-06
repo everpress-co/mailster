@@ -323,11 +323,11 @@ class MailsterSubscribers {
 
 		}
 		if ( $success_message ) {
-			mailster_notice( $success_message . $message_postfix, 'success', true, 'subscriber_bulk_success', true, true );
+			mailster_notice( $success_message . $message_postfix, 'success', true, 'subscriber_bulk_success', true, null, true );
 		}
 
 		if ( $error_message ) {
-			mailster_notice( $error_message . $message_postfix, 'error', true, 'subscriber_bulk_error', true, true );
+			mailster_notice( $error_message . $message_postfix, 'error', true, 'subscriber_bulk_error', true, null, true );
 		}
 
 		if ( isset( $is_ajax ) ) {
@@ -401,7 +401,7 @@ class MailsterSubscribers {
 				}
 
 				// maybe send confirmation if status wasn't pending
-				if ( $old_subscriber_data->status != 0 ) {
+				if ( $old_subscriber_data && $old_subscriber_data->status != 0 ) {
 					$entry->confirmation = 0;
 				}
 
@@ -1079,6 +1079,9 @@ class MailsterSubscribers {
 
 		if ( mailster_option( 'track_users' ) && isset( $entry['ip'] ) && $entry['ip'] !== false ) {
 
+			if ( $entry['ip'] === true ) {
+				unset( $entry['ip'] );
+			}
 			$ip = mailster_get_ip();
 
 			$entry = wp_parse_args( $entry, array(
@@ -2324,9 +2327,10 @@ class MailsterSubscribers {
 	 * @param unknown $ids   (optional)
 	 * @param unknown $force (optional)
 	 * @param unknown $now   (optional)
+	 * @param unknown $user_form_id   (optional)
 	 * @return unknown
 	 */
-	public function send_confirmations( $ids = null, $force = false, $now = false ) {
+	public function send_confirmations( $ids = null, $force = false, $now = false, $user_form_id = null ) {
 
 		global $wpdb;
 
@@ -2388,7 +2392,7 @@ class MailsterSubscribers {
 			if ( mailster( 'notification' )->add( $timestamp, array(
 				'subscriber_id' => $subscriber->ID,
 				'template' => 'confirmation',
-				'form' => $subscriber->form_id,
+				'form' => ! is_null( $user_form_id ) ? (int) $user_form_id : $subscriber->form_id,
 				'list_ids' => $subscriber->list_ids,
 			) ) ) {
 				$this->update_meta( $subscriber->ID, 0, 'confirmation', ++$subscriber->try );
@@ -3193,8 +3197,8 @@ class MailsterSubscribers {
 		if ( preg_match( '/src=["\'](.*)["\']/Ui', $image, $match ) ) {
 			$url = htmlspecialchars_decode( $match[1] );
 		} else {
-		}
 			$url = 'https://' . ( $id % 3 ) . '.gravatar.com/avatar/' . $hash . '?d=' . urlencode( $default ) . '&s=' . $size;
+		}
 
 		return $url;
 

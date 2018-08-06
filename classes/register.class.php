@@ -5,6 +5,8 @@ class MailsterRegister {
 	public function __construct() {
 
 		add_action( 'mailster_register_mailster', array( &$this, 'on_register' ), 10, 3 );
+		add_action( 'mailster_remove_notice_verify', array( &$this, 'verified_notice_closed' ) );
+		add_action( 'wp_version_check', array( &$this, 'verified_notice' ) );
 
 	}
 
@@ -34,14 +36,14 @@ class MailsterRegister {
 
 		$args = wp_parse_args( $args, array(
 			'pretext' => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . esc_url( 'https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=' . $page ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
-			'purchasecode' => get_option( 'mailster_license' ),
+			'purchasecode' => mailster()->license(),
 		) );
 
 		$user_id = get_current_user_id();
 		$user = get_userdata( $user_id );
 
-		$username = get_option( 'mailster_username', '' );
-		$useremail = get_option( 'mailster_email', '' );
+		$username = mailster()->username( '' );
+		$useremail = mailster()->email( '' );
 
 		wp_print_styles( 'mailster-register-style' );
 
@@ -69,7 +71,7 @@ class MailsterRegister {
 				<div class="error-msg">&nbsp;</div>
 				<input type="text" class="widefat username" placeholder="<?php _e( 'Username', 'mailster' ); ?>" name="username" value="<?php echo esc_attr( $username ) ?>">
 				<input type="email" class="widefat email" placeholder="Email" name="email" value="<?php echo esc_attr( $useremail ) ?>">
-				<div class="howto tos-field"><input type="checkbox" name="tos" value="<?php echo time() ?>"> <?php printf( esc_html__( 'I agree to the %1$s and the %2$s by completing the registration.','mailster' ), '<a href="https://mailster.co/legal/tos/" class="external">' . esc_html__( 'Terms of service', 'mailster' ) . '</a>', '<a href="https://mailster.co/legal/privacy-policy/" class="external">' . esc_html__( 'Privacy Policy', 'mailster' ) . '</a>' ); ?></div>
+				<div class="howto tos-field"><input type="checkbox" name="tos" class="tos" value="<?php echo time() ?>"> <?php printf( esc_html__( 'I agree to the %1$s and the %2$s by completing the registration.','mailster' ), '<a href="https://mailster.co/legal/tos/" class="external">' . esc_html__( 'Terms of service', 'mailster' ) . '</a>', '<a href="https://mailster.co/legal/privacy-policy/" class="external">' . esc_html__( 'Privacy Policy', 'mailster' ) . '</a>' ); ?></div>
 				<input type="submit" class="button button-hero button-primary" value="<?php esc_attr_e( 'Complete Registration', 'mailster' ) ?>">
 			</form>
 			<form class="registration_complete">
@@ -96,6 +98,40 @@ class MailsterRegister {
 		delete_transient( 'mailster_verified' );
 		mailster_remove_notice( 'verify' );
 
+	}
+
+
+	public function verified_notice_closed() {
+
+		set_transient( 'mailster_skip_verifcation_notices', true, WEEK_IN_SECONDS );
+
+	}
+
+
+	public function verified_notice() {
+
+		if ( mailster_is_local() ) {
+			return;
+		}
+
+		if ( get_transient( 'mailster_skip_verifcation_notices' ) ) {
+			return;
+		}
+
+		if ( ! mailster()->is_verified() ) {
+			if ( time() - get_option( 'mailster' ) > WEEK_IN_SECONDS
+				&& get_option( 'mailster_setup' ) ) {
+				mailster_notice( sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ), 'error', false, 'verify', 'mailster_manage_licenses' );
+			}
+		} else {
+			mailster_remove_notice( 'verify' );
+		}
+
+		if ( mailster()->is_outdated() ) {
+			mailster_notice( sprintf( __( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog?v=' . MAILSTER_VERSION . '">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ), 'error', false, 'outdated', 'mailster_manage_licenses' );
+		} else {
+			mailster_remove_notice( 'outdated' );
+		}
 	}
 
 

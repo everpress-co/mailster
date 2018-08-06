@@ -424,7 +424,7 @@ class MailsterAjax {
 			'emailaddress' => $current_user->user_email,
 		) );
 
-		$placeholder->share_service( '{webversionlink}', esc_attr( $_POST['subject'] ) );
+		$placeholder->share_service( '{webversionlink}', $subject );
 		$content = $placeholder->get_content();
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
@@ -1563,16 +1563,16 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$return['success'] = true;
-
+		$campaign_id = (int) $_POST['id'];
 		$post_type = sanitize_key( $_POST['post_type'] );
 		$relative = (int) $_POST['relative'];
 		$offset = $relative + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
 		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
+		$args = array();
 
-		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, null, true );
+		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, $args, $campaign_id );
 		$is_post = ! ! $post;
 
 		$return['title'] = $is_post
@@ -1600,6 +1600,8 @@ class MailsterAjax {
 		$return['pattern'] = apply_filters( 'mymail_auto_tag', apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post, $modulename ), $post_type, $options, $post, $modulename );
 
 		$return['pattern']['tag'] = '{' . $post_type . ':' . $options . '}';
+
+		$return['success'] = true;
 
 		$this->json_return( $return );
 
@@ -1778,7 +1780,7 @@ class MailsterAjax {
 			$path = mailster( 'templates', $return['slug'] )->get_path();
 			$file = $path . '/' . $return['slug'] . '/' . $return['file'];
 
-			$content = mailster()->sanitize_content( $content );
+			$content = mailster()->sanitize_content( $content, false, null, true );
 
 			if ( $wp_filesystem->put_contents( $file, $content, FS_CHMOD_FILE ) ) {
 				$filename = $file;
@@ -2399,14 +2401,13 @@ class MailsterAjax {
 				}
 			}
 		} else {
-			// $result = UpdateCenterPlugin::verify( $slug, $purchasecode );
-			// if ( is_wp_error( $result ) && 681 != $result->get_error_code() ) {
-			// $return['error'] = mailster()->get_update_error( $result );
-			// $return['code'] = $result->get_error_code();
-			// } else {
-			// $return['success'] = true;
-			// }
-			$return['success'] = true;
+			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );
+			if ( is_wp_error( $result ) && 681 != $result->get_error_code() ) {
+				$return['error'] = mailster()->get_update_error( $result );
+				$return['code'] = $result->get_error_code();
+			} else {
+				$return['success'] = true;
+			}
 		}
 
 		$this->json_return( $return );

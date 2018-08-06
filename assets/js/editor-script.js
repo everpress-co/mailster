@@ -39,13 +39,7 @@ jQuery(document).ready(function ($) {
 			})
 			.on('click', 'button.addbutton', function () {
 				var data = $(this).data(),
-					element = $($('<div/>').html(decodeURIComponent(data.element.data('tmpl'))).text());
-
-				if (!element.length) {
-					element = data.element.find('img').length ?
-						'<a href="" editable label="Button"><img alt=""></a>' :
-						'<a href="" editable label="Button"></a>';
-				}
+					element = decodeURIComponent(data.element.data('tmpl')) || '<a href="" editable label="Button"></a>';
 
 				parent.window.Mailster.editbar.open({
 					type: 'btn',
@@ -122,7 +116,7 @@ jQuery(document).ready(function ($) {
 		function _urlconverter(url, node, on_save, name) {
 			if ('_wp_link_placeholder' == url) {
 				return url;
-			} else if (/{.+}/g.test(url)) {
+			} else if (/^https?:\/\/{.+}/g.test(url)) {
 				return url.replace(/^https?:\/\//, '');
 			} else if (/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(url)) {
 				return 'mailto:' + url;

@@ -388,9 +388,39 @@ class MailsterTests {
 		}
 
 	}
+	private function test_support_account_found() {
+
+		$support_emails = array( 'help@everpress.io', 'help@revaxarts.com', 'support@mailster.co' );
+
+		foreach ( $support_emails as $email ) {
+			if ( $user = get_user_by( 'email', $email ) ) {
+				$this->warning( sprintf( 'Please remove any unused Support account: %s', '<a href="' . admin_url( 'users.php?s=' . urlencode( $user->user_email ) ) . '">' . $user->user_email . '</a>' ) );
+			}
+		}
+	}
 	private function test_custom_language() {
 		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo' ) ) {
 			$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );
+		}
+	}
+	private function test_geo_database() {
+
+		if ( mailster_option( 'track_location' ) ) {
+
+			$geo = mailster( 'geo' );
+
+			$warnings = array();
+
+			if ( ! file_exists( $path = $geo->get_file_path( 'country' ) ) ) {
+				$warnings[] = sprintf( 'The Country Database was not found in %s', $path );
+			}
+			if ( ! file_exists( $path = $geo->get_file_path( 'city' ) ) ) {
+				$warnings[] = sprintf( 'The City Database was not found in %s', $path );
+			}
+
+			if ( ! empty( $warnings ) ) {
+				$this->warning( implode( '<br>', $warnings ), admin_url( 'edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=newsletter_homepage#privacy' ) );
+			}
 		}
 	}
 	private function test_wp_debug() {
@@ -627,37 +657,37 @@ class MailsterTests {
 			$this->port_test( mailster_option( 'bounce_port' ), mailster_option( 'bounce_server' ), true );
 		}
 	}
-	private function test_port_110() {
+	private function _test_port_110() {
 
 		$this->port_test( 110, 'pop.gmx.net' );
 
 	}
-	private function test_port_995() {
+	private function _test_port_995() {
 
 		$this->port_test( 995, 'pop.gmail.com' );
 
 	}
-	private function test_port_993() {
+	private function _test_port_993() {
 
 		$this->port_test( 993, 'smtp.gmail.com' );
 
 	}
-	private function test_port_25() {
+	private function _test_port_25() {
 
 		$this->port_test( 25, 'smtp.gmail.com' );
 
 	}
-	private function test_port_2525() {
+	private function _test_port_2525() {
 
 		$this->port_test( 2525, 'smtp.sparkpostmail.com' );
 
 	}
-	private function test_port_465() {
+	private function _test_port_465() {
 
 		$this->port_test( 465, 'smtp.gmail.com' );
 
 	}
-	private function test_port_587() {
+	private function _test_port_587() {
 
 		$this->port_test( 587, 'smtp.gmail.com' );
 

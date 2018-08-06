@@ -232,7 +232,7 @@ function mailster_get_current_user_id() {
  */
 function mailster_form( $id = 1, $echo = true, $classes = '', $depreciated = '' ) {
 
-	// tabindex is depreciated but for backward compatibility
+	// tabindex is depreciated but for backward compatibility.
 	if ( is_int( $echo ) ) {
 		$classes = $depreciated;
 		$echo = $classes;
@@ -365,10 +365,10 @@ function mailster_list_newsletter( $args = '' ) {
 
 	$output = '';
 
-	// sanitize, mostly to keep spaces out
+	// sanitize, mostly to keep spaces out.
 	$r['exclude'] = preg_replace( '/[^0-9,]/', '', $r['exclude'] );
 
-	// Allow plugins to filter an array of excluded pages (but don't put a nullstring into the array)
+	// Allow plugins to filter an array of excluded pages (but don't put a nullstring into the array).
 	$exclude_array = ( $r['exclude'] ) ? explode( ',', $r['exclude'] ) : array();
 	$r['exclude'] = implode( ',', apply_filters( 'mymail_list_newsletter_excludes', apply_filters( 'mailster_list_newsletter_excludes', $exclude_array ) ) );
 
@@ -562,13 +562,13 @@ function mailster_get_user_client( $string = null ) {
 function mailster_subscribe( $email, $userdata = array(), $lists = array(), $double_opt_in = null, $overwrite = true, $mergelists = null, $template = 'notification.html' ) {
 
 	$entry = wp_parse_args( array(
-			'email' => $email,
+		'email' => $email,
 	), $userdata );
 
 	$added = null;
 	if ( ! is_null( $double_opt_in ) ) {
 		$entry['status'] = $double_opt_in ? 0 : 1;
-		$added = $double_opt_in ? 0 : 1;
+		$added = mailster_option( 'list_based_opt_in' ) ? ($double_opt_in ? false : true) : time();
 	}
 
 	$subscriber_id = mailster( 'subscribers' )->add( $entry, $overwrite );
@@ -604,22 +604,22 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
  *
  * @param unknown $email_hash_id
  * @param unknown $campaign_id   (optional)
- * @param unknown $logit         (optional)
+ * @param unknown $status        (optional)
  * @return unknown
  */
-function mailster_unsubscribe( $email_hash_id, $campaign_id = null, $logit = true ) {
+function mailster_unsubscribe( $email_hash_id, $campaign_id = null, $status = null ) {
 
-	if ( is_int( $email_hash_id ) ) {
+	if ( is_numeric( $email_hash_id ) ) {
 
-		return mailster( 'subscribers' )->unsubscribe( $email_hash_id, $campaign_id );
+		return mailster( 'subscribers' )->unsubscribe( $email_hash_id, $campaign_id, $status );
 
 	} elseif ( preg_match( '#^[0-9a-f]{32}$#', $email_hash_id ) ) {
 
-		return mailster( 'subscribers' )->unsubscribe_by_hash( $email_hash_id, $campaign_id );
+		return mailster( 'subscribers' )->unsubscribe_by_hash( $email_hash_id, $campaign_id, $status );
 
 	} else {
 
-		return mailster( 'subscribers' )->unsubscribe_by_mail( $email_hash_id, $campaign_id );
+		return mailster( 'subscribers' )->unsubscribe_by_mail( $email_hash_id, $campaign_id, $status );
 	}
 
 }
@@ -692,10 +692,11 @@ function mailster_clear_cache( $part = '', $deprecated = false ) {
  * @param unknown $once       (optional)
  * @param unknown $key        (optional)
  * @param unknown $capability (optional)
+ * @param unknown $screen     (optional)
  * @param unknown $append     (optional)
  * @return unknown
  */
-function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true, $append = false ) {
+function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true, $screen = null, $append = false ) {
 
 	global $mailster_notices;
 
@@ -728,6 +729,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		'key' => uniqid(),
 		'cb' => null,
 		'cap' => $capability,
+		'screen' => $screen,
 	) );
 
 	if ( empty( $args['key'] ) ) {
@@ -753,6 +755,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		'once' => $args['once'],
 		'cb' => $args['cb'],
 		'cap' => $args['cap'],
+		'screen' => $args['screen'],
 	);
 
 	do_action( 'mailster_notice', $args['text'], $args['type'], $args['key'] );
@@ -783,6 +786,7 @@ function mailster_remove_notice( $key ) {
 		unset( $mailster_notices[ $key ] );
 
 		do_action( 'mailster_remove_notice', $key );
+		do_action( 'mailster_remove_notice_' . $key );
 		do_action( 'mymail_remove_notice', $key );
 
 		return update_option( 'mailster_notices', $mailster_notices );

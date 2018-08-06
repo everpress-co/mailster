@@ -23,8 +23,10 @@ class MailsterFrontpage {
 		add_shortcode( 'newsletter_signup_form', array( &$this, 'newsletter_signup_form' ) );
 
 		add_shortcode( 'newsletter_signup', array( &$this, 'do_shortcode' ) );
+		add_shortcode( 'newsletter_unsubscribe', array( &$this, 'do_shortcode_unsubscribe' ) );
+		add_shortcode( 'newsletter_profile', array( &$this, 'do_shortcode_profile' ) );
+
 		add_shortcode( 'newsletter_confirm', array( &$this, 'do_shortcode_wrong_confirm' ) );
-		add_shortcode( 'newsletter_unsubscribe', array( &$this, 'do_shortcode_wrong_unsubscribe' ) );
 
 		add_shortcode( 'newsletter_subscribers', array( &$this, 'newsletter_subscribers' ) );
 		add_shortcode( 'newsletter_button', array( &$this, 'newsletter_button' ) );
@@ -146,9 +148,16 @@ class MailsterFrontpage {
 
 		$subpage = $this->get_page_by_slug( $subpage );
 
+		wp_parse_str( (string) parse_url( $homepage, PHP_URL_QUERY ), $query_string );
+
+		// remove all query strings
+		if ( ! empty( $query_string ) ) {
+			$homepage = remove_query_arg( array_keys( $query_string ), $homepage );
+		}
+
 		if ( $is_permalink ) {
 
-			return trailingslashit( $homepage ) . trailingslashit( $subpage . '/' . ($hash ? $hash . '/' : '') . $extra );
+			$url = trailingslashit( $homepage ) . trailingslashit( $subpage . '/' . ($hash ? $hash . '/' : '') . $extra );
 
 		} else {
 
@@ -162,9 +171,11 @@ class MailsterFrontpage {
 				$query = wp_parse_args( $query, array( 'page_id' => mailster_option( 'homepage' ) ) );
 			}
 
-			return add_query_arg( $query, $homepage );
+			$url = add_query_arg( $query, $homepage );
 
 		}
+
+		return ! empty( $query_string ) ? add_query_arg( $query_string, $url ) : $url;
 
 	}
 
@@ -362,7 +373,7 @@ class MailsterFrontpage {
 		}
 
 		if ( ! $redirect_to ) {
-			$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id ), $campaign_id ) : false;
+			$redirect_to = $target ? apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id, $subscriber->ID ), $campaign_id, $subscriber->ID ) : false;
 		}
 
 		// no target => tracking image
@@ -639,6 +650,20 @@ class MailsterFrontpage {
 					$placeholder->excerpt_filters( false );
 					$placeholder->set_campaign( get_the_ID() );
 
+					if ( mailster_option( 'tags_webversion' ) ) {
+						$subscriber = mailster( 'subscribers' )->get_current_user();
+						$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
+
+						$placeholder->set_subscriber( $subscriber->ID );
+						$placeholder->add( $userdata );
+
+						$placeholder->add( array(
+							'firstname' => $subscriber->firstname,
+							'lastname' => $subscriber->lastname,
+							'fullname' => $subscriber->fullname,
+						) );
+					}
+
 					$placeholder->add_defaults( get_the_ID() );
 					$placeholder->add_custom( get_the_ID() );
 
@@ -900,7 +925,7 @@ class MailsterFrontpage {
 					$form_id = (int) $form_id[2];
 				} else {
 					global $wpdb;
-					$form_id = (int) $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" );
+					$form_id = mailster( 'helper' )->get_first_form_id();
 				}
 
 				$form = mailster( 'form' )->id( $form_id );
@@ -1077,6 +1102,55 @@ class MailsterFrontpage {
 		return $form->render( false );
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $atts
+	 * @param unknown $content
+	 * @return unknown
+	 */
+	public function do_shortcode_profile( $atts, $content ) {
+
+		// not on the newsletter homepage
+		if ( is_mailster_newsletter_homepage() ) {
+			return;
+		}
+
+		$atts = wp_parse_args( $atts, array(
+			'id' => mailster_option( 'profile_form', 1 ),
+		));
+
+		$form = mailster( 'form' )->id( (int) $atts['id'] );
+		$form->is_profile();
+
+		return $form->render( false );
+
+	}
+	/**
+	 *
+	 *
+	 * @param unknown $atts
+	 * @param unknown $content
+	 * @return unknown
+	 */
+	public function do_shortcode_unsubscribe( $atts, $content ) {
+
+		// not on the newsletter homepage
+		if ( is_mailster_newsletter_homepage() ) {
+			return;
+		}
+
+		$atts = wp_parse_args( $atts, array(
+			'id' => mailster( 'helper' )->get_first_form_id(),
+		));
+
+		$form = mailster( 'form' )->id( (int) $atts['id'] );
+		$form->is_unsubscribe();
+		$form->campaign_id( get_query_var( '_mailster', get_query_var( '_mailster_extra' ) ) );
+
+		return $form->render( false );
+	}
+
 
 	/**
 	 *
@@ -1088,20 +1162,6 @@ class MailsterFrontpage {
 	public function do_shortcode_wrong_confirm( $atts, $content ) {
 
 		return $this->do_shortcode_wrong( 'newsletter_confirm', $atts, $content );
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $atts
-	 * @param unknown $content
-	 * @return unknown
-	 */
-	public function do_shortcode_wrong_unsubscribe( $atts, $content ) {
-
-		return $this->do_shortcode_wrong( 'newsletter_unsubscribe', $atts, $content );
 
 	}
 

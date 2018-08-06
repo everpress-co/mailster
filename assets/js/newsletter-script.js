@@ -1955,6 +1955,7 @@ jQuery(document).ready(function ($) {
 				});
 
 				_ajax('check_for_posts', {
+					id: campaign_id,
 					post_type: post_type,
 					relative: relative,
 					extra: extra,
@@ -2081,7 +2082,10 @@ jQuery(document).ready(function ($) {
 							currentimage.name = imagealt.val();
 
 							if (is_img) {
-								current.element.one('load', function () {
+								current.element.one('load error', function (event) {
+									if ('error' == event.type) {
+										alert(sprintf(mailsterL10n.invalid_image, response.image.url));
+									}
 									current.element.removeClass('mailster-loading');
 									_trigger('save');
 								});
@@ -3456,7 +3460,7 @@ jQuery(document).ready(function ($) {
 	function _scroll(pos, callback, speed) {
 		pos = Math.round(pos);
 		if (isNaN(speed)) speed = 200;
-		if (animateDOM.scrollTop() == pos || document.scrollingElement.scrollTop == pos) {
+		if (!isMSIE && (animateDOM.scrollTop() == pos || document.scrollingElement.scrollTop == pos)) {
 			callback && callback();
 			return
 		}
@@ -3619,9 +3623,17 @@ jQuery(document).ready(function ($) {
 
 		var triggerevent = arguments[0];
 		var args = arguments[1] || null;
-		var event = new CustomEvent('Mailster:' + triggerevent, {
-			'detail': args,
-		});
+		var event;
+		if (isMSIE) {
+			event = document.createEvent("CustomEvent");
+			event.initCustomEvent('Mailster:' + triggerevent, false, false, {
+				'detail': args,
+			});
+		} else {
+			event = new CustomEvent('Mailster:' + triggerevent, {
+				'detail': args,
+			});
+		}
 
 		window.dispatchEvent(event);
 		_iframe[0].contentWindow.window.dispatchEvent(event);

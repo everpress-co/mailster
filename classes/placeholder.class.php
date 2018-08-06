@@ -160,25 +160,15 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
-	 * @param unknown $campaign_id
-	 * @param unknown $args    (optional)
+	 * @param unknown $campaign_id (optional)
+	 * @param unknown $args        (optional)
 	 * @return unknown
 	 */
-	public function add_defaults( $campaign_id, $args = array() ) {
-
-		$meta = mailster( 'campaigns' )->meta( $campaign_id );
+	public function add_defaults( $campaign_id = null, $args = array() ) {
 
 		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
 
 		$defaults = array(
-			'preheader' => $meta['preheader'],
-			'subject' => $meta['subject'],
-			'webversion' => '<a href="{webversionlink}">{webversionlinktext}</a>',
-			'unsub' => '<a href="{unsublink}">{unsublinktext}</a>',
-			'forward' => '<a href="{forwardlink}">{forwardlinktext}</a>',
-			'profile' => '<a href="{profilelink}">{profilelinktext}</a>',
-			'webversionlink' => get_permalink( $campaign_id ),
-			'lists' => mailster( 'campaigns' )->get_formated_lists( $campaign_id ),
 			'email' => '<a href="">{emailaddress}</a>',
 			'year' => $time[0],
 			'month' => $time[1],
@@ -186,9 +176,28 @@ class MailsterPlaceholder {
 			'hour' => $time[3],
 			'minute' => $time[4],
 		);
-		if ( ! $meta['webversion'] ) {
-			$defaults['webversion'] = '';
-			$defaults['webversionlink'] = '';
+
+		if ( $campaign_id ) {
+			$meta = mailster( 'campaigns' )->meta( $campaign_id );
+			if ( ! $meta ) {
+				$meta = mailster( 'campaigns' )->meta_defaults();
+			}
+
+			$defaults = wp_parse_args( array(
+				'preheader' => $meta['preheader'],
+				'subject' => $meta['subject'],
+				'webversion' => '<a href="{webversionlink}">{webversionlinktext}</a>',
+				'unsub' => '<a href="{unsublink}">{unsublinktext}</a>',
+				'forward' => '<a href="{forwardlink}">{forwardlinktext}</a>',
+				'profile' => '<a href="{profilelink}">{profilelinktext}</a>',
+				'webversionlink' => get_permalink( $campaign_id ),
+				'lists' => mailster( 'campaigns' )->get_formated_lists( $campaign_id ),
+			), $defaults );
+
+			if ( ! $meta['webversion'] ) {
+				$defaults['webversion'] = '';
+				$defaults['webversionlink'] = '';
+			}
 		}
 
 		$args = wp_parse_args( $args, $defaults );
@@ -466,7 +475,7 @@ class MailsterPlaceholder {
 					$post = get_post( $post_or_offset );
 				} else {
 					$term_ids = ! empty( $modules[6][ $i ] ) ? explode( ';', trim( $modules[6][ $i ] ) ) : array();
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args );
+					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 				}
 
 				if ( ! $post ) {
@@ -700,7 +709,7 @@ class MailsterPlaceholder {
 
 							if ( $post_id < 0 ) {
 
-								$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids, $this->last_post_args );
+								$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 							} elseif ( $post_id > 0 ) {
 
@@ -827,7 +836,7 @@ class MailsterPlaceholder {
 				} else {
 
 					$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args );
+					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 				}
 

@@ -466,6 +466,18 @@ $utm = array(
 			</div>
 			<p><?php printf( esc_html__( 'Still need help? Go ask on the %s further questions.', 'mailster' ), '<a href="' . add_query_arg( $utm, 'https://kb.mailster.co/' ) . '" class="external">' . esc_html__( 'knowledge base', 'mailster' ) . '</a>' ) ?></p>
 
+			<div class="social-media-buttons">
+				<div id="fb-root"></div>
+					<a href="https://twitter.com/mailster?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-size="large" data-show-count="false">Follow @mailster</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+				<script>(function(d, s, id) {
+				  var js, fjs = d.getElementsByTagName(s)[0];
+				  if (d.getElementById(id)) return;
+				  js = d.createElement(s); js.id = id;
+				  js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0&appId=1656804244418051&autoLogAppEvents=1';
+				  fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));</script>
+				<div class="fb-like" data-href="https://www.facebook.com/mailsterplugin/" data-layout="button" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
+				</div>
 			</div>
 
 			<div class="mailster-setup-step-buttons">
