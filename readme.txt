@@ -84,6 +84,9 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.11 =
 
+* fixed: added "source" tag in allowed tags
+* fixed: smaller issues
+
 = Version 2.3.10 =
 
 * new: you can now use `[newsletter_profile]` and `[newsletter_unsubscribe]` everywhere where short codes are accepted
@@ -94,10 +97,10 @@ Xaver Birsak – https://everpress.io
 * fixed: error if location database is missing
 * fixed: tags in links causes a protocol removal
 * fixed: smaller issues
-* improved: better support for maislter_subscriber of third party apps with wrong data type
+* improved: better support for mailster_subscriber of third party apps with wrong data type
 * improved: show stats on campaign overview if heartbeat API is disabled (no live reload)
 * improved: better handling of inline styles for subscriber buttons
-* disabled: honeypot mechnism to prevent Chrome browsers to fill out the honeypot field
+* disabled: honeypot mechanism to prevent Chrome browsers to fill out the honeypot field
 
 = Version 2.3.9 =
 

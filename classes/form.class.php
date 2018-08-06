@@ -14,7 +14,7 @@ class MailsterForm {
 
 	private $form = null;
 	private $campaignID = null;
-	private $honeypot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135
+	private $honeypot = true;
 	private $hash = null;
 	private $profile = false;
 	private $unsubscribe = false;
@@ -33,7 +33,8 @@ class MailsterForm {
 
 	public function __construct() {
 		$this->scheme = is_ssl() ? 'https' : 'http';
-		$this->honeypot = ! is_admin();
+		// $this->honeypot = ! is_admin();
+		$this->honepot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135
 		$this->form = new StdClass();
 	}
 

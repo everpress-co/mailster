@@ -232,7 +232,7 @@ function mailster_get_current_user_id() {
  */
 function mailster_form( $id = 1, $echo = true, $classes = '', $depreciated = '' ) {
 
-	// tabindex is depreciated but for backward compatibility
+	// tabindex is depreciated but for backward compatibility.
 	if ( is_int( $echo ) ) {
 		$classes = $depreciated;
 		$echo = $classes;
@@ -365,10 +365,10 @@ function mailster_list_newsletter( $args = '' ) {
 
 	$output = '';
 
-	// sanitize, mostly to keep spaces out
+	// sanitize, mostly to keep spaces out.
 	$r['exclude'] = preg_replace( '/[^0-9,]/', '', $r['exclude'] );
 
-	// Allow plugins to filter an array of excluded pages (but don't put a nullstring into the array)
+	// Allow plugins to filter an array of excluded pages (but don't put a nullstring into the array).
 	$exclude_array = ( $r['exclude'] ) ? explode( ',', $r['exclude'] ) : array();
 	$r['exclude'] = implode( ',', apply_filters( 'mymail_list_newsletter_excludes', apply_filters( 'mailster_list_newsletter_excludes', $exclude_array ) ) );
 
@@ -783,6 +783,7 @@ function mailster_remove_notice( $key ) {
 		unset( $mailster_notices[ $key ] );
 
 		do_action( 'mailster_remove_notice', $key );
+		do_action( 'mailster_remove_notice_' . $key );
 		do_action( 'mymail_remove_notice', $key );
 
 		return update_option( 'mailster_notices', $mailster_notices );

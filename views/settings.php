@@ -80,10 +80,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
 		<?php do_action( 'mymail_section_tab' ); ?>
 		<?php do_action( 'mymail_section_tab_' . $id ); ?>
 
-		<?php if ( file_exists( MAILSTER_DIR . 'views/settings/' . $id . '.php' ) ) {
+		<?php if ( file_exists( MAILSTER_DIR . 'views/settings/' . $id . '.php' ) ) :
 			include MAILSTER_DIR . 'views/settings/' . $id . '.php';
-}
-?>
+		endif; ?>
 
 	</div>
 	<?php }?>
