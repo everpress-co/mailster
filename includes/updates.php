@@ -565,6 +565,12 @@ if ( $old_version ) {
 			mailster( 'helper' )->mkdir( 'screenshots', true );
 			mailster( 'helper' )->mkdir( 'backgrounds', true );
 
+		case '2.3.8':
+		case '2.3.9':
+		case '2.3.10':
+		case '2.3.11':
+
+			// mailster_notice( $update_info, 'updated', false, 'info-screen', true, 'newsletter_page_mailster_dashboard' );
 		default:
 
 			do_action( 'mailster_update', $old_version, $new_version );

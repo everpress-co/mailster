@@ -430,21 +430,23 @@ class MailsterNotification {
 
 		$placeholder = mailster( 'placeholder', $raw );
 
+		$placeholder->add_defaults();
+
 		if ( $subscriber ) {
 			$this->mail->hash = $subscriber->hash;
 			$this->mail->add_header( 'X-Mailster', $subscriber->hash );
 			$placeholder->add( $userdata );
 			$placeholder->add( array(
-					'emailaddress' => $subscriber->email,
-					'hash' => $subscriber->hash,
+				'emailaddress' => $subscriber->email,
+				'hash' => $subscriber->hash,
 			) );
 		}
 
 		$placeholder->add( array(
-				'subject' => $this->subject,
-				'preheader' => $this->preheader,
-				'headline' => $this->headline,
-				'content' => $this->message,
+			'subject' => $this->subject,
+			'preheader' => $this->preheader,
+			'headline' => $this->headline,
+			'content' => $this->message,
 		) );
 
 		$placeholder->add( $this->replace );

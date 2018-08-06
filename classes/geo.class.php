@@ -157,6 +157,10 @@ class MailsterGeo {
 			}
 
 			$Ip2City = $this->Ip2City();
+			if ( ! $Ip2City->gi ) {
+				return 'unknown';
+			}
+
 			$code = $Ip2City->get( $ip, $part );
 
 			if ( is_null( $part ) && is_object( $code ) ) {
@@ -166,7 +170,7 @@ class MailsterGeo {
 			return $code;
 
 		} catch ( Exception $e ) {
-			return 'error';
+			return 'unknown';
 		}
 
 	}

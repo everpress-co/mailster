@@ -563,8 +563,10 @@ class MailsterLists {
 
 		if ( is_null( $added ) ) {
 			$added = mailster_option( 'list_based_opt_in' ) ? 0 : time();
-		} elseif ( true === $added ) {
+		} elseif ( true === $added || 1 == $added ) {
 			$added = time();
+		} elseif ( false === $added ) {
+			$added = 0;
 		}
 
 		$ids = array_filter( $ids );

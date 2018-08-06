@@ -21,7 +21,7 @@ jQuery(document).ready(function ($) {
 		$('.submit-form').prop('disabled', false);
 		$('form#mailster-settings-form').off('submit');
 	} else {
-		console.log('error loading settings page');
+		if (console) console.log('error loading settings page');
 	}
 
 	deliverynav.on('click', 'a.nav-tab', function () {
