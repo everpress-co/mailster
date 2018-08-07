@@ -256,14 +256,26 @@ jQuery(document).ready(function ($) {
 	});
 
 	$('input.cron_radio').on('change', function () {
-		$('.cron_opts').hide();
-		$('.' + $(this).val()).show();
+		$('#tab-cron > table')
+			.removeClass('cron-service-wp_cron cron-service-cron cron-service-multi_cron')
+			.addClass('cron-service-' + $(this).val());
+		$('.lasthitstats').hide();
 	});
 
 	$('.switch-cron-url').on('click', function () {
-		$('.cron_opts').toggleClass('alternative-cron');
+		$('body').toggleClass('alternative-cron');
 		return false;
 	});
+
+	$('.solid-cron-setup').on('click', function () {
+		tb_show(mailsterL10n.textfield, '#TB_inline?x=1&width=720&height=520&inlineId=solid-cron-setup', null);
+		return false;
+	})
+	$('.advanced-cron-setup').on('click', function () {
+		tb_show(mailsterL10n.textfield, '#TB_inline?x=1&width=720&height=520&inlineId=advanced-cron-setup', null);
+		return false;
+	})
+
 
 	$('#mailster_add_tag').on('click', function () {
 		var el = $('<div class="tag"><code>{<input type="text" class="tag-key">}</code> &#10152; <input type="text" class="regular-text tag-value"> <a class="tag-remove">&#10005;</a></div>').insertBefore($(this));

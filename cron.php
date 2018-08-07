@@ -71,7 +71,7 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 		spawn_cron();
 	}
 
-	if ( mailster_option( 'cron_service' ) != 'cron' ) {
+	if ( mailster_option( 'cron_service' ) == 'wp_cron' ) {
 		echo '<h2>' . esc_html__( 'WordPress Cron in use!', 'mailster' ) . '</h2>';
 	} else {
 
@@ -88,6 +88,8 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 
 if ( isset( $argv[2] ) ) {
 	$worker = $argv[2];
+} elseif ( isset( $_GET['process'] ) ) {
+	$worker = $_GET['process'];
 } else {
 	$worker = get_query_var( '_mailster_extra' );
 }

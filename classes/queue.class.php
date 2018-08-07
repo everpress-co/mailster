@@ -864,10 +864,12 @@ class MailsterQueue {
 
 		global $wpdb;
 
-		$processes = mailster_option( 'cron_processes', 0 );
+		$processes = mailster_option( 'cron_processes' );
+		$cron_service = mailster_option( 'cron_service' );
+		$is_multi_cron = 'multi_cron' == $cron_service;
 
 		// do not allow 0 process_id with multi processes
-		if ( ! $process_id && $processes ) {
+		if ( ! $process_id && $is_multi_cron ) {
 			echo '<h2>' . __( 'Multi Process Cron Enabled!', 'mailster' ) . '</h2>';
 			if ( is_user_logged_in() ) {
 				echo '<p>' . __( 'Please use multi processing.', 'mailster' ) . '</p>';
@@ -915,17 +917,6 @@ class MailsterQueue {
 			} else {
 				return false;
 			}
-		}
-
-		$processes = mailster_option( 'cron_processes', 0 );
-		// do not allow 0 process_id with multi processes
-		if ( ! $process_id && $processes ) {
-			echo '<h2>' . __( 'Multi Process Cron Enabled!', 'mailster' ) . '</h2>';
-			if ( is_user_logged_in() ) {
-				echo '<p>' . __( 'Please use multi processing.', 'mailster' ) . '</p>';
-				echo '<p>' . sprintf( __( 'Read more about Multi process Crons %s.', 'mailster' ), '<a href="https://kb.mailster.co/what-is-a-cron-lock/">' . __( 'here', 'mailster' ) . '</a>' );
-			}
-			return false;
 		}
 
 		$microtime = microtime( true );
@@ -983,7 +974,7 @@ class MailsterQueue {
 
 		$queue_update_sql = "UPDATE {$wpdb->prefix}mailster_queue SET sent = %d, error = %d, priority = %d, count = %d WHERE subscriber_id = %d AND campaign_id = %d AND requeued = %d AND options = %s LIMIT 1";
 
-		if ( $processes ) {
+		if ( $is_multi_cron ) {
 			$this->cron_log( 'Process ID', '<strong>#' . number_format_i18n( $process_id ) . '</strong>' );
 		}
 		$this->cron_log( 'UTC', '<strong>' . date( 'Y-m-d H:i:s' ) . ' - ' . time() . '</strong>' );

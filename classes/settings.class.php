@@ -766,7 +766,7 @@ class MailsterSettings {
 			$options['ID'] = md5( uniqid() );
 		}
 
-		foreach ( $options as $id => $value ) {
+		foreach ( $options as $id => &$value ) {
 
 			// skip certain values
 			if ( in_array( $id, array( 'dkim_private_hash' ) ) ) {
@@ -915,6 +915,10 @@ class MailsterSettings {
 						mailster( 'cron' )->unschedule();
 					}
 
+					if ( $value != 'multi_cron' ) {
+						$options['cron_processes'] = 1;
+					}
+
 				break;
 
 				case 'cron_processes':
@@ -927,6 +931,7 @@ class MailsterSettings {
 							update_option( 'mailster_cron_lasthit', false );
 						}
 					}
+
 				break;
 
 				case 'cron_secret':

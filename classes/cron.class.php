@@ -2,6 +2,8 @@
 
 class MailsterCron {
 
+	private $pid;
+
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
@@ -196,6 +198,10 @@ class MailsterCron {
 
 			$interval = mailster_option( 'interval' ) * 60;
 			$last_hit_array = get_option( 'mailster_cron_lasthit', array() );
+			if ( ! is_array( $last_hit_array ) ) {
+				$last_hit_array = array( $last_hit_array );
+			}
+
 			foreach ( $last_hit_array as $process_id => $last_hit ) :
 
 				if ( ! $last_hit ) {
@@ -320,7 +326,7 @@ class MailsterCron {
 		$exec = is_callable( 'shell_exec' ) && false === stripos( ini_get( 'disable_functions' ), 'shell_exec' );
 
 		if ( is_integer( $key ) && $exec ) {
-			$pids = explode( PHP_EOL, `ps -e | awk '{print $1}'` );
+			$pids = array_filter( explode( PHP_EOL, `ps -e | awk '{print $1}'` ) );
 			if ( in_array( $this->pid, $pids ) || empty( $pids[0] ) ) {
 				return true;
 			}
@@ -358,35 +364,50 @@ class MailsterCron {
 	 *
 	 * @return unknown
 	 */
-	public function url( $alternative = false ) {
+	public function url( $alternative = false, $process_id = null ) {
 
+		if ( mailster_option( 'cron_service' ) != 'multi_cron' ) {
+			$process_id = null;
+		}
 		if ( ! $alternative ) {
 
 			if ( mailster_option( 'got_url_rewrite' ) ) {
-				return apply_filters( 'mailster_cron_url', get_home_url( null, 'mailster/' . mailster_option( 'cron_secret' ) ), $alternative );
+				$url = apply_filters( 'mailster_cron_url', get_home_url( null, 'mailster/' . mailster_option( 'cron_secret' ) ), $alternative );
+				if ( $process_id ) {
+					$url .= '/' . (int) $process_id;
+				}
 			} else {
-				return apply_filters( 'mailster_cron_url', add_query_arg( array(
+				$url = apply_filters( 'mailster_cron_url', add_query_arg( array(
 					'secret' => mailster_option( 'cron_secret' ),
 				), MAILSTER_URI . 'cron.php' ), $alternative );
-
+				if ( $process_id ) {
+					$url = add_query_arg( 'process',$process_id, $url );
+				}
 			}
 		} else {
-			return apply_filters( 'mailster_cron_url', add_query_arg( array(
+			$url = apply_filters( 'mailster_cron_url', add_query_arg( array(
 				'action' => 'mailster_cron',
 				'secret' => mailster_option( 'cron_secret' ),
 			), admin_url( 'admin-ajax.php' ) ), $alternative );
-
+			if ( $process_id ) {
+				$url = add_query_arg( 'process',$process_id, $url );
+			}
 		}
+
+		return $url;
 
 	}
 
 
-	public function path( $arguments = false ) {
+	public function path( $arguments = false, $process_id = null ) {
 
 		$path = MAILSTER_DIR . 'cron.php';
 
 		if ( $arguments ) {
 			$path .= ' ' . mailster_option( 'cron_secret' );
+			if ( $process_id ) {
+				$path .= ' ' . (string) $process_id;
+			}
 		}
 
 		return $path;
