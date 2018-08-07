@@ -82,6 +82,10 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+= Version 2.4 =
+
+* new: cron options
+
 = Version 2.3.11 =
 
 * fixed: added "source" tag in allowed tags
