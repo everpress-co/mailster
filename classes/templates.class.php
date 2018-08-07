@@ -150,7 +150,7 @@ class MailsterTemplates {
 			$images = array_unique( $images[2] );
 
 			foreach ( $images as $image ) {
-				//no absolute images
+				// no absolute images
 				if ( substr( $image, 0, 7 ) == 'http://' || substr( $image, 0, 8 ) == 'https://' ) {
 					continue;
 				}

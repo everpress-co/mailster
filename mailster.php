@@ -3,7 +3,7 @@
 Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
 Description: Advanced Newsletter Plugin for WordPress. Create, Send and Track your Newsletter Campaigns
-Version: 2.3.11
+Version: 2.4
 Author: EverPress
 Author URI: https://everpress.io
 Text Domain: mailster
@@ -13,7 +13,7 @@ if ( defined( 'MAILSTER_VERSION' ) ) {
 	return;
 }
 
-define( 'MAILSTER_VERSION', '2.3.11' );
+define( 'MAILSTER_VERSION', '2.4' );
 define( 'MAILSTER_BUILT', 0000000000 );
 define( 'MAILSTER_DBVERSION', 20170201 );
 define( 'MAILSTER_DIR', plugin_dir_path( __FILE__ ) );
