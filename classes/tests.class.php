@@ -398,6 +398,19 @@ class MailsterTests {
 			}
 		}
 	}
+	private function test_tinymce_access() {
+
+		$file = includes_url( 'js/tinymce/' ) . 'wp-tinymce.php';
+		$response = wp_remote_post( $file );
+		$code = wp_remote_retrieve_response_code( $response );
+
+		if ( is_wp_error( $response ) ) {
+			$this->warning( sprintf( 'The Mailster Editor requires TinMCE and access to the file %1$s which seems to be blocked by your host. [%2$s]', '"' . $file . '"', $response->get_error_message() ) );
+		} elseif ( $code != 200 ) {
+			$this->warning( sprintf( 'The Mailster Editor requires TinMCE and access to the file %1$s which seems to be blocked by your host. [Error Code %2$s]', '"' . $file . '"', $code ) );
+		}
+
+	}
 	private function test_custom_language() {
 		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo' ) ) {
 			$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );
