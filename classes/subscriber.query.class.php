@@ -883,7 +883,7 @@ class MailsterSubscriberQuery {
 		// legacy filter
 		$sql = apply_filters( 'mailster_campaign_get_subscribers_by_list_sql', $sql );
 
-		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql );
+		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql, $this->args );
 
 		// error_log( $sql );
 		if ( $this->args['return_sql'] ) {

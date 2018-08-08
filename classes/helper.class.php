@@ -408,13 +408,15 @@ class MailsterHelper {
 			'youtube' => 'https://youtube.com/%%USERNAME%%',
 		);
 
+		$links = apply_filters( 'mailster_get_social_links', $links );
+
 		if ( $only_with_username ) {
 			$links = preg_grep( '/%%USERNAME%%/', $links );
 		}
 
 		$links = str_replace( '%%USERNAME%%', $username, $links );
 
-		return apply_filters( 'mymail_get_social_links', apply_filters( 'mailster_get_social_links', $links, $only_with_username ), $only_with_username );
+		return $links;
 
 	}
 

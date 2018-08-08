@@ -34,7 +34,7 @@ class MailsterForm {
 	public function __construct() {
 		$this->scheme = is_ssl() ? 'https' : 'http';
 		// $this->honeypot = ! is_admin();
-		$this->honepot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135
+		$this->honeypot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135
 		$this->form = new StdClass();
 	}
 
