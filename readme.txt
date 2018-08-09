@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 
 * fixed: added "source" tag in allowed tags
 * fixed: smaller issues
+* improved: privacy policy link gets updated if the address changes
 
 = Version 2.3.10 =
 
