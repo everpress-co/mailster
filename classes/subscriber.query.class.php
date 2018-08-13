@@ -489,50 +489,9 @@ class MailsterSubscriberQuery {
 
 					} else {
 
-						if ( ! is_array( $value ) ) {
-							$value = explode( ',', $value );
-						}
-						if ( false !== ($pos = array_search( '_last_5', $value ) ) ) {
-							unset( $value[ $pos ] );
-							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
-								'post_status' => array( 'active', 'finished' ),
-								'posts_per_page' => 5,
-								'fields' => 'ids',
-							)));
-						}
-						if ( false !== ($pos = array_search( '_last_7day', $value ) ) ) {
-							unset( $value[ $pos ] );
-							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
-								'post_status' => array( 'active', 'finished' ),
-								'meta_key' => '_mailster_finished',
-								'meta_compare' => '>',
-								'meta_value' => strtotime( '-7 days' ),
-								'fields' => 'ids',
-							)));
+						$value = $this->get_campaign_ids_from_value( $value );
 
-						}
-						if ( false !== ($pos = array_search( '_last_1month', $value ) ) ) {
-							unset( $value[ $pos ] );
-							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
-								'post_status' => array( 'active', 'finished' ),
-								'meta_key' => '_mailster_finished',
-								'meta_compare' => '>',
-								'meta_value' => strtotime( '-1 month' ),
-								'fields' => 'ids',
-							)));
-						}
-						if ( false !== ($pos = array_search( '_last_3month', $value ) ) ) {
-							unset( $value[ $pos ] );
-							$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
-								'post_status' => array( 'active', 'finished' ),
-								'meta_key' => '_mailster_finished',
-								'meta_compare' => '>',
-								'meta_value' => strtotime( '-3 month' ),
-								'fields' => 'ids',
-							)));
-						}
 						$alias = 'actions' . $field . '_' . $i . '_' . $j;
-						$value = array_unique( $value );
 
 						if ( $field == '_lists__not_in' ) {
 
@@ -581,6 +540,18 @@ class MailsterSubscriberQuery {
 							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS $alias ON $alias.type = 3 AND subscribers.ID = $alias.subscriber_id";
 							if ( ('_click' === $field || '_click__not_in' === $field) && $value && $value != -1 ) {
 								$join .= " AND $alias.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
+							} elseif ( ('_click_link' === $field || '_click_link__not_in' === $field) ) {
+								$campaigns = array();
+								foreach ( $value as $k => $v ) {
+									if ( is_numeric( $v ) ) {
+										$campaigns[] = $v;
+										unset( $value[ $k ] );
+									}
+								}
+								$campaigns = array_filter( $campaigns );
+								if ( ! empty( $campaigns ) ) {
+									$join .= " AND $alias.campaign_id IN (" . implode( ',', array_filter( $campaigns, 'is_numeric' ) ) . ')';
+								}
 							}
 							$joins[] = $join;
 
@@ -593,11 +564,11 @@ class MailsterSubscriberQuery {
 							} elseif ( '_click_after' === $field ) {
 								$sub_cond[] = "$alias.timestamp >= " . $this->get_timestamp( $value );
 							} elseif ( '_click_link' === $field ) {
-								$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_links AS $field ON $alias.link_id = $field.ID AND $field.link IN ('" . implode( "','", $value ) . "')";
-								$sub_cond[] = "$alias.subscriber_id IS NOT NULL";
+								$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_links AS {$field}_{$alias} ON $alias.link_id = {$field}_{$alias}.ID AND {$field}_{$alias}.link IN ('" . implode( "','", $value ) . "')";
+								$sub_cond[] = "$alias.subscriber_id IS NOT NULL AND {$field}_{$alias}.ID IS NOT NULL";
 							} elseif ( '_click_link__not_in' === $field ) {
-								$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_links AS $field ON $alias.link_id = $field.ID AND $field.link IN ('" . implode( "','", $value ) . "')";
-								$sub_cond[] = "$alias.link_id IS NULL";
+								$joins[] = "LEFT JOIN {$wpdb->prefix}mailster_links AS {$field}_{$alias} ON $alias.link_id = {$field}_{$alias}.ID AND {$field}_{$alias}.link IN ('" . implode( "','", $value ) . "')";
+								$sub_cond[] = "{$field}_{$alias}.link_id IS NULL";
 							}
 						}
 					}
@@ -1297,6 +1268,53 @@ class MailsterSubscriberQuery {
 
 		array_unshift( $this->args['conditions'], array( $condition ) );
 
+	}
+
+	private function get_campaign_ids_from_value( $value ) {
+		if ( ! is_array( $value ) ) {
+			$value = explode( ',', $value );
+		}
+		if ( false !== ($pos = array_search( '_last_5', $value ) ) ) {
+			unset( $value[ $pos ] );
+			$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
+				'post_status' => array( 'active', 'finished' ),
+				'posts_per_page' => 5,
+				'fields' => 'ids',
+			)));
+		}
+		if ( false !== ($pos = array_search( '_last_7day', $value ) ) ) {
+			unset( $value[ $pos ] );
+			$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
+				'post_status' => array( 'active', 'finished' ),
+				'meta_key' => '_mailster_finished',
+				'meta_compare' => '>',
+				'meta_value' => strtotime( '-7 days' ),
+				'fields' => 'ids',
+			)));
+
+		}
+		if ( false !== ($pos = array_search( '_last_1month', $value ) ) ) {
+			unset( $value[ $pos ] );
+			$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
+				'post_status' => array( 'active', 'finished' ),
+				'meta_key' => '_mailster_finished',
+				'meta_compare' => '>',
+				'meta_value' => strtotime( '-1 month' ),
+				'fields' => 'ids',
+			)));
+		}
+		if ( false !== ($pos = array_search( '_last_3month', $value ) ) ) {
+			unset( $value[ $pos ] );
+			$value = array_merge( $value, array( -1 ), mailster( 'campaigns' )->get_campaigns(array(
+				'post_status' => array( 'active', 'finished' ),
+				'meta_key' => '_mailster_finished',
+				'meta_compare' => '>',
+				'meta_value' => strtotime( '-3 month' ),
+				'fields' => 'ids',
+			)));
+		}
+			$campaign_ids = array_unique( $value );
+		return $campaign_ids;
 	}
 
 	private function get_timestamp( $value, $format = null ) {
