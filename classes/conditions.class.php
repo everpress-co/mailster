@@ -143,7 +143,7 @@ class MailsterConditions {
 	private function get_campaign_related() {
 		return array(
 			'_sent' => __( 'has received', 'mailster' ),
-			'_sent__not_in' => __( 'has not receiverd', 'mailster' ),
+			'_sent__not_in' => __( 'has not received', 'mailster' ),
 			'_open' => __( 'has received and opened', 'mailster' ),
 			'_open__not_in' => __( 'has received but not opened', 'mailster' ),
 			'_click' => __( 'has received and clicked', 'mailster' ),
@@ -226,6 +226,8 @@ class MailsterConditions {
 			'_last_7day' => __( 'Any Campaigns within the last 7 days', 'mailster' ),
 			'_last_1month' => __( 'Any Campaigns within the last 1 month', 'mailster' ),
 			'_last_3month' => __( 'Any Campaigns within the last 3 months', 'mailster' ),
+			'_last_6month' => __( 'Any Campaigns within the last 6 months', 'mailster' ),
+			'_last_12month' => __( 'Any Campaigns within the last 12 months', 'mailster' ),
 		);
 
 	}
