@@ -2272,6 +2272,7 @@ class MailsterCampaigns {
 		// ) );
 		// }
 		$placeholder->do_conditions( false );
+		$placeholder->replace_custom_tags( false );
 
 		$placeholder->clear_placeholder();
 		$placeholder->add( array( 'issue' => $issue ) );

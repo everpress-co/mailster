@@ -30,6 +30,9 @@ class MailsterSubscriberQuery {
 		'include' => null,
 		'exclude' => null,
 
+		'wp_include' => null,
+		'wp_exclude' => null,
+
 		'fields' => null,
 		'meta' => null,
 
@@ -157,6 +160,16 @@ class MailsterSubscriberQuery {
 			$this->args['exclude'] = explode( ',', $this->args['exclude'] );
 		}
 			$this->args['exclude'] = $this->id_parse( $this->args['exclude'] );
+
+		if ( $this->args['wp_include'] && ! is_array( $this->args['wp_include'] ) ) {
+			$this->args['wp_include'] = explode( ',', $this->args['wp_include'] );
+		}
+			$this->args['wp_include'] = $this->id_parse( $this->args['wp_include'] );
+
+		if ( $this->args['wp_exclude'] && ! is_array( $this->args['wp_exclude'] ) ) {
+			$this->args['wp_exclude'] = explode( ',', $this->args['wp_exclude'] );
+		}
+			$this->args['wp_exclude'] = $this->id_parse( $this->args['wp_exclude'] );
 
 		if ( $this->args['select'] && ! is_array( $this->args['select'] ) ) {
 			$this->args['select'] = explode( ',', $this->args['select'] );
@@ -630,6 +643,14 @@ class MailsterSubscriberQuery {
 
 		if ( $this->args['exclude'] ) {
 			$wheres[] = 'AND subscribers.ID NOT IN (' . implode( ',', array_filter( $this->args['exclude'], 'is_numeric' ) ) . ')';
+		}
+
+		if ( $this->args['wp_include'] ) {
+			$wheres[] = 'AND subscribers.wp_id IN (' . implode( ',', array_filter( $this->args['wp_include'], 'is_numeric' ) ) . ')';
+		}
+
+		if ( $this->args['wp_exclude'] ) {
+			$wheres[] = 'AND subscribers.wp_id NOT IN (' . implode( ',', array_filter( $this->args['wp_exclude'], 'is_numeric' ) ) . ')';
 		}
 
 		// if ( $this->args['lists__not_in'] ) {

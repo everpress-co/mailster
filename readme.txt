@@ -86,7 +86,9 @@ Xaver Birsak – https://everpress.io
 
 * fixed: added "source" tag in allowed tags
 * fixed: smaller issues
+* improved: custom tags are now replaced in the final campaign and no longer when created
 * improved: privacy policy link gets updated if the address changes
+* added: `wp_include` and `wp_exclude` for subscriber query to handle WP user ID's
 
 = Version 2.3.10 =
 
