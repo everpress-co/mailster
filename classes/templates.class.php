@@ -1308,6 +1308,7 @@ class MailsterTemplates {
 			'new_version' => false,
 			'update' => false,
 			'author' => false,
+			'author_profile' => false,
 			'requires' => '2.2',
 			'is_feature' => false,
 			'is_free' => false,
@@ -1427,9 +1428,9 @@ class MailsterTemplates {
 						$mailster_templates[ $slug ]['author'] = esc_attr( strip_tags( $response[ $i ]['author'] ) );
 					}
 
-					if ( isset( $response[ $i ]['author_profile'] ) ) {
-						$mailster_templates[ $slug ]['author_profile'] = esc_url( strip_tags( $response[ $i ]['author_profile'] ) );
-					}
+					// if ( isset( $response[ $i ]['author_profile'] ) ) {
+					// 	$mailster_templates[ $slug ]['author_profile'] = esc_url( strip_tags( $response[ $i ]['author_profile'] ) );
+					// }
 
 					// if ( isset( $response[ $i ]['homepage'] ) ) {
 					// $mailster_templates[ $slug ]['homepage'] = esc_url( strip_tags( $response[ $i ]['homepage'] ) );
