@@ -3528,6 +3528,7 @@ jQuery(document).ready(function ($) {
 				if ($(this).is(':checked')) lists.push(id);
 			});
 
+			data.id = campaign_id;
 			data.lists = lists;
 			data.ignore_lists = $('#ignore_lists').is(':checked');
 

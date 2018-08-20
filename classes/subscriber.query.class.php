@@ -75,18 +75,18 @@ class MailsterSubscriberQuery {
 
 	private static $_instance = null;
 
-	private function __construct( $args = null ) {
+	private function __construct( $args = null, $campaign_id = null ) {
 
 		if ( ! is_null( $args ) ) {
-			return $this->run( $args );
+			return $this->run( $args, $campaign_id );
 		}
 
 	}
 	public function __destruct() {}
 
-	public static function get_instance( $args = null ) {
+	public static function get_instance( $args = null, $campaign_id = null ) {
 		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
+			self::$_instance = new self( $args, $campaign_id );
 		}
 		return self::$_instance;
 	}
@@ -101,7 +101,9 @@ class MailsterSubscriberQuery {
 
 	}
 
-	public function run( $args = array() ) {
+	public function run( $args = array(), $campaign_id = null ) {
+
+		error_log( $campaign_id );
 
 		global $wpdb;
 
@@ -340,7 +342,7 @@ class MailsterSubscriberQuery {
 			}
 		}
 
-		$this->args = apply_filters( 'mailster_subscriber_query_args', $this->args );
+		$this->args = apply_filters( 'mailster_subscriber_query_args', $this->args, $campaign_id );
 
 		$cache_key = 'query_' . md5( serialize( $this->args ) );
 
@@ -872,21 +874,21 @@ class MailsterSubscriberQuery {
 			$limit = 'LIMIT ' . (int) $this->args['offset'] . ', ' . (int) $this->args['limit'];
 		}
 
-		$sql = apply_filters( 'mailster_subscriber_query_sql_select', $select, $this->args ) . "\n";
-		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_from', $from, $this->args ) . "\n";
-		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_join', $join, $this->args ) . "\n";
-		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_where', $where, $this->args ) . "\n";
-		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_group', $group, $this->args ) . "\n";
-		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_having', $having, $this->args ) . "\n";
-		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_order', $order, $this->args ) . "\n";
-		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_limit', $limit, $this->args );
+		$sql = apply_filters( 'mailster_subscriber_query_sql_select', $select, $this->args, $campaign_id ) . "\n";
+		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_from', $from, $this->args, $campaign_id ) . "\n";
+		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_join', $join, $this->args, $campaign_id ) . "\n";
+		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_where', $where, $this->args, $campaign_id ) . "\n";
+		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_group', $group, $this->args, $campaign_id ) . "\n";
+		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_having', $having, $this->args, $campaign_id ) . "\n";
+		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_order', $order, $this->args, $campaign_id ) . "\n";
+		$sql .= ' ' . apply_filters( 'mailster_subscriber_query_sql_limit', $limit, $this->args, $campaign_id );
 
 		$sql = trim( $sql );
 
 		// legacy filter
 		$sql = apply_filters( 'mailster_campaign_get_subscribers_by_list_sql', $sql );
 
-		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql, $this->args );
+		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql, $this->args, $campaign_id );
 
 		// error_log( $sql );
 		if ( $this->args['return_sql'] ) {

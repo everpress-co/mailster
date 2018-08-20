@@ -424,7 +424,7 @@ class MailsterQueue {
 					$args['where'][] = 'lists_subscribers.added != 0';
 				}
 
-				$subscribers = mailster( 'subscribers' )->query( $args );
+				$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
 
 				if ( ! empty( $subscribers ) ) {
 
@@ -455,7 +455,7 @@ class MailsterQueue {
 					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
 				}
 
-				$subscribers = mailster( 'subscribers' )->query( $args );
+				$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
 
 				if ( ! empty( $subscribers ) ) {
 
@@ -499,7 +499,7 @@ class MailsterQueue {
 					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
 				}
 
-				$subscribers = mailster( 'subscribers' )->query( $args );
+				$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
 
 				if ( ! empty( $subscribers ) ) {
 
@@ -790,7 +790,7 @@ class MailsterQueue {
 				'sent__not_in' => $once ? $campaign->ID : false,
 				'queue__not_in' => $campaign->ID,
 				'orderby' => $autoresponder_meta['uservalue'],
-			));
+			), $campaign->ID);
 
 			foreach ( $subscribers as $subscriber ) {
 

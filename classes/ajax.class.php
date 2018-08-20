@@ -757,11 +757,13 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
+		$campaign_ID = (int) $_POST['id'];
 		$lists = ( $_POST['ignore_lists'] == 'true' ) ? false : ( isset( $_POST['lists'] ) ? $_POST['lists'] : array() );
 		$conditions = isset( $_POST['conditions'] ) ? stripslashes_deep( array_values( array_filter( $_POST['conditions'] ) ) ) : false;
+		$statuses = null;
 
 		$return['success'] = true;
-		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, $conditions );
+		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, $conditions, $statuses, $campaign_ID );
 		$return['conditions'] = mailster( 'conditions' )->render( $conditions, false );
 		$return['totalformatted'] = number_format_i18n( $return['total'] );
 

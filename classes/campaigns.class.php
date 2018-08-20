@@ -130,7 +130,7 @@ class MailsterCampaigns {
 
 		$query_args['return_ids'] = true;
 
-		$subscribers = mailster( 'subscribers' )->query( $query_args );
+		$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign_id );
 
 		$timestamp = strtotime( '+ ' . $meta['autoresponder']['amount'] . ' ' . $meta['autoresponder']['unit'] );
 
@@ -2606,7 +2606,7 @@ class MailsterCampaigns {
 			'limit' => $limit,
 			'offset' => $offset,
 			'return_sql' => $returnsql,
-		));
+		), $id);
 	}
 
 
@@ -2804,19 +2804,20 @@ class MailsterCampaigns {
 	/**
 	 *
 	 *
-	 * @param unknown $lists      (optional)
-	 * @param unknown $conditions (optional)
-	 * @param unknown $statuses   (optional)
+	 * @param unknown $lists       (optional)
+	 * @param unknown $conditions  (optional)
+	 * @param unknown $statuses    (optional)
+	 * @param unknown $campaign_id (optional)
 	 * @return unknown
 	 */
-	public function get_totals_by_lists( $lists = false, $conditions = null, $statuses = null ) {
+	public function get_totals_by_lists( $lists = false, $conditions = null, $statuses = null, $campaign_id = null ) {
 
 		return mailster( 'subscribers' )->query(array(
 			'lists' => $lists,
 			'conditions' => $conditions,
 			'status' => $statuses,
 			'return_count' => true,
-		));
+		), $campaign_id);
 
 	}
 
@@ -3253,12 +3254,12 @@ class MailsterCampaigns {
 
 		if ( $countonly ) {
 			$args['return_count'] = true;
-			return mailster( 'subscribers' )->query( $args );
+			return mailster( 'subscribers' )->query( $args, $campaign->ID );
 		}
 
 		$args['return_ids'] = true;
 
-		$subscribers = mailster( 'subscribers' )->query( $args );
+		$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
 
 		$options = array(
 			'sent' => __( 'who have received', 'mailster' ),

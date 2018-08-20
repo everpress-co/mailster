@@ -89,6 +89,7 @@ Xaver Birsak – https://everpress.io
 * fixed: smaller issues
 * improved: custom tags are now replaced in the final campaign and no longer when created
 * improved: privacy policy link gets updated if the address changes
+* improved: subscriber query now has the campaign id as second argument.
 * added: `wp_include` and `wp_exclude` for subscriber query to handle WP user ID's
 * added: condition '(didn't) clicked link' now allows to choose a certain campaign
 * added: additional aggregated campaigns
