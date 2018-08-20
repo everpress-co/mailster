@@ -85,8 +85,8 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.11 =
 
 * fixed: added "source" tag in allowed tags
+* fixed: sql query issue on '(didn't) clicked link' condition
 * fixed: smaller issues
-* fixed: query issue on '(didn't) clicked link' condition
 * improved: custom tags are now replaced in the final campaign and no longer when created
 * improved: privacy policy link gets updated if the address changes
 * added: `wp_include` and `wp_exclude` for subscriber query to handle WP user ID's
