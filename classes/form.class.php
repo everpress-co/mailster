@@ -614,15 +614,26 @@ class MailsterForm {
 			$html .= '<input name="_campaign_id" type="hidden" value="' . esc_attr( $this->campaignID ) . '">' . "\n";
 		}
 
-		if ( ! is_admin() ) {
-			$html .= '<input name="_nonce" type="hidden" value="' . wp_create_nonce( 'mailster-form-nonce' ) . '">' . "\n";
-		} elseif ( $post_nonce = mailster_option( 'post_nonce' ) ) {
-			$html .= '<input name="_nonce" type="hidden" value="' . esc_attr( $post_nonce ) . '">' . "\n";
+		if ( $nonce = $this->get_nonce() ) {
+			$html .= '<input name="_nonce" type="hidden" value="' . esc_attr( $nonce ) . '">' . "\n";
 		}
 
 		$html .= '<input name="formid" type="hidden" value="' . $this->ID . '">' . "\n";
 
 		return $html;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	private function get_nonce() {
+		if ( is_admin() || mailster_option( 'use_post_nonce' ) ) {
+			return mailster_option( 'post_nonce' );
+		}
+		return wp_create_nonce( 'mailster-form-nonce' );
 	}
 
 

@@ -103,8 +103,6 @@ class MailsterSubscriberQuery {
 
 	public function run( $args = array(), $campaign_id = null ) {
 
-		error_log( $campaign_id );
-
 		global $wpdb;
 
 		if ( is_string( $args ) ) {
