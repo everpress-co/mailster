@@ -1072,7 +1072,7 @@ class MailsterQueue {
 				} else {
 
 					$this->cron_log( $i + 1, '<span class="error">' . $data->subscriber_id . ' ' . $data->email . '</span>', $data->campaign_id ? $data->campaign_id : $options['template'], $data->_count, $took > 2 ? '<span class="error">' . $took . '</span>' : $took );
-					$this->cron_log( '', '&nbsp;<span class="error">' . $result->get_error_message() . '</span>', '', '', '' );
+					$this->cron_log( '', '&nbsp;<span class="error">[' . $result->get_error_code() . '] ' . $result->get_error_message() . '</span>', '', '', '' );
 
 						// user_error
 					if ( $result->get_error_code() == 'user_error' ) {

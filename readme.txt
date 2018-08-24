@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * fixed: sql query issue on '(didn't) clicked link' condition
 * fixed: smaller issues
 * fixed: unsubscribe issue on single opt out if user is logged in
+* fixed: subscriber export on sites with CloudFlare
 * improved: custom tags are now replaced in the final campaign and no longer when created
 * improved: privacy policy link gets updated if the address changes
 * improved: subscriber query now has the campaign id as second argument.

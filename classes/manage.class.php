@@ -1151,15 +1151,14 @@ class MailsterManage {
 
 		$folder = MAILSTER_UPLOAD_DIR;
 
-		$file = $folder . '/' . $_REQUEST['file'];
+		$filename = basename( $_REQUEST['file'] );
+		$file = $folder . '/' . $filename;
 
 		if ( ! file_exists( $file ) ) {
 			die( 'not found' );
 		}
 
 		$format = $_REQUEST['format'];
-
-		$filename = basename( $file );
 
 		send_nosniff_header();
 		nocache_headers();
@@ -1179,7 +1178,7 @@ class MailsterManage {
 		}
 
 		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
-		header( 'Content-Length: ' . filesize( $file ) );
+		// header( 'Content-Length: ' . filesize( $file ) );
 		header( 'Connection: close' );
 
 		if ( 'html' == $format ) {
