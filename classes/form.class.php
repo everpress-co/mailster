@@ -254,7 +254,7 @@ class MailsterForm {
 			$buttonlabel = mailster_text( 'unsubscribebutton', __( 'Unsubscribe', 'mailster' ) );
 
 			// instant unsubscribe
-			if ( $subscriber && $single_opt_out ) {
+			if ( $subscriber && $single_opt_out && isset( $_COOKIE['mailster'] ) ) {
 
 				if ( mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $this->campaignID, 'link_unsubscribe' ) ) {
 					$buttonlabel = $this->form->submit;
@@ -513,7 +513,7 @@ class MailsterForm {
 		$fields['_submit'] .= '</div>';
 
 		// remove submit button on single opt out
-		if ( $this->unsubscribe && $subscriber && $single_opt_out ) {
+		if ( $this->unsubscribe && $subscriber && $single_opt_out && isset( $_COOKIE['mailster'] ) ) {
 			unset( $fields['_submit'] );
 		}
 
