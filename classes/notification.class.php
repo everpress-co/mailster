@@ -209,20 +209,20 @@ class MailsterNotification {
 			return $subscriber->email;
 
 			case 'confirmation_subject':
-				$form = mailster( 'forms' )->get( $options['form'], false, false );
+				$form = $this->get_form_options( $options, $subscriber );
 			return $form->subject;
 
 			case 'confirmation_file':
-				$form = mailster( 'forms' )->get( $options['form'], false, false );
+				$form = $this->get_form_options( $options, $subscriber );
 			return $form->template;
 
 			case 'confirmation_headline':
-				$form = mailster( 'forms' )->get( $options['form'], false, false );
+				$form = $this->get_form_options( $options, $subscriber );
 			return $form->headline;
 
 			case 'confirmation_replace':
 				if ( isset( $options['form'] ) ) {
-					$form = mailster( 'forms' )->get( $options['form'], false, true );
+					$form = $this->get_form_options( $options, $subscriber, false, true );
 					$form_id = $form->ID;
 				} else {
 					$form_id = null;
@@ -242,7 +242,7 @@ class MailsterNotification {
 				), $content );
 
 			case 'confirmation_attachments':
-				$form = mailster( 'forms' )->get( $options['form'], false, false );
+				$form = $this->get_form_options( $options, $subscriber );
 				if ( $form->vcard ) {
 
 					global $wp_filesystem;
@@ -522,6 +522,21 @@ class MailsterNotification {
 	}
 
 
+	/**
+	 *
+	 *
+	 * @param unknown $options
+	 */
+	private function get_form_options( $options, $subscriber, $fields = false, $lists = false ) {
+		$form = mailster( 'forms' )->get( $options['form'], $fields, $lists );
+		if ( $form_key = mailster( 'subscribers' )->meta( $subscriber->ID, 'formkey' ) ) {
+			$form_args = (array) get_transient( '_mailster_form_' . $form_key );
+			$form = (object) wp_parse_args( $form_args, (array) $form );
+		}
+		return $form;
+	}
+
+
 	// Templates
 	/**
 	 *
@@ -542,7 +557,11 @@ class MailsterNotification {
 	 */
 	private function template_confirmation( $subscriber, $options ) {
 
-		$form = mailster( 'forms' )->get( $options['form'], false, false );
+		$form = $this->get_form_options( $options, $subscriber );
+
+		if ( false === strpos( $form->content, '{link}' ) ) {
+			$form->content .= "\n{link}";
+		}
 
 		echo nl2br( $form->content );
 

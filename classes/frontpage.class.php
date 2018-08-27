@@ -1098,7 +1098,7 @@ class MailsterFrontpage {
 			$atts['id'] = mailster( 'helper' )->get_first_form_id();
 		}
 
-		$form = mailster( 'form' )->id( $atts['id'] );
+		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		return $form->render( false );
 	}
 
@@ -1120,7 +1120,7 @@ class MailsterFrontpage {
 			'id' => mailster_option( 'profile_form', 1 ),
 		));
 
-		$form = mailster( 'form' )->id( (int) $atts['id'] );
+		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		$form->is_profile();
 
 		return $form->render( false );
@@ -1144,7 +1144,7 @@ class MailsterFrontpage {
 			'id' => mailster( 'helper' )->get_first_form_id(),
 		));
 
-		$form = mailster( 'form' )->id( (int) $atts['id'] );
+		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		$form->is_unsubscribe();
 		$form->campaign_id( get_query_var( '_mailster', get_query_var( '_mailster_extra' ) ) );
 

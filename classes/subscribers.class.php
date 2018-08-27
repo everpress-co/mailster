@@ -1438,6 +1438,7 @@ class MailsterSubscribers {
 			'form' => __( 'Form', 'mailster' ),
 			'unsubscribe' => __( 'Unsubscribe', 'mailster' ),
 			'gdpr' => __( 'GDPR Timestamp', 'mailster' ),
+			'formkey' => __( 'Form Key', 'mailster' ),
 		);
 		return $keys_only ? array_keys( $meta_keys ) : $meta_keys;
 	}

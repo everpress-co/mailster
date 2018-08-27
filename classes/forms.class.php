@@ -975,6 +975,7 @@ class MailsterForms {
 
 			$forms[ $i ]->style = ( $forms[ $i ]->style ) ? json_decode( $forms[ $i ]->style ) : array();
 			$forms[ $i ]->stylesheet = '';
+			$forms[ $i ]->ajax = true;
 			foreach ( $forms[ $i ]->style as $selectors => $data ) {
 				$forms[ $i ]->stylesheet .= '.mailster-form.mailster-form-' . $forms[ $i ]->ID . ' ' . $selectors . '{';
 				foreach ( $data as $key => $value ) {

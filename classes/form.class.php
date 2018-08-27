@@ -13,6 +13,7 @@ class MailsterForm {
 	private $message = '';
 
 	private $form = null;
+	private $formkey = null;
 	private $campaignID = null;
 	private $honeypot = true;
 	private $hash = null;
@@ -65,17 +66,26 @@ class MailsterForm {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $args   (optional)
 	 * @return unknown
 	 */
-	public function id( $id ) {
+	public function id( $id, $args = array() ) {
 
 		$this->ID = $id;
 		$this->form = mailster( 'forms' )->get( $this->ID, true, true );
 		if ( ! $this->form ) {
-			$this->form = $this->form = mailster( 'forms' )->get( 1, true, true );
+			$this->form = $this->form = mailster( 'forms' )->get( mailster( 'helper' )->get_first_form_id(), true, true );
+		}
+		if ( isset( $args['id'] ) ) {
+			unset( $args['id'] );
+		}
+		if ( ! empty( $args ) ) {
+			$this->formkey = md5( AUTH_SALT . serialize( $args ) );
+			set_transient( '_mailster_form_' . $this->formkey, $args );
+			$this->form = (object) wp_parse_args( $args, (array) $this->form );
 		}
 
-		$this->ajax();
+		$this->ajax( $this->form->ajax );
 		return $this;
 	}
 
@@ -213,6 +223,7 @@ class MailsterForm {
 			} elseif ( $subscriber = mailster( 'subscribers' )->get_by_wpid( null, true ) ) {
 				$this->object['userdata'] = (array) $subscriber;
 			}
+		} else {
 		}
 
 		if ( isset( $_GET['userdata'] ) ) {
@@ -230,6 +241,9 @@ class MailsterForm {
 				$this->has_errors( ! ! count( $this->object['errors'] ) );
 				delete_transient( $transient );
 			}
+		}
+		if ( isset( $_GET['success'] ) ) {
+			$this->object['success'] = array( mailster_text( $_GET['success'] ) );
 		}
 
 		$this->add_class( 'mailster-form-' . $this->ID );
@@ -606,6 +620,10 @@ class MailsterForm {
 			$html .= '<input name="_referer" type="hidden" value="' . esc_attr( is_string( $this->referer ) ? $this->referer : $referer ) . '">' . "\n";
 		}
 
+		if ( $this->formkey ) {
+			$html .= '<input name="_formkey" type="hidden" value="' . esc_attr( $this->formkey ) . '">' . "\n";
+		}
+
 		if ( $this->hash ) {
 			$html .= '<input name="_hash" type="hidden" value="' . esc_attr( $this->hash ) . '">' . "\n";
 		}
@@ -853,6 +871,7 @@ class MailsterForm {
 		}
 
 		$_nonce = isset( $_BASE['_nonce'] ) ? $_BASE['_nonce'] : null;
+		$_formkey = isset( $_BASE['_formkey'] ) ? $_BASE['_formkey'] : null;
 		$post_nonce = mailster_option( 'post_nonce' );
 
 		if ( $_nonce || $post_nonce ) {
@@ -874,7 +893,12 @@ class MailsterForm {
 
 		$now = time();
 
-		$this->id( isset( $_BASE['formid'] ) ? (int) $_BASE['formid'] : 1 );
+		$form_args = array();
+		if ( $_formkey ) {
+			$form_args = (array) get_transient( '_mailster_form_' . $_formkey );
+		}
+
+		$this->id( isset( $_BASE['formid'] ) ? (int) $_BASE['formid'] : 1, $form_args );
 
 		$double_opt_in = $this->form->doubleoptin;
 		$overwrite = $this->form->overwrite;
@@ -927,6 +951,10 @@ class MailsterForm {
 			}
 		}
 
+		if ( isset( $_BASE['_formkey'] ) ) {
+			$this->object['userdata']['formkey'] = $_BASE['_formkey'];
+		}
+
 		// to hook into the system
 		$this->object = apply_filters( 'mymail_submit', apply_filters( 'mailster_submit', $this->object ) );
 		$this->object = apply_filters( 'mymail_submit_' . $this->ID, apply_filters( 'mailster_submit_' . $this->ID, $this->object ) );
@@ -967,15 +995,15 @@ class MailsterForm {
 						}
 
 						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
-						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
-						$message = $double_opt_in ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
+						$message = $entry['status'] == 0 ? 'confirmation' : 'success';
+						$message = $double_opt_in ? 'confirmation' : 'success';
 
 						$submissiontype = 'update';
 
 					} else {
 
 						$subscriber_id = mailster( 'subscribers' )->add( $entry );
-						$message = $double_opt_in ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
+						$message = $double_opt_in ? 'confirmation' : 'success';
 
 					}
 
@@ -1008,7 +1036,7 @@ class MailsterForm {
 						if ( ! ($return['success'] = mailster( 'subscribers' )->unsubscribe( $subscriber_id, $campaign_id, $type )) ) {
 							$this->object['errors']['email'] = mailster_text( 'unsubscribeerror' );
 						} else {
-							$message = mailster_text( 'unsubscribe' );
+							$message = 'unsubscribe';
 						}
 					} else {
 
@@ -1067,7 +1095,7 @@ class MailsterForm {
 							$subscriber_id = $subscriber->ID;
 						}
 
-						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+						$message = $entry['status'] == 0 ? 'confirmation': 'profile_update';
 
 					} else {
 						$subscriber_id = new WP_Error( 'error', __( 'There was an error updating the user', 'mailster' ) );
@@ -1148,7 +1176,7 @@ class MailsterForm {
 			if ( $this->valid() ) {
 				$return = array(
 					'success' => true,
-					'html' => '<p>' . $message . '</p>',
+					'html' => '<p>' . mailster_text( $message ) . '</p>',
 				);
 			} else {
 				$return = array(
@@ -1189,7 +1217,7 @@ class MailsterForm {
 				exit;
 			}
 
-			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( mailster_get_referer() );
+			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( add_query_arg( 'success' , $message, mailster_get_referer() ) );
 
 		} else {
 
@@ -1198,7 +1226,7 @@ class MailsterForm {
 				exit;
 			}
 
-			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( mailster_get_referer() );
+			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( add_query_arg( 'success' , $message, mailster_get_referer() ) );
 
 		}
 
