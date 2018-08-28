@@ -1115,9 +1115,10 @@ class MailsterFrontpage {
 		if ( is_mailster_newsletter_homepage() ) {
 			return;
 		}
-		if ( ! isset( $atts['id'] ) ) {
-			$atts['id'] = mailster_option( 'profile_form', 1 );
-		}
+
+		$atts = wp_parse_args( $atts, array(
+			'id' => mailster_option( 'profile_form', 1 ),
+		));
 
 		$form = mailster( 'form' )->id( (int) $atts['id'] );
 		$form->is_profile();
@@ -1138,9 +1139,10 @@ class MailsterFrontpage {
 		if ( is_mailster_newsletter_homepage() ) {
 			return;
 		}
-		if ( ! isset( $atts['id'] ) ) {
-			$atts['id'] = mailster( 'helper' )->get_first_form_id();
-		}
+
+		$atts = wp_parse_args( $atts, array(
+			'id' => mailster( 'helper' )->get_first_form_id(),
+		));
 
 		$form = mailster( 'form' )->id( (int) $atts['id'] );
 		$form->is_unsubscribe();

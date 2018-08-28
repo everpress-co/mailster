@@ -3142,16 +3142,20 @@ jQuery(document).ready(function ($) {
 		}
 
 		function up() {
-			var module = $(this).parent().parent().parent();
+			var module = $(this).parent().parent().parent(),
+				pos = module.offset();
 			module.insertBefore(module.prev('module'));
+			_jump(module.offset().top - pos.top, true);
 			_trigger('refresh');
 			_trigger('save');
 			return false;
 		}
 
 		function down() {
-			var module = $(this).parent().parent().parent();
+			var module = $(this).parent().parent().parent(),
+				pos = module.offset()
 			module.insertAfter(module.next('module'));
+			_jump(module.offset().top - pos.top, true);
 			_trigger('refresh');
 			_trigger('save');
 			return false;
@@ -3436,6 +3440,15 @@ jQuery(document).ready(function ($) {
 			});
 	}
 
+	function _jump(val, rel) {
+		val = Math.round(val);
+		if (rel) {
+			window.scrollBy(0, val);
+		} else {
+			window.scrollTo(0, val);
+		}
+	}
+
 	$(window)
 
 	.on('Mailster:refresh', function () {
@@ -3528,6 +3541,7 @@ jQuery(document).ready(function ($) {
 				if ($(this).is(':checked')) lists.push(id);
 			});
 
+			data.id = campaign_id;
 			data.lists = lists;
 			data.ignore_lists = $('#ignore_lists').is(':checked');
 

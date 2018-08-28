@@ -19,7 +19,7 @@
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Form POST protection', 'mailster' ) ?></th>
-		<td><input type="text" name="mailster_options[post_nonce]" value="<?php echo esc_attr( mailster_option( 'post_nonce' ) ); ?>" class="regular-text">
+		<td><input type="text" name="mailster_options[post_nonce]" value="<?php echo esc_attr( mailster_option( 'post_nonce' ) ); ?>" class="regular-text" style="width: 100px;"> <label><input type="hidden" name="mailster_options[use_post_nonce]" value=""><input type="checkbox" name="mailster_options[use_post_nonce]" value="1" <?php checked( mailster_option( 'use_post_nonce' ) );?>> <?php esc_html_e( 'Use on internal forms.', 'mailster' ) ?></label> <span class="description"><?php esc_html_e( 'Check if you have a heavy cached page and problems with invalid Security Nonce.', 'mailster' ) ?></span>
 			<p class="description"><?php esc_html_e( 'A unique string to prevent form submissions via POST. Pass this value in a \'_nonce\' variable. Keep empty to disable test.', 'mailster' ) ?></p></td>
 	</tr>
 	<tr valign="top">

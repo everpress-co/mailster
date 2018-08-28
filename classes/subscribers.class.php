@@ -323,11 +323,11 @@ class MailsterSubscribers {
 
 		}
 		if ( $success_message ) {
-			mailster_notice( $success_message . $message_postfix, 'success', true, 'subscriber_bulk_success', true, true );
+			mailster_notice( $success_message . $message_postfix, 'success', true, 'subscriber_bulk_success', true, null, true );
 		}
 
 		if ( $error_message ) {
-			mailster_notice( $error_message . $message_postfix, 'error', true, 'subscriber_bulk_error', true, true );
+			mailster_notice( $error_message . $message_postfix, 'error', true, 'subscriber_bulk_error', true, null, true );
 		}
 
 		if ( isset( $is_ajax ) ) {
@@ -2429,14 +2429,15 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $args (optional)
+	 * @param unknown $args        (optional)
+	 * @param unknown $campaign_id (optional)
 	 * @return unknown
 	 */
-	public function query( $args = array() ) {
+	public function query( $args = array(), $campaign_id = null ) {
 
 		require_once MAILSTER_DIR . 'classes/subscriber.query.class.php';
 		$query = MailsterSubscriberQuery::get_instance( );
-		return $query->run( $args );
+		return $query->run( $args, $campaign_id );
 
 	}
 

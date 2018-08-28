@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9.7
-Stable tag: 2.3.10
+Tested up to: 4.9.8
+Stable tag: 2.3.11
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -82,6 +82,21 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+= Version 2.3.11 =
+
+* fixed: added "source" tag in allowed tags
+* fixed: sql query issue on "(didn't) clicked link" condition
+* fixed: smaller issues
+* fixed: unsubscribe issue on single opt out if user is logged in
+* fixed: subscriber export on sites with CloudFlare
+* improved: custom tags are now replaced in the final campaign and no longer when created
+* improved: privacy policy link gets updated if the address changes
+* improved: subscriber query now has the campaign id as second argument.
+* improved: nonce form handle
+* added: `wp_include` and `wp_exclude` for subscriber query to handle WP user ID's
+* added: condition "(didn't) clicked link" now allows to choose a certain campaign
+* added: additional aggregated campaigns
+
 = Version 2.3.10 =
 
 * new: you can now use `[newsletter_profile]` and `[newsletter_unsubscribe]` everywhere where short codes are accepted
@@ -92,10 +107,10 @@ Xaver Birsak – https://everpress.io
 * fixed: error if location database is missing
 * fixed: tags in links causes a protocol removal
 * fixed: smaller issues
-* improved: better support for maislter_subscriber of third party apps with wrong data type
+* improved: better support for mailster_subscriber of third party apps with wrong data type
 * improved: show stats on campaign overview if heartbeat API is disabled (no live reload)
 * improved: better handling of inline styles for subscriber buttons
-* disabled: honeypot mechnism to prevent Chrome browsers to fill out the honeypot field
+* disabled: honeypot mechanism to prevent Chrome browsers to fill out the honeypot field
 
 = Version 2.3.9 =
 

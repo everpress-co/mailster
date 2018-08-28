@@ -143,7 +143,7 @@ class MailsterConditions {
 	private function get_campaign_related() {
 		return array(
 			'_sent' => __( 'has received', 'mailster' ),
-			'_sent__not_in' => __( 'has not receiverd', 'mailster' ),
+			'_sent__not_in' => __( 'has not received', 'mailster' ),
 			'_open' => __( 'has received and opened', 'mailster' ),
 			'_open__not_in' => __( 'has received but not opened', 'mailster' ),
 			'_click' => __( 'has received and clicked', 'mailster' ),
@@ -226,6 +226,8 @@ class MailsterConditions {
 			'_last_7day' => __( 'Any Campaigns within the last 7 days', 'mailster' ),
 			'_last_1month' => __( 'Any Campaigns within the last 1 month', 'mailster' ),
 			'_last_3month' => __( 'Any Campaigns within the last 3 months', 'mailster' ),
+			'_last_6month' => __( 'Any Campaigns within the last 6 months', 'mailster' ),
+			'_last_12month' => __( 'Any Campaigns within the last 12 months', 'mailster' ),
 		);
 
 	}
@@ -279,11 +281,24 @@ class MailsterConditions {
 		$closing_quote = _x( '&#8221;', 'closing curly double quote', 'mailster' );
 
 		if ( isset( $this->campaign_related[ $field ] ) ) {
+			$special_campaign_keys = array_keys( $this->special_campaigns );
 			if ( ! is_array( $value ) ) {
 				$value = array( $value );
 			}
+			$urls = array();
+			$campagins = array();
 			if ( strpos( $field, '_click_link' ) !== false ) {
-				$return['value'] = implode( ' ' . esc_html__( 'or', 'mailster' ) . ' ', array_map( 'esc_url', $value ) );
+				foreach ( $value as $k => $v ) {
+					if ( is_numeric( $v ) || in_array( $v, $special_campaign_keys ) ) {
+						$campagins[] = $v;
+					} else {
+						$urls[] = $v;
+					}
+				}
+				$return['value'] = implode( ' ' . esc_html__( 'or', 'mailster' ) . ' ', array_map( 'esc_url', $urls ) );
+				if ( ! empty( $campagins ) ) {
+					$return['value'] .= '<br> ' . esc_html__( 'in', 'mailster' ) . ' ' . $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_campaign_title' ), $campagins ) ) . $closing_quote;
+				}
 			} else {
 				$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_campaign_title' ), $value ) ) . $closing_quote;
 			}
@@ -333,6 +348,10 @@ class MailsterConditions {
 	}
 
 	public function get_campaign_title( $post ) {
+
+		if ( ! $post ) {
+			return __( 'Any Campaign', 'maislter' );
+		}
 
 		if ( isset( $this->special_campaigns[ $post ] ) ) {
 			return $this->special_campaigns[ $post ];
