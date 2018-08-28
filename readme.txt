@@ -85,7 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.11 =
 
 * fixed: added "source" tag in allowed tags
-* fixed: sql query issue on '(didn't) clicked link' condition
+* fixed: sql query issue on "(didn't) clicked link" condition
 * fixed: smaller issues
 * fixed: unsubscribe issue on single opt out if user is logged in
 * fixed: subscriber export on sites with CloudFlare
@@ -94,7 +94,7 @@ Xaver Birsak – https://everpress.io
 * improved: subscriber query now has the campaign id as second argument.
 * improved: nonce form handle
 * added: `wp_include` and `wp_exclude` for subscriber query to handle WP user ID's
-* added: condition '(didn't) clicked link' now allows to choose a certain campaign
+* added: condition "(didn't) clicked link" now allows to choose a certain campaign
 * added: additional aggregated campaigns
 
 = Version 2.3.10 =
