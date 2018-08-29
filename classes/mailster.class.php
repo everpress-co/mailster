@@ -19,7 +19,7 @@ class Mailster {
 		register_activation_hook( MAILSTER_FILE, array( &$this, 'activate' ) );
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
-		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy', 'empty' );
+		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'tags', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy', 'empty' );
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
@@ -1548,6 +1548,26 @@ class Mailster {
                 added int(11) unsigned NOT NULL,
                 UNIQUE KEY id (list_id,subscriber_id),
                 KEY list_id (list_id),
+                KEY subscriber_id (subscriber_id)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_tags (
+                ID bigint(20) NOT NULL AUTO_INCREMENT,
+                name varchar(191) NOT NULL,
+                slug varchar(191) NOT NULL,
+                description longtext NOT NULL,
+                added int(11) unsigned NOT NULL,
+                updated int(11) unsigned NOT NULL,
+                PRIMARY KEY  (ID),
+                UNIQUE KEY name (name),
+                UNIQUE KEY slug (slug)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_tags_subscribers (
+                tag_id bigint(20) unsigned NOT NULL,
+                subscriber_id bigint(20) unsigned NOT NULL,
+                UNIQUE KEY id (tag_id,subscriber_id),
+                KEY tag_id (tag_id),
                 KEY subscriber_id (subscriber_id)
             ) $collate;",
 

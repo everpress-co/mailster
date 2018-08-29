@@ -76,6 +76,7 @@ class MailsterConditions {
 			'firstname' => array( 'name' => mailster_text( 'firstname' ) ),
 			'lastname' => array( 'name' => mailster_text( 'lastname' ) ),
 			'rating' => array( 'name' => __( 'Rating', 'mailster' ) ),
+			'tag' => array( 'name' => __( 'Tag', 'mailster' ) ),
 		));
 
 		return $custom_fields;

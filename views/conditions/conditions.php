@@ -101,7 +101,7 @@
 						endforeach; ?>
 						</select>
 					</div>
-					<div class="mailster-conditions-operator-field" data-fields=",lang,client,referer,firstname,lastname,email,">
+					<div class="mailster-conditions-operator-field" data-fields=",lang,client,referer,firstname,lastname,email,tag,">
 						<select name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
 						<?php
 						foreach ( $this->string_operators as $key => $name ) :

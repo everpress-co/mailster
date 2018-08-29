@@ -66,7 +66,7 @@ h3.detail .click-to-edit{
 .click-to-edit li{
 	display: none;
 }
-.click-to-edit li:first-child{
+.click-to-edit > li:first-child{
 	display: block;
 	min-width: 102%;
 }
@@ -288,6 +288,67 @@ h3 input{
 .activity-wrap .unsubscribe-message, .activity-wrap .bounce-message, .activity-wrap .error-message{
 	white-space: pre-line;
 }
+
+.mailster-tags{
+	display: inline-block;
+}
+
+.mailster-tags li{
+	display: inline-block;
+	height:24px;
+	line-height:24px;
+	position:relative;
+	font-size:12px;
+	}
+.mailster-tags li{
+	margin-right:4px;
+	padding:0 10px 0 18px;
+	background:#2bb3e7;
+	color:#fff;
+	text-decoration:none;
+	border-radius:4px;
+}
+.mailster-tags li input{
+	background: none;
+	border:0;
+	color: #fff;
+	font-weight: bold;
+	font-size: 12px;
+}
+.mailster-tags li a{
+	opacity: 0;
+	color: #fff;
+}
+.mailster-tags li:hover a{
+	opacity: 1;
+}
+.mailster-tags li:after{
+	content:"";
+	position:absolute;
+	top:10px;
+	left:8px;
+	float:left;
+	width:4px;
+	height:4px;
+	-moz-border-radius:2px;
+	-webkit-border-radius:2px;
+	border-radius:2px;
+	background:#fff;
+	-moz-box-shadow:-1px -1px 2px #004977;
+	-webkit-box-shadow:-1px -1px 2px #004977;
+	box-shadow:-1px -1px 2px #004977;
+}
+.mailster-tags li .wp-color-result-text{
+	display:none;
+}
+.mailster-tags .wp-picker-container{
+	display: inline-block;
+}
+.mailster-tags .wp-picker-container button{
+	box-shadow: none;
+	border:0;
+}
+
 @media screen and (max-width: 782px) {
 	.wrap h2{
 		overflow: hidden;

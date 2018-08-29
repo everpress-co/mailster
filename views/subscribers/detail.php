@@ -277,6 +277,17 @@ if ( $is_new ) {
 				</li>
 				</ul>
 			</div>
+			<div class="detail v-top">
+				<label><?php esc_html_e( 'Tags', 'mailster' );?>:</label>
+				<ul class="click-to-edit type-list">
+				<li>
+				<?php $this->print_tags( $subscriber->ID ) ?>
+				</li>
+				<li>
+				<?php $this->print_tags( $subscriber->ID, true ) ?>
+				</li>
+				</ul>
+			</div>
 		</td>
 		<td class="user-meta" align="right">
 			<?php if ( ! $is_new ) : ?>

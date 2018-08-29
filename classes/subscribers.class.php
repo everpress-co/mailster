@@ -375,6 +375,7 @@ class MailsterSubscribers {
 
 			}
 		}
+
 		if ( isset( $_POST['mailster_data'] ) ) {
 
 			if ( isset( $_POST['save'] ) ) :
@@ -912,6 +913,7 @@ class MailsterSubscribers {
 		$meta = array();
 		$customfields = array();
 		$lists = null;
+		$tags = null;
 		$meta_keys = $this->get_meta_keys( true );
 
 		$entry = $this->verify( $entry );
@@ -924,6 +926,11 @@ class MailsterSubscribers {
 		if ( isset( $entry['_lists'] ) ) {
 			$lists = $entry['_lists'];
 			unset( $entry['_lists'] );
+		}
+
+		if ( isset( $entry['_tags'] ) ) {
+			$tags = $entry['_tags'];
+			unset( $entry['_tags'] );
 		}
 
 		foreach ( $entry as $key => $value ) {
@@ -988,6 +995,9 @@ class MailsterSubscribers {
 			}
 			if ( $lists ) {
 				$this->assign_lists( $subscriber_id, $lists, false, $data['status'] == 0 ? false : true );
+			}
+			if ( $tags ) {
+				$this->assign_tags( $subscriber_id, $tags );
 			}
 
 			$this->add_custom_value( $subscriber_id, $customfields, null, ! $merge );
@@ -1321,6 +1331,72 @@ class MailsterSubscribers {
 		if ( false !== $wpdb->query( $sql ) ) {
 			do_action( 'mailster_unassign_lists', $subscriber_ids, $lists, $not_list );
 			do_action( 'mymail_unassign_lists', $subscriber_ids, $lists, $not_list );
+
+			return true;
+		}
+
+		return false;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_ids
+	 * @param unknown $tags
+	 * @param unknown $remove_old     (optional)
+	 * @return unknown
+	 */
+	public function assign_tags( $subscriber_ids, $tags, $remove_old = false ) {
+
+		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
+		if ( ! is_array( $tags ) ) {
+			$tags = array( (int) $tags );
+		}
+
+		if ( $remove_old ) {
+			$this->unassign_tags( $subscriber_ids, null, $tags );
+		}
+
+		return mailster( 'tags' )->assign_subscribers( $tags, $subscriber_ids, $remove_old );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_ids
+	 * @param unknown $tags          (optional)
+	 * @param unknown $not_tag       (optional)
+	 * @return unknown
+	 */
+	public function unassign_tags( $subscriber_ids, $tags = null, $not_tag = null ) {
+
+		global $wpdb;
+
+		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
+
+		$sql = "DELETE FROM {$wpdb->prefix}mailster_tags_subscribers WHERE subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ')';
+
+		if ( ! is_null( $tags ) && ! empty( $tags ) ) {
+			if ( ! is_array( $tags ) ) {
+				$tags = array( $tags );
+			}
+
+			$sql .= ' AND tag_id IN (' . implode( ', ', array_filter( $tags, 'is_numeric' ) ) . ')';
+		}
+		if ( ! is_null( $not_tag ) && ! empty( $not_tag ) ) {
+			if ( ! is_array( $not_tag ) ) {
+				$not_tag = array( $not_tag );
+			}
+
+			$sql .= ' AND tag_id NOT IN (' . implode( ', ', array_filter( $not_tag, 'is_numeric' ) ) . ')';
+		}
+
+		if ( false !== $wpdb->query( $sql ) ) {
+			do_action( 'mailster_unassign_tags', $subscriber_ids, $tags, $not_tag );
 
 			return true;
 		}
@@ -2025,6 +2101,51 @@ class MailsterSubscribers {
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $lists, 'ID' ) : $lists;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 * @param unknown $ids_only (optional)
+	 * @return unknown
+	 */
+	public function get_tags( $id, $ids_only = false ) {
+
+		global $wpdb;
+
+		$cache = mailster_cache_get( 'subscribers_tags' );
+		if ( isset( $cache[ $id ] ) ) {
+			return $cache[ $id ];
+		}
+
+		$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_tags AS a LEFT JOIN {$wpdb->prefix}mailster_tags_subscribers AS ab ON a.ID = ab.tag_id WHERE ab.subscriber_id = %d";
+
+		$tags = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
+
+		return $ids_only ? wp_list_pluck( $tags, 'ID' ) : $tags;
+
+	}
+
+	public function print_tags( $id, $editable = false ) {
+
+		$tags = mailster( 'tags' )->get_by_subscriber( $id );
+
+		echo '<ul class="mailster-tags">';
+
+		foreach ( $tags as $i => $tag ) {
+
+			if ( $editable ) {
+				echo '<li class="mailster-tag mailster-tag-' . sanitize_key( $tag->name ) . '"><input type="hidden" value="' . esc_attr( $tag->ID ) . '" name="mailster_data[_tags][' . $i . '][ID]"><input type="text" value="' . esc_attr( $tag->name ) . '" name="mailster_data[_tags][' . $i . '][name]"><a class="remove-tag">x</a></li>';
+			} else {
+
+				echo '<li class="mailster-tag mailster-tag-' . sanitize_key( $tag->name ) . '"><label>' . esc_html( $tag->name ) . ' </label><a class="remove-tag">x</a></li>';
+			}
+		}
+
+		echo '</ul>';
 
 	}
 
