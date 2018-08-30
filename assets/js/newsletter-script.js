@@ -2010,9 +2010,12 @@ jQuery(document).ready(function ($) {
 						current.element.attr({
 							'src': currentimage.src,
 							'width': Math.round(imagewidth.val()),
-							'height': Math.round(imageheight.val()),
+							//'height': Math.round(imageheight.val()),
 							'alt': currentimage.name
 						});
+						if (current.element.attr('height')) {
+							current.element.attr('height', Math.round(imageheight.val()))
+						}
 						if (imagecrop.is(':checked')) {
 							current.element.attr({
 								'data-crop': true,
@@ -2056,9 +2059,12 @@ jQuery(document).ready(function ($) {
 
 								current.element.attr({
 									'width': Math.round(imagewidth.val()),
-									'height': Math.round(imageheight.val()),
+									//'height': Math.round(imageheight.val()),
 									'alt': currentimage.name
 								})
+								if (current.element.attr('height')) {
+									current.element.attr('height', Math.round(imageheight.val()))
+								}
 								if (imagecrop.is(':checked')) {
 									current.element.attr({
 										'data-crop': true,
@@ -2290,10 +2296,14 @@ jQuery(document).ready(function ($) {
 													'data-id': currenttext.image[i].id,
 													'src': response.image.url,
 													'width': Math.round(response.image.width / f),
-													'height': Math.round(response.image.height / f),
+													//'height': Math.round(response.image.height / f),
 													'alt': currenttext.alt || currenttext.title[i]
 												})
 												.data('id', currenttext.image[i].id);
+
+											if (imgelement.attr('height')) {
+												imgelement.attr('height', Math.round(response.image.height / f));
+											}
 
 											if (imgelement.parent().is('a')) {
 												imgelement.unwrap();
@@ -2332,8 +2342,9 @@ jQuery(document).ready(function ($) {
 									height = crop ? imgelement.height() : null;
 
 								if ('img' == imgelement.prop('tagName').toLowerCase()) {
+
 									imgelement
-										.removeAttr('height')
+									//.removeAttr('height')
 										.removeAttr('data-id')
 										.attr({
 											'src': dynamicImage(currenttext.image[i], width, height, crop),
@@ -2341,6 +2352,9 @@ jQuery(document).ready(function ($) {
 											'alt': currenttext.alt || currenttext.title[i]
 										})
 										.removeData('id');
+									if (imgelement.attr('height')) {
+										imgelement.attr('height', height || Math.round(width / 1.6));
+									}
 								} else {
 									var orgurl = imgelement.attr('background');
 									imgelement

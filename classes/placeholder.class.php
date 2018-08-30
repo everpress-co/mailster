@@ -673,11 +673,11 @@ class MailsterPlaceholder {
 					continue;
 				}
 				$tag = $hits[1][ $i ];
-				$pre_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[2][ $i ] );
+				$pre_stuff = $hits[2][ $i ];
 				$attribute = $hits[3][ $i ];
 				$imagestring = $hits[4][ $i ];
 				$querystring = str_replace( '&amp;', '&', $hits[5][ $i ] );
-				$post_stuff = preg_replace( '# height="(\d+)"#i', '', $hits[6][ $i ] );
+				$post_stuff = $hits[6][ $i ];
 				$is_img_tag = 'img' == $tag;
 
 				parse_str( $querystring, $query );
@@ -760,7 +760,10 @@ class MailsterPlaceholder {
 								}
 
 								if ( $is_img_tag ) {
-									$post_stuff = 'height="' . $height . '" ' . $post_stuff;
+									// set new height
+									$post_stuff = preg_replace( '# height="(\d+)"#i', $height ? ' height="' . $height . '"' : '', $post_stuff );
+									$pre_stuff = preg_replace( '# height="(\d+)"#i', $height ? ' height="' . $height . '"' : '', $pre_stuff );
+
 									$replace_to = '<img ' . $pre_stuff . 'src="' . $img['url'] . '" ' . $post_stuff . '>';
 								} else {
 									$pre_stuff = str_replace( $imagestring, $img['url'], $pre_stuff );
