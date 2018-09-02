@@ -151,11 +151,6 @@ class Mailster {
 	 */
 	public function template( $slug = null, $file = null ) {
 
-		static $template;
-		if ( $template ) {
-			return $template;
-		}
-
 		if ( is_null( $slug ) ) {
 			$slug = mailster_option( 'default_template', 'mailster' );
 		}
