@@ -103,7 +103,7 @@ class MailsterUpgrade {
 	public function deactivate_mymail( $info = true ) {
 		if ( is_plugin_active( 'myMail/myMail.php' ) ) {
 			if ( $info ) {
-				mailster_notice( '<strong>MyMail is now Mailster - Plugin deactivated.</strong>', 'error', true );
+				mailster_notice( 'MyMail is now Mailster - Plugin deactivated', 'error', true );
 			}
 			deactivate_plugins( 'myMail/myMail.php' );
 		}
@@ -122,7 +122,7 @@ class MailsterUpgrade {
 		$return['success'] = false;
 
 		$id = $_POST['id'];
-		$this->performance = isset( $_POST['performance'] ) ? intval( $_POST['performance'] ) : $this->performance;
+		$this->performance = isset( $_POST['performance'] ) ? (int) $_POST['performance'] : $this->performance;
 
 		if ( method_exists( $this, 'do_' . $id ) ) {
 			$return['success'] = true;
@@ -264,7 +264,7 @@ class MailsterUpgrade {
 		wp_localize_script( 'mailster-update-script', 'mailster_updates_options', array(
 			'autostart' => $autostart,
 		) );
-		$performance = isset( $_GET['performance'] ) ? max( 1, intval( $_GET['performance'] ) ) : 1;
+		$performance = isset( $_GET['performance'] ) ? max( 1, (int) $_GET['performance'] ) : 1;
 		wp_localize_script( 'mailster-update-script', 'mailster_updates_performance', array( $performance ) );
 
 		remove_action( 'admin_enqueue_scripts', 'wp_auth_check_load' );
@@ -493,6 +493,8 @@ class MailsterUpgrade {
 		update_option( 'mailster_templates', '' );
 		$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'no' WHERE option_name IN ('mailster_templates', 'mailster_cron_lasthit')" );
 
+		mailster_update_option( 'webversion_bar', true );
+
 		if ( wp_next_scheduled( 'mymail_cron_worker' ) ) {
 			wp_clear_scheduled_hook( 'mymail_cron_worker' );
 		}
@@ -601,13 +603,15 @@ class MailsterUpgrade {
 			delete_option( '_mailster_formstructure' );
 			$form_id = $wpdb->insert_id;
 
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_form_fields SET form_id = %d WHERE form_id = 0", $form_id ) );
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_forms_lists SET form_id = %d WHERE form_id = 0", $form_id ) );
-			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_content` = replace(post_content, %s, %s)", '[newsletter_signup_form id=0]', '[newsletter_signup_form id=' . $form_id . ']' ) );
+			if ( is_numeric( $form_id ) ) {
+				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_form_fields SET form_id = %d WHERE form_id = 0", $form_id ) );
+				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_forms_lists SET form_id = %d WHERE form_id = 0", $form_id ) );
+				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_content` = replace(post_content, %s, %s)", '[newsletter_signup_form id=0]', '[newsletter_signup_form id=' . $form_id . ']' ) );
 
-			$old_profile_form = mailster_option( 'profile_form' );
-			if ( 0 == $old_profile_form ) {
-				mailster_update_option( 'profile_form', $form_id );
+				$old_profile_form = mailster_option( 'profile_form' );
+				if ( 0 == $old_profile_form ) {
+					mailster_update_option( 'profile_form', $form_id );
+				}
 			}
 		}
 
@@ -658,10 +662,6 @@ class MailsterUpgrade {
 			if ( ! $wp_filesystem->move( $old_location, $new_location, true ) ) {
 				@rename( $old_location, $new_location );
 			}
-
-			mailster_update_option( 'countries_db', str_replace( $old_location, $new_location, mailster_option( 'countries_db' ) ) );
-			mailster_update_option( 'cities_db', str_replace( $old_location, $new_location, mailster_option( 'cities_db' ) ) );
-
 		}
 
 		if ( is_dir( $new_location . '_bak' ) ) {
@@ -1284,7 +1284,7 @@ class MailsterUpgrade {
 
 		$now = time();
 
-		$id = intval( $id );
+		$id = (int) $id;
 
 		$sql = "SELECT a.meta_value AS meta FROM {$wpdb->postmeta} AS a LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS b ON b.subscriber_id = a.post_id WHERE a.meta_key = 'mailster-userdata' AND b.subscriber_id IS NULL AND a.post_id = %d LIMIT 1";
 

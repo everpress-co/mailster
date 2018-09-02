@@ -31,7 +31,11 @@ function mailster( $subclass = null ) {
 function mailster_option( $option, $fallback = null ) {
 
 	global $mailster_options;
-	return isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $fallback;
+
+	$value = isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $fallback;
+	$value = apply_filters( 'mailster_option', $value, $option, $fallback );
+	$value = apply_filters( 'mailster_option_' . $option, $value, $fallback );
+	return $value;
 
 }
 
@@ -179,7 +183,7 @@ function mailster_update_option( $option, $value, $temp = false ) {
 		$temp = (bool) $value;
 		$mailster_options = wp_parse_args( $option, $mailster_options );
 	} else {
-		$mailster_options[ $option ] = $value;
+		$mailster_options[ $option ] = apply_filters( 'mailster_update_option_' . $option, $value, $temp );
 	}
 
 	if ( $temp ) {
@@ -194,6 +198,32 @@ function mailster_update_option( $option, $value, $temp = false ) {
 /**
  *
  *
+ * @param unknown $custom_fields (optional)
+ * @return unknown
+ */
+function mailster_get_current_user( $custom_fields = true ) {
+
+	return mailster( 'subscribers' )->get_current_user( $custom_fields );
+
+}
+
+
+/**
+ *
+ *
+ * @return unknown
+ */
+function mailster_get_current_user_id() {
+
+	return mailster( 'subscribers' )->get_current_user_id();
+
+}
+
+
+
+/**
+ *
+ *
  * @param unknown $id          (optional)
  * @param unknown $echo        (optional)
  * @param unknown $classes     (optional)
@@ -202,7 +232,7 @@ function mailster_update_option( $option, $value, $temp = false ) {
  */
 function mailster_form( $id = 1, $echo = true, $classes = '', $depreciated = '' ) {
 
-	// tabindex is depreciated but for backward compatibility
+	// tabindex is depreciated but for backward compatibility.
 	if ( is_int( $echo ) ) {
 		$classes = $depreciated;
 		$echo = $classes;
@@ -335,10 +365,10 @@ function mailster_list_newsletter( $args = '' ) {
 
 	$output = '';
 
-	// sanitize, mostly to keep spaces out
+	// sanitize, mostly to keep spaces out.
 	$r['exclude'] = preg_replace( '/[^0-9,]/', '', $r['exclude'] );
 
-	// Allow plugins to filter an array of excluded pages (but don't put a nullstring into the array)
+	// Allow plugins to filter an array of excluded pages (but don't put a nullstring into the array).
 	$exclude_array = ( $r['exclude'] ) ? explode( ',', $r['exclude'] ) : array();
 	$r['exclude'] = implode( ',', apply_filters( 'mymail_list_newsletter_excludes', apply_filters( 'mailster_list_newsletter_excludes', $exclude_array ) ) );
 
@@ -378,7 +408,7 @@ function mailster_list_newsletter( $args = '' ) {
  */
 function mailster_ip2Country( $ip = '', $get = 'code' ) {
 
-	if ( ! mailster_option( 'trackcountries' ) ) {
+	if ( ! mailster_option( 'track_location' ) ) {
 		return 'unknown';
 	}
 
@@ -388,9 +418,9 @@ function mailster_ip2Country( $ip = '', $get = 'code' ) {
 			$ip = mailster_get_ip();
 		}
 
-		require_once MAILSTER_DIR . 'classes/libs/Ip2Country.php';
-		$i = new Ip2Country();
-		$code = $i->get( $ip, $get );
+		$ip2Country = mailster( 'geo' )->Ip2Country();
+
+		$code = $ip2Country->get( $ip, $get );
 
 		if ( ! $code ) {
 			$code = mailster_ip2City( $ip, $get ? 'country_' . $get : null );
@@ -412,7 +442,7 @@ function mailster_ip2Country( $ip = '', $get = 'code' ) {
  */
 function mailster_ip2City( $ip = '', $get = null ) {
 
-	if ( ! mailster_option( 'trackcities' ) ) {
+	if ( ! mailster_option( 'track_location' ) ) {
 		return 'unknown';
 	}
 
@@ -532,11 +562,13 @@ function mailster_get_user_client( $string = null ) {
 function mailster_subscribe( $email, $userdata = array(), $lists = array(), $double_opt_in = null, $overwrite = true, $mergelists = null, $template = 'notification.html' ) {
 
 	$entry = wp_parse_args( array(
-			'email' => $email,
+		'email' => $email,
 	), $userdata );
 
+	$added = null;
 	if ( ! is_null( $double_opt_in ) ) {
 		$entry['status'] = $double_opt_in ? 0 : 1;
+		$added = mailster_option( 'list_based_opt_in' ) ? ($double_opt_in ? false : true) : time();
 	}
 
 	$subscriber_id = mailster( 'subscribers' )->add( $entry, $overwrite );
@@ -553,15 +585,14 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
 
 	foreach ( $lists as $list ) {
 		if ( is_numeric( $list ) ) {
-			$new_lists[] = intval( $list );
+			$new_lists[] = (int) $list;
 		} else {
 			if ( $list_id = mailster( 'lists' )->get_by_name( $list, 'ID' ) ) {
 				$new_lists[] = $list_id;
 			}
 		}
 	}
-
-	mailster( 'subscribers' )->assign_lists( $subscriber_id, $new_lists, $mergelists );
+	mailster( 'subscribers' )->assign_lists( $subscriber_id, $new_lists, $mergelists, $added );
 
 	return true;
 
@@ -573,22 +604,22 @@ function mailster_subscribe( $email, $userdata = array(), $lists = array(), $dou
  *
  * @param unknown $email_hash_id
  * @param unknown $campaign_id   (optional)
- * @param unknown $logit         (optional)
+ * @param unknown $status        (optional)
  * @return unknown
  */
-function mailster_unsubscribe( $email_hash_id, $campaign_id = null, $logit = true ) {
+function mailster_unsubscribe( $email_hash_id, $campaign_id = null, $status = null ) {
 
-	if ( is_int( $email_hash_id ) ) {
+	if ( is_numeric( $email_hash_id ) ) {
 
-		return mailster( 'subscribers' )->unsubscribe( $email_hash_id, $campaign_id );
+		return mailster( 'subscribers' )->unsubscribe( $email_hash_id, $campaign_id, $status );
 
 	} elseif ( preg_match( '#^[0-9a-f]{32}$#', $email_hash_id ) ) {
 
-		return mailster( 'subscribers' )->unsubscribe_by_hash( $email_hash_id, $campaign_id );
+		return mailster( 'subscribers' )->unsubscribe_by_hash( $email_hash_id, $campaign_id, $status );
 
 	} else {
 
-		return mailster( 'subscribers' )->unsubscribe_by_mail( $email_hash_id, $campaign_id );
+		return mailster( 'subscribers' )->unsubscribe_by_mail( $email_hash_id, $campaign_id, $status );
 	}
 
 }
@@ -661,9 +692,11 @@ function mailster_clear_cache( $part = '', $deprecated = false ) {
  * @param unknown $once       (optional)
  * @param unknown $key        (optional)
  * @param unknown $capability (optional)
+ * @param unknown $screen     (optional)
+ * @param unknown $append     (optional)
  * @return unknown
  */
-function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true ) {
+function mailster_notice( $args, $type = '', $once = false, $key = null, $capability = true, $screen = null, $append = false ) {
 
 	global $mailster_notices;
 
@@ -696,15 +729,24 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		'key' => uniqid(),
 		'cb' => null,
 		'cap' => $capability,
+		'screen' => $screen,
 	) );
 
 	if ( empty( $args['key'] ) ) {
 		$args['key'] = uniqid();
 	}
 
+	if ( is_numeric( $args['once'] ) && $args['once'] < 1500000000 ) {
+		$args['once'] = time() + $args['once'];
+	}
+
 	$mailster_notices = get_option( 'mailster_notices' );
 	if ( ! is_array( $mailster_notices ) ) {
 		$mailster_notices = array();
+	}
+
+	if ( $append && isset( $mailster_notices[ $args['key'] ] ) ) {
+		$args['text'] = $mailster_notices[ $args['key'] ]['text'] . '<br>' . $args['text'];
 	}
 
 	$mailster_notices[ $args['key'] ] = array(
@@ -713,6 +755,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 		'once' => $args['once'],
 		'cb' => $args['cb'],
 		'cap' => $args['cap'],
+		'screen' => $args['screen'],
 	);
 
 	do_action( 'mailster_notice', $args['text'], $args['type'], $args['key'] );
@@ -723,6 +766,7 @@ function mailster_notice( $args, $type = '', $once = false, $key = null, $capabi
 	return $args['key'];
 
 }
+
 
 
 /**
@@ -742,6 +786,7 @@ function mailster_remove_notice( $key ) {
 		unset( $mailster_notices[ $key ] );
 
 		do_action( 'mailster_remove_notice', $key );
+		do_action( 'mailster_remove_notice_' . $key );
 		do_action( 'mymail_remove_notice', $key );
 
 		return update_option( 'mailster_notices', $mailster_notices );
@@ -923,11 +968,10 @@ function mailster_get_referer() {
 	if ( $referer = wp_get_referer() ) {
 		return $referer;
 	}
-	if ( $referer = wp_get_raw_referer() ) {
-		return $referer;
-	}
-	if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-		return $_SERVER['HTTP_REFERER'];
+	if ( ! empty( $_REQUEST['_wp_http_referer'] ) ) {
+		return wp_unslash( $_REQUEST['_wp_http_referer'] );
+	} elseif ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+		return wp_unslash( $_SERVER['HTTP_REFERER'] );
 	}
 	return false;
 }
@@ -952,27 +996,20 @@ function mailster_update_notice( $text ) {
 /**
  *
  *
+ * @param unknown $post_id (optional)
  * @return unknown
  */
-function is_mailster_newsletter_homepage() {
+function is_mailster_newsletter_homepage( $post_id = null ) {
 
 	global $post;
+	if ( is_null( $post_id ) ) {
+		$the_post = $post;
+		$post_id = isset( $post ) ? $post->ID : null;
+	} else {
+		$the_post = get_post( $post_id );
+	}
 
-	return isset( $post ) && $post->ID == mailster_option( 'homepage' );
-
-}
-
-
-/**
- *
- *
- * @return unknown
- */
-function is_mailster_dashboard() {
-
-	$screen = get_current_screen();
-
-	return $screen && $screen->id == 'newsletter_page_mailster_dashboard';
+	return apply_filters( 'is_mailster_newsletter_homepage', $post_id == mailster_option( 'homepage' ), $the_post );
 
 }
 
@@ -1071,7 +1108,7 @@ if ( ! function_exists( 'http_negotiate_language' ) ) :
 
 			$qvalue = 1.0;
 			if ( ! empty( $arr[5] ) ) {
-				$qvalue = floatval( $arr[5] );
+				$qvalue = (float) $arr[5];
 			}
 
 			// find q-maximal language

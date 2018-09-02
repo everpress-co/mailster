@@ -105,16 +105,17 @@ class Mailster_Forms_Table extends WP_List_Table {
 
 				echo '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $item->ID ) . '" title="' . $item->name . '">' . ( $item->name ? $item->name : '<span class="grey">' . __( 'undefined', 'mailster' ) . '</span>' ) . '</a> <strong>(#' . $item->ID . ')</strong>';
 
-				if ( mailster_option( 'profile_form', 0 ) == $item->ID ) {
+				if ( mailster_option( 'profile_form', 1 ) == $item->ID ) {
 					echo '<span class="dashicons-before dashicons-admin-users" title="' . __( 'This form is used for user profile updates', 'mailster' ) . '"></span>';
 				}
 
 				echo '<div class="row-actions">';
 				$actions = array();
 
-				$actions['fields'] = '<a class="" href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=structure" title="' . __( 'change structure', 'mailster' ) . '">' . __( 'Fields', 'mailster' ) . '</a>';
-				$actions['design'] = '<a class="" href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=design" title="' . __( 'change design', 'mailster' ) . '">' . __( 'Design', 'mailster' ) . '</a>';
-				$actions['settings'] = '<a class="" href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=settings" title="' . __( 'change settings', 'mailster' ) . '">' . __( 'Settings', 'mailster' ) . '</a>';
+				$actions['fields'] = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=structure" title="' . __( 'change structure', 'mailster' ) . '">' . __( 'Fields', 'mailster' ) . '</a>';
+				$actions['design'] = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=design" title="' . __( 'change design', 'mailster' ) . '">' . __( 'Design', 'mailster' ) . '</a>';
+				$actions['settings'] = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=settings" title="' . __( 'change settings', 'mailster' ) . '">' . __( 'Settings', 'mailster' ) . '</a>';
+				$actions['duplicate'] = '<a href="?post_type=newsletter&page=mailster_forms&duplicate=' . $item->ID . '&_wpnonce=' . wp_create_nonce( 'mailster_duplicate_nonce' ) . '" title="' . __( 'duplicate Form', 'mailster' ) . '">' . __( 'Duplicate', 'mailster' ) . '</a>';
 
 				echo implode( ' | ', $actions );
 				echo '</div>';

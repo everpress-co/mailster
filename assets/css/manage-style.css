@@ -1,5 +1,4 @@
 .nav-tab-wrapper a:focus{
-	-webkit-box-shadow: none;
 	box-shadow: none;
 }
 .upload-method{
@@ -50,7 +49,7 @@ span.error{
 	width: 150px;
 }
 #subscriber-table table{
-	border:0;
+	border: 0;
 }
 #subscriber-table table tbody td{
 	max-height: 30px;
@@ -60,7 +59,7 @@ span.error{
 	white-space: nowrap;
 }
 #wordpress-users{
-	border-top:1px solid #ccc;
+	border-top: 1px solid #ccc;
 	margin-top: 20px;
 	padding-top: 20px;
 }
@@ -75,20 +74,20 @@ span.error{
 }
 #wordpress-user-roles{
 	float: left;
-	border-right:1px solid #ccc;
+	border-right: 1px solid #ccc;
 	margin-right: 20px;
-	width:25%;
+	width: 25%;
 }
 .rtl #wordpress-user-roles{
 	float: right;
 	margin-right: 0;
 	margin-left: 20px;
-	border-right:0;
-	border-left:1px solid #ccc;
+	border-right: 0;
+	border-left: 1px solid #ccc;
 }
 #wordpress-user-meta{
 	float: left;
-	width:40%;
+	width: 40%;
 }
 .rtl #wordpress-user-meta{
 	float: right;
@@ -114,24 +113,48 @@ span.error{
 .submit-button-box{
 	text-align: right;
 }
-.export-order{
+.mailster-conditions{
+	width: 720px;
+}
+.export-order-wrap{
 	overflow: hidden;
-
+}
+.export-order-middle{
+	float: left;
+	overflow: hidden;
+	transform: translateY(100%);
+	padding: 10px;
+}
+.export-order-middle button{
+	display: block;
+	width: 35px;
+	margin: 4px 0;
+}
+.export-order{
+	float: left;
+	overflow: auto;
+	border-radius: 2px;
+	border: 1px solid #DFDFDF;
+	width: 200px;
+	padding: 10px;
+	height: 300px;
 }
 .export-order li{
-	float: left;
 	padding: 6px 9px;
 	background: #fff;
 	border-radius: 2px;
 	border: 1px solid #DFDFDF;
 	display: block;
-	margin-right:2px;
-	cursor:we-resize;
-	cursor:hand;
-	cursor:grab;
-	cursor:grabbing;
-	cursor:-moz-grab;
-	cursor:-webkit-grab;
+	margin: 4px 1px;
+	cursor: we-resize;
+	cursor: hand;
+	cursor: grab;
+	cursor: grabbing;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 .rtl .export-order li{
 	float: right;
@@ -141,9 +164,9 @@ span.error{
 	color: #D54E21;
 }
 .export-order li.ui-sortable-helper{
-	cursor:grabbing;
-	cursor:-moz-grabbing;
-	cursor:-webkit-grabbing;
+	cursor: grabbing;
+	cursor: -moz-grabbing;
+	cursor: -webkit-grabbing;
 	border: 1px solid #ccc;
 }
 .mailster-manage .stuffbox{
@@ -153,48 +176,37 @@ span.error{
 	overflow: hidden;
 }
 .progress{
-	width:100%;
-	height:40px;
-	background:#efefef;
-	overflow:hidden;
-	font-size:10px;
-	position:relative;
-	text-align:right;
-	line-height:20px;
-	display: none;
+	width: 100%;
+	height: 40px;
+	background: #ededed;
+	overflow: hidden;
+	font-size: 10px;
+	position: relative;
+	text-align: right;
+	line-height: 20px;
 	margin-top: 24px;
+	border-radius: 4px;
 }
 .progress span.bar{
-	display:block;
-	position:absolute;
-	line-height:2.6em;
-	padding:2px 0;
-	white-space:nowrap;
-	top:0;
-	bottom:0;
-	left:0;
-	overflow:visible;
+	display: block;
+	position: absolute;
+	line-height: 2.6em;
+	padding: 2px 0;
+	white-space: nowrap;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	overflow: visible;
+	border-radius: 4px;
 }
 .progress span.bar{
 	background: url(../img/progress_2x.gif);
 }
 .progress.paused span.bar,
 .progress.error span.bar{
-	background: #e3eaed;
-	background: -moz-linear-gradient(top,  #e3eaed 0%, #c8d7dc 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e3eaed), color-stop(100%,#c8d7dc));
-	background: -webkit-linear-gradient(top,  #e3eaed 0%,#c8d7dc 100%);
-	background: -o-linear-gradient(top,  #e3eaed 0%,#c8d7dc 100%);
-	background: -ms-linear-gradient(top,  #e3eaed 0%,#c8d7dc 100%);
-	background: linear-gradient(top,  #e3eaed 0%,#c8d7dc 100%);
-	opacity:0.8;
+	background: #D54E21;
+	opacity: 0.8;
 }
-.progress.finished span.bar{
-	background: #c7e9c4;
-	background: -moz-linear-gradient(top, #c7e9c4 0%, #aacca7 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c7e9c4), color-stop(100%,#aacca7));
-	background: -webkit-linear-gradient(top, #c7e9c4 0%,#aacca7 100%);
-	background: -o-linear-gradient(top, #c7e9c4 0%,#aacca7 100%);
-	background: -ms-linear-gradient(top, #c7e9c4 0%,#aacca7 100%);
-	background: linear-gradient(top, #c7e9c4 0%,#aacca7 100%);
+.progress.finished{
+	display: none;
 }

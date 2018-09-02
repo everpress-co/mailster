@@ -95,12 +95,12 @@ class MailsterNotification {
 
 		$options = wp_parse_args( $args, $defaults );
 
-		$subscriber_id = intval( $options['subscriber_id'] );
+		$subscriber_id = (int) $options['subscriber_id'];
 
 		// send now
 		if ( $timestamp <= $now ) {
 			// sendnow
-			$result = $this->send( intval( $subscriber_id ), $options );
+			$result = $this->send( (int) $subscriber_id, $options );
 
 			// queue it if there was a problem
 			if ( is_wp_error( $result ) ) {
@@ -222,18 +222,24 @@ class MailsterNotification {
 
 			case 'confirmation_replace':
 				if ( isset( $options['form'] ) ) {
-					$form = mailster( 'forms' )->get( $options['form'], false, false );
+					$form = mailster( 'forms' )->get( $options['form'], false, true );
 					$form_id = $form->ID;
 				} else {
 					$form_id = null;
 				}
 
-					$link = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id );
+				$subscriber_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID );
+				$list_names = wp_list_pluck( $subscriber_lists, 'name' );
 
-			return wp_parse_args( array(
-					'link' => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
-					'linkaddress' => $link,
-			), $content );
+				$list_ids = isset( $options['list_ids'] ) ? array_filter( $options['list_ids'] ) : null;
+
+				$link = mailster( 'subscribers' )->get_confirm_link( $subscriber->ID, $form_id, $list_ids );
+
+				return wp_parse_args( array(
+						'link' => '<a href="' . htmlentities( $link ) . '">' . $form->link . '</a>',
+						'linkaddress' => $link,
+						'lists' => implode( ', ', $list_names ),
+				), $content );
 
 			case 'confirmation_attachments':
 				$form = mailster( 'forms' )->get( $options['form'], false, false );
@@ -424,21 +430,23 @@ class MailsterNotification {
 
 		$placeholder = mailster( 'placeholder', $raw );
 
+		$placeholder->add_defaults();
+
 		if ( $subscriber ) {
 			$this->mail->hash = $subscriber->hash;
 			$this->mail->add_header( 'X-Mailster', $subscriber->hash );
 			$placeholder->add( $userdata );
 			$placeholder->add( array(
-					'emailaddress' => $subscriber->email,
-					'hash' => $subscriber->hash,
+				'emailaddress' => $subscriber->email,
+				'hash' => $subscriber->hash,
 			) );
 		}
 
 		$placeholder->add( array(
-				'subject' => $this->subject,
-				'preheader' => $this->preheader,
-				'headline' => $this->headline,
-				'content' => $this->message,
+			'subject' => $this->subject,
+			'preheader' => $this->preheader,
+			'headline' => $this->headline,
+			'content' => $this->message,
 		) );
 
 		$placeholder->add( $this->replace );
@@ -608,6 +616,9 @@ class MailsterNotification {
 		$custom_fields = mailster()->get_custom_fields();
 
 ?>
+
+	<?php if ( get_option( 'show_avatars' ) ) : ?>
+
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
@@ -617,6 +628,8 @@ class MailsterNotification {
 			</td>
 			</tr>
 		</table>
+
+	<?php endif; ?>
 
 		<table style="width:100%;table-layout:fixed"><tr><td valign="top" align="center">&nbsp;</td></tr></table>
 
@@ -644,7 +657,7 @@ class MailsterNotification {
 						break;
 					case 'date':
 						echo $subscriber->{$id} && is_integer( strtotime( $subscriber->{$id} ) )
-							? date( get_option( 'date_format' ), strtotime( $subscriber->{$id} ) )
+							? date( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$id} ) )
 							: $subscriber->{$id};
 						break;
 					default:
@@ -657,7 +670,7 @@ class MailsterNotification {
 					<?php if ( $lists = mailster( 'subscribers' )->get_lists( $subscriber->ID ) ) : ?>
 				<tr><td height="30" style="border-top:1px solid #ccc;height:30px"><strong><?php esc_html_e( 'Lists', 'mailster' ) ?>:</strong>
 					<?php foreach ( $lists as $i => $list ) { ?>
-							<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID ) ?>"><?php echo $list->name ?></a><?php if ( $i + 1 < count( $list ) ) {echo ', '; } ?>
+							<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID ) ?>"><?php echo $list->name ?></a><?php if ( $i + 1 < count( $lists ) ) {echo ', '; } ?>
 					<?php } ?>
 				</td></tr>
 					<?php endif; ?>
@@ -726,7 +739,7 @@ class MailsterNotification {
 
 		$subscribers = $wpdb->get_results( $sql );
 
-		$date_format = get_option( 'date_format' );
+		$date_format = mailster( 'helper' )->dateformat();
 
 		$count = count( $subscribers );
 		if ( ! $count ) {
@@ -774,20 +787,22 @@ class MailsterNotification {
 				<tr>
 					<td width="264" valign="top" align="left" class="m-b">
 					<table cellpadding="0" cellspacing="0">
-					<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
-					<tr>
-					<td valign="top" align="center" width="80">
-						<div style="border-radius:50%;width:60px;height:60px;background-color:#fafafa">
-						<a href="<?php echo $link ?>">
-						<img src="<?php echo mailster( 'subscribers' )->get_gravatar_uri( $subscriber->email, 120 ) ?>" width="60" style="border-radius:50%;display:block;width:60px;overflow:hidden">
-						</div>
-						</a>
-					</td>
-					<td valign="top" align="left">
-						<h4 style="margin:0"><?php echo $subscriber->fullname ? '<a href="' . $link . '">' . esc_html( $subscriber->fullname ) . '</a>' : '&nbsp;'; ?></h4>
-						<small><?php echo esc_html( $subscriber->email ); ?></small>
-					</td>
-					</tr>
+						<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
+						<tr>
+						<?php if ( get_option( 'show_avatars' ) ) : ?>
+						<td valign="top" align="center" width="80">
+							<div style="border-radius:50%;width:60px;height:60px;background-color:#fafafa">
+							<a href="<?php echo $link ?>">
+							<img src="<?php echo mailster( 'subscribers' )->get_gravatar_uri( $subscriber->email, 120 ) ?>" width="60" style="border-radius:50%;display:block;width:60px;overflow:hidden">
+							</div>
+							</a>
+						</td>
+						<?php endif; ?>
+						<td valign="top" align="left">
+							<h4 style="margin:0"><?php echo $subscriber->fullname ? '<a href="' . $link . '">' . esc_html( $subscriber->fullname ) . '</a>' : '&nbsp;'; ?></h4>
+							<small><?php echo esc_html( $subscriber->email ); ?></small>
+						</td>
+						</tr>
 						<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
 					</table>
 					</td>
@@ -914,7 +929,7 @@ foreach ( $coords as $i => $coord ) {
 					<?php esc_html_e( 'from other countries', 'mailster' ) ?>
 				</td>
 				<td align="right" width="15%">
-					<strong><?php echo number_format_i18n( intval( $other ) ); ?></strong>
+					<strong><?php echo number_format_i18n( (int) $other ); ?></strong>
 				</td>
 				<td>&nbsp;</td>
 				</tr>
@@ -948,6 +963,8 @@ foreach ( $coords as $i => $coord ) {
 		$custom_fields = mailster()->get_custom_fields();
 
 ?>
+		<?php if ( get_option( 'show_avatars' ) ) : ?>
+
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
@@ -957,6 +974,8 @@ foreach ( $coords as $i => $coord ) {
 			</td>
 			</tr>
 		</table>
+
+		<?php endif; ?>
 
 		<table style="width:100%;table-layout:fixed"><tr><td valign="top" align="center">&nbsp;</td></tr></table>
 
@@ -999,7 +1018,7 @@ foreach ( $coords as $i => $coord ) {
 
 		$subscribers = $wpdb->get_results( $sql );
 
-		$date_format = get_option( 'date_format' );
+		$date_format = mailster( 'helper' )->dateformat();
 
 		$count = count( $subscribers );
 		if ( ! $count ) {
@@ -1048,6 +1067,7 @@ foreach ( $coords as $i => $coord ) {
 				<table cellpadding="0" cellspacing="0">
 				<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
 				<tr>
+				<?php if ( get_option( 'show_avatars' ) ) : ?>
 				<td valign="top" align="center" width="80">
 					<div style="border-radius:50%;width:60px;height:60px;background-color:#fafafa">
 					<a href="<?php echo $link ?>">
@@ -1055,6 +1075,7 @@ foreach ( $coords as $i => $coord ) {
 					</div>
 					</a>
 				</td>
+				<?php endif; ?>
 				<td valign="top" align="left">
 					<h4 style="margin:0"><?php echo esc_html( $subscriber->fullname ) ? '<a href="' . $link . '">' . esc_html( $subscriber->fullname ) . '</a>' : '&nbsp;'; ?></h4>
 					<small><?php echo esc_html( $subscriber->email ); ?></small>

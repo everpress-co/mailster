@@ -39,9 +39,23 @@ class MailsterStatistics {
 
 		$dates = array_keys( $rawdata );
 
-		foreach ( $dates as $i => $date ) {
+		$i = 0;
+		$prev = null;
+
+		foreach ( $rawdata as $date => $count ) {
 			$d = strtotime( $date );
-			$dates[ $i ] = $wp_locale->weekday_abbrev[ $wp_locale->weekday[ date( 'w', $d ) ] ];
+			$str = $wp_locale->weekday_abbrev[ $wp_locale->weekday[ date( 'w', $d ) ] ];
+			if ( ! is_null( $prev ) ) {
+				$grow = $count - $prev;
+				if ( $grow > 0 ) {
+					$str .= ' ▲+' . $this->format( $grow ) . ' ';
+				} elseif ( $grow < 0 ) {
+					$str .= ' ▼-' . $this->format( $grow ) . ' ';
+				}
+			}
+			$prev = $count;
+			$dates[ $i ] = $str;
+			$i++;
 		}
 
 		return $dates;
@@ -107,9 +121,11 @@ class MailsterStatistics {
 		$dates = $this->get_calendar_table( $from, $to );
 		$count = count( $dates );
 
-		$count_before = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers WHERE status = 1 AND IF(confirm, confirm, signup) < %d", $from ) );
+		$count_before = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) < %d", $from ) );
 
-		$sql = "SELECT @n:=@n + IFNULL(total,0) total FROM (SELECT {$this->calendar_table}.date, total FROM {$this->calendar_table} LEFT JOIN (SELECT FROM_UNIXTIME(IF(confirm, confirm, signup), '%Y-%m-%d') date, count(*) total FROM {$wpdb->prefix}mailster_subscribers WHERE status = 1 GROUP BY date ) t2 ON {$this->calendar_table}.date= t2.date ORDER BY date) t3 CROSS JOIN (SELECT @n:=$count_before) n LIMIT 0,$count";
+		$sql = "SELECT @n:=@n + IFNULL(total,0) total FROM (SELECT {$this->calendar_table}.date, total FROM {$this->calendar_table} LEFT JOIN (SELECT FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup), '%Y-%m-%d') date, COUNT(*) AS total FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) GROUP BY date ) t2 ON {$this->calendar_table}.date= t2.date ORDER BY date) t3 CROSS JOIN (SELECT @n:=$count_before) n LIMIT 0, $count";
+
+		$sql = apply_filters( 'mailster_get_signups_sql', $sql, $from, $to );
 
 		$data = array_combine( $dates, array_map( 'floatval', $wpdb->get_col( $sql ) ) );
 
@@ -179,5 +195,24 @@ class MailsterStatistics {
 		return $dates;
 	}
 
+
+	/**
+	 *
+	 *
+	 * @param unknown $value
+	 * @return unknown
+	 */
+	private function format( $value ) {
+
+		$value = (int) $value;
+
+		if ( $value >= 1000000 ) {
+			return round( $value / 1000, 1 ) . 'M';
+		} elseif ( $value >= 1000 ) {
+			return round( $value / 1000, 1 ) . 'K';
+		}
+
+		return ! ($value % 1) ? $value : '';
+	}
 
 }

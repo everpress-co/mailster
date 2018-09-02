@@ -25,7 +25,7 @@ jQuery(document).ready(function ($) {
 				caretSize: 8,
 				callbacks: {
 					label: function (a, b) {
-						return _format(a.yLabel);
+						return sprintf(mailsterdashboardL10n.subscribers, _number_format(a.yLabel));
 					}
 				}
 			},
@@ -33,11 +33,19 @@ jQuery(document).ready(function ($) {
 				xAxes: [{
 					ticks: {
 						maxTicksLimit: 20
+					},
+					_type: "time",
+					_time: {
+						format: 'MM/DD/YYYY HH:mm',
+						round: 'day',
+						tooltipFormat: 'll HH:mm'
 					}
 				}],
 				yAxes: [{
 					ticks: {
-						callback: _format,
+						callback: function (value) {
+							return _format(value, true);
+						},
 					}
 				}]
 			}
@@ -52,7 +60,7 @@ jQuery(document).ready(function ($) {
 	}).trigger('change');
 
 	$('a.external').on('click', function () {
-		window.open(this.href);
+		if (this.href) window.open(this.href);
 		return false;
 	});
 
@@ -116,6 +124,20 @@ jQuery(document).ready(function ($) {
 		})
 		.on('click', '.locked', function () {
 			$('.purchasecode').focus().select();
+		})
+		.on('click', '.check-for-update', function () {
+			var _this = $(this);
+			_this.html(mailsterdashboardL10n.checking);
+			_ajax('check_for_update', function (response) {
+				_this.html(mailsterdashboardL10n.check_again);
+				if (response.success) {
+					_this.closest('.postbox')[response.update ? 'addClass' : 'removeClass']('has-update');
+					$('.update-version').html(response.version);
+					$('.update-last-check').html(response.last_update);
+
+				}
+			});
+			return false;
 		})
 		.on('click', '.reset-license', function () {
 
@@ -303,15 +325,51 @@ jQuery(document).ready(function ($) {
 
 	}
 
-	function _format(value) {
+	function sprintf() {
+		var a = Array.prototype.slice.call(arguments),
+			str = a.shift(),
+			total = a.length,
+			reg;
+		for (var i = 0; i < total; i++) {
+			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
+			str = str.replace(reg, a[i]);
+		}
+		return str;
+	}
+
+	function _format(value, konly) {
 
 		if (value >= 1000000) {
 			return (value / 1000).toFixed(1) + 'M';
-		} else if (value >= 1000) {
+		} else if (value >= 1000 && !konly) {
 			return (value / 1000).toFixed(1) + 'K';
 		}
 
-		return !(value % 1) ? value : '';
+		return !(value % 1) ? _number_format(value) : '';
+	}
+
+	function _number_format(number, decimals, decPoint, thousandsSep) {
+
+		number = (number + '').replace(/[^0-9+\-Ee.]/g, '')
+		var n = !isFinite(+number) ? 0 : +number
+		var prec = !isFinite(+decimals) ? 0 : Math.abs(decimals)
+		var sep = (typeof thousandsSep === 'undefined') ? ',' : thousandsSep
+		var dec = (typeof decPoint === 'undefined') ? '.' : decPoint
+		var s = ''
+		var toFixedFix = function (n, prec) {
+			var k = Math.pow(10, prec)
+			return '' + (Math.round(n * k) / k)
+				.toFixed(prec)
+		}
+		s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.')
+		if (s[0].length > 3) {
+			s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep)
+		}
+		if ((s[1] || '').length < prec) {
+			s[1] = s[1] || ''
+			s[1] += new Array(prec - s[1].length + 1).join('0')
+		}
+		return s.join(dec)
 	}
 
 	function _ajax(action, data, callback, errorCallback, dataType) {

@@ -383,13 +383,15 @@ class MailsterTemplate {
 
 			$original_modules_html = $modules ? $this->get_modules_html() : '';
 			$custom_modules = $hits[1];
-			$custom_modules = preg_replace( '#<module(.*)?( class="([^"]*)?")(.*)?>#', '<module$1$4>', $custom_modules );
-			$custom_modules = preg_replace( '#<module(.*)?( style="([^"]*)?")(.*)?>#', '<module$1$4' . ( $active ? ' active' : '' ) . '>', $custom_modules );
+			// remove all active
+			$custom_modules = preg_replace( '#<module([^>]+)?( active="([^"]*)?")([^>]+)?>#', '<module$1$4>', $custom_modules );
+
+			// add active
+			if ( $active ) {
+				$custom_modules = preg_replace( '#<module([^>]+)?>#', '<module$1 active>', $custom_modules );
+			}
 
 			$content = str_replace( $hits[0], '<modules>' . $custom_modules . $original_modules_html . '</modules>', $content );
-			$content = str_replace( '<module', "\n<module", $content );
-			$content = str_replace( '</modules>', "\n</modules>\n", $content );
-			$content = str_replace( '</module>', "\n</module>", $content );
 
 		}
 
@@ -474,7 +476,12 @@ class MailsterTemplate {
 
 		for ( $i = 0; $i < $count; $i++ ) {
 			$label = $modules->item( $i )->getAttribute( 'label' );
-			$list[] = ( isset( $labels[ strtolower( $label ) ] ) ? $labels[ strtolower( $label ) ] : $label );
+			if ( isset( $labels[ strtolower( $label ) ] ) ) {
+				$label = $labels[ strtolower( $label ) ];
+			} elseif ( empty( $label ) ) {
+				$label = sprintf( __( 'Module %s', 'mailster' ), '#' . ($i + 1) );
+			}
+			$list[] = $label;
 		}
 
 		return $list;

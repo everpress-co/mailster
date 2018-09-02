@@ -1,10 +1,9 @@
 <?php
 
-global $wpdb, $current_user, $wp_post_statuses, $wp_roles, $locale;
+global $wpdb, $current_user, $wp_post_statuses, $wp_roles;
 
 $customfields = mailster()->get_custom_fields();
 $roles = $wp_roles->get_names();
-$translations = get_transient( '_mailster_translation' );
 
 ?>
 <form id="mailster-settings-form" method="post" action="options.php" autocomplete="off" enctype="multipart/form-data">
@@ -16,15 +15,9 @@ $translations = get_transient( '_mailster_translation' );
 <h1><?php esc_html_e( 'Newsletter Settings', 'mailster' ) ?></h1>
 <?php
 
-$active = count( mailster_get_active_campaigns() );
-
 $templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
-
-if ( $active ) {
-	echo '<div class="error inline"><p>' . sprintf( _n( '%d campaign is active. You should pause it before you change the settings!', '%d campaigns are active. You should pause them before you change the settings!', $active, 'mailster' ), $active ) . '</p></div>';
-}
 
 ?>
 <?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>
@@ -37,9 +30,10 @@ $sections = array(
 	'general' => esc_html__( 'General', 'mailster' ),
 	'template' => esc_html__( 'Template', 'mailster' ),
 	'frontend' => esc_html__( 'Front End', 'mailster' ),
+	'privacy' => esc_html__( 'Privacy', 'mailster' ),
 	'subscribers' => esc_html__( 'Subscribers', 'mailster' ),
 	'wordpress-users' => esc_html__( 'WordPress Users', 'mailster' ),
-	'texts' => esc_html__( 'Texts', 'mailster' ) . ( $translations ? ' <span class="update-translation-available wp-ui-highlight" title="' . esc_html__( 'update available', 'mailster' ) . '"><span>!</span></span>' : '' ),
+	'texts' => esc_html__( 'Text Strings', 'mailster' ),
 	'tags' => esc_html__( 'Tags', 'mailster' ),
 	'delivery' => esc_html__( 'Delivery', 'mailster' ),
 	'cron' => esc_html__( 'Cron', 'mailster' ),
@@ -86,10 +80,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
 		<?php do_action( 'mymail_section_tab' ); ?>
 		<?php do_action( 'mymail_section_tab_' . $id ); ?>
 
-		<?php if ( file_exists( MAILSTER_DIR . 'views/settings/' . $id . '.php' ) ) {
+		<?php if ( file_exists( MAILSTER_DIR . 'views/settings/' . $id . '.php' ) ) :
 			include MAILSTER_DIR . 'views/settings/' . $id . '.php';
-}
-?>
+		endif; ?>
 
 	</div>
 	<?php }?>
@@ -116,7 +109,7 @@ foreach ( $extra_sections as $id => $name ) {?>
 	<?php do_action( 'mailster_settings' ); ?>
 	<?php do_action( 'mymail_settings' ); ?>
 
-	<input type="text" class="hidden" name="mailster_options[profile_form]" value="<?php echo esc_attr( mailster_option( 'profile_form', 0 ) ); ?>">
+	<input type="text" class="hidden" name="mailster_options[profile_form]" value="<?php echo esc_attr( mailster_option( 'profile_form', 1 ) ); ?>">
 	<input type="text" class="hidden" name="mailster_options[ID]" value="<?php echo esc_attr( mailster_option( 'ID' ) ); ?>">
 
 	<br class="clearfix">

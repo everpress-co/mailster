@@ -1,4 +1,3 @@
-
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Sync WordPress Users', 'mailster' ) ?></th>
@@ -8,10 +7,7 @@
 		</td>
 	</tr>
 </table>
-<div id="sync_list" <?php if ( ! mailster_option( 'sync' ) ) {
-	echo 'style="display:none"';
-}
-?>>
+<div id="sync_list" <?php if ( ! mailster_option( 'sync' ) ) { echo 'style="display:none"'; } ?>>
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Meta Data List', 'mailster' ) ?><p class="description"><?php esc_html_e( 'select the custom field which should sync with a certain meta field', 'mailster' ) ?></p></th>
@@ -51,7 +47,6 @@
 	<tr valign="top">
 		<th scope="row"><p class="description"><?php esc_html_e( 'manually sync all existing users based on the above settings. (save required)', 'mailster' );?></p></th>
 		<td>
-
 		<p>
 		<button class="button sync-button" id="sync_subscribers_wp"><?php esc_html_e( 'Subscribers', 'mailster' ) ?> &#x21D2; <?php esc_html_e( 'WordPress Users', 'mailster' ) ?></button>
 		<button class="button sync-button" id="sync_wp_subscribers"><?php esc_html_e( 'WordPress Users', 'mailster' ) ?> &#x21D2; <?php esc_html_e( 'Subscribers', 'mailster' ) ?></button>
@@ -115,10 +110,7 @@
 		</td>
 	</tr>
 </table>
-<div id="users-register_comment_form" <?php if ( ! mailster_option( 'register_comment_form' ) ) {
-	echo ' style="display:none"';
-}
-?>>
+<div id="users-register_comment_form" <?php if ( ! mailster_option( 'register_comment_form' ) ) { echo ' style="display:none"'; } ?>>
 	<table class="form-table">
 		<tr valign="top">
 			<th scope="row"></th>
@@ -132,11 +124,8 @@
 			</p>
 			<br><label><input type="hidden" name="mailster_options[register_comment_form_confirmation]" value=""><input type="checkbox" name="mailster_options[register_comment_form_confirmation]" value="1" <?php checked( mailster_option( 'register_comment_form_confirmation' ) ) ?>> <?php esc_html_e( 'send confirmation (double-opt-in)', 'mailster' );?></label>
 			<p class="description"><?php esc_html_e( 'Subscribe them to these lists:', 'mailster' );?></p>
-			<?php
-
-			mailster( 'lists' )->print_it( null, null, 'mailster_options[register_comment_form_lists]', false, mailster_option( 'register_comment_form_lists' ) );
-
-?></td>
+			<?php mailster( 'lists' )->print_it( null, null, 'mailster_options[register_comment_form_lists]', false, mailster_option( 'register_comment_form_lists' ) ); ?>
+		</td>
 		</tr>
 	</table>
 </div>
@@ -148,30 +137,24 @@
 		</td>
 	</tr>
 </table>
-<div id="users-register_other" <?php if ( ! mailster_option( 'register_other' ) ) {
-	echo ' style="display:none"';
-}
-?>>
+<div id="users-register_other" <?php if ( ! mailster_option( 'register_other' ) ) { echo ' style="display:none"'; } ?>>
 	<table class="form-table">
 		<tr valign="top">
 			<th scope="row"></th>
 			<td>
 			<p><label><input type="hidden" name="mailster_options[register_other_confirmation]" value=""><input type="checkbox" name="mailster_options[register_other_confirmation]" value="1" <?php checked( mailster_option( 'register_other_confirmation' ) ) ?>> <?php esc_html_e( 'send confirmation (double-opt-in)', 'mailster' );?></label></p>
 			<p class="description"><?php esc_html_e( 'Subscribe them to these lists:', 'mailster' );?></p>
-			<?php
-
-			mailster( 'lists' )->print_it( null, null, 'mailster_options[register_other_lists]', false, mailster_option( 'register_other_lists' ) );
-
-?>
+			<?php mailster( 'lists' )->print_it( null, null, 'mailster_options[register_other_lists]', false, mailster_option( 'register_other_lists' ) ); ?>
 			<p class="description"><?php esc_html_e( 'only with these user roles:', 'mailster' );?></p>
-			<ul><?php
-
+			<ul>
+			<?php
 			$set = mailster_option( 'register_other_roles', array() );
-
 			foreach ( $roles as $role => $name ) {
 				echo '<li><input type="checkbox" name="mailster_options[register_other_roles][]" value="' . $role . '" ' . checked( in_array( $role, $set ), true, false ) . '> ' . $name . '</li>';
 
-			}?></ul></td>
+			}?>
+			</ul>
+			</td>
 		</tr>
 	</table>
 </div>

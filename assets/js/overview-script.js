@@ -4,7 +4,9 @@ jQuery(document).ready(function ($) {
 
 	if (typeof wp == 'undefined' || !wp.heartbeat) return;
 
-	var current;
+	var current = [],
+		scrolltimeout = false,
+		rows = $('tr.type-newsletter');
 
 	$('.column-status')
 		.on('click', 'a.live-action', function () {
@@ -16,19 +18,31 @@ jQuery(document).ready(function ($) {
 			var row = $(this).parent().parent().parent().addClass('loading');
 
 			$.get($(this).attr('href'), function () {
-				wp.heartbeat.connectNow();
+				setTimeout(function () {
+					wp.heartbeat.connectNow();
+				}, 500);
 			});
 			return false;
 
 		});
 
 	$(document)
+		.on('scroll', function () {
+			clearTimeout(scrolltimeout);
+			scrolltimeout = setTimeout(function () {
+				wp.heartbeat.connectNow();
+			}, 400);
+		})
 		.on('heartbeat-send', function (e, data) {
 
-			var ids = [];
+			var ids = [],
+				id;
 
-			$('tr.type-newsletter').each(function () {
-				ids.push(parseInt($(this).find('input').eq(0).val(), 10));
+			rows.each(function () {
+				id = parseInt($(this).find('input').eq(0).val(), 10);
+				current[id] = current[id] || {};
+				if (isElementInViewport(this))
+					ids.push(id);
 			});
 
 			data['mailster'] = {
@@ -44,47 +58,55 @@ jQuery(document).ready(function ($) {
 			if (data['mailster']) {
 
 				if (!current) {
-					current = data['mailster'];
+					current = $.extend(data['mailster'], current);
 					first = true;
 					//return;
 				}
 
-				var change = false;
+				var change = false,
+					i = 0;
 
-				$.each(data['mailster'], function (id, data) {
+				$.each(rows, function (id, row) {
 
-					var row = $('#post-' + id).removeClass('loading');
+					var rowdata;
+					row = $(row);
+					id = row.attr('id').replace('post-', '');
+					row.removeClass('loading');
 
-					if (!data) return;
+					if (!data['mailster'][id]) return;
+					rowdata = data['mailster'][id];
 
-					$.each(data, function (key, value) {
-						if (current && current[id][key] == value) return;
+					row.find('.column-status')[rowdata.cron ? 'removeClass' : 'addClass']('cron-issue');
+					row.find('.campaign-status').html(rowdata.cron ? '' : rowdata.status_title);
 
-						var statuschange = current && data.status != current[id].status;
+					$.each(rowdata, function (key, value) {
+						if (!first && current[id][key] == value) return;
+
+						var statuschange = current[id] && current[id].status && (rowdata.status != current[id].status || rowdata.is_active != current[id].is_active);
 
 						switch (key) {
 						case 'status':
 							if (statuschange) {
-								row.removeClass('status-' + current[id].status).addClass('status-' + data.status);
+								row.removeClass('status-' + current[id].status).addClass('status-' + rowdata.status);
 							}
 						case 'sent':
 						case 'total':
 						case 'sent_formatted':
 							break;
 						case 'column-status':
-							if (data.status == 'active' && !statuschange) {
+							if (rowdata.status == 'active' && !statuschange) {
 								var progress = row.find('.campaign-progress'),
-									p = (data.sent / data.total * 100);
+									p = (rowdata.sent / rowdata.total * 100);
 								progress.find('.bar').width(p + '%');
-								progress.find('span').eq(1).html(data.sent_formatted);
+								progress.find('span').eq(1).html(rowdata.sent_formatted);
 								progress.find('var').html(Math.round(p) + '%');
-								if (!first) break;
 							}
+							if (!statuschange) break;
 						default:
 							var el = row.find('.' + key);
 							if (!el.is(':visible')) break;
 							el.fadeTo(10, 0.01, function () {
-								el.html(value).fadeTo(200, 1);
+								el.html(value).delay(10 * (i++)).fadeTo(200, 1);
 							});
 
 						}
@@ -97,14 +119,27 @@ jQuery(document).ready(function ($) {
 				});
 
 				if (change) wp.heartbeat.interval('fast');
-
-
-				current = data['mailster'];
+				current = $.extend(current, data['mailster']);
 			}
 
 		});
 
 	wp.heartbeat.interval('fast');
 	if (wp.heartbeat.connectNow) wp.heartbeat.connectNow();
+
+	function isElementInViewport(el, offset) {
+
+		var rect = el.getBoundingClientRect();
+
+		if (!offset) offset = 0;
+
+		//only need top and bottom
+		return (
+			//rect.left + offset >= 0 &&
+			rect.top + offset >= 0 &&
+			//rect.right - offset <= (window.innerWidth || document.documentElement.clientWidth) && /*or $(window).width() */
+			rect.top - offset <= (window.innerHeight || document.documentElement.clientHeight) /*or $(window).height() */
+		);
+	}
 
 });

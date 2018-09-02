@@ -5,11 +5,10 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
 
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 ?>
-
 
 <?php if ( $editable ) : ?>
 <table class="form-table">
@@ -70,19 +69,22 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<tr><th><?php esc_html_e( 'Preheader', 'mailster' ) ?></th><td><?php echo $this->post_data['preheader'] ? $this->post_data['preheader'] : '<span class="description">' . __( 'no preheader', 'mailster' ) . '</span>' ?></td></tr>
 </table>
 
-
 <ul id="stats">
 	<li class="receivers">
 		<label class="recipients-limit"><span class="verybold hb-sent"><?php echo number_format_i18n( $sent ); ?></span> <?php echo ( 'autoresponder' == $post->post_status ) ? __( 'sent', 'mailster' ) : _nx( 'receiver', 'receivers', $sent, 'in pie chart', 'mailster' ) ?></label>
 	</li>
+	<?php if ( $this->post_data['track_opens'] ) : ?>
 	<li>
 		<div id="stats_open" class="piechart" data-percent="<?php echo $this->get_open_rate( $post->ID ) * 100 ?>"><span>0</span>%</div>
 		<label class="show-open"><span class="verybold hb-opens"><?php echo number_format_i18n( $opens ); ?></span> <?php echo _nx( 'opened', 'opens', $opens, 'in pie chart', 'mailster' ) ?></label>
 	</li>
+	<?php endif; ?>
+	<?php if ( $this->post_data['track_clicks'] ) : ?>
 	<li>
 		<div id="stats_click" class="piechart" data-percent="<?php echo $this->get_click_rate( $post->ID ) * 100 ?>"><span>0</span>%</div>
 		<label class="show-click"><span class="verybold hb-clicks"><?php echo number_format_i18n( $clicks ); ?></span> <?php echo _nx( 'click', 'clicks', $clicks, 'in pie chart', 'mailster' ) ?></label>
 	</li>
+	<?php endif; ?>
 	<li>
 		<div id="stats_unsubscribes" class="piechart" data-percent="<?php echo $this->get_unsubscribe_rate( $post->ID ) * 100 ?>"><span>0</span>%</div>
 		<label class="show-unsubscribes"><span class="verybold hb-unsubs"><?php echo number_format_i18n( $unsubscribes ); ?></span> <?php echo _nx( 'unsubscribe', 'unsubscribes', $unsubscribes, 'in pie chart', 'mailster' ) ?></label>
@@ -115,12 +117,14 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<?php endif; ?>
 	</td></tr>
 <?php endif; ?>
+	<?php if ( $this->post_data['track_clicks'] ) : ?>
 	<tr><th><?php esc_html_e( 'Total Clicks', 'mailster' ) ?></th><td class="nopadding"> <span class="big hb-clicks_total"><?php echo number_format_i18n( $clicks_total ) ?></span>
 	<?php if ( ! empty( $clicks_total ) ) : ?>
 		<a href="#" id="show_clicks" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ) ?></a>
 		<span class="spinner" id="clicks-ajax-loading"></span><div class="ajax-list" id="clicks-list"></div>
 	<?php endif; ?>
 	</td></tr>
+<?php endif; ?>
 	<?php
 	if ( $environment = $this->get_environment( $post->ID ) ) :
 		$types = array(

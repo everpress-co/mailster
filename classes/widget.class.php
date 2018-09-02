@@ -47,7 +47,7 @@ class Mailster_Signup_Widget extends WP_Widget {
 		<input class="widefat" id="<?php echo $this->get_field_id( 'text_after' ); ?>" name="<?php echo $this->get_field_name( 'text_after' ); ?>" type="text" value="<?php echo esc_attr( $text_after ); ?>" />
 		</p>
 		<p>
-		<label><input id="<?php echo $this->get_field_id( 'on_homepage' ); ?>" name="<?php echo $this->get_field_name( 'on_homepage' ); ?>" type="checkbox" value="1" <?php checked( $on_homepage );?> /> <?php esc_html_e( 'Show form on newsletter homepage as well', 'mailster' );?></label>
+		<label><input id="<?php echo $this->get_field_id( 'on_homepage' ); ?>" name="<?php echo $this->get_field_name( 'on_homepage' ); ?>" type="checkbox" value="1" <?php checked( $on_homepage );?> /> <?php esc_html_e( 'Show form on the newsletter homepage.', 'mailster' );?></label>
 		</p>
 		<?php
 	}
@@ -167,26 +167,19 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 
 		$r = new WP_Query( apply_filters( 'widget_newsletter_args', array( 'post_type' => 'newsletter', 'posts_per_page' => $number, 'no_found_rows' => true, 'post_status' => array( 'finished', 'active' ), 'ignore_sticky_posts' => true ) ) );
 		if ( $r->have_posts() ) :
-?>
-		<?php echo $before_widget; ?>
-		<?php if ( $title ) {
-			echo $before_title . $title . $after_title;
-}
-?>
+			echo $before_widget;
+			if ( $title ) {	echo $before_title . $title . $after_title; } ?>
 		<div class="mailster-widget mailster-widget-recent-newsletter">
 		<ul>
-		<?php while ( $r->have_posts() ) : $r->the_post();?>
-			<li><a href="<?php the_permalink() ?>" title="<?php echo esc_attr( get_the_title() ? get_the_title() : get_the_ID() ); ?>"><?php if ( get_the_title() ) {
-				the_title();
-} else {
-	the_ID();
-}
-		?></a></li>
+		<?php while ( $r->have_posts() ) : $r->the_post(); ?>
+			<li><a href="<?php the_permalink() ?>" title="<?php echo esc_attr( get_the_title() ? get_the_title() : get_the_ID() ); ?>">
+				<?php if ( get_the_title() ) {	the_title(); } else { the_ID(); } ?>
+			</a></li>
 			<?php endwhile;?>
 		</ul>
 		</div>
-		<?php echo $after_widget; ?>
-<?php
+		<?php echo $after_widget;
+
 		// Reset the global $the_post as this query will have stomped on it
 		wp_reset_postdata();
 

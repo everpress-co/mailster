@@ -25,8 +25,8 @@ $forms = count( mailster( 'forms' )->get_all( ) );
 	<dd><span class="version"><?php echo number_format_i18n( $subscribers ) . ' ' . _n( 'Subscriber', 'Subscribers', $subscribers, 'mailster' ) ?></span></dd>
 	<dd>
 		<a class="" href="edit.php?post_type=newsletter&page=mailster_subscribers"><?php esc_html_e( 'View', 'mailster' ) ?></a> |
-		<a class="" href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=import"><?php esc_html_e( 'Import', 'mailster' ) ?></a> |
-		<a class="" href="edit.php?post_type=newsletter&page=mailster_subscriber-manage&tab=export"><?php esc_html_e( 'Export', 'mailster' ) ?></a> |
+		<a class="" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=import"><?php esc_html_e( 'Import', 'mailster' ) ?></a> |
+		<a class="" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export"><?php esc_html_e( 'Export', 'mailster' ) ?></a> |
 		<a class="" href="edit.php?post_type=newsletter&page=mailster_subscribers&new"><?php esc_html_e( 'Add Subscriber', 'mailster' ) ?></a></dd>
 </dl>
 <dl class="mailster-icon mailster-icon-list">

@@ -17,47 +17,44 @@ $sent = $this->get_sent( $post->ID );
 <div>
 	<div id="misc-publishing-actions">
 
-		<div id="delete-action">
-			<?php
-			if ( current_user_can( 'delete_post', $post->ID ) ) :
-
-				if ( ! EMPTY_TRASH_DAYS ) {
-					$delete_text = __( 'Delete Permanently', 'mailster' );
-				} else {
-					$delete_text = __( 'Move to Trash', 'mailster' );
-				}
-
-				?>
-				<a class="submitdelete deletion" href="<?php echo get_delete_post_link( $post->ID ); ?>"><?php echo $delete_text; ?></a>
-			<?php endif; ?>
-			</div>
-
 			<span class="spinner ajax-loading" id="ajax-loading"></span>
-			<?php if ( ! in_array( $post->post_status, array( 'active', 'finished' ) ) && ! isset( $_GET['showstats'] ) ) : ?>
 
-			<p class="clear" id="password-field">
-				<label for="post_password"><input type="checkbox" name="use_pwd" id="use_pwd" value="1" <?php checked( ! ! $post->post_password ); ?>> <?php esc_html_e( 'Password', 'mailster' ) ?></label>
+			<p class="clear" id="webversion-field" title="<?php esc_attr_e( 'Offer a public web version for this campaign. If disabled this campaign will be marked as "private"', 'mailster' ) ?>">
+				<label for="use_webversion"><input type="checkbox" id="use_webversion" name="mailster_data[webversion]" value="1" <?php checked( $this->post_data['webversion'] ); ?>> <?php esc_html_e( 'Web version', 'mailster' ) ?></label>
+			</p>
+
+			<p class="clear" id="password-field" title="<?php esc_attr_e( 'Protect the web version with a password.', 'mailster' ) ?>">
+				<label for="use_pwd"><input type="checkbox" name="use_pwd" id="use_pwd" value="1" <?php checked( ! ! $post->post_password ); ?>> <?php esc_html_e( 'Password', 'mailster' ) ?></label>
 				<span id="password-wrap" <?php if ( ! $post->post_password ) { echo 'style="display:none;"'; } ?>>
 					<input type="hidden" name="post_password" value="">
 					<input type="text" class="widefat" name="post_password" id="post_password" value="<?php echo $post->post_password ?>" maxlength="20"><br>
-					<span class="description"><?php esc_html_e( 'protect the webversion with a password', 'mailster' ) ?></span>
+					<span class="description"><?php esc_html_e( 'Protect the web version with a password.', 'mailster' ) ?></span>
 				</span>
 			</p>
 
-			<?php elseif ( ! ! $post->post_password ) : ?>
-
-			<p class="description alignright"><?php esc_html_e( 'password protected', 'mailster' ); ?></p>
-			<?php endif; ?>
-
+			<div id="delete-action">
+				<?php if ( current_user_can( 'delete_post', $post->ID ) ) : ?>
+				<p class="clear" id="delete-field">
+					<a class="submitdelete deletion" href="<?php echo get_delete_post_link( $post->ID ); ?>">
+						<?php ( ! EMPTY_TRASH_DAYS ) ? esc_html_e( 'Delete Permanently', 'mailster' ) : esc_html_e( 'Move to Trash', 'mailster' ); ?>
+					</a>
+				</p>
+				<?php endif; ?>
+			</div>
 		</div>
 
 		<div id="major-publishing-actions">
 			<div id="publishing-action">
 			<?php if ( 'finished' == $post->post_status ) : ?>
 
-				<?php if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() == $post->post_author ) || current_user_can( 'duplicate_others_newsletters' ) ) : ?>
-				<a class="button duplicate" href="edit.php?post_type=newsletter&duplicate=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_nonce' ) ?>"><?php esc_html_e( 'Duplicate', 'mailster' ) ?></a>
+				<?php if ( $can_publish ) : ?>
+						<input name="save" type="submit" class="button-primary" id="publish" tabindex="15" accesskey="p" value="<?php esc_attr_e( 'Update', 'mailster' ) ?>" />
 				<?php endif; ?>
+
+				<?php if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() == $post->post_author ) || current_user_can( 'duplicate_others_newsletters' ) ) : ?>
+				<a class="button duplicate" href="edit.php?post_type=newsletter&duplicate=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_duplicate_nonce' ) ?>"><?php esc_html_e( 'Duplicate', 'mailster' ) ?></a>
+				<?php endif; ?>
+
 
 			<?php elseif ( ! in_array( $post->post_status, array( 'publish', 'future', 'private', 'paused' ) ) || 0 == $post->ID ) : ?>
 
@@ -66,14 +63,18 @@ $sent = $this->get_sent( $post->ID );
 					<?php if ( $can_publish && in_array( $post->post_status, array( 'paused', 'autoresponder' ) ) ) : ?>
 					<a class="button" href="post.php?post=<?php echo $post->ID ?>&action=edit"><?php esc_html_e( 'Edit', 'mailster' ) ?></a>
 					<?php else : ?>
-					<a class="button pause" href="edit.php?post_type=newsletter&pause=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_nonce' ) ?>"><?php esc_html_e( 'Pause', 'mailster' ) ?></a>
+					<a class="button pause" href="edit.php?post_type=newsletter&pause=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_pause_nonce' ) ?>"><?php esc_html_e( 'Pause', 'mailster' ) ?></a>
 					<?php endif; ?>
 
 				<?php elseif ( $can_publish ) : ?>
 
 					<?php if ( 'active' == $post->post_status ) : ?>
 
-						<a class="button pause" href="edit.php?post_type=newsletter&pause=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_nonce' ) ?>"><?php esc_html_e( 'Pause', 'mailster' ) ?></a>
+						<?php if ( $can_publish ) : ?>
+							<input name="save" type="submit" class="button-primary" id="publish" tabindex="15" accesskey="p" value="<?php esc_attr_e( 'Update', 'mailster' ) ?>" />
+						<?php endif; ?>
+
+						<a class="button pause" href="edit.php?post_type=newsletter&pause=<?php echo $post->ID ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_pause_nonce' ) ?>"><?php esc_html_e( 'Pause', 'mailster' ) ?></a>
 
 					<?php elseif ( 'queued' == $post->post_status ) : ?>
 

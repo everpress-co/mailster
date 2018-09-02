@@ -36,7 +36,7 @@ class MailsterDashboard {
 
 		if ( isset( $_GET['reset_license'] ) && wp_verify_nonce( $_GET['reset_license'], 'mailster_reset_license' ) && current_user_can( 'mailster_manage_licenses' ) ) {
 
-			$result = UpdateCenterPlugin::reset( MAILSTER_SLUG, get_option( 'mailster_license' ) );
+			$result = mailster()->reset_license();
 
 			if ( is_wp_error( $result ) ) {
 				mailster_notice( __( 'There was an Error while processing your request!', 'mailster' ) . '<br>' . $result->get_error_message(), 'error', true );
@@ -226,7 +226,10 @@ class MailsterDashboard {
 		wp_enqueue_style( 'mailster-dashboard-style', MAILSTER_URI . 'assets/css/dashboard-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		wp_localize_script( 'mailster-dashboard-script', 'mailsterdashboardL10n', apply_filters( 'mailster-dashboard-script_mailsterL10n', array(
+			'subscribers' => __( '%s Subscribers', 'mailster' ),
 			'reset_license' => __( 'Do you really like to reset your license for this site?', 'mailster' ),
+			'check_again' => __( 'Check Again', 'mailster' ),
+			'checking' => __( 'Checking...', 'mailster' ),
 		) ) );
 	}
 

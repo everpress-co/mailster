@@ -47,7 +47,7 @@ jQuery(document).ready(function ($) {
 			});
 
 			uploader.bind('BeforeUpload', function (up, file) {
-				progress.show().removeClass('finished error');
+				progress.removeClass('finished error hidden');
 				importstatus.html('uploading');
 			});
 
@@ -119,7 +119,7 @@ jQuery(document).ready(function ($) {
 
 
 
-			progress.show();
+			progress.removeClass('hidden');
 			progressbar.stop().width(0);
 			$('.step1').slideUp();
 			$('.step2-body').html('<br><br>').parent().show();
@@ -137,7 +137,7 @@ jQuery(document).ready(function ($) {
 				performance: performance
 			});
 
-			importstatus.html(sprintf(mailsterL10n.import_contacts, ''));
+			importstatus.html(mailsterL10n.prepare_import);
 
 			window.onbeforeunload = function () {
 				return mailsterL10n.onbeforeunloadimport;
@@ -205,19 +205,40 @@ jQuery(document).ready(function ($) {
 			return false;
 		});
 
-	$(".export-order").sortable({
-		containment: "parent"
+	$('select[name="outputformat"]').on('change', function () {
+		$('#csv-separator')[$(this).val() == 'csv' ? 'show' : 'hide']();
 	});
+
+	$(".export-order")
+		.sortable({
+			connectWith: '.export-order',
+			_placeholder: "ui-state-highlight",
+			containment: ".export-order-wrap",
+			receive: function (event, ui) {
+				ui.item.find('input').prop('checked', ui.item.closest('.export-order').is('.selected'));
+			},
+		})
+		.on('change', 'input', function () {
+			var _this = $(this);
+
+			_this.parent().appendTo(_this.is(':checked') ? $('.export-order.selected') : $('.export-order.unselected'))
+		});
+
+	$('.export-order-wrap')
+		.on('click', '.export-order-add', function () {
+			$(".export-order.unselected").find('li').appendTo('.export-order.selected').find('input').prop('checked', true);
+			return false;
+		})
+		.on('click', '.export-order-remove', function () {
+			$(".export-order.selected").find('li').appendTo('.export-order.unselected').find('input').prop('checked', false);
+			return false;
+		})
 
 	$('#export-subscribers').on('submit', function () {
 
 		var data = $(this).serialize();
 
-		progress.show().removeClass('finished error');
 
-		$('.step1').slideUp();
-		$('.step2').slideDown();
-		$('.step2-body').html(sprintf(mailsterL10n.write_file, '0.00 Kb'));
 		_ajax('export_contacts', {
 			data: data,
 		}, function (response) {
@@ -230,6 +251,10 @@ jQuery(document).ready(function ($) {
 
 				var limit = $('.performance').val();
 
+				$('.step2').slideDown();
+				$('.step2-body').html(sprintf(mailsterL10n.write_file, '0.00 Kb'));
+				progress.removeClass('finished error hidden');
+				progressbar.stop().width(0);
 				do_export(0, limit, response.count, data);
 
 			} else {
@@ -258,9 +283,8 @@ jQuery(document).ready(function ($) {
 
 			var data = $(this).serialize();
 
-			progress.show().removeClass('finished error');
+			progress.removeClass('finished error hidden');
 
-			$('.step1').slideUp();
 			progressbar.stop().animate({
 				'width': '99%'
 			}, 25000);
@@ -309,7 +333,7 @@ jQuery(document).ready(function ($) {
 		var t = new Date().getTime(),
 			percentage = (Math.min(1, (limit * offset) / count) * 100);
 
-		exportstatus.html(sprintf(mailsterL10n.prepare_download, ''));
+		exportstatus.html(sprintf(mailsterL10n.prepare_download, count, ''));
 
 		_ajax('do_export', {
 			limit: limit,
@@ -323,23 +347,23 @@ jQuery(document).ready(function ($) {
 
 				if (!finished) do_export(offset + 1, limit, count, data);
 
-				progressbar.stop().animate({
+				progressbar.animate({
 					'width': (percentage) + '%'
 				}, {
-					duration: finished ? 100 : (new Date().getTime() - t) * 0.9,
+					duration: 1000,
 					easing: 'swing',
 					queue: false,
 					step: function (percentage) {
-						exportstatus.html(sprintf(mailsterL10n.prepare_download, Math.ceil(percentage) + '%'));
+						exportstatus.html(sprintf(mailsterL10n.prepare_download, count, Math.ceil(percentage) + '%'));
 					},
 					complete: function () {
-						exportstatus.html(sprintf(mailsterL10n.prepare_download, Math.ceil(percentage) + '%'));
+						exportstatus.html(sprintf(mailsterL10n.prepare_download, count, Math.ceil(percentage) + '%'));
 						if (finished) {
 							window.onbeforeunload = null;
 							progress.addClass('finished');
-							$('.step2-body').html(mailsterL10n.download_finished);
+							$('.step2-body').html(mailsterL10n.export_finished);
 
-							exportstatus.html(mailsterL10n.downloading);
+							exportstatus.html(sprintf(mailsterL10n.downloading, count));
 							if (response.filename) setTimeout(function () {
 								document.location = response.filename
 							}, 1000);
@@ -352,6 +376,8 @@ jQuery(document).ready(function ($) {
 
 			} else {
 
+				progressbar.stop();
+				progress.addClass('error');
 				window.onbeforeunload = null;
 				exportstatus.html(mailsterL10n.error_export);
 				$('.step2-body').html(response.msg);
@@ -386,10 +412,11 @@ jQuery(document).ready(function ($) {
 			if (response.success) {
 
 				if (!finished) do_import(id + 1, options);
-				progressbar.stop().animate({
+
+				progressbar.animate({
 					'width': (percentage) + '%'
 				}, {
-					duration: finished ? 100 : (new Date().getTime() - t) * 0.9,
+					duration: 1000,
 					easing: 'swing',
 					queue: false,
 					step: function (percentage) {
@@ -423,7 +450,7 @@ jQuery(document).ready(function ($) {
 		_ajax('get_import_data', {
 			identifier: importidentifier
 		}, function (response) {
-			progress.hide().removeClass('finished');
+			progress.addClass('hidden');
 
 			$('.step1').slideUp();
 			$('.step2-body').html(response.html).parent().show();

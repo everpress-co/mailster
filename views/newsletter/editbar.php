@@ -115,7 +115,6 @@
 	$toolbar1 = (string) apply_filters( 'mymail_editor_toolbar1', apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat' ) );
 	$toolbar2 = (string) apply_filters( 'mymail_editor_toolbar2', apply_filters( 'mailster_editor_toolbar2', '' ) );
 	$toolbar3 = (string) apply_filters( 'mymail_editor_toolbar3', apply_filters( 'mailster_editor_toolbar3', '' ) );
-	$toolbar4 = (string) apply_filters( 'mymail_editor_toolbar4', apply_filters( 'mailster_editor_toolbar4', '' ) );
 
 	if ( ($toolbar2 || $toolbar3) && false === strpos( $toolbar1, 'wp_adv' ) ) {
 		$toolbar1 .= ',|,wp_adv';
@@ -146,11 +145,9 @@
 			'theme_advanced_buttons1' => $toolbar1,
 			'theme_advanced_buttons2' => $toolbar2,
 			'theme_advanced_buttons3' => $toolbar3,
-			'theme_advanced_buttons4' => $toolbar4,
 			'toolbar1' => $toolbar1,
 			'toolbar2' => $toolbar2,
 			'toolbar3' => $toolbar3,
-			'toolbar4' => $toolbar4,
 			'apply_source_formatting' => true,
 			'content_css' => MAILSTER_URI . 'assets/css/tinymce-style.css?v=' . MAILSTER_VERSION,
 		),
@@ -161,7 +158,8 @@
 		<div class="type img">
 			<div class="imagecontentwrap">
 				<div class="left">
-					<p><?php esc_html_e( 'Size', 'mailster' );?>: <input type="number" class="imagewidth">&times;<input type="number" class="imageheight">px
+					<p><input type="number" class="imagewidth">&times;<input type="number" class="imageheight">px
+					<label class="imagecroplabel" title="<?php esc_attr_e( 'Toggle Crop', 'mailster' ) ?>"><input type="checkbox" class="imagecrop"><span class="mailster-icon"></span></label>
 					</p>
 					<div class="imagewrap">
 					<img src="" alt="" class="imagepreview">
@@ -169,26 +167,26 @@
 				</div>
 				<div class="right">
 					<p>
-						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_html_e( 'search for images', 'mailster' );?>..." ></label>
+						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'search for images', 'mailster' );?>&hellip;" ></label>
 					</p>
 					<div class="imagelist">
 					</div>
 					<p>
-						<a class="button button-small add_image"><?php ( ( ! function_exists( 'wp_enqueue_media' ) ) ? esc_html_e( 'Upload', 'mailster' ) : esc_html_e( 'Media Manager', 'mailster' ) ) ?></a>
+						<a class="button button-small add_image"><?php esc_html_e( 'Media Manager', 'mailster' ) ?></a>
 						<a class="button button-small reload"><?php esc_html_e( 'Reload', 'mailster' ) ?></a>
 						<a class="button button-small add_image_url"><?php esc_html_e( 'Insert from URL', 'mailster' ) ?></a>
 					</p>
 				</div>
 			<br class="clear">
 			</div>
-			<p class="clearfix">
+			<div class="clearfix">
 				<div class="imageurl-popup">
-					<label class="block"><div class="left"><?php esc_html_e( 'Image URL', 'mailster' ) ?></div><div class="right"><input type="text" class="input imageurl" value="" placeholder="http://example.com/image.jpg"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Image URL', 'mailster' ) ?></div><div class="right"><input type="text" class="input imageurl" value="" placeholder="https://example.com/image.jpg"></div></label>
 				</div>
 					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ) ?></div><div class="right"><input type="text" class="input imagealt" value="" placeholder="<?php esc_html_e( 'image description', 'mailster' );?>"></div></label>
 					<label class="block"><div class="left"><?php esc_html_e( 'Link image to the this URL', 'mailster' ) ?></div><div class="right"><input type="text" class="input imagelink" value="" placeholder="<?php esc_html_e( 'insert URL', 'mailster' );?>"></div></label>
 					<input type="hidden" class="input orgimageurl" value="">
-			</p>
+			</div>
 			<br class="clear">
 		</div>
 
@@ -207,7 +205,7 @@
 					<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="content"> <?php esc_html_e( 'full content', 'mailster' );?> </label>
 				</p>
 				<p id="post_type_select" class="alignright">
-				<?php $pts = mailster( 'helper' )->get_post_types( array(), 'objects' ); ?>
+				<?php $pts = mailster( 'helper' )->get_post_types(true, 'objects' ); ?>
 				<?php foreach ( $pts as $pt => $data ) : ?>
 					<label><input type="checkbox" name="post_types[]" value="<?php echo esc_attr( $pt ) ?>" <?php checked( 'post' == $pt, true );?>> <?php echo esc_html( $data->labels->name ) ?> </label>
 				<?php endforeach; ?>
@@ -278,7 +276,7 @@
 				<div id="rss_input">
 					<p>
 						<?php esc_html_e( 'Enter feed URL', 'mailster' ) ?><br>
-						<label><input type="text" id="rss_url" class="widefat" placeholder="http://example.com/feed.xml" value=""></label>
+						<label><input type="text" id="rss_url" class="widefat" placeholder="https://example.com/feed.xml" value=""></label>
 					</p>
 					<ul id="recent_feeds">
 					<?php if ( $recent_feeds = get_option( 'mailster_recent_feeds' ) ) : ?>

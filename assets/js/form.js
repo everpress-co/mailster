@@ -21,7 +21,26 @@ jQuery(document).ready(function (jQuery) {
 
 		form.addClass('loading').find('.submit-button').prop('disabled', true);
 
-		jQuery.post(form.attr('action'), data, function (response) {
+		jQuery
+			.post(form.attr('action'), data, handlerResponse, 'JSON')
+			.fail(function (jqXHR, textStatus, errorThrown) {
+				if (textStatus == 'error' && !errorThrown) return;
+				var html = jqXHR.responseText,
+					response;
+
+				try {
+					response = jQuery.parseJSON(jqXHR.responseText);
+				} catch (err) {
+					response = {
+						html: 'There was an error while parsing the response: <code>' + jqXHR.responseText + '</code>',
+						success: false
+					}
+				}
+				handlerResponse(response);
+				if (console) console.error(jqXHR.responseText);
+			});
+
+		function handlerResponse(response) {
 
 			form.removeClass('loading has-errors').find('div.mailster-wrapper').removeClass('error');
 
@@ -35,29 +54,32 @@ jQuery(document).ready(function (jQuery) {
 
 			form.find('.submit-button').prop('disabled', false);
 
-			info.html(response.html).prependTo(form);
+			if (response.html) info.html(response.html);
+			if (jQuery(document).scrollTop() < form.offset().top) {
+				info.prependTo(form);
+			} else {
+				info.appendTo(form);
+			}
 
 			if (response.success) {
 
-				if (!form.is('.is-profile')) form
+				if (!form.is('.is-profile'))
+					form
 					.find('.mailster-form-fields').slideUp(100)
 					.find('.mailster-wrapper').find(':input').prop('disabled', true).filter('.input').val('');
 
-				(response.redirect) ?
-				location.href = response.redirect: info.show().addClass('success');
+				(response.redirect) ? location.href = response.redirect: info.show().addClass('success');
 
 			} else {
 
 				if (response.fields)
 					jQuery.each(response.fields, function (field) {
-
 						form.addClass('has-errors').find('.mailster-' + field + '-wrapper').addClass('error');
-
 					})
 				info.show().addClass('error');
 			}
 
-		}, 'JSON');
+		}
 
 
 	});
