@@ -42,7 +42,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 <?php endif; ?>
 
 	<meta name="twitter:card" content="<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_card', apply_filters( 'mailster_frontpage_twitter_card', 'summary' ) ) ); ?>"/>
-	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_username', apply_filters( 'mailster_frontpage_twitter_username', 'mailsterapp' ) ) ); ?>"/>
+	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_username', apply_filters( 'mailster_frontpage_twitter_username', 'mailster' ) ) ); ?>"/>
 	<meta name="twitter:title" content="<?php echo esc_attr( $title ) ?>" />
 	<meta name="twitter:description" content="<?php echo esc_attr( $description ); ?>"/>
 
