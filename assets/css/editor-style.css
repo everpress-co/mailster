@@ -223,7 +223,9 @@ single[label]:before,
 img[editable][label]:before,
 a[editable][label]:before,
 td[background][label]:before,
-th[background][label]:before {
+th[background][label]:before,
+module[rss]:after,
+module[rss][selected]:after {
 	content: attr(label);
 	display: block;
 	opacity: 0;
@@ -251,11 +253,25 @@ th[background][label]:before {
 [mailster-is-rtl] img[editable][label]:before,
 [mailster-is-rtl] a[editable][label]:before,
 [mailster-is-rtl] td[background][label]:before,
-[mailster-is-rtl] th[background][label]:before {
+[mailster-is-rtl] th[background][label]:before,
+[mailster-is-rtl] module[rss]:before,
+[mailster-is-rtl] module[rss][selected]:before,
+[mailster-is-rtl] multi[rss]:before,
+[mailster-is-rtl] single[rss]:before,
+[mailster-is-rtl] img[editable][rss]:before,
+[mailster-is-rtl] a[editable][rss]:before,
+[mailster-is-rtl] td[background][rss]:before,
+[mailster-is-rtl] th[background][rss]:before {
 	-webkit-transform: translate(-4px, -15px);
 	-ms-transform: translate(-4px, -15px);
 	transform: translate(-4px, -15px);
 	right: 0;
+}
+module[rss]:after,
+module[rss][selected]:after{
+	content:"RSS: " attr(rss);
+	top: 15px;
+	z-index: 100;
 }
 module[label]:hover:before,
 module[label][selected]:before,
@@ -264,7 +280,9 @@ single[label]:hover:before,
 img[editable][label]:hover:before,
 a[editable][label]:hover:before,
 td[background][label]:hover:before,
-th[background][label]:hover:before {
+th[background][label]:hover:before,
+module[rss]:hover:after,
+module[rss][selected]:after{
 	-webkit-transform: translate(-2px, -15px);
 	-ms-transform: translate(-2px, -15px);
 	transform: translate(-2px, -15px);
@@ -277,28 +295,34 @@ th[background][label]:hover:before {
 [mailster-is-rtl] img[editable][label]:hover:before,
 [mailster-is-rtl] a[editable][label]:hover:before,
 [mailster-is-rtl] td[background][label]:hover:before,
-[mailster-is-rtl] th[background][label]:hover:before {
+[mailster-is-rtl] th[background][label]:hover:before,
+[mailster-is-rtl] module[rss]:hover:after,
+[mailster-is-rtl] module[rss][selected]:after {
 	-webkit-transform: translate(2px, -15px);
 	-ms-transform: translate(2px, -15px);
 	transform: translate(2px, -15px);
 }
-module[label]:before {
+module[label]:before,
+module[rss]:after {
 	-webkit-transform: translate(-6px, -1px);
 	-ms-transform: translate(-6px, -1px);
 	transform: translate(-6px, -1px);
 }
-[mailster-is-rtl] module[label]:before {
+[mailster-is-rtl] module[label]:before,
+[mailster-is-rtl] module[label]:after {
 	-webkit-transform: translate(6px, -1px);
 	-ms-transform: translate(6px, -1px);
 	transform: translate(6px, -1px);
 }
-module[label]:hover:before, module[label][selected]:before {
+module[label]:hover:before, module[label][selected]:before,
+module[rss]:hover:after, module[rss][selected]:after {
 	opacity: 0.9;
 	-webkit-transform: translate(-1px, -1px);
 	-ms-transform: translate(-1px, -1px);
 	transform: translate(-1px, -1px);
 }
-[mailster-is-rtl] module[label]:hover:before, [mailster-is-rtl] module[label][selected]:before {
+[mailster-is-rtl] module[label]:hover:before, [mailster-is-rtl] module[label][selected]:before,
+[mailster-is-rtl] module[rss]:hover:after, [mailster-is-rtl] module[rss][selected]:after {
 	-webkit-transform: translate(1px, -1px);
 	-ms-transform: translate(1px, -1px);
 	transform: translate(1px, -1px);

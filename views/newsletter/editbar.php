@@ -205,7 +205,7 @@
 					<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="content"> <?php esc_html_e( 'full content', 'mailster' );?> </label>
 				</p>
 				<p id="post_type_select" class="alignright">
-				<?php $pts = mailster( 'helper' )->get_post_types(true, 'objects' ); ?>
+				<?php $pts = mailster( 'helper' )->get_post_types( true, 'objects' ); ?>
 				<?php foreach ( $pts as $pt => $data ) : ?>
 					<label><input type="checkbox" name="post_types[]" value="<?php echo esc_attr( $pt ) ?>" <?php checked( 'post' == $pt, true );?>> <?php echo esc_html( $data->labels->name ) ?> </label>
 				<?php endforeach; ?>

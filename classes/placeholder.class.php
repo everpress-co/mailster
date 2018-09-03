@@ -7,6 +7,7 @@ class MailsterPlaceholder {
 	private $keeptag;
 	private $keeptags;
 	private $placeholder = array();
+	private $rss = array();
 	private $campaignID = null;
 	private $subscriberID = null;
 	private $subscriberHash = null;
@@ -292,6 +293,7 @@ class MailsterPlaceholder {
 			}
 		}
 
+		$this->rss();
 		$this->remove_modules();
 		$this->conditions();
 
@@ -394,6 +396,76 @@ class MailsterPlaceholder {
 
 		return '<a href="' . $_url . '" class="social">' . $content . '</a>' . "\n";
 
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	private function rss() {
+		if ( preg_match_all( '#<module[^>]*?rss="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
+
+			foreach ( $modules[0] as $i => $html ) {
+
+				$search = $modules[0][ $i ];
+				$feed_url = $modules[1][ $i ];
+				// $post_or_offset = $modules[4][ $i ];
+				$id = base_convert( $feed_url , 10, 36 );
+
+				if ( ! isset( $rss[ $id ] ) ) {
+					error_log( $id );
+					$this->rss[ 'mailster_get_last_post_do_rss_' . $id ] = $feed_url;
+					add_filter( 'mailster_get_last_post_do_rss_' . $id, array( &$this, 'rss_replace' ), 10, 6 );
+				}
+
+				$replace = str_replace( '{rss', '{do_rss_' . $id, $search );
+
+				$this->content = str_replace( $search, $replace, $this->content );
+			}
+		}
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function rss_replace( $return, $args, $offset, $term_ids, $campaign_id, $subscriber_id ) {
+
+		$current = current_filter();
+
+		if ( ! isset( $this->rss[ $current ] ) ) {
+			return $return;
+		}
+
+		$feed_url = $this->rss[ $current ];
+		$rss = fetch_feed( $feed_url );
+
+		if ( is_wp_error( $rss ) ) {
+			return $return;
+		}
+
+		$item = $rss->get_item( $offset );
+
+		$return = new WP_Post((object) array(
+			'post_type' => 'mailster_rss',
+			'post_title' => $item->get_title(),
+			'post_author' => $item->get_author(),
+			'post_permalink' => $item->get_permalink(),
+			'post_excerpt' => $item->get_description(),
+			'post_content' => $item->get_content(),
+			'post_permalink' => $item->get_permalink(),
+			'post_date' => $item->get_date( 'Y-m-d H:i:s' ),
+			'post_date_gmt' => $item->get_gmdate( 'Y-m-d H:i:s' ),
+			'post_modified' => $item->get_updated_date( 'Y-m-d H:i:s' ),
+			'post_modified_gmt' => $item->get_updated_gmdate( 'Y-m-d H:i:s' ),
+		));
+
+		return $return;
 	}
 
 
@@ -642,7 +714,7 @@ class MailsterPlaceholder {
 									continue;
 								}
 
-							$post = get_post( $post_id );
+								$post = get_post( $post_id );
 
 							}
 						} else {
