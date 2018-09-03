@@ -2750,8 +2750,6 @@ class MailsterCampaigns {
 			'copyright' => '',
 		) );
 
-		$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
-
 		$content = $placeholder->get_content();
 		$content = preg_replace( '#<script[^>]*?>.*?</script>#si', '', $content );
 		$content = preg_replace( '#<style[^>]*?>.*?</style>#si', '', $content );
@@ -3791,7 +3789,6 @@ class MailsterCampaigns {
 
 			$placeholder->add_defaults( $campaign->ID );
 
-			$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
 			$content = $placeholder->get_content( false );
 			$content = mailster( 'helper' )->prepare_content( $content );
 

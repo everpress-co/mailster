@@ -169,7 +169,6 @@ jQuery(document).ready(function ($) {
 
 		if (!_disabled) {
 
-			//wp.heartbeat.interval('fast');
 
 			_doc
 				.on('heartbeat-send', function (e, data) {
@@ -185,35 +184,6 @@ jQuery(document).ready(function ($) {
 					_title.val(data.post_title);
 					_trigger('refresh');
 					return false;
-				})
-				.on('load', '.mailster-preview-iframe', function () {
-
-					var $this = $(this),
-						contents = $this.contents(),
-						body = contents.find('body');
-
-					if ($this.is('.mobile')) {
-						var style = contents.find('style').text(),
-							hasqueries = /@media/.test(style);
-
-						if (hasqueries) {
-							var zoom = 0.85;
-							body.css({
-								'zoom': zoom,
-								'-moz-transform': 'scale(' + zoom + ')',
-								'-moz-transform-origin': '0 0',
-								'transform': 'scale(' + zoom + ')',
-								'transform-origin': '0 0',
-							});
-						}
-					}
-
-					body.on('click', 'a', function () {
-						var href = $(this).attr('href');
-						if (href && href != '#') window.open(href);
-						return false;
-					});
-
 				})
 				.on('change', '.dynamic_embed_options_taxonomy', function () {
 					var $this = $(this),
@@ -550,6 +520,18 @@ jQuery(document).ready(function ($) {
 				clear: function (event, ui) {}
 			});
 
+			$('.mailster-preview-iframe').on('load', function () {
+				var $this = $(this),
+					contents = $this.contents(),
+					body = contents.find('body');
+
+				body.on('click', 'a', function () {
+					var href = $(this).attr('href');
+					if (href && href != '#') window.open(href);
+					return false;
+				});
+
+			});
 			if (typeof jQuery.datepicker == 'object') {
 				$('#mailster_delivery')
 					.find('input.datepicker').datepicker({
