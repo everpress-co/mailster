@@ -667,8 +667,6 @@ class MailsterFrontpage {
 					$placeholder->add_defaults( get_the_ID() );
 					$placeholder->add_custom( get_the_ID() );
 
-					$placeholder->share_service( get_permalink( get_the_ID() ), get_the_title() );
-
 					$content = $placeholder->get_content();
 					$search = array( '<a ',  '@media only screen and (max-device-width:' );
 					$replace = array( '<a target="_top" ', '@media only screen and (max-width:' );

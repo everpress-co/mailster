@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.12 =
 
 * fixed: height attribute of image tags were not always respected.
+* improved: tag replacement handling
 
 = Version 2.3.11 =
 

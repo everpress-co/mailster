@@ -274,8 +274,6 @@ class MailsterAjax {
 				// ) );
 			}
 
-			$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
-
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
 			$html = $placeholder->get_content( false );
 			$html = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style' . $suffix . '.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
@@ -407,7 +405,6 @@ class MailsterAjax {
 			'emailaddress' => $current_user->user_email,
 		) );
 
-		$placeholder->share_service( '{webversionlink}', $subject );
 		$content = $placeholder->get_content();
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
@@ -643,7 +640,6 @@ class MailsterAjax {
 					'emailaddress' => $to,
 				) );
 
-				$placeholder->share_service( $campaign_permalink, $subject );
 				$content = $placeholder->get_content();
 				$content = mailster( 'helper' )->prepare_content( $content );
 
