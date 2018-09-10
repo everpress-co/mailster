@@ -1094,9 +1094,19 @@ class MailsterActions {
 
 		if ( false === ( $clicked_links = mailster_cache_get( 'clicked_links_' . $campaign_id ) ) ) {
 
-			$sql = "SELECT c.link, c.i, COUNT(*) AS clicks, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->postmeta} AS b ON b.meta_key = '_mailster_parent_id' AND b.post_id = a.campaign_id LEFT JOIN {$wpdb->prefix}mailster_links AS c ON c.ID = a.link_id WHERE (a.campaign_id = %d OR b.meta_value = %d) AND a.type = 3 GROUP BY a.campaign_id, a.link_id ORDER BY c.i ASC, total DESC, clicks DESC";
+			if ( $parent_id = get_post_meta( $campaign_id, '_mailster_parent_id', true ) ) {
+				$sql = "SELECT c.link, c.i, COUNT(*) AS clicks, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->postmeta} AS b ON b.meta_key = '_mailster_parent_id' AND b.post_id = a.campaign_id LEFT JOIN {$wpdb->prefix}mailster_links AS c ON c.ID = a.link_id WHERE (a.campaign_id = %d OR b.meta_value = %d) AND a.type = 3 GROUP BY a.campaign_id, a.link_id ORDER BY c.i ASC, total DESC, clicks DESC";
 
-			$result = $wpdb->get_results( $wpdb->prepare( $sql, $campaign_id, $campaign_id ) );
+				$sql = $wpdb->prepare( $sql, $campaign_id, $campaign_id );
+
+			} else {
+				$sql = "SELECT c.link, c.i, COUNT(*) AS clicks, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_links AS c ON c.ID = a.link_id WHERE a.campaign_id = %d AND a.type = 3 GROUP BY a.campaign_id, a.link_id ORDER BY c.i ASC, total DESC, clicks DESC";
+
+				$sql = $wpdb->prepare( $sql, $campaign_id );
+
+			}
+
+			$result = $wpdb->get_results( $sql );
 
 			$clicked_links = array();
 
