@@ -2772,16 +2772,17 @@ class MailsterCampaigns {
 	 * @param unknown $id           (optional)
 	 * @param unknown $unsubscribes (optional)
 	 * @param unknown $bounces      (optional)
+	 * @param unknown $deleted      (optional)
 	 * @return unknown
 	 */
-	public function get_totals( $id = null, $unsubscribes = true, $bounces = false ) {
+	public function get_totals( $id = null, $unsubscribes = true, $bounces = false, $deleted = true ) {
 
 		$campaign = $this->get( $id );
 		if ( ! $campaign ) {
 			return 0;
 		}
 
-		if ( in_array( $campaign->post_status, array( 'finished' ) ) ) {
+		if ( 'finished' == $campaign->post_status ) {
 			return $this->get_sent( $id, false );
 		}
 		$subscribers_count = $this->get_subscribers( $id );
@@ -2792,6 +2793,10 @@ class MailsterCampaigns {
 
 		if ( $bounces ) {
 			$subscribers_count += $this->get_bounces( $id );
+		}
+
+		if ( $deleted ) {
+			$subscribers_count += $this->get_deleted( $id );
 		}
 
 		return $subscribers_count;
@@ -2830,6 +2835,19 @@ class MailsterCampaigns {
 	public function get_sent( $id = null, $total = false ) {
 
 		return $this->get_action( 'sent', $id, $total );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $id    (optional)
+	 * @param unknown $total (optional)
+	 * @return unknown
+	 */
+	public function get_deleted( $id = null, $total = false ) {
+
+		return $this->get_action( 'sent_deleted', $id, $total );
 
 	}
 
@@ -3343,6 +3361,7 @@ class MailsterCampaigns {
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 		$subscribers_count = count( $subscribers );
+		$deleted = $this->get_deleted( $campaign_id );
 
 		$unopen = in_array( 'unopen', $parts );
 		$opens = in_array( 'opens', $parts );
@@ -3373,6 +3392,9 @@ class MailsterCampaigns {
 
 		if ( ! $offset ) {
 			$return .= '<table class="wp-list-table widefat recipients-list"><tbody>';
+			if ( $deleted ) {
+				$return .= '<tr><td>&nbsp;</td><td colspan="8"><em>' . esc_html__( 'Deleted Subscribers are not listed.', 'mailster' ) . '</em></td></tr>';
+			}
 		}
 
 		foreach ( $subscribers as $i => $subscriber ) {
@@ -3586,6 +3608,7 @@ class MailsterCampaigns {
 				$meta = $this->meta( $id );
 				$totals = $this->get_totals( $id );
 				$sent = $this->get_sent( $id );
+				$deleted = $this->get_deleted( $id );
 				$opens = $this->get_opens( $id );
 				$clicks = $this->get_clicks( $id );
 				$clicks_total = $this->get_clicks( $id, true );
@@ -3637,6 +3660,7 @@ class MailsterCampaigns {
 					'status' => $post->post_status,
 					'total' => $post->post_type == 'autoresponder' ? $sent : $totals,
 					'sent' => $sent,
+					'deleted' => $deleted,
 					'opens' => $opens,
 					'clicks' => $clicks,
 					'clicks_total' => $clicks_total,
@@ -3648,6 +3672,7 @@ class MailsterCampaigns {
 					'bounce_rate' => $bounce_rate,
 					'total_f' => number_format_i18n( $totals ),
 					'sent_f' => number_format_i18n( $sent ),
+					'deleted_f' => number_format_i18n( $deleted ),
 					'opens_f' => number_format_i18n( $opens ),
 					'clicks_f' => number_format_i18n( $clicks ),
 					'clicks_total_f' => number_format_i18n( $clicks_total ),

@@ -1479,7 +1479,7 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_subscriber_meta (
-                subscriber_id bigint(20) unsigned NOT NULL,
+                subscriber_id bigint(20) unsigned NULL DEFAULT NULL,
                 campaign_id bigint(20) unsigned NOT NULL,
                 meta_key varchar(191) NOT NULL,
                 meta_value longtext NOT NULL,
