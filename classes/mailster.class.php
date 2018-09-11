@@ -717,16 +717,17 @@ class Mailster {
 	 * @param unknown $try           (optional)
 	 * @return unknown
 	 */
-	public function get_random_post( $identifier = 0, $post_type = 'post', $term_ids = array(), $args = array(), $campaign_id = 0, $subscriber_id = null, $try = 0 ) {
+	public function get_random_post( $identifier = 0, $post_type = 'post', $term_ids = array(), $args = array(), $campaign_id = 0, $subscriber_id = null, $try = 1 ) {
 
 		// filters only on first run.
-		if ( ! $try ) {
+		if ( 1 == $try ) {
 			$args = apply_filters( 'mailster_get_random_post_args', $args, $identifier, $post_type, $term_ids, $campaign_id, $subscriber_id );
+		// try max 10 times to prevent infinity loop
 		} elseif ( $try >= 10 ) {
 			return false;
 		}
 
-		// get a seed like to bring some randomness.
+		// get a seed to bring some randomness.
 		$seed = apply_filters( 'mailster_get_random_post_seed', 0 );
 
 		$args['orderby'] = 'RAND(' . ((int) $seed . (int) $campaign_id . (int) $identifier) . ')';
