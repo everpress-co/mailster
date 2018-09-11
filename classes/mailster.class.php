@@ -714,33 +714,35 @@ class Mailster {
 	 * @param unknown $args          (optional)
 	 * @param unknown $campaign_id   (optional)
 	 * @param unknown $subscriber_id (optional)
+	 * @param unknown $try           (optional)
 	 * @return unknown
 	 */
-	public function get_random_post( $identifier = 0, $post_type = 'post', $term_ids = array(), $args = array(), $campaign_id = null, $subscriber_id = null, $try = 0 ) {
+	public function get_random_post( $identifier = 0, $post_type = 'post', $term_ids = array(), $args = array(), $campaign_id = 0, $subscriber_id = null, $try = 0 ) {
 
-		if ( $try >= 10 ) {
+		// filters only on first run.
+		if ( ! $try ) {
+			$args = apply_filters( 'mailster_get_random_post_args', $args, $identifier, $post_type, $term_ids, $campaign_id, $subscriber_id );
+		} elseif ( $try >= 10 ) {
 			return false;
 		}
 
+		// get a seed like to bring some randomness.
 		$seed = apply_filters( 'mailster_get_random_post_seed', 0 );
 
-		$rand = (int) $seed . (int) $campaign_id . (int) $identifier;
+		$args['orderby'] = 'RAND(' . ((int) $seed . (int) $campaign_id . (int) $identifier) . ')';
 
-		$args = apply_filters( 'mailster_get_random_post_args', $args, $identifier, $post_type, $term_ids, $campaign_id, $subscriber_id );
-
-		if ( ! isset( $args['orderby'] ) ) {
-			$args['orderby'] = 'RAND(' . $rand . ')';
-		}
-
+		// add an identifier to prevent results from being cached.
 		$key = md5( serialize( array( $identifier, $post_type, $term_ids, $args, $campaign_id ) ) );
 		$args['mailster_identifier'] = $key;
 
+		// check if there's a cached version.
 		$posts = mailster_cache_get( 'get_random_post' );
 
 		if ( $posts && isset( $posts[ $campaign_id ] ) && isset( $posts[ $campaign_id ][ $key ] ) ) {
 			return $posts[ $campaign_id ][ $key ];
 		}
 
+		// get the actual post.
 		$post = $this->get_last_post( 0, $post_type, $term_ids, $args, $campaign_id, $subscriber_id );
 
 		if ( ! isset( $posts[ $campaign_id ] ) ) {
@@ -750,6 +752,7 @@ class Mailster {
 		}
 
 		if ( ($pos = array_search( $post->ID, $stored )) !== false ) {
+			unset( $args['mailster_identifier'] );
 			return $this->get_random_post( ++$identifier, $post_type, $term_ids, $args, $campaign_id, $subscriber_id, ++$try );
 		} else {
 			$posts[ $campaign_id ][ $key ] = $post;
@@ -778,7 +781,6 @@ class Mailster {
 		global $wpdb;
 
 		$args = apply_filters( 'mailster_pre_get_last_post_args', $args, $offset, $post_type, $term_ids, $campaign_id, $subscriber_id );
-
 		$key = md5( serialize( array( $offset, $post_type, $term_ids, $args, $campaign_id, $subscriber_id ) ) );
 
 		$posts = mailster_cache_get( 'get_last_post' );
@@ -798,7 +800,7 @@ class Mailster {
 				'offset' => $offset,
 				'update_post_meta_cache' => false,
 				'no_found_rows' => true,
-				'cache_results' => false,
+				// 'cache_results' => false,
 			);
 
 			if ( ! isset( $args['post__not_in'] ) ) {
