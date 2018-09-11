@@ -167,7 +167,7 @@
 				</div>
 				<div class="right">
 					<p>
-						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'search for images', 'mailster' );?>&hellip;" ></label>
+						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'Search for Images', 'mailster' );?>&hellip;" ></label>
 					</p>
 					<div class="imagelist">
 					</div>
@@ -193,16 +193,16 @@
 		<div class="type auto">
 
 			<div id="embedoption-bar" class="nav-tab-wrapper hide-if-no-js">
-				<a class="nav-tab nav-tab-active" href="#static_embed_options" data-type="static"><?php esc_html_e( 'static', 'mailster' );?></a>
-				<a class="nav-tab" href="#dynamic_embed_options" data-type="dynamic"><?php esc_html_e( 'dynamic', 'mailster' );?></a>
+				<a class="nav-tab nav-tab-active" href="#static_embed_options" data-type="static"><?php esc_html_e( 'Static', 'mailster' );?></a>
+				<a class="nav-tab" href="#dynamic_embed_options" data-type="dynamic"><?php esc_html_e( 'Dynamic', 'mailster' );?></a>
 				<a class="nav-tab" href="#rss_embed_options" data-type="rss"><?php esc_html_e( 'RSS', 'mailster' );?></a>
 			</div>
 
 			<div id="static_embed_options" class="tab">
 				<p class="editbarinfo"><?php esc_html_e( 'Select a post', 'mailster' ) ?></p>
 				<p class="alignleft">
-					<label title="<?php esc_html_e( 'use the excerpt if exists otherwise use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="excerpt" checked> <?php esc_html_e( 'excerpt', 'mailster' );?> </label>
-					<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="content"> <?php esc_html_e( 'full content', 'mailster' );?> </label>
+					<label title="<?php esc_html_e( 'use the excerpt if exists otherwise use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="excerpt" checked> <?php esc_html_e( 'Excerpt', 'mailster' );?> </label>
+					<label title="<?php esc_html_e( 'use the content', 'mailster' );?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="content"> <?php esc_html_e( 'Full Content', 'mailster' );?> </label>
 				</p>
 				<p id="post_type_select" class="alignright">
 				<?php $pts = mailster( 'helper' )->get_post_types( true, 'objects' ); ?>
@@ -211,7 +211,7 @@
 				<?php endforeach; ?>
 				</p>
 				<p>
-					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'search for posts', 'mailster' );?>..." ></label>
+					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'Search for Posts', 'mailster' );?>&hellip;" ></label>
 				</p>
 				<div class="postlist">
 				</div>
@@ -252,11 +252,14 @@
 
 						$post_types .= '<option value="' . $pt . '">' . $data->labels->singular_name . '</option>';
 					}
+					$post_types .= '<option value="rss">' . __( 'RSS Feed', 'mailster' ) . '</option>';
 					$post_types .= '</select>';
 
 					printf( _x( 'Insert %1$s of %2$s %3$s', 'Insert [excerpt] of [latest] [post]', 'mailster' ), $content, $relative, $post_types );
 				?>
-
+				<span class="dynamic-rss">
+					<?php esc_html_e( 'from', 'mailster' ) ?> <label class="dynamic-rss-url-label"><input type="url" id="dynamic_rss_url" class="widefat" placeholder="https://example.com/feed.xml" value=""></label>
+				</span>
 				</p>
 				<div class="right">
 					<div class="current-preview">

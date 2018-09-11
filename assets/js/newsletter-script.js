@@ -1629,6 +1629,7 @@ jQuery(document).ready(function ($) {
 				.on('click', '.imagepreview', toggleImgZoom)
 				.on('click', 'a.nav-tab', openTab)
 				.on('change', 'select.check-for-posts', checkForPosts)
+				.on('change', '#dynamic_rss_url', checkForPosts)
 				.on('keyup change', '#rss_url', loadPosts)
 				.on('keyup change', '#post-search', searchPost)
 				.on('keyup change', '#image-search', searchPost)
@@ -1702,11 +1703,13 @@ jQuery(document).ready(function ($) {
 
 			$('#dynamic_embed_options_post_type').on('change', function () {
 
-				var cats = $('#dynamic_embed_options_cats');
+				var cats = $('#dynamic_embed_options_cats'),
+					val = $(this).val();
 				cats.find('select').prop('disabled', true);
+				bar.find('.dynamic-rss')[val == 'rss' ? 'show' : 'hide']();
 				loader();
 				_ajax('get_post_term_dropdown', {
-					posttype: $(this).val()
+					posttype: val
 				}, function (response) {
 					loader(false);
 					if (response.success) {
@@ -1887,6 +1890,7 @@ jQuery(document).ready(function ($) {
 					content = bar.find('#dynamic_embed_options_content').val(),
 					relative = bar.find('#dynamic_embed_options_relative').val(),
 					taxonomies = bar.find('.dynamic_embed_options_taxonomy_wrap'),
+					rss_url = $('#dynamic_rss_url').val(),
 					extra = [];
 
 				$.each(taxonomies, function (i) {
@@ -1906,7 +1910,8 @@ jQuery(document).ready(function ($) {
 					relative: relative,
 					extra: extra,
 					modulename: current.name,
-					expect: current.elements.expects
+					expect: current.elements.expects,
+					rss_url: rss_url
 				}, function (response) {
 					loader(false);
 					if (response.success) {
@@ -2166,23 +2171,30 @@ jQuery(document).ready(function ($) {
 
 				var insertmethod = $('#embedoption-bar').find('.nav-tab-active').data('type');
 
+				current.element.removeAttr('data-tag data-rss').removeData('tag').removeData('data-rss');
+
 				if ('dynamic' == insertmethod) {
 
-					var contenttype = bar.find('#dynamic_embed_options_content').val();
+					var contenttype = bar.find('#dynamic_embed_options_content').val(),
+						post_type = bar.find('#dynamic_embed_options_post_type').val(),
+						rss_url = $('#dynamic_rss_url').val();
 
 					currenttext.content = currenttext[contenttype];
 
 					current.element.attr('data-tag', currenttext.tag).data('tag', currenttext.tag);
+					if ('rss' == post_type)
+						current.element.attr('data-rss', rss_url).data('rss', rss_url);
 
 				} else if ('rss' == insertmethod) {
 
-					var contenttype = $('.embed_options_content_rss:checked').val();
-					current.element.removeAttr('data-tag').removeData('tag').attr('data-rss', $('#rss_url').val());
+					var contenttype = $('.embed_options_content_rss:checked').val(),
+						rss_url = $('#rss_url').val();
+
+					current.element.attr('data-rss', rss_url).data('rss', rss_url);
 
 				} else {
 
 					var contenttype = $('.embed_options_content:checked').val();
-					current.element.removeAttr('data-tag').removeData('tag');
 
 				}
 
@@ -2759,6 +2771,8 @@ jQuery(document).ready(function ($) {
 				bar.find('div.type').hide();
 
 				bar.find('div.' + type).show();
+
+				if (module.data('rss')) $('#dynamic_rss_url').val(module.data('rss'));
 
 				//center the bar
 				var baroffset = _doc.scrollTop() + (_win.height() / 2) - _container.offset().top - (bar.height() / 2);

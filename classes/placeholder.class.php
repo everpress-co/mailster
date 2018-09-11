@@ -405,22 +405,23 @@ class MailsterPlaceholder {
 	 * @return unknown
 	 */
 	private function rss() {
-		if ( preg_match_all( '#<module[^>]*?rss="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
+
+		if ( preg_match_all( '#<module[^>]*?data-rss="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
 
 			foreach ( $modules[0] as $i => $html ) {
 
 				$search = $modules[0][ $i ];
 				$feed_url = $modules[1][ $i ];
 				// $post_or_offset = $modules[4][ $i ];
-				$id = base_convert( $feed_url , 10, 36 );
+				$id = md5( $feed_url );
 
 				if ( ! isset( $rss[ $id ] ) ) {
-					error_log( $id );
 					$this->rss[ 'mailster_get_last_post_do_rss_' . $id ] = $feed_url;
 					add_filter( 'mailster_get_last_post_do_rss_' . $id, array( &$this, 'rss_replace' ), 10, 6 );
 				}
 
 				$replace = str_replace( '{rss', '{do_rss_' . $id, $search );
+				$replace = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=do_rss_' . $id, $replace );
 
 				$this->content = str_replace( $search, $replace, $this->content );
 			}
@@ -443,29 +444,8 @@ class MailsterPlaceholder {
 		}
 
 		$feed_url = $this->rss[ $current ];
-		$rss = fetch_feed( $feed_url );
+		return mailster( 'helper' )->feed( $feed_url, $offset );
 
-		if ( is_wp_error( $rss ) ) {
-			return $return;
-		}
-
-		$item = $rss->get_item( $offset );
-
-		$return = new WP_Post((object) array(
-			'post_type' => 'mailster_rss',
-			'post_title' => $item->get_title(),
-			'post_author' => $item->get_author(),
-			'post_permalink' => $item->get_permalink(),
-			'post_excerpt' => $item->get_description(),
-			'post_content' => $item->get_content(),
-			'post_permalink' => $item->get_permalink(),
-			'post_date' => $item->get_date( 'Y-m-d H:i:s' ),
-			'post_date_gmt' => $item->get_gmdate( 'Y-m-d H:i:s' ),
-			'post_modified' => $item->get_updated_date( 'Y-m-d H:i:s' ),
-			'post_modified_gmt' => $item->get_updated_gmdate( 'Y-m-d H:i:s' ),
-		));
-
-		return $return;
 	}
 
 
@@ -476,7 +456,7 @@ class MailsterPlaceholder {
 	 */
 	private function remove_modules() {
 
-		if ( preg_match_all( '#<module[^>]*?data-tag="{(([a-z0-9_-]+]):(-)?([\d]+)(;([0-9;,]+))?)\}"(.*?)".*?</module>#ms', $this->content, $modules ) ) {
+		if ( preg_match_all( '#<module[^>]*?data-tag="{(([a-z0-9_-]+):(-)?([\d]+)(;([0-9;,]+))?)\}"(.*?)".*?</module>#ms', $this->content, $modules ) ) {
 
 			foreach ( $modules[0] as $i => $html ) {
 
@@ -968,6 +948,7 @@ class MailsterPlaceholder {
 	public function get_replace( $post, $what ) {
 
 		$extra = null;
+		$author = null;
 		$post_type = $post->post_type;
 		$timeformat = mailster( 'helper' )->timeformat();
 		$dateformat = mailster( 'helper' )->dateformat();
@@ -998,7 +979,7 @@ class MailsterPlaceholder {
 			} else {
 				$category = 'category';
 			}
-			$categories = get_the_term_list( $post->ID, $category, '', ', ' );
+			$categories = isset( $post->post_category ) ? $post->post_category : get_the_term_list( $post->ID, $category, '', ', ' );
 
 			if ( is_wp_error( $categories ) ) {
 				return null;
@@ -1006,6 +987,9 @@ class MailsterPlaceholder {
 
 			if ( 'category_strip' != $what ) {
 				$what = 'category';
+			}
+			if ( is_array( $categories ) ) {
+				$categories = implode( ', ', $categories );
 			}
 			$extra = $categories;
 		}
@@ -1029,6 +1013,10 @@ class MailsterPlaceholder {
 				break;
 			case 'author':
 			case 'author_strip':
+				if ( ! $author ) {
+					$replace_to = $post->post_author;
+					break;
+				}
 				if ( $author->data->user_url && $what != 'author_strip' ) {
 					$replace_to = '<a href="' . $author->data->user_url . '">' . $author->data->display_name . '</a>';
 				} else {
@@ -1036,16 +1024,16 @@ class MailsterPlaceholder {
 				}
 				break;
 			case 'author_name':
-				$replace_to = $author->data->display_name;
+				$replace_to = $author ? $author->data->display_name : $post->post_author;
 				break;
 			case 'author_nicename':
-				$replace_to = $author->data->user_nicename;
+				$replace_to = $author ? $author->data->user_nicename : $post->post_author;
 				break;
 			case 'author_email':
-				$replace_to = $author->data->user_email;
+				$replace_to = $author ? $author->data->user_email : '';
 				break;
 			case 'author_url':
-				$replace_to = $author->data->user_url;
+				$replace_to = $author ? $author->data->user_url : '';
 				break;
 			case 'date':
 			case 'date_gmt':

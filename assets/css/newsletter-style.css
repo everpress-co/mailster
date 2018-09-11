@@ -1024,6 +1024,10 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	overflow: hidden;
 	white-space: nowrap;
 }
+.dynamic-rss-url-label{
+	display: inline-block;
+	width: 270px;
+}
 .dynamic_embed_options_taxonomy_container{
 	border: 1px solid #DFDFDF;
 	border-radius: 3px;

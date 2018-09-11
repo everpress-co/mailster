@@ -1550,15 +1550,31 @@ class MailsterAjax {
 		$offset = $relative + 1;
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
+		$rss_url = isset( $_POST['rss_url'] ) ? $_POST['rss_url'] : null;
 		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 		$args = array();
 
-		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, $args, $campaign_id );
-		$is_post = ! ! $post;
+		// special case for RSS.
+		if ( 'rss' == $post_type ) {
+			$args['mailster_rss_url'] = $rss_url;
+		}
 
-		$return['title'] = $is_post
-			? '<a href="post.php?post=' . $post->ID . '&action=edit" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : __( 'no title', 'mailster' ) ) . '</a>'
-			: __( 'no match for your selection!', 'mailster' ) . ' <a href="post-new.php?post_type=' . $post_type . '" class="external">' . __( 'create a new one', 'mailster' ) . '</a>?';
+		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, $args, $campaign_id );
+
+		if ( is_wp_error( $post ) ) {
+			$return['title'] = $post->get_error_message();
+		} elseif ( is_a( $post, 'WP_Post' ) ) {
+			if ( $rss_url ) {
+				$return['title'] = '<a href="' . $post->post_permalink . '" class="external">#' . absint( $offset -1 ) . ' &ndash; ' . ( $post->post_title ? $post->post_title : __( 'no title', 'mailster' ) ) . '</a>';
+			} else {
+				$return['title'] = '<a href="' . admin_url( 'post.php?post=' . $post->ID . '&action=edit' ) . '" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : __( 'no title', 'mailster' ) ) . '</a>';
+			}
+		} else {
+			$return['title'] = __( 'no match for your selection!', 'mailster' );
+			if ( ! $rss_url ) {
+				$return['title'] .= ' <a href="post-new.php?post_type=' . $post_type . '" class="external">' . __( 'create a new one', 'mailster' ) . '</a>?';
+			}
+		}
 
 		$options = $relative . ( ! empty( $term_ids ) ? ';' . implode( ';', $term_ids ) : '' );
 

@@ -1413,6 +1413,110 @@ class MailsterHelper {
 
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $url
+	 * @param unknown $item      (optional)
+	 * @param unknown $max_items (optional)
+	 * @return unknown
+	 */
+	public function feed( $url, $item = null, $max_items = 100 ) {
+
+		if ( ! class_exists( 'SimplePie', false ) ) {
+			require_once( ABSPATH . WPINC . '/class-simplepie.php' );
+		}
+
+		require_once( ABSPATH . WPINC . '/class-wp-feed-cache.php' );
+		require_once( ABSPATH . WPINC . '/class-wp-feed-cache-transient.php' );
+		require_once( ABSPATH . WPINC . '/class-wp-simplepie-file.php' );
+		require_once( ABSPATH . WPINC . '/class-wp-simplepie-sanitize-kses.php' );
+
+		$feed = new SimplePie();
+
+		// $feed->set_sanitize_class( 'WP_SimplePie_Sanitize_KSES' );
+		// $feed->sanitize = new WP_SimplePie_Sanitize_KSES();
+		//
+		$feed->set_cache_class( 'WP_Feed_Cache' );
+		$feed->set_file_class( 'WP_SimplePie_File' );
+
+		$feed->set_feed_url( $url );
+		$feed->set_autodiscovery_level( SIMPLEPIE_LOCATOR_ALL );
+
+		$feed->set_cache_duration( 360 );
+		// Prepare the tags to strip from the feed
+	    $tags_to_strip = apply_filters( 'mailster_feed_tags_to_strip', $feed->strip_htmltags );
+	    // Strip them
+	    $feed->strip_htmltags( $tags_to_strip );
+
+	    $attributes_to_strip = apply_filters( 'mailster_feed_attributes_to_strip', $feed->strip_attributes );
+		$feed->strip_attributes( $attributes_to_strip );
+
+		$feed->init();
+		$feed->handle_content_type();
+		$feed->set_output_encoding( get_option( 'blog_charset' ) );
+
+		if ( $feed->error() ) {
+			return new WP_Error( 'simplepie-error', $feed->error() );
+		}
+
+		if ( is_wp_error( $feed ) ) {
+			return $feed;
+		}
+
+		$max_items = $feed->get_item_quantity( $max_items );
+
+		if ( $item >= $max_items ) {
+			return new WP_Error( 'feed_short', sprintf( 'The feed only contains %d items', $max_items ) );
+		}
+
+		$rss_items = $feed->get_items( 0, $max_items );
+
+		$posts = array();
+
+		foreach ( $rss_items as $id => $rss_item ) {
+
+			$content = $rss_item->get_content();
+			preg_match_all( '/<img[^>]*src="(.*?(?:\.png|\.jpg|\.gif))"[^>]*>/i', $content, $images );
+			$hasthumb = false;
+			if ( ! empty( $images[0] ) ) {
+				$hasthumb = $images[1][0];
+			} else {
+				$hasthumb = $feed->get_image_url();
+			}
+			$author = $rss_item->get_author();
+			$category = $rss_item->get_categories();
+			$category = wp_list_pluck( (array) $category, 'term' );
+
+			$post = new WP_Post((object) array(
+				'post_type' => 'mailster_rss',
+				'post_title' => $rss_item->get_title(),
+				'post_image' => $hasthumb,
+				'post_author' => $author->name,
+				'post_author_link' => $author->link,
+				'post_author_email' => $author->email,
+				'post_permalink' => $rss_item->get_permalink(),
+				'post_excerpt' => $rss_item->get_description(),
+				'post_content' => $rss_item->get_content(),
+				'post_category' => $category,
+				'post_permalink' => $rss_item->get_permalink(),
+				'post_date' => $rss_item->get_date( 'Y-m-d H:i:s' ),
+				'post_date_gmt' => $rss_item->get_gmdate( 'Y-m-d H:i:s' ),
+				'post_modified' => $rss_item->get_updated_date( 'Y-m-d H:i:s' ),
+				'post_modified_gmt' => $rss_item->get_updated_gmdate( 'Y-m-d H:i:s' ),
+			));
+
+			$posts[ $id ] = $post;
+		}
+
+		if ( ! is_null( $item ) ) {
+			return isset( $posts[ $item ] ) ? $posts[ $item ] : new WP_Error( 'no_item', sprintf( 'Feed item #%d does not exist', $item ) );
+		}
+
+		return $posts;
+
+	}
+
 
 	/**
 	 *
