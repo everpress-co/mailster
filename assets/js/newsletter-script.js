@@ -1259,7 +1259,7 @@ jQuery(document).ready(function ($) {
 
 				});
 
-			wp.heartbeat.interval('fast');
+			if (typeof wp != 'undefined' && wp.heartbeat) wp.heartbeat.interval('fast');
 
 		}
 
