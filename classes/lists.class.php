@@ -1094,7 +1094,9 @@ class MailsterLists {
 				echo '</select>';
 			}
 		} else {
-			echo '<ul><li>' . __( 'No Lists found!', 'mailster' ) . '</li><li><a href="edit.php?post_type=newsletter&page=mailster_lists&new">' . __( 'Create a List now', 'mailster' ) . '</a></li></ul>';
+			if ( is_admin() ) {
+				echo '<ul><li>' . __( 'No Lists found!', 'mailster' ) . '</li><li><a href="edit.php?post_type=newsletter&page=mailster_lists&new">' . __( 'Create a List now', 'mailster' ) . '</a></li></ul>';
+			}
 		}
 
 	}

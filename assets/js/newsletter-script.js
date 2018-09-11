@@ -169,7 +169,6 @@ jQuery(document).ready(function ($) {
 
 		if (!_disabled) {
 
-			//wp.heartbeat.interval('fast');
 
 			_doc
 				.on('heartbeat-send', function (e, data) {
@@ -185,35 +184,6 @@ jQuery(document).ready(function ($) {
 					_title.val(data.post_title);
 					_trigger('refresh');
 					return false;
-				})
-				.on('load', '.mailster-preview-iframe', function () {
-
-					var $this = $(this),
-						contents = $this.contents(),
-						body = contents.find('body');
-
-					if ($this.is('.mobile')) {
-						var style = contents.find('style').text(),
-							hasqueries = /@media/.test(style);
-
-						if (hasqueries) {
-							var zoom = 0.85;
-							body.css({
-								'zoom': zoom,
-								'-moz-transform': 'scale(' + zoom + ')',
-								'-moz-transform-origin': '0 0',
-								'transform': 'scale(' + zoom + ')',
-								'transform-origin': '0 0',
-							});
-						}
-					}
-
-					body.on('click', 'a', function () {
-						var href = $(this).attr('href');
-						if (href && href != '#') window.open(href);
-						return false;
-					});
-
 				})
 				.on('change', '.dynamic_embed_options_taxonomy', function () {
 					var $this = $(this),
@@ -550,6 +520,18 @@ jQuery(document).ready(function ($) {
 				clear: function (event, ui) {}
 			});
 
+			$('.mailster-preview-iframe').on('load', function () {
+				var $this = $(this),
+					contents = $this.contents(),
+					body = contents.find('body');
+
+				body.on('click', 'a', function () {
+					var href = $(this).attr('href');
+					if (href && href != '#') window.open(href);
+					return false;
+				});
+
+			});
 			if (typeof jQuery.datepicker == 'object') {
 				$('#mailster_delivery')
 					.find('input.datepicker').datepicker({
@@ -1277,7 +1259,7 @@ jQuery(document).ready(function ($) {
 
 				});
 
-			wp.heartbeat.interval('fast');
+			if (typeof wp != 'undefined' && wp.heartbeat) wp.heartbeat.interval('fast');
 
 		}
 
@@ -2010,9 +1992,12 @@ jQuery(document).ready(function ($) {
 						current.element.attr({
 							'src': currentimage.src,
 							'width': Math.round(imagewidth.val()),
-							'height': Math.round(imageheight.val()),
+							//'height': Math.round(imageheight.val()),
 							'alt': currentimage.name
 						});
+						if (current.element.attr('height')) {
+							current.element.attr('height', Math.round(imageheight.val()))
+						}
 						if (imagecrop.is(':checked')) {
 							current.element.attr({
 								'data-crop': true,
@@ -2056,9 +2041,12 @@ jQuery(document).ready(function ($) {
 
 								current.element.attr({
 									'width': Math.round(imagewidth.val()),
-									'height': Math.round(imageheight.val()),
+									//'height': Math.round(imageheight.val()),
 									'alt': currentimage.name
 								})
+								if (current.element.attr('height')) {
+									current.element.attr('height', Math.round(imageheight.val()))
+								}
 								if (imagecrop.is(':checked')) {
 									current.element.attr({
 										'data-crop': true,
@@ -2290,10 +2278,14 @@ jQuery(document).ready(function ($) {
 													'data-id': currenttext.image[i].id,
 													'src': response.image.url,
 													'width': Math.round(response.image.width / f),
-													'height': Math.round(response.image.height / f),
+													//'height': Math.round(response.image.height / f),
 													'alt': currenttext.alt || currenttext.title[i]
 												})
 												.data('id', currenttext.image[i].id);
+
+											if (imgelement.attr('height')) {
+												imgelement.attr('height', Math.round(response.image.height / f));
+											}
 
 											if (imgelement.parent().is('a')) {
 												imgelement.unwrap();
@@ -2332,8 +2324,9 @@ jQuery(document).ready(function ($) {
 									height = crop ? imgelement.height() : null;
 
 								if ('img' == imgelement.prop('tagName').toLowerCase()) {
+
 									imgelement
-										.removeAttr('height')
+									//.removeAttr('height')
 										.removeAttr('data-id')
 										.attr({
 											'src': dynamicImage(currenttext.image[i], width, height, crop),
@@ -2341,6 +2334,9 @@ jQuery(document).ready(function ($) {
 											'alt': currenttext.alt || currenttext.title[i]
 										})
 										.removeData('id');
+									if (imgelement.attr('height')) {
+										imgelement.attr('height', height || Math.round(width / 1.6));
+									}
 								} else {
 									var orgurl = imgelement.attr('background');
 									imgelement
@@ -3142,16 +3138,20 @@ jQuery(document).ready(function ($) {
 		}
 
 		function up() {
-			var module = $(this).parent().parent().parent();
+			var module = $(this).parent().parent().parent(),
+				pos = module.offset();
 			module.insertBefore(module.prev('module'));
+			_jump(module.offset().top - pos.top, true);
 			_trigger('refresh');
 			_trigger('save');
 			return false;
 		}
 
 		function down() {
-			var module = $(this).parent().parent().parent();
+			var module = $(this).parent().parent().parent(),
+				pos = module.offset()
 			module.insertAfter(module.next('module'));
+			_jump(module.offset().top - pos.top, true);
 			_trigger('refresh');
 			_trigger('save');
 			return false;
@@ -3436,6 +3436,15 @@ jQuery(document).ready(function ($) {
 			});
 	}
 
+	function _jump(val, rel) {
+		val = Math.round(val);
+		if (rel) {
+			window.scrollBy(0, val);
+		} else {
+			window.scrollTo(0, val);
+		}
+	}
+
 	$(window)
 
 	.on('Mailster:refresh', function () {
@@ -3528,6 +3537,7 @@ jQuery(document).ready(function ($) {
 				if ($(this).is(':checked')) lists.push(id);
 			});
 
+			data.id = campaign_id;
 			data.lists = lists;
 			data.ignore_lists = $('#ignore_lists').is(':checked');
 

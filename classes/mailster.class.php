@@ -151,11 +151,6 @@ class Mailster {
 	 */
 	public function template( $slug = null, $file = null ) {
 
-		static $template;
-		if ( $template ) {
-			return $template;
-		}
-
 		if ( is_null( $slug ) ) {
 			$slug = mailster_option( 'default_template', 'mailster' );
 		}
@@ -792,61 +787,69 @@ class Mailster {
 			return $posts[ $key ];
 		}
 
-		$defaults = array(
-			'posts_per_page' => 1,
-			'numberposts' => 1,
-			'post_type' => $post_type,
-			'offset' => $offset,
-			'update_post_meta_cache' => false,
-			'no_found_rows' => true,
-			// 'cache_results' => true,
-		);
+		$post = apply_filters( 'mailster_get_last_post_' . $post_type, null, $args, $offset, $term_ids, $campaign_id, $subscriber_id );
 
-		if ( ! isset( $args['post__not_in'] ) ) {
-			$exclude = mailster_cache_get( 'get_last_post_ignore' );
+		if ( is_null( $post ) ) {
 
-			if ( ! $exclude ) {
-				$exclude = $wpdb->get_col( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'mailster_ignore' AND meta_value != '0'" );
-			}
+			$defaults = array(
+				'posts_per_page' => 1,
+				'numberposts' => 1,
+				'post_type' => $post_type,
+				'offset' => $offset,
+				'update_post_meta_cache' => false,
+				'no_found_rows' => true,
+				'cache_results' => false,
+			);
 
-			if ( ! empty( $exclude ) ) {
-				$args['post__not_in'] = (array) $exclude;
-			}
-		}
-		$args = wp_parse_args( $args, $defaults );
+			if ( ! isset( $args['post__not_in'] ) ) {
+				$exclude = mailster_cache_get( 'get_last_post_ignore' );
 
-		mailster_cache_set( 'get_last_post_ignore', $exclude );
-
-		if ( ! empty( $term_ids ) ) {
-
-			$tax_query = array();
-
-			$taxonomies = get_object_taxonomies( $post_type, 'names' );
-
-			for ( $i = 0; $i < count( $term_ids ); $i++ ) {
-				if ( empty( $term_ids[ $i ] ) ) {
-					continue;
+				if ( ! $exclude ) {
+					$exclude = $wpdb->get_col( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'mailster_ignore' AND meta_value != '0'" );
 				}
 
-				$tax_query[] = array(
-					'taxonomy' => $taxonomies[ $i ],
-					'field' => 'id',
-					'terms' => explode( ',', $term_ids[ $i ] ),
-				);
+				if ( ! empty( $exclude ) ) {
+					$args['post__not_in'] = (array) $exclude;
+				}
+			}
+			$args = wp_parse_args( $args, $defaults );
+
+			mailster_cache_set( 'get_last_post_ignore', $exclude );
+
+			if ( ! empty( $term_ids ) ) {
+
+				$tax_query = array();
+
+				$taxonomies = get_object_taxonomies( $post_type, 'names' );
+
+				for ( $i = 0; $i < count( $term_ids ); $i++ ) {
+					if ( empty( $term_ids[ $i ] ) ) {
+						continue;
+					}
+
+					$tax_query[] = array(
+						'taxonomy' => $taxonomies[ $i ],
+						'field' => 'id',
+						'terms' => explode( ',', $term_ids[ $i ] ),
+					);
+				}
+
+				if ( ! empty( $tax_query ) ) {
+					$tax_query['relation'] = 'AND';
+					$args = wp_parse_args( $args, array( 'tax_query' => $tax_query ) );
+				}
 			}
 
-			if ( ! empty( $tax_query ) ) {
-				$tax_query['relation'] = 'AND';
-				$args = wp_parse_args( $args, array( 'tax_query' => $tax_query ) );
-			}
+			$args = apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids, $campaign_id, $subscriber_id );
+
+			$posts = get_posts( $args );
+
+		} else {
+			$posts = array( $post );
 		}
 
-		$args = apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids, $campaign_id, $subscriber_id );
-
-		$post = get_posts( $args );
-
-		if ( $post ) {
-			$post = $post[0];
+		if ( $posts ) {
+			$post = $posts[0];
 
 			if ( ! $post->post_excerpt ) {
 				if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {

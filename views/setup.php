@@ -476,7 +476,7 @@ $utm = array(
 				  js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0&appId=1656804244418051&autoLogAppEvents=1';
 				  fjs.parentNode.insertBefore(js, fjs);
 				}(document, 'script', 'facebook-jssdk'));</script>
-				<div class="fb-like" data-href="https://www.facebook.com/mailsterplugin/" data-layout="button" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
+				<div class="fb-like" data-href="https://www.facebook.com/mailster/" data-layout="button" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
 				</div>
 			</div>
 
