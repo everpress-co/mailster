@@ -2037,8 +2037,13 @@ label.weekday input{
 	border-color: #DFDFDF;
 }
 #mailster_conditions_render{
-	min-height: 18px;
 	position: relative;
+}
+#mailster_conditions_render .mailster-conditions-render:empty{
+    border: 1px solid #ccc;
+    border-radius: 2px;
+	padding: 10px 0;
+	min-height: 18px;
 }
 #mailster_conditions_render .mailster-conditions-render:empty:before, .mailster-conditions .mailster-conditions-wrap:empty:before{
 	content: attr(data-emptytext);
