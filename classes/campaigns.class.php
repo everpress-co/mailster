@@ -2246,6 +2246,8 @@ class MailsterCampaigns {
 		$lists = $this->get_lists( $campaign->ID, true );
 		$meta = $this->meta( $campaign->ID );
 
+		$relative_to_absolute = 'rss' != $meta['autoresponder']['post_type'];
+
 		$meta['autoresponder'] = $meta['sent'] = $meta['errors'] = $meta['finished'] = null;
 
 		$meta['active'] = true;
@@ -2281,16 +2283,16 @@ class MailsterCampaigns {
 		$campaign->post_title = $placeholder->get_content( false );
 
 		$placeholder->set_content( $campaign->post_content );
-		$campaign->post_content = $placeholder->get_content( false, array(), true );
+		$campaign->post_content = $placeholder->get_content( false, array(), $relative_to_absolute );
 
 		$placeholder->set_content( $meta['subject'] );
-		$meta['subject'] = $placeholder->get_content( false, array(), true );
+		$meta['subject'] = $placeholder->get_content( false, array(), $relative_to_absolute );
 
 		$placeholder->set_content( $meta['preheader'] );
-		$meta['preheader'] = $placeholder->get_content( false, array(), true );
+		$meta['preheader'] = $placeholder->get_content( false, array(), $relative_to_absolute );
 
 		$placeholder->set_content( $meta['from_name'] );
-		$meta['from_name'] = $placeholder->get_content( false, array(), true );
+		$meta['from_name'] = $placeholder->get_content( false, array(), $relative_to_absolute );
 
 		remove_action( 'save_post', array( &$this, 'save_campaign' ), 10, 3 );
 		kses_remove_filters();

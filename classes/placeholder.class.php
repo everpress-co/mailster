@@ -8,6 +8,7 @@ class MailsterPlaceholder {
 	private $keeptags;
 	private $placeholder = array();
 	private $rss = array();
+	private $rss_timestamp = null;
 	private $campaignID = null;
 	private $subscriberID = null;
 	private $subscriberHash = null;
@@ -139,6 +140,15 @@ class MailsterPlaceholder {
 	 */
 	public function get_content( $removeunused = true, $placeholders = array(), $relative_to_absolute = false ) {
 		return $this->do_placeholder( $removeunused, $placeholders, $relative_to_absolute );
+	}
+
+	public function has_content( $check_for_modules = false ) {
+		$html = $this->get_content( false );
+		if ( $check_for_modules ) {
+			return preg_match( '/<\/module>/', $html );
+		}
+
+		return ! empty( trim( $html ) );
 	}
 
 
@@ -404,26 +414,57 @@ class MailsterPlaceholder {
 	 *
 	 * @return unknown
 	 */
+	public function rss_since( $timestamp = null ) {
+		if ( is_null( $timestamp ) ) {
+			$timestamp = time();
+		}
+
+		$this->rss_timestamp = $timestamp;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
 	private function rss() {
 
 		if ( preg_match_all( '#<module[^>]*?data-rss="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
 
+			$first_id = null;
 			foreach ( $modules[0] as $i => $html ) {
 
 				$search = $modules[0][ $i ];
 				$feed_url = $modules[1][ $i ];
-				// $post_or_offset = $modules[4][ $i ];
-				$id = md5( $feed_url );
 
-				if ( ! isset( $rss[ $id ] ) ) {
-					$this->rss[ 'mailster_get_last_post_do_rss_' . $id ] = $feed_url;
-					add_filter( 'mailster_get_last_post_do_rss_' . $id, array( &$this, 'rss_replace' ), 10, 6 );
+				// check if there's a new feed since.
+				if ( $this->rss_timestamp && ! mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url ) ) {
+					$replace = '';
+				} else {
+
+					$id = md5( $feed_url );
+
+					if ( ! isset( $this->rss[ $id ] ) ) {
+						$this->rss[ 'mailster_get_last_post_mailster_rss_' . $id ] = $feed_url;
+						add_filter( 'mailster_get_last_post_mailster_rss_' . $id, array( &$this, 'rss_replace' ), 5, 6 );
+						if ( $i == 0 ) {
+							$first_id = $id;
+						}
+					}
+
+					$replace = str_replace( '{rss', '{mailster_rss_' . $id, $search );
+					$replace = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=mailster_rss_' . $id, $replace );
+
 				}
 
-				$replace = str_replace( '{rss', '{do_rss_' . $id, $search );
-				$replace = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=do_rss_' . $id, $replace );
-
 				$this->content = str_replace( $search, $replace, $this->content );
+			}
+
+			// replace all tags outside the scope
+			if ( $first_id ) {
+				$this->content = str_replace( '{rss', '{mailster_rss_' . $first_id, $this->content );
+				$this->content = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=mailster_rss_' . $first_id, $this->content );
 			}
 		}
 
@@ -714,15 +755,33 @@ class MailsterPlaceholder {
 						if ( ! $relative_to_absolute ) {
 
 							if ( ! empty( $post ) ) {
-								$thumb_id = get_post_thumbnail_id( $post->ID );
 
-								$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
+								if ( ! empty( $post->ID ) ) {
+									$thumb_id = get_post_thumbnail_id( $post->ID );
+
+									$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
+								}
 
 								if ( empty( $org_src ) && isset( $post->post_image ) ) {
 									if ( is_numeric( $post->post_image ) ) {
 										$org_src = wp_get_attachment_image_src( $post->post_image, 'full' );
+									} elseif ( empty( $post->post_image ) ) {
+
+										// get image from sites meta tags
+										$meta_tags = mailster( 'helper' )->get_meta_tags_from_url( $post->post_permalink );
+										$src = false;
+										if ( isset( $meta_tags['thumbnail'] ) ) {
+											 $src = $meta_tags['thumbnail'];
+										} elseif ( isset( $meta_tags['og:image'] ) ) {
+											$src = $meta_tags['og:image'];
+										} elseif ( isset( $meta_tags['twitter:image'] ) ) {
+											$src = $meta_tags['twitter:image'];
+										}
+										if ( $src ) {
+											$org_src = array( $src, 0, 0, false );
+										}
 									} else {
-										$org_src = array( $post->post_image,0,0,false );
+										$org_src = array( $post->post_image, 0, 0, false );
 									}
 								}
 							}
@@ -1000,12 +1059,10 @@ class MailsterPlaceholder {
 				break;
 			case 'link':
 			case 'permalink':
-				$replace_to = get_permalink( $post->ID );
-				if ( ! $replace_to ) {
-					$replace_to = $post->post_link;
-				}
-				if ( ! $replace_to ) {
-					$replace_to = $post->post_permalink;
+				if ( $post->ID ) {
+					$replace_to = get_permalink( $post->ID );
+				} else {
+					$replace_to = $post->post_link ? $post->post_link : $post->post_permalink;
 				}
 				break;
 			case 'shortlink':

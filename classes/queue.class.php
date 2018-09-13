@@ -508,6 +508,55 @@ class MailsterQueue {
 
 					$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, 15, false );
 				}
+			} elseif ( 'mailster_post_published' == $autoresponder_meta['action'] && $autoresponder_meta['post_type'] == 'rss' ) {
+
+				if ( ! isset( $autoresponder_meta['since'] ) ) {
+					$autoresponder_meta['since'] = $now;
+					mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
+				};
+
+				if ( preg_match_all( '#<module[^>]*?data-rss="(.*?)".*?</module>#ms', $campaign->post_content, $modules ) ) {
+	    			$feed_urls = array_unique( $modules[1] );
+
+		    		foreach ( $feed_urls as $feed_url ) {
+						if ( ! ($last = mailster( 'helper' )->new_feed_since( $autoresponder_meta['since'], $feed_url ) ) ) {
+							continue;
+						}
+
+						$integer = floor( $autoresponder_meta['amount'] );
+						$decimal = $autoresponder_meta['amount'] - $integer;
+
+						$send_offset = ( strtotime( '+' . $integer . ' ' . $autoresponder_meta['unit'], 0 ) + ( strtotime( '+1 ' . $autoresponder_meta['unit'], 0 ) * $decimal ) );
+
+						echo '<pre>' . print_r( date( 'Y-m-d H:i:s', $last ), true ) . '</pre>';
+						echo '<pre>' . print_r( date( 'Y-m-d H:i:s', $autoresponder_meta['since'] ), true ) . '</pre>';
+						echo '<pre>' . print_r( date( 'Y-m-d H:i:s', $now ), true ) . '</pre>';
+
+						echo '<pre>' . print_r( $last, true ) . '</pre>';
+						echo '<pre>' . print_r( $autoresponder_meta['since'], true ) . '</pre>';
+						echo '<pre>' . print_r( $last - $now, true ) . '</pre>';
+						echo '<pre>' . print_r( $send_offset, true ) . '</pre>';
+						// recalculate send offset by the publishing time of the last post
+						$send_offset = max( 0, $send_offset - ($now - $last) );
+						echo '<pre>' . print_r( $send_offset, true ) . '</pre>';
+
+						if ( $new_id = mailster( 'campaigns' )->autoresponder_to_campaign( $campaign->ID, $send_offset, $autoresponder_meta['issue']++ ) ) {
+
+							$new_campaign = mailster( 'campaigns' )->get( $new_id );
+
+							mailster_notice( sprintf( __( 'New campaign %1$s has been created and is going to be sent in %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . $new_campaign->ID . '&action=edit">' . $new_campaign->post_title . '</a>"</strong>', '<strong>' . human_time_diff( $now + $send_offset ) . '</strong>' ), 'info', true );
+
+							$autoresponder_meta['since'] = $now;
+							do_action( 'mailster_autoresponder_post_published', $campaign->ID, $new_id );
+							do_action( 'mymail_autoresponder_post_published', $campaign->ID, $new_id );
+
+							mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
+						}
+
+						// do not create two campaigns here.
+						break;
+		    		}
+	    		}
 			}
 		}
 
@@ -611,17 +660,17 @@ class MailsterQueue {
 
 				}
 			}
+
 			// check if modules with content exist
 			if ( isset( $autoresponder_meta['since'] ) ) {
 
 				$placeholder = mailster( 'placeholder', $campaign->post_content );
 				$placeholder->set_campaign( $campaign->ID );
+				$placeholder->rss_since( $autoresponder_meta['since'] );
 				// $placeholder->set_last_post_args( array(
 				// 'date_query' => array( 'after' => date( 'Y-m-d H:i:s', $autoresponder_meta['since'] + $timeoffset ) ),
 				// ) );
-				$html = $placeholder->get_content( false );
-
-				if ( ! preg_match( '/<\/module>/', $html ) ) {
+				if ( ! $placeholder->has_content( true ) ) {
 					$doit = false;
 					$schedule_new = true;
 				} else {

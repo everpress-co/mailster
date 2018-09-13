@@ -1028,6 +1028,10 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	display: inline-block;
 	width: 270px;
 }
+.dynamic-rss-url-label input{
+	display: inline-block;
+	width: 270px;
+}
 .dynamic_embed_options_taxonomy_container{
 	border: 1px solid #DFDFDF;
 	border-radius: 3px;
