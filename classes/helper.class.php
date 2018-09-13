@@ -1417,13 +1417,17 @@ class MailsterHelper {
 	 *
 	 *
 	 * @param unknown $url
-	 * @param unknown $item      (optional)
-	 * @param unknown $max_items (optional)
+	 * @param unknown $item           (optional)
+	 * @param unknown $cache_duration (optional)
 	 * @return unknown
 	 */
-	public function feed( $url, $item = null, $cache_duration = 360 ) {
+	public function feed( $url, $item = null, $cache_duration = null ) {
 
 		$feed_id = md5( trim( $url ) );
+
+		if ( is_null( $cache_duration ) ) {
+			$cache_duration = 360;
+		}
 
 		if ( ! ($posts = mailster_cache_get( 'feed_' . $feed_id )) ) {
 			if ( ! class_exists( 'SimplePie', false ) ) {
@@ -1533,13 +1537,13 @@ class MailsterHelper {
 	 * @param unknown $url
 	 * @return unknown
 	 */
-	public function new_feed_since( $timestamp, $url, $cache_duration = 90 ) {
+	public function new_feed_since( $timestamp, $url, $cache_duration = null ) {
 
 		if ( is_null( $cache_duration ) ) {
-			$feed = $this->feed( $url, 0 );
-		} else {
-			$feed = $this->feed( $url, 0, $cache_duration );
+			$cache_duration = 90;
 		}
+
+		$feed = $this->feed( $url, 0, $cache_duration );
 		if ( is_wp_error( $feed ) ) {
 			return false;
 		}
@@ -1560,13 +1564,15 @@ class MailsterHelper {
 	 * @param unknown $url
 	 * @return unknown
 	 */
-	public function get_meta_tags_from_url( $url, $args = array(), $force = false ) {
+	public function get_meta_tags_from_url( $url, $fields = null, $force = false ) {
 
 		$tags = null;
 		$cache_key = 'mailster_meta_tags_' . md5( $url );
 
 		if ( $force || false === ( $tags = get_transient( $cache_key ) ) ) {
-			$response = wp_remote_get( $url, $args );
+			$response = wp_remote_get( $url, array(
+				'timeout' => 5,
+			) );
 
 			$tags = array();
 
@@ -1580,6 +1586,17 @@ class MailsterHelper {
 
 			set_transient( $cache_key, $tags, DAY_IN_SECONDS );
 
+		}
+
+		if ( ! is_null( $fields ) ) {
+			if ( ! is_array( $fields ) ) {
+				$fields = array( $fields );
+			}
+			foreach ( $fields as $field ) {
+				if ( isset( $tags[ $field ] ) ) {
+					return $tags[ $field ];
+				}
+			}
 		}
 
 		return $tags;

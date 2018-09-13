@@ -768,15 +768,7 @@ class MailsterPlaceholder {
 									} elseif ( empty( $post->post_image ) ) {
 
 										// get image from sites meta tags
-										$meta_tags = mailster( 'helper' )->get_meta_tags_from_url( $post->post_permalink );
-										$src = false;
-										if ( isset( $meta_tags['thumbnail'] ) ) {
-											 $src = $meta_tags['thumbnail'];
-										} elseif ( isset( $meta_tags['og:image'] ) ) {
-											$src = $meta_tags['og:image'];
-										} elseif ( isset( $meta_tags['twitter:image'] ) ) {
-											$src = $meta_tags['twitter:image'];
-										}
+										$src = mailster( 'helper' )->get_meta_tags_from_url( $post->post_permalink, array( 'mailster:image', 'thumbnail', 'og:image', 'twitter:image' ) );
 										if ( $src ) {
 											$org_src = array( $src, 0, 0, false );
 										}
