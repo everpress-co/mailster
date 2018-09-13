@@ -64,17 +64,28 @@ jQuery(document).ready(function ($) {
 			.on('change', '.condition-field', function () {
 
 				var condition = $(this).closest('.mailster-condition'),
-					field = $(this).val();
+					field = $(this).val(),
+					operator_field, value_field;
 
 				condition.find('div.mailster-conditions-value-field').removeClass('active').find('.condition-value').prop('disabled', true);
 				condition.find('div.mailster-conditions-operator-field').removeClass('active').find('.condition-operator').prop('disabled', true);
 
-				if (!condition.find('div.mailster-conditions-value-field[data-fields*=",' + field + ',"]').addClass('active').find('.condition-value').prop('disabled', false).length) {
-					condition.find('div.mailster-conditions-value-field-default').addClass('active').find('.condition-value').prop('disabled', false);
+				value_field = condition.find('div.mailster-conditions-value-field[data-fields*=",' + field + ',"]').addClass('active').find('.condition-value').prop('disabled', false);
+				operator_field = condition.find('div.mailster-conditions-operator-field[data-fields*=",' + field + ',"]').addClass('active').find('.condition-operator').prop('disabled', false);
+
+				if (!value_field.length) {
+					value_field = condition.find('div.mailster-conditions-value-field-default').addClass('active').find('.condition-value').prop('disabled', false);
 				}
-				if (!condition.find('div.mailster-conditions-operator-field[data-fields*=",' + field + ',"]').addClass('active').find('.condition-operator').prop('disabled', false).length) {
-					condition.find('div.mailster-conditions-operator-field-default').addClass('active').find('.condition-operator').prop('disabled', false);
+				if (!operator_field.length) {
+					operator_field = condition.find('div.mailster-conditions-operator-field-default').addClass('active').find('.condition-operator').prop('disabled', false);
 				}
+
+				if (!value_field.val()) {
+					if (value_field.is('.hasDatepicker')) {
+						value_field.datepicker("setDate", "yy-mm-dd");;
+					}
+				}
+
 				_trigger('updateCount');
 
 			})

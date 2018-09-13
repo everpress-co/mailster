@@ -2040,9 +2040,9 @@ label.weekday input{
 	position: relative;
 }
 #mailster_conditions_render .mailster-conditions-render:empty{
-    border: 1px solid #ccc;
-    border-radius: 2px;
-	padding: 10px 0;
+	border: 1px solid #DFDFDF;
+	border-radius: 2px;
+	padding: 10px 6px;
 	min-height: 18px;
 }
 #mailster_conditions_render .mailster-conditions-render:empty:before, .mailster-conditions .mailster-conditions-wrap:empty:before{
