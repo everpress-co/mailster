@@ -611,7 +611,7 @@ jQuery(document).ready(function ($) {
 				})
 				.on('click', '.remove-conditions', function () {
 					if (confirm(mailsterL10n.remove_conditions)) {
-						$('#receivers-dialog').find('.mailster-conditions').empty();
+						$('#receivers-dialog').find('.mailster-conditions-wrap').empty();
 						_trigger('updateCount');
 					}
 					return false;

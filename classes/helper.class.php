@@ -159,7 +159,7 @@ class MailsterHelper {
 		$cache_key = 'mailster_wpuser_meta_fields';
 
 		if ( $force || false === ( $meta_values = get_transient( $cache_key ) ) ) {
-			$exclude = array( 'comment_shortcuts', 'first_name', 'last_name', 'nickname', 'use_ssl', 'default_password_nag', 'dismissed_wp_pointers', 'rich_editing', 'show_admin_bar_front', 'show_welcome_panel', 'admin_color', 'screen_layout_dashboard', 'screen_layout_newsletter' );
+			$exclude = array( 'comment_shortcuts', 'first_name', 'last_name', 'nickname', 'use_ssl', 'default_password_nag', 'dismissed_wp_pointers', 'rich_editing', 'show_admin_bar_front', 'show_welcome_panel', 'admin_color', 'screen_layout_dashboard', 'screen_layout_newsletter', 'show_try_gutenberg_panel' );
 
 			$meta_values = $wpdb->get_col( "SELECT meta_key FROM {$wpdb->usermeta} WHERE meta_value NOT LIKE '%:{%' GROUP BY meta_key ASC" );
 			$meta_values = preg_grep( '/^(?!' . preg_quote( $wpdb->prefix ) . ')/', $meta_values );
