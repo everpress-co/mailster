@@ -601,7 +601,6 @@ class MailsterQueue {
 			$meta = mailster( 'campaigns' )->meta( $campaign->ID );
 
 			$autoresponder_meta = $meta['autoresponder'];
-			$time_conditions = isset( $autoresponder_meta['time_conditions'] );
 
 			if ( 'mailster_autoresponder_timebased' != $autoresponder_meta['action'] ) {
 				continue;
@@ -613,93 +612,87 @@ class MailsterQueue {
 				continue;
 			}
 
-			$starttime = $meta['timestamp'];
+			$time_conditions = isset( $autoresponder_meta['time_conditions'] );
+			$new_content_since = isset( $autoresponder_meta['since'] ) ? (int) $autoresponder_meta['since'] : false;
+			$starttime = (int) $meta['timestamp'];
 			$delay = $starttime - $now;
 
-			// more than an hour in the future (without timezone) or more than 24h in the future (with timezone)
-			if ( ! $time_conditions && ( $delay > 3600 && ! $meta['timezone']
-					|| ( $delay > 86400 ) ) ) {
+			// check if endtime is passed.
+			if ( isset( $autoresponder_meta['endschedule'] ) && $autoresponder_meta['endtimestamp'] && $autoresponder_meta['endtimestamp'] - $now < 0 ) {
+				// disable this campaign
+				mailster( 'campaigns' )->update_meta( $campaign->ID, 'active', false );
+				mailster_notice( sprintf( __( 'Auto responder campaign %s has been finished and is deactivated!', 'mailster' ), '<strong>"<a href="post.php?post=' . $campaign->ID . '&action=edit">' . $campaign->post_title . '</a>"</strong>' ), 'success', false, 'autoresponder_' . $campaign_id, $campaign->post_author );
 				continue;
 			}
 
-			if ( isset( $autoresponder_meta['endschedule'] ) && $autoresponder_meta['endtimestamp'] ) {
-				$endtime = $autoresponder_meta['endtimestamp'];
+			// seconds the campaign should created before the actual send time.
+			$time_created_before = 60;
 
-				// endtime has passed
-				if ( $endtime - $now < 0 ) {
-
-					// disable this campaign
-					mailster( 'campaigns' )->update_meta( $campaign->ID, 'active', false );
-					mailster_notice( sprintf( __( 'Auto responder campaign %s has been finished and is deactivated!', 'mailster' ), '<strong>"<a href="post.php?post=' . $campaign->ID . '&action=edit">' . $campaign->post_title . '</a>"</strong>' ), 'success', false, 'autoresponder_' . $campaign_id, $campaign->post_author );
-					continue;
-
-				}
+			// add a day if timezone based sending is enabled
+			if ( $meta['timezone'] ) {
+				// $time_created_before += DAY_IN_SECONDS;
 			}
 
-			$doit = true;
-			$new_id = null;
-			$schedule_new = null;
+			// do it if time is over.
+			$doit = $delay <= $time_created_before;
+			// do not schedule new by default.
+			$schedule_new = false;
 
-			// check for conditions
-			if ( $time_conditions ) {
+			// check for conditions "only if [time_post_count] [post_type] have been published."
+			if ( $doit && $time_conditions ) {
 
 				// if post count is reached
-				if ( $autoresponder_meta['post_count_status']
-					&& $autoresponder_meta['post_count_status'] >= $autoresponder_meta['time_post_count'] ) {
+				if ( $autoresponder_meta['post_count_status'] >= $autoresponder_meta['time_post_count'] ) {
 
 					// reduce counter with required posts counter
 					$autoresponder_meta['post_count_status'] = $autoresponder_meta['post_count_status'] - $autoresponder_meta['time_post_count'];
 
 				} else {
-					// schedule new event if it's in the past
-					if ( $delay < 0 ) {
-						$schedule_new = true;
-					}
 
+					// schedule new event if it's in the past
+					$schedule_new = $delay < 0;
 					$doit = false;
 
 				}
 			}
 
-			// check if modules with content exist
-			if ( isset( $autoresponder_meta['since'] ) ) {
+			// check if modules with content exist | "only if new content is available."
+			if ( $doit && $new_content_since ) {
 
 				$placeholder = mailster( 'placeholder', $campaign->post_content );
 				$placeholder->set_campaign( $campaign->ID );
 				$placeholder->rss_since( $autoresponder_meta['since'] );
-				// $placeholder->set_last_post_args( array(
-				// 'date_query' => array( 'after' => date( 'Y-m-d H:i:s', $autoresponder_meta['since'] + $timeoffset ) ),
-				// ) );
-				if ( ! $placeholder->has_content( true ) ) {
-					$doit = false;
-					$schedule_new = true;
+
+				if ( $placeholder->has_content( true ) ) {
+					// has content.
 				} else {
+					// schedule new event if it's in the past.
+					$schedule_new = $delay < 0;
+					$doit = false;
 				}
 			}
 
-			if ( $doit ) {
+			if ( $doit && $new_id = mailster( 'campaigns' )->autoresponder_to_campaign( $campaign->ID, $delay, $autoresponder_meta['issue']++ ) ) {
 
-				if ( $new_id = mailster( 'campaigns' )->autoresponder_to_campaign( $campaign->ID, $delay, $autoresponder_meta['issue']++ ) ) {
+				$newCamp = mailster( 'campaigns' )->get( $new_id );
+				mailster_notice( sprintf( __( 'New campaign %s has been created!', 'mailster' ), '<strong>"<a href="post.php?post=' . $newCamp->ID . '&action=edit">' . $newCamp->post_title . '</a>"</strong>' ), 'info', true, 'autoresponder_' . $campaign->ID, $campaign->post_author );
 
-					$newCamp = mailster( 'campaigns' )->get( $new_id );
-					$schedule_new = true;
-
-					mailster_notice( sprintf( __( 'New campaign %s has been created!', 'mailster' ), '<strong>"<a href="post.php?post=' . $newCamp->ID . '&action=edit">' . $newCamp->post_title . '</a>"</strong>' ), 'info', true, 'autoresponder_' . $campaign->ID, $campaign->post_author );
-
-					do_action( 'mailster_autoresponder_timebased', $campaign->ID, $new_id );
-					do_action( 'mymail_autoresponder_timebased', $campaign->ID, $new_id );
+				$schedule_new = true;
+				if ( $new_content_since ) {
+					$autoresponder_meta['since'] = $now;
 				}
+
+				do_action( 'mailster_autoresponder_timebased', $campaign->ID, $new_id );
+				do_action( 'mymail_autoresponder_timebased', $campaign->ID, $new_id );
+
+				mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
+
 			}
 
 			if ( $schedule_new ) {
 				$nextdate = mailster( 'helper' )->get_next_date_in_future( $starttime, $autoresponder_meta['interval'], $autoresponder_meta['time_frame'], $autoresponder_meta['weekdays'] );
 
-				if ( isset( $autoresponder_meta['since'] ) && $autoresponder_meta['since'] ) {
-					$autoresponder_meta['since'] = $now;
-				}
-
 				mailster( 'campaigns' )->update_meta( $campaign->ID, 'timestamp', $nextdate );
-				mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
 
 			}
 		}
