@@ -140,6 +140,15 @@ class MailsterPlaceholder {
 		return $this->do_placeholder( $removeunused, $placeholders, $relative_to_absolute );
 	}
 
+	public function has_content( $check_for_modules = false ) {
+		$html = $this->get_content( false );
+		if ( $check_for_modules ) {
+			return preg_match( '/<\/module>/', $html );
+		}
+
+		return ! empty( trim( $html ) );
+	}
+
 
 	public function clear_placeholder() {
 		$this->placeholder = array();
@@ -404,7 +413,7 @@ class MailsterPlaceholder {
 	 */
 	private function remove_modules() {
 
-		if ( preg_match_all( '#<module[^>]*?data-tag="{(([a-z0-9_-]+]):(-)?([\d]+)(;([0-9;,]+))?)\}"(.*?)".*?</module>#ms', $this->content, $modules ) ) {
+		if ( preg_match_all( '#<module[^>]*?data-tag="{(([a-z0-9_-]+):(-)?([\d]+)(;([0-9;,]+))?)\}"(.*?)".*?</module>#ms', $this->content, $modules ) ) {
 
 			foreach ( $modules[0] as $i => $html ) {
 

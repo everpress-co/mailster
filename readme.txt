@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 
 * fixed: height attribute of image tags were not always respected.
 * improved: tag replacement handling
+* improved: queue handling of time based auto responders
 * improved: sql query
 
 = Version 2.3.11 =
