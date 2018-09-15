@@ -287,6 +287,7 @@ $sent = $this->get_sent( $post->ID );
 					}
 					$type .= '<option value="' . $pt . '"' . selected( $autoresponderdata['time_post_type'], $pt, false ) . '>' . $data->labels->name . '</option>';
 				}
+				$type .= '<option value="rss"' . selected( $autoresponderdata['time_post_type'], 'rss', false ) . '>' . esc_html__( 'RSS Feeds', 'mailster' ) . '</option>';
 				$type .= '</select><br>';
 				printf( esc_html__( '%1$s %2$s have been published', 'mailster' ), $count, $type );
 				?>

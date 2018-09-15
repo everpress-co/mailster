@@ -709,9 +709,16 @@ class MailsterCampaigns {
 										'<strong title="' . date( $timeformat, $meta['timestamp'] + $timeoffset ) . '">' . human_time_diff( $meta['timestamp'] ) . '</strong>'
 									);
 									echo ' &ndash; ' . sprintf( '#%s', '<strong title="' . sprintf( __( 'Next issue: %s', 'mailster' ), '#' . $autoresponder['issue'] ) . '">' . $autoresponder['issue'] . '</strong>' );
+									if ( isset( $autoresponder['since'] ) && $autoresponder['since'] ) {
+											echo '<br>' . __( 'only if new content is available.', 'mailster' );
+									}
 									if ( isset( $autoresponder['time_conditions'] ) ) {
 										if ( $posts_required = max( 0, ( $autoresponder['time_post_count'] - $autoresponder['post_count_status'] ) ) ) {
-											echo '<br>' . sprintf( __( 'requires %1$s more %2$s', 'mailster' ), ' <strong>' . $posts_required . '</strong>', ' <strong>' . $pts[ $autoresponder['time_post_type'] ]->labels->name . '</strong>' );
+											if ( 'rss' == $autoresponder['time_post_type'] ) {
+												echo '<br>' . sprintf( __( 'requires %1$s more %2$s', 'mailster' ), ' <strong>' . $posts_required . '</strong>', ' <strong>' . __( 'RSS Feed', 'mailster' ) . '</strong>' );
+											} else {
+												echo '<br>' . sprintf( __( 'requires %1$s more %2$s', 'mailster' ), ' <strong>' . $posts_required . '</strong>', ' <strong>' . $pts[ $autoresponder['time_post_type'] ]->labels->name . '</strong>' );
+											}
 										}
 									}
 								}
@@ -1533,6 +1540,9 @@ class MailsterCampaigns {
 
 				} elseif ( 'mailster_post_published' == $autoresponder['action'] ) {
 
+					if ( 'rss' == $autoresponder['post_type'] && ! isset( $autoresponder['since'] ) ) {
+						$autoresponder['since'] = time();
+					}
 				} else {
 					unset( $autoresponder['terms'] );
 				}
@@ -1553,6 +1563,10 @@ class MailsterCampaigns {
 					$localtime = mailster( 'helper' )->get_next_date_in_future( $localtime - $timeoffset, 0, $autoresponder['time_frame'], $autoresponder['weekdays'] );
 
 					$meta['timestamp'] = $localtime;
+
+					if ( isset( $autoresponder['time_conditions'] ) && 'rss' == $autoresponder['time_post_type'] && ! $autoresponder['since'] ) {
+						$autoresponder['since'] = $now;
+					}
 
 					if ( isset( $autoresponder['endschedule'] ) ) {
 

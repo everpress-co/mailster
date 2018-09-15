@@ -1540,7 +1540,7 @@ class MailsterHelper {
 	public function new_feed_since( $timestamp, $url, $cache_duration = null ) {
 
 		if ( is_null( $cache_duration ) ) {
-			$cache_duration = 90;
+			$cache_duration = 60;
 		}
 
 		$feed = $this->feed( $url, 0, $cache_duration );
@@ -1554,6 +1554,38 @@ class MailsterHelper {
 		}
 
 		return false;
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $timestamp
+	 * @param unknown $url
+	 * @return unknown
+	 */
+	public function get_feed_since( $timestamp, $url, $cache_duration = null ) {
+
+		if ( is_null( $cache_duration ) ) {
+			$cache_duration = 60;
+		}
+
+		$posts = $this->feed( $url, null, $cache_duration );
+		if ( is_wp_error( $posts ) ) {
+			return false;
+		}
+
+		$return = array();
+
+		foreach ( $posts as $post ) {
+			$last = strtotime( $post->post_date_gmt );
+
+			if ( $last > $timestamp ) {
+				$return[] = $post;
+			}
+		}
+
+		return $return;
 
 	}
 
@@ -1597,6 +1629,8 @@ class MailsterHelper {
 					return $tags[ $field ];
 				}
 			}
+
+			return false;
 		}
 
 		return $tags;
