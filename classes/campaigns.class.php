@@ -2323,14 +2323,24 @@ class MailsterCampaigns {
 
 		global $wpdb;
 
-		// remove actions, queue and subscriber meta
-		$wpdb->query( $wpdb->prepare( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a WHERE a.campaign_id = %d", $id ) );
+		// delete action or just set them to NULL
+		$delete_action = false;
+
+		// remove or set actions to NULL.
+		if ( $delete_action ) {
+			$wpdb->query( $wpdb->prepare( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a WHERE a.campaign_id = %d", $id ) );
+
+		} else {
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_actions AS a SET a.campaign_id = NULL WHERE a.campaign_id = %d", $id ) );
+		}
+		// remove queue and subscriber meta
 		$wpdb->query( $wpdb->prepare( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a WHERE a.campaign_id = %d", $id ) );
 		$wpdb->query( $wpdb->prepare( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_meta AS a WHERE a.campaign_id = %d", $id ) );
 
 		// unassign existing parents
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->postmeta} WHERE meta_value = %d AND meta_key = '_mailster_parent_id'", $id ) );
 
+		// $wpdb->query( $wpdb->prepare( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a WHERE a.campaign_id = NULL AND a.subscriber_id = NULL", $id ) );
 	}
 
 
