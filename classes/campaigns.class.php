@@ -28,17 +28,12 @@ class MailsterCampaigns {
 	public function init() {
 
 		add_filter( 'transition_post_status', array( &$this, 'check_for_autoresponder' ), 10, 3 );
+		add_filter( 'transition_post_status', array( &$this, 'set_before_trash_status' ), 10, 3 );
 		add_action( 'mailster_finish_campaign', array( &$this, 'remove_revisions' ) );
 
 		add_action( 'mailster_auto_post_thumbnail', array( &$this, 'get_post_thumbnail' ), 10, 1 );
 
 		if ( is_admin() ) {
-
-			add_action( 'paused_to_trash', array( &$this, 'paused_to_trash' ) );
-			add_action( 'active_to_trash', array( &$this, 'active_to_trash' ) );
-			add_action( 'queued_to_trash', array( &$this, 'queued_to_trash' ) );
-			add_action( 'finished_to_trash', array( &$this, 'finished_to_trash' ) );
-			add_action( 'trash_to_paused', array( &$this, 'trash_to_paused' ), 999 );
 
 			add_action( 'admin_menu', array( &$this, 'remove_meta_boxs' ) );
 			add_action( 'admin_menu', array( &$this, 'autoresponder_menu' ), 20 );
@@ -130,7 +125,7 @@ class MailsterCampaigns {
 
 		$query_args['return_ids'] = true;
 
-		$subscribers = mailster( 'subscribers' )->query( $query_args );
+		$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign_id );
 
 		$timestamp = strtotime( '+ ' . $meta['autoresponder']['amount'] . ' ' . $meta['autoresponder']['unit'] );
 
@@ -1017,57 +1012,24 @@ class MailsterCampaigns {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function paused_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
-	}
+	public function set_before_trash_status( $new_status, $old_status, $campaign ) {
 
+		if ( 'newsletter' != $campaign->post_type || $new_status == $old_status ) {
+			return;
+		}
 
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function active_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'active' );
-	}
+		// store old status on trash.
+		if ( 'trash' == $new_status ) {
+			set_transient( 'mailster_before_trash_status_' . $campaign->ID, $old_status );
+		}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function queued_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'queued' );
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function finished_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'finished' );
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function trash_to_paused( $campaign ) {
-
-		$oldstatus = get_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
-
-		if ( $campaign->post_status != $oldstatus ) {
-			$this->change_status( $campaign, $oldstatus, true );
+		// restore old status on untrash.
+		if ( 'trash' == $old_status ) {
+			$status_before = get_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
+			if ( $campaign->post_status != $status_before ) {
+				$this->change_status( $campaign, $status_before, true );
+			}
+			delete_transient( 'mailster_before_trash_status_' . $campaign->ID );
 		}
 
 	}
@@ -2272,6 +2234,7 @@ class MailsterCampaigns {
 		// ) );
 		// }
 		$placeholder->do_conditions( false );
+		$placeholder->replace_custom_tags( false );
 
 		$placeholder->clear_placeholder();
 		$placeholder->add( array( 'issue' => $issue ) );
@@ -2605,7 +2568,7 @@ class MailsterCampaigns {
 			'limit' => $limit,
 			'offset' => $offset,
 			'return_sql' => $returnsql,
-		));
+		), $id);
 	}
 
 
@@ -2749,8 +2712,6 @@ class MailsterCampaigns {
 			'copyright' => '',
 		) );
 
-		$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
-
 		$content = $placeholder->get_content();
 		$content = preg_replace( '#<script[^>]*?>.*?</script>#si', '', $content );
 		$content = preg_replace( '#<style[^>]*?>.*?</style>#si', '', $content );
@@ -2803,19 +2764,20 @@ class MailsterCampaigns {
 	/**
 	 *
 	 *
-	 * @param unknown $lists      (optional)
-	 * @param unknown $conditions (optional)
-	 * @param unknown $statuses   (optional)
+	 * @param unknown $lists       (optional)
+	 * @param unknown $conditions  (optional)
+	 * @param unknown $statuses    (optional)
+	 * @param unknown $campaign_id (optional)
 	 * @return unknown
 	 */
-	public function get_totals_by_lists( $lists = false, $conditions = null, $statuses = null ) {
+	public function get_totals_by_lists( $lists = false, $conditions = null, $statuses = null, $campaign_id = null ) {
 
 		return mailster( 'subscribers' )->query(array(
 			'lists' => $lists,
 			'conditions' => $conditions,
 			'status' => $statuses,
 			'return_count' => true,
-		));
+		), $campaign_id);
 
 	}
 
@@ -3252,12 +3214,12 @@ class MailsterCampaigns {
 
 		if ( $countonly ) {
 			$args['return_count'] = true;
-			return mailster( 'subscribers' )->query( $args );
+			return mailster( 'subscribers' )->query( $args, $campaign->ID );
 		}
 
 		$args['return_ids'] = true;
 
-		$subscribers = mailster( 'subscribers' )->query( $args );
+		$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
 
 		$options = array(
 			'sent' => __( 'who have received', 'mailster' ),
@@ -3789,7 +3751,6 @@ class MailsterCampaigns {
 
 			$placeholder->add_defaults( $campaign->ID );
 
-			$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
 			$content = $placeholder->get_content( false );
 			$content = mailster( 'helper' )->prepare_content( $content );
 

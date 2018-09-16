@@ -5,6 +5,7 @@ class MailsterPrivacy {
 	public function __construct() {
 
 		add_action( 'admin_init', array( &$this, 'init' ) );
+		add_action( 'save_post', array( &$this, 'maybe_update_privacy_link' ), 10, 3 );
 
 	}
 
@@ -277,6 +278,27 @@ class MailsterPrivacy {
 			'messages'       => $messages,
 			'done'           => true,
 		);
+	}
+
+	public function maybe_update_privacy_link( $post_id, $post, $update = null ) {
+
+		// only on update
+		if ( ! $update || ! $post_id || ! $post ) {
+			return;
+		}
+
+		if ( $privacy_policy_page_id = (int) get_option( 'wp_page_for_privacy_policy' ) ) {
+			if ( $post_id == $privacy_policy_page_id ) {
+				$link = get_permalink( $post_id );
+				$gdpr_link = mailster_option( 'gdpr_link' );
+				if ( $gdpr_link && $link != $gdpr_link ) {
+					if ( mailster_update_option( 'gdpr_link', $link ) ) {
+						mailster_notice( '[Mailster] ' . sprintf( __( 'The Privacy page link has been changed to %s', 'mailster' ), '<em>' . $link . '</em>' ), 'info', true );
+					}
+				}
+			}
+		}
+
 	}
 
 }

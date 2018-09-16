@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.8
-Stable tag: 2.3.11
+Stable tag: 2.4
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -86,10 +86,28 @@ Xaver Birsak – https://everpress.io
 
 * new: cron options
 
+= Version 2.3.12 =
+
+* fixed: height attribute of image tags were not always respected.
+* improved: tag replacement handling
+* improved: queue handling of time based auto responders
+* improved: sql query
+>>>>>>> origin/develop
+
 = Version 2.3.11 =
 
 * fixed: added "source" tag in allowed tags
+* fixed: sql query issue on "(didn't) clicked link" condition
 * fixed: smaller issues
+* fixed: unsubscribe issue on single opt out if user is logged in
+* fixed: subscriber export on sites with CloudFlare
+* improved: custom tags are now replaced in the final campaign and no longer when created
+* improved: privacy policy link gets updated if the address changes
+* improved: subscriber query now has the campaign id as second argument.
+* improved: nonce form handle
+* added: `wp_include` and `wp_exclude` for subscriber query to handle WP user ID's
+* added: condition "(didn't) clicked link" now allows to choose a certain campaign
+* added: additional aggregated campaigns
 
 = Version 2.3.10 =
 

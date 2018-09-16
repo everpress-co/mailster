@@ -274,8 +274,6 @@ class MailsterAjax {
 				// ) );
 			}
 
-			$placeholder->share_service( get_permalink( $campaign->ID ), $campaign->post_title );
-
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
 			$html = $placeholder->get_content( false );
 			$html = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style' . $suffix . '.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
@@ -407,7 +405,6 @@ class MailsterAjax {
 			'emailaddress' => $current_user->user_email,
 		) );
 
-		$placeholder->share_service( '{webversionlink}', $subject );
 		$content = $placeholder->get_content();
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
@@ -643,7 +640,6 @@ class MailsterAjax {
 					'emailaddress' => $to,
 				) );
 
-				$placeholder->share_service( $campaign_permalink, $subject );
 				$content = $placeholder->get_content();
 				$content = mailster( 'helper' )->prepare_content( $content );
 
@@ -757,11 +753,13 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
+		$campaign_ID = (int) $_POST['id'];
 		$lists = ( $_POST['ignore_lists'] == 'true' ) ? false : ( isset( $_POST['lists'] ) ? $_POST['lists'] : array() );
 		$conditions = isset( $_POST['conditions'] ) ? stripslashes_deep( array_values( array_filter( $_POST['conditions'] ) ) ) : false;
+		$statuses = null;
 
 		$return['success'] = true;
-		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, $conditions );
+		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, $conditions, $statuses, $campaign_ID );
 		$return['conditions'] = mailster( 'conditions' )->render( $conditions, false );
 		$return['totalformatted'] = number_format_i18n( $return['total'] );
 

@@ -533,7 +533,7 @@ if ( $old_version ) {
 			$mailster_options['track_opens'] = true;
 			$mailster_options['track_clicks'] = true;
 
-			update_option( 'mailster_cron_lasthit', false );
+			update_option( 'mailster_cron_lasthit', '' );
 
 			// allow NULL values on two columns
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
