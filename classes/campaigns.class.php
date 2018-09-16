@@ -1014,17 +1014,17 @@ class MailsterCampaigns {
 
 	public function set_before_trash_status( $new_status, $old_status, $campaign ) {
 
-		if('newsletter' != $campaign->post_type || $new_status == $old_status){
+		if ( 'newsletter' != $campaign->post_type || $new_status == $old_status ) {
 			return;
 		}
 
-		//store old status on trash.
-		if('trash' == $new_status){
+		// store old status on trash.
+		if ( 'trash' == $new_status ) {
 			set_transient( 'mailster_before_trash_status_' . $campaign->ID, $old_status );
 		}
 
-		//restore old status on untrash.
-		if('trash' == $old_status){
+		// restore old status on untrash.
+		if ( 'trash' == $old_status ) {
 			$status_before = get_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
 			if ( $campaign->post_status != $status_before ) {
 				$this->change_status( $campaign, $status_before, true );
