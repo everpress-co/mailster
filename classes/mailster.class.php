@@ -2321,8 +2321,9 @@ class Mailster {
 		if ( $postdata['post_type'] != 'newsletter' ) {
 			return;
 		}
-
-		$prefix = 100000000;
+		if ( $post_id == $original_post_ID ) {
+			return;
+		}
 
 		$tables = array( 'actions', 'queue', 'subscriber_meta' );
 
@@ -2333,13 +2334,9 @@ class Mailster {
 		foreach ( $tables as $table ) {
 			printf( '<code>%s</code>', 'mailster_' . $table );
 
-			$sql1 = $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_{$table} SET campaign_id = %d WHERE campaign_id = %d", $prefix + $post_id, $original_post_ID );
-			$sql2 = $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_{$table} SET campaign_id = %d WHERE campaign_id = %d", $post_id, $prefix + $post_id );
-			if ( false !== ($rows = $wpdb->query( $sql1 )) ) {
-				echo '.';
-				if ( false !== ($rows = $wpdb->query( $sql2 )) ) {
-					printf( '..' . __( 'completed for %d rows.', 'mailster' ), $rows );
-				}
+			$sql = $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_{$table} SET campaign_id = %d WHERE campaign_id = %d", $post_id, $original_post_ID );
+			if ( false !== ($rows = $wpdb->query( $sql )) ) {
+				printf( '..' . __( 'completed for %d rows.', 'mailster' ), $rows );
 			}
 			echo '<br>';
 		}
