@@ -24,6 +24,7 @@ $utm = array(
 		<li><a href="#basics"><?php esc_html_e( 'Basics', 'mailster' );?></a></li>
 		<li><a href="#homepage"><?php esc_html_e( 'Homepage', 'mailster' );?></a></li>
 		<li><a href="#delivery"><?php esc_html_e( 'Delivery', 'mailster' );?></a></li>
+		<li><a href="#cron"><?php esc_html_e( 'Cron', 'mailster' );?></a></li>
 		<li><a href="#privacy"><?php esc_html_e( 'Privacy', 'mailster' );?></a></li>
 		<li><a href="#validation"><?php esc_html_e( 'Validation', 'mailster' );?></a></li>
 		<li class="not-hidden"><a href="#finish"><?php esc_html_e( 'Ready!', 'mailster' );?></a></li>
@@ -371,8 +372,34 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
+				<a class="button button-large skip-step" href="#cron"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
+				<a class="button button-large button-primary next-step delivery-next-step" href="#cron"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
+
+			</div>
+
+		</div>
+
+		<div class="mailster-setup-step" id="step_cron">
+
+			<h2><?php esc_html_e( 'Cron', 'mailster' );?></h2>
+
+			<div class="mailster-setup-step-body">
+
+			<form class="mailster-setup-step-form">
+
+			<?php include MAILSTER_DIR . '/views/setup/cron.php' ?>
+
+			</form>
+
+			</div>
+
+			<div class="mailster-setup-step-buttons">
+
+				<span class="alignleft status"></span>
+				<i class="spinner"></i>
+
 				<a class="button button-large skip-step" href="#privacy"><?php esc_html_e( 'Skip this Step', 'mailster' ) ?></a>
-				<a class="button button-large button-primary next-step delivery-next-step" href="#privacy"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
+				<a class="button button-large button-primary next-step" href="#privacy"><?php esc_html_e( 'Next Step', 'mailster' ) ?></a>
 
 			</div>
 
@@ -386,15 +413,11 @@ $utm = array(
 
 			<form class="mailster-setup-step-form">
 
-			<p><?php esc_html_e( 'Mailster can track specific behaviors and the location of your subscribers to target your audience better. In most countries you must get the consent of the subscriber if you sent them marketing emails. Please get in touch with your lawyer for legal advice in your country.', 'mailster' ) ?></p>
-			<p><?php esc_html_e( 'If you have users in the European Union you have to comply with the General Data Protection Regulation (GDPR). Please check our knowledge base on how Mailster can help you.', 'mailster' ) ?></p>
-			<p><a href="https://kb.mailster.co/tag/gdpr/" class="external button button-primary"><?php esc_html_e( 'Knowledge Base', 'mailster' ) ?></a></p>
-
-			<?php include MAILSTER_DIR . '/views/settings/privacy.php' ?>
-
-			</div>
+			<?php include MAILSTER_DIR . '/views/setup/privacy.php' ?>
 
 			</form>
+
+			</div>
 
 			<div class="mailster-setup-step-buttons">
 

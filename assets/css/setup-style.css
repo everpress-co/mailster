@@ -211,3 +211,59 @@
 #mailster-setup .twitter-follow-button, #mailster-setup .fb_iframe_widget{
 	vertical-align: bottom;
 }
+
+
+.cron-service-wrap{
+	display: -ms-grid;
+	display: grid;
+	-ms-grid-columns: 33% 33% 33%;
+	grid-template-columns: 33% 33% 33%;
+}
+.cron-service-wrap li{
+	border: 1px solid;
+	display: block;
+	float: left;
+	text-align: center;
+	margin-right: 10px;
+	padding: 0.5em;
+	border: 1px solid #DEDEDB;
+	background-color: #f7f7f7;
+	-webkit-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
+	-moz-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
+	-ms-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
+	-o-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
+	transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
+}
+.cron-service-wrap li:hover,
+.cron-service.cron-service-wp_cron .cron-service-wrap li.cron-service-radio-wp_cron,
+.cron-service.cron-service-cron .cron-service-wrap li.cron-service-radio-cron,
+.cron-service.cron-service-multi_cron .cron-service-wrap li.cron-service-radio-multi_cron{
+	background-color: #fff;
+	border-color: #5b9dd9;
+	box-shadow: 0 0 2px rgba( 30, 140, 190, 0.8 );
+}
+.cron-service-wrap label h4{
+	font-weight: 400;
+	font-size: 16px;
+}
+.cron-service-wrap label{
+	height: 100px;
+	display: block;
+}
+.cron-service-wrap label input{
+	display: block;
+	visibility: hidden;
+}
+.cron-service-wrap label span.description{
+	display: block;
+}
+.cron-service .cron-opts, .cron-setupguide{
+	display: none;
+}
+.cron-service.cron-service-cron .cron-setupguide.cron-setupguide-cron,
+.cron-service.cron-service-multi_cron .cron-setupguide.cron-setupguide-multi_cron,
+.cron-service.cron-service-wp_cron .cron-opts.cron-opts-wp_cron,
+.cron-service.cron-service-cron .cron-opts.cron-opts-cron,
+.cron-service.cron-service-multi_cron .cron-opts.cron-opts-multi_cron{
+	display: block;
+}

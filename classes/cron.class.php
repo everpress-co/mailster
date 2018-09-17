@@ -181,6 +181,53 @@ class MailsterCron {
 	}
 
 
+	public function get_interval() {
+		$interval = mailster_option( 'interval' ) * 60;
+		return $interval;
+	}
+
+
+	public function is_working() {
+
+		$interval = $this->get_interval();
+
+		$last_hit_array = get_option( 'mailster_cron_lasthit', array() );
+		if ( ! is_array( $last_hit_array ) ) {
+			$last_hit_array = array( $last_hit_array );
+		}
+
+		foreach ( $last_hit_array as $process_id => $last_hit ) :
+
+			if ( ! $last_hit ) {
+				if ( is_array( $last_hit ) ) {
+					return new WP_Error( 'cron_error', sprintf( __( 'Your Cron page hasn\'t get triggered recently. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'settings page', 'mailster' ) . '</strong></a>.' ) );
+				}
+
+				return new WP_Error( 'cron_error', sprintf( __( 'The Cron Process is not setup correctly. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'settings page', 'mailster' ) . '</strong></a>.' ) );
+			}
+
+			// get real delay...
+			$real_delay = max( $interval, $last_hit['timestamp'] - $last_hit['oldtimestamp'] );
+			$current_delay = $now - $last_hit['timestamp'];
+
+			// ..and compare it with the interval (3 times) - also something in the queue
+			if ( ( $current_delay > $real_delay * 3 || ! $real_delay && ! $current_delay ) ) :
+
+				$this->update();
+
+				return new WP_Error( 'cron_warning', sprintf( __( 'Are your campaigns not sending? You may have to check your %1$s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'cron settings', 'mailster' ) . '</strong></a>' ) );
+
+			else :
+
+				return true;
+
+			endif;
+
+		endforeach;
+
+	}
+
+
 	public function check( $strict = false ) {
 
 		global $wpdb;
@@ -196,41 +243,15 @@ class MailsterCron {
 
 		else :
 
-			$interval = mailster_option( 'interval' ) * 60;
-			$last_hit_array = get_option( 'mailster_cron_lasthit', array() );
-			if ( ! is_array( $last_hit_array ) ) {
-				$last_hit_array = array( $last_hit_array );
+			$is_working = $this->is_working();
+
+			if ( is_wp_error( $is_working ) ) {
+				return $is_working;
 			}
 
-			foreach ( $last_hit_array as $process_id => $last_hit ) :
+			mailster_remove_notice( 'check_cron' );
 
-				if ( ! $last_hit ) {
-					if ( is_array( $last_hit ) ) {
-						return new WP_Error( 'cron_error', sprintf( __( 'Your Cron page hasn\'t get triggered recently. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'settings page', 'mailster' ) . '</strong></a>.' ) );
-					}
-
-					return new WP_Error( 'cron_error', sprintf( __( 'The Cron Process is not setup correctly. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'settings page', 'mailster' ) . '</strong></a>.' ) );
-				}
-
-				// get real delay...
-				$real_delay = max( $interval, $last_hit['timestamp'] - $last_hit['oldtimestamp'] );
-				$current_delay = $now - $last_hit['timestamp'];
-
-				// ..and compare it with the interval (3 times) - also something in the queue
-				if ( ( $current_delay > $real_delay * 3 || ! $real_delay && ! $current_delay ) ) :
-
-					$this->update();
-
-					return new WP_Error( 'cron_warning', sprintf( __( 'Are your campaigns not sending? You may have to check your %1$s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . __( 'cron settings', 'mailster' ) . '</strong></a>' ) );
-
-				else :
-
-					mailster_remove_notice( 'check_cron' );
-					return true;
-
-				endif;
-
-			endforeach;
+			return true;
 
 		endif;
 
