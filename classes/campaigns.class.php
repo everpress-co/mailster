@@ -3917,10 +3917,6 @@ class MailsterCampaigns {
 			return;
 		}
 
-		if ( 'publish' != $new_status ) {
-			return;
-		}
-
 		if ( 'newsletter' == $post->post_type ) {
 			return;
 		}
@@ -3929,6 +3925,15 @@ class MailsterCampaigns {
 			return;
 		}
 
+		$accepted_status = apply_filters( 'mailster_check_for_autoresponder_accepted_status', 'publish', $post );
+
+		if ( ! is_array( $accepted_status ) ) {
+			$accepted_status = array( $accepted_status );
+		}
+
+		if ( ! in_array( $new_status, $accepted_status ) ) {
+			return;
+		}
 		$now = time();
 
 		$campaigns = $this->get_autoresponder();
