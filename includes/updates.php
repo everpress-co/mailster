@@ -533,7 +533,7 @@ if ( $old_version ) {
 			$mailster_options['track_opens'] = true;
 			$mailster_options['track_clicks'] = true;
 
-			update_option( 'mailster_cron_lasthit', false );
+			update_option( 'mailster_cron_lasthit', '' );
 
 			// allow NULL values on two columns
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
@@ -569,6 +569,9 @@ if ( $old_version ) {
 		case '2.3.9':
 		case '2.3.10':
 		case '2.3.11':
+
+
+			set_transient( 'mailster_check_verification', true, WEEK_IN_SECONDS );
 
 			// mailster_notice( $update_info, 'updated', false, 'info-screen', true, 'newsletter_page_mailster_dashboard' );
 		default:

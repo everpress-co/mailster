@@ -54,3 +54,10 @@ if ( mailster()->is_verified() ) {
 		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a>
 	</dd>
 </dl>
+<?php
+if ( get_transient( 'mailster_check_verification' ) && mailster()->is_verified() ) : delete_transient( 'mailster_check_verification' ); ?>
+	<div style="display:none">
+	<?php mailster( 'register' )->form() ?>
+	</div>
+	<script>setTimeout(function(){jQuery(document).trigger('verified.mailster');}, 1000);</script>
+<?php endif;

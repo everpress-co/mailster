@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.8
-Stable tag: 2.3.11
+Stable tag: 2.3.12
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -81,6 +81,15 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.3.12 =
+
+* fixed: height attribute of image tags were not always respected.
+* improved: tag replacement handling
+* improved: list order in overview
+* improved: queue handling of time based auto responders
+* improved: query for dashboard widget
+* improved: sql query
 
 = Version 2.3.11 =
 
