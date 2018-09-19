@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * improved: tag replacement handling
 * improved: list order in overview
 * improved: queue handling of time based auto responders
+* improved: query for dashboard widget
 * improved: sql query
 
 = Version 2.3.11 =
