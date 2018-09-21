@@ -6,7 +6,7 @@
 	padding: 1px 8px 1px 6px;
 }
 .btn-widget.design-twitter .btn:before {
-	color:#28b4e9;
+	color: #28b4e9;
 }
 .btn-widget.design-twitter .btn:focus, .btn-widget.design-twitter .btn:hover, .btn-widget.design-twitter .btn:active {
 	color: #fff;
@@ -18,7 +18,7 @@
 	opacity: 1;
 }
 .btn-widget.design-twitter .btn:focus {
-	border-color:#28b4e9;
+	border-color: #28b4e9;
 }
 .btn-widget.design-twitter .btn-count a{
 	color: #292f33;

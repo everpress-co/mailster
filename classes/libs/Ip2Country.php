@@ -2,23 +2,17 @@
 
 class Ip2Country {
 
-	//maxmind doesn't provide a zip version so I've uploaded it to bitbucket (updated weekly)
-	public $zip = 'http://mailster.github.io/GeoIPv6.zip';
+	// maxmind doesn't provide a zip version so I've uploaded it to bitbucket (updated weekly)
+	public $zip = 'https://mailster.github.io/GeoIPv6.zip';
 	private $dbfile;
-	private $gi;
+	public $gi;
 	private $renew = false;
 
-	public function __construct() {
+	public function __construct( $dbfile ) {
 
 		require_once MAILSTER_DIR . 'classes/libs/geoip.inc.php';
 
-		$this->dbfile = MAILSTER_UPLOAD_DIR . '/GeoIPv6.dat';
-
-		if ( mailster_option( 'countries_db' ) && mailster_option( 'countries_db' ) != $this->dbfile ) {
-			$this->dbfile = mailster_option( 'countries_db' );
-		} else if ( !file_exists( $this->dbfile ) ) {
-				add_action( 'shutdown', array( &$this, 'renew' ) );
-			}
+		$this->dbfile = $dbfile;
 
 		if ( file_exists( $this->dbfile ) ) {
 			$this->gi = new mailster_GeoIP( $this->dbfile );
@@ -33,7 +27,7 @@ class Ip2Country {
 	 * @return unknown
 	 */
 	public function country( $code ) {
-		return ( isset( $this->gi->GEOIP_COUNTRY_CODE_TO_NUMBER[strtoupper( $code )] ) ) ? $this->gi->GEOIP_COUNTRY_NAMES[$this->gi->GEOIP_COUNTRY_CODE_TO_NUMBER[strtoupper( $code )]] : $code;
+		return ( isset( $this->gi->GEOIP_COUNTRY_CODE_TO_NUMBER[ strtoupper( $code ) ] ) ) ? $this->gi->GEOIP_COUNTRY_NAMES[ $this->gi->GEOIP_COUNTRY_CODE_TO_NUMBER[ strtoupper( $code ) ] ] : $code;
 	}
 
 
@@ -47,11 +41,11 @@ class Ip2Country {
 		$rawcountries = $this->gi->GEOIP_COUNTRY_NAMES;
 		$countries = array();
 		foreach ( $rawcountries as $key => $country ) {
-			if ( !$key ) {
+			if ( ! $key ) {
 				continue;
 			}
 
-			$countries[$this->gi->GEOIP_COUNTRY_CODES[$key]] = $country;
+			$countries[ $this->gi->GEOIP_COUNTRY_CODES[ $key ] ] = $country;
 		}
 
 		return $countries;
@@ -67,16 +61,16 @@ class Ip2Country {
 	 */
 	public function get( $ip, $part = null ) {
 
-		//append two semicollons for ipv4 addresses
+		// append two semicollons for ipv4 addresses
 		if ( strlen( $ip ) <= 15 ) {
 			$ip = '::' . $ip;
 		}
 
-		//prevent some errors
-		$error = ini_get( "error_reporting" );
+		// prevent some errors
+		$error = ini_get( 'error_reporting' );
 		error_reporting( E_ERROR );
 
-		if ( !is_null( $part ) ) {
+		if ( ! is_null( $part ) ) {
 			if ( method_exists( $this->gi, 'geoip_country_' . $part . '_by_addr_v6' ) ) {
 				return call_user_func( array( $this->gi, 'geoip_country_' . $part . '_by_addr_v6' ), $ip );
 			} else {
@@ -101,18 +95,18 @@ class Ip2Country {
 	 * @param unknown $force (optional)
 	 * @return unknown
 	 */
-	public function renew( $force = false ) {
+	public function update( $force = false ) {
 
 		global $wp_filesystem;
 
 		$filemtime = file_exists( $this->dbfile ) ? filemtime( $this->dbfile ) : 0;
 
-		if ( !$filemtime || $force || $this->renew ) {
+		if ( ! $filemtime || $force || $this->renew ) {
 			$do_renew = true;
 		} else {
 			$r = wp_remote_get( $this->zip, array( 'method' => 'HEAD' ) );
 			$headers = wp_remote_retrieve_headers( $r );
-			//check header
+			// check header
 			if ( $headers['content-type'] != 'application/zip' ) {
 				return new WP_Error( 'wrong_filetype', 'wrong file type' );
 			}
@@ -126,27 +120,26 @@ class Ip2Country {
 			mailster_require_filesystem();
 			@set_time_limit( 120 );
 
-			if ( !function_exists( 'download_url' ) ) {
+			if ( ! function_exists( 'download_url' ) ) {
 				include ABSPATH . 'wp-admin/includes/file.php';
 			}
 
-			//download
+			// download
 			$tempfile = download_url( $this->zip );
 
-			//create directory
-			if ( !is_dir( dirname( $this->dbfile ) ) ) {
-				if ( !wp_mkdir_p( dirname( $this->dbfile ) ) ) {
+			// create directory
+			if ( ! is_dir( dirname( $this->dbfile ) ) ) {
+				if ( ! wp_mkdir_p( dirname( $this->dbfile ) ) ) {
 					return new WP_Error( 'create_directory', sprintf( 'not able to create directory %s', dirname( $this->dbfile ) ) );
 				}
 			}
 
-			//unzip
-			if ( !unzip_file( $tempfile, dirname( $this->dbfile ) ) ) {
+			// unzip
+			if ( ! unzip_file( $tempfile, dirname( $this->dbfile ) ) ) {
 				return new WP_Error( 'unzip_file', 'error unzipping file' );
 			}
 
-			if ( !file_exists( $this->dbfile ) ) {
-				mailster_update_option( 'trackcountries', false );
+			if ( ! file_exists( $this->dbfile ) ) {
 				return new WP_Error( 'file_missing', 'file is missing' );
 			}
 
@@ -154,7 +147,7 @@ class Ip2Country {
 
 		}
 
-		return file_exists( $this->dbfile ) ? $this->dbfile : false;
+		return file_exists( $this->dbfile );
 
 	}
 

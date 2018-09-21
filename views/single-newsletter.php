@@ -37,12 +37,12 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 	<meta property="og:site_name" content="<?php echo esc_attr( $blogname ) ?>" />
 <?php if ( $post_thumbnail_id ) : ?>
 	<meta property="og:image" content="<?php echo esc_attr( $image[0] ) ?>" />
-	<meta property="og:image:width" content="<?php echo intval( $image[1] ) ?>" />
-	<meta property="og:image:height" content="<?php echo intval( $image[2] ) ?>" />
+	<meta property="og:image:width" content="<?php echo (int) $image[1] ?>" />
+	<meta property="og:image:height" content="<?php echo (int) $image[2] ?>" />
 <?php endif; ?>
 
 	<meta name="twitter:card" content="<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_card', apply_filters( 'mailster_frontpage_twitter_card', 'summary' ) ) ); ?>"/>
-	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_username', apply_filters( 'mailster_frontpage_twitter_username', 'mailsterapp' ) ) ); ?>"/>
+	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_username', apply_filters( 'mailster_frontpage_twitter_username', 'mailster' ) ) ); ?>"/>
 	<meta name="twitter:title" content="<?php echo esc_attr( $title ) ?>" />
 	<meta name="twitter:description" content="<?php echo esc_attr( $description ); ?>"/>
 
@@ -62,7 +62,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 <?php if ( get_previous_post() && mailster_option( 'frontpage_pagination' ) ) : ?>
 			<li class="button header previous"><?php previous_post_link( '%link', '' ) ?></li>
 <?php endif; ?>
-		<li class="subject header"><a href="<?php echo $permalink ?>"><?php echo esc_html( $title ); ?></a></li>
+		<li class="subject header"><a href="<?php echo $permalink ?>"><?php if ( ! $meta['webversion'] ) : ?><strong>[ <?php esc_html_e( 'Private', 'mailster' ); ?> ]</strong><?php endif; ?> <?php echo esc_html( $title ); ?></a></li>
 <?php if ( current_user_can( 'edit_post', $post_id ) ) : ?>
 		<li class="editlink header"><a href="<?php echo admin_url( 'post.php?post=' . $post_id . '&action=edit' ); ?>"><?php esc_html_e( 'Edit', 'mailster' );?></a></li>
 <?php endif; ?>
@@ -89,7 +89,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 								}
 
 								?><li>
-									<a title="<?php printf( __( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ) ?>" class="<?php echo $service ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? intval( $social_services[ $service ]['width'] ) : 650 ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? intval( $social_services[ $service ]['height'] ) : 405 ?>" >
+									<a title="<?php printf( __( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ) ?>" class="<?php echo $service ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? (int) $social_services[ $service ]['width'] : 650 ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? (int) $social_services[ $service ]['height'] : 405 ?>" >
 									<?php echo esc_html( $social_services[ $service ]['name'] ) ?>
 									</a>
 								</li>

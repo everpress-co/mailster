@@ -14,6 +14,12 @@ $new_version = MAILSTER_VERSION;
 $texts = isset( $mailster_options['text'] ) && ! empty( $mailster_options['text'] ) ? $mailster_options['text'] : $mailster_texts;
 $show_update_notice = false;
 
+// update db structure
+mailster()->dbstructure();
+
+$default_options = mailster( 'settings' )->get_defaults();
+$default_texts = mailster( 'settings' )->get_default_texts();
+
 
 if ( $old_version ) {
 
@@ -419,14 +425,12 @@ if ( $old_version ) {
 
 		case '2.1.9':
 
-			$defaults = mailster( 'settings' )->get_default_texts();
-
-			$texts = wp_parse_args( $texts, $defaults );
+			$texts = wp_parse_args( $texts, $default_texts );
 
 			$t = mailster( 'translations' )->get_translation_data();
 
 			if ( ! empty( $t ) ) {
-				mailster_notice( '<strong>' . sprintf( 'An important change to localizations in Mailster has been made. <a href="%s">read more</a>', 'https://kb.mailster.co/translations-in-mailster/' ) . '</strong>', '', false, 'mailstertranslation' );
+				mailster_notice( sprintf( 'An important change to localizations in Mailster has been made. <a href="%s">read more</a>', 'https://kb.mailster.co/translations-in-mailster/' ), '', false, 'mailstertranslation' );
 			}
 
 			unset( $mailster_options['texts'] );
@@ -472,7 +476,7 @@ if ( $old_version ) {
 		case '2.1.30':
 
 			if ( isset( $mailster_options['php_mailer'] ) && $mailster_options['php_mailer'] ) {
-				mailster_notice( '<strong>' . sprintf( 'PHPMailer has been updated to 5.2.21. <a href="%s">read more</a>', 'https://github.com/PHPMailer/PHPMailer/releases/tag/v5.2.20' ) . '</strong>', '', false, 'phpmailer' );
+				mailster_notice( sprintf( 'PHPMailer has been updated to 5.2.21. <a href="%s">read more</a>', 'https://github.com/PHPMailer/PHPMailer/releases/tag/v5.2.20' ), '', false, 'phpmailer' );
 				$mailster_options['php_mailer'] = 'latest';
 			}
 
@@ -507,13 +511,76 @@ if ( $old_version ) {
 
 			$wpdb->query( "UPDATE {$wpdb->options} SET autoload = 'yes' WHERE option_name IN ('mailster_username', 'mailster_email')" );
 
+		case '2.2.7':
+		case '2.2.8':
+		case '2.2.9':
+		case '2.2.10':
+
+			update_option( 'mailster_hooks', get_option( 'mailster_hooks', '' ) );
+
+		case '2.2.11':
+		case '2.2.12':
+		case '2.2.13':
+		case '2.2.14':
+		case '2.2.15':
+		case '2.2.16':
+		case '2.2.17':
+		case '2.2.18':
+		case '2.2.x':
+
+			// since 2.3
+			$mailster_options['webversion_bar'] = true;
+			$mailster_options['track_opens'] = true;
+			$mailster_options['track_clicks'] = true;
+
+			update_option( 'mailster_cron_lasthit', '' );
+
+			// allow NULL values on two columns
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_actions CHANGE `campaign_id` `campaign_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
+
+			$mailster_options['welcome'] = true;
+			$mailster_options['_flush_rewrite_rules'] = true;
+			$show_update_notice = true;
+
+		case '2.3':
+		case '2.3.1':
+		case '2.3.2':
+		case '2.3.3':
+		case '2.3.4':
+		case '2.3.5':
+
+			$mailster_options['track_location'] = $mailster_options['trackcountries'];
+
+		case '2.3.6':
+
+			$mailster_options['gdpr_link'] = $default_options['gdpr_link'];
+			$mailster_options['gdpr_text'] = $default_options['gdpr_text'];
+			$mailster_options['gdpr_error'] = $default_options['gdpr_error'];
+
+		case '2.3.7':
+
+			mailster( 'helper' )->mkdir( '', true );
+			mailster( 'helper' )->mkdir( 'templates', true );
+			mailster( 'helper' )->mkdir( 'screenshots', true );
+			mailster( 'helper' )->mkdir( 'backgrounds', true );
+
+		case '2.3.8':
+		case '2.3.9':
+		case '2.3.10':
+		case '2.3.11':
+
+			// mailster_notice( $update_info, 'updated', false, 'info-screen', true, 'newsletter_page_mailster_dashboard' );
 		default:
 
+			do_action( 'mailster_update', $old_version, $new_version );
+			do_action( 'mailster_update_' . $old_version, $new_version );
 
 
 	}
 
 	update_option( 'mailster_version_old', $old_version );
+	update_option( 'mailster_updated', time() );
 
 }
 
@@ -527,9 +594,6 @@ update_option( 'mailster_texts', $mailster_texts );
 
 // update caps
 mailster( 'settings' )->update_capabilities();
-
-// update db structure
-mailster()->dbstructure();
 
 // clear cache
 mailster_clear_cache( '' );

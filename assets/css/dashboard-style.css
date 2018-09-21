@@ -2,7 +2,7 @@
 	display: none;
 }
 .mailster-dashboard .postbox:before{
-	content:'';
+	content: '';
 	display: block;
 }
 .mailster-dashboard .postbox .inside{
@@ -54,7 +54,7 @@
 	margin: 0;
 	font-size: 20px;
 }
-.welcome-panel-column-container{
+.mailster-dashboard .welcome-panel-column-container{
 	text-align: center;
 }
 .mailster-dashboard .register_form_wrap .howto{
@@ -78,15 +78,15 @@
 .mailster-dashboard dl dt{
 	font-weight: 700;
 	margin-left: 55px;
-	margin-top:8px;
-	margin-bottom:4px;
+	margin-top: 8px;
+	margin-bottom: 4px;
 }
 .mailster-dashboard dl dt a{
 	color: #444;
 }
 .mailster-dashboard dl dd{
 	margin-left: 55px;
-	color:#23282d;
+	color: #23282d;
 }
 .mailster-dashboard dl dd span.lighter{
 	color: #aaa;
@@ -153,18 +153,25 @@
 	padding: 6px 0 10px;
 }
 .mailster-mb-label{
-	vertical-align:top;
+	vertical-align: top;
 	display: inline-block;
-	max-width:50%;
-	text-overflow:ellipsis;
-	overflow:hidden;
+	max-width: 50%;
+	text-overflow: ellipsis;
+	overflow: hidden;
 	white-space: nowrap;
+}
+.mailster-mb-link{
+	display: inline-block;
+	max-width: 40%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 .mailster-mb-link:before{
 	font: normal 16px/1 'mailster-icons';
 	content: '';
 	margin: 0 4px 0 5px;
-	color:#585858;
+	color: #585858;
 }
 .mailster-mb-link.status-active:before{
 	content: '\e80f';
@@ -173,9 +180,10 @@
 	content: '\e804';
 	color: #3AB61B;
 }
-.mailster-mb-select{
+.meta-box-sortables select.mailster-mb-select{
 	float: right;
 	margin-top: -6px;
+	max-width: 33%;
 }
 .rtl .mailster-mb-select{
 	float: left;
@@ -187,17 +195,15 @@
 	overflow: hidden;
 }
 .mailster-mb-stats ul li{
-	height:75px;
+	height: 75px;
 	width: 20%;
 	display: block;
 	float: left;
 	text-align: center;
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	box-sizing:border-box;
+	box-sizing: border-box;
 }
 .mailster-mb-stats ul.labels li{
-	height:25px;
+	height: 25px;
 }
 .rtl .mailster-mb-statsli{
 	float: right;
@@ -206,9 +212,9 @@
 	margin: 0 auto;
 }
 .mailster-mb-stats .stats-total{
-	line-height:3.5em;
-	font-size:22px;
-	font-weight:700;
+	line-height: 3.5em;
+	font-size: 22px;
+	font-weight: 700;
 
 }
 /* My Mailster */
@@ -239,12 +245,17 @@
 .postbox.verified .valid{
 	display: inherit;
 }
+.postbox .update-available, .postbox.has-update .update-not-available{
+	display: none;
+}
+.postbox.has-update .update-available{
+	display: block;
+}
 .postbox .update-button{
 	font-weight: 700;
 }
 .mailster-dashboard .postbox.has-update{
 	overflow: hidden;
-	-webkit-box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 	box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 	border-color: #F26B6B;
 }

@@ -5,16 +5,24 @@ class MailsterUpdate {
 
 	public function __construct() {
 
-		add_filter( 'upgrader_pre_download', array( &$this, 'upgrader_pre_download' ), 10, 3 );
+		add_filter( 'plugins_loaded', array( &$this, 'init' ) );
 
+		add_filter( 'upgrader_pre_download', array( &$this, 'upgrader_pre_download' ), 10, 3 );
+		add_action( 'after_plugin_row_' . MAILSTER_SLUG, array( &$this, 'add_license_info' ), 10, 3 );
+
+	}
+
+
+	public function init() {
 		if ( ! class_exists( 'UpdateCenterPlugin' ) ) {
 			require_once MAILSTER_DIR . 'classes/UpdateCenterPlugin.php';
 		}
 
 		UpdateCenterPlugin::add( array(
-			'licensecode' => get_option( 'mailster_license' ),
+			'licensecode' => mailster()->license(),
 			'remote_url' => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
 			'plugin' => MAILSTER_SLUG,
+			'slug' => 'mailster',
 			'autoupdate' => mailster_option( 'autoupdate', true ),
 		) );
 
@@ -73,7 +81,7 @@ class MailsterUpdate {
 
 					case 500: // Internal Server Error
 					case 503: // Service Unavailable
-						$error = __( 'Envato servers are currently down. Please try again later!', 'mailster' );
+						$error = __( 'Authentication servers are currently down. Please try again later!', 'mailster' );
 					break;
 
 					default:
@@ -138,6 +146,28 @@ class MailsterUpdate {
 		$actions['mailster_get_license'] = '<a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=action+link">' . __( 'Buy a new Mailster License', 'mailster' ) . '</a>';
 
 		return $actions;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $actions
+	 * @return unknown
+	 */
+	public function add_license_info( $plugin_file, $plugin_data, $status ) {
+
+		if ( mailster()->is_outdated() ) {
+
+			echo '<tr class="plugin-update-tr" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="3" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( __( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
+
+		}
+		if ( ! mailster()->is_verified() ) {
+
+			echo '<tr class="plugin-update-tr" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="3" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
+
+		}
 
 	}
 

@@ -142,9 +142,23 @@ class MailsterStatistics {
 
 		$dates = array_keys( $rawdata );
 
-		foreach ( $dates as $i => $date ) {
+		$i = 0;
+		$prev = null;
+
+		foreach ( $rawdata as $date => $count ) {
 			$d = strtotime( $date );
-			$dates[ $i ] = $wp_locale->weekday_abbrev[ $wp_locale->weekday[ date( 'w', $d ) ] ];
+			$str = $wp_locale->weekday_abbrev[ $wp_locale->weekday[ date( 'w', $d ) ] ];
+			if ( ! is_null( $prev ) ) {
+				$grow = $count - $prev;
+				if ( $grow > 0 ) {
+					$str .= ' ▲+' . $this->format( $grow ) . ' ';
+				} elseif ( $grow < 0 ) {
+					$str .= ' ▼-' . $this->format( $grow ) . ' ';
+				}
+			}
+			$prev = $count;
+			$dates[ $i ] = $str;
+			$i++;
 		}
 
 		return $dates;
@@ -205,22 +219,30 @@ class MailsterStatistics {
 		global $wpdb;
 
 		$from = is_null( $from ) ? time() : $from;
-		$to = is_null( $to ) ? time() + 86399 : $to;
+		$to = is_null( $to ) ? time() + DAY_IN_SECONDS - 1 : $to;
 
-		$dates = $this->get_calendar_table( $from, $to );
-		$count = count( $dates );
+		$dates = $this->get_date_range( $from, $to );
+		$dates = array_fill_keys( $dates, 0 );
 
-		$count_before = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers WHERE status = 1 AND IF(confirm, confirm, signup) < %d", $from ) );
+		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) < %d", $from ) );
 
-		$sql = "SELECT @n:=@n + IFNULL(total,0) total FROM (SELECT {$this->calendar_table}.date, total FROM {$this->calendar_table} LEFT JOIN (SELECT FROM_UNIXTIME(IF(confirm, confirm, signup), '%Y-%m-%d') date, count(*) total FROM {$wpdb->prefix}mailster_subscribers WHERE status = 1 GROUP BY date ) t2 ON {$this->calendar_table}.date= t2.date ORDER BY date) t3 CROSS JOIN (SELECT @n:=$count_before) n LIMIT 0, $count";
+		$sql = "SELECT FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup), '%Y-%m-%d') AS the_date, COUNT(*) AS increase FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) GROUP BY the_date HAVING the_date >= '" . date( 'Y-m-d', $from ) . "' AND the_date <= '" . date( 'Y-m-d', $to ) . "'";
 
-		$sql = apply_filters( 'mailster_get_signups_sql', $sql, $from, $to );
+		$increase_data = $wpdb->get_results( $sql );
 
-		$data = array_combine( $dates, array_map( 'floatval', $wpdb->get_col( $sql ) ) );
+		$increase_data = array_combine( wp_list_pluck( $increase_data, 'the_date' ), wp_list_pluck( $increase_data, 'increase' ) );
 
-		return $data;
+		foreach ( $dates as $date => $count ) {
 
+			if ( isset( $increase_data[ $date ] ) ) {
+				$total += $increase_data[ $date ];
+			}
+			$dates[ $date ] = $total;
+		}
+
+			return $dates;
 	}
+
 
 
 	/**
@@ -239,7 +261,7 @@ class MailsterStatistics {
 
 		if ( ! $this->calendar_table ) {
 			$this->calendar_table = "{$wpdb->prefix}mailster_" . uniqid();
-			$sql = "CREATE TEMPORARY TABLE {$this->calendar_table} ( date date );";
+			$sql = "CREATE TEMPORARY TABLE {$this->calendar_table} ( thedate date );";
 			if ( false == $wpdb->query( $sql ) ) {
 				return false;
 			}
@@ -250,7 +272,7 @@ class MailsterStatistics {
 			}
 		}
 
-		$sql = "INSERT INTO {$this->calendar_table} (date) VALUES ('" . implode( "'),('", $dates ) . "');";
+		$sql = "INSERT INTO {$this->calendar_table} (thedate) VALUES ('" . implode( "'),('", $dates ) . "');";
 
 		if ( false !== $wpdb->query( $sql ) ) {
 			return $dates;
@@ -284,5 +306,24 @@ class MailsterStatistics {
 		return $dates;
 	}
 
+
+	/**
+	 *
+	 *
+	 * @param unknown $value
+	 * @return unknown
+	 */
+	private function format( $value ) {
+
+		$value = (int) $value;
+
+		if ( $value >= 1000000 ) {
+			return round( $value / 1000, 1 ) . 'M';
+		} elseif ( $value >= 1000 ) {
+			return round( $value / 1000, 1 ) . 'K';
+		}
+
+		return ! ($value % 1) ? $value : '';
+	}
 
 }

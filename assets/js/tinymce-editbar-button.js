@@ -4,7 +4,8 @@ jQuery(document).ready(function ($) {
 
 	var l10n = mailster_mce_button.l10n,
 		tags = mailster_mce_button.tags,
-		designs = mailster_mce_button.designs;
+		designs = mailster_mce_button.designs,
+		selection;
 
 	tinymce.PluginManager.add('mailster_mce_button', function (editor, url) {
 		editor.addButton('mailster_mce_button', {
@@ -14,11 +15,27 @@ jQuery(document).ready(function ($) {
 			menu: $.map(tags, function (group, id) {
 				return {
 					text: group.name,
-					menu: $.map(group.tags, function (name, id) {
+					menu: $.map(group.tags, function (name, tag) {
 						return {
 							text: name,
 							onclick: function () {
-								editor.insertContent('{' + id + '}');
+								var poststuff = '';
+								switch (tag) {
+								case 'webversion':
+								case 'unsub':
+								case 'forward':
+								case 'profile':
+									poststuff = 'link';
+								case 'homepage':
+									if (selection = editor.selection.getContent({
+											format: "text"
+										})) {
+										editor.insertContent('<a href="{' + tag + poststuff + '}">' + selection + '</a>');
+										break;
+									}
+								default:
+									editor.insertContent('{' + tag + '} ');
+								}
 							}
 						};
 

@@ -91,7 +91,7 @@ jQuery(document).ready(function ($) {
 		_email
 			.on('blur', function () {
 				var _this = $(this),
-					email = $.trim(_this.val().toLowerCase()),
+					email = $.trim(_this.val()),
 					valid = _verify(email);
 
 				if (!valid) {
@@ -127,7 +127,7 @@ jQuery(document).ready(function ($) {
 				var _this = $(this);
 				clearTimeout(timeout);
 				timeout = setTimeout(function () {
-					var email = $.trim(_this.val().toLowerCase()),
+					var email = $.trim(_this.val()),
 						valid = _verify(email);
 					if (!valid) return false;
 

@@ -79,27 +79,38 @@ class MailsterBounceHandler {
 
 			$bouncehandler = new Bouncehandler();
 			$bounceresult = $bouncehandler->parse_email( $message );
-			$bounceresult = (object) $bounceresult[0];
+
+			if ( ! empty( $bounceresult ) ) {
+				$bounceresult = (object) $bounceresult[0];
+				$action = $bounceresult->action;
+				$status = $bounceresult->status;
+			} else {
+				$action = 'unsubscribe';
+			}
 
 			$subscriber = mailster( 'subscribers' )->get_by_hash( $hash[2], false );
-			$campaign = ! empty( $camp ) ? mailster( 'campaigns' )->get( intval( $camp[2] ) ) : null;
+			$campaign = ! empty( $camp ) ? mailster( 'campaigns' )->get( (int) $camp[2] ) : null;
 
 			if ( $subscriber ) {
 
 				$campaign_id = $campaign ? $campaign->ID : 0;
-				switch ( $bounceresult->action ) {
+				switch ( $action ) {
 					case 'success':
 					break;
 
+					case 'unsubscribe':
+						// unsubscribe
+						mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $campaign_id, 'list_unsubscribe' );
+					break;
 					case 'failed':
 						// hardbounce
-						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, true, $bounceresult->status );
+						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, true, $status );
 					break;
 
 					case 'transient':
 					default:
 						// softbounce
-						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, false, $bounceresult->status );
+						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, false, $status );
 
 				}
 			}
@@ -203,7 +214,7 @@ class MailsterBounceLegacyHandler extends MailsterBounceHandler {
 
 		require_once ABSPATH . WPINC . '/class-pop3.php';
 		$this->mailbox = new POP3();
-		$this->mailbox->TIMEOUT = $timeout;
+		$this->mailbox->TIMEOUT = (int) $timeout;
 
 		if ( $ssl ) {
 			$server = 'ssl://' . $server;
