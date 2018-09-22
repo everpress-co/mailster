@@ -1,0 +1,1 @@
+<canvas class="metabox-chart" data-type="line"></canvas>Subscribers

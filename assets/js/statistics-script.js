@@ -46,15 +46,48 @@ jQuery(document).ready(function ($) {
 			$el.attr('aria-expanded', !$el.parent('.postbox').hasClass('closed'));
 		});
 
+	if (typeof jQuery.datepicker == 'object') {
+		$('input.datepicker').datepicker({
+			dateFormat: 'yy-mm-dd',
+			maxDate: new Date(),
+			firstDay: mailsterL10n.start_of_week,
+			showWeek: true,
+			dayNames: mailsterL10n.day_names,
+			dayNamesMin: mailsterL10n.day_names_min,
+			monthNames: mailsterL10n.month_names,
+			prevText: mailsterL10n.prev,
+			nextText: mailsterL10n.next,
+			showAnim: 'fadeIn',
+			onClose: function () {
+				var date = $(this).datepicker('getDate');
+				console.log($(this).val());
+				// $('.deliverydate').html($(this).val());
+			}
+		});
+
+		$()
+
+
+	}
 
 	$(document)
 		.on('click', '.toggle-indicator', toggleMetaBoxes)
 		.on('click', '.hide-postbox-tog', function () {
-
 			$('#' + $(this).val())[$(this).is(':checked') ? 'show' : 'hide']().removeClass('closed');
 			toggleMetaBoxes();
 
-		});
+		})
+		.on('change', '.date-range-select', function () {
+
+			console.log(mailsterL10n[$(this).val()]);
+			var dates = mailsterL10n[$(this).val()];
+
+			$('.date-range-from').datepicker("setDate", dates[0]);
+			$('.date-range-to').datepicker("setDate", dates[1]);
+			console.log(dates);
+
+		})
+
 
 	function updateMetaBoxes() {
 		orderMetaBoxes();
@@ -111,6 +144,74 @@ jQuery(document).ready(function ($) {
 
 		$.post(ajaxurl, data);
 
+	}
+
+	initeMetaBoxes();
+
+	function initeMetaBoxes() {
+
+		var boxes = $('.postbox');
+
+		$.each(boxes, function () {
+			var id = this.id;
+
+			loadMetaBox(this);
+
+			console.log(id);
+		});
+
+	}
+
+	function loadMetaBox(id) {
+		var el = $(id),
+			ctx;
+
+		el.find('.metabox-chart').each(function () {
+			var self = $(this),
+				chart = self.data('chart') || new Chart(self, {
+					type: self.data('type') || 'bar',
+					options: {
+						scales: {
+							yAxes: [{
+								ticks: {
+									beginAtZero: true
+								}
+							}]
+						}
+					}
+				});
+
+			chart.options.defaultColor = 'rgba(255, 99, 132, 0.5)';
+			chart.data.labels = ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"];
+			chart.data.datasets = [];
+			chart.data.datasets.push({
+				label: '# of Votes',
+				data: [12, 19, 3, 5, 2, 3],
+				_backgroundColor: [
+					'rgba(255, 99, 132, 0.2)',
+				],
+				borderWidth: 1
+			});
+
+
+			chart.update();
+
+
+			console.log(chart);
+			setTimeout(function () {
+
+				chart.options.defaultColor = 'rgba(255, 99, 132, 1)';
+				chart.type = 'line';
+				el.removeClass('loading');
+				console.log(chart.data.datasets[0]);
+				chart.data.datasets[0].data[0] = 17;
+
+				chart.update();
+
+			}, 2000)
+
+		});
+		el.addClass('loading');
 	}
 
 	function _ajax(action, data, callback, errorCallback, dataType) {

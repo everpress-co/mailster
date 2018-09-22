@@ -13,7 +13,7 @@ class MailsterStatistics {
 	public function init() {
 
 		if ( is_admin() ) {
-			add_action( 'admin_menu', array( &$this, 'add_menu' ), 40 );
+			add_action( 'admin_menu', array( &$this, 'add_menu' ), 30 );
 		}
 
 	}
@@ -42,28 +42,68 @@ class MailsterStatistics {
 
 	}
 
-	public function sample_metabox() {
-		echo 'Test';
-	}
 
 	public function campaigns() {
 		include MAILSTER_DIR . 'views/statistics/mb-campaigns.php';
 	}
+	public function subscribers() {
+		include MAILSTER_DIR . 'views/statistics/mb-subscribers.php';
+	}
+	public function engagements() {
+		include MAILSTER_DIR . 'views/statistics/mb-engagements.php';
+	}
 
 	public function scripts_styles() {
 
+		global $wp_locale;
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_script( 'mailster-chartjs', MAILSTER_URI . 'assets/js/libs/chart' . $suffix . '.js', array(), MAILSTER_VERSION );
 
 		wp_enqueue_script( 'mailster-statistics-script', MAILSTER_URI . 'assets/js/statistics-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 		wp_localize_script( 'mailster-statistics-script', 'mailsterL10n', array() );
+
+		$today = date( 'Y-m-d' );
+		$yesterday = date( 'Y-m-d', strtotime( 'yesterday' ) );
+		$last_7_days = date( 'Y-m-d', strtotime( '-7 days' ) );
+		$last_week_from = date( 'Y-m-d', strtotime( 'sunday 1 week ago +' . get_option( 'start_of_week' ) . ' day' ) );
+		$last_week_to = date( 'Y-m-d', strtotime( 'sunday 1 week ago +' . (6 + get_option( 'start_of_week' )) . ' day' ) );
+		$last_month_from = date( 'Y-m-d', mktime( 0,0,0,date( 'n' ) -1,1,date( 'Y' ) ) );
+		$last_month_to = date( 'Y-m-d', mktime( 0,0,-1,date( 'n' ),1,date( 'Y' ) ) );
+		$this_month = date( 'Y-m-d', mktime( 0,0,0,date( 'n' ),1,date( 'Y' ) ) );
+		$last_12_month = date( 'Y-m-d', strtotime( '-12 month' ) );
+
+		wp_localize_script( 'mailster-statistics-script', 'mailsterL10n', array(
+			'next' => __( 'next', 'mailster' ),
+			'prev' => __( 'prev', 'mailster' ),
+			'start_of_week' => get_option( 'start_of_week' ),
+			'day_names' => $wp_locale->weekday,
+			'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
+			'month_names' => array_values( $wp_locale->month ),
+			'now' => $today,
+			'today' => array( $today,$today ),
+			'yesterday' => array( $yesterday,$yesterday ),
+			'last_7_days' => array( $last_7_days, $yesterday ),
+			'last_week' => array( $last_week_from, $last_week_to ),
+			'last_month' => array( $last_month_from, $last_month_to ),
+			'this_month' => array( $this_month, $yesterday ),
+			'last_12_month' => array( $last_12_month, $yesterday ),
+		) );
+
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_script( 'jquery-touch-punch' );
 
-		wp_enqueue_style( 'mailster-manage-style', MAILSTER_URI . 'assets/css/statistics-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_style( 'mailster-statistics-style', MAILSTER_URI . 'assets/css/statistics-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		wp_enqueue_style( 'jquery-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css' );
 		wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css' );
+
+		wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'jquery-ui-datepicker' );
+		wp_enqueue_script( 'jquery-ui-draggable' );
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 
@@ -71,8 +111,8 @@ class MailsterStatistics {
 
 	public function register_meta_boxes() {
 
-		$this->register_meta_box( 'metabox1', __( 'MetaBox 1', 'mailster' ), array( &$this, 'sample_metabox' ) );
-		$this->register_meta_box( 'metabox2', __( 'MetaBox 2', 'mailster' ), array( &$this, 'sample_metabox' ), 'side' );
+		$this->register_meta_box( 'engagements', __( 'Engagements', 'mailster' ), array( &$this, 'engagements' ) );
+		$this->register_meta_box( 'subscribers', __( 'Subscribers', 'mailster' ), array( &$this, 'subscribers' ), 'side' );
 		$this->register_meta_box( 'campaigns', __( 'Campaigns', 'mailster' ), array( &$this, 'campaigns' ), 'side' );
 
 	}

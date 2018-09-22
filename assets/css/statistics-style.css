@@ -5,3 +5,50 @@
 .mailster-statistics .postbox .inside{
 	min-height: 200px;
 }
+.mailster-statistics .postbox.loading .inside{
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-image: url(../img/loading.gif) !important;
+}
+.mailster-statistics .postbox .metabox-chart{
+	width: 100%;
+	min-height: 240px;
+}
+
+.date-range{
+	font-size: 14px;
+	display: inline-block;
+	border-bottom-style: dotted;
+	border-bottom-width: 1px;
+}
+.date-range .date-range-dropdown{
+	padding: 20px;
+	width: auto;
+	position: absolute;
+	z-index: 1;
+	display: none;
+}
+.date-range:hover .date-range-dropdown{
+}
+.date-range:hover .date-range-dropdown{
+	display: block;
+}
+.date-range .date-range-dropdown input, .date-range .date-range-dropdown select{
+	display: inline-block;
+	width: 100px;
+}
+
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+	only screen and (-o-min-device-pixel-ratio: 32),
+	only screen and (min--moz-device-pixel-ratio: 1.5),
+	only screen and (min-device-pixel-ratio: 1.5) {
+
+
+	.mailster-statistics .postbox.loading .inside {
+		-webkit-background-size: 20px 20px;
+		-moz-background-size: 20px 20px;
+		background-size: 20px 20px;
+		background-image: url(../img/loading_2x.gif) !important;
+	}
+}

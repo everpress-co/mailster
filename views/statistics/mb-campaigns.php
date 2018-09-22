@@ -1,1 +1,1 @@
-Campaigns Meta Box
+<canvas class="metabox-chart" data-type="bar"></canvas>
