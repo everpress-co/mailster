@@ -19,7 +19,7 @@ class Mailster {
 		register_activation_hook( MAILSTER_FILE, array( &$this, 'activate' ) );
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
-		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy', 'empty' );
+		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'logs', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy', 'empty' );
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
@@ -1603,6 +1603,16 @@ class Mailster {
                 UNIQUE KEY id (form_id,list_id),
                 KEY form_id (form_id),
                 KEY list_id (list_id)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_logs (
+                ID bigint(20) NOT NULL AUTO_INCREMENT,
+                timestamp decimal(15,5) unsigned NOT NULL DEFAULT 0,
+                type varchar(191) NOT NULL,
+                subscriber_id bigint(20) unsigned NULL DEFAULT NULL,
+                campaign_id bigint(20) unsigned NULL DEFAULT NULL,
+                text longtext NOT NULL,
+                PRIMARY KEY  (ID)
             ) $collate;",
 
 		), $collate);

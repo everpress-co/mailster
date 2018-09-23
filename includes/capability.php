@@ -140,6 +140,21 @@ $mailster_capabilities = array(
 	),
 
 
+	'mailster_add_logs' => array(
+		'title' => __( 'add logs', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'mailster_edit_logs' => array(
+		'title' => __( 'edit logs', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
+	'mailster_delete_logs' => array(
+		'title' => __( 'delete logs', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
 
 	'mailster_manage_addons' => array(
 		'title' => __( 'manage addons', 'mailster' ),

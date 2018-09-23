@@ -41,6 +41,7 @@ $sections = array(
 	'bounce' => esc_html__( 'Bouncing', 'mailster' ),
 	'authentication' => esc_html__( 'Authentication', 'mailster' ),
 	'advanced' => esc_html__( 'Advanced', 'mailster' ),
+	'log' => esc_html__( 'Logging', 'mailster' ),
 	'system_info' => esc_html__( 'System Info', 'mailster' ),
 	'manage-settings' => esc_html__( 'Manage Settings', 'mailster' ),
 );
