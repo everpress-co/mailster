@@ -7,6 +7,7 @@ class MailsterPlaceholder {
 	private $keeptag;
 	private $keeptags;
 	private $placeholder = array();
+	private $post_types = array();
 	private $rss = array();
 	private $rss_timestamp = null;
 	private $campaignID = null;
@@ -432,7 +433,7 @@ class MailsterPlaceholder {
 
 		if ( preg_match_all( '#<module[^>]*?data-rss="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
 
-			$first_id = null;
+			$first = null;
 			foreach ( $modules[0] as $i => $html ) {
 
 				$search = $modules[0][ $i ];
@@ -444,17 +445,19 @@ class MailsterPlaceholder {
 				} else {
 
 					$id = md5( $feed_url );
+					$temp_post_type = 'mailster_rss_' . $id;
 
 					if ( ! isset( $this->rss[ $id ] ) ) {
-						$this->rss[ 'mailster_get_last_post_mailster_rss_' . $id ] = $feed_url;
-						add_filter( 'mailster_get_last_post_mailster_rss_' . $id, array( &$this, 'rss_replace' ), 5, 6 );
+						$this->rss[ 'mailster_get_last_post_' . $temp_post_type ] = $feed_url;
+						add_filter( 'mailster_get_last_post_' . $temp_post_type, array( &$this, 'rss_replace' ), 5, 6 );
 						if ( $i == 0 ) {
-							$first_id = $id;
+							$first = $temp_post_type;
 						}
 					}
 
-					$replace = str_replace( '{rss', '{mailster_rss_' . $id, $search );
-					$replace = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=mailster_rss_' . $id, $replace );
+					$this->post_types[] = $temp_post_type;
+					$replace = str_replace( '{rss', '{' . $temp_post_type, $search );
+					$replace = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $temp_post_type, $replace );
 
 				}
 
@@ -462,9 +465,9 @@ class MailsterPlaceholder {
 			}
 
 			// replace all tags outside the scope
-			if ( $first_id ) {
-				$this->content = str_replace( '{rss', '{mailster_rss_' . $first_id, $this->content );
-				$this->content = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=mailster_rss_' . $first_id, $this->content );
+			if ( $first ) {
+				$this->content = str_replace( '{rss', '{' . $first, $this->content );
+				$this->content = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $first, $this->content );
 			}
 		}
 
@@ -838,11 +841,24 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
+	 */
+	private function get_post_types_to_replace() {
+		if ( empty( $this->post_types ) ) {
+			$this->post_types = mailster( 'helper' )->get_post_types();
+		}
+
+		return $this->post_types;
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $relative_to_absolute (optional)
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
-		$pts = mailster( 'helper' )->get_post_types();
+		$pts = $this->get_post_types_to_replace();
 		$pts = implode( '|', $pts );
 
 		// all dynamic post type tags
