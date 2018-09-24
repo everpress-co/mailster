@@ -84,6 +84,9 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.13 =
 
+* fixed: Max execution time error message pops up randomly on some servers.
+* fixed: PHP error on form duplication.
+
 = Version 2.3.12 =
 
 * fixed: height attribute of image tags were not always respected.
