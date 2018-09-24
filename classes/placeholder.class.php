@@ -842,8 +842,11 @@ class MailsterPlaceholder {
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
+		$pts = mailster( 'helper' )->get_post_types();
+		$pts = implode( '|', $pts );
+
 		// all dynamic post type tags
-		if ( $count = preg_match_all( '#\{(([a-z0-9_-]+)_([^}]+):(-)?([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#\{((' . $pts . ')_([^}]+):(-)?([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 

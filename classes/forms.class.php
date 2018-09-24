@@ -340,8 +340,8 @@ class MailsterForms {
 
 			// duplicate form
 			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
-					$id = (int) $_GET['duplicate'];
-					$id = $this->duplicate( $id );
+				$id = (int) $_GET['duplicate'];
+				$id = $this->duplicate( $id );
 
 			}
 
@@ -684,6 +684,9 @@ class MailsterForms {
 			unset( $form->added );
 			unset( $form->updated );
 			unset( $form->stylesheet );
+			if ( empty( $form->style ) ) {
+				unset( $form->style );
+			}
 
 			if ( preg_match( '# \((\d+)\)$#', $form->name, $hits ) ) {
 				$form->name = trim( preg_replace( '#(.*) \(\d+\)$#', '$1 (' . ( ++$hits[1] ) . ')', $form->name ) );

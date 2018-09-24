@@ -91,15 +91,9 @@
 .mailster-condition-container{
 	display: none;
 }
-_.mailster-conditions-wrap .mailster-condition:after{
-	display: table;
-	content: '';
-	clear: both;
-	float: none;
-}
 .mailster-conditions-field-fields, .mailster-conditions-operator-fields, .mailster-conditions-value-fields{
 	float: left;
-	max-width: 38%;
+	max-width: 37%;
 	padding-right: 4px;
 }
 .rtl .mailster-conditions-field-fields,.rtl .mailster-conditions-operator-fields,.rtl .mailster-conditions-value-fields{
@@ -173,7 +167,6 @@ _.mailster-conditions-wrap .mailster-condition:after{
 .mailster-condition .mailster-rating span.enabled:before{
 	content: '\e82d';
 }
-
 .mailster-conditions-wrap .mailster-conditions-value-field-multiselect:first-child{
 	display: inline-block;
 }
