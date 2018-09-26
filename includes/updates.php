@@ -597,6 +597,10 @@ mailster( 'settings' )->update_capabilities();
 
 // clear cache
 mailster_clear_cache( '' );
+
+// delete plugin hash
+delete_transient( 'mailster_hash' );
+
 // mailster_update_option('welcome', true);
 add_action( 'shutdown', array( 'UpdateCenterPlugin', 'clear_options' ) );
 

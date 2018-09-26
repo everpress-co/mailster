@@ -2211,6 +2211,30 @@ class Mailster {
 	}
 
 
+	public function get_plugin_hash( $force = false ) {
+
+		if ( ! ( $hash = get_transient( 'mailster_hash' ) ) || $force ) {
+
+			$files = list_files( MAILSTER_DIR, 100 );
+
+			sort( $files );
+
+			$hashes = array();
+
+			foreach ( $files as $file ) {
+				$hashes[] = md5_file( $file );
+			}
+
+			$hash = md5( implode( '', $hashes ) );
+			set_transient( 'mailster_hash', $hash, DAY_IN_SECONDS );
+
+		}
+
+		return $hash;
+
+	}
+
+
 	/**
 	 *
 	 *
