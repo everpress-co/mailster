@@ -67,10 +67,10 @@ $sent = $this->get_sent( $post->ID );
 
 	$totals = $this->get_totals( $post->ID );
 	$p = round( $this->get_sent_rate( $post->ID ) * 100 );
-
+	$pg = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 ?>
 		<p>
-			<div class="progress paused"><span class="bar" style="width:<?php echo $p ?>%"></span><span>&nbsp;<?php printf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) ?></span><var><?php echo $p ?>%</var></div>
+			<div class="progress paused"><span class="bar" style="width:<?php echo $p ?>%"><span>&nbsp;<?php echo $pg ?></span></span><span>&nbsp;<?php echo $pg ?></span><var><?php echo $p ?>%</var></div>
 		</p>
 	<?php endif; ?>
 
@@ -509,11 +509,11 @@ $sent = $this->get_sent( $post->ID );
 	<?php if ( $sent && ! $is_autoresponder ) :
 
 		$totals = $this->get_totals( $post->ID );
-
 		$p = round( $this->get_sent_rate( $post->ID ) * 100 );
+		$pg = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 	?>
 		<div class="progress">
-			<span class="bar" style="width:<?php echo $p ?>%"></span><span>&nbsp;<?php printf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) ?></span><var><?php echo $p ?>%</var>
+			<span class="bar" style="width:<?php echo $p ?>%"><span>&nbsp;<?php echo $pg ?></span></span><span>&nbsp;<?php echo $pg ?></span><var><?php echo $p ?>%</var>
 		</div>
 
 			<?php if ( $p ) : ?>
@@ -534,9 +534,10 @@ $sent = $this->get_sent( $post->ID );
 	<?php
 		$totals = $this->get_totals( $post->ID );
 		$p = round( $this->get_sent_rate( $post->ID ) * 100 );
+		$pg = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 	?>
 	<div class="progress paused">
-		<span class="bar" style="width:<?php echo $p ?>%"></span><span>&nbsp;<?php printf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) ?></span><var><?php echo $p ?>%</var>
+		<span class="bar" style="width:<?php echo $p ?>%"><span>&nbsp;<?php echo $pg ?></span></span><span>&nbsp;<?php echo $pg ?></span><var><?php echo $p ?>%</var>
 	</div>
 <?php endif; ?>
 

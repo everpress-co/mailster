@@ -99,6 +99,7 @@ jQuery(document).ready(function ($) {
 									p = (rowdata.sent / rowdata.total * 100);
 								progress.find('.bar').width(p + '%');
 								progress.find('span').eq(1).html(rowdata.sent_formatted);
+								progress.find('span').eq(2).html(rowdata.sent_formatted);
 								progress.find('var').html(Math.round(p) + '%');
 							}
 							if (!statuschange) break;

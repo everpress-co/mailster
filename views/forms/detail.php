@@ -72,11 +72,11 @@ if ( $is_new ) {
 ?>
 <input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo (int) $form->ID ?>">
 <?php if ( current_user_can( 'mailster_add_forms' ) ) : ?>
-	<a href="edit.php?post_type=newsletter&page=mailster_forms&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
+	<a href="edit.php?post_type=newsletter&page=mailster_forms&new" class="page-title-action"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>
 <?php } ?>
 <?php if ( ! $is_new ) :  ?>
-	<a href="#TB_inline?&width=1200&height=600&inlineId=useitbox" class="add-new-h2" id="use-it"><?php esc_html_e( 'Use it!', 'mailster' );?></a>
+	<a href="#TB_inline?&width=1200&height=600&inlineId=useitbox" class="page-title-action" id="use-it"><?php esc_html_e( 'Use it!', 'mailster' );?></a>
 <?php endif; ?>
 </h1>
 <?php if ( ! $is_new ) : ?>
