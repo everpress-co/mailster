@@ -129,6 +129,29 @@ class Mailster {
 	 * @param unknown $test
 	 * @return unknown
 	 */
+	public function importer( $id ) {
+
+		$importers = glob( MAILSTER_DIR . 'classes/importer.*' );
+		foreach ( $importers as $file ) {
+			require_once $file;
+		}
+
+		$class = 'MailsterImporter' . $id;
+
+		if ( class_exists( $class, false ) ) {
+			return new $class();
+		}
+
+		return null;
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $test
+	 * @return unknown
+	 */
 	public function test( $test = null ) {
 		require_once MAILSTER_DIR . 'classes/tests.class.php';
 
@@ -1003,6 +1026,9 @@ class Mailster {
 		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, __( 'Mailster Tests', 'mailster' ), __( 'Self Tests', 'mailster' ), 'activate_plugins', 'mailster_tests', array( &$this, 'tests_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
 
+		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Importer', 'mailster' ), __( 'Importer', 'mailster' ), 'mailster_manage_addons', 'mailster_importer', array( &$this, 'importer_page' ) );
+		add_action( 'load-' . $page, array( &$this, 'importer_scripts_styles' ) );
+
 	}
 
 
@@ -1050,6 +1076,13 @@ class Mailster {
 		wp_enqueue_script( 'thickbox' );
 
 		include MAILSTER_DIR . 'views/addons.php';
+
+	}
+
+	public function importer_page() {
+
+		require_once MAILSTER_DIR . 'classes/importer.class.php';
+		include MAILSTER_DIR . 'views/importer.php';
 
 	}
 
@@ -1145,6 +1178,18 @@ class Mailster {
 
 		wp_enqueue_style( 'mailster-addons', MAILSTER_URI . 'assets/css/addons-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-addons', MAILSTER_URI . 'assets/js/addons-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+
+	}
+
+	public function importer_scripts_styles( $hook ) {
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_style( 'mailster-importer', MAILSTER_URI . 'assets/css/importer-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-importer', MAILSTER_URI . 'assets/js/importer-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION );
+		wp_localize_script( 'mailster-importer', 'mailsterL10n', array(
+			'post_data' => isset( $_POST ) ? $_POST : null,
+		) );
 
 	}
 

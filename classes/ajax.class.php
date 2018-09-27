@@ -70,6 +70,7 @@ class MailsterAjax {
 		'quick_install',
 		'wizard_save',
 
+		'third_party_import',
 		'test',
 
 	);
@@ -2544,6 +2545,34 @@ class MailsterAjax {
 				}
 			break;
 		}
+
+		$this->json_return( $return );
+
+	}
+
+
+	private function third_party_import() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+		$importer = $_POST['importer'];
+		$round = isset( $_POST['round'] ) ? (int) $_POST['round'] : 0;
+
+		$importer = mailster( 'importer', $_POST['importer'] );
+		if ( isset( $_POST['post_data'] ) ) {
+			$importer->post_data( $_POST['post_data'] );
+		}
+
+		echo '<pre>' . print_r( $importer, true ) . '</pre>';
+		echo '<pre>' . print_r( $_POST, true ) . '</pre>';
+
+		$return['success'] = $importer->import( 'subscribers', $round );
+		$return['message'] = 'Asdas';
+		$return['nextimport'] = 'asda';
+		$return['total'] = 0;
+		$return['errors'] = 0;
+		$return['current'] = 0;
+		$return['type'] = 0;
 
 		$this->json_return( $return );
 
