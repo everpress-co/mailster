@@ -11,6 +11,9 @@ $class = array( 'mailster-box' );
 		<div class="meta">
 			<h3><?php echo $this->name() ?></h3>
 		</div>
+		<div class="description">
+		<p><?php echo $this->description() ?></p>
+		</div>
 		<div class="action-links">
 			<ul>
 

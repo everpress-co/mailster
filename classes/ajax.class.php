@@ -70,6 +70,7 @@ class MailsterAjax {
 		'quick_install',
 		'wizard_save',
 
+		'request_import',
 		'third_party_import',
 		'test',
 
@@ -2551,31 +2552,120 @@ class MailsterAjax {
 	}
 
 
+	private function request_import() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+		if ( isset( $_POST['formdata'] ) ) {
+			parse_str( $_POST['formdata'], $data );
+			$data = (object) $data;
+		} else {
+			$this->json_return( $return );
+		}
+		if ( isset( $_POST['postdata'] ) ) {
+			parse_str( $_POST['postdata'], $postdata );
+			$data->postdata = (object) $postdata;
+		} else {
+			$data->postdata = '';
+		}
+
+		$importer = mailster( 'importer', $data->importer );
+
+		$data->current = array_shift( $data->import_part );
+		$data->total = $importer->get_total( $data->current );
+		$data->processed = 0;
+		$data->round = 0;
+
+		$key = uniqid();
+
+		$return['success'] = set_transient( 'mailster_import_' . $key, $data, DAY_IN_SECONDS );
+
+		$return['key'] = $key;
+
+		$this->json_return( $return );
+
+	}
+
+
 	private function third_party_import() {
 		$return['success'] = false;
 
 		$this->ajax_nonce( json_encode( $return ) );
-		$importer = $_POST['importer'];
-		$round = isset( $_POST['round'] ) ? (int) $_POST['round'] : 0;
 
-		$importer = mailster( 'importer', $_POST['importer'] );
-		if ( isset( $_POST['post_data'] ) ) {
-			$importer->post_data( $_POST['post_data'] );
+		$key = isset( $_POST['key'] ) ? sanitize_key( $_POST['key'] ) : null;
+
+		$data = get_transient( 'mailster_import_' . $key );
+
+		if ( ! $data ) {
+			$this->json_return( $return );
 		}
 
-		echo '<pre>' . print_r( $importer, true ) . '</pre>';
-		echo '<pre>' . print_r( $_POST, true ) . '</pre>';
+		$importer = mailster( 'importer', $data->importer );
 
-		$return['success'] = $importer->import( 'subscribers', $round );
+		// if ( ! isset( $data->total ) ) {
+		// $data->total = $importer->get_total( $data->current );
+		// $data->processed = 0;
+		// }
+		// if ( ! isset( $data->round ) ) {
+		// $data->round = 0;
+		// }
+		if ( $imported = $importer->import( $data->current, $data->round++ ) ) {
+			$data->processed += $imported;
+		} else {
+
+			$data->current = array_shift( $data->import_part );
+
+			$data->round = 0;
+			$data->total = $importer->get_total( $data->current );
+			$data->processed = 0;
+		}
+
+		$return['current'] = $data->current;
+		$return['processed'] = $data->processed;
+		$return['percentage'] = $data->total ? $data->processed / $data->total : 0;
+		$return['total'] = $data->total;
+
+		$return['success'] = set_transient( 'mailster_import_' . $key, $data, DAY_IN_SECONDS );
+		$return['finished'] = ! $data->current;
+
+		$return['message'] = $importer->get_message();
+		$return['errors'] = $importer->get_error_counts();
+
+		$this->json_return( $return );
+
+		// $current_part =
+		echo '<pre>' . print_r( $data, true ) . '</pre>';
+
+		if ( isset( $_POST['formdata'] ) ) {
+			parse_str( $_POST['formdata'], $formdata );
+		} else {
+			$this->json_return( $return );
+		}
+
+		$importer = $formdata['importer'];
+		$import = isset( $formdata['import'] ) ? (array) $formdata['import'] : array();
+		$part = isset( $formdata['part'] ) && in_array( $formdata['part'], $import ) ? $formdata['part'] : $import[0];
+		$round = isset( $_POST['round'] ) ? (int) $_POST['round'] : 0;
+
+		if ( isset( $formdata['postdata'] ) ) {
+			$importer->post_data( $formdata['postdata'] );
+		}
+
+		if ( ! $round ) {
+			$return['total'] = $importer->get_total( $part );
+		}
+
+		$return['imported'] = $importer->import( $part, $round );
+		$return['success'] = true;
 		$return['message'] = 'Asdas';
-		$return['nextimport'] = 'asda';
-		$return['total'] = 0;
+		$return['nextimport'] = ! $return['imported'] ? $part : $part;
+		$return['round'] = ++$round;
+		$return['percentage'] = ++$round;
 		$return['errors'] = 0;
 		$return['current'] = 0;
 		$return['type'] = 0;
 
 		$this->json_return( $return );
-
 	}
 
 

@@ -23,7 +23,7 @@ jQuery(document).ready(function ($) {
 		output.empty();
 		textoutput.val(textoutput.data('pretext'));
 		imports_run = 1;
-		do_import();
+		request_import();
 		errors = {
 			'error': 0,
 			'warning': 0,
@@ -44,12 +44,27 @@ jQuery(document).ready(function ($) {
 		});
 
 
-	function do_import(import_id) {
+	function request_import() {
+
+		_ajax('request_import', {
+			'formdata': $('#import-form').serialize(),
+			'postdata': mailsterL10n.post_data,
+		}, function (response) {
+
+			if (response.success) {
+				do_import(response.key);
+			} else {
+
+			}
+
+		}, function (jqXHR, textStatus, errorThrown) {});
+
+	}
+
+	function do_import(key) {
 
 		_ajax('third_party_import', {
-			'import_id': import_id,
-			'importer': $('#importer').val(),
-			'post_data': mailsterL10n.post_data,
+			'key': key,
 		}, function (response) {
 
 			errors['error'] += response.errors.error;
@@ -58,26 +73,22 @@ jQuery(document).ready(function ($) {
 			errors['success'] += response.errors.success;
 
 			$(response.message.html).appendTo(output);
-			textoutput.val(textoutput.val() + response.message.text);
 
-			if (response.nextimport) {
-				progressbar.width(((++imports_run) / response.total * 100) + '%');
-				importinfo.html(sprintf(mailsterL10n.running_import, imports_run, response.total, response.current));
+			if (!response.finished) {
+				progressbar.width((response.percentage * 100) + '%');
+				importinfo.html(sprintf(mailsterL10n.running_import, response.processed, response.total, response.current));
+
+				setTimeout(function () {
+					do_import(key);
+				}, response.percentage ? 200 : 1000);
 			} else {
 				progressbar.width('100%');
 				setTimeout(function () {
-					start_button.html(mailsterL10n.restart_import).show();
 					progress.hide();
 					progressbar.width(0);
-					importinfo.html(sprintf(mailsterL10n.imports_finished, errors.error, errors.warning, errors.notice));
+					importinfo.html(sprintf(mailsterL10n.import_finished, errors.error, errors.warning, errors.notice));
 				}, 500);
 			}
-
-			if (response.nextimport) {
-				setTimeout(function () {
-					import (response.nextimport);
-				}, 100);
-			} else {}
 
 		}, function (jqXHR, textStatus, errorThrown) {});
 	}

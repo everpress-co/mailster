@@ -1189,6 +1189,8 @@ class Mailster {
 		wp_enqueue_script( 'mailster-importer', MAILSTER_URI . 'assets/js/importer-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION );
 		wp_localize_script( 'mailster-importer', 'mailsterL10n', array(
 			'post_data' => isset( $_POST ) ? $_POST : null,
+			'running_import' => __( 'Imported %1$s of %2$s %3$s', 'mailster' ),
+			'import_finished' => __( 'Import has been finished with %1$s Errors, %2$s Warnings and %3$s Notices.', 'mailster' ),
 		) );
 
 	}
