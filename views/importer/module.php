@@ -17,9 +17,9 @@ $class = array( 'mailster-box' );
 		<div class="action-links">
 			<ul>
 
-					<li class="alignright">
-						<a class="button button-primary" href="<?php echo add_query_arg( array( 'importer' => $this->id(), 'step' => 2 ) ) ?>"><?php echo sprintf( esc_html__( 'Import from %s', 'mailster' ), $this->name() );?></a>
-					</li>
+				<li class="alignright">
+					<a class="button button-primary" href="<?php echo add_query_arg( array( 'importer' => $this->id(), 'step' => 2 ) ) ?>"><?php echo sprintf( esc_html__( 'Import from %s', 'mailster' ), $this->name() );?></a>
+				</li>
 
 			</ul>
 		</div>

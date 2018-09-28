@@ -2563,8 +2563,7 @@ class MailsterAjax {
 			$this->json_return( $return );
 		}
 		if ( isset( $_POST['postdata'] ) ) {
-			parse_str( $_POST['postdata'], $postdata );
-			$data->postdata = (object) $postdata;
+			$data->postdata = (object) $_POST['postdata'];
 		} else {
 			$data->postdata = '';
 		}
@@ -2578,7 +2577,7 @@ class MailsterAjax {
 
 		$key = uniqid();
 
-		$return['success'] = set_transient( 'mailster_import_' . $key, $data, DAY_IN_SECONDS );
+		$return['success'] = set_transient( '_mailster_import_' . $key, $data, DAY_IN_SECONDS );
 
 		$return['key'] = $key;
 
@@ -2594,7 +2593,7 @@ class MailsterAjax {
 
 		$key = isset( $_POST['key'] ) ? sanitize_key( $_POST['key'] ) : null;
 
-		$data = get_transient( 'mailster_import_' . $key );
+		$data = get_transient( '_mailster_import_' . $key );
 
 		if ( ! $data ) {
 			$this->json_return( $return );
@@ -2625,16 +2624,15 @@ class MailsterAjax {
 		$return['percentage'] = $data->total ? $data->processed / $data->total : 0;
 		$return['total'] = $data->total;
 
-		$return['success'] = set_transient( 'mailster_import_' . $key, $data, DAY_IN_SECONDS );
+		set_transient( '_mailster_import_' . $key, $data );
+
+		$return['success'] = true;
 		$return['finished'] = ! $data->current;
 
 		$return['message'] = $importer->get_message();
 		$return['errors'] = $importer->get_error_counts();
 
 		$this->json_return( $return );
-
-		// $current_part =
-		echo '<pre>' . print_r( $data, true ) . '</pre>';
 
 		if ( isset( $_POST['formdata'] ) ) {
 			parse_str( $_POST['formdata'], $formdata );

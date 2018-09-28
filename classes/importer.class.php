@@ -7,6 +7,7 @@ abstract class MailsterImporter {
 	private $post_data;
 	private $errors;
 	private $round;
+	private $mapping = array();
 
 	public function __construct() {
 
@@ -177,8 +178,14 @@ abstract class MailsterImporter {
 
 	private function get_nice_support_name( $key ) {
 		$names = array(
+			'custom_fields' => 'Custom Fields',
 			'subscribers' => 'Subscribers',
 			'lists' => 'Lists',
+			'forms' => 'Forms',
+			'campaigns' => 'Campaigns',
+			'sent' => 'Sent',
+			'clicks' => 'Clicks',
+			'opens' => 'Opens',
 		);
 
 		if ( isset( $names[ $key ] ) ) {
@@ -204,6 +211,46 @@ abstract class MailsterImporter {
 	public function get_total( $what ) {
 
 		return $this->{'get_total_' . $what}();
+
+	}
+
+	protected function map( $type, $original_id, $mailster_id ) {
+
+		if ( empty( $this->mapping ) ) {
+			$this->mapping = get_transient( '_mailster_import_mapping' );
+		}
+
+		if ( ! isset( $this->mapping[ $type ] ) ) {
+			$this->mapping[ $type ] = array();
+		}
+		$this->mapping[ $type ][ $original_id ] = $mailster_id;
+
+		set_transient( '_mailster_import_mapping', $this->mapping );
+
+	}
+	protected function get_mapping( $type, $original_ids ) {
+
+		$this->mapping = get_transient( '_mailster_import_mapping' );
+
+		if ( ! isset( $this->mapping[ $type ] ) ) {
+			return $original_ids;
+		}
+
+		if ( ! is_array( $original_ids ) ) {
+			if ( isset( $this->mapping[ $type ][ $original_ids ] ) ) {
+				return $this->mapping[ $type ][ $original_ids ];
+			}
+		}
+
+		$return = array();
+
+		foreach ( $original_ids as $original_id ) {
+			if ( isset( $this->mapping[ $type ][ $original_id ] ) ) {
+				$return[] = $this->mapping[ $type ][ $original_id ];
+			}
+		}
+
+		return $return;
 
 	}
 
