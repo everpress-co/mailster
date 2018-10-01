@@ -3913,6 +3913,10 @@ class MailsterCampaigns {
 	 */
 	public function check_for_autoresponder( $new_status, $old_status, $post ) {
 
+		if ( defined( 'WP_IMPORTING' ) ) {
+			return;
+		}
+
 		if ( $new_status == $old_status ) {
 			return;
 		}

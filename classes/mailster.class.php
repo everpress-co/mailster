@@ -220,6 +220,8 @@ class Mailster {
 			add_filter( 'add_meta_boxes_page', array( &$this, 'add_homepage_info' ), 10, 2 );
 
 			add_filter( 'wp_import_post_data_processed', array( &$this, 'import_post_data' ), 10, 2 );
+			add_action( 'wp_import_insert_post', array( &$this, 'convert_old_campaign_ids' ), 10, 4 );
+
 			add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
 			add_filter( 'admin_page_access_denied', array( &$this, 'maybe_redirect_special_pages' ) );
@@ -2333,6 +2335,35 @@ class Mailster {
 		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaings' );
 
 		return $postdata;
+
+	}
+
+	public function convert_old_campaign_ids( $post_id, $original_post_ID, $postdata, $post ) {
+
+		global $wpdb;
+
+		if ( $postdata['post_type'] != 'newsletter' ) {
+			return;
+		}
+		if ( $post_id == $original_post_ID ) {
+			return;
+		}
+
+		$tables = array( 'actions', 'queue', 'subscriber_meta' );
+
+		echo '<h4>';
+		printf( __( 'Updating Mailster tables for Campaign %s:', 'mailster' ), '"<a href="' . admin_url( 'post.php?post=' . $post_id . '&action=edit' ) . '">' . $postdata['post_title'] . '</a>"' );
+		echo '</h4>';
+
+		foreach ( $tables as $table ) {
+			printf( '<code>%s</code>', 'mailster_' . $table );
+
+			$sql = $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_{$table} SET campaign_id = %d WHERE campaign_id = %d", $post_id, $original_post_ID );
+			if ( false !== ($rows = $wpdb->query( $sql )) ) {
+				printf( '..' . __( 'completed for %d rows.', 'mailster' ), $rows );
+			}
+			echo '<br>';
+		}
 
 	}
 
