@@ -28,17 +28,12 @@ class MailsterCampaigns {
 	public function init() {
 
 		add_filter( 'transition_post_status', array( &$this, 'check_for_autoresponder' ), 10, 3 );
+		add_filter( 'transition_post_status', array( &$this, 'set_before_trash_status' ), 10, 3 );
 		add_action( 'mailster_finish_campaign', array( &$this, 'remove_revisions' ) );
 
 		add_action( 'mailster_auto_post_thumbnail', array( &$this, 'get_post_thumbnail' ), 10, 1 );
 
 		if ( is_admin() ) {
-
-			add_action( 'paused_to_trash', array( &$this, 'paused_to_trash' ) );
-			add_action( 'active_to_trash', array( &$this, 'active_to_trash' ) );
-			add_action( 'queued_to_trash', array( &$this, 'queued_to_trash' ) );
-			add_action( 'finished_to_trash', array( &$this, 'finished_to_trash' ) );
-			add_action( 'trash_to_paused', array( &$this, 'trash_to_paused' ), 999 );
 
 			add_action( 'admin_menu', array( &$this, 'remove_meta_boxs' ) );
 			add_action( 'admin_menu', array( &$this, 'autoresponder_menu' ), 20 );
@@ -1017,57 +1012,24 @@ class MailsterCampaigns {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function paused_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
-	}
+	public function set_before_trash_status( $new_status, $old_status, $campaign ) {
 
+		if ( 'newsletter' != $campaign->post_type || $new_status == $old_status ) {
+			return;
+		}
 
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function active_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'active' );
-	}
+		// store old status on trash.
+		if ( 'trash' == $new_status ) {
+			set_transient( 'mailster_before_trash_status_' . $campaign->ID, $old_status );
+		}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function queued_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'queued' );
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function finished_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'finished' );
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function trash_to_paused( $campaign ) {
-
-		$oldstatus = get_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
-
-		if ( $campaign->post_status != $oldstatus ) {
-			$this->change_status( $campaign, $oldstatus, true );
+		// restore old status on untrash.
+		if ( 'trash' == $old_status ) {
+			$status_before = get_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
+			if ( $campaign->post_status != $status_before ) {
+				$this->change_status( $campaign, $status_before, true );
+			}
+			delete_transient( 'mailster_before_trash_status_' . $campaign->ID );
 		}
 
 	}
@@ -3955,10 +3917,6 @@ class MailsterCampaigns {
 			return;
 		}
 
-		if ( 'publish' != $new_status ) {
-			return;
-		}
-
 		if ( 'newsletter' == $post->post_type ) {
 			return;
 		}
@@ -3967,6 +3925,15 @@ class MailsterCampaigns {
 			return;
 		}
 
+		$accepted_status = apply_filters( 'mailster_check_for_autoresponder_accepted_status', 'publish', $post );
+
+		if ( ! is_array( $accepted_status ) ) {
+			$accepted_status = array( $accepted_status );
+		}
+
+		if ( ! in_array( $new_status, $accepted_status ) ) {
+			return;
+		}
 		$now = time();
 
 		$campaigns = $this->get_autoresponder();

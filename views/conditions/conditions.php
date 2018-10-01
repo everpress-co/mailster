@@ -140,7 +140,7 @@
 					}
 					?>
 					<div class="mailster-conditions-value-field mailster-conditions-value-field-default">
-					<input type="text" class="widefat condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]">
+					<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]">
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",rating,">
 					<?php

@@ -85,13 +85,15 @@ class MailsterGeo {
 	 */
 	public function get_file_path( $which ) {
 
+		$folder = trailingslashit( apply_filters( 'mailster_location_db_folder', MAILSTER_UPLOAD_DIR ) );
+
 		switch ( $which ) {
 			case 'country':
 			case 'countries':
-				return apply_filters( 'mailster_location_db_file_country', MAILSTER_UPLOAD_DIR . '/GeoIPv6.dat' );
+				return apply_filters( 'mailster_location_db_file_country', $folder . 'GeoIPv6.dat' );
 			case 'city':
 			case 'cities':
-				return apply_filters( 'mailster_location_db_file_city', MAILSTER_UPLOAD_DIR . '/GeoIPCity.dat' );
+				return apply_filters( 'mailster_location_db_file_city', $folder . 'GeoIPCity.dat' );
 				break;
 		}
 		return false;
