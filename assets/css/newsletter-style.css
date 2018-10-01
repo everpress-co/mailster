@@ -2512,7 +2512,7 @@ a.mailster-btn.editbutton {
 	overflow: scroll;
 	overflow-y: auto;
 	overflow-x: hidden;
-	height: 96%;
+	height: 94%;
 }
 #mailster_template .inner #template-wrap.load, #mailster_template .inner #template-wrap.load *{
 	cursor: progress !important;

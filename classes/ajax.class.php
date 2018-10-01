@@ -1195,6 +1195,8 @@ class MailsterAjax {
 			$return['success'] = true;
 			$return['itemcount'] = isset( $_POST['itemcount'] ) ? $_POST['itemcount'] : array();
 
+			$args = apply_filters( 'mailster_get_post_list_args', $args );
+
 			$posts = get_posts( $args );
 
 			if ( $current_id && ( $current = get_post( $current_id ) ) ) {

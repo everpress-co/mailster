@@ -783,6 +783,13 @@ class MailsterSettings {
 
 				break;
 
+				case 'services':
+
+					if ( $value ) {
+						$value = array_map( 'trim', $value );
+					}
+
+				break;
 				case 'track_location':
 
 					if ( $value ) {
@@ -1477,6 +1484,7 @@ class MailsterSettings {
 			'--',
 			'Mailster Version' => MAILSTER_VERSION,
 			'Updated From' => get_option( 'mailster_version_old', 'N/A' ) . ' (' . date( 'r', get_option( 'mailster_updated' ) ) . ')',
+			'Mailster Hash' => mailster()->get_plugin_hash( true ),
 			'WordPress Version' => get_bloginfo( 'version' ),
 			'Mailster DB Version' => $db_version,
 			'PHPMailer Version' => $mail->mailer->Version,
