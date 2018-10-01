@@ -783,6 +783,13 @@ class MailsterSettings {
 
 				break;
 
+				case 'services':
+
+					if ( $value ) {
+						$value = array_map( 'trim', $value );
+					}
+
+				break;
 				case 'track_location':
 
 					if ( $value ) {
