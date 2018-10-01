@@ -482,10 +482,10 @@ class MailsterTests {
 
 	}
 	private function test_memory_limit() {
-		if ( max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT ) < 128 ) {
-			$this->warning( 'Your Memory Limit is ' . size_format( (int) WP_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
+		if ( $max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT ) < 128 ) {
+			$this->warning( 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		} else {
-			$this->success( 'Your Memory Limit is ' . size_format( (int) WP_MEMORY_LIMIT * 1048576 ) );
+			$this->success( 'Your Memory Limit is ' . size_format( $max * 1048576 ) );
 		}
 	}
 	private function test_plugin_location() {

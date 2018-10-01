@@ -86,11 +86,20 @@ Xaver Birsak – https://everpress.io
 
 * improved: Export / Import
 
+= Version 2.3.13 =
+
+* fixed: Max execution time error message pops up randomly on some servers.
+* fixed: issue with certain post types and multiple underscores
+* fixed: PHP error on form duplication.
+* added: 'mailster_get_post_list_args' filter for static posts
+
 = Version 2.3.12 =
 
 * fixed: height attribute of image tags were not always respected.
 * improved: tag replacement handling
+* improved: list order in overview
 * improved: queue handling of time based auto responders
+* improved: query for dashboard widget
 * improved: sql query
 
 = Version 2.3.11 =
