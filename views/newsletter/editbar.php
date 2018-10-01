@@ -239,6 +239,8 @@
 						'-10' => __( 'the tenth latest', 'mailster' ),
 						'-11' => __( 'the eleventh latest', 'mailster' ),
 						'-12' => __( 'the twelfth latest', 'mailster' ),
+					);
+					$randomnames = array(
 						'~1' => __( '1st random', 'mailster' ),
 						'~2' => __( '2nd random', 'mailster' ),
 						'~3' => __( '3rd random', 'mailster' ),
@@ -253,9 +255,17 @@
 						'~12' => __( '12th random', 'mailster' ),
 					);
 
+					$relative .= '<optgroup label="' . __( 'Relative', 'mailster' ) . '">';
 					foreach ( $relativenames as $key => $name ) {
 						$relative .= '<option value="' . $key . '">' . $name . '</option>';
 					}
+					$relative .= '</optgroup>';
+
+					$relative .= '<optgroup label="' . __( 'Random', 'mailster' ) . '">';
+					foreach ( $randomnames as $key => $name ) {
+						$relative .= '<option value="' . $key . '">' . $name . '</option>';
+					}
+					$relative .= '</optgroup>';
 
 					$relative .= '</select>';
 					$post_types = '<select id="dynamic_embed_options_post_type">';
@@ -282,7 +292,13 @@
 				<div class="left">
 				<div id="dynamic_embed_options_cats"></div>
 				</div>
-				<p class="description clear"><?php esc_html_e( 'dynamic content get replaced with the proper content as soon as the campaign get send. Check the quick preview to see the current status of dynamic elements', 'mailster' );?></p>
+				<p class="description clear">
+					<?php esc_html_e( 'Dynamic content get replaced with the proper content as soon as the campaign get send. Check the quick preview to see the current status of dynamic elements.', 'mailster' );?>
+				</p>
+				<p class="description clear">
+					<?php esc_html_e( 'Random tags will display a random content while the number is used as an identifier. Same identifier will display content from the same post.', 'mailster' );?>
+					<?php esc_html_e( 'Different identifier will never display the same post in the same campaign.', 'mailster' );?>
+				</p>
 			</div>
 
 			<div id="rss_embed_options" class="tab">
