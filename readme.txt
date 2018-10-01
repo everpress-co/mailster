@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.8
-Stable tag: 2.4
+Stable tag: 2.3.13
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -82,15 +82,12 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
-= Version 2.4 =
-
-* improved: Export / Import
-
 = Version 2.3.13 =
 
 * fixed: Max execution time error message pops up randomly on some servers.
 * fixed: issue with certain post types and multiple underscores
 * fixed: PHP error on form duplication.
+* improved: import of campaigns
 * added: 'mailster_get_post_list_args' filter for static posts
 
 = Version 2.3.12 =
