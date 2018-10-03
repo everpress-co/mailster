@@ -87,6 +87,7 @@ Xaver Birsak – https://everpress.io
 * fixed: Max execution time error message pops up randomly on some servers.
 * fixed: issue with certain post types and multiple underscores
 * fixed: PHP error on form duplication.
+* improved: query for location based segmentation.
 * added: 'mailster_get_post_list_args' filter for static posts
 
 = Version 2.3.12 =
