@@ -1586,11 +1586,11 @@ class MailsterSubscribers {
 				$rating = max( $rating, ( $openrate + $aclickrate ) / 2 );
 
 				if ( $actions['softbounces'] ) {
-					$rating -= ( $actions['softbounces'] / 20 );
+					$rating -= 0.01;
 				}
 
 				if ( $actions['bounces'] ) {
-					$rating -= ( $actions['bounces'] / 5 );
+					$rating -= 0.2;
 				}
 
 				if ( $actions['unsubscribes'] ) {

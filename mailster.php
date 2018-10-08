@@ -9,7 +9,7 @@ Author URI: https://everpress.io
 Text Domain: mailster
 */
 
-if ( defined( 'MAILSTER_VERSION' ) ) {
+if ( defined( 'MAILSTER_VERSION' ) || ! defined( 'ABSPATH' ) ) {
 	return;
 }
 

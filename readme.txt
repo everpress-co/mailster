@@ -65,19 +65,19 @@ Xaver Birsak – https://everpress.io
 
 
 = Linus =
-[!(https://mailster.github.io/preview/linus.jpg)](https://rxa.li/linus?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/linus.jpg)](https://evp.li/linus?utm_source=Plugin+Info+Page)
 = Metro =
-[!(https://mailster.github.io/preview/metro.jpg)](https://rxa.li/metro?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/metro.jpg)](https://evp.li/metro?utm_source=Plugin+Info+Page)
 = My Business =
-[!(https://mailster.github.io/preview/business.jpg)](https://rxa.li/business?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/business.jpg)](https://evp.li/business?utm_source=Plugin+Info+Page)
 = Loose Leaf =
-[!(https://mailster.github.io/preview/looseleaf.jpg)](https://rxa.li/looseleaf?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/looseleaf.jpg)](https://evp.li/looseleaf?utm_source=Plugin+Info+Page)
 = Market =
-[!(https://mailster.github.io/preview/market.jpg)](https://rxa.li/market?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/market.jpg)](https://evp.li/market?utm_source=Plugin+Info+Page)
 = Skyline =
-[!(https://mailster.github.io/preview/skyline.jpg)](https://rxa.li/skyline?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/skyline.jpg)](https://evp.li/skyline?utm_source=Plugin+Info+Page)
 = Letterpress =
-[!(https://mailster.github.io/preview/letterpress.jpg)](https://rxa.li/letterpress?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/letterpress.jpg)](https://evp.li/letterpress?utm_source=Plugin+Info+Page)
 
 
 == Changelog ==
@@ -87,6 +87,7 @@ Xaver Birsak – https://everpress.io
 * fixed: Max execution time error message pops up randomly on some servers.
 * fixed: issue with certain post types and multiple underscores
 * fixed: PHP error on form duplication.
+* fixed: smaller issues
 * improved: query for location based segmentation.
 * added: 'mailster_get_post_list_args' filter for static posts
 
@@ -103,9 +104,9 @@ Xaver Birsak – https://everpress.io
 
 * fixed: added "source" tag in allowed tags
 * fixed: sql query issue on "(didn't) clicked link" condition
-* fixed: smaller issues
 * fixed: unsubscribe issue on single opt out if user is logged in
 * fixed: subscriber export on sites with CloudFlare
+* fixed: smaller issues
 * improved: custom tags are now replaced in the final campaign and no longer when created
 * improved: privacy policy link gets updated if the address changes
 * improved: subscriber query now has the campaign id as second argument.

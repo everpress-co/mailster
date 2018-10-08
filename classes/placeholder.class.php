@@ -141,12 +141,11 @@ class MailsterPlaceholder {
 	}
 
 	public function has_content( $check_for_modules = false ) {
-		$html = $this->get_content( false );
+		$html = trim( $this->get_content( false ) );
 		if ( $check_for_modules ) {
 			return preg_match( '/<\/module>/', $html );
 		}
-
-		return ! empty( trim( $html ) );
+		return ! empty( $html );
 	}
 
 

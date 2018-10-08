@@ -976,10 +976,10 @@ class MailsterSubscriberQuery {
 				break;
 			case 'geo':
 				if ( 'is' == $operator ) {
-					return "`meta_$field`.meta_value REGEXP '^($value)\|%'";
+					return "`meta_$field`.meta_value REGEXP '^($value)\\\|'";
 				}
 				if ( 'is_not' == $operator ) {
-					return "(`meta_$field`.meta_value NOT REGEXP '^($value)\|%' OR `meta_$field`.meta_value IS NULL)";
+					return "(`meta_$field`.meta_value NOT REGEXP '^($value)\\\|' OR `meta_$field`.meta_value IS NULL)";
 				}
 		}
 
