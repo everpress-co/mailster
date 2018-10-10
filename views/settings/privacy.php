@@ -29,7 +29,7 @@
 		<p><button id="load_location_db" class="button-primary" <?php disabled( ! $geoip );?>><?php esc_html_e( 'Update Location Database', 'mailster' );?></button>&nbsp;<span class="loading geo-ajax-loading"></span>
 			<em id="location_last_update"><?php esc_html_e( 'Last update', 'mailster' ) ?>: <?php printf( esc_html__( '%s ago', 'mailster' ), human_time_diff( filemtime( $geo_db_file_cities ) ) )?></em>
 		</p>
-	<?php else : ?>
+	<?php elseif ( $geoip ) : ?>
 		<div class="error inline"><p><?php esc_html_e( 'Looks like the location database hasn\'t been loaded yet!', 'mailster' ) ?></p></div>
 		<p><button id="load_location_db" class="button-primary"><?php esc_html_e( 'Load Location Database manually', 'mailster' );?></button>&nbsp;<span class="loading geo-ajax-loading"></span>
 			<em id="location_last_update"></em>

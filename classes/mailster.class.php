@@ -628,10 +628,10 @@ class Mailster {
 	 *
 	 * @param unknown $content     (optional)
 	 * @param unknown $hash        (optional)
-	 * @param unknown $campaing_id (optional)
+	 * @param unknown $campaign_id (optional)
 	 * @return unknown
 	 */
-	public function replace_links( $content = '', $hash = '', $campaing_id = '' ) {
+	public function replace_links( $content = '', $hash = '', $campaign_id = '' ) {
 
 		// get all links from the basecontent
 		preg_match_all( '#href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
@@ -644,7 +644,7 @@ class Mailster {
 		$used = array();
 
 		$new_structure = mailster( 'helper' )->using_permalinks();
-		$base = $this->get_base_link( $campaing_id );
+		$base = $this->get_base_link( $campaign_id );
 
 		// add title tag on links
 		// preg_match_all( '#(<a(?!.*?title=([\'"]).*?\2)[^>]*)(>)#', $content, $no_title_links );
@@ -674,7 +674,7 @@ class Mailster {
 			}
 
 			$link = '"' . $link . '"';
-			$new_link = apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaing_id );
+			$new_link = apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id );
 
 			if ( ( $pos = strpos( $content, $link ) ) !== false ) {
 				$content = substr_replace( $content, '"' . $new_link . '"', $pos, strlen( $link ) );
@@ -2332,7 +2332,7 @@ class Mailster {
 			$postdata['post_content'] = str_replace( $old_home_url, trailingslashit( home_url() ), $postdata['post_content'] );
 		}
 
-		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaings' );
+		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaigns' );
 
 		return $postdata;
 

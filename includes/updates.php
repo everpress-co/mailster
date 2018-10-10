@@ -23,7 +23,10 @@ $default_texts = mailster( 'settings' )->get_default_texts();
 
 if ( $old_version ) {
 
-	switch ( $old_version ) {
+	// remove any branch version from the string.
+	$old_version_sanitized = preg_replace( '#^([^a-z]+)\.([a-z_]+)(.*?)$#i', '$1', $old_version );
+
+	switch ( $old_version_sanitized ) {
 		case '1.0':
 		case '1.0.1':
 
@@ -569,12 +572,13 @@ if ( $old_version ) {
 		case '2.3.9':
 		case '2.3.10':
 		case '2.3.11':
+		case '2.3.12':
 
 			// mailster_notice( $update_info, 'updated', false, 'info-screen', true, 'newsletter_page_mailster_dashboard' );
 		default:
 
-			do_action( 'mailster_update', $old_version, $new_version );
-			do_action( 'mailster_update_' . $old_version, $new_version );
+			do_action( 'mailster_update', $old_version_sanitized, $new_version );
+			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
 
 
 	}

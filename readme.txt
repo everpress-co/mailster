@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.io
 * fixed: smaller issues
 * improved: query for location based segmentation.
 * added: 'mailster_get_post_list_args' filter for static posts
+* added: 'mailster_autoresponder_grace_period' filter
 
 = Version 2.3.12 =
 
