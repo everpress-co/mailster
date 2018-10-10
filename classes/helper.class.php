@@ -91,7 +91,7 @@ class MailsterHelper {
 
 		}
 
-		if ( ! $height && isset( $image_src[2] ) ) {
+		if ( ! $height && isset( $image_src[1] ) && $image_src[1] && isset( $image_src[2] ) && $image_src[2] ) {
 			$height = round( $width / ( $image_src[1] / $image_src[2] ) );
 		}
 
@@ -184,7 +184,7 @@ class MailsterHelper {
 	public function get_addons( $force = false ) {
 
 		if ( $force || false === ( $addons = get_transient( 'mailster_addons' ) ) ) {
-			$url = 'http://mailster.github.io/v1/addons.json';
+			$url = 'https://mailster.github.io/v1/addons.json';
 
 			$response = wp_remote_get( $url, array() );
 

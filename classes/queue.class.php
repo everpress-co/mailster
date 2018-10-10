@@ -384,7 +384,7 @@ class MailsterQueue {
 			}
 
 			// time when user no longer get the campaign
-			$do_not_send_after = apply_filters( 'mailster_autoresponder_do_not_send_after', WEEK_IN_SECONDS, $campaign, $meta );
+			$grace_period = apply_filters( 'mailster_autoresponder_grace_period', WEEK_IN_SECONDS, $campaign );
 			$queue_upfront = 3600;
 
 			if ( 'mailster_subscriber_insert' == $autoresponder_meta['action'] ) {
@@ -413,8 +413,8 @@ class MailsterQueue {
 					'orderby' => 'autoresponder_timestamp',
 				);
 
-				if ( $do_not_send_after ) {
-					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
+				if ( $grace_period ) {
+					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
 				}
 
 				if ( $ignore_lists ) {
@@ -451,8 +451,8 @@ class MailsterQueue {
 					'orderby' => 'autoresponder_timestamp',
 				);
 
-				if ( $do_not_send_after ) {
-					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
+				if ( $grace_period ) {
+					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
 				}
 
 				$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
@@ -495,8 +495,8 @@ class MailsterQueue {
 						break;
 				}
 
-				if ( $do_not_send_after ) {
-					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
+				if ( $grace_period ) {
+					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
 				}
 
 				$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );

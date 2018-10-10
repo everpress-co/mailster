@@ -220,6 +220,8 @@ class Mailster {
 			add_filter( 'add_meta_boxes_page', array( &$this, 'add_homepage_info' ), 10, 2 );
 
 			add_filter( 'wp_import_post_data_processed', array( &$this, 'import_post_data' ), 10, 2 );
+			add_action( 'wp_import_insert_post', array( &$this, 'convert_old_campaign_ids' ), 10, 4 );
+
 			add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
 			add_filter( 'admin_page_access_denied', array( &$this, 'maybe_redirect_special_pages' ) );
@@ -626,10 +628,10 @@ class Mailster {
 	 *
 	 * @param unknown $content     (optional)
 	 * @param unknown $hash        (optional)
-	 * @param unknown $campaing_id (optional)
+	 * @param unknown $campaign_id (optional)
 	 * @return unknown
 	 */
-	public function replace_links( $content = '', $hash = '', $campaing_id = '' ) {
+	public function replace_links( $content = '', $hash = '', $campaign_id = '' ) {
 
 		// get all links from the basecontent
 		preg_match_all( '#href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
@@ -642,7 +644,7 @@ class Mailster {
 		$used = array();
 
 		$new_structure = mailster( 'helper' )->using_permalinks();
-		$base = $this->get_base_link( $campaing_id );
+		$base = $this->get_base_link( $campaign_id );
 
 		// add title tag on links
 		// preg_match_all( '#(<a(?!.*?title=([\'"]).*?\2)[^>]*)(>)#', $content, $no_title_links );
@@ -672,7 +674,7 @@ class Mailster {
 			}
 
 			$link = '"' . $link . '"';
-			$new_link = apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaing_id );
+			$new_link = apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id );
 
 			if ( ( $pos = strpos( $content, $link ) ) !== false ) {
 				$content = substr_replace( $content, '"' . $new_link . '"', $pos, strlen( $link ) );
@@ -1315,8 +1317,8 @@ class Mailster {
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
 		}
-		if ( max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT ) < 128 ) {
-			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( WP_MAX_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
+		if ( $max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT ) < 128 ) {
+			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		}
 
 		$errors->error_count = count( $errors->errors->errors );
@@ -2211,6 +2213,30 @@ class Mailster {
 	}
 
 
+	public function get_plugin_hash( $force = false ) {
+
+		if ( ! ( $hash = get_transient( 'mailster_hash' ) ) || $force ) {
+
+			$files = list_files( MAILSTER_DIR, 100 );
+
+			sort( $files );
+
+			$hashes = array();
+
+			foreach ( $files as $file ) {
+				$hashes[] = md5_file( $file );
+			}
+
+			$hash = md5( implode( '', $hashes ) );
+			set_transient( 'mailster_hash', $hash, DAY_IN_SECONDS );
+
+		}
+
+		return $hash;
+
+	}
+
+
 	/**
 	 *
 	 *
@@ -2306,9 +2332,38 @@ class Mailster {
 			$postdata['post_content'] = str_replace( $old_home_url, trailingslashit( home_url() ), $postdata['post_content'] );
 		}
 
-		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaings' );
+		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaigns' );
 
 		return $postdata;
+
+	}
+
+	public function convert_old_campaign_ids( $post_id, $original_post_ID, $postdata, $post ) {
+
+		global $wpdb;
+
+		if ( $postdata['post_type'] != 'newsletter' ) {
+			return;
+		}
+		if ( $post_id == $original_post_ID ) {
+			return;
+		}
+
+		$tables = array( 'actions', 'queue', 'subscriber_meta' );
+
+		echo '<h4>';
+		printf( __( 'Updating Mailster tables for Campaign %s:', 'mailster' ), '"<a href="' . admin_url( 'post.php?post=' . $post_id . '&action=edit' ) . '">' . $postdata['post_title'] . '</a>"' );
+		echo '</h4>';
+
+		foreach ( $tables as $table ) {
+			printf( '<code>%s</code>', 'mailster_' . $table );
+
+			$sql = $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_{$table} SET campaign_id = %d WHERE campaign_id = %d", $post_id, $original_post_ID );
+			if ( false !== ($rows = $wpdb->query( $sql )) ) {
+				printf( '..' . __( 'completed for %d rows.', 'mailster' ), $rows );
+			}
+			echo '<br>';
+		}
 
 	}
 

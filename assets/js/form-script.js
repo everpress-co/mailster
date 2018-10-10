@@ -244,9 +244,14 @@ jQuery(document).ready(function ($) {
 			$(this).select();
 		});
 
-	updateButton();
+	$('.nav-subscriber-button')
+		.on('click', function () {
+			updateButton();
+		});
 
 	function updateButton() {
+
+		console.log('adasd');
 
 		var code = window.mailsterdata.embedcode,
 			id = $('#ID').val(),

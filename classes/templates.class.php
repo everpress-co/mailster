@@ -1412,7 +1412,7 @@ class MailsterTemplates {
 					$i++;
 
 					$mailster_templates[ $slug ]['version'] = isset( $versions[ $slug ] ) ? $versions[ $slug ] : null;
-					if ( gettype( $response ) != 'array' || empty( $response[ $i ] ) ) {
+					if ( gettype( $response ) != 'array' || ! isset( $response[ $i ] ) || empty( $response[ $i ] ) ) {
 						unset( $mailster_templates[ $slug ] );
 						continue;
 					}

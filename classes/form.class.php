@@ -449,7 +449,7 @@ class MailsterForm {
 
 			if ( ! empty( $lists ) ) {
 
-				if ( $this->profile ) {
+				if ( $this->profile && isset( $this->object['userdata']['ID'] ) ) {
 					$userlists = mailster( 'subscribers' )->get_lists( $this->object['userdata']['ID'], true );
 				}
 
@@ -470,7 +470,7 @@ class MailsterForm {
 							|| ( ! empty( $this->object['errors'] ) && in_array( $list->ID, $this->object['lists'] ) )
 							|| ( $this->form->precheck && $this->preview );
 
-						if ( $this->profile ) {
+						if ( $this->profile && isset( $userlists ) ) {
 							$checked = in_array( $list->ID, $userlists );
 						}
 

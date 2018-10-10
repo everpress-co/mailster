@@ -1533,15 +1533,15 @@ class MailsterCampaigns {
 						// open
 						case '2':
 							if ( ! $this->meta( $parent_id, 'track_opens' ) ) {
-								$parent_campaing = get_post( $parent_id );
-								mailster_notice( '<strong>' . sprintf( __( 'Tracking Opens is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaing->ID . '&action=edit' ) . '">' . $parent_campaing->post_title . '</a>' ) . '</strong>', 'error', true );
+								$parent_campaign = get_post( $parent_id );
+								mailster_notice( '<strong>' . sprintf( __( 'Tracking Opens is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaign->ID . '&action=edit' ) . '">' . $parent_campaign->post_title . '</a>' ) . '</strong>', 'error', true );
 							}
 							break;
 						// clicked
 						case '3':
 							if ( ! $this->meta( $_POST['parent_id'], 'track_clicks' ) ) {
-								$parent_campaing = get_post( $parent_id );
-								mailster_notice( sprintf( __( 'Tracking Clicks is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaing->ID . '&action=edit' ) . '">' . $parent_campaing->post_title . '</a>' ), 'error', true );
+								$parent_campaign = get_post( $parent_id );
+								mailster_notice( sprintf( __( 'Tracking Clicks is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaign->ID . '&action=edit' ) . '">' . $parent_campaign->post_title . '</a>' ), 'error', true );
 							}
 							break;
 
@@ -3512,7 +3512,10 @@ class MailsterCampaigns {
 					$sent = $this->get_sent( $id );
 					$sent_formatted = sprintf( __( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 					if ( is_wp_error( $cron_status ) ) {
-						$status_title = __( 'Sending Problem!', 'mailster' ) . ' <a href="' . admin_url( 'admin.php?page=mailster_tests&autostart' ) . '" class="button button-small">' . __( 'Self Test', 'mailster' ) . '</a>';
+						$status_title = __( 'Sending Problem!', 'mailster' );
+						if ( current_user_can( 'activate_plugins' ) ) {
+							 $status_title .= ' <a href="' . admin_url( 'admin.php?page=mailster_tests&autostart' ) . '" class="button button-small">' . __( 'Self Test', 'mailster' ) . '</a>';
+						}
 					} else {
 						$status_title = $sent_formatted;
 					}
@@ -3912,6 +3915,10 @@ class MailsterCampaigns {
 	 * @param unknown $post
 	 */
 	public function check_for_autoresponder( $new_status, $old_status, $post ) {
+
+		if ( defined( 'WP_IMPORTING' ) ) {
+			return;
+		}
 
 		if ( $new_status == $old_status ) {
 			return;
