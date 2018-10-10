@@ -91,7 +91,7 @@ class MailsterHelper {
 
 		}
 
-		if ( ! $height && isset( $image_src[2] ) && $image_src[2] ) {
+		if ( ! $height && isset( $image_src[1] ) && $image_src[1] && isset( $image_src[2] ) && $image_src[2] ) {
 			$height = round( $width / ( $image_src[1] / $image_src[2] ) );
 		}
 

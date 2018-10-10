@@ -293,13 +293,6 @@ class MailsterPlaceholder {
 		$this->add( mailster_option( 'custom_tags', array() ) );
 		$this->add( mailster_option( 'tags', array() ) );
 
-		// temporary remove style blocks
-		if ( preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $this->styles ) ) {
-			foreach ( $this->styles[0] as $i => $style ) {
-				$this->content = str_replace( $style, '<!--Mailster:styleblock' . $i . '-->', $this->content );
-			}
-		}
-
 		$this->remove_modules();
 		$this->conditions();
 
@@ -307,6 +300,13 @@ class MailsterPlaceholder {
 
 		// as long there are tags in the content.
 		while ( false !== strpos( $this->content, '{' ) ) {
+			// temporary remove style blocks
+			if ( preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $styles ) ) {
+				foreach ( $styles[0] as $style ) {
+					$this->content = str_replace( $style, '<!--Mailster:styleblock' . count( $this->styles ) . '-->', $this->content );
+					$this->styles[] = $style;
+				}
+			}
 			$this->replace_images( $relative_to_absolute );
 			$this->replace_dynamic( $relative_to_absolute );
 			$this->replace_static( $removeunused );
@@ -323,8 +323,8 @@ class MailsterPlaceholder {
 			}
 		}
 
-		if ( ! empty( $this->styles[0] ) ) {
-			foreach ( $this->styles[0] as $i => $style ) {
+		if ( ! empty( $this->styles ) ) {
+			foreach ( $this->styles as $i => $style ) {
 				$this->content = str_replace( '<!--Mailster:styleblock' . $i . '-->', $style, $this->content );
 			}
 		}

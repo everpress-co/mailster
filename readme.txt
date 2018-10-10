@@ -85,12 +85,13 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.13 =
 
 * fixed: Max execution time error message pops up randomly on some servers.
-* fixed: issue with certain post types and multiple underscores
+* fixed: issue with certain post types and multiple underscores.
 * fixed: PHP error on form duplication.
-* fixed: smaller issues
+* fixed: issue with nested emebed styles.
+* fixed: smaller issues.
 * improved: query for location based segmentation.
-* added: 'mailster_get_post_list_args' filter for static posts
-* added: 'mailster_autoresponder_grace_period' filter
+* added: 'mailster_get_post_list_args' filter for static posts.
+* added: 'mailster_autoresponder_grace_period' filter.
 
 = Version 2.3.12 =
 
