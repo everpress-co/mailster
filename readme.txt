@@ -84,6 +84,9 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.14 =
 
+* added: 'sub_query_limit' to process subscriber query in chunks for very large subscriber base
+* improved: query on subscriber overview page
+
 = Version 2.3.13 =
 
 * fixed: Max execution time error message pops up randomly on some servers.

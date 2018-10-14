@@ -3,7 +3,7 @@
 class MailsterPlaceholder {
 
 	private $content;
-	private $styles;
+	private $styles = array();
 	private $keeptag;
 	private $keeptags;
 	private $placeholder = array();

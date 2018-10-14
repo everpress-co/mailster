@@ -139,6 +139,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	public function column_default( $item, $column_name ) {
 
+		$data = mailster( 'subscribers' )->get_custom_fields( $item->ID );
+
 		switch ( $column_name ) {
 
 			case 'name':
@@ -149,8 +151,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 					$avatar = '';
 				}
 
-				if ( $item->fullname ) {
-					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '">' . $item->fullname . '</a><br><a class="email" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $item->{'email'} . '</a>';
+				if ( $data['fullname'] ) {
+					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '">' . $data['fullname'] . '</a><br><a class="email" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $item->{'email'} . '</a>';
 				} else {
 					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $item->{'email'} . '</a><br><span class="email">&nbsp;</span>';
 				}
@@ -193,15 +195,18 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			default:
 				$custom_fields = mailster()->get_custom_fields();
 				if ( in_array( $column_name, array_keys( $custom_fields ) ) ) {
+
+					$value = mailster( 'subscribers' )->get_custom_fields( $item->ID, $column_name );
+
 					switch ( $custom_fields[ $column_name ]['type'] ) {
 						case 'checkbox':
-						return '<div class="table-data">' . ($item->{$column_name} ? '&#10004;' : '&#10005;') . '</div>';
+						return '<div class="table-data">' . ($value ? '&#10004;' : '&#10005;') . '</div>';
 						break;
 						case 'date':
-						return '<div class="table-data">' . ($item->{$column_name} ? date_i18n( mailster( 'helper' )->dateformat(), strtotime( $item->{$column_name} ) ) : '') . '</div>';
+						return '<div class="table-data">' . ($value ? date_i18n( mailster( 'helper' )->dateformat(), strtotime( $value ) ) : '') . '</div>';
 						break;
 						default:
-						return '<div class="table-data">' . ($item->{$column_name}) . '</div>';
+						return '<div class="table-data">' . ($value) . '</div>';
 					}
 				}
 			return print_r( $item, true ); // Show the whole array for troubleshooting purposes
@@ -336,6 +341,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$columns = $this->get_columns();
 		$hidden = get_hidden_columns( $screen );
 		$sortable = $this->get_sortable_columns();
+		$custom_fields = mailster()->get_custom_fields();
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
@@ -355,14 +361,21 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$offset = isset( $_GET['paged'] ) ? ( (int) $_GET['paged'] - 1 ) * $this->per_page : 0;
 		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'id';
 		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
+		$fields = array( 'ID', 'email', 'rating', 'wp_id', 'status', 'signup' );
+
+		if ( isset( $custom_fields[ $orderby ] ) ) {
+			$fields[] = $orderby;
+		}
 
 		switch ( $orderby ) {
 			case 'name':
 			case 'lastname':
 				$orderby = array( 'lastname', 'firstname' );
+				$fields[] = 'fullname';
 				break;
 			case 'firstname':
 				$orderby = array( 'firstname', 'lastname' );
+				$fields[] = 'fullname';
 				break;
 		}
 
@@ -370,13 +383,17 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			'calc_found_rows' => true,
 			'orderby' => $orderby,
 			'order' => $order,
-			'fields' => 'all',
+			'fields' => $fields,
 			'limit' => $this->per_page,
 			'offset' => $offset,
 		)) );
 
 		$this->items = $items;
 		$this->total_items = $wpdb->get_var( 'SELECT FOUND_ROWS();' );
+
+		$item_ids = wp_list_pluck( $this->items, 'ID' );
+
+		mailster( 'actions' )->get_by_subscriber( $item_ids );
 
 		$this->total_pages = ceil( $this->total_items / $this->per_page );
 
