@@ -349,8 +349,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			'status' => isset( $_GET['status'] ) ? (int) $_GET['status'] : false,
 			's'      => isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null,
 			'strict' => isset( $_GET['strict'] ) ? boolval( $_GET['strict'] ) : false,
-			'lists' => isset( $_GET['lists'] ) ? ($_GET['lists'] ) : false,
-			'conditions' => isset( $_GET['conditions'] ) ? $_GET['conditions'] : null,
+			'lists' => isset( $_GET['lists'] ) ? ( $_GET['lists'] ) : false,
+			'conditions' => isset( $_GET['conditions'] ) ? $_GET['conditions'] : array(),
 		);
 
 		// How many to display per page?
@@ -362,9 +362,18 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'id';
 		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
 		$fields = array( 'ID', 'email', 'rating', 'wp_id', 'status', 'signup' );
+		$since = ! empty( $_GET['since'] ) ? strtotime( $_GET['since'] ) : null;
 
 		if ( isset( $custom_fields[ $orderby ] ) ) {
 			$fields[] = $orderby;
+		}
+
+		if ( $since ) {
+			$args['conditions'][] = array(
+				'field' => 'signup',
+				'operator' => '>',
+				'value' => $since,
+			);
 		}
 
 		switch ( $orderby ) {

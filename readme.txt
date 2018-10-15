@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 
 * fixed: missing fallback on custom fields
 * added: 'sub_query_limit' to process subscriber query in chunks for very large subscriber base
+* improved: external forms now embedded via dedicate URL
 * improved: query on subscriber overview page
 
 = Version 2.3.13 =

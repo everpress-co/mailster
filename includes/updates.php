@@ -553,7 +553,9 @@ if ( $old_version ) {
 		case '2.3.10':
 		case '2.3.11':
 		case '2.3.12':
+		case '2.3.13':
 
+			$mailster_options['_flush_rewrite_rules'] = true;
 			// mailster_notice( $update_info, 'updated', false, 'info-screen', true, 'newsletter_page_mailster_dashboard' );
 		default:
 

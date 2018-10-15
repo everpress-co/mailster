@@ -181,7 +181,7 @@ if ( $is_new ) {
 	<p><label><input type="checkbox" id="themestyle" checked> <?php esc_html_e( 'Include your Theme\'s style.css', 'mailster' ) ?></label></p>
 	<p class="description clear"><?php esc_html_e( 'Your form may look different depending on the place you are using it!', 'mailster' ) ?></p>
 	<div id="form-design">
-		<iframe id="form-design-iframe" width="100%" height="500" allowTransparency="true" frameborder="0" scrolling="no" src="<?php echo $this->url( array( 'id' => $id, 'edit' => wp_create_nonce( 'mailsteriframeform' ), 's' => 1, 'path' => ABSPATH ) ); ?>" data-no-lazy=""></iframe>
+		<iframe id="form-design-iframe" width="100%" height="500" allowTransparency="true" frameborder="0" scrolling="no" src="<?php echo $this->url( array( 'id' => $id, 'edit' => wp_create_nonce( 'mailsteriframeform' ), 's' => 1 ) ); ?>" data-no-lazy=""></iframe>
 	</div>
 	<div id="form-design-options">
 	<div class="form-design-options-nav">

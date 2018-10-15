@@ -592,7 +592,7 @@ class MailsterForm {
 		$html = '';
 
 		$redirect = esc_url( home_url( remove_query_arg( array( 'mailster_error', 'mailster_success' ), $_SERVER['REQUEST_URI'] ) ) );
-		$referer = $pagenow == 'form.php' ? ( isset( $_GET['referer'] ) ? $_GET['referer'] : 'extern' ) : $redirect;
+		$referer = $pagenow == 'form.php' || get_query_var( '_mailster_form' ) ? ( isset( $_GET['referer'] ) ? $_GET['referer'] : 'extern' ) : $redirect;
 
 		if ( $this->action ) {
 			$html .= '<input name="_action" type="hidden" value="' . esc_attr( $this->action ) . '">' . "\n";
