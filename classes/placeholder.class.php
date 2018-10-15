@@ -886,6 +886,11 @@ class MailsterPlaceholder {
 				} elseif ( ! $removeunused ) {
 					continue;
 				}
+
+				// add fallback if set
+				if ( '' == $replace && $fallback ) {
+					$replace = $fallback;
+				}
 				$replace_to = apply_filters( 'mailster_replace_' . $tag, $replace, $option, $fallback, $this->campaignID, $this->subscriberID );
 
 				$this->content = str_replace( $search, $replace_to, $this->content );

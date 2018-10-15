@@ -726,10 +726,8 @@ class MailsterQueue {
 
 			} else {
 
-				$specialcond = $wpdb->prepare( ' AND STR_TO_DATE(x.meta_value, %s) <= %s', '%Y-%m-%d', date( 'Y-m-d', $offsettimestamp ) );
 				switch ( $autoresponder_meta['userunit'] ) {
 					case 'year':
-						$specialcond .= " AND x.meta_value LIKE '%" . date( '-m-d', $offsettimestamp ) . "'";
 						$cond = array(
 							'field' => $autoresponder_meta['uservalue'],
 							'operator' => '$',
@@ -737,7 +735,6 @@ class MailsterQueue {
 						);
 					break;
 					case 'month':
-						$specialcond .= " AND x.meta_value LIKE '%" . date( '-d', $offsettimestamp ) . "'";
 						$cond = array(
 									'field' => $autoresponder_meta['uservalue'],
 									'operator' => '$',
@@ -745,7 +742,6 @@ class MailsterQueue {
 								);
 					break;
 					default:
-						$specialcond .= " AND x.meta_value != ''";
 						$cond = array(
 							'field' => $autoresponder_meta['uservalue'],
 							'operator' => '!=',
@@ -764,17 +760,7 @@ class MailsterQueue {
 			$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : array();
 
 			$conditions[] = array( $cond );
-			// if ( ! empty( $meta['list_conditions'] ) ) {
-			// if ( ! isset( $conditions['conditions'][0]['conditions'] ) ) {
-			// $conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );
-			// $conditions['operator'] = 'AND';
-			// }
-			// $conditions['conditions'][] = $extracondition;
-			// } else {
-			// $conditions = $extracondition;
-			// $conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );
-			// $conditions['operator'] = 'AND';
-			// }
+
 			$subscribers = mailster( 'subscribers' )->query(array(
 				'fields' => array( 'ID', $autoresponder_meta['uservalue'] ),
 				'lists' => $lists,

@@ -251,8 +251,6 @@ jQuery(document).ready(function ($) {
 
 	function updateButton() {
 
-		console.log('adasd');
-
 		var code = window.mailsterdata.embedcode,
 			id = $('#ID').val(),
 			width = $('#buttonwidth').val() || 480,
