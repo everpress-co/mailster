@@ -405,9 +405,9 @@ class MailsterTests {
 		$code = wp_remote_retrieve_response_code( $response );
 
 		if ( is_wp_error( $response ) ) {
-			$this->warning( sprintf( 'The Mailster Editor requires TinMCE and access to the file %1$s which seems to be blocked by your host. [%2$s]', '"' . $file . '"', $response->get_error_message() ) );
+			$this->warning( sprintf( 'The Mailster Editor requires TinyMCE and access to the file %1$s which seems to be blocked by your host. [%2$s]', '"' . $file . '"', $response->get_error_message() ) );
 		} elseif ( $code != 200 ) {
-			$this->warning( sprintf( 'The Mailster Editor requires TinMCE and access to the file %1$s which seems to be blocked by your host. [Error Code %2$s]', '"' . $file . '"', $code ) );
+			$this->warning( sprintf( 'The Mailster Editor requires TinyMCE and access to the file %1$s which seems to be blocked by your host. [Error Code %2$s]', '"' . $file . '"', $code ) );
 		}
 
 	}

@@ -194,7 +194,9 @@ class MailsterTemplate {
 				}
 				$logo->setAttribute( 'data-id', $new_logo['id'] );
 				$logo->setAttribute( 'width', $width );
-				$logo->setAttribute( 'height', round( $width / $new_logo['asp'] ) );
+				if ( $new_logo['asp'] ) {
+					$logo->setAttribute( 'height', round( $width / $new_logo['asp'] ) );
+				}
 				$logo->setAttribute( 'src', $new_logo['url'] );
 
 				if ( $logo_link ) {

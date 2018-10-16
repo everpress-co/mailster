@@ -1298,8 +1298,8 @@ class MailsterHelper {
 		if ( $force || false === ( $records = get_transient( $key ) ) ) {
 
 			// request TXT first
-			dns_get_record( $host, DNS_TXT );
-			$records = dns_get_record( $host, DNS_ALL - DNS_PTR );
+			@dns_get_record( $host, DNS_TXT );
+			$records = @dns_get_record( $host, DNS_ALL - DNS_PTR );
 
 			set_transient( $key, $records, 90 );
 
