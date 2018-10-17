@@ -393,7 +393,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					<label><input type="checkbox" name="remove_actions" value="1" checked> <?php esc_html_e( 'Remove all actions from affected users', 'mailster' );?> </label>
 				</p>
 				<p>
-					<input class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Delete Subscribers permanently', 'mailster' ) ?>" />
+					<input id="delete-subscriber-button" class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Delete Subscribers permanently', 'mailster' ) ?>" />
 				</p>
 				<h2 class="delete-status"></h2>
 				</form>

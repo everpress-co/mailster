@@ -226,7 +226,7 @@ class MailsterSubscriberQuery {
 			 $this->args['conditions'] = array_values( $this->args['conditions'] );
 
 			// sanitize
-			if ( ! isset( $this->args['conditions'][0][0] ) ) {
+			if ( empty( $this->args['conditions'][0] ) ) {
 				if ( 'OR' == $this->args['operator'] ) {
 					$this->args['conditions'] = array( $this->args['conditions'] );
 				} else {
@@ -899,7 +899,7 @@ class MailsterSubscriberQuery {
 			$this->last_result = null;
 		} else {
 			if ( $this->args['return_count'] ) {
-				$result = $wpdb->get_var( $sql );
+				$result = (int) $wpdb->get_var( $sql );
 			} else {
 
 				$sub_query_limit = $this->args['sub_query_limit'] ? (int) $this->args['sub_query_limit'] : false ;
