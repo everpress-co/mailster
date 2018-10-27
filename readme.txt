@@ -87,6 +87,9 @@ Xaver Birsak – https://everpress.io
 * fixed: missing fallback on custom fields
 * added: 'sub_query_limit' to process subscriber query in chunks for very large subscriber base
 * added: display count of selected subscribers on delete page
+* added: test for wp_mail
+* improved: wp_mail handling for third party plugins
+* improved: raw header parser for wp_mail
 * improved: external forms now embedded via dedicate URL
 * improved: query on subscriber overview page
 

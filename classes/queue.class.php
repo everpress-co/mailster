@@ -834,11 +834,11 @@ class MailsterQueue {
 	/**
 	 *
 	 *
-	 * @param unknown $cron_used  (optional)
+	 * @param unknown $campaign_id  (optional)
 	 * @param unknown $process_id (optional)
 	 * @return unknown
 	 */
-	public function progress( $cron_used = false, $process_id = 0 ) {
+	public function progress( $campaign_id = null, $process_id = 0 ) {
 
 		global $wpdb;
 
@@ -871,6 +871,10 @@ class MailsterQueue {
 			} else {
 				return false;
 			}
+		}
+
+		if ( $campaign_id && ! is_array( $campaign_id ) ) {
+			$campaign_id = array( $campaign_id );
 		}
 
 		$microtime = microtime( true );
@@ -917,7 +921,7 @@ class MailsterQueue {
 
 		$campaign_errors = array();
 
-		$to_send = $this->size( $microtime );
+		$to_send = $this->size( $microtime, $campaign_id );
 
 		$queue_update_sql = "UPDATE {$wpdb->prefix}mailster_queue SET sent = %d, error = %d, priority = %d, count = %d WHERE subscriber_id = %d AND campaign_id = %d AND requeued = %d AND options = %s LIMIT 1";
 
@@ -951,6 +955,11 @@ class MailsterQueue {
 
 			// subscriber exists or is not subscriber_id
 			$sql .= ' AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0)';
+
+			if ( $campaign_id ) {
+				$campaign_id = array_filter( $campaign_id, 'is_numeric' );
+				$sql .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
+			}
 
 			// $sql .= ' AND (actions.subscriber_id IS NULL OR queue.requeued = 1)';
 			$sql .= ' ORDER BY queue.priority ASC, subscribers.rating DESC';
@@ -1161,9 +1170,10 @@ class MailsterQueue {
 	 *
 	 *
 	 * @param unknown $microtime (optional)
+	 * @param unknown $campaign_id (optional)
 	 * @return unknown
 	 */
-	public function size( $microtime = null ) {
+	public function size( $microtime = null, $campaign_id = null ) {
 
 		global $wpdb;
 
@@ -1171,7 +1181,16 @@ class MailsterQueue {
 			$microtime = microtime( true );
 		}
 
+		if ( $campaign_id && ! is_array( $campaign_id ) ) {
+			$campaign_id = array( $campaign_id );
+		}
+
 		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id WHERE queue.timestamp <= " . (int) $microtime . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error} AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder') OR queue.campaign_id = 0) AND (subscribers.status = 1 OR queue.ignore_status = 1) AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0)";
+
+		if ( $campaign_id ) {
+			$campaign_id = array_filter( $campaign_id, 'is_numeric' );
+			$sql .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
+		}
 
 		return (int) $wpdb->get_var( $sql );
 	}
