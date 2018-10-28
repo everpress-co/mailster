@@ -2252,7 +2252,7 @@ class Mailster {
 
 			foreach ( $files as $file ) {
 				$file_parts = pathinfo( $file );
-				if ( 'php' == $file_parts['extension'] ) {
+				if ( isset( $file_parts['extension'] ) && 'php' == $file_parts['extension'] ) {
 					$hashes[] = md5_file( $file );
 				}
 			}

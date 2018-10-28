@@ -482,7 +482,8 @@ class MailsterTests {
 
 	}
 	private function test_memory_limit() {
-		if ( $max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT ) < 128 ) {
+		$max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
+		if ( $max < 128 ) {
 			$this->warning( 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		} else {
 			$this->success( 'Your Memory Limit is ' . size_format( $max * 1048576 ) );
@@ -655,12 +656,16 @@ class MailsterTests {
 			} else {
 				$this->error( $msg . '<br>' . $error_message );
 			}
+		} else {
+			$this->success( 'Email was successfully delivery to ' . $to );
 		}
 
 		if ( mailster_option( 'system_mail' ) ) {
 
 			add_action( 'wp_mail_failed', array( $this, 'wp_mail_failed' ) );
-			$response = wp_mail( $to, '[wp_mail] ' . $subject, $message );
+			if ( $response = wp_mail( $to, '[wp_mail] ' . $subject, $message ) ) {
+				$this->success( '[wp_mail] Email was successfully delivery to ' . $to );
+			}
 			remove_action( 'wp_mail_failed', array( $this, 'wp_mail_failed' ) );
 
 		}

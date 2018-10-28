@@ -88,6 +88,8 @@ Xaver Birsak – https://everpress.io
 * added: 'sub_query_limit' to process subscriber query in chunks for very large subscriber base
 * added: display count of selected subscribers on delete page
 * added: test for wp_mail
+* added: more date form options on export
+* improved: Gravatar as source is no longer shown if the source is not Gravatar
 * improved: wp_mail handling for third party plugins
 * improved: raw header parser for wp_mail
 * improved: external forms now embedded via dedicate URL

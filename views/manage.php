@@ -210,6 +210,12 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					<option value="<?php $d = mailster( 'helper' )->dateformat(); echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
+					<option value="<?php $d = 'Y-m-d H:i:s'; echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
+					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
+					</option>
+					<option value="<?php $d = 'Y-m-d'; echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
+					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
+					</option>
 					<option value="<?php $d = 'Y-d-m H:i:s'; echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
