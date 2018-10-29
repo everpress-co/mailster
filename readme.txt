@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.14 =
 
 * fixed: missing fallback on custom fields
+* fixed: undefined bodyElement in editor.
 * added: 'sub_query_limit' to process subscriber query in chunks for very large subscriber base
 * added: display count of selected subscribers on delete page
 * added: test for wp_mail
@@ -94,6 +95,7 @@ Xaver Birsak – https://everpress.io
 * improved: raw header parser for wp_mail
 * improved: external forms now embedded via dedicate URL
 * improved: query on subscriber overview page
+* improved: translated roles in conditions view
 
 = Version 2.3.13 =
 
