@@ -137,6 +137,33 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 * @param unknown $column_name
 	 * @return unknown
 	 */
+	private function searchmark( $string, $search = null ) {
+
+		if ( is_null( $search ) && isset( $_GET['s'] ) ) {
+			$search = stripslashes( $_GET['s'] );
+		}
+
+		if ( empty( $search ) ) {
+			return $string;
+		}
+
+		foreach ( explode( ' ', $search ) as $term ) {
+			$term = str_replace( array( '+', '-', '"', '*', '?' ), '', $term );
+			$string = preg_replace( '/(' . preg_quote( $term ) . ')/i', '<span class="highlight wp-ui-text-highlight">$1</span>', $string );
+		}
+
+		return $string;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $item
+	 * @param unknown $column_name
+	 * @return unknown
+	 */
 	public function column_default( $item, $column_name ) {
 
 		$data = mailster( 'subscribers' )->get_custom_fields( $item->ID );
@@ -152,9 +179,9 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				}
 
 				if ( $data['fullname'] ) {
-					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '">' . $data['fullname'] . '</a><br><a class="email" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $item->{'email'} . '</a>';
+					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '">' . $this->searchmark( $data['fullname'] ) . '</a><br><a class="email" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $this->searchmark( $item->{'email'} ) . '</a>';
 				} else {
-					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $item->{'email'} . '</a><br><span class="email">&nbsp;</span>';
+					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $this->searchmark( $item->{'email'} ) . '</a><br><span class="email">&nbsp;</span>';
 				}
 
 				$stars = ( round( $item->rating / 10, 2 ) * 50 );
@@ -190,7 +217,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 			case 'signup':
 				$timestring = ( ! $item->{$column_name} ) ? __( 'unknown', 'mailster' ) : date_i18n( mailster( 'helper' )->timeformat(), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
-			return '<div class="table-data">' . $timestring . '</div>';
+			return '<div class="table-data">' . $this->searchmark( $timestring ) . '</div>';
 
 			default:
 				$custom_fields = mailster()->get_custom_fields();
@@ -203,10 +230,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 						return '<div class="table-data">' . ($value ? '&#10004;' : '&#10005;') . '</div>';
 						break;
 						case 'date':
-						return '<div class="table-data">' . ($value ? date_i18n( mailster( 'helper' )->dateformat(), strtotime( $value ) ) : '') . '</div>';
+						return '<div class="table-data">' . $this->searchmark( $value ? date_i18n( mailster( 'helper' )->dateformat(), strtotime( $value ) ) : '' ) . '</div>';
 						break;
 						default:
-						return '<div class="table-data">' . ($value) . '</div>';
+						return '<div class="table-data">' . $this->searchmark( $value ) . '</div>';
 					}
 				}
 			return print_r( $item, true ); // Show the whole array for troubleshooting purposes

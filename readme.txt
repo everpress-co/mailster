@@ -96,6 +96,7 @@ Xaver Birsak – https://everpress.io
 * improved: external forms now embedded via dedicate URL
 * improved: query on subscriber overview page
 * improved: translated roles in conditions view
+* improved: searching subscribers now highlights search term.
 
 = Version 2.3.13 =
 

@@ -716,8 +716,11 @@ class MailsterSubscriberQuery {
 
 						} else {
 
-							$searches[] = "(subscribers.$search_field LIKE '$wildcard$term$wildcard')";
-
+							if ( 'hash' == $search_field ) {
+								$searches[] = "(subscribers.$search_field LIKE '$term')";
+							} else {
+								$searches[] = "(subscribers.$search_field LIKE '$wildcard$term$wildcard')";
+							}
 						}
 					}
 
