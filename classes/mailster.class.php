@@ -1827,7 +1827,7 @@ class Mailster {
 			} else {
 
 				if ( $this->wp_mail ) {
-					add_action( 'admin_notices', array( &$this, 'wp_mail_notice' ) );
+					mailster_notice( sprintf( esc_html__( 'The %s method already exists from a different plugin! Please disable it before using Mailster for system mails!', 'mailster' ), '<code>wp_mail()</code>' ), 'error', true, 'wp_mail_notice' );
 				}
 			}
 		}
@@ -1938,11 +1938,6 @@ class Mailster {
 	}
 
 
-	public function wp_mail_notice() {
-		echo '<div class="error"><p>function <strong>wp_mail</strong> already exists from a different plugin! Please disable it before using Mailsters wp_mail alternative!</p></div>';
-	}
-
-
 	/**
 	 *
 	 *
@@ -1957,6 +1952,28 @@ class Mailster {
 	 */
 	public function wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $file = null, $template = null ) {
 
+		$current_filter = current_filter();
+
+		$atts = apply_filters( 'wp_mail', compact( 'to', 'subject', 'message', 'headers', 'attachments' ) );
+
+		if ( isset( $this->atts['to'] ) ) {
+			$to = $this->atts['to'];
+		}
+		if ( isset( $this->atts['subject'] ) ) {
+			$subject = $this->atts['subject'];
+		}
+
+		if ( isset( $this->atts['message'] ) ) {
+			$message = $this->atts['message'];
+		}
+
+		if ( isset( $this->atts['headers'] ) ) {
+			$headers = $this->atts['headers'];
+		}
+
+		if ( isset( $this->atts['attachments'] ) ) {
+			$attachments = $this->atts['attachments'];
+		}
 		if ( is_array( $headers ) ) {
 			$headers = implode( "\r\n", $headers ) . "\r\n";
 		}
@@ -1976,7 +1993,6 @@ class Mailster {
 			$file = trim( $hits[1] );
 		}
 
-		$current_filter = current_filter();
 		$methods = wp_list_pluck( debug_backtrace(), 'function' );
 		$caller = null;
 		foreach ( $methods as $method ) {
@@ -2017,7 +2033,18 @@ class Mailster {
 		$message = apply_filters( 'mymail_send_message', apply_filters( 'mailster_send_message', $message ) );
 		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $subject ) );
 
-		return $mail->send_notification( $message, $headline, $replace, false, $file, $template );
+		$success = (bool) $mail->send_notification( $message, $headline, $replace, false, $file, $template );
+
+		if ( ! $success ) {
+
+			$error = $mail->last_error;
+			$mail_error_data = compact( 'to', 'subject', 'message', 'headers', 'attachments' );
+			$mail_error_data['phpmailer_exception_code'] = $error->getCode();
+
+			do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $error->getMessage(), $mail_error_data ) );
+		}
+
+		return $success;
 
 	}
 
@@ -2224,7 +2251,10 @@ class Mailster {
 			$hashes = array();
 
 			foreach ( $files as $file ) {
-				$hashes[] = md5_file( $file );
+				$file_parts = pathinfo( $file );
+				if ( isset( $file_parts['extension'] ) && 'php' == $file_parts['extension'] ) {
+					$hashes[] = md5_file( $file );
+				}
 			}
 
 			$hash = md5( implode( '', $hashes ) );

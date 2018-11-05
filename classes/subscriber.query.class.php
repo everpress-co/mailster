@@ -71,6 +71,8 @@ class MailsterSubscriberQuery {
 		'click_after' => null,
 		'click_link' => null,
 		'click_link__not_in' => null,
+
+		'sub_query_limit' => false,
 	);
 
 	private static $_instance = null;
@@ -224,7 +226,7 @@ class MailsterSubscriberQuery {
 			 $this->args['conditions'] = array_values( $this->args['conditions'] );
 
 			// sanitize
-			if ( ! isset( $this->args['conditions'][0][0] ) ) {
+			if ( empty( $this->args['conditions'][0] ) ) {
 				if ( 'OR' == $this->args['operator'] ) {
 					$this->args['conditions'] = array( $this->args['conditions'] );
 				} else {
@@ -714,8 +716,11 @@ class MailsterSubscriberQuery {
 
 						} else {
 
-							$searches[] = "(subscribers.$search_field LIKE '$wildcard$term$wildcard')";
-
+							if ( 'hash' == $search_field ) {
+								$searches[] = "(subscribers.$search_field LIKE '$term')";
+							} else {
+								$searches[] = "(subscribers.$search_field LIKE '$wildcard$term$wildcard')";
+							}
 						}
 					}
 
@@ -835,7 +840,9 @@ class MailsterSubscriberQuery {
 		$select = 'SELECT';
 
 		if ( $this->args['calc_found_rows'] ) {
-			$select .= ' SQL_CALC_FOUND_ROWS subscribers.ID,';
+			$select .= ' SQL_CALC_FOUND_ROWS';
+			array_unshift( $this->args['select'], 'subscribers.ID' );
+			$this->args['select'] = array_unique( $this->args['select'] );
 		}
 
 		$select .= ' ' . implode( ', ', $this->args['select'] );
@@ -894,15 +901,44 @@ class MailsterSubscriberQuery {
 			$this->last_error = null;
 			$this->last_result = null;
 		} else {
-			if ( $this->args['return_ids'] ) {
-				$result = $wpdb->get_col( $sql );
-			} elseif ( $this->args['return_count'] ) {
-				$result = $wpdb->get_var( $sql );
+			if ( $this->args['return_count'] ) {
+				$result = (int) $wpdb->get_var( $sql );
 			} else {
-				$result = $wpdb->get_results( $sql );
+
+				$sub_query_limit = $this->args['sub_query_limit'] ? (int) $this->args['sub_query_limit'] : false ;
+				$sub_query_offset = 0;
+				$limit_sql = '';
+				$result = array();
+				$round = 0;
+
+				do {
+
+					// limit is not set explicitly => do sub queries
+					if ( $sub_query_limit && ! $this->args['limit'] ) {
+						$sub_query_offset = $sub_query_limit * ($round++);
+						$limit_sql = ' LIMIT ' . $sub_query_offset . ', ' . $sub_query_limit;
+					}
+
+					// get sub query
+					if ( $this->args['return_ids'] ) {
+						$sub_result = $wpdb->get_col( $sql . $limit_sql );
+					} else {
+						$sub_result = $wpdb->get_results( $sql . $limit_sql );
+					}
+
+					$result = array_merge( $result, $sub_result );
+
+					if ( ! $sub_query_limit || ! $this->args['limit'] && count( $sub_result ) < $sub_query_limit ) {
+						break;
+					}
+				} while ( ! empty( $sub_result ));
+
+				unset( $sub_result );
+
 				// $result = $this->cast( $result ) );
 			}
-			$this->last_query = $wpdb->last_query;
+
+			$this->last_query = $sql;
 			$this->last_error = $wpdb->last_error;
 			$this->last_result = $result;
 

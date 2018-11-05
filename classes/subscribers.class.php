@@ -968,6 +968,7 @@ class MailsterSubscribers {
 
 			if ( ! $bulkimport ) {
 				mailster_cache_delete( 'subscriber_' . $subscriber_id );
+				mailster_cache_delete( 'get_custom_fields_' . $subscriber_id );
 				mailster_cache_delete( 'subscriber_meta_' . $subscriber_id . '0' );
 			}
 

@@ -55,6 +55,8 @@ class MailsterAjax {
 		'create_list',
 		'get_create_list_count',
 
+		'get_subscriber_count',
+
 		'editor_image_upload_handler',
 		'template_upload_handler',
 
@@ -2055,6 +2057,33 @@ class MailsterAjax {
 		$listtype = esc_attr( $_POST['listtype'] );
 
 		$return['count'] = mailster( 'campaigns' )->create_list_from_option( '', $campaign_id, $listtype, true );
+		$return['success'] = true;
+
+		$this->json_return( $return );
+
+	}
+
+
+	private function get_subscriber_count() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		parse_str( $_POST['data'], $data );
+
+		$lists = isset( $data['lists'] ) ? (array) $data['lists'] : -1;
+		$conditions = isset( $data['conditions'] ) ? array_values( $data['conditions'] ) : false;
+		$status = isset( $data['status'] ) ? (array) $data['status'] : false;
+
+		$args = array(
+			'return_count' => true,
+			'lists' => $lists,
+			'status' => $status,
+			'conditions' => $conditions,
+		);
+
+		$return['count'] = mailster( 'subscribers' )->query( $args );
+
 		$return['success'] = true;
 
 		$this->json_return( $return );

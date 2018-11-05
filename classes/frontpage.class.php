@@ -77,6 +77,8 @@ class MailsterFrontpage {
 			$rules[ '^(index\.php/)?mailster/(' . $secret . ')/?([0-9a-z]+)?/?$' ] = 'index.php?_mailster_cron=$matches[2]&_mailster_extra=$matches[3]';
 		}
 
+		$rules['^(index\.php/)?mailster/form$'] = 'index.php?_mailster_form=1';
+
 		$rules = apply_filters( 'mailster_rewrite_rules', $rules );
 
 		return $rules + $wp_rules;
@@ -117,6 +119,7 @@ class MailsterFrontpage {
 		$vars[] = '_mailster_hash';
 		$vars[] = '_mailster_extra';
 		$vars[] = '_mailster_cron';
+		$vars[] = '_mailster_form';
 		return $vars;
 
 	}
@@ -1198,7 +1201,6 @@ class MailsterFrontpage {
 			'label' => mailster_text( 'submitbutton' ),
 			'design' => 'default',
 			'width' => 480,
-			'endpoint' => MAILSTER_URI . 'form.php',
 		), $atts );
 
 		return mailster( 'forms' )->get_subscribe_button( $args['id'], $args );

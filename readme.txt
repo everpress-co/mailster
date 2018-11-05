@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.8
-Stable tag: 2.3.13
+Stable tag: 2.3.14
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -82,12 +82,28 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+= Version 2.3.14 =
+
+* fixed: missing fallback on custom fields
+* fixed: undefined bodyElement in editor.
+* added: 'sub_query_limit' to process subscriber query in chunks for very large subscriber base
+* added: display count of selected subscribers on delete page
+* added: test for wp_mail
+* added: more date form options on export
+* improved: Gravatar as source is no longer shown if the source is not Gravatar
+* improved: wp_mail handling for third party plugins
+* improved: raw header parser for wp_mail
+* improved: external forms now embedded via dedicate URL
+* improved: query on subscriber overview page
+* improved: translated roles in conditions view
+* improved: searching subscribers now highlights search term.
+
 = Version 2.3.13 =
 
 * fixed: Max execution time error message pops up randomly on some servers.
 * fixed: issue with certain post types and multiple underscores.
 * fixed: PHP error on form duplication.
-* fixed: issue with nested emebed styles.
+* fixed: issue with nested embed styles.
 * fixed: smaller issues.
 * improved: query for location based segmentation.
 * added: 'mailster_get_post_list_args' filter for static posts.

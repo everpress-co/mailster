@@ -235,12 +235,12 @@ jQuery(document).ready(function ($) {
 		}).eq(0).trigger('change');
 
 	$('.embed-form-output')
-		.on('click', function () {
+		.on('focus', function () {
 			$(this).select();
 		});
 
 	$('.form-output')
-		.on('click', function () {
+		.on('focus', function () {
 			$(this).select();
 		});
 
@@ -250,8 +250,6 @@ jQuery(document).ready(function ($) {
 		});
 
 	function updateButton() {
-
-		console.log('adasd');
 
 		var code = window.mailsterdata.embedcode,
 			id = $('#ID').val(),

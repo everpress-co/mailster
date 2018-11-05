@@ -3,7 +3,7 @@
 class MailsterPlaceholder {
 
 	private $content;
-	private $styles;
+	private $styles = array();
 	private $keeptag;
 	private $keeptags;
 	private $placeholder = array();
@@ -885,6 +885,11 @@ class MailsterPlaceholder {
 					// keep unused
 				} elseif ( ! $removeunused ) {
 					continue;
+				}
+
+				// add fallback if set
+				if ( '' == $replace && $fallback ) {
+					$replace = $fallback;
 				}
 				$replace_to = apply_filters( 'mailster_replace_' . $tag, $replace, $option, $fallback, $this->campaignID, $this->subscriberID );
 
