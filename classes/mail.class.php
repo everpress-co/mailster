@@ -316,23 +316,106 @@ class MailsterMail {
 			return;
 		}
 
-		$headers = is_array( $headers ) ? $headers : explode( "\n", $headers );
-		foreach ( $headers as $header ) {
-			if ( empty( $header ) ) {
-				continue;
-			}
+		if ( ! is_array( $headers ) ) {
+			// Explode the headers out, so this function can take both
+			// string headers and an array of headers.
+			$tempheaders = explode( "\n", str_replace( "\r\n", "\n", $headers ) );
+		} else {
+			$tempheaders = $headers;
+		}
+		$headers = array();
 
-			if ( preg_match( '#^from: ?(.*) (<([^ ]+)>)?#i', $header, $from ) ) {
-				$this->from_name = trim( $from[1], '"' );
-				$this->from = isset( $from[3] ) ? trim( $from[3] ) : '';
+		// If it's actually got contents
+		if ( ! empty( $tempheaders ) ) {
+			// Iterate through the raw headers
+			foreach ( (array) $tempheaders as $header ) {
+				if ( strpos( $header, ':' ) === false ) {
+					if ( false !== stripos( $header, 'boundary=' ) ) {
+						$parts = preg_split( '/boundary=/i', trim( $header ) );
+						$boundary = trim( str_replace( array( "'", '"' ), '', $parts[1] ) );
+					}
+					continue;
+				}
+				// Explode them out
+				list( $name, $content ) = explode( ':', trim( $header ), 2 );
 
-			} elseif ( preg_match( '#^content-type#i', $header, $from ) ) {
-				continue;
-			} else {
-				$parts = array_map( 'trim', explode( ':', $header ) );
-				$this->add_header( $parts[0], $parts[1] );
+				// Cleanup crew
+				$name    = trim( $name );
+				$content = trim( $content );
+
+				switch ( strtolower( $name ) ) {
+					// Mainly for legacy -- process a From: header if it's there
+					case 'from':
+						$bracket_pos = strpos( $content, '<' );
+						if ( $bracket_pos !== false ) {
+							// Text before the bracketed email is the "From" name.
+							if ( $bracket_pos > 0 ) {
+								$from_name = substr( $content, 0, $bracket_pos - 1 );
+								$from_name = str_replace( '"', '', $from_name );
+								$from_name = trim( $from_name );
+							}
+
+							$from_email = substr( $content, $bracket_pos + 1 );
+							$from_email = str_replace( '>', '', $from_email );
+							$from_email = trim( $from_email );
+
+							// Avoid setting an empty $from_email.
+						} elseif ( '' !== trim( $content ) ) {
+							$from_email = trim( $content );
+						}
+						break;
+					case 'content-type':
+						if ( strpos( $content, ';' ) !== false ) {
+							list( $type, $charset_content ) = explode( ';', $content );
+							$content_type = trim( $type );
+							if ( false !== stripos( $charset_content, 'charset=' ) ) {
+								$charset = trim( str_replace( array( 'charset=', '"' ), '', $charset_content ) );
+							} elseif ( false !== stripos( $charset_content, 'boundary=' ) ) {
+								$boundary = trim( str_replace( array( 'BOUNDARY=', 'boundary=', '"' ), '', $charset_content ) );
+								$charset = '';
+							}
+
+							// Avoid setting an empty $content_type.
+						} elseif ( '' !== trim( $content ) ) {
+							$content_type = trim( $content );
+						}
+						break;
+					case 'cc':
+						$cc = array_merge( (array) $cc, explode( ',', $content ) );
+						break;
+					case 'bcc':
+						$bcc = array_merge( (array) $bcc, explode( ',', $content ) );
+						break;
+					case 'reply-to':
+						$reply_to = array_merge( (array) $reply_to, explode( ',', $content ) );
+						break;
+					default:
+						// Add it to our grand headers array
+						$headers[ trim( $name ) ] = trim( $content );
+						break;
+				}
 			}
 		}
+
+		if ( ! empty( $headers ) ) {
+			$this->add_header( $headers );
+		}
+		if ( isset( $from_email ) ) {
+			$this->from = $from_email;
+		}
+		if ( isset( $from_name ) ) {
+			$this->from_name = $from_name;
+		}
+		if ( isset( $reply_to ) ) {
+			$this->reply_to = $reply_to;
+		}
+		if ( isset( $bcc ) ) {
+			$this->bcc = $bcc;
+		}
+		if ( isset( $cc ) ) {
+			$this->cc = $cc;
+		}
+
 	}
 
 
@@ -395,8 +478,8 @@ class MailsterMail {
 		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 
 		if ( $template ) {
-			$template = mailster( 'template', $template, $file );
-			$this->content = $template->get( true, true );
+			$template_obj = mailster( 'template', $template, $file );
+			$this->content = $template_obj->get( true, true );
 		} else {
 			$this->content = '{headline}<br>{content}';
 		}
@@ -543,6 +626,13 @@ class MailsterMail {
 
 			$this->subject = htmlspecialchars_decode( $this->subject );
 			$this->from_name = htmlspecialchars_decode( $this->from_name );
+
+			if ( empty( $this->from ) ) {
+				$this->from = mailster_option( 'from' );
+				if ( empty( $this->from_name ) ) {
+					$this->from_name = mailster_option( 'from_name' );
+				}
+			}
 
 			$this->mailer->Subject = $this->subject;
 			$this->mailer->SetFrom( $this->from, $this->from_name, false );
