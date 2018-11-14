@@ -58,6 +58,7 @@ class MailsterManage {
 				'confirm_import' => __( 'Do you really like to import these contacts?', 'mailster' ),
 				'import_complete' => __( 'Import complete!', 'mailster' ),
 				'confirm_delete' => __( 'You are about to delete these subscribers permanently. This step is irreversible!', 'mailster' ) . "\n" . sprintf( __( 'Type "%s" to confirm deletion', 'mailster' ), 'DELETE' ),
+				'delete_n_subscribers' => __( 'Delete %s Subscribers permanently', 'mailster' ),
 				'onbeforeunloadimport' => __( 'You are currently importing subscribers! If you leave the page all pending subscribers don\'t get imported!', 'mailster' ),
 				'onbeforeunloadexport' => __( 'Your download is preparing! If you leave this page the progress will abort!', 'mailster' ),
 		) );

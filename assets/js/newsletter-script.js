@@ -611,7 +611,7 @@ jQuery(document).ready(function ($) {
 				})
 				.on('click', '.remove-conditions', function () {
 					if (confirm(mailsterL10n.remove_conditions)) {
-						$('#receivers-dialog').find('.mailster-conditions').empty();
+						$('#receivers-dialog').find('.mailster-conditions-wrap').empty();
 						_trigger('updateCount');
 					}
 					return false;
@@ -2143,7 +2143,7 @@ jQuery(document).ready(function ($) {
 						label = buttonlabel.val();
 
 					if (!wrap.length) {
-						current.element.replaceWith('<table class="textbutton" align="left"><tr><td align="center" width="auto"><a href="' + link + '" editable label="' + label + '">' + label + '</a></td></tr></table>')
+						current.element.replaceWith('<table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' + link + '" editable label="' + label + '">' + label + '</a></td></tr></table>')
 					} else {
 						if (current.element[0] == wrap[0]) {
 							current.element = wrap.find('a');
@@ -2209,7 +2209,7 @@ jQuery(document).ready(function ($) {
 							current.elements.buttons.not(':last').remove();
 						} else {
 
-							current.elements.multi.last().after('<buttons><table class="textbutton" align="left"><tr><td align="center" width="auto"><a href="' + currenttext.link + '" title="' + mailsterL10n.read_more + '" editable label="' + mailsterL10n.read_more + '">' + mailsterL10n.read_more + '</a></td></tr></table></buttons>');
+							current.elements.multi.last().after('<buttons><table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' + currenttext.link + '" title="' + mailsterL10n.read_more + '" editable label="' + mailsterL10n.read_more + '">' + mailsterL10n.read_more + '</a></td></tr></table></buttons>');
 						}
 
 					} else {

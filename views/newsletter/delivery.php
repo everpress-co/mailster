@@ -396,8 +396,8 @@ $sent = $this->get_sent( $post->ID );
 			<?php if ( $all_campaigns = $this->get_campaigns( array( 'post__not_in' => array( $post->ID ), 'orderby' => 'post_title' ) ) ) :
 
 				// bypass post_status sort limitation.
-				$all_campaings_stati = wp_list_pluck( $all_campaigns, 'post_status' );
-				asort( $all_campaings_stati );
+				$all_campaigns_stati = wp_list_pluck( $all_campaigns, 'post_status' );
+				asort( $all_campaigns_stati );
 
 			?>
 				<p>
@@ -414,7 +414,7 @@ $sent = $this->get_sent( $post->ID );
 				<?php
 				global $wp_post_statuses;
 				$status = '';
-				foreach ( $all_campaings_stati as $i => $c ) {
+				foreach ( $all_campaigns_stati as $i => $c ) {
 					$c = $all_campaigns[ $i ];
 					if ( $status != $c->post_status ) {
 						if ( $status ) {
@@ -440,7 +440,7 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 			<?php
 				$hooks = apply_filters( 'mailster_action_hooks', array(
-					// 'mailster_clicked_link_in_campaing' => __( 'user clicked link in a campaign', 'mailster' ),
+					// 'mailster_clicked_link_in_campaign' => __( 'user clicked link in a campaign', 'mailster' ),
 				) );
 			if ( $autoresponderdata['hook'] && ! isset( $hooks[ $autoresponderdata['hook'] ] ) ) {
 				$hooks[ $autoresponderdata['hook'] ] = $autoresponderdata['hook'];

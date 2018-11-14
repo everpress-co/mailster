@@ -1229,8 +1229,8 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 }
 .device.desktop{
 	width: 60%;
-	max-width: 660px;
-	min-width: 650px;
+	max-width: 710px;
+	min-width: 700px;
 	height: 98%;
 	margin-top: 1%;
 	left: 4%;
@@ -2037,8 +2037,13 @@ label.weekday input{
 	border-color: #DFDFDF;
 }
 #mailster_conditions_render{
-	min-height: 18px;
 	position: relative;
+}
+#mailster_conditions_render .mailster-conditions-render:empty{
+	border: 1px solid #DFDFDF;
+	border-radius: 2px;
+	padding: 10px 6px;
+	min-height: 18px;
 }
 #mailster_conditions_render .mailster-conditions-render:empty:before, .mailster-conditions .mailster-conditions-wrap:empty:before{
 	content: attr(data-emptytext);
@@ -2499,7 +2504,7 @@ a.mailster-btn.editbutton {
 	overflow: scroll;
 	overflow-y: auto;
 	overflow-x: hidden;
-	height: 96%;
+	height: 94%;
 }
 #mailster_template .inner #template-wrap.load, #mailster_template .inner #template-wrap.load *{
 	cursor: progress !important;

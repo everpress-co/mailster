@@ -28,17 +28,12 @@ class MailsterCampaigns {
 	public function init() {
 
 		add_filter( 'transition_post_status', array( &$this, 'check_for_autoresponder' ), 10, 3 );
+		add_filter( 'transition_post_status', array( &$this, 'set_before_trash_status' ), 10, 3 );
 		add_action( 'mailster_finish_campaign', array( &$this, 'remove_revisions' ) );
 
 		add_action( 'mailster_auto_post_thumbnail', array( &$this, 'get_post_thumbnail' ), 10, 1 );
 
 		if ( is_admin() ) {
-
-			add_action( 'paused_to_trash', array( &$this, 'paused_to_trash' ) );
-			add_action( 'active_to_trash', array( &$this, 'active_to_trash' ) );
-			add_action( 'queued_to_trash', array( &$this, 'queued_to_trash' ) );
-			add_action( 'finished_to_trash', array( &$this, 'finished_to_trash' ) );
-			add_action( 'trash_to_paused', array( &$this, 'trash_to_paused' ), 999 );
 
 			add_action( 'admin_menu', array( &$this, 'remove_meta_boxs' ) );
 			add_action( 'admin_menu', array( &$this, 'autoresponder_menu' ), 20 );
@@ -175,6 +170,7 @@ class MailsterCampaigns {
 				'show_in_nav_menus' => false,
 				'show_in_menu' => true,
 				'show_in_admin_bar' => true,
+				'show_in_rest' => false,
 				'exclude_from_search' => true,
 				'capability_type' => 'newsletter',
 				'map_meta_cap' => true,
@@ -1017,57 +1013,24 @@ class MailsterCampaigns {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function paused_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
-	}
+	public function set_before_trash_status( $new_status, $old_status, $campaign ) {
 
+		if ( 'newsletter' != $campaign->post_type || $new_status == $old_status ) {
+			return;
+		}
 
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function active_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'active' );
-	}
+		// store old status on trash.
+		if ( 'trash' == $new_status ) {
+			set_transient( 'mailster_before_trash_status_' . $campaign->ID, $old_status );
+		}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function queued_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'queued' );
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function finished_to_trash( $campaign ) {
-		set_transient( 'mailster_before_trash_status_' . $campaign->ID, 'finished' );
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $campaign
-	 */
-	public function trash_to_paused( $campaign ) {
-
-		$oldstatus = get_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
-
-		if ( $campaign->post_status != $oldstatus ) {
-			$this->change_status( $campaign, $oldstatus, true );
+		// restore old status on untrash.
+		if ( 'trash' == $old_status ) {
+			$status_before = get_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
+			if ( $campaign->post_status != $status_before ) {
+				$this->change_status( $campaign, $status_before, true );
+			}
+			delete_transient( 'mailster_before_trash_status_' . $campaign->ID );
 		}
 
 	}
@@ -1571,15 +1534,15 @@ class MailsterCampaigns {
 						// open
 						case '2':
 							if ( ! $this->meta( $parent_id, 'track_opens' ) ) {
-								$parent_campaing = get_post( $parent_id );
-								mailster_notice( '<strong>' . sprintf( __( 'Tracking Opens is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaing->ID . '&action=edit' ) . '">' . $parent_campaing->post_title . '</a>' ) . '</strong>', 'error', true );
+								$parent_campaign = get_post( $parent_id );
+								mailster_notice( '<strong>' . sprintf( __( 'Tracking Opens is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaign->ID . '&action=edit' ) . '">' . $parent_campaign->post_title . '</a>' ) . '</strong>', 'error', true );
 							}
 							break;
 						// clicked
 						case '3':
 							if ( ! $this->meta( $_POST['parent_id'], 'track_clicks' ) ) {
-								$parent_campaing = get_post( $parent_id );
-								mailster_notice( sprintf( __( 'Tracking Clicks is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaing->ID . '&action=edit' ) . '">' . $parent_campaing->post_title . '</a>' ), 'error', true );
+								$parent_campaign = get_post( $parent_id );
+								mailster_notice( sprintf( __( 'Tracking Clicks is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaign->ID . '&action=edit' ) . '">' . $parent_campaign->post_title . '</a>' ), 'error', true );
 							}
 							break;
 
@@ -3582,7 +3545,10 @@ class MailsterCampaigns {
 					$sent = $this->get_sent( $id );
 					$sent_formatted = sprintf( __( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 					if ( is_wp_error( $cron_status ) ) {
-						$status_title = __( 'Sending Problem!', 'mailster' ) . ' <a href="' . admin_url( 'admin.php?page=mailster_tests&autostart' ) . '" class="button button-small">' . __( 'Self Test', 'mailster' ) . '</a>';
+						$status_title = __( 'Sending Problem!', 'mailster' );
+						if ( current_user_can( 'activate_plugins' ) ) {
+							 $status_title .= ' <a href="' . admin_url( 'admin.php?page=mailster_tests&autostart' ) . '" class="button button-small">' . __( 'Self Test', 'mailster' ) . '</a>';
+						}
 					} else {
 						$status_title = $sent_formatted;
 					}
@@ -3986,11 +3952,11 @@ class MailsterCampaigns {
 	 */
 	public function check_for_autoresponder( $new_status, $old_status, $post ) {
 
-		if ( $new_status == $old_status ) {
+		if ( defined( 'WP_IMPORTING' ) ) {
 			return;
 		}
 
-		if ( 'publish' != $new_status ) {
+		if ( $new_status == $old_status ) {
 			return;
 		}
 
@@ -4002,6 +3968,15 @@ class MailsterCampaigns {
 			return;
 		}
 
+		$accepted_status = apply_filters( 'mailster_check_for_autoresponder_accepted_status', 'publish', $post );
+
+		if ( ! is_array( $accepted_status ) ) {
+			$accepted_status = array( $accepted_status );
+		}
+
+		if ( ! in_array( $new_status, $accepted_status ) ) {
+			return;
+		}
 		$now = time();
 
 		$campaigns = $this->get_autoresponder();
@@ -4422,18 +4397,19 @@ class MailsterCampaigns {
 			'unsupported_format' => __( 'Unsupported file format', 'mailster' ),
 		) );
 
-		wp_register_script( 'mailster-tinymce', includes_url( 'js/tinymce/' ) . 'wp-tinymce.php', array( 'jquery' ), false, true );
-		wp_register_style( 'wp-editor', includes_url( 'css/editor' . $suffix . '.css' ) );
-		wp_register_style( 'wp-editor-forms', admin_url( 'css/forms' . $suffix . '.css' ) );
+		wp_register_script( 'mailster-tinymce', includes_url( 'js/tinymce/' ) . 'tinymce.min.js', array(), false, true );
+		wp_register_script( 'mailster-tinymce-compat', includes_url( 'js/tinymce/plugins/compat3x/' ) . 'plugin' . $suffix . '.js', array(), false, true );
+		wp_register_style( 'mailster-wp-editor', includes_url( 'css/editor' . $suffix . '.css' ) );
 
 		ob_start();
 
 		if ( $inline ) {
 			wp_print_styles( 'dashicons' );
-			wp_print_styles( 'wp-editor' );
+			wp_print_styles( 'mailster-wp-editor' );
 			wp_print_scripts( 'utils' );
 			mailster( 'tinymce' )->editbar_translations();
 			wp_print_scripts( 'mailster-tinymce' );
+			wp_print_scripts( 'mailster-tinymce-compat' );
 		}
 
 		wp_print_styles( 'mailster-icons' );

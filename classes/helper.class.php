@@ -91,7 +91,7 @@ class MailsterHelper {
 
 		}
 
-		if ( ! $height && isset( $image_src[2] ) ) {
+		if ( ! $height && isset( $image_src[1] ) && $image_src[1] && isset( $image_src[2] ) && $image_src[2] ) {
 			$height = round( $width / ( $image_src[1] / $image_src[2] ) );
 		}
 
@@ -159,7 +159,7 @@ class MailsterHelper {
 		$cache_key = 'mailster_wpuser_meta_fields';
 
 		if ( $force || false === ( $meta_values = get_transient( $cache_key ) ) ) {
-			$exclude = array( 'comment_shortcuts', 'first_name', 'last_name', 'nickname', 'use_ssl', 'default_password_nag', 'dismissed_wp_pointers', 'rich_editing', 'show_admin_bar_front', 'show_welcome_panel', 'admin_color', 'screen_layout_dashboard', 'screen_layout_newsletter' );
+			$exclude = array( 'comment_shortcuts', 'first_name', 'last_name', 'nickname', 'use_ssl', 'default_password_nag', 'dismissed_wp_pointers', 'rich_editing', 'show_admin_bar_front', 'show_welcome_panel', 'admin_color', 'screen_layout_dashboard', 'screen_layout_newsletter', 'show_try_gutenberg_panel', 'syntax_highlighting', 'locale', 'sites_network_per_page' );
 
 			$meta_values = $wpdb->get_col( "SELECT meta_key FROM {$wpdb->usermeta} WHERE meta_value NOT LIKE '%:{%' GROUP BY meta_key ASC" );
 			$meta_values = preg_grep( '/^(?!' . preg_quote( $wpdb->prefix ) . ')/', $meta_values );
@@ -184,7 +184,7 @@ class MailsterHelper {
 	public function get_addons( $force = false ) {
 
 		if ( $force || false === ( $addons = get_transient( 'mailster_addons' ) ) ) {
-			$url = 'http://mailster.github.io/v1/addons.json';
+			$url = 'https://mailster.github.io/v1/addons.json';
 
 			$response = wp_remote_get( $url, array() );
 
@@ -1298,8 +1298,8 @@ class MailsterHelper {
 		if ( $force || false === ( $records = get_transient( $key ) ) ) {
 
 			// request TXT first
-			dns_get_record( $host, DNS_TXT );
-			$records = dns_get_record( $host, DNS_ALL - DNS_PTR );
+			@dns_get_record( $host, DNS_TXT );
+			$records = @dns_get_record( $host, DNS_ALL - DNS_PTR );
 
 			set_transient( $key, $records, 90 );
 

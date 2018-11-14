@@ -132,9 +132,8 @@ class MailsterConditions {
 	}
 
 	private function get_wp_user_meta() {
-		$wp_user_meta = wp_parse_args( array( 'wp_user_level' => 'User Lever', 'wp_capabilities' => 'User Role' ), mailster( 'helper' )->get_wpuser_meta_fields() );
+		$wp_user_meta = wp_parse_args( mailster( 'helper' )->get_wpuser_meta_fields(), array( 'wp_user_level' => __( 'User Level', 'mailster' ), 'wp_capabilities' => __( 'User Role', 'mailster' ) ) );
 		// removing custom fields from wp user meta to prevent conflicts
-		// error_log($this->custom_fields);
 		$wp_user_meta = array_diff( $wp_user_meta, array_merge( array( 'email' ), array_keys( $this->custom_fields ) ) );
 
 		return $wp_user_meta;
@@ -419,11 +418,17 @@ class MailsterConditions {
 				if ( in_array( $field, $this->time_fields ) ) {
 					return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
 				}
-				if ( $field == 'form' ) {
+				if ( 'form' == $field ) {
 					if ( $form = mailster( 'forms' )->get( (int) $string, false, false ) ) {
 						return $form->name;
 					}
+				} elseif ( 'wp_capabilities' == $field ) {
+					global $wp_roles;
+					if ( isset( $wp_roles->roles[ $string ] ) ) {
+	    				return translate_user_role( $wp_roles->roles[ $string ]['name'] );
+					}
 				}
+
 				break;
 
 		}

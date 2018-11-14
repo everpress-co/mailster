@@ -312,7 +312,7 @@ $utm = array(
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-mailgun" data-method="mailgun">
-				<?php echo in_array( 'mailster-mailgun', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'SparkPost' ) ?>
+				<?php echo in_array( 'mailster-mailgun', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'Mailgun' ) ?>
 				</a>
 				<?php endif; ?>
 			</div>

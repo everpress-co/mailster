@@ -23,7 +23,10 @@ $default_texts = mailster( 'settings' )->get_default_texts();
 
 if ( $old_version ) {
 
-	switch ( $old_version ) {
+	// remove any branch version from the string.
+	$old_version_sanitized = preg_replace( '#^([^a-z]+)\.([a-z_]+)(.*?)$#i', '$1', $old_version );
+
+	switch ( $old_version_sanitized ) {
 		case '1.0':
 		case '1.0.1':
 
@@ -379,25 +382,6 @@ if ( $old_version ) {
 			mailster_notice( 'Please clear your cache if you are using page cache on your site', '', false, 'mailsterpagecache' );
 			$mailster_options['welcome'] = true;
 
-		case '2.1Beta1':
-		case '2.1Beta2':
-		case '2.1Beta3':
-		case '2.1Beta4':
-		case '2.1Beta5':
-		case '2.1Beta6':
-		case '2.1Beta7':
-		case '2.1Beta8':
-		case '2.1Beta9':
-		case '2.1Beta10':
-		case '2.1Beta11':
-		case '2.1Beta12':
-		case '2.1Beta13':
-		case '2.1Beta14':
-		case '2.1Beta15':
-		case '2.1Beta16':
-		case '2.1Beta17':
-		case '2.1Beta18':
-
 		case '2.1':
 
 		case '2.1.1':
@@ -526,7 +510,6 @@ if ( $old_version ) {
 		case '2.2.16':
 		case '2.2.17':
 		case '2.2.18':
-		case '2.2.x':
 
 			// since 2.3
 			$mailster_options['webversion_bar'] = true;
@@ -569,16 +552,20 @@ if ( $old_version ) {
 		case '2.3.9':
 		case '2.3.10':
 		case '2.3.11':
+		case '2.3.12':
+		case '2.3.13':
 
 		case '2.4':
 
 			// allow NULL values on one column
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_subscriber_meta CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
+			$mailster_options['_flush_rewrite_rules'] = true;
+
 			// mailster_notice( $update_info, 'updated', false, 'info-screen', true, 'newsletter_page_mailster_dashboard' );
 		default:
 
-			do_action( 'mailster_update', $old_version, $new_version );
-			do_action( 'mailster_update_' . $old_version, $new_version );
+			do_action( 'mailster_update', $old_version_sanitized, $new_version );
+			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
 
 
 	}
@@ -601,6 +588,10 @@ mailster( 'settings' )->update_capabilities();
 
 // clear cache
 mailster_clear_cache( '' );
+
+// delete plugin hash
+delete_transient( 'mailster_hash' );
+
 // mailster_update_option('welcome', true);
 add_action( 'shutdown', array( 'UpdateCenterPlugin', 'clear_options' ) );
 

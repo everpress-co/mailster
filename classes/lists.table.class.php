@@ -198,7 +198,14 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 		$extrasql = '';
 
-		$sql = "SELECT CONCAT(IF(ISNULL(b.slug),'',CONCAT(' ',b.slug)),' ',a.slug) AS _sort, b.name AS parent_name, a.*";
+		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : '_sort';
+		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'ASC';
+
+		$sql = 'SELECT';
+		if ( $orderby != 'name' ) {
+			$sql .= " CONCAT(IF(ISNULL(b.slug),'',CONCAT(' ',b.slug)),' ',a.slug) AS _sort,";
+		}
+		$sql .= ' b.name AS parent_name, a.*';
 
 		$sql .= " FROM {$wpdb->prefix}mailster_lists AS a";
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists AS b ON a.parent_id = b.ID";
@@ -241,11 +248,11 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 		$sql .= ' GROUP BY a.ID';
 
-		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'name';
-		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'ASC';
-
 		if ( ! empty( $orderby ) && ! empty( $order ) ) {
-			$sql .= ' ORDER BY _sort ' . $order . ', ' . $orderby . ' ' . $order;
+			$sql .= ' ORDER BY ' . $orderby . ' ' . $order;
+			if ( '_sort' == $orderby ) {
+				$sql .= ', name ' . $order;
+			}
 		}
 
 		$totalitems = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_lists" );

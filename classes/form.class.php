@@ -449,7 +449,7 @@ class MailsterForm {
 
 			if ( ! empty( $lists ) ) {
 
-				if ( $this->profile ) {
+				if ( $this->profile && isset( $this->object['userdata']['ID'] ) ) {
 					$userlists = mailster( 'subscribers' )->get_lists( $this->object['userdata']['ID'], true );
 				}
 
@@ -470,7 +470,7 @@ class MailsterForm {
 							|| ( ! empty( $this->object['errors'] ) && in_array( $list->ID, $this->object['lists'] ) )
 							|| ( $this->form->precheck && $this->preview );
 
-						if ( $this->profile ) {
+						if ( $this->profile && isset( $userlists ) ) {
 							$checked = in_array( $list->ID, $userlists );
 						}
 
@@ -592,7 +592,7 @@ class MailsterForm {
 		$html = '';
 
 		$redirect = esc_url( home_url( remove_query_arg( array( 'mailster_error', 'mailster_success' ), $_SERVER['REQUEST_URI'] ) ) );
-		$referer = $pagenow == 'form.php' ? ( isset( $_GET['referer'] ) ? $_GET['referer'] : 'extern' ) : $redirect;
+		$referer = $pagenow == 'form.php' || get_query_var( '_mailster_form' ) ? ( isset( $_GET['referer'] ) ? $_GET['referer'] : 'extern' ) : $redirect;
 
 		if ( $this->action ) {
 			$html .= '<input name="_action" type="hidden" value="' . esc_attr( $this->action ) . '">' . "\n";

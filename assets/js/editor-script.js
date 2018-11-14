@@ -174,6 +174,7 @@ jQuery(document).ready(function ($) {
 
 			editor
 				.on('change', function (event) {
+					var _self = this;
 					clearTimeout(changetimeout);
 					changetimeout = setTimeout(function () {
 						var content = event.level.content,
@@ -182,7 +183,7 @@ jQuery(document).ready(function ($) {
 							for (var i = c.length - 1; i >= 0; i--) {
 								content = content.replace(c[i], _hex(c[i]));
 							}
-							this.bodyElement.innerHTML = content;
+							_self.bodyElement.innerHTML = content;
 						}
 						_trigger('save');
 						change = true;
