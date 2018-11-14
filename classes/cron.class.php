@@ -74,9 +74,13 @@ class MailsterCron {
 
 		$error = error_get_last();
 
-		if ( ! is_null( $error ) && $error['type'] == 1 ) {
+		if ( ! is_null( $error ) && $error['type'] == 1 && 0 === strpos( $error['file'], MAILSTER_DIR ) ) {
 
-			mailster_notice( sprintf( __( 'It looks like your last cronjob hasn\'t been finished! Increase the %1$s, add %2$s to your wp-config.php or reduce the %3$s in the settings', 'mailster' ), "'max_execution_time'", '<code>define("WP_MEMORY_LIMIT", "256M");</code>', '<a href="edit.php?post_type=newsletter&page=mailster_settings#delivery">' . __( 'Number of mails sent', 'mailster' ) . '</a>' ), 'error', false, 'cron_unfinished' );
+			$msg = sprintf( __( 'It looks like your last cronjob hasn\'t been finished! Increase the %1$s, add %2$s to your wp-config.php or reduce the %3$s in the settings.', 'mailster' ), "'max_execution_time'", '<code>define("WP_MEMORY_LIMIT", "256M");</code>', '<a href="' . add_query_arg( array( 'mailster_remove_notice' => 'cron_unfinished' ), admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' ) ) . '">' . __( 'Number of mails sent', 'mailster' ) . '</a>' );
+
+			$msg .= '<pre><code>' . esc_html( $error['message'] ) . '</code></pre>';
+
+			mailster_notice( $msg, 'error', false, 'cron_unfinished' );
 
 		} else {
 

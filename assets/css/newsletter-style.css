@@ -1237,8 +1237,8 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 }
 .device.desktop{
 	width: 60%;
-	max-width: 660px;
-	min-width: 650px;
+	max-width: 710px;
+	min-width: 700px;
 	height: 98%;
 	margin-top: 1%;
 	left: 4%;

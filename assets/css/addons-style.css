@@ -81,7 +81,7 @@
 }
 .addons-wrap .mailster-addon p{
 	max-height: 77px;
-	overflow: hidden;
+	overflow: auto;
 }
 .addons-wrap .mailster-addon .action-links{
 	overflow: hidden;

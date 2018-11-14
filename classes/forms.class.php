@@ -14,6 +14,7 @@ class MailsterForms {
 	public function init() {
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 20 );
+		add_action( 'wp', array( &$this, 'form' ) );
 
 		if ( is_admin() ) {
 
@@ -40,7 +41,7 @@ class MailsterForms {
 
 		global $pagenow;
 
-		$formpage = $pagenow == 'form.php';
+		$formpage = $pagenow == 'form.php' || get_query_var( '_mailster_form' );
 
 		$this->request = array(
 			'is_editable' => isset( $_GET['edit'] ) && wp_verify_nonce( $_GET['edit'], 'mailsteriframeform' ),
@@ -57,6 +58,16 @@ class MailsterForms {
 			'buttonlabel' => ( isset( $_GET['label'] ) ? esc_attr( strip_tags( urldecode( $_GET['label'] ) ) ) : 'Subscribe' ),
 
 		);
+	}
+
+
+	public function form() {
+
+		if ( get_query_var( '_mailster_form' ) ) {
+			include_once MAILSTER_DIR . 'form.php';
+			exit;
+		}
+
 	}
 
 
@@ -538,7 +549,7 @@ class MailsterForms {
 	public function url( $args = array(), $endpoint = null ) {
 
 		if ( is_null( $endpoint ) ) {
-			$endpoint = plugins_url( basename( MAILSTER_DIR ) . '/form.php' );
+			$endpoint = get_home_url( null, 'mailster/form' );
 		}
 
 		return apply_filters( 'mailster_form_url', add_query_arg( $args , $endpoint ) );

@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 4.9.8
-Stable tag: 2.4
+Stable tag: 2.3.15
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -65,19 +65,19 @@ Xaver Birsak – https://everpress.io
 
 
 = Linus =
-[!(https://mailster.github.io/preview/linus.jpg)](https://rxa.li/linus?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/linus.jpg)](https://evp.li/linus?utm_source=Plugin+Info+Page)
 = Metro =
-[!(https://mailster.github.io/preview/metro.jpg)](https://rxa.li/metro?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/metro.jpg)](https://evp.li/metro?utm_source=Plugin+Info+Page)
 = My Business =
-[!(https://mailster.github.io/preview/business.jpg)](https://rxa.li/business?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/business.jpg)](https://evp.li/business?utm_source=Plugin+Info+Page)
 = Loose Leaf =
-[!(https://mailster.github.io/preview/looseleaf.jpg)](https://rxa.li/looseleaf?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/looseleaf.jpg)](https://evp.li/looseleaf?utm_source=Plugin+Info+Page)
 = Market =
-[!(https://mailster.github.io/preview/market.jpg)](https://rxa.li/market?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/market.jpg)](https://evp.li/market?utm_source=Plugin+Info+Page)
 = Skyline =
-[!(https://mailster.github.io/preview/skyline.jpg)](https://rxa.li/skyline?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/skyline.jpg)](https://evp.li/skyline?utm_source=Plugin+Info+Page)
 = Letterpress =
-[!(https://mailster.github.io/preview/letterpress.jpg)](https://rxa.li/letterpress?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/letterpress.jpg)](https://evp.li/letterpress?utm_source=Plugin+Info+Page)
 
 
 == Changelog ==
@@ -86,12 +86,37 @@ Xaver Birsak – https://everpress.io
 
 * new: RSS
 
+= Version 2.3.15 =
+
+* fixed: missing icons in WordPress 5.0
+
+= Version 2.3.14 =
+
+* fixed: missing fallback on custom fields
+* fixed: undefined bodyElement in editor.
+* added: 'sub_query_limit' to process subscriber query in chunks for very large subscriber base
+* added: display count of selected subscribers on delete page
+* added: test for wp_mail
+* added: more date form options on export
+* improved: Gravatar as source is no longer shown if the source is not Gravatar
+* improved: wp_mail handling for third party plugins
+* improved: raw header parser for wp_mail
+* improved: external forms now embedded via dedicate URL
+* improved: query on subscriber overview page
+* improved: translated roles in conditions view
+* improved: searching subscribers now highlights search term.
+>>>>>>> origin/develop
+
 = Version 2.3.13 =
 
 * fixed: Max execution time error message pops up randomly on some servers.
-* fixed: issue with certain post types and multiple underscores
+* fixed: issue with certain post types and multiple underscores.
 * fixed: PHP error on form duplication.
-* added: 'mailster_get_post_list_args' filter for static posts
+* fixed: issue with nested embed styles.
+* fixed: smaller issues.
+* improved: query for location based segmentation.
+* added: 'mailster_get_post_list_args' filter for static posts.
+* added: 'mailster_autoresponder_grace_period' filter.
 
 = Version 2.3.12 =
 
@@ -106,9 +131,9 @@ Xaver Birsak – https://everpress.io
 
 * fixed: added "source" tag in allowed tags
 * fixed: sql query issue on "(didn't) clicked link" condition
-* fixed: smaller issues
 * fixed: unsubscribe issue on single opt out if user is logged in
 * fixed: subscriber export on sites with CloudFlare
+* fixed: smaller issues
 * improved: custom tags are now replaced in the final campaign and no longer when created
 * improved: privacy policy link gets updated if the address changes
 * improved: subscriber query now has the campaign id as second argument.

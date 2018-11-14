@@ -220,6 +220,8 @@ class Mailster {
 			add_filter( 'add_meta_boxes_page', array( &$this, 'add_homepage_info' ), 10, 2 );
 
 			add_filter( 'wp_import_post_data_processed', array( &$this, 'import_post_data' ), 10, 2 );
+			add_action( 'wp_import_insert_post', array( &$this, 'convert_old_campaign_ids' ), 10, 4 );
+
 			add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
 			add_filter( 'admin_page_access_denied', array( &$this, 'maybe_redirect_special_pages' ) );
@@ -626,10 +628,10 @@ class Mailster {
 	 *
 	 * @param unknown $content     (optional)
 	 * @param unknown $hash        (optional)
-	 * @param unknown $campaing_id (optional)
+	 * @param unknown $campaign_id (optional)
 	 * @return unknown
 	 */
-	public function replace_links( $content = '', $hash = '', $campaing_id = '' ) {
+	public function replace_links( $content = '', $hash = '', $campaign_id = '' ) {
 
 		// get all links from the basecontent
 		preg_match_all( '#href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
@@ -642,7 +644,7 @@ class Mailster {
 		$used = array();
 
 		$new_structure = mailster( 'helper' )->using_permalinks();
-		$base = $this->get_base_link( $campaing_id );
+		$base = $this->get_base_link( $campaign_id );
 
 		// add title tag on links
 		// preg_match_all( '#(<a(?!.*?title=([\'"]).*?\2)[^>]*)(>)#', $content, $no_title_links );
@@ -672,7 +674,7 @@ class Mailster {
 			}
 
 			$link = '"' . $link . '"';
-			$new_link = apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaing_id );
+			$new_link = apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id );
 
 			if ( ( $pos = strpos( $content, $link ) ) !== false ) {
 				$content = substr_replace( $content, '"' . $new_link . '"', $pos, strlen( $link ) );
@@ -1839,7 +1841,7 @@ class Mailster {
 			} else {
 
 				if ( $this->wp_mail ) {
-					add_action( 'admin_notices', array( &$this, 'wp_mail_notice' ) );
+					mailster_notice( sprintf( esc_html__( 'The %s method already exists from a different plugin! Please disable it before using Mailster for system mails!', 'mailster' ), '<code>wp_mail()</code>' ), 'error', true, 'wp_mail_notice' );
 				}
 			}
 		}
@@ -1950,11 +1952,6 @@ class Mailster {
 	}
 
 
-	public function wp_mail_notice() {
-		echo '<div class="error"><p>function <strong>wp_mail</strong> already exists from a different plugin! Please disable it before using Mailsters wp_mail alternative!</p></div>';
-	}
-
-
 	/**
 	 *
 	 *
@@ -1969,6 +1966,28 @@ class Mailster {
 	 */
 	public function wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $file = null, $template = null ) {
 
+		$current_filter = current_filter();
+
+		$atts = apply_filters( 'wp_mail', compact( 'to', 'subject', 'message', 'headers', 'attachments' ) );
+
+		if ( isset( $this->atts['to'] ) ) {
+			$to = $this->atts['to'];
+		}
+		if ( isset( $this->atts['subject'] ) ) {
+			$subject = $this->atts['subject'];
+		}
+
+		if ( isset( $this->atts['message'] ) ) {
+			$message = $this->atts['message'];
+		}
+
+		if ( isset( $this->atts['headers'] ) ) {
+			$headers = $this->atts['headers'];
+		}
+
+		if ( isset( $this->atts['attachments'] ) ) {
+			$attachments = $this->atts['attachments'];
+		}
 		if ( is_array( $headers ) ) {
 			$headers = implode( "\r\n", $headers ) . "\r\n";
 		}
@@ -1988,7 +2007,6 @@ class Mailster {
 			$file = trim( $hits[1] );
 		}
 
-		$current_filter = current_filter();
 		$methods = wp_list_pluck( debug_backtrace(), 'function' );
 		$caller = null;
 		foreach ( $methods as $method ) {
@@ -2029,7 +2047,18 @@ class Mailster {
 		$message = apply_filters( 'mymail_send_message', apply_filters( 'mailster_send_message', $message ) );
 		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $subject ) );
 
-		return $mail->send_notification( $message, $headline, $replace, false, $file, $template );
+		$success = (bool) $mail->send_notification( $message, $headline, $replace, false, $file, $template );
+
+		if ( ! $success ) {
+
+			$error = $mail->last_error;
+			$mail_error_data = compact( 'to', 'subject', 'message', 'headers', 'attachments' );
+			$mail_error_data['phpmailer_exception_code'] = $error->getCode();
+
+			do_action( 'wp_mail_failed', new WP_Error( 'wp_mail_failed', $error->getMessage(), $mail_error_data ) );
+		}
+
+		return $success;
 
 	}
 
@@ -2236,7 +2265,10 @@ class Mailster {
 			$hashes = array();
 
 			foreach ( $files as $file ) {
-				$hashes[] = md5_file( $file );
+				$file_parts = pathinfo( $file );
+				if ( isset( $file_parts['extension'] ) && 'php' == $file_parts['extension'] ) {
+					$hashes[] = md5_file( $file );
+				}
 			}
 
 			$hash = md5( implode( '', $hashes ) );
@@ -2344,9 +2376,38 @@ class Mailster {
 			$postdata['post_content'] = str_replace( $old_home_url, trailingslashit( home_url() ), $postdata['post_content'] );
 		}
 
-		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaings' );
+		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaigns' );
 
 		return $postdata;
+
+	}
+
+	public function convert_old_campaign_ids( $post_id, $original_post_ID, $postdata, $post ) {
+
+		global $wpdb;
+
+		if ( $postdata['post_type'] != 'newsletter' ) {
+			return;
+		}
+		if ( $post_id == $original_post_ID ) {
+			return;
+		}
+
+		$tables = array( 'actions', 'queue', 'subscriber_meta' );
+
+		echo '<h4>';
+		printf( __( 'Updating Mailster tables for Campaign %s:', 'mailster' ), '"<a href="' . admin_url( 'post.php?post=' . $post_id . '&action=edit' ) . '">' . $postdata['post_title'] . '</a>"' );
+		echo '</h4>';
+
+		foreach ( $tables as $table ) {
+			printf( '<code>%s</code>', 'mailster_' . $table );
+
+			$sql = $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_{$table} SET campaign_id = %d WHERE campaign_id = %d", $post_id, $original_post_ID );
+			if ( false !== ($rows = $wpdb->query( $sql )) ) {
+				printf( '..' . __( 'completed for %d rows.', 'mailster' ), $rows );
+			}
+			echo '<br>';
+		}
 
 	}
 

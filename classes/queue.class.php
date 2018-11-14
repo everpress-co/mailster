@@ -384,7 +384,7 @@ class MailsterQueue {
 			}
 
 			// time when user no longer get the campaign
-			$do_not_send_after = apply_filters( 'mailster_autoresponder_do_not_send_after', WEEK_IN_SECONDS, $campaign, $meta );
+			$grace_period = apply_filters( 'mailster_autoresponder_grace_period', WEEK_IN_SECONDS, $campaign );
 			$queue_upfront = 3600;
 
 			if ( 'mailster_subscriber_insert' == $autoresponder_meta['action'] ) {
@@ -413,8 +413,8 @@ class MailsterQueue {
 					'orderby' => 'autoresponder_timestamp',
 				);
 
-				if ( $do_not_send_after ) {
-					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
+				if ( $grace_period ) {
+					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
 				}
 
 				if ( $ignore_lists ) {
@@ -451,8 +451,8 @@ class MailsterQueue {
 					'orderby' => 'autoresponder_timestamp',
 				);
 
-				if ( $do_not_send_after ) {
-					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
+				if ( $grace_period ) {
+					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
 				}
 
 				$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
@@ -495,8 +495,8 @@ class MailsterQueue {
 						break;
 				}
 
-				if ( $do_not_send_after ) {
-					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $do_not_send_after);
+				if ( $grace_period ) {
+					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
 				}
 
 				$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
@@ -783,10 +783,8 @@ class MailsterQueue {
 
 			} else {
 
-				$specialcond = $wpdb->prepare( ' AND STR_TO_DATE(x.meta_value, %s) <= %s', '%Y-%m-%d', date( 'Y-m-d', $offsettimestamp ) );
 				switch ( $autoresponder_meta['userunit'] ) {
 					case 'year':
-						$specialcond .= " AND x.meta_value LIKE '%" . date( '-m-d', $offsettimestamp ) . "'";
 						$cond = array(
 							'field' => $autoresponder_meta['uservalue'],
 							'operator' => '$',
@@ -794,7 +792,6 @@ class MailsterQueue {
 						);
 					break;
 					case 'month':
-						$specialcond .= " AND x.meta_value LIKE '%" . date( '-d', $offsettimestamp ) . "'";
 						$cond = array(
 									'field' => $autoresponder_meta['uservalue'],
 									'operator' => '$',
@@ -802,7 +799,6 @@ class MailsterQueue {
 								);
 					break;
 					default:
-						$specialcond .= " AND x.meta_value != ''";
 						$cond = array(
 							'field' => $autoresponder_meta['uservalue'],
 							'operator' => '!=',
@@ -821,17 +817,7 @@ class MailsterQueue {
 			$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : array();
 
 			$conditions[] = array( $cond );
-			// if ( ! empty( $meta['list_conditions'] ) ) {
-			// if ( ! isset( $conditions['conditions'][0]['conditions'] ) ) {
-			// $conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );
-			// $conditions['operator'] = 'AND';
-			// }
-			// $conditions['conditions'][] = $extracondition;
-			// } else {
-			// $conditions = $extracondition;
-			// $conditions['conditions'] = array( array( 'operator' => $conditions['operator'], 'conditions' => $conditions['conditions'] ) );
-			// $conditions['operator'] = 'AND';
-			// }
+
 			$subscribers = mailster( 'subscribers' )->query(array(
 				'fields' => array( 'ID', $autoresponder_meta['uservalue'] ),
 				'lists' => $lists,
@@ -905,11 +891,11 @@ class MailsterQueue {
 	/**
 	 *
 	 *
-	 * @param unknown $cron_used  (optional)
+	 * @param unknown $campaign_id  (optional)
 	 * @param unknown $process_id (optional)
 	 * @return unknown
 	 */
-	public function progress( $cron_used = false, $process_id = 0 ) {
+	public function progress( $campaign_id = null, $process_id = 0 ) {
 
 		global $wpdb;
 
@@ -942,6 +928,10 @@ class MailsterQueue {
 			} else {
 				return false;
 			}
+		}
+
+		if ( $campaign_id && ! is_array( $campaign_id ) ) {
+			$campaign_id = array( $campaign_id );
 		}
 
 		$microtime = microtime( true );
@@ -988,7 +978,7 @@ class MailsterQueue {
 
 		$campaign_errors = array();
 
-		$to_send = $this->size( $microtime );
+		$to_send = $this->size( $microtime, $campaign_id );
 
 		$queue_update_sql = "UPDATE {$wpdb->prefix}mailster_queue SET sent = %d, error = %d, priority = %d, count = %d WHERE subscriber_id = %d AND campaign_id = %d AND requeued = %d AND options = %s LIMIT 1";
 
@@ -1022,6 +1012,11 @@ class MailsterQueue {
 
 			// subscriber exists or is not subscriber_id
 			$sql .= ' AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0)';
+
+			if ( $campaign_id ) {
+				$campaign_id = array_filter( $campaign_id, 'is_numeric' );
+				$sql .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
+			}
 
 			// $sql .= ' AND (actions.subscriber_id IS NULL OR queue.requeued = 1)';
 			$sql .= ' ORDER BY queue.priority ASC, subscribers.rating DESC';
@@ -1232,9 +1227,10 @@ class MailsterQueue {
 	 *
 	 *
 	 * @param unknown $microtime (optional)
+	 * @param unknown $campaign_id (optional)
 	 * @return unknown
 	 */
-	public function size( $microtime = null ) {
+	public function size( $microtime = null, $campaign_id = null ) {
 
 		global $wpdb;
 
@@ -1242,7 +1238,16 @@ class MailsterQueue {
 			$microtime = microtime( true );
 		}
 
+		if ( $campaign_id && ! is_array( $campaign_id ) ) {
+			$campaign_id = array( $campaign_id );
+		}
+
 		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id WHERE queue.timestamp <= " . (int) $microtime . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error} AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder') OR queue.campaign_id = 0) AND (subscribers.status = 1 OR queue.ignore_status = 1) AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0)";
+
+		if ( $campaign_id ) {
+			$campaign_id = array_filter( $campaign_id, 'is_numeric' );
+			$sql .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
+		}
 
 		return (int) $wpdb->get_var( $sql );
 	}
