@@ -27,6 +27,7 @@ class MailsterSettings {
 	 * @return unknown
 	 */
 	public function maybe_create_homepage() {
+
 		if ( isset( $_GET['mailster_create_homepage'] ) && wp_verify_nonce( $_GET['mailster_create_homepage'], 'mailster_create_homepage' ) ) {
 
 			if ( $homepage = mailster_option( 'homepage' ) ) {
@@ -783,15 +784,20 @@ class MailsterSettings {
 
 				break;
 
+				case 'services':
+
+					if ( $value ) {
+						$value = array_map( 'trim', $value );
+					}
+
+				break;
 				case 'track_location':
 
 					if ( $value ) {
-
 						if ( $value != $old ) {
+							mailster( 'geo' )->update( );
 							if ( $options['track_location_update'] ) {
 								mailster( 'geo' )->set_cron( 'daily' );
-							} else {
-								mailster( 'geo' )->set_cron();
 							}
 						}
 					} else {

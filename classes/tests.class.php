@@ -398,16 +398,16 @@ class MailsterTests {
 			}
 		}
 	}
-	private function test_tinymce_access() {
+	private function _test_tinymce_access() {
 
 		$file = includes_url( 'js/tinymce/' ) . 'wp-tinymce.php';
 		$response = wp_remote_post( $file );
 		$code = wp_remote_retrieve_response_code( $response );
 
 		if ( is_wp_error( $response ) ) {
-			$this->warning( sprintf( 'The Mailster Editor requires TinMCE and access to the file %1$s which seems to be blocked by your host. [%2$s]', '"' . $file . '"', $response->get_error_message() ) );
+			$this->warning( sprintf( 'The Mailster Editor requires TinyMCE and access to the file %1$s which seems to be blocked by your host. [%2$s]', '"' . $file . '"', $response->get_error_message() ) );
 		} elseif ( $code != 200 ) {
-			$this->warning( sprintf( 'The Mailster Editor requires TinMCE and access to the file %1$s which seems to be blocked by your host. [Error Code %2$s]', '"' . $file . '"', $code ) );
+			$this->warning( sprintf( 'The Mailster Editor requires TinyMCE and access to the file %1$s which seems to be blocked by your host. [Error Code %2$s]', '"' . $file . '"', $code ) );
 		}
 
 	}
@@ -482,10 +482,11 @@ class MailsterTests {
 
 	}
 	private function test_memory_limit() {
-		if ( max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT ) < 128 ) {
-			$this->warning( 'Your Memory Limit is ' . size_format( (int) WP_MEMORY_LIMIT * 1048576 ) . ', Mailster recommends at least 128 MB' );
+		$max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
+		if ( $max < 128 ) {
+			$this->warning( 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		} else {
-			$this->success( 'Your Memory Limit is ' . size_format( (int) WP_MEMORY_LIMIT * 1048576 ) );
+			$this->success( 'Your Memory Limit is ' . size_format( $max * 1048576 ) );
 		}
 	}
 	private function test_plugin_location() {
@@ -634,12 +635,17 @@ class MailsterTests {
 
 	}
 	private function test_mailfunction() {
+
+		$to = 'deadend@newsletter-plugin.com';
+		$subject = 'This is a test mail from the Mailster Test page';
+		$message = 'This test message can sent from ' . admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) . ' and can get deleted.';
+
 		$mail = mailster( 'mail' );
-		$mail->to = 'deadend@newsletter-plugin.com';
-		$mail->subject = 'test';
+		$mail->to = $to;
+		$mail->subject = $subject;
 		$mail->debug();
 
-		if ( ! $mail->send_notification( 'Sendtest', 'this test message can get deleted', array( 'notification' => '' ), false ) ) {
+		if ( ! $mail->send_notification( 'Sendtest', $message, array( 'notification' => '' ), false ) ) {
 			$error_message = strip_tags( $mail->get_errors() );
 			$msg = 'You are not able to send mails with the current delivery settings!';
 
@@ -650,8 +656,32 @@ class MailsterTests {
 			} else {
 				$this->error( $msg . '<br>' . $error_message );
 			}
+		} else {
+			$this->success( 'Email was successfully delivery to ' . $to );
 		}
 
+		if ( mailster_option( 'system_mail' ) ) {
+
+			add_action( 'wp_mail_failed', array( $this, 'wp_mail_failed' ) );
+			if ( $response = wp_mail( $to, '[wp_mail] ' . $subject, $message ) ) {
+				$this->success( '[wp_mail] Email was successfully delivery to ' . $to );
+			}
+			remove_action( 'wp_mail_failed', array( $this, 'wp_mail_failed' ) );
+
+		}
+
+	}
+	public function wp_mail_failed( $error ) {
+		$error_message = strip_tags( $error->get_error_message() );
+		$msg = 'You are not able to use <code>wp_mail()</code> with Mailster';
+
+		if ( false !== stripos( $error_message, 'smtp connect()' ) ) {
+			$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/' );
+		} elseif ( false !== stripos( $error_message, 'data not accepted' ) ) {
+			$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-data-not-accepted/' );
+		} else {
+			$this->error( $msg . '<br>' . $error_message );
+		}
 	}
 	private function test_db_version() {
 		if ( get_option( 'mailster_dbversion' ) != MAILSTER_DBVERSION ) {

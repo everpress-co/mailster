@@ -73,8 +73,11 @@ if ( $is_new ) {
 	<tr>
 		<td scope="row" class="avatar-wrap">
 			<?php if ( get_option( 'show_avatars' ) ) : ?>
-				<div class="avatar<?php if ( $subscriber->wp_id ) {	echo ' wp-user'; } ?>" title="<?php esc_html_e( 'Source', 'mailster' ) ?>: Gravatar.com" style="background-image:url(<?php echo $this->get_gravatar_uri( $subscriber->email, 400 ); ?>)"></div>
+				<?php $avatar_url = $this->get_gravatar_uri( $subscriber->email, 400 ); ?>
+				<div class="avatar<?php if ( $subscriber->wp_id ) {	echo ' wp-user'; } ?>" title="<?php esc_html_e( 'Source', 'mailster' ) ?>: Gravatar.com" style="background-image:url(<?php echo $avatar_url; ?>)"></div>
+				<?php if ( false !== strpos( $avatar_url, 'gravatar.com' ) ) : ?>
 				<p class="info"><?php esc_html_e( 'Source', 'mailster' ) ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
+				<?php endif; ?>
 			<?php endif; ?>
 			<?php if ( ! $is_new ) : ?>
 

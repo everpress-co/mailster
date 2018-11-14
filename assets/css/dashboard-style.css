@@ -6,6 +6,7 @@
 	display: block;
 }
 .mailster-dashboard .postbox .inside{
+	position: relative;
 }
 .mailster-dashboard .postbox .inside .locked{
 	display: block;

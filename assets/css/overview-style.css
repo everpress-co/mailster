@@ -143,7 +143,7 @@ table.wp-list-table .column-total a, table.wp-list-table .column-open a, table.w
 .mailster-icon.finished:before{content: '\e804'; color: #3AB61B}
 .mailster-icon.active:before{content: '\e81d'; color: #3AB61B}
 .mailster-icon.inactive:before{content: '\e81d'; color: #D54E21}
-.mailster-icon.warning:before{content: '\e812';}
+.mailster-icon.warning:before{content: '\e812'; color: #ffb900;}
 
 .mailster-condition-render{
 	white-space: nowrap;
