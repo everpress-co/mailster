@@ -1182,16 +1182,16 @@ class MailsterTemplates {
 
 		$basename = false;
 		if ( ! file_exists( $file ) && is_string( $file ) ) {
-			$file_data = $file;
+			$file = $file;
 		} else {
 			$basename = basename( $file );
 			$fp = fopen( $file, 'r' );
-			$file_data = fread( $fp, 2048 );
+			$file = fread( $fp, 2048 );
 			fclose( $fp );
 		}
 
 		foreach ( $this->headers as $field => $regex ) {
-			preg_match( '/^[ \t\/*#@]*' . preg_quote( $regex, '/' ) . ':(.*)$/mi', $file_data, ${$field} );
+			preg_match( '/^[ \t\/*#@]*' . preg_quote( $regex, '/' ) . ':(.*)$/mi', $file, ${$field} );
 			if ( ! empty( ${$field} ) ) {
 				${$field} = _cleanup_header_comment( ${$field}[1] );
 			} else {

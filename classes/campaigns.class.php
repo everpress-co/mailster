@@ -4362,18 +4362,19 @@ class MailsterCampaigns {
 			'unsupported_format' => __( 'Unsupported file format', 'mailster' ),
 		) );
 
-		wp_register_script( 'mailster-tinymce', includes_url( 'js/tinymce/' ) . 'wp-tinymce.php', array( 'jquery' ), false, true );
-		wp_register_style( 'wp-editor', includes_url( 'css/editor' . $suffix . '.css' ) );
-		wp_register_style( 'wp-editor-forms', admin_url( 'css/forms' . $suffix . '.css' ) );
+		wp_register_script( 'mailster-tinymce', includes_url( 'js/tinymce/' ) . 'tinymce.min.js', array(), false, true );
+		wp_register_script( 'mailster-tinymce-compat', includes_url( 'js/tinymce/plugins/compat3x/' ) . 'plugin' . $suffix . '.js', array(), false, true );
+		wp_register_style( 'mailster-wp-editor', includes_url( 'css/editor' . $suffix . '.css' ) );
 
 		ob_start();
 
 		if ( $inline ) {
 			wp_print_styles( 'dashicons' );
-			wp_print_styles( 'wp-editor' );
+			wp_print_styles( 'mailster-wp-editor' );
 			wp_print_scripts( 'utils' );
 			mailster( 'tinymce' )->editbar_translations();
 			wp_print_scripts( 'mailster-tinymce' );
+			wp_print_scripts( 'mailster-tinymce-compat' );
 		}
 
 		wp_print_styles( 'mailster-icons' );
