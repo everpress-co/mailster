@@ -203,8 +203,8 @@ span.error{
 	top: 0;
 	bottom: 0;
 	left: 0;
-	overflow: visible;
 	border-radius: 4px;
+	overflow: hidden;
 }
 .progress span.bar{
 	background: #2BB3E7;

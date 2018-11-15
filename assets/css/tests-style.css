@@ -126,7 +126,7 @@
 	-o-transition: width .6s ease-in-out;
 	transition: width .6s ease-in-out;
 	border-radius: 4px;
-
+	overflow: hidden;
 }
 .progress span.bar{
 	background: #2BB3E7;

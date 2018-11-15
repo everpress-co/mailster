@@ -65,7 +65,7 @@ if ( ! isset( $_GET['more'] ) ) :
 	<br class="clear">
 </li>
 </ul>
-<h1><?php esc_html_e( 'Templates', 'mailster' ) ?> <a class="add-new-h2 upload-template"> <?php esc_html_e( 'Add New', 'mailster' );?> </a></h1>
+<h1><?php esc_html_e( 'Templates', 'mailster' ) ?> <a class="page-title-action upload-template"> <?php esc_html_e( 'Add New', 'mailster' );?> </a></h1>
 <?php
 wp_nonce_field( 'mailster_nonce' );
 if ( $notice ) {

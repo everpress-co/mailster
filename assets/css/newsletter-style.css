@@ -152,6 +152,9 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	border: 1px solid #FFF;
 	padding: 20px 0px 2px;
 }
+.dark-mode.fixed-optionbar .optionbar{
+	border-color: #32373c;
+}
 .fixed-optionbar .optionbar:after{
 	content: '.';
 	display: block;
@@ -1835,6 +1838,9 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	padding: 0.5em 5px;
 	overflow: hidden;
 }
+.dark-mode .tabs-panel{
+	border-color: #191f25;
+}
 .mailster_autoresponder_more, .autoresponder_before_after{
 	display: none;
 }
@@ -2075,6 +2081,10 @@ label.weekday input{
 	padding: 10px 6px;
 	min-height: 18px;
 }
+.dark-mode #mailster_conditions_render .mailster-conditions-render:empty{
+	border-color: #191f25;
+}
+
 #mailster_conditions_render .mailster-conditions-render:empty:before, .mailster-conditions .mailster-conditions-wrap:empty:before{
 	content: attr(data-emptytext);
 	display: block;
@@ -2432,6 +2442,9 @@ a.mailster-btn.editbutton {
 	transition: margin-left .15s ease-in-out;
 	margin-left: 0px;
 }
+.dark-mode #mailster_template #iframe-wrap {
+	border-color: #32373c;
+}
 #mailster_template .show-modules #iframe-wrap {
 	margin-right: 170px;
 }
@@ -2455,6 +2468,10 @@ a.mailster-btn.editbutton {
 	color: #a8a8a8;
 	position: absolute;
 	display: block;
+}
+.dark-mode #mailster_template a.toggle-modules{
+	background: #32373c;
+	border-color: #32373c #32373c #191f25 #191f25;
 }
 #mailster_template .show-modules a.toggle-modules{
 	display: none !important;
@@ -2518,6 +2535,9 @@ a.mailster-btn.editbutton {
 	bottom: 0;
 	top: 40px;
 	background: #fff;
+}
+.dark-mode #module-selector{
+	background: #32373c;
 }
 .rtl #module-selector{
 	left: 0;
@@ -2616,6 +2636,10 @@ a.mailster-btn.editbutton {
 	width: 160px;
 	text-align: center;
 }
+.dark-mode #module-selector ul li a.mailster-btn {
+	border-color: #32373c;
+}
+
 #module-selector ul li a.mailster-btn.has-screenshot {
 	background-size: 100%;
 	background-position: 50% 50%;
