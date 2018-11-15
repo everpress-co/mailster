@@ -363,13 +363,13 @@ class MailsterFrontpage {
 
 			endif;
 
-			if ( $meta['track_clicks'] ) {
+			if ( $subscriber->ID && $meta['track_clicks'] ) {
 				do_action( 'mailster_click', $subscriber->ID, $campaign_id, $target, $index );
 				do_action( 'mymail_click', $subscriber->ID, $campaign_id, $target, $index );
 			}
 		} else {
 
-			if ( $meta['track_opens'] ) {
+			if ( $subscriber->ID && $meta['track_opens'] ) {
 				do_action( 'mailster_open', $subscriber->ID, $campaign_id );
 				do_action( 'mymail_open', $subscriber->ID, $campaign_id );
 			}
