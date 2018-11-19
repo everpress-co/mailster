@@ -1991,10 +1991,13 @@ jQuery(document).ready(function ($) {
 					if (is_img) {
 						current.element.attr({
 							'src': currentimage.src,
-							'width': Math.round(imagewidth.val()),
+							//'width': Math.round(imagewidth.val()),
 							//'height': Math.round(imageheight.val()),
 							'alt': currentimage.name
 						});
+						if (!current.is_percentage) {
+							current.element.attr('width', Math.round(imagewidth.val()))
+						}
 						if (current.element.attr('height')) {
 							current.element.attr('height', Math.round(imageheight.val()))
 						}
@@ -2040,10 +2043,13 @@ jQuery(document).ready(function ($) {
 								});
 
 								current.element.attr({
-									'width': Math.round(imagewidth.val()),
+									//'width': Math.round(imagewidth.val()),
 									//'height': Math.round(imageheight.val()),
 									'alt': currentimage.name
 								})
+								if (!current.is_percentage) {
+									current.element.attr('width', Math.round(imagewidth.val()))
+								}
 								if (current.element.attr('height')) {
 									current.element.attr('height', Math.round(imageheight.val()))
 								}
@@ -2515,10 +2521,11 @@ jQuery(document).ready(function ($) {
 		}
 
 		function adjustImagePreview() {
-			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val()))));
+			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val())))),
+				f = factor.val();
 
 			imagepreview.css({
-				'clip': 'rect(' + (x) + 'px,' + (current.width) + 'px,' + (current.height - x) + 'px,0px)',
+				'clip': 'rect(' + (x) + 'px,' + (current.width * f) + 'px,' + (current.height * f - x) + 'px,0px)',
 				'margin-top': (-1 * x) + 'px'
 			});
 		}
@@ -2591,6 +2598,7 @@ jQuery(document).ready(function ($) {
 			current.asp = current.width / current.height;
 			current.crop = el.data('crop') ? el.data('crop') : false;
 			current.tag = el.prop('tagName').toLowerCase();
+			current.is_percentage = el.attr('width').indexOf('%') !== -1;
 
 			current.content = content;
 

@@ -914,7 +914,7 @@ class MailsterTemplates {
 		mailster_require_filesystem();
 
 		if ( ! is_dir( $screenshot_folder ) ) {
-			wp_mkdir_p( $screenshot_folder );
+			mailster( 'helper' )->mkdir( $screenshot_folder, true );
 		}
 
 		// not on localhost
@@ -942,7 +942,7 @@ class MailsterTemplates {
 
 						if ( ! is_wp_error( $tmp_file ) ) {
 							if ( ! is_dir( dirname( $screenshotfile ) ) ) {
-								wp_mkdir_p( dirname( $screenshotfile ) );
+								mailster( 'helper' )->mkdir( dirname( $screenshotfile ), true );
 							}
 
 							if ( ! $wp_filesystem->copy( $tmp_file, $screenshotfile ) ) {
@@ -1182,16 +1182,16 @@ class MailsterTemplates {
 
 		$basename = false;
 		if ( ! file_exists( $file ) && is_string( $file ) ) {
-			$file = $file;
+			$file_data = $file;
 		} else {
 			$basename = basename( $file );
 			$fp = fopen( $file, 'r' );
-			$file = fread( $fp, 2048 );
+			$file_data = fread( $fp, 2048 );
 			fclose( $fp );
 		}
 
 		foreach ( $this->headers as $field => $regex ) {
-			preg_match( '/^[ \t\/*#@]*' . preg_quote( $regex, '/' ) . ':(.*)$/mi', $file, ${$field} );
+			preg_match( '/^[ \t\/*#@]*' . preg_quote( $regex, '/' ) . ':(.*)$/mi', $file_data, ${$field} );
 			if ( ! empty( ${$field} ) ) {
 				${$field} = _cleanup_header_comment( ${$field}[1] );
 			} else {
