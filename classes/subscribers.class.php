@@ -1439,6 +1439,7 @@ class MailsterSubscribers {
 			'form' => __( 'Form', 'mailster' ),
 			'unsubscribe' => __( 'Unsubscribe', 'mailster' ),
 			'gdpr' => __( 'GDPR Timestamp', 'mailster' ),
+			'tags' => __( 'Tags', 'mailster' ),
 		);
 		return $keys_only ? array_keys( $meta_keys ) : $meta_keys;
 	}
@@ -1479,6 +1480,9 @@ class MailsterSubscribers {
 			foreach ( $result as $row ) {
 				if ( ! isset( $meta[ $row->subscriber_id ] ) ) {
 					$meta[ $row->subscriber_id ] = $default;
+				}
+				if ( 'tags' == $row->meta_key && $row->meta_value ) {
+					$row->meta_value = maybe_unserialize( $row->meta_value );
 				}
 
 				$meta[ $row->subscriber_id ][ $row->meta_key ] = $row->meta_value;
@@ -1529,6 +1533,11 @@ class MailsterSubscribers {
 		$inserts = array();
 
 		foreach ( $insert as $key => $value ) {
+
+			if ( 'tags' == $key ) {
+				$value = maybe_serialize( $value );
+			}
+
 			// new value is empty and old value is NOT empty
 			if ( ! $value && isset( $oldmeta[ $key ] ) ) {
 				// delete that row
@@ -1540,7 +1549,7 @@ class MailsterSubscribers {
 				$inserts[] = $wpdb->prepare( '(%d, %d, %s, %s)', $id, $campaign_id, $key, $value );
 			}
 
-			if ( $campaign_id || $single_meta ) {
+			if ( ( $campaign_id || $single_meta ) && 'tags' != $key ) {
 				$inserts[] = $wpdb->prepare( '(%d, %d, %s, %s)', $id, 0, $key, $value );
 			}
 

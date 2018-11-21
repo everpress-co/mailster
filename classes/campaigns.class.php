@@ -89,6 +89,7 @@ class MailsterCampaigns {
 			$campaign_id = (int) substr( $func, 19 );
 
 			$subscribers = isset( $args[0] ) ? array_shift( $args ) : null;
+			$args = isset( $args[0] ) ? array_shift( $args ) : array();
 
 			$this->autoresponder_hook( $campaign_id, $subscribers, $args );
 
@@ -126,6 +127,9 @@ class MailsterCampaigns {
 		$query_args['return_ids'] = true;
 
 		$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign_id );
+		foreach ( $subscribers as $subscriber_id ) {
+			mailster( 'subscribers' )->update_meta( $subscriber_id, $campaign_id, 'tags', $args );
+		}
 
 		$timestamp = strtotime( '+ ' . $meta['autoresponder']['amount'] . ' ' . $meta['autoresponder']['unit'] );
 
@@ -3778,6 +3782,11 @@ class MailsterCampaigns {
 
 		// add subscriber info
 		$placeholder->add( (array) $subscriber );
+
+		// add subscriber specific tags
+		if ( $subscriber_tags = mailster( 'subscribers' )->meta( $subscriber->ID, 'tags', $campaign->ID ) ) {
+			$placeholder->add( (array) $subscriber_tags );
+		}
 
 		$content = $placeholder->get_content();
 
