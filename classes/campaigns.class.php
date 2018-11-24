@@ -823,7 +823,9 @@ class MailsterCampaigns {
 							}
 						}
 					} else {
-						echo '<br><span class="mailster-icon warning"></span> ' . esc_html__( 'no lists selected', 'mailster' );
+						if ( ! in_array( $post->post_status, array( 'finished' ) ) ) {
+							echo '<br><span class="mailster-icon warning"></span> ' . esc_html__( 'no lists selected', 'mailster' );
+						}
 					}
 					echo '<br>';
 				}
@@ -838,19 +840,19 @@ class MailsterCampaigns {
 
 				if ( ( current_user_can( 'publish_newsletters' ) && get_current_user_id() == $post->post_author ) || current_user_can( 'edit_others_newsletters' ) ) {
 					if ( $post->post_status == 'queued' ) {
-						$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . esc_attr__( 'Start Campaign now', 'mailster' ) . '">' . esc_html__( 'Start now', 'mailster' ) . '</a>&nbsp;';
+						$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . esc_attr__( 'Start Campaign now', 'mailster' ) . '">' . esc_html__( 'Start now', 'mailster' ) . '</a>';
 					}
 					if ( in_array( $post->post_status, array( 'active', 'queued' ) ) && $status != 'finished' ) {
-						$actions['pause'] = '<a class="pause live-action" href="?post_type=newsletter&pause=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_pause_nonce' ) . '" title="' . esc_attr__( 'Pause Campaign', 'mailster' ) . '">' . esc_html__( 'Pause', 'mailster' ) . '</a>&nbsp;';
+						$actions['pause'] = '<a class="pause live-action" href="?post_type=newsletter&pause=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_pause_nonce' ) . '" title="' . esc_attr__( 'Pause Campaign', 'mailster' ) . '">' . esc_html__( 'Pause', 'mailster' ) . '</a>';
 					} elseif ( $post->post_status == 'paused' && $totals ) {
-						if ( ! empty( $meta['timestamp'] ) ) {
-							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . esc_attr__( 'Resume Campaign', 'mailster' ) . '">' . esc_html__( 'Resume', 'mailster' ) . '</a>&nbsp;';
+						if ( ! empty( $meta['timestamp'] ) && $sent ) {
+							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . esc_attr__( 'Resume Campaign', 'mailster' ) . '">' . esc_html__( 'Resume', 'mailster' ) . '</a>';
 						} else {
-							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . esc_attr__( 'Start Campaign', 'mailster' ) . '">' . esc_html__( 'Start', 'mailster' ) . '</a>&nbsp;';
+							$actions['start'] = '<a class="start live-action" href="?post_type=newsletter&start=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) . '" title="' . esc_attr__( 'Start Campaign', 'mailster' ) . '">' . esc_html__( 'Start', 'mailster' ) . '</a>';
 						}
 					}
-					if ( in_array( $post->post_status, array( 'active', 'paused' ) ) && $totals ) {
-						$actions['finish'] = '<a class="finish live-action" href="?post_type=newsletter&finish=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_finish_nonce' ) . '" title="' . esc_attr__( 'Finish Campaign', 'mailster' ) . '">' . esc_html__( 'Finish', 'mailster' ) . '</a>&nbsp;';
+					if ( in_array( $post->post_status, array( 'active', 'paused' ) ) && $totals && $sent ) {
+						$actions['finish'] = '<a class="finish live-action" href="?post_type=newsletter&finish=' . $post->ID . ( isset( $_GET['post_status'] ) ? '&post_status=' . esc_attr( $_GET['post_status'] ) : '' ) . '&_wpnonce=' . wp_create_nonce( 'mailster_finish_nonce' ) . '" title="' . esc_attr__( 'Finish Campaign', 'mailster' ) . '">' . esc_html__( 'Finish', 'mailster' ) . '</a>';
 					}
 				}
 				if ( ! empty( $actions ) ) {

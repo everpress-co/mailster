@@ -324,6 +324,7 @@ class MailsterMail {
 			$tempheaders = $headers;
 		}
 		$headers = array();
+		$cc = $bcc = $reply_to = array();
 
 		// If it's actually got contents
 		if ( ! empty( $tempheaders ) ) {

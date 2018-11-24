@@ -1262,7 +1262,11 @@ class MailsterHelper {
 
 		mailster_require_filesystem();
 
-		$path = trailingslashit( trailingslashit( MAILSTER_UPLOAD_DIR ) . $folder );
+		if ( 0 === strrpos( $folder, ABSPATH ) ) {
+			$path = trailingslashit( $folder );
+		} else {
+			$path = trailingslashit( trailingslashit( MAILSTER_UPLOAD_DIR ) . $folder );
+		}
 
 		if ( ! is_dir( $path ) ) {
 

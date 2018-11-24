@@ -557,6 +557,11 @@ if ( $old_version ) {
 
 			$mailster_options['_flush_rewrite_rules'] = true;
 			// mailster_notice( $update_info, 'updated', false, 'info-screen', true, 'newsletter_page_mailster_dashboard' );
+		case '2.3.14':
+
+			// remove entries caused by wrong tracking
+			$wpdb->query( "DELETE FROM {$wpdb->prefix}mailster_actions WHERE subscriber_id = 0" );
+
 		default:
 
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );

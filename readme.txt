@@ -85,6 +85,8 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.15 =
 
 * fixed: missing icons in WordPress 5.0
+* fixed: prevent tracking on test mails
+* fixed: relative width attributes now preserved in the editor
 
 = Version 2.3.14 =
 
