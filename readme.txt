@@ -87,6 +87,7 @@ Xaver Birsak – https://everpress.io
 * fixed: missing icons in WordPress 5.0
 * fixed: prevent tracking on test mails
 * fixed: relative width attributes now preserved in the editor
+* fixed: issues with wp_mail if reply_to is an array
 
 = Version 2.3.14 =
 
