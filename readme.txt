@@ -2,7 +2,7 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9.8
+Tested up to: 5.0
 Stable tag: 2.3.15
 Author: EverPress
 Author URI: https://mailster.co
@@ -84,10 +84,12 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.15 =
 
+* fully tested on WordPress 5.0
 * fixed: missing icons in WordPress 5.0
 * fixed: prevent tracking on test mails
 * fixed: relative width attributes now preserved in the editor
 * fixed: issues with wp_mail if reply_to is an array
+* improved: better checks if `wp_mail` is defined by another plugin
 
 = Version 2.3.14 =
 

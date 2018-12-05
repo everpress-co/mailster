@@ -2598,7 +2598,7 @@ jQuery(document).ready(function ($) {
 			current.asp = current.width / current.height;
 			current.crop = el.data('crop') ? el.data('crop') : false;
 			current.tag = el.prop('tagName').toLowerCase();
-			current.is_percentage = el.attr('width').indexOf('%') !== -1;
+			current.is_percentage = el.attr('width') && el.attr('width').indexOf('%') !== -1;
 
 			current.content = content;
 
