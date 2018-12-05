@@ -398,7 +398,7 @@ class MailsterTests {
 			}
 		}
 	}
-	private function test_tinymce_access() {
+	private function _test_tinymce_access() {
 
 		$file = includes_url( 'js/tinymce/' ) . 'wp-tinymce.php';
 		$response = wp_remote_post( $file );

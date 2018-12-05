@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.3
+// Version 3.4
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -269,7 +269,7 @@ class UpdateCenterPlugin {
 		add_filter( 'plugins_api', array( &$this, 'plugins_api' ), 10, 3 );
 		add_filter( 'plugins_api_result', array( &$this, 'plugins_api_result' ), 10, 3 );
 
-		if ( ! is_admin() || ! current_user_can( 'update_plugins' ) ) {
+		if ( ! is_admin() ) {
 			return;
 		}
 

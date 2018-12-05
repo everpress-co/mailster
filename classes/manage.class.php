@@ -614,7 +614,7 @@ class MailsterManage {
 					}
 
 					// apply global status
-					if ( $bulkdata['status'] == -1 && is_numeric( $insert['status'] ) ) {
+					if ( $bulkdata['status'] == -1 && isset( $insert['status'] ) && is_numeric( $insert['status'] ) ) {
 						$insert['status'] = (int) $insert['status'];
 					} else {
 						$insert['status'] = $bulkdata['status'];

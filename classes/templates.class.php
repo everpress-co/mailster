@@ -914,7 +914,7 @@ class MailsterTemplates {
 		mailster_require_filesystem();
 
 		if ( ! is_dir( $screenshot_folder ) ) {
-			wp_mkdir_p( $screenshot_folder );
+			mailster( 'helper' )->mkdir( $screenshot_folder, true );
 		}
 
 		// not on localhost
@@ -942,7 +942,7 @@ class MailsterTemplates {
 
 						if ( ! is_wp_error( $tmp_file ) ) {
 							if ( ! is_dir( dirname( $screenshotfile ) ) ) {
-								wp_mkdir_p( dirname( $screenshotfile ) );
+								mailster( 'helper' )->mkdir( dirname( $screenshotfile ), true );
 							}
 
 							if ( ! $wp_filesystem->copy( $tmp_file, $screenshotfile ) ) {

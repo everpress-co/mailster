@@ -1821,13 +1821,39 @@ class Mailster {
 
 			if ( $system_mail == 'template' ) {
 
-				add_filter( 'wp_mail', array( &$this, 'wp_mail_set' ) );
-				add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ) );
+				add_filter( 'wp_mail', array( &$this, 'wp_mail_set' ), 99 );
+				add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 
 			} else {
 
 				if ( $this->wp_mail ) {
-					mailster_notice( sprintf( esc_html__( 'The %s method already exists from a different plugin! Please disable it before using Mailster for system mails!', 'mailster' ), '<code>wp_mail()</code>' ), 'error', true, 'wp_mail_notice' );
+
+					$message = sprintf( esc_html__( 'The %s method already exists from a different plugin! Please disable it before using Mailster for system mails!', 'mailster' ), '<code>wp_mail()</code>' );
+
+					if ( class_exists( 'ReflectionFunction' ) ) {
+						$reflFunc = new ReflectionFunction( 'wp_mail' );
+
+						$plugin_path = $reflFunc->getFileName();
+
+						if ( strpos( $plugin_path, WP_PLUGIN_DIR ) !== false ) {
+
+							require_once ABSPATH . '/wp-admin/includes/plugin.php';
+
+							if ( preg_match( '/([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\.php)$/', $plugin_path, $output_array ) ) {
+								$plugin_file = $output_array[1];
+								$plugin_data = get_plugin_data( $plugin_path );
+
+								$deactivate = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=', 'deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( _x( 'Deactivate %s', 'mailster' ), $plugin_data['Name'] ) ) . '">' . __( 'Deactivate' , 'mailster' ) . '</a>';
+								$message .= '<br>' . __( 'Plugin Name', 'mailster' ) . ': ' . esc_html( $plugin_data['Name'] );
+								$message .= '<br>' . $deactivate;
+							}
+						}
+
+						$message .= '<br>' . esc_html__( 'More info:', 'mailster' ) . ' - ' . $reflFunc->getFileName() . ':' . $reflFunc->getStartLine();
+					}
+
+					mailster_notice( $message, 'error', true, 'wp_mail_notice' );
+
 				}
 			}
 		}

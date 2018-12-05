@@ -324,6 +324,7 @@ class MailsterMail {
 			$tempheaders = $headers;
 		}
 		$headers = array();
+		$cc = $bcc = $reply_to = array();
 
 		// If it's actually got contents
 		if ( ! empty( $tempheaders ) ) {
@@ -652,9 +653,13 @@ class MailsterMail {
 				? $this->mailer->ReturnPath = $this->mailer->Sender = $this->bouncemail
 				: $this->mailer->ReturnPath = $this->mailer->Sender = $this->from;
 
-			( $this->reply_to )
-				? $this->mailer->AddReplyTo( $this->reply_to )
-				: $this->mailer->AddReplyTo( $this->from );
+			if ( ! empty( $this->reply_to ) ) {
+				foreach ( (array) $this->reply_to as $address ) {
+					$this->mailer->addReplyTo( $address );
+				}
+			} else {
+				$this->mailer->addReplyTo( $this->from );
+			}
 
 			// add the tracking image at the bottom
 			if ( $this->add_tracking_image ) {

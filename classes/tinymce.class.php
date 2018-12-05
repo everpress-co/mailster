@@ -28,7 +28,7 @@ class MailsterTinymce {
 
 		global $post;
 
-		if ( isset( $post ) && 'true' == get_user_option( 'rich_editing' ) ) {
+		if ( isset( $post ) ) {
 
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
 
