@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.16 =
 
+* added: option to re test a test
+
 = Version 2.3.15 =
 
 * fully tested on WordPress 5.0
