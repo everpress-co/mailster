@@ -13,6 +13,7 @@
 
 <div class="tests-wrap no-success">
 	<a class="button button-primary button-hero start-test"><?php esc_html_e( __( 'Start Tests', 'mailster' ) ) ?></a>
+	<input type="hidden" id="singletest" value="<?php echo isset( $_GET['test'] ) ? esc_attr( $_GET['test'] ) : '' ?>">
 	<div id="progress" class="progress"><span class="bar" style="width:0%"><span></span></span></div>
 	<h4 class="test-info"><?php esc_html_e( __( 'Click the button to start test', 'mailster' ) ) ?></h4>
 	<div id="outputnav" class="nav-tab-wrapper hide-if-no-js">

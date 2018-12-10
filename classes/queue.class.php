@@ -577,7 +577,7 @@ class MailsterQueue {
 			}
 
 			// seconds the campaign should created before the actual send time.
-			$time_created_before = 60;
+			$time_created_before = 3600;
 
 			// add a day if timezone based sending is enabled
 			if ( $meta['timezone'] ) {

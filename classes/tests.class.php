@@ -113,7 +113,7 @@ class MailsterTests {
 
 				foreach ( $test_errors as $i => $error ) {
 					$name = $this->nicename( $test_id );
-					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ($error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . '</h4><div class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</div></div>';
+					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ($error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . ' <a class="retest mailster-icon" href="' . add_query_arg( array( 'test' => $test_id ), admin_url( 'edit.php?post_type=newsletter&page=mailster_tests&autostart' ) ) . '">' . __( 'Test again', 'mailster' ) . '</a></h4><div class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</div></div>';
 					if ( $type != 'success' ) {
 						$text .= '[' . $type . '] ' . $test_id . ': ' . strip_tags( $error['msg'] ) . "\n";
 					}
