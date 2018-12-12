@@ -33,7 +33,7 @@ class MailsterQueue {
 		add_action( 'mailster_update_queue', array( &$this, 'update_status' ), 30 );
 		add_action( 'mailster_update_queue', array( &$this, 'update' ), 30 );
 
-		add_action( 'mailster_bounce', array( &$this, 'add_after_bounce' ), 10, 3 );
+		add_action( 'mailster_bounce', array( &$this, 'update_after_bounce' ), 10, 3 );
 
 		// hooks to remove subscriber from the queue
 		if ( ! defined( 'MAILSTER_DO_BULKIMPORT' ) ) {
@@ -88,10 +88,12 @@ class MailsterQueue {
 	 * @param unknown $hard
 	 * @return unknown
 	 */
-	public function add_after_bounce( $subscriber_id, $campaign_id, $hard ) {
+	public function update_after_bounce( $subscriber_id, $campaign_id, $hard ) {
 
 		// only softbounce
 		if ( $hard ) {
+			// remove all from queue
+			$this->remove_subscribers( $subscriber_id );
 			return;
 		}
 
@@ -214,6 +216,37 @@ class MailsterQueue {
 			$sql .= ' AND a.subscriber_id NOT IN (' . implode( ',', $subscribers ) . ')';
 
 		}
+
+		return false !== $wpdb->query( $sql );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscribers (optional)
+	 * @param unknown $campaign_id (optional)
+	 * @return unknown
+	 */
+	public function remove_subscribers( $subscribers, $campaign_id = null ) {
+
+		global $wpdb;
+
+		$sql = "DELETE a FROM {$wpdb->prefix}mailster_queue AS a WHERE 1";
+		if ( ! is_null( $campaign_id ) ) {
+			$sql .= $wpdb->prepare( ' AND a.campaign_id = %d', $campaign_id );
+		}
+
+		if ( ! is_array( $subscribers ) ) {
+			$subscriber = array( $subscribers );
+		}
+
+		$subscribers = array_filter( $subscribers, 'is_numeric' );
+		if ( empty( $subscribers ) ) {
+			$subscribers = array( -1 );
+		}
+
+		$sql .= ' AND a.subscriber_id IN (' . implode( ',', $subscribers ) . ')';
 
 		return false !== $wpdb->query( $sql );
 

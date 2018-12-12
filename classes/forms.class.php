@@ -146,7 +146,7 @@ class MailsterForms {
 			$form = mailster( 'form' )->id( $form_id );
 			$form->add_class( 'embeded' );
 			$form->prefill( false );
-			$form->set_success( __( 'This is a success info', 'mailster' ) );
+			$form->set_success( __( 'This is a success message', 'mailster' ) );
 			$form->set_error( __( 'This is an error message', 'mailster' ) );
 			$form->is_preview();
 			$form->render();
