@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.16 =
 
 * improved: subscribers now get removed from the queue if a bounce happens
+* added: condition "is in list" for better segmentation
 * added: option to re test a test
 
 = Version 2.3.15 =

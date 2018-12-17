@@ -154,6 +154,7 @@ class MailsterConditions {
 	}
 	private function get_list_related() {
 		return array(
+			'_lists__in' => __( 'is in List', 'mailster' ),
 			'_lists__not_in' => __( 'is not in List', 'mailster' ),
 		);
 
