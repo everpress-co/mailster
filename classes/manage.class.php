@@ -424,7 +424,7 @@ class MailsterManage {
 
 			$html .= '<label><input type="radio" name="status" value="' . $i . '" ' . checked( 1, $i, false ) . '> ' . $name . ' </label>';
 		}
-		$html .= '</p><p class="pending-info description">' . __( 'choosing "pending" as status will force a confirmation message to the subscriber', 'mailster' ) . '</p>';
+		$html .= '</p><div class="pending-info error inline"><p><strong>' . __( 'Choosing "pending" as status will force a confirmation message to the subscribers.', 'mailster' ) . '</strong></p></div>';
 
 		$html .= '<h3>' . __( 'Existing subscribers', 'mailster' ) . ':</h3><p><label> <input type="radio" name="existing" value="skip" checked> ' . __( 'skip', 'mailster' ) . ' </label> <label><input type="radio" name="existing" value="overwrite"> ' . __( 'overwrite', 'mailster' ) . ' </label><input type="radio" name="existing" value="merge"> ' . __( 'merge', 'mailster' ) . ' </label></p>';
 		$html .= '<h3>' . __( 'Other', 'mailster' ) . ':</h3><p><label>';
