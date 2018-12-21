@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.16 =
 
 * fixed: wrong subscriber count in dashboard widget if assigned to multiple lists
+* improved: DNS checks on settings page now asynchronous
 * improved: subscribers now get removed from the queue if a bounce happens
 * improved: better warning on import for pending subscribers
 * added: condition "is in list" for better segmentation

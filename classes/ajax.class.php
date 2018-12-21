@@ -48,6 +48,8 @@ class MailsterAjax {
 		'get_system_info',
 		'get_gravatar',
 		'check_email',
+		'spf_check',
+		'dkim_check',
 
 		'sync_all_subscriber',
 		'sync_all_wp_user',
@@ -2022,6 +2024,104 @@ class MailsterAjax {
 
 		$subscriber = mailster( 'subscribers' )->get_by_mail( $email );
 		$return['exists'] = ! ! $subscriber && $subscriber->ID != (int) $_POST['id'];
+		$return['success'] = true;
+
+		$this->json_return( $return );
+
+	}
+
+	private function spf_check() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		if ( $spf_domain = mailster_option( 'spf_domain' ) ) {
+			$records = mailster( 'helper' )->dns_query( $spf_domain, 'TXT' );
+
+			$return['found'] = false;
+			if ( $records ) {
+				foreach ( $records as $r ) {
+					if ( $r->type === 'TXT' && preg_match( '#v=spf1 #', $r->txt ) ) {
+						$return['found'] = $r;
+						break;
+					}
+				}
+			}
+
+			$return['message'] = sprintf( __( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ';
+
+			if ( $return['found'] ) :
+
+				$return['message'] .= '<code>' . __( 'TXT record found', 'mailster' ) . '</code>';
+
+			else :
+
+				$records = mailster( 'helper' )->dns_query( $spf_domain, 'A' );
+
+				$ips = wp_list_pluck( (array) $records, 'ip' );
+
+				$return['message'] = sprintf( __( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ';
+				$return['message'] .= '<code>' . __( 'no TXT record found', 'mailster' ) . '</code>';
+				$return['message'] .= '<p>' . sprintf( __( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . '</p>';
+
+				$return['message'] .= '<dl><dt><strong>' . $spf_domain . '</strong> IN TXT</dt>';
+				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
+
+			endif;
+
+		}
+
+		$return['success'] = true;
+
+		$this->json_return( $return );
+
+	}
+
+
+	private function dkim_check() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		if ( $dkim_domain = mailster_option( 'dkim_domain' ) ) {
+			$dkim_selector = mailster_option( 'dkim_selector' );
+			$records = mailster( 'helper' )->dns_query( mailster_option( 'dkim_selector' ) . '._domainkey.' . $dkim_domain, 'TXT' );
+
+			$pubkey = trim( str_replace( array( '-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----', "\n", "\r" ), '', mailster_option( 'dkim_public_key' ) ) );
+			$record = apply_filters( 'mailster_dkim_record', 'k=rsa; p=' . $pubkey );
+			$return['found'] = false;
+			if ( $records ) {
+				foreach ( (array) $records as $r ) {
+					if ( $r->type === 'TXT' && preg_replace( '#[^a-zA-Z0-9]#s', '', str_replace( ';t=y', '', $r->txt ) ) == preg_replace( '#[^a-zA-Z0-9]#s', '', $record ) ) {
+						$return['found'] = $r;
+						break;
+					}
+				}
+			}
+
+			$return['message'] = sprintf( __( 'Domain %s', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . ': ';
+			$return['message'] .= ' Selector: <strong>' . $dkim_selector . '</strong>: ';
+
+			if ( $return['found'] ) :
+
+				$return['message'] .= '<code>' . __( 'verified', 'mailster' ) . '</code>';
+
+			else :
+
+				$return['message'] .= '<code>' . __( 'not verified', 'mailster' ) . '</code>';
+				$records = mailster( 'helper' )->dns_query( $dkim_domain, 'A' );
+
+				$return['message'] .= '<p>' . sprintf( __( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . '</p>';
+
+				$return['message'] .= '<dl><dt><strong>' . $dkim_domain . '</strong> IN TXT</dt>';
+				$return['message'] .= '<dl><dt><strong>' . $dkim_selector . '._domainkey.' . $dkim_domain . '</strong> IN TXT</dt><dd><textarea class="widefat" rows="4" id="dkim-record" readonly>' . esc_textarea( $record ) . '</textarea><a class="clipboard" data-clipboard-target="#dkim-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
+
+			endif;
+
+		}
+
 		$return['success'] = true;
 
 		$this->json_return( $return );
