@@ -62,7 +62,7 @@ class MailsterHelper {
 
 				$actual_file_path = realpath( $_SERVER['DOCUMENT_ROOT'] ) . $file_path['path'];
 
-				/* todo: reconize URLs */
+				/* todo: recognize URLs */
 				if ( ! file_exists( $actual_file_path ) ) {
 
 					return apply_filters( 'mailster_create_image', array(
@@ -122,7 +122,7 @@ class MailsterHelper {
 			$new_img = str_replace( basename( $image_src[0] ), basename( $new_img_path ), $image_src[0] );
 
 			$meta_data = wp_get_attachment_metadata( $attach_id );
-			if ( $meta_data ) {
+			if ( $meta_data && is_array( $meta_data ) ) {
 				$size_id = '_mailster-' . $width . 'x' . $height . '|' . $crop;
 				$meta_data['sizes'][ $size_id ] = array(
 					'file' => basename( $new_img_path ),

@@ -220,7 +220,6 @@ function mailster_get_current_user_id() {
 }
 
 
-
 /**
  *
  *
