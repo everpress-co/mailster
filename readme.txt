@@ -85,9 +85,13 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.16 =
 
 * fixed: wrong subscriber count in dashboard widget if assigned to multiple lists
+* fixed: auto expanding of chart on dashboard
+* fixed: title with quotes now escaped correctly
+* improved: wp_mail wrapper now supports to address in format name <email>
 * improved: DNS checks on settings page now asynchronous
 * improved: subscribers now get removed from the queue if a bounce happens
 * improved: better warning on import for pending subscribers
+* improved: auto responder data now stored if campaign is saved as draft
 * added: condition "is in list" for better segmentation
 * added: option to re test a test
 

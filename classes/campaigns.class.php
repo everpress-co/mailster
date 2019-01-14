@@ -1461,7 +1461,7 @@ class MailsterCampaigns {
 
 			$meta['head'] = $postdata['head'];
 
-			$is_autoresponder = ! ! $postdata['is_autoresponder'] && ! isset( $_POST['draft'] );
+			$is_autoresponder = isset( $postdata['is_autoresponder'] ) && $postdata['is_autoresponder'];
 
 			$autoresponder = $postdata['autoresponder'];
 
@@ -1481,12 +1481,12 @@ class MailsterCampaigns {
 
 			if ( $is_autoresponder ) {
 
-				if ( $post->post_status != 'autoresponder' && ! $is_autosave ) {
+				if ( $post->post_status != 'autoresponder' && ! $is_autosave && ! isset( $_POST['draft'] ) ) {
 					$this->change_status( $post, 'autoresponder' );
 					$post->post_status = 'autoresponder';
 				}
 
-				$meta['active'] = isset( $postdata['active_autoresponder'] ) && current_user_can( 'publish_newsletters' );
+				$meta['active'] = isset( $postdata['active_autoresponder'] ) && current_user_can( 'publish_newsletters' ) && ! isset( $_POST['draft'] );
 
 				$autoresponder['amount'] = max( 0, (float) $autoresponder['amount'] );
 

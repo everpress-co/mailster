@@ -5,7 +5,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
 
-$is_autoresponder = 'autoresponder' == $post->post_status;
+$is_autoresponder = 'autoresponder' == $post->post_status || $this->post_data['autoresponder'];
 
 ?>
 <?php if ( $editable ) : ?>

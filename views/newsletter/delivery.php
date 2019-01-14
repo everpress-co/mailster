@@ -7,7 +7,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
 
-$is_autoresponder = ('autoresponder' == $post->post_status);
+$is_autoresponder = 'autoresponder' == $post->post_status || $this->post_data['autoresponder'];
 
 $timestamp = ( ! empty( $this->post_data['timestamp'] ) ) ? $this->post_data['timestamp'] : $now + ( 60 * mailster_option( 'send_offset' ) );
 

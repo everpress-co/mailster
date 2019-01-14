@@ -953,6 +953,9 @@ class MailsterPlaceholder {
 			case 'id':
 				$replace_to = $post->ID;
 				break;
+			case 'title':
+				$replace_to = str_replace( array( '"', "'" ), array( '&quot;', '&apos;' ), $post->post_title );
+				break;
 			case 'link':
 			case 'permalink':
 				$replace_to = get_permalink( $post->ID );

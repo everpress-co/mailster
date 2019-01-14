@@ -2044,8 +2044,22 @@ class Mailster {
 			$to = explode( ',', $to );
 		}
 		$to = array_map( 'trim', $to );
+		$mail->to = array();
 
-		$mail->to = $to;
+		foreach ( $to as $address ) {
+			if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
+				$recipient_name = '';
+				if ( count( $matches ) == 3 ) {
+					$recipient_name = $matches[1];
+					$address        = $matches[2];
+				}
+				$mail->to[] = $address;
+				$mail->to_name[] = $recipient_name;
+			} else {
+				$mail->to[] = $address;
+			}
+		}
+
 		$mail->message = $message;
 		$mail->subject = $subject;
 
