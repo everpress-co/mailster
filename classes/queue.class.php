@@ -889,7 +889,7 @@ class MailsterQueue {
 
 				if ( $last_hit ) {
 					echo '<p>' . sprintf( esc_html__( 'Cron Lock requested %s ago from:', 'mailster' ),
-					'<strong>' . ( $sec > 60 ? human_time_diff( time() + $sec ) : sprintf( _n( '%d second', '%d seconds', $sec, 'mailster' ), $sec ) ) . '</strong>' ) . '</p>';
+					'<strong>' . ( $sec > 60 ? human_time_diff( time() + $sec ) : sprintf( esc_html__( _n( '%d second', '%d seconds', $sec, 'mailster' ) ), $sec ) ) . '</strong>' ) . '</p>';
 
 					echo '<p><strong>IP: ' . $last_hit['ip'] . '<br>PID: ' . $pid . '<br>' . $last_hit['user'] . '</strong></p>';
 				}

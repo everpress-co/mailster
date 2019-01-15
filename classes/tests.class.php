@@ -540,7 +540,7 @@ class MailsterTests {
 				return;
 			}
 			$mails_per_sec = round( 1 / $last_hit['mail'], 2 );
-			$mails_per_sec = sprintf( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ), $mails_per_sec );
+			$mails_per_sec = sprintf( esc_html__( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ) ), $mails_per_sec );
 
 			if ( $last_hit['mail'] > 1 ) {
 				$this->warning( 'Your mail throughput is low. (' . $mails_per_sec . ')', 'https://kb.mailster.co/how-can-i-increase-the-sending-speed/' );

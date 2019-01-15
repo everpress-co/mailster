@@ -93,7 +93,7 @@ if ( $is_new ) {
 	<tr>
 		<th scope="row"><?php esc_html_e( 'Subscribers', 'mailster' ) ?></th>
 		<td>
-			<?php echo '<a href="' . add_query_arg( array( 'lists' => array( $list->ID ) ), 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '">' . sprintf( _n( '%s Subscriber', '%s Subscribers', $list->subscribers, 'mailster' ), '<strong>' . number_format_i18n( $list->subscribers ) . '</strong>' ) . '</a>'; ?>
+			<?php echo '<a href="' . add_query_arg( array( 'lists' => array( $list->ID ) ), 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '">' . sprintf( esc_html__( _n( '%s Subscriber', '%s Subscribers', $list->subscribers, 'mailster' ) ), '<strong>' . number_format_i18n( $list->subscribers ) . '</strong>' ) . '</a>'; ?>
 		</td>
 	</tr>
 </table>
@@ -118,7 +118,7 @@ if ( ! $is_new ) :
 		<div class="stats-wrap">
 			<table id="stats">
 				<tr>
-				<td><span class="verybold"><?php echo number_format_i18n( $sent ) ?></span> <?php echo _n( 'Mail sent', 'Mails sent', $sent, 'mailster' ) ?></td>
+				<td><span class="verybold"><?php echo number_format_i18n( $sent ) ?></span> <?php echo esc_html__( _n( 'Mail sent', 'Mails sent', $sent, 'mailster' ) ) ?></td>
 				<td width="60">
 					<div id="stats_open" class="piechart" data-percent="<?php echo $openrate ?>"><span>0</span>%</div>
 				</td><td><span class="verybold"></span> <?php esc_html_e( 'open rate', 'mailster' ) ?></td>

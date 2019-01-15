@@ -261,15 +261,15 @@ class MailsterDashboard {
 		$elements[] = '</ul><br><ul>';
 
 		if ( $campaigns = count( mailster_get_campaigns() ) ) {
-			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_type=newsletter">' . number_format_i18n( $campaigns - $autoresponder ) . ' ' . _n( 'Campaign', 'Campaigns', $campaigns - $autoresponder, 'mailster' ) . '</a>';
+			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_type=newsletter">' . number_format_i18n( $campaigns - $autoresponder ) . ' ' . esc_html__( _n( 'Campaign', 'Campaigns', $campaigns - $autoresponder, 'mailster' ) ) . '</a>';
 		}
 
 		if ( $autoresponder ) {
-			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_status=autoresponder&post_type=newsletter">' . number_format_i18n( $autoresponder ) . ' ' . _n( 'Autoresponder', 'Autoresponders', $autoresponder, 'mailster' ) . '</a>';
+			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_status=autoresponder&post_type=newsletter">' . number_format_i18n( $autoresponder ) . ' ' . esc_html__( _n( 'Autoresponder', 'Autoresponders', $autoresponder, 'mailster' ) ) . '</a>';
 		}
 
 		if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) {
-			$elements[] = '<a class="mailster-subscribers" href="edit.php?post_type=newsletter&page=mailster_subscribers">' . number_format_i18n( $subscribers ) . ' ' . _n( 'Subscriber', 'Subscribers', $subscribers, 'mailster' ) . '</a>';
+			$elements[] = '<a class="mailster-subscribers" href="edit.php?post_type=newsletter&page=mailster_subscribers">' . number_format_i18n( $subscribers ) . ' ' . esc_html__( _n( 'Subscriber', 'Subscribers', $subscribers, 'mailster' ) ) . '</a>';
 		}
 
 		return $elements;

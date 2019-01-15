@@ -828,7 +828,7 @@ class MailsterNotification {
 						</a>
 					</td>
 					<td valign="center" align="left">
-						<h4 style="margin:0;"><a href="<?php echo $link ?>"><?php printf( _n( '%s other', '%s others', $count - $limit, 'mailster' ), number_format_i18n( $count - $limit ) ) ?></a></h5>
+						<h4 style="margin:0;"><a href="<?php echo $link ?>"><?php printf( esc_html__( _n( '%s other', '%s others', $count - $limit, 'mailster' ) ), number_format_i18n( $count - $limit ) ) ?></a></h5>
 					</td>
 					</tr>
 					<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
@@ -881,7 +881,7 @@ foreach ( $coords as $i => $coord ) {
 				<table style="width:100%;table-layout:fixed">
 				<tr>
 				<td valign="top" align="center">
-				<img width="600" height="300" src="<?php echo $link ?>" alt="<?php printf( _n( 'location of %d subscriber', 'location of %d subscribers', $locationcount, 'mailster' ), $locationcount );?>">
+				<img width="600" height="300" src="<?php echo $link ?>" alt="<?php printf( esc_html__( _n( 'location of %d subscriber', 'location of %d subscribers', $locationcount, 'mailster' ) ), $locationcount );?>">
 				</td>
 			</tr>
 		</table>
@@ -1107,7 +1107,7 @@ foreach ( $coords as $i => $coord ) {
 						</a>
 					</td>
 					<td valign="center" align="left">
-						<h4 style="margin:0;"><a href="<?php echo $link ?>"><?php printf( _n( '%s other', '%s others', $count - $limit, 'mailster' ), number_format_i18n( $count - $limit ) ) ?></a></h5>
+						<h4 style="margin:0;"><a href="<?php echo $link ?>"><?php printf( esc_html__( _n( '%s other', '%s others', $count - $limit, 'mailster' ) ), number_format_i18n( $count - $limit ) ) ?></a></h5>
 					</td>
 					</tr>
 					<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>

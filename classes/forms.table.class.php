@@ -166,7 +166,7 @@ class Mailster_Forms_Table extends WP_List_Table {
 
 					if ( ! empty( $occurrence['widgets'] ) ) {
 						$count = count( $occurrence['widgets'] );
-						echo '<a href="widgets.php">' . sprintf( _n( '%d Widget', '%d Widgets', $count, 'mailster' ), $count ) . '</a>';
+						echo '<a href="widgets.php">' . sprintf( esc_html__( _n( '%d Widget', '%d Widgets', $count, 'mailster' ) ), $count ) . '</a>';
 					}
 				} else {
 					echo '<em class="tiny">' . esc_html__( 'unknown', 'mailster' ) . '</em>';

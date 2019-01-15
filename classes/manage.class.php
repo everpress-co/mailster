@@ -1271,7 +1271,7 @@ class MailsterManage {
 		if ( $return['success'] && $count ) {
 
 			mailster()->optimize_tables( array( 'subscribers', 'lists' ) );
-			$return['msg'] = sprintf( _n( '%s Subscriber removed', '%s Subscribers removed', $count, 'mailster' ), number_format_i18n( $count ) );
+			$return['msg'] = sprintf( esc_html__( _n( '%s Subscriber removed', '%s Subscribers removed', $count, 'mailster' ) ), number_format_i18n( $count ) );
 
 		} else {
 

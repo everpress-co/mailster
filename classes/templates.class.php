@@ -39,7 +39,7 @@ class MailsterTemplates {
 	public function admin_menu() {
 
 		if ( $updates = $this->get_updates() ) {
-			$updates = ' <span class="update-plugins count-' . $updates . '" title="' . sprintf( _n( '%d Update available', '%d Updates available', $updates, 'mailster' ), $updates ) . '"><span class="update-count">' . $updates . '</span></span>';
+			$updates = ' <span class="update-plugins count-' . $updates . '" title="' . sprintf( esc_html__( _n( '%d Update available', '%d Updates available', $updates, 'mailster' ) ), $updates ) . '"><span class="update-count">' . $updates . '</span></span>';
 		} else {
 			$updates = '';
 		}
@@ -1279,7 +1279,7 @@ class MailsterTemplates {
 		$diff = $new_count - $old_count;
 
 		if ( false && $old_count && $new_count > $old_count ) {
-			mailster_notice( sprintf( _n( '%d new template for Mailster is available!', '%d new templates for Mailster are available!', $diff, 'your_textdomain' ), $diff ) . ' <br><strong><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more&mailster_remove_notice=new_templates' ) . '">' . esc_html__( 'Visit Templates Page', 'mailster' ) . '<a></strong>', 'info', false, 'new_templates' );
+			mailster_notice( sprintf( esc_html__( _n( '%d new template for Mailster is available!', '%d new templates for Mailster are available!', $diff, 'your_textdomain' ), $diff ) . ' <br><strong><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more&mailster_remove_notice=new_templates' ) . '">' . esc_html__( 'Visit Templates Page', 'mailster' ) ) . '<a></strong>', 'info', false, 'new_templates' );
 		}
 
 		update_option( 'mailster_templates_updates', array_sum( wp_list_pluck( $templates, 'update' ) ) );

@@ -200,7 +200,7 @@ $sent = $this->get_sent( $post->ID );
 				</div>
 				<p>
 				<?php
-				printf( _n( 'always skip %s release', 'always skip %s releases', $autoresponderdata['post_count'], 'mailster' ), $count );
+				printf( esc_html__( _n( 'always skip %s release', 'always skip %s releases', $autoresponderdata['post_count'], 'mailster' ) ), $count );
 				?>
 				</p>
 			</div>

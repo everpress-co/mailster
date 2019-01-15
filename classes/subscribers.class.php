@@ -282,11 +282,11 @@ class MailsterSubscribers {
 				}
 
 				if ( $unverfied ) {
-					$error_message = sprintf( _n( '%s subscriber has not been verified!', '%s subscribers have not been verified!', $unverfied, 'mailster' ), $unverfied );
+					$error_message = sprintf( esc_html__( _n( '%s subscriber has not been verified!', '%s subscribers have not been verified!', $unverfied, 'mailster' ) ), $unverfied );
 				}
 
 				if ( $verfied ) {
-					$success_message = sprintf( _n( '%s subscriber has been verified!', '%s subscribers have been verified!', $verfied, 'mailster' ), $verfied );
+					$success_message = sprintf( esc_html__( _n( '%s subscriber has been verified!', '%s subscribers have been verified!', $verfied, 'mailster' ) ), $verfied );
 				}
 
 			break;
@@ -2825,7 +2825,7 @@ class MailsterSubscribers {
 		if ( $actions->clicks ) {
 			$html .= '<li><ul>';
 			foreach ( $actions->clicks as $link => $count ) {
-				$html .= '<li class=""><a href="' . $link . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( _n( '%s click', '%s clicks', (int) $count, 'mailster' ), $count ) . ')</span></li>';
+				$html .= '<li class=""><a href="' . $link . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( esc_html__( _n( '%s click', '%s clicks', (int) $count, 'mailster' ) ), $count ) . ')</span></li>';
 			}
 			$html .= '</ul></li>';
 		}
@@ -2837,10 +2837,10 @@ class MailsterSubscribers {
 
 		if ( $actions->bounces ) {
 			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
-			$html .= '<li><label class="red">' . sprintf( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ), $actions->softbounces_total ) . '</label> <strong class="red">' . sprintf( esc_html__( 'Hard bounced at %s', 'mailster' ), date( $timeformat, $actions->bounces + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->bounces ) ) ) . '</strong><br>' . esc_html( $message ) . '</li>';
+			$html .= '<li><label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ) ), $actions->softbounces_total ) . '</label> <strong class="red">' . sprintf( esc_html__( 'Hard bounced at %s', 'mailster' ), date( $timeformat, $actions->bounces + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->bounces ) ) ) . '</strong><br>' . esc_html( $message ) . '</li>';
 		} elseif ( $actions->softbounces ) {
 			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
-			$html .= '<li><label class="red">' . sprintf( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ), $actions->softbounces_total ) . '</label><br>' . esc_html( $message ) . '</li>';
+			$html .= '<li><label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ) ), $actions->softbounces_total ) . '</label><br>' . esc_html( $message ) . '</li>';
 		}
 
 		$html .= '</ul>';

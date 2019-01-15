@@ -343,7 +343,7 @@ if ( ! $is_new ) :
 		<div class="stats-wrap">
 			<table id="stats">
 				<tr>
-				<td><span class="verybold"><?php echo $sent ?></span> <?php echo _n( 'Campaign sent', 'Campaigns sent', $sent, 'mailster' ) ?></td>
+				<td><span class="verybold"><?php echo $sent ?></span> <?php echo esc_html__( _n( 'Campaign sent', 'Campaigns sent', $sent, 'mailster' ) ) ?></td>
 				<td width="60">
 				<div id="stats_open" class="piechart" data-percent="<?php echo $openrate * 100 ?>"><span>0</span>%</div>
 				</td>

@@ -7,7 +7,7 @@ $table->prepare_items();
 ?>
 <div class="wrap">
 <h1>
-<?php printf( _n( '%s Subscriber found', '%s Subscribers found', $table->total_items, 'mailster' ), number_format_i18n( $table->total_items ) ); ?>
+<?php printf( esc_html__( _n( '%s Subscriber found', '%s Subscribers found', $table->total_items, 'mailster' ) ), number_format_i18n( $table->total_items ) ); ?>
 <?php if ( current_user_can( 'mailster_add_subscribers' ) ) : ?>
 	<a href="edit.php?post_type=newsletter&page=mailster_subscribers&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>
