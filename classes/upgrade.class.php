@@ -39,7 +39,7 @@ class MailsterUpgrade {
 			if ( version_compare( $db_version, MAILSTER_DBVERSION, '<' ) ) {
 
 				$redirectto = admin_url( 'admin.php?page=mailster_update' );
-				$update_msg = '<p><strong>' . __( 'An additional update is required for Mailster!', 'mailster' ) . '</strong></p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . __( 'Progress Update now', 'mailster' ) . '</a>';
+				$update_msg = '<p><strong>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</strong></p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . esc_html__( 'Progress Update now', 'mailster' ) . '</a>';
 
 				if ( 'update.php' == $pagenow ) {
 
@@ -1728,10 +1728,10 @@ class MailsterUpgrade {
 
 		$texts = mailster_option( 'text' );
 
-		$texts['profile_update'] = ! empty( $texts['profile_update'] ) ? $texts['profile_update'] : __( 'Profile Updated!', 'mailster' );
-		$texts['profilebutton'] = ! empty( $texts['profilebutton'] ) ? $texts['profilebutton'] : __( 'Update Profile', 'mailster' );
-		$texts['forward'] = ! empty( $texts['forward'] ) ? $texts['forward'] : __( 'forward to a friend', 'mailster' );
-		$texts['profile'] = ! empty( $texts['profile'] ) ? $texts['profile'] : __( 'update profile', 'mailster' );
+		$texts['profile_update'] = ! empty( $texts['profile_update'] ) ? $texts['profile_update'] : esc_html__( 'Profile Updated!', 'mailster' );
+		$texts['profilebutton'] = ! empty( $texts['profilebutton'] ) ? $texts['profilebutton'] : esc_html__( 'Update Profile', 'mailster' );
+		$texts['forward'] = ! empty( $texts['forward'] ) ? $texts['forward'] : esc_html__( 'forward to a friend', 'mailster' );
+		$texts['profile'] = ! empty( $texts['profile'] ) ? $texts['profile'] : esc_html__( 'update profile', 'mailster' );
 
 		echo "updated texts\n";
 

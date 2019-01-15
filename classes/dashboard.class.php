@@ -39,10 +39,10 @@ class MailsterDashboard {
 			$result = mailster()->reset_license();
 
 			if ( is_wp_error( $result ) ) {
-				mailster_notice( __( 'There was an Error while processing your request!', 'mailster' ) . '<br>' . $result->get_error_message(), 'error', true );
+				mailster_notice( esc_html__( 'There was an Error while processing your request!', 'mailster' ) . '<br>' . $result->get_error_message(), 'error', true );
 			} else {
 				update_option( 'mailster_license', '' );
-				mailster_notice( __( 'Your License has been reset!', 'mailster' ), '', true );
+				mailster_notice( esc_html__( 'Your License has been reset!', 'mailster' ), '', true );
 			}
 
 			wp_redirect( admin_url( 'admin.php?page=mailster_dashboard' ) );
@@ -81,7 +81,7 @@ class MailsterDashboard {
 
 		$slug = 'edit.php?post_type=newsletter';
 
-		$page = add_submenu_page( $slug, __( 'Mailster Dashboard', 'mailster' ), __( 'Dashboard', 'mailster' ), 'mailster_dashboard', 'mailster_dashboard', array( &$this, 'dashboard' ) );
+		$page = add_submenu_page( $slug, esc_html__( 'Mailster Dashboard', 'mailster' ), esc_html__( 'Dashboard', 'mailster' ), 'mailster_dashboard', 'mailster_dashboard', array( &$this, 'dashboard' ) );
 		add_action( 'load-' . $page, array( &$this, 'init_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'register_meta_boxes' ) );
@@ -141,13 +141,13 @@ class MailsterDashboard {
 
 	public function register_meta_boxes() {
 
-		$this->register_meta_box( 'quick-links', __( 'Quick Links', 'mailster' ), array( &$this, 'quick_links' ) );
-		$this->register_meta_box( 'campaigns', __( 'My Campaigns', 'mailster' ), array( &$this, 'campaigns' ) );
+		$this->register_meta_box( 'quick-links', esc_html__( 'Quick Links', 'mailster' ), array( &$this, 'quick_links' ) );
+		$this->register_meta_box( 'campaigns', esc_html__( 'My Campaigns', 'mailster' ), array( &$this, 'campaigns' ) );
 		if ( current_user_can( 'mailster_manage_licenses' ) ) {
-			$this->register_meta_box( 'mailster', __( 'My Mailster', 'mailster' ), array( &$this, 'mailster' ), 'side', 'high' );
+			$this->register_meta_box( 'mailster', esc_html__( 'My Mailster', 'mailster' ), array( &$this, 'mailster' ), 'side', 'high' );
 		}
-		$this->register_meta_box( 'subscribers', __( 'My Subscribers', 'mailster' ), array( &$this, 'subscribers' ), 'side' );
-		$this->register_meta_box( 'lists', __( 'My Lists', 'mailster' ), array( &$this, 'lists' ), 'side' );
+		$this->register_meta_box( 'subscribers', esc_html__( 'My Subscribers', 'mailster' ), array( &$this, 'subscribers' ), 'side' );
+		$this->register_meta_box( 'lists', esc_html__( 'My Lists', 'mailster' ), array( &$this, 'lists' ), 'side' );
 
 	}
 
@@ -226,10 +226,10 @@ class MailsterDashboard {
 		wp_enqueue_style( 'mailster-dashboard-style', MAILSTER_URI . 'assets/css/dashboard-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		wp_localize_script( 'mailster-dashboard-script', 'mailsterdashboardL10n', apply_filters( 'mailster-dashboard-script_mailsterL10n', array(
-			'subscribers' => __( '%s Subscribers', 'mailster' ),
-			'reset_license' => __( 'Do you really like to reset your license for this site?', 'mailster' ),
-			'check_again' => __( 'Check Again', 'mailster' ),
-			'checking' => __( 'Checking...', 'mailster' ),
+			'subscribers' => esc_html__( '%s Subscribers', 'mailster' ),
+			'reset_license' => esc_html__( 'Do you really like to reset your license for this site?', 'mailster' ),
+			'check_again' => esc_html__( 'Check Again', 'mailster' ),
+			'checking' => esc_html__( 'Checking...', 'mailster' ),
 		) ) );
 	}
 
@@ -242,7 +242,7 @@ class MailsterDashboard {
 			return;
 		}
 
-		add_meta_box( 'dashboard_mailster', __( 'Newsletter', 'mailster' ), array( &$this, 'widget' ), 'dashboard', 'side', 'high' );
+		add_meta_box( 'dashboard_mailster', esc_html__( 'Newsletter', 'mailster' ), array( &$this, 'widget' ), 'dashboard', 'side', 'high' );
 
 		add_action( 'admin_enqueue_scripts', array( &$this, 'scripts_styles' ), 10, 1 );
 

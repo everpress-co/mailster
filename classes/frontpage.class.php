@@ -95,7 +95,7 @@ class MailsterFrontpage {
 
 		$post = get_post( $post_id );
 		if ( 'mailster' == $post->post_name ) {
-			mailster_notice( sprintf( __( 'Please do not use %1$s in %2$s as page slug as it conflicts with Mailster form submission!', 'mailster' ), '&quot;<strong>mailster</strong>&quot;', '<a>' . str_replace( 'mailster', '<strong>mailster</strong>', get_permalink( $post_id ) . '</a>' ) ), 'error', true );
+			mailster_notice( sprintf( esc_html__( 'Please do not use %1$s in %2$s as page slug as it conflicts with Mailster form submission!', 'mailster' ), '&quot;<strong>mailster</strong>&quot;', '<a>' . str_replace( 'mailster', '<strong>mailster</strong>', get_permalink( $post_id ) . '</a>' ) ), 'error', true );
 		}
 
 		if ( $post_id == mailster_option( 'homepage' ) ) {
@@ -343,7 +343,7 @@ class MailsterFrontpage {
 		if ( $target ) {
 
 			if ( ! preg_match( '#^https?:#', $target ) ) {
-				wp_die( sprintf( __( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
+				wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 			}
 
 			$this->setcookie( $subscriber->hash );
@@ -644,7 +644,7 @@ class MailsterFrontpage {
 					}
 
 					if ( ! $content ) {
-						wp_die( __( 'There is no content for this newsletter.', 'mailster' ) . ( current_user_can( 'edit_newsletters' ) ? ' <a href="' . admin_url( 'post.php?post=' . get_the_ID() . '&action=edit' ) . '">' . __( 'Add content', 'mailster' ) . '</a>' : '' ) );
+						wp_die( esc_html__( 'There is no content for this newsletter.', 'mailster' ) . ( current_user_can( 'edit_newsletters' ) ? ' <a href="' . admin_url( 'post.php?post=' . get_the_ID() . '&action=edit' ) . '">' . esc_html__( 'Add content', 'mailster' ) . '</a>' : '' ) );
 					}
 
 					$content = mailster()->sanitize_content( $content, null, $meta['head'] );
@@ -1178,7 +1178,7 @@ class MailsterFrontpage {
 	private function do_shortcode_wrong( $shorttcode, $atts, $content ) {
 
 		if ( ! is_mailster_newsletter_homepage() && is_user_logged_in() ) {
-			$msg = sprintf( __( 'You should use the shortcode %s only on the newsletter homepage!', 'mailster' ), "[$shorttcode]" );
+			$msg = sprintf( esc_html__( 'You should use the shortcode %s only on the newsletter homepage!', 'mailster' ), "[$shorttcode]" );
 			_doing_it_wrong( "[$shorttcode]", $msg, '2.1.5' );
 			return '<p>' . $msg . '</p>';
 		}

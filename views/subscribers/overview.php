@@ -18,14 +18,14 @@ $table->prepare_items();
 	<a href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export" class="add-new-h2"><?php esc_html_e( 'Export', 'mailster' );?></a>
 <?php endif; ?>
 <?php if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) : ?>
-	<span class="subtitle"><?php printf( __( 'Search result for %s', 'mailster' ), '&quot;' . esc_html( stripslashes( $_GET['s'] ) ) . '&quot;' ) ?></span>
+	<span class="subtitle"><?php printf( esc_html__( 'Search result for %s', 'mailster' ), '&quot;' . esc_html( stripslashes( $_GET['s'] ) ) . '&quot;' ) ?></span>
 	<?php endif; ?>
 </h1>
 <?php
-$table->search_box( __( 'Search Subscribers', 'mailster' ), 's' );
+$table->search_box( esc_html__( 'Search Subscribers', 'mailster' ), 's' );
 $table->views();
 
-$text = sprintf( __( 'Do you like to select all %s subscribers?', 'mailster' ), number_format_i18n( $table->total_items ) );
+$text = sprintf( esc_html__( 'Do you like to select all %s subscribers?', 'mailster' ), number_format_i18n( $table->total_items ) );
 
 ?>
 <form method="post" action="" id="subscribers-overview-form">

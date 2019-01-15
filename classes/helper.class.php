@@ -245,11 +245,11 @@ class MailsterHelper {
 			wp_die( $api );
 		}
 
-		$title = __( 'Plugin Install', 'mailster' );
+		$title = esc_html__( 'Plugin Install', 'mailster' );
 		$parent_file = 'plugins.php';
 		$submenu_file = 'plugin-install.php';
 
-		$title = sprintf( __( 'Installing Plugin: %s', 'mailster' ), $api->name . ' ' . $api->version );
+		$title = sprintf( esc_html__( 'Installing Plugin: %s', 'mailster' ), $api->name . ' ' . $api->version );
 		$nonce = 'install-plugin_' . $plugin;
 		$url = 'update.php?action=install-plugin&plugin=' . urlencode( $plugin );
 
@@ -340,7 +340,7 @@ class MailsterHelper {
 		$results = array();
 		foreach ( $posts as $post ) {
 			if ( 'post' == $post->post_type ) {
-				$info = mysql2date( __( 'Y/m/d', 'mailster' ), $post->post_date );
+				$info = mysql2date( esc_html__( 'Y/m/d', 'mailster' ), $post->post_date );
 			} else {
 				$info = $pts[ $post->post_type ]->labels->singular_name;
 			}
@@ -556,7 +556,7 @@ class MailsterHelper {
 
 			foreach ( $values[ $id ] as $term ) {
 				$select = '<select class="dynamic_embed_options_taxonomy check-for-posts" ' . ( $names ? 'name="mailster_data[autoresponder][terms][' . $id . '][]"' : '' ) . '>';
-				$select .= '<option value="-1">' . sprintf( __( 'any %s', 'mailster' ), $taxonomy->labels->singular_name ) . '</option>';
+				$select .= '<option value="-1">' . sprintf( esc_html__( 'any %s', 'mailster' ), $taxonomy->labels->singular_name ) . '</option>';
 				foreach ( $cats as $cat ) {
 					$select .= '<option value="' . $cat->term_id . '" ' . selected( $cat->term_id, $term, false ) . '>' . $cat->name . '</option>';
 				}
@@ -564,9 +564,9 @@ class MailsterHelper {
 				$selects[] = $select;
 			}
 
-			$tax .= implode( ' ' . __( 'or', 'mailster' ) . ' ', $selects );
+			$tax .= implode( ' ' . esc_html__( 'or', 'mailster' ) . ' ', $selects );
 
-			$tax .= '</span><div class="mailster-list-operator"><span class="operator-and">' . __( 'and', 'mailster' ) . '</span></div></div>';
+			$tax .= '</span><div class="mailster-list-operator"><span class="operator-and">' . esc_html__( 'and', 'mailster' ) . '</span></div></div>';
 
 			$taxwraps[] = $tax;
 		}
@@ -910,16 +910,16 @@ class MailsterHelper {
 		switch ( $status ) {
 			case 'list_unsubscribe':
 			case 'list_unsubscribe_list':
-				return  __( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
+				return  esc_html__( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
 			case 'link_unsubscribe':
 			case 'link_unsubscribe_list':
-				return __( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
+				return esc_html__( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
 			case 'email_unsubscribe':
 			case 'email_unsubscribe_list':
-				return __( 'The user canceled the subscription via the website.', 'mailster' );
+				return esc_html__( 'The user canceled the subscription via the website.', 'mailster' );
 			case 'spam_complaint':
 			case 'spam_complaint_list':
-				return __( 'The user marked this message as Spam in the Mail application.', 'mailster' );
+				return esc_html__( 'The user marked this message as Spam in the Mail application.', 'mailster' );
 		}
 
 		return $status;
@@ -1539,7 +1539,7 @@ class MailsterHelper {
 
 		$defaults = array(
 			'id' => uniqid(),
-			'button_label' => __( 'Ok, got it!', 'mailster' ),
+			'button_label' => esc_html__( 'Ok, got it!', 'mailster' ),
 			'classes' => array(),
 		);
 

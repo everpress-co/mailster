@@ -18,7 +18,7 @@
 		<td>
 		<div class="spf-result spinner"><?php esc_html_e( 'Loading SPF data', 'mailster' ) ?>&hellip;</div>
 
-		<p class="description"><?php printf( __( 'SPF doesn\'t require any configuration on this settings page. This should give you some help to set it up correctly. If this SPF configuration doesn\'t work or your mails returned as spam you should ask your provider for help or change your delivery method or try %s', 'mailster' ), '<a href="http://www.openspf.org/FAQ/Common_mistakes" class="external">' . __( 'to get help here', 'mailster' ) . '</a>' ); ?></p>
+		<p class="description"><?php printf( esc_html__( 'SPF doesn\'t require any configuration on this settings page. This should give you some help to set it up correctly. If this SPF configuration doesn\'t work or your mails returned as spam you should ask your provider for help or change your delivery method or try %s', 'mailster' ), '<a href="http://www.openspf.org/FAQ/Common_mistakes" class="external">' . esc_html__( 'to get help here', 'mailster' ) . '</a>' ); ?></p>
 		</td>
 	</tr>
 	<?php endif; ?>

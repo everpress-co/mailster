@@ -31,7 +31,7 @@ $file = $this->get_file();
 			$templates = $currenttemplate + $templates;
 
 		?>
-			<li class="current_template <?php if ( $single ) { echo 'single'; } ?>"><span class="change_template" title="<?php echo esc_attr( sprintf( __( 'Your currently working with %s', 'mailster' ), '"' . $all_files[ $template ][ $file ]['label'] . '"' ) ); ?>"><?php echo esc_html( $all_files[ $template ][ $file ]['label'] ); ?></span>
+			<li class="current_template <?php if ( $single ) { echo 'single'; } ?>"><span class="change_template" title="<?php echo esc_attr( sprintf( esc_html__( 'Your currently working with %s', 'mailster' ), '"' . $all_files[ $template ][ $file ]['label'] . '"' ) ); ?>"><?php echo esc_html( $all_files[ $template ][ $file ]['label'] ); ?></span>
 				<div class="dropdown">
 					<div class="ddarrow"></div>
 					<div class="inner">
@@ -87,7 +87,7 @@ $file = $this->get_file();
 				</p>
 				<?php if ( ! empty( $modules ) ) : ?>
 				<p>
-					<label><input type="checkbox" id="new_template_modules" value="1"> <?php printf( __( 'include original modules from %s', 'mailster' ), '&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot;' );?></label>
+					<label><input type="checkbox" id="new_template_modules" value="1"> <?php printf( esc_html__( 'include original modules from %s', 'mailster' ), '&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot;' );?></label>
 					<span class="help" title="<?php esc_html_e( 'will append the existing modules to your custom ones', 'mailster' ) ?>">(?)</span><br>
 					<label><input type="checkbox" id="new_template_active_modules" value="1"> <?php esc_html_e( 'show custom modules by default', 'mailster' );?></label><br>
 				</p>
@@ -95,7 +95,7 @@ $file = $this->get_file();
 
 			</div>
 			<div class="foot">
-				<p class="description alignleft">&nbsp;<?php printf( __( 'based on %1$s from %2$s', 'mailster' ), '<strong>&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot;</strong>', '<strong>&quot;' . $all_files[ $template ][ $file ]['name'] . '&quot;</strong>' ); ?>
+				<p class="description alignleft">&nbsp;<?php printf( esc_html__( 'based on %1$s from %2$s', 'mailster' ), '<strong>&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot;</strong>', '<strong>&quot;' . $all_files[ $template ][ $file ]['name'] . '&quot;</strong>' ); ?>
 				</p>
 				<button class="button button-primary save-template"><?php esc_html_e( 'Save', 'mailster' );?></button>
 				<button class="button save-template-cancel"><?php esc_html_e( 'Cancel', 'mailster' );?></button>

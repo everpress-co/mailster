@@ -40,9 +40,9 @@
 		<?php
 		$is = mailster_option( 'autoupdate', 'minor' );
 		$types = array(
-			'1' => __( 'enabled', 'mailster' ),
-			'0' => __( 'disabled', 'mailster' ),
-			'minor' => __( 'only minor updates', 'mailster' ),
+			'1' => esc_html__( 'enabled', 'mailster' ),
+			'0' => esc_html__( 'disabled', 'mailster' ),
+			'minor' => esc_html__( 'only minor updates', 'mailster' ),
 		);
 		?>
 		<select name="mailster_options[autoupdate]">

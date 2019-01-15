@@ -171,7 +171,7 @@ class MailsterMail {
 		$this->sentlimitreached = $this->sent_within_period >= $this->send_limit;
 
 		if ( $this->sentlimitreached ) {
-			$msg = sprintf( __( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), '<strong>' . $this->send_limit . '</strong>', '<strong>' . human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) . '</strong>' );
+			$msg = sprintf( esc_html__( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), '<strong>' . $this->send_limit . '</strong>', '<strong>' . human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) . '</strong>' );
 			mailster_notice( $msg, 'error', false, 'dailylimit' );
 
 			$e = new Exception( $msg, 1 );

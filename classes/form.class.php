@@ -251,7 +251,7 @@ class MailsterForm {
 		if ( $this->unsubscribe ) {
 
 			$single_opt_out = mailster_option( 'single_opt_out' );
-			$buttonlabel = mailster_text( 'unsubscribebutton', __( 'Unsubscribe', 'mailster' ) );
+			$buttonlabel = mailster_text( 'unsubscribebutton', esc_html__( 'Unsubscribe', 'mailster' ) );
 
 			// instant unsubscribe
 			if ( $subscriber && $single_opt_out && isset( $_COOKIE['mailster'] ) ) {
@@ -277,7 +277,7 @@ class MailsterForm {
 		if ( $this->profile ) {
 			$this->form->fields['_status'] = (object) array(
 				'field_id' => '_status',
-				'name' => __( 'Status', 'mailster' ),
+				'name' => esc_html__( 'Status', 'mailster' ),
 			);
 		}
 
@@ -453,7 +453,7 @@ class MailsterForm {
 					$userlists = mailster( 'subscribers' )->get_lists( $this->object['userdata']['ID'], true );
 				}
 
-				$fields['lists'] = '<div class="mailster-wrapper mailster-lists-wrapper' . $class . '"><label>' . mailster_text( 'lists', __( 'Lists', 'mailster' ) ) . '</label>';
+				$fields['lists'] = '<div class="mailster-wrapper mailster-lists-wrapper' . $class . '"><label>' . mailster_text( 'lists', esc_html__( 'Lists', 'mailster' ) ) . '</label>';
 
 				if ( $this->form->dropdown ) {
 					$fields['lists'] .= '<select name="lists[]" class="input mailster-lists-dropdown">';
@@ -674,7 +674,7 @@ class MailsterForm {
 
 			$this->profile = true;
 			// $this->form_endpoint = 'update';
-			$this->form->submit = mailster_text( 'profilebutton', __( 'Update Profile', 'mailster' ) );
+			$this->form->submit = mailster_text( 'profilebutton', esc_html__( 'Update Profile', 'mailster' ) );
 			$this->add_class( 'is-profile' );
 			$this->set_hash();
 			$this->action = 'update';
@@ -813,13 +813,13 @@ class MailsterForm {
 		$html .= '<div class="mailster-form-fields">';
 		if ( ! $this->hash ) {
 
-			$html .= '<div class="mailster-wrapper mailster-email-wrapper"><label for="mailster-email">' . mailster_text( 'email', __( 'Email', 'mailster' ) ) . ' <span class="mailster-required">*</span></label>';
+			$html .= '<div class="mailster-wrapper mailster-email-wrapper"><label for="mailster-email">' . mailster_text( 'email', esc_html__( 'Email', 'mailster' ) ) . ' <span class="mailster-required">*</span></label>';
 			$html .= '<input id="mailster-email" class="input mailster-email mailster-required" name="email" type="email" value=""></div>';
 
 		}
 		if ( $subscriber && $single_opt_out ) {
 		} else {
-			$buttontext = mailster_text( 'unsubscribebutton', __( 'Unsubscribe', 'mailster' ) );
+			$buttontext = mailster_text( 'unsubscribebutton', esc_html__( 'Unsubscribe', 'mailster' ) );
 			$html .= '<div class="mailster-wrapper mailster-submit-wrapper form-submit"><input name="submit" type="submit" value="' . $buttontext . '" class="submit-button button"></div>';
 			$html .= '</div>';
 		}
@@ -848,7 +848,7 @@ class MailsterForm {
 			$honeypot = isset( $_BASE[ 'n_' . $honeypotnonce . '_email' ] ) ? $_BASE[ 'n_' . $honeypotnonce . '_email' ] : null;
 
 			if ( ! empty( $honeypot ) ) {
-				$this->object['errors']['_honeypot'] = __( 'Honeypot is for bears only!', 'mailster' );
+				$this->object['errors']['_honeypot'] = esc_html__( 'Honeypot is for bears only!', 'mailster' );
 			}
 		}
 
@@ -858,7 +858,7 @@ class MailsterForm {
 		if ( $_nonce || $post_nonce ) {
 			if ( wp_verify_nonce( $_nonce, 'mailster-form-nonce' ) || $post_nonce == $_nonce ) {
 			} else {
-				$this->object['errors']['_nonce'] = __( 'Security Nonce is invalid!', 'mailster' );
+				$this->object['errors']['_nonce'] = esc_html__( 'Security Nonce is invalid!', 'mailster' );
 			}
 		}
 
@@ -1070,7 +1070,7 @@ class MailsterForm {
 						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
 
 					} else {
-						$subscriber_id = new WP_Error( 'error', __( 'There was an error updating the user', 'mailster' ) );
+						$subscriber_id = new WP_Error( 'error', esc_html__( 'There was an error updating the user', 'mailster' ) );
 					}
 
 				break;
@@ -1185,7 +1185,7 @@ class MailsterForm {
 		if ( $this->is_extern() ) {
 
 			if ( ! $return['success'] ) {
-				wp_die( $return['html'] . '<a href="javascript:history.back()">' . __( 'Go back', 'mailster' ) . '</a>' );
+				wp_die( $return['html'] . '<a href="javascript:history.back()">' . esc_html__( 'Go back', 'mailster' ) . '</a>' );
 				exit;
 			}
 
@@ -1194,7 +1194,7 @@ class MailsterForm {
 		} else {
 
 			if ( ! $return['success'] ) {
-				wp_die( $return['html'] . '<a href="javascript:history.back()">' . __( 'Go back', 'mailster' ) . '</a>' );
+				wp_die( $return['html'] . '<a href="javascript:history.back()">' . esc_html__( 'Go back', 'mailster' ) . '</a>' );
 				exit;
 			}
 

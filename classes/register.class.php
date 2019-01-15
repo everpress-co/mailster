@@ -121,14 +121,14 @@ class MailsterRegister {
 		if ( ! mailster()->is_verified() ) {
 			if ( time() - get_option( 'mailster' ) > WEEK_IN_SECONDS
 				&& get_option( 'mailster_setup' ) ) {
-				mailster_notice( sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ), 'error', false, 'verify', 'mailster_manage_licenses' );
+				mailster_notice( sprintf( esc_html__( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ), 'error', false, 'verify', 'mailster_manage_licenses' );
 			}
 		} else {
 			mailster_remove_notice( 'verify' );
 		}
 
 		if ( mailster()->is_outdated() ) {
-			mailster_notice( sprintf( __( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog?v=' . MAILSTER_VERSION . '">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ), 'error', false, 'outdated', 'mailster_manage_licenses' );
+			mailster_notice( sprintf( esc_html__( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog?v=' . MAILSTER_VERSION . '">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ), 'error', false, 'outdated', 'mailster_manage_licenses' );
 		} else {
 			mailster_remove_notice( 'outdated' );
 		}

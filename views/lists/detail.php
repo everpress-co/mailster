@@ -6,13 +6,13 @@ $is_new = isset( $_GET['new'] );
 
 if ( ! $is_new ) {
 	if ( ! ( $list = $this->get( $id, null, true ) ) ) {
-		echo '<h2>' . __( 'This list does not exist or has been deleted!', 'mailster' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'This list does not exist or has been deleted!', 'mailster' ) . '</h2>';
 		return;
 	}
 } else {
 
 	if ( ! current_user_can( 'mailster_add_subscribers' ) ) {
-		echo '<h2>' . __( 'You don\'t have the right permission to add new lists', 'mailster' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'You don\'t have the right permission to add new lists', 'mailster' ) . '</h2>';
 		return;
 	}
 
@@ -46,7 +46,7 @@ if ( $is_new ) {
 	if ( $list->parent_id && $parent = $this->get( $list->parent_id ) ) {
 		echo '<div class="parent_list"><strong><a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $parent->ID . '">' . $parent->name . '</a></strong> &rsaquo; </div>';
 	}
-	printf( __( 'Edit List %s', 'mailster' ), '<strong>' . $list->name . '</strong>' );
+	printf( esc_html__( 'Edit List %s', 'mailster' ), '<strong>' . $list->name . '</strong>' );
 ?>
 <?php if ( current_user_can( 'mailster_add_subscribers' ) ) : ?>
 	<a href="edit.php?post_type=newsletter&page=mailster_lists&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
@@ -84,7 +84,7 @@ if ( $is_new ) {
 		<td>
 			<div class="detail">
 				<ul class="click-to-edit">
-					<li><?php echo $list->description ? esc_attr( $list->description ) : '<span class="description">' . __( 'no description', 'mailster' ) . '</span>'; ?></li>
+					<li><?php echo $list->description ? esc_attr( $list->description ) : '<span class="description">' . esc_html__( 'no description', 'mailster' ) . '</span>'; ?></li>
 					<li><textarea id="description" class="widefat" type="text" name="mailster_data[description]"><?php echo esc_textarea( $list->description ); ?></textarea></li>
 				</ul>
 			</div>
@@ -147,32 +147,32 @@ if ( ! $is_new ) :
 					<tbody>
 				<?php foreach ( $activities as $i => $activity ) { ?>
 						<tr class="<?php if ( ! ( $i % 2 ) ) {	echo ' alternate'; } ?>">
-							<td><?php echo $now - $activity->timestamp < 3600 ? sprintf( __( '%s ago', 'mailster' ), human_time_diff( $now, $activity->timestamp ) ) : date( $timeformat, $activity->timestamp + $timeoffset ); ?></td>
+							<td><?php echo $now - $activity->timestamp < 3600 ? sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $activity->timestamp ) ) : date( $timeformat, $activity->timestamp + $timeoffset ); ?></td>
 							<td><?php
 							switch ( $activity->type ) {
 								case 1:
 									echo '<span class="mailster-icon mailster-icon-progress"></span></td><td>';
-									printf( __( 'Campaign %s has start sending', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
+									printf( esc_html__( 'Campaign %s has start sending', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 									break;
 								case 2:
 										echo '<span class="mailster-icon mailster-icon-open"></span></td><td>';
-										printf( __( 'First open in Campaign %s', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
+										printf( esc_html__( 'First open in Campaign %s', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 									break;
 								case 3:
 										echo '<span class="mailster-icon mailster-icon-click"></span></td><td>';
-										printf( __( '%1$s in Campaign %2$s clicked', 'mailster' ), '<a href="' . $activity->link . '">' . __( 'Link', 'mailster' ) . '</a>', '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
+										printf( esc_html__( '%1$s in Campaign %2$s clicked', 'mailster' ), '<a href="' . $activity->link . '">' . esc_html__( 'Link', 'mailster' ) . '</a>', '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 									break;
 								case 4:
 										echo '<span class="mailster-icon mailster-icon-unsubscribe"></span></td><td>';
-										echo __( 'First subscription canceled', 'mailster' );
+										echo esc_html__( 'First subscription canceled', 'mailster' );
 									break;
 								case 5:
 										echo '<span class="mailster-icon mailster-icon-bounce"></span></td><td>';
-										printf( __( 'Soft bounce (%d tries)', 'mailster' ), $activity->count );
+										printf( esc_html__( 'Soft bounce (%d tries)', 'mailster' ), $activity->count );
 									break;
 								case 6:
 										echo '<span class="mailster-icon mailster-icon-bounce hard"></span></td><td>';
-										echo __( 'Hard bounce', 'mailster' );
+										echo esc_html__( 'Hard bounce', 'mailster' );
 									break;
 								default:
 										echo '</td><td>';

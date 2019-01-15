@@ -319,7 +319,7 @@ class MailsterAjax {
 		}
 
 		if ( ! $return['success'] ) {
-			$return['msg'] = __( 'Unable to save template!', 'mailster' );
+			$return['msg'] = esc_html__( 'Unable to save template!', 'mailster' );
 		}
 
 		$this->json_return( $return );
@@ -450,7 +450,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( array(
 			'success' => false,
-			'msg' => __( 'Nonce invalid! Please reload site.', 'mailster' ),
+			'msg' => esc_html__( 'Nonce invalid! Please reload site.', 'mailster' ),
 		) ) );
 
 		if ( isset( $_POST['test'] ) ) {
@@ -538,7 +538,7 @@ class MailsterAjax {
 					} else {
 						$receivers = array();
 						$return['success'] = false;
-						$return['msg'] = sprintf( __( 'Attachments must not exceed the file size limit of %s!', 'mailster' ), '<strong>' . esc_html( size_format( $max_size ) ) . '</strong>' );
+						$return['msg'] = sprintf( esc_html__( 'Attachments must not exceed the file size limit of %s!', 'mailster' ), '<strong>' . esc_html( size_format( $max_size ) ) . '</strong>' );
 					}
 				}
 			}
@@ -681,7 +681,7 @@ class MailsterAjax {
 					} else {
 
 						$return['success'] = false;
-						$return['msg'] = __( 'You can only perform 10 test within an hour. Please try again later!', 'mailster' );
+						$return['msg'] = esc_html__( 'You can only perform 10 test within an hour. Please try again later!', 'mailster' );
 
 					}
 				} else {
@@ -695,12 +695,12 @@ class MailsterAjax {
 
 		if ( ! isset( $return['msg'] ) ) {
 			$return['msg'] = ( $return['success'] )
-				? __( 'Message sent. Check your inbox!', 'mailster' )
-				: __( 'Couldn\'t send message. Check your settings!', 'mailster' ) . '<strong>' . $mail->get_errors( 'br' ) . '</strong>';
+				? esc_html__( 'Message sent. Check your inbox!', 'mailster' )
+				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . '<strong>' . $mail->get_errors( 'br' ) . '</strong>';
 		}
 
 		if ( isset( $return['log'] ) ) {
-			$return['msg'] .= '<br>' . __( 'Check your console for more info.', 'mailster' );
+			$return['msg'] .= '<br>' . esc_html__( 'Check your console for more info.', 'mailster' );
 		}
 
 		$this->json_return( $return );
@@ -863,7 +863,7 @@ class MailsterAjax {
 		$i = 1;
 		foreach ( $clicked_links as $link => $indexes ) {
 			foreach ( $indexes as $index => $counts ) {
-				$return['html'] .= '<tr ' . ( ! ( $i % 2 ) ? ' class="alternate"' : '' ) . '><td>' . sprintf( _n( '%s click', '%s clicks', $counts['total'], 'mailster' ), $counts['total'] ) . ' ' . ( $counts['total'] != $counts['clicks'] ? '<span class="count">(' . sprintf( __( '%s unique', 'mailster' ), $counts['clicks'] ) . ')</span>' : '' ) . '</td><td>' . round( ( $counts['total'] / $clicks_total * 100 ), 2 ) . '%</td><td><a href="' . $link . '" class="external clicked-link">' . $link . '</a></td></tr>';
+				$return['html'] .= '<tr ' . ( ! ( $i % 2 ) ? ' class="alternate"' : '' ) . '><td>' . sprintf( _n( '%s click', '%s clicks', $counts['total'], 'mailster' ), $counts['total'] ) . ' ' . ( $counts['total'] != $counts['clicks'] ? '<span class="count">(' . sprintf( esc_html__( '%s unique', 'mailster' ), $counts['clicks'] ) . ')</span>' : '' ) . '</td><td>' . round( ( $counts['total'] / $clicks_total * 100 ), 2 ) . '%</td><td><a href="' . $link . '" class="external clicked-link">' . $link . '</a></td></tr>';
 				$i++;
 			}
 		}
@@ -959,7 +959,7 @@ class MailsterAjax {
 
 		$return['geodata'] = $geo_data;
 		$return['unknown_cities'] = $unknown_cities;
-		$return['countrydata'] = array( array( 'code', __( 'Country', 'mailster' ), __( 'opens', 'mailster' ) ) );
+		$return['countrydata'] = array( array( 'code', esc_html__( 'Country', 'mailster' ), esc_html__( 'opens', 'mailster' ) ) );
 
 		foreach ( $geo_data as $country => $cities ) {
 			$opens = 0;
@@ -969,7 +969,7 @@ class MailsterAjax {
 			$return['countrydata'][] = array( $country, mailster( 'geo' )->code2Country( $country ), $opens );
 		}
 
-		$return['html'] = '<div id="countries_wrap"><a class="zoomout button mailster-icon" title="' . __( 'back to world view', 'mailster' ) . '">&nbsp;</a><div id="countries_map"></div><div id="mapinfo"></div><div id="countries_table"><table class="wp-list-table widefat">
+		$return['html'] = '<div id="countries_wrap"><a class="zoomout button mailster-icon" title="' . esc_html__( 'back to world view', 'mailster' ) . '">&nbsp;</a><div id="countries_map"></div><div id="mapinfo"></div><div id="countries_table"><table class="wp-list-table widefat">
 			<tbody>';
 
 		$i = 0;
@@ -982,7 +982,7 @@ class MailsterAjax {
 		}
 
 		if ( $unknown ) :
-			$return['html'] .= '<tr data-code="-" id="country-row-unknown" class="' . ( ( ! ( $i % 2 ) ) ? ' alternate' : '' ) . '"><td width="20"><span class="mailster-flag-24 flag-unknown"></span></td><td width="100%">' . __( 'unknown', 'mailster' ) . ' <span class="count">(' . round( $unknown / $totalopens * 100, 2 ) . '%)</span></td><td class="textright">' . number_format_i18n( $unknown ) . '</td></tr>';
+			$return['html'] .= '<tr data-code="-" id="country-row-unknown" class="' . ( ( ! ( $i % 2 ) ) ? ' alternate' : '' ) . '"><td width="20"><span class="mailster-flag-24 flag-unknown"></span></td><td width="100%">' . esc_html__( 'unknown', 'mailster' ) . ' <span class="count">(' . round( $unknown / $totalopens * 100, 2 ) . '%)</span></td><td class="textright">' . number_format_i18n( $unknown ) . '</td></tr>';
 		endif;
 
 		$return['html'] .= '</tbody></table></div>';
@@ -1215,18 +1215,18 @@ class MailsterAjax {
 			}
 
 			$relativenames = array(
-				-1 => __( 'last %s', 'mailster' ),
-				-2 => __( 'second last %s', 'mailster' ),
-				-3 => __( 'third last %s', 'mailster' ),
-				-4 => __( 'fourth last %s', 'mailster' ),
-				-5 => __( 'fifth last %s', 'mailster' ),
-				-6 => __( 'sixth last %s', 'mailster' ),
-				-7 => __( 'seventh last %s', 'mailster' ),
-				-8 => __( 'eighth last %s', 'mailster' ),
-				-9 => __( 'ninth last %s', 'mailster' ),
-				-10 => __( 'tenth last %s', 'mailster' ),
-				-11 => __( 'eleventh last %s', 'mailster' ),
-				-12 => __( 'twelfth last %s', 'mailster' ),
+				-1 => esc_html__( 'last %s', 'mailster' ),
+				-2 => esc_html__( 'second last %s', 'mailster' ),
+				-3 => esc_html__( 'third last %s', 'mailster' ),
+				-4 => esc_html__( 'fourth last %s', 'mailster' ),
+				-5 => esc_html__( 'fifth last %s', 'mailster' ),
+				-6 => esc_html__( 'sixth last %s', 'mailster' ),
+				-7 => esc_html__( 'seventh last %s', 'mailster' ),
+				-8 => esc_html__( 'eighth last %s', 'mailster' ),
+				-9 => esc_html__( 'ninth last %s', 'mailster' ),
+				-10 => esc_html__( 'tenth last %s', 'mailster' ),
+				-11 => esc_html__( 'eleventh last %s', 'mailster' ),
+				-12 => esc_html__( 'twelfth last %s', 'mailster' ),
 			);
 
 			$posts_lefts = max( 0, $post_counts - $offset - $post_count );
@@ -1280,12 +1280,12 @@ class MailsterAjax {
 				}
 
 				if ( $posts_lefts ) {
-					$html .= '<li><a class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $_POST['type'] . '"><span>' . sprintf( __( 'load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) ) . '</span></a></li>';
+					$html .= '<li><a class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $_POST['type'] . '"><span>' . sprintf( esc_html__( 'load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) ) . '</span></a></li>';
 				}
 
 				$return['html'] = $html;
 			} else {
-				$return['html'] = '<li><span class="norows">' . __( 'no entries found', 'mailster' ) . '</span></li>';
+				$return['html'] = '<li><span class="norows">' . esc_html__( 'no entries found', 'mailster' ) . '</span></li>';
 			}
 		} elseif ( $_POST['type'] == 'link' ) {
 
@@ -1326,13 +1326,13 @@ class MailsterAjax {
 					$html .= '</li>';
 				}
 				if ( $posts_lefts ) {
-					$html .= '<li><a class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $post_type . '"><span>' . sprintf( __( 'load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) ) . '</span></a></li>';
+					$html .= '<li><a class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $post_type . '"><span>' . sprintf( esc_html__( 'load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) ) . '</span></a></li>';
 				}
 
 				$return['html'] = $html;
 
 			} else {
-				$return['html'] = '<li><span class="norows">' . __( 'no entries found', 'mailster' ) . '</span></li>';
+				$return['html'] = '<li><span class="norows">' . esc_html__( 'no entries found', 'mailster' ) . '</span></li>';
 			}
 		} elseif ( $_POST['type'] == '_rss' ) {
 
@@ -1378,13 +1378,13 @@ class MailsterAjax {
 				}
 
 				if ( $posts_lefts ) {
-					$html .= '<li><a class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="_rss"><span>' . sprintf( __( 'load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) ) . '</span></a></li>';
+					$html .= '<li><a class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="_rss"><span>' . sprintf( esc_html__( 'load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) ) . '</span></a></li>';
 				}
 
 				$return['html'] = $html;
 
 				$return['rssinfo'] = array(
-					'copyright' => $rss->get_copyright() ? $rss->get_copyright() : sprintf( __( 'All rights reserved %s', 'mailster' ), '<a href="' . $rss->get_link() . '" class="external">' . $rss->get_title() . '</a>' ),
+					'copyright' => $rss->get_copyright() ? $rss->get_copyright() : sprintf( esc_html__( 'All rights reserved %s', 'mailster' ), '<a href="' . $rss->get_link() . '" class="external">' . $rss->get_title() . '</a>' ),
 					'title' => $rss->get_title(),
 					'description' => $rss->get_description(),
 				);
@@ -1563,8 +1563,8 @@ class MailsterAjax {
 		$is_post = ! ! $post;
 
 		$return['title'] = $is_post
-			? '<a href="post.php?post=' . $post->ID . '&action=edit" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : __( 'no title', 'mailster' ) ) . '</a>'
-			: __( 'no match for your selection!', 'mailster' ) . ' <a href="post-new.php?post_type=' . $post_type . '" class="external">' . __( 'create a new one', 'mailster' ) . '</a>?';
+			? '<a href="post.php?post=' . $post->ID . '&action=edit" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'no title', 'mailster' ) ) . '</a>'
+			: esc_html__( 'no match for your selection!', 'mailster' ) . ' <a href="post-new.php?post_type=' . $post_type . '" class="external">' . esc_html__( 'create a new one', 'mailster' ) . '</a>?';
 
 		$options = $relative . ( ! empty( $term_ids ) ? ';' . implode( ';', $term_ids ) : '' );
 
@@ -1623,7 +1623,7 @@ class MailsterAjax {
 
 		if ( empty( $data['message'] ) || ! mailster_is_email( $data['receiver'] ) || ! mailster_is_email( $data['sender'] ) || empty( $data['sendername'] ) ) {
 
-			$return['msg'] = __( 'Please fill out all fields correctly!', 'mailster' );
+			$return['msg'] = esc_html__( 'Please fill out all fields correctly!', 'mailster' );
 
 			$this->json_return( $return );
 
@@ -1631,20 +1631,20 @@ class MailsterAjax {
 
 		$mail = mailster( 'mail' );
 		$mail->to = esc_attr( $data['receiver'] );
-		$mail->subject = esc_attr( '[' . get_bloginfo( 'name' ) . '] ' . sprintf( __( '%s is forwarding an email to you!', 'mailster' ), $data['sendername'] ) );
+		$mail->subject = esc_attr( '[' . get_bloginfo( 'name' ) . '] ' . sprintf( esc_html__( '%s is forwarding an email to you!', 'mailster' ), $data['sendername'] ) );
 		// $mail->from = esc_attr($data['sender']);
 		$mail->from = mailster_option( 'from' );
-		$mail->from_name = sprintf( _x( '%1$s via %2$s', 'user forwarded via website', 'mailster' ), $data['sendername'], get_bloginfo( 'name' ) );
+		$mail->from_name = sprintf( esc_html_x( '%1$s via %2$s', 'user forwarded via website', 'mailster' ), $data['sendername'], get_bloginfo( 'name' ) );
 
 		$message = nl2br( $data['message'] ) . '<br><br>' . $data['url'];
 
 		$replace = array(
-			'notification' => sprintf( __( '%1$s is forwarding this mail to you via %2$s', 'mailster' ), $data['sendername'] . ' (<a href="mailto:' . esc_attr( $data['sender'] ) . '">' . esc_attr( $data['sender'] ) . '</a>)', '<a href="' . get_bloginfo( 'url' ) . '">' . get_bloginfo( 'name' ) . '</a>' ),
+			'notification' => sprintf( esc_html__( '%1$s is forwarding this mail to you via %2$s', 'mailster' ), $data['sendername'] . ' (<a href="mailto:' . esc_attr( $data['sender'] ) . '">' . esc_attr( $data['sender'] ) . '</a>)', '<a href="' . get_bloginfo( 'url' ) . '">' . get_bloginfo( 'name' ) . '</a>' ),
 		);
 
 		$return['success'] = $mail->send_notification( $message, $mail->subject, $replace );
 
-		$return['msg'] = ( $return['success'] ) ? __( 'Your message was sent successfully!', 'mailster' ) : __( 'Sorry, we couldn\'t deliver your message. Please try again later!', 'mailster' );
+		$return['msg'] = ( $return['success'] ) ? esc_html__( 'Your message was sent successfully!', 'mailster' ) : esc_html__( 'Sorry, we couldn\'t deliver your message. Please try again later!', 'mailster' );
 
 		$this->json_return( $return );
 
@@ -1685,7 +1685,7 @@ class MailsterAjax {
 	private function ajax_nonce( $return = null, $nonce = 'mailster_nonce' ) {
 		if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], $nonce ) ) {
 			if ( is_null( $return ) ) {
-				$return = __( 'Your nonce is expired! Please reload the site.', 'mailster' );
+				$return = esc_html__( 'Your nonce is expired! Please reload the site.', 'mailster' );
 			}
 			if ( is_string( $return ) ) {
 				wp_die( $return );
@@ -1780,11 +1780,11 @@ class MailsterAjax {
 				$return['newfile'] = $file;
 			}
 
-			$return['msg'] = __( 'File has been saved!', 'mailster' );
+			$return['msg'] = esc_html__( 'File has been saved!', 'mailster' );
 			$return['success'] = true;
 			wp_remote_get( mailster( 'templates' )->get_screenshot( $return['slug'], $file ) );
 		} else {
-			$return['msg'] = __( 'Not able to save file!', 'mailster' );
+			$return['msg'] = esc_html__( 'Not able to save file!', 'mailster' );
 		}
 
 		$this->json_return( $return );
@@ -1834,8 +1834,8 @@ class MailsterAjax {
 
 	private function ajax_filesystem() {
 		if ( 'ftpext' == get_filesystem_method() && ! defined( 'FTP_HOST' ) && ! defined( 'FTP_USER' ) && ! defined( 'FTP_PASS' ) ) {
-			$return['msg'] = __( 'WordPress is not able to access to your filesystem!', 'mailster' );
-			$return['msg'] .= "\n" . sprintf( __( 'Please add following lines to the wp-config.php %s', 'mailster' ), "\n\ndefine('FTP_HOST', 'your-ftp-host');\ndefine('FTP_USER', 'your-ftp-user');\ndefine('FTP_PASS', 'your-ftp-password');\n" );
+			$return['msg'] = esc_html__( 'WordPress is not able to access to your filesystem!', 'mailster' );
+			$return['msg'] .= "\n" . sprintf( esc_html__( 'Please add following lines to the wp-config.php %s', 'mailster' ), "\n\ndefine('FTP_HOST', 'your-ftp-host');\ndefine('FTP_USER', 'your-ftp-user');\ndefine('FTP_PASS', 'your-ftp-password');\n" );
 			$return['success'] = false;
 
 			$this->json_return( $return );
@@ -1851,10 +1851,10 @@ class MailsterAjax {
 
 		if ( mailster( 'geo' )->update( true ) ) {
 			$return['success'] = true;
-			$return['update'] = esc_html__( 'Last update', 'mailster' ) . ': ' . esc_html__( 'right now', 'mailster' );
-			$return['msg'] = __( 'Location Database success loaded!', 'mailster' );
+			$return['update'] = esc_htmlesc_html__( 'Last update', 'mailster' ) . ': ' . esc_htmlesc_html__( 'right now', 'mailster' );
+			$return['msg'] = esc_html__( 'Location Database success loaded!', 'mailster' );
 		} else {
-			$return['msg'] = __( 'Couldn\'t load Location Database', 'mailster' );
+			$return['msg'] = esc_html__( 'Couldn\'t load Location Database', 'mailster' );
 		}
 
 		$this->json_return( $return );
@@ -1933,7 +1933,7 @@ class MailsterAjax {
 		$identifier = $_POST['identifier'];
 
 		$return['success'] = true;
-		$return['msg'] = __( 'checking for new messages', 'mailster' ) . str_repeat( '.', $passes );
+		$return['msg'] = esc_html__( 'checking for new messages', 'mailster' ) . str_repeat( '.', $passes );
 
 		$result = mailster( 'bounce' )->test( $identifier );
 
@@ -1947,12 +1947,12 @@ class MailsterAjax {
 			} else {
 
 				$return['complete'] = true;
-				$return['msg'] = __( 'Your bounce server is good!', 'mailster' );
+				$return['msg'] = esc_html__( 'Your bounce server is good!', 'mailster' );
 			}
 		} elseif ( $passes > 20 ) {
 
 				$return['complete'] = true;
-				$return['msg'] = __( 'Unable to get test message! Please check your settings.', 'mailster' );
+				$return['msg'] = esc_html__( 'Unable to get test message! Please check your settings.', 'mailster' );
 
 		}
 
@@ -2049,11 +2049,11 @@ class MailsterAjax {
 				}
 			}
 
-			$return['message'] = sprintf( __( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ';
+			$return['message'] = sprintf( esc_html__( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ';
 
 			if ( $return['found'] ) :
 
-				$return['message'] .= '<code>' . __( 'TXT record found', 'mailster' ) . '</code>';
+				$return['message'] .= '<code>' . esc_html__( 'TXT record found', 'mailster' ) . '</code>';
 
 			else :
 
@@ -2061,12 +2061,12 @@ class MailsterAjax {
 
 				$ips = wp_list_pluck( (array) $records, 'ip' );
 
-				$return['message'] = sprintf( __( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ';
-				$return['message'] .= '<code>' . __( 'no TXT record found', 'mailster' ) . '</code>';
-				$return['message'] .= '<p>' . sprintf( __( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . '</p>';
+				$return['message'] = sprintf( esc_html__( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ';
+				$return['message'] .= '<code>' . esc_html__( 'no TXT record found', 'mailster' ) . '</code>';
+				$return['message'] .= '<p>' . sprintf( esc_html__( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . '</p>';
 
 				$return['message'] .= '<dl><dt><strong>' . $spf_domain . '</strong> IN TXT</dt>';
-				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
+				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_htmlesc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
 
 			endif;
 
@@ -2101,22 +2101,22 @@ class MailsterAjax {
 				}
 			}
 
-			$return['message'] = sprintf( __( 'Domain %s', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . ': ';
+			$return['message'] = sprintf( esc_html__( 'Domain %s', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . ': ';
 			$return['message'] .= ' Selector: <strong>' . $dkim_selector . '</strong>: ';
 
 			if ( $return['found'] ) :
 
-				$return['message'] .= '<code>' . __( 'verified', 'mailster' ) . '</code>';
+				$return['message'] .= '<code>' . esc_html__( 'verified', 'mailster' ) . '</code>';
 
 			else :
 
-				$return['message'] .= '<code>' . __( 'not verified', 'mailster' ) . '</code>';
+				$return['message'] .= '<code>' . esc_html__( 'not verified', 'mailster' ) . '</code>';
 				$records = mailster( 'helper' )->dns_query( $dkim_domain, 'A' );
 
-				$return['message'] .= '<p>' . sprintf( __( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . '</p>';
+				$return['message'] .= '<p>' . sprintf( esc_html__( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . '</p>';
 
 				$return['message'] .= '<dl><dt><strong>' . $dkim_domain . '</strong> IN TXT</dt>';
-				$return['message'] .= '<dl><dt><strong>' . $dkim_selector . '._domainkey.' . $dkim_domain . '</strong> IN TXT</dt><dd><textarea class="widefat" rows="4" id="dkim-record" readonly>' . esc_textarea( $record ) . '</textarea><a class="clipboard" data-clipboard-target="#dkim-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
+				$return['message'] .= '<dl><dt><strong>' . $dkim_selector . '._domainkey.' . $dkim_domain . '</strong> IN TXT</dt><dd><textarea class="widefat" rows="4" id="dkim-record" readonly>' . esc_textarea( $record ) . '</textarea><a class="clipboard" data-clipboard-target="#dkim-record">' . esc_htmlesc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
 
 			endif;
 
@@ -2140,7 +2140,7 @@ class MailsterAjax {
 		$listtype = $_POST['listtype'];
 
 		$return['success'] = mailster( 'campaigns' )->create_list_from_option( $name, $campaign_id, $listtype );
-		$return['msg'] = $return['success'] ? __( 'List has been created', 'mailster' ) : __( 'Couldn\'t create List', 'mailster' );
+		$return['msg'] = $return['success'] ? esc_html__( 'List has been created', 'mailster' ) : esc_html__( 'Couldn\'t create List', 'mailster' );
 
 		$this->json_return( $return );
 
@@ -2341,7 +2341,7 @@ class MailsterAjax {
 
 				} else {
 
-					mailster_notice( sprintf( __( 'Template %s has been uploaded', 'mailster' ), '"' . $result['name'] . ' ' . $result['version'] . '"' ), 'success', true );
+					mailster_notice( sprintf( esc_html__( 'Template %s has been uploaded', 'mailster' ), '"' . $result['name'] . ' ' . $result['version'] . '"' ), 'success', true );
 					$return['success'] = true;
 				}
 			}
@@ -2437,14 +2437,14 @@ class MailsterAjax {
 		if ( $return['language'] ) {
 
 			if ( $return['language']['current'] ) {
-				$return['html'] = __( 'An update to the Mailster translation is available!', 'mailster' );
+				$return['html'] = esc_html__( 'An update to the Mailster translation is available!', 'mailster' );
 			} else {
-				$return['html'] = __( 'Mailster is available in your language!', 'mailster' );
+				$return['html'] = esc_html__( 'Mailster is available in your language!', 'mailster' );
 			}
-			$return['html'] .= ' <a class="load-language" href="#">' . __( 'load it', 'mailster' ) . '</a>';
+			$return['html'] .= ' <a class="load-language" href="#">' . esc_html__( 'load it', 'mailster' ) . '</a>';
 
 		} elseif ( null === $return['language'] && get_locale() != 'en_US' ) {
-				$return['html'] = __( 'Mailster is not available in your languages!', 'mailster' );
+				$return['html'] = esc_html__( 'Mailster is not available in your languages!', 'mailster' );
 
 		} else {
 			$return['html'] = '';
@@ -2463,9 +2463,9 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		if ( $return['success'] = mailster( 'translations' )->download_language() ) {
-			$return['html'] = __( 'Language as been loaded successfully.', 'mailster' ) . ' ' . __( 'reloading', 'mailster' ) . '&hellip;';
+			$return['html'] = esc_html__( 'Language as been loaded successfully.', 'mailster' ) . ' ' . esc_html__( 'reloading', 'mailster' ) . '&hellip;';
 		} else {
-			$return['html'] = __( 'Couldn\'t load language file. Please try again later.', 'mailster' );
+			$return['html'] = esc_html__( 'Couldn\'t load language file. Please try again later.', 'mailster' );
 		}
 
 		$this->json_return( $return );
@@ -2481,16 +2481,16 @@ class MailsterAjax {
 		$slug = trim( $_POST['slug'] );
 
 		if ( empty( $purchasecode ) ) {
-			$return['error'] = __( 'Please enter your Purchase Code!', 'mailster' );
+			$return['error'] = esc_html__( 'Please enter your Purchase Code!', 'mailster' );
 
 		} elseif ( isset( $_POST['data'] ) ) {
 
 			parse_str( $_POST['data'], $userdata );
 
 			if ( empty( $userdata['email'] ) ) {
-				$return['error'] = __( 'Please enter your email address', 'mailster' );
+				$return['error'] = esc_html__( 'Please enter your email address', 'mailster' );
 			} elseif ( ! isset( $userdata['tos'] ) ) {
-				$return['error'] = __( 'You have to accept the terms of service.', 'mailster' );
+				$return['error'] = esc_html__( 'You have to accept the terms of service.', 'mailster' );
 			} else {
 				$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
 

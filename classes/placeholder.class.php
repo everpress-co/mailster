@@ -396,7 +396,7 @@ class MailsterPlaceholder {
 				rawurlencode( $url ),
 		), $this->social_services[ $service ]['url'] );
 
-		$content = '<img alt="' . esc_attr( sprintf( __( 'Share this on %s', 'mailster' ), $this->social_services[ $service ]['name'] ) ) . '" src="' . MAILSTER_URI . 'assets/img/share/share_' . $service . '.png" style="display:inline;display:inline !important;" />';
+		$content = '<img alt="' . esc_attr( sprintf( esc_html__( 'Share this on %s', 'mailster' ), $this->social_services[ $service ]['name'] ) ) . '" src="' . MAILSTER_URI . 'assets/img/share/share_' . $service . '.png" style="display:inline;display:inline !important;" />';
 
 		$content = apply_filters( 'mymail_share_button_' . $service, apply_filters( 'mailster_share_button_' . $service, $content ) );
 
@@ -1031,7 +1031,7 @@ class MailsterPlaceholder {
 				$replace_to = $this->get_social_service( $what, get_permalink( $post->ID ), get_the_title( $post->ID ) );
 				break;
 			case 'image':
-				$replace_to = '[' . ( sprintf( __( 'use the tag %s as url in the editbar', 'mailster' ), '"' . $hits[1][ $i ] . '"' ) ) . ']';
+				$replace_to = '[' . ( sprintf( esc_html__( 'use the tag %s as url in the editbar', 'mailster' ), '"' . $hits[1][ $i ] . '"' ) ) . ']';
 				break;
 			default:
 				if ( isset( $post->{'post_' . $what} ) ) {
@@ -1091,7 +1091,7 @@ class MailsterPlaceholder {
 
 			if ( ! $token || ! $token_secret || ! $consumer_key || ! $consumer_secret ) {
 
-				return __( 'Please enter your Twitter application credentials on the settings page', 'mailster' );
+				return esc_html__( 'Please enter your Twitter application credentials on the settings page', 'mailster' );
 
 			}
 

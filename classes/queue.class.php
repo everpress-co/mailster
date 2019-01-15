@@ -605,7 +605,7 @@ class MailsterQueue {
 			if ( isset( $autoresponder_meta['endschedule'] ) && $autoresponder_meta['endtimestamp'] && $autoresponder_meta['endtimestamp'] - $now < 0 ) {
 				// disable this campaign
 				mailster( 'campaigns' )->update_meta( $campaign->ID, 'active', false );
-				mailster_notice( sprintf( __( 'Auto responder campaign %s has been finished and is deactivated!', 'mailster' ), '<strong>"<a href="post.php?post=' . $campaign->ID . '&action=edit">' . $campaign->post_title . '</a>"</strong>' ), 'success', false, 'autoresponder_' . $campaign_id, $campaign->post_author );
+				mailster_notice( sprintf( esc_html__( 'Auto responder campaign %s has been finished and is deactivated!', 'mailster' ), '<strong>"<a href="post.php?post=' . $campaign->ID . '&action=edit">' . $campaign->post_title . '</a>"</strong>' ), 'success', false, 'autoresponder_' . $campaign_id, $campaign->post_author );
 				continue;
 			}
 
@@ -658,7 +658,7 @@ class MailsterQueue {
 			if ( $doit && $new_id = mailster( 'campaigns' )->autoresponder_to_campaign( $campaign->ID, $delay, $autoresponder_meta['issue']++ ) ) {
 
 				$newCamp = mailster( 'campaigns' )->get( $new_id );
-				mailster_notice( sprintf( __( 'New campaign %s has been created!', 'mailster' ), '<strong>"<a href="post.php?post=' . $newCamp->ID . '&action=edit">' . $newCamp->post_title . '</a>"</strong>' ), 'info', true, 'autoresponder_' . $campaign->ID, $campaign->post_author );
+				mailster_notice( sprintf( esc_html__( 'New campaign %s has been created!', 'mailster' ), '<strong>"<a href="post.php?post=' . $newCamp->ID . '&action=edit">' . $newCamp->post_title . '</a>"</strong>' ), 'info', true, 'autoresponder_' . $campaign->ID, $campaign->post_author );
 
 				$schedule_new = true;
 				if ( $new_content_since ) {
@@ -879,16 +879,16 @@ class MailsterQueue {
 
 		if ( ( $pid = mailster( 'cron' )->lock( $process_id ) ) !== true ) {
 
-			echo '<h2>' . __( 'Cron Lock Enabled!', 'mailster' ) . '</h2>';
+			echo '<h2>' . esc_html__( 'Cron Lock Enabled!', 'mailster' ) . '</h2>';
 			$sec = isset( $last_hit['timestamp'] ) ? ( round( time() - $last_hit['timestamp'] ) ) : 0;
 
 			if ( is_user_logged_in() ) {
-				echo '<p>' . __( 'Another process is currently running the cron process and you have been temporary blocked to prevent duplicate emails getting sent out.', 'mailster' ) . '</p>';
+				echo '<p>' . esc_html__( 'Another process is currently running the cron process and you have been temporary blocked to prevent duplicate emails getting sent out.', 'mailster' ) . '</p>';
 
-				echo '<p>' . sprintf( __( 'Read more about Cron Locks %s.', 'mailster' ), '<a href="https://kb.mailster.co/what-is-a-cron-lock/">' . __( 'here', 'mailster' ) . '</a>' );
+				echo '<p>' . sprintf( esc_html__( 'Read more about Cron Locks %s.', 'mailster' ), '<a href="https://kb.mailster.co/what-is-a-cron-lock/">' . esc_html__( 'here', 'mailster' ) . '</a>' );
 
 				if ( $last_hit ) {
-					echo '<p>' . sprintf( __( 'Cron Lock requested %s ago from:', 'mailster' ),
+					echo '<p>' . sprintf( esc_html__( 'Cron Lock requested %s ago from:', 'mailster' ),
 					'<strong>' . ( $sec > 60 ? human_time_diff( time() + $sec ) : sprintf( _n( '%d second', '%d seconds', $sec, 'mailster' ), $sec ) ) . '</strong>' ) . '</p>';
 
 					echo '<p><strong>IP: ' . $last_hit['ip'] . '<br>PID: ' . $pid . '<br>' . $last_hit['user'] . '</strong></p>';
@@ -900,7 +900,7 @@ class MailsterQueue {
 			if ( $unlock && $sec > max( 600, $unlock ) ) {
 				// unlock automatically but with a minimum of 10 minutes
 				mailster( 'cron' )->unlock( $process_id );
-				echo '<h2>' . __( 'Cron Lock has been released!', 'mailster' ) . '</h2>';
+				echo '<h2>' . esc_html__( 'Cron Lock has been released!', 'mailster' ) . '</h2>';
 			} else {
 				return false;
 			}
@@ -1020,9 +1020,9 @@ class MailsterQueue {
 				}
 
 				if ( $max_execution_time && microtime( true ) - $globaltime > $max_execution_time - 1 ) {
-					$this->cron_log( '', '&nbsp;<span class="error">' . __( 'timeout reached', 'mailster' ) . '</span>', '', '', '' );
+					$this->cron_log( '', '&nbsp;<span class="error">' . esc_html__( 'timeout reached', 'mailster' ) . '</span>', '', '', '' );
 					if ( ! $send_this_turn ) {
-						mailster_notice( sprintf( __( 'Mailster is not able to send your campaign cause of a server timeout. Please increase the %1$s on the %2$s', 'mailster' ), '<strong>&quot;' . __( 'Max. Execution Time', 'mailster' ) . '&quot;</strong>', '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=max_execution_time#delivery">' . __( 'settings page', 'mailster' ) . '</a>' ), 'error', false, 'max_execution_time' );
+						mailster_notice( sprintf( esc_html__( 'Mailster is not able to send your campaign cause of a server timeout. Please increase the %1$s on the %2$s', 'mailster' ), '<strong>&quot;' . esc_html__( 'Max. Execution Time', 'mailster' ) . '&quot;</strong>', '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=max_execution_time#delivery">' . esc_html__( 'settings page', 'mailster' ) . '</a>' ), 'error', false, 'max_execution_time' );
 					}
 
 					break;
@@ -1117,7 +1117,7 @@ class MailsterQueue {
 
 						if ( $error ) {
 							if ( isset( $options['template'] ) && $options['template'] ) {
-								mailster_notice( sprintf( __( 'Notification %1$s has thrown an error: %2$s', 'mailster' ), '<strong>&quot;' . $options['template'] . '&quot;</strong>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', 7200, 'notification_error_' . $options['template'] );
+								mailster_notice( sprintf( esc_html__( 'Notification %1$s has thrown an error: %2$s', 'mailster' ), '<strong>&quot;' . $options['template'] . '&quot;</strong>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', 7200, 'notification_error_' . $options['template'] );
 							}
 
 							do_action( 'mailster_notification_error', $data->subscriber_id, $result->get_error_message() );
@@ -1130,16 +1130,16 @@ class MailsterQueue {
 						$campaign = mailster( 'campaigns' )->get( $data->campaign_id );
 
 						if ( $campaign->post_status == 'autoresponder' ) {
-							mailster_notice( sprintf( __( 'Autoresponder %1$s has caused sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'success', true, 'camp_error_' . $campaign->ID, $campaign->post_author );
+							mailster_notice( sprintf( esc_html__( 'Autoresponder %1$s has caused sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'success', true, 'camp_error_' . $campaign->ID, $campaign->post_author );
 
 						} else {
 
 							if ( mailster_option( 'pause_campaigns' ) ) {
 								mailster( 'campaigns' )->change_status( $campaign, 'paused' );
-								mailster_notice( sprintf( __( 'Campaign %1$s has been paused cause of a sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', 7200, 'camp_error_' . $campaign->ID, $campaign->post_author );
+								mailster_notice( sprintf( esc_html__( 'Campaign %1$s has been paused cause of a sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'error', 7200, 'camp_error_' . $campaign->ID, $campaign->post_author );
 
 							} else {
-								mailster_notice( sprintf( __( 'Campaign %1$s has some delay cause of a sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'success', true, 'camp_error_' . $campaign->ID, $campaign->post_author );
+								mailster_notice( sprintf( esc_html__( 'Campaign %1$s has some delay cause of a sending error: %2$s', 'mailster' ), '<a href="post.php?post=' . $campaign->ID . '&action=edit"><strong>' . $campaign->post_title . '</strong></a>', '<strong>' . implode( '', $result->get_error_messages() ) ) . '</strong>', 'success', true, 'camp_error_' . $campaign->ID, $campaign->post_author );
 
 							}
 						}

@@ -11,7 +11,7 @@ $default = mailster_option( 'default_template', 'mymail' );
 if ( ! isset( $templates[ $default ] ) ) {
 	$default = 'mymail';
 	mailster_update_option( 'default_template', 'mymail' );
-	$notice[] = sprintf( __( 'Template %s is missing or broken. Reset to default', 'mailster' ), '"' . $default . '"' );
+	$notice[] = sprintf( esc_html__( 'Template %s is missing or broken. Reset to default', 'mailster' ), '"' . $default . '"' );
 
 	// mymail template is missing => redownload it.
 	if ( ! isset( $templates[ $default ] ) ) {
@@ -111,7 +111,7 @@ if ( current_user_can( 'mailster_upload_templates' ) ) : ?>
 
 if ( empty( $mailster_templates ) ) :
 
-	echo '<div class="error below-h2"><p>' . __( 'Looks like there was a problem getting the list of templates', 'mailster' ) . '</p></div>';
+	echo '<div class="error below-h2"><p>' . esc_html__( 'Looks like there was a problem getting the list of templates', 'mailster' ) . '</p></div>';
 
 else :
 
