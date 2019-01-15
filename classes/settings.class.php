@@ -358,10 +358,10 @@ class MailsterSettings {
 
 		if ( current_user_can( 'manage_options' ) ) {
 			$submenu['options-general.php'][] = array(
-				__( 'Newsletter', 'mailster' ),
+				esc_html__( 'Newsletter', 'mailster' ),
 				'manage_options',
 				'edit.php?post_type=newsletter&page=mailster_settings',
-				__( 'Newsletter', 'mailster' ),
+				esc_html__( 'Newsletter', 'mailster' ),
 			);
 		}
 

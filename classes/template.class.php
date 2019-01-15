@@ -878,8 +878,8 @@ class MailsterTemplate {
 		$folders = array();
 
 		// common_button_folder_names in use for __($name, 'mailster')
-		__( 'light', 'mailster' );
-		__( 'dark', 'mailster' );
+		esc_html__( 'light', 'mailster' );
+		esc_html__( 'dark', 'mailster' );
 
 		foreach ( $root as $file ) {
 

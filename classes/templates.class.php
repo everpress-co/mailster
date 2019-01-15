@@ -1397,7 +1397,6 @@ class MailsterTemplates {
 			if ( $response_code != 200 || is_wp_error( $response ) ) {
 				foreach ( $items as $slug => $data ) {
 					if ( isset( $mailster_templates[ $slug ] ) ) {
-						// unset( $mailster_templates[ $slug ] );
 						$mailster_templates[ $slug ] = wp_parse_args( $mailster_templates[ $slug ], $default );
 						$mailster_templates[ $slug ]['endpoint'] = null;
 					}
@@ -1416,9 +1415,7 @@ class MailsterTemplates {
 						unset( $mailster_templates[ $slug ] );
 						continue;
 					}
-					// if ( isset( $response[ $i ]['name'] ) ) {
-					// $mailster_templates[ $slug ]['name'] = esc_attr( strip_tags( $response[ $i ]['name'] ) );
-					// }
+
 					if ( isset( $response[ $i ]['version'] ) ) {
 						$mailster_templates[ $slug ]['new_version'] = esc_attr( strip_tags( $response[ $i ]['version'] ) );
 					}
@@ -1428,15 +1425,6 @@ class MailsterTemplates {
 						$mailster_templates[ $slug ]['author'] = esc_attr( strip_tags( $response[ $i ]['author'] ) );
 					}
 
-					// if ( isset( $response[ $i ]['author_profile'] ) ) {
-					// $mailster_templates[ $slug ]['author_profile'] = esc_url( strip_tags( $response[ $i ]['author_profile'] ) );
-					// }
-					// if ( isset( $response[ $i ]['homepage'] ) ) {
-					// $mailster_templates[ $slug ]['homepage'] = esc_url( strip_tags( $response[ $i ]['homepage'] ) );
-					// }
-					// if ( isset( $response[ $i ]['description'] ) ) {
-					// $mailster_templates[ $slug ]['description'] = strip_tags( $response[ $i ]['description'], '<a><strong>' );
-					// }
 					if ( isset( $response[ $i ]['download_link'] ) ) {
 						$mailster_templates[ $slug ]['download_url'] = esc_url( strip_tags( $response[ $i ]['download_link'] ) );
 					}

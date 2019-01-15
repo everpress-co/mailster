@@ -63,7 +63,6 @@ class MailsterFrontpage {
 		$rules = array();
 		$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
-		// $rules['^(index\.php/)?(mailster|mymail)/(subscribe|update|unsubscribe)/?$'] = 'index.php?_mailster=$matches[3]';
 		$rules['^(index\.php/)?(mailster|mymail)/(subscribe)/?$'] = 'index.php?_mailster=$matches[3]';
 		$rules[ '(index\.php/)?(mailster)/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 

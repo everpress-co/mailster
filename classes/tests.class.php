@@ -202,8 +202,6 @@ class MailsterTests {
 
 	private function failure( $type, $msg, $link = null ) {
 
-		// $backtrace = debug_backtrace();
-		// $test_id = $backtrace[2]['function'];
 		$test_id = $this->current_id;
 
 		if ( is_null( $test_id ) ) {
@@ -211,8 +209,6 @@ class MailsterTests {
 		}
 
 		$data = array( 'link' => $link );
-		// $this->errors['all']->add( $test_id, $msg, $data );
-		// $this->errors[ $type ]->add( $test_id, $msg, $data );
 		if ( ! isset( $this->errors['all'][ $test_id ] ) ) {
 			$this->errors['all'][ $test_id ] = array();
 		}

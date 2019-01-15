@@ -32,8 +32,8 @@ class MailsterPrivacy {
 			'<p class="wp-policy-help">' . esc_html__( 'We\'ll only send emails which you have explicitly or implicitly (registration, product purchase etc.) signed up to.', 'mailster' ) . '</p>';
 
 		$tracked_fields = array(
-			__( 'your email address', 'mailster' ),
-			__( 'your name', 'mailster' ),
+			esc_html__( 'your email address', 'mailster' ),
+			esc_html__( 'your name', 'mailster' ),
 		);
 
 		if ( $custom_fields = mailster()->get_custom_fields() ) {

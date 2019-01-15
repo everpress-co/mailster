@@ -264,7 +264,7 @@ class MailsterCampaigns {
 
 		if ( current_user_can( 'edit_newsletters' ) ) {
 			$submenu['edit.php?post_type=newsletter'][] = array(
-				__( 'Autoresponder', 'mailster' ),
+				esc_html__( 'Autoresponder', 'mailster' ),
 				'mailster_edit_autoresponders',
 				'edit.php?post_status=autoresponder&post_type=newsletter',
 			);
@@ -1172,12 +1172,12 @@ class MailsterCampaigns {
 				'delete_colorschema_all' => esc_html__( 'Do you really like to delete all custom color schema for this template?', 'mailster' ),
 				'yourscore' => esc_html__( '%s out of 10', 'mailster' ),
 				'yourscores' => array(
-					__( 'This mail will hardly see any inbox!', 'mailster' ),
-					__( 'You have to make it better!', 'mailster' ),
-					__( 'Many inboxes will refuse this mail!', 'mailster' ),
-					__( 'Not bad at all. Improve it further!', 'mailster' ),
-					__( 'Almost perfect!', 'mailster' ),
-					__( 'Great! Your campaign is ready to send!', 'mailster' ),
+					esc_html__( 'This mail will hardly see any inbox!', 'mailster' ),
+					esc_html__( 'You have to make it better!', 'mailster' ),
+					esc_html__( 'Many inboxes will refuse this mail!', 'mailster' ),
+					esc_html__( 'Not bad at all. Improve it further!', 'mailster' ),
+					esc_html__( 'Almost perfect!', 'mailster' ),
+					esc_html__( 'Great! Your campaign is ready to send!', 'mailster' ),
 				),
 				'undosteps' => mailster_option( 'undosteps', 10 ),
 				'statuschanged' => esc_html__( 'The status of this campaign has changed. Please reload the page or %s', 'mailster' ),

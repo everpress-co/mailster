@@ -3234,11 +3234,11 @@ class MailsterSubscribers {
 
 		if ( $nice ) {
 			$statuses = array(
-				__( 'Pending', 'mailster' ),
-				__( 'Subscribed', 'mailster' ),
-				__( 'Unsubscribed', 'mailster' ),
-				__( 'Hardbounced', 'mailster' ),
-				__( 'Error', 'mailster' ),
+				esc_html__( 'Pending', 'mailster' ),
+				esc_html__( 'Subscribed', 'mailster' ),
+				esc_html__( 'Unsubscribed', 'mailster' ),
+				esc_html__( 'Hardbounced', 'mailster' ),
+				esc_html__( 'Error', 'mailster' ),
 			);
 
 		} else {
