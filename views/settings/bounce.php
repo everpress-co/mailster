@@ -20,7 +20,7 @@
 		</tr>
 	<?php if ( function_exists( 'imap_open' ) ) : ?>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Service', 'mailster' );?></th>
+			<th scope="row"><?php esc_html_e( 'Service', 'mailster' );?></th>
 			<td>
 			<label><input type="radio" name="mailster_options[bounce_service]" value="pop3" <?php checked( mailster_option( 'bounce_service' ), 'pop3' ) ?>> POP3 </label>&nbsp;
 			<label><input type="radio" name="mailster_options[bounce_service]" value="imap" <?php checked( mailster_option( 'bounce_service' ), 'imap' ) ?>> IMAP </label>&nbsp;

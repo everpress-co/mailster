@@ -69,7 +69,7 @@ class MailsterRegister {
 			</form>
 			<form class="register_form_2" action="" method="POST">
 				<div class="error-msg">&nbsp;</div>
-				<input type="text" class="widefat username" placeholder="<?php _e( 'Username', 'mailster' ); ?>" name="username" value="<?php echo esc_attr( $username ) ?>">
+				<input type="text" class="widefat username" placeholder="<?php esc_html_e( 'Username', 'mailster' ); ?>" name="username" value="<?php echo esc_attr( $username ) ?>">
 				<input type="email" class="widefat email" placeholder="Email" name="email" value="<?php echo esc_attr( $useremail ) ?>">
 				<div class="howto tos-field"><input type="checkbox" name="tos" class="tos" value="<?php echo time() ?>"> <?php printf( esc_html__( 'I agree to the %1$s and the %2$s by completing the registration.','mailster' ), '<a href="https://mailster.co/legal/tos/" class="external">' . esc_html__( 'Terms of service', 'mailster' ) . '</a>', '<a href="https://mailster.co/legal/privacy-policy/" class="external">' . esc_html__( 'Privacy Policy', 'mailster' ) . '</a>' ); ?></div>
 				<input type="submit" class="button button-hero button-primary" value="<?php esc_attr_e( 'Complete Registration', 'mailster' ) ?>">

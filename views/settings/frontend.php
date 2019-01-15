@@ -51,7 +51,7 @@
 		</td>
 	</tr>
 	<tr valign="top">
-		<th scope="row"><?php _e( 'Services', 'mailster' ) ?></th>
+		<th scope="row"><?php esc_html_e( 'Services', 'mailster' ) ?></th>
 		<td><ul class="frontpage-social-services"><?php
 
 		$social_services = mailster( 'helper' )->social_services();
