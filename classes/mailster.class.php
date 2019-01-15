@@ -646,13 +646,6 @@ class Mailster {
 		$new_structure = mailster( 'helper' )->using_permalinks();
 		$base = $this->get_base_link( $campaign_id );
 
-		// add title tag on links
-		// preg_match_all( '#(<a(?!.*?title=([\'"]).*?\2)[^>]*)(>)#', $content, $no_title_links );
-		// $no_title_links = $no_title_links[0];
-		// foreach ( $no_title_links as $link ) {
-		// $new_link = preg_replace( '/href=(\'|")(.*)(\'|")/', 'href="$2" title="$2"', $link );
-		// $content = str_replace( $link, $new_link, $content );
-		// }
 		foreach ( $links as $link ) {
 
 			if ( $new_structure ) {
@@ -2247,10 +2240,6 @@ class Mailster {
 						$verified = $old;
 						break;
 					case 681: // no user assigned
-						// $register = $this->maybe_register();
-						// if ( $register && ! is_wp_error( $register ) ) {
-						// $verified = 'yes';
-						// }
 						break;
 				}
 			}

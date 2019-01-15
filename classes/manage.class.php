@@ -155,7 +155,6 @@ class MailsterManage {
 			$sql .= " LEFT JOIN {$wpdb->usermeta} AS meta_role ON meta_role.user_id = u.id AND meta_role.meta_key = '{$wpdb->prefix}capabilities'";
 			$sql .= " LEFT JOIN {$wpdb->usermeta} AS meta_firstname ON meta_firstname.user_id = u.id AND meta_firstname.meta_key = 'first_name'";
 			$sql .= " LEFT JOIN {$wpdb->usermeta} AS meta_lastname ON meta_lastname.user_id = u.id AND meta_lastname.meta_key = 'last_name'";
-			// $sql .= " LEFT JOIN {$wpdb->usermeta} AS meta_nickname ON meta_nickname.user_id = u.id AND meta_nickname.meta_key = 'nickname'";
 			foreach ( $meta_values as $i => $meta_value ) {
 				$sql .= " LEFT JOIN {$wpdb->usermeta} AS meta_$i ON meta_$i.user_id = u.id AND meta_$i.meta_key = '$meta_value'";
 			}
@@ -981,7 +980,6 @@ class MailsterManage {
 
 		$data = mailster( 'subscribers' )->query( $args );
 
-		// return;
 		if ( isset( $d['nolists'] ) && $d['nolists'] ) {
 
 			$args['lists'] = -1;
@@ -1179,7 +1177,6 @@ class MailsterManage {
 		}
 
 		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
-		// header( 'Content-Length: ' . filesize( $file ) );
 		header( 'Connection: close' );
 
 		if ( 'html' == $format ) {

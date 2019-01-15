@@ -93,14 +93,12 @@ class MailsterConditions {
 			'hash' => esc_html__( 'Hash', 'mailster' ),
 			'email' => esc_html__( 'Email', 'mailster' ),
 			'wp_id' => esc_html__( 'WordPress User ID', 'mailster' ),
-			// 'status' => esc_html__( 'Status', 'mailster' ),
 			'added' => esc_html__( 'Added', 'mailster' ),
 			'updated' => esc_html__( 'Updated', 'mailster' ),
 			'signup' => esc_html__( 'Signup', 'mailster' ),
 			'confirm' => esc_html__( 'Confirm', 'mailster' ),
 			'ip_signup' => esc_html__( 'IP on Signup', 'mailster' ),
 			'ip_confirm' => esc_html__( 'IP on confirmation', 'mailster' ),
-			// 'rating' => esc_html__( 'Rating', 'mailster' ),
 		);
 
 		return $fields;
@@ -119,13 +117,9 @@ class MailsterConditions {
 			'referer' => esc_html__( 'Referer', 'mailster' ),
 			'client' => esc_html__( 'Client', 'mailster' ),
 			'clienttype' => esc_html__( 'Clienttype', 'mailster' ),
-			// 'coords' => esc_html__( 'Coords', 'mailster' ),
 			'geo' => esc_html__( 'Location', 'mailster' ),
 			'lang' => esc_html__( 'Language', 'mailster' ),
-			// 'timeoffset' => esc_html__( 'Timeoffset', 'mailster' ),
-			// 'lat' => esc_html__( 'Latitude', 'mailster' ),
-			// 'lng' => esc_html__( 'Longitude', 'mailster' ),
-			 'gdpr' => esc_html__( 'GDPR Consent given', 'mailster' ),
+			'gdpr' => esc_html__( 'GDPR Consent given', 'mailster' ),
 		);
 
 		return $meta_fields;
@@ -215,8 +209,6 @@ class MailsterConditions {
 			'is_smaller' => esc_html__( 'is before', 'mailster' ),
 			'is_greater_equal' => esc_html__( 'is after or on the', 'mailster' ),
 			'is_smaller_equal' => esc_html__( 'is before or on the', 'mailster' ),
-			// 'pattern' => esc_html__( 'match regex pattern', 'mailster' ),
-			// 'not_pattern' => esc_html__( 'does not match regex pattern', 'mailster' ),
 		);
 
 	}

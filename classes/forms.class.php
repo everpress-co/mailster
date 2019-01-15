@@ -92,7 +92,6 @@ class MailsterForms {
 			do_action( 'mailster_form_head_button' );
 			do_action( 'mymail_form_head_button' );
 
-			// wp_print_styles('mailster-form-button-style');
 			mailster( 'helper' )->wp_print_embedded_styles( 'mailster-form-button-style' );
 
 		} elseif ( $is_editable ) {
@@ -114,10 +113,6 @@ class MailsterForms {
 			$width = preg_match( '#\d+%#', $width ) ? (int) $width . '%' : (int) $width . 'px';
 			echo '<style type="text/css">.mailster-form-wrap{width:' . $width . '}</style>';
 
-		} else {
-
-			// wp_register_style('mailster-form', MAILSTER_URI . 'assets/css/form'.$suffix.'.css', array(), MAILSTER_VERSION);
-			// wp_print_styles('mailster-form');
 		}
 
 	}
@@ -175,9 +170,7 @@ class MailsterForms {
 			do_action( 'mailster_form_footer_button' );
 			do_action( 'mymail_form_footer_button' );
 			wp_register_script( 'mailster-form-button-script', MAILSTER_URI . 'assets/js/form-button-script' . $suffix . '.js', array(), MAILSTER_VERSION );
-			// wp_localize_script( 'mailster-form-button-script', 'MailsterData', $mailsterData);
 			mailster( 'helper' )->wp_print_embedded_scripts( 'mailster-form-button-script' );
-			// wp_print_scripts('mailster-form-button-script');
 		} elseif ( $is_editable ) {
 
 			wp_register_script( 'mailster-editable-form', MAILSTER_URI . 'assets/js/editable-form-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
@@ -194,13 +187,9 @@ class MailsterForms {
 			do_action( 'mailster_form_footer_iframe' );
 			do_action( 'mymail_form_footer_iframe' );
 			wp_register_script( 'mailster-form-iframe-script', MAILSTER_URI . 'assets/js/form-iframe-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
-			// wp_localize_script('mailster-form-iframe-script', 'MailsterData', $mailsterData);
 			wp_print_scripts( 'mailster-form-iframe-script' );
 			wp_print_scripts( 'mailster-form' );
 
-		} else {
-
-			// wp_print_scripts('mailster-form-embeded');
 		}
 
 	}
@@ -1238,7 +1227,6 @@ class MailsterForms {
 		) );
 
 		$button_src = apply_filters( 'mymail_subscribe_button_src', apply_filters( 'mailster_subscribe_button_src', '//mailster.github.io/v1/button.js', $options ), $options );
-		// $button_src = apply_filters('mailster_subscribe_button_src', MAILSTER_URI.'assets/js/button.js', $options);
 		$options['endpoint'] = $this->url( array(
 			'id' => $form_id,
 			'iframe' => 1,

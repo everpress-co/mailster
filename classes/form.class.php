@@ -33,8 +33,7 @@ class MailsterForm {
 
 	public function __construct() {
 		$this->scheme = is_ssl() ? 'https' : 'http';
-		// $this->honeypot = ! is_admin();
-		$this->honeypot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135
+		$this->honeypot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135 (otherwise ! is_admin())
 		$this->form = new StdClass();
 	}
 
@@ -235,7 +234,6 @@ class MailsterForm {
 		$this->add_class( 'mailster-form-' . $this->ID );
 
 		$html = '';
-		// $html .= '<!-- Begin Mailster Form -->'."\n";
 		$html .= '<!--Mailster:styles-->';
 
 		$html .= '<form action="<!--Mailster:formaction-->" method="post" class="<!--Mailster:classes-->">';
@@ -356,8 +354,6 @@ class MailsterForm {
 
 					$data = $customfields[ $field->field_id ];
 
-					// $label = isset($form->labels[$field->field_id]) ? $form->labels[$field->field_id] : $data['name'];
-					// $esc_label = esc_attr(strip_tags($label));
 					$fields[ $field->field_id ] = '<div class="mailster-wrapper mailster-' . $field->field_id . '-wrapper' . $class . '">';
 
 					$showlabel = ! $inline;
@@ -532,7 +528,6 @@ class MailsterForm {
 
 		$html .= '</form>' . "\n";
 
-		// $html .= '<!-- End Mailster Form -->';
 		$html = str_replace( '<!--Mailster:formaction-->', $this->get_form_action( $this->profile ? 'mailster_profile_submit' : 'mailster_form_submit' ), $html );
 		$html = str_replace( '<!--Mailster:classes-->', esc_attr( implode( ' ', $this->classes ) ), $html );
 		$html = str_replace( '<!--Mailster:styles-->', $this->get_styles(), $html );
@@ -673,7 +668,6 @@ class MailsterForm {
 		if ( $bool ) {
 
 			$this->profile = true;
-			// $this->form_endpoint = 'update';
 			$this->form->submit = mailster_text( 'profilebutton', esc_html__( 'Update Profile', 'mailster' ) );
 			$this->add_class( 'is-profile' );
 			$this->set_hash();
@@ -709,7 +703,6 @@ class MailsterForm {
 
 		if ( $bool ) {
 
-			// $this->form_endpoint = 'unsubscribe';
 			$this->unsubscribe = true;
 			$this->add_class( 'is-unsubscribe' );
 			$this->set_hash();
@@ -717,7 +710,6 @@ class MailsterForm {
 
 		} else {
 
-			// $this->form_endpoint = 'subscribe';
 			$this->remove_class( 'is-unsubscribe' );
 			$this->unsubscribe = false;
 			$this->hash = null;
@@ -804,7 +796,6 @@ class MailsterForm {
 
 		$html .= '<form action="' . $this->get_form_action( $action ) . '" method="post" class="mailster-form mailster-form-' . $form_id . ' mailster-form-submit mailster-ajax-form" id="mailster-form-unsubscribe">' . "\n";
 		$html .= '<div class="mailster-form-info ' . $infoclass . '">';
-		// $html .= $this->get_message();
 		$html .= $this->message;
 		$html .= '</div>';
 		$html .= '<input name="_action" type="hidden" value="unsubscribe">';
@@ -1104,14 +1095,6 @@ class MailsterForm {
 									mailster( 'subscribers' )->change_status( $exists->ID, 1, true );
 								}
 							}
-
-							// if ( ! empty( $assign_lists ) ) {
-							// mailster( 'subscribers' )->assign_lists( $exists->ID, $assign_lists, $remove_old_lists, ! $double_opt_in );
-							// mailster( 'subscribers' )->send_confirmations( $exists->ID, true, true );
-							// }
-							// if ( ! empty( $unassign_lists ) ) {
-							// mailster( 'subscribers' )->unassign_lists( $exists->ID, $unassign_lists );
-							// }
 						}
 
 					break;
@@ -1224,9 +1207,6 @@ class MailsterForm {
 			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id, 'email_unsubscribe' );
 		} elseif ( isset( $_BASE['hash'] ) ) {
 			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_hash( $_BASE['hash'], $campaign_id, 'link_unsubscribe' );
-		} else {
-			// wp_redirect(mailster()->get_unsubscribe_link());
-			// exit;
 		}
 
 		// redirect if no ajax request

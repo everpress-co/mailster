@@ -898,7 +898,6 @@ class MailsterPlaceholder {
 
 			// break out to prevent infinity loop
 			if ( ! $removeunused ) {
-				// break;
 			}
 		}
 
@@ -1048,31 +1047,6 @@ class MailsterPlaceholder {
 	}
 
 
-	private function replace_embeds() {
-
-		// TODO
-		/*
-		require_once( ABSPATH . WPINC . '/class-oembed.php' );
-		$oembed = _wp_oembed_get_object();
-
-		if(preg_match_all('#<iframe.*?src="([^"]+)".*?>.*?<\/iframe>#', $this->content, $iframes)){
-
-		foreach($iframes[0] as $i => $iframe){
-		$width = NULL;
-		$height = NULL;
-		$src = $iframes[1][$i];
-		if(preg_match('#width="([^"]+)"#', $iframe, $match)) $width = $match[1];
-		if(preg_match('#height="([^"]+)"#', $iframe, $match)) $height = $match[1];
-		if(preg_match('#youtube\.com/embed/([a-zA-Z0-9]+)$#',$src, $id)){
-		$src = 'http://img.youtube.com/vi/'.$id[1].'/maxresdefault.jpg';
-		}
-		$this->content = str_replace($iframe, $width.' '.$height.' '.$src, $this->content);
-		}
-		}
-		*/
-	}
-
-
 	/**
 	 *
 	 *
@@ -1150,8 +1124,6 @@ class MailsterPlaceholder {
 				}
 			}
 
-			// $tweet->text = preg_replace('/(http|https|ftp|ftps)\:\/\/([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*))?/','<a href="\0">\2</a>', $tweet->text);
-			// $tweet->text = preg_replace('/(^|\s)#(\w+)/','\1#<a href="https://twitter.com/search/%23\2">\2</a>',$tweet->text);
 			$tweet->text = preg_replace( '/(^|\s)@(\w+)/', '\1@<a href="https://twitter.com/\2">\2</a>', $tweet->text );
 
 			set_transient( 'mailster_tweet_' . $username, $tweet, 60 * mailster_option( 'tweet_cache_time' ) );

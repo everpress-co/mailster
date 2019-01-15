@@ -270,12 +270,6 @@ class MailsterAjax {
 
 			if ( 0 != $current_user->ID ) {
 				$firstname = ( $current_user->user_firstname ) ? $current_user->user_firstname : $current_user->display_name;
-
-				// $placeholder->add( array(
-				// 'firstname' => $firstname,
-				// 'lastname' => $current_user->user_lastname,
-				// 'fullname' => mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname ),
-				// ) );
 			}
 
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
@@ -508,11 +502,7 @@ class MailsterAjax {
 
 			$autoplain = isset( $formdata['mailster_data']['autoplaintext'] );
 			$plaintext = stripslashes( $_POST['plaintext'] );
-			// if ( function_exists( 'wp_encode_emoji' ) ) {
-			// $subject = wp_decode_emoji( $subject );
-			// $preheader = wp_decode_emoji( $preheader );
-			// $from_name = wp_decode_emoji( $from_name );
-			// }
+
 			$MID = mailster_option( 'ID' );
 
 			$ID = (int) $formdata['post_ID'];
@@ -1084,7 +1074,6 @@ class MailsterAjax {
 
 		$text = '{' . $tag . '}';
 		$font_size = max( 11, round( $width / strlen( $text ) ) );
-		// $font = MAILSTER_DIR . 'assets/font/OpenSans-Regular.ttf';
 		$font = MAILSTER_DIR . 'assets/font/FredokaOne-Regular.ttf';
 
 		$im = imagecreatetruecolor( $width, $height );
@@ -1632,7 +1621,6 @@ class MailsterAjax {
 		$mail = mailster( 'mail' );
 		$mail->to = esc_attr( $data['receiver'] );
 		$mail->subject = esc_attr( '[' . get_bloginfo( 'name' ) . '] ' . sprintf( esc_html__( '%s is forwarding an email to you!', 'mailster' ), $data['sendername'] ) );
-		// $mail->from = esc_attr($data['sender']);
 		$mail->from = mailster_option( 'from' );
 		$mail->from_name = sprintf( esc_html_x( '%1$s via %2$s', 'user forwarded via website', 'mailster' ), $data['sendername'], get_bloginfo( 'name' ) );
 

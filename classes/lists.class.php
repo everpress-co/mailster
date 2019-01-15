@@ -843,11 +843,6 @@ class MailsterLists {
 
 			if ( is_null( $id ) ) {
 
-				// if ( $counts ) {
-				// $sql = "SELECT a.*, COUNT(DISTINCT c.ID) AS subscribers FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS c INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ac ON c.ID = ac.subscriber_id AND c.status IN('" . implode( ', ', $statuses ) . "')) ON a.ID = ac.list_id GROUP BY a.ID ORDER BY CASE WHEN parent_id = 0 THEN name ELSE ( SELECT name FROM {$wpdb->prefix}mailster_lists AS b WHERE b.ID = a.parent_id ) END, CASE WHEN parent_id = 0 THEN 1 END DESC, name";
-				// } else {
-				// $sql = "SELECT a.* FROM {$wpdb->prefix}mailster_lists AS a ORDER BY CASE WHEN parent_id = 0 THEN name ELSE ( SELECT name FROM {$wpdb->prefix}mailster_lists AS b WHERE b.ID = a.parent_id ) END, CASE WHEN parent_id = 0 THEN 1 END DESC, name";
-				// }
 				if ( $counts ) {
 					$sql = "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers, CASE WHEN a.parent_id = 0 THEN a.ID*10 ELSE a.parent_id*10+1 END AS _sort FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ') AND ab.added != 0) ON a.ID = ab.list_id GROUP BY a.ID ORDER BY _sort ASC';
 				} else {

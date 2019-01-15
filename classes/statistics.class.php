@@ -72,24 +72,6 @@ class MailsterStatistics {
 	private function get_datasets( $rawdata ) {
 
 		return array(
-			// array(
-			// 'data' => array_values( $rawdata ),
-			// 'fillColor' => "rgba(111,191,77,0.2)",
-			// 'strokeColor' => "rgba(111,191,77,1)",
-			// 'pointColor' => "rgba(111,191,77,1)",
-			// 'pointStrokeColor' => "#fff",
-			// 'pointHighlightFill' => "#fff",
-			// 'pointHighlightStroke' => "rgba(111,191,77,1)",
-			// ),
-			// array(
-			// 'data' => array_values( $rawdata ),
-			// 'fillColor' => "rgba(43,179,231,0.2)",
-			// 'strokeColor' => "rgba(43,179,231,1)",
-			// 'pointColor' => "rgba(43,179,231,1)",
-			// 'pointStrokeColor' => "#fff",
-			// 'pointHighlightFill' => "#fff",
-			// 'pointHighlightStroke' => "rgba(43,179,231,1)",
-			// ),
 			array(
 				'data' => array_values( $rawdata ),
 				'backgroundColor' => 'rgba(43,179,231,0.2)',

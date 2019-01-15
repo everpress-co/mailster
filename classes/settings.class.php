@@ -1444,9 +1444,6 @@ class MailsterSettings {
 		$options['homepage'] = $old_options['homepage'];
 		$options['got_url_rewrite'] = mailster( 'helper' )->got_url_rewrite();
 
-		// $options['update_required'] = isset( $old_options['update_required'] );
-		// $options['welcome'] = isset( $old_options['welcome'] );
-		// $options['setup'] = isset( $old_options['setup'] );
 		$options['_flush_rewrite_rules'] = true;
 
 		return array(

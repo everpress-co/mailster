@@ -35,7 +35,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$statuses = mailster( 'subscribers' )->get_status();
 		$statuses_nice = mailster( 'subscribers' )->get_status( null, true );
 		$link = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
-		// $link = add_query_arg( array() );
 		$views = array(
 			'view-all' => '<a href="' . remove_query_arg( 'status', $link ) . '">' . esc_html__( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( array_sum( $counts ) ) . ')</span></a>',
 		);

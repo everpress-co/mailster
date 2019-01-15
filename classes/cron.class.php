@@ -260,7 +260,6 @@ class MailsterCron {
 			$lockfile = MAILSTER_UPLOAD_DIR . '/CRON_' . $key . '.lockfile';
 
 			if ( file_exists( $lockfile ) ) {
-				// return false;
 				// Is running?
 				$this->pid = file_get_contents( $lockfile );
 				if ( $this->is_locked( $key ) ) {

@@ -330,7 +330,6 @@ class MailsterSubscriberQuery {
 					}
 				}
 				$this->args['fields'] = array_unique( $this->args['fields'] );
-				// sort($this->args['fields']);
 			}
 			if ( ! empty( $this->args['meta'] ) ) {
 				foreach ( $this->args['meta'] as $field ) {
@@ -342,7 +341,6 @@ class MailsterSubscriberQuery {
 						$this->args['select'][] = "`meta_$field`.meta_value AS `$field`";
 					}
 				}
-				// sort($this->args['meta']);
 			}
 		}
 
@@ -354,13 +352,6 @@ class MailsterSubscriberQuery {
 			return $result;
 		}
 
-		// if ( $this->args['lists'] !== false || $this->args['lists__not_in'] ) {
-		// $join = "LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON subscribers.ID = lists_subscribers.subscriber_id AND lists_subscribers.added != 0";
-		// if ( $this->args['lists__not_in'] && $this->args['lists__not_in'][0] != -1 ) {
-		// $join .= ' AND lists_subscribers.list_id IN (' . implode( ',', array_filter( $this->args['lists__not_in'], 'is_numeric' ) ) . ')';
-		// }
-		// $joins[] = $join;
-		// }
 		if ( $this->args['lists'] !== false ) {
 			$join = "LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON subscribers.ID = lists_subscribers.subscriber_id AND lists_subscribers.added != 0";
 			$joins[] = $join;
@@ -636,9 +627,6 @@ class MailsterSubscriberQuery {
 			$wheres[] = 'AND subscribers.wp_id NOT IN (' . implode( ',', array_filter( $this->args['wp_exclude'], 'is_numeric' ) ) . ')';
 		}
 
-		// if ( $this->args['lists__not_in'] ) {
-		// $wheres[] = 'AND lists_subscribers.list_id IS NULL';
-		// }
 		if ( $this->args['unsubscribe'] ) {
 			$wheres[] = 'AND actions_unsubscribe.subscriber_id IS NOT NULL';
 		}
@@ -903,7 +891,6 @@ class MailsterSubscriberQuery {
 
 		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql, $this->args, $campaign_id );
 
-		// error_log( $sql );
 		if ( $this->args['return_sql'] ) {
 			$result = $this->last_query = $sql;
 			$this->last_error = null;
@@ -942,8 +929,6 @@ class MailsterSubscriberQuery {
 				} while ( ! empty( $sub_result ));
 
 				unset( $sub_result );
-
-				// $result = $this->cast( $result ) );
 			}
 
 			$this->last_query = $sql;

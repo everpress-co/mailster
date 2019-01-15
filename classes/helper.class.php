@@ -942,11 +942,6 @@ class MailsterHelper {
 		// strip all unwanted stuff from the content
 		$content = $this->strip_unwanted_html( $content );
 
-		// fix for Yahoo background color FIXED!!
-		// if(!strpos($this->content, 'body{background-image'))
-		// $this->content = preg_replace('/body{background-color/','body,.bodytbl{background-color', $this->content, 1);
-		// adding a inline width attribute to images for a bug in Apple Mail 7 with embeded images
-		// if($this->embed_images){
 		preg_match_all( '#(<img.*?)(width="(\d+)")(.*?>)#', $content, $images );
 		foreach ( $images[0] as $i => $image ) {
 			$oldstyle = '';
@@ -958,7 +953,7 @@ class MailsterHelper {
 			$imgstr = str_replace( $styleattr, '', $images[1][ $i ] . 'style="width:' . $images[3][ $i ] . 'px;' . $oldstyle . '" ' . $images[2][ $i ] . $images[4][ $i ] );
 			$content = str_replace( $image, $imgstr, $content );
 		}
-		// }
+
 		// custom styles
 		$content = $this->add_mailster_styles( $content );
 

@@ -1064,7 +1064,6 @@ class MailsterSubscribers {
 				'added' => $now,
 				'signup' => $now,
 				'updated' => $now,
-				// 'ip' => null,
 				'referer' => mailster_get_referer(),
 		) );
 
@@ -2339,7 +2338,6 @@ class MailsterSubscribers {
 		$fallback_form_id = (int) $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" );
 
 		// get all pending subscribers which are not queued already
-		// $sql = "SELECT a.ID, a.signup, IFNULL( b.meta_value, 0 ) AS try, f.resend, f.resend_count, f.resend_time, IFNULL( f.ID, $fallback_form_id ) AS form_id FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS b ON a.ID = b.subscriber_id AND b.meta_key = 'confirmation' LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS c ON a.ID = c.subscriber_id AND c.meta_key = 'form' LEFT JOIN {$wpdb->prefix}mailster_queue AS d ON a.ID = d.subscriber_id AND d.campaign_id = 0 LEFT JOIN {$wpdb->prefix}mailster_forms AS f ON f.ID = IFNULL( c.meta_value, $fallback_form_id ) WHERE a.status = 0 AND ( d.subscriber_id IS NULL OR d.sent != 0 )";
 		$sql = "SELECT subscribers.ID, subscribers.signup, IFNULL( confirmation.meta_value, 0 ) AS try, forms.resend, forms.resend_count, forms.resend_time, IFNULL( forms.ID, $fallback_form_id ) AS form_id, lists_subscribers.list_id FROM {$wpdb->prefix}mailster_subscribers AS subscribers";
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON subscribers.ID = lists_subscribers.subscriber_id AND lists_subscribers.added = 0";
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS confirmation ON subscribers.ID = confirmation.subscriber_id AND confirmation.meta_key = 'confirmation'";
@@ -2673,7 +2671,6 @@ class MailsterSubscribers {
 			$custom_fields['lastname'] = '';
 			$custom_fields['fullname'] = '';
 
-			// $sql = $wpdb->prepare( "SELECT b.meta_key, b.meta_value FROM {$wpdb->prefix}mailster_subscriber_fields AS b WHERE b.subscriber_id = %d UNION SELECT c.meta_key, c.meta_value FROM {$wpdb->prefix}mailster_subscriber_meta AS c WHERE c.subscriber_id = %d", $subscriber_id, $subscriber_id );
 			$sql = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->prefix}mailster_subscriber_fields WHERE subscriber_id = %d", $subscriber_id );
 
 			$meta_data = $wpdb->get_results( $sql );
@@ -2751,7 +2748,6 @@ class MailsterSubscribers {
 			$list_ids = array( $list_ids );
 		}
 
-		// $baselink = get_permalink( mailster_option( 'homepage' ) );
 		$baselink = home_url();
 
 		$slugs = mailster_option( 'slugs' );

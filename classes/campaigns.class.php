@@ -174,7 +174,6 @@ class MailsterCampaigns {
 				'exclude_from_search' => true,
 				'capability_type' => 'newsletter',
 				'map_meta_cap' => true,
-				// 'menu_position' => 30,
 				'has_archive' => mailster_option( 'hasarchive', false ) ? mailster_option( 'archive_slug', false ) : false,
 				'hierarchical' => $is_autoresponder,
 				'rewrite' => array( 'with_front' => false, 'slug' => mailster_option( 'slug', 'newsletter' ) ),
@@ -1410,11 +1409,6 @@ class MailsterCampaigns {
 
 		if ( isset( $postdata ) ) {
 
-			// if ( function_exists( 'wp_encode_emoji' ) ) {
-			// $postdata['subject'] = wp_encode_emoji( $postdata['subject'] );
-			// $postdata['preheader'] = wp_encode_emoji( $postdata['preheader'] );
-			// $postdata['from_name'] = wp_encode_emoji( $postdata['from_name'] );
-			// }
 			$meta['subject'] = $postdata['subject'];
 			$meta['preheader'] = $postdata['preheader'];
 			$meta['template'] = $postdata['template'];
@@ -1815,15 +1809,6 @@ class MailsterCampaigns {
 
 			if ( ! empty( $meta[ $metadata->ID ]['autoresponder'] ) ) {
 				$meta[ $metadata->ID ]['autoresponder'] = maybe_unserialize( $meta[ $metadata->ID ]['autoresponder'] );
-				// if ( $meta[ $metadata->ID ]['autoresponder']['action'] == 'mailster_subscriber_insert' ) {
-				// $meta[ $metadata->ID ]['list_conditions'][] = array(
-				// array(
-				// 'field' => 'signup',
-				// 'operator' => 'is_greater',
-				// 'value' => date( 'Y-m-d', $meta[ $metadata->ID ]['timestamp'] ),
-				// ),
-				// );
-				// }
 			}
 			if ( ! empty( $meta[ $metadata->ID ]['attachments'] ) ) {
 				$meta[ $metadata->ID ]['attachments'] = maybe_unserialize( $meta[ $metadata->ID ]['attachments'] );
@@ -2230,12 +2215,6 @@ class MailsterCampaigns {
 		$placeholder = mailster( 'placeholder' );
 		$placeholder->set_campaign( $id );
 
-		// if ( isset( $meta['since'] ) ) {
-		// $timeoffset = mailster( 'helper' )->gmt_offset( true );
-		// $placeholder->set_last_post_args( array(
-		// 'date_query' => array( 'after' => date( 'Y-m-d H:i:s', $meta['since'] + $timeoffset ) ),
-		// ) );
-		// }
 		$placeholder->do_conditions( false );
 		$placeholder->replace_custom_tags( false );
 
@@ -2679,7 +2658,6 @@ class MailsterCampaigns {
 		$content = $campaign->post_content;
 
 		preg_match_all( "/(href)=[\"'](.*)[\"']/Ui", $content, $urls );
-		// preg_match_all('@((https?://)([-\w]+\.[-\w\.]+)+\w(:\d+)?(/([-\w/_\.]*(\?\S+)?)?)*)@',$content,$urls);
 		$urls = ! empty( $urls[2] ) ? ( $urls[2] ) : array();
 
 		return $unique ? array_values( array_unique( $urls ) ) : $urls;
@@ -3706,7 +3684,6 @@ class MailsterCampaigns {
 			return new WP_Error( 'sendlimit_reached', sprintf( esc_html__( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), mailster_option( 'send_limit' ), human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) ) );
 		}
 
-		// $subscriber->hash = str_repeat('1', 32);
 		$mail->to = $subscriber->email;
 		$mail->to_name = $subscriber->fullname;
 		$mail->subject = $campaign_meta['subject'];
@@ -3728,12 +3705,6 @@ class MailsterCampaigns {
 		$placeholder->set_hash( $subscriber->hash );
 		$placeholder->replace_custom_tags( false );
 
-		// if ( isset( $campaign_meta['since'] ) ) {
-		// $timeoffset = mailster( 'helper' )->gmt_offset( true );
-		// $placeholder->set_last_post_args( array(
-		// 'date_query' => array( 'after' => date( 'Y-m-d H:i:s', $campaign_meta['since'] + $timeoffset ) ),
-		// ) );
-		// }
 		if ( ! empty( $campaign_meta['attachments'] ) ) {
 			$mail->attachments = array();
 			foreach ( (array) $campaign_meta['attachments'] as $attachment_id ) {
@@ -4287,8 +4258,6 @@ class MailsterCampaigns {
 			'plupload' => array(
 				'runtimes' => 'html5,flash',
 				'browse_button' => 'mailster-editorimage-upload-button',
-				// 'container' => 'plupload-upload-ui',
-				// 'drop_element' => 'drag-drop-area',
 				'file_data_name' => 'async-upload',
 				'multiple_queues' => true,
 				'max_file_size' => wp_max_upload_size() . 'b',
@@ -4325,14 +4294,12 @@ class MailsterCampaigns {
 						'inline' => true,
 						'menubar' => false,
 						'branding' => false,
-						// 'valid_elements' => 'p[class|style],span[class|style],a[href|class|title|target|style],strong[class|style],em[class|style],strike,br',
 						'invalid_elements' => 'script,iframe,frameset,applet,embed',
 						'block_formats' => 'Paragraph=p',
 						'relative_urls' => false,
 						'remove_script_host' => false,
 						'convert_urls' => true,
 						'browser_spellcheck' => false,
-						// 'directionality' => (is_rtl() ? 'rtl' : 'ltr'),
 						'directionality' => 'ltr',
 						'fontsize_formats' => '8px 10px 12px 14px 18px 24px 36px',
 						'skin_url' => MAILSTER_URI . 'assets/css/tinymce',

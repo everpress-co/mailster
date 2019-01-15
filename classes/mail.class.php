@@ -210,7 +210,6 @@ class MailsterMail {
 			}
 
 			$this->mailer->SMTPDebug = $level; // 0 = off, 1 = commands, 2 = commands and data
-			// Options: "echo", "html" or "error_log";
 		}
 	}
 
