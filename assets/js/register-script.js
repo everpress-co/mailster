@@ -44,7 +44,6 @@ jQuery(document).ready(function ($) {
 				wrap.removeClass('loading');
 				if (response.success) {
 					wrap.addClass('step-2').removeClass('step-1')
-						//$('.register_form_2').find('input').eq(0).focus();
 				} else {
 					form.addClass('has-error').find('.error-msg').html(response.error);
 				}
@@ -153,7 +152,6 @@ jQuery(document).ready(function ($) {
 
 		if (purchasecode) {
 			wrap.find('.register_form').parent().removeClass('step-1').addClass('step-2');
-			//wrap.find('.register_form_2').submit();
 		} else {
 			wrap.find('.register_form').submit();
 		}

@@ -50,7 +50,6 @@ jQuery(document).ready(function ($) {
 			autofocus: true
 		};
 
-	//init the whole thing
 	function _init() {
 
 		_trigger('disable');
@@ -95,12 +94,9 @@ jQuery(document).ready(function ($) {
 				iframeloaded = true;
 				clearInterval(iframeloadinterval);
 
-				//wp.autosave.getCompareString = _getAutosaveString;
-
 				_ibody = _iframe.contents().find('body');
 
 				if (_disabled) {
-					//_title.prop('disabled', true);
 					//overwrite autosave function since we don't need it
 					window.autosave = wp.autosave = function () {
 						return true;
@@ -752,9 +748,6 @@ jQuery(document).ready(function ($) {
 
 		} else {
 
-			// _title.prop('disabled', true);
-
-			//$('#change-permalinks').remove();
 			if (typeof autosavePeriodical != 'undefined') autosavePeriodical.repeat = false;
 
 			$('#mailster_details')
@@ -1157,7 +1150,6 @@ jQuery(document).ready(function ($) {
 							});
 						}, function (jqXHR, textStatus, errorThrown) {
 							loader.removeClass('loading');
-							//detailbox.removeClass('loading');
 						});
 					}
 
@@ -1272,8 +1264,6 @@ jQuery(document).ready(function ($) {
 		function init() {
 			_obar
 				.on('click', 'a.template', showFiles)
-				// .on('click', 'button.save-template', save)
-				// .on('mouseenter', 'a.save-template', focusName)
 				.on('click', 'a.save-template', openSaveDialog)
 				.on('click', 'a.clear-modules', clear)
 				.on('click', 'a.preview', preview)
@@ -1843,7 +1833,6 @@ jQuery(document).ready(function ($) {
 				img = $('<img>', {
 					'src': 'https://dummy.newsletter-plugin.com/' + (w * f) + 'x' + (h * f) + '.jpg',
 					'alt': current.content,
-					//'title': current.content,
 					'label': current.content,
 					'width': w,
 					'height': h,
@@ -1991,8 +1980,6 @@ jQuery(document).ready(function ($) {
 					if (is_img) {
 						current.element.attr({
 							'src': currentimage.src,
-							//'width': Math.round(imagewidth.val()),
-							//'height': Math.round(imageheight.val()),
 							'alt': currentimage.name
 						});
 						if (!current.is_percentage) {
@@ -2043,8 +2030,6 @@ jQuery(document).ready(function ($) {
 								});
 
 								current.element.attr({
-									//'width': Math.round(imagewidth.val()),
-									//'height': Math.round(imageheight.val()),
 									'alt': currentimage.name
 								})
 								if (!current.is_percentage) {
@@ -2133,7 +2118,6 @@ jQuery(document).ready(function ($) {
 							'src': btnsrc,
 							'width': Math.round((img.width || current.element.width()) / f),
 							'height': Math.round((img.height || current.element.height()) / f),
-							//'title': buttonalt.val()
 							'alt': buttonalt.val(),
 						});
 
@@ -2284,7 +2268,6 @@ jQuery(document).ready(function ($) {
 													'data-id': currenttext.image[i].id,
 													'src': response.image.url,
 													'width': Math.round(response.image.width / f),
-													//'height': Math.round(response.image.height / f),
 													'alt': currenttext.alt || currenttext.title[i]
 												})
 												.data('id', currenttext.image[i].id);
@@ -2332,7 +2315,6 @@ jQuery(document).ready(function ($) {
 								if ('img' == imgelement.prop('tagName').toLowerCase()) {
 
 									imgelement
-									//.removeAttr('height')
 										.removeAttr('data-id')
 										.attr({
 											'src': dynamicImage(currenttext.image[i], width, height, crop),
@@ -2407,7 +2389,6 @@ jQuery(document).ready(function ($) {
 
 		function remove() {
 			if (current.element.parent().is('a')) current.element.unwrap();
-			//if (!current.element.parent().is('td')) current.element.unwrap();
 			if ('btn' == current.type) {
 				var wrap = current.element.closest('.textbutton');
 				if (!wrap.length) {
@@ -2432,12 +2413,6 @@ jQuery(document).ready(function ($) {
 			case 'img':
 			case 'btn':
 				break;
-				// if (!current.element.attr('href')) {
-				// 	var wrap = current.element.closest('.textbutton');
-				// 	if (wrap.length) wrap.remove();
-				// }
-				// current.element.remove();
-				// break;
 			default:
 				current.element.html(current.content);
 			}
@@ -2964,7 +2939,6 @@ jQuery(document).ready(function ($) {
 				if (response.success) {
 					itemcount = response.itemcount;
 					displayPosts(response.html, true);
-					//assetslist.find('.selected').trigger('click');
 					if (response.rssinfo) {
 						$('#rss_more').slideDown(200);
 						$('#rss_input').slideUp(200);
@@ -3416,8 +3390,6 @@ jQuery(document).ready(function ($) {
 
 			}
 
-			//_trigger('refresh');
-
 		}
 
 		init();
@@ -3696,27 +3668,7 @@ jQuery(document).ready(function ($) {
 
 					})
 
-			} //!$._data( cont[0], "events" )
-
-
-			// $.each(buttoncontainer, function () {
-
-			// 	var $this = $(this),
-			// 		name = $this.attr('label'),
-			// 		offset = this.getBoundingClientRect(),
-			// 		top = offset.top + 46,
-			// 		left = offset.right + 16,
-			// 		btn;
-
-			// 	btn = $('<a class="addbutton content mailster-btn" title="' + mailsterL10n.add_button + '"></a>').css({
-			// 		top: top,
-			// 		left: left
-			// 	}).appendTo(_container);
-
-			// 	btn.data('offset', offset).data('name', name);
-			// 	btn.data('element', $this);
-
-			// });
+			}
 
 			if (!mailsterdata.inline) {
 				cont
@@ -3737,33 +3689,6 @@ jQuery(document).ready(function ($) {
 						});
 					});
 			}
-			// $.each(repeatable, function () {
-			// 	var $this = $(this),
-			// 		name = $this.attr('label'),
-			// 		offset = this.getBoundingClientRect(),
-			// 		top = offset.top + 48,
-			// 		left = offset.right,
-			// 		btn;
-
-			// 	btn = $('<a class="addrepeater content mailster-btn" title="' + sprintf(mailsterL10n.add_s, name) + '"></a>').css({
-			// 		top: top - 3,
-			// 		left: left + 18
-			// 	}).appendTo(_container);
-
-			// 	btn.data('offset', offset).data('name', name);
-			// 	btn.data('element', $this);
-
-			// 	btn = $('<a class="removerepeater content mailster-btn" title="' + sprintf(mailsterL10n.remove_s, name) + '"></a>').css({
-			// 		top: top + 18,
-			// 		left: left + 18
-			// 	}).appendTo(_container);
-
-			// 	btn.data('offset', offset).data('name', name);
-			// 	btn.data('element', $this);
-
-			// });
-
-
 
 		}, 500);
 
@@ -3832,35 +3757,6 @@ jQuery(document).ready(function ($) {
 		return str;
 	}
 
-	// function _changeBG(file) {
-	// 	var raw = _getContent(),
-	// 		html = raw.replace(/body{background-image:url\(.*}/i, '');
-
-	// 	if (file) {
-	// 		// var s = (file) ? "\tbody{background-image:url('" + file + "');background-repeat:repeat-y no-repeat;background-position:top center;}" : '',
-	// 		// 	html = html.replace(/<style.*?>/i, '<style type="text/css">' + s)
-	// 		// 	//.replace(/<td /i, '<td background="'+base+file+'"');
-	// 		// 	.replace(/<td/i, '<td background="' + file + '"');
-	// 		// //.replace(/background="([^"]*)"/i,'background="'+base+file+'"');
-	// 		// $('ul.backgrounds > li > a').css({
-	// 		// 	'background-image': "url('" + file + "')"
-	// 		// });
-	// 	} else {
-
-	// 		var parts = html.match(/<td(.*)background="[^"]*"(.*)/i);
-
-	// 		if (parts) html = html.replace(parts[0], '<td ' + parts[1] + ' ' + parts[2]);
-	// 		//.replace(/<td(.*)background="([^"]*)"/i,'<td ');
-	// 		$('ul.backgrounds > li > a').css({
-	// 			'background-image': "none"
-	// 		});
-	// 		//.replace(/background="([^"]*)"/i,'background=""');
-	// 	}
-
-	// 	_setContent(html);
-	// 	return;
-	// }
-
 	function _changeElements(version) {
 		var raw = _getContent(),
 			reg = /\/img\/version(\d+)\//g,
@@ -3928,7 +3824,6 @@ jQuery(document).ready(function ($) {
 
 		var attrcount = structure.bodyattributes.length,
 			doc = (isWebkit || isMozilla) ? _iframe[0].contentWindow.document : _idoc,
-			//headscripts = $(doc).find('head').find('script'),
 			headstyles = $(doc).find('head').find('link'),
 			headdoc = doc.getElementsByTagName('head')[0];
 
