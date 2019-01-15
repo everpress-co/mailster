@@ -2038,13 +2038,14 @@ class Mailster {
 		$mail->from = apply_filters( 'wp_mail_from', mailster_option( 'from' ) );
 		$mail->from_name = apply_filters( 'wp_mail_from_name', mailster_option( 'from_name' ) );
 
+		$mail->to = array();
+
 		$mail->apply_raw_headers( $headers );
 
 		if ( is_string( $to ) ) {
 			$to = explode( ',', $to );
 		}
 		$to = array_map( 'trim', $to );
-		$mail->to = array();
 
 		foreach ( $to as $address ) {
 			if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
