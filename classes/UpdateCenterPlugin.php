@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.4
+// Version 3.5
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -653,9 +653,11 @@ class UpdateCenterPlugin {
 	public static function deactivate() {
 
 		$plugin = str_replace( 'deactivate_', '', current_filter() );
+		$slug = dirname( $plugin );
 
-		if ( isset( self::$plugins[ dirname( $plugin ) ] ) ) {
-			unset( self::$plugins[ dirname( $plugin ) ] );
+		if ( isset( self::$plugins[ $slug ] ) ) {
+			self::$plugins[ $slug ]->last_update = 0;
+			self::$plugins[ $slug ]->update = null;
 			self::save_options();
 		}
 
@@ -869,4 +871,3 @@ class UpdateCenterPlugin {
 
 
 }
-

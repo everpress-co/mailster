@@ -904,6 +904,11 @@ class MailsterSubscribers {
 			$entry['email'] = trim( $emailparts[0] . '@' . strtolower( $emailparts[1] ) );
 		}
 
+		// fix typos from third party
+		if ( isset( $entry['referrer'] ) ) {
+			$entry['referer'] = $entry['referrer'];
+		}
+
 		$field_names = array( 'ID' => '%d', 'hash' => '%s', 'email' => '%s', 'status' => '%d', 'added' => '%d', 'signup' => '%d', 'confirm' => '%d', 'updated' => '%d', 'ip_signup' => '%s', 'ip_confirm' => '%s', 'wp_id' => '%d', 'rating' => '%f' );
 
 		$now = time();

@@ -1519,7 +1519,7 @@ class MailsterTemplates {
 	<div id="drag-drop-area">
 		<div class="drag-drop-inside">
 		<p class="drag-drop-info"><?php esc_html_e( 'Drop your ZIP file here to upload new template', 'mailster' );?></p>
-		<p><?php esc_html_ex( 'or', 'Uploader: Drop files here - or - Select Files', 'mailster' );?></p>
+		<p><?php echo esc_html_x( 'or', 'Uploader: Drop files here - or - Select Files', 'mailster' );?></p>
 		<p class="drag-drop-buttons"><input id="plupload-browse-button" type="button" value="<?php esc_attr_e( 'Select File', 'mailster' );?>" class="button" /></p>
 		<p class="max-upload-size"><?php printf( esc_html__( 'Maximum upload file size: %s.', 'mailster' ), esc_html( $upload_size_unit . $sizes[ $u ] ) );?></p>
 		<p class="uploadinfo"></p>

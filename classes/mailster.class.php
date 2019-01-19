@@ -1273,9 +1273,6 @@ class Mailster {
 
 
 	public function on_deactivate() {
-
-		$this->reset_license();
-
 	}
 
 
