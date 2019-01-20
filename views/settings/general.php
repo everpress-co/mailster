@@ -12,8 +12,8 @@
 		<td><input type="text" name="mailster_options[reply_to]" value="<?php echo esc_attr( mailster_option( 'reply_to' ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'The address users can reply to', 'mailster' ) ?></span></td>
 	</tr>
 	<tr valign="top">
-		<th scope="row"><?php _e( 'Send delay', 'mailster' ) ?> *</th>
-		<td><input type="text" name="mailster_options[send_offset]" value="<?php echo esc_attr( mailster_option( 'send_offset' ) ); ?>" class="small-text"> <span class="description"><?php _e( 'The default delay in minutes for sending campaigns.', 'mailster' ) ?></span></td>
+		<th scope="row"><?php esc_html_e( 'Send delay', 'mailster' ) ?> *</th>
+		<td><input type="text" name="mailster_options[send_offset]" value="<?php echo esc_attr( mailster_option( 'send_offset' ) ); ?>" class="small-text"> <span class="description"><?php esc_html_e( 'The default delay in minutes for sending campaigns.', 'mailster' ) ?></span></td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Delivery by Time Zone', 'mailster' ) ?> *</th>
@@ -40,9 +40,9 @@
 		<?php
 		$is = mailster_option( 'autoupdate', 'minor' );
 		$types = array(
-			'1' => __( 'enabled', 'mailster' ),
-			'0' => __( 'disabled', 'mailster' ),
-			'minor' => __( 'only minor updates', 'mailster' ),
+			'1' => esc_html__( 'enabled', 'mailster' ),
+			'0' => esc_html__( 'disabled', 'mailster' ),
+			'minor' => esc_html__( 'only minor updates', 'mailster' ),
 		);
 		?>
 		<select name="mailster_options[autoupdate]">

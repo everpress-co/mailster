@@ -21,16 +21,16 @@
 			$fields[ $field ] = $data['name'];
 		}
 		$operators = array(
-			'is' => __( 'is', 'mailster' ),
-			'is_not' => __( 'is not', 'mailster' ),
-			'contains' => __( 'contains', 'mailster' ),
-			'contains_not' => __( 'contains not', 'mailster' ),
-			'begin_with' => __( 'begins with', 'mailster' ),
-			'end_with' => __( 'ends with', 'mailster' ),
-			'is_greater' => __( 'is greater', 'mailster' ),
-			'is_smaller' => __( 'is smaller', 'mailster' ),
-			'pattern' => __( 'match regex pattern', 'mailster' ),
-			'not_pattern' => __( 'does not match regex pattern', 'mailster' ),
+			'is' => esc_html__( 'is', 'mailster' ),
+			'is_not' => esc_html__( 'is not', 'mailster' ),
+			'contains' => esc_html__( 'contains', 'mailster' ),
+			'contains_not' => esc_html__( 'contains not', 'mailster' ),
+			'begin_with' => esc_html__( 'begins with', 'mailster' ),
+			'end_with' => esc_html__( 'ends with', 'mailster' ),
+			'is_greater' => esc_html__( 'is greater', 'mailster' ),
+			'is_smaller' => esc_html__( 'is smaller', 'mailster' ),
+			'pattern' => esc_html__( 'match regex pattern', 'mailster' ),
+			'not_pattern' => esc_html__( 'does not match regex pattern', 'mailster' ),
 		);
 
 		?>
@@ -223,22 +223,22 @@
 
 				<p>
 				<?php
-					$content = '<select id="dynamic_embed_options_content" class="check-for-posts"><option value="excerpt">' . __( 'the excerpt', 'mailster' ) . '</option><option value="content">' . __( 'the full content', 'mailster' ) . '</option></select>';
+					$content = '<select id="dynamic_embed_options_content" class="check-for-posts"><option value="excerpt">' . esc_html__( 'the excerpt', 'mailster' ) . '</option><option value="content">' . esc_html__( 'the full content', 'mailster' ) . '</option></select>';
 
 					$relative = '<select id="dynamic_embed_options_relative" class="check-for-posts">';
 					$relativenames = array(
-						-1 => __( 'the latest', 'mailster' ),
-						-2 => __( 'the second latest', 'mailster' ),
-						-3 => __( 'the third latest', 'mailster' ),
-						-4 => __( 'the fourth latest', 'mailster' ),
-						-5 => __( 'the fifth latest', 'mailster' ),
-						-6 => __( 'the sixth latest', 'mailster' ),
-						-7 => __( 'the seventh latest', 'mailster' ),
-						-8 => __( 'the eighth latest', 'mailster' ),
-						-9 => __( 'the ninth latest', 'mailster' ),
-						-10 => __( 'the tenth latest', 'mailster' ),
-						-11 => __( 'the eleventh latest', 'mailster' ),
-						-12 => __( 'the twelfth latest', 'mailster' ),
+						-1 => esc_html__( 'the latest', 'mailster' ),
+						-2 => esc_html__( 'the second latest', 'mailster' ),
+						-3 => esc_html__( 'the third latest', 'mailster' ),
+						-4 => esc_html__( 'the fourth latest', 'mailster' ),
+						-5 => esc_html__( 'the fifth latest', 'mailster' ),
+						-6 => esc_html__( 'the sixth latest', 'mailster' ),
+						-7 => esc_html__( 'the seventh latest', 'mailster' ),
+						-8 => esc_html__( 'the eighth latest', 'mailster' ),
+						-9 => esc_html__( 'the ninth latest', 'mailster' ),
+						-10 => esc_html__( 'the tenth latest', 'mailster' ),
+						-11 => esc_html__( 'the eleventh latest', 'mailster' ),
+						-12 => esc_html__( 'the twelfth latest', 'mailster' ),
 					);
 
 					foreach ( $relativenames as $key => $name ) {
@@ -256,7 +256,7 @@
 					}
 					$post_types .= '</select>';
 
-					printf( _x( 'Insert %1$s of %2$s %3$s', 'Insert [excerpt] of [latest] [post]', 'mailster' ), $content, $relative, $post_types );
+					printf( esc_html_x( 'Insert %1$s of %2$s %3$s', 'Insert [excerpt] of [latest] [post]', 'mailster' ), $content, $relative, $post_types );
 				?>
 
 				</p>
@@ -282,7 +282,7 @@
 					</p>
 					<ul id="recent_feeds">
 					<?php if ( $recent_feeds = get_option( 'mailster_recent_feeds' ) ) : ?>
-						<?php echo '<li><strong>' . __( 'Recent Feeds', 'mailster' ) . '</strong></li>';
+						<?php echo '<li><strong>' . esc_html__( 'Recent Feeds', 'mailster' ) . '</strong></li>';
 						foreach ( $recent_feeds as $title => $url ) {
 							echo '<li><a href="' . $url . '">' . $title . '</a></li>';
 						}

@@ -79,7 +79,7 @@ $sent = $this->get_sent( $post->ID );
 					<?php elseif ( 'queued' == $post->post_status ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ) ?>" />
-						<?php submit_button( __( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+						<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 						<?php if ( $this->post_data['timestamp'] < $now && in_array( $post->post_status, array( 'paused' ) ) && $sent ) : ?>
 							<input name="resume" type="submit" value="<?php esc_attr_e( 'Resume', 'mailster' ) ?>" class="button resume-button" title="<?php esc_attr_e( 'Save and resume campaign', 'mailster' ) ?>" />
@@ -95,21 +95,21 @@ $sent = $this->get_sent( $post->ID );
 					<?php elseif ( in_array( $post->post_status, array( 'draft', 'auto-draft' ) ) ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ) ?>" />
-						<?php submit_button( __( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
-						<?php submit_button( __( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+						<?php submit_button( esc_html__( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
+						<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 					<?php elseif ( in_array( $post->post_status, array( 'pending' ) ) ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ) ?>" />
-						<?php submit_button( __( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
-						<?php submit_button( __( 'Confirm', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+						<?php submit_button( esc_html__( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
+						<?php submit_button( esc_html__( 'Confirm', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 					<?php endif; ?>
 
 				<?php else : ?>
 
 					<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Submit for Review', 'mailster' ) ?>" />
-					<?php submit_button( __( 'Submit for Review', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+					<?php submit_button( esc_html__( 'Submit for Review', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 			<?php endif; ?>
 

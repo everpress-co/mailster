@@ -26,10 +26,7 @@ jQuery(document).ready(function ($) {
 					action: 'dismiss-wp-pointer'
 				});
 			},
-			close: function (a) {
-				//console.log(MailsterPointer);
-				//pointers[i].dissmisstour();
-			}
+			close: function (a) {}
 		});
 
 
@@ -61,18 +58,11 @@ jQuery(document).ready(function ($) {
 					$(pointers[id].id).pointer('close');
 					if (pointers[id + 1]) init(id + 1);
 
-					//$(pointers[id+1].id).pointer(pointers[id+1]).pointer('open');
-
 				})
 				.on('click.pointer', '#pointer-close', function () {
 
 					// Post to admin ajax to disable pointers when user clicks "Close"
-					console.log(pointers[id].dissmisstour);
 					pointers[id].dissmisstour();
-					// $.post (ajaxurl, {
-					// 	pointer: MailsterPointer.tourname,
-					// 	action: 'dismiss-wp-pointer'
-					// });
 
 				})
 				.find('.wp-pointer-buttons').prepend('<a id="pointer-primary" class="button-primary right">' + pointers[id].button2 + '</a>');

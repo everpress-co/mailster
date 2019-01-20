@@ -157,8 +157,17 @@ jQuery(document).ready(function ($) {
 
 		})
 		.on('change', '.list-toggle', function () {
-			$(this).parent().parent().parent().find('li input').prop('checked', $(this).prop('checked'));
-		});
+			$(this).parent().parent().parent().find('ul input').prop('checked', $(this).prop('checked'));
+		})
+		.on('change', 'input[name="status"]', function () {
+			if ($(this).val() <= 0) {
+				$('.pending-info').show();
+			} else {
+				$('.pending-info').hide();
+			}
+		})
+
+	;
 
 	$('#paste-import')
 		.on('focus', function () {
@@ -319,13 +328,34 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
+	$('#delete-subscribers').on('change', 'input, select', update_deleteion_count);
+	update_deleteion_count();
+
+	function update_deleteion_count() {
+
+		setTimeout(function () {
+			var data = $('#delete-subscribers').serialize();
+			$('#delete-subscriber-button').prop('disabled', true);
+
+			_ajax('get_subscriber_count', {
+				data: data
+			}, function (response) {
+
+				if (response.success) {
+					$('#delete-subscriber-button').val(sprintf(mailsterL10n.delete_n_subscribers, response.count)).prop('disabled', !response.count);
+				}
+
+			});
+		}, 10);
+
+	}
+
 	$('input.selectall').on('change', function () {
 		var _this = $(this),
 			name = _this.attr('name');
 
 		$('input[name="' + name + '"]').prop('checked', _this.prop('checked'));
 	});
-
 
 
 	function do_export(offset, limit, count, data) {

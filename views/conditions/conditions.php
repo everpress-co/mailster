@@ -27,7 +27,7 @@
 	<div class="mailster-condition-container"></div>
 	<div class="mailster-conditions-wrap" data-emptytext="<?php esc_attr_e( 'Please add your first condition.', 'mailster' ); ?>"><?php
 	foreach ( $conditions as $i => $condition_group ) : ?><div class="mailster-condition-group" data-id="<?php echo $i ?>" data-operator="<?php esc_attr_e( 'and', 'mailster' );?>"<?php if ( ! $i ) {echo ' style="display:none"';} ?>>
-				<a class="add-or-condition button button-small"><?php esc_html_e( 'Add Condition', 'mailster' );?></a>
+				<a class="add-or-condition button button-small"><?php esc_html_e( 'Add Condition', 'mailster' );?> [<span><?php esc_html_e( 'or', 'mailster' );?></span>]</a>
 		<?php foreach ( $condition_group as $j => $condition ) :
 			$value = $condition['value'];
 			$field = $condition['field'];
@@ -125,7 +125,7 @@
 						endforeach; ?>
 						</select>
 					</div>
-					<div class="mailster-conditions-operator-field" data-fields=",_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,_click_link,_click_link__not_in,_lists__not_in,">
+					<div class="mailster-conditions-operator-field" data-fields=",_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,_click_link,_click_link__not_in,_lists__not_in,_lists__in,">
 						<input type="hidden" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled value="is">
 					</div>
 				</div>
@@ -227,7 +227,7 @@
 					<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]"></p>
 				<?php endif; ?>
 					</div>
-					<div class="mailster-conditions-value-field" data-fields=",_lists__not_in,">
+					<div class="mailster-conditions-value-field" data-fields=",_lists__not_in,_lists__in,">
 					<?php if ( $lists ) : ?>
 					<?php foreach ( $value_arr as $k => $v ) : ?>
 						<div class="mailster-conditions-value-field-multiselect">
