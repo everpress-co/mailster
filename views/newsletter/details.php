@@ -61,17 +61,17 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<tr><th><?php esc_html_e( 'Date', 'mailster' ) ?></th><td><?php echo date( $timeformat, $this->post_data['timestamp'] + $timeoffset );
 	if ( 'finished' == $post->post_status  ) :
 		echo ' &ndash; ' . date( $timeformat, $this->post_data['finished'] + $timeoffset );
-		echo ' (' . sprintf( __( 'took %s', 'mailster' ), human_time_diff( $this->post_data['timestamp'], $this->post_data['finished'] ) ) . ')';
+		echo ' (' . sprintf( esc_html__( 'took %s', 'mailster' ), human_time_diff( $this->post_data['timestamp'], $this->post_data['finished'] ) ) . ')';
 	endif;
 ?>
 	</td></tr>
 <?php endif; ?>
-	<tr><th><?php esc_html_e( 'Preheader', 'mailster' ) ?></th><td><?php echo $this->post_data['preheader'] ? $this->post_data['preheader'] : '<span class="description">' . __( 'no preheader', 'mailster' ) . '</span>' ?></td></tr>
+	<tr><th><?php esc_html_e( 'Preheader', 'mailster' ) ?></th><td><?php echo $this->post_data['preheader'] ? $this->post_data['preheader'] : '<span class="description">' . esc_html__( 'no preheader', 'mailster' ) . '</span>' ?></td></tr>
 </table>
 
 <ul id="stats">
 	<li class="receivers">
-		<label class="recipients-limit"><span class="verybold hb-sent"><?php echo number_format_i18n( $sent ); ?></span> <?php echo ( 'autoresponder' == $post->post_status ) ? __( 'sent', 'mailster' ) : _nx( 'receiver', 'receivers', $sent, 'in pie chart', 'mailster' ) ?></label>
+		<label class="recipients-limit"><span class="verybold hb-sent"><?php echo number_format_i18n( $sent ); ?></span> <?php echo ( 'autoresponder' == $post->post_status ) ? esc_html__( 'sent', 'mailster' ) : _nx( 'receiver', 'receivers', $sent, 'in pie chart', 'mailster' ) ?></label>
 	</li>
 	<?php if ( $this->post_data['track_opens'] ) : ?>
 	<li>
@@ -101,7 +101,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<th><?php ( 'autoresponder' == $post->post_status ) ? esc_html_e( 'Total Sent', 'mailster' ) : esc_html_e( 'Total Recipients', 'mailster' ) ?></th>
 	<td class="nopadding"> <span class="big hb-totals"><?php echo number_format_i18n( $totals ); ?></span>
 	<?php if ( ! in_array( $post->post_status, array( 'finished', 'autoresponder' ) ) ) {
-		echo '(<span class="hb-sent">' . number_format_i18n( $sent ) . '</span> ' . __( 'sent', 'mailster' ) . ')';
+		echo '(<span class="hb-sent">' . number_format_i18n( $sent ) . '</span> ' . esc_html__( 'sent', 'mailster' ) . ')';
 }
 	?>
 	<?php if ( ! empty( $sent ) ) : ?>
@@ -128,14 +128,14 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<?php
 	if ( $environment = $this->get_environment( $post->ID ) ) :
 		$types = array(
-			'desktop' => __( 'Desktop', 'mailster' ),
-			'mobile' => __( 'Mobile', 'mailster' ),
-			'webmail' => __( 'Web Client', 'mailster' ),
+			'desktop' => esc_html__( 'Desktop', 'mailster' ),
+			'mobile' => esc_html__( 'Mobile', 'mailster' ),
+			'webmail' => esc_html__( 'Web Client', 'mailster' ),
 		);
 	?>
 	<tr class="environment"><th><?php esc_html_e( 'Environment', 'mailster' ) ?></th><td class="nopadding">
 		<?php foreach ( $environment as $type => $data ) {?>
-		<label><span class="big"><span class="hb-<?php echo $type ?>"><?php echo round( $data['percentage'] * 100, 2 ) ?>%</span> <span class="mailster-icon client-<?php echo $type ?>"></span></span> <?php echo isset( $types[ $type ] ) ? $types[ $type ] : __( 'unknown', 'mailster' ); ?></label>
+		<label><span class="big"><span class="hb-<?php echo $type ?>"><?php echo round( $data['percentage'] * 100, 2 ) ?>%</span> <span class="mailster-icon client-<?php echo $type ?>"></span></span> <?php echo isset( $types[ $type ] ) ? $types[ $type ] : esc_html__( 'unknown', 'mailster' ); ?></label>
 		<?php }?>
 		<a href="#" id="show_environment" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ) ?></a>
 		<span class="spinner" id="environment-ajax-loading"></span><div class="ajax-list" id="environment-list"></div>
