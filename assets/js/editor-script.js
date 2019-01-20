@@ -174,6 +174,7 @@ jQuery(document).ready(function ($) {
 
 			editor
 				.on('change', function (event) {
+					var _self = this;
 					clearTimeout(changetimeout);
 					changetimeout = setTimeout(function () {
 						var content = event.level.content,
@@ -182,7 +183,7 @@ jQuery(document).ready(function ($) {
 							for (var i = c.length - 1; i >= 0; i--) {
 								content = content.replace(c[i], _hex(c[i]));
 							}
-							this.bodyElement.innerHTML = content;
+							_self.bodyElement.innerHTML = content;
 						}
 						_trigger('save');
 						change = true;
@@ -225,31 +226,6 @@ jQuery(document).ready(function ($) {
 	function _sortable() {
 
 		if (container.data('sortable')) container.sortable('destroy');
-		// if (buttons.data('sortable')) buttons.sortable('destroy');
-
-		// buttons.sortable({
-		// 	stop: function (event, ui) {
-		// 		event.stopPropagation();
-		// 		container.removeClass('dragging');
-		// 		setTimeout(function () {
-		// 			_trigger('refresh');
-		// 		}, 200);
-		// 	},
-		// 	start: function (event, ui) {
-		// 		event.stopPropagation();
-		// 		_trigger('hidebuttons');
-		// 		container.addClass('dragging');
-		// 	},
-		// 	containment: 'parent',
-		// 	revert: 100,
-		// 	placeholder: "sortable-placeholder",
-		// 	items: "> a",
-		// 	distance: 5,
-		// 	forcePlaceholderSize: true,
-		// 	helper: 'clone',
-		// 	zIndex: 10000
-		// });
-
 
 		if (modules.length < 2) return;
 
@@ -257,7 +233,6 @@ jQuery(document).ready(function ($) {
 			stop: function (event, ui) {
 				event.stopPropagation();
 				container.removeClass('dragging');
-				//_trigger('selectModule', ui.item);
 				setTimeout(function () {
 					_trigger('refresh');
 					_trigger('save');
@@ -369,7 +344,6 @@ jQuery(document).ready(function ($) {
 									'alt': target.attr('alt'),
 									'src': target.attr('src'),
 									'width': Math.round(org_w / org_f),
-									//'height': Math.round(org_h/org_f)
 									'height': Math.round((org_w / (target_w / target_h)) / org_f)
 								}).data('id', 0).removeClass('mailster-loading');
 
@@ -641,7 +615,6 @@ jQuery(document).ready(function ($) {
 
 						source._element.attr({
 							'src': response.image.url,
-							//'height': Math.round(response.image.height/up.settings.multipart_params.factor),
 							'height': height,
 							'data-id': response.image.id || 0
 						}).data('id', response.image.id || 0);

@@ -137,3 +137,12 @@ a.clipboard{
 	cursor: pointer;
 	font-size: smaller;
 }
+a.retest{
+	color: #aaa;
+	font-size: 12px;
+	text-decoration: none;
+}
+a.retest:before{content: '\e802';}
+.mailster-test-is-success a.retest{
+	display: none;
+}

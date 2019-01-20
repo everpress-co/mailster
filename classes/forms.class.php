@@ -14,6 +14,7 @@ class MailsterForms {
 	public function init() {
 
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 20 );
+		add_action( 'wp', array( &$this, 'form' ) );
 
 		if ( is_admin() ) {
 
@@ -40,7 +41,7 @@ class MailsterForms {
 
 		global $pagenow;
 
-		$formpage = $pagenow == 'form.php';
+		$formpage = $pagenow == 'form.php' || get_query_var( '_mailster_form' );
 
 		$this->request = array(
 			'is_editable' => isset( $_GET['edit'] ) && wp_verify_nonce( $_GET['edit'], 'mailsteriframeform' ),
@@ -57,6 +58,16 @@ class MailsterForms {
 			'buttonlabel' => ( isset( $_GET['label'] ) ? esc_attr( strip_tags( urldecode( $_GET['label'] ) ) ) : 'Subscribe' ),
 
 		);
+	}
+
+
+	public function form() {
+
+		if ( get_query_var( '_mailster_form' ) ) {
+			include_once MAILSTER_DIR . 'form.php';
+			exit;
+		}
+
 	}
 
 
@@ -81,7 +92,6 @@ class MailsterForms {
 			do_action( 'mailster_form_head_button' );
 			do_action( 'mymail_form_head_button' );
 
-			// wp_print_styles('mailster-form-button-style');
 			mailster( 'helper' )->wp_print_embedded_styles( 'mailster-form-button-style' );
 
 		} elseif ( $is_editable ) {
@@ -103,10 +113,6 @@ class MailsterForms {
 			$width = preg_match( '#\d+%#', $width ) ? (int) $width . '%' : (int) $width . 'px';
 			echo '<style type="text/css">.mailster-form-wrap{width:' . $width . '}</style>';
 
-		} else {
-
-			// wp_register_style('mailster-form', MAILSTER_URI . 'assets/css/form'.$suffix.'.css', array(), MAILSTER_VERSION);
-			// wp_print_styles('mailster-form');
 		}
 
 	}
@@ -135,8 +141,8 @@ class MailsterForms {
 			$form = mailster( 'form' )->id( $form_id );
 			$form->add_class( 'embeded' );
 			$form->prefill( false );
-			$form->set_success( __( 'This is a success info', 'mailster' ) );
-			$form->set_error( __( 'This is an error message', 'mailster' ) );
+			$form->set_success( esc_html__( 'This is a success message', 'mailster' ) );
+			$form->set_error( esc_html__( 'This is an error message', 'mailster' ) );
 			$form->is_preview();
 			$form->render();
 
@@ -164,9 +170,7 @@ class MailsterForms {
 			do_action( 'mailster_form_footer_button' );
 			do_action( 'mymail_form_footer_button' );
 			wp_register_script( 'mailster-form-button-script', MAILSTER_URI . 'assets/js/form-button-script' . $suffix . '.js', array(), MAILSTER_VERSION );
-			// wp_localize_script( 'mailster-form-button-script', 'MailsterData', $mailsterData);
 			mailster( 'helper' )->wp_print_embedded_scripts( 'mailster-form-button-script' );
-			// wp_print_scripts('mailster-form-button-script');
 		} elseif ( $is_editable ) {
 
 			wp_register_script( 'mailster-editable-form', MAILSTER_URI . 'assets/js/editable-form-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
@@ -183,13 +187,9 @@ class MailsterForms {
 			do_action( 'mailster_form_footer_iframe' );
 			do_action( 'mymail_form_footer_iframe' );
 			wp_register_script( 'mailster-form-iframe-script', MAILSTER_URI . 'assets/js/form-iframe-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
-			// wp_localize_script('mailster-form-iframe-script', 'MailsterData', $mailsterData);
 			wp_print_scripts( 'mailster-form-iframe-script' );
 			wp_print_scripts( 'mailster-form' );
 
-		} else {
-
-			// wp_print_scripts('mailster-form-embeded');
 		}
 
 	}
@@ -197,7 +197,7 @@ class MailsterForms {
 
 	public function admin_menu() {
 
-		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Forms', 'mailster' ), __( 'Forms', 'mailster' ), 'mailster_edit_forms', 'mailster_forms', array( &$this, 'view_forms' ) );
+		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Forms', 'mailster' ), esc_html__( 'Forms', 'mailster' ), 'mailster_edit_forms', 'mailster_forms', array( &$this, 'view_forms' ) );
 
 		add_action( 'load-' . $page, array( &$this, 'script_styles' ) );
 
@@ -250,10 +250,10 @@ class MailsterForms {
 
 			wp_enqueue_style( 'mailster-form-detail', MAILSTER_URI . 'assets/css/form-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_localize_script( 'mailster-form-detail', 'mailsterL10n', array(
-				'require_save' => __( 'The changes you made will be lost if you navigate away from this page.', 'mailster' ),
-				'not_saved' => __( 'You haven\'t saved your recent changes on this form!', 'mailster' ),
-				'prev' => __( 'prev', 'mailster' ),
-				'useit' => __( 'Use your form as', 'mailster' ) . '&hellip;',
+				'require_save' => esc_html__( 'The changes you made will be lost if you navigate away from this page.', 'mailster' ),
+				'not_saved' => esc_html__( 'You haven\'t saved your recent changes on this form!', 'mailster' ),
+				'prev' => esc_html__( 'prev', 'mailster' ),
+				'useit' => esc_html__( 'Use your form as', 'mailster' ) . '&hellip;',
 			) );
 			wp_localize_script( 'mailster-form-detail', 'mailsterdata', array(
 				'embedcode' => $this->get_empty_subscribe_button(),
@@ -276,11 +276,11 @@ class MailsterForms {
 	public function get_columns() {
 		return $columns = array(
 			'cb' => '<input type="checkbox" />',
-			'name' => __( 'Name', 'mailster' ),
-			'shortcode' => __( 'Shortcode', 'mailster' ),
-			'fields' => __( 'Fields', 'mailster' ),
-			'lists' => __( 'Lists', 'mailster' ),
-			'occurrence' => __( 'Occurrence', 'mailster' ),
+			'name' => esc_html__( 'Name', 'mailster' ),
+			'shortcode' => esc_html__( 'Shortcode', 'mailster' ),
+			'fields' => esc_html__( 'Fields', 'mailster' ),
+			'lists' => esc_html__( 'Lists', 'mailster' ),
+			'occurrence' => esc_html__( 'Occurrence', 'mailster' ),
 			'preview' => '',
 		);
 
@@ -314,10 +314,10 @@ class MailsterForms {
 
 					$success = $this->remove( $_POST['forms'] );
 					if ( is_wp_error( $success ) ) {
-						mailster_notice( sprintf( __( 'There was an error while deleting forms: %s', 'mailster' ), $success->get_error_message() ), 'error', true );
+						mailster_notice( sprintf( esc_html__( 'There was an error while deleting forms: %s', 'mailster' ), $success->get_error_message() ), 'error', true );
 
 					} elseif ( $success ) {
-						mailster_notice( sprintf( __( '%d forms have been removed', 'mailster' ), count( $_POST['forms'] ) ), 'error', true );
+						mailster_notice( sprintf( esc_html__( '%d forms have been removed', 'mailster' ), count( $_POST['forms'] ) ), 'error', true );
 					}
 
 					wp_redirect( $redirect );
@@ -340,8 +340,8 @@ class MailsterForms {
 
 			// duplicate form
 			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
-					$id = (int) $_GET['duplicate'];
-					$id = $this->duplicate( $id );
+				$id = (int) $_GET['duplicate'];
+				$id = $this->duplicate( $id );
 
 			}
 
@@ -373,7 +373,7 @@ class MailsterForms {
 					$id = $this->add( $data );
 
 					if ( is_wp_error( $id ) ) {
-						mailster_notice( sprintf( __( 'There was an error while adding the form: %s', 'mailster' ), $id->get_error_message() ), 'error', true );
+						mailster_notice( sprintf( esc_html__( 'There was an error while adding the form: %s', 'mailster' ), $id->get_error_message() ), 'error', true );
 
 					}
 
@@ -384,7 +384,7 @@ class MailsterForms {
 					$id = $this->update( $data );
 
 					if ( is_wp_error( $id ) ) {
-						mailster_notice( sprintf( __( 'There was an error while updating the form: %s', 'mailster' ), $id->get_error_message() ), 'error', true );
+						mailster_notice( sprintf( esc_html__( 'There was an error while updating the form: %s', 'mailster' ), $id->get_error_message() ), 'error', true );
 
 					}
 				}
@@ -419,7 +419,7 @@ class MailsterForms {
 
 				}
 
-				mailster_notice( isset( $urlparams['new'] ) ? __( 'Form added', 'mailster' ) : __( 'Form updated', 'mailster' ), 'success', true );
+				mailster_notice( isset( $urlparams['new'] ) ? esc_html__( 'Form added', 'mailster' ) : esc_html__( 'Form updated', 'mailster' ), 'success', true );
 
 			endif;
 
@@ -443,10 +443,10 @@ class MailsterForms {
 				if ( current_user_can( 'mailster_delete_forms' ) && $form = $this->get( (int) $_POST['mailster_data']['ID'] ) ) {
 					$success = $this->remove( $form->ID );
 					if ( is_wp_error( $success ) ) {
-						mailster_notice( sprintf( __( 'There was an error while deleting forms: %s', 'mailster' ), $success->get_error_message() ), 'error', true );
+						mailster_notice( sprintf( esc_html__( 'There was an error while deleting forms: %s', 'mailster' ), $success->get_error_message() ), 'error', true );
 
 					} elseif ( $success ) {
-						mailster_notice( sprintf( __( 'Form %s has been removed', 'mailster' ), '<strong>&quot;' . $form->name . '&quot;</strong>' ), 'error', true );
+						mailster_notice( sprintf( esc_html__( 'Form %s has been removed', 'mailster' ), '<strong>&quot;' . $form->name . '&quot;</strong>' ), 'error', true );
 						do_action( 'mailster_form_delete', $form->ID );
 						do_action( 'mymail_form_delete', $form->ID );
 					}
@@ -501,7 +501,7 @@ class MailsterForms {
 		$screen = get_current_screen();
 
 		add_screen_option( 'per_page', array(
-				'label' => __( 'Forms', 'mailster' ),
+				'label' => esc_html__( 'Forms', 'mailster' ),
 				'default' => 10,
 				'option' => 'mailster_forms_per_page',
 		) );
@@ -538,7 +538,7 @@ class MailsterForms {
 	public function url( $args = array(), $endpoint = null ) {
 
 		if ( is_null( $endpoint ) ) {
-			$endpoint = plugins_url( basename( MAILSTER_DIR ) . '/form.php' );
+			$endpoint = get_home_url( null, 'mailster/form' );
 		}
 
 		return apply_filters( 'mailster_form_url', add_query_arg( $args , $endpoint ) );
@@ -559,7 +559,7 @@ class MailsterForms {
 		$data = (array) $entry;
 
 		if ( ! isset( $data['ID'] ) ) {
-			return new WP_Error( 'id_required', __( 'updating form requires ID', 'mailster' ) );
+			return new WP_Error( 'id_required', esc_html__( 'updating form requires ID', 'mailster' ) );
 		}
 
 		$now = time();
@@ -607,7 +607,7 @@ class MailsterForms {
 		$entry = is_string( $entry ) ? array( 'name' => $entry ) : (array) $entry;
 
 		$entry = wp_parse_args( $entry, array(
-				'name' => __( 'Form', 'mailster' ),
+				'name' => esc_html__( 'Form', 'mailster' ),
 				'submit' => mailster_text( 'submitbutton' ),
 				'asterisk' => true,
 				'userschoice' => false,
@@ -619,10 +619,10 @@ class MailsterForms {
 				'style' => '',
 				'custom_style' => '',
 				'doubleoptin' => true,
-				'subject' => __( 'Please confirm', 'mailster' ),
-				'headline' => __( 'Please confirm your Email Address', 'mailster' ),
-				'content' => sprintf( __( 'You have to confirm your email address. Please click the link below to confirm. %s', 'mailster' ), "\n{link}" ),
-				'link' => __( 'Click here to confirm', 'mailster' ),
+				'subject' => esc_html__( 'Please confirm', 'mailster' ),
+				'headline' => esc_html__( 'Please confirm your Email Address', 'mailster' ),
+				'content' => sprintf( esc_html__( 'You have to confirm your email address. Please click the link below to confirm. %s', 'mailster' ), "\n{link}" ),
+				'link' => esc_html__( 'Click here to confirm', 'mailster' ),
 				'resend' => false,
 				'resend_count' => 2,
 				'resend_time' => 48,
@@ -667,7 +667,7 @@ class MailsterForms {
 	public function duplicate( $id ) {
 
 		if ( ! current_user_can( 'mailster_add_forms' ) ) {
-			wp_die( __( 'You are not allowed to add forms.', 'mailster' ) );
+			wp_die( esc_html__( 'You are not allowed to add forms.', 'mailster' ) );
 		}
 
 		if ( $form = $this->get( $id ) ) {
@@ -684,6 +684,9 @@ class MailsterForms {
 			unset( $form->added );
 			unset( $form->updated );
 			unset( $form->stylesheet );
+			if ( empty( $form->style ) ) {
+				unset( $form->style );
+			}
 
 			if ( preg_match( '# \((\d+)\)$#', $form->name, $hits ) ) {
 				$form->name = trim( preg_replace( '#(.*) \(\d+\)$#', '$1 (' . ( ++$hits[1] ) . ')', $form->name ) );
@@ -1076,8 +1079,8 @@ class MailsterForms {
 		foreach ( $fields as $i => $field ) {
 			if ( empty( $field->error_msg ) ) {
 				$field->error_msg = ( $field->field_id == 'email' )
-					? __( 'Email is missing or wrong', 'mailster' )
-					: sprintf( __( '%s is missing', 'mailster' ), $field->name );
+					? esc_html__( 'Email is missing or wrong', 'mailster' )
+					: sprintf( esc_html__( '%s is missing', 'mailster' ), $field->name );
 			}
 			unset( $fields[ $i ] );
 			$fields[ $field->field_id ] = $field;
@@ -1225,7 +1228,6 @@ class MailsterForms {
 		) );
 
 		$button_src = apply_filters( 'mymail_subscribe_button_src', apply_filters( 'mailster_subscribe_button_src', '//mailster.github.io/v1/button.js', $options ), $options );
-		// $button_src = apply_filters('mailster_subscribe_button_src', MAILSTER_URI.'assets/js/button.js', $options);
 		$options['endpoint'] = $this->url( array(
 			'id' => $form_id,
 			'iframe' => 1,
@@ -1289,25 +1291,25 @@ class MailsterForms {
 
 		if ( $new ) {
 			$form_id = $this->add( array(
-				'name' => __( 'Default Form', 'mailster' ),
-				'submit' => __( 'Subscribe', 'mailster' ),
+				'name' => esc_html__( 'Default Form', 'mailster' ),
+				'submit' => esc_html__( 'Subscribe', 'mailster' ),
 			) );
 			if ( ! is_wp_error( $form_id ) ) {
 				$this->update_fields( $form_id, array(
-					'email' => __( 'Email', 'mailster' ),
+					'email' => esc_html__( 'Email', 'mailster' ),
 				));
 				$this->assign_lists( $form_id, 1 );
 			}
 			$profile_form_id = $this->add( array(
-				'name' => __( 'Profile', 'mailster' ),
-				'submit' => __( 'Subscribe', 'mailster' ),
+				'name' => esc_html__( 'Profile', 'mailster' ),
+				'submit' => esc_html__( 'Subscribe', 'mailster' ),
 				'userschoice' => true,
 			) );
 			if ( ! is_wp_error( $profile_form_id ) ) {
 				$this->update_fields( $profile_form_id, array(
-					'email' => __( 'Email', 'mailster' ),
-					'firstname' => __( 'First Name', 'mailster' ),
-					'lastname' => __( 'Last Name', 'mailster' ),
+					'email' => esc_html__( 'Email', 'mailster' ),
+					'firstname' => esc_html__( 'First Name', 'mailster' ),
+					'lastname' => esc_html__( 'Last Name', 'mailster' ),
 				));
 				mailster_update_option( 'profile_form', $profile_form_id );
 				$this->assign_lists( $profile_form_id, 1 );
@@ -1320,10 +1322,10 @@ class MailsterForms {
 	public function use_it_form_tab_intro( $form ) {
 		?>
 		<h4>&hellip; <?php esc_html_e( 'Shortcode', 'mailster' ) ?></h4>
-		<p class="description"><?php esc_html_e( 'Use a shortcode on a blog post, page or wherever they are excepted.', 'mailster' ) ?> <?php printf( __( 'Read more about shortcodes at %s', 'mailster' ), '<a href="https://codex.wordpress.org/Shortcode">WordPress Codex</a>' ) ?></p>
+		<p class="description"><?php esc_html_e( 'Use a shortcode on a blog post, page or wherever they are excepted.', 'mailster' ) ?> <?php printf( esc_html__( 'Read more about shortcodes at %s', 'mailster' ), '<a href="https://codex.wordpress.org/Shortcode">WordPress Codex</a>' ) ?></p>
 
 		<h4>&hellip; <?php esc_html_e( 'Widget', 'mailster' ) ?></h4>
-		<p class="description"><?php printf( __( 'Use this form as a %s in one of your sidebars', 'mailster' ), '<a href="widgets.php">' . __( 'widget', 'mailster' ) . '</a>' ) ?>.</p>
+		<p class="description"><?php printf( esc_html__( 'Use this form as a %s in one of your sidebars', 'mailster' ), '<a href="widgets.php">' . esc_html__( 'widget', 'mailster' ) . '</a>' ) ?>.</p>
 
 		<h4>&hellip; <?php esc_html_e( 'Subscriber Button', 'mailster' ) ?></h4>
 		<p class="description"><?php esc_html_e( 'Embed your form on any site, no matter if it is your current or a third party one. It\'s similar to the Twitter button.', 'mailster' ) ?></p>

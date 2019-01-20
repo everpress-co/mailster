@@ -62,7 +62,7 @@ class MailsterHelper {
 
 				$actual_file_path = realpath( $_SERVER['DOCUMENT_ROOT'] ) . $file_path['path'];
 
-				/* todo: reconize URLs */
+				/* todo: recognize URLs */
 				if ( ! file_exists( $actual_file_path ) ) {
 
 					return apply_filters( 'mailster_create_image', array(
@@ -91,7 +91,7 @@ class MailsterHelper {
 
 		}
 
-		if ( ! $height && isset( $image_src[2] ) ) {
+		if ( ! $height && isset( $image_src[1] ) && $image_src[1] && isset( $image_src[2] ) && $image_src[2] ) {
 			$height = round( $width / ( $image_src[1] / $image_src[2] ) );
 		}
 
@@ -122,7 +122,7 @@ class MailsterHelper {
 			$new_img = str_replace( basename( $image_src[0] ), basename( $new_img_path ), $image_src[0] );
 
 			$meta_data = wp_get_attachment_metadata( $attach_id );
-			if ( $meta_data ) {
+			if ( $meta_data && is_array( $meta_data ) ) {
 				$size_id = '_mailster-' . $width . 'x' . $height . '|' . $crop;
 				$meta_data['sizes'][ $size_id ] = array(
 					'file' => basename( $new_img_path ),
@@ -159,7 +159,7 @@ class MailsterHelper {
 		$cache_key = 'mailster_wpuser_meta_fields';
 
 		if ( $force || false === ( $meta_values = get_transient( $cache_key ) ) ) {
-			$exclude = array( 'comment_shortcuts', 'first_name', 'last_name', 'nickname', 'use_ssl', 'default_password_nag', 'dismissed_wp_pointers', 'rich_editing', 'show_admin_bar_front', 'show_welcome_panel', 'admin_color', 'screen_layout_dashboard', 'screen_layout_newsletter' );
+			$exclude = array( 'comment_shortcuts', 'first_name', 'last_name', 'nickname', 'use_ssl', 'default_password_nag', 'dismissed_wp_pointers', 'rich_editing', 'show_admin_bar_front', 'show_welcome_panel', 'admin_color', 'screen_layout_dashboard', 'screen_layout_newsletter', 'show_try_gutenberg_panel', 'syntax_highlighting', 'locale', 'sites_network_per_page' );
 
 			$meta_values = $wpdb->get_col( "SELECT meta_key FROM {$wpdb->usermeta} WHERE meta_value NOT LIKE '%:{%' GROUP BY meta_key ASC" );
 			$meta_values = preg_grep( '/^(?!' . preg_quote( $wpdb->prefix ) . ')/', $meta_values );
@@ -184,7 +184,7 @@ class MailsterHelper {
 	public function get_addons( $force = false ) {
 
 		if ( $force || false === ( $addons = get_transient( 'mailster_addons' ) ) ) {
-			$url = 'http://mailster.github.io/v1/addons.json';
+			$url = 'https://mailster.github.io/v1/addons.json';
 
 			$response = wp_remote_get( $url, array() );
 
@@ -245,11 +245,11 @@ class MailsterHelper {
 			wp_die( $api );
 		}
 
-		$title = __( 'Plugin Install', 'mailster' );
+		$title = esc_html__( 'Plugin Install', 'mailster' );
 		$parent_file = 'plugins.php';
 		$submenu_file = 'plugin-install.php';
 
-		$title = sprintf( __( 'Installing Plugin: %s', 'mailster' ), $api->name . ' ' . $api->version );
+		$title = sprintf( esc_html__( 'Installing Plugin: %s', 'mailster' ), $api->name . ' ' . $api->version );
 		$nonce = 'install-plugin_' . $plugin;
 		$url = 'update.php?action=install-plugin&plugin=' . urlencode( $plugin );
 
@@ -340,7 +340,7 @@ class MailsterHelper {
 		$results = array();
 		foreach ( $posts as $post ) {
 			if ( 'post' == $post->post_type ) {
-				$info = mysql2date( __( 'Y/m/d', 'mailster' ), $post->post_date );
+				$info = mysql2date( esc_html__( 'Y/m/d', 'mailster' ), $post->post_date );
 			} else {
 				$info = $pts[ $post->post_type ]->labels->singular_name;
 			}
@@ -556,7 +556,7 @@ class MailsterHelper {
 
 			foreach ( $values[ $id ] as $term ) {
 				$select = '<select class="dynamic_embed_options_taxonomy check-for-posts" ' . ( $names ? 'name="mailster_data[autoresponder][terms][' . $id . '][]"' : '' ) . '>';
-				$select .= '<option value="-1">' . sprintf( __( 'any %s', 'mailster' ), $taxonomy->labels->singular_name ) . '</option>';
+				$select .= '<option value="-1">' . sprintf( esc_html__( 'any %s', 'mailster' ), $taxonomy->labels->singular_name ) . '</option>';
 				foreach ( $cats as $cat ) {
 					$select .= '<option value="' . $cat->term_id . '" ' . selected( $cat->term_id, $term, false ) . '>' . $cat->name . '</option>';
 				}
@@ -564,9 +564,9 @@ class MailsterHelper {
 				$selects[] = $select;
 			}
 
-			$tax .= implode( ' ' . __( 'or', 'mailster' ) . ' ', $selects );
+			$tax .= implode( ' ' . esc_html__( 'or', 'mailster' ) . ' ', $selects );
 
-			$tax .= '</span><div class="mailster-list-operator"><span class="operator-and">' . __( 'and', 'mailster' ) . '</span></div></div>';
+			$tax .= '</span><div class="mailster-list-operator"><span class="operator-and">' . esc_html__( 'and', 'mailster' ) . '</span></div></div>';
 
 			$taxwraps[] = $tax;
 		}
@@ -910,16 +910,16 @@ class MailsterHelper {
 		switch ( $status ) {
 			case 'list_unsubscribe':
 			case 'list_unsubscribe_list':
-				return  __( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
+				return  esc_html__( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
 			case 'link_unsubscribe':
 			case 'link_unsubscribe_list':
-				return __( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
+				return esc_html__( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
 			case 'email_unsubscribe':
 			case 'email_unsubscribe_list':
-				return __( 'The user canceled the subscription via the website.', 'mailster' );
+				return esc_html__( 'The user canceled the subscription via the website.', 'mailster' );
 			case 'spam_complaint':
 			case 'spam_complaint_list':
-				return __( 'The user marked this message as Spam in the Mail application.', 'mailster' );
+				return esc_html__( 'The user marked this message as Spam in the Mail application.', 'mailster' );
 		}
 
 		return $status;
@@ -942,11 +942,6 @@ class MailsterHelper {
 		// strip all unwanted stuff from the content
 		$content = $this->strip_unwanted_html( $content );
 
-		// fix for Yahoo background color FIXED!!
-		// if(!strpos($this->content, 'body{background-image'))
-		// $this->content = preg_replace('/body{background-color/','body,.bodytbl{background-color', $this->content, 1);
-		// adding a inline width attribute to images for a bug in Apple Mail 7 with embeded images
-		// if($this->embed_images){
 		preg_match_all( '#(<img.*?)(width="(\d+)")(.*?>)#', $content, $images );
 		foreach ( $images[0] as $i => $image ) {
 			$oldstyle = '';
@@ -958,7 +953,7 @@ class MailsterHelper {
 			$imgstr = str_replace( $styleattr, '', $images[1][ $i ] . 'style="width:' . $images[3][ $i ] . 'px;' . $oldstyle . '" ' . $images[2][ $i ] . $images[4][ $i ] );
 			$content = str_replace( $image, $imgstr, $content );
 		}
-		// }
+
 		// custom styles
 		$content = $this->add_mailster_styles( $content );
 
@@ -1262,7 +1257,11 @@ class MailsterHelper {
 
 		mailster_require_filesystem();
 
-		$path = trailingslashit( trailingslashit( MAILSTER_UPLOAD_DIR ) . $folder );
+		if ( 0 === strrpos( $folder, ABSPATH ) ) {
+			$path = trailingslashit( $folder );
+		} else {
+			$path = trailingslashit( trailingslashit( MAILSTER_UPLOAD_DIR ) . $folder );
+		}
 
 		if ( ! is_dir( $path ) ) {
 
@@ -1298,8 +1297,8 @@ class MailsterHelper {
 		if ( $force || false === ( $records = get_transient( $key ) ) ) {
 
 			// request TXT first
-			dns_get_record( $host, DNS_TXT );
-			$records = dns_get_record( $host, DNS_ALL - DNS_PTR );
+			@dns_get_record( $host, DNS_TXT );
+			$records = @dns_get_record( $host, DNS_ALL - DNS_PTR );
 
 			set_transient( $key, $records, 90 );
 
@@ -1535,7 +1534,7 @@ class MailsterHelper {
 
 		$defaults = array(
 			'id' => uniqid(),
-			'button_label' => __( 'Ok, got it!', 'mailster' ),
+			'button_label' => esc_html__( 'Ok, got it!', 'mailster' ),
 			'classes' => array(),
 		);
 

@@ -42,7 +42,7 @@ class MailsterUpdate {
 		if ( ( isset( $upgrader->skin->plugin ) && $upgrader->skin->plugin === MAILSTER_SLUG ) ||
 			( isset( $upgrader->skin->plugin_info ) && $upgrader->skin->plugin_info['Name'] === 'Mailster - Email Newsletter Plugin for WordPress' ) ) {
 
-			$upgrader->strings['mailster_download'] = __( 'Downloading the latest version of Mailster', 'mailster' ) . '...';
+			$upgrader->strings['mailster_download'] = esc_html__( 'Downloading the latest version of Mailster', 'mailster' ) . '...';
 			$upgrader->skin->feedback( 'mailster_download' );
 
 			$res = $upgrader->fs_connect( array( WP_CONTENT_DIR ) );
@@ -58,18 +58,18 @@ class MailsterUpdate {
 
 				$short_msg = isset( $_SERVER['HTTP_REFERER'] ) ? preg_match( '#page=envato-market#', $_SERVER['HTTP_REFERER'] ) : false;
 
-				$upgrader->strings['mailster_download_error'] = __( 'Not able to download Mailster!', 'mailster' );
+				$upgrader->strings['mailster_download_error'] = esc_html__( 'Not able to download Mailster!', 'mailster' );
 				$upgrader->skin->feedback( 'mailster_download_error' );
 
 				$code = $download_file->get_error_message();
 
-				$error_msg = mailster()->get_update_error( $code, $short_msg, __( 'An error occurred while updating Mailster!', 'mailster' ) );
+				$error_msg = mailster()->get_update_error( $code, $short_msg, esc_html__( 'An error occurred while updating Mailster!', 'mailster' ) );
 
 				switch ( $code ) {
 
 					case 680: // Licensecode in use
 
-						$error_msg = $error_msg . ' <a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=inline+link" target="_blank"><strong>' . sprintf( __( 'Buy an additional license for %s.', 'mailster' ), ( mailster_is_local() ? __( 'your new site', 'mailster' ) : $_SERVER['HTTP_HOST'] ) . '</strong></a>' );
+						$error_msg = $error_msg . ' <a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=inline+link" target="_blank"><strong>' . sprintf( esc_html__( 'Buy an additional license for %s.', 'mailster' ), ( mailster_is_local() ? esc_html__( 'your new site', 'mailster' ) : $_SERVER['HTTP_HOST'] ) . '</strong></a>' );
 
 					case 679: // No Licensecode provided
 					case 678: // Licensecode invalid
@@ -81,12 +81,12 @@ class MailsterUpdate {
 
 					case 500: // Internal Server Error
 					case 503: // Service Unavailable
-						$error = __( 'Authentication servers are currently down. Please try again later!', 'mailster' );
+						$error = esc_html__( 'Authentication servers are currently down. Please try again later!', 'mailster' );
 					break;
 
 					default:
 
-						$error = __( 'An error occurred while updating Mailster!', 'mailster' );
+						$error = esc_html__( 'An error occurred while updating Mailster!', 'mailster' );
 						if ( $message ) {
 							$error .= '<br>' . $message;
 						}
@@ -143,7 +143,7 @@ class MailsterUpdate {
 	 */
 	public function add_update_action_link( $actions ) {
 
-		$actions['mailster_get_license'] = '<a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=action+link">' . __( 'Buy a new Mailster License', 'mailster' ) . '</a>';
+		$actions['mailster_get_license'] = '<a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=action+link">' . esc_html__( 'Buy a new Mailster License', 'mailster' ) . '</a>';
 
 		return $actions;
 
@@ -160,12 +160,12 @@ class MailsterUpdate {
 
 		if ( mailster()->is_outdated() ) {
 
-			echo '<tr class="plugin-update-tr" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="3" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( __( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
+			echo '<tr class="plugin-update-tr" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="3" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( esc_html__( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
 
 		}
 		if ( ! mailster()->is_verified() ) {
 
-			echo '<tr class="plugin-update-tr" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="3" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
+			echo '<tr class="plugin-update-tr" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="3" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( esc_html__( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
 
 		}
 
