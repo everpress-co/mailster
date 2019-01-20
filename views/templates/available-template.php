@@ -20,7 +20,7 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 }
 
 ?>
-	<li class="<?php echo implode( ' ', $class ) ?>" id="template-<?php echo $slug ?>" data-id="<?php echo esc_attr( $slug ) ?>" data-support="<?php echo esc_attr( sprintf( __( 'This Template requires at least version %s of Mailster.', 'mailster' ), $data['requires'] ) ); ?>">
+	<li class="<?php echo implode( ' ', $class ) ?>" id="template-<?php echo $slug ?>" data-id="<?php echo esc_attr( $slug ) ?>" data-support="<?php echo esc_attr( sprintf( esc_html__( 'This Template requires at least version %s of Mailster.', 'mailster' ), $data['requires'] ) ); ?>">
 		<a class="external screenshot" title="<?php echo $data['name'] . ' ' . $data['new_version'] . ' ' . esc_attr__( 'by', 'mailster' ) . ' ' . $data['author'] ?>" <?php echo ! empty( $data['uri'] ) ? 'href="' . esc_url( $data['uri'] ) . '" ' : '' ?> data-slug="<?php echo esc_attr( $slug ) ?>">
 				<img alt="" src="<?php echo esc_url( $data['image'] ) ?>" width="300" height="225">
 		</a>
@@ -64,7 +64,7 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 						<li class="alignright">
 							<a title="<?php esc_html_e( 'update template', 'mailster' );?>" class="update button button-primary" href="edit.php?post_type=newsletter&page=mailster_templates&action=update&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'download-' . $slug ) ?>">
 							<?php if ( $data['update'] && $updates ) : ?>
-								<?php echo sprintf( __( 'Update to %s', 'mailster' ), $data['new_version'] ); ?>
+								<?php echo sprintf( esc_html__( 'Update to %s', 'mailster' ), $data['new_version'] ); ?>
 							<?php else : ?>
 								<?php esc_html_e( 'Download', 'mailster' ); ?>
 							<?php endif; ?>
@@ -96,7 +96,7 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 					<li class="alignright">
 						<a title="<?php esc_html_e( 'activate on Envato', 'mailster' );?>" class="envato-activate update button button-primary" href="<?php echo add_query_arg( array( 'auth' => wp_create_nonce( 'envato-activate' ), 'item_id' => $data['envato_item_id'], 'slug' => $slug, 'returnto' => urlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' ) ) ), $data['endpoint'] ) ?>" data-slug="<?php echo $slug ?>">
 							<?php if ( $data['update'] && $updates ) : ?>
-								<?php echo sprintf( __( 'Update to %s', 'mailster' ), $data['new_version'] ); ?>
+								<?php echo sprintf( esc_html__( 'Update to %s', 'mailster' ), $data['new_version'] ); ?>
 							<?php else : ?>
 								<?php esc_html_e( 'Download', 'mailster' ); ?>
 							<?php endif; ?>

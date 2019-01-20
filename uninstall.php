@@ -28,14 +28,27 @@ foreach ( $blogids as $blog_id ) {
 	if ( empty( $mailster_options ) ) {
 		$mailster_options = get_option( 'mailster_options' );
 	}
+
+	require WP_PLUGIN_DIR . '/' . WP_UNINSTALL_PLUGIN;
+
+	if ( ! class_exists( 'UpdateCenterPlugin' ) ) {
+		require_once MAILSTER_DIR . 'classes/UpdateCenterPlugin.php';
+	}
+
+	UpdateCenterPlugin::add( array(
+		'licensecode' => mailster()->license(),
+		'remote_url' => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
+		'plugin' => MAILSTER_SLUG,
+		'slug' => 'mailster',
+		'autoupdate' => mailster_option( 'autoupdate', true ),
+	) );
+
+	mailster()->reset_license();
+
 	// stop if data should be kept
 	if ( ! $mailster_options['remove_data'] ) {
 		continue;
 	}
-
-	$path = WP_PLUGIN_DIR . '/' . dirname( WP_UNINSTALL_PLUGIN );
-
-	require $path . '/includes/capability.php';
 
 	$roles = array_keys( $wp_roles->roles );
 	$mailster_capabilities = array_keys( $mailster_capabilities );
@@ -94,8 +107,6 @@ foreach ( $blogids as $blog_id ) {
 	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_forms" );
 	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_forms_lists" );
 	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_form_fields" );
-
-	require_once $path . '/includes/functions.php';
 
 	// remove folder in the upload directory
 	if ( $filesystem = mailster_require_filesystem() ) {
