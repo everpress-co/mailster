@@ -16,43 +16,9 @@
 	<tr valign="top">
 		<th scope="row">&nbsp;</th>
 		<td>
-<?php
+		<div class="spf-result spinner"><?php esc_html_e( 'Loading SPF data', 'mailster' ) ?>&hellip;</div>
 
-	$records = mailster( 'helper' )->dns_query( $spf_domain, 'TXT' );
-
-$found = false;
-if ( $records ) {
-	foreach ( $records as $r ) {
-		if ( $r->type === 'TXT' && preg_match( '#v=spf1 #', $r->txt ) ) {
-			$found = $r;
-			break;
-		}
-	}
-}
-
-if ( $found ) : ?>
-
-		<div class="verified">
-		<p><?php printf( __( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ' . __( 'TXT record found', 'mailster' ); ?>: <code><?php echo $found->txt ?></code></p>
-		</div>
-
-<?php else : ?>
-		<div class="not-verified"><p><?php printf( __( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ' . __( 'no TXT record found', 'mailster' ); ?></p>
-		<p><?php printf( __( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ); ?>
-		</p>
-		<?php
-		$records = mailster( 'helper' )->dns_query( $spf_domain, 'A' );
-
-		$ips = wp_list_pluck( (array) $records, 'ip' );
-?>
-	<dl>
-		<dt><strong><?php echo $spf_domain; ?></strong> IN TXT</dt>
-			<dd><textarea class="widefat" rows="1" id="spf-record" readonly><?php echo esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) ?></textarea><a class="clipboard" data-clipboard-target="#spf-record"><?php esc_html_e( 'copy', 'mailster' ) ?></a></dd>
-	</dl>
-	</div>
-
-	<?php endif; ?>
-		<p class="description"><?php printf( __( 'SPF doesn\'t require any configuration on this settings page. This should give you some help to set it up correctly. If this SPF configuration doesn\'t work or your mails returned as spam you should ask your provider for help or change your delivery method or try %s', 'mailster' ), '<a href="http://www.openspf.org/FAQ/Common_mistakes" class="external">' . __( 'to get help here', 'mailster' ) . '</a>' ); ?></p>
+		<p class="description"><?php printf( esc_html__( 'SPF doesn\'t require any configuration on this settings page. This should give you some help to set it up correctly. If this SPF configuration doesn\'t work or your mails returned as spam you should ask your provider for help or change your delivery method or try %s', 'mailster' ), '<a href="http://www.openspf.org/FAQ/Common_mistakes" class="external">' . esc_html__( 'to get help here', 'mailster' ) . '</a>' ); ?></p>
 		</td>
 	</tr>
 	<?php endif; ?>
@@ -69,44 +35,9 @@ if ( $found ) : ?>
 	<tr valign="top">
 		<th scope="row">&nbsp;</th>
 		<td>
-<?php
-
-$pubkey = trim( str_replace( array( '-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----', "\n", "\r" ), '', mailster_option( 'dkim_public_key' ) ) );
-$record = apply_filters( 'mailster_dkim_record', 'k=rsa; p=' . $pubkey );
-
-$dkim_domain = mailster_option( 'dkim_domain' );
-$dkim_selector = mailster_option( 'dkim_selector' );
-$records = mailster( 'helper' )->dns_query( mailster_option( 'dkim_selector' ) . '._domainkey.' . $dkim_domain, 'TXT' );
-
-$found = false;
-foreach ( (array) $records as $r ) {
-	if ( $r->type === 'TXT' && preg_replace( '#[^a-zA-Z0-9]#s', '', str_replace( ';t=y', '', $r->txt ) ) == preg_replace( '#[^a-zA-Z0-9]#s', '', $record ) ) {
-		$found = $r;
-		break;
-	}
-}
-
-if ( $found ) : ?>
-
-		<div class="verified">
-		<p><?php printf( __( 'Domain %s', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . ', Selector: <strong>' . $dkim_selector . '</strong>: ' . __( 'verified', 'mailster' ); ?></p>
-		</div>
-
-	<?php else : ?>
-
-		<div class="not-verified"><p><?php printf( __( 'Domain %s', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . ': ' . __( 'not verified', 'mailster' ); ?></p>
-			<p><?php printf( __( 'No or wrong record found for %s. Please adjust the name space records and add this line:', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ); ?>
-			</p>
-			<dl>
-				<dt><strong><?php echo $dkim_selector . '._domainkey.' . $dkim_domain  ?></strong> IN TXT</dt>
-					<dd><textarea class="widefat" rows="4" id="dkim-record" readonly><?php echo esc_textarea( $record ) ?></textarea><a class="clipboard" data-clipboard-target="#dkim-record"><?php esc_html_e( 'copy', 'mailster' ) ?></a></dd>
-			</dl>
-		</div>
-
-	<?php endif; ?>
+		<div class="dkim-result spinner"><?php esc_html_e( 'Loading DKIM data', 'mailster' ) ?>&hellip;</div>
 		</td>
 	</tr>
-
 <?php endif; ?>
 
 	<tr valign="top">

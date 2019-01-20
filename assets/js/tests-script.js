@@ -3,6 +3,7 @@ jQuery(document).ready(function ($) {
 	"use strict"
 
 	var wpnonce = $('#mailster_nonce').val(),
+		single_test = $('#singletest').val() || null,
 		start_button = $('.start-test'),
 		output = $('.tests-output'),
 		textoutput = $('.tests-textoutput'),
@@ -25,7 +26,7 @@ jQuery(document).ready(function ($) {
 		output.empty();
 		textoutput.val(textoutput.data('pretext'));
 		tests_run = 1;
-		test();
+		test(single_test);
 		errors = {
 			'error': 0,
 			'warning': 0,
@@ -36,6 +37,7 @@ jQuery(document).ready(function ($) {
 	});
 
 	output.on('click', 'a', function () {
+		if (this.className.match(/retest/)) return true;
 		if (this.href) window.open(this.href);
 		return false;
 	});
@@ -87,9 +89,9 @@ jQuery(document).ready(function ($) {
 			$(response.message.html).appendTo(output);
 			textoutput.val(textoutput.val() + response.message.text);
 
-			if (response.nexttest) {
+			if (response.nexttest && !single_test) {
 				progressbar.width(((++tests_run) / response.total * 100) + '%');
-				testinfo.html(sprintf(mailsterL10n.running_test, tests_run, response.total, response.current));
+				testinfo.html(sprintf(mailsterL10n.running_test, tests_run, response.total, response.next));
 			} else {
 				progressbar.width('100%');
 				setTimeout(function () {
@@ -100,7 +102,7 @@ jQuery(document).ready(function ($) {
 				}, 500);
 			}
 
-			if (response.nexttest) {
+			if (response.nexttest && !single_test) {
 				setTimeout(function () {
 					test(response.nexttest);
 				}, 100);

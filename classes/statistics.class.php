@@ -72,24 +72,6 @@ class MailsterStatistics {
 	private function get_datasets( $rawdata ) {
 
 		return array(
-			// array(
-			// 'data' => array_values( $rawdata ),
-			// 'fillColor' => "rgba(111,191,77,0.2)",
-			// 'strokeColor' => "rgba(111,191,77,1)",
-			// 'pointColor' => "rgba(111,191,77,1)",
-			// 'pointStrokeColor' => "#fff",
-			// 'pointHighlightFill' => "#fff",
-			// 'pointHighlightStroke' => "rgba(111,191,77,1)",
-			// ),
-			// array(
-			// 'data' => array_values( $rawdata ),
-			// 'fillColor' => "rgba(43,179,231,0.2)",
-			// 'strokeColor' => "rgba(43,179,231,1)",
-			// 'pointColor' => "rgba(43,179,231,1)",
-			// 'pointStrokeColor' => "#fff",
-			// 'pointHighlightFill' => "#fff",
-			// 'pointHighlightStroke' => "rgba(43,179,231,1)",
-			// ),
 			array(
 				'data' => array_values( $rawdata ),
 				'backgroundColor' => 'rgba(43,179,231,0.2)',
@@ -123,7 +105,7 @@ class MailsterStatistics {
 
 		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) < %d", $from ) );
 
-		$sql = "SELECT FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup), '%Y-%m-%d') AS the_date, COUNT(*) AS increase FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) GROUP BY the_date HAVING the_date >= '" . date( 'Y-m-d', $from ) . "' AND the_date <= '" . date( 'Y-m-d', $to ) . "'";
+		$sql = "SELECT FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup), '%Y-%m-%d') AS the_date, COUNT(DISTINCT subscribers.ID) AS increase FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) GROUP BY the_date HAVING the_date >= '" . date( 'Y-m-d', $from ) . "' AND the_date <= '" . date( 'Y-m-d', $to ) . "'";
 
 		$increase_data = $wpdb->get_results( $sql );
 

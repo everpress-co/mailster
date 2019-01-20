@@ -5,7 +5,7 @@
 	<a href="edit.php?post_type=newsletter&page=mailster_lists&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>
 <?php if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) : ?>
-	<span class="subtitle"><?php printf( __( 'Search result for %s', 'mailster' ), '&quot;' . esc_html( stripslashes( $_GET['s'] ) ) . '&quot;' ) ?></span>
+	<span class="subtitle"><?php printf( esc_html__( 'Search result for %s', 'mailster' ), '&quot;' . esc_html( stripslashes( $_GET['s'] ) ) . '&quot;' ) ?></span>
 	<?php endif; ?>
 </h1>
 <?php
@@ -14,7 +14,7 @@ require_once MAILSTER_DIR . 'classes/lists.table.class.php';
 $table = new Mailster_Lists_Table();
 
 $table->prepare_items();
-$table->search_box( __( 'Search Lists', 'mailster' ), 's' );
+$table->search_box( esc_html__( 'Search Lists', 'mailster' ), 's' );
 $table->views();
 ?><form method="post" action="" id="lists-overview-form"><?php
 $table->display();

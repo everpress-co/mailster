@@ -240,16 +240,16 @@ class MailsterGeo {
 	public function get_continents( $european_union = false ) {
 
 		$continents = array(
-			'_EU' => __( 'Europe', 'mailster' ),
-			'_AS' => __( 'Asia/Pacific Region', 'mailster' ),
-			'_NA' => __( 'North America', 'mailster' ),
-			'_SA' => __( 'South America', 'mailster' ),
-			'_AF' => __( 'Africa', 'mailster' ),
-			'_OC' => __( 'Oceania/Australia', 'mailster' ),
+			'_EU' => esc_html__( 'Europe', 'mailster' ),
+			'_AS' => esc_html__( 'Asia/Pacific Region', 'mailster' ),
+			'_NA' => esc_html__( 'North America', 'mailster' ),
+			'_SA' => esc_html__( 'South America', 'mailster' ),
+			'_AF' => esc_html__( 'Africa', 'mailster' ),
+			'_OC' => esc_html__( 'Oceania/Australia', 'mailster' ),
 		);
 
 		if ( $european_union ) {
-			$continents['_EN'] = __( 'European Union', 'mailster' );
+			$continents['_EN'] = esc_html__( 'European Union', 'mailster' );
 		}
 
 		asort( $continents );
