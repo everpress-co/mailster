@@ -468,7 +468,7 @@ class MailsterTests {
 				$tables = mailster()->get_tables( true );
 
 				foreach ( $tables as $table ) {
-					$sql = sprintf( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
+					$sql = $wpdb->prepare( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
 					if ( false !== $wpdb->query( $sql ) ) {
 						$this->notice( "'$table' converted to {$status->Collation}" );
 					}

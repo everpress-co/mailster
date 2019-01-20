@@ -962,11 +962,9 @@ class MailsterSubscribers {
 			}
 		}
 
-		$sql = $wpdb->prepare( $sql, $data );
-
 		$wpdb->suppress_errors();
 
-		if ( false !== $wpdb->query( $sql ) ) {
+		if ( false !== $wpdb->query( $wpdb->prepare( $sql, $data ) ) ) {
 
 			$subscriber_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
 			$bulkimport = defined( 'MAILSTER_DO_BULKIMPORT' ) && MAILSTER_DO_BULKIMPORT;

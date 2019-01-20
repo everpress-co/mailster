@@ -751,10 +751,9 @@ class MailsterForms {
 		}
 
 		foreach ( $chunks as $insert ) {
+
 			$sql = "INSERT INTO {$wpdb->prefix}mailster_forms_lists (list_id, form_id, added) VALUES ";
-
 			$sql .= ' ' . implode( ',', $insert );
-
 			$sql .= ' ON DUPLICATE KEY UPDATE list_id = values(list_id), form_id = values(form_id)';
 
 			$success = $success && ( false !== $wpdb->query( $sql ) );

@@ -319,7 +319,7 @@ class MailsterLists {
 		if ( is_wp_error( $entry ) ) {
 			return $entry;
 		} elseif ( $entry === false ) {
-				return new WP_Error( 'not_verified', esc_html__( 'List failed verification', 'mailster' ) );
+			return new WP_Error( 'not_verified', esc_html__( 'List failed verification', 'mailster' ) );
 		}
 
 		foreach ( $entry as $key => $value ) {
@@ -667,15 +667,15 @@ class MailsterLists {
 
 		global $wpdb;
 
-		$ids = is_numeric( $ids ) ? array( $ids ) : $ids;
+		$ids = is_numeric( $ids ) ? array( (int) $ids ) : array_filter( $ids, 'is_numeric' );
 
 		if ( $subscribers ) {
-			$sql = "DELETE a,b,c,d,e,f FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields c ON a.ID = c.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS d ON a.ID = d.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_actions AS e ON a.ID = e.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_queue AS f ON a.ID = f.subscriber_id WHERE b.list_id IN (" . implode( ', ', array_filter( $ids, 'is_numeric' ) ) . ')';
+			$sql = "DELETE a,b,c,d,e,f FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields c ON a.ID = c.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS d ON a.ID = d.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_actions AS e ON a.ID = e.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_queue AS f ON a.ID = f.subscriber_id WHERE b.list_id IN (" . implode( ', ', $ids ) . ')';
 
 			$wpdb->query( $sql );
 		}
 
-		$sql = "DELETE a,b FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.list_id WHERE a.ID IN (" . implode( ', ', array_filter( $ids, 'is_numeric' ) ) . ')';
+		$sql = "DELETE a,b FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.list_id WHERE a.ID IN (" . implode( ', ', $ids ) . ')';
 
 		if ( false !== $wpdb->query( $sql ) ) {
 

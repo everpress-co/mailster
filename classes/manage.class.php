@@ -232,7 +232,7 @@ class MailsterManage {
 			$collate = $wpdb->get_charset_collate();
 		}
 
-		$wpdb->query( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}mailster_temp_import (ID bigint(20) NOT NULL AUTO_INCREMENT, data longtext NOT NULL, identifier char(13) NOT NULL, PRIMARY KEY (ID) ) $collate" );
+		$wpdb->query( $wpdb->prepare( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}mailster_temp_import (ID bigint(20) NOT NULL AUTO_INCREMENT, data longtext NOT NULL, identifier char(13) NOT NULL, PRIMARY KEY (ID) ) %s", $collate ) );
 
 		$return['identifier'] = $identifier = uniqid();
 
@@ -721,7 +721,7 @@ class MailsterManage {
 
 			delete_option( 'mailster_bulk_import' );
 			delete_option( 'mailster_bulk_import_errors' );
-			$wpdb->query( "DROP TABLE {$wpdb->prefix}mailster_temp_import" );
+			$wpdb->query( $wpdb->prepare( 'DROP TABLE %s', "{$wpdb->prefix}mailster_temp_import" ) );
 
 			$return['wpusers'] = mailster( 'subscribers' )->wp_id();
 

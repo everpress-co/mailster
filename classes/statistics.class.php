@@ -123,45 +123,6 @@ class MailsterStatistics {
 	}
 
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $from
-	 * @param unknown $to
-	 * @param unknown $format (optional)
-	 * @return unknown
-	 */
-	private function get_calendar_table( $from, $to, $format = 'Y-m-d' ) {
-
-		global $wpdb;
-		$dates = $this->get_date_range( $from, $to, '+1 day', $format );
-		$count = count( $dates );
-
-		if ( ! $this->calendar_table ) {
-			$this->calendar_table = "{$wpdb->prefix}mailster_" . uniqid();
-			$sql = "CREATE TEMPORARY TABLE {$this->calendar_table} ( thedate date );";
-			if ( false == $wpdb->query( $sql ) ) {
-				return false;
-			}
-		} else {
-			$sql = "TRUNCATE {$this->calendar_table};";
-			if ( false == $wpdb->query( $sql ) ) {
-				return false;
-			}
-		}
-
-		$sql = "INSERT INTO {$this->calendar_table} (thedate) VALUES ('" . implode( "'),('", $dates ) . "');";
-
-		if ( false !== $wpdb->query( $sql ) ) {
-			return $dates;
-		}
-
-		return false;
-
-	}
-
-
 	/**
 	 *
 	 *

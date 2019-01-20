@@ -55,11 +55,11 @@ class MailsterQueue {
 		$now = time();
 
 		$args = wp_parse_args( $args, array(
-				'added' => $now,
-				'timestamp' => $now,
-				'priority' => 10,
-				'count' => 1,
-				'sent' => 0,
+			'added' => $now,
+			'timestamp' => $now,
+			'priority' => 10,
+			'count' => 1,
+			'sent' => 0,
 		) );
 
 		if ( isset( $args['options'] ) ) {

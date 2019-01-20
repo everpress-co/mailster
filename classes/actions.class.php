@@ -308,9 +308,9 @@ class MailsterActions {
 
 		foreach ( $chunks as $subscriber_chunk ) {
 
-			$sql = "DELETE a FROM {$wpdb->prefix}mailster_queue AS a WHERE a.campaign_id = $campaign_id AND a.sent = 0 AND a.subscriber_id NOT IN (" . implode( ',', $subscriber_chunk ) . ')';
+			$sql = "DELETE a FROM {$wpdb->prefix}mailster_queue AS a WHERE a.campaign_id = %d AND a.sent = 0 AND a.subscriber_id NOT IN (" . implode( ',', $subscriber_chunk ) . ')';
 
-			$success = $success && $wpdb->query( $sql );
+			$success = $success && $wpdb->query( $wpdb->prepare( $sql, $campaign_id ) );
 
 		}
 
@@ -324,7 +324,7 @@ class MailsterActions {
 		global $wpdb;
 
 		// delete all softbounces where a hardbounce exists
-		$wpdb->query( "DELETE b FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.campaign_id = b.campaign_id AND a.subscriber_id = b.subscriber_id AND a.link_id = b.link_id WHERE a.type = 6 AND b.type = 5" );
+		$wpdb->query( $wpdb->prepare( "DELETE b FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.campaign_id = b.campaign_id AND a.subscriber_id = b.subscriber_id AND a.link_id = b.link_id WHERE a.type = %d AND b.type = %d", 6, 5 ) );
 
 	}
 

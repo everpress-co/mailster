@@ -586,7 +586,7 @@ update_option( 'mailster_texts', $mailster_texts );
 mailster( 'settings' )->update_capabilities();
 
 // clear cache
-mailster_clear_cache( '' );
+mailster_clear_cache( );
 
 // delete plugin hash
 delete_transient( 'mailster_hash' );
