@@ -486,7 +486,8 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	opacity: 1;
 	filter: none;
 }
-#editbar.current-codeview .highdpi-checkbox, #editbar.current-single .highdpi-checkbox, #editbar.current-multi .highdpi-checkbox{
+#editbar.current-codeview .highdpi-checkbox, #editbar.current-single .highdpi-checkbox, #editbar.current-multi .highdpi-checkbox,
+#editbar.current-codeview .original-checkbox, #editbar.current-single .original-checkbox, #editbar.current-multi .original-checkbox{
 	display: none;
 }
 #editbar h4.editbar-title {

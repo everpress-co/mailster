@@ -641,6 +641,9 @@ class MailsterMail {
 				$this->mailer->AddAddress( $address, isset( $this->to_name[ $i ] ) ? $this->to_name[ $i ] : null );
 			}
 
+			$this->subject = htmlspecialchars_decode( $this->subject );
+			$this->from_name = htmlspecialchars_decode( $this->from_name );
+
 			if ( $this->cc ) {
 				if ( ! is_array( $this->cc ) ) {
 					$this->cc = array( $this->cc );
@@ -667,8 +670,20 @@ class MailsterMail {
 				}
 			}
 
-			$this->subject = htmlspecialchars_decode( $this->subject );
-			$this->from_name = htmlspecialchars_decode( $this->from_name );
+			if ( $this->reply_to ) {
+				if ( ! is_array( $this->reply_to ) ) {
+					$this->reply_to = array( $this->reply_to );
+				}
+				if ( ! is_array( $this->reply_to_name ) ) {
+					$this->reply_to_name = array( $this->reply_to_name );
+				}
+
+				foreach ( $this->reply_to as $i => $address ) {
+					$this->mailer->addReplyTo( $address, isset( $this->reply_to_name[ $i ] ) ? $this->reply_to_name[ $i ] : null );
+				}
+			} else {
+				$this->mailer->addReplyTo( $this->from, $this->from_name );
+			}
 
 			if ( empty( $this->from ) ) {
 				$this->from = mailster_option( 'from' );
@@ -694,14 +709,6 @@ class MailsterMail {
 			( $this->bouncemail )
 				? $this->mailer->ReturnPath = $this->mailer->Sender = $this->bouncemail
 				: $this->mailer->ReturnPath = $this->mailer->Sender = $this->from;
-
-			if ( ! empty( $this->reply_to ) ) {
-				foreach ( (array) $this->reply_to as $address ) {
-					$this->mailer->addReplyTo( $address );
-				}
-			} else {
-				$this->mailer->addReplyTo( $this->from );
-			}
 
 			// add the tracking image at the bottom
 			if ( $this->add_tracking_image ) {

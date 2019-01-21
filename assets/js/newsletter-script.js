@@ -1581,6 +1581,7 @@ jQuery(document).ready(function ($) {
 			imagecrop = bar.find('.imagecrop'),
 			factor = bar.find('.factor'),
 			highdpi = bar.find('.highdpi'),
+			original = bar.find('.original'),
 			imagelink = bar.find('.imagelink'),
 			imageurl = bar.find('.imageurl'),
 			orgimageurl = bar.find('.orgimageurl'),
@@ -1913,13 +1914,14 @@ jQuery(document).ready(function ($) {
 
 		}
 
-		function dynamicImage(val, w, h, c) {
+		function dynamicImage(val, w, h, c, o) {
 			w = w || imagewidth.val();
 			h = h || imageheight.val() || Math.round(w / 1.6);
 			c = typeof c == 'undefined' ? imagecrop.prop(':checked') : c;
+			o = typeof o == 'undefined' ? original.prop(':checked') : o;
 			if (/^\{([a-z0-9-_,;:|]+)\}$/.test(val)) {
 				var f = factor.val();
-				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&f=' + f;
+				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&o=' + (o ? 1 : 0) + '&f=' + f;
 			}
 			return val;
 		}
@@ -1971,6 +1973,10 @@ jQuery(document).ready(function ($) {
 					loader();
 
 					var f = factor.val() || 1,
+						w = imagewidth.val(),
+						h = imageheight.val(),
+						c = imagecrop.is(':checked'),
+						o = original.is(':checked'),
 						attribute = is_img ? 'src' : 'background';
 
 					current.element.attr({
@@ -1983,15 +1989,20 @@ jQuery(document).ready(function ($) {
 							'alt': currentimage.name
 						});
 						if (!current.is_percentage) {
-							current.element.attr('width', Math.round(imagewidth.val()))
+							current.element.attr('width', Math.round(w))
 						}
 						if (current.element.attr('height')) {
-							current.element.attr('height', Math.round(imageheight.val()))
+							current.element.attr('height', Math.round(h))
 						}
-						if (imagecrop.is(':checked')) {
+						if (c) {
 							current.element.attr({
 								'data-crop': true,
 							}).data('crop', true);
+						}
+						if (o) {
+							current.element.attr({
+								'data-original': true,
+							}).data('original', true);
 						}
 					}
 
@@ -2002,10 +2013,11 @@ jQuery(document).ready(function ($) {
 
 					_ajax('create_image', {
 						id: currentimage.id,
+						original: o,
 						src: currentimage.src,
-						width: imagewidth.val() * f,
-						height: imageheight.val() * f,
-						crop: imagecrop.is(':checked')
+						width: w * f,
+						height: h * f,
+						crop: c
 					}, function (response) {
 
 						loader(false);
@@ -2038,10 +2050,15 @@ jQuery(document).ready(function ($) {
 								if (current.element.attr('height')) {
 									current.element.attr('height', Math.round(imageheight.val()))
 								}
-								if (imagecrop.is(':checked')) {
+								if (c) {
 									current.element.attr({
 										'data-crop': true,
 									}).data('crop', true);
+								}
+								if (o) {
+									current.element.attr({
+										'data-original': true,
+									}).data('original', true);
 								}
 							} else {
 
@@ -2254,6 +2271,7 @@ jQuery(document).ready(function ($) {
 							if ('static' == insertmethod) {
 								_ajax('create_image', {
 									id: currenttext.image[i].id,
+									original: original.is(':checked'),
 									width: imgelement.width() * f,
 									height: imgelement.height() * f,
 									crop: imgelement.data('crop'),
@@ -2262,6 +2280,11 @@ jQuery(document).ready(function ($) {
 									if (response.success) {
 										loader(false);
 
+										if (original.is(':checked')) {
+											imgelement.attr({
+												'data-original': true,
+											}).data('original', true);
+										}
 										if ('img' == imgelement.prop('tagName').toLowerCase()) {
 											imgelement
 												.attr({
@@ -2310,6 +2333,7 @@ jQuery(document).ready(function ($) {
 
 								var width = imgelement.width(),
 									crop = imgelement.data('crop'),
+									org = original.is(':checked'),
 									height = crop ? imgelement.height() : null;
 
 								if ('img' == imgelement.prop('tagName').toLowerCase()) {
@@ -2317,7 +2341,7 @@ jQuery(document).ready(function ($) {
 									imgelement
 										.removeAttr('data-id')
 										.attr({
-											'src': dynamicImage(currenttext.image[i], width, height, crop),
+											'src': dynamicImage(currenttext.image[i], width, height, crop, org),
 											'width': width,
 											'alt': currenttext.alt || currenttext.title[i]
 										})
@@ -2334,7 +2358,7 @@ jQuery(document).ready(function ($) {
 										})
 										.removeData('id')
 										.css('background-image', '');
-									current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop)));
+									current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop, org)));
 								}
 
 							}
@@ -2482,13 +2506,6 @@ jQuery(document).ready(function ($) {
 				if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / current.asp));
 
 				adjustImagePreview();
-				/*
-				current.element.attr({
-					'src': src,
-					'width': imagewidth.val(),
-					'height': Math.round(imagewidth.val()/current.asp)
-				});
-				*/
 
 			}).attr('src', src);
 
@@ -2574,7 +2591,6 @@ jQuery(document).ready(function ($) {
 			current.crop = el.data('crop') ? el.data('crop') : false;
 			current.tag = el.prop('tagName').toLowerCase();
 			current.is_percentage = el.attr('width') && el.attr('width').indexOf('%') !== -1;
-
 			current.content = content;
 
 			currenttag = current.element.data('tag');
@@ -2637,6 +2653,7 @@ jQuery(document).ready(function ($) {
 
 			if (type == 'img') {
 
+				original.prop('checked', current.original);
 				imagecrop.prop('checked', current.crop).parent()[current.crop ? 'addClass' : 'removeClass']('not-cropped');
 
 				factor.val(1);

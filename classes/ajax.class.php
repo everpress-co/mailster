@@ -1056,8 +1056,9 @@ class MailsterAjax {
 			$crop = isset( $_POST['crop'] ) ? ( $_POST['crop'] == 'true' ) : false;
 			$width = isset( $_POST['width'] ) ? (int) $_POST['width'] : null;
 			$height = isset( $_POST['height'] ) && $crop ? (int) $_POST['height'] : null;
+			$original = isset( $_POST['original'] ) ? ( $_POST['original'] == 'true' ) : false;
 
-			$return['success'] = ! ! ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop ) );
+			$return['success'] = ! ! ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop, $original ) );
 		}
 
 		$this->json_return( $return );
@@ -1260,7 +1261,6 @@ class MailsterAjax {
 						if ( $current_id == $post->ID ) {
 							$html .= ' class="selected"';
 						}
-
 						$html .= '>';
 						$image = wp_get_attachment_image_src( $post->ID, 'medium' );
 						$html .= '<a style="background-image:url(' . $image[0] . ')"><span class="caption" title="' . esc_attr( $title ) . '">' . esc_html( $title ) . '</span></a>';

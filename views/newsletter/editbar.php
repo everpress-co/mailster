@@ -39,7 +39,6 @@
 		foreach ( $fields as $key => $name ) {
 			echo '<option value="' . $key . '">' . $name . '</option>';
 		}
-
 		?>
 		</select>
 		<select class="condition-operators">
@@ -314,6 +313,9 @@
 		<div class="buttons clearfix">
 			<button class="button button-primary save"><?php esc_html_e( 'Save', 'mailster' ) ?></button>
 			<button class="button cancel"><?php esc_html_e( 'Cancel', 'mailster' ) ?></button>
+			<label class="original-checkbox" title="<?php esc_html_e( 'use the original image file and prevent cropping/modifing the image.', 'mailster' );?>">
+				<input type="checkbox" class="original"> <?php esc_html_e( 'Use original image', 'mailster' );?>
+			</label>
 			<label class="highdpi-checkbox" title="<?php esc_html_e( 'use HighDPI/Retina ready images if available', 'mailster' );?>">
 				<input type="checkbox" class="highdpi" <?php checked( mailster_option( 'high_dpi' ) ); ?>> <?php esc_html_e( 'HighDPI/Retina ready', 'mailster' );?>
 			</label>

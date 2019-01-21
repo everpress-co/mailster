@@ -84,6 +84,7 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.16 =
 
+* new: option to choose original image in editbar (for animated gifs)
 * fixed: wrong subscriber count in dashboard widget if assigned to multiple lists
 * fixed: auto expanding of chart on dashboard
 * fixed: title with quotes now escaped correctly
