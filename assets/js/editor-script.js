@@ -1,4 +1,3 @@
-document.getElementsByTagName("html")[0].className += ' mailster-loading';
 jQuery(document).ready(function ($) {
 
 	"use strict"
@@ -730,3 +729,4 @@ jQuery(document).ready(function ($) {
 	}
 
 });
+document.getElementsByTagName("html")[0].className += ' mailster-loading';

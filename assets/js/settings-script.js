@@ -34,7 +34,6 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
-
 	nav.on('click', 'a', function () {
 		nav.find('li').removeClass('active');
 		tabs.hide();
