@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 4.9.8
-Stable tag: 2.3.15
+Tested up to: 5.0
+Stable tag: 2.3.16
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -65,19 +65,19 @@ Xaver Birsak – https://everpress.io
 
 
 = Linus =
-[!(https://mailster.github.io/preview/linus.jpg)](https://evp.li/linus?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/linus.jpg)](https://evp.to/linus?utm_source=Plugin+Info+Page)
 = Metro =
-[!(https://mailster.github.io/preview/metro.jpg)](https://evp.li/metro?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/metro.jpg)](https://evp.to/metro?utm_source=Plugin+Info+Page)
 = My Business =
-[!(https://mailster.github.io/preview/business.jpg)](https://evp.li/business?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/business.jpg)](https://evp.to/business?utm_source=Plugin+Info+Page)
 = Loose Leaf =
-[!(https://mailster.github.io/preview/looseleaf.jpg)](https://evp.li/looseleaf?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/looseleaf.jpg)](https://evp.to/looseleaf?utm_source=Plugin+Info+Page)
 = Market =
-[!(https://mailster.github.io/preview/market.jpg)](https://evp.li/market?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/market.jpg)](https://evp.to/market?utm_source=Plugin+Info+Page)
 = Skyline =
-[!(https://mailster.github.io/preview/skyline.jpg)](https://evp.li/skyline?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/skyline.jpg)](https://evp.to/skyline?utm_source=Plugin+Info+Page)
 = Letterpress =
-[!(https://mailster.github.io/preview/letterpress.jpg)](https://evp.li/letterpress?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/letterpress.jpg)](https://evp.to/letterpress?utm_source=Plugin+Info+Page)
 
 
 == Changelog ==
@@ -86,9 +86,28 @@ Xaver Birsak – https://everpress.io
 
 * new: display of deleted subscribers in campaign stats
 
+= Version 2.3.16 =
+
+* fixed: wrong subscriber count in dashboard widget if assigned to multiple lists
+* fixed: auto expanding of chart on dashboard
+* fixed: title with quotes now escaped correctly
+* improved: wp_mail wrapper now supports to address in format name <email>
+* improved: wp_mail handling of BCC and CC fields
+* improved: DNS checks on settings page now asynchronous
+* improved: subscribers now get removed from the queue if a bounce happens
+* improved: better warning on import for pending subscribers
+* improved: auto responder data now stored if campaign is saved as draft
+* added: condition "is in list" for better segmentation
+* added: option to re test a test
+
 = Version 2.3.15 =
 
+* fully tested on WordPress 5.0
 * fixed: missing icons in WordPress 5.0
+* fixed: prevent tracking on test mails
+* fixed: relative width attributes now preserved in the editor
+* fixed: issues with wp_mail if reply_to is an array
+* improved: better checks if `wp_mail` is defined by another plugin
 
 = Version 2.3.14 =
 

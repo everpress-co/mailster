@@ -11,7 +11,6 @@ jQuery(document).ready(function ($) {
 		animateDOM = $('html,body'),
 		codemirror;
 
-
 	$('a.external').on('click', function () {
 		if (this.href) window.open(this.href);
 		return false;

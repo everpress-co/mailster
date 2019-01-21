@@ -13,8 +13,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	public function __construct() {
 
 		parent::__construct( array(
-			'singular' => __( 'Subscriber', 'mailster' ), // singular name of the listed records
-			'plural' => __( 'Subscribers', 'mailster' ), // plural name of the listed records
+			'singular' => esc_html__( 'Subscriber', 'mailster' ), // singular name of the listed records
+			'plural' => esc_html__( 'Subscribers', 'mailster' ), // plural name of the listed records
 			'ajax' => false, // does this table support ajax?
 		) );
 
@@ -35,9 +35,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$statuses = mailster( 'subscribers' )->get_status();
 		$statuses_nice = mailster( 'subscribers' )->get_status( null, true );
 		$link = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
-		// $link = add_query_arg( array() );
 		$views = array(
-			'view-all' => '<a href="' . remove_query_arg( 'status', $link ) . '">' . __( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( array_sum( $counts ) ) . ')</span></a>',
+			'view-all' => '<a href="' . remove_query_arg( 'status', $link ) . '">' . esc_html__( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( array_sum( $counts ) ) . ')</span></a>',
 		);
 
 		foreach ( $counts as $id => $count ) {
@@ -75,7 +74,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		}
 
 		if ( current_user_can( 'mailster_add_subscribers' ) ) {
-			echo ' <a href="edit.php?post_type=newsletter&page=mailster_subscribers&new">' . __( 'Add New', 'mailster' ) . '</a>';
+			echo ' <a href="edit.php?post_type=newsletter&page=mailster_subscribers&new">' . esc_html__( 'Add New', 'mailster' ) . '</a>';
 		}
 
 	}
@@ -216,7 +215,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			return '<div class="table-data"><span class="nowrap tiny">' . mailster( 'subscribers' )->get_status( $item->{$column_name}, true ) . '</span></div>';
 
 			case 'signup':
-				$timestring = ( ! $item->{$column_name} ) ? __( 'unknown', 'mailster' ) : date_i18n( mailster( 'helper' )->timeformat(), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
+				$timestring = ( ! $item->{$column_name} ) ? esc_html__( 'unknown', 'mailster' ) : date_i18n( mailster( 'helper' )->timeformat(), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
 			return '<div class="table-data">' . $this->searchmark( $timestring ) . '</div>';
 
 			default:
@@ -268,10 +267,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		$actions = array(
-			'delete' => __( 'Delete', 'mailster' ),
-			'send_campaign' => __( 'Send new Campaign', 'mailster' ),
-			'confirmation' => __( 'Resend Confirmation', 'mailster' ),
-			'verify' => __( 'Verify', 'mailster' ),
+			'delete' => esc_html__( 'Delete', 'mailster' ),
+			'send_campaign' => esc_html__( 'Send new Campaign', 'mailster' ),
+			'confirmation' => esc_html__( 'Resend Confirmation', 'mailster' ),
+			'verify' => esc_html__( 'Verify', 'mailster' ),
 		);
 
 		if ( ! current_user_can( 'mailster_delete_subscribers' ) ) {
@@ -294,11 +293,11 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$actions = ob_get_contents();
 		ob_end_clean();
 
-		$status = '<option value="pending">&#x2514; ' . __( 'pending', 'mailster' ) . '</option>';
-		$status .= '<option value="subscribed">&#x2514; ' . __( 'subscribed', 'mailster' ) . '</option>';
-		$status .= '<option value="unsubscribed">&#x2514; ' . __( 'unsubscribed', 'mailster' ) . '</option>';
+		$status = '<option value="pending">&#x2514; ' . esc_html__( 'pending', 'mailster' ) . '</option>';
+		$status .= '<option value="subscribed">&#x2514; ' . esc_html__( 'subscribed', 'mailster' ) . '</option>';
+		$status .= '<option value="unsubscribed">&#x2514; ' . esc_html__( 'unsubscribed', 'mailster' ) . '</option>';
 
-		$actions = str_replace( '</select>', '<optgroup label="' . __( 'change status', 'mailster' ) . '">' . $status . '</optgroup></select>', $actions );
+		$actions = str_replace( '</select>', '<optgroup label="' . esc_html__( 'change status', 'mailster' ) . '">' . $status . '</optgroup></select>', $actions );
 
 		$lists = mailster( 'lists' )->get();
 
@@ -318,7 +317,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			$unconfirm .= '<option value="unconfirm_list_' . $list->ID . '">' . ( $list->parent_id ? '&nbsp;' : '' ) . '&#x2514; ' . $list->name . '</option>';
 		}
 
-		echo str_replace( '</select>', '<optgroup label="' . __( 'add to list', 'mailster' ) . '">' . $add . '</optgroup><optgroup label="' . __( 'remove from list', 'mailster' ) . '">' . $remove . '</optgroup><optgroup label="' . __( 'confirm list', 'mailster' ) . '">' . $confirm . '</optgroup><optgroup label="' . __( 'unconfirm list', 'mailster' ) . '">' . $unconfirm . '</optgroup></select>', $actions );
+		echo str_replace( '</select>', '<optgroup label="' . esc_html__( 'add to list', 'mailster' ) . '">' . $add . '</optgroup><optgroup label="' . esc_html__( 'remove from list', 'mailster' ) . '">' . $remove . '</optgroup><optgroup label="' . esc_html__( 'confirm list', 'mailster' ) . '">' . $confirm . '</optgroup><optgroup label="' . esc_html__( 'unconfirm list', 'mailster' ) . '">' . $unconfirm . '</optgroup></select>', $actions );
 
 	}
 
