@@ -1,5 +1,7 @@
 jQuery(document).ready(function (jQuery) {
 
+	"use strict"
+
 	//fix for the missing placeholder feature in IE < 10
 	if (!placeholderIsSupported()) {
 

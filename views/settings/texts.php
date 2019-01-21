@@ -2,7 +2,7 @@
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Subscription Form', 'mailster' ) ?><p class="description"><?php esc_html_e( 'Define messages for the subscription form', 'mailster' );?>.<br>
 <?php if ( mailster_option( 'homepage' ) ) :
-		printf( __( 'Some text can get defined on the %s as well', 'mailster' ), '<a href="post.php?post=' . mailster_option( 'homepage' ) . '&action=edit">Newsletter Homepage</a>' );
+		printf( esc_html__( 'Some text can get defined on the %s as well', 'mailster' ), '<a href="post.php?post=' . mailster_option( 'homepage' ) . '&action=edit">Newsletter Homepage</a>' );
 endif; ?>
 </p></th>
 		<td>

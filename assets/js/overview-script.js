@@ -60,7 +60,6 @@ jQuery(document).ready(function ($) {
 				if (!current) {
 					current = $.extend(data['mailster'], current);
 					first = true;
-					//return;
 				}
 
 				var change = false,
@@ -136,9 +135,7 @@ jQuery(document).ready(function ($) {
 
 		//only need top and bottom
 		return (
-			//rect.left + offset >= 0 &&
 			rect.top + offset >= 0 &&
-			//rect.right - offset <= (window.innerWidth || document.documentElement.clientWidth) && /*or $(window).width() */
 			rect.top - offset <= (window.innerHeight || document.documentElement.clientHeight) /*or $(window).height() */
 		);
 	}

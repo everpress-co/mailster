@@ -42,7 +42,6 @@ $mailster_options = get_option( 'mailster_options', array() );
 
 $mailster = new mailster();
 
-// if( !$mailster_options ) mailster( 'settings' )->maybe_repair_settings();
 if ( ! $mailster->wp_mail && mailster_option( 'system_mail' ) == 1 ) {
 
 	function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) {

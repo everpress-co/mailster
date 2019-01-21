@@ -31,7 +31,6 @@ jQuery(document).ready(function ($) {
 			}
 		});
 
-
 	}
 
 	function _events() {

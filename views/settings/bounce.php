@@ -20,7 +20,7 @@
 		</tr>
 	<?php if ( function_exists( 'imap_open' ) ) : ?>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Service', 'mailster' );?></th>
+			<th scope="row"><?php esc_html_e( 'Service', 'mailster' );?></th>
 			<td>
 			<label><input type="radio" name="mailster_options[bounce_service]" value="pop3" <?php checked( mailster_option( 'bounce_service' ), 'pop3' ) ?>> POP3 </label>&nbsp;
 			<label><input type="radio" name="mailster_options[bounce_service]" value="imap" <?php checked( mailster_option( 'bounce_service' ), 'imap' ) ?>> IMAP </label>&nbsp;
@@ -48,7 +48,7 @@
 		</tr>
 		<tr valign="top" class="wp_cron">
 			<th scope="row"></th>
-			<td><p><?php printf( __( 'Check bounce server every %s minutes for new messages', 'mailster' ), '<input type="text" name="mailster_options[bounce_check]" value="' . mailster_option( 'bounce_check' ) . '" class="small-text">' ) ?></p></td>
+			<td><p><?php printf( esc_html__( 'Check bounce server every %s minutes for new messages', 'mailster' ), '<input type="text" name="mailster_options[bounce_check]" value="' . mailster_option( 'bounce_check' ) . '" class="small-text">' ) ?></p></td>
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Delete messages', 'mailster' );?></th>
@@ -57,7 +57,7 @@
 		</tr>
 		<tr valign="top" class="wp_cron">
 			<th scope="row"><?php esc_html_e( 'Soft Bounces', 'mailster' ) ?></th>
-			<td><p><?php printf( __( 'Resend soft bounced mails after %s minutes', 'mailster' ), '<input type="text" name="mailster_options[bounce_delay]" value="' . mailster_option( 'bounce_delay' ) . '" class="small-text">' ) ?></p>
+			<td><p><?php printf( esc_html__( 'Resend soft bounced mails after %s minutes', 'mailster' ), '<input type="text" name="mailster_options[bounce_delay]" value="' . mailster_option( 'bounce_delay' ) . '" class="small-text">' ) ?></p>
 			<p>
 <?php
 			$dropdown = '<select name="mailster_options[bounce_attempts]" class="postform">';
@@ -68,7 +68,7 @@ for ( $i = 1; $i <= 10; $i++ ) {
 }
 			$dropdown .= '</select>';
 
-			printf( __( '%s attempts to deliver message until hardbounce', 'mailster' ), $dropdown );
+			printf( esc_html__( '%s attempts to deliver message until hardbounce', 'mailster' ), $dropdown );
 ?>
 			</p>
 			</td>

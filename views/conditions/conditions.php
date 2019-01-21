@@ -125,7 +125,7 @@
 						endforeach; ?>
 						</select>
 					</div>
-					<div class="mailster-conditions-operator-field" data-fields=",_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,_click_link,_click_link__not_in,_lists__not_in,">
+					<div class="mailster-conditions-operator-field" data-fields=",_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,_click_link,_click_link__not_in,_lists__not_in,_lists__in,">
 						<input type="hidden" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled value="is">
 					</div>
 				</div>
@@ -227,7 +227,7 @@
 					<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]"></p>
 				<?php endif; ?>
 					</div>
-					<div class="mailster-conditions-value-field" data-fields=",_lists__not_in,">
+					<div class="mailster-conditions-value-field" data-fields=",_lists__not_in,_lists__in,">
 					<?php if ( $lists ) : ?>
 					<?php foreach ( $value_arr as $k => $v ) : ?>
 						<div class="mailster-conditions-value-field-multiselect">

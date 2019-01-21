@@ -177,13 +177,13 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 			<li><label><input type="checkbox" class="list-toggle" checked> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></li>
 			<li>&nbsp;</li>
 			<input type="hidden" name="lists[]" value="-1">
-			<?php mailster( 'lists' )->print_it( null, false, 'lists', __( 'total', 'mailster' ), $user_settings['lists'] ); ?>
+			<?php mailster( 'lists' )->print_it( null, false, 'lists', esc_html__( 'total', 'mailster' ), $user_settings['lists'] ); ?>
 			</ul>
 			<?php endif; ?>
 
 			<?php if ( $no_list ) : ?>
 			<ul>
-				<li><label><input type="hidden" name="nolists" value="0"><input type="checkbox" name="nolists" value="1" <?php checked( $user_settings['nolists'] ) ?>> <?php echo __( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . __( 'total', 'mailster' ) . ')</span>' ?></label></li>
+				<li><label><input type="hidden" name="nolists" value="0"><input type="checkbox" name="nolists" value="1" <?php checked( $user_settings['nolists'] ) ?>> <?php echo esc_html__( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . esc_html__( 'total', 'mailster' ) . ')</span>' ?></label></li>
 			</ul>
 			<?php endif; ?>
 			<h3><?php esc_html_e( 'Conditions', 'mailster' );?>:</h3>
@@ -286,7 +286,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					<?php
 
 					$columns = array(
-						'ID' => __( 'ID', 'mailster' ),
+						'ID' => esc_html__( 'ID', 'mailster' ),
 						'email' => mailster_text( 'email' ),
 						'firstname' => mailster_text( 'firstname' ),
 						'lastname' => mailster_text( 'lastname' ),
@@ -296,21 +296,21 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					$customfields = wp_list_pluck( $customfields, 'name' );
 
 					$extra = array(
-						'_statuscode' => __( 'Statuscode', 'mailster' ),
-						'_listnames' => __( 'Listnames', 'mailster' ),
+						'_statuscode' => esc_html__( 'Statuscode', 'mailster' ),
+						'_listnames' => esc_html__( 'Listnames', 'mailster' ),
 					);
 
 					$meta = array(
-						'hash' => __( 'Hash', 'mailster' ),
-						'status' => __( 'Status', 'mailster' ),
-						'added' => __( 'Added', 'mailster' ),
-						'updated' => __( 'Updated', 'mailster' ),
+						'hash' => esc_html__( 'Hash', 'mailster' ),
+						'status' => esc_html__( 'Status', 'mailster' ),
+						'added' => esc_html__( 'Added', 'mailster' ),
+						'updated' => esc_html__( 'Updated', 'mailster' ),
 						// 'ip' => __('IP Address', 'mailster'),
-						'signup' => __( 'Signup Date', 'mailster' ),
-						'ip_signup' => __( 'Signup IP', 'mailster' ),
-						'confirm' => __( 'Confirm Date', 'mailster' ),
-						'ip_confirm' => __( 'Confirm IP', 'mailster' ),
-						'rating' => __( 'Rating', 'mailster' ),
+						'signup' => esc_html__( 'Signup Date', 'mailster' ),
+						'ip_signup' => esc_html__( 'Signup IP', 'mailster' ),
+						'confirm' => esc_html__( 'Confirm Date', 'mailster' ),
+						'ip_confirm' => esc_html__( 'Confirm IP', 'mailster' ),
+						'rating' => esc_html__( 'Rating', 'mailster' ),
 					);
 
 					$meta = $meta + mailster( 'subscribers' )->get_meta_keys();
@@ -374,13 +374,13 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 				<ul>
 					<li><label><input type="checkbox" class="list-toggle"> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></li>
 					<li>&nbsp;</li>
-					<?php mailster( 'lists' )->print_it( null, false, 'lists', __( 'total', 'mailster' ) ); ?>
+					<?php mailster( 'lists' )->print_it( null, false, 'lists', esc_html__( 'total', 'mailster' ) ); ?>
 				</ul>
 				<?php endif; ?>
 
 				<?php if ( $no_list ) : ?>
 				<ul>
-					<li><label><input type="checkbox" name="nolists" value="1"> <?php echo __( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . __( 'total', 'mailster' ) . ')</span>' ?></label></li>
+					<li><label><input type="checkbox" name="nolists" value="1"> <?php echo esc_html__( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . esc_html__( 'total', 'mailster' ) . ')</span>' ?></label></li>
 				</ul>
 				<?php endif; ?>
 				<h3><?php esc_html_e( 'Conditions', 'mailster' );?>:</h3>

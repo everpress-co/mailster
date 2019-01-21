@@ -107,6 +107,9 @@ span.error{
 	font-weight: normal;
 	overflow: hidden;
 }
+.step2 .pending-info{
+	display: none;
+}
 .step2 .do-import{
 	font-size: 120%;
 }
