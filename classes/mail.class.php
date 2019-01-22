@@ -17,6 +17,7 @@ class MailsterMail {
 	public $bcc_name;
 	public $hash = '';
 	public $reply_to;
+	public $reply_to_name;
 	public $deliverymethod;
 	public $dkim;
 	public $bouncemail;

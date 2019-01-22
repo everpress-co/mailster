@@ -98,8 +98,8 @@ class MailsterSubscribers {
 				'day_names' => $wp_locale->weekday,
 				'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
 				'month_names' => array_values( $wp_locale->month ),
-				'invalid_email' => esc_html__( 'this isn\'t a valid email address!', 'mailster' ),
-				'email_exists' => esc_html__( 'this email address already exists!', 'mailster' ),
+				'invalid_email' => esc_html__( 'This isn\'t a valid email address!', 'mailster' ),
+				'email_exists' => esc_html__( 'This email address already exists!', 'mailster' ),
 			) );
 
 		else :

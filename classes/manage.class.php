@@ -1382,7 +1382,7 @@ class MailsterManage {
 	<div id="drag-drop-area">
 		<div class="drag-drop-inside">
 		<p class="drag-drop-info"><?php esc_html_e( 'Drop your list here', 'mailster' );?></p>
-		<p><?php esc_html_x( 'or', 'Uploader: Drop files here - or - Select Files', 'mailster' );?></p>
+		<p><?php echo esc_html_x( 'or', 'Uploader: Drop files here - or - Select Files', 'mailster' );?></p>
 		<p class="drag-drop-buttons"><input id="plupload-browse-button" type="button" value="<?php esc_attr_e( 'Select File', 'mailster' );?>" class="button" /></p>
 		</div>
 	</div>

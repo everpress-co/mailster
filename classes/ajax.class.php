@@ -1839,7 +1839,7 @@ class MailsterAjax {
 
 		if ( mailster( 'geo' )->update( true ) ) {
 			$return['success'] = true;
-			$return['update'] = esc_htmlesc_html__( 'Last update', 'mailster' ) . ': ' . esc_htmlesc_html__( 'right now', 'mailster' );
+			$return['update'] = esc_html__( 'Last update', 'mailster' ) . ': ' . esc_html__( 'right now', 'mailster' );
 			$return['msg'] = esc_html__( 'Location Database success loaded!', 'mailster' );
 		} else {
 			$return['msg'] = esc_html__( 'Couldn\'t load Location Database', 'mailster' );
@@ -2054,7 +2054,7 @@ class MailsterAjax {
 				$return['message'] .= '<p>' . sprintf( esc_html__( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . '</p>';
 
 				$return['message'] .= '<dl><dt><strong>' . $spf_domain . '</strong> IN TXT</dt>';
-				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_htmlesc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
+				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
 
 			endif;
 
@@ -2104,7 +2104,7 @@ class MailsterAjax {
 				$return['message'] .= '<p>' . sprintf( esc_html__( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . '</p>';
 
 				$return['message'] .= '<dl><dt><strong>' . $dkim_domain . '</strong> IN TXT</dt>';
-				$return['message'] .= '<dl><dt><strong>' . $dkim_selector . '._domainkey.' . $dkim_domain . '</strong> IN TXT</dt><dd><textarea class="widefat" rows="4" id="dkim-record" readonly>' . esc_textarea( $record ) . '</textarea><a class="clipboard" data-clipboard-target="#dkim-record">' . esc_htmlesc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
+				$return['message'] .= '<dl><dt><strong>' . $dkim_selector . '._domainkey.' . $dkim_domain . '</strong> IN TXT</dt><dd><textarea class="widefat" rows="4" id="dkim-record" readonly>' . esc_textarea( $record ) . '</textarea><a class="clipboard" data-clipboard-target="#dkim-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
 
 			endif;
 
