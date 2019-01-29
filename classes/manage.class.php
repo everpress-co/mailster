@@ -232,7 +232,7 @@ class MailsterManage {
 			$collate = $wpdb->get_charset_collate();
 		}
 
-		$wpdb->query( $wpdb->prepare( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}mailster_temp_import (ID bigint(20) NOT NULL AUTO_INCREMENT, data longtext NOT NULL, identifier char(13) NOT NULL, PRIMARY KEY (ID) ) %s", $collate ) );
+		$wpdb->query( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}mailster_temp_import (ID bigint(20) NOT NULL AUTO_INCREMENT, data longtext NOT NULL, identifier char(13) NOT NULL, PRIMARY KEY (ID) ) $collate" );
 
 		$return['identifier'] = $identifier = uniqid();
 

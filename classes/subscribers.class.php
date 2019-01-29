@@ -1832,7 +1832,7 @@ class MailsterSubscribers {
 
 		$opens = $this->get_opens( $id );
 
-		return $opens / $sent;
+		return min( 1, ($opens / $sent) );
 
 	}
 
@@ -1867,7 +1867,7 @@ class MailsterSubscribers {
 
 		$clicks = $this->get_clicks( $id, $total );
 
-		return $clicks / $sent;
+		return min( 1, ($clicks / $sent) );
 
 	}
 
@@ -1888,7 +1888,7 @@ class MailsterSubscribers {
 
 		$clicks = $this->get_clicks( $id, $total );
 
-		return $clicks / $open;
+		return min( 1, ($clicks / $open) );
 
 	}
 

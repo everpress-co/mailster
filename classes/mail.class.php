@@ -411,7 +411,19 @@ class MailsterMail {
 			$this->from_name = $from_name;
 		}
 		if ( isset( $reply_to ) ) {
-			$this->reply_to = $reply_to;
+			foreach ( $reply_to as $address ) {
+				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
+					$recipient_name = '';
+					if ( count( $matches ) == 3 ) {
+						$recipient_name = $matches[1];
+						$address        = $matches[2];
+					}
+					$this->reply_to[] = $address;
+					$this->reply_to_name[] = $recipient_name;
+				} else {
+					$this->reply_to[] = $address;
+				}
+			}
 		}
 		if ( isset( $cc ) ) {
 			foreach ( $cc as $address ) {
