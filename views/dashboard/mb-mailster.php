@@ -38,7 +38,7 @@ if ( mailster()->is_verified() ) {
 <dl class="mailster-icon mailster-icon-reload update-not-available">
 	<dt><?php printf( esc_html__( 'Installed Version %s', 'mailster' ), MAILSTER_VERSION ) ?></dt>
 		<dd><?php esc_html_e( 'You have the latest version', 'mailster' ); ?></dd>
-		<dd><span class="lighter"><?php echo isset( $plugin_info->last_update ) ? sprintf( esc_html__( 'checked %s ago', 'mailster' ), '<span class="update-last-check">' . human_time_diff( $plugin_info->last_update ) . '</span>' ) . ' - '  : '' ?></span> <span class="lighter"><a href="" class="check-for-update"><?php esc_html_e( 'Check Again', 'mailster' ); ?></a></span></dd>
+		<dd><span class="lighter"><?php echo isset( $plugin_info->last_update ) ? sprintf( esc_html__( 'checked %s ago', 'mailster' ), '<span class="update-last-check">' . human_time_diff( $plugin_info->last_update ) . '</span>' ) . ' &ndash; '  : '' ?></span> <span class="lighter"><a href="" class="check-for-update"><?php esc_html_e( 'Check Again', 'mailster' ); ?></a></span></dd>
 </dl>
 <dl class="mailster-icon mailster-icon-reload update-available">
 	<dt><?php printf( esc_html__( 'Installed Version %s', 'mailster' ), MAILSTER_VERSION ) ?></dt>
@@ -54,3 +54,24 @@ if ( mailster()->is_verified() ) {
 		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a>
 	</dd>
 </dl>
+<?php if ( current_user_can( 'install_languages' ) && $set = mailster( 'translations' )->get_translation_set() ) :?>
+<dl class="mailster-icon mailster-dash mailster-icon-translate">
+	<dt><?php esc_html_e( 'Translation', 'mailster' ); ?> </dt>
+	<dd>
+		<?php if ( mailster( 'translations' )->translation_installed() ) :?>
+			<?php $name = (esc_html_x( 'Thanks for using Mailster in %s!', 'Your language', 'mailster' ) == 'Thanks for using Mailster in %s!') ? $set->name : $set->native_name; ?>
+			<?php printf( esc_html_x( 'Thanks for using Mailster in %s!', 'Your language', 'mailster' ), '<strong>' . $name . '</strong>' ); ?>
+			<?php if ( mailster( 'translations' )->translation_available() ) : ?>
+			&ndash; <a href="" class="load-language"><?php esc_html_e( 'Download Translation', 'mailster' ); ?></a>
+			<?php endif; ?>
+		<?php elseif ( mailster( 'translations' )->translation_available() ) : ?>
+		<?php printf( esc_html__( 'Mailster is available in %s!', 'mailster' ), '<strong>' . $set->name . '</strong>' ); ?>
+		<?php endif; ?>
+		<dd><span class="lighter"><?php printf( esc_html__( 'Currently %s translated.', 'mailster' ), '<strong>' . $set->percent_translated . '%</strong>' ); ?></span></dd>
+		<dd>
+			<a href="<?php echo add_query_arg( 'lang', $set->wp_locale,  'https://translate.mailster.co' ) ?>" class="external"><?php esc_html_e( 'Join the Translation Project', 'mailster' ); ?></a> |
+			<a href="https://kb.mailster.co/translations-in-mailster/" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a>
+		</dd>
+	</dd>
+</dl>
+<?php endif; ?>

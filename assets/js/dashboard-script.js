@@ -139,6 +139,16 @@ jQuery(document).ready(function ($) {
 			});
 			return false;
 		})
+		.one('click', '.load-language', function () {
+			var _this = $(this);
+			_this.html(mailsterdashboardL10n.downloading);
+			_ajax('load_language', function (response) {
+				if (response.success) {
+					_this.html(mailsterdashboardL10n.reload_page);
+				}
+			});
+			return false;
+		})
 		.on('click', '.reset-license', function () {
 
 			if (!confirm(mailsterdashboardL10n.reset_license)) {

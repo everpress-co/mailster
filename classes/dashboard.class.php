@@ -230,6 +230,8 @@ class MailsterDashboard {
 			'reset_license' => esc_html__( 'Do you really like to reset your license for this site?', 'mailster' ),
 			'check_again' => esc_html__( 'Check Again', 'mailster' ),
 			'checking' => esc_html__( 'Checking...', 'mailster' ),
+			'downloading' => esc_html__( 'Downloading...', 'mailster' ),
+			'reload_page' => esc_html__( 'Complete. Reload page!', 'mailster' ),
 		) ) );
 	}
 

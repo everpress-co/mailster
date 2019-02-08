@@ -561,6 +561,11 @@ if ( $old_version ) {
 			// remove entries caused by wrong tracking
 			$wpdb->query( "DELETE FROM {$wpdb->prefix}mailster_actions WHERE subscriber_id = 0" );
 
+		case '2.4':
+
+			// reset translations
+			update_option( 'mailster_translation', '' );
+
 		default:
 
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
