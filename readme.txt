@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * fixed: wrong subscriber count in dashboard widget if assigned to multiple lists
 * fixed: auto expanding of chart on dashboard
 * fixed: title with quotes now escaped correctly
+* fixed: calculation of images if height is set to "auto"
 * improved: wp_mail wrapper now supports to address in format name <email>
 * improved: wp_mail handling of BCC and CC fields
 * improved: DNS checks on settings page now asynchronous

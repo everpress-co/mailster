@@ -1991,7 +1991,7 @@ jQuery(document).ready(function ($) {
 						if (!current.is_percentage) {
 							current.element.attr('width', Math.round(w))
 						}
-						if (current.element.attr('height')) {
+						if (current.element.attr('height') && current.element.attr('height') != 'auto') {
 							current.element.attr('height', Math.round(h))
 						}
 						if (c) {
@@ -2047,7 +2047,7 @@ jQuery(document).ready(function ($) {
 								if (!current.is_percentage) {
 									current.element.attr('width', Math.round(imagewidth.val()))
 								}
-								if (current.element.attr('height')) {
+								if (current.element.attr('height') && current.element.attr('height') != 'auto') {
 									current.element.attr('height', Math.round(imageheight.val()))
 								}
 								if (c) {
@@ -2295,7 +2295,7 @@ jQuery(document).ready(function ($) {
 												})
 												.data('id', currenttext.image[i].id);
 
-											if (imgelement.attr('height')) {
+											if (imgelement.attr('height') && imgelement.attr('height') != 'auto') {
 												imgelement.attr('height', Math.round(response.image.height / f));
 											}
 
