@@ -158,7 +158,16 @@ jQuery(document).ready(function ($) {
 		})
 		.on('change', '.list-toggle', function () {
 			$(this).parent().parent().parent().find('ul input').prop('checked', $(this).prop('checked'));
+		})
+		.on('change', 'input[name="status"]', function () {
+			if ($(this).val() <= 0) {
+				$('.pending-info').show();
+			} else {
+				$('.pending-info').hide();
+			}
 		});
+
+	;
 
 	$('#paste-import')
 		.on('focus', function () {

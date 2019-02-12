@@ -12,22 +12,22 @@
 <p><?php esc_html_e( 'Mailster will now run some tests to ensure everything is running smoothly. Please keep this browser window open until all tests are finished.', 'mailster' ); ?></p>
 
 <div class="tests-wrap no-success">
-	<a class="button button-primary button-hero start-test"><?php esc_html_e( __( 'Start Tests', 'mailster' ) ) ?></a>
+	<a class="button button-primary button-hero start-test"><?php esc_html_e( 'Start Tests', 'mailster' ) ?></a>
 	<input type="hidden" id="singletest" value="<?php echo isset( $_GET['test'] ) ? esc_attr( $_GET['test'] ) : '' ?>">
 	<div id="progress" class="progress"><span class="bar" style="width:0%"><span></span></span></div>
-	<h4 class="test-info"><?php esc_html_e( __( 'Click the button to start test', 'mailster' ) ) ?></h4>
+	<h4 class="test-info"><?php esc_html_e( 'Click the button to start test', 'mailster' ) ?></h4>
 	<div id="outputnav" class="nav-tab-wrapper hide-if-no-js">
-		<a class="nav-tab nav-tab-active" href="#selftest"><?php esc_html_e( __( 'Output', 'mailster' ) ) ?></a>
-		<a class="nav-tab" href="#textoutput"><?php esc_html_e( __( 'Text Output', 'mailster' ) ) ?></a>
-		<a class="nav-tab" href="#systeminfo"><?php esc_html_e( __( 'System Info', 'mailster' ) ) ?></a>
+		<a class="nav-tab nav-tab-active" href="#selftest"><?php esc_html_e( 'Output', 'mailster' ) ?></a>
+		<a class="nav-tab" href="#textoutput"><?php esc_html_e( 'Text Output', 'mailster' ) ?></a>
+		<a class="nav-tab" href="#systeminfo"><?php esc_html_e( 'System Info', 'mailster' ) ?></a>
 	</div>
 	<div class="subtab" id="subtab-selftest">
 		<p class="tests-toggles">
-			<?php esc_html_e( __( 'Show', 'mailster' ) ) ?>:
-			<label class="label-error" title="<?php echo esc_attr__( 'Errors must be fixed in order to make Mailster work correctly.', 'mailster' );  ?>"> <input type="checkbox" name="" data-type="error" checked><i></i><?php esc_html_e( __( 'Errors', 'mailster' ) ) ?></label>
-			<label class="label-warning" title="<?php echo esc_attr__( 'Warnings are recommended to get fixed but not required to make Mailster work.', 'mailster' );  ?>"> <input type="checkbox" name="" data-type="warning" checked><i></i><?php esc_html_e( __( 'Warnings', 'mailster' ) ) ?></label>
-			<label class="label-notice" title="<?php echo esc_attr__( 'Notices normally don\'t require any action.', 'mailster' );  ?>"> <input type="checkbox" name="" data-type="notice" checked><i></i><?php esc_html_e( __( 'Notices', 'mailster' ) ) ?></label>
-			<label class="label-success" title="<?php echo esc_attr__( 'Best requirements for Mailster to work.', 'mailster' );  ?>"> <input type="checkbox" name="" data-type="success"><i></i><?php esc_html_e( __( 'Success', 'mailster' ) ) ?></label>
+			<?php esc_html_e( 'Show', 'mailster' ) ?>:
+			<label class="label-error" title="<?php esc_attr_e( 'Errors must be fixed in order to make Mailster work correctly.', 'mailster' );  ?>"> <input type="checkbox" name="" data-type="error" checked><i></i><?php esc_html_e( 'Errors', 'mailster' ) ?></label>
+			<label class="label-warning" title="<?php esc_attr_e( 'Warnings are recommended to get fixed but not required to make Mailster work.', 'mailster' );  ?>"> <input type="checkbox" name="" data-type="warning" checked><i></i><?php esc_html_e( 'Warnings', 'mailster' ) ?></label>
+			<label class="label-notice" title="<?php esc_attr_e( 'Notices normally don\'t require any action.', 'mailster' );  ?>"> <input type="checkbox" name="" data-type="notice" checked><i></i><?php esc_html_e( 'Notices', 'mailster' ) ?></label>
+			<label class="label-success" title="<?php esc_attr_e( 'Best requirements for Mailster to work.', 'mailster' );  ?>"> <input type="checkbox" name="" data-type="success"><i></i><?php esc_html_e( 'Success', 'mailster' ) ?></label>
 		</p>
 		<div class="tests-output"></div>
 	</div>

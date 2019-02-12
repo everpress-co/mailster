@@ -113,12 +113,15 @@ class Mailster {
 	 * @param unknown $template (optional)
 	 * @return unknown
 	 */
-	public function notification( $file = 'notification.html', $template = null ) {
-		require_once MAILSTER_DIR . 'classes/notification.class.php';
+	public function notification( $file = null, $template = null ) {
 		if ( is_null( $template ) ) {
 			$template = 'basic';
 		}
+		if ( is_null( $file ) ) {
+			$file = mailster_option( 'system_mail_template', 'notification.html' );
+		}
 
+		require_once MAILSTER_DIR . 'classes/notification.class.php';
 		return MailsterNotification::get_instance( $template, $file );
 	}
 
@@ -646,13 +649,6 @@ class Mailster {
 		$new_structure = mailster( 'helper' )->using_permalinks();
 		$base = $this->get_base_link( $campaign_id );
 
-		// add title tag on links
-		// preg_match_all( '#(<a(?!.*?title=([\'"]).*?\2)[^>]*)(>)#', $content, $no_title_links );
-		// $no_title_links = $no_title_links[0];
-		// foreach ( $no_title_links as $link ) {
-		// $new_link = preg_replace( '/href=(\'|")(.*)(\'|")/', 'href="$2" title="$2"', $link );
-		// $content = str_replace( $link, $new_link, $content );
-		// }
 		foreach ( $links as $link ) {
 
 			if ( $new_structure ) {
@@ -967,10 +963,10 @@ class Mailster {
 	public function add_action_link( $links, $file ) {
 
 		if ( $file == MAILSTER_SLUG ) {
-			array_unshift( $links, '<a href="admin.php?page=mailster_tests">' . __( 'Self Test', 'mailster' ) . '</a>' );
-			array_unshift( $links, '<a href="edit.php?post_type=newsletter&page=mailster_addons">' . __( 'Add Ons', 'mailster' ) . '</a>' );
-			array_unshift( $links, '<a href="edit.php?post_type=newsletter&page=mailster_settings">' . __( 'Settings', 'mailster' ) . '</a>' );
-			array_unshift( $links, '<a href="admin.php?page=mailster_setup">' . __( 'Wizard', 'mailster' ) . '</a>' );
+			array_unshift( $links, '<a href="admin.php?page=mailster_tests">' . esc_html__( 'Self Test', 'mailster' ) . '</a>' );
+			array_unshift( $links, '<a href="edit.php?post_type=newsletter&page=mailster_addons">' . esc_html__( 'Add Ons', 'mailster' ) . '</a>' );
+			array_unshift( $links, '<a href="edit.php?post_type=newsletter&page=mailster_settings">' . esc_html__( 'Settings', 'mailster' ) . '</a>' );
+			array_unshift( $links, '<a href="admin.php?page=mailster_setup">' . esc_html__( 'Wizard', 'mailster' ) . '</a>' );
 		}
 
 		return $links;
@@ -987,7 +983,7 @@ class Mailster {
 	public function add_plugin_links( $links, $file ) {
 
 		if ( $file == MAILSTER_SLUG ) {
-			$links[] = '<a href="edit.php?post_type=newsletter&page=mailster_templates&more">' . __( 'Templates', 'mailster' ) . '</a>';
+			$links[] = '<a href="edit.php?post_type=newsletter&page=mailster_templates&more">' . esc_html__( 'Templates', 'mailster' ) . '</a>';
 		}
 
 		return $links;
@@ -1008,7 +1004,7 @@ class Mailster {
 			return $install_actions;
 		}
 
-		$install_actions['mailster_addons'] = '<a href="edit.php?post_type=newsletter&page=mailster_addons">' . __( 'Return to Add Ons Page', 'mailster' ) . '</a>';
+		$install_actions['mailster_addons'] = '<a href="edit.php?post_type=newsletter&page=mailster_addons">' . esc_html__( 'Return to Add Ons Page', 'mailster' ) . '</a>';
 
 		if ( isset( $install_actions['plugins_page'] ) ) {
 			unset( $install_actions['plugins_page'] );
@@ -1020,17 +1016,17 @@ class Mailster {
 
 	public function special_pages() {
 
-		$page = add_submenu_page( true, __( 'Mailster Setup', 'mailster' ), __( 'Setup', 'mailster' ), 'activate_plugins', 'mailster_setup', array( &$this, 'setup_page' ) );
+		$page = add_submenu_page( true, esc_html__( 'Mailster Setup', 'mailster' ), esc_html__( 'Setup', 'mailster' ), 'activate_plugins', 'mailster_setup', array( &$this, 'setup_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'setup_scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'remove_menu_enties' ) );
 
-		$page = add_submenu_page( true, __( 'Welcome to Mailster', 'mailster' ), __( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
+		$page = add_submenu_page( true, esc_html__( 'Welcome to Mailster', 'mailster' ), esc_html__( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
 
-		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Add Ons', 'mailster' ), __( 'Add Ons', 'mailster' ), 'mailster_manage_addons', 'mailster_addons', array( &$this, 'addon_page' ) );
+		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Add Ons', 'mailster' ), esc_html__( 'Add Ons', 'mailster' ), 'mailster_manage_addons', 'mailster_addons', array( &$this, 'addon_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'addon_scripts_styles' ) );
 
-		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, __( 'Mailster Tests', 'mailster' ), __( 'Self Tests', 'mailster' ), 'activate_plugins', 'mailster_tests', array( &$this, 'tests_page' ) );
+		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, esc_html__( 'Mailster Tests', 'mailster' ), esc_html__( 'Self Tests', 'mailster' ), 'activate_plugins', 'mailster_tests', array( &$this, 'tests_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
 
 	}
@@ -1099,7 +1095,7 @@ class Mailster {
 		wp_register_script( 'mailster-clipboard', MAILSTER_URI . 'assets/js/libs/clipboard' . $suffix . '.js', array(), MAILSTER_VERSION );
 		wp_register_script( 'mailster-clipboard-script', MAILSTER_URI . 'assets/js/clipboard-script' . $suffix . '.js', array( 'mailster-clipboard' ), MAILSTER_VERSION );
 		wp_localize_script( 'mailster-clipboard-script', 'mailsterClipboardL10', array(
-				'copied' => __( 'Copied!', 'mailster' ),
+				'copied' => esc_html__( 'Copied!', 'mailster' ),
 		) );
 
 	}
@@ -1117,14 +1113,14 @@ class Mailster {
 		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 		wp_localize_script( 'mailster-setup', 'mailsterL10n', array(
-			'load_language' => __( 'Loading Languages', 'mailster' ),
-			'enable_first' => __( 'Enable %s first', 'mailster' ),
-			'use_deliverymethod' => __( 'Use %s as your delivery method', 'mailster' ),
-			'check_language' => __( 'Check for languages', 'mailster' ),
-			'install_addon' => __( 'Installing Add on', 'mailster' ),
-			'activate_addon' => __( 'Activating Add on', 'mailster' ),
-			'receiving_content' => __( 'Receiving Content', 'mailster' ),
-			'skip_validation' => __( 'Without Registration you are not able to get automatic update or support!', 'mailster' ),
+			'load_language' => esc_html__( 'Loading Languages', 'mailster' ),
+			'enable_first' => esc_html__( 'Enable %s first', 'mailster' ),
+			'use_deliverymethod' => esc_html__( 'Use %s as your delivery method', 'mailster' ),
+			'check_language' => esc_html__( 'Check for languages', 'mailster' ),
+			'install_addon' => esc_html__( 'Installing Add on', 'mailster' ),
+			'activate_addon' => esc_html__( 'Activating Add on', 'mailster' ),
+			'receiving_content' => esc_html__( 'Receiving Content', 'mailster' ),
+			'skip_validation' => esc_html__( 'Without Registration you are not able to get automatic update or support!', 'mailster' ),
 		) );
 
 	}
@@ -1155,10 +1151,10 @@ class Mailster {
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION );
 		wp_localize_script( 'mailster-tests', 'mailsterL10n', array(
-			'restart_test' => __( 'Restart Test', 'mailster' ),
-			'running_test' => __( 'Running Test %1$s of %2$s: %3$s', 'mailster' ),
-			'tests_finished' => __( 'Tests are finished with %1$s Errors, %2$s Warnings and %3$s Notices.', 'mailster' ),
-			'support' => __( 'Need Support?', 'mailster' ),
+			'restart_test' => esc_html__( 'Restart Test', 'mailster' ),
+			'running_test' => esc_html__( 'Running Test %1$s of %2$s: %3$s', 'mailster' ),
+			'tests_finished' => esc_html__( 'Tests are finished with %1$s Errors, %2$s Warnings and %3$s Notices.', 'mailster' ),
+			'support' => esc_html__( 'Need Support?', 'mailster' ),
 		) );
 
 	}
@@ -1308,9 +1304,6 @@ class Mailster {
 
 
 	public function on_deactivate() {
-
-		$this->reset_license();
-
 	}
 
 
@@ -1400,34 +1393,34 @@ class Mailster {
 		switch ( $code ) {
 
 			case 678: // No Licensecode provided
-				$error_msg = $short ? __( 'Register via the %s.', 'mailster' ) : __( 'To get automatic updates for Mailster you need to register on the %s.', 'mailster' );
-				$error_msg = sprintf( $error_msg, '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '" target="_top">' . __( 'Dashboard', 'mailster' ) . '</a>' );
+				$error_msg = $short ? esc_html__( 'Register via the %s.', 'mailster' ) : esc_html__( 'To get automatic updates for Mailster you need to register on the %s.', 'mailster' );
+				$error_msg = sprintf( $error_msg, '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '" target="_top">' . esc_html__( 'Dashboard', 'mailster' ) . '</a>' );
 			break;
 
 			case 679: // Licensecode invalid
-				$error_msg = __( 'Your purchase code is invalid.', 'mailster' );
+				$error_msg = esc_html__( 'Your purchase code is invalid.', 'mailster' );
 				if ( ! $short ) {
-					$error_msg .= ' ' . __( 'To get automatic updates for Mailster you need provide a valid purchase code.', 'mailster' );
+					$error_msg .= ' ' . esc_html__( 'To get automatic updates for Mailster you need provide a valid purchase code.', 'mailster' );
 				}
 
 			break;
 
 			case 680: // Licensecode in use
-				$error_msg = $short ? __( 'Code in use!', 'mailster' ) : __( 'Your purchase code is already in use and can only be used for one site.', 'mailster' );
+				$error_msg = $short ? esc_html__( 'Code in use!', 'mailster' ) : esc_html__( 'Your purchase code is already in use and can only be used for one site.', 'mailster' );
 			break;
 
 			case 500: // Internal Server Error
 			case 503: // Service Unavailable
 			case 'http_err':
-				$error_msg = __( 'Authentication servers are currently down. Please try again later!', 'mailster' );
+				$error_msg = esc_html__( 'Authentication servers are currently down. Please try again later!', 'mailster' );
 			break;
 
 			case 406: // already assigned
-				$error_msg = __( 'This purchase code is already assigned to another user!', 'mailster' );
+				$error_msg = esc_html__( 'This purchase code is already assigned to another user!', 'mailster' );
 			break;
 
 			default:
-				$error_msg = $fallback ? $fallback : __( 'There was an error while processing your request!', 'mailster' ) . ' [' . $code . ']';
+				$error_msg = $fallback ? $fallback : esc_html__( 'There was an error while processing your request!', 'mailster' ) . ' [' . $code . ']';
 			break;
 		}
 
@@ -1871,8 +1864,8 @@ class Mailster {
 								$plugin_file = $output_array[1];
 								$plugin_data = get_plugin_data( $plugin_path );
 
-								$deactivate = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=', 'deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( _x( 'Deactivate %s', 'mailster' ), $plugin_data['Name'] ) ) . '">' . __( 'Deactivate' , 'mailster' ) . '</a>';
-								$message .= '<br>' . __( 'Plugin Name', 'mailster' ) . ': ' . esc_html( $plugin_data['Name'] );
+								$deactivate = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=', 'deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( esc_html_x( 'Deactivate %s', 'mailster' ), $plugin_data['Name'] ) ) . '">' . esc_html__( 'Deactivate' , 'mailster' ) . '</a>';
+								$message .= '<br>' . esc_html__( 'Plugin Name', 'mailster' ) . ': ' . esc_html( $plugin_data['Name'] );
 								$message .= '<br>' . $deactivate;
 							}
 						}
@@ -2066,6 +2059,8 @@ class Mailster {
 		$mail->from = apply_filters( 'wp_mail_from', mailster_option( 'from' ) );
 		$mail->from_name = apply_filters( 'wp_mail_from_name', mailster_option( 'from_name' ) );
 
+		$mail->to = array();
+
 		$mail->apply_raw_headers( $headers );
 
 		if ( is_string( $to ) ) {
@@ -2073,7 +2068,20 @@ class Mailster {
 		}
 		$to = array_map( 'trim', $to );
 
-		$mail->to = $to;
+		foreach ( $to as $address ) {
+			if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
+				$recipient_name = '';
+				if ( count( $matches ) == 3 ) {
+					$recipient_name = $matches[1];
+					$address        = $matches[2];
+				}
+				$mail->to[] = $address;
+				$mail->to_name[] = $recipient_name;
+			} else {
+				$mail->to[] = $address;
+			}
+		}
+
 		$mail->message = $message;
 		$mail->subject = $subject;
 
@@ -2216,7 +2224,7 @@ class Mailster {
 		}
 
 		if ( defined( 'MAILSTER_LICENSE' ) && MAILSTER_LICENSE && $this->is_verified() ) {
-			return new WP_Error( 'defined_constants', sprintf( __( 'The License is defined as constant %s. You have to remove it before you can reset your license.', 'mailster' ), '<code>MAILSTER_LICENSE</code>' ) );
+			return new WP_Error( 'defined_constants', sprintf( esc_html__( 'The License is defined as constant %s. You have to remove it before you can reset your license.', 'mailster' ), '<code>MAILSTER_LICENSE</code>' ) );
 		}
 
 		delete_transient( 'mailster_verified' );
@@ -2260,10 +2268,6 @@ class Mailster {
 						$verified = $old;
 						break;
 					case 681: // no user assigned
-						// $register = $this->maybe_register();
-						// if ( $register && ! is_wp_error( $register ) ) {
-						// $verified = 'yes';
-						// }
 						break;
 				}
 			}
@@ -2377,7 +2381,7 @@ class Mailster {
 	public function display_post_states( $post_states, $post ) {
 
 		if ( is_mailster_newsletter_homepage() ) {
-			$post_states['mailster_is_homepage'] = __( 'Newsletter Homepage', 'mailster' );
+			$post_states['mailster_is_homepage'] = esc_html__( 'Newsletter Homepage', 'mailster' );
 		}
 
 		return $post_states;
@@ -2416,7 +2420,7 @@ class Mailster {
 			$postdata['post_content'] = str_replace( $old_home_url, trailingslashit( home_url() ), $postdata['post_content'] );
 		}
 
-		mailster_notice( __( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaigns' );
+		mailster_notice( esc_html__( 'Please make sure all your campaigns are imported correctly!', 'mailster' ), 'error', false, 'import_campaigns' );
 
 		return $postdata;
 
@@ -2436,7 +2440,7 @@ class Mailster {
 		$tables = array( 'actions', 'queue', 'subscriber_meta' );
 
 		echo '<h4>';
-		printf( __( 'Updating Mailster tables for Campaign %s:', 'mailster' ), '"<a href="' . admin_url( 'post.php?post=' . $post_id . '&action=edit' ) . '">' . $postdata['post_title'] . '</a>"' );
+		printf( esc_html__( 'Updating Mailster tables for Campaign %s:', 'mailster' ), '"<a href="' . admin_url( 'post.php?post=' . $post_id . '&action=edit' ) . '">' . $postdata['post_title'] . '</a>"' );
 		echo '</h4>';
 
 		foreach ( $tables as $table ) {
@@ -2444,7 +2448,7 @@ class Mailster {
 
 			$sql = $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_{$table} SET campaign_id = %d WHERE campaign_id = %d", $post_id, $original_post_ID );
 			if ( false !== ($rows = $wpdb->query( $sql )) ) {
-				printf( '..' . __( 'completed for %d rows.', 'mailster' ), $rows );
+				printf( '..' . esc_html__( 'completed for %d rows.', 'mailster' ), $rows );
 			}
 			echo '<br>';
 		}

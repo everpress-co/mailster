@@ -50,7 +50,6 @@ jQuery(document).ready(function ($) {
 			autofocus: true
 		};
 
-	//init the whole thing
 	function _init() {
 
 		_trigger('disable');
@@ -95,12 +94,9 @@ jQuery(document).ready(function ($) {
 				iframeloaded = true;
 				clearInterval(iframeloadinterval);
 
-				//wp.autosave.getCompareString = _getAutosaveString;
-
 				_ibody = _iframe.contents().find('body');
 
 				if (_disabled) {
-					//_title.prop('disabled', true);
 					//overwrite autosave function since we don't need it
 					window.autosave = wp.autosave = function () {
 						return true;
@@ -752,9 +748,6 @@ jQuery(document).ready(function ($) {
 
 		} else {
 
-			// _title.prop('disabled', true);
-
-			//$('#change-permalinks').remove();
 			if (typeof autosavePeriodical != 'undefined') autosavePeriodical.repeat = false;
 
 			$('#mailster_details')
@@ -1157,7 +1150,6 @@ jQuery(document).ready(function ($) {
 							});
 						}, function (jqXHR, textStatus, errorThrown) {
 							loader.removeClass('loading');
-							//detailbox.removeClass('loading');
 						});
 					}
 
@@ -1272,8 +1264,6 @@ jQuery(document).ready(function ($) {
 		function init() {
 			_obar
 				.on('click', 'a.template', showFiles)
-				// .on('click', 'button.save-template', save)
-				// .on('mouseenter', 'a.save-template', focusName)
 				.on('click', 'a.save-template', openSaveDialog)
 				.on('click', 'a.clear-modules', clear)
 				.on('click', 'a.preview', preview)
@@ -1591,6 +1581,7 @@ jQuery(document).ready(function ($) {
 			imagecrop = bar.find('.imagecrop'),
 			factor = bar.find('.factor'),
 			highdpi = bar.find('.highdpi'),
+			original = bar.find('.original'),
 			imagelink = bar.find('.imagelink'),
 			imageurl = bar.find('.imageurl'),
 			orgimageurl = bar.find('.orgimageurl'),
@@ -1843,7 +1834,6 @@ jQuery(document).ready(function ($) {
 				img = $('<img>', {
 					'src': 'https://dummy.newsletter-plugin.com/' + (w * f) + 'x' + (h * f) + '.jpg',
 					'alt': current.content,
-					//'title': current.content,
 					'label': current.content,
 					'width': w,
 					'height': h,
@@ -1924,13 +1914,14 @@ jQuery(document).ready(function ($) {
 
 		}
 
-		function dynamicImage(val, w, h, c) {
+		function dynamicImage(val, w, h, c, o) {
 			w = w || imagewidth.val();
 			h = h || imageheight.val() || Math.round(w / 1.6);
 			c = typeof c == 'undefined' ? imagecrop.prop(':checked') : c;
+			o = typeof o == 'undefined' ? original.prop(':checked') : o;
 			if (/^\{([a-z0-9-_,;:|]+)\}$/.test(val)) {
 				var f = factor.val();
-				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&f=' + f;
+				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&o=' + (o ? 1 : 0) + '&f=' + f;
 			}
 			return val;
 		}
@@ -1982,6 +1973,10 @@ jQuery(document).ready(function ($) {
 					loader();
 
 					var f = factor.val() || 1,
+						w = imagewidth.val(),
+						h = imageheight.val(),
+						c = imagecrop.is(':checked'),
+						o = original.is(':checked'),
 						attribute = is_img ? 'src' : 'background';
 
 					current.element.attr({
@@ -1991,20 +1986,23 @@ jQuery(document).ready(function ($) {
 					if (is_img) {
 						current.element.attr({
 							'src': currentimage.src,
-							//'width': Math.round(imagewidth.val()),
-							//'height': Math.round(imageheight.val()),
 							'alt': currentimage.name
 						});
 						if (!current.is_percentage) {
-							current.element.attr('width', Math.round(imagewidth.val()))
+							current.element.attr('width', Math.round(w))
 						}
-						if (current.element.attr('height')) {
-							current.element.attr('height', Math.round(imageheight.val()))
+						if (current.element.attr('height') && current.element.attr('height') != 'auto') {
+							current.element.attr('height', Math.round(h))
 						}
-						if (imagecrop.is(':checked')) {
+						if (c) {
 							current.element.attr({
 								'data-crop': true,
 							}).data('crop', true);
+						}
+						if (o) {
+							current.element.attr({
+								'data-original': true,
+							}).data('original', true);
 						}
 					}
 
@@ -2015,10 +2013,11 @@ jQuery(document).ready(function ($) {
 
 					_ajax('create_image', {
 						id: currentimage.id,
+						original: o,
 						src: currentimage.src,
-						width: imagewidth.val() * f,
-						height: imageheight.val() * f,
-						crop: imagecrop.is(':checked')
+						width: w * f,
+						height: h * f,
+						crop: c
 					}, function (response) {
 
 						loader(false);
@@ -2043,20 +2042,23 @@ jQuery(document).ready(function ($) {
 								});
 
 								current.element.attr({
-									//'width': Math.round(imagewidth.val()),
-									//'height': Math.round(imageheight.val()),
 									'alt': currentimage.name
 								})
 								if (!current.is_percentage) {
 									current.element.attr('width', Math.round(imagewidth.val()))
 								}
-								if (current.element.attr('height')) {
+								if (current.element.attr('height') && current.element.attr('height') != 'auto') {
 									current.element.attr('height', Math.round(imageheight.val()))
 								}
-								if (imagecrop.is(':checked')) {
+								if (c) {
 									current.element.attr({
 										'data-crop': true,
 									}).data('crop', true);
+								}
+								if (o) {
+									current.element.attr({
+										'data-original': true,
+									}).data('original', true);
 								}
 							} else {
 
@@ -2133,7 +2135,6 @@ jQuery(document).ready(function ($) {
 							'src': btnsrc,
 							'width': Math.round((img.width || current.element.width()) / f),
 							'height': Math.round((img.height || current.element.height()) / f),
-							//'title': buttonalt.val()
 							'alt': buttonalt.val(),
 						});
 
@@ -2270,6 +2271,7 @@ jQuery(document).ready(function ($) {
 							if ('static' == insertmethod) {
 								_ajax('create_image', {
 									id: currenttext.image[i].id,
+									original: original.is(':checked'),
 									width: imgelement.width() * f,
 									height: imgelement.height() * f,
 									crop: imgelement.data('crop'),
@@ -2278,18 +2280,22 @@ jQuery(document).ready(function ($) {
 									if (response.success) {
 										loader(false);
 
+										if (original.is(':checked')) {
+											imgelement.attr({
+												'data-original': true,
+											}).data('original', true);
+										}
 										if ('img' == imgelement.prop('tagName').toLowerCase()) {
 											imgelement
 												.attr({
 													'data-id': currenttext.image[i].id,
 													'src': response.image.url,
 													'width': Math.round(response.image.width / f),
-													//'height': Math.round(response.image.height / f),
 													'alt': currenttext.alt || currenttext.title[i]
 												})
 												.data('id', currenttext.image[i].id);
 
-											if (imgelement.attr('height')) {
+											if (imgelement.attr('height') && imgelement.attr('height') != 'auto') {
 												imgelement.attr('height', Math.round(response.image.height / f));
 											}
 
@@ -2327,15 +2333,15 @@ jQuery(document).ready(function ($) {
 
 								var width = imgelement.width(),
 									crop = imgelement.data('crop'),
+									org = original.is(':checked'),
 									height = crop ? imgelement.height() : null;
 
 								if ('img' == imgelement.prop('tagName').toLowerCase()) {
 
 									imgelement
-									//.removeAttr('height')
 										.removeAttr('data-id')
 										.attr({
-											'src': dynamicImage(currenttext.image[i], width, height, crop),
+											'src': dynamicImage(currenttext.image[i], width, height, crop, org),
 											'width': width,
 											'alt': currenttext.alt || currenttext.title[i]
 										})
@@ -2352,7 +2358,7 @@ jQuery(document).ready(function ($) {
 										})
 										.removeData('id')
 										.css('background-image', '');
-									current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop)));
+									current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop, org)));
 								}
 
 							}
@@ -2407,7 +2413,6 @@ jQuery(document).ready(function ($) {
 
 		function remove() {
 			if (current.element.parent().is('a')) current.element.unwrap();
-			//if (!current.element.parent().is('td')) current.element.unwrap();
 			if ('btn' == current.type) {
 				var wrap = current.element.closest('.textbutton');
 				if (!wrap.length) {
@@ -2432,12 +2437,6 @@ jQuery(document).ready(function ($) {
 			case 'img':
 			case 'btn':
 				break;
-				// if (!current.element.attr('href')) {
-				// 	var wrap = current.element.closest('.textbutton');
-				// 	if (wrap.length) wrap.remove();
-				// }
-				// current.element.remove();
-				// break;
 			default:
 				current.element.html(current.content);
 			}
@@ -2507,13 +2506,6 @@ jQuery(document).ready(function ($) {
 				if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / current.asp));
 
 				adjustImagePreview();
-				/*
-				current.element.attr({
-					'src': src,
-					'width': imagewidth.val(),
-					'height': Math.round(imagewidth.val()/current.asp)
-				});
-				*/
 
 			}).attr('src', src);
 
@@ -2599,7 +2591,6 @@ jQuery(document).ready(function ($) {
 			current.crop = el.data('crop') ? el.data('crop') : false;
 			current.tag = el.prop('tagName').toLowerCase();
 			current.is_percentage = el.attr('width') && el.attr('width').indexOf('%') !== -1;
-
 			current.content = content;
 
 			currenttag = current.element.data('tag');
@@ -2662,6 +2653,7 @@ jQuery(document).ready(function ($) {
 
 			if (type == 'img') {
 
+				original.prop('checked', current.original);
 				imagecrop.prop('checked', current.crop).parent()[current.crop ? 'addClass' : 'removeClass']('not-cropped');
 
 				factor.val(1);
@@ -2964,7 +2956,6 @@ jQuery(document).ready(function ($) {
 				if (response.success) {
 					itemcount = response.itemcount;
 					displayPosts(response.html, true);
-					//assetslist.find('.selected').trigger('click');
 					if (response.rssinfo) {
 						$('#rss_more').slideDown(200);
 						$('#rss_input').slideUp(200);
@@ -3229,8 +3220,14 @@ jQuery(document).ready(function ($) {
 			if (element) {
 				(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
 			} else {
-				clone.hide().appendTo(container);
+				if('footer' == modules.last().attr('type')){
+					clone.hide().insertBefore(modules.last());
+				}else{
+					clone.hide().appendTo(container);
+				}
 			}
+
+			modules = container.find('module');
 
 			clone.slideDown(100, function () {
 				clone.css('display', 'block');
@@ -3415,8 +3412,6 @@ jQuery(document).ready(function ($) {
 					});
 
 			}
-
-			//_trigger('refresh');
 
 		}
 
@@ -3696,27 +3691,7 @@ jQuery(document).ready(function ($) {
 
 					})
 
-			} //!$._data( cont[0], "events" )
-
-
-			// $.each(buttoncontainer, function () {
-
-			// 	var $this = $(this),
-			// 		name = $this.attr('label'),
-			// 		offset = this.getBoundingClientRect(),
-			// 		top = offset.top + 46,
-			// 		left = offset.right + 16,
-			// 		btn;
-
-			// 	btn = $('<a class="addbutton content mailster-btn" title="' + mailsterL10n.add_button + '"></a>').css({
-			// 		top: top,
-			// 		left: left
-			// 	}).appendTo(_container);
-
-			// 	btn.data('offset', offset).data('name', name);
-			// 	btn.data('element', $this);
-
-			// });
+			}
 
 			if (!mailsterdata.inline) {
 				cont
@@ -3737,33 +3712,6 @@ jQuery(document).ready(function ($) {
 						});
 					});
 			}
-			// $.each(repeatable, function () {
-			// 	var $this = $(this),
-			// 		name = $this.attr('label'),
-			// 		offset = this.getBoundingClientRect(),
-			// 		top = offset.top + 48,
-			// 		left = offset.right,
-			// 		btn;
-
-			// 	btn = $('<a class="addrepeater content mailster-btn" title="' + sprintf(mailsterL10n.add_s, name) + '"></a>').css({
-			// 		top: top - 3,
-			// 		left: left + 18
-			// 	}).appendTo(_container);
-
-			// 	btn.data('offset', offset).data('name', name);
-			// 	btn.data('element', $this);
-
-			// 	btn = $('<a class="removerepeater content mailster-btn" title="' + sprintf(mailsterL10n.remove_s, name) + '"></a>').css({
-			// 		top: top + 18,
-			// 		left: left + 18
-			// 	}).appendTo(_container);
-
-			// 	btn.data('offset', offset).data('name', name);
-			// 	btn.data('element', $this);
-
-			// });
-
-
 
 		}, 500);
 
@@ -3832,35 +3780,6 @@ jQuery(document).ready(function ($) {
 		return str;
 	}
 
-	// function _changeBG(file) {
-	// 	var raw = _getContent(),
-	// 		html = raw.replace(/body{background-image:url\(.*}/i, '');
-
-	// 	if (file) {
-	// 		// var s = (file) ? "\tbody{background-image:url('" + file + "');background-repeat:repeat-y no-repeat;background-position:top center;}" : '',
-	// 		// 	html = html.replace(/<style.*?>/i, '<style type="text/css">' + s)
-	// 		// 	//.replace(/<td /i, '<td background="'+base+file+'"');
-	// 		// 	.replace(/<td/i, '<td background="' + file + '"');
-	// 		// //.replace(/background="([^"]*)"/i,'background="'+base+file+'"');
-	// 		// $('ul.backgrounds > li > a').css({
-	// 		// 	'background-image': "url('" + file + "')"
-	// 		// });
-	// 	} else {
-
-	// 		var parts = html.match(/<td(.*)background="[^"]*"(.*)/i);
-
-	// 		if (parts) html = html.replace(parts[0], '<td ' + parts[1] + ' ' + parts[2]);
-	// 		//.replace(/<td(.*)background="([^"]*)"/i,'<td ');
-	// 		$('ul.backgrounds > li > a').css({
-	// 			'background-image': "none"
-	// 		});
-	// 		//.replace(/background="([^"]*)"/i,'background=""');
-	// 	}
-
-	// 	_setContent(html);
-	// 	return;
-	// }
-
 	function _changeElements(version) {
 		var raw = _getContent(),
 			reg = /\/img\/version(\d+)\//g,
@@ -3928,7 +3847,6 @@ jQuery(document).ready(function ($) {
 
 		var attrcount = structure.bodyattributes.length,
 			doc = (isWebkit || isMozilla) ? _iframe[0].contentWindow.document : _idoc,
-			//headscripts = $(doc).find('head').find('script'),
 			headstyles = $(doc).find('head').find('link'),
 			headdoc = doc.getElementsByTagName('head')[0];
 

@@ -67,7 +67,7 @@
 			<option value="0"<?php selected( ! mailster_option( 'name_order' ) );?>><?php esc_html_e( 'Firstname', 'mailster' ) ?> <?php esc_html_e( 'Lastname', 'mailster' ) ?></option>
 			<option value="1"<?php selected( mailster_option( 'name_order' ) );?>><?php esc_html_e( 'Lastname', 'mailster' ) ?> <?php esc_html_e( 'Firstname', 'mailster' ) ?></option>
 		</select>
-		<p class="description"><?php printf( __( 'Define in which order names appear in your language or country. This is used for the %s tag.', 'mailster' ), '<code>{fullname}</code>' );?></p>
+		<p class="description"><?php printf( esc_html__( 'Define in which order names appear in your language or country. This is used for the %s tag.', 'mailster' ), '<code>{fullname}</code>' );?></p>
 		</td>
 	</tr>
 	<tr valign="top">
@@ -80,12 +80,12 @@
 			<div class="customfields">
 		<?php if ( $customfields ) : ?>
 		<?php $types = array(
-				'textfield' => __( 'Textfield', 'mailster' ),
-				'textarea' => __( 'Textarea', 'mailster' ),
-				'dropdown' => __( 'Dropdown Menu', 'mailster' ),
-				'radio' => __( 'Radio Buttons', 'mailster' ),
-				'checkbox' => __( 'Checkbox', 'mailster' ),
-				'date' => __( 'Date', 'mailster' ),
+				'textfield' => esc_html__( 'Textfield', 'mailster' ),
+				'textarea' => esc_html__( 'Textarea', 'mailster' ),
+				'dropdown' => esc_html__( 'Dropdown Menu', 'mailster' ),
+				'radio' => esc_html__( 'Radio Buttons', 'mailster' ),
+				'checkbox' => esc_html__( 'Checkbox', 'mailster' ),
+				'date' => esc_html__( 'Date', 'mailster' ),
 			);
 		foreach ( $customfields as $id => $data ) : ?>
 			<div class="customfield">

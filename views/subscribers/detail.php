@@ -6,7 +6,7 @@ $is_new = isset( $_GET['new'] );
 
 if ( ! $is_new ) {
 	if ( ! ( $subscriber = $this->get( $id, true ) ) ) {
-		echo '<h2>' . __( 'This user does not exist or has been deleted!', 'mailster' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'This user does not exist or has been deleted!', 'mailster' ) . '</h2>';
 		return;
 	}
 
@@ -16,7 +16,7 @@ if ( ! $is_new ) {
 } else {
 
 	if ( ! current_user_can( 'mailster_add_subscribers' ) ) {
-		echo '<h2>' . __( 'You don\'t have the right permission to add new subscribers', 'mailster' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'You don\'t have the right permission to add new subscribers', 'mailster' ) . '</h2>';
 		return;
 	}
 
@@ -47,9 +47,9 @@ $tabindex = 1;
 if ( $is_new ) {
 	esc_html_e( 'Add new Subscriber', 'mailster' );
 } else {
-	printf( __( 'Edit %s', 'mailster' ), '<strong>' . $nicename . '</strong>' );
+	printf( esc_html__( 'Edit %s', 'mailster' ), '<strong>' . $nicename . '</strong>' );
 	if ( $subscriber->status == 4 ) {
-		echo '<div class="error"><p>' . sprintf( __( 'This subscriber has caused an error: %s', 'mailster' ), '<strong>' . ( $meta->error ? $meta->error : __( 'unknown', 'mailster' ) ) . '</strong>' ) . '</p></div>';
+		echo '<div class="error"><p>' . sprintf( esc_html__( 'This subscriber has caused an error: %s', 'mailster' ), '<strong>' . ( $meta->error ? $meta->error : esc_html__( 'unknown', 'mailster' ) ) . '</strong>' ) . '</p></div>';
 	}
 ?>
 <?php if ( current_user_can( 'mailster_add_subscribers' ) ) : ?>
@@ -102,7 +102,7 @@ if ( $is_new ) {
 					<li><?php echo esc_attr( $subscriber->email ); ?>&nbsp;</li>
 					<li><input id="email" type="email" name="mailster_data[email]" value="<?php echo esc_attr( $subscriber->email ); ?>" placeholder="<?php echo mailster_text( 'email' ) ?>" autofocus></li>
 				</ul>
-				<code title="<?php printf( __( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{emailaddress}', '&quot;' . $subscriber->email . '&quot;' ) ?>">{emailaddress}</code>
+				<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{emailaddress}', '&quot;' . $subscriber->email . '&quot;' ) ?>">{emailaddress}</code>
 			</h3>
 			<div class="detail">
 				<label for="mailster_firstname" class="label-type-name"><?php esc_html_e( 'Name', 'mailster' );?>:</label>
@@ -118,9 +118,9 @@ if ( $is_new ) {
 				<?php endif; ?>
 					</li>
 				</ul>
-				<code title="<?php printf( __( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{fullname}', '&quot;' . $subscriber->fullname . '&quot;' ) ?>">{fullname}</code>
-				<code title="<?php printf( __( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{lastname}', '&quot;' . $subscriber->lastname . '&quot;' ) ?>">{lastname}</code>
-				<code title="<?php printf( __( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{firstname}', '&quot;' . $subscriber->firstname . '&quot;' ) ?>">{firstname}</code>
+				<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{fullname}', '&quot;' . $subscriber->fullname . '&quot;' ) ?>">{fullname}</code>
+				<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{lastname}', '&quot;' . $subscriber->lastname . '&quot;' ) ?>">{lastname}</code>
+				<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{firstname}', '&quot;' . $subscriber->firstname . '&quot;' ) ?>">{firstname}</code>
 			</div>
 			<div class="detail">
 				<label for="mailster_status"><?php esc_html_e( 'Status', 'mailster' );?>:</label>
@@ -137,16 +137,16 @@ if ( $is_new ) {
 							<option value="<?php echo (int) $id ?>" <?php selected( $id, $subscriber->status ) ?> ><?php echo $status ?></option>
 						<?php } ?>
 						</select>
-						<span class="description info"><?php esc_html_e( 'choosing "pending" as status will force a confirmation message to the subscriber', 'mailster' );?></span>
-						</div>
 					</li>
 				</ul>
+				<div class="pending-info error inline"><p><?php esc_html_e( 'Choosing "pending" as status will force a confirmation message to the subscribers.', 'mailster' ) ?></p></div>
+				</div>
 			</div>
 			<?php if ( ! $is_new ) : ?>
 			<div class="info">
 				<strong><?php esc_html_e( 'subscribed at', 'mailster' );?>:</strong> <?php echo $subscriber->signup
-				? date( $timeformat, $subscriber->signup + $timeoffset ) . ', ' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->signup ) )
-				: __( 'unknown', 'mailster' ) ?>
+				? date( $timeformat, $subscriber->signup + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->signup ) )
+				: esc_html__( 'unknown', 'mailster' ) ?>
 
 				<div><?php $this->output_referer( $subscriber->ID );?></div>
 
@@ -156,16 +156,16 @@ if ( $is_new ) {
 				<a class="show-more-info alignright"><?php esc_html_e( 'more', 'mailster' );?></a>
 				<ul class="more-info">
 					<li><strong><?php esc_html_e( 'confirmed at', 'mailster' );?>:</strong> <?php echo $subscriber->confirm
-					? date( $timeformat, $subscriber->confirm + $timeoffset ) . ', ' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->confirm ) ) . ( $subscriber->ip_confirm ? ' ' . sprintf( __( 'with IP %s', 'mailster' ), $subscriber->ip_confirm ) : '' )
-					: __( 'unknown', 'mailster' ) ?>
+					? date( $timeformat, $subscriber->confirm + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->confirm ) ) . ( $subscriber->ip_confirm ? ' ' . sprintf( esc_html__( 'with IP %s', 'mailster' ), $subscriber->ip_confirm ) : '' )
+					: esc_html__( 'unknown', 'mailster' ) ?>
 					</li>
-					<li><strong><?php esc_html_e( 'latest known IP', 'mailster' );?>:</strong> <?php echo $meta->ip ? $meta->ip	: __( 'unknown', 'mailster' ) ?></li>
+					<li><strong><?php esc_html_e( 'latest known IP', 'mailster' );?>:</strong> <?php echo $meta->ip ? $meta->ip	: esc_html__( 'unknown', 'mailster' ) ?></li>
 				</ul>
 			</div>
 			<div class="info">
 				<strong><?php esc_html_e( 'latest updated', 'mailster' );?>:</strong> <?php echo $subscriber->updated
-				? date( $timeformat, $subscriber->updated + $timeoffset ) . ', ' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->updated ) )
-				: __( 'never', 'mailster' ) ?>
+				? date( $timeformat, $subscriber->updated + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->updated ) )
+				: esc_html__( 'never', 'mailster' ) ?>
 			</div>
 			<?php endif; ?>
 			<div class="custom-field-wrap">
@@ -175,14 +175,14 @@ if ( $is_new ) {
 			?>
 				<div class="detail">
 					<label for="mailster_data_<?php echo $field ?>" class="label-type-<?php echo $data['type'] ?>"><?php echo strip_tags( $data['name'] ) ?>:</label>
-						<code title="<?php printf( __( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{' . $field . '}', '&quot;' . $subscriber->{$field} . '&quot;' ) ?>">{<?php echo $field ?>}</code>
+						<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{' . $field . '}', '&quot;' . $subscriber->{$field} . '&quot;' ) ?>">{<?php echo $field ?>}</code>
 					<ul class="click-to-edit type-<?php echo $data['type'] ?>">
 				<?php
 				switch ( $data['type'] ) {
 
 					case 'dropdown':
 				?>
-						<li><?php echo $subscriber->{$field} ? $subscriber->{$field} : __( 'nothing selected', 'mailster' ) ?></li>
+						<li><?php echo $subscriber->{$field} ? $subscriber->{$field} : esc_html__( 'nothing selected', 'mailster' ) ?></li>
 						<li><select id="mailster_data_<?php echo $field ?>" name="mailster_data[<?php echo $field ?>]">
 							<?php foreach ( $data['values'] as $v ) {?>
 								<option value="<?php echo esc_attr( $v ) ?>" <?php selected( ( ! empty( $subscriber->{$field} ) ) ? $subscriber->{$field} : ( isset( $data['default'] ) ? $data['default'] : null ), $v ) ?>><?php echo $v ?></option>
@@ -207,7 +207,7 @@ if ( $is_new ) {
 
 					case 'checkbox':
 				?>
-						<li> <?php echo $subscriber->{$field} ? __( 'yes', 'mailster' ) : __( 'no', 'mailster' ) ?></li>
+						<li> <?php echo $subscriber->{$field} ? esc_html__( 'yes', 'mailster' ) : esc_html__( 'no', 'mailster' ) ?></li>
 						<li><label for="mailster_data_<?php echo $field ?>" class="label-type-checkbox"><input type="checkbox" id="mailster_data_<?php echo $field ?>" name="mailster_data[<?php echo $field ?>]" value="1" <?php checked( $subscriber->{$field}, true ) ?>> <?php echo $data['name'] ?> </label>
 							</li>
 							<?php
@@ -258,7 +258,7 @@ if ( $is_new ) {
 						}
 						echo '<span title="' . $list->description . '" class="' . ($list->confirmed ? 'confirmed' : 'not-confirmed') . '">' . $list->name . '</span>';
 					} else :
-						echo '<span class="description">' . __( 'User has not been assigned to a list', 'mailster' ) . '</span>';
+						echo '<span class="description">' . esc_html__( 'User has not been assigned to a list', 'mailster' ) . '</span>';
 
 				endif; ?>
 				</li>
@@ -271,7 +271,7 @@ if ( $is_new ) {
 					echo '<li>';
 					echo '<label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="mailster_lists[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . '</label>';
 					if ( in_array( $list->ID, $checked ) ) {
-						echo '<span class="confirmation-status">' . (isset( $confirmed[ $list->ID ] ) ? __( 'confirmed at', 'mailster' ) . ': ' . date( $timeformat, $confirmed[ $list->ID ] + $timeoffset ) : __( 'not confirmed', 'mailster' )) . '</span>';
+						echo '<span class="confirmation-status">' . (isset( $confirmed[ $list->ID ] ) ? esc_html__( 'confirmed at', 'mailster' ) . ': ' . date( $timeformat, $confirmed[ $list->ID ] + $timeoffset ) : esc_html__( 'not confirmed', 'mailster' )) . '</span>';
 					}
 					echo '</li>';
 				}
@@ -300,7 +300,7 @@ if ( $is_new ) {
 					<p class="alignright">
 						<?php
 						if ( $geo[1] ) {
-							echo __( 'from', 'mailster' ) . sprintf( ' %s, %s', '<strong><a href="https://www.google.com/maps/@' . $meta->coords . ',11z" class="external">' . $geo[1] . '</a></strong>', '<span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ) );
+							echo esc_html__( 'from', 'mailster' ) . sprintf( ' %s, %s', '<strong><a href="https://www.google.com/maps/@' . $meta->coords . ',11z" class="external">' . $geo[1] . '</a></strong>', '<span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ) );
 						}
 						?>
 				<?php elseif ( $meta->geo ) : ?>
@@ -319,7 +319,7 @@ if ( $is_new ) {
 					<img src="<?php echo esc_url( $mapurl ) ?>" width="300" heigth="250">
 				</div>
 				<p class="alignright">
-				<?php echo __( 'from', 'mailster' ) . ' <span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] );	?>
+				<?php echo esc_html__( 'from', 'mailster' ) . ' <span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] );	?>
 				<?php endif; ?>
 					<?php if ( ! is_null( $meta->timeoffset ) ) : $t = time() + ( $meta->timeoffset * 3600 ) ?>
 						<?php echo '<br>' . esc_html__( 'Local Time', 'mailster' ) . ': <span title="' . date( $timeformat, $t ) . '">' . date( $timeformat, $t ) . '</span>'; ?>
@@ -343,7 +343,7 @@ if ( ! $is_new ) :
 		<div class="stats-wrap">
 			<table id="stats">
 				<tr>
-				<td><span class="verybold"><?php echo $sent ?></span> <?php echo _n( 'Campaign sent', 'Campaigns sent', $sent, 'mailster' ) ?></td>
+				<td><span class="verybold"><?php echo $sent ?></span> <?php echo esc_html__( _n( 'Campaign sent', 'Campaigns sent', $sent, 'mailster' ) ) ?></td>
 				<td width="60">
 				<div id="stats_open" class="piechart" data-percent="<?php echo $openrate * 100 ?>"><span>0</span>%</div>
 				</td>
@@ -393,10 +393,10 @@ if ( ! $is_new ) :
 				<p>
 				<?php if ( $open_time ) : ?>
 				<?php
-				printf( __( '%1$s needs about %2$s to open a campaign', 'mailster' ), ( $subscriber->fullname ? $subscriber->fullname : __( 'User', 'mailster' ) ), '<strong>' . human_time_diff( $now + $open_time ) . '</strong>' ); ?>
+				printf( esc_html__( '%1$s needs about %2$s to open a campaign', 'mailster' ), ( $subscriber->fullname ? $subscriber->fullname : esc_html__( 'User', 'mailster' ) ), '<strong>' . human_time_diff( $now + $open_time ) . '</strong>' ); ?>
 				<?php
 				if ( $click_time ) {
-					printf( __( 'and %1$s to click a link', 'mailster' ), '<strong>' . human_time_diff( $now + $click_time ) . '</strong>' );
+					printf( esc_html__( 'and %1$s to click a link', 'mailster' ), '<strong>' . human_time_diff( $now + $click_time ) . '</strong>' );
 				} ?>
 				<?php else : ?>
 				<?php esc_html_e( 'User has never opened a campaign', 'mailster' ); ?>
@@ -409,42 +409,42 @@ if ( ! $is_new ) :
 				<tbody>
 					<?php foreach ( $activities as $i => $activity ) { ?>
 					<tr class="<?php if ( ! ( $i % 2 ) ) { echo ' alternate'; } ?>">
-						<td><?php echo $now - $activity->timestamp < 3600 ? sprintf( __( '%s ago', 'mailster' ), human_time_diff( $now, $activity->timestamp ) ) : date( $timeformat, $activity->timestamp + $timeoffset ); ?></td>
+						<td><?php echo $now - $activity->timestamp < 3600 ? sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $activity->timestamp ) ) : date( $timeformat, $activity->timestamp + $timeoffset ); ?></td>
 						<td><?php
 						switch ( $activity->type ) {
 							case 1:
 								echo '<span class="mailster-icon mailster-icon-progress"></span></td><td>';
-								printf( __( 'Campaign %s has been sent', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
+								printf( esc_html__( 'Campaign %s has been sent', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
 							case 2:
 									echo '<span class="mailster-icon mailster-icon-open"></span></td><td>';
-									printf( __( 'opened Campaign %s', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
+									printf( esc_html__( 'opened Campaign %s', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
 							case 3:
 									echo '<span class="mailster-icon mailster-icon-click"></span></td><td>';
-									printf( __( 'clicked %1$s in Campaign %2$s', 'mailster' ), '<a href="' . $activity->link . '">' . __( 'a link', 'mailster' ) . '</a>', '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
+									printf( esc_html__( 'clicked %1$s in Campaign %2$s', 'mailster' ), '<a href="' . $activity->link . '">' . esc_html__( 'a link', 'mailster' ) . '</a>', '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
 							case 4:
 									echo '<span class="mailster-icon mailster-icon-unsubscribe"></span></td><td>';
 									$unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id );
 								if ( 'link_unsubscribe_list' == $unsub_status ) {
-									echo __( 'unsubscribed from a list', 'mailster' );
+									echo esc_html__( 'unsubscribed from a list', 'mailster' );
 								} else {
-									echo __( 'unsubscribed your newsletter', 'mailster' );
+									echo esc_html__( 'unsubscribed your newsletter', 'mailster' );
 								}
 								break;
 							case 5:
 									echo '<span class="mailster-icon mailster-icon-bounce"></span></td><td>';
-									printf( __( 'Soft bounce (%d tries)', 'mailster' ), $activity->count );
+									printf( esc_html__( 'Soft bounce (%d tries)', 'mailster' ), $activity->count );
 
 								break;
 							case 6:
 									echo '<span class="mailster-icon mailster-icon-bounce hard"></span></td><td>';
-									echo __( 'Hard bounce', 'mailster' );
+									echo esc_html__( 'Hard bounce', 'mailster' );
 								break;
 							case 7:
 									echo '<span class="mailster-icon mailster-icon-error"></span></td><td>';
-									echo __( 'Error', 'mailster' );
+									echo esc_html__( 'Error', 'mailster' );
 								break;
 							default:
 									echo '</td><td>';

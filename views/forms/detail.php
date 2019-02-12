@@ -8,13 +8,13 @@ $is_new = isset( $_GET['new'] );
 
 if ( ! $is_new ) {
 	if ( ! ( $form = $this->get( $id, true ) ) ) {
-		echo '<h2>' . __( 'This form does not exist or has been deleted!', 'mailster' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'This form does not exist or has been deleted!', 'mailster' ) . '</h2>';
 		return;
 	}
 } else {
 
 	if ( ! current_user_can( 'mailster_add_forms' ) ) {
-		echo '<h2>' . __( 'You don\'t have the right permission to add new forms', 'mailster' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'You don\'t have the right permission to add new forms', 'mailster' ) . '</h2>';
 		return;
 	}
 
@@ -156,7 +156,7 @@ if ( $is_new ) {
 			</li>
 		<?php endforeach; ?>
 		</ul>
-				<p class="description"><?php printf( __( 'Add more custom fields on the %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings#subscribers">' . __( 'Settings Page', 'mailster' ) . '</a>' ) ?></p>
+				<p class="description"><?php printf( esc_html__( 'Add more custom fields on the %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings#subscribers">' . esc_html__( 'Settings Page', 'mailster' ) . '</a>' ) ?></p>
 
 	</fieldset>
 </div>
@@ -322,7 +322,7 @@ if ( $is_new ) {
 				</p>
 					<?php if ( ! $is_profile ) :
 						if ( $profile_form = mailster( 'forms' )->get( mailster_option( 'profile_form', 0 ), false, false ) ) :?>
-							<p class="description"><?php printf( __( 'Currently %s is your profile form', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_forms&ID=' . $profile_form->ID . '&tab=settings">' . $profile_form->name . '</a>' ) ?></p>
+							<p class="description"><?php printf( esc_html__( 'Currently %s is your profile form', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_forms&ID=' . $profile_form->ID . '&tab=settings">' . $profile_form->name . '</a>' ) ?></p>
 						<?php endif; ?>
 					<?php endif; ?>
 
@@ -377,7 +377,7 @@ if ( $is_new ) {
 									<td><input type="text" id="mailster_text_link" name="mailster_data[link]" value="<?php echo esc_attr( $form->link ); ?>" class="regular-text"></td>
 								</tr>
 								<tr valign="top">
-									<td scope="row"><label for="mailster_text_content"><?php esc_html_e( 'Text', 'mailster' );?>: <code>{content}</code></label><p class="description"><?php printf( __( 'The text new subscribers get when Double-Opt-In is selected. Use %s for the link placeholder. Basic HTML is allowed', 'mailster' ), '<code>{link}</code>' ); ?></p></td>
+									<td scope="row"><label for="mailster_text_content"><?php esc_html_e( 'Text', 'mailster' );?>: <code>{content}</code></label><p class="description"><?php printf( esc_html__( 'The text new subscribers get when Double-Opt-In is selected. Use %s for the link placeholder. Basic HTML is allowed', 'mailster' ), '<code>{link}</code>' ); ?></p></td>
 									<td><textarea id="mailster_text_content" name="mailster_data[content]" rows="10" cols="50" class="large-text"><?php echo esc_attr( $form->content ); ?></textarea></td>
 								</tr>
 								<tr><td><?php esc_html_e( 'Used template file', 'mailster' );?></td><td>
@@ -396,7 +396,7 @@ if ( $is_new ) {
 
 								<tr>
 									<td><?php esc_html_e( 'Resend Confirmation', 'mailster' ) ?></td>
-									<td><div><input type="checkbox" name="mailster_data[resend]" value="1" <?php checked( $form->resend ) ?>> <?php printf( __( 'Resend confirmation %1$s times with a delay of %2$s hours if user hasn\'t confirmed the subscription', 'mailster' ), '<input type="text" name="mailster_data[resend_count]" value="' . esc_attr( $form->resend_count ) . '" class="small-text">', '<input type="text" name="mailster_data[resend_time]" value="' . esc_attr( $form->resend_time ) . '" class="small-text">' ) ?></div></td>
+									<td><div><input type="checkbox" name="mailster_data[resend]" value="1" <?php checked( $form->resend ) ?>> <?php printf( esc_html__( 'Resend confirmation %1$s times with a delay of %2$s hours if user hasn\'t confirmed the subscription', 'mailster' ), '<input type="text" name="mailster_data[resend_count]" value="' . esc_attr( $form->resend_count ) . '" class="small-text">', '<input type="text" name="mailster_data[resend_time]" value="' . esc_attr( $form->resend_time ) . '" class="small-text">' ) ?></div></td>
 								</tr>
 
 								<tr><td><?php esc_html_e( 'Redirect after confirm', 'mailster' );?></td><td><input type="text" name="mailster_data[confirmredirect]" class="widefat" value="<?php if ( isset( $form->confirmredirect ) ) {	echo $form->confirmredirect; } ?>" placeholder="http://www.example.com" ></td>
@@ -405,7 +405,7 @@ if ( $is_new ) {
 									<td>&nbsp;</td>
 									<td><label><input type="hidden" name="mailster_data[vcard]" class="vcard" value="0"><input type="checkbox" name="mailster_data[vcard]" class="vcard" value="1" <?php checked( $form->vcard );?> data-id="<?php echo $id; ?>"> <?php esc_html_e( 'Attach vCard to all confirmation mails', 'mailster' ) ?></label>
 									<div id="vcard-field" <?php if ( ! $form->vcard ) {	echo ' style="display:none"'; } ?> class="vcard-field">
-									<p class="description"><?php printf( __( 'Paste in your vCard content. You can use %s to generate your personal vcard', 'mailster' ), '<a href="http://vcardmaker.com/" class="external">vcardmaker.com</a>' ); ?></p>
+									<p class="description"><?php printf( esc_html__( 'Paste in your vCard content. You can use %s to generate your personal vcard', 'mailster' ), '<a href="http://vcardmaker.com/" class="external">vcardmaker.com</a>' ); ?></p>
 									<?php $vcard = $form->vcard_content ? $form->vcard_content : $this->get_vcard(); ?><textarea name="mailster_data[vcard_content]" rows="10" cols="50" class="large-text code"><?php echo esc_textarea( $vcard ); ?></textarea>
 									</div>
 
@@ -437,10 +437,10 @@ if ( $is_new ) {
 
 
 		$form_use_it_tabs = array(
-			'intro' => __( 'Use your form as', 'mailster' ) . '&hellip;',
-			'code' => __( 'Shortcode or PHP', 'mailster' ),
-			'subscriber-button' => __( 'Subscriber Button', 'mailster' ),
-			'form-html' => __( 'Form HTML', 'mailster' ),
+			'intro' => esc_html__( 'Use your form as', 'mailster' ) . '&hellip;',
+			'code' => esc_html__( 'Shortcode or PHP', 'mailster' ),
+			'subscriber-button' => esc_html__( 'Subscriber Button', 'mailster' ),
+			'form-html' => esc_html__( 'Form HTML', 'mailster' ),
 		);
 
 		$form_use_it_tabs = apply_filters( 'mailster_form_use_it_tabs', $form_use_it_tabs );

@@ -31,14 +31,14 @@ if ( $new == $slug ) {
 					<?php if ( empty( $licensecode ) && ! $is_free ) : ?>
 
 							<?php if ( $envato_item_id ) : ?>
-								<a title="<?php esc_html_e( 'update via Envato', 'mailster' );?>" class="update envato-activate button button-primary button-small alignright" href="<?php echo add_query_arg( array( 'auth' => wp_create_nonce( 'envato-activate' ), 'item_id' => $mailster_templates[ $slug ]['envato_item_id'], 'slug' => $slug, 'returnto' => urlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' ) ) ), $mailster_templates[ $slug ]['endpoint'] ) ?>" data-slug="<?php echo $slug ?>"><?php echo sprintf( __( 'Update to %s', 'mailster' ), $mailster_templates[ $slug ]['new_version'] ); ?></a>
+								<a title="<?php esc_html_e( 'update via Envato', 'mailster' );?>" class="update envato-activate button button-primary button-small alignright" href="<?php echo add_query_arg( array( 'auth' => wp_create_nonce( 'envato-activate' ), 'item_id' => $mailster_templates[ $slug ]['envato_item_id'], 'slug' => $slug, 'returnto' => urlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' ) ) ), $mailster_templates[ $slug ]['endpoint'] ) ?>" data-slug="<?php echo $slug ?>"><?php echo sprintf( esc_html__( 'Update to %s', 'mailster' ), $mailster_templates[ $slug ]['new_version'] ); ?></a>
 							<?php else : ?>
 								<a title="<?php esc_html_e( 'activate with licensecode', 'mailster' );?>" class="activate button button-primary button-small alignright" href="edit.php?post_type=newsletter&page=mailster_templates&action=license&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'license-' . $slug ) ?>" data-license="<?php echo $licensecode ?>" data-slug="<?php echo $slug ?>"><?php esc_html_e( 'Activate', 'mailster' );?></a>
 							<?php endif; ?>
 
 						<?php else : ?>
 
-							<a title="<?php esc_html_e( 'update template', 'mailster' );?>" class="update button button-primary button-small alignright" href="edit.php?post_type=newsletter&page=mailster_templates&action=update&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'download-' . $slug ) ?>" data-license="<?php echo $licensecode ?>" data-slug="<?php echo $slug ?>"><?php echo sprintf( __( 'Update to %s', 'mailster' ), $mailster_templates[ $slug ]['new_version'] ); ?></a>
+							<a title="<?php esc_html_e( 'update template', 'mailster' );?>" class="update button button-primary button-small alignright" href="edit.php?post_type=newsletter&page=mailster_templates&action=update&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'download-' . $slug ) ?>" data-license="<?php echo $licensecode ?>" data-slug="<?php echo $slug ?>"><?php echo sprintf( esc_html__( 'Update to %s', 'mailster' ), $mailster_templates[ $slug ]['new_version'] ); ?></a>
 
 					<?php endif; ?>
 				<?php endif; ?>

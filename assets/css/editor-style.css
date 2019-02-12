@@ -243,6 +243,7 @@ th[background][label]:before {
 	letter-spacing: 0.1em;
 	padding: 4px;
 	white-space: nowrap;
+	z-index: 1000000;
 }
 [mailster-is-rtl] module[label]:before,
 [mailster-is-rtl] module[label][selected]:before,
@@ -351,6 +352,7 @@ td[background]:before, th[background]:before{
 	color: #fff;
 	pointer-events: all;
 	cursor: pointer;
+	z-index: 9200;
 }
 [mailster-is-rtl] td[background]:before, [mailster-is-rtl] th[background]:before {
 	left: auto;
