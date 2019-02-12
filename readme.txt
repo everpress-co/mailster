@@ -91,7 +91,7 @@ Xaver Birsak – https://everpress.io
 * fixed: calculation of images if height is set to "auto"
 * fixes: template file selection on system mails are now respected correctly
 * improved: wp_mail wrapper now supports to address in format name <email>
-* improved: wp_mail handling of BCC and CC fields
+* improved: wp_mail handling of reply-to, BCC and CC fields
 * improved: DNS checks on settings page now asynchronous
 * improved: subscribers now get removed from the queue if a bounce happens
 * improved: better warning on import for pending subscribers
