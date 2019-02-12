@@ -13,10 +13,6 @@ jQuery(document).ready(function ($) {
 		datepicker();
 
 		_self
-		// .on('change', '.mailster-list-operator', function () {
-		// 	conditions.removeClass('mailster-condition-operator-is-and mailster-condition-operator-is-or').addClass('mailster-condition-operator-is-' + $(this).val().toLowerCase());
-		// 	_trigger('updateCount');
-		// })
 			.on('click', '.add-condition', function () {
 				var id = groups.length,
 					clone = groups.eq(0).clone();
@@ -28,7 +24,6 @@ jQuery(document).ready(function ($) {
 					_this.attr('name', name.replace(/\[\d+\]/, '[' + id + ']')).prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
-				//clone.find('select.select2').select2();
 				datepicker();
 				groups = _self.find('.mailster-condition-group');
 				cond = _self.find('.mailster-condition');
@@ -45,7 +40,6 @@ jQuery(document).ready(function ($) {
 					_this.attr('name', name.replace(/\[\d+\]\[\d+\]/, '[' + cont.data('id') + '][' + id + ']')).prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
-				//clone.find('select.select2').select2();
 				datepicker();
 				cond = _self.find('.mailster-condition');
 			});
@@ -153,6 +147,5 @@ jQuery(document).ready(function ($) {
 		var triggerevent = args.shift();
 		window.Mailster.trigger(triggerevent, args);
 	}
-
 
 });

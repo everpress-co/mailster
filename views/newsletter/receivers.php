@@ -96,12 +96,12 @@ $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data
 		<select class="create-list-type">
 		<?php
 		$options = array(
-			'sent' => __( 'who have received', 'mailster' ),
-			'not_sent' => __( 'who have not received', 'mailster' ),
-			'open' => __( 'who have opened', 'mailster' ),
-			'open_not_click' => __( 'who have opened but not clicked', 'mailster' ),
-			'click' => __( 'who have opened and clicked', 'mailster' ),
-			'not_open' => __( 'who have not opened', 'mailster' ),
+			'sent' => esc_html__( 'who have received', 'mailster' ),
+			'not_sent' => esc_html__( 'who have not received', 'mailster' ),
+			'open' => esc_html__( 'who have opened', 'mailster' ),
+			'open_not_click' => esc_html__( 'who have opened but not clicked', 'mailster' ),
+			'click' => esc_html__( 'who have opened and clicked', 'mailster' ),
+			'not_open' => esc_html__( 'who have not opened', 'mailster' ),
 			);
 		foreach ( $options as $id => $option ) { ?>
 			<option value="<?php echo $id ?>"><?php echo $option ?></option>

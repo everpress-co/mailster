@@ -11,9 +11,13 @@ class MailsterMail {
 	public $from_name;
 	public $to;
 	public $to_name;
+	public $cc;
+	public $cc_name;
 	public $bcc;
+	public $bcc_name;
 	public $hash = '';
 	public $reply_to;
+	public $reply_to_name;
 	public $deliverymethod;
 	public $dkim;
 	public $bouncemail;
@@ -168,7 +172,7 @@ class MailsterMail {
 		$this->sentlimitreached = $this->sent_within_period >= $this->send_limit;
 
 		if ( $this->sentlimitreached ) {
-			$msg = sprintf( __( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), '<strong>' . $this->send_limit . '</strong>', '<strong>' . human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) . '</strong>' );
+			$msg = sprintf( esc_html__( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), '<strong>' . $this->send_limit . '</strong>', '<strong>' . human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) . '</strong>' );
 			mailster_notice( $msg, 'error', false, 'dailylimit' );
 
 			$e = new Exception( $msg, 1 );
@@ -207,7 +211,6 @@ class MailsterMail {
 			}
 
 			$this->mailer->SMTPDebug = $level; // 0 = off, 1 = commands, 2 = commands and data
-			// Options: "echo", "html" or "error_log";
 		}
 	}
 
@@ -408,13 +411,49 @@ class MailsterMail {
 			$this->from_name = $from_name;
 		}
 		if ( isset( $reply_to ) ) {
-			$this->reply_to = $reply_to;
-		}
-		if ( isset( $bcc ) ) {
-			$this->bcc = $bcc;
+			foreach ( $reply_to as $address ) {
+				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
+					$recipient_name = '';
+					if ( count( $matches ) == 3 ) {
+						$recipient_name = $matches[1];
+						$address        = $matches[2];
+					}
+					$this->reply_to[] = $address;
+					$this->reply_to_name[] = $recipient_name;
+				} else {
+					$this->reply_to[] = $address;
+				}
+			}
 		}
 		if ( isset( $cc ) ) {
-			$this->cc = $cc;
+			foreach ( $cc as $address ) {
+				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
+					$recipient_name = '';
+					if ( count( $matches ) == 3 ) {
+						$recipient_name = $matches[1];
+						$address        = $matches[2];
+					}
+					$this->cc[] = $address;
+					$this->cc_name[] = $recipient_name;
+				} else {
+					$this->cc[] = $address;
+				}
+			}
+		}
+		if ( isset( $bcc ) ) {
+			foreach ( $bcc as $address ) {
+				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
+					$recipient_name = '';
+					if ( count( $matches ) == 3 ) {
+						$recipient_name = $matches[1];
+						$address        = $matches[2];
+					}
+					$this->bcc[] = $address;
+					$this->bcc_name[] = $recipient_name;
+				} else {
+					$this->bcc[] = $address;
+				}
+			}
 		}
 
 	}
@@ -615,18 +654,49 @@ class MailsterMail {
 				$this->mailer->AddAddress( $address, isset( $this->to_name[ $i ] ) ? $this->to_name[ $i ] : null );
 			}
 
+			$this->subject = htmlspecialchars_decode( $this->subject );
+			$this->from_name = htmlspecialchars_decode( $this->from_name );
+
+			if ( $this->cc ) {
+				if ( ! is_array( $this->cc ) ) {
+					$this->cc = array( $this->cc );
+				}
+				if ( ! is_array( $this->cc_name ) ) {
+					$this->cc_name = array( $this->cc_name );
+				}
+
+				foreach ( $this->cc as $i => $address ) {
+					$this->mailer->addCC( $address, isset( $this->cc_name[ $i ] ) ? $this->cc_name[ $i ] : null );
+				}
+			}
+
 			if ( $this->bcc ) {
 				if ( ! is_array( $this->bcc ) ) {
 					$this->bcc = array( $this->bcc );
 				}
+				if ( ! is_array( $this->bcc_name ) ) {
+					$this->bcc_name = array( $this->bcc_name );
+				}
 
-				foreach ( $this->bcc as $address ) {
-					$this->mailer->addBCC( $address );
+				foreach ( $this->bcc as $i => $address ) {
+					$this->mailer->addBCC( $address, isset( $this->bcc_name[ $i ] ) ? $this->bcc_name[ $i ] : null );
 				}
 			}
 
-			$this->subject = htmlspecialchars_decode( $this->subject );
-			$this->from_name = htmlspecialchars_decode( $this->from_name );
+			if ( $this->reply_to ) {
+				if ( ! is_array( $this->reply_to ) ) {
+					$this->reply_to = array( $this->reply_to );
+				}
+				if ( ! is_array( $this->reply_to_name ) ) {
+					$this->reply_to_name = array( $this->reply_to_name );
+				}
+
+				foreach ( $this->reply_to as $i => $address ) {
+					$this->mailer->addReplyTo( $address, isset( $this->reply_to_name[ $i ] ) ? $this->reply_to_name[ $i ] : null );
+				}
+			} else {
+				$this->mailer->addReplyTo( $this->from, $this->from_name );
+			}
 
 			if ( empty( $this->from ) ) {
 				$this->from = mailster_option( 'from' );
@@ -652,14 +722,6 @@ class MailsterMail {
 			( $this->bouncemail )
 				? $this->mailer->ReturnPath = $this->mailer->Sender = $this->bouncemail
 				: $this->mailer->ReturnPath = $this->mailer->Sender = $this->from;
-
-			if ( ! empty( $this->reply_to ) ) {
-				foreach ( (array) $this->reply_to as $address ) {
-					$this->mailer->addReplyTo( $address );
-				}
-			} else {
-				$this->mailer->addReplyTo( $this->from );
-			}
 
 			// add the tracking image at the bottom
 			if ( $this->add_tracking_image ) {

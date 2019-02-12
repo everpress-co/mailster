@@ -4,7 +4,6 @@ class MailsterHelpmenu {
 
 	public function __construct() {
 
-		// add_action('admin_head', array( &$this, 'init'), 1);
 	}
 
 

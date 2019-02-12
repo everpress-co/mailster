@@ -14,7 +14,7 @@ jQuery(document).ready(function ($) {
 		ctx,
 
 		chartoptions = {
-			responsive: true,
+			responsive: false,
 			legend: false,
 			animationEasing: "easeOutExpo",
 			maintainAspectRatio: false,

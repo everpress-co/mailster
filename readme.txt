@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.0
-Stable tag: 2.3.15
+Stable tag: 2.3.16
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -65,22 +65,41 @@ Xaver Birsak – https://everpress.io
 
 
 = Linus =
-[!(https://mailster.github.io/preview/linus.jpg)](https://evp.li/linus?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/linus.jpg)](https://evp.to/linus?utm_source=Plugin+Info+Page)
 = Metro =
-[!(https://mailster.github.io/preview/metro.jpg)](https://evp.li/metro?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/metro.jpg)](https://evp.to/metro?utm_source=Plugin+Info+Page)
 = My Business =
-[!(https://mailster.github.io/preview/business.jpg)](https://evp.li/business?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/business.jpg)](https://evp.to/business?utm_source=Plugin+Info+Page)
 = Loose Leaf =
-[!(https://mailster.github.io/preview/looseleaf.jpg)](https://evp.li/looseleaf?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/looseleaf.jpg)](https://evp.to/looseleaf?utm_source=Plugin+Info+Page)
 = Market =
-[!(https://mailster.github.io/preview/market.jpg)](https://evp.li/market?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/market.jpg)](https://evp.to/market?utm_source=Plugin+Info+Page)
 = Skyline =
-[!(https://mailster.github.io/preview/skyline.jpg)](https://evp.li/skyline?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/skyline.jpg)](https://evp.to/skyline?utm_source=Plugin+Info+Page)
 = Letterpress =
-[!(https://mailster.github.io/preview/letterpress.jpg)](https://evp.li/letterpress?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/letterpress.jpg)](https://evp.to/letterpress?utm_source=Plugin+Info+Page)
 
 
 == Changelog ==
+
+= Version 2.3.16 =
+
+* new: option to choose original image in editbar (for animated gifs)
+* fixed: wrong subscriber count in dashboard widget if assigned to multiple lists
+* fixed: auto expanding of chart on dashboard
+* fixed: title with quotes now escaped correctly
+* fixed: calculation of images if height is set to "auto"
+* fixes: template file selection on system mails are now respected correctly
+* improved: wp_mail wrapper now supports to address in format name <email>
+* improved: wp_mail handling of reply-to, BCC and CC fields
+* improved: DNS checks on settings page now asynchronous
+* improved: subscribers now get removed from the queue if a bounce happens
+* improved: better warning on import for pending subscribers
+* improved: auto responder data now stored if campaign is saved as draft
+* improved: handling of script tags during sanitation
+* added: `mailster_allowed_script_domains` and `mailster_allowed_script_types` filter hooks
+* added: condition "is in list" for better segmentation
+* added: option to re test a test
 
 = Version 2.3.15 =
 

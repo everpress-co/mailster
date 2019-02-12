@@ -37,6 +37,7 @@ class MailsterSubscriberQuery {
 		'meta' => null,
 
 		'lists' => false,
+		'lists__in' => null,
 		'lists__not_in' => null,
 
 		'unsubscribe' => null,
@@ -308,6 +309,9 @@ class MailsterSubscriberQuery {
 			$this->add_condition( '_click_link__not_in', '=', ( $this->args['click_link__not_in'] ) );
 		}
 
+		if ( $this->args['lists__in'] ) {
+			$this->add_condition( '_lists__in', '=', ( $this->args['lists__in'] ) );
+		}
 		if ( $this->args['lists__not_in'] ) {
 			$this->add_condition( '_lists__not_in', '=', ( $this->args['lists__not_in'] ) );
 		}
@@ -326,7 +330,6 @@ class MailsterSubscriberQuery {
 					}
 				}
 				$this->args['fields'] = array_unique( $this->args['fields'] );
-				// sort($this->args['fields']);
 			}
 			if ( ! empty( $this->args['meta'] ) ) {
 				foreach ( $this->args['meta'] as $field ) {
@@ -338,7 +341,6 @@ class MailsterSubscriberQuery {
 						$this->args['select'][] = "`meta_$field`.meta_value AS `$field`";
 					}
 				}
-				// sort($this->args['meta']);
 			}
 		}
 
@@ -350,13 +352,6 @@ class MailsterSubscriberQuery {
 			return $result;
 		}
 
-		// if ( $this->args['lists'] !== false || $this->args['lists__not_in'] ) {
-		// $join = "LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON subscribers.ID = lists_subscribers.subscriber_id AND lists_subscribers.added != 0";
-		// if ( $this->args['lists__not_in'] && $this->args['lists__not_in'][0] != -1 ) {
-		// $join .= ' AND lists_subscribers.list_id IN (' . implode( ',', array_filter( $this->args['lists__not_in'], 'is_numeric' ) ) . ')';
-		// }
-		// $joins[] = $join;
-		// }
 		if ( $this->args['lists'] !== false ) {
 			$join = "LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON subscribers.ID = lists_subscribers.subscriber_id AND lists_subscribers.added != 0";
 			$joins[] = $join;
@@ -495,7 +490,11 @@ class MailsterSubscriberQuery {
 
 						$alias = 'actions' . $field . '_' . $i . '_' . $j;
 
-						if ( $field == '_lists__not_in' ) {
+						if ( $field == '_lists__in' ) {
+
+							$sub_cond[] = "subscribers.ID IN ( SELECT subscriber_id FROM {$wpdb->prefix}mailster_lists_subscribers WHERE list_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ') )';
+
+						} elseif ( $field == '_lists__not_in' ) {
 
 							$sub_cond[] = "subscribers.ID NOT IN ( SELECT subscriber_id FROM {$wpdb->prefix}mailster_lists_subscribers WHERE list_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ') )';
 
@@ -628,9 +627,6 @@ class MailsterSubscriberQuery {
 			$wheres[] = 'AND subscribers.wp_id NOT IN (' . implode( ',', array_filter( $this->args['wp_exclude'], 'is_numeric' ) ) . ')';
 		}
 
-		// if ( $this->args['lists__not_in'] ) {
-		// $wheres[] = 'AND lists_subscribers.list_id IS NULL';
-		// }
 		if ( $this->args['unsubscribe'] ) {
 			$wheres[] = 'AND actions_unsubscribe.subscriber_id IS NOT NULL';
 		}
@@ -895,7 +891,6 @@ class MailsterSubscriberQuery {
 
 		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql, $this->args, $campaign_id );
 
-		// error_log( $sql );
 		if ( $this->args['return_sql'] ) {
 			$result = $this->last_query = $sql;
 			$this->last_error = null;
@@ -934,8 +929,6 @@ class MailsterSubscriberQuery {
 				} while ( ! empty( $sub_result ));
 
 				unset( $sub_result );
-
-				// $result = $this->cast( $result ) );
 			}
 
 			$this->last_query = $sql;
@@ -1000,7 +993,7 @@ class MailsterSubscriberQuery {
 				$value = str_replace( ',', '.', $value );
 				if ( strpos( $value, '%' ) !== false || $value > 5 ) {
 					$value = (float) $value / 100;
-				} elseif ( $value >= 1 ) {
+				} elseif ( $value > 1 ) {
 					$value = (float) $value * 0.2;
 				}
 				break;
@@ -1297,7 +1290,7 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_action_fields() {
-		$action_fields = array( '_sent', '_sent__not_in', '_sent_before', '_sent_after', '_open', '_open__not_in', '_open_before', '_open_after', '_click', '_click__not_in', '_click_before', '_click_after', '_click_link', '_click_link__not_in', '_lists__not_in' );
+		$action_fields = array( '_sent', '_sent__not_in', '_sent_before', '_sent_after', '_open', '_open__not_in', '_open_before', '_open_after', '_click', '_click__not_in', '_click_before', '_click_after', '_click_link', '_click_link__not_in', '_lists__in', '_lists__not_in' );
 
 		return $action_fields;
 	}

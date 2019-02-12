@@ -162,7 +162,7 @@ class MailsterBounce {
 
 		if ( is_wp_error( $handler ) ) {
 
-			mailster_notice( sprintf( __( 'It looks like your bounce server setting is incorrect! Last error: %s', 'mailster' ), '<br><strong>' . $handler->get_error_message() . '</strong>' ), 'error', true, 'bounce_server' );
+			mailster_notice( sprintf( esc_html__( 'It looks like your bounce server setting is incorrect! Last error: %s', 'mailster' ), '<br><strong>' . $handler->get_error_message() . '</strong>' ), 'error', true, 'bounce_server' );
 
 			return;
 		}

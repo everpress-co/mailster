@@ -21,7 +21,6 @@ jQuery(document).ready(function ($) {
 					multiple: false
 				});
 
-
 			}
 
 			wp.media.frames.mailster_mediaeditorlink.off('select').on('select', function () {
