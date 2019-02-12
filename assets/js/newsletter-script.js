@@ -3220,9 +3220,9 @@ jQuery(document).ready(function ($) {
 			if (element) {
 				(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
 			} else {
-				if('footer' == modules.last().attr('type')){
+				if ('footer' == modules.last().attr('type')) {
 					clone.hide().insertBefore(modules.last());
-				}else{
+				} else {
 					clone.hide().appendTo(container);
 				}
 			}

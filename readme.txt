@@ -96,6 +96,8 @@ Xaver Birsak – https://everpress.io
 * improved: subscribers now get removed from the queue if a bounce happens
 * improved: better warning on import for pending subscribers
 * improved: auto responder data now stored if campaign is saved as draft
+* improved: handling of script tags during sanitation
+* added: `mailster_allowed_script_domains` and `mailster_allowed_script_types` filter hooks
 * added: condition "is in list" for better segmentation
 * added: option to re test a test
 
