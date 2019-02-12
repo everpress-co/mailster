@@ -113,12 +113,15 @@ class Mailster {
 	 * @param unknown $template (optional)
 	 * @return unknown
 	 */
-	public function notification( $file = 'notification.html', $template = null ) {
-		require_once MAILSTER_DIR . 'classes/notification.class.php';
+	public function notification( $file = null, $template = null ) {
 		if ( is_null( $template ) ) {
 			$template = 'basic';
 		}
+		if ( is_null( $file ) ) {
+			$file = mailster_option( 'system_mail_template', 'notification.html' );
+		}
 
+		require_once MAILSTER_DIR . 'classes/notification.class.php';
 		return MailsterNotification::get_instance( $template, $file );
 	}
 

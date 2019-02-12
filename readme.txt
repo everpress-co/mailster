@@ -89,6 +89,7 @@ Xaver Birsak – https://everpress.io
 * fixed: auto expanding of chart on dashboard
 * fixed: title with quotes now escaped correctly
 * fixed: calculation of images if height is set to "auto"
+* fixes: template file selection on system mails are now respected correctly
 * improved: wp_mail wrapper now supports to address in format name <email>
 * improved: wp_mail handling of BCC and CC fields
 * improved: DNS checks on settings page now asynchronous

@@ -3220,8 +3220,14 @@ jQuery(document).ready(function ($) {
 			if (element) {
 				(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
 			} else {
-				clone.hide().appendTo(container);
+				if('footer' == modules.last().attr('type')){
+					clone.hide().insertBefore(modules.last());
+				}else{
+					clone.hide().appendTo(container);
+				}
 			}
+
+			modules = container.find('module');
 
 			clone.slideDown(100, function () {
 				clone.css('display', 'block');
