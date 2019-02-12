@@ -890,14 +890,42 @@ class Mailster {
 		$content = str_replace( '</module><module', '</module>' . "\n" . '<module', $content );
 		$content = str_replace( '<modules><module', '<modules>' . "\n" . '<module', $content );
 		$content = str_replace( '</module></modules>', '</module>' . "\n" . '</modules>', $content );
-		$content = preg_replace( '#<script[^>]*?>.*?</script>#si', '', $content );
+
+		$keep_scripts = array();
+		$keep_scripts_count = 0;
+		$allowed_script_domains = apply_filters( 'mailster_allowed_script_domains', array( 'cdn.ampproject.org' ) );
+		$allowed_script_types = apply_filters( 'mailster_allowed_script_types', array( 'application/ld+json' ) );
+
+		// save allowed domains
+		if ( ! empty( $allowed_script_domains ) && preg_match_all( '#<script([^>]*)?src="https?:\/\/(' . preg_quote( implode( '|', $allowed_script_domains ) ) . ')([^>]*)?>#is', $content, $scripts ) ) {
+			foreach ( $scripts[0] as $script ) {
+				$content = str_replace( $script, '<!--Mailster:keepscript' . ($keep_scripts_count++) . '-->', $content );
+			}
+			$keep_scripts = array_merge( $keep_scripts, $scripts[0] );
+		}
+		// save allowed types
+		if ( ! empty( $allowed_script_types ) && preg_match_all( '#<script([^>]*)?type="(' . preg_quote( implode( '|', $allowed_script_types ) ) . ')"([^>]*)?>#is', $content, $scripts ) ) {
+			foreach ( $scripts[0] as $script ) {
+				$content = str_replace( $script, '<!--Mailster:keepscript' . ($keep_scripts_count++) . '-->', $content );
+			}
+			$keep_scripts = array_merge( $keep_scripts, $scripts[0] );
+		}
+
+		$content = preg_replace( '#<script[^>]*?>.*?<\/script>#si', '', $content );
+
+		if ( ! empty( $keep_scripts ) ) {
+			foreach ( $keep_scripts as $i => $script ) {
+				$content = str_replace( '<!--Mailster:keepscript' . $i . '-->', $script, $content );
+			}
+		}
+
 		$content = str_replace( array( 'mailster-highlight', 'mailster-loading', 'ui-draggable', ' -handle', ' contenteditable="true"', ' spellcheck="false"' ), '', $content );
 
-		$allowed_tags = array( 'address', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'source', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else' );
+		$allowed_tags = array( 'address', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'source', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'script','amp-form', 'amp-selector', 'amp-bind', 'amp-state', 'amp-list', 'amp-mustache', 'amp-accordion', 'amp-carousel', 'amp-sidebar', 'amp-image-lightbox', 'amp-lightbox', 'amp-fit-text', 'amp-timeago', 'amp-img', 'amp-anim', 'template' );
 
 		$allowed_tags = apply_filters( 'mymail_allowed_tags', apply_filters( 'mailster_allowed_tags', $allowed_tags ) );
 
-		$allowed_tags = '<' . implode( '><', $allowed_tags ) . '>';
+		$allowed_tags = '<' . implode( '><', (array) $allowed_tags ) . '>';
 
 		if ( $preserve_comments ) {
 			// preserve all comments
