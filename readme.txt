@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.17 =
 
 * improved: block comments now removed if present in the email
+* improved: better action handling for mails opened on Yahoo
 
 = Version 2.3.16 =
 
