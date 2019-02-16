@@ -1425,7 +1425,7 @@ class MailsterAjax {
 				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 				$link = get_permalink( $post->ID );
 
-				$content = wpautop( $post->post_content );
+				$content = wpautop( mailster_remove_block_comments( $post->post_content ) );
 
 				if ( ! empty( $post->post_excerpt ) ) {
 					$excerpt = wpautop( $post->post_excerpt );

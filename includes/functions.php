@@ -1013,6 +1013,14 @@ function is_mailster_newsletter_homepage( $post_id = null ) {
 }
 
 
+function mailster_remove_block_comments( $content ) {
+
+	if ( false !== strpos( $content, '<!-- wp' ) ) {
+		$content = preg_replace( '/<!-- \/?wp:(.+) -->(\n?)/', '', $content );
+	}
+
+	return $content;
+}
 
 /**
  *

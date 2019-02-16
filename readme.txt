@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.17 =
 
+* improved: block comments now removed if present in the email
+
 = Version 2.3.16 =
 
 * new: option to choose original image in editbar (for animated gifs)
