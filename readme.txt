@@ -84,6 +84,9 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.17 =
 
+* added: `mailster_add_embeded_style` method to add custom embeded styles.
+* improved: styles added via `mailster_add(_embeded)_style` are now visible in the editor.
+* improved: inline styles can now be skipped with an optional `data-embed` attribute
 * improved: block comments now removed if present in the email
 * improved: better action handling for mails opened on Yahoo
 

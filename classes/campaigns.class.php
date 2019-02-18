@@ -4186,7 +4186,6 @@ class MailsterCampaigns {
 			if ( $editorstyle ) {
 				$html = str_replace( '</head>', $this->iframe_script_styles() . '</head>', $html );
 				$html = str_replace( '</body>', $this->iframe_body_stuff() . '</body>', $html );
-
 			}
 
 			$html = str_replace( ' !DOCTYPE', '!DOCTYPE', $html );
@@ -4357,6 +4356,8 @@ class MailsterCampaigns {
 		wp_print_scripts( 'jquery-touch-punch' );
 		wp_print_scripts( 'plupload-all' );
 		wp_print_scripts( 'mailster-editor-script' );
+
+		mailster( 'helper' )->get_mailster_styles( true );
 
 		do_action( 'mailster_iframe_script_styles' );
 

@@ -331,7 +331,7 @@ class MailsterAjax {
 		$content = isset( $_POST['content'] ) ? '<body' . $bodyattributes . '>' . stripslashes( $_POST['content'] ) . '</body>' : null;
 
 		$return['content'] = mailster()->sanitize_content( $content, null, $head );
-
+		$return['style'] = mailster( 'helper' )->get_mailster_styles();
 		$this->json_return( $return );
 
 	}
@@ -406,6 +406,7 @@ class MailsterAjax {
 		$content = $placeholder->get_content();
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
+		$content = mailster( 'helper' )->add_mailster_styles( $content );
 
 		$hash = md5( $content );
 
@@ -2470,15 +2471,18 @@ class MailsterAjax {
 
 		if ( empty( $purchasecode ) ) {
 			$return['error'] = esc_html__( 'Please enter your Purchase Code!', 'mailster' );
+			$return['code'] = 'license';
 
 		} elseif ( isset( $_POST['data'] ) ) {
 
 			parse_str( $_POST['data'], $userdata );
 
 			if ( empty( $userdata['email'] ) ) {
-				$return['error'] = esc_html__( 'Please enter your email address', 'mailster' );
+				$return['error'] = esc_html__( 'Please enter your email address.', 'mailster' );
+				$return['code'] = 'email';
 			} elseif ( ! isset( $userdata['tos'] ) ) {
 				$return['error'] = esc_html__( 'You have to accept the terms of service.', 'mailster' );
+				$return['code'] = 'tos';
 			} else {
 				$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
 

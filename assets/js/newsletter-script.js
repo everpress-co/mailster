@@ -1484,7 +1484,7 @@ jQuery(document).ready(function ($) {
 					content: structure.content,
 					head: structure.head
 				}, function (response) {
-					_setContent(response.content, 100, true);
+					_setContent(response.content, 100, true, response.style);
 					_html.show();
 					_content.hide();
 					$('.CodeMirror').remove();
@@ -3217,6 +3217,8 @@ jQuery(document).ready(function ($) {
 
 			if (!element && !container.length) return false;
 
+			modules = container.find('module');
+
 			if (element) {
 				(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
 			} else {
@@ -3841,7 +3843,7 @@ jQuery(document).ready(function ($) {
 		};
 	}
 
-	function _setContent(content, delay, saveit) {
+	function _setContent(content, delay, saveit, extrastyle) {
 
 		var structure = _getHTMLStructure(content);
 
@@ -3851,7 +3853,8 @@ jQuery(document).ready(function ($) {
 			headdoc = doc.getElementsByTagName('head')[0];
 
 		_head.val(structure.head);
-		headdoc.innerHTML = structure.head.replace(/([^]*)<head([^>]*)?>([^]*)<\/head>([^]*)/m, '$3');
+		if (!extrastyle) extrastyle = '';
+		headdoc.innerHTML = structure.head.replace(/([^]*)<head([^>]*)?>([^]*)<\/head>([^]*)/m, '$3' + extrastyle);
 		$(headdoc).append(headstyles);
 
 		doc.body.innerHTML = structure.content;

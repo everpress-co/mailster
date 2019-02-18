@@ -1016,18 +1016,25 @@ class MailsterHelper {
 		foreach ( $comments[0] as $i => $comment ) {
 			$content = str_replace( $comment, '<!--Mailster:html_comment_' . $i . '_' . $commentid . '-->', $content );
 		}
-
 		// get all style blocks
-		if ( preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles ) ) {
+		if ( preg_match_all( '#<style([^><]*)>(.*?)</style>#is', $content, $originalstyles ) ) {
 
 			@error_reporting( E_ERROR | E_PARSE );
 			@ini_set( 'display_errors', '0' );
 
+			$apply_styles = array();
+
 			// strip media queries
 			foreach ( $originalstyles[2] as $i => $styleblock ) {
+				// skip embeded styles
+				if ( false !== strpos( $originalstyles[1][ $i ], 'data-embed' ) ) {
+					continue;
+				}
 				$mediaBlocks = $this->parseMediaBlocks( $styleblock );
 				if ( ! empty( $mediaBlocks ) ) {
-					$originalstyles[2][ $i ] = str_replace( $mediaBlocks, '', $originalstyles[2][ $i ] );
+					$apply_styles[] = trim( str_replace( $mediaBlocks, '', $originalstyles[2][ $i ] ) );
+				} else {
+					$apply_styles[] = trim( $originalstyles[2][ $i ] );
 				}
 			}
 
@@ -1035,7 +1042,7 @@ class MailsterHelper {
 
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
 
-			$htmldoc->applyStylesheet( $originalstyles[2] );
+			$htmldoc->applyStylesheet( $apply_styles );
 
 			$html = $htmldoc->getHTML();
 
@@ -1110,30 +1117,59 @@ class MailsterHelper {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $content
-	 * @return unknown
-	 */
-	public function add_mailster_styles( $content ) {
-		// custom styles
+	public function add_style( $callback, $args, $embed = false ) {
+
 		global $mailster_mystyles;
 
-		if ( $mailster_mystyles ) {
-			// check for existing styles
-			preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles );
+		if ( is_callable( $callback ) ) {
 
-			if ( ! empty( $originalstyles[0] ) ) {
-				foreach ( $mailster_mystyles as $style ) {
-					$block = end( $originalstyles[0] );
-					$content = str_replace( $block, $block . '<style type="text/css">' . "\n" . $style . "\n" . '</style>', $content );
-				}
-			} else {
-				$content = str_replace( '</head>', '<style type="text/css">' . "\n" . $style . "\n" . '</style></head>', $content );
+		} elseif ( is_array( $callback ) ) {
+			if ( ! method_exists( $callback[0], $callback[1] ) ) {
+				return false;
+			}
+		} else {
+			if ( ! function_exists( $callback ) ) {
+				return false;
 			}
 		}
 
+		$type = $embed ? 'embed' : 'inline';
+
+		if ( ! isset( $mailster_mystyles ) ) {
+			$mailster_mystyles = array();
+		}
+		if ( ! isset( $mailster_mystyles[ $type ] ) ) {
+			$mailster_mystyles[ $type ] = array();
+		}
+
+		$mailster_mystyles[ $type ][] = call_user_func_array( $callback, $args );
+
+		return true;
+
+	}
+
+
+	public function get_mailster_styles( $echo = false ) {
+		// custom styles
+		global $mailster_mystyles;
+		$mailster_styles = '';
+
+		if ( $mailster_mystyles ) {
+			foreach ( $mailster_mystyles as $type => $styles ) {
+				foreach ( $styles as $style ) {
+					$mailster_styles .= '<style type="text/css"' . ('embed' == $type ? ' data-embed' : '') . '>' . "\n" . $style . "\n" . '</style>' . "\n";
+				}
+			}
+		}
+
+		if ( ! $echo ) {
+			return $mailster_styles;
+		}
+		echo $mailster_styles;
+	}
+
+	public function add_mailster_styles( $content ) {
+		$content = str_replace( '</head>', $this->get_mailster_styles() . '</head>', $content );
 		return $content;
 	}
 

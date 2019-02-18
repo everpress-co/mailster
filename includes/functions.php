@@ -871,20 +871,20 @@ function mailster_get_subscriber( $id_email_or_hash, $type = null ) {
  *
  *
  * @param unknown $tag
- * @param unknown $callbackfunction
+ * @param unknown $callback
  * @return unknown
  */
-function mailster_add_tag( $tag, $callbackfunction ) {
+function mailster_add_tag( $tag, $callback ) {
 
-	if ( is_callable( $callbackfunction ) ) {
+	if ( is_callable( $callback ) ) {
 
-	} elseif ( is_array( $callbackfunction ) ) {
-		if ( ! method_exists( $callbackfunction[0], $callbackfunction[1] ) ) {
+	} elseif ( is_array( $callback ) ) {
+		if ( ! method_exists( $callback[0], $callback[1] ) ) {
 			return false;
 		}
 	} else {
 
-		if ( ! function_exists( $callbackfunction ) ) {
+		if ( ! function_exists( $callback ) ) {
 			return false;
 		}
 	}
@@ -895,7 +895,7 @@ function mailster_add_tag( $tag, $callbackfunction ) {
 		$mailster_tags = array();
 	}
 
-	$mailster_tags[ $tag ] = $callbackfunction;
+	$mailster_tags[ $tag ] = $callback;
 
 	return true;
 
@@ -924,39 +924,35 @@ function mailster_remove_tag( $tag ) {
 /**
  *
  *
- * @param unknown $callbackfunction
+ * @param unknown $callback
  * @return unknown
  */
-function mailster_add_style( $callbackfunction ) {
-
-	global $mailster_mystyles;
-
-	if ( is_callable( $callbackfunction ) ) {
-
-	} elseif ( is_array( $callbackfunction ) ) {
-		if ( ! method_exists( $callbackfunction[0], $callbackfunction[1] ) ) {
-			return false;
-		}
-	} else {
-		if ( ! function_exists( $callbackfunction ) ) {
-			return false;
-		}
-	}
-
-	if ( ! isset( $mailster_mystyles ) ) {
-		$mailster_mystyles = array();
-	}
+function mailster_add_style( $callback ) {
 
 	$args = func_get_args();
 	$args = array_slice( $args, 1 );
-	$mailster_mystyles[] = call_user_func_array( $callbackfunction, $args );
+	return mailster( 'helper' )->add_style( $callback, $args );
+}
 
-	return true;
+/**
+ *
+ *
+ * @param unknown $callback
+ * @return unknown
+ */
+function mailster_add_embeded_style( $callback ) {
+
+	$args = func_get_args();
+	$args = array_slice( $args, 1 );
+	return mailster( 'helper' )->add_style( $callback, $args, true );
 
 }
 
+function mailster_add_embedded_style( $callback ) {
 
+	return mailster_add_embeded_style( $callback );
 
+}
 
 /**
  *
