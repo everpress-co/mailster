@@ -165,7 +165,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	margin-right: 169px;
 }
 .fixed-optionbar .has-modules.show-modules .optionbar:after{
-	margin-right: 199px;
+	margin-right: 173px;
 }
 .rtl.fixed-optionbar .has-modules .optionbar:after{
 	margin-right: 0;

@@ -1429,7 +1429,7 @@ class MailsterAjax {
 				$content = wpautop( mailster_remove_block_comments( $post->post_content ) );
 
 				if ( ! empty( $post->post_excerpt ) ) {
-					$excerpt = wpautop( $post->post_excerpt );
+					$excerpt = wpautop( mailster_remove_block_comments( $post->post_excerpt ) );
 				} else {
 					$excerpt = mailster( 'helper' )->get_excerpt( $content );
 				}
@@ -2474,7 +2474,6 @@ class MailsterAjax {
 			$return['code'] = 'license';
 
 		} elseif ( isset( $_POST['data'] ) ) {
-
 			parse_str( $_POST['data'], $userdata );
 
 			if ( empty( $userdata['email'] ) ) {
@@ -2508,7 +2507,7 @@ class MailsterAjax {
 			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );
 			if ( is_wp_error( $result ) && 681 != $result->get_error_code() ) {
 				$return['error'] = mailster()->get_update_error( $result );
-				$return['code'] = $result->get_error_code();
+				$return['code'] = str_replace( '_', '', $result->get_error_code() );
 			} else {
 				$return['success'] = true;
 			}

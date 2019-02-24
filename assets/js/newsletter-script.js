@@ -2008,7 +2008,7 @@ jQuery(document).ready(function ($) {
 
 					if (currentimage.src) {
 						current.element.attr(attribute, currentimage.src);
-						current.element[0].style.cssText = current.element[0].style.cssText.replace(/url\("?(.+)"?\)/, 'url(' + currentimage.src + ')');
+						current.element.attr('style', current.element.attr('style').replace(/url\("?(.+)"?\)/, "url(\'" + currentimage.src + "\')"));
 					}
 
 					_ajax('create_image', {
@@ -3770,6 +3770,7 @@ jQuery(document).ready(function ($) {
 		$('#mailster-color-' + from.substr(1).toLowerCase()).attr('id', 'mailster-color-' + to.substr(1).toLowerCase());
 
 		_setContent(raw.replace(reg, to), 3000);
+		_trigger('refresh');
 
 	}
 

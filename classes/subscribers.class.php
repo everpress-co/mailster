@@ -1024,18 +1024,10 @@ class MailsterSubscribers {
 
 		} else {
 
-			if ( isset( $wpdb->use_mysqli ) && $wpdb->use_mysqli ) {
-				if ( $wpdb->dbh instanceof mysqli ) {
-					$mysql_errno = mysqli_errno( $wpdb->dbh );
-				} else {
-					$mysql_errno = 2006;
-				}
-			} else {
-				if ( is_resource( $wpdb->dbh ) ) {
-					$mysql_errno = mysql_errno( $wpdb->dbh );
-				} else {
-					$mysql_errno = 2006;
-				}
+			$mysql_errno = 2006;
+
+			if ( isset( $wpdb->use_mysqli ) && $wpdb->use_mysqli && $wpdb->dbh instanceof mysqli  ) {
+				$mysql_errno = mysqli_errno( $wpdb->dbh );
 			}
 
 			if ( $mysql_errno == 1062 ) {
