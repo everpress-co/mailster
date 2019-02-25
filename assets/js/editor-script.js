@@ -192,6 +192,9 @@ jQuery(document).ready(function ($) {
 					$(event.currentTarget).prop('spellcheck', true);
 				})
 				.on('click', function (event) {
+					// if(editor.theme && editor.theme.panel && editor.theme.panel.$el){
+					// 	var toolbar = $(editor.theme.panel.$el);
+					// }
 					_trigger('selectModule', $(event.currentTarget).closest('module'));
 					event.stopPropagation();
 					editor.focus();
@@ -215,7 +218,6 @@ jQuery(document).ready(function ($) {
 
 		function hex(val) {
 			val = parseInt(val, 10).toString(16);
-
 			return val.length > 1 ? val : '0' + val; // 0 -> 00
 		}
 		return colors ? '#' + hex(colors[1]) + hex(colors[2]) + hex(colors[3]) : str;

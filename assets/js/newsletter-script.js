@@ -178,7 +178,6 @@ jQuery(document).ready(function ($) {
 					var data = wp.autosave.local.getSavedPostData();
 					_setContent(data.content);
 					_title.val(data.post_title);
-					_trigger('refresh');
 					return false;
 				})
 				.on('change', '.dynamic_embed_options_taxonomy', function () {
@@ -1349,7 +1348,6 @@ jQuery(document).ready(function ($) {
 				_currentundo--;
 				_setContent(_undo[_currentundo], 100, false);
 				_content.val(_undo[_currentundo]);
-				_trigger('refresh');
 				_obar.find('a.redo').removeClass('disabled');
 				if (!_currentundo) $(this).addClass('disabled');
 			}
@@ -1364,7 +1362,6 @@ jQuery(document).ready(function ($) {
 				_currentundo++;
 				_setContent(_undo[_currentundo], 100, false);
 				_content.val(_undo[_currentundo]);
-				_trigger('refresh');
 				_obar.find('a.undo').removeClass('disabled');
 				if (_currentundo >= length - 1) $(this).addClass('disabled');
 			}
@@ -1492,7 +1489,6 @@ jQuery(document).ready(function ($) {
 					_obar.find('a').not('a.redo, a.undo, a.code').removeClass('disabled');
 
 					_trigger('enable');
-					_trigger('refresh');
 
 				}, function (jqXHR, textStatus, errorThrown) {
 					_obar.find('a.code').addClass('active').removeClass('loading');
@@ -2214,7 +2210,6 @@ jQuery(document).ready(function ($) {
 							current.elements.buttons.last().attr('href', currenttext.link);
 							current.elements.buttons.not(':last').remove();
 						} else {
-
 							current.elements.multi.last().after('<buttons><table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' + currenttext.link + '" title="' + mailsterL10n.read_more + '" editable label="' + mailsterL10n.read_more + '">' + mailsterL10n.read_more + '</a></td></tr></table></buttons>');
 						}
 
@@ -3755,22 +3750,29 @@ jQuery(document).ready(function ($) {
 	}
 
 
-	function _changeColor(from, to, element) {
-		if (!from) from = to;
-		if (!to) return false;
-		if (from == to) return false;
+	function _changeColor(color_from, color_to, element) {
+		if (!color_from) color_from = color_to;
+		if (!color_to) return false;
+		color_from = color_from.toLowerCase();
+		color_to = color_to.toLowerCase();
+		if (color_from == color_to) return false;
+		console.log(arguments);
 		var raw = _getContent(),
-			reg = new RegExp(from, 'gi'),
+			reg = new RegExp(color_from, 'gi'),
 			m = _modulesraw.val();
 
-		if (element) element.data('value', to);
+		if (element)
+			element.data('value', color_to);
 
-		_modulesraw.val(m.replace(reg, to));
+		$('#mailster-color-' + color_from.substr(1)).attr('id', 'mailster-color-' + color_to.substr(1));
 
-		$('#mailster-color-' + from.substr(1).toLowerCase()).attr('id', 'mailster-color-' + to.substr(1).toLowerCase());
+		if (reg.test(m))
+			_modulesraw.val(m.replace(reg, color_to));
 
-		_setContent(raw.replace(reg, to), 3000);
-		_trigger('refresh');
+		if (reg.test(raw)) {
+			_setContent(raw.replace(reg, color_to), 30);
+		}
+
 
 	}
 
@@ -3870,7 +3872,10 @@ jQuery(document).ready(function ($) {
 			clearTimeout(timeout);
 			timeout = setTimeout(function () {
 				modules && modules.refresh && modules.refresh();
+				_trigger('refresh');
 			}, delay || 100);
+		} else {
+			_trigger('refresh');
 		}
 
 		if (typeof saveit == 'undefined' || saveit === true) _trigger('save');

@@ -493,7 +493,6 @@ class MailsterCampaigns {
 	 */
 	public function columns( $columns ) {
 
-		global $post;
 		$columns = array(
 			'cb' => '<input type="checkbox" />',
 			'title' => esc_html__( 'Name', 'mailster' ),

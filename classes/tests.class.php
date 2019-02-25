@@ -592,14 +592,14 @@ class MailsterTests {
 			$this->error( 'Constant WP_HTTP_BLOCK_EXTERNAL defined' );
 		}
 
-		$response = wp_remote_post( 'https://update.mailster.co/' );
+		$response = wp_remote_post( apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ) );
 		$code = wp_remote_retrieve_response_code( $response );
 
 		if ( is_wp_error( $response ) ) {
 			$this->error( $response->get_error_message() . ' - Please allow connection to update.mailster.co!' );
 		} elseif ( $code >= 200 && $code < 300 ) {
 		} else {
-			$this->error( 'does not work: ' . $code );
+			$this->error( 'does not work: Error code ' . $code );
 		}
 	}
 	private function _test_TLS() {

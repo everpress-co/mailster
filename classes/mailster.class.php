@@ -2250,7 +2250,7 @@ class Mailster {
 			return false;
 		}
 
-		$old = get_option( '_transient_mailster_verified', 'no' );
+		$old = get_option( '_transient_mailster_verified', 'maybe' );
 
 		if ( ! ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
 
@@ -2273,7 +2273,7 @@ class Mailster {
 				}
 			}
 
-			if ( 'yes' == $verified ) {
+			if ( 'no' != $verified ) {
 				mailster_remove_notice( 'verify' );
 			}
 
