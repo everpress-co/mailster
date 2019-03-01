@@ -107,7 +107,7 @@ class MailsterHelper {
 			$new_img_size = array( $image_src[1], $image_src[2] );
 			$resized_img_path = $no_ext_path . '.' . $extension;
 		} else {
-			if ( ! $crop ) {
+			if ( $crop ) {
 				$new_img_size = array( $width, $height );
 			} else {
 				$new_img_size = wp_constrain_dimensions( $image_src[1], $image_src[2], $width, $height );

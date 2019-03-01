@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.io
 * improved: inline styles can now be skipped with an optional `data-embed` attribute
 * improved: block comments now removed if present in the email
 * improved: better action handling for mails opened on Yahoo
+* improved: editor behavior
 
 = Version 2.3.16 =
 

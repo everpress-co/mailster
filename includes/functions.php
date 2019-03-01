@@ -1013,6 +1013,8 @@ function mailster_remove_block_comments( $content ) {
 
 	if ( false !== strpos( $content, '<!-- wp' ) ) {
 		$content = preg_replace( '/<!-- \/?wp:(.+) -->(\n?)/', '', $content );
+		$content = str_replace( array( '<p></p>' ), '', $content );
+		$content = trim( $content );
 	}
 
 	return $content;

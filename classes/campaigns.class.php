@@ -1133,12 +1133,12 @@ class MailsterCampaigns {
 
 			wp_localize_script( 'mailster-script', 'mailsterL10n', array(
 				'loading' => esc_html__( 'loading', 'mailster' ),
-				'add' => esc_html__( 'add', 'mailster' ),
+				'add' => esc_html__( 'Add', 'mailster' ),
 				'or' => esc_html__( 'or', 'mailster' ),
 				'move_module_up' => esc_html__( 'Move module up', 'mailster' ),
 				'move_module_down' => esc_html__( 'Move module down', 'mailster' ),
 				'duplicate_module' => esc_html__( 'Duplicate module', 'mailster' ),
-				'remove_module' => esc_html__( 'remove module', 'mailster' ),
+				'remove_module' => esc_html__( 'Remove module', 'mailster' ),
 				'remove_all_modules' => esc_html__( 'Do you really like to remove all modules?', 'mailster' ),
 				'save_template' => esc_html__( 'Save Template File', 'mailster' ),
 				'add_module' => esc_html__( 'Add Module', 'mailster' ),
@@ -1149,9 +1149,11 @@ class MailsterCampaigns {
 				'click_to_edit' => esc_html__( 'Click to edit %s', 'mailster' ),
 				'click_to_add' => esc_html__( 'Click to add %s', 'mailster' ),
 				'auto' => esc_html_x( 'Auto', 'for the autoimporter', 'mailster' ),
-				'add_button' => esc_html__( 'add button', 'mailster' ),
-				'add_s' => esc_html__( 'add %s', 'mailster' ),
-				'remove_s' => esc_html__( 'remove %s', 'mailster' ),
+				'add_button' => esc_html__( 'Add button', 'mailster' ),
+				'add_repeater' => esc_html__( 'Add repeater', 'mailster' ),
+				'remove_repeater' => esc_html__( 'Remove repeater', 'mailster' ),
+				'add_s' => esc_html__( 'Add %s', 'mailster' ),
+				'remove_s' => esc_html__( 'Remove %s', 'mailster' ),
 				'curr_selected' => esc_html__( 'Currently selected', 'mailster' ),
 				'remove_btn' => esc_html__( 'An empty link will remove this button! Continue?', 'mailster' ),
 				'preview_for' => esc_html__( 'Preview for %s', 'mailster' ),
@@ -4327,6 +4329,9 @@ class MailsterCampaigns {
 			'error' => esc_html__( 'error!', 'mailster' ),
 			'error_occurs' => esc_html__( 'An error occurs while uploading', 'mailster' ),
 			'unsupported_format' => esc_html__( 'Unsupported file format', 'mailster' ),
+			'add_button' => esc_html__( 'Add button', 'mailster' ),
+			'add_repeater' => esc_html__( 'Duplicate element', 'mailster' ),
+			'remove_repeater' => esc_html__( 'Remove element', 'mailster' ),
 		) );
 
 		wp_register_script( 'mailster-tinymce', includes_url( 'js/tinymce/' ) . 'tinymce.min.js', array(), false, true );

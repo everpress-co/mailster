@@ -43,7 +43,7 @@ jQuery(document).ready(function ($) {
 				parent.window.Mailster.editbar.open({
 					type: 'btn',
 					offset: data.offset,
-					element: $(element).appendTo(data.element),
+					element: $(element).attr('tmpbutton', '').appendTo(data.element),
 					name: data.name
 				});
 				return false;
@@ -51,7 +51,16 @@ jQuery(document).ready(function ($) {
 			.on('click', 'button.addrepeater', function () {
 				var data = $(this).data();
 
-				data.element.clone().insertAfter(data.element);
+				if ('TH' == data.element[0].nodeName || 'TD' == data.element[0].nodeName) {
+					var table = data.element.closest('table'),
+						index = data.element.prevAll().length;
+					for (var i = table[0].rows.length - 1; i >= 0; i--) {
+						$(table[0].rows[i].cells[index]).clone().insertAfter(table[0].rows[i].cells[index]);
+					}
+				} else {
+					data.element.clone().insertAfter(data.element);
+				}
+
 				_trigger('save');
 				_trigger('refresh');
 
@@ -60,7 +69,16 @@ jQuery(document).ready(function ($) {
 			.on('click', 'button.removerepeater', function () {
 				var data = $(this).data();
 
-				data.element.remove();
+				if ('TH' == data.element[0].nodeName || 'TD' == data.element[0].nodeName) {
+					var table = data.element.closest('table'),
+						index = data.element.prevAll().length;
+					for (var i = table[0].rows.length - 1; i >= 0; i--) {
+						$(table[0].rows[i].cells[index]).remove();
+					}
+				} else {
+					data.element.remove();
+				}
+
 				_trigger('save');
 				_trigger('refresh');
 
@@ -297,7 +315,7 @@ jQuery(document).ready(function ($) {
 				drop: function (event, ui) {
 					var org = $(ui.draggable[0]),
 						target = $(event.target),
-						target_id, org_id, copy;
+						target_id, org_id, crop, copy;
 
 					target.removeClass('ui-drag-over');
 
@@ -305,6 +323,7 @@ jQuery(document).ready(function ($) {
 
 					target_id = target.attr('data-id') ? parseInt(target.attr('data-id'), 10) : null;
 					org_id = org.attr('data-id') ? parseInt(org.attr('data-id'), 10) : null;
+					crop = org.data('crop');
 					copy = org.clone();
 
 					org.addClass('mailster-loading');
@@ -317,6 +336,8 @@ jQuery(document).ready(function ($) {
 								org.removeClass('mailster-loading');
 								target.removeClass('mailster-loading');
 							} else if (target_id) {
+
+								console.log(crop);
 								_ajax('create_image', {
 									id: target_id,
 									width: org_w,
@@ -410,7 +431,7 @@ jQuery(document).ready(function ($) {
 
 				if ($this.data('has-buttons')) return;
 
-				btn = $('<button class="addbutton mailster-btn-inline mailster-icon" title="' + mailsterL10n.add_button + '"></button>').prependTo($this);
+				btn = $('<button class="addbutton mailster-btn mailster-btn-inline" title="' + mailsterL10n.add_button + '"></button>').appendTo($this);
 
 				btn.data('offset', offset).data('name', name);
 				btn.data('element', $this);
@@ -442,22 +463,33 @@ jQuery(document).ready(function ($) {
 					name = $this.attr('label'),
 					moduleoffset = module[0].getBoundingClientRect(),
 					offset = this.getBoundingClientRect(),
-					top = offset.top - moduleoffset.top,
-					left = offset.right,
+					add_top = offset.top - moduleoffset.top,
+					add_left = offset.left,
+					del_top = offset.top - moduleoffset.top + 18,
+					del_left = offset.left,
 					btn;
 
-				btn = $('<button class="addrepeater mailster-btn-inline mailster-icon" title=""></button>').css({
-					top: top,
-					left: left
-				}).appendTo(module);
+				if ('TH' == this.nodeName || 'TD' == this.nodeName) {
+					add_top = 0;
+					add_left = offset.width - 36;
+					del_top = 0;
+					del_left = offset.width - 18;
+				}
+
+				//top = left = 0;
+
+				btn = $('<button class="addrepeater mailster-btn mailster-btn-inline" title="' + mailsterL10n.add_repeater + '"></button>').css({
+					top: add_top,
+					left: add_left
+				}).appendTo($this);
 
 				btn.data('offset', offset).data('name', name);
 				btn.data('element', $this);
 
-				btn = $('<button class="removerepeater mailster-btn-inline mailster-icon" title=""></button>').css({
-					top: top + 20,
-					left: left
-				}).appendTo(module);
+				btn = $('<button class="removerepeater mailster-btn mailster-btn-inline" title="' + mailsterL10n.remove_repeater + '"></button>').css({
+					top: del_top,
+					left: del_left
+				}).appendTo($this);
 
 				btn.data('offset', offset).data('name', name);
 				btn.data('element', $this);

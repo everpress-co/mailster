@@ -2454,10 +2454,10 @@ a.mailster-btn.editbutton {
 	margin-right: -30px;
 }
 #mailster_template a.toggle-modules:before{
-	content: '\e81a';
+	content: '\e807';
 }
 #mailster_template .show-modules a.toggle-modules:before{
-	content: '\e819'
+	content: '\e808'
 }
 #mailster_template .inside iframe#mailster_iframe {
 	-webkit-transition: height .25s ease-in-out;

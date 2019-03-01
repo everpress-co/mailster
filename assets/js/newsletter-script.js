@@ -112,7 +112,6 @@ jQuery(document).ready(function ($) {
 
 				}
 
-				_trigger('resize');
 				_trigger('refresh');
 				if (!_content.val()) {
 					_trigger('save');
@@ -1973,7 +1972,9 @@ jQuery(document).ready(function ($) {
 						h = imageheight.val(),
 						c = imagecrop.is(':checked'),
 						o = original.is(':checked'),
-						attribute = is_img ? 'src' : 'background';
+						attribute = is_img ? 'src' : 'background',
+						style;
+
 
 					current.element.attr({
 						'data-id': currentimage.id,
@@ -2004,7 +2005,9 @@ jQuery(document).ready(function ($) {
 
 					if (currentimage.src) {
 						current.element.attr(attribute, currentimage.src);
-						current.element.attr('style', current.element.attr('style').replace(/url\("?(.+)"?\)/, "url(\'" + currentimage.src + "\')"));
+						if (style = current.element.attr('style')) {
+							current.element.attr('style', style.replace(/url\("?(.+)"?\)/, "url(\'" + currentimage.src + "\')"));
+						}
 					}
 
 					_ajax('create_image', {
@@ -2063,6 +2066,7 @@ jQuery(document).ready(function ($) {
 									is_root = html.match(/<modules/),
 									reg;
 
+
 								if (orgimageurl.val()) {
 									if (is_root) {
 										if (is_root = html.match(new RegExp('<v:background(.*)<\/v:background>', 's'))) {
@@ -2115,6 +2119,8 @@ jQuery(document).ready(function ($) {
 					buttontype = 'text';
 					if (!buttonlabel.val()) buttonlabel.val(mailsterL10n.read_more);
 				}
+
+				current.element.removeAttr('tmpbutton');
 
 				if ('image' == buttontype) {
 					var f = factor.val();
@@ -2311,10 +2317,16 @@ jQuery(document).ready(function ($) {
 												})
 												.data('id', currenttext.image[i].id)
 												.css('background-image', '');
+
 											current.element.html(_replace(current.element.html(), orgurl, response.image.url));
+
+											//remove id to re trigger tinymce
+											current.element.find('single, multi').removeAttr('id');
+											_trigger('save');
+											_trigger('refresh');
+
 										}
 									}
-									close();
 								}, function (jqXHR, textStatus, errorThrown) {
 
 									loader(false);
@@ -2354,6 +2366,8 @@ jQuery(document).ready(function ($) {
 										.removeData('id')
 										.css('background-image', '');
 									current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop, org)));
+									//remove id to re trigger tinymce
+									current.element.find('single, multi').removeAttr('id');
 								}
 
 							}
@@ -2431,6 +2445,9 @@ jQuery(document).ready(function ($) {
 			switch (current.type) {
 			case 'img':
 			case 'btn':
+				if (current.element.is('[tmpbutton]')) {
+					current.element.remove();
+				}
 				break;
 			default:
 				current.element.html(current.content);
@@ -3092,8 +3109,8 @@ jQuery(document).ready(function ($) {
 			bar.removeClass('current-' + current.type).hide();
 			loader(false);
 			$('#single-link').hide();
-			_trigger('save');
 			_trigger('refresh');
+			_trigger('save');
 			return false;
 
 		}
@@ -3228,7 +3245,6 @@ jQuery(document).ready(function ($) {
 
 			clone.slideDown(100, function () {
 				clone.css('display', 'block');
-				_trigger('resize');
 				_trigger('refresh');
 				_trigger('save');
 			});
@@ -3243,7 +3259,6 @@ jQuery(document).ready(function ($) {
 		}
 
 		function codeView() {
-
 			var module = $(this).parent().parent().parent();
 			editbar.open({
 				element: module,
@@ -3302,12 +3317,12 @@ jQuery(document).ready(function ($) {
 
 			container = _iframe.contents().find('modules');
 			container
-				.on('click', 'a.up', up)
-				.on('click', 'a.down', down)
-				.on('click', 'a.auto', auto)
-				.on('click', 'a.duplicate', duplicate)
-				.on('click', 'a.remove', remove)
-				.on('click', 'a.codeview', codeView)
+				.on('click', 'button.up', up)
+				.on('click', 'button.down', down)
+				.on('click', 'button.auto', auto)
+				.on('click', 'button.duplicate', duplicate)
+				.on('click', 'button.remove', remove)
+				.on('click', 'button.codeview', codeView)
 				.on('change', 'input.modulelabel', changeName);
 
 			var html = '',
@@ -3322,10 +3337,10 @@ jQuery(document).ready(function ($) {
 				var $this = $(this);
 				if ($this.is('module')) {
 					var name = $this.attr('label') || sprintf(mailsterL10n.module, '#' + (++mc)),
-						codeview = mailsterdata.codeview ? '<a class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></a>' : '',
-						auto = ($this.is('[auto]') ? '<a class="mailster-btn auto" title="' + mailsterL10n.auto + '"></a>' : '');
+						codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></button>' : '',
+						auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailsterL10n.auto + '"></button>' : '');
 
-					$('<modulebuttons>' + '<span>' + auto + '<a class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></a><a class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></a><a class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></a>' + codeview + '<a class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></a></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
+					$('<modulebuttons>' + '<span>' + auto + '<button class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></button><button class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></button></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
 
 
 					if (!$this.parent().length) {
