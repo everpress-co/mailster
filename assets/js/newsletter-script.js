@@ -2195,26 +2195,53 @@ jQuery(document).ready(function ($) {
 
 				}
 
+
 				if (currenttext) {
+
+					var position = current.element.data('position') || 0,
+						org_content, content = [];
 
 					if (currenttext.title) {
 
 						current.elements.single.each(function (i, e) {
 							var _this = $(this),
-								expected = _this.attr('expect') || 'title';
+								expected = _this.attr('expect') || 'title',
+								array = [];
 							if (!$.isArray(currenttext[expected])) {
-								currenttext[expected] = [currenttext[expected]];
+								array[position] = currenttext[expected];
+								currenttext[expected] = array;
 							}
-							_this.html(currenttext[expected].shift());
+							if (position != i) return;
+							if (currenttext[expected][position]) {
+								_this.html(currenttext[expected][position]);
+							}
+						});
+
+					}
+
+					if (current.elements.single.length) {
+						org_content = currenttext[contenttype] ? currenttext[contenttype] : '',
+							content = [];
+
+						if (!$.isArray(org_content)) {
+							content[position] = org_content;
+						} else {
+							content = org_content;
+						}
+
+						current.elements.multi.each(function (i, e) {
+							if (content[i]) {
+								$(this).html(content[i]);
+							}
 						});
 
 					}
 
 					if (currenttext.link) {
 
+
 						if (current.elements.buttons.length) {
-							current.elements.buttons.last().attr('href', currenttext.link);
-							current.elements.buttons.not(':last').remove();
+							current.elements.buttons.eq(position).attr('href', currenttext.link);
 						} else {
 							current.elements.multi.last().after('<buttons><table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' + currenttext.link + '" title="' + mailsterL10n.read_more + '" editable label="' + mailsterL10n.read_more + '">' + mailsterL10n.read_more + '</a></td></tr></table></buttons>');
 						}
@@ -2222,9 +2249,9 @@ jQuery(document).ready(function ($) {
 					} else {
 
 						if (current.elements.buttons.parent().length && current.elements.buttons.parent()[0].nodeName == 'TD') {
-							current.elements.buttons.closest('.textbutton').remove();
+							current.elements.buttons.eq(position).closest('.textbutton').remove();
 						} else if (current.elements.buttons.length) {
-							if (current.elements.buttons.last().find('img').length) {
+							if (current.elements.buttons.eq(position).last().find('img').length) {
 								current.elements.buttons.remove();
 							}
 						}
@@ -2232,24 +2259,19 @@ jQuery(document).ready(function ($) {
 					}
 
 					if (current.elements.multi.length) {
-						var contentcount = current.elements.multi.length,
-							org_content = currenttext[contenttype] ? currenttext[contenttype] : '',
-							content = [],
-							contentlength,
-							partlength;
+						org_content = currenttext[contenttype] ? currenttext[contenttype] : '',
+							content = [];
 
 						if (!$.isArray(org_content)) {
-							contentlength = org_content.length,
-								partlength = ('static' == insertmethod) ? Math.ceil(contentlength / contentcount) : contentlength;
-							for (var i = 0; i < contentcount; i++) {
-								content.push(org_content.substring(i * partlength, i * partlength + partlength));
-							}
+							content[position] = org_content;
 						} else {
 							content = org_content;
 						}
 
 						current.elements.multi.each(function (i, e) {
-							$(this).html(content[i] ? content[i] : '');
+							if (content[i]) {
+								$(this).html(content[i]);
+							}
 						});
 
 					}
@@ -2377,13 +2399,16 @@ jQuery(document).ready(function ($) {
 
 					}
 
+					position = position + 1 >= current.elements.multi.length ? 0 : position + 1;
+
+					current.element.data('position', position);
+
 					_iframe.contents().find("html")
 						.find("img").each(function () {
 							this.onload = function () {
 								_trigger('refresh');
 							};
 						});
-
 
 				}
 
@@ -2590,6 +2615,7 @@ jQuery(document).ready(function ($) {
 				content = $.trim(el.html()),
 				condition = el.find('if'),
 				conditions,
+				position = current.element.data('position') || 0,
 				carea, cwrap, offset,
 				fac = 1;
 
@@ -2881,6 +2907,12 @@ jQuery(document).ready(function ($) {
 						expects: current.element.find('[expect]').map(function () {
 							return $(this).attr('expect');
 						}).toArray()
+					}
+
+					if (current.elements.multi.length > 1) {
+						bar.find('.editbarpostion').html(sprintf(mailsterL10n.for_area, '#' + (position + 1))).show();
+					} else {
+						bar.find('.editbarpostion').hide();
 					}
 
 				} else if (type == 'codeview') {

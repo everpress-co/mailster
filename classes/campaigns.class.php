@@ -1160,6 +1160,7 @@ class MailsterCampaigns {
 				'preview' => esc_html__( 'Preview', 'mailster' ),
 				'read_more' => esc_html__( 'Read more', 'mailster' ),
 				'invalid_image' => esc_html__( '%s does not contain a valid image', 'mailster' ),
+				'for_area' => esc_html__( 'Area %s', 'mailster' ),
 				'enter_list_name' => esc_html__( 'Enter name of the list', 'mailster' ),
 				'create_list' => esc_html_x( '%1$s of %2$s', '[recipientstype] of [campaignname]', 'mailster' ),
 

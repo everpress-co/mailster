@@ -191,6 +191,8 @@
 
 		<div class="type auto">
 
+			<p class="editbarpostion" title="<?php esc_attr_e( 'The area in which content gets placed.', 'mailster' ) ?>"></p>
+
 			<div id="embedoption-bar" class="nav-tab-wrapper hide-if-no-js">
 				<a class="nav-tab nav-tab-active" href="#static_embed_options" data-type="static"><?php esc_html_e( 'static', 'mailster' );?></a>
 				<a class="nav-tab" href="#dynamic_embed_options" data-type="dynamic"><?php esc_html_e( 'dynamic', 'mailster' );?></a>
@@ -212,7 +214,7 @@
 				<?php } ?>
 				</p>
 				<p>
-					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'search for posts', 'mailster' );?>..." ></label>
+					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'Search for posts', 'mailster' );?>..." ></label>
 				</p>
 				<div class="postlist">
 				</div>
