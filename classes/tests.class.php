@@ -386,7 +386,7 @@ class MailsterTests {
 	}
 	private function test_support_account_found() {
 
-		$support_emails = array( 'help@everpress.io', 'help@revaxarts.com', 'support@mailster.co' );
+		$support_emails = array( 'help@everpress.co', 'help@everpress.io', 'help@revaxarts.com', 'support@mailster.co' );
 
 		foreach ( $support_emails as $email ) {
 			if ( $user = get_user_by( 'email', $email ) ) {
@@ -451,10 +451,16 @@ class MailsterTests {
 
 		global $wpdb;
 
-		$result = mailster()->dbstructure( false, true, true, false );
+		$set_charset = true;
+		$result = mailster()->dbstructure( false, true, $set_charset, false );
+
+		if ( false !== strpos( $result, 'Unknown character set:' ) ) {
+			$set_charset = false;
+			$result = mailster()->dbstructure( false, true, $set_charset, false );
+		}
 
 		if ( true !== $result ) {
-			$second_result = mailster()->dbstructure( false, true, true, false );
+			$second_result = mailster()->dbstructure( false, true, $set_charset, false );
 			if ( $result === $second_result ) {
 				$this->error( $result );
 			} else {

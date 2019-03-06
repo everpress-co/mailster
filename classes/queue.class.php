@@ -849,7 +849,7 @@ class MailsterQueue {
 				continue;
 			}
 
-			mailster( 'campaigns' )->finish( $id, false );
+			mailster( 'campaigns' )->finish( $id );
 
 		}
 
