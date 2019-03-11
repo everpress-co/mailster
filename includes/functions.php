@@ -30,7 +30,7 @@ function mailster( $subclass = null ) {
  */
 function mailster_option( $option, $fallback = null ) {
 
-	global $mailster_options;
+	$mailster_options = mailster_options();
 
 	$value = isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $fallback;
 	$value = apply_filters( 'mailster_option', $value, $option, $fallback );
@@ -49,15 +49,11 @@ function mailster_option( $option, $fallback = null ) {
  */
 function mailster_options( $option = null, $fallback = null ) {
 
-	global $mailster_options;
-
 	if ( ! is_null( $option ) ) {
 		return mailster_option( $option, $fallback );
 	}
-	if ( empty( $mailster_options ) ) {
-		$mailster_options = get_option( 'mailster_options', array() );
-	}
-	return $mailster_options;
+
+	return get_option( 'mailster_options', array() );
 }
 
 
@@ -146,10 +142,8 @@ function mailster_cache_delete( $key ) {
  * @return unknown
  */
 function mailster_text( $option, $fallback = '' ) {
-	global $mailster_texts;
-	if ( empty( $mailster_texts ) ) {
-		$mailster_texts = get_option( 'mailster_texts', array() );
-	}
+
+	$mailster_texts = mailster_texts();
 
 	$string = isset( $mailster_texts[ $option ] ) ? $mailster_texts[ $option ] : $fallback ;
 
@@ -163,8 +157,7 @@ function mailster_text( $option, $fallback = '' ) {
  * @return unknown
  */
 function mailster_texts() {
-	global $mailster_texts;
-	return $mailster_texts;
+	return get_option( 'mailster_texts', array() );
 }
 
 
@@ -177,7 +170,8 @@ function mailster_texts() {
  * @return unknown
  */
 function mailster_update_option( $option, $value, $temp = false ) {
-	global $mailster_options;
+
+	$mailster_options = mailster_options();
 
 	if ( is_array( $option ) ) {
 		$temp = (bool) $value;
@@ -188,6 +182,15 @@ function mailster_update_option( $option, $value, $temp = false ) {
 
 	if ( $temp ) {
 		$mailster_options = mailster( 'settings' )->verify( $mailster_options );
+		add_filter( 'mailster_option', function( $value, $option, $fallback ) use ( $mailster_options ) {
+			if ( is_array( $value ) ) {
+				$value = $mailster_options;
+			} else {
+				$value = isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $value;
+			}
+			return $value;
+
+		},0,3);
 		return true;
 	}
 

@@ -264,19 +264,14 @@ class MailsterSettings {
 	 */
 	private function define_settings( $capabilities = true ) {
 
-		global $mailster_options, $mailster_texts;
+		$mailster_options = mailster_options();
 
 		$options = $this->get_defaults();
-		$texts = $this->get_default_texts();
 
 		// merge options with Mailster options (don't override)
 		$mailster_options = wp_parse_args( $mailster_options, $options );
 
-		// merge texts with Mailster texts (don't override)
-		$mailster_texts = wp_parse_args( $mailster_texts, $texts );
-
 		update_option( 'mailster_options', $mailster_options );
-		update_option( 'mailster_texts', $mailster_texts );
 
 		if ( $capabilities ) {
 			$this->set_capabilities();
@@ -286,14 +281,12 @@ class MailsterSettings {
 
 	public function define_texts( $overwrite = false ) {
 
-		global $mailster_texts;
-
 		$texts = $this->get_default_texts();
 
-		if ( ! $overwrite ) {
-			$mailster_texts = wp_parse_args( $mailster_texts, $texts );
-		} else {
+		if ( $overwrite ) {
 			$mailster_texts = $texts;
+		} else {
+			$mailster_texts = wp_parse_args( mailster_texts(), $texts );
 		}
 
 		update_option( 'mailster_texts', $mailster_texts );
@@ -303,7 +296,9 @@ class MailsterSettings {
 
 	public function maybe_repair_settings() {
 
-		global $wpdb, $mailster_options;
+		global $wpdb;
+
+		$mailster_options = mailster_options();
 
 		if ( $mailster_options ) {
 			return;
@@ -420,7 +415,7 @@ class MailsterSettings {
 
 	public function newsletter_settings() {
 
-		global $mailster_options;
+		$mailster_options = mailster_options();
 
 		if ( ! $mailster_options ) : ?>
 			<div class="wrap">
@@ -465,8 +460,6 @@ class MailsterSettings {
 	public function reset_settings( $redirect = false ) {
 
 		if ( is_super_admin() ) {
-
-			global $mailster_options, $mailster_texts;
 
 			$mailster_options = $this->get_defaults();
 			$mailster_texts = $this->get_default_texts();
@@ -1134,7 +1127,11 @@ class MailsterSettings {
 
 				case 'smtp_host':
 
-					if ( function_exists( 'fsockopen' ) && $options['deliverymethod'] == 'smtp' ) {
+					if ( $options['deliverymethod'] == 'smtp' ) {
+						$this->check_smtp_host( $value );
+					}
+
+					if ( false & function_exists( 'fsockopen' ) && $options['deliverymethod'] == 'smtp' ) {
 						$host = trim( $options['smtp_host'] );
 						$port = (int) $options['smtp_port'];
 						$conn = @fsockopen( $host, $port, $errno, $errstr, 5 );
@@ -1322,13 +1319,37 @@ class MailsterSettings {
 
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $host
-	 * @param unknown $port
-	 * @return unknown
-	 */
+	public function check_smtp_host( $host ) {
+
+		$message = esc_html__( 'Do you like to send your campaigns with %1$s? Please use our %2$s.', 'mailster' );
+		$link = '<a href="' . admin_url( 'plugin-install.php?s=%s&tab=search&type=term' ) . '">' . esc_html__( '%s Add-on', 'mailster' ) . '</a>';
+
+		if ( false !== ( strpos( $host, '.amazonaws.com' ) ) ) {
+			$service = 'Amazon SES';
+			$link = sprintf( $link, 'mailster-amazonses', $service );
+
+		} elseif ( false !== ( strpos( $host, '.mailgun.org' ) ) ) {
+			$service = 'Mailgun';
+			$link = sprintf( $link, 'mailster-mailgun', $service );
+
+		} elseif ( false !== ( strpos( $host, 'smtp.sendgrid.net' ) ) ) {
+			$service = 'SendGrid';
+			$link = sprintf( $link, 'mailster-sendgrid', $service );
+
+		} elseif ( false !== ( strpos( $host, 'smtp.sparkpostmail.com' ) ) ) {
+			$service = 'SparkPost';
+			$link = sprintf( $link, 'mailster-sparkpost', $service );
+
+		} else {
+			return;
+		}
+
+		$message = sprintf( $message, $service, $link );
+		$this->add_settings_error( $message, 'deliverymethod_service' );
+
+	}
+
+
 	public function check_port( $host, $port ) {
 
 		if ( ! function_exists( 'fsockopen' ) ) {

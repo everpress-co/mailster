@@ -2,7 +2,7 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.0
+Tested up to: 5.1
 Stable tag: 2.3.17
 Author: EverPress
 Author URI: https://mailster.co
@@ -92,6 +92,8 @@ Xaver Birsak – https://everpress.io
 * improved: block comments now removed if present in the email
 * improved: better action handling for mails opened on Yahoo
 * improved: editor behavior
+* improved: handling of options
+* improved: removed some variables from the global space
 
 = Version 2.3.16 =
 

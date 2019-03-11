@@ -4,10 +4,10 @@
 This runs if an update was done.
 */
 
-global $mailster_options, $mailster_texts, $wpdb;
+global $wpdb;
 
-$mailster_options = get_option( 'mailster_options', array() );
-$mailster_texts = get_option( 'mailster_texts', array() );
+$mailster_options = mailster_options();
+$mailster_texts = mailster_texts();
 
 $new_version = MAILSTER_VERSION;
 

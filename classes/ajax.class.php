@@ -2611,7 +2611,7 @@ class MailsterAjax {
 
 	private function wizard_save() {
 
-		global $mailster_options;
+		$mailster_options = mailster_options();
 
 		$return['success'] = false;
 

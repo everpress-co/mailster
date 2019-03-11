@@ -36,9 +36,8 @@ require_once MAILSTER_DIR . 'includes/deprecated.php';
 require_once MAILSTER_DIR . 'includes/3rdparty.php';
 require_once MAILSTER_DIR . 'classes/mailster.class.php';
 
-global $mailster_options, $mailster, $mailster_tags, $mailster_mystyles;
-
-$mailster_options = get_option( 'mailster_options', array() );
+global $mailster;
+mailster_options();
 
 $mailster = new mailster();
 
