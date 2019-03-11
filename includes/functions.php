@@ -165,11 +165,11 @@ function mailster_texts() {
  *
  *
  * @param unknown $option
- * @param unknown $value
+ * @param unknown $value  (optional)
  * @param unknown $temp   (optional)
  * @return unknown
  */
-function mailster_update_option( $option, $value, $temp = false ) {
+function mailster_update_option( $option, $value = null, $temp = false ) {
 
 	$mailster_options = mailster_options();
 

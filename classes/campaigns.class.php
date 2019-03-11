@@ -41,7 +41,7 @@ class MailsterCampaigns {
 		add_filter( 'wp_insert_post_data', array( &$this, 'wp_insert_post_data' ), 1, 2 );
 		add_filter( 'post_updated_messages', array( &$this, 'updated_messages' ) );
 
-		add_action( 'after_delete_post', array( &$this, 'cleanup_after_delete' ) );
+		add_action( 'before_delete_post', array( &$this, 'maybe_cleanup_after_delete' ) );
 
 		add_filter( 'pre_post_content', array( &$this, 'remove_kses' ) );
 
@@ -2346,14 +2346,27 @@ class MailsterCampaigns {
 	 *
 	 * @param unknown $id
 	 */
+	public function maybe_cleanup_after_delete( $post_id ) {
+		if ( $post_id && $post = get_post( $post_id ) ) {
+			if ( 'newsletter' == $post->post_type ) {
+				add_action( 'after_delete_post', array( &$this, 'cleanup_after_delete' ) );
+			}
+		}
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 */
 	public function cleanup_after_delete( $id ) {
 
 		global $wpdb;
 
 		// remove actions, queue and subscriber meta
-		$wpdb->query( $wpdb->prepare( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a WHERE a.campaign_id = %d", $id ) );
-		$wpdb->query( $wpdb->prepare( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a WHERE a.campaign_id = %d", $id ) );
-		$wpdb->query( $wpdb->prepare( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_meta AS a WHERE a.campaign_id = %d", $id ) );
+		$wpdb->query( $wpdb->prepare( "DELETE actions FROM {$wpdb->prefix}mailster_actions AS actions WHERE actions.campaign_id = %d", $id ) );
+		$wpdb->query( $wpdb->prepare( "DELETE queue FROM {$wpdb->prefix}mailster_queue AS queue WHERE queue.campaign_id = %d", $id ) );
+		$wpdb->query( $wpdb->prepare( "DELETE subscriber_meta FROM {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta WHERE subscriber_meta.campaign_id = %d", $id ) );
 
 		// unassign existing parents
 		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->postmeta} WHERE meta_value = %d AND meta_key = '_mailster_parent_id'", $id ) );
