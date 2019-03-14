@@ -80,8 +80,16 @@ class MailsterRegister {
 				<div class="registration_complete_text"><?php esc_html_e( 'All Set!', 'mailster' ); ?></div>
 			</form>
 		</div>
-		<?php mailster( 'helper' )->dialog( '<img src="https://mailster.github.io/images/purchasecode.gif">', 'registration-dialog' ) ?>
-	<?php
+		<?php
+		mailster( 'helper' )->dialog( '<img src="https://mailster.github.io/images/purchasecode.gif">', array(
+			'id' => 'registration-dialog',
+			'buttons' => array(
+				array(
+					'label' => esc_html__( 'OK got it', 'mailster' ),
+					'classes' => 'button button-primary right notification-dialog-dismiss',
+				),
+			),
+		));
 
 	}
 

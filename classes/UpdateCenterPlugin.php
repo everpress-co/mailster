@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.5
+// Version 4.0
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -251,6 +251,50 @@ class UpdateCenterPlugin {
 				return false;
 			}
 			return new WP_Error( $response['code'], $response['message'], $response['data'] );
+
+		} else {
+
+			if ( ! $returnWPError ) {
+				return false;
+			}
+			return $response;
+
+		}
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $pluginslug
+	 * @param unknown $userdata      (optional)
+	 * @param unknown $licensecode   (optional)
+	 * @param unknown $returnWPError (optional)
+	 * @return unknown
+	 */
+	public static function feedback( $pluginslug, $userdata = array(), $licensecode = null, $returnWPError = true ) {
+
+		$pluginslug = strtolower( $pluginslug );
+
+		if ( ! isset( self::$plugin_data[ $pluginslug ] ) ) {
+			$pluginslug = dirname( $pluginslug );
+			if ( ! isset( self::$plugin_data[ $pluginslug ] ) ) {
+				return null;
+			}
+		}
+
+		$plugin = self::$plugin_data[ $pluginslug ];
+
+		if ( ! is_null( $licensecode ) ) {
+			$plugin->licensecode = $licensecode;
+		}
+
+		$response = self::check( $pluginslug, 'feedback', $userdata );
+
+		if ( ! is_wp_error( $response ) ) {
+
+			return true;
 
 		} else {
 

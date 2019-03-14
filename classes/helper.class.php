@@ -1578,6 +1578,10 @@ class MailsterHelper {
 	 */
 	public function dialog( $content, $args = array() ) {
 
+		if ( $is_file = is_file( MAILSTER_DIR . 'views/dialogs/' . basename( $content ) . '.php' ) ) {
+			$content = MAILSTER_DIR . 'views/dialogs/' . basename( $content ) . '.php';
+		}
+
 		$defaults = array(
 			'id' => uniqid(),
 			'button_label' => esc_html__( 'Ok, got it!', 'mailster' ),
@@ -1601,10 +1605,21 @@ class MailsterHelper {
 			<div class="notification-dialog-background"></div>
 			<div class="notification-dialog" role="dialog" aria-labelledby="<?php echo esc_attr( $args['id'] ) ?>" tabindex="0">
 				<div class="notification-dialog-content <?php echo esc_attr( $args['id'] ) ?>-content">
+					<?php if ( $is_file ) : ?>
+					<?php include $content; ?>
+					<?php else : ?>
 					<?php echo $content; ?>
+					<?php endif; ?>
 				</div>
 				<div class="notification-dialog-footer">
-					<button type="button" class="<?php echo esc_attr( $args['id'] ) ?>-submit notification-dialog-submit button button-primary"><?php echo esc_html( $args['button_label'] ) ?></button>
+					<?php foreach ( $args['buttons'] as $button ) : ?>
+					<?php $button = wp_parse_args( $button, array(
+						'href' => '#',
+						'classes' => '',
+						'label' => 'Submit',
+					) ); ?>
+						<a class="<?php echo esc_attr( implode( ' ', (array) $button['classes'] ) ) ?>" href="<?php echo esc_attr( $button['href'] ) ?>"><?php echo esc_html( $button['label'] ) ?></a>
+					<?php endforeach; ?>
 				</div>
 			</div>
 		</div>
