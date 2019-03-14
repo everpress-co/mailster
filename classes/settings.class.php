@@ -62,6 +62,7 @@ class MailsterSettings {
 
 		$current_user = wp_get_current_user();
 		$email = $current_user->user_email ? $current_user->user_email : get_bloginfo( 'admin_email' );
+		$from_name = $current_user->first_name ? sprintf( esc_html_x( '%1$s from %2$s', '[Name] from [Blogname]', 'mailster' ), $current_user->first_name,  get_bloginfo( 'name' ) ) :  get_bloginfo( 'name' );
 
 		$gdpr_link = '';
 		if ( $wp_page_for_privacy_policy = (int) get_option( 'wp_page_for_privacy_policy' ) ) {
@@ -75,7 +76,7 @@ class MailsterSettings {
 		include MAILSTER_DIR . 'includes/static.php';
 
 		return array(
-			'from_name' => get_bloginfo( 'name' ),
+			'from_name' => $from_name,
 			'from' => $email,
 			'reply_to' => $email,
 			'send_offset' => 0,

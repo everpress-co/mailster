@@ -35,6 +35,7 @@ function mailster_option( $option, $fallback = null ) {
 	$value = isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $fallback;
 	$value = apply_filters( 'mailster_option', $value, $option, $fallback );
 	$value = apply_filters( 'mailster_option_' . $option, $value, $fallback );
+
 	return $value;
 
 }
@@ -183,14 +184,10 @@ function mailster_update_option( $option, $value = null, $temp = false ) {
 	if ( $temp ) {
 		$mailster_options = mailster( 'settings' )->verify( $mailster_options );
 		add_filter( 'mailster_option', function( $value, $option, $fallback ) use ( $mailster_options ) {
-			if ( is_array( $value ) ) {
-				$value = $mailster_options;
-			} else {
-				$value = isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $value;
-			}
-			return $value;
 
-		},0,3);
+			return isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $value;
+
+		}, 0, 3);
 		return true;
 	}
 

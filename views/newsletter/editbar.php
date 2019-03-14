@@ -166,7 +166,7 @@
 				</div>
 				<div class="right">
 					<p>
-						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'search for images', 'mailster' );?>&hellip;" ></label>
+						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'Search for images', 'mailster' );?>&hellip;" ></label>
 					</p>
 					<div class="imagelist">
 					</div>

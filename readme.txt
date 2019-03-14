@@ -87,6 +87,7 @@ Xaver Birsak – https://everpress.io
 * added: `mailster_add_embeded_style` method to add custom embeded styles.
 * fixed: issue with double quotes in background-image property
 * fixed: correct saving of form option
+* fixed: delivery issue with some third party apps
 * improved: editor behavior when adding content in multiple areas.
 * improved: styles added via `mailster_add(_embeded)_style` are now visible in the editor.
 * improved: inline styles can now be skipped with an optional `data-embed` attribute

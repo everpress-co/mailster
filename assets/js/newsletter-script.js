@@ -209,12 +209,14 @@ jQuery(document).ready(function ($) {
 				});
 
 
-			//submit box
-			$('#mailster_submitdiv')
-				.on('#post', 'submit', function () {
+			$('form#post')
+				.on('submit', function () {
 					if (isDisabled) return false;
 					_trigger('save');
-				})
+				});
+
+			//submit box
+			$('#mailster_submitdiv')
 				.on('click', '.sendnow-button', function () {
 					if (!confirm(mailsterL10n.send_now)) return false;
 				});
@@ -230,7 +232,7 @@ jQuery(document).ready(function ($) {
 				})
 				.on('change', 'input.userexactdate', function () {
 					var wrap = $(this).parent().parent().parent();
-					wrap.find('span')._Class('disabled');
+					wrap.find('span').addClass('disabled');
 				})
 				.on('change', '#autoresponder-post_type', function () {
 					var cats = $('#autoresponder-taxonomies');
@@ -1588,7 +1590,6 @@ jQuery(document).ready(function ($) {
 			buttonnav = bar.find('.button-nav'),
 			buttontabs = bar.find('ul.buttons'),
 			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, searchTimeout, checkRSSfeedInterval, rssURL = 'x',
-			searchstring = '',
 			editor = $('#wp-mailster-editor-wrap'),
 			postsearch = $('#post-search'),
 			imagesearch = $('#image-search');
@@ -2173,7 +2174,10 @@ jQuery(document).ready(function ($) {
 
 			} else if (current.type == 'auto') {
 
-				var insertmethod = $('#embedoption-bar').find('.nav-tab-active').data('type');
+				var insertmethod = $('#embedoption-bar').find('.nav-tab-active').data('type'),
+					position = current.element.data('position') || 0,
+					org_content, content = [],
+					images = [];
 
 				if ('dynamic' == insertmethod) {
 
@@ -2195,11 +2199,7 @@ jQuery(document).ready(function ($) {
 
 				}
 
-
 				if (currenttext) {
-
-					var position = current.element.data('position') || 0,
-						org_content, content = [];
 
 					if (currenttext.title) {
 
@@ -2279,8 +2279,12 @@ jQuery(document).ready(function ($) {
 					if (currenttext.image && current.elements.images.length) {
 
 						if (!$.isArray(currenttext.image)) {
-							currenttext.image = [currenttext.image];
+							images[position] = currenttext.image;
+						} else {
+							images = currenttext.image;
 						}
+
+						currenttext.image = images;
 
 						loader();
 
@@ -2399,7 +2403,7 @@ jQuery(document).ready(function ($) {
 
 					}
 
-					position = position + 1 >= current.elements.multi.length ? 0 : position + 1;
+					position = position + 1 >= (current.elements.multi.length || current.elements.single.length || current.elements.images.length) ? 0 : position + 1;
 
 					current.element.data('position', position);
 
@@ -2909,7 +2913,7 @@ jQuery(document).ready(function ($) {
 						}).toArray()
 					}
 
-					if (current.elements.multi.length > 1) {
+					if ((current.elements.multi.length || current.elements.single.length || current.elements.images.length) > 1) {
 						bar.find('.editbarpostion').html(sprintf(mailsterL10n.for_area, '#' + (position + 1))).show();
 					} else {
 						bar.find('.editbarpostion').hide();
@@ -2973,7 +2977,7 @@ jQuery(document).ready(function ($) {
 				data = {
 					type: assetstype,
 					posttypes: posttypes,
-					search: searchstring,
+					search: 'attachment' == assetstype ? imagesearch.val() : postsearch.val(),
 					offset: 0
 				};
 
@@ -3018,6 +3022,7 @@ jQuery(document).ready(function ($) {
 			var $this = $(this),
 				offset = $this.data('offset'),
 				type = $this.data('type');
+
 			loader();
 
 			var posttypes = $('#post_type_select').find('input:checked').serialize();
@@ -3025,7 +3030,7 @@ jQuery(document).ready(function ($) {
 			_ajax('get_post_list', {
 				type: type,
 				posttypes: posttypes,
-				search: searchstring,
+				search: 'attachment' == type ? imagesearch.val() : postsearch.val(),
 				offset: offset,
 				url: $.trim($('#rss_url').val()),
 				itemcount: itemcount
@@ -3048,9 +3053,6 @@ jQuery(document).ready(function ($) {
 			var $this = $(this);
 			clearTimeout(searchTimeout);
 			searchTimeout = setTimeout(function () {
-				var str = $this.val();
-				if (str == searchstring) return;
-				searchstring = str;
 				loadPosts();
 			}, 300);
 		}
@@ -3803,7 +3805,6 @@ jQuery(document).ready(function ($) {
 		color_from = color_from.toLowerCase();
 		color_to = color_to.toLowerCase();
 		if (color_from == color_to) return false;
-		console.log(arguments);
 		var raw = _getContent(),
 			reg = new RegExp(color_from, 'gi'),
 			m = _modulesraw.val();
