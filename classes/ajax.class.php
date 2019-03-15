@@ -1136,6 +1136,7 @@ class MailsterAjax {
 		if ( in_array( $_POST['type'], array( 'post', 'attachment' ) ) ) {
 
 			$post_type = esc_attr( $_POST['type'] );
+			$imagetype = esc_attr( $_POST['imagetype'] );
 			$current_id = isset( $_POST['id'] ) ? (int) $_POST['id'] : null;
 
 			$defaults = array(
@@ -1175,8 +1176,7 @@ class MailsterAjax {
 					$counts = wp_count_posts( $type );
 					$post_counts += $counts->publish + $counts->future;
 				}
-			} else {
-
+			} elseif ( 'media' == $imagetype ) {
 				$args = wp_parse_args( array(
 					'post_status' => 'inherit',
 					'post_mime_type' => ( $post_type == 'attachment' ) ? array( 'image/jpeg', 'image/gif', 'image/png', 'image/tiff', 'image/bmp' ) : null,
@@ -1185,45 +1185,52 @@ class MailsterAjax {
 				$post_counts = wp_count_posts( $post_type );
 				$post_counts = $post_counts->inherit;
 
+			} else {
+
+				// unsplash
 			}
 
+			$post_counts = 0;
 			$return['success'] = true;
 			$return['itemcount'] = isset( $_POST['itemcount'] ) ? $_POST['itemcount'] : array();
 
-			$args = apply_filters( 'mailster_get_post_list_args', $args );
+			if ( 'unsplash' == $imagetype ) {
+				error_log( 'unsplash ' . $search );
 
-			$posts = get_posts( $args );
+				$response = mailster( 'helper' )->unsplash('search', array(
+					'offset' => $offset,
+					'query' => $search,
+				));
 
-			if ( $current_id && ( $current = get_post( $current_id ) ) ) {
-
-				array_unshift( $posts, $current );
-				$post_counts++;
-
+				if ( is_wp_error( $response ) ) {
+					$post_counts = $response;
+				} else {
+					$data = json_decode( $response );
+					$post_counts = $data->total;
+					$posts = $data->results;
+				}
 			} else {
+				$args = apply_filters( 'mailster_get_post_list_args', $args );
+				$posts = get_posts( $args );
 
-				$args['exclude'] = null;
+				if ( $current_id && ( $current = get_post( $current_id ) ) ) {
 
+					array_unshift( $posts, $current );
+					$post_counts++;
+
+				} else {
+					$args['exclude'] = null;
+				}
 			}
 
-			$relativenames = array(
-				-1 => esc_html__( 'last %s', 'mailster' ),
-				-2 => esc_html__( 'second last %s', 'mailster' ),
-				-3 => esc_html__( 'third last %s', 'mailster' ),
-				-4 => esc_html__( 'fourth last %s', 'mailster' ),
-				-5 => esc_html__( 'fifth last %s', 'mailster' ),
-				-6 => esc_html__( 'sixth last %s', 'mailster' ),
-				-7 => esc_html__( 'seventh last %s', 'mailster' ),
-				-8 => esc_html__( 'eighth last %s', 'mailster' ),
-				-9 => esc_html__( 'ninth last %s', 'mailster' ),
-				-10 => esc_html__( 'tenth last %s', 'mailster' ),
-				-11 => esc_html__( 'eleventh last %s', 'mailster' ),
-				-12 => esc_html__( 'twelfth last %s', 'mailster' ),
-			);
+			if ( is_wp_error( $post_counts ) ) {
+				$return['html'] = '<li><span class="norows error">' . $post_counts->get_error_message() . '</span></li>';
+			} elseif ( $post_counts ) {
 
-			$posts_lefts = max( 0, $post_counts - $offset - $post_count );
+				$posts_lefts = max( 0, $post_counts - $offset - $post_count );
 
-			if ( $post_counts ) {
 				$html = '';
+
 				if ( $_POST['type'] == 'post' ) {
 
 					$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
@@ -1256,15 +1263,31 @@ class MailsterAjax {
 				} elseif ( $_POST['type'] == 'attachment' ) {
 
 					foreach ( $posts as $post ) {
-						$image = wp_get_attachment_image_src( $post->ID, 'large' );
-						$title = $post->post_title ? $post->post_title : ( $post->post_excerpt ? $post->post_excerpt : basename( $image[0] ) );
-						$html .= '<li data-id="' . $post->ID . '" data-name="' . esc_attr( $title ) . '" data-src="' . esc_attr( $image[0] ) . '" data-asp="' . ( $image[2] ? str_replace( ',', '.', $image[1] / $image[2] ) : '' ) . '"';
-						if ( $current_id == $post->ID ) {
-							$html .= ' class="selected"';
+
+						if ( 'unsplash' == $imagetype ) {
+							$post_id = $post->id;
+							$src = $post->urls->raw;
+							$asp = $post->width / $post->height;
+							$thumb_src = $post->urls->thumb;
+							$title = isset( $post->alt_description ) ? $post->alt_description : $post->id;
+							$class = 'is-unsplash';
+						} else {
+							$post_id = $post->ID;
+							$image = wp_get_attachment_image_src( $post_id, 'large' );
+							$src = $image[0];
+							$asp = $image[2] ? str_replace( ',', '.', $image[1] / $image[2] ) : '';
+							$thumbnail = wp_get_attachment_image_src( $post_id, 'medium' );
+							$thumb_src = $thumbnail[0];
+							$title = $post->post_title ? $post->post_title : ( $post->post_excerpt ? $post->post_excerpt : basename( $image[0] ) );
+							$class = '';
 						}
+						if ( $current_id == $post_id ) {
+							$class .= ' selected';
+						}
+
+						$html .= '<li data-id="' . $post_id . '" data-name="' . esc_attr( $title ) . '" data-src="' . esc_attr( $src ) . '" data-asp="' . ( $asp ) . '" class="' . esc_attr( $class ) . '"';
 						$html .= '>';
-						$image = wp_get_attachment_image_src( $post->ID, 'medium' );
-						$html .= '<a style="background-image:url(' . $image[0] . ')"><span class="caption" title="' . esc_attr( $title ) . '">' . esc_html( $title ) . '</span></a>';
+						$html .= '<a style="background-image:url(' . $thumb_src . ')"><span class="caption" title="' . esc_attr( $title ) . '">' . esc_html( $title ) . '</span></a>';
 						$html .= '</li>';
 					}
 				}

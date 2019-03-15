@@ -1624,6 +1624,53 @@ class MailsterHelper {
 			</div>
 		</div>
 <?php
+	}
+
+
+	public function unsplash( $command, $args = array() ) {
+
+		$url = 'https://api.unsplash.com/';
+
+		$key = sanitize_key( apply_filters( 'mailster_unsplash_client_id', 'ba3e2af91c8c44d00cb70fe6217dcf021f7350633c323876ffa561a1dfbfc25f' ) );
+
+		switch ( $command ) {
+			case 'search':
+				$url .= 'search/photos';
+				$defaults = array(
+					'per_page' => mailster_option( 'post_count', 30 ),
+				);
+				$args = wp_parse_args( $args, $defaults );
+				if ( isset( $args['offset'] ) ) {
+					$args['page'] = floor( $args['offset'] / $args['per_page'] ) + 1;
+					unset( $args['offset'] );
+				}
+				break;
+
+			default:
+				break;
+		}
+
+		$headers = array(
+			'Authorization' => 'Client-ID ' . $key,
+		);
+
+		$url = add_query_arg( $args, $url );
+		$response = wp_remote_get( $url, array(
+			'headers' => $headers,
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$code = wp_remote_retrieve_response_code( $response );
+		$body = wp_remote_retrieve_body( $response );
+
+		if ( $code != 200 ) {
+			return new WP_Error( $code, $body );
+		}
+
+		return $body;
 
 	}
 

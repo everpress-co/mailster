@@ -1591,8 +1591,10 @@ jQuery(document).ready(function ($) {
 			buttontabs = bar.find('ul.buttons'),
 			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, searchTimeout, checkRSSfeedInterval, rssURL = 'x',
 			editor = $('#wp-mailster-editor-wrap'),
+			searchstring = '',
 			postsearch = $('#post-search'),
-			imagesearch = $('#image-search');
+			imagesearch = $('#image-search'),
+			imagesearchtype = $('[name="image-search-type"]');
 
 		function init() {
 			bar
@@ -1624,7 +1626,7 @@ jQuery(document).ready(function ($) {
 				})
 				.on('click', '.rss_change', changeRSS)
 				.on('click', '#recent_feeds a', recentFeed)
-
+				.on('change', imagesearchtype, loadPosts)
 
 			.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
 				.on('mouseleave', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', enabledrag);
@@ -2973,11 +2975,14 @@ jQuery(document).ready(function ($) {
 
 		function loadPosts(event, callback) {
 
+			searchstring = $.trim('attachment' == assetstype ? imagesearch.val() : postsearch.val());
+
 			var posttypes = $('#post_type_select').find('input:checked').serialize(),
 				data = {
 					type: assetstype,
 					posttypes: posttypes,
-					search: 'attachment' == assetstype ? imagesearch.val() : postsearch.val(),
+					search: searchstring,
+					imagetype: imagesearchtype.filter(':checked').val(),
 					offset: 0
 				};
 
@@ -3023,6 +3028,8 @@ jQuery(document).ready(function ($) {
 				offset = $this.data('offset'),
 				type = $this.data('type');
 
+			searchstring = $.trim('attachment' == type ? imagesearch.val() : postsearch.val());
+
 			loader();
 
 			var posttypes = $('#post_type_select').find('input:checked').serialize();
@@ -3030,7 +3037,8 @@ jQuery(document).ready(function ($) {
 			_ajax('get_post_list', {
 				type: type,
 				posttypes: posttypes,
-				search: 'attachment' == type ? imagesearch.val() : postsearch.val(),
+				search: searchstring,
+				imagetype: imagesearchtype.filter(':checked').val(),
 				offset: offset,
 				url: $.trim($('#rss_url').val()),
 				itemcount: itemcount
@@ -3050,11 +3058,18 @@ jQuery(document).ready(function ($) {
 		}
 
 		function searchPost() {
+			console.log('searchPost');
 			var $this = $(this);
+			if (searchstring == $.trim($this.val())) {
+
+
+				return false;
+			}
+			console.log(searchstring, $.trim($this.val()), $.trim($this.val()));
 			clearTimeout(searchTimeout);
 			searchTimeout = setTimeout(function () {
 				loadPosts();
-			}, 300);
+			}, 1000);
 		}
 
 		function loadSingleLink() {
