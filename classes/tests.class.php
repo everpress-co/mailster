@@ -375,7 +375,23 @@ class MailsterTests {
 		if ( ! empty( $hooks ) ) {
 			$msg = 'Following deprecated MyMail hooks were found and should get replaced:<ul>';
 			foreach ( $hooks as $hook ) {
-				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code> </li>';
+
+				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code>';
+				foreach ( array_values( $wp_filter[ $hook ]->callbacks ) as $data ) {
+					foreach ( $data as $id => $entries ) {
+						if ( is_string( $entries['function'] ) ) {
+							continue;
+						} elseif ( $entries['function'] instanceof Closure ) {
+							$reflFunc = new ReflectionFunction( $entries['function'] );
+						} else {
+							$reflFunc = new ReflectionMethod( $entries['function'][0], $entries['function'][1] );
+						}
+						$plugin_path = $reflFunc->getFileName();
+						$msg .= '<br>found in ' . $plugin_path;
+					}
+				}
+				$msg .= '</li>';
+
 			}
 			$msg .= '</ul>';
 
