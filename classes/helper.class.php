@@ -24,19 +24,28 @@ class MailsterHelper {
 
 		if ( $attach_id ) {
 
-			$attach_id = (int) $attach_id;
+			if ( is_numeric( $attach_id ) ) {
 
-			$image_src = wp_get_attachment_image_src( $attach_id, 'full' );
-			if ( ! $image_src ) {
+				$attach_id = (int) $attach_id;
+
+				$image_src = wp_get_attachment_image_src( $attach_id, 'full' );
+				if ( ! $image_src ) {
+					return false;
+				}
+
+				$actual_file_path = get_attached_file( $attach_id );
+
+				if ( ! $width && ! $height ) {
+					$orig_size = getimagesize( $actual_file_path );
+					$width = $orig_size[0];
+					$height = $orig_size[1];
+				}
+
+				// Unsplash Image
+			} else {
+
 				return false;
-			}
 
-			$actual_file_path = get_attached_file( $attach_id );
-
-			if ( ! $width && ! $height ) {
-				$orig_size = getimagesize( $actual_file_path );
-				$width = $orig_size[0];
-				$height = $orig_size[1];
 			}
 		} elseif ( $img_url ) {
 
@@ -79,18 +88,18 @@ class MailsterHelper {
 				}
 			}
 
-			$actual_file_path = ltrim( $file_path['path'], '/' );
-			$actual_file_path = rtrim( ABSPATH, '/' ) . $file_path['path'];
+					$actual_file_path = ltrim( $file_path['path'], '/' );
+					$actual_file_path = rtrim( ABSPATH, '/' ) . $file_path['path'];
 
 			if ( ! file_exists( $actual_file_path ) ) {
 				$actual_file_path = ABSPATH . str_replace( site_url( '/' ), '', $img_url );
 			}
 
-			$orig_size = getimagesize( $actual_file_path );
+					$orig_size = getimagesize( $actual_file_path );
 
-			$image_src[0] = $img_url;
-			$image_src[1] = $orig_size[0];
-			$image_src[2] = $orig_size[1];
+					$image_src[0] = $img_url;
+					$image_src[1] = $orig_size[0];
+					$image_src[2] = $orig_size[1];
 
 		}
 
@@ -1637,7 +1646,7 @@ class MailsterHelper {
 			case 'search':
 				$url .= 'search/photos';
 				$defaults = array(
-					'per_page' => mailster_option( 'post_count', 30 ),
+					'per_page' => 30,
 				);
 				$args = wp_parse_args( $args, $defaults );
 				if ( isset( $args['offset'] ) ) {
@@ -1665,6 +1674,10 @@ class MailsterHelper {
 
 		$code = wp_remote_retrieve_response_code( $response );
 		$body = wp_remote_retrieve_body( $response );
+		$headers = wp_remote_retrieve_headers( $response );
+
+		$limit = $headers['x-ratelimit-limit'];
+		$remaining = $headers['x-ratelimit-remaining'];
 
 		if ( $code != 200 ) {
 			return new WP_Error( $code, $body );

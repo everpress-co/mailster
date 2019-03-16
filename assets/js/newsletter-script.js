@@ -1978,7 +1978,6 @@ jQuery(document).ready(function ($) {
 						attribute = is_img ? 'src' : 'background',
 						style;
 
-
 					current.element.attr({
 						'data-id': currentimage.id,
 					}).data('id', currentimage.id).addClass('mailster-loading');
@@ -3058,14 +3057,10 @@ jQuery(document).ready(function ($) {
 		}
 
 		function searchPost() {
-			console.log('searchPost');
 			var $this = $(this);
 			if (searchstring == $.trim($this.val())) {
-
-
 				return false;
 			}
-			console.log(searchstring, $.trim($this.val()), $.trim($this.val()));
 			clearTimeout(searchTimeout);
 			searchTimeout = setTimeout(function () {
 				loadPosts();
