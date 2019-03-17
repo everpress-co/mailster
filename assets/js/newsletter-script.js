@@ -1626,7 +1626,7 @@ jQuery(document).ready(function ($) {
 				})
 				.on('click', '.rss_change', changeRSS)
 				.on('click', '#recent_feeds a', recentFeed)
-				.on('change', imagesearchtype, loadPosts)
+				.on('change', '[name="image-search-type"]', searchPost)
 
 			.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
 				.on('mouseleave', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', enabledrag);
@@ -1671,11 +1671,11 @@ jQuery(document).ready(function ($) {
 				}, 1);
 			});
 
-			imagewidth.on('change, keyup', function () {
+			imagewidth.on('keyup change', function () {
 				if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / currentimage.asp));
 				adjustImagePreview();
 			});
-			imageheight.on('change, keyup', function () {
+			imageheight.on('keyup change', function () {
 				if (!imagecrop.is(':checked')) imagewidth.val(Math.round(imageheight.val() * currentimage.asp));
 				adjustImagePreview();
 			});
@@ -2011,6 +2011,8 @@ jQuery(document).ready(function ($) {
 							current.element.attr('style', style.replace(/url\("?(.+)"?\)/, "url(\'" + currentimage.src + "\')"));
 						}
 					}
+
+					console.log(w, h, f);
 
 					_ajax('create_image', {
 						id: currentimage.id,
@@ -2555,8 +2557,10 @@ jQuery(document).ready(function ($) {
 		}
 
 		function adjustImagePreview() {
-			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val())))),
-				f = factor.val();
+			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val())))) || 0,
+				f = parseInt(factor.val(), 10);
+
+			console.log(x, current.width, f, current.height);
 
 			imagepreview.css({
 				'clip': 'rect(' + (x) + 'px,' + (current.width * f) + 'px,' + (current.height * f - x) + 'px,0px)',
@@ -2637,6 +2641,7 @@ jQuery(document).ready(function ($) {
 			current.content = content;
 
 			currenttag = current.element.data('tag');
+			searchstring = '';
 
 			_trigger('selectModule', module);
 
@@ -2698,6 +2703,7 @@ jQuery(document).ready(function ($) {
 
 				original.prop('checked', current.original);
 				imagecrop.prop('checked', current.crop).parent()[current.crop ? 'addClass' : 'removeClass']('not-cropped');
+				searchstring = $.trim(imagesearch.val());
 
 				factor.val(1);
 				_getRealDimensions(el, function (w, h, f) {
@@ -2755,6 +2761,7 @@ jQuery(document).ready(function ($) {
 			} else if (type == 'auto') {
 
 				openTab('#' + (currenttag ? 'dynamic' : 'static') + '_embed_options', true);
+				searchstring = $.trim(postsearch.val());
 
 				if (currenttag) {
 
@@ -2974,8 +2981,6 @@ jQuery(document).ready(function ($) {
 
 		function loadPosts(event, callback) {
 
-			searchstring = $.trim('attachment' == assetstype ? imagesearch.val() : postsearch.val());
-
 			var posttypes = $('#post_type_select').find('input:checked').serialize(),
 				data = {
 					type: assetstype,
@@ -3027,8 +3032,6 @@ jQuery(document).ready(function ($) {
 				offset = $this.data('offset'),
 				type = $this.data('type');
 
-			searchstring = $.trim('attachment' == type ? imagesearch.val() : postsearch.val());
-
 			loader();
 
 			var posttypes = $('#post_type_select').find('input:checked').serialize();
@@ -3045,7 +3048,7 @@ jQuery(document).ready(function ($) {
 				loader(false);
 				if (response.success) {
 					itemcount = response.itemcount;
-					$this.parent().remove();
+					$this.remove();
 					displayPosts(response.html, false);
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
@@ -3057,14 +3060,19 @@ jQuery(document).ready(function ($) {
 		}
 
 		function searchPost() {
-			var $this = $(this);
-			if (searchstring == $.trim($this.val())) {
+			var $this = $(this),
+				temp = $.trim('attachment' == assetstype ? imagesearch.val() : postsearch.val());
+			console.log('searchPost');
+			if ((!$this.is(':checked') && searchstring == temp)) {
 				return false;
 			}
+			searchstring = temp;
+			console.log('do searchPost ', '[' + searchstring + ']');
 			clearTimeout(searchTimeout);
 			searchTimeout = setTimeout(function () {
+				console.log('run searchPost ', '[' + searchstring + ']');
 				loadPosts();
-			}, 1000);
+			}, 500);
 		}
 
 		function loadSingleLink() {

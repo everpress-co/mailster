@@ -24,28 +24,19 @@ class MailsterHelper {
 
 		if ( $attach_id ) {
 
-			if ( is_numeric( $attach_id ) ) {
+			$attach_id = (int) $attach_id;
 
-				$attach_id = (int) $attach_id;
-
-				$image_src = wp_get_attachment_image_src( $attach_id, 'full' );
-				if ( ! $image_src ) {
-					return false;
-				}
-
-				$actual_file_path = get_attached_file( $attach_id );
-
-				if ( ! $width && ! $height ) {
-					$orig_size = getimagesize( $actual_file_path );
-					$width = $orig_size[0];
-					$height = $orig_size[1];
-				}
-
-				// Unsplash Image
-			} else {
-
+			$image_src = wp_get_attachment_image_src( $attach_id, 'full' );
+			if ( ! $image_src ) {
 				return false;
+			}
 
+			$actual_file_path = get_attached_file( $attach_id );
+
+			if ( ! $width && ! $height ) {
+				$orig_size = getimagesize( $actual_file_path );
+				$width = $orig_size[0];
+				$height = $orig_size[1];
 			}
 		} elseif ( $img_url ) {
 
@@ -55,6 +46,7 @@ class MailsterHelper {
 
 				$actual_file_path = $img_url;
 				$img_url = str_replace( ABSPATH, site_url( '/' ), $img_url );
+
 			} elseif ( strpos( $img_url, admin_url( 'admin-ajax' ) ) === 0 ) {
 
 				parse_str( $file_path['query'], $query );
@@ -77,12 +69,34 @@ class MailsterHelper {
 				/* todo: recognize URLs */
 				if ( ! file_exists( $actual_file_path ) ) {
 
+					if ( false !== strpos( $img_url, '//images.unsplash.com' ) ) {
+						$query = wp_parse_url( $img_url, PHP_URL_QUERY );
+						parse_str( $query, $query_args );
+
+						$unsplash_args = apply_filters( 'mailster_create_image_unsplash_args', array(), $attach_id, $img_url, $width, $height, $crop );
+
+						$args = wp_parse_args( $unsplash_args, array(
+							'w' => $width,
+							'h' => $height,
+							'crop' => $crop,
+							'fit' => $crop ? 'crop' : 'max',
+							'dpi' => 1,
+							'q' => apply_filters( 'jpeg_quality', $query_args['q'] ),
+						));
+
+						$img_url = add_query_arg( $args, $img_url );
+
+					} else {
+						$height = null;
+					}
+					$asp = null;
+
 					return apply_filters( 'mailster_create_image', array(
 						'id' => $attach_id,
 						'url' => $img_url,
 						'width' => $width,
-						'height' => null,
-						'asp' => null,
+						'height' => $height,
+						'asp' => $asp,
 					), $attach_id, $img_url, $width, $height, $crop);
 
 				}
@@ -1638,24 +1652,32 @@ class MailsterHelper {
 
 	public function unsplash( $command, $args = array() ) {
 
-		$url = 'https://api.unsplash.com/';
+		$endpoint = 'https://api.unsplash.com/';
 
 		$key = sanitize_key( apply_filters( 'mailster_unsplash_client_id', 'ba3e2af91c8c44d00cb70fe6217dcf021f7350633c323876ffa561a1dfbfc25f' ) );
+		// demo
+		$key = sanitize_key( apply_filters( 'mailster_unsplash_client_id', '84b6fecb559329be472a483328763ba0980a8272f25dc524f1cae852970c9b20' ) );
 
 		switch ( $command ) {
 			case 'search':
-				$url .= 'search/photos';
+				$path = 'search/photos';
 				$defaults = array(
 					'per_page' => 30,
 				);
 				$args = wp_parse_args( $args, $defaults );
+				if ( empty( $args['query'] ) ) {
+					unset( $args['query'] );
+					$path = 'photos';
+				} else {
+					$args['query'] = urlencode( $args['query'] );
+				}
 				if ( isset( $args['offset'] ) ) {
 					$args['page'] = floor( $args['offset'] / $args['per_page'] ) + 1;
 					unset( $args['offset'] );
 				}
 				break;
-
 			default:
+				return new WP_Error( 'err', esc_html__( 'Command not supported', 'mailster' ) );
 				break;
 		}
 
@@ -1663,7 +1685,7 @@ class MailsterHelper {
 			'Authorization' => 'Client-ID ' . $key,
 		);
 
-		$url = add_query_arg( $args, $url );
+		$url = add_query_arg( $args, $endpoint . $path );
 		$response = wp_remote_get( $url, array(
 			'headers' => $headers,
 		) );
@@ -1683,7 +1705,7 @@ class MailsterHelper {
 			return new WP_Error( $code, $body );
 		}
 
-		return $body;
+		return json_decode( $body );
 
 	}
 
