@@ -24,7 +24,7 @@ $default_texts = mailster( 'settings' )->get_default_texts();
 if ( $old_version ) {
 
 	// remove any branch version from the string.
-	$old_version_sanitized = preg_replace( '#^([^a-z]+)\.([a-z_]+)(.*?)$#i', '$1', $old_version );
+	$old_version_sanitized = preg_replace( '#^([^a-z]+)(\.|-)([a-z_]+)(.*?)$#i', '$1', $old_version );
 
 	switch ( $old_version_sanitized ) {
 		case '1.0':
