@@ -337,7 +337,6 @@ jQuery(document).ready(function ($) {
 								target.removeClass('mailster-loading');
 							} else if (target_id) {
 
-								console.log(crop);
 								_ajax('create_image', {
 									id: target_id,
 									width: org_w,
