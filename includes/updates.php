@@ -561,6 +561,13 @@ if ( $old_version ) {
 			// remove entries caused by wrong tracking
 			$wpdb->query( "DELETE FROM {$wpdb->prefix}mailster_actions WHERE subscriber_id = 0" );
 
+		case '2.3.15':
+		case '2.3.16':
+
+			$mailster_options['ask_usage_tracking'] = true;
+
+		case '2.3.17':
+
 		default:
 
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );

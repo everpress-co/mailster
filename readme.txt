@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.io
 = Version 2.3.17 =
 
 * added: `mailster_add_embeded_style` method to add custom embeded styles.
+* added: option to enable sending usage statistics.
 * fixed: issue with double quotes in background-image property
 * fixed: correct saving of form option
 * fixed: delivery issue with some third party apps

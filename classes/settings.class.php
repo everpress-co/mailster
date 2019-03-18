@@ -209,6 +209,8 @@ class MailsterSettings {
 			'dkim_identity' => '',
 			'dkim_passphrase' => '',
 
+			'usage_tracking' => false,
+			'ask_usage_tracking' => true,
 			'disable_cache' => false,
 			'remove_data' => false,
 			'got_url_rewrite' => mailster( 'helper' )->got_url_rewrite(),
@@ -1180,6 +1182,14 @@ class MailsterSettings {
 							}
 						}
 						$value = $newvalue;
+					}
+
+				break;
+
+				case 'usage_tracking':
+
+					if ( ! $value ) {
+						wp_clear_scheduled_hook( 'put_do_weekly_action' );
 					}
 
 				break;

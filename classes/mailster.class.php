@@ -1109,6 +1109,10 @@ class Mailster {
 	 */
 	public function deactivation_survey( $hook ) {
 
+		if ( ! mailster_option( 'usage_tracking' ) ) {
+			return;
+		}
+
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		if ( isset( $_GET['mailster_deactivation_survey'] ) && wp_verify_nonce( $_POST['mailster_nonce'], 'mailster_deactivation_survey' ) ) {
@@ -1118,14 +1122,10 @@ class Mailster {
 			}
 
 			$reason = stripslashes( $_POST['mailster_surey_reason'] );
+			$details = stripslashes( $_POST['mailster_surey_extra'] );
 
-			UpdateCenterPlugin::feedback( 'mailster', array(
-				'source' => 'deactivation_survey',
-				'data' => array(
-					$reason,
-					stripslashes( $_POST['mailster_surey_extra'] ),
-				),
-			) );
+			update_option( 'wisdom_deactivation_reason_mailster', '["' . $reason . '"]' );
+			update_option( 'wisdom_deactivation_details_mailster', $details );
 
 			if ( isset( $_POST['delete_data'] ) && $_POST['delete_data'] ) {
 
