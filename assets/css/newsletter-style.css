@@ -777,7 +777,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 
 #editbar .image-search-wrap, #editbar .image-search-type-wrap{
 	width: 48%;
-	margin: 0 1% 7px 0;
+	margin: 7px 1% 7px 0;
 	display: inline-block;
 }
 #editbar div.type.img .imagecontentwrap {
