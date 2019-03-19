@@ -52,10 +52,10 @@ class MailsterTemplate {
 	 *
 	 *
 	 * @param unknown $modules      (optional)
-	 * @param unknown $absolute_img (optional)
+	 * @param unknown $absolute_path (optional)
 	 * @return unknown
 	 */
-	public function get( $modules = true, $absolute_img = false ) {
+	public function get( $modules = true, $absolute_path = false ) {
 		if ( ! $modules ) {
 
 			if ( ! $this->doc ) {
@@ -90,8 +90,8 @@ class MailsterTemplate {
 			$html = $x->saveHTML();
 
 		}
-		if ( $absolute_img ) {
-			$html = $this->make_img_absolute( $html );
+		if ( $absolute_path ) {
+			$html = $this->make_paths_absolute( $html );
 		}
 
 		$html = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $html );
@@ -106,10 +106,15 @@ class MailsterTemplate {
 	 * @param unknown $html
 	 * @return unknown
 	 */
-	private function make_img_absolute( $html ) {
+	private function make_paths_absolute( $html ) {
+
 		preg_match_all( "/(src|background)=[\"'](.*)[\"']/Ui", $html, $images );
-		$images = array_unique( $images[2] );
+		preg_match_all( "/@import[ ]*['\"]{0,}(url\()*['\"]*([^;'\"\)]*)['\"\)]*/ui", $html, $assets );
+		$images = array_unique( array_merge( $images[2], $assets[2] ) );
 		foreach ( $images as $image ) {
+			if ( empty( $image ) ) {
+				continue;
+			}
 			if ( substr( $image, 0, 7 ) == 'http://' ) {
 				continue;
 			}
@@ -500,7 +505,7 @@ class MailsterTemplate {
 	 */
 	public function get_modules_html( $activeonly = false, $separator = "\n\n" ) {
 
-		return $this->make_img_absolute( $this->get_html_from_nodes( $this->get_modules( $activeonly ), $separator ) );
+		return $this->make_paths_absolute( $this->get_html_from_nodes( $this->get_modules( $activeonly ), $separator ) );
 	}
 
 
@@ -561,7 +566,7 @@ class MailsterTemplate {
 		}
 
 		if ( $pos = strpos( $this->raw, '<body' ) ) {
-			return trim( substr( $this->raw, 0, $pos ) );
+			return $this->make_paths_absolute( trim( substr( $this->raw, 0, $pos ) ) );
 		}
 		return '';
 

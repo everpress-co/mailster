@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.0
-Stable tag: 2.3.16
+Tested up to: 5.1.1
+Stable tag: 2.3.17
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -81,6 +81,22 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.3.17 =
+
+* added: `mailster_add_embeded_style` method to add custom embeded styles.
+* added: option to enable sending usage statistics.
+* fixed: issue with double quotes in background-image property
+* fixed: correct saving of form option
+* fixed: delivery issue with some third party apps
+* improved: editor behavior when adding content in multiple areas.
+* improved: styles added via `mailster_add(_embeded)_style` are now visible in the editor.
+* improved: inline styles can now be skipped with an optional `data-embed` attribute
+* improved: block comments now removed if present in the email
+* improved: better action handling for mails opened on Yahoo
+* improved: editor behavior
+* improved: handling of options
+* improved: removed some variables from the global space
 
 = Version 2.3.16 =
 

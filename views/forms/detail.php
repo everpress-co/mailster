@@ -396,7 +396,7 @@ if ( $is_new ) {
 
 								<tr>
 									<td><?php esc_html_e( 'Resend Confirmation', 'mailster' ) ?></td>
-									<td><div><input type="checkbox" name="mailster_data[resend]" value="1" <?php checked( $form->resend ) ?>> <?php printf( esc_html__( 'Resend confirmation %1$s times with a delay of %2$s hours if user hasn\'t confirmed the subscription', 'mailster' ), '<input type="text" name="mailster_data[resend_count]" value="' . esc_attr( $form->resend_count ) . '" class="small-text">', '<input type="text" name="mailster_data[resend_time]" value="' . esc_attr( $form->resend_time ) . '" class="small-text">' ) ?></div></td>
+									<td><div><input type="hidden" name="mailster_data[resend]" value="0"><input type="checkbox" name="mailster_data[resend]" value="1" <?php checked( $form->resend ) ?>> <?php printf( esc_html__( 'Resend confirmation %1$s times with a delay of %2$s hours if user hasn\'t confirmed the subscription', 'mailster' ), '<input type="text" name="mailster_data[resend_count]" value="' . esc_attr( $form->resend_count ) . '" class="small-text">', '<input type="text" name="mailster_data[resend_time]" value="' . esc_attr( $form->resend_time ) . '" class="small-text">' ) ?></div></td>
 								</tr>
 
 								<tr><td><?php esc_html_e( 'Redirect after confirm', 'mailster' );?></td><td><input type="text" name="mailster_data[confirmredirect]" class="widefat" value="<?php if ( isset( $form->confirmredirect ) ) {	echo $form->confirmredirect; } ?>" placeholder="http://www.example.com" ></td>
