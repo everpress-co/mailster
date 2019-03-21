@@ -205,11 +205,10 @@ class MailsterTemplate {
 				$logo->setAttribute( 'src', $new_logo['url'] );
 
 				if ( $logo_link ) {
-					$parent = $logo->parentNode;
 					$link = $doc->createElement( 'a' );
 					$link->setAttribute( 'href', $logo_link );
+					$logo->parentNode->replaceChild( $link, $logo );
 					$link->appendChild( $logo );
-					$parent->appendChild( $link );
 				}
 			}
 		}
