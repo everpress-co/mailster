@@ -34,9 +34,9 @@
 
 			<div class="mailster-transition">
 				<div class="mailster-transition-box">
-					<img src="https://mailster.github.io/welcome/My.svg" class="mailster-transition-my" width="162">
-					<img src="https://mailster.github.io/welcome/Mail.svg" class="mailster-transition-mail" width="222">
-					<img src="https://mailster.github.io/welcome/ster.svg" class="mailster-transition-ster" width="211">
+					<img src="https://static.mailster.co/welcome/My.svg" class="mailster-transition-my" width="162">
+					<img src="https://static.mailster.co/welcome/Mail.svg" class="mailster-transition-mail" width="222">
+					<img src="https://static.mailster.co/welcome/ster.svg" class="mailster-transition-ster" width="211">
 				</div>
 			</div>
 		</div>
@@ -46,8 +46,8 @@
 		<div class="feature-section one-col main-feature">
 			<h2>Updated Editor</h2>
 			<p>The new Editor helps to crate your campaigns faster and provides more options. You can now edit your text inline and see the result immediately.</p>
-			<video loop muted preload="auto" autoplay src="https://mailster.github.io/videos/mailster_editor.mp4" poster="https://mailster.github.io/videos/mailster_editor.png">
-				<source src="https://mailster.github.io/videos/mailster_editor.mp4" type="video/mp4">
+			<video loop muted preload="auto" autoplay src="https://static.mailster.co/videos/mailster_editor.mp4" poster="https://static.mailster.co/videos/mailster_editor.png">
+				<source src="https://static.mailster.co/videos/mailster_editor.mp4" type="video/mp4">
 			</video>
 			<div class="return-to-dashboard align-center"><a href="post-new.php?post_type=newsletter">Create a new Campaign</a></div>
 		</div>
@@ -57,8 +57,8 @@
 				<div class="media-container">
 				<?php
 				echo wp_video_shortcode( array(
-					'mp4'      => 'https://mailster.github.io/videos/segmentation.mp4',
-					'poster'   => 'https://mailster.github.io/videos/segmentation.png',
+					'mp4'      => 'https://static.mailster.co/videos/segmentation.mp4',
+					'poster'   => 'https://static.mailster.co/videos/segmentation.png',
 					'width'    => 505,
 					'height'   => 284,
 					'autoplay' => true,
@@ -72,7 +72,7 @@
 			</div>
 			<div class="col">
 				<div class="media-container">
-					<img src="https://mailster.github.io/welcome/time_frame.jpg" width="505" height="284">
+					<img src="https://static.mailster.co/welcome/time_frame.jpg" width="505" height="284">
 				</div>
 				<h3>Delivery Time Frame</h3>
 				<p>Mailster can now send campaign in a defined time frame.</p>
@@ -82,8 +82,8 @@
 				<div class="media-container">
 				<?php
 				echo wp_video_shortcode( array(
-					'mp4'      => 'https://mailster.github.io/videos/image_crop.mp4',
-					'poster'   => 'https://mailster.github.io/videos/image_crop.png',
+					'mp4'      => 'https://static.mailster.co/videos/image_crop.mp4',
+					'poster'   => 'https://static.mailster.co/videos/image_crop.png',
 					'width'    => 505,
 					'height'   => 284,
 					'autoplay' => true,
@@ -97,7 +97,7 @@
 			</div>
 			<div class="col">
 				<div class="media-container">
-					<img src="https://mailster.github.io/welcome/subscriber_query.jpg" width="505" height="284">
+					<img src="https://static.mailster.co/welcome/subscriber_query.jpg" width="505" height="284">
 				</div>
 				<h3>Subscriber Query Class</h3>
 				<p>Similar to the WP_Query you can now simple query your subscribers.</p>
