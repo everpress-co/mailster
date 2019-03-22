@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.18 =
 
+* improved: handling if notification.html file is missing
+
 = Version 2.3.17 =
 
 * added: `mailster_add_embeded_style` method to add custom embeded styles.
