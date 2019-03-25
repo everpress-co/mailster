@@ -3,7 +3,7 @@
 class Ip2Country {
 
 	// maxmind doesn't provide a zip version so I've uploaded it to bitbucket (updated weekly)
-	public $zip = 'https://static.mailster.co/GeoIPv6.zip';
+	public $zip = 'https://mailster.github.io/GeoIPv6.zip';
 	private $dbfile;
 	public $gi;
 	private $renew = false;

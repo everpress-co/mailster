@@ -62,7 +62,7 @@ class MailsterRegister {
 				<input type="text" class="widefat register-form-purchasecode" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="purchasecode" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="36" value="<?php echo esc_attr( $args['purchasecode'] ) ?>">
 				<input type="submit" class="button button-hero button-primary dashboard-register" value="<?php esc_attr_e( 'Verify Purchase Code', 'mailster' ) ?>">
 				<div class="howto">
-					<a href="https://static.mailster.co/images/purchasecode.gif" class="howto-purchasecode"><?php esc_html_e( 'Where can I find my item purchase code?', 'mailster' ); ?></a>
+					<a href="https://mailster.github.io/images/purchasecode.gif" class="howto-purchasecode"><?php esc_html_e( 'Where can I find my item purchase code?', 'mailster' ); ?></a>
 					<!-- &ndash;
 					<a href="<?php echo add_query_arg( array( 'action' => 'mailster_envato_verify', 'slug' => $slug, '_wpnonce' => wp_create_nonce( 'mailster_nonce' ) ), admin_url( 'admin-ajax.php' ) ); ?>" class="envato-signup"><?php esc_html_e( 'Register via Envato', 'mailster' ); ?></a>
 					-->
@@ -81,7 +81,7 @@ class MailsterRegister {
 			</form>
 		</div>
 		<?php
-		mailster( 'helper' )->dialog( '<img src="https://static.mailster.co/images/purchasecode.gif">', array(
+		mailster( 'helper' )->dialog( '<img src="https://mailster.github.io/images/purchasecode.gif">', array(
 			'id' => 'registration-dialog',
 			'buttons' => array(
 				array(

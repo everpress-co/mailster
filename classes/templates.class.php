@@ -5,7 +5,7 @@ class MailsterTemplates {
 	public $path;
 	public $url;
 
-	private $download_url = 'https://static.mailster.co/templates/mymail.zip';
+	private $download_url = 'https://mailster.github.io/templates/mymail.zip';
 	private $headers = array(
 		'name' => 'Template Name',
 		'label' => 'Name',
@@ -854,9 +854,9 @@ class MailsterTemplates {
 		if ( file_exists( $screenshotfile ) ) {
 			$url = str_replace( ' ', '%20', $screenshoturi );
 		} elseif ( ! file_exists( $filedir ) ) {
-				$url = 'https://static.mailster.co/preview/not_available.gif';
+				$url = 'https://mailster.github.io/preview/not_available.gif';
 		} elseif ( mailster_is_local() ) {
-			$url = 'https://static.mailster.co/preview/not_available.gif';
+			$url = 'https://mailster.github.io/preview/not_available.gif';
 		} else {
 
 			static $mailster_get_screenshot_delay;
@@ -872,7 +872,7 @@ class MailsterTemplates {
 
 			$this->schedule_screenshot( $slug, $file, $process_module, $delay );
 
-			$url = 'https://static.mailster.co/preview/create.gif';
+			$url = 'https://mailster.github.io/preview/create.gif';
 
 		}
 
@@ -1250,7 +1250,7 @@ class MailsterTemplates {
 
 		// time before next check
 		$pause = DAY_IN_SECONDS;
-		$url = 'https://static.mailster.co/v1/templates.json';
+		$url = 'https://mailster.github.io/v1/templates.json';
 
 		if ( time() - $mailster_templates['timestamp'] <= $pause && ! $force ) {
 			$templates = $mailster_templates['templates'];

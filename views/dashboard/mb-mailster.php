@@ -48,9 +48,9 @@ if ( mailster()->is_verified() ) {
 <dl class="mailster-icon mailster-icon-support">
 	<dt><?php esc_html_e( 'Support', 'mailster' ); ?></dt>
 	<dd>
-		<a href="https://kb.mailster.co/category/getting-started/" class="external"><?php esc_html_e( 'Getting Started', 'mailster' ); ?></a> |
+		<a href="https://docs.mailster.co/" class="external"><?php esc_html_e( 'Documentation', 'mailster' ); ?></a> |
 		<a href="https://kb.mailster.co/" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a> |
-		<a href="https://mailster.co/login/" class="external"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
+		<a href="https://mailster.co/support/" class="external"><?php esc_html_e( 'Support', 'mailster' ); ?></a> |
 		<a href="<?php echo admin_url( 'admin.php?page=mailster_tests' ); ?>"><?php esc_html_e( 'Self Test', 'mailster' ); ?></a>
 	</dd>
 </dl>

@@ -65,19 +65,19 @@ Xaver Birsak – https://everpress.io
 
 
 = Linus =
-[!(https://static.mailster.co/preview/linus.jpg)](https://evp.to/linus?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/linus.jpg)](https://evp.to/linus?utm_source=Plugin+Info+Page)
 = Metro =
-[!(https://static.mailster.co/preview/metro.jpg)](https://evp.to/metro?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/metro.jpg)](https://evp.to/metro?utm_source=Plugin+Info+Page)
 = My Business =
-[!(https://static.mailster.co/preview/business.jpg)](https://evp.to/business?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/business.jpg)](https://evp.to/business?utm_source=Plugin+Info+Page)
 = Loose Leaf =
-[!(https://static.mailster.co/preview/looseleaf.jpg)](https://evp.to/looseleaf?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/looseleaf.jpg)](https://evp.to/looseleaf?utm_source=Plugin+Info+Page)
 = Market =
-[!(https://static.mailster.co/preview/market.jpg)](https://evp.to/market?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/market.jpg)](https://evp.to/market?utm_source=Plugin+Info+Page)
 = Skyline =
-[!(https://static.mailster.co/preview/skyline.jpg)](https://evp.to/skyline?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/skyline.jpg)](https://evp.to/skyline?utm_source=Plugin+Info+Page)
 = Letterpress =
-[!(https://static.mailster.co/preview/letterpress.jpg)](https://evp.to/letterpress?utm_source=Plugin+Info+Page)
+[!(https://mailster.github.io/preview/letterpress.jpg)](https://evp.to/letterpress?utm_source=Plugin+Info+Page)
 
 
 == Changelog ==

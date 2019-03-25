@@ -3,7 +3,7 @@
 class Ip2City {
 
 	// maxmind doesn't provide a zip version so I've uploaded it to bitbucket (updated weekly)
-	public $zip = 'https://static.mailster.co/GeoIPCity.zip';
+	public $zip = 'https://mailster.github.io/GeoIPCity.zip';
 	private $dbfile;
 	public $gi;
 	private $renew = false;
