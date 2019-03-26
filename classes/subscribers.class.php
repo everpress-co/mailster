@@ -441,7 +441,7 @@ class MailsterSubscribers {
 						$this->assign_lists( $subscriber->ID, $assign, false, true );
 					}
 
-					if ( $subscriber->status != $old_subscriber_data->status ) {
+					if ( ! $old_subscriber_data || $subscriber->status != $old_subscriber_data->status ) {
 						if ( mailster_option( 'list_based_opt_in' ) ) {
 							if ( 1 == $subscriber->status ) {
 								mailster( 'lists' )->confirm_subscribers( null,  $subscriber->ID );

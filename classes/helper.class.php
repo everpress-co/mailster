@@ -657,6 +657,32 @@ class MailsterHelper {
 	 * @param unknown $fieldname
 	 * @param unknown $size          (optional)
 	 */
+	public function notifcation_template_dropdown( $selected, $fieldname, $disabled = false ) {
+
+		$templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
+
+		if ( isset( $templatefiles['index.html'] ) ) {
+			unset( $templatefiles['index.html'] );
+		}
+
+		?>
+		<select name="<?php echo esc_attr( $fieldname ) ?>" <?php echo $disabled ? 'disabled' : '' ?>>
+				<option value="-1" <?php selected( -1 == $selected ) ?>><?php esc_html_e( 'Plain Text (no template file)', 'mailster' );?></option>
+		<?php foreach ( $templatefiles as $slug => $filedata ) : ?>
+				<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo esc_html( $slug ) ?>)</option>
+		<?php endforeach; ?>
+		</select>
+		<?php
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $attachemnt_id
+	 * @param unknown $fieldname
+	 * @param unknown $size          (optional)
+	 */
 	public function media_editor_link( $attachemnt_id, $fieldname, $size = 'thumbnail' ) {
 
 		$image_url = wp_get_attachment_image_src( $attachemnt_id, $size );

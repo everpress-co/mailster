@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.1.1
-Stable tag: 2.3.17
+Stable tag: 2.3.18
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -82,9 +82,14 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+= Version 2.3.18 =
+
+* improved: handling if notification.html file is missing
+
 = Version 2.3.17 =
 
 * added: `mailster_add_embeded_style` method to add custom embeded styles.
+* added: option to enable sending usage statistics.
 * fixed: issue with double quotes in background-image property
 * fixed: correct saving of form option
 * fixed: delivery issue with some third party apps

@@ -70,7 +70,7 @@ jQuery(document).ready(function ($) {
 	nav.find('a[href="' + location.hash + '"]').trigger('click'): nav.find('a').eq(0).trigger('click');
 
 	$('.system_mail').on('change', function () {
-		$('.system_mail_template').prop('disabled', $(this).val() == 0);
+		$('[name="mailster_options[system_mail_template]"]').prop('disabled', $(this).val() == 0);
 	});
 
 	$('#load_location_db').on('click', function () {

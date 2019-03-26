@@ -24,7 +24,7 @@ $default_texts = mailster( 'settings' )->get_default_texts();
 if ( $old_version ) {
 
 	// remove any branch version from the string.
-	$old_version_sanitized = preg_replace( '#^([^a-z]+)\.([a-z_]+)(.*?)$#i', '$1', $old_version );
+	$old_version_sanitized = preg_replace( '#^([^a-z]+)(\.|-)([a-z_]+)(.*?)$#i', '$1', $old_version );
 
 	switch ( $old_version_sanitized ) {
 		case '1.0':
@@ -560,6 +560,13 @@ if ( $old_version ) {
 
 			// remove entries caused by wrong tracking
 			$wpdb->query( "DELETE FROM {$wpdb->prefix}mailster_actions WHERE subscriber_id = 0" );
+
+		case '2.3.15':
+		case '2.3.16':
+
+			$mailster_options['ask_usage_tracking'] = true;
+
+		case '2.3.17':
 
 		default:
 

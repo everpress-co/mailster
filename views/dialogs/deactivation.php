@@ -5,34 +5,34 @@
 	<input type="hidden" name="mailster_surey_extra" value=''>
 	<p><?php esc_html_e( 'If you have a moment, please let us know why you are deactivating Mailster. We only use this feedback to improve the plugin.', 'mailster' ) ?></p>
 	<div>
-		<label><input type="radio" name="mailster_surey_reason" value="1" required> <?php esc_html_e( 'It\'s a temporary deactivation.', 'mailster' ) ?></label>
+		<label><input type="radio" name="mailster_surey_reason" value="It's a temporary deactivation." required> <?php esc_html_e( 'It\'s a temporary deactivation.', 'mailster' ) ?></label>
 	</div>
 	<div>
-		<label><input type="radio" name="mailster_surey_reason" value="2" required> <?php esc_html_e( 'I no longer need the plugin.', 'mailster' ) ?></label>
+		<label><input type="radio" name="mailster_surey_reason" value="I no longer need the plugin." required> <?php esc_html_e( 'I no longer need the plugin.', 'mailster' ) ?></label>
 	</div>
 	<div>
-		<label><input type="radio" name="mailster_surey_reason" value="3" required> <?php esc_html_e( 'The plugin didn\'t work.', 'mailster' ) ?></label>
+		<label><input type="radio" name="mailster_surey_reason" value="The plugin didn't work." required> <?php esc_html_e( 'The plugin didn\'t work.', 'mailster' ) ?></label>
 		<div class="mailster-survey-extra">
 			<p><?php sprintf( esc_html__( 'We\'re sorry about that. Please get in touch with our %s.', 'mailster' ), '<a href="https://evp.to/support">' . esc_html__( 'support', 'mailster' ) . '</a>' ) ?></p>
 			<textarea disabled name="mailster_surey_extra" class="widefat" rows="5"></textarea>
 		</div>
 	</div>
 	<div>
-		<label><input type="radio" name="mailster_surey_reason" value="4" required> <?php esc_html_e( 'The plugin broke my site.', 'mailster' ) ?></label>
+		<label><input type="radio" name="mailster_surey_reason" value="The plugin broke my site." required> <?php esc_html_e( 'The plugin broke my site.', 'mailster' ) ?></label>
 		<div class="mailster-survey-extra">
 			<p><?php sprintf( esc_html__( 'We\'re sorry about that. Please get in touch with our %s.', 'mailster' ), '<a href="https://evp.to/support">' . esc_html__( 'support', 'mailster' ) . '</a>' ) ?></p>
 			<textarea disabled name="mailster_surey_extra" class="widefat" rows="5"></textarea>
 		</div>
 	</div>
 	<div>
-		<label><input type="radio" name="mailster_surey_reason" value="5" required> <?php esc_html_e( 'I found a better plugin.', 'mailster' ) ?></label>
+		<label><input type="radio" name="mailster_surey_reason" value="I found a better plugin." required> <?php esc_html_e( 'I found a better plugin.', 'mailster' ) ?></label>
 		<div class="mailster-survey-extra">
 			<p><?php esc_html_e( 'What is the name of the plugin?', 'mailster' ) ?></p>
 			<textarea disabled name="mailster_surey_extra" class="widefat" rows="5"></textarea>
 		</div>
 	</div>
 	<div>
-		<label><input type="radio" name="mailster_surey_reason" value="6" required> <?php esc_html_e( 'Other', 'mailster' ) ?></label>
+		<label><input type="radio" name="mailster_surey_reason" value="Other" required> <?php esc_html_e( 'Other', 'mailster' ) ?></label>
 		<div class="mailster-survey-extra">
 			<p><?php esc_html_e( 'Please describe why you\'re deactivating Mailster.', 'mailster' ) ?></p>
 			<textarea disabled name="mailster_surey_extra" class="widefat" rows="5"></textarea>

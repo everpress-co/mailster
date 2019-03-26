@@ -203,6 +203,7 @@
 #mailster-setup .register_form_wrap{
 	margin: 0 auto;
 	width: 70%;
+	min-height: 260px;
 }
 #mailster-setup .register_form_wrap .howto{
 	font-size: 14px;
