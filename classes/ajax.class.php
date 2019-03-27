@@ -331,7 +331,7 @@ class MailsterAjax {
 		$content = isset( $_POST['content'] ) ? '<body' . $bodyattributes . '>' . stripslashes( $_POST['content'] ) . '</body>' : null;
 
 		$return['content'] = mailster()->sanitize_content( $content, null, $head );
-
+		$return['style'] = mailster( 'helper' )->get_mailster_styles();
 		$this->json_return( $return );
 
 	}
@@ -406,6 +406,7 @@ class MailsterAjax {
 		$content = $placeholder->get_content();
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
+		$content = mailster( 'helper' )->add_mailster_styles( $content );
 
 		$hash = md5( $content );
 
@@ -1056,8 +1057,9 @@ class MailsterAjax {
 			$crop = isset( $_POST['crop'] ) ? ( $_POST['crop'] == 'true' ) : false;
 			$width = isset( $_POST['width'] ) ? (int) $_POST['width'] : null;
 			$height = isset( $_POST['height'] ) && $crop ? (int) $_POST['height'] : null;
+			$original = isset( $_POST['original'] ) ? ( $_POST['original'] == 'true' ) : false;
 
-			$return['success'] = ! ! ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop ) );
+			$return['success'] = ! ! ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop, $original ) );
 		}
 
 		$this->json_return( $return );
@@ -1260,7 +1262,6 @@ class MailsterAjax {
 						if ( $current_id == $post->ID ) {
 							$html .= ' class="selected"';
 						}
-
 						$html .= '>';
 						$image = wp_get_attachment_image_src( $post->ID, 'medium' );
 						$html .= '<a style="background-image:url(' . $image[0] . ')"><span class="caption" title="' . esc_attr( $title ) . '">' . esc_html( $title ) . '</span></a>';
@@ -1425,10 +1426,10 @@ class MailsterAjax {
 				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 				$link = get_permalink( $post->ID );
 
-				$content = wpautop( $post->post_content );
+				$content = wpautop( mailster_remove_block_comments( $post->post_content ) );
 
 				if ( ! empty( $post->post_excerpt ) ) {
-					$excerpt = wpautop( $post->post_excerpt );
+					$excerpt = wpautop( mailster_remove_block_comments( $post->post_excerpt ) );
 				} else {
 					$excerpt = mailster( 'helper' )->get_excerpt( $content );
 				}
@@ -1855,7 +1856,7 @@ class MailsterAjax {
 
 		if ( mailster( 'geo' )->update( true ) ) {
 			$return['success'] = true;
-			$return['update'] = esc_htmlesc_html__( 'Last update', 'mailster' ) . ': ' . esc_htmlesc_html__( 'right now', 'mailster' );
+			$return['update'] = esc_html__( 'Last update', 'mailster' ) . ': ' . esc_html__( 'right now', 'mailster' );
 			$return['msg'] = esc_html__( 'Location Database success loaded!', 'mailster' );
 		} else {
 			$return['msg'] = esc_html__( 'Couldn\'t load Location Database', 'mailster' );
@@ -2070,7 +2071,7 @@ class MailsterAjax {
 				$return['message'] .= '<p>' . sprintf( esc_html__( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . '</p>';
 
 				$return['message'] .= '<dl><dt><strong>' . $spf_domain . '</strong> IN TXT</dt>';
-				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_htmlesc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
+				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
 
 			endif;
 
@@ -2120,7 +2121,7 @@ class MailsterAjax {
 				$return['message'] .= '<p>' . sprintf( esc_html__( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . '</p>';
 
 				$return['message'] .= '<dl><dt><strong>' . $dkim_domain . '</strong> IN TXT</dt>';
-				$return['message'] .= '<dl><dt><strong>' . $dkim_selector . '._domainkey.' . $dkim_domain . '</strong> IN TXT</dt><dd><textarea class="widefat" rows="4" id="dkim-record" readonly>' . esc_textarea( $record ) . '</textarea><a class="clipboard" data-clipboard-target="#dkim-record">' . esc_htmlesc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
+				$return['message'] .= '<dl><dt><strong>' . $dkim_selector . '._domainkey.' . $dkim_domain . '</strong> IN TXT</dt><dd><textarea class="widefat" rows="4" id="dkim-record" readonly>' . esc_textarea( $record ) . '</textarea><a class="clipboard" data-clipboard-target="#dkim-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
 
 			endif;
 
@@ -2486,15 +2487,17 @@ class MailsterAjax {
 
 		if ( empty( $purchasecode ) ) {
 			$return['error'] = esc_html__( 'Please enter your Purchase Code!', 'mailster' );
+			$return['code'] = 'license';
 
 		} elseif ( isset( $_POST['data'] ) ) {
-
 			parse_str( $_POST['data'], $userdata );
 
 			if ( empty( $userdata['email'] ) ) {
-				$return['error'] = esc_html__( 'Please enter your email address', 'mailster' );
+				$return['error'] = esc_html__( 'Please enter your email address.', 'mailster' );
+				$return['code'] = 'email';
 			} elseif ( ! isset( $userdata['tos'] ) ) {
 				$return['error'] = esc_html__( 'You have to accept the terms of service.', 'mailster' );
+				$return['code'] = 'tos';
 			} else {
 				$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
 
@@ -2520,7 +2523,7 @@ class MailsterAjax {
 			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );
 			if ( is_wp_error( $result ) && 681 != $result->get_error_code() ) {
 				$return['error'] = mailster()->get_update_error( $result );
-				$return['code'] = $result->get_error_code();
+				$return['code'] = str_replace( '_', '', $result->get_error_code() );
 			} else {
 				$return['success'] = true;
 			}
@@ -2624,7 +2627,7 @@ class MailsterAjax {
 
 	private function wizard_save() {
 
-		global $mailster_options;
+		$mailster_options = mailster_options();
 
 		$return['success'] = false;
 

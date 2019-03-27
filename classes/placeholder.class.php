@@ -713,6 +713,7 @@ class MailsterPlaceholder {
 						$width = isset( $query['w'] ) ? (int) $query['w'] * $factor : null;
 						$height = isset( $query['h'] ) ? (int) $query['h'] * $factor : null;
 						$crop = isset( $query['c'] ) && $height ? ! ! ( $query['c'] ) : false;
+						$original = isset( $query['o'] ) ? ! ! ( $query['o'] ) : false;
 						$post_type = str_replace( '_image', '', $parts[0] );
 						$is_post = $post_type != $parts[0];
 						$org_src = false;
@@ -745,7 +746,7 @@ class MailsterPlaceholder {
 							$fallback_id = mailster_option( 'fallback_image' );
 							$post = null;
 							$thumb_id = null;
-							$src = apply_filters( 'mailster_image_placeholder', $query['tag'], $width, $height, $crop, $this->campaignID, $this->subscriberID );
+							$src = apply_filters( 'mailster_image_placeholder', $query['tag'], $width, $height, $crop, $original, $this->campaignID, $this->subscriberID );
 							if ( $src && $src != $query['tag'] ) {
 								if ( ! is_array( $src ) ) {
 									$src = array( $src, $width, $height );
@@ -791,7 +792,7 @@ class MailsterPlaceholder {
 								if ( $org_src[1] && $org_src[2] ) {
 									$asp = $org_src[1] / $org_src[2];
 									$height = $height ? $height : round( ($width / $asp) / $factor );
-									$img = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height, $crop );
+									$img = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height, $crop, $original );
 								} else {
 									$img = array( 'url' => $org_src[0] );
 								}
@@ -884,6 +885,8 @@ class MailsterPlaceholder {
 						continue;
 					}
 
+					$post->post_excerpt = trim( $post->post_excerpt );
+
 					if ( empty( $post->post_excerpt ) ) {
 						if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
 							$content = explode( $matches[0], $post->post_content, 2 );
@@ -892,7 +895,9 @@ class MailsterPlaceholder {
 						if ( ! $post->post_excerpt ) {
 							$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content );
 						}
+						$post->post_excerpt = mailster_remove_block_comments( $post->post_excerpt );
 					}
+
 					if ( $this->apply_the_excerpt_filters ) {
 						if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
 							$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );

@@ -109,7 +109,9 @@ class MailsterStatistics {
 
 		$increase_data = $wpdb->get_results( $sql );
 
-		$increase_data = array_combine( wp_list_pluck( $increase_data, 'the_date' ), wp_list_pluck( $increase_data, 'increase' ) );
+		if ( ! empty( $increase_data ) ) {
+			$increase_data = array_combine( wp_list_pluck( $increase_data, 'the_date' ), wp_list_pluck( $increase_data, 'increase' ) );
+		}
 
 		foreach ( $dates as $date => $count ) {
 
@@ -120,45 +122,6 @@ class MailsterStatistics {
 		}
 
 			return $dates;
-	}
-
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $from
-	 * @param unknown $to
-	 * @param unknown $format (optional)
-	 * @return unknown
-	 */
-	private function get_calendar_table( $from, $to, $format = 'Y-m-d' ) {
-
-		global $wpdb;
-		$dates = $this->get_date_range( $from, $to, '+1 day', $format );
-		$count = count( $dates );
-
-		if ( ! $this->calendar_table ) {
-			$this->calendar_table = "{$wpdb->prefix}mailster_" . uniqid();
-			$sql = "CREATE TEMPORARY TABLE {$this->calendar_table} ( thedate date );";
-			if ( false == $wpdb->query( $sql ) ) {
-				return false;
-			}
-		} else {
-			$sql = "TRUNCATE {$this->calendar_table};";
-			if ( false == $wpdb->query( $sql ) ) {
-				return false;
-			}
-		}
-
-		$sql = "INSERT INTO {$this->calendar_table} (thedate) VALUES ('" . implode( "'),('", $dates ) . "');";
-
-		if ( false !== $wpdb->query( $sql ) ) {
-			return $dates;
-		}
-
-		return false;
-
 	}
 
 

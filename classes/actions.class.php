@@ -217,8 +217,8 @@ class MailsterActions {
 
 			if ( $client = mailster_get_user_client() ) {
 
-				if ( $client->client == 'Gmail' ) {
-					// remove meta info if client is Gmail (Gmail Image Proxy)
+				// remove meta info if client is Gmail (GoogleImageProxyy) or Yahoo (YahooMailProxy)
+				if ( 'Gmail' == $client->client || 'Yahoo' == $client->client ) {
 					$user_meta = array();
 				}
 
@@ -308,9 +308,9 @@ class MailsterActions {
 
 		foreach ( $chunks as $subscriber_chunk ) {
 
-			$sql = "DELETE a FROM {$wpdb->prefix}mailster_queue AS a WHERE a.campaign_id = $campaign_id AND a.sent = 0 AND a.subscriber_id NOT IN (" . implode( ',', $subscriber_chunk ) . ')';
+			$sql = "DELETE a FROM {$wpdb->prefix}mailster_queue AS a WHERE a.campaign_id = %d AND a.sent = 0 AND a.subscriber_id NOT IN (" . implode( ',', $subscriber_chunk ) . ')';
 
-			$success = $success && $wpdb->query( $sql );
+			$success = $success && $wpdb->query( $wpdb->prepare( $sql, $campaign_id ) );
 
 		}
 
@@ -324,7 +324,7 @@ class MailsterActions {
 		global $wpdb;
 
 		// delete all softbounces where a hardbounce exists
-		$wpdb->query( "DELETE b FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.campaign_id = b.campaign_id AND a.subscriber_id = b.subscriber_id AND a.link_id = b.link_id WHERE a.type = 6 AND b.type = 5" );
+		$wpdb->query( $wpdb->prepare( "DELETE b FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.campaign_id = b.campaign_id AND a.subscriber_id = b.subscriber_id AND a.link_id = b.link_id WHERE a.type = %d AND b.type = %d", 6, 5 ) );
 
 	}
 
@@ -552,25 +552,25 @@ class MailsterActions {
 				$action_counts[ $row->ID ]['sent_total'] += (int) $row->total;
 			} // opens
 			elseif ( 2 == $row->type ) {
-					$action_counts[ $row->ID ]['opens'] += (int) $row->count;
-					$action_counts[ $row->ID ]['opens_total'] += (int) $row->total;
+				$action_counts[ $row->ID ]['opens'] += (int) $row->count;
+				$action_counts[ $row->ID ]['opens_total'] += (int) $row->total;
 			} // clicks
 			elseif ( 3 == $row->type ) {
-					$action_counts[ $row->ID ]['clicks'] += (int) $row->count;
-					$action_counts[ $row->ID ]['clicks_total'] += (int) $row->total;
+				$action_counts[ $row->ID ]['clicks'] += (int) $row->count;
+				$action_counts[ $row->ID ]['clicks_total'] += (int) $row->total;
 			} // unsubscribes
 			elseif ( 4 == $row->type ) {
-					$action_counts[ $row->ID ]['unsubscribes'] += (int) $row->count;
+				$action_counts[ $row->ID ]['unsubscribes'] += (int) $row->count;
 			} // softbounces
 			elseif ( 5 == $row->type ) {
-					$action_counts[ $row->ID ]['softbounces'] += (int) $row->count;
+				$action_counts[ $row->ID ]['softbounces'] += (int) $row->count;
 			} // bounces
 			elseif ( 6 == $row->type ) {
-					$action_counts[ $row->ID ]['bounces'] += (int) $row->count;
+				$action_counts[ $row->ID ]['bounces'] += (int) $row->count;
 			} // error
 			elseif ( 7 == $row->type ) {
-					$action_counts[ $row->ID ]['errors'] += floor( $row->count );
-					$action_counts[ $row->ID ]['errors_total'] += floor( $row->total );
+				$action_counts[ $row->ID ]['errors'] += floor( $row->count );
+				$action_counts[ $row->ID ]['errors_total'] += floor( $row->total );
 			}
 		}
 
@@ -588,7 +588,11 @@ class MailsterActions {
 			return isset( $action_counts[ $subscriber_id ] ) ? $action_counts[ $subscriber_id ] : $default;
 		}
 
-		return isset( $action_counts[ $subscriber_id ] ) && isset( $action_counts[ $subscriber_id ][ $action ] ) ? $action_counts[ $subscriber_id ][ $action ] : 0;
+		if ( isset( $action_counts[ $subscriber_id ] ) && isset( $action_counts[ $subscriber_id ][ $action ] ) ) {
+			return $action_counts[ $subscriber_id ][ $action ];
+		}
+
+		return 0;
 
 	}
 

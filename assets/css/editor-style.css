@@ -41,7 +41,7 @@ body:hover module[condition],body:hover single[condition],body:hover multi[condi
 module{
 	position: relative;
 }
-a.mailster-btn,a.mailster-btn:hover,a.mailster-btn:active{
+button.mailster-btn,button.mailster-btn:hover,button.mailster-btn:active{
 	color: #eaeaea;
 	cursor: pointer;
 	text-decoration: none;
@@ -49,74 +49,71 @@ a.mailster-btn,a.mailster-btn:hover,a.mailster-btn:active{
 	outline: 0;
 	min-width: 12px;
 }
-a.mailster-btn:hover {
+button.mailster-btn:hover {
 	color: #fff;
 }
-a.mailster-btn:before {
+button.mailster-btn:before {
 	font-family: 'mailster-icons';
 }
-a.mailster-btn.codeview:before { content: '\e80a'; }
-a.mailster-btn.auto:before { content: '\e818'; }
-a.mailster-btn.add:before { content: '\e81a'; }
-a.mailster-btn.duplicate:before { content: '\e817'; }
-a.mailster-btn.up:before { content: '\e816'; }
-a.mailster-btn.down:before { content: '\e815'; }
-a.mailster-btn.remove:before { content: '\e82a'; }
-a.mailster-btn.editbutton:before { content: '\e80c'; }
-a.mailster-btn.addbutton:before { content: '\e81a'; }
-a.mailster-btn.addrepeater:before { content: '\e81a'; }
-a.mailster-btn.removerepeater:before { content: '\e81b'; }
-a.mailster-btn { padding: 1px 4px; }
+button.mailster-btn.codeview:before { content: '\e80a'; }
+button.mailster-btn.auto:before { content: '\e818'; }
+button.mailster-btn.add:before { content: '\e837'; }
+button.mailster-btn.duplicate:before { content: '\e817'; }
+button.mailster-btn.up:before { content: '\e816'; }
+button.mailster-btn.down:before { content: '\e815'; }
+button.mailster-btn.remove:before { content: '\e82a'; }
+button.mailster-btn.editbutton:before { content: '\e80c'; }
+button.mailster-btn.addbutton:before { content: '\e837'; }
+button.mailster-btn.addrepeater:before { content: '\e837'; }
+button.mailster-btn.removerepeater:before { content: '\e838'; }
+button.mailster-btn { padding: 1px 4px; }
 
 buttons{
 	position: relative;
 }
-button.mailster-btn-inline{
-	position: absolute;
-	width: 25px;
-	right: -30px;
-	top: 3px;
-	cursor: pointer;
-	border: 1px solid #e5e5e5;
-	background: #fff;
-	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
-	padding: 0;
+buttons:hover{
+	padding-right: 22px;
+}
+[align="right"] > div > buttons:hover, [align="right"] > buttons:hover{
+	-webkit-transform: translate(22px, 0);
+	-ms-transform: translate(22px, 0);
+	transform: translate(22px, 0);
+}
+[align="center"] > div > buttons:hover, [align="center"] > buttons:hover{
+	-webkit-transform: translate(11px, 0);
+	-ms-transform: translate(11px, 0);
+	transform: translate(11px, 0);
+}
+button.mailster-btn.mailster-btn-inline{
 	box-sizing: border-box;
-	min-height: 18px;
-	line-height: 16px;
-	border-radius: 2px;
-	font-size: 10px;
-	font-weight: 100;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	text-align: center;
-}
-button.mailster-btn-inline:before{
-}
-
-button.mailster-btn-inline:focus{
-	outline: none;
-}
-module button.mailster-btn-inline{
+	position: absolute;
+	padding: 0px 0px;
+	height: 18px;
+	text-indent: 0px;
 	display: none;
 }
-module:hover button.mailster-btn-inline, module[selected] button.mailster-btn-inline{
+button.mailster-btn.mailster-btn-inline:focus{
+	outline: none;
+}
+buttons button.mailster-btn.mailster-btn-inline{
+	top: 50%;
+	-webkit-transform: translate(0, -12px);
+	-ms-transform: translate(0, -12px);
+	transform: translate(0, -12px);
+	right: 0;
+}
+buttons:hover button.mailster-btn.mailster-btn-inline{
 	display: block;
 }
-button.mailster-btn-inline.addrepeater{
+[repeatable]{
+	position: relative;
 }
-button.mailster-btn-inline.removerepeater{
-	top: 20px;
+[repeatable]:hover{
+	outline: 1px solid rgba(43, 179, 231, 0.3);
+	outline-offset: -1px;
 }
-button.mailster-btn-inline.addbutton:before{
-	content: "\e81a";
-}
-button.mailster-btn-inline.addrepeater:before{
-	content: "\e81a";
-}
-button.mailster-btn-inline.removerepeater:before{
-	content: "\e81b";
+module [repeatable]:hover button.mailster-btn.mailster-btn-inline{
+	display: block;
 }
 modulebuttons {
 	-webkit-transition: all .15s ease-in-out;
@@ -137,22 +134,26 @@ module[selected] modulebuttons{
 	right: inherit;
 	left: 0;
 }
-modulebuttons a.mailster-btn {
-	padding: 8px 9px;
+button.mailster-btn {
+	padding: 9px 15px;
 	display: inline-block;
 	position: relative;
 	margin: 0;
-	height: 18px;
+	height: 33px;
 	border: 0;
 	background: rgba(43, 179, 231, 0.8);
-	line-height: 18px;
+	line-height: 16px;
 	width: 18px;
-	font-size: 12px;
-}
-modulebuttons:hover a.mailster-btn {
+	font-size: 14px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	text-indent: -5px;
+	}
+modulebuttons:hover button.mailster-btn {
 	background: rgb(43, 179, 231);
 }
-[mailster-is-rtl] modulebuttons a.mailster-btn {
+[mailster-is-rtl] modulebuttons button.mailster-btn {
 }
 modulebuttons a:first-child {
 }
@@ -192,8 +193,11 @@ modulebuttons input.modulelabel:hover, modulebuttons input.modulelabel:focus {
 modules, module, multi {
 	display: block;
 }
-buttons, single {
+buttons {
 	display: inline-block;
+}
+single {
+	_display: inline;
 }
 if, elseif, else {
 	display: inline-block;
@@ -238,11 +242,10 @@ module[data-rss][selected]:after {
 	-webkit-transform: translate(4px, -15px);
 	-ms-transform: translate(4px, -15px);
 	transform: translate(4px, -15px);
-	height: 7px;
-	font: 8px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	height: 9px;
+	font: 10px sans-serif;
 	text-transform: uppercase;
 	line-height: 1em;
-	letter-spacing: 0.1em;
 	padding: 4px;
 	white-space: nowrap;
 	z-index: 1000000;
@@ -284,9 +287,9 @@ td[background][label]:hover:before,
 th[background][label]:hover:before,
 module[data-rss]:hover:after,
 module[data-rss][selected]:after{
-	-webkit-transform: translate(-2px, -15px);
-	-ms-transform: translate(-2px, -15px);
-	transform: translate(-2px, -15px);
+	-webkit-transform: translate(-2px, -17px);
+	-ms-transform: translate(-2px, -17px);
+	transform: translate(-2px, -17px);
 	opacity: 1;
 }
 [mailster-is-rtl] module[label]:hover:before,
@@ -299,9 +302,9 @@ module[data-rss][selected]:after{
 [mailster-is-rtl] th[background][label]:hover:before,
 [mailster-is-rtl] module[data-rss]:hover:after,
 [mailster-is-rtl] module[data-rss][selected]:after {
-	-webkit-transform: translate(2px, -15px);
-	-ms-transform: translate(2px, -15px);
-	transform: translate(2px, -15px);
+	-webkit-transform: translate(2px, -17px);
+	-ms-transform: translate(2px, -17px);
+	transform: translate(2px, -17px);
 }
 module[label]:before,
 module[data-rss]:after {
@@ -376,6 +379,7 @@ td[background]:before, th[background]:before{
 	color: #fff;
 	pointer-events: all;
 	cursor: pointer;
+	z-index: 9200;
 }
 [mailster-is-rtl] td[background]:before, [mailster-is-rtl] th[background]:before {
 	left: auto;

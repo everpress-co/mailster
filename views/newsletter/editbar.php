@@ -39,7 +39,6 @@
 		foreach ( $fields as $key => $name ) {
 			echo '<option value="' . $key . '">' . $name . '</option>';
 		}
-
 		?>
 		</select>
 		<select class="condition-operators">
@@ -167,7 +166,7 @@
 				</div>
 				<div class="right">
 					<p>
-						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'Search for Images', 'mailster' );?>&hellip;" ></label>
+						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'Search for images', 'mailster' );?>&hellip;" ></label>
 					</p>
 					<div class="imagelist">
 					</div>
@@ -192,6 +191,8 @@
 
 		<div class="type auto">
 
+			<p class="editbarpostion" title="<?php esc_attr_e( 'The area in which content gets placed.', 'mailster' ) ?>"></p>
+
 			<div id="embedoption-bar" class="nav-tab-wrapper hide-if-no-js">
 				<a class="nav-tab nav-tab-active" href="#static_embed_options" data-type="static"><?php esc_html_e( 'Static', 'mailster' );?></a>
 				<a class="nav-tab" href="#dynamic_embed_options" data-type="dynamic"><?php esc_html_e( 'Dynamic', 'mailster' );?></a>
@@ -211,7 +212,11 @@
 				<?php endforeach; ?>
 				</p>
 				<p>
+<<<<<<< HEAD
 					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'Search for Posts', 'mailster' );?>&hellip;" ></label>
+=======
+					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'Search for posts', 'mailster' );?>..." ></label>
+>>>>>>> origin/develop
 				</p>
 				<div class="postlist">
 				</div>
@@ -315,6 +320,9 @@
 		<div class="buttons clearfix">
 			<button class="button button-primary save"><?php esc_html_e( 'Save', 'mailster' ) ?></button>
 			<button class="button cancel"><?php esc_html_e( 'Cancel', 'mailster' ) ?></button>
+			<label class="original-checkbox" title="<?php esc_html_e( 'use the original image file and prevent cropping/modifing the image.', 'mailster' );?>">
+				<input type="checkbox" class="original"> <?php esc_html_e( 'Use original image', 'mailster' );?>
+			</label>
 			<label class="highdpi-checkbox" title="<?php esc_html_e( 'use HighDPI/Retina ready images if available', 'mailster' );?>">
 				<input type="checkbox" class="highdpi" <?php checked( mailster_option( 'high_dpi' ) ); ?>> <?php esc_html_e( 'HighDPI/Retina ready', 'mailster' );?>
 			</label>

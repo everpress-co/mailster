@@ -993,7 +993,7 @@ class MailsterSubscriberQuery {
 				$value = str_replace( ',', '.', $value );
 				if ( strpos( $value, '%' ) !== false || $value > 5 ) {
 					$value = (float) $value / 100;
-				} elseif ( $value >= 1 ) {
+				} elseif ( $value > 1 ) {
 					$value = (float) $value * 0.2;
 				}
 				break;
