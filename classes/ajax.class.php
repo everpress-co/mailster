@@ -331,7 +331,7 @@ class MailsterAjax {
 		$content = isset( $_POST['content'] ) ? '<body' . $bodyattributes . '>' . stripslashes( $_POST['content'] ) . '</body>' : null;
 
 		$return['content'] = mailster()->sanitize_content( $content, null, $head );
-
+		$return['style'] = mailster( 'helper' )->get_mailster_styles();
 		$this->json_return( $return );
 
 	}
@@ -406,6 +406,7 @@ class MailsterAjax {
 		$content = $placeholder->get_content();
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
+		$content = mailster( 'helper' )->add_mailster_styles( $content );
 
 		$hash = md5( $content );
 
@@ -1425,10 +1426,10 @@ class MailsterAjax {
 				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 				$link = get_permalink( $post->ID );
 
-				$content = wpautop( $post->post_content );
+				$content = wpautop( mailster_remove_block_comments( $post->post_content ) );
 
 				if ( ! empty( $post->post_excerpt ) ) {
-					$excerpt = wpautop( $post->post_excerpt );
+					$excerpt = wpautop( mailster_remove_block_comments( $post->post_excerpt ) );
 				} else {
 					$excerpt = mailster( 'helper' )->get_excerpt( $content );
 				}
@@ -2470,15 +2471,17 @@ class MailsterAjax {
 
 		if ( empty( $purchasecode ) ) {
 			$return['error'] = esc_html__( 'Please enter your Purchase Code!', 'mailster' );
+			$return['code'] = 'license';
 
 		} elseif ( isset( $_POST['data'] ) ) {
-
 			parse_str( $_POST['data'], $userdata );
 
 			if ( empty( $userdata['email'] ) ) {
-				$return['error'] = esc_html__( 'Please enter your email address', 'mailster' );
+				$return['error'] = esc_html__( 'Please enter your email address.', 'mailster' );
+				$return['code'] = 'email';
 			} elseif ( ! isset( $userdata['tos'] ) ) {
 				$return['error'] = esc_html__( 'You have to accept the terms of service.', 'mailster' );
+				$return['code'] = 'tos';
 			} else {
 				$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
 
@@ -2504,7 +2507,7 @@ class MailsterAjax {
 			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );
 			if ( is_wp_error( $result ) && 681 != $result->get_error_code() ) {
 				$return['error'] = mailster()->get_update_error( $result );
-				$return['code'] = $result->get_error_code();
+				$return['code'] = str_replace( '_', '', $result->get_error_code() );
 			} else {
 				$return['success'] = true;
 			}
@@ -2608,7 +2611,7 @@ class MailsterAjax {
 
 	private function wizard_save() {
 
-		global $mailster_options;
+		$mailster_options = mailster_options();
 
 		$return['success'] = false;
 

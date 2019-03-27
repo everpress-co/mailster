@@ -441,7 +441,7 @@ class MailsterSubscribers {
 						$this->assign_lists( $subscriber->ID, $assign, false, true );
 					}
 
-					if ( $subscriber->status != $old_subscriber_data->status ) {
+					if ( ! $old_subscriber_data || $subscriber->status != $old_subscriber_data->status ) {
 						if ( mailster_option( 'list_based_opt_in' ) ) {
 							if ( 1 == $subscriber->status ) {
 								mailster( 'lists' )->confirm_subscribers( null,  $subscriber->ID );
@@ -1024,18 +1024,10 @@ class MailsterSubscribers {
 
 		} else {
 
-			if ( isset( $wpdb->use_mysqli ) && $wpdb->use_mysqli ) {
-				if ( $wpdb->dbh instanceof mysqli ) {
-					$mysql_errno = mysqli_errno( $wpdb->dbh );
-				} else {
-					$mysql_errno = 2006;
-				}
-			} else {
-				if ( is_resource( $wpdb->dbh ) ) {
-					$mysql_errno = mysql_errno( $wpdb->dbh );
-				} else {
-					$mysql_errno = 2006;
-				}
+			$mysql_errno = 2006;
+
+			if ( isset( $wpdb->use_mysqli ) && $wpdb->use_mysqli && $wpdb->dbh instanceof mysqli  ) {
+				$mysql_errno = mysqli_errno( $wpdb->dbh );
 			}
 
 			if ( $mysql_errno == 1062 ) {

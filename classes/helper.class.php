@@ -107,7 +107,7 @@ class MailsterHelper {
 			$new_img_size = array( $image_src[1], $image_src[2] );
 			$resized_img_path = $no_ext_path . '.' . $extension;
 		} else {
-			if ( ! $crop ) {
+			if ( $crop ) {
 				$new_img_size = array( $width, $height );
 			} else {
 				$new_img_size = wp_constrain_dimensions( $image_src[1], $image_src[2], $width, $height );
@@ -634,6 +634,32 @@ class MailsterHelper {
 	 * @param unknown $fieldname
 	 * @param unknown $size          (optional)
 	 */
+	public function notifcation_template_dropdown( $selected, $fieldname, $disabled = false ) {
+
+		$templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
+
+		if ( isset( $templatefiles['index.html'] ) ) {
+			unset( $templatefiles['index.html'] );
+		}
+
+		?>
+		<select name="<?php echo esc_attr( $fieldname ) ?>" <?php echo $disabled ? 'disabled' : '' ?>>
+				<option value="-1" <?php selected( -1 == $selected ) ?>><?php esc_html_e( 'Plain Text (no template file)', 'mailster' );?></option>
+		<?php foreach ( $templatefiles as $slug => $filedata ) : ?>
+				<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo esc_html( $slug ) ?>)</option>
+		<?php endforeach; ?>
+		</select>
+		<?php
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $attachemnt_id
+	 * @param unknown $fieldname
+	 * @param unknown $size          (optional)
+	 */
 	public function media_editor_link( $attachemnt_id, $fieldname, $size = 'thumbnail' ) {
 
 		$image_url = wp_get_attachment_image_src( $attachemnt_id, $size );
@@ -1016,18 +1042,25 @@ class MailsterHelper {
 		foreach ( $comments[0] as $i => $comment ) {
 			$content = str_replace( $comment, '<!--Mailster:html_comment_' . $i . '_' . $commentid . '-->', $content );
 		}
-
 		// get all style blocks
-		if ( preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles ) ) {
+		if ( preg_match_all( '#<style([^><]*)>(.*?)</style>#is', $content, $originalstyles ) ) {
 
 			@error_reporting( E_ERROR | E_PARSE );
 			@ini_set( 'display_errors', '0' );
 
+			$apply_styles = array();
+
 			// strip media queries
 			foreach ( $originalstyles[2] as $i => $styleblock ) {
+				// skip embeded styles
+				if ( false !== strpos( $originalstyles[1][ $i ], 'data-embed' ) ) {
+					continue;
+				}
 				$mediaBlocks = $this->parseMediaBlocks( $styleblock );
 				if ( ! empty( $mediaBlocks ) ) {
-					$originalstyles[2][ $i ] = str_replace( $mediaBlocks, '', $originalstyles[2][ $i ] );
+					$apply_styles[] = trim( str_replace( $mediaBlocks, '', $originalstyles[2][ $i ] ) );
+				} else {
+					$apply_styles[] = trim( $originalstyles[2][ $i ] );
 				}
 			}
 
@@ -1035,7 +1068,7 @@ class MailsterHelper {
 
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
 
-			$htmldoc->applyStylesheet( $originalstyles[2] );
+			$htmldoc->applyStylesheet( $apply_styles );
 
 			$html = $htmldoc->getHTML();
 
@@ -1110,30 +1143,59 @@ class MailsterHelper {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $content
-	 * @return unknown
-	 */
-	public function add_mailster_styles( $content ) {
-		// custom styles
+	public function add_style( $callback, $args, $embed = false ) {
+
 		global $mailster_mystyles;
 
-		if ( $mailster_mystyles ) {
-			// check for existing styles
-			preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $content, $originalstyles );
+		if ( is_callable( $callback ) ) {
 
-			if ( ! empty( $originalstyles[0] ) ) {
-				foreach ( $mailster_mystyles as $style ) {
-					$block = end( $originalstyles[0] );
-					$content = str_replace( $block, $block . '<style type="text/css">' . "\n" . $style . "\n" . '</style>', $content );
-				}
-			} else {
-				$content = str_replace( '</head>', '<style type="text/css">' . "\n" . $style . "\n" . '</style></head>', $content );
+		} elseif ( is_array( $callback ) ) {
+			if ( ! method_exists( $callback[0], $callback[1] ) ) {
+				return false;
+			}
+		} else {
+			if ( ! function_exists( $callback ) ) {
+				return false;
 			}
 		}
 
+		$type = $embed ? 'embed' : 'inline';
+
+		if ( ! isset( $mailster_mystyles ) ) {
+			$mailster_mystyles = array();
+		}
+		if ( ! isset( $mailster_mystyles[ $type ] ) ) {
+			$mailster_mystyles[ $type ] = array();
+		}
+
+		$mailster_mystyles[ $type ][] = call_user_func_array( $callback, $args );
+
+		return true;
+
+	}
+
+
+	public function get_mailster_styles( $echo = false ) {
+		// custom styles
+		global $mailster_mystyles;
+		$mailster_styles = '';
+
+		if ( $mailster_mystyles ) {
+			foreach ( $mailster_mystyles as $type => $styles ) {
+				foreach ( $styles as $style ) {
+					$mailster_styles .= '<style type="text/css"' . ('embed' == $type ? ' data-embed' : '') . '>' . "\n" . $style . "\n" . '</style>' . "\n";
+				}
+			}
+		}
+
+		if ( ! $echo ) {
+			return $mailster_styles;
+		}
+		echo $mailster_styles;
+	}
+
+	public function add_mailster_styles( $content ) {
+		$content = str_replace( '</head>', $this->get_mailster_styles() . '</head>', $content );
 		return $content;
 	}
 
@@ -1542,6 +1604,10 @@ class MailsterHelper {
 	 */
 	public function dialog( $content, $args = array() ) {
 
+		if ( $is_file = is_file( MAILSTER_DIR . 'views/dialogs/' . basename( $content ) . '.php' ) ) {
+			$content = MAILSTER_DIR . 'views/dialogs/' . basename( $content ) . '.php';
+		}
+
 		$defaults = array(
 			'id' => uniqid(),
 			'button_label' => esc_html__( 'Ok, got it!', 'mailster' ),
@@ -1565,10 +1631,21 @@ class MailsterHelper {
 			<div class="notification-dialog-background"></div>
 			<div class="notification-dialog" role="dialog" aria-labelledby="<?php echo esc_attr( $args['id'] ) ?>" tabindex="0">
 				<div class="notification-dialog-content <?php echo esc_attr( $args['id'] ) ?>-content">
+					<?php if ( $is_file ) : ?>
+					<?php include $content; ?>
+					<?php else : ?>
 					<?php echo $content; ?>
+					<?php endif; ?>
 				</div>
 				<div class="notification-dialog-footer">
-					<button type="button" class="<?php echo esc_attr( $args['id'] ) ?>-submit notification-dialog-submit button button-primary"><?php echo esc_html( $args['button_label'] ) ?></button>
+					<?php foreach ( $args['buttons'] as $button ) : ?>
+					<?php $button = wp_parse_args( $button, array(
+						'href' => '#',
+						'classes' => '',
+						'label' => 'Submit',
+					) ); ?>
+						<a class="<?php echo esc_attr( implode( ' ', (array) $button['classes'] ) ) ?>" href="<?php echo esc_attr( $button['href'] ) ?>"><?php echo esc_html( $button['label'] ) ?></a>
+					<?php endforeach; ?>
 				</div>
 			</div>
 		</div>

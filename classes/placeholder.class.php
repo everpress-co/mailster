@@ -773,6 +773,8 @@ class MailsterPlaceholder {
 						continue;
 					}
 
+					$post->post_excerpt = trim( $post->post_excerpt );
+
 					if ( empty( $post->post_excerpt ) ) {
 						if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
 							$content = explode( $matches[0], $post->post_content, 2 );
@@ -781,7 +783,9 @@ class MailsterPlaceholder {
 						if ( ! $post->post_excerpt ) {
 							$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content );
 						}
+						$post->post_excerpt = mailster_remove_block_comments( $post->post_excerpt );
 					}
+
 					if ( $this->apply_the_excerpt_filters ) {
 						if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
 							$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );

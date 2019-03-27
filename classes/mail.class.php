@@ -657,42 +657,33 @@ class MailsterMail {
 			$this->subject = htmlspecialchars_decode( $this->subject );
 			$this->from_name = htmlspecialchars_decode( $this->from_name );
 
+			// add CC
 			if ( $this->cc ) {
-				if ( ! is_array( $this->cc ) ) {
-					$this->cc = array( $this->cc );
-				}
-				if ( ! is_array( $this->cc_name ) ) {
-					$this->cc_name = array( $this->cc_name );
-				}
+				$cc = (array) $this->cc;
+				$cc_name = (array) $this->cc_name;
 
 				foreach ( $this->cc as $i => $address ) {
-					$this->mailer->addCC( $address, isset( $this->cc_name[ $i ] ) ? $this->cc_name[ $i ] : null );
+					$this->mailer->addCC( $address, isset( $cc_name[ $i ] ) ? $cc_name[ $i ] : null );
 				}
 			}
 
+			// add BCC
 			if ( $this->bcc ) {
-				if ( ! is_array( $this->bcc ) ) {
-					$this->bcc = array( $this->bcc );
-				}
-				if ( ! is_array( $this->bcc_name ) ) {
-					$this->bcc_name = array( $this->bcc_name );
-				}
+				$bcc = (array) $this->bcc;
+				$bcc_name = (array) $this->bcc_name;
 
 				foreach ( $this->bcc as $i => $address ) {
-					$this->mailer->addBCC( $address, isset( $this->bcc_name[ $i ] ) ? $this->bcc_name[ $i ] : null );
+					$this->mailer->addBCC( $address, isset( $bcc_name[ $i ] ) ? $bcc_name[ $i ] : null );
 				}
 			}
 
+			// add Reply-to
 			if ( $this->reply_to ) {
-				if ( ! is_array( $this->reply_to ) ) {
-					$this->reply_to = array( $this->reply_to );
-				}
-				if ( ! is_array( $this->reply_to_name ) ) {
-					$this->reply_to_name = array( $this->reply_to_name );
-				}
+				$reply_to = (array) $this->reply_to;
+				$reply_to_name = (array) $this->reply_to_name;
 
-				foreach ( $this->reply_to as $i => $address ) {
-					$this->mailer->addReplyTo( $address, isset( $this->reply_to_name[ $i ] ) ? $this->reply_to_name[ $i ] : null );
+				foreach ( $reply_to as $i => $address ) {
+					$this->mailer->addReplyTo( $address, isset( $reply_to_name[ $i ] ) ? $reply_to_name[ $i ] : null );
 				}
 			} else {
 				$this->mailer->addReplyTo( $this->from, $this->from_name );

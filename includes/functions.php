@@ -30,11 +30,12 @@ function mailster( $subclass = null ) {
  */
 function mailster_option( $option, $fallback = null ) {
 
-	global $mailster_options;
+	$mailster_options = mailster_options();
 
 	$value = isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $fallback;
 	$value = apply_filters( 'mailster_option', $value, $option, $fallback );
 	$value = apply_filters( 'mailster_option_' . $option, $value, $fallback );
+
 	return $value;
 
 }
@@ -49,15 +50,11 @@ function mailster_option( $option, $fallback = null ) {
  */
 function mailster_options( $option = null, $fallback = null ) {
 
-	global $mailster_options;
-
 	if ( ! is_null( $option ) ) {
 		return mailster_option( $option, $fallback );
 	}
-	if ( empty( $mailster_options ) ) {
-		$mailster_options = get_option( 'mailster_options', array() );
-	}
-	return $mailster_options;
+
+	return get_option( 'mailster_options', array() );
 }
 
 
@@ -146,10 +143,8 @@ function mailster_cache_delete( $key ) {
  * @return unknown
  */
 function mailster_text( $option, $fallback = '' ) {
-	global $mailster_texts;
-	if ( empty( $mailster_texts ) ) {
-		$mailster_texts = get_option( 'mailster_texts', array() );
-	}
+
+	$mailster_texts = mailster_texts();
 
 	$string = isset( $mailster_texts[ $option ] ) ? $mailster_texts[ $option ] : $fallback ;
 
@@ -163,8 +158,7 @@ function mailster_text( $option, $fallback = '' ) {
  * @return unknown
  */
 function mailster_texts() {
-	global $mailster_texts;
-	return $mailster_texts;
+	return get_option( 'mailster_texts', array() );
 }
 
 
@@ -172,12 +166,13 @@ function mailster_texts() {
  *
  *
  * @param unknown $option
- * @param unknown $value
+ * @param unknown $value  (optional)
  * @param unknown $temp   (optional)
  * @return unknown
  */
-function mailster_update_option( $option, $value, $temp = false ) {
-	global $mailster_options;
+function mailster_update_option( $option, $value = null, $temp = false ) {
+
+	$mailster_options = mailster_options();
 
 	if ( is_array( $option ) ) {
 		$temp = (bool) $value;
@@ -188,6 +183,11 @@ function mailster_update_option( $option, $value, $temp = false ) {
 
 	if ( $temp ) {
 		$mailster_options = mailster( 'settings' )->verify( $mailster_options );
+		add_filter( 'mailster_option', function( $value, $option, $fallback ) use ( $mailster_options ) {
+
+			return isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $value;
+
+		}, 0, 3);
 		return true;
 	}
 
@@ -871,20 +871,20 @@ function mailster_get_subscriber( $id_email_or_hash, $type = null ) {
  *
  *
  * @param unknown $tag
- * @param unknown $callbackfunction
+ * @param unknown $callback
  * @return unknown
  */
-function mailster_add_tag( $tag, $callbackfunction ) {
+function mailster_add_tag( $tag, $callback ) {
 
-	if ( is_callable( $callbackfunction ) ) {
+	if ( is_callable( $callback ) ) {
 
-	} elseif ( is_array( $callbackfunction ) ) {
-		if ( ! method_exists( $callbackfunction[0], $callbackfunction[1] ) ) {
+	} elseif ( is_array( $callback ) ) {
+		if ( ! method_exists( $callback[0], $callback[1] ) ) {
 			return false;
 		}
 	} else {
 
-		if ( ! function_exists( $callbackfunction ) ) {
+		if ( ! function_exists( $callback ) ) {
 			return false;
 		}
 	}
@@ -895,7 +895,7 @@ function mailster_add_tag( $tag, $callbackfunction ) {
 		$mailster_tags = array();
 	}
 
-	$mailster_tags[ $tag ] = $callbackfunction;
+	$mailster_tags[ $tag ] = $callback;
 
 	return true;
 
@@ -924,39 +924,35 @@ function mailster_remove_tag( $tag ) {
 /**
  *
  *
- * @param unknown $callbackfunction
+ * @param unknown $callback
  * @return unknown
  */
-function mailster_add_style( $callbackfunction ) {
-
-	global $mailster_mystyles;
-
-	if ( is_callable( $callbackfunction ) ) {
-
-	} elseif ( is_array( $callbackfunction ) ) {
-		if ( ! method_exists( $callbackfunction[0], $callbackfunction[1] ) ) {
-			return false;
-		}
-	} else {
-		if ( ! function_exists( $callbackfunction ) ) {
-			return false;
-		}
-	}
-
-	if ( ! isset( $mailster_mystyles ) ) {
-		$mailster_mystyles = array();
-	}
+function mailster_add_style( $callback ) {
 
 	$args = func_get_args();
 	$args = array_slice( $args, 1 );
-	$mailster_mystyles[] = call_user_func_array( $callbackfunction, $args );
+	return mailster( 'helper' )->add_style( $callback, $args );
+}
 
-	return true;
+/**
+ *
+ *
+ * @param unknown $callback
+ * @return unknown
+ */
+function mailster_add_embeded_style( $callback ) {
+
+	$args = func_get_args();
+	$args = array_slice( $args, 1 );
+	return mailster( 'helper' )->add_style( $callback, $args, true );
 
 }
 
+function mailster_add_embedded_style( $callback ) {
 
+	return mailster_add_embeded_style( $callback );
 
+}
 
 /**
  *
@@ -1013,6 +1009,16 @@ function is_mailster_newsletter_homepage( $post_id = null ) {
 }
 
 
+function mailster_remove_block_comments( $content ) {
+
+	if ( false !== strpos( $content, '<!-- wp' ) ) {
+		$content = preg_replace( '/<!-- \/?wp:(.+) -->(\n?)/', '', $content );
+		$content = str_replace( array( '<p></p>' ), '', $content );
+		$content = trim( $content );
+	}
+
+	return $content;
+}
 
 /**
  *
