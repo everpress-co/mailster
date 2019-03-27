@@ -313,8 +313,7 @@ class MailsterUpgrade {
 		$tables = mailster()->get_tables();
 
 		foreach ( $tables as $table ) {
-			if ( false !== $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_$table" ) ) {
-			}
+			$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', "{$wpdb->prefix}mailster_$table" ) );
 		}
 
 		return true;
@@ -692,7 +691,7 @@ class MailsterUpgrade {
 
 			if ( $this->table_exists( "{$wpdb->prefix}mymail_{$table}" ) ) {
 
-				if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mymail_{$table}" ) ) {
+				if ( $count = $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', "{$wpdb->prefix}mymail_{$table}" ) ) ) {
 					echo 'old ' . $table . ' table removed' . "\n";
 					return false;
 				}
@@ -720,7 +719,7 @@ class MailsterUpgrade {
 
 			if ( $this->table_exists( "{$wpdb->prefix}mymail_bak_{$table}" ) ) {
 
-				if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mymail_bak_{$table}" ) ) {
+				if ( $count = $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', "{$wpdb->prefix}mymail_bak_{$table}" ) ) ) {
 					echo 'Backup table ' . $table . ' removed' . "\n";
 					return false;
 				}
@@ -878,7 +877,7 @@ class MailsterUpgrade {
 				$tables = mailster()->get_tables( true );
 
 				foreach ( $tables as $table ) {
-					$sql = sprintf( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
+					$sql = $wpdb->prepare( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
 					if ( false !== $wpdb->query( $sql ) ) {
 						echo "'$table' converted to {$status->Collation}.\n";
 					}
@@ -994,14 +993,13 @@ class MailsterUpgrade {
 
 			if ( $wpdb->query( $sql ) ) {
 				if ( $wpdb->insert_id != $id ) {
-					$wpdb->query( $wpdb->prepare( "UPDATE  {$wpdb->prefix}mailster_forms SET `ID` = %d WHERE {$wpdb->prefix}mailster_forms.ID = %d;", $id, $wpdb->insert_id ) );
+					$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_forms SET `ID` = %d WHERE {$wpdb->prefix}mailster_forms.ID = %d;", $id, $wpdb->insert_id ) );
 				}
 
 				foreach ( $form['order'] as $position => $field_id ) {
 
 					$sql = "INSERT INTO {$wpdb->prefix}mailster_form_fields (form_id, field_id, name, required, position) VALUES (%d, %s, %s, %d, %d)";
-					$sql = $wpdb->prepare( $sql, $id, $field_id, $form['labels'][ $field_id ], in_array( $field_id, $form['required'] ), $position );
-					$wpdb->query( $sql );
+					$wpdb->query( $wpdb->prepare( $sql, $id, $field_id, $form['labels'][ $field_id ], in_array( $field_id, $form['required'] ), $position ) );
 				}
 
 				echo 'updated form ' . $form['name'] . " \n";
@@ -1763,7 +1761,7 @@ class MailsterUpgrade {
 	private function table_exists( $table ) {
 
 		global $wpdb;
-		return $wpdb->query( "SHOW TABLES LIKE '" . esc_sql( $table ) . "'" );
+		return $wpdb->query( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
 	}
 
 

@@ -13,11 +13,11 @@ jQuery(document).ready(function ($) {
 		if (!dialog.length) return false;
 
 		dialog
-			.one('click', function (event) {
+			.one('click', '.notification-dialog-dismiss', function (event) {
 				event.stopPropagation();
 				_cancel();
 			})
-			.one('click', '.notification-dialog-dismiss', function (event) {
+			.one('click', '.notification-dialog-background', function (event) {
 				event.stopPropagation();
 				_cancel();
 			})
