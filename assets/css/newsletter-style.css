@@ -165,7 +165,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	margin-right: 169px;
 }
 .fixed-optionbar .has-modules.show-modules .optionbar:after{
-	margin-right: 199px;
+	margin-right: 173px;
 }
 .rtl.fixed-optionbar .has-modules .optionbar:after{
 	margin-right: 0;
@@ -500,7 +500,8 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	opacity: 1;
 	filter: none;
 }
-#editbar.current-codeview .highdpi-checkbox, #editbar.current-single .highdpi-checkbox, #editbar.current-multi .highdpi-checkbox{
+#editbar.current-codeview .highdpi-checkbox, #editbar.current-single .highdpi-checkbox, #editbar.current-multi .highdpi-checkbox,
+#editbar.current-codeview .original-checkbox, #editbar.current-single .original-checkbox, #editbar.current-multi .original-checkbox{
 	display: none;
 }
 #editbar h4.editbar-title {
@@ -775,6 +776,19 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 #editbar .editbarinfo span {
 	font-weight: 700;
 }
+#editbar .editbarpostion {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	display: block;
+	background-color: #464646;
+	color: white;
+	font-size: 10px;
+	padding: 3px 6px;
+	z-index: 2;
+	display: none;
+}
+
 #editbar div.type.img .imagecontentwrap {
 	overflow: hidden;
 }
@@ -1243,8 +1257,8 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 }
 .device.desktop{
 	width: 60%;
-	max-width: 660px;
-	min-width: 650px;
+	max-width: 710px;
+	min-width: 700px;
 	height: 98%;
 	margin-top: 1%;
 	left: 4%;
@@ -2051,8 +2065,13 @@ label.weekday input{
 	border-color: #DFDFDF;
 }
 #mailster_conditions_render{
-	min-height: 18px;
 	position: relative;
+}
+#mailster_conditions_render .mailster-conditions-render:empty{
+	border: 1px solid #DFDFDF;
+	border-radius: 2px;
+	padding: 10px 6px;
+	min-height: 18px;
 }
 #mailster_conditions_render .mailster-conditions-render:empty:before, .mailster-conditions .mailster-conditions-wrap:empty:before{
 	content: attr(data-emptytext);
@@ -2462,10 +2481,10 @@ a.mailster-btn.editbutton {
 	margin-right: -30px;
 }
 #mailster_template a.toggle-modules:before{
-	content: '\e81a';
+	content: '\e807';
 }
 #mailster_template .show-modules a.toggle-modules:before{
-	content: '\e819'
+	content: '\e808'
 }
 #mailster_template .inside iframe#mailster_iframe {
 	-webkit-transition: height .25s ease-in-out;
@@ -2513,7 +2532,7 @@ a.mailster-btn.editbutton {
 	overflow: scroll;
 	overflow-y: auto;
 	overflow-x: hidden;
-	height: 96%;
+	height: 94%;
 }
 #mailster_template .inner #template-wrap.load, #mailster_template .inner #template-wrap.load *{
 	cursor: progress !important;
@@ -2528,7 +2547,7 @@ a.mailster-btn.editbutton {
 	right: initial;
 }
 .fixed-optionbar #module-selector .inner{
-	height: 99%;
+	_height: 99%;
 }
 .fixed-optionbar #post-body.columns-1 #module-selector{
 	right: 21px;

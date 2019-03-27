@@ -69,6 +69,12 @@ jQuery(document).ready(function ($) {
 			uploader.bind('FileUploaded', function (up, file, response) {
 				response = $.parseJSON(response.response);
 				importidentifier = response.identifier;
+				if (!response.success) {
+					importstatus.html(response.message);
+					progress.addClass('error');
+					up.refresh();
+					uploader.unbind('UploadComplete');
+				}
 			});
 
 			uploader.bind('UploadComplete', function (up, files) {
@@ -157,8 +163,17 @@ jQuery(document).ready(function ($) {
 
 		})
 		.on('change', '.list-toggle', function () {
-			$(this).parent().parent().parent().find('li input').prop('checked', $(this).prop('checked'));
+			$(this).parent().parent().parent().find('ul input').prop('checked', $(this).prop('checked'));
+		})
+		.on('change', 'input[name="status"]', function () {
+			if ($(this).val() <= 0) {
+				$('.pending-info').show();
+			} else {
+				$('.pending-info').hide();
+			}
 		});
+
+	;
 
 	$('#paste-import')
 		.on('focus', function () {
@@ -177,6 +192,9 @@ jQuery(document).ready(function ($) {
 						importidentifier = response.identifier;
 						$('#wordpress-users').fadeOut();
 						get_import_data();
+					} else {
+						importstatus.html(response.message);
+						progress.addClass('error');
 					}
 				}, function () {
 
@@ -196,6 +214,9 @@ jQuery(document).ready(function ($) {
 					importidentifier = response.identifier;
 					$('#wordpress-users').fadeOut();
 					get_import_data();
+				} else {
+					importstatus.html(response.message);
+					progress.addClass('error');
 				}
 			}, function () {
 
@@ -319,13 +340,34 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
+	$('#delete-subscribers').on('change', 'input, select', update_deleteion_count);
+	update_deleteion_count();
+
+	function update_deleteion_count() {
+
+		setTimeout(function () {
+			var data = $('#delete-subscribers').serialize();
+			$('#delete-subscriber-button').prop('disabled', true);
+
+			_ajax('get_subscriber_count', {
+				data: data
+			}, function (response) {
+
+				if (response.success) {
+					$('#delete-subscriber-button').val(sprintf(mailsterL10n.delete_n_subscribers, response.count)).prop('disabled', !response.count);
+				}
+
+			});
+		}, 10);
+
+	}
+
 	$('input.selectall').on('change', function () {
 		var _this = $(this),
 			name = _this.attr('name');
 
 		$('input[name="' + name + '"]').prop('checked', _this.prop('checked'));
 	});
-
 
 
 	function do_export(offset, limit, count, data) {

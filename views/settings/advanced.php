@@ -1,6 +1,13 @@
 <p class="description"><?php esc_html_e( 'Some of these settings may affect your website. In normal circumstance it is not required to change anything on this page.', 'mailster' ) ?></p>
 <table class="form-table">
 	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'Usage Tracking', 'mailster' ) ?></th>
+		<td>
+			<label><input type="hidden" name="mailster_options[usage_tracking]" value=""><input type="checkbox" name="mailster_options[usage_tracking]" value="1" <?php checked( mailster_option( 'usage_tracking' ) );?>> <?php esc_html_e( 'Enable usage tracking for this site.', 'mailster' ) ?></label> <p class="description"><?php esc_html_e( 'If you enable this option we are able to track the usage of Mailster on your site. We don\'t record any sensitive data but only information regarding the WordPress environment and plugin settings, which we use to make improvements to the plugin. Tracking is completely optional and can be disabled anytime.', 'mailster' ); ?><br><a href="https://kb.mailster.co/usage-tracking/" class="external"><?php esc_html_e( 'Read more about what we collect if you enable this option.', 'mailster' ); ?></a></p>
+			<input type="hidden" name="mailster_options[ask_usage_tracking]" value="<?php echo mailster_option( 'ask_usage_tracking' ) ?>">
+		</td>
+	</tr>
+	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Cache', 'mailster' ) ?></th>
 		<td>
 			<label><input type="hidden" name="mailster_options[disable_cache_frontpage]" value=""><input type="checkbox" name="mailster_options[disable_cache_frontpage]" value="1" <?php checked( mailster_option( 'disable_cache_frontpage' ) );?>> <?php esc_html_e( 'Disable Form Caching', 'mailster' ) ?></label> <p class="description"><?php esc_html_e( 'Enable this option if you have issue with the security nonce on Mailster forms.', 'mailster' ); ?></p>
@@ -19,7 +26,7 @@
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Form POST protection', 'mailster' ) ?></th>
-		<td><input type="text" name="mailster_options[post_nonce]" value="<?php echo esc_attr( mailster_option( 'post_nonce' ) ); ?>" class="regular-text">
+		<td><input type="text" name="mailster_options[post_nonce]" value="<?php echo esc_attr( mailster_option( 'post_nonce' ) ); ?>" class="regular-text" style="width: 100px;"> <label><input type="hidden" name="mailster_options[use_post_nonce]" value=""><input type="checkbox" name="mailster_options[use_post_nonce]" value="1" <?php checked( mailster_option( 'use_post_nonce' ) );?>> <?php esc_html_e( 'Use on internal forms.', 'mailster' ) ?></label> <span class="description"><?php esc_html_e( 'Check if you have a heavy cached page and problems with invalid Security Nonce.', 'mailster' ) ?></span>
 			<p class="description"><?php esc_html_e( 'A unique string to prevent form submissions via POST. Pass this value in a \'_nonce\' variable. Keep empty to disable test.', 'mailster' ) ?></p></td>
 	</tr>
 	<tr valign="top">
@@ -29,7 +36,7 @@
 		<label><?php esc_html_e( 'Use version', 'mailster' ) ?>
 		<select name="mailster_options[php_mailer]">
 			<option value="0" <?php selected( ! $phpmailerversion ); ?>><?php esc_html_e( 'included in WordPress', 'mailster' ) ?></option>
-			<option value="latest" <?php selected( 'latest', $phpmailerversion ); ?>><?php printf( __( 'latest (%s)', 'mailster' ), '5.2.26' ); ?></option>
+			<option value="latest" <?php selected( 'latest', $phpmailerversion ); ?>><?php printf( esc_html__( 'latest (%s)', 'mailster' ), '5.2.26' ); ?></option>
 		</select></label>
 		</td>
 	</tr>

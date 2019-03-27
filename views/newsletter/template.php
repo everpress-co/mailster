@@ -29,8 +29,8 @@ $all_files = mailster( 'templates' )->get_all_files();
 		<p><strong class="link"></strong></p>
 		<p><?php esc_html_e( 'Clicks', 'mailster' );?>: <strong class="clicks">0</strong><br><?php esc_html_e( 'Total', 'mailster' );?>: <strong class="total">0</strong></p>
 	</div>
-	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_content ) ?></textarea>
-	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_excerpt ) ?></textarea>
+	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo ( $post->post_content ) ?></textarea>
+	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo ( $post->post_excerpt ) ?></textarea>
 
 <?php endif; ?>
 
@@ -64,11 +64,12 @@ $all_files = mailster( 'templates' )->get_all_files();
 
 						if ( isset( $screenshots[ $i ] ) && file_exists( $screenshot_modules_folder . $screenshots[ $i ] ) ) {
 							$has_screenshots = getimagesize( $screenshot_modules_folder . $screenshots[ $i ] );
+							$factor = round( $has_screenshots[0] / 150 );
 						} else {
 							$has_screenshots = false;
 						}
 
-						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / 2 ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( __( 'Click to add %s', 'mailster' ), '"' . $module . '"' ) ) . '" data-id="' . $i . '"><span>' . esc_html( $module ) . '</span><span class="hidden">' . esc_html( strtolower( $module ) ) . '</span></a></li>';
+						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / $factor ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $module . '"' ) ) . '" data-id="' . $i . '"><span>' . esc_html( $module ) . '</span><span class="hidden">' . esc_html( strtolower( $module ) ) . '</span></a></li>';
 					} ?>
 					</ul>
 				</div>
@@ -116,6 +117,6 @@ $all_files = mailster( 'templates' )->get_all_files();
 		</div>
 	</div>
 </div>
-<textarea id="content" autocomplete="off" name="content"><?php echo esc_textarea( $post->post_content ) ?></textarea>
-<textarea id="modules" autocomplete="off"><?php echo esc_textarea( $modules ) ?></textarea>
-<textarea id="head" name="mailster_data[head]" autocomplete="off"><?php echo esc_textarea( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>
+<textarea id="content" autocomplete="off" name="content"><?php echo ( $post->post_content ) ?></textarea>
+<textarea id="modules" autocomplete="off"><?php echo ( $modules ) ?></textarea>
+<textarea id="head" name="mailster_data[head]" autocomplete="off"><?php echo ( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>

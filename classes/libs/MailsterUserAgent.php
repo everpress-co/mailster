@@ -122,6 +122,11 @@ class MailsterUserAgent {
 			$object->version = '';
 			$object->type = 'webmail';
 
+		} else if ( preg_match( '# YahooMailProxy#i', $this->string, $hit ) ) {
+			$object->client = 'Yahoo';
+			$object->version = '';
+			$object->type = 'webmail';
+
 		} else if ( preg_match( '#(iPod|iPod touch).*OS ([0-9_]+)#i', $this->string, $hit ) ) {
 			$object->client = 'iPod Touch';
 			$object->version = 'iOS ' . (int) $hit[2];

@@ -12,8 +12,8 @@
 		<td><input type="text" name="mailster_options[reply_to]" value="<?php echo esc_attr( mailster_option( 'reply_to' ) ); ?>" class="regular-text"> <span class="description"><?php esc_html_e( 'The address users can reply to', 'mailster' ) ?></span></td>
 	</tr>
 	<tr valign="top">
-		<th scope="row"><?php _e( 'Send delay', 'mailster' ) ?> *</th>
-		<td><input type="text" name="mailster_options[send_offset]" value="<?php echo esc_attr( mailster_option( 'send_offset' ) ); ?>" class="small-text"> <span class="description"><?php _e( 'The default delay in minutes for sending campaigns.', 'mailster' ) ?></span></td>
+		<th scope="row"><?php esc_html_e( 'Send delay', 'mailster' ) ?> *</th>
+		<td><input type="text" name="mailster_options[send_offset]" value="<?php echo esc_attr( mailster_option( 'send_offset' ) ); ?>" class="small-text"> <span class="description"><?php esc_html_e( 'The default delay in minutes for sending campaigns.', 'mailster' ) ?></span></td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Delivery by Time Zone', 'mailster' ) ?> *</th>
@@ -40,9 +40,9 @@
 		<?php
 		$is = mailster_option( 'autoupdate', 'minor' );
 		$types = array(
-			'1' => __( 'enabled', 'mailster' ),
-			'0' => __( 'disabled', 'mailster' ),
-			'minor' => __( 'only minor updates', 'mailster' ),
+			'1' => esc_html__( 'enabled', 'mailster' ),
+			'0' => esc_html__( 'disabled', 'mailster' ),
+			'minor' => esc_html__( 'only minor updates', 'mailster' ),
 		);
 		?>
 		<select name="mailster_options[autoupdate]">
@@ -60,20 +60,9 @@
 		<p><label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="0" <?php checked( ! mailster_option( 'system_mail' ) ) ?>> <?php esc_html_e( 'Do not use Mailster for outgoing WordPress mails', 'mailster' ) ?></label></p>
 		<p><label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="1" <?php checked( mailster_option( 'system_mail' ) == 1 ) ?>> <?php esc_html_e( 'Use Mailster for all outgoing WordPress mails', 'mailster' ) ?></label><br>
 			<label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="template" <?php checked( mailster_option( 'system_mail' ) == 'template' ) ?>> <?php esc_html_e( 'Use only the template for all outgoing WordPress mails', 'mailster' ) ?></label></p>
-		<p>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' );?><select name="mailster_options[system_mail_template]" class="system_mail_template" <?php echo ! mailster_option( 'system_mail' ) ? 'disabled' : '' ?>>
-		<?php
-		$selected = mailster_option( 'system_mail_template', 'notification.html' );
-		foreach ( $templatefiles as $slug => $filedata ) {
-			if ( $slug == 'index.html' ) {
-				continue;
-			}
-
-				?>
-					<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo $slug ?>)</option>
-		<?php
-		}
-?>
-		</select></p>
+		<p>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' );?>
+		<?php mailster( 'helper' )->notifcation_template_dropdown( mailster_option( 'system_mail_template', 'notification.html' ), 'mailster_options[system_mail_template]', ! mailster_option( 'system_mail' ) ); ?>
+		</p>
 		</td>
 	</tr>
 	<tr valign="top">

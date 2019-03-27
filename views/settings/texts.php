@@ -2,7 +2,7 @@
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Subscription Form', 'mailster' ) ?><p class="description"><?php esc_html_e( 'Define messages for the subscription form', 'mailster' );?>.<br>
 <?php if ( mailster_option( 'homepage' ) ) :
-		printf( __( 'Some text can get defined on the %s as well', 'mailster' ), '<a href="post.php?post=' . mailster_option( 'homepage' ) . '&action=edit">Newsletter Homepage</a>' );
+		printf( esc_html__( 'Some text can get defined on the %s as well', 'mailster' ), '<a href="post.php?post=' . mailster_option( 'homepage' ) . '&action=edit">Newsletter Homepage</a>' );
 endif; ?>
 </p></th>
 		<td>
@@ -51,24 +51,24 @@ endif; ?>
 		</td>
 	</tr>
 </table>
+<?php
+
+$dir = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';
+$files = array();
+$locale = get_locale();
+
+if ( is_dir( $dir ) ) {
+	$files = list_files( $dir );
+	$files = preg_grep( '/mailster-(.*)\.po$/', $files );
+}
+if ( ! empty( $files ) ) :
+?>
 <table class="form-table language-switcher-field">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Change Language', 'mailster' ) ?></th>
 		<td>
 			<p class="description">
 			<?php esc_html_e( 'change language of texts if available to', 'mailster' );?>
-			<?php
-
-			$dir = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';
-			$files = array();
-			$locale = get_locale();
-
-			if ( is_dir( $dir ) ) {
-				$files = list_files( $dir );
-				$files = preg_grep( '/mailster-(.*)\.po$/', $files );
-			}
-
-			?>
 			<select name="language-file">
 				<option<?php selected( preg_match( '#^en_#', $locale ) );?> value="en_US"><?php esc_html_e( 'English', 'mailster' );?> (en_US)</option>
 				<?php foreach ( $files as $file ) { $lang = str_replace( array( '.po', 'mailster-' ), '', basename( $file ) ); ?>
@@ -81,3 +81,4 @@ endif; ?>
 		</td>
 	</tr>
 </table>
+<?php endif; ?>

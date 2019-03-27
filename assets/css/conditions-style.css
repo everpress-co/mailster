@@ -80,9 +80,6 @@
 	position: relative;
 	padding: 10px 0 10px;
 }
-.mailster-conditions-wrap .mailster-condition:last-child, .mailster-conditions-wrap .mailster-condition-empty:last-child{
-	_border-bottom: 0;
-}
 .mailster-conditions-wrap{
 	margin: 10px 0;
 	height: 83%;
@@ -91,15 +88,9 @@
 .mailster-condition-container{
 	display: none;
 }
-_.mailster-conditions-wrap .mailster-condition:after{
-	display: table;
-	content: '';
-	clear: both;
-	float: none;
-}
 .mailster-conditions-field-fields, .mailster-conditions-operator-fields, .mailster-conditions-value-fields{
 	float: left;
-	max-width: 38%;
+	max-width: 37%;
 	padding-right: 4px;
 }
 .rtl .mailster-conditions-field-fields,.rtl .mailster-conditions-operator-fields,.rtl .mailster-conditions-value-fields{
@@ -145,6 +136,9 @@ _.mailster-conditions-wrap .mailster-condition:after{
 	bottom: 6px;
 	z-index: 1;
 }
+.mailster-conditions-wrap .add-or-condition span{
+	text-transform: uppercase;
+}
 .mailster-conditions-wrap .datepicker.condition-value{
 	width: 100px;
 }
@@ -173,7 +167,6 @@ _.mailster-conditions-wrap .mailster-condition:after{
 .mailster-condition .mailster-rating span.enabled:before{
 	content: '\e82d';
 }
-
 .mailster-conditions-wrap .mailster-conditions-value-field-multiselect:first-child{
 	display: inline-block;
 }

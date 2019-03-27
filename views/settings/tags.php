@@ -1,5 +1,5 @@
-<p class="description"><?php printf( __( 'Tags are placeholder for your newsletter. You can set them anywhere in your newsletter template with the format %s. Custom field tags are individual for each subscriber.', 'mailster' ), '<code>{tagname}</code>' ); ?></p>
-<p class="description"><?php printf( __( 'You can set alternative content with %1$s which will be uses if %2$s is not defined. All unused tags will get removed in the final message', 'mailster' ), '<code>{tagname|alternative content}</code>', '[tagname]' ); ?></p>
+<p class="description"><?php printf( esc_html__( 'Tags are placeholder for your newsletter. You can set them anywhere in your newsletter template with the format %s. Custom field tags are individual for each subscriber.', 'mailster' ), '<code>{tagname}</code>' ); ?></p>
+<p class="description"><?php printf( esc_html__( 'You can set alternative content with %1$s which will be uses if %2$s is not defined. All unused tags will get removed in the final message', 'mailster' ), '<code>{tagname|alternative content}</code>', '[tagname]' ); ?></p>
 		<?php $reserved = array( 'unsub', 'unsublink', 'webversion', 'webversionlink', 'forward', 'forwardlink', 'subject', 'preheader', 'profile', 'profilelink', 'headline', 'content', 'link', 'email', 'emailaddress', 'firstname', 'lastname', 'fullname', 'year', 'month', 'day', 'share', 'tweet', 'hash', 'wp_id', 'status', 'added', 'updated', 'signup', 'confirm', 'ip_signup', 'ip_confirm', 'rating' ) ?>
 <p id="reserved-tags" data-tags='["<?php echo implode( '","', $reserved ) ?>"]'><?php esc_html_e( 'reserved tags', 'mailster' );?>: <code>{<?php echo implode( '}</code>, <code>{', $reserved ) ?>}</code></p>
 <table class="form-table">
@@ -38,9 +38,9 @@
 		<th scope="row"><?php esc_html_e( 'Special Tags', 'mailster' ) ?>:</th>
 		<td class="customfields">
 		<p class="description"><?php esc_html_e( 'Special tags display dynamic content and are equally for all subscribers', 'mailster' );?></p>
-		<div class="customfield"><span><code>{tweet:username}</code></span> &#10152; <?php printf( __( 'displays the last tweet from Twitter user [username] (cache it for %s minutes)', 'mailster' ), '<input type="text" name="mailster_options[tweet_cache_time]" value="' . esc_attr( mailster_option( 'tweet_cache_time' ) ) . '" class="small-text">' ); ?></div>
+		<div class="customfield"><span><code>{tweet:username}</code></span> &#10152; <?php printf( esc_html__( 'displays the last tweet from Twitter user [username] (cache it for %s minutes)', 'mailster' ), '<input type="text" name="mailster_options[tweet_cache_time]" value="' . esc_attr( mailster_option( 'tweet_cache_time' ) ) . '" class="small-text">' ); ?></div>
 		<p class="description">
-			<?php printf( __( 'To enable the tweet feature you have to create a new %s and insert your credentials', 'mailster' ), '<a href="https://dev.twitter.com/apps/new" class="external">Twitter App</a>' ); ?>
+			<?php printf( esc_html__( 'To enable the tweet feature you have to create a new %s and insert your credentials', 'mailster' ), '<a href="https://dev.twitter.com/apps/new" class="external">Twitter App</a>' ); ?>
 		</p>
 		<p>
 		<div class="mailster_text">&nbsp;<label><?php esc_html_e( 'Access token', 'mailster' );?>:</label> <input type="text" name="mailster_options[twitter_token]" value="<?php echo esc_attr( mailster_option( 'twitter_token' ) ); ?>" class="regular-text" autocomplete="off"></div>
@@ -49,10 +49,10 @@
 		<div class="mailster_text">&nbsp;<label><?php esc_html_e( 'Consumer secret', 'mailster' );?>:</label> <input type="password" name="mailster_options[twitter_consumer_secret]" value="<?php echo esc_attr( mailster_option( 'twitter_consumer_secret' ) ); ?>" class="regular-text" autocomplete="off"></div>
 		</p>
 		<br>
-		<div class="customfield"><span><code>{share:twitter}</code></span> &#10152; <?php printf( __( 'displays %1$s to share the newsletter via %2$s', 'mailster' ), '<img src="' . MAILSTER_URI . '/assets/img/share/share_twitter.png">', 'Twitter' ); ?></div>
-		<div class="customfield"><span><code>{share:facebook}</code></span> &#10152; <?php printf( __( 'displays %1$s to share the newsletter via %2$s', 'mailster' ), '<img src="' . MAILSTER_URI . '/assets/img/share/share_facebook.png">', 'Facebook' ); ?></div>
-		<div class="customfield"><span><code>{share:google}</code></span> &#10152; <?php printf( __( 'displays %1$s to share the newsletter via %2$s', 'mailster' ), '<img src="' . MAILSTER_URI . '/assets/img/share/share_google.png">', 'Google+' ); ?></div>
-		<div class="customfield"><span><code>{share:linkedin}</code></span> &#10152; <?php printf( __( 'displays %1$s to share the newsletter via %2$s', 'mailster' ), '<img src="' . MAILSTER_URI . '/assets/img/share/share_linkedin.png">', 'LinkedIn' ); ?></div>
+		<div class="customfield"><span><code>{share:twitter}</code></span> &#10152; <?php printf( esc_html__( 'displays %1$s to share the newsletter via %2$s', 'mailster' ), '<img src="' . MAILSTER_URI . '/assets/img/share/share_twitter.png">', 'Twitter' ); ?></div>
+		<div class="customfield"><span><code>{share:facebook}</code></span> &#10152; <?php printf( esc_html__( 'displays %1$s to share the newsletter via %2$s', 'mailster' ), '<img src="' . MAILSTER_URI . '/assets/img/share/share_facebook.png">', 'Facebook' ); ?></div>
+		<div class="customfield"><span><code>{share:google}</code></span> &#10152; <?php printf( esc_html__( 'displays %1$s to share the newsletter via %2$s', 'mailster' ), '<img src="' . MAILSTER_URI . '/assets/img/share/share_google.png">', 'Google+' ); ?></div>
+		<div class="customfield"><span><code>{share:linkedin}</code></span> &#10152; <?php printf( esc_html__( 'displays %1$s to share the newsletter via %2$s', 'mailster' ), '<img src="' . MAILSTER_URI . '/assets/img/share/share_linkedin.png">', 'LinkedIn' ); ?></div>
 		</td>
 	</tr>
 	<tr valign="top">
