@@ -160,11 +160,13 @@ class MailsterDashboard {
 	 */
 	public function post_box_classes_for_mailster( $classes ) {
 
-		if ( mailster()->has_update() ) {
-			$classes[] = 'has-update';
-		}
 		if ( $this->verified ) {
 			$classes[] = 'verified';
+		}
+		if ( mailster()->has_update() ) {
+			$classes[] = 'has-update';
+		} elseif ( mailster( 'translations' )->translation_available() ) {
+			$classes[] = 'has-translation-update';
 		}
 
 		return $classes;
