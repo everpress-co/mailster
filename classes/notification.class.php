@@ -416,8 +416,11 @@ class MailsterNotification {
 		$this->mail = mailster( 'mail' );
 
 		$this->mail->to = $this->to;
+		$this->mail->from = apply_filters( 'mailster_notification_from', $this->mail->from, $template, $subscriber, $options );
+		$this->mail->from_name = apply_filters( 'mailster_notification_from_name', $this->mail->from_name, $template, $subscriber, $options );
+		$this->mail->reply_to = apply_filters( 'mailster_notification_reply_to', mailster_option( 'reply_to', false ), $template, $subscriber, $options );
+
 		$this->mail->subject = $this->subject;
-		$this->mail->reply_to = mailster_option( 'reply_to', false );
 
 		$MID = mailster_option( 'ID' );
 		$this->mail->add_header( 'X-Mailster-ID', $MID );

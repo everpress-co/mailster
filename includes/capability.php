@@ -34,7 +34,7 @@ $mailster_capabilities = array(
 
 	'duplicate_others_newsletters' => array(
 		'title' => esc_html__( 'duplicate others campaigns', 'mailster' ),
-		'roles' => array( 'author', 'editor' ),
+		'roles' => array( 'editor' ),
 	),
 
 	'mailster_edit_autoresponders' => array(
