@@ -179,10 +179,15 @@
 					<div class="mailster-conditions-value-field" data-fields=",form,">
 					<select name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]" class="condition-value" disabled>
 					<?php
-					foreach ( $forms as $form ) :
-						echo '<option value="' . $form->ID . '"' . selected( $form->ID, $value, false ) . '>#' . $form->ID . ' ' . $form->name . '</option>';
-						endforeach; ?>
-						</select>
+					if ( ! empty( $forms ) ) :
+						foreach ( $forms as $form ) :
+							echo '<option value="' . $form->ID . '"' . selected( $form->ID, $value, false ) . '>#' . $form->ID . ' ' . $form->name . '</option>';
+						endforeach;
+					else :
+							echo '<option value="0">' . esc_html__( 'No Form found', 'mailster' ) . '</option>';
+					endif;
+						?>
+					</select>
 					</div>
 					<div class="mailster-conditions-value-field" data-fields=",clienttype,">
 						<select name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]" class="condition-value" disabled>

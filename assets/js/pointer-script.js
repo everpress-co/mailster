@@ -5,7 +5,6 @@ jQuery(document).ready(function ($) {
 	var pointers = [],
 		init;
 
-
 	$.each(MailsterPointer.pointers, function (i, e) {
 
 		pointers[i] = $.extend(MailsterPointer.pointers[i], {
@@ -29,9 +28,7 @@ jQuery(document).ready(function ($) {
 			close: function (a) {}
 		});
 
-
 	});
-
 
 	init = function (id) {
 
