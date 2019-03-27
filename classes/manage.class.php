@@ -128,7 +128,6 @@ class MailsterManage {
 			$raw_data = esc_textarea( stripslashes( $_POST['data'] ) );
 			// single quotes cause problems
 			$raw_data = str_replace( '&#039;', "'", $raw_data );
-			$return['success'] = true;
 
 		} elseif ( isset( $_POST['wordpressusers'] ) ) {
 
@@ -192,9 +191,6 @@ class MailsterManage {
 				$raw_data .= "\n";
 
 			}
-
-			$return['success'] = true;
-
 		} else {
 
 			die( 'not allowed' );
@@ -232,31 +228,34 @@ class MailsterManage {
 			$collate = $wpdb->get_charset_collate();
 		}
 
-		$wpdb->query( $wpdb->prepare( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}mailster_temp_import (ID bigint(20) NOT NULL AUTO_INCREMENT, data longtext NOT NULL, identifier char(13) NOT NULL, PRIMARY KEY (ID) ) %s", $collate ) );
+		if ( false !== $wpdb->query( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}mailster_temp_import (ID bigint(20) NOT NULL AUTO_INCREMENT, data longtext NOT NULL, identifier char(13) NOT NULL, PRIMARY KEY (ID) ) $collate" ) ) {
+			$return['identifier'] = $identifier = uniqid();
 
-		$return['identifier'] = $identifier = uniqid();
+			for ( $i = 0; $i < $partcount; $i++ ) {
 
-		for ( $i = 0; $i < $partcount; $i++ ) {
+				$part = $parts[ $i ];
 
-			$part = $parts[ $i ];
+				// remove quotes;
+				$part = str_replace( array( "'" . $bulkimport['separator'] . "'", '"' . $bulkimport['separator'] . '"' ), $bulkimport['separator'], $part );
+				$part = preg_replace( '#^("|\')#', '', $part );
+				$part = preg_replace( '#("|\')$#', '', $part );
 
-			// remove quotes;
-			$part = str_replace( array( "'" . $bulkimport['separator'] . "'", '"' . $bulkimport['separator'] . '"' ), $bulkimport['separator'], $part );
-			$part = preg_replace( '#^("|\')#', '', $part );
-			$part = preg_replace( '#("|\')$#', '', $part );
+				$new_value = base64_encode( serialize( $part ) );
 
-			$new_value = base64_encode( serialize( $part ) );
+				$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->prefix}mailster_temp_import (data, identifier) VALUES (%s, %s)", $new_value, $identifier ) );
 
-			$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->prefix}mailster_temp_import (data, identifier) VALUES (%s, %s)", $new_value, $identifier ) );
+				$bulkimport['ids'][] = $i;
+			}
 
-			$bulkimport['ids'][] = $i;
-		}
-
-		$return['memoryusage'] = size_format( memory_get_peak_usage( true ), 2 );
-		if ( get_option( 'mailster_bulk_import' ) !== false ) {
-			update_option( 'mailster_bulk_import', $bulkimport );
+			$return['success'] = true;
+			$return['memoryusage'] = size_format( memory_get_peak_usage( true ), 2 );
+			if ( get_option( 'mailster_bulk_import' ) !== false ) {
+				update_option( 'mailster_bulk_import', $bulkimport );
+			} else {
+				add_option( 'mailster_bulk_import', $bulkimport, '', 'no' );
+			}
 		} else {
-			add_option( 'mailster_bulk_import', $bulkimport, '', 'no' );
+			$return['message'] = $wpdb->last_error;
 		}
 
 		if ( isset( $return ) ) {
@@ -1382,7 +1381,7 @@ class MailsterManage {
 	<div id="drag-drop-area">
 		<div class="drag-drop-inside">
 		<p class="drag-drop-info"><?php esc_html_e( 'Drop your list here', 'mailster' );?></p>
-		<p><?php esc_html_x( 'or', 'Uploader: Drop files here - or - Select Files', 'mailster' );?></p>
+		<p><?php echo esc_html_x( 'or', 'Uploader: Drop files here - or - Select Files', 'mailster' );?></p>
 		<p class="drag-drop-buttons"><input id="plupload-browse-button" type="button" value="<?php esc_attr_e( 'Select File', 'mailster' );?>" class="button" /></p>
 		</div>
 	</div>

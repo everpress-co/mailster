@@ -98,8 +98,8 @@ class MailsterSubscribers {
 				'day_names' => $wp_locale->weekday,
 				'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
 				'month_names' => array_values( $wp_locale->month ),
-				'invalid_email' => esc_html__( 'this isn\'t a valid email address!', 'mailster' ),
-				'email_exists' => esc_html__( 'this email address already exists!', 'mailster' ),
+				'invalid_email' => esc_html__( 'This isn\'t a valid email address!', 'mailster' ),
+				'email_exists' => esc_html__( 'This email address already exists!', 'mailster' ),
 			) );
 
 		else :
@@ -441,7 +441,7 @@ class MailsterSubscribers {
 						$this->assign_lists( $subscriber->ID, $assign, false, true );
 					}
 
-					if ( $subscriber->status != $old_subscriber_data->status ) {
+					if ( ! $old_subscriber_data || $subscriber->status != $old_subscriber_data->status ) {
 						if ( mailster_option( 'list_based_opt_in' ) ) {
 							if ( 1 == $subscriber->status ) {
 								mailster( 'lists' )->confirm_subscribers( null,  $subscriber->ID );
@@ -1024,18 +1024,10 @@ class MailsterSubscribers {
 
 		} else {
 
-			if ( isset( $wpdb->use_mysqli ) && $wpdb->use_mysqli ) {
-				if ( $wpdb->dbh instanceof mysqli ) {
-					$mysql_errno = mysqli_errno( $wpdb->dbh );
-				} else {
-					$mysql_errno = 2006;
-				}
-			} else {
-				if ( is_resource( $wpdb->dbh ) ) {
-					$mysql_errno = mysql_errno( $wpdb->dbh );
-				} else {
-					$mysql_errno = 2006;
-				}
+			$mysql_errno = 2006;
+
+			if ( isset( $wpdb->use_mysqli ) && $wpdb->use_mysqli && $wpdb->dbh instanceof mysqli  ) {
+				$mysql_errno = mysqli_errno( $wpdb->dbh );
 			}
 
 			if ( $mysql_errno == 1062 ) {
@@ -1849,7 +1841,7 @@ class MailsterSubscribers {
 
 		$opens = $this->get_opens( $id );
 
-		return $opens / $sent;
+		return min( 1, ($opens / $sent) );
 
 	}
 
@@ -1884,7 +1876,7 @@ class MailsterSubscribers {
 
 		$clicks = $this->get_clicks( $id, $total );
 
-		return $clicks / $sent;
+		return min( 1, ($clicks / $sent) );
 
 	}
 
@@ -1905,7 +1897,7 @@ class MailsterSubscribers {
 
 		$clicks = $this->get_clicks( $id, $total );
 
-		return $clicks / $open;
+		return min( 1, ($clicks / $open) );
 
 	}
 

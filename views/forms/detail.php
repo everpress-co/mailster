@@ -381,22 +381,13 @@ if ( $is_new ) {
 									<td><textarea id="mailster_text_content" name="mailster_data[content]" rows="10" cols="50" class="large-text"><?php echo esc_attr( $form->content ); ?></textarea></td>
 								</tr>
 								<tr><td><?php esc_html_e( 'Used template file', 'mailster' );?></td><td>
-									<select name="mailster_data[template]">
-									<?php
-									$templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
-									foreach ( $templatefiles as $slug => $filedata ) {
-										if ( $slug == 'index.html' ) {
-											continue;
-										} ?>
-										<option value="<?php echo $slug ?>"<?php selected( $slug == $form->template ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo $slug ?>)</option>
-									<?php } ?>
-									</select>
+									<?php mailster( 'helper' )->notifcation_template_dropdown( $form->template, 'mailster_data[template]' ); ?>
 									</td>
 								</tr>
 
 								<tr>
 									<td><?php esc_html_e( 'Resend Confirmation', 'mailster' ) ?></td>
-									<td><div><input type="checkbox" name="mailster_data[resend]" value="1" <?php checked( $form->resend ) ?>> <?php printf( esc_html__( 'Resend confirmation %1$s times with a delay of %2$s hours if user hasn\'t confirmed the subscription', 'mailster' ), '<input type="text" name="mailster_data[resend_count]" value="' . esc_attr( $form->resend_count ) . '" class="small-text">', '<input type="text" name="mailster_data[resend_time]" value="' . esc_attr( $form->resend_time ) . '" class="small-text">' ) ?></div></td>
+									<td><div><input type="hidden" name="mailster_data[resend]" value="0"><input type="checkbox" name="mailster_data[resend]" value="1" <?php checked( $form->resend ) ?>> <?php printf( esc_html__( 'Resend confirmation %1$s times with a delay of %2$s hours if user hasn\'t confirmed the subscription', 'mailster' ), '<input type="text" name="mailster_data[resend_count]" value="' . esc_attr( $form->resend_count ) . '" class="small-text">', '<input type="text" name="mailster_data[resend_time]" value="' . esc_attr( $form->resend_time ) . '" class="small-text">' ) ?></div></td>
 								</tr>
 
 								<tr><td><?php esc_html_e( 'Redirect after confirm', 'mailster' );?></td><td><input type="text" name="mailster_data[confirmredirect]" class="widefat" value="<?php if ( isset( $form->confirmredirect ) ) {	echo $form->confirmredirect; } ?>" placeholder="http://www.example.com" ></td>

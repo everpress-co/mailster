@@ -69,6 +69,12 @@ jQuery(document).ready(function ($) {
 			uploader.bind('FileUploaded', function (up, file, response) {
 				response = $.parseJSON(response.response);
 				importidentifier = response.identifier;
+				if (!response.success) {
+					importstatus.html(response.message);
+					progress.addClass('error');
+					up.refresh();
+					uploader.unbind('UploadComplete');
+				}
 			});
 
 			uploader.bind('UploadComplete', function (up, files) {
@@ -165,7 +171,7 @@ jQuery(document).ready(function ($) {
 			} else {
 				$('.pending-info').hide();
 			}
-		})
+		});
 
 	;
 
@@ -186,6 +192,9 @@ jQuery(document).ready(function ($) {
 						importidentifier = response.identifier;
 						$('#wordpress-users').fadeOut();
 						get_import_data();
+					} else {
+						importstatus.html(response.message);
+						progress.addClass('error');
 					}
 				}, function () {
 
@@ -205,6 +214,9 @@ jQuery(document).ready(function ($) {
 					importidentifier = response.identifier;
 					$('#wordpress-users').fadeOut();
 					get_import_data();
+				} else {
+					importstatus.html(response.message);
+					progress.addClass('error');
 				}
 			}, function () {
 

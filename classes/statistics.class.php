@@ -109,7 +109,9 @@ class MailsterStatistics {
 
 		$increase_data = $wpdb->get_results( $sql );
 
-		$increase_data = array_combine( wp_list_pluck( $increase_data, 'the_date' ), wp_list_pluck( $increase_data, 'increase' ) );
+		if ( ! empty( $increase_data ) ) {
+			$increase_data = array_combine( wp_list_pluck( $increase_data, 'the_date' ), wp_list_pluck( $increase_data, 'increase' ) );
+		}
 
 		foreach ( $dates as $date => $count ) {
 

@@ -25,8 +25,9 @@ class MailsterRegister {
 		wp_enqueue_script( 'mailster-register-script', MAILSTER_URI . 'assets/js/register-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
 		wp_localize_script( 'mailster-register-script', 'mailsterregisterL10n', array(
-				'wpnonce' => wp_create_nonce( 'mailster_register' ),
-				'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
+			'wpnonce' => wp_create_nonce( 'mailster_register' ),
+			'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
+			'help' => esc_html__( 'Help me!', 'mailster' ),
 		) );
 
 		$slug = 'mailster';
@@ -59,7 +60,7 @@ class MailsterRegister {
 				<div class="howto"><?php echo $args['pretext'] ?></div>
 				<div class="error-msg">&nbsp;</div>
 				<input type="text" class="widefat register-form-purchasecode" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="purchasecode" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="36" value="<?php echo esc_attr( $args['purchasecode'] ) ?>">
-				<input type="submit" class="button button-hero button-primary dashboard-register" value="<?php esc_attr_e( 'Next Step', 'mailster' ) ?>">
+				<input type="submit" class="button button-hero button-primary dashboard-register" value="<?php esc_attr_e( 'Verify Purchase Code', 'mailster' ) ?>">
 				<div class="howto">
 					<a href="https://mailster.github.io/images/purchasecode.gif" class="howto-purchasecode"><?php esc_html_e( 'Where can I find my item purchase code?', 'mailster' ); ?></a>
 					<!-- &ndash;
@@ -79,8 +80,16 @@ class MailsterRegister {
 				<div class="registration_complete_text"><?php esc_html_e( 'All Set!', 'mailster' ); ?></div>
 			</form>
 		</div>
-		<?php mailster( 'helper' )->dialog( '<img src="https://mailster.github.io/images/purchasecode.gif">', 'registration-dialog' ) ?>
-	<?php
+		<?php
+		mailster( 'helper' )->dialog( '<img src="https://mailster.github.io/images/purchasecode.gif">', array(
+			'id' => 'registration-dialog',
+			'buttons' => array(
+				array(
+					'label' => esc_html__( 'OK got it', 'mailster' ),
+					'classes' => 'button button-primary right notification-dialog-dismiss',
+				),
+			),
+		));
 
 	}
 

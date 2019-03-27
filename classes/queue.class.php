@@ -235,7 +235,7 @@ class MailsterQueue {
 		}
 
 		if ( ! is_array( $subscribers ) ) {
-			$subscriber = array( $subscribers );
+			$subscribers = array( (int) $subscribers );
 		}
 
 		$subscribers = array_filter( $subscribers, 'is_numeric' );
@@ -849,7 +849,7 @@ class MailsterQueue {
 				continue;
 			}
 
-			mailster( 'campaigns' )->finish( $id, false );
+			mailster( 'campaigns' )->finish( $id );
 
 		}
 

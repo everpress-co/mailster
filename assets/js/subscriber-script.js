@@ -54,7 +54,13 @@ jQuery(document).ready(function ($) {
 			}
 
 		});
-
+		$('#mailster_status').on('change', function () {
+			if ($(this).val() <= 0) {
+				$('.pending-info').show();
+			} else {
+				$('.pending-info').hide();
+			}
+		});
 		$('.show-more-info').on('click', function () {
 			$('.more-info').slideToggle(100);
 		});
