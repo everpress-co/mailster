@@ -993,12 +993,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	font-size: 11px;
 	line-height: 1em;
 }
-#editbar .tab .rss_info h4{
-	margin-bottom: 2px;
-}
-#editbar .tab .rss_info p{
-	margin: 0 2px;
-}
 #editbar .tab, #editbar .link-wrap .postlist{
 	padding: 5px;
 	box-sizing: border-box;

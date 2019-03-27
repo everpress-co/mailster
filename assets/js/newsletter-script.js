@@ -1589,7 +1589,7 @@ jQuery(document).ready(function ($) {
 			buttonalt = bar.find('.buttonalt'),
 			buttonnav = bar.find('.button-nav'),
 			buttontabs = bar.find('ul.buttons'),
-			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, searchTimeout, checkRSSfeedInterval, rssURL = 'x',
+			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, searchTimeout, checkRSSfeedInterval,
 			editor = $('#wp-mailster-editor-wrap'),
 			postsearch = $('#post-search'),
 			imagesearch = $('#image-search');
@@ -1617,14 +1617,8 @@ jQuery(document).ready(function ($) {
 				.on('click', 'a.nav-tab', openTab)
 				.on('change', 'select.check-for-posts', checkForPosts)
 				.on('change', '#dynamic_rss_url', checkForPosts)
-				.on('keyup change', '#rss_url', loadPosts)
 				.on('keyup change', '#post-search', searchPost)
 				.on('keyup change', '#image-search', searchPost)
-				.on('click', '#rss_url', function () {
-					$(this).focus().select();
-				})
-				.on('click', '.rss_change', changeRSS)
-				.on('click', '#recent_feeds a', recentFeed)
 
 
 			.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
@@ -2198,13 +2192,6 @@ jQuery(document).ready(function ($) {
 					if ('rss' == post_type)
 						current.element.attr('data-rss', rss_url).data('rss', rss_url);
 
-				} else if ('rss' == insertmethod) {
-
-					var contenttype = $('.embed_options_content_rss:checked').val(),
-						rss_url = $('#rss_url').val();
-
-					current.element.attr('data-rss', rss_url).data('rss', rss_url);
-
 				} else {
 
 					var contenttype = $('.embed_options_content:checked').val();
@@ -2373,8 +2360,8 @@ jQuery(document).ready(function ($) {
 
 								return false;
 
-								// rss and dynamic
-							} else if ('dynamic' == insertmethod || 'rss' == insertmethod) {
+								// dynamic
+							} else if ('dynamic' == insertmethod) {
 
 								var width = imgelement.width(),
 									crop = imgelement.data('crop'),
@@ -2995,17 +2982,6 @@ jQuery(document).ready(function ($) {
 					offset: 0
 				};
 
-			if ($(this).is('#rss_url')) {
-				data.type = '_rss';
-				data.url = $.trim($('#rss_url').val());
-				if (data.url == rssURL) return false;
-				rssURL = data.url;
-				if (!data.url) {
-					$('#rss_more').slideUp(200);
-					return false;
-				}
-				$('.rss_info').html('');
-			}
 			if (assetstype == 'attachment') {
 				data.id = currentimage.id;
 			}
@@ -3018,11 +2994,6 @@ jQuery(document).ready(function ($) {
 				if (response.success) {
 					itemcount = response.itemcount;
 					displayPosts(response.html, true);
-					if (response.rssinfo) {
-						$('#rss_more').slideDown(200);
-						$('#rss_input').slideUp(200);
-						$('.rss_info').html('<h4>' + response.rssinfo.title + ' &ndash; ' + response.rssinfo.description + '</h4><p class="tiny">' + response.rssinfo.copyright + '</p>');
-					}
 					callback && callback();
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
@@ -3046,7 +3017,6 @@ jQuery(document).ready(function ($) {
 				posttypes: posttypes,
 				search: 'attachment' == type ? imagesearch.val() : postsearch.val(),
 				offset: offset,
-				url: $.trim($('#rss_url').val()),
 				itemcount: itemcount
 			}, function (response) {
 				loader(false);
@@ -3087,22 +3057,6 @@ jQuery(document).ready(function ($) {
 			if (!list.html()) list.html('<ul></ul>');
 
 			list.find('ul').append(html);
-		}
-
-		function recentFeed() {
-
-			$('#rss_url').val($(this).attr('href')).trigger('change');
-
-			return false;
-		}
-
-		function changeRSS() {
-
-			$('#rss_url').val('');
-			$('#rss_more').slideUp(200);
-			$('#rss_input').slideDown(200);
-
-			return false;
 		}
 
 		function openURL() {
