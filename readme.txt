@@ -103,7 +103,6 @@ Xaver Birsak – https://everpress.io
 * improved: editor behavior
 * improved: handling of options
 * improved: removed some variables from the global space
->>>>>>> origin/develop
 
 = Version 2.3.16 =
 
@@ -168,7 +167,6 @@ Xaver Birsak – https://everpress.io
 * improved: queue handling of time based auto responders
 * improved: query for dashboard widget
 * improved: sql query
->>>>>>> origin/develop
 
 = Version 2.3.11 =
 
