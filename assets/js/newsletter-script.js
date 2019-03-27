@@ -2012,8 +2012,6 @@ jQuery(document).ready(function ($) {
 						}
 					}
 
-					console.log(w, h, f);
-
 					_ajax('create_image', {
 						id: currentimage.id,
 						original: o,
@@ -2560,8 +2558,6 @@ jQuery(document).ready(function ($) {
 			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val())))) || 0,
 				f = parseInt(factor.val(), 10);
 
-			console.log(x, current.width, f, current.height);
-
 			imagepreview.css({
 				'clip': 'rect(' + (x) + 'px,' + (current.width * f) + 'px,' + (current.height * f - x) + 'px,0px)',
 				'margin-top': (-1 * x) + 'px'
@@ -3062,15 +3058,12 @@ jQuery(document).ready(function ($) {
 		function searchPost() {
 			var $this = $(this),
 				temp = $.trim('attachment' == assetstype ? imagesearch.val() : postsearch.val());
-			console.log('searchPost');
 			if ((!$this.is(':checked') && searchstring == temp)) {
 				return false;
 			}
 			searchstring = temp;
-			console.log('do searchPost ', '[' + searchstring + ']');
 			clearTimeout(searchTimeout);
 			searchTimeout = setTimeout(function () {
-				console.log('run searchPost ', '[' + searchstring + ']');
 				loadPosts();
 			}, 500);
 		}

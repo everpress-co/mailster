@@ -1052,7 +1052,7 @@ class MailsterAjax {
 
 		if ( isset( $_POST['id'] ) ) {
 
-			$id = (int) $_POST['id'] ;
+			$id = basename( $_POST['id'] );
 			$src = isset( $_POST['src'] ) ? ( $_POST['src'] ) : null;
 			$crop = isset( $_POST['crop'] ) ? ( $_POST['crop'] == 'true' ) : false;
 			$width = isset( $_POST['width'] ) ? (int) $_POST['width'] : null;
@@ -1270,7 +1270,7 @@ class MailsterAjax {
 							$asp = $post->width / $post->height;
 							$thumb_src = add_query_arg( $unsplash_args, $post->urls->thumb );
 							$title = isset( $post->alt_description ) ? $post->alt_description : $post->id;
-							$title .= ' ' . sprintf( esc_html__( 'by %s', 'mailster' ),$post->user->name );
+							$title .= ' ' . sprintf( esc_html__( 'by %s', 'mailster' ), $post->user->name.' ('. $post->user->links->html.')' );
 							$class = 'is-unsplash';
 						} else {
 							$post_id = $post->ID;

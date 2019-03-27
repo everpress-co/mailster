@@ -22,7 +22,16 @@ class MailsterHelper {
 			return $image;
 		}
 
-		if ( $attach_id ) {
+		if ( $attach_id && ! is_numeric( $attach_id ) ) {
+
+			$response = $this->unsplash( 'download_url', $attach_id );
+
+			if ( ! is_wp_error( $response ) && isset( $response->url ) ) {
+				$img_url = $response->url;
+			} else {
+				return false;
+			}
+		} elseif ( $attach_id ) {
 
 			$attach_id = (int) $attach_id;
 
@@ -38,7 +47,9 @@ class MailsterHelper {
 				$width = $orig_size[0];
 				$height = $orig_size[1];
 			}
-		} elseif ( $img_url ) {
+		}
+
+		if ( $img_url ) {
 
 			$file_path = parse_url( $img_url );
 
@@ -102,18 +113,18 @@ class MailsterHelper {
 				}
 			}
 
-					$actual_file_path = ltrim( $file_path['path'], '/' );
-					$actual_file_path = rtrim( ABSPATH, '/' ) . $file_path['path'];
+			$actual_file_path = ltrim( $file_path['path'], '/' );
+			$actual_file_path = rtrim( ABSPATH, '/' ) . $file_path['path'];
 
 			if ( ! file_exists( $actual_file_path ) ) {
 				$actual_file_path = ABSPATH . str_replace( site_url( '/' ), '', $img_url );
 			}
 
-					$orig_size = getimagesize( $actual_file_path );
+			$orig_size = getimagesize( $actual_file_path );
 
-					$image_src[0] = $img_url;
-					$image_src[1] = $orig_size[0];
-					$image_src[2] = $orig_size[1];
+			$image_src[0] = $img_url;
+			$image_src[1] = $orig_size[0];
+			$image_src[2] = $orig_size[1];
 
 		}
 
@@ -1682,8 +1693,7 @@ class MailsterHelper {
 
 		$key = sanitize_key( apply_filters( 'mailster_unsplash_client_id', 'ba3e2af91c8c44d00cb70fe6217dcf021f7350633c323876ffa561a1dfbfc25f' ) );
 		// demo
-		$key = sanitize_key( apply_filters( 'mailster_unsplash_client_id', '84b6fecb559329be472a483328763ba0980a8272f25dc524f1cae852970c9b20' ) );
-
+		// $key = sanitize_key( apply_filters( 'mailster_unsplash_client_id', '84b6fecb559329be472a483328763ba0980a8272f25dc524f1cae852970c9b20' ) );
 		switch ( $command ) {
 			case 'search':
 				$path = 'search/photos';
@@ -1701,6 +1711,10 @@ class MailsterHelper {
 					$args['page'] = floor( $args['offset'] / $args['per_page'] ) + 1;
 					unset( $args['offset'] );
 				}
+				break;
+			case 'download_url':
+				$path = 'photos/' . $args . '/download';
+				$args = array();
 				break;
 			default:
 				return new WP_Error( 'err', esc_html__( 'Command not supported', 'mailster' ) );
