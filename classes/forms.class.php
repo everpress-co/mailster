@@ -989,6 +989,8 @@ class MailsterForms {
 			if ( empty( $forms[ $i ]->submit ) ) {
 				$forms[ $i ]->submit = mailster_text( 'submitbutton' );
 			}
+
+			$forms[ $i ]->gdpr = mailster_option( 'gdpr_forms' );
 		}
 
 		return is_null( $ID ) ? $forms : $forms[0];

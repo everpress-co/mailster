@@ -73,15 +73,26 @@ class MailsterForm {
 		$this->ID = $id;
 		$this->form = mailster( 'forms' )->get( $this->ID, true, true );
 		if ( ! $this->form ) {
-			$this->form = $this->form = mailster( 'forms' )->get( mailster( 'helper' )->get_first_form_id(), true, true );
+			$this->form = mailster( 'forms' )->get( mailster( 'helper' )->get_first_form_id(), true, true );
 		}
 		if ( isset( $args['id'] ) ) {
 			unset( $args['id'] );
 		}
 		if ( ! empty( $args ) ) {
+
+			// only allow certain elements
+			$args = array_intersect_key( $args, array_flip( array( 'name', 'submit', 'asterisk', 'userschoice', 'precheck', 'dropdown', 'prefill', 'inline', 'overwrite', 'style', 'doubleoptin', 'subject', 'headline', 'content', 'link', 'template', 'redirect', 'gdpr' ) ) );
+
+			// special case form stylesheet
+			if ( isset( $args['style'] ) ) {
+				$args['stylesheet'] = $args['style'];
+				unset( $args['style'] );
+			}
+
 			$this->formkey = md5( AUTH_SALT . serialize( $args ) );
 			set_transient( '_mailster_form_' . $this->formkey, $args );
-			$this->form = (object) wp_parse_args( $args, (array) $this->form );
+			$this->form = (object) shortcode_atts( (array) $this->form, $args );
+
 		}
 
 		$this->ajax( $this->form->ajax );
@@ -503,8 +514,12 @@ class MailsterForm {
 			}
 		}
 
-		if ( ! $this->profile && ! $this->unsubscribe && mailster_option( 'gdpr_forms' ) ) {
-			$label = mailster_option( 'gdpr_text' );
+		if ( ! $this->profile && ! $this->unsubscribe && $this->form->gdpr ) {
+			if ( ! is_numeric( $this->form->gdpr ) ) {
+				$label = $this->form->gdpr;
+			} else {
+				$label = mailster_option( 'gdpr_text' );
+			}
 			$fields['_gdpr'] = '<div class="mailster-wrapper mailster-_gdpr-wrapper">';
 			$fields['_gdpr'] .= '<label for="mailster-_gdpr-' . $this->ID . '">';
 			$fields['_gdpr'] .= '<input type="hidden" name="_gdpr" value="0"><input id="mailster-_gdpr-' . $this->ID . '" name="_gdpr" type="checkbox" value="1" class="mailster-_gdpr mailster-required" aria-required="true" aria-label="' . esc_attr( $label ) . '"> ';
