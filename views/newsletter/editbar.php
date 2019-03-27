@@ -212,11 +212,7 @@
 				<?php endforeach; ?>
 				</p>
 				<p>
-<<<<<<< HEAD
-					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'Search for Posts', 'mailster' );?>&hellip;" ></label>
-=======
 					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'Search for posts', 'mailster' );?>..." ></label>
->>>>>>> origin/develop
 				</p>
 				<div class="postlist">
 				</div>
