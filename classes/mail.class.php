@@ -17,6 +17,7 @@ class MailsterMail {
 	public $bcc_name;
 	public $hash = '';
 	public $reply_to;
+	public $reply_to_name;
 	public $deliverymethod;
 	public $dkim;
 	public $bouncemail;
@@ -410,7 +411,19 @@ class MailsterMail {
 			$this->from_name = $from_name;
 		}
 		if ( isset( $reply_to ) ) {
-			$this->reply_to = $reply_to;
+			foreach ( $reply_to as $address ) {
+				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
+					$recipient_name = '';
+					if ( count( $matches ) == 3 ) {
+						$recipient_name = $matches[1];
+						$address        = $matches[2];
+					}
+					$this->reply_to[] = $address;
+					$this->reply_to_name[] = $recipient_name;
+				} else {
+					$this->reply_to[] = $address;
+				}
+			}
 		}
 		if ( isset( $cc ) ) {
 			foreach ( $cc as $address ) {
@@ -641,34 +654,40 @@ class MailsterMail {
 				$this->mailer->AddAddress( $address, isset( $this->to_name[ $i ] ) ? $this->to_name[ $i ] : null );
 			}
 
-			if ( $this->cc ) {
-				if ( ! is_array( $this->cc ) ) {
-					$this->cc = array( $this->cc );
-				}
-				if ( ! is_array( $this->cc_name ) ) {
-					$this->cc_name = array( $this->cc_name );
-				}
-
-				foreach ( $this->cc as $i => $address ) {
-					$this->mailer->addCC( $address, isset( $this->cc_name[ $i ] ) ? $this->cc_name[ $i ] : null );
-				}
-			}
-
-			if ( $this->bcc ) {
-				if ( ! is_array( $this->bcc ) ) {
-					$this->bcc = array( $this->bcc );
-				}
-				if ( ! is_array( $this->bcc_name ) ) {
-					$this->bcc_name = array( $this->bcc_name );
-				}
-
-				foreach ( $this->bcc as $i => $address ) {
-					$this->mailer->addBCC( $address, isset( $this->bcc_name[ $i ] ) ? $this->bcc_name[ $i ] : null );
-				}
-			}
-
 			$this->subject = htmlspecialchars_decode( $this->subject );
 			$this->from_name = htmlspecialchars_decode( $this->from_name );
+
+			// add CC
+			if ( $this->cc ) {
+				$cc = (array) $this->cc;
+				$cc_name = (array) $this->cc_name;
+
+				foreach ( $this->cc as $i => $address ) {
+					$this->mailer->addCC( $address, isset( $cc_name[ $i ] ) ? $cc_name[ $i ] : null );
+				}
+			}
+
+			// add BCC
+			if ( $this->bcc ) {
+				$bcc = (array) $this->bcc;
+				$bcc_name = (array) $this->bcc_name;
+
+				foreach ( $this->bcc as $i => $address ) {
+					$this->mailer->addBCC( $address, isset( $bcc_name[ $i ] ) ? $bcc_name[ $i ] : null );
+				}
+			}
+
+			// add Reply-to
+			if ( $this->reply_to ) {
+				$reply_to = (array) $this->reply_to;
+				$reply_to_name = (array) $this->reply_to_name;
+
+				foreach ( $reply_to as $i => $address ) {
+					$this->mailer->addReplyTo( $address, isset( $reply_to_name[ $i ] ) ? $reply_to_name[ $i ] : null );
+				}
+			} else {
+				$this->mailer->addReplyTo( $this->from, $this->from_name );
+			}
 
 			if ( empty( $this->from ) ) {
 				$this->from = mailster_option( 'from' );
@@ -694,14 +713,6 @@ class MailsterMail {
 			( $this->bouncemail )
 				? $this->mailer->ReturnPath = $this->mailer->Sender = $this->bouncemail
 				: $this->mailer->ReturnPath = $this->mailer->Sender = $this->from;
-
-			if ( ! empty( $this->reply_to ) ) {
-				foreach ( (array) $this->reply_to as $address ) {
-					$this->mailer->addReplyTo( $address );
-				}
-			} else {
-				$this->mailer->addReplyTo( $this->from );
-			}
 
 			// add the tracking image at the bottom
 			if ( $this->add_tracking_image ) {

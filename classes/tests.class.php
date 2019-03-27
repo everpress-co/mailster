@@ -375,7 +375,23 @@ class MailsterTests {
 		if ( ! empty( $hooks ) ) {
 			$msg = 'Following deprecated MyMail hooks were found and should get replaced:<ul>';
 			foreach ( $hooks as $hook ) {
-				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code> </li>';
+
+				$msg .= '<li><code>' . $hook . '</code> => <code>' . str_replace( 'mymail', 'mailster', $hook ) . '</code>';
+				foreach ( array_values( $wp_filter[ $hook ]->callbacks ) as $data ) {
+					foreach ( $data as $id => $entries ) {
+						if ( is_string( $entries['function'] ) ) {
+							continue;
+						} elseif ( $entries['function'] instanceof Closure ) {
+							$reflFunc = new ReflectionFunction( $entries['function'] );
+						} else {
+							$reflFunc = new ReflectionMethod( $entries['function'][0], $entries['function'][1] );
+						}
+						$plugin_path = $reflFunc->getFileName();
+						$msg .= '<br>found in ' . $plugin_path;
+					}
+				}
+				$msg .= '</li>';
+
 			}
 			$msg .= '</ul>';
 
@@ -386,7 +402,7 @@ class MailsterTests {
 	}
 	private function test_support_account_found() {
 
-		$support_emails = array( 'help@everpress.io', 'help@revaxarts.com', 'support@mailster.co' );
+		$support_emails = array( 'help@everpress.co', 'help@everpress.io', 'help@revaxarts.com', 'support@mailster.co' );
 
 		foreach ( $support_emails as $email ) {
 			if ( $user = get_user_by( 'email', $email ) ) {
@@ -451,10 +467,16 @@ class MailsterTests {
 
 		global $wpdb;
 
-		$result = mailster()->dbstructure( false, true, true, false );
+		$set_charset = true;
+		$result = mailster()->dbstructure( false, true, $set_charset, false );
+
+		if ( false !== strpos( $result, 'Unknown character set:' ) ) {
+			$set_charset = false;
+			$result = mailster()->dbstructure( false, true, $set_charset, false );
+		}
 
 		if ( true !== $result ) {
-			$second_result = mailster()->dbstructure( false, true, true, false );
+			$second_result = mailster()->dbstructure( false, true, $set_charset, false );
 			if ( $result === $second_result ) {
 				$this->error( $result );
 			} else {
@@ -592,14 +614,14 @@ class MailsterTests {
 			$this->error( 'Constant WP_HTTP_BLOCK_EXTERNAL defined' );
 		}
 
-		$response = wp_remote_post( 'https://update.mailster.co/' );
+		$response = wp_remote_post( apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ) );
 		$code = wp_remote_retrieve_response_code( $response );
 
 		if ( is_wp_error( $response ) ) {
 			$this->error( $response->get_error_message() . ' - Please allow connection to update.mailster.co!' );
 		} elseif ( $code >= 200 && $code < 300 ) {
 		} else {
-			$this->error( 'does not work: ' . $code );
+			$this->error( 'does not work: Error code ' . $code );
 		}
 	}
 	private function _test_TLS() {

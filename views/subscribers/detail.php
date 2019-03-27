@@ -137,10 +137,10 @@ if ( $is_new ) {
 							<option value="<?php echo (int) $id ?>" <?php selected( $id, $subscriber->status ) ?> ><?php echo $status ?></option>
 						<?php } ?>
 						</select>
-						<span class="description info"><?php esc_html_e( 'choosing "pending" as status will force a confirmation message to the subscriber', 'mailster' );?></span>
-						</div>
 					</li>
 				</ul>
+				<div class="pending-info error inline"><p><?php esc_html_e( 'Choosing "pending" as status will force a confirmation message to the subscribers.', 'mailster' ) ?></p></div>
+				</div>
 			</div>
 			<?php if ( ! $is_new ) : ?>
 			<div class="info">

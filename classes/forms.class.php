@@ -1225,7 +1225,12 @@ class MailsterForms {
 			'endpoint' => null,
 		) );
 
-		$button_src = apply_filters( 'mymail_subscribe_button_src', apply_filters( 'mailster_subscribe_button_src', '//mailster.github.io/v1/button.js', $options ), $options );
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+		// $button_src = '//mailster.github.io/v1/button.js';
+		$button_src = MAILSTER_URI . 'assets/js/button' . $suffix . '.js';
+
+		$button_src = apply_filters( 'mymail_subscribe_button_src', apply_filters( 'mailster_subscribe_button_src', $button_src, $options ), $options );
+
 		$options['endpoint'] = $this->url( array(
 			'id' => $form_id,
 			'iframe' => 1,

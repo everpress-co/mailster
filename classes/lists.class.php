@@ -1141,7 +1141,7 @@ class MailsterLists {
 
 		$sent = $this->get_sent( $id, $total );
 
-		return $sent / $totals;
+		return min( 1, ($sent / $totals) );
 
 	}
 
@@ -1176,7 +1176,7 @@ class MailsterLists {
 
 		$errors = $this->get_errors( $id, $total );
 
-		return $errors / $sent;
+		return min( 1, ($errors / $sent) );
 
 	}
 
@@ -1211,7 +1211,7 @@ class MailsterLists {
 
 		$opens = $this->get_opens( $id, $total );
 
-		return $opens / $sent;
+		return min( 1, ($opens / $sent) );
 
 	}
 
@@ -1246,7 +1246,7 @@ class MailsterLists {
 
 		$clicks = $this->get_clicks( $id, $total );
 
-		return $clicks / $sent;
+		return min( 1, ($clicks / $sent) );
 
 	}
 
@@ -1267,7 +1267,7 @@ class MailsterLists {
 
 		$clicks = $this->get_clicks( $id, $total );
 
-		return $clicks / $open;
+		return min( 1, ($clicks / $open) );
 
 	}
 
@@ -1301,7 +1301,7 @@ class MailsterLists {
 
 		$unsubscribes = $this->get_unsubscribes( $id, $total );
 
-		return $unsubscribes / $sent;
+		return min( 1, ($unsubscribes / $sent) );
 
 	}
 
@@ -1322,7 +1322,7 @@ class MailsterLists {
 
 		$unsubscribes = $this->get_unsubscribes( $id, $total );
 
-		return $unsubscribes / $open;
+		return min( 1, ($unsubscribes / $open) );
 
 	}
 
@@ -1355,7 +1355,7 @@ class MailsterLists {
 
 		$bounces = $this->get_bounces( $id );
 
-		return $bounces / ( $totals + $bounces );
+		return min( 1, ($bounces / ( $totals + $bounces )) );
 
 	}
 
