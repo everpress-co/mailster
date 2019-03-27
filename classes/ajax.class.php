@@ -1270,7 +1270,7 @@ class MailsterAjax {
 							$asp = $post->width / $post->height;
 							$thumb_src = add_query_arg( $unsplash_args, $post->urls->thumb );
 							$title = isset( $post->alt_description ) ? $post->alt_description : $post->id;
-							$title .= ' ' . sprintf( esc_html__( 'by %s', 'mailster' ), $post->user->name.' ('. $post->user->links->html.')' );
+							$title .= ' ' . sprintf( esc_html__( 'by %s', 'mailster' ), $post->user->name . ' (' . $post->user->links->html . ')' );
 							$class = 'is-unsplash';
 						} else {
 							$post_id = $post->ID;
