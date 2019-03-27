@@ -293,6 +293,10 @@ class MailsterForm {
 			);
 		}
 
+		if ( empty( $this->form->fields ) ) {
+			$this->form->fields = array();
+		}
+
 		foreach ( $this->form->fields as $field_id => $field ) {
 
 			$required = isset( $field->required ) && $field->required;
