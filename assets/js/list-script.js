@@ -7,7 +7,6 @@ jQuery(document).ready(function ($) {
 		_form = $('form#subscriber_form'),
 		wpnonce = $('#_wpnonce').val();
 
-	//init the whole thing
 	function _init() {
 
 		_events();

@@ -30,7 +30,8 @@ jQuery(document).ready(function ($) {
 			var form = $(this),
 				wrap = form.parent(),
 				purchasecode = wrap.find('input.register-form-purchasecode').val(),
-				slug = wrap.find('input.register-form-slug').val();
+				slug = wrap.find('input.register-form-slug').val(),
+				error;
 
 			form.removeClass('has-error').prop('disabled', true);
 			wrap.addClass('loading');
@@ -44,9 +45,10 @@ jQuery(document).ready(function ($) {
 				wrap.removeClass('loading');
 				if (response.success) {
 					wrap.addClass('step-2').removeClass('step-1')
-						//$('.register_form_2').find('input').eq(0).focus();
 				} else {
-					form.addClass('has-error').find('.error-msg').html(response.error);
+					error = response.error;
+					error += ' <a href="https://evp.to/error-' + response.code + '" target="_blank">' + mailsterregisterL10n.help + '</a>';
+					form.addClass('has-error').find('.error-msg').html(error);
 				}
 
 			}, function (jqXHR, textStatus, errorThrown) {
@@ -64,7 +66,8 @@ jQuery(document).ready(function ($) {
 			var form = $(this),
 				wrap = form.parent(),
 				purchasecode = wrap.find('input.register-form-purchasecode').val(),
-				slug = wrap.find('input.register-form-slug').val();
+				slug = wrap.find('input.register-form-slug').val(),
+				error;
 
 			form.removeClass('has-error').prop('disabled', true);
 			wrap.addClass('loading');
@@ -85,7 +88,9 @@ jQuery(document).ready(function ($) {
 						form = wrap.find('.register_form');
 						form.parent().removeClass('step-2').addClass('step-1');
 					}
-					form.addClass('has-error').find('.error-msg').html(response.error);
+					error = response.error;
+					error += ' (<a href="https://evp.to/error-' + response.code + '" target="_blank">' + mailsterregisterL10n.help + '</a>)';
+					form.addClass('has-error').find('.error-msg').html(error);
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
 
@@ -153,7 +158,6 @@ jQuery(document).ready(function ($) {
 
 		if (purchasecode) {
 			wrap.find('.register_form').parent().removeClass('step-1').addClass('step-2');
-			//wrap.find('.register_form_2').submit();
 		} else {
 			wrap.find('.register_form').submit();
 		}

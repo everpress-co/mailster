@@ -30,11 +30,12 @@ function mailster( $subclass = null ) {
  */
 function mailster_option( $option, $fallback = null ) {
 
-	global $mailster_options;
+	$mailster_options = mailster_options();
 
 	$value = isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $fallback;
 	$value = apply_filters( 'mailster_option', $value, $option, $fallback );
 	$value = apply_filters( 'mailster_option_' . $option, $value, $fallback );
+
 	return $value;
 
 }
@@ -49,15 +50,11 @@ function mailster_option( $option, $fallback = null ) {
  */
 function mailster_options( $option = null, $fallback = null ) {
 
-	global $mailster_options;
-
 	if ( ! is_null( $option ) ) {
 		return mailster_option( $option, $fallback );
 	}
-	if ( empty( $mailster_options ) ) {
-		$mailster_options = get_option( 'mailster_options', array() );
-	}
-	return $mailster_options;
+
+	return get_option( 'mailster_options', array() );
 }
 
 
@@ -146,10 +143,8 @@ function mailster_cache_delete( $key ) {
  * @return unknown
  */
 function mailster_text( $option, $fallback = '' ) {
-	global $mailster_texts;
-	if ( empty( $mailster_texts ) ) {
-		$mailster_texts = get_option( 'mailster_texts', array() );
-	}
+
+	$mailster_texts = mailster_texts();
 
 	$string = isset( $mailster_texts[ $option ] ) ? $mailster_texts[ $option ] : $fallback ;
 
@@ -163,8 +158,7 @@ function mailster_text( $option, $fallback = '' ) {
  * @return unknown
  */
 function mailster_texts() {
-	global $mailster_texts;
-	return $mailster_texts;
+	return get_option( 'mailster_texts', array() );
 }
 
 
@@ -172,12 +166,13 @@ function mailster_texts() {
  *
  *
  * @param unknown $option
- * @param unknown $value
+ * @param unknown $value  (optional)
  * @param unknown $temp   (optional)
  * @return unknown
  */
-function mailster_update_option( $option, $value, $temp = false ) {
-	global $mailster_options;
+function mailster_update_option( $option, $value = null, $temp = false ) {
+
+	$mailster_options = mailster_options();
 
 	if ( is_array( $option ) ) {
 		$temp = (bool) $value;
@@ -188,6 +183,11 @@ function mailster_update_option( $option, $value, $temp = false ) {
 
 	if ( $temp ) {
 		$mailster_options = mailster( 'settings' )->verify( $mailster_options );
+		add_filter( 'mailster_option', function( $value, $option, $fallback ) use ( $mailster_options ) {
+
+			return isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $value;
+
+		}, 0, 3);
 		return true;
 	}
 
@@ -218,7 +218,6 @@ function mailster_get_current_user_id() {
 	return mailster( 'subscribers' )->get_current_user_id();
 
 }
-
 
 
 /**
@@ -354,7 +353,7 @@ function mailster_get_campaigns( $args = '' ) {
  */
 function mailster_list_newsletter( $args = '' ) {
 	$defaults = array(
-		'title_li' => __( 'Newsletters', 'mailster' ),
+		'title_li' => esc_html__( 'Newsletters', 'mailster' ),
 		'post_type' => 'newsletter',
 		'post_status' => array( 'finished', 'active' ),
 		'echo' => 1,
@@ -469,7 +468,7 @@ function mailster_get_ip() {
 	}
 
 	$ip = '';
-	foreach ( array( 'HTTP_CLIENT_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR' ) as $key ) {
+	foreach ( array( 'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR' ) as $key ) {
 		if ( isset( $_SERVER[ $key ] ) ) {
 			foreach ( explode( ',', $_SERVER[ $key ] ) as $ip ) {
 				$ip = trim( $ip );
@@ -872,20 +871,20 @@ function mailster_get_subscriber( $id_email_or_hash, $type = null ) {
  *
  *
  * @param unknown $tag
- * @param unknown $callbackfunction
+ * @param unknown $callback
  * @return unknown
  */
-function mailster_add_tag( $tag, $callbackfunction ) {
+function mailster_add_tag( $tag, $callback ) {
 
-	if ( is_callable( $callbackfunction ) ) {
+	if ( is_callable( $callback ) ) {
 
-	} elseif ( is_array( $callbackfunction ) ) {
-		if ( ! method_exists( $callbackfunction[0], $callbackfunction[1] ) ) {
+	} elseif ( is_array( $callback ) ) {
+		if ( ! method_exists( $callback[0], $callback[1] ) ) {
 			return false;
 		}
 	} else {
 
-		if ( ! function_exists( $callbackfunction ) ) {
+		if ( ! function_exists( $callback ) ) {
 			return false;
 		}
 	}
@@ -896,7 +895,7 @@ function mailster_add_tag( $tag, $callbackfunction ) {
 		$mailster_tags = array();
 	}
 
-	$mailster_tags[ $tag ] = $callbackfunction;
+	$mailster_tags[ $tag ] = $callback;
 
 	return true;
 
@@ -925,39 +924,35 @@ function mailster_remove_tag( $tag ) {
 /**
  *
  *
- * @param unknown $callbackfunction
+ * @param unknown $callback
  * @return unknown
  */
-function mailster_add_style( $callbackfunction ) {
-
-	global $mailster_mystyles;
-
-	if ( is_callable( $callbackfunction ) ) {
-
-	} elseif ( is_array( $callbackfunction ) ) {
-		if ( ! method_exists( $callbackfunction[0], $callbackfunction[1] ) ) {
-			return false;
-		}
-	} else {
-		if ( ! function_exists( $callbackfunction ) ) {
-			return false;
-		}
-	}
-
-	if ( ! isset( $mailster_mystyles ) ) {
-		$mailster_mystyles = array();
-	}
+function mailster_add_style( $callback ) {
 
 	$args = func_get_args();
 	$args = array_slice( $args, 1 );
-	$mailster_mystyles[] = call_user_func_array( $callbackfunction, $args );
+	return mailster( 'helper' )->add_style( $callback, $args );
+}
 
-	return true;
+/**
+ *
+ *
+ * @param unknown $callback
+ * @return unknown
+ */
+function mailster_add_embeded_style( $callback ) {
+
+	$args = func_get_args();
+	$args = array_slice( $args, 1 );
+	return mailster( 'helper' )->add_style( $callback, $args, true );
 
 }
 
+function mailster_add_embedded_style( $callback ) {
 
+	return mailster_add_embeded_style( $callback );
 
+}
 
 /**
  *
@@ -988,7 +983,7 @@ function mailster_update_notice( $text ) {
 	wp_enqueue_style( 'thickbox' );
 	wp_enqueue_script( 'thickbox' );
 
-	return sprintf( __( 'Mailster has been updated to %s.', 'mailster' ), '<strong>' . MAILSTER_VERSION . '</strong>' ) . ' <a class="thickbox" href="' . network_admin_url( 'plugin-install.php?tab=plugin-information&amp;plugin=mailster&amp;section=changelog&amp;TB_iframe=true&amp;width=772&amp;height=745' ) . '">' . __( 'Changelog', 'mailster' ) . '</a>';
+	return sprintf( esc_html__( 'Mailster has been updated to %s.', 'mailster' ), '<strong>' . MAILSTER_VERSION . '</strong>' ) . ' <a class="thickbox" href="' . network_admin_url( 'plugin-install.php?tab=plugin-information&amp;plugin=mailster&amp;section=changelog&amp;TB_iframe=true&amp;width=772&amp;height=745' ) . '">' . esc_html__( 'Changelog', 'mailster' ) . '</a>';
 
 }
 
@@ -1014,6 +1009,16 @@ function is_mailster_newsletter_homepage( $post_id = null ) {
 }
 
 
+function mailster_remove_block_comments( $content ) {
+
+	if ( false !== strpos( $content, '<!-- wp' ) ) {
+		$content = preg_replace( '/<!-- \/?wp:(.+) -->(\n?)/', '', $content );
+		$content = str_replace( array( '<p></p>' ), '', $content );
+		$content = trim( $content );
+	}
+
+	return $content;
+}
 
 /**
  *

@@ -136,7 +136,6 @@ class mailster_mail_helper extends _mailster_mail_helper {
 
 		$text = preg_replace( '# +#', ' ', $html );
 		$text = str_replace( array( "\n", "\r", "\t" ), '', $text );
-		// $piclinks = "#< *a[^>]*> *< *img[^>]*> *< *\/ *a *>#isU";
 		$piclinks = '/< *a[^>]*href *= *"([^#][^"]*)"[^>]*> *< *img[^>]*> *< *\/ *a *>/Uis';
 		$style = '#< *style(?:(?!< */ *style *>).)*< */ *style *>#isU';
 		$strikeTags = '#< *strike(?:(?!< */ *strike *>).)*< */ *strike *>#iU';

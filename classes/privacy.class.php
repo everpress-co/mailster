@@ -23,17 +23,17 @@ class MailsterPrivacy {
 	public function privacy_content() {
 
 		$content =
-			'<h2 class="privacy-policy-tutorial">' . __( 'What data Mailster collects from your subscribers', 'mailster' ) . '</h2>';
+			'<h2 class="privacy-policy-tutorial">' . esc_html__( 'What data Mailster collects from your subscribers', 'mailster' ) . '</h2>';
 		$content .=
-			'<h3 class="wp-policy-help">' . __( 'Newsletter', 'mailster' ) . '</h3>';
+			'<h3 class="wp-policy-help">' . esc_html__( 'Newsletter', 'mailster' ) . '</h3>';
 		$content .=
-			'<p class="wp-policy-help">' . __( 'If you have signed up for our newsletter you may receive emails from us. This includes but not limited to transactional emails and marketing emails.', 'mailster' ) . '</p>';
+			'<p class="wp-policy-help">' . esc_html__( 'If you have signed up for our newsletter you may receive emails from us. This includes but not limited to transactional emails and marketing emails.', 'mailster' ) . '</p>';
 		$content .=
-			'<p class="wp-policy-help">' . __( 'We\'ll only send emails which you have explicitly or implicitly (registration, product purchase etc.) signed up to.', 'mailster' ) . '</p>';
+			'<p class="wp-policy-help">' . esc_html__( 'We\'ll only send emails which you have explicitly or implicitly (registration, product purchase etc.) signed up to.', 'mailster' ) . '</p>';
 
 		$tracked_fields = array(
-			__( 'your email address', 'mailster' ),
-			__( 'your name', 'mailster' ),
+			esc_html__( 'your email address', 'mailster' ),
+			esc_html__( 'your name', 'mailster' ),
 		);
 
 		if ( $custom_fields = mailster()->get_custom_fields() ) {
@@ -42,26 +42,26 @@ class MailsterPrivacy {
 		}
 
 		if ( mailster_option( 'track_location' ) ) {
-			$tracked_fields[] = __( 'your current location', 'mailster' );
+			$tracked_fields[] = esc_html__( 'your current location', 'mailster' );
 		}
 		if ( mailster_option( 'track_users' ) ) {
-			$tracked_fields[] = __( 'your current IP address and timestamp of signup', 'mailster' );
-			$tracked_fields[] = __( 'your IP address and timestamp when you have confirmed your subscription', 'mailster' );
+			$tracked_fields[] = esc_html__( 'your current IP address and timestamp of signup', 'mailster' );
+			$tracked_fields[] = esc_html__( 'your IP address and timestamp when you have confirmed your subscription', 'mailster' );
 		}
 
 		$content .=
-			'<p class="wp-policy-help">' . sprintf( __( 'On signup we collect %s and the current web address were you sign up.', 'mailster' ), implode( ', ', $tracked_fields ) ) . '</p>';
+			'<p class="wp-policy-help">' . sprintf( esc_html__( 'On signup we collect %s and the current web address were you sign up.', 'mailster' ), implode( ', ', $tracked_fields ) ) . '</p>';
 		$content .=
-			'<p class="wp-policy-help">' . __( 'We send our emails via', 'mailster' ) . ' ';
+			'<p class="wp-policy-help">' . esc_html__( 'We send our emails via', 'mailster' ) . ' ';
 
 		if ( 'simple' == ($deliverymethod = mailster_option( 'deliverymethod' )) ) {
-			$content .= __( 'our own server.', 'mailster' );
+			$content .= esc_html__( 'our own server.', 'mailster' );
 		} elseif ( 'smtp' == $deliverymethod ) {
-			$content .= sprintf( __( 'via SMTP host %s', 'mailster' ), mailster_option( 'smtp_host' ) );
+			$content .= sprintf( esc_html__( 'via SMTP host %s', 'mailster' ), mailster_option( 'smtp_host' ) );
 		} elseif ( 'gmail' == $deliverymethod ) {
-			$content .= sprintf( __( 'a service called %s', 'mailster' ), 'Gmail by Google' );
+			$content .= sprintf( esc_html__( 'a service called %s', 'mailster' ), 'Gmail by Google' );
 		} else {
-			$content .= sprintf( __( 'a service called %s', 'mailster' ), $deliverymethod );
+			$content .= sprintf( esc_html__( 'a service called %s', 'mailster' ), $deliverymethod );
 		}
 		$content .=
 			'</p>';
@@ -69,25 +69,25 @@ class MailsterPrivacy {
 		$tracking = array();
 
 		if ( mailster_option( 'track_opens' ) ) {
-			$tracking[] = __( 'if you open the email in your email client', 'mailster' );
+			$tracking[] = esc_html__( 'if you open the email in your email client', 'mailster' );
 		}
 		if ( mailster_option( 'track_clicks' ) ) {
-			$tracking[] = __( 'if you click a link in the email', 'mailster' );
+			$tracking[] = esc_html__( 'if you click a link in the email', 'mailster' );
 		}
 		if ( mailster_option( 'track_location' ) ) {
-			$tracking[] = __( 'your current location', 'mailster' );
+			$tracking[] = esc_html__( 'your current location', 'mailster' );
 		}
 		if ( mailster_option( 'track_users' ) ) {
-			$tracking[] = __( 'your current IP address', 'mailster' );
+			$tracking[] = esc_html__( 'your current IP address', 'mailster' );
 		}
 
 		if ( ! empty( $tracking ) ) {
 			$content .=
-				'<p class="wp-policy-help">' . sprintf( __( 'Once you get an email from us we track %s.', 'mailster' ), implode( ', ', $tracking ) ) . '</p>';
+				'<p class="wp-policy-help">' . sprintf( esc_html__( 'Once you get an email from us we track %s.', 'mailster' ), implode( ', ', $tracking ) ) . '</p>';
 		}
 
 		if ( mailster_option( 'do_not_track' ) ) {
-			$content .= '<p class="wp-policy-help">' . __( 'We respect your browsers "Do Not Track" feature which means we do not track your interaction with our emails.', 'mailster' ) . '</p>';
+			$content .= '<p class="wp-policy-help">' . esc_html__( 'We respect your browsers "Do Not Track" feature which means we do not track your interaction with our emails.', 'mailster' ) . '</p>';
 		}
 
 		return apply_filters( 'mailster_privacy_content', $content );
@@ -95,7 +95,7 @@ class MailsterPrivacy {
 
 	public function register_exporter( $exporters ) {
 		$exporters['mailster-exporter'] = array(
-			'exporter_friendly_name' => __( 'Mailster Data', 'mailster' ),
+			'exporter_friendly_name' => esc_html__( 'Mailster Data', 'mailster' ),
 			'callback' => array( &$this, 'data_export' ),
 		);
 		return $exporters;
@@ -103,7 +103,7 @@ class MailsterPrivacy {
 
 	public function register_eraser( $eraser ) {
 		$eraser['mailster-eraser'] = array(
-			'eraser_friendly_name' => __( 'Mailster Data', 'mailster' ),
+			'eraser_friendly_name' => esc_html__( 'Mailster Data', 'mailster' ),
 			'callback' => array( &$this, 'data_erase' ),
 		);
 		return $eraser;
@@ -157,19 +157,19 @@ class MailsterPrivacy {
 				// lists
 				foreach ( $lists as $key => $value ) {
 					$data[] = array(
-						'name'  => __( 'List Name', 'mailster' ),
+						'name'  => esc_html__( 'List Name', 'mailster' ),
 						'value' => $value->name,
 					);
 					$data[] = array(
-						'name'  => __( 'Description', 'mailster' ),
+						'name'  => esc_html__( 'Description', 'mailster' ),
 						'value' => $value->description,
 					);
 					$data[] = array(
-						'name'  => __( 'Added', 'mailster' ),
+						'name'  => esc_html__( 'Added', 'mailster' ),
 						'value' => mailster( 'helper' )->do_timestamp( $value->added ),
 					);
 					$data[] = array(
-						'name'  => __( 'Confirmed', 'mailster' ),
+						'name'  => esc_html__( 'Confirmed', 'mailster' ),
 						'value' => mailster( 'helper' )->do_timestamp( $value->confirmed ),
 					);
 				}
@@ -202,25 +202,25 @@ class MailsterPrivacy {
 					switch ( $value->type ) {
 						case 1: // sent
 							$campaigns[ $value->campaign_id ]['data'][] = array(
-								'name'  => __( 'Sent', 'mailster' ),
+								'name'  => esc_html__( 'Sent', 'mailster' ),
 								'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ),
 							);
 							break;
 						case 2: // opened
 							$campaigns[ $value->campaign_id ]['data'][] = array(
-								'name'  => __( 'Opened', 'mailster' ),
+								'name'  => esc_html__( 'Opened', 'mailster' ),
 								'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ),
 							);
 							break;
 						case 3:  // clicked
 							$campaigns[ $value->campaign_id ]['data'][] = array(
-								'name'  => __( 'Clicked', 'mailster' ),
+								'name'  => esc_html__( 'Clicked', 'mailster' ),
 								'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ) . ' (' . $value->link . ')',
 							);
 							break;
 						case 4:  // clicked
 							$campaigns[ $value->campaign_id ]['data'][] = array(
-								'name'  => __( 'Unsubscribe', 'mailster' ),
+								'name'  => esc_html__( 'Unsubscribe', 'mailster' ),
 								'value' => mailster( 'helper' )->do_timestamp( $value->timestamp ),
 							);
 							break;
@@ -292,8 +292,8 @@ class MailsterPrivacy {
 				$link = get_permalink( $post_id );
 				$gdpr_link = mailster_option( 'gdpr_link' );
 				if ( $gdpr_link && $link != $gdpr_link ) {
-					if ( mailster_update_option( 'gdpr_link', $link ) ) {
-						mailster_notice( '[Mailster] ' . sprintf( __( 'The Privacy page link has been changed to %s', 'mailster' ), '<em>' . $link . '</em>' ), 'info', true );
+					if ( mailster_update_option( 'gdpr_link', $link ) && mailster_option( 'gdpr_forms' ) ) {
+						mailster_notice( '[Mailster] ' . sprintf( esc_html__( 'The Privacy page link has been changed to %s', 'mailster' ), '<em>' . $link . '</em>' ), 'info', true );
 					}
 				}
 			}

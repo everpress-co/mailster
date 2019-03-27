@@ -2,7 +2,6 @@
 
 class MailsterActions {
 
-	// private $types = array('', 'sent', 'open', 'click', 'unsubscribe', 'bounce', 'hardbounce', 'error');
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
@@ -201,7 +200,6 @@ class MailsterActions {
 		}
 
 		$user_meta = array(
-			// 'lang' => mailster_get_lang(),
 			'ip' => mailster_get_ip(),
 		);
 
@@ -219,8 +217,8 @@ class MailsterActions {
 
 			if ( $client = mailster_get_user_client() ) {
 
-				if ( $client->client == 'Gmail' ) {
-					// remove meta info if client is Gmail (Gmail Image Proxy)
+				// remove meta info if client is Gmail (GoogleImageProxyy) or Yahoo (YahooMailProxy)
+				if ( 'Gmail' == $client->client || 'Yahoo' == $client->client ) {
 					$user_meta = array();
 				}
 
@@ -310,9 +308,9 @@ class MailsterActions {
 
 		foreach ( $chunks as $subscriber_chunk ) {
 
-			$sql = "DELETE a FROM {$wpdb->prefix}mailster_queue AS a WHERE a.campaign_id = $campaign_id AND a.sent = 0 AND a.subscriber_id NOT IN (" . implode( ',', $subscriber_chunk ) . ')';
+			$sql = "DELETE a FROM {$wpdb->prefix}mailster_queue AS a WHERE a.campaign_id = %d AND a.sent = 0 AND a.subscriber_id NOT IN (" . implode( ',', $subscriber_chunk ) . ')';
 
-			$success = $success && $wpdb->query( $sql );
+			$success = $success && $wpdb->query( $wpdb->prepare( $sql, $campaign_id ) );
 
 		}
 
@@ -326,7 +324,7 @@ class MailsterActions {
 		global $wpdb;
 
 		// delete all softbounces where a hardbounce exists
-		$wpdb->query( "DELETE b FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.campaign_id = b.campaign_id AND a.subscriber_id = b.subscriber_id AND a.link_id = b.link_id WHERE a.type = 6 AND b.type = 5" );
+		$wpdb->query( $wpdb->prepare( "DELETE b FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.campaign_id = b.campaign_id AND a.subscriber_id = b.subscriber_id AND a.link_id = b.link_id WHERE a.type = %d AND b.type = %d", 6, 5 ) );
 
 	}
 
@@ -384,7 +382,6 @@ class MailsterActions {
 
 		$sql = "SELECT a.campaign_id AS ID, type, COUNT(DISTINCT a.subscriber_id) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a";
 
-		// $sql = "SELECT a.campaign_id AS ID, type, IF(a.subscriber_id, COUNT(DISTINCT a.subscriber_id), SUM(a.count)) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a";
 		if ( isset( $campaign_ids ) ) {
 			$sql .= ' WHERE a.campaign_id IN (' . implode( ',', $campaign_ids ) . ')';
 		}
@@ -529,15 +526,12 @@ class MailsterActions {
 
 		$sql = "SELECT a.campaign_id, a.subscriber_id AS ID, type, COUNT(DISTINCT a.subscriber_id) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a";
 
-		// $sql = "SELECT a.campaign_id, a.subscriber_id AS ID, type, IF(a.subscriber_id, COUNT(DISTINCT a.subscriber_id), SUM(a.count)) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a";
 		if ( ! empty( $subscriber_ids ) ) {
 			$sql .= ' WHERE a.subscriber_id IN (' . implode( ',', $subscriber_ids ) . ')';
 		}
 
-		// if($strict) $sql .= " WHERE subscriber_id = ".intval($subscriber_id);
 		$sql .= ' GROUP BY a.type, a.subscriber_id, a.campaign_id';
 
-		// $sql = "SELECT a.campaign_id, a.subscriber_id AS ID, type, COUNT(DISTINCT a.subscriber_id) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a GROUP BY a.type, a.subscriber_id, a.campaign_id UNION SELECT b.campaign_id, b.subscriber_id AS ID, type, COUNT(DISTINCT b.subscriber_id) AS count, SUM(b.count) AS total FROM {$wpdb->prefix}mailster_subscriber_actions AS b GROUP BY b.type, b.subscriber_id, b.campaign_id";
 		$result = $wpdb->get_results( $sql );
 
 		foreach ( $subscriber_ids as $id ) {
@@ -558,25 +552,25 @@ class MailsterActions {
 				$action_counts[ $row->ID ]['sent_total'] += (int) $row->total;
 			} // opens
 			elseif ( 2 == $row->type ) {
-					$action_counts[ $row->ID ]['opens'] += (int) $row->count;
-					$action_counts[ $row->ID ]['opens_total'] += (int) $row->total;
+				$action_counts[ $row->ID ]['opens'] += (int) $row->count;
+				$action_counts[ $row->ID ]['opens_total'] += (int) $row->total;
 			} // clicks
 			elseif ( 3 == $row->type ) {
-					$action_counts[ $row->ID ]['clicks'] += (int) $row->count;
-					$action_counts[ $row->ID ]['clicks_total'] += (int) $row->total;
+				$action_counts[ $row->ID ]['clicks'] += (int) $row->count;
+				$action_counts[ $row->ID ]['clicks_total'] += (int) $row->total;
 			} // unsubscribes
 			elseif ( 4 == $row->type ) {
-					$action_counts[ $row->ID ]['unsubscribes'] += (int) $row->count;
+				$action_counts[ $row->ID ]['unsubscribes'] += (int) $row->count;
 			} // softbounces
 			elseif ( 5 == $row->type ) {
-					$action_counts[ $row->ID ]['softbounces'] += (int) $row->count;
+				$action_counts[ $row->ID ]['softbounces'] += (int) $row->count;
 			} // bounces
 			elseif ( 6 == $row->type ) {
-					$action_counts[ $row->ID ]['bounces'] += (int) $row->count;
+				$action_counts[ $row->ID ]['bounces'] += (int) $row->count;
 			} // error
 			elseif ( 7 == $row->type ) {
-					$action_counts[ $row->ID ]['errors'] += floor( $row->count );
-					$action_counts[ $row->ID ]['errors_total'] += floor( $row->total );
+				$action_counts[ $row->ID ]['errors'] += floor( $row->count );
+				$action_counts[ $row->ID ]['errors_total'] += floor( $row->total );
 			}
 		}
 
@@ -594,7 +588,11 @@ class MailsterActions {
 			return isset( $action_counts[ $subscriber_id ] ) ? $action_counts[ $subscriber_id ] : $default;
 		}
 
-		return isset( $action_counts[ $subscriber_id ] ) && isset( $action_counts[ $subscriber_id ][ $action ] ) ? $action_counts[ $subscriber_id ][ $action ] : 0;
+		if ( isset( $action_counts[ $subscriber_id ] ) && isset( $action_counts[ $subscriber_id ][ $action ] ) ) {
+			return $action_counts[ $subscriber_id ][ $action ];
+		}
+
+		return 0;
 
 	}
 
@@ -783,7 +781,6 @@ class MailsterActions {
 		}
 
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
-		// $sql = "SELECT FROM_UNIXTIME(a.timestamp+$timeoffset, '".$timestring[$scale]."') AS date";
 		$sql = 'SELECT t1.date';
 
 		foreach ( $sets as $i => $set ) {
@@ -794,7 +791,6 @@ class MailsterActions {
 		$sql .= $wpdb->prepare( " BETWEEN '%s' AND DATE_ADD('%s' ,INTERVAL %d DAY)", date( 'Y-m-d', $enddate + $timeoffset ), date( 'Y-m-d', $enddate + $timeoffset ), $limit );
 		$sql .= ") t1 LEFT JOIN {$wpdb->prefix}mailster_actions AS a ON FROM_UNIXTIME(a.timestamp+$timeoffset, '%Y-%m-%d') = t1.date";
 
-		// $sql .= $wpdb->prepare(" WHERE a.timestamp >= %d AND a.timestamp < %d", $enddate+$timeoffset, $startdate+$timeoffset);
 		$sql .= ' GROUP BY t1.date ORDER BY t1.date DESC';
 
 		$result = $wpdb->get_results( $sql );
