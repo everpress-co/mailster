@@ -1692,8 +1692,7 @@ class MailsterHelper {
 		$endpoint = 'https://api.unsplash.com/';
 
 		$key = sanitize_key( apply_filters( 'mailster_unsplash_client_id', 'ba3e2af91c8c44d00cb70fe6217dcf021f7350633c323876ffa561a1dfbfc25f' ) );
-		// demo
-		// $key = sanitize_key( apply_filters( 'mailster_unsplash_client_id', '84b6fecb559329be472a483328763ba0980a8272f25dc524f1cae852970c9b20' ) );
+
 		switch ( $command ) {
 			case 'search':
 				$path = 'search/photos';
