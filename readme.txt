@@ -84,6 +84,7 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.18 =
 
+* added: option to use TLS on bounce servers
 * improved: handling if notification.html file is missing
 
 = Version 2.3.17 =
