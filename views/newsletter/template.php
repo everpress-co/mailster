@@ -76,6 +76,7 @@ $all_files = mailster( 'templates' )->get_all_files();
 			</div>
 		<?php endif; ?>
 
+		<input type="hidden" id="editor-height" name="mailster_data[editor_height]" value="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>">
 		<div id="iframe-wrap">
 			<iframe id="mailster_iframe" src="<?php echo add_query_arg(array(
 				'action' => 'mailster_get_template',
@@ -85,7 +86,7 @@ $all_files = mailster( 'templates' )->get_all_files();
 				'editorstyle' => $editable,
 				'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
 				'nocache' => time(),
-			), admin_url( 'admin-ajax.php' ) ) ?>" width="100%" height="500" scrolling="no" frameborder="0" data-no-lazy="">
+			), admin_url( 'admin-ajax.php' ) ) ?>" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
 			</iframe>
 		</div>
 	</div>
