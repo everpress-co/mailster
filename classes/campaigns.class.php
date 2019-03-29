@@ -1443,6 +1443,7 @@ class MailsterCampaigns {
 			$meta['reply_to'] = $postdata['reply_to'];
 			$meta['timezone'] = isset( $postdata['timezone'] ) && $postdata['timezone'];
 			$meta['webversion'] = isset( $postdata['webversion'] );
+			$meta['editor_height'] = (int) $postdata['editor_height'];
 
 			if ( isset( $postdata['newsletter_color'] ) ) {
 				$meta['colors'] = $postdata['newsletter_color'];
@@ -1933,6 +1934,7 @@ class MailsterCampaigns {
 			'preheader' => null,
 			'template' => null,
 			'file' => null,
+			'editor_height' => 500,
 			'lists' => null,
 			'ignore_lists' => null,
 			'autoresponder' => null,
