@@ -896,7 +896,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	clip: inherit !important;
 }
 #editbar div.type .imagelist,#editbar div.type .postlist {
-	height: 339px;
 	width: 100%;
 	overflow: auto;
 	padding: 5px;
@@ -904,8 +903,10 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	box-sizing: border-box;
 }
 #editbar div.type .postlist {
+	height: 339px;
 }
-#editbar div.type.img .imagelist {
+#editbar div.type .imagelist {
+	height: 539px;
 	background-color: #fff;
 }
 #editbar #imagewidth{

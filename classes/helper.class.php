@@ -1725,23 +1725,26 @@ class MailsterHelper {
 		);
 
 		$url = add_query_arg( $args, $endpoint . $path );
-		$response = wp_remote_get( $url, array(
-			'headers' => $headers,
-		) );
 
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
+		$cache_key = 'mailster_unsplash_' . md5( $url );
 
-		$code = wp_remote_retrieve_response_code( $response );
-		$body = wp_remote_retrieve_body( $response );
-		$headers = wp_remote_retrieve_headers( $response );
+		if ( false === ( $body = get_transient( $cache_key ) ) ) {
+			$response = wp_remote_get( $url, array(
+				'headers' => $headers,
+			) );
 
-		$limit = $headers['x-ratelimit-limit'];
-		$remaining = $headers['x-ratelimit-remaining'];
+			if ( is_wp_error( $response ) ) {
+				return $response;
+			}
 
-		if ( $code != 200 ) {
-			return new WP_Error( $code, $body );
+			$code = wp_remote_retrieve_response_code( $response );
+			if ( $code != 200 ) {
+				return new WP_Error( $code, $body );
+			}
+
+			$body = wp_remote_retrieve_body( $response );
+
+			set_transient( $cache_key, $body, HOUR_IN_SECONDS );
 		}
 
 		return json_decode( $body );
