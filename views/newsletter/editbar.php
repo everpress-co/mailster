@@ -166,7 +166,7 @@
 				</div>
 				<div class="right">
 					<p class="image-search-wrap">
-						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'Search for images', 'mailster' );?>&hellip;" ></label>
+						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'Search for images', 'mailster' );?>&hellip;" autocomplete="off"></label>
 					</p>
 					<p class="image-search-type-wrap">
 						<label><input type="radio" name="image-search-type" value="media" checked> <?php esc_html_e( 'Media Library', 'mailster' ) ?> </label>
