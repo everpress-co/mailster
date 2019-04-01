@@ -2780,7 +2780,7 @@ jQuery(document).ready(function ($) {
 
 				current.modulebuttons = clone.find('modulebuttons');
 
-				clone.find('modulebuttons, button').remove();
+				clone.find('modulebuttons').remove();
 				clone.find('single, multi')
 					.removeAttr('contenteditable spellcheck id dir style class');
 
