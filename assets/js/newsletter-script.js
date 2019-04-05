@@ -2455,9 +2455,9 @@ jQuery(document).ready(function ($) {
 				if (!wrap.length) {
 					wrap = current.element;
 				}
-				if(parent.is('buttons') && !parent.find('.textbutton').length){
+				if (parent.is('buttons') && !parent.find('.textbutton').length) {
 					parent.remove();
-				}else{
+				} else {
 					wrap.remove();
 				}
 			} else if ('img' == current.type && 'img' != current.tag) {

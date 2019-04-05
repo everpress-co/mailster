@@ -1130,12 +1130,13 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$offset = (int) $_POST['offset'];
+		$search = esc_attr( $_POST['search'] );
+		$post_type = esc_attr( $_POST['type'] );
+
 		$post_count = mailster_option( 'post_count', 30 );
-		$search = $_POST['search'];
 
-		if ( in_array( $_POST['type'], array( 'post', 'attachment' ) ) ) {
+		if ( in_array( $post_type, array( 'post', 'attachment' ) ) ) {
 
-			$post_type = esc_attr( $_POST['type'] );
 			$imagetype = esc_attr( $_POST['imagetype'] );
 			$current_id = isset( $_POST['id'] ) ? (int) $_POST['id'] : null;
 			$post_counts = 0;
@@ -1188,34 +1189,6 @@ class MailsterAjax {
 					'query' => $search,
 				));
 
-				for ( $i = 1; $i < 10; $i++ ) {
-					$r = mailster( 'helper' )->unsplash('search', array(
-						'offset' => ($offset + 30) * $i,
-						'query' => $search,
-					));
-					if(isset($response->results)){
-						$response->results = array_merge( $response->results, $r->results );
-					}else{
-						$response = array_merge( $response, $r );
-					}
-				}
-
-
-				// $ids = wp_list_pluck( $response->results, 'id' );
-				// $urls = wp_list_pluck( $response->results, 'urls' );
-				// $image = wp_list_pluck( $urls, 'regular' );
-
-				// $image = array_filter(array_map(function( $el ) {
-				// 	$temp = str_replace( array( 'https://images.unsplash.com/photo-', '?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjU4NzMxfQ' ), '', $el );
-
-				// 	if ( false !== strpos( $temp, 'images.unsplash.com' ) ) {
-				// 		return null;
-				// 	}
-				// 	return $temp;
-				// }, $image));
-
-				// error_log( "window.uimg = ['" . implode( "','", $image ) . "'];" );
-
 				if ( is_wp_error( $response ) ) {
 					$post_counts = $response;
 				} else {
@@ -1258,7 +1231,7 @@ class MailsterAjax {
 
 				$html = '';
 
-				if ( $_POST['type'] == 'post' ) {
+				if ( 'post' == $post_type ) {
 
 					$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
 
@@ -1287,7 +1260,7 @@ class MailsterAjax {
 						$html .= '<span class="date">' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $post->post_date ) ) . '</span>';
 						$html .= '</li>';
 					}
-				} elseif ( $_POST['type'] == 'attachment' ) {
+				} elseif ( 'attachment' == $post_type ) {
 
 					foreach ( $posts as $post ) {
 
@@ -1322,7 +1295,7 @@ class MailsterAjax {
 				}
 
 				if ( $posts_lefts ) {
-					$html .= '<li class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $_POST['type'] . '"><a><span>';
+					$html .= '<li class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $post_type . '"><a><span>';
 					if ( $posts_lefts == -1 ) {
 						$html .= esc_html__( 'Load more entries', 'mailster' );
 					} else {
@@ -1335,25 +1308,23 @@ class MailsterAjax {
 			} else {
 				$return['html'] = '<li class="norows"><span>' . esc_html__( 'No entries found!', 'mailster' ) . '</span></li>';
 			}
-		} elseif ( $_POST['type'] == 'link' ) {
+		} elseif ( 'link' == $post_type ) {
 
-				$post_type = esc_attr( $_POST['type'] );
+			$args = array();
 
-				$args = array();
+			$post_counts = mailster( 'helper' )->link_query( array(
+				'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
+			), true );
 
-				$post_counts = mailster( 'helper' )->link_query( array(
-					'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
-				), true );
+			$posts_lefts = max( 0, $post_counts - $offset - $post_count );
 
-				$posts_lefts = max( 0, $post_counts - $offset - $post_count );
+			$results = mailster( 'helper' )->link_query( array(
+				'offset' => $offset,
+				'posts_per_page' => $post_count,
+				'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
+			) );
 
-				$results = mailster( 'helper' )->link_query( array(
-					'offset' => $offset,
-					'posts_per_page' => $post_count,
-					'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
-				) );
-
-				$return['success'] = true;
+			$return['success'] = true;
 
 			if ( isset( $results ) ) {
 				$html = '';
@@ -1374,7 +1345,7 @@ class MailsterAjax {
 					$html .= '</li>';
 				}
 				if ( $posts_lefts ) {
-					$html .= '<li class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $_POST['type'] . '"><a><span>';
+					$html .= '<li class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $post_type . '"><a><span>';
 					if ( $posts_lefts == -1 ) {
 						$html .= esc_html__( 'Load more entries', 'mailster' );
 					} else {
@@ -1388,7 +1359,7 @@ class MailsterAjax {
 			} else {
 				$return['html'] = '<li class="norows"><span>' . esc_html__( 'No entries found!', 'mailster' ) . '</span></li>';
 			}
-		} elseif ( $_POST['type'] == '_rss' ) {
+		} elseif ( '_rss' == $post_type ) {
 
 			$url = esc_url( $_POST['url'] );
 
@@ -1432,7 +1403,7 @@ class MailsterAjax {
 				}
 
 				if ( $posts_lefts ) {
-					$html .= '<li class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $_POST['type'] . '"><a><span>';
+					$html .= '<li class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $post_type . '"><a><span>';
 					if ( $posts_lefts == -1 ) {
 						$html .= esc_html__( 'Load more entries', 'mailster' );
 					} else {
@@ -2421,7 +2392,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$type = $_POST['type'];
+		$type = esc_attr( $_POST['type'] );
 		$id = (int) $_POST['id'];
 
 		switch ( $type ) {
