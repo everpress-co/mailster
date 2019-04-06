@@ -568,6 +568,9 @@ if ( $old_version ) {
 
 		case '2.3.17':
 
+			if ( isset( $mailster_options['bounce_ssl'] ) && $mailster_options['bounce_ssl'] ) {
+				$mailster_options['bounce_secure'] = 'ssl';
+			}
 
 		default:
 

@@ -2239,11 +2239,8 @@ jQuery(document).ready(function ($) {
 
 					if (currenttext.link) {
 
-
 						if (current.elements.buttons.length) {
 							current.elements.buttons.eq(position).attr('href', currenttext.link);
-						} else {
-							current.elements.multi.last().after('<buttons><table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' + currenttext.link + '" title="' + mailsterL10n.read_more + '" editable label="' + mailsterL10n.read_more + '">' + mailsterL10n.read_more + '</a></td></tr></table></buttons>');
 						}
 
 					} else {
@@ -2452,13 +2449,14 @@ jQuery(document).ready(function ($) {
 		function remove() {
 			if (current.element.parent().is('a')) current.element.unwrap();
 			if ('btn' == current.type) {
-				var wrap = current.element.closest('.textbutton');
+				var wrap = current.element.closest('.textbutton'),
+					parent = wrap.parent();
 				if (!wrap.length) {
 					wrap = current.element;
 				}
-				if (wrap.parent().children().length > 2) {
-					wrap.remove();
-				} else {
+				if(parent.is('buttons') && !parent.find('.textbutton').length){
+					parent.remove();
+				}else{
 					wrap.remove();
 				}
 			} else if ('img' == current.type && 'img' != current.tag) {
@@ -2782,7 +2780,7 @@ jQuery(document).ready(function ($) {
 
 				current.modulebuttons = clone.find('modulebuttons');
 
-				clone.find('modulebuttons, button').remove();
+				clone.find('modulebuttons').remove();
 				clone.find('single, multi')
 					.removeAttr('contenteditable spellcheck id dir style class');
 
@@ -3516,8 +3514,9 @@ jQuery(document).ready(function ($) {
 		setTimeout(function () {
 			if (!_iframe[0].contentWindow.document.body) return;
 			var height = _iframe.contents().height() || _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
-
-			_iframe.attr("height", Math.max(500, height + (extra || 0)));
+			height = Math.max(300, height + (extra || 0));
+			$('#editor-height').val(height);
+			_iframe.attr("height", height);
 		}, delay ? delay : 500);
 	})
 

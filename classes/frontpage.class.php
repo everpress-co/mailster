@@ -957,7 +957,11 @@ class MailsterFrontpage {
 
 		$cookietime = apply_filters( 'mailster_cookie_time', $timeout );
 
-		return setcookie( 'mailster', $hash, time() + $cookietime, COOKIEPATH, COOKIE_DOMAIN );
+		if ( $cookietime ) {
+			return setcookie( 'mailster', $hash, time() + $cookietime, COOKIEPATH, COOKIE_DOMAIN );
+		}
+
+		return false;
 
 	}
 
