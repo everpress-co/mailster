@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.io
 
 * added: option to use TLS on bounce servers
 * fixed: missing module buttons after code edit.
+* fixed: priority order in queue.
 * improved: handling if notification.html file is missing
 
 = Version 2.3.17 =
