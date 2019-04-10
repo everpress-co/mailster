@@ -68,9 +68,5 @@ if ( mailster()->is_verified() ) {
 	<dd><a href="" class="load-language"><strong><?php esc_html_e( 'Download Translation', 'mailster' ); ?></strong></a></dd>
 	<?php endif; ?>
 	<dd><span class="lighter"><?php printf( esc_html__( 'Currently %s translated.', 'mailster' ), '<strong>' . $set->percent_translated . '%</strong>' ); ?></span></dd>
-	<dd>
-		<a href="<?php echo add_query_arg( 'lang', $set->wp_locale, 'https://translate.mailster.co' ) ?>" class="external"><?php esc_html_e( 'Join the Translation Project', 'mailster' ); ?></a> |
-		<a href="https://kb.mailster.co/translations-in-mailster/" class="external"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a>
-	</dd>
 </dl>
 <?php endif; ?>
