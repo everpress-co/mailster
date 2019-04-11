@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * fixed: missing module buttons after code edit.
 * fixed: priority order in queue.
 * improved: handling if notification.html file is missing
+* improved: better file sanitation on template uploads
 
 = Version 2.3.17 =
 

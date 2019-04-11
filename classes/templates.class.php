@@ -142,7 +142,7 @@ class MailsterTemplates {
 
 			foreach ( $folders as $folder ) {
 
-				if ( in_array( $folder, array( '.', '..' ) ) || ! is_dir( $uploadfolder . '/' . $folder ) ) {
+				if ( in_array( $folder, array( '.', '..' ) ) ) {
 					continue;
 				}
 
@@ -184,10 +184,37 @@ class MailsterTemplates {
 
 					$files = list_files( $uploadfolder . '/' . $folder );
 
+					$removed_files = array();
+
+					$allowed_mimes = array( 'text/html', 'text/xml', 'text/plain', 'image/svg+xml','image/svg', 'image/png', 'image/gif', 'image/jpeg', 'image/tiff', 'image/x-icon' );
+					$whitelist = array( 'json', 'woff', 'woff2', 'ttf', 'eot' );
+					$blacklist = array( 'php', 'bin', 'exe' );
+
 					foreach ( $files as $file ) {
-						// remove unallowed files
-						if ( is_file( $file ) && ! preg_match( '#\.(html|gif|png|jpg|jpeg|tiff|json)$#', $file ) ) {
+
+						$basename = wp_basename( $file );
+
+						if ( ! is_file( $file ) ) {
 							$wp_filesystem->delete( $file, true );
+							continue;
+						}
+
+						if ( function_exists( 'mime_content_type' ) ) {
+							$mimetype = mime_content_type( $file );
+						} else {
+							$validate = wp_check_filetype( $file );
+							$mimetype = $validate['type'];
+						}
+
+						if ( ( ! in_array( $mimetype, $allowed_mimes ) && ! preg_match( '#\.(' . implode( '|', $whitelist ) . ')$#i', $file ) || preg_match( '#\.(' . implode( '|', $blacklist ) . ')$#i', $file )) ) {
+							$removed_files[] = $basename;
+							$wp_filesystem->delete( $file, true );
+							continue;
+						}
+						// sanitize HTML upload
+						if ( 'text/html' == $mimetype ) {
+							$raw = file_get_contents( $file );
+							$wp_filesystem->put_contents( $file, mailster()->sanitize_content( $raw, false, null, true ), FS_CHMOD_FILE );
 						}
 					}
 
@@ -220,6 +247,10 @@ class MailsterTemplates {
 					} else {
 						$wp_filesystem->delete( $uploadfolder, true );
 						return new WP_Error( 'wrong_header', esc_html__( 'The header of this template files is missing or corrupt', 'mailster' ) );
+					}
+
+					if ( ! empty( $removed_files ) ) {
+						mailster_notice( '<strong>' . esc_html__( 'Following files have been removed during upload:', 'mailster' ) . '</strong><ul><li>' . implode( '</li><li>', $removed_files ) . '</li></ul>', 'info', true );
 					}
 				} else {
 
@@ -265,7 +296,7 @@ class MailsterTemplates {
 
 			$wp_filesystem->delete( $uploadfolder, true );
 
-			if ( $templateslug ) {
+			if ( isset( $templateslug ) && $templateslug ) {
 
 				return $data;
 			}
