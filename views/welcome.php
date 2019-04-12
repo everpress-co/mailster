@@ -46,9 +46,14 @@
 				<p>Create real RSS Email Campaigns with sources from third party web sites.</p>
 				<div class="return-to-dashboard"><a href="https://kb.mailster.co/rss-email-campaigns/" target="_blank">Learn more</a></div>
 			</div>
+		</div>
+
+		<div class="feature-section two-col">
 			<div class="col">
 				<div class="media-container">
-					<img src="https://mailster.github.io/welcome/time_frame.jpg" width="505" height="284">
+					<div class="feature-fresh-ui">
+						<div class="campaign-progress"><span class="bar" style="width: 100%;"></span></div>
+					</div>
 				</div>
 				<h3>Fresh UI</h3>
 				<p>We have tweaked the look of some UI elements.</p>
@@ -83,7 +88,7 @@
 			</div>
 			<div class="feature-section under-the-hood three-col">
 				<div class="col">
-					<h4>Improved Export/import</h4>
+					<h4>Improved Export/Import</h4>
 					<p>Mailster handle imported campaigns now better and does some sanitation checks during this process.</p>
 				</div>
 				<div class="col">
