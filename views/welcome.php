@@ -1,6 +1,6 @@
 <div class="wrap mailster-welcome-wrap">
 
-	<h1><?php printf( esc_html__( 'Welcome to %s', 'mailster' ), 'Mailster 2.3' ); ?></h1>
+	<h1><?php printf( esc_html__( 'Welcome to %s', 'mailster' ), 'Mailster 2.4' ); ?></h1>
 
 	<div class="about-text">
 		<?php esc_html_e( 'Easily create, send and track your Newsletter Campaigns', 'mailster' ); ?><br>
@@ -44,55 +44,38 @@
 <?php endif; ?>
 
 		<div class="feature-section one-col main-feature">
-			<h2>Updated Editor</h2>
-			<p>The new Editor helps to crate your campaigns faster and provides more options. You can now edit your text inline and see the result immediately.</p>
-			<video loop muted preload="auto" autoplay src="https://mailster.github.io/videos/mailster_editor.mp4" poster="https://mailster.github.io/videos/mailster_editor.png">
-				<source src="https://mailster.github.io/videos/mailster_editor.mp4" type="video/mp4">
-			</video>
-			<div class="return-to-dashboard align-center"><a href="post-new.php?post_type=newsletter">Create a new Campaign</a></div>
+			<h2>Create beautiful Campaigns.</h2>
+			<p class="about-text">You have now access to over 900.000 Photos from 129.000 photographers directly in the campaign editor.<br>Create visual stunning emails with free photos form Unsplash.</p>
+			<div class="promo-video">
+				<iframe id="ytplayer" type="text/html" src="https://www.youtube.com/embed/ZG9V0sSbwvo?autoplay=0&showinfo=0&modestbranding=1&controls=0&rel=0" frameborder="0"></iframe>
+			</div>
+			<p class="about-text"><a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ) ?>" class="button button-primary button-hero">Create a new Campaign</a></p>
+			<p><a href="https://kb.mailster.co/unsplash/" target="_blank">Learn more</a> or <a href="https://unsplash.com/" target="_blank">visit Unsplash.com</a></p>
 		</div>
 
 		<div class="feature-section two-col">
 			<div class="col">
 				<div class="media-container">
-				<?php
-				echo wp_video_shortcode( array(
-					'mp4'      => 'https://mailster.github.io/videos/segmentation.mp4',
-					'poster'   => 'https://mailster.github.io/videos/segmentation.png',
-					'width'    => 505,
-					'height'   => 284,
-					'autoplay' => true,
-					'loop'     => true,
-				) );
-				?>
+					<img src="https://mailster.github.io/welcome/time_frame.jpg" width="505" height="284">
 				</div>
-				<h3>Improved Segmentation</h3>
-				<p>Target your audience even better with improved segmentation.</p>
-				<div class="return-to-dashboard"></div>
+				<h3>Random Dynamic Posts</h3>
+				<p>You can now add a random post in your email campaigns.</p>
+				<div class="return-to-dashboard"><a href="">Learn more</a></div>
 			</div>
 			<div class="col">
 				<div class="media-container">
 					<img src="https://mailster.github.io/welcome/time_frame.jpg" width="505" height="284">
 				</div>
-				<h3>Delivery Time Frame</h3>
-				<p>Mailster can now send campaign in a defined time frame.</p>
-				<div class="return-to-dashboard"></div>
+				<h3>RSS Email Campaigns</h3>
+				<p>Create real RSS Email Campaigns with sources from third party web sites.</p>
+				<div class="return-to-dashboard"><a href="">Learn more</a></div>
 			</div>
 			<div class="col">
 				<div class="media-container">
-				<?php
-				echo wp_video_shortcode( array(
-					'mp4'      => 'https://mailster.github.io/videos/image_crop.mp4',
-					'poster'   => 'https://mailster.github.io/videos/image_crop.png',
-					'width'    => 505,
-					'height'   => 284,
-					'autoplay' => true,
-					'loop'     => true,
-				) );
-				?>
+					<img src="https://mailster.github.io/welcome/time_frame.jpg" width="505" height="284">
 				</div>
-				<h3>Improved Image Handling</h3>
-				<p>The Mailster PicPicker allows to quickly select and crop images. It now also works better with third party plugins.</p>
+				<h3>Fresh UI</h3>
+				<p>We have tweaked the look of some UI elements.</p>
 				<div class="return-to-dashboard"></div>
 			</div>
 			<div class="col">
@@ -107,13 +90,13 @@
 
 		<div class="feature-section two-col">
 			<div class="col">
-				<h3>List Based Subscription</h3>
-				<p>Mailster now handles list based subscription next to global subscription.</p>
+				<h3>Campaign-Subscriber related Tags</h3>
+				<p>Tags now have more power and can be defined fore each individual subscriber</p>
 				<div class="return-to-dashboard"></div>
 			</div>
 			<div class="col">
-				<h3>Optional Web Version</h3>
-				<p>Disable the web version individually for your campaigns an auto responders.</p>
+				<h3>Translation Dashboard Info</h3>
+				<p>If you use Mailster in a different Language than English you can now quickly update translations from the Dashboard.</p>
 				<div class="return-to-dashboard"></div>
 			</div>
 		</div>
@@ -124,12 +107,12 @@
 
 			<div class="feature-section under-the-hood three-col">
 				<div class="col">
-					<h4>Notice Capabilities</h4>
-					<p>Notifications are now shown to the targeted users.</p>
+					<h4>Preserved stats from deleted Subscribers.</h4>
+					<p>Mailster will keep analytics data from deleted subscribers.</p>
 				</div>
 				<div class="col">
-					<h4>Disable Tracking</h4>
-					<p>Disable tracking globally or on a campaign basis.</p>
+					<h4>Form Shortcode attributes.</h4>
+					<p>Customize each form with attributes </p>
 				</div>
 				<div class="col">
 					<h4>Custom Template Screenshot</h4>
