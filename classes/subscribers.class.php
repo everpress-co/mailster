@@ -441,7 +441,7 @@ class MailsterSubscribers {
 						$this->assign_lists( $subscriber->ID, $assign, false, true );
 					}
 
-					if ( $subscriber->status != $old_subscriber_data->status ) {
+					if ( ! $old_subscriber_data || $subscriber->status != $old_subscriber_data->status ) {
 						if ( mailster_option( 'list_based_opt_in' ) ) {
 							if ( 1 == $subscriber->status ) {
 								mailster( 'lists' )->confirm_subscribers( null,  $subscriber->ID );
@@ -3183,7 +3183,7 @@ class MailsterSubscribers {
 		$hash = md5( $email );
 		// create a number from 01 to 09 based on the email address
 		$id = '0' . ( round( abs( crc32( $hash ) ) % 9 ) + 1 );
-		$default = 'https://mailster.github.io/user/user' . $id . '.gif';
+		$default = 'https://static.mailster.co/user/user' . $id . '.gif';
 
 		$image = get_avatar( $email, $size, $default );
 

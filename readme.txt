@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.1.1
-Stable tag: 2.3.17
+Stable tag: 2.3.18
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -65,22 +65,33 @@ Xaver Birsak – https://everpress.io
 
 
 = Linus =
-[!(https://mailster.github.io/preview/linus.jpg)](https://evp.to/linus?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/linus.jpg)](https://evp.to/linus?utm_source=Plugin+Info+Page)
 = Metro =
-[!(https://mailster.github.io/preview/metro.jpg)](https://evp.to/metro?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/metro.jpg)](https://evp.to/metro?utm_source=Plugin+Info+Page)
 = My Business =
-[!(https://mailster.github.io/preview/business.jpg)](https://evp.to/business?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/business.jpg)](https://evp.to/business?utm_source=Plugin+Info+Page)
 = Loose Leaf =
-[!(https://mailster.github.io/preview/looseleaf.jpg)](https://evp.to/looseleaf?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/looseleaf.jpg)](https://evp.to/looseleaf?utm_source=Plugin+Info+Page)
 = Market =
-[!(https://mailster.github.io/preview/market.jpg)](https://evp.to/market?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/market.jpg)](https://evp.to/market?utm_source=Plugin+Info+Page)
 = Skyline =
-[!(https://mailster.github.io/preview/skyline.jpg)](https://evp.to/skyline?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/skyline.jpg)](https://evp.to/skyline?utm_source=Plugin+Info+Page)
 = Letterpress =
-[!(https://mailster.github.io/preview/letterpress.jpg)](https://evp.to/letterpress?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/letterpress.jpg)](https://evp.to/letterpress?utm_source=Plugin+Info+Page)
 
 
 == Changelog ==
+
+= Version 2.3.18 =
+
+* updated included template
+* added: option to use TLS on bounce servers
+* fixed: missing module buttons after code edit.
+* fixed: priority order in queue.
+* fixed: single quote in subject now correctly encoded
+* improved: handling of link mapping for multi byte characters.
+* improved: handling if notification.html file is missing
+* improved: better file sanitation on template uploads
 
 = Version 2.3.17 =
 

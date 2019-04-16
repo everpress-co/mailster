@@ -194,7 +194,8 @@ class MailsterHelper {
 	public function get_addons( $force = false ) {
 
 		if ( $force || false === ( $addons = get_transient( 'mailster_addons' ) ) ) {
-			$url = 'https://mailster.github.io/v1/addons.json';
+
+			$url = 'https://static.mailster.co/v1/addons.json';
 
 			$response = wp_remote_get( $url, array() );
 
@@ -624,6 +625,32 @@ class MailsterHelper {
 	public function get_first_form_id() {
 		global $wpdb;
 		return (int) $wpdb->get_var( "SELECT ID FROM {$wpdb->prefix}mailster_forms ORDER BY ID ASC LIMIT 1" );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $attachemnt_id
+	 * @param unknown $fieldname
+	 * @param unknown $size          (optional)
+	 */
+	public function notifcation_template_dropdown( $selected, $fieldname, $disabled = false ) {
+
+		$templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
+
+		if ( isset( $templatefiles['index.html'] ) ) {
+			unset( $templatefiles['index.html'] );
+		}
+
+		?>
+		<select name="<?php echo esc_attr( $fieldname ) ?>" <?php echo $disabled ? 'disabled' : '' ?>>
+				<option value="-1" <?php selected( -1 == $selected ) ?>><?php esc_html_e( 'Plain Text (no template file)', 'mailster' );?></option>
+		<?php foreach ( $templatefiles as $slug => $filedata ) : ?>
+				<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo esc_html( $slug ) ?>)</option>
+		<?php endforeach; ?>
+		</select>
+		<?php
 	}
 
 

@@ -654,8 +654,8 @@ class MailsterMail {
 				$this->mailer->AddAddress( $address, isset( $this->to_name[ $i ] ) ? $this->to_name[ $i ] : null );
 			}
 
-			$this->subject = htmlspecialchars_decode( $this->subject );
-			$this->from_name = htmlspecialchars_decode( $this->from_name );
+			$this->subject = htmlspecialchars_decode( $this->subject, ENT_QUOTES );
+			$this->from_name = htmlspecialchars_decode( $this->from_name, ENT_QUOTES );
 
 			// add CC
 			if ( $this->cc ) {

@@ -14,7 +14,7 @@ class MailsterTemplate {
 	private $file;
 
 	private $templatepath;
-	private $download_url = 'https://mailster.github.io/templates/mymail.zip';
+	private $download_url = 'https://static.mailster.co/templates/mymail.zip';
 	private $headers = array(
 		'name' => 'Template Name',
 		'label' => 'Name',
@@ -205,11 +205,10 @@ class MailsterTemplate {
 				$logo->setAttribute( 'src', $new_logo['url'] );
 
 				if ( $logo_link ) {
-					$parent = $logo->parentNode;
 					$link = $doc->createElement( 'a' );
 					$link->setAttribute( 'href', $logo_link );
+					$logo->parentNode->replaceChild( $link, $logo );
 					$link->appendChild( $logo );
-					$parent->appendChild( $link );
 				}
 			}
 		}

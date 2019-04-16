@@ -381,16 +381,7 @@ if ( $is_new ) {
 									<td><textarea id="mailster_text_content" name="mailster_data[content]" rows="10" cols="50" class="large-text"><?php echo esc_attr( $form->content ); ?></textarea></td>
 								</tr>
 								<tr><td><?php esc_html_e( 'Used template file', 'mailster' );?></td><td>
-									<select name="mailster_data[template]">
-									<?php
-									$templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
-									foreach ( $templatefiles as $slug => $filedata ) {
-										if ( $slug == 'index.html' ) {
-											continue;
-										} ?>
-										<option value="<?php echo $slug ?>"<?php selected( $slug == $form->template ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo $slug ?>)</option>
-									<?php } ?>
-									</select>
+									<?php mailster( 'helper' )->notifcation_template_dropdown( $form->template, 'mailster_data[template]' ); ?>
 									</td>
 								</tr>
 
