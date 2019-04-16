@@ -638,7 +638,7 @@ class Mailster {
 	public function replace_links( $content = '', $hash = '', $campaign_id = '' ) {
 
 		// get all links from the basecontent
-		preg_match_all( '#href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
+		preg_match_all( '# href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
 		$links = $links[2];
 
 		if ( empty( $links ) ) {
@@ -670,11 +670,15 @@ class Mailster {
 
 			}
 
-			$link = '"' . $link . '"';
-			$new_link = apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id );
+			$link = 'href="' . $link . '"';
+			$new_link = 'href="' . apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id ) . '"';
 
 			if ( ( $pos = strpos( $content, $link ) ) !== false ) {
-				$content = substr_replace( $content, '"' . $new_link . '"', $pos, strlen( $link ) );
+
+				// do not use substr_replace as it has problems with multibyte
+				// $content = substr_replace( $content, $new_link, $pos, strlen( $link ) );
+				$content = preg_replace( '/' . preg_quote( $link, '/' ) . '/', $new_link, $content, 1 );
+
 			}
 		}
 

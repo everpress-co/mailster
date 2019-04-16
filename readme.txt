@@ -88,6 +88,7 @@ Xaver Birsak – https://everpress.io
 * fixed: missing module buttons after code edit.
 * fixed: priority order in queue.
 * fixed: single quote in subject now correctly encoded
+* improved: handling of link mapping for multi byte characters.
 * improved: handling if notification.html file is missing
 * improved: better file sanitation on template uploads
 
