@@ -82,6 +82,8 @@ Xaver Birsak – https://everpress.io
 
 == Changelog ==
 
+* new: Mailster now stores your email address when you send a test.
+
 = Version 2.3.18 =
 
 * updated included template
