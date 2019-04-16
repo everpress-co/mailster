@@ -14,7 +14,7 @@ class MailsterTemplate {
 	private $file;
 
 	private $templatepath;
-	private $download_url = 'https://mailster.github.io/templates/mymail.zip';
+	private $download_url = 'https://static.mailster.co/templates/mymail.zip';
 	private $headers = array(
 		'name' => 'Template Name',
 		'label' => 'Name',

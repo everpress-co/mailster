@@ -245,6 +245,7 @@ class MailsterCampaigns {
 	public function display_post_states( $post_states, $post ) {
 
 		if ( $post->post_type == 'newsletter' ) {
+			$post_states = array();
 			if ( ! $this->meta( $post->ID, 'webversion' ) ) {
 				$post_states['mailster_no_webversion'] = esc_html__( 'Private', 'mailster' );
 			}
