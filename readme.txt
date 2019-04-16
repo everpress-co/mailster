@@ -84,6 +84,7 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.18 =
 
+* updated included template
 * added: option to use TLS on bounce servers
 * fixed: missing module buttons after code edit.
 * fixed: priority order in queue.
