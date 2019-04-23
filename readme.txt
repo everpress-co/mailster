@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.io
 
 = Version 2.3.19 =
 
+* fixed: custom 'mailster_auto_post' output is working again
+
 = Version 2.3.18 =
 
 * updated included template
