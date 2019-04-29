@@ -986,7 +986,7 @@ class MailsterFrontpage {
 		}
 
 		extract( shortcode_atts( array(
-					'scrolling' => true,
+			'scrolling' => true,
 		), $atts ) );
 
 		return '<iframe class="mailster_frame" src="' . add_query_arg( 'frame', 0, $link ) . '" style="min-width:610px;" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) . '" scrolling="' . ( $scrolling ? 'auto' : 'no' ) ) . '" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
