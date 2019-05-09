@@ -133,6 +133,10 @@ class MailsterCampaigns {
 
 		mailster( 'queue' )->bulk_add( $campaign_id, $subscribers, $timestamp, $priority, false, false, true );
 
+		// handle instant delivery
+		if ( $timestamp -time() <= 0 ) {
+			wp_schedule_single_event( $timestamp, 'mailster_cron_worker', array( $campaign_id ) );
+		}
 	}
 
 
