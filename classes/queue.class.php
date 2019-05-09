@@ -1044,7 +1044,7 @@ class MailsterQueue {
 				$sql .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
 			}
 
-			$sql .= ' ORDER BY queue.priority ASC, subscribers.rating DESC';
+			$sql .= ' ORDER BY queue.priority DESC, subscribers.rating DESC';
 
 			$sql .= ! mailster_option( 'split_campaigns' ) ? ', queue.campaign_id ASC' : '';
 

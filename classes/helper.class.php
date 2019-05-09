@@ -194,7 +194,8 @@ class MailsterHelper {
 	public function get_addons( $force = false ) {
 
 		if ( $force || false === ( $addons = get_transient( 'mailster_addons' ) ) ) {
-			$url = 'https://mailster.github.io/v1/addons.json';
+
+			$url = 'https://static.mailster.co/v1/addons.json';
 
 			$response = wp_remote_get( $url, array() );
 
@@ -1540,7 +1541,7 @@ class MailsterHelper {
 			$max_items = $feed->get_item_quantity( $max_items );
 
 			if ( $item >= $max_items ) {
-				return new WP_Error( 'feed_to_short', sprintf( 'The feed only contains %d items', $max_items ) );
+				return new WP_Error( 'feed_to_short', sprintf( esc_html__( 'The feed only contains %d items', 'mailster' ), $max_items ) );
 			}
 
 			$rss_items = $feed->get_items( 0, $max_items );
@@ -1593,7 +1594,7 @@ class MailsterHelper {
 		}
 
 		if ( ! is_null( $item ) ) {
-			return isset( $posts[ $item ] ) ? $posts[ $item ] : new WP_Error( 'no_item', sprintf( 'Feed item #%d does not exist', $item ) );
+			return isset( $posts[ $item ] ) ? $posts[ $item ] : new WP_Error( 'no_item', sprintf( esc_html__( 'Feed item #%d does not exist', 'mailster' ), $item ) );
 		}
 
 		return $posts;

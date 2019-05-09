@@ -2175,74 +2175,84 @@ jQuery(document).ready(function ($) {
 
 				var insertmethod = $('#embedoption-bar').find('.nav-tab-active').data('type'),
 					position = current.element.data('position') || 0,
-					org_content, content = [],
-					images = [];
+					contenttype, images = [],
+					post_type, rss_url;
 
 				current.element.removeAttr('data-tag data-rss').removeData('tag').removeData('data-rss');
 
 				if ('dynamic' == insertmethod) {
 
-					var contenttype = bar.find('#dynamic_embed_options_content').val(),
-						post_type = bar.find('#dynamic_embed_options_post_type').val(),
-						rss_url = $('#dynamic_rss_url').val();
+					contenttype = bar.find('#dynamic_embed_options_content').val();
+					post_type = bar.find('#dynamic_embed_options_post_type').val();
+					rss_url = $('#dynamic_rss_url').val();
 
 					currenttext.content = currenttext[contenttype];
 
 					current.element.attr('data-tag', currenttext.tag).data('tag', currenttext.tag);
-					if ('rss' == post_type)
+
+					if ('rss' == post_type) {
 						current.element.attr('data-rss', rss_url).data('rss', rss_url);
+					}
 
 				} else {
 
-					var contenttype = $('.embed_options_content:checked').val();
+					contenttype = $('.embed_options_content:checked').val();
+					current.element.removeAttr('data-tag').removeData('tag');
 
 				}
 
 				if (currenttext) {
 
-					if (currenttext.title) {
+					if (current.elements.single.length) {
 
 						current.elements.single.each(function (i, e) {
 							var _this = $(this),
 								expected = _this.attr('expect') || 'title',
+								org_content = currenttext[expected] ? currenttext[expected] : '',
+								content = [],
 								array = [];
-							if (!$.isArray(currenttext[expected])) {
-								array[position] = currenttext[expected];
-								currenttext[expected] = array;
+
+							if (!$.isArray(org_content)) {
+								content[position] = org_content;
+							} else {
+								content = org_content;
 							}
-							if (position != i) return;
-							if (currenttext[expected][position]) {
-								_this.html(currenttext[expected][position]);
+
+							if (content[i]) {
+								$(this).html(content[i]);
 							}
+
 						});
 
 					}
 
-					if (current.elements.single.length) {
-						org_content = currenttext[contenttype] ? currenttext[contenttype] : '',
-							content = [];
-
-						if (!$.isArray(org_content)) {
-							content[position] = org_content;
-						} else {
-							content = org_content;
-						}
+					if (current.elements.multi.length) {
 
 						current.elements.multi.each(function (i, e) {
+							var _this = $(this),
+								expected = _this.attr('expect') || contenttype,
+								org_content = currenttext[expected] ? currenttext[expected] : '',
+								content = [],
+								array = [];
+
+							if (!$.isArray(org_content)) {
+								content[position] = org_content;
+							} else {
+								content = org_content;
+							}
+
 							if (content[i]) {
 								$(this).html(content[i]);
 							}
+
 						});
 
 					}
 
 					if (currenttext.link) {
 
-
 						if (current.elements.buttons.length) {
 							current.elements.buttons.eq(position).attr('href', currenttext.link);
-						} else {
-							current.elements.multi.last().after('<buttons><table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' + currenttext.link + '" title="' + mailsterL10n.read_more + '" editable label="' + mailsterL10n.read_more + '">' + mailsterL10n.read_more + '</a></td></tr></table></buttons>');
 						}
 
 					} else {
@@ -2254,24 +2264,6 @@ jQuery(document).ready(function ($) {
 								current.elements.buttons.remove();
 							}
 						}
-
-					}
-
-					if (current.elements.multi.length) {
-						org_content = currenttext[contenttype] ? currenttext[contenttype] : '',
-							content = [];
-
-						if (!$.isArray(org_content)) {
-							content[position] = org_content;
-						} else {
-							content = org_content;
-						}
-
-						current.elements.multi.each(function (i, e) {
-							if (content[i]) {
-								$(this).html(content[i]);
-							}
-						});
 
 					}
 
@@ -2451,12 +2443,13 @@ jQuery(document).ready(function ($) {
 		function remove() {
 			if (current.element.parent().is('a')) current.element.unwrap();
 			if ('btn' == current.type) {
-				var wrap = current.element.closest('.textbutton');
+				var wrap = current.element.closest('.textbutton'),
+					parent = wrap.parent();
 				if (!wrap.length) {
 					wrap = current.element;
 				}
-				if (wrap.parent().children().length > 2) {
-					wrap.remove();
+				if (parent.is('buttons') && !parent.find('.textbutton').length) {
+					parent.remove();
 				} else {
 					wrap.remove();
 				}
@@ -2781,7 +2774,7 @@ jQuery(document).ready(function ($) {
 
 				current.modulebuttons = clone.find('modulebuttons');
 
-				clone.find('modulebuttons, button').remove();
+				clone.find('modulebuttons').remove();
 				clone.find('single, multi')
 					.removeAttr('contenteditable spellcheck id dir style class');
 
@@ -3484,8 +3477,9 @@ jQuery(document).ready(function ($) {
 		setTimeout(function () {
 			if (!_iframe[0].contentWindow.document.body) return;
 			var height = _iframe.contents().height() || _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
-
-			_iframe.attr("height", Math.max(500, height + (extra || 0)));
+			height = Math.max(300, height + (extra || 0));
+			$('#editor-height').val(height);
+			_iframe.attr("height", height);
 		}, delay ? delay : 500);
 	})
 
