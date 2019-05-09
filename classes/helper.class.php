@@ -1745,7 +1745,7 @@ class MailsterHelper {
 
 			$body = wp_remote_retrieve_body( $response );
 
-			set_transient( $cache_key, $body, HOUR_IN_SECONDS );
+			set_transient( $cache_key, $body, HOUR_IN_SECONDS * 6 );
 		}
 
 		return json_decode( $body );
