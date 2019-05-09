@@ -487,14 +487,10 @@ $sent = $this->get_sent( $post->ID );
 <?php endif; ?>
 	<div>
 		<input type="text" value="<?php echo esc_attr( $current_user->user_email ) ?>" autocomplete="off" id="mailster_testmail" class="widefat" aria-label="<?php esc_attr_e( 'Send Test', 'mailster' );?>">
-		<button type="button" class="button mailster_spamscore" title="<?php esc_html_e( 'check your spam score', 'mailster' );?> (beta)">Spam Score</button>
 		<span class="spinner" id="delivery-ajax-loading"></span>
 		<input type="button" value="<?php esc_html_e( 'Send Test', 'mailster' ) ?>" class="button mailster_sendtest">
+		<div class="clear"></div>
 
-		<div id="spam_score_progress">
-		<div class="progress"><span class="bar" style="width:1%"></span></div>
-		<div class="score"></div>
-		</div>
 	</div>
 
 <?php elseif ( 'active' == $post->post_status ) : ?>

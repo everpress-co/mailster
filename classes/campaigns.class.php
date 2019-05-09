@@ -229,6 +229,7 @@ class MailsterCampaigns {
 		add_meta_box( 'mailster_details', esc_html__( 'Details', 'mailster' ), array( &$this, 'newsletter_details' ), 'newsletter', 'normal', 'high' );
 		add_meta_box( 'mailster_template', ( ! in_array( $post->post_status, array( 'active', 'finished' ) ) && ! isset( $_GET['showstats'] ) ) ? esc_html__( 'Template', 'mailster' ) : esc_html__( 'Clickmap', 'mailster' ), array( &$this, 'newsletter_template' ), 'newsletter', 'normal', 'high' );
 		add_meta_box( 'mailster_submitdiv', esc_html__( 'Save', 'mailster' ), array( &$this, 'newsletter_submit' ), 'newsletter', 'side', 'high' );
+		add_meta_box( 'mailster_preflight', esc_html__( 'Preflight', 'mailster' ), array( &$this, 'newsletter_preflight' ), 'newsletter', 'side', 'high' );
 		add_meta_box( 'mailster_delivery', esc_html__( 'Delivery', 'mailster' ), array( &$this, 'newsletter_delivery' ), 'newsletter', 'side', 'high' );
 		add_meta_box( 'mailster_receivers', esc_html__( 'Receivers', 'mailster' ), array( &$this, 'newsletter_receivers' ), 'newsletter', 'side', 'high' );
 		add_meta_box( 'mailster_options', esc_html__( 'Options', 'mailster' ), array( &$this, 'newsletter_options' ), 'newsletter', 'side', 'high' );
@@ -312,17 +313,17 @@ class MailsterCampaigns {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $post
-	 */
+
 	public function newsletter_submit( $post ) {
 		global $action;
 		$post_type = $post->post_type;
 		$post_type_object = get_post_type_object( $post_type );
 		$can_publish = current_user_can( $post_type_object->cap->publish_posts );
 		include MAILSTER_DIR . 'views/newsletter/submit.php';
+	}
+
+	public function newsletter_preflight( $post ) {
+		include MAILSTER_DIR . 'views/newsletter/preflight.php';
 	}
 
 
@@ -1178,7 +1179,7 @@ class MailsterCampaigns {
 				'remove_s' => esc_html__( 'Remove %s', 'mailster' ),
 				'curr_selected' => esc_html__( 'Currently selected', 'mailster' ),
 				'remove_btn' => esc_html__( 'An empty link will remove this button! Continue?', 'mailster' ),
-				'preview_for' => esc_html__( 'Preview for %s', 'mailster' ),
+				'preflight' => esc_html__( 'Preflight %s', 'mailster' ),
 				'preview' => esc_html__( 'Preview', 'mailster' ),
 				'read_more' => esc_html__( 'Read more', 'mailster' ),
 				'invalid_image' => esc_html__( '%s does not contain a valid image', 'mailster' ),

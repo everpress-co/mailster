@@ -221,90 +221,13 @@ jQuery(document).ready(function ($) {
 					if (!confirm(mailsterL10n.send_now)) return false;
 				});
 
+			//preflight box
+			$('#mailster_preflight')
+				.on('click', '.mailster_preflight', function () {
+					_preFlight();
 
-			// delivery box
-			$('#mailster_delivery')
-				.on('change', 'input.timezone', function () {
-					$('.active_wrap').toggleClass('timezone-enabled');
-				})
-				.on('change', 'input.autoresponder-timezone', function () {
-					$('.autoresponderfield-mailster_autoresponder_timebased').toggleClass('timezone-enabled');
-				})
-				.on('change', 'input.userexactdate', function () {
-					var wrap = $(this).parent().parent().parent();
-					wrap.find('span').addClass('disabled');
-				})
-				.on('change', '#autoresponder-post_type', function () {
-					var cats = $('#autoresponder-taxonomies');
-					cats.find('select').prop('disabled', true);
-					_ajax('get_post_term_dropdown', {
-						labels: false,
-						names: true,
-						posttype: $(this).val()
-					}, function (response) {
-						if (response.success) {
-							cats.html(response.html);
-						}
-					}, function (jqXHR, textStatus, errorThrown) {
+					return;
 
-						loader(false);
-
-					});
-				})
-				.on('click', '.category-tabs a', function () {
-					var _this = $(this),
-						href = _this.attr('href');
-
-					$('#mailster_delivery').find('.tabs-panel').hide();
-					$('#mailster_delivery').find('.tabs').removeClass('tabs');
-					_this.parent().addClass('tabs');
-					$(href).show();
-					$('#mailster_is_autoresponder').val((href == '#autoresponder') ? 1 : '');
-					return false;
-				})
-				.on('click', '.mailster_sendtest', function () {
-					var $this = $(this),
-						loader = $('#delivery-ajax-loading').css('display', 'inline');
-
-					$this.prop('disabled', true);
-					_trigger('save');
-
-					_ajax('send_test', {
-						formdata: $('#post').serialize(),
-						to: $('#mailster_testmail').val(),
-						content: _content.val(),
-						head: _head.val(),
-						plaintext: _excerpt.val()
-
-					}, function (response) {
-
-						loader.hide();
-						$this.prop('disabled', false);
-						var msg = $('<div class="' + ((!response.success) ? 'error' : 'updated') + '"><p>' + response.msg + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
-							msg.remove();
-						});
-					}, function (jqXHR, textStatus, errorThrown) {
-
-						loader.hide();
-						$this.prop('disabled', false);
-						var msg = $('<div class="error"><p>' + textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
-							msg.remove();
-						});
-
-					})
-				})
-				.on('change', '#mailster_data_active', function () {
-					($(this).is(':checked')) ?
-					$('.active_wrap').addClass('disabled'): $('.active_wrap').removeClass('disabled');
-					$('.deliverydate, .deliverytime').prop('disabled', !$(this).is(':checked'));
-
-				})
-				.on('change', '#mailster_data_autoresponder_active', function () {
-					($(this).is(':checked')) ?
-					$('.autoresponder_active_wrap').addClass('disabled'): $('.autoresponder_active_wrap').removeClass('disabled');
-
-				})
-				.on('click', '.mailster_spamscore', function () {
 					var $this = $(this),
 						loader = $('#delivery-ajax-loading').css('display', 'inline'),
 						progress = $('#spam_score_progress').removeClass('spam-score').slideDown(200),
@@ -387,6 +310,96 @@ jQuery(document).ready(function ($) {
 							});
 						})
 					}
+
+				})
+
+			$('.mailster-preflight')
+				.on('click', '.preflight-switch', function () {
+					var dimensions = $(this).data('dimensions');
+					$('.device.desktop').width(dimensions.w).height(dimensions.h);
+				})
+
+
+			// delivery box
+			$('#mailster_delivery')
+				.on('change', 'input.timezone', function () {
+					$('.active_wrap').toggleClass('timezone-enabled');
+				})
+				.on('change', 'input.autoresponder-timezone', function () {
+					$('.autoresponderfield-mailster_autoresponder_timebased').toggleClass('timezone-enabled');
+				})
+				.on('change', 'input.userexactdate', function () {
+					var wrap = $(this).parent().parent().parent();
+					wrap.find('span').addClass('disabled');
+				})
+				.on('change', '#autoresponder-post_type', function () {
+					var cats = $('#autoresponder-taxonomies');
+					cats.find('select').prop('disabled', true);
+					_ajax('get_post_term_dropdown', {
+						labels: false,
+						names: true,
+						posttype: $(this).val()
+					}, function (response) {
+						if (response.success) {
+							cats.html(response.html);
+						}
+					}, function (jqXHR, textStatus, errorThrown) {
+
+						loader(false);
+
+					});
+				})
+				.on('click', '.category-tabs a', function () {
+					var _this = $(this),
+						href = _this.attr('href');
+
+					$('#mailster_delivery').find('.tabs-panel').hide();
+					$('#mailster_delivery').find('.tabs').removeClass('tabs');
+					_this.parent().addClass('tabs');
+					$(href).show();
+					$('#mailster_is_autoresponder').val((href == '#autoresponder') ? 1 : '');
+					return false;
+				})
+				.on('click', '.mailster_sendtest', function () {
+					var $this = $(this),
+						loader = $('#delivery-ajax-loading').css('display', 'inline');
+
+					$this.prop('disabled', true);
+					_trigger('save');
+
+					_ajax('send_test', {
+						formdata: $('#post').serialize(),
+						to: $('#mailster_testmail').val(),
+						content: _content.val(),
+						head: _head.val(),
+						plaintext: _excerpt.val()
+
+					}, function (response) {
+
+						loader.hide();
+						$this.prop('disabled', false);
+						var msg = $('<div class="' + ((!response.success) ? 'error' : 'updated') + '"><p>' + response.msg + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
+							msg.remove();
+						});
+					}, function (jqXHR, textStatus, errorThrown) {
+
+						loader.hide();
+						$this.prop('disabled', false);
+						var msg = $('<div class="error"><p>' + textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
+							msg.remove();
+						});
+
+					})
+				})
+				.on('change', '#mailster_data_active', function () {
+					($(this).is(':checked')) ?
+					$('.active_wrap').addClass('disabled'): $('.active_wrap').removeClass('disabled');
+					$('.deliverydate, .deliverytime').prop('disabled', !$(this).is(':checked'));
+
+				})
+				.on('change', '#mailster_data_autoresponder_active', function () {
+					($(this).is(':checked')) ?
+					$('.autoresponder_active_wrap').addClass('disabled'): $('.autoresponder_active_wrap').removeClass('disabled');
 
 				})
 				.on('blur', 'input.deliverytime', function () {
@@ -1386,33 +1399,7 @@ jQuery(document).ready(function ($) {
 
 		function preview() {
 
-			_trigger('save');
-
-			var _this = $(this),
-				content = _getContent(),
-				subject = _subject.val(),
-				preheader = _preheader.val(),
-				title = _title.val();
-
-			if (_obar.find('a.preview').is('.loading')) return false;
-
-			_obar.find('a.preview').addClass('loading');
-			_ajax('set_preview', {
-				id: campaign_id,
-				content: content,
-				head: _head.val(),
-				issue: $('#mailster_autoresponder_issue').val(),
-				subject: subject,
-				preheader: preheader
-			}, function (response) {
-				_obar.find('a.preview').removeClass('loading');
-
-				$('.mailster-preview-iframe').attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
-				tb_show((title ? sprintf(mailsterL10n.preview_for, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1200, _win.width() - 50)) + '&height=' + (_win.height() - 100) + '&inlineId=mailster_campaign_preview', null);
-
-			}, function (jqXHR, textStatus, errorThrown) {
-				_obar.find('a.preview').removeClass('loading');
-			});
+			_preFlight();
 
 		}
 
@@ -3786,6 +3773,35 @@ jQuery(document).ready(function ($) {
 
 			});
 		});
+	}
+
+
+	function _preFlight() {
+
+		_trigger('save');
+		_trigger('disable');
+
+		var content = _getContent(),
+			subject = _subject.val(),
+			preheader = _preheader.val(),
+			title = _title.val();
+
+		_ajax('set_preview', {
+			id: campaign_id,
+			content: content,
+			head: _head.val(),
+			issue: $('#mailster_autoresponder_issue').val(),
+			subject: subject,
+			preheader: preheader
+		}, function (response) {
+			$('.mailster-preview-iframe').attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
+			tb_show((title ? sprintf(mailsterL10n.preflight, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1440, _win.width() - 50)) + '&height=' + (_win.height() - 100) + '&inlineId=mailster_preflight_wrap', null);
+			_trigger('enable');
+
+		}, function (jqXHR, textStatus, errorThrown) {
+			_trigger('enable');
+		});
+
 	}
 
 
