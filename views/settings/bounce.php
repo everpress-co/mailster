@@ -34,8 +34,11 @@
 			<td><input type="text" name="mailster_options[bounce_server]" value="<?php echo esc_attr( mailster_option( 'bounce_server' ) ); ?>" class="regular-text">:<input type="text" name="mailster_options[bounce_port]" id="bounce_port" value="<?php echo mailster_option( 'bounce_port' ); ?>" class="small-text"></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row">SSL</th>
-			<td><label><input type="hidden" name="mailster_options[bounce_ssl]" value=""><input type="checkbox" name="mailster_options[bounce_ssl]" id="bounce_ssl" value="1" <?php checked( mailster_option( 'bounce_ssl' ) );?>> <?php esc_html_e( 'Use SSL.', 'mailster' ) ?></label>
+			<th scope="row"><?php esc_html_e( 'Secure', 'mailster' );?></th>
+			<td>
+			<label><input type="radio" name="mailster_options[bounce_secure]" value="" <?php checked( ! mailster_option( 'bounce_secure' ) ) ?>> <?php esc_html_e( 'none', 'mailster' );?></label>
+			<label><input type="radio" name="mailster_options[bounce_secure]" value="ssl" <?php checked( mailster_option( 'bounce_secure' ), 'ssl' ) ?>> SSL </label>&nbsp;
+			<label><input type="radio" name="mailster_options[bounce_secure]" value="tls" <?php checked( mailster_option( 'bounce_secure' ), 'tls' ) ?>> TLS </label>&nbsp;
 			</td>
 		</tr>
 		<tr valign="top">
