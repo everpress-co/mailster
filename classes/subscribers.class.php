@@ -3200,7 +3200,7 @@ class MailsterSubscribers {
 		$hash = md5( $email );
 		// create a number from 01 to 09 based on the email address
 		$id = '0' . ( round( abs( crc32( $hash ) ) % 9 ) + 1 );
-		$default = 'https://mailster.github.io/user/user' . $id . '.gif';
+		$default = 'https://static.mailster.co/user/user' . $id . '.gif';
 
 		$image = get_avatar( $email, $size, $default );
 

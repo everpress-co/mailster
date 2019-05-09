@@ -29,7 +29,7 @@ if ( $this->update ) {
 	</div>
 <?php elseif ( ! mailster_option( 'usage_tracking' ) && mailster_option( 'ask_usage_tracking' ) && ( time() - get_option( 'mailster_updated' ) ) > HOUR_IN_SECONDS && current_user_can( 'manage_options' ) ) : ?>
 	<div class="info notice">
-		<h3><?php esc_html_e( 'Help us improve Mailster automatically.', 'mailster' ); ?></h3>
+		<h2><?php esc_html_e( 'Help us improve Mailster automatically.', 'mailster' ); ?></h2>
 		<p style="max-width: 800px;"><?php esc_html_e( 'If you enable this option we are able to track the usage of Mailster on your site. We don\'t record any sensitive data but only information regarding the WordPress environment and plugin settings, which we use to make improvements to the plugin. Tracking is completely optional and can be disabled anytime.', 'mailster' ); ?><br><a href="https://kb.mailster.co/usage-tracking/" class="external"><?php esc_html_e( 'Read more about what we collect if you enable this option.', 'mailster' ); ?></a>
 		</p>
 		<p>
