@@ -32,7 +32,7 @@
 		<div class="feature-section two-col">
 			<div class="col">
 				<div class="media-container">
-					<img src="<?php echo admin_url( 'admin-ajax.php?action=mailster_image_placeholder&tag=post_title:~1&w=505&h=284&c=0&f=2' ) ?>" width="505" height="284">
+					<img src="https://static.mailster.co/welcome/relative_tags.gif" width="505" height="284">
 				</div>
 				<h3>Random Dynamic Posts</h3>
 				<p>You can now add a random post in your email campaigns.</p>
@@ -40,7 +40,7 @@
 			</div>
 			<div class="col">
 				<div class="media-container">
-					<img src="https://mailster.github.io/welcome/time_frame.jpg" width="505" height="284">
+					<img src="https://static.mailster.co/welcome/time_frame.jpg" width="505" height="284">
 				</div>
 				<h3>RSS Email Campaigns</h3>
 				<p>Create real RSS Email Campaigns with sources from third party web sites.</p>
@@ -61,7 +61,7 @@
 			</div>
 			<div class="col">
 				<div class="media-container">
-					<img src="https://mailster.github.io/welcome/subscriber_query.jpg" width="505" height="284">
+					<img src="https://static.mailster.co/welcome/subscriber_query.jpg" width="505" height="284">
 				</div>
 				<h3>Subscriber Query Class</h3>
 				<p>Similar to the WP_Query you can now simple query your subscribers.</p>
