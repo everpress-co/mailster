@@ -2396,8 +2396,8 @@ a.mailster-btn.editbutton {
 #ui-datepicker-div{
 	width: 230px;
 }
-.fixed-optionbar #mailster_iframe{
-	margin-top: 38px;
+.fixed-optionbar #iframe-wrap{
+	margin-top: 42px;
 }
 #mailster_template #iframe-wrap {
 	-webkit-transition: margin-right .15s ease-in-out;

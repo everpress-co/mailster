@@ -804,6 +804,11 @@ function mailster_remove_notice( $key ) {
  */
 function mailster_is_email( $email ) {
 
+	$pre_check = apply_filters( 'mailster_is_email', null, $email );
+	if ( ! is_null( $pre_check ) ) {
+		return (bool) $pre_check;
+	}
+
 	// First, we check that there's one @ symbol, and that the lengths are right
 	if ( ! preg_match( '/^[^@]{1,64}@[^@]{1,255}$/', $email ) ) {
 		// Email invalid because wrong number of characters in one section, or wrong number of @ symbols.

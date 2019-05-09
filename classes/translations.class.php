@@ -152,7 +152,7 @@ class MailsterTranslations {
 			update_option( 'mailster_translation', $object );
 		}
 
-		return is_array( $object['data'] ) ? ( ! empty( $object['data'] ) ? $object['data'] : null ) : false;
+		return isset( $object['data'] ) && is_array( $object['data'] ) ? ( ! empty( $object['data'] ) ? $object['data'] : null ) : false;
 
 	}
 

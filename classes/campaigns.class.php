@@ -249,6 +249,7 @@ class MailsterCampaigns {
 	public function display_post_states( $post_states, $post ) {
 
 		if ( $post->post_type == 'newsletter' ) {
+			$post_states = array();
 			if ( ! $this->meta( $post->ID, 'webversion' ) ) {
 				$post_states['mailster_no_webversion'] = esc_html__( 'Private', 'mailster' );
 			}
@@ -1447,6 +1448,7 @@ class MailsterCampaigns {
 			$meta['reply_to'] = $postdata['reply_to'];
 			$meta['timezone'] = isset( $postdata['timezone'] ) && $postdata['timezone'];
 			$meta['webversion'] = isset( $postdata['webversion'] );
+			$meta['editor_height'] = (int) $postdata['editor_height'];
 
 			if ( isset( $postdata['newsletter_color'] ) ) {
 				$meta['colors'] = $postdata['newsletter_color'];
@@ -1937,6 +1939,7 @@ class MailsterCampaigns {
 			'preheader' => null,
 			'template' => null,
 			'file' => null,
+			'editor_height' => 500,
 			'lists' => null,
 			'ignore_lists' => null,
 			'autoresponder' => null,
@@ -2144,7 +2147,7 @@ class MailsterCampaigns {
 		unset( $campaign->post_modified );
 		unset( $campaign->post_modified_gmt );
 
-		if ( preg_match( '# \((\d+)\)$#', $last_title, $hits ) ) {
+		if ( preg_match( '# \((\d+)\)$#', $campaign->post_title, $hits ) ) {
 			$campaign->post_title = trim( preg_replace( '#(.*) \(\d+\)$#', '$1 (' . ( ++$hits[1] ) . ')', $campaign->post_title ) );
 		} elseif ( $campaign->post_title ) {
 			$campaign->post_title .= ' (2)';
