@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.co
 
 * fixed: custom 'mailster_auto_post' output is working again.
 * added: `mailster_is_email` filter to add custom email validation checks.
+* improved: Mailster now better respects third party email with content type text/html
 
 = Version 2.3.18 =
 

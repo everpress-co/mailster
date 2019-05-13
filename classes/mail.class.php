@@ -411,6 +411,7 @@ class MailsterMail {
 			$this->from_name = $from_name;
 		}
 		if ( isset( $reply_to ) ) {
+			$this->reply_to = array();
 			foreach ( $reply_to as $address ) {
 				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
 					$recipient_name = '';
@@ -426,6 +427,7 @@ class MailsterMail {
 			}
 		}
 		if ( isset( $cc ) ) {
+			$this->cc = array();
 			foreach ( $cc as $address ) {
 				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
 					$recipient_name = '';
@@ -441,6 +443,7 @@ class MailsterMail {
 			}
 		}
 		if ( isset( $bcc ) ) {
+			$this->bcc = array();
 			foreach ( $bcc as $address ) {
 				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
 					$recipient_name = '';
@@ -517,11 +520,15 @@ class MailsterMail {
 
 		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 
-		if ( $template ) {
+		if ( $template && $file ) {
 			$template_obj = mailster( 'template', $template, $file );
 			$this->content = $template_obj->get( true, true );
 		} else {
-			$this->content = '{headline}<br>{content}';
+			if ( $file ) {
+				$this->content = '{headline}<br>{content}';
+			} else {
+				$this->content = '{content}';
+			}
 		}
 
 		$placeholder = mailster( 'placeholder', $this->content );
