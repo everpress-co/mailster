@@ -245,6 +245,7 @@ class MailsterCampaigns {
 	public function display_post_states( $post_states, $post ) {
 
 		if ( $post->post_type == 'newsletter' ) {
+			$post_states = array();
 			if ( ! $this->meta( $post->ID, 'webversion' ) ) {
 				$post_states['mailster_no_webversion'] = esc_html__( 'Private', 'mailster' );
 			}
@@ -2142,7 +2143,7 @@ class MailsterCampaigns {
 		unset( $campaign->post_modified );
 		unset( $campaign->post_modified_gmt );
 
-		if ( preg_match( '# \((\d+)\)$#', $last_title, $hits ) ) {
+		if ( preg_match( '# \((\d+)\)$#', $campaign->post_title, $hits ) ) {
 			$campaign->post_title = trim( preg_replace( '#(.*) \(\d+\)$#', '$1 (' . ( ++$hits[1] ) . ')', $campaign->post_title ) );
 		} elseif ( $campaign->post_title ) {
 			$campaign->post_title .= ' (2)';
