@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.1.1
-Stable tag: 2.3.18
+Tested up to: 5.2
+Stable tag: 2.3.19
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -61,30 +61,43 @@ These Templates are made for the Mailster Newsletter Plugin. They have been full
 
 If you have further questions please visit our [knowledge base](https://kb.mailster.co)
 
-Xaver Birsak – https://everpress.io
+Xaver Birsak – https://everpress.co
 
 
 = Linus =
-[!(https://mailster.github.io/preview/linus.jpg)](https://evp.to/linus?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/linus.jpg)](https://evp.to/linus?utm_source=Plugin+Info+Page)
 = Metro =
-[!(https://mailster.github.io/preview/metro.jpg)](https://evp.to/metro?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/metro.jpg)](https://evp.to/metro?utm_source=Plugin+Info+Page)
 = My Business =
-[!(https://mailster.github.io/preview/business.jpg)](https://evp.to/business?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/business.jpg)](https://evp.to/business?utm_source=Plugin+Info+Page)
 = Loose Leaf =
-[!(https://mailster.github.io/preview/looseleaf.jpg)](https://evp.to/looseleaf?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/looseleaf.jpg)](https://evp.to/looseleaf?utm_source=Plugin+Info+Page)
 = Market =
-[!(https://mailster.github.io/preview/market.jpg)](https://evp.to/market?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/market.jpg)](https://evp.to/market?utm_source=Plugin+Info+Page)
 = Skyline =
-[!(https://mailster.github.io/preview/skyline.jpg)](https://evp.to/skyline?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/skyline.jpg)](https://evp.to/skyline?utm_source=Plugin+Info+Page)
 = Letterpress =
-[!(https://mailster.github.io/preview/letterpress.jpg)](https://evp.to/letterpress?utm_source=Plugin+Info+Page)
+[!(https://static.mailster.co/preview/letterpress.jpg)](https://evp.to/letterpress?utm_source=Plugin+Info+Page)
 
 
 == Changelog ==
 
+= Version 2.3.19 =
+
+* fixed: custom 'mailster_auto_post' output is working again.
+* added: `mailster_is_email` filter to add custom email validation checks.
+* improved: Mailster now better respects third party email with content type text/html
+
 = Version 2.3.18 =
 
+* updated included template
+* added: option to use TLS on bounce servers
+* fixed: missing module buttons after code edit.
+* fixed: priority order in queue.
+* fixed: single quote in subject now correctly encoded
+* improved: handling of link mapping for multi byte characters.
 * improved: handling if notification.html file is missing
+* improved: better file sanitation on template uploads
 
 = Version 2.3.17 =
 
