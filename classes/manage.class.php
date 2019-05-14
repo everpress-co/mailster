@@ -401,7 +401,7 @@ class MailsterManage {
 		$html .= '</table></form>';
 		$html .= '<div class="stuffbox import-options">';
 		$html .= '<div class="submit-button-box alignright"><button class="do-import button button-hero button-primary">' . ( sprintf( esc_html__( 'Import %s contacts', 'mailster' ), '<strong>' . number_format_i18n( $contactcount ) . '</strong>' ) ) . '*</button><p>* ' . esc_html__( 'Please make sure you have the permission to import these contacts!', 'mailster' ) . '</p></div>';
-		$html .= '<h3>' . esc_html__( 'add contacts to following lists', 'mailster' ) . '</h3>';
+		$html .= '<h3>' . esc_html__( 'Add contacts to following lists', 'mailster' ) . '</h3>';
 		$html .= '<form id="lists"><ul>';
 		$lists = mailster( 'lists' )->get( null, null, true );
 		if ( $lists && ! is_wp_error( $lists ) ) {
@@ -410,11 +410,11 @@ class MailsterManage {
 			}
 		}
 		$html .= '</ul></form>';
-		$html .= '<p><label for="new_list_name">' . esc_html__( 'add new list', 'mailster' ) . ': </label><input type="text" id="new_list_name" value=""> <button class="button" id="addlist">' . esc_html__( 'add', 'mailster' ) . '</button></p>
+		$html .= '<p><label for="new_list_name">' . esc_html__( 'Add new list', 'mailster' ) . ': </label><input type="text" id="new_list_name" value=""> <button class="button" id="addlist">' . esc_html__( 'Add', 'mailster' ) . '</button></p>
 ';
 		$html .= '<h3>' . esc_html__( 'Import as', 'mailster' ) . ':</h3><p>';
 		$statuses = mailster( 'subscribers' )->get_status( null, true );
-		$html .= '<label><input type="radio" name="status" value="-1"> ' . esc_html__( 'ignore or as defined above', 'mailster' ) . ' </label> (<abbr title="' . esc_html__( 'Use following numbers for different statuses', 'mailster' ) . ': ' . "\n" . substr( print_r( $statuses, true ), 10, -3 ) . '">?</abbr>)</p><p>';
+		$html .= '<label><input type="radio" name="status" value="-1"> ' . esc_html__( 'Ignore or as defined above', 'mailster' ) . ' </label> (<abbr title="' . esc_html__( 'Use following numbers for different statuses', 'mailster' ) . ': ' . "\n" . substr( print_r( $statuses, true ), 10, -3 ) . '">?</abbr>)</p><p>';
 		foreach ( $statuses as $i => $name ) {
 			if ( in_array( $i, array( 4, 5, 6 ) ) ) {
 				continue;
@@ -428,7 +428,7 @@ class MailsterManage {
 		$html .= '<h3>' . esc_html__( 'Other', 'mailster' ) . ':</h3><p><label>';
 		$html .= '<p><label><input type="checkbox" id="signup" name="signup" checked>' . esc_html__( 'Use a signup date if not defined', 'mailster' ) . ': <input type="text" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate"></label>';
 		$html .= '<br><span class="description">' . esc_html__( 'Some Auto responder require a signup date. Define it here if it is not set or missing', 'mailster' ) . '</span></p>';
-		$html .= '<p><label><input type="checkbox" id="performance" name="performance"> ' . esc_html__( 'low memory usage (slower)', 'mailster' ) . '</label></p>';
+		$html .= '<p><label><input type="checkbox" id="performance" name="performance"> ' . esc_html__( 'Low memory usage (slower)', 'mailster' ) . '</label></p>';
 		$html .= '<input type="hidden" id="identifier" value="' . $identifier . '">';
 		$html .= '</div>';
 
