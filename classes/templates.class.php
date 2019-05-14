@@ -5,7 +5,7 @@ class MailsterTemplates {
 	public $path;
 	public $url;
 
-	private $download_url = 'https://mailster.github.io/templates/mymail.zip';
+	private $download_url = 'https://static.mailster.co/templates/mymail.zip';
 	private $headers = array(
 		'name' => 'Template Name',
 		'label' => 'Name',
@@ -561,7 +561,7 @@ class MailsterTemplates {
 			'uploading' => esc_html__( 'uploading zip file %s', 'mailster' ),
 			'enter_license' => esc_html__( 'Please enter your Purchase Code!', 'mailster' ),
 			'confirm_delete' => esc_html__( 'You are about to delete this template "%s"', 'mailster' ),
-			'update_note' => esc_html__( 'You are about to OVERWRITE your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Please make sure you have a backup of your files.', 'mailster' ),
+			'update_note' => esc_html__( 'You are about to update your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Old template files will be preserved in the templates folder.', 'mailster' ),
 		) );
 
 	}
@@ -885,9 +885,9 @@ class MailsterTemplates {
 		if ( file_exists( $screenshotfile ) ) {
 			$url = str_replace( ' ', '%20', $screenshoturi );
 		} elseif ( ! file_exists( $filedir ) ) {
-				$url = 'https://mailster.github.io/preview/not_available.gif';
+				$url = 'https://static.mailster.co/preview/not_available.gif';
 		} elseif ( mailster_is_local() ) {
-			$url = 'https://mailster.github.io/preview/not_available.gif';
+			$url = 'https://static.mailster.co/preview/not_available.gif';
 		} else {
 
 			static $mailster_get_screenshot_delay;
@@ -903,7 +903,7 @@ class MailsterTemplates {
 
 			$this->schedule_screenshot( $slug, $file, $process_module, $delay );
 
-			$url = 'https://mailster.github.io/preview/create.gif';
+			$url = 'https://static.mailster.co/preview/create.gif';
 
 		}
 
@@ -1281,7 +1281,7 @@ class MailsterTemplates {
 
 		// time before next check
 		$pause = DAY_IN_SECONDS;
-		$url = 'https://mailster.github.io/v1/templates.json';
+		$url = 'https://static.mailster.co/v1/templates.json';
 
 		if ( time() - $mailster_templates['timestamp'] <= $pause && ! $force ) {
 			$templates = $mailster_templates['templates'];
