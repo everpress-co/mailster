@@ -92,6 +92,10 @@
 					<p>Mailster handle imported campaigns now better and does some sanitation checks during this process.</p>
 				</div>
 				<div class="col">
+					<h4>Test email addresses</h4>
+					<p>Mailster now stores the latest used email address for your tests. This is done for each user separately.</p>
+				</div>
+				<div class="col">
 					<h4>Translation Dashboard Info</h4>
 					<p>If you use Mailster in a different Language than English you can now quickly update translations from the Dashboard.</p>
 				</div>
