@@ -223,6 +223,47 @@ function mailster_get_current_user_id() {
 /**
  *
  *
+ * @param unknown $post_type
+ * @param unknown $args      (optional)
+ * @param unknown $callback  (optional)
+ * @param unknown $priority  (optional)
+ * @return unknown
+ */
+function mailster_register_dynamic_post_type( $post_type, $args = array(), $callback = null, $priority = 10 ) {
+	if ( ! class_exists( 'WP_Post_Type' ) ) {
+		return false;
+	}
+
+	// add additional post type
+	add_filter( 'mailster_dynamic_post_types', function( $post_types, $output ) use ( $post_type, $args ) {
+
+		if ( 'names' == $output ) {
+			$post_types[ $post_type ] = $post_type;
+		} else {
+			$post_types[ $post_type ] = new WP_Post_Type( $post_type, $args );
+		}
+
+		return $post_types;
+
+	}, 10, 2);
+
+	// filter in placeholder
+	add_filter( 'mailster_get_last_post_' . $post_type, function( $return, $args, $offset, $term_ids, $campaign_id, $subscriber_id ) use ( $callback ) {
+
+		if ( is_callable( $callback ) ) {
+			$return = call_user_func_array( $callback, array( $offset, $campaign_id, $subscriber_id, $term_ids, $args ) );
+		}
+
+		return $return;
+
+	}, (int) $priority, 6);
+
+	return true;
+}
+
+/**
+ *
+ *
  * @param unknown $id          (optional)
  * @param unknown $echo        (optional)
  * @param unknown $classes     (optional)

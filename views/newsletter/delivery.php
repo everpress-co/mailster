@@ -174,9 +174,6 @@ $sent = $this->get_sent( $post->ID );
 			$count = '<input type="number" name="mailster_data[autoresponder][post_count]" class="small-text" value="' . $autoresponderdata['post_count'] . '">';
 			$type = '<select id="autoresponder-post_type" name="mailster_data[autoresponder][post_type]">';
 			foreach ( $pts as $pt => $data ) {
-				if ( in_array( $pt, array( 'attachment', 'newsletter' ) ) ) {
-					continue;
-				}
 				$type .= '<option value="' . $pt . '"' . selected( $autoresponderdata['post_type'], $pt, false ) . '>' . $data->labels->singular_name . '</option>';
 			}
 			$type .= '</select>';

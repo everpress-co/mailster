@@ -247,6 +247,7 @@
 					}
 
 					$relative .= '</select>';
+					$pts = mailster( 'helper' )->get_dynamic_post_types( true, 'objects' );
 					$post_types = '<select id="dynamic_embed_options_post_type">';
 					foreach ( $pts as $pt => $data ) {
 						if ( in_array( $pt, array( 'attachment', 'newsletter' ) ) ) {

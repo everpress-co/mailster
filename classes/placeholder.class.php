@@ -749,7 +749,7 @@ class MailsterPlaceholder {
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
-		$pts = mailster( 'helper' )->get_post_types();
+		$pts = mailster( 'helper' )->get_dynamic_post_types();
 		$pts = implode( '|', $pts );
 
 		// all dynamic post type tags
@@ -961,8 +961,13 @@ class MailsterPlaceholder {
 				$replace_to = str_replace( array( '"', "'" ), array( '&quot;', '&#039;' ), $post->post_title );
 				break;
 			case 'link':
+				if ( isset( $post->post_link ) ) {
+					$replace_to = $post->post_link;
+				}
 			case 'permalink':
-				$replace_to = get_permalink( $post->ID );
+				if ( ! $replace_to ) {
+					$replace_to = get_permalink( $post->ID );
+				}
 				if ( ! $replace_to ) {
 					$replace_to = $post->post_link;
 				}
