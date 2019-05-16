@@ -9,7 +9,7 @@ html.mailster-loading{
 	 filter: blur(3px);
 }
 html.mailster-loading:before{
-	content: '';
+	_content: '';
 	text-decoration: inherit;
 	font-weight: normal;
 	font-style: normal;
@@ -55,17 +55,17 @@ button.mailster-btn:hover {
 button.mailster-btn:before {
 	font-family: 'mailster-icons';
 }
-button.mailster-btn.codeview:before { content: '\e80a'; }
-button.mailster-btn.auto:before { content: '\e818'; }
-button.mailster-btn.add:before { content: '\e837'; }
-button.mailster-btn.duplicate:before { content: '\e817'; }
-button.mailster-btn.up:before { content: '\e816'; }
-button.mailster-btn.down:before { content: '\e815'; }
-button.mailster-btn.remove:before { content: '\e82a'; }
-button.mailster-btn.editbutton:before { content: '\e80c'; }
-button.mailster-btn.addbutton:before { content: '\e837'; }
-button.mailster-btn.addrepeater:before { content: '\e837'; }
-button.mailster-btn.removerepeater:before { content: '\e838'; }
+button.mailster-btn.codeview:before { _content: '\e80a'; }
+button.mailster-btn.auto:before { _content: '\e818'; }
+button.mailster-btn.add:before { _content: '\e837'; }
+button.mailster-btn.duplicate:before { _content: '\e817'; }
+button.mailster-btn.up:before { _content: '\e816'; }
+button.mailster-btn.down:before { _content: '\e815'; }
+button.mailster-btn.remove:before { _content: '\e82a'; }
+button.mailster-btn.editbutton:before { _content: '\e80c'; }
+button.mailster-btn.addbutton:before { _content: '\e837'; }
+button.mailster-btn.addrepeater:before { _content: '\e837'; }
+button.mailster-btn.removerepeater:before { _content: '\e838'; }
 button.mailster-btn { padding: 1px 4px; }
 
 buttons{
@@ -228,7 +228,7 @@ img[editable][label]:before,
 a[editable][label]:before,
 td[background][label]:before,
 th[background][label]:before {
-	content: attr(label);
+	_content: attr(label);
 	display: block;
 	opacity: 0;
 	background-color: #2BB3E7;
@@ -338,7 +338,7 @@ multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, .textbutt
 	z-index: 11;
 }
 td[background]:before, th[background]:before{
-	content: '\e836';
+	_content: '\e836';
 	font-family: "mailster-icons";
 	display: none;
 	position: absolute;
@@ -367,10 +367,10 @@ td[background]:hover:before, th[background]:hover:before{
 multi, single, img[editable], a[editable] img, .textbutton a[editable]{
 	position: relative;
 }
-multi[contenteditable], single[contenteditable]{
+multi[_contenteditable], single[_contenteditable]{
 	cursor: text;
 }
-multi[contenteditable]:focus, single[contenteditable]:focus, a[editable]:focus{
+multi[_contenteditable]:focus, single[_contenteditable]:focus, a[editable]:focus{
 	outline: none;
 }
 body:hover single:empty{
@@ -379,7 +379,7 @@ body:hover single:empty{
 	min-width: 15px;
 }
 body:hover single:empty:after{
-	content: '\00A0';
+	_content: '\00A0';
 }
 img[editable]{
 	z-index: 10;
@@ -407,7 +407,7 @@ module.drag-down{
 	transform: translateY(80px);
 }
 modules:empty:after, dropzone{
-	content: "\e815";
+	_content: "\e815";
 	font-family: "mailster-icons";
 	text-decoration: inherit;
 	font-weight: normal;
@@ -432,7 +432,7 @@ modules:empty:after, dropzone{
 	margin: 0;
 }
 body.drag-active modules:empty:after, body.drag-active modules dropzone:before{
-	content: "\e815";
+	_content: "\e815";
 	font-family: "mailster-icons";
 	color: #2BB3E7;
 	font-size: 18px;
@@ -590,12 +590,12 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 }
 .mce-ico.mailster-tags-icon:before, .mce-ico.mailster-remove-icon:before {
 	font: normal 16px/1 'mailster-icons' !important;
-	content: '\e830';
+	_content: '\e830';
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
 .mce-ico.mailster-remove-icon:before {
-	content: '\e82a';
+	_content: '\e82a';
 	color: red;
 }
 .ui-helper-hidden-accessible, .screen-reader-text{
