@@ -23,7 +23,7 @@
 			<h2>Create beautiful Campaigns.</h2>
 			<p class="about-text">You have now access to over 900.000 Photos from 129.000 photographers directly in the campaign editor.<br>Create visual stunning emails with free photos form Unsplash.</p>
 			<div class="promo-video">
-				<iframe id="ytplayer" type="text/html" src="https://www.youtube.com/embed/ZG9V0sSbwvo?autoplay=1&showinfo=0&modestbranding=1&controls=0&rel=0" frameborder="0"></iframe>
+				<iframe id="ytplayer" type="text/html" src="https://www.youtube.com/embed/ZG9V0sSbwvo?autoplay=1&showinfo=0&modestbranding=1&controls=0&rel=0&vq=hd720" frameborder="0"></iframe>
 			</div>
 			<p class="about-text"><a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ) ?>" class="button button-primary button-hero">Create a new Campaign</a></p>
 			<p><a href="https://kb.mailster.co/unsplash/" target="_blank">Learn more</a> or <a href="https://unsplash.com/" target="_blank">visit Unsplash.com</a></p>
@@ -46,26 +46,22 @@
 			</div>
 		</div>
 
-		<div class="feature-section two-col">
-			<div class="col">
-				<div class="media-container">
-				</div>
-				<h3>Fresh UI</h3>
-				<p>We have tweaked the look of some UI elements.</p>
-				<div class="return-to-dashboard"></div>
-			</div>
-			<div class="col">
-				<div class="media-container">
-				</div>
-				<h3>Subscriber Query Class</h3>
-				<p>Similar to the WP_Query you can now simple query your subscribers.</p>
-				<div class="return-to-dashboard"></div>
-			</div>
-		</div>
-
 		<div class="changelog">
 			<h2>Further Improvements</h2>
 
+			<div class="feature-section under-the-hood three-col">
+				<div class="col">
+					<h4>Fresh UI</h4>
+					<p>We have tweaked the look of some UI elements.</p>
+				</div>
+				<div class="col">
+					<h4>Dynamic Custom Post Types</h4>
+					<p>Add custom post types dynamically and use the in your campaigns.</p>
+				</div>
+				<div class="col">
+					<h4>Translation Dashboard Info</h4>
+					<p>If you use Mailster in a different Language than English you can now quickly update translations from the Dashboard.</p>
+				</div>
 			<div class="feature-section under-the-hood three-col">
 				<div class="col">
 					<h4>Preserved stats from deleted Subscribers.</h4>
@@ -90,8 +86,6 @@
 					<p>Mailster now stores the latest used email address for your tests. This is done for each user separately.</p>
 				</div>
 				<div class="col">
-					<h4>Translation Dashboard Info</h4>
-					<p>If you use Mailster in a different Language than English you can now quickly update translations from the Dashboard.</p>
 				</div>
 			</div>
 
