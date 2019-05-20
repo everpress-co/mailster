@@ -408,10 +408,10 @@ class MailsterAjax {
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
 		$content = mailster( 'helper' )->add_mailster_styles( $content );
 
-		$hash = md5( $content );
+		$hash = md5( NONCE_SALT . $content );
 
-		// cache preview for 60 seconds
-		set_transient( 'mailster_p_' . $hash, $content, 60 );
+		// cache preview for 15 seconds
+		set_transient( 'mailster_p_' . $hash, $content, 15 );
 
 		$placeholder->set_content( $subject );
 		$return['subject'] = $placeholder->get_content();
@@ -428,12 +428,12 @@ class MailsterAjax {
 
 		$this->ajax_nonce( );
 
-		$hash = $_GET['hash'];
+		$hash = sanitize_key( $_GET['hash'] );
 
 		$content = get_transient( 'mailster_p_' . $hash );
 
 		if ( empty( $content ) ) {
-			$content = 'error';
+			wp_die( 'There was an error creating the preview.' );
 		}
 
 		echo $content;
@@ -1548,13 +1548,21 @@ class MailsterAjax {
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
 		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 		$args = array();
+		$static_post_types = mailster( 'helper' )->get_post_types();
+		$is_dynmaic_post_type = ! isset( $static_post_types[ $post_type ] );
 
 		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, $args, $campaign_id );
 		$is_post = ! ! $post;
 
-		$return['title'] = $is_post
-			? '<a href="post.php?post=' . $post->ID . '&action=edit" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'no title', 'mailster' ) ) . '</a>'
-			: esc_html__( 'no match for your selection!', 'mailster' ) . ' <a href="post-new.php?post_type=' . $post_type . '" class="external">' . esc_html__( 'create a new one', 'mailster' ) . '</a>?';
+		if ( $is_dynmaic_post_type ) {
+			$return['title'] = $is_post
+				? ( $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' ) )
+				: esc_html__( 'There\'s currently no match for your selection!', 'mailster' );
+		} else {
+			$return['title'] = $is_post
+				? '<a href="' . admin_url( 'post.php?post=' . $post->ID . '&action=edit' ) . '" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' ) ) . '</a>'
+				: esc_html__( 'There\'s currently no match for your selection!', 'mailster' ) . ' <a href="' . admin_url( 'post-new.php?post_type=' . $post_type ) . '" class="external">' . esc_html__( 'Create a new one', 'mailster' ) . '</a>?';
+		}
 
 		$options = $relative . ( ! empty( $term_ids ) ? ';' . implode( ';', $term_ids ) : '' );
 

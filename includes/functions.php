@@ -234,6 +234,12 @@ function mailster_register_dynamic_post_type( $post_type, $args = array(), $call
 		return false;
 	}
 
+	$args = wp_parse_args( $args, array(
+		'labels' => array(
+			'name' => is_string( $args ) ? $args : ucwords( str_replace( '_', ' ', $post_type ) ),
+		),
+	) );
+
 	// add additional post type
 	add_filter( 'mailster_dynamic_post_types', function( $post_types, $output ) use ( $post_type, $args ) {
 
@@ -251,7 +257,9 @@ function mailster_register_dynamic_post_type( $post_type, $args = array(), $call
 	add_filter( 'mailster_get_last_post_' . $post_type, function( $return, $args, $offset, $term_ids, $campaign_id, $subscriber_id ) use ( $callback ) {
 
 		if ( is_callable( $callback ) ) {
-			$return = call_user_func_array( $callback, array( $offset, $campaign_id, $subscriber_id, $term_ids, $args ) );
+			if ( $return = call_user_func_array( $callback, array( $offset, $campaign_id, $subscriber_id, $term_ids, $args ) ) ) {
+				$return = new WP_Post( (object) $return );
+			}
 		}
 
 		return $return;
