@@ -293,8 +293,10 @@ class MailsterPlaceholder {
 		$this->add( mailster_option( 'custom_tags', array() ) );
 		$this->add( mailster_option( 'tags', array() ) );
 
-		$this->remove_modules();
-		$this->conditions();
+		if ( $removeunused ) {
+			$this->remove_modules();
+			$this->conditions();
+		}
 
 		$k = 0;
 
@@ -758,7 +760,7 @@ class MailsterPlaceholder {
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
-		$pts = mailster( 'helper' )->get_post_types();
+		$pts = mailster( 'helper' )->get_dynamic_post_types();
 		$pts = implode( '|', $pts );
 
 		// all dynamic post type tags
@@ -926,9 +928,8 @@ class MailsterPlaceholder {
 	public function get_replace( $post, $what ) {
 
 		$extra = null;
+		$replace_to = null;
 		$post_type = $post->post_type;
-		$timeformat = mailster( 'helper' )->timeformat();
-		$dateformat = mailster( 'helper' )->dateformat();
 
 		if ( 0 === strpos( $what, 'author' ) ) {
 			$author = get_user_by( 'id', $post->post_author );
@@ -976,8 +977,13 @@ class MailsterPlaceholder {
 				$replace_to = str_replace( array( '"', "'" ), array( '&quot;', '&#039;' ), $post->post_title );
 				break;
 			case 'link':
+				if ( isset( $post->post_link ) ) {
+					$replace_to = $post->post_link;
+				}
 			case 'permalink':
-				$replace_to = get_permalink( $post->ID );
+				if ( ! $replace_to ) {
+					$replace_to = get_permalink( $post->ID );
+				}
 				if ( ! $replace_to ) {
 					$replace_to = $post->post_link;
 				}
@@ -1012,7 +1018,7 @@ class MailsterPlaceholder {
 			case 'date_gmt':
 			case 'modified':
 			case 'modified_gmt':
-				$replace_to = date( $dateformat, strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date( mailster( 'helper' )->dateformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'time':
 				$what = 'date';
@@ -1022,7 +1028,7 @@ class MailsterPlaceholder {
 				$what = isset( $what ) ? $what : 'modified';
 			case 'modified_time_gmt':
 				$what = isset( $what ) ? $what : 'modified_gmt';
-				$replace_to = date( $timeformat, strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date( mailster( 'helper' )->timeformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'excerpt':
 				if ( ! empty( $post->{'post_excerpt'} ) ) {
@@ -1053,9 +1059,9 @@ class MailsterPlaceholder {
 				$replace_to = '[' . ( sprintf( esc_html__( 'use the tag %s as url in the editbar', 'mailster' ), '"' . $hits[1][ $i ] . '"' ) ) . ']';
 				break;
 			default:
-				if ( isset( $post->{'post_' . $what} ) ) {
+				if ( isset( $post->{'post_' . $what} ) && $post->{'post_' . $what} ) {
 					$replace_to = $post->{'post_' . $what};
-				} elseif ( isset( $post->{$what} ) ) {
+				} elseif ( isset( $post->{$what} ) && $post->{$what} ) {
 					$replace_to = $post->{$what};
 				} else {
 					$replace_to = '';

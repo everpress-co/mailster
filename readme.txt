@@ -83,6 +83,7 @@ Xaver Birsak – https://everpress.co
 == Changelog ==
 
 * new: Random Post
+* new: support for custom dynamic post types
 
 = Version 2.3.19 =
 

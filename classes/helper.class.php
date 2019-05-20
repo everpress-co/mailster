@@ -1481,7 +1481,21 @@ class MailsterHelper {
 			$post_types = array_diff_key( $post_types, array_flip( $exclude ) );
 		}
 
-		return $post_types;
+		return apply_filters( 'mailster_post_types', $post_types, $output );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $public_only (optional)
+	 * @param unknown $output      (optional)
+	 * @param unknown $exclude     (optional)
+	 * @return unknown
+	 */
+	public function get_dynamic_post_types( $public_only = true, $output = 'names', $exclude = array( 'attachment', 'newsletter' ) ) {
+
+		return apply_filters( 'mailster_dynamic_post_types', $this->get_post_types( $public_only, $output, $exclude ), $output );
 
 	}
 

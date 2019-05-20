@@ -1813,7 +1813,7 @@ jQuery(document).ready(function ($) {
 			$this.addClass('nav-tab-active');
 			base.find('.tab').hide();
 			base.find(id).show();
-			if (id == '#dynamic_embed_options' && trigger !== false) $('#dynamic_embed_options_post_type').trigger('change');
+			//if (id == '#dynamic_embed_options' && trigger !== false) $('#dynamic_embed_options_post_type').trigger('change');
 			if (id == '#image_button') buttontype = 'image';
 			if (id == '#text_button') buttontype = 'text';
 

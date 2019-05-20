@@ -723,7 +723,7 @@ class Mailster {
 	public function get_random_post( $identifier = 0, $post_type = 'post', $term_ids = array(), $args = array(), $campaign_id = 0, $subscriber_id = null, $try = 1 ) {
 
 		// filters only on first run.
-		if ( 1 == $try ) {
+		if ( 1 === $try ) {
 			$args = apply_filters( 'mailster_get_random_post_args', $args, $identifier, $post_type, $term_ids, $campaign_id, $subscriber_id );
 			// try max 10 times to prevent infinity loop
 		} elseif ( $try >= 10 ) {
@@ -737,7 +737,8 @@ class Mailster {
 
 		// add an identifier to prevent results from being cached.
 		$key = md5( serialize( array( $identifier, $post_type, $term_ids, $args, $campaign_id ) ) );
-		$args['mailster_identifier'] = $key;
+		$args['mailster_identifier'] = $identifier;
+		$args['mailster_identifier_key'] = $key;
 
 		// check if there's a cached version.
 		$posts = mailster_cache_get( 'get_random_post' );
@@ -755,8 +756,12 @@ class Mailster {
 			$stored = wp_list_pluck( $posts[ $campaign_id ], 'ID' );
 		}
 
-		if ( ($pos = array_search( $post->ID, $stored )) !== false ) {
+		$allow_duplciates = apply_filters( 'mailster_allow_random_post_duplicates', false, $post_type, $term_ids, $args, $campaign_id, $subscriber_id );
+
+		// get new if already used
+		if ( ! $allow_duplciates && ($pos = array_search( $post->ID, $stored )) !== false ) {
 			unset( $args['mailster_identifier'] );
+			unset( $args['mailster_identifier_key'] );
 			return $this->get_random_post( ++$identifier, $post_type, $term_ids, $args, $campaign_id, $subscriber_id, ++$try );
 		} else {
 			$posts[ $campaign_id ][ $key ] = $post;
