@@ -2061,7 +2061,6 @@ class Mailster {
 			if ( $system_mail == 'template' ) {
 
 				add_filter( 'wp_mail', array( &$this, 'wp_mail_set' ), 99 );
-				add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 
 			} else {
 
@@ -2128,17 +2127,29 @@ class Mailster {
 			}
 		}
 
+		$content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
+
 		$template = mailster_option( 'default_template' );
 		$template = apply_filters( 'mailster_wp_mail_template', $template, $caller, $current_filter );
 
-		$file = mailster_option( 'system_mail_template', 'notification.html' );
+		if ( 'text/plain' == $content_type ) {
+			$file = mailster_option( 'system_mail_template', 'notification.html' );
+			add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
+		} else {
+			$file = false;
+			remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
+		}
 		$file = apply_filters( 'mymail_wp_mail_template_file', apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter ), $caller, $current_filter );
 
-		if ( $template ) {
+		if ( $template && $file ) {
 			$template = mailster( 'template', $template, $file );
 			$content = $template->get( true, true );
 		} else {
-			$content = $headline . '<br>' . $content;
+			if ( $file ) {
+				$content = $headline . '<br>' . $content;
+			} else {
+				$content = '{content}';
+			}
 		}
 
 		$replace = apply_filters( 'mymail_send_replace', apply_filters( 'mailster_send_replace', array( 'notification' => '' ), $caller, $current_filter ) );
@@ -2146,11 +2157,14 @@ class Mailster {
 		$subject = apply_filters( 'mymail_send_subject', apply_filters( 'mailster_send_subject', $args['subject'], $caller, $current_filter ) );
 		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $args['subject'], $caller, $current_filter ) );
 
-		if ( apply_filters( 'mymail_wp_mail_htmlify', apply_filters( 'mailster_wp_mail_htmlify', true ) ) ) {
-			$message = $this->wp_mail_map_links( $message );
-			$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
-			$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
-			$message = wpautop( $message, true );
+		if ( 'text/plain' == $content_type ) {
+
+			if ( apply_filters( 'mymail_wp_mail_htmlify', apply_filters( 'mailster_wp_mail_htmlify', true ) ) ) {
+				$message = $this->wp_mail_map_links( $message );
+				$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
+				$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
+				$message = wpautop( $message, true );
+			}
 		}
 
 		$placeholder = mailster( 'placeholder', $content );
@@ -2224,6 +2238,7 @@ class Mailster {
 		if ( isset( $this->atts['to'] ) ) {
 			$to = $this->atts['to'];
 		}
+
 		if ( isset( $this->atts['subject'] ) ) {
 			$subject = $this->atts['subject'];
 		}
@@ -2243,14 +2258,20 @@ class Mailster {
 			$headers = implode( "\r\n", $headers ) . "\r\n";
 		}
 
-		$message = $this->wp_mail_map_links( $message );
+		$content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
 
-		// only if content type is not html
-		if ( ! preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
-			$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
-			$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
-			$message = wpautop( $message, true );
+		if ( 'text/plain' == $content_type ) {
+
+			$message = $this->wp_mail_map_links( $message );
+
+			// only if content type is not html
+			if ( ! preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
+				$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
+				$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
+				$message = wpautop( $message, true );
+			}
 		}
+
 		if ( preg_match( '#x-mailster-template:(.*)#i', $headers, $hits ) ) {
 			$template = trim( $hits[1] );
 		}
@@ -2270,7 +2291,12 @@ class Mailster {
 		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 		$template = apply_filters( 'mailster_wp_mail_template', $template, $caller, $current_filter );
 
-		$file = ! is_null( $file ) ? $file : mailster_option( 'system_mail_template', 'notification.html' );
+		if ( 'text/plain' == $content_type ) {
+			$file = ! is_null( $file ) ? $file : mailster_option( 'system_mail_template', 'notification.html' );
+			add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
+		} else {
+			remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
+		}
 		$file = apply_filters( 'mymail_wp_mail_template_file', apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter ), $caller, $current_filter );
 
 		$mail = mailster( 'mail' );

@@ -43,7 +43,7 @@ $mailster = new mailster();
 
 if ( ! $mailster->wp_mail && mailster_option( 'system_mail' ) == 1 ) {
 
-	function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) {
-		return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments );
+	function wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $file = null, $template = null ) {
+		return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments, $file, $template );
 	}
 }
