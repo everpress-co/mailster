@@ -4,7 +4,6 @@ $t = mailster( 'templates' );
 
 $templates = $t->get_templates();
 $mailster_templates = $t->get_mailster_templates();
-$licensecodes = $t->get_license();
 
 $notice = false;
 $default = mailster_option( 'default_template', 'mymail' );

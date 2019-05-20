@@ -271,29 +271,6 @@ only screen and (                min-resolution: 2dppx) {
 .add-license .description{
 	max-height: 16px;
 }
-.mailster-box .licensecode{
-	border-top: 1px solid #DEDEDB;
-	border-bottom: 1px solid #DEDEDB;
-	height: 28px;
-	padding: 19px;
-	opacity: 0;
-	-webkit-transition: opacity .25s ease-in-out;
-	-moz-transition: opacity .25s ease-in-out;
-	-ms-transition: opacity .25s ease-in-out;
-	-o-transition: opacity .25s ease-in-out;
-	transition: opacity .25s ease-in-out;
-}
-.mailster-box .licensecode input.license{
-	float: left;
-	width: 79%;
-}
-.mailster-box .licensecode .button{
-	float: right;
-	width: 20%;
-}
-.add-license .licensecode{
-	opacity: 1;
-}
 .mailster-box .action-links{
 	position: absolute;
 	left: 0px;

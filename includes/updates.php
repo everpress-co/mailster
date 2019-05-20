@@ -572,6 +572,10 @@ if ( $old_version ) {
 				$mailster_options['bounce_secure'] = 'ssl';
 			}
 
+		case '2.3.18':
+		case '2.3.19':
+			// no longer in use
+			delete_option( 'mailster_template_licenses' );
 		default:
 
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
