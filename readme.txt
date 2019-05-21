@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.1.1
-Stable tag: 2.3.18
+Tested up to: 5.2
+Stable tag: 2.3.19
 Author: EverPress
 Author URI: https://mailster.co
 Requires PHP: 5.3.6
@@ -61,7 +61,7 @@ These Templates are made for the Mailster Newsletter Plugin. They have been full
 
 If you have further questions please visit our [knowledge base](https://kb.mailster.co)
 
-Xaver Birsak – https://everpress.io
+Xaver Birsak – https://everpress.co
 
 
 = Linus =
@@ -81,6 +81,13 @@ Xaver Birsak – https://everpress.io
 
 
 == Changelog ==
+
+= Version 2.3.19 =
+
+* fixed: custom 'mailster_auto_post' output is working again.
+* added: `mailster_is_email` filter to add custom email validation checks.
+* improved: Mailster now better respects third party email with content type text/html
+* removed: deprecated template functionality
 
 = Version 2.3.18 =
 

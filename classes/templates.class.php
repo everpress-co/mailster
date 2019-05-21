@@ -559,7 +559,6 @@ class MailsterTemplates {
 			'delete_template_file' => esc_html__( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
 			'enter_template_name' => esc_html__( 'Please enter the name of the new template', 'mailster' ),
 			'uploading' => esc_html__( 'uploading zip file %s', 'mailster' ),
-			'enter_license' => esc_html__( 'Please enter your Purchase Code!', 'mailster' ),
 			'confirm_delete' => esc_html__( 'You are about to delete this template "%s"', 'mailster' ),
 			'update_note' => esc_html__( 'You are about to update your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Old template files will be preserved in the templates folder.', 'mailster' ),
 		) );
@@ -669,9 +668,7 @@ class MailsterTemplates {
 
 							$this->download_slug = $slug;
 
-							add_filter( 'http_request_args', array( &$this, 'download_http_request_args' ), 100, 2 );
 							$tempfile = download_url( $template['download_url'], 3000 );
-							remove_filter( 'http_request_args', array( &$this, 'download_http_request_args' ), 100, 2 );
 
 							if ( is_wp_error( $tempfile ) ) {
 
@@ -723,104 +720,8 @@ class MailsterTemplates {
 					exit;
 				break;
 
-				case 'license':
-
-					$slug = esc_attr( $_GET['template'] );
-
-					if ( wp_verify_nonce( $_GET['_wpnonce'], 'license-' . $slug ) && current_user_can( 'mailster_manage_templates' ) ) {
-
-						if ( $template = $this->get_mailster_templates( $slug ) ) {
-
-							$this->download_slug = $slug;
-
-							if ( $this->update_license( $slug, $_GET['license'] ) ) {
-
-								mailster_notice( esc_html__( 'Licensecode has been updated!', 'mailster' ), 'success', true );
-
-							}
-						}
-
-						$redirect = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more' );
-						wp_redirect( $redirect );
-						exit;
-
-					}
-				break;
-
 			}
 		}
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $r
-	 * @param unknown $url
-	 * @return unknown
-	 */
-	public function download_http_request_args( $r, $url ) {
-
-		include ABSPATH . WPINC . '/version.php';
-
-		if ( ! $wp_version ) {
-			global $wp_version;
-		}
-
-		$template = $this->get_mailster_templates( $this->download_slug );
-
-		$version = $this->get_versions( $this->download_slug );
-
-		$body = array(
-			'licensecode' => $this->get_license( $this->download_slug ),
-			'version' => $version,
-			'wp-version' => $wp_version,
-			'referer' => home_url(),
-			'multisite' => is_multisite(),
-		);
-
-		$r['headers'] = array(
-			'x-updatecenter' => serialize( $body ),
-		);
-
-		return $r;
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $slug (optional)
-	 * @return unknown
-	 */
-	private function get_license( $slug = null ) {
-
-		$licenses = get_option( 'mailster_template_licenses', array() );
-
-		// sanitize
-		$licenses = preg_grep( '/[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}/', $licenses );
-
-		return is_null( $slug ) ? $licenses : ( isset( $licenses[ $slug ] ) ? $licenses[ $slug ] : null );
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $slug
-	 * @param unknown $license
-	 * @return unknown
-	 */
-	private function update_license( $slug, $license ) {
-
-		$licenses = get_option( 'mailster_template_licenses', array() );
-
-		$licenses[ $slug ] = $license;
-
-		return update_option( 'mailster_template_licenses', $licenses );
 
 	}
 
@@ -1362,10 +1263,9 @@ class MailsterTemplates {
 			global $wp_version;
 		}
 
-		$referer = home_url();
-		$multisite = is_multisite();
 		$versions = $this->get_versions();
 		$collection = array();
+
 		foreach ( $endpoints as $slug => $endpoint ) {
 
 			if ( empty( $endpoint ) ) {
@@ -1377,11 +1277,7 @@ class MailsterTemplates {
 			}
 
 			$collection[ $endpoint ][ $slug ] = isset( $templates[ $slug ] ) ? array(
-				'licensecode' => $this->get_license( $slug ),
 				'version' => $templates[ $slug ]['version'],
-				'wp-version' => $wp_version,
-				'referer' => $referer,
-				'multisite' => $multisite,
 			) : array();
 
 			$collection[ $endpoint ][ $slug ]['envato_item_id'] = isset( $mailster_templates[ $slug ]['envato_item_id'] ) ? $mailster_templates[ $slug ]['envato_item_id'] : null;
@@ -1390,10 +1286,7 @@ class MailsterTemplates {
 		foreach ( $collection as $endpoint => $items ) {
 
 			$post = array(
-				'headers' => array(
-					'Content-Type' => 'application/x-www-form-urlencoded',
-					'x-ip' => isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : null,
-				),
+				'headers' => array( 'Content-Type' => 'application/x-www-form-urlencoded' ),
 				'timeout' => $timeout,
 			);
 
@@ -1411,15 +1304,6 @@ class MailsterTemplates {
 				$response = wp_remote_get( $remote_url, $post );
 				$response_body = trim( wp_remote_retrieve_body( $response ) );
 
-			} else {
-
-				$remote_url = trailingslashit( $remote_url );
-
-				$response = wp_remote_get( add_query_arg( array(
-					'updatecenter_action' => 'versions',
-					'updatecenter_slug' => array_keys( $items ),
-					'updatecenter_data' => array_values( $items ),
-				), $remote_url ), $post );
 			}
 
 			$response_code = wp_remote_retrieve_response_code( $response );
