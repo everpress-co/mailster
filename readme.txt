@@ -85,6 +85,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4 =
 
 * new: campaign subscriber related tag
+* new: Import Export
 
 = Version 2.3.19 =
 
