@@ -217,8 +217,8 @@ class MailsterActions {
 
 			if ( $client = mailster_get_user_client() ) {
 
-				// remove meta info if client is Gmail (GoogleImageProxyy) or Yahoo (YahooMailProxy)
-				if ( 'Gmail' == $client->client || 'Yahoo' == $client->client ) {
+				// remove meta info if client is Gmail (GoogleImageProxyy)
+				if ( 'Gmail' == $client->client ) {
 					$user_meta = array();
 				}
 
