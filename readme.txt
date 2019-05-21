@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 * new: display of deleted subscribers in campaign stats
 * new: Random Post
 * new: support for custom dynamic post types
+* new: RSS to Email
 
 = Version 2.3.19 =
 

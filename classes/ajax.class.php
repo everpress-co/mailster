@@ -1324,73 +1324,6 @@ class MailsterAjax {
 			} else {
 				$return['html'] = '<li><span class="norows">' . esc_html__( 'no entries found', 'mailster' ) . '</span></li>';
 			}
-		} elseif ( $_POST['type'] == '_rss' ) {
-
-			$url = esc_url( $_POST['url'] );
-
-			include_once ABSPATH . WPINC . '/feed.php';
-
-			$rss = fetch_feed( $url );
-
-			if ( ! is_wp_error( $rss ) ) {
-
-				$return['success'] = true;
-
-				$maxitems = $rss->get_item_quantity( $post_count );
-
-				$rss_items = $rss->get_items( $offset, $maxitems );
-				$post_counts = count( $rss->get_items( $offset ) );
-
-				$posts_lefts = max( 0, $post_counts - $offset - $post_count );
-
-				$html = '';
-
-				foreach ( $rss_items as $i => $item ) {
-					$relative = 0;
-					preg_match_all( '/<img[^>]*src="(.*?(?:\.png|\.jpg|\.gif))"[^>]*>/i', $item->get_content(), $images );
-					$hasthumb = false;
-					if ( ! empty( $images[0] ) ) {
-						$hasthumb = $images[1][0];
-					}
-					$html .= '<li data-id="' . $url . '#' . ( $i + $offset ) . '" data-name="' . $item->get_title() . '"';
-					if ( $hasthumb ) {
-						$html .= ' data-thumbid="' . $hasthumb . '" class="has-thumb"';
-					}
-
-					$html .= ' data-link="' . $item->get_permalink() . '" data-type="rss-item" data-relative="' . $relative . '">';
-					( $hasthumb )
-						? $html .= '<div class="feature" style="background-image:url(' . $hasthumb . ')"></div>'
-						: $html .= '<div class="no-feature"></div>';
-					$html .= '<strong>' . $item->get_title() . '</strong>';
-					$html .= '<span>' . trim( wp_trim_words( strip_shortcodes( $item->get_description() ), 18 ) ) . '</span>';
-					$html .= '<span>' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $item->get_date() ) ) . '</span>';
-					$html .= '</li>';
-				}
-
-				if ( $posts_lefts ) {
-					$html .= '<li><a class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="_rss"><span>' . sprintf( esc_html__( 'load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) ) . '</span></a></li>';
-				}
-
-				$return['html'] = $html;
-
-				$return['rssinfo'] = array(
-					'copyright' => $rss->get_copyright() ? $rss->get_copyright() : sprintf( esc_html__( 'All rights reserved %s', 'mailster' ), '<a href="' . $rss->get_link() . '" class="external">' . $rss->get_title() . '</a>' ),
-					'title' => $rss->get_title(),
-					'description' => $rss->get_description(),
-				);
-
-				$recent_feeds = get_option( 'mailster_recent_feeds', array() );
-				$recent_feeds = array_reverse( $recent_feeds );
-				$recent_feeds[ $rss->get_title() ] = $url;
-				$recent_feeds = array_reverse( $recent_feeds );
-				$recent_feeds = array_slice( $recent_feeds, 0, 5 );
-				update_option( 'mailster_recent_feeds', $recent_feeds );
-
-			} else {
-
-				$return['success'] = true;
-				$return['html'] = '<li><span class="norows">' . $rss->get_error_message() . '</span></li>';
-			}
 		}
 
 		$this->json_return( $return );
@@ -1467,67 +1400,6 @@ class MailsterAjax {
 				$return['success'] = true;
 
 			}
-		} else {
-
-			$url = explode( '#', esc_url( $_POST['id'] ) );
-			$id = (int) array_pop( $url );
-			$url = implode( '#', $url );
-			$rss = fetch_feed( $url );
-			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
-
-			if ( ! is_wp_error( $rss ) ) {
-
-				$item = $rss->get_item( $id );
-
-				$content = mailster()->sanitize_content( $item->get_content() );
-				$excerpt = mailster()->sanitize_content( $item->get_description() );
-
-				$content = strip_shortcodes( wpautop( $content, false ) );
-				$excerpt = strip_shortcodes( wpautop( $excerpt ? $excerpt : substr( $content, 0, strpos( $content, '<!--more-->' ) ), false ) );
-
-				$image = null;
-				preg_match_all( '/<img[^>]*src="(.*?(?:\.png|\.jpg|\.gif))"[^>]*>/i', $content, $images );
-				if ( ! empty( $images[0] ) ) {
-					$image = array(
-						'src' => $images[1][0],
-						'name' => $item->get_title(),
-					);
-					// remove that image
-					$content = str_replace( $images[0][0], '', $content );
-					$excerpt = str_replace( $images[0][0], '', $excerpt );
-				}
-
-				preg_match_all( '/<img[^>]*src="[^"]+(\.feedsportal|\.feedburner)[^"]*"[^>]*>/i', $content, $remove_images );
-				if ( ! empty( $remove_images[0] ) ) {
-					foreach ( $remove_images as $i => $remove_image ) {
-						$content = str_replace( $remove_images[0][ $i ], '', $content );
-					}
-				}
-
-				$content = preg_replace( array( '/class=".*?"/', '/id=".*?"/', '/style=".*?"/' ), '', $content );
-				$content = str_replace( '<img ', '<img editable ', $content );
-				$excerpt = preg_replace( array( '/class=".*?"/', '/id=".*?"/', '/style=".*?"/' ), '', $excerpt );
-
-				$data = array(
-					'title' => $item->get_title(),
-					'alt' => $item->get_title(),
-					'content' => $content,
-					'excerpt' => $excerpt,
-					'link' => $item->get_permalink(),
-					'image' => $image,
-				);
-
-				foreach ( $expects as $expect ) {
-					if ( isset( $data[ $expect ] ) ) {
-						continue;
-					}
-					$data[ $expect ] = method_exists( $item, 'get_' . $expect ) ? $item->{'get_' . $expect}() : '';
-				}
-
-				$return['pattern'] = apply_filters( 'mymail_auto_rss', apply_filters( 'mailster_auto_rss', $data, $url ), $url );
-				$return['success'] = true;
-
-			}
 		}
 
 		$this->json_return( $return );
@@ -1545,6 +1417,7 @@ class MailsterAjax {
 		$relative_or_identifier = stripslashes( $_POST['relative'] );
 		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
 		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
+		$rss_url = isset( $_POST['rss_url'] ) ? $_POST['rss_url'] : null;
 		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 		$args = array();
 		$static_post_types = mailster( 'helper' )->get_post_types();
@@ -1556,16 +1429,32 @@ class MailsterAjax {
 			$post = mailster()->get_last_post( $relative_or_identifier + 1, $post_type, $term_ids, $args, $campaign_id );
 		}
 
-		$is_post = ! ! $post;
+		// special case for RSS.
+		if ( 'rss' == $post_type ) {
+			$args['mailster_rss_url'] = $rss_url;
+		}
 
-		if ( $is_dynmaic_post_type ) {
-			$return['title'] = $is_post
-				? ( $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' ) )
-				: esc_html__( 'There\'s currently no match for your selection!', 'mailster' );
+		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, $args, $campaign_id );
+
+		if ( is_wp_error( $post ) ) {
+			$return['title'] = $post->get_error_message();
+		} elseif ( is_a( $post, 'WP_Post' ) ) {
+			if ( $rss_url ) {
+				$return['title'] = '<a href="' . $post->post_permalink . '" class="external">#' . absint( $offset -1 ) . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No title', 'mailster' ) ) . '</a>';
+			} else {
+				if ( $is_dynmaic_post_type ) {
+					$return['title'] = $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' );
+				} else {
+					$return['title'] = '<a href="' . admin_url( 'post.php?post=' . $post->ID . '&action=edit' ) . '" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' ) ) . '</a>';
+				}
+			}
 		} else {
-			$return['title'] = $is_post
-				? '<a href="' . admin_url( 'post.php?post=' . $post->ID . '&action=edit' ) . '" class="external">#' . $post->ID . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' ) ) . '</a>'
-				: esc_html__( 'There\'s currently no match for your selection!', 'mailster' ) . ' <a href="' . admin_url( 'post-new.php?post_type=' . $post_type ) . '" class="external">' . esc_html__( 'Create a new one', 'mailster' ) . '</a>?';
+			$return['title'] = esc_html__( 'There\'s currently no match for your selection!', 'mailster' );
+			if ( ! $rss_url ) {
+				if ( !$is_dynmaic_post_type ) {
+					$return['title'] .= ' <a href="post-new.php?post_type=' . $post_type . '" class="external">' . esc_html__( 'Create a new one', 'mailster' ) . '</a>?';
+				}
+			}
 		}
 
 		$options = $relative_or_identifier . ( ! empty( $term_ids ) ? ';' . implode( ';', $term_ids ) : '' );

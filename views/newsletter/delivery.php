@@ -176,6 +176,7 @@ $sent = $this->get_sent( $post->ID );
 			foreach ( $pts as $pt => $data ) {
 				$type .= '<option value="' . $pt . '"' . selected( $autoresponderdata['post_type'], $pt, false ) . '>' . $data->labels->singular_name . '</option>';
 			}
+			$type .= '<option value="rss"' . selected( $autoresponderdata['post_type'], 'rss', false ) . '>' . esc_html__( 'RSS Feed', 'mailster' ) . '</option>';
 			$type .= '</select>';
 			printf( esc_html__( 'create a new campaign every time a new %s has been published', 'mailster' ), $type );
 			?>
@@ -286,6 +287,7 @@ $sent = $this->get_sent( $post->ID );
 					}
 					$type .= '<option value="' . $pt . '"' . selected( $autoresponderdata['time_post_type'], $pt, false ) . '>' . $data->labels->name . '</option>';
 				}
+				$type .= '<option value="rss"' . selected( $autoresponderdata['time_post_type'], 'rss', false ) . '>' . esc_html__( 'RSS Feeds', 'mailster' ) . '</option>';
 				$type .= '</select><br>';
 				printf( esc_html__( '%1$s %2$s have been published', 'mailster' ), $count, $type );
 				?>
@@ -315,10 +317,16 @@ $sent = $this->get_sent( $post->ID );
 					? $autoresponderdata['time_post_type']
 					: $autoresponderdata['post_type'];
 
-					printf( _n( '%1$s matching %2$s has been published','%1$s matching %2$s have been published', $autoresponderdata['post_count_status'], 'mailster' ),
-						'<strong>' . $autoresponderdata['post_count_status'] . '</strong>',
-						'<strong><a href="edit.php?post_type=' . $post_type . '">' . ( 1 == $autoresponderdata['post_count_status'] ? $pts[ $post_type ]->labels->singular_name : $pts[ $post_type ]->labels->name ) . '</a></strong>'
-					);
+				if ( 'rss' == $post_type ) {
+					$post_type_label = ( 1 == $autoresponderdata['post_count_status'] ? esc_html__( 'RSS Feed', 'mailster' ) : esc_html__( 'RSS Feeds', 'mailster' ) );
+				} else {
+					$post_type_label = '<a href="' . admin_url( 'edit.php?post_type=' . $post_type ) . '">' . ( 1 == $autoresponderdata['post_count_status'] ? $pts[ $post_type ]->labels->singular_name : $pts[ $post_type ]->labels->name ) . '</a>';
+				}
+
+				printf( _n( '%1$s matching %2$s has been published', '%1$s matching %2$s have been published', $autoresponderdata['post_count_status'], 'mailster' ),
+					'<strong>' . $autoresponderdata['post_count_status'] . '</strong>',
+					'<strong>' . $post_type_label . '</strong>'
+				);
 				?>
 				<br><label><input type="checkbox" name="post_count_status_reset" value="1"> <?php esc_html_e( 'reset counter', 'mailster' );?></label>
 			</p>

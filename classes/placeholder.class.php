@@ -7,6 +7,9 @@ class MailsterPlaceholder {
 	private $keeptag;
 	private $keeptags;
 	private $placeholder = array();
+	private $post_types = array();
+	private $rss = array();
+	private $rss_timestamp = null;
 	private $campaignID = null;
 	private $subscriberID = null;
 	private $subscriberHash = null;
@@ -293,6 +296,7 @@ class MailsterPlaceholder {
 		$this->add( mailster_option( 'custom_tags', array() ) );
 		$this->add( mailster_option( 'tags', array() ) );
 
+		$this->rss();
 		if ( $removeunused ) {
 			$this->remove_modules();
 			$this->conditions();
@@ -403,6 +407,89 @@ class MailsterPlaceholder {
 		$content = apply_filters( 'mymail_share_button_' . $service, apply_filters( 'mailster_share_button_' . $service, $content ) );
 
 		return '<a href="' . $_url . '" class="social">' . $content . '</a>' . "\n";
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function rss_since( $timestamp = null ) {
+		if ( is_null( $timestamp ) ) {
+			$timestamp = time();
+		}
+
+		$this->rss_timestamp = $timestamp;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	private function rss() {
+
+		if ( preg_match_all( '#<module[^>]*?data-rss="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
+
+			$first = null;
+			foreach ( $modules[0] as $i => $html ) {
+
+				$search = $modules[0][ $i ];
+				$feed_url = $modules[1][ $i ];
+
+				// check if there's a new feed since.
+				if ( $this->rss_timestamp && ! mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url ) ) {
+					$replace = '';
+				} else {
+
+					$id = md5( $feed_url );
+					$temp_post_type = 'mailster_rss_' . $id;
+
+					if ( ! isset( $this->rss[ $id ] ) ) {
+						$this->rss[ 'mailster_get_last_post_' . $temp_post_type ] = $feed_url;
+						add_filter( 'mailster_get_last_post_' . $temp_post_type, array( &$this, 'rss_replace' ), 5, 6 );
+						if ( $i == 0 ) {
+							$first = $temp_post_type;
+						}
+					}
+
+					$this->post_types[] = $temp_post_type;
+					$replace = str_replace( '{rss', '{' . $temp_post_type, $search );
+					$replace = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $temp_post_type, $replace );
+
+				}
+
+				$this->content = str_replace( $search, $replace, $this->content );
+			}
+
+			// replace all tags outside the scope
+			if ( $first ) {
+				$this->content = str_replace( '{rss', '{' . $first, $this->content );
+				$this->content = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $first, $this->content );
+			}
+		}
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function rss_replace( $return, $args, $offset, $term_ids, $campaign_id, $subscriber_id ) {
+
+		$current = current_filter();
+
+		if ( ! isset( $this->rss[ $current ] ) ) {
+			return $return;
+		}
+
+		$feed_url = $this->rss[ $current ];
+		return mailster( 'helper' )->feed( $feed_url, $offset );
 
 	}
 
@@ -682,13 +769,22 @@ class MailsterPlaceholder {
 						if ( ! $relative_to_absolute ) {
 
 							if ( ! empty( $post ) ) {
-								$thumb_id = get_post_thumbnail_id( $post->ID );
 
-								$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
+								if ( ! empty( $post->ID ) ) {
+									$thumb_id = get_post_thumbnail_id( $post->ID );
+
+									$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
+								}
 
 								if ( empty( $org_src ) && isset( $post->post_image ) ) {
 									if ( is_numeric( $post->post_image ) ) {
 										$org_src = wp_get_attachment_image_src( $post->post_image, 'full' );
+									} elseif ( empty( $post->post_image ) ) {
+
+										// get image from sites meta tags
+										if ( $src = mailster( 'helper' )->get_meta_tags_from_url( $post->post_permalink, array( 'mailster:image', 'thumbnail', 'og:image', 'twitter:image' ) ) ) {
+											$org_src = array( $src, 0, 0, false );
+										}
 									} else {
 										$org_src = array( $post->post_image, 0, 0, false );
 									}
@@ -756,11 +852,28 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
+	 */
+	private function get_post_types_to_replace() {
+		if ( empty( $this->post_types ) ) {
+			$this->post_types = mailster( 'helper' )->get_post_types();
+		}
+
+		return $this->post_types;
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $relative_to_absolute (optional)
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
+<<<<<<< HEAD
 		$pts = mailster( 'helper' )->get_dynamic_post_types();
+=======
+		$pts = $this->get_post_types_to_replace();
+>>>>>>> feature/2_4_RSS
 		$pts = implode( '|', $pts );
 
 		// all dynamic post type tags
@@ -777,15 +890,22 @@ class MailsterPlaceholder {
 
 				if ( empty( $type ) || $is_random ) {
 
+					$post_id = $post_or_offset;
+
 					if ( $relative_to_absolute ) {
 						continue;
 					}
 
+<<<<<<< HEAD
 					if ( $is_random ) {
 						$post = mailster()->get_random_post( $post_or_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 					} else {
 						$post = get_post( $post_or_offset );
 					}
+=======
+					$post = get_post( $post_id );
+					$post = apply_filters( 'mailster_get_post_' . $post_type, $post, $post_id );
+>>>>>>> feature/2_4_RSS
 
 					if ( ! $post ) {
 						continue;
@@ -812,6 +932,12 @@ class MailsterPlaceholder {
 					}
 				} else {
 
+<<<<<<< HEAD
+=======
+					$post_offset = $post_or_offset -1;
+					$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
+
+>>>>>>> feature/2_4_RSS
 					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 				}
@@ -928,7 +1054,11 @@ class MailsterPlaceholder {
 	public function get_replace( $post, $what ) {
 
 		$extra = null;
+<<<<<<< HEAD
 		$replace_to = null;
+=======
+		$author = null;
+>>>>>>> feature/2_4_RSS
 		$post_type = $post->post_type;
 
 		if ( 0 === strpos( $what, 'author' ) ) {
@@ -957,7 +1087,7 @@ class MailsterPlaceholder {
 			} else {
 				$category = 'category';
 			}
-			$categories = get_the_term_list( $post->ID, $category, '', ', ' );
+			$categories = isset( $post->post_category ) ? $post->post_category : get_the_term_list( $post->ID, $category, '', ', ' );
 
 			if ( is_wp_error( $categories ) ) {
 				return null;
@@ -965,6 +1095,9 @@ class MailsterPlaceholder {
 
 			if ( 'category_strip' != $what ) {
 				$what = 'category';
+			}
+			if ( is_array( $categories ) ) {
+				$categories = implode( ', ', $categories );
 			}
 			$extra = $categories;
 		}
@@ -981,6 +1114,7 @@ class MailsterPlaceholder {
 					$replace_to = $post->post_link;
 				}
 			case 'permalink':
+<<<<<<< HEAD
 				if ( ! $replace_to ) {
 					$replace_to = get_permalink( $post->ID );
 				}
@@ -989,6 +1123,12 @@ class MailsterPlaceholder {
 				}
 				if ( ! $replace_to ) {
 					$replace_to = $post->post_permalink;
+=======
+				if ( $post->ID ) {
+					$replace_to = get_permalink( $post->ID );
+				} else {
+					$replace_to = $post->post_link ? $post->post_link : $post->post_permalink;
+>>>>>>> feature/2_4_RSS
 				}
 				break;
 			case 'shortlink':
@@ -996,6 +1136,10 @@ class MailsterPlaceholder {
 				break;
 			case 'author':
 			case 'author_strip':
+				if ( ! $author ) {
+					$replace_to = $post->post_author;
+					break;
+				}
 				if ( $author->data->user_url && $what != 'author_strip' ) {
 					$replace_to = '<a href="' . $author->data->user_url . '">' . $author->data->display_name . '</a>';
 				} else {
@@ -1003,16 +1147,16 @@ class MailsterPlaceholder {
 				}
 				break;
 			case 'author_name':
-				$replace_to = $author->data->display_name;
+				$replace_to = $author ? $author->data->display_name : $post->post_author;
 				break;
 			case 'author_nicename':
-				$replace_to = $author->data->user_nicename;
+				$replace_to = $author ? $author->data->user_nicename : $post->post_author;
 				break;
 			case 'author_email':
-				$replace_to = $author->data->user_email;
+				$replace_to = $author ? $author->data->user_email : '';
 				break;
 			case 'author_url':
-				$replace_to = $author->data->user_url;
+				$replace_to = $author ? $author->data->user_url : '';
 				break;
 			case 'date':
 			case 'date_gmt':

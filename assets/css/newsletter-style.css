@@ -1012,12 +1012,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	font-size: 11px;
 	line-height: 1em;
 }
-#editbar .tab .rss_info h4{
-	margin-bottom: 2px;
-}
-#editbar .tab .rss_info p{
-	margin: 0 2px;
-}
 #editbar .tab, #editbar .link-wrap .postlist{
 	padding: 5px;
 	box-sizing: border-box;
@@ -1056,6 +1050,14 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+}
+.dynamic-rss-url-label{
+	display: inline-block;
+	width: 270px;
+}
+.dynamic-rss-url-label input{
+	display: inline-block;
+	width: 270px;
 }
 .dynamic_embed_options_taxonomy_container{
 	border: 1px solid #DFDFDF;

@@ -735,9 +735,16 @@ class MailsterCampaigns {
 										'<strong title="' . date( $timeformat, $meta['timestamp'] + $timeoffset ) . '">' . human_time_diff( $meta['timestamp'] ) . '</strong>'
 									);
 									echo ' &ndash; ' . sprintf( '#%s', '<strong title="' . sprintf( esc_html__( 'Next issue: %s', 'mailster' ), '#' . $autoresponder['issue'] ) . '">' . $autoresponder['issue'] . '</strong>' );
+									if ( isset( $autoresponder['since'] ) && $autoresponder['since'] ) {
+											echo '<br>' . esc_html__( 'only if new content is available.', 'mailster' );
+									}
 									if ( isset( $autoresponder['time_conditions'] ) ) {
 										if ( $posts_required = max( 0, ( $autoresponder['time_post_count'] - $autoresponder['post_count_status'] ) ) ) {
-											echo '<br>' . sprintf( esc_html__( 'requires %1$s more %2$s', 'mailster' ), ' <strong>' . $posts_required . '</strong>', ' <strong>' . $pts[ $autoresponder['time_post_type'] ]->labels->name . '</strong>' );
+											if ( 'rss' == $autoresponder['time_post_type'] ) {
+												echo '<br>' . sprintf( esc_html__( 'requires %1$s more %2$s', 'mailster' ), ' <strong>' . $posts_required . '</strong>', ' <strong>' . esc_html__( 'RSS Feed', 'mailster' ) . '</strong>' );
+											} else {
+												echo '<br>' . sprintf( esc_html__( 'requires %1$s more %2$s', 'mailster' ), ' <strong>' . $posts_required . '</strong>', ' <strong>' . $pts[ $autoresponder['time_post_type'] ]->labels->name . '</strong>' );
+											}
 										}
 									}
 								}
@@ -1527,6 +1534,9 @@ class MailsterCampaigns {
 
 				} elseif ( 'mailster_post_published' == $autoresponder['action'] ) {
 
+					if ( 'rss' == $autoresponder['post_type'] && ! isset( $autoresponder['since'] ) ) {
+						$autoresponder['since'] = time();
+					}
 				} else {
 					unset( $autoresponder['terms'] );
 				}
@@ -1547,6 +1557,10 @@ class MailsterCampaigns {
 					$localtime = mailster( 'helper' )->get_next_date_in_future( $localtime - $timeoffset, 0, $autoresponder['time_frame'], $autoresponder['weekdays'] );
 
 					$meta['timestamp'] = $localtime;
+
+					if ( isset( $autoresponder['time_conditions'] ) && 'rss' == $autoresponder['time_post_type'] && ! $autoresponder['since'] ) {
+						$autoresponder['since'] = $now;
+					}
 
 					if ( isset( $autoresponder['endschedule'] ) ) {
 
@@ -2258,6 +2272,8 @@ class MailsterCampaigns {
 		$lists = $this->get_lists( $campaign->ID, true );
 		$meta = $this->meta( $campaign->ID );
 
+		$relative_to_absolute = 'rss' != $meta['autoresponder']['post_type'];
+
 		$meta['autoresponder'] = $meta['sent'] = $meta['errors'] = $meta['finished'] = null;
 
 		$meta['active'] = true;
@@ -2287,16 +2303,16 @@ class MailsterCampaigns {
 		$campaign->post_title = $placeholder->get_content( false );
 
 		$placeholder->set_content( $campaign->post_content );
-		$campaign->post_content = $placeholder->get_content( false, array(), true );
+		$campaign->post_content = $placeholder->get_content( false, array(), $relative_to_absolute );
 
 		$placeholder->set_content( $meta['subject'] );
-		$meta['subject'] = $placeholder->get_content( false, array(), true );
+		$meta['subject'] = $placeholder->get_content( false, array(), $relative_to_absolute );
 
 		$placeholder->set_content( $meta['preheader'] );
-		$meta['preheader'] = $placeholder->get_content( false, array(), true );
+		$meta['preheader'] = $placeholder->get_content( false, array(), $relative_to_absolute );
 
 		$placeholder->set_content( $meta['from_name'] );
-		$meta['from_name'] = $placeholder->get_content( false, array(), true );
+		$meta['from_name'] = $placeholder->get_content( false, array(), $relative_to_absolute );
 
 		remove_action( 'save_post', array( &$this, 'save_campaign' ), 10, 3 );
 		kses_remove_filters();
