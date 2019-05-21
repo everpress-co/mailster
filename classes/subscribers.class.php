@@ -1331,43 +1331,60 @@ class MailsterSubscribers {
 	 * @param unknown $subscriber_ids
 	 * @param unknown $status         (optional)
 	 * @param unknown $remove_actions (optional)
+	 * @param unknown $remove_meta    (optional)
 	 * @return unknown
 	 */
-	public function remove( $subscriber_ids, $status = null, $remove_actions = true ) {
+	public function remove( $subscriber_ids, $status = null, $remove_actions = false, $remove_meta = true ) {
 
 		global $wpdb;
 
 		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
 		$statuses = ! is_null( $status ) ? ( ! is_array( $status ) ? array( (int) $status ) : array_filter( $status, 'is_numeric' ) ) : null;
 
+		// reduce subscriber_ids if status is set
+		if ( $statuses ) {
+			$sql = "SELECT subscribers.ID FROM {$wpdb->prefix}mailster_subscribers AS subscribers WHERE subscribers.ID IN (0," . implode( ',', $subscriber_ids ) . ')';
+			$sql .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
+			$subscriber_ids = $wpdb->get_col( $sql );
+		}
+
 		if ( empty( $subscriber_ids ) ) {
 			return true;
 		}
+
+		$subscriber_ids_concat = implode( ',', $subscriber_ids );
 
 		if ( $delete_wp_user = ( mailster_option( 'delete_wp_user' ) && current_user_can( 'delete_users' ) ) ) {
 
 			// get all wp users except the current user
 			$current_user_id = get_current_user_id();
-			$sql = "SELECT wp_id FROM {$wpdb->prefix}mailster_subscribers AS subscribers WHERE subscribers.wp_id != 0 AND subscribers.wp_id != %d AND subscribers.ID IN (" . implode( ',', $subscriber_ids ) . ')';
-
-			if ( $statuses ) {
-				$sql .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
-			}
+			$sql = "SELECT wp_id FROM {$wpdb->prefix}mailster_subscribers AS subscribers WHERE subscribers.wp_id != 0 AND subscribers.wp_id != %d AND subscribers.ID IN (" . $subscriber_ids_concat . ')';
 
 			$wp_ids_to_delete = $wpdb->get_col( $wpdb->prepare( $sql, $current_user_id ) );
 
 		}
 
 		// delete from subscribers, lists_subscribers, subscriber_fields, subscriber_meta, queue
-		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . "subscriber_meta,queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . implode( ',', $subscriber_ids ) . ')';
+		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . "subscriber_meta,queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
 
-		if ( $statuses ) {
-			$sql .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
-		}
+		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . ( $remove_meta ? 'subscriber_meta,' : '' ) . "queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
 
 		if ( $success = ( false !== $wpdb->query( $sql ) ) ) {
 			if ( $wpdb->last_error ) {
 				return new WP_Error( 'db_error', $wpdb->last_error );
+			}
+
+			// anonymize action data
+			if ( ! $remove_actions ) {
+				$sql = "UPDATE {$wpdb->prefix}mailster_actions AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')';
+
+				$wpdb->query( $sql );
+			}
+			// anonymize subscriber_meta data
+			if ( ! $remove_meta ) {
+				$sql = "UPDATE {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta SET subscriber_id = NULL WHERE subscriber_meta.subscriber_id IN (" . $subscriber_ids_concat . ')';
+
+				$wpdb->query( $sql );
 			}
 
 			if ( $delete_wp_user ) {

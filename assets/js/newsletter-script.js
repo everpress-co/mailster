@@ -1220,6 +1220,7 @@ jQuery(document).ready(function ($) {
 						p = (_data.sent / _data.total * 100);
 
 					$('.hb-sent').html(_data.sent_f);
+					$('.hb-deleted').html(_data.deleted_f);
 					$('.hb-opens').html(_data.opens_f);
 					$('.hb-clicks').html(_data.clicks_f);
 					$('.hb-clicks_total').html(_data.clicks_total_f);

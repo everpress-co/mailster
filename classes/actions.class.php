@@ -380,7 +380,8 @@ class MailsterActions {
 			$parent_ids[ $parent->ID ] = $parent->parent_id;
 		}
 
-		$sql = "SELECT a.campaign_id AS ID, type, COUNT(DISTINCT a.subscriber_id) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a";
+		// $sql = "SELECT a.campaign_id AS ID, type, COUNT(DISTINCT a.subscriber_id) AS count, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a";
+		$sql = "SELECT a.campaign_id AS ID, type, COUNT(COALESCE( a.subscriber_id, 1) ) AS count, COUNT(DISTINCT a.subscriber_id) AS count_cleard, SUM(a.count) AS total FROM {$wpdb->prefix}mailster_actions AS a";
 
 		if ( isset( $campaign_ids ) ) {
 			$sql .= ' WHERE a.campaign_id IN (' . implode( ',', $campaign_ids ) . ')';
@@ -414,53 +415,67 @@ class MailsterActions {
 			if ( 1 == $row->type ) {
 				$action_counts[ $row->ID ]['sent'] = (int) $row->count;
 				$action_counts[ $row->ID ]['sent_total'] = (int) $row->total;
+				$action_counts[ $row->ID ]['sent_deleted'] = (int) $row->count - (int) $row->count_cleard;
 				if ( $hasparent ) {
 					$action_counts[ $parent_ids[ $row->ID ] ]['sent'] += (int) $row->count;
 					$action_counts[ $parent_ids[ $row->ID ] ]['sent_total'] += (int) $row->total;
+					$action_counts[ $parent_ids[ $row->ID ] ]['sent_deleted'] += ((int) $row->count - (int) $row->count_cleard);
 				}
 			} // opens
 			elseif ( 2 == $row->type ) {
 					$action_counts[ $row->ID ]['opens'] = (int) $row->count;
 					$action_counts[ $row->ID ]['opens_total'] = (int) $row->total;
+					$action_counts[ $row->ID ]['opens_deleted'] = (int) $row->count - (int) $row->count_cleard;
 				if ( $hasparent ) {
 					$action_counts[ $parent_ids[ $row->ID ] ]['opens'] += (int) $row->count;
 					$action_counts[ $parent_ids[ $row->ID ] ]['opens_total'] += (int) $row->total;
+					$action_counts[ $parent_ids[ $row->ID ] ]['opens_deleted'] += ((int) $row->count - (int) $row->count_cleard);
 				}
 			} // clicks
 			elseif ( 3 == $row->type ) {
 					$action_counts[ $row->ID ]['clicks'] = (int) $row->count;
 					$action_counts[ $row->ID ]['clicks_total'] = (int) $row->total;
+					$action_counts[ $row->ID ]['clicks_deleted'] = (int) $row->count - (int) $row->count_cleard;
 				if ( $hasparent ) {
 					$action_counts[ $parent_ids[ $row->ID ] ]['clicks'] += (int) $row->count;
 					$action_counts[ $parent_ids[ $row->ID ] ]['clicks_total'] += (int) $row->total;
+					$action_counts[ $parent_ids[ $row->ID ] ]['clicks_deleted'] += ((int) $row->count - (int) $row->count_cleard);
 				}
 			} // unsubscribes
 			elseif ( 4 == $row->type ) {
 					$action_counts[ $row->ID ]['unsubscribes'] = (int) $row->count;
+					$action_counts[ $row->ID ]['unsubscribes_deleted'] = (int) $row->count - (int) $row->count_cleard;
 				if ( $hasparent ) {
 					$action_counts[ $parent_ids[ $row->ID ] ]['unsubscribes'] += (int) $row->count;
+					$action_counts[ $parent_ids[ $row->ID ] ]['unsubscribes_deleted'] += ((int) $row->count - (int) $row->count_cleard);
 				}
 			} // softbounces
 			elseif ( 5 == $row->type ) {
 					$action_counts[ $row->ID ]['softbounces'] = (int) $row->count;
+					$action_counts[ $row->ID ]['softbounces_deleted'] = (int) $row->count - (int) $row->count_cleard;
 				if ( $hasparent ) {
 					$action_counts[ $parent_ids[ $row->ID ] ]['softbounces'] += (int) $row->count;
+					$action_counts[ $parent_ids[ $row->ID ] ]['softbounces_deleted'] += ((int) $row->count - (int) $row->count_cleard);
 				}
 			} // bounces
 			elseif ( 6 == $row->type ) {
 					$action_counts[ $row->ID ]['bounces'] = (int) $row->count;
+					$action_counts[ $row->ID ]['bounces_deleted'] = (int) $row->count - (int) $row->count_cleard;
 					$action_counts[ $row->ID ]['sent'] -= (int) $row->count;
 				if ( $hasparent ) {
 					$action_counts[ $parent_ids[ $row->ID ] ]['bounces'] += (int) $row->count;
+					$action_counts[ $parent_ids[ $row->ID ] ]['bounces_deleted'] += ((int) $row->count - (int) $row->count_cleard);
 					$action_counts[ $parent_ids[ $row->ID ] ]['sent'] -= (int) $row->count;
 				}
 			} // error
 			elseif ( 7 == $row->type ) {
-					$action_counts[ $row->ID ]['errors'] = floor( $row->count );
-					$action_counts[ $row->ID ]['errors_total'] = floor( $row->total );
+					$action_counts[ $row->ID ]['errors'] = (int) $row->count;
+					$action_counts[ $row->ID ]['errors_total'] = (int) $row->total;
+					$action_counts[ $row->ID ]['errors_deleted'] = (int) $row->count - (int) $row->count_cleard;
 				if ( $hasparent ) {
 					$action_counts[ $parent_ids[ $row->ID ] ]['errors'] += (int) $row->count;
 					$action_counts[ $parent_ids[ $row->ID ] ]['errors_total'] += (int) $row->total;
+					$action_counts[ $parent_ids[ $row->ID ] ]['errors_deleted'] += ((int) $row->count - (int) $row->count_cleard);
 				}
 			}
 		}
@@ -712,15 +727,22 @@ class MailsterActions {
 		return array(
 			'sent' => 0,
 			'sent_total' => 0,
+			'sent_deleted' => 0,
 			'opens' => 0,
 			'opens_total' => 0,
+			'opens_deleted' => 0,
 			'clicks' => 0,
 			'clicks_total' => 0,
+			'clicks_deleted' => 0,
 			'unsubscribes' => 0,
+			'unsubscribes_deleted' => 0,
 			'softbounces' => 0,
+			'softbounces_deleted' => 0,
 			'bounces' => 0,
+			'bounces_deleted' => 0,
 			'errors' => 0,
 			'errors_total' => 0,
+			'errors_deleted' => 0,
 		);
 	}
 
