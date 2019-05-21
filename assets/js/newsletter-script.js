@@ -1816,7 +1816,7 @@ jQuery(document).ready(function ($) {
 			$this.addClass('nav-tab-active');
 			base.find('.tab').hide();
 			base.find(id).show();
-			if (id == '#dynamic_embed_options' && trigger !== false) $('#dynamic_embed_options_post_type').trigger('change');
+			//if (id == '#dynamic_embed_options' && trigger !== false) $('#dynamic_embed_options_post_type').trigger('change');
 			if (id == '#image_button') buttontype = 'image';
 			if (id == '#text_button') buttontype = 'text';
 
@@ -1918,7 +1918,7 @@ jQuery(document).ready(function ($) {
 			h = h || imageheight.val() || Math.round(w / 1.6);
 			c = typeof c == 'undefined' ? imagecrop.prop(':checked') : c;
 			o = typeof o == 'undefined' ? original.prop(':checked') : o;
-			if (/^\{([a-z0-9-_,;:|]+)\}$/.test(val)) {
+			if (/^\{([a-z0-9-_,;:|~]+)\}$/.test(val)) {
 				var f = factor.val();
 				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&o=' + (o ? 1 : 0) + '&f=' + f;
 			}
@@ -1927,7 +1927,7 @@ jQuery(document).ready(function ($) {
 
 		function isDynamicImage(val) {
 			if (-1 !== val.indexOf('?action=mailster_image_placeholder&tag=')) {
-				var m = val.match(/&tag=([a-z0-9-_,;:|]+)&/);
+				var m = val.match(/&tag=([a-z0-9-_,;:|~]+)&/);
 				return '{' + m[1] + '}';
 			}
 			return false;
@@ -2751,7 +2751,7 @@ jQuery(document).ready(function ($) {
 
 					var parts = currenttag.substr(1, currenttag.length - 2).split(':'),
 						extra = parts[1].split(';'),
-						relative = parseInt(extra.shift(), 10),
+						relative = extra.shift(),
 						terms = extra.length ? extra : null;
 
 					currenttag = {

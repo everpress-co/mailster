@@ -88,6 +88,8 @@ Xaver Birsak – https://everpress.co
 * new: Import Export
 * new: more form shortcode attributes
 * new: display of deleted subscribers in campaign stats
+* new: Random Post
+* new: support for custom dynamic post types
 
 = Version 2.3.19 =
 
@@ -190,6 +192,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.3.11 =
 
 * fixed: added "source" tag in allowed tags
+* fixed: smaller issues
 * fixed: sql query issue on "(didn't) clicked link" condition
 * fixed: unsubscribe issue on single opt out if user is logged in
 * fixed: subscriber export on sites with CloudFlare

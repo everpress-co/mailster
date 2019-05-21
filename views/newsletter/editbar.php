@@ -228,25 +228,50 @@
 
 					$relative = '<select id="dynamic_embed_options_relative" class="check-for-posts">';
 					$relativenames = array(
-						-1 => esc_html__( 'the latest', 'mailster' ),
-						-2 => esc_html__( 'the second latest', 'mailster' ),
-						-3 => esc_html__( 'the third latest', 'mailster' ),
-						-4 => esc_html__( 'the fourth latest', 'mailster' ),
-						-5 => esc_html__( 'the fifth latest', 'mailster' ),
-						-6 => esc_html__( 'the sixth latest', 'mailster' ),
-						-7 => esc_html__( 'the seventh latest', 'mailster' ),
-						-8 => esc_html__( 'the eighth latest', 'mailster' ),
-						-9 => esc_html__( 'the ninth latest', 'mailster' ),
-						-10 => esc_html__( 'the tenth latest', 'mailster' ),
-						-11 => esc_html__( 'the eleventh latest', 'mailster' ),
-						-12 => esc_html__( 'the twelfth latest', 'mailster' ),
+
+						'-1' => esc_html__( 'the latest', 'mailster' ),
+						'-2' => esc_html__( 'the second latest', 'mailster' ),
+						'-3' => esc_html__( 'the third latest', 'mailster' ),
+						'-4' => esc_html__( 'the fourth latest', 'mailster' ),
+						'-5' => esc_html__( 'the fifth latest', 'mailster' ),
+						'-6' => esc_html__( 'the sixth latest', 'mailster' ),
+						'-7' => esc_html__( 'the seventh latest', 'mailster' ),
+						'-8' => esc_html__( 'the eighth latest', 'mailster' ),
+						'-9' => esc_html__( 'the ninth latest', 'mailster' ),
+						'-10' => esc_html__( 'the tenth latest', 'mailster' ),
+						'-11' => esc_html__( 'the eleventh latest', 'mailster' ),
+						'-12' => esc_html__( 'the twelfth latest', 'mailster' ),
+					);
+					$randomnames = array(
+						'~1' => esc_html__( '1st random', 'mailster' ),
+						'~2' => esc_html__( '2nd random', 'mailster' ),
+						'~3' => esc_html__( '3rd random', 'mailster' ),
+						'~4' => esc_html__( '4th random', 'mailster' ),
+						'~5' => esc_html__( '5th random', 'mailster' ),
+						'~6' => esc_html__( '6th random', 'mailster' ),
+						'~7' => esc_html__( '7th random', 'mailster' ),
+						'~8' => esc_html__( '8th random', 'mailster' ),
+						'~9' => esc_html__( '9th random', 'mailster' ),
+						'~10' => esc_html__( '10th random', 'mailster' ),
+						'~11' => esc_html__( '11th random', 'mailster' ),
+						'~12' => esc_html__( '12th random', 'mailster' ),
+
 					);
 
+					$relative .= '<optgroup label="' . esc_html__( 'Relative', 'mailster' ) . '">';
 					foreach ( $relativenames as $key => $name ) {
 						$relative .= '<option value="' . $key . '">' . $name . '</option>';
 					}
+					$relative .= '</optgroup>';
+
+					$relative .= '<optgroup label="' . esc_html__( 'Random', 'mailster' ) . '">';
+					foreach ( $randomnames as $key => $name ) {
+						$relative .= '<option value="' . $key . '">' . $name . '</option>';
+					}
+					$relative .= '</optgroup>';
 
 					$relative .= '</select>';
+					$pts = mailster( 'helper' )->get_dynamic_post_types( true, 'objects' );
 					$post_types = '<select id="dynamic_embed_options_post_type">';
 					foreach ( $pts as $pt => $data ) {
 						if ( in_array( $pt, array( 'attachment', 'newsletter' ) ) ) {
@@ -271,7 +296,13 @@
 				<div class="left">
 				<div id="dynamic_embed_options_cats"></div>
 				</div>
-				<p class="description clear"><?php esc_html_e( 'dynamic content get replaced with the proper content as soon as the campaign get send. Check the quick preview to see the current status of dynamic elements', 'mailster' );?></p>
+				<p class="description clear">
+					<?php esc_html_e( 'Dynamic content get replaced with the proper content as soon as the campaign get send. Check the quick preview to see the current status of dynamic elements.', 'mailster' );?>
+				</p>
+				<p class="description clear">
+					<?php esc_html_e( 'Random tags will display a random content while the number is used as an identifier. Same identifier will display content from the same post.', 'mailster' );?>
+					<?php esc_html_e( 'Different identifier will never display the same post in the same campaign.', 'mailster' );?>
+				</p>
 			</div>
 
 			<div id="rss_embed_options" class="tab">

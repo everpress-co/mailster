@@ -293,8 +293,10 @@ class MailsterPlaceholder {
 		$this->add( mailster_option( 'custom_tags', array() ) );
 		$this->add( mailster_option( 'tags', array() ) );
 
-		$this->remove_modules();
-		$this->conditions();
+		if ( $removeunused ) {
+			$this->remove_modules();
+			$this->conditions();
+		}
 
 		$k = 0;
 
@@ -412,7 +414,7 @@ class MailsterPlaceholder {
 	 */
 	private function remove_modules() {
 
-		if ( preg_match_all( '#<module[^>]*?data-tag="{(([a-z0-9_-]+):(-)?([\d]+)(;([0-9;,]+))?)\}"(.*?)".*?</module>#ms', $this->content, $modules ) ) {
+		if ( preg_match_all( '#<module[^>]*?data-tag="{(([a-z0-9_-]+):(-|~)?([\d]+)(;([0-9;,]+))?)\}"(.*?)".*?</module>#ms', $this->content, $modules ) ) {
 
 			foreach ( $modules[0] as $i => $html ) {
 
@@ -420,12 +422,17 @@ class MailsterPlaceholder {
 				$tag = $modules[1][ $i ];
 				$post_type = $modules[2][ $i ];
 				$post_or_offset = $modules[4][ $i ];
+				$type = $modules[3][ $i ];
 
-				if ( empty( $modules[3][ $i ] ) ) {
+				if ( empty( $type ) ) {
 					$post = get_post( $post_or_offset );
 				} else {
 					$term_ids = ! empty( $modules[6][ $i ] ) ? explode( ';', trim( $modules[6][ $i ] ) ) : array();
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					if ( '~' == $type ) {
+						$post = mailster()->get_random_post( $post_or_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					} else {
+						$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					}
 				}
 
 				if ( ! $post ) {
@@ -639,19 +646,23 @@ class MailsterPlaceholder {
 							$extra = explode( '|', $parts[1] );
 							$term_ids = explode( ';', $extra[0] );
 							$fallback_id = isset( $extra[1] ) ? (int) $extra[1] : mailster_option( 'fallback_image' );
-							$post_id = (int) array_shift( $term_ids );
+							$post_id_or_identifier = array_shift( $term_ids );
 
-							if ( $post_id < 0 ) {
+							if ( 0 === strpos( $post_id_or_identifier, '~' ) ) {
 
-								$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+								$post = mailster()->get_random_post( substr( $post_id_or_identifier, 1 ), $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
-							} elseif ( $post_id > 0 ) {
+							} elseif ( $post_id_or_identifier < 0 ) {
+
+								$post = mailster()->get_last_post( abs( $post_id_or_identifier ) - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+
+							} elseif ( $post_id_or_identifier > 0 ) {
 
 								if ( $relative_to_absolute ) {
 									continue;
 								}
 
-								$post = get_post( $post_id );
+								$post = get_post( $post_id_or_identifier );
 
 							}
 						} else {
@@ -749,25 +760,32 @@ class MailsterPlaceholder {
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
-		$pts = mailster( 'helper' )->get_post_types();
+		$pts = mailster( 'helper' )->get_dynamic_post_types();
 		$pts = implode( '|', $pts );
 
 		// all dynamic post type tags
-		if ( $count = preg_match_all( '#\{((' . $pts . ')_([^}]+):(-)?([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#\{((' . $pts . ')_([^}]+):(-|~)?([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
 				$search = $hits[0][ $i ];
 				$post_or_offset = $hits[5][ $i ];
 				$post_type = $hits[2][ $i ];
+				$type = $hits[4][ $i ];
+				$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
+				$is_random = '~' == $type;
 
-				if ( empty( $hits[4][ $i ] ) ) {
+				if ( empty( $type ) || $is_random ) {
 
 					if ( $relative_to_absolute ) {
 						continue;
 					}
 
-					$post = get_post( $post_or_offset );
+					if ( $is_random ) {
+						$post = mailster()->get_random_post( $post_or_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					} else {
+						$post = get_post( $post_or_offset );
+					}
 
 					if ( ! $post ) {
 						continue;
@@ -794,7 +812,6 @@ class MailsterPlaceholder {
 					}
 				} else {
 
-					$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
 					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 				}
@@ -911,9 +928,8 @@ class MailsterPlaceholder {
 	public function get_replace( $post, $what ) {
 
 		$extra = null;
+		$replace_to = null;
 		$post_type = $post->post_type;
-		$timeformat = mailster( 'helper' )->timeformat();
-		$dateformat = mailster( 'helper' )->dateformat();
 
 		if ( 0 === strpos( $what, 'author' ) ) {
 			$author = get_user_by( 'id', $post->post_author );
@@ -961,8 +977,13 @@ class MailsterPlaceholder {
 				$replace_to = str_replace( array( '"', "'" ), array( '&quot;', '&#039;' ), $post->post_title );
 				break;
 			case 'link':
+				if ( isset( $post->post_link ) ) {
+					$replace_to = $post->post_link;
+				}
 			case 'permalink':
-				$replace_to = get_permalink( $post->ID );
+				if ( ! $replace_to ) {
+					$replace_to = get_permalink( $post->ID );
+				}
 				if ( ! $replace_to ) {
 					$replace_to = $post->post_link;
 				}
@@ -997,7 +1018,7 @@ class MailsterPlaceholder {
 			case 'date_gmt':
 			case 'modified':
 			case 'modified_gmt':
-				$replace_to = date( $dateformat, strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date( mailster( 'helper' )->dateformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'time':
 				$what = 'date';
@@ -1007,7 +1028,7 @@ class MailsterPlaceholder {
 				$what = isset( $what ) ? $what : 'modified';
 			case 'modified_time_gmt':
 				$what = isset( $what ) ? $what : 'modified_gmt';
-				$replace_to = date( $timeformat, strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date( mailster( 'helper' )->timeformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'excerpt':
 				if ( ! empty( $post->{'post_excerpt'} ) ) {
@@ -1038,9 +1059,9 @@ class MailsterPlaceholder {
 				$replace_to = '[' . ( sprintf( esc_html__( 'use the tag %s as url in the editbar', 'mailster' ), '"' . $hits[1][ $i ] . '"' ) ) . ']';
 				break;
 			default:
-				if ( isset( $post->{'post_' . $what} ) ) {
+				if ( isset( $post->{'post_' . $what} ) && $post->{'post_' . $what} ) {
 					$replace_to = $post->{'post_' . $what};
-				} elseif ( isset( $post->{$what} ) ) {
+				} elseif ( isset( $post->{$what} ) && $post->{$what} ) {
 					$replace_to = $post->{$what};
 				} else {
 					$replace_to = '';

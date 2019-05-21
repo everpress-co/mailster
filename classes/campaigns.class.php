@@ -1334,7 +1334,7 @@ class MailsterCampaigns {
 	 */
 	public function wp_insert_post_data( $post, $postarr ) {
 
-		if ( ! isset( $post ) ) {
+		if ( ! isset( $post ) || ! $postarr['ID'] ) {
 			return $post;
 		}
 
@@ -3867,19 +3867,13 @@ class MailsterCampaigns {
 
 			$content = mailster()->sanitize_content( $campaign->post_content, null, $campaign_meta['head'] );
 
-			$placeholder->set_content( $content );
-
-			$placeholder->add_defaults( $campaign->ID );
-
-			$content = $placeholder->get_content( false );
 			$content = mailster( 'helper' )->prepare_content( $content );
 
 			mailster_cache_set( 'campaign_send_' . $campaign->ID, $content );
 
-		} else {
-			$placeholder->add_defaults( $campaign->ID );
 		}
 
+		$placeholder->add_defaults( $campaign->ID );
 		$placeholder->set_content( $content );
 
 		// user specific stuff
