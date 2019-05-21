@@ -102,6 +102,7 @@ $sent = $this->get_sent( $post->ID );
 		'hook' => '',
 		'priority' => 10,
 		'once' => false,
+		'multiple' => false,
 		'followup_action' => 1,
 	) );
 
@@ -466,21 +467,27 @@ $sent = $this->get_sent( $post->ID );
 			<p>
 				<input type="text" class="widefat code mailster-action-hook" name="mailster_data[autoresponder][hook]" value="<?php echo $autoresponderdata['hook'] ?>" placeholder="hook_name">
 			</p>
-			<p>
-				<label>
+			<div>
+				<p><label>
 				<?php esc_html_e( 'Priority', 'mailster' );?>:
 					<select name="mailster_data[autoresponder][priority]">
 						<option value="5" <?php selected( $autoresponderdata['priority'], 5 );?>><?php esc_html_e( 'High', 'mailster' );?></option>
 						<option value="10" <?php selected( $autoresponderdata['priority'], 10 );?>><?php esc_html_e( 'Normal', 'mailster' );?></option>
 						<option value="15" <?php selected( $autoresponderdata['priority'], 15 );?>><?php esc_html_e( 'Low', 'mailster' );?></option>
 					</select>
-				</label>
-			</p>
-			<p>
-				<label>
+				</label></p>
+			</div>
+			<div>
+				<p><label>
 					<input type="checkbox" name="mailster_data[autoresponder][hook_once]" value="1" <?php checked( $autoresponderdata['once'] ) ?>> <?php esc_html_e( 'send campaign only once', 'mailster' );?>
+				</label></p>
+			</div>
+			<div>
+				<label>
+					<input type="checkbox" name="mailster_data[autoresponder][multiple]" value="1" <?php checked( $autoresponderdata['multiple'] ) ?>> <?php esc_html_e( 'allow multiple triggers', 'mailster' );?>
 				</label>
-			</p>
+				<p class="description"><?php esc_html_e( 'Hooks can get triggered multiple times and cause multiple emails.', 'mailster' );?></p>
+			</div>
 		</div>
 
 		<?php do_action( 'mailster_autoresponder_more' ); ?>

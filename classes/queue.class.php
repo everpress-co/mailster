@@ -70,7 +70,7 @@ class MailsterQueue {
 
 		$sql .= " VALUES ('" . implode( "','", array_values( $args ) ) . "')";
 
-		$sql .= ' ON DUPLICATE KEY UPDATE count = count+1, timestamp = values(timestamp), sent = values(sent), priority = values(priority)';
+		$sql .= ' ON DUPLICATE KEY UPDATE count = count+1, timestamp = values(timestamp), sent = values(sent), priority = values(priority), tags = values(tags)';
 
 		return false !== $wpdb->query( $sql );
 
@@ -119,9 +119,11 @@ class MailsterQueue {
 	 * @param unknown $clear         (optional)
 	 * @param unknown $ignore_status (optional)
 	 * @param unknown $reset         (optional)
+	 * @param unknown $options       (optional)
+	 * @param unknown $tags          (optional)
 	 * @return unknown
 	 */
-	public function bulk_add( $campaign_id, $subscribers, $timestamp = null, $priority = 10, $clear = false, $ignore_status = false, $reset = false ) {
+	public function bulk_add( $campaign_id, $subscribers, $timestamp = null, $priority = 10, $clear = false, $ignore_status = false, $reset = false, $options = false, $tags = false ) {
 
 		global $wpdb;
 
@@ -146,6 +148,13 @@ class MailsterQueue {
 		$campaign_id = (int) $campaign_id;
 		$subscribers = array_filter( $subscribers, 'is_numeric' );
 
+		if ( $tags ) {
+			$tags = maybe_serialize( $tags );
+		}
+		if ( $options ) {
+			$options = maybe_serialize( $options );
+		}
+
 		if ( empty( $subscribers ) ) {
 			return true;
 		}
@@ -153,7 +162,7 @@ class MailsterQueue {
 		$inserts = array();
 
 		foreach ( $subscribers as $i => $subscriber_id ) {
-			$inserts[] = "($subscriber_id,$campaign_id,$now," . $timestamps[ $i ] . ",$priority,1,'$ignore_status')";
+			$inserts[] = "($subscriber_id,$campaign_id,$now," . $timestamps[ $i ] . ",$priority,1,'$ignore_status','$options','$tags')";
 		}
 
 		$chunks = array_chunk( $inserts, 2000 );
@@ -161,13 +170,19 @@ class MailsterQueue {
 		$success = true;
 
 		foreach ( $chunks as $insert ) {
-			$sql = "INSERT INTO {$wpdb->prefix}mailster_queue (subscriber_id, campaign_id, added, timestamp, priority, count, ignore_status) VALUES";
+			$sql = "INSERT INTO {$wpdb->prefix}mailster_queue (subscriber_id, campaign_id, added, timestamp, priority, count, ignore_status, options, tags) VALUES";
 
 			$sql .= ' ' . implode( ',', $insert );
 
 			$sql .= ' ON DUPLICATE KEY UPDATE timestamp = values(timestamp), ignore_status = values(ignore_status)';
 			if ( $reset ) {
 				$sql .= ', sent = 0';
+			}
+			if ( $options ) {
+				$sql .= sprintf( ", options = '%s'", $options );
+			}
+			if ( $tags ) {
+				$sql .= sprintf( ", tags = '%s'", $tags );
 			}
 
 			$success = $success && false !== $wpdb->query( $sql );
@@ -1022,7 +1037,7 @@ class MailsterQueue {
 
 		if ( $to_send ) {
 
-			$sql = 'SELECT queue.campaign_id, queue.count AS _count, queue.requeued AS _requeued, queue.options AS _options, queue.priority AS _priority, subscribers.ID AS subscriber_id, subscribers.status, subscribers.email, subscribers.rating';
+			$sql = 'SELECT queue.campaign_id, queue.count AS _count, queue.requeued AS _requeued, queue.options AS _options, queue.tags AS _tags, queue.priority AS _priority, subscribers.ID AS subscriber_id, subscribers.status, subscribers.email, subscribers.rating';
 
 			$sql .= " FROM {$wpdb->prefix}mailster_queue AS queue";
 			$sql .= " LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id";
@@ -1094,17 +1109,20 @@ class MailsterQueue {
 						continue;
 					}
 
+					$tags = ! empty( $data->_tags ) ? @unserialize( $data->_tags ) : array();
+
 					// regular campaign
-					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, null, false, true );
+					$result = mailster( 'campaigns' )->send( $data->campaign_id, $data->subscriber_id, null, false, true, $tags );
 
 					$options = false;
 
 				} elseif ( $data->_options ) {
 
-						$options = unserialize( $data->_options );
-
+					if ( $options = @unserialize( $data->_options ) ) {
 						$result = mailster( 'notification' )->send( $data->subscriber_id, $options );
-
+					} else {
+						continue;
+					}
 				} else {
 
 					continue;
@@ -1405,21 +1423,9 @@ class MailsterQueue {
 			$timestamp = 0;
 		}
 
-		if ( false === ( $job_counts = mailster_cache_get( 'job_counts_' . $timestamp ) ) ) {
-			$sql = "SELECT a.campaign_id AS ID, COUNT(DISTINCT a.subscriber_id) AS count FROM {$wpdb->prefix}mailster_queue AS a WHERE a.sent = 0 AND a.timestamp > %d GROUP BY a.campaign_id";
+		$sql = "SELECT COUNT(queue.subscriber_id) AS count FROM {$wpdb->prefix}mailster_queue AS queue WHERE queue.sent = 0 AND queue.timestamp > %d AND queue.campaign_id = %d";
 
-			$result = $wpdb->get_results( $wpdb->prepare( $sql, $timestamp ) );
-			$job_counts = array();
-
-			foreach ( $result as $row ) {
-				$job_counts[ $row->ID ] = (int) $row->count;
-			}
-
-			mailster_cache_add( 'job_counts_' . $timestamp, $job_counts );
-
-		}
-
-		return ( is_null( $campaign_id ) ) ? $job_counts : ( isset( $job_counts[ $campaign_id ] ) ? $job_counts[ $campaign_id ] : 0 );
+		return $wpdb->get_var( $wpdb->prepare( $sql, $timestamp, $campaign_id ) );
 
 	}
 

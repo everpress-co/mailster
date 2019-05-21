@@ -112,7 +112,7 @@ class MailsterCampaigns {
 		$query_args = array(
 			'lists' => $meta['ignore_lists'] ? false : $meta['lists'],
 			'conditions' => $meta['list_conditions'],
-			'queue__not_in' => $campaign_id,
+			// 'queue__not_in' => $campaign_id,
 			'sent__not_in' => $meta['autoresponder']['once'] ? $campaign_id : false,
 			'include' => $subscriber_ids,
 		);
@@ -123,15 +123,17 @@ class MailsterCampaigns {
 		$query_args['return_ids'] = true;
 
 		$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign_id );
-		foreach ( $subscribers as $subscriber_id ) {
-			mailster( 'subscribers' )->update_meta( $subscriber_id, $campaign_id, 'tags', $args );
-		}
 
 		$timestamp = strtotime( '+ ' . $meta['autoresponder']['amount'] . ' ' . $meta['autoresponder']['unit'] );
 
 		$priority = $meta['autoresponder']['priority'];
+		$clear = false;
+		$ignore_status = false;
+		$reset = true;
+		$options = isset( $meta['autoresponder']['multiple'] ) ? uniqid() : false;
+		$tags = $args;
 
-		mailster( 'queue' )->bulk_add( $campaign_id, $subscribers, $timestamp, $priority, false, false, true );
+		mailster( 'queue' )->bulk_add( $campaign_id, $subscribers, $timestamp, $priority, $clear, $ignore_status, $reset, $options, $tags );
 
 		// handle instant delivery
 		if ( $timestamp - time() <= 0 ) {
@@ -1611,7 +1613,9 @@ class MailsterCampaigns {
 					}
 
 					update_option( 'mailster_hooks', $hooks );
-					$autoresponder['once'] = isset( $autoresponder['hook_once'] );
+					if ( $autoresponder['once'] = isset( $autoresponder['hook_once'] )&& isset( $autoresponder['multiple'] ) ) {
+						unset( $autoresponder['multiple'] );
+					}
 					if ( empty( $autoresponder['hook'] ) ) {
 						mailster_notice( esc_html__( 'Please define a hook which should trigger the campaign!', 'mailster' ), 'error', true );
 					}
@@ -1719,7 +1723,9 @@ class MailsterCampaigns {
 
 		if ( ! $is_autosave ) {
 
-			mailster( 'queue' )->clear( $post_id );
+			if ( ! $is_autoresponder || isset( $_POST['clearqueue'] ) ) {
+				mailster( 'queue' )->clear( $post_id );
+			}
 
 			// if post is published, active or queued and campaign start within the next 60 minutes
 			if ( in_array( $post->post_status, array( 'active', 'queued', 'autoresponder' ) ) && $now - $meta['timestamp'] > -3600 ) {
@@ -3808,9 +3814,10 @@ class MailsterCampaigns {
 	 * @param unknown $track         (optional)
 	 * @param unknown $force         (optional)
 	 * @param unknown $log           (optional)
+	 * @param unknown $tags          (optional)
 	 * @return unknown
 	 */
-	public function send( $campaign_id, $subscriber_id, $track = null, $force = false, $log = true ) {
+	public function send( $campaign_id, $subscriber_id, $track = null, $force = false, $log = true, $tags = array() ) {
 
 		global $wpdb;
 
@@ -3906,6 +3913,10 @@ class MailsterCampaigns {
 		// add subscriber specific tags
 		if ( $subscriber_tags = mailster( 'subscribers' )->meta( $subscriber->ID, 'tags', $campaign->ID ) ) {
 			$placeholder->add( (array) $subscriber_tags );
+		}
+
+		if ( $tags ) {
+			$placeholder->add( (array) $tags );
 		}
 
 		$content = $placeholder->get_content();

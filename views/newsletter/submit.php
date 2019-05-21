@@ -89,6 +89,12 @@ $sent = $this->get_sent( $post->ID );
 
 					<?php elseif ( 'autoresponder' == $post->post_status ) : ?>
 
+						<?php if ( $queuecount = mailster( 'queue' )->get_job_count( $post->ID, false ) ) : ?>
+
+						<p><label title="<?php esc_attr_e( 'Removes all pending entries from this campaign in the queue.', 'mailster' ) ?>"><input type="checkbox" name="clearqueue" value="1" checked> <?php esc_html_e( 'Clear Queue of this auto responder.', 'mailster' ) ?></label></p>
+
+						<?php endif; ?>
+
 						<input name="save" type="submit" class="button-primary" id="publish" tabindex="15" accesskey="p" value="<?php esc_attr_e( 'Update', 'mailster' ) ?>" />
 						<a href="<?php echo add_query_arg( array( 'post' => $post->ID, 'action' => 'edit', 'showstats' => 1 ), '' ); ?>" class="button statistics"><?php esc_html_e( 'Statistic', 'mailster' ); ?></a>
 

@@ -1736,9 +1736,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 .receiver-detail-data .clicked-link{
 	float: left;
 }
-.receiver-detail-data ul li:hover span.count{
-	visibility: hidden;
-}
 #mailster_details .piechart {
 	width: 75px;
 	height: 75px;

@@ -1759,6 +1759,7 @@ class Mailster {
                 `error` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `ignore_status` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `options` varchar(191) NOT NULL DEFAULT '',
+                `tags` longtext NOT NULL,
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`requeued`,`options`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`),

@@ -869,6 +869,7 @@ class MailsterPlaceholder {
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
+		$pts = $this->get_post_types_to_replace();
 		$pts = implode( '|', $pts );
 
 		// all dynamic post type tags
