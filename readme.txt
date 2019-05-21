@@ -86,6 +86,7 @@ Xaver Birsak – https://everpress.co
 
 * new: campaign subscriber related tag
 * new: Import Export
+* new: more form shortcode attributes
 
 = Version 2.3.19 =
 

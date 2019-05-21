@@ -1434,7 +1434,7 @@ class MailsterSubscribers {
 			'unsubscribe' => esc_html__( 'Unsubscribe', 'mailster' ),
 			'gdpr' => esc_html__( 'GDPR Timestamp', 'mailster' ),
 			'tags' => esc_html__( 'Tags', 'mailster' ),
-
+			'formkey' => esc_html__( 'Form Key', 'mailster' ),
 		);
 		return $keys_only ? array_keys( $meta_keys ) : $meta_keys;
 	}
