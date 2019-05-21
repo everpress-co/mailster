@@ -84,6 +84,8 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4 =
 
+* new: campaign subscriber related tag
+
 = Version 2.3.19 =
 
 * fixed: custom 'mailster_auto_post' output is working again.
