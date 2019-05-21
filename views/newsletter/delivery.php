@@ -491,7 +491,13 @@ $sent = $this->get_sent( $post->ID );
 	</div>
 <?php endif; ?>
 	<div>
-		<input type="text" value="<?php echo esc_attr( $current_user->user_email ) ?>" autocomplete="off" id="mailster_testmail" class="widefat" aria-label="<?php esc_attr_e( 'Send Test', 'mailster' );?>">
+		<?php
+		if ( ! ($test_email = get_user_meta( $current_user->ID, 'mailster_test_email', true )) ) {
+			$test_email = $current_user->user_email;
+		}
+		$test_email = apply_filters( 'mailster_test_email', $test_email );
+		?>
+		<input type="text" value="<?php echo esc_attr( $test_email ) ?>" autocomplete="off" id="mailster_testmail" class="widefat" aria-label="<?php esc_attr_e( 'Send Test', 'mailster' );?>">
 		<button type="button" class="button mailster_spamscore" title="<?php esc_html_e( 'check your spam score', 'mailster' );?> (beta)">Spam Score</button>
 		<span class="spinner" id="delivery-ajax-loading"></span>
 		<input type="button" value="<?php esc_html_e( 'Send Test', 'mailster' ) ?>" class="button mailster_sendtest">

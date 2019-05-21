@@ -448,16 +448,23 @@ class MailsterAjax {
 			'msg' => esc_html__( 'Nonce invalid! Please reload site.', 'mailster' ),
 		) ) );
 
-		if ( isset( $_POST['test'] ) ) {
-
-			if ( isset( $_POST['formdata'] ) ) {
-				parse_str( $_POST['formdata'], $formdata );
+		if ( isset( $_POST['formdata'] ) ) {
+			parse_str( $_POST['formdata'], $formdata );
+			if ( isset( $formdata['mailster_options'] ) ) {
 				mailster_update_option( $formdata['mailster_options'], true );
 			}
+		}
+
+		$to = trim( stripslashes( $_POST['to'] ) );
+		$current_user = wp_get_current_user();
+
+		if ( ! empty( $to ) && $to != $current_user->user_emai ) {
+			update_user_meta( $current_user->ID, 'mailster_test_email', $to );
+		}
+
+		if ( isset( $_POST['test'] ) ) {
 
 			$basic = ! ! ( $_POST['basic'] === 'true' );
-
-			$to = stripslashes( $_POST['to'] );
 
 			$n = mailster( 'notification' );
 			$n->debug();
@@ -474,7 +481,6 @@ class MailsterAjax {
 		} else {
 
 			$return['success'] = true;
-			parse_str( $_POST['formdata'], $formdata );
 
 			$spam_test = isset( $_POST['spamtest'] );
 			if ( $spam_test ) {
@@ -484,7 +490,7 @@ class MailsterAjax {
 					$receivers = array( $receivers );
 				}
 			} else {
-				$receivers = explode( ',', stripslashes( $_POST['to'] ) );
+				$receivers = explode( ',', $to );
 			}
 
 			$subject = stripslashes( $formdata['mailster_data']['subject'] );
@@ -602,7 +608,7 @@ class MailsterAjax {
 					$mail->set_subscriber( $subscriber->ID );
 					$placeholder->set_subscriber( $subscriber->ID );
 
-				} elseif ( $current_user = wp_get_current_user() ) {
+				} elseif ( $current_user ) {
 
 					$profilelink = mailster()->get_profile_link( $ID, '' );
 

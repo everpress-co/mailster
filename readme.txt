@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 * new: Random Post
 * new: support for custom dynamic post types
 * new: RSS to Email
+* new: Mailster now stores your email address when you send a test.
 
 = Version 2.3.19 =
 
