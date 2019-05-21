@@ -21,7 +21,7 @@
 		</td>
 	</tr>
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Embed Images', 'mailster' ) ?> *</th>
+		<th scope="row"><?php esc_html_e( 'Embed Images', 'mailster' ) ?></th>
 		<td><label><input type="hidden" name="mailster_options[embed_images]" value=""><input type="checkbox" name="mailster_options[embed_images]" value="1" <?php checked( mailster_option( 'embed_images' ) );?>> <?php esc_html_e( 'Embed images in the mail', 'mailster' ) ?></label>
 		</td>
 	</tr>

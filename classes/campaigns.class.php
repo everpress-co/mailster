@@ -1493,7 +1493,7 @@ class MailsterCampaigns {
 				$meta['attachments'] = array();
 			}
 
-			$meta['embed_images'] = isset( $postdata['embed_images'] );
+			$meta['embed_images'] = isset( $postdata['embed_images'] ) && $postdata['embed_images'];
 			$meta['track_opens'] = isset( $postdata['track_opens'] );
 			$meta['track_clicks'] = isset( $postdata['track_clicks'] );
 

@@ -1537,18 +1537,16 @@ class MailsterAjax {
 		$static_post_types = mailster( 'helper' )->get_post_types();
 		$is_dynmaic_post_type = ! isset( $static_post_types[ $post_type ] );
 
-		if ( 0 === strpos( $relative_or_identifier, '~' ) ) {
-			$post = mailster()->get_random_post( substr( $relative_or_identifier, 1 ), $post_type, $term_ids, $args, $campaign_id );
-		} else {
-			$post = mailster()->get_last_post( $relative_or_identifier + 1, $post_type, $term_ids, $args, $campaign_id );
-		}
-
 		// special case for RSS.
 		if ( 'rss' == $post_type ) {
 			$args['mailster_rss_url'] = $rss_url;
 		}
 
-		$post = mailster()->get_last_post( $offset, $post_type, $term_ids, $args, $campaign_id );
+		if ( 0 === strpos( $relative_or_identifier, '~' ) ) {
+			$post = mailster()->get_random_post( substr( $relative_or_identifier, 1 ), $post_type, $term_ids, $args, $campaign_id );
+		} else {
+			$post = mailster()->get_last_post( $relative_or_identifier + 1, $post_type, $term_ids, $args, $campaign_id );
+		}
 
 		if ( is_wp_error( $post ) ) {
 			$return['title'] = $post->get_error_message();

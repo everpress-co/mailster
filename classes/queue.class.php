@@ -475,6 +475,13 @@ class MailsterQueue {
 					$timestamps = wp_list_pluck( $subscribers, 'autoresponder_timestamp' );
 
 					$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, 15 );
+
+					$timestamp = min( $timestamps );
+
+					// handle instant delivery
+					if ( $timestamp - time() <= 0 ) {
+						wp_schedule_single_event( $timestamp, 'mailster_cron_worker', array( $campaign->ID ) );
+					}
 				}
 			} elseif ( 'mailster_subscriber_unsubscribed' == $autoresponder_meta['action'] ) {
 
@@ -506,6 +513,13 @@ class MailsterQueue {
 					$timestamps = wp_list_pluck( $subscribers, 'autoresponder_timestamp' );
 
 					$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, 15, false, true );
+
+					$timestamp = min( $timestamps );
+
+					// handle instant delivery
+					if ( $timestamp - time() <= 0 ) {
+						wp_schedule_single_event( $timestamp, 'mailster_cron_worker', array( $campaign->ID ) );
+					}
 				}
 			} elseif ( 'mailster_autoresponder_followup' == $autoresponder_meta['action'] && $campaign->post_parent ) {
 
@@ -550,6 +564,13 @@ class MailsterQueue {
 					$timestamps = wp_list_pluck( $subscribers, 'autoresponder_timestamp' );
 
 					$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, 15, false );
+
+					$timestamp = min( $timestamps );
+
+					// handle instant delivery
+					if ( $timestamp - time() <= 0 ) {
+						wp_schedule_single_event( $timestamp, 'mailster_cron_worker', array( $campaign->ID ) );
+					}
 				}
 			} elseif ( 'mailster_post_published' == $autoresponder_meta['action'] && $autoresponder_meta['post_type'] == 'rss' ) {
 
