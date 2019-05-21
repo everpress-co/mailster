@@ -582,6 +582,9 @@ if ( $old_version ) {
 			delete_option( 'mailster_template_licenses' );
 		default:
 
+			// reset translations
+			update_option( 'mailster_translation', '' );
+
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
 
