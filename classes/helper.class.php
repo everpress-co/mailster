@@ -22,7 +22,16 @@ class MailsterHelper {
 			return $image;
 		}
 
-		if ( $attach_id ) {
+		if ( $attach_id && ! is_numeric( $attach_id ) ) {
+
+			$response = $this->unsplash( 'download_url', $attach_id );
+
+			if ( ! is_wp_error( $response ) && isset( $response->url ) ) {
+				$img_url = $response->url;
+			} else {
+				return false;
+			}
+		} elseif ( $attach_id ) {
 
 			$attach_id = (int) $attach_id;
 
@@ -38,7 +47,9 @@ class MailsterHelper {
 				$width = $orig_size[0];
 				$height = $orig_size[1];
 			}
-		} elseif ( $img_url ) {
+		}
+
+		if ( $img_url ) {
 
 			$file_path = parse_url( $img_url );
 
@@ -46,6 +57,7 @@ class MailsterHelper {
 
 				$actual_file_path = $img_url;
 				$img_url = str_replace( ABSPATH, site_url( '/' ), $img_url );
+
 			} elseif ( strpos( $img_url, admin_url( 'admin-ajax' ) ) === 0 ) {
 
 				parse_str( $file_path['query'], $query );
@@ -68,12 +80,34 @@ class MailsterHelper {
 				/* todo: recognize URLs */
 				if ( ! file_exists( $actual_file_path ) ) {
 
+					if ( false !== strpos( $img_url, '//images.unsplash.com' ) ) {
+						$query = wp_parse_url( $img_url, PHP_URL_QUERY );
+						parse_str( $query, $query_args );
+
+						$unsplash_args = apply_filters( 'mailster_create_image_unsplash_args', array(), $attach_id, $img_url, $width, $height, $crop );
+
+						$args = wp_parse_args( $unsplash_args, array(
+							'w' => $width,
+							'h' => $height,
+							'crop' => $crop,
+							'fit' => $crop ? 'crop' : 'max',
+							'dpi' => 1,
+							'q' => apply_filters( 'jpeg_quality', $query_args['q'] ),
+						));
+
+						$img_url = add_query_arg( $args, $img_url );
+
+					} else {
+						$height = null;
+					}
+					$asp = null;
+
 					return apply_filters( 'mailster_create_image', array(
 						'id' => $attach_id,
 						'url' => $img_url,
 						'width' => $width,
-						'height' => null,
-						'asp' => null,
+						'height' => $height,
+						'asp' => $asp,
 					), $attach_id, $img_url, $width, $height, $crop);
 
 				}
@@ -1890,6 +1924,70 @@ class MailsterHelper {
 			</div>
 		</div>
 <?php
+	}
+
+
+	public function unsplash( $command, $args = array() ) {
+
+		$endpoint = 'https://api.unsplash.com/';
+
+		$key = sanitize_key( apply_filters( 'mailster_unsplash_client_id', 'ba3e2af91c8c44d00cb70fe6217dcf021f7350633c323876ffa561a1dfbfc25f' ) );
+
+		switch ( $command ) {
+			case 'search':
+				$path = 'search/photos';
+				$defaults = array(
+					'per_page' => 30,
+				);
+				$args = wp_parse_args( $args, $defaults );
+				if ( empty( $args['query'] ) ) {
+					unset( $args['query'] );
+					$path = 'photos';
+				} else {
+					$args['query'] = urlencode( $args['query'] );
+				}
+				if ( isset( $args['offset'] ) ) {
+					$args['page'] = floor( $args['offset'] / $args['per_page'] ) + 1;
+					unset( $args['offset'] );
+				}
+				break;
+			case 'download_url':
+				$path = 'photos/' . $args . '/download';
+				$args = array();
+				break;
+			default:
+				return new WP_Error( 'err', esc_html__( 'Command not supported', 'mailster' ) );
+				break;
+		}
+
+		$headers = array(
+			'Authorization' => 'Client-ID ' . $key,
+		);
+
+		$url = add_query_arg( $args, $endpoint . $path );
+
+		$cache_key = 'mailster_unsplash_' . md5( $url );
+
+		if ( false === ( $body = get_transient( $cache_key ) ) ) {
+			$response = wp_remote_get( $url, array(
+				'headers' => $headers,
+			) );
+
+			if ( is_wp_error( $response ) ) {
+				return $response;
+			}
+
+			$code = wp_remote_retrieve_response_code( $response );
+			if ( $code != 200 ) {
+				return new WP_Error( $code, $body );
+			}
+
+			$body = wp_remote_retrieve_body( $response );
+
+			set_transient( $cache_key, $body, HOUR_IN_SECONDS * 6 );
+		}
+
+		return json_decode( $body );
 
 	}
 

@@ -1058,7 +1058,7 @@ class MailsterAjax {
 
 		if ( isset( $_POST['id'] ) ) {
 
-			$id = (int) $_POST['id'];
+			$id = basename( $_POST['id'] );
 			$src = isset( $_POST['src'] ) ? ( $_POST['src'] ) : null;
 			$crop = isset( $_POST['crop'] ) ? ( $_POST['crop'] == 'true' ) : false;
 			$width = isset( $_POST['width'] ) ? (int) $_POST['width'] : null;
@@ -1136,13 +1136,17 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$offset = (int) $_POST['offset'];
+		$search = esc_attr( $_POST['search'] );
+		$post_type = esc_attr( $_POST['type'] );
+
 		$post_count = mailster_option( 'post_count', 30 );
-		$search = $_POST['search'];
 
-		if ( in_array( $_POST['type'], array( 'post', 'attachment' ) ) ) {
+		if ( in_array( $post_type, array( 'post', 'attachment' ) ) ) {
 
-			$post_type = esc_attr( $_POST['type'] );
+			$imagetype = esc_attr( $_POST['imagetype'] );
 			$current_id = isset( $_POST['id'] ) ? (int) $_POST['id'] : null;
+			$post_counts = 0;
+			$is_unsplash = 'attachment' == $post_type && 'unsplash' == $imagetype;
 
 			$defaults = array(
 				'post_type' => $post_type,
@@ -1154,14 +1158,12 @@ class MailsterAjax {
 				'orderby' => 'post_date',
 				'order' => 'DESC',
 				'exclude' => $current_id,
+				's' => $search ? $search : null,
 			);
 
-			if ( $search ) {
-				$defaults['s'] = $search;
-			}
-
-			if ( $post_type == 'post' ) {
+			if ( 'post' == $post_type ) {
 				parse_str( $_POST['posttypes'], $pt );
+
 				if ( isset( $pt['post_types'] ) ) {
 					$post_types = (array) $pt['post_types'];
 				} else {
@@ -1173,64 +1175,69 @@ class MailsterAjax {
 					'post_status' => array( 'publish', 'future', 'draft' ),
 				), $defaults );
 
-				$post_counts = 0;
-				foreach ( $post_types as $type ) {
-					if ( $type == -1 ) {
-						continue;
-					}
-					$counts = wp_count_posts( $type );
-					$post_counts += $counts->publish + $counts->future;
-				}
-			} else {
+			} elseif ( $is_unsplash ) {
 
+			} elseif ( 'attachment' == $post_type ) {
 				$args = wp_parse_args( array(
 					'post_status' => 'inherit',
-					'post_mime_type' => ( $post_type == 'attachment' ) ? array( 'image/jpeg', 'image/gif', 'image/png', 'image/tiff', 'image/bmp' ) : null,
+					'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png', 'image/tiff', 'image/bmp' ),
 				), $defaults );
-
-				$post_counts = wp_count_posts( $post_type );
-				$post_counts = $post_counts->inherit;
 
 			}
 
 			$return['success'] = true;
 			$return['itemcount'] = isset( $_POST['itemcount'] ) ? $_POST['itemcount'] : array();
 
-			$args = apply_filters( 'mailster_get_post_list_args', $args );
+			if ( $is_unsplash ) {
 
-			$posts = get_posts( $args );
+				$response = mailster( 'helper' )->unsplash('search', array(
+					'offset' => $offset,
+					'query' => $search,
+				));
 
-			if ( $current_id && ( $current = get_post( $current_id ) ) ) {
-
-				array_unshift( $posts, $current );
-				$post_counts++;
-
+				if ( is_wp_error( $response ) ) {
+					$post_counts = $response;
+				} else {
+					if ( isset( $response->total ) ) {
+						$post_counts = $response->total;
+						$posts = $response->results;
+					} else {
+						$post_counts = -1;
+						$posts = $response;
+					}
+				}
 			} else {
 
-				$args['exclude'] = null;
+				$args = apply_filters( 'mailster_get_post_list_args', $args );
+				$posts = get_posts( $args );
+				$query = new WP_Query( $args );
 
+				$post_counts = $query->post_count;
+				$posts = $query->posts;
+
+				if ( $current_id && ( $current = get_post( $current_id ) ) ) {
+
+					array_unshift( $posts, $current );
+					$post_counts++;
+
+				} else {
+					$args['exclude'] = null;
+				}
 			}
 
-			$relativenames = array(
-				-1 => esc_html__( 'last %s', 'mailster' ),
-				-2 => esc_html__( 'second last %s', 'mailster' ),
-				-3 => esc_html__( 'third last %s', 'mailster' ),
-				-4 => esc_html__( 'fourth last %s', 'mailster' ),
-				-5 => esc_html__( 'fifth last %s', 'mailster' ),
-				-6 => esc_html__( 'sixth last %s', 'mailster' ),
-				-7 => esc_html__( 'seventh last %s', 'mailster' ),
-				-8 => esc_html__( 'eighth last %s', 'mailster' ),
-				-9 => esc_html__( 'ninth last %s', 'mailster' ),
-				-10 => esc_html__( 'tenth last %s', 'mailster' ),
-				-11 => esc_html__( 'eleventh last %s', 'mailster' ),
-				-12 => esc_html__( 'twelfth last %s', 'mailster' ),
-			);
+			if ( is_wp_error( $post_counts ) ) {
+				$return['html'] = '<li class="norows error"><span>' . $post_counts->get_error_message() . '</span></li>';
+			} elseif ( $post_counts ) {
 
-			$posts_lefts = max( 0, $post_counts - $offset - $post_count );
+				if ( $post_counts == -1 ) {
+					$posts_lefts = -1;
+				} else {
+					$posts_lefts = max( 0, $post_counts - $offset - $post_count );
+				}
 
-			if ( $post_counts ) {
 				$html = '';
-				if ( $_POST['type'] == 'post' ) {
+
+				if ( 'post' == $post_type ) {
 
 					$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
 
@@ -1259,49 +1266,71 @@ class MailsterAjax {
 						$html .= '<span class="date">' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $post->post_date ) ) . '</span>';
 						$html .= '</li>';
 					}
-				} elseif ( $_POST['type'] == 'attachment' ) {
+				} elseif ( 'attachment' == $post_type ) {
 
 					foreach ( $posts as $post ) {
-						$image = wp_get_attachment_image_src( $post->ID, 'large' );
-						$title = $post->post_title ? $post->post_title : ( $post->post_excerpt ? $post->post_excerpt : basename( $image[0] ) );
-						$html .= '<li data-id="' . $post->ID . '" data-name="' . esc_attr( $title ) . '" data-src="' . esc_attr( $image[0] ) . '" data-asp="' . ( $image[2] ? str_replace( ',', '.', $image[1] / $image[2] ) : '' ) . '"';
-						if ( $current_id == $post->ID ) {
-							$html .= ' class="selected"';
+
+						if ( 'unsplash' == $imagetype ) {
+							$post_id = $post->id;
+							$unsplash_args = apply_filters( 'mailster_create_image_unsplash_args', array(), $post_id, $post->urls->raw, $post->width, $post->height, null );
+							$src = add_query_arg( $unsplash_args, $post->urls->small );
+							$asp = $post->width / $post->height;
+							$thumb_src = add_query_arg( $unsplash_args, $post->urls->thumb );
+							$title = isset( $post->alt_description ) ? $post->alt_description : $post->id;
+							$title .= ' ' . sprintf( esc_html__( 'by %s', 'mailster' ), $post->user->name . ' (' . $post->user->links->html . ')' );
+							$class = 'is-unsplash';
+						} else {
+							$post_id = $post->ID;
+							$image = wp_get_attachment_image_src( $post_id, 'large' );
+							$src = $image[0];
+							$asp = $image[2] ? str_replace( ',', '.', $image[1] / $image[2] ) : '';
+							$thumbnail = wp_get_attachment_image_src( $post_id, 'medium' );
+							$thumb_src = $thumbnail[0];
+							$title = $post->post_title ? $post->post_title : ( $post->post_excerpt ? $post->post_excerpt : basename( $image[0] ) );
+							$class = '';
 						}
+						if ( $current_id && $current_id == $post_id ) {
+							$class .= ' selected';
+						}
+
+						$html .= '<li data-id="' . $post_id . '" data-name="' . esc_attr( $title ) . '" data-src="' . esc_attr( $src ) . '" data-asp="' . ( $asp ) . '" class="' . esc_attr( $class ) . '"';
 						$html .= '>';
-						$image = wp_get_attachment_image_src( $post->ID, 'medium' );
-						$html .= '<a style="background-image:url(' . $image[0] . ')"><span class="caption" title="' . esc_attr( $title ) . '">' . esc_html( $title ) . '</span></a>';
+						$html .= '<a style="background-image:url(' . $thumb_src . ')"><span class="caption" title="' . esc_attr( $title ) . '">' . esc_html( $title ) . '</span></a>';
 						$html .= '</li>';
 					}
 				}
 
 				if ( $posts_lefts ) {
-					$html .= '<li><a class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $_POST['type'] . '"><span>' . sprintf( esc_html__( 'load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) ) . '</span></a></li>';
+					$html .= '<li class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $post_type . '"><a><span>';
+					if ( $posts_lefts == -1 ) {
+						$html .= esc_html__( 'Load more entries', 'mailster' );
+					} else {
+						$html .= sprintf( esc_html__( 'Load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) );
+					}
+					$html .= '</span></a></li>';
 				}
 
 				$return['html'] = $html;
 			} else {
-				$return['html'] = '<li><span class="norows">' . esc_html__( 'no entries found', 'mailster' ) . '</span></li>';
+				$return['html'] = '<li class="norows"><span>' . esc_html__( 'No entries found!', 'mailster' ) . '</span></li>';
 			}
-		} elseif ( $_POST['type'] == 'link' ) {
+		} elseif ( 'link' == $post_type ) {
 
-				$post_type = esc_attr( $_POST['type'] );
+			$args = array();
 
-				$args = array();
+			$post_counts = mailster( 'helper' )->link_query( array(
+				'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
+			), true );
 
-				$post_counts = mailster( 'helper' )->link_query( array(
-						'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
-				), true );
+			$posts_lefts = max( 0, $post_counts - $offset - $post_count );
 
-				$posts_lefts = max( 0, $post_counts - $offset - $post_count );
+			$results = mailster( 'helper' )->link_query( array(
+				'offset' => $offset,
+				'posts_per_page' => $post_count,
+				'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
+			) );
 
-				$results = mailster( 'helper' )->link_query( array(
-						'offset' => $offset,
-						'posts_per_page' => $post_count,
-						'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
-				) );
-
-				$return['success'] = true;
+			$return['success'] = true;
 
 			if ( isset( $results ) ) {
 				$html = '';
@@ -1322,13 +1351,93 @@ class MailsterAjax {
 					$html .= '</li>';
 				}
 				if ( $posts_lefts ) {
-					$html .= '<li><a class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $post_type . '"><span>' . sprintf( esc_html__( 'load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) ) . '</span></a></li>';
+					$html .= '<li class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $post_type . '"><a><span>';
+					if ( $posts_lefts == -1 ) {
+						$html .= esc_html__( 'Load more entries', 'mailster' );
+					} else {
+						$html .= sprintf( esc_html__( 'Load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) );
+					}
+					$html .= '</span></a></li>';
 				}
 
 				$return['html'] = $html;
 
 			} else {
-				$return['html'] = '<li><span class="norows">' . esc_html__( 'no entries found', 'mailster' ) . '</span></li>';
+				$return['html'] = '<li class="norows"><span>' . esc_html__( 'No entries found!', 'mailster' ) . '</span></li>';
+			}
+
+		} elseif ( '_rss' == $post_type ) {
+
+			$url = esc_url( $_POST['url'] );
+
+			include_once ABSPATH . WPINC . '/feed.php';
+
+			$rss = fetch_feed( $url );
+
+			if ( ! is_wp_error( $rss ) ) {
+
+				$return['success'] = true;
+
+				$maxitems = $rss->get_item_quantity( $post_count );
+
+				$rss_items = $rss->get_items( $offset, $maxitems );
+				$post_counts = count( $rss->get_items( $offset ) );
+
+				$posts_lefts = max( 0, $post_counts - $offset - $post_count );
+
+				$html = '';
+
+				foreach ( $rss_items as $i => $item ) {
+					$relative = 0;
+					preg_match_all( '/<img[^>]*src="(.*?(?:\.png|\.jpg|\.gif))"[^>]*>/i', $item->get_content(), $images );
+					$hasthumb = false;
+					if ( ! empty( $images[0] ) ) {
+						$hasthumb = $images[1][0];
+					}
+					$html .= '<li data-id="' . $url . '#' . ( $i + $offset ) . '" data-name="' . $item->get_title() . '"';
+					if ( $hasthumb ) {
+						$html .= ' data-thumbid="' . $hasthumb . '" class="has-thumb"';
+					}
+
+					$html .= ' data-link="' . $item->get_permalink() . '" data-type="rss-item" data-relative="' . $relative . '">';
+					( $hasthumb )
+						? $html .= '<div class="feature" style="background-image:url(' . $hasthumb . ')"></div>'
+						: $html .= '<div class="no-feature"></div>';
+					$html .= '<strong>' . $item->get_title() . '</strong>';
+					$html .= '<span>' . trim( wp_trim_words( strip_shortcodes( $item->get_description() ), 18 ) ) . '</span>';
+					$html .= '<span>' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $item->get_date() ) ) . '</span>';
+					$html .= '</li>';
+				}
+
+				if ( $posts_lefts ) {
+					$html .= '<li class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $post_type . '"><a><span>';
+					if ( $posts_lefts == -1 ) {
+						$html .= esc_html__( 'Load more entries', 'mailster' );
+					} else {
+						$html .= sprintf( esc_html__( 'Load more entries (%s left)', 'mailster' ), number_format_i18n( $posts_lefts ) );
+					}
+					$html .= '</span></a></li>';
+				}
+
+				$return['html'] = $html;
+
+				$return['rssinfo'] = array(
+					'copyright' => $rss->get_copyright() ? $rss->get_copyright() : sprintf( esc_html__( 'All rights reserved %s', 'mailster' ), '<a href="' . $rss->get_link() . '" class="external">' . $rss->get_title() . '</a>' ),
+					'title' => $rss->get_title(),
+					'description' => $rss->get_description(),
+				);
+
+				$recent_feeds = get_option( 'mailster_recent_feeds', array() );
+				$recent_feeds = array_reverse( $recent_feeds );
+				$recent_feeds[ $rss->get_title() ] = $url;
+				$recent_feeds = array_reverse( $recent_feeds );
+				$recent_feeds = array_slice( $recent_feeds, 0, 5 );
+				update_option( 'mailster_recent_feeds', $recent_feeds );
+
+			} else {
+
+				$return['success'] = true;
+				$return['html'] = '<li class="norows"><span>' . $rss->get_error_message() . '</span></li>';
 			}
 		}
 
@@ -2258,7 +2367,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$type = $_POST['type'];
+		$type = esc_attr( $_POST['type'] );
 		$id = (int) $_POST['id'];
 
 		switch ( $type ) {

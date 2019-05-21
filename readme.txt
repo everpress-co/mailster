@@ -84,6 +84,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4 =
 
+* new: use over 900K photos from Unsplash
 * new: campaign subscriber related tag
 * new: Import Export
 * new: more form shortcode attributes

@@ -1594,8 +1594,10 @@ jQuery(document).ready(function ($) {
 			buttontabs = bar.find('ul.buttons'),
 			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, searchTimeout, checkRSSfeedInterval,
 			editor = $('#wp-mailster-editor-wrap'),
+			searchstring = '',
 			postsearch = $('#post-search'),
-			imagesearch = $('#image-search');
+			imagesearch = $('#image-search'),
+			imagesearchtype = $('[name="image-search-type"]');
 
 		function init() {
 			bar
@@ -1622,9 +1624,9 @@ jQuery(document).ready(function ($) {
 				.on('change', '#dynamic_rss_url', checkForPosts)
 				.on('keyup change', '#post-search', searchPost)
 				.on('keyup change', '#image-search', searchPost)
+				.on('change', '[name="image-search-type"]', searchPost)
 
-
-			.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
+				.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
 				.on('mouseleave', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', enabledrag);
 
 			_getRealDimensions(_iframe.contents().find("img").eq(0), function (w, h, f) {
@@ -1667,11 +1669,11 @@ jQuery(document).ready(function ($) {
 				}, 1);
 			});
 
-			imagewidth.on('change, keyup', function () {
+			imagewidth.on('keyup change', function () {
 				if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / currentimage.asp));
 				adjustImagePreview();
 			});
-			imageheight.on('change, keyup', function () {
+			imageheight.on('keyup change', function () {
 				if (!imagecrop.is(':checked')) imagewidth.val(Math.round(imageheight.val() * currentimage.asp));
 				adjustImagePreview();
 			});
@@ -1977,7 +1979,6 @@ jQuery(document).ready(function ($) {
 						o = original.is(':checked'),
 						attribute = is_img ? 'src' : 'background',
 						style;
-
 
 					current.element.attr({
 						'data-id': currentimage.id,
@@ -2549,8 +2550,8 @@ jQuery(document).ready(function ($) {
 		}
 
 		function adjustImagePreview() {
-			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val())))),
-				f = factor.val();
+			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val())))) || 0,
+				f = parseInt(factor.val(), 10);
 
 			imagepreview.css({
 				'clip': 'rect(' + (x) + 'px,' + (current.width * f) + 'px,' + (current.height * f - x) + 'px,0px)',
@@ -2631,6 +2632,7 @@ jQuery(document).ready(function ($) {
 			current.content = content;
 
 			currenttag = current.element.data('tag');
+			searchstring = '';
 
 			_trigger('selectModule', module);
 
@@ -2692,6 +2694,7 @@ jQuery(document).ready(function ($) {
 
 				original.prop('checked', current.original);
 				imagecrop.prop('checked', current.crop).parent()[current.crop ? 'addClass' : 'removeClass']('not-cropped');
+				searchstring = $.trim(imagesearch.val());
 
 				factor.val(1);
 				_getRealDimensions(el, function (w, h, f) {
@@ -2749,6 +2752,7 @@ jQuery(document).ready(function ($) {
 			} else if (type == 'auto') {
 
 				openTab('#' + (currenttag ? 'dynamic' : 'static') + '_embed_options', true);
+				searchstring = $.trim(postsearch.val());
 
 				if (currenttag) {
 
@@ -2974,7 +2978,8 @@ jQuery(document).ready(function ($) {
 				data = {
 					type: assetstype,
 					posttypes: posttypes,
-					search: 'attachment' == assetstype ? imagesearch.val() : postsearch.val(),
+					search: searchstring,
+					imagetype: imagesearchtype.filter(':checked').val(),
 					offset: 0
 				};
 
@@ -3011,14 +3016,15 @@ jQuery(document).ready(function ($) {
 			_ajax('get_post_list', {
 				type: type,
 				posttypes: posttypes,
-				search: 'attachment' == type ? imagesearch.val() : postsearch.val(),
+				search: searchstring,
+				imagetype: imagesearchtype.filter(':checked').val(),
 				offset: offset,
 				itemcount: itemcount
 			}, function (response) {
 				loader(false);
 				if (response.success) {
 					itemcount = response.itemcount;
-					$this.parent().remove();
+					$this.remove();
 					displayPosts(response.html, false);
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
@@ -3030,11 +3036,16 @@ jQuery(document).ready(function ($) {
 		}
 
 		function searchPost() {
-			var $this = $(this);
+			var $this = $(this),
+				temp = $.trim('attachment' == assetstype ? imagesearch.val() : postsearch.val());
+			if ((!$this.is(':checked') && searchstring == temp)) {
+				return false;
+			}
+			searchstring = temp;
 			clearTimeout(searchTimeout);
 			searchTimeout = setTimeout(function () {
 				loadPosts();
-			}, 300);
+			}, 500);
 		}
 
 		function loadSingleLink() {
