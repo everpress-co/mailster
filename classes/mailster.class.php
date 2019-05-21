@@ -808,7 +808,6 @@ class Mailster {
 				if ( ! is_wp_error( $post ) && $post ) {
 					$posts = array( $post );
 				}
-
 			} else {
 				$defaults = array(
 					'posts_per_page' => 1,

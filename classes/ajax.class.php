@@ -1365,7 +1365,6 @@ class MailsterAjax {
 			} else {
 				$return['html'] = '<li class="norows"><span>' . esc_html__( 'No entries found!', 'mailster' ) . '</span></li>';
 			}
-
 		} elseif ( '_rss' == $post_type ) {
 
 			$url = esc_url( $_POST['url'] );
@@ -1566,7 +1565,7 @@ class MailsterAjax {
 		} else {
 			$return['title'] = esc_html__( 'There\'s currently no match for your selection!', 'mailster' );
 			if ( ! $rss_url ) {
-				if ( !$is_dynmaic_post_type ) {
+				if ( ! $is_dynmaic_post_type ) {
 					$return['title'] .= ' <a href="post-new.php?post_type=' . $post_type . '" class="external">' . esc_html__( 'Create a new one', 'mailster' ) . '</a>?';
 				}
 			}

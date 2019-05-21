@@ -855,7 +855,7 @@ class MailsterPlaceholder {
 	 */
 	private function get_post_types_to_replace() {
 		if ( empty( $this->post_types ) ) {
-			$this->post_types = mailster( 'helper' )->get_post_types();
+			$this->post_types = mailster( 'helper' )->get_dynamic_post_types();
 		}
 
 		return $this->post_types;
@@ -869,11 +869,6 @@ class MailsterPlaceholder {
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
-<<<<<<< HEAD
-		$pts = mailster( 'helper' )->get_dynamic_post_types();
-=======
-		$pts = $this->get_post_types_to_replace();
->>>>>>> feature/2_4_RSS
 		$pts = implode( '|', $pts );
 
 		// all dynamic post type tags
@@ -896,16 +891,13 @@ class MailsterPlaceholder {
 						continue;
 					}
 
-<<<<<<< HEAD
 					if ( $is_random ) {
 						$post = mailster()->get_random_post( $post_or_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 					} else {
 						$post = get_post( $post_or_offset );
 					}
-=======
-					$post = get_post( $post_id );
+
 					$post = apply_filters( 'mailster_get_post_' . $post_type, $post, $post_id );
->>>>>>> feature/2_4_RSS
 
 					if ( ! $post ) {
 						continue;
@@ -932,12 +924,9 @@ class MailsterPlaceholder {
 					}
 				} else {
 
-<<<<<<< HEAD
-=======
 					$post_offset = $post_or_offset -1;
 					$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
 
->>>>>>> feature/2_4_RSS
 					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 				}
@@ -1054,11 +1043,8 @@ class MailsterPlaceholder {
 	public function get_replace( $post, $what ) {
 
 		$extra = null;
-<<<<<<< HEAD
 		$replace_to = null;
-=======
 		$author = null;
->>>>>>> feature/2_4_RSS
 		$post_type = $post->post_type;
 
 		if ( 0 === strpos( $what, 'author' ) ) {
@@ -1114,7 +1100,6 @@ class MailsterPlaceholder {
 					$replace_to = $post->post_link;
 				}
 			case 'permalink':
-<<<<<<< HEAD
 				if ( ! $replace_to ) {
 					$replace_to = get_permalink( $post->ID );
 				}
@@ -1123,12 +1108,6 @@ class MailsterPlaceholder {
 				}
 				if ( ! $replace_to ) {
 					$replace_to = $post->post_permalink;
-=======
-				if ( $post->ID ) {
-					$replace_to = get_permalink( $post->ID );
-				} else {
-					$replace_to = $post->post_link ? $post->post_link : $post->post_permalink;
->>>>>>> feature/2_4_RSS
 				}
 				break;
 			case 'shortlink':
