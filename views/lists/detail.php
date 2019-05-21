@@ -49,7 +49,7 @@ if ( $is_new ) {
 	printf( esc_html__( 'Edit List %s', 'mailster' ), '<strong>' . $list->name . '</strong>' );
 ?>
 <?php if ( current_user_can( 'mailster_add_subscribers' ) ) : ?>
-	<a href="edit.php?post_type=newsletter&page=mailster_lists&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
+	<a href="edit.php?post_type=newsletter&page=mailster_lists&new" class="page-title-action"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>
 
 <?php

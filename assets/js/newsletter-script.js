@@ -1183,6 +1183,7 @@ jQuery(document).ready(function ($) {
 				animate: 2000,
 				rotate: 180,
 				barColor: '#2BB3E7',
+				trackColor: '#50626f',
 				trackColor: '#f3f3f3',
 				lineWidth: 9,
 				size: 75,
@@ -1237,6 +1238,7 @@ jQuery(document).ready(function ($) {
 
 					progress.find('.bar').width(p + '%');
 					progress.find('span').eq(1).html(_data.sent_formatted);
+					progress.find('span').eq(2).html(_data.sent_formatted);
 					progress.find('var').html(Math.round(p) + '%');
 
 					_clickBadges(_data.clickbadges);

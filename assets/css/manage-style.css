@@ -129,7 +129,7 @@ span.error{
 	padding: 10px;
 }
 .export-order-middle button{
-	display: block;
+	display: block !important;
 	width: 35px;
 	margin: 4px 0;
 }
@@ -159,6 +159,10 @@ span.error{
 	white-space: nowrap;
 	overflow: hidden;
 }
+.dark-mode .export-order li{
+	border-color: #191f25;
+	background: #23282d;
+}
 .rtl .export-order li{
 	float: right;
 }
@@ -181,7 +185,7 @@ span.error{
 .progress{
 	width: 100%;
 	height: 40px;
-	background: #ededed;
+	background: #efefef;
 	overflow: hidden;
 	font-size: 10px;
 	position: relative;
@@ -189,6 +193,9 @@ span.error{
 	line-height: 20px;
 	margin-top: 24px;
 	border-radius: 4px;
+}
+.dark-mode .progress{
+	background: #50626f;
 }
 .progress span.bar{
 	display: block;
@@ -199,11 +206,13 @@ span.error{
 	top: 0;
 	bottom: 0;
 	left: 0;
-	overflow: visible;
 	border-radius: 4px;
+	overflow: hidden;
 }
 .progress span.bar{
-	background: url(../img/progress_2x.gif);
+	background: #2BB3E7;
+	background: -webkit-linear-gradient(to right, #084067, #2BB3E7);
+	background: linear-gradient(to right, #084067, #2BB3E7);
 }
 .progress.paused span.bar,
 .progress.error span.bar{

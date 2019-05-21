@@ -2,7 +2,7 @@
 <div class="wrap">
 <h1><?php esc_html_e( 'Lists', 'mailster' ) ?>
 <?php if ( current_user_can( 'mailster_add_lists' ) ) : ?>
-	<a href="edit.php?post_type=newsletter&page=mailster_lists&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
+	<a href="edit.php?post_type=newsletter&page=mailster_lists&new" class="page-title-action"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>
 <?php if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) : ?>
 	<span class="subtitle"><?php printf( esc_html__( 'Search result for %s', 'mailster' ), '&quot;' . esc_html( stripslashes( $_GET['s'] ) ) . '&quot;' ) ?></span>

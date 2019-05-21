@@ -328,8 +328,8 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 						<?php endforeach; ?>
 					</ul>
 					<div class="export-order-middle">
-						<button class="export-order-add">&gt;&gt;</button>
-						<button class="export-order-remove">&lt;&lt;</button>
+						<button class="export-order-add button-secondary">&gt;&gt;</button>
+						<button class="export-order-remove button-secondary">&lt;&lt;</button>
 					</div>
 					<ul class="export-order selected">
 					<?php foreach ( $user_settings['column'] as $id ) : ?>

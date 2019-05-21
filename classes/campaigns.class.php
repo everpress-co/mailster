@@ -654,7 +654,8 @@ class MailsterCampaigns {
 							if ( $totals = $this->get_totals( $post->ID ) ) {
 								if ( $sent = $this->get_sent( $post->ID ) ) {
 									$p = round( $sent / $totals * 100 );
-									echo "<br><div class='campaign-progress'><span class='bar' style='width:" . $p . "%'></span><span>&nbsp;" . sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) . "</span><var>$p%</var></div>";
+									$pg = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
+									echo "<br><div class='campaign-progress'><span class='bar' style='width:$p%'><span>&nbsp;$pg</span></span><span>&nbsp;$pg</span><var>$p%</var></div>";
 								}
 							} elseif ( is_null( $totals ) ) {
 							} else {
@@ -666,7 +667,8 @@ class MailsterCampaigns {
 								$sent = $this->get_sent( $post->ID );
 								echo '<span class="mailster-icon progressing"></span> ' . ( $sent == $totals ? esc_html__( 'completing job', 'mailster' ) : esc_html__( 'progressing', 'mailster' ) ) . '&hellip;' . ( $meta['timezone'] ? ' <span class="timezonebased"  title="' . esc_html__( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '' );
 								$p = $totals ? round( $sent / $totals * 100 ) : 0;
-								echo "<br><div class='campaign-progress'><span class='bar' style='width:" . $p . "%'></span><span>&nbsp;" . sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) . "</span><var>$p%</var></div>";
+								$pg = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
+								echo "<br><div class='campaign-progress'><span class='bar' style='width:$p%'><span>&nbsp;$pg</span></span><span>&nbsp;$pg</span><var>$p%</var></div>";
 							} elseif ( is_null( $totals ) ) {
 							} else {
 								echo '<span class="mailster-icon no-receiver"></span> ' . esc_html__( 'no receivers!', 'mailster' );
