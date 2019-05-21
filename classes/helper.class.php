@@ -1568,11 +1568,8 @@ class MailsterHelper {
 
 			$feed->set_cache_duration( (int) $cache_duration );
 
-		    $tags_to_strip = apply_filters( 'mailster_feed_tags_to_strip', $feed->strip_htmltags );
-		    $feed->strip_htmltags( $tags_to_strip );
-
-		    $attributes_to_strip = apply_filters( 'mailster_feed_attributes_to_strip', $feed->strip_attributes );
-			$feed->strip_attributes( $attributes_to_strip );
+		    $feed->strip_htmltags( apply_filters( 'mailster_feed_strip_htmltags', $feed->strip_htmltags ) );
+			$feed->strip_attributes( apply_filters( 'mailster_feed_strip_attributes', $feed->strip_attributes ) );
 
 			$feed->init();
 			$feed->set_output_encoding( get_option( 'blog_charset' ) );
@@ -1586,7 +1583,7 @@ class MailsterHelper {
 			}
 
 		    $max_items = apply_filters( 'mailster_feed_max_items', 100 );
-			$max_items = $feed->get_item_quantity( $max_items );
+			$max_items = @$feed->get_item_quantity( (int) $max_items );
 
 			if ( $item >= $max_items ) {
 				return new WP_Error( 'feed_to_short', sprintf( esc_html__( 'The feed only contains %d items', 'mailster' ), $max_items ) );
