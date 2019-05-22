@@ -578,8 +578,13 @@ if ( $old_version ) {
 
 		case '2.3.18':
 		case '2.3.19':
+
 			// no longer in use
 			delete_option( 'mailster_template_licenses' );
+			$mailster_options['welcome'] = true;
+
+		case '2.4':
+
 		default:
 
 			// reset translations
