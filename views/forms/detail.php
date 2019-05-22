@@ -109,7 +109,7 @@ if ( $is_new ) {
 		<ul class="form-order sortable">
 		<?php foreach ( $form->fields as $field ) : ?>
 			<li class="field-<?php echo $field->field_id ?> form-field">
-				<label><?php echo $field->name ?></label>
+				<label><?php echo strip_tags( $field->name ) ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ) ?>:</span>
 				<input class="label widefat" type="text" name="mailster_structure[fields][<?php echo $field->field_id ?>]" data-name="mailster_structure[fields][<?php echo $field->field_id ?>]" value="<?php echo esc_attr( $field->name ) ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' );?>" placeholder="<?php echo esc_attr( $field->name ) ?>">

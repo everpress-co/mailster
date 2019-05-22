@@ -34,7 +34,7 @@
 				<div class="media-container">
 				</div>
 				<h3>Random Dynamic Posts</h3>
-				<p>You can now add a random post in your email campaigns.</p>
+				<p>You can now add random posts in your email campaigns.</p>
 				<div class="return-to-dashboard"><a href="https://kb.mailster.co/random-dynamic-posts/" target="_blank">Learn more</a></div>
 			</div>
 			<div class="col">
@@ -51,15 +51,15 @@
 
 			<div class="feature-section under-the-hood three-col">
 				<div class="col">
-					<h4>Fresh UI</h4>
+					<h4>Fresh UI.</h4>
 					<p>We have tweaked the look of some UI elements.</p>
 				</div>
 				<div class="col">
-					<h4>Dynamic Custom Post Types</h4>
+					<h4>Dynamic Custom Post Types.</h4>
 					<p>Add custom post types dynamically and use the in your campaigns.</p>
 				</div>
 				<div class="col">
-					<h4>Translation Dashboard Info</h4>
+					<h4>Translation Dashboard Info.</h4>
 					<p>If you use Mailster in a different Language than English you can now quickly update translations from the Dashboard.</p>
 				</div>
 			<div class="feature-section under-the-hood three-col">
@@ -78,11 +78,11 @@
 			</div>
 			<div class="feature-section under-the-hood three-col">
 				<div class="col">
-					<h4>Improved Export/Import</h4>
+					<h4>Improved Export/Import.</h4>
 					<p>Mailster handle imported campaigns now better and does some sanitation checks during this process.</p>
 				</div>
 				<div class="col">
-					<h4>Test email addresses</h4>
+					<h4>Test email addresses.</h4>
 					<p>Mailster now stores the latest used email address for your tests. This is done for each user separately.</p>
 				</div>
 				<div class="col">

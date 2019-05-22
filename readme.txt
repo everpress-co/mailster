@@ -2,35 +2,41 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.2
+Tested up to: 5.2.1
 Stable tag: 2.4
 Author: EverPress
-Author URI: https://mailster.co
+Author URI: https://everpress.co
 Requires PHP: 5.3.6
 
 == Description ==
 
-= a super simple Email Newsletter Plugin for WordPress to create, send and track your Newsletter Campaigns =
+= Mailster is an easy to use Email Newsletter Plugin for WordPress. Create, send and track your Newsletter Campaigns without hassle. =
 
 **Track Opens, Clicks, Unsubscriptions and Bounces**
 Now it’s easy to keep track of your customers. Who does opened when and where your Newsletter? Track undeliverable mails (bounces), Countries, Cities** and know exactly who opened your mails.
 
 **Auto Responders**
-Send welcome messages to new subscribers or special offers to your loyal customers. Limit receivers with conditions or send messages only to certain lists
+Send welcome messages to new subscribers or special offers to your loyal customers. Limit receivers with conditions or send messages only to certain lists.
+
+**Unlimited**
+Mailster has no limit for storing subscribers. Send campaigns to thousands of users with a single Mailster installation.
 
 **Schedule your Campaigns**
-Let your subscribers receive your latest news when they have time to read it, not when you have time to create it
+Let your subscribers receive your latest news when they have time to read it, not when you have time to create it.
 
 **Simple Newsletter Creation**
-Creating Newsletters has never been so easy. If you familiar with WordPress Posts you can create your next campaign as easy as you publish a new blog entry. All options are easy accessible via the edit campaign page
+Creating Newsletters has never been so easy. If you familiar with WordPress Posts you can create your next campaign as easy as you publish a new blog entry. All options are easy accessible via the edit campaign screen.
 
-**Unlimited Customization**
-Use the Option panel to give your newsletter an unique branding, save your color schema and reuse it later. Choose one over 20 included backgrounds or upload your custom one.
+**Campaign Analytics**
+Track your campaigns **in real-time**. Get in depth statistics and track opens, clicks, unsubscritions and bounces.
+
+**Segmentation**
+Target your audience with custom **conditions** and segmentations.
 
 **Preflight your Newsletter**
-Don’t send unfinished Newsletters to your Customers which possible end up in there SPAM folders and are never been seen. Use built in Spam check to get your spam score
+Don’t send unfinished Newsletters to your Customers which possible end up in there SPAM folders and are never been seen. Use built in Spam check to get your spam score.
 
-= Full Feature List =
+= Feature List =
 
 * Track Opens, Clicks, Unsubscriptions and Bounces
 * Track Countries and Cities*
@@ -84,16 +90,17 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4 =
 
-* new: use over 900K photos from Unsplash
-* new: campaign subscriber related tag
-* new: Import Export
-* new: more form shortcode attributes
-* new: display of deleted subscribers in campaign stats
-* new: Random Post
-* new: support for custom dynamic post types
-* new: RSS to Email
-* new: Mailster now stores your email address when you send a test.
-* deprecated: embeded images
+* new: Use over 900K photos from Unsplash
+* new: RSS to Email Campaigns.
+* new: Random Post Tags
+* new: Campaign-Subscriber related tags
+* new: Custom Dynamic Post Types
+* new: additional Form shortcode attributes
+* new: Fresh UI
+* new: Translation Dashboard Info
+* improved: Preserved stats from deleted subscribers
+* improved: Mailster now stores your email address when you send a test
+* improved: Import Export
 
 = Version 2.3.19 =
 

@@ -1848,8 +1848,8 @@ class Mailster {
 			"CREATE TABLE {$wpdb->prefix}mailster_form_fields (
                 `form_id` bigint(20) unsigned NOT NULL,
                 `field_id` varchar(191) NOT NULL,
-                `name` varchar(191) NOT NULL,
-                `error_msg` varchar(191) NOT NULL,
+                `name` longtext NOT NULL,
+                `error_msg` longtext NOT NULL,
                 `required` tinyint(1) unsigned NOT NULL,
                 `position` int(11) unsigned NOT NULL,
                 UNIQUE KEY `id` (`form_id`,`field_id`)

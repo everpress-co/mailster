@@ -8,7 +8,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 <?php if ( $editable ) : ?>
 
 	<span class="spinner" id="colorschema-ajax-loading"></span>
-	<input name="mailster_data[embed_images]" id="mailster_data_embed_images" value="<?php echo (isset( $this->post_data['embed_images'] ) ? $this->post_data['embed_images'] : mailster_option( 'embed_images' )) ?>" type="hidde">
+	<input name="mailster_data[embed_images]" id="mailster_data_embed_images" value="<?php echo (isset( $this->post_data['embed_images'] ) ? $this->post_data['embed_images'] : mailster_option( 'embed_images' )) ?>" type="hidden">
 	<p>
 		<label>
 		<input name="mailster_data[track_opens]" id="mailster_data_track_opens" value="1" type="checkbox" <?php echo ( isset( $this->post_data['track_opens'] ) ) ? ( ( $this->post_data['track_opens'] ) ? 'checked' : '' ) : ( mailster_option( 'track_opens' ) ? 'checked' : '' ) ?>> <?php esc_html_e( 'Track Opens', 'mailster' ) ?>

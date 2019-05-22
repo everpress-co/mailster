@@ -2,10 +2,10 @@
 /*
 Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
-Description: Advanced Newsletter Plugin for WordPress. Create, Send and Track your Newsletter Campaigns
+Description: The Ultimate Newsletter Plugin.
 Version: 2.4
 Author: EverPress
-Author URI: https://everpress.io
+Author URI: https://everpress.co
 Text Domain: mailster
 */
 
