@@ -977,6 +977,7 @@ class MailsterForms {
 
 			$forms[ $i ]->style = ( $forms[ $i ]->style ) ? json_decode( $forms[ $i ]->style ) : array();
 			$forms[ $i ]->stylesheet = '';
+			$forms[ $i ]->ajax = true;
 			foreach ( $forms[ $i ]->style as $selectors => $data ) {
 				$forms[ $i ]->stylesheet .= '.mailster-form.mailster-form-' . $forms[ $i ]->ID . ' ' . $selectors . '{';
 				foreach ( $data as $key => $value ) {
@@ -988,6 +989,8 @@ class MailsterForms {
 			if ( empty( $forms[ $i ]->submit ) ) {
 				$forms[ $i ]->submit = mailster_text( 'submitbutton' );
 			}
+
+			$forms[ $i ]->gdpr = mailster_option( 'gdpr_forms' );
 		}
 
 		return is_null( $ID ) ? $forms : $forms[0];

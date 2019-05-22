@@ -55,6 +55,10 @@
 	-webkit-transition: all .1s ease-in-out;
 	transition: all .1s ease-in-out;
 }
+.mailster-icon.mailster-dash:before{
+	font-family: 'dashicons' !important;
+	width: 1.05em;
+}
 
 .mailster-icon-newsletter:before { content: '\e800'; } /* '' */
 .mailster-icon-queued:before { content: '\e801'; } /* '' */
@@ -117,6 +121,7 @@
 .mailster-icon-plus:before { content: '\e837'; } /* '' */
 .mailster-icon-minus:before { content: '\e838'; } /* '' */
 
+.mailster-icon-translate:before { content: '\f326'; } /* '' */
 /*
    Animation example, for spinners
 */

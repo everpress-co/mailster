@@ -328,8 +328,8 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 						<?php endforeach; ?>
 					</ul>
 					<div class="export-order-middle">
-						<button class="export-order-add">&gt;&gt;</button>
-						<button class="export-order-remove">&lt;&lt;</button>
+						<button class="export-order-add button-secondary">&gt;&gt;</button>
+						<button class="export-order-remove button-secondary">&lt;&lt;</button>
 					</div>
 					<ul class="export-order selected">
 					<?php foreach ( $user_settings['column'] as $id ) : ?>
@@ -396,7 +396,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					<label><input type="checkbox" name="remove_lists" value="1"> <?php esc_html_e( 'Remove selected lists', 'mailster' );?> </label>
 				</p>
 				<p>
-					<label><input type="checkbox" name="remove_actions" value="1" checked> <?php esc_html_e( 'Remove all actions from affected users', 'mailster' );?> </label>
+					<label><input type="checkbox" name="remove_actions" value="1"> <?php esc_html_e( 'Remove all actions from affected users', 'mailster' );?> </label>
 				</p>
 				<p>
 					<input id="delete-subscriber-button" class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Delete Subscribers permanently', 'mailster' ) ?>" />
@@ -404,7 +404,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 				<h2 class="delete-status"></h2>
 				</form>
 			</div>
-							<?php else : ?>
+			<?php else : ?>
 		<p><?php esc_html_e( 'No Subscriber found!', 'mailster' );?></p>
 
 	<?php endif; ?>

@@ -107,7 +107,7 @@ $all_files = mailster( 'templates' )->get_all_files();
 			</div>
 		</div>
 		<div class="device mobile">
-			<div class="mobile-header"><u></u><i></i></div>
+			<div class="mobile-header"><u></u></div>
 			<div class="mobile-body">
 				<div class="preview-body">
 					<iframe class="mailster-preview-iframe mobile" src="" width="100%" scrolling="auto" frameborder="0" data-no-lazy=""></iframe>

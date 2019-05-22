@@ -21,7 +21,6 @@
 	box-sizing: border-box;
 }
 .user-info .detail.active{
-	background-color: #F9F9F9;
 	cursor: default;
 }
 .new .user-info .detail.active{
@@ -34,8 +33,11 @@
 	vertical-align: top;
 	padding-right: 5px;
 }
-.user-info .detail:hover{
+.user-info .detail:hover, .user-info .detail.active{
 	background-color: #F9F9F9;
+}
+.dark-mode .user-info .detail:hover,.dark-mode .user-info .detail.active{
+	background-color: #32373c;
 }
 .new .user-info .detail:hover{
 	background-color: inherit;
@@ -126,8 +128,8 @@ label{
 	width: 200px;
 	height: 200px;
 	padding: 4px;
-	border: 1px solid #D3D6DB;
-	background-color: #FFF;
+	_border: 1px solid #D3D6DB;
+	_background-color: #FFF;
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-size: 200px 200px;
@@ -156,6 +158,9 @@ label{
 	padding: 11px 8px 2px;
 	margin-right: 20px;
 	border-bottom: 1px solid #ccc;
+}
+.dark-mode .user-info .detail{
+	border-bottom: 1px solid #32373c;
 }
 .user-info .detail code{
 	float: right;
@@ -233,6 +238,7 @@ h3 input{
 	margin-bottom: 20px;
 	border: 0;
 	width: 80%;
+	border-collapse: collapse;
 }
 .stats-wrap #stats td {
 	vertical-align: middle;
@@ -241,7 +247,7 @@ h3 input{
 .stats-wrap .big {
 	font-size: 18px;
 	font-weight: 100;
-	text-shadow: 1px 1px 0 rgba(255,255,255,1);
+	_text-shadow: 1px 1px 0 rgba(255,255,255,1);
 	display: inline-block;
 	width: 90px;
 	margin-right: 5px
@@ -250,7 +256,7 @@ h3 input{
 	line-height: 2.5em;
 	font-size: 22px;
 	font-weight: 700;
-	text-shadow: 1px 1px 0 rgba(255,255,255,1);
+	_text-shadow: 1px 1px 0 rgba(255,255,255,1);
 }
 .mailster-icon.client-desktop:before{
 	content: '\e811';
