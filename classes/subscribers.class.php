@@ -1147,7 +1147,7 @@ class MailsterSubscribers {
 
 		$subscriber_exists = $this->get_by_mail( $email );
 
-		if ( $subscriber_exists ) {
+		if ( ! $merge && $subscriber_exists ) {
 			return new WP_Error( 'subscriber_exists', esc_html__( 'Subscriber already exists', 'mailster' ) );
 		}
 
@@ -2949,7 +2949,7 @@ class MailsterSubscribers {
 			'status' => $status,
 			'referer' => apply_filters( 'mymail_user_register_referer', apply_filters( 'mailster_user_register_referer', $referer ) ),
 			'_lists' => $lists,
-		) );
+		), true );
 
 		if ( is_wp_error( $subscriber_id ) ) {
 

@@ -90,6 +90,8 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.1 =
 
+* fixed: Subscribers are correctly connected if WordPress User is added later
+
 = Version 2.4 =
 
 * new: Use over 900K photos from Unsplash
