@@ -21,56 +21,57 @@ class MailsterUpgrade {
 		global $pagenow;
 
 		$old_version = get_option( 'mailster_version' );
+		$version_match = $old_version == MAILSTER_VERSION;
 
-		if ( $old_version != MAILSTER_VERSION ) {
+		if ( ! $version_match ) {
 
 			if ( ! $old_version ) {
 				$old_version = get_option( 'mymail_version' );
 			}
 
-			$this->check_db_version();
-
+			// update db structure
+			if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
+				mailster()->dbstructure();
+			}
 		}
 
-		if ( mailster_option( 'update_required' ) ) {
+		if ( mailster_option( 'db_update_required' ) ) {
 
 			$db_version = get_option( 'mailster_dbversion' );
 
-			if ( version_compare( $db_version, MAILSTER_DBVERSION, '<' ) ) {
+			$redirectto = admin_url( 'admin.php?page=mailster_update' );
+			$update_msg = '<p><strong>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</strong></p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . esc_html__( 'Progress Update now', 'mailster' ) . '</a>';
 
-				$redirectto = admin_url( 'admin.php?page=mailster_update' );
-				$update_msg = '<p><strong>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</strong></p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . esc_html__( 'Progress Update now', 'mailster' ) . '</a>';
+			if ( 'update.php' == $pagenow ) {
 
-				if ( 'update.php' == $pagenow ) {
+				if ( isset( $_GET['success'] )
+					&& isset( $_GET['action'] ) && 'activate-plugin' == $_GET['action']
+					&& isset( $_GET['plugin'] ) && MAILSTER_SLUG == $_GET['plugin'] ) {
 
-					if ( isset( $_GET['success'] )
-						&& isset( $_GET['action'] ) && 'activate-plugin' == $_GET['action']
-						&& isset( $_GET['plugin'] ) && MAILSTER_SLUG == $_GET['plugin'] ) {
+					echo $update_msg;
 
-						echo $update_msg;
+				}
+			} else {
 
-					}
+				if ( isset( $_GET['page'] ) && $_GET['page'] == 'mailster_update' ) {
 				} else {
-
-					if ( isset( $_GET['page'] ) && $_GET['page'] == 'mailster_update' ) {
+					if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
+						wp_redirect( $redirectto );
+						exit;
 					} else {
-						if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
-							wp_redirect( $redirectto );
-							exit;
-						} else {
-							mailster_remove_notice( 'no_homepage' );
-							mailster_notice( $update_msg, 'error', true, 'update_required' );
-						}
+						mailster_remove_notice( 'no_homepage' );
+						mailster_notice( $update_msg, 'error', true, 'db_update_required' );
 					}
 				}
 			}
-		} elseif ( $old_version != MAILSTER_VERSION ) {
+		} elseif ( ! $version_match ) {
 
 			if ( version_compare( $old_version, MAILSTER_VERSION, '<' ) ) {
 				include MAILSTER_DIR . 'includes/updates.php';
 			}
 
 			update_option( 'mailster_version', MAILSTER_VERSION );
+			update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 		} elseif ( mailster_option( 'setup' ) ) {
 
@@ -80,8 +81,6 @@ class MailsterUpgrade {
 				exit;
 			}
 		} elseif ( mailster_option( 'welcome' ) ) {
-
-			$this->check_db_version();
 
 			if ( ! is_network_admin() &&
 				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_welcome' != $_GET['page'] ) ) {
@@ -1707,7 +1706,7 @@ class MailsterUpgrade {
 		delete_transient( 'mailster_cron_lock' );
 
 		update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
-		mailster_update_option( 'update_required', false );
+		mailster_update_option( 'db_update_required', false );
 
 		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_actions AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
 			echo "removed actions where's no campaign\n";
@@ -1775,16 +1774,6 @@ class MailsterUpgrade {
 		global $mailster_batch_update_output;
 
 		$mailster_batch_update_output[] = $content;
-
-	}
-
-	private function check_db_version() {
-
-		if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
-			mailster_update_option( 'update_required', true );
-		} else {
-			mailster_update_option( 'update_required', false );
-		}
 
 	}
 

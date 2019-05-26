@@ -1511,11 +1511,11 @@ class Mailster {
 
 				if ( deactivate_plugins( 'myMail/myMail.php', true, is_network_admin() ) ) {
 					mailster_notice( 'MyMail is now Mailster! The old version has been deactivated and can get removed!', 'error', false, 'warnings' );
-					mailster_update_option( 'update_required', true );
+					mailster_update_option( 'db_update_required', true );
 				}
 			} elseif ( get_option( 'mymail' ) ) {
 
-				mailster_update_option( 'update_required', true );
+				mailster_update_option( 'db_update_required', true );
 
 			} else {
 

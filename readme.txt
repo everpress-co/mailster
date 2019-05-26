@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.1 =
 
 * fixed: Subscribers are correctly connected if WordPress User is added later
+* improved: database update checks
 
 = Version 2.4 =
 
