@@ -131,6 +131,8 @@ class MailsterSettings {
 			'unsubscribe_notification_template' => 'notification.html',
 			'track_users' => false,
 			'do_not_track' => false,
+			'antiflood' => 10,
+			'reject_dep' => true,
 			'list_based_opt_in' => true,
 			'single_opt_out' => false,
 			'custom_field' => array(),
