@@ -1256,6 +1256,24 @@ class MailsterSettings {
 
 				break;
 
+				case 'check_mx':
+					if ( $old != $value ) {
+						if ( $value && ! function_exists( 'checkdnsrr' ) || ! checkdnsrr( 'google.com', 'MX' ) ) {
+							$this->add_settings_error( esc_html__( 'Your server is not able to do a DNS lookup. MX check disabled.', 'mailster' ), 'dkim' );
+							$value = false;
+						}
+					}
+				break;
+
+				case 'check_smtp':
+					if ( $old != $value ) {
+						if ( $value && ! mailster( 'security' )->smtp_check( 'hello@google.com' ) ) {
+							$this->add_settings_error( esc_html__( 'Your server is not able to validate via SMTP. SMTP check disabled.', 'mailster' ), 'dkim' );
+							$value = false;
+						}
+					}
+				break;
+
 			}
 
 			$options[ $id ] = $value;
