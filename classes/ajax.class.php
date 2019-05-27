@@ -1150,7 +1150,7 @@ class MailsterAjax {
 
 			$defaults = array(
 				'post_type' => $post_type,
-				'numberposts' => $post_count,
+				'posts_per_page' => $post_count,
 				'suppress_filters' => true,
 				'update_post_term_cache' => false,
 				'update_post_meta_cache' => false,
@@ -1209,11 +1209,9 @@ class MailsterAjax {
 			} else {
 
 				$args = apply_filters( 'mailster_get_post_list_args', $args );
-				$posts = get_posts( $args );
 				$query = new WP_Query( $args );
-
-				$post_counts = $query->post_count;
 				$posts = $query->posts;
+				$post_counts = $query->found_posts;
 
 				if ( $current_id && ( $current = get_post( $current_id ) ) ) {
 
