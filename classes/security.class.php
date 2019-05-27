@@ -9,8 +9,6 @@ class MailsterSecurity {
 		add_action( 'mailster_verify_subscriber', array( $this, 'verify_subscriber' ) );
 		add_action( 'mailster_add_subscriber', array( $this, 'flood' ) );
 
-
-
 	}
 
 
@@ -106,8 +104,8 @@ class MailsterSecurity {
 
 		// check Antiflood
 		if ( $timestamp = $this->is_flood( $ip ) ) {
-			$t = ($timestamp-time() > 60) ? human_time_diff( $timestamp ) : sprintf(esc_html__('%d seconds', 'mailster'), $timestamp-time());
-			return new WP_Error( 'error_antiflood', sprintf(esc_html__('Please wait %s', 'mailster'), $t), 'email' );
+			$t = ($timestamp -time() > 60) ? human_time_diff( $timestamp ) : sprintf( esc_html__( '%d seconds', 'mailster' ), $timestamp -time() );
+			return new WP_Error( 'error_antiflood', sprintf( esc_html__( 'Please wait %s', 'mailster' ), $t ), 'email' );
 		}
 
 		return true;
@@ -164,9 +162,9 @@ class MailsterSecurity {
 
 
 	public function flood( $subscriber_id ) {
-		if(!is_admin() && $time = mailster_option( 'antiflood' )){
+		if ( ! is_admin() && $time = mailster_option( 'antiflood' ) ) {
 			$ip = mailster_get_ip();
-			set_transient( 'mailster_ip_check_' . md5( NONCE_SALT.ip2long( $ip ) ), time()+$time, $time );
+			set_transient( 'mailster_ip_check_' . md5( NONCE_SALT . ip2long( $ip ) ), time() + $time, $time );
 		}
 
 		return $object;
@@ -179,7 +177,7 @@ class MailsterSecurity {
 			return false;
 		}
 
-		return get_transient( 'mailster_ip_check_' . md5( NONCE_SALT.ip2long( $ip ) ) );
+		return get_transient( 'mailster_ip_check_' . md5( NONCE_SALT . ip2long( $ip ) ) );
 
 	}
 
