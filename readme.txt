@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.1 =
 
+* fixed: duplication of forms working again
 * fixed: Subscribers are correctly connected if WordPress User is added later
 * improved: database update checks
 

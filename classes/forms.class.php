@@ -684,6 +684,8 @@ class MailsterForms {
 			unset( $form->added );
 			unset( $form->updated );
 			unset( $form->stylesheet );
+			unset( $form->ajax );
+			unset( $form->gdpr );
 			if ( empty( $form->style ) ) {
 				unset( $form->style );
 			}
@@ -700,6 +702,8 @@ class MailsterForms {
 				$this->update_fields( $new_id, $fields, $required, $error_msg );
 
 				do_action( 'mailster_form_duplicate', $id, $new_id );
+			} else {
+				mailster_notice( $new_id->get_error_message(), 'error', true );
 			}
 
 			return $new_id;
