@@ -7,6 +7,9 @@ class MailsterSecurity {
 
 		add_filter( 'plugins_loaded', array( &$this, 'init' ) );
 		add_action( 'mailster_verify_subscriber', array( $this, 'verify_subscriber' ) );
+		add_action( 'mailster_add_subscriber', array( $this, 'flood' ) );
+
+
 
 	}
 
@@ -64,7 +67,7 @@ class MailsterSecurity {
 
 		// check for email addresses
 		if ( $this->match( $email, mailster_option( 'blacklisted_emails' ) ) ) {
-			return new WP_Error( 'email', 'blacklisted_email', 'blacklisted' );
+			return new WP_Error( 'error_blacklisted', 'blacklisted_email', 'blacklisted' );
 		}
 
 		// check for white listed
@@ -74,38 +77,37 @@ class MailsterSecurity {
 
 		// check for domains
 		if ( $this->match( $domain, mailster_option( 'blacklisted_domains' ) ) ) {
-			return new WP_Error( 'blacklisted',  'blacklisted' , 'email' );
+			return new WP_Error( 'error_blacklisted',  'blacklisted' , 'email' );
 		}
 
 		// check DEP
 		if ( $this->match( $domain, $this->get_dep_domains( ) ) ) {
-			return new WP_Error( 'dep_error', 'dep_domain', 'email' );
+			return new WP_Error( 'error_dep', 'dep_domain', 'email' );
 		}
 
 		// check MX record
 		if ( mailster_option( 'check_mx' ) && function_exists( 'checkdnsrr' ) ) {
 			if ( ! checkdnsrr( $domain, 'MX' ) ) {
-				return new WP_Error( 'mx_error',  'mx_check', 'email' );
+				return new WP_Error( 'error_mx',  'mx_check', 'email' );
 			}
 		}
 
 		// check via SMTP server
 		if ( mailster_option( 'check_smtp' ) ) {
-
-			$valid = $this->smtp_check( $email );
-			if ( ! $valid ) {
-				return new WP_Error( 'smtp_error', 'smtpcheck', 'email' );
+			if ( ! $this->smtp_check( $email ) ) {
+				return new WP_Error( 'error_smtp', 'smtpcheck', 'email' );
 			}
 		}
 
 		// check via Akismet if enabled
-		if ( $this->is_akismet_block( $email, $ip, $_SERVER['HTTP_USER_AGENT'], $_SERVER['HTTP_REFERER'] ) ) {
-			return new WP_Error( 'aksimet', 'aksimet', 'email' );
+		if ( $this->is_akismet_block( $email, $ip ) ) {
+			return new WP_Error( 'error_aksimet', 'aksimet', 'email' );
 		}
 
 		// check Antiflood
-		if ( $this->is_flood( $ip ) ) {
-			return new WP_Error( 'dep_error', 'flood', 'email' );
+		if ( $timestamp = $this->is_flood( $ip ) ) {
+			$t = ($timestamp-time() > 60) ? human_time_diff( $timestamp ) : sprintf(esc_html__('%d seconds', 'mailster'), $timestamp-time());
+			return new WP_Error( 'error_antiflood', sprintf(esc_html__('Please wait %s', 'mailster'), $t), 'email' );
 		}
 
 		return true;
@@ -161,22 +163,23 @@ class MailsterSecurity {
 	}
 
 
+	public function flood( $subscriber_id ) {
+		if(!is_admin() && $time = mailster_option( 'antiflood' )){
+			$ip = mailster_get_ip();
+			set_transient( 'mailster_ip_check_' . md5( NONCE_SALT.ip2long( $ip ) ), time()+$time, $time );
+		}
+
+		return $object;
+	}
+
+
 	public function is_flood( $ip ) {
 
-		$time = mailster_option( 'antiflood' );
-
-		if ( ! $time ) {
+		if ( ! mailster_option( 'antiflood' ) ) {
 			return false;
 		}
 
-		$key = 'mailster_ip_check_' . md5( ip2long( $ip ) );
-
-		if ( ! ($set = get_transient( $key )) ) {
-			set_transient( $key, time(), $time );
-			return false;
-		}
-
-		return true;
+		return get_transient( 'mailster_ip_check_' . md5( NONCE_SALT.ip2long( $ip ) ) );
 
 	}
 
@@ -201,16 +204,19 @@ class MailsterSecurity {
 
 		$validator = new SMTPValidateEmail\Validator( $email, $from );
 		$smtp_results = $validator->validate();
-		$valid = (isset( $smtp_results[ $email ] ) && 1 == $smtp_results[ $email ]) || ! ! array_sum( $smtp_results['domains'][ $domain ]['mxs'] );
+		$valid = (isset( $smtp_results[ $email ] ) && 1 == $smtp_results[ $email ]) || array_sum( $smtp_results['domains'][ $domain ]['mxs'] );
 
-		return $valid;
+		return (bool) $valid;
 
 	}
 
-	function is_akismet_block( $email, $ip, $agent, $referrer ) {
+	function is_akismet_block( $email, $ip ) {
 		if ( ! class_exists( 'Akismet' ) ) {
 			return false;
 		}
+
+		$agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : null;
+		$referrer = wp_get_referer();
 
 		$response = Akismet::http_post(Akismet::build_query(array(
 			'blog' => home_url(),

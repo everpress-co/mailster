@@ -1055,11 +1055,11 @@ class MailsterSubscribers {
 		$entry = is_string( $entry ) ? array( 'email' => $entry ) : (array) $entry;
 
 		$entry = wp_parse_args( $entry, array(
-				'hash' => $this->hash( $entry['email'] ),
-				'added' => $now,
-				'signup' => $now,
-				'updated' => $now,
-				'referer' => mailster_get_referer(),
+			'hash' => $this->hash( $entry['email'] ),
+			'added' => $now,
+			'signup' => $now,
+			'updated' => $now,
+			'referer' => mailster_get_referer(),
 		) );
 
 		if ( isset( $entry['status'] ) && $entry['status'] == -1 ) {
