@@ -37,7 +37,6 @@ require_once MAILSTER_DIR . 'includes/3rdparty.php';
 require_once MAILSTER_DIR . 'classes/mailster.class.php';
 
 global $mailster;
-mailster_options();
 
 $mailster = new mailster();
 

@@ -94,6 +94,7 @@ Xaver Birsak – https://everpress.co
 * fixed: Subscribers are correctly connected if WordPress User is added later
 * fixed: picpicker only showed 8 recent files
 * fixed: unsubscribe auto responder works with list based subscriptions
+* improved: fixing broken settings automatically
 * improved: database update checks
 
 = Version 2.4 =
