@@ -93,6 +93,7 @@ Xaver Birsak – https://everpress.co
 * fixed: duplication of forms working again
 * fixed: Subscribers are correctly connected if WordPress User is added later
 * fixed: picpicker only showed 8 recent files
+* fixed: unsubscribe auto responder works with list based subscriptions
 * improved: database update checks
 
 = Version 2.4 =
