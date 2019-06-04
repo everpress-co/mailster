@@ -2145,7 +2145,13 @@ class Mailster {
 			}
 		}
 
-		$content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
+		$content_type = 'text/plain';
+		if ( mailster_option( 'respect_content_type' ) ) {
+			$content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
+			if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", $args['headers'] ) ) ) {
+				$content_type = 'text/html';
+			}
+		}
 
 		$template = mailster_option( 'default_template' );
 		$template = apply_filters( 'mailster_wp_mail_template', $template, $caller, $current_filter );
@@ -2154,8 +2160,8 @@ class Mailster {
 			$file = mailster_option( 'system_mail_template', 'notification.html' );
 			add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 		} else {
-			$file = false;
 			remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
+			$file = false;
 		}
 		$file = apply_filters( 'mymail_wp_mail_template_file', apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter ), $caller, $current_filter );
 
@@ -2183,6 +2189,8 @@ class Mailster {
 				$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
 				$message = wpautop( $message, true );
 			}
+		} else {
+			remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 		}
 
 		$placeholder = mailster( 'placeholder', $content );
@@ -2276,12 +2284,17 @@ class Mailster {
 			$headers = implode( "\r\n", $headers ) . "\r\n";
 		}
 
-		$content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
+		$content_type = 'text/plain';
+		if ( mailster_option( 'respect_content_type' ) ) {
+			$content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
+			if ( preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
+				$content_type = 'text/html';
+			}
+		}
 
 		if ( 'text/plain' == $content_type ) {
 
 			$message = $this->wp_mail_map_links( $message );
-
 			// only if content type is not html
 			if ( ! preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
 				$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
@@ -2312,9 +2325,8 @@ class Mailster {
 		if ( 'text/plain' == $content_type ) {
 			$file = ! is_null( $file ) ? $file : mailster_option( 'system_mail_template', 'notification.html' );
 			add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
-		} else {
-			remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 		}
+
 		$file = apply_filters( 'mymail_wp_mail_template_file', apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter ), $caller, $current_filter );
 
 		$mail = mailster( 'mail' );
@@ -2358,6 +2370,8 @@ class Mailster {
 		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $subject ) );
 
 		$success = (bool) $mail->send_notification( $message, $headline, $replace, false, $file, $template );
+
+		remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 
 		if ( ! $success ) {
 

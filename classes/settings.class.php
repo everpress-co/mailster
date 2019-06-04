@@ -80,6 +80,7 @@ class MailsterSettings {
 			'from' => $email,
 			'reply_to' => $email,
 			'send_offset' => 0,
+			'respect_content_type' => true,
 			'timezone' => false,
 			'embed_images' => false,
 			'track_opens' => true,
@@ -110,7 +111,6 @@ class MailsterSettings {
 			'share_services' => array(
 				'twitter',
 				'facebook',
-				'google',
 			),
 			'slug' => 'newsletter',
 			'slugs' => array(

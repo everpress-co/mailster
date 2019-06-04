@@ -71,6 +71,7 @@ jQuery(document).ready(function ($) {
 
 	$('.system_mail').on('change', function () {
 		$('[name="mailster_options[system_mail_template]"]').prop('disabled', $(this).val() == 0);
+		$('[name="mailster_options[respect_content_type]"]').prop('disabled', $(this).val() == 0);
 	});
 
 	$('#load_location_db').on('click', function () {

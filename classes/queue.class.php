@@ -493,7 +493,7 @@ class MailsterQueue {
 
 				$query_args = array(
 					'select' => array( 'subscribers.ID', "UNIX_TIMESTAMP ( FROM_UNIXTIME( actions_unsubscribe.timestamp ) + INTERVAL $offset ) AS autoresponder_timestamp" ),
-					'status' => array( 1,2 ),
+					'status' => array( 1, 2 ),
 					'unsubscribe' => -1,
 					'sent__not_in' => $campaign->ID,
 					'queue__not_in' => $campaign->ID,
