@@ -2475,6 +2475,8 @@ jQuery(document).ready(function ($) {
 				break;
 			default:
 				current.element.html(current.content);
+				//remove id to re trigger tinymce
+				current.element.find('single, multi').removeAttr('id');
 			}
 			close();
 			return false;
@@ -3258,9 +3260,7 @@ jQuery(document).ready(function ($) {
 			});
 
 			if (scroll) {
-				var offset = clone.offset().top + _container.offset().top - (_win.height() / 2) - clone.outerHeight();
-				offset = Math.max(_container.offset().top, offset);
-
+				var offset = clone.offset().top + _container.offset().top - (_win.height() / 2);
 				_scroll(offset);
 			}
 
