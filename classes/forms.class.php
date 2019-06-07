@@ -1308,7 +1308,8 @@ class MailsterForms {
 				$this->update_fields( $form_id, array(
 					'email' => esc_html__( 'Email', 'mailster' ),
 				));
-				$this->assign_lists( $form_id, 1 );
+				$list_id = mailster( 'lists' )->get_by_name( esc_html__( 'Default List', 'mailster' ), 'ID' );
+				$this->assign_lists( $form_id, $list_id );
 			}
 			$profile_form_id = $this->add( array(
 				'name' => esc_html__( 'Profile', 'mailster' ),
@@ -1322,7 +1323,8 @@ class MailsterForms {
 					'lastname' => esc_html__( 'Last Name', 'mailster' ),
 				));
 				mailster_update_option( 'profile_form', $profile_form_id );
-				$this->assign_lists( $profile_form_id, 1 );
+				$list_id = mailster( 'lists' )->get_by_name( esc_html__( 'Default List', 'mailster' ), 'ID' );
+				$this->assign_lists( $profile_form_id, $list_id );
 			}
 		}
 
