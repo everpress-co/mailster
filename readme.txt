@@ -96,6 +96,7 @@ Xaver Birsak – https://everpress.co
 * fixed: unsubscribe auto responder works with list based subscriptions
 * fixed: small JavaScript issues in the editor
 * improved: better support for third party email with content type text/html
+* improved: better checks for content related autoresponders
 * improved: fixing broken settings automatically
 * improved: database update checks
 
