@@ -2146,11 +2146,12 @@ class Mailster {
 		}
 
 		$content_type = 'text/plain';
+		$third_party_content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
+		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", $args['headers'] ) ) ) {
+			$third_party_content_type = 'text/html';
+		}
 		if ( mailster_option( 'respect_content_type' ) ) {
-			$content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
-			if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", $args['headers'] ) ) ) {
-				$content_type = 'text/html';
-			}
+			$content_type = $third_party_content_type;
 		}
 
 		$template = mailster_option( 'default_template' );
@@ -2183,7 +2184,7 @@ class Mailster {
 
 		if ( 'text/plain' == $content_type ) {
 
-			if ( apply_filters( 'mymail_wp_mail_htmlify', apply_filters( 'mailster_wp_mail_htmlify', true ) ) ) {
+			if ( apply_filters( 'mymail_wp_mail_htmlify', apply_filters( 'mailster_wp_mail_htmlify', true ) ) && 'text/html' != $third_party_content_type ) {
 				$message = $this->wp_mail_map_links( $message );
 				$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
 				$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
@@ -2285,18 +2286,19 @@ class Mailster {
 		}
 
 		$content_type = 'text/plain';
+		$third_party_content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
+		if ( preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
+			$third_party_content_type = 'text/html';
+		}
 		if ( mailster_option( 'respect_content_type' ) ) {
-			$content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
-			if ( preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
-				$content_type = 'text/html';
-			}
+			$content_type = $third_party_content_type;
 		}
 
 		if ( 'text/plain' == $content_type ) {
 
 			$message = $this->wp_mail_map_links( $message );
 			// only if content type is not html
-			if ( ! preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
+			if ( ! preg_match( '#content-type:(.*)text/html#i', $headers ) && 'text/html' != $third_party_content_type ) {
 				$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
 				$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
 				$message = wpautop( $message, true );
