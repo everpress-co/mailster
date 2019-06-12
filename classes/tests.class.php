@@ -498,6 +498,12 @@ class MailsterTests {
 			}
 		}
 
+		// reset auto increments
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_subscribers AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_forms AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_lists AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_links AUTO_INCREMENT = %d", 1 ) );
+
 	}
 	private function test_memory_limit() {
 		$max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );

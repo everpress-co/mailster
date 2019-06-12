@@ -14,12 +14,8 @@ $new_version = MAILSTER_VERSION;
 $texts = isset( $mailster_options['text'] ) && ! empty( $mailster_options['text'] ) ? $mailster_options['text'] : $mailster_texts;
 $show_update_notice = false;
 
-// update db structure
-mailster()->dbstructure();
-
 $default_options = mailster( 'settings' )->get_defaults();
 $default_texts = mailster( 'settings' )->get_default_texts();
-
 
 if ( $old_version ) {
 
@@ -578,8 +574,13 @@ if ( $old_version ) {
 
 		case '2.3.18':
 		case '2.3.19':
+
 			// no longer in use
 			delete_option( 'mailster_template_licenses' );
+			$mailster_options['welcome'] = true;
+
+		case '2.4':
+
 		default:
 
 			// reset translations
@@ -612,6 +613,7 @@ mailster_clear_cache( );
 
 // delete plugin hash
 delete_transient( 'mailster_hash' );
+
 
 // mailster_update_option('welcome', true);
 add_action( 'shutdown', array( 'UpdateCenterPlugin', 'clear_options' ) );
