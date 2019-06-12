@@ -17,7 +17,6 @@ $show_update_notice = false;
 $default_options = mailster( 'settings' )->get_defaults();
 $default_texts = mailster( 'settings' )->get_default_texts();
 
-
 if ( $old_version ) {
 
 	// remove any branch version from the string.
@@ -581,8 +580,6 @@ if ( $old_version ) {
 			$mailster_options['welcome'] = true;
 
 		case '2.4':
-
-			$mailster_options['db_update_required'] = false;
 
 		default:
 
