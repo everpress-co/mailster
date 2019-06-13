@@ -14,12 +14,8 @@ $new_version = MAILSTER_VERSION;
 $texts = isset( $mailster_options['text'] ) && ! empty( $mailster_options['text'] ) ? $mailster_options['text'] : $mailster_texts;
 $show_update_notice = false;
 
-// update db structure
-mailster()->dbstructure();
-
 $default_options = mailster( 'settings' )->get_defaults();
 $default_texts = mailster( 'settings' )->get_default_texts();
-
 
 if ( $old_version ) {
 
@@ -555,6 +551,8 @@ if ( $old_version ) {
 		case '2.3.12':
 		case '2.3.13':
 
+			// allow NULL values on one column
+			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_subscriber_meta CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 			$mailster_options['_flush_rewrite_rules'] = true;
 		case '2.3.14':
 
@@ -572,7 +570,20 @@ if ( $old_version ) {
 				$mailster_options['bounce_secure'] = 'ssl';
 			}
 
+		case '2.3.18':
+		case '2.3.19':
+
+			// no longer in use
+			delete_option( 'mailster_template_licenses' );
+			$mailster_options['welcome'] = true;
+
+		case '2.4':
+		case '2.4.1':
+
 		default:
+
+			// reset translations
+			update_option( 'mailster_translation', '' );
 
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
@@ -601,6 +612,7 @@ mailster_clear_cache( );
 
 // delete plugin hash
 delete_transient( 'mailster_hash' );
+
 
 // mailster_update_option('welcome', true);
 add_action( 'shutdown', array( 'UpdateCenterPlugin', 'clear_options' ) );

@@ -4,10 +4,6 @@ $now = time();
 
 $sent = $this->get_sent( $post->ID );
 
-$email = mailster( 'subscribers' )->get( 500 )->email;
-
-echo '<pre>' . print_r( $email, true ) . '</pre>';
-
 ?>
 
 <button type="button" class="button mailster_preflight" title="<?php esc_html_e( 'check your spam score', 'mailster' );?> (beta)">Preflight</button>

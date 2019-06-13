@@ -76,7 +76,7 @@ textarea{
 	width: 50%;
 	display: block;
 	border: 1px solid #D3D6DB;
-	background-color: #FFF;
+	_background-color: #FFF;
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-size: 40px 40px;
@@ -108,7 +108,6 @@ textarea{
 	width: 100%;
 	outline: none;
 	margin: 0 0 3px;
-	background-color: #fff;
 }
 #title_new{
 	padding: 3px 8px;
@@ -143,7 +142,10 @@ textarea{
 	box-sizing: border-box;
 	float: left;
 	width: 100%;
-
+}
+.dark-mode .form-order li{
+	border-color: #191f25;
+	background: #23282d;
 }
 .form-order a.field-remove{
 	top: 9px;
@@ -235,8 +237,12 @@ textarea{
 	border: 1px solid #ccc;
 }
 .form-order li:hover{
-	border: 1px solid #ccc;
-	background: #fdfdfd;
+	border-color: #ccc;
+	background-color: #fdfdfd;
+}
+.dark-mode .form-order li:hover{
+	border-color: #ccc;
+	background-color: #32373c;
 }
 .form-order li.ui-sortable-helper{
 	cursor: grabbing;
@@ -273,6 +279,9 @@ textarea{
 }
 #form-design-options ul li ul li{
 	padding-left: 10px;
+}
+#form-design-iframe{
+	background-color:#fff;
 }
 .designtab{
 	display: none;
@@ -320,26 +329,33 @@ textarea.embed-form-output{
 textarea.form-output{
 	height: 380px;
 }
-body fieldset{
+#form_form fieldset{
 	border: 1px solid #D3D6DB;
 	margin: 25px 25px 0 0;
 	padding: 10px 18px;
 	background: #fff;
 }
-body fieldset legend{
+.dark-mode #form_form fieldset{
+	border-color: #191f25;
+	background: #32373c;
+}
+#form_form fieldset legend{
 	font-size: 18px;
-	font-size: 400;
 	padding: 6px 12px 5px;
 	border: 1px solid #D3D6DB;
 	background: #fff;
 	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 }
-body fieldset fieldset{
+.dark-mode #form_form fieldset legend{
+	border-color: #191f25;
+	background: #32373c;
+}
+#form_form fieldset fieldset{
 	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 	margin: 5px 0 0;
 	border: 1px solid #e5e5e5;
 }
-body fieldset fieldset legend{
+#form_form fieldset fieldset legend{
 	font-size: 100;
 	font-size: 16px;
 }

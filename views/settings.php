@@ -17,6 +17,11 @@ $roles = $wp_roles->get_names();
 
 $timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
+if ( ! ($test_email = get_user_meta( $current_user->ID, 'mailster_test_email', true )) ) {
+	$test_email = $current_user->user_email;
+}
+$test_email = apply_filters( 'mailster_test_email', $test_email );
+
 
 ?>
 <?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>

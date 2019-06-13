@@ -1,7 +1,5 @@
 <?php
 
-$licensecode = isset( $licensecodes[ $slug ] ) ? $licensecodes[ $slug ] : '';
-
 $class = array( 'mailster-box' );
 if ( $data['update'] ) {
 	$class[] = 'update';
@@ -36,27 +34,11 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 		<?php if ( isset( $data['description'] ) ) : ?><p><?php echo $data['description'] ?></p><?php endif; ?>
 		</div>
 		<?php if ( ! $unsupported ) : ?>
-		<div class="licensecode">
-			<form action="edit.php?post_type=newsletter&page=mailster_templates&more" method="get">
-			<input type="hidden" name="post_type" = value="newsletter">
-			<input type="hidden" name="page" value="mailster_templates">
-			<input type="hidden" name="more" value="1">
-			<input type="hidden" name="action" value="license">
-			<input type="hidden" name="template" value="<?php echo $slug ?>">
-			<input type="text" name="license" class="widefat license" value="" placeholder="<?php esc_html_e( 'Enter Licensecode', 'mailster' ) ?>">
-			<?php wp_nonce_field( 'license-' . $slug, '_wpnonce', false );?>
-			<input type="submit" class="button save-license" value="<?php esc_html_e( 'save', 'mailster' ) ?>">
-			</form>
-		</div>
 		<div class="action-links">
 			<ul>
-				<?php if ( $data['is_free'] || ! empty( $licensecode ) ) : ?>
+				<?php if ( $data['is_free'] ) : ?>
 
 					<?php if ( ! $data['is_free'] ) : ?>
-
-						<li>
-							<a title="<?php esc_html_e( 'activate with licensecode', 'mailster' );?>" class="activate button" href="edit.php?post_type=newsletter&page=mailster_templates&action=license&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'license-' . $slug ) ?>" data-slug="<?php echo $slug ?>" data-license="<?php echo $licensecode ?>"> <?php esc_html_e( 'Change Code', 'mailster' );?></a>
-						</li>
 
 					<?php endif; ?>
 
@@ -86,10 +68,6 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 						</li>
 
 						<?php endif; ?>
-					<?php elseif ( ! empty( $data['endpoint'] ) ) : ?>
-						<li>
-							<a title="<?php esc_html_e( 'activate with licensecode', 'mailster' );?>" class="activate button" href="edit.php?post_type=newsletter&page=mailster_templates&action=license&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'license-' . $slug ) ?>" data-slug="<?php echo $slug ?>"><?php esc_html_e( 'Activate', 'mailster' );?></a>
-						</li>
 					<?php endif; ?>
 
 					<?php if ( isset( $data['envato_item_id'] ) && isset( $templates[ $slug ] ) ) : ?>

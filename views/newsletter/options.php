@@ -4,16 +4,11 @@ $editable = ! in_array( $post->post_status, array( 'active', 'finished' ) );
 if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
-
 ?>
 <?php if ( $editable ) : ?>
 
 	<span class="spinner" id="colorschema-ajax-loading"></span>
-	<p>
-		<label>
-		<input name="mailster_data[embed_images]" id="mailster_data_embed_images" value="1" type="checkbox" <?php echo ( isset( $this->post_data['embed_images'] ) ) ? ( ( $this->post_data['embed_images'] ) ? 'checked' : '' ) : ( mailster_option( 'embed_images' ) ? 'checked' : '' ) ?>> <?php esc_html_e( 'Embed Images', 'mailster' ) ?>
-		</label>
-	</p>
+	<input name="mailster_data[embed_images]" id="mailster_data_embed_images" value="<?php echo (isset( $this->post_data['embed_images'] ) ? $this->post_data['embed_images'] : mailster_option( 'embed_images' )) ?>" type="hidden">
 	<p>
 		<label>
 		<input name="mailster_data[track_opens]" id="mailster_data_track_opens" value="1" type="checkbox" <?php echo ( isset( $this->post_data['track_opens'] ) ) ? ( ( $this->post_data['track_opens'] ) ? 'checked' : '' ) : ( mailster_option( 'track_opens' ) ? 'checked' : '' ) ?>> <?php esc_html_e( 'Track Opens', 'mailster' ) ?>
@@ -103,64 +98,7 @@ foreach ( $current_colors as $i => $color ) {
 		</ul>
 		<?php endforeach; ?>
 	<?php endif; ?>
-
-	<?php /*
-	?>
-
-	<hr>
-	<label><?php esc_html_e( 'Background', 'mailster' ) ?></label><br>
-
-	<?php $value = ( isset( $this->post_data['background'] ) && $this->post_data['template'] == $this->get_template() ) ? $this->post_data['background'] : '';
-	?>
-	<input type="hidden" id="mailster_background" name="mailster_data[background]" value="<?php echo $value ?>">
-	<ul class="backgrounds">
-		<li><a style="background-image:<?php echo ( 'none' == $value || empty( $value ) ) ? 'none' : 'url(' . $value . ')' ?>"></a>
-		<?php
-
-		$custombgs = MAILSTER_UPLOAD_DIR . '/backgrounds';
-		$custombgsuri = MAILSTER_UPLOAD_URI . '/backgrounds';
-
-		if ( ! is_dir( $custombgs ) ) {
-			wp_mkdir_p( $custombgs );
-		}
-
-		if ( $files = list_files( $custombgs ) ) : ?>
-			<ul data-base="<?php echo $custombgsuri ?>">
-				<li>
-					<a title="<?php esc_html_e( 'none', 'mailster' ) ?>" data-file="" <?php if ( ! $value ) {echo ' class="active"'; }?>><?php esc_html_e( 'none', 'mailster' ) ?></a>
-				</li>
-
-		<?php
-			sort( $files );
-
-		foreach ( $files as $file ) :
-
-			if ( ! in_array( strrchr( $file, '.' ), array( '.png', '.gif', '.jpg', '.jpeg' ) ) ) {
-				continue;
-			}
-
-			$value = ( isset( $this->post_data['background'] ) ) ? $this->post_data['background'] : false;
-			$file = str_replace( $custombgs, '', $file );
-			?>
-			<li>
-			<a title="<?php echo basename( $file ); ?>" data-file="<?php echo $file ?>" style="background-image:url(<?php echo $custombgsuri . $file ?>)"<?php if ( $custombgsuri . $file == $value ) {	echo ' class="active"'; } ?>>&nbsp;</a>
-			</li>
-			<?php endforeach; ?>
-			</ul>
-		<?php endif; ?>
-
-		</li>
-
-	</ul>
-	<p class="howto tiny"><?php esc_html_e( 'background images are not displayed on all clients!', 'mailster' ) ?></p>
-
-	<?php */ ?>
-
 <?php else : ?>
-
-	<p>
-		<?php if ( $this->post_data['embed_images'] ) { ?>&#10004;<?php } else { ?>&#10005;<?php }?> <?php esc_html_e( 'Embedded Images', 'mailster' ) ?>
-	</p>
 	<p>
 		<?php if ( $this->post_data['track_opens'] ) { ?>&#10004;<?php } else { ?>&#10005;<?php }?> <?php esc_html_e( 'Track Opens', 'mailster' ) ?>
 	</p>
@@ -175,17 +113,4 @@ foreach ( $current_colors as $i => $color ) {
 		<li data-hex="<?php echo $color ?>" style="background-color:<?php echo $color ?>"></li>
 	<?php endforeach; ?>
 	</ul>
-	<?php /*
-	?>
-	<?php if ( $this->post_data['background'] ) {
-		$file = $this->post_data['background'];
-		?>
-	<hr>
-	<label><?php esc_html_e( 'Background', 'mailster' ) ?></label><br>
-	<ul class="backgrounds finished">
-		<li><a title="<?php echo basename( $file ); ?>" style="background-image:url(<?php echo $file ?>)"></a></li>
-	</ul>
-	<?php } ?>
-	<?php */ ?>
-
 <?php endif; ?>

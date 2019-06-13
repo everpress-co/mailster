@@ -122,7 +122,7 @@ class MailsterUserAgent {
 			$object->version = '';
 			$object->type = 'webmail';
 
-		} else if ( preg_match( '# YahooMailProxy#i', $this->string, $hit ) ) {
+		} else if ( preg_match( '#YahooMailProxy#i', $this->string, $hit ) ) {
 			$object->client = 'Yahoo';
 			$object->version = '';
 			$object->type = 'webmail';

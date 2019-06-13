@@ -32,7 +32,7 @@
 		<div class="tests-output"></div>
 	</div>
 	<div class="subtab" id="subtab-textoutput">
-		<div class="tests-textoutput-wrap"><textarea class="tests-textoutput" data-pretext="<?php echo esc_attr( $textoutput ) ?>"></textarea></div>
+		<div class="tests-textoutput-wrap"><textarea class="tests-textoutput code" data-pretext="<?php echo esc_attr( $textoutput ) ?>"></textarea></div>
 		<a class="clipboard" data-clipboard-target=".tests-textoutput"><?php esc_html_e( 'Copy Info to Clipboard', 'mailster' ) ?></a>
 	</div>
 	<div class="subtab" id="subtab-systeminfo">

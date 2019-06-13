@@ -2,10 +2,10 @@
 /*
 Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
-Description: Advanced Newsletter Plugin for WordPress. Create, Send and Track your Newsletter Campaigns
-Version: 2.3.19
+Description: The Ultimate Newsletter Plugin.
+Version: 2.4.2
 Author: EverPress
-Author URI: https://everpress.io
+Author URI: https://everpress.co
 Text Domain: mailster
 */
 
@@ -13,9 +13,9 @@ if ( defined( 'MAILSTER_VERSION' ) || ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
-define( 'MAILSTER_VERSION', '2.3.19' );
+define( 'MAILSTER_VERSION', '2.4.2' );
 define( 'MAILSTER_BUILT', 0000000000 );
-define( 'MAILSTER_DBVERSION', 20170201 );
+define( 'MAILSTER_DBVERSION', 20190522 );
 define( 'MAILSTER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MAILSTER_URI', plugin_dir_url( __FILE__ ) );
 define( 'MAILSTER_FILE', __FILE__ );
@@ -37,13 +37,12 @@ require_once MAILSTER_DIR . 'includes/3rdparty.php';
 require_once MAILSTER_DIR . 'classes/mailster.class.php';
 
 global $mailster;
-mailster_options();
 
 $mailster = new mailster();
 
 if ( ! $mailster->wp_mail && mailster_option( 'system_mail' ) == 1 ) {
 
-	function wp_mail( $to, $subject, $message, $headers = '', $attachments = array() ) {
-		return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments );
+	function wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $file = null, $template = null ) {
+		return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments, $file, $template );
 	}
 }

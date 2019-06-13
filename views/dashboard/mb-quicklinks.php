@@ -13,7 +13,10 @@ $forms = count( mailster( 'forms' )->get_all( ) );
 ?>
 <dl class="mailster-icon mailster-icon-newsletter-outline">
 	<dt><a class="" href="edit.php?post_type=newsletter"><?php esc_html_e( 'Campaigns', 'mailster' ) ?><a></dt>
-	<dd><span class="version"><?php echo number_format_i18n( $campaigns ) . ' ' . esc_html__( _n( 'Campaign', 'Campaigns', $campaigns, 'mailster' ) )  ?><?php echo $autoresponder ? ', ' . number_format_i18n( $autoresponder ) . ' ' . esc_html__( _n( 'Autoresponder', 'Autoresponders', $autoresponder, 'mailster' ) ) : '' ?></span></dd>
+	<dd><span class="version">
+		<?php echo number_format_i18n( $campaigns ) . ' ' . esc_html__( _n( 'Campaign', 'Campaigns', $campaigns, 'mailster' ) )  ?>
+		<?php echo $autoresponder ? ', ' . number_format_i18n( $autoresponder ) . ' ' . esc_html__( _n( 'Autoresponder', 'Autoresponders', $autoresponder, 'mailster' ) ) : '' ?></span>
+	</dd>
 	<dd>
 		<a href="edit.php?post_type=newsletter"><?php esc_html_e( 'View', 'mailster' ) ?></a> |
 		<a href="post-new.php?post_type=newsletter"><?php esc_html_e( 'Create Campaign', 'mailster' ) ?></a> |

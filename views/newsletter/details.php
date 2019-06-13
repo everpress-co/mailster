@@ -44,6 +44,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 <?php
 	$totals = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $this->get_sent( $post->ID );
 	$sent = $this->get_sent( $post->ID );
+	$deleted = $this->get_deleted( $post->ID );
 
 	$errors = $this->get_errors( $post->ID );
 
@@ -94,16 +95,17 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 		<label class="show-bounces"><span class="verybold hb-bounces"><?php echo number_format_i18n( $bounces ); ?></span> <?php echo _nx( 'bounce', 'bounces', $bounces, 'in pie chart', 'mailster' ) ?></label>
 	</li>
 </ul>
-
 <table>
 
 	<tr>
 	<th><?php ( 'autoresponder' == $post->post_status ) ? esc_html_e( 'Total Sent', 'mailster' ) : esc_html_e( 'Total Recipients', 'mailster' ) ?></th>
 	<td class="nopadding"> <span class="big hb-totals"><?php echo number_format_i18n( $totals ); ?></span>
-	<?php if ( ! in_array( $post->post_status, array( 'finished', 'autoresponder' ) ) ) {
-		echo '(<span class="hb-sent">' . number_format_i18n( $sent ) . '</span> ' . esc_html__( 'sent', 'mailster' ) . ')';
-}
-	?>
+	<?php if ( ! in_array( $post->post_status, array( 'finished', 'autoresponder' ) ) ) :
+		echo '<span class="hb-sent">' . number_format_i18n( $sent ) . '</span> ' . esc_html__( 'sent', 'mailster' ) . '';
+	endif; ?>
+	<?php if ( $deleted ) :
+		echo '&ndash; <span class="hb-deleted">' . number_format_i18n( $deleted ) . '</span> ' . esc_html__( 'deleted', 'mailster' ) . '';
+	endif; ?>
 	<?php if ( ! empty( $sent ) ) : ?>
 		<a href="#" id="show_recipients" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ) ?></a>
 		<span class="spinner" id="recipients-ajax-loading"></span><div class="ajax-list" id="recipients-list"></div>
