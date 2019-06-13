@@ -684,6 +684,8 @@ class MailsterForms {
 			unset( $form->added );
 			unset( $form->updated );
 			unset( $form->stylesheet );
+			unset( $form->ajax );
+			unset( $form->gdpr );
 			if ( empty( $form->style ) ) {
 				unset( $form->style );
 			}
@@ -700,6 +702,8 @@ class MailsterForms {
 				$this->update_fields( $new_id, $fields, $required, $error_msg );
 
 				do_action( 'mailster_form_duplicate', $id, $new_id );
+			} else {
+				mailster_notice( $new_id->get_error_message(), 'error', true );
 			}
 
 			return $new_id;
@@ -1304,7 +1308,8 @@ class MailsterForms {
 				$this->update_fields( $form_id, array(
 					'email' => esc_html__( 'Email', 'mailster' ),
 				));
-				$this->assign_lists( $form_id, 1 );
+				$list_id = mailster( 'lists' )->get_by_name( esc_html__( 'Default List', 'mailster' ), 'ID' );
+				$this->assign_lists( $form_id, $list_id );
 			}
 			$profile_form_id = $this->add( array(
 				'name' => esc_html__( 'Profile', 'mailster' ),
@@ -1318,7 +1323,8 @@ class MailsterForms {
 					'lastname' => esc_html__( 'Last Name', 'mailster' ),
 				));
 				mailster_update_option( 'profile_form', $profile_form_id );
-				$this->assign_lists( $profile_form_id, 1 );
+				$list_id = mailster( 'lists' )->get_by_name( esc_html__( 'Default List', 'mailster' ), 'ID' );
+				$this->assign_lists( $profile_form_id, $list_id );
 			}
 		}
 

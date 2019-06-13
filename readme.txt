@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.2.1
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,9 +88,20 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.2 =
+
+* fixed: remember usage tracking opt in setting
+
 = Version 2.4.1 =
 
+* fixed: duplication of forms working again
 * fixed: Subscribers are correctly connected if WordPress User is added later
+* fixed: picpicker only showed 8 recent files
+* fixed: unsubscribe auto responder works with list based subscriptions
+* fixed: small JavaScript issues in the editor
+* improved: better support for third party email with content type text/html
+* improved: better checks for content related autoresponders
+* improved: fixing broken settings automatically
 * improved: database update checks
 
 = Version 2.4 =

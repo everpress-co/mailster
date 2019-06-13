@@ -17,7 +17,6 @@ $show_update_notice = false;
 $default_options = mailster( 'settings' )->get_defaults();
 $default_texts = mailster( 'settings' )->get_default_texts();
 
-
 if ( $old_version ) {
 
 	// remove any branch version from the string.
@@ -552,8 +551,6 @@ if ( $old_version ) {
 		case '2.3.12':
 		case '2.3.13':
 
-		case '2.4':
-
 			// allow NULL values on one column
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_subscriber_meta CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 			$mailster_options['_flush_rewrite_rules'] = true;
@@ -581,8 +578,7 @@ if ( $old_version ) {
 			$mailster_options['welcome'] = true;
 
 		case '2.4':
-
-			$mailster_options['db_update_required'] = false;
+		case '2.4.1':
 
 		default:
 

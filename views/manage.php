@@ -81,33 +81,27 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 			$roles = $wp_roles->get_names();
 
 			if ( ! empty( $roles ) ) : ?>
-									<div id="wordpress-user-roles">
-							<h4><?php esc_html_e( 'Import WordPress users with following roles', 'mailster' );?></h4>
-							<p><label><input type="checkbox" class="wordpress-users-toggle" checked> <?php esc_html_e( 'toggle all', 'mailster' );?></label></p>
-							<ul>
-							<?php
-							$i = 0;
-							foreach ( $roles as $role => $name ) {
-								if ( ! ( $i % 8 ) && $i ) {
-									echo '</ul><ul>';
-								}
-
-										?>
-												<li><label><input type="checkbox" name="roles[]" value="<?php echo $role ?>" checked> <?php echo $name ?></label></li>
-									<?php
-									$i++;
-							}
-						?>
-							</ul>
-							<ul>
-								<li><label><input type="checkbox" name="no_role" value="1" checked> <?php esc_html_e( 'users without a role', 'mailster' );?></label></li>
+			<div id="wordpress-user-roles">
+				<h4><?php esc_html_e( 'Import WordPress users with following roles', 'mailster' );?></h4>
+				<p><label><input type="checkbox" class="wordpress-users-toggle" checked> <?php esc_html_e( 'toggle all', 'mailster' );?></label></p>
+				<ul>
+				<?php
+				$i = 0;
+				foreach ( $roles as $role => $name ) {
+					if ( ! ( $i % 8 ) && $i ) {
+						echo '</ul><ul>';
+					}
+					?><li><label><input type="checkbox" name="roles[]" value="<?php echo $role ?>" checked> <?php echo $name ?></label></li><?php
+					$i++;
+				} ?>
+				</ul>
+				<ul>
+					<li><label><input type="checkbox" name="no_role" value="1" checked> <?php esc_html_e( 'users without a role', 'mailster' );?></label></li>
 				</ul>
 			</div>
 			<div id="wordpress-user-meta">
-				<?php
-						$meta_values = mailster( 'helper' )->get_wpuser_meta_fields();
-						?>
-							<h4><?php esc_html_e( 'Use following meta values', 'mailster' );?></h4>
+				<?php $meta_values = mailster( 'helper' )->get_wpuser_meta_fields(); ?>
+				<h4><?php esc_html_e( 'Use following meta values', 'mailster' );?></h4>
 				<p><label><input type="checkbox" class="wordpress-users-toggle"> <?php esc_html_e( 'toggle all', 'mailster' );?></label></p>
 				<ul>
 				<?php
@@ -115,15 +109,11 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					if ( ! ( $i % 8 ) && $i ) {
 						echo '</ul><ul>';
 					}
-
-					?>
-						<li><label><input type="checkbox" name="meta_values[]" value="<?php echo $meta_value ?>"> <?php echo $meta_value ?></label></li>
-					<?php
-				}
-						?>
-							</ul>
-						</div>
-						<?php endif; ?>
+					?><li><label><input type="checkbox" name="meta_values[]" value="<?php echo esc_attr( $meta_value ) ?>"> <?php echo esc_html( $meta_value ) ?></label></li><?php
+				} ?>
+				</ul>
+			</div>
+			<?php endif; ?>
 			<div class="clearfix clear">
 				<input type="submit" class="button button-primary button-large" value="<?php esc_html_e( 'Next Step', 'mailster' );?> &#x2192;">
 			</div>

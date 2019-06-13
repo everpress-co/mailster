@@ -440,7 +440,7 @@ class MailsterQueue {
 
 				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null;
 
-				$args = array(
+				$query_args = array(
 					'select' => array(
 						'subscribers.ID',
 						"UNIX_TIMESTAMP ( FROM_UNIXTIME( IFNULL(lists_subscribers.added, IF(subscribers.confirm, subscribers.confirm, subscribers.signup)) ) + INTERVAL $offset ) AS autoresponder_timestamp",
@@ -457,17 +457,19 @@ class MailsterQueue {
 				);
 
 				if ( $grace_period ) {
-					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
+					$query_args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
 				}
 
 				if ( $ignore_lists ) {
-					$args['where'][] = '(subscribers.signup >= ' . (int) $meta['timestamp'] . ')';
+					$query_args['where'][] = '(subscribers.signup >= ' . (int) $meta['timestamp'] . ')';
 				} else {
-					$args['where'][] = '(subscribers.signup >= ' . (int) $meta['timestamp'] . ' OR lists_subscribers.added >= ' . (int) $meta['timestamp'] . ')';
-					$args['where'][] = 'lists_subscribers.added != 0';
+					$query_args['where'][] = '(subscribers.signup >= ' . (int) $meta['timestamp'] . ' OR lists_subscribers.added >= ' . (int) $meta['timestamp'] . ')';
+					$query_args['where'][] = 'lists_subscribers.added != 0';
 				}
 
-				$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
+				$query_args = apply_filters( 'mailster_autoresponder_hook_args', $query_args, $campaign->ID );
+
+				$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign->ID );
 
 				if ( ! empty( $subscribers ) ) {
 
@@ -489,9 +491,9 @@ class MailsterQueue {
 
 				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null;
 
-				$args = array(
+				$query_args = array(
 					'select' => array( 'subscribers.ID', "UNIX_TIMESTAMP ( FROM_UNIXTIME( actions_unsubscribe.timestamp ) + INTERVAL $offset ) AS autoresponder_timestamp" ),
-					'status' => 2,
+					'status' => array( 1, 2 ),
 					'unsubscribe' => -1,
 					'sent__not_in' => $campaign->ID,
 					'queue__not_in' => $campaign->ID,
@@ -502,10 +504,12 @@ class MailsterQueue {
 				);
 
 				if ( $grace_period ) {
-					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
+					$query_args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
 				}
 
-				$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
+				$query_args = apply_filters( 'mailster_autoresponder_hook_args', $query_args, $campaign->ID );
+
+				$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign->ID );
 
 				if ( ! empty( $subscribers ) ) {
 
@@ -527,7 +531,7 @@ class MailsterQueue {
 
 				$conditions = ! empty( $meta['list_conditions'] ) ? $meta['list_conditions'] : null;
 
-				$args = array(
+				$query_args = array(
 					'select' => array( 'subscribers.ID' ),
 					'sent__not_in' => $campaign->ID,
 					'queue__not_in' => $campaign->ID,
@@ -539,24 +543,26 @@ class MailsterQueue {
 
 				switch ( $autoresponder_meta['followup_action'] ) {
 					case 1:
-						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_sent_1_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
-						$args['sent'] = $campaign->post_parent;
+						$query_args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_sent_1_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
+						$query_args['sent'] = $campaign->post_parent;
 						break;
 					case 2:
-						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_open_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
-						$args['open'] = $campaign->post_parent;
+						$query_args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_open_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
+						$query_args['open'] = $campaign->post_parent;
 						break;
 					case 3:
-						$args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_click_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
-						$args['click'] = $campaign->post_parent;
+						$query_args['select'][] = "UNIX_TIMESTAMP( FROM_UNIXTIME ( actions_click_0_0.timestamp) + INTERVAL $offset ) AS autoresponder_timestamp";
+						$query_args['click'] = $campaign->post_parent;
 						break;
 				}
 
 				if ( $grace_period ) {
-					$args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
+					$query_args['having'][] = 'autoresponder_timestamp >= ' . ($now - $grace_period);
 				}
 
-				$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
+				$query_args = apply_filters( 'mailster_autoresponder_hook_args', $query_args, $campaign->ID );
+
+				$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign->ID );
 
 				if ( ! empty( $subscribers ) ) {
 

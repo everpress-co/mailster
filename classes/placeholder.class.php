@@ -146,7 +146,7 @@ class MailsterPlaceholder {
 	public function has_content( $check_for_modules = false ) {
 		$html = trim( $this->get_content( false ) );
 		if ( $check_for_modules ) {
-			return preg_match( '/<\/module>/', $html );
+			return preg_match( '/<module[^>]*?data-tag="(.*?)"/', $html );
 		}
 		return ! empty( $html );
 	}

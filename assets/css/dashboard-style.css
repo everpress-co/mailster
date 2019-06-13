@@ -230,13 +230,12 @@
 	content: "\e833";
 	display: block;
 	font-size: 70px;
-	transform: translateY(-68%);
 }
 .mailster-dashboard .is-verified .postbox .inside .locked h2:before{
 	content: "\f13e";
 }
 .mailster-dashboard .postbox .inside .locked h2{
-	transform: translateY(140%);
+	transform: translateY(40%);
 	margin: 0 auto;
 	max-width: 80%;
 	padding: 0;

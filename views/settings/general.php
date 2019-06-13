@@ -54,14 +54,20 @@
 		</td>
 	</tr>
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ) ?>
-		<p class="description"><?php esc_html_e( 'decide how Mailster uses the wp_mail function', 'mailster' );?></p></th>
+		<th scope="row"><?php esc_html_e( 'System Mails', 'mailster' ) ?><a class="infolink external" href="https://kb.mailster.co/how-can-i-use-mailster-with-the-wp_mail-function/"></a>
+		<p class="description"><?php esc_html_e( 'Decide how Mailster uses the wp_mail function.', 'mailster' );?></p>
+		</th>
 		<td>
 		<p><label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="0" <?php checked( ! mailster_option( 'system_mail' ) ) ?>> <?php esc_html_e( 'Do not use Mailster for outgoing WordPress mails', 'mailster' ) ?></label></p>
 		<p><label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="1" <?php checked( mailster_option( 'system_mail' ) == 1 ) ?>> <?php esc_html_e( 'Use Mailster for all outgoing WordPress mails', 'mailster' ) ?></label><br>
 			<label><input type="radio" name="mailster_options[system_mail]" class="system_mail" value="template" <?php checked( mailster_option( 'system_mail' ) == 'template' ) ?>> <?php esc_html_e( 'Use only the template for all outgoing WordPress mails', 'mailster' ) ?></label></p>
 		<p>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' );?>
-		<?php mailster( 'helper' )->notifcation_template_dropdown( mailster_option( 'system_mail_template', 'notification.html' ), 'mailster_options[system_mail_template]', ! mailster_option( 'system_mail' ) ); ?>
+		<?php mailster( 'helper' )->notifcation_template_dropdown( mailster_option( 'system_mail_template', 'notification.html' ), 'mailster_options[system_mail_template]', ! mailster_option( 'system_mail' ) ); esc_html_e( 'and', 'mailster' );?>
+			<select name="mailster_options[respect_content_type]" <?php if ( ! mailster_option( 'system_mail' ) ) {echo 'disabled';} ?>>
+				<option value="0" <?php selected( ! mailster_option( 'respect_content_type' ) ) ?>><?php esc_html_e( 'ignore', 'mailster' ) ?></option>
+				<option value="1" <?php selected( mailster_option( 'respect_content_type' ) ) ?>><?php esc_html_e( 'respect', 'mailster' ) ?></option>
+			</select>
+			<?php esc_html_e( 'third party content type settings.', 'mailster' ) ?>
 		</p>
 		</td>
 	</tr>
