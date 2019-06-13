@@ -88,6 +88,10 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.2 =
+
+* fixed: remember usage tracking opt in setting
+
 = Version 2.4.1 =
 
 * fixed: duplication of forms working again
