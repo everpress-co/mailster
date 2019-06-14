@@ -723,6 +723,7 @@ class MailsterPlaceholder {
 						$original = isset( $query['o'] ) ? ! ! ( $query['o'] ) : false;
 						$post_type = str_replace( '_image', '', $parts[0] );
 						$is_post = $post_type != $parts[0];
+						$is_random = null;
 						$org_src = false;
 
 						if ( $is_post ) {
@@ -734,8 +735,9 @@ class MailsterPlaceholder {
 							$term_ids = explode( ';', $extra[0] );
 							$fallback_id = isset( $extra[1] ) ? (int) $extra[1] : mailster_option( 'fallback_image' );
 							$post_id_or_identifier = array_shift( $term_ids );
+							$is_random = 0 === strpos( $post_id_or_identifier, '~' );
 
-							if ( 0 === strpos( $post_id_or_identifier, '~' ) ) {
+							if ( $is_random ) {
 
 								$post = mailster()->get_random_post( substr( $post_id_or_identifier, 1 ), $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
@@ -833,9 +835,9 @@ class MailsterPlaceholder {
 							mailster_cache_set( 'mailster_' . $querystring, $replace_to );
 
 						} else {
-
-							$replace_to = str_replace( 'tag=' . $query['tag'], 'tag=' . $post_type . '_image:' . $post->ID, $search );
-
+							if ( $post && ! $is_random ) {
+								$replace_to = str_replace( 'tag=' . $query['tag'], 'tag=' . $post_type . '_image:' . $post->ID, $search );
+							}
 						}
 					}
 

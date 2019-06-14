@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.2 =
 
 * fixed: remember usage tracking opt in setting
+* fixed: images from dynamic random post type in autoresponders
 
 = Version 2.4.1 =
 
