@@ -845,11 +845,26 @@ class Mailster {
 							continue;
 						}
 
-						$tax_query[] = array(
-							'taxonomy' => $taxonomies[ $i ],
-							'field' => 'id',
-							'terms' => explode( ',', $term_ids[ $i ] ),
-						);
+						$terms = explode( ',', $term_ids[ $i ] );
+
+						$include = array_filter( $terms, function ( $v ) { return $v >= 0; } );
+						$exclude = array_filter( $terms, function ( $v ) { return $v < 0; } );
+
+						if ( ! empty( $include ) ) {
+							$tax_query[] = array(
+								'taxonomy' => $taxonomies[ $i ],
+								'field' => 'id',
+								'terms' => $include,
+							);
+						}
+						if ( ! empty( $exclude ) ) {
+							$tax_query[] = array(
+								'taxonomy' => $taxonomies[ $i ],
+								'field' => 'id',
+								'terms' => $exclude,
+								'operator' => 'NOT IN',
+							);
+						}
 					}
 
 					if ( ! empty( $tax_query ) ) {
