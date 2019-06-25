@@ -2,7 +2,7 @@
 
 class MailsterMail {
 
-	public $embed_images = true;
+	public $embed_images = null;
 	public $headers = array();
 	public $content = '';
 	public $plaintext = '';

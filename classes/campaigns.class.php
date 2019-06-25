@@ -1472,7 +1472,6 @@ class MailsterCampaigns {
 				$meta['attachments'] = array();
 			}
 
-			$meta['embed_images'] = isset( $postdata['embed_images'] ) && $postdata['embed_images'];
 			$meta['track_opens'] = isset( $postdata['track_opens'] );
 			$meta['track_clicks'] = isset( $postdata['track_clicks'] );
 
@@ -1898,7 +1897,7 @@ class MailsterCampaigns {
 			$_meta = array( $key => $value );
 		}
 
-		$nullvalues = array( 'timezone', 'embed_images', 'track_opens', 'track_clicks', 'ignore_lists', 'autoplaintext', 'auto_post_thumbnail', 'webversion' );
+		$nullvalues = array( 'timezone', 'track_opens', 'track_clicks', 'ignore_lists', 'autoplaintext', 'auto_post_thumbnail', 'webversion' );
 
 		foreach ( $_meta as $k => $v ) {
 			// allowed NULL values
@@ -1951,7 +1950,6 @@ class MailsterCampaigns {
 			'list_conditions' => null,
 			'head' => null,
 			'colors' => null,
-			'embed_images' => mailster_option( 'embed_images' ),
 			'track_opens' => mailster_option( 'track_opens' ),
 			'track_clicks' => mailster_option( 'track_clicks' ),
 			'autoplaintext' => true,
@@ -3837,7 +3835,7 @@ class MailsterCampaigns {
 		$mail->reply_to = $campaign_meta['reply_to'];
 		$mail->bouncemail = mailster_option( 'bounce' );
 		$mail->preheader = $campaign_meta['preheader'];
-		$mail->embed_images = $campaign_meta['embed_images'];
+		$mail->embed_images = mailster_option( 'embed_images' );
 
 		$mail->add_tracking_image = $track || $campaign_meta['track_opens'];
 		$mail->hash = $subscriber->hash;

@@ -94,6 +94,7 @@ Xaver Birsak – https://everpress.co
 * fixed: remember usage tracking opt in setting
 * fixed: correctly redirect after campaign duplication
 * fixed: images from dynamic random post type in autoresponders
+* fixed: deprecated embed option
 
 = Version 2.4.1 =
 
