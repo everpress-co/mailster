@@ -165,6 +165,7 @@ class MailsterTemplate {
 
 		if ( file_exists( $file ) ) {
 			$data = file_get_contents( $file );
+			$data = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $data );
 		} else {
 			$data = '{headline}<br>{content}';
 		}

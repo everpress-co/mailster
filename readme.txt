@@ -90,7 +90,9 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.2 =
 
+* change: dummy image service domain
 * improved: option to exclude taxonomies in dynamic tags
+* improved: forms no longer use native validation
 * fixed: remember usage tracking opt in setting
 * fixed: correctly redirect after campaign duplication
 * fixed: images from dynamic random post type in autoresponders
