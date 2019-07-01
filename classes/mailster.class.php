@@ -845,11 +845,26 @@ class Mailster {
 							continue;
 						}
 
-						$tax_query[] = array(
-							'taxonomy' => $taxonomies[ $i ],
-							'field' => 'id',
-							'terms' => explode( ',', $term_ids[ $i ] ),
-						);
+						$terms = explode( ',', $term_ids[ $i ] );
+
+						$include = array_filter( $terms, function ( $v ) { return $v >= 0; } );
+						$exclude = array_filter( $terms, function ( $v ) { return $v < 0; } );
+
+						if ( ! empty( $include ) ) {
+							$tax_query[] = array(
+								'taxonomy' => $taxonomies[ $i ],
+								'field' => 'id',
+								'terms' => $include,
+							);
+						}
+						if ( ! empty( $exclude ) ) {
+							$tax_query[] = array(
+								'taxonomy' => $taxonomies[ $i ],
+								'field' => 'id',
+								'terms' => $exclude,
+								'operator' => 'NOT IN',
+							);
+						}
 					}
 
 					if ( ! empty( $tax_query ) ) {
@@ -2147,7 +2162,7 @@ class Mailster {
 
 		$content_type = 'text/plain';
 		$third_party_content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
-		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", $args['headers'] ) ) ) {
+		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", (array) $args['headers'] ) ) ) {
 			$third_party_content_type = 'text/html';
 		}
 		if ( mailster_option( 'respect_content_type' ) ) {

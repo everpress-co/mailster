@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.2.1
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -87,6 +87,17 @@ Xaver Birsak – https://everpress.co
 
 
 == Changelog ==
+
+= Version 2.4.2 =
+
+* change: dummy image service domain
+* improved: option to exclude taxonomies in dynamic tags
+* improved: forms no longer use native validation
+* fixed: remember usage tracking opt in setting
+* fixed: correctly redirect after campaign duplication
+* fixed: images from dynamic random post type in autoresponders
+* fixed: subscriberID is now correctly populated in confirmation messages
+* fixed: deprecated embed option
 
 = Version 2.4.1 =
 

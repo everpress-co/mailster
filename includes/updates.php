@@ -551,8 +551,6 @@ if ( $old_version ) {
 		case '2.3.12':
 		case '2.3.13':
 
-		case '2.4':
-
 			// allow NULL values on one column
 			$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_subscriber_meta CHANGE `subscriber_id` `subscriber_id` BIGINT(20)  UNSIGNED  NULL  DEFAULT NULL" );
 			$mailster_options['_flush_rewrite_rules'] = true;
@@ -580,6 +578,11 @@ if ( $old_version ) {
 			$mailster_options['welcome'] = true;
 
 		case '2.4':
+		case '2.4.1':
+
+			// changes dummy image server
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_content` = replace(post_content, %s, %s) WHERE post_type = 'newsletter'", '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/' ) );
+
 
 		default:
 
