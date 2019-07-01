@@ -2162,7 +2162,7 @@ class Mailster {
 
 		$content_type = 'text/plain';
 		$third_party_content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
-		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", $args['headers'] ) ) ) {
+		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", (array) $args['headers'] ) ) ) {
 			$third_party_content_type = 'text/html';
 		}
 		if ( mailster_option( 'respect_content_type' ) ) {

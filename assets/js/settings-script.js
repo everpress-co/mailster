@@ -15,9 +15,9 @@ jQuery(document).ready(function ($) {
 	});
 
 	$('form#mailster-settings-form')
-	.on('submit.lock', function () {
-		return false
-	});
+		.on('submit.lock', function () {
+			return false
+		});
 	if ($('#settingsloaded').length) {
 		$('.submit-form').prop('disabled', false);
 		$('form#mailster-settings-form').off('submit.lock');
