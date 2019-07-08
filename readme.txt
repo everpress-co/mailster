@@ -90,6 +90,8 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.3 =
 
+* improved: accessibly in editor
+
 = Version 2.4.2 =
 
 * change: dummy image service domain
