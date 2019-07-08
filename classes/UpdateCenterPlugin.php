@@ -859,6 +859,7 @@ class UpdateCenterPlugin {
 			'auto' => $pagenow == 'wp-cron.php',
 			'php' => phpversion(),
 			'mysql' => method_exists( $wpdb, 'db_version' ) ? $wpdb->db_version() : null,
+			'theme' => function_exists( 'get_stylesheet' ) ? get_stylesheet() : null,
 			'locale' => get_locale(),
 		);
 

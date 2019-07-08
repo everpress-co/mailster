@@ -1816,7 +1816,7 @@ jQuery(document).ready(function ($) {
 				w = current.element.width(),
 				h = Math.round(w / 1.6),
 				img = $('<img>', {
-					'src': 'https://dummy.newsletter-plugin.com/' + (w * f) + 'x' + (h * f) + '.jpg',
+					'src': 'https://dummy.mailster.co/' + (w * f) + 'x' + (h * f) + '.jpg',
 					'alt': current.content,
 					'label': current.content,
 					'width': w,
@@ -3056,7 +3056,7 @@ jQuery(document).ready(function ($) {
 
 		function openURL() {
 			$('.imageurl-popup').toggle();
-			if (!imageurl.val() && currentimage.src.indexOf(location.origin) == -1 && currentimage.src.indexOf('dummy.newsletter-plugin.com') == -1) {
+			if (!imageurl.val() && currentimage.src.indexOf(location.origin) == -1 && currentimage.src.indexOf('dummy.mailster.co') == -1) {
 				imageurl.val(currentimage.src);
 			}
 			imageurl.focus().select();
@@ -3283,6 +3283,11 @@ jQuery(document).ready(function ($) {
 		function init() {
 			_container
 				.on('click', 'a.toggle-modules', toggleModules)
+				.on('keydown', 'a.addmodule', function (event) {
+					if (13 == event.which) {
+						addmodule.call(this);
+					}
+				})
 				.on('click', 'a.addmodule', addmodule);
 
 			search

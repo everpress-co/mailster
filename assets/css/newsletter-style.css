@@ -2715,7 +2715,7 @@ a.mailster-btn.editbutton {
 #module-selector ul li:hover a.mailster-btn.has-screenshot span {
 	opacity: 1;
 }
-#module-selector ul li:hover a.mailster-btn {
+#module-selector ul li:hover a.mailster-btn, #module-selector ul li a.mailster-btn:focus {
 	background-color: #fafafa !important;
 	border: 1px solid #999;
 	color: #23282d;

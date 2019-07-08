@@ -278,7 +278,7 @@ class MailsterAjax {
 		}
 
 		$replace = array(
-			'http://dummy.newsletter-plugin.com' => 'https://dummy.newsletter-plugin.com',
+			'//dummy.newsletter-plugin.com' => '//dummy.mailster.co',
 		);
 		$replace = apply_filters( 'mymail_get_template_replace', apply_filters( 'mailster_get_template_replace', $replace ) );
 
@@ -497,7 +497,7 @@ class MailsterAjax {
 			$from = $formdata['mailster_data']['from_email'];
 			$from_name = stripslashes( $formdata['mailster_data']['from_name'] );
 			$reply_to = $formdata['mailster_data']['reply_to'];
-			$embed_images = isset( $formdata['mailster_data']['embed_images'] );
+			$embed_images = mailster_option( 'embed_images' );
 			$track_opens = isset( $formdata['mailster_data']['track_opens'] );
 			$track_clicks = isset( $formdata['mailster_data']['track_clicks'] );
 			$head = stripslashes( $_POST['head'] );

@@ -909,7 +909,7 @@ class MailsterTemplates {
 
 		$modules_html = $matches[0];
 
-		$request_url = 'http://screenshot.newsletter-plugin.com/v4/';
+		$request_url = 'https://api.mailster.co/module/v1/';
 
 		$file_size = strlen( $raw );
 		$hash = md5( $modules_html );

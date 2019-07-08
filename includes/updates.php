@@ -580,6 +580,10 @@ if ( $old_version ) {
 		case '2.4':
 		case '2.4.1':
 
+			// changes dummy image server
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_content` = replace(post_content, %s, %s) WHERE post_type = 'newsletter'", '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/' ) );
+
+
 		default:
 
 			// reset translations

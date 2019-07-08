@@ -351,17 +351,19 @@ class MailsterCampaigns {
 
 			// duplicate campaign
 			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
-					$id = (int) $_GET['duplicate'];
-					$post = get_post( $id );
+				$id = (int) $_GET['duplicate'];
+				$post = get_post( $id );
 				if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
 					wp_die( esc_html__( 'You are not allowed to duplicate this campaign.', 'mailster' ) );
 				} else {
-					$this->duplicate( $id );
+					if ( $new_id = $this->duplicate( $id ) ) {
+						$id = $new_id;
+					}
 				}
 
 				// pause campaign
 			} elseif ( isset( $_GET['pause'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_pause_nonce' ) ) {
-					$id = (int) $_GET['pause'];
+				$id = (int) $_GET['pause'];
 				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
 					wp_die( esc_html__( 'You are not allowed to pause this campaign.', 'mailster' ) );
 				} else {
@@ -370,7 +372,7 @@ class MailsterCampaigns {
 
 				// continue/start campaign
 			} elseif ( isset( $_GET['start'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_start_nonce' ) ) {
-					$id = (int) $_GET['start'];
+				$id = (int) $_GET['start'];
 				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
 					wp_die( esc_html__( 'You are not allowed to start this campaign.', 'mailster' ) );
 				} else {
@@ -378,7 +380,7 @@ class MailsterCampaigns {
 				}
 				// finish campaign
 			} elseif ( isset( $_GET['finish'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_finish_nonce' ) ) {
-					$id = (int) $_GET['finish'];
+				$id = (int) $_GET['finish'];
 				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
 					wp_die( esc_html__( 'You are not allowed to finish this campaign.', 'mailster' ) );
 				} else {
@@ -386,7 +388,7 @@ class MailsterCampaigns {
 				}
 				// activate autoresponder
 			} elseif ( isset( $_GET['activate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_activate_nonce' ) ) {
-					$id = (int) $_GET['activate'];
+				$id = (int) $_GET['activate'];
 				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
 					wp_die( esc_html__( 'You are not allowed to activate this campaign.', 'mailster' ) );
 				} else {
@@ -395,7 +397,7 @@ class MailsterCampaigns {
 
 				// deactivate autoresponder
 			} elseif ( isset( $_GET['deactivate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_deactivate_nonce' ) ) {
-					$id = (int) $_GET['deactivate'];
+				$id = (int) $_GET['deactivate'];
 				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
 					wp_die( esc_html__( 'You are not allowed to deactivate this campaign.', 'mailster' ) );
 				} else {
@@ -411,7 +413,6 @@ class MailsterCampaigns {
 				exit;
 			}
 
-			add_filter( 'wp', array( &$this, 'preload' ) );
 			add_filter( 'the_excerpt', '__return_false' );
 			add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
 			add_filter( 'page_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
@@ -425,28 +426,6 @@ class MailsterCampaigns {
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $query
-	 */
-	public function preload( $query ) {
-
-		global $wp_query;
-
-		if ( isset( $wp_query->query['post_status'] ) && 'autoresponder' == $wp_query->query['post_status'] ) {
-			return;
-		}
-		if ( empty( $wp_query->posts ) ) {
-			return;
-		}
-		$ids = wp_list_pluck( $wp_query->posts, 'ID' );
-
-		// preload meta from the displayed campaigns
-		$meta = $this->meta( $ids );
-		mailster( 'actions' )->get_by_campaign( $ids );
-	}
 
 
 	/**
@@ -1036,7 +1015,7 @@ class MailsterCampaigns {
 				$actions['statistics'] = '<a class="statistics" href="post.php?post=' . $campaign->ID . '&action=edit&showstats=1" title="' . sprintf( esc_html__( 'See stats of Campaign %s', 'mailster' ), '&quot;' . $campaign->post_title . '&quot;' ) . '">' . esc_html__( 'Statistics', 'mailster' ) . '</a>';
 			}
 
-			if ( $parent_id = $this->meta( $campaign->ID, 'parent_id' ) ) {
+			if ( $parent_id = (int) $this->meta( $campaign->ID, 'parent_id' ) ) {
 				$actions['autoresponder_link'] = '<a class="edit_base" href="post.php?post=' . $parent_id . '&action=edit">' . esc_html__( 'Edit base', 'mailster' ) . '</a>';
 			}
 		}
@@ -1494,7 +1473,6 @@ class MailsterCampaigns {
 				$meta['attachments'] = array();
 			}
 
-			$meta['embed_images'] = isset( $postdata['embed_images'] ) && $postdata['embed_images'];
 			$meta['track_opens'] = isset( $postdata['track_opens'] );
 			$meta['track_clicks'] = isset( $postdata['track_clicks'] );
 
@@ -1920,7 +1898,7 @@ class MailsterCampaigns {
 			$_meta = array( $key => $value );
 		}
 
-		$nullvalues = array( 'timezone', 'embed_images', 'track_opens', 'track_clicks', 'ignore_lists', 'autoplaintext', 'auto_post_thumbnail', 'webversion' );
+		$nullvalues = array( 'timezone', 'track_opens', 'track_clicks', 'ignore_lists', 'autoplaintext', 'auto_post_thumbnail', 'webversion' );
 
 		foreach ( $_meta as $k => $v ) {
 			// allowed NULL values
@@ -1973,7 +1951,6 @@ class MailsterCampaigns {
 			'list_conditions' => null,
 			'head' => null,
 			'colors' => null,
-			'embed_images' => mailster_option( 'embed_images' ),
 			'track_opens' => mailster_option( 'track_opens' ),
 			'track_clicks' => mailster_option( 'track_clicks' ),
 			'autoplaintext' => true,
@@ -3859,7 +3836,7 @@ class MailsterCampaigns {
 		$mail->reply_to = $campaign_meta['reply_to'];
 		$mail->bouncemail = mailster_option( 'bounce' );
 		$mail->preheader = $campaign_meta['preheader'];
-		$mail->embed_images = $campaign_meta['embed_images'];
+		$mail->embed_images = mailster_option( 'embed_images' );
 
 		$mail->add_tracking_image = $track || $campaign_meta['track_opens'];
 		$mail->hash = $subscriber->hash;

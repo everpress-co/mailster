@@ -1094,7 +1094,6 @@ class MailsterUpgrade {
 				'head' => trim( $meta['head'] ),
 				'background' => $meta['background'],
 				'colors' => ( $meta['newsletter_color'] ),
-				'embed_images' => isset( $meta['embed_images'] ),
 			);
 
 			if ( $data->post_status == 'active' ) {

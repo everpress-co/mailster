@@ -26,6 +26,14 @@
 	float: left;
 	min-height: 600px;
 }
+@media only screen and (max-width: 782px){
+	.settings-nav{
+		width: inherit;
+		float: none;
+		min-height:auto;
+		font-size: 15px;
+	}
+}
 .rtl .settings-nav{
 	float: right;
 }
