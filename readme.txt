@@ -90,7 +90,9 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.3 =
 
-* improved: accessibly in editor
+* improved: lang attribute now added for accessibility
+* improved: accessibility in editor
+* improved: plain text rendering
 
 = Version 2.4.2 =
 
