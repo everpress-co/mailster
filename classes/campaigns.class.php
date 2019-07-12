@@ -3640,6 +3640,11 @@ class MailsterCampaigns {
 						$status_title = $sent_formatted;
 					}
 
+					// finish campaign
+					if ( $sent >= $totals ) {
+						$this->finish( $id );
+					}
+
 					$return[ $id ] = array(
 						'cron' => ! is_wp_error( $cron_status ),
 						'status' => $post->post_status,
