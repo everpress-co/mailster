@@ -2772,6 +2772,11 @@ class MailsterSubscribers {
 
 		$baselink = home_url();
 
+		if ( $query = wp_parse_url( $baselink , PHP_URL_QUERY ) ) {
+			$baselink = strtok( $baselink, '?' );
+			wp_parse_str( $query, $query );
+		}
+
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['confirm'] ) ? $slugs['confirm'] : 'confirm';
 		$lists = $list_ids ? '/' . implode( '/', $list_ids ) : '';
@@ -2784,6 +2789,10 @@ class MailsterSubscribers {
 				'f' => $form_id,
 				'l' => $list_ids,
 			), $baselink );
+
+		if ( ! empty( $query ) ) {
+			$link = add_query_arg( $query, $link );
+		}
 
 		return $link;
 

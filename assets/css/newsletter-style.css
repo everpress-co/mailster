@@ -1059,6 +1059,13 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	overflow: hidden;
 	white-space: nowrap;
 }
+#editbar .editbar-description{
+	padding-top: 1em;
+	clear: both;
+}
+.dynamic-rss{
+	display: none;
+}
 .dynamic-rss-url-label{
 	display: inline-block;
 	width: 270px;

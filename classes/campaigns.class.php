@@ -3641,7 +3641,7 @@ class MailsterCampaigns {
 					}
 
 					// finish campaign
-					if ( $sent >= $totals ) {
+					if ( 'active' == $post->post_status && $totals && $sent >= $totals ) {
 						$this->finish( $id );
 					}
 
