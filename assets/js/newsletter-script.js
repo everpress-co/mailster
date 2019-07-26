@@ -3508,7 +3508,7 @@ jQuery(document).ready(function ($) {
 		setTimeout(function () {
 			if (!_iframe[0].contentWindow.document.body) return;
 			var height = _iframe.contents().find('body').outerHeight() || _iframe.contents().height() || _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
-			height = Math.max(300, height + (extra || 0));
+			height = Math.max(500, height + (extra || 0));
 			$('#editor-height').val(height);
 			_iframe.attr("height", height);
 		}, delay ? delay : 50);

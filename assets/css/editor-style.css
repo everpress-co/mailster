@@ -26,6 +26,9 @@ html.mailster-loading:before{
 	cursor: progress !important;
 	z-index: 1000000;
 }
+body{
+	min-height: 1px;
+}
 body.drag-active.drag-over{
 }
 body.drag-active modules module{
