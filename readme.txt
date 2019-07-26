@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.3 =
 
 * fixed: permalink issue with WPML add on
+* improved: menu icon
 * improved: loading posts in editbar
 * improved: lang attribute now added for accessibility
 * improved: accessibility in editor
