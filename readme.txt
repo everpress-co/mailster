@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.3 =
 
+* fixed: post_category tag now shows categories names again
 * fixed: permalink issue with WPML add on
 * improved: menu icon
 * improved: loading posts in editbar
