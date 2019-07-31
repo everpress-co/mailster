@@ -660,7 +660,7 @@ class MailsterTests {
 	}
 	private function test_mailfunction() {
 
-		$to = 'success@simulator.amazonses.com';
+		$to = 'deadend@newsletter-plugin.com';
 		$subject = 'This is a test mail from the Mailster Test page';
 		$message = 'This test message can sent from ' . admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) . ' and can get deleted.';
 

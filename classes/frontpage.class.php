@@ -323,27 +323,21 @@ class MailsterFrontpage {
 		$index = get_query_var( '_mailster_extra' );
 		$redirect_to = null;
 
-		$subscriber = mailster( 'subscribers' )->get_by_hash( $hash, false );
-		$campaign = mailster( 'campaigns' )->get( $campaign_id, false );
-		if ( ! $campaign ) {
-			$campaign_id = null;
-			$meta = mailster( 'campaigns' )->meta_defaults();
-		} else {
-			$campaign_id = $campaign->ID;
-			$meta = mailster( 'campaigns' )->meta( $campaign_id );
+		if ( ! ($campaign = mailster( 'campaigns' )->get( $campaign_id, false )) ) {
+			$this->do_404();
 		}
-
-		if ( ! $subscriber ) {
-
+		if ( ! ($subscriber = mailster( 'subscribers' )->get_by_hash( $hash, false )) ) {
 			$subscriber = (object) array(
 				'ID' => null,
 				'hash' => $hash,
 			);
 		}
+		$campaign_id = $campaign->ID;
+		$meta = mailster( 'campaigns' )->meta( $campaign_id );
 
 		if ( $target ) {
 
-			if ( ! preg_match( '#^https?:#', $target ) ) {
+			if ( filter_var( $target, FILTER_VALIDATE_URL ) === false ) {
 				wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 			}
 
