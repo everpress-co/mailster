@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.2.2
-Stable tag: 2.4.3
+Stable tag: 2.4.4
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,7 +88,7 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
-= Version 2.4.3 =
+= Version 2.4.4 =
 
 * fixed: post_category tag now shows categories names again
 * fixed: permalink issue with WPML add on
