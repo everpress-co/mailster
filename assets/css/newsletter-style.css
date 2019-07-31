@@ -31,11 +31,9 @@
 }
 .focus-on div.postbox, .focus-on div.updated{
 	opacity: 0;
-	-webkit-transition: opacity .6s ease-in-out;
 	transition: opacity .6s ease-in-out;
 }
 div.postbox{
-	-webkit-transition: height .25s ease;
 	transition: height .25s ease;
 }
 a{
@@ -830,7 +828,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	border-color: #ccc;
 }
 #editbar div.type.img .right {
-	-webkit-transition: margin-right .25s ease;
 	transition: margin-right .25s ease;
 }
 #editbar div.type.img.edit .right {
@@ -880,7 +877,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	cursor: -webkit-zoom-in;
 	cursor: -moz-zoom-in;
 	cursor: zoom-in;
-	-webkit-transition: all 0.1s;
 	transition: all 0.1s;
 	z-index: 1;
 }
@@ -1271,7 +1267,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	right: 0;
 }
 .device{
-	-webkit-transition: all 0.3s;
 	transition: all 0.3s;
 	position: absolute;
 	top: 0;
@@ -2013,7 +2008,6 @@ label.weekday input{
 	white-space: nowrap;
 }
 .progress span.bar{
-	-webkit-transition: width 1.25s ease;
 	transition: width 1.25s ease;
 	overflow: visible;
 	border-radius: 2px;
@@ -2454,13 +2448,11 @@ a.mailster-btn.editbutton {
 	margin-top: 42px;
 }
 #mailster_template #iframe-wrap {
-	-webkit-transition: margin-right .15s ease-in-out;
 	transition: margin-right .15s ease-in-out;
 	margin-right: 0px;
 	border: 1px solid #DFDFDF;
 }
 .rtl #mailster_template #iframe-wrap {
-	-webkit-transition: margin-left .15s ease-in-out;
 	transition: margin-left .15s ease-in-out;
 	margin-left: 0px;
 }
@@ -2475,7 +2467,6 @@ a.mailster-btn.editbutton {
 	margin-left: 170px;
 }
 #mailster_template a.toggle-modules{
-	-webkit-transition: margin-left .15s ease-in-out;
 	transition: margin-left .15s ease-in-out;
 	border: 1px solid;
 	border-color: #fff #fff #DFDFDF #DFDFDF;
@@ -2499,7 +2490,6 @@ a.mailster-btn.editbutton {
 	display: block !important;
 }
 .rtl #mailster_template a.toggle-modules{
-	-webkit-transition: margin-right .15s ease-in-out;
 	transition: margin-right .15s ease-in-out;
 	border-color: #fff #DFDFDF #DFDFDF #fff;
 	margin-left: 0;
@@ -2522,7 +2512,6 @@ a.mailster-btn.editbutton {
 	content: '\e808'
 }
 #mailster_template .inside iframe#mailster_iframe {
-	-webkit-transition: height .25s ease-in-out;
 	transition: height .25s ease-in-out;
 	margin-top: -3px;
 	margin-bottom: -4px;
@@ -2537,7 +2526,6 @@ a.mailster-btn.editbutton {
 	display: block;
 }
 #module-selector{
-	-webkit-transition: width .15s ease-in-out;
 	transition: width .15s ease-in-out;
 	right: 0;
 	position: absolute;
@@ -2592,7 +2580,6 @@ a.mailster-btn.editbutton {
 	width: 170px;
 }
 #module-selector #module-search-wrap{
-	-webkit-transition: width .15s ease-in-out;
 	transition: width .15s ease-in-out;
 	width: 0;
 	overflow: hidden;
@@ -2663,7 +2650,6 @@ a.mailster-btn.editbutton {
 	border-radius: 0 0 2px 2px;
 	line-height: 22px;
 	opacity: 0;
-	-webkit-transition: all .25s ease;
 	transition: all .25s ease;
 }
 #module-selector ul li:hover a.mailster-btn.has-screenshot span {

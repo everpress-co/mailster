@@ -19,10 +19,6 @@ a {
 	background: rgba(0,0,0,.35);
 	background: -webkit-radial-gradient(50% 50%,rgba(0,0,0,.2),rgba(0,0,0,.5) 100%);
 	background: radial-gradient(50% 50%,rgba(0,0,0,.2),rgba(0,0,0,.5) 100%);
-	-webkit-transition: opacity .15s ease-in-out;
-	-moz-transition: opacity .15s ease-in-out;
-	-ms-transition: opacity .15s ease-in-out;
-	-o-transition: opacity .15s ease-in-out;
 	transition: opacity .15s ease-in-out;
 	opacity: 0;
 }
@@ -46,10 +42,6 @@ html.mailster-embeded-form.unload .mailster-form-wrap{
 	overflow: hidden;
 }
 .mailster-form-inner{
-	-webkit-transition: all .15s ease-in-out;
-	-moz-transition: all .15s ease-in-out;
-	-ms-transition: all .15s ease-in-out;
-	-o-transition: all .15s ease-in-out;
 	transition: all .15s ease-in-out;
 	-webkit-transform: scale(0.8) rotate(0.0001deg);
 	-moz-transform: scale(0.8) rotate(0.0001deg);
@@ -111,9 +103,6 @@ html.mailster-embeded-form.unload .mailster-form-inner{
 	padding: 0.5278em;
 	vertical-align: baseline;
 	-webkit-appearance: none;
-	-webkit-transition: all 0.3s;
-	-moz-transition: all 0.3s;
-	-ms-transition: all 0.3s;
 	transition: all 0.3s;
 }
 .mailster-form .input:focus{

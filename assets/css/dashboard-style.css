@@ -21,10 +21,6 @@
 	background: -webkit-radial-gradient(50% 50%,rgba(255,255,255,.5),rgba(255,255,255,.9) 100%);
 	background: radial-gradient(50% 50%,rgba(255,255,255,.5),rgba(255,255,255,.9) 100%);
 	text-align: center;
-	-webkit-transition: opacity 1.15s ease-in;
-	-moz-transition: opacity 1.15s ease-in;
-	-ms-transition: opacity 1.15s ease-in;
-	-o-transition: opacity 1.15s ease-in;
 	transition: opacity 1.15s ease-in;
 }
 .mailster-dashboard .register_form_wrap{

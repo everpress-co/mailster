@@ -120,7 +120,6 @@ module [repeatable]:hover button.mailster-btn.mailster-btn-inline{
 	display: block;
 }
 modulebuttons {
-	-webkit-transition: all .15s ease-in-out;
 	transition: all .15s ease-in-out;
 	opacity: 0;
 	position: absolute;
@@ -161,7 +160,6 @@ modulebuttons:hover button.mailster-btn {
 [mailster-is-rtl] modulebuttons button.mailster-btn {
 }
 modulebuttons input.modulelabel {
-	-webkit-transition: all .15s ease-in-out;
 	transition: all .15s ease-in-out;
 	display: block;
 	width: 110px;
@@ -235,7 +233,6 @@ module[data-rss][selected]:after {
 	background-color: #2BB3E7;
 	color: #fff;
 	position: absolute;
-	-webkit-transition: all .15s linear;
 	transition: all .15s linear;
 	-webkit-transform: translate(4px, -15px);
 	-ms-transform: translate(4px, -15px);
@@ -407,20 +404,16 @@ img[editable]{
 	z-index: 10;
 }
 modules.ui-sortable module{
-	-webkit-transition: padding .25s ease-in-out, margin .25s ease-in-out;
 	transition: padding .25s ease-in-out, margin .25s ease-in-out;
 }
 body.drag-active modules.ui-sortable module{
-	-webkit-transition: -webkit-transform .25s ease-in-out;
 	transition: transform .25s ease-in-out;
 }
 modules.ui-sortable module.ui-sortable-fly-under{
-	-webkit-transition: -webkit-transform .25s ease-in-out;
 	transition: transform .25s ease-in-out;
 	z-index: 1;
 }
 modules.ui-sortable module.ui-sortable-fly-over{
-	-webkit-transition: -webkit-transform .25s ease-in-out;
 	transition: transform .25s ease-in-out;
 	z-index: 2;
 }
@@ -455,7 +448,6 @@ modules:empty:after, dropzone{
 	margin-top: 0;
 	text-decoration: underline;
 	color: #2BB3E7;
-	-webkit-transition: all .15s linear;
 	transition: all .15s linear;
 	background-color: #fff;
 	outline: 1px solid rgba(43, 179, 231, 0.3);
@@ -473,7 +465,6 @@ body.drag-active modules:empty:after, body.drag-active modules dropzone:before{
 	line-height: 80px;
 	opacity: 0.8;
 	margin: 0;
-	-webkit-transition: all .15s linear;
 	transition: all .15s linear;
 }
 body.drag-active modules dropzone.drag-over{
@@ -490,7 +481,6 @@ body.drag-active modules dropzone:first-child{
 	margin-top: -80px;
 }
 body.drag-active modules dropzone{
-	-webkit-transition: all .15s linear;
 	transition: all .15s linear;
 	height: 0px;
 	position: absolute;
@@ -547,7 +537,6 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 	transform: scale(1.03);
 }
 .ui-draggable-dragging{
-	-webkit-transition: none !important;
 	transition: none !important;
 }
 .sortable-placeholder{
@@ -556,7 +545,6 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 	background-color: rgba(43, 179, 231, 0.3);
 }
 img{
-	-webkit-transition: height .25s ease-in-out, width .25s ease-in-out;
 	transition: height .25s ease-in-out, width .25s ease-in-out;
 }
 img.mailster-loading{
@@ -583,7 +571,6 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	left: 0px;
 	z-index: 1000000;
 	overflow: hidden;
-	-webkit-transition: height .25s ease-in-out, width .25s ease-in-out;
 	transition: height .25s ease-in-out, width .25s ease-in-out;
 }
 .mailster-upload-info .mailster-upload-info-bar{
@@ -659,7 +646,6 @@ div.wp-link-input input[type="text"] {
 	background-color: #fff;
 	color: #32373c;
 	outline: none;
-	-webkit-transition: 0.05s border-color ease-in-out;
 	transition: 0.05s border-color ease-in-out;
 }
 .mce-toolbar .mce-ico.dashicons-editor-break {

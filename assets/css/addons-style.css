@@ -13,10 +13,6 @@
 	background-color: #f7f7f7;
 	position: relative;
 	overflow: hidden;
-	-webkit-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
-	-moz-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
-	-ms-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
-	-o-transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
 	transition: border-color .25s ease-in-out, background-color .25s ease-in-out;
 	z-index: 2;
 }

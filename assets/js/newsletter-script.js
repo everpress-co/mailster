@@ -3532,10 +3532,10 @@ jQuery(document).ready(function ($) {
 		setTimeout(function () {
 			if (!_iframe[0].contentWindow.document.body) return;
 			var height = _iframe.contents().find('body').outerHeight() ||
-						 _iframe.contents().height() ||
-						 _iframe[0].contentWindow.document.body.offsetHeight ||
-						 _iframe.contents().find("html")[0].innerHeight ||
-						 _iframe.contents().find("html").height();
+				_iframe.contents().height() ||
+				_iframe[0].contentWindow.document.body.offsetHeight ||
+				_iframe.contents().find("html")[0].innerHeight ||
+				_iframe.contents().find("html").height();
 
 			height = Math.max(500, height + 4);
 			$('#editor-height').val(height);
