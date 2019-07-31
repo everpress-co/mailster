@@ -1076,7 +1076,7 @@ class MailsterPlaceholder {
 			} else {
 				$category = 'category';
 			}
-			$categories = isset( $post->post_category ) ? $post->post_category : get_the_term_list( $post->ID, $category, '', ', ' );
+			$categories = is_string( $post->post_category ) ? $post->post_category : get_the_term_list( $post->ID, $category, '', ', ' );
 
 			if ( is_wp_error( $categories ) ) {
 				return null;

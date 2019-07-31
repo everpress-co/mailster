@@ -174,10 +174,6 @@
 }
 
 .campaign-progress span.bar{
-	-webkit-transition: width 1.25s ease;
-	-moz-transition: width 1.25s ease;
-	-ms-transition: width 1.25s ease;
-	-o-transition: width 1.25s ease;
 	transition: width 1.25s ease;
 	overflow: visible;
 	border-radius: 2px;
@@ -568,10 +564,6 @@
 }
 .wrap.mailster-welcome-wrap .mailster-transition img{
 	border:0;
-	-webkit-transition: all .25s ease;
-	-moz-transition: all .25s ease;
-	-ms-transition: all .25s ease;
-	-o-transition: all .25s ease;
 	transition: all .25s ease;
 }
 .mailster-transition .mailster-transition-my{
@@ -591,19 +583,16 @@
 	-moz-transform: translateX(-100px);
 	transform: translateX(-100px);
 	margin-top: 10px;
-}
-.mailster-transition:hover .mailster-transition-my{
+
 	opacity: 0;
 	-webkit-transform: translateX(120px);
 	-moz-transform: translateX(120px);
 	transform: translateX(120px);
-}
-.mailster-transition:hover .mailster-transition-mail{
+
 	-webkit-transform: translateX(-80px);
 	-moz-transform: translateX(-80px);
 	transform: translateX(-80px);
-}
-.mailster-transition:hover .mailster-transition-ster{
+
 	opacity: 1;
 	-webkit-transform: translateX(-81px);
 	-moz-transform: translateX(-81px);

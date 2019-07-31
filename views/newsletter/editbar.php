@@ -292,21 +292,23 @@
 				</p>
 				<div class="right">
 					<div class="current-preview">
-					<label><?php esc_html_e( 'Current Match', 'mailster' ) ?></label>
-					<h4 class="current-match">&hellip;</h4>
-					<div class="current-tag code">&hellip;</div>
+						<label><?php esc_html_e( 'Current Match', 'mailster' ) ?>:</label>
+						<h4 class="current-match">&hellip;</h4>
+						<div class="current-tag code">&hellip;</div>
 					</div>
 				</div>
 				<div class="left">
-				<div id="dynamic_embed_options_cats"></div>
+					<div id="dynamic_embed_options_cats"></div>
 				</div>
-				<p class="description clear">
-					<?php esc_html_e( 'Dynamic content get replaced with the proper content as soon as the campaign get send. Check the quick preview to see the current status of dynamic elements.', 'mailster' );?>
-				</p>
-				<p class="description clear">
-					<?php esc_html_e( 'Random tags will display a random content while the number is used as an identifier. Same identifier will display content from the same post.', 'mailster' );?>
-					<?php esc_html_e( 'Different identifier will never display the same post in the same campaign.', 'mailster' );?>
-				</p>
+				<div class="editbar-description">
+					<p class="description clear">
+						<?php esc_html_e( 'Dynamic content get replaced with the proper content as soon as the campaign get send. Check the quick preview to see the current status of dynamic elements.', 'mailster' );?>
+					</p>
+					<p class="description clear">
+						<?php esc_html_e( 'Random tags will display a random content while the number is used as an identifier. Same identifier will display content from the same post.', 'mailster' );?>
+						<?php esc_html_e( 'Different identifier will never display the same post in the same campaign.', 'mailster' );?>
+					</p>
+				</div>
 			</div>
 
 		</div>

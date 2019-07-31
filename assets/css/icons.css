@@ -51,8 +51,6 @@
 	/* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	-moz-transition: all .1s ease-in-out;
-	-webkit-transition: all .1s ease-in-out;
 	transition: all .1s ease-in-out;
 }
 .mailster-icon.mailster-dash:before{

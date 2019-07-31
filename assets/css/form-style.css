@@ -134,10 +134,6 @@ textarea{
 	border-radius: 2px;
 	border: 1px solid #DFDFDF;
 	display: block;
-	-webkit-transition: margin-bottom .25s ease-in-out, margin-top .25s ease-in-out, height .25s ease-in-out;
-	-moz-transition: margin-bottom .25s ease-in-out, margin-top .25s ease-in-out, height .25s ease-in-out;
-	-ms-transition: margin-bottom .25s ease-in-out, margin-top .25s ease-in-out, height .25s ease-in-out;
-	-o-transition: margin-bottom .25s ease-in-out, margin-top .25s ease-in-out, height .25s ease-in-out;
 	transition: margin-bottom .25s ease-in-out, margin-top .25s ease-in-out, height .25s ease-in-out;
 	box-sizing: border-box;
 	float: left;
