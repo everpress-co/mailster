@@ -32,16 +32,10 @@
 .focus-on div.postbox, .focus-on div.updated{
 	opacity: 0;
 	-webkit-transition: opacity .6s ease-in-out;
-	-moz-transition: opacity .6s ease-in-out;
-	-ms-transition: opacity .6s ease-in-out;
-	-o-transition: opacity .6s ease-in-out;
 	transition: opacity .6s ease-in-out;
 }
 div.postbox{
 	-webkit-transition: height .25s ease;
-	-moz-transition: height .25s ease;
-	-ms-transition: height .25s ease;
-	-o-transition: height .25s ease;
 	transition: height .25s ease;
 }
 a{
@@ -837,9 +831,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 }
 #editbar div.type.img .right {
 	-webkit-transition: margin-right .25s ease;
-	-moz-transition: margin-right .25s ease;
-	-ms-transition: margin-right .25s ease;
-	-o-transition: margin-right .25s ease;
 	transition: margin-right .25s ease;
 }
 #editbar div.type.img.edit .right {
@@ -890,9 +881,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	cursor: -moz-zoom-in;
 	cursor: zoom-in;
 	-webkit-transition: all 0.1s;
-	-moz-transition: all 0.1s;
-	-o-transition: all 0.1s;
-	-ms-transition: all 0.1s;
 	transition: all 0.1s;
 	z-index: 1;
 }
@@ -1284,9 +1272,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 }
 .device{
 	-webkit-transition: all 0.3s;
-	-moz-transition: all 0.3s;
-	-o-transition: all 0.3s;
-	-ms-transition: all 0.3s;
 	transition: all 0.3s;
 	position: absolute;
 	top: 0;
@@ -2029,9 +2014,6 @@ label.weekday input{
 }
 .progress span.bar{
 	-webkit-transition: width 1.25s ease;
-	-moz-transition: width 1.25s ease;
-	-ms-transition: width 1.25s ease;
-	-o-transition: width 1.25s ease;
 	transition: width 1.25s ease;
 	overflow: visible;
 	border-radius: 2px;
@@ -2473,18 +2455,12 @@ a.mailster-btn.editbutton {
 }
 #mailster_template #iframe-wrap {
 	-webkit-transition: margin-right .15s ease-in-out;
-	-moz-transition: margin-right .15s ease-in-out;
-	-ms-transition: margin-right .15s ease-in-out;
-	-o-transition: margin-right .15s ease-in-out;
 	transition: margin-right .15s ease-in-out;
 	margin-right: 0px;
 	border: 1px solid #DFDFDF;
 }
 .rtl #mailster_template #iframe-wrap {
 	-webkit-transition: margin-left .15s ease-in-out;
-	-moz-transition: margin-left .15s ease-in-out;
-	-ms-transition: margin-left .15s ease-in-out;
-	-o-transition: margin-left .15s ease-in-out;
 	transition: margin-left .15s ease-in-out;
 	margin-left: 0px;
 }
@@ -2500,9 +2476,6 @@ a.mailster-btn.editbutton {
 }
 #mailster_template a.toggle-modules{
 	-webkit-transition: margin-left .15s ease-in-out;
-	-moz-transition: margin-left .15s ease-in-out;
-	-ms-transition: margin-left .15s ease-in-out;
-	-o-transition: margin-left .15s ease-in-out;
 	transition: margin-left .15s ease-in-out;
 	border: 1px solid;
 	border-color: #fff #fff #DFDFDF #DFDFDF;
@@ -2527,9 +2500,6 @@ a.mailster-btn.editbutton {
 }
 .rtl #mailster_template a.toggle-modules{
 	-webkit-transition: margin-right .15s ease-in-out;
-	-moz-transition: margin-right .15s ease-in-out;
-	-ms-transition: margin-right .15s ease-in-out;
-	-o-transition: margin-right .15s ease-in-out;
 	transition: margin-right .15s ease-in-out;
 	border-color: #fff #DFDFDF #DFDFDF #fff;
 	margin-left: 0;
@@ -2553,9 +2523,6 @@ a.mailster-btn.editbutton {
 }
 #mailster_template .inside iframe#mailster_iframe {
 	-webkit-transition: height .25s ease-in-out;
-	-moz-transition: height .25s ease-in-out;
-	-ms-transition: height .25s ease-in-out;
-	-o-transition: height .25s ease-in-out;
 	transition: height .25s ease-in-out;
 	margin-top: -3px;
 	margin-bottom: -4px;
@@ -2571,9 +2538,6 @@ a.mailster-btn.editbutton {
 }
 #module-selector{
 	-webkit-transition: width .15s ease-in-out;
-	-moz-transition: width .15s ease-in-out;
-	-ms-transition: width .15s ease-in-out;
-	-o-transition: width .15s ease-in-out;
 	transition: width .15s ease-in-out;
 	right: 0;
 	position: absolute;
@@ -2629,9 +2593,6 @@ a.mailster-btn.editbutton {
 }
 #module-selector #module-search-wrap{
 	-webkit-transition: width .15s ease-in-out;
-	-moz-transition: width .15s ease-in-out;
-	-ms-transition: width .15s ease-in-out;
-	-o-transition: width .15s ease-in-out;
 	transition: width .15s ease-in-out;
 	width: 0;
 	overflow: hidden;
@@ -2703,9 +2664,6 @@ a.mailster-btn.editbutton {
 	line-height: 22px;
 	opacity: 0;
 	-webkit-transition: all .25s ease;
-	-moz-transition: all .25s ease;
-	-ms-transition: all .25s ease;
-	-o-transition: all .25s ease;
 	transition: all .25s ease;
 }
 #module-selector ul li:hover a.mailster-btn.has-screenshot span {

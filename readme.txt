@@ -93,7 +93,8 @@ Xaver Birsak – https://everpress.co
 * fixed: post_category tag now shows categories names again
 * fixed: permalink issue with WPML add on
 * improved: links from deleted campaigns end up in a 404
-* improved: menu icon
+* improved: better visualization during module reordering in editor
+* improved: menu icon is now a svg
 * improved: loading posts in editbar
 * improved: lang attribute now added for accessibility
 * improved: accessibility in editor

@@ -3175,22 +3175,46 @@ jQuery(document).ready(function ($) {
 		}
 
 		function up() {
-			var module = $(this).parent().parent().parent(),
-				pos = module.offset();
-			module.insertBefore(module.prev('module'));
-			_jump(module.offset().top - pos.top, true);
-			_trigger('refresh');
-			_trigger('save');
+			var module = $(this).parent().parent().parent().addClass('ui-sortable-fly-over'),
+				prev = module.prev('module').addClass('ui-sortable-fly-under'),
+				pos = (animateDOM.scrollTop() || document.scrollingElement.scrollTop) - prev.height();
+			module.css({
+				'transform': 'translateY(-' + prev.height() + 'px)'
+			});
+			prev.css({
+				'transform': 'translateY(' + module.height() + 'px)'
+			});
+			_scroll(pos, function () {
+				module.insertBefore(prev.css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-under')).css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-over');
+				_trigger('refresh');
+				_trigger('save');
+			}, 250);
 			return false;
 		}
 
 		function down() {
-			var module = $(this).parent().parent().parent(),
-				pos = module.offset()
-			module.insertAfter(module.next('module'));
-			_jump(module.offset().top - pos.top, true);
-			_trigger('refresh');
-			_trigger('save');
+			var module = $(this).parent().parent().parent().addClass('ui-sortable-fly-over'),
+				next = module.next('module').addClass('ui-sortable-fly-under'),
+				pos = (animateDOM.scrollTop() || document.scrollingElement.scrollTop) + next.height();
+			module.css({
+				'transform': 'translateY(' + next.height() + 'px)'
+			});
+			next.css({
+				'transform': 'translateY(-' + module.height() + 'px)'
+			});
+			_scroll(pos, function () {
+				module.insertAfter(next.css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-under')).css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-over');
+				_trigger('refresh');
+				_trigger('save');
+			}, 250);
 			return false;
 		}
 
@@ -3474,7 +3498,9 @@ jQuery(document).ready(function ($) {
 		}
 		animateDOM.stop().animate({
 			'scrollTop': pos
-		}, speed, callback && callback())
+		}, speed, function () {
+			callback && callback()
+		});
 	}
 
 	function _jump(val, rel) {
@@ -3952,11 +3978,10 @@ jQuery(document).ready(function ($) {
 				if (textStatus == 'error' && !errorThrown) return;
 				if (console) console.error(response);
 				if ('JSON' == dataType) {
-					var json = response.match(/{(.*)}$/);
-					if (json && callback) {
+					var maybe_json = response.match(/{(.*)}$/);
+					if (maybe_json && callback) {
 						try {
-							json = $.parseJSON(json[0]);
-							callback.call(this, json);
+							callback.call(this, $.parseJSON(maybe_json[0]));
 						} catch (e) {
 							if (console) console.error(e);
 						}
