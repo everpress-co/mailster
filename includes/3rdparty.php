@@ -77,5 +77,3 @@ add_filter( 'pre_update_option_cornerstone_settings', function( $settings ) {
 
 	return $settings;
 });
-
-
