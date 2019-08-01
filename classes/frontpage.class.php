@@ -337,7 +337,7 @@ class MailsterFrontpage {
 
 		if ( $target ) {
 
-			if ( filter_var( $target, FILTER_VALIDATE_URL ) === false ) {
+			if ( ! preg_match( '#^https?:#', $target ) ) {
 				wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 			}
 

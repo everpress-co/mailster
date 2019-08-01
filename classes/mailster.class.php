@@ -667,11 +667,10 @@ class Mailster {
 
 			}
 
-			$link = 'href="' . $link . '"';
-			$new_link = 'href="' . apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id ) . '"';
+			$link = ' href="' . $link . '"';
+			$new_link = ' href="' . apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id ) . '"';
 
 			if ( ( $pos = strpos( $content, $link ) ) !== false ) {
-
 				// do not use substr_replace as it has problems with multibyte
 				// $content = substr_replace( $content, $new_link, $pos, strlen( $link ) );
 				$content = preg_replace( '/' . preg_quote( $link, '/' ) . '/', $new_link, $content, 1 );

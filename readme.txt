@@ -90,6 +90,10 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.4 =
 
+* fixed: redirecting issue with spaces in URLs
+
+= Version 2.4.3 =
+
 * fixed: post_category tag now shows categories names again
 * fixed: permalink issue with WPML add on
 * improved: links from deleted campaigns end up in a 404
