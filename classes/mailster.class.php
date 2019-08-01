@@ -700,7 +700,7 @@ class Mailster {
 	 * @return unknown
 	 */
 	public function decode_link( $encoded_link ) {
-		return apply_filters( 'mailster_encode_link', base64_decode( strtr( $encoded_link, '-_', '+/' ) ), $encoded_link );
+		return apply_filters( 'mailster_decode_link', base64_decode( strtr( $encoded_link, '-_', '+/' ) ), $encoded_link );
 	}
 
 

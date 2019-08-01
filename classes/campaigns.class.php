@@ -3728,7 +3728,12 @@ class MailsterCampaigns {
 						}
 					}
 
-					endif;
+				endif;
+
+				// finish campaign
+				if ( 'active' == $post->post_status && $totals && $sent >= $totals ) {
+					$this->finish( $id );
+				}
 
 				$return[ $id ] = array(
 					'cron' => ! is_wp_error( $cron_status ),
