@@ -2437,6 +2437,7 @@ a.mailster-btn.editbutton {
 	color: #383838;
 	background: #f9f9f9;
 	box-sizing: border-box;
+	line-height: 18px;
 }
 .clickbadge.clickbadge-outside span {
 	text-indent: -9999px;

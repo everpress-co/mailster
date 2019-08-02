@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.4 =
 
 * improved: you can now encode tags output with an exclamation mark `{!mytag}`
+* fixed: cumulative clout calculations
 * fixed: redirecting issue with spaces in URLs
 
 = Version 2.4.3 =
