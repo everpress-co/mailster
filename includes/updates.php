@@ -583,6 +583,11 @@ if ( $old_version ) {
 			// changes dummy image server
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET `post_content` = replace(post_content, %s, %s) WHERE post_type = 'newsletter'", '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/' ) );
 
+		case '2.4.2':
+
+			$mailster_options['_flush_rewrite_rules'] = true;
+
+		case '2.4.3':
 
 		default:
 

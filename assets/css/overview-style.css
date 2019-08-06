@@ -47,10 +47,6 @@ table tr th.manage-column{
 	white-space: nowrap;
 }
 .campaign-progress span.bar{
-	-webkit-transition: width 1.25s ease;
-	-moz-transition: width 1.25s ease;
-	-ms-transition: width 1.25s ease;
-	-o-transition: width 1.25s ease;
 	transition: width 1.25s ease;
 	overflow: visible;
 	border-radius: 2px;

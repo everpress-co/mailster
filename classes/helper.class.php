@@ -1833,7 +1833,7 @@ class MailsterHelper {
 			$htmlconverter = new \MailsterHtml2Text\Html2Text( $html, array( 'width' => 200, 'do_links' => 'table' ) );
 
 			$text = trim( $htmlconverter->get_text() );
-			$text = preg_replace( '/\s*$^\s*/mu', "\n\n", $text );
+			$text = preg_replace( '/\s*$^\s*/mu', "\r\n", $text );
 			$text = preg_replace( '/[ \t]+/u', ' ', $text );
 
 			return $text;

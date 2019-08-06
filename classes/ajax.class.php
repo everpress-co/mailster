@@ -157,9 +157,7 @@ class MailsterAjax {
 
 	private function submit() {
 
-		global $wp;
-
-		$wp->query_vars['_mailster'] = 'subscribe';
+		set_query_var( '_mailster', 'subscribe' );
 
 		mailster( 'form' )->submit();
 
@@ -1550,7 +1548,7 @@ class MailsterAjax {
 			$return['title'] = $post->get_error_message();
 		} elseif ( is_a( $post, 'WP_Post' ) ) {
 			if ( $rss_url ) {
-				$return['title'] = '<a href="' . $post->post_permalink . '" class="external">#' . absint( $offset -1 ) . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No title', 'mailster' ) ) . '</a>';
+				$return['title'] = '<a href="' . $post->post_permalink . '" class="external">#' . absint( $relative_or_identifier ) . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No title', 'mailster' ) ) . '</a>';
 			} else {
 				if ( $is_dynmaic_post_type ) {
 					$return['title'] = $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' );

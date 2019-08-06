@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.2.2
-Stable tag: 2.4.3
+Stable tag: 2.4.4
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,9 +88,23 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.4 =
+
+* improved: you can now encode tags output with an exclamation mark `{!mytag}`
+* fixed: cumulative clout calculations
+* fixed: redirecting issue with spaces in URLs
+
 = Version 2.4.3 =
 
-* improved: accessibly in editor
+* fixed: post_category tag now shows categories names again
+* fixed: permalink issue with WPML add on
+* improved: links from deleted campaigns end up in a 404
+* improved: better visualization during module reordering in editor
+* improved: menu icon is now a svg
+* improved: loading posts in editbar
+* improved: lang attribute now added for accessibility
+* improved: accessibility in editor
+* improved: plain text rendering
 
 = Version 2.4.2 =
 

@@ -2772,6 +2772,11 @@ class MailsterSubscribers {
 
 		$baselink = home_url();
 
+		if ( $query = wp_parse_url( $baselink , PHP_URL_QUERY ) ) {
+			$baselink = strtok( $baselink, '?' );
+			wp_parse_str( $query, $query );
+		}
+
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['confirm'] ) ? $slugs['confirm'] : 'confirm';
 		$lists = $list_ids ? '/' . implode( '/', $list_ids ) : '';
@@ -2784,6 +2789,10 @@ class MailsterSubscribers {
 				'f' => $form_id,
 				'l' => $list_ids,
 			), $baselink );
+
+		if ( ! empty( $query ) ) {
+			$link = add_query_arg( $query, $link );
+		}
 
 		return $link;
 
@@ -2855,7 +2864,12 @@ class MailsterSubscribers {
 
 		if ( $actions->bounces ) {
 			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
-			$html .= '<li><label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ) ), $actions->softbounces_total ) . '</label> <strong class="red">' . sprintf( esc_html__( 'Hard bounced at %s', 'mailster' ), date( $timeformat, $actions->bounces + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->bounces ) ) ) . '</strong><br>' . esc_html( $message ) . '</li>';
+			$html .= '<li>';
+			if ( $actions->softbounces_total ) :
+				$html .= '<label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ) ), $actions->softbounces_total ) . '</label>';
+			endif;
+			$html .= '<strong class="red">' . sprintf( esc_html__( 'Hard bounced at %s', 'mailster' ), date( $timeformat, $actions->bounces + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->bounces ) ) ) . '</strong><br>' . esc_html( $message );
+			$html .= '</li>';
 		} elseif ( $actions->softbounces ) {
 			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
 			$html .= '<li><label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ) ), $actions->softbounces_total ) . '</label><br>' . esc_html( $message ) . '</li>';

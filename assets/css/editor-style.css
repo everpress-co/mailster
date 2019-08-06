@@ -26,6 +26,10 @@ html.mailster-loading:before{
 	cursor: progress !important;
 	z-index: 1000000;
 }
+body{
+	min-height: 1px;
+	overflow: auto;
+}
 body.drag-active.drag-over{
 }
 body.drag-active modules module{
@@ -116,9 +120,6 @@ module [repeatable]:hover button.mailster-btn.mailster-btn-inline{
 	display: block;
 }
 modulebuttons {
-	-webkit-transition: all .15s ease-in-out;
-	-moz-transition: all .15s ease-in-out;
-	-ms-transition: all .15s ease-in-out;
 	transition: all .15s ease-in-out;
 	opacity: 0;
 	position: absolute;
@@ -126,6 +127,9 @@ modulebuttons {
 	text-align: right;
 	z-index: 100;
 	display: block;
+}
+module.ui-sortable-fly-over modulebuttons button{
+	pointer-events: none;
 }
 module[selected] modulebuttons{
 	transform: translateY(-35px);
@@ -155,14 +159,7 @@ modulebuttons:hover button.mailster-btn {
 }
 [mailster-is-rtl] modulebuttons button.mailster-btn {
 }
-modulebuttons a:first-child {
-}
-modulebuttons a:last-child {
-}
 modulebuttons input.modulelabel {
-	-webkit-transition: all .15s ease-in-out;
-	-moz-transition: all .15s ease-in-out;
-	-ms-transition: all .15s ease-in-out;
 	transition: all .15s ease-in-out;
 	display: block;
 	width: 110px;
@@ -236,8 +233,6 @@ module[data-rss][selected]:after {
 	background-color: #2BB3E7;
 	color: #fff;
 	position: absolute;
-	-webkit-transition: all .15s linear;
-	-ms-transition: all .15s linear;
 	transition: all .15s linear;
 	-webkit-transform: translate(4px, -15px);
 	-ms-transform: translate(4px, -15px);
@@ -337,7 +332,7 @@ module:hover modulebuttons,module[selected] modulebuttons,.ie module modulebutto
 [mailster-is-rtl] module:hover modulebuttons, [mailster-is-rtl] module[selected] modulebuttons {
 	right: inherit;
 }
-module:first-child modulebuttons a.up, module:last-child modulebuttons a.down {
+module:first-child modulebuttons button.up, module:last-child modulebuttons button.down {
 	display: none;
 }
 module[condition]{
@@ -350,7 +345,7 @@ module[condition]{
 a.mailster-highlight {
 	outline: none;
 }
-multi, single, img[editable], a[editable] img, .textbutton a[editable], td[background]{
+multi, single, module, img[editable], a[editable] img, .textbutton a[editable], td[background]{
 	webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
 	-webkit-backface-visibility: hidden; /* Chrome, Safari, Opera */
@@ -409,10 +404,18 @@ img[editable]{
 	z-index: 10;
 }
 modules.ui-sortable module{
-	-webkit-transition: padding .25s ease-in-out, margin .25s ease-in-out, -webkit-transform .15s ease-in-out;
-	-ms-transition: padding .25s ease-in-out, margin .25s ease-in-out, -ms-transform .15s ease-in-out;
-	transition: padding .25s ease-in-out, margin .25s ease-in-out, transform .15s ease-in-out;
-
+	transition: padding .25s ease-in-out, margin .25s ease-in-out;
+}
+body.drag-active modules.ui-sortable module{
+	transition: transform .25s ease-in-out;
+}
+modules.ui-sortable module.ui-sortable-fly-under{
+	transition: transform .25s ease-in-out;
+	z-index: 1;
+}
+modules.ui-sortable module.ui-sortable-fly-over{
+	transition: transform .25s ease-in-out;
+	z-index: 2;
 }
 modules.ui-sortable.dragging module{
 	padding-top: 3px;
@@ -445,8 +448,6 @@ modules:empty:after, dropzone{
 	margin-top: 0;
 	text-decoration: underline;
 	color: #2BB3E7;
-	-webkit-transition: all .15s linear;
-	-ms-transition: all .15s linear;
 	transition: all .15s linear;
 	background-color: #fff;
 	outline: 1px solid rgba(43, 179, 231, 0.3);
@@ -464,8 +465,6 @@ body.drag-active modules:empty:after, body.drag-active modules dropzone:before{
 	line-height: 80px;
 	opacity: 0.8;
 	margin: 0;
-	-webkit-transition: all .15s linear;
-	-ms-transition: all .15s linear;
 	transition: all .15s linear;
 }
 body.drag-active modules dropzone.drag-over{
@@ -482,8 +481,6 @@ body.drag-active modules dropzone:first-child{
 	margin-top: -80px;
 }
 body.drag-active modules dropzone{
-	-webkit-transition: all .15s linear;
-	-ms-transition: all .15s linear;
 	transition: all .15s linear;
 	height: 0px;
 	position: absolute;
@@ -540,8 +537,6 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 	transform: scale(1.03);
 }
 .ui-draggable-dragging{
-	-webkit-transition: none !important;
-	-ms-transition: none !important;
 	transition: none !important;
 }
 .sortable-placeholder{
@@ -550,8 +545,6 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 	background-color: rgba(43, 179, 231, 0.3);
 }
 img{
-	-webkit-transition: height .25s ease-in-out, width .25s ease-in-out;
-	-ms-transition: height .25s ease-in-out, width .25s ease-in-out;
 	transition: height .25s ease-in-out, width .25s ease-in-out;
 }
 img.mailster-loading{
@@ -559,13 +552,15 @@ img.mailster-loading{
 	-webkit-filter: blur(2px);
 	filter: blur(2px);
 }
+modules.ui-sortable.dragging module.ui-sortable-helper, module.ui-sortable-fly-over{
+	box-shadow: 0 5px 18px rgba(0,0,0,.22),0 9px 45px rgba(0,0,0,.25);
+	-webkit-transform: scale(1.03) translateZ(200px);;
+	-ms-transform: scale(1.03) translateZ(0px);;
+	transform: scale(1.03) translateZ(0px);;
+}
 modules.ui-sortable.dragging module.ui-sortable-helper{
 	opacity: 0.9;
 	filter: alpha(90);
-	box-shadow: 0 5px 18px rgba(0,0,0,.22),0 9px 45px rgba(0,0,0,.25);
-	-webkit-transform: scale(1.03);
-	-ms-transform: scale(1.03);
-	transform: scale(1.03);
 }
 modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	display: none;
@@ -576,8 +571,6 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	left: 0px;
 	z-index: 1000000;
 	overflow: hidden;
-	-webkit-transition: height .25s ease-in-out, width .25s ease-in-out;
-	-ms-transition: height .25s ease-in-out, width .25s ease-in-out;
 	transition: height .25s ease-in-out, width .25s ease-in-out;
 }
 .mailster-upload-info .mailster-upload-info-bar{
@@ -611,6 +604,9 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 }
 .mailster-upload-info.error .mailster-upload-info-text{
 	background: #f33;
+}
+.mce-notification-error{
+	display: none;
 }
 .mce-ico.mailster-tags-icon:before, .mce-ico.mailster-remove-icon:before {
 	font: normal 16px/1 'mailster-icons' !important;
@@ -650,7 +646,6 @@ div.wp-link-input input[type="text"] {
 	background-color: #fff;
 	color: #32373c;
 	outline: none;
-	-webkit-transition: 0.05s border-color ease-in-out;
 	transition: 0.05s border-color ease-in-out;
 }
 .mce-toolbar .mce-ico.dashicons-editor-break {
