@@ -92,6 +92,7 @@ Xaver Birsak – https://everpress.co
 
 * improved: you can now encode tags output with an exclamation mark `{!mytag}`
 * improved: drag n drop images from your desktop now respects cropped image setting.
+* improved: import screen
 * fixed: cumulative clout calculations
 * fixed: redirecting issue with spaces in URLs
 
