@@ -521,15 +521,11 @@ jQuery(document).ready(function ($) {
 					var file = dropzone.files.shift(),
 						altkey = window.event && event.altKey,
 						dimensions = [_this.width(), _this.height()],
+						crop = _this.data('crop'),
 						position = _this.offset(),
-						preview = $('<div class="mailster-upload-info"><div class="mailster-upload-info-bar"></div><div class="mailster-upload-info-text"></div></div>').css({
-							width: dimensions[0],
-							height: dimensions[1],
-							top: position.top,
-							left: position.left
-
-						}),
-
+						upload = $('<upload><div class="mailster-upload-info"><div class="mailster-upload-info-bar"></div><div class="mailster-upload-info-text"></div></div></upload>'),
+						preview = upload.find('.mailster-upload-info-bar'),
+						previewtext = upload.find('.mailster-upload-info-text'),
 						preloader = new mOxie.Image(file);
 
 					preloader.onerror = function (e) {
@@ -539,17 +535,21 @@ jQuery(document).ready(function ($) {
 					}
 					preloader.onload = function (e) {
 
-						preview.appendTo('body');
+						upload.insertAfter(_this);
+						_this.appendTo(upload);
 
 						file._element = _this;
 						file._altKey = altkey;
+						file._crop = crop;
+						file._upload = upload;
 						file._preview = preview;
+						file._previewtext = previewtext;
 						file._dimensions = [preloader.width, preloader.height, preloader.width / preloader.height];
 
 						preloader.downsize(dimensions[0], dimensions[1]);
-						preview.find('.mailster-upload-info-bar').css({
+						preview.css({
 							'background-image': 'url(' + preloader.getAsDataURL() + ')',
-							'background-size': dimensions[0] + 'px ' + (dimensions[0] / file._dimensions[2]) + 'px'
+							'background-size': dimensions[0] + 'px ' + (crop ? dimensions[1] : dimensions[0] / file._dimensions[2]) + 'px'
 						});
 
 						uploader.addFile(file);
@@ -582,7 +582,7 @@ jQuery(document).ready(function ($) {
 			if (!uploader) {
 
 
-				$('<button id="mailster-editorimage-upload-button" />').hide().appendTo('body');
+				$('<button id="mailster-editorimage-upload-button" />').hide().appendTo('mailster');
 				uploader = new plupload.Uploader(mailsterdata.plupload);
 
 				uploader.bind('Init', function (up) {
@@ -598,6 +598,7 @@ jQuery(document).ready(function ($) {
 						up.settings.multipart_params.width = width;
 						up.settings.multipart_params.height = height;
 						up.settings.multipart_params.factor = factor;
+						up.settings.multipart_params.crop = source._crop;
 						up.settings.multipart_params.altKey = source._altKey;
 						up.refresh();
 						up.start();
@@ -613,8 +614,8 @@ jQuery(document).ready(function ($) {
 
 					var source = file.getSource();
 
-					source._preview.find('.mailster-upload-info-bar').width(file.percent + '%');
-					source._preview.find('.mailster-upload-info-text').html(file.percent + '%');
+					source._preview.width(file.percent + '%');
+					source._previewtext.html(file.percent + '%');
 
 				});
 
@@ -623,7 +624,8 @@ jQuery(document).ready(function ($) {
 
 					alert(err.message);
 
-					source._preview.remove();
+					source._element.insertAfter(source._upload);
+					source._upload.remove();
 				});
 
 				uploader.bind('FileUploaded', function (up, file, response) {
@@ -634,11 +636,12 @@ jQuery(document).ready(function ($) {
 					try {
 						response = $.parseJSON(response.response);
 
-						source._preview.find('.mailster-upload-info-text').html(mailsterL10n.ready);
+						source._previewtext.html(mailsterL10n.ready);
 						source._element.on('load', function () {
 							clearTimeout(delay);
 							source._preview.fadeOut(function () {
-								$(this).remove();
+								source._element.insertAfter(source._upload);
+								source._upload.remove();
 								_trigger('refresh');
 							});
 						});
@@ -647,6 +650,7 @@ jQuery(document).ready(function ($) {
 
 						source._element.attr({
 							'src': response.image.url,
+							'alt': response.name,
 							'height': height,
 							'data-id': response.image.id || 0
 						}).data('id', response.image.id || 0);
@@ -655,7 +659,8 @@ jQuery(document).ready(function ($) {
 
 						delay = setTimeout(function () {
 							source._preview.fadeOut(function () {
-								$(this).remove();
+								source._element.insertAfter(source._upload);
+								source._upload.remove();
 								_trigger('refresh');
 							});
 						}, 3000);
@@ -663,7 +668,8 @@ jQuery(document).ready(function ($) {
 						source._preview.addClass('error').find('.mailster-upload-info-text').html(mailsterL10n.error);
 						alert(mailsterL10n.error_occurs + "\n" + err.message);
 						source._preview.fadeOut(function () {
-							$(this).remove();
+							source._element.insertAfter(source._upload);
+							source._upload.remove();
 						});
 					}
 
