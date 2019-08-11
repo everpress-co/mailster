@@ -340,7 +340,8 @@ jQuery(document).ready(function ($) {
 								_ajax('create_image', {
 									id: target_id,
 									width: org_w,
-									_height: org_h
+									height: org_h,
+									crop: org.data('crop'),
 								}, function (response) {
 
 									org.removeAttr('src').attr({
@@ -374,7 +375,8 @@ jQuery(document).ready(function ($) {
 								_ajax('create_image', {
 									id: org_id,
 									width: target_w,
-									_height: target_h
+									height: target_h,
+									crop: target.data('crop'),
 								}, function (response) {
 
 									target.removeAttr('src').attr({
