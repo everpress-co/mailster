@@ -91,7 +91,10 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.4 =
 
 * improved: you can now encode tags output with an exclamation mark `{!mytag}`
-* fixed: cumulative clout calculations
+* improved: drag n drop images from your desktop now respects cropped image setting.
+* improved: import screen
+* fixed: wrong subscriber count if status "pending" in subscriber query
+* fixed: cumulative count calculations
 * fixed: redirecting issue with spaces in URLs
 
 = Version 2.4.3 =

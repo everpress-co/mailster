@@ -2216,6 +2216,7 @@ class MailsterAjax {
 			$width = (int) $_POST['width'];
 			$height = (int) $_POST['height'];
 			$factor = (int) $_POST['factor'];
+			$crop = isset( $_POST['crop'] ) && $_POST['crop'] == 'true';
 
 			$wp_upload_dir = wp_upload_dir();
 			$image = false;
@@ -2227,7 +2228,7 @@ class MailsterAjax {
 
 				$url = $wp_upload_dir['url'] . '/' . $filename;
 				if ( $attach_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND guid = %s;", $url ) ) ) {
-					$image = mailster( 'helper' )->create_image( $attach_id, null, $width, null, false );
+					$image = mailster( 'helper' )->create_image( $attach_id, null, $width, $height, $crop );
 				}
 			}
 
@@ -2267,16 +2268,22 @@ class MailsterAjax {
 					$attach_data = wp_generate_attachment_metadata( $attach_id, $result['file'] );
 					wp_update_attachment_metadata( $attach_id, $attach_data );
 
-					$image = mailster( 'helper' )->create_image( $attach_id, null, $width, null, false );
+					$image = mailster( 'helper' )->create_image( $attach_id, null, $width, $height, $crop );
 
 				} else {
 
-					$image = mailster( 'helper' )->create_image( null, $result['file'], $width, null, false );
+					$image = mailster( 'helper' )->create_image( null, $result['file'], $width, $height, $crop );
 
 				}
 			}
 
 			if ( $image ) {
+
+				$return['name'] = $filename;
+				if ( isset( $image['id'] ) ) {
+					$return['name'] = get_post_field( 'post_title', $image['id'] );
+				}
+
 				$return['image'] = $image;
 				$return['success'] = true;
 			}
