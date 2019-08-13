@@ -28,7 +28,6 @@ class MailsterCampaigns {
 	public function init() {
 
 		add_filter( 'transition_post_status', array( &$this, 'check_for_autoresponder' ), 10, 3 );
-		add_filter( 'transition_post_status', array( &$this, 'set_before_trash_status' ), 10, 3 );
 		add_action( 'mailster_finish_campaign', array( &$this, 'remove_revisions' ) );
 
 		add_action( 'mailster_auto_post_thumbnail', array( &$this, 'get_post_thumbnail' ), 10, 1 );
@@ -1037,29 +1036,6 @@ class MailsterCampaigns {
 	 */
 	public function title( $title ) {
 		return esc_html__( 'Enter Campaign Title here', 'mailster' );
-	}
-
-
-	public function set_before_trash_status( $new_status, $old_status, $campaign ) {
-
-		if ( 'newsletter' != $campaign->post_type || $new_status == $old_status ) {
-			return;
-		}
-
-		// store old status on trash.
-		if ( 'trash' == $new_status ) {
-			set_transient( 'mailster_before_trash_status_' . $campaign->ID, $old_status );
-		}
-
-		// restore old status on untrash.
-		if ( 'trash' == $old_status ) {
-			$status_before = get_transient( 'mailster_before_trash_status_' . $campaign->ID, 'paused' );
-			if ( $campaign->post_status != $status_before ) {
-				$this->change_status( $campaign, $status_before, true );
-			}
-			delete_transient( 'mailster_before_trash_status_' . $campaign->ID );
-		}
-
 	}
 
 
@@ -2258,7 +2234,7 @@ class MailsterCampaigns {
 		$lists = $this->get_lists( $campaign->ID, true );
 		$meta = $this->meta( $campaign->ID );
 
-		$relative_to_absolute = 'rss' != $meta['autoresponder']['post_type'];
+		$relative_to_absolute = true;
 
 		$meta['autoresponder'] = $meta['sent'] = $meta['errors'] = $meta['finished'] = null;
 
