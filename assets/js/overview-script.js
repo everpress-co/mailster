@@ -60,7 +60,6 @@ jQuery(document).ready(function ($) {
 				if (!current) {
 					current = $.extend(data['mailster'], current);
 					first = true;
-					//return;
 				}
 
 				var change = false,
@@ -99,6 +98,7 @@ jQuery(document).ready(function ($) {
 									p = (rowdata.sent / rowdata.total * 100);
 								progress.find('.bar').width(p + '%');
 								progress.find('span').eq(1).html(rowdata.sent_formatted);
+								progress.find('span').eq(2).html(rowdata.sent_formatted);
 								progress.find('var').html(Math.round(p) + '%');
 							}
 							if (!statuschange) break;
@@ -135,9 +135,7 @@ jQuery(document).ready(function ($) {
 
 		//only need top and bottom
 		return (
-			//rect.left + offset >= 0 &&
 			rect.top + offset >= 0 &&
-			//rect.right - offset <= (window.innerWidth || document.documentElement.clientWidth) && /*or $(window).width() */
 			rect.top - offset <= (window.innerHeight || document.documentElement.clientHeight) /*or $(window).height() */
 		);
 	}

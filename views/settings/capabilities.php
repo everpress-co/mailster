@@ -12,7 +12,7 @@ unset( $roles['administrator'] );
 				<tr>
 				<th>&nbsp;</th><?php
 				foreach ( $roles as $role => $name ) {
-					echo '<th><input type="hidden" name="mailster_options[roles][' . $role . '][]" value="">' . $name . ' <input type="checkbox" class="selectall" value="' . $role . '" title="' . __( 'toggle all', 'mailster' ) . '"></th>';
+					echo '<th><input type="hidden" name="mailster_options[roles][' . $role . '][]" value="">' . $name . ' <input type="checkbox" class="selectall" value="' . $role . '" title="' . esc_html__( 'toggle all', 'mailster' ) . '"></th>';
 
 				}?>
 				</tr>
@@ -24,7 +24,7 @@ unset( $roles['administrator'] );
 			<tr><th><?php echo $data['title'] ?></th>
 		<?php foreach ( $roles as $role => $name ) { ?>
 		<?php $r = get_role( $role );
-			echo '<td><label title="' . sprintf( __( '%1$s can %2$s', 'mailster' ), $name, $data['title'] ) . '"><input name="mailster_options[roles][' . $role . '][]" type="checkbox" class="cap-check-' . $role . '" value="' . $capability . '" ' . checked( ! empty( $r->capabilities[ $capability ] ), 1, false ) . ' ' . ( $role == 'administrator' ? 'readonly' : '' ) . '></label></td>';
+			echo '<td><label title="' . sprintf( esc_html__( '%1$s can %2$s', 'mailster' ), $name, $data['title'] ) . '"><input name="mailster_options[roles][' . $role . '][]" type="checkbox" class="cap-check-' . $role . '" value="' . $capability . '" ' . checked( ! empty( $r->capabilities[ $capability ] ), 1, false ) . ' ' . ( $role == 'administrator' ? 'readonly' : '' ) . '></label></td>';
 		?>
 		<?php } ?>
 			</tr>

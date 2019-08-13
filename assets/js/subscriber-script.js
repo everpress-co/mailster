@@ -18,6 +18,7 @@ jQuery(document).ready(function ($) {
 			animate: 1000,
 			rotate: 180,
 			barColor: '#2BB3E7',
+			trackColor: '#50626f',
 			trackColor: '#ffffff',
 			lineWidth: 9,
 			size: 75,
@@ -54,7 +55,13 @@ jQuery(document).ready(function ($) {
 			}
 
 		});
-
+		$('#mailster_status').on('change', function () {
+			if ($(this).val() <= 0) {
+				$('.pending-info').show();
+			} else {
+				$('.pending-info').hide();
+			}
+		});
 		$('.show-more-info').on('click', function () {
 			$('.more-info').slideToggle(100);
 		});

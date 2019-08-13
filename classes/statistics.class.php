@@ -72,24 +72,6 @@ class MailsterStatistics {
 	private function get_datasets( $rawdata ) {
 
 		return array(
-			// array(
-			// 'data' => array_values( $rawdata ),
-			// 'fillColor' => "rgba(111,191,77,0.2)",
-			// 'strokeColor' => "rgba(111,191,77,1)",
-			// 'pointColor' => "rgba(111,191,77,1)",
-			// 'pointStrokeColor' => "#fff",
-			// 'pointHighlightFill' => "#fff",
-			// 'pointHighlightStroke' => "rgba(111,191,77,1)",
-			// ),
-			// array(
-			// 'data' => array_values( $rawdata ),
-			// 'fillColor' => "rgba(43,179,231,0.2)",
-			// 'strokeColor' => "rgba(43,179,231,1)",
-			// 'pointColor' => "rgba(43,179,231,1)",
-			// 'pointStrokeColor' => "#fff",
-			// 'pointHighlightFill' => "#fff",
-			// 'pointHighlightStroke' => "rgba(43,179,231,1)",
-			// ),
 			array(
 				'data' => array_values( $rawdata ),
 				'backgroundColor' => 'rgba(43,179,231,0.2)',
@@ -116,59 +98,30 @@ class MailsterStatistics {
 		global $wpdb;
 
 		$from = is_null( $from ) ? time() : $from;
-		$to = is_null( $to ) ? time() + 86399 : $to;
+		$to = is_null( $to ) ? time() + DAY_IN_SECONDS - 1 : $to;
 
-		$dates = $this->get_calendar_table( $from, $to );
-		$count = count( $dates );
+		$dates = $this->get_date_range( $from, $to );
+		$dates = array_fill_keys( $dates, 0 );
 
-		$count_before = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) < %d", $from ) );
+		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) < %d", $from ) );
 
-		$sql = "SELECT @n:=@n + IFNULL(total,0) total FROM (SELECT {$this->calendar_table}.date, total FROM {$this->calendar_table} LEFT JOIN (SELECT FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup), '%Y-%m-%d') date, COUNT(*) AS total FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) GROUP BY date ) t2 ON {$this->calendar_table}.date= t2.date ORDER BY date) t3 CROSS JOIN (SELECT @n:=$count_before) n LIMIT 0, $count";
+		$sql = "SELECT FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup), '%Y-%m-%d') AS the_date, COUNT(DISTINCT subscribers.ID) AS increase FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) GROUP BY the_date HAVING the_date >= '" . date( 'Y-m-d', $from ) . "' AND the_date <= '" . date( 'Y-m-d', $to ) . "'";
 
-		$sql = apply_filters( 'mailster_get_signups_sql', $sql, $from, $to );
+		$increase_data = $wpdb->get_results( $sql );
 
-		$data = array_combine( $dates, array_map( 'floatval', $wpdb->get_col( $sql ) ) );
-
-		return $data;
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $from
-	 * @param unknown $to
-	 * @param unknown $format (optional)
-	 * @return unknown
-	 */
-	private function get_calendar_table( $from, $to, $format = 'Y-m-d' ) {
-
-		global $wpdb;
-		$dates = $this->get_date_range( $from, $to, '+1 day', $format );
-		$count = count( $dates );
-
-		if ( ! $this->calendar_table ) {
-			$this->calendar_table = "{$wpdb->prefix}mailster_" . uniqid();
-			$sql = "CREATE TEMPORARY TABLE {$this->calendar_table} ( date date );";
-			if ( false == $wpdb->query( $sql ) ) {
-				return false;
-			}
-		} else {
-			$sql = "TRUNCATE {$this->calendar_table};";
-			if ( false == $wpdb->query( $sql ) ) {
-				return false;
-			}
+		if ( ! empty( $increase_data ) ) {
+			$increase_data = array_combine( wp_list_pluck( $increase_data, 'the_date' ), wp_list_pluck( $increase_data, 'increase' ) );
 		}
 
-		$sql = "INSERT INTO {$this->calendar_table} (date) VALUES ('" . implode( "'),('", $dates ) . "');";
+		foreach ( $dates as $date => $count ) {
 
-		if ( false !== $wpdb->query( $sql ) ) {
+			if ( isset( $increase_data[ $date ] ) ) {
+				$total += $increase_data[ $date ];
+			}
+			$dates[ $date ] = $total;
+		}
+
 			return $dates;
-		}
-
-		return false;
-
 	}
 
 

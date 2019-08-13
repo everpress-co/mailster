@@ -39,7 +39,6 @@
 }
 .mce-fade {
 	opacity: 0;
-	-webkit-transition: opacity .15s linear;
 	transition: opacity .15s linear
 }
 .mce-fade.mce-in {
@@ -790,7 +789,6 @@ div.mce-fullscreen {
 	width: 0%;
 	height: 100%;
 	background-color: #d7d7d7;
-	-webkit-transition: width .2s ease;
 	transition: width .2s ease
 }
 .mce-notification {
@@ -1946,7 +1944,6 @@ i.mce-i-resize {
 	background: #fff;
 	border: 1px solid #c5c5c5;
 	display: inline-block;
-	-webkit-transition: border linear .2s, box-shadow linear .2s;
 	transition: border linear .2s, box-shadow linear .2s;
 	height: 28px;
 	resize: none;
