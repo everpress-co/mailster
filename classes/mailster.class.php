@@ -1839,23 +1839,23 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_tags (
-                ID bigint(20) NOT NULL AUTO_INCREMENT,
-                name varchar(191) NOT NULL,
-                slug varchar(191) NOT NULL,
-                description longtext NOT NULL,
-                added int(11) unsigned NOT NULL,
-                updated int(11) unsigned NOT NULL,
-                PRIMARY KEY  (ID),
-                UNIQUE KEY name (name),
-                UNIQUE KEY slug (slug)
+                `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+                `name` varchar(191) NOT NULL,
+                `slug` varchar(191) NOT NULL,
+                `description` longtext NOT NULL,
+                `added` int(11) unsigned NOT NULL,
+                `updated` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `name` (`name`),
+                UNIQUE KEY `slug` (`slug`)
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_tags_subscribers (
-                tag_id bigint(20) unsigned NOT NULL,
-                subscriber_id bigint(20) unsigned NOT NULL,
-                UNIQUE KEY id (tag_id,subscriber_id),
-                KEY tag_id (tag_id),
-                KEY subscriber_id (subscriber_id)
+                `tag_id` bigint(20) unsigned NOT NULL,
+                `subscriber_id` bigint(20) unsigned NOT NULL,
+                UNIQUE KEY id (`tag_id`,`subscriber_id`),
+                KEY `tag_id` (`tag_id`),
+                KEY `subscriber_id` (`subscriber_id`)
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_forms (
