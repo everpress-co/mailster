@@ -7,7 +7,6 @@ jQuery(document).ready(function ($) {
 		_form = $('form#subscriber_form'),
 		wpnonce = $('#_wpnonce').val();
 
-	//init the whole thing
 	function _init() {
 
 		_events();
@@ -16,6 +15,7 @@ jQuery(document).ready(function ($) {
 			animate: 1000,
 			rotate: 180,
 			barColor: '#2BB3E7',
+			trackColor: '#50626f',
 			trackColor: '#ffffff',
 			lineWidth: 9,
 			size: 75,

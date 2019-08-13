@@ -13,11 +13,12 @@ class MailsterForm {
 	private $message = '';
 
 	private $form = null;
+	private $formkey = null;
 	private $campaignID = null;
-	private $cache = true;
 	private $honeypot = true;
 	private $hash = null;
 	private $profile = false;
+	private $unsubscribe = false;
 	private $preview = false;
 	private $ajax = true;
 	private $embed_style = true;
@@ -26,13 +27,14 @@ class MailsterForm {
 	private $redirect = false;
 	private $referer = true;
 	private $extern = false;
+	private $action = 'subscribe';
 
 	static $add_script = false;
 	static $add_style = false;
 
 	public function __construct() {
 		$this->scheme = is_ssl() ? 'https' : 'http';
-		$this->honeypot = ! is_admin();
+		$this->honeypot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135 (otherwise ! is_admin())
 		$this->form = new StdClass();
 	}
 
@@ -63,17 +65,37 @@ class MailsterForm {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $args   (optional)
 	 * @return unknown
 	 */
-	public function id( $id ) {
+	public function id( $id, $args = array() ) {
 
 		$this->ID = $id;
 		$this->form = mailster( 'forms' )->get( $this->ID, true, true );
 		if ( ! $this->form ) {
-			$this->form = $this->form = mailster( 'forms' )->get( 1, true, true );
+			$this->form = mailster( 'forms' )->get( mailster( 'helper' )->get_first_form_id(), true, true );
+		}
+		if ( isset( $args['id'] ) ) {
+			unset( $args['id'] );
+		}
+		if ( ! empty( $args ) ) {
+
+			// only allow certain elements
+			$args = array_intersect_key( $args, array_flip( array( 'name', 'submit', 'asterisk', 'userschoice', 'precheck', 'dropdown', 'prefill', 'inline', 'overwrite', 'style', 'doubleoptin', 'subject', 'headline', 'content', 'link', 'template', 'redirect', 'gdpr' ) ) );
+
+			// special case form stylesheet
+			if ( isset( $args['style'] ) ) {
+				$args['stylesheet'] = $args['style'];
+				unset( $args['style'] );
+			}
+
+			$this->formkey = md5( AUTH_SALT . serialize( $args ) );
+			set_transient( '_mailster_form_' . $this->formkey, $args );
+			$this->form = (object) shortcode_atts( (array) $this->form, $args );
+
 		}
 
-		$this->ajax();
+		$this->ajax( $this->form->ajax );
 		return $this;
 	}
 
@@ -188,8 +210,8 @@ class MailsterForm {
 		add_action( 'wp_footer', array( &$this, 'print_script' ) );
 		add_action( 'admin_footer', array( &$this, 'print_script' ) );
 
-		if ( $this->unsubscribe ) {
-			return $this->unsubscribe_form();
+		if ( ! defined( 'DONOTCACHEPAGE' ) && mailster_option( 'disable_cache_frontpage' ) ) {
+			define( 'DONOTCACHEPAGE', true );
 		}
 
 		if ( $this->prefill ) {
@@ -202,14 +224,16 @@ class MailsterForm {
 				if ( ! $this->object['userdata']['firstname'] ) {
 					$this->object['userdata']['firstname'] = $current_user->display_name;
 				}
-
-				$this->cache( false );
 			}
 		}
-		if ( $this->profile ) {
+		if ( $this->profile || $this->unsubscribe ) {
+
 			if ( $subscriber = mailster( 'subscribers' )->get_by_hash( $this->hash, true ) ) {
 				$this->object['userdata'] = (array) $subscriber;
+			} elseif ( $subscriber = mailster( 'subscribers' )->get_by_wpid( null, true ) ) {
+				$this->object['userdata'] = (array) $subscriber;
 			}
+		} else {
 		}
 
 		if ( isset( $_GET['userdata'] ) ) {
@@ -228,14 +252,18 @@ class MailsterForm {
 				delete_transient( $transient );
 			}
 		}
+		if ( isset( $_GET['success'] ) ) {
+			$this->object['success'] = array( mailster_text( $_GET['success'] ) );
+		}
+
+		$this->add_class( 'mailster-form-' . $this->ID );
 
 		$html = '';
-		// $html .= '<!-- Begin Mailster Form -->'."\n";
-		$html .= '%%STYLES%%';
+		$html .= '<!--Mailster:styles-->';
 
-		$html .= '<form action="%%FORMACTION%%" method="post" class="mailster-form-%%FORMID%% %%CLASSES%%">';
-		$html .= '%%INFOS%%';
-		$html .= '%%HIDDENFIELDS%%';
+		$html .= '<form action="<!--Mailster:formaction-->" method="post" class="<!--Mailster:classes-->" novalidate>';
+		$html .= '<!--Mailster:infos-->';
+		$html .= '<!--Mailster:hiddenfields-->';
 
 		$customfields = mailster()->get_custom_fields();
 		$inline = $this->form->inline;
@@ -243,11 +271,49 @@ class MailsterForm {
 
 		$fields = array();
 
-		foreach ( $this->form->fields as $field ) {
+		if ( $this->unsubscribe ) {
 
-			$required = $field->required;
+			$single_opt_out = mailster_option( 'single_opt_out' );
+			$buttonlabel = mailster_text( 'unsubscribebutton', esc_html__( 'Unsubscribe', 'mailster' ) );
+
+			// instant unsubscribe
+			if ( $subscriber && $single_opt_out && isset( $_COOKIE['mailster'] ) ) {
+
+				if ( mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $this->campaignID, 'link_unsubscribe' ) ) {
+					$buttonlabel = $this->form->submit;
+					$this->form->fields = array();
+					$this->set_success( mailster_text( 'unsubscribe' ) );
+				} else {
+					$this->set_error( mailster_text( 'unsubscribeerror' ) );
+				}
+			}
+			if ( get_query_var( '_mailster_hash' ) ) {
+				$this->form->fields = array();
+			} else {
+				$this->form->fields = array_intersect_key( $this->form->fields, array_flip( array( 'email' ) ) );
+			}
+			$this->form->userschoice = false;
+		} else {
+			$buttonlabel = strip_tags( $this->form->submit );
+		}
+
+		if ( $this->profile ) {
+			$this->form->fields['_status'] = (object) array(
+				'field_id' => '_status',
+				'name' => esc_html__( 'Status', 'mailster' ),
+			);
+		}
+
+		if ( empty( $this->form->fields ) ) {
+			$this->form->fields = array();
+		}
+
+		foreach ( $this->form->fields as $field_id => $field ) {
+
+			$required = isset( $field->required ) && $field->required;
 
 			$label = ! empty( $field->name ) ? $field->name : mailster_text( $field->field_id );
+			$label = apply_filters( 'mailster_form_field_label_' . $field_id, $label, $field );
 			$esc_label = esc_attr( strip_tags( $label ) );
 
 			$value = ( isset( $this->object['userdata'][ $field->field_id ] )
@@ -283,6 +349,31 @@ class MailsterForm {
 
 				break;
 
+				case '_status':
+
+					$subscriber_status = isset( $this->object['userdata']['status'] ) ? (int) $this->object['userdata']['status'] : 1;
+
+					$fields[ $field->field_id ] = '<div class="mailster-wrapper mailster-' . $field->field_id . '-wrapper' . $class . '">';
+
+					if ( ! $inline ) {
+						$fields[ $field->field_id ] .= '<label for="mailster-' . $field->field_id . '-' . $this->ID . '">' . $label;
+						if ( $required && $asterisk ) {
+							$fields[ $field->field_id ] .= ' <span class="mailster-required">*</span>';
+						}
+
+						$fields[ $field->field_id ] .= '</label>';
+					}
+					$fields[ $field->field_id ] .= '<select id="mailster-' . $field->field_id . '-' . $this->ID . '" name="' . $field->field_id . '" class="input mailster-' . $field->field_id . '' . ( $required ? ' mailster-required' : '' ) . '" aria-required="' . ( $required ? 'true' : 'false' ) . '" aria-label="' . $esc_label . '">';
+
+					$stati = mailster( 'subscribers' )->get_status( null, true );
+					foreach ( $stati as $status => $name ) {
+						if ( in_array( $status, array( 1, 2 ) ) || $status == $subscriber_status ) {
+							$fields[ $field->field_id ] .= '<option value="' . $status . '" ' . selected( $subscriber_status, $status, false ) . '>' . $name . '</option>';
+						}
+					}
+					$fields[ $field->field_id ] .= '</select></div>';
+
+				break;
 				// custom fields
 				default:
 
@@ -292,8 +383,6 @@ class MailsterForm {
 
 					$data = $customfields[ $field->field_id ];
 
-					// $label = isset($form->labels[$field->field_id]) ? $form->labels[$field->field_id] : $data['name'];
-					// $esc_label = esc_attr(strip_tags($label));
 					$fields[ $field->field_id ] = '<div class="mailster-wrapper mailster-' . $field->field_id . '-wrapper' . $class . '">';
 
 					$showlabel = ! $inline;
@@ -385,11 +474,11 @@ class MailsterForm {
 
 			if ( ! empty( $lists ) ) {
 
-				if ( $this->profile ) {
+				if ( $this->profile && isset( $this->object['userdata']['ID'] ) ) {
 					$userlists = mailster( 'subscribers' )->get_lists( $this->object['userdata']['ID'], true );
 				}
 
-				$fields['lists'] = '<div class="mailster-wrapper mailster-lists-wrapper' . $class . '"><label>' . mailster_text( 'lists', __( 'Lists', 'mailster' ) ) . '</label>';
+				$fields['lists'] = '<div class="mailster-wrapper mailster-lists-wrapper' . $class . '"><label>' . mailster_text( 'lists', esc_html__( 'Lists', 'mailster' ) ) . '</label>';
 
 				if ( $this->form->dropdown ) {
 					$fields['lists'] .= '<select name="lists[]" class="input mailster-lists-dropdown">';
@@ -406,11 +495,11 @@ class MailsterForm {
 							|| ( ! empty( $this->object['errors'] ) && in_array( $list->ID, $this->object['lists'] ) )
 							|| ( $this->form->precheck && $this->preview );
 
-						if ( $this->profile ) {
+						if ( $this->profile && isset( $userlists ) ) {
 							$checked = in_array( $list->ID, $userlists );
 						}
 
-						$fields['lists'] .= '<li><label title="' . esc_attr( $list->description ) . '"><input type="hidden" name="lists[' . $i . ']" value="0"><input class="mailster-list mailster-list-' . $list->slug . '" type="checkbox" name="lists[' . $i . ']" value="' . $list->ID . '" ' . checked( $checked, true, false ) . ' aria-label="' . esc_attr( $list->name ) . '"> ' . $list->name;
+						$fields['lists'] .= '<li><label title="' . esc_attr( $list->description ) . '"><input type="hidden" name="lists[' . $i . ']" value=""><input class="mailster-list mailster-list-' . $list->slug . '" type="checkbox" name="lists[' . $i . ']" value="' . $list->ID . '" ' . checked( $checked, true, false ) . ' aria-label="' . esc_attr( $list->name ) . '"> ' . $list->name;
 						if ( $list->description ) {
 							$fields['lists'] .= ' <span class="mailster-list-description mailster-list-description-' . $list->ID . '">' . $list->description . '</span>';
 						}
@@ -425,17 +514,44 @@ class MailsterForm {
 			}
 		}
 
-		$buttonlabel = esc_attr( strip_tags( $this->form->submit ) );
+		if ( ! $this->profile && ! $this->unsubscribe && $this->form->gdpr ) {
+			if ( ! is_numeric( $this->form->gdpr ) ) {
+				$label = $this->form->gdpr;
+			} else {
+				$label = mailster_option( 'gdpr_text' );
+			}
+			$fields['_gdpr'] = '<div class="mailster-wrapper mailster-_gdpr-wrapper">';
+			$fields['_gdpr'] .= '<label for="mailster-_gdpr-' . $this->ID . '">';
+			$fields['_gdpr'] .= '<input type="hidden" name="_gdpr" value="0"><input id="mailster-_gdpr-' . $this->ID . '" name="_gdpr" type="checkbox" value="1" class="mailster-_gdpr mailster-required" aria-required="true" aria-label="' . esc_attr( $label ) . '"> ';
+			$fields['_gdpr'] .= ' ' . $label;
+			if ( mailster_option( 'gdpr_link' ) ) {
+				$fields['_gdpr'] .= ' (<a href="' . mailster_option( 'gdpr_link' ) . '">' . esc_html__( 'Link', 'mailster' ) . '</a>)';
+			}
 
-		$fields['_submit'] = '<div class="mailster-wrapper mailster-submit-wrapper form-submit"><input name="submit" type="submit" value="' . $buttonlabel . '" class="submit-button button" aria-label="' . $buttonlabel . '"></div>';
+			$fields['_gdpr'] .= '</label>';
+			$fields['_gdpr'] .= '</div>';
+		}
 
-		// if($cache) set_transient( $transient, $fields );
+		$fields['_submit'] = '<div class="mailster-wrapper mailster-submit-wrapper form-submit">';
+
+		if ( apply_filters( 'mailster_form_button_as_input', true, $this->ID, $this->form ) ) {
+			$fields['_submit'] .= '<input name="submit" type="submit" value="' . esc_attr( $buttonlabel ) . '" class="submit-button button" aria-label="' . esc_attr( $buttonlabel ) . '">';
+		} else {
+			$fields['_submit'] .= '<button name="submit" class="submit-button button" aria-label="' . esc_attr( $buttonlabel ) . '">' . esc_attr( $buttonlabel ) . '</button>';
+		}
+		$fields['_submit'] .= '</div>';
+
+		// remove submit button on single opt out
+		if ( $this->unsubscribe && $subscriber && $single_opt_out && isset( $_COOKIE['mailster'] ) ) {
+			unset( $fields['_submit'] );
+		}
+
 		$fields = apply_filters( 'mymail_form_fields', apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form ), $this->ID, $this->form );
 
 		if ( $this->honeypot ) {
 			$position = rand( count( $fields ), 0 ) - 1;
 			$fields = array_slice( $fields, 0, $position, true ) +
-				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="off"></label>' ) +
+				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="off" autofill="off"></label>' ) +
 				array_slice( $fields, $position, null, true );
 		}
 
@@ -445,13 +561,18 @@ class MailsterForm {
 
 		$html .= '</form>' . "\n";
 
-		// $html .= '<!-- End Mailster Form -->';
-		$html = str_replace( '%%FORMACTION%%', $this->get_form_action( $this->profile ? 'mailster_profile_submit' : 'mailster_form_submit' ), $html );
-		$html = str_replace( '%%CLASSES%%', esc_attr( implode( ' ', $this->classes ) ), $html );
-		$html = str_replace( '%%FORMID%%', $this->ID, $html );
-		$html = str_replace( '%%STYLES%%', $this->get_styles(), $html );
-		$html = str_replace( '%%HIDDENFIELDS%%', $this->get_hidden_fields(), $html );
-		$html = str_replace( '%%INFOS%%', $this->get_info(), $html );
+		$html = str_replace( '<!--Mailster:formaction-->', $this->get_form_action( $this->profile ? 'mailster_profile_submit' : 'mailster_form_submit' ), $html );
+		$html = str_replace( '<!--Mailster:classes-->', esc_attr( implode( ' ', $this->classes ) ), $html );
+		$html = str_replace( '<!--Mailster:styles-->', $this->get_styles(), $html );
+		$html = str_replace( '<!--Mailster:hiddenfields-->', $this->get_hidden_fields(), $html );
+		$html = str_replace( '<!--Mailster:infos-->', $this->get_info(), $html );
+
+		if ( $this->profile ) {
+			$html = apply_filters( 'mailster_profile_form', $html, $this->ID, $this->form );
+		}
+		if ( $this->unsubscribe ) {
+			$html = apply_filters( 'mailster_unsubscribe_form', $html, $this->ID, $this->form );
+		}
 
 		$html = apply_filters( 'mymail_form', apply_filters( 'mailster_form', $html, $this->ID, $this->form ), $this->ID, $this->form );
 
@@ -499,7 +620,11 @@ class MailsterForm {
 		$html = '';
 
 		$redirect = esc_url( home_url( remove_query_arg( array( 'mailster_error', 'mailster_success' ), $_SERVER['REQUEST_URI'] ) ) );
-		$referer = $pagenow == 'form.php' ? ( isset( $_GET['referer'] ) ? $_GET['referer'] : 'extern' ) : $redirect;
+		$referer = $pagenow == 'form.php' || get_query_var( '_mailster_form' ) ? ( isset( $_GET['referer'] ) ? $_GET['referer'] : 'extern' ) : $redirect;
+
+		if ( $this->action ) {
+			$html .= '<input name="_action" type="hidden" value="' . esc_attr( $this->action ) . '">' . "\n";
+		}
 
 		if ( $this->redirect ) {
 			$html .= '<input name="_redirect" type="hidden" value="' . esc_attr( is_string( $this->redirect ) ? $this->redirect : $redirect ) . '">' . "\n";
@@ -509,13 +634,38 @@ class MailsterForm {
 			$html .= '<input name="_referer" type="hidden" value="' . esc_attr( is_string( $this->referer ) ? $this->referer : $referer ) . '">' . "\n";
 		}
 
+		if ( $this->formkey ) {
+			$html .= '<input name="_formkey" type="hidden" value="' . esc_attr( $this->formkey ) . '">' . "\n";
+		}
+
 		if ( $this->hash ) {
 			$html .= '<input name="_hash" type="hidden" value="' . esc_attr( $this->hash ) . '">' . "\n";
+		}
+
+		if ( $this->campaignID ) {
+			$html .= '<input name="_campaign_id" type="hidden" value="' . esc_attr( $this->campaignID ) . '">' . "\n";
+		}
+
+		if ( $nonce = $this->get_nonce() ) {
+			$html .= '<input name="_nonce" type="hidden" value="' . esc_attr( $nonce ) . '">' . "\n";
 		}
 
 		$html .= '<input name="formid" type="hidden" value="' . $this->ID . '">' . "\n";
 
 		return $html;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	private function get_nonce() {
+		if ( is_admin() || mailster_option( 'use_post_nonce' ) ) {
+			return mailster_option( 'post_nonce' );
+		}
+		return wp_create_nonce( 'mailster-form-nonce' );
 	}
 
 
@@ -555,17 +705,16 @@ class MailsterForm {
 		if ( $bool ) {
 
 			$this->profile = true;
-			$this->form_endpoint = 'update';
-			$this->form->submit = mailster_text( 'profilebutton', __( 'Update Profile', 'mailster' ) );
+			$this->form->submit = mailster_text( 'profilebutton', esc_html__( 'Update Profile', 'mailster' ) );
 			$this->add_class( 'is-profile' );
 			$this->set_hash();
+			$this->action = 'update';
 
 		} else {
 
 			$this->profile = false;
 			$this->remove_class( 'is-profile' );
 			$this->hash = null;
-			$this->form_endpoint = 'subscribe';
 
 		}
 
@@ -578,7 +727,7 @@ class MailsterForm {
 	 * @param unknown $ID
 	 */
 	public function campaign_id( $ID ) {
-		$this->campaignID = intval( $ID );
+		$this->campaignID = (int) $ID;
 	}
 
 
@@ -591,13 +740,14 @@ class MailsterForm {
 
 		if ( $bool ) {
 
-			$this->form_endpoint = 'unsubscribe';
 			$this->unsubscribe = true;
+			$this->add_class( 'is-unsubscribe' );
 			$this->set_hash();
+			$this->action = 'unsubscribe';
 
 		} else {
 
-			$this->form_endpoint = 'subscribe';
+			$this->remove_class( 'is-unsubscribe' );
 			$this->unsubscribe = false;
 			$this->hash = null;
 
@@ -625,6 +775,10 @@ class MailsterForm {
 
 		if ( isset( $_COOKIE['mailster'] ) ) {
 			return $_COOKIE['mailster'];
+		}
+
+		if ( $hash = get_query_var( '_mailster_hash' ) ) {
+			return $hash;
 		}
 
 		if ( ! $this->unsubscribe && is_user_logged_in() && ( $subscriber = mailster( 'subscribers' )->get_by_wpid( get_current_user_id() ) ) ) {
@@ -657,7 +811,7 @@ class MailsterForm {
 			if ( mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $this->campaignID ) ) {
 				$infoclass = ' success';
 				$this->message = '<p>' . mailster_text( 'unsubscribe' ) . '</p>';
-				$this->form_endpoint = 'resubscribe';
+				$this->form_endpoint = 'subscribe';
 			} else {
 				$infoclass = ' error';
 				$this->message = '<p>' . mailster_text( 'unsubscribeerror' ) . '</p>';
@@ -666,8 +820,8 @@ class MailsterForm {
 
 		global $post;
 		$form_id = '';
-		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#', $post->post_content, $form_id ) ) {
-			$form_id = intval( $form_id[1] );
+		if ( preg_match( '#\[newsletter_signup_form id="?(\d+)"?#i', $post->post_content, $matches ) ) {
+			$form_id = (int) $matches[1];
 			$this->id( $form_id );
 		}
 
@@ -677,23 +831,23 @@ class MailsterForm {
 
 		$action = 'mailster_form_unsubscribe';
 
-		$html .= '<form action="' . $this->get_form_action( $action ) . '" method="post" class="mailster-form mailster-form-' . $form_id . ' mailster-form-submit mailster-ajax-form" id="mailster-form-unsubscribe">' . "\n";
+		$html .= '<form action="' . $this->get_form_action( $action ) . '" method="post" class="mailster-form mailster-form-' . $form_id . ' mailster-form-submit mailster-ajax-form" id="mailster-form-unsubscribe" novalidate>' . "\n";
 		$html .= '<div class="mailster-form-info ' . $infoclass . '">';
-		// $html .= $this->get_message();
 		$html .= $this->message;
 		$html .= '</div>';
+		$html .= '<input name="_action" type="hidden" value="unsubscribe">';
 		$html .= '<input name="hash" type="hidden" value="' . $this->hash . '">';
 		$html .= '<input name="campaign" type="hidden" value="' . $this->campaignID . '">';
 		$html .= '<div class="mailster-form-fields">';
 		if ( ! $this->hash ) {
 
-			$html .= '<div class="mailster-wrapper mailster-email-wrapper"><label for="mailster-email">' . mailster_text( 'email', __( 'Email', 'mailster' ) ) . ' <span class="mailster-required">*</span></label>';
+			$html .= '<div class="mailster-wrapper mailster-email-wrapper"><label for="mailster-email">' . mailster_text( 'email', esc_html__( 'Email', 'mailster' ) ) . ' <span class="mailster-required">*</span></label>';
 			$html .= '<input id="mailster-email" class="input mailster-email mailster-required" name="email" type="email" value=""></div>';
 
 		}
 		if ( $subscriber && $single_opt_out ) {
 		} else {
-			$buttontext = mailster_text( 'unsubscribebutton', __( 'Unsubscribe', 'mailster' ) );
+			$buttontext = mailster_text( 'unsubscribebutton', esc_html__( 'Unsubscribe', 'mailster' ) );
 			$html .= '<div class="mailster-wrapper mailster-submit-wrapper form-submit"><input name="submit" type="submit" value="' . $buttontext . '" class="submit-button button"></div>';
 			$html .= '</div>';
 		}
@@ -705,15 +859,13 @@ class MailsterForm {
 
 	public function submit() {
 
-		global $wp;
-
 		$_BASE = $_POST;
 
 		if ( empty( $_BASE ) ) {
 			wp_die( 'no data' );
 		};
 
-		$submissiontype = isset( $wp->query_vars['_mailster'] ) ? $wp->query_vars['_mailster'] : null;
+		$submissiontype = isset( $_BASE['_action'] ) ? $_BASE['_action'] : 'subscribe';
 
 		if ( ! $submissiontype ) {
 			wp_die( 'wrong submissiontype' );
@@ -724,7 +876,18 @@ class MailsterForm {
 			$honeypot = isset( $_BASE[ 'n_' . $honeypotnonce . '_email' ] ) ? $_BASE[ 'n_' . $honeypotnonce . '_email' ] : null;
 
 			if ( ! empty( $honeypot ) ) {
-				die( 1 );
+				$this->object['errors']['_honeypot'] = esc_html__( 'Honeypot is for bears only!', 'mailster' );
+			}
+		}
+
+		$_nonce = isset( $_BASE['_nonce'] ) ? $_BASE['_nonce'] : null;
+		$_formkey = isset( $_BASE['_formkey'] ) ? $_BASE['_formkey'] : null;
+		$post_nonce = mailster_option( 'post_nonce' );
+
+		if ( $_nonce || $post_nonce ) {
+			if ( wp_verify_nonce( $_nonce, 'mailster-form-nonce' ) || $post_nonce == $_nonce ) {
+			} else {
+				$this->object['errors']['_nonce'] = esc_html__( 'Security Nonce is invalid!', 'mailster' );
 			}
 		}
 
@@ -740,7 +903,12 @@ class MailsterForm {
 
 		$now = time();
 
-		$this->id( isset( $_BASE['formid'] ) ? intval( $_BASE['formid'] ) : 1 );
+		$form_args = array();
+		if ( $_formkey ) {
+			$form_args = (array) get_transient( '_mailster_form_' . $_formkey );
+		}
+
+		$this->id( isset( $_BASE['formid'] ) ? (int) $_BASE['formid'] : 1, $form_args );
 
 		$double_opt_in = $this->form->doubleoptin;
 		$overwrite = $this->form->overwrite;
@@ -761,15 +929,7 @@ class MailsterForm {
 					$value = stripslashes( $value );
 					break;
 				case 'date':
-					$timestamp = is_numeric( $value ) ? strtotime( '@' . $value ) : strtotime( '' . $value );
-					if ( false !== $timestamp ) {
-						$value = date( 'Y-m-d', $timestamp );
-					} elseif ( is_numeric( $value ) ) {
-						$value = date( 'Y-m-d', $value );
-					} else {
-						$value = '';
-					}
-					break;
+					$value = mailster( 'helper' )->do_timestamp( $value, 'Y-m-d' );
 				default:
 					$value = sanitize_text_field( $value );
 					break;
@@ -777,18 +937,33 @@ class MailsterForm {
 
 			$this->object['userdata'][ $field_id ] = $value;
 
-			if ( ( $field_id == 'email' && ! mailster_is_email( trim( $this->object['userdata'][ $field_id ] ) ) )
-				|| ( ! $this->object['userdata'][ $field_id ] && in_array( $field_id, $this->form->required ) ) ) {
-				$this->object['errors'][ $field_id ] = $field->error_msg;
+			if ( $submissiontype != 'unsubscribe' ) {
+				if ( ( $field_id == 'email' && ! mailster_is_email( trim( $this->object['userdata'][ $field_id ] ) ) )
+					|| ( ! $this->object['userdata'][ $field_id ] && in_array( $field_id, $this->form->required ) ) ) {
+					$this->object['errors'][ $field_id ] = $field->error_msg;
+				}
 			}
 		}
 
 		$this->object['userdata']['email'] = trim( $this->object['userdata']['email'] );
 
-		$this->object['lists'] = $this->form->userschoice
-			? ( isset( $_POST['lists'] )
-			? (array) $_POST['lists'] : array() )
-			: $this->form->lists;
+		if ( $this->form->userschoice ) {
+			$this->object['lists'] = isset( $_BASE['lists'] ) ? array_filter( (array) $_BASE['lists'] ) : array() ;
+		} else {
+			$this->object['lists'] = $this->form->lists;
+		}
+
+		if ( isset( $_BASE['_gdpr'] ) ) {
+			if ( empty( $_BASE['_gdpr'] ) ) {
+				$this->object['errors']['_gdpr'] = mailster_option( 'gdpr_error' );
+			} else {
+				$this->object['userdata']['gdpr'] = $now;
+			}
+		}
+
+		if ( isset( $_BASE['_formkey'] ) ) {
+			$this->object['userdata']['formkey'] = $_BASE['_formkey'];
+		}
 
 		// to hook into the system
 		$this->object = apply_filters( 'mymail_submit', apply_filters( 'mailster_submit', $this->object ) );
@@ -799,8 +974,10 @@ class MailsterForm {
 			$email = $this->object['userdata']['email'];
 
 			$entry = wp_parse_args( array(
-					'lang' => mailster_get_lang(),
+				'lang' => mailster_get_lang(),
 			), $this->object['userdata'] );
+
+			$remove_old_lists = false;
 
 			switch ( $submissiontype ) {
 
@@ -813,22 +990,65 @@ class MailsterForm {
 						'lang' => mailster_get_lang(),
 						'referer' => $referer,
 						'form' => $this->ID,
+						'ip' => (bool) mailster_option( 'track_users' ),
 					), $this->object['userdata'] );
 
 					if ( $overwrite && $subscriber = mailster( 'subscribers' )->get_by_mail( $entry['email'] ) ) {
 						$entry = wp_parse_args( array(
-							// change status if other than pending, subscribed or unsubscribed
-							'status' => $subscriber->status >= 3 ? 2 : $subscriber->status,
+							// set status to the form default if it's not "subscribed"
+							'status' => $subscriber->status != 1 ? $entry['status'] : $subscriber->status,
 							'ID' => $subscriber->ID,
 						), $entry );
 
-							$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
-							$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+						if ( isset( $entry['form'] ) ) {
+							unset( $entry['form'] );
+						}
+
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+						$message = $entry['status'] == 0 ? 'confirmation' : 'success';
+						$message = $double_opt_in ? 'confirmation' : 'success';
+
+						$submissiontype = 'update';
 
 					} else {
 
 						$subscriber_id = mailster( 'subscribers' )->add( $entry );
-						$message = $double_opt_in ? mailster_text( 'confirmation' ) : mailster_text( 'success' );
+						$message = $double_opt_in ? 'confirmation' : 'success';
+
+					}
+
+					$assign_lists = $this->object['lists'];
+
+				break;
+
+				case 'unsubscribe':
+
+					$campaign_id = ! empty( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null;
+					$subscriber_id = $subscriber = null;
+
+					if ( isset( $_BASE['email'] ) ) {
+						if ( ! empty( $_BASE['email'] ) ) {
+							$subscriber = mailster( 'subscribers' )->get_by_mail( $_BASE['email'] );
+							if ( ! $subscriber ) {
+								$this->object['errors']['email'] = mailster_text( 'unsubscribeerror' );
+							}
+						} else {
+							$this->object['errors']['email'] = mailster_text( 'enter_email' );
+						}
+						$type = 'email_unsubscribe';
+					} elseif ( isset( $_BASE['_hash'] ) ) {
+						$subscriber = mailster( 'subscribers' )->get_by_hash( $_BASE['_hash'] );
+						$type = 'link_unsubscribe';
+					}
+
+					if ( $subscriber ) {
+						$subscriber_id = $subscriber->ID;
+						if ( ! ($return['success'] = mailster( 'subscribers' )->unsubscribe( $subscriber_id, $campaign_id, $type )) ) {
+							$this->object['errors']['email'] = mailster_text( 'unsubscribeerror' );
+						} else {
+							$message = 'unsubscribe';
+						}
+					} else {
 
 					}
 
@@ -836,17 +1056,60 @@ class MailsterForm {
 
 				case 'update':
 
-					$this->set_hash();
-					$subscriber = mailster( 'subscribers' )->get_by_hash( $this->hash, true );
-					$entry = wp_parse_args( array(
+					$this->set_hash( $_BASE['_hash'] );
+
+					if ( ! ( $subscriber = mailster( 'subscribers' )->get_by_hash( $this->hash, true ) ) ) {
+						$subscriber = mailster( 'subscribers' )->get_by_wpid( null, true );
+					}
+
+					if ( $subscriber ) {
+						$unassign_lists = null;
+						$assign_lists = null;
+						if ( $this->form->userschoice ) {
+							$assigned_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID, true );
+
+							$unassign_lists = array_diff( $assigned_lists, $this->object['lists'] );
+							$fix_lists = array_diff( $assigned_lists, $this->form->lists );
+							$unassign_lists = array_diff( $unassign_lists, $fix_lists );
+
+							$assign_lists = array_diff( $this->object['lists'], $assigned_lists );
+						}
+
 						// change status if other than pending, subscribed or unsubscribed
-						'status' => $subscriber->status >= 3 ? 2 : $subscriber->status,
-						'ID' => $subscriber->ID,
-					), $entry );
+						$status = $subscriber->status >= 3 ? 1 : $subscriber->status;
+						if ( isset( $_BASE['_status'] ) ) {
+							if ( $status == 0 && (int) $_BASE['_status'] == 1 ) {
+
+								if ( mailster_option( 'track_users' ) ) {
+									$ip = mailster_get_ip();
+									$entry['ip'] = $ip;
+									$entry['ip_confirm'] = $ip;
+								}
+								$entry['confirm'] = time();
+
+							}
+							$status = (int) $_BASE['_status'];
+						}
+
+						$entry = wp_parse_args( array(
+							'status' => $status,
+							'ID' => $subscriber->ID,
+						), $entry );
+
+						if ( isset( $entry['form'] ) ) {
+							unset( $entry['form'] );
+						}
 
 						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+						if ( is_wp_error( $subscriber_id ) ) {
+							$subscriber_id = $subscriber->ID;
+						}
 
-						$message = $entry['status'] == 0 ? mailster_text( 'confirmation' ) : mailster_text( 'profile_update' );
+						$message = $entry['status'] == 0 ? 'confirmation': 'profile_update';
+
+					} else {
+						$subscriber_id = new WP_Error( 'error', esc_html__( 'There was an error updating the user', 'mailster' ) );
+					}
 
 				break;
 			}
@@ -879,9 +1142,6 @@ class MailsterForm {
 									mailster( 'subscribers' )->change_status( $exists->ID, 1, true );
 								}
 							}
-
-							mailster( 'subscribers' )->assign_lists( $exists->ID, $this->object['lists'], $submissiontype == 'update' );
-
 						}
 
 					break;
@@ -896,7 +1156,15 @@ class MailsterForm {
 				}
 			} else {
 
-				mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], $submissiontype == 'update' );
+				if ( ! empty( $assign_lists ) ) {
+					mailster( 'subscribers' )->assign_lists( $subscriber_id, $assign_lists, $remove_old_lists, ! $double_opt_in );
+					if ( 'update' == $submissiontype ) {
+						mailster( 'subscribers' )->send_confirmations( $subscriber_id, true, true, $this->form->ID );
+					}
+				}
+				if ( ! empty( $unassign_lists ) ) {
+					mailster( 'subscribers' )->unassign_lists( $subscriber_id, $unassign_lists );
+				}
 
 				$target = add_query_arg( array(
 						'subscribe' => '',
@@ -910,7 +1178,7 @@ class MailsterForm {
 			if ( $this->valid() ) {
 				$return = array(
 					'success' => true,
-					'html' => '<p>' . $message . '</p>',
+					'html' => '<p>' . mailster_text( $message ) . '</p>',
 				);
 			} else {
 				$return = array(
@@ -920,7 +1188,7 @@ class MailsterForm {
 				);
 			}
 
-			if ( $this->form->redirect ) {
+			if ( $this->form->redirect && 'unsubscribe' != $submissiontype ) {
 				$return = wp_parse_args( array( 'redirect' => $this->form->redirect ), $return );
 			}
 
@@ -936,7 +1204,7 @@ class MailsterForm {
 		}
 
 		// ajax request
-		if ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) :
+		if ( (isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] )) ) :
 
 			@header( 'Content-type: application/json' );
 			echo json_encode( $return );
@@ -947,170 +1215,25 @@ class MailsterForm {
 		if ( $this->is_extern() ) {
 
 			if ( ! $return['success'] ) {
-				wp_die( $return['html'] . '<a href="javascript:history.back()">' . __( 'Go back', 'mailster' ) . '</a>' );
+				wp_die( $return['html'] . '<a href="javascript:history.back()">' . esc_html__( 'Go back', 'mailster' ) . '</a>' );
 				exit;
 			}
 
-			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( mailster_get_referer() );
+			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( add_query_arg( 'success' , $message, mailster_get_referer() ) );
 
 		} else {
 
 			if ( ! $return['success'] ) {
-				wp_die( $return['html'] . '<a href="javascript:history.back()">' . __( 'Go back', 'mailster' ) . '</a>' );
+				wp_die( $return['html'] . '<a href="javascript:history.back()">' . esc_html__( 'Go back', 'mailster' ) . '</a>' );
 				exit;
 			}
 
-			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( mailster_get_referer() );
+			$target = isset( $return['redirect'] ) ? $return['redirect'] : esc_url( add_query_arg( 'success' , $message, mailster_get_referer() ) );
 
 		}
 
 		wp_redirect( $target );
 		exit;
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
-	public function update() {
-
-		$baselink = get_permalink( mailster_option( 'homepage' ) );
-		if ( ! $baselink ) {
-			$baselink = site_url();
-		}
-
-		$_BASE = $_POST;
-
-		if ( empty( $_BASE ) ) {
-			wp_die( 'no data' );
-		};
-
-		$referer = isset( $_BASE['_referer'] ) ? $_BASE['_referer'] : $baselink;
-		$redirect = isset( $_BASE['_redirect'] ) ? $_BASE['_redirect'] : $baselink;
-
-		$now = time();
-
-		$form_id = mailster_option( 'profile_form', 0 );
-		$form = mailster( 'forms' )->get( $form_id );
-
-		$customfields = mailster()->get_custom_fields();
-		$subscriber = mailster( 'subscribers' )->get_by_hash( $_BASE['hash'], true );
-
-		foreach ( $form->fields as $field ) {
-
-			$value = esc_attr( isset( $_BASE[ $field->field_id ] )
-				? $_BASE[ $field->field_id ]
-			: ( isset( $_BASE['userdata'][ $field->field_id ] ) ? $_BASE['userdata'][ $field->field_id ] : '' ) );
-
-			$this->object['userdata'][ $field->field_id ] = ( $type == 'textarea' ? stripslashes( $value ) : sanitize_text_field( $value ) );
-
-			if ( ( $field->field_id == 'email' && ! mailster_is_email( trim( $this->object['userdata'][ $field->field_id ] ) ) ) || ( ! $this->object['userdata'][ $field->field_id ] && in_array( $field->field_id, $form->required ) ) ) {
-				$this->object['errors'][ $field->field_id ] = mailster_text( $field->field_id, isset( $customfields[ $field->field_id ]['name'] ) ? $customfields[ $field->field_id ]['name'] : $field->name );
-			}
-		}
-
-		$this->object['userdata']['email'] = trim( $this->object['userdata']['email'] );
-
-		$this->object['userdata'] = $this->object['userdata'];
-
-		$this->object['lists'] = isset( $_BASE['lists'] ) ? (array) $_BASE['lists'] : array();
-
-		$this->object = apply_filters( 'mymail_submit', apply_filters( 'mailster_submit', $this->object ) );
-		$this->object = apply_filters( 'mymail_submit_' . $form_id, apply_filters( 'mailster_submit_' . $form_id, $this->object ) );
-
-		$this->object['userdata']['ID'] = $subscriber->ID;
-
-		if ( $this->valid() ) {
-			$email = $this->object['userdata']['email'];
-
-			$this->object['userdata']['updated'] = $now;
-
-			// change status if other than pending, subscribed or unsubscribed
-			if ( $subscriber->status >= 3 ) {
-				$this->object['userdata']['status'] = 2;
-			}
-
-			$subscriber_id = mailster( 'subscribers' )->update( $this->object['userdata'], true, true );
-
-			if ( is_wp_error( $subscriber_id ) ) {
-
-				$this->object['errors']['confirmation'] = $subscriber_id->get_error_message();
-
-			} else {
-
-				if ( isset( $form->userschoice ) ) {
-					mailster( 'subscribers' )->assign_lists( $subscriber_id, $this->object['lists'], true );
-				}
-
-				$target = add_query_arg( array(
-						'subscribe' => '',
-				), $baselink );
-
-			}
-
-			$this->object = apply_filters( 'mymail_post_submit', apply_filters( 'mailster_post_submit', $this->object ) );
-			$this->object = apply_filters( 'mymail_post_submit_' . $form_id, apply_filters( 'mailster_post_submit_' . $form_id, $this->object ) );
-
-			// redirect if no ajax request
-			if ( ! isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
-
-				$target = ( ! empty( $form->redirect ) )
-					? $form->redirect
-					: add_query_arg( array( 'mailster_success' => $double_opt_in + 1 ), $redirect );
-
-				$target = apply_filters( 'mymail_profile_update_target', apply_filters( 'mailster_profile_update_target', $target, $form_id ), $form_id );
-				wp_redirect( $target );
-				exit;
-
-			} else {
-
-				if ( $this->valid() ) {
-					$return = array(
-						'success' => true,
-						'html' => '<p>' . mailster_text( 'profile_update' ) . '</p>',
-					);
-				} else {
-					$return = array(
-						'success' => false,
-						'fields' => $this->object['errors'],
-						'html' => '<p>' . $this->get_message( 'errors', true ) . '</p>',
-					);
-				}
-
-				@header( 'Content-type: application/json' );
-				echo json_encode( $return );
-				exit;
-
-			}
-
-			// redirect if no ajax request or extern
-			return $target;
-
-			// an error occurred
-		} else {
-
-			$return = array(
-				'success' => false,
-				'fields' => $this->object['errors'],
-				'html' => $this->get_message(),
-			);
-
-			// stop if no ajax request
-			if ( ! isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
-
-				wp_die( $return['html'] . '<a href="javascript:history.back()">' . __( 'Go back', 'mailster' ) . '</a>' );
-				exit;
-
-			}
-
-			@header( 'Content-type: application/json' );
-			echo json_encode( $return );
-			exit;
-
-		}
 
 	}
 
@@ -1125,19 +1248,16 @@ class MailsterForm {
 			wp_die( 'no data' );
 		};
 
-		$campaign_id = ! empty( $_BASE['campaign'] ) ? intval( $_BASE['campaign'] ) : null;
+		$campaign_id = ! empty( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null;
 
 		if ( isset( $_BASE['email'] ) ) {
-			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id );
+			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id, 'email_unsubscribe' );
 		} elseif ( isset( $_BASE['hash'] ) ) {
-				$return['success'] = mailster( 'subscribers' )->unsubscribe_by_hash( $_BASE['hash'], $campaign_id );
-		} else {
-			// wp_redirect(mailster()->get_unsubscribe_link());
-			// exit;
+			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_hash( $_BASE['hash'], $campaign_id, 'link_unsubscribe' );
 		}
 
 		// redirect if no ajax request
-		if ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
+		if ( (isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] )) ) {
 
 			$return['html'] = $return['success']
 				? mailster_text( 'unsubscribe' )

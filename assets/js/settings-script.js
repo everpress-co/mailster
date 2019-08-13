@@ -14,14 +14,15 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
-	$('form#mailster-settings-form').on('submit', function () {
-		return false
-	});
+	$('form#mailster-settings-form')
+		.on('submit.lock', function () {
+			return false
+		});
 	if ($('#settingsloaded').length) {
 		$('.submit-form').prop('disabled', false);
-		$('form#mailster-settings-form').off('submit');
+		$('form#mailster-settings-form').off('submit.lock');
 	} else {
-		console.log('error loading settings page');
+		if (console) console.log('error loading settings page');
 	}
 
 	deliverynav.on('click', 'a.nav-tab', function () {
@@ -34,7 +35,6 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
-
 	nav.on('click', 'a', function () {
 		nav.find('li').removeClass('active');
 		tabs.hide();
@@ -42,16 +42,9 @@ jQuery(document).ready(function ($) {
 		$('#tab-' + hash.substr(1)).show();
 		location.hash = hash;
 		$('form#mailster-settings-form').attr('action', 'options.php' + hash);
-		if (hash == '#system_info') {
-			var textarea = $('#system_info_content');
-			if ($.trim(textarea.val())) return;
-			textarea.val(mailsterL10n.loading + '...');
-			_ajax('get_system_info', function (response) {
-
-				if (response.log && console)
-					console.log(response.log);
-				textarea.val(response.msg);
-			});
+		if ('#authentication' == hash) {
+			load_spf_data();
+			load_dkim_data();
 		}
 		return false;
 	});
@@ -78,51 +71,29 @@ jQuery(document).ready(function ($) {
 	nav.find('a[href="' + location.hash + '"]').trigger('click'): nav.find('a').eq(0).trigger('click');
 
 	$('.system_mail').on('change', function () {
-		$('.system_mail_template').prop('disabled', $(this).val() == 0);
+		$('[name="mailster_options[system_mail_template]"]').prop('disabled', $(this).val() == 0);
+		$('[name="mailster_options[respect_content_type]"]').prop('disabled', $(this).val() == 0);
 	});
 
-
-	$('#mailster_geoip').on('change', function () {
-		($(this).is(':checked')) ?
-		$('#mailster_geoipcity').prop('disabled', false): $('#mailster_geoipcity').prop('disabled', true).prop('checked', false);
-	});
-	$('#mailster_geoip').on('change', function () {
-		($(this).is(':checked')) ?
-		$('#load_country_db').prop('disabled', false): $('#load_country_db').prop('disabled', true).prop('checked', false);
-	});
-	$('#mailster_geoipcity').on('change', function () {
-		($(this).is(':checked')) ?
-		$('#load_city_db').prop('disabled', false): $('#load_city_db').prop('disabled', true).prop('checked', false);
-	});
-
-	$('#load_country_db, #load_city_db').on('click', function () {
+	$('#load_location_db').on('click', function () {
 		var $this = $(this),
 			loader = $('.geo-ajax-loading').css({
 				'visibility': 'visible'
-			}),
-			type = $this.data('type');
+			});
 
 		$('button').prop('disabled', true);
 
-		_ajax('load_geo_data', {
-			type: type
-
-		}, function (response) {
+		_ajax('load_geo_data', function (response) {
 
 			$('button').prop('disabled', false);
 			loader.css({
 				'visibility': 'hidden'
 			});
 			$this.prop('disabled', false).html(response.buttontext);
+			if (response.update) $('#location_last_update').html(response.update);
 			var msg = $('<div class="' + ((!response.success) ? 'error' : 'updated') + '"><p>' + response.msg + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(4000).fadeTo(200, 0).delay(200).slideUp(200, function () {
 				msg.remove();
 			});
-
-			if (response.success) {
-				if (response.path) {
-					$('#' + type + '_db_path').val(response.path);
-				}
-			}
 
 		}, function (jqXHR, textStatus, errorThrown) {
 
@@ -140,14 +111,9 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
-	$('#upload_country_db_btn').on('click', function () {
-		$('#upload_country_db').removeClass('hidden');
-		return false;
-	});
-
-	$('#upload_city_db_btn').on('click', function () {
-		$('#upload_city_db').removeClass('hidden');
-		return false;
+	$('.webversion-bar-checkbox').on('change', function () {
+		($(this).is(':checked')) ?
+		$('#webversion-bar-options').slideDown(200): $('#webversion-bar-options').slideUp(200);
 	});
 
 	$('#social-services')
@@ -224,11 +190,11 @@ jQuery(document).ready(function ($) {
 
 	$('.mailster_sendtest').on('click', function () {
 		var $this = $(this),
-			loader = $('.test-ajax-loading').css({
+			cont = $this.closest('.mailster-testmail'),
+			loader = cont.find('.test-ajax-loading').css({
 				'visibility': 'visible'
 			}),
-			basic = $this.data('role') == 'basic',
-			to = (basic) ? $('#mailster_testmail').val() : $('#mailster_authenticationmail').val(),
+			to = cont.find('input.mailster-testmail-email').val(),
 			formdata = $('form#mailster-settings-form').serialize();
 
 		$this.prop('disabled', true);
@@ -236,7 +202,7 @@ jQuery(document).ready(function ($) {
 		_ajax('send_test', {
 			test: true,
 			formdata: formdata,
-			basic: basic,
+			basic: true,
 			to: to
 
 		}, function (response) {
@@ -437,7 +403,7 @@ jQuery(document).ready(function ($) {
 				_base = _this.parent().parent().parent(),
 				val = _sanitize(_this.val());
 
-			if (!val) _this.parent().parent().remove();
+			if (!val) _base.remove();
 
 			_this.val(val);
 			_base.find('.customfield-name').attr('name', 'mailster_options[custom_field][' + val + '][name]');
@@ -511,7 +477,7 @@ jQuery(document).ready(function ($) {
 				callback && callback();
 			} else {
 				setTimeout(function () {
-					bounce_test_check(identifier, ++count, callback);
+					bounce_test_check(identifier, ++count, formdata, callback);
 				}, 1000);
 			}
 
@@ -528,8 +494,50 @@ jQuery(document).ready(function ($) {
 
 	}
 
+	function load_spf_data() {
+		var loader = $('.spf-result').css({
+			'visibility': 'visible'
+		});
+
+		_ajax('spf_check', function (response) {
+
+			if (response.success) {
+				loader
+					.html(response.message)
+					.addClass(response.found ? 'verified' : 'not-verified')
+					.removeClass('spinner');
+			} else {}
+
+		}, function (jqXHR, textStatus, errorThrown) {
+
+			loader.html('error');
+
+		});
+	}
+
+	function load_dkim_data() {
+		var loader = $('.dkim-result').css({
+			'visibility': 'visible'
+		});
+
+		_ajax('dkim_check', function (response) {
+
+			if (response.success) {
+				loader
+					.html(response.message)
+					.addClass(response.found ? 'verified' : 'not-verified')
+					.removeClass('spinner');
+			} else {}
+
+		}, function (jqXHR, textStatus, errorThrown) {
+
+			loader.html('error');
+
+		});
+	}
+
 	function _sanitize(string) {
-		var tag = $.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '');
+		var tag = $.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '').replace(/^[_]*/, '').replace(/[_]*$/, '');
 		if ($.inArray(tag, reservedtags) != -1) {
 			alert(sprintf(mailsterL10n.reserved_tag, '"' + tag + '"'));
 			tag += '-a';

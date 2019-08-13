@@ -20,7 +20,7 @@ jQuery(document).ready(function ($) {
 						return {
 							text: name,
 							onclick: function () {
-								editor.insertContent('[newsletter_signup_form ID=' + id + ']');
+								editor.insertContent('[newsletter_signup_form id=' + id + ']');
 							}
 						};
 					})
@@ -60,7 +60,7 @@ jQuery(document).ready(function ($) {
 								})
 							}],
 							onsubmit: function (e) {
-								editor.insertContent('[newsletter_signup]' + e.data.pre + '[newsletter_signup_form ID=' + e.data.form + '][/newsletter_signup][newsletter_confirm]' + e.data.confirm + '[/newsletter_confirm][newsletter_unsubscribe]' + e.data.unsub + '[/newsletter_unsubscribe]');
+								editor.insertContent('[newsletter_signup]' + e.data.pre + '[newsletter_signup_form id=' + e.data.form + '][/newsletter_signup][newsletter_confirm]' + e.data.confirm + '[/newsletter_confirm][newsletter_unsubscribe]' + e.data.unsub + '[/newsletter_unsubscribe]');
 							}
 						});
 					}

@@ -9,8 +9,8 @@ class Mailster_Lists_Table extends WP_List_Table {
 	public function __construct() {
 
 		parent::__construct( array(
-				'singular' => __( 'List', 'mailster' ), // singular name of the listed records
-				'plural' => __( 'Lists', 'mailster' ), // plural name of the listed records
+				'singular' => esc_html__( 'List', 'mailster' ), // singular name of the listed records
+				'plural' => esc_html__( 'Lists', 'mailster' ), // plural name of the listed records
 				'ajax' => false, // does this table support ajax?
 		) );
 
@@ -29,7 +29,7 @@ class Mailster_Lists_Table extends WP_List_Table {
 		$counts = mailster( 'lists' )->get_list_count();
 		$link = 'edit.php?post_type=newsletter&page=mailster_lists';
 
-		$views = array( 'view-all' => '<a href="' . $link . '">' . __( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $counts ) . ')</span></a>' );
+		$views = array( 'view-all' => '<a href="' . $link . '">' . esc_html__( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $counts ) . ')</span></a>' );
 
 		return $views;
 	}
@@ -40,7 +40,7 @@ class Mailster_Lists_Table extends WP_List_Table {
 		esc_html_e( 'No list found', 'mailster' ) . '.';
 
 		if ( current_user_can( 'mailster_add_lists' ) ) {
-			echo ' <a href="edit.php?post_type=newsletter&page=mailster_lists&new">' . __( 'Add New', 'mailster' ) . '</a>';
+			echo ' <a href="edit.php?post_type=newsletter&page=mailster_lists&new">' . esc_html__( 'Add New', 'mailster' ) . '</a>';
 		}
 
 	}
@@ -97,14 +97,14 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 			case 'name':
 				$parentindicator = $item->parent_id && ! isset( $_GET['orderby'] ) && ! isset( $_GET['s'] );
-			return ( $parentindicator ? '&nbsp;&#x2517; ' : '' ) . '<a class="name" href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $item->ID . '">' . $item->{$column_name} . '</a>' . ( $parentindicator ? '' : ' <span class="description" title="' . esc_attr( sprintf( __( 'Child of %s', 'mailster' ), '"' . $item->parent_name . '"' ) ) . '">' . $item->parent_name . '</span>' );
+			return ( $parentindicator ? '&nbsp;&#x2517; ' : '' ) . '<a class="name" href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $item->ID . '">' . $item->{$column_name} . '</a>' . ( $parentindicator ? '' : ' <span class="description" title="' . esc_attr( sprintf( esc_html__( 'Child of %s', 'mailster' ), '"' . $item->parent_name . '"' ) ) . '">' . $item->parent_name . '</span>' );
 
 			case 'description':
 			return $item->{$column_name};
 
 			case 'updated':
 			case 'added':
-				$timestring = date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
+				$timestring = date_i18n( mailster( 'helper' )->timeformat(), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
 			return $timestring;
 
 			case 'subscribers':
@@ -145,12 +145,12 @@ class Mailster_Lists_Table extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		$actions = array(
-			'delete' => __( 'Delete', 'mailster' ),
-			'delete_subscribers' => __( 'Delete with subscribers', 'mailster' ),
-			'subscribe' => __( 'Subscribe subscribers', 'mailster' ),
-			'unsubscribe' => __( 'Unsubscribe subscribers', 'mailster' ),
-			'merge' => __( 'Merge selected Lists', 'mailster' ),
-			'send_campaign' => __( 'Send new Campaign', 'mailster' ),
+			'delete' => esc_html__( 'Delete', 'mailster' ),
+			'delete_subscribers' => esc_html__( 'Delete with subscribers', 'mailster' ),
+			'subscribe' => esc_html__( 'Subscribe subscribers', 'mailster' ),
+			'unsubscribe' => esc_html__( 'Unsubscribe subscribers', 'mailster' ),
+			'merge' => esc_html__( 'Merge selected Lists', 'mailster' ),
+			'send_campaign' => esc_html__( 'Send new Campaign', 'mailster' ),
 		);
 		return $actions;
 	}
@@ -198,7 +198,14 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 		$extrasql = '';
 
-		$sql = "SELECT CONCAT(IF(ISNULL(b.slug),'',CONCAT(' ',b.slug)),' ',a.slug) AS _sort, b.name AS parent_name, a.*";
+		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : '_sort';
+		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'ASC';
+
+		$sql = 'SELECT';
+		if ( $orderby != 'name' ) {
+			$sql .= " CONCAT(IF(ISNULL(b.slug),'',CONCAT(' ',b.slug)),' ',a.slug) AS _sort,";
+		}
+		$sql .= ' b.name AS parent_name, a.*';
 
 		$sql .= " FROM {$wpdb->prefix}mailster_lists AS a";
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_lists AS b ON a.parent_id = b.ID";
@@ -241,11 +248,11 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 		$sql .= ' GROUP BY a.ID';
 
-		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'name';
-		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'ASC';
-
 		if ( ! empty( $orderby ) && ! empty( $order ) ) {
-			$sql .= ' ORDER BY _sort ' . $order . ', ' . $orderby . ' ' . $order;
+			$sql .= ' ORDER BY ' . $orderby . ' ' . $order;
+			if ( '_sort' == $orderby ) {
+				$sql .= ', name ' . $order;
+			}
 		}
 
 		$totalitems = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_lists" );

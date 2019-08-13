@@ -18,7 +18,7 @@ class MailsterBounce {
 
 	public function init() {
 
-		add_action( 'mailster_cron_worker', array( &$this, 'check' ), 1 );
+		add_action( 'mailster_cron_bounce', array( &$this, 'check' ), 1 );
 		add_action( 'mailster_check_bounces', array( &$this, 'check' ), 99 );
 
 	}
@@ -82,17 +82,17 @@ class MailsterBounce {
 	 * @param unknown $user    (optional)
 	 * @param unknown $pwd     (optional)
 	 * @param unknown $port    (optional)
-	 * @param unknown $ssl     (optional)
+	 * @param unknown $secure  (optional)
 	 * @param unknown $service (optional)
 	 * @return unknown
 	 */
-	public function get_handler( $server = null, $user = null, $pwd = null, $port = null, $ssl = null, $service = null ) {
+	public function get_handler( $server = null, $user = null, $pwd = null, $port = null, $secure = null, $service = null ) {
 
 		$server = ! is_null( $server ) ? $server : mailster_option( 'bounce_server' );
 		$user = ! is_null( $user ) ? $user : mailster_option( 'bounce_user' );
 		$pwd = ! is_null( $pwd ) ? $pwd : mailster_option( 'bounce_pwd' );
 		$port = ! is_null( $port ) ? $port : mailster_option( 'bounce_port', 110 );
-		$ssl = ! is_null( $ssl ) ? $ssl : mailster_option( 'bounce_ssl' );
+		$secure = ! is_null( $secure ) ? $secure : mailster_option( 'bounce_secure' );
 		$service = ! is_null( $service ) ? $service : mailster_option( 'bounce_service' );
 
 		require_once MAILSTER_DIR . 'classes/libs/bouncehandler.class.php';
@@ -108,7 +108,7 @@ class MailsterBounce {
 			break;
 		}
 
-		$connect = $handler->connect( $server, $user, $pwd, $port, $ssl, $service, 10 );
+		$connect = $handler->connect( $server, $user, $pwd, $port, $secure, $service, 10 );
 
 		if ( is_wp_error( $connect ) ) {
 
@@ -162,7 +162,7 @@ class MailsterBounce {
 
 		if ( is_wp_error( $handler ) ) {
 
-			mailster_notice( sprintf( __( 'It looks like your bounce server setting is incorrect! Last error: %s', 'mailster' ), '<br><strong>' . $handler->get_error_message() . '</strong>' ), 'error', true, 'bounce_server' );
+			mailster_notice( sprintf( esc_html__( 'It looks like your bounce server setting is incorrect! Last error: %s', 'mailster' ), '<br><strong>' . $handler->get_error_message() . '</strong>' ), 'error', true, 'bounce_server' );
 
 			return;
 		}

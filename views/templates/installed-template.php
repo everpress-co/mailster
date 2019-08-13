@@ -1,9 +1,8 @@
 <?php
 $update = isset( $mailster_templates[ $slug ] ) && $mailster_templates[ $slug ]['update'] && current_user_can( 'mailster_update_templates' );
-$licensecode = isset( $licensecodes[ $slug ] ) ? $licensecodes[ $slug ] : '';
 $envato_item_id = isset( $mailster_templates[ $slug ]['envato_item_id'] ) ? $mailster_templates[ $slug ]['envato_item_id'] : null;
 
-$is_free = isset( $mailster_templates[ $slug ] ) && isset( $mailster_templates[ $slug ]['is_free'] );
+$is_free = isset( $mailster_templates[ $slug ] ) && isset( $mailster_templates[ $slug ]['is_free'] ) && $mailster_templates[ $slug ]['is_free'];
 
 $class = array( 'mailster-box' );
 if ( $update ) {
@@ -28,17 +27,13 @@ if ( $new == $slug ) {
 		<div class="meta">
 			<h3><?php echo esc_html( $data['name'] ) ?> <span class="version"><?php echo esc_html( $data['version'] ) ?></span>
 				<?php if ( $update ) : ?>
-					<?php if ( empty( $licensecode ) && ! $is_free ) : ?>
+					<?php if ( ! $is_free && $envato_item_id ) : ?>
 
-							<?php if ( $envato_item_id ) : ?>
-								<a title="<?php esc_html_e( 'update via Envato', 'mailster' );?>" class="update envato-activate button button-primary button-small alignright" href="<?php echo add_query_arg( array( 'auth' => wp_create_nonce( 'envato-activate' ), 'item_id' => $mailster_templates[ $slug ]['envato_item_id'], 'slug' => $slug, 'returnto' => urlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' ) ) ), $mailster_templates[ $slug ]['endpoint'] ) ?>" data-slug="<?php echo $slug ?>"><?php echo sprintf( __( 'Update to %s', 'mailster' ), $mailster_templates[ $slug ]['new_version'] ); ?></a>
-							<?php else : ?>
-								<a title="<?php esc_html_e( 'activate with licensecode', 'mailster' );?>" class="activate button button-primary button-small alignright" href="edit.php?post_type=newsletter&page=mailster_templates&action=license&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'license-' . $slug ) ?>" data-license="<?php echo $licensecode ?>" data-slug="<?php echo $slug ?>"><?php esc_html_e( 'Activate', 'mailster' );?></a>
-							<?php endif; ?>
+							<a title="<?php esc_html_e( 'update via Envato', 'mailster' );?>" class="update envato-activate button button-primary button-small alignright" href="<?php echo add_query_arg( array( 'auth' => wp_create_nonce( 'envato-activate' ), 'item_id' => $mailster_templates[ $slug ]['envato_item_id'], 'slug' => $slug, 'returnto' => urlencode( admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' ) ) ), $mailster_templates[ $slug ]['endpoint'] ) ?>" data-slug="<?php echo $slug ?>"><?php echo sprintf( esc_html__( 'Update to %s', 'mailster' ), $mailster_templates[ $slug ]['new_version'] ); ?></a>
 
 						<?php else : ?>
 
-							<a title="<?php esc_html_e( 'update template', 'mailster' );?>" class="update button button-primary button-small alignright" href="edit.php?post_type=newsletter&page=mailster_templates&action=update&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'download-' . $slug ) ?>" data-license="<?php echo $licensecode ?>" data-slug="<?php echo $slug ?>"><?php echo sprintf( __( 'Update to %s', 'mailster' ), $mailster_templates[ $slug ]['new_version'] ); ?></a>
+							<a title="<?php esc_html_e( 'update template', 'mailster' );?>" class="update button button-primary button-small alignright" href="edit.php?post_type=newsletter&page=mailster_templates&action=update&template=<?php echo $slug ?>&_wpnonce=<?php echo wp_create_nonce( 'download-' . $slug ) ?>" data-slug="<?php echo $slug ?>"><?php echo sprintf( esc_html__( 'Update to %s', 'mailster' ), $mailster_templates[ $slug ]['new_version'] ); ?></a>
 
 					<?php endif; ?>
 				<?php endif; ?>
@@ -52,18 +47,6 @@ if ( $new == $slug ) {
 		<?php elseif ( ! empty( $mailster_templates[ $slug ]['description'] ) ) : ?>
 			<p class="description"><?php echo $mailster_templates[ $slug ]['description'] ?></p>
 		<?php endif; ?>
-		<div class="licensecode">
-			<form action="edit.php?post_type=newsletter&page=mailster_templates" method="get">
-			<input type="hidden" name="post_type" value="newsletter">
-			<input type="hidden" name="page" value="mailster_templates">
-			<input type="hidden" name="more" value="1">
-			<input type="hidden" name="action" value="license">
-			<input type="hidden" name="template" value="<?php echo $slug ?>">
-			<input type="text" name="license" class="widefat license" value="" placeholder="<?php esc_html_e( 'Enter Licensecode', 'mailster' ) ?>">
-			<?php wp_nonce_field( 'license-' . $slug, '_wpnonce', false );?>
-			<input type="submit" class="button save-license" value="<?php esc_html_e( 'save', 'mailster' ) ?>">
-			</form>
-		</div>
 		<div class="action-links">
 			<ul>
 				<?php if ( $default != $slug ) : ?>
