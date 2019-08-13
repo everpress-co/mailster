@@ -80,6 +80,7 @@ class MailsterSettings {
 			'from' => $email,
 			'reply_to' => $email,
 			'send_offset' => 0,
+			'respect_content_type' => true,
 			'timezone' => false,
 			'embed_images' => false,
 			'track_opens' => true,
@@ -110,7 +111,6 @@ class MailsterSettings {
 			'share_services' => array(
 				'twitter',
 				'facebook',
-				'google',
 			),
 			'slug' => 'newsletter',
 			'slugs' => array(
@@ -297,13 +297,11 @@ class MailsterSettings {
 	}
 
 
-	public function maybe_repair_settings() {
+	public function maybe_repair_options( $options ) {
 
 		global $wpdb;
 
-		$mailster_options = mailster_options();
-
-		if ( $mailster_options ) {
+		if ( $options ) {
 			return;
 		}
 
@@ -314,8 +312,10 @@ class MailsterSettings {
 
 		$mailster_options = mailster( 'helper' )->unserialize( $serialized_string );
 		if ( update_option( 'mailster_options', $mailster_options ) ) {
-			mailster_notice( sprintf( esc_html__( 'There was a problem in your Mailster settings which has been automatically fixed! Either way it\'s good to check %s if everything is in place.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=error_settings">' . esc_html__( 'the settings page', 'mailster' ) . '</a>' ), 'error', false, 'error_settings' );
+			mailster_notice( sprintf( esc_html__( 'There was a problem in your Mailster settings which has been automatically fixed! Either way it\'s good to check %s if everything is in place.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=error_settings">' . esc_html__( 'the settings page', 'mailster' ) . '</a>' ), 'error', 1800, 'error_settings' );
 		}
+
+		return $mailster_options;
 
 	}
 
@@ -352,7 +352,6 @@ class MailsterSettings {
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Newsletter Settings', 'mailster' ), esc_html__( 'Settings', 'mailster' ), 'manage_options', 'mailster_settings', array( &$this, 'newsletter_settings' ) );
 
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
-		add_action( 'load-' . $page, array( &$this, 'maybe_repair_settings' ) );
 
 		if ( current_user_can( 'manage_options' ) ) {
 			$submenu['options-general.php'][] = array(

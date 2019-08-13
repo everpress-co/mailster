@@ -69,13 +69,14 @@ $all_files = mailster( 'templates' )->get_all_files();
 							$has_screenshots = false;
 						}
 
-						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / $factor ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $module . '"' ) ) . '" data-id="' . $i . '"><span>' . esc_html( $module ) . '</span><span class="hidden">' . esc_html( strtolower( $module ) ) . '</span></a></li>';
+						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / $factor ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $module . '"' ) ) . '" data-id="' . $i . '" tabindex="0"><span>' . esc_html( $module ) . '</span><span class="hidden">' . esc_html( strtolower( $module ) ) . '</span></a></li>';
 					} ?>
 					</ul>
 				</div>
 			</div>
 		<?php endif; ?>
 
+		<input type="hidden" id="editor-height" name="mailster_data[editor_height]" value="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>">
 		<div id="iframe-wrap">
 			<iframe id="mailster_iframe" src="<?php echo add_query_arg(array(
 				'action' => 'mailster_get_template',
@@ -85,7 +86,7 @@ $all_files = mailster( 'templates' )->get_all_files();
 				'editorstyle' => $editable,
 				'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
 				'nocache' => time(),
-			), admin_url( 'admin-ajax.php' ) ) ?>" width="100%" height="500" scrolling="no" frameborder="0" data-no-lazy="">
+			), admin_url( 'admin-ajax.php' ) ) ?>" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
 			</iframe>
 		</div>
 	</div>
@@ -106,7 +107,7 @@ $all_files = mailster( 'templates' )->get_all_files();
 			</div>
 		</div>
 		<div class="device mobile">
-			<div class="mobile-header"><u></u><i></i></div>
+			<div class="mobile-header"><u></u></div>
 			<div class="mobile-body">
 				<div class="preview-body">
 					<iframe class="mailster-preview-iframe mobile" src="" width="100%" scrolling="auto" frameborder="0" data-no-lazy=""></iframe>

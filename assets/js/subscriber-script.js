@@ -18,6 +18,7 @@ jQuery(document).ready(function ($) {
 			animate: 1000,
 			rotate: 180,
 			barColor: '#2BB3E7',
+			trackColor: '#50626f',
 			trackColor: '#ffffff',
 			lineWidth: 9,
 			size: 75,

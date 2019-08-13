@@ -14,12 +14,13 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
-	$('form#mailster-settings-form').on('submit', function () {
-		return false
-	});
+	$('form#mailster-settings-form')
+		.on('submit.lock', function () {
+			return false
+		});
 	if ($('#settingsloaded').length) {
 		$('.submit-form').prop('disabled', false);
-		$('form#mailster-settings-form').off('submit');
+		$('form#mailster-settings-form').off('submit.lock');
 	} else {
 		if (console) console.log('error loading settings page');
 	}
@@ -71,6 +72,7 @@ jQuery(document).ready(function ($) {
 
 	$('.system_mail').on('change', function () {
 		$('[name="mailster_options[system_mail_template]"]').prop('disabled', $(this).val() == 0);
+		$('[name="mailster_options[respect_content_type]"]').prop('disabled', $(this).val() == 0);
 	});
 
 	$('#load_location_db').on('click', function () {

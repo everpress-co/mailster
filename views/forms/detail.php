@@ -72,11 +72,11 @@ if ( $is_new ) {
 ?>
 <input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo (int) $form->ID ?>">
 <?php if ( current_user_can( 'mailster_add_forms' ) ) : ?>
-	<a href="edit.php?post_type=newsletter&page=mailster_forms&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
+	<a href="edit.php?post_type=newsletter&page=mailster_forms&new" class="page-title-action"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>
 <?php } ?>
 <?php if ( ! $is_new ) :  ?>
-	<a href="#TB_inline?&width=1200&height=600&inlineId=useitbox" class="add-new-h2" id="use-it"><?php esc_html_e( 'Use it!', 'mailster' );?></a>
+	<a href="#TB_inline?&width=1200&height=600&inlineId=useitbox" class="page-title-action" id="use-it"><?php esc_html_e( 'Use it!', 'mailster' );?></a>
 <?php endif; ?>
 </h1>
 <?php if ( ! $is_new ) : ?>
@@ -109,7 +109,7 @@ if ( $is_new ) {
 		<ul class="form-order sortable">
 		<?php foreach ( $form->fields as $field ) : ?>
 			<li class="field-<?php echo $field->field_id ?> form-field">
-				<label><?php echo $field->name ?></label>
+				<label><?php echo strip_tags( $field->name ) ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ) ?>:</span>
 				<input class="label widefat" type="text" name="mailster_structure[fields][<?php echo $field->field_id ?>]" data-name="mailster_structure[fields][<?php echo $field->field_id ?>]" value="<?php echo esc_attr( $field->name ) ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' );?>" placeholder="<?php echo esc_attr( $field->name ) ?>">

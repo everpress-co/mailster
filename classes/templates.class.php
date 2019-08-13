@@ -5,7 +5,7 @@ class MailsterTemplates {
 	public $path;
 	public $url;
 
-	private $download_url = 'https://mailster.github.io/templates/mymail.zip';
+	private $download_url = 'https://static.mailster.co/templates/mymail.zip';
 	private $headers = array(
 		'name' => 'Template Name',
 		'label' => 'Name',
@@ -142,7 +142,7 @@ class MailsterTemplates {
 
 			foreach ( $folders as $folder ) {
 
-				if ( in_array( $folder, array( '.', '..' ) ) || ! is_dir( $uploadfolder . '/' . $folder ) ) {
+				if ( in_array( $folder, array( '.', '..' ) ) ) {
 					continue;
 				}
 
@@ -184,10 +184,37 @@ class MailsterTemplates {
 
 					$files = list_files( $uploadfolder . '/' . $folder );
 
+					$removed_files = array();
+
+					$allowed_mimes = array( 'text/html', 'text/xml', 'text/plain', 'image/svg+xml','image/svg', 'image/png', 'image/gif', 'image/jpeg', 'image/tiff', 'image/x-icon' );
+					$whitelist = array( 'json', 'woff', 'woff2', 'ttf', 'eot' );
+					$blacklist = array( 'php', 'bin', 'exe' );
+
 					foreach ( $files as $file ) {
-						// remove unallowed files
-						if ( is_file( $file ) && ! preg_match( '#\.(html|gif|png|jpg|jpeg|tiff|json)$#', $file ) ) {
+
+						$basename = wp_basename( $file );
+
+						if ( ! is_file( $file ) ) {
 							$wp_filesystem->delete( $file, true );
+							continue;
+						}
+
+						if ( function_exists( 'mime_content_type' ) ) {
+							$mimetype = mime_content_type( $file );
+						} else {
+							$validate = wp_check_filetype( $file );
+							$mimetype = $validate['type'];
+						}
+
+						if ( ( ! in_array( $mimetype, $allowed_mimes ) && ! preg_match( '#\.(' . implode( '|', $whitelist ) . ')$#i', $file ) || preg_match( '#\.(' . implode( '|', $blacklist ) . ')$#i', $file )) ) {
+							$removed_files[] = $basename;
+							$wp_filesystem->delete( $file, true );
+							continue;
+						}
+						// sanitize HTML upload
+						if ( 'text/html' == $mimetype ) {
+							$raw = file_get_contents( $file );
+							$wp_filesystem->put_contents( $file, mailster()->sanitize_content( $raw, false, null, true ), FS_CHMOD_FILE );
 						}
 					}
 
@@ -220,6 +247,10 @@ class MailsterTemplates {
 					} else {
 						$wp_filesystem->delete( $uploadfolder, true );
 						return new WP_Error( 'wrong_header', esc_html__( 'The header of this template files is missing or corrupt', 'mailster' ) );
+					}
+
+					if ( ! empty( $removed_files ) ) {
+						mailster_notice( '<strong>' . esc_html__( 'Following files have been removed during upload:', 'mailster' ) . '</strong><ul><li>' . implode( '</li><li>', $removed_files ) . '</li></ul>', 'info', true );
 					}
 				} else {
 
@@ -265,7 +296,7 @@ class MailsterTemplates {
 
 			$wp_filesystem->delete( $uploadfolder, true );
 
-			if ( $templateslug ) {
+			if ( isset( $templateslug ) && $templateslug ) {
 
 				return $data;
 			}
@@ -528,9 +559,8 @@ class MailsterTemplates {
 			'delete_template_file' => esc_html__( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
 			'enter_template_name' => esc_html__( 'Please enter the name of the new template', 'mailster' ),
 			'uploading' => esc_html__( 'uploading zip file %s', 'mailster' ),
-			'enter_license' => esc_html__( 'Please enter your Purchase Code!', 'mailster' ),
 			'confirm_delete' => esc_html__( 'You are about to delete this template "%s"', 'mailster' ),
-			'update_note' => esc_html__( 'You are about to OVERWRITE your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Please make sure you have a backup of your files.', 'mailster' ),
+			'update_note' => esc_html__( 'You are about to update your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Old template files will be preserved in the templates folder.', 'mailster' ),
 		) );
 
 	}
@@ -638,9 +668,11 @@ class MailsterTemplates {
 
 							$this->download_slug = $slug;
 
-							add_filter( 'http_request_args', array( &$this, 'download_http_request_args' ), 100, 2 );
-							$tempfile = download_url( $template['download_url'], 3000 );
-							remove_filter( 'http_request_args', array( &$this, 'download_http_request_args' ), 100, 2 );
+							if ( ! mailster()->is_verified() ) {
+								$tempfile = new WP_Error( 'licenses_required', sprintf( esc_html__( 'To download this free template you have to enter your Mailster license on %s.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">' . esc_html__( 'the dashboard', 'mailster' ) . '</a>' ) );
+							} else {
+								$tempfile = download_url( $template['download_url'], 3000 );
+							}
 
 							if ( is_wp_error( $tempfile ) ) {
 
@@ -692,104 +724,8 @@ class MailsterTemplates {
 					exit;
 				break;
 
-				case 'license':
-
-					$slug = esc_attr( $_GET['template'] );
-
-					if ( wp_verify_nonce( $_GET['_wpnonce'], 'license-' . $slug ) && current_user_can( 'mailster_manage_templates' ) ) {
-
-						if ( $template = $this->get_mailster_templates( $slug ) ) {
-
-							$this->download_slug = $slug;
-
-							if ( $this->update_license( $slug, $_GET['license'] ) ) {
-
-								mailster_notice( esc_html__( 'Licensecode has been updated!', 'mailster' ), 'success', true );
-
-							}
-						}
-
-						$redirect = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more' );
-						wp_redirect( $redirect );
-						exit;
-
-					}
-				break;
-
 			}
 		}
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $r
-	 * @param unknown $url
-	 * @return unknown
-	 */
-	public function download_http_request_args( $r, $url ) {
-
-		include ABSPATH . WPINC . '/version.php';
-
-		if ( ! $wp_version ) {
-			global $wp_version;
-		}
-
-		$template = $this->get_mailster_templates( $this->download_slug );
-
-		$version = $this->get_versions( $this->download_slug );
-
-		$body = array(
-			'licensecode' => $this->get_license( $this->download_slug ),
-			'version' => $version,
-			'wp-version' => $wp_version,
-			'referer' => home_url(),
-			'multisite' => is_multisite(),
-		);
-
-		$r['headers'] = array(
-			'x-updatecenter' => serialize( $body ),
-		);
-
-		return $r;
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $slug (optional)
-	 * @return unknown
-	 */
-	private function get_license( $slug = null ) {
-
-		$licenses = get_option( 'mailster_template_licenses', array() );
-
-		// sanitize
-		$licenses = preg_grep( '/[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}/', $licenses );
-
-		return is_null( $slug ) ? $licenses : ( isset( $licenses[ $slug ] ) ? $licenses[ $slug ] : null );
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $slug
-	 * @param unknown $license
-	 * @return unknown
-	 */
-	private function update_license( $slug, $license ) {
-
-		$licenses = get_option( 'mailster_template_licenses', array() );
-
-		$licenses[ $slug ] = $license;
-
-		return update_option( 'mailster_template_licenses', $licenses );
 
 	}
 
@@ -854,9 +790,9 @@ class MailsterTemplates {
 		if ( file_exists( $screenshotfile ) ) {
 			$url = str_replace( ' ', '%20', $screenshoturi );
 		} elseif ( ! file_exists( $filedir ) ) {
-				$url = 'https://mailster.github.io/preview/not_available.gif';
+				$url = 'https://static.mailster.co/preview/not_available.gif';
 		} elseif ( mailster_is_local() ) {
-			$url = 'https://mailster.github.io/preview/not_available.gif';
+			$url = 'https://static.mailster.co/preview/not_available.gif';
 		} else {
 
 			static $mailster_get_screenshot_delay;
@@ -872,7 +808,7 @@ class MailsterTemplates {
 
 			$this->schedule_screenshot( $slug, $file, $process_module, $delay );
 
-			$url = 'https://mailster.github.io/preview/create.gif';
+			$url = 'https://static.mailster.co/preview/create.gif';
 
 		}
 
@@ -977,7 +913,7 @@ class MailsterTemplates {
 
 		$modules_html = $matches[0];
 
-		$request_url = 'http://screenshot.newsletter-plugin.com/v3/';
+		$request_url = 'https://api.mailster.co/module/v1/';
 
 		$file_size = strlen( $raw );
 		$hash = md5( $modules_html );
@@ -1250,7 +1186,7 @@ class MailsterTemplates {
 
 		// time before next check
 		$pause = DAY_IN_SECONDS;
-		$url = 'https://mailster.github.io/v1/templates.json';
+		$url = 'https://static.mailster.co/v1/templates.json';
 
 		if ( time() - $mailster_templates['timestamp'] <= $pause && ! $force ) {
 			$templates = $mailster_templates['templates'];
@@ -1331,10 +1267,9 @@ class MailsterTemplates {
 			global $wp_version;
 		}
 
-		$referer = home_url();
-		$multisite = is_multisite();
 		$versions = $this->get_versions();
 		$collection = array();
+
 		foreach ( $endpoints as $slug => $endpoint ) {
 
 			if ( empty( $endpoint ) ) {
@@ -1346,11 +1281,7 @@ class MailsterTemplates {
 			}
 
 			$collection[ $endpoint ][ $slug ] = isset( $templates[ $slug ] ) ? array(
-				'licensecode' => $this->get_license( $slug ),
 				'version' => $templates[ $slug ]['version'],
-				'wp-version' => $wp_version,
-				'referer' => $referer,
-				'multisite' => $multisite,
 			) : array();
 
 			$collection[ $endpoint ][ $slug ]['envato_item_id'] = isset( $mailster_templates[ $slug ]['envato_item_id'] ) ? $mailster_templates[ $slug ]['envato_item_id'] : null;
@@ -1359,10 +1290,7 @@ class MailsterTemplates {
 		foreach ( $collection as $endpoint => $items ) {
 
 			$post = array(
-				'headers' => array(
-					'Content-Type' => 'application/x-www-form-urlencoded',
-					'x-ip' => isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : null,
-				),
+				'headers' => array( 'Content-Type' => 'application/x-www-form-urlencoded' ),
 				'timeout' => $timeout,
 			);
 
@@ -1380,15 +1308,6 @@ class MailsterTemplates {
 				$response = wp_remote_get( $remote_url, $post );
 				$response_body = trim( wp_remote_retrieve_body( $response ) );
 
-			} else {
-
-				$remote_url = trailingslashit( $remote_url );
-
-				$response = wp_remote_get( add_query_arg( array(
-					'updatecenter_action' => 'versions',
-					'updatecenter_slug' => array_keys( $items ),
-					'updatecenter_data' => array_values( $items ),
-				), $remote_url ), $post );
 			}
 
 			$response_code = wp_remote_retrieve_response_code( $response );
@@ -1405,7 +1324,7 @@ class MailsterTemplates {
 
 			} else {
 
-				$response = array_values( json_decode( $response_body, true ) );
+				$response = ! empty( $response_body ) ? array_values( json_decode( $response_body, true ) ) : false;
 				$i = -1;
 				foreach ( $items as $slug => $data ) {
 					$i++;

@@ -30,10 +30,6 @@
 	background-image: url('../img/loading.gif');
 	visibility: hidden;
 	opacity: 0;
-	-webkit-transition: opacity .15s ease-in-out;
-	-moz-transition: opacity .15s ease-in-out;
-	-ms-transition: opacity .15s ease-in-out;
-	-o-transition: opacity .15s ease-in-out;
 	transition: opacity .15s ease-in-out;
 }
 .mailster-form.loading:before{
@@ -62,10 +58,6 @@
 .mailster-form .mailster-wrapper{
 	position: relative;
 	margin-bottom: 2px;
-	-webkit-transition: opacity .15s ease-in-out;
-	-moz-transition: opacity .15s ease-in-out;
-	-ms-transition: opacity .15s ease-in-out;
-	-o-transition: opacity .15s ease-in-out;
 	transition: opacity .15s ease-in-out;
 }
 .mailster-form.loading .mailster-wrapper{
@@ -106,8 +98,6 @@ span.mailster-required {
 	margin-bottom: 4px;
 	color: #fff;
 	padding: 9px 16px;
-	-webkit-transition: all 0.2s;
-	-moz-transition: all 0.2s;
 	transition: all 0.2s;
 	-webkit-transform: scale(0);
 	-moz-transform: scale(0);

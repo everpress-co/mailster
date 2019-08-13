@@ -53,9 +53,9 @@ if ( $is_new ) {
 	}
 ?>
 <?php if ( current_user_can( 'mailster_add_subscribers' ) ) : ?>
-	<a href="edit.php?post_type=newsletter&page=mailster_subscribers&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
+	<a href="edit.php?post_type=newsletter&page=mailster_subscribers&new" class="page-title-action"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>
-<?php if ( $subscriber->wp_id ) : ?><a href="user-edit.php?user_id=<?php echo $subscriber->wp_id ?>" class="add-new-h2"><?php esc_html_e( 'goto WordPress User profile', 'mailster' );?></a><?php endif; ?>
+<?php if ( $subscriber->wp_id ) : ?><a href="user-edit.php?user_id=<?php echo $subscriber->wp_id ?>" class="page-title-action"><?php esc_html_e( 'goto WordPress User profile', 'mailster' );?></a><?php endif; ?>
 <?php }?>
 	<span class="alignright">
 		<?php if ( ! $is_new && $subscriber->status == 0 ) : ?>

@@ -1147,7 +1147,7 @@ class MailsterSubscribers {
 
 		$subscriber_exists = $this->get_by_mail( $email );
 
-		if ( $subscriber_exists ) {
+		if ( ! $merge && $subscriber_exists ) {
 			return new WP_Error( 'subscriber_exists', esc_html__( 'Subscriber already exists', 'mailster' ) );
 		}
 
@@ -1331,43 +1331,60 @@ class MailsterSubscribers {
 	 * @param unknown $subscriber_ids
 	 * @param unknown $status         (optional)
 	 * @param unknown $remove_actions (optional)
+	 * @param unknown $remove_meta    (optional)
 	 * @return unknown
 	 */
-	public function remove( $subscriber_ids, $status = null, $remove_actions = true ) {
+	public function remove( $subscriber_ids, $status = null, $remove_actions = false, $remove_meta = true ) {
 
 		global $wpdb;
 
 		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
 		$statuses = ! is_null( $status ) ? ( ! is_array( $status ) ? array( (int) $status ) : array_filter( $status, 'is_numeric' ) ) : null;
 
+		// reduce subscriber_ids if status is set
+		if ( $statuses ) {
+			$sql = "SELECT subscribers.ID FROM {$wpdb->prefix}mailster_subscribers AS subscribers WHERE subscribers.ID IN (0," . implode( ',', $subscriber_ids ) . ')';
+			$sql .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
+			$subscriber_ids = $wpdb->get_col( $sql );
+		}
+
 		if ( empty( $subscriber_ids ) ) {
 			return true;
 		}
+
+		$subscriber_ids_concat = implode( ',', $subscriber_ids );
 
 		if ( $delete_wp_user = ( mailster_option( 'delete_wp_user' ) && current_user_can( 'delete_users' ) ) ) {
 
 			// get all wp users except the current user
 			$current_user_id = get_current_user_id();
-			$sql = "SELECT wp_id FROM {$wpdb->prefix}mailster_subscribers AS subscribers WHERE subscribers.wp_id != 0 AND subscribers.wp_id != %d AND subscribers.ID IN (" . implode( ',', $subscriber_ids ) . ')';
-
-			if ( $statuses ) {
-				$sql .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
-			}
+			$sql = "SELECT wp_id FROM {$wpdb->prefix}mailster_subscribers AS subscribers WHERE subscribers.wp_id != 0 AND subscribers.wp_id != %d AND subscribers.ID IN (" . $subscriber_ids_concat . ')';
 
 			$wp_ids_to_delete = $wpdb->get_col( $wpdb->prepare( $sql, $current_user_id ) );
 
 		}
 
 		// delete from subscribers, lists_subscribers, subscriber_fields, subscriber_meta, queue
-		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . "subscriber_meta,queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . implode( ',', $subscriber_ids ) . ')';
+		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . "subscriber_meta,queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
 
-		if ( $statuses ) {
-			$sql .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
-		}
+		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . ( $remove_meta ? 'subscriber_meta,' : '' ) . "queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
 
 		if ( $success = ( false !== $wpdb->query( $sql ) ) ) {
 			if ( $wpdb->last_error ) {
 				return new WP_Error( 'db_error', $wpdb->last_error );
+			}
+
+			// anonymize action data
+			if ( ! $remove_actions ) {
+				$sql = "UPDATE {$wpdb->prefix}mailster_actions AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')';
+
+				$wpdb->query( $sql );
+			}
+			// anonymize subscriber_meta data
+			if ( ! $remove_meta ) {
+				$sql = "UPDATE {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta SET subscriber_id = NULL WHERE subscriber_meta.subscriber_id IN (" . $subscriber_ids_concat . ')';
+
+				$wpdb->query( $sql );
 			}
 
 			if ( $delete_wp_user ) {
@@ -1433,6 +1450,8 @@ class MailsterSubscribers {
 			'form' => esc_html__( 'Form', 'mailster' ),
 			'unsubscribe' => esc_html__( 'Unsubscribe', 'mailster' ),
 			'gdpr' => esc_html__( 'GDPR Timestamp', 'mailster' ),
+			'tags' => esc_html__( 'Tags', 'mailster' ),
+			'formkey' => esc_html__( 'Form Key', 'mailster' ),
 		);
 		return $keys_only ? array_keys( $meta_keys ) : $meta_keys;
 	}
@@ -1473,6 +1492,9 @@ class MailsterSubscribers {
 			foreach ( $result as $row ) {
 				if ( ! isset( $meta[ $row->subscriber_id ] ) ) {
 					$meta[ $row->subscriber_id ] = $default;
+				}
+				if ( 'tags' == $row->meta_key && $row->meta_value ) {
+					$row->meta_value = maybe_unserialize( $row->meta_value );
 				}
 
 				$meta[ $row->subscriber_id ][ $row->meta_key ] = $row->meta_value;
@@ -1523,6 +1545,11 @@ class MailsterSubscribers {
 		$inserts = array();
 
 		foreach ( $insert as $key => $value ) {
+
+			if ( 'tags' == $key ) {
+				$value = maybe_serialize( $value );
+			}
+
 			// new value is empty and old value is NOT empty
 			if ( ! $value && isset( $oldmeta[ $key ] ) ) {
 				// delete that row
@@ -1534,7 +1561,7 @@ class MailsterSubscribers {
 				$inserts[] = $wpdb->prepare( '(%d, %d, %s, %s)', $id, $campaign_id, $key, $value );
 			}
 
-			if ( $campaign_id || $single_meta ) {
+			if ( ( $campaign_id || $single_meta ) && 'tags' != $key ) {
 				$inserts[] = $wpdb->prepare( '(%d, %d, %s, %s)', $id, 0, $key, $value );
 			}
 
@@ -2745,6 +2772,11 @@ class MailsterSubscribers {
 
 		$baselink = home_url();
 
+		if ( $query = wp_parse_url( $baselink , PHP_URL_QUERY ) ) {
+			$baselink = strtok( $baselink, '?' );
+			wp_parse_str( $query, $query );
+		}
+
 		$slugs = mailster_option( 'slugs' );
 		$slug = isset( $slugs['confirm'] ) ? $slugs['confirm'] : 'confirm';
 		$lists = $list_ids ? '/' . implode( '/', $list_ids ) : '';
@@ -2757,6 +2789,10 @@ class MailsterSubscribers {
 				'f' => $form_id,
 				'l' => $list_ids,
 			), $baselink );
+
+		if ( ! empty( $query ) ) {
+			$link = add_query_arg( $query, $link );
+		}
 
 		return $link;
 
@@ -2828,7 +2864,12 @@ class MailsterSubscribers {
 
 		if ( $actions->bounces ) {
 			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
-			$html .= '<li><label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ) ), $actions->softbounces_total ) . '</label> <strong class="red">' . sprintf( esc_html__( 'Hard bounced at %s', 'mailster' ), date( $timeformat, $actions->bounces + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->bounces ) ) ) . '</strong><br>' . esc_html( $message ) . '</li>';
+			$html .= '<li>';
+			if ( $actions->softbounces_total ) :
+				$html .= '<label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ) ), $actions->softbounces_total ) . '</label>';
+			endif;
+			$html .= '<strong class="red">' . sprintf( esc_html__( 'Hard bounced at %s', 'mailster' ), date( $timeformat, $actions->bounces + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->bounces ) ) ) . '</strong><br>' . esc_html( $message );
+			$html .= '</li>';
 		} elseif ( $actions->softbounces ) {
 			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
 			$html .= '<li><label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ) ), $actions->softbounces_total ) . '</label><br>' . esc_html( $message ) . '</li>';
@@ -2922,7 +2963,7 @@ class MailsterSubscribers {
 			'status' => $status,
 			'referer' => apply_filters( 'mymail_user_register_referer', apply_filters( 'mailster_user_register_referer', $referer ) ),
 			'_lists' => $lists,
-		) );
+		), true );
 
 		if ( is_wp_error( $subscriber_id ) ) {
 
@@ -3183,7 +3224,7 @@ class MailsterSubscribers {
 		$hash = md5( $email );
 		// create a number from 01 to 09 based on the email address
 		$id = '0' . ( round( abs( crc32( $hash ) ) % 9 ) + 1 );
-		$default = 'https://mailster.github.io/user/user' . $id . '.gif';
+		$default = 'https://static.mailster.co/user/user' . $id . '.gif';
 
 		$image = get_avatar( $email, $size, $default );
 

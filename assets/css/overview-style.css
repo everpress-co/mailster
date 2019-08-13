@@ -22,6 +22,10 @@ table tr th.manage-column{
 	line-height: 20px;
 	border-radius: 2px;
 }
+.dark-mode .campaign-progress{
+	background: #50626f;
+}
+
 .campaign-progress var{
 	padding-right: 2px;
 	font-style: normal;
@@ -43,13 +47,11 @@ table tr th.manage-column{
 	white-space: nowrap;
 }
 .campaign-progress span.bar{
-	-webkit-transition: width 1.25s ease;
-	-moz-transition: width 1.25s ease;
-	-ms-transition: width 1.25s ease;
-	-o-transition: width 1.25s ease;
 	transition: width 1.25s ease;
 	overflow: visible;
 	border-radius: 2px;
+	z-index: 1;
+	overflow: hidden;
 }
 .timezonebased{
 	vertical-align: top;
@@ -60,11 +62,17 @@ table tr th.manage-column{
 }
 table.wp-list-table tr.status-active div.campaign-progress span.bar{
 	text-shadow: none;
-	background-image: url(../img/progress.gif);
+	background: #2BB3E7;
+	background: -webkit-linear-gradient(to right, #084067, #2BB3E7);
+	background: linear-gradient(to right, #084067, #2BB3E7);
 }
 table.wp-list-table tr.status-paused div.campaign-progress span.bar{
-	background: #e3eaed;
-	opacity: 0.8;
+	background: #8a8a8a;
+	background: -webkit-linear-gradient(to right, #383838, #8a8a8a);
+	background: linear-gradient(to right, #383838, #8a8a8a);
+}
+table.wp-list-table div.campaign-progress span.bar span{
+	color: #fff !important;
 }
 table.wp-list-table tr .column-status.cron-issue div.campaign-progress span.bar{
 	background: #e3eaed;
@@ -175,10 +183,5 @@ table.wp-list-table td span{
 			-moz-background-size: 16px 16px;
 			background-size: 16px 16px;
 		}
-		table.wp-list-table tr.status-active div.campaign-progress span.bar{
-			background: url(../img/progress_2x.gif);
-			-webkit-background-size: 15px 20px;
-			-moz-background-size: 15px 20px;
-			background-size: 15px 20px;
-		}
+
 }

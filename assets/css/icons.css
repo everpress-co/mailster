@@ -51,9 +51,11 @@
 	/* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	-moz-transition: all .1s ease-in-out;
-	-webkit-transition: all .1s ease-in-out;
 	transition: all .1s ease-in-out;
+}
+.mailster-icon.mailster-dash:before{
+	font-family: 'dashicons' !important;
+	width: 1.05em;
 }
 
 .mailster-icon-newsletter:before { content: '\e800'; } /* '' */
@@ -117,6 +119,7 @@
 .mailster-icon-plus:before { content: '\e837'; } /* '' */
 .mailster-icon-minus:before { content: '\e838'; } /* '' */
 
+.mailster-icon-translate:before { content: '\f326'; } /* '' */
 /*
    Animation example, for spinners
 */

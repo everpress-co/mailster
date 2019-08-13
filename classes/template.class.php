@@ -14,7 +14,7 @@ class MailsterTemplate {
 	private $file;
 
 	private $templatepath;
-	private $download_url = 'https://mailster.github.io/templates/mymail.zip';
+	private $download_url = 'https://static.mailster.co/templates/mymail.zip';
 	private $headers = array(
 		'name' => 'Template Name',
 		'label' => 'Name',
@@ -165,6 +165,7 @@ class MailsterTemplate {
 
 		if ( file_exists( $file ) ) {
 			$data = file_get_contents( $file );
+			$data = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $data );
 		} else {
 			$data = '{headline}<br>{content}';
 		}

@@ -353,7 +353,10 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['lists'] !== false ) {
-			$join = "LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON subscribers.ID = lists_subscribers.subscriber_id AND lists_subscribers.added != 0";
+			$join = "LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON subscribers.ID = lists_subscribers.subscriber_id";
+			if ( is_array( $this->args['status'] ) && ! in_array( 0, $this->args['status'] ) ) {
+				$join .= ' AND lists_subscribers.added != 0';
+			}
 			$joins[] = $join;
 		}
 
@@ -891,6 +894,7 @@ class MailsterSubscriberQuery {
 
 		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql, $this->args, $campaign_id );
 
+		// error_log($sql);
 		if ( $this->args['return_sql'] ) {
 			$result = $this->last_query = $sql;
 			$this->last_error = null;

@@ -21,10 +21,6 @@
 	background: -webkit-radial-gradient(50% 50%,rgba(255,255,255,.5),rgba(255,255,255,.9) 100%);
 	background: radial-gradient(50% 50%,rgba(255,255,255,.5),rgba(255,255,255,.9) 100%);
 	text-align: center;
-	-webkit-transition: opacity 1.15s ease-in;
-	-moz-transition: opacity 1.15s ease-in;
-	-ms-transition: opacity 1.15s ease-in;
-	-o-transition: opacity 1.15s ease-in;
 	transition: opacity 1.15s ease-in;
 }
 .mailster-dashboard .register_form_wrap{
@@ -85,9 +81,12 @@
 .mailster-dashboard dl dt a{
 	color: #444;
 }
+.dark-mode .mailster-dashboard dl dt a{
+	color: #fff;
+}
 .mailster-dashboard dl dd{
 	margin-left: 55px;
-	color: #23282d;
+	_color: #23282d;
 }
 .mailster-dashboard dl dd span.lighter{
 	color: #aaa;
@@ -174,6 +173,9 @@
 	margin: 0 4px 0 5px;
 	color: #585858;
 }
+.dark-mode .mailster-mb-link:before{
+	color: #bbc8d4;
+}
 .mailster-mb-link.status-active:before{
 	content: '\e80f';
 }
@@ -224,13 +226,12 @@
 	content: "\e833";
 	display: block;
 	font-size: 70px;
-	transform: translateY(-68%);
 }
 .mailster-dashboard .is-verified .postbox .inside .locked h2:before{
 	content: "\f13e";
 }
 .mailster-dashboard .postbox .inside .locked h2{
-	transform: translateY(140%);
+	transform: translateY(40%);
 	margin: 0 auto;
 	max-width: 80%;
 	padding: 0;
@@ -260,11 +261,16 @@
 	box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 	border-color: #F26B6B;
 }
-.mailster-dashboard .postbox.has-update:after{
+.mailster-dashboard .postbox.has-translation-update{
+	overflow: hidden;
+	box-shadow: inset 0px 0px 15px rgba(43, 179, 231, .3);
+	border-color: #2bb3e7;
+}
+.mailster-dashboard .postbox.has-update:after, .mailster-dashboard .postbox.has-translation-update:after{
+	content: 'Update available!';
 	position: absolute;
 	top: 33px;
 	right: -46px;
-	content: 'update available';
 	padding: 8px 44px;
 	background-color: #F26B6B;
 	color: #fff;
@@ -275,7 +281,10 @@
 	transform: rotate(45deg);
 	z-index: 20;
 }
-.rtl .mailster-dashboard .postbox.has-update:after{
+.mailster-dashboard .postbox.has-translation-update:after{
+	background-color: #2bb3e7;
+}
+.rtl .mailster-dashboard .postbox.has-update:after, .rtl .mailster-dashboard .postbox.has-translation-update:after{
 	right: inherit;
 	left: -46px;
 	-webkit-transform: rotate(-45deg);
@@ -284,7 +293,7 @@
 	-o-transform: rotate(-45deg);
 	transform: rotate(-45deg);
 }
-.mailster-dashboard .postbox.has-update.closed:after{
+.mailster-dashboard .postbox.has-update.closed:after, .mailster-dashboard .postbox.has-translation-update.closed:after{
 	-webkit-transform: rotate(0deg);
 	-moz-transform: rotate(0deg);
 	-ms-transform: rotate(0deg);
@@ -294,7 +303,7 @@
 	right: 43px;
 	padding: 4px 12px;
 }
-.rtl .mailster-dashboard .postbox.has-update.closed:after{
+.rtl .mailster-dashboard .postbox.has-update.closed:after, .rtl .mailster-dashboard .postbox.has-translation-update.closed:after{
 	right: inherit;
 	left: 43px;
 }
