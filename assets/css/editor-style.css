@@ -26,6 +26,10 @@ html.mailster-loading:before{
 	cursor: progress !important;
 	z-index: 1000000;
 }
+body{
+	min-height: 1px;
+	overflow: auto;
+}
 body.drag-active.drag-over{
 }
 body.drag-active modules module{
@@ -41,7 +45,7 @@ body:hover module[condition],body:hover single[condition],body:hover multi[condi
 module{
 	position: relative;
 }
-a.mailster-btn,a.mailster-btn:hover,a.mailster-btn:active{
+button.mailster-btn,button.mailster-btn:hover,button.mailster-btn:active{
 	color: #eaeaea;
 	cursor: pointer;
 	text-decoration: none;
@@ -49,79 +53,73 @@ a.mailster-btn,a.mailster-btn:hover,a.mailster-btn:active{
 	outline: 0;
 	min-width: 12px;
 }
-a.mailster-btn:hover {
+button.mailster-btn:hover {
 	color: #fff;
 }
-a.mailster-btn:before {
+button.mailster-btn:before {
 	font-family: 'mailster-icons';
 }
-a.mailster-btn.codeview:before { content: '\e80a'; }
-a.mailster-btn.auto:before { content: '\e818'; }
-a.mailster-btn.add:before { content: '\e81a'; }
-a.mailster-btn.duplicate:before { content: '\e817'; }
-a.mailster-btn.up:before { content: '\e816'; }
-a.mailster-btn.down:before { content: '\e815'; }
-a.mailster-btn.remove:before { content: '\e82a'; }
-a.mailster-btn.editbutton:before { content: '\e80c'; }
-a.mailster-btn.addbutton:before { content: '\e81a'; }
-a.mailster-btn.addrepeater:before { content: '\e81a'; }
-a.mailster-btn.removerepeater:before { content: '\e81b'; }
-a.mailster-btn { padding: 1px 4px; }
+button.mailster-btn.codeview:before { content: '\e80a'; }
+button.mailster-btn.auto:before { content: '\e818'; }
+button.mailster-btn.add:before { content: '\e837'; }
+button.mailster-btn.duplicate:before { content: '\e817'; }
+button.mailster-btn.up:before { content: '\e816'; }
+button.mailster-btn.down:before { content: '\e815'; }
+button.mailster-btn.remove:before { content: '\e82a'; }
+button.mailster-btn.editbutton:before { content: '\e80c'; }
+button.mailster-btn.addbutton:before { content: '\e837'; }
+button.mailster-btn.addrepeater:before { content: '\e837'; }
+button.mailster-btn.removerepeater:before { content: '\e838'; }
+button.mailster-btn { padding: 1px 4px; }
 
 buttons{
 	position: relative;
 }
-button.mailster-btn-inline{
-	position: absolute;
-	width: 25px;
-	right: -30px;
-	top: 3px;
-	cursor: pointer;
-	border: 1px solid #e5e5e5;
-	background: #fff;
-	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
-	padding: 0;
+buttons:hover{
+	padding-right: 22px;
+}
+[align="right"] > div > buttons:hover, [align="right"] > buttons:hover{
+	-webkit-transform: translate(22px, 0);
+	-ms-transform: translate(22px, 0);
+	transform: translate(22px, 0);
+}
+[align="center"] > div > buttons:hover, [align="center"] > buttons:hover{
+	-webkit-transform: translate(11px, 0);
+	-ms-transform: translate(11px, 0);
+	transform: translate(11px, 0);
+}
+button.mailster-btn.mailster-btn-inline{
 	box-sizing: border-box;
-	min-height: 18px;
-	line-height: 16px;
-	border-radius: 2px;
-	font-size: 10px;
-	font-weight: 100;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	text-align: center;
-}
-button.mailster-btn-inline:before{
-}
-
-button.mailster-btn-inline:focus{
-	outline: none;
-}
-module button.mailster-btn-inline{
+	position: absolute;
+	padding: 0px 0px;
+	height: 18px;
+	text-indent: 0px;
 	display: none;
 }
-module:hover button.mailster-btn-inline, module[selected] button.mailster-btn-inline{
+button.mailster-btn.mailster-btn-inline:focus{
+	outline: none;
+}
+buttons button.mailster-btn.mailster-btn-inline{
+	top: 50%;
+	-webkit-transform: translate(0, -12px);
+	-ms-transform: translate(0, -12px);
+	transform: translate(0, -12px);
+	right: 0;
+}
+buttons:hover button.mailster-btn.mailster-btn-inline{
 	display: block;
 }
-button.mailster-btn-inline.addrepeater{
+[repeatable]{
+	position: relative;
 }
-button.mailster-btn-inline.removerepeater{
-	top: 20px;
+[repeatable]:hover{
+	outline: 1px solid rgba(43, 179, 231, 0.3);
+	outline-offset: -1px;
 }
-button.mailster-btn-inline.addbutton:before{
-	content: "\e81a";
-}
-button.mailster-btn-inline.addrepeater:before{
-	content: "\e81a";
-}
-button.mailster-btn-inline.removerepeater:before{
-	content: "\e81b";
+module [repeatable]:hover button.mailster-btn.mailster-btn-inline{
+	display: block;
 }
 modulebuttons {
-	-webkit-transition: all .15s ease-in-out;
-	-moz-transition: all .15s ease-in-out;
-	-ms-transition: all .15s ease-in-out;
 	transition: all .15s ease-in-out;
 	opacity: 0;
 	position: absolute;
@@ -130,6 +128,9 @@ modulebuttons {
 	z-index: 100;
 	display: block;
 }
+module.ui-sortable-fly-over modulebuttons button{
+	pointer-events: none;
+}
 module[selected] modulebuttons{
 	transform: translateY(-35px);
 }
@@ -137,31 +138,28 @@ module[selected] modulebuttons{
 	right: inherit;
 	left: 0;
 }
-modulebuttons a.mailster-btn {
-	padding: 8px 9px;
+button.mailster-btn {
+	padding: 9px 15px;
 	display: inline-block;
 	position: relative;
 	margin: 0;
-	height: 18px;
+	height: 33px;
 	border: 0;
 	background: rgba(43, 179, 231, 0.8);
-	line-height: 18px;
+	line-height: 16px;
 	width: 18px;
-	font-size: 12px;
-}
-modulebuttons:hover a.mailster-btn {
+	font-size: 14px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	text-indent: -5px;
+	}
+modulebuttons:hover button.mailster-btn {
 	background: rgb(43, 179, 231);
 }
-[mailster-is-rtl] modulebuttons a.mailster-btn {
-}
-modulebuttons a:first-child {
-}
-modulebuttons a:last-child {
+[mailster-is-rtl] modulebuttons button.mailster-btn {
 }
 modulebuttons input.modulelabel {
-	-webkit-transition: all .15s ease-in-out;
-	-moz-transition: all .15s ease-in-out;
-	-ms-transition: all .15s ease-in-out;
 	transition: all .15s ease-in-out;
 	display: block;
 	width: 110px;
@@ -192,8 +190,11 @@ modulebuttons input.modulelabel:hover, modulebuttons input.modulelabel:focus {
 modules, module, multi {
 	display: block;
 }
-buttons, single {
+buttons {
 	display: inline-block;
+}
+single {
+	_display: inline;
 }
 if, elseif, else {
 	display: inline-block;
@@ -223,26 +224,26 @@ single[label]:before,
 img[editable][label]:before,
 a[editable][label]:before,
 td[background][label]:before,
-th[background][label]:before {
+th[background][label]:before,
+module[data-rss]:after,
+module[data-rss][selected]:after {
 	content: attr(label);
 	display: block;
 	opacity: 0;
 	background-color: #2BB3E7;
 	color: #fff;
 	position: absolute;
-	-webkit-transition: all .15s linear;
-	-ms-transition: all .15s linear;
 	transition: all .15s linear;
 	-webkit-transform: translate(4px, -15px);
 	-ms-transform: translate(4px, -15px);
 	transform: translate(4px, -15px);
-	height: 7px;
-	font: 8px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	height: 9px;
+	font: 10px sans-serif;
 	text-transform: uppercase;
 	line-height: 1em;
-	letter-spacing: 0.1em;
 	padding: 4px;
 	white-space: nowrap;
+	z-index: 1000000;
 }
 [mailster-is-rtl] module[label]:before,
 [mailster-is-rtl] module[label][selected]:before,
@@ -251,11 +252,25 @@ th[background][label]:before {
 [mailster-is-rtl] img[editable][label]:before,
 [mailster-is-rtl] a[editable][label]:before,
 [mailster-is-rtl] td[background][label]:before,
-[mailster-is-rtl] th[background][label]:before {
+[mailster-is-rtl] th[background][label]:before,
+[mailster-is-rtl] module[data-rss]:before,
+[mailster-is-rtl] module[data-rss][selected]:before,
+[mailster-is-rtl] multi[data-rss]:before,
+[mailster-is-rtl] single[data-rss]:before,
+[mailster-is-rtl] img[editable][data-rss]:before,
+[mailster-is-rtl] a[editable][data-rss]:before,
+[mailster-is-rtl] td[background][data-rss]:before,
+[mailster-is-rtl] th[background][data-rss]:before {
 	-webkit-transform: translate(-4px, -15px);
 	-ms-transform: translate(-4px, -15px);
 	transform: translate(-4px, -15px);
 	right: 0;
+}
+module[data-rss]:after,
+module[data-rss][selected]:after{
+	content:"RSS: " attr(data-rss);
+	top: 18px;
+	z-index: 100;
 }
 module[label]:hover:before,
 module[label][selected]:before,
@@ -264,10 +279,12 @@ single[label]:hover:before,
 img[editable][label]:hover:before,
 a[editable][label]:hover:before,
 td[background][label]:hover:before,
-th[background][label]:hover:before {
-	-webkit-transform: translate(-2px, -15px);
-	-ms-transform: translate(-2px, -15px);
-	transform: translate(-2px, -15px);
+th[background][label]:hover:before,
+module[data-rss]:hover:after,
+module[data-rss][selected]:after{
+	-webkit-transform: translate(-2px, -17px);
+	-ms-transform: translate(-2px, -17px);
+	transform: translate(-2px, -17px);
 	opacity: 1;
 }
 [mailster-is-rtl] module[label]:hover:before,
@@ -277,28 +294,34 @@ th[background][label]:hover:before {
 [mailster-is-rtl] img[editable][label]:hover:before,
 [mailster-is-rtl] a[editable][label]:hover:before,
 [mailster-is-rtl] td[background][label]:hover:before,
-[mailster-is-rtl] th[background][label]:hover:before {
-	-webkit-transform: translate(2px, -15px);
-	-ms-transform: translate(2px, -15px);
-	transform: translate(2px, -15px);
+[mailster-is-rtl] th[background][label]:hover:before,
+[mailster-is-rtl] module[data-rss]:hover:after,
+[mailster-is-rtl] module[data-rss][selected]:after {
+	-webkit-transform: translate(2px, -17px);
+	-ms-transform: translate(2px, -17px);
+	transform: translate(2px, -17px);
 }
-module[label]:before {
+module[label]:before,
+module[data-rss]:after {
 	-webkit-transform: translate(-6px, -1px);
 	-ms-transform: translate(-6px, -1px);
 	transform: translate(-6px, -1px);
 }
-[mailster-is-rtl] module[label]:before {
+[mailster-is-rtl] module[label]:before,
+[mailster-is-rtl] module[label]:after {
 	-webkit-transform: translate(6px, -1px);
 	-ms-transform: translate(6px, -1px);
 	transform: translate(6px, -1px);
 }
-module[label]:hover:before, module[label][selected]:before {
+module[label]:hover:before, module[label][selected]:before,
+module[data-rss]:hover:after, module[data-rss][selected]:after {
 	opacity: 0.9;
 	-webkit-transform: translate(-1px, -1px);
 	-ms-transform: translate(-1px, -1px);
 	transform: translate(-1px, -1px);
 }
-[mailster-is-rtl] module[label]:hover:before, [mailster-is-rtl] module[label][selected]:before {
+[mailster-is-rtl] module[label]:hover:before, [mailster-is-rtl] module[label][selected]:before,
+[mailster-is-rtl] module[data-rss]:hover:after, [mailster-is-rtl] module[data-rss][selected]:after {
 	-webkit-transform: translate(1px, -1px);
 	-ms-transform: translate(1px, -1px);
 	transform: translate(1px, -1px);
@@ -309,7 +332,7 @@ module:hover modulebuttons,module[selected] modulebuttons,.ie module modulebutto
 [mailster-is-rtl] module:hover modulebuttons, [mailster-is-rtl] module[selected] modulebuttons {
 	right: inherit;
 }
-module:first-child modulebuttons a.up, module:last-child modulebuttons a.down {
+module:first-child modulebuttons button.up, module:last-child modulebuttons button.down {
 	display: none;
 }
 module[condition]{
@@ -322,7 +345,7 @@ module[condition]{
 a.mailster-highlight {
 	outline: none;
 }
-multi, single, img[editable], a[editable] img, .textbutton a[editable], td[background]{
+multi, single, module, img[editable], a[editable] img, .textbutton a[editable], td[background]{
 	webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
 	-webkit-backface-visibility: hidden; /* Chrome, Safari, Opera */
@@ -351,6 +374,7 @@ td[background]:before, th[background]:before{
 	color: #fff;
 	pointer-events: all;
 	cursor: pointer;
+	z-index: 9200;
 }
 [mailster-is-rtl] td[background]:before, [mailster-is-rtl] th[background]:before {
 	left: auto;
@@ -380,10 +404,18 @@ img[editable]{
 	z-index: 10;
 }
 modules.ui-sortable module{
-	-webkit-transition: padding .25s ease-in-out, margin .25s ease-in-out, -webkit-transform .15s ease-in-out;
-	-ms-transition: padding .25s ease-in-out, margin .25s ease-in-out, -ms-transform .15s ease-in-out;
-	transition: padding .25s ease-in-out, margin .25s ease-in-out, transform .15s ease-in-out;
-
+	transition: padding .25s ease-in-out, margin .25s ease-in-out;
+}
+body.drag-active modules.ui-sortable module{
+	transition: transform .25s ease-in-out;
+}
+modules.ui-sortable module.ui-sortable-fly-under{
+	transition: transform .25s ease-in-out;
+	z-index: 1;
+}
+modules.ui-sortable module.ui-sortable-fly-over{
+	transition: transform .25s ease-in-out;
+	z-index: 2;
 }
 modules.ui-sortable.dragging module{
 	padding-top: 3px;
@@ -416,8 +448,6 @@ modules:empty:after, dropzone{
 	margin-top: 0;
 	text-decoration: underline;
 	color: #2BB3E7;
-	-webkit-transition: all .15s linear;
-	-ms-transition: all .15s linear;
 	transition: all .15s linear;
 	background-color: #fff;
 	outline: 1px solid rgba(43, 179, 231, 0.3);
@@ -435,8 +465,6 @@ body.drag-active modules:empty:after, body.drag-active modules dropzone:before{
 	line-height: 80px;
 	opacity: 0.8;
 	margin: 0;
-	-webkit-transition: all .15s linear;
-	-ms-transition: all .15s linear;
 	transition: all .15s linear;
 }
 body.drag-active modules dropzone.drag-over{
@@ -453,8 +481,6 @@ body.drag-active modules dropzone:first-child{
 	margin-top: -80px;
 }
 body.drag-active modules dropzone{
-	-webkit-transition: all .15s linear;
-	-ms-transition: all .15s linear;
 	transition: all .15s linear;
 	height: 0px;
 	position: absolute;
@@ -511,8 +537,6 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 	transform: scale(1.03);
 }
 .ui-draggable-dragging{
-	-webkit-transition: none !important;
-	-ms-transition: none !important;
 	transition: none !important;
 }
 .sortable-placeholder{
@@ -521,8 +545,6 @@ img[editable].ui-drag-over-file.ui-drag-over-file-alt{
 	background-color: rgba(43, 179, 231, 0.3);
 }
 img{
-	-webkit-transition: height .25s ease-in-out, width .25s ease-in-out;
-	-ms-transition: height .25s ease-in-out, width .25s ease-in-out;
 	transition: height .25s ease-in-out, width .25s ease-in-out;
 }
 img.mailster-loading{
@@ -530,28 +552,32 @@ img.mailster-loading{
 	-webkit-filter: blur(2px);
 	filter: blur(2px);
 }
+modules.ui-sortable.dragging module.ui-sortable-helper, module.ui-sortable-fly-over{
+	box-shadow: 0 5px 18px rgba(0,0,0,.22),0 9px 45px rgba(0,0,0,.25);
+	-webkit-transform: scale(1.03) translateZ(0px);
+	-ms-transform: scale(1.03) translateZ(0px);
+	transform: scale(1.03) translateZ(0px);
+}
 modules.ui-sortable.dragging module.ui-sortable-helper{
 	opacity: 0.9;
 	filter: alpha(90);
-	box-shadow: 0 5px 18px rgba(0,0,0,.22),0 9px 45px rgba(0,0,0,.25);
-	-webkit-transform: scale(1.03);
-	-ms-transform: scale(1.03);
-	transform: scale(1.03);
 }
 modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	display: none;
 }
-.mailster-upload-info{
+upload{
+	display: block;
+	position: relative;
+}
+upload .mailster-upload-info{
 	position: absolute;
-	top: -99999px;
-	left: 0px;
-	z-index: 1000000;
+	height: 100%;
+	width: 100%;
+	z-index: 20;
 	overflow: hidden;
-	-webkit-transition: height .25s ease-in-out, width .25s ease-in-out;
-	-ms-transition: height .25s ease-in-out, width .25s ease-in-out;
 	transition: height .25s ease-in-out, width .25s ease-in-out;
 }
-.mailster-upload-info .mailster-upload-info-bar{
+upload .mailster-upload-info .mailster-upload-info-bar{
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -559,12 +585,12 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	width: 1px;
 	height: 100%;
 	background-color: rgba(0,0,0,0.6);
-	background-size: cover;
+	_background-size: cover;
 	background-repeat: no-repeat;
-	-webkit-filter: blur(4px);
-	filter: blur(4px);
+	-webkit-filter: blur(2px) grayscale(50%);
+	filter: blur(2px) grayscale(50%);
 }
-.mailster-upload-info .mailster-upload-info-text{
+upload .mailster-upload-info .mailster-upload-info-text{
 	font: 20px "Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-weight: 400;
 	position: absolute;
@@ -580,8 +606,11 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	color: #fff;
 	text-shadow: -1px -1px 0 #333,1px -1px 0 #333,-1px 1px 0 #333,1px 1px 0 #333;
 }
-.mailster-upload-info.error .mailster-upload-info-text{
+upload .mailster-upload-info.error .mailster-upload-info-text{
 	background: #f33;
+}
+.mce-notification-error{
+	display: none;
 }
 .mce-ico.mailster-tags-icon:before, .mce-ico.mailster-remove-icon:before {
 	font: normal 16px/1 'mailster-icons' !important;
@@ -621,7 +650,6 @@ div.wp-link-input input[type="text"] {
 	background-color: #fff;
 	color: #32373c;
 	outline: none;
-	-webkit-transition: 0.05s border-color ease-in-out;
 	transition: 0.05s border-color ease-in-out;
 }
 .mce-toolbar .mce-ico.dashicons-editor-break {

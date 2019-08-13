@@ -21,56 +21,57 @@ class MailsterUpgrade {
 		global $pagenow;
 
 		$old_version = get_option( 'mailster_version' );
+		$version_match = $old_version == MAILSTER_VERSION;
 
-		if ( $old_version != MAILSTER_VERSION ) {
+		if ( ! $version_match ) {
 
 			if ( ! $old_version ) {
 				$old_version = get_option( 'mymail_version' );
 			}
 
-			$this->check_db_version();
-
+			// update db structure
+			if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
+				mailster()->dbstructure();
+			}
 		}
 
-		if ( mailster_option( 'update_required' ) ) {
+		if ( mailster_option( 'db_update_required' ) ) {
 
 			$db_version = get_option( 'mailster_dbversion' );
 
-			if ( version_compare( $db_version, MAILSTER_DBVERSION, '<' ) ) {
+			$redirectto = admin_url( 'admin.php?page=mailster_update' );
+			$update_msg = '<p><strong>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</strong></p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . esc_html__( 'Progress Update now', 'mailster' ) . '</a>';
 
-				$redirectto = admin_url( 'admin.php?page=mailster_update' );
-				$update_msg = '<p><strong>' . __( 'An additional update is required for Mailster!', 'mailster' ) . '</strong></p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . __( 'Progress Update now', 'mailster' ) . '</a>';
+			if ( 'update.php' == $pagenow ) {
 
-				if ( 'update.php' == $pagenow ) {
+				if ( isset( $_GET['success'] )
+					&& isset( $_GET['action'] ) && 'activate-plugin' == $_GET['action']
+					&& isset( $_GET['plugin'] ) && MAILSTER_SLUG == $_GET['plugin'] ) {
 
-					if ( isset( $_GET['success'] )
-						&& isset( $_GET['action'] ) && 'activate-plugin' == $_GET['action']
-						&& isset( $_GET['plugin'] ) && MAILSTER_SLUG == $_GET['plugin'] ) {
+					echo $update_msg;
 
-						echo $update_msg;
+				}
+			} else {
 
-					}
+				if ( isset( $_GET['page'] ) && $_GET['page'] == 'mailster_update' ) {
 				} else {
-
-					if ( isset( $_GET['page'] ) && $_GET['page'] == 'mailster_update' ) {
+					if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
+						wp_redirect( $redirectto );
+						exit;
 					} else {
-						if ( ! is_network_admin() && isset( $_GET['post_type'] ) && $_GET['post_type'] = 'newsletter' ) {
-							wp_redirect( $redirectto );
-							exit;
-						} else {
-							mailster_remove_notice( 'no_homepage' );
-							mailster_notice( $update_msg, 'error', true, 'update_required' );
-						}
+						mailster_remove_notice( 'no_homepage' );
+						mailster_notice( $update_msg, 'error', true, 'db_update_required' );
 					}
 				}
 			}
-		} elseif ( $old_version != MAILSTER_VERSION ) {
+		} elseif ( ! $version_match ) {
 
 			if ( version_compare( $old_version, MAILSTER_VERSION, '<' ) ) {
 				include MAILSTER_DIR . 'includes/updates.php';
 			}
 
 			update_option( 'mailster_version', MAILSTER_VERSION );
+			update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 		} elseif ( mailster_option( 'setup' ) ) {
 
@@ -80,8 +81,6 @@ class MailsterUpgrade {
 				exit;
 			}
 		} elseif ( mailster_option( 'welcome' ) ) {
-
-			$this->check_db_version();
 
 			if ( ! is_network_admin() &&
 				( ( isset( $_GET['page'] ) && strpos( $_GET['page'], 'mailster_' ) !== false ) && 'mailster_welcome' != $_GET['page'] ) ) {
@@ -135,10 +134,6 @@ class MailsterUpgrade {
 				$return['output'] .= "* OUTPUT for $id (" . date( 'H:i:s', current_time( 'timestamp' ) ) . ') - ' . size_format( memory_get_peak_usage( true ), 2 ) . "\n";
 				$return['output'] .= "===========================================================\n";
 				$return['output'] .= strip_tags( $output ) . "\n";
-			} else {
-				// $return['output']  = "===========================================================\n";
-				// $return['output'] .= "* NO OUTPUT for $id (".date('Y-m-d H:i:s', current_time('timestamp')).")\n";
-				// $return['output'] .= "===========================================================\n";
 			}
 		}
 
@@ -185,12 +180,9 @@ class MailsterUpgrade {
 				'pre_mailster_options' => 'Copy Options',
 				'pre_mailster_updatedpostmeta' => 'Update Post Meta',
 				'pre_mailster_movefiles' => 'Moving Files and Folders',
-				// 'pre_mailster_checkhooks' => 'Check Hooks',
 				'pre_mailster_removeoldtables' => 'Remove old Tables',
-				// 'pre_mailster_removebackup' => 'Remove Backup',
 				'pre_mailster_removemymail' => 'Remove old Options',
 				'pre_mailster_legacy' => 'Prepare Legacy mode',
-					// 'db_structure' => 'checking DB structure',
 			), $actions );
 
 			$db_version = get_option( 'mymail_dbversion', 0 );
@@ -257,7 +249,6 @@ class MailsterUpgrade {
 		$actions = wp_parse_args( array(
 			'db_check' => 'Database integrity',
 			'cleanup' => 'Cleanup',
-			// 'change_plugin_slug' => 'Change Plugin Slug',
 		), $actions );
 
 		wp_localize_script( 'mailster-update-script', 'mailster_updates', $actions );
@@ -321,8 +312,7 @@ class MailsterUpgrade {
 		$tables = mailster()->get_tables();
 
 		foreach ( $tables as $table ) {
-			if ( false !== $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_$table" ) ) {
-			}
+			$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', "{$wpdb->prefix}mailster_$table" ) );
 		}
 
 		return true;
@@ -358,10 +348,6 @@ class MailsterUpgrade {
 			echo 'old User related data removed' . "\n";
 			return false;
 		}
-		// if($count = $wpdb->query("DELETE t FROM {$wpdb->posts} AS p LEFT JOIN {$wpdb->term_relationships} AS t ON p.ID = t.object_id WHERE p.post_type = 'subscriber' AND t.object_id")){
-		// echo 'old User related data removed'."\n";
-		// return false;
-		// }
 		if ( $count = $wpdb->query( "DELETE a,b,c FROM {$wpdb->term_taxonomy} AS a LEFT JOIN {$wpdb->terms} AS b ON b.term_id = a.term_id JOIN {$wpdb->term_taxonomy} AS c ON c.term_taxonomy_id = a.term_taxonomy_id WHERE a.taxonomy = 'newsletter_lists'" ) ) {
 			echo 'old Lists removed' . "\n";
 			return false;
@@ -481,10 +467,6 @@ class MailsterUpgrade {
 			$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->options} (`option_name`, `option_value`, `autoload`) VALUES (%s, %s, %s ) ON DUPLICATE KEY UPDATE option_value = values(option_value)", $option->option_name, $option->option_value, $option->autoload ) );
 		}
 
-		// if ( $count = $wpdb->query( "INSERT INTO {$wpdb->options} (option_name, option_value, autoload) SELECT REPLACE(b.option_name, 'mymail', 'mailster') as options_name , b.option_value, b.autoload FROM {$wpdb->options} AS b WHERE b.option_name LIKE 'mymail%' ON DUPLICATE KEY UPDATE option_value = values(option_value)" ) ) {
-		// echo $count . ' old options converted' . "\n";
-		// return false;
-		// }
 		$tables = mailster()->get_tables( true );
 
 		set_transient( '_mailster_mymail', true, MONTH_IN_SECONDS );
@@ -664,10 +646,6 @@ class MailsterUpgrade {
 			}
 		}
 
-		if ( is_dir( $new_location . '_bak' ) ) {
-			// $wp_filesystem->rmdir( $new_location . '_bak', true );
-		}
-
 		$new_location_url = preg_replace( '/https?:/', '', MAILSTER_UPLOAD_URI );
 		$old_location_url = preg_replace( '/https?:/', '', dirname( MAILSTER_UPLOAD_URI ) . '/myMail' );
 
@@ -712,7 +690,7 @@ class MailsterUpgrade {
 
 			if ( $this->table_exists( "{$wpdb->prefix}mymail_{$table}" ) ) {
 
-				if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mymail_{$table}" ) ) {
+				if ( $count = $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', "{$wpdb->prefix}mymail_{$table}" ) ) ) {
 					echo 'old ' . $table . ' table removed' . "\n";
 					return false;
 				}
@@ -740,7 +718,7 @@ class MailsterUpgrade {
 
 			if ( $this->table_exists( "{$wpdb->prefix}mymail_bak_{$table}" ) ) {
 
-				if ( $count = $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mymail_bak_{$table}" ) ) {
+				if ( $count = $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %s', "{$wpdb->prefix}mymail_bak_{$table}" ) ) ) {
 					echo 'Backup table ' . $table . ' removed' . "\n";
 					return false;
 				}
@@ -898,7 +876,7 @@ class MailsterUpgrade {
 				$tables = mailster()->get_tables( true );
 
 				foreach ( $tables as $table ) {
-					$sql = sprintf( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
+					$sql = $wpdb->prepare( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
 					if ( false !== $wpdb->query( $sql ) ) {
 						echo "'$table' converted to {$status->Collation}.\n";
 					}
@@ -1014,14 +992,13 @@ class MailsterUpgrade {
 
 			if ( $wpdb->query( $sql ) ) {
 				if ( $wpdb->insert_id != $id ) {
-					$wpdb->query( $wpdb->prepare( "UPDATE  {$wpdb->prefix}mailster_forms SET `ID` = %d WHERE {$wpdb->prefix}mailster_forms.ID = %d;", $id, $wpdb->insert_id ) );
+					$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_forms SET `ID` = %d WHERE {$wpdb->prefix}mailster_forms.ID = %d;", $id, $wpdb->insert_id ) );
 				}
 
 				foreach ( $form['order'] as $position => $field_id ) {
 
 					$sql = "INSERT INTO {$wpdb->prefix}mailster_form_fields (form_id, field_id, name, required, position) VALUES (%d, %s, %s, %d, %d)";
-					$sql = $wpdb->prepare( $sql, $id, $field_id, $form['labels'][ $field_id ], in_array( $field_id, $form['required'] ), $position );
-					$wpdb->query( $sql );
+					$wpdb->query( $wpdb->prepare( $sql, $id, $field_id, $form['labels'][ $field_id ], in_array( $field_id, $form['required'] ), $position ) );
 				}
 
 				echo 'updated form ' . $form['name'] . " \n";
@@ -1078,7 +1055,6 @@ class MailsterUpgrade {
 					'totalerrors' => '',
 			), mailster( 'helper' )->unserialize( $data->campaign ) );
 
-			// $lists = $wpdb->get_results($wpdb->prepare("SELECT b.* FROM {$wpdb->term_relationships} AS a LEFT JOIN {$wpdb->terms} AS b ON b.term_id = a. term_taxonomy_id WHERE object_id = %d", $data->ID));
 			$lists = $wpdb->get_results( $wpdb->prepare( "SELECT b.* FROM {$wpdb->term_relationships} AS a LEFT JOIN {$wpdb->term_taxonomy} AS b ON b.term_taxonomy_id = a.term_taxonomy_id WHERE object_id = %d", $data->ID ) );
 
 			$listids = wp_list_pluck( $lists, 'term_id' );
@@ -1101,13 +1077,10 @@ class MailsterUpgrade {
 			}
 
 			$values = array(
-				// 'campaign_id' => $data->ID,
 				'parent_id' => $campaign['original_campaign'],
 				'timestamp' => $timestamp,
 				'finished' => $campaign['finished'],
 				'active' => $active, // all campaigns inactive
-				// 'sent' => $campaign['finished'] ? $campaign['sent'] : 0,
-				// 'error' => $campaign['totalerrors'],
 				'from_name' => $meta['from_name'],
 				'from_email' => $meta['from'],
 				'reply_to' => $meta['reply_to'],
@@ -1121,10 +1094,8 @@ class MailsterUpgrade {
 				'head' => trim( $meta['head'] ),
 				'background' => $meta['background'],
 				'colors' => ( $meta['newsletter_color'] ),
-				'embed_images' => isset( $meta['embed_images'] ),
 			);
 
-			// return false;
 			if ( $data->post_status == 'active' ) {
 				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->posts} SET post_status = 'queued' WHERE ID = %d AND post_type = 'newsletter'", $data->ID ) );
 			}
@@ -1154,16 +1125,12 @@ class MailsterUpgrade {
 
 		$now = time();
 
-		// $wpdb->query("ALTER TABLE {$wpdb->prefix}mailster_subscribers CHARACTER SET utf8 COLLATE utf8_general_ci");
 		$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} AS p LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = p.ID LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s2 ON s2.email = p.post_title LEFT JOIN {$wpdb->postmeta} AS c ON p.ID = c.post_id AND c.meta_key = 'mailster-campaigns' LEFT JOIN {$wpdb->postmeta} AS u ON p.ID = u.post_id AND u.meta_key = 'mailster-userdata' WHERE p.post_type = 'subscriber' AND post_status IN ('subscribed', 'unsubscribed', 'hardbounced', 'error') AND s.ID IS NULL AND (s2.email != p.post_title OR s2.email IS NULL)" );
 
-		// $count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts} AS p LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = p.ID LEFT JOIN {$wpdb->postmeta} AS c ON p.ID = c.post_id AND c.meta_key = 'mailster-campaigns' LEFT JOIN {$wpdb->postmeta} AS u ON p.ID = u.post_id AND u.meta_key = 'mailster-userdata' WHERE p.post_type = 'subscriber' AND post_status IN ('subscribed', 'unsubscribed', 'hardbounced', 'error') AND s.ID IS NULL");
 		echo $count . ' subscribers left' . "\n\n";
 
 		$sql = "SELECT p.ID, p.post_title AS email, p.post_status AS status, p.post_name AS hash, c.meta_value as campaign, u.meta_value as userdata FROM {$wpdb->posts} AS p LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = p.ID LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s2 ON s2.email = p.post_title LEFT JOIN {$wpdb->postmeta} AS c ON p.ID = c.post_id AND c.meta_key = 'mailster-campaigns' LEFT JOIN {$wpdb->postmeta} AS u ON p.ID = u.post_id AND u.meta_key = 'mailster-userdata' WHERE p.post_type = 'subscriber' AND post_status IN ('subscribed', 'unsubscribed', 'hardbounced', 'error') AND s.ID IS NULL AND (s2.email != p.post_title OR s2.email IS NULL) GROUP BY p.ID ORDER BY p.post_title ASC LIMIT $limit";
 
-		// $sql = "SELECT p.ID, p.post_title AS email, p.post_status AS status, p.post_name AS hash, c.meta_value as campaign, u.meta_value as userdata FROM {$wpdb->posts} AS p LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = p.ID LEFT JOIN {$wpdb->postmeta} AS c ON p.ID = c.post_id AND c.meta_key = 'mailster-campaigns' LEFT JOIN {$wpdb->postmeta} AS u ON p.ID = u.post_id AND u.meta_key = 'mailster-userdata' WHERE p.post_type = 'subscriber' AND post_status IN ('subscribed', 'unsubscribed', 'hardbounced', 'error') AND s.ID IS NULL AND (s.email != p.post_title OR s.email IS NULL) GROUP BY p.ID ORDER BY p.post_title ASC LIMIT $limit";
-		// $sql = "SELECT p.ID, p.post_title AS email, p.post_status AS status, p.post_name AS hash, c.meta_value as campaign, u.meta_value as userdata FROM {$wpdb->posts} AS p LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = p.ID LEFT JOIN {$wpdb->postmeta} AS c ON p.ID = c.post_id AND c.meta_key = 'mailster-campaigns' LEFT JOIN {$wpdb->postmeta} AS u ON p.ID = u.post_id AND u.meta_key = 'mailster-userdata' WHERE p.post_type = 'subscriber' AND post_status IN ('subscribed', 'unsubscribed', 'hardbounced', 'error') AND s.ID IS NULL GROUP BY p.ID ORDER BY p.post_title ASC LIMIT $limit";
 		$users = $wpdb->get_results( $sql );
 
 		$count = count( $users );
@@ -1210,12 +1177,6 @@ class MailsterUpgrade {
 			if ( false !== $wpdb->query( $sql ) ) {
 
 				echo 'added ' . $data->email . "\n";
-				// $lists = $wpdb->get_results($wpdb->prepare("SELECT b.* FROM {$wpdb->term_relationships} AS a LEFT JOIN {$wpdb->terms} AS b ON b.term_id = a.term_taxonomy_id WHERE object_id = %d", $data->ID));
-				// $listids = wp_list_pluck( $lists, 'term_id' );
-				// foreach($listids as $listid){
-				// $sql = $wpdb->prepare("INSERT INTO {$wpdb->prefix}mailster_lists_subscribers (list_id, subscriber_id, added) VALUES (%d, %d, %d)", $listid, $data->ID, $now );
-				// $wpdb->query($sql);
-				// }
 				$this->update_customfields( $data->ID );
 				echo "\n";
 
@@ -1395,7 +1356,7 @@ class MailsterUpgrade {
 
 		}
 
-		// not finished yet (but successfull)
+		// not finished yet (but successful)
 		return false;
 
 	}
@@ -1450,7 +1411,6 @@ class MailsterUpgrade {
 				$default = array(
 					'subscriber_id' => $data->ID,
 					'campaign_id' => $campaign_id,
-					// 'added' => $now,
 					'count' => 1,
 				);
 				foreach ( $infos as $info_key => $info_value ) {
@@ -1539,7 +1499,7 @@ class MailsterUpgrade {
 
 		set_transient( 'mailster_do_update_actions', $offset + $limit );
 
-		// not finished yet (but successfull)
+		// not finished yet (but successful)
 		return false;
 
 		return new WP_Error( 'update_error', 'An error occured during batch update' );
@@ -1591,15 +1551,6 @@ class MailsterUpgrade {
 
 				$subscriber_id = $wpdb->insert_id;
 
-				// $metavalues = array(
-				// 'subscriber_id' => $subscriber_id,
-				// 'campaign_id' => 0,
-				// 'added' => $user['timestamp'],
-				// 'timestamp' => $user['timestamp'],
-				// 'sent' => $user['last'],
-				// 'priority' => 5,
-				// 'count' => $user['try']+1,
-				// );
 				unset( $userdata['email'] );
 
 				foreach ( $userdata as $field => $value ) {
@@ -1728,10 +1679,10 @@ class MailsterUpgrade {
 
 		$texts = mailster_option( 'text' );
 
-		$texts['profile_update'] = ! empty( $texts['profile_update'] ) ? $texts['profile_update'] : __( 'Profile Updated!', 'mailster' );
-		$texts['profilebutton'] = ! empty( $texts['profilebutton'] ) ? $texts['profilebutton'] : __( 'Update Profile', 'mailster' );
-		$texts['forward'] = ! empty( $texts['forward'] ) ? $texts['forward'] : __( 'forward to a friend', 'mailster' );
-		$texts['profile'] = ! empty( $texts['profile'] ) ? $texts['profile'] : __( 'update profile', 'mailster' );
+		$texts['profile_update'] = ! empty( $texts['profile_update'] ) ? $texts['profile_update'] : esc_html__( 'Profile Updated!', 'mailster' );
+		$texts['profilebutton'] = ! empty( $texts['profilebutton'] ) ? $texts['profilebutton'] : esc_html__( 'Update Profile', 'mailster' );
+		$texts['forward'] = ! empty( $texts['forward'] ) ? $texts['forward'] : esc_html__( 'forward to a friend', 'mailster' );
+		$texts['profile'] = ! empty( $texts['profile'] ) ? $texts['profile'] : esc_html__( 'update profile', 'mailster' );
 
 		echo "updated texts\n";
 
@@ -1754,7 +1705,7 @@ class MailsterUpgrade {
 		delete_transient( 'mailster_cron_lock' );
 
 		update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
-		mailster_update_option( 'update_required', false );
+		mailster_update_option( 'db_update_required', false );
 
 		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_actions AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
 			echo "removed actions where's no campaign\n";
@@ -1808,7 +1759,7 @@ class MailsterUpgrade {
 	private function table_exists( $table ) {
 
 		global $wpdb;
-		return $wpdb->query( "SHOW TABLES LIKE '" . esc_sql( $table ) . "'" );
+		return $wpdb->query( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
 	}
 
 
@@ -1822,16 +1773,6 @@ class MailsterUpgrade {
 		global $mailster_batch_update_output;
 
 		$mailster_batch_update_output[] = $content;
-
-	}
-
-	private function check_db_version() {
-
-		if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
-			mailster_update_option( 'update_required', true );
-		} else {
-			mailster_update_option( 'update_required', false );
-		}
 
 	}
 
