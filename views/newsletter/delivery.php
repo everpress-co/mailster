@@ -67,10 +67,10 @@ $sent = $this->get_sent( $post->ID );
 
 	$totals = $this->get_totals( $post->ID );
 	$p = round( $this->get_sent_rate( $post->ID ) * 100 );
-
+	$pg = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 ?>
 		<p>
-			<div class="progress paused"><span class="bar" style="width:<?php echo $p ?>%"></span><span>&nbsp;<?php printf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) ?></span><var><?php echo $p ?>%</var></div>
+			<div class="progress paused"><span class="bar" style="width:<?php echo $p ?>%"><span>&nbsp;<?php echo $pg ?></span></span><span>&nbsp;<?php echo $pg ?></span><var><?php echo $p ?>%</var></div>
 		</p>
 	<?php endif; ?>
 
@@ -102,6 +102,7 @@ $sent = $this->get_sent( $post->ID );
 		'hook' => '',
 		'priority' => 10,
 		'once' => false,
+		'multiple' => false,
 		'followup_action' => 1,
 	) );
 
@@ -174,11 +175,9 @@ $sent = $this->get_sent( $post->ID );
 			$count = '<input type="number" name="mailster_data[autoresponder][post_count]" class="small-text" value="' . $autoresponderdata['post_count'] . '">';
 			$type = '<select id="autoresponder-post_type" name="mailster_data[autoresponder][post_type]">';
 			foreach ( $pts as $pt => $data ) {
-				if ( in_array( $pt, array( 'attachment', 'newsletter' ) ) ) {
-					continue;
-				}
 				$type .= '<option value="' . $pt . '"' . selected( $autoresponderdata['post_type'], $pt, false ) . '>' . $data->labels->singular_name . '</option>';
 			}
+			$type .= '<option value="rss"' . selected( $autoresponderdata['post_type'], 'rss', false ) . '>' . esc_html__( 'RSS Feed', 'mailster' ) . '</option>';
 			$type .= '</select>';
 			printf( esc_html__( 'create a new campaign every time a new %s has been published', 'mailster' ), $type );
 			?>
@@ -289,6 +288,7 @@ $sent = $this->get_sent( $post->ID );
 					}
 					$type .= '<option value="' . $pt . '"' . selected( $autoresponderdata['time_post_type'], $pt, false ) . '>' . $data->labels->name . '</option>';
 				}
+				$type .= '<option value="rss"' . selected( $autoresponderdata['time_post_type'], 'rss', false ) . '>' . esc_html__( 'RSS Feeds', 'mailster' ) . '</option>';
 				$type .= '</select><br>';
 				printf( esc_html__( '%1$s %2$s have been published', 'mailster' ), $count, $type );
 				?>
@@ -318,10 +318,16 @@ $sent = $this->get_sent( $post->ID );
 					? $autoresponderdata['time_post_type']
 					: $autoresponderdata['post_type'];
 
-					printf( _n( '%1$s matching %2$s has been published','%1$s matching %2$s have been published', $autoresponderdata['post_count_status'], 'mailster' ),
-						'<strong>' . $autoresponderdata['post_count_status'] . '</strong>',
-						'<strong><a href="edit.php?post_type=' . $post_type . '">' . ( 1 == $autoresponderdata['post_count_status'] ? $pts[ $post_type ]->labels->singular_name : $pts[ $post_type ]->labels->name ) . '</a></strong>'
-					);
+				if ( 'rss' == $post_type ) {
+					$post_type_label = ( 1 == $autoresponderdata['post_count_status'] ? esc_html__( 'RSS Feed', 'mailster' ) : esc_html__( 'RSS Feeds', 'mailster' ) );
+				} else {
+					$post_type_label = '<a href="' . admin_url( 'edit.php?post_type=' . $post_type ) . '">' . ( 1 == $autoresponderdata['post_count_status'] ? $pts[ $post_type ]->labels->singular_name : $pts[ $post_type ]->labels->name ) . '</a>';
+				}
+
+				printf( _n( '%1$s matching %2$s has been published', '%1$s matching %2$s have been published', $autoresponderdata['post_count_status'], 'mailster' ),
+					'<strong>' . $autoresponderdata['post_count_status'] . '</strong>',
+					'<strong>' . $post_type_label . '</strong>'
+				);
 				?>
 				<br><label><input type="checkbox" name="post_count_status_reset" value="1"> <?php esc_html_e( 'reset counter', 'mailster' );?></label>
 			</p>
@@ -461,21 +467,27 @@ $sent = $this->get_sent( $post->ID );
 			<p>
 				<input type="text" class="widefat code mailster-action-hook" name="mailster_data[autoresponder][hook]" value="<?php echo $autoresponderdata['hook'] ?>" placeholder="hook_name">
 			</p>
-			<p>
-				<label>
+			<div>
+				<p><label>
 				<?php esc_html_e( 'Priority', 'mailster' );?>:
 					<select name="mailster_data[autoresponder][priority]">
 						<option value="5" <?php selected( $autoresponderdata['priority'], 5 );?>><?php esc_html_e( 'High', 'mailster' );?></option>
 						<option value="10" <?php selected( $autoresponderdata['priority'], 10 );?>><?php esc_html_e( 'Normal', 'mailster' );?></option>
 						<option value="15" <?php selected( $autoresponderdata['priority'], 15 );?>><?php esc_html_e( 'Low', 'mailster' );?></option>
 					</select>
-				</label>
-			</p>
-			<p>
-				<label>
+				</label></p>
+			</div>
+			<div>
+				<p><label>
 					<input type="checkbox" name="mailster_data[autoresponder][hook_once]" value="1" <?php checked( $autoresponderdata['once'] ) ?>> <?php esc_html_e( 'send campaign only once', 'mailster' );?>
+				</label></p>
+			</div>
+			<div>
+				<label>
+					<input type="checkbox" name="mailster_data[autoresponder][multiple]" value="1" <?php checked( $autoresponderdata['multiple'] ) ?>> <?php esc_html_e( 'allow multiple triggers', 'mailster' );?>
 				</label>
-			</p>
+				<p class="description"><?php esc_html_e( 'Hooks can get triggered multiple times and cause multiple emails.', 'mailster' );?></p>
+			</div>
 		</div>
 
 		<?php do_action( 'mailster_autoresponder_more' ); ?>
@@ -486,7 +498,13 @@ $sent = $this->get_sent( $post->ID );
 	</div>
 <?php endif; ?>
 	<div>
-		<input type="text" value="<?php echo esc_attr( $current_user->user_email ) ?>" autocomplete="off" id="mailster_testmail" class="widefat" aria-label="<?php esc_attr_e( 'Send Test', 'mailster' );?>">
+		<?php
+		if ( ! ($test_email = get_user_meta( $current_user->ID, 'mailster_test_email', true )) ) {
+			$test_email = $current_user->user_email;
+		}
+		$test_email = apply_filters( 'mailster_test_email', $test_email );
+		?>
+		<input type="text" value="<?php echo esc_attr( $test_email ) ?>" autocomplete="off" id="mailster_testmail" class="widefat" aria-label="<?php esc_attr_e( 'Send Test', 'mailster' );?>">
 		<button type="button" class="button mailster_spamscore" title="<?php esc_html_e( 'check your spam score', 'mailster' );?> (beta)">Spam Score</button>
 		<span class="spinner" id="delivery-ajax-loading"></span>
 		<input type="button" value="<?php esc_html_e( 'Send Test', 'mailster' ) ?>" class="button mailster_sendtest">
@@ -509,11 +527,11 @@ $sent = $this->get_sent( $post->ID );
 	<?php if ( $sent && ! $is_autoresponder ) :
 
 		$totals = $this->get_totals( $post->ID );
-
 		$p = round( $this->get_sent_rate( $post->ID ) * 100 );
+		$pg = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 	?>
 		<div class="progress">
-			<span class="bar" style="width:<?php echo $p ?>%"></span><span>&nbsp;<?php printf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) ?></span><var><?php echo $p ?>%</var>
+			<span class="bar" style="width:<?php echo $p ?>%"><span>&nbsp;<?php echo $pg ?></span></span><span>&nbsp;<?php echo $pg ?></span><var><?php echo $p ?>%</var>
 		</div>
 
 			<?php if ( $p ) : ?>
@@ -534,9 +552,10 @@ $sent = $this->get_sent( $post->ID );
 	<?php
 		$totals = $this->get_totals( $post->ID );
 		$p = round( $this->get_sent_rate( $post->ID ) * 100 );
+		$pg = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 	?>
 	<div class="progress paused">
-		<span class="bar" style="width:<?php echo $p ?>%"></span><span>&nbsp;<?php printf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ) ?></span><var><?php echo $p ?>%</var>
+		<span class="bar" style="width:<?php echo $p ?>%"><span>&nbsp;<?php echo $pg ?></span></span><span>&nbsp;<?php echo $pg ?></span><var><?php echo $p ?>%</var>
 	</div>
 <?php endif; ?>
 

@@ -2,35 +2,41 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.2
-Stable tag: 2.3.19
+Tested up to: 5.2.2
+Stable tag: 2.4.4
 Author: EverPress
-Author URI: https://mailster.co
+Author URI: https://everpress.co
 Requires PHP: 5.3.6
 
 == Description ==
 
-= a super simple Email Newsletter Plugin for WordPress to create, send and track your Newsletter Campaigns =
+= Mailster is an easy to use Email Newsletter Plugin for WordPress. Create, send and track your Newsletter Campaigns without hassle. =
 
 **Track Opens, Clicks, Unsubscriptions and Bounces**
 Now it’s easy to keep track of your customers. Who does opened when and where your Newsletter? Track undeliverable mails (bounces), Countries, Cities** and know exactly who opened your mails.
 
 **Auto Responders**
-Send welcome messages to new subscribers or special offers to your loyal customers. Limit receivers with conditions or send messages only to certain lists
+Send welcome messages to new subscribers or special offers to your loyal customers. Limit receivers with conditions or send messages only to certain lists.
+
+**Unlimited**
+Mailster has no limit for storing subscribers. Send campaigns to thousands of users with a single Mailster installation.
 
 **Schedule your Campaigns**
-Let your subscribers receive your latest news when they have time to read it, not when you have time to create it
+Let your subscribers receive your latest news when they have time to read it, not when you have time to create it.
 
 **Simple Newsletter Creation**
-Creating Newsletters has never been so easy. If you familiar with WordPress Posts you can create your next campaign as easy as you publish a new blog entry. All options are easy accessible via the edit campaign page
+Creating Newsletters has never been so easy. If you familiar with WordPress Posts you can create your next campaign as easy as you publish a new blog entry. All options are easy accessible via the edit campaign screen.
 
-**Unlimited Customization**
-Use the Option panel to give your newsletter an unique branding, save your color schema and reuse it later. Choose one over 20 included backgrounds or upload your custom one.
+**Campaign Analytics**
+Track your campaigns **in real-time**. Get in depth statistics and track opens, clicks, unsubscritions and bounces.
+
+**Segmentation**
+Target your audience with custom **conditions** and segmentations.
 
 **Preflight your Newsletter**
-Don’t send unfinished Newsletters to your Customers which possible end up in there SPAM folders and are never been seen. Use built in Spam check to get your spam score
+Don’t send unfinished Newsletters to your Customers which possible end up in there SPAM folders and are never been seen. Use built in Spam check to get your spam score.
 
-= Full Feature List =
+= Feature List =
 
 * Track Opens, Clicks, Unsubscriptions and Bounces
 * Track Countries and Cities*
@@ -84,10 +90,70 @@ Xaver Birsak – https://everpress.co
 
 * new: Template Importer
 
+= Version 2.4.4 =
+
+* improved: you can now encode tags output with an exclamation mark `{!mytag}`
+* improved: drag n drop images from your desktop now respects cropped image setting.
+* improved: import screen
+* fixed: wrong subscriber count if status "pending" in subscriber query
+* fixed: cumulative count calculations
+* fixed: redirecting issue with spaces in URLs
+
+= Version 2.4.3 =
+
+* fixed: post_category tag now shows categories names again
+* fixed: permalink issue with WPML add on
+* improved: links from deleted campaigns end up in a 404
+* improved: better visualization during module reordering in editor
+* improved: menu icon is now a svg
+* improved: loading posts in editbar
+* improved: lang attribute now added for accessibility
+* improved: accessibility in editor
+* improved: plain text rendering
+
+= Version 2.4.2 =
+
+* change: dummy image service domain
+* improved: option to exclude taxonomies in dynamic tags
+* improved: forms no longer use native validation
+* fixed: remember usage tracking opt in setting
+* fixed: correctly redirect after campaign duplication
+* fixed: images from dynamic random post type in autoresponders
+* fixed: subscriberID is now correctly populated in confirmation messages
+* fixed: deprecated embed option
+
+= Version 2.4.1 =
+
+* fixed: duplication of forms working again
+* fixed: Subscribers are correctly connected if WordPress User is added later
+* fixed: picpicker only showed 8 recent files
+* fixed: unsubscribe auto responder works with list based subscriptions
+* fixed: small JavaScript issues in the editor
+* improved: better support for third party email with content type text/html
+* improved: better checks for content related autoresponders
+* improved: fixing broken settings automatically
+* improved: database update checks
+
+= Version 2.4 =
+
+* new: Use over 900K photos from Unsplash
+* new: RSS to Email Campaigns.
+* new: Random Post Tags
+* new: Campaign-Subscriber related tags
+* new: Custom Dynamic Post Types
+* new: additional Form shortcode attributes
+* new: Fresh UI
+* new: Translation Dashboard Info
+* improved: Preserved stats from deleted subscribers
+* improved: Mailster now stores your email address when you send a test
+* improved: Import Export
+
 = Version 2.3.19 =
 
 * fixed: custom 'mailster_auto_post' output is working again.
 * added: `mailster_is_email` filter to add custom email validation checks.
+* improved: Mailster now better respects third party email with content type text/html
+* removed: deprecated template functionality
 
 = Version 2.3.18 =
 
@@ -184,6 +250,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.3.11 =
 
 * fixed: added "source" tag in allowed tags
+* fixed: smaller issues
 * fixed: sql query issue on "(didn't) clicked link" condition
 * fixed: unsubscribe issue on single opt out if user is logged in
 * fixed: subscriber export on sites with CloudFlare

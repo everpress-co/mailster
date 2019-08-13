@@ -54,7 +54,11 @@ function mailster_options( $option = null, $fallback = null ) {
 		return mailster_option( $option, $fallback );
 	}
 
-	return get_option( 'mailster_options', array() );
+	if ( ! ($options = get_option( 'mailster_options', array() )) ) {
+		$options = mailster( 'settings' )->maybe_repair_options( $options );
+	}
+
+	return $options;
 }
 
 
@@ -219,6 +223,61 @@ function mailster_get_current_user_id() {
 
 }
 
+
+/**
+ *
+ *
+ * @param unknown $post_type
+ * @param unknown $args      (optional)
+ * @param unknown $callback  (optional)
+ * @param unknown $priority  (optional)
+ * @return unknown
+ */
+function mailster_register_dynamic_post_type( $post_type, $args = array(), $callback = null, $priority = 10 ) {
+	if ( ! class_exists( 'WP_Post_Type' ) ) {
+		return false;
+	}
+
+	$args = wp_parse_args( $args, array(
+		'labels' => array(
+			'name' => is_string( $args ) ? $args : ucwords( str_replace( '_', ' ', $post_type ) ),
+		),
+	) );
+
+	// add additional post type
+	add_filter( 'mailster_dynamic_post_types', function( $post_types, $output ) use ( $post_type, $args ) {
+
+		if ( 'names' == $output ) {
+			$post_types[ $post_type ] = $post_type;
+		} else {
+			$post_types[ $post_type ] = new WP_Post_Type( $post_type, $args );
+		}
+
+		return $post_types;
+
+	}, 10, 2);
+
+	// filter in placeholder
+	add_filter( 'mailster_get_last_post_' . $post_type, function( $return, $args, $offset, $term_ids, $campaign_id, $subscriber_id ) use ( $callback ) {
+
+		if ( is_callable( $callback ) ) {
+			$random = false;
+			if ( isset( $args['mailster_identifier'] ) ) {
+				$random = (int) $args['mailster_identifier'];
+				unset( $args['mailster_identifier'] );
+				unset( $args['mailster_identifier_key'] );
+			}
+			if ( $return = call_user_func_array( $callback, array( $offset, $campaign_id, $subscriber_id, $term_ids, $args, $random ) ) ) {
+				$return = new WP_Post( (object) $return );
+			}
+		}
+
+		return $return;
+
+	}, (int) $priority, 6);
+
+	return true;
+}
 
 /**
  *

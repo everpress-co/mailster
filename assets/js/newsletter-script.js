@@ -1183,6 +1183,7 @@ jQuery(document).ready(function ($) {
 				animate: 2000,
 				rotate: 180,
 				barColor: '#2BB3E7',
+				trackColor: '#50626f',
 				trackColor: '#f3f3f3',
 				lineWidth: 9,
 				size: 75,
@@ -1219,6 +1220,7 @@ jQuery(document).ready(function ($) {
 						p = (_data.sent / _data.total * 100);
 
 					$('.hb-sent').html(_data.sent_f);
+					$('.hb-deleted').html(_data.deleted_f);
 					$('.hb-opens').html(_data.opens_f);
 					$('.hb-clicks').html(_data.clicks_f);
 					$('.hb-clicks_total').html(_data.clicks_total_f);
@@ -1237,6 +1239,7 @@ jQuery(document).ready(function ($) {
 
 					progress.find('.bar').width(p + '%');
 					progress.find('span').eq(1).html(_data.sent_formatted);
+					progress.find('span').eq(2).html(_data.sent_formatted);
 					progress.find('var').html(Math.round(p) + '%');
 
 					_clickBadges(_data.clickbadges);
@@ -1625,10 +1628,12 @@ jQuery(document).ready(function ($) {
 			buttonalt = bar.find('.buttonalt'),
 			buttonnav = bar.find('.button-nav'),
 			buttontabs = bar.find('ul.buttons'),
-			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, searchTimeout, checkRSSfeedInterval, rssURL = 'x',
+			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, lastpostsargs, searchTimeout, checkRSSfeedInterval,
 			editor = $('#wp-mailster-editor-wrap'),
+			searchstring = '',
 			postsearch = $('#post-search'),
-			imagesearch = $('#image-search');
+			imagesearch = $('#image-search'),
+			imagesearchtype = $('[name="image-search-type"]');
 
 		function init() {
 			bar
@@ -1652,17 +1657,11 @@ jQuery(document).ready(function ($) {
 				.on('click', '.imagepreview', toggleImgZoom)
 				.on('click', 'a.nav-tab', openTab)
 				.on('change', 'select.check-for-posts', checkForPosts)
-				.on('keyup change', '#rss_url', loadPosts)
+				.on('change paste', '#dynamic_rss_url', checkForPosts)
 				.on('keyup change', '#post-search', searchPost)
 				.on('keyup change', '#image-search', searchPost)
-				.on('click', '#rss_url', function () {
-					$(this).focus().select();
-				})
-				.on('click', '.rss_change', changeRSS)
-				.on('click', '#recent_feeds a', recentFeed)
-
-
-			.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
+				.on('change', '[name="image-search-type"]', searchPost)
+				.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
 				.on('mouseleave', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', enabledrag);
 
 			_getRealDimensions(_iframe.contents().find("img").eq(0), function (w, h, f) {
@@ -1705,11 +1704,11 @@ jQuery(document).ready(function ($) {
 				}, 1);
 			});
 
-			imagewidth.on('change, keyup', function () {
+			imagewidth.on('keyup change', function () {
 				if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / currentimage.asp));
 				adjustImagePreview();
 			});
-			imageheight.on('change, keyup', function () {
+			imageheight.on('keyup change', function () {
 				if (!imagecrop.is(':checked')) imagewidth.val(Math.round(imageheight.val() * currentimage.asp));
 				adjustImagePreview();
 			});
@@ -1725,11 +1724,13 @@ jQuery(document).ready(function ($) {
 
 			$('#dynamic_embed_options_post_type').on('change', function () {
 
-				var cats = $('#dynamic_embed_options_cats');
+				var cats = $('#dynamic_embed_options_cats'),
+					val = $(this).val();
 				cats.find('select').prop('disabled', true);
+				bar.find('.dynamic-rss')[val == 'rss' ? 'show' : 'hide']();
 				loader();
 				_ajax('get_post_term_dropdown', {
-					posttype: $(this).val()
+					posttype: val
 				}, function (response) {
 					loader(false);
 					if (response.success) {
@@ -1849,6 +1850,7 @@ jQuery(document).ready(function ($) {
 			$this.addClass('nav-tab-active');
 			base.find('.tab').hide();
 			base.find(id).show();
+
 			if (id == '#dynamic_embed_options' && trigger !== false) $('#dynamic_embed_options_post_type').trigger('change');
 			if (id == '#image_button') buttontype = 'image';
 			if (id == '#text_button') buttontype = 'text';
@@ -1864,7 +1866,7 @@ jQuery(document).ready(function ($) {
 				w = current.element.width(),
 				h = Math.round(w / 1.6),
 				img = $('<img>', {
-					'src': 'https://dummy.newsletter-plugin.com/' + (w * f) + 'x' + (h * f) + '.jpg',
+					'src': 'https://dummy.mailster.co/' + (w * f) + 'x' + (h * f) + '.jpg',
 					'alt': current.content,
 					'label': current.content,
 					'width': w,
@@ -1901,14 +1903,14 @@ jQuery(document).ready(function ($) {
 		function checkForPosts() {
 			clearInterval(checkForPostsTimeout);
 			loader();
-			$('#dynamic_embed_options').find('h4.current-match').html('&hellip;');
-			$('#dynamic_embed_options').find('div.current-tag').html('&hellip;');
 			checkForPostsTimeout = setTimeout(function () {
 
 				var post_type = bar.find('#dynamic_embed_options_post_type').val(),
 					content = bar.find('#dynamic_embed_options_content').val(),
 					relative = bar.find('#dynamic_embed_options_relative').val(),
 					taxonomies = bar.find('.dynamic_embed_options_taxonomy_wrap'),
+					rss_url = $('#dynamic_rss_url').val(),
+					postargs = {},
 					extra = [];
 
 				$.each(taxonomies, function (i) {
@@ -1921,15 +1923,32 @@ jQuery(document).ready(function ($) {
 					values = values.join(',');
 					if (values) extra[i] = values;
 				});
-
-				_ajax('check_for_posts', {
+				postargs = {
 					id: campaign_id,
 					post_type: post_type,
 					relative: relative,
 					extra: extra,
 					modulename: current.name,
-					expect: current.elements.expects
-				}, function (response) {
+					expect: current.elements.expects,
+					rss_url: rss_url
+				};
+
+				if (JSON.stringify(postargs) === JSON.stringify(lastpostsargs)) {
+					loader(false);
+					return;
+				}
+
+				$('#dynamic_embed_options').find('h4.current-match').html('&hellip;');
+				$('#dynamic_embed_options').find('div.current-tag').html('&hellip;');
+
+				if ('rss' == post_type && !rss_url) {
+					loader(false);
+					return;
+				}
+
+				lastpostsargs = postargs;
+
+				_ajax('check_for_posts', postargs, function (response) {
 					loader(false);
 					if (response.success) {
 						currenttext = response.pattern;
@@ -1951,7 +1970,7 @@ jQuery(document).ready(function ($) {
 			h = h || imageheight.val() || Math.round(w / 1.6);
 			c = typeof c == 'undefined' ? imagecrop.prop(':checked') : c;
 			o = typeof o == 'undefined' ? original.prop(':checked') : o;
-			if (/^\{([a-z0-9-_,;:|]+)\}$/.test(val)) {
+			if (/^\{([a-z0-9-_,;:|~]+)\}$/.test(val)) {
 				var f = factor.val();
 				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&o=' + (o ? 1 : 0) + '&f=' + f;
 			}
@@ -1960,7 +1979,7 @@ jQuery(document).ready(function ($) {
 
 		function isDynamicImage(val) {
 			if (-1 !== val.indexOf('?action=mailster_image_placeholder&tag=')) {
-				var m = val.match(/&tag=([a-z0-9-_,;:|]+)&/);
+				var m = val.match(/&tag=([a-z0-9-_,;:|~]+)&/);
 				return '{' + m[1] + '}';
 			}
 			return false;
@@ -2011,7 +2030,6 @@ jQuery(document).ready(function ($) {
 						o = original.is(':checked'),
 						attribute = is_img ? 'src' : 'background',
 						style;
-
 
 					current.element.attr({
 						'data-id': currentimage.id,
@@ -2212,20 +2230,24 @@ jQuery(document).ready(function ($) {
 
 				var insertmethod = $('#embedoption-bar').find('.nav-tab-active').data('type'),
 					position = current.element.data('position') || 0,
-					contenttype, images = [];
+					contenttype, images = [],
+					post_type, rss_url;
+
+				current.element.removeAttr('data-tag data-rss').removeData('tag').removeData('data-rss');
 
 				if ('dynamic' == insertmethod) {
 
 					contenttype = bar.find('#dynamic_embed_options_content').val();
+					post_type = bar.find('#dynamic_embed_options_post_type').val();
+					rss_url = $('#dynamic_rss_url').val();
 
 					currenttext.content = currenttext[contenttype];
 
 					current.element.attr('data-tag', currenttext.tag).data('tag', currenttext.tag);
 
-				} else if ('rss' == insertmethod) {
-
-					contenttype = $('.embed_options_content_rss:checked').val();
-					current.element.removeAttr('data-tag').removeData('tag').attr('data-rss', $('#rss_url').val());
+					if ('rss' == post_type) {
+						current.element.attr('data-rss', rss_url).data('rss', rss_url);
+					}
 
 				} else {
 
@@ -2385,8 +2407,8 @@ jQuery(document).ready(function ($) {
 
 								return false;
 
-								// rss and dynamic
-							} else if ('dynamic' == insertmethod || 'rss' == insertmethod) {
+								// dynamic
+							} else if ('dynamic' == insertmethod) {
 
 								var width = imgelement.width(),
 									crop = imgelement.data('crop'),
@@ -2505,6 +2527,8 @@ jQuery(document).ready(function ($) {
 				break;
 			default:
 				current.element.html(current.content);
+				//remove id to re trigger tinymce
+				current.element.find('single, multi').removeAttr('id');
 			}
 			close();
 			return false;
@@ -2579,8 +2603,8 @@ jQuery(document).ready(function ($) {
 		}
 
 		function adjustImagePreview() {
-			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val())))),
-				f = factor.val();
+			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val())))) || 0,
+				f = parseInt(factor.val(), 10);
 
 			imagepreview.css({
 				'clip': 'rect(' + (x) + 'px,' + (current.width * f) + 'px,' + (current.height * f - x) + 'px,0px)',
@@ -2661,6 +2685,7 @@ jQuery(document).ready(function ($) {
 			current.content = content;
 
 			currenttag = current.element.data('tag');
+			searchstring = '';
 
 			_trigger('selectModule', module);
 
@@ -2722,6 +2747,7 @@ jQuery(document).ready(function ($) {
 
 				original.prop('checked', current.original);
 				imagecrop.prop('checked', current.crop).parent()[current.crop ? 'addClass' : 'removeClass']('not-cropped');
+				searchstring = $.trim(imagesearch.val());
 
 				factor.val(1);
 				_getRealDimensions(el, function (w, h, f) {
@@ -2779,12 +2805,13 @@ jQuery(document).ready(function ($) {
 			} else if (type == 'auto') {
 
 				openTab('#' + (currenttag ? 'dynamic' : 'static') + '_embed_options', true);
+				searchstring = $.trim(postsearch.val());
 
 				if (currenttag) {
 
 					var parts = currenttag.substr(1, currenttag.length - 2).split(':'),
 						extra = parts[1].split(';'),
-						relative = parseInt(extra.shift(), 10),
+						relative = extra.shift(),
 						terms = extra.length ? extra : null;
 
 					currenttag = {
@@ -2826,6 +2853,8 @@ jQuery(document).ready(function ($) {
 				bar.find('div.type').hide();
 
 				bar.find('div.' + type).show();
+
+				if (module.data('rss')) $('#dynamic_rss_url').val(module.data('rss'));
 
 				//center the bar
 				var baroffset = _doc.scrollTop() + (_win.height() / 2) - _container.offset().top - (bar.height() / 2);
@@ -3002,21 +3031,11 @@ jQuery(document).ready(function ($) {
 				data = {
 					type: assetstype,
 					posttypes: posttypes,
-					search: 'attachment' == assetstype ? imagesearch.val() : postsearch.val(),
+					search: searchstring,
+					imagetype: imagesearchtype.filter(':checked').val(),
 					offset: 0
 				};
 
-			if ($(this).is('#rss_url')) {
-				data.type = '_rss';
-				data.url = $.trim($('#rss_url').val());
-				if (data.url == rssURL) return false;
-				rssURL = data.url;
-				if (!data.url) {
-					$('#rss_more').slideUp(200);
-					return false;
-				}
-				$('.rss_info').html('');
-			}
 			if (assetstype == 'attachment') {
 				data.id = currentimage.id;
 			}
@@ -3029,11 +3048,6 @@ jQuery(document).ready(function ($) {
 				if (response.success) {
 					itemcount = response.itemcount;
 					displayPosts(response.html, true);
-					if (response.rssinfo) {
-						$('#rss_more').slideDown(200);
-						$('#rss_input').slideUp(200);
-						$('.rss_info').html('<h4>' + response.rssinfo.title + ' &ndash; ' + response.rssinfo.description + '</h4><p class="tiny">' + response.rssinfo.copyright + '</p>');
-					}
 					callback && callback();
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
@@ -3055,15 +3069,15 @@ jQuery(document).ready(function ($) {
 			_ajax('get_post_list', {
 				type: type,
 				posttypes: posttypes,
-				search: 'attachment' == type ? imagesearch.val() : postsearch.val(),
+				search: searchstring,
+				imagetype: imagesearchtype.filter(':checked').val(),
 				offset: offset,
-				url: $.trim($('#rss_url').val()),
 				itemcount: itemcount
 			}, function (response) {
 				loader(false);
 				if (response.success) {
 					itemcount = response.itemcount;
-					$this.parent().remove();
+					$this.remove();
 					displayPosts(response.html, false);
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
@@ -3075,11 +3089,16 @@ jQuery(document).ready(function ($) {
 		}
 
 		function searchPost() {
-			var $this = $(this);
+			var $this = $(this),
+				temp = $.trim('attachment' == assetstype ? imagesearch.val() : postsearch.val());
+			if ((!$this.is(':checked') && searchstring == temp)) {
+				return false;
+			}
+			searchstring = temp;
 			clearTimeout(searchTimeout);
 			searchTimeout = setTimeout(function () {
 				loadPosts();
-			}, 300);
+			}, 500);
 		}
 
 		function loadSingleLink() {
@@ -3100,25 +3119,9 @@ jQuery(document).ready(function ($) {
 			list.find('ul').append(html);
 		}
 
-		function recentFeed() {
-
-			$('#rss_url').val($(this).attr('href')).trigger('change');
-
-			return false;
-		}
-
-		function changeRSS() {
-
-			$('#rss_url').val('');
-			$('#rss_more').slideUp(200);
-			$('#rss_input').slideDown(200);
-
-			return false;
-		}
-
 		function openURL() {
 			$('.imageurl-popup').toggle();
-			if (!imageurl.val() && currentimage.src.indexOf(location.origin) == -1 && currentimage.src.indexOf('dummy.newsletter-plugin.com') == -1) {
+			if (!imageurl.val() && currentimage.src.indexOf(location.origin) == -1 && currentimage.src.indexOf('dummy.mailster.co') == -1) {
 				imageurl.val(currentimage.src);
 			}
 			imageurl.focus().select();
@@ -3208,22 +3211,46 @@ jQuery(document).ready(function ($) {
 		}
 
 		function up() {
-			var module = $(this).parent().parent().parent(),
-				pos = module.offset();
-			module.insertBefore(module.prev('module'));
-			_jump(module.offset().top - pos.top, true);
-			_trigger('refresh');
-			_trigger('save');
+			var module = $(this).parent().parent().parent().addClass('ui-sortable-fly-over'),
+				prev = module.prev('module').addClass('ui-sortable-fly-under'),
+				pos = (animateDOM.scrollTop() || document.scrollingElement.scrollTop) - prev.height();
+			module.css({
+				'transform': 'translateY(-' + prev.height() + 'px)'
+			});
+			prev.css({
+				'transform': 'translateY(' + module.height() + 'px)'
+			});
+			_scroll(pos, function () {
+				module.insertBefore(prev.css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-under')).css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-over');
+				_trigger('refresh');
+				_trigger('save');
+			}, 250);
 			return false;
 		}
 
 		function down() {
-			var module = $(this).parent().parent().parent(),
-				pos = module.offset()
-			module.insertAfter(module.next('module'));
-			_jump(module.offset().top - pos.top, true);
-			_trigger('refresh');
-			_trigger('save');
+			var module = $(this).parent().parent().parent().addClass('ui-sortable-fly-over'),
+				next = module.next('module').addClass('ui-sortable-fly-under'),
+				pos = (animateDOM.scrollTop() || document.scrollingElement.scrollTop) + next.height();
+			module.css({
+				'transform': 'translateY(' + next.height() + 'px)'
+			});
+			next.css({
+				'transform': 'translateY(-' + module.height() + 'px)'
+			});
+			_scroll(pos, function () {
+				module.insertAfter(next.css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-under')).css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-over');
+				_trigger('refresh');
+				_trigger('save');
+			}, 250);
 			return false;
 		}
 
@@ -3309,9 +3336,7 @@ jQuery(document).ready(function ($) {
 			});
 
 			if (scroll) {
-				var offset = clone.offset().top + _container.offset().top - (_win.height() / 2) - clone.outerHeight();
-				offset = Math.max(_container.offset().top, offset);
-
+				var offset = clone.offset().top + _container.offset().top - (_win.height() / 2);
 				_scroll(offset);
 			}
 
@@ -3347,6 +3372,11 @@ jQuery(document).ready(function ($) {
 		function init() {
 			_container
 				.on('click', 'a.toggle-modules', toggleModules)
+				.on('keydown', 'a.addmodule', function (event) {
+					if (13 == event.which) {
+						addmodule.call(this);
+					}
+				})
 				.on('click', 'a.addmodule', addmodule);
 
 			search
@@ -3503,11 +3533,10 @@ jQuery(document).ready(function ($) {
 			return
 		}
 		animateDOM.stop().animate({
-				'scrollTop': pos
-			}, speed, callback &&
-			function () {
-				callback();
-			});
+			'scrollTop': pos
+		}, speed, function () {
+			callback && callback()
+		});
 	}
 
 	function _jump(val, rel) {
@@ -3535,16 +3564,19 @@ jQuery(document).ready(function ($) {
 	})
 
 	.on('Mailster:resize', function () {
-		var delay = 0,
-			extra = 0;
 		if (!iframeloaded) return false;
 		setTimeout(function () {
 			if (!_iframe[0].contentWindow.document.body) return;
-			var height = _iframe.contents().height() || _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
-			height = Math.max(300, height + (extra || 0));
+			var height = _iframe.contents().find('body').outerHeight() ||
+				_iframe.contents().height() ||
+				_iframe[0].contentWindow.document.body.offsetHeight ||
+				_iframe.contents().find("html")[0].innerHeight ||
+				_iframe.contents().find("html").height();
+
+			height = Math.max(500, height + 4);
 			$('#editor-height').val(height);
 			_iframe.attr("height", height);
-		}, delay ? delay : 500);
+		}, 50);
 	})
 
 	.on('Mailster:save', function () {
@@ -3985,11 +4017,10 @@ jQuery(document).ready(function ($) {
 				if (textStatus == 'error' && !errorThrown) return;
 				if (console) console.error(response);
 				if ('JSON' == dataType) {
-					var json = response.match(/{(.*)}$/);
-					if (json && callback) {
+					var maybe_json = response.match(/{(.*)}$/);
+					if (maybe_json && callback) {
 						try {
-							json = $.parseJSON(json[0]);
-							callback.call(this, json);
+							callback.call(this, $.parseJSON(maybe_json[0]));
 						} catch (e) {
 							if (console) console.error(e);
 						}

@@ -44,7 +44,7 @@
 		<th scope="row"><?php esc_html_e( 'Send Test', 'mailster' ) ?></th>
 		<td>
 		<div class="mailster-testmail">
-			<input type="text" value="<?php echo $current_user->user_email ?>" autocomplete="off" class="form-input-tip mailster-testmail-email">
+			<input type="text" value="<?php echo esc_attr( $test_email ) ?>" autocomplete="off" class="form-input-tip mailster-testmail-email">
 			<input type="button" value="<?php esc_html_e( 'Send Test', 'mailster' ) ?>" class="button mailster_sendtest" data-role="basic">
 			<div class="loading test-ajax-loading"></div>
 		</div>

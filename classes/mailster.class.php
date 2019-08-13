@@ -19,7 +19,7 @@ class Mailster {
 		register_activation_hook( MAILSTER_FILE, array( &$this, 'activate' ) );
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
-		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy', 'empty' );
+		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy', 'export', 'empty' );
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
@@ -221,9 +221,6 @@ class Mailster {
 			add_filter( 'install_plugin_complete_actions', array( &$this, 'add_install_plugin_complete_actions' ), 10, 3 );
 
 			add_filter( 'add_meta_boxes_page', array( &$this, 'add_homepage_info' ), 10, 2 );
-
-			add_filter( 'wp_import_post_data_processed', array( &$this, 'import_post_data' ), 10, 2 );
-			add_action( 'wp_import_insert_post', array( &$this, 'convert_old_campaign_ids' ), 10, 4 );
 
 			add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
@@ -670,11 +667,10 @@ class Mailster {
 
 			}
 
-			$link = 'href="' . $link . '"';
-			$new_link = 'href="' . apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id ) . '"';
+			$link = ' href="' . $link . '"';
+			$new_link = ' href="' . apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id ) . '"';
 
 			if ( ( $pos = strpos( $content, $link ) ) !== false ) {
-
 				// do not use substr_replace as it has problems with multibyte
 				// $content = substr_replace( $content, $new_link, $pos, strlen( $link ) );
 				$content = preg_replace( '/' . preg_quote( $link, '/' ) . '/', $new_link, $content, 1 );
@@ -704,7 +700,73 @@ class Mailster {
 	 * @return unknown
 	 */
 	public function decode_link( $encoded_link ) {
-		return apply_filters( 'mailster_encode_link', base64_decode( strtr( $encoded_link, '-_', '+/' ) ), $encoded_link );
+		return apply_filters( 'mailster_decode_link', base64_decode( strtr( $encoded_link, '-_', '+/' ) ), $encoded_link );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $identifier    (optional)
+	 * @param unknown $post_type     (optional)
+	 * @param unknown $term_ids      (optional)
+	 * @param unknown $args          (optional)
+	 * @param unknown $campaign_id   (optional)
+	 * @param unknown $subscriber_id (optional)
+	 * @param unknown $try           (optional)
+	 * @return unknown
+	 */
+	public function get_random_post( $identifier = 0, $post_type = 'post', $term_ids = array(), $args = array(), $campaign_id = 0, $subscriber_id = null, $try = 1 ) {
+
+		// filters only on first run.
+		if ( 1 === $try ) {
+			$args = apply_filters( 'mailster_get_random_post_args', $args, $identifier, $post_type, $term_ids, $campaign_id, $subscriber_id );
+			// try max 10 times to prevent infinity loop
+		} elseif ( $try >= 10 ) {
+			return false;
+		}
+
+		// get a seed to bring some randomness.
+		$seed = apply_filters( 'mailster_get_random_post_seed', 0 );
+
+		$args['orderby'] = 'RAND(' . ((int) $seed . (int) $campaign_id . (int) $identifier) . ')';
+
+		// add an identifier to prevent results from being cached.
+		$key = md5( serialize( array( $identifier, $post_type, $term_ids, $args, $campaign_id ) ) );
+		$args['mailster_identifier'] = $identifier;
+		$args['mailster_identifier_key'] = $key;
+
+		// check if there's a cached version.
+		$posts = mailster_cache_get( 'get_random_post' );
+
+		if ( $posts && isset( $posts[ $campaign_id ] ) && isset( $posts[ $campaign_id ][ $key ] ) ) {
+			return $posts[ $campaign_id ][ $key ];
+		}
+
+		// get the actual post.
+		$post = $this->get_last_post( 0, $post_type, $term_ids, $args, $campaign_id, $subscriber_id );
+
+		if ( ! isset( $posts[ $campaign_id ] ) ) {
+			$posts[ $campaign_id ] = $stored = array();
+		} else {
+			$stored = wp_list_pluck( $posts[ $campaign_id ], 'ID' );
+		}
+
+		$allow_duplciates = apply_filters( 'mailster_allow_random_post_duplicates', false, $post_type, $term_ids, $args, $campaign_id, $subscriber_id );
+
+		// get new if already used
+		if ( ! $allow_duplciates && ($pos = array_search( $post->ID, $stored )) !== false ) {
+			unset( $args['mailster_identifier'] );
+			unset( $args['mailster_identifier_key'] );
+			return $this->get_random_post( ++$identifier, $post_type, $term_ids, $args, $campaign_id, $subscriber_id, ++$try );
+		} else {
+			$posts[ $campaign_id ][ $key ] = $post;
+		}
+
+		mailster_cache_set( 'get_random_post', $posts );
+
+		return $post;
+
 	}
 
 
@@ -724,7 +786,6 @@ class Mailster {
 		global $wpdb;
 
 		$args = apply_filters( 'mailster_pre_get_last_post_args', $args, $offset, $post_type, $term_ids, $campaign_id, $subscriber_id );
-
 		$key = md5( serialize( array( $offset, $post_type, $term_ids, $args, $campaign_id, $subscriber_id ) ) );
 
 		$posts = mailster_cache_get( 'get_last_post' );
@@ -737,65 +798,94 @@ class Mailster {
 
 		if ( is_null( $post ) ) {
 
-			$defaults = array(
-				'posts_per_page' => 1,
-				'numberposts' => 1,
-				'post_type' => $post_type,
-				'offset' => $offset,
-				'update_post_meta_cache' => false,
-				'no_found_rows' => true,
-				'cache_results' => false,
-			);
+			if ( 'rss' == $post_type && isset( $args['mailster_rss_url'] ) ) {
 
-			if ( ! isset( $args['post__not_in'] ) ) {
-				$exclude = mailster_cache_get( 'get_last_post_ignore' );
+				$posts = false;
 
-				if ( ! $exclude ) {
-					$exclude = $wpdb->get_col( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'mailster_ignore' AND meta_value != '0'" );
+				$post = mailster( 'helper' )->feed( $args['mailster_rss_url'], absint( $offset ) );
+
+				if ( ! is_wp_error( $post ) && $post ) {
+					$posts = array( $post );
 				}
+			} else {
+				$defaults = array(
+					'posts_per_page' => 1,
+					'numberposts' => 1,
+					'post_type' => $post_type,
+					'offset' => $offset,
+					'update_post_meta_cache' => false,
+					'no_found_rows' => true,
+					// 'cache_results' => false,
+				);
 
-				if ( ! empty( $exclude ) ) {
-					$args['post__not_in'] = (array) $exclude;
-				}
-			}
-			$args = wp_parse_args( $args, $defaults );
+				if ( ! isset( $args['post__not_in'] ) ) {
+					$exclude = mailster_cache_get( 'get_last_post_ignore' );
 
-			mailster_cache_set( 'get_last_post_ignore', $exclude );
-
-			if ( ! empty( $term_ids ) ) {
-
-				$tax_query = array();
-
-				$taxonomies = get_object_taxonomies( $post_type, 'names' );
-
-				for ( $i = 0; $i < count( $term_ids ); $i++ ) {
-					if ( empty( $term_ids[ $i ] ) ) {
-						continue;
+					if ( ! $exclude ) {
+						$exclude = $wpdb->get_col( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'mailster_ignore' AND meta_value != '0'" );
 					}
 
-					$tax_query[] = array(
-						'taxonomy' => $taxonomies[ $i ],
-						'field' => 'id',
-						'terms' => explode( ',', $term_ids[ $i ] ),
-					);
+					if ( ! empty( $exclude ) ) {
+						$args['post__not_in'] = (array) $exclude;
+					}
+				}
+				$args = wp_parse_args( $args, $defaults );
+
+				mailster_cache_set( 'get_last_post_ignore', $exclude );
+
+				if ( ! empty( $term_ids ) ) {
+
+					$tax_query = array();
+
+					$taxonomies = get_object_taxonomies( $post_type, 'names' );
+
+					for ( $i = 0; $i < count( $term_ids ); $i++ ) {
+						if ( empty( $term_ids[ $i ] ) ) {
+							continue;
+						}
+
+						$terms = explode( ',', $term_ids[ $i ] );
+
+						$include = array_filter( $terms, function ( $v ) { return $v >= 0; } );
+						$exclude = array_filter( $terms, function ( $v ) { return $v < 0; } );
+
+						if ( ! empty( $include ) ) {
+							$tax_query[] = array(
+								'taxonomy' => $taxonomies[ $i ],
+								'field' => 'id',
+								'terms' => $include,
+							);
+						}
+						if ( ! empty( $exclude ) ) {
+							$tax_query[] = array(
+								'taxonomy' => $taxonomies[ $i ],
+								'field' => 'id',
+								'terms' => $exclude,
+								'operator' => 'NOT IN',
+							);
+						}
+					}
+
+					if ( ! empty( $tax_query ) ) {
+						$tax_query['relation'] = 'AND';
+						$args = wp_parse_args( $args, array( 'tax_query' => $tax_query ) );
+					}
 				}
 
-				if ( ! empty( $tax_query ) ) {
-					$tax_query['relation'] = 'AND';
-					$args = wp_parse_args( $args, array( 'tax_query' => $tax_query ) );
+				$args = apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids, $campaign_id, $subscriber_id );
+
+				$posts = get_posts( $args );
+				if ( is_wp_error( $posts ) ) {
+					$post = $posts;
+				} elseif ( ! empty( $posts ) ) {
+					$post = $posts[0];
 				}
 			}
-
-			$args = apply_filters( 'mailster_get_last_post_args', $args, $offset, $post_type, $term_ids, $campaign_id, $subscriber_id );
-
-			$posts = get_posts( $args );
-
-		} else {
-			$posts = array( $post );
 		}
 
-		if ( $posts ) {
-			$post = $posts[0];
+		if ( is_wp_error( $post ) ) {
+
+		} elseif ( $post ) {
 
 			if ( ! $post->post_excerpt ) {
 				if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
@@ -953,6 +1043,16 @@ class Mailster {
 		}
 
 		$content = $pre_stuff . $content;
+
+		// en_US => en
+		$lang = substr( get_bloginfo( 'language' ), 0, 2 );
+
+		// add language tag for accessibility
+		if ( preg_match( '/<html([^>]*?)lang="(.*?)"/', $content, $matches ) ) {
+			$content = str_replace( '<html' . $matches[1] . 'lang="' . $matches[2] . '"', '<html' . $matches[1] . 'lang="' . $lang . '"', $content );
+		} else {
+			$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
+		}
 
 		return apply_filters( 'mymail_sanitize_content', apply_filters( 'mailster_sanitize_content', $content ) );
 	}
@@ -1316,6 +1416,7 @@ class Mailster {
 			$wpdb->query( "DELETE FROM `$wpdb->options` WHERE `$wpdb->options`.`option_name` = 'mailster'" );
 
 			$wpdb->query( "DELETE FROM `$wpdb->usermeta` WHERE `$wpdb->usermeta`.`meta_key` LIKE '%_newsletter_page_mailster_dashboard%'" );
+			$wpdb->query( "DELETE FROM `$wpdb->usermeta` WHERE `$wpdb->usermeta`.`meta_key` LIKE 'mailster%'" );
 
 		}
 
@@ -1434,11 +1535,11 @@ class Mailster {
 
 				if ( deactivate_plugins( 'myMail/myMail.php', true, is_network_admin() ) ) {
 					mailster_notice( 'MyMail is now Mailster! The old version has been deactivated and can get removed!', 'error', false, 'warnings' );
-					mailster_update_option( 'update_required', true );
+					mailster_update_option( 'db_update_required', true );
 				}
 			} elseif ( get_option( 'mymail' ) ) {
 
-				mailster_update_option( 'update_required', true );
+				mailster_update_option( 'db_update_required', true );
 
 			} else {
 
@@ -1682,6 +1783,7 @@ class Mailster {
                 `error` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `ignore_status` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `options` varchar(191) NOT NULL DEFAULT '',
+                `tags` longtext NOT NULL,
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`requeued`,`options`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`),
@@ -1770,8 +1872,8 @@ class Mailster {
 			"CREATE TABLE {$wpdb->prefix}mailster_form_fields (
                 `form_id` bigint(20) unsigned NOT NULL,
                 `field_id` varchar(191) NOT NULL,
-                `name` varchar(191) NOT NULL,
-                `error_msg` varchar(191) NOT NULL,
+                `name` longtext NOT NULL,
+                `error_msg` longtext NOT NULL,
                 `required` tinyint(1) unsigned NOT NULL,
                 `position` int(11) unsigned NOT NULL,
                 UNIQUE KEY `id` (`form_id`,`field_id`)
@@ -2001,7 +2103,6 @@ class Mailster {
 			if ( $system_mail == 'template' ) {
 
 				add_filter( 'wp_mail', array( &$this, 'wp_mail_set' ), 99 );
-				add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 
 			} else {
 
@@ -2068,17 +2169,36 @@ class Mailster {
 			}
 		}
 
+		$content_type = 'text/plain';
+		$third_party_content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
+		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", (array) $args['headers'] ) ) ) {
+			$third_party_content_type = 'text/html';
+		}
+		if ( mailster_option( 'respect_content_type' ) ) {
+			$content_type = $third_party_content_type;
+		}
+
 		$template = mailster_option( 'default_template' );
 		$template = apply_filters( 'mailster_wp_mail_template', $template, $caller, $current_filter );
 
-		$file = mailster_option( 'system_mail_template', 'notification.html' );
+		if ( 'text/plain' == $content_type ) {
+			$file = mailster_option( 'system_mail_template', 'notification.html' );
+			add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
+		} else {
+			remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
+			$file = false;
+		}
 		$file = apply_filters( 'mymail_wp_mail_template_file', apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter ), $caller, $current_filter );
 
-		if ( $template ) {
+		if ( $template && $file ) {
 			$template = mailster( 'template', $template, $file );
 			$content = $template->get( true, true );
 		} else {
-			$content = $headline . '<br>' . $content;
+			if ( $file ) {
+				$content = $headline . '<br>' . $content;
+			} else {
+				$content = '{content}';
+			}
 		}
 
 		$replace = apply_filters( 'mymail_send_replace', apply_filters( 'mailster_send_replace', array( 'notification' => '' ), $caller, $current_filter ) );
@@ -2086,11 +2206,16 @@ class Mailster {
 		$subject = apply_filters( 'mymail_send_subject', apply_filters( 'mailster_send_subject', $args['subject'], $caller, $current_filter ) );
 		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $args['subject'], $caller, $current_filter ) );
 
-		if ( apply_filters( 'mymail_wp_mail_htmlify', apply_filters( 'mailster_wp_mail_htmlify', true ) ) ) {
-			$message = $this->wp_mail_map_links( $message );
-			$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
-			$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
-			$message = wpautop( $message, true );
+		if ( 'text/plain' == $content_type ) {
+
+			if ( apply_filters( 'mymail_wp_mail_htmlify', apply_filters( 'mailster_wp_mail_htmlify', true ) ) && 'text/html' != $third_party_content_type ) {
+				$message = $this->wp_mail_map_links( $message );
+				$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
+				$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
+				$message = wpautop( $message, true );
+			}
+		} else {
+			remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 		}
 
 		$placeholder = mailster( 'placeholder', $content );
@@ -2164,6 +2289,7 @@ class Mailster {
 		if ( isset( $this->atts['to'] ) ) {
 			$to = $this->atts['to'];
 		}
+
 		if ( isset( $this->atts['subject'] ) ) {
 			$subject = $this->atts['subject'];
 		}
@@ -2183,14 +2309,26 @@ class Mailster {
 			$headers = implode( "\r\n", $headers ) . "\r\n";
 		}
 
-		$message = $this->wp_mail_map_links( $message );
-
-		// only if content type is not html
-		if ( ! preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
-			$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
-			$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
-			$message = wpautop( $message, true );
+		$content_type = 'text/plain';
+		$third_party_content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
+		if ( preg_match( '#content-type:(.*)text/html#i', $headers ) ) {
+			$third_party_content_type = 'text/html';
 		}
+		if ( mailster_option( 'respect_content_type' ) ) {
+			$content_type = $third_party_content_type;
+		}
+
+		if ( 'text/plain' == $content_type ) {
+
+			$message = $this->wp_mail_map_links( $message );
+			// only if content type is not html
+			if ( ! preg_match( '#content-type:(.*)text/html#i', $headers ) && 'text/html' != $third_party_content_type ) {
+				$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
+				$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
+				$message = wpautop( $message, true );
+			}
+		}
+
 		if ( preg_match( '#x-mailster-template:(.*)#i', $headers, $hits ) ) {
 			$template = trim( $hits[1] );
 		}
@@ -2210,7 +2348,11 @@ class Mailster {
 		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 		$template = apply_filters( 'mailster_wp_mail_template', $template, $caller, $current_filter );
 
-		$file = ! is_null( $file ) ? $file : mailster_option( 'system_mail_template', 'notification.html' );
+		if ( 'text/plain' == $content_type ) {
+			$file = ! is_null( $file ) ? $file : mailster_option( 'system_mail_template', 'notification.html' );
+			add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
+		}
+
 		$file = apply_filters( 'mymail_wp_mail_template_file', apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter ), $caller, $current_filter );
 
 		$mail = mailster( 'mail' );
@@ -2254,6 +2396,8 @@ class Mailster {
 		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $subject ) );
 
 		$success = (bool) $mail->send_notification( $message, $headline, $replace, false, $file, $template );
+
+		remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 
 		if ( ! $success ) {
 

@@ -390,7 +390,7 @@ class MailsterManage {
 			$html .= '<tr class="alternate"><td>&nbsp;</td><td colspan="' . ( $cols ) . '"><span class="description">&hellip;' . sprintf( esc_html__( '%s contacts are hidden', 'mailster' ), number_format_i18n( $contactcount - 11 ) ) . '&hellip;</span></td>';
 
 			$data = explode( $return['data']['separator'], array_pop( $last ) );
-			$html .= '<tr' . ( $i % 2 ? '' : ' class="alternate"' ) . '><td>' . number_format_i18n( $contactcount ) . '</td>';
+			$html .= '<tr><td>' . number_format_i18n( $contactcount ) . '</td>';
 			foreach ( $data as $cell ) {
 				$html .= '<td title="' . strip_tags( $cell ) . '">' . ( $cell ) . '</td>';
 			}
@@ -401,7 +401,7 @@ class MailsterManage {
 		$html .= '</table></form>';
 		$html .= '<div class="stuffbox import-options">';
 		$html .= '<div class="submit-button-box alignright"><button class="do-import button button-hero button-primary">' . ( sprintf( esc_html__( 'Import %s contacts', 'mailster' ), '<strong>' . number_format_i18n( $contactcount ) . '</strong>' ) ) . '*</button><p>* ' . esc_html__( 'Please make sure you have the permission to import these contacts!', 'mailster' ) . '</p></div>';
-		$html .= '<h3>' . esc_html__( 'add contacts to following lists', 'mailster' ) . '</h3>';
+		$html .= '<h3>' . esc_html__( 'Add contacts to following lists', 'mailster' ) . ':</h3>';
 		$html .= '<form id="lists"><ul>';
 		$lists = mailster( 'lists' )->get( null, null, true );
 		if ( $lists && ! is_wp_error( $lists ) ) {
@@ -410,11 +410,11 @@ class MailsterManage {
 			}
 		}
 		$html .= '</ul></form>';
-		$html .= '<p><label for="new_list_name">' . esc_html__( 'add new list', 'mailster' ) . ': </label><input type="text" id="new_list_name" value=""> <button class="button" id="addlist">' . esc_html__( 'add', 'mailster' ) . '</button></p>
+		$html .= '<p><label for="new_list_name">' . esc_html__( 'Add new list', 'mailster' ) . ': </label><input type="text" id="new_list_name" value=""> <button class="button" id="addlist">' . esc_html__( 'Add', 'mailster' ) . '</button></p>
 ';
 		$html .= '<h3>' . esc_html__( 'Import as', 'mailster' ) . ':</h3><p>';
+		$html .= '<p>';
 		$statuses = mailster( 'subscribers' )->get_status( null, true );
-		$html .= '<label><input type="radio" name="status" value="-1"> ' . esc_html__( 'ignore or as defined above', 'mailster' ) . ' </label> (<abbr title="' . esc_html__( 'Use following numbers for different statuses', 'mailster' ) . ': ' . "\n" . substr( print_r( $statuses, true ), 10, -3 ) . '">?</abbr>)</p><p>';
 		foreach ( $statuses as $i => $name ) {
 			if ( in_array( $i, array( 4, 5, 6 ) ) ) {
 				continue;
@@ -422,13 +422,15 @@ class MailsterManage {
 
 			$html .= '<label><input type="radio" name="status" value="' . $i . '" ' . checked( 1, $i, false ) . '> ' . $name . ' </label>';
 		}
-		$html .= '</p><div class="pending-info error inline"><p><strong>' . esc_html__( 'Choosing "pending" as status will force a confirmation message to the subscribers.', 'mailster' ) . '</strong></p></div>';
+		$html .= '</p>';
+		$html .= '<p class="description">' . esc_html__( 'The status will be applied to contacts if no other is defined via the columns.', 'mailster' ) . '</p>';
+		$html .= '<div class="pending-info error inline"><p><strong>' . esc_html__( 'Choosing "pending" as status will force a confirmation message to the subscribers.', 'mailster' ) . '</strong></p></div>';
 
-		$html .= '<h3>' . esc_html__( 'Existing subscribers', 'mailster' ) . ':</h3><p><label> <input type="radio" name="existing" value="skip" checked> ' . esc_html__( 'skip', 'mailster' ) . ' </label> <label><input type="radio" name="existing" value="overwrite"> ' . esc_html__( 'overwrite', 'mailster' ) . ' </label><input type="radio" name="existing" value="merge"> ' . esc_html__( 'merge', 'mailster' ) . ' </label></p>';
+		$html .= '<h3>' . esc_html__( 'Existing subscribers', 'mailster' ) . ':</h3><p><label> <input type="radio" name="existing" value="skip" checked> ' . esc_html__( 'skip', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will skip the contact if the email address already exists. Status will not be changed.', 'mailster' ) . '</span><br> <label><input type="radio" name="existing" value="overwrite"> ' . esc_html__( 'overwrite', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will overwrite all values of the contact. Status will be overwritten.', 'mailster' ) . '</span><br><input type="radio" name="existing" value="merge"> ' . esc_html__( 'merge', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will overwrite only defined values and keep old ones. Status will not be changed unless defined via the columns.', 'mailster' ) . '</span></p>';
 		$html .= '<h3>' . esc_html__( 'Other', 'mailster' ) . ':</h3><p><label>';
 		$html .= '<p><label><input type="checkbox" id="signup" name="signup" checked>' . esc_html__( 'Use a signup date if not defined', 'mailster' ) . ': <input type="text" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate"></label>';
 		$html .= '<br><span class="description">' . esc_html__( 'Some Auto responder require a signup date. Define it here if it is not set or missing', 'mailster' ) . '</span></p>';
-		$html .= '<p><label><input type="checkbox" id="performance" name="performance"> ' . esc_html__( 'low memory usage (slower)', 'mailster' ) . '</label></p>';
+		$html .= '<p><label><input type="checkbox" id="performance" name="performance"> ' . esc_html__( 'Low memory usage (slower)', 'mailster' ) . '</label></p>';
 		$html .= '<input type="hidden" id="identifier" value="' . $identifier . '">';
 		$html .= '</div>';
 
@@ -547,6 +549,7 @@ class MailsterManage {
 					);
 
 					$insert = array();
+					$statusnames = array_flip( mailster( 'subscribers' )->get_status( null, true ) );
 
 					// each column
 					for ( $col = 0; $col < $line_count; $col++ ) {
@@ -570,8 +573,14 @@ class MailsterManage {
 							case '_ip_signup':
 							case '_ip_confirm':
 							case '_lang':
-							case '_status':
 								$insert[ substr( $order[ $col ], 1 ) ] = $d;
+							break;
+							case '_status':
+								if ( is_numeric( $d ) ) {
+									$insert[ substr( $order[ $col ], 1 ) ] = $d;
+								} elseif ( is_string( $d ) && isset( $statusnames[ $d ] ) ) {
+									$insert[ substr( $order[ $col ], 1 ) ] = $statusnames[ $d ];
+								}
 							break;
 							case '_lists':
 
@@ -605,29 +614,11 @@ class MailsterManage {
 								$insert['lastname'] = $split[0];
 							break;
 							case '-1':
+								// ignored column
 							break;
 							default:
 								$insert[ $order[ $col ] ] = $d;
 						}
-					}
-
-					// apply global status
-					if ( $bulkdata['status'] == -1 && isset( $insert['status'] ) && is_numeric( $insert['status'] ) ) {
-						$insert['status'] = (int) $insert['status'];
-					} else {
-						$insert['status'] = $bulkdata['status'];
-					}
-
-					if ( ! isset( $insert['signup'] ) || empty( $insert['signup'] ) ) {
-						$insert['signup'] = $bulkdata['signupdate'] ? strtotime( $bulkdata['signupdate'] ) - $timeoffset : 0;
-					}
-
-					if ( empty( $insert['signup'] ) && $bulkdata['existing'] == 'merge' ) {
-						unset( $insert['signup'] );
-					}
-
-					if ( ! isset( $insert['confirm'] ) ) {
-						$insert['confirm'] = 0;
 					}
 
 					if ( ! mailster_is_email( $insert['email'] ) ) {
@@ -636,16 +627,50 @@ class MailsterManage {
 						continue;
 					}
 
+					if ( ! isset( $insert['signup'] ) || empty( $insert['signup'] ) ) {
+						$insert['signup'] = $bulkdata['signupdate'] ? strtotime( $bulkdata['signupdate'] ) - $timeoffset : 0;
+					}
+
+					if ( empty( $insert['signup'] ) && 'merge' == $bulkdata['existing'] ) {
+						unset( $insert['signup'] );
+					}
+
+					if ( ! isset( $insert['confirm'] ) ) {
+						$insert['confirm'] = 0;
+					}
+
 					$insert['referer'] = 'import';
 
 					switch ( $bulkdata['existing'] ) {
 						case 'merge':
-							$subscriber_id = mailster( 'subscribers' )->merge( $insert );
+							if ( $exists = mailster( 'subscribers' )->get_by_mail( $insert['email'] ) ) {
+
+								$insert['ID'] = $exists->ID;
+								if ( ! isset( $insert['status'] ) ) {
+									$insert['status'] = $exists->status;
+								}
+								$subscriber_id = mailster( 'subscribers' )->update( $insert, true, true );
+
+							} else {
+
+								if ( ! isset( $insert['status'] ) ) {
+									$insert['status'] = $bulkdata['status'];
+								}
+
+								$subscriber_id = mailster( 'subscribers' )->add( $insert, false );
+							}
+
 						break;
 						case 'overwrite':
+							if ( ! isset( $insert['status'] ) ) {
+								$insert['status'] = $bulkdata['status'];
+							}
 							$subscriber_id = mailster( 'subscribers' )->add( $insert, true );
 						break;
 						case 'skip':
+							if ( ! isset( $insert['status'] ) ) {
+								$insert['status'] = $bulkdata['status'];
+							}
 							$subscriber_id = mailster( 'subscribers' )->add( $insert, false );
 						break;
 					}
@@ -964,6 +989,10 @@ class MailsterManage {
 		$meta = array_values( array_intersect( $fields, mailster( 'subscribers' )->get_meta_keys( true ) ) );
 		$fields = array_values( array_diff( $fields, $meta ) );
 		$conditions = isset( $d['conditions'] ) ? (array) $d['conditions'] : array();
+
+		if ( in_array( '_statuscode', $special ) ) {
+			$fields[] = 'status';
+		}
 
 		$args = array(
 			'lists' => $listids,

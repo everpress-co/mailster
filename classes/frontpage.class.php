@@ -56,18 +56,20 @@ class MailsterFrontpage {
 
 		$slugs = implode( '|', (array) mailster_option( 'slugs', array( 'confirm', 'subscribe', 'unsubscribe', 'profile' ) ) );
 
-		$homepage = mailster_option( 'homepage' );
-
-		$pagename = str_replace( 'index.php/', '', untrailingslashit( str_replace( trailingslashit( get_bloginfo( 'url' ) ), '', get_permalink( $homepage ) ) ) );
-
 		$rules = array();
-		$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
-		$rules['^(index\.php/)?(mailster|mymail)/(subscribe)/?$'] = 'index.php?_mailster=$matches[3]';
-		$rules[ '(index\.php/)?(mailster)/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
+		if ( $homepage = mailster_option( 'homepage' ) ) {
 
-		if ( get_option( 'page_on_front' ) == $homepage && get_option( 'show_on_front' ) == 'page' ) {
-			$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?page_id=' . $homepage . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
+			$pagename = get_page_uri( $homepage );
+
+			$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
+
+			$rules['^(index\.php/)?(mailster|mymail)/(subscribe)/?$'] = 'index.php?_mailster=$matches[3]';
+			$rules[ '(index\.php/)?(mailster)/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
+
+			if ( get_option( 'page_on_front' ) == $homepage && get_option( 'show_on_front' ) == 'page' ) {
+				$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?page_id=' . $homepage . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
+			}
 		}
 
 		$rules['^(index\.php/)?(mailster|mymail)/([0-9]+)/([a-f0-9]{32})/?([a-zA-Z0-9=_+]+)?/?([0-9]+)?/?'] = 'index.php?_mailster=$matches[3]&_mailster_hash=$matches[4]&_mailster_page=$matches[5]&_mailster_extra=$matches[6]';
@@ -321,23 +323,17 @@ class MailsterFrontpage {
 		$index = get_query_var( '_mailster_extra' );
 		$redirect_to = null;
 
-		$subscriber = mailster( 'subscribers' )->get_by_hash( $hash, false );
-		$campaign = mailster( 'campaigns' )->get( $campaign_id, false );
-		if ( ! $campaign ) {
-			$campaign_id = null;
-			$meta = mailster( 'campaigns' )->meta_defaults();
-		} else {
-			$campaign_id = $campaign->ID;
-			$meta = mailster( 'campaigns' )->meta( $campaign_id );
+		if ( ! ($campaign = mailster( 'campaigns' )->get( $campaign_id, false )) ) {
+			$this->do_404();
 		}
-
-		if ( ! $subscriber ) {
-
+		if ( ! ($subscriber = mailster( 'subscribers' )->get_by_hash( $hash, false )) ) {
 			$subscriber = (object) array(
 				'ID' => null,
 				'hash' => $hash,
 			);
 		}
+		$campaign_id = $campaign->ID;
+		$meta = mailster( 'campaigns' )->meta( $campaign_id );
 
 		if ( $target ) {
 
@@ -1102,7 +1098,7 @@ class MailsterFrontpage {
 			$atts['id'] = mailster( 'helper' )->get_first_form_id();
 		}
 
-		$form = mailster( 'form' )->id( $atts['id'] );
+		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		return $form->render( false );
 	}
 
@@ -1124,7 +1120,7 @@ class MailsterFrontpage {
 			'id' => mailster_option( 'profile_form', 1 ),
 		));
 
-		$form = mailster( 'form' )->id( (int) $atts['id'] );
+		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		$form->is_profile();
 
 		return $form->render( false );
@@ -1148,7 +1144,7 @@ class MailsterFrontpage {
 			'id' => mailster( 'helper' )->get_first_form_id(),
 		));
 
-		$form = mailster( 'form' )->id( (int) $atts['id'] );
+		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		$form->is_unsubscribe();
 		$form->campaign_id( get_query_var( '_mailster', get_query_var( '_mailster_extra' ) ) );
 
