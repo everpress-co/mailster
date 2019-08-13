@@ -1,6 +1,6 @@
 <?php
 
-function mailster_do_depcreated_mymail_action($hook){
+function mailster_do_depcreated_mymail_action($tag){
 	$args = func_get_args();
 	$tag = array_shift($args);
 	do_action_ref_array( $tag, $args );

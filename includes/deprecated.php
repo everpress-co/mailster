@@ -2,6 +2,7 @@
 
 if ( ! function_exists( 'mymail' ) ) :
 
+	require_once MAILSTER_DIR . 'includes/deprecated_actions.php';
 
 	// deprecated stuff
 	if ( ! defined( 'MYMAIL_VERSION' ) ) {
