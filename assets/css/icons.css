@@ -1,18 +1,18 @@
 @font-face {
 	font-family: 'mailster-icons';
-	src: url('../font/mailster-icons.eot?v2');
-	src: url('../font/mailster-icons.eot?v2#iefix') format('embedded-opentype'),
-	url('../font/mailster-icons.woff2?v2') format('woff2'),
-	url('../font/mailster-icons.woff?v2') format('woff'),
-	url('../font/mailster-icons.ttf?v2') format('truetype'),
-	url('../font/mailster-icons.svg?v2#mailster') format('svg');
+	src: url('../font/mailster-icons.eot?v4');
+	src: url('../font/mailster-icons.eot?v4#iefix') format('embedded-opentype'),
+	url('../font/mailster-icons.woff2?v4') format('woff2'),
+	url('../font/mailster-icons.woff?v4') format('woff'),
+	url('../font/mailster-icons.ttf?v4') format('truetype'),
+	url('../font/mailster-icons.svg?v4#mailster') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 /* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
 /* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
 /*
-@media screen and (-webkit-min-device-pixel-ratio:0) {
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
   @font-face {
     font-family: 'fontello';
     src: url('../font/fontello.svg?9736362#fontello') format('svg');
@@ -51,9 +51,11 @@
 	/* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	-moz-transition: all .1s ease-in-out;
-	-webkit-transition: all .1s ease-in-out;
 	transition: all .1s ease-in-out;
+}
+.mailster-icon.mailster-dash:before{
+	font-family: 'dashicons' !important;
+	width: 1.05em;
 }
 
 .mailster-icon-newsletter:before { content: '\e800'; } /* '' */
@@ -82,8 +84,6 @@
 .mailster-icon-duplicate:before { content: '\e817'; } /* '' */
 .mailster-icon-magic:before { content: '\e818'; } /* '' */
 .mailster-icon-delete:before { content: '\e819'; } /* '' */
-.mailster-icon-add:before { content: '\e81a'; } /* '' */
-.mailster-icon-minus:before { content: '\e81b'; } /* '' */
 .mailster-icon-users:before { content: '\e81c'; } /* '' */
 .mailster-icon-flag:before { content: '\e81d'; } /* '' */
 .mailster-icon-save:before { content: '\e81e'; } /* '' */
@@ -108,11 +108,18 @@
 .mailster-icon-download:before { content: '\e831'; } /* '' */
 .mailster-icon-newsletter-outline:before { content: '\e832'; } /* '' */
 .mailster-icon-lock:before { content: '\e833'; } /* '' */
+.mailster-icon-notice:before { content: '\e834'; } /* '' */
+.mailster-icon-link:before { content: '\e835'; } /* '' */
 .mailster-icon-list:before { content: '\f0ca'; } /* '' */
+.mailster-icon-unlink:before { content: '\f127'; } /* '' */
 .mailster-icon-unlock:before { content: '\f13e'; } /* '' */
 .mailster-icon-support:before { content: '\f1cd'; } /* '' */
 .mailster-icon-forms:before { content: '\f298'; } /* '' */
+.mailster-icon-picture:before { content: '\e836'; } /* '' */
+.mailster-icon-plus:before { content: '\e837'; } /* '' */
+.mailster-icon-minus:before { content: '\e838'; } /* '' */
 
+.mailster-icon-translate:before { content: '\f326'; } /* '' */
 /*
    Animation example, for spinners
 */

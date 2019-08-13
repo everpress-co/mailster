@@ -20,7 +20,7 @@
 		</tr>
 	<?php if ( function_exists( 'imap_open' ) ) : ?>
 		<tr valign="top">
-			<th scope="row"><?php _e( 'Service', 'mailster' );?></th>
+			<th scope="row"><?php esc_html_e( 'Service', 'mailster' );?></th>
 			<td>
 			<label><input type="radio" name="mailster_options[bounce_service]" value="pop3" <?php checked( mailster_option( 'bounce_service' ), 'pop3' ) ?>> POP3 </label>&nbsp;
 			<label><input type="radio" name="mailster_options[bounce_service]" value="imap" <?php checked( mailster_option( 'bounce_service' ), 'imap' ) ?>> IMAP </label>&nbsp;
@@ -34,8 +34,11 @@
 			<td><input type="text" name="mailster_options[bounce_server]" value="<?php echo esc_attr( mailster_option( 'bounce_server' ) ); ?>" class="regular-text">:<input type="text" name="mailster_options[bounce_port]" id="bounce_port" value="<?php echo mailster_option( 'bounce_port' ); ?>" class="small-text"></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row">SSL</th>
-			<td><label><input type="hidden" name="mailster_options[bounce_ssl]" value=""><input type="checkbox" name="mailster_options[bounce_ssl]" id="bounce_ssl" value="1" <?php checked( mailster_option( 'bounce_ssl' ) );?>> <?php esc_html_e( 'Use SSL.', 'mailster' ) ?></label>
+			<th scope="row"><?php esc_html_e( 'Secure', 'mailster' );?></th>
+			<td>
+			<label><input type="radio" name="mailster_options[bounce_secure]" value="" <?php checked( ! mailster_option( 'bounce_secure' ) ) ?>> <?php esc_html_e( 'none', 'mailster' );?></label>
+			<label><input type="radio" name="mailster_options[bounce_secure]" value="ssl" <?php checked( mailster_option( 'bounce_secure' ), 'ssl' ) ?>> SSL </label>&nbsp;
+			<label><input type="radio" name="mailster_options[bounce_secure]" value="tls" <?php checked( mailster_option( 'bounce_secure' ), 'tls' ) ?>> TLS </label>&nbsp;
 			</td>
 		</tr>
 		<tr valign="top">
@@ -48,7 +51,7 @@
 		</tr>
 		<tr valign="top" class="wp_cron">
 			<th scope="row"></th>
-			<td><p><?php printf( __( 'Check bounce server every %s minutes for new messages', 'mailster' ), '<input type="text" name="mailster_options[bounce_check]" value="' . mailster_option( 'bounce_check' ) . '" class="small-text">' ) ?></p></td>
+			<td><p><?php printf( esc_html__( 'Check bounce server every %s minutes for new messages', 'mailster' ), '<input type="text" name="mailster_options[bounce_check]" value="' . mailster_option( 'bounce_check' ) . '" class="small-text">' ) ?></p></td>
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Delete messages', 'mailster' );?></th>
@@ -57,7 +60,7 @@
 		</tr>
 		<tr valign="top" class="wp_cron">
 			<th scope="row"><?php esc_html_e( 'Soft Bounces', 'mailster' ) ?></th>
-			<td><p><?php printf( __( 'Resend soft bounced mails after %s minutes', 'mailster' ), '<input type="text" name="mailster_options[bounce_delay]" value="' . mailster_option( 'bounce_delay' ) . '" class="small-text">' ) ?></p>
+			<td><p><?php printf( esc_html__( 'Resend soft bounced mails after %s minutes', 'mailster' ), '<input type="text" name="mailster_options[bounce_delay]" value="' . mailster_option( 'bounce_delay' ) . '" class="small-text">' ) ?></p>
 			<p>
 <?php
 			$dropdown = '<select name="mailster_options[bounce_attempts]" class="postform">';
@@ -68,7 +71,7 @@ for ( $i = 1; $i <= 10; $i++ ) {
 }
 			$dropdown .= '</select>';
 
-			printf( __( '%s attempts to deliver message until hardbounce', 'mailster' ), $dropdown );
+			printf( esc_html__( '%s attempts to deliver message until hardbounce', 'mailster' ), $dropdown );
 ?>
 			</p>
 			</td>
