@@ -2784,7 +2784,6 @@ class Mailster {
 	private function thirdpartystuff() {
 
 		do_action( 'mailster_thirdpartystuff' );
-		do_action( 'mymail_thirdpartystuff' );
 
 		if ( function_exists( 'w3tc_objectcache_flush' ) ) {
 			add_action( 'shutdown', 'w3tc_objectcache_flush' );

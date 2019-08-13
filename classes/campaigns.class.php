@@ -1995,7 +1995,6 @@ class MailsterCampaigns {
 
 		if ( $this->change_status( $campaign, 'paused' ) ) {
 			do_action( 'mailster_campaign_pause', $id );
-			do_action( 'mymail_campaign_pause', $id );
 			return true;
 		} else {
 			return false;
@@ -2035,7 +2034,6 @@ class MailsterCampaigns {
 
 		if ( $this->change_status( $campaign, $status ) ) {
 			do_action( 'mailster_campaign_start', $id );
-			do_action( 'mymail_campaign_start', $id );
 			mailster_remove_notice( 'camp_error_' . $id );
 			return true;
 
@@ -2118,7 +2116,6 @@ class MailsterCampaigns {
 		}
 
 		do_action( 'mailster_finish_campaign', $id );
-		do_action( 'mymail_finish_campaign', $id );
 
 		mailster( 'queue' )->remove( $id );
 
@@ -2179,7 +2176,6 @@ class MailsterCampaigns {
 			$this->add_lists( $new_id, $lists );
 
 			do_action( 'mailster_campaign_duplicate', $id, $new_id );
-			do_action( 'mymail_campaign_duplicate', $id, $new_id );
 
 			return $new_id;
 		}
@@ -3968,7 +3964,6 @@ class MailsterCampaigns {
 		if ( $result && ! is_wp_error( $result ) ) {
 			if ( $log ) {
 				do_action( 'mailster_send', $subscriber->ID, $campaign->ID, $result );
-				do_action( 'mymail_send', $subscriber->ID, $campaign->ID, $result );
 			}
 
 			return $result;
@@ -3981,7 +3976,6 @@ class MailsterCampaigns {
 		if ( $mail->is_user_error() ) {
 			if ( $log ) {
 				do_action( 'mailster_subscriber_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
-				do_action( 'mymail_subscriber_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
 			}
 
 			return new WP_Error( 'user_error', $mail->last_error->getMessage() );
@@ -3990,7 +3984,6 @@ class MailsterCampaigns {
 		if ( $mail->is_system_error() ) {
 			if ( $log ) {
 				do_action( 'mailster_system_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
-				do_action( 'mymail_system_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
 			}
 
 			return new WP_Error( 'system_error', $mail->last_error->getMessage() );
@@ -3999,7 +3992,6 @@ class MailsterCampaigns {
 		if ( $mail->last_error ) {
 			if ( $log ) {
 				do_action( 'mailster_campaign_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
-				do_action( 'mymail_campaign_error', $subscriber->ID, $campaign->ID, $mail->last_error->getMessage() );
 			}
 
 			return new WP_Error( 'error', $mail->last_error->getMessage() );
@@ -4145,7 +4137,6 @@ class MailsterCampaigns {
 						mailster_notice( sprintf( esc_html__( 'New campaign %1$s has been created and is going to be sent in %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . $new_campaign->ID . '&action=edit">' . $new_campaign->post_title . '</a>"</strong>', '<strong>' . human_time_diff( $now + $send_offset ) . '</strong>' ), 'info', true );
 
 						do_action( 'mailster_autoresponder_post_published', $campaign->ID, $new_id );
-						do_action( 'mymail_autoresponder_post_published', $campaign->ID, $new_id );
 
 					}
 				}
