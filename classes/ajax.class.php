@@ -157,9 +157,7 @@ class MailsterAjax {
 
 	private function submit() {
 
-		global $wp;
-
-		$wp->query_vars['_mailster'] = 'subscribe';
+		set_query_var( '_mailster', 'subscribe' );
 
 		mailster( 'form' )->submit();
 
@@ -278,7 +276,7 @@ class MailsterAjax {
 		}
 
 		$replace = array(
-			'http://dummy.newsletter-plugin.com' => 'https://dummy.newsletter-plugin.com',
+			'//dummy.newsletter-plugin.com' => '//dummy.mailster.co',
 		);
 		$replace = apply_filters( 'mymail_get_template_replace', apply_filters( 'mailster_get_template_replace', $replace ) );
 
@@ -497,7 +495,7 @@ class MailsterAjax {
 			$from = $formdata['mailster_data']['from_email'];
 			$from_name = stripslashes( $formdata['mailster_data']['from_name'] );
 			$reply_to = $formdata['mailster_data']['reply_to'];
-			$embed_images = isset( $formdata['mailster_data']['embed_images'] );
+			$embed_images = mailster_option( 'embed_images' );
 			$track_opens = isset( $formdata['mailster_data']['track_opens'] );
 			$track_clicks = isset( $formdata['mailster_data']['track_clicks'] );
 			$head = stripslashes( $_POST['head'] );
@@ -1550,7 +1548,7 @@ class MailsterAjax {
 			$return['title'] = $post->get_error_message();
 		} elseif ( is_a( $post, 'WP_Post' ) ) {
 			if ( $rss_url ) {
-				$return['title'] = '<a href="' . $post->post_permalink . '" class="external">#' . absint( $offset -1 ) . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No title', 'mailster' ) ) . '</a>';
+				$return['title'] = '<a href="' . $post->post_permalink . '" class="external">#' . absint( $relative_or_identifier ) . ' &ndash; ' . ( $post->post_title ? $post->post_title : esc_html__( 'No title', 'mailster' ) ) . '</a>';
 			} else {
 				if ( $is_dynmaic_post_type ) {
 					$return['title'] = $post->post_title ? $post->post_title : esc_html__( 'No Title', 'mailster' );
@@ -2218,6 +2216,7 @@ class MailsterAjax {
 			$width = (int) $_POST['width'];
 			$height = (int) $_POST['height'];
 			$factor = (int) $_POST['factor'];
+			$crop = isset( $_POST['crop'] ) && $_POST['crop'] == 'true';
 
 			$wp_upload_dir = wp_upload_dir();
 			$image = false;
@@ -2229,7 +2228,7 @@ class MailsterAjax {
 
 				$url = $wp_upload_dir['url'] . '/' . $filename;
 				if ( $attach_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND guid = %s;", $url ) ) ) {
-					$image = mailster( 'helper' )->create_image( $attach_id, null, $width, null, false );
+					$image = mailster( 'helper' )->create_image( $attach_id, null, $width, $height, $crop );
 				}
 			}
 
@@ -2269,16 +2268,22 @@ class MailsterAjax {
 					$attach_data = wp_generate_attachment_metadata( $attach_id, $result['file'] );
 					wp_update_attachment_metadata( $attach_id, $attach_data );
 
-					$image = mailster( 'helper' )->create_image( $attach_id, null, $width, null, false );
+					$image = mailster( 'helper' )->create_image( $attach_id, null, $width, $height, $crop );
 
 				} else {
 
-					$image = mailster( 'helper' )->create_image( null, $result['file'], $width, null, false );
+					$image = mailster( 'helper' )->create_image( null, $result['file'], $width, $height, $crop );
 
 				}
 			}
 
 			if ( $image ) {
+
+				$return['name'] = $filename;
+				if ( isset( $image['id'] ) ) {
+					$return['name'] = get_post_field( 'post_title', $image['id'] );
+				}
+
 				$return['image'] = $image;
 				$return['success'] = true;
 			}

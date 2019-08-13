@@ -667,11 +667,10 @@ class Mailster {
 
 			}
 
-			$link = 'href="' . $link . '"';
-			$new_link = 'href="' . apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id ) . '"';
+			$link = ' href="' . $link . '"';
+			$new_link = ' href="' . apply_filters( 'mailster_replace_link', $new_link, $base, $hash, $campaign_id ) . '"';
 
 			if ( ( $pos = strpos( $content, $link ) ) !== false ) {
-
 				// do not use substr_replace as it has problems with multibyte
 				// $content = substr_replace( $content, $new_link, $pos, strlen( $link ) );
 				$content = preg_replace( '/' . preg_quote( $link, '/' ) . '/', $new_link, $content, 1 );
@@ -701,7 +700,7 @@ class Mailster {
 	 * @return unknown
 	 */
 	public function decode_link( $encoded_link ) {
-		return apply_filters( 'mailster_encode_link', base64_decode( strtr( $encoded_link, '-_', '+/' ) ), $encoded_link );
+		return apply_filters( 'mailster_decode_link', base64_decode( strtr( $encoded_link, '-_', '+/' ) ), $encoded_link );
 	}
 
 
@@ -845,11 +844,26 @@ class Mailster {
 							continue;
 						}
 
-						$tax_query[] = array(
-							'taxonomy' => $taxonomies[ $i ],
-							'field' => 'id',
-							'terms' => explode( ',', $term_ids[ $i ] ),
-						);
+						$terms = explode( ',', $term_ids[ $i ] );
+
+						$include = array_filter( $terms, function ( $v ) { return $v >= 0; } );
+						$exclude = array_filter( $terms, function ( $v ) { return $v < 0; } );
+
+						if ( ! empty( $include ) ) {
+							$tax_query[] = array(
+								'taxonomy' => $taxonomies[ $i ],
+								'field' => 'id',
+								'terms' => $include,
+							);
+						}
+						if ( ! empty( $exclude ) ) {
+							$tax_query[] = array(
+								'taxonomy' => $taxonomies[ $i ],
+								'field' => 'id',
+								'terms' => $exclude,
+								'operator' => 'NOT IN',
+							);
+						}
 					}
 
 					if ( ! empty( $tax_query ) ) {
@@ -1029,6 +1043,16 @@ class Mailster {
 		}
 
 		$content = $pre_stuff . $content;
+
+		// en_US => en
+		$lang = substr( get_bloginfo( 'language' ), 0, 2 );
+
+		// add language tag for accessibility
+		if ( preg_match( '/<html([^>]*?)lang="(.*?)"/', $content, $matches ) ) {
+			$content = str_replace( '<html' . $matches[1] . 'lang="' . $matches[2] . '"', '<html' . $matches[1] . 'lang="' . $lang . '"', $content );
+		} else {
+			$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
+		}
 
 		return apply_filters( 'mymail_sanitize_content', apply_filters( 'mailster_sanitize_content', $content ) );
 	}
@@ -2147,7 +2171,7 @@ class Mailster {
 
 		$content_type = 'text/plain';
 		$third_party_content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
-		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", $args['headers'] ) ) ) {
+		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", (array) $args['headers'] ) ) ) {
 			$third_party_content_type = 'text/html';
 		}
 		if ( mailster_option( 'respect_content_type' ) ) {

@@ -261,7 +261,7 @@ class MailsterForm {
 		$html = '';
 		$html .= '<!--Mailster:styles-->';
 
-		$html .= '<form action="<!--Mailster:formaction-->" method="post" class="<!--Mailster:classes-->">';
+		$html .= '<form action="<!--Mailster:formaction-->" method="post" class="<!--Mailster:classes-->" novalidate>';
 		$html .= '<!--Mailster:infos-->';
 		$html .= '<!--Mailster:hiddenfields-->';
 
@@ -831,7 +831,7 @@ class MailsterForm {
 
 		$action = 'mailster_form_unsubscribe';
 
-		$html .= '<form action="' . $this->get_form_action( $action ) . '" method="post" class="mailster-form mailster-form-' . $form_id . ' mailster-form-submit mailster-ajax-form" id="mailster-form-unsubscribe">' . "\n";
+		$html .= '<form action="' . $this->get_form_action( $action ) . '" method="post" class="mailster-form mailster-form-' . $form_id . ' mailster-form-submit mailster-ajax-form" id="mailster-form-unsubscribe" novalidate>' . "\n";
 		$html .= '<div class="mailster-form-info ' . $infoclass . '">';
 		$html .= $this->message;
 		$html .= '</div>';

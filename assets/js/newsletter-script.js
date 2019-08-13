@@ -1592,7 +1592,7 @@ jQuery(document).ready(function ($) {
 			buttonalt = bar.find('.buttonalt'),
 			buttonnav = bar.find('.button-nav'),
 			buttontabs = bar.find('ul.buttons'),
-			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, searchTimeout, checkRSSfeedInterval,
+			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, lastpostsargs, searchTimeout, checkRSSfeedInterval,
 			editor = $('#wp-mailster-editor-wrap'),
 			searchstring = '',
 			postsearch = $('#post-search'),
@@ -1621,7 +1621,7 @@ jQuery(document).ready(function ($) {
 				.on('click', '.imagepreview', toggleImgZoom)
 				.on('click', 'a.nav-tab', openTab)
 				.on('change', 'select.check-for-posts', checkForPosts)
-				.on('change', '#dynamic_rss_url', checkForPosts)
+				.on('change paste', '#dynamic_rss_url', checkForPosts)
 				.on('keyup change', '#post-search', searchPost)
 				.on('keyup change', '#image-search', searchPost)
 				.on('change', '[name="image-search-type"]', searchPost)
@@ -1814,7 +1814,8 @@ jQuery(document).ready(function ($) {
 			$this.addClass('nav-tab-active');
 			base.find('.tab').hide();
 			base.find(id).show();
-			//if (id == '#dynamic_embed_options' && trigger !== false) $('#dynamic_embed_options_post_type').trigger('change');
+
+			if (id == '#dynamic_embed_options' && trigger !== false) $('#dynamic_embed_options_post_type').trigger('change');
 			if (id == '#image_button') buttontype = 'image';
 			if (id == '#text_button') buttontype = 'text';
 
@@ -1829,7 +1830,7 @@ jQuery(document).ready(function ($) {
 				w = current.element.width(),
 				h = Math.round(w / 1.6),
 				img = $('<img>', {
-					'src': 'https://dummy.newsletter-plugin.com/' + (w * f) + 'x' + (h * f) + '.jpg',
+					'src': 'https://dummy.mailster.co/' + (w * f) + 'x' + (h * f) + '.jpg',
 					'alt': current.content,
 					'label': current.content,
 					'width': w,
@@ -1866,8 +1867,6 @@ jQuery(document).ready(function ($) {
 		function checkForPosts() {
 			clearInterval(checkForPostsTimeout);
 			loader();
-			$('#dynamic_embed_options').find('h4.current-match').html('&hellip;');
-			$('#dynamic_embed_options').find('div.current-tag').html('&hellip;');
 			checkForPostsTimeout = setTimeout(function () {
 
 				var post_type = bar.find('#dynamic_embed_options_post_type').val(),
@@ -1875,6 +1874,7 @@ jQuery(document).ready(function ($) {
 					relative = bar.find('#dynamic_embed_options_relative').val(),
 					taxonomies = bar.find('.dynamic_embed_options_taxonomy_wrap'),
 					rss_url = $('#dynamic_rss_url').val(),
+					postargs = {},
 					extra = [];
 
 				$.each(taxonomies, function (i) {
@@ -1887,8 +1887,7 @@ jQuery(document).ready(function ($) {
 					values = values.join(',');
 					if (values) extra[i] = values;
 				});
-
-				_ajax('check_for_posts', {
+				postargs = {
 					id: campaign_id,
 					post_type: post_type,
 					relative: relative,
@@ -1896,7 +1895,24 @@ jQuery(document).ready(function ($) {
 					modulename: current.name,
 					expect: current.elements.expects,
 					rss_url: rss_url
-				}, function (response) {
+				};
+
+				if (JSON.stringify(postargs) === JSON.stringify(lastpostsargs)) {
+					loader(false);
+					return;
+				}
+
+				$('#dynamic_embed_options').find('h4.current-match').html('&hellip;');
+				$('#dynamic_embed_options').find('div.current-tag').html('&hellip;');
+
+				if ('rss' == post_type && !rss_url) {
+					loader(false);
+					return;
+				}
+
+				lastpostsargs = postargs;
+
+				_ajax('check_for_posts', postargs, function (response) {
 					loader(false);
 					if (response.success) {
 						currenttext = response.pattern;
@@ -3069,7 +3085,7 @@ jQuery(document).ready(function ($) {
 
 		function openURL() {
 			$('.imageurl-popup').toggle();
-			if (!imageurl.val() && currentimage.src.indexOf(location.origin) == -1 && currentimage.src.indexOf('dummy.newsletter-plugin.com') == -1) {
+			if (!imageurl.val() && currentimage.src.indexOf(location.origin) == -1 && currentimage.src.indexOf('dummy.mailster.co') == -1) {
 				imageurl.val(currentimage.src);
 			}
 			imageurl.focus().select();
@@ -3159,22 +3175,46 @@ jQuery(document).ready(function ($) {
 		}
 
 		function up() {
-			var module = $(this).parent().parent().parent(),
-				pos = module.offset();
-			module.insertBefore(module.prev('module'));
-			_jump(module.offset().top - pos.top, true);
-			_trigger('refresh');
-			_trigger('save');
+			var module = $(this).parent().parent().parent().addClass('ui-sortable-fly-over'),
+				prev = module.prev('module').addClass('ui-sortable-fly-under'),
+				pos = (animateDOM.scrollTop() || document.scrollingElement.scrollTop) - prev.height();
+			module.css({
+				'transform': 'translateY(-' + prev.height() + 'px)'
+			});
+			prev.css({
+				'transform': 'translateY(' + module.height() + 'px)'
+			});
+			_scroll(pos, function () {
+				module.insertBefore(prev.css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-under')).css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-over');
+				_trigger('refresh');
+				_trigger('save');
+			}, 250);
 			return false;
 		}
 
 		function down() {
-			var module = $(this).parent().parent().parent(),
-				pos = module.offset()
-			module.insertAfter(module.next('module'));
-			_jump(module.offset().top - pos.top, true);
-			_trigger('refresh');
-			_trigger('save');
+			var module = $(this).parent().parent().parent().addClass('ui-sortable-fly-over'),
+				next = module.next('module').addClass('ui-sortable-fly-under'),
+				pos = (animateDOM.scrollTop() || document.scrollingElement.scrollTop) + next.height();
+			module.css({
+				'transform': 'translateY(' + next.height() + 'px)'
+			});
+			next.css({
+				'transform': 'translateY(-' + module.height() + 'px)'
+			});
+			_scroll(pos, function () {
+				module.insertAfter(next.css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-under')).css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-over');
+				_trigger('refresh');
+				_trigger('save');
+			}, 250);
 			return false;
 		}
 
@@ -3296,6 +3336,11 @@ jQuery(document).ready(function ($) {
 		function init() {
 			_container
 				.on('click', 'a.toggle-modules', toggleModules)
+				.on('keydown', 'a.addmodule', function (event) {
+					if (13 == event.which) {
+						addmodule.call(this);
+					}
+				})
 				.on('click', 'a.addmodule', addmodule);
 
 			search
@@ -3452,11 +3497,10 @@ jQuery(document).ready(function ($) {
 			return
 		}
 		animateDOM.stop().animate({
-				'scrollTop': pos
-			}, speed, callback &&
-			function () {
-				callback();
-			});
+			'scrollTop': pos
+		}, speed, function () {
+			callback && callback()
+		});
 	}
 
 	function _jump(val, rel) {
@@ -3484,16 +3528,19 @@ jQuery(document).ready(function ($) {
 	})
 
 	.on('Mailster:resize', function () {
-		var delay = 0,
-			extra = 0;
 		if (!iframeloaded) return false;
 		setTimeout(function () {
 			if (!_iframe[0].contentWindow.document.body) return;
-			var height = _iframe.contents().height() || _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
-			height = Math.max(300, height + (extra || 0));
+			var height = _iframe.contents().find('body').outerHeight() ||
+				_iframe.contents().height() ||
+				_iframe[0].contentWindow.document.body.offsetHeight ||
+				_iframe.contents().find("html")[0].innerHeight ||
+				_iframe.contents().find("html").height();
+
+			height = Math.max(500, height + 4);
 			$('#editor-height').val(height);
 			_iframe.attr("height", height);
-		}, delay ? delay : 500);
+		}, 50);
 	})
 
 	.on('Mailster:save', function () {
@@ -3934,11 +3981,10 @@ jQuery(document).ready(function ($) {
 				if (textStatus == 'error' && !errorThrown) return;
 				if (console) console.error(response);
 				if ('JSON' == dataType) {
-					var json = response.match(/{(.*)}$/);
-					if (json && callback) {
+					var maybe_json = response.match(/{(.*)}$/);
+					if (maybe_json && callback) {
 						try {
-							json = $.parseJSON(json[0]);
-							callback.call(this, json);
+							callback.call(this, $.parseJSON(maybe_json[0]));
 						} catch (e) {
 							if (console) console.error(e);
 						}

@@ -148,6 +148,13 @@ class MailsterCampaigns {
 		$single = $is_autoresponder ? esc_html__( 'Autoresponder', 'mailster' ) : esc_html__( 'Campaign', 'mailster' );
 		$plural = $is_autoresponder ? esc_html__( 'Autoresponders', 'mailster' ) : esc_html__( 'Campaigns', 'mailster' );
 
+		$color = '#a0a5aa';
+		if ( is_admin() && ( isset( $_GET['post_type'] ) && 'newsletter' == $_GET['post_type'] || isset( $_GET['page'] ) && 'mailster_dashboard' == $_GET['page'] ) ) {
+			$color = '#ffffff';
+			// $menu_icon = '<svg fill="#fff" aria-hidden="true" focusable="false" data-prefix="fas" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" transform="scale(0.9)"><path d="M176 216h160c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16H176c-8.84 0-16 7.16-16 16v16c0 8.84 7.16 16 16 16zm-16 80c0 8.84 7.16 16 16 16h160c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16H176c-8.84 0-16 7.16-16 16v16zm96 121.13c-16.42 0-32.84-5.06-46.86-15.19L0 250.86V464c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V250.86L302.86 401.94c-14.02 10.12-30.44 15.19-46.86 15.19zm237.61-254.18c-8.85-6.94-17.24-13.47-29.61-22.81V96c0-26.51-21.49-48-48-48h-77.55c-3.04-2.2-5.87-4.26-9.04-6.56C312.6 29.17 279.2-.35 256 0c-23.2-.35-56.59 29.17-73.41 41.44-3.17 2.3-6 4.36-9.04 6.56H96c-26.51 0-48 21.49-48 48v44.14c-12.37 9.33-20.76 15.87-29.61 22.81A47.995 47.995 0 0 0 0 200.72v10.65l96 69.35V96h320v184.72l96-69.35v-10.65c0-14.74-6.78-28.67-18.39-37.77z"></path></svg>';
+		}
+		$menu_icon = '<svg aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" transform="scale(0.9)"><path fill="' . $color . '" d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z" transform="scale(0.9)"></path></svg>';
+
 		register_post_type( 'newsletter', array(
 
 				'labels' => array(
@@ -171,7 +178,7 @@ class MailsterCampaigns {
 
 				'public' => true,
 				'can_export' => true,
-				'menu_icon' => 'dashicons-mailster',
+				'menu_icon' => 'data:image/svg+xml;base64,' . base64_encode( $menu_icon ),
 				'show_ui' => true,
 				'show_in_nav_menus' => false,
 				'show_in_menu' => true,
@@ -199,35 +206,35 @@ class MailsterCampaigns {
 	public function register_post_status() {
 
 		register_post_status( 'paused', array(
-				'label' => esc_html__( 'Paused', 'mailster' ),
-				'public' => true,
-				'label_count' => _n_noop( esc_html__( 'Paused', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Paused', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			'label' => esc_html__( 'Paused', 'mailster' ),
+			'public' => true,
+			'label_count' => _n_noop( esc_html__( 'Paused', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Paused', 'mailster' ) . ' <span class="count">(%s)</span>' ),
 		) );
 
 		register_post_status( 'active', array(
-				'label' => esc_html__( 'Active', 'mailster' ),
-				'public' => true,
-				'label_count' => _n_noop( esc_html__( 'Active', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Active', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			'label' => esc_html__( 'Active', 'mailster' ),
+			'public' => true,
+			'label_count' => _n_noop( esc_html__( 'Active', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Active', 'mailster' ) . ' <span class="count">(%s)</span>' ),
 		) );
 
 		register_post_status( 'queued', array(
-				'label' => esc_html__( 'Queued', 'mailster' ),
-				'public' => true,
-				'label_count' => _n_noop( esc_html__( 'Queued', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Queued', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			'label' => esc_html__( 'Queued', 'mailster' ),
+			'public' => true,
+			'label_count' => _n_noop( esc_html__( 'Queued', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Queued', 'mailster' ) . ' <span class="count">(%s)</span>' ),
 		) );
 
 		register_post_status( 'finished', array(
-				'label' => esc_html__( 'Finished', 'mailster' ),
-				'public' => true,
-				'label_count' => _n_noop( esc_html__( 'Finished', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Finished', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			'label' => esc_html__( 'Finished', 'mailster' ),
+			'public' => true,
+			'label_count' => _n_noop( esc_html__( 'Finished', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Finished', 'mailster' ) . ' <span class="count">(%s)</span>' ),
 		) );
 
 		register_post_status( 'autoresponder', array(
-				'label' => esc_html__( 'Autoresponder', 'mailster' ),
-				'public' => ! is_admin(),
-				'exclude_from_search' => true,
-				'show_in_admin_all_list' => false,
-				'label_count' => _n_noop( esc_html__( 'Autoresponder', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Autoresponders', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			'label' => esc_html__( 'Autoresponder', 'mailster' ),
+			'public' => ! is_admin(),
+			'exclude_from_search' => true,
+			'show_in_admin_all_list' => false,
+			'label_count' => _n_noop( esc_html__( 'Autoresponder', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Autoresponders', 'mailster' ) . ' <span class="count">(%s)</span>' ),
 		) );
 
 	}
@@ -350,17 +357,19 @@ class MailsterCampaigns {
 
 			// duplicate campaign
 			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
-					$id = (int) $_GET['duplicate'];
-					$post = get_post( $id );
+				$id = (int) $_GET['duplicate'];
+				$post = get_post( $id );
 				if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
 					wp_die( esc_html__( 'You are not allowed to duplicate this campaign.', 'mailster' ) );
 				} else {
-					$this->duplicate( $id );
+					if ( $new_id = $this->duplicate( $id ) ) {
+						$id = $new_id;
+					}
 				}
 
 				// pause campaign
 			} elseif ( isset( $_GET['pause'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_pause_nonce' ) ) {
-					$id = (int) $_GET['pause'];
+				$id = (int) $_GET['pause'];
 				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
 					wp_die( esc_html__( 'You are not allowed to pause this campaign.', 'mailster' ) );
 				} else {
@@ -369,7 +378,7 @@ class MailsterCampaigns {
 
 				// continue/start campaign
 			} elseif ( isset( $_GET['start'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_start_nonce' ) ) {
-					$id = (int) $_GET['start'];
+				$id = (int) $_GET['start'];
 				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
 					wp_die( esc_html__( 'You are not allowed to start this campaign.', 'mailster' ) );
 				} else {
@@ -377,7 +386,7 @@ class MailsterCampaigns {
 				}
 				// finish campaign
 			} elseif ( isset( $_GET['finish'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_finish_nonce' ) ) {
-					$id = (int) $_GET['finish'];
+				$id = (int) $_GET['finish'];
 				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
 					wp_die( esc_html__( 'You are not allowed to finish this campaign.', 'mailster' ) );
 				} else {
@@ -385,7 +394,7 @@ class MailsterCampaigns {
 				}
 				// activate autoresponder
 			} elseif ( isset( $_GET['activate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_activate_nonce' ) ) {
-					$id = (int) $_GET['activate'];
+				$id = (int) $_GET['activate'];
 				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
 					wp_die( esc_html__( 'You are not allowed to activate this campaign.', 'mailster' ) );
 				} else {
@@ -394,7 +403,7 @@ class MailsterCampaigns {
 
 				// deactivate autoresponder
 			} elseif ( isset( $_GET['deactivate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_deactivate_nonce' ) ) {
-					$id = (int) $_GET['deactivate'];
+				$id = (int) $_GET['deactivate'];
 				if ( ! current_user_can( 'publish_newsletters', $id ) ) {
 					wp_die( esc_html__( 'You are not allowed to deactivate this campaign.', 'mailster' ) );
 				} else {
@@ -410,7 +419,6 @@ class MailsterCampaigns {
 				exit;
 			}
 
-			add_filter( 'wp', array( &$this, 'preload' ) );
 			add_filter( 'the_excerpt', '__return_false' );
 			add_filter( 'post_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
 			add_filter( 'page_row_actions', array( &$this, 'quick_edit_btns' ), 10, 2 );
@@ -424,28 +432,6 @@ class MailsterCampaigns {
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $query
-	 */
-	public function preload( $query ) {
-
-		global $wp_query;
-
-		if ( isset( $wp_query->query['post_status'] ) && 'autoresponder' == $wp_query->query['post_status'] ) {
-			return;
-		}
-		if ( empty( $wp_query->posts ) ) {
-			return;
-		}
-		$ids = wp_list_pluck( $wp_query->posts, 'ID' );
-
-		// preload meta from the displayed campaigns
-		$meta = $this->meta( $ids );
-		mailster( 'actions' )->get_by_campaign( $ids );
-	}
 
 
 	/**
@@ -1035,7 +1021,7 @@ class MailsterCampaigns {
 				$actions['statistics'] = '<a class="statistics" href="post.php?post=' . $campaign->ID . '&action=edit&showstats=1" title="' . sprintf( esc_html__( 'See stats of Campaign %s', 'mailster' ), '&quot;' . $campaign->post_title . '&quot;' ) . '">' . esc_html__( 'Statistics', 'mailster' ) . '</a>';
 			}
 
-			if ( $parent_id = $this->meta( $campaign->ID, 'parent_id' ) ) {
+			if ( $parent_id = (int) $this->meta( $campaign->ID, 'parent_id' ) ) {
 				$actions['autoresponder_link'] = '<a class="edit_base" href="post.php?post=' . $parent_id . '&action=edit">' . esc_html__( 'Edit base', 'mailster' ) . '</a>';
 			}
 		}
@@ -1493,7 +1479,6 @@ class MailsterCampaigns {
 				$meta['attachments'] = array();
 			}
 
-			$meta['embed_images'] = isset( $postdata['embed_images'] ) && $postdata['embed_images'];
 			$meta['track_opens'] = isset( $postdata['track_opens'] );
 			$meta['track_clicks'] = isset( $postdata['track_clicks'] );
 
@@ -1919,7 +1904,7 @@ class MailsterCampaigns {
 			$_meta = array( $key => $value );
 		}
 
-		$nullvalues = array( 'timezone', 'embed_images', 'track_opens', 'track_clicks', 'ignore_lists', 'autoplaintext', 'auto_post_thumbnail', 'webversion' );
+		$nullvalues = array( 'timezone', 'track_opens', 'track_clicks', 'ignore_lists', 'autoplaintext', 'auto_post_thumbnail', 'webversion' );
 
 		foreach ( $_meta as $k => $v ) {
 			// allowed NULL values
@@ -1972,7 +1957,6 @@ class MailsterCampaigns {
 			'list_conditions' => null,
 			'head' => null,
 			'colors' => null,
-			'embed_images' => mailster_option( 'embed_images' ),
 			'track_opens' => mailster_option( 'track_opens' ),
 			'track_clicks' => mailster_option( 'track_clicks' ),
 			'autoplaintext' => true,
@@ -3663,6 +3647,11 @@ class MailsterCampaigns {
 						$status_title = $sent_formatted;
 					}
 
+					// finish campaign
+					if ( 'active' == $post->post_status && $totals && $sent >= $totals ) {
+						$this->finish( $id );
+					}
+
 					$return[ $id ] = array(
 						'cron' => ! is_wp_error( $cron_status ),
 						'status' => $post->post_status,
@@ -3739,7 +3728,12 @@ class MailsterCampaigns {
 						}
 					}
 
-					endif;
+				endif;
+
+				// finish campaign
+				if ( 'active' == $post->post_status && $totals && $sent >= $totals ) {
+					$this->finish( $id );
+				}
 
 				$return[ $id ] = array(
 					'cron' => ! is_wp_error( $cron_status ),
@@ -3858,7 +3852,7 @@ class MailsterCampaigns {
 		$mail->reply_to = $campaign_meta['reply_to'];
 		$mail->bouncemail = mailster_option( 'bounce' );
 		$mail->preheader = $campaign_meta['preheader'];
-		$mail->embed_images = $campaign_meta['embed_images'];
+		$mail->embed_images = mailster_option( 'embed_images' );
 
 		$mail->add_tracking_image = $track || $campaign_meta['track_opens'];
 		$mail->hash = $subscriber->hash;

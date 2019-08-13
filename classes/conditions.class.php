@@ -342,7 +342,7 @@ class MailsterConditions {
 	public function get_campaign_title( $post ) {
 
 		if ( ! $post ) {
-			return esc_html__( 'Any Campaign', 'maislter' );
+			return esc_html__( 'Any Campaign', 'mailster' );
 		}
 
 		if ( isset( $this->special_campaigns[ $post ] ) ) {

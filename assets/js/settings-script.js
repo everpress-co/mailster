@@ -14,12 +14,13 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
-	$('form#mailster-settings-form').on('submit', function () {
-		return false
-	});
+	$('form#mailster-settings-form')
+		.on('submit.lock', function () {
+			return false
+		});
 	if ($('#settingsloaded').length) {
 		$('.submit-form').prop('disabled', false);
-		$('form#mailster-settings-form').off('submit');
+		$('form#mailster-settings-form').off('submit.lock');
 	} else {
 		if (console) console.log('error loading settings page');
 	}

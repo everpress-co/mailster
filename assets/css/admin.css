@@ -1,4 +1,4 @@
-#adminmenu div.wp-menu-image.dashicons-mailster:before, .mailster-shortcodes-icon:before, .mailster-tags-icon:before {
+.mailster-shortcodes-icon:before, .mailster-tags-icon:before {
 	font: normal 16px/1 'mailster-icons' !important;
 	content: '\e800';
 	-webkit-font-smoothing: antialiased;
