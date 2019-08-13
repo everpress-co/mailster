@@ -5,7 +5,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
 
-$is_autoresponder = 'autoresponder' == $post->post_status;
+$is_autoresponder = 'autoresponder' == $post->post_status || $this->post_data['autoresponder'];
 
 ?>
 <?php if ( $editable ) : ?>
@@ -25,7 +25,7 @@ $is_autoresponder = 'autoresponder' == $post->post_status;
 				<a href="" class="delete-attachment" title="<?php echo esc_attr__( 'Remove Attachment', 'mailster' ); ?>">&#10005;</a>
 				<?php echo wp_get_attachment_image( $attachment_id, 'thumbnail', true ) ?>
 				<div class="mailster-attachment-label"><?php echo esc_html( basename( $file ) ) ?></div>
-				<input name="mailster_data[attachments][]" value="<?php echo intval( $attachment_id ) ?>" type="hidden" >
+				<input name="mailster_data[attachments][]" value="<?php echo (int) $attachment_id ?>" type="hidden" >
 			</li>
 		<?php endforeach; ?>
 	<?php endif; ?>
@@ -43,24 +43,25 @@ $is_autoresponder = 'autoresponder' == $post->post_status;
 
 <?php else : ?>
 
+	<?php if ( ! empty( $this->post_data['attachments'] ) ) : ?>
+
 	<ul class="mailster-attachments">
-		<?php if ( ! empty( $this->post_data['attachments'] ) ) : ?>
-			<?php foreach ( $this->post_data['attachments'] as $attachment_id ) : ?>
-				<?php $file = get_attached_file( $attachment_id ); ?>
+		<?php foreach ( $this->post_data['attachments'] as $attachment_id ) : ?>
+			<?php $file = get_attached_file( $attachment_id ); ?>
 
-				<li class="mailster-attachment">
-					<a href="" class="delete-attachment" title="<?php echo esc_attr__( 'Remove Attachment', 'mailster' ); ?>">&#10005;</a>
-					<?php echo wp_get_attachment_image( $attachment_id, 'thumbnail', true ) ?>
-					<div class="mailster-attachment-label"><?php echo esc_html( basename( $file ) ) ?></div>
-					<input name="mailster_data[attachments][]" value="<?php echo intval( $attachment_id ) ?>" type="hidden" >
-				</li>
-			<?php endforeach; ?>
-		<?php endif; ?>
-
-		<p class="description">
-			<?php esc_html_e( 'This campaign doesn\'t have any attachment.', 'mailster' ); ?>
-		</p>
-
+			<li class="mailster-attachment">
+				<a href="" class="delete-attachment" title="<?php echo esc_attr__( 'Remove Attachment', 'mailster' ); ?>">&#10005;</a>
+				<?php echo wp_get_attachment_image( $attachment_id, 'thumbnail', true ) ?>
+				<div class="mailster-attachment-label"><?php echo esc_html( basename( $file ) ) ?></div>
+				<input name="mailster_data[attachments][]" value="<?php echo (int) $attachment_id ?>" type="hidden" >
+			</li>
+		<?php endforeach; ?>
 	</ul>
+	<?php else : ?>
+
+	<p class="description">
+		<?php esc_html_e( 'This campaign doesn\'t have any attachment.', 'mailster' ); ?>
+	</p>
+	<?php endif; ?>
 
 <?php endif; ?>

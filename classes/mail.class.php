@@ -2,7 +2,7 @@
 
 class MailsterMail {
 
-	public $embed_images = true;
+	public $embed_images = null;
 	public $headers = array();
 	public $content = '';
 	public $plaintext = '';
@@ -11,9 +11,13 @@ class MailsterMail {
 	public $from_name;
 	public $to;
 	public $to_name;
+	public $cc;
+	public $cc_name;
 	public $bcc;
+	public $bcc_name;
 	public $hash = '';
 	public $reply_to;
+	public $reply_to_name;
 	public $deliverymethod;
 	public $dkim;
 	public $bouncemail;
@@ -33,6 +37,7 @@ class MailsterMail {
 
 	private $campaignID = null;
 	private $subscriberID = null;
+	private $messageID = null;
 
 	public $text = '';
 
@@ -142,13 +147,17 @@ class MailsterMail {
 
 		$this->send_limit = mailster_option( 'send_limit' );
 
-		$ubscriber_errors = array(
+		$subscriber_errors = array(
 			'SMTP Error: The following recipients failed',
 			'The following From address failed',
 			'Invalid address:',
 			'SMTP Error: Data not accepted',
 		);
-		$this->subscriber_errors = apply_filters( 'mymail_subscriber_errors', apply_filters( 'mailster_subscriber_errors', $ubscriber_errors ) );
+		$this->subscriber_errors = apply_filters( 'mymail_subscriber_errors', apply_filters( 'mailster_subscriber_errors', $subscriber_errors ) );
+		$system_errors = array(
+			'Not in Time Frame',
+		);
+		$this->system_errors = apply_filters( 'mailster_system_errors', $system_errors );
 
 		if ( ! get_transient( '_mailster_send_period_timeout' ) ) {
 			set_transient( '_mailster_send_period_timeout', true, mailster_option( 'send_period' ) * 3600 );
@@ -163,7 +172,7 @@ class MailsterMail {
 		$this->sentlimitreached = $this->sent_within_period >= $this->send_limit;
 
 		if ( $this->sentlimitreached ) {
-			$msg = sprintf( __( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), '<strong>' . $this->send_limit . '</strong>', '<strong>' . human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) . '</strong>' );
+			$msg = sprintf( esc_html__( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), '<strong>' . $this->send_limit . '</strong>', '<strong>' . human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) . '</strong>' );
 			mailster_notice( $msg, 'error', false, 'dailylimit' );
 
 			$e = new Exception( $msg, 1 );
@@ -202,7 +211,6 @@ class MailsterMail {
 			}
 
 			$this->mailer->SMTPDebug = $level; // 0 = off, 1 = commands, 2 = commands and data
-			// Options: "echo", "html" or "error_log";
 		}
 	}
 
@@ -286,8 +294,8 @@ class MailsterMail {
 	 * @param unknown $id
 	 */
 	public function set_campaign( $id ) {
-		$this->campaignID = intval( $id );
-		$this->baselink = mailster()->get_base_link( intval( $id ) );
+		$this->campaignID = (int) $id;
+		$this->baselink = mailster()->get_base_link( (int) $id );
 	}
 
 
@@ -297,7 +305,7 @@ class MailsterMail {
 	 * @param unknown $id
 	 */
 	public function set_subscriber( $id ) {
-		$this->subscriberID = intval( $id );
+		$this->subscriberID = (int) $id;
 	}
 
 
@@ -311,23 +319,146 @@ class MailsterMail {
 			return;
 		}
 
-		$headers = is_array( $headers ) ? $headers : explode( "\n", $headers );
-		foreach ( $headers as $header ) {
-			if ( empty( $header ) ) {
-				continue;
-			}
+		if ( ! is_array( $headers ) ) {
+			// Explode the headers out, so this function can take both
+			// string headers and an array of headers.
+			$tempheaders = explode( "\n", str_replace( "\r\n", "\n", $headers ) );
+		} else {
+			$tempheaders = $headers;
+		}
+		$headers = array();
+		$cc = $bcc = $reply_to = array();
 
-			if ( preg_match( '#^from: ?(.*) (<([^ ]+)>)?#i', $header, $from ) ) {
-				$this->from_name = trim( $from[1], '"' );
-				$this->from = isset( $from[3] ) ? trim( $from[3] ) : '';
+		// If it's actually got contents
+		if ( ! empty( $tempheaders ) ) {
+			// Iterate through the raw headers
+			foreach ( (array) $tempheaders as $header ) {
+				if ( strpos( $header, ':' ) === false ) {
+					if ( false !== stripos( $header, 'boundary=' ) ) {
+						$parts = preg_split( '/boundary=/i', trim( $header ) );
+						$boundary = trim( str_replace( array( "'", '"' ), '', $parts[1] ) );
+					}
+					continue;
+				}
+				// Explode them out
+				list( $name, $content ) = explode( ':', trim( $header ), 2 );
 
-			} elseif ( preg_match( '#^content-type#i', $header, $from ) ) {
-				continue;
-			} else {
-				$parts = array_map( 'trim', explode( ':', $header ) );
-				$this->add_header( $parts[0], $parts[1] );
+				// Cleanup crew
+				$name    = trim( $name );
+				$content = trim( $content );
+
+				switch ( strtolower( $name ) ) {
+					// Mainly for legacy -- process a From: header if it's there
+					case 'from':
+						$bracket_pos = strpos( $content, '<' );
+						if ( $bracket_pos !== false ) {
+							// Text before the bracketed email is the "From" name.
+							if ( $bracket_pos > 0 ) {
+								$from_name = substr( $content, 0, $bracket_pos - 1 );
+								$from_name = str_replace( '"', '', $from_name );
+								$from_name = trim( $from_name );
+							}
+
+							$from_email = substr( $content, $bracket_pos + 1 );
+							$from_email = str_replace( '>', '', $from_email );
+							$from_email = trim( $from_email );
+
+							// Avoid setting an empty $from_email.
+						} elseif ( '' !== trim( $content ) ) {
+							$from_email = trim( $content );
+						}
+						break;
+					case 'content-type':
+						if ( strpos( $content, ';' ) !== false ) {
+							list( $type, $charset_content ) = explode( ';', $content );
+							$content_type = trim( $type );
+							if ( false !== stripos( $charset_content, 'charset=' ) ) {
+								$charset = trim( str_replace( array( 'charset=', '"' ), '', $charset_content ) );
+							} elseif ( false !== stripos( $charset_content, 'boundary=' ) ) {
+								$boundary = trim( str_replace( array( 'BOUNDARY=', 'boundary=', '"' ), '', $charset_content ) );
+								$charset = '';
+							}
+
+							// Avoid setting an empty $content_type.
+						} elseif ( '' !== trim( $content ) ) {
+							$content_type = trim( $content );
+						}
+						break;
+					case 'cc':
+						$cc = array_merge( (array) $cc, explode( ',', $content ) );
+						break;
+					case 'bcc':
+						$bcc = array_merge( (array) $bcc, explode( ',', $content ) );
+						break;
+					case 'reply-to':
+						$reply_to = array_merge( (array) $reply_to, explode( ',', $content ) );
+						break;
+					default:
+						// Add it to our grand headers array
+						$headers[ trim( $name ) ] = trim( $content );
+						break;
+				}
 			}
 		}
+
+		if ( ! empty( $headers ) ) {
+			$this->add_header( $headers );
+		}
+		if ( isset( $from_email ) ) {
+			$this->from = $from_email;
+		}
+		if ( isset( $from_name ) ) {
+			$this->from_name = $from_name;
+		}
+		if ( isset( $reply_to ) ) {
+			$this->reply_to = array();
+			foreach ( $reply_to as $address ) {
+				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
+					$recipient_name = '';
+					if ( count( $matches ) == 3 ) {
+						$recipient_name = $matches[1];
+						$address        = $matches[2];
+					}
+					$this->reply_to[] = $address;
+					$this->reply_to_name[] = $recipient_name;
+				} else {
+					$this->reply_to[] = $address;
+				}
+			}
+		}
+		if ( isset( $cc ) ) {
+			$this->cc = array();
+			foreach ( $cc as $address ) {
+				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
+					$recipient_name = '';
+					if ( count( $matches ) == 3 ) {
+						$recipient_name = $matches[1];
+						$address        = $matches[2];
+					}
+					$this->cc[] = $address;
+					$this->cc_name[] = $recipient_name;
+				} else {
+					$this->cc[] = $address;
+				}
+			}
+		}
+		if ( isset( $bcc ) ) {
+			$this->bcc = array();
+			foreach ( $bcc as $address ) {
+				if ( preg_match( '/(.*)<(.+)>/', $address, $matches ) ) {
+					$recipient_name = '';
+					if ( count( $matches ) == 3 ) {
+						$recipient_name = $matches[1];
+						$address        = $matches[2];
+					}
+					$this->bcc[] = $address;
+					$this->bcc_name[] = $recipient_name;
+				} else {
+					$this->bcc[] = $address;
+				}
+			}
+		}
+
 	}
 
 
@@ -337,8 +468,16 @@ class MailsterMail {
 	 * @param unknown $key
 	 * @param unknown $value
 	 */
-	public function add_header( $key, $value ) {
-		$this->headers[ $key ] = (string) $value;
+	public function add_header( $key, $value = null ) {
+		if ( is_array( $key ) ) {
+			$header = $key;
+		} else {
+			$header = array( $key => $value );
+		}
+
+		foreach ( $header as $k => $v ) {
+			$this->headers[ $k ] = str_replace( array( "\n", ' ' ), array( '%0D%0A', '%20' ), (string) $v );
+		}
 	}
 
 
@@ -370,21 +509,26 @@ class MailsterMail {
 	 * @param unknown $replace  (optional)
 	 * @param unknown $force    (optional)
 	 * @param unknown $file     (optional)
+	 * @param unknown $template (optional)
 	 * @return unknown
 	 */
-	public function send_notification( $content, $headline = null, $replace = array(), $force = false, $file = 'notification.html' ) {
+	public function send_notification( $content, $headline = null, $replace = array(), $force = false, $file = 'notification.html', $template = null ) {
 
 		if ( is_null( $headline ) ) {
 			$headline = $this->subject;
 		}
 
-		$template = mailster_option( 'default_template' );
+		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 
-		if ( $template ) {
-			$template = mailster( 'template', $template, $file );
-			$this->content = $template->get( true, true );
+		if ( $template && $file ) {
+			$template_obj = mailster( 'template', $template, $file );
+			$this->content = $template_obj->get( true, true );
 		} else {
-			$this->content = '{headline}<br>{content}';
+			if ( $file ) {
+				$this->content = '{headline}<br>{content}';
+			} else {
+				$this->content = '{content}';
+			}
 		}
 
 		$placeholder = mailster( 'placeholder', $this->content );
@@ -448,7 +592,11 @@ class MailsterMail {
 
 		}
 
-		return $this->sent;
+		if ( $this->sent ) {
+			return $this->messageID;
+		} else {
+			return false;
+		}
 
 	}
 
@@ -496,6 +644,7 @@ class MailsterMail {
 
 		try {
 
+			$this->messageID = null;
 			$this->last_error = null;
 
 			// Empty out the values that may be set
@@ -512,18 +661,47 @@ class MailsterMail {
 				$this->mailer->AddAddress( $address, isset( $this->to_name[ $i ] ) ? $this->to_name[ $i ] : null );
 			}
 
-			if ( $this->bcc ) {
-				if ( ! is_array( $this->bcc ) ) {
-					$this->bcc = array( $this->bcc );
-				}
+			$this->subject = htmlspecialchars_decode( $this->subject, ENT_QUOTES );
+			$this->from_name = htmlspecialchars_decode( $this->from_name, ENT_QUOTES );
 
-				foreach ( $this->bcc as $address ) {
-					$this->mailer->addBCC( $address );
+			// add CC
+			if ( $this->cc ) {
+				$cc = (array) $this->cc;
+				$cc_name = (array) $this->cc_name;
+
+				foreach ( $this->cc as $i => $address ) {
+					$this->mailer->addCC( $address, isset( $cc_name[ $i ] ) ? $cc_name[ $i ] : null );
 				}
 			}
 
-			$this->subject = htmlspecialchars_decode( $this->subject );
-			$this->from_name = htmlspecialchars_decode( $this->from_name );
+			// add BCC
+			if ( $this->bcc ) {
+				$bcc = (array) $this->bcc;
+				$bcc_name = (array) $this->bcc_name;
+
+				foreach ( $this->bcc as $i => $address ) {
+					$this->mailer->addBCC( $address, isset( $bcc_name[ $i ] ) ? $bcc_name[ $i ] : null );
+				}
+			}
+
+			// add Reply-to
+			if ( $this->reply_to ) {
+				$reply_to = (array) $this->reply_to;
+				$reply_to_name = (array) $this->reply_to_name;
+
+				foreach ( $reply_to as $i => $address ) {
+					$this->mailer->addReplyTo( $address, isset( $reply_to_name[ $i ] ) ? $reply_to_name[ $i ] : null );
+				}
+			} else {
+				$this->mailer->addReplyTo( $this->from, $this->from_name );
+			}
+
+			if ( empty( $this->from ) ) {
+				$this->from = mailster_option( 'from' );
+				if ( empty( $this->from_name ) ) {
+					$this->from_name = mailster_option( 'from_name' );
+				}
+			}
 
 			$this->mailer->Subject = $this->subject;
 			$this->mailer->SetFrom( $this->from, $this->from_name, false );
@@ -543,10 +721,6 @@ class MailsterMail {
 				? $this->mailer->ReturnPath = $this->mailer->Sender = $this->bouncemail
 				: $this->mailer->ReturnPath = $this->mailer->Sender = $this->from;
 
-			( $this->reply_to )
-				? $this->mailer->AddReplyTo( $this->reply_to )
-				: $this->mailer->AddReplyTo( $this->from );
-
 			// add the tracking image at the bottom
 			if ( $this->add_tracking_image ) {
 
@@ -564,11 +738,12 @@ class MailsterMail {
 
 			}
 
-			$this->mailer->MessageID = sprintf( '<%s@%s>',
-				uniqid() . '-' . $this->hash . '-' . $this->campaignID . '-' . mailster_option( 'ID' ),
+			$this->messageID = uniqid();
+			$this->mailer->messageID = sprintf( '<%s@%s>',
+				$this->messageID . '-' . $this->hash . '-' . $this->campaignID . '-' . mailster_option( 'ID' ),
 			$this->hostname );
 
-			$this->add_header( 'X-Message-ID', $this->mailer->MessageID );
+			$this->add_header( 'X-Message-ID', $this->mailer->messageID );
 
 			$this->set_headers();
 
@@ -626,6 +801,36 @@ class MailsterMail {
 		// check for subscriber error
 		foreach ( $this->subscriber_errors as $subscriber_error ) {
 			if ( stripos( $errormsg, $subscriber_error ) !== false ) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $error (optional)
+	 * @return unknown
+	 */
+	public function is_system_error( $error = null ) {
+
+		if ( is_null( $error ) ) {
+			$error = $this->last_error;
+		}
+
+		if ( empty( $error ) ) {
+			return false;
+		}
+
+		$errormsg = $error->getMessage();
+
+		// check for subscriber error
+		foreach ( $this->system_errors as $system_errors ) {
+			if ( stripos( $errormsg, $system_errors ) !== false ) {
 				return true;
 			}
 		}
@@ -742,7 +947,7 @@ class MailsterMail {
 	private function ServerHostname() {
 		if ( $this->Hostname != '' ) {
 			$result = $this->Hostname;
-		} elseif ( $_SERVER['SERVER_NAME'] != '' ) {
+		} elseif ( isset( $_SERVER['SERVER_NAME'] ) && $_SERVER['SERVER_NAME'] != '' ) {
 			$result = $_SERVER['SERVER_NAME'];
 		} else {
 			$result = 'localhost.localdomain';

@@ -8,17 +8,17 @@
 	font-weight: normal;
 	font-style: normal;
 }
-html.mailster-emebed-form, .mailster-emebed-form body{
-	margin:0 !important;
-	padding:0 !important;
+html.mailster-embeded-form, .mailster-embeded-form body{
+	margin: 0 !important;
+	padding: 0 !important;
 	min-width: 500px;
 	min-height: 50px;
-	display:block;
+	display: block;
 	direction: ltr;
 }
 .btn-widget{
 	margin: 0 !important;
-	padding:0 !important;
+	padding: 0 !important;
 	font: normal normal normal 11px/18px 'Helvetica Neue',Arial,sans-serif;
 	color: #555;
 	-webkit-user-select: none;
@@ -28,7 +28,7 @@ html.mailster-emebed-form, .mailster-emebed-form body{
 	overflow: hidden;
 }
 .mailster-form-inner{
-	float:left;
+	float: left;
 }
 .btn-widget .btn{
 	margin: 0 !important;
@@ -46,14 +46,14 @@ html.mailster-emebed-form, .mailster-emebed-form body{
 	padding: 0 4px 0 4px;
 }
 .btn-widget .btn:empty:before{
-	margin-right:0;
+	margin-right: 0;
 }
 .btn-widget.init{
-	opacity:0.5;
-	filter:alpha(50);
+	opacity: 0.5;
+	filter: alpha(50);
 }
 .btn-widget.init .btn{
-	cursor:progress !important;
+	cursor: progress !important;
 }
 .btn-widget.ontop .btn{
 	display: block;
@@ -148,17 +148,13 @@ html.mailster-emebed-form, .mailster-emebed-form body{
 	text-shadow: inset 1px 1px 1px rgba(127, 127, 127, 0.3);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	-webkit-transition:all .1s ease-in-out;
-	-moz-transition:all .1s ease-in-out;
-	-ms-transition:all .1s ease-in-out;
-	-o-transition:all .1s ease-in-out;
-	transition:all .1s ease-in-out;
-	color:#555;
+	transition: all .1s ease-in-out;
+	color: #555;
 	content: '\e800';
 	opacity: .8;
 }
 .btn-widget .btn:hover:before{
-	color:#28b4e9;
+	color: #28b4e9;
 }
 .btn-widget .btn:focus {
 	outline: 0;

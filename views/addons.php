@@ -73,7 +73,9 @@
 		</li>
 		<?php endforeach; ?>
 	</ul>
-
+<div class="clear affiliate-note">
+	Disclosure: Some of the links on this page are affiliate links. This means if you click on the link and purchase the item, we may receive an affiliate commission.
+</div>
 <?php endif; ?>
 
 <div id="ajax-response"></div>

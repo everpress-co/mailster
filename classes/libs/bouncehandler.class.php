@@ -37,13 +37,18 @@ class MailsterBounceHandler {
 	 * @param unknown $user
 	 * @param unknown $pwd
 	 * @param unknown $port    (optional)
-	 * @param unknown $ssl     (optional)
+	 * @param unknown $secure  (optional)
 	 * @param unknown $timeout (optional)
 	 * @return unknown
 	 */
-	public function connect( $server, $user, $pwd, $port = 110, $ssl = false, $timeout = 60 ) {
+	public function connect( $server, $user, $pwd, $port = 110, $secure = false, $timeout = 60 ) {
 
-		$path = '{' . $server . ':' . $port . '/' . $this->service . ( $ssl ? '/ssl' : '' ) . '/novalidate-cert}INBOX';
+		$securepath = '';
+		if($secure){
+			$securepath = '/'.$secure;
+		}
+
+		$path = '{' . $server . ':' . $port . '/' . $this->service . $securepath . '/novalidate-cert}INBOX';
 
 		require_once MAILSTER_DIR . 'classes/libs/PhpImap/__autoload.php';
 
@@ -79,27 +84,38 @@ class MailsterBounceHandler {
 
 			$bouncehandler = new Bouncehandler();
 			$bounceresult = $bouncehandler->parse_email( $message );
-			$bounceresult = (object) $bounceresult[0];
+
+			if ( ! empty( $bounceresult ) ) {
+				$bounceresult = (object) $bounceresult[0];
+				$action = $bounceresult->action;
+				$status = $bounceresult->status;
+			} else {
+				$action = 'unsubscribe';
+			}
 
 			$subscriber = mailster( 'subscribers' )->get_by_hash( $hash[2], false );
-			$campaign = ! empty( $camp ) ? mailster( 'campaigns' )->get( intval( $camp[2] ) ) : null;
+			$campaign = ! empty( $camp ) ? mailster( 'campaigns' )->get( (int) $camp[2] ) : null;
 
 			if ( $subscriber ) {
 
 				$campaign_id = $campaign ? $campaign->ID : 0;
-				switch ( $bounceresult->action ) {
+				switch ( $action ) {
 					case 'success':
 					break;
 
+					case 'unsubscribe':
+						// unsubscribe
+						mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $campaign_id, 'list_unsubscribe' );
+					break;
 					case 'failed':
 						// hardbounce
-						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, true, $bounceresult->status );
+						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, true, $status );
 					break;
 
 					case 'transient':
 					default:
 						// softbounce
-						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, false, $bounceresult->status );
+						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, false, $status );
 
 				}
 			}
@@ -195,18 +211,18 @@ class MailsterBounceLegacyHandler extends MailsterBounceHandler {
 	 * @param unknown $user
 	 * @param unknown $pwd
 	 * @param unknown $port    (optional)
-	 * @param unknown $ssl     (optional)
+	 * @param unknown $secure  (optional)
 	 * @param unknown $timeout (optional)
 	 * @return unknown
 	 */
-	public function connect( $server, $user, $pwd, $port = 110, $ssl = false, $timeout = 60 ) {
+	public function connect( $server, $user, $pwd, $port = 110, $secure = false, $timeout = 60 ) {
 
 		require_once ABSPATH . WPINC . '/class-pop3.php';
 		$this->mailbox = new POP3();
-		$this->mailbox->TIMEOUT = $timeout;
+		$this->mailbox->TIMEOUT = (int) $timeout;
 
-		if ( $ssl ) {
-			$server = 'ssl://' . $server;
+		if($secure){
+			$server = $secure.'://' . $server;
 		}
 
 		$this->mailbox->connect( $server, $port );

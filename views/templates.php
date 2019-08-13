@@ -4,14 +4,13 @@ $t = mailster( 'templates' );
 
 $templates = $t->get_templates();
 $mailster_templates = $t->get_mailster_templates();
-$licensecodes = $t->get_license();
 
 $notice = false;
 $default = mailster_option( 'default_template', 'mymail' );
 if ( ! isset( $templates[ $default ] ) ) {
 	$default = 'mymail';
 	mailster_update_option( 'default_template', 'mymail' );
-	$notice[] = sprintf( __( 'Template %s is missing or broken. Reset to default', 'mailster' ), '"' . $default . '"' );
+	$notice[] = sprintf( esc_html__( 'Template %s is missing or broken. Reset to default', 'mailster' ), '"' . $default . '"' );
 
 	// mymail template is missing => redownload it.
 	if ( ! isset( $templates[ $default ] ) ) {
@@ -25,7 +24,7 @@ if ( ! isset( $templates[ $default ] ) ) {
 }
 if ( $updates = $t->get_updates() ) : ?>
 <div class="update-nag below-h2">
-	<?php printf( _n( '%d Update available', '%d Updates available', $updates, 'mailster' ), $updates ) ?>
+	<?php printf( esc_html__( _n( '%d Update available', '%d Updates available', $updates, 'mailster' ) ), $updates ) ?>
 </div>
 <?php endif; ?>
 <div class="wrap">
@@ -65,7 +64,7 @@ if ( ! isset( $_GET['more'] ) ) :
 	<br class="clear">
 </li>
 </ul>
-<h1><?php esc_html_e( 'Templates', 'mailster' ) ?> <a class="add-new-h2 upload-template"> <?php esc_html_e( 'Add New', 'mailster' );?> </a></h1>
+<h1><?php esc_html_e( 'Templates', 'mailster' ) ?> <a class="page-title-action upload-template"> <?php esc_html_e( 'Add New', 'mailster' );?> </a></h1>
 <?php
 wp_nonce_field( 'mailster_nonce' );
 if ( $notice ) {
@@ -107,16 +106,16 @@ if ( current_user_can( 'mailster_upload_templates' ) ) : ?>
 
 <h1><?php esc_html_e( 'More Templates', 'mailster' ) ?></h1>
 
-<ul id="available-templates">
 <?php
 
 if ( empty( $mailster_templates ) ) :
 
-	echo '<div class="error below-h2"><p>' . __( 'Looks like there was a problem getting the list of templates', 'mailster' ) . '</p></div>';
+	echo '<div class="error below-h2"><p>' . esc_html__( 'Looks like there was a problem getting the list of templates', 'mailster' ) . '</p></div>';
 
 else :
 
 	?>
+<ul id="available-templates">
 	<li class="mailster-box more-templates-field">
 		<div><a href="edit.php?post_type=newsletter&page=mailster_templates" class="button button-primary button-hero"> <?php esc_html_e( 'Back to Overview', 'mailster' );?></a></div>
 	</li>
@@ -132,11 +131,13 @@ foreach ( $mailster_templates as $slug => $data ) {
 	include MAILSTER_DIR . 'views/templates/available-template.php';
 
 }
-
-endif;
-
 ?>
 </ul>
+<div class="clear affiliate-note">
+	Disclosure: Some of the links on this page are affiliate links. This means if you click on the link and purchase the item, we may receive an affiliate commission.
+</div>
+<?php endif; ?>
+
 <?php endif; ?>
 <div id="thickboxbox">
 	<ul class="thickbox-filelist"></ul>

@@ -18,6 +18,7 @@ jQuery(document).ready(function ($) {
 			animate: 1000,
 			rotate: 180,
 			barColor: '#2BB3E7',
+			trackColor: '#50626f',
 			trackColor: '#ffffff',
 			lineWidth: 9,
 			size: 75,
@@ -29,7 +30,6 @@ jQuery(document).ready(function ($) {
 				this.$el.find('span').text(Math.round(value));
 			}
 		});
-
 
 	}
 
@@ -55,7 +55,13 @@ jQuery(document).ready(function ($) {
 			}
 
 		});
-
+		$('#mailster_status').on('change', function () {
+			if ($(this).val() <= 0) {
+				$('.pending-info').show();
+			} else {
+				$('.pending-info').hide();
+			}
+		});
 		$('.show-more-info').on('click', function () {
 			$('.more-info').slideToggle(100);
 		});
@@ -91,7 +97,7 @@ jQuery(document).ready(function ($) {
 		_email
 			.on('blur', function () {
 				var _this = $(this),
-					email = $.trim(_this.val().toLowerCase()),
+					email = $.trim(_this.val()),
 					valid = _verify(email);
 
 				if (!valid) {
@@ -127,7 +133,7 @@ jQuery(document).ready(function ($) {
 				var _this = $(this);
 				clearTimeout(timeout);
 				timeout = setTimeout(function () {
-					var email = $.trim(_this.val().toLowerCase()),
+					var email = $.trim(_this.val()),
 						valid = _verify(email);
 					if (!valid) return false;
 
