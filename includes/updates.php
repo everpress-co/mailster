@@ -590,7 +590,7 @@ if ( $old_version ) {
 
 		case '2.4.3':
 
-			if (get_option('mailster') < strtotime( '2017-05-01 00:00 GMT+2' ) ) {
+			if (get_option('mailster') && get_option('mailster') < strtotime( '2018-01-01 00:00' ) ) {
 				$mailster_options['legacy_hooks'] = true;
 			}
 
