@@ -1277,7 +1277,7 @@ class MailsterAjax {
 							$class = 'is-unsplash';
 						} else {
 							$post_id = $post->ID;
-							$image = wp_get_attachment_image_src( $post_id, 'large' );
+							$image = wp_get_attachment_image_src( $post_id, 'full' );
 							$src = $image[0];
 							$asp = $image[2] ? str_replace( ',', '.', $image[1] / $image[2] ) : '';
 							$thumbnail = wp_get_attachment_image_src( $post_id, 'medium' );
