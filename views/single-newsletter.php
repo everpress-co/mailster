@@ -53,7 +53,6 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 <?php endif; ?>
 
 	<?php do_action( 'mailster_wphead' ); ?>
-	<?php do_action( 'mymail_wphead' ); ?>
 
 </head>
 <body <?php body_class();?>>
@@ -148,7 +147,6 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 	</div>
 
 	<?php do_action( 'mailster_wpfooter' ); ?>
-	<?php do_action( 'mymail_wpfooter' ); ?>
 
 </body>
 </html>

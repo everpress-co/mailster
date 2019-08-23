@@ -472,6 +472,7 @@ if ( $old_version ) {
 			update_option( 'mailster_cron_lasthit', '' );
 			delete_option( 'mailster_purchasecode_disabled' );
 			$mailster_options['welcome'] = true;
+			$mailster_options['legacy_hooks'] = true;
 			$mailster_options['_flush_rewrite_rules'] = true;
 			update_option( 'mailster_license', $mailster_options['purchasecode'] );
 
@@ -588,6 +589,10 @@ if ( $old_version ) {
 			$mailster_options['_flush_rewrite_rules'] = true;
 
 		case '2.4.3':
+
+			if (get_option('mailster') && get_option('mailster') < strtotime( '2018-01-01 00:00' ) ) {
+				$mailster_options['legacy_hooks'] = true;
+			}
 
 		default:
 

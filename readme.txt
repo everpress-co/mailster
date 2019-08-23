@@ -93,6 +93,8 @@ Xaver Birsak – https://everpress.co
 * improved: you can now encode tags output with an exclamation mark `{!mytag}`
 * improved: drag n drop images from your desktop now respects cropped image setting.
 * improved: import screen
+* improved: test mails now fallback to the current users email if not defined
+* fixed: issue with RSS campaigns on time based autoresponders
 * fixed: wrong subscriber count if status "pending" in subscriber query
 * fixed: cumulative count calculations
 * fixed: redirecting issue with spaces in URLs

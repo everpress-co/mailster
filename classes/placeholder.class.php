@@ -434,6 +434,7 @@ class MailsterPlaceholder {
 					$this->post_types[] = $temp_post_type;
 					$replace = str_replace( '{rss', '{' . $temp_post_type, $search );
 					$replace = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $temp_post_type, $replace );
+					$replace = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . $temp_post_type, $replace );
 
 				}
 
@@ -444,6 +445,7 @@ class MailsterPlaceholder {
 			if ( $first ) {
 				$this->content = str_replace( '{rss', '{' . $first, $this->content );
 				$this->content = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $first, $this->content );
+				$this->content = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . $first, $this->content );
 			}
 		}
 
@@ -701,6 +703,10 @@ class MailsterPlaceholder {
 						$is_random = null;
 						$org_src = false;
 
+						// not on RSS
+						if ($relative_to_absolute && 0 === strpos($post_type, 'mailster_rss_')) {
+							$relative_to_absolute = false;
+						}
 						if ( $is_post ) {
 							// cropping requires height
 							if ( ! $crop ) {
@@ -862,6 +868,11 @@ class MailsterPlaceholder {
 				$term_ids = ! empty( $hits[8][ $i ] ) ? explode( ';', trim( $hits[8][ $i ] ) ) : array();
 				$is_random = '~' == $type;
 
+				// not on RSS
+				if ($relative_to_absolute && 0 === strpos($post_type, 'mailster_rss_')) {
+					$relative_to_absolute = false;
+				}
+
 				if ( empty( $type ) || $is_random ) {
 
 					$post_id = $post_or_offset;
@@ -910,9 +921,13 @@ class MailsterPlaceholder {
 
 				}
 
-				if ( $relative_to_absolute ) {
+				if ( $relative_to_absolute && $post ) {
 
-					$replace_to = '{' . $post_type . '_' . $hits[4][ $i ] . ':' . $post->ID . '}';
+					if ( $encode ) {
+						$replace_to = '{!' . $post_type . '_' . $hits[4][ $i ] . ':' . $post->ID . '}';
+					}else{
+						$replace_to = '{' . $post_type . '_' . $hits[4][ $i ] . ':' . $post->ID . '}';
+					}
 
 				} elseif ( $post ) {
 
@@ -923,12 +938,13 @@ class MailsterPlaceholder {
 					if ( is_null( $replace_to ) ) {
 						continue;
 					}
+
+					if ( $encode ) {
+						$replace_to = rawurlencode( $replace_to );
+					}
+
 				} else {
 					$replace_to = '';
-				}
-
-				if ( $encode ) {
-					$replace_to = rawurlencode( $replace_to );
 				}
 
 				$this->content = str_replace( $search, $replace_to, $this->content );
@@ -986,11 +1002,11 @@ class MailsterPlaceholder {
 				if ( isset( $this->placeholder[ $search ] ) ) {
 					$replace = $this->placeholder[ $search ];
 
-					// tag is a custom tag
+				// tag is a custom tag
 				} elseif ( isset( $this->placeholder[ '{' . $tag . '}' ] ) ) {
 					$replace = $this->placeholder[ '{' . $tag . '}' ];
 
-					// tag is a custom tag
+				// tag is a custom tag
 				} elseif ( isset( $mailster_tags[ $tag ] ) && $this->replace_custom ) {
 					$replace = call_user_func_array( $mailster_tags[ $tag ], array( $option, $fallback, $this->campaignID, $this->subscriberID ) );
 					// prevent infinity loops if replace contains it's own tag
@@ -998,7 +1014,7 @@ class MailsterPlaceholder {
 						$replace = str_replace( array( '{', '}' ), array( '!', '!' ), $replace );
 					}
 
-					// tag should be kept
+				// tag should be kept
 				} elseif ( in_array( $tag, $keep ) ) {
 					if ( $fallback ) {
 						$replace = $fallback;
@@ -1007,7 +1023,7 @@ class MailsterPlaceholder {
 						$replace = '<!--Mailster:keeptag' . $i . '-->';
 					}
 
-					// keep unused
+				// keep unused
 				} elseif ( ! $removeunused ) {
 					continue;
 				}

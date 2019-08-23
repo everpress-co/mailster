@@ -225,8 +225,89 @@ jQuery(document).ready(function ($) {
 			$('#mailster_preflight')
 				.on('click', '.mailster_preflight', function () {
 					_preFlight();
-
 					return;
+				});
+
+			// delivery box
+			$('#mailster_delivery')
+				.on('change', 'input.timezone', function () {
+					$('.active_wrap').toggleClass('timezone-enabled');
+				})
+				.on('change', 'input.autoresponder-timezone', function () {
+					$('.autoresponderfield-mailster_autoresponder_timebased').toggleClass('timezone-enabled');
+				})
+				.on('change', 'input.userexactdate', function () {
+					var wrap = $(this).parent().parent().parent();
+					wrap.find('span').addClass('disabled');
+				})
+				.on('change', '#autoresponder-post_type', function () {
+					var cats = $('#autoresponder-taxonomies');
+					cats.find('select').prop('disabled', true);
+					_ajax('get_post_term_dropdown', {
+						labels: false,
+						names: true,
+						posttype: $(this).val()
+					}, function (response) {
+						if (response.success) {
+							cats.html(response.html);
+						}
+					}, function (jqXHR, textStatus, errorThrown) {
+
+						loader(false);
+
+					});
+				})
+				.on('click', '.category-tabs a', function () {
+					var _this = $(this),
+						href = _this.attr('href');
+
+					$('#mailster_delivery').find('.tabs-panel').hide();
+					$('#mailster_delivery').find('.tabs').removeClass('tabs');
+					_this.parent().addClass('tabs');
+					$(href).show();
+					$('#mailster_is_autoresponder').val((href == '#autoresponder') ? 1 : '');
+					return false;
+				})
+				.on('click', '.mailster_sendtest', function () {
+					var $this = $(this),
+						loader = $('#delivery-ajax-loading').css('display', 'inline');
+
+					$this.prop('disabled', true);
+					_trigger('save');
+
+					_ajax('send_test', {
+						formdata: $('#post').serialize(),
+						to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
+						content: _content.val(),
+						head: _head.val(),
+						plaintext: _excerpt.val()
+
+					}, function (response) {
+
+						loader.hide();
+						$this.prop('disabled', false);
+						var msg = $('<div class="' + ((!response.success) ? 'error' : 'updated') + '"><p>' + response.msg + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
+							msg.remove();
+						});
+					}, function (jqXHR, textStatus, errorThrown) {
+
+						loader.hide();
+						$this.prop('disabled', false);
+						var msg = $('<div class="error"><p>' + textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
+							msg.remove();
+						});
+
+					})
+				})
+				.on('change', '#mailster_data_active', function () {
+					($(this).is(':checked')) ?
+					$('.active_wrap').addClass('disabled'): $('.active_wrap').removeClass('disabled');
+					$('.deliverydate, .deliverytime').prop('disabled', !$(this).is(':checked'));
+
+				})
+				.on('change', '#mailster_data_autoresponder_active', function () {
+					($(this).is(':checked')) ?
+					$('.autoresponder_active_wrap').addClass('disabled'): $('.autoresponder_active_wrap').removeClass('disabled');
 
 					var $this = $(this),
 						loader = $('#delivery-ajax-loading').css('display', 'inline'),
@@ -241,7 +322,7 @@ jQuery(document).ready(function ($) {
 					_ajax('send_test', {
 						spamtest: true,
 						formdata: $('#post').serialize(),
-						to: $('#mailster_testmail').val(),
+						to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
 						content: _content.val(),
 						head: _head.val(),
 						plaintext: _excerpt.val()
