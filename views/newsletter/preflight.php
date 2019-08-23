@@ -21,7 +21,7 @@ $sent = $this->get_sent( $post->ID );
 				<li class="aligncenter"><a class="button preflight-switch" data-dimensions='{"w":700,"h":"90%"}'>Desktop</a></li>
 				<li class="aligncenter"><a class="button preflight-switch" data-dimensions='{"w":320,"h":640}'>Mobile</a></li>
 				<li class="aligncenter"><a class="button preflight-switch" data-dimensions='{"w":640,"h":320}'>Landscape</a></li>
-				<li class="alignright"><a class="button button-primary">Run Test</a></li>
+				<li class="alignright"><span class="spinner" id="preflight-ajax-loading"></span><button class="button button-primary preflight-run">Run Test</button></li>
 			</ul>
 		</div>
 		<div class="device-wrap">
@@ -41,29 +41,45 @@ $sent = $this->get_sent( $post->ID );
 
 				<div class="score">83</div>
 
-				<h3>This is a text for the summery</h3>
+				<h3 class="preflight-status">This is a text for the summery</h3>
 			</div>
 
 			<div class="preflight-results-wrap">
 				<div class="preflight-results">
-					<details>
-						<summary class="loading" data-count="10">Spam Report</summary>
-						<div class="body">
-							<p class="description">SpamAssasin likes you</p>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent fringilla mollis tortor a scelerisque. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam pharetra massa sed orci pulvinar porta vehicula vitae elit. Suspendisse sed augue leo. Duis laoreet cursus sem in vulputate. Curabitur ullamcorper tincidunt mi nec malesuada. In convallis elit id ligula pulvinar tincidunt. In in nibh metus, ultricies viverra ante. In semper fringilla sem non interdum. Nulla at urna id urna bibendum vestibulum. Nunc aliquam turpis euismod est egestas dignissim condimentum mi vestibulum. Nam blandit dolor eget sapien tempor porttitor. Nam sollicitudin pharetra erat ac laoreet. Ut ac diam purus. Sed nec felis sed justo pretium faucibus sed non tellus.</p>
-						</div>
+					<details id="preflight-spam_report">
+						<summary data-count="10">Spam Report</summary>
+						<div class="body"></div>
 					</details>
-					<details>
-						<summary class="is-warning" data-count="10">Authentication</summary>
+					<details id="preflight-authentication">
+						<summary data-count="10">Authentication</summary>
 						<div class="body">
-							<p class="description">SpamAssasin likes you</p>
-							<details open>
-								<summary class="is-warning" data-count="10">SPF</summary>
-								<p>SPF summary</p>
+							<details id="preflight-spf">
+								<summary data-count="10">SPF</summary>
+								<div class="body"></div>
 							</details>
-							<details open>
-								<summary class="is-error" data-count="10">SenderID</summary>
-								<p>SenderID summary</p>
+							<details id="preflight-senderid">
+								<summary data-count="10">Sender ID</summary>
+								<div class="body"></div>
+							</details>
+							<details id="preflight-dkim">
+								<summary data-count="10">DKIM</summary>
+								<div class="body"></div>
+							</details>
+							<details id="preflight-dmarc">
+								<summary data-count="10">DMARC</summary>
+								<div class="body"></div>
+							</details>
+							<details id="preflight-rdns">
+								<summary data-count="10">RDNS</summary>
+								<div class="body"></div>
+							</details>
+							<details id="preflight-mx">
+								<summary data-count="10">MX</summary>
+								<div class="body"></div>
+							</details>
+							<details id="preflight-a">
+								<summary data-count="10">A</summary>
+								<div class="body"></div>
 							</details>
 						</div>
 					</details>
@@ -74,18 +90,17 @@ $sent = $this->get_sent( $post->ID );
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent fringilla mollis tortor a scelerisque. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam pharetra massa sed orci pulvinar porta vehicula vitae elit. Suspendisse sed augue leo. Duis laoreet cursus sem in vulputate. Curabitur ullamcorper tincidunt mi nec malesuada. In convallis elit id ligula pulvinar tincidunt. In in nibh metus, ultricies viverra ante. In semper fringilla sem non interdum. Nulla at urna id urna bibendum vestibulum. Nunc aliquam turpis euismod est egestas dignissim condimentum mi vestibulum. Nam blandit dolor eget sapien tempor porttitor. Nam sollicitudin pharetra erat ac laoreet. Ut ac diam purus. Sed nec felis sed justo pretium faucibus sed non tellus.</p>
 						</div>
 					</details>
-					<details>
-						<summary class="is-success" data-count="10">Links</summary>
-						<div class="body">
-
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent fringilla mollis tortor a scelerisque. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam pharetra massa sed orci pulvinar porta vehicula vitae elit. Suspendisse sed augue leo. Duis laoreet cursus sem in vulputate. Curabitur ullamcorper tincidunt mi nec malesuada. In convallis elit id ligula pulvinar tincidunt. In in nibh metus, ultricies viverra ante. In semper fringilla sem non interdum. Nulla at urna id urna bibendum vestibulum. Nunc aliquam turpis euismod est egestas dignissim condimentum mi vestibulum. Nam blandit dolor eget sapien tempor porttitor. Nam sollicitudin pharetra erat ac laoreet. Ut ac diam purus. Sed nec felis sed justo pretium faucibus sed non tellus.</p>
-						</div>
+					<details id="preflight-links">
+						<summary data-count="10">Links</summary>
+						<div class="body"></div>
 					</details>
-					<details>
-						<summary class="is-success" data-count="10">Blacklist</summary>
-						<div class="body">
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent fringilla mollis tortor a scelerisque. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam pharetra massa sed orci pulvinar porta vehicula vitae elit. Suspendisse sed augue leo. Duis laoreet cursus sem in vulputate. Curabitur ullamcorper tincidunt mi nec malesuada. In convallis elit id ligula pulvinar tincidunt. In in nibh metus, ultricies viverra ante. In semper fringilla sem non interdum. Nulla at urna id urna bibendum vestibulum. Nunc aliquam turpis euismod est egestas dignissim condimentum mi vestibulum. Nam blandit dolor eget sapien tempor porttitor. Nam sollicitudin pharetra erat ac laoreet. Ut ac diam purus. Sed nec felis sed justo pretium faucibus sed non tellus.</p>
-						</div>
+					<details id="preflight-images">
+						<summary data-count="10">Images</summary>
+						<div class="body"></div>
+					</details>
+					<details id="preflight-blacklist">
+						<summary data-count="10">Blacklist</summary>
+						<div class="body"></div>
 					</details>
 
 				</div>

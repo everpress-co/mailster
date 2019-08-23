@@ -221,13 +221,6 @@ jQuery(document).ready(function ($) {
 					if (!confirm(mailsterL10n.send_now)) return false;
 				});
 
-			//preflight box
-			$('#mailster_preflight')
-				.on('click', '.mailster_preflight', function () {
-					_preFlight();
-					return;
-				});
-
 			// delivery box
 			$('#mailster_delivery')
 				.on('change', 'input.timezone', function () {
@@ -278,179 +271,6 @@ jQuery(document).ready(function ($) {
 					_ajax('send_test', {
 						formdata: $('#post').serialize(),
 						to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
-						content: _content.val(),
-						head: _head.val(),
-						plaintext: _excerpt.val()
-
-					}, function (response) {
-
-						loader.hide();
-						$this.prop('disabled', false);
-						var msg = $('<div class="' + ((!response.success) ? 'error' : 'updated') + '"><p>' + response.msg + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
-							msg.remove();
-						});
-					}, function (jqXHR, textStatus, errorThrown) {
-
-						loader.hide();
-						$this.prop('disabled', false);
-						var msg = $('<div class="error"><p>' + textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
-							msg.remove();
-						});
-
-					})
-				})
-				.on('change', '#mailster_data_active', function () {
-					($(this).is(':checked')) ?
-					$('.active_wrap').addClass('disabled'): $('.active_wrap').removeClass('disabled');
-					$('.deliverydate, .deliverytime').prop('disabled', !$(this).is(':checked'));
-
-				})
-				.on('change', '#mailster_data_autoresponder_active', function () {
-					($(this).is(':checked')) ?
-					$('.autoresponder_active_wrap').addClass('disabled'): $('.autoresponder_active_wrap').removeClass('disabled');
-
-					var $this = $(this),
-						loader = $('#delivery-ajax-loading').css('display', 'inline'),
-						progress = $('#spam_score_progress').removeClass('spam-score').slideDown(200),
-						progressbar = progress.find('.bar');
-
-					$this.prop('disabled', true);
-					$('.score').html('');
-					_trigger('save');
-					progressbar.css('width', '20%');
-
-					_ajax('send_test', {
-						spamtest: true,
-						formdata: $('#post').serialize(),
-						to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
-						content: _content.val(),
-						head: _head.val(),
-						plaintext: _excerpt.val()
-
-					}, function (response) {
-
-						if (response.success) {
-							progressbar.css('width', '40%');
-							check(response.id, 1);
-						} else {
-							loader.hide();
-							progress.slideUp(200);
-							var msg = $('<div class="error"><p>' + response.msg + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
-								msg.remove();
-							});
-						}
-					}, function (jqXHR, textStatus, errorThrown) {
-						loader.hide();
-						$this.prop('disabled', false);
-						var msg = $('<div class="error"><p>' + textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
-							msg.remove();
-						});
-
-					})
-
-					function check(id, round) {
-
-						_ajax('check_spam_score', {
-							ID: id,
-						}, function (response) {
-
-							if (response.score) {
-								loader.hide();
-								$this.prop('disabled', false);
-								progress.addClass('spam-score');
-								progressbar.css('width', (parseFloat(response.score) * 10) + '%');
-
-								$('.score').html('<strong>' + sprintf(mailsterL10n.yourscore, response.score) + '</strong>:<br>' + mailsterL10n.yourscores[Math.floor((response.score / 10) * mailsterL10n.yourscores.length)]);
-							} else {
-
-								if (round <= 5 && !response.abort) {
-									var percentage = (round * 10) + 50;
-									progressbar.css('width', (percentage) + '%');
-									setTimeout(function () {
-										check(id, ++round);
-									}, round * 400);
-								} else {
-
-									loader.hide();
-									$this.prop('disabled', false);
-									progressbar.css('width', '100%');
-									progress.slideUp(200);
-									var msg = $('<div class="error"><p>' + response.msg + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
-										msg.remove();
-										progressbar.css('width', 0);
-									});
-
-								}
-
-							}
-						}, function (jqXHR, textStatus, errorThrown) {
-							loader.hide();
-							$this.prop('disabled', false);
-							var msg = $('<div class="error"><p>' + textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
-								msg.remove();
-							});
-						})
-					}
-
-				})
-
-			$('.mailster-preflight')
-				.on('click', '.preflight-switch', function () {
-					var dimensions = $(this).data('dimensions');
-					$('.device.desktop').width(dimensions.w).height(dimensions.h);
-				})
-
-
-			// delivery box
-			$('#mailster_delivery')
-				.on('change', 'input.timezone', function () {
-					$('.active_wrap').toggleClass('timezone-enabled');
-				})
-				.on('change', 'input.autoresponder-timezone', function () {
-					$('.autoresponderfield-mailster_autoresponder_timebased').toggleClass('timezone-enabled');
-				})
-				.on('change', 'input.userexactdate', function () {
-					var wrap = $(this).parent().parent().parent();
-					wrap.find('span').addClass('disabled');
-				})
-				.on('change', '#autoresponder-post_type', function () {
-					var cats = $('#autoresponder-taxonomies');
-					cats.find('select').prop('disabled', true);
-					_ajax('get_post_term_dropdown', {
-						labels: false,
-						names: true,
-						posttype: $(this).val()
-					}, function (response) {
-						if (response.success) {
-							cats.html(response.html);
-						}
-					}, function (jqXHR, textStatus, errorThrown) {
-
-						loader(false);
-
-					});
-				})
-				.on('click', '.category-tabs a', function () {
-					var _this = $(this),
-						href = _this.attr('href');
-
-					$('#mailster_delivery').find('.tabs-panel').hide();
-					$('#mailster_delivery').find('.tabs').removeClass('tabs');
-					_this.parent().addClass('tabs');
-					$(href).show();
-					$('#mailster_is_autoresponder').val((href == '#autoresponder') ? 1 : '');
-					return false;
-				})
-				.on('click', '.mailster_sendtest', function () {
-					var $this = $(this),
-						loader = $('#delivery-ajax-loading').css('display', 'inline');
-
-					$this.prop('disabled', true);
-					_trigger('save');
-
-					_ajax('send_test', {
-						formdata: $('#post').serialize(),
-						to: $('#mailster_testmail').val(),
 						content: _content.val(),
 						head: _head.val(),
 						plaintext: _excerpt.val()
@@ -1482,9 +1302,7 @@ jQuery(document).ready(function ($) {
 		}
 
 		function preview() {
-
-			_preFlight();
-
+			preflight.open();
 		}
 
 		function hide() {
@@ -3889,34 +3707,6 @@ jQuery(document).ready(function ($) {
 	}
 
 
-	function _preFlight() {
-
-		_trigger('save');
-		_trigger('disable');
-
-		var content = _getContent(),
-			subject = _subject.val(),
-			preheader = _preheader.val(),
-			title = _title.val();
-
-		_ajax('set_preview', {
-			id: campaign_id,
-			content: content,
-			head: _head.val(),
-			issue: $('#mailster_autoresponder_issue').val(),
-			subject: subject,
-			preheader: preheader
-		}, function (response) {
-			$('.mailster-preview-iframe').attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
-			tb_show((title ? sprintf(mailsterL10n.preflight, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1440, _win.width() - 50)) + '&height=' + (_win.height() - 100) + '&inlineId=mailster_preflight_wrap', null);
-			_trigger('enable');
-
-		}, function (jqXHR, textStatus, errorThrown) {
-			_trigger('enable');
-		});
-
-	}
-
 
 	function _changeColor(color_from, color_to, element) {
 		if (!color_from) color_from = color_to;
@@ -4234,6 +4024,212 @@ jQuery(document).ready(function ($) {
 		});
 	}
 
+var preflight = (function(){
+
+	var api = {},
+		id,
+		preflight = $('.mailster-preflight'),
+		$status = $('.preflight-status'),
+		$loader = $('#preflight-ajax-loading'),
+		$authentication = $('#preflight-authentication'),
+		runbtn = $('.preflight-run'),
+		started = 0,
+
+	status = function(msg, append){
+		if(append){
+			$status.html($status.html()+msg);
+		}else{
+			$status.html(msg);
+		}
+	},
+
+	error = function(msg){
+		var box = $('<div class="error"><p><strong>' + msg + '</strong></p></div>').hide().prependTo($('.score-wrap')).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(1500).slideUp(200, function () {
+			box.remove();
+		});
+		console.error(msg);
+	},
+
+	loader = function(enable){
+		$loader.css('visibility', enable ? 'visible' : 'hidden');
+	},
+
+	switchPane = function(){
+		var dimensions = $(this).data('dimensions');
+		$('.device.desktop').width(dimensions.w).height(dimensions.h);
+	},
+
+	initTest = function(){
+		loader(true);
+		status('Sending your campaign.');
+		runbtn.prop('disabled', true);
+		started = 0;
+
+		_ajax('send_test', {
+			preflight: true,
+			formdata: $('#post').serialize(),
+			to: $('#mailster_testmail').val(),
+			content: _content.val(),
+			head: _head.val(),
+			plaintext: _excerpt.val()
+
+		}, function (response) {
+
+			if(response.success){
+				status('Check for delivery.');
+				id = response.id;
+				checkTest(1)
+			}else{
+				loader(false);
+				runbtn.prop('disabled', false);
+			}
+
+
+		}, function (jqXHR, textStatus, errorThrown) {
+
+			loader(false);
+			runbtn.prop('disabled', false);
+
+		})
+
+	},
+
+	checkTest = function(tries){
+
+		if(tries > 10){
+			error('The email wasn\'t sent');
+			loader(false);
+			runbtn.prop('disabled', false);
+			return;
+		}
+
+		_ajax('preflight', {
+			id: id,
+		}, function (response) {
+			if(response.success){
+				if(!response.ready){
+					setTimeout(function(){
+						checkTest(++tries);
+					}, 3000);
+				}else{
+					status('Email delivered, gathering results...');
+            		getResult('blacklist');
+					getResult('spam_report');
+					getResult('authentication');
+					getResult('links', 'tests/links');
+					getResult('images', 'tests/images');
+
+					loader(false);
+					runbtn.prop('disabled', false);
+				}
+			}
+
+
+		}, function (jqXHR, textStatus, errorThrown) {
+			loader(false);
+			runbtn.prop('disabled', false);
+
+		})
+	},
+
+	getResult = function(part, endpoint){
+		var base = $('#preflight-'+part),
+			summary = base.find('summary').removeAttr('class'),
+			body = base.find('.body');
+
+		if('authentication' == part){
+			summary.addClass('loading');
+			getResult('spf', 'tests/spf');
+			getResult('senderid', 'tests/senderid');
+			getResult('dkim', 'tests/dkim');
+			getResult('dmarc', 'tests/dmarc');
+			getResult('rdns', 'tests/rdns');
+			getResult('mx', 'tests/mx');
+			getResult('a', 'tests/a');
+			return false;
+		}
+
+		if(!endpoint) endpoint = part;
+		started++;
+		setTimeout(function(){
+			summary.addClass('loading');
+
+			_ajax('preflight_result', {
+				id: id,
+				endpoint: endpoint,
+			}, function (response) {
+
+				console.log(part, response);
+
+				if(response.success){
+					summary.removeClass('loading').addClass('is-'+response.result.status);
+					if('success' != response.result.status){
+						base.prop('open', true);
+					}
+					body.html(response.result.html)
+					started--;
+					if(!started){
+						$authentication.find('summary').removeClass('loading');
+						if($authentication.find('.is-error').length){
+							$authentication.find('summary').eq(0).addClass('is-error');
+						}else if($authentication.find('.is-warning').length){
+							$authentication.find('summary').eq(0).addClass('is-warning');
+						}else{
+							$authentication.find('summary').eq(0).addClass('is-success');
+						}
+					}
+				}
+
+
+			}, function (jqXHR, textStatus, errorThrown) {
+				loader(false);
+				runbtn.prop('disabled', false);
+
+			})
+		}, 100*started);
+	},
+
+	open = function(){
+		_trigger('save');
+		_trigger('disable');
+
+		var content = _getContent(),
+			subject = _subject.val(),
+			preheader = _preheader.val(),
+			title = _title.val();
+
+		_ajax('set_preview', {
+			id: campaign_id,
+			content: content,
+			head: _head.val(),
+			issue: $('#mailster_autoresponder_issue').val(),
+			subject: subject,
+			preheader: preheader
+		}, function (response) {
+			$('.mailster-preview-iframe').attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
+			tb_show((title ? sprintf(mailsterL10n.preflight, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1440, _win.width() - 50)) + '&height=' + (_win.height() - 100) + '&inlineId=mailster_preflight_wrap', null);
+			_trigger('enable');
+
+		}, function (jqXHR, textStatus, errorThrown) {
+			_trigger('enable');
+		});
+	};
+
+	//preflight box
+	$('#mailster_preflight')
+		.on('click', '.mailster_preflight', function () {
+			open();
+			return;
+		});
+
+	preflight
+		.on('click', '.preflight-switch', switchPane)
+		.on('click', '.preflight-run', initTest);
+
+	api.open = open
+	return api;
+
+})();
 	_init();
 
 });

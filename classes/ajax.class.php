@@ -14,7 +14,8 @@ class MailsterAjax {
 		'get_preview',
 		'toggle_codeview',
 		'send_test',
-		'check_spam_score',
+		'preflight',
+		'preflight_result',
 		'get_totals',
 		'save_color_schema',
 		'delete_color_schema',
@@ -299,8 +300,8 @@ class MailsterAjax {
 
 		$name = esc_attr( $_POST['name'] );
 		$template = esc_attr( $_POST['template'] );
-		$modules = ! ! ( $_POST['modules'] === 'true' );
-		$activemodules = ! ! ( $_POST['activemodules'] === 'true' );
+		$modules = (bool) ( $_POST['modules'] === 'true' );
+		$activemodules = (bool) ( $_POST['activemodules'] === 'true' );
 		$overwrite = $_POST['overwrite'] === 'false' ? false : $_POST['overwrite'];
 
 		$t = mailster( 'template', $template );
@@ -453,6 +454,8 @@ class MailsterAjax {
 			}
 		}
 
+		$preflight = (bool) ( isset( $_POST['preflight']) && $_POST['preflight'] === 'true' );
+
 		$to = trim( stripslashes( $_POST['to'] ) );
 		$current_user = wp_get_current_user();
 
@@ -480,16 +483,12 @@ class MailsterAjax {
 
 			$return['success'] = true;
 
-			$spam_test = isset( $_POST['spamtest'] );
-			if ( $spam_test ) {
-				$spam_check_id = uniqid();
-				$receivers = apply_filters( 'mymail_spam_score_mail', apply_filters( 'mailster_spam_score_mail', 'mailster-' . $spam_check_id . '@check.newsletter-plugin.com' ) );
-				if ( ! is_array( $receivers ) ) {
-					$receivers = array( $receivers );
-				}
-			} else {
-				$receivers = explode( ',', $to );
+			if($preflight){
+				$preflight_id = uniqid();
+				$to = apply_filters( 'mailster_preflight_mail', 'mailster-' . $preflight_id . '@preflight.email', $preflight_id );
+				$return['id'] = $preflight_id;
 			}
+			$receivers = explode( ',', $to );
 
 			$subject = stripslashes( $formdata['mailster_data']['subject'] );
 			$from = $formdata['mailster_data']['from_email'];
@@ -642,8 +641,8 @@ class MailsterAjax {
 				$content = $placeholder->get_content();
 				$content = mailster( 'helper' )->prepare_content( $content );
 
-				// replace links with fake hash to prevent tracking
-				if ( $track_clicks ) {
+				// replace links with fake hash to prevent tracking, not during preflight.
+				if ( $track_clicks && !$is_preflight ) {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
@@ -657,32 +656,9 @@ class MailsterAjax {
 				$placeholder->set_content( $mail->subject );
 				$mail->subject = $placeholder->get_content();
 
-				$mail->add_tracking_image = $track_opens;
+				$mail->add_tracking_image = $track_opens && !$is_preflight;
 
-				if ( $spam_test ) {
-
-					if ( false === ( $count = get_transient( '_mailster_spam_score_count' ) ) ) {
-
-						$count = 0;
-						set_transient( '_mailster_spam_score_count', $count, 3600 );
-					}
-
-					if ( $count < 10 ) {
-
-						$return['success'] = $return['success'] && $mail->send();
-						$return['id'] = $spam_check_id;
-						update_option( '_transient__mailster_spam_score_count', ++$count );
-
-					} else {
-
-						$return['success'] = false;
-						$return['msg'] = esc_html__( 'You can only perform 10 test within an hour. Please try again later!', 'mailster' );
-
-					}
-				} else {
-
-					$return['success'] = $return['success'] && $mail->send();
-				}
+				$return['success'] = $return['success'] && $mail->send();
 
 				$mail->close();
 			}
@@ -703,42 +679,66 @@ class MailsterAjax {
 	}
 
 
-	private function check_spam_score() {
+	private function preflight() {
 
 		$return['success'] = false;
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$id = isset( $_POST['ID'] ) ? $_POST['ID'] : false;
+		$id = isset( $_POST['id'] ) ? sanitize_key( $_POST['id'] ) : false;
 
 		if ( $id ) {
 
-			$return = apply_filters( 'mymail_check_spam_score', apply_filters( 'mailster_check_spam_score', false, $id ), $id );
+			$response = wp_remote_get( 'https://api.preflight.email/' . $id .'.json', array(
+				'timeout' => 5,
+			) );
 
-			if ( false === $return ) {
+			$code = wp_remote_retrieve_response_code( $response );
 
-				$response = wp_remote_get( 'http://check.newsletter-plugin.com/' . $id, array(
-					'sslverify' => false,
-					'timeout' => 20,
-				) );
-
-				$code = wp_remote_retrieve_response_code( $response );
-
-				if ( is_wp_error( $response ) ) {
-					$return['msg'] = $response->get_error_message();
-				} elseif ( 200 == $code ) {
-					$body = json_decode( wp_remote_retrieve_body( $response ) );
-					$return['score'] = $body->score;
-				} elseif ( 503 == $code ) {
-					$return['abort'] = true;
-					$body = json_decode( wp_remote_retrieve_body( $response ) );
-					$return['msg'] = $body->msg;
-				} else {
-					$return['abort'] = false;
-					$body = json_decode( wp_remote_retrieve_body( $response ) );
-					$return['msg'] = $body->msg;
-				}
+			if(is_wp_error( $response )){
+				$return['msg'] = esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' );
+			}elseif(200 === $code){
+				$body = wp_remote_retrieve_body( $response );
+				$body = json_decode($body);
+				$return['success'] = true;
+				$return['ready'] = $body->ready;
 			}
+
+		}
+
+		$this->json_return( $return );
+
+	}
+
+
+	private function preflight_result() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$id = isset( $_POST['id'] ) ? sanitize_key( $_POST['id'] ) : false;
+		$endpoint = isset( $_POST['endpoint'] ) ? ( $_POST['endpoint'] ) : false;
+
+		if ( $id ) {
+
+			$response = wp_remote_get( 'https://api.preflight.email/' . $id .'/'.$endpoint.'.json', array(
+				'timeout' => 25,
+			) );
+
+			$code = wp_remote_retrieve_response_code( $response );
+
+			if(is_wp_error( $response )){
+				$return['msg'] = esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' );
+			}elseif(200 === $code){
+				$body = wp_remote_retrieve_body( $response );
+				$body = json_decode($body);
+				if('tests/rdns' == $endpoint)
+				error_log( print_r($body, true) );
+				$return['success'] = true;
+				$return['result'] = $body;
+			}
+
 		}
 
 		$this->json_return( $return );
