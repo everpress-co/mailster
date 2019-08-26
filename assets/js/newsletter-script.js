@@ -4033,7 +4033,9 @@ var preflight = (function(){
 		$loader = $('#preflight-ajax-loading'),
 		$authentication = $('#preflight-authentication'),
 		runbtn = $('.preflight-run'),
+		$iframe = $('.mailster-preview-iframe'),
 		started = 0,
+		images,
 
 	status = function(msg, append){
 		if(append){
@@ -4044,7 +4046,7 @@ var preflight = (function(){
 	},
 
 	error = function(msg){
-		var box = $('<div class="error"><p><strong>' + msg + '</strong></p></div>').hide().prependTo($('.score-wrap')).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(1500).slideUp(200, function () {
+		var box = $('<div class="error"><p><strong>' + msg + '</strong></p></div>').hide().prependTo($('.score-wrap')).slideDown(200).delay(200).fadeIn().delay(8000).fadeTo(200, 0).delay(1500).slideUp(200, function () {
 			box.remove();
 		});
 		console.error(msg);
@@ -4116,12 +4118,18 @@ var preflight = (function(){
             		getResult('blacklist');
 					getResult('spam_report');
 					getResult('authentication');
+					getResult('message', 'tests/links');
 					getResult('links', 'tests/links');
 					getResult('images', 'tests/images');
 
 					loader(false);
 					runbtn.prop('disabled', false);
 				}
+			}
+			if(response.error){
+				error(response.error);
+				loader(false);
+				runbtn.prop('disabled', false);
 			}
 
 
@@ -4180,6 +4188,12 @@ var preflight = (function(){
 					}
 				}
 
+				if(response.error){
+					error(response.error);
+					loader(false);
+					runbtn.prop('disabled', false);
+				}
+
 
 			}, function (jqXHR, textStatus, errorThrown) {
 				loader(false);
@@ -4196,7 +4210,12 @@ var preflight = (function(){
 		var content = _getContent(),
 			subject = _subject.val(),
 			preheader = _preheader.val(),
+			from_name = $('#from_name').val(),
 			title = _title.val();
+
+		$('.preflight-from').html(from_name);
+		$('.preflight-subject').html(subject);
+		$('.preflight-to').html(from_name);
 
 		_ajax('set_preview', {
 			id: campaign_id,
@@ -4206,13 +4225,28 @@ var preflight = (function(){
 			subject: subject,
 			preheader: preheader
 		}, function (response) {
-			$('.mailster-preview-iframe').attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
+			$iframe.attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
 			tb_show((title ? sprintf(mailsterL10n.preflight, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1440, _win.width() - 50)) + '&height=' + (_win.height() - 100) + '&inlineId=mailster_preflight_wrap', null);
 			_trigger('enable');
+			images = true;
 
 		}, function (jqXHR, textStatus, errorThrown) {
 			_trigger('enable');
 		});
+	},
+
+	toggleImages = function(){
+		var img = $iframe.contents().find('img');
+		if(images){
+			$.each(img, function(i,e){
+				$(e).attr('data-src', $(e).attr('src')).attr('src', '');
+			});
+		}else{
+			$.each(img, function(i,e){
+				$(e).attr('src', $(e).attr('data-src')).removeAttr('data-src');
+			});
+		}
+		images = !images;
 	};
 
 	//preflight box
@@ -4224,7 +4258,8 @@ var preflight = (function(){
 
 	preflight
 		.on('click', '.preflight-switch', switchPane)
-		.on('click', '.preflight-run', initTest);
+		.on('click', '.preflight-run', initTest)
+		.on('click', '.preflight-toggle-images', toggleImages);
 
 	api.open = open
 	return api;

@@ -642,7 +642,7 @@ class MailsterAjax {
 				$content = mailster( 'helper' )->prepare_content( $content );
 
 				// replace links with fake hash to prevent tracking, not during preflight.
-				if ( $track_clicks && !$is_preflight ) {
+				if ( $track_clicks && !$preflight ) {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
@@ -656,7 +656,7 @@ class MailsterAjax {
 				$placeholder->set_content( $mail->subject );
 				$mail->subject = $placeholder->get_content();
 
-				$mail->add_tracking_image = $track_opens && !$is_preflight;
+				$mail->add_tracking_image = $track_opens && !$preflight;
 
 				$return['success'] = $return['success'] && $mail->send();
 
@@ -694,14 +694,17 @@ class MailsterAjax {
 			) );
 
 			$code = wp_remote_retrieve_response_code( $response );
+			$headers = wp_remote_retrieve_headers( $response );
 
 			if(is_wp_error( $response )){
-				$return['msg'] = esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' );
+				$return['error'] = esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' );
 			}elseif(200 === $code){
 				$body = wp_remote_retrieve_body( $response );
 				$body = json_decode($body);
 				$return['success'] = true;
 				$return['ready'] = $body->ready;
+			}elseif(429 === $code){
+				$return['error'] = sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime($headers['retry-after']) ));
 			}
 
 		}
@@ -727,16 +730,17 @@ class MailsterAjax {
 			) );
 
 			$code = wp_remote_retrieve_response_code( $response );
+			$headers = wp_remote_retrieve_headers( $response );
 
 			if(is_wp_error( $response )){
-				$return['msg'] = esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' );
+				$return['error'] = esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' );
 			}elseif(200 === $code){
 				$body = wp_remote_retrieve_body( $response );
 				$body = json_decode($body);
-				if('tests/rdns' == $endpoint)
-				error_log( print_r($body, true) );
 				$return['success'] = true;
 				$return['result'] = $body;
+			}elseif(429 === $code){
+				$return['error'] = sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime($headers['retry-after']) ));
 			}
 
 		}
