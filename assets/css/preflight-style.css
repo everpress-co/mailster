@@ -61,11 +61,11 @@
 
 .prefligth-emailheader li label{
 	font-size: 10px;
-    line-height: 10px;
-    text-transform: uppercase;
-    color: #AAA;
-    display: inline-block;
-    width: 56px;
+	line-height: 10px;
+	text-transform: uppercase;
+	color: #AAA;
+	display: inline-block;
+	width: 56px;
 }
 .device-wrap{
 	grid-column-start: 1;
@@ -75,11 +75,11 @@
 	background-color: #f1f1f1;
 }
 .device-notice{
-    bottom: 3vh;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: -1;
+	bottom: 3vh;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: -1;
 }
 .score-wrap{
 	grid-column-start: 2;
@@ -212,7 +212,7 @@ details summary::-webkit-details-marker { display:none; }
 	border-bottom: 1px solid #dfdfdf;
 }
 .score-wrap .preflight-results pre{
-	white-space: normal;
+	white-space: pre;
 	font-size: 12px;
 	background: #fff;
 	overflow: auto;
@@ -274,6 +274,45 @@ details summary::-webkit-details-marker { display:none; }
 	padding:1px 2em 1em;
 }
 
+.score-wrap .assets-table{
+
+}
+.score-wrap .assets-table tr.asset-valid td .asset-type{
+	color: #46b450;
+}
+.score-wrap .assets-table tr.asset-invalid td .asset-type{
+	color: #dc3232;
+}
+.score-wrap .assets-table .asset-type{
+	display: block;
+	font-size: 16px;
+}
+.score-wrap .assets-table .asset-type-link:before{
+	content: '\e835';
+}
+.score-wrap .assets-table .asset-type-image:before{
+	content: '\e836';
+}
+.score-wrap .assets-table .asset-type-anchor:before{
+	content: '\f13d';
+}
+.score-wrap .assets-table .asset-type-email:before{
+	content: '\e832';
+}
+.score-wrap .assets-table .the-link{
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	display: block;
+	width: 300px;
+}
+.score-wrap .assets-table a.open-link:before{
+	content: '\f08E';
+	color: #dc3232;
+	display: inline;
+	float: right;
+}
+
 .preflight-score{
 	text-align: center;
 }
@@ -284,5 +323,5 @@ details summary::-webkit-details-marker { display:none; }
 }
 .preflight-score .score:after{
 	content:'%';
-	    font-size: 20px;
+		font-size: 20px;
 }

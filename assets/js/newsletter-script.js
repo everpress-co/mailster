@@ -4080,7 +4080,9 @@ var preflight = (function(){
 			if(response.success){
 				status('Check for delivery.');
 				id = response.id;
-				checkTest(1)
+				setTimeout(function(){
+					checkTest(1);
+				}, 3000);
 			}else{
 				loader(false);
 				runbtn.prop('disabled', false);
@@ -4118,7 +4120,7 @@ var preflight = (function(){
             		getResult('blacklist');
 					getResult('spam_report');
 					getResult('authentication');
-					getResult('message', 'tests/links');
+					//getResult('message', 'tests/links');
 					getResult('links', 'tests/links');
 					getResult('images', 'tests/images');
 
@@ -4170,11 +4172,11 @@ var preflight = (function(){
 				console.log(part, response);
 
 				if(response.success){
-					summary.removeClass('loading').addClass('is-'+response.result.status);
-					if('success' != response.result.status){
+					summary.removeClass('loading').addClass('is-'+response.status);
+					if('success' != response.status){
 						base.prop('open', true);
 					}
-					body.html(response.result.html)
+					body.html(response.html)
 					started--;
 					if(!started){
 						$authentication.find('summary').removeClass('loading');
@@ -4259,7 +4261,25 @@ var preflight = (function(){
 	preflight
 		.on('click', '.preflight-switch', switchPane)
 		.on('click', '.preflight-run', initTest)
-		.on('click', '.preflight-toggle-images', toggleImages);
+		.on('click', '.preflight-toggle-images', toggleImages)
+		.on('mouseenter', '.assets-table tr', function(){
+			var href= $(this).data('href'),
+				index = $(this).data('index'),
+				links = $iframe.contents().find("a[href='"+(href)+"']").eq(index);
+
+			links.css({
+				'outline': '3px solid #dc3232',
+			});
+		})
+		.on('mouseleave', '.assets-table tr', function(){
+			var href= $(this).data('href'),
+				index = $(this).data('index'),
+				links = $iframe.contents().find("a[href='"+(href)+"']").eq(index);
+
+			links.css({
+				'outline': '',
+			});
+		});
 
 	api.open = open
 	return api;

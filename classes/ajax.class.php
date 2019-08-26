@@ -14,8 +14,6 @@ class MailsterAjax {
 		'get_preview',
 		'toggle_codeview',
 		'send_test',
-		'preflight',
-		'preflight_result',
 		'get_totals',
 		'save_color_schema',
 		'delete_color_schema',
@@ -142,7 +140,7 @@ class MailsterAjax {
 	 *
 	 * @param unknown $return
 	 */
-	private function json_return( $return ) {
+	public function json_return( $return ) {
 
 		@header( 'Content-type: application/json' );
 		echo json_encode( $return );
@@ -672,77 +670,6 @@ class MailsterAjax {
 
 		if ( isset( $return['log'] ) ) {
 			$return['msg'] .= '<br>' . esc_html__( 'Check your console for more info.', 'mailster' );
-		}
-
-		$this->json_return( $return );
-
-	}
-
-
-	private function preflight() {
-
-		$return['success'] = false;
-
-		$this->ajax_nonce( json_encode( $return ) );
-
-		$id = isset( $_POST['id'] ) ? sanitize_key( $_POST['id'] ) : false;
-
-		if ( $id ) {
-
-			$response = wp_remote_get( 'https://api.preflight.email/' . $id .'.json', array(
-				'timeout' => 5,
-			) );
-
-			$code = wp_remote_retrieve_response_code( $response );
-			$headers = wp_remote_retrieve_headers( $response );
-
-			if(is_wp_error( $response )){
-				$return['error'] = esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' );
-			}elseif(200 === $code){
-				$body = wp_remote_retrieve_body( $response );
-				$body = json_decode($body);
-				$return['success'] = true;
-				$return['ready'] = $body->ready;
-			}elseif(429 === $code){
-				$return['error'] = sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime($headers['retry-after']) ));
-			}
-
-		}
-
-		$this->json_return( $return );
-
-	}
-
-
-	private function preflight_result() {
-
-		$return['success'] = false;
-
-		$this->ajax_nonce( json_encode( $return ) );
-
-		$id = isset( $_POST['id'] ) ? sanitize_key( $_POST['id'] ) : false;
-		$endpoint = isset( $_POST['endpoint'] ) ? ( $_POST['endpoint'] ) : false;
-
-		if ( $id ) {
-
-			$response = wp_remote_get( 'https://api.preflight.email/' . $id .'/'.$endpoint.'.json', array(
-				'timeout' => 25,
-			) );
-
-			$code = wp_remote_retrieve_response_code( $response );
-			$headers = wp_remote_retrieve_headers( $response );
-
-			if(is_wp_error( $response )){
-				$return['error'] = esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' );
-			}elseif(200 === $code){
-				$body = wp_remote_retrieve_body( $response );
-				$body = json_decode($body);
-				$return['success'] = true;
-				$return['result'] = $body;
-			}elseif(429 === $code){
-				$return['error'] = sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime($headers['retry-after']) ));
-			}
-
 		}
 
 		$this->json_return( $return );
@@ -1684,7 +1611,7 @@ class MailsterAjax {
 	 * @param unknown $return (optional)
 	 * @param unknown $nonce  (optional)
 	 */
-	private function ajax_nonce( $return = null, $nonce = 'mailster_nonce' ) {
+	public function ajax_nonce( $return = null, $nonce = 'mailster_nonce' ) {
 		if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], $nonce ) ) {
 			if ( is_null( $return ) ) {
 				$return = esc_html__( 'Your nonce is expired! Please reload the site.', 'mailster' );
