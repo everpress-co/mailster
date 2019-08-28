@@ -4034,6 +4034,8 @@ var preflight = (function(){
 		$authentication = $('#preflight-authentication'),
 		runbtn = $('.preflight-run'),
 		$iframe = $('.mailster-preview-iframe'),
+		$iframebody,
+		$hx, $hy,
 		started = 0,
 		images,
 
@@ -4062,6 +4064,7 @@ var preflight = (function(){
 	},
 
 	initTest = function(){
+		clear();
 		loader(true);
 		status('Sending your campaign.');
 		runbtn.prop('disabled', true);
@@ -4098,6 +4101,11 @@ var preflight = (function(){
 
 	},
 
+	clear = function(){
+		preflight.find('summary').removeAttr('class');
+		preflight.find('.body').empty();
+	},
+
 	checkTest = function(tries){
 
 		if(tries > 10){
@@ -4120,7 +4128,7 @@ var preflight = (function(){
             		getResult('blacklist');
 					getResult('spam_report');
 					getResult('authentication');
-					//getResult('message', 'tests/links');
+					getResult('message');
 					getResult('links', 'tests/links');
 					getResult('images', 'tests/images');
 
@@ -4144,7 +4152,7 @@ var preflight = (function(){
 
 	getResult = function(part, endpoint){
 		var base = $('#preflight-'+part),
-			summary = base.find('summary').removeAttr('class'),
+			summary = base.find('summary').eq(0).removeAttr('class'),
 			body = base.find('.body');
 
 		if('authentication' == part){
@@ -4156,6 +4164,12 @@ var preflight = (function(){
 			getResult('rdns', 'tests/rdns');
 			getResult('mx', 'tests/mx');
 			getResult('a', 'tests/a');
+			return false;
+		}
+		if('message' == part){
+			summary.addClass('loading');
+			getResult('email', 'tests/email');
+			getResult('subject', 'tests/subject');
 			return false;
 		}
 
@@ -4174,7 +4188,7 @@ var preflight = (function(){
 				if(response.success){
 					summary.removeClass('loading').addClass('is-'+response.status);
 					if('success' != response.status){
-						base.prop('open', true);
+						//base.prop('open', true);
 					}
 					body.html(response.html)
 					started--;
@@ -4219,15 +4233,31 @@ var preflight = (function(){
 		$('.preflight-subject').html(subject);
 		$('.preflight-to').html(from_name);
 
-		_ajax('set_preview', {
+		loadPreview();
+
+	},
+
+	initFrame = function(){
+		$iframebody = $iframe.contents().find('html,body');
+		$hx = $iframe.contents().find('highlighterx');
+		$hy = $iframe.contents().find('highlightery');
+	},
+
+	loadPreview = function(subscriber_id){
+
+		var args = {
 			id: campaign_id,
-			content: content,
+			subscriber_id: subscriber_id || null,
+			content: _getContent(),
 			head: _head.val(),
 			issue: $('#mailster_autoresponder_issue').val(),
-			subject: subject,
-			preheader: preheader
-		}, function (response) {
-			$iframe.attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
+			subject: _subject.val(),
+			preheader: _preheader.val(),
+		},
+		title = _title.val();
+
+		_ajax('set_preview', args, function (response) {
+			$iframe.one('load', initFrame).attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
 			tb_show((title ? sprintf(mailsterL10n.preflight, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1440, _win.width() - 50)) + '&height=' + (_win.height() - 100) + '&inlineId=mailster_preflight_wrap', null);
 			_trigger('enable');
 			images = true;
@@ -4235,6 +4265,7 @@ var preflight = (function(){
 		}, function (jqXHR, textStatus, errorThrown) {
 			_trigger('enable');
 		});
+
 	},
 
 	toggleImages = function(){
@@ -4249,6 +4280,49 @@ var preflight = (function(){
 			});
 		}
 		images = !images;
+	},
+
+	highlightElement = function(event){
+		var t = $(this),
+			d = t.data(), el,
+			type = event.type;
+
+
+		if(!d.el){
+			var url = d.url,
+			tag = d.tag,
+			attr = d.attr,
+			index = d.index,
+			el = $iframe.contents().find(tag+'['+attr+'="'+url+'"]')[index];
+			t.data('el', el);
+		}else{
+			el = d.el;
+		}
+		if(!el){
+			return;
+		}
+		if('mouseleave' == type){
+			$iframebody.removeClass('preflight-highlighter');
+			$(el).removeClass('preflight-highlighted');
+			return;
+		}else{
+			$(el).addClass('preflight-highlighted');
+			$iframebody.addClass('preflight-highlighter');
+		}
+
+		el.scrollIntoView({behavior: "smooth", block: "center"});
+
+		var rect = el.getBoundingClientRect();
+
+		$hx.css({
+			'transform': 'translateY('+(rect.y+$iframebody.scrollTop())+'px)',
+			'height': rect.height-1,
+		})
+		$hy.css({
+			'transform': 'translateX('+rect.x+'px)',
+			'width': rect.width-1,
+		})
+
 	};
 
 	//preflight box
@@ -4262,24 +4336,8 @@ var preflight = (function(){
 		.on('click', '.preflight-switch', switchPane)
 		.on('click', '.preflight-run', initTest)
 		.on('click', '.preflight-toggle-images', toggleImages)
-		.on('mouseenter', '.assets-table tr', function(){
-			var href= $(this).data('href'),
-				index = $(this).data('index'),
-				links = $iframe.contents().find("a[href='"+(href)+"']").eq(index);
-
-			links.css({
-				'outline': '3px solid #dc3232',
-			});
-		})
-		.on('mouseleave', '.assets-table tr', function(){
-			var href= $(this).data('href'),
-				index = $(this).data('index'),
-				links = $iframe.contents().find("a[href='"+(href)+"']").eq(index);
-
-			links.css({
-				'outline': '',
-			});
-		});
+		.on('mouseenter', '.assets-table tr', highlightElement)
+		.on('mouseleave', '.assets-table tr', highlightElement);
 
 	api.open = open
 	return api;

@@ -41,10 +41,7 @@ $sent = $this->get_sent( $post->ID );
 		</div>
 		<div class="score-wrap">
 			<div class="preflight-score">
-
-				<div class="score">83</div>
-
-				<h3 class="preflight-status">This is a text for the summery</h3>
+				<h3 class="preflight-status">&nbsp;</h3>
 			</div>
 
 			<div class="preflight-results-wrap">
@@ -87,10 +84,16 @@ $sent = $this->get_sent( $post->ID );
 						</div>
 					</details>
 					<details id="preflight-message">
-						<summary class="is-error" data-count="10">Message</summary>
+						<summary data-count="10">Message</summary>
 						<div class="body">
-							<h3>Message</h3>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent fringilla mollis tortor a scelerisque. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam pharetra massa sed orci pulvinar porta vehicula vitae elit. Suspendisse sed augue leo. Duis laoreet cursus sem in vulputate. Curabitur ullamcorper tincidunt mi nec malesuada. In convallis elit id ligula pulvinar tincidunt. In in nibh metus, ultricies viverra ante. In semper fringilla sem non interdum. Nulla at urna id urna bibendum vestibulum. Nunc aliquam turpis euismod est egestas dignissim condimentum mi vestibulum. Nam blandit dolor eget sapien tempor porttitor. Nam sollicitudin pharetra erat ac laoreet. Ut ac diam purus. Sed nec felis sed justo pretium faucibus sed non tellus.</p>
+							<details id="preflight-email">
+								<summary data-count="10">Email</summary>
+								<div class="body"></div>
+							</details>
+							<details id="preflight-subject">
+								<summary data-count="10">Subject</summary>
+								<div class="body"></div>
+							</details>
 						</div>
 					</details>
 					<details id="preflight-links">

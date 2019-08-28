@@ -1,0 +1,46 @@
+body.preflight-highlighter{
+	position: relative;
+	overflow: hidden;
+}
+highlighterx, highlightery{
+	display: block;
+	border:1px dashed red;
+	position: absolute;
+	top: 0;
+	transition: all .25s ease-out;
+	display: none;
+	z-index: 1000;
+}
+.preflight-highlighter highlighterx,.preflight-highlighter highlightery{
+	display: block;
+}
+.preflight-highlighted, .preflight-highlighted *{
+	position: relative;
+	z-index: 9999999;
+}
+highlighterx{
+	left: 0;
+	width: 100%;
+	border-width: 1px 0;
+	height: 1px;
+	transform: translateY(0);
+	z-index: 10;
+}
+highlightery{
+	top: 0;
+	height: 100%;
+	border-width: 0 1px;
+	width: 1px;
+	transform: translateX(0);
+	z-index: 10;
+}
+highlightery:before{
+	content:'';
+	background: rgba(255, 255, 255, 0.6);
+	position: absolute;
+	display: block;
+	z-index: 5;
+	height: 200vh;
+	width: 200vh;
+	left: -100vh;
+}

@@ -10,9 +10,11 @@ class MailsterAjax {
 		'get_template',
 		'get_plaintext',
 		'create_new_template',
+		'toggle_codeview',
 		'set_preview',
 		'get_preview',
-		'toggle_codeview',
+		'preflight',
+		'preflight_result',
 		'send_test',
 		'get_totals',
 		'save_color_schema',
@@ -345,7 +347,7 @@ class MailsterAjax {
 		$preheader = isset( $_POST['preheader'] ) ? stripslashes( $_POST['preheader'] ) : '';
 		$issue = isset( $_POST['issue'] ) ? (int) $_POST['issue'] : 1;
 		$head = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
-		$userid = isset( $_POST['userid'] ) ? (int) $_POST['userid'] : null;
+		$subscriber_id = isset( $_POST['subscriber_id'] ) ? (int) $_POST['subscriber_id'] : null;
 
 		$html = mailster()->sanitize_content( $content, true, $head );
 
@@ -353,41 +355,36 @@ class MailsterAjax {
 
 		$placeholder->set_campaign( $ID );
 
-		$current_user = wp_get_current_user();
+		if ( $subscriber_id ) {
 
-		if ( ! $userid ) {
-			if ( $subscriber = mailster( 'subscribers' )->get_by_wpid( $current_user->ID, true ) ) {
-				$userid = $subscriber->ID;
-			}
-		}
-
-		if ( $userid ) {
-
-			if ( $subscriber = mailster( 'subscribers' )->get( $userid, true ) ) {
+			if ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ) ) {
 
 				$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
 
 				$placeholder->set_subscriber( $subscriber->ID );
 				$placeholder->add( $userdata );
 
-				$names = array(
+				$placeholder->add( array(
 					'firstname' => $subscriber->firstname,
 					'lastname' => $subscriber->lastname,
 					'fullname' => $subscriber->fullname,
-				);
-
-			} else {
-
-				$firstname = ( $current_user->user_firstname ) ? $current_user->user_firstname : $current_user->display_name;
-				$names = array(
-					'firstname' => $firstname,
-					'lastname' => $current_user->user_lastname,
-					'fullname' => mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname ),
-				);
+					'emailaddress' => $subscriber->email,
+				) );
 			}
 
-			$placeholder->add( $names );
+		} else {
 
+			$current_user = wp_get_current_user();
+
+			$firstname = ( $current_user->user_firstname ) ? $current_user->user_firstname : $current_user->display_name;
+			$fullname = mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname );
+
+			$placeholder->add( array(
+				'firstname' => $firstname,
+				'lastname' => $current_user->user_lastname,
+				'fullname' => $fullname,
+				'emailaddress' => $current_user->user_email,
+			) );
 		}
 
 		$placeholder->add_defaults( $ID, array(
@@ -396,16 +393,17 @@ class MailsterAjax {
 			'preheader' => $preheader,
 		) );
 
-		$placeholder->add_custom( $ID, array(
-			'emailaddress' => $current_user->user_email,
-		) );
+		$placeholder->add_custom( $ID );
 
 		$content = $placeholder->get_content();
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
 		$content = mailster( 'helper' )->add_mailster_styles( $content );
 
-		$hash = md5( NONCE_SALT . $content );
+		$content = str_replace( '</head>', mailster('preflight')->script_styles() . '</head>', $content );
+		$content = str_replace( '</body>', '<highlighterx></highlighterx><highlightery></highlightery></body>', $content );
+
+		$hash = md5( NONCE_SALT . MAILSTER_VERSION . $content );
 
 		// cache preview for 15 seconds
 		set_transient( 'mailster_p_' . $hash, $content, 15 );
@@ -437,6 +435,58 @@ class MailsterAjax {
 		exit;
 	}
 
+
+	private function preflight() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$id = isset( $_POST['id'] ) ? sanitize_key( $_POST['id'] ) : false;
+
+		if ( $id ) {
+
+			$response = mailster('preflight')->request( $id );
+
+			if ( is_wp_error( $response ) ) {
+				$return['error'] = $response->get_error_message();
+			} else {
+				$return['success'] = true;
+				$return['ready']   = $response->ready;
+			}
+		}
+
+		$this->json_return( $return );
+
+	}
+
+
+
+	private function preflight_result() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$id       = isset( $_POST['id'] ) ? sanitize_key( $_POST['id'] ) : false;
+		$endpoint = isset( $_POST['endpoint'] ) ? ( $_POST['endpoint'] ) : false;
+
+		if ( $id ) {
+
+			$response = mailster('preflight')->request( $id, $endpoint, 25 );
+
+			if ( is_wp_error( $response ) ) {
+				$return['error'] = $response->get_error_message();
+			} else {
+				$return['success'] = true;
+				$return['status']  = $response->status;
+				$return['html']    = mailster('preflight')->convert( $response, $endpoint );
+			}
+		}
+
+		$this->json_return( $return );
+
+	}
 
 	private function send_test() {
 
