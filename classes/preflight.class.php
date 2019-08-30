@@ -113,44 +113,52 @@ class MailsterPreflight {
 				break;
 
 			case 'tests/links':
-				$html .= '<table class="wp-list-table widefat striped assets-table">';
-				foreach ( $response->links as $i => $link ) {
-					$html .= '<tr class="asset is-' . esc_attr( $link->status ) . '" data-url="' . esc_attr( $link->href ) . '" data-tag="a" data-attr="href" data-index="' . esc_attr( $link->index ) . '">';
-					$html .= '<td><span class="asset-type asset-type-' . $link->type . ' mailster-icon"></span></td>';
-					$html .= '<td title="' . esc_attr( $link->message ) . '">' . $link->code . '</td>';
-					$html .= '<td>';
-					if ( $link->href && 'anchor' != $link->type ) {
-						$html .= '<a href="' . esc_attr( $link->href ) . '" target="_blank" title="' . esc_attr__( 'open link', 'mailster' ) . '" class="open-link mailster-icon"></a>';
+				if ( $response->count ) {
+					$html .= '<table class="wp-list-table widefat striped assets-table">';
+					foreach ( $response->links as $i => $link ) {
+						$html .= '<tr class="asset is-' . esc_attr( $link->status ) . '" data-url="' . esc_attr( $link->href ) . '" data-tag="a" data-attr="href" data-index="' . esc_attr( $link->index ) . '">';
+						$html .= '<td><span class="asset-type asset-type-' . $link->type . ' mailster-icon"></span></td>';
+						$html .= '<td title="' . esc_attr( $link->message ) . '">' . $link->code . '</td>';
+						$html .= '<td>';
+						if ( $link->href && 'anchor' != $link->type ) {
+							$html .= '<a href="' . esc_attr( $link->href ) . '" target="_blank" title="' . esc_attr__( 'open link', 'mailster' ) . '" class="open-link mailster-icon"></a>';
+						}
+						$html .= '<strong class="the-link" title="' . esc_attr( $link->href ) . '">' . preg_replace( '/^https?:\/\//', '', $link->href ) . '</strong>';
+						$html .= esc_html( $link->message ) . '<br>';
+						if ( $link->text ) {
+							$html .= esc_html( $link->text );
+						}
+						$html .= '</td>';
+						$html .= '</tr>';
 					}
-					$html .= '<strong class="the-link" title="' . esc_attr( $link->href ) . '">' . preg_replace( '/^https?:\/\//', '', $link->href ) . '</strong>';
-					$html .= esc_html( $link->message ) . '<br>';
-					if ( $link->text ) {
-						$html .= esc_html( $link->text );
-					}
-					$html .= '</td>';
-					$html .= '</tr>';
+					$html .= '</table>';
+				} else {
+					$html .= esc_html__( 'This email doesn\'t contain links.', 'mailster' );
 				}
-				$html .= '</table>';
 				break;
 
 			case 'tests/images':
-				$html .= '<table class="wp-list-table widefat striped assets-table">';
-				foreach ( $response->images as $i => $image ) {
-					$html .= '<tr class="asset is-' . esc_attr( $image->status ) . '" data-url="' . esc_attr( $image->src ) . '" data-tag="img" data-attr="src" data-index="' . esc_attr( $image->index ) . '">';
-					$html .= '<td><span class="asset-type asset-type-image mailster-icon"></span></td>';
-					$html .= '<td title="' . esc_attr( $image->message ) . '">' . $image->code . '</td>';
-					$html .= '<td>';
-					$html .= '<strong class="the-link" title="' . esc_attr( $image->src ) . '">' . basename( $image->src ) . '</strong>';
-					$html .= esc_html( $image->message ) . '<br>';
-					if ( $image->alt ) {
-						$html .= esc_html__( 'Alt text', 'mailster' ) . ': ' . esc_html( $image->alt );
-					} else {
-						$html .= esc_html__( 'No Alt text found.', 'mailster' );
+				if ( $response->count ) {
+					$html .= '<table class="wp-list-table widefat striped assets-table">';
+					foreach ( $response->images as $i => $image ) {
+						$html .= '<tr class="asset is-' . esc_attr( $image->status ) . '" data-url="' . esc_attr( $image->src ) . '" data-tag="img" data-attr="src" data-index="' . esc_attr( $image->index ) . '">';
+						$html .= '<td><span class="asset-type asset-type-image mailster-icon"></span></td>';
+						$html .= '<td title="' . esc_attr( $image->message ) . '">' . $image->code . '</td>';
+						$html .= '<td>';
+						$html .= '<strong class="the-link" title="' . esc_attr( $image->src ) . '">' . basename( $image->src ) . '</strong>';
+						$html .= esc_html( $image->message ) . '<br>';
+						if ( $image->alt ) {
+							$html .= esc_html__( 'Alt text', 'mailster' ) . ': ' . esc_html( $image->alt );
+						} else {
+							$html .= esc_html__( 'No Alt text found.', 'mailster' );
+						}
+						$html .= '</td>';
+						$html .= '</tr>';
 					}
-					$html .= '</td>';
-					$html .= '</tr>';
+					$html .= '</table>';
+				} else {
+					$html .= esc_html__( 'This email doesn\'t contain images.', 'mailster' );
 				}
-				$html .= '</table>';
 				break;
 
 			case 'blacklist':
@@ -171,11 +179,12 @@ class MailsterPreflight {
 				break;
 
 			case 'tests/email':
-				error_log( print_r( $response, true ) );
-
-				$html .= '<dl><dt>' . esc_html__( 'Date', 'mailster' ) . ':</dt><dd>' . date( mailster( 'helper' )->timeformat(), $response->udate ) . '</dd></dl>';
+				$html .= '<dl><dt>' . esc_html__( 'Words', 'mailster' ) . ':</dt><dd>' . number_format_i18n( $response->words ) . '</dd></dl>';
+				$html .= '<dl><dt>' . esc_html__( 'Characters', 'mailster' ) . ':</dt><dd>' . number_format_i18n( $response->characters ) . '</dd></dl>';
+				$html .= '<dl><dt>' . esc_html__( 'Images', 'mailster' ) . ':</dt><dd>' . number_format_i18n( $response->images ) . '</dd></dl>';
+				$html .= '<dl><dt>' . esc_html__( 'Image Ratio', 'mailster' ) . ':</dt><dd>' . number_format_i18n( $response->image_ratio * 100, 2 ) . '%</dd></dl>';
+				$html .= '<dl><dt>' . esc_html__( 'Attachments', 'mailster' ) . ':</dt><dd>' . number_format_i18n( $response->attachments ) . '</dd></dl>';
 				$html .= '<dl><dt>' . esc_html__( 'Size', 'mailster' ) . ':</dt><dd>' . size_format( $response->size, 2 ) . '</dd></dl>';
-				$html .= '<dl><dt>' . esc_html__( 'Attachments', 'mailster' ) . ':</dt><dd>' . esc_html( $response->attachments ) . '</dd></dl>';
 				if ( $response->tips ) {
 					$html .= '<ul class="tips">';
 					foreach ( $response->tips as $tip ) {
@@ -188,8 +197,8 @@ class MailsterPreflight {
 				break;
 
 			case 'tests/subject':
-				$html .= '<dl><dt>' . esc_html__( 'Words', 'mailster' ) . ':</dt><dd>' . esc_html( $response->words ) . '</dd></dl>';
-				$html .= '<dl><dt>' . esc_html__( 'Characters', 'mailster' ) . ':</dt><dd>' . esc_html( $response->characters ) . '</dd></dl>';
+				$html .= '<dl><dt>' . esc_html__( 'Words', 'mailster' ) . ':</dt><dd>' . number_format_i18n( $response->words ) . '</dd></dl>';
+				$html .= '<dl><dt>' . esc_html__( 'Characters', 'mailster' ) . ':</dt><dd>' . number_format_i18n( $response->characters ) . '</dd></dl>';
 				if ( $response->tips ) {
 					$html .= '<ul class="tips">';
 					foreach ( $response->tips as $tip ) {
@@ -235,9 +244,7 @@ class MailsterPreflight {
 		$code    = wp_remote_retrieve_response_code( $response );
 		$headers = wp_remote_retrieve_headers( $response );
 
-		error_log( print_r( $headers, true ) );
-
-		if ( is_wp_error( $response ) ) {
+		if ( is_wp_error( $response ) || 503 === $code ) {
 			return new WP_Error( 503, esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' ) );
 		} elseif ( 200 === $code ) {
 			$body = wp_remote_retrieve_body( $response );

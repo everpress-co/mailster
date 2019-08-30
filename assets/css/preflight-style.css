@@ -184,7 +184,21 @@ summary, details { display: block; }
 details { visibility: hidden; }
 details > summary { visibility:  visible; }
 details details { visibility:  visible; }
-details[open] summary.no-det:before { transform: rotate(90deg); }
+details > summary:before {
+	content: '\e815';
+	display: inline-block;
+	font-family: 'mailster-icons' !important;
+	font-size: 10px;
+	font-style: normal;
+	font-weight: normal;
+	speak: none;
+	display: inline-block !important;
+	vertical-align: bottom;
+	margin: 0 8px 0 -14px;
+	transform: rotate(-90deg);
+	transition: transform 0.3s;
+}
+details[open] > summary:before { transform: rotate(0deg); }
 details[open] { visibility: visible; }
 details summary { cursor: pointer; }
 summary:hover { cursor: pointer; }
@@ -196,6 +210,8 @@ details summary::-webkit-details-marker { display:none; }
 	position: absolute;
 	left: 0;
 	right: 0;
+	top: 70px;
+	bottom:0;
 	overflow: auto;
 	border-top: 1px solid #dfdfdf;
 }
@@ -209,10 +225,15 @@ details summary::-webkit-details-marker { display:none; }
 	overflow: auto;
 	padding:3px;
 }
+.score-wrap .preflight-result:empty{
+	display: none;
+	background: red;
+}
 .score-wrap .error{
 	position: absolute;
 	left: 0;
 	right: 0;
+	z-index: 1;
 }
 .score-wrap details{
 }
@@ -220,11 +241,12 @@ details summary::-webkit-details-marker { display:none; }
 	border-top: 1px solid #dfdfdf;
 	padding: 1em 2em;
 	font-weight: bold;
+	color: #999;
 }
 .score-wrap details details summary{
-	margin: 0 -2em;
+	margin: 0 -2em 0 -1em;
 	padding: 0.5em 2em;
-	border-color: #efefef;
+	border-color: #eaeaea;
 }
 .score-wrap details:first-child summary{
 	border-top: none;
@@ -260,7 +282,9 @@ details summary::-webkit-details-marker { display:none; }
 	background-position: 95% center;
 	background-repeat: no-repeat;
 	background-image: url(../img/loading.gif) !important;
-	color: #999;
+}
+.score-wrap details summary.loaded{
+	color: inherit;
 }
 .score-wrap details > div{
 	padding:1px 2em 1em;

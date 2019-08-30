@@ -26,7 +26,7 @@ $sent = $this->get_sent( $post->ID );
 				<a class="button preflight-switch mailster-icon preflight-switch-landscape" data-dimensions='{"w":640,"h":320}'></a>
 			</div>
 			<ul class="prefligth-run">
-				<li class="alignright"><span class="spinner" id="preflight-ajax-loading"></span><button class="button button-primary preflight-run"><?php esc_html_e( 'Run Test', 'mailster' );?></button></li>
+				<li class="alignright"><span class="spinner" id="preflight-ajax-loading"></span><button class="button button-primary preflight-run"><?php esc_html_e( 'Preflight Campaign', 'mailster' );?></button></li>
 			</ul>
 		</div>
 		<div class="device-wrap">
@@ -37,76 +37,76 @@ $sent = $this->get_sent( $post->ID );
 					</div>
 				</div>
 			</div>
-			<div class="device-notice"><?php esc_html_e( 'Your email may look different on mobile devices', 'mailster' );?></div>
+			<div class="device-notice"><?php esc_html_e( 'Your email may look different on mobile devices.', 'mailster' );?></div>
 		</div>
 		<div class="score-wrap">
 			<div class="preflight-score">
-				<h3 class="preflight-status">&nbsp;</h3>
+				<h3 class="preflight-status"><?php esc_html_e( 'Ready for Preflight!', 'mailster' );?></h3>
 			</div>
 
 			<div class="preflight-results-wrap">
 				<div class="preflight-results">
-					<details id="preflight-spam_report">
-						<summary data-count="10">Spam Report</summary>
-						<div class="body"></div>
-					</details>
-					<details id="preflight-authentication">
-						<summary data-count="10">Authentication</summary>
-						<div class="body">
-							<details id="preflight-spf">
-								<summary data-count="10">SPF</summary>
-								<div class="body"></div>
-							</details>
-							<details id="preflight-senderid">
-								<summary data-count="10">Sender ID</summary>
-								<div class="body"></div>
-							</details>
-							<details id="preflight-dkim">
-								<summary data-count="10">DKIM</summary>
-								<div class="body"></div>
-							</details>
-							<details id="preflight-dmarc">
-								<summary data-count="10">DMARC</summary>
-								<div class="body"></div>
-							</details>
-							<details id="preflight-rdns">
-								<summary data-count="10">RDNS</summary>
-								<div class="body"></div>
-							</details>
-							<details id="preflight-mx">
-								<summary data-count="10">MX</summary>
-								<div class="body"></div>
-							</details>
-							<details id="preflight-a">
-								<summary data-count="10">A</summary>
-								<div class="body"></div>
-							</details>
-						</div>
-					</details>
 					<details id="preflight-message">
 						<summary data-count="10">Message</summary>
-						<div class="body">
-							<details id="preflight-email">
-								<summary data-count="10">Email</summary>
-								<div class="body"></div>
-							</details>
+						<div class="preflight-body">
 							<details id="preflight-subject">
 								<summary data-count="10">Subject</summary>
-								<div class="body"></div>
+								<div class="preflight-result"></div>
+							</details>
+							<details id="preflight-email">
+								<summary data-count="10">Email</summary>
+								<div class="preflight-result"></div>
 							</details>
 						</div>
 					</details>
 					<details id="preflight-links">
 						<summary data-count="10">Links</summary>
-						<div class="body"></div>
+						<div class="preflight-result"></div>
 					</details>
 					<details id="preflight-images">
 						<summary data-count="10">Images</summary>
-						<div class="body"></div>
+						<div class="preflight-result"></div>
+					</details>
+					<details id="preflight-spam_report">
+						<summary data-count="10">Spam Report</summary>
+						<div class="preflight-result"></div>
+					</details>
+					<details id="preflight-authentication">
+						<summary data-count="10">Authentication</summary>
+						<div class="preflight-body">
+							<details id="preflight-spf">
+								<summary data-count="10">SPF</summary>
+								<div class="preflight-result"></div>
+							</details>
+							<details id="preflight-senderid">
+								<summary data-count="10">Sender ID</summary>
+								<div class="preflight-result"></div>
+							</details>
+							<details id="preflight-dkim">
+								<summary data-count="10">DKIM</summary>
+								<div class="preflight-result"></div>
+							</details>
+							<details id="preflight-dmarc">
+								<summary data-count="10">DMARC</summary>
+								<div class="preflight-result"></div>
+							</details>
+							<details id="preflight-rdns">
+								<summary data-count="10">RDNS</summary>
+								<div class="preflight-result"></div>
+							</details>
+							<details id="preflight-mx">
+								<summary data-count="10">MX</summary>
+								<div class="preflight-result"></div>
+							</details>
+							<details id="preflight-a">
+								<summary data-count="10">A</summary>
+								<div class="preflight-result"></div>
+							</details>
+						</div>
 					</details>
 					<details id="preflight-blacklist">
 						<summary data-count="10">Blacklist</summary>
-						<div class="body"></div>
+						<div class="preflight-result"></div>
 					</details>
 
 				</div>

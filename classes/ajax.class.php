@@ -482,6 +482,8 @@ class MailsterAjax {
 				$return['status']  = $response->status;
 				$return['html']    = mailster('preflight')->convert( $response, $endpoint );
 			}
+
+			$return['part'] = basename($endpoint);
 		}
 
 		$this->json_return( $return );

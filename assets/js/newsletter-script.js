@@ -3853,7 +3853,7 @@ jQuery(document).ready(function ($) {
 		}
 
 		dataType = dataType ? dataType : "JSON";
-		$.ajax({
+		return $.ajax({
 			type: 'POST',
 			url: ajaxurl,
 			data: $.extend({
@@ -4103,8 +4103,9 @@ var preflight = (function(){
 
 	clear = function(){
 		preflight.find('summary').removeAttr('class');
-		preflight.find('.body').empty();
+		preflight.find('.preflight-result').empty();
 	},
+
 
 	checkTest = function(tries){
 
@@ -4125,15 +4126,20 @@ var preflight = (function(){
 					}, 3000);
 				}else{
 					status('Email delivered, gathering results...');
-            		getResult('blacklist');
-					getResult('spam_report');
-					getResult('authentication');
-					getResult('message');
-					getResult('links', 'tests/links');
-					getResult('images', 'tests/images');
 
-					loader(false);
-					runbtn.prop('disabled', false);
+					$.when.apply($, [
+						getResult('blacklist'),
+						getResult('spam_report'),
+						getResult('authentication'),
+						getResult('message'),
+						getResult('links', 'tests/links'),
+						getResult('images', 'tests/images'),
+					])
+					.done(function(){
+						status('Preflight finished. Please check results.');
+						loader(false);
+						runbtn.prop('disabled', false);
+					});
 				}
 			}
 			if(response.error){
@@ -4152,71 +4158,84 @@ var preflight = (function(){
 
 	getResult = function(part, endpoint){
 		var base = $('#preflight-'+part),
-			summary = base.find('summary').eq(0).removeAttr('class'),
-			body = base.find('.body');
+			children = base.find('details'),
+			child_part,
+			promises = [];
 
-		if('authentication' == part){
-			summary.addClass('loading');
-			getResult('spf', 'tests/spf');
-			getResult('senderid', 'tests/senderid');
-			getResult('dkim', 'tests/dkim');
-			getResult('dmarc', 'tests/dmarc');
-			getResult('rdns', 'tests/rdns');
-			getResult('mx', 'tests/mx');
-			getResult('a', 'tests/a');
-			return false;
-		}
-		if('message' == part){
-			summary.addClass('loading');
-			getResult('email', 'tests/email');
-			getResult('subject', 'tests/subject');
-			return false;
+		if(children.length){
+			base.find('summary').eq(0).removeAttr('class').addClass('loading');
+			for (var i = 0; i < children.length; i++) {
+				child_part = children[i].id.replace('preflight-','');
+				if(child_part){
+					endpoint = 'tests/'+child_part;
+					promises.push(getEndpoint(child_part, endpoint));
+				}
+			}
+
+		}else{
+			if(!endpoint) endpoint = part;
+			promises.push(getEndpoint(part, endpoint));
 		}
 
-		if(!endpoint) endpoint = part;
-		started++;
-		setTimeout(function(){
-			summary.addClass('loading');
+		return $.when.apply($, promises)
+		.done(function(){
+			var status, statuses = {
+				'error': 0,
+				'warning': 0,
+				'notice': 0,
+				'success': 0,
+			};
+			if(typeof arguments[1] != 'string'){
+				for(i in arguments){
+					statuses[arguments[i][0].status]++;
+	       		}
+	       		if(statuses.error){
+	       			status = 'error';
+	       		}else if(statuses.warning){
+	       			status = 'warning';
+	       		}else if(statuses.notice){
+	       			status = 'notice';
+	       		}else{
+		       		status = 'success';
+	       		}
+				$('#preflight-'+part).find('summary').eq(0).removeClass('loading').addClass('loaded is-'+status);
+			}
+		});
 
-			_ajax('preflight_result', {
-				id: id,
-				endpoint: endpoint,
-			}, function (response) {
+	},
 
-				console.log(part, response);
+	getEndpoint = function(part, endpoint){
 
-				if(response.success){
-					summary.removeClass('loading').addClass('is-'+response.status);
-					if('success' != response.status){
-						//base.prop('open', true);
-					}
-					body.html(response.html)
-					started--;
-					if(!started){
-						$authentication.find('summary').removeClass('loading');
-						if($authentication.find('.is-error').length){
-							$authentication.find('summary').eq(0).addClass('is-error');
-						}else if($authentication.find('.is-warning').length){
-							$authentication.find('summary').eq(0).addClass('is-warning');
-						}else{
-							$authentication.find('summary').eq(0).addClass('is-success');
-						}
-					}
+		var base = $('#preflight-'+part),
+			summary = base.find('summary').eq(0).removeAttr('class').addClass('loading'),
+			body = base.find('.preflight-result');
+
+		return _ajax('preflight_result', {
+			id: id,
+			endpoint: endpoint,
+		}, function (response) {
+
+			if(response.success){
+				summary.removeClass('loading').addClass('loaded is-'+response.status);
+				if('success' != response.status){
+					//base.prop('open', true);
 				}
+				body.html(response.html)
+			}
 
-				if(response.error){
-					error(response.error);
-					loader(false);
-					runbtn.prop('disabled', false);
-				}
-
-
-			}, function (jqXHR, textStatus, errorThrown) {
+			if(response.error){
+				error(response.error);
 				loader(false);
 				runbtn.prop('disabled', false);
+			}
 
-			})
-		}, 100*started);
+
+		}, function (jqXHR, textStatus, errorThrown) {
+			loader(false);
+			runbtn.prop('disabled', false);
+
+		})
+
 	},
 
 	open = function(){
@@ -4256,6 +4275,7 @@ var preflight = (function(){
 		},
 		title = _title.val();
 
+		clear();
 		_ajax('set_preview', args, function (response) {
 			$iframe.one('load', initFrame).attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
 			tb_show((title ? sprintf(mailsterL10n.preflight, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1440, _win.width() - 50)) + '&height=' + (_win.height() - 100) + '&inlineId=mailster_preflight_wrap', null);
@@ -4269,14 +4289,17 @@ var preflight = (function(){
 	},
 
 	toggleImages = function(){
-		var img = $iframe.contents().find('img');
-		if(images){
-			$.each(img, function(i,e){
-				$(e).attr('data-src', $(e).attr('src')).attr('src', '');
-			});
-		}else{
+		var body = $iframe.contents().find('body'),
+			img = body.find('img');
+		if(!images){
+			body.removeClass('preflight-images-hidden');
 			$.each(img, function(i,e){
 				$(e).attr('src', $(e).attr('data-src')).removeAttr('data-src');
+			});
+		}else{
+			body.addClass('preflight-images-hidden');
+			$.each(img, function(i,e){
+				$(e).attr('data-src', $(e).attr('src')).attr('src', '');
 			});
 		}
 		images = !images;
@@ -4286,7 +4309,6 @@ var preflight = (function(){
 		var t = $(this),
 			d = t.data(), el,
 			type = event.type;
-
 
 		if(!d.el){
 			var url = d.url,
@@ -4315,12 +4337,14 @@ var preflight = (function(){
 		var rect = el.getBoundingClientRect();
 
 		$hx.css({
-			'transform': 'translateY('+(rect.y+$iframebody.scrollTop())+'px)',
-			'height': rect.height-1,
+			'transform': 'translate('+(rect.x)+'px, '+(rect.y+$iframebody.scrollTop())+'px)',
+			'width': rect.width,
+			'height': rect.height,
 		})
 		$hy.css({
-			'transform': 'translateX('+rect.x+'px)',
-			'width': rect.width-1,
+			'transform': 'translate('+(rect.x)+'px, '+(rect.y+$iframebody.scrollTop())+'px)',
+			'width': rect.width,
+			'height': rect.height,
 		})
 
 	};

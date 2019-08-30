@@ -4,43 +4,51 @@ body.preflight-highlighter{
 }
 highlighterx, highlightery{
 	display: block;
-	border:1px dashed red;
 	position: absolute;
 	top: 0;
 	transition: all .25s ease-out;
-	display: none;
+	opacity: 0;
 	z-index: 1000;
 }
-.preflight-highlighter highlighterx,.preflight-highlighter highlightery{
-	display: block;
+body.preflight-images-hidden [background]{
+	background-image: none !important;
 }
-.preflight-highlighted, .preflight-highlighted *{
+.preflight-highlighter highlighterx,.preflight-highlighter highlightery{
+	opacity: 1;
+}
+._preflight-highlighted, ._preflight-highlighted *{
 	position: relative;
 	z-index: 9999999;
 }
-highlighterx{
-	left: 0;
-	width: 100%;
-	border-width: 1px 0;
-	height: 1px;
-	transform: translateY(0);
+highlighterx, highlightery{
 	z-index: 10;
+	background: rgba(43, 179, 231, 0.2);
 }
-highlightery{
-	top: 0;
-	height: 100%;
-	border-width: 0 1px;
-	width: 1px;
-	transform: translateX(0);
-	z-index: 10;
+highlighterx:before, highlighterx:after, highlightery:before, highlightery:after{
+	content: '';
+	position: absolute;
+	border-color: #2BB3E7;
+	border-style: dashed;
+}
+highlighterx:before{
+	width: 400vh;
+	border-width: 1px 0 0 0;
+	margin: 0 -200vh;
+}
+highlighterx:after{
+	width: 400vh;
+	border-width: 0 0 1px 0;
+	margin: 0 -200vh;
+	bottom:0;
 }
 highlightery:before{
-	content:'';
-	background: rgba(255, 255, 255, 0.6);
-	position: absolute;
-	display: block;
-	z-index: 5;
-	height: 200vh;
-	width: 200vh;
-	left: -100vh;
+	height: 400vh;
+	border-width: 0 1px 0 0;
+	margin: -200vw 0;
+}
+highlightery:after{
+	height: 400vh;
+	border-width: 0 0 0 1px;
+	margin: -200vw 0;
+	right: 0;
 }
