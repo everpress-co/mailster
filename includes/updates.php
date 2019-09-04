@@ -594,6 +594,11 @@ if ( $old_version ) {
 				$mailster_options['legacy_hooks'] = true;
 			}
 
+		case '2.4.4':
+
+			// prefix mailster entries with "_"
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET `meta_key` = replace(meta_key, %s, %s) WHERE meta_key LIKE 'mailster_%'", 'mailster_', '_mailster_' ) );
+
 		default:
 
 			// reset translations

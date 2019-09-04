@@ -457,7 +457,7 @@ class MailsterAjax {
 		$current_user = wp_get_current_user();
 
 		if ( ! empty( $to ) && $to != $current_user->user_emai ) {
-			update_user_meta( $current_user->ID, 'mailster_test_email', $to );
+			update_user_meta( $current_user->ID, '_mailster_test_email', $to );
 		}
 
 		if ( isset( $_POST['test'] ) ) {
