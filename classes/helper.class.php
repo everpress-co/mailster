@@ -1010,9 +1010,6 @@ class MailsterHelper {
 			return false;
 		}
 
-		// strip all unwanted stuff from the content
-		$content = $this->strip_unwanted_html( $content );
-
 		preg_match_all( '#(<img.*?)(width="(\d+)")(.*?>)#', $content, $images );
 		foreach ( $images[0] as $i => $image ) {
 			$oldstyle = '';
@@ -1044,7 +1041,7 @@ class MailsterHelper {
 	 * @param unknown $content
 	 * @return unknown
 	 */
-	private function strip_unwanted_html( $content ) {
+	public function strip_unwanted_html( $content ) {
 
 		if ( empty( $content ) ) {
 			return false;

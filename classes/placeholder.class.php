@@ -315,6 +315,9 @@ class MailsterPlaceholder {
 			? strip_shortcodes( $this->content )
 			: do_shortcode( $this->content );
 
+		// strip all unwanted stuff from the content
+		$this->content = mailster( 'helper' )->strip_unwanted_html( $this->content );
+
 		return $this->content;
 
 	}

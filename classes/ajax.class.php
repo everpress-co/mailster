@@ -271,7 +271,7 @@ class MailsterAjax {
 			}
 
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
-			$html = $placeholder->get_content( false );
+			$html = $placeholder->get_content( true );
 			$html = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style' . $suffix . '.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
 		}
 
