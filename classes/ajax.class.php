@@ -15,6 +15,8 @@ class MailsterAjax {
 		'get_preview',
 		'preflight',
 		'preflight_result',
+		'preflight_agree',
+		'search_subscribers',
 		'send_test',
 		'get_totals',
 		'save_color_schema',
@@ -350,7 +352,7 @@ class MailsterAjax {
 		$subscriber_id = isset( $_POST['subscriber_id'] ) ? (int) $_POST['subscriber_id'] : null;
 
 		$html = mailster()->sanitize_content( $content, true, $head );
-
+		$to = '';
 		$placeholder = mailster( 'placeholder', $html );
 
 		$placeholder->set_campaign( $ID );
@@ -370,6 +372,8 @@ class MailsterAjax {
 					'fullname' => $subscriber->fullname,
 					'emailaddress' => $subscriber->email,
 				) );
+
+				$to = $subscriber->fullname ? $subscriber->fullname. ' <'.$subscriber->email.'>' : $subscriber->email;
 			}
 
 		} else {
@@ -385,6 +389,8 @@ class MailsterAjax {
 				'fullname' => $fullname,
 				'emailaddress' => $current_user->user_email,
 			) );
+
+			$to = $fullname ? $fullname. ' <'.$current_user->user_email.'>' : $current_user->user_email;
 		}
 
 		$placeholder->add_defaults( $ID, array(
@@ -410,6 +416,7 @@ class MailsterAjax {
 
 		$placeholder->set_content( $subject );
 		$return['subject'] = $placeholder->get_content();
+		$return['to'] = $to;
 		$return['hash'] = $hash;
 		$return['nonce'] = wp_create_nonce( 'mailster_nonce' );
 		$return['success'] = true;
@@ -461,7 +468,6 @@ class MailsterAjax {
 	}
 
 
-
 	private function preflight_result() {
 
 		$return['success'] = false;
@@ -490,6 +496,55 @@ class MailsterAjax {
 
 	}
 
+
+	private function preflight_agree() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$current_user = wp_get_current_user();
+
+		$return['success'] = (bool) update_user_meta( $current_user->ID, '_mailster_preflight_agreed', time() );
+
+		$this->json_return( $return );
+
+	}
+
+
+	private function search_subscribers() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$id  = isset( $_POST['post_id'] ) ? (int) $_POST['post_id']: false;
+		$term = isset( $_POST['term'] ) ? ( $_POST['term'] ) : false;
+
+		$return['subscribers'] = array();
+		$return['success'] = true;
+
+		if($term){
+			$subscribers = mailster( 'subscribers' )->query( array(
+				's' => $term,
+				'fields' => 'fullname,email,ID',
+			), $id );
+
+			foreach ($subscribers as $subscriber) {
+				$label = $subscriber->fullname ? $subscriber->fullname. ' <'.$subscriber->email.'>' : $subscriber->email;
+				$return['subscribers'][] = array(
+					'id' => $subscriber->ID,
+					'label' => '['.$subscriber->ID.']: '.$label,
+					'value' => $label,
+				);
+			}
+
+		}
+
+		$this->json_return( $return['subscribers'] );
+
+	}
+
 	private function send_test() {
 
 		$this->ajax_nonce( json_encode( array(
@@ -509,7 +564,7 @@ class MailsterAjax {
 		$to = trim( stripslashes( $_POST['to'] ) );
 		$current_user = wp_get_current_user();
 
-		if ( ! empty( $to ) && $to != $current_user->user_emai ) {
+		if ( ! empty( $to ) && $to != $current_user->user_email ) {
 			update_user_meta( $current_user->ID, 'mailster_test_email', $to );
 		}
 
@@ -560,6 +615,7 @@ class MailsterAjax {
 			$MID = mailster_option( 'ID' );
 
 			$ID = (int) $formdata['post_ID'];
+			$subscriber_id = isset($_POST['subscriber_id']) ? (int) $_POST['subscriber_id'] : null;
 			$issue = $formdata['mailster_data']['autoresponder']['issue'];
 
 			$campaign_permalink = get_permalink( $ID );
@@ -589,7 +645,6 @@ class MailsterAjax {
 
 			foreach ( $receivers as $to ) {
 
-				$current_user = null;
 				$names = null;
 
 				$mail = mailster( 'mail' );
@@ -635,7 +690,9 @@ class MailsterAjax {
 				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $ID, null ) );
 
 				// check for subscriber by mail
-				$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
+				if(!($subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ))){
+					$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
+				}
 
 				if ( $subscriber ) {
 
@@ -650,6 +707,7 @@ class MailsterAjax {
 						'firstname' => $subscriber->firstname,
 						'lastname' => $subscriber->lastname,
 						'fullname' => $subscriber->fullname,
+						'emailaddress' => $subscriber->email,
 					);
 
 					$mail->set_subscriber( $subscriber->ID );
@@ -659,11 +717,12 @@ class MailsterAjax {
 
 					$profilelink = mailster()->get_profile_link( $ID, '' );
 
-					$firstname = ( $current_user->user_firstname ) ? $current_user->user_firstname : $current_user->display_name;
+					$firstname = $current_user->user_firstname ? $current_user->user_firstname : $current_user->display_name;
 					$names = array(
 						'firstname' => $firstname,
 						'lastname' => $current_user->user_lastname,
 						'fullname' => mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname ),
+						'emailaddress' => $current_user->user_email,
 					);
 				} else {
 					// no subscriber found for data
@@ -684,9 +743,7 @@ class MailsterAjax {
 					'preheader' => $preheader,
 				) );
 
-				$placeholder->add_custom( $ID, array(
-					'emailaddress' => $to,
-				) );
+				$placeholder->add_custom( $ID );
 
 				$content = $placeholder->get_content();
 				$content = mailster( 'helper' )->prepare_content( $content );

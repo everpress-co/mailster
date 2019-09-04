@@ -2,20 +2,45 @@
 
 $now = time();
 
-$sent = $this->get_sent( $post->ID );
+$sent         = $this->get_sent( $post->ID );
+$current_user = wp_get_current_user();
+
+$terms_agreed = get_user_meta( $current_user->ID, '_mailster_preflight_agreed', true );
+
+if ( $subscriber = mailster( 'subscribers' )->get_by_mail( $current_user->user_email, true ) ) {
+
+	$fullname      = $subscriber->fullname;
+	$email         = $subscriber->email;
+	$subscriber_id = $subscriber->ID;
+
+} else {
+
+	$firstname     = $current_user->user_firstname ? $current_user->user_firstname : $current_user->display_name;
+	$fullname      = mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname );
+	$email         = $current_user->user_email;
+	$subscriber_id = 0;
+
+}
+
+$to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 
 ?>
 
-<button type="button" class="button mailster_preflight" title="<?php esc_attr_e( 'check your spam score', 'mailster' );?> (beta)">Preflight</button>
+<button type="button" class="button mailster_preflight" title="<?php esc_attr_e( 'check your spam score', 'mailster' ); ?> (beta)">Preflight</button>
 
 
 <div id="mailster_preflight_wrap" style="display:none;">
-	<div class="mailster-preflight">
+	<div class="mailster-preflight
+	<?php
+	if ( $terms_agreed ) {
+		echo 'preflight-terms-agreed';}
+	?>
+	">
 		<div class="preflight-bar">
 			<ul class="prefligth-emailheader">
-				<li><label><?php esc_attr_e( 'From', 'mailster' );?>:</label><span class="preflight-from">Xaver</span></li>
-				<li><label><?php esc_attr_e( 'Subject', 'mailster' );?>:</label><span class="preflight-subject">This is the Subject</span></li>
-				<li><label><?php esc_attr_e( 'To', 'mailster' );?>:</label><span class="preflight-to">John &lt;john.doe@example.com&gt;</span></li>
+				<li><label><?php esc_html_e( 'From', 'mailster' ); ?>:</label><span class="preflight-from"></span></li>
+				<li><label><?php esc_html_e( 'Subject', 'mailster' ); ?>:</label><span class="preflight-subject"></span></li>
+				<li><label><?php esc_html_e( 'To', 'mailster' ); ?>:</label><span class="preflight-to" title="<?php esc_attr_e( 'Search for subscribers...', 'mailster' ); ?>"><input type="hidden" value="<?php echo (int) $subscriber_id; ?>" id="subscriber_id"><input type="text" class="preflight-subscriber button button-small" value="" placeholder="<?php echo esc_attr( $to ); ?>"></span></li>
 			</ul>
 			<div class="prefligth-images">
 				<a class="button preflight-toggle-images mailster-icon"></a>
@@ -26,7 +51,7 @@ $sent = $this->get_sent( $post->ID );
 				<a class="button preflight-switch mailster-icon preflight-switch-landscape" data-dimensions='{"w":640,"h":320}'></a>
 			</div>
 			<ul class="prefligth-run">
-				<li class="alignright"><span class="spinner" id="preflight-ajax-loading"></span><button class="button button-primary preflight-run"><?php esc_html_e( 'Preflight Campaign', 'mailster' );?></button></li>
+				<li class="alignright"><span class="spinner" id="preflight-ajax-loading"></span><button class="button button-primary preflight-run"><?php esc_html_e( 'Preflight Campaign', 'mailster' ); ?></button></li>
 			</ul>
 		</div>
 		<div class="device-wrap">
@@ -37,13 +62,19 @@ $sent = $this->get_sent( $post->ID );
 					</div>
 				</div>
 			</div>
-			<div class="device-notice"><?php esc_html_e( 'Your email may look different on mobile devices.', 'mailster' );?></div>
+			<div class="device-notice"><?php esc_html_e( 'Your email may look different on mobile devices.', 'mailster' ); ?></div>
 		</div>
 		<div class="score-wrap">
-			<div class="preflight-score">
-				<h3 class="preflight-status"><?php esc_html_e( 'Ready for Preflight!', 'mailster' );?></h3>
+			<div class="preflight-tos-box">
+				<h3><?php esc_html_e( 'Preflight Terms of Service.', 'mailster' ); ?></h3>
+				<p><?php esc_html_e( 'To use the Preflight service Mailster needs to send your campaign to our third party service. The email which is sent is the same as sent as test. All personalized information included but not limited to links, images, attachments etc. are sent via your current selected delivery method.', 'mailster' ); ?></p>
+				<p><?php esc_html_e( 'We keep the right to track anonymously usage data.', 'mailster' ); ?></p>
+				<p><label><input type="checkbox" id="preflight-agree-checkbox"><?php esc_html_e( 'I\'ve read the Terms of Service and agree.', 'mailster' ); ?></label></p>
+				<?php submit_button( 'Agree', 'primary', 'preflight-agree' ); ?>
 			</div>
-
+			<div class="preflight-score">
+				<h3 class="preflight-status"><?php esc_html_e( 'Ready for Preflight!', 'mailster' ); ?></h3>
+			</div>
 			<div class="preflight-results-wrap">
 				<div class="preflight-results">
 					<details id="preflight-message">

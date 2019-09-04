@@ -28,6 +28,13 @@
 .prefligth-emailheader li{
 	display: block;
 }
+.prefligth-emailheader .preflight-subscriber{
+	width: 50%;
+	text-overflow: ellipsis;
+}
+.prefligth-emailheader .ui-menu-item.ui-state-focus{
+	border:0;
+}
 .preflight-switch.preflight-switch-mobile:before{
 	transform: scale(1.6);
 	content: '\e813';
@@ -180,6 +187,27 @@ _.desktop-header _.desktop-header-info i:last-child{
 	font-size: 130%;
 	left: -10%;
 }
+.preflight-bar .preflight-run{
+	display: none;
+}
+.preflight-terms-agreed .preflight-bar .preflight-run{
+	display: inline-block;
+}
+.preflight-tos-box{
+	background: rgba(255, 255, 255, 0.9);
+	margin: 2em;
+	position: absolute;
+	z-index: 1;
+	border-radius: 7px;
+	box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+	color: #444;
+	display: block;
+	overflow: hidden;
+	padding: 35px 33px 35px;
+}
+.preflight-terms-agreed .preflight-tos-box{
+	display: none;
+}
 summary, details { display: block; }
 details { visibility: hidden; }
 details > summary { visibility:  visible; }
@@ -206,6 +234,10 @@ details a { display: block; }
 summary:focus {outline:none}
 details summary::-webkit-details-marker { display:none; }
 
+.score-wrap .preflight-score{
+	padding: 1em 2em;
+	filter: blur(3px);
+}
 .score-wrap .preflight-results-wrap{
 	position: absolute;
 	left: 0;
@@ -214,6 +246,10 @@ details summary::-webkit-details-marker { display:none; }
 	bottom:0;
 	overflow: auto;
 	border-top: 1px solid #dfdfdf;
+	filter: blur(3px);
+}
+.preflight-terms-agreed .score-wrap .preflight-results-wrap,.preflight-terms-agreed .score-wrap .preflight-score{
+	filter: none;
 }
 .score-wrap .preflight-results{
 	border-bottom: 1px solid #dfdfdf;
@@ -314,6 +350,10 @@ details summary::-webkit-details-marker { display:none; }
 	display: inline-block !important;
 	content: '\e834';
 }
+.score-wrap .wp-list-table{
+	margin-left: -2em;
+	width: calc(100% + 4em);
+}
 .score-wrap .assets-table tr:hover{
 	cursor: pointer;
 	background: #efefef;
@@ -353,13 +393,12 @@ details summary::-webkit-details-marker { display:none; }
 	display: block;
 	width: 255px;
 }
+.score-wrap a.open-link{
+	float: right;
+}
 .score-wrap a.open-link:before{
 	content: '\f08E';
 	display: inline;
-	float: right;
 	text-decoration: none;
 }
 
-.preflight-score{
-	padding: 1em 2em;
-}

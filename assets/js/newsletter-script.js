@@ -4051,7 +4051,7 @@ var preflight = (function(){
 		var box = $('<div class="error"><p><strong>' + msg + '</strong></p></div>').hide().prependTo($('.score-wrap')).slideDown(200).delay(200).fadeIn().delay(8000).fadeTo(200, 0).delay(1500).slideUp(200, function () {
 			box.remove();
 		});
-		console.error(msg);
+		if (console) console.error(msg);
 	},
 
 	loader = function(enable){
@@ -4072,6 +4072,7 @@ var preflight = (function(){
 
 		_ajax('send_test', {
 			preflight: true,
+			subscriber_id: $('#subscriber_id').val(),
 			formdata: $('#post').serialize(),
 			to: $('#mailster_testmail').val(),
 			content: _content.val(),
@@ -4242,16 +4243,7 @@ var preflight = (function(){
 		_trigger('save');
 		_trigger('disable');
 
-		var content = _getContent(),
-			subject = _subject.val(),
-			preheader = _preheader.val(),
-			from_name = $('#from_name').val(),
-			title = _title.val();
-
-		$('.preflight-from').html(from_name);
-		$('.preflight-subject').html(subject);
-		$('.preflight-to').html(from_name);
-
+		$('.preflight-from').html($('#mailster_from-name').val());
 		loadPreview();
 
 	},
@@ -4262,11 +4254,11 @@ var preflight = (function(){
 		$hy = $iframe.contents().find('highlightery');
 	},
 
-	loadPreview = function(subscriber_id){
+	loadPreview = function(){
 
 		var args = {
 			id: campaign_id,
-			subscriber_id: subscriber_id || null,
+			subscriber_id: $('#subscriber_id').val(),
 			content: _getContent(),
 			head: _head.val(),
 			issue: $('#mailster_autoresponder_issue').val(),
@@ -4278,7 +4270,14 @@ var preflight = (function(){
 		clear();
 		_ajax('set_preview', args, function (response) {
 			$iframe.one('load', initFrame).attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
-			tb_show((title ? sprintf(mailsterL10n.preflight, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1440, _win.width() - 50)) + '&height=' + (_win.height() - 100) + '&inlineId=mailster_preflight_wrap', null);
+			tb_show((title ? sprintf(mailsterL10n.preflight, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash='
+				+ response.hash
+				+ '&_wpnonce=' + response.nonce
+				+ '&width=' + (Math.min(1440, _win.width() - 50))
+				+ '&height=' + (_win.height() - 100)
+				+ '&inlineId=mailster_preflight_wrap', null);
+			$('.preflight-subject').html(response.subject);
+			$( '.preflight-subscriber' ).val(response.to);
 			_trigger('enable');
 			images = true;
 
@@ -4347,6 +4346,19 @@ var preflight = (function(){
 			'height': rect.height,
 		})
 
+	},
+
+	agreeTerms = function(){
+
+		if(!$('#preflight-agree-checkbox').is(':checked')){
+			alert(mailsterL10n.enter_list_name);
+			return false;
+		}
+		_ajax('preflight_agree',function (response) {
+			preflight.addClass('preflight-terms-agreed');
+		}, function (jqXHR, textStatus, errorThrown) {
+		});
+
 	};
 
 	//preflight box
@@ -4361,7 +4373,41 @@ var preflight = (function(){
 		.on('click', '.preflight-run', initTest)
 		.on('click', '.preflight-toggle-images', toggleImages)
 		.on('mouseenter', '.assets-table tr', highlightElement)
-		.on('mouseleave', '.assets-table tr', highlightElement);
+		.on('mouseleave', '.assets-table tr', highlightElement)
+		.on('click', '#preflight-agree', agreeTerms);
+
+		$( ".preflight-subscriber" )
+		.on('focus', function(){
+			$(this).select();
+		})
+		.autocomplete({
+      		source: function( request, response ) {
+				_ajax('search_subscribers', {
+					id: campaign_id,
+					term: request.term,
+				}, function (data) {
+					response(data);
+				}, function (jqXHR, textStatus, errorThrown) {
+				});
+			},
+			classes: {
+				"ui-autocomplete": "bbbb",
+				"ui-state-focus": "aaaa",
+			},
+  			appendTo: '.prefligth-emailheader',
+			minLength: 1,
+			select: function( event, ui ) {
+				$('#subscriber_id').val(ui.item.id);
+				loadPreview();
+			},
+			change: function( event, ui ) {
+				if(!ui.item){
+					$('#subscriber_id').val(0);
+					loadPreview();
+				}
+			}
+		} );
+
 
 	api.open = open
 	return api;
