@@ -469,7 +469,7 @@ class MailsterNotification {
 			$this->mail->debug();
 		}
 
-		foreach ($this->to as $receiver) {
+		foreach ((array) $this->to as $receiver) {
 
 			$this->mail->to = $receiver;
 			$result = $this->mail->send();

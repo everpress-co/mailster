@@ -81,7 +81,7 @@ class MailsterHelper {
 				if ( ! file_exists( $actual_file_path ) ) {
 
 					if ( false !== strpos( $img_url, '//images.unsplash.com' ) ) {
-						$query = wp_parse_url( $img_url, PHP_URL_QUERY );
+						$query = parse_url( $img_url, PHP_URL_QUERY );
 						parse_str( $query, $query_args );
 
 						$unsplash_args = apply_filters( 'mailster_create_image_unsplash_args', array(), $attach_id, $img_url, $width, $height, $crop );
