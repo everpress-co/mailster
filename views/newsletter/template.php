@@ -11,19 +11,12 @@ $templates = mailster( 'templates' )->get_templates();
 $all_files = mailster( 'templates' )->get_all_files();
 
 ?>
-<div id="template-wrap" class="load 
-<?php
-if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $modules ) ) {
-	echo ' show-modules';
-} if ( $editable && ! empty( $modules ) ) {
-	echo ' has-modules'; }
-?>
-									">
+<div id="template-wrap" class="load <?php if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $modules ) ) {	echo ' show-modules'; } if ( $editable && ! empty( $modules ) ) { echo ' has-modules'; }?>">
 
 <?php if ( $editable ) : ?>
 
-	<?php include 'optionbar.php'; ?>
-	<?php include 'editbar.php'; ?>
+	<?php include 'optionbar.php' ?>
+	<?php include 'editbar.php' ?>
 
 <?php else : ?>
 
@@ -34,40 +27,35 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 	<div id="clickmap-stats">
 		<div class="piechart" data-percent="0" data-size="60" data-line-width="8" data-animate="500"><span>0</span>%</div>
 		<p><strong class="link"></strong></p>
-		<p><?php esc_html_e( 'Clicks', 'mailster' ); ?>: <strong class="clicks">0</strong><br><?php esc_html_e( 'Total', 'mailster' ); ?>: <strong class="total">0</strong></p>
+		<p><?php esc_html_e( 'Clicks', 'mailster' );?>: <strong class="clicks">0</strong><br><?php esc_html_e( 'Total', 'mailster' );?>: <strong class="total">0</strong></p>
 	</div>
-	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo ( $post->post_content ); ?></textarea>
-	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo ( $post->post_excerpt ); ?></textarea>
+	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo ( $post->post_content ) ?></textarea>
+	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo ( $post->post_excerpt ) ?></textarea>
 
 <?php endif; ?>
 
 	<div id="plain-text-wrap">
-		<?php $autoplaintext = ! isset( $this->post_data['autoplaintext'] ) || $this->post_data['autoplaintext']; ?>
+		<?php $autoplaintext = ! isset( $this->post_data['autoplaintext'] ) || $this->post_data['autoplaintext']?>
 		<p>
-			<label><input type="checkbox" id="plaintext" name="mailster_data[autoplaintext]" value="1" <?php checked( $autoplaintext ); ?>> <?php esc_html_e( 'Create the plain text version based on the HTML version of the campaign', 'mailster' ); ?></label> <a class="alignright button button-primary getplaintext"><?php esc_html_e( 'get text from HTML version', 'mailster' ); ?></a>
+			<label><input type="checkbox" id="plaintext" name="mailster_data[autoplaintext]" value="1" <?php checked( $autoplaintext );?>> <?php esc_html_e( 'Create the plain text version based on the HTML version of the campaign', 'mailster' );?></label> <a class="alignright button button-primary getplaintext"><?php esc_html_e( 'get text from HTML version', 'mailster' );?></a>
 		</p>
 
-		<textarea id="excerpt" name="excerpt" class="
-		<?php
-		if ( $autoplaintext ) {
-			echo ' disabled'; }
-		?>
-			" autocomplete="off" <?php disabled( $autoplaintext ); ?>><?php echo $post->post_excerpt; ?></textarea>
+		<textarea id="excerpt" name="excerpt" class="<?php if ( $autoplaintext ) { echo ' disabled'; } ?>" autocomplete="off" <?php disabled( $autoplaintext );?>><?php echo $post->post_excerpt ?></textarea>
 	</div>
 
 	<div id="html-wrap">
 		<?php
 		if ( $editable && ! empty( $modules ) ) :
-			$module_list                   = $this->templateobj->get_module_list();
-			$screenshots                   = $this->templateobj->get_module_screenshots();
-			$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/' . $this->get_template() . '/modules/';
+			$module_list = $this->templateobj->get_module_list();
+			$screenshots = $this->templateobj->get_module_screenshots();
+			$screenshot_modules_folder = MAILSTER_UPLOAD_DIR . '/screenshots/' . $this->get_template() . '/modules/';
 			$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $this->get_template() . '/modules/';
-			?>
+		?>
 			<div id="module-selector">
-				<a class="toggle-modules mailster-btn mailster-icon" title="<?php esc_attr_e( 'Modules', 'mailster' ); ?>"></a>
+				<a class="toggle-modules mailster-btn mailster-icon" title="<?php esc_attr_e( 'Modules', 'mailster' ) ?>"></a>
 				<div id="module-search-wrap">
-					<input type="text" class="widefat" id="module-search" placeholder="<?php esc_attr_e( 'Search Modules...', 'mailster' ); ?>">
-					<a id="module-search-remove" href="#" title="<?php esc_attr_e( 'clear search', 'mailster' ); ?>">&#10005;</a>
+					<input type="text" class="widefat" id="module-search" placeholder="<?php esc_attr_e( 'Search Modules...', 'mailster' ) ?>">
+					<a id="module-search-remove" href="#" title="<?php esc_attr_e( 'clear search', 'mailster' );?>">&#10005;</a>
 				</div>
 				<div class="inner">
 					<ul>
@@ -76,14 +64,13 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 
 						if ( isset( $screenshots[ $i ] ) && file_exists( $screenshot_modules_folder . $screenshots[ $i ] ) ) {
 							$has_screenshots = getimagesize( $screenshot_modules_folder . $screenshots[ $i ] );
-							$factor          = round( $has_screenshots[0] / 150 );
+							$factor = round( $has_screenshots[0] / 150 );
 						} else {
 							$has_screenshots = false;
 						}
 
 						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / $factor ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $module . '"' ) ) . '" data-id="' . $i . '" tabindex="0"><span>' . esc_html( $module ) . '</span><span class="hidden">' . esc_html( strtolower( $module ) ) . '</span></a></li>';
-					}
-					?>
+					} ?>
 					</ul>
 				</div>
 			</div>
@@ -91,22 +78,15 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 
 		<input type="hidden" id="editor-height" name="mailster_data[editor_height]" value="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>">
 		<div id="iframe-wrap">
-			<iframe id="mailster_iframe" src="
-			<?php
-			echo add_query_arg(
-				array(
-					'action'       => 'mailster_get_template',
-					'id'           => $post->ID,
-					'template'     => $this->get_template(),
-					'templatefile' => $this->get_file(),
-					'editorstyle'  => $editable,
-					'_wpnonce'     => wp_create_nonce( 'mailster_nonce' ),
-					'nocache'      => time(),
-				),
-				admin_url( 'admin-ajax.php' )
-			)
-			?>
-			" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
+			<iframe id="mailster_iframe" src="<?php echo add_query_arg(array(
+				'action' => 'mailster_get_template',
+				'id' => $post->ID,
+				'template' => $this->get_template(),
+				'templatefile' => $this->get_file(),
+				'editorstyle' => $editable,
+				'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
+				'nocache' => time(),
+			), admin_url( 'admin-ajax.php' ) ) ?>" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
 			</iframe>
 		</div>
 	</div>
@@ -138,6 +118,6 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 		</div>
 	</div>
 </div>
-<textarea id="content" autocomplete="off" name="content"><?php echo ( $post->post_content ); ?></textarea>
-<textarea id="modules" autocomplete="off"><?php echo ( $modules ); ?></textarea>
+<textarea id="content" autocomplete="off" name="content"><?php echo ( $post->post_content ) ?></textarea>
+<textarea id="modules" autocomplete="off"><?php echo ( $modules ) ?></textarea>
 <textarea id="head" name="mailster_data[head]" autocomplete="off"><?php echo ( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>
