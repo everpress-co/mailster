@@ -44,8 +44,8 @@ class MailsterHelper {
 
 			if ( ! $width && ! $height ) {
 				$orig_size = getimagesize( $actual_file_path );
-				$width = $orig_size[0];
-				$height = $orig_size[1];
+				$width     = $orig_size[0];
+				$height    = $orig_size[1];
 			}
 		}
 
@@ -56,22 +56,30 @@ class MailsterHelper {
 			if ( file_exists( $img_url ) ) {
 
 				$actual_file_path = $img_url;
-				$img_url = str_replace( ABSPATH, site_url( '/' ), $img_url );
+				$img_url          = str_replace( ABSPATH, site_url( '/' ), $img_url );
 
 			} elseif ( strpos( $img_url, admin_url( 'admin-ajax' ) ) === 0 ) {
 
 				parse_str( $file_path['query'], $query );
-				$width = $query['w'];
+				$width  = $query['w'];
 				$height = $query['h'];
-				$crop = $query['c'];
+				$crop   = $query['c'];
 
-				return apply_filters( 'mailster_create_image', array(
-					'id' => $attach_id,
-					'url' => $img_url,
-					'width' => $width,
-					'height' => $height,
-					'asp' => $width / $height,
-				), $attach_id, $img_url, $width, $height, $crop);
+				return apply_filters(
+					'mailster_create_image',
+					array(
+						'id'     => $attach_id,
+						'url'    => $img_url,
+						'width'  => $width,
+						'height' => $height,
+						'asp'    => $width / $height,
+					),
+					$attach_id,
+					$img_url,
+					$width,
+					$height,
+					$crop
+				);
 
 			} else {
 
@@ -86,14 +94,17 @@ class MailsterHelper {
 
 						$unsplash_args = apply_filters( 'mailster_create_image_unsplash_args', array(), $attach_id, $img_url, $width, $height, $crop );
 
-						$args = wp_parse_args( $unsplash_args, array(
-							'w' => $width,
-							'h' => $height,
-							'crop' => $crop,
-							'fit' => $crop ? 'crop' : 'max',
-							'dpi' => 1,
-							'q' => apply_filters( 'jpeg_quality', $query_args['q'] ),
-						));
+						$args = wp_parse_args(
+							$unsplash_args,
+							array(
+								'w'    => $width,
+								'h'    => $height,
+								'crop' => $crop,
+								'fit'  => $crop ? 'crop' : 'max',
+								'dpi'  => 1,
+								'q'    => apply_filters( 'jpeg_quality', $query_args['q'] ),
+							)
+						);
 
 						$img_url = add_query_arg( $args, $img_url );
 
@@ -102,13 +113,21 @@ class MailsterHelper {
 					}
 					$asp = null;
 
-					return apply_filters( 'mailster_create_image', array(
-						'id' => $attach_id,
-						'url' => $img_url,
-						'width' => $width,
-						'height' => $height,
-						'asp' => $asp,
-					), $attach_id, $img_url, $width, $height, $crop);
+					return apply_filters(
+						'mailster_create_image',
+						array(
+							'id'     => $attach_id,
+							'url'    => $img_url,
+							'width'  => $width,
+							'height' => $height,
+							'asp'    => $asp,
+						),
+						$attach_id,
+						$img_url,
+						$width,
+						$height,
+						$crop
+					);
 
 				}
 			}
@@ -138,7 +157,7 @@ class MailsterHelper {
 		$no_ext_path = trailingslashit( $file_info['dirname'] ) . $file_info['filename'];
 
 		if ( $original ) {
-			$new_img_size = array( $image_src[1], $image_src[2] );
+			$new_img_size     = array( $image_src[1], $image_src[2] );
 			$resized_img_path = $no_ext_path . '.' . $extension;
 		} else {
 			if ( $crop ) {
@@ -156,35 +175,43 @@ class MailsterHelper {
 			$image = wp_get_image_editor( $actual_file_path );
 			if ( ! is_wp_error( $image ) ) {
 				$image->resize( $width, $height, $crop );
-				$imageobj = $image->save();
+				$imageobj     = $image->save();
 				$new_img_path = ! is_wp_error( $imageobj ) ? $imageobj['path'] : $actual_file_path;
 			} else {
 				$new_img_path = $actual_file_path;
 			}
 
 			$new_img_size = getimagesize( $new_img_path );
-			$new_img = str_replace( basename( $image_src[0] ), basename( $new_img_path ), $image_src[0] );
+			$new_img      = str_replace( basename( $image_src[0] ), basename( $new_img_path ), $image_src[0] );
 
 			$meta_data = wp_get_attachment_metadata( $attach_id );
 			if ( $meta_data && is_array( $meta_data ) ) {
-				$size_id = '_mailster-' . $width . 'x' . $height . '|' . $crop;
+				$size_id                        = '_mailster-' . $width . 'x' . $height . '|' . $crop;
 				$meta_data['sizes'][ $size_id ] = array(
-					'file' => basename( $new_img_path ),
-					'width' => $width,
-					'height' => $height,
+					'file'      => basename( $new_img_path ),
+					'width'     => $width,
+					'height'    => $height,
 					'mime-type' => $new_img_size['mime'],
 				);
 				wp_update_attachment_metadata( $attach_id, $meta_data );
 			}
 		}
 
-		return apply_filters( 'mailster_create_image', array(
-			'id' => $attach_id,
-			'url' => $new_img,
-			'width' => $new_img_size[0],
-			'height' => $new_img_size[1],
-			'asp' => $new_img_size[1] ? $new_img_size[0] / $new_img_size[1] : null,
-		), $attach_id, $img_url, $width, $height, $crop);
+		return apply_filters(
+			'mailster_create_image',
+			array(
+				'id'     => $attach_id,
+				'url'    => $new_img,
+				'width'  => $new_img_size[0],
+				'height' => $new_img_size[1],
+				'asp'    => $new_img_size[1] ? $new_img_size[0] / $new_img_size[1] : null,
+			),
+			$attach_id,
+			$img_url,
+			$width,
+			$height,
+			$crop
+		);
 
 	}
 
@@ -258,7 +285,7 @@ class MailsterHelper {
 	 */
 	public function install_plugin( $plugin ) {
 
-		$plugins = array_keys( get_plugins() );
+		$plugins     = array_keys( get_plugins() );
 		$pluginslugs = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
 		// already installed
@@ -268,35 +295,38 @@ class MailsterHelper {
 
 		include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 
-		$api = plugins_api( 'plugin_information', array(
-				'slug' => $plugin,
+		$api = plugins_api(
+			'plugin_information',
+			array(
+				'slug'   => $plugin,
 				'fields' => array(
 					'short_description' => false,
-					'sections' => false,
-					'requires' => false,
-					'rating' => false,
-					'ratings' => false,
-					'downloaded' => false,
-					'last_updated' => false,
-					'added' => false,
-					'tags' => false,
-					'compatibility' => false,
-					'homepage' => false,
-					'donate_link' => false,
+					'sections'          => false,
+					'requires'          => false,
+					'rating'            => false,
+					'ratings'           => false,
+					'downloaded'        => false,
+					'last_updated'      => false,
+					'added'             => false,
+					'tags'              => false,
+					'compatibility'     => false,
+					'homepage'          => false,
+					'donate_link'       => false,
 				),
-		) );
+			)
+		);
 
 		if ( is_wp_error( $api ) ) {
 			wp_die( $api );
 		}
 
-		$title = esc_html__( 'Plugin Install', 'mailster' );
-		$parent_file = 'plugins.php';
+		$title        = esc_html__( 'Plugin Install', 'mailster' );
+		$parent_file  = 'plugins.php';
 		$submenu_file = 'plugin-install.php';
 
 		$title = sprintf( esc_html__( 'Installing Plugin: %s', 'mailster' ), $api->name . ' ' . $api->version );
 		$nonce = 'install-plugin_' . $plugin;
-		$url = 'update.php?action=install-plugin&plugin=' . urlencode( $plugin );
+		$url   = 'update.php?action=install-plugin&plugin=' . urlencode( $plugin );
 
 		$type = 'web'; // Install plugin type, From Web or an Upload.
 
@@ -347,19 +377,19 @@ class MailsterHelper {
 
 		global $wpdb;
 
-		$pts = get_post_types( array( 'public' => true ), 'objects' );
+		$pts      = get_post_types( array( 'public' => true ), 'objects' );
 		$pt_names = array_keys( $pts );
 
 		$defaults = array(
-			'post_type' => $pt_names,
-			'suppress_filters' => true,
+			'post_type'              => $pt_names,
+			'suppress_filters'       => true,
 			'update_post_term_cache' => false,
 			'update_post_meta_cache' => false,
-			'post_status' => 'publish',
-			'order' => 'DESC',
-			'orderby' => 'post_date',
-			'posts_per_page' => -1,
-			'offset' => 0,
+			'post_status'            => 'publish',
+			'order'                  => 'DESC',
+			'orderby'                => 'post_date',
+			'posts_per_page'         => -1,
+			'offset'                 => 0,
 		);
 
 		$query = wp_parse_args( $args, $defaults );
@@ -370,7 +400,15 @@ class MailsterHelper {
 
 		if ( $countonly ) {
 			// Do main query with only one result to reduce server load
-			$get_posts = new WP_Query( wp_parse_args( array( 'posts_per_page' => 1, 'offset' => 0 ), $query ) );
+			$get_posts = new WP_Query(
+				wp_parse_args(
+					array(
+						'posts_per_page' => 1,
+						'offset'         => 0,
+					),
+					$query
+				)
+			);
 			return $wpdb->query( str_ireplace( 'LIMIT 0, 1', '', $get_posts->request ) );
 		}
 
@@ -391,10 +429,10 @@ class MailsterHelper {
 			}
 
 			$results[] = array(
-				'ID' => $post->ID,
-				'title' => trim( esc_html( strip_tags( get_the_title( $post ) ) ) ),
+				'ID'        => $post->ID,
+				'title'     => trim( esc_html( strip_tags( get_the_title( $post ) ) ) ),
 				'permalink' => get_permalink( $post->ID ),
-				'info' => $info,
+				'info'      => $info,
 			);
 		}
 
@@ -412,45 +450,45 @@ class MailsterHelper {
 	public function get_social_links( $username = '', $only_with_username = false ) {
 
 		$links = array(
-			'amazon' => 'https://amazon.com',
-			'android' => 'https://android.com',
-			'apple' => 'https://apple.com',
-			'appstore' => 'https://apple.com',
-			'behance' => 'https://www.behance.net/%%USERNAME%%',
-			'blogger' => 'https://%%USERNAME%%.blogspot.com/',
-			'delicious' => 'https://delicious.com/%%USERNAME%%',
-			'deviantart' => 'https://%%USERNAME%%.deviantart.com',
-			'digg' => 'https://digg.com/users/%%USERNAME%%',
-			'dribbble' => 'https://dribbble.com/%%USERNAME%%',
-			'drive' => 'https://drive.google.com',
-			'dropbox' => 'https://dropbox.com',
-			'ebay' => 'https://www.ebay.com',
-			'facebook' => 'https://facebook.com/%%USERNAME%%',
-			'flickr' => 'https://www.flickr.com/photos/%%USERNAME%%',
-			'forrst' => 'https://forrst.me/%%USERNAME%%',
-			'google' => 'https://www.google.com',
-			'googleplus' => 'https://plus.google.com/%%USERNAME%%',
-			'html5' => 'https://html5.com',
-			'instagram' => 'https://instagram.com/%%USERNAME%%',
-			'lastfm' => 'https://www.lastfm.de/user/%%USERNAME%%',
-			'linkedin' => 'https://www.linkedin.com/%%USERNAME%%',
-			'myspace' => 'https://www.myspace.com/%%USERNAME%%',
-			'paypal' => 'https://paypal.com',
-			'picasa' => 'https://picasa.com',
-			'pinterest' => 'https://pinterest.com/%%USERNAME%%',
-			'rss' => get_bloginfo( 'rss2_url' ),
-			'skype' => 'skype:%%USERNAME%%',
-			'soundcloud' => 'https://soundcloud.com/%%USERNAME%%',
+			'amazon'      => 'https://amazon.com',
+			'android'     => 'https://android.com',
+			'apple'       => 'https://apple.com',
+			'appstore'    => 'https://apple.com',
+			'behance'     => 'https://www.behance.net/%%USERNAME%%',
+			'blogger'     => 'https://%%USERNAME%%.blogspot.com/',
+			'delicious'   => 'https://delicious.com/%%USERNAME%%',
+			'deviantart'  => 'https://%%USERNAME%%.deviantart.com',
+			'digg'        => 'https://digg.com/users/%%USERNAME%%',
+			'dribbble'    => 'https://dribbble.com/%%USERNAME%%',
+			'drive'       => 'https://drive.google.com',
+			'dropbox'     => 'https://dropbox.com',
+			'ebay'        => 'https://www.ebay.com',
+			'facebook'    => 'https://facebook.com/%%USERNAME%%',
+			'flickr'      => 'https://www.flickr.com/photos/%%USERNAME%%',
+			'forrst'      => 'https://forrst.me/%%USERNAME%%',
+			'google'      => 'https://www.google.com',
+			'googleplus'  => 'https://plus.google.com/%%USERNAME%%',
+			'html5'       => 'https://html5.com',
+			'instagram'   => 'https://instagram.com/%%USERNAME%%',
+			'lastfm'      => 'https://www.lastfm.de/user/%%USERNAME%%',
+			'linkedin'    => 'https://www.linkedin.com/%%USERNAME%%',
+			'myspace'     => 'https://www.myspace.com/%%USERNAME%%',
+			'paypal'      => 'https://paypal.com',
+			'picasa'      => 'https://picasa.com',
+			'pinterest'   => 'https://pinterest.com/%%USERNAME%%',
+			'rss'         => get_bloginfo( 'rss2_url' ),
+			'skype'       => 'skype:%%USERNAME%%',
+			'soundcloud'  => 'https://soundcloud.com/%%USERNAME%%',
 			'stumbleupon' => 'https://stumbleupon.com',
-			'technorati' => 'https://technorati.com',
-			'tumblr' => 'https://%%USERNAME%%.tumblr.com',
-			'twitter' => 'https://twitter.com/%%USERNAME%%',
-			'vimeo' => 'https://vimeo.com/%%USERNAME%%',
-			'windows' => 'https://microsoft.com',
-			'windows_8' => 'https://microsoft.com',
-			'wordpress' => 'https://profiles.wordpress.org/%%USERNAME%%',
-			'yahoo' => 'https://yahoo.com',
-			'youtube' => 'https://youtube.com/%%USERNAME%%',
+			'technorati'  => 'https://technorati.com',
+			'tumblr'      => 'https://%%USERNAME%%.tumblr.com',
+			'twitter'     => 'https://twitter.com/%%USERNAME%%',
+			'vimeo'       => 'https://vimeo.com/%%USERNAME%%',
+			'windows'     => 'https://microsoft.com',
+			'windows_8'   => 'https://microsoft.com',
+			'wordpress'   => 'https://profiles.wordpress.org/%%USERNAME%%',
+			'yahoo'       => 'https://yahoo.com',
+			'youtube'     => 'https://youtube.com/%%USERNAME%%',
 		);
 
 		$links = apply_filters( 'mailster_get_social_links', $links );
@@ -498,10 +536,10 @@ class MailsterHelper {
 	public function get_next_date_in_future( $utc_start, $interval, $time_frame, $weekdays = array(), $in_future = true ) {
 
 		// in local time
-		$offset = $this->gmt_offset( true );
-		$now = time() + $offset;
+		$offset     = $this->gmt_offset( true );
+		$now        = time() + $offset;
 		$utc_start += $offset;
-		$times = 1;
+		$times      = 1;
 
 		// must be in future and starttime in the past
 		if ( $in_future && $utc_start - $now < 0 ) {
@@ -509,22 +547,22 @@ class MailsterHelper {
 			switch ( $time_frame ) {
 				case 'year':
 					$count = date( 'Y', $now ) - date( 'Y', $utc_start );
-				break;
+					break;
 				case 'month':
 					$count = ( date( 'Y', $now ) - date( 'Y', $utc_start ) ) * 12 + ( date( 'm', $now ) - date( 'm', $utc_start ) );
-				break;
+					break;
 				case 'week':
 					$count = floor( ( ( $now - $utc_start ) / 86400 ) / 7 );
-				break;
+					break;
 				case 'day':
 					$count = floor( ( $now - $utc_start ) / 86400 );
-				break;
+					break;
 				case 'hour':
 					$count = floor( ( $now - $utc_start ) / 3600 );
-				break;
+					break;
 				default:
 					$count = $interval;
-				break;
+					break;
 			}
 
 			$times = $interval ? ceil( $count / $interval ) : 0;
@@ -540,7 +578,7 @@ class MailsterHelper {
 		if ( ! empty( $weekdays ) && count( $weekdays ) < 7 ) {
 
 			$dayofweek = date( 'w', $nextdate );
-			$i = 0;
+			$i         = 0;
 			if ( ! $interval ) {
 				$interval = 1;
 			}
@@ -591,7 +629,15 @@ class MailsterHelper {
 		foreach ( $taxonomies as $id => $taxonomy ) {
 			$tax = '<div class="dynamic_embed_options_taxonomy_container">' . ( $labels ? '<label class="dynamic_embed_options_taxonomy_label">' . $taxonomy->labels->name . ': </label>' : '' ) . '<span class="dynamic_embed_options_taxonomy_wrap">';
 
-			$cats = get_categories( array( 'hide_empty' => false, 'taxonomy' => $id, 'type' => $post_type, 'orderby' => 'id', 'number' => 999 ) );
+			$cats = get_categories(
+				array(
+					'hide_empty' => false,
+					'taxonomy'   => $id,
+					'type'       => $post_type,
+					'orderby'    => 'id',
+					'number'     => 999,
+				)
+			);
 
 			if ( ! isset( $values[ $id ] ) ) {
 				$values[ $id ] = array( '-1' );
@@ -600,12 +646,12 @@ class MailsterHelper {
 			$selects = array();
 
 			foreach ( $values[ $id ] as $term ) {
-				$select = '<select class="dynamic_embed_options_taxonomy check-for-posts" ' . ( $names ? 'name="mailster_data[autoresponder][terms][' . $id . '][]"' : '' ) . '>';
+				$select  = '<select class="dynamic_embed_options_taxonomy check-for-posts" ' . ( $names ? 'name="mailster_data[autoresponder][terms][' . $id . '][]"' : '' ) . '>';
 				$select .= '<option value="-1">' . sprintf( esc_html__( 'any %s', 'mailster' ), $taxonomy->labels->singular_name ) . '</option>';
 				foreach ( $cats as $cat ) {
 					$select .= '<option value="' . $cat->term_id . '" ' . selected( $cat->term_id, $term, false ) . '>' . $cat->name . '</option>';
 				}
-				$select .= '</select>';
+				$select   .= '</select>';
 				$selects[] = $select;
 			}
 
@@ -617,9 +663,12 @@ class MailsterHelper {
 		}
 
 		$html = ( ! empty( $taxwraps ) )
-			? implode( ( $labels
+			? implode(
+				( $labels
 				? '<label class="dynamic_embed_options_taxonomy_label">&nbsp;</label>'
-			: '' ), $taxwraps )
+				: '' ),
+				$taxwraps
+			)
 			: '';
 
 		return $html;
@@ -678,10 +727,10 @@ class MailsterHelper {
 		}
 
 		?>
-		<select name="<?php echo esc_attr( $fieldname ) ?>" <?php echo $disabled ? 'disabled' : '' ?>>
-				<option value="-1" <?php selected( -1 == $selected ) ?>><?php esc_html_e( 'Plain Text (no template file)', 'mailster' );?></option>
+		<select name="<?php echo esc_attr( $fieldname ); ?>" <?php echo $disabled ? 'disabled' : ''; ?>>
+				<option value="-1" <?php selected( -1 == $selected ); ?>><?php esc_html_e( 'Plain Text (no template file)', 'mailster' ); ?></option>
 		<?php foreach ( $templatefiles as $slug => $filedata ) : ?>
-				<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo esc_html( $slug ) ?>)</option>
+				<option value="<?php echo $slug; ?>"<?php selected( $slug == $selected ); ?>><?php echo esc_attr( $filedata['label'] ); ?> (<?php echo esc_html( $slug ); ?>)</option>
 		<?php endforeach; ?>
 		</select>
 		<?php
@@ -699,17 +748,20 @@ class MailsterHelper {
 
 		$image_url = wp_get_attachment_image_src( $attachemnt_id, $size );
 
-		if ( ! function_exists( 'wpview_media_sandbox_styles' ) ) { // since 4.0 ?>
+		if ( ! function_exists( 'wpview_media_sandbox_styles' ) ) { // since 4.0
+			?>
 			<?php if ( $image_url ) : ?>
-			<img src="<?php echo esc_attr( $image_url[0] ) ?> width="150">
+			<img src="<?php echo esc_attr( $image_url[0] ); ?> width="150">
 			<?php endif; ?>
-			<label><?php esc_html_e( 'Image ID', 'mailster' );?>:
+			<label><?php esc_html_e( 'Image ID', 'mailster' ); ?>:
 			<input class="small-text" type="text" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>"></label>
 
-<?php
+			<?php
 		} else {
 			wp_enqueue_media();
-			wp_add_inline_style( 'media-views', '
+			wp_add_inline_style(
+				'media-views',
+				'
 				.media-editor-link{
 					display: inline-block;
 					height: 80px;
@@ -747,28 +799,33 @@ class MailsterHelper {
 					top: 50%;
 					position: relative;
 					max-width: 200px;
-				}' );
+				}'
+			);
 
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 			wp_enqueue_script( 'mailster-media-editor-link-script', MAILSTER_URI . 'assets/js/media-editor-link-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
 			$image_url = $image_url ? $image_url[0] : '';
-			$classes = array( 'media-editor-link' );
+			$classes   = array( 'media-editor-link' );
 			if ( $image_url ) {
 				$classes[] = 'media-editor-link-has-image';
 			}
 
-?>
+			?>
 
-			<div class="<?php echo esc_attr( implode( ' ', $classes ) ) ?>" title="<?php esc_attr_e( 'Change Image', 'mailster' ); ?>" data-title="<?php esc_attr_e( 'Add Image', 'mailster' ); ?>">
-				<img class="media-editor-link-img" <?php if ( $image_url ) : ?>src="<?php echo esc_attr( $image_url ) ?>"<?php endif; ?>>
+			<div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" title="<?php esc_attr_e( 'Change Image', 'mailster' ); ?>" data-title="<?php esc_attr_e( 'Add Image', 'mailster' ); ?>">
+				<img class="media-editor-link-img" 
+				<?php
+				if ( $image_url ) :
+					?>
+					src="<?php echo esc_attr( $image_url ); ?>"<?php endif; ?>>
 				<a class="media-editor-link-select button" href="#"><?php esc_html_e( 'Select Image', 'mailster' ); ?></a>
 				<a class="media-editor-link-remove" href="#" title="<?php esc_attr_e( 'Remove Image', 'mailster' ); ?>">&#10005;</a>
 				<input class="media-editor-link-input" type="hidden" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>">
 			</div>
 
-	<?php
+			<?php
 
 		}
 
@@ -788,7 +845,7 @@ class MailsterHelper {
 
 		if ( $offset == '' ) {
 			$tzstring = get_option( 'timezone_string' );
-			$current = date_default_timezone_get();
+			$current  = date_default_timezone_get();
 			date_default_timezone_set( $tzstring );
 			$offset = date( 'Z' ) / 3600;
 			date_default_timezone_set( $current );
@@ -865,7 +922,7 @@ class MailsterHelper {
 	 */
 	public function get_timestamp_by_string( $string, $last = false ) {
 
-		$offset = $this->gmt_offset();
+		$offset           = $this->gmt_offset();
 		$current_timezone = date_default_timezone_get();
 		date_default_timezone_set( 'UTC' );
 
@@ -883,7 +940,7 @@ class MailsterHelper {
 				break;
 		}
 
-		$utcMidnight = strtotime( $str, $day );
+		$utcMidnight  = strtotime( $str, $day );
 		$zoneMidnight = strtotime( ( $offset * -1 ) . ' hours', $utcMidnight );
 
 		date_default_timezone_set( $current_timezone );
@@ -904,7 +961,7 @@ class MailsterHelper {
 		$doc = new DOMDocument();
 
 		$doc->preserveWhiteSpace = false;
-		$i_error = libxml_use_internal_errors( true );
+		$i_error                 = libxml_use_internal_errors( true );
 		$doc->loadHTML( $html );
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
@@ -1015,13 +1072,13 @@ class MailsterHelper {
 
 		preg_match_all( '#(<img.*?)(width="(\d+)")(.*?>)#', $content, $images );
 		foreach ( $images[0] as $i => $image ) {
-			$oldstyle = '';
+			$oldstyle  = '';
 			$styleattr = '';
 			if ( preg_match( '#style="([^"]*)"#', $image, $style ) ) {
-				$oldstyle = $style[1];
+				$oldstyle  = $style[1];
 				$styleattr = $style[0];
 			}
-			$imgstr = str_replace( $styleattr, '', $images[1][ $i ] . 'style="width:' . $images[3][ $i ] . 'px;' . $oldstyle . '" ' . $images[2][ $i ] . $images[4][ $i ] );
+			$imgstr  = str_replace( $styleattr, '', $images[1][ $i ] . 'style="width:' . $images[3][ $i ] . 'px;' . $oldstyle . '" ' . $images[2][ $i ] . $images[4][ $i ] );
 			$content = str_replace( $image, $imgstr, $content );
 		}
 
@@ -1218,7 +1275,7 @@ class MailsterHelper {
 		if ( $mailster_mystyles ) {
 			foreach ( $mailster_mystyles as $type => $styles ) {
 				foreach ( $styles as $style ) {
-					$mailster_styles .= '<style type="text/css"' . ('embed' == $type ? ' data-embed' : '') . '>' . "\n" . $style . "\n" . '</style>' . "\n";
+					$mailster_styles .= '<style type="text/css"' . ( 'embed' == $type ? ' data-embed' : '' ) . '>' . "\n" . $style . "\n" . '</style>' . "\n";
 				}
 			}
 		}
@@ -1285,9 +1342,9 @@ class MailsterHelper {
 			return;
 		}
 
-		$path = untrailingslashit( ABSPATH );
+		$path   = untrailingslashit( ABSPATH );
 		$before = '';
-		$after = '';
+		$after  = '';
 
 		foreach ( $wp_styles->registered[ $handle ]->deps as $h ) {
 			$this->wp_print_embedded_styles( $h );
@@ -1431,13 +1488,13 @@ class MailsterHelper {
 	public function in_timeframe( $timestamp = null ) {
 
 		$from = mailster_option( 'time_frame_from', 0 );
-		$to = mailster_option( 'time_frame_to', 0 );
+		$to   = mailster_option( 'time_frame_to', 0 );
 		$days = mailster_option( 'time_frame_day' );
 		if ( is_null( $timestamp ) ) {
 			$timestamp = current_time( 'timestamp' );
 		}
 		$hour = date( 'G', $timestamp );
-		$day = date( 'w', $timestamp );
+		$day  = date( 'w', $timestamp );
 
 		// further check if not 24h
 		if ( abs( $from - $to ) ) {
@@ -1549,7 +1606,7 @@ class MailsterHelper {
 			$cache_duration = 360;
 		}
 
-		if ( ! ($posts = mailster_cache_get( 'feed_' . $feed_id )) ) {
+		if ( ! ( $posts = mailster_cache_get( 'feed_' . $feed_id ) ) ) {
 			if ( ! class_exists( 'SimplePie', false ) ) {
 				require_once( ABSPATH . WPINC . '/class-simplepie.php' );
 			}
@@ -1568,7 +1625,7 @@ class MailsterHelper {
 
 			$feed->set_cache_duration( (int) $cache_duration );
 
-		    $feed->strip_htmltags( apply_filters( 'mailster_feed_strip_htmltags', $feed->strip_htmltags ) );
+			$feed->strip_htmltags( apply_filters( 'mailster_feed_strip_htmltags', $feed->strip_htmltags ) );
 			$feed->strip_attributes( apply_filters( 'mailster_feed_strip_attributes', $feed->strip_attributes ) );
 
 			$feed->init();
@@ -1582,7 +1639,7 @@ class MailsterHelper {
 				return $feed;
 			}
 
-		    $max_items = apply_filters( 'mailster_feed_max_items', 100 );
+			$max_items = apply_filters( 'mailster_feed_max_items', 100 );
 			$max_items = @$feed->get_item_quantity( (int) $max_items );
 
 			if ( $item >= $max_items ) {
@@ -1591,11 +1648,11 @@ class MailsterHelper {
 
 			$rss_items = $feed->get_items( 0, $max_items );
 
-			$recent_feeds = get_option( 'mailster_recent_feeds', array() );
-			$recent_feeds = array_reverse( $recent_feeds );
+			$recent_feeds                       = get_option( 'mailster_recent_feeds', array() );
+			$recent_feeds                       = array_reverse( $recent_feeds );
 			$recent_feeds[ $feed->get_title() ] = $url;
-			$recent_feeds = array_reverse( $recent_feeds );
-			$recent_feeds = array_slice( $recent_feeds, 0, 5 );
+			$recent_feeds                       = array_reverse( $recent_feeds );
+			$recent_feeds                       = array_slice( $recent_feeds, 0, 5 );
 			update_option( 'mailster_recent_feeds', $recent_feeds );
 
 			$posts = array();
@@ -1611,26 +1668,28 @@ class MailsterHelper {
 				} else {
 					$post_image = false;
 				}
-				$author = $rss_item->get_author();
+				$author   = $rss_item->get_author();
 				$category = $rss_item->get_categories();
 				$category = wp_list_pluck( (array) $category, 'term' );
 
-				$post = new WP_Post((object) array(
-					'post_type' => 'mailster_rss',
-					'post_title' => $rss_item->get_title(),
-					'post_image' => $post_image,
-					'post_author' => $author ? $author->name : '',
-					'post_author_link' => $author ? $author->link : '',
-					'post_author_email' => $author ? $author->email : '',
-					'post_permalink' => $rss_item->get_permalink(),
-					'post_excerpt' => $post_excerpt,
-					'post_content' => $post_content,
-					'post_category' => $category,
-					'post_date' => $rss_item->get_date( 'Y-m-d H:i:s' ),
-					'post_date_gmt' => $rss_item->get_gmdate( 'Y-m-d H:i:s' ),
-					'post_modified' => $rss_item->get_updated_date( 'Y-m-d H:i:s' ),
-					'post_modified_gmt' => $rss_item->get_updated_gmdate( 'Y-m-d H:i:s' ),
-				));
+				$post = new WP_Post(
+					(object) array(
+						'post_type'         => 'mailster_rss',
+						'post_title'        => $rss_item->get_title(),
+						'post_image'        => $post_image,
+						'post_author'       => $author ? $author->name : '',
+						'post_author_link'  => $author ? $author->link : '',
+						'post_author_email' => $author ? $author->email : '',
+						'post_permalink'    => $rss_item->get_permalink(),
+						'post_excerpt'      => $post_excerpt,
+						'post_content'      => $post_content,
+						'post_category'     => $category,
+						'post_date'         => $rss_item->get_date( 'Y-m-d H:i:s' ),
+						'post_date_gmt'     => $rss_item->get_gmdate( 'Y-m-d H:i:s' ),
+						'post_modified'     => $rss_item->get_updated_date( 'Y-m-d H:i:s' ),
+						'post_modified_gmt' => $rss_item->get_updated_gmdate( 'Y-m-d H:i:s' ),
+					)
+				);
 
 				$posts[ $id ] = $post;
 			}
@@ -1715,22 +1774,25 @@ class MailsterHelper {
 	 */
 	public function get_meta_tags_from_url( $url, $fields = null, $force = false ) {
 
-		$tags = null;
+		$tags      = null;
 		$cache_key = 'mailster_meta_tags_' . md5( $url );
 
 		if ( $force || false === ( $tags = get_transient( $cache_key ) ) ) {
-			$response = wp_remote_get( $url, array(
-				'timeout' => 5,
-			) );
+			$response = wp_remote_get(
+				$url,
+				array(
+					'timeout' => 5,
+				)
+			);
 
 			$tags = array();
 
 			if ( ! is_wp_error( $response ) ) {
-				$body = wp_remote_retrieve_body( $response );
+				$body    = wp_remote_retrieve_body( $response );
 				$pattern = '~<\s*meta\s(?=[^>]*?\b(?:name|property|http-equiv)\s*=\s*(?|"\s*([^"]*?)\s*"|\'\s*([^\']*?)\s*\'|([^"\'>]*?)(?=\s*/?\s*>|\s\w+\s*=)))[^>]*?\bcontent\s*=\s*(?|"\s*([^"]*?)\s*"|\'\s*([^\']*?)\s*\'|([^"\'>]*?)(?=\s*/?\s*>|\s\w+\s*=))[^>]*>~ix';
 				if ( preg_match_all( $pattern, $body, $out ) ) {
-	    			$tags = array_combine( $out[1], $out[2] );
-	    		}
+					$tags = array_combine( $out[1], $out[2] );
+				}
 			}
 
 			set_transient( $cache_key, $tags, DAY_IN_SECONDS );
@@ -1774,14 +1836,14 @@ class MailsterHelper {
 			return $excerpt;
 		}
 
-		$string = str_replace( "\n", '<!--Mailster:newline-->', $org_string );
-		$string = html_entity_decode( wp_trim_words( htmlentities( $string ), $length, $more ) );
+		$string            = str_replace( "\n", '<!--Mailster:newline-->', $org_string );
+		$string            = html_entity_decode( wp_trim_words( htmlentities( $string ), $length, $more ) );
 		$maybe_broken_html = str_replace( '<!--Mailster:newline-->', "\n", $string );
 
 		if ( $maybe_broken_html !== $org_string ) {
 			$doc = new DOMDocument();
 			// Note the meta charset is used to prevent UTF-8 data from being interpreted as Latin1, thus corrupting it
-			$html = '<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"></head><body>';
+			$html  = '<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"></head><body>';
 			$html .= $maybe_broken_html;
 			$html .= '</body></html>';
 
@@ -1822,15 +1884,21 @@ class MailsterHelper {
 
 		if ( $linksonly ) {
 			$links = '/< *a[^>]*href *= *"([^#]*)"[^>]*>(.*)< *\/ *a *>/Uis';
-			$text = preg_replace( $links, '${2} [${1}]', $html );
-			$text = str_replace( array( ' ', '&nbsp;' ), ' ', strip_tags( $text ) );
-			$text = @html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
+			$text  = preg_replace( $links, '${2} [${1}]', $html );
+			$text  = str_replace( array( ' ', '&nbsp;' ), ' ', strip_tags( $text ) );
+			$text  = @html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
 
 			return trim( $text );
 
 		} else {
 			require_once MAILSTER_DIR . 'classes/libs/class.html2text.php';
-			$htmlconverter = new \MailsterHtml2Text\Html2Text( $html, array( 'width' => 200, 'do_links' => 'table' ) );
+			$htmlconverter = new \MailsterHtml2Text\Html2Text(
+				$html,
+				array(
+					'width'    => 200,
+					'do_links' => 'table',
+				)
+			);
 
 			$text = trim( $htmlconverter->get_text() );
 			$text = preg_replace( '/\s*$^\s*/mu', "\r\n", $text );
@@ -1855,9 +1923,13 @@ class MailsterHelper {
 		if ( empty( $object ) ) {
 			$d = html_entity_decode( $serialized_string, ENT_QUOTES, 'UTF-8' );
 
-			$d = preg_replace_callback( '!s:(\d+):"(.*?)";!', function( $matches ) {
+			$d      = preg_replace_callback(
+				'!s:(\d+):"(.*?)";!',
+				function( $matches ) {
 					return 's:' . strlen( $matches[2] ) . ':"' . $matches[2] . '";';
-			}, $d );
+				},
+				$d
+			);
 			$object = maybe_unserialize( $d );
 		}
 
@@ -1880,16 +1952,16 @@ class MailsterHelper {
 		}
 
 		$defaults = array(
-			'id' => uniqid(),
+			'id'           => uniqid(),
 			'button_label' => esc_html__( 'Ok, got it!', 'mailster' ),
-			'classes' => array(),
+			'classes'      => array(),
 		);
 
 		if ( is_string( $args ) ) {
 			$args = array( 'id' => $args );
 		}
 
-		$args = wp_parse_args( $args, $defaults );
+		$args       = wp_parse_args( $args, $defaults );
 		$args['id'] = 'mailster-' . $args['id'];
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
@@ -1897,30 +1969,35 @@ class MailsterHelper {
 		wp_enqueue_script( 'mailster-dialog', MAILSTER_URI . 'assets/js/dialog-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 		wp_enqueue_style( 'mailster-dialog', MAILSTER_URI . 'assets/css/dialog-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-?>
-		<div id="<?php echo esc_attr( $args['id'] ) ?>" class="mailster-notification-dialog notification-dialog-wrap <?php echo esc_attr( $args['id'] ) ?> hidden <?php echo implode( ' ', $args['classes'] ) ?>">
+		?>
+		<div id="<?php echo esc_attr( $args['id'] ); ?>" class="mailster-notification-dialog notification-dialog-wrap <?php echo esc_attr( $args['id'] ); ?> hidden <?php echo implode( ' ', $args['classes'] ); ?>">
 			<div class="notification-dialog-background"></div>
-			<div class="notification-dialog" role="dialog" aria-labelledby="<?php echo esc_attr( $args['id'] ) ?>" tabindex="0">
-				<div class="notification-dialog-content <?php echo esc_attr( $args['id'] ) ?>-content">
+			<div class="notification-dialog" role="dialog" aria-labelledby="<?php echo esc_attr( $args['id'] ); ?>" tabindex="0">
+				<div class="notification-dialog-content <?php echo esc_attr( $args['id'] ); ?>-content">
 					<?php if ( $is_file ) : ?>
-					<?php include $content; ?>
+						<?php include $content; ?>
 					<?php else : ?>
-					<?php echo $content; ?>
+						<?php echo $content; ?>
 					<?php endif; ?>
 				</div>
 				<div class="notification-dialog-footer">
 					<?php foreach ( $args['buttons'] as $button ) : ?>
-					<?php $button = wp_parse_args( $button, array(
-						'href' => '#',
-						'classes' => '',
-						'label' => 'Submit',
-					) ); ?>
-						<a class="<?php echo esc_attr( implode( ' ', (array) $button['classes'] ) ) ?>" href="<?php echo esc_attr( $button['href'] ) ?>"><?php echo esc_html( $button['label'] ) ?></a>
+						<?php
+						$button = wp_parse_args(
+							$button,
+							array(
+								'href'    => '#',
+								'classes' => '',
+								'label'   => 'Submit',
+							)
+						);
+						?>
+						<a class="<?php echo esc_attr( implode( ' ', (array) $button['classes'] ) ); ?>" href="<?php echo esc_attr( $button['href'] ); ?>"><?php echo esc_html( $button['label'] ); ?></a>
 					<?php endforeach; ?>
 				</div>
 			</div>
 		</div>
-<?php
+		<?php
 	}
 
 
@@ -1932,11 +2009,11 @@ class MailsterHelper {
 
 		switch ( $command ) {
 			case 'search':
-				$path = 'search/photos';
+				$path     = 'search/photos';
 				$defaults = array(
 					'per_page' => 30,
 				);
-				$args = wp_parse_args( $args, $defaults );
+				$args     = wp_parse_args( $args, $defaults );
 				if ( empty( $args['query'] ) ) {
 					unset( $args['query'] );
 					$path = 'photos';
@@ -1966,9 +2043,12 @@ class MailsterHelper {
 		$cache_key = 'mailster_unsplash_' . md5( $url );
 
 		if ( false === ( $body = get_transient( $cache_key ) ) ) {
-			$response = wp_remote_get( $url, array(
-				'headers' => $headers,
-			) );
+			$response = wp_remote_get(
+				$url,
+				array(
+					'headers' => $headers,
+				)
+			);
 
 			if ( is_wp_error( $response ) ) {
 				return $response;

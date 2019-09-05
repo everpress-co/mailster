@@ -17,18 +17,18 @@ class MailsterTests {
 		} else {
 			$this->tests = $this->get_tests();
 		}
-		$this->total = count( $this->tests );
+		$this->total  = count( $this->tests );
 		$this->errors = array(
-			'count' => 0,
-			'error_count' => 0,
+			'count'         => 0,
+			'error_count'   => 0,
 			'warning_count' => 0,
-			'notice_count' => 0,
+			'notice_count'  => 0,
 			'success_count' => 0,
-			'all' => array(),
-			'error' => array(),
-			'warning' => array(),
-			'notice' => array(),
-			'success' => array(),
+			'all'           => array(),
+			'error'         => array(),
+			'warning'       => array(),
+			'notice'        => array(),
+			'success'       => array(),
 		);
 
 	}
@@ -59,14 +59,14 @@ class MailsterTests {
 
 		if ( isset( $this->tests[ $test_id ] ) ) {
 
-			$this->last_is_error = false;
-			$this->last_error_test = null;
+			$this->last_is_error      = false;
+			$this->last_error_test    = null;
 			$this->last_error_message = null;
-			$this->last_error_type = 'success';
-			$this->last_error_link = null;
+			$this->last_error_type    = 'success';
+			$this->last_error_link    = null;
 
 			$this->current_id = $test_id;
-			$this->current = $this->tests[ $test_id ];
+			$this->current    = $this->tests[ $test_id ];
 
 			try {
 				if ( is_callable( $this->current ) ) {
@@ -76,10 +76,10 @@ class MailsterTests {
 				} else {
 					$this->warning( 'Test \'' . $test_id . '\' does not exist!' );
 				}
-			} catch (Exception $e) {
+			} catch ( Exception $e ) {
 				$this->error( $e );
 			}
-			return ! ($this->last_error_test == $test_id);
+			return ! ( $this->last_error_test == $test_id );
 
 		}
 
@@ -100,9 +100,9 @@ class MailsterTests {
 
 	public function get_message() {
 
-		$time = date( 'Y-m-d H:i:s' );
-		$html = '';
-		$text = '';
+		$time   = date( 'Y-m-d H:i:s' );
+		$html   = '';
+		$text   = '';
 		$maxlen = max( array_map( 'strlen', array_keys( $this->get_tests() ) ) );
 
 		foreach ( array( 'error', 'warning', 'notice', 'success' ) as $type ) {
@@ -112,8 +112,8 @@ class MailsterTests {
 			foreach ( $this->errors[ $type ] as $test_id => $test_errors ) {
 
 				foreach ( $test_errors as $i => $error ) {
-					$name = $this->nicename( $test_id );
-					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ($error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . esc_html__( 'More Info', 'mailster' ) . '</a>)' : '') . ' <a class="retest mailster-icon" href="' . add_query_arg( array( 'test' => $test_id ), admin_url( 'edit.php?post_type=newsletter&page=mailster_tests&autostart' ) ) . '">' . esc_html__( 'Test again', 'mailster' ) . '</a></h4><div class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</div></div>';
+					$name  = $this->nicename( $test_id );
+					$html .= '<div class="mailster-test-result mailster-test-is-' . $type . '"><h4>' . $name . ( $error['data']['link'] ? ' (<a class="mailster-test-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . esc_html__( 'More Info', 'mailster' ) . '</a>)' : '' ) . ' <a class="retest mailster-icon" href="' . add_query_arg( array( 'test' => $test_id ), admin_url( 'edit.php?post_type=newsletter&page=mailster_tests&autostart' ) ) . '">' . esc_html__( 'Test again', 'mailster' ) . '</a></h4><div class="mailster-test-result-more">' . nl2br( $error['msg'] ) . '</div></div>';
 					if ( $type != 'success' ) {
 						$text .= '[' . $type . '] ' . $test_id . ': ' . strip_tags( $error['msg'] ) . "\n";
 					}
@@ -163,9 +163,9 @@ class MailsterTests {
 	public function get_error_counts() {
 
 		return array(
-			'error' => $this->errors['error_count'],
+			'error'   => $this->errors['error_count'],
 			'warning' => $this->errors['warning_count'],
-			'notice' => $this->errors['notice_count'],
+			'notice'  => $this->errors['notice_count'],
 			'success' => $this->errors['success_count'],
 		);
 
@@ -213,29 +213,29 @@ class MailsterTests {
 			$this->errors['all'][ $test_id ] = array();
 		}
 		$this->errors['all'][ $test_id ][] = array(
-			'msg' => $msg,
+			'msg'  => $msg,
 			'data' => $data,
 		);
 		if ( ! isset( $this->errors[ $type ][ $test_id ] ) ) {
 			$this->errors[ $type ][ $test_id ] = array();
 		}
 		$this->errors[ $type ][ $test_id ][] = array(
-			'msg' => $msg,
+			'msg'  => $msg,
 			'data' => $data,
 		);
 		$this->errors['count']++;
 		$this->errors[ $type . '_count' ]++;
 
-		$this->last_is_error = 'success' != $type;
-		$this->last_error_type = $type;
-		$this->last_error_test = $test_id;
+		$this->last_is_error      = 'success' != $type;
+		$this->last_error_type    = $type;
+		$this->last_error_test    = $test_id;
 		$this->last_error_message = $msg;
-		$this->last_error_link = $link;
+		$this->last_error_link    = $link;
 
 	}
 
 	public function get() {
-		return $this->errors['count'] ? $this->errors['all']: true;
+		return $this->errors['count'] ? $this->errors['all'] : true;
 	}
 
 	public function has( $type = null ) {
@@ -281,7 +281,7 @@ class MailsterTests {
 		}
 	}
 	private function test_wordpress_version() {
-		$update = get_preferred_from_update_core();
+		$update  = get_preferred_from_update_core();
 		$current = get_bloginfo( 'version' );
 		if ( version_compare( $current, '3.8' ) < 0 ) {
 			$this->error( sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', $current ) );
@@ -335,8 +335,8 @@ class MailsterTests {
 	}
 	private function test_default_template() {
 
-		$default = 'mymail';
-		$template = mailster_option( 'default_template' );
+		$default      = 'mymail';
+		$template     = mailster_option( 'default_template' );
 		$template_dir = trailingslashit( MAILSTER_UPLOAD_DIR ) . 'templates/' . $template;
 
 		if ( ! is_dir( dirname( $template_dir ) ) ) {
@@ -387,7 +387,7 @@ class MailsterTests {
 							$reflFunc = new ReflectionMethod( $entries['function'][0], $entries['function'][1] );
 						}
 						$plugin_path = $reflFunc->getFileName();
-						$msg .= '<br>found in ' . $plugin_path;
+						$msg        .= '<br>found in ' . $plugin_path;
 					}
 				}
 				$msg .= '</li>';
@@ -412,9 +412,9 @@ class MailsterTests {
 	}
 	private function _test_tinymce_access() {
 
-		$file = includes_url( 'js/tinymce/' ) . 'wp-tinymce.php';
+		$file     = includes_url( 'js/tinymce/' ) . 'wp-tinymce.php';
 		$response = wp_remote_post( $file );
-		$code = wp_remote_retrieve_response_code( $response );
+		$code     = wp_remote_retrieve_response_code( $response );
 
 		if ( is_wp_error( $response ) ) {
 			$this->warning( sprintf( 'The Mailster Editor requires TinyMCE and access to the file %1$s which seems to be blocked by your host. [%2$s]', '"' . $file . '"', $response->get_error_message() ) );
@@ -450,7 +450,7 @@ class MailsterTests {
 	}
 	private function test_wp_debug() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$this->failure( (mailster_is_local() ? 'notice' : 'warning' ),'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
+			$this->failure( ( mailster_is_local() ? 'notice' : 'warning' ), 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
 		}
 	}
 	private function test_dom_document_extension() {
@@ -468,11 +468,11 @@ class MailsterTests {
 		global $wpdb;
 
 		$set_charset = true;
-		$result = mailster()->dbstructure( false, true, $set_charset, false );
+		$result      = mailster()->dbstructure( false, true, $set_charset, false );
 
 		if ( false !== strpos( $result, 'Unknown character set:' ) ) {
 			$set_charset = false;
-			$result = mailster()->dbstructure( false, true, $set_charset, false );
+			$result      = mailster()->dbstructure( false, true, $set_charset, false );
 		}
 
 		if ( true !== $result ) {
@@ -621,7 +621,7 @@ class MailsterTests {
 		}
 
 		$response = wp_remote_post( apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ) );
-		$code = wp_remote_retrieve_response_code( $response );
+		$code     = wp_remote_retrieve_response_code( $response );
 
 		if ( is_wp_error( $response ) ) {
 			$this->error( $response->get_error_message() . ' - Please allow connection to update.mailster.co!' );
@@ -631,10 +631,13 @@ class MailsterTests {
 		}
 	}
 	private function _test_TLS() {
-		$response = wp_remote_post( 'https://www.howsmyssl.com/a/check', array(
-			'sslverify' => true,
-			'timeout' => 5,
-		) );
+		$response = wp_remote_post(
+			'https://www.howsmyssl.com/a/check',
+			array(
+				'sslverify' => true,
+				'timeout'   => 5,
+			)
+		);
 
 		$code = wp_remote_retrieve_response_code( $response );
 
@@ -660,18 +663,18 @@ class MailsterTests {
 	}
 	private function test_mailfunction() {
 
-		$to = 'deadend@newsletter-plugin.com';
+		$to      = 'deadend@newsletter-plugin.com';
 		$subject = 'This is a test mail from the Mailster Test page';
 		$message = 'This test message can sent from ' . admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) . ' and can get deleted.';
 
-		$mail = mailster( 'mail' );
-		$mail->to = $to;
+		$mail          = mailster( 'mail' );
+		$mail->to      = $to;
 		$mail->subject = $subject;
 		$mail->debug();
 
 		if ( ! $mail->send_notification( 'Sendtest', $message, array( 'notification' => '' ), false ) ) {
 			$error_message = strip_tags( $mail->get_errors() );
-			$msg = 'You are not able to send mails with the current delivery settings!';
+			$msg           = 'You are not able to send mails with the current delivery settings!';
 
 			if ( false !== stripos( $error_message, 'smtp connect()' ) ) {
 				$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/' );
@@ -697,7 +700,7 @@ class MailsterTests {
 	}
 	public function wp_mail_failed( $error ) {
 		$error_message = strip_tags( $error->get_error_message() );
-		$msg = 'You are not able to use <code>wp_mail()</code> with Mailster';
+		$msg           = 'You are not able to use <code>wp_mail()</code> with Mailster';
 
 		if ( false !== stripos( $error_message, 'smtp connect()' ) ) {
 			$this->error( $msg . '<br>' . $error_message, 'https://kb.mailster.co/smtp-error-could-not-connect-to-smtp-host/' );

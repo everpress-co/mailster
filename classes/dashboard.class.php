@@ -97,9 +97,9 @@ class MailsterDashboard {
 
 	public function dashboard() {
 
-		$this->update = mailster()->has_update();
-		$this->verified = mailster()->is_verified();
-		$this->plugin_info = mailster()->plugin_info();
+		$this->update       = mailster()->has_update();
+		$this->verified     = mailster()->is_verified();
+		$this->plugin_info  = mailster()->plugin_info();
 		$this->is_dashboard = false;
 
 		$this->screen = get_current_screen();
@@ -186,7 +186,7 @@ class MailsterDashboard {
 	 */
 	public function register_meta_box( $id, $title, $callback, $context = 'normal', $priority = 'default', $callback_args = null ) {
 
-		$id = 'mailster-mb-' . sanitize_key( $id );
+		$id     = 'mailster-mb-' . sanitize_key( $id );
 		$screen = get_current_screen();
 
 		add_meta_box( $id, $title, $callback, $screen, $context, $priority, $callback_args );
@@ -202,7 +202,7 @@ class MailsterDashboard {
 	 */
 	public function unregister_meta_box( $id, $context = 'normal' ) {
 
-		$id = 'mailster-mb-' . sanitize_key( $id );
+		$id     = 'mailster-mb-' . sanitize_key( $id );
 		$screen = get_current_screen();
 
 		remove_meta_box( $id, $screen, $context );
@@ -227,14 +227,21 @@ class MailsterDashboard {
 		wp_enqueue_script( 'mailster-dashboard-script', MAILSTER_URI . 'assets/js/dashboard-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 		wp_enqueue_style( 'mailster-dashboard-style', MAILSTER_URI . 'assets/css/dashboard-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-		wp_localize_script( 'mailster-dashboard-script', 'mailsterdashboardL10n', apply_filters( 'mailster-dashboard-script_mailsterL10n', array(
-			'subscribers' => esc_html__( '%s Subscribers', 'mailster' ),
-			'reset_license' => esc_html__( 'Do you really like to reset your license for this site?', 'mailster' ),
-			'check_again' => esc_html__( 'Check Again', 'mailster' ),
-			'checking' => esc_html__( 'Checking...', 'mailster' ),
-			'downloading' => esc_html__( 'Downloading...', 'mailster' ),
-			'reload_page' => esc_html__( 'Complete. Reload page!', 'mailster' ),
-		) ) );
+		wp_localize_script(
+			'mailster-dashboard-script',
+			'mailsterdashboardL10n',
+			apply_filters(
+				'mailster-dashboard-script_mailsterL10n',
+				array(
+					'subscribers'   => esc_html__( '%s Subscribers', 'mailster' ),
+					'reset_license' => esc_html__( 'Do you really like to reset your license for this site?', 'mailster' ),
+					'check_again'   => esc_html__( 'Check Again', 'mailster' ),
+					'checking'      => esc_html__( 'Checking...', 'mailster' ),
+					'downloading'   => esc_html__( 'Downloading...', 'mailster' ),
+					'reload_page'   => esc_html__( 'Complete. Reload page!', 'mailster' ),
+				)
+			)
+		);
 	}
 
 
@@ -262,7 +269,7 @@ class MailsterDashboard {
 	public function dashboard_glance_items( $elements ) {
 
 		$autoresponder = count( mailster_get_autoresponder_campaigns() );
-		$elements[] = '</ul><br><ul>';
+		$elements[]    = '</ul><br><ul>';
 
 		if ( $campaigns = count( mailster_get_campaigns() ) ) {
 			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_type=newsletter">' . number_format_i18n( $campaigns - $autoresponder ) . ' ' . esc_html__( _n( 'Campaign', 'Campaigns', $campaigns - $autoresponder, 'mailster' ) ) . '</a>';

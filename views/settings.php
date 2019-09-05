@@ -3,21 +3,21 @@
 global $wpdb, $current_user, $wp_post_statuses, $wp_roles;
 
 $customfields = mailster()->get_custom_fields();
-$roles = $wp_roles->get_names();
+$roles        = $wp_roles->get_names();
 
 ?>
 <form id="mailster-settings-form" method="post" action="options.php" autocomplete="off" enctype="multipart/form-data">
 <input style="display:none"><input type="password" style="display:none">
 <div class="wrap">
 	<p class="alignright">
-		<input type="submit" class="submit-form button-primary" value="<?php esc_html_e( 'Save Changes', 'mailster' ) ?>" disabled />
+		<input type="submit" class="submit-form button-primary" value="<?php esc_html_e( 'Save Changes', 'mailster' ); ?>" disabled />
 	</p>
-<h1><?php esc_html_e( 'Newsletter Settings', 'mailster' ) ?></h1>
+<h1><?php esc_html_e( 'Newsletter Settings', 'mailster' ); ?></h1>
 <?php
 
 $timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
-if ( ! ($test_email = get_user_meta( $current_user->ID, 'mailster_test_email', true )) ) {
+if ( ! ( $test_email = get_user_meta( $current_user->ID, 'mailster_test_email', true ) ) ) {
 	$test_email = $current_user->user_email;
 }
 $test_email = apply_filters( 'mailster_test_email', $test_email );
@@ -31,21 +31,21 @@ $test_email = apply_filters( 'mailster_test_email', $test_email );
 
 <?php
 $sections = array(
-	'general' => esc_html__( 'General', 'mailster' ),
-	'template' => esc_html__( 'Template', 'mailster' ),
-	'frontend' => esc_html__( 'Front End', 'mailster' ),
-	'privacy' => esc_html__( 'Privacy', 'mailster' ),
-	'subscribers' => esc_html__( 'Subscribers', 'mailster' ),
+	'general'         => esc_html__( 'General', 'mailster' ),
+	'template'        => esc_html__( 'Template', 'mailster' ),
+	'frontend'        => esc_html__( 'Front End', 'mailster' ),
+	'privacy'         => esc_html__( 'Privacy', 'mailster' ),
+	'subscribers'     => esc_html__( 'Subscribers', 'mailster' ),
 	'wordpress-users' => esc_html__( 'WordPress Users', 'mailster' ),
-	'texts' => esc_html__( 'Text Strings', 'mailster' ),
-	'tags' => esc_html__( 'Tags', 'mailster' ),
-	'delivery' => esc_html__( 'Delivery', 'mailster' ),
-	'cron' => esc_html__( 'Cron', 'mailster' ),
-	'capabilities' => esc_html__( 'Capabilities', 'mailster' ),
-	'bounce' => esc_html__( 'Bouncing', 'mailster' ),
-	'authentication' => esc_html__( 'Authentication', 'mailster' ),
-	'advanced' => esc_html__( 'Advanced', 'mailster' ),
-	'system_info' => esc_html__( 'System Info', 'mailster' ),
+	'texts'           => esc_html__( 'Text Strings', 'mailster' ),
+	'tags'            => esc_html__( 'Tags', 'mailster' ),
+	'delivery'        => esc_html__( 'Delivery', 'mailster' ),
+	'cron'            => esc_html__( 'Cron', 'mailster' ),
+	'capabilities'    => esc_html__( 'Capabilities', 'mailster' ),
+	'bounce'          => esc_html__( 'Bouncing', 'mailster' ),
+	'authentication'  => esc_html__( 'Authentication', 'mailster' ),
+	'advanced'        => esc_html__( 'Advanced', 'mailster' ),
+	'system_info'     => esc_html__( 'System Info', 'mailster' ),
 	'manage-settings' => esc_html__( 'Manage Settings', 'mailster' ),
 );
 $sections = apply_filters( 'mymail_setting_sections', apply_filters( 'mailster_setting_sections', $sections ) );
@@ -64,9 +64,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	<div class="settings-nav">
 		<div class="mainnav contextual-help-tabs hide-if-no-js">
 		<ul>
-		<?php foreach ( $sections as $id => $name ) {?>
+		<?php foreach ( $sections as $id => $name ) { ?>
 			<li><a href="#<?php echo $id; ?>" class="nav-<?php echo $id; ?>"><?php echo $name; ?></a></li>
-		<?php }?>
+		<?php } ?>
 		<?php do_action( 'mailster_settings_tabs' ); ?>
 		</ul>
 		</div>
@@ -74,32 +74,36 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 	<div class="settings-tabs"> <div class="tab"><h3>&nbsp;</h3></div>
 
-	<?php foreach ( $sections as $id => $name ) {
-?>
-	<div id="tab-<?php echo esc_attr( $id ) ?>" class="tab">
+	<?php
+	foreach ( $sections as $id => $name ) {
+		?>
+	<div id="tab-<?php echo esc_attr( $id ); ?>" class="tab">
 		<h3><?php echo esc_html( strip_tags( $name ) ); ?></h3>
 		<?php do_action( 'mailster_section_tab', $id ); ?>
 		<?php do_action( 'mailster_section_tab_' . $id ); ?>
 
-		<?php if ( file_exists( MAILSTER_DIR . 'views/settings/' . $id . '.php' ) ) :
+		<?php
+		if ( file_exists( MAILSTER_DIR . 'views/settings/' . $id . '.php' ) ) :
 			include MAILSTER_DIR . 'views/settings/' . $id . '.php';
-		endif; ?>
+		endif;
+		?>
 
 	</div>
-	<?php }?>
+	<?php } ?>
 
 <?php
 $extra_sections = apply_filters( 'mymail_extra_setting_sections', apply_filters( 'mailster_extra_setting_sections', array() ) );
 
-foreach ( $extra_sections as $id => $name ) {?>
-	<div id="tab-<?php echo esc_attr( $id ) ?>" class="tab">
+foreach ( $extra_sections as $id => $name ) {
+	?>
+	<div id="tab-<?php echo esc_attr( $id ); ?>" class="tab">
 		<h3><?php echo esc_html( strip_tags( $name ) ); ?></h3>
 		<?php do_action( 'mailster_section_tab', $id ); ?>
 		<?php do_action( 'mailster_section_tab_' . $id ); ?>
 	</div>
-	<?php }?>
+	<?php } ?>
 		<p class="submitbutton">
-			<input type="submit" class="submit-form button-primary" value="<?php esc_html_e( 'Save Changes', 'mailster' ) ?>" disabled />
+			<input type="submit" class="submit-form button-primary" value="<?php esc_html_e( 'Save Changes', 'mailster' ); ?>" disabled />
 		</p>
 	</div>
 
