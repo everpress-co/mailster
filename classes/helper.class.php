@@ -1041,30 +1041,6 @@ class MailsterHelper {
 	 * @param unknown $content
 	 * @return unknown
 	 */
-	public function strip_unwanted_html( $content ) {
-
-		if ( empty( $content ) ) {
-			return false;
-		}
-
-		// template language stuff
-		$content = preg_replace( '#<(modules?|buttons|multi|single)([^>]*)>#', '', $content );
-		$content = preg_replace( '#<\/(modules?|buttons|multi|single)>#', '', $content );
-
-		// remove comments
-		$content = preg_replace( '#<!-- (.*) -->\s*#', '', $content );
-
-		return $content;
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $content
-	 * @return unknown
-	 */
 	public function inline_style( $content ) {
 
 		// save comments with conditional stuff
