@@ -469,25 +469,32 @@ class MailsterNotification {
 			$this->mail->debug();
 		}
 
-		$result = $this->mail->send();
+		foreach ($this->to as $receiver) {
 
-		if ( $result && ! is_wp_error( $result ) ) {
-			return true;
+			$this->mail->to = $receiver;
+			$result = $this->mail->send();
+
+			if ( $result && ! is_wp_error( $result ) ) {
+				continue;
+			}
+
+			if ( is_wp_error( $result ) ) {
+				return $result;
+			}
+
+			if ( $this->mail->is_user_error() ) {
+				return new WP_Error( 'user_error', $this->mail->last_error->getMessage() );
+			}
+
+			if ( $this->mail->last_error ) {
+				return new WP_Error( 'notification_error', $this->mail->last_error->getMessage() );
+			}
+
+			return new WP_Error( 'notification_error', esc_html__( 'unknown', 'mailster' ) );
 		}
 
-		if ( is_wp_error( $result ) ) {
-			return $result;
-		}
+		return true;
 
-		if ( $this->mail->is_user_error() ) {
-			return new WP_Error( 'user_error', $this->mail->last_error->getMessage() );
-		}
-
-		if ( $this->mail->last_error ) {
-			return new WP_Error( 'notification_error', $this->mail->last_error->getMessage() );
-		}
-
-		return new WP_Error( 'notification_error', esc_html__( 'unknown', 'mailster' ) );
 
 	}
 
