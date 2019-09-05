@@ -274,7 +274,7 @@ class MailsterAjax {
 			}
 
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
-			$html = $placeholder->get_content( false );
+			$html = $placeholder->get_content( true );
 			$html = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style' . $suffix . '.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
 		}
 
@@ -565,7 +565,7 @@ class MailsterAjax {
 		$current_user = wp_get_current_user();
 
 		if ( ! empty( $to ) && $to != $current_user->user_email ) {
-			update_user_meta( $current_user->ID, 'mailster_test_email', $to );
+			update_user_meta( $current_user->ID, '_mailster_test_email', $to );
 		}
 
 		if ( isset( $_POST['test'] ) ) {

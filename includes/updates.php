@@ -593,6 +593,8 @@ if ( $old_version ) {
 			if (get_option('mailster') && get_option('mailster') < strtotime( '2018-01-01 00:00' ) ) {
 				$mailster_options['legacy_hooks'] = true;
 			}
+			// prefix mailster entries with "_"
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET `meta_key` = replace(meta_key, %s, %s) WHERE meta_key LIKE 'mailster_%'", 'mailster_', '_mailster_' ) );
 
 		default:
 

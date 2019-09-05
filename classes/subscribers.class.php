@@ -2766,7 +2766,7 @@ class MailsterSubscribers {
 
 		$baselink = home_url();
 
-		if ( $query = wp_parse_url( $baselink , PHP_URL_QUERY ) ) {
+		if ( $query = parse_url( $baselink , PHP_URL_QUERY ) ) {
 			$baselink = strtok( $baselink, '?' );
 			wp_parse_str( $query, $query );
 		}
