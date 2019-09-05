@@ -101,6 +101,7 @@ Xaver Birsak – https://everpress.co
 * fixed: wrong subscriber count if status "pending" in subscriber query.
 * fixed: cumulative count calculations.
 * fixed: redirecting issue with spaces in URLs.
+* updated: to most recent coding standards
 
 = Version 2.4.3 =
 
