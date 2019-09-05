@@ -128,7 +128,7 @@ class MailsterAjax {
 	public function call_method() {
 
 		$method_name = str_replace( array( 'wp_ajax_mailster_', 'wp_ajax_nopriv_mailster_' ), '', current_filter() );
-		$args        = func_get_args();
+		$args = func_get_args();
 
 		if ( method_exists( $this, $method_name ) ) {
 			call_user_func_array( array( $this, $method_name ), $args );
@@ -202,7 +202,7 @@ class MailsterAjax {
 
 	private function get_plaintext() {
 
-		$this->ajax_nonce();
+		$this->ajax_nonce( );
 
 		$html = isset( $_POST['html'] ) ? stripslashes( $_POST['html'] ) : '';
 
@@ -219,13 +219,13 @@ class MailsterAjax {
 
 	private function get_template() {
 
-		$this->ajax_nonce();
+		$this->ajax_nonce( );
 
 		@error_reporting( 0 );
 
-		$id          = (int) $_GET['id'];
-		$template    = basename( $_GET['template'] );
-		$file        = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
+		$id = (int) $_GET['id'];
+		$template = basename( $_GET['template'] );
+		$file = isset( $_GET['templatefile'] ) ? basename( $_GET['templatefile'] ) : 'index.html';
 		$editorstyle = isset( $_GET['editorstyle'] ) && '1' == $_GET['editorstyle'];
 
 		$meta = mailster( 'campaigns' )->meta( $id );
@@ -245,13 +245,13 @@ class MailsterAjax {
 		if ( ! $editorstyle ) {
 			$revision = isset( $_REQUEST['revision'] ) ? (int) $_REQUEST['revision'] : false;
 			$campaign = get_post( $id );
-			$subject  = isset( $_REQUEST['subject'] ) ? esc_attr( $_REQUEST['subject'] ) : isset( $meta['subject'] ) ? esc_attr( $meta['subject'] ) : '';
+			$subject = isset( $_REQUEST['subject'] ) ? esc_attr( $_REQUEST['subject'] ) : isset( $meta['subject'] ) ? esc_attr( $meta['subject'] ) : '';
 
 			$current_user = wp_get_current_user();
 
 			if ( $revision ) {
 				$revision = get_post( $revision );
-				$html     = mailster()->sanitize_content( $revision->post_content, null, $head );
+				$html = mailster()->sanitize_content( $revision->post_content, null, $head );
 			}
 
 			$placeholder = mailster( 'placeholder', $html );
@@ -262,26 +262,20 @@ class MailsterAjax {
 
 			$placeholder->remove_last_post_args();
 
-			$placeholder->add_defaults(
-				$campaign->ID,
-				array(
-					'subject' => $subject,
-				)
-			);
-			$placeholder->add_custom(
-				$campaign->ID,
-				array(
-					'emailaddress' => $current_user->user_email,
-				)
-			);
+			$placeholder->add_defaults( $campaign->ID, array(
+				'subject' => $subject,
+			) );
+			$placeholder->add_custom( $campaign->ID, array(
+				'emailaddress' => $current_user->user_email,
+			) );
 
 			if ( 0 != $current_user->ID ) {
 				$firstname = ( $current_user->user_firstname ) ? $current_user->user_firstname : $current_user->display_name;
 			}
 
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
-			$html   = $placeholder->get_content( false );
-			$html   = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style' . $suffix . '.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
+			$html = $placeholder->get_content( false );
+			$html = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style' . $suffix . '.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
 		}
 
 		$replace = array(
@@ -306,24 +300,17 @@ class MailsterAjax {
 
 		$content = mailster()->sanitize_content( stripslashes( $_POST['content'] ), null, ( isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null ) );
 
-		$name          = esc_attr( $_POST['name'] );
-		$template      = esc_attr( $_POST['template'] );
-		$modules       = (bool) ( $_POST['modules'] === 'true' );
+		$name = esc_attr( $_POST['name'] );
+		$template = esc_attr( $_POST['template'] );
+		$modules = (bool) ( $_POST['modules'] === 'true' );
 		$activemodules = (bool) ( $_POST['activemodules'] === 'true' );
-		$overwrite     = $_POST['overwrite'] === 'false' ? false : $_POST['overwrite'];
+		$overwrite = $_POST['overwrite'] === 'false' ? false : $_POST['overwrite'];
 
-		$t        = mailster( 'template', $template );
+		$t = mailster( 'template', $template );
 		$filename = $t->create_new( $name, $content, $modules, $activemodules, $overwrite );
 
 		if ( $return['success'] = $filename !== false ) {
-			$return['url'] = add_query_arg(
-				array(
-					'template' => $template,
-					'file'     => $filename,
-					'message'  => 3,
-				),
-				mailster_get_referer()
-			);
+			$return['url'] = add_query_arg( array( 'template' => $template, 'file' => $filename, 'message' => 3 ), mailster_get_referer() );
 		}
 
 		if ( ! $return['success'] ) {
@@ -340,12 +327,12 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$head           = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
+		$head = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
 		$bodyattributes = isset( $_POST['bodyattributes'] ) ? stripslashes( $_POST['bodyattributes'] ) : '';
-		$content        = isset( $_POST['content'] ) ? '<body' . $bodyattributes . '>' . stripslashes( $_POST['content'] ) . '</body>' : null;
+		$content = isset( $_POST['content'] ) ? '<body' . $bodyattributes . '>' . stripslashes( $_POST['content'] ) . '</body>' : null;
 
 		$return['content'] = mailster()->sanitize_content( $content, null, $head );
-		$return['style']   = mailster( 'helper' )->get_mailster_styles();
+		$return['style'] = mailster( 'helper' )->get_mailster_styles();
 		$this->json_return( $return );
 
 	}
@@ -356,16 +343,16 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$content       = isset( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : '';
-		$ID            = isset( $_POST['id'] ) ? (int) $_POST['id'] : 0;
-		$subject       = isset( $_POST['subject'] ) ? stripslashes( $_POST['subject'] ) : '';
-		$preheader     = isset( $_POST['preheader'] ) ? stripslashes( $_POST['preheader'] ) : '';
-		$issue         = isset( $_POST['issue'] ) ? (int) $_POST['issue'] : 1;
-		$head          = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
+		$content = isset( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : '';
+		$ID = isset( $_POST['id'] ) ? (int) $_POST['id'] : 0;
+		$subject = isset( $_POST['subject'] ) ? stripslashes( $_POST['subject'] ) : '';
+		$preheader = isset( $_POST['preheader'] ) ? stripslashes( $_POST['preheader'] ) : '';
+		$issue = isset( $_POST['issue'] ) ? (int) $_POST['issue'] : 1;
+		$head = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
 		$subscriber_id = isset( $_POST['subscriber_id'] ) ? (int) $_POST['subscriber_id'] : null;
 
-		$html        = mailster()->sanitize_content( $content, true, $head );
-		$to          = '';
+		$html = mailster()->sanitize_content( $content, true, $head );
+		$to = '';
 		$placeholder = mailster( 'placeholder', $html );
 
 		$placeholder->set_campaign( $ID );
@@ -379,44 +366,38 @@ class MailsterAjax {
 				$placeholder->set_subscriber( $subscriber->ID );
 				$placeholder->add( $userdata );
 
-				$placeholder->add(
-					array(
-						'firstname'    => $subscriber->firstname,
-						'lastname'     => $subscriber->lastname,
-						'fullname'     => $subscriber->fullname,
-						'emailaddress' => $subscriber->email,
-					)
-				);
+				$placeholder->add( array(
+					'firstname' => $subscriber->firstname,
+					'lastname' => $subscriber->lastname,
+					'fullname' => $subscriber->fullname,
+					'emailaddress' => $subscriber->email,
+				) );
 
-				$to = $subscriber->fullname ? $subscriber->fullname . ' <' . $subscriber->email . '>' : $subscriber->email;
+				$to = $subscriber->fullname ? $subscriber->fullname. ' <'.$subscriber->email.'>' : $subscriber->email;
 			}
+
 		} else {
 
 			$current_user = wp_get_current_user();
 
 			$firstname = ( $current_user->user_firstname ) ? $current_user->user_firstname : $current_user->display_name;
-			$fullname  = mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname );
+			$fullname = mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname );
 
-			$placeholder->add(
-				array(
-					'firstname'    => $firstname,
-					'lastname'     => $current_user->user_lastname,
-					'fullname'     => $fullname,
-					'emailaddress' => $current_user->user_email,
-				)
-			);
+			$placeholder->add( array(
+				'firstname' => $firstname,
+				'lastname' => $current_user->user_lastname,
+				'fullname' => $fullname,
+				'emailaddress' => $current_user->user_email,
+			) );
 
-			$to = $fullname ? $fullname . ' <' . $current_user->user_email . '>' : $current_user->user_email;
+			$to = $fullname ? $fullname. ' <'.$current_user->user_email.'>' : $current_user->user_email;
 		}
 
-		$placeholder->add_defaults(
-			$ID,
-			array(
-				'issue'     => $issue,
-				'subject'   => $subject,
-				'preheader' => $preheader,
-			)
-		);
+		$placeholder->add_defaults( $ID, array(
+			'issue' => $issue,
+			'subject' => $subject,
+			'preheader' => $preheader,
+		) );
 
 		$placeholder->add_custom( $ID );
 
@@ -425,7 +406,7 @@ class MailsterAjax {
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
 		$content = mailster( 'helper' )->add_mailster_styles( $content );
 
-		$content = str_replace( '</head>', mailster( 'preflight' )->script_styles() . '</head>', $content );
+		$content = str_replace( '</head>', mailster('preflight')->script_styles() . '</head>', $content );
 		$content = str_replace( '</body>', '<highlighterx></highlighterx><highlightery></highlightery></body>', $content );
 
 		$hash = md5( NONCE_SALT . MAILSTER_VERSION . $content );
@@ -435,9 +416,9 @@ class MailsterAjax {
 
 		$placeholder->set_content( $subject );
 		$return['subject'] = $placeholder->get_content();
-		$return['to']      = $to;
-		$return['hash']    = $hash;
-		$return['nonce']   = wp_create_nonce( 'mailster_nonce' );
+		$return['to'] = $to;
+		$return['hash'] = $hash;
+		$return['nonce'] = wp_create_nonce( 'mailster_nonce' );
 		$return['success'] = true;
 
 		$this->json_return( $return );
@@ -447,7 +428,7 @@ class MailsterAjax {
 
 	private function get_preview() {
 
-		$this->ajax_nonce();
+		$this->ajax_nonce( );
 
 		$hash = sanitize_key( $_GET['hash'] );
 
@@ -472,7 +453,7 @@ class MailsterAjax {
 
 		if ( $id ) {
 
-			$response = mailster( 'preflight' )->request( $id );
+			$response = mailster('preflight')->request( $id );
 
 			if ( is_wp_error( $response ) ) {
 				$return['error'] = $response->get_error_message();
@@ -498,17 +479,17 @@ class MailsterAjax {
 
 		if ( $id ) {
 
-			$response = mailster( 'preflight' )->request( $id, $endpoint, 25 );
+			$response = mailster('preflight')->request( $id, $endpoint, 25 );
 
 			if ( is_wp_error( $response ) ) {
 				$return['error'] = $response->get_error_message();
 			} else {
 				$return['success'] = true;
 				$return['status']  = $response->status;
-				$return['html']    = mailster( 'preflight' )->convert( $response, $endpoint );
+				$return['html']    = mailster('preflight')->convert( $response, $endpoint );
 			}
 
-			$return['part'] = basename( $endpoint );
+			$return['part'] = basename($endpoint);
 		}
 
 		$this->json_return( $return );
@@ -537,29 +518,27 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$id   = isset( $_POST['post_id'] ) ? (int) $_POST['post_id'] : false;
+		$id  = isset( $_POST['post_id'] ) ? (int) $_POST['post_id']: false;
 		$term = isset( $_POST['term'] ) ? ( $_POST['term'] ) : false;
 
 		$return['subscribers'] = array();
-		$return['success']     = true;
+		$return['success'] = true;
 
-		if ( $term ) {
-			$subscribers = mailster( 'subscribers' )->query(
-				array(
-					's'      => $term,
-					'fields' => 'fullname,email,ID',
-				),
-				$id
-			);
+		if($term){
+			$subscribers = mailster( 'subscribers' )->query( array(
+				's' => $term,
+				'fields' => 'fullname,email,ID',
+			), $id );
 
-			foreach ( $subscribers as $subscriber ) {
-				$label                   = $subscriber->fullname ? $subscriber->fullname . ' <' . $subscriber->email . '>' : $subscriber->email;
+			foreach ($subscribers as $subscriber) {
+				$label = $subscriber->fullname ? $subscriber->fullname. ' <'.$subscriber->email.'>' : $subscriber->email;
 				$return['subscribers'][] = array(
-					'id'    => $subscriber->ID,
-					'label' => '[' . $subscriber->ID . ']: ' . $label,
+					'id' => $subscriber->ID,
+					'label' => '['.$subscriber->ID.']: '.$label,
 					'value' => $label,
 				);
 			}
+
 		}
 
 		$this->json_return( $return['subscribers'] );
@@ -568,14 +547,10 @@ class MailsterAjax {
 
 	private function send_test() {
 
-		$this->ajax_nonce(
-			json_encode(
-				array(
-					'success' => false,
-					'msg'     => esc_html__( 'Nonce invalid! Please reload site.', 'mailster' ),
-				)
-			)
-		);
+		$this->ajax_nonce( json_encode( array(
+			'success' => false,
+			'msg' => esc_html__( 'Nonce invalid! Please reload site.', 'mailster' ),
+		) ) );
 
 		if ( isset( $_POST['formdata'] ) ) {
 			parse_str( $_POST['formdata'], $formdata );
@@ -584,9 +559,9 @@ class MailsterAjax {
 			}
 		}
 
-		$preflight = (bool) ( isset( $_POST['preflight'] ) && $_POST['preflight'] === 'true' );
+		$preflight = (bool) ( isset( $_POST['preflight']) && $_POST['preflight'] === 'true' );
 
-		$to           = trim( stripslashes( $_POST['to'] ) );
+		$to = trim( stripslashes( $_POST['to'] ) );
 		$current_user = wp_get_current_user();
 
 		if ( ! empty( $to ) && $to != $current_user->user_email ) {
@@ -613,35 +588,35 @@ class MailsterAjax {
 
 			$return['success'] = true;
 
-			if ( $preflight ) {
+			if($preflight){
 				$preflight_id = uniqid();
-				$to           = apply_filters( 'mailster_preflight_mail', 'mailster-' . $preflight_id . '@preflight.email', $preflight_id );
+				$to = apply_filters( 'mailster_preflight_mail', 'mailster-' . $preflight_id . '@preflight.email', $preflight_id );
 				$return['id'] = $preflight_id;
 			}
 			$receivers = explode( ',', $to );
 
-			$subject      = stripslashes( $formdata['mailster_data']['subject'] );
-			$from         = $formdata['mailster_data']['from_email'];
-			$from_name    = stripslashes( $formdata['mailster_data']['from_name'] );
-			$reply_to     = $formdata['mailster_data']['reply_to'];
+			$subject = stripslashes( $formdata['mailster_data']['subject'] );
+			$from = $formdata['mailster_data']['from_email'];
+			$from_name = stripslashes( $formdata['mailster_data']['from_name'] );
+			$reply_to = $formdata['mailster_data']['reply_to'];
 			$embed_images = mailster_option( 'embed_images' );
-			$track_opens  = isset( $formdata['mailster_data']['track_opens'] );
+			$track_opens = isset( $formdata['mailster_data']['track_opens'] );
 			$track_clicks = isset( $formdata['mailster_data']['track_clicks'] );
-			$head         = stripslashes( $_POST['head'] );
-			$content      = stripslashes( $_POST['content'] );
-			$preheader    = stripslashes( $formdata['mailster_data']['preheader'] );
-			$bouncemail   = mailster_option( 'bounce' );
-			$attachments  = isset( $formdata['mailster_data']['attachments'] ) ? $formdata['mailster_data']['attachments'] : array();
-			$max_size     = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );
+			$head = stripslashes( $_POST['head'] );
+			$content = stripslashes( $_POST['content'] );
+			$preheader = stripslashes( $formdata['mailster_data']['preheader'] );
+			$bouncemail = mailster_option( 'bounce' );
+			$attachments = isset( $formdata['mailster_data']['attachments'] ) ? $formdata['mailster_data']['attachments'] : array();
+			$max_size = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );
 
 			$autoplain = isset( $formdata['mailster_data']['autoplaintext'] );
 			$plaintext = stripslashes( $_POST['plaintext'] );
 
 			$MID = mailster_option( 'ID' );
 
-			$ID            = (int) $formdata['post_ID'];
-			$subscriber_id = isset( $_POST['subscriber_id'] ) ? (int) $_POST['subscriber_id'] : null;
-			$issue         = $formdata['mailster_data']['autoresponder']['issue'];
+			$ID = (int) $formdata['post_ID'];
+			$subscriber_id = isset($_POST['subscriber_id']) ? (int) $_POST['subscriber_id'] : null;
+			$issue = $formdata['mailster_data']['autoresponder']['issue'];
 
 			$campaign_permalink = get_permalink( $ID );
 
@@ -661,9 +636,9 @@ class MailsterAjax {
 					if ( $total_size <= $max_size ) {
 						$attach[ basename( $file ) ] = $file;
 					} else {
-						$receivers         = array();
+						$receivers = array();
 						$return['success'] = false;
-						$return['msg']     = sprintf( esc_html__( 'Attachments must not exceed the file size limit of %s!', 'mailster' ), '<strong>' . esc_html( size_format( $max_size ) ) . '</strong>' );
+						$return['msg'] = sprintf( esc_html__( 'Attachments must not exceed the file size limit of %s!', 'mailster' ), '<strong>' . esc_html( size_format( $max_size ) ) . '</strong>' );
 					}
 				}
 			}
@@ -674,14 +649,14 @@ class MailsterAjax {
 
 				$mail = mailster( 'mail' );
 
-				$mail->to           = $to;
-				$mail->subject      = $subject;
-				$mail->from         = $from;
-				$mail->from_name    = $from_name;
-				$mail->reply_to     = $reply_to;
-				$mail->bouncemail   = $bouncemail;
+				$mail->to = $to;
+				$mail->subject = $subject;
+				$mail->from = $from;
+				$mail->from_name = $from_name;
+				$mail->reply_to = $reply_to;
+				$mail->bouncemail = $bouncemail;
 				$mail->embed_images = $embed_images;
-				$mail->hash         = str_repeat( '0', 32 );
+				$mail->hash = str_repeat( '0', 32 );
 
 				$content = mailster()->sanitize_content( $content, null, $head );
 
@@ -694,17 +669,17 @@ class MailsterAjax {
 
 				$listunsubscribe = '';
 				if ( $mail->bouncemail ) {
-					$listunsubscribe_mail    = $mail->bouncemail;
+					$listunsubscribe_mail = $mail->bouncemail;
 					$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
-					$listunsubscribe_body    = "X-Mailster: $mail->hash\nX-Mailster-Campaign: $ID\nX-Mailster-ID: $MID\n\n";
-					$listunsubscribe        .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
+					$listunsubscribe_body = "X-Mailster: $mail->hash\nX-Mailster-Campaign: $ID\nX-Mailster-ID: $MID\n\n";
+					$listunsubscribe .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
 				}
 				$listunsubscribe .= '<' . $unsubscribelink . '>';
 
 				$headers = array(
-					'X-Mailster-Campaign'   => $ID,
-					'X-Mailster-ID'         => $MID,
-					'List-Unsubscribe'      => $listunsubscribe,
+					'X-Mailster-Campaign' => $ID,
+					'X-Mailster-ID' => $MID,
+					'List-Unsubscribe' => $listunsubscribe,
 					'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
 				);
 
@@ -715,7 +690,7 @@ class MailsterAjax {
 				$mail->add_header( apply_filters( 'mailster_mail_headers', $headers, $ID, null ) );
 
 				// check for subscriber by mail
-				if ( ! ( $subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ) ) ) {
+				if(!($subscriber = mailster( 'subscribers' )->get( $subscriber_id, true ))){
 					$subscriber = mailster( 'subscribers' )->get_by_mail( $to, true );
 				}
 
@@ -729,9 +704,9 @@ class MailsterAjax {
 					$placeholder->add( $userdata );
 
 					$names = array(
-						'firstname'    => $subscriber->firstname,
-						'lastname'     => $subscriber->lastname,
-						'fullname'     => $subscriber->fullname,
+						'firstname' => $subscriber->firstname,
+						'lastname' => $subscriber->lastname,
+						'fullname' => $subscriber->fullname,
 						'emailaddress' => $subscriber->email,
 					);
 
@@ -743,10 +718,10 @@ class MailsterAjax {
 					$profilelink = mailster()->get_profile_link( $ID, '' );
 
 					$firstname = $current_user->user_firstname ? $current_user->user_firstname : $current_user->display_name;
-					$names     = array(
-						'firstname'    => $firstname,
-						'lastname'     => $current_user->user_lastname,
-						'fullname'     => mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname ),
+					$names = array(
+						'firstname' => $firstname,
+						'lastname' => $current_user->user_lastname,
+						'fullname' => mailster_option( 'name_order' ) ? trim( $current_user->user_lastname . ' ' . $firstname ) : trim( $firstname . ' ' . $current_user->user_lastname ),
 						'emailaddress' => $current_user->user_email,
 					);
 				} else {
@@ -762,14 +737,11 @@ class MailsterAjax {
 					$mail->attachments = $attach;
 				}
 
-				$placeholder->add_defaults(
-					$ID,
-					array(
-						'issue'     => $issue,
-						'subject'   => $subject,
-						'preheader' => $preheader,
-					)
-				);
+				$placeholder->add_defaults( $ID, array(
+					'issue' => $issue,
+					'subject' => $subject,
+					'preheader' => $preheader,
+				) );
 
 				$placeholder->add_custom( $ID );
 
@@ -777,7 +749,7 @@ class MailsterAjax {
 				$content = mailster( 'helper' )->prepare_content( $content );
 
 				// replace links with fake hash to prevent tracking, not during preflight.
-				if ( $track_clicks && ! $preflight ) {
+				if ( $track_clicks && !$preflight ) {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
@@ -791,7 +763,7 @@ class MailsterAjax {
 				$placeholder->set_content( $mail->subject );
 				$mail->subject = $placeholder->get_content();
 
-				$mail->add_tracking_image = $track_opens && ! $preflight;
+				$mail->add_tracking_image = $track_opens && !$preflight;
 
 				$return['success'] = $return['success'] && $mail->send();
 
@@ -821,13 +793,13 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$campaign_ID = (int) $_POST['id'];
-		$lists       = ( $_POST['ignore_lists'] == 'true' ) ? false : ( isset( $_POST['lists'] ) ? $_POST['lists'] : array() );
-		$conditions  = isset( $_POST['conditions'] ) ? stripslashes_deep( array_values( array_filter( $_POST['conditions'] ) ) ) : false;
-		$statuses    = null;
+		$lists = ( $_POST['ignore_lists'] == 'true' ) ? false : ( isset( $_POST['lists'] ) ? $_POST['lists'] : array() );
+		$conditions = isset( $_POST['conditions'] ) ? stripslashes_deep( array_values( array_filter( $_POST['conditions'] ) ) ) : false;
+		$statuses = null;
 
-		$return['success']        = true;
-		$return['total']          = mailster( 'campaigns' )->get_totals_by_lists( $lists, $conditions, $statuses, $campaign_ID );
-		$return['conditions']     = mailster( 'conditions' )->render( $conditions, false );
+		$return['success'] = true;
+		$return['total'] = mailster( 'campaigns' )->get_totals_by_lists( $lists, $conditions, $statuses, $campaign_ID );
+		$return['conditions'] = mailster( 'conditions' )->render( $conditions, false );
 		$return['totalformatted'] = number_format_i18n( $return['total'] );
 
 		$this->json_return( $return );
@@ -841,7 +813,7 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$colors = get_option( 'mailster_colors' );
-		$hash   = md5( implode( '', $_POST['colors'] ) );
+		$hash = md5( implode( '', $_POST['colors'] ) );
 
 		if ( ! isset( $colors[ $_POST['template'] ] ) ) {
 			$colors[ $_POST['template'] ] = array();
@@ -919,7 +891,7 @@ class MailsterAjax {
 		$campaign_ID = (int) $_POST['id'];
 
 		$clicked_links = mailster( 'campaigns' )->get_clicked_links( $campaign_ID );
-		$clicks_total  = mailster( 'campaigns' )->get_clicks( $campaign_ID, true );
+		$clicks_total = mailster( 'campaigns' )->get_clicks( $campaign_ID, true );
 
 		$return['html'] = '<table class="wp-list-table widefat"><tbody>';
 
@@ -1000,11 +972,11 @@ class MailsterAjax {
 
 		$campaign_ID = (int) $_POST['id'];
 
-		$geo_data   = mailster( 'campaigns' )->get_geo_data( $campaign_ID );
+		$geo_data = mailster( 'campaigns' )->get_geo_data( $campaign_ID );
 		$totalopens = mailster( 'campaigns' )->get_opens( $campaign_ID );
 
 		$unknown_cities = array();
-		$countrycodes   = array();
+		$countrycodes = array();
 
 		foreach ( $geo_data as $countrycode => $data ) {
 			$x = wp_list_pluck( $data, 3 );
@@ -1020,9 +992,9 @@ class MailsterAjax {
 		arsort( $countrycodes );
 		$total = array_sum( $countrycodes );
 
-		$return['geodata']        = $geo_data;
+		$return['geodata'] = $geo_data;
 		$return['unknown_cities'] = $unknown_cities;
-		$return['countrydata']    = array( array( 'code', esc_html__( 'Country', 'mailster' ), esc_html__( 'opens', 'mailster' ) ) );
+		$return['countrydata'] = array( array( 'code', esc_html__( 'Country', 'mailster' ), esc_html__( 'opens', 'mailster' ) ) );
 
 		foreach ( $geo_data as $country => $cities ) {
 			$opens = 0;
@@ -1035,11 +1007,11 @@ class MailsterAjax {
 		$return['html'] = '<div id="countries_wrap"><a class="zoomout button mailster-icon" title="' . esc_html__( 'back to world view', 'mailster' ) . '">&nbsp;</a><div id="countries_map"></div><div id="mapinfo"></div><div id="countries_table"><table class="wp-list-table widefat">
 			<tbody>';
 
-		$i       = 0;
+		$i = 0;
 		$unknown = $totalopens - $total;
 
 		foreach ( $countrycodes as $countrycode => $count ) {
-			$data            = $geo_data[ $countrycode ];
+			$data = $geo_data[ $countrycode ];
 			$return['html'] .= '<tr data-code="' . $countrycode . '" id="country-row-' . $countrycode . '" class="' . ( ( ! ( $i % 2 ) ) ? ' alternate' : '' ) . '"><td width="20"><span class="mailster-flag-24 flag-' . strtolower( $countrycode ) . '"></span></td><td width="100%"><span class="country">' . mailster( 'geo' )->code2Country( $countrycode ) . '</span> <span class="count">(' . round( $count / $totalopens * 100, 2 ) . '%)</span></td><td class="textright">' . number_format_i18n( $count ) . '</td></tr>';
 			$i++;
 		}
@@ -1063,9 +1035,9 @@ class MailsterAjax {
 
 		$campaign_ID = (int) $_POST['id'];
 
-		$parts   = ! empty( $_POST['types'] ) ? explode( ',', $_POST['types'] ) : array( 'unopen', 'opens', 'clicks', 'unsubs', 'bounces' );
+		$parts = ! empty( $_POST['types'] ) ? explode( ',', $_POST['types'] ) : array( 'unopen', 'opens', 'clicks', 'unsubs', 'bounces' );
 		$orderby = ! empty( $_POST['orderby'] ) ? $_POST['orderby'] : 'sent';
-		$order   = ! isset( $_POST['order'] ) || $_POST['order'] == 'ASC' ? 'ASC' : 'DESC';
+		$order = ! isset( $_POST['order'] ) || $_POST['order'] == 'ASC' ? 'ASC' : 'DESC';
 
 		$return['html'] = '<table class="wp-list-table widefat"><tbody>';
 
@@ -1086,13 +1058,13 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$campaign_ID = (int) $_POST['id'];
-		$page        = (int) $_POST['page'];
+		$page = (int) $_POST['page'];
 
-		$parts   = ! empty( $_POST['types'] ) ? explode( ',', $_POST['types'] ) : array( 'unopen', 'opens', 'clicks', 'unsubs', 'bounces' );
+		$parts = ! empty( $_POST['types'] ) ? explode( ',', $_POST['types'] ) : array( 'unopen', 'opens', 'clicks', 'unsubs', 'bounces' );
 		$orderby = ! empty( $_POST['orderby'] ) ? $_POST['orderby'] : 'sent';
-		$order   = ! isset( $_POST['order'] ) || $_POST['order'] == 'ASC' ? 'ASC' : 'DESC';
+		$order = ! isset( $_POST['order'] ) || $_POST['order'] == 'ASC' ? 'ASC' : 'DESC';
 
-		$return['html']    = mailster( 'campaigns' )->get_recipients_part( $campaign_ID, $parts, $page, $orderby, $order );
+		$return['html'] = mailster( 'campaigns' )->get_recipients_part( $campaign_ID, $parts, $page, $orderby, $order );
 		$return['success'] = true;
 
 		$this->json_return( $return );
@@ -1107,9 +1079,9 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$subscriber_id = (int) $_POST['id'];
-		$campaign_id   = (int) $_POST['campaignid'];
+		$campaign_id = (int) $_POST['campaignid'];
 
-		$return['html']    = mailster( 'subscribers' )->get_recipient_detail( $subscriber_id, $campaign_id );
+		$return['html'] = mailster( 'subscribers' )->get_recipient_detail( $subscriber_id, $campaign_id );
 		$return['success'] = ! ! $return['html'];
 
 		$this->json_return( $return );
@@ -1124,11 +1096,11 @@ class MailsterAjax {
 
 		if ( isset( $_POST['id'] ) ) {
 
-			$id       = basename( $_POST['id'] );
-			$src      = isset( $_POST['src'] ) ? ( $_POST['src'] ) : null;
-			$crop     = isset( $_POST['crop'] ) ? ( $_POST['crop'] == 'true' ) : false;
-			$width    = isset( $_POST['width'] ) ? (int) $_POST['width'] : null;
-			$height   = isset( $_POST['height'] ) && $crop ? (int) $_POST['height'] : null;
+			$id = basename( $_POST['id'] );
+			$src = isset( $_POST['src'] ) ? ( $_POST['src'] ) : null;
+			$crop = isset( $_POST['crop'] ) ? ( $_POST['crop'] == 'true' ) : false;
+			$width = isset( $_POST['width'] ) ? (int) $_POST['width'] : null;
+			$height = isset( $_POST['height'] ) && $crop ? (int) $_POST['height'] : null;
 			$original = isset( $_POST['original'] ) ? ( $_POST['original'] == 'true' ) : false;
 
 			$return['success'] = ! ! ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop, $original ) );
@@ -1142,17 +1114,17 @@ class MailsterAjax {
 	private function image_placeholder() {
 
 		$factor = ! empty( $_GET['f'] ) ? (int) $_GET['f'] : 1;
-		$width  = $factor * ( ! empty( $_GET['w'] ) ? (int) $_GET['w'] : 600 );
-		$height = $factor * ( ! empty( $_GET['h'] ) ? (int) $_GET['h'] : round( $width / 1.6 ) );
-		$tag    = isset( $_GET['tag'] ) ? '' . esc_attr( $_GET['tag'] ) . '' : '';
+		$width = $factor * ( ! empty( $_GET['w'] ) ? (int) $_GET['w'] : 600);
+		$height = $factor * ( ! empty( $_GET['h'] ) ? (int) $_GET['h'] : round( $width / 1.6 ));
+		$tag = isset( $_GET['tag'] ) ? '' . esc_attr( $_GET['tag'] ) . '' : '';
 
-		$text      = '{' . $tag . '}';
+		$text = '{' . $tag . '}';
 		$font_size = max( 11, round( $width / strlen( $text ) ) );
-		$font      = MAILSTER_DIR . 'assets/font/FredokaOne-Regular.ttf';
+		$font = MAILSTER_DIR . 'assets/font/FredokaOne-Regular.ttf';
 
 		$im = imagecreatetruecolor( $width, $height );
 
-		$bg         = imagecolorallocate( $im, 43, 179, 231 );
+		$bg = imagecolorallocate( $im, 43, 179, 231 );
 		$font_color = imagecolorallocate( $im, 255, 255, 255 );
 
 		imagefilledrectangle( $im, 0, 0, $width, $height, $bg );
@@ -1172,7 +1144,7 @@ class MailsterAjax {
 
 			$fw = imagefontwidth( $font_size );
 			$fh = imagefontheight( $font_size );
-			$l  = strlen( $text );
+			$l = strlen( $text );
 			$tw = $l * $fw;
 
 			$center_x = ( $width - $tw ) / 2;
@@ -1201,30 +1173,30 @@ class MailsterAjax {
 		global $wp_post_statuses;
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$offset    = (int) $_POST['offset'];
-		$search    = esc_attr( $_POST['search'] );
+		$offset = (int) $_POST['offset'];
+		$search = esc_attr( $_POST['search'] );
 		$post_type = esc_attr( $_POST['type'] );
 
 		$post_count = mailster_option( 'post_count', 30 );
 
 		if ( in_array( $post_type, array( 'post', 'attachment' ) ) ) {
 
-			$imagetype   = esc_attr( $_POST['imagetype'] );
-			$current_id  = isset( $_POST['id'] ) ? (int) $_POST['id'] : null;
+			$imagetype = esc_attr( $_POST['imagetype'] );
+			$current_id = isset( $_POST['id'] ) ? (int) $_POST['id'] : null;
 			$post_counts = 0;
 			$is_unsplash = 'attachment' == $post_type && 'unsplash' == $imagetype;
 
 			$defaults = array(
-				'post_type'              => $post_type,
-				'posts_per_page'         => $post_count,
-				'suppress_filters'       => true,
+				'post_type' => $post_type,
+				'posts_per_page' => $post_count,
+				'suppress_filters' => true,
 				'update_post_term_cache' => false,
 				'update_post_meta_cache' => false,
-				'offset'                 => $offset,
-				'orderby'                => 'post_date',
-				'order'                  => 'DESC',
-				'exclude'                => $current_id,
-				's'                      => $search ? $search : null,
+				'offset' => $offset,
+				'orderby' => 'post_date',
+				'order' => 'DESC',
+				'exclude' => $current_id,
+				's' => $search ? $search : null,
 			);
 
 			if ( 'post' == $post_type ) {
@@ -1236,56 +1208,47 @@ class MailsterAjax {
 					$post_types = array( -1 );
 				}
 
-				$args = wp_parse_args(
-					array(
-						'post_type'   => $post_types,
-						'post_status' => array( 'publish', 'future', 'draft' ),
-					),
-					$defaults
-				);
+				$args = wp_parse_args( array(
+					'post_type' => $post_types,
+					'post_status' => array( 'publish', 'future', 'draft' ),
+				), $defaults );
 
 			} elseif ( $is_unsplash ) {
 
 			} elseif ( 'attachment' == $post_type ) {
-				$args = wp_parse_args(
-					array(
-						'post_status'    => 'inherit',
-						'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png', 'image/tiff', 'image/bmp' ),
-					),
-					$defaults
-				);
+				$args = wp_parse_args( array(
+					'post_status' => 'inherit',
+					'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png', 'image/tiff', 'image/bmp' ),
+				), $defaults );
 
 			}
 
-			$return['success']   = true;
+			$return['success'] = true;
 			$return['itemcount'] = isset( $_POST['itemcount'] ) ? $_POST['itemcount'] : array();
 
 			if ( $is_unsplash ) {
 
-				$response = mailster( 'helper' )->unsplash(
-					'search',
-					array(
-						'offset' => $offset,
-						'query'  => $search,
-					)
-				);
+				$response = mailster( 'helper' )->unsplash('search', array(
+					'offset' => $offset,
+					'query' => $search,
+				));
 
 				if ( is_wp_error( $response ) ) {
 					$post_counts = $response;
 				} else {
 					if ( isset( $response->total ) ) {
 						$post_counts = $response->total;
-						$posts       = $response->results;
+						$posts = $response->results;
 					} else {
 						$post_counts = -1;
-						$posts       = $response;
+						$posts = $response;
 					}
 				}
 			} else {
 
-				$args        = apply_filters( 'mailster_get_post_list_args', $args );
-				$query       = new WP_Query( $args );
-				$posts       = $query->posts;
+				$args = apply_filters( 'mailster_get_post_list_args', $args );
+				$query = new WP_Query( $args );
+				$posts = $query->posts;
 				$post_counts = $query->found_posts;
 
 				if ( $current_id && ( $current = get_post( $current_id ) ) ) {
@@ -1321,7 +1284,7 @@ class MailsterAjax {
 
 						$relative = ( --$return['itemcount'][ $post->post_type ] );
 						$hasthumb = ! ! ( $thumbid = get_post_thumbnail_id( $post->ID ) );
-						$html    .= '<li data-id="' . $post->ID . '" data-name="' . esc_attr( $post->post_title ) . '" class="status-' . $post->post_status . '';
+						$html .= '<li data-id="' . $post->ID . '" data-name="' . esc_attr( $post->post_title ) . '" class="status-' . $post->post_status . '';
 						if ( $current_id == $post->ID ) {
 							$html .= ' selected';
 						}
@@ -1329,38 +1292,38 @@ class MailsterAjax {
 						( $hasthumb )
 							? $html .= ' has-thumb" data-thumbid="' . $thumbid . '"'
 							: $html .= '"';
-						$html       .= ' data-link="' . get_permalink( $post->ID ) . '" data-type="' . $post->post_type . '" data-relative="' . $relative . '">';
+						$html .= ' data-link="' . get_permalink( $post->ID ) . '" data-type="' . $post->post_type . '" data-relative="' . $relative . '">';
 						( $hasthumb )
 							? $html .= get_the_post_thumbnail( $post->ID, array( 48, 48 ) )
 							: $html .= '<div class="no-feature"></div>';
-						$html       .= '<span class="post-type">' . $pts[ $post->post_type ]->labels->singular_name . '</span>';
-						$html       .= '<strong>' . $post->post_title . '' . ( $post->post_status != 'publish' ? ' <em class="post-status wp-ui-highlight">' . $wp_post_statuses[ $post->post_status ]->label . '</em>' : '' ) . '</strong>';
-						$html       .= '<span class="excerpt">' . trim( wp_trim_words( strip_shortcodes( $post->post_content ), 25 ) ) . '</span>';
-						$html       .= '<span class="date">' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $post->post_date ) ) . '</span>';
-						$html       .= '</li>';
+						$html .= '<span class="post-type">' . $pts[ $post->post_type ]->labels->singular_name . '</span>';
+						$html .= '<strong>' . $post->post_title . '' . ( $post->post_status != 'publish' ? ' <em class="post-status wp-ui-highlight">' . $wp_post_statuses[ $post->post_status ]->label . '</em>' : '' ) . '</strong>';
+						$html .= '<span class="excerpt">' . trim( wp_trim_words( strip_shortcodes( $post->post_content ), 25 ) ) . '</span>';
+						$html .= '<span class="date">' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $post->post_date ) ) . '</span>';
+						$html .= '</li>';
 					}
 				} elseif ( 'attachment' == $post_type ) {
 
 					foreach ( $posts as $post ) {
 
 						if ( 'unsplash' == $imagetype ) {
-							$post_id       = $post->id;
+							$post_id = $post->id;
 							$unsplash_args = apply_filters( 'mailster_create_image_unsplash_args', array(), $post_id, $post->urls->raw, $post->width, $post->height, null );
-							$src           = add_query_arg( $unsplash_args, $post->urls->small );
-							$asp           = $post->width / $post->height;
-							$thumb_src     = add_query_arg( $unsplash_args, $post->urls->thumb );
-							$title         = isset( $post->alt_description ) ? $post->alt_description : $post->id;
-							$title        .= ' ' . sprintf( esc_html__( 'by %s', 'mailster' ), $post->user->name . ' (' . $post->user->links->html . ')' );
-							$class         = 'is-unsplash';
+							$src = add_query_arg( $unsplash_args, $post->urls->small );
+							$asp = $post->width / $post->height;
+							$thumb_src = add_query_arg( $unsplash_args, $post->urls->thumb );
+							$title = isset( $post->alt_description ) ? $post->alt_description : $post->id;
+							$title .= ' ' . sprintf( esc_html__( 'by %s', 'mailster' ), $post->user->name . ' (' . $post->user->links->html . ')' );
+							$class = 'is-unsplash';
 						} else {
-							$post_id   = $post->ID;
-							$image     = wp_get_attachment_image_src( $post_id, 'full' );
-							$src       = $image[0];
-							$asp       = $image[2] ? str_replace( ',', '.', $image[1] / $image[2] ) : '';
+							$post_id = $post->ID;
+							$image = wp_get_attachment_image_src( $post_id, 'full' );
+							$src = $image[0];
+							$asp = $image[2] ? str_replace( ',', '.', $image[1] / $image[2] ) : '';
 							$thumbnail = wp_get_attachment_image_src( $post_id, 'medium' );
 							$thumb_src = $thumbnail[0];
-							$title     = $post->post_title ? $post->post_title : ( $post->post_excerpt ? $post->post_excerpt : basename( $image[0] ) );
-							$class     = '';
+							$title = $post->post_title ? $post->post_title : ( $post->post_excerpt ? $post->post_excerpt : basename( $image[0] ) );
+							$class = '';
 						}
 						if ( $current_id && $current_id == $post_id ) {
 							$class .= ' selected';
@@ -1391,22 +1354,17 @@ class MailsterAjax {
 
 			$args = array();
 
-			$post_counts = mailster( 'helper' )->link_query(
-				array(
-					'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
-				),
-				true
-			);
+			$post_counts = mailster( 'helper' )->link_query( array(
+				'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
+			), true );
 
 			$posts_lefts = max( 0, $post_counts - $offset - $post_count );
 
-			$results = mailster( 'helper' )->link_query(
-				array(
-					'offset'         => $offset,
-					'posts_per_page' => $post_count,
-					'post_status'    => array( 'publish', 'finished', 'queued', 'paused' ),
-				)
-			);
+			$results = mailster( 'helper' )->link_query( array(
+				'offset' => $offset,
+				'posts_per_page' => $post_count,
+				'post_status' => array( 'publish', 'finished', 'queued', 'paused' ),
+			) );
 
 			$return['success'] = true;
 
@@ -1414,19 +1372,19 @@ class MailsterAjax {
 				$html = '';
 				foreach ( $results as $entry ) {
 					$hasthumb = ! ! ( $thumbid = get_post_thumbnail_id( $entry['ID'] ) );
-					$html    .= '<li data-id="' . $entry['ID'] . '" data-name="' . $entry['title'] . '"';
+					$html .= '<li data-id="' . $entry['ID'] . '" data-name="' . $entry['title'] . '"';
 					if ( $hasthumb ) {
 						$html .= ' data-thumbid="' . $thumbid . '" class="has-thumb"';
 					}
 
-					$html       .= ' data-link="' . $entry['permalink'] . '">';
+					$html .= ' data-link="' . $entry['permalink'] . '">';
 					( $hasthumb )
 						? $html .= get_the_post_thumbnail( $entry['ID'], array( 48, 48 ) )
 						: $html .= '<div class="no-feature"></div>';
-					$html       .= '<strong>' . $entry['title'] . '</strong>';
-					$html       .= '<span class="link">' . $entry['permalink'] . '</span>';
-					$html       .= '<span class="info">' . $entry['info'] . '</span>';
-					$html       .= '</li>';
+					$html .= '<strong>' . $entry['title'] . '</strong>';
+					$html .= '<span class="link">' . $entry['permalink'] . '</span>';
+					$html .= '<span class="info">' . $entry['info'] . '</span>';
+					$html .= '</li>';
 				}
 				if ( $posts_lefts ) {
 					$html .= '<li class="load-more-posts" data-offset="' . ( $offset + $post_count ) . '" data-type="' . $post_type . '"><a><span>';
@@ -1457,7 +1415,7 @@ class MailsterAjax {
 
 				$maxitems = $rss->get_item_quantity( $post_count );
 
-				$rss_items   = $rss->get_items( $offset, $maxitems );
+				$rss_items = $rss->get_items( $offset, $maxitems );
 				$post_counts = count( $rss->get_items( $offset ) );
 
 				$posts_lefts = max( 0, $post_counts - $offset - $post_count );
@@ -1476,14 +1434,14 @@ class MailsterAjax {
 						$html .= ' data-thumbid="' . $hasthumb . '" class="has-thumb"';
 					}
 
-					$html       .= ' data-link="' . $item->get_permalink() . '" data-type="rss-item" data-relative="' . $relative . '">';
+					$html .= ' data-link="' . $item->get_permalink() . '" data-type="rss-item" data-relative="' . $relative . '">';
 					( $hasthumb )
 						? $html .= '<div class="feature" style="background-image:url(' . $hasthumb . ')"></div>'
 						: $html .= '<div class="no-feature"></div>';
-					$html       .= '<strong>' . $item->get_title() . '</strong>';
-					$html       .= '<span>' . trim( wp_trim_words( strip_shortcodes( $item->get_description() ), 18 ) ) . '</span>';
-					$html       .= '<span>' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $item->get_date() ) ) . '</span>';
-					$html       .= '</li>';
+					$html .= '<strong>' . $item->get_title() . '</strong>';
+					$html .= '<span>' . trim( wp_trim_words( strip_shortcodes( $item->get_description() ), 18 ) ) . '</span>';
+					$html .= '<span>' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $item->get_date() ) ) . '</span>';
+					$html .= '</li>';
 				}
 
 				if ( $posts_lefts ) {
@@ -1499,22 +1457,22 @@ class MailsterAjax {
 				$return['html'] = $html;
 
 				$return['rssinfo'] = array(
-					'copyright'   => $rss->get_copyright() ? $rss->get_copyright() : sprintf( esc_html__( 'All rights reserved %s', 'mailster' ), '<a href="' . $rss->get_link() . '" class="external">' . $rss->get_title() . '</a>' ),
-					'title'       => $rss->get_title(),
+					'copyright' => $rss->get_copyright() ? $rss->get_copyright() : sprintf( esc_html__( 'All rights reserved %s', 'mailster' ), '<a href="' . $rss->get_link() . '" class="external">' . $rss->get_title() . '</a>' ),
+					'title' => $rss->get_title(),
 					'description' => $rss->get_description(),
 				);
 
-				$recent_feeds                      = get_option( 'mailster_recent_feeds', array() );
-				$recent_feeds                      = array_reverse( $recent_feeds );
+				$recent_feeds = get_option( 'mailster_recent_feeds', array() );
+				$recent_feeds = array_reverse( $recent_feeds );
 				$recent_feeds[ $rss->get_title() ] = $url;
-				$recent_feeds                      = array_reverse( $recent_feeds );
-				$recent_feeds                      = array_slice( $recent_feeds, 0, 5 );
+				$recent_feeds = array_reverse( $recent_feeds );
+				$recent_feeds = array_slice( $recent_feeds, 0, 5 );
 				update_option( 'mailster_recent_feeds', $recent_feeds );
 
 			} else {
 
 				$return['success'] = true;
-				$return['html']    = '<li class="norows"><span>' . $rss->get_error_message() . '</span></li>';
+				$return['html'] = '<li class="norows"><span>' . $rss->get_error_message() . '</span></li>';
 			}
 		}
 
@@ -1531,13 +1489,13 @@ class MailsterAjax {
 		$strip_shortcodes = apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) );
 
 		if ( is_numeric( $_POST['id'] ) ) {
-			$post    = get_post( (int) $_POST['id'] );
+			$post = get_post( (int) $_POST['id'] );
 			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 
 			if ( $post ) {
 				if ( ! $post->post_excerpt ) {
 					if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
-						$content            = explode( $matches[0], $post->post_content, 2 );
+						$content = explode( $matches[0], $post->post_content, 2 );
 						$post->post_excerpt = trim( $content[0] );
 					}
 					if ( ! $post->post_excerpt ) {
@@ -1549,7 +1507,7 @@ class MailsterAjax {
 					$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );
 				}
 				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
-				$link               = get_permalink( $post->ID );
+				$link = get_permalink( $post->ID );
 
 				$content = wpautop( mailster_remove_block_comments( $post->post_content ) );
 
@@ -1562,7 +1520,7 @@ class MailsterAjax {
 				$image = null;
 				if ( has_post_thumbnail( $post->ID ) ) {
 					$image = array(
-						'id'   => get_post_thumbnail_id( $post->ID ),
+						'id' => get_post_thumbnail_id( $post->ID ),
 						'name' => $post->post_title,
 					);
 				}
@@ -1573,12 +1531,12 @@ class MailsterAjax {
 				$excerpt = ( $strip_shortcodes ) ? strip_shortcodes( $excerpt ) : do_shortcode( $excerpt );
 
 				$data = array(
-					'title'   => $post->post_title,
-					'alt'     => $post->post_title,
+					'title' => $post->post_title,
+					'alt' => $post->post_title,
 					'content' => $content,
 					'excerpt' => $excerpt,
-					'link'    => get_permalink( $post->ID ),
-					'image'   => $image,
+					'link' => get_permalink( $post->ID ),
+					'image' => $image,
 				);
 
 				foreach ( $expects as $expect ) {
@@ -1604,16 +1562,16 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$campaign_id            = (int) $_POST['id'];
-		$post_type              = sanitize_key( $_POST['post_type'] );
+		$campaign_id = (int) $_POST['id'];
+		$post_type = sanitize_key( $_POST['post_type'] );
 		$relative_or_identifier = stripslashes( $_POST['relative'] );
-		$term_ids               = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
-		$modulename             = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
-		$rss_url                = isset( $_POST['rss_url'] ) ? $_POST['rss_url'] : null;
-		$expects                = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
-		$args                   = array();
-		$static_post_types      = mailster( 'helper' )->get_post_types();
-		$is_dynmaic_post_type   = ! isset( $static_post_types[ $post_type ] );
+		$term_ids = isset( $_POST['extra'] ) ? (array) $_POST['extra'] : array();
+		$modulename = isset( $_POST['modulename'] ) ? $_POST['modulename'] : null;
+		$rss_url = isset( $_POST['rss_url'] ) ? $_POST['rss_url'] : null;
+		$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
+		$args = array();
+		$static_post_types = mailster( 'helper' )->get_post_types();
+		$is_dynmaic_post_type = ! isset( $static_post_types[ $post_type ] );
 
 		// special case for RSS.
 		if ( 'rss' == $post_type ) {
@@ -1650,12 +1608,12 @@ class MailsterAjax {
 		$options = $relative_or_identifier . ( ! empty( $term_ids ) ? ';' . implode( ';', $term_ids ) : '' );
 
 		$pattern = array(
-			'title'   => '{' . $post_type . '_title:' . $options . '}',
-			'alt'     => '{' . $post_type . '_title:' . $options . '}',
+			'title' => '{' . $post_type . '_title:' . $options . '}',
+			'alt' => '{' . $post_type . '_title:' . $options . '}',
 			'content' => '{' . $post_type . '_content:' . $options . '}',
 			'excerpt' => '{' . $post_type . '_excerpt:' . $options . '}',
-			'link'    => '{' . $post_type . '_link:' . $options . '}',
-			'image'   => '{' . $post_type . '_image:' . $options . '}',
+			'link' => '{' . $post_type . '_link:' . $options . '}',
+			'image' => '{' . $post_type . '_image:' . $options . '}',
 		);
 
 		foreach ( $expects as $expect ) {
@@ -1682,10 +1640,10 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$post_type = $_POST['posttype'];
-		$labels    = isset( $_POST['labels'] ) ? ( $_POST['labels'] == 'true' ) : false;
-		$names     = isset( $_POST['names'] ) ? $_POST['names'] : false;
+		$labels = isset( $_POST['labels'] ) ? ( $_POST['labels'] == 'true' ) : false;
+		$names = isset( $_POST['names'] ) ? $_POST['names'] : false;
 
-		$return['html']    = '<div class="dynamic_embed_options_taxonomies">' . mailster( 'helper' )->get_post_term_dropdown( $post_type, $labels, $names ) . '</div>';
+		$return['html'] = '<div class="dynamic_embed_options_taxonomies">' . mailster( 'helper' )->get_post_term_dropdown( $post_type, $labels, $names ) . '</div>';
 		$return['success'] = true;
 
 		$this->json_return( $return );
@@ -1710,10 +1668,10 @@ class MailsterAjax {
 
 		}
 
-		$mail            = mailster( 'mail' );
-		$mail->to        = esc_attr( $data['receiver'] );
-		$mail->subject   = esc_attr( '[' . get_bloginfo( 'name' ) . '] ' . sprintf( esc_html__( '%s is forwarding an email to you!', 'mailster' ), $data['sendername'] ) );
-		$mail->from      = mailster_option( 'from' );
+		$mail = mailster( 'mail' );
+		$mail->to = esc_attr( $data['receiver'] );
+		$mail->subject = esc_attr( '[' . get_bloginfo( 'name' ) . '] ' . sprintf( esc_html__( '%s is forwarding an email to you!', 'mailster' ), $data['sendername'] ) );
+		$mail->from = mailster_option( 'from' );
 		$mail->from_name = sprintf( esc_html_x( '%1$s via %2$s', 'user forwarded via website', 'mailster' ), $data['sendername'], get_bloginfo( 'name' ) );
 
 		$message = nl2br( $data['message'] ) . '<br><br>' . $data['url'];
@@ -1788,7 +1746,7 @@ class MailsterAjax {
 
 		if ( count( $return['files'] ) ) {
 			$return['success'] = true;
-			$return['base']    = trailingslashit( mailster( 'templates' )->get_url() ) . $return['slug'];
+			$return['base'] = trailingslashit( mailster( 'templates' )->get_url() ) . $return['slug'];
 			foreach ( $return['files'] as $file => $data ) {
 				$return['files'][ $file ]['screenshot'] = mailster( 'templates' )->get_screenshot( $return['slug'], $file );
 			}
@@ -1806,7 +1764,7 @@ class MailsterAjax {
 
 		$return['slug'] = dirname( $_POST['href'] );
 		$return['file'] = basename( $_POST['href'] );
-		$file           = mailster( 'templates' )->get_path() . '/' . $return['slug'] . '/' . $return['file'];
+		$file = mailster( 'templates' )->get_path() . '/' . $return['slug'] . '/' . $return['file'];
 
 		$return['files'] = mailster( 'templates' )->get_files( $return['slug'], true );
 
@@ -1827,10 +1785,10 @@ class MailsterAjax {
 
 		$return['slug'] = esc_attr( $_POST['slug'] );
 		$return['file'] = esc_attr( $_POST['file'] );
-		$new            = ! empty( $_POST['name'] );
+		$new = ! empty( $_POST['name'] );
 
-		$name     = $new ? esc_attr( $_POST['name'] ) : $return['file'];
-		$content  = stripslashes( $_POST['content'] );
+		$name = $new ? esc_attr( $_POST['name'] ) : $return['file'];
+		$content = stripslashes( $_POST['content'] );
 		$filename = false;
 
 		if ( $new ) {
@@ -1860,7 +1818,7 @@ class MailsterAjax {
 				$return['newfile'] = $file;
 			}
 
-			$return['msg']     = esc_html__( 'File has been saved!', 'mailster' );
+			$return['msg'] = esc_html__( 'File has been saved!', 'mailster' );
 			$return['success'] = true;
 			wp_remote_get( mailster( 'templates' )->get_screenshot( $return['slug'], $file ) );
 		} else {
@@ -1914,8 +1872,8 @@ class MailsterAjax {
 
 	private function ajax_filesystem() {
 		if ( 'ftpext' == get_filesystem_method() && ! defined( 'FTP_HOST' ) && ! defined( 'FTP_USER' ) && ! defined( 'FTP_PASS' ) ) {
-			$return['msg']     = esc_html__( 'WordPress is not able to access to your filesystem!', 'mailster' );
-			$return['msg']    .= "\n" . sprintf( esc_html__( 'Please add following lines to the wp-config.php %s', 'mailster' ), "\n\ndefine('FTP_HOST', 'your-ftp-host');\ndefine('FTP_USER', 'your-ftp-user');\ndefine('FTP_PASS', 'your-ftp-password');\n" );
+			$return['msg'] = esc_html__( 'WordPress is not able to access to your filesystem!', 'mailster' );
+			$return['msg'] .= "\n" . sprintf( esc_html__( 'Please add following lines to the wp-config.php %s', 'mailster' ), "\n\ndefine('FTP_HOST', 'your-ftp-host');\ndefine('FTP_USER', 'your-ftp-user');\ndefine('FTP_PASS', 'your-ftp-password');\n" );
 			$return['success'] = false;
 
 			$this->json_return( $return );
@@ -1931,8 +1889,8 @@ class MailsterAjax {
 
 		if ( mailster( 'geo' )->update( true ) ) {
 			$return['success'] = true;
-			$return['update']  = esc_html__( 'Last update', 'mailster' ) . ': ' . esc_html__( 'right now', 'mailster' );
-			$return['msg']     = esc_html__( 'Location Database success loaded!', 'mailster' );
+			$return['update'] = esc_html__( 'Last update', 'mailster' ) . ': ' . esc_html__( 'right now', 'mailster' );
+			$return['msg'] = esc_html__( 'Location Database success loaded!', 'mailster' );
 		} else {
 			$return['msg'] = esc_html__( 'Couldn\'t load Location Database', 'mailster' );
 		}
@@ -1945,12 +1903,12 @@ class MailsterAjax {
 	private function sync_all_subscriber() {
 
 		$return['success'] = false;
-		$limit             = 100;
-		$offset            = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
+		$limit = 100;
+		$offset = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
 
-		$return['count']   = mailster( 'subscribers' )->sync_all_subscriber( $limit, $offset );
+		$return['count'] = mailster( 'subscribers' )->sync_all_subscriber( $limit, $offset );
 		$return['success'] = true;
-		$return['offset']  = $limit + $offset;
+		$return['offset'] = $limit + $offset;
 
 		$this->json_return( $return );
 
@@ -1960,12 +1918,12 @@ class MailsterAjax {
 	private function sync_all_wp_user() {
 
 		$return['success'] = false;
-		$limit             = 100;
-		$offset            = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
+		$limit = 100;
+		$offset = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
 
-		$return['count']   = mailster( 'subscribers' )->sync_all_wp_user( $limit, $offset );
+		$return['count'] = mailster( 'subscribers' )->sync_all_wp_user( $limit, $offset );
 		$return['success'] = true;
-		$return['offset']  = $limit + $offset;
+		$return['offset'] = $limit + $offset;
 
 		$this->json_return( $return );
 
@@ -1985,15 +1943,12 @@ class MailsterAjax {
 
 		$return['identifier'] = $identifier;
 
-		$mail          = mailster( 'mail' );
-		$mail->to      = mailster_option( 'bounce' );
+		$mail = mailster( 'mail' );
+		$mail->to = mailster_option( 'bounce' );
 		$mail->subject = 'Mailster Bounce Test Mail';
 		$mail->add_header( 'X-Mailster-Bounce-Identifier', $identifier );
 
-		$replace = array(
-			'preheader'    => 'You can delete this message!',
-			'notification' => 'This message was sent from your WordPress blog to test your bounce server. You can delete this message!',
-		);
+		$replace = array( 'preheader' => 'You can delete this message!', 'notification' => 'This message was sent from your WordPress blog to test your bounce server. You can delete this message!' );
 
 		$return['success'] = $mail->send_notification( $identifier, $mail->subject, $replace );
 
@@ -2005,18 +1960,18 @@ class MailsterAjax {
 	private function bounce_test_check() {
 
 		$return['success'] = false;
-		$return['msg']     = '';
+		$return['msg'] = '';
 
 		if ( isset( $_POST['formdata'] ) ) {
 			parse_str( $_POST['formdata'], $formdata );
 			mailster_update_option( $formdata['mailster_options'], true );
 		}
 
-		$passes     = (int) $_POST['passes'];
+		$passes = (int) $_POST['passes'];
 		$identifier = $_POST['identifier'];
 
 		$return['success'] = true;
-		$return['msg']     = esc_html__( 'checking for new messages', 'mailster' ) . str_repeat( '.', $passes );
+		$return['msg'] = esc_html__( 'checking for new messages', 'mailster' ) . str_repeat( '.', $passes );
 
 		$result = mailster( 'bounce' )->test( $identifier );
 
@@ -2030,12 +1985,12 @@ class MailsterAjax {
 			} else {
 
 				$return['complete'] = true;
-				$return['msg']      = esc_html__( 'Your bounce server is good!', 'mailster' );
+				$return['msg'] = esc_html__( 'Your bounce server is good!', 'mailster' );
 			}
 		} elseif ( $passes > 20 ) {
 
 				$return['complete'] = true;
-				$return['msg']      = esc_html__( 'Unable to get test message! Please check your settings.', 'mailster' );
+				$return['msg'] = esc_html__( 'Unable to get test message! Please check your settings.', 'mailster' );
 
 		}
 
@@ -2047,7 +2002,7 @@ class MailsterAjax {
 	private function get_system_info() {
 
 		$return['success'] = false;
-		$return['msg']     = 'You have no permission to access the stats';
+		$return['msg'] = 'You have no permission to access the stats';
 
 		$this->ajax_nonce( json_encode( $return ) );
 
@@ -2055,9 +2010,9 @@ class MailsterAjax {
 			$this->json_return( $return );
 		}
 
-		$space   = 30;
-		$infos   = mailster( 'settings' )->get_system_info( $space );
-		$output  = "### Begin System Info ###\n\n";
+		$space = 30;
+		$infos = mailster( 'settings' )->get_system_info( $space );
+		$output = "### Begin System Info ###\n\n";
 		$output .= "## Please include this information when posting support requests ##\n\n";
 
 		foreach ( $infos as $name => $value ) {
@@ -2087,7 +2042,7 @@ class MailsterAjax {
 
 		if ( get_option( 'show_avatars' ) ) {
 			$return['success'] = true;
-			$return['url']     = mailster( 'subscribers' )->get_gravatar_uri( $email, 400 );
+			$return['url'] = mailster( 'subscribers' )->get_gravatar_uri( $email, 400 );
 		} else {
 			$return['url'] = null;
 		}
@@ -2105,8 +2060,8 @@ class MailsterAjax {
 
 		$email = esc_attr( $_POST['email'] );
 
-		$subscriber        = mailster( 'subscribers' )->get_by_mail( $email );
-		$return['exists']  = ! ! $subscriber && $subscriber->ID != (int) $_POST['id'];
+		$subscriber = mailster( 'subscribers' )->get_by_mail( $email );
+		$return['exists'] = ! ! $subscriber && $subscriber->ID != (int) $_POST['id'];
 		$return['success'] = true;
 
 		$this->json_return( $return );
@@ -2144,7 +2099,7 @@ class MailsterAjax {
 
 				$ips = wp_list_pluck( (array) $records, 'ip' );
 
-				$return['message']  = sprintf( esc_html__( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ';
+				$return['message'] = sprintf( esc_html__( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ';
 				$return['message'] .= '<code>' . esc_html__( 'no TXT record found', 'mailster' ) . '</code>';
 				$return['message'] .= '<p>' . sprintf( esc_html__( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . '</p>';
 
@@ -2170,10 +2125,10 @@ class MailsterAjax {
 
 		if ( $dkim_domain = mailster_option( 'dkim_domain' ) ) {
 			$dkim_selector = mailster_option( 'dkim_selector' );
-			$records       = mailster( 'helper' )->dns_query( mailster_option( 'dkim_selector' ) . '._domainkey.' . $dkim_domain, 'TXT' );
+			$records = mailster( 'helper' )->dns_query( mailster_option( 'dkim_selector' ) . '._domainkey.' . $dkim_domain, 'TXT' );
 
-			$pubkey          = trim( str_replace( array( '-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----', "\n", "\r" ), '', mailster_option( 'dkim_public_key' ) ) );
-			$record          = apply_filters( 'mailster_dkim_record', 'k=rsa; p=' . $pubkey );
+			$pubkey = trim( str_replace( array( '-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----', "\n", "\r" ), '', mailster_option( 'dkim_public_key' ) ) );
+			$record = apply_filters( 'mailster_dkim_record', 'k=rsa; p=' . $pubkey );
 			$return['found'] = false;
 			if ( $records ) {
 				foreach ( (array) $records as $r ) {
@@ -2184,7 +2139,7 @@ class MailsterAjax {
 				}
 			}
 
-			$return['message']  = sprintf( esc_html__( 'Domain %s', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . ': ';
+			$return['message'] = sprintf( esc_html__( 'Domain %s', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . ': ';
 			$return['message'] .= ' Selector: <strong>' . $dkim_selector . '</strong>: ';
 
 			if ( $return['found'] ) :
@@ -2194,7 +2149,7 @@ class MailsterAjax {
 			else :
 
 				$return['message'] .= '<code>' . esc_html__( 'not verified', 'mailster' ) . '</code>';
-				$records            = mailster( 'helper' )->dns_query( $dkim_domain, 'A' );
+				$records = mailster( 'helper' )->dns_query( $dkim_domain, 'A' );
 
 				$return['message'] .= '<p>' . sprintf( esc_html__( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $dkim_domain . '</strong>' ) . '</p>';
 
@@ -2218,12 +2173,12 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$name        = stripslashes( $_POST['name'] );
+		$name = stripslashes( $_POST['name'] );
 		$campaign_id = (int) $_POST['id'];
-		$listtype    = $_POST['listtype'];
+		$listtype = $_POST['listtype'];
 
 		$return['success'] = mailster( 'campaigns' )->create_list_from_option( $name, $campaign_id, $listtype );
-		$return['msg']     = $return['success'] ? esc_html__( 'List has been created', 'mailster' ) : esc_html__( 'Couldn\'t create List', 'mailster' );
+		$return['msg'] = $return['success'] ? esc_html__( 'List has been created', 'mailster' ) : esc_html__( 'Couldn\'t create List', 'mailster' );
 
 		$this->json_return( $return );
 
@@ -2237,9 +2192,9 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$campaign_id = (int) $_POST['id'];
-		$listtype    = esc_attr( $_POST['listtype'] );
+		$listtype = esc_attr( $_POST['listtype'] );
 
-		$return['count']   = mailster( 'campaigns' )->create_list_from_option( '', $campaign_id, $listtype, true );
+		$return['count'] = mailster( 'campaigns' )->create_list_from_option( '', $campaign_id, $listtype, true );
 		$return['success'] = true;
 
 		$this->json_return( $return );
@@ -2254,15 +2209,15 @@ class MailsterAjax {
 
 		parse_str( $_POST['data'], $data );
 
-		$lists      = isset( $data['lists'] ) ? (array) $data['lists'] : -1;
+		$lists = isset( $data['lists'] ) ? (array) $data['lists'] : -1;
 		$conditions = isset( $data['conditions'] ) ? array_values( $data['conditions'] ) : false;
-		$status     = isset( $data['status'] ) ? (array) $data['status'] : false;
+		$status = isset( $data['status'] ) ? (array) $data['status'] : false;
 
 		$args = array(
 			'return_count' => true,
-			'lists'        => $lists,
-			'status'       => $status,
-			'conditions'   => $conditions,
+			'lists' => $lists,
+			'status' => $status,
+			'conditions' => $conditions,
 		);
 
 		$return['count'] = mailster( 'subscribers' )->query( $args );
@@ -2278,7 +2233,7 @@ class MailsterAjax {
 
 		global $wpdb;
 
-		$memory_limit       = @ini_get( 'memory_limit' );
+		$memory_limit = @ini_get( 'memory_limit' );
 		$max_execution_time = @ini_get( 'max_execution_time' );
 
 		$return['success'] = false;
@@ -2298,13 +2253,13 @@ class MailsterAjax {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 			}
 
-			$width  = (int) $_POST['width'];
+			$width = (int) $_POST['width'];
 			$height = (int) $_POST['height'];
 			$factor = (int) $_POST['factor'];
-			$crop   = isset( $_POST['crop'] ) && $_POST['crop'] == 'true';
+			$crop = isset( $_POST['crop'] ) && $_POST['crop'] == 'true';
 
 			$wp_upload_dir = wp_upload_dir();
-			$image         = false;
+			$image = false;
 
 			$filename = $_FILES['async-upload']['name'];
 
@@ -2319,20 +2274,17 @@ class MailsterAjax {
 
 			if ( ! $image ) {
 
-				$result = wp_handle_upload(
-					$_FILES['async-upload'],
-					array(
-						'test_form' => false,
-						'mimes'     => array(
-							'jpeg' => 'image/jpeg',
-							'jpg'  => 'image/jpeg',
-							'png'  => 'image/png',
-							'tiff' => 'image/tiff',
-							'tif'  => 'image/tiff',
-							'gif'  => 'image/gif',
-						),
-					)
-				);
+				$result = wp_handle_upload( $_FILES['async-upload'], array(
+					'test_form' => false,
+					'mimes' => array(
+						'jpeg' => 'image/jpeg',
+						'jpg' => 'image/jpeg',
+						'png' => 'image/png',
+						'tiff' => 'image/tiff',
+						'tif' => 'image/tiff',
+						'gif' => 'image/gif',
+					),
+				) );
 
 				$filename = basename( $result['file'] );
 				$filetype = wp_check_filetype( $filename, null );
@@ -2344,15 +2296,15 @@ class MailsterAjax {
 
 					$post_id = isset( $_POST['ID'] ) ? (int) $_POST['ID'] : 0;
 
-					$attachment  = array(
-						'guid'           => $wp_upload_dir['url'] . '/' . $filename,
+					$attachment = array(
+						'guid' => $wp_upload_dir['url'] . '/' . $filename,
 						'post_mime_type' => $filetype['type'],
-						'post_title'     => preg_replace( '/\.[^.]+$/', '', $filename ),
-						'post_content'   => '',
-						'post_status'    => 'inherit',
-						'post_parent'    => $post_id,
+						'post_title' => preg_replace( '/\.[^.]+$/', '', $filename ),
+						'post_content' => '',
+						'post_status' => 'inherit',
+						'post_parent' => $post_id,
 					);
-					$attach_id   = wp_insert_attachment( $attachment, $result['file'] );
+					$attach_id = wp_insert_attachment( $attachment, $result['file'] );
 					$attach_data = wp_generate_attachment_metadata( $attach_id, $result['file'] );
 					wp_update_attachment_metadata( $attach_id, $attach_data );
 
@@ -2372,7 +2324,7 @@ class MailsterAjax {
 					$return['name'] = get_post_field( 'post_title', $image['id'] );
 				}
 
-				$return['image']   = $image;
+				$return['image'] = $image;
 				$return['success'] = true;
 			}
 		}
@@ -2394,7 +2346,7 @@ class MailsterAjax {
 			die( 'not allowed' );
 		}
 
-		$memory_limit       = @ini_get( 'memory_limit' );
+		$memory_limit = @ini_get( 'memory_limit' );
 		$max_execution_time = @ini_get( 'max_execution_time' );
 
 		$return['success'] = false;
@@ -2414,14 +2366,11 @@ class MailsterAjax {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 			}
 
-			$result = wp_handle_upload(
-				$_FILES['async-upload'],
-				array(
-					'test_form' => false,
-					'test_type' => false,
-					'mimes'     => array( 'zip' => 'multipart/x-zip' ),
-				)
-			);
+			$result = wp_handle_upload( $_FILES['async-upload'], array(
+				'test_form' => false,
+				'test_type' => false,
+				'mimes' => array( 'zip' => 'multipart/x-zip' ),
+			) );
 
 			if ( isset( $result['error'] ) ) {
 
@@ -2459,49 +2408,49 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$type = esc_attr( $_POST['type'] );
-		$id   = (int) $_POST['id'];
+		$id = (int) $_POST['id'];
 
 		switch ( $type ) {
 			case 'campaigns':
 				if ( $campaign = mailster( 'campaigns' )->get( $id ) ) {
-					$data              = array(
-						'name'             => $campaign->post_title,
-						'status'           => $campaign->post_status,
-						'ID'               => $campaign->ID,
-						'totals'           => mailster( 'campaigns' )->get_totals( $id ),
+					$data = array(
+						'name' => $campaign->post_title,
+						'status' => $campaign->post_status,
+						'ID' => $campaign->ID,
+						'totals' => mailster( 'campaigns' )->get_totals( $id ),
 						'totals_formatted' => number_format_i18n( mailster( 'campaigns' )->get_totals( $id ) ),
-						'sent'             => mailster( 'campaigns' )->get_sent( $id ),
-						'sent_formatted'   => number_format_i18n( mailster( 'campaigns' )->get_sent( $id ) ),
-						'openrate'         => mailster( 'campaigns' )->get_open_rate( $id ),
-						'clickrate'        => mailster( 'campaigns' )->get_click_rate( $id ),
-						'bouncerate'       => mailster( 'campaigns' )->get_bounce_rate( $id ),
-						'unsubscriberate'  => mailster( 'campaigns' )->get_unsubscribe_rate( $id ),
+						'sent' => mailster( 'campaigns' )->get_sent( $id ),
+						'sent_formatted' => number_format_i18n( mailster( 'campaigns' )->get_sent( $id ) ),
+						'openrate' => mailster( 'campaigns' )->get_open_rate( $id ),
+						'clickrate' => mailster( 'campaigns' )->get_click_rate( $id ),
+						'bouncerate' => mailster( 'campaigns' )->get_bounce_rate( $id ),
+						'unsubscriberate' => mailster( 'campaigns' )->get_unsubscribe_rate( $id ),
 					);
-					$return['data']    = $data;
+					$return['data'] = $data;
 					$return['success'] = true;
 				}
-				break;
+			break;
 			case 'lists':
 				if ( $list = mailster( 'lists' )->get( $id ) ) {
-					$data              = array(
-						'name'             => $list->name,
-						'ID'               => $list->ID,
-						'totals'           => mailster( 'lists' )->get_totals( $id ),
+					$data = array(
+						'name' => $list->name,
+						'ID' => $list->ID,
+						'totals' => mailster( 'lists' )->get_totals( $id ),
 						'totals_formatted' => number_format_i18n( mailster( 'lists' )->get_totals( $id ) ),
-						'sent'             => mailster( 'lists' )->get_sent( $id ),
-						'sent_formatted'   => number_format_i18n( mailster( 'lists' )->get_sent( $id ) ),
-						'openrate'         => mailster( 'lists' )->get_open_rate( $id ),
-						'clickrate'        => mailster( 'lists' )->get_click_rate( $id ),
-						'bouncerate'       => mailster( 'lists' )->get_bounce_rate( $id ),
-						'unsubscriberate'  => mailster( 'lists' )->get_unsubscribe_rate( $id ),
+						'sent' => mailster( 'lists' )->get_sent( $id ),
+						'sent_formatted' => number_format_i18n( mailster( 'lists' )->get_sent( $id ) ),
+						'openrate' => mailster( 'lists' )->get_open_rate( $id ),
+						'clickrate' => mailster( 'lists' )->get_click_rate( $id ),
+						'bouncerate' => mailster( 'lists' )->get_bounce_rate( $id ),
+						'unsubscriberate' => mailster( 'lists' )->get_unsubscribe_rate( $id ),
 					);
-					$return['data']    = $data;
+					$return['data'] = $data;
 					$return['success'] = true;
 				}
-				break;
+			break;
 
 			default:
-				break;
+			break;
 		}
 
 		$this->json_return( $return );
@@ -2513,7 +2462,7 @@ class MailsterAjax {
 		$return['success'] = false;
 
 		$this->ajax_nonce( json_encode( $return ) );
-		$range           = isset( $_POST['range'] ) ? $_POST['range'] : '7 days';
+		$range = isset( $_POST['range'] ) ? $_POST['range'] : '7 days';
 		$return['chart'] = mailster( 'stats' )->get_dashboard( $range );
 
 		$return['success'] = true;
@@ -2574,27 +2523,27 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ), 'mailster_register' );
 		$purchasecode = trim( $_POST['purchasecode'] );
-		$slug         = trim( $_POST['slug'] );
+		$slug = trim( $_POST['slug'] );
 
 		if ( empty( $purchasecode ) ) {
 			$return['error'] = esc_html__( 'Please enter your Purchase Code!', 'mailster' );
-			$return['code']  = 'license';
+			$return['code'] = 'license';
 
 		} elseif ( isset( $_POST['data'] ) ) {
 			parse_str( $_POST['data'], $userdata );
 
 			if ( empty( $userdata['email'] ) ) {
 				$return['error'] = esc_html__( 'Please enter your email address.', 'mailster' );
-				$return['code']  = 'email';
+				$return['code'] = 'email';
 			} elseif ( ! isset( $userdata['tos'] ) ) {
 				$return['error'] = esc_html__( 'You have to accept the terms of service.', 'mailster' );
-				$return['code']  = 'tos';
+				$return['code'] = 'tos';
 			} else {
 				$result = UpdateCenterPlugin::register( $slug, $userdata, $purchasecode );
 
 				if ( is_wp_error( $result ) ) {
 					$return['error'] = mailster()->get_update_error( $result );
-					$return['code']  = $result->get_error_code();
+					$return['code'] = $result->get_error_code();
 
 				} else {
 					update_option( 'mailster_username', $result['username'] );
@@ -2604,17 +2553,17 @@ class MailsterAjax {
 					do_action( 'mailster_register', $result['username'], $result['email'], $purchasecode );
 					do_action( 'mailster_register_' . $slug, $result['username'], $result['email'], $purchasecode );
 
-					$return['username']     = $result['username'];
-					$return['email']        = $result['email'];
+					$return['username'] = $result['username'];
+					$return['email'] = $result['email'];
 					$return['purchasecode'] = $purchasecode;
-					$return['success']      = true;
+					$return['success'] = true;
 				}
 			}
 		} else {
 			$result = UpdateCenterPlugin::verify( $slug, $purchasecode );
 			if ( is_wp_error( $result ) && 681 != $result->get_error_code() ) {
 				$return['error'] = mailster()->get_update_error( $result );
-				$return['code']  = str_replace( '_', '', $result->get_error_code() );
+				$return['code'] = str_replace( '_', '', $result->get_error_code() );
 			} else {
 				$return['success'] = true;
 			}
@@ -2634,8 +2583,7 @@ class MailsterAjax {
 
 			$args = array( trim( $_GET['slug'] ), trim( $_GET['purchasecode'] ), trim( $_GET['username'] ), trim( $_GET['email'] ) );
 
-			?><script>window.opener.verifymailster('<?php echo implode( "','", $args ); ?>');window.close();</script>
-			<?php
+			?><script>window.opener.verifymailster('<?php echo implode( "','", $args ) ?>');window.close();</script><?php
 
 			exit;
 
@@ -2645,22 +2593,16 @@ class MailsterAjax {
 
 			$url = UpdateCenterPlugin::get( $slug, 'remote_url' );
 
-			$url = add_query_arg(
-				array(
-					'envato-signup' => 1,
-					'slug'          => $slug,
-					'token'         => wp_create_nonce( 'mailster_nonce' ),
-					'redirect'      => add_query_arg(
-						array(
-							'action'   => 'mailster_envato_verify',
-							'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
-						),
-						admin_url( 'admin-ajax.php' )
-					),
-					'location'      => home_url(),
-				),
-				$url
-			);
+			$url = add_query_arg( array(
+				'envato-signup' => 1,
+				'slug' => $slug,
+				'token' => wp_create_nonce( 'mailster_nonce' ),
+				'redirect' => add_query_arg( array(
+					'action' => 'mailster_envato_verify',
+					'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
+				), admin_url( 'admin-ajax.php' ) ),
+				'location' => home_url(),
+			), $url );
 
 			wp_redirect( $url );
 			exit;
@@ -2676,8 +2618,8 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		if ( $plugin_info = mailster()->plugin_info( null, true ) ) {
-			$return['update']      = $plugin_info->update;
-			$return['version']     = $plugin_info->new_version;
+			$return['update'] = $plugin_info->update;
+			$return['version'] = $plugin_info->new_version;
 			$return['last_update'] = human_time_diff( $plugin_info->last_update );
 			$return['plugin_info'] = $plugin_info;
 
@@ -2696,16 +2638,17 @@ class MailsterAjax {
 
 		$plugin = sanitize_key( $_POST['plugin'] );
 		$method = sanitize_key( $_POST['method'] );
-		$step   = sanitize_key( $_POST['step'] );
+		$step = sanitize_key( $_POST['step'] );
 
 		switch ( $step ) {
 			case 'install':
 				$return['success'] = mailster( 'helper' )->install_plugin( $plugin );
-				break;
+			break;
 			case 'activate':
 				$return['success'] = mailster( 'helper' )->activate_plugin( $plugin );
-				break;
+			break;
 			case 'content':
+
 				ob_start();
 
 				do_action( "mailster_deliverymethod_tab_{$method}" );
@@ -2715,7 +2658,7 @@ class MailsterAjax {
 				ob_end_clean();
 				$return['content'] = $content;
 				$return['success'] = true;
-				break;
+			break;
 		}
 
 		$this->json_return( $return );
@@ -2735,9 +2678,10 @@ class MailsterAjax {
 
 		switch ( $id ) {
 			case 'homepage':
+
 				// homepage exists => update
 				if ( $homepage = get_post( mailster_option( 'homepage' ) ) ) {
-					$homepage->post_title   = $data['post_title'];
+					$homepage->post_title = $data['post_title'];
 					$homepage->post_content = $data['post_content'];
 					if ( isset( $data['post_name'] ) ) {
 						$homepage->post_name = $data['post_name'];
@@ -2747,9 +2691,9 @@ class MailsterAjax {
 					// create new one
 				} else {
 					include MAILSTER_DIR . 'includes/static.php';
-					$homepage                = wp_parse_args( $homepage, $mailster_homepage );
+					$homepage = wp_parse_args( $homepage, $mailster_homepage );
 					$homepage['post_status'] = 'publish';
-					$id                      = wp_insert_post( $homepage );
+					$id = wp_insert_post( $homepage );
 					if ( $id && ! is_wp_error( $id ) ) {
 						mailster_remove_notice( 'no_homepage' );
 						mailster_remove_notice( 'wrong_homepage_status' );
@@ -2760,23 +2704,23 @@ class MailsterAjax {
 					}
 				}
 
-				break;
+			break;
 
 			case 'validation':
-				break;
+			break;
 			case 'finish':
-				// maybe
-				mailster( 'templates' )->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 1 );
+			 	// maybe
+			 	mailster( 'templates' )->schedule_screenshot( mailster_option( 'default_template' ), 'index.html', true, 1 );
 				update_option( 'mailster_setup', time() );
 				flush_rewrite_rules();
-				break;
+			break;
 			case 'delivery':
 			default:
 				if ( isset( $data['mailster_options'] ) ) {
 					$mailster_options = wp_parse_args( $data['mailster_options'], $mailster_options );
 					update_option( 'mailster_options', $mailster_options );
 				}
-				break;
+			break;
 		}
 
 		$this->json_return( $return );
@@ -2790,15 +2734,15 @@ class MailsterAjax {
 
 		$test_id = isset( $_POST['test_id'] ) ? $_POST['test_id'] : null;
 
-		$test               = mailster( 'test' );
-		$return['success']  = $test->run( $test_id );
-		$return['message']  = $test->get_message();
+		$test = mailster( 'test' );
+		$return['success'] = $test->run( $test_id );
+		$return['message'] = $test->get_message();
 		$return['nexttest'] = $test->get_next();
-		$return['next']     = $test->nicename( $return['nexttest'] );
-		$return['total']    = $test->get_total();
-		$return['errors']   = $test->get_error_counts();
-		$return['current']  = $test->get_current();
-		$return['type']     = $test->get_current_type();
+		$return['next'] = $test->nicename( $return['nexttest'] );
+		$return['total'] = $test->get_total();
+		$return['errors'] = $test->get_error_counts();
+		$return['current'] = $test->get_current();
+		$return['type'] = $test->get_current_type();
 
 		$this->json_return( $return );
 

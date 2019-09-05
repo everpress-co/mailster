@@ -3,10 +3,10 @@
 class MailsterMail {
 
 	public $embed_images = null;
-	public $headers      = array();
-	public $content      = '';
-	public $plaintext    = '';
-	public $subject      = '';
+	public $headers = array();
+	public $content = '';
+	public $plaintext = '';
+	public $subject = '';
 	public $from;
 	public $from_name;
 	public $to;
@@ -23,9 +23,9 @@ class MailsterMail {
 	public $bouncemail;
 	public $baselink;
 	public $add_tracking_image = true;
-	public $errors             = array();
-	public $sent               = false;
-	public $pre_send           = false;
+	public $errors = array();
+	public $sent = false;
+	public $pre_send = false;
 
 	public $mailer;
 
@@ -33,11 +33,11 @@ class MailsterMail {
 
 	public $send_limit;
 	public $sent_within_period = 0;
-	public $sentlimitreached   = false;
+	public $sentlimitreached = false;
 
-	private $campaignID   = null;
+	private $campaignID = null;
 	private $subscriberID = null;
-	private $messageID    = null;
+	private $messageID = null;
 
 	public $text = '';
 
@@ -74,16 +74,16 @@ class MailsterMail {
 
 			$this->mailer->IsSMTP();
 
-			$this->mailer->Host     = mailster_option( 'smtp_host' );
-			$this->mailer->Port     = mailster_option( 'smtp_port', 25 );
-			$this->mailer->Timeout  = mailster_option( 'smtp_timeout', 10 );
+			$this->mailer->Host = mailster_option( 'smtp_host' );
+			$this->mailer->Port = mailster_option( 'smtp_port', 25 );
+			$this->mailer->Timeout = mailster_option( 'smtp_timeout', 10 );
 			$this->mailer->SMTPAuth = ! ! mailster_option( 'smtp_auth', false );
 			if ( $this->mailer->SMTPAuth ) {
 				$this->mailer->AuthType = mailster_option( 'smtp_auth', '' );
 				$this->mailer->Username = mailster_option( 'smtp_user' );
 				$this->mailer->Password = mailster_option( 'smtp_pwd' );
 			}
-			$this->mailer->SMTPSecure    = mailster_option( 'smtp_secure', '' );
+			$this->mailer->SMTPSecure = mailster_option( 'smtp_secure', '' );
 			$this->mailer->SMTPKeepAlive = true;
 
 			add_action( 'mailster_presend', array( &$this, 'pre_send' ), 1, 10 );
@@ -93,14 +93,14 @@ class MailsterMail {
 
 			$this->mailer->IsSMTP();
 
-			$this->mailer->Host     = 'smtp.googlemail.com';
-			$this->mailer->Port     = 587;
+			$this->mailer->Host = 'smtp.googlemail.com';
+			$this->mailer->Port = 587;
 			$this->mailer->SMTPAuth = true;
 
 			$this->mailer->Username = mailster_option( 'gmail_user' );
 			$this->mailer->Password = mailster_option( 'gmail_pwd' );
 
-			$this->mailer->SMTPSecure    = 'tls';
+			$this->mailer->SMTPSecure = 'tls';
 			$this->mailer->SMTPKeepAlive = true;
 
 			add_action( 'mailster_presend', array( &$this, 'pre_send' ), 1, 10 );
@@ -132,31 +132,31 @@ class MailsterMail {
 
 		if ( $this->dkim ) {
 			$this->mailer->DKIM_selector = mailster_option( 'dkim_selector' );
-			$this->mailer->DKIM_domain   = mailster_option( 'dkim_domain' );
+			$this->mailer->DKIM_domain = mailster_option( 'dkim_domain' );
 
 			$folder = MAILSTER_UPLOAD_DIR . '/dkim';
 
-			$this->mailer->DKIM_private    = $folder . '/' . mailster_option( 'dkim_private_hash' ) . '.pem';
+			$this->mailer->DKIM_private = $folder . '/' . mailster_option( 'dkim_private_hash' ) . '.pem';
 			$this->mailer->DKIM_passphrase = mailster_option( 'dkim_passphrase' );
-			$this->mailer->DKIM_identity   = mailster_option( 'dkim_identity' );
+			$this->mailer->DKIM_identity = mailster_option( 'dkim_identity' );
 		}
 
-		$this->from      = mailster_option( 'from' );
+		$this->from = mailster_option( 'from' );
 		$this->from_name = mailster_option( 'from_name' );
 
 		$this->send_limit = mailster_option( 'send_limit' );
 
-		$subscriber_errors       = array(
+		$subscriber_errors = array(
 			'SMTP Error: The following recipients failed',
 			'The following From address failed',
 			'Invalid address:',
 			'SMTP Error: Data not accepted',
 		);
 		$this->subscriber_errors = apply_filters( 'mymail_subscriber_errors', apply_filters( 'mailster_subscriber_errors', $subscriber_errors ) );
-		$system_errors           = array(
+		$system_errors = array(
 			'Not in Time Frame',
 		);
-		$this->system_errors     = apply_filters( 'mailster_system_errors', $system_errors );
+		$this->system_errors = apply_filters( 'mailster_system_errors', $system_errors );
 
 		if ( ! get_transient( '_mailster_send_period_timeout' ) ) {
 			set_transient( '_mailster_send_period_timeout', true, mailster_option( 'send_period' ) * 3600 );
@@ -174,9 +174,9 @@ class MailsterMail {
 			$msg = sprintf( esc_html__( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), '<strong>' . $this->send_limit . '</strong>', '<strong>' . human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) . '</strong>' );
 			mailster_notice( $msg, 'error', false, 'dailylimit' );
 
-			$e                = new Exception( $msg, 1 );
+			$e = new Exception( $msg, 1 );
 			$this->last_error = $e;
-			$this->errors[]   = $e;
+			$this->errors[] = $e;
 
 		} else {
 
@@ -266,7 +266,7 @@ class MailsterMail {
 	public function __set( $name, $value ) {
 		switch ( $name ) {
 			case 'mailer':
-				break;
+			break;
 			default:
 				$this->{$name} = apply_filters( "mailster_mail_set_{$name}", $value );
 		}
@@ -294,7 +294,7 @@ class MailsterMail {
 	 */
 	public function set_campaign( $id ) {
 		$this->campaignID = (int) $id;
-		$this->baselink   = mailster()->get_base_link( (int) $id );
+		$this->baselink = mailster()->get_base_link( (int) $id );
 	}
 
 
@@ -326,7 +326,7 @@ class MailsterMail {
 			$tempheaders = $headers;
 		}
 		$headers = array();
-		$cc      = $bcc = $reply_to = array();
+		$cc = $bcc = $reply_to = array();
 
 		// If it's actually got contents
 		if ( ! empty( $tempheaders ) ) {
@@ -334,7 +334,7 @@ class MailsterMail {
 			foreach ( (array) $tempheaders as $header ) {
 				if ( strpos( $header, ':' ) === false ) {
 					if ( false !== stripos( $header, 'boundary=' ) ) {
-						$parts    = preg_split( '/boundary=/i', trim( $header ) );
+						$parts = preg_split( '/boundary=/i', trim( $header ) );
 						$boundary = trim( str_replace( array( "'", '"' ), '', $parts[1] ) );
 					}
 					continue;
@@ -370,12 +370,12 @@ class MailsterMail {
 					case 'content-type':
 						if ( strpos( $content, ';' ) !== false ) {
 							list( $type, $charset_content ) = explode( ';', $content );
-							$content_type                   = trim( $type );
+							$content_type = trim( $type );
 							if ( false !== stripos( $charset_content, 'charset=' ) ) {
 								$charset = trim( str_replace( array( 'charset=', '"' ), '', $charset_content ) );
 							} elseif ( false !== stripos( $charset_content, 'boundary=' ) ) {
 								$boundary = trim( str_replace( array( 'BOUNDARY=', 'boundary=', '"' ), '', $charset_content ) );
-								$charset  = '';
+								$charset = '';
 							}
 
 							// Avoid setting an empty $content_type.
@@ -418,7 +418,7 @@ class MailsterMail {
 						$recipient_name = $matches[1];
 						$address        = $matches[2];
 					}
-					$this->reply_to[]      = $address;
+					$this->reply_to[] = $address;
 					$this->reply_to_name[] = $recipient_name;
 				} else {
 					$this->reply_to[] = $address;
@@ -434,7 +434,7 @@ class MailsterMail {
 						$recipient_name = $matches[1];
 						$address        = $matches[2];
 					}
-					$this->cc[]      = $address;
+					$this->cc[] = $address;
 					$this->cc_name[] = $recipient_name;
 				} else {
 					$this->cc[] = $address;
@@ -450,7 +450,7 @@ class MailsterMail {
 						$recipient_name = $matches[1];
 						$address        = $matches[2];
 					}
-					$this->bcc[]      = $address;
+					$this->bcc[] = $address;
 					$this->bcc_name[] = $recipient_name;
 				} else {
 					$this->bcc[] = $address;
@@ -520,7 +520,7 @@ class MailsterMail {
 		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 
 		if ( $template && $file ) {
-			$template_obj  = mailster( 'template', $template, $file );
+			$template_obj = mailster( 'template', $template, $file );
 			$this->content = $template_obj->get( true, true );
 		} else {
 			if ( $file ) {
@@ -532,14 +532,12 @@ class MailsterMail {
 
 		$placeholder = mailster( 'placeholder', $this->content );
 
-		$placeholder->add(
-			array(
-				'subject'   => $this->subject,
-				'preheader' => $headline,
-				'headline'  => $headline,
-				'content'   => $content,
-			)
-		);
+		$placeholder->add( array(
+			'subject' => $this->subject,
+			'preheader' => $headline,
+			'headline' => $headline,
+			'content' => $content,
+		) );
 
 		$placeholder->add( $replace );
 
@@ -550,7 +548,7 @@ class MailsterMail {
 		$this->subject = $placeholder->get_content();
 
 		$this->add_tracking_image = false;
-		$this->embed_images       = mailster_option( 'embed_images' );
+		$this->embed_images = mailster_option( 'embed_images' );
 
 		$success = $this->send( $force );
 
@@ -609,20 +607,20 @@ class MailsterMail {
 		} catch ( _mailster_phpmailerException $e ) {
 
 			$this->last_error = $e;
-			$this->errors[]   = $e;
-			$this->sent       = false;
+			$this->errors[] = $e;
+			$this->sent = false;
 
 		} catch ( mailerException $e ) {
 
 			$this->last_error = $e;
-			$this->errors[]   = $e;
-			$this->sent       = false;
+			$this->errors[] = $e;
+			$this->sent = false;
 
 		} catch ( Exception $e ) {
 
 			$this->last_error = $e;
-			$this->errors[]   = $e;
-			$this->sent       = false;
+			$this->errors[] = $e;
+			$this->sent = false;
 
 		}
 
@@ -643,7 +641,7 @@ class MailsterMail {
 
 		try {
 
-			$this->messageID  = null;
+			$this->messageID = null;
 			$this->last_error = null;
 
 			// Empty out the values that may be set
@@ -660,12 +658,12 @@ class MailsterMail {
 				$this->mailer->AddAddress( $address, isset( $this->to_name[ $i ] ) ? $this->to_name[ $i ] : null );
 			}
 
-			$this->subject   = htmlspecialchars_decode( $this->subject, ENT_QUOTES );
+			$this->subject = htmlspecialchars_decode( $this->subject, ENT_QUOTES );
 			$this->from_name = htmlspecialchars_decode( $this->from_name, ENT_QUOTES );
 
 			// add CC
 			if ( $this->cc ) {
-				$cc      = (array) $this->cc;
+				$cc = (array) $this->cc;
 				$cc_name = (array) $this->cc_name;
 
 				foreach ( $this->cc as $i => $address ) {
@@ -675,7 +673,7 @@ class MailsterMail {
 
 			// add BCC
 			if ( $this->bcc ) {
-				$bcc      = (array) $this->bcc;
+				$bcc = (array) $this->bcc;
 				$bcc_name = (array) $this->bcc_name;
 
 				foreach ( $this->bcc as $i => $address ) {
@@ -685,7 +683,7 @@ class MailsterMail {
 
 			// add Reply-to
 			if ( $this->reply_to ) {
-				$reply_to      = (array) $this->reply_to;
+				$reply_to = (array) $this->reply_to;
 				$reply_to_name = (array) $this->reply_to_name;
 
 				foreach ( $reply_to as $i => $address ) {
@@ -737,12 +735,10 @@ class MailsterMail {
 
 			}
 
-			$this->messageID         = uniqid();
-			$this->mailer->messageID = sprintf(
-				'<%s@%s>',
+			$this->messageID = uniqid();
+			$this->mailer->messageID = sprintf( '<%s@%s>',
 				$this->messageID . '-' . $this->hash . '-' . $this->campaignID . '-' . mailster_option( 'ID' ),
-				$this->hostname
-			);
+			$this->hostname );
 
 			$this->add_header( 'X-Message-ID', $this->mailer->messageID );
 
@@ -761,20 +757,20 @@ class MailsterMail {
 		} catch ( _mailster_phpmailerException $e ) {
 
 			$this->last_error = $e;
-			$this->errors[]   = $e;
-			$this->pre_send   = false;
+			$this->errors[] = $e;
+			$this->pre_send = false;
 
 		} catch ( mailerException $e ) {
 
 			$this->last_error = $e;
-			$this->errors[]   = $e;
-			$this->pre_send   = false;
+			$this->errors[] = $e;
+			$this->pre_send = false;
 
 		} catch ( Exception $e ) {
 
 			$this->last_error = $e;
-			$this->errors[]   = $e;
-			$this->sent       = false;
+			$this->errors[] = $e;
+			$this->sent = false;
 
 		}
 
@@ -858,7 +854,7 @@ class MailsterMail {
 
 			foreach ( $error as $e ) {
 				$this->last_error = new Exception( $e, 1 );
-				$this->errors[]   = $this->last_error;
+				$this->errors[] = $this->last_error;
 			}
 		}
 	}
@@ -890,18 +886,18 @@ class MailsterMail {
 				foreach ( $messages as $msg ) {
 					$html .= '<li>' . $msg . '</li>';
 				}
-				$html  .= '</' . $format . '>';
+				$html .= '</' . $format . '>';
 				$return = $html;
-				break;
+			break;
 			case 'array':
 				$return = $messages;
-				break;
+			break;
 			case 'object':
 				$return = (object) $messages;
-				break;
+			break;
 			case 'string':
 				$return = $messages[0];
-				break;
+			break;
 			case 'br':
 				$format = '<br>';
 			default:
@@ -909,9 +905,9 @@ class MailsterMail {
 				foreach ( $messages as $msg ) {
 					$html .= $format . $msg . "\n";
 				}
-				$html  .= '</span>';
+				$html .= '</span>';
 				$return = $html;
-				break;
+			break;
 		}
 		return $return;
 	}
