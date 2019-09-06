@@ -369,7 +369,6 @@ class MailsterSubscribers {
 
 				mailster_notice( esc_html__( 'Subscriber added', 'mailster' ), 'success', true );
 				do_action( 'mailster_subscriber_save', $subscriber_id );
-				do_action( 'mymail_subscriber_save', $subscriber_id );
 				wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber_id );
 				exit;
 
@@ -453,7 +452,6 @@ class MailsterSubscribers {
 
 					mailster_notice( $is_new ? esc_html__( 'Subscriber added', 'mailster' ) : esc_html__( 'Subscriber saved', 'mailster' ), 'success', true );
 					do_action( 'mailster_subscriber_save', $subscriber->ID );
-					do_action( 'mymail_subscriber_save', $subscriber->ID );
 					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
 					exit;
 
@@ -471,7 +469,6 @@ class MailsterSubscribers {
 						} else {
 							mailster_notice( sprintf( esc_html__( 'Subscriber %s has been removed', 'mailster' ), '<strong>&quot;' . $subscriber->email . '&quot;</strong>' ), 'error', true, true );
 							do_action( 'mailster_subscriber_delete', $subscriber->ID, $subscriber->email );
-							do_action( 'mymail_subscriber_delete', $subscriber->ID, $subscriber->email );
 						}
 
 							wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
@@ -1018,7 +1015,6 @@ class MailsterSubscribers {
 			}
 
 			do_action( 'mailster_update_subscriber', $subscriber_id );
-			do_action( 'mymail_update_subscriber', $subscriber_id );
 
 			return $subscriber_id;
 
@@ -1315,7 +1311,6 @@ class MailsterSubscribers {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 			do_action( 'mailster_unassign_lists', $subscriber_ids, $lists, $not_list );
-			do_action( 'mymail_unassign_lists', $subscriber_ids, $lists, $not_list );
 
 			return true;
 		}
@@ -2196,7 +2191,6 @@ class MailsterSubscribers {
 		if ( $this->change_status( $subscriber->ID, 2 ) ) {
 
 			do_action( 'mailster_unsubscribe', $subscriber->ID, $campaign_id, $status );
-			do_action( 'mymail_unsubscribe', $subscriber->ID, $campaign_id, $status );
 
 			if ( $status ) {
 				$this->update_meta( $subscriber->ID, $campaign_id, 'unsubscribe', $status );
@@ -2772,7 +2766,7 @@ class MailsterSubscribers {
 
 		$baselink = home_url();
 
-		if ( $query = wp_parse_url( $baselink , PHP_URL_QUERY ) ) {
+		if ( $query = parse_url( $baselink , PHP_URL_QUERY ) ) {
 			$baselink = strtok( $baselink, '?' );
 			wp_parse_str( $query, $query );
 		}
@@ -3134,7 +3128,6 @@ class MailsterSubscribers {
 
 			if ( $this->change_status( $subscriber->ID, $this->get_status_by_name( 'hardbounced' ) ) ) {
 				do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, true, $status );
-				do_action( 'mymail_bounce', $subscriber->ID, $campaign_id, true, $status );
 				if ( $status ) {
 					$this->update_meta( $subscriber->ID, $campaign_id, 'bounce', $status );
 				}
@@ -3157,7 +3150,6 @@ class MailsterSubscribers {
 
 		// softbounce
 		do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, false, $status );
-		do_action( 'mymail_bounce', $subscriber->ID, $campaign_id, false, $status );
 		if ( $status ) {
 			$this->update_meta( $subscriber->ID, $campaign_id, 'bounce', $status );
 		}
@@ -3419,7 +3411,6 @@ class MailsterSubscribers {
 			if ( false !== $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_subscribers SET status = %d WHERE ID = %d", $new_status, $subscriber->ID ) ) ) {
 				if ( ! $silent ) {
 					do_action( 'mailster_subscriber_change_status', $new_status, $old_status, $subscriber );
-					do_action( 'mymail_subscriber_change_status', $new_status, $old_status, $subscriber );
 				}
 
 				if ( mailster_option( 'list_based_opt_in' ) ) {
