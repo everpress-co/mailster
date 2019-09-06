@@ -21,12 +21,12 @@ class MailsterTags {
 	 */
 	public function get_empty() {
 		return (object) array(
-			'ID' => 0,
-			'name' => '',
-			'slug' => '',
+			'ID'          => 0,
+			'name'        => '',
+			'slug'        => '',
 			'description' => '',
-			'added' => 0,
-			'updated' => 0,
+			'added'       => 0,
+			'updated'     => 0,
 			'subscribers' => 0,
 		);
 	}
@@ -48,7 +48,14 @@ class MailsterTags {
 
 		$entry = (array) $entry;
 
-		$field_names = array( 'ID' => '%d', 'name' => '%s', 'slug' => '%s', 'description' => '%d', 'added' => '%d', 'updated' => '%d' );
+		$field_names = array(
+			'ID'          => '%d',
+			'name'        => '%s',
+			'slug'        => '%s',
+			'description' => '%d',
+			'added'       => '%d',
+			'updated'     => '%d',
+		);
 
 		$now = time();
 
@@ -120,12 +127,15 @@ class MailsterTags {
 
 		$entry = (array) $entry;
 
-		$entry = wp_parse_args( $entry, array(
-			'slug' => sanitize_title( $entry['name'] ),
-			'description' => '',
-			'added' => $now,
-			'updated' => $now,
-		) );
+		$entry = wp_parse_args(
+			$entry,
+			array(
+				'slug'        => sanitize_title( $entry['name'] ),
+				'description' => '',
+				'added'       => $now,
+				'updated'     => $now,
+			)
+		);
 
 		add_action( 'mailster_update_tag', array( &$this, 'update_forms' ) );
 
@@ -154,7 +164,7 @@ class MailsterTags {
 			$subscriber_ids = array( (int) $subscriber_ids );
 		}
 
-		$ids = array_filter( $ids );
+		$ids            = array_filter( $ids );
 		$subscriber_ids = array_filter( $subscriber_ids );
 
 		if ( $remove_old ) {
@@ -211,7 +221,7 @@ class MailsterTags {
 			$subscriber_ids = array( (int) $subscriber_ids );
 		}
 
-		$ids = array_filter( $ids, 'is_numeric' );
+		$ids            = array_filter( $ids, 'is_numeric' );
 		$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
 
 		$chunks = array_chunk( $subscriber_ids, 200 );
@@ -328,10 +338,10 @@ class MailsterTags {
 				$ids = array_filter( $ids, 'is_numeric' );
 
 				if ( ! empty( $ids ) ) {
-					$sql = ( $counts )
+					$sql  = ( $counts )
 						? "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers FROM {$wpdb->prefix}mailster_tags AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_tags_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ')) ON a.ID = ab.tag_id WHERE a.ID IN(' . implode( ', ', $ids ) . ') GROUP BY a.ID'
 						: "SELECT a.* FROM {$wpdb->prefix}mailster_tags AS a WHERE a.ID IN(" . implode( ', ', $ids ) . ')';
-					$sql = apply_filters( 'mailster_tag_get_sql', $sql, $ids, $statuses, $counts );
+					$sql  = apply_filters( 'mailster_tag_get_sql', $sql, $ids, $statuses, $counts );
 					$tags = $wpdb->get_results( $sql );
 				}
 			}
@@ -483,7 +493,7 @@ class MailsterTags {
 		global $wpdb;
 
 		$statuses = ! is_null( $statuses ) && ! is_array( $statuses ) ? array( $statuses ) : $statuses;
-		$key = is_array( $statuses ) ? 'tag_counts_' . implode( '|', $statuses ) : 'tag_counts';
+		$key      = is_array( $statuses ) ? 'tag_counts_' . implode( '|', $statuses ) : 'tag_counts';
 
 		if ( false === ( $tag_counts = mailster_cache_get( $key ) ) ) {
 
