@@ -38,8 +38,8 @@ class MailsterLogs {
 		}
 
 		$current_filter = current_filter();
-		$func_args = func_get_args();
-		$type = str_replace( 'mailster_', '', $current_filter );
+		$func_args      = func_get_args();
+		$type           = str_replace( 'mailster_', '', $current_filter );
 
 		$args = array(
 			'type' => $type,
@@ -48,21 +48,21 @@ class MailsterLogs {
 		switch ( $current_filter ) {
 			case 'mailster_send':
 				$args['subscriber_id'] = $func_args[0];
-				$args['campaign_id'] = $func_args[1];
-				$args['text'] = 'Email was sent to %1';
+				$args['campaign_id']   = $func_args[1];
+				$args['text']          = 'Email was sent to %1';
 				break;
 			case 'mailster_list_unsubscribe':
 			case 'mailster_unsubscribe':
 				$args['subscriber_id'] = $func_args[0];
-				$args['campaign_id'] = $func_args[1];
-				$args['text'] = 'unsub %1';
+				$args['campaign_id']   = $func_args[1];
+				$args['text']          = 'unsub %1';
 				break;
 			case 'mailster_subscriber_error':
 			case 'mailster_system_error':
 			case 'mailster_campaign_error':
 				$args['subscriber_id'] = $func_args[0];
-				$args['campaign_id'] = $func_args[1];
-				$args['text'] = $func_args[2];
+				$args['campaign_id']   = $func_args[1];
+				$args['text']          = $func_args[2];
 				break;
 
 			default:
@@ -97,11 +97,11 @@ class MailsterLogs {
 	private function log_it( $args ) {
 
 		$defaults = array(
-			'type' => 0,
-			'timestamp' => microtime( true ),
+			'type'          => 0,
+			'timestamp'     => microtime( true ),
 			'subscriber_id' => null,
-			'campaign_id' => null,
-			'text' => '',
+			'campaign_id'   => null,
+			'text'          => '',
 		);
 
 		$data = wp_parse_args( $args, $defaults );
@@ -129,11 +129,11 @@ class MailsterLogs {
 	 */
 	public function get_columns() {
 		$columns = array(
-			'cb' => '<input type="checkbox" />',
-			'timestamp' => __( 'Time', 'mailster' ),
-			'text' => __( 'Text', 'mailster' ),
-			'type' => __( 'Type', 'mailster' ),
-			'campaign_id' => __( 'Campaign', 'mailster' ),
+			'cb'            => '<input type="checkbox" />',
+			'timestamp'     => __( 'Time', 'mailster' ),
+			'text'          => __( 'Text', 'mailster' ),
+			'type'          => __( 'Type', 'mailster' ),
+			'campaign_id'   => __( 'Campaign', 'mailster' ),
 			'subscriber_id' => __( 'Subscriber', 'mailster' ),
 
 		);
@@ -175,7 +175,7 @@ class MailsterLogs {
 		switch ( $action ) {
 
 			case 'delete':
-			break;
+				break;
 
 		}
 

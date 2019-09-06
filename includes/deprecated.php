@@ -10,36 +10,42 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 	}
 
 	if ( ! defined( 'DOING_AJAX' ) ) {
-		add_action( 'mymail_form_header', function() {
+		add_action(
+			'mymail_form_header',
+			function() {
 
-			global $pagenow;
+				global $pagenow;
 
-			if ( strpos( $_SERVER['REQUEST_URI'], 'myMail/form.php' ) !== false && isset( $_SERVER['HTTP_REFERER'] ) && 'form.php' == $pagenow ) {
+				if ( strpos( $_SERVER['REQUEST_URI'], 'myMail/form.php' ) !== false && isset( $_SERVER['HTTP_REFERER'] ) && 'form.php' == $pagenow ) {
 
-				$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
-				if ( isset( $_GET['button'] ) ) {
-					$msg = 'A deprecated Subscriber Button for Mailster has been found at %1$s. Please update the HTML following %2$s.';
-				} else {
-					$msg = 'An deprecated external form for Mailster has been found at %1$s. Please update the HTML following %2$s.';
+					$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
+					if ( isset( $_GET['button'] ) ) {
+						$msg = 'A deprecated Subscriber Button for Mailster has been found at %1$s. Please update the HTML following %2$s.';
+					} else {
+						$msg = 'An deprecated external form for Mailster has been found at %1$s. Please update the HTML following %2$s.';
+					}
+
+					mailster_notice( sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank">this guide</a>' ), 'error', 3600, 'oldsubscriberbtn' );
 				}
-
-				mailster_notice( sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank">this guide</a>' ), 'error', 3600, 'oldsubscriberbtn' );
 			}
-		});
+		);
 
-		add_action( 'mymail_cron_worker', function() {
+		add_action(
+			'mymail_cron_worker',
+			function() {
 
-			global $pagenow;
+				global $pagenow;
 
-			if ( strpos( $_SERVER['REQUEST_URI'], 'myMail/cron.php' ) !== false && isset( $_SERVER['HTTP_REFERER'] ) && 'cron.php' == $pagenow ) {
+				if ( strpos( $_SERVER['REQUEST_URI'], 'myMail/cron.php' ) !== false && isset( $_SERVER['HTTP_REFERER'] ) && 'cron.php' == $pagenow ) {
 
-				$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
+					$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
 
-				$msg = 'The URL to the cron has changed but still get triggered! Please update your cron service to the new URL.</strong></p><a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_settings#cron">Get the new URL</a>';
+					$msg = 'The URL to the cron has changed but still get triggered! Please update your cron service to the new URL.</strong></p><a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_settings#cron">Get the new URL</a>';
 
-				mailster_notice( $msg, 'error', 3600, 'oldcronurl' );
+					mailster_notice( $msg, 'error', 3600, 'oldcronurl' );
+				}
 			}
-		});
+		);
 	}
 
 
@@ -62,7 +68,7 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 
 		if ( empty( $to ) ) {
 			$current_user = wp_get_current_user();
-			$to = $current_user->user_email;
+			$to           = $current_user->user_email;
 		}
 
 		$defaults = array( 'notification' => '' );
@@ -77,16 +83,16 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 				$headerlines = explode( "\n", trim( $headers ) );
 				foreach ( $headerlines as $header ) {
 					$parts = explode( ':', $header, 2 );
-					$key = trim( $parts[0] );
+					$key   = trim( $parts[0] );
 					$value = trim( $parts[1] );
 
 					// if fom is set, use it!
 					if ( 'from' == strtolower( $key ) ) {
 						if ( preg_match( '#(.*)?<([^>]+)>#', $value, $matches ) ) {
-							$mail->from = trim( $matches[2] );
+							$mail->from      = trim( $matches[2] );
 							$mail->from_name = trim( $matches[1] );
 						} else {
-							$mail->from = $value;
+							$mail->from      = $value;
 							$mail->from_name = '';
 						}
 					} elseif ( ! in_array( strtolower( $key ), array( 'content-type' ) ) ) {
@@ -100,8 +106,8 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 			}
 		}
 
-		$mail->to = $to;
-		$mail->subject = $headline;
+		$mail->to          = $to;
+		$mail->subject     = $headline;
 		$mail->attachments = $attachments;
 
 		return $mail->send_notification( $content, $headline, $replace, false, $template_file );
@@ -139,7 +145,7 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 
 		_deprecated_function( __FUNCTION__, '2.3', 'mailster(\'campaigns\')->send' );
 
-		$campaign_id = is_numeric( $campaign ) ? $campaign : $campaign->ID;
+		$campaign_id   = is_numeric( $campaign ) ? $campaign : $campaign->ID;
 		$subscriber_id = is_numeric( $subscriber ) ? $subscriber : $subscriber->ID;
 
 		$result = mailster( 'campaigns' )->send( $campaign_id, $subscriber_id, $track, $forcesend || $force, false );
