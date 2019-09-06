@@ -75,11 +75,11 @@ class MailsterTinymce {
 		global $mailster_tags;
 
 		$user = array(
-			'firstname' => esc_html__( 'First Name', 'mailster' ),
-			'lastname' => esc_html__( 'Last Name', 'mailster' ),
-			'fullname' => esc_html__( 'Full Name', 'mailster' ),
+			'firstname'    => esc_html__( 'First Name', 'mailster' ),
+			'lastname'     => esc_html__( 'Last Name', 'mailster' ),
+			'fullname'     => esc_html__( 'Full Name', 'mailster' ),
 			'emailaddress' => esc_html__( 'Email address', 'mailster' ),
-			'profile' => esc_html__( 'Profile Link', 'mailster' ),
+			'profile'      => esc_html__( 'Profile Link', 'mailster' ),
 		);
 
 		$customfields = mailster()->get_custom_fields();
@@ -99,10 +99,10 @@ class MailsterTinymce {
 			'name' => esc_html__( 'Campaign related', 'mailster' ),
 			'tags' => array(
 				'webversion' => esc_html__( 'Webversion', 'mailster' ),
-				'unsub' => esc_html__( 'Unsubscribe Link', 'mailster' ),
-				'forward' => esc_html__( 'Forward', 'mailster' ),
-				'subject' => esc_html__( 'Subject', 'mailster' ),
-				'preheader' => esc_html__( 'Preheader', 'mailster' ),
+				'unsub'      => esc_html__( 'Unsubscribe Link', 'mailster' ),
+				'forward'    => esc_html__( 'Forward', 'mailster' ),
+				'subject'    => esc_html__( 'Subject', 'mailster' ),
+				'preheader'  => esc_html__( 'Preheader', 'mailster' ),
 			),
 		);
 
@@ -129,26 +129,28 @@ class MailsterTinymce {
 		$tags['date'] = array(
 			'name' => esc_html__( 'Date', 'mailster' ),
 			'tags' => array(
-				'year' => esc_html__( 'Current Year', 'mailster' ),
+				'year'  => esc_html__( 'Current Year', 'mailster' ),
 				'month' => esc_html__( 'Current Month', 'mailster' ),
-				'day' => esc_html__( 'Current Day', 'mailster' ),
+				'day'   => esc_html__( 'Current Day', 'mailster' ),
 			),
 		);
 
 		echo '<script type="text/javascript">';
-		echo 'mailster_mce_button = ' . json_encode( array(
+		echo 'mailster_mce_button = ' . json_encode(
+			array(
 				'l10n' => array(
-					'tags' => array(
+					'tags'   => array(
 						'title' => esc_html__( 'Mailster Tags', 'mailster' ),
-						'tag' => esc_html__( 'Tag', 'mailster' ),
-						'tags' => esc_html__( 'Tags', 'mailster' ),
+						'tag'   => esc_html__( 'Tag', 'mailster' ),
+						'tags'  => esc_html__( 'Tags', 'mailster' ),
 					),
 					'remove' => array(
 						'title' => esc_html__( 'Remove Block', 'mailster' ),
 					),
 				),
 				'tags' => $tags,
-		) );
+			)
+		);
 		echo '</script>';
 
 	}
@@ -165,40 +167,42 @@ class MailsterTinymce {
 		$forms = mailster( 'forms' )->get_list();
 
 		echo '<script type="text/javascript">';
-		echo 'mailster_mce_button = ' . json_encode( array(
-				'l10n' => array(
-					'title' => 'Mailster',
+		echo 'mailster_mce_button = ' . json_encode(
+			array(
+				'l10n'    => array(
+					'title'    => 'Mailster',
 					'homepage' => array(
-						'menulabel' => esc_html__( 'Newsletter Homepage', 'mailster' ),
-						'title' => esc_html__( 'Insert Newsletter Homepage Shortcodes', 'mailster' ),
-						'prelabel' => esc_html__( 'Text', 'mailster' ),
-						'pre' => esc_html__( 'Signup for the newsletter', 'mailster' ),
+						'menulabel'    => esc_html__( 'Newsletter Homepage', 'mailster' ),
+						'title'        => esc_html__( 'Insert Newsletter Homepage Shortcodes', 'mailster' ),
+						'prelabel'     => esc_html__( 'Text', 'mailster' ),
+						'pre'          => esc_html__( 'Signup for the newsletter', 'mailster' ),
 						'confirmlabel' => esc_html__( 'Confirm Text', 'mailster' ),
-						'confirm' => esc_html__( 'Thanks for your interest!', 'mailster' ),
-						'unsublabel' => esc_html__( 'Unsubscribe Text', 'mailster' ),
-						'unsub' => esc_html__( 'Do you really want to unsubscribe?', 'mailster' ),
+						'confirm'      => esc_html__( 'Thanks for your interest!', 'mailster' ),
+						'unsublabel'   => esc_html__( 'Unsubscribe Text', 'mailster' ),
+						'unsub'        => esc_html__( 'Do you really want to unsubscribe?', 'mailster' ),
 					),
-					'button' => array(
-						'menulabel' => esc_html__( 'Subscriber Button', 'mailster' ),
-						'title' => esc_html__( 'Insert Subscriber Button Shortcode', 'mailster' ),
+					'button'   => array(
+						'menulabel'  => esc_html__( 'Subscriber Button', 'mailster' ),
+						'title'      => esc_html__( 'Insert Subscriber Button Shortcode', 'mailster' ),
 						'labellabel' => esc_html__( 'Label', 'mailster' ),
-						'label' => esc_html__( 'Subscribe', 'mailster' ),
-						'count' => esc_html__( 'Display subscriber count', 'mailster' ),
+						'label'      => esc_html__( 'Subscribe', 'mailster' ),
+						'count'      => esc_html__( 'Display subscriber count', 'mailster' ),
 						'countabove' => esc_html__( 'Count above Button', 'mailster' ),
-						'design' => esc_html__( 'Design', 'mailster' ),
+						'design'     => esc_html__( 'Design', 'mailster' ),
 					),
-					'form' => esc_html__( 'Form', 'mailster' ),
-					'forms' => esc_html__( 'Forms', 'mailster' ),
+					'form'     => esc_html__( 'Form', 'mailster' ),
+					'forms'    => esc_html__( 'Forms', 'mailster' ),
 				),
-				'forms' => $forms,
+				'forms'   => $forms,
 				'designs' => array(
 					'default' => 'Default',
 					'twitter' => 'Twitter',
-					'wp' => 'WordPress',
-					'flat' => 'Flat',
+					'wp'      => 'WordPress',
+					'flat'    => 'Flat',
 					'minimal' => 'Minimal',
 				),
-		) );
+			)
+		);
 		echo '</script>';
 
 	}

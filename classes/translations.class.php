@@ -121,7 +121,7 @@ class MailsterTranslations {
 	public function get_translation_data( $force = false ) {
 
 		$object = get_option( 'mailster_translation' );
-		$now = time();
+		$now    = time();
 
 		// if force, not set yet or expired
 		if ( $force || ! $object || $now - $object['expires'] >= 0 ) {
@@ -135,24 +135,24 @@ class MailsterTranslations {
 
 			$object = array(
 				'expires' => $now + DAY_IN_SECONDS, // check if a newer version is available once a day
-				'data' => false,
-				'set' => null,
+				'data'    => false,
+				'set'     => null,
 			);
 
 			// $object['expires'] = $now + 20;
-			$file = 'mailster-' . $locale;
-			$url = $this->endpoint . '/api/projects/mailster';
+			$file    = 'mailster-' . $locale;
+			$url     = $this->endpoint . '/api/projects/mailster';
 			$package = $this->endpoint . '/api/get/mailster/' . $locale;
 
-			$location = WP_LANG_DIR . '/plugins';
-			$mo_file = trailingslashit( $location ) . $file . '.mo';
+			$location  = WP_LANG_DIR . '/plugins';
+			$mo_file   = trailingslashit( $location ) . $file . '.mo';
 			$filemtime = file_exists( $mo_file ) ? filemtime( $mo_file ) : 0;
 
 			$base_locale = preg_replace( '/([a-z]+)_([A-Z]+)_(.*)/', '$1_$2', $locale );
 			$root_locale = preg_replace( '/([a-z]+)_([A-Z]+)/', '$1', $base_locale );
 
 			$response = wp_remote_get( $url );
-			$body = wp_remote_retrieve_body( $response );
+			$body     = wp_remote_retrieve_body( $response );
 
 			if ( empty( $body ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 				$object['expires'] = $now + 3600;
@@ -163,7 +163,7 @@ class MailsterTranslations {
 			$body = json_decode( $body );
 
 			$translation_set = null;
-			$lastmodified = 0;
+			$lastmodified    = 0;
 
 			foreach ( $body->translation_sets as $set ) {
 				if ( ! isset( $set->wp_locale ) ) {
@@ -171,15 +171,15 @@ class MailsterTranslations {
 				}
 				if ( $set->locale == $root_locale ) {
 					$translation_set = $set;
-					$lastmodified = strtotime( $set->last_modified );
+					$lastmodified    = strtotime( $set->last_modified );
 				}
 				if ( $set->wp_locale == $base_locale ) {
 					$translation_set = $set;
-					$lastmodified = strtotime( $set->last_modified );
+					$lastmodified    = strtotime( $set->last_modified );
 				}
 				if ( $set->wp_locale == $locale ) {
 					$translation_set = $set;
-					$lastmodified = strtotime( $set->last_modified );
+					$lastmodified    = strtotime( $set->last_modified );
 					break;
 				}
 			}
@@ -188,20 +188,20 @@ class MailsterTranslations {
 				if ( ! function_exists( 'wp_get_available_translations' ) ) {
 					require ABSPATH . '/wp-admin/includes/translation-install.php';
 				}
-				$translations = wp_get_available_translations();
+				$translations                 = wp_get_available_translations();
 				$translation_set->native_name = isset( $translations[ $translation_set->wp_locale ] ) ? $translations[ $translation_set->wp_locale ]['native_name'] : $translation_set->name;
-				$object['set'] = $translation_set;
+				$object['set']                = $translation_set;
 			}
 
 			if ( $translation_set && $lastmodified - $filemtime > 0 ) {
 				$object['data'] = array(
-					'type' => 'plugin',
-					'slug' => 'mailster',
-					'language' => $locale,
-					'version' => MAILSTER_VERSION,
-					'updated' => date( 'Y-m-d H:i:s', $lastmodified ),
-					'current' => $filemtime,
-					'package' => $package,
+					'type'       => 'plugin',
+					'slug'       => 'mailster',
+					'language'   => $locale,
+					'version'    => MAILSTER_VERSION,
+					'updated'    => date( 'Y-m-d H:i:s', $lastmodified ),
+					'current'    => $filemtime,
+					'package'    => $package,
 					'autoupdate' => (bool) mailster_option( 'autoupdate' ),
 				);
 			}

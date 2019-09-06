@@ -3,7 +3,18 @@
 if ( ! defined( 'ABSPATH' ) ) {
 
 	$path = isset( $_GET['path'] ) && is_dir( $_GET['path'] ) && file_exists( $_GET['path'] . 'wp-load.php' )
-		? strtr( $_GET['path'], array( "\x00" => '\x00', "\n" => '\n', "\r" => '\r', '\\' => '\\\\', "'" => "\'", '"' => '\"', "\x1a" => '\x1a' ) ) . 'wp-load.php'
+		? strtr(
+			$_GET['path'],
+			array(
+				"\x00" => '\x00',
+				"\n"   => '\n',
+				"\r"   => '\r',
+				'\\'   => '\\\\',
+				"'"    => "\'",
+				'"'    => '\"',
+				"\x1a" => '\x1a',
+			)
+		) . 'wp-load.php'
 		: '../../../wp-load.php';
 
 	if ( file_exists( $path ) ) {
@@ -21,7 +32,7 @@ do_action( 'mailster_form_header' );
 <!--[if gt IE 9]><!--><html <?php language_attributes(); ?>><!--<![endif]-->
 <html <?php language_attributes(); ?> class="mailster-embeded-form">
 <head>
-	<meta http-equiv="Content-Type" content="<?php bloginfo( 'html_type' );?>; charset=<?php echo get_option( 'blog_charset' ); ?>" />
+	<meta http-equiv="Content-Type" content="<?php bloginfo( 'html_type' ); ?>; charset=<?php echo get_option( 'blog_charset' ); ?>" />
 	<meta name='robots' content='noindex,nofollow'>
 	<?php do_action( 'mailster_form_head' ); ?>
 

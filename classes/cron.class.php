@@ -162,7 +162,7 @@ class MailsterCron {
 
 		$cron_schedules['mailster_cron_interval'] = array(
 			'interval' => mailster_option( 'interval', 5 ) * 60, // seconds
-			'display' => 'Mailster Cronjob Interval',
+			'display'  => 'Mailster Cronjob Interval',
 		);
 
 		return $cron_schedules;
@@ -209,7 +209,7 @@ class MailsterCron {
 			}
 
 			// get real delay...
-			$real_delay = max( $interval, $last_hit['timestamp'] - $last_hit['oldtimestamp'] );
+			$real_delay    = max( $interval, $last_hit['timestamp'] - $last_hit['oldtimestamp'] );
 			$current_delay = $now - $last_hit['timestamp'];
 
 			// ..and compare it with the interval (3 times) - also something in the queue
@@ -234,7 +234,7 @@ class MailsterCron {
 
 		global $wpdb;
 
-		$now = time();
+		$now          = time();
 		$cron_service = mailster_option( 'cron_service' );
 
 		if ( ! mailster( 'queue' )->size() && ! $strict ) :
@@ -399,20 +399,34 @@ class MailsterCron {
 					$url .= '/' . (int) $process_id;
 				}
 			} else {
-				$url = apply_filters( 'mailster_cron_url', add_query_arg( array(
-					'secret' => mailster_option( 'cron_secret' ),
-				), MAILSTER_URI . 'cron.php' ), $alternative );
+				$url = apply_filters(
+					'mailster_cron_url',
+					add_query_arg(
+						array(
+							'secret' => mailster_option( 'cron_secret' ),
+						),
+						MAILSTER_URI . 'cron.php'
+					),
+					$alternative
+				);
 				if ( $process_id ) {
-					$url = add_query_arg( 'process',$process_id, $url );
+					$url = add_query_arg( 'process', $process_id, $url );
 				}
 			}
 		} else {
-			$url = apply_filters( 'mailster_cron_url', add_query_arg( array(
-				'action' => 'mailster_cron',
-				'secret' => mailster_option( 'cron_secret' ),
-			), admin_url( 'admin-ajax.php' ) ), $alternative );
+			$url = apply_filters(
+				'mailster_cron_url',
+				add_query_arg(
+					array(
+						'action' => 'mailster_cron',
+						'secret' => mailster_option( 'cron_secret' ),
+					),
+					admin_url( 'admin-ajax.php' )
+				),
+				$alternative
+			);
 			if ( $process_id ) {
-				$url = add_query_arg( 'process',$process_id, $url );
+				$url = add_query_arg( 'process', $process_id, $url );
 			}
 		}
 

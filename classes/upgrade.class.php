@@ -20,7 +20,7 @@ class MailsterUpgrade {
 
 		global $pagenow;
 
-		$old_version = get_option( 'mailster_version' );
+		$old_version   = get_option( 'mailster_version' );
 		$version_match = $old_version == MAILSTER_VERSION;
 
 		if ( ! $version_match ) {
@@ -120,17 +120,17 @@ class MailsterUpgrade {
 
 		$return['success'] = false;
 
-		$id = $_POST['id'];
+		$id                = $_POST['id'];
 		$this->performance = isset( $_POST['performance'] ) ? (int) $_POST['performance'] : $this->performance;
 
 		if ( method_exists( $this, 'do_' . $id ) ) {
 			$return['success'] = true;
 			ob_start();
 			$return[ $id ] = $this->{'do_' . $id}();
-			$output = ob_get_contents();
+			$output        = ob_get_contents();
 			ob_end_clean();
 			if ( ! empty( $output ) ) {
-				$return['output'] = "===========================================================\n";
+				$return['output']  = "===========================================================\n";
 				$return['output'] .= "* OUTPUT for $id (" . date( 'H:i:s', current_time( 'timestamp' ) ) . ') - ' . size_format( memory_get_peak_usage( true ), 2 ) . "\n";
 				$return['output'] .= "===========================================================\n";
 				$return['output'] .= strip_tags( $output ) . "\n";
@@ -172,89 +172,117 @@ class MailsterUpgrade {
 		if ( get_option( 'mymail' ) || isset( $_GET['mymail'] ) ) {
 
 			$autostart = false;
-			$actions = wp_parse_args( array(
-				'pre_mailster_updateslug' => 'Update Plugin Slug',
-				'pre_mailster_backuptables' => 'Backup old Tables',
-				'pre_mailster_form_prepare' => 'Checking Forms',
-				'pre_mailster_copytables' => 'Copy Database Tables',
-				'pre_mailster_options' => 'Copy Options',
-				'pre_mailster_updatedpostmeta' => 'Update Post Meta',
-				'pre_mailster_movefiles' => 'Moving Files and Folders',
-				'pre_mailster_removeoldtables' => 'Remove old Tables',
-				'pre_mailster_removemymail' => 'Remove old Options',
-				'pre_mailster_legacy' => 'Prepare Legacy mode',
-			), $actions );
+			$actions   = wp_parse_args(
+				array(
+					'pre_mailster_updateslug'      => 'Update Plugin Slug',
+					'pre_mailster_backuptables'    => 'Backup old Tables',
+					'pre_mailster_form_prepare'    => 'Checking Forms',
+					'pre_mailster_copytables'      => 'Copy Database Tables',
+					'pre_mailster_options'         => 'Copy Options',
+					'pre_mailster_updatedpostmeta' => 'Update Post Meta',
+					'pre_mailster_movefiles'       => 'Moving Files and Folders',
+					'pre_mailster_removeoldtables' => 'Remove old Tables',
+					'pre_mailster_removemymail'    => 'Remove old Options',
+					'pre_mailster_legacy'          => 'Prepare Legacy mode',
+				),
+				$actions
+			);
 
 			$db_version = get_option( 'mymail_dbversion', 0 );
 
 		} else {
 
 			if ( ! get_option( 'mailster' ) ) {
-				$actions = wp_parse_args( array(
-					'maybe_install' => 'Installing Mailster',
-				), $actions );
+				$actions = wp_parse_args(
+					array(
+						'maybe_install' => 'Installing Mailster',
+					),
+					$actions
+				);
 
 			} else {
-				$actions = wp_parse_args( array(
-					'db_structure' => 'Checking DB structure',
-				), $actions );
+				$actions = wp_parse_args(
+					array(
+						'db_structure' => 'Checking DB structure',
+					),
+					$actions
+				);
 
 			}
 		}
 
 		if ( isset( $_GET['hard'] ) ) {
 			$db_version = 0;
-			$actions = wp_parse_args( $actions, array( 'remove_db_structure' => 'Removing DB structure' ) );
+			$actions    = wp_parse_args( $actions, array( 'remove_db_structure' => 'Removing DB structure' ) );
 		}
 		if ( isset( $_GET['redo'] ) ) {
 			$db_version = 0;
 		}
 
 		if ( $db_version < 20140924 || false ) {
-			$actions = wp_parse_args( array(
-				'update_lists' => 'updating Lists',
-				'update_forms' => 'updating Forms',
-				'update_campaign' => 'updating Campaigns',
-				'update_subscriber' => 'updating Subscriber',
-				'update_list_subscriber' => 'update Lists <=> Subscribers',
-				'update_actions' => 'updating Actions',
-				'update_pending' => 'updating Pending Subscribers',
-				'update_autoresponder' => 'updating Autoresponder',
-				'update_settings' => 'updating Settings',
-			), $actions );
+			$actions = wp_parse_args(
+				array(
+					'update_lists'           => 'updating Lists',
+					'update_forms'           => 'updating Forms',
+					'update_campaign'        => 'updating Campaigns',
+					'update_subscriber'      => 'updating Subscriber',
+					'update_list_subscriber' => 'update Lists <=> Subscribers',
+					'update_actions'         => 'updating Actions',
+					'update_pending'         => 'updating Pending Subscribers',
+					'update_autoresponder'   => 'updating Autoresponder',
+					'update_settings'        => 'updating Settings',
+				),
+				$actions
+			);
 		}
 
 		if ( $db_version < 20150924 || false ) {
-			$actions = wp_parse_args( array(
-				'update_forms' => 'updating Forms',
-			), $actions );
+			$actions = wp_parse_args(
+				array(
+					'update_forms' => 'updating Forms',
+				),
+				$actions
+			);
 		}
 
 		if ( $db_version < 20151218 || false ) {
-			$actions = wp_parse_args( array(
-				'update_db_structure' => 'Changes in DB structure',
-			), $actions );
+			$actions = wp_parse_args(
+				array(
+					'update_db_structure' => 'Changes in DB structure',
+				),
+				$actions
+			);
 		}
 
 		if ( $db_version < 20160105 || false ) {
-			$actions = wp_parse_args( array(
-				'remove_old_data' => 'Removing MyMail 1.x data',
-			), $actions );
+			$actions = wp_parse_args(
+				array(
+					'remove_old_data' => 'Removing MyMail 1.x data',
+				),
+				$actions
+			);
 		}
 
 		if ( $db_version < 20170201 || false ) {
 			$actions = wp_parse_args( array(), $actions );
 		}
 
-		$actions = wp_parse_args( array(
-			'db_check' => 'Database integrity',
-			'cleanup' => 'Cleanup',
-		), $actions );
+		$actions = wp_parse_args(
+			array(
+				'db_check' => 'Database integrity',
+				'cleanup'  => 'Cleanup',
+			),
+			$actions
+		);
 
 		wp_localize_script( 'mailster-update-script', 'mailster_updates', $actions );
-		wp_localize_script( 'mailster-update-script', 'mailster_updates_options', array(
-			'autostart' => $autostart,
-		) );
+		wp_localize_script(
+			'mailster-update-script',
+			'mailster_updates_options',
+			array(
+				'autostart' => $autostart,
+			)
+		);
 		$performance = isset( $_GET['performance'] ) ? max( 1, (int) $_GET['performance'] ) : 1;
 		wp_localize_script( 'mailster-update-script', 'mailster_updates_performance', array( $performance ) );
 
@@ -264,7 +292,7 @@ class MailsterUpgrade {
 
 	public function page() {
 
-?>
+		?>
 	<div class="wrap">
 		<h2>Mailster Batch Update</h2>
 		<?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>
@@ -296,7 +324,7 @@ class MailsterUpgrade {
 		</div>
 
 	</div>
-	<?php
+		<?php
 	}
 
 
@@ -771,14 +799,14 @@ class MailsterUpgrade {
 		}
 
 		$from = MAILSTER_DIR . '/form.php';
-		$to = WP_PLUGIN_DIR . '/myMail/form.php';
+		$to   = WP_PLUGIN_DIR . '/myMail/form.php';
 
 		if ( ! $wp_filesystem->copy( $from, $to, true ) ) {
 			@copy( $from, $to );
 		}
 
 		$from = MAILSTER_DIR . '/cron.php';
-		$to = WP_PLUGIN_DIR . '/myMail/cron.php';
+		$to   = WP_PLUGIN_DIR . '/myMail/cron.php';
 
 		if ( ! $wp_filesystem->copy( $from, $to, true ) ) {
 			@copy( $from, $to );
@@ -1048,12 +1076,15 @@ class MailsterUpgrade {
 
 			$meta = mailster( 'helper' )->unserialize( $data->meta );
 
-			$campaign = wp_parse_args( array(
+			$campaign = wp_parse_args(
+				array(
 					'original_campaign' => '',
-					'finished' => '',
-					'timestamp' => '',
-					'totalerrors' => '',
-			), mailster( 'helper' )->unserialize( $data->campaign ) );
+					'finished'          => '',
+					'timestamp'         => '',
+					'totalerrors'       => '',
+				),
+				mailster( 'helper' )->unserialize( $data->campaign )
+			);
 
 			$lists = $wpdb->get_results( $wpdb->prepare( "SELECT b.* FROM {$wpdb->term_relationships} AS a LEFT JOIN {$wpdb->term_taxonomy} AS b ON b.term_taxonomy_id = a.term_taxonomy_id WHERE object_id = %d", $data->ID ) );
 
@@ -1061,13 +1092,13 @@ class MailsterUpgrade {
 
 			if ( $data->post_status == 'autoresponder' ) {
 				$autoresponder = $meta['autoresponder'];
-				$active = isset( $meta['active_autoresponder'] ) && $meta['active_autoresponder'];
-				$timestamp = isset( $autoresponder['timestamp'] ) ? $autoresponder['timestamp'] : strtotime( $autoresponder['date'] . ' ' . $autoresponder['time'] );
+				$active        = isset( $meta['active_autoresponder'] ) && $meta['active_autoresponder'];
+				$timestamp     = isset( $autoresponder['timestamp'] ) ? $autoresponder['timestamp'] : strtotime( $autoresponder['date'] . ' ' . $autoresponder['time'] );
 
 			} else {
 				$autoresponder = '';
-				$active = isset( $meta['active'] ) && $meta['active'] && ! $campaign['finished'];
-				$timestamp = isset( $meta['timestamp'] ) ? $meta['timestamp'] : time();
+				$active        = isset( $meta['active'] ) && $meta['active'] && ! $campaign['finished'];
+				$timestamp     = isset( $meta['timestamp'] ) ? $meta['timestamp'] : time();
 			}
 
 			$timestamp = $timestamp - $timeoffset;
@@ -1077,23 +1108,23 @@ class MailsterUpgrade {
 			}
 
 			$values = array(
-				'parent_id' => $campaign['original_campaign'],
-				'timestamp' => $timestamp,
-				'finished' => $campaign['finished'],
-				'active' => $active, // all campaigns inactive
-				'from_name' => $meta['from_name'],
-				'from_email' => $meta['from'],
-				'reply_to' => $meta['reply_to'],
-				'subject' => $meta['subject'],
-				'preheader' => $meta['preheader'],
-				'template' => $meta['template'],
-				'file' => $meta['file'],
-				'lists' => array_unique( $listids ),
-				'ignore_lists' => 0,
+				'parent_id'     => $campaign['original_campaign'],
+				'timestamp'     => $timestamp,
+				'finished'      => $campaign['finished'],
+				'active'        => $active, // all campaigns inactive
+				'from_name'     => $meta['from_name'],
+				'from_email'    => $meta['from'],
+				'reply_to'      => $meta['reply_to'],
+				'subject'       => $meta['subject'],
+				'preheader'     => $meta['preheader'],
+				'template'      => $meta['template'],
+				'file'          => $meta['file'],
+				'lists'         => array_unique( $listids ),
+				'ignore_lists'  => 0,
 				'autoresponder' => $autoresponder,
-				'head' => trim( $meta['head'] ),
-				'background' => $meta['background'],
-				'colors' => ( $meta['newsletter_color'] ),
+				'head'          => trim( $meta['head'] ),
+				'background'    => $meta['background'],
+				'colors'        => ( $meta['newsletter_color'] ),
 			);
 
 			if ( $data->post_status == 'active' ) {
@@ -1145,9 +1176,9 @@ class MailsterUpgrade {
 
 			$meta = array(
 				'confirmtime' => 0,
-				'signuptime' => 0,
-				'signupip' => '',
-				'confirmip' => '',
+				'signuptime'  => 0,
+				'signupip'    => '',
+				'confirmip'   => '',
 			);
 
 			if ( is_array( $userdata ) && isset( $userdata['_meta'] ) ) {
@@ -1158,15 +1189,15 @@ class MailsterUpgrade {
 			$status = mailster( 'subscribers' )->get_status_by_name( $data->status );
 
 			$values = array(
-				'ID' => $data->ID,
-				'email' => addcslashes( $data->email, "'" ),
-				'hash' => $data->hash,
-				'status' => $status,
-				'added' => isset( $meta['imported'] ) ? $meta['imported'] : ( isset( $meta['confirmtime'] ) ? $meta['confirmtime'] : $now ),
-				'updated' => $now,
-				'signup' => $meta['signuptime'],
-				'confirm' => $meta['confirmtime'],
-				'ip_signup' => $meta['signupip'],
+				'ID'         => $data->ID,
+				'email'      => addcslashes( $data->email, "'" ),
+				'hash'       => $data->hash,
+				'status'     => $status,
+				'added'      => isset( $meta['imported'] ) ? $meta['imported'] : ( isset( $meta['confirmtime'] ) ? $meta['confirmtime'] : $now ),
+				'updated'    => $now,
+				'signup'     => $meta['signuptime'],
+				'confirm'    => $meta['confirmtime'],
+				'ip_signup'  => $meta['signupip'],
 				'ip_confirm' => $meta['confirmip'],
 			);
 
@@ -1321,7 +1352,7 @@ class MailsterUpgrade {
 
 		foreach ( $usermeta as $data ) {
 			$userdata = mailster( 'helper' )->unserialize( $data->meta );
-			$meta = array();
+			$meta     = array();
 			if ( isset( $userdata['_meta'] ) ) {
 				$meta = $userdata['_meta'];
 				unset( $userdata['_meta'] );
@@ -1410,46 +1441,54 @@ class MailsterUpgrade {
 
 				$default = array(
 					'subscriber_id' => $data->ID,
-					'campaign_id' => $campaign_id,
-					'count' => 1,
+					'campaign_id'   => $campaign_id,
+					'count'         => 1,
 				);
 				foreach ( $infos as $info_key => $info_value ) {
 
 					echo 'added action ' . $info_key . ' => ' . $info_value . "\n";
 					switch ( $info_key ) {
 						case 'sent':
-
 							if ( gettype( $info_value ) == 'boolean' && ! $info_value ) {
 								$info_value = $now;
 							}
 
 							if ( $info_value ) {
-								$values = wp_parse_args( array(
-									'timestamp' => $info_value,
-									'type' => 1,
-								), $default );
+								$values = wp_parse_args(
+									array(
+										'timestamp' => $info_value,
+										'type'      => 1,
+									),
+									$default
+								);
 
 								$wpdb->query( "INSERT INTO {$wpdb->prefix}mailster_actions (" . implode( ',', array_keys( $values ) ) . ") VALUES ('" . implode( "','", array_values( $values ) ) . "') ON DUPLICATE KEY UPDATE timestamp = values(timestamp)" );
 							} else {
 
-								$values = wp_parse_args( array(
-									'timestamp' => $now,
-									'sent' => $info_value,
-									'priority' => 10,
-								), $default );
+								$values = wp_parse_args(
+									array(
+										'timestamp' => $now,
+										'sent'      => $info_value,
+										'priority'  => 10,
+									),
+									$default
+								);
 
 								$wpdb->query( "INSERT INTO {$wpdb->prefix}mailster_queue (" . implode( ',', array_keys( $values ) ) . ") VALUES ('" . implode( "','", array_values( $values ) ) . "') ON DUPLICATE KEY UPDATE timestamp = values(timestamp)" );
 							}
 
-						break;
+							break;
 						case 'open':
-							$values = wp_parse_args( array(
-								'timestamp' => $info_value,
-								'type' => 2,
-							), $default );
+							$values = wp_parse_args(
+								array(
+									'timestamp' => $info_value,
+									'type'      => 2,
+								),
+								$default
+							);
 
 								$wpdb->query( "INSERT INTO {$wpdb->prefix}mailster_actions (" . implode( ',', array_keys( $values ) ) . ") VALUES ('" . implode( "','", array_values( $values ) ) . "') ON DUPLICATE KEY UPDATE timestamp = values(timestamp)" );
-						break;
+							break;
 
 						case 'clicks':
 							foreach ( $info_value as $link => $count ) {
@@ -1459,38 +1498,47 @@ class MailsterUpgrade {
 									$link = $new_unsubscribelink;
 								}
 
-								$values = wp_parse_args( array(
-									'timestamp' => $infos['firstclick'],
-									'type' => 3,
-									'link_id' => mailster( 'actions' )->get_link_id( $link, 0 ),
-									'count' => $count,
-								), $default );
+								$values = wp_parse_args(
+									array(
+										'timestamp' => $infos['firstclick'],
+										'type'      => 3,
+										'link_id'   => mailster( 'actions' )->get_link_id( $link, 0 ),
+										'count'     => $count,
+									),
+									$default
+								);
 
 								$wpdb->query( "INSERT INTO {$wpdb->prefix}mailster_actions (" . implode( ',', array_keys( $values ) ) . ") VALUES ('" . implode( "','", array_values( $values ) ) . "') ON DUPLICATE KEY UPDATE timestamp = values(timestamp)" );
 
 							}
-						break;
+							break;
 
 						case 'unsubscribe':
-							$values = wp_parse_args( array(
-								'timestamp' => $info_value,
-								'type' => 4,
-							), $default );
+							$values = wp_parse_args(
+								array(
+									'timestamp' => $info_value,
+									'type'      => 4,
+								),
+								$default
+							);
 
 								$wpdb->query( "INSERT INTO {$wpdb->prefix}mailster_actions (" . implode( ',', array_keys( $values ) ) . ") VALUES ('" . implode( "','", array_values( $values ) ) . "') ON DUPLICATE KEY UPDATE timestamp = values(timestamp)" );
 
-						break;
+							break;
 
 						case 'bounces':
-							$values = wp_parse_args( array(
-								'timestamp' => $now,
-								'type' => $info_value >= $bounce_attempts ? 6 : 5,
-								'count' => $info_value >= $bounce_attempts ? $bounce_attempts : 1,
-							), $default );
+							$values = wp_parse_args(
+								array(
+									'timestamp' => $now,
+									'type'      => $info_value >= $bounce_attempts ? 6 : 5,
+									'count'     => $info_value >= $bounce_attempts ? $bounce_attempts : 1,
+								),
+								$default
+							);
 
 								$wpdb->query( "INSERT INTO {$wpdb->prefix}mailster_actions (" . implode( ',', array_keys( $values ) ) . ") VALUES ('" . implode( "','", array_values( $values ) ) . "') ON DUPLICATE KEY UPDATE timestamp = values(timestamp)" );
 
-						break;
+							break;
 
 					}
 				}
@@ -1529,19 +1577,19 @@ class MailsterUpgrade {
 		foreach ( $pending as $hash => $user ) {
 
 			$userdata = $user['userdata'];
-			$meta = array();
+			$meta     = array();
 			if ( isset( $userdata['_meta'] ) ) {
 				$meta = $userdata['_meta'];
 				unset( $userdata['_meta'] );
 			}
 
 			$values = array(
-				'email' => $userdata['email'],
-				'hash' => $hash,
-				'status' => 0,
-				'added' => $user['timestamp'],
-				'updated' => $now,
-				'signup' => $user['timestamp'],
+				'email'     => $userdata['email'],
+				'hash'      => $hash,
+				'status'    => 0,
+				'added'     => $user['timestamp'],
+				'updated'   => $now,
+				'signup'    => $user['timestamp'],
 				'ip_signup' => $meta['signupip'],
 			);
 
@@ -1619,12 +1667,12 @@ class MailsterUpgrade {
 
 					$values = array(
 						'subscriber_id' => $args['args'][0],
-						'campaign_id' => $args['campaign_id'],
-						'added' => $now,
-						'timestamp' => $timestamp,
-						'sent' => 0,
-						'priority' => 15,
-						'count' => $args['try'],
+						'campaign_id'   => $args['campaign_id'],
+						'added'         => $now,
+						'timestamp'     => $timestamp,
+						'sent'          => 0,
+						'priority'      => 15,
+						'count'         => $args['try'],
 						'ignore_status' => $args['action'] == 'mailster_subscriber_unsubscribed',
 					);
 
@@ -1680,9 +1728,9 @@ class MailsterUpgrade {
 		$texts = mailster_option( 'text' );
 
 		$texts['profile_update'] = ! empty( $texts['profile_update'] ) ? $texts['profile_update'] : esc_html__( 'Profile Updated!', 'mailster' );
-		$texts['profilebutton'] = ! empty( $texts['profilebutton'] ) ? $texts['profilebutton'] : esc_html__( 'Update Profile', 'mailster' );
-		$texts['forward'] = ! empty( $texts['forward'] ) ? $texts['forward'] : esc_html__( 'forward to a friend', 'mailster' );
-		$texts['profile'] = ! empty( $texts['profile'] ) ? $texts['profile'] : esc_html__( 'update profile', 'mailster' );
+		$texts['profilebutton']  = ! empty( $texts['profilebutton'] ) ? $texts['profilebutton'] : esc_html__( 'Update Profile', 'mailster' );
+		$texts['forward']        = ! empty( $texts['forward'] ) ? $texts['forward'] : esc_html__( 'forward to a friend', 'mailster' );
+		$texts['profile']        = ! empty( $texts['profile'] ) ? $texts['profile'] : esc_html__( 'update profile', 'mailster' );
 
 		echo "updated texts\n";
 
