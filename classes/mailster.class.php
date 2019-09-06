@@ -1417,6 +1417,7 @@ class Mailster {
 
 			$wpdb->query( "DELETE FROM `$wpdb->usermeta` WHERE `$wpdb->usermeta`.`meta_key` LIKE '%_newsletter_page_mailster_dashboard%'" );
 			$wpdb->query( "DELETE FROM `$wpdb->usermeta` WHERE `$wpdb->usermeta`.`meta_key` LIKE 'mailster%'" );
+			$wpdb->query( "DELETE FROM `$wpdb->usermeta` WHERE `$wpdb->usermeta`.`meta_key` LIKE '_mailster%'" );
 
 		}
 
@@ -2784,7 +2785,6 @@ class Mailster {
 	private function thirdpartystuff() {
 
 		do_action( 'mailster_thirdpartystuff' );
-		do_action( 'mymail_thirdpartystuff' );
 
 		if ( function_exists( 'w3tc_objectcache_flush' ) ) {
 			add_action( 'shutdown', 'w3tc_objectcache_flush' );
