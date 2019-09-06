@@ -39,7 +39,6 @@
 }
 .mce-fade {
 	opacity: 0;
-	-webkit-transition: opacity .15s linear;
 	transition: opacity .15s linear
 }
 .mce-fade.mce-in {
@@ -116,7 +115,7 @@ div.mce-edit-area {
 	border-color: #a1a1a1
 }
 .mce-grid td.mce-grid-cell div[disabled] {
-	cursor: not-allowed
+	cursor:not-allowed
 }
 .mce-grid {
 	border-spacing: 2px;
@@ -505,7 +504,7 @@ div.mce-tinymce {
 	content: ""
 }
 .mce-floatpanel.mce-popover {
-	filter: progid: DXImageTransform.Microsoft.gradient(enabled false);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled false);
 	background: transparent;
 	top: 0;
 	left: 0;
@@ -576,7 +575,7 @@ div.mce-fullscreen {
 	cursor: move
 }
 .mce-window {
-	filter: progid: DXImageTransform.Microsoft.gradient(enabled false);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled false);
 	background: transparent;
 	background: #fff;
 	position: fixed;
@@ -790,7 +789,6 @@ div.mce-fullscreen {
 	width: 0%;
 	height: 100%;
 	background-color: #d7d7d7;
-	-webkit-transition: width .2s ease;
 	transition: width .2s ease
 }
 .mce-notification {
@@ -969,7 +967,7 @@ body .mce-abs-layout-item,
 	overflow: visible;
 	-webkit-appearance: none
 }
-.mce-btn button::-moz-focus-inner {
+.mce-btn button:: -moz-focus-inner {
 	border: 0;
 	padding: 0
 }
@@ -1307,12 +1305,12 @@ i.mce-i-checkbox {
 	left: 0
 }
 .mce-colorpicker-overlay1 {
-	filter: progid: DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr='#ffffff', endColorstr='#00ffffff');
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr='#ffffff', endColorstr='#00ffffff');
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#ffffff', endColorstr='#00ffffff')";
 	background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0))
 }
 .mce-colorpicker-overlay2 {
-	filter: progid: DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#00000000', endColorstr='#000000');
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#00000000', endColorstr='#000000');
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#00000000', endColorstr='#000000')";
 	background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #000)
 }
@@ -1769,7 +1767,7 @@ div.mce-menu .mce-menu-item b {
 	position: absolute;
 	left: 0;
 	top: 0;
-	filter: progid: DXImageTransform.Microsoft.gradient(enabled false);
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled false);
 	background: transparent;
 	z-index: 1000;
 	padding: 5px 0 5px 0;
@@ -1946,7 +1944,6 @@ i.mce-i-resize {
 	background: #fff;
 	border: 1px solid #c5c5c5;
 	display: inline-block;
-	-webkit-transition: border linear .2s, box-shadow linear .2s;
 	transition: border linear .2s, box-shadow linear .2s;
 	height: 28px;
 	resize: none;

@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.2
+// Version 3.5
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -23,10 +23,6 @@ class UpdateCenterPlugin {
 	 */
 	public static function add( $args = array() ) {
 
-		if ( isset( $args['slug'] ) ) {
-			$args['plugin'] = $args['slug'];
-		}
-
 		if ( ! isset( $args['plugin'] ) ) {
 			$caller = array_shift( debug_backtrace() );
 			$error = sprintf( '[UpdateCenter] You have to define a "plugin" parameter for your plugin in %s on line %d', $caller['file'], $caller['line'] );
@@ -43,10 +39,8 @@ class UpdateCenterPlugin {
 
 		$plugin_data = (object) wp_parse_args( $args, array(
 			'remote_url' => null,
-			'slug' => null,
+			'slug' => strtolower( dirname( $args['plugin'] ) ),
 		) );
-
-		$plugin_data->slug = strtolower( dirname( $plugin_data->plugin ) );
 
 		$plugin_data->remote_url = trailingslashit( $plugin_data->remote_url );
 
@@ -275,7 +269,7 @@ class UpdateCenterPlugin {
 		add_filter( 'plugins_api', array( &$this, 'plugins_api' ), 10, 3 );
 		add_filter( 'plugins_api_result', array( &$this, 'plugins_api_result' ), 10, 3 );
 
-		if ( ! is_admin() || ! current_user_can( 'update_plugins' ) ) {
+		if ( ! is_admin() ) {
 			return;
 		}
 
@@ -396,7 +390,7 @@ class UpdateCenterPlugin {
 			$new = explode( '.', rtrim( $new_version, '.0' ) );
 			$old = explode( '.', rtrim( $old_version, '.0' ) );
 
-			$is_major_update = version_compare( $new[1], $old[1], '>' ) || version_compare( intval( $new_version ), intval( $old_version ), '>' );
+			$is_major_update = version_compare( $new[1], $old[1], '>' ) || version_compare( (int) $new_version, (int) $old_version, '>' );
 
 			$is_minor_update = ( ! $is_major_update && version_compare( strstr( $new_version, '.' ), strstr( $old_version, '.' ), '>' ) );
 
@@ -659,9 +653,11 @@ class UpdateCenterPlugin {
 	public static function deactivate() {
 
 		$plugin = str_replace( 'deactivate_', '', current_filter() );
+		$slug = dirname( $plugin );
 
-		if ( isset( self::$plugins[ dirname( $plugin ) ] ) ) {
-			unset( self::$plugins[ dirname( $plugin ) ] );
+		if ( isset( self::$plugins[ $slug ] ) ) {
+			self::$plugins[ $slug ]->last_update = 0;
+			self::$plugins[ $slug ]->update = null;
 			self::save_options();
 		}
 
@@ -863,6 +859,7 @@ class UpdateCenterPlugin {
 			'auto' => $pagenow == 'wp-cron.php',
 			'php' => phpversion(),
 			'mysql' => method_exists( $wpdb, 'db_version' ) ? $wpdb->db_version() : null,
+			'theme' => function_exists( 'get_stylesheet' ) ? get_stylesheet() : null,
 			'locale' => get_locale(),
 		);
 
@@ -875,4 +872,3 @@ class UpdateCenterPlugin {
 
 
 }
-

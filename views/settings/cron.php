@@ -1,16 +1,19 @@
+<?php
+	$cron_status = mailster( 'cron' )->check();
+if ( is_wp_error( $cron_status ) ) : ?>
+	<div class="error inline"><p><strong><?php echo $cron_status->get_error_message() ?></strong></p></div>
+	<?php endif;
+?>
 <table class="form-table">
 	<tr valign="top" class="wp_cron">
 		<th scope="row"><?php esc_html_e( 'Interval for sending emails', 'mailster' ) ?></th>
-		<td><p><?php printf( __( 'Send emails at most every %1$s minutes', 'mailster' ), '<input type="text" name="mailster_options[interval]" value="' . mailster_option( 'interval' ) . '" class="small-text">' ) ?></p><p class="description"><?php esc_html_e( 'Optional if a real cron service is used', 'mailster' );?></p></td>
+		<td><p><?php printf( esc_html__( 'Send emails at most every %1$s minutes', 'mailster' ), '<input type="text" name="mailster_options[interval]" value="' . mailster_option( 'interval' ) . '" class="small-text">' ) ?></p><p class="description"><?php esc_html_e( 'Optional if a real cron service is used', 'mailster' );?></p></td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Cron Service', 'mailster' ) ?></th>
 		<td>
 			<?php $cron = mailster_option( 'cron_service' );?>
 			<label><input type="radio" class="cron_radio" name="mailster_options[cron_service]" value="wp_cron" <?php checked( $cron == 'wp_cron' );?> > <?php esc_html_e( 'Use the wp_cron function to send newsletters', 'mailster' ) ?></label><br>
-			<?php if ( ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ) : ?>
-			<div class="error inline"><p><strong><?php printf( __( 'WordPress cron is disabled! Uncomment the %s constant in the wp-config.php or use a real cron instead', 'mailster' ), '<code>DISABLE_WP_CRON</code>' ); ?></strong></p></div>
-			<?php endif; ?>
 			<label><input type="radio" class="cron_radio" name="mailster_options[cron_service]" value="cron" <?php checked( $cron == 'cron' ) ?> > <?php esc_html_e( 'Use a real cron to send newsletters', 'mailster' ) ?></label> <span class="description"><?php esc_html_e( 'reccomended for many subscribers', 'mailster' ) ?></span>
 			<?php if ( file_exists( MAILSTER_UPLOAD_DIR . '/CRON_LOCK' ) && ( time() - filemtime( MAILSTER_UPLOAD_DIR . '/CRON_LOCK' ) ) < 10 ) : ?>
 			<div class="error inline"><p><strong><?php esc_html_e( 'Cron is currently running!', 'mailster' );?></strong></p></div>
@@ -20,7 +23,7 @@
 	<tr valign="top" class="cron_opts cron" <?php if ( $cron != 'cron' ) { echo ' style="display:none"'; } ?>>
 		<th scope="row"><?php esc_html_e( 'Cron Settings', 'mailster' ) ?>
 			<p class="description">
-				<?php printf( __( 'Use the alternative Cron URL if you have troubles with this one by clicking %s.', 'mailster' ), '<a class="switch-cron-url" href="#">' . __( 'here', 'mailster' ) . '</a>' ) ?>
+				<?php printf( esc_html__( 'Use the alternative Cron URL if you have troubles with this one by clicking %s.', 'mailster' ), '<a class="switch-cron-url" href="#">' . esc_html__( 'here', 'mailster' ) . '</a>' ) ?>
 			</p>
 		</th>
 		<td>
@@ -45,8 +48,7 @@
 			</ul>
 			<p class="description"><?php esc_html_e( 'You can setup an interval as low as one minute, but should consider a reasonable value of 5-15 minutes as well.', 'mailster' );?></p>
 			<p class="description"><?php esc_html_e( 'If you need help setting up a cron job please refer to the documentation that your provider offers.', 'mailster' );?></p>
-			<p class="description"><?php printf( __( 'Anyway, chances are high that either %1$s, %2$s or %3$s  documentation will help you.', 'mailster' ), '<a href="https://docs.cpanel.net/display/ALD/Cron+Jobs" class="external">the CPanel</a>', '<a href="http://download1.parallels.com/Plesk/PP10/10.3.1/Doc/en-US/online/plesk-administrator-guide/plesk-control-panel-user-guide/index.htm?fileName=65208.htm" class="external">Plesk</a>', '<a href="http://www.thegeekstuff.com/2011/07/php-cron-job/" class="external">the crontab</a>' ); ?></p>
-			<p class="description"><?php printf( __( 'You can also find additional help on our %s.', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-a-cron-job/" class="external">' . __( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
+			<p class="description"><?php printf( esc_html__( 'You can also find additional help on our %s.', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-a-cron-job/" class="external">' . esc_html__( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
 		</td>
 	</tr>
 	<?php $last_hit = get_option( 'mailster_cron_lasthit' ); ?>
@@ -55,7 +57,7 @@
 		<td>
 			<?php if ( $last_hit && time() - $last_hit['timestamp'] > 720 && mailster( 'cron' )->is_locked() ) : ?>
 				<div class="error inline">
-				<p><?php printf( __( 'Looks like your Cron Lock is still in place after %1$s! Read more about why this can happen %2$s.', 'mailster' ), '<strong>' . human_time_diff( $last_hit['timestamp'] ) . '</strong>', '<a href="https://kb.mailster.co/what-is-a-cron-lock/" class="external">' . __( 'here', 'mailster' ) . '</a>' ); ?></p>
+				<p><?php printf( esc_html__( 'Looks like your Cron Lock is still in place after %1$s! Read more about why this can happen %2$s.', 'mailster' ), '<strong>' . human_time_diff( $last_hit['timestamp'] ) . '</strong>', '<a href="https://kb.mailster.co/what-is-a-cron-lock/" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></p>
 				</div>
 			<?php endif; ?>
 			<?php $cron_lock = mailster_option( 'cron_lock' ); ?>
@@ -77,18 +79,18 @@
 				$interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 );
 			?>
 			<li>IP: <?php echo $last_hit['ip'];
-			if ( $last_hit['ip'] == mailster_get_ip() ) { echo ' (' . __( 'probably you', 'mailster' ) . ')'; } ?></li>
+			if ( $last_hit['ip'] == mailster_get_ip() ) { echo ' (' . esc_html__( 'probably you', 'mailster' ) . ')'; } ?></li>
 			<li><?php echo $last_hit['user'] ?></li>
-			<li><?php echo date( $timeformat, $last_hit['timestamp'] + $timeoffset ) . ', <strong>' . sprintf( __( '%s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) . '</strong>' ?></li>
+			<li><?php echo date( $timeformat, $last_hit['timestamp'] + $timeoffset ) . ', <strong>' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) . '</strong>' ?></li>
 			<?php if ( $interv ) : ?>
-			<li><?php echo esc_html__( 'Interval', 'mailster' ) . ': <strong>' . $interv . ' ' . _x( 'min', 'short for minute', 'mailster' ) . '</strong>'; ?></li>
+			<li><?php echo esc_html__( 'Interval', 'mailster' ) . ': <strong>' . $interv . ' ' . esc_html_x( 'min', 'short for minute', 'mailster' ) . '</strong>'; ?></li>
 			<?php endif; ?>
 			<?php if ( $last_hit['mail'] ) : ?>
 			<?php $mails_per_sec = round( 1 / $last_hit['mail'], 2 ); ?>
-			<li><?php echo esc_html__( 'Throughput', 'mailster' ) . ': ' . round( $last_hit['mail'], 3 ) . ' ' . _x( 'sec', 'short for second', 'mailster' ); echo '/' . esc_html__( 'mail', 'mailster' ) ?> (<?php printf( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ), $mails_per_sec ) ?>)</li>
+			<li><?php echo esc_html__( 'Throughput', 'mailster' ) . ': ' . round( $last_hit['mail'], 3 ) . ' ' . esc_html_x( 'sec', 'short for second', 'mailster' ); echo '/' . esc_html__( 'mail', 'mailster' ) ?> (<?php printf( esc_html__( _n( '%s mail per second', '%s mails per second', $mails_per_sec, 'mailster' ) ), $mails_per_sec ) ?>)</li>
 			<?php endif; ?>
 			<?php if ( $last_hit['timemax'] ) : ?>
-			<li><?php echo esc_html__( 'Max Execution Time', 'mailster' ) . ': ' . round( $last_hit['timemax'], 3 ) . ' ' . _x( 'sec', 'short for second', 'mailster' ); ?></li>
+			<li><?php echo esc_html__( 'Max Execution Time', 'mailster' ) . ': ' . round( $last_hit['timemax'], 3 ) . ' ' . esc_html_x( 'sec', 'short for second', 'mailster' ); ?></li>
 			<?php endif; ?>
 			<li><a href="edit.php?post_type=newsletter&page=mailster_settings&reset-lasthit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-lasthit' ) ?>"><?php esc_html_e( 'Reset', 'mailster' );?></a></li>
 		<?php else : ?>

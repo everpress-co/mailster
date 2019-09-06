@@ -11,7 +11,7 @@ if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) : ?>
 		</select>
 		<span class="alignright"><?php esc_html_e( 'Subscriber Grows', 'mailster' ) ?>: </span>
 	<?php if ( ! $this->is_dashboard ) : ?>
-		<?php printf( __( 'You have %s', 'mailster' ), '<a class="mailster-subscribers" href="edit.php?post_type=newsletter&page=mailster_subscribers&status=1">' . number_format_i18n( $subscribers ) . ' ' . _n( 'Subscriber', 'Subscribers', $subscribers, 'mailster' ) . '</a>' ); ?>
+		<?php printf( esc_html__( 'You have %s', 'mailster' ), '<a class="mailster-subscribers" href="edit.php?post_type=newsletter&page=mailster_subscribers&status=1">' . number_format_i18n( $subscribers ) . ' ' . esc_html__( _n( 'Subscriber', 'Subscribers', $subscribers, 'mailster' ) ) . '</a>' ); ?>
 	<?php endif; ?>
 	</div>
 	<div class="mailster-db-wrap">
@@ -31,7 +31,7 @@ if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) : ?>
 <a class="" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export"><?php esc_html_e( 'Export', 'mailster' ) ?></a>
 <?php esc_html_e( 'or', 'mailster' ) ?>
 
-<a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_subscriber&new"><?php esc_html_e( 'Add Subscriber', 'mailster' ) ?></a>
+<a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_subscribers&new"><?php esc_html_e( 'Add Subscriber', 'mailster' ) ?></a>
 </p>
 <?php endif; ?>
 

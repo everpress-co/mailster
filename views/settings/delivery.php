@@ -1,7 +1,7 @@
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Number of mails sent', 'mailster' ) ?></th>
-		<td><p><?php printf( __( 'Send max %1$s emails at once and max %2$s within %3$s hours', 'mailster' ), '<input type="text" name="mailster_options[send_at_once]" value="' . mailster_option( 'send_at_once' ) . '" class="small-text">', '<input type="text" name="mailster_options[send_limit]" value="' . mailster_option( 'send_limit' ) . '" class="small-text">', '<input type="text" name="mailster_options[send_period]" value="' . mailster_option( 'send_period' ) . '" class="small-text">' ) ?></p>
+		<td><p><?php printf( esc_html__( 'Send max %1$s emails at once and max %2$s within %3$s hours', 'mailster' ), '<input type="text" name="mailster_options[send_at_once]" value="' . mailster_option( 'send_at_once' ) . '" class="small-text">', '<input type="text" name="mailster_options[send_limit]" value="' . mailster_option( 'send_limit' ) . '" class="small-text">', '<input type="text" name="mailster_options[send_period]" value="' . mailster_option( 'send_period' ) . '" class="small-text">' ) ?></p>
 		<p class="description"><?php esc_html_e( 'Depending on your hosting provider you can increase these values', 'mailster' ) ?></p>
 <?php
 		global $wp_locale;
@@ -16,12 +16,12 @@ if ( ! $next_reset || $next_reset < time() ) {
 	$mails_left = mailster_option( 'send_limit' );
 }
 ?>
-		<p class="description"><?php printf( __( 'You can still send %1$s mails within the next %2$s', 'mailster' ), '<strong>' . number_format_i18n( $mails_left ) . '</strong>', '<strong title="' . date_i18n( $timeformat, $next_reset + $timeoffset, true ) . '">' . human_time_diff( $next_reset ) . '</strong>' ); ?> &ndash; <a href="edit.php?post_type=newsletter&page=mailster_settings&reset-limits=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-limits' ) ?>"><?php esc_html_e( 'reset these limits', 'mailster' );?></a></p>
+		<p class="description"><?php printf( esc_html__( 'You can still send %1$s mails within the next %2$s', 'mailster' ), '<strong>' . number_format_i18n( $mails_left ) . '</strong>', '<strong title="' . date_i18n( $timeformat, $next_reset + $timeoffset, true ) . '">' . human_time_diff( $next_reset ) . '</strong>' ); ?> &ndash; <a href="edit.php?post_type=newsletter&page=mailster_settings&reset-limits=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-limits' ) ?>"><?php esc_html_e( 'reset these limits', 'mailster' );?></a></p>
 
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Time Frame', 'mailster' ) ?><br>
-		<p class="howto"><?php printf( __( 'It\'s %1$s, %2$s', 'mailster' ), $wp_locale->weekday[ date( 'w', $timestamp ) ], date( 'H:i', $timestamp ) ) ?><br>
+		<p class="howto"><?php printf( esc_html__( 'It\'s %1$s, %2$s', 'mailster' ), $wp_locale->weekday[ date( 'w', $timestamp ) ], date( 'H:i', $timestamp ) ) ?><br>
 		<?php esc_html_e( 'Status', 'mailster' ) ?> : <?php mailster( 'helper' )->in_timeframe() ? esc_html_e( 'active', 'mailster' ) : esc_html_e( 'paused', 'mailster' ); ?></p>
 		</th>
 		<td><p><?php esc_html_e( 'send mails only between', 'mailster' );?>
@@ -78,9 +78,11 @@ if ( ! $next_reset || $next_reset < time() ) {
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Send Test', 'mailster' ) ?></th>
 		<td>
-		<input type="text" value="<?php echo $current_user->user_email ?>" autocomplete="off" class="form-input-tip" id="mailster_testmail">
-		<input type="button" value="<?php esc_html_e( 'Send Test', 'mailster' ) ?>" class="button mailster_sendtest" data-role="basic">
-		<div class="loading test-ajax-loading"></div>
+		<div class="mailster-testmail">
+			<input type="text" value="<?php echo esc_attr( $test_email ) ?>" autocomplete="off" class="form-input-tip mailster-testmail-email">
+			<input type="button" value="<?php esc_html_e( 'Send Test', 'mailster' ) ?>" class="button mailster_sendtest" data-role="basic">
+			<div class="loading test-ajax-loading"></div>
+		</div>
 		</td>
 	</tr>
 </table>
@@ -88,7 +90,7 @@ if ( ! $next_reset || $next_reset < time() ) {
 <?php
 
 $deliverymethods = array(
-	'simple' => __( 'Simple', 'mailster' ),
+	'simple' => esc_html__( 'Simple', 'mailster' ),
 	'smtp' => 'SMTP',
 	'gmail' => 'Gmail',
 );
@@ -99,7 +101,7 @@ $method = mailster_option( 'deliverymethod', 'simple' );
 ?>
 
 <h3><?php esc_html_e( 'Delivery Method', 'mailster' );?></h3>
-<div class="updated inline"><p><?php printf( __( 'You are currently sending with the %s delivery method', 'mailster' ), '<strong>' . $deliverymethods[ $method ] . '</strong>' ) ?></p></div>
+<div class="updated inline"><p><?php printf( esc_html__( 'You are currently sending with the %s delivery method', 'mailster' ), '<strong>' . $deliverymethods[ $method ] . '</strong>' ) ?></p></div>
 
 <div id="deliverynav" class="nav-tab-wrapper hide-if-no-js">
 <?php foreach ( $deliverymethods as $id => $name ) {
@@ -119,9 +121,7 @@ $method = mailster_option( 'deliverymethod', 'simple' );
 
 <?php foreach ( $deliverymethods as $id => $name ) : ?>
 <div class="subtab" id="subtab-<?php echo $id ?>" <?php if ( $method == $id ) {	echo 'style="display:block"';}?>>
-	<?php do_action( 'mailster_deliverymethod_tab' ); ?>
+	<?php do_action( 'mailster_deliverymethod_tab', $id ); ?>
 	<?php do_action( 'mailster_deliverymethod_tab_' . $id ); ?>
-	<?php do_action( 'mymail_deliverymethod_tab' ); ?>
-	<?php do_action( 'mymail_deliverymethod_tab_' . $id ); ?>
 </div>
 <?php endforeach; ?>

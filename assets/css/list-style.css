@@ -29,10 +29,10 @@
 	display: inherit;
 }
 label{
-	font-weight:700;
+	font-weight: 700;
 }
 .click-to-edit label{
-	font-weight:normal;
+	font-weight: normal;
 }
 h3 input{
 	font-size: 20px;
@@ -42,31 +42,32 @@ h3 input{
 #description{
 	height: 80px;
 	resize: none;
-	resize:vertical;
+	resize: vertical;
 }
 .stats-wrap #stats {
-	margin-top:20px;
-	margin-bottom:20px;
-	border:0;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	border: 0;
 	width: 80%;
+	border-collapse: collapse;
 }
 .stats-wrap #stats td {
-	vertical-align:middle;
-	border:0;
+	vertical-align: middle;
+	border: 0;
 }
 .stats-wrap .big {
-	font-size:18px;
-	font-weight:100;
-	text-shadow:1px 1px 0 rgba(255,255,255,1);
-	display:inline-block;
-	width:90px;
-	margin-right:5px
+	font-size: 18px;
+	font-weight: 100;
+	_text-shadow: 1px 1px 0 rgba(255,255,255,1);
+	display: inline-block;
+	width: 90px;
+	margin-right: 5px
 }
 .stats-wrap .verybold {
-	line-height:2.5em;
-	font-size:22px;
-	font-weight:700;
-	text-shadow:1px 1px 0 rgba(255,255,255,1);
+	line-height: 2.5em;
+	font-size: 22px;
+	font-weight: 700;
+	_text-shadow: 1px 1px 0 rgba(255,255,255,1);
 }
 .activity-wrap .red{
 	color: #D8605F;
@@ -75,18 +76,18 @@ h3 input{
 	color: #D8605F;
 }
 .activity-wrap .mailster-icon-bounce.hard{
-	text-align:center;
-	border-radius:50%;
-	display:block;
-	width:18px;
-	height:18px;
+	text-align: center;
+	border-radius: 50%;
+	display: block;
+	width: 18px;
+	height: 18px;
 	line-height: 17px;
-	font-size:11px;
-	color:#fff;
-	background-color:#D8605F;
+	font-size: 11px;
+	color: #fff;
+	background-color: #D8605F;
 }
 .activity-wrap .mailster-icon-bounce.hard:before{
-	margin-left:2px;
+	margin-left: 2px;
 }
 .activity-wrap .bounce-message{
 	cursor: help;

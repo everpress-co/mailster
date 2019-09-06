@@ -29,7 +29,7 @@ if ( ! defined( 'MAILSTER_VERSION' ) ) {
 	wp_die( 'Please activate the Mailster Plugin!' );
 }
 
-$interval = isset( $_GET['interval'] ) ? intval( $_GET['interval'] ) : mailster_option( 'interval', 5 ) * 60;
+$interval = isset( $_GET['interval'] ) ? (int) $_GET['interval'] : mailster_option( 'interval', 5 ) * 60;
 if ( $request_url ) {
 	@header( "Refresh: $interval;url=" . $request_url, true );
 }
@@ -96,14 +96,12 @@ if ( empty( $worker ) ) {
 	do_action( 'mailster_cron_worker' );
 	do_action( 'mailster_cron_bounce' );
 	do_action( 'mailster_cron_cleanup' );
-} elseif ( in_array( $worker, array( 'autoresponder', 'worker', 'bounce', 'cleanup' ) ) ) {
+} elseif ( in_array( $worker, apply_filters( 'mailster_cron_workers', array( 'autoresponder', 'worker', 'bounce', 'cleanup' ) ) ) ) {
 	echo '<h2>' . esc_html__( 'Single Cron', 'mailster' ) . ': ' . ucwords( $worker ) . '</h2>';
 	do_action( 'mailster_cron_' . $worker );
 } else {
 	echo '<h2>' . esc_html__( 'Invalid Cron Worker!', 'mailster' ) . '</h2>';
 }
-
-	do_action( 'mymail_cron_worker' );
 ?>
 	<p>
 		<a onclick="location.reload();clearInterval(i);" class="button" id="button"><?php esc_html_e( 'reload', 'mailster' ); ?></a>

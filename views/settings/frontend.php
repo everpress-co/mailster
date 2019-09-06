@@ -1,24 +1,29 @@
 <table class="form-table">
 	<tr valign="top">
+		<?php $mailster_homepage = mailster_option( 'homepage' ); ?>
 		<th scope="row"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ) ?></th>
-		<td><select name="mailster_options[homepage]" class="postform">
-			<option value="0"><?php esc_html_e( 'Choose', 'mailster' ) ?></option>
-		<?php
-		$pages = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish,private,draft', 'posts_per_page' => -1 ) );
-		$mailster_homepage = mailster_option( 'homepage' );
-		foreach ( $pages as $page ) { ?>
-			<option value="<?php echo $page->ID ?>"<?php if ( $page->ID == $mailster_homepage ) {	echo ' selected'; }	?>><?php echo esc_attr( $page->post_title );if ( $page->post_status != 'publish' ) { echo ' (' . $wp_post_statuses[ $page->post_status ]->label . ')'; }?></option>
-		<?php } ?>
-		</select>
+		<td>
+		<?php if ( array_sum( (array) wp_count_posts( 'page' ) ) > 100 ) : ?>
+			<p><?php esc_html_e( 'Page ID:', 'mailster' );?> <input type="text" name="mailster_options[homepage]" value="<?php echo $mailster_homepage; ?>" class="small-text"> <span class="description"><?php esc_html_e( 'Find your Page ID in the address bar of the edit screen of this page.', 'mailster' );?></span></p>
+		<?php else : ?>
+			<?php $pages = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish,private,draft', 'posts_per_page' => -1 ) ); ?>
+			<select name="mailster_options[homepage]" class="postform">
+				<option value="0"><?php esc_html_e( 'Choose', 'mailster' ) ?></option>
+			<?php foreach ( $pages as $page ) { ?>
+				<option value="<?php echo $page->ID ?>"<?php if ( $page->ID == $mailster_homepage ) {	echo ' selected'; }	?>><?php echo esc_attr( $page->post_title );if ( $page->post_status != 'publish' ) { echo ' (' . $wp_post_statuses[ $page->post_status ]->label . ')'; }?></option>
+			<?php } ?>
+			</select>
+		<?php endif; ?>
+
 		<?php if ( $mailster_homepage ) : ?>
 		<span class="description">
-			<a href="post.php?post=<?php echo intval( $mailster_homepage ); ?>&action=edit"><?php esc_html_e( 'edit', 'mailster' );?></a>
+			<a href="post.php?post=<?php echo (int) $mailster_homepage; ?>&action=edit"><?php esc_html_e( 'edit', 'mailster' );?></a>
 			<?php esc_html_e( 'or', 'mailster' ) ?>
 			<a href="<?php echo get_permalink( $mailster_homepage ); ?>" class="external"><?php esc_html_e( 'visit', 'mailster' );?></a>
 
 			</span>
 		<?php else : ?>
-		<span class="description"><a href="?mailster_create_homepage=1"><?php esc_html_e( 'create it right now', 'mailster' );?></a></span>
+		<span class="description"><a href="<?php echo add_query_arg( 'mailster_create_homepage', wp_create_nonce( 'mailster_create_homepage' ), admin_url() ) ?>"><?php esc_html_e( 'create it right now', 'mailster' );?></a></span>
 		<?php endif; ?>
 		</td>
 	</tr>
@@ -46,7 +51,7 @@
 		</td>
 	</tr>
 	<tr valign="top">
-		<th scope="row"><?php _e( 'Services', 'mailster' ) ?></th>
+		<th scope="row"><?php esc_html_e( 'Services', 'mailster' ) ?></th>
 		<td><ul class="frontpage-social-services"><?php
 
 		$social_services = mailster( 'helper' )->social_services();
@@ -67,7 +72,7 @@
 		<?php if ( mailster( 'helper' )->using_permalinks() ) : ?>
 		<span class="description"><?php echo get_bloginfo( 'url' ) ?>/</span><input type="text" name="mailster_options[slug]" value="<?php echo esc_attr( mailster_option( 'slug', 'newsletter' ) ); ?>" class="small-text" style="width:80px"><span class="description">/my-campaign</span><br><span class="description"><?php esc_html_e( 'changing the slug may cause broken links in previous sent campaigns!', 'mailster' ) ?></span>
 		<?php else : ?>
-		<span class="description"><?php printf( _x( 'Define a %s to enable custom slugs', 'Campaign slug', 'mailster' ), '<a href="options-permalink.php">' . __( 'Permalink Structure', 'mailster' ) . '</a>' ) ?></span>
+		<span class="description"><?php printf( esc_html_x( 'Define a %s to enable custom slugs', 'Campaign slug', 'mailster' ), '<a href="options-permalink.php">' . esc_html__( 'Permalink Structure', 'mailster' ) . '</a>' ) ?></span>
 		<input type="hidden" name="mailster_options[slug]" value="<?php echo esc_attr( mailster_option( 'slug', 'newsletter' ) ); ?>">
 		<?php endif; ?>
 		</p>
@@ -91,7 +96,7 @@
 					<label><?php esc_html_e( 'Confirm Slug', 'mailster' ) ?>:</label><br>
 						<span>
 							<?php echo $homepage ?><strong><?php echo $slugs['confirm'] ?></strong>/
-							<a class="button button-small hide-if-no-js edit-slug"><?php echo __( 'Edit', 'mailster' ) ?></a>
+							<a class="button button-small hide-if-no-js edit-slug"><?php echo esc_html__( 'Edit', 'mailster' ) ?></a>
 						</span>
 						<span class="edit-slug-area">
 						<?php echo $homepage ?><input type="text" name="mailster_options[slugs][confirm]" value="<?php echo esc_attr( $slugs['confirm'] ); ?>" class="small-text">/
@@ -101,7 +106,7 @@
 					<label><?php esc_html_e( 'Subscribe Slug', 'mailster' ) ?>:</label><br>
 						<span>
 							<?php echo $homepage ?><strong><?php echo $slugs['subscribe'] ?></strong>/
-							<a class="button button-small hide-if-no-js edit-slug"><?php echo __( 'Edit', 'mailster' ) ?></a>
+							<a class="button button-small hide-if-no-js edit-slug"><?php echo esc_html__( 'Edit', 'mailster' ) ?></a>
 						</span>
 						<span class="edit-slug-area">
 						<?php echo $homepage ?><input type="text" name="mailster_options[slugs][subscribe]" value="<?php echo esc_attr( $slugs['subscribe'] ); ?>" class="small-text">/
@@ -111,7 +116,7 @@
 					<label><?php esc_html_e( 'Unsubscribe Slug', 'mailster' ) ?>:</label><br>
 						<span>
 							<a href="<?php echo $homepage . esc_attr( $slugs['unsubscribe'] ) ?>" class="external"><?php echo $homepage ?><strong><?php echo $slugs['unsubscribe'] ?></strong>/</a>
-							<a class="button button-small hide-if-no-js edit-slug"><?php echo __( 'Edit', 'mailster' ) ?></a>
+							<a class="button button-small hide-if-no-js edit-slug"><?php echo esc_html__( 'Edit', 'mailster' ) ?></a>
 						</span>
 						<span class="edit-slug-area">
 						<?php echo $homepage ?><input type="text" name="mailster_options[slugs][unsubscribe]" value="<?php echo esc_attr( $slugs['unsubscribe'] ); ?>" class="small-text">/
@@ -121,7 +126,7 @@
 					<label><?php esc_html_e( 'Profile Slug', 'mailster' ) ?>:</label><br>
 						<span>
 							<a href="<?php echo $homepage . esc_attr( $slugs['profile'] ) ?>" class="external"><?php echo $homepage ?><strong><?php echo $slugs['profile'] ?></strong>/</a>
-							<a class="button button-small hide-if-no-js edit-slug"><?php echo __( 'Edit', 'mailster' ) ?></a>
+							<a class="button button-small hide-if-no-js edit-slug"><?php echo esc_html__( 'Edit', 'mailster' ) ?></a>
 						</span>
 						<span class="edit-slug-area">
 						<?php echo $homepage ?><input type="text" name="mailster_options[slugs][profile]" value="<?php echo esc_attr( $slugs['profile'] ); ?>" class="small-text">/
@@ -151,7 +156,7 @@
 ?>
 			<span>
 				<a href="<?php echo $homepage . esc_attr( $slug ) ?>" class="external"><?php echo $homepage ?><strong><?php echo $slug ?></strong>/</a>
-				<a class="button button-small hide-if-no-js edit-slug"><?php echo __( 'Edit', 'mailster' ) ?></a>
+				<a class="button button-small hide-if-no-js edit-slug"><?php echo esc_html__( 'Edit', 'mailster' ) ?></a>
 			</span>
 			<span class="edit-slug-area">
 			<?php echo $homepage ?><input type="text" name="mailster_options[archive_slug]" value="<?php echo esc_attr( $slug ); ?>" class="small-text">/

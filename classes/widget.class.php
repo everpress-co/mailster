@@ -5,8 +5,8 @@ class Mailster_Signup_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'mailster_signup', // Base ID
-			'(Mailster) ' . __( 'Newsletter Signup Form', 'mailster' ), // Name
-			array( 'description' => __( 'Sign Up form for the newsletter', 'mailster' ) ) // Args
+			'(Mailster) ' . esc_html__( 'Newsletter Signup Form', 'mailster' ), // Name
+			array( 'description' => esc_html__( 'Sign Up form for the newsletter', 'mailster' ) ) // Args
 		);
 	}
 
@@ -47,7 +47,7 @@ class Mailster_Signup_Widget extends WP_Widget {
 		<input class="widefat" id="<?php echo $this->get_field_id( 'text_after' ); ?>" name="<?php echo $this->get_field_name( 'text_after' ); ?>" type="text" value="<?php echo esc_attr( $text_after ); ?>" />
 		</p>
 		<p>
-		<label><input id="<?php echo $this->get_field_id( 'on_homepage' ); ?>" name="<?php echo $this->get_field_name( 'on_homepage' ); ?>" type="checkbox" value="1" <?php checked( $on_homepage );?> /> <?php esc_html_e( 'Show form on newsletter homepage as well', 'mailster' );?></label>
+		<label><input id="<?php echo $this->get_field_id( 'on_homepage' ); ?>" name="<?php echo $this->get_field_name( 'on_homepage' ); ?>" type="checkbox" value="1" <?php checked( $on_homepage );?> /> <?php esc_html_e( 'Show form on the newsletter homepage.', 'mailster' );?></label>
 		</p>
 		<?php
 	}
@@ -124,8 +124,8 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'mailster_list_newsletter', // Base ID
-			'(Mailster) ' . __( 'Newsletter List', 'mailster' ), // Name
-			array( 'description' => __( 'Display the most recent newsletters', 'mailster' ) ) // Args
+			'(Mailster) ' . esc_html__( 'Newsletter List', 'mailster' ), // Name
+			array( 'description' => esc_html__( 'Display the most recent newsletters', 'mailster' ) ) // Args
 		);
 
 		add_action( 'save_post', array( &$this, 'flush_widget_cache' ) );
@@ -160,33 +160,26 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 		ob_start();
 		extract( $args );
 
-		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? __( 'Latest Newsletter', 'mailster' ) : $instance['title'], $instance, $this->id_base );
+		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? esc_html__( 'Latest Newsletter', 'mailster' ) : $instance['title'], $instance, $this->id_base );
 		if ( empty( $instance['number'] ) || ! $number = absint( $instance['number'] ) ) {
 			$number = 10;
 		}
 
 		$r = new WP_Query( apply_filters( 'widget_newsletter_args', array( 'post_type' => 'newsletter', 'posts_per_page' => $number, 'no_found_rows' => true, 'post_status' => array( 'finished', 'active' ), 'ignore_sticky_posts' => true ) ) );
 		if ( $r->have_posts() ) :
-?>
-		<?php echo $before_widget; ?>
-		<?php if ( $title ) {
-			echo $before_title . $title . $after_title;
-}
-?>
+			echo $before_widget;
+			if ( $title ) {	echo $before_title . $title . $after_title; } ?>
 		<div class="mailster-widget mailster-widget-recent-newsletter">
 		<ul>
-		<?php while ( $r->have_posts() ) : $r->the_post();?>
-			<li><a href="<?php the_permalink() ?>" title="<?php echo esc_attr( get_the_title() ? get_the_title() : get_the_ID() ); ?>"><?php if ( get_the_title() ) {
-				the_title();
-} else {
-	the_ID();
-}
-		?></a></li>
+		<?php while ( $r->have_posts() ) : $r->the_post(); ?>
+			<li><a href="<?php the_permalink() ?>" title="<?php echo esc_attr( get_the_title() ? get_the_title() : get_the_ID() ); ?>">
+				<?php if ( get_the_title() ) {	the_title(); } else { the_ID(); } ?>
+			</a></li>
 			<?php endwhile;?>
 		</ul>
 		</div>
-		<?php echo $after_widget; ?>
-<?php
+		<?php echo $after_widget;
+
 		// Reset the global $the_post as this query will have stomped on it
 		wp_reset_postdata();
 
@@ -230,7 +223,7 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 	 * @param unknown $instance
 	 */
 	public function form( $instance ) {
-		$title = isset( $instance['title'] ) ? esc_attr( $instance['title'] ) : __( 'Latest Newsletter', 'mailster' );
+		$title = isset( $instance['title'] ) ? esc_attr( $instance['title'] ) : esc_html__( 'Latest Newsletter', 'mailster' );
 		$number = isset( $instance['number'] ) ? absint( $instance['number'] ) : 5;
 ?>
 		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php esc_html_e( 'Title', 'mailster' );?>:</label>
@@ -251,8 +244,8 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'mailster_subscribers_count', // Base ID
-			'(Mailster) ' . __( 'Number of Subscribers', 'mailster' ), // Name
-			array( 'description' => __( 'Display the number of your Subscribers', 'mailster' ) ) // Args
+			'(Mailster) ' . esc_html__( 'Number of Subscribers', 'mailster' ), // Name
+			array( 'description' => esc_html__( 'Display the number of your Subscribers', 'mailster' ) ) // Args
 		);
 
 		add_action( 'mailster_subscriber_change_status', array( &$this, 'flush_widget_cache' ) );
@@ -278,7 +271,7 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 		$instance = wp_parse_args( $instance, array(
 			'widget_id' => $this->id,
 			'prefix' => '',
-			'postfix' => __( 'Subscribers', 'mailster' ),
+			'postfix' => esc_html__( 'Subscribers', 'mailster' ),
 			'formatted' => true,
 			'round' => 1,
 		) );
@@ -341,7 +334,7 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 	 */
 	public function form( $instance ) {
 		$prefix = isset( $instance['prefix'] ) ? $instance['prefix'] : '';
-		$postfix = isset( $instance['postfix'] ) ? $instance['postfix'] : __( 'Subscribers', 'mailster' );
+		$postfix = isset( $instance['postfix'] ) ? $instance['postfix'] : esc_html__( 'Subscribers', 'mailster' );
 		$formatted = isset( $instance['formatted'] ) ? ! ! $instance['formatted'] : true;
 		$round = isset( $instance['round'] ) ? absint( $instance['round'] ) : 1;
 ?>
@@ -376,8 +369,8 @@ class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
 	public function __construct() {
 		parent::__construct(
 			'mailster_subscriber_button', // Base ID
-			'(Mailster) ' . __( 'Subscriber Button', 'mailster' ), // Name
-			array( 'description' => __( 'Display a button to let users subscribe', 'mailster' ) ) // Args
+			'(Mailster) ' . esc_html__( 'Subscriber Button', 'mailster' ), // Name
+			array( 'description' => esc_html__( 'Display a button to let users subscribe', 'mailster' ) ) // Args
 		);
 
 		add_action( 'mailster_subscriber_change_status', array( &$this, 'flush_widget_cache' ) );
@@ -402,11 +395,11 @@ class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
 
 		$instance = wp_parse_args( $instance, array(
 			'widget_id' => $this->id,
-			'title' => __( 'Subscribe to our Newsletter', 'mailster' ),
+			'title' => esc_html__( 'Subscribe to our Newsletter', 'mailster' ),
 			'prefix' => '',
 			'postfix' => '',
 			'form' => 1,
-			'label' => __( 'Subscribe', 'mailster' ),
+			'label' => esc_html__( 'Subscribe', 'mailster' ),
 			'design' => 'default',
 			'width' => 480,
 			'showcount' => true,
@@ -479,12 +472,12 @@ class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
 	 */
 	public function form( $instance ) {
 
-		$title = isset( $instance['title'] ) ? $instance['title'] : __( 'Subscribe to our Newsletter', 'mailster' );
+		$title = isset( $instance['title'] ) ? $instance['title'] : esc_html__( 'Subscribe to our Newsletter', 'mailster' );
 		$prefix = isset( $instance['prefix'] ) ? $instance['prefix'] : '';
 		$postfix = isset( $instance['postfix'] ) ? $instance['postfix'] : '';
 
 		$form = isset( $instance['form'] ) ? $instance['form'] : 1;
-		$label = isset( $instance['label'] ) ? $instance['label'] : __( 'Subscribe', 'mailster' );
+		$label = isset( $instance['label'] ) ? $instance['label'] : esc_html__( 'Subscribe', 'mailster' );
 		$design = isset( $instance['design'] ) ? $instance['design'] : 'default';
 		$width = isset( $instance['width'] ) ? $instance['width'] : 480;
 		$showcount = isset( $instance['showcount'] ) ? $instance['showcount'] : true;

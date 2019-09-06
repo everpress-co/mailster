@@ -1,3 +1,6 @@
+.notice, .error, .update-nag{
+	display: none !important;
+}
 .mailster-test-result{
 	background: #fff;
 	border-left: 4px solid #fff;
@@ -5,15 +8,19 @@
 	margin: 5px 0px;
 	padding: 12px 12px;
 }
+.dark-mode .mailster-test-result{
+	border-color: #191f25;
+	background: #32373c;
+}
 .mailster-test-result h4{
-	margin:0;
+	margin: 0;
 }
 .tests-toggles label{
 	padding-left: 20px;
 }
 .mailster-test-result h4:before, .tests-toggles label i:before{
 	font-family: 'mailster-icons' !important;
-	padding-right:10px;
+	padding-right: 10px;
 	font-size: 20px;
 	font-style: normal;
 	font-weight: normal;
@@ -44,7 +51,7 @@
 }
 
 .mailster-test-result .mailster-test-result-more{
-	padding-left: 27px;
+	padding: 10px 0 8px 30px;
 	font-style: italic;
 }
 .mailster-test-result .mailster-test-result-more:empty{
@@ -56,11 +63,11 @@
 .subtab{
 	padding: 10px 5px;
 }
-#subtab-textoutput{
+#subtab-textoutput, #subtab-systeminfo{
 	display: none;
 }
 .tests-output, .tests-textoutput-wrap{
-	height: 370px;
+	height: 420px;
 	overflow: auto;
 	padding: 5px;
 	box-shadow: inset 0px 0px 3px rgba(0,0,0,0.5);
@@ -76,9 +83,9 @@
 	white-space: pre;
 	font-family: monospace;
 }
-.tests-textoutput{
+.tests-textoutput-wrap textarea{
 	width: 100%;
-	height: 300px;
+	height: 100%;
 }
 .tests-wrap.no-success .mailster-test-is-success,
 .tests-wrap.no-error .mailster-test-is-error,
@@ -88,36 +95,39 @@
 	display: none;
 }
 .progress{
-	width:100%;
-	height:40px;
-	background:#fefefe;
-	overflow:hidden;
-	font-size:10px;
-	position:relative;
-	text-align:right;
-	line-height:20px;
+	width: 100%;
+	height: 40px;
+	background: #efefef;
+	overflow: hidden;
+	font-size: 10px;
+	position: relative;
+	text-align: right;
+	line-height: 20px;
 	display: none;
-	margin-top: 24px;
+	margin-top: 19px;
+	border-radius: 4px;
+}
+.dark-mode .progress{
+	background: #50626f;
 }
 .progress span.bar{
-	display:block;
-	position:absolute;
-	line-height:2.6em;
-	padding:2px 0;
-	white-space:nowrap;
-	top:0;
-	bottom:0;
-	left:0;
-	overflow:visible;
-	-webkit-transition:width .6s ease-in-out;
-	-moz-transition:width .6s ease-in-out;
-	-ms-transition:width .6s ease-in-out;
-	-o-transition:width .6s ease-in-out;
-	transition:width .6s ease-in-out;
-
+	display: block;
+	position: absolute;
+	line-height: 2.6em;
+	padding: 2px 0;
+	white-space: nowrap;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	overflow: visible;
+	transition: width .6s ease-in-out;
+	border-radius: 4px;
+	overflow: hidden;
 }
 .progress span.bar{
-	background: url(../img/progress_2x.gif);
+	background: #2BB3E7;
+	background: -webkit-linear-gradient(to right, #084067, #2BB3E7);
+	background: linear-gradient(to right, #084067, #2BB3E7);
 }
 .progress.finished span.bar{
 	background: #c7e9c4;
@@ -131,4 +141,13 @@
 a.clipboard{
 	cursor: pointer;
 	font-size: smaller;
+}
+a.retest{
+	color: #aaa;
+	font-size: 12px;
+	text-decoration: none;
+}
+a.retest:before{content: '\e802';}
+.mailster-test-is-success a.retest{
+	display: none;
 }

@@ -13,9 +13,7 @@ class MailsterCron {
 
 		add_filter( 'cron_schedules', array( &$this, 'filter_cron_schedules' ) );
 		add_action( 'mailster_cron', array( &$this, 'hourly_cronjob' ) );
-		add_action( 'mailster_cron', array( &$this, 'check' ) );
 		add_action( 'mailster_cron_worker', array( &$this, 'handler' ), -1 );
-		add_action( 'mailster_cron_worker', array( &$this, 'check' ), 99 );
 
 		add_action( 'mailster_campaign_pause', array( &$this, 'update' ) );
 		add_action( 'mailster_campaign_start', array( &$this, 'update' ) );
@@ -32,6 +30,7 @@ class MailsterCron {
 	}
 
 
+
 	/**
 	 * Checks for new newsletter in the queue to start new cronjob
 	 */
@@ -39,25 +38,13 @@ class MailsterCron {
 
 		// check for bounced emails
 		do_action( 'mailster_check_bounces' );
-		do_action( 'mymail_check_bounces' );
 
 		// send confirmations again
 		do_action( 'mailster_resend_confirmations' );
-		do_action( 'mymail_resend_confirmations' );
 
 		$this->update();
 
-		if ( ! mailster_is_local() && ! mailster()->is_verified() ) {
-			if ( time() - get_option( 'mailster' ) > WEEK_IN_SECONDS
-				&& get_option( 'mailster_setup' ) ) {
-				mailster_notice( sprintf( __( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ), 'error', false, 'verify', 'mailster_manage_licenses' );
-			}
-		} else {
-			mailster_remove_notice( 'verify' );
-		}
-
 	}
-
 
 	/**
 	 *
@@ -85,9 +72,13 @@ class MailsterCron {
 
 		$error = error_get_last();
 
-		if ( ! is_null( $error ) && $error['type'] == 1 ) {
+		if ( ! is_null( $error ) && $error['type'] == 1 && 0 === strpos( $error['file'], MAILSTER_DIR ) ) {
 
-			mailster_notice( sprintf( __( 'It looks like your last cronjob hasn\'t been finished! Increase the %1$s, add %2$s to your wp-config.php or reduce the %3$s in the settings', 'mailster' ), "'max_execution_time'", '<code>define("WP_MEMORY_LIMIT", "256M");</code>', '<a href="edit.php?post_type=newsletter&page=mailster_settings#delivery">' . __( 'Number of mails sent', 'mailster' ) . '</a>' ), 'error', false, 'cron_unfinished' );
+			$msg = sprintf( esc_html__( 'It looks like your last cronjob hasn\'t been finished! Increase the %1$s, add %2$s to your wp-config.php or reduce the %3$s in the settings.', 'mailster' ), "'max_execution_time'", '<code>define("WP_MEMORY_LIMIT", "256M");</code>', '<a href="' . add_query_arg( array( 'mailster_remove_notice' => 'cron_unfinished' ), admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' ) ) . '">' . esc_html__( 'Number of mails sent', 'mailster' ) . '</a>' );
+
+			$msg .= '<pre><code>' . esc_html( $error['message'] ) . '</code></pre>';
+
+			mailster_notice( $msg, 'error', false, 'cron_unfinished' );
 
 		} else {
 
@@ -190,28 +181,30 @@ class MailsterCron {
 	}
 
 
-	public function check() {
+	public function check( $strict = false ) {
 
 		global $wpdb;
 
 		$now = time();
 		$cron_service = mailster_option( 'cron_service' );
 
-		if ( ! mailster( 'queue' )->size() ) :
+		if ( ! mailster( 'queue' )->size() && ! $strict ) :
 
 			mailster_remove_notice( 'check_cron' );
+
+			return true;
 
 		else :
 
 			$interval = mailster_option( 'interval' ) * 60;
-			$last_hit = get_option( 'mailster_cron_lasthit', array(
-				'ip' => mailster_get_ip(),
-				'timestamp' => $now,
-				'oldtimestamp' => $now - $interval,
-			) );
+			$last_hit = get_option( 'mailster_cron_lasthit' );
 
-			if ( ! isset( $last_hit['timestamp'] ) ) {
-				return;
+			if ( ! $last_hit ) {
+				if ( is_array( $last_hit ) ) {
+					return new WP_Error( 'cron_error', sprintf( esc_html__( 'Your Cron page hasn\'t get triggered recently. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . esc_html__( 'settings page', 'mailster' ) . '</strong></a>.' ) );
+				}
+
+				return new WP_Error( 'cron_error', sprintf( esc_html__( 'The Cron Process is not setup correctly. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . esc_html__( 'settings page', 'mailster' ) . '</strong></a>.' ) );
 			}
 
 			// get real delay...
@@ -221,17 +214,14 @@ class MailsterCron {
 			// ..and compare it with the interval (3 times) - also something in the queue
 			if ( ( $current_delay > $real_delay * 3 || ! $real_delay && ! $current_delay ) ) :
 
-				if ( $cron_service == 'wp-cron' && defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
-					mailster_notice( sprintf( __( 'The WordPress Cron is disabled! Please remove the %s constant from your wp-config.php file or switch to a real cron job!', 'mailster' ), '<code>DISABLE_WP_CRON</code>' ), 'error', false, 'check_cron' );
-				} else {
-					mailster_notice( sprintf( __( 'Are your campaigns not sending? You may have to check your %1$s', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=check_cron#cron"><strong>' . __( 'cron settings', 'mailster' ) . '</strong></a>' ), 'error', false, 'check_cron' );
-				}
-
 				$this->update();
+
+				return new WP_Error( 'cron_warning', sprintf( esc_html__( 'Are your campaigns not sending? You may have to check your %1$s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . esc_html__( 'cron settings', 'mailster' ) . '</strong></a>' ) );
 
 			else :
 
 				mailster_remove_notice( 'check_cron' );
+				return true;
 
 			endif;
 
@@ -268,7 +258,6 @@ class MailsterCron {
 			$lockfile = MAILSTER_UPLOAD_DIR . '/CRON_' . $key . '.lockfile';
 
 			if ( file_exists( $lockfile ) ) {
-				// return false;
 				// Is running?
 				$this->pid = file_get_contents( $lockfile );
 				if ( $this->is_locked( $key ) ) {

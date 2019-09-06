@@ -122,14 +122,19 @@ class MailsterUserAgent {
 			$object->version = '';
 			$object->type = 'webmail';
 
+		} else if ( preg_match( '#YahooMailProxy#i', $this->string, $hit ) ) {
+			$object->client = 'Yahoo';
+			$object->version = '';
+			$object->type = 'webmail';
+
 		} else if ( preg_match( '#(iPod|iPod touch).*OS ([0-9_]+)#i', $this->string, $hit ) ) {
 			$object->client = 'iPod Touch';
-			$object->version = 'iOS ' . intval( $hit[2] );
+			$object->version = 'iOS ' . (int) $hit[2];
 			$object->type = 'mobile';
 
 		} else if ( preg_match( '#(iPhone|iPad).*OS ([0-9_]+)#i', $this->string, $hit ) ) {
 			$object->client = $hit[1];
-			$object->version = 'iOS ' . intval( $hit[2] );
+			$object->version = 'iOS ' . (int) $hit[2];
 			$object->type = 'mobile';
 
 		} else if ( preg_match( '#(Android|BlackBerry|Windows Phone OS) ([0-9.]+)#i', $this->string, $hit ) ) {
@@ -164,7 +169,7 @@ class MailsterUserAgent {
 
 		} else if ( preg_match( '# (Microsoft Outlook|MSOffice) ([0-9]+)#i', $this->string, $hit ) ) {
 			$object->client = 'Microsoft Outlook';
-			$version = intval( $hit[2] );
+			$version = (int) $hit[2];
 			switch ( $version ) {
 			case 12:$object->version = 2007;
 				break;
@@ -184,12 +189,12 @@ class MailsterUserAgent {
 			$object->type = 'webmail';
 
 		} else if ( preg_match( '# Trident/.* rv:([0-9a-z.]+)#i', $this->string, $hit ) ) {
-			$object->client = 'Web Client (Internet Explorer ' . intval( $hit[1] ) . ')';
+			$object->client = 'Web Client (Internet Explorer ' . (int) $hit[1] . ')';
 			$object->version = '';
 			$object->type = 'webmail';
 
 		} else if ( preg_match( '#MSIE ([0-9.]+).* Trident/#i', $this->string, $hit ) ) {
-			$version = intval( $hit[1] );
+			$version = (int) $hit[1];
 			if ( $version <= 7 ) {
 				//most likly Outlook 2000-2003
 				$object->client = 'Microsoft Outlook';

@@ -5,6 +5,8 @@ class MailsterRegister {
 	public function __construct() {
 
 		add_action( 'mailster_register_mailster', array( &$this, 'on_register' ), 10, 3 );
+		add_action( 'mailster_remove_notice_verify', array( &$this, 'verified_notice_closed' ) );
+		add_action( 'wp_version_check', array( &$this, 'verified_notice' ) );
 
 	}
 
@@ -12,11 +14,9 @@ class MailsterRegister {
 	/**
 	 *
 	 *
-	 * @param unknown $slug     (optional)
-	 * @param unknown $verified (optional)
 	 * @param unknown $args     (optional)
 	 */
-	public function form( $slug = null, $verified = null, $args = array() ) {
+	public function form( $args = array() ) {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
@@ -25,31 +25,26 @@ class MailsterRegister {
 		wp_enqueue_script( 'mailster-register-script', MAILSTER_URI . 'assets/js/register-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
 		wp_localize_script( 'mailster-register-script', 'mailsterregisterL10n', array(
-				'wpnonce' => wp_create_nonce( 'mailster_register' ),
-				'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
+			'wpnonce' => wp_create_nonce( 'mailster_register' ),
+			'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
+			'help' => esc_html__( 'Help me!', 'mailster' ),
 		) );
 
-		if ( is_null( $slug ) ) {
-			$slug = MAILSTER_SLUG;
-		}
-		$slug = strtolower( dirname( $slug ) );
-
-		if ( is_null( $verified ) ) {
-			$verified = mailster()->is_verified();
-		}
+		$slug = 'mailster';
+		$verified = mailster()->is_verified();
 
 		$page = isset( $_GET['page'] ) ? str_replace( 'mailster_', '', $_GET['page'] ) : 'dashboard';
 
 		$args = wp_parse_args( $args, array(
 			'pretext' => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . esc_url( 'https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=' . $page ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
-			'purchasecode' => get_option( 'mailster_license' ),
+			'purchasecode' => mailster()->license(),
 		) );
 
 		$user_id = get_current_user_id();
 		$user = get_userdata( $user_id );
 
-		$username = get_option( 'mailster_username', '' );
-		$useremail = get_option( 'mailster_email', '' );
+		$username = mailster()->username( '' );
+		$useremail = mailster()->email( '' );
 
 		wp_print_styles( 'mailster-register-style' );
 
@@ -65,9 +60,9 @@ class MailsterRegister {
 				<div class="howto"><?php echo $args['pretext'] ?></div>
 				<div class="error-msg">&nbsp;</div>
 				<input type="text" class="widefat register-form-purchasecode" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" name="purchasecode" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="36" value="<?php echo esc_attr( $args['purchasecode'] ) ?>">
-				<input type="submit" class="button button-hero button-primary dashboard-register" value="<?php esc_attr_e( 'Register', 'mailster' ) ?>">
+				<input type="submit" class="button button-hero button-primary dashboard-register" value="<?php esc_attr_e( 'Verify Purchase Code', 'mailster' ) ?>">
 				<div class="howto">
-					<a href="https://mailster.github.io/images/purchasecode.gif" class="howto-purchasecode"><?php esc_html_e( 'Where can I find my item purchase code?', 'mailster' ); ?></a>
+					<a href="https://static.mailster.co/images/purchasecode.gif" class="howto-purchasecode"><?php esc_html_e( 'Where can I find my item purchase code?', 'mailster' ); ?></a>
 					<!-- &ndash;
 					<a href="<?php echo add_query_arg( array( 'action' => 'mailster_envato_verify', 'slug' => $slug, '_wpnonce' => wp_create_nonce( 'mailster_nonce' ) ), admin_url( 'admin-ajax.php' ) ); ?>" class="envato-signup"><?php esc_html_e( 'Register via Envato', 'mailster' ); ?></a>
 					-->
@@ -75,17 +70,26 @@ class MailsterRegister {
 			</form>
 			<form class="register_form_2" action="" method="POST">
 				<div class="error-msg">&nbsp;</div>
-				<input type="text" class="widefat username" placeholder="<?php _e( 'Username', 'mailster' ); ?>" name="username" value="<?php echo esc_attr( $username ) ?>">
+				<input type="text" class="widefat username" placeholder="<?php esc_html_e( 'Username', 'mailster' ); ?>" name="username" value="<?php echo esc_attr( $username ) ?>">
 				<input type="email" class="widefat email" placeholder="Email" name="email" value="<?php echo esc_attr( $useremail ) ?>">
+				<div class="howto tos-field"><input type="checkbox" name="tos" class="tos" value="<?php echo time() ?>"> <?php printf( esc_html__( 'I agree to the %1$s and the %2$s by completing the registration.','mailster' ), '<a href="https://mailster.co/legal/tos/" class="external">' . esc_html__( 'Terms of service', 'mailster' ) . '</a>', '<a href="https://mailster.co/legal/privacy-policy/" class="external">' . esc_html__( 'Privacy Policy', 'mailster' ) . '</a>' ); ?></div>
 				<input type="submit" class="button button-hero button-primary" value="<?php esc_attr_e( 'Complete Registration', 'mailster' ) ?>">
-				<div class="howto"><label>* <?php esc_html_e( 'By completing this registration you\'ll receive an invitation to join our exclusive email list which provides you with updates related to Mailster.', 'mailster' ); ?></label></div>
 			</form>
 			<form class="registration_complete">
 				<div class="registration_complete_check"></div>
 				<div class="registration_complete_text"><?php esc_html_e( 'All Set!', 'mailster' ); ?></div>
 			</form>
 		</div>
-	<?php
+		<?php
+		mailster( 'helper' )->dialog( '<img src="https://static.mailster.co/images/purchasecode.gif">', array(
+			'id' => 'registration-dialog',
+			'buttons' => array(
+				array(
+					'label' => esc_html__( 'OK got it', 'mailster' ),
+					'classes' => 'button button-primary right notification-dialog-dismiss',
+				),
+			),
+		));
 
 	}
 
@@ -103,6 +107,40 @@ class MailsterRegister {
 		delete_transient( 'mailster_verified' );
 		mailster_remove_notice( 'verify' );
 
+	}
+
+
+	public function verified_notice_closed() {
+
+		set_transient( 'mailster_skip_verifcation_notices', true, WEEK_IN_SECONDS );
+
+	}
+
+
+	public function verified_notice() {
+
+		if ( mailster_is_local() ) {
+			return;
+		}
+
+		if ( get_transient( 'mailster_skip_verifcation_notices' ) ) {
+			return;
+		}
+
+		if ( ! mailster()->is_verified() ) {
+			if ( time() - get_option( 'mailster' ) > WEEK_IN_SECONDS
+				&& get_option( 'mailster_setup' ) ) {
+				mailster_notice( sprintf( esc_html__( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ), 'error', false, 'verify', 'mailster_manage_licenses' );
+			}
+		} else {
+			mailster_remove_notice( 'verify' );
+		}
+
+		if ( mailster()->is_outdated() ) {
+			mailster_notice( sprintf( esc_html__( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog?v=' . MAILSTER_VERSION . '">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ), 'error', false, 'outdated', 'mailster_manage_licenses' );
+		} else {
+			mailster_remove_notice( 'outdated' );
+		}
 	}
 
 

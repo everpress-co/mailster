@@ -6,10 +6,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
 
-$listdata = wp_parse_args( $this->post_data['list_conditions'], array( 'operator' => 'OR' ) );
 $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data['ignore_lists'] : false;
-
-$total = $this->get_totals( $post->ID );
 
 ?>
 <?php if ( $editable ) : ?>
@@ -17,12 +14,12 @@ $total = $this->get_totals( $post->ID );
 	<div id="receivers-dialog" style="display:none;">
 		<div class="mailster-conditions-thickbox">
 			<div class="inner">
-				<?php mailster( 'conditions' )->view( isset( $listdata['conditions'] ) ? $listdata['conditions'] : array(), $listdata['operator'] ); ?>
+				<?php mailster( 'conditions' )->view( $this->post_data['list_conditions'] ); ?>
 			</div>
 			<div class="foot">
-				<div class="alignleft"><?php esc_html_e( 'Total receivers', 'mailster' );?>: <span class="mailster-total"><?php echo number_format_i18n( $total ) ?></span></div>
+				<div class="alignleft"><?php esc_html_e( 'Total receivers', 'mailster' );?>: <span class="mailster-total">&ndash;</span></div>
 				<div class="alignright">
-				<button class="button button-primary close"><?php esc_html_e( 'Close', 'mailster' ) ?></button>
+				<button class="button button-primary close-conditions"><?php esc_html_e( 'Close', 'mailster' ) ?></button>
 				<span class="spinner" id="conditions-ajax-loading"></span>
 				</div>
 			</div>
@@ -30,7 +27,7 @@ $total = $this->get_totals( $post->ID );
 	</div>
 
 	<div>
-		<p class="lists">
+		<div class="lists">
 
 			<?php $checked = wp_parse_args( isset( $_GET['lists'] ) ? $_GET['lists'] : array(), $this->post_data['lists'] ); ?>
 
@@ -42,19 +39,19 @@ $total = $this->get_totals( $post->ID );
 				<li><label><input id="ignore_lists" type="checkbox" name="mailster_data[ignore_lists]" value="1" <?php checked( $ignore_lists ) ?>> <?php esc_html_e( 'List doesn\'t matter', 'mailster' );?> </label></li>
 			</ul>
 
-		</p>
-		<p><strong><?php esc_html_e( 'Conditions','mailster' ); ?>:</strong>
-			<div id="mailster_conditions">
-			<?php mailster( 'conditions' )->render( isset( $listdata['conditions'] ) ? $listdata['conditions'] : array(), $listdata['operator'] ); ?>
+		</div>
+		<div><strong><?php esc_html_e( 'Conditions','mailster' ); ?>:</strong>
+			<div id="mailster_conditions_render">
+			<?php mailster( 'conditions' )->render( $this->post_data['list_conditions'] ); ?>
 			</div>
-		</p>
+		</div>
 	</div>
 	<p>
 		<button class="button edit-conditions"><?php esc_html_e( 'Edit Conditions','mailster' ); ?></button> <?php esc_html_e( 'or','mailster' ); ?> <a class="remove-conditions" href="#"><?php esc_html_e( 'remove all','mailster' ); ?></a>
 	</p>
 
 </div>
-<p class="totals"><?php esc_html_e( 'Total receivers', 'mailster' );?>: <span class="mailster-total"><?php echo number_format_i18n( $total ) ?></span></p>
+<p class="totals"><?php esc_html_e( 'Total receivers', 'mailster' );?>: <span class="mailster-total">&ndash;</span></p>
 	<?php else : ?>
 	<p>
 	<?php if ( $ignore_lists ) :
@@ -81,9 +78,9 @@ $total = $this->get_totals( $post->ID );
 
 		endif; ?>
 	</p>
-		<?php if ( isset( $listdata['conditions'] ) ) : ?>
+		<?php if ( isset( $this->post_data['list_conditions'] ) ) : ?>
 		<p><strong><?php esc_html_e( 'only if', 'mailster' ); ?>:</strong>
-			<?php mailster( 'conditions' )->render( $listdata['conditions'], $listdata['operator'] ); ?>
+			<?php mailster( 'conditions' )->render( $this->post_data['list_conditions'] ); ?>
 		</p>
 		<?php endif; ?>
 	<?php endif; ?>
@@ -99,12 +96,12 @@ $total = $this->get_totals( $post->ID );
 		<select class="create-list-type">
 		<?php
 		$options = array(
-			'sent' => __( 'who have received', 'mailster' ),
-			'not_sent' => __( 'who have not received', 'mailster' ),
-			'open' => __( 'who have opened', 'mailster' ),
-			'open_not_click' => __( 'who have opened but not clicked', 'mailster' ),
-			'click' => __( 'who have opened and clicked', 'mailster' ),
-			'not_open' => __( 'who have not opened', 'mailster' ),
+			'sent' => esc_html__( 'who have received', 'mailster' ),
+			'not_sent' => esc_html__( 'who have not received', 'mailster' ),
+			'open' => esc_html__( 'who have opened', 'mailster' ),
+			'open_not_click' => esc_html__( 'who have opened but not clicked', 'mailster' ),
+			'click' => esc_html__( 'who have opened and clicked', 'mailster' ),
+			'not_open' => esc_html__( 'who have not opened', 'mailster' ),
 			);
 		foreach ( $options as $id => $option ) { ?>
 			<option value="<?php echo $id ?>"><?php echo $option ?></option>

@@ -2,10 +2,11 @@
 	display: none;
 }
 .mailster-dashboard .postbox:before{
-	content:'';
+	content: '';
 	display: block;
 }
 .mailster-dashboard .postbox .inside{
+	position: relative;
 }
 .mailster-dashboard .postbox .inside .locked{
 	display: block;
@@ -20,10 +21,6 @@
 	background: -webkit-radial-gradient(50% 50%,rgba(255,255,255,.5),rgba(255,255,255,.9) 100%);
 	background: radial-gradient(50% 50%,rgba(255,255,255,.5),rgba(255,255,255,.9) 100%);
 	text-align: center;
-	-webkit-transition: opacity 1.15s ease-in;
-	-moz-transition: opacity 1.15s ease-in;
-	-ms-transition: opacity 1.15s ease-in;
-	-o-transition: opacity 1.15s ease-in;
 	transition: opacity 1.15s ease-in;
 }
 .mailster-dashboard .register_form_wrap{
@@ -54,7 +51,7 @@
 	margin: 0;
 	font-size: 20px;
 }
-.welcome-panel-column-container{
+.mailster-dashboard .welcome-panel-column-container{
 	text-align: center;
 }
 .mailster-dashboard .register_form_wrap .howto{
@@ -78,15 +75,18 @@
 .mailster-dashboard dl dt{
 	font-weight: 700;
 	margin-left: 55px;
-	margin-top:8px;
-	margin-bottom:4px;
+	margin-top: 8px;
+	margin-bottom: 4px;
 }
 .mailster-dashboard dl dt a{
 	color: #444;
 }
+.dark-mode .mailster-dashboard dl dt a{
+	color: #fff;
+}
 .mailster-dashboard dl dd{
 	margin-left: 55px;
-	color:#23282d;
+	_color: #23282d;
 }
 .mailster-dashboard dl dd span.lighter{
 	color: #aaa;
@@ -153,11 +153,11 @@
 	padding: 6px 0 10px;
 }
 .mailster-mb-label{
-	vertical-align:top;
+	vertical-align: top;
 	display: inline-block;
-	max-width:50%;
-	text-overflow:ellipsis;
-	overflow:hidden;
+	max-width: 50%;
+	text-overflow: ellipsis;
+	overflow: hidden;
 	white-space: nowrap;
 }
 .mailster-mb-link{
@@ -171,7 +171,10 @@
 	font: normal 16px/1 'mailster-icons';
 	content: '';
 	margin: 0 4px 0 5px;
-	color:#585858;
+	color: #585858;
+}
+.dark-mode .mailster-mb-link:before{
+	color: #bbc8d4;
 }
 .mailster-mb-link.status-active:before{
 	content: '\e80f';
@@ -195,15 +198,15 @@
 	overflow: hidden;
 }
 .mailster-mb-stats ul li{
-	height:75px;
+	height: 75px;
 	width: 20%;
 	display: block;
 	float: left;
 	text-align: center;
-	box-sizing:border-box;
+	box-sizing: border-box;
 }
 .mailster-mb-stats ul.labels li{
-	height:25px;
+	height: 25px;
 }
 .rtl .mailster-mb-statsli{
 	float: right;
@@ -212,9 +215,9 @@
 	margin: 0 auto;
 }
 .mailster-mb-stats .stats-total{
-	line-height:3.5em;
-	font-size:22px;
-	font-weight:700;
+	line-height: 3.5em;
+	font-size: 22px;
+	font-weight: 700;
 
 }
 /* My Mailster */
@@ -223,13 +226,12 @@
 	content: "\e833";
 	display: block;
 	font-size: 70px;
-	transform: translateY(-68%);
 }
 .mailster-dashboard .is-verified .postbox .inside .locked h2:before{
 	content: "\f13e";
 }
 .mailster-dashboard .postbox .inside .locked h2{
-	transform: translateY(140%);
+	transform: translateY(40%);
 	margin: 0 auto;
 	max-width: 80%;
 	padding: 0;
@@ -259,11 +261,16 @@
 	box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 	border-color: #F26B6B;
 }
-.mailster-dashboard .postbox.has-update:after{
+.mailster-dashboard .postbox.has-translation-update{
+	overflow: hidden;
+	box-shadow: inset 0px 0px 15px rgba(43, 179, 231, .3);
+	border-color: #2bb3e7;
+}
+.mailster-dashboard .postbox.has-update:after, .mailster-dashboard .postbox.has-translation-update:after{
+	content: 'Update available!';
 	position: absolute;
 	top: 33px;
 	right: -46px;
-	content: 'update available';
 	padding: 8px 44px;
 	background-color: #F26B6B;
 	color: #fff;
@@ -274,7 +281,10 @@
 	transform: rotate(45deg);
 	z-index: 20;
 }
-.rtl .mailster-dashboard .postbox.has-update:after{
+.mailster-dashboard .postbox.has-translation-update:after{
+	background-color: #2bb3e7;
+}
+.rtl .mailster-dashboard .postbox.has-update:after, .rtl .mailster-dashboard .postbox.has-translation-update:after{
 	right: inherit;
 	left: -46px;
 	-webkit-transform: rotate(-45deg);
@@ -283,7 +293,7 @@
 	-o-transform: rotate(-45deg);
 	transform: rotate(-45deg);
 }
-.mailster-dashboard .postbox.has-update.closed:after{
+.mailster-dashboard .postbox.has-update.closed:after, .mailster-dashboard .postbox.has-translation-update.closed:after{
 	-webkit-transform: rotate(0deg);
 	-moz-transform: rotate(0deg);
 	-ms-transform: rotate(0deg);
@@ -293,7 +303,7 @@
 	right: 43px;
 	padding: 4px 12px;
 }
-.rtl .mailster-dashboard .postbox.has-update.closed:after{
+.rtl .mailster-dashboard .postbox.has-update.closed:after, .rtl .mailster-dashboard .postbox.has-translation-update.closed:after{
 	right: inherit;
 	left: 43px;
 }

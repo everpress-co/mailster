@@ -8,13 +8,9 @@
 	padding: 10px 0 0 0;
 	width: 100%;
 	position: absolute;
-	top:0;
+	top: 0;
 	bottom: 0;
-	-webkit-transition:opacity .25s ease-in-out;
-	-moz-transition:opacity .25s ease-in-out;
-	-ms-transition:opacity .25s ease-in-out;
-	-o-transition:opacity .25s ease-in-out;
-	transition:opacity .25s ease-in-out;
+	transition: opacity .25s ease-in-out;
 	opacity: 1;
 	z-index: 2;
 	display: none;
@@ -22,7 +18,7 @@
 }
 .register_form_wrap form.is-hidden{
 	z-index: 1;
-	opacity:0;
+	opacity: 0;
 }
 .register_form_wrap.step-1 form.register_form, .register_form_wrap.step-2 form.register_form_2, .register_form_wrap.step-3 form.registration_complete{
 	display: block;
@@ -39,24 +35,28 @@
 	margin: 0.6em auto 0;
 	line-height: 1.4em;
 }
+.register_form_wrap .howto.tos-field{
+	margin: 0.1em auto 1em;
+	width: 100%;
+}
 .register_form_wrap .registration_complete{
 	top: 20%;
 }
 .register_form_wrap input.register-form-purchasecode{
 	text-align: center;
 }
-.register_form_wrap input.register-form-purchasecode::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+.register_form_wrap input.register-form-purchasecode:: -webkit-input-placeholder { /* WebKit, Blink, Edge */
 	color: #ccc;
 }
-.register_form_wrap input.register-form-purchasecode:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-	color: #ccc;
-	opacity: 1;
-}
-.register_form_wrap input.register-form-purchasecode::-moz-placeholder { /* Mozilla Firefox 19+ */
+.register_form_wrap input.register-form-purchasecode: -moz-placeholder { /* Mozilla Firefox 4 to 18 */
 	color: #ccc;
 	opacity: 1;
 }
-.register_form_wrap input.register-form-purchasecode:-ms-input-placeholder { /* Internet Explorer 10-11 */
+.register_form_wrap input.register-form-purchasecode:: -moz-placeholder { /* Mozilla Firefox 19+ */
+	color: #ccc;
+	opacity: 1;
+}
+.register_form_wrap input.register-form-purchasecode: -ms-input-placeholder { /* Internet Explorer 10-11 */
 	color: #ccc;
 }
 .register_form_wrap .register-form-info{
@@ -70,22 +70,18 @@
 	position: absolute;
 	transform: translateY(-50%);
 	z-index: -1;
-	background-repeat:no-repeat;
-	background-position:50% 35%;
-	background-size:20px 20px;
-	background-image:url('../img/loading.gif');
-	background-color:rgba(255,255,255,0.9);
+	background-repeat: no-repeat;
+	background-position: 50% 35%;
+	background-size: 20px 20px;
+	background-image: url('../img/loading.gif');
+	background-color: rgba(255,255,255,0.9);
 	font-size: 21px;
-	-webkit-transition:opacity .25s ease-in-out;
-	-moz-transition:opacity .25s ease-in-out;
-	-ms-transition:opacity .25s ease-in-out;
-	-o-transition:opacity .25s ease-in-out;
-	transition:opacity .25s ease-in-out;
+	transition: opacity .25s ease-in-out;
 	opacity: 0;
 }
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),only screen and (-o-min-device-pixel-ratio: 32),only screen and (min--moz-device-pixel-ratio: 1.5),only screen and (min-device-pixel-ratio: 1.5) {
 	.register_form_wrap .register-form-info {
-		background-image:url(../img/loading_2x.gif);
+		background-image: url(../img/loading_2x.gif);
 	}
 }
 .register_form_wrap.loading .register-form-info{
@@ -93,10 +89,10 @@
 	opacity: 1;
 }
 .register_form_wrap form.register_form_2{
-	top:-14px;
+	top: -14px;
 }
 .register_form_wrap form.has-error input[type="text"], .register_form_wrap form.has-error input[type="email"]{
-	border-color:#F26B6B;
+	border-color: #F26B6B;
 	box-shadow: inset 0px 0px 15px rgba(242, 107, 107, .3);
 }
 .register_form_wrap form .error-msg{
@@ -113,7 +109,7 @@
 	display: none;
 }
 .register_form_wrap.loading form{
-	-webkit-filter:blur(2px);
+	-webkit-filter: blur(2px);
 }
 @-moz-keyframes
 dothabottomcheck {  0% {
@@ -183,8 +179,8 @@ dothatopcheck {  0% {
 
 }
 .register_form_wrap .registration_complete div.registration_complete_check {
-	height:80px;
-	width:100px;
+	height: 80px;
+	width: 100px;
 }
 .register_form_wrap .registration_complete div.registration_complete_check::before,
 .register_form_wrap .registration_complete div.registration_complete_check::after {
@@ -201,8 +197,6 @@ dothatopcheck {  0% {
 	transform-origin: left top;
 	border-radius: 4px;
 	content: ' ';
-	-webkit-transition: opacity ease .5;
-	-moz-transition: opacity ease .5;
 	transition: opacity ease .5;
 }
 .register_form_wrap .registration_complete div.registration_complete_check::before {
