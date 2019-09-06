@@ -2,18 +2,18 @@
 
 class MailsterImporterMailChimp extends MailsterImporter {
 
-	private $name = 'MailChimp';
+	private $name        = 'MailChimp';
 	private $description = 'Import Subscribers, Lists and Campaigns from MailChimp';
 	private $round;
 
 	public function step2() {
-?>
-		<p><?php esc_html_e( 'You can Import following things into Mailster:', 'mailster' );?></p>
+		?>
+		<p><?php esc_html_e( 'You can Import following things into Mailster:', 'mailster' ); ?></p>
 
-		<p><?php esc_html_e( 'Please insert your API Key from MailChimp:', 'mailster' );?></p>
+		<p><?php esc_html_e( 'Please insert your API Key from MailChimp:', 'mailster' ); ?></p>
 		<input type="name" name="apikey" required="">
 
-<?php
+		<?php
 
 	}
 	public function supports() {

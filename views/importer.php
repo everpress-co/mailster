@@ -15,9 +15,9 @@ if ( $importer && class_exists( $importer, false ) ) {
 } else {
 	$importer = null;
 }
-	?>
+?>
 
-<div class="<?php echo implode( ' ', $classes ) ?>">
+<div class="<?php echo implode( ' ', $classes ); ?>">
 <h1><?php esc_html_e( 'Importer', 'mailster' ); ?></h1>
 
 <?php if ( ! $step ) : ?>
@@ -26,30 +26,41 @@ if ( $importer && class_exists( $importer, false ) ) {
 
 <h2>Available</h2>
 
-<?php foreach ( $importers as $file ) : ?>
-	<?php
+	<?php foreach ( $importers as $file ) : ?>
+		<?php
 		$classname = 'Mailster' . str_replace( ' ', '', ucwords( str_replace( array( '.class.php', '.' ), array( '', ' ' ), basename( $file ) ) ) );
-		$i = new $classname();
+		$i         = new $classname();
 		$i->display();
 		?>
-<?php endforeach; ?>
+	<?php endforeach; ?>
 
 <?php else : ?>
 
 	<?php if ( $importer ) : ?>
 
-		<form id="import-form" action="<?php echo esc_url( add_query_arg( array( 'importer' => $importer->id(), 'step' => $step + 1 ) ) ) ?>" method="POST">
-		<input type="text" id="importer" name="importer" value="<?php echo esc_attr( $importer->id() ) ?>">
+		<form id="import-form" action="
+		<?php
+		echo esc_url(
+			add_query_arg(
+				array(
+					'importer' => $importer->id(),
+					'step'     => $step + 1,
+				)
+			)
+		);
+		?>
+										" method="POST">
+		<input type="text" id="importer" name="importer" value="<?php echo esc_attr( $importer->id() ); ?>">
 
 		<?php if ( 2 == $step ) : ?>
 
-		<?php $importer->step2(); ?>
+			<?php $importer->step2(); ?>
 
-		<input type="submit" class="button button-primary"  value="<?php echo sprintf( esc_attr__( 'Define things to import from %s', 'mailster' ), $importer->name() );?>">
+		<input type="submit" class="button button-primary"  value="<?php echo sprintf( esc_attr__( 'Define things to import from %s', 'mailster' ), $importer->name() ); ?>">
 
 		<?php elseif ( 3 == $step ) : ?>
 
-		<?php $importer->step3(); ?>
+			<?php $importer->step3(); ?>
 
 		<?php endif; ?>
 

@@ -12,25 +12,25 @@ abstract class MailsterImporter {
 	public function __construct() {
 
 		$this->errors = array(
-			'count' => 0,
-			'error_count' => 0,
+			'count'         => 0,
+			'error_count'   => 0,
 			'warning_count' => 0,
-			'notice_count' => 0,
+			'notice_count'  => 0,
 			'success_count' => 0,
-			'all' => array(),
-			'error' => array(),
-			'warning' => array(),
-			'notice' => array(),
-			'success' => array(),
+			'all'           => array(),
+			'error'         => array(),
+			'warning'       => array(),
+			'notice'        => array(),
+			'success'       => array(),
 		);
 	}
 
 	public function set( $name, $value ) {
 
-	    $reflector = new ReflectionClass( get_class( $this ) );
-	    $prop = $reflector->getProperty( $name );
-	    $prop->setAccessible( true );
-	    $prop->setValue( $this, $value );
+		$reflector = new ReflectionClass( get_class( $this ) );
+		$prop      = $reflector->getProperty( $name );
+		$prop->setAccessible( true );
+		$prop->setValue( $this, $value );
 
 	}
 
@@ -76,8 +76,8 @@ abstract class MailsterImporter {
 				continue;
 			}
 			foreach ( $this->errors[ $type ] as $i => $error ) {
-				$name = ucwords( $type );
-				$html .= '<div class="mailster-import-result mailster-import-is-' . $type . '"><h4>' . $name . ($error['data']['link'] ? ' (<a class="mailster-import-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '') . '</h4><div class="mailster-import-result-more">' . nl2br( $error['msg'] ) . '</div></div>';
+				$name  = ucwords( $type );
+				$html .= '<div class="mailster-import-result mailster-import-is-' . $type . '"><h4>' . $name . ( $error['data']['link'] ? ' (<a class="mailster-import-result-link external" href="' . esc_url( $error['data']['link'] ) . '">' . __( 'More Info', 'mailster' ) . '</a>)' : '' ) . '</h4><div class="mailster-import-result-more">' . nl2br( $error['msg'] ) . '</div></div>';
 			}
 		}
 
@@ -90,9 +90,9 @@ abstract class MailsterImporter {
 	public function get_error_counts() {
 
 		return array(
-			'error' => $this->errors['error_count'],
+			'error'   => $this->errors['error_count'],
 			'warning' => $this->errors['warning_count'],
-			'notice' => $this->errors['notice_count'],
+			'notice'  => $this->errors['notice_count'],
 			'success' => $this->errors['success_count'],
 		);
 
@@ -133,14 +133,14 @@ abstract class MailsterImporter {
 			$this->errors['all'] = array();
 		}
 		$this->errors['all'][] = array(
-			'msg' => $msg,
+			'msg'  => $msg,
 			'data' => $data,
 		);
 		if ( ! isset( $this->errors[ $type ] ) ) {
 			$this->errors[ $type ] = array();
 		}
 		$this->errors[ $type ][] = array(
-			'msg' => $msg,
+			'msg'  => $msg,
 			'data' => $data,
 		);
 		$this->errors['count']++;
@@ -156,16 +156,18 @@ abstract class MailsterImporter {
 
 		echo '<table class="form-table">';
 
-		foreach ( $this->supports() as $key ) : $name = $this->get_nice_support_name( $key ) ?>
+		foreach ( $this->supports() as $key ) :
+			$name = $this->get_nice_support_name( $key ) ?>
 
 			<tr valign="top">
-				<th scope="row"><?php echo esc_html( $name ) ?></th>
+				<th scope="row"><?php echo esc_html( $name ); ?></th>
 				<td>
-					<label><input type="checkbox" name="import_part[]" value="<?php echo esc_attr( $key ) ?>" checked> <?php printf( esc_html__( 'Import %s', 'mailster' ), $name ) ?></label>
+					<label><input type="checkbox" name="import_part[]" value="<?php echo esc_attr( $key ); ?>" checked> <?php printf( esc_html__( 'Import %s', 'mailster' ), $name ); ?></label>
 				</td>
 			</tr>
 
-		<?php endforeach;
+			<?php
+		endforeach;
 
 		echo '</table>';
 
@@ -179,13 +181,13 @@ abstract class MailsterImporter {
 	private function get_nice_support_name( $key ) {
 		$names = array(
 			'custom_fields' => 'Custom Fields',
-			'subscribers' => 'Subscribers',
-			'lists' => 'Lists',
-			'forms' => 'Forms',
-			'campaigns' => 'Campaigns',
-			'sent' => 'Sent',
-			'clicks' => 'Clicks',
-			'opens' => 'Opens',
+			'subscribers'   => 'Subscribers',
+			'lists'         => 'Lists',
+			'forms'         => 'Forms',
+			'campaigns'     => 'Campaigns',
+			'sent'          => 'Sent',
+			'clicks'        => 'Clicks',
+			'opens'         => 'Opens',
 		);
 
 		if ( isset( $names[ $key ] ) ) {
