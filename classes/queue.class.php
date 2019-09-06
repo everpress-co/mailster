@@ -606,7 +606,6 @@ class MailsterQueue {
 								mailster_notice( sprintf( __( 'New campaign %1$s has been created and is going to be sent in %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . $new_campaign->ID . '&action=edit">' . $new_campaign->post_title . '</a>"</strong>', '<strong>' . human_time_diff( $now + $send_offset ) . '</strong>' ), 'info', true );
 
 								do_action( 'mailster_autoresponder_post_published', $campaign->ID, $new_id );
-								do_action( 'mymail_autoresponder_post_published', $campaign->ID, $new_id );
 
 							}
 						}
@@ -760,7 +759,6 @@ class MailsterQueue {
 				}
 
 				do_action( 'mailster_autoresponder_timebased', $campaign->ID, $new_id );
-				do_action( 'mymail_autoresponder_timebased', $campaign->ID, $new_id );
 
 				mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
 
@@ -922,7 +920,6 @@ class MailsterQueue {
 				$this->bulk_add( $campaign->ID, $subscriber_ids, $timestamps, 15 );
 
 				do_action( 'mailster_autoresponder_usertime', $campaign->ID, $subscriber_ids );
-				do_action( 'mymail_autoresponder_usertime', $campaign->ID, $subscriber_ids );
 			}
 		}
 	}
@@ -1232,7 +1229,6 @@ class MailsterQueue {
 
 						if ( $error ) {
 							do_action( 'mailster_subscriber_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
-							do_action( 'mymail_subscriber_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
 
 							mailster( 'subscribers' )->change_status( $data->subscriber_id, 4 );
 						}
@@ -1250,7 +1246,6 @@ class MailsterQueue {
 							}
 
 							do_action( 'mailster_notification_error', $data->subscriber_id, $result->get_error_message() );
-							do_action( 'mymail_notification_error', $data->subscriber_id, $result->get_error_message() );
 						}
 
 						// campaign_error
@@ -1275,7 +1270,6 @@ class MailsterQueue {
 
 						array_push( $campaign_errors, $data->campaign_id );
 						do_action( 'mailster_campaign_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
-						do_action( 'mymail_campaign_error', $data->subscriber_id, $data->campaign_id, $result->get_error_message() );
 
 						// system_error
 					} elseif ( $result->get_error_code() == 'system_error' ) {
@@ -1321,7 +1315,6 @@ class MailsterQueue {
 		update_option( 'mailster_cron_lasthit', $last_hit );
 
 		do_action( 'mailster_cron_finished' );
-		do_action( 'mymail_cron_finished' );
 
 		return true;
 

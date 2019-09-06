@@ -1,7 +1,8 @@
 <?php
 
-if ( ! function_exists( 'mymail' ) ) :
+if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 
+	require_once MAILSTER_DIR . 'includes/deprecated_actions.php';
 
 	// deprecated stuff
 	if ( ! defined( 'MYMAIL_VERSION' ) ) {
