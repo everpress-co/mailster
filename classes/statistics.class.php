@@ -20,7 +20,7 @@ class MailsterStatistics {
 		$rawdata = $this->get_signups( strtotime( '-' . $range ), time() );
 
 		return array(
-			'labels' => $this->get_labels( $rawdata ),
+			'labels'   => $this->get_labels( $rawdata ),
 			'datasets' => $this->get_datasets( $rawdata ),
 		);
 
@@ -39,11 +39,11 @@ class MailsterStatistics {
 
 		$dates = array_keys( $rawdata );
 
-		$i = 0;
+		$i    = 0;
 		$prev = null;
 
 		foreach ( $rawdata as $date => $count ) {
-			$d = strtotime( $date );
+			$d   = strtotime( $date );
 			$str = $wp_locale->weekday_abbrev[ $wp_locale->weekday[ date( 'w', $d ) ] ];
 			if ( ! is_null( $prev ) ) {
 				$grow = $count - $prev;
@@ -53,7 +53,7 @@ class MailsterStatistics {
 					$str .= ' ▼-' . $this->format( $grow ) . ' ';
 				}
 			}
-			$prev = $count;
+			$prev        = $count;
 			$dates[ $i ] = $str;
 			$i++;
 		}
@@ -73,12 +73,12 @@ class MailsterStatistics {
 
 		return array(
 			array(
-				'data' => array_values( $rawdata ),
-				'backgroundColor' => 'rgba(43,179,231,0.2)',
-				'borderColor' => 'rgba(43,179,231,1)',
-				'pointColor' => 'rgba(43,179,231,1)',
-				'pointBorderColor' => 'rgba(43,179,231,1)',
-				'pointBackgroundColor' => '#fff',
+				'data'                      => array_values( $rawdata ),
+				'backgroundColor'           => 'rgba(43,179,231,0.2)',
+				'borderColor'               => 'rgba(43,179,231,1)',
+				'pointColor'                => 'rgba(43,179,231,1)',
+				'pointBorderColor'          => 'rgba(43,179,231,1)',
+				'pointBackgroundColor'      => '#fff',
 				'pointHoverBackgroundColor' => 'rgba(43,179,231,1)',
 			),
 		);
@@ -98,7 +98,7 @@ class MailsterStatistics {
 		global $wpdb;
 
 		$from = is_null( $from ) ? time() : $from;
-		$to = is_null( $to ) ? time() + DAY_IN_SECONDS - 1 : $to;
+		$to   = is_null( $to ) ? time() + DAY_IN_SECONDS - 1 : $to;
 
 		$dates = $this->get_date_range( $from, $to );
 		$dates = array_fill_keys( $dates, 0 );
@@ -136,7 +136,7 @@ class MailsterStatistics {
 	 */
 	private function get_date_range( $first, $last, $step = '+1 day', $format = 'Y-m-d' ) {
 
-		$dates = array();
+		$dates   = array();
 		$current = $first;
 
 		while ( $current <= $last ) {
@@ -165,7 +165,7 @@ class MailsterStatistics {
 			return round( $value / 1000, 1 ) . 'K';
 		}
 
-		return ! ($value % 1) ? $value : '';
+		return ! ( $value % 1 ) ? $value : '';
 	}
 
 }
