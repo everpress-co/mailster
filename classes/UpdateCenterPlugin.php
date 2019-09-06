@@ -8,11 +8,11 @@ if ( class_exists( 'UpdateCenterPlugin' ) ) {
 
 class UpdateCenterPlugin {
 
-	private static $plugins = null;
+	private static $plugins     = null;
 	private static $plugin_data = array();
-	public static $caller = null;
+	public static $caller       = null;
 
-	private static $_instance = null;
+	private static $_instance  = null;
 	private static $optionname = 'updatecenter_plugins';
 
 	/**
@@ -25,7 +25,7 @@ class UpdateCenterPlugin {
 
 		if ( ! isset( $args['plugin'] ) ) {
 			$caller = array_shift( debug_backtrace() );
-			$error = sprintf( '[UpdateCenter] You have to define a "plugin" parameter for your plugin in %s on line %d', $caller['file'], $caller['line'] );
+			$error  = sprintf( '[UpdateCenter] You have to define a "plugin" parameter for your plugin in %s on line %d', $caller['file'], $caller['line'] );
 
 			return ( is_admin() )
 				? wp_die( $error )
@@ -37,10 +37,13 @@ class UpdateCenterPlugin {
 			self::$_instance = new self( $args['plugin'] );
 		}
 
-		$plugin_data = (object) wp_parse_args( $args, array(
-			'remote_url' => null,
-			'slug' => strtolower( dirname( $args['plugin'] ) ),
-		) );
+		$plugin_data = (object) wp_parse_args(
+			$args,
+			array(
+				'remote_url' => null,
+				'slug'       => strtolower( dirname( $args['plugin'] ) ),
+			)
+		);
 
 		$plugin_data->remote_url = trailingslashit( $plugin_data->remote_url );
 
@@ -332,7 +335,8 @@ class UpdateCenterPlugin {
 				$output[] = str_replace(
 					'%%updateurl%%',
 					admin_url( 'update.php?action=upgrade-plugin&plugin=' . urlencode( $data->plugin ) . '&_wpnonce=' . $nonce ),
-				$notice);
+					$notice
+				);
 			}
 
 			echo '<div class="update-nag update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
@@ -417,7 +421,7 @@ class UpdateCenterPlugin {
 
 		$plugin_urls = wp_list_pluck( self::$plugins, 'package' );
 
-		if ( ($slug = array_search( $url, $plugin_urls )) !== false ) {
+		if ( ( $slug = array_search( $url, $plugin_urls ) ) !== false ) {
 			if ( ! isset( $r['headers'] ) ) {
 				$r['headers'] = array();
 			}
@@ -463,7 +467,7 @@ class UpdateCenterPlugin {
 				wp_die( 'There was an error while getting the information about the plugin. Please try again later' );
 			}
 
-			$res = (object) $version_info;
+			$res       = (object) $version_info;
 			$res->slug = $slug;
 			if ( isset( $res->contributors ) ) {
 				$res->contributors = (array) $res->contributors;
@@ -515,21 +519,21 @@ class UpdateCenterPlugin {
 		foreach ( self::$plugin_data as $slug => $plugin ) {
 			if ( ! isset( self::$plugins[ $plugin->slug ] ) ) {
 				self::$plugins[ $plugin->slug ] = (object) array(
-					'slug' => $slug,
-					'plugin' => $plugin->plugin,
-					'new_version' => null,
-					'url' => null,
-					'package' => null,
-					'version' => null,
-					'last_update' => 0,
-					'update' => null,
-					'verified' => false,
+					'slug'          => $slug,
+					'plugin'        => $plugin->plugin,
+					'new_version'   => null,
+					'url'           => null,
+					'package'       => null,
+					'version'       => null,
+					'last_update'   => 0,
+					'update'        => null,
+					'verified'      => false,
 					'compatibility' => new StdClass(),
 				);
 			}
 
 			if ( is_readable( WP_PLUGIN_DIR . '/' . $plugin->plugin ) ) {
-				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin->plugin );
+				$plugin_data                             = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin->plugin );
 				self::$plugins[ $plugin->slug ]->version = $plugin_data['Version'];
 			}
 		}
@@ -559,8 +563,8 @@ class UpdateCenterPlugin {
 				} elseif ( isset( $updatecenterinfo->version ) && isset( $updatecenterinfo->download_link ) ) {
 
 					self::$plugins[ $slug ]->new_version = $updatecenterinfo->version;
-					self::$plugins[ $slug ]->package = $updatecenterinfo->download_link;
-					self::$plugins[ $slug ]->update = version_compare( self::$plugins[ $slug ]->new_version, self::$plugins[ $slug ]->version, '>' );
+					self::$plugins[ $slug ]->package     = $updatecenterinfo->download_link;
+					self::$plugins[ $slug ]->update      = version_compare( self::$plugins[ $slug ]->new_version, self::$plugins[ $slug ]->version, '>' );
 					self::$plugins[ $slug ]->last_update = time();
 
 					if ( isset( $updatecenterinfo->icons ) ) {
@@ -636,7 +640,7 @@ class UpdateCenterPlugin {
 		foreach ( self::$plugin_data as $slug => $plugin ) {
 
 			if ( isset( self::$plugins[ $slug ] ) && time() - self::$plugins[ $slug ]->last_update >= $timeout ) {
-				$collection[ $plugin->remote_url ] = isset( $collection[ $plugin->remote_url ] ) ? $collection[ $plugin->remote_url ] : array();
+				$collection[ $plugin->remote_url ]          = isset( $collection[ $plugin->remote_url ] ) ? $collection[ $plugin->remote_url ] : array();
 				$collection[ $plugin->remote_url ][ $slug ] = self::header_infos( $slug );
 			}
 		}
@@ -653,11 +657,11 @@ class UpdateCenterPlugin {
 	public static function deactivate() {
 
 		$plugin = str_replace( 'deactivate_', '', current_filter() );
-		$slug = dirname( $plugin );
+		$slug   = dirname( $plugin );
 
 		if ( isset( self::$plugins[ $slug ] ) ) {
 			self::$plugins[ $slug ]->last_update = 0;
-			self::$plugins[ $slug ]->update = null;
+			self::$plugins[ $slug ]->update      = null;
 			self::save_options();
 		}
 
@@ -707,10 +711,16 @@ class UpdateCenterPlugin {
 
 		$body = http_build_query( array( 'updatecenter_data' => array_values( $plugins ) ), null, '&' );
 
-		$response = self::save_response( add_query_arg( array(
-			'updatecenter_action' => 'versions',
-			'updatecenter_slug' => array_keys( $plugins ),
-		), $remote_url ), $body );
+		$response = self::save_response(
+			add_query_arg(
+				array(
+					'updatecenter_action' => 'versions',
+					'updatecenter_slug'   => array_keys( $plugins ),
+				),
+				$remote_url
+			),
+			$body
+		);
 
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = trim( wp_remote_retrieve_body( $response ) );
@@ -750,10 +760,16 @@ class UpdateCenterPlugin {
 		}
 		$body = http_build_query( $body, null, '&' );
 
-		$response = self::save_response( add_query_arg( array(
-			'updatecenter_action' => $action,
-			'updatecenter_slug' => $slug,
-		), self::$plugin_data[ $slug ]->remote_url ), $body );
+		$response = self::save_response(
+			add_query_arg(
+				array(
+					'updatecenter_action' => $action,
+					'updatecenter_slug'   => $slug,
+				),
+				self::$plugin_data[ $slug ]->remote_url
+			),
+			$body
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -762,7 +778,11 @@ class UpdateCenterPlugin {
 		$response_code = wp_remote_retrieve_response_code( $response );
 
 		if ( $response_code != 200 ) {
-			return array( 'code' => 'http_err', 'message' => wp_remote_retrieve_response_message( $response ), 'data' => '' );
+			return array(
+				'code'    => 'http_err',
+				'message' => wp_remote_retrieve_response_message( $response ),
+				'data'    => '',
+			);
 		}
 
 		$response_body = trim( wp_remote_retrieve_body( $response ) );
@@ -787,11 +807,11 @@ class UpdateCenterPlugin {
 
 		$args = array(
 			'headers' => array(
-				'Content-Type' => 'application/x-www-form-urlencoded',
+				'Content-Type'   => 'application/x-www-form-urlencoded',
 				'Content-Length' => strlen( $body ),
-				'x-ip' => isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : null,
+				'x-ip'           => isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : null,
 			),
-			'body' => $body,
+			'body'    => $body,
 			'timeout' => 20,
 		);
 
@@ -852,15 +872,15 @@ class UpdateCenterPlugin {
 
 		$return = array(
 			'licensecode' => isset( self::$plugin_data[ $slug ]->licensecode ) ? self::$plugin_data[ $slug ]->licensecode : null,
-			'version' => self::$plugins[ $slug ]->version,
-			'wp-version' => $wp_version,
-			'referer' => $is_multisite ? network_site_url() : home_url(),
-			'multisite' => $is_multisite ? get_blog_count() : false,
-			'auto' => $pagenow == 'wp-cron.php',
-			'php' => phpversion(),
-			'mysql' => method_exists( $wpdb, 'db_version' ) ? $wpdb->db_version() : null,
-			'theme' => function_exists( 'get_stylesheet' ) ? get_stylesheet() : null,
-			'locale' => get_locale(),
+			'version'     => self::$plugins[ $slug ]->version,
+			'wp-version'  => $wp_version,
+			'referer'     => $is_multisite ? network_site_url() : home_url(),
+			'multisite'   => $is_multisite ? get_blog_count() : false,
+			'auto'        => $pagenow == 'wp-cron.php',
+			'php'         => phpversion(),
+			'mysql'       => method_exists( $wpdb, 'db_version' ) ? $wpdb->db_version() : null,
+			'theme'       => function_exists( 'get_stylesheet' ) ? get_stylesheet() : null,
+			'locale'      => get_locale(),
 		);
 
 		if ( isset( self::$plugin_data[ $slug ]->custom ) ) {
