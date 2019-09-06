@@ -14,7 +14,7 @@ jQuery(document).ready(function ($) {
 		ctx,
 
 		chartoptions = {
-			responsive: true,
+			responsive: false,
 			legend: false,
 			animationEasing: "easeOutExpo",
 			maintainAspectRatio: false,
@@ -139,6 +139,16 @@ jQuery(document).ready(function ($) {
 			});
 			return false;
 		})
+		.one('click', '.load-language', function () {
+			var _this = $(this);
+			_this.html(mailsterdashboardL10n.downloading);
+			_ajax('load_language', function (response) {
+				if (response.success) {
+					_this.html(mailsterdashboardL10n.reload_page);
+				}
+			});
+			return false;
+		})
 		.on('click', '.reset-license', function () {
 
 			if (!confirm(mailsterdashboardL10n.reset_license)) {
@@ -180,6 +190,7 @@ jQuery(document).ready(function ($) {
 			animate: 1000,
 			rotate: 180,
 			barColor: '#2BB3E7',
+			trackColor: '#50626f',
 			trackColor: '#f3f3f3',
 			lineWidth: 9,
 			size: 75,

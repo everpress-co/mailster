@@ -34,8 +34,6 @@ jQuery(document).ready(function ($) {
 
 	}
 
-	console.log(mailster_updates_options.autostart);
-
 	if (mailster_updates_options.autostart) {
 		$('#mailster-update-process').show();
 		run(0);

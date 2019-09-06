@@ -235,16 +235,19 @@ jQuery(document).ready(function ($) {
 		}).eq(0).trigger('change');
 
 	$('.embed-form-output')
-		.on('click', function () {
+		.on('focus', function () {
 			$(this).select();
 		});
 
 	$('.form-output')
-		.on('click', function () {
+		.on('focus', function () {
 			$(this).select();
 		});
 
-	updateButton();
+	$('.nav-subscriber-button')
+		.on('click', function () {
+			updateButton();
+		});
 
 	function updateButton() {
 

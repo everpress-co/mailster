@@ -3,7 +3,7 @@
 class Ip2Country {
 
 	// maxmind doesn't provide a zip version so I've uploaded it to bitbucket (updated weekly)
-	public $zip = 'https://mailster.github.io/GeoIPv6.zip';
+	public $zip = 'https://static.mailster.co/GeoIPv6.zip';
 	private $dbfile;
 	public $gi;
 	private $renew = false;
@@ -107,7 +107,7 @@ class Ip2Country {
 			$r = wp_remote_get( $this->zip, array( 'method' => 'HEAD' ) );
 			$headers = wp_remote_retrieve_headers( $r );
 			// check header
-			if ( $headers['content-type'] != 'application/zip' ) {
+			if ( ! isset( $headers['content-type'] ) || $headers['content-type'] != 'application/zip' ) {
 				return new WP_Error( 'wrong_filetype', 'wrong file type' );
 			}
 

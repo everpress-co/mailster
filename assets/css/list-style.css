@@ -49,6 +49,7 @@ h3 input{
 	margin-bottom: 20px;
 	border: 0;
 	width: 80%;
+	border-collapse: collapse;
 }
 .stats-wrap #stats td {
 	vertical-align: middle;
@@ -57,7 +58,7 @@ h3 input{
 .stats-wrap .big {
 	font-size: 18px;
 	font-weight: 100;
-	text-shadow: 1px 1px 0 rgba(255,255,255,1);
+	_text-shadow: 1px 1px 0 rgba(255,255,255,1);
 	display: inline-block;
 	width: 90px;
 	margin-right: 5px
@@ -66,7 +67,7 @@ h3 input{
 	line-height: 2.5em;
 	font-size: 22px;
 	font-weight: 700;
-	text-shadow: 1px 1px 0 rgba(255,255,255,1);
+	_text-shadow: 1px 1px 0 rgba(255,255,255,1);
 }
 .activity-wrap .red{
 	color: #D8605F;

@@ -1,8 +1,3 @@
-div.mailster-notice{
-	word-wrap: break-word;
-	position: relative;
-	padding: 0.7em 0 0.9em 19px;
-}
 .rtl div.mailster-notice{
 	padding: 0.7em 19px 0.9em 0;
 }
@@ -10,6 +5,10 @@ div.mailster-notice{
 	display: block;
 }
 div.mailster-notice{
+	word-wrap: break-word;
+	position: relative;
+	padding: 0.7em 0 0.9em 19px;
+	clear: both;
 	max-height: 280px;
 	overflow: auto;
 }
