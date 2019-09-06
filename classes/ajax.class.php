@@ -272,7 +272,7 @@ class MailsterAjax {
 			}
 
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
-			$html = $placeholder->get_content( false );
+			$html = $placeholder->get_content( true );
 			$html = str_replace( '</head>', '<link rel="stylesheet" id="template-style" href="' . MAILSTER_URI . 'assets/css/template-style' . $suffix . '.css?ver=' . MAILSTER_VERSION . '" type="text/css" media="all"></head>', $html );
 		}
 
@@ -474,7 +474,7 @@ class MailsterAjax {
 		$current_user = wp_get_current_user();
 
 		if ( ! empty( $to ) && $to != $current_user->user_emai ) {
-			update_user_meta( $current_user->ID, 'mailster_test_email', $to );
+			update_user_meta( $current_user->ID, '_mailster_test_email', $to );
 		}
 
 		if ( isset( $_POST['test'] ) ) {
@@ -1294,7 +1294,7 @@ class MailsterAjax {
 							$class = 'is-unsplash';
 						} else {
 							$post_id = $post->ID;
-							$image = wp_get_attachment_image_src( $post_id, 'large' );
+							$image = wp_get_attachment_image_src( $post_id, 'full' );
 							$src = $image[0];
 							$asp = $image[2] ? str_replace( ',', '.', $image[1] / $image[2] ) : '';
 							$thumbnail = wp_get_attachment_image_src( $post_id, 'medium' );

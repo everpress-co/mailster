@@ -34,7 +34,7 @@ class MailsterForm {
 
 	public function __construct() {
 		$this->scheme = is_ssl() ? 'https' : 'http';
-		$this->honeypot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135 (otherwise ! is_admin())
+		$this->honeypot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135
 		$this->form = new StdClass();
 	}
 
@@ -548,7 +548,7 @@ class MailsterForm {
 
 		$fields = apply_filters( 'mymail_form_fields', apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form ), $this->ID, $this->form );
 
-		if ( $this->honeypot ) {
+		if ( ! is_admin() && apply_filters( 'mailster_honeypot', $this->honeypot ) ) {
 			$position = rand( count( $fields ), 0 ) - 1;
 			$fields = array_slice( $fields, 0, $position, true ) +
 				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="off" autofill="off"></label>' ) +
@@ -871,7 +871,7 @@ class MailsterForm {
 			wp_die( 'wrong submissiontype' );
 		};
 
-		if ( $this->honeypot ) {
+		if ( ! is_admin() && apply_filters( 'mailster_honeypot', $this->honeypot ) ) {
 			$honeypotnonce = wp_create_nonce( 'honeypot' );
 			$honeypot = isset( $_BASE[ 'n_' . $honeypotnonce . '_email' ] ) ? $_BASE[ 'n_' . $honeypotnonce . '_email' ] : null;
 

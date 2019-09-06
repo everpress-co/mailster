@@ -2,7 +2,7 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.2.2
+Tested up to: 5.2.3
 Stable tag: 2.4.4
 Author: EverPress
 Author URI: https://everpress.co
@@ -92,12 +92,18 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.4 =
 
-* improved: you can now encode tags output with an exclamation mark `{!mytag}`
+
+* improved: you can now encode tags output with an exclamation mark `{!mytag}`.
 * improved: drag n drop images from your desktop now respects cropped image setting.
-* improved: import screen
-* fixed: wrong subscriber count if status "pending" in subscriber query
-* fixed: cumulative count calculations
-* fixed: redirecting issue with spaces in URLs
+* improved: import screen.
+* improved: test mails now fallback to the current users email if not defined.
+* improved: subscriber query now search for ID by default.
+* fixed: notifications to multiple addresses.
+* fixed: modules without content sometimes preserve in the campaign.
+* fixed: issue with RSS campaigns on time based autoresponders.
+* fixed: wrong subscriber count if status "pending" in subscriber query.
+* fixed: cumulative count calculations.
+* fixed: redirecting issue with spaces in URLs.
 
 = Version 2.4.3 =
 

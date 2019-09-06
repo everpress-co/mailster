@@ -81,7 +81,7 @@ class MailsterHelper {
 				if ( ! file_exists( $actual_file_path ) ) {
 
 					if ( false !== strpos( $img_url, '//images.unsplash.com' ) ) {
-						$query = wp_parse_url( $img_url, PHP_URL_QUERY );
+						$query = parse_url( $img_url, PHP_URL_QUERY );
 						parse_str( $query, $query_args );
 
 						$unsplash_args = apply_filters( 'mailster_create_image_unsplash_args', array(), $attach_id, $img_url, $width, $height, $crop );
@@ -1054,9 +1054,6 @@ class MailsterHelper {
 			return false;
 		}
 
-		// strip all unwanted stuff from the content
-		$content = $this->strip_unwanted_html( $content );
-
 		preg_match_all( '#(<img.*?)(width="(\d+)")(.*?>)#', $content, $images );
 		foreach ( $images[0] as $i => $image ) {
 			$oldstyle = '';
@@ -1078,30 +1075,6 @@ class MailsterHelper {
 		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
 
 		return apply_filters( 'mailster_prepare_content', $content );
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $content
-	 * @return unknown
-	 */
-	private function strip_unwanted_html( $content ) {
-
-		if ( empty( $content ) ) {
-			return false;
-		}
-
-		// template language stuff
-		$content = preg_replace( '#<(modules?|buttons|multi|single)([^>]*)>#', '', $content );
-		$content = preg_replace( '#<\/(modules?|buttons|multi|single)>#', '', $content );
-
-		// remove comments
-		$content = preg_replace( '#<!-- (.*) -->\s*#', '', $content );
-
-		return $content;
 
 	}
 

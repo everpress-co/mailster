@@ -271,7 +271,7 @@ jQuery(document).ready(function ($) {
 
 					_ajax('send_test', {
 						formdata: $('#post').serialize(),
-						to: $('#mailster_testmail').val(),
+						to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
 						content: _content.val(),
 						head: _head.val(),
 						plaintext: _excerpt.val()
@@ -318,7 +318,7 @@ jQuery(document).ready(function ($) {
 					_ajax('send_test', {
 						spamtest: true,
 						formdata: $('#post').serialize(),
-						to: $('#mailster_testmail').val(),
+						to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
 						content: _content.val(),
 						head: _head.val(),
 						plaintext: _excerpt.val()
