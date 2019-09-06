@@ -129,7 +129,6 @@ class MailsterMail {
 		}
 
 		do_action( 'mailster_initsend', $this );
-		do_action( 'mymail_initsend', $this );
 
 		if ( $this->dkim ) {
 			$this->mailer->DKIM_selector = mailster_option( 'dkim_selector' );
@@ -576,13 +575,11 @@ class MailsterMail {
 		$this->content = str_replace( '</tr>', "</tr>\n", $this->content );
 
 		do_action( 'mailster_presend', $this );
-		do_action( 'mymail_presend', $this );
 		if ( ! $this->pre_send ) {
 			return false;
 		}
 
 		do_action( 'mailster_dosend', $this );
-		do_action( 'mymail_dosend', $this );
 
 		if ( $this->sent ) {
 
@@ -658,7 +655,7 @@ class MailsterMail {
 			}
 
 			foreach ( $this->to as $i => $address ) {
-				$this->mailer->AddAddress( $address, isset( $this->to_name[ $i ] ) ? $this->to_name[ $i ] : null );
+				$this->mailer->addAddress( $address, isset( $this->to_name[ $i ] ) ? $this->to_name[ $i ] : '' );
 			}
 
 			$this->subject = htmlspecialchars_decode( $this->subject, ENT_QUOTES );
@@ -670,7 +667,7 @@ class MailsterMail {
 				$cc_name = (array) $this->cc_name;
 
 				foreach ( $this->cc as $i => $address ) {
-					$this->mailer->addCC( $address, isset( $cc_name[ $i ] ) ? $cc_name[ $i ] : null );
+					$this->mailer->addCC( $address, isset( $cc_name[ $i ] ) ? $cc_name[ $i ] : '' );
 				}
 			}
 
@@ -680,7 +677,7 @@ class MailsterMail {
 				$bcc_name = (array) $this->bcc_name;
 
 				foreach ( $this->bcc as $i => $address ) {
-					$this->mailer->addBCC( $address, isset( $bcc_name[ $i ] ) ? $bcc_name[ $i ] : null );
+					$this->mailer->addBCC( $address, isset( $bcc_name[ $i ] ) ? $bcc_name[ $i ] : '' );
 				}
 			}
 
@@ -690,7 +687,7 @@ class MailsterMail {
 				$reply_to_name = (array) $this->reply_to_name;
 
 				foreach ( $reply_to as $i => $address ) {
-					$this->mailer->addReplyTo( $address, isset( $reply_to_name[ $i ] ) ? $reply_to_name[ $i ] : null );
+					$this->mailer->addReplyTo( $address, isset( $reply_to_name[ $i ] ) ? $reply_to_name[ $i ] : '' );
 				}
 			} else {
 				$this->mailer->addReplyTo( $this->from, $this->from_name );

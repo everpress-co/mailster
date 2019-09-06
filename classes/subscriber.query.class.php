@@ -398,7 +398,7 @@ class MailsterSubscriberQuery {
 		$meta_and_fields = wp_parse_args( $this->args['fields'], $this->args['meta'] );
 
 		if ( $this->args['s'] ) {
-			$search_fields = $this->args['search_fields'] ? $this->args['search_fields'] : array_merge( array( 'email', 'hash', 'fullname' ), $this->custom_fields );
+			$search_fields = $this->args['search_fields'] ? $this->args['search_fields'] : array_merge( array( 'ID', 'email', 'hash', 'fullname' ), $this->custom_fields );
 			$meta_and_fields = array_merge( $search_fields, $meta_and_fields );
 		}
 
@@ -754,7 +754,7 @@ class MailsterSubscriberQuery {
 
 						} else {
 
-							if ( 'hash' == $search_field ) {
+							if ( 'hash' == $search_field || 'ID' == $search_field ) {
 								$searches[] = "(subscribers.$search_field LIKE '$term')";
 							} else {
 								$searches[] = "(subscribers.$search_field LIKE '$wildcard$term$wildcard')";
