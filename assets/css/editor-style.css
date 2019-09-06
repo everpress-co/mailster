@@ -244,6 +244,9 @@ module[data-rss][selected]:after {
 	padding: 4px;
 	white-space: nowrap;
 	z-index: 1000000;
+	max-width: 200px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 [mailster-is-rtl] module[label]:before,
 [mailster-is-rtl] module[label][selected]:before,

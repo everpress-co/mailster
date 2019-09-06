@@ -30,6 +30,11 @@
 			<p class="description"><?php esc_html_e( 'A unique string to prevent form submissions via POST. Pass this value in a \'_nonce\' variable. Keep empty to disable test.', 'mailster' ) ?></p></td>
 	</tr>
 	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'Legacy Hooks', 'mailster' ) ?></th>
+		<td><label><input type="checkbox" name="mailster_options[legacy_hooks]" value="1" <?php checked( mailster_option( 'legacy_hooks' ) );?>> <?php esc_html_e( 'Enable legacy hooks', 'mailster' ) ?></label> <p class="description"><?php esc_html_e( 'If you still use deprecated MyMail hooks and filters you can keep them working by enabling this option.', 'mailster' ); ?></p>
+		</td>
+	</tr>
+	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'PHP Mailer', 'mailster' ) ?></th>
 		<td>
 		<?php $phpmailerversion = mailster_option( 'php_mailer' ); ?>
