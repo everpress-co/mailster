@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.3
+// Version 3.5
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -269,7 +269,7 @@ class UpdateCenterPlugin {
 		add_filter( 'plugins_api', array( &$this, 'plugins_api' ), 10, 3 );
 		add_filter( 'plugins_api_result', array( &$this, 'plugins_api_result' ), 10, 3 );
 
-		if ( ! is_admin() || ! current_user_can( 'update_plugins' ) ) {
+		if ( ! is_admin() ) {
 			return;
 		}
 
@@ -653,9 +653,11 @@ class UpdateCenterPlugin {
 	public static function deactivate() {
 
 		$plugin = str_replace( 'deactivate_', '', current_filter() );
+		$slug = dirname( $plugin );
 
-		if ( isset( self::$plugins[ dirname( $plugin ) ] ) ) {
-			unset( self::$plugins[ dirname( $plugin ) ] );
+		if ( isset( self::$plugins[ $slug ] ) ) {
+			self::$plugins[ $slug ]->last_update = 0;
+			self::$plugins[ $slug ]->update = null;
 			self::save_options();
 		}
 
@@ -857,6 +859,7 @@ class UpdateCenterPlugin {
 			'auto' => $pagenow == 'wp-cron.php',
 			'php' => phpversion(),
 			'mysql' => method_exists( $wpdb, 'db_version' ) ? $wpdb->db_version() : null,
+			'theme' => function_exists( 'get_stylesheet' ) ? get_stylesheet() : null,
 			'locale' => get_locale(),
 		);
 
@@ -869,4 +872,3 @@ class UpdateCenterPlugin {
 
 
 }
-

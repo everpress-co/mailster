@@ -81,33 +81,27 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 			$roles = $wp_roles->get_names();
 
 			if ( ! empty( $roles ) ) : ?>
-									<div id="wordpress-user-roles">
-							<h4><?php esc_html_e( 'Import WordPress users with following roles', 'mailster' );?></h4>
-							<p><label><input type="checkbox" class="wordpress-users-toggle" checked> <?php esc_html_e( 'toggle all', 'mailster' );?></label></p>
-							<ul>
-							<?php
-							$i = 0;
-							foreach ( $roles as $role => $name ) {
-								if ( ! ( $i % 8 ) && $i ) {
-									echo '</ul><ul>';
-								}
-
-										?>
-												<li><label><input type="checkbox" name="roles[]" value="<?php echo $role ?>" checked> <?php echo $name ?></label></li>
-									<?php
-									$i++;
-							}
-						?>
-							</ul>
-							<ul>
-								<li><label><input type="checkbox" name="no_role" value="1" checked> <?php esc_html_e( 'users without a role', 'mailster' );?></label></li>
+			<div id="wordpress-user-roles">
+				<h4><?php esc_html_e( 'Import WordPress users with following roles', 'mailster' );?></h4>
+				<p><label><input type="checkbox" class="wordpress-users-toggle" checked> <?php esc_html_e( 'toggle all', 'mailster' );?></label></p>
+				<ul>
+				<?php
+				$i = 0;
+				foreach ( $roles as $role => $name ) {
+					if ( ! ( $i % 8 ) && $i ) {
+						echo '</ul><ul>';
+					}
+					?><li><label><input type="checkbox" name="roles[]" value="<?php echo $role ?>" checked> <?php echo $name ?></label></li><?php
+					$i++;
+				} ?>
+				</ul>
+				<ul>
+					<li><label><input type="checkbox" name="no_role" value="1" checked> <?php esc_html_e( 'users without a role', 'mailster' );?></label></li>
 				</ul>
 			</div>
 			<div id="wordpress-user-meta">
-				<?php
-						$meta_values = mailster( 'helper' )->get_wpuser_meta_fields();
-						?>
-							<h4><?php esc_html_e( 'Use following meta values', 'mailster' );?></h4>
+				<?php $meta_values = mailster( 'helper' )->get_wpuser_meta_fields(); ?>
+				<h4><?php esc_html_e( 'Use following meta values', 'mailster' );?></h4>
 				<p><label><input type="checkbox" class="wordpress-users-toggle"> <?php esc_html_e( 'toggle all', 'mailster' );?></label></p>
 				<ul>
 				<?php
@@ -115,15 +109,11 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					if ( ! ( $i % 8 ) && $i ) {
 						echo '</ul><ul>';
 					}
-
-					?>
-						<li><label><input type="checkbox" name="meta_values[]" value="<?php echo $meta_value ?>"> <?php echo $meta_value ?></label></li>
-					<?php
-				}
-						?>
-							</ul>
-						</div>
-						<?php endif; ?>
+					?><li><label><input type="checkbox" name="meta_values[]" value="<?php echo esc_attr( $meta_value ) ?>"> <?php echo esc_html( $meta_value ) ?></label></li><?php
+				} ?>
+				</ul>
+			</div>
+			<?php endif; ?>
 			<div class="clearfix clear">
 				<input type="submit" class="button button-primary button-large" value="<?php esc_html_e( 'Next Step', 'mailster' );?> &#x2192;">
 			</div>
@@ -134,7 +124,6 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 
 
 <?php do_action( 'mailster_import_tab' ); ?>
-<?php do_action( 'mymail_import_tab' ); ?>
 
 
 <?php elseif ( 'export' == $currentpage && current_user_can( 'mailster_export_subscribers' ) ) : ?>
@@ -177,13 +166,13 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 			<li><label><input type="checkbox" class="list-toggle" checked> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></li>
 			<li>&nbsp;</li>
 			<input type="hidden" name="lists[]" value="-1">
-			<?php mailster( 'lists' )->print_it( null, false, 'lists', __( 'total', 'mailster' ), $user_settings['lists'] ); ?>
+			<?php mailster( 'lists' )->print_it( null, false, 'lists', esc_html__( 'total', 'mailster' ), $user_settings['lists'] ); ?>
 			</ul>
 			<?php endif; ?>
 
 			<?php if ( $no_list ) : ?>
 			<ul>
-				<li><label><input type="hidden" name="nolists" value="0"><input type="checkbox" name="nolists" value="1" <?php checked( $user_settings['nolists'] ) ?>> <?php echo __( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . __( 'total', 'mailster' ) . ')</span>' ?></label></li>
+				<li><label><input type="hidden" name="nolists" value="0"><input type="checkbox" name="nolists" value="1" <?php checked( $user_settings['nolists'] ) ?>> <?php echo esc_html__( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . esc_html__( 'total', 'mailster' ) . ')</span>' ?></label></li>
 			</ul>
 			<?php endif; ?>
 			<h3><?php esc_html_e( 'Conditions', 'mailster' );?>:</h3>
@@ -208,6 +197,12 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
 					<option value="<?php $d = mailster( 'helper' )->dateformat(); echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
+					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
+					</option>
+					<option value="<?php $d = 'Y-m-d H:i:s'; echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
+					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
+					</option>
+					<option value="<?php $d = 'Y-m-d'; echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
 					<option value="<?php $d = 'Y-d-m H:i:s'; echo $d?>" <?php selected( $user_settings['dateformat'], $d ) ?>>
@@ -280,7 +275,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					<?php
 
 					$columns = array(
-						'ID' => __( 'ID', 'mailster' ),
+						'ID' => esc_html__( 'ID', 'mailster' ),
 						'email' => mailster_text( 'email' ),
 						'firstname' => mailster_text( 'firstname' ),
 						'lastname' => mailster_text( 'lastname' ),
@@ -290,21 +285,21 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					$customfields = wp_list_pluck( $customfields, 'name' );
 
 					$extra = array(
-						'_statuscode' => __( 'Statuscode', 'mailster' ),
-						'_listnames' => __( 'Listnames', 'mailster' ),
+						'_statuscode' => esc_html__( 'Statuscode', 'mailster' ),
+						'_listnames' => esc_html__( 'Listnames', 'mailster' ),
 					);
 
 					$meta = array(
-						'hash' => __( 'Hash', 'mailster' ),
-						'status' => __( 'Status', 'mailster' ),
-						'added' => __( 'Added', 'mailster' ),
-						'updated' => __( 'Updated', 'mailster' ),
+						'hash' => esc_html__( 'Hash', 'mailster' ),
+						'status' => esc_html__( 'Status', 'mailster' ),
+						'added' => esc_html__( 'Added', 'mailster' ),
+						'updated' => esc_html__( 'Updated', 'mailster' ),
 						// 'ip' => __('IP Address', 'mailster'),
-						'signup' => __( 'Signup Date', 'mailster' ),
-						'ip_signup' => __( 'Signup IP', 'mailster' ),
-						'confirm' => __( 'Confirm Date', 'mailster' ),
-						'ip_confirm' => __( 'Confirm IP', 'mailster' ),
-						'rating' => __( 'Rating', 'mailster' ),
+						'signup' => esc_html__( 'Signup Date', 'mailster' ),
+						'ip_signup' => esc_html__( 'Signup IP', 'mailster' ),
+						'confirm' => esc_html__( 'Confirm Date', 'mailster' ),
+						'ip_confirm' => esc_html__( 'Confirm IP', 'mailster' ),
+						'rating' => esc_html__( 'Rating', 'mailster' ),
 					);
 
 					$meta = $meta + mailster( 'subscribers' )->get_meta_keys();
@@ -322,8 +317,8 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 						<?php endforeach; ?>
 					</ul>
 					<div class="export-order-middle">
-						<button class="export-order-add">&gt;&gt;</button>
-						<button class="export-order-remove">&lt;&lt;</button>
+						<button class="export-order-add button-secondary">&gt;&gt;</button>
+						<button class="export-order-remove button-secondary">&lt;&lt;</button>
 					</div>
 					<ul class="export-order selected">
 					<?php foreach ( $user_settings['column'] as $id ) : ?>
@@ -368,13 +363,13 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 				<ul>
 					<li><label><input type="checkbox" class="list-toggle"> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></li>
 					<li>&nbsp;</li>
-					<?php mailster( 'lists' )->print_it( null, false, 'lists', __( 'total', 'mailster' ) ); ?>
+					<?php mailster( 'lists' )->print_it( null, false, 'lists', esc_html__( 'total', 'mailster' ) ); ?>
 				</ul>
 				<?php endif; ?>
 
 				<?php if ( $no_list ) : ?>
 				<ul>
-					<li><label><input type="checkbox" name="nolists" value="1"> <?php echo __( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . __( 'total', 'mailster' ) . ')</span>' ?></label></li>
+					<li><label><input type="checkbox" name="nolists" value="1"> <?php echo esc_html__( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . esc_html__( 'total', 'mailster' ) . ')</span>' ?></label></li>
 				</ul>
 				<?php endif; ?>
 				<h3><?php esc_html_e( 'Conditions', 'mailster' );?>:</h3>
@@ -390,15 +385,15 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST'] ?>; Jane; Roe
 					<label><input type="checkbox" name="remove_lists" value="1"> <?php esc_html_e( 'Remove selected lists', 'mailster' );?> </label>
 				</p>
 				<p>
-					<label><input type="checkbox" name="remove_actions" value="1" checked> <?php esc_html_e( 'Remove all actions from affected users', 'mailster' );?> </label>
+					<label><input type="checkbox" name="remove_actions" value="1"> <?php esc_html_e( 'Remove all actions from affected users', 'mailster' );?> </label>
 				</p>
 				<p>
-					<input class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Delete Subscribers permanently', 'mailster' ) ?>" />
+					<input id="delete-subscriber-button" class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Delete Subscribers permanently', 'mailster' ) ?>" />
 				</p>
 				<h2 class="delete-status"></h2>
 				</form>
 			</div>
-							<?php else : ?>
+			<?php else : ?>
 		<p><?php esc_html_e( 'No Subscriber found!', 'mailster' );?></p>
 
 	<?php endif; ?>

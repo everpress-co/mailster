@@ -154,15 +154,15 @@ class MailsterNotification {
 			return explode( ',', mailster_option( 'subscriber_notification_receviers' ) );
 
 			case 'new_subscriber_subject':
-			return __( 'A new user has subscribed to your newsletter!', 'mailster' );
+			return esc_html__( 'A new user has subscribed to your newsletter!', 'mailster' );
 			case 'new_subscriber_delayed_subject':
 				$delay = mailster_option( 'subscriber_notification_delay' );
 				$subjects = array(
-				'day' => __( 'Your daily summary', 'mailster' ),
-				'week' => __( 'Your weekly summary', 'mailster' ),
-				'month' => __( 'Your monthly summary', 'mailster' ),
+				'day' => esc_html__( 'Your daily summary', 'mailster' ),
+				'week' => esc_html__( 'Your weekly summary', 'mailster' ),
+				'month' => esc_html__( 'Your monthly summary', 'mailster' ),
 					);
-			return isset( $subjects[ $delay ] ) ? $subjects[ $delay ] : __( 'New subscribers to your newsletter!', 'mailster' );
+			return isset( $subjects[ $delay ] ) ? $subjects[ $delay ] : esc_html__( 'New subscribers to your newsletter!', 'mailster' );
 
 			case 'new_subscriber_file':
 			case 'new_subscriber_delayed_file':
@@ -172,7 +172,7 @@ class MailsterNotification {
 			case 'new_subscriber_delayed_replace':
 			return array(
 				'preheader' => $subscriber ? ( ( $subscriber->fullname ? $subscriber->fullname . ' - ' : '' ) . $subscriber->email ) : '',
-				'notification' => sprintf( __( 'You are receiving this email because you have enabled notifications for new subscribers %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' ) . '">' . __( 'on your settings page', 'mailster' ) . '</a>' ),
+				'notification' => sprintf( esc_html__( 'You are receiving this email because you have enabled notifications for new subscribers %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' ) . '">' . esc_html__( 'on your settings page', 'mailster' ) . '</a>' ),
 				'can-spam' => '',
 			);
 
@@ -182,15 +182,15 @@ class MailsterNotification {
 			return explode( ',', mailster_option( 'unsubscribe_notification_receviers' ) );
 
 			case 'unsubscribe_subject':
-			return __( 'A user has canceled your newsletter!', 'mailster' );
+			return esc_html__( 'A user has canceled your newsletter!', 'mailster' );
 			case 'unsubscribe_delayed_subject':
 				$delay = mailster_option( 'unsubscribe_notification_delay' );
 				$subjects = array(
-				'day' => __( 'Your daily summary', 'mailster' ),
-				'week' => __( 'Your weekly summary', 'mailster' ),
-				'month' => __( 'Your monthly summary', 'mailster' ),
+				'day' => esc_html__( 'Your daily summary', 'mailster' ),
+				'week' => esc_html__( 'Your weekly summary', 'mailster' ),
+				'month' => esc_html__( 'Your monthly summary', 'mailster' ),
 					);
-			return isset( $subjects[ $delay ] ) ? $subjects[ $delay ] : __( 'You have new cancellations!', 'mailster' );
+			return isset( $subjects[ $delay ] ) ? $subjects[ $delay ] : esc_html__( 'You have new cancellations!', 'mailster' );
 
 			case 'unsubscribe_file':
 			case 'unsubscribe_delayed_file':
@@ -200,7 +200,7 @@ class MailsterNotification {
 			case 'unsubscribe_delayed_replace':
 			return array(
 				'preheader' => $subscriber ? ( ( $subscriber->fullname ? $subscriber->fullname . ' - ' : '' ) . $subscriber->email ) : '',
-				'notification' => sprintf( __( 'You are receiving this email because you have enabled notifications for unsubscriptions %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' ) . '">' . __( 'on your settings page', 'mailster' ) . '</a>' ),
+				'notification' => sprintf( esc_html__( 'You are receiving this email because you have enabled notifications for unsubscriptions %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' ) . '">' . esc_html__( 'on your settings page', 'mailster' ) . '</a>' ),
 				'can-spam' => '',
 			);
 
@@ -209,20 +209,20 @@ class MailsterNotification {
 			return $subscriber->email;
 
 			case 'confirmation_subject':
-				$form = mailster( 'forms' )->get( $options['form'], false, false );
+				$form = $this->get_form_options( $options, $subscriber );
 			return $form->subject;
 
 			case 'confirmation_file':
-				$form = mailster( 'forms' )->get( $options['form'], false, false );
+				$form = $this->get_form_options( $options, $subscriber );
 			return $form->template;
 
 			case 'confirmation_headline':
-				$form = mailster( 'forms' )->get( $options['form'], false, false );
+				$form = $this->get_form_options( $options, $subscriber );
 			return $form->headline;
 
 			case 'confirmation_replace':
 				if ( isset( $options['form'] ) ) {
-					$form = mailster( 'forms' )->get( $options['form'], false, true );
+					$form = $this->get_form_options( $options, $subscriber, false, true );
 					$form_id = $form->ID;
 				} else {
 					$form_id = null;
@@ -242,7 +242,7 @@ class MailsterNotification {
 				), $content );
 
 			case 'confirmation_attachments':
-				$form = mailster( 'forms' )->get( $options['form'], false, false );
+				$form = $this->get_form_options( $options, $subscriber );
 				if ( $form->vcard ) {
 
 					global $wp_filesystem;
@@ -257,11 +257,11 @@ class MailsterNotification {
 
 			// test mail
 			case 'test_subject':
-			return __( 'Mailster Test Email', 'mailster' );
+			return esc_html__( 'Mailster Test Email', 'mailster' );
 
 			case 'test_replace':
 			return array(
-				'notification' => sprintf( __( 'This is a test mail sent from %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' ) . '">' . __( 'from your settings page', 'mailster' ) . '</a>' ),
+				'notification' => sprintf( esc_html__( 'This is a test mail sent from %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' ) . '">' . esc_html__( 'from your settings page', 'mailster' ) . '</a>' ),
 				'can-spam' => '',
 			);
 
@@ -416,8 +416,11 @@ class MailsterNotification {
 		$this->mail = mailster( 'mail' );
 
 		$this->mail->to = $this->to;
+		$this->mail->from = apply_filters( 'mailster_notification_from', $this->mail->from, $template, $subscriber, $options );
+		$this->mail->from_name = apply_filters( 'mailster_notification_from_name', $this->mail->from_name, $template, $subscriber, $options );
+		$this->mail->reply_to = apply_filters( 'mailster_notification_reply_to', mailster_option( 'reply_to', false ), $template, $subscriber, $options );
+
 		$this->mail->subject = $this->subject;
-		$this->mail->reply_to = mailster_option( 'reply_to', false );
 
 		$MID = mailster_option( 'ID' );
 		$this->mail->add_header( 'X-Mailster-ID', $MID );
@@ -435,6 +438,7 @@ class MailsterNotification {
 		if ( $subscriber ) {
 			$this->mail->hash = $subscriber->hash;
 			$this->mail->add_header( 'X-Mailster', $subscriber->hash );
+			$placeholder->set_subscriber( $subscriber->ID );
 			$placeholder->add( $userdata );
 			$placeholder->add( array(
 				'emailaddress' => $subscriber->email,
@@ -465,25 +469,32 @@ class MailsterNotification {
 			$this->mail->debug();
 		}
 
-		$result = $this->mail->send();
+		foreach ((array) $this->to as $receiver) {
 
-		if ( $result && ! is_wp_error( $result ) ) {
-			return true;
+			$this->mail->to = $receiver;
+			$result = $this->mail->send();
+
+			if ( $result && ! is_wp_error( $result ) ) {
+				continue;
+			}
+
+			if ( is_wp_error( $result ) ) {
+				return $result;
+			}
+
+			if ( $this->mail->is_user_error() ) {
+				return new WP_Error( 'user_error', $this->mail->last_error->getMessage() );
+			}
+
+			if ( $this->mail->last_error ) {
+				return new WP_Error( 'notification_error', $this->mail->last_error->getMessage() );
+			}
+
+			return new WP_Error( 'notification_error', esc_html__( 'unknown', 'mailster' ) );
 		}
 
-		if ( is_wp_error( $result ) ) {
-			return $result;
-		}
+		return true;
 
-		if ( $this->mail->is_user_error() ) {
-			return new WP_Error( 'user_error', $this->mail->last_error->getMessage() );
-		}
-
-		if ( $this->mail->last_error ) {
-			return new WP_Error( 'notification_error', $this->mail->last_error->getMessage() );
-		}
-
-		return new WP_Error( 'notification_error', __( 'unknown', 'mailster' ) );
 
 	}
 
@@ -522,6 +533,21 @@ class MailsterNotification {
 	}
 
 
+	/**
+	 *
+	 *
+	 * @param unknown $options
+	 */
+	private function get_form_options( $options, $subscriber, $fields = false, $lists = false ) {
+		$form = mailster( 'forms' )->get( $options['form'], $fields, $lists );
+		if ( $form_key = mailster( 'subscribers' )->meta( $subscriber->ID, 'formkey' ) ) {
+			$form_args = (array) get_transient( '_mailster_form_' . $form_key );
+			$form = (object) wp_parse_args( $form_args, (array) $form );
+		}
+		return $form;
+	}
+
+
 	// Templates
 	/**
 	 *
@@ -542,7 +568,11 @@ class MailsterNotification {
 	 */
 	private function template_confirmation( $subscriber, $options ) {
 
-		$form = mailster( 'forms' )->get( $options['form'], false, false );
+		$form = $this->get_form_options( $options, $subscriber );
+
+		if ( false === strpos( $form->content, '{link}' ) ) {
+			$form->content .= "\n{link}";
+		}
 
 		echo nl2br( $form->content );
 
@@ -636,7 +666,7 @@ class MailsterNotification {
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
-				<h2><?php printf( __( '%s has joined', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID ) . '">' . ( ( $subscriber->fullname ) ? $subscriber->fullname . ' - ' : '' ) . $subscriber->email . '</a>' ) ?></h2>
+				<h2><?php printf( esc_html__( '%s has joined', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID ) . '">' . ( ( $subscriber->fullname ) ? $subscriber->fullname . ' - ' : '' ) . $subscriber->email . '</a>' ) ?></h2>
 
 				<table style="width:100%;table-layout:fixed">
 					<tr><td><?php mailster( 'subscribers' )->output_referer( $subscriber->ID ) ?></td></tr>
@@ -650,7 +680,7 @@ class MailsterNotification {
 				<?php
 				switch ( $field['type'] ) {
 					case 'checkbox':
-						echo $subscriber->{$id} ? __( 'yes', 'mailster' ) : __( 'no', 'mailster' );
+						echo $subscriber->{$id} ? esc_html__( 'yes', 'mailster' ) : esc_html__( 'no', 'mailster' );
 							break;
 					case 'textarea':
 						echo wpautop( esc_html( $subscriber->{$id} ) );
@@ -759,8 +789,8 @@ class MailsterNotification {
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
-				<h2><?php printf( __( 'You have %1$s new subscribers since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date( $date_format, $timestamp + $gmt_offset ) );?></h2>
-				<?php printf( __( 'You have now %s subscribers in total.', 'mailster' ), '<strong>' . number_format_i18n( $total ) . '</strong>' );?>
+				<h2><?php printf( esc_html__( 'You have %1$s new subscribers since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date( $date_format, $timestamp + $gmt_offset ) );?></h2>
+				<?php printf( esc_html__( 'You have now %s subscribers in total.', 'mailster' ), '<strong>' . number_format_i18n( $total ) . '</strong>' );?>
 			</td>
 			</tr>
 		</table>
@@ -828,7 +858,7 @@ class MailsterNotification {
 						</a>
 					</td>
 					<td valign="center" align="left">
-						<h4 style="margin:0;"><a href="<?php echo $link ?>"><?php printf( _n( '%s other', '%s others', $count - $limit, 'mailster' ), number_format_i18n( $count - $limit ) ) ?></a></h5>
+						<h4 style="margin:0;"><a href="<?php echo $link ?>"><?php printf( esc_html__( _n( '%s other', '%s others', $count - $limit, 'mailster' ) ), number_format_i18n( $count - $limit ) ) ?></a></h5>
 					</td>
 					</tr>
 					<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
@@ -873,7 +903,7 @@ foreach ( $coords as $i => $coord ) {
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 				<td valign="top" align="center">
-				<h2><?php printf( __( 'Subscribers are located in %s different countries', 'mailster' ), '<strong>' . $locationcount . '</strong>' ) ?></h2>
+				<h2><?php printf( esc_html__( 'Subscribers are located in %s different countries', 'mailster' ), '<strong>' . $locationcount . '</strong>' ) ?></h2>
 				</td>
 				</tr>
 				</table>
@@ -881,7 +911,7 @@ foreach ( $coords as $i => $coord ) {
 				<table style="width:100%;table-layout:fixed">
 				<tr>
 				<td valign="top" align="center">
-				<img width="600" height="300" src="<?php echo $link ?>" alt="<?php printf( _n( 'location of %d subscriber', 'location of %d subscribers', $locationcount, 'mailster' ), $locationcount );?>">
+				<img width="600" height="300" src="<?php echo $link ?>" alt="<?php printf( esc_html__( _n( 'location of %d subscriber', 'location of %d subscribers', $locationcount, 'mailster' ) ), $locationcount );?>">
 				</td>
 			</tr>
 		</table>
@@ -982,7 +1012,7 @@ foreach ( $coords as $i => $coord ) {
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
-				<h2><?php printf( __( '%s has canceled', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID ) . '">' . ( ( $subscriber->fullname ) ? $subscriber->fullname . ' - ' : '' ) . $subscriber->email . '</a>' ) ?></h2>
+				<h2><?php printf( esc_html__( '%s has canceled', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID ) . '">' . ( ( $subscriber->fullname ) ? $subscriber->fullname . ' - ' : '' ) . $subscriber->email . '</a>' ) ?></h2>
 			</td>
 			</tr>
 		</table>
@@ -1038,8 +1068,8 @@ foreach ( $coords as $i => $coord ) {
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
-				<h2><?php printf( __( 'You have %1$s cancellations since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date( $date_format, $timestamp + $gmt_offset ) );?></h2>
-				<?php printf( __( 'You have now %s subscribers in total.', 'mailster' ), '<strong>' . number_format_i18n( $total ) . '</strong>' );?>
+				<h2><?php printf( esc_html__( 'You have %1$s cancellations since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date( $date_format, $timestamp + $gmt_offset ) );?></h2>
+				<?php printf( esc_html__( 'You have now %s subscribers in total.', 'mailster' ), '<strong>' . number_format_i18n( $total ) . '</strong>' );?>
 			</td>
 			</tr>
 		</table>
@@ -1107,7 +1137,7 @@ foreach ( $coords as $i => $coord ) {
 						</a>
 					</td>
 					<td valign="center" align="left">
-						<h4 style="margin:0;"><a href="<?php echo $link ?>"><?php printf( _n( '%s other', '%s others', $count - $limit, 'mailster' ), number_format_i18n( $count - $limit ) ) ?></a></h5>
+						<h4 style="margin:0;"><a href="<?php echo $link ?>"><?php printf( esc_html__( _n( '%s other', '%s others', $count - $limit, 'mailster' ) ), number_format_i18n( $count - $limit ) ) ?></a></h5>
 					</td>
 					</tr>
 					<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>

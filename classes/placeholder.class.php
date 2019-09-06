@@ -3,10 +3,13 @@
 class MailsterPlaceholder {
 
 	private $content;
-	private $styles;
+	private $styles = array();
 	private $keeptag;
 	private $keeptags;
 	private $placeholder = array();
+	private $post_types = array();
+	private $rss = array();
+	private $rss_timestamp = null;
 	private $campaignID = null;
 	private $subscriberID = null;
 	private $subscriberHash = null;
@@ -30,31 +33,6 @@ class MailsterPlaceholder {
 
 	public function __destruct() { }
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $option
-	 * @param unknown $fallback
-	 * @param unknown $campaignID   (optional)
-	 * @param unknown $subscriberID (optional)
-	 * @return unknown
-	 */
-	public function urlencode_tags( $option, $fallback, $campaignID = null, $subscriberID = null ) {
-
-		if ( $subscriber = mailster( 'subscribers' )->get( $subscriberID ) && isset( $subscriber->{$option} ) ) {
-			$return = rawurlencode( $subscriber->{$option} );
-		} else {
-			$return = '{' . $option;
-			if ( $fallback ) {
-				$return .= '|' . $fallback;
-			}
-
-			$return .= '}';
-		}
-
-		return $return;
-	}
 
 
 	/**
@@ -141,12 +119,11 @@ class MailsterPlaceholder {
 	}
 
 	public function has_content( $check_for_modules = false ) {
-		$html = $this->get_content( false );
+		$html = trim( $this->get_content( false ) );
 		if ( $check_for_modules ) {
-			return preg_match( '/<\/module>/', $html );
+			return preg_match( '/<module[^>]*?data-tag="(.*?)"/', $html );
 		}
-
-		return ! empty( trim( $html ) );
+		return ! empty( $html );
 	}
 
 
@@ -294,20 +271,23 @@ class MailsterPlaceholder {
 		$this->add( mailster_option( 'custom_tags', array() ) );
 		$this->add( mailster_option( 'tags', array() ) );
 
-		// temporary remove style blocks
-		if ( preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $this->styles ) ) {
-			foreach ( $this->styles[0] as $i => $style ) {
-				$this->content = str_replace( $style, '<!--Mailster:styleblock' . $i . '-->', $this->content );
-			}
+		$this->rss();
+		if ( $removeunused ) {
+			$this->remove_modules();
+			$this->conditions();
 		}
-
-		$this->remove_modules();
-		$this->conditions();
 
 		$k = 0;
 
 		// as long there are tags in the content.
 		while ( false !== strpos( $this->content, '{' ) ) {
+			// temporary remove style blocks
+			if ( preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $styles ) ) {
+				foreach ( $styles[0] as $style ) {
+					$this->content = str_replace( $style, '<!--Mailster:styleblock' . count( $this->styles ) . '-->', $this->content );
+					$this->styles[] = $style;
+				}
+			}
 			$this->replace_images( $relative_to_absolute );
 			$this->replace_dynamic( $relative_to_absolute );
 			$this->replace_static( $removeunused );
@@ -324,8 +304,8 @@ class MailsterPlaceholder {
 			}
 		}
 
-		if ( ! empty( $this->styles[0] ) ) {
-			foreach ( $this->styles[0] as $i => $style ) {
+		if ( ! empty( $this->styles ) ) {
+			foreach ( $this->styles as $i => $style ) {
 				$this->content = str_replace( '<!--Mailster:styleblock' . $i . '-->', $style, $this->content );
 			}
 		}
@@ -334,6 +314,9 @@ class MailsterPlaceholder {
 		$this->content = apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) )
 			? strip_shortcodes( $this->content )
 			: do_shortcode( $this->content );
+
+		// strip all unwanted stuff from the content
+		$this->strip_unwanted_html();
 
 		return $this->content;
 
@@ -397,7 +380,7 @@ class MailsterPlaceholder {
 				rawurlencode( $url ),
 		), $this->social_services[ $service ]['url'] );
 
-		$content = '<img alt="' . esc_attr( sprintf( __( 'Share this on %s', 'mailster' ), $this->social_services[ $service ]['name'] ) ) . '" src="' . MAILSTER_URI . 'assets/img/share/share_' . $service . '.png" style="display:inline;display:inline !important;" />';
+		$content = '<img alt="' . esc_attr( sprintf( esc_html__( 'Share this on %s', 'mailster' ), $this->social_services[ $service ]['name'] ) ) . '" src="' . MAILSTER_URI . 'assets/img/share/share_' . $service . '.png" style="display:inline;display:inline !important;" />';
 
 		$content = apply_filters( 'mymail_share_button_' . $service, apply_filters( 'mailster_share_button_' . $service, $content ) );
 
@@ -411,9 +394,94 @@ class MailsterPlaceholder {
 	 *
 	 * @return unknown
 	 */
+	public function rss_since( $timestamp = null ) {
+		if ( is_null( $timestamp ) ) {
+			$timestamp = time();
+		}
+
+		$this->rss_timestamp = $timestamp;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	private function rss() {
+
+		if ( preg_match_all( '#<module[^>]*?data-rss="(.*?)".*?</module>#ms', $this->content, $modules ) ) {
+
+			$first = null;
+			foreach ( $modules[0] as $i => $html ) {
+
+				$search = $modules[0][ $i ];
+				$feed_url = $modules[1][ $i ];
+
+				// check if there's a new feed since.
+				if ( $this->rss_timestamp && ! mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url ) ) {
+					$replace = '';
+				} else {
+
+					$id = md5( $feed_url );
+					$temp_post_type = 'mailster_rss_' . $id;
+
+					if ( ! isset( $this->rss[ $id ] ) ) {
+						$this->rss[ 'mailster_get_last_post_' . $temp_post_type ] = $feed_url;
+						add_filter( 'mailster_get_last_post_' . $temp_post_type, array( &$this, 'rss_replace' ), 5, 6 );
+						if ( $i == 0 ) {
+							$first = $temp_post_type;
+						}
+					}
+
+					$this->post_types[] = $temp_post_type;
+					$replace = str_replace( '{rss', '{' . $temp_post_type, $search );
+					$replace = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $temp_post_type, $replace );
+					$replace = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . $temp_post_type, $replace );
+
+				}
+
+				$this->content = str_replace( $search, $replace, $this->content );
+			}
+
+			// replace all tags outside the scope
+			if ( $first ) {
+				$this->content = str_replace( '{rss', '{' . $first, $this->content );
+				$this->content = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $first, $this->content );
+				$this->content = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . $first, $this->content );
+			}
+		}
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function rss_replace( $return, $args, $offset, $term_ids, $campaign_id, $subscriber_id ) {
+
+		$current = current_filter();
+
+		if ( ! isset( $this->rss[ $current ] ) ) {
+			return $return;
+		}
+
+		$feed_url = $this->rss[ $current ];
+		return mailster( 'helper' )->feed( $feed_url, $offset );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
 	private function remove_modules() {
 
-		if ( preg_match_all( '#<module[^>]*?data-tag="{(([a-z0-9_-]+):(-)?([\d]+)(;([0-9;,]+))?)\}"(.*?)".*?</module>#ms', $this->content, $modules ) ) {
+		if ( preg_match_all( '#<module[^>]*?data-tag="{(([a-z0-9_-]+):(-|~)?([\d]+)(;([0-9;,-]+))?)\}"(.*?)".*?</module>#ms', $this->content, $modules ) ) {
 
 			foreach ( $modules[0] as $i => $html ) {
 
@@ -421,12 +489,17 @@ class MailsterPlaceholder {
 				$tag = $modules[1][ $i ];
 				$post_type = $modules[2][ $i ];
 				$post_or_offset = $modules[4][ $i ];
+				$type = $modules[3][ $i ];
 
-				if ( empty( $modules[3][ $i ] ) ) {
+				if ( empty( $type ) ) {
 					$post = get_post( $post_or_offset );
 				} else {
 					$term_ids = ! empty( $modules[6][ $i ] ) ? explode( ';', trim( $modules[6][ $i ] ) ) : array();
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					if ( '~' == $type ) {
+						$post = mailster()->get_random_post( $post_or_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					} else {
+						$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					}
 				}
 
 				if ( ! $post ) {
@@ -627,10 +700,16 @@ class MailsterPlaceholder {
 						$width = isset( $query['w'] ) ? (int) $query['w'] * $factor : null;
 						$height = isset( $query['h'] ) ? (int) $query['h'] * $factor : null;
 						$crop = isset( $query['c'] ) && $height ? ! ! ( $query['c'] ) : false;
+						$original = isset( $query['o'] ) ? ! ! ( $query['o'] ) : false;
 						$post_type = str_replace( '_image', '', $parts[0] );
 						$is_post = $post_type != $parts[0];
+						$is_random = null;
 						$org_src = false;
 
+						// not on RSS
+						if ($relative_to_absolute && 0 === strpos($post_type, 'mailster_rss_')) {
+							$relative_to_absolute = false;
+						}
 						if ( $is_post ) {
 							// cropping requires height
 							if ( ! $crop ) {
@@ -639,19 +718,24 @@ class MailsterPlaceholder {
 							$extra = explode( '|', $parts[1] );
 							$term_ids = explode( ';', $extra[0] );
 							$fallback_id = isset( $extra[1] ) ? (int) $extra[1] : mailster_option( 'fallback_image' );
-							$post_id = (int) array_shift( $term_ids );
+							$post_id_or_identifier = array_shift( $term_ids );
+							$is_random = 0 === strpos( $post_id_or_identifier, '~' );
 
-							if ( $post_id < 0 ) {
+							if ( $is_random ) {
 
-								$post = mailster()->get_last_post( abs( $post_id ) - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+								$post = mailster()->get_random_post( substr( $post_id_or_identifier, 1 ), $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
-							} elseif ( $post_id > 0 ) {
+							} elseif ( $post_id_or_identifier < 0 ) {
+
+								$post = mailster()->get_last_post( abs( $post_id_or_identifier ) - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+
+							} elseif ( $post_id_or_identifier > 0 ) {
 
 								if ( $relative_to_absolute ) {
 									continue;
 								}
 
-								$post = get_post( $post_id );
+								$post = get_post( $post_id_or_identifier );
 
 							}
 						} else {
@@ -659,7 +743,7 @@ class MailsterPlaceholder {
 							$fallback_id = mailster_option( 'fallback_image' );
 							$post = null;
 							$thumb_id = null;
-							$src = apply_filters( 'mailster_image_placeholder', $query['tag'], $width, $height, $crop, $this->campaignID, $this->subscriberID );
+							$src = apply_filters( 'mailster_image_placeholder', $query['tag'], $width, $height, $crop, $original, $this->campaignID, $this->subscriberID );
 							if ( $src && $src != $query['tag'] ) {
 								if ( ! is_array( $src ) ) {
 									$src = array( $src, $width, $height );
@@ -671,15 +755,24 @@ class MailsterPlaceholder {
 						if ( ! $relative_to_absolute ) {
 
 							if ( ! empty( $post ) ) {
-								$thumb_id = get_post_thumbnail_id( $post->ID );
 
-								$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
+								if ( ! empty( $post->ID ) ) {
+									$thumb_id = get_post_thumbnail_id( $post->ID );
+
+									$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
+								}
 
 								if ( empty( $org_src ) && isset( $post->post_image ) ) {
 									if ( is_numeric( $post->post_image ) ) {
 										$org_src = wp_get_attachment_image_src( $post->post_image, 'full' );
+									} elseif ( empty( $post->post_image ) ) {
+
+										// get image from sites meta tags
+										if ( $src = mailster( 'helper' )->get_meta_tags_from_url( $post->post_permalink, array( 'mailster:image', 'thumbnail', 'og:image', 'twitter:image' ) ) ) {
+											$org_src = array( $src, 0, 0, false );
+										}
 									} else {
-										$org_src = array( $post->post_image,0,0,false );
+										$org_src = array( $post->post_image, 0, 0, false );
 									}
 								}
 							}
@@ -696,7 +789,7 @@ class MailsterPlaceholder {
 								if ( $org_src[1] && $org_src[2] ) {
 									$asp = $org_src[1] / $org_src[2];
 									$height = $height ? $height : round( ($width / $asp) / $factor );
-									$img = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height, $crop );
+									$img = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height, $crop, $original );
 								} else {
 									$img = array( 'url' => $org_src[0] );
 								}
@@ -726,9 +819,9 @@ class MailsterPlaceholder {
 							mailster_cache_set( 'mailster_' . $querystring, $replace_to );
 
 						} else {
-
-							$replace_to = str_replace( 'tag=' . $query['tag'], 'tag=' . $post_type . '_image:' . $post->ID, $search );
-
+							if ( $post && ! $is_random ) {
+								$replace_to = str_replace( 'tag=' . $query['tag'], 'tag=' . $post_type . '_image:' . $post->ID, $search );
+							}
 						}
 					}
 
@@ -745,30 +838,65 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
+	 */
+	private function get_post_types_to_replace() {
+		if ( empty( $this->post_types ) ) {
+			$this->post_types = mailster( 'helper' )->get_dynamic_post_types();
+		}
+
+		return $this->post_types;
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $relative_to_absolute (optional)
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
+		$pts = $this->get_post_types_to_replace();
+		$pts = implode( '|', $pts );
+
 		// all dynamic post type tags
-		if ( $count = preg_match_all( '#\{(([a-z0-9_-]+)_([^}]+):(-)?([\d]+)(;([0-9;,]+))?)\}#i', $this->content, $hits ) ) {
+		if ( $count = preg_match_all( '#\{(!)?((' . $pts . ')_([^}]+):(-|~)?([\d]+)(;([0-9;,-]+))?)\}#i', $this->content, $hits ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
 				$search = $hits[0][ $i ];
-				$post_or_offset = $hits[5][ $i ];
-				$post_type = $hits[2][ $i ];
+				$encode = ! empty( $hits[1][ $i ] );
+				$post_or_offset = $hits[6][ $i ];
+				$post_type = $hits[3][ $i ];
+				$type = $hits[5][ $i ];
+				$term_ids = ! empty( $hits[8][ $i ] ) ? explode( ';', trim( $hits[8][ $i ] ) ) : array();
+				$is_random = '~' == $type;
 
-				if ( empty( $hits[4][ $i ] ) ) {
+				// not on RSS
+				if ($relative_to_absolute && 0 === strpos($post_type, 'mailster_rss_')) {
+					$relative_to_absolute = false;
+				}
+
+				if ( empty( $type ) || $is_random ) {
+
+					$post_id = $post_or_offset;
 
 					if ( $relative_to_absolute ) {
 						continue;
 					}
 
-					$post = get_post( $post_or_offset );
+					if ( $is_random ) {
+						$post = mailster()->get_random_post( $post_or_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					} else {
+						$post = get_post( $post_or_offset );
+					}
+
+					$post = apply_filters( 'mailster_get_post_' . $post_type, $post, $post_id );
 
 					if ( ! $post ) {
 						continue;
 					}
+
+					$post->post_excerpt = trim( $post->post_excerpt );
 
 					if ( empty( $post->post_excerpt ) ) {
 						if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
@@ -778,7 +906,9 @@ class MailsterPlaceholder {
 						if ( ! $post->post_excerpt ) {
 							$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content );
 						}
+						$post->post_excerpt = mailster_remove_block_comments( $post->post_excerpt );
 					}
+
 					if ( $this->apply_the_excerpt_filters ) {
 						if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
 							$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );
@@ -787,24 +917,35 @@ class MailsterPlaceholder {
 					}
 				} else {
 
-					$term_ids = ! empty( $hits[7][ $i ] ) ? explode( ';', trim( $hits[7][ $i ] ) ) : array();
+					$post_offset = $post_or_offset -1;
+					$term_ids = ! empty( $hits[8][ $i ] ) ? explode( ';', trim( $hits[8][ $i ] ) ) : array();
+
 					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 				}
 
-				if ( $relative_to_absolute ) {
+				if ( $relative_to_absolute && $post ) {
 
-					$replace_to = '{' . $post_type . '_' . $hits[3][ $i ] . ':' . $post->ID . '}';
+					if ( $encode ) {
+						$replace_to = '{!' . $post_type . '_' . $hits[4][ $i ] . ':' . $post->ID . '}';
+					}else{
+						$replace_to = '{' . $post_type . '_' . $hits[4][ $i ] . ':' . $post->ID . '}';
+					}
 
 				} elseif ( $post ) {
 
-					$what = $hits[3][ $i ];
+					$what = $hits[4][ $i ];
 
 					$replace_to = $this->get_replace( $post, $what );
 
 					if ( is_null( $replace_to ) ) {
 						continue;
 					}
+
+					if ( $encode ) {
+						$replace_to = rawurlencode( $replace_to );
+					}
+
 				} else {
 					$replace_to = '';
 				}
@@ -815,11 +956,15 @@ class MailsterPlaceholder {
 		}
 
 		if ( ! $relative_to_absolute ) {
-			if ( $count = preg_match_all( '#\{(tweet:([^}|]+)\|?([^}]+)?)\}#i', $this->content, $hits ) ) {
+			if ( $count = preg_match_all( '#\{(!)?(tweet:([^}|]+)\|?([^}]+)?)\}#i', $this->content, $hits ) ) {
 
 				for ( $i = 0; $i < $count; $i++ ) {
 					$search = $hits[0][ $i ];
-					$tweet = $this->get_last_tweet( $hits[2][ $i ], $hits[3][ $i ] );
+					$encode = ! empty( $hits[1][ $i ] );
+					$tweet = $this->get_last_tweet( $hits[3][ $i ], $hits[4][ $i ] );
+					if ( $encode ) {
+						$tweet = rawurlencode( $tweet );
+					}
 					$this->content = str_replace( $search, $tweet, $this->content );
 				}
 			}
@@ -839,31 +984,32 @@ class MailsterPlaceholder {
 		$keep = $this->get_keep_tags();
 
 		// replace static
-		if ( $count = preg_match_all( '#\{([a-z0-9-_]+):?([^\}|]+)?\|?([^\}]+)?\}#i', $this->content, $hits_fallback ) ) {
+		if ( $count = preg_match_all( '#\{(!)?([a-z0-9-_]+):?([^\}|]+)?\|?([^\}]+)?\}#i', $this->content, $hits_fallback ) ) {
 
 			for ( $i = 0; $i < $count; $i++ ) {
 
 				$search = $hits_fallback[0][ $i ];
+				$encode = ! empty( $hits_fallback[1][ $i ] );
 
 				// check if string is still there
 				if ( $i && false === strrpos( $this->content, $search ) ) {
 					continue;
 				}
 
-				$tag = $hits_fallback[1][ $i ];
-				$option = $hits_fallback[2][ $i ];
-				$fallback = $hits_fallback[3][ $i ];
+				$tag = $hits_fallback[2][ $i ];
+				$option = $hits_fallback[3][ $i ];
+				$fallback = $hits_fallback[4][ $i ];
 				$replace = '';
 
 				// tag is in placeholders
 				if ( isset( $this->placeholder[ $search ] ) ) {
 					$replace = $this->placeholder[ $search ];
 
-					// tag is a custom tag
+				// tag is a custom tag
 				} elseif ( isset( $this->placeholder[ '{' . $tag . '}' ] ) ) {
 					$replace = $this->placeholder[ '{' . $tag . '}' ];
 
-					// tag is a custom tag
+				// tag is a custom tag
 				} elseif ( isset( $mailster_tags[ $tag ] ) && $this->replace_custom ) {
 					$replace = call_user_func_array( $mailster_tags[ $tag ], array( $option, $fallback, $this->campaignID, $this->subscriberID ) );
 					// prevent infinity loops if replace contains it's own tag
@@ -871,7 +1017,7 @@ class MailsterPlaceholder {
 						$replace = str_replace( array( '{', '}' ), array( '!', '!' ), $replace );
 					}
 
-					// tag should be kept
+				// tag should be kept
 				} elseif ( in_array( $tag, $keep ) ) {
 					if ( $fallback ) {
 						$replace = $fallback;
@@ -880,19 +1026,24 @@ class MailsterPlaceholder {
 						$replace = '<!--Mailster:keeptag' . $i . '-->';
 					}
 
-					// keep unused
+				// keep unused
 				} elseif ( ! $removeunused ) {
 					continue;
 				}
+
+				// add fallback if set
+				if ( '' == $replace && $fallback ) {
+					$replace = $fallback;
+				}
 				$replace_to = apply_filters( 'mailster_replace_' . $tag, $replace, $option, $fallback, $this->campaignID, $this->subscriberID );
+
+				if ( $encode ) {
+					$replace_to = rawurlencode( $replace_to );
+				}
 
 				$this->content = str_replace( $search, $replace_to, $this->content );
 			}
 
-			// break out to prevent infinity loop
-			if ( ! $removeunused ) {
-				// break;
-			}
 		}
 
 	}
@@ -900,9 +1051,9 @@ class MailsterPlaceholder {
 	public function get_replace( $post, $what ) {
 
 		$extra = null;
+		$replace_to = null;
+		$author = null;
 		$post_type = $post->post_type;
-		$timeformat = mailster( 'helper' )->timeformat();
-		$dateformat = mailster( 'helper' )->dateformat();
 
 		if ( 0 === strpos( $what, 'author' ) ) {
 			$author = get_user_by( 'id', $post->post_author );
@@ -930,7 +1081,7 @@ class MailsterPlaceholder {
 			} else {
 				$category = 'category';
 			}
-			$categories = get_the_term_list( $post->ID, $category, '', ', ' );
+			$categories = is_string( $post->post_category ) ? $post->post_category : get_the_term_list( $post->ID, $category, '', ', ' );
 
 			if ( is_wp_error( $categories ) ) {
 				return null;
@@ -939,6 +1090,9 @@ class MailsterPlaceholder {
 			if ( 'category_strip' != $what ) {
 				$what = 'category';
 			}
+			if ( is_array( $categories ) ) {
+				$categories = implode( ', ', $categories );
+			}
 			$extra = $categories;
 		}
 
@@ -946,9 +1100,17 @@ class MailsterPlaceholder {
 			case 'id':
 				$replace_to = $post->ID;
 				break;
+			case 'title':
+				$replace_to = str_replace( array( '"', "'" ), array( '&quot;', '&#039;' ), $post->post_title );
+				break;
 			case 'link':
+				if ( isset( $post->post_link ) ) {
+					$replace_to = $post->post_link;
+				}
 			case 'permalink':
-				$replace_to = get_permalink( $post->ID );
+				if ( ! $replace_to ) {
+					$replace_to = get_permalink( $post->ID );
+				}
 				if ( ! $replace_to ) {
 					$replace_to = $post->post_link;
 				}
@@ -961,6 +1123,10 @@ class MailsterPlaceholder {
 				break;
 			case 'author':
 			case 'author_strip':
+				if ( ! $author ) {
+					$replace_to = $post->post_author;
+					break;
+				}
 				if ( $author->data->user_url && $what != 'author_strip' ) {
 					$replace_to = '<a href="' . $author->data->user_url . '">' . $author->data->display_name . '</a>';
 				} else {
@@ -968,22 +1134,22 @@ class MailsterPlaceholder {
 				}
 				break;
 			case 'author_name':
-				$replace_to = $author->data->display_name;
+				$replace_to = $author ? $author->data->display_name : $post->post_author;
 				break;
 			case 'author_nicename':
-				$replace_to = $author->data->user_nicename;
+				$replace_to = $author ? $author->data->user_nicename : $post->post_author;
 				break;
 			case 'author_email':
-				$replace_to = $author->data->user_email;
+				$replace_to = $author ? $author->data->user_email : '';
 				break;
 			case 'author_url':
-				$replace_to = $author->data->user_url;
+				$replace_to = $author ? $author->data->user_url : '';
 				break;
 			case 'date':
 			case 'date_gmt':
 			case 'modified':
 			case 'modified_gmt':
-				$replace_to = date( $dateformat, strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date( mailster( 'helper' )->dateformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'time':
 				$what = 'date';
@@ -993,7 +1159,7 @@ class MailsterPlaceholder {
 				$what = isset( $what ) ? $what : 'modified';
 			case 'modified_time_gmt':
 				$what = isset( $what ) ? $what : 'modified_gmt';
-				$replace_to = date( $timeformat, strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date( mailster( 'helper' )->timeformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'excerpt':
 				if ( ! empty( $post->{'post_excerpt'} ) ) {
@@ -1021,12 +1187,12 @@ class MailsterPlaceholder {
 				$replace_to = $this->get_social_service( $what, get_permalink( $post->ID ), get_the_title( $post->ID ) );
 				break;
 			case 'image':
-				$replace_to = '[' . ( sprintf( __( 'use the tag %s as url in the editbar', 'mailster' ), '"' . $hits[1][ $i ] . '"' ) ) . ']';
+				$replace_to = '[' . ( sprintf( esc_html__( 'use the tag %s as url in the editbar', 'mailster' ), '"' . $hits[1][ $i ] . '"' ) ) . ']';
 				break;
 			default:
-				if ( isset( $post->{'post_' . $what} ) ) {
+				if ( isset( $post->{'post_' . $what} ) && $post->{'post_' . $what} ) {
 					$replace_to = $post->{'post_' . $what};
-				} elseif ( isset( $post->{$what} ) ) {
+				} elseif ( isset( $post->{$what} ) && $post->{$what} ) {
 					$replace_to = $post->{$what};
 				} else {
 					$replace_to = '';
@@ -1035,31 +1201,6 @@ class MailsterPlaceholder {
 
 		return apply_filters( 'mailster_replace_' . $post_type . '_' . $what, $replace_to, $post, $extra, $this->campaignID, $this->subscriberID );
 
-	}
-
-
-	private function replace_embeds() {
-
-		// TODO
-		/*
-		require_once( ABSPATH . WPINC . '/class-oembed.php' );
-		$oembed = _wp_oembed_get_object();
-
-		if(preg_match_all('#<iframe.*?src="([^"]+)".*?>.*?<\/iframe>#', $this->content, $iframes)){
-
-		foreach($iframes[0] as $i => $iframe){
-		$width = NULL;
-		$height = NULL;
-		$src = $iframes[1][$i];
-		if(preg_match('#width="([^"]+)"#', $iframe, $match)) $width = $match[1];
-		if(preg_match('#height="([^"]+)"#', $iframe, $match)) $height = $match[1];
-		if(preg_match('#youtube\.com/embed/([a-zA-Z0-9]+)$#',$src, $id)){
-		$src = 'http://img.youtube.com/vi/'.$id[1].'/maxresdefault.jpg';
-		}
-		$this->content = str_replace($iframe, $width.' '.$height.' '.$src, $this->content);
-		}
-		}
-		*/
 	}
 
 
@@ -1081,7 +1222,7 @@ class MailsterPlaceholder {
 
 			if ( ! $token || ! $token_secret || ! $consumer_key || ! $consumer_secret ) {
 
-				return __( 'Please enter your Twitter application credentials on the settings page', 'mailster' );
+				return esc_html__( 'Please enter your Twitter application credentials on the settings page', 'mailster' );
 
 			}
 
@@ -1140,8 +1281,6 @@ class MailsterPlaceholder {
 				}
 			}
 
-			// $tweet->text = preg_replace('/(http|https|ftp|ftps)\:\/\/([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*))?/','<a href="\0">\2</a>', $tweet->text);
-			// $tweet->text = preg_replace('/(^|\s)#(\w+)/','\1#<a href="https://twitter.com/search/%23\2">\2</a>',$tweet->text);
 			$tweet->text = preg_replace( '/(^|\s)@(\w+)/', '\1@<a href="https://twitter.com/\2">\2</a>', $tweet->text );
 
 			set_transient( 'mailster_tweet_' . $username, $tweet, 60 * mailster_option( 'tweet_cache_time' ) );
@@ -1156,6 +1295,20 @@ class MailsterPlaceholder {
 			$this->keeptags = array_unique( (array) apply_filters( 'mailster_keep_tags', array() ) );
 		}
 		return $this->keeptags;
+
+	}
+
+
+	private function strip_unwanted_html( ) {
+
+		if ( !empty( $this->content ) ) {
+			// template language stuff
+			$this->content = preg_replace( '#<(modules?|buttons|multi|single)([^>]*)>#', '', $this->content );
+			$this->content = preg_replace( '#<\/(modules?|buttons|multi|single)>#', '', $this->content );
+
+			// remove comments
+			$this->content = preg_replace( '#<!-- (.*) -->\s*#', '', $this->content );
+		}
 
 	}
 

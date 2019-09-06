@@ -50,7 +50,6 @@ jQuery(document).ready(function ($) {
 			autofocus: true
 		};
 
-	//init the whole thing
 	function _init() {
 
 		_trigger('disable');
@@ -95,12 +94,9 @@ jQuery(document).ready(function ($) {
 				iframeloaded = true;
 				clearInterval(iframeloadinterval);
 
-				//wp.autosave.getCompareString = _getAutosaveString;
-
 				_ibody = _iframe.contents().find('body');
 
 				if (_disabled) {
-					//_title.prop('disabled', true);
 					//overwrite autosave function since we don't need it
 					window.autosave = wp.autosave = function () {
 						return true;
@@ -116,7 +112,6 @@ jQuery(document).ready(function ($) {
 
 				}
 
-				_trigger('resize');
 				_trigger('refresh');
 				if (!_content.val()) {
 					_trigger('save');
@@ -182,7 +177,6 @@ jQuery(document).ready(function ($) {
 					var data = wp.autosave.local.getSavedPostData();
 					_setContent(data.content);
 					_title.val(data.post_title);
-					_trigger('refresh');
 					return false;
 				})
 				.on('change', '.dynamic_embed_options_taxonomy', function () {
@@ -215,12 +209,14 @@ jQuery(document).ready(function ($) {
 				});
 
 
-			//submit box
-			$('#mailster_submitdiv')
-				.on('#post', 'submit', function () {
+			$('form#post')
+				.on('submit', function () {
 					if (isDisabled) return false;
 					_trigger('save');
-				})
+				});
+
+			//submit box
+			$('#mailster_submitdiv')
 				.on('click', '.sendnow-button', function () {
 					if (!confirm(mailsterL10n.send_now)) return false;
 				});
@@ -236,7 +232,7 @@ jQuery(document).ready(function ($) {
 				})
 				.on('change', 'input.userexactdate', function () {
 					var wrap = $(this).parent().parent().parent();
-					wrap.find('span')._Class('disabled');
+					wrap.find('span').addClass('disabled');
 				})
 				.on('change', '#autoresponder-post_type', function () {
 					var cats = $('#autoresponder-taxonomies');
@@ -275,7 +271,7 @@ jQuery(document).ready(function ($) {
 
 					_ajax('send_test', {
 						formdata: $('#post').serialize(),
-						to: $('#mailster_testmail').val(),
+						to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
 						content: _content.val(),
 						head: _head.val(),
 						plaintext: _excerpt.val()
@@ -322,7 +318,7 @@ jQuery(document).ready(function ($) {
 					_ajax('send_test', {
 						spamtest: true,
 						formdata: $('#post').serialize(),
-						to: $('#mailster_testmail').val(),
+						to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
 						content: _content.val(),
 						head: _head.val(),
 						plaintext: _excerpt.val()
@@ -752,9 +748,6 @@ jQuery(document).ready(function ($) {
 
 		} else {
 
-			// _title.prop('disabled', true);
-
-			//$('#change-permalinks').remove();
 			if (typeof autosavePeriodical != 'undefined') autosavePeriodical.repeat = false;
 
 			$('#mailster_details')
@@ -1157,7 +1150,6 @@ jQuery(document).ready(function ($) {
 							});
 						}, function (jqXHR, textStatus, errorThrown) {
 							loader.removeClass('loading');
-							//detailbox.removeClass('loading');
 						});
 					}
 
@@ -1191,6 +1183,7 @@ jQuery(document).ready(function ($) {
 				animate: 2000,
 				rotate: 180,
 				barColor: '#2BB3E7',
+				trackColor: '#50626f',
 				trackColor: '#f3f3f3',
 				lineWidth: 9,
 				size: 75,
@@ -1227,6 +1220,7 @@ jQuery(document).ready(function ($) {
 						p = (_data.sent / _data.total * 100);
 
 					$('.hb-sent').html(_data.sent_f);
+					$('.hb-deleted').html(_data.deleted_f);
 					$('.hb-opens').html(_data.opens_f);
 					$('.hb-clicks').html(_data.clicks_f);
 					$('.hb-clicks_total').html(_data.clicks_total_f);
@@ -1245,6 +1239,7 @@ jQuery(document).ready(function ($) {
 
 					progress.find('.bar').width(p + '%');
 					progress.find('span').eq(1).html(_data.sent_formatted);
+					progress.find('span').eq(2).html(_data.sent_formatted);
 					progress.find('var').html(Math.round(p) + '%');
 
 					_clickBadges(_data.clickbadges);
@@ -1272,8 +1267,6 @@ jQuery(document).ready(function ($) {
 		function init() {
 			_obar
 				.on('click', 'a.template', showFiles)
-				// .on('click', 'button.save-template', save)
-				// .on('mouseenter', 'a.save-template', focusName)
 				.on('click', 'a.save-template', openSaveDialog)
 				.on('click', 'a.clear-modules', clear)
 				.on('click', 'a.preview', preview)
@@ -1359,7 +1352,6 @@ jQuery(document).ready(function ($) {
 				_currentundo--;
 				_setContent(_undo[_currentundo], 100, false);
 				_content.val(_undo[_currentundo]);
-				_trigger('refresh');
 				_obar.find('a.redo').removeClass('disabled');
 				if (!_currentundo) $(this).addClass('disabled');
 			}
@@ -1374,7 +1366,6 @@ jQuery(document).ready(function ($) {
 				_currentundo++;
 				_setContent(_undo[_currentundo], 100, false);
 				_content.val(_undo[_currentundo]);
-				_trigger('refresh');
 				_obar.find('a.undo').removeClass('disabled');
 				if (_currentundo >= length - 1) $(this).addClass('disabled');
 			}
@@ -1494,7 +1485,7 @@ jQuery(document).ready(function ($) {
 					content: structure.content,
 					head: structure.head
 				}, function (response) {
-					_setContent(response.content, 100, true);
+					_setContent(response.content, 100, true, response.style);
 					_html.show();
 					_content.hide();
 					$('.CodeMirror').remove();
@@ -1502,7 +1493,6 @@ jQuery(document).ready(function ($) {
 					_obar.find('a').not('a.redo, a.undo, a.code').removeClass('disabled');
 
 					_trigger('enable');
-					_trigger('refresh');
 
 				}, function (jqXHR, textStatus, errorThrown) {
 					_obar.find('a.code').addClass('active').removeClass('loading');
@@ -1591,6 +1581,7 @@ jQuery(document).ready(function ($) {
 			imagecrop = bar.find('.imagecrop'),
 			factor = bar.find('.factor'),
 			highdpi = bar.find('.highdpi'),
+			original = bar.find('.original'),
 			imagelink = bar.find('.imagelink'),
 			imageurl = bar.find('.imageurl'),
 			orgimageurl = bar.find('.orgimageurl'),
@@ -1601,11 +1592,12 @@ jQuery(document).ready(function ($) {
 			buttonalt = bar.find('.buttonalt'),
 			buttonnav = bar.find('.button-nav'),
 			buttontabs = bar.find('ul.buttons'),
-			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, searchTimeout, checkRSSfeedInterval, rssURL = 'x',
-			searchstring = '',
+			buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, lastpostsargs, searchTimeout, checkRSSfeedInterval,
 			editor = $('#wp-mailster-editor-wrap'),
+			searchstring = '',
 			postsearch = $('#post-search'),
-			imagesearch = $('#image-search');
+			imagesearch = $('#image-search'),
+			imagesearchtype = $('[name="image-search-type"]');
 
 		function init() {
 			bar
@@ -1629,17 +1621,11 @@ jQuery(document).ready(function ($) {
 				.on('click', '.imagepreview', toggleImgZoom)
 				.on('click', 'a.nav-tab', openTab)
 				.on('change', 'select.check-for-posts', checkForPosts)
-				.on('keyup change', '#rss_url', loadPosts)
+				.on('change paste', '#dynamic_rss_url', checkForPosts)
 				.on('keyup change', '#post-search', searchPost)
 				.on('keyup change', '#image-search', searchPost)
-				.on('click', '#rss_url', function () {
-					$(this).focus().select();
-				})
-				.on('click', '.rss_change', changeRSS)
-				.on('click', '#recent_feeds a', recentFeed)
-
-
-			.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
+				.on('change', '[name="image-search-type"]', searchPost)
+				.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
 				.on('mouseleave', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', enabledrag);
 
 			_getRealDimensions(_iframe.contents().find("img").eq(0), function (w, h, f) {
@@ -1682,11 +1668,11 @@ jQuery(document).ready(function ($) {
 				}, 1);
 			});
 
-			imagewidth.on('change, keyup', function () {
+			imagewidth.on('keyup change', function () {
 				if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / currentimage.asp));
 				adjustImagePreview();
 			});
-			imageheight.on('change, keyup', function () {
+			imageheight.on('keyup change', function () {
 				if (!imagecrop.is(':checked')) imagewidth.val(Math.round(imageheight.val() * currentimage.asp));
 				adjustImagePreview();
 			});
@@ -1702,11 +1688,13 @@ jQuery(document).ready(function ($) {
 
 			$('#dynamic_embed_options_post_type').on('change', function () {
 
-				var cats = $('#dynamic_embed_options_cats');
+				var cats = $('#dynamic_embed_options_cats'),
+					val = $(this).val();
 				cats.find('select').prop('disabled', true);
+				bar.find('.dynamic-rss')[val == 'rss' ? 'show' : 'hide']();
 				loader();
 				_ajax('get_post_term_dropdown', {
-					posttype: $(this).val()
+					posttype: val
 				}, function (response) {
 					loader(false);
 					if (response.success) {
@@ -1826,6 +1814,7 @@ jQuery(document).ready(function ($) {
 			$this.addClass('nav-tab-active');
 			base.find('.tab').hide();
 			base.find(id).show();
+
 			if (id == '#dynamic_embed_options' && trigger !== false) $('#dynamic_embed_options_post_type').trigger('change');
 			if (id == '#image_button') buttontype = 'image';
 			if (id == '#text_button') buttontype = 'text';
@@ -1841,9 +1830,8 @@ jQuery(document).ready(function ($) {
 				w = current.element.width(),
 				h = Math.round(w / 1.6),
 				img = $('<img>', {
-					'src': 'https://dummy.newsletter-plugin.com/' + (w * f) + 'x' + (h * f) + '.jpg',
+					'src': 'https://dummy.mailster.co/' + (w * f) + 'x' + (h * f) + '.jpg',
 					'alt': current.content,
-					//'title': current.content,
 					'label': current.content,
 					'width': w,
 					'height': h,
@@ -1879,14 +1867,14 @@ jQuery(document).ready(function ($) {
 		function checkForPosts() {
 			clearInterval(checkForPostsTimeout);
 			loader();
-			$('#dynamic_embed_options').find('h4.current-match').html('&hellip;');
-			$('#dynamic_embed_options').find('div.current-tag').html('&hellip;');
 			checkForPostsTimeout = setTimeout(function () {
 
 				var post_type = bar.find('#dynamic_embed_options_post_type').val(),
 					content = bar.find('#dynamic_embed_options_content').val(),
 					relative = bar.find('#dynamic_embed_options_relative').val(),
 					taxonomies = bar.find('.dynamic_embed_options_taxonomy_wrap'),
+					rss_url = $('#dynamic_rss_url').val(),
+					postargs = {},
 					extra = [];
 
 				$.each(taxonomies, function (i) {
@@ -1899,15 +1887,32 @@ jQuery(document).ready(function ($) {
 					values = values.join(',');
 					if (values) extra[i] = values;
 				});
-
-				_ajax('check_for_posts', {
+				postargs = {
 					id: campaign_id,
 					post_type: post_type,
 					relative: relative,
 					extra: extra,
 					modulename: current.name,
-					expect: current.elements.expects
-				}, function (response) {
+					expect: current.elements.expects,
+					rss_url: rss_url
+				};
+
+				if (JSON.stringify(postargs) === JSON.stringify(lastpostsargs)) {
+					loader(false);
+					return;
+				}
+
+				$('#dynamic_embed_options').find('h4.current-match').html('&hellip;');
+				$('#dynamic_embed_options').find('div.current-tag').html('&hellip;');
+
+				if ('rss' == post_type && !rss_url) {
+					loader(false);
+					return;
+				}
+
+				lastpostsargs = postargs;
+
+				_ajax('check_for_posts', postargs, function (response) {
 					loader(false);
 					if (response.success) {
 						currenttext = response.pattern;
@@ -1924,20 +1929,21 @@ jQuery(document).ready(function ($) {
 
 		}
 
-		function dynamicImage(val, w, h, c) {
+		function dynamicImage(val, w, h, c, o) {
 			w = w || imagewidth.val();
 			h = h || imageheight.val() || Math.round(w / 1.6);
 			c = typeof c == 'undefined' ? imagecrop.prop(':checked') : c;
-			if (/^\{([a-z0-9-_,;:|]+)\}$/.test(val)) {
+			o = typeof o == 'undefined' ? original.prop(':checked') : o;
+			if (/^\{([a-z0-9-_,;:|~]+)\}$/.test(val)) {
 				var f = factor.val();
-				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&f=' + f;
+				val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&o=' + (o ? 1 : 0) + '&f=' + f;
 			}
 			return val;
 		}
 
 		function isDynamicImage(val) {
 			if (-1 !== val.indexOf('?action=mailster_image_placeholder&tag=')) {
-				var m = val.match(/&tag=([a-z0-9-_,;:|]+)&/);
+				var m = val.match(/&tag=([a-z0-9-_,;:|~]+)&/);
 				return '{' + m[1] + '}';
 			}
 			return false;
@@ -1982,7 +1988,12 @@ jQuery(document).ready(function ($) {
 					loader();
 
 					var f = factor.val() || 1,
-						attribute = is_img ? 'src' : 'background';
+						w = imagewidth.val(),
+						h = imageheight.val(),
+						c = imagecrop.is(':checked'),
+						o = original.is(':checked'),
+						attribute = is_img ? 'src' : 'background',
+						style;
 
 					current.element.attr({
 						'data-id': currentimage.id,
@@ -1991,31 +2002,40 @@ jQuery(document).ready(function ($) {
 					if (is_img) {
 						current.element.attr({
 							'src': currentimage.src,
-							'width': Math.round(imagewidth.val()),
-							//'height': Math.round(imageheight.val()),
 							'alt': currentimage.name
 						});
-						if (current.element.attr('height')) {
-							current.element.attr('height', Math.round(imageheight.val()))
+						if (!current.is_percentage) {
+							current.element.attr('width', Math.round(w))
 						}
-						if (imagecrop.is(':checked')) {
+						if (current.element.attr('height') && current.element.attr('height') != 'auto') {
+							current.element.attr('height', Math.round(h))
+						}
+						if (c) {
 							current.element.attr({
 								'data-crop': true,
 							}).data('crop', true);
+						}
+						if (o) {
+							current.element.attr({
+								'data-original': true,
+							}).data('original', true);
 						}
 					}
 
 					if (currentimage.src) {
 						current.element.attr(attribute, currentimage.src);
-						current.element[0].style.cssText = current.element[0].style.cssText.replace(/url\("?(.+)"?\)/, 'url(' + currentimage.src + ')');
+						if (style = current.element.attr('style')) {
+							current.element.attr('style', style.replace(/url\("?(.+)"?\)/, "url(\'" + currentimage.src + "\')"));
+						}
 					}
 
 					_ajax('create_image', {
 						id: currentimage.id,
+						original: o,
 						src: currentimage.src,
-						width: imagewidth.val() * f,
-						height: imageheight.val() * f,
-						crop: imagecrop.is(':checked')
+						width: w * f,
+						height: h * f,
+						crop: c
 					}, function (response) {
 
 						loader(false);
@@ -2040,17 +2060,23 @@ jQuery(document).ready(function ($) {
 								});
 
 								current.element.attr({
-									'width': Math.round(imagewidth.val()),
-									//'height': Math.round(imageheight.val()),
 									'alt': currentimage.name
 								})
-								if (current.element.attr('height')) {
+								if (!current.is_percentage) {
+									current.element.attr('width', Math.round(imagewidth.val()))
+								}
+								if (current.element.attr('height') && current.element.attr('height') != 'auto') {
 									current.element.attr('height', Math.round(imageheight.val()))
 								}
-								if (imagecrop.is(':checked')) {
+								if (c) {
 									current.element.attr({
 										'data-crop': true,
 									}).data('crop', true);
+								}
+								if (o) {
+									current.element.attr({
+										'data-original': true,
+									}).data('original', true);
 								}
 							} else {
 
@@ -2058,6 +2084,7 @@ jQuery(document).ready(function ($) {
 								var html = current.element.html(),
 									is_root = html.match(/<modules/),
 									reg;
+
 
 								if (orgimageurl.val()) {
 									if (is_root) {
@@ -2112,6 +2139,8 @@ jQuery(document).ready(function ($) {
 					if (!buttonlabel.val()) buttonlabel.val(mailsterL10n.read_more);
 				}
 
+				current.element.removeAttr('tmpbutton');
+
 				if ('image' == buttontype) {
 					var f = factor.val();
 					var img = new Image();
@@ -2127,7 +2156,6 @@ jQuery(document).ready(function ($) {
 							'src': btnsrc,
 							'width': Math.round((img.width || current.element.width()) / f),
 							'height': Math.round((img.height || current.element.height()) / f),
-							//'title': buttonalt.val()
 							'alt': buttonalt.val(),
 						});
 
@@ -2142,7 +2170,7 @@ jQuery(document).ready(function ($) {
 						label = buttonlabel.val();
 
 					if (!wrap.length) {
-						current.element.replaceWith('<table class="textbutton" align="left"><tr><td align="center" width="auto"><a href="' + link + '" editable label="' + label + '">' + label + '</a></td></tr></table>')
+						current.element.replaceWith('<table class="textbutton" align="left" role="presentation"><tr><td align="center" width="auto"><a href="' + link + '" editable label="' + label + '">' + label + '</a></td></tr></table>')
 					} else {
 						if (current.element[0] == wrap[0]) {
 							current.element = wrap.find('a');
@@ -2164,39 +2192,78 @@ jQuery(document).ready(function ($) {
 
 			} else if (current.type == 'auto') {
 
-				var insertmethod = $('#embedoption-bar').find('.nav-tab-active').data('type');
+				var insertmethod = $('#embedoption-bar').find('.nav-tab-active').data('type'),
+					position = current.element.data('position') || 0,
+					contenttype, images = [],
+					post_type, rss_url;
+
+				current.element.removeAttr('data-tag data-rss').removeData('tag').removeData('data-rss');
 
 				if ('dynamic' == insertmethod) {
 
-					var contenttype = bar.find('#dynamic_embed_options_content').val();
+					contenttype = bar.find('#dynamic_embed_options_content').val();
+					post_type = bar.find('#dynamic_embed_options_post_type').val();
+					rss_url = $('#dynamic_rss_url').val();
 
 					currenttext.content = currenttext[contenttype];
 
 					current.element.attr('data-tag', currenttext.tag).data('tag', currenttext.tag);
 
-				} else if ('rss' == insertmethod) {
-
-					var contenttype = $('.embed_options_content_rss:checked').val();
-					current.element.removeAttr('data-tag').removeData('tag').attr('data-rss', $('#rss_url').val());
+					if ('rss' == post_type) {
+						current.element.attr('data-rss', rss_url).data('rss', rss_url);
+					}
 
 				} else {
 
-					var contenttype = $('.embed_options_content:checked').val();
+					contenttype = $('.embed_options_content:checked').val();
 					current.element.removeAttr('data-tag').removeData('tag');
 
 				}
 
 				if (currenttext) {
 
-					if (currenttext.title) {
+					if (current.elements.single.length) {
 
 						current.elements.single.each(function (i, e) {
 							var _this = $(this),
-								expected = _this.attr('expect') || 'title';
-							if (!$.isArray(currenttext[expected])) {
-								currenttext[expected] = [currenttext[expected]];
+								expected = _this.attr('expect') || 'title',
+								org_content = currenttext[expected] ? currenttext[expected] : '',
+								content = [],
+								array = [];
+
+							if (!$.isArray(org_content)) {
+								content[position] = org_content;
+							} else {
+								content = org_content;
 							}
-							_this.html(currenttext[expected].shift());
+
+							if (content[i]) {
+								$(this).html(content[i]);
+							}
+
+						});
+
+					}
+
+					if (current.elements.multi.length) {
+
+						current.elements.multi.each(function (i, e) {
+							var _this = $(this),
+								expected = _this.attr('expect') || contenttype,
+								org_content = currenttext[expected] ? currenttext[expected] : '',
+								content = [],
+								array = [];
+
+							if (!$.isArray(org_content)) {
+								content[position] = org_content;
+							} else {
+								content = org_content;
+							}
+
+							if (content[i]) {
+								$(this).html(content[i]);
+							}
+
 						});
 
 					}
@@ -2204,53 +2271,30 @@ jQuery(document).ready(function ($) {
 					if (currenttext.link) {
 
 						if (current.elements.buttons.length) {
-							current.elements.buttons.last().attr('href', currenttext.link);
-							current.elements.buttons.not(':last').remove();
-						} else {
-
-							current.elements.multi.last().after('<buttons><table class="textbutton" align="left"><tr><td align="center" width="auto"><a href="' + currenttext.link + '" title="' + mailsterL10n.read_more + '" editable label="' + mailsterL10n.read_more + '">' + mailsterL10n.read_more + '</a></td></tr></table></buttons>');
+							current.elements.buttons.eq(position).attr('href', currenttext.link);
 						}
 
 					} else {
 
 						if (current.elements.buttons.parent().length && current.elements.buttons.parent()[0].nodeName == 'TD') {
-							current.elements.buttons.closest('.textbutton').remove();
+							current.elements.buttons.eq(position).closest('.textbutton').remove();
 						} else if (current.elements.buttons.length) {
-							if (current.elements.buttons.last().find('img').length) {
+							if (current.elements.buttons.eq(position).last().find('img').length) {
 								current.elements.buttons.remove();
 							}
 						}
 
 					}
 
-					if (current.elements.multi.length) {
-						var contentcount = current.elements.multi.length,
-							org_content = currenttext[contenttype] ? currenttext[contenttype] : '',
-							content = [],
-							contentlength,
-							partlength;
-
-						if (!$.isArray(org_content)) {
-							contentlength = org_content.length,
-								partlength = ('static' == insertmethod) ? Math.ceil(contentlength / contentcount) : contentlength;
-							for (var i = 0; i < contentcount; i++) {
-								content.push(org_content.substring(i * partlength, i * partlength + partlength));
-							}
-						} else {
-							content = org_content;
-						}
-
-						current.elements.multi.each(function (i, e) {
-							$(this).html(content[i] ? content[i] : '');
-						});
-
-					}
-
 					if (currenttext.image && current.elements.images.length) {
 
 						if (!$.isArray(currenttext.image)) {
-							currenttext.image = [currenttext.image];
+							images[position] = currenttext.image;
+						} else {
+							images = currenttext.image;
 						}
+
+						currenttext.image = images;
 
 						loader();
 
@@ -2264,6 +2308,7 @@ jQuery(document).ready(function ($) {
 							if ('static' == insertmethod) {
 								_ajax('create_image', {
 									id: currenttext.image[i].id,
+									original: original.is(':checked'),
 									width: imgelement.width() * f,
 									height: imgelement.height() * f,
 									crop: imgelement.data('crop'),
@@ -2272,18 +2317,22 @@ jQuery(document).ready(function ($) {
 									if (response.success) {
 										loader(false);
 
+										if (original.is(':checked')) {
+											imgelement.attr({
+												'data-original': true,
+											}).data('original', true);
+										}
 										if ('img' == imgelement.prop('tagName').toLowerCase()) {
 											imgelement
 												.attr({
 													'data-id': currenttext.image[i].id,
 													'src': response.image.url,
 													'width': Math.round(response.image.width / f),
-													//'height': Math.round(response.image.height / f),
 													'alt': currenttext.alt || currenttext.title[i]
 												})
 												.data('id', currenttext.image[i].id);
 
-											if (imgelement.attr('height')) {
+											if (imgelement.attr('height') && imgelement.attr('height') != 'auto') {
 												imgelement.attr('height', Math.round(response.image.height / f));
 											}
 
@@ -2304,10 +2353,16 @@ jQuery(document).ready(function ($) {
 												})
 												.data('id', currenttext.image[i].id)
 												.css('background-image', '');
+
 											current.element.html(_replace(current.element.html(), orgurl, response.image.url));
+
+											//remove id to re trigger tinymce
+											current.element.find('single, multi').removeAttr('id');
+											_trigger('save');
+											_trigger('refresh');
+
 										}
 									}
-									close();
 								}, function (jqXHR, textStatus, errorThrown) {
 
 									loader(false);
@@ -2316,20 +2371,20 @@ jQuery(document).ready(function ($) {
 
 								return false;
 
-								// rss and dynamic
-							} else if ('dynamic' == insertmethod || 'rss' == insertmethod) {
+								// dynamic
+							} else if ('dynamic' == insertmethod) {
 
 								var width = imgelement.width(),
 									crop = imgelement.data('crop'),
+									org = original.is(':checked'),
 									height = crop ? imgelement.height() : null;
 
 								if ('img' == imgelement.prop('tagName').toLowerCase()) {
 
 									imgelement
-									//.removeAttr('height')
 										.removeAttr('data-id')
 										.attr({
-											'src': dynamicImage(currenttext.image[i], width, height, crop),
+											'src': dynamicImage(currenttext.image[i], width, height, crop, org),
 											'width': width,
 											'alt': currenttext.alt || currenttext.title[i]
 										})
@@ -2346,7 +2401,9 @@ jQuery(document).ready(function ($) {
 										})
 										.removeData('id')
 										.css('background-image', '');
-									current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop)));
+									current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop, org)));
+									//remove id to re trigger tinymce
+									current.element.find('single, multi').removeAttr('id');
 								}
 
 							}
@@ -2356,13 +2413,16 @@ jQuery(document).ready(function ($) {
 
 					}
 
+					position = position + 1 >= (current.elements.multi.length || current.elements.single.length || current.elements.images.length) ? 0 : position + 1;
+
+					current.element.data('position', position);
+
 					_iframe.contents().find("html")
 						.find("img").each(function () {
 							this.onload = function () {
 								_trigger('refresh');
 							};
 						});
-
 
 				}
 
@@ -2401,14 +2461,14 @@ jQuery(document).ready(function ($) {
 
 		function remove() {
 			if (current.element.parent().is('a')) current.element.unwrap();
-			//if (!current.element.parent().is('td')) current.element.unwrap();
 			if ('btn' == current.type) {
-				var wrap = current.element.closest('.textbutton');
+				var wrap = current.element.closest('.textbutton'),
+					parent = wrap.parent();
 				if (!wrap.length) {
 					wrap = current.element;
 				}
-				if (wrap.parent().children().length > 2) {
-					wrap.remove();
+				if (parent.is('buttons') && !parent.find('.textbutton').length) {
+					parent.remove();
 				} else {
 					wrap.remove();
 				}
@@ -2425,15 +2485,14 @@ jQuery(document).ready(function ($) {
 			switch (current.type) {
 			case 'img':
 			case 'btn':
+				if (current.element.is('[tmpbutton]')) {
+					current.element.remove();
+				}
 				break;
-				// if (!current.element.attr('href')) {
-				// 	var wrap = current.element.closest('.textbutton');
-				// 	if (wrap.length) wrap.remove();
-				// }
-				// current.element.remove();
-				// break;
 			default:
 				current.element.html(current.content);
+				//remove id to re trigger tinymce
+				current.element.find('single, multi').removeAttr('id');
 			}
 			close();
 			return false;
@@ -2501,13 +2560,6 @@ jQuery(document).ready(function ($) {
 				if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / current.asp));
 
 				adjustImagePreview();
-				/*
-				current.element.attr({
-					'src': src,
-					'width': imagewidth.val(),
-					'height': Math.round(imagewidth.val()/current.asp)
-				});
-				*/
 
 			}).attr('src', src);
 
@@ -2515,10 +2567,11 @@ jQuery(document).ready(function ($) {
 		}
 
 		function adjustImagePreview() {
-			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val()))));
+			var x = Math.round(.5 * (current.height - (current.width * (imageheight.val() / imagewidth.val())))) || 0,
+				f = parseInt(factor.val(), 10);
 
 			imagepreview.css({
-				'clip': 'rect(' + (x) + 'px,' + (current.width) + 'px,' + (current.height - x) + 'px,0px)',
+				'clip': 'rect(' + (x) + 'px,' + (current.width * f) + 'px,' + (current.height * f - x) + 'px,0px)',
 				'margin-top': (-1 * x) + 'px'
 			});
 		}
@@ -2579,6 +2632,7 @@ jQuery(document).ready(function ($) {
 				content = $.trim(el.html()),
 				condition = el.find('if'),
 				conditions,
+				position = current.element.data('position') || 0,
 				carea, cwrap, offset,
 				fac = 1;
 
@@ -2591,10 +2645,11 @@ jQuery(document).ready(function ($) {
 			current.asp = current.width / current.height;
 			current.crop = el.data('crop') ? el.data('crop') : false;
 			current.tag = el.prop('tagName').toLowerCase();
-
+			current.is_percentage = el.attr('width') && el.attr('width').indexOf('%') !== -1;
 			current.content = content;
 
 			currenttag = current.element.data('tag');
+			searchstring = '';
 
 			_trigger('selectModule', module);
 
@@ -2654,7 +2709,9 @@ jQuery(document).ready(function ($) {
 
 			if (type == 'img') {
 
+				original.prop('checked', current.original);
 				imagecrop.prop('checked', current.crop).parent()[current.crop ? 'addClass' : 'removeClass']('not-cropped');
+				searchstring = $.trim(imagesearch.val());
 
 				factor.val(1);
 				_getRealDimensions(el, function (w, h, f) {
@@ -2712,12 +2769,13 @@ jQuery(document).ready(function ($) {
 			} else if (type == 'auto') {
 
 				openTab('#' + (currenttag ? 'dynamic' : 'static') + '_embed_options', true);
+				searchstring = $.trim(postsearch.val());
 
 				if (currenttag) {
 
 					var parts = currenttag.substr(1, currenttag.length - 2).split(':'),
 						extra = parts[1].split(';'),
-						relative = parseInt(extra.shift(), 10),
+						relative = extra.shift(),
 						terms = extra.length ? extra : null;
 
 					currenttag = {
@@ -2740,7 +2798,7 @@ jQuery(document).ready(function ($) {
 
 				current.modulebuttons = clone.find('modulebuttons');
 
-				clone.find('modulebuttons, button').remove();
+				clone.find('modulebuttons').remove();
 				clone.find('single, multi')
 					.removeAttr('contenteditable spellcheck id dir style class');
 
@@ -2759,6 +2817,8 @@ jQuery(document).ready(function ($) {
 				bar.find('div.type').hide();
 
 				bar.find('div.' + type).show();
+
+				if (module.data('rss')) $('#dynamic_rss_url').val(module.data('rss'));
 
 				//center the bar
 				var baroffset = _doc.scrollTop() + (_win.height() / 2) - _container.offset().top - (bar.height() / 2);
@@ -2871,6 +2931,12 @@ jQuery(document).ready(function ($) {
 						}).toArray()
 					}
 
+					if ((current.elements.multi.length || current.elements.single.length || current.elements.images.length) > 1) {
+						bar.find('.editbarpostion').html(sprintf(mailsterL10n.for_area, '#' + (position + 1))).show();
+					} else {
+						bar.find('.editbarpostion').hide();
+					}
+
 				} else if (type == 'codeview') {
 
 					if (codemirror) {
@@ -2930,20 +2996,10 @@ jQuery(document).ready(function ($) {
 					type: assetstype,
 					posttypes: posttypes,
 					search: searchstring,
+					imagetype: imagesearchtype.filter(':checked').val(),
 					offset: 0
 				};
 
-			if ($(this).is('#rss_url')) {
-				data.type = '_rss';
-				data.url = $.trim($('#rss_url').val());
-				if (data.url == rssURL) return false;
-				rssURL = data.url;
-				if (!data.url) {
-					$('#rss_more').slideUp(200);
-					return false;
-				}
-				$('.rss_info').html('');
-			}
 			if (assetstype == 'attachment') {
 				data.id = currentimage.id;
 			}
@@ -2956,12 +3012,6 @@ jQuery(document).ready(function ($) {
 				if (response.success) {
 					itemcount = response.itemcount;
 					displayPosts(response.html, true);
-					//assetslist.find('.selected').trigger('click');
-					if (response.rssinfo) {
-						$('#rss_more').slideDown(200);
-						$('#rss_input').slideUp(200);
-						$('.rss_info').html('<h4>' + response.rssinfo.title + ' &ndash; ' + response.rssinfo.description + '</h4><p class="tiny">' + response.rssinfo.copyright + '</p>');
-					}
 					callback && callback();
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
@@ -2975,6 +3025,7 @@ jQuery(document).ready(function ($) {
 			var $this = $(this),
 				offset = $this.data('offset'),
 				type = $this.data('type');
+
 			loader();
 
 			var posttypes = $('#post_type_select').find('input:checked').serialize();
@@ -2983,14 +3034,14 @@ jQuery(document).ready(function ($) {
 				type: type,
 				posttypes: posttypes,
 				search: searchstring,
+				imagetype: imagesearchtype.filter(':checked').val(),
 				offset: offset,
-				url: $.trim($('#rss_url').val()),
 				itemcount: itemcount
 			}, function (response) {
 				loader(false);
 				if (response.success) {
 					itemcount = response.itemcount;
-					$this.parent().remove();
+					$this.remove();
 					displayPosts(response.html, false);
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
@@ -3002,14 +3053,16 @@ jQuery(document).ready(function ($) {
 		}
 
 		function searchPost() {
-			var $this = $(this);
+			var $this = $(this),
+				temp = $.trim('attachment' == assetstype ? imagesearch.val() : postsearch.val());
+			if ((!$this.is(':checked') && searchstring == temp)) {
+				return false;
+			}
+			searchstring = temp;
 			clearTimeout(searchTimeout);
 			searchTimeout = setTimeout(function () {
-				var str = $this.val();
-				if (str == searchstring) return;
-				searchstring = str;
 				loadPosts();
-			}, 300);
+			}, 500);
 		}
 
 		function loadSingleLink() {
@@ -3030,25 +3083,9 @@ jQuery(document).ready(function ($) {
 			list.find('ul').append(html);
 		}
 
-		function recentFeed() {
-
-			$('#rss_url').val($(this).attr('href')).trigger('change');
-
-			return false;
-		}
-
-		function changeRSS() {
-
-			$('#rss_url').val('');
-			$('#rss_more').slideUp(200);
-			$('#rss_input').slideDown(200);
-
-			return false;
-		}
-
 		function openURL() {
 			$('.imageurl-popup').toggle();
-			if (!imageurl.val() && currentimage.src.indexOf(location.origin) == -1 && currentimage.src.indexOf('dummy.newsletter-plugin.com') == -1) {
+			if (!imageurl.val() && currentimage.src.indexOf(location.origin) == -1 && currentimage.src.indexOf('dummy.mailster.co') == -1) {
 				imageurl.val(currentimage.src);
 			}
 			imageurl.focus().select();
@@ -3098,8 +3135,8 @@ jQuery(document).ready(function ($) {
 			bar.removeClass('current-' + current.type).hide();
 			loader(false);
 			$('#single-link').hide();
-			_trigger('save');
 			_trigger('refresh');
+			_trigger('save');
 			return false;
 
 		}
@@ -3138,22 +3175,46 @@ jQuery(document).ready(function ($) {
 		}
 
 		function up() {
-			var module = $(this).parent().parent().parent(),
-				pos = module.offset();
-			module.insertBefore(module.prev('module'));
-			_jump(module.offset().top - pos.top, true);
-			_trigger('refresh');
-			_trigger('save');
+			var module = $(this).parent().parent().parent().addClass('ui-sortable-fly-over'),
+				prev = module.prev('module').addClass('ui-sortable-fly-under'),
+				pos = (animateDOM.scrollTop() || document.scrollingElement.scrollTop) - prev.height();
+			module.css({
+				'transform': 'translateY(-' + prev.height() + 'px)'
+			});
+			prev.css({
+				'transform': 'translateY(' + module.height() + 'px)'
+			});
+			_scroll(pos, function () {
+				module.insertBefore(prev.css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-under')).css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-over');
+				_trigger('refresh');
+				_trigger('save');
+			}, 250);
 			return false;
 		}
 
 		function down() {
-			var module = $(this).parent().parent().parent(),
-				pos = module.offset()
-			module.insertAfter(module.next('module'));
-			_jump(module.offset().top - pos.top, true);
-			_trigger('refresh');
-			_trigger('save');
+			var module = $(this).parent().parent().parent().addClass('ui-sortable-fly-over'),
+				next = module.next('module').addClass('ui-sortable-fly-under'),
+				pos = (animateDOM.scrollTop() || document.scrollingElement.scrollTop) + next.height();
+			module.css({
+				'transform': 'translateY(' + next.height() + 'px)'
+			});
+			next.css({
+				'transform': 'translateY(-' + module.height() + 'px)'
+			});
+			_scroll(pos, function () {
+				module.insertAfter(next.css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-under')).css({
+					'transform': ''
+				}).removeClass('ui-sortable-fly-over');
+				_trigger('refresh');
+				_trigger('save');
+			}, 250);
 			return false;
 		}
 
@@ -3218,30 +3279,34 @@ jQuery(document).ready(function ($) {
 
 			if (!element && !container.length) return false;
 
+			modules = container.find('module');
+
 			if (element) {
 				(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
 			} else {
-				clone.hide().appendTo(container);
+				if ('footer' == modules.last().attr('type')) {
+					clone.hide().insertBefore(modules.last());
+				} else {
+					clone.hide().appendTo(container);
+				}
 			}
+
+			modules = container.find('module');
 
 			clone.slideDown(100, function () {
 				clone.css('display', 'block');
-				_trigger('resize');
 				_trigger('refresh');
 				_trigger('save');
 			});
 
 			if (scroll) {
-				var offset = clone.offset().top + _container.offset().top - (_win.height() / 2) - clone.outerHeight();
-				offset = Math.max(_container.offset().top, offset);
-
+				var offset = clone.offset().top + _container.offset().top - (_win.height() / 2);
 				_scroll(offset);
 			}
 
 		}
 
 		function codeView() {
-
 			var module = $(this).parent().parent().parent();
 			editbar.open({
 				element: module,
@@ -3271,6 +3336,11 @@ jQuery(document).ready(function ($) {
 		function init() {
 			_container
 				.on('click', 'a.toggle-modules', toggleModules)
+				.on('keydown', 'a.addmodule', function (event) {
+					if (13 == event.which) {
+						addmodule.call(this);
+					}
+				})
 				.on('click', 'a.addmodule', addmodule);
 
 			search
@@ -3300,12 +3370,12 @@ jQuery(document).ready(function ($) {
 
 			container = _iframe.contents().find('modules');
 			container
-				.on('click', 'a.up', up)
-				.on('click', 'a.down', down)
-				.on('click', 'a.auto', auto)
-				.on('click', 'a.duplicate', duplicate)
-				.on('click', 'a.remove', remove)
-				.on('click', 'a.codeview', codeView)
+				.on('click', 'button.up', up)
+				.on('click', 'button.down', down)
+				.on('click', 'button.auto', auto)
+				.on('click', 'button.duplicate', duplicate)
+				.on('click', 'button.remove', remove)
+				.on('click', 'button.codeview', codeView)
 				.on('change', 'input.modulelabel', changeName);
 
 			var html = '',
@@ -3320,10 +3390,10 @@ jQuery(document).ready(function ($) {
 				var $this = $(this);
 				if ($this.is('module')) {
 					var name = $this.attr('label') || sprintf(mailsterL10n.module, '#' + (++mc)),
-						codeview = mailsterdata.codeview ? '<a class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></a>' : '',
-						auto = ($this.is('[auto]') ? '<a class="mailster-btn auto" title="' + mailsterL10n.auto + '"></a>' : '');
+						codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></button>' : '',
+						auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailsterL10n.auto + '"></button>' : '');
 
-					$('<modulebuttons>' + '<span>' + auto + '<a class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></a><a class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></a><a class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></a>' + codeview + '<a class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></a></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
+					$('<modulebuttons>' + '<span>' + auto + '<button class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></button><button class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></button></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
 
 
 					if (!$this.parent().length) {
@@ -3408,8 +3478,6 @@ jQuery(document).ready(function ($) {
 
 			}
 
-			//_trigger('refresh');
-
 		}
 
 		init();
@@ -3429,11 +3497,10 @@ jQuery(document).ready(function ($) {
 			return
 		}
 		animateDOM.stop().animate({
-				'scrollTop': pos
-			}, speed, callback &&
-			function () {
-				callback();
-			});
+			'scrollTop': pos
+		}, speed, function () {
+			callback && callback()
+		});
 	}
 
 	function _jump(val, rel) {
@@ -3461,15 +3528,19 @@ jQuery(document).ready(function ($) {
 	})
 
 	.on('Mailster:resize', function () {
-		var delay = 0,
-			extra = 0;
 		if (!iframeloaded) return false;
 		setTimeout(function () {
 			if (!_iframe[0].contentWindow.document.body) return;
-			var height = _iframe.contents().height() || _iframe[0].contentWindow.document.body.offsetHeight || _iframe.contents().find("html")[0].innerHeight || _iframe.contents().find("html").height();
+			var height = _iframe.contents().find('body').outerHeight() ||
+				_iframe.contents().height() ||
+				_iframe[0].contentWindow.document.body.offsetHeight ||
+				_iframe.contents().find("html")[0].innerHeight ||
+				_iframe.contents().find("html").height();
 
-			_iframe.attr("height", Math.max(500, height + (extra || 0)));
-		}, delay ? delay : 500);
+			height = Math.max(500, height + 4);
+			$('#editor-height').val(height);
+			_iframe.attr("height", height);
+		}, 50);
 	})
 
 	.on('Mailster:save', function () {
@@ -3688,27 +3759,7 @@ jQuery(document).ready(function ($) {
 
 					})
 
-			} //!$._data( cont[0], "events" )
-
-
-			// $.each(buttoncontainer, function () {
-
-			// 	var $this = $(this),
-			// 		name = $this.attr('label'),
-			// 		offset = this.getBoundingClientRect(),
-			// 		top = offset.top + 46,
-			// 		left = offset.right + 16,
-			// 		btn;
-
-			// 	btn = $('<a class="addbutton content mailster-btn" title="' + mailsterL10n.add_button + '"></a>').css({
-			// 		top: top,
-			// 		left: left
-			// 	}).appendTo(_container);
-
-			// 	btn.data('offset', offset).data('name', name);
-			// 	btn.data('element', $this);
-
-			// });
+			}
 
 			if (!mailsterdata.inline) {
 				cont
@@ -3729,33 +3780,6 @@ jQuery(document).ready(function ($) {
 						});
 					});
 			}
-			// $.each(repeatable, function () {
-			// 	var $this = $(this),
-			// 		name = $this.attr('label'),
-			// 		offset = this.getBoundingClientRect(),
-			// 		top = offset.top + 48,
-			// 		left = offset.right,
-			// 		btn;
-
-			// 	btn = $('<a class="addrepeater content mailster-btn" title="' + sprintf(mailsterL10n.add_s, name) + '"></a>').css({
-			// 		top: top - 3,
-			// 		left: left + 18
-			// 	}).appendTo(_container);
-
-			// 	btn.data('offset', offset).data('name', name);
-			// 	btn.data('element', $this);
-
-			// 	btn = $('<a class="removerepeater content mailster-btn" title="' + sprintf(mailsterL10n.remove_s, name) + '"></a>').css({
-			// 		top: top + 18,
-			// 		left: left + 18
-			// 	}).appendTo(_container);
-
-			// 	btn.data('offset', offset).data('name', name);
-			// 	btn.data('element', $this);
-
-			// });
-
-
 
 		}, 500);
 
@@ -3797,21 +3821,28 @@ jQuery(document).ready(function ($) {
 	}
 
 
-	function _changeColor(from, to, element) {
-		if (!from) from = to;
-		if (!to) return false;
-		if (from == to) return false;
+	function _changeColor(color_from, color_to, element) {
+		if (!color_from) color_from = color_to;
+		if (!color_to) return false;
+		color_from = color_from.toLowerCase();
+		color_to = color_to.toLowerCase();
+		if (color_from == color_to) return false;
 		var raw = _getContent(),
-			reg = new RegExp(from, 'gi'),
+			reg = new RegExp(color_from, 'gi'),
 			m = _modulesraw.val();
 
-		if (element) element.data('value', to);
+		if (element)
+			element.data('value', color_to);
 
-		_modulesraw.val(m.replace(reg, to));
+		$('#mailster-color-' + color_from.substr(1)).attr('id', 'mailster-color-' + color_to.substr(1));
 
-		$('#mailster-color-' + from.substr(1).toLowerCase()).attr('id', 'mailster-color-' + to.substr(1).toLowerCase());
+		if (reg.test(m))
+			_modulesraw.val(m.replace(reg, color_to));
 
-		_setContent(raw.replace(reg, to), 3000);
+		if (reg.test(raw)) {
+			_setContent(raw.replace(reg, color_to), 30);
+		}
+
 
 	}
 
@@ -3823,35 +3854,6 @@ jQuery(document).ready(function ($) {
 		} while (match && str.indexOf(match) !== -1);
 		return str;
 	}
-
-	// function _changeBG(file) {
-	// 	var raw = _getContent(),
-	// 		html = raw.replace(/body{background-image:url\(.*}/i, '');
-
-	// 	if (file) {
-	// 		// var s = (file) ? "\tbody{background-image:url('" + file + "');background-repeat:repeat-y no-repeat;background-position:top center;}" : '',
-	// 		// 	html = html.replace(/<style.*?>/i, '<style type="text/css">' + s)
-	// 		// 	//.replace(/<td /i, '<td background="'+base+file+'"');
-	// 		// 	.replace(/<td/i, '<td background="' + file + '"');
-	// 		// //.replace(/background="([^"]*)"/i,'background="'+base+file+'"');
-	// 		// $('ul.backgrounds > li > a').css({
-	// 		// 	'background-image': "url('" + file + "')"
-	// 		// });
-	// 	} else {
-
-	// 		var parts = html.match(/<td(.*)background="[^"]*"(.*)/i);
-
-	// 		if (parts) html = html.replace(parts[0], '<td ' + parts[1] + ' ' + parts[2]);
-	// 		//.replace(/<td(.*)background="([^"]*)"/i,'<td ');
-	// 		$('ul.backgrounds > li > a').css({
-	// 			'background-image': "none"
-	// 		});
-	// 		//.replace(/background="([^"]*)"/i,'background=""');
-	// 	}
-
-	// 	_setContent(html);
-	// 	return;
-	// }
 
 	function _changeElements(version) {
 		var raw = _getContent(),
@@ -3914,18 +3916,18 @@ jQuery(document).ready(function ($) {
 		};
 	}
 
-	function _setContent(content, delay, saveit) {
+	function _setContent(content, delay, saveit, extrastyle) {
 
 		var structure = _getHTMLStructure(content);
 
 		var attrcount = structure.bodyattributes.length,
 			doc = (isWebkit || isMozilla) ? _iframe[0].contentWindow.document : _idoc,
-			//headscripts = $(doc).find('head').find('script'),
 			headstyles = $(doc).find('head').find('link'),
 			headdoc = doc.getElementsByTagName('head')[0];
 
 		_head.val(structure.head);
-		headdoc.innerHTML = structure.head.replace(/([^]*)<head([^>]*)?>([^]*)<\/head>([^]*)/m, '$3');
+		if (!extrastyle) extrastyle = '';
+		headdoc.innerHTML = structure.head.replace(/([^]*)<head([^>]*)?>([^]*)<\/head>([^]*)/m, '$3' + extrastyle);
 		$(headdoc).append(headstyles);
 
 		doc.body.innerHTML = structure.content;
@@ -3940,7 +3942,10 @@ jQuery(document).ready(function ($) {
 			clearTimeout(timeout);
 			timeout = setTimeout(function () {
 				modules && modules.refresh && modules.refresh();
+				_trigger('refresh');
 			}, delay || 100);
+		} else {
+			_trigger('refresh');
 		}
 
 		if (typeof saveit == 'undefined' || saveit === true) _trigger('save');
@@ -3976,11 +3981,10 @@ jQuery(document).ready(function ($) {
 				if (textStatus == 'error' && !errorThrown) return;
 				if (console) console.error(response);
 				if ('JSON' == dataType) {
-					var json = response.match(/{(.*)}$/);
-					if (json && callback) {
+					var maybe_json = response.match(/{(.*)}$/);
+					if (maybe_json && callback) {
 						try {
-							json = $.parseJSON(json[0]);
-							callback.call(this, json);
+							callback.call(this, $.parseJSON(maybe_json[0]));
 						} catch (e) {
 							if (console) console.error(e);
 						}
