@@ -4,7 +4,6 @@ jQuery(document).ready(function ($) {
 
 	var wpnonce = mailsterregisterL10n.wpnonce;
 
-
 	$('.register_form_wrap')
 		.on('focus', 'input', function () {
 			$(this).attr('data-placeholder', $(this).attr('placeholder'));
@@ -20,15 +19,19 @@ jQuery(document).ready(function ($) {
 		})
 		.on('click', '.howto-purchasecode', function () {
 
-			popup(this.href, 600, 350, 'mailster_how_to_puchasecode');
+			Mailster.dialog('registration-dialog');
 			return false;
+		})
+		.on('change', '.tos', function () {
+			$(this).val(Math.round(new Date().getTime() / 1000));
 		})
 		.on('submit', '.register_form', function () {
 
 			var form = $(this),
 				wrap = form.parent(),
 				purchasecode = wrap.find('input.register-form-purchasecode').val(),
-				slug = wrap.find('input.register-form-slug').val();
+				slug = wrap.find('input.register-form-slug').val(),
+				error;
 
 			form.removeClass('has-error').prop('disabled', true);
 			wrap.addClass('loading');
@@ -42,9 +45,10 @@ jQuery(document).ready(function ($) {
 				wrap.removeClass('loading');
 				if (response.success) {
 					wrap.addClass('step-2').removeClass('step-1')
-						//$('.register_form_2').find('input').eq(0).focus();
 				} else {
-					form.addClass('has-error').find('.error-msg').html(response.error);
+					error = response.error;
+					error += ' <a href="https://evp.to/error-' + response.code + '" target="_blank">' + mailsterregisterL10n.help + '</a>';
+					form.addClass('has-error').find('.error-msg').html(error);
 				}
 
 			}, function (jqXHR, textStatus, errorThrown) {
@@ -62,7 +66,8 @@ jQuery(document).ready(function ($) {
 			var form = $(this),
 				wrap = form.parent(),
 				purchasecode = wrap.find('input.register-form-purchasecode').val(),
-				slug = wrap.find('input.register-form-slug').val();
+				slug = wrap.find('input.register-form-slug').val(),
+				error;
 
 			form.removeClass('has-error').prop('disabled', true);
 			wrap.addClass('loading');
@@ -79,11 +84,13 @@ jQuery(document).ready(function ($) {
 					wrap.addClass('step-3').removeClass('step-2')
 					$(document).trigger('verified.' + slug, [response.purchasecode, response.username, response.email]);
 				} else {
-					if (response.code == 406) {
+					if (response.code == 406 || response.code == 679 || response.code == 680) {
 						form = wrap.find('.register_form');
 						form.parent().removeClass('step-2').addClass('step-1');
 					}
-					form.addClass('has-error').find('.error-msg').html(response.error);
+					error = response.error;
+					error += ' (<a href="https://evp.to/error-' + response.code + '" target="_blank">' + mailsterregisterL10n.help + '</a>)';
+					form.addClass('has-error').find('.error-msg').html(error);
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
 
@@ -151,12 +158,41 @@ jQuery(document).ready(function ($) {
 
 		if (purchasecode) {
 			wrap.find('.register_form').parent().removeClass('step-1').addClass('step-2');
-			//wrap.find('.register_form_2').submit();
 		} else {
 			wrap.find('.register_form').submit();
 		}
 
 	}
 
+	$(document)
+		.on('verified.mailster', function (event, purchasecode, username, email) {
+
+			! function (f, b, e, v, n, t, s) {
+				if (f.fbq) {
+					return;
+				}
+				n = f.fbq = function () {
+					n.callMethod ?
+						n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+				};
+				if (!f._fbq) {
+					f._fbq = n;
+				}
+				n.push = n;
+				n.loaded = !0;
+				n.version = '2.0';
+				n.queue = [];
+				t = b.createElement(e);
+				t.async = !0;
+				t.src = v;
+				s = b.getElementsByTagName(e)[0];
+				s.parentNode.insertBefore(t, s)
+			}(window, document, 'script',
+				'https://connect.facebook.net/en_US/fbevents.js');
+
+			fbq('init', '2235134113384930');
+			fbq('track', 'CompleteRegistration');
+
+		});
 
 });

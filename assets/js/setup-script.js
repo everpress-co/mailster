@@ -29,7 +29,7 @@ jQuery(document).ready(function ($) {
 	});
 
 	$('a.external').on('click', function () {
-		window.open(this.href);
+		if (this.href) window.open(this.href);
 		return false;
 	});
 
@@ -75,7 +75,6 @@ jQuery(document).ready(function ($) {
 
 			var _this = $(this);
 
-			//_install('fakerpress');
 			_install(_this.data('plugin'), _this.data('method'), _this.parent());
 
 		})
@@ -146,9 +145,9 @@ jQuery(document).ready(function ($) {
 		if (current.length) {
 			_step(id);
 			current.parent().parent().find('a').removeClass('next prev current');
-			//current.parent().nextAll().find('a').addClass('next');
 			current.parent().prevAll().find('a').addClass('prev');
 			current.addClass('current');
+			if (tinymce && tinymce.activeEditor) tinymce.activeEditor.theme.resizeTo('100%', 200);
 		}
 
 		if ('finish' == id) {

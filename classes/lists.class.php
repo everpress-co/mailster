@@ -18,7 +18,7 @@ class MailsterLists {
 
 	public function admin_menu() {
 
-		$page = add_submenu_page( 'edit.php?post_type=newsletter', __( 'Lists', 'mailster' ), __( 'Lists', 'mailster' ), 'mailster_edit_lists', 'mailster_lists', array( &$this, 'view_lists' ) );
+		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Lists', 'mailster' ), esc_html__( 'Lists', 'mailster' ), 'mailster_edit_lists', 'mailster_lists', array( &$this, 'view_lists' ) );
 
 		if ( isset( $_GET['ID'] ) || isset( $_GET['new'] ) ) :
 
@@ -42,11 +42,11 @@ class MailsterLists {
 	public function get_columns() {
 		$columns = array(
 			'cb' => '<input type="checkbox" />',
-			'name' => __( 'Name', 'mailster' ),
-			'description' => __( 'Description', 'mailster' ),
-			'subscribers' => __( 'Subscribers', 'mailster' ),
-			'updated' => __( 'Updated', 'mailster' ),
-			'added' => __( 'Added', 'mailster' ),
+			'name' => esc_html__( 'Name', 'mailster' ),
+			'description' => esc_html__( 'Description', 'mailster' ),
+			'subscribers' => esc_html__( 'Subscribers', 'mailster' ),
+			'updated' => esc_html__( 'Updated', 'mailster' ),
+			'added' => esc_html__( 'Added', 'mailster' ),
 
 		);
 		return $columns;
@@ -65,8 +65,8 @@ class MailsterLists {
 			wp_enqueue_script( 'mailster-list-detail', MAILSTER_URI . 'assets/js/list-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 			wp_enqueue_style( 'mailster-list-detail', MAILSTER_URI . 'assets/css/list-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_localize_script( 'mailster-list-detail', 'mailsterL10n', array(
-				'next' => __( 'next', 'mailster' ),
-				'prev' => __( 'prev', 'mailster' ),
+				'next' => esc_html__( 'next', 'mailster' ),
+				'prev' => esc_html__( 'prev', 'mailster' ),
 			) );
 
 			include MAILSTER_DIR . 'views/lists/detail.php';
@@ -107,7 +107,7 @@ class MailsterLists {
 				if ( current_user_can( 'mailster_delete_lists' ) ) {
 
 					if ( $this->remove( $_POST['lists'] ) ) {
-						mailster_notice( sprintf( __( '%d Lists have been removed', 'mailster' ), count( $_POST['lists'] ) ), 'error', true );
+						mailster_notice( sprintf( esc_html__( '%d Lists have been removed', 'mailster' ), count( $_POST['lists'] ) ), 'error', true );
 					}
 
 					wp_redirect( $redirect );
@@ -119,7 +119,7 @@ class MailsterLists {
 				if ( current_user_can( 'mailster_delete_lists' ) && current_user_can( 'mailster_delete_subscribers' ) ) {
 
 					if ( $this->remove( $_POST['lists'], true ) ) {
-						mailster_notice( sprintf( __( '%d Lists with subscribers have been removed', 'mailster' ), count( $_POST['lists'] ) ), 'error', true );
+						mailster_notice( sprintf( esc_html__( '%d Lists with subscribers have been removed', 'mailster' ), count( $_POST['lists'] ) ), 'error', true );
 					}
 
 					wp_redirect( $redirect );
@@ -130,7 +130,7 @@ class MailsterLists {
 			case 'subscribe':
 				if ( $count = $this->change_status( $_POST['lists'], 1 ) ) {
 
-					mailster_notice( __( 'Subscribers have been subscribed', 'mailster' ), 'error', true );
+					mailster_notice( esc_html__( 'Subscribers have been subscribed', 'mailster' ), 'error', true );
 
 					wp_redirect( $redirect );
 					exit;
@@ -139,7 +139,7 @@ class MailsterLists {
 			case 'unsubscribe':
 				if ( $this->unsubscribe( $_POST['lists'] ) ) {
 
-					mailster_notice( __( 'Subscribers have been unsubscribed', 'mailster' ), 'error', true );
+					mailster_notice( esc_html__( 'Subscribers have been unsubscribed', 'mailster' ), 'error', true );
 
 					wp_redirect( $redirect );
 					exit;
@@ -149,14 +149,14 @@ class MailsterLists {
 
 				if ( count( $_POST['lists'] ) == 1 ) {
 
-					mailster_notice( __( 'Please selected at least two lists!', 'mailster' ), 'error', true );
+					mailster_notice( esc_html__( 'Please selected at least two lists!', 'mailster' ), 'error', true );
 
 					wp_redirect( $redirect );
 					exit;
 
 				} elseif ( $this->merge( $_POST['lists'] ) ) {
 
-					mailster_notice( sprintf( __( 'Lists have been merged. Please update your %s if necessary!', 'mailster' ), '<a href="edit.php?post_type=newsletter">' . __( 'campaigns', 'mailster' ) . '</a>' ), 'success', true );
+					mailster_notice( sprintf( esc_html__( 'Lists have been merged. Please update your %s if necessary!', 'mailster' ), '<a href="edit.php?post_type=newsletter">' . esc_html__( 'campaigns', 'mailster' ) . '</a>' ), 'success', true );
 
 					wp_redirect( $redirect );
 					exit;
@@ -196,7 +196,7 @@ class MailsterLists {
 						case 'email_exists':
 							$subscriber = $this->get_by_mail( $entry->email );
 
-							$msg = sprintf( __( '%1$s already exists. %2$s', 'mailster' ), '<strong>&quot;' . $subscriber->email . '&quot;</strong>', '<a href="edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID . '">' . __( 'Edit this user', 'mailster' ) . '</a>' );
+							$msg = sprintf( esc_html__( '%1$s already exists. %2$s', 'mailster' ), '<strong>&quot;' . $subscriber->email . '&quot;</strong>', '<a href="edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID . '">' . esc_html__( 'Edit this user', 'mailster' ) . '</a>' );
 						break;
 						default:
 							$msg = $list_id->get_error_message();
@@ -208,21 +208,19 @@ class MailsterLists {
 
 					$list = $this->get( $list_id );
 
-					mailster_notice( isset( $urlparams['new'] ) ? __( 'List added', 'mailster' ) : __( 'List saved', 'mailster' ), 'success', true );
+					mailster_notice( isset( $urlparams['new'] ) ? esc_html__( 'List added', 'mailster' ) : esc_html__( 'List saved', 'mailster' ), 'success', true );
 					do_action( 'mailster_list_save', $list_id );
-					do_action( 'mymail_list_save', $list_id );
 					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID );
 					exit;
 				} elseif ( $_POST['delete'] || $_POST['delete_subscribers'] ) :
 
-					if ( $list = $this->get( intval( $_POST['mailster_data']['ID'] ), false ) ) {
+					if ( $list = $this->get( (int) $_POST['mailster_data']['ID'], false ) ) {
 
 						$delete_subscribers = isset( $_POST['delete_subscribers'] );
 
 						if ( $this->remove( $list->ID, $delete_subscribers ) ) {
-							mailster_notice( sprintf( __( 'List %s has been removed', 'mailster' ), '<strong>&quot;' . $list->name . '&quot;</strong>' ), 'error', true );
+							mailster_notice( sprintf( esc_html__( 'List %s has been removed', 'mailster' ), '<strong>&quot;' . $list->name . '&quot;</strong>' ), 'error', true );
 							do_action( 'mailster_list_delete', $list->ID );
-							do_action( 'mymail_list_delete', $list->ID );
 							wp_redirect( 'edit.php?post_type=newsletter&page=mailster_lists' );
 							exit;
 						}
@@ -268,13 +266,13 @@ class MailsterLists {
 		$segment = $this->get( $segment_id = get_option( 'mailster_list_segment_parent_id' ) );
 		if ( ! $segment ) {
 			$segment_id = $this->add( array(
-					'name' => __( 'Segments', 'mailster' ),
-					'description' => __( 'contains all segments', 'mailster' ),
+					'name' => esc_html__( 'Segments', 'mailster' ),
+					'description' => esc_html__( 'contains all segments', 'mailster' ),
 			), true );
 			update_option( 'mailster_list_segment_parent_id', $segment_id );
 		}
 
-		$name = isset( $entry['name'] ) && ! empty( $entry['name'] ) ? $entry['name'] : sprintf( __( 'Segment #%d', 'mailster' ), $id++ );
+		$name = isset( $entry['name'] ) && ! empty( $entry['name'] ) ? $entry['name'] : sprintf( esc_html__( 'Segment #%d', 'mailster' ), $id++ );
 
 		$current_user = wp_get_current_user();
 
@@ -282,7 +280,7 @@ class MailsterLists {
 					'name' => $name,
 					'parent_id' => $segment_id,
 					'slug' => sanitize_title( $name ) . '-' . time(),
-					'description' => sprintf( __( 'Segment created by %s', 'mailster' ), $current_user->display_name ),
+					'description' => sprintf( esc_html__( 'Segment created by %s', 'mailster' ), $current_user->display_name ),
 		) ), $overwrite, $subscriber_ids );
 
 		if ( ! is_wp_error( $list_id ) ) {
@@ -319,7 +317,7 @@ class MailsterLists {
 		if ( is_wp_error( $entry ) ) {
 			return $entry;
 		} elseif ( $entry === false ) {
-				return new WP_Error( 'not_verified', __( 'List failed verification', 'mailster' ) );
+			return new WP_Error( 'not_verified', esc_html__( 'List failed verification', 'mailster' ) );
 		}
 
 		foreach ( $entry as $key => $value ) {
@@ -329,7 +327,7 @@ class MailsterLists {
 		}
 
 		if ( isset( $data['name'] ) && empty( $data['name'] ) ) {
-			$data['name'] = __( 'undefined', 'mailster' );
+			$data['name'] = esc_html__( 'undefined', 'mailster' );
 		}
 
 		$sql = "INSERT INTO {$wpdb->prefix}mailster_lists (" . implode( ', ', array_keys( $data ) ) . ')';
@@ -347,14 +345,13 @@ class MailsterLists {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
-			$list_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : intval( $data['ID'] );
+			$list_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
 
 			if ( ! empty( $subscriber_ids ) ) {
-				$this->assign_subscribers( $list_id, $subscriber_ids );
+				$this->assign_subscribers( $list_id, $subscriber_ids, false, true );
 			}
 
 			do_action( 'mailster_update_list', $list_id );
-			do_action( 'mymail_update_list', $list_id );
 
 			return $list_id;
 
@@ -446,10 +443,110 @@ class MailsterLists {
 	 *
 	 * @param unknown $ids
 	 * @param unknown $subscriber_ids
-	 * @param unknown $remove_old     (optional)
+	 * @param unknown $force     (optional)
 	 * @return unknown
 	 */
-	public function assign_subscribers( $ids, $subscriber_ids, $remove_old = false ) {
+	public function confirm_subscribers( $ids, $subscriber_ids, $force = false ) {
+
+		global $wpdb;
+
+		if ( ! is_null( $ids ) ) {
+			if ( ! is_array( $ids ) ) {
+				$ids = array( (int) $ids );
+			}
+
+			if ( empty( $ids ) ) {
+				return true;
+			}
+		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			if ( ! is_array( $subscriber_ids ) ) {
+				$subscriber_ids = array( (int) $subscriber_ids );
+			}
+
+			if ( empty( $subscriber_ids ) ) {
+				return true;
+			}
+		}
+
+		$confirmed = time();
+
+		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE 1=1";
+
+		if ( ! is_null( $ids ) ) {
+			$sql .= ' AND list_id IN (' . implode( ', ', $ids ) . ')';
+		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			$sql .= ' AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
+		}
+		if ( ! $force ) {
+			$sql .= ' AND added = 0';
+		}
+
+		return false !== $wpdb->query( $wpdb->prepare( $sql, $confirmed ) );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $ids
+	 * @param unknown $subscriber_ids
+	 * @param unknown $force     (optional)
+	 * @return unknown
+	 */
+	public function unconfirm_subscribers( $ids, $subscriber_ids, $force = false ) {
+
+		global $wpdb;
+
+		if ( ! is_null( $ids ) ) {
+			if ( ! is_array( $ids ) ) {
+				$ids = array( (int) $ids );
+			}
+
+			if ( empty( $ids ) ) {
+				return true;
+			}
+		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			if ( ! is_array( $subscriber_ids ) ) {
+				$subscriber_ids = array( (int) $subscriber_ids );
+			}
+
+			if ( empty( $subscriber_ids ) ) {
+				return true;
+			}
+		}
+
+		$confirmed = 0;
+
+		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers SET added = %d WHERE 1=1";
+
+		if ( ! is_null( $ids ) ) {
+			$sql .= ' AND list_id IN (' . implode( ', ', $ids ) . ')';
+		}
+		if ( ! is_null( $subscriber_ids ) ) {
+			$sql .= ' AND subscriber_id IN (' . implode( ', ', $subscriber_ids ) . ')';
+		}
+		if ( ! $force ) {
+			$sql .= ' AND added != 0';
+		}
+
+		return false !== $wpdb->query( $wpdb->prepare( $sql, $confirmed ) );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $ids
+	 * @param unknown $subscriber_ids
+	 * @param unknown $remove_old     (optional)
+	 * @param unknown $added     (optional)
+	 * @return unknown
+	 */
+	public function assign_subscribers( $ids, $subscriber_ids, $remove_old = false, $added = null ) {
 
 		global $wpdb;
 
@@ -461,7 +558,16 @@ class MailsterLists {
 			$subscriber_ids = array( (int) $subscriber_ids );
 		}
 
-		$now = time();
+		if ( is_null( $added ) ) {
+			$added = mailster_option( 'list_based_opt_in' ) ? 0 : time();
+		} elseif ( true === $added || 1 == $added ) {
+			$added = time();
+		} elseif ( false === $added ) {
+			$added = 0;
+		}
+
+		$ids = array_filter( $ids );
+		$subscriber_ids = array_filter( $subscriber_ids );
 
 		if ( $remove_old ) {
 			$this->unassign_subscribers( $ids, $subscriber_ids );
@@ -470,7 +576,7 @@ class MailsterLists {
 		$inserts = array();
 		foreach ( $ids as $list_id ) {
 			foreach ( $subscriber_ids as $subscriber_id ) {
-				$inserts[] = $wpdb->prepare( '(%d, %d, %d)', $list_id, $subscriber_id, $now );
+				$inserts[] = $wpdb->prepare( '(%d, %d, %d)', $list_id, $subscriber_id, $added );
 			}
 		}
 
@@ -492,6 +598,11 @@ class MailsterLists {
 			$success = $success && ( false !== $wpdb->query( $sql ) );
 
 		}
+
+		// set the status for the list from the global status from the user
+		$sql = "UPDATE {$wpdb->prefix}mailster_lists_subscribers AS l LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = l.subscriber_id SET l.added = s.confirm WHERE l.subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ') AND l.added = 0 AND s.status != 0';
+
+		$success = $success && ( false !== $wpdb->query( $sql ) );
 
 		return $success;
 
@@ -553,15 +664,15 @@ class MailsterLists {
 
 		global $wpdb;
 
-		$ids = is_numeric( $ids ) ? array( $ids ) : $ids;
+		$ids = is_numeric( $ids ) ? array( (int) $ids ) : array_filter( $ids, 'is_numeric' );
 
 		if ( $subscribers ) {
-			$sql = "DELETE a,b,c,d,e,f FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields c ON a.ID = c.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS d ON a.ID = d.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_actions AS e ON a.ID = e.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_queue AS f ON a.ID = f.subscriber_id WHERE b.list_id IN (" . implode( ', ', array_filter( $ids, 'is_numeric' ) ) . ')';
+			$sql = "DELETE a,b,c,d,e,f FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields c ON a.ID = c.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS d ON a.ID = d.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_actions AS e ON a.ID = e.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_queue AS f ON a.ID = f.subscriber_id WHERE b.list_id IN (" . implode( ', ', $ids ) . ')';
 
 			$wpdb->query( $sql );
 		}
 
-		$sql = "DELETE a,b FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.list_id WHERE a.ID IN (" . implode( ', ', array_filter( $ids, 'is_numeric' ) ) . ')';
+		$sql = "DELETE a,b FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.list_id WHERE a.ID IN (" . implode( ', ', $ids ) . ')';
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
@@ -607,10 +718,10 @@ class MailsterLists {
 	 *
 	 *
 	 * @param unknown $ids
-	 * @param unknown $newname (optional)
+	 * @param unknown $name (optional)
 	 * @return unknown
 	 */
-	public function merge( $ids, $newname = null ) {
+	public function merge( $ids, $name = null ) {
 
 		global $wpdb;
 
@@ -620,7 +731,7 @@ class MailsterLists {
 		}
 
 		$now = time();
-		$ids = is_numeric( $ids ) ? array( $ids ) : $ids;
+		$ids = is_numeric( $ids ) ? array( (int) $ids ) : array_filter( $ids, 'is_numeric' );
 		$lists = $this->get( $ids );
 
 		if ( empty( $lists ) ) {
@@ -631,18 +742,20 @@ class MailsterLists {
 		$segment_id = get_option( 'mailster_list_segment_id', 1 );
 		$merge_list_id = get_option( 'mailster_merged_list_id', 1 );
 
-		$name = sprintf( __( 'Merged List #%d', 'mailster' ), $merge_list_id );
+		if ( is_null( $name ) ) {
+			$name = sprintf( esc_html__( 'Merged List #%d', 'mailster' ), $merge_list_id );
+		}
 
 		$new_id = $this->add( array(
 			'name' => $name,
 			'slug' => sanitize_title( $name ) . '-' . $now,
-			'description' => __( 'A merged list of', 'mailster' ) . ":\n" . implode( ', ', $list_names ),
+			'description' => esc_html__( 'A merged list of', 'mailster' ) . ":\n" . implode( ', ', $list_names ),
 		) );
 
 		if ( ! is_wp_error( $new_id ) ) {
 
 			// move connections
-			$sql = "UPDATE IGNORE {$wpdb->prefix}mailster_lists_subscribers SET list_id = %d, added = %d WHERE list_id IN (" . implode( ', ', array_filter( $ids, 'is_numeric' ) ) . ')';
+			$sql = "UPDATE IGNORE {$wpdb->prefix}mailster_lists_subscribers SET list_id = %d, added = %d WHERE list_id IN (" . implode( ', ', $ids ) . ')';
 			$wpdb->query( $wpdb->prepare( $sql, $new_id, $now ) );
 
 			$this->remove( $ids, false );
@@ -727,13 +840,12 @@ class MailsterLists {
 
 			if ( is_null( $id ) ) {
 
-				// if ( $counts ) {
-				// $sql = "SELECT a.*, COUNT(DISTINCT c.ID) AS subscribers FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS c INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ac ON c.ID = ac.subscriber_id AND c.status IN('" . implode( ', ', $statuses ) . "')) ON a.ID = ac.list_id GROUP BY a.ID ORDER BY CASE WHEN parent_id = 0 THEN name ELSE ( SELECT name FROM {$wpdb->prefix}mailster_lists AS b WHERE b.ID = a.parent_id ) END, CASE WHEN parent_id = 0 THEN 1 END DESC, name";
-				// } else {
-				// $sql = "SELECT a.* FROM {$wpdb->prefix}mailster_lists AS a ORDER BY CASE WHEN parent_id = 0 THEN name ELSE ( SELECT name FROM {$wpdb->prefix}mailster_lists AS b WHERE b.ID = a.parent_id ) END, CASE WHEN parent_id = 0 THEN 1 END DESC, name";
-				// }
 				if ( $counts ) {
-					$sql = "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers, CASE WHEN a.parent_id = 0 THEN a.ID*10 ELSE a.parent_id*10+1 END AS _sort FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ')) ON a.ID = ab.list_id GROUP BY a.ID ORDER BY _sort ASC';
+					$sql = "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers, CASE WHEN a.parent_id = 0 THEN a.ID*10 ELSE a.parent_id*10+1 END AS _sort FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ")";
+					if ( ! in_array( 0, $statuses ) ) {
+						$sql .= " AND ab.added != 0";
+					}
+					$sql .= ") ON a.ID = ab.list_id GROUP BY a.ID ORDER BY _sort ASC";
 				} else {
 					$sql = "SELECT a.*, CASE WHEN a.parent_id = 0 THEN a.ID*10 ELSE a.parent_id*10+1 END AS _sort FROM {$wpdb->prefix}mailster_lists AS a ORDER BY _sort ASC";
 				}
@@ -744,9 +856,15 @@ class MailsterLists {
 
 			} elseif ( is_numeric( $id ) ) {
 
-				$sql = ( $counts )
-					? "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ')) ON a.ID = ab.list_id WHERE a.ID = %d GROUP BY a.ID'
-					: "SELECT a.* FROM {$wpdb->prefix}mailster_lists AS a WHERE a.ID = %d GROUP BY a.ID";
+				if ( $counts ) {
+					$sql = "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ")";
+					if ( ! in_array( 0, $statuses ) ) {
+						$sql .= " AND ab.added != 0";
+					}
+					$sql .= ") ON a.ID = ab.list_id WHERE a.ID = %d GROUP BY a.ID";
+				} else {
+					$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_lists AS a WHERE a.ID = %d";
+				}
 
 				$sql = apply_filters( 'mailster_list_get_sql', $sql, $id, $statuses, $counts );
 
@@ -758,7 +876,17 @@ class MailsterLists {
 				$ids = array_filter( $ids, 'is_numeric' );
 
 				if ( ! empty( $ids ) ) {
-					$sql = "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ')) ON a.ID = ab.list_id WHERE a.ID IN(' . implode( ', ', $ids ) . ') GROUP BY a.ID';
+
+					if ( $counts ) {
+						$sql = "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ")";
+						if ( ! in_array( 0, $statuses ) ) {
+							$sql .= " AND ab.added != 0";
+						}
+						$sql .= ") ON a.ID = ab.list_id WHERE a.ID IN(' . implode( ', ', $ids ) . ') GROUP BY a.ID";
+					} else {
+						$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_lists AS a WHERE a.ID IN(" . implode( ', ', $ids ) . ")";
+					}
+
 					$sql = apply_filters( 'mailster_list_get_sql', $sql, $ids, $statuses, $counts );
 					$lists = $wpdb->get_results( $sql );
 				}
@@ -858,7 +986,7 @@ class MailsterLists {
 
 		$result = $wpdb->get_var( $sql );
 
-		return $result ? intval( $result ) : 0;
+		return $result ? (int) $result : 0;
 
 	}
 
@@ -909,7 +1037,7 @@ class MailsterLists {
 
 		if ( false === ( $list_counts = mailster_cache_get( $key ) ) ) {
 
-			$sql = "SELECT a.ID, a.parent_id, COUNT(DISTINCT ab.subscriber_id) AS count FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ({$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id) ON a.ID = ab.list_id";
+			$sql = "SELECT a.ID, a.parent_id, COUNT(DISTINCT ab.subscriber_id) AS count FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ({$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND ab.added != 0) ON a.ID = ab.list_id";
 
 			if ( is_array( $statuses ) ) {
 				$sql .= ' AND b.status IN (' . implode( ',', array_filter( $statuses, 'is_numeric' ) ) . ')';
@@ -926,9 +1054,9 @@ class MailsterLists {
 					$list_counts[ $list->ID ] = 0;
 				}
 
-				$list_counts[ $list->ID ] += intval( $list->count );
+				$list_counts[ $list->ID ] += (int) $list->count;
 				if ( $list->parent_id ) {
-					$list_counts[ $list->parent_id ] += intval( $list->count );
+					$list_counts[ $list->parent_id ] += (int) $list->count;
 				}
 			}
 
@@ -940,7 +1068,7 @@ class MailsterLists {
 			return $list_counts;
 		}
 
-		return isset( $list_counts[ $list_id ] ) && isset( $list_counts[ $list_id ] ) ? intval( $list_counts[ $list_id ] ) : 0;
+		return isset( $list_counts[ $list_id ] ) && isset( $list_counts[ $list_id ] ) ? (int) $list_counts[ $list_id ] : 0;
 
 	}
 
@@ -954,7 +1082,7 @@ class MailsterLists {
 	 * @param unknown $show_count (optional)
 	 * @param unknown $checked    (optional)
 	 */
-	public function print_it( $id = null, $status = null, $name = 'mailster_lists', $show_count = true, $checked = array() ) {
+	public function print_it( $id = null, $status = null, $name = 'mailster_lists', $show_count = true, $checked = array(), $type = 'checkbox' ) {
 
 		if ( $lists = $this->get( $id, $status, ! ! $show_count ) ) {
 
@@ -962,14 +1090,23 @@ class MailsterLists {
 				$checked = array( $checked );
 			}
 
-			echo '<ul>';
-			foreach ( $lists as $list ) {
-				echo '<li><label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="' . $name . '[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . ( $show_count ? ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')</span>' : '' ) . '</label></li>';
+			if ( $type == 'checkbox' ) {
+				echo '<ul>';
+				foreach ( $lists as $list ) {
+					echo '<li><label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="' . $name . '[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . ( $show_count ? ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')</span>' : '' ) . '</label></li>';
+				}
+				echo '</ul>';
+			} else {
+				echo '<select class="widefat" multiple name="' . $name . '">';
+				foreach ( $lists as $list ) {
+					echo '<option value="' . $list->ID . '" ' . selected( in_array( $list->ID, $checked ), true, false ) . '>' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . $list->name . '' . ( $show_count ? ' (' . number_format_i18n( $list->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')' : '' ) . '</option>';
+				}
+				echo '</select>';
 			}
-			echo '</ul>';
-
 		} else {
-			echo '<ul><li>' . __( 'No Lists found!', 'mailster' ) . '</li><li><a href="edit.php?post_type=newsletter&page=mailster_lists&new">' . __( 'Create a List now', 'mailster' ) . '</a></li></ul>';
+			if ( is_admin() ) {
+				echo '<ul><li>' . esc_html__( 'No Lists found!', 'mailster' ) . '</li><li><a href="edit.php?post_type=newsletter&page=mailster_lists&new">' . esc_html__( 'Create a List now', 'mailster' ) . '</a></li></ul>';
+			}
 		}
 
 	}
@@ -983,8 +1120,6 @@ class MailsterLists {
 	 * @return unknown
 	 */
 	public function get_totals( $id = null, $total = false ) {
-
-		return 123;
 
 		return $this->get_action( 'total', $id, $total );
 
@@ -1021,7 +1156,7 @@ class MailsterLists {
 
 		$sent = $this->get_sent( $id, $total );
 
-		return $sent / $totals;
+		return min( 1, ($sent / $totals) );
 
 	}
 
@@ -1056,7 +1191,7 @@ class MailsterLists {
 
 		$errors = $this->get_errors( $id, $total );
 
-		return $errors / $sent;
+		return min( 1, ($errors / $sent) );
 
 	}
 
@@ -1091,7 +1226,7 @@ class MailsterLists {
 
 		$opens = $this->get_opens( $id, $total );
 
-		return $opens / $sent;
+		return min( 1, ($opens / $sent) );
 
 	}
 
@@ -1126,7 +1261,7 @@ class MailsterLists {
 
 		$clicks = $this->get_clicks( $id, $total );
 
-		return $clicks / $sent;
+		return min( 1, ($clicks / $sent) );
 
 	}
 
@@ -1147,7 +1282,7 @@ class MailsterLists {
 
 		$clicks = $this->get_clicks( $id, $total );
 
-		return $clicks / $open;
+		return min( 1, ($clicks / $open) );
 
 	}
 
@@ -1181,7 +1316,7 @@ class MailsterLists {
 
 		$unsubscribes = $this->get_unsubscribes( $id, $total );
 
-		return $unsubscribes / $sent;
+		return min( 1, ($unsubscribes / $sent) );
 
 	}
 
@@ -1202,7 +1337,7 @@ class MailsterLists {
 
 		$unsubscribes = $this->get_unsubscribes( $id, $total );
 
-		return $unsubscribes / $open;
+		return min( 1, ($unsubscribes / $open) );
 
 	}
 
@@ -1235,7 +1370,7 @@ class MailsterLists {
 
 		$bounces = $this->get_bounces( $id );
 
-		return $bounces / ( $totals + $bounces );
+		return min( 1, ($bounces / ( $totals + $bounces )) );
 
 	}
 
@@ -1264,7 +1399,7 @@ class MailsterLists {
 
 		if ( $new ) {
 			$this->add( array(
-				'name' => __( 'Default List', 'mailster' ),
+				'name' => esc_html__( 'Default List', 'mailster' ),
 			), false, get_current_user_id() );
 		}
 

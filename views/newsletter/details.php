@@ -5,11 +5,10 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
 
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 ?>
-
 
 <?php if ( $editable ) : ?>
 <table class="form-table">
@@ -45,6 +44,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 <?php
 	$totals = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $this->get_sent( $post->ID );
 	$sent = $this->get_sent( $post->ID );
+	$deleted = $this->get_deleted( $post->ID );
 
 	$errors = $this->get_errors( $post->ID );
 
@@ -62,27 +62,30 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<tr><th><?php esc_html_e( 'Date', 'mailster' ) ?></th><td><?php echo date( $timeformat, $this->post_data['timestamp'] + $timeoffset );
 	if ( 'finished' == $post->post_status  ) :
 		echo ' &ndash; ' . date( $timeformat, $this->post_data['finished'] + $timeoffset );
-		echo ' (' . sprintf( __( 'took %s', 'mailster' ), human_time_diff( $this->post_data['timestamp'], $this->post_data['finished'] ) ) . ')';
+		echo ' (' . sprintf( esc_html__( 'took %s', 'mailster' ), human_time_diff( $this->post_data['timestamp'], $this->post_data['finished'] ) ) . ')';
 	endif;
 ?>
 	</td></tr>
 <?php endif; ?>
-	<tr><th><?php esc_html_e( 'Preheader', 'mailster' ) ?></th><td><?php echo $this->post_data['preheader'] ? $this->post_data['preheader'] : '<span class="description">' . __( 'no preheader', 'mailster' ) . '</span>' ?></td></tr>
+	<tr><th><?php esc_html_e( 'Preheader', 'mailster' ) ?></th><td><?php echo $this->post_data['preheader'] ? $this->post_data['preheader'] : '<span class="description">' . esc_html__( 'no preheader', 'mailster' ) . '</span>' ?></td></tr>
 </table>
-
 
 <ul id="stats">
 	<li class="receivers">
-		<label class="recipients-limit"><span class="verybold hb-sent"><?php echo number_format_i18n( $sent ); ?></span> <?php echo ( 'autoresponder' == $post->post_status ) ? __( 'sent', 'mailster' ) : _nx( 'receiver', 'receivers', $sent, 'in pie chart', 'mailster' ) ?></label>
+		<label class="recipients-limit"><span class="verybold hb-sent"><?php echo number_format_i18n( $sent ); ?></span> <?php echo ( 'autoresponder' == $post->post_status ) ? esc_html__( 'sent', 'mailster' ) : _nx( 'receiver', 'receivers', $sent, 'in pie chart', 'mailster' ) ?></label>
 	</li>
+	<?php if ( $this->post_data['track_opens'] ) : ?>
 	<li>
 		<div id="stats_open" class="piechart" data-percent="<?php echo $this->get_open_rate( $post->ID ) * 100 ?>"><span>0</span>%</div>
 		<label class="show-open"><span class="verybold hb-opens"><?php echo number_format_i18n( $opens ); ?></span> <?php echo _nx( 'opened', 'opens', $opens, 'in pie chart', 'mailster' ) ?></label>
 	</li>
+	<?php endif; ?>
+	<?php if ( $this->post_data['track_clicks'] ) : ?>
 	<li>
 		<div id="stats_click" class="piechart" data-percent="<?php echo $this->get_click_rate( $post->ID ) * 100 ?>"><span>0</span>%</div>
 		<label class="show-click"><span class="verybold hb-clicks"><?php echo number_format_i18n( $clicks ); ?></span> <?php echo _nx( 'click', 'clicks', $clicks, 'in pie chart', 'mailster' ) ?></label>
 	</li>
+	<?php endif; ?>
 	<li>
 		<div id="stats_unsubscribes" class="piechart" data-percent="<?php echo $this->get_unsubscribe_rate( $post->ID ) * 100 ?>"><span>0</span>%</div>
 		<label class="show-unsubscribes"><span class="verybold hb-unsubs"><?php echo number_format_i18n( $unsubscribes ); ?></span> <?php echo _nx( 'unsubscribe', 'unsubscribes', $unsubscribes, 'in pie chart', 'mailster' ) ?></label>
@@ -92,16 +95,17 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 		<label class="show-bounces"><span class="verybold hb-bounces"><?php echo number_format_i18n( $bounces ); ?></span> <?php echo _nx( 'bounce', 'bounces', $bounces, 'in pie chart', 'mailster' ) ?></label>
 	</li>
 </ul>
-
 <table>
 
 	<tr>
 	<th><?php ( 'autoresponder' == $post->post_status ) ? esc_html_e( 'Total Sent', 'mailster' ) : esc_html_e( 'Total Recipients', 'mailster' ) ?></th>
 	<td class="nopadding"> <span class="big hb-totals"><?php echo number_format_i18n( $totals ); ?></span>
-	<?php if ( ! in_array( $post->post_status, array( 'finished', 'autoresponder' ) ) ) {
-		echo '(<span class="hb-sent">' . number_format_i18n( $sent ) . '</span> ' . __( 'sent', 'mailster' ) . ')';
-}
-	?>
+	<?php if ( ! in_array( $post->post_status, array( 'finished', 'autoresponder' ) ) ) :
+		echo '<span class="hb-sent">' . number_format_i18n( $sent ) . '</span> ' . esc_html__( 'sent', 'mailster' ) . '';
+	endif; ?>
+	<?php if ( $deleted ) :
+		echo '&ndash; <span class="hb-deleted">' . number_format_i18n( $deleted ) . '</span> ' . esc_html__( 'deleted', 'mailster' ) . '';
+	endif; ?>
 	<?php if ( ! empty( $sent ) ) : ?>
 		<a href="#" id="show_recipients" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ) ?></a>
 		<span class="spinner" id="recipients-ajax-loading"></span><div class="ajax-list" id="recipients-list"></div>
@@ -115,23 +119,25 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<?php endif; ?>
 	</td></tr>
 <?php endif; ?>
+	<?php if ( $this->post_data['track_clicks'] ) : ?>
 	<tr><th><?php esc_html_e( 'Total Clicks', 'mailster' ) ?></th><td class="nopadding"> <span class="big hb-clicks_total"><?php echo number_format_i18n( $clicks_total ) ?></span>
 	<?php if ( ! empty( $clicks_total ) ) : ?>
 		<a href="#" id="show_clicks" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ) ?></a>
 		<span class="spinner" id="clicks-ajax-loading"></span><div class="ajax-list" id="clicks-list"></div>
 	<?php endif; ?>
 	</td></tr>
+<?php endif; ?>
 	<?php
 	if ( $environment = $this->get_environment( $post->ID ) ) :
 		$types = array(
-			'desktop' => __( 'Desktop', 'mailster' ),
-			'mobile' => __( 'Mobile', 'mailster' ),
-			'webmail' => __( 'Web Client', 'mailster' ),
+			'desktop' => esc_html__( 'Desktop', 'mailster' ),
+			'mobile' => esc_html__( 'Mobile', 'mailster' ),
+			'webmail' => esc_html__( 'Web Client', 'mailster' ),
 		);
 	?>
 	<tr class="environment"><th><?php esc_html_e( 'Environment', 'mailster' ) ?></th><td class="nopadding">
 		<?php foreach ( $environment as $type => $data ) {?>
-		<label><span class="big"><span class="hb-<?php echo $type ?>"><?php echo round( $data['percentage'] * 100, 2 ) ?>%</span> <span class="mailster-icon client-<?php echo $type ?>"></span></span> <?php echo isset( $types[ $type ] ) ? $types[ $type ] : __( 'unknown', 'mailster' ); ?></label>
+		<label><span class="big"><span class="hb-<?php echo $type ?>"><?php echo round( $data['percentage'] * 100, 2 ) ?>%</span> <span class="mailster-icon client-<?php echo $type ?>"></span></span> <?php echo isset( $types[ $type ] ) ? $types[ $type ] : esc_html__( 'unknown', 'mailster' ); ?></label>
 		<?php }?>
 		<a href="#" id="show_environment" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ) ?></a>
 		<span class="spinner" id="environment-ajax-loading"></span><div class="ajax-list" id="environment-list"></div>

@@ -2,17 +2,93 @@ jQuery(document).ready(function ($) {
 
 	"use strict"
 
-	var body = $('body'),
-		uploader, container, modules, images, buttons;
+	var html = $('html'),
+		body = $('body'),
+		uploader, container, modules, images, buttons, repeatable, selection,
+		currentmodule,
+		isTinymce = typeof tinymce != 'undefined';
 
-	body.addClass('mailster-loading');
+	//not in an iframe
+	if (parent.window == window) {
+
+		var campaign_id;
+		if (campaign_id = location.search.match(/id=(\d+)/i)[1]) {
+			window.location = location.protocol + '//' + location.host + location.pathname.replace('admin-ajax.php', 'post.php') + '?post=' + campaign_id + '&action=edit';
+		}
+	}
+
+	window.ajaxurl = window.ajaxurl || window.mailsterdata.ajaxurl;
 
 	$(window).on('load', function () {
+
 		body
 			.on('click', 'a', function (event) {
 				event.preventDefault();
+			})
+			.on('click', function (event) {
+				if (currentmodule) {
+					currentmodule.removeAttr('selected');
+				}
+			})
+			.on('click', 'module', function (event) {
+				if ('MODULE' == event.target.nodeName) {
+					event.stopPropagation();
+					_trigger('selectModule', $(this));
+				}
+			})
+			.on('click', 'button.addbutton', function () {
+				var data = $(this).data(),
+					element = decodeURIComponent(data.element.data('tmpl')) || '<a href="" editable label="Button"></a>';
+
+				parent.window.Mailster.editbar.open({
+					type: 'btn',
+					offset: data.offset,
+					element: $(element).attr('tmpbutton', '').appendTo(data.element),
+					name: data.name
+				});
+				return false;
+			})
+			.on('click', 'button.addrepeater', function () {
+				var data = $(this).data();
+
+				if ('TH' == data.element[0].nodeName || 'TD' == data.element[0].nodeName) {
+					var table = data.element.closest('table'),
+						index = data.element.prevAll().length;
+					for (var i = table[0].rows.length - 1; i >= 0; i--) {
+						$(table[0].rows[i].cells[index]).clone().insertAfter(table[0].rows[i].cells[index]);
+					}
+				} else {
+					data.element.clone().insertAfter(data.element);
+				}
+
+				_trigger('save');
+				_trigger('refresh');
+
+				return false;
+			})
+			.on('click', 'button.removerepeater', function () {
+				var data = $(this).data();
+
+				if ('TH' == data.element[0].nodeName || 'TD' == data.element[0].nodeName) {
+					var table = data.element.closest('table'),
+						index = data.element.prevAll().length;
+					for (var i = table[0].rows.length - 1; i >= 0; i--) {
+						$(table[0].rows[i].cells[index]).remove();
+					}
+				} else {
+					data.element.remove();
+				}
+
+				_trigger('save');
+				_trigger('refresh');
+
+				return false;
 			});
-		_refreshMain();
+
+		//legacy buttons
+		body.find('div.modulebuttons').remove();
+		(mailsterdata.isrtl) ? html.attr('mailster-is-rtl', ''): html.removeAttr('mailster-is-rtl');
+
 	});
 
 	function _refresh() {
@@ -21,43 +97,154 @@ jQuery(document).ready(function ($) {
 		modules = container.find('module');
 		images = $('img[editable]');
 		buttons = $('buttons');
+		repeatable = $('[repeatable]');
 
 		_sortable();
 		_draggable();
 		_upload();
+		if (isTinymce) _inlineeditor();
 
-		body.removeClass('mailster-loading');
-		return;
+		html.removeClass('mailster-loading');
+
+	}
+
+	function _resize() {
+		_buttons();
+	}
+
+	function _inlineeditor() {
+
+		var l10n = mailster_mce_button.l10n,
+			tags = mailster_mce_button.tags,
+			designs = mailster_mce_button.designs,
+			tiny = mailsterdata.tinymce,
+			changetimeout,
+			change = false;
+
+		tinymce.init($.extend(tiny.args, tiny.multi, {
+			urlconverter_callback: _urlconverter,
+			setup: _setup
+		}));
+		tinymce.init($.extend(tiny.args, tiny.single, {
+			urlconverter_callback: _urlconverter,
+			setup: _setup
+		}));
+
+		function _urlconverter(url, node, on_save, name) {
+			if ('_wp_link_placeholder' == url) {
+				return url;
+			} else if (/^https?:\/\/{.+}/g.test(url)) {
+				return url.replace(/^https?:\/\//, '');
+			} else if (/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(url)) {
+				return 'mailto:' + url;
+			}
+			return this.documentBaseURI.toAbsolute(url, tiny.remove_script_host);
+		}
+
+		function _setup(editor) {
+
+			editor.addButton('mailster_mce_button', {
+				title: l10n.tags.title,
+				type: 'menubutton',
+				icon: 'icon mailster-tags-icon',
+				menu: $.map(tags, function (group, id) {
+					return {
+						text: group.name,
+						menu: $.map(group.tags, function (name, tag) {
+							return {
+								text: name,
+								onclick: function () {
+									var poststuff = '';
+									switch (tag) {
+									case 'webversion':
+									case 'unsub':
+									case 'forward':
+									case 'profile':
+										poststuff = 'link';
+									case 'homepage':
+										if (selection = editor.selection.getContent({
+												format: "text"
+											})) {
+											editor.insertContent('<a href="{' + tag + poststuff + '}">' + selection + '</a>');
+											break;
+										}
+									default:
+										editor.insertContent('{' + tag + '} ');
+									}
+								}
+							};
+
+						})
+					};
+				})
+			});
+
+			editor.addButton('mailster_remove_element', {
+				title: l10n.remove.title,
+				icon: 'icon mailster-remove-icon',
+				onclick: function () {
+					editor.targetElm.remove();
+					editor.remove();
+					_trigger('save');
+				}
+			});
+
+			editor
+				.on('change', function (event) {
+					var _self = this;
+					clearTimeout(changetimeout);
+					changetimeout = setTimeout(function () {
+						var content = event.level.content,
+							c = content.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/g);
+						if (c) {
+							for (var i = c.length - 1; i >= 0; i--) {
+								content = content.replace(c[i], _hex(c[i]));
+							}
+							_self.bodyElement.innerHTML = content;
+						}
+						_trigger('save');
+						change = true;
+					}, 100)
+				})
+				.on('keyup', function (event) {
+					$(event.currentTarget).prop('spellcheck', true);
+				})
+				.on('click', function (event) {
+					// if(editor.theme && editor.theme.panel && editor.theme.panel.$el){
+					// 	var toolbar = $(editor.theme.panel.$el);
+					// }
+					_trigger('selectModule', $(event.currentTarget).closest('module'));
+					event.stopPropagation();
+					editor.focus();
+				})
+				.on('focus', function (event) {
+					event.stopPropagation();
+					editor.selection.select(editor.getBody(), true);
+					if (container.data('uiSortable')) container.sortable('destroy');
+				})
+				.on('blur', function (event) {
+					_trigger('refresh');
+					_sortable();
+				});
+
+		}
+
+	}
+
+	function _hex(str) {
+		var colors = str.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/);
+
+		function hex(val) {
+			val = parseInt(val, 10).toString(16);
+			return val.length > 1 ? val : '0' + val; // 0 -> 00
+		}
+		return colors ? '#' + hex(colors[1]) + hex(colors[2]) + hex(colors[3]) : str;
+
 	}
 
 	function _sortable() {
 
 		if (container.data('sortable')) container.sortable('destroy');
-		if (buttons.data('sortable')) buttons.sortable('destroy');
-
-		buttons.sortable({
-			stop: function (event, ui) {
-				event.stopPropagation();
-				container.removeClass('dragging');
-				setTimeout(function () {
-					_refreshMain();
-				}, 200);
-			},
-			start: function (event, ui) {
-				event.stopPropagation();
-				_hideButtons();
-				container.addClass('dragging');
-			},
-			containment: 'parent',
-			revert: 100,
-			placeholder: "sortable-placeholder",
-			items: "> a",
-			distance: 5,
-			forcePlaceholderSize: true,
-			helper: 'clone',
-			zIndex: 10000
-		});
-
 
 		if (modules.length < 2) return;
 
@@ -66,12 +253,12 @@ jQuery(document).ready(function ($) {
 				event.stopPropagation();
 				container.removeClass('dragging');
 				setTimeout(function () {
-					_refreshMain();
+					_trigger('refresh');
+					_trigger('save');
 				}, 200);
 			},
 			start: function (event, ui) {
 				event.stopPropagation();
-				_hideButtons();
 				container.addClass('dragging');
 			},
 			containment: 'body',
@@ -113,10 +300,11 @@ jQuery(document).ready(function ($) {
 				},
 				stop: function () {
 					body.removeClass('ui-dragging');
-					_refreshMain();
+					_trigger('refresh');
 
 				}
-			}).droppable({
+			})
+			.droppable({
 				addClasses: false,
 				over: function (event, ui) {
 					$(event.target).addClass('ui-drag-over');
@@ -127,7 +315,7 @@ jQuery(document).ready(function ($) {
 				drop: function (event, ui) {
 					var org = $(ui.draggable[0]),
 						target = $(event.target),
-						target_id, org_id, copy;
+						target_id, org_id, crop, copy;
 
 					target.removeClass('ui-drag-over');
 
@@ -135,6 +323,7 @@ jQuery(document).ready(function ($) {
 
 					target_id = target.attr('data-id') ? parseInt(target.attr('data-id'), 10) : null;
 					org_id = org.attr('data-id') ? parseInt(org.attr('data-id'), 10) : null;
+					crop = org.data('crop');
 					copy = org.clone();
 
 					org.addClass('mailster-loading');
@@ -147,10 +336,12 @@ jQuery(document).ready(function ($) {
 								org.removeClass('mailster-loading');
 								target.removeClass('mailster-loading');
 							} else if (target_id) {
+
 								_ajax('create_image', {
 									id: target_id,
 									width: org_w,
-									_height: org_h
+									height: org_h,
+									crop: org.data('crop'),
 								}, function (response) {
 
 									org.removeAttr('src').attr({
@@ -175,7 +366,6 @@ jQuery(document).ready(function ($) {
 									'alt': target.attr('alt'),
 									'src': target.attr('src'),
 									'width': Math.round(org_w / org_f),
-									//'height': Math.round(org_h/org_f)
 									'height': Math.round((org_w / (target_w / target_h)) / org_f)
 								}).data('id', 0).removeClass('mailster-loading');
 
@@ -185,7 +375,8 @@ jQuery(document).ready(function ($) {
 								_ajax('create_image', {
 									id: org_id,
 									width: target_w,
-									_height: target_h
+									height: target_h,
+									crop: target.data('crop'),
 								}, function (response) {
 
 									target.removeAttr('src').attr({
@@ -197,7 +388,7 @@ jQuery(document).ready(function ($) {
 										'height': Math.round(response.image.height / target_f)
 									}).data('id', org_id).removeClass('mailster-loading');
 
-									_refreshMain();
+									_trigger('refresh');
 
 								}, function (jqXHR, textStatus, errorThrown) {
 
@@ -217,13 +408,95 @@ jQuery(document).ready(function ($) {
 
 							}
 
-							if (!org_id && !target_id) _refreshMain();
+							if (!org_id && !target_id) _trigger('refresh');
 
 						});
 					});
 
 				}
 			});
+
+	}
+
+	function _buttons() {
+
+		if (buttons) {
+			$.each(buttons, function () {
+
+				var $this = $(this),
+					name = $this.attr('label'),
+					offset = this.getBoundingClientRect(),
+					top = offset.top + 0,
+					left = offset.right + 0,
+					btn, tmpl;
+
+				if ($this.data('has-buttons')) return;
+
+				btn = $('<button class="addbutton mailster-btn mailster-btn-inline" title="' + mailsterL10n.add_button + '"></button>').appendTo($this);
+
+				btn.data('offset', offset).data('name', name);
+				btn.data('element', $this);
+
+				$this.data('has-buttons', true);
+
+				if (!(tmpl = $this.data('tmpl'))) {
+					if ($this.find('.textbutton').length) {
+						tmpl = $this.find('.textbutton').last();
+					} else if ($this.find('img').length) {
+						tmpl = $this.find('a[editable]').last();
+					} else {
+						tmpl = $('<a href="" editable label="Button"></a>');
+					}
+					tmpl = $('<div/>').text(encodeURIComponent(tmpl[0].outerHTML)).html();
+				}
+
+				$this.attr('data-tmpl', tmpl).data('tmpl', tmpl);
+
+			});
+		}
+
+		$('button.addrepeater, button.removerepeater').remove();
+
+		if (repeatable) {
+			$.each(repeatable, function () {
+				var $this = $(this),
+					module = $this.closest('module'),
+					name = $this.attr('label'),
+					moduleoffset = module[0].getBoundingClientRect(),
+					offset = this.getBoundingClientRect(),
+					add_top = offset.top - moduleoffset.top,
+					add_left = offset.left,
+					del_top = offset.top - moduleoffset.top + 18,
+					del_left = offset.left,
+					btn;
+
+				if ('TH' == this.nodeName || 'TD' == this.nodeName) {
+					add_top = 0;
+					add_left = offset.width - 36;
+					del_top = 0;
+					del_left = offset.width - 18;
+				}
+
+				//top = left = 0;
+
+				btn = $('<button class="addrepeater mailster-btn mailster-btn-inline" title="' + mailsterL10n.add_repeater + '"></button>').css({
+					top: add_top,
+					left: add_left
+				}).appendTo($this);
+
+				btn.data('offset', offset).data('name', name);
+				btn.data('element', $this);
+
+				btn = $('<button class="removerepeater mailster-btn mailster-btn-inline" title="' + mailsterL10n.remove_repeater + '"></button>').css({
+					top: del_top,
+					left: del_left
+				}).appendTo($this);
+
+				btn.data('offset', offset).data('name', name);
+				btn.data('element', $this);
+
+			});
+		}
 
 	}
 
@@ -250,15 +523,11 @@ jQuery(document).ready(function ($) {
 					var file = dropzone.files.shift(),
 						altkey = window.event && event.altKey,
 						dimensions = [_this.width(), _this.height()],
+						crop = _this.data('crop'),
 						position = _this.offset(),
-						preview = $('<div class="mailster-upload-info"><div class="mailster-upload-info-bar"></div><div class="mailster-upload-info-text"></div></div>').css({
-							width: dimensions[0],
-							height: dimensions[1],
-							top: position.top,
-							left: position.left
-
-						}),
-
+						upload = $('<upload><div class="mailster-upload-info"><div class="mailster-upload-info-bar"></div><div class="mailster-upload-info-text"></div></div></upload>'),
+						preview = upload.find('.mailster-upload-info-bar'),
+						previewtext = upload.find('.mailster-upload-info-text'),
 						preloader = new mOxie.Image(file);
 
 					preloader.onerror = function (e) {
@@ -268,17 +537,21 @@ jQuery(document).ready(function ($) {
 					}
 					preloader.onload = function (e) {
 
-						preview.appendTo('body');
+						upload.insertAfter(_this);
+						_this.appendTo(upload);
 
 						file._element = _this;
 						file._altKey = altkey;
+						file._crop = crop;
+						file._upload = upload;
 						file._preview = preview;
+						file._previewtext = previewtext;
 						file._dimensions = [preloader.width, preloader.height, preloader.width / preloader.height];
 
 						preloader.downsize(dimensions[0], dimensions[1]);
-						preview.find('.mailster-upload-info-bar').css({
+						preview.css({
 							'background-image': 'url(' + preloader.getAsDataURL() + ')',
-							'background-size': dimensions[0] + 'px ' + (dimensions[0] / file._dimensions[2]) + 'px'
+							'background-size': dimensions[0] + 'px ' + (crop ? dimensions[1] : dimensions[0] / file._dimensions[2]) + 'px'
 						});
 
 						uploader.addFile(file);
@@ -311,7 +584,7 @@ jQuery(document).ready(function ($) {
 			if (!uploader) {
 
 
-				$('<button id="mailster-editorimage-upload-button" />').hide().appendTo('body');
+				$('<button id="mailster-editorimage-upload-button" />').hide().appendTo('mailster');
 				uploader = new plupload.Uploader(mailsterdata.plupload);
 
 				uploader.bind('Init', function (up) {
@@ -327,6 +600,7 @@ jQuery(document).ready(function ($) {
 						up.settings.multipart_params.width = width;
 						up.settings.multipart_params.height = height;
 						up.settings.multipart_params.factor = factor;
+						up.settings.multipart_params.crop = source._crop;
 						up.settings.multipart_params.altKey = source._altKey;
 						up.refresh();
 						up.start();
@@ -342,8 +616,8 @@ jQuery(document).ready(function ($) {
 
 					var source = file.getSource();
 
-					source._preview.find('.mailster-upload-info-bar').width(file.percent + '%');
-					source._preview.find('.mailster-upload-info-text').html(file.percent + '%');
+					source._preview.width(file.percent + '%');
+					source._previewtext.html(file.percent + '%');
 
 				});
 
@@ -352,7 +626,8 @@ jQuery(document).ready(function ($) {
 
 					alert(err.message);
 
-					source._preview.remove();
+					source._element.insertAfter(source._upload);
+					source._upload.remove();
 				});
 
 				uploader.bind('FileUploaded', function (up, file, response) {
@@ -363,12 +638,13 @@ jQuery(document).ready(function ($) {
 					try {
 						response = $.parseJSON(response.response);
 
-						source._preview.find('.mailster-upload-info-text').html(mailsterL10n.ready);
+						source._previewtext.html(mailsterL10n.ready);
 						source._element.on('load', function () {
 							clearTimeout(delay);
 							source._preview.fadeOut(function () {
-								$(this).remove();
-								_refreshMain();
+								source._element.insertAfter(source._upload);
+								source._upload.remove();
+								_trigger('refresh');
 							});
 						});
 
@@ -376,7 +652,7 @@ jQuery(document).ready(function ($) {
 
 						source._element.attr({
 							'src': response.image.url,
-							//'height': Math.round(response.image.height/up.settings.multipart_params.factor),
+							'alt': response.name,
 							'height': height,
 							'data-id': response.image.id || 0
 						}).data('id', response.image.id || 0);
@@ -385,15 +661,17 @@ jQuery(document).ready(function ($) {
 
 						delay = setTimeout(function () {
 							source._preview.fadeOut(function () {
-								$(this).remove();
-								_refreshMain();
+								source._element.insertAfter(source._upload);
+								source._upload.remove();
+								_trigger('refresh');
 							});
 						}, 3000);
 					} catch (err) {
 						source._preview.addClass('error').find('.mailster-upload-info-text').html(mailsterL10n.error);
 						alert(mailsterL10n.error_occurs + "\n" + err.message);
 						source._preview.fadeOut(function () {
-							$(this).remove();
+							source._element.insertAfter(source._upload);
+							source._upload.remove();
 						});
 					}
 
@@ -409,19 +687,32 @@ jQuery(document).ready(function ($) {
 
 	}
 
-	window.mailster_refresh = function () {
-		_refresh();
-	}
-	window.mailster_onsave = function () {
-		_refresh();
-	}
 
-	function _hideButtons() {
-		if (parent.window.mailster_hideButtons) parent.window.mailster_hideButtons();
-	}
+	$(window)
+		.on('Mailster:refresh', function () {
+			_refresh();
+		})
+		.on('Mailster:resize', function () {
+			_resize();
+		})
+		.on('Mailster:selectModule', function (event) {
+			if (!event.detail) return;
+			var module = $(event.detail[0]);
+			if (currentmodule) {
+				currentmodule.removeAttr('selected');
+			}
+			currentmodule = module;
+			currentmodule.attr('selected', true);
+		})
 
-	function _refreshMain() {
-		if (parent.window.mailster_refresh) parent.window.mailster_refresh()
+	function _trigger() {
+		if (!window.Mailster) {
+			window.Mailster = parent.window.Mailster;
+		}
+		if (!window.Mailster) return;
+		var args = jQuery.makeArray(arguments);
+		var triggerevent = args.shift();
+		window.Mailster.trigger(triggerevent, args);
 	}
 
 	function _getRealDimensions(el, callback) {
@@ -466,4 +757,17 @@ jQuery(document).ready(function ($) {
 		});
 	}
 
+	function sprintf() {
+		var a = Array.prototype.slice.call(arguments),
+			str = a.shift(),
+			total = a.length,
+			reg;
+		for (var i = 0; i < total; i++) {
+			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
+			str = str.replace(reg, a[i]);
+		}
+		return str;
+	}
+
 });
+document.getElementsByTagName("html")[0].className += ' mailster-loading';

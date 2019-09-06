@@ -1,6 +1,6 @@
 <?php
 
-$id = isset( $_GET['ID'] ) ? intval( $_GET['ID'] ) : null;
+$id = isset( $_GET['ID'] ) ? (int) $_GET['ID'] : null;
 
 $currentpage = isset( $_GET['tab'] ) ? $_GET['tab'] : 'structure';
 
@@ -8,13 +8,13 @@ $is_new = isset( $_GET['new'] );
 
 if ( ! $is_new ) {
 	if ( ! ( $form = $this->get( $id, true ) ) ) {
-		echo '<h2>' . __( 'This form does not exist or has been deleted!', 'mailster' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'This form does not exist or has been deleted!', 'mailster' ) . '</h2>';
 		return;
 	}
 } else {
 
 	if ( ! current_user_can( 'mailster_add_forms' ) ) {
-		echo '<h2>' . __( 'You don\'t have the right permission to add new forms', 'mailster' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'You don\'t have the right permission to add new forms', 'mailster' ) . '</h2>';
 		return;
 	}
 
@@ -31,7 +31,7 @@ if ( ! $is_new ) {
 		$form = (object) wp_parse_args( $_POST['mailster_data'], (array) $form );
 	}
 }
-$timeformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+$timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
 $customfields = mailster()->get_custom_fields();
 
@@ -70,13 +70,13 @@ if ( $is_new ) {
 } else {
 	esc_html_e( 'Edit Form', 'mailster' );
 ?>
-<input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo intval( $form->ID ) ?>">
+<input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo (int) $form->ID ?>">
 <?php if ( current_user_can( 'mailster_add_forms' ) ) : ?>
-	<a href="edit.php?post_type=newsletter&page=mailster_forms&new" class="add-new-h2"><?php esc_html_e( 'Add New', 'mailster' );?></a>
+	<a href="edit.php?post_type=newsletter&page=mailster_forms&new" class="page-title-action"><?php esc_html_e( 'Add New', 'mailster' );?></a>
 <?php endif; ?>
 <?php } ?>
 <?php if ( ! $is_new ) :  ?>
-	<a href="#TB_inline?&width=1200&height=600&inlineId=useitbox" class="add-new-h2" id="use-it"><?php esc_html_e( 'Use it!', 'mailster' );?></a>
+	<a href="#TB_inline?&width=1200&height=600&inlineId=useitbox" class="page-title-action" id="use-it"><?php esc_html_e( 'Use it!', 'mailster' );?></a>
 <?php endif; ?>
 </h1>
 <?php if ( ! $is_new ) : ?>
@@ -108,8 +108,8 @@ if ( $is_new ) {
 
 		<ul class="form-order sortable">
 		<?php foreach ( $form->fields as $field ) : ?>
-		<li class="field-<?php echo $field->field_id ?>">
-				<label><?php echo $field->name ?></label>
+			<li class="field-<?php echo $field->field_id ?> form-field">
+				<label><?php echo strip_tags( $field->name ) ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ) ?>:</span>
 				<input class="label widefat" type="text" name="mailster_structure[fields][<?php echo $field->field_id ?>]" data-name="mailster_structure[fields][<?php echo $field->field_id ?>]" value="<?php echo esc_attr( $field->name ) ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' );?>" placeholder="<?php echo esc_attr( $field->name ) ?>">
@@ -122,7 +122,7 @@ if ( $is_new ) {
 				<span class="label"><?php esc_html_e( 'Error Message', 'mailster' ) ?>:</span>
 				<input class="label widefat error-msg" type="text" name="mailster_structure[error_msg][<?php echo $field->field_id ?>]" data-name="mailster_structure[error_msg][<?php echo $field->field_id ?>]" value="<?php echo esc_attr( $field->error_msg ) ?>" title="<?php esc_html_e( 'define an error message for this field', 'mailster' );?>" placeholder="<?php esc_html_e( 'Error Message (optional)', 'mailster' ) ?>">
 				</div>
-				</li>
+			</li>
 			<?php endforeach; ?>
 		</ul>
 				<h4><label><?php esc_html_e( 'Button Label', 'mailster' );?>: <input type="text" name="mailster_data[submit]" class="widefat regular-text" value="<?php echo esc_attr( $form->submit ); ?>" placeholder="<?php echo mailster_text( 'submitbutton' ) ?>" ></label></h4>
@@ -140,7 +140,7 @@ if ( $is_new ) {
 
 		foreach ( $fields as $field_id => $name ) : ?>
 
-		<li class="field-<?php echo $field_id ?>">
+			<li class="field-<?php echo $field_id ?> form-field">
 				<label><?php echo strip_tags( $name ) ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ) ?>:</span>
@@ -153,10 +153,10 @@ if ( $is_new ) {
 				<span class="label"><?php esc_html_e( 'Error Message', 'mailster' ) ?>:</span>
 				<input class="label widefat error-msg" type="text" name="mailster_structure[error_msg][<?php echo $field_id ?>]" data-name="mailster_structure[error_msg][<?php echo $field_id ?>]" value="" title="<?php esc_html_e( 'define an error message for this field', 'mailster' );?>" placeholder="<?php esc_html_e( 'Error Message (optional)', 'mailster' ) ?>">
 				</div>
-				</li>
+			</li>
 		<?php endforeach; ?>
 		</ul>
-				<p class="description"><?php printf( __( 'Add more custom fields on the %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings#subscribers">' . __( 'Settings Page', 'mailster' ) . '</a>' ) ?></p>
+				<p class="description"><?php printf( esc_html__( 'Add more custom fields on the %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings#subscribers">' . esc_html__( 'Settings Page', 'mailster' ) . '</a>' ) ?></p>
 
 	</fieldset>
 </div>
@@ -181,7 +181,7 @@ if ( $is_new ) {
 	<p><label><input type="checkbox" id="themestyle" checked> <?php esc_html_e( 'Include your Theme\'s style.css', 'mailster' ) ?></label></p>
 	<p class="description clear"><?php esc_html_e( 'Your form may look different depending on the place you are using it!', 'mailster' ) ?></p>
 	<div id="form-design">
-		<iframe id="form-design-iframe" width="100%" height="500" allowTransparency="true" frameborder="0" scrolling="no" src="<?php echo $this->url( array( 'id' => $id, 'edit' => wp_create_nonce( 'mailsteriframeform' ), 's' => 1, 'path' => ABSPATH ) ); ?>" data-no-lazy=""></iframe>
+		<iframe id="form-design-iframe" width="100%" height="500" allowTransparency="true" frameborder="0" scrolling="no" src="<?php echo $this->url( array( 'id' => $id, 'edit' => wp_create_nonce( 'mailsteriframeform' ), 's' => 1 ) ); ?>" data-no-lazy=""></iframe>
 	</div>
 	<div id="form-design-options">
 	<div class="form-design-options-nav">
@@ -275,6 +275,7 @@ if ( $is_new ) {
 			</optgroup>
 			<optgroup label="<?php esc_html_e( 'Other', 'mailster' ) ?>">
 			<option value=" label .mailster-required"><?php esc_html_e( 'Required Asterisk', 'mailster' ) ?></option>
+			<option value=" .mailster-submit-wrapper .submit-button"><?php esc_html_e( 'Submit Button', 'mailster' ) ?></option>
 			</optgroup>
 		</select>
 		</div>
@@ -321,7 +322,7 @@ if ( $is_new ) {
 				</p>
 					<?php if ( ! $is_profile ) :
 						if ( $profile_form = mailster( 'forms' )->get( mailster_option( 'profile_form', 0 ), false, false ) ) :?>
-							<p class="description"><?php printf( __( 'Currently %s is your profile form', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_forms&ID=' . $profile_form->ID . '&tab=settings">' . $profile_form->name . '</a>' ) ?></p>
+							<p class="description"><?php printf( esc_html__( 'Currently %s is your profile form', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_forms&ID=' . $profile_form->ID . '&tab=settings">' . $profile_form->name . '</a>' ) ?></p>
 						<?php endif; ?>
 					<?php endif; ?>
 
@@ -376,26 +377,17 @@ if ( $is_new ) {
 									<td><input type="text" id="mailster_text_link" name="mailster_data[link]" value="<?php echo esc_attr( $form->link ); ?>" class="regular-text"></td>
 								</tr>
 								<tr valign="top">
-									<td scope="row"><label for="mailster_text_content"><?php esc_html_e( 'Text', 'mailster' );?>: <code>{content}</code></label><p class="description"><?php printf( __( 'The text new subscribers get when Double-Opt-In is selected. Use %s for the link placeholder. Basic HTML is allowed', 'mailster' ), '<code>{link}</code>' ); ?></p></td>
+									<td scope="row"><label for="mailster_text_content"><?php esc_html_e( 'Text', 'mailster' );?>: <code>{content}</code></label><p class="description"><?php printf( esc_html__( 'The text new subscribers get when Double-Opt-In is selected. Use %s for the link placeholder. Basic HTML is allowed', 'mailster' ), '<code>{link}</code>' ); ?></p></td>
 									<td><textarea id="mailster_text_content" name="mailster_data[content]" rows="10" cols="50" class="large-text"><?php echo esc_attr( $form->content ); ?></textarea></td>
 								</tr>
 								<tr><td><?php esc_html_e( 'Used template file', 'mailster' );?></td><td>
-									<select name="mailster_data[template]">
-									<?php
-									$templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
-									foreach ( $templatefiles as $slug => $filedata ) {
-										if ( $slug == 'index.html' ) {
-											continue;
-										} ?>
-										<option value="<?php echo $slug ?>"<?php selected( $slug == $form->template ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo $slug ?>)</option>
-									<?php } ?>
-									</select>
+									<?php mailster( 'helper' )->notifcation_template_dropdown( $form->template, 'mailster_data[template]' ); ?>
 									</td>
 								</tr>
 
 								<tr>
 									<td><?php esc_html_e( 'Resend Confirmation', 'mailster' ) ?></td>
-									<td><div><input type="checkbox" name="mailster_data[resend]" value="1" <?php checked( $form->resend ) ?>> <?php printf( __( 'Resend confirmation %1$s times with a delay of %2$s hours if user hasn\'t confirmed the subscription', 'mailster' ), '<input type="text" name="mailster_data[resend_count]" value="' . esc_attr( $form->resend_count ) . '" class="small-text">', '<input type="text" name="mailster_data[resend_time]" value="' . esc_attr( $form->resend_time ) . '" class="small-text">' ) ?></div></td>
+									<td><div><input type="hidden" name="mailster_data[resend]" value="0"><input type="checkbox" name="mailster_data[resend]" value="1" <?php checked( $form->resend ) ?>> <?php printf( esc_html__( 'Resend confirmation %1$s times with a delay of %2$s hours if user hasn\'t confirmed the subscription', 'mailster' ), '<input type="text" name="mailster_data[resend_count]" value="' . esc_attr( $form->resend_count ) . '" class="small-text">', '<input type="text" name="mailster_data[resend_time]" value="' . esc_attr( $form->resend_time ) . '" class="small-text">' ) ?></div></td>
 								</tr>
 
 								<tr><td><?php esc_html_e( 'Redirect after confirm', 'mailster' );?></td><td><input type="text" name="mailster_data[confirmredirect]" class="widefat" value="<?php if ( isset( $form->confirmredirect ) ) {	echo $form->confirmredirect; } ?>" placeholder="http://www.example.com" ></td>
@@ -404,7 +396,7 @@ if ( $is_new ) {
 									<td>&nbsp;</td>
 									<td><label><input type="hidden" name="mailster_data[vcard]" class="vcard" value="0"><input type="checkbox" name="mailster_data[vcard]" class="vcard" value="1" <?php checked( $form->vcard );?> data-id="<?php echo $id; ?>"> <?php esc_html_e( 'Attach vCard to all confirmation mails', 'mailster' ) ?></label>
 									<div id="vcard-field" <?php if ( ! $form->vcard ) {	echo ' style="display:none"'; } ?> class="vcard-field">
-									<p class="description"><?php printf( __( 'Paste in your vCard content. You can use %s to generate your personal vcard', 'mailster' ), '<a href="http://vcardmaker.com/" class="external">vcardmaker.com</a>' ); ?></p>
+									<p class="description"><?php printf( esc_html__( 'Paste in your vCard content. You can use %s to generate your personal vcard', 'mailster' ), '<a href="http://vcardmaker.com/" class="external">vcardmaker.com</a>' ); ?></p>
 									<?php $vcard = $form->vcard_content ? $form->vcard_content : $this->get_vcard(); ?><textarea name="mailster_data[vcard_content]" rows="10" cols="50" class="large-text code"><?php echo esc_textarea( $vcard ); ?></textarea>
 									</div>
 
@@ -430,144 +422,45 @@ if ( $is_new ) {
 <?php if ( ! $is_new ) :  ?>
 <div class="clear" id="useitbox" style="display:none">
 
+	<?php
+
+		$form = mailster( 'form' )->id( $id );
+
+
+		$form_use_it_tabs = array(
+			'intro' => esc_html__( 'Use your form as', 'mailster' ) . '&hellip;',
+			'code' => esc_html__( 'Shortcode or PHP', 'mailster' ),
+			'subscriber-button' => esc_html__( 'Subscriber Button', 'mailster' ),
+			'form-html' => esc_html__( 'Form HTML', 'mailster' ),
+		);
+
+		$form_use_it_tabs = apply_filters( 'mailster_form_use_it_tabs', $form_use_it_tabs );
+
+		?>
+
 	<div class="useit-wrap">
 		<div class="useit-nav">
 			<div class="mainnav contextual-help-tabs hide-if-no-js">
 				<ul>
-					<li><a href="#shortcode" class="nav-shortcode"><?php esc_html_e( 'Shortcode', 'mailster' ) ?></a></li>
-					<li><a href="#subscriber-button" class="nav-subscriber-button"><?php esc_html_e( 'Subscriber Button', 'mailster' ) ?></a></li>
-					<li><a href="#form-html" class="nav-form-html"><?php esc_html_e( 'Form HTML', 'mailster' ) ?></a></li>
+				<?php foreach ( $form_use_it_tabs as $key => $name ) : ?>
+					<li><a href="#<?php echo esc_attr( $key ) ?>" class="nav-<?php echo esc_attr( $key ) ?>"><?php echo esc_html( $name ) ?></a></li>
+				<?php endforeach; ?>
 				</ul>
 			</div>
 		</div>
 
 		<div class="useit-tabs">
 
-			<div id="tab-intro" class="useit-tab">
-				<h3><?php esc_html_e( 'Use your form as', 'mailster' ) ?>&hellip;</h3>
+			<?php foreach ( $form_use_it_tabs as $key => $name ) : ?>
 
-				<h4>&hellip; <?php esc_html_e( 'Shortcode', 'mailster' ) ?></h4>
-				<p class="description"><?php esc_html_e( 'Use a shortcode on a blog post, page or wherever they are excepted.', 'mailster' ) ?> <?php printf( __( 'Read more about shortcodes at %s', 'mailster' ), '<a href="https://codex.wordpress.org/Shortcode">WordPress Codex</a>' ) ?></p>
-
-				<h4>&hellip; <?php esc_html_e( 'Widget', 'mailster' ) ?></h4>
-				<p class="description"><?php printf( __( 'Use this form as a %s in one of your sidebars', 'mailster' ), '<a href="widgets.php">' . __( 'widget', 'mailster' ) . '</a>' ) ?>.</p>
-
-				<h4>&hellip; <?php esc_html_e( 'Subscriber Button', 'mailster' ) ?></h4>
-				<p class="description"><?php esc_html_e( 'Embed your form on any site, no matter if it is your current or a third party one. It\'s similar to the Twitter button.', 'mailster' ) ?></p>
-
-				<h4>&hellip; HTML</h4>
-				<p class="description"><?php esc_html_e( 'Use your form via the HTML markup. This is often required by third party plugins. You can choose between an iframe or the raw HTML.', 'mailster' ) ?></p>
+			<div id="tab-<?php echo esc_attr( $key ) ?>" class="useit-tab">
+				<h3><?php echo esc_html( $name ); ?></h3>
+				<?php do_action( 'mailster_use_it_form_tab', $form ); ?>
+				<?php do_action( 'mailster_use_it_form_tab_' . $key, $form ); ?>
+				<?php do_action( 'mailster_after_use_it_form_tab_' . $key, $form ); ?>
 			</div>
 
-			<div id="tab-shortcode" class="useit-tab">
-				<h3><?php esc_html_e( 'Shortcode', 'mailster' ) ?></h3>
-				<input type="text" class="code widefat" value="[newsletter_signup_form id=<?php echo $id ?>]">
-				<p class="description"><?php esc_html_e( 'Use this shortcode wherever they are excepted.', 'mailster' ) ?></p>
-			</div>
-
-			<div id="tab-subscriber-button" class="useit-tab">
-				<h3><?php esc_html_e( 'Subscriber Button', 'mailster' ) ?></h3>
-				<p class="description"><?php esc_html_e( 'Embed a button where users can subscribe on any website', 'mailster' ) ?></p>
-
-				<?php
-				$subscribercount = mailster( 'subscribers' )->get_count( 'kilo' );
-				$embeddedcode = mailster( 'forms' )->get_subscribe_button();
-				?>
-
-				<div class="wrapper">
-
-					<h4><?php esc_html_e( 'Button Style', 'mailster' ) ?></h4>
-					<?php $styles = array( 'default', 'wp', 'twitter', 'flat', 'minimal' ) ?>
-					<ul class="subscriber-button-style">
-					<?php foreach ( $styles as $i => $style ) { ?>
-						<li><label>
-						<input type="radio" name="subscriber-button-style" value="<?php echo esc_attr( $style ) ?>" <?php checked( ! $i );?>>
-						<div class="btn-widget design-<?php echo $style ?> count">
-							<div class="btn-count"><i></i><u></u><a><?php echo $subscribercount ?></a></div>
-							<a class="btn"><?php echo esc_html( $form->submit ); ?></a>
-						</div>
-						</label></li>
-					<?php } ?>
-					</ul>
-
-				<div class="clear"></div>
-
-				<div class="wrapper-left">
-
-					<h4><?php esc_html_e( 'Button Options', 'mailster' ) ?></h4>
-
-					<div class="button-options-wrap">
-
-						<p><?php esc_html_e( 'Popup width', 'mailster' ) ?>:
-							<input type="text" id="buttonwidth" placeholder="480" value="480" class="small-text"></p>
-
-						<h4><?php esc_html_e( 'Label', 'mailster' ) ?></h4>
-						<p><label><input type="radio" name="buttonlabel" value="default" checked>
-						<?php esc_html_e( 'Use Form Default', 'mailster' ) ?></label></p>
-						<p><input type="radio" name="buttonlabel" value="custom">
-						<input type="text" id="buttonlabel" placeholder="<?php echo esc_attr( $form->submit ); ?>" value="<?php echo esc_attr( $form->submit ); ?>"></p>
-
-						<h4><?php esc_html_e( 'Subscriber Count', 'mailster' ) ?></h4>
-						<p><label><input type="checkbox" id="showcount" checked> <?php esc_html_e( 'Display subscriber count', 'mailster' ) ?></label></p>
-						<p><label><input type="checkbox" id="ontop"> <?php esc_html_e( 'Count above Button', 'mailster' ) ?></label></p>
-
-						</div>
-
-					</div>
-
-					<div class="wrapper-right">
-
-						<h4><?php esc_html_e( 'Preview and Code', 'mailster' ) ?></h4>
-
-						<p><?php esc_html_e( 'Test your button', 'mailster' ) ?> &hellip;</p>
-							<div class="button-preview">
-								<?php echo $embeddedcode; ?>
-							</div>
-
-						<p>&hellip; <?php esc_html_e( 'embed it somewhere', 'mailster' ) ?> &hellip;</p>
-							<div class="code-preview">
-								<textarea class="code" readonly></textarea>
-							</div>
-						<p>&hellip; <?php esc_html_e( 'or use this shortcode on your site', 'mailster' ) ?></p>
-							<div class="shortcode-preview">
-								<input type="text" class="widefat code" readonly>
-							</div>
-
-					</div>
-				</div>
-
-			</div>
-
-			<div id="tab-form-html" class="useit-tab">
-
-				<h3><?php esc_html_e( 'Form HTML', 'mailster' ) ?></h3>
-
-				<h4><?php esc_html_e( 'iFrame Version', 'mailster' ) ?></h4>
-
-				<?php $embedcode = '<iframe width="%s" height="%s" allowTransparency="true" frameborder="0" scrolling="no" style="border:none" src="' . $this->url( array( 'id' => $id ) ) . '%s"></iframe>'; ?>
-
-				<div>
-					<label><?php esc_html_e( 'width', 'mailster' );?>: <input type="text" class="small-text embed-form-input" value="100%"></label>
-					<label><?php esc_html_e( 'height', 'mailster' );?>: <input type="text" class="small-text embed-form-input" value="500"></label>
-					<label title="<?php esc_html_e( 'check this option to include the style.css of your theme into the form', 'mailster' );?>"><input type="checkbox" value="1" class="embed-form-input" checked> <?php esc_html_e( 'include themes style.css', 'mailster' );?></label>
-					<textarea class="widefat code embed-form-output" data-embedcode="<?php echo esc_attr( $embedcode ) ?>"><?php echo esc_textarea( $embedcode ) ?></textarea>
-				</div>
-
-				<h4><?php esc_html_e( 'HTML Version', 'mailster' ) ?></h4>
-
-				<div>
-				<?php
-					$form = mailster( 'form' )->id( $id );
-					$form->add_class( 'extern' );
-					$form->prefill( false );
-					$form->ajax( false );
-					$form->embed_style( false );
-					$form->referer( 'extern' );
-				?>
-					<textarea class="widefat code form-output"><?php echo esc_textarea( $form->render( false ) ) ?></textarea>
-				</div>
-
-			</div>
+			<?php endforeach; ?>
 
 		</div>
 
