@@ -121,9 +121,7 @@ $method = mailster_option( 'deliverymethod', 'simple' );
 
 <?php foreach ( $deliverymethods as $id => $name ) : ?>
 <div class="subtab" id="subtab-<?php echo $id ?>" <?php if ( $method == $id ) {	echo 'style="display:block"';}?>>
-	<?php do_action( 'mailster_deliverymethod_tab' ); ?>
+	<?php do_action( 'mailster_deliverymethod_tab', $id ); ?>
 	<?php do_action( 'mailster_deliverymethod_tab_' . $id ); ?>
-	<?php do_action( 'mymail_deliverymethod_tab' ); ?>
-	<?php do_action( 'mymail_deliverymethod_tab_' . $id ); ?>
 </div>
 <?php endforeach; ?>
