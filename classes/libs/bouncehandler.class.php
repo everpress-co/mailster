@@ -37,13 +37,18 @@ class MailsterBounceHandler {
 	 * @param unknown $user
 	 * @param unknown $pwd
 	 * @param unknown $port    (optional)
-	 * @param unknown $ssl     (optional)
+	 * @param unknown $secure  (optional)
 	 * @param unknown $timeout (optional)
 	 * @return unknown
 	 */
-	public function connect( $server, $user, $pwd, $port = 110, $ssl = false, $timeout = 60 ) {
+	public function connect( $server, $user, $pwd, $port = 110, $secure = false, $timeout = 60 ) {
 
-		$path = '{' . $server . ':' . $port . '/' . $this->service . ( $ssl ? '/ssl' : '' ) . '/novalidate-cert}INBOX';
+		$securepath = '';
+		if($secure){
+			$securepath = '/'.$secure;
+		}
+
+		$path = '{' . $server . ':' . $port . '/' . $this->service . $securepath . '/novalidate-cert}INBOX';
 
 		require_once MAILSTER_DIR . 'classes/libs/PhpImap/__autoload.php';
 
@@ -100,7 +105,7 @@ class MailsterBounceHandler {
 
 					case 'unsubscribe':
 						// unsubscribe
-						mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $campaign_id );
+						mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $campaign_id, 'list_unsubscribe' );
 					break;
 					case 'failed':
 						// hardbounce
@@ -206,18 +211,18 @@ class MailsterBounceLegacyHandler extends MailsterBounceHandler {
 	 * @param unknown $user
 	 * @param unknown $pwd
 	 * @param unknown $port    (optional)
-	 * @param unknown $ssl     (optional)
+	 * @param unknown $secure  (optional)
 	 * @param unknown $timeout (optional)
 	 * @return unknown
 	 */
-	public function connect( $server, $user, $pwd, $port = 110, $ssl = false, $timeout = 60 ) {
+	public function connect( $server, $user, $pwd, $port = 110, $secure = false, $timeout = 60 ) {
 
 		require_once ABSPATH . WPINC . '/class-pop3.php';
 		$this->mailbox = new POP3();
 		$this->mailbox->TIMEOUT = (int) $timeout;
 
-		if ( $ssl ) {
-			$server = 'ssl://' . $server;
+		if($secure){
+			$server = $secure.'://' . $server;
 		}
 
 		$this->mailbox->connect( $server, $port );

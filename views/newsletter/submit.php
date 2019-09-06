@@ -19,17 +19,17 @@ $sent = $this->get_sent( $post->ID );
 
 			<span class="spinner ajax-loading" id="ajax-loading"></span>
 
-			<p class="clear" id="password-field">
+			<p class="clear" id="webversion-field" title="<?php esc_attr_e( 'Offer a public web version for this campaign. If disabled this campaign will be marked as "private"', 'mailster' ) ?>">
+				<label for="use_webversion"><input type="checkbox" id="use_webversion" name="mailster_data[webversion]" value="1" <?php checked( $this->post_data['webversion'] ); ?>> <?php esc_html_e( 'Web version', 'mailster' ) ?></label>
+			</p>
+
+			<p class="clear" id="password-field" title="<?php esc_attr_e( 'Protect the web version with a password.', 'mailster' ) ?>">
 				<label for="use_pwd"><input type="checkbox" name="use_pwd" id="use_pwd" value="1" <?php checked( ! ! $post->post_password ); ?>> <?php esc_html_e( 'Password', 'mailster' ) ?></label>
 				<span id="password-wrap" <?php if ( ! $post->post_password ) { echo 'style="display:none;"'; } ?>>
 					<input type="hidden" name="post_password" value="">
 					<input type="text" class="widefat" name="post_password" id="post_password" value="<?php echo $post->post_password ?>" maxlength="20"><br>
 					<span class="description"><?php esc_html_e( 'Protect the web version with a password.', 'mailster' ) ?></span>
 				</span>
-			</p>
-
-			<p class="clear" id="webversion-field">
-				<label for="use_webversion"><input type="checkbox" id="use_webversion" name="mailster_data[webversion]" value="1" <?php checked( $this->post_data['webversion'] ); ?>> <?php esc_html_e( 'Web version', 'mailster' ) ?></label>
 			</p>
 
 			<div id="delete-action">
@@ -79,7 +79,7 @@ $sent = $this->get_sent( $post->ID );
 					<?php elseif ( 'queued' == $post->post_status ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ) ?>" />
-						<?php submit_button( __( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+						<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 						<?php if ( $this->post_data['timestamp'] < $now && in_array( $post->post_status, array( 'paused' ) ) && $sent ) : ?>
 							<input name="resume" type="submit" value="<?php esc_attr_e( 'Resume', 'mailster' ) ?>" class="button resume-button" title="<?php esc_attr_e( 'Save and resume campaign', 'mailster' ) ?>" />
@@ -89,27 +89,33 @@ $sent = $this->get_sent( $post->ID );
 
 					<?php elseif ( 'autoresponder' == $post->post_status ) : ?>
 
+						<?php if ( $queuecount = mailster( 'queue' )->get_job_count( $post->ID, false ) ) : ?>
+
+						<p><label title="<?php esc_attr_e( 'Removes all pending entries from this campaign in the queue.', 'mailster' ) ?>"><input type="checkbox" name="clearqueue" value="1" checked> <?php esc_html_e( 'Clear Queue of this auto responder.', 'mailster' ) ?></label></p>
+
+						<?php endif; ?>
+
 						<input name="save" type="submit" class="button-primary" id="publish" tabindex="15" accesskey="p" value="<?php esc_attr_e( 'Update', 'mailster' ) ?>" />
 						<a href="<?php echo add_query_arg( array( 'post' => $post->ID, 'action' => 'edit', 'showstats' => 1 ), '' ); ?>" class="button statistics"><?php esc_html_e( 'Statistic', 'mailster' ); ?></a>
 
 					<?php elseif ( in_array( $post->post_status, array( 'draft', 'auto-draft' ) ) ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ) ?>" />
-						<?php submit_button( __( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
-						<?php submit_button( __( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+						<?php submit_button( esc_html__( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
+						<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 					<?php elseif ( in_array( $post->post_status, array( 'pending' ) ) ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ) ?>" />
-						<?php submit_button( __( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
-						<?php submit_button( __( 'Confirm', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+						<?php submit_button( esc_html__( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
+						<?php submit_button( esc_html__( 'Confirm', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 					<?php endif; ?>
 
 				<?php else : ?>
 
 					<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Submit for Review', 'mailster' ) ?>" />
-					<?php submit_button( __( 'Submit for Review', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
+					<?php submit_button( esc_html__( 'Submit for Review', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 			<?php endif; ?>
 

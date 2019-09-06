@@ -15,9 +15,13 @@ $roles = $wp_roles->get_names();
 <h1><?php esc_html_e( 'Newsletter Settings', 'mailster' ) ?></h1>
 <?php
 
-$templatefiles = mailster( 'templates' )->get_files( mailster_option( 'default_template' ) );
 $timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );
+if ( ! ($test_email = get_user_meta( $current_user->ID, '_mailster_test_email', true )) ) {
+	$test_email = $current_user->user_email;
+}
+$test_email = apply_filters( 'mailster_test_email', $test_email );
+
 
 ?>
 <?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>
@@ -64,7 +68,6 @@ if ( ! current_user_can( 'manage_options' ) ) {
 			<li><a href="#<?php echo $id; ?>" class="nav-<?php echo $id; ?>"><?php echo $name; ?></a></li>
 		<?php }?>
 		<?php do_action( 'mailster_settings_tabs' ); ?>
-		<?php do_action( 'mymail_settings_tabs' ); ?>
 		</ul>
 		</div>
 	</div>
@@ -75,15 +78,12 @@ if ( ! current_user_can( 'manage_options' ) ) {
 ?>
 	<div id="tab-<?php echo esc_attr( $id ) ?>" class="tab">
 		<h3><?php echo esc_html( strip_tags( $name ) ); ?></h3>
-		<?php do_action( 'mailster_section_tab' ); ?>
+		<?php do_action( 'mailster_section_tab', $id ); ?>
 		<?php do_action( 'mailster_section_tab_' . $id ); ?>
-		<?php do_action( 'mymail_section_tab' ); ?>
-		<?php do_action( 'mymail_section_tab_' . $id ); ?>
 
-		<?php if ( file_exists( MAILSTER_DIR . 'views/settings/' . $id . '.php' ) ) {
+		<?php if ( file_exists( MAILSTER_DIR . 'views/settings/' . $id . '.php' ) ) :
 			include MAILSTER_DIR . 'views/settings/' . $id . '.php';
-}
-?>
+		endif; ?>
 
 	</div>
 	<?php }?>
@@ -94,10 +94,8 @@ $extra_sections = apply_filters( 'mymail_extra_setting_sections', apply_filters(
 foreach ( $extra_sections as $id => $name ) {?>
 	<div id="tab-<?php echo esc_attr( $id ) ?>" class="tab">
 		<h3><?php echo esc_html( strip_tags( $name ) ); ?></h3>
-		<?php do_action( 'mailster_section_tab' ); ?>
+		<?php do_action( 'mailster_section_tab', $id ); ?>
 		<?php do_action( 'mailster_section_tab_' . $id ); ?>
-		<?php do_action( 'mymail_section_tab' ); ?>
-		<?php do_action( 'mymail_section_tab_' . $id ); ?>
 	</div>
 	<?php }?>
 		<p class="submitbutton">
@@ -108,7 +106,6 @@ foreach ( $extra_sections as $id => $name ) {?>
 	</div>
 
 	<?php do_action( 'mailster_settings' ); ?>
-	<?php do_action( 'mymail_settings' ); ?>
 
 	<input type="text" class="hidden" name="mailster_options[profile_form]" value="<?php echo esc_attr( mailster_option( 'profile_form', 1 ) ); ?>">
 	<input type="text" class="hidden" name="mailster_options[ID]" value="<?php echo esc_attr( mailster_option( 'ID' ) ); ?>">

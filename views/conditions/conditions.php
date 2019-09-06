@@ -27,7 +27,7 @@
 	<div class="mailster-condition-container"></div>
 	<div class="mailster-conditions-wrap" data-emptytext="<?php esc_attr_e( 'Please add your first condition.', 'mailster' ); ?>"><?php
 	foreach ( $conditions as $i => $condition_group ) : ?><div class="mailster-condition-group" data-id="<?php echo $i ?>" data-operator="<?php esc_attr_e( 'and', 'mailster' );?>"<?php if ( ! $i ) {echo ' style="display:none"';} ?>>
-				<a class="add-or-condition button button-small"><?php esc_html_e( 'Add Condition', 'mailster' );?></a>
+				<a class="add-or-condition button button-small"><?php esc_html_e( 'Add Condition', 'mailster' );?> [<span><?php esc_html_e( 'or', 'mailster' );?></span>]</a>
 		<?php foreach ( $condition_group as $j => $condition ) :
 			$value = $condition['value'];
 			$field = $condition['field'];
@@ -125,7 +125,7 @@
 						endforeach; ?>
 						</select>
 					</div>
-					<div class="mailster-conditions-operator-field" data-fields=",_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,_click_link,_click_link__not_in,_lists__not_in,">
+					<div class="mailster-conditions-operator-field" data-fields=",_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,_click_link,_click_link__not_in,_lists__not_in,_lists__in,">
 						<input type="hidden" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled value="is">
 					</div>
 				</div>
@@ -140,7 +140,7 @@
 					}
 					?>
 					<div class="mailster-conditions-value-field mailster-conditions-value-field-default">
-					<input type="text" class="widefat condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]">
+					<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]">
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",rating,">
 					<?php
@@ -179,10 +179,15 @@
 					<div class="mailster-conditions-value-field" data-fields=",form,">
 					<select name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]" class="condition-value" disabled>
 					<?php
-					foreach ( $forms as $form ) :
-						echo '<option value="' . $form->ID . '"' . selected( $form->ID, $value, false ) . '>#' . $form->ID . ' ' . $form->name . '</option>';
-						endforeach; ?>
-						</select>
+					if ( ! empty( $forms ) ) :
+						foreach ( $forms as $form ) :
+							echo '<option value="' . $form->ID . '"' . selected( $form->ID, $value, false ) . '>#' . $form->ID . ' ' . $form->name . '</option>';
+						endforeach;
+					else :
+							echo '<option value="0">' . esc_html__( 'No Form found', 'mailster' ) . '</option>';
+					endif;
+						?>
+					</select>
 					</div>
 					<div class="mailster-conditions-value-field" data-fields=",clienttype,">
 						<select name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]" class="condition-value" disabled>
@@ -227,7 +232,7 @@
 					<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]"></p>
 				<?php endif; ?>
 					</div>
-					<div class="mailster-conditions-value-field" data-fields=",_lists__not_in,">
+					<div class="mailster-conditions-value-field" data-fields=",_lists__not_in,_lists__in,">
 					<?php if ( $lists ) : ?>
 					<?php foreach ( $value_arr as $k => $v ) : ?>
 						<div class="mailster-conditions-value-field-multiselect">
@@ -249,14 +254,55 @@
 				<?php endif; ?>
 					</div>
 					<div class="mailster-conditions-value-field" data-fields=",_click_link,_click_link__not_in,">
-					<?php foreach ( $value_arr as $k => $v ) : ?>
+					<div>
+						<?php foreach ( $value_arr as $k => $v ) : ?>
+						<?php if ( is_numeric( $v ) || in_array( $v, array_keys( $this->special_campaigns ) ) ) { continue; } ?>
 					<div class="mailster-conditions-value-field-multiselect">
-					<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
-						<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $v ); ?>" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value][]" placeholder="https://example.com">
-					<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
-					<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
+						<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
+							<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $v ); ?>" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value][]" placeholder="https://example.com">
+						<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+						<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
 					</div>
-				<?php endforeach; ?>
+					<?php endforeach; ?>
+					</div>
+					<?php if ( $all_campaigns ) : ?>
+					<span><?php esc_html_e( 'in', 'mailster' ); ?> </span>
+					<div>
+					<?php foreach ( $value_arr as $k => $v ) : ?>
+						<?php if ( ! is_numeric( $v ) && ! in_array( $v, array_keys( $this->special_campaigns ) ) && $v != '' ) { continue; } ?>
+						<div class="mailster-conditions-value-field-multiselect">
+							<span><?php esc_html_e( 'or', 'mailster' ); ?> </span>
+							<select name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value][]" class="condition-value" disabled>
+								<option value="0"><?php esc_html_e( 'Any Campaign', 'mailster' ); ?></option>
+								<optgroup label="<?php esc_attr_e( 'Aggregate Campaigns', 'mailster' ) ?>">
+							<?php
+							foreach ( $this->special_campaigns as $key => $name ) :
+								echo '<option value="' . $key . '"' . selected( $v, $key, false ) . '>' . $name . '</option>';
+								endforeach; ?>
+								</optgroup>
+								<?php
+								$status = '';
+								foreach ( $all_campaigns_stati as $cj => $c ) {
+									$c = $all_campaigns[ $cj ];
+									if ( $status != $c->post_status ) {
+										if ( $status ) {
+											echo '</optgroup>';
+										}
+										echo '<optgroup label="' . $wp_post_statuses[ $c->post_status ]->label . '">';
+										$status = $c->post_status;
+									}
+									?><option value="<?php echo $c->ID ?>" <?php selected( $v, $c->ID );?>><?php echo ($c->post_title ? esc_html( $c->post_title ) : '[' . esc_html__( 'no title', 'mailster' ) . ']') . ' (# ' . $c->ID . ')' ?></option><?php
+								} ?>
+								</optgroup>
+							</select>
+						<a class="mailster-condition-remove-multiselect" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+						<a class="button button-small mailster-condition-add-multiselect"><?php esc_html_e( 'or', 'mailster' ); ?></a>
+						</div>
+					<?php endforeach; ?>
+					</div>
+					<?php else : ?>
+						<p><?php esc_html_e( 'No campaigns available', 'mailster' );?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo $inputname ?>[<?php echo $i ?>][<?php echo $j; ?>][value]"></p>
+					<?php endif; ?>
 					</div>
 				<?php if ( $geo ) : ?>
 					<div class="mailster-conditions-value-field" data-fields=",geo,">

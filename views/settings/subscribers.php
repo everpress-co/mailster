@@ -3,16 +3,8 @@
 		<th scope="row"><?php esc_html_e( 'Notification', 'mailster' ) ?></th>
 		<td>
 		<p><label><input type="hidden" name="mailster_options[subscriber_notification]" value=""><input type="checkbox" name="mailster_options[subscriber_notification]" value="1" <?php checked( mailster_option( 'subscriber_notification' ) );?>> <?php esc_html_e( 'Send a notification of new subscribers to following receivers (comma separated)', 'mailster' ) ?> <input type="text" name="mailster_options[subscriber_notification_receviers]" value="<?php echo esc_attr( mailster_option( 'subscriber_notification_receviers' ) ); ?>" class="regular-text"></label>
-		<br>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' );?> <select name="mailster_options[subscriber_notification_template]">
-		<?php
-		$selected = mailster_option( 'subscriber_notification_template', 'notification.html' );
-		foreach ( $templatefiles as $slug => $filedata ) {
-			if ( $slug == 'index.html' ) {
-				continue;
-			} ?>
-				<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo $slug ?>)</option>
-		<?php } ?>
-		</select>
+		<br>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' );?>
+		<?php mailster( 'helper' )->notifcation_template_dropdown( mailster_option( 'subscriber_notification_template', 'notification.html' ), 'mailster_options[subscriber_notification_template]' ); ?>
 		<br>&nbsp;&nbsp;<?php esc_html_e( 'send', 'mailster' );?> <select name="mailster_options[subscriber_notification_delay]">
 		<?php $selected = mailster_option( 'subscriber_notification_delay' ); ?>
 			<option value="0"<?php selected( ! $selected ) ?>><?php esc_html_e( 'immediately', 'mailster' );?></option>
@@ -30,16 +22,9 @@
 		<td>
 		<p>
 		<label><input type="hidden" name="mailster_options[unsubscribe_notification]" value=""><input type="checkbox" name="mailster_options[unsubscribe_notification]" value="1" <?php checked( mailster_option( 'unsubscribe_notification' ) );?>> <?php esc_html_e( 'Send a notification if subscribers cancel their subscription to following receivers (comma separated)', 'mailster' ) ?> <input type="text" name="mailster_options[unsubscribe_notification_receviers]" value="<?php echo esc_attr( mailster_option( 'unsubscribe_notification_receviers' ) ); ?>" class="regular-text"></label>
-		<br>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' );?> <select name="mailster_options[unsubscribe_notification_template]">
-		<?php
-		$selected = mailster_option( 'unsubscribe_notification_template', 'notification.html' );
-		foreach ( $templatefiles as $slug => $filedata ) {
-			if ( $slug == 'index.html' ) {
-				continue;
-			} ?>
-			<option value="<?php echo $slug ?>"<?php selected( $slug == $selected ) ?>><?php echo esc_attr( $filedata['label'] ) ?> (<?php echo $slug ?>)</option>
-		<?php } ?>
-		</select>
+		<br>&nbsp;&nbsp;<?php esc_html_e( 'use', 'mailster' );?>
+		<?php mailster( 'helper' )->notifcation_template_dropdown( mailster_option( 'unsubscribe_notification_template', 'notification.html' ), 'mailster_options[unsubscribe_notification_template]' ); ?>
+
 		<br>&nbsp;&nbsp;<?php esc_html_e( 'send', 'mailster' );?> <select name="mailster_options[unsubscribe_notification_delay]">
 		<?php $selected = mailster_option( 'unsubscribe_notification_delay' ); ?>
 			<option value="0"<?php selected( ! $selected ) ?>><?php esc_html_e( 'immediately', 'mailster' );?></option>
@@ -67,7 +52,7 @@
 			<option value="0"<?php selected( ! mailster_option( 'name_order' ) );?>><?php esc_html_e( 'Firstname', 'mailster' ) ?> <?php esc_html_e( 'Lastname', 'mailster' ) ?></option>
 			<option value="1"<?php selected( mailster_option( 'name_order' ) );?>><?php esc_html_e( 'Lastname', 'mailster' ) ?> <?php esc_html_e( 'Firstname', 'mailster' ) ?></option>
 		</select>
-		<p class="description"><?php printf( __( 'Define in which order names appear in your language or country. This is used for the %s tag.', 'mailster' ), '<code>{fullname}</code>' );?></p>
+		<p class="description"><?php printf( esc_html__( 'Define in which order names appear in your language or country. This is used for the %s tag.', 'mailster' ), '<code>{fullname}</code>' );?></p>
 		</td>
 	</tr>
 	<tr valign="top">
@@ -80,12 +65,12 @@
 			<div class="customfields">
 		<?php if ( $customfields ) : ?>
 		<?php $types = array(
-				'textfield' => __( 'Textfield', 'mailster' ),
-				'textarea' => __( 'Textarea', 'mailster' ),
-				'dropdown' => __( 'Dropdown Menu', 'mailster' ),
-				'radio' => __( 'Radio Buttons', 'mailster' ),
-				'checkbox' => __( 'Checkbox', 'mailster' ),
-				'date' => __( 'Date', 'mailster' ),
+				'textfield' => esc_html__( 'Textfield', 'mailster' ),
+				'textarea' => esc_html__( 'Textarea', 'mailster' ),
+				'dropdown' => esc_html__( 'Dropdown Menu', 'mailster' ),
+				'radio' => esc_html__( 'Radio Buttons', 'mailster' ),
+				'checkbox' => esc_html__( 'Checkbox', 'mailster' ),
+				'date' => esc_html__( 'Date', 'mailster' ),
 			);
 		foreach ( $customfields as $id => $data ) : ?>
 			<div class="customfield">

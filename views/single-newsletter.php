@@ -42,7 +42,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 <?php endif; ?>
 
 	<meta name="twitter:card" content="<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_card', apply_filters( 'mailster_frontpage_twitter_card', 'summary' ) ) ); ?>"/>
-	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_username', apply_filters( 'mailster_frontpage_twitter_username', 'mailsterapp' ) ) ); ?>"/>
+	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_username', apply_filters( 'mailster_frontpage_twitter_username', 'mailster' ) ) ); ?>"/>
 	<meta name="twitter:title" content="<?php echo esc_attr( $title ) ?>" />
 	<meta name="twitter:description" content="<?php echo esc_attr( $description ); ?>"/>
 
@@ -53,7 +53,6 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 <?php endif; ?>
 
 	<?php do_action( 'mailster_wphead' ); ?>
-	<?php do_action( 'mymail_wphead' ); ?>
 
 </head>
 <body <?php body_class();?>>
@@ -79,7 +78,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 					<ul class="sharebox-panel">
 				<?php if ( $services = mailster_option( 'share_services' ) ) : ?>
 						<li class="sharebox-panel-option <?php if ( ! $is_forward ) { echo ' active'; } ?>">
-							<h4><?php printf( __( 'Share this via %s', 'mailster' ), '&hellip;' ) ?></h4>
+							<h4><?php printf( esc_html__( 'Share this via %s', 'mailster' ), '&hellip;' ) ?></h4>
 							<div>
 								<ul class="social-services">
 								<?php foreach ( $services as $service ) : ?>
@@ -89,7 +88,7 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 								}
 
 								?><li>
-									<a title="<?php printf( __( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ) ?>" class="<?php echo $service ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? (int) $social_services[ $service ]['width'] : 650 ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? (int) $social_services[ $service ]['height'] : 405 ?>" >
+									<a title="<?php printf( esc_html__( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ) ?>" class="<?php echo $service ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? (int) $social_services[ $service ]['width'] : 650 ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? (int) $social_services[ $service ]['height'] : 405 ?>" >
 									<?php echo esc_html( $social_services[ $service ]['name'] ) ?>
 									</a>
 								</li>
@@ -148,7 +147,6 @@ if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 	</div>
 
 	<?php do_action( 'mailster_wpfooter' ); ?>
-	<?php do_action( 'mymail_wpfooter' ); ?>
 
 </body>
 </html>

@@ -194,12 +194,12 @@ $extensions = array(
 
 			<?php
 
-			$buttontext = __( 'Update Newsletter Homepage', 'mailster' );
+			$buttontext = esc_html__( 'Update Newsletter Homepage', 'mailster' );
 
 			if ( ! ( $homepage = (array) get_post( mailster_option( 'homepage' ) ) ) ) {
 				include MAILSTER_DIR . 'includes/static.php';
 
-				$buttontext = __( 'Create Newsletter Homepage', 'mailster' );
+				$buttontext = esc_html__( 'Create Newsletter Homepage', 'mailster' );
 				$homepage = $mailster_homepage;
 
 			}
@@ -214,7 +214,7 @@ $extensions = array(
 				<label><?php echo esc_html_x( 'Location', 'the URL not the place', 'mailster' ) ?>:</label>
 				<span>
 					<a href="<?php echo $url . sanitize_title( $homepage['post_name'] ) ?>" class="external"><?php echo $url ?><strong><?php echo sanitize_title( $homepage['post_name'] ) ?></strong>/</a>
-					<a class="button button-small hide-if-no-js edit-slug"><?php echo __( 'Edit', 'mailster' ) ?></a>
+					<a class="button button-small hide-if-no-js edit-slug"><?php echo esc_html__( 'Edit', 'mailster' ) ?></a>
 				</span>
 				<span class="edit-slug-area">
 				<?php echo $url ?><input type="text" name="post_name" value="<?php echo sanitize_title( $homepage['post_name'] ); ?>" class="regular-text">/
@@ -288,7 +288,7 @@ $extensions = array(
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-amazonses" data-method="amazonses">
-				<?php echo in_array( 'mailster-amazonses', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'Amazon SES' ) ?>
+				<?php echo in_array( 'mailster-amazonses', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Amazon SES' ) ?>
 				</a>
 				<?php endif; ?>
 			</div>
@@ -303,7 +303,7 @@ $extensions = array(
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-sparkpost" data-method="sparkpost">
-				<?php echo in_array( 'mailster-sparkpost', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'SparkPost' ) ?>
+				<?php echo in_array( 'mailster-sparkpost', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'SparkPost' ) ?>
 				</a>
 				<?php endif; ?>
 			</div>
@@ -318,7 +318,7 @@ $extensions = array(
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-mailgun" data-method="mailgun">
-				<?php echo in_array( 'mailster-mailgun', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'SparkPost' ) ?>
+				<?php echo in_array( 'mailster-mailgun', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Mailgun' ) ?>
 				</a>
 				<?php endif; ?>
 			</div>
@@ -333,7 +333,7 @@ $extensions = array(
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-sendgrid" data-method="sendgrid">
-				<?php echo in_array( 'mailster-sendgrid', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'SendGrid' ) ?>
+				<?php echo in_array( 'mailster-sendgrid', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'SendGrid' ) ?>
 				</a>
 				<?php endif; ?>
 			</div>
@@ -348,7 +348,7 @@ $extensions = array(
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-mandrill" data-method="mandrill">
-				<?php echo in_array( 'mailster-mandrill', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'Mandrill' ) ?>
+				<?php echo in_array( 'mailster-mandrill', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Mandrill' ) ?>
 				</a>
 				<?php endif; ?>
 			</div>
@@ -363,7 +363,7 @@ $extensions = array(
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-dummy-mailer" data-method="dummymailer">
-				<?php echo in_array( 'mailster-dummy-mailer', $pluginslugs ) ? __( 'Activate Plugin', 'mailster' ) : sprintf( __( 'Install %s Extension', 'mailster' ), 'Dummy Mailer' ) ?>
+				<?php echo in_array( 'mailster-dummy-mailer', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Dummy Mailer' ) ?>
 				</a>
 				<?php endif; ?>
 			</div>
@@ -546,6 +546,18 @@ $extensions = array(
 			</div>
 			<p><?php printf( esc_html__( 'Still need help? Go ask on the %s further questions.', 'mailster' ), '<a href="' . add_query_arg( $utm, 'https://kb.mailster.co/' ) . '" class="external">' . esc_html__( 'knowledge base', 'mailster' ) . '</a>' ) ?></p>
 
+			<div class="social-media-buttons">
+				<div id="fb-root"></div>
+					<a href="https://twitter.com/mailster?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-size="large" data-show-count="false">Follow @mailster</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+				<script>(function(d, s, id) {
+				  var js, fjs = d.getElementsByTagName(s)[0];
+				  if (d.getElementById(id)) return;
+				  js = d.createElement(s); js.id = id;
+				  js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0&appId=1656804244418051&autoLogAppEvents=1';
+				  fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));</script>
+				<div class="fb-like" data-href="https://www.facebook.com/mailster/" data-layout="button" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
+				</div>
 			</div>
 
 			<div class="mailster-setup-step-buttons">

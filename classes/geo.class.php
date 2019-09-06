@@ -85,13 +85,15 @@ class MailsterGeo {
 	 */
 	public function get_file_path( $which ) {
 
+		$folder = trailingslashit( apply_filters( 'mailster_location_db_folder', MAILSTER_UPLOAD_DIR ) );
+
 		switch ( $which ) {
 			case 'country':
 			case 'countries':
-				return apply_filters( 'mailster_location_db_file_country', MAILSTER_UPLOAD_DIR . '/GeoIPv6.dat' );
+				return apply_filters( 'mailster_location_db_file_country', $folder . 'GeoIPv6.dat' );
 			case 'city':
 			case 'cities':
-				return apply_filters( 'mailster_location_db_file_city', MAILSTER_UPLOAD_DIR . '/GeoIPCity.dat' );
+				return apply_filters( 'mailster_location_db_file_city', $folder . 'GeoIPCity.dat' );
 				break;
 		}
 		return false;
@@ -157,6 +159,10 @@ class MailsterGeo {
 			}
 
 			$Ip2City = $this->Ip2City();
+			if ( ! $Ip2City->gi ) {
+				return 'unknown';
+			}
+
 			$code = $Ip2City->get( $ip, $part );
 
 			if ( is_null( $part ) && is_object( $code ) ) {
@@ -166,7 +172,7 @@ class MailsterGeo {
 			return $code;
 
 		} catch ( Exception $e ) {
-			return 'error';
+			return 'unknown';
 		}
 
 	}
@@ -234,16 +240,16 @@ class MailsterGeo {
 	public function get_continents( $european_union = false ) {
 
 		$continents = array(
-			'_EU' => __( 'Europe', 'mailster' ),
-			'_AS' => __( 'Asia/Pacific Region', 'mailster' ),
-			'_NA' => __( 'North America', 'mailster' ),
-			'_SA' => __( 'South America', 'mailster' ),
-			'_AF' => __( 'Africa', 'mailster' ),
-			'_OC' => __( 'Oceania/Australia', 'mailster' ),
+			'_EU' => esc_html__( 'Europe', 'mailster' ),
+			'_AS' => esc_html__( 'Asia/Pacific Region', 'mailster' ),
+			'_NA' => esc_html__( 'North America', 'mailster' ),
+			'_SA' => esc_html__( 'South America', 'mailster' ),
+			'_AF' => esc_html__( 'Africa', 'mailster' ),
+			'_OC' => esc_html__( 'Oceania/Australia', 'mailster' ),
 		);
 
 		if ( $european_union ) {
-			$continents['_EN'] = __( 'European Union', 'mailster' );
+			$continents['_EN'] = esc_html__( 'European Union', 'mailster' );
 		}
 
 		asort( $continents );

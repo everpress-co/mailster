@@ -9,8 +9,8 @@ class Mailster_Forms_Table extends WP_List_Table {
 	public function __construct() {
 
 		parent::__construct( array(
-				'singular' => __( 'Form', 'mailster' ), // singular name of the listed records
-				'plural' => __( 'Forms', 'mailster' ), // plural name of the listed records
+				'singular' => esc_html__( 'Form', 'mailster' ), // singular name of the listed records
+				'plural' => esc_html__( 'Forms', 'mailster' ), // plural name of the listed records
 				'ajax' => false, // does this table support ajax?
 		) );
 
@@ -29,7 +29,7 @@ class Mailster_Forms_Table extends WP_List_Table {
 		$counts = mailster( 'forms' )->get_count();
 		$link = 'edit.php?post_type=newsletter&page=mailster_forms';
 
-		$views = array( 'view-all' => '<a href="' . $link . '">' . __( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $counts ) . ')</span></a>' );
+		$views = array( 'view-all' => '<a href="' . $link . '">' . esc_html__( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $counts ) . ')</span></a>' );
 
 		return $views;
 	}
@@ -44,7 +44,7 @@ class Mailster_Forms_Table extends WP_List_Table {
 		esc_html_e( 'No forms found', 'mailster' );
 
 		if ( current_user_can( 'mailster_add_forms' ) ) {
-			echo ' <a href="edit.php?post_type=newsletter&page=mailster_forms&new">' . __( 'Add New', 'mailster' ) . '</a>';
+			echo ' <a href="edit.php?post_type=newsletter&page=mailster_forms&new">' . esc_html__( 'Add New', 'mailster' ) . '</a>';
 		}
 
 	}
@@ -103,19 +103,19 @@ class Mailster_Forms_Table extends WP_List_Table {
 
 			case 'name':
 
-				echo '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $item->ID ) . '" title="' . $item->name . '">' . ( $item->name ? $item->name : '<span class="grey">' . __( 'undefined', 'mailster' ) . '</span>' ) . '</a> <strong>(#' . $item->ID . ')</strong>';
+				echo '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $item->ID ) . '" title="' . $item->name . '">' . ( $item->name ? $item->name : '<span class="grey">' . esc_html__( 'undefined', 'mailster' ) . '</span>' ) . '</a> <strong>(#' . $item->ID . ')</strong>';
 
 				if ( mailster_option( 'profile_form', 1 ) == $item->ID ) {
-					echo '<span class="dashicons-before dashicons-admin-users" title="' . __( 'This form is used for user profile updates', 'mailster' ) . '"></span>';
+					echo '<span class="dashicons-before dashicons-admin-users" title="' . esc_html__( 'This form is used for user profile updates', 'mailster' ) . '"></span>';
 				}
 
 				echo '<div class="row-actions">';
 				$actions = array();
 
-				$actions['fields'] = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=structure" title="' . __( 'change structure', 'mailster' ) . '">' . __( 'Fields', 'mailster' ) . '</a>';
-				$actions['design'] = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=design" title="' . __( 'change design', 'mailster' ) . '">' . __( 'Design', 'mailster' ) . '</a>';
-				$actions['settings'] = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=settings" title="' . __( 'change settings', 'mailster' ) . '">' . __( 'Settings', 'mailster' ) . '</a>';
-				$actions['duplicate'] = '<a href="?post_type=newsletter&page=mailster_forms&duplicate=' . $item->ID . '&_wpnonce=' . wp_create_nonce( 'mailster_duplicate_nonce' ) . '" title="' . __( 'duplicate Form', 'mailster' ) . '">' . __( 'Duplicate', 'mailster' ) . '</a>';
+				$actions['fields'] = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=structure" title="' . esc_html__( 'change structure', 'mailster' ) . '">' . esc_html__( 'Fields', 'mailster' ) . '</a>';
+				$actions['design'] = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=design" title="' . esc_html__( 'change design', 'mailster' ) . '">' . esc_html__( 'Design', 'mailster' ) . '</a>';
+				$actions['settings'] = '<a href="?post_type=newsletter&page=mailster_forms&ID=' . $item->ID . '&tab=settings" title="' . esc_html__( 'change settings', 'mailster' ) . '">' . esc_html__( 'Settings', 'mailster' ) . '</a>';
+				$actions['duplicate'] = '<a href="?post_type=newsletter&page=mailster_forms&duplicate=' . $item->ID . '&_wpnonce=' . wp_create_nonce( 'mailster_duplicate_nonce' ) . '" title="' . esc_html__( 'duplicate Form', 'mailster' ) . '">' . esc_html__( 'Duplicate', 'mailster' ) . '</a>';
 
 				echo implode( ' | ', $actions );
 				echo '</div>';
@@ -166,10 +166,10 @@ class Mailster_Forms_Table extends WP_List_Table {
 
 					if ( ! empty( $occurrence['widgets'] ) ) {
 						$count = count( $occurrence['widgets'] );
-						echo '<a href="widgets.php">' . sprintf( _n( '%d Widget', '%d Widgets', $count, 'mailster' ), $count ) . '</a>';
+						echo '<a href="widgets.php">' . sprintf( esc_html__( _n( '%d Widget', '%d Widgets', $count, 'mailster' ) ), $count ) . '</a>';
 					}
 				} else {
-					echo '<em class="tiny">' . __( 'unknown', 'mailster' ) . '</em>';
+					echo '<em class="tiny">' . esc_html__( 'unknown', 'mailster' ) . '</em>';
 				}
 
 			break;
@@ -178,7 +178,7 @@ class Mailster_Forms_Table extends WP_List_Table {
 
 			return mailster( 'forms' )->get_subscribe_button( $item->ID, array(
 					'showcount' => false,
-					'label' => __( 'Preview', 'mailster' ),
+					'label' => esc_html__( 'Preview', 'mailster' ),
 			) );
 
 			default:
@@ -207,7 +207,7 @@ class Mailster_Forms_Table extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		$actions = array(
-			'delete' => __( 'Delete', 'mailster' ),
+			'delete' => esc_html__( 'Delete', 'mailster' ),
 		);
 
 		if ( ! current_user_can( 'mailster_delete_forms' ) ) {

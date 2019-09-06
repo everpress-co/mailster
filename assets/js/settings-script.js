@@ -14,14 +14,15 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
-	$('form#mailster-settings-form').on('submit', function () {
-		return false
-	});
+	$('form#mailster-settings-form')
+		.on('submit.lock', function () {
+			return false
+		});
 	if ($('#settingsloaded').length) {
 		$('.submit-form').prop('disabled', false);
-		$('form#mailster-settings-form').off('submit');
+		$('form#mailster-settings-form').off('submit.lock');
 	} else {
-		console.log('error loading settings page');
+		if (console) console.log('error loading settings page');
 	}
 
 	deliverynav.on('click', 'a.nav-tab', function () {
@@ -34,7 +35,6 @@ jQuery(document).ready(function ($) {
 		return false;
 	});
 
-
 	nav.on('click', 'a', function () {
 		nav.find('li').removeClass('active');
 		tabs.hide();
@@ -42,6 +42,10 @@ jQuery(document).ready(function ($) {
 		$('#tab-' + hash.substr(1)).show();
 		location.hash = hash;
 		$('form#mailster-settings-form').attr('action', 'options.php' + hash);
+		if ('#authentication' == hash) {
+			load_spf_data();
+			load_dkim_data();
+		}
 		return false;
 	});
 
@@ -67,7 +71,8 @@ jQuery(document).ready(function ($) {
 	nav.find('a[href="' + location.hash + '"]').trigger('click'): nav.find('a').eq(0).trigger('click');
 
 	$('.system_mail').on('change', function () {
-		$('.system_mail_template').prop('disabled', $(this).val() == 0);
+		$('[name="mailster_options[system_mail_template]"]').prop('disabled', $(this).val() == 0);
+		$('[name="mailster_options[respect_content_type]"]').prop('disabled', $(this).val() == 0);
 	});
 
 	$('#load_location_db').on('click', function () {
@@ -487,6 +492,48 @@ jQuery(document).ready(function ($) {
 		});
 
 
+	}
+
+	function load_spf_data() {
+		var loader = $('.spf-result').css({
+			'visibility': 'visible'
+		});
+
+		_ajax('spf_check', function (response) {
+
+			if (response.success) {
+				loader
+					.html(response.message)
+					.addClass(response.found ? 'verified' : 'not-verified')
+					.removeClass('spinner');
+			} else {}
+
+		}, function (jqXHR, textStatus, errorThrown) {
+
+			loader.html('error');
+
+		});
+	}
+
+	function load_dkim_data() {
+		var loader = $('.dkim-result').css({
+			'visibility': 'visible'
+		});
+
+		_ajax('dkim_check', function (response) {
+
+			if (response.success) {
+				loader
+					.html(response.message)
+					.addClass(response.found ? 'verified' : 'not-verified')
+					.removeClass('spinner');
+			} else {}
+
+		}, function (jqXHR, textStatus, errorThrown) {
+
+			loader.html('error');
+
+		});
 	}
 
 	function _sanitize(string) {
