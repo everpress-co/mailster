@@ -9,12 +9,12 @@
 	<div class="mailster-badge"><?php printf( esc_html__( 'Version %s', 'mailster' ), MAILSTER_VERSION ); ?></div>
 
 	<div class="nav-tab-wrapper">
-		<a href="<?php echo admin_url( 'admin.php?page=mailster_welcome' ) ?>" class="nav-tab nav-tab-active"><?php esc_html_e( 'What\'s New', 'mailster' ); ?></a>
+		<a href="<?php echo admin_url( 'admin.php?page=mailster_welcome' ); ?>" class="nav-tab nav-tab-active"><?php esc_html_e( 'What\'s New', 'mailster' ); ?></a>
 		<?php if ( current_user_can( 'mailster_manage_templates' ) ) : ?>
-		<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more' ) ?>" class="nav-tab"><?php esc_html_e( 'Templates', 'mailster' ); ?></a>
+		<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more' ); ?>" class="nav-tab"><?php esc_html_e( 'Templates', 'mailster' ); ?></a>
 		<?php endif; ?>
 		<?php if ( current_user_can( 'mailster_manage_addons' ) ) : ?>
-		<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_addons' ) ?>" class="nav-tab"><?php esc_html_e( 'Add Ons', 'mailster' ); ?></a>
+		<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_addons' ); ?>" class="nav-tab"><?php esc_html_e( 'Add Ons', 'mailster' ); ?></a>
 		<?php endif; ?>
 
 	</div>
@@ -25,7 +25,7 @@
 			<div class="promo-video">
 				<iframe id="ytplayer" type="text/html" src="https://www.youtube.com/embed/ZG9V0sSbwvo?autoplay=1&showinfo=0&modestbranding=1&controls=0&rel=0&vq=hd720" frameborder="0"></iframe>
 			</div>
-			<p class="about-text"><a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ) ?>" class="button button-primary button-hero">Create a new Campaign</a></p>
+			<p class="about-text"><a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ); ?>" class="button button-primary button-hero">Create a new Campaign</a></p>
 			<p><a href="https://kb.mailster.co/unsplash/" target="_blank">Learn more</a> or <a href="https://unsplash.com/" target="_blank">visit Unsplash.com</a></p>
 		</div>
 
@@ -93,7 +93,7 @@
 		<div class="clear"></div>
 
 		<div class="return-to-dashboard">
-			<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ) ?>">Back to Dashboard</a>
+			<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>">Back to Dashboard</a>
 		</div>
 
 <div class="clear"></div>

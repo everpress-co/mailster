@@ -22,7 +22,7 @@ class MailsterPrivacy {
 
 	public function privacy_content() {
 
-		$content =
+		$content  =
 			'<h2 class="privacy-policy-tutorial">' . esc_html__( 'What data Mailster collects from your subscribers', 'mailster' ) . '</h2>';
 		$content .=
 			'<h3 class="wp-policy-help">' . esc_html__( 'Newsletter', 'mailster' ) . '</h3>';
@@ -37,7 +37,7 @@ class MailsterPrivacy {
 		);
 
 		if ( $custom_fields = mailster()->get_custom_fields() ) {
-			$custom_fields = wp_list_pluck( $custom_fields, 'name' );
+			$custom_fields  = wp_list_pluck( $custom_fields, 'name' );
 			$tracked_fields = array_merge( $tracked_fields, $custom_fields );
 		}
 
@@ -54,7 +54,7 @@ class MailsterPrivacy {
 		$content .=
 			'<p class="wp-policy-help">' . esc_html__( 'We send our emails via', 'mailster' ) . ' ';
 
-		if ( 'simple' == ($deliverymethod = mailster_option( 'deliverymethod' )) ) {
+		if ( 'simple' == ( $deliverymethod = mailster_option( 'deliverymethod' ) ) ) {
 			$content .= esc_html__( 'our own server.', 'mailster' );
 		} elseif ( 'smtp' == $deliverymethod ) {
 			$content .= sprintf( esc_html__( 'via SMTP host %s', 'mailster' ), mailster_option( 'smtp_host' ) );
@@ -96,7 +96,7 @@ class MailsterPrivacy {
 	public function register_exporter( $exporters ) {
 		$exporters['mailster-exporter'] = array(
 			'exporter_friendly_name' => esc_html__( 'Mailster Data', 'mailster' ),
-			'callback' => array( &$this, 'data_export' ),
+			'callback'               => array( &$this, 'data_export' ),
 		);
 		return $exporters;
 	}
@@ -104,7 +104,7 @@ class MailsterPrivacy {
 	public function register_eraser( $eraser ) {
 		$eraser['mailster-eraser'] = array(
 			'eraser_friendly_name' => esc_html__( 'Mailster Data', 'mailster' ),
-			'callback' => array( &$this, 'data_erase' ),
+			'callback'             => array( &$this, 'data_erase' ),
 		);
 		return $eraser;
 	}
@@ -184,7 +184,7 @@ class MailsterPrivacy {
 			}
 
 			if ( $activity = mailster( 'actions' )->get_activity( null, $subscriber->ID ) ) {
-				$data = array();
+				$data      = array();
 				$campaigns = array();
 
 				// activity
@@ -228,7 +228,7 @@ class MailsterPrivacy {
 					}
 				}
 
-				$export_items = array_merge( $export_items,  array_values( $campaigns ) );
+				$export_items = array_merge( $export_items, array_values( $campaigns ) );
 
 			}
 		}
@@ -262,7 +262,7 @@ class MailsterPrivacy {
 			);
 		}
 
-		$messages = array();
+		$messages       = array();
 		$items_removed  = false;
 		$items_retained = false;
 
@@ -289,7 +289,7 @@ class MailsterPrivacy {
 
 		if ( $privacy_policy_page_id = (int) get_option( 'wp_page_for_privacy_policy' ) ) {
 			if ( $post_id == $privacy_policy_page_id ) {
-				$link = get_permalink( $post_id );
+				$link      = get_permalink( $post_id );
 				$gdpr_link = mailster_option( 'gdpr_link' );
 				if ( $gdpr_link && $link != $gdpr_link ) {
 					if ( mailster_update_option( 'gdpr_link', $link ) && mailster_option( 'gdpr_forms' ) ) {
