@@ -10,7 +10,7 @@ global $wpdb, $wp_roles;
 if ( is_network_admin() && is_multisite() ) {
 
 	$old_blog = $wpdb->blogid;
-	$blogids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+	$blogids  = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
 
 } else {
 
@@ -30,13 +30,15 @@ foreach ( $blogids as $blog_id ) {
 		require_once MAILSTER_DIR . 'classes/UpdateCenterPlugin.php';
 	}
 
-	UpdateCenterPlugin::add( array(
-		'licensecode' => mailster()->license(),
-		'remote_url' => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
-		'plugin' => MAILSTER_SLUG,
-		'slug' => 'mailster',
-		'autoupdate' => mailster_option( 'autoupdate', true ),
-	) );
+	UpdateCenterPlugin::add(
+		array(
+			'licensecode' => mailster()->license(),
+			'remote_url'  => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
+			'plugin'      => MAILSTER_SLUG,
+			'slug'        => 'mailster',
+			'autoupdate'  => mailster_option( 'autoupdate', true ),
+		)
+	);
 
 	mailster()->uninstall();
 

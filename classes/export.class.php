@@ -39,8 +39,8 @@ class MailsterExport {
 		$old_home_url = '';
 		foreach ( $links as $link ) {
 			if ( preg_match( '/(.*)wp-content(.*)\/mailster/U', $link, $match ) ) {
-				$new_link = str_replace( $match[0], MAILSTER_UPLOAD_URI, $link );
-				$old_home_url = $match[1];
+				$new_link                 = str_replace( $match[0], MAILSTER_UPLOAD_URI, $link );
+				$old_home_url             = $match[1];
 				$postdata['post_content'] = str_replace( $link, $new_link, $postdata['post_content'] );
 			}
 		}
@@ -78,7 +78,7 @@ class MailsterExport {
 			printf( '<code>%s</code>', 'mailster_' . $table );
 
 			$sql = $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_{$table} SET campaign_id = %d WHERE campaign_id = %d", $post_id, $original_post_ID );
-			if ( false !== ($rows = $wpdb->query( $sql )) ) {
+			if ( false !== ( $rows = $wpdb->query( $sql ) ) ) {
 				printf( '..' . __( 'completed for %d rows.', 'mailster' ), $rows );
 			}
 			echo '<br>';
@@ -124,10 +124,14 @@ class MailsterExport {
 				$data = $wpdb->get_results( $sql, ARRAY_N );
 
 				if ( ! empty( $data ) ) {
-					printf( '<wp:postmeta>
+					printf(
+						'<wp:postmeta>
 						<wp:meta_key>%1$s</wp:meta_key>
 						<wp:meta_value>>%2$s</wp:meta_value>
-					</wp:postmeta>', wxr_cdata( '_mailster_table_data_' . $table ), wxr_cdata( serialize( $data ) ) );
+					</wp:postmeta>',
+						wxr_cdata( '_mailster_table_data_' . $table ),
+						wxr_cdata( serialize( $data ) )
+					);
 				}
 			}
 

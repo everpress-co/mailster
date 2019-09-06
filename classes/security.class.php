@@ -59,7 +59,7 @@ class MailsterSecurity {
 	private function verify( $entry ) {
 
 		$email = $entry['email'];
-		$ip = mailster_get_ip();
+		$ip    = mailster_get_ip();
 
 		list( $user, $domain ) = explode( '@', $email );
 
@@ -75,18 +75,18 @@ class MailsterSecurity {
 
 		// check for domains
 		if ( $this->match( $domain, mailster_option( 'blacklisted_domains' ) ) ) {
-			return new WP_Error( 'error_blacklisted',  'blacklisted' , 'email' );
+			return new WP_Error( 'error_blacklisted', 'blacklisted', 'email' );
 		}
 
 		// check DEP
-		if ( $this->match( $domain, $this->get_dep_domains( ) ) ) {
+		if ( $this->match( $domain, $this->get_dep_domains() ) ) {
 			return new WP_Error( 'error_dep', 'dep_domain', 'email' );
 		}
 
 		// check MX record
 		if ( mailster_option( 'check_mx' ) && function_exists( 'checkdnsrr' ) ) {
 			if ( ! checkdnsrr( $domain, 'MX' ) ) {
-				return new WP_Error( 'error_mx',  'mx_check', 'email' );
+				return new WP_Error( 'error_mx', 'mx_check', 'email' );
 			}
 		}
 
@@ -104,7 +104,7 @@ class MailsterSecurity {
 
 		// check Antiflood
 		if ( $timestamp = $this->is_flood( $ip ) ) {
-			$t = ($timestamp -time() > 60) ? human_time_diff( $timestamp ) : sprintf( esc_html__( '%d seconds', 'mailster' ), $timestamp -time() );
+			$t = ( $timestamp - time() > 60 ) ? human_time_diff( $timestamp ) : sprintf( esc_html__( '%d seconds', 'mailster' ), $timestamp - time() );
 			return new WP_Error( 'error_antiflood', sprintf( esc_html__( 'Please wait %s', 'mailster' ), $t ), 'email' );
 		}
 
@@ -200,9 +200,9 @@ class MailsterSecurity {
 		require_once MAILSTER_DIR . 'classes/libs/smtp-validate-email/Exceptions/SendFailed.php';
 		require_once MAILSTER_DIR . 'classes/libs/smtp-validate-email/Exceptions/UnexpectedResponse.php';
 
-		$validator = new SMTPValidateEmail\Validator( $email, $from );
+		$validator    = new SMTPValidateEmail\Validator( $email, $from );
 		$smtp_results = $validator->validate();
-		$valid = (isset( $smtp_results[ $email ] ) && 1 == $smtp_results[ $email ]) || array_sum( $smtp_results['domains'][ $domain ]['mxs'] );
+		$valid        = ( isset( $smtp_results[ $email ] ) && 1 == $smtp_results[ $email ] ) || array_sum( $smtp_results['domains'][ $domain ]['mxs'] );
 
 		return (bool) $valid;
 
@@ -213,17 +213,22 @@ class MailsterSecurity {
 			return false;
 		}
 
-		$agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : null;
+		$agent    = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : null;
 		$referrer = wp_get_referer();
 
-		$response = Akismet::http_post(Akismet::build_query(array(
-			'blog' => home_url(),
-			'referrer' => $referrer,
-			'user_agent' => $agent,
-			'comment_type' => 'signup',
-			'comment_author_email' => $email,
-			'user_ip' => $ip,
-		)), 'comment-check');
+		$response = Akismet::http_post(
+			Akismet::build_query(
+				array(
+					'blog'                 => home_url(),
+					'referrer'             => $referrer,
+					'user_agent'           => $agent,
+					'comment_type'         => 'signup',
+					'comment_author_email' => $email,
+					'user_ip'              => $ip,
+				)
+			),
+			'comment-check'
+		);
 
 		if ( $response && $response[1] == 'true' ) {
 			return true;
