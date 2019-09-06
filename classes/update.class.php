@@ -20,13 +20,15 @@ class MailsterUpdate {
 			require_once MAILSTER_DIR . 'classes/UpdateCenterPlugin.php';
 		}
 
-		UpdateCenterPlugin::add( array(
-			'licensecode' => mailster()->license(),
-			'remote_url' => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
-			'plugin' => MAILSTER_SLUG,
-			'slug' => 'mailster',
-			'autoupdate' => mailster_option( 'autoupdate', true ),
-		) );
+		UpdateCenterPlugin::add(
+			array(
+				'licensecode' => mailster()->license(),
+				'remote_url'  => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
+				'plugin'      => MAILSTER_SLUG,
+				'slug'        => 'mailster',
+				'autoupdate'  => mailster_option( 'autoupdate', true ),
+			)
+		);
 
 		if ( isset( $_GET['mailster_allow_usage_tracking'] ) ) {
 			if ( wp_verify_nonce( $_GET['_wpnonce'], 'mailster_allow_usage_tracking' ) ) {
@@ -34,7 +36,7 @@ class MailsterUpdate {
 				mailster_update_option( 'usage_tracking', $track );
 				if ( ! $track ) {
 					mailster_update_option( 'ask_usage_tracking', false );
-					mailster_notice( esc_html__( 'Thanks, we\'ll respect your opinion. You can always opt in anytime on the advanced tab in the settings!', 'mailster' ), 'info',true );
+					mailster_notice( esc_html__( 'Thanks, we\'ll respect your opinion. You can always opt in anytime on the advanced tab in the settings!', 'mailster' ), 'info', true );
 				}
 			}
 		}
@@ -83,7 +85,7 @@ class MailsterUpdate {
 
 	public function modify_tracking( $body ) {
 
-		$track = array( 'send_offset','timezone','embed_images','track_opens','track_clicks','track_location','track_users','tags_webversion','gdpr_forms','module_thumbnails','charset','encoding','autoupdate','system_mail','default_template','frontpage_public','webversion_bar','frontpage_pagination','share_button','hasarchive','subscriber_notification','unsubscribe_notification','do_not_track','list_based_opt_in','single_opt_out','sync','register_comment_form','register_other','interval','send_at_once','send_limit','send_period','send_delay','cron_service','cron_lock','deliverymethod','bounce_active','disable_cache','remove_data' );
+		$track = array( 'send_offset', 'timezone', 'embed_images', 'track_opens', 'track_clicks', 'track_location', 'track_users', 'tags_webversion', 'gdpr_forms', 'module_thumbnails', 'charset', 'encoding', 'autoupdate', 'system_mail', 'default_template', 'frontpage_public', 'webversion_bar', 'frontpage_pagination', 'share_button', 'hasarchive', 'subscriber_notification', 'unsubscribe_notification', 'do_not_track', 'list_based_opt_in', 'single_opt_out', 'sync', 'register_comment_form', 'register_other', 'interval', 'send_at_once', 'send_limit', 'send_period', 'send_delay', 'cron_service', 'cron_lock', 'deliverymethod', 'bounce_active', 'disable_cache', 'remove_data' );
 
 		$body['plugin_options_fields'] = array();
 
@@ -139,30 +141,27 @@ class MailsterUpdate {
 
 				switch ( $code ) {
 
-					case 680: // Licensecode in use
-
+					case 680:
 						$error_msg = $error_msg . ' <a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=inline+link" target="_blank"><strong>' . sprintf( esc_html__( 'Buy an additional license for %s.', 'mailster' ), ( mailster_is_local() ? esc_html__( 'your new site', 'mailster' ) : $_SERVER['HTTP_HOST'] ) . '</strong></a>' );
 
 					case 679: // No Licensecode provided
-					case 678: // Licensecode invalid
-
+					case 678:
 						add_filter( 'update_plugin_complete_actions', array( &$this, 'add_update_action_link' ) );
 						add_filter( 'install_plugin_complete_actions', array( &$this, 'add_update_action_link' ) );
 
-					break;
+						break;
 
 					case 500: // Internal Server Error
 					case 503: // Service Unavailable
 						$error = esc_html__( 'Authentication servers are currently down. Please try again later!', 'mailster' );
-					break;
+						break;
 
 					default:
-
 						$error = esc_html__( 'An error occurred while updating Mailster!', 'mailster' );
 						if ( $message ) {
 							$error .= '<br>' . $message;
 						}
-					break;
+						break;
 				}
 
 				if ( is_a( $upgrader->skin, 'Bulk_Plugin_Upgrader_Skin' ) ) {
