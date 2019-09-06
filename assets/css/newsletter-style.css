@@ -909,8 +909,8 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 }
 #editbar #content-type-bar a{
 	font-weight: normal;
-    padding: 0px 10px;
-    font-size: 12px;
+	padding: 0px 10px;
+	font-size: 12px;
 }
 #editbar #content-type-bar span{
 	float: left;

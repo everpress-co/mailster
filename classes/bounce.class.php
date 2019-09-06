@@ -58,12 +58,12 @@ class MailsterBounce {
 
 		$identifier = 'mailster_' . md5( uniqid() );
 
-		$mail = mailster( 'mail' );
-		$mail->to = mailster_option( 'bounce' );
+		$mail          = mailster( 'mail' );
+		$mail->to      = mailster_option( 'bounce' );
 		$mail->subject = 'Mailster Bounce Test ' . $identifier;
 
 		$replace = array(
-			'preheader' => 'You can delete this message!',
+			'preheader'    => 'You can delete this message!',
 			'notification' => 'This message was sent from your WordPress blog to test your bounce server. You can delete this message!',
 		);
 
@@ -88,11 +88,11 @@ class MailsterBounce {
 	 */
 	public function get_handler( $server = null, $user = null, $pwd = null, $port = null, $secure = null, $service = null ) {
 
-		$server = ! is_null( $server ) ? $server : mailster_option( 'bounce_server' );
-		$user = ! is_null( $user ) ? $user : mailster_option( 'bounce_user' );
-		$pwd = ! is_null( $pwd ) ? $pwd : mailster_option( 'bounce_pwd' );
-		$port = ! is_null( $port ) ? $port : mailster_option( 'bounce_port', 110 );
-		$secure = ! is_null( $secure ) ? $secure : mailster_option( 'bounce_secure' );
+		$server  = ! is_null( $server ) ? $server : mailster_option( 'bounce_server' );
+		$user    = ! is_null( $user ) ? $user : mailster_option( 'bounce_user' );
+		$pwd     = ! is_null( $pwd ) ? $pwd : mailster_option( 'bounce_pwd' );
+		$port    = ! is_null( $port ) ? $port : mailster_option( 'bounce_port', 110 );
+		$secure  = ! is_null( $secure ) ? $secure : mailster_option( 'bounce_secure' );
 		$service = ! is_null( $service ) ? $service : mailster_option( 'bounce_service' );
 
 		require_once MAILSTER_DIR . 'classes/libs/bouncehandler.class.php';
@@ -102,10 +102,10 @@ class MailsterBounce {
 			case 'imap':
 			case 'nntp':
 				$handler = new MailsterBounceHandler( $service );
-			break;
+				break;
 			default:
 				$handler = new MailsterBounceLegacyHandler();
-			break;
+				break;
 		}
 
 		$connect = $handler->connect( $server, $user, $pwd, $port, $secure, $service, 10 );

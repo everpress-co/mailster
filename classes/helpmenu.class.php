@@ -33,11 +33,13 @@ class MailsterHelpmenu {
 						$content = $tab['content'];
 					}
 
-					$screen->add_help_tab( array(
-							'id' => 'tab' . uniqid(),
-							'title' => $tab['title'],
+					$screen->add_help_tab(
+						array(
+							'id'      => 'tab' . uniqid(),
+							'title'   => $tab['title'],
 							'content' => $content,
-					) );
+						)
+					);
 				}
 			}
 
@@ -62,8 +64,8 @@ class MailsterHelpmenu {
 
 	private function page_newsletter_page_mailster_dashboard() {
 
-?>
-<?php
+		?>
+		<?php
 
 	}
 
