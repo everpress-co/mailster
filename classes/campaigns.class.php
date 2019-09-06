@@ -84,7 +84,7 @@ class MailsterCampaigns {
 			$campaign_id = (int) substr( $func, 19 );
 
 			$subscribers = isset( $args[0] ) ? array_shift( $args ) : null;
-			$args = isset( $args[0] ) ? array_shift( $args ) : array();
+			$args        = isset( $args[0] ) ? array_shift( $args ) : array();
 
 			$this->autoresponder_hook( $campaign_id, $subscribers, $args );
 
@@ -109,11 +109,11 @@ class MailsterCampaigns {
 		}
 
 		$query_args = array(
-			'lists' => $meta['ignore_lists'] ? false : $meta['lists'],
-			'conditions' => $meta['list_conditions'],
+			'lists'        => $meta['ignore_lists'] ? false : $meta['lists'],
+			'conditions'   => $meta['list_conditions'],
 			// 'queue__not_in' => $campaign_id,
 			'sent__not_in' => $meta['autoresponder']['once'] ? $campaign_id : false,
-			'include' => $subscriber_ids,
+			'include'      => $subscriber_ids,
 		);
 
 		$query_args = apply_filters( 'mailster_autoresponder_hook_args', $query_args, $campaign_id, $subscriber_ids, $args );
@@ -125,12 +125,12 @@ class MailsterCampaigns {
 
 		$timestamp = strtotime( '+ ' . $meta['autoresponder']['amount'] . ' ' . $meta['autoresponder']['unit'] );
 
-		$priority = $meta['autoresponder']['priority'];
-		$clear = false;
+		$priority      = $meta['autoresponder']['priority'];
+		$clear         = false;
 		$ignore_status = false;
-		$reset = true;
-		$options = isset( $meta['autoresponder']['multiple'] ) ? uniqid() : false;
-		$tags = $args;
+		$reset         = true;
+		$options       = isset( $meta['autoresponder']['multiple'] ) ? uniqid() : false;
+		$tags          = $args;
 
 		mailster( 'queue' )->bulk_add( $campaign_id, $subscribers, $timestamp, $priority, $clear, $ignore_status, $reset, $options, $tags );
 
@@ -144,8 +144,8 @@ class MailsterCampaigns {
 	public function register_post_type() {
 
 		$is_autoresponder = is_admin() && isset( $_GET['post_status'] ) && $_GET['post_status'] == 'autoresponder';
-		$single = $is_autoresponder ? esc_html__( 'Autoresponder', 'mailster' ) : esc_html__( 'Campaign', 'mailster' );
-		$plural = $is_autoresponder ? esc_html__( 'Autoresponders', 'mailster' ) : esc_html__( 'Campaigns', 'mailster' );
+		$single           = $is_autoresponder ? esc_html__( 'Autoresponder', 'mailster' ) : esc_html__( 'Campaign', 'mailster' );
+		$plural           = $is_autoresponder ? esc_html__( 'Autoresponders', 'mailster' ) : esc_html__( 'Campaigns', 'mailster' );
 
 		$color = '#a0a5aa';
 		if ( is_admin() && ( isset( $_GET['post_type'] ) && 'newsletter' == $_GET['post_type'] || isset( $_GET['page'] ) && 'mailster_dashboard' == $_GET['page'] ) ) {
@@ -154,42 +154,47 @@ class MailsterCampaigns {
 		}
 		$menu_icon = '<svg aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" transform="scale(0.9)"><path fill="' . $color . '" d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z" transform="scale(0.9)"></path></svg>';
 
-		register_post_type( 'newsletter', array(
+		register_post_type(
+			'newsletter',
+			array(
 
-				'labels' => array(
-					'name' => $plural,
-					'singular_name' => $single,
-					'add_new' => sprintf( esc_html__( 'New %s', 'mailster' ), $single ),
-					'add_new_item' => esc_html__( 'Create A New Campaign', 'mailster' ),
-					'edit_item' => sprintf( esc_html__( 'Edit %s', 'mailster' ), $single ),
-					'new_item' => sprintf( esc_html__( 'New %s', 'mailster' ), $single ),
-					'all_items' => esc_html__( 'All Campaigns', 'mailster' ),
-					'view_item' => esc_html__( 'View Newsletter', 'mailster' ),
-					'search_items' => sprintf( esc_html__( 'Search %s', 'mailster' ), $plural ),
-					'not_found' => sprintf( esc_html__( 'No %s found', 'mailster' ), $single ),
-					'not_found_in_trash' => sprintf( esc_html__( 'No %s found in Trash', 'mailster' ), $single ),
-					'parent_item_colon' => '',
-					'menu_name' => esc_html__( 'Newsletter', 'mailster' ),
-					'filter_items_list' => esc_html__( 'Filter Newsletter list', 'mailster' ),
+				'labels'               => array(
+					'name'                  => $plural,
+					'singular_name'         => $single,
+					'add_new'               => sprintf( esc_html__( 'New %s', 'mailster' ), $single ),
+					'add_new_item'          => esc_html__( 'Create A New Campaign', 'mailster' ),
+					'edit_item'             => sprintf( esc_html__( 'Edit %s', 'mailster' ), $single ),
+					'new_item'              => sprintf( esc_html__( 'New %s', 'mailster' ), $single ),
+					'all_items'             => esc_html__( 'All Campaigns', 'mailster' ),
+					'view_item'             => esc_html__( 'View Newsletter', 'mailster' ),
+					'search_items'          => sprintf( esc_html__( 'Search %s', 'mailster' ), $plural ),
+					'not_found'             => sprintf( esc_html__( 'No %s found', 'mailster' ), $single ),
+					'not_found_in_trash'    => sprintf( esc_html__( 'No %s found in Trash', 'mailster' ), $single ),
+					'parent_item_colon'     => '',
+					'menu_name'             => esc_html__( 'Newsletter', 'mailster' ),
+					'filter_items_list'     => esc_html__( 'Filter Newsletter list', 'mailster' ),
 					'items_list_navigation' => esc_html__( 'Newsletter list navigation', 'mailster' ),
-					'items_list' => esc_html__( 'Newsletter list', 'mailster' ),
+					'items_list'            => esc_html__( 'Newsletter list', 'mailster' ),
 				),
 
-				'public' => true,
-				'can_export' => true,
-				'menu_icon' => 'data:image/svg+xml;base64,' . base64_encode( $menu_icon ),
-				'show_ui' => true,
-				'show_in_nav_menus' => false,
-				'show_in_menu' => true,
-				'show_in_admin_bar' => true,
-				'show_in_rest' => false,
-				'exclude_from_search' => true,
-				'capability_type' => 'newsletter',
-				'map_meta_cap' => true,
-				'has_archive' => mailster_option( 'hasarchive', false ) ? mailster_option( 'archive_slug', false ) : false,
-				'hierarchical' => $is_autoresponder,
-				'rewrite' => array( 'with_front' => false, 'slug' => mailster_option( 'slug', 'newsletter' ) ),
-				'supports' => array(
+				'public'               => true,
+				'can_export'           => true,
+				'menu_icon'            => 'data:image/svg+xml;base64,' . base64_encode( $menu_icon ),
+				'show_ui'              => true,
+				'show_in_nav_menus'    => false,
+				'show_in_menu'         => true,
+				'show_in_admin_bar'    => true,
+				'show_in_rest'         => false,
+				'exclude_from_search'  => true,
+				'capability_type'      => 'newsletter',
+				'map_meta_cap'         => true,
+				'has_archive'          => mailster_option( 'hasarchive', false ) ? mailster_option( 'archive_slug', false ) : false,
+				'hierarchical'         => $is_autoresponder,
+				'rewrite'              => array(
+					'with_front' => false,
+					'slug'       => mailster_option( 'slug', 'newsletter' ),
+				),
+				'supports'             => array(
 					'title',
 					'thumbnail',
 					'revisions',
@@ -197,44 +202,60 @@ class MailsterCampaigns {
 				),
 				'register_meta_box_cb' => array( &$this, 'meta_boxes' ),
 
-		) );
+			)
+		);
 
 	}
 
 
 	public function register_post_status() {
 
-		register_post_status( 'paused', array(
-			'label' => esc_html__( 'Paused', 'mailster' ),
-			'public' => true,
-			'label_count' => _n_noop( esc_html__( 'Paused', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Paused', 'mailster' ) . ' <span class="count">(%s)</span>' ),
-		) );
+		register_post_status(
+			'paused',
+			array(
+				'label'       => esc_html__( 'Paused', 'mailster' ),
+				'public'      => true,
+				'label_count' => _n_noop( esc_html__( 'Paused', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Paused', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			)
+		);
 
-		register_post_status( 'active', array(
-			'label' => esc_html__( 'Active', 'mailster' ),
-			'public' => true,
-			'label_count' => _n_noop( esc_html__( 'Active', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Active', 'mailster' ) . ' <span class="count">(%s)</span>' ),
-		) );
+		register_post_status(
+			'active',
+			array(
+				'label'       => esc_html__( 'Active', 'mailster' ),
+				'public'      => true,
+				'label_count' => _n_noop( esc_html__( 'Active', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Active', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			)
+		);
 
-		register_post_status( 'queued', array(
-			'label' => esc_html__( 'Queued', 'mailster' ),
-			'public' => true,
-			'label_count' => _n_noop( esc_html__( 'Queued', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Queued', 'mailster' ) . ' <span class="count">(%s)</span>' ),
-		) );
+		register_post_status(
+			'queued',
+			array(
+				'label'       => esc_html__( 'Queued', 'mailster' ),
+				'public'      => true,
+				'label_count' => _n_noop( esc_html__( 'Queued', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Queued', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			)
+		);
 
-		register_post_status( 'finished', array(
-			'label' => esc_html__( 'Finished', 'mailster' ),
-			'public' => true,
-			'label_count' => _n_noop( esc_html__( 'Finished', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Finished', 'mailster' ) . ' <span class="count">(%s)</span>' ),
-		) );
+		register_post_status(
+			'finished',
+			array(
+				'label'       => esc_html__( 'Finished', 'mailster' ),
+				'public'      => true,
+				'label_count' => _n_noop( esc_html__( 'Finished', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Finished', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			)
+		);
 
-		register_post_status( 'autoresponder', array(
-			'label' => esc_html__( 'Autoresponder', 'mailster' ),
-			'public' => ! is_admin(),
-			'exclude_from_search' => true,
-			'show_in_admin_all_list' => false,
-			'label_count' => _n_noop( esc_html__( 'Autoresponder', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Autoresponders', 'mailster' ) . ' <span class="count">(%s)</span>' ),
-		) );
+		register_post_status(
+			'autoresponder',
+			array(
+				'label'                  => esc_html__( 'Autoresponder', 'mailster' ),
+				'public'                 => ! is_admin(),
+				'exclude_from_search'    => true,
+				'show_in_admin_all_list' => false,
+				'label_count'            => _n_noop( esc_html__( 'Autoresponder', 'mailster' ) . ' <span class="count">(%s)</span>', esc_html__( 'Autoresponders', 'mailster' ) . ' <span class="count">(%s)</span>' ),
+			)
+		);
 
 	}
 
@@ -335,9 +356,9 @@ class MailsterCampaigns {
 	 */
 	public function newsletter_submit( $post ) {
 		global $action;
-		$post_type = $post->post_type;
+		$post_type        = $post->post_type;
 		$post_type_object = get_post_type_object( $post_type );
-		$can_publish = current_user_can( $post_type_object->cap->publish_posts );
+		$can_publish      = current_user_can( $post_type_object->cap->publish_posts );
 		include MAILSTER_DIR . 'views/newsletter/submit.php';
 	}
 
@@ -356,7 +377,7 @@ class MailsterCampaigns {
 
 			// duplicate campaign
 			if ( isset( $_GET['duplicate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_duplicate_nonce' ) ) {
-				$id = (int) $_GET['duplicate'];
+				$id   = (int) $_GET['duplicate'];
 				$post = get_post( $id );
 				if ( ( current_user_can( 'duplicate_newsletters' ) && get_current_user_id() != $post->post_author ) && ! current_user_can( 'duplicate_others_newsletters' ) ) {
 					wp_die( esc_html__( 'You are not allowed to duplicate this campaign.', 'mailster' ) );
@@ -446,17 +467,17 @@ class MailsterCampaigns {
 			case 'finished':
 				$timeformat = mailster( 'helper' )->timeformat();
 				$timeoffset = mailster( 'helper' )->gmt_offset( true );
-				$msg = sprintf( esc_html__( 'This Campaign was sent on %s', 'mailster' ), '<span class="nowrap">' . date( $timeformat, $this->meta( $post->ID, 'finished' ) + $timeoffset ) . '</span>' );
-			break;
+				$msg        = sprintf( esc_html__( 'This Campaign was sent on %s', 'mailster' ), '<span class="nowrap">' . date( $timeformat, $this->meta( $post->ID, 'finished' ) + $timeoffset ) . '</span>' );
+				break;
 			case 'queued':
 				$msg = esc_html__( 'This Campaign is currently in the queue', 'mailster' );
-			break;
+				break;
 			case 'active':
 				$msg = esc_html__( 'This Campaign is currently progressing', 'mailster' );
-			break;
+				break;
 			case 'paused':
 				$msg = esc_html__( 'This Campaign has been paused', 'mailster' );
-			break;
+				break;
 		}
 
 		if ( ! isset( $msg ) ) {
@@ -485,16 +506,16 @@ class MailsterCampaigns {
 		$messages[] = 'No subject!';
 
 		$messages['newsletter'] = array(
-			0 => '',
-			1 => sprintf( esc_html__( 'Campaign updated. %s', 'mailster' ), '<a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html__( 'View Newsletter', 'mailster' ) . '</a>' ),
-			2 => sprintf( esc_html__( 'Template changed. %1$s', 'mailster' ), '<a href="' . remove_query_arg( 'message', mailster_get_referer() ) . '">' . esc_html__( 'Go back', 'mailster' ) . '</a>' ),
-			3 => esc_html__( 'Template saved', 'mailster' ),
-			4 => esc_html__( 'Campaign updated.', 'mailster' ),
-			5 => isset( $_GET['revision'] ) ? sprintf( esc_html__( 'Campaign restored to revision from %s', 'mailster' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6 => sprintf( esc_html__( 'Campaign published. %s', 'mailster' ), '<a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html__( 'View Newsletter', 'mailster' ) . '</a>' ),
-			7 => esc_html__( 'Campaign saved.', 'mailster' ),
-			8 => sprintf( esc_html__( 'Campaign submitted. %s', 'mailster' ), '<a target="_blank" href="' . esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_id ) ) ) . '">' . esc_html__( 'Preview Newsletter', 'mailster' ) . '</a>' ),
-			9 => esc_html__( 'Campaign scheduled.', 'mailster' ),
+			0  => '',
+			1  => sprintf( esc_html__( 'Campaign updated. %s', 'mailster' ), '<a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html__( 'View Newsletter', 'mailster' ) . '</a>' ),
+			2  => sprintf( esc_html__( 'Template changed. %1$s', 'mailster' ), '<a href="' . remove_query_arg( 'message', mailster_get_referer() ) . '">' . esc_html__( 'Go back', 'mailster' ) . '</a>' ),
+			3  => esc_html__( 'Template saved', 'mailster' ),
+			4  => esc_html__( 'Campaign updated.', 'mailster' ),
+			5  => isset( $_GET['revision'] ) ? sprintf( esc_html__( 'Campaign restored to revision from %s', 'mailster' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => sprintf( esc_html__( 'Campaign published. %s', 'mailster' ), '<a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html__( 'View Newsletter', 'mailster' ) . '</a>' ),
+			7  => esc_html__( 'Campaign saved.', 'mailster' ),
+			8  => sprintf( esc_html__( 'Campaign submitted. %s', 'mailster' ), '<a target="_blank" href="' . esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_id ) ) ) . '">' . esc_html__( 'Preview Newsletter', 'mailster' ) . '</a>' ),
+			9  => esc_html__( 'Campaign scheduled.', 'mailster' ),
 			10 => esc_html__( 'Campaign draft updated.', 'mailster' ),
 		);
 
@@ -511,15 +532,15 @@ class MailsterCampaigns {
 	public function columns( $columns ) {
 
 		$columns = array(
-			'cb' => '<input type="checkbox" />',
-			'title' => esc_html__( 'Name', 'mailster' ),
-			'status' => esc_html__( 'Status', 'mailster' ),
-			'total' => esc_html__( 'Total', 'mailster' ),
-			'open' => esc_html__( 'Open', 'mailster' ),
-			'click' => esc_html__( 'Clicks', 'mailster' ),
-			'unsubs' => esc_html__( 'Unsubscribes', 'mailster' ),
+			'cb'      => '<input type="checkbox" />',
+			'title'   => esc_html__( 'Name', 'mailster' ),
+			'status'  => esc_html__( 'Status', 'mailster' ),
+			'total'   => esc_html__( 'Total', 'mailster' ),
+			'open'    => esc_html__( 'Open', 'mailster' ),
+			'click'   => esc_html__( 'Clicks', 'mailster' ),
+			'unsubs'  => esc_html__( 'Unsubscribes', 'mailster' ),
 			'bounces' => esc_html__( 'Bounces', 'mailster' ),
-			'date' => esc_html__( 'Date', 'mailster' ),
+			'date'    => esc_html__( 'Date', 'mailster' ),
 		);
 		return $columns;
 	}
@@ -555,7 +576,7 @@ class MailsterCampaigns {
 
 				case 'status':
 					add_filter( 'posts_orderby', array( &$this, 'columns_orderby_status' ) );
-				break;
+					break;
 
 			}
 		}
@@ -605,8 +626,8 @@ class MailsterCampaigns {
 
 		global $post, $wp_post_statuses;
 
-		$now = time();
-		$is_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
+		$now        = time();
+		$is_ajax    = defined( 'DOING_AJAX' ) && DOING_AJAX;
 		$timeformat = mailster( 'helper' )->timeformat();
 
 		if ( ! $is_ajax && $column != 'status' && wp_script_is( 'heartbeat', 'registered' ) ) {
@@ -622,12 +643,11 @@ class MailsterCampaigns {
 		switch ( $column ) {
 
 			case 'status':
-
-				$timestamp = isset( $meta['timestamp'] ) ? $meta['timestamp'] : $now;
+				$timestamp  = isset( $meta['timestamp'] ) ? $meta['timestamp'] : $now;
 				$timeoffset = mailster( 'helper' )->gmt_offset( true );
-				$actions = array();
-				$is_active = $meta['active'];
-				$active = $is_active ? 'active' : 'inactive';
+				$actions    = array();
+				$is_active  = $meta['active'];
+				$active     = $is_active ? 'active' : 'inactive';
 
 				if ( ! in_array( $post->post_status, array( 'pending', 'auto-draft' ) ) ) {
 
@@ -640,7 +660,7 @@ class MailsterCampaigns {
 							esc_html_e( 'Paused', 'mailster' );
 							if ( $totals = $this->get_totals( $post->ID ) ) {
 								if ( $sent = $this->get_sent( $post->ID ) ) {
-									$p = round( $sent / $totals * 100 );
+									$p  = round( $sent / $totals * 100 );
 									$pg = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 									echo "<br><div class='campaign-progress'><span class='bar' style='width:$p%'><span>&nbsp;$pg</span></span><span>&nbsp;$pg</span><var>$p%</var></div>";
 								}
@@ -648,12 +668,12 @@ class MailsterCampaigns {
 							} else {
 								echo '<br><span class="mailster-icon no-receiver"></span> ' . esc_html__( 'no receivers!', 'mailster' );
 							}
-					break;
+							break;
 						case 'active':
 							if ( $totals = $this->get_totals( $post->ID ) ) {
 								$sent = $this->get_sent( $post->ID );
 								echo '<span class="mailster-icon progressing"></span> ' . ( $sent == $totals ? esc_html__( 'completing job', 'mailster' ) : esc_html__( 'progressing', 'mailster' ) ) . '&hellip;' . ( $meta['timezone'] ? ' <span class="timezonebased"  title="' . esc_html__( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '' );
-								$p = $totals ? round( $sent / $totals * 100 ) : 0;
+								$p  = $totals ? round( $sent / $totals * 100 ) : 0;
 								$pg = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 								echo "<br><div class='campaign-progress'><span class='bar' style='width:$p%'><span>&nbsp;$pg</span></span><span>&nbsp;$pg</span><var>$p%</var></div>";
 							} elseif ( is_null( $totals ) ) {
@@ -661,30 +681,29 @@ class MailsterCampaigns {
 								echo '<span class="mailster-icon no-receiver"></span> ' . esc_html__( 'no receivers!', 'mailster' );
 							}
 							echo '<div class="campaign-status"></div>';
-						break;
+							break;
 						case 'queued':
 							echo '<span class="mailster-icon queued"></span> ';
 							if ( $meta['timezone'] && $timestamp - $now < 86400 ) :
-								$sub = $this->get_unsent_subscribers( $post->ID, array( 1 ), true );
+								$sub       = $this->get_unsent_subscribers( $post->ID, array( 1 ), true );
 								$timestamp = min( mailster( 'subscribers' )->get_timeoffset_timestamps( $sub, $timestamp ) );
 								endif;
 							printf( esc_html__( 'starts in %s', 'mailster' ), ( $timestamp - $now > 60 ) ? human_time_diff( $timestamp ) : esc_html__( 'less than a minute', 'mailster' ) );
 							echo $meta['timezone'] ? ' <span class="timezonebased"  title="' . esc_attr__( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '';
 							echo "<br><span class='nonessential'>(" . date( $timeformat, $timestamp + $timeoffset ) . ')</span>';
 							echo '<div class="campaign-status"></div>';
-						break;
+							break;
 						case 'finished':
 							echo '<span class="mailster-icon finished"></span> ' . esc_html__( 'Finished', 'mailster' );
 							echo '<br><span class="nonessential">(' . date( $timeformat, $meta['finished'] + $timeoffset ) . ')</span>';
-						break;
+							break;
 						case 'draft':
 							echo '<span class="mailster-icon draft"></span> ' . $wp_post_statuses['draft']->label;
-						break;
+							break;
 						case 'trash':
 							echo $wp_post_statuses['trash']->label;
-						break;
+							break;
 						case 'autoresponder':
-
 							include MAILSTER_DIR . 'includes/autoresponder.php';
 
 							$autoresponder = $meta['autoresponder'];
@@ -696,11 +715,11 @@ class MailsterCampaigns {
 
 							$time_frame_names = array(
 								'minute' => esc_html__( 'minute(s)', 'mailster' ),
-								'hour' => esc_html__( 'hour(s)', 'mailster' ),
-								'day' => esc_html__( 'day(s)', 'mailster' ),
-								'week' => esc_html__( 'week(s)', 'mailster' ),
-								'month' => esc_html__( 'month(s)', 'mailster' ),
-								'year' => esc_html__( 'year(s)', 'mailster' ),
+								'hour'   => esc_html__( 'hour(s)', 'mailster' ),
+								'day'    => esc_html__( 'day(s)', 'mailster' ),
+								'week'   => esc_html__( 'week(s)', 'mailster' ),
+								'month'  => esc_html__( 'month(s)', 'mailster' ),
+								'year'   => esc_html__( 'year(s)', 'mailster' ),
 							);
 
 							if ( 'mailster_autoresponder_timebased' == $autoresponder['action'] ) {
@@ -711,14 +730,16 @@ class MailsterCampaigns {
 									mailster( 'queue' )->autoresponder_timebased( $post->ID );
 								}
 
-								printf( esc_html__( 'send every %1$s %2$s', 'mailster' ),
+								printf(
+									esc_html__( 'send every %1$s %2$s', 'mailster' ),
 									'<strong>' . $autoresponder['interval'] . '</strong>',
 									'<strong>' . $time_frame_names[ $autoresponder['time_frame'] ] . '</strong>'
 								);
 
 								if ( $meta['timestamp'] ) {
 									echo '<br>';
-									printf( esc_html__( 'next campaign in %s', 'mailster' ),
+									printf(
+										esc_html__( 'next campaign in %s', 'mailster' ),
 										'<strong title="' . date( $timeformat, $meta['timestamp'] + $timeoffset ) . '">' . human_time_diff( $meta['timestamp'] ) . '</strong>'
 									);
 									echo ' &ndash; ' . sprintf( '#%s', '<strong title="' . sprintf( esc_html__( 'Next issue: %s', 'mailster' ), '#' . $autoresponder['issue'] ) . '">' . $autoresponder['issue'] . '</strong>' );
@@ -738,7 +759,8 @@ class MailsterCampaigns {
 
 								if ( isset( $autoresponder['endtimestamp'] ) ) {
 									echo '<br>';
-									printf( esc_html__( 'until %s', 'mailster' ),
+									printf(
+										esc_html__( 'until %s', 'mailster' ),
 										' <strong>' . date( $timeformat, $autoresponder['endtimestamp'] + $timeoffset ) . '</strong>'
 									);
 								}
@@ -747,7 +769,7 @@ class MailsterCampaigns {
 
 									global $wp_locale;
 									$start_at = get_option( 'start_of_week' );
-									$days = array();
+									$days     = array();
 									for ( $i = $start_at; $i < 7 + $start_at; $i++ ) {
 										$j = $i;
 										if ( ! isset( $wp_locale->weekday[ $j ] ) ) {
@@ -760,7 +782,8 @@ class MailsterCampaigns {
 									}
 
 									echo '<br>';
-									printf( esc_html_x( 'only on %s', 'only on [weekdays]', 'mailster' ),
+									printf(
+										esc_html_x( 'only on %s', 'only on [weekdays]', 'mailster' ),
 										' <strong>' . implode( ', ', $days ) . '</strong>'
 									);
 								}
@@ -770,15 +793,17 @@ class MailsterCampaigns {
 
 								if ( $autoresponder['userexactdate'] ) :
 
-									printf( esc_html__( 'send %1$s %2$s %3$s', 'mailster' ),
+									printf(
+										esc_html__( 'send %1$s %2$s %3$s', 'mailster' ),
 										'<strong>' . $autoresponder['amount'] . '</strong>',
 										'<strong>' . $time_frame_names[ $autoresponder['unit'] ] . '</strong>',
-										($autoresponder['before_after'] > 0 ? esc_html__( 'after', 'mailster' ) : esc_html__( 'before', 'mailster' ))
+										( $autoresponder['before_after'] > 0 ? esc_html__( 'after', 'mailster' ) : esc_html__( 'before', 'mailster' ) )
 									);
 
 									echo ' ' . sprintf( esc_html__( 'the users %1$s value', 'mailster' ), ' <strong>' . ( isset( $datefields[ $autoresponder['uservalue'] ] ) ? $datefields[ $autoresponder['uservalue'] ]['name'] : $autoresponder['uservalue'] ) . '</strong>' );
 								else :
-									printf( esc_html__( 'send every %1$s %2$s', 'mailster' ),
+									printf(
+										esc_html__( 'send every %1$s %2$s', 'mailster' ),
 										'<strong>' . $autoresponder['useramount'] . '</strong>',
 										'<strong>' . $time_frame_names[ $autoresponder['userunit'] ] . '</strong>'
 									);
@@ -794,7 +819,8 @@ class MailsterCampaigns {
 										2 => esc_html__( 'has been opened', 'mailster' ),
 										3 => esc_html__( 'has been clicked', 'mailster' ),
 									);
-									printf( esc_html__( 'send %1$s %2$s %3$s', 'mailster' ),
+									printf(
+										esc_html__( 'send %1$s %2$s %3$s', 'mailster' ),
 										( $autoresponder['amount'] ? '<strong>' . $autoresponder['amount'] . '</strong> ' . $mailster_autoresponder_info['units'][ $autoresponder['unit'] ] : esc_html__( 'immediately', 'mailster' ) ),
 										esc_html__( 'after', 'mailster' ),
 										' <strong><a href="post.php?post=' . $campaign->ID . '&action=edit">' . $campaign->post_title . '</a></strong> ' . $types[ $autoresponder['followup_action'] ]
@@ -805,7 +831,8 @@ class MailsterCampaigns {
 								}
 							} else {
 
-								printf( esc_html__( 'send %1$s %2$s %3$s', 'mailster' ),
+								printf(
+									esc_html__( 'send %1$s %2$s %3$s', 'mailster' ),
 									( $autoresponder['amount'] ? '<strong>' . $autoresponder['amount'] . '</strong> ' . $mailster_autoresponder_info['units'][ $autoresponder['unit'] ] : esc_html__( 'immediately', 'mailster' ) ),
 									esc_html__( 'after', 'mailster' ),
 									' <strong>' . $mailster_autoresponder_info['actions'][ $autoresponder['action'] ]['label'] . '</strong>'
@@ -823,7 +850,7 @@ class MailsterCampaigns {
 								}
 							}
 
-						break;
+							break;
 					}
 				} else {
 					$status = get_post_status_object( $post->post_status );
@@ -882,10 +909,9 @@ class MailsterCampaigns {
 					echo implode( ' | ', $actions );
 					echo '</div>';
 				}
-			break;
+				break;
 
 			case 'total':
-
 				if ( 'finished' == $post->post_status ) {
 					echo number_format_i18n( $this->get_sent( $post->ID ) );
 				} elseif ( 'autoresponder' == $post->post_status ) {
@@ -899,10 +925,9 @@ class MailsterCampaigns {
 					echo '&nbsp;(<a href="edit.php?post_type=newsletter&page=mailster_subscribers&status=4" class="errors" title="' . sprintf( esc_html__( '%d emails have not been sent', 'mailster' ), $errors ) . '">+' . $errors . '</a>)';
 				}
 
-			break;
+				break;
 
 			case 'open':
-
 				if ( ! $this->meta( $post->ID, 'track_opens' ) ) {
 					echo '<span class="mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
 				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
@@ -914,14 +939,14 @@ class MailsterCampaigns {
 				} else {
 					echo '&ndash;';
 				}
-			break;
+				break;
 
 			case 'click':
 				if ( ! $this->meta( $post->ID, 'track_clicks' ) ) {
 					echo '<span class="mailster-icon-lock" title="' . esc_attr__( 'Tracking is disabled for this campaign!', 'default' ) . '"></span>';
 				} elseif ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
 					$clicks = $this->get_clicks( $post->ID );
-					$rate = round( $this->get_click_rate( $post->ID ) * 100, 2 );
+					$rate   = round( $this->get_click_rate( $post->ID ) * 100, 2 );
 					$rate_a = round( $this->get_adjusted_click_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $clicks );
 					if ( $rate ) {
@@ -939,13 +964,13 @@ class MailsterCampaigns {
 				} else {
 					echo '&ndash;';
 				}
-			break;
+				break;
 
 			case 'unsubs':
 				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
 					$unsubscribes = $this->get_unsubscribes( $post->ID );
-					$rate = round( $this->get_unsubscribe_rate( $post->ID ) * 100, 2 );
-					$rate_a = round( $this->get_adjusted_unsubscribe_rate( $post->ID ) * 100, 2 );
+					$rate         = round( $this->get_unsubscribe_rate( $post->ID ) * 100, 2 );
+					$rate_a       = round( $this->get_adjusted_unsubscribe_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $unsubscribes );
 					if ( $rate ) {
 						echo "<br><span class='nonessential'>(<span title='" . sprintf( esc_attr__( '%s of sent', 'mailster' ), $rate . '%' ) . "'>";
@@ -962,12 +987,12 @@ class MailsterCampaigns {
 				} else {
 					echo '&ndash;';
 				}
-			break;
+				break;
 
 			case 'bounces':
 				if ( in_array( $post->post_status, array( 'finished', 'active', 'paused', 'autoresponder' ) ) ) {
 					$bounces = $this->get_bounces( $post->ID );
-					$rate = round( $this->get_bounce_rate( $post->ID ) * 100, 2 );
+					$rate    = round( $this->get_bounce_rate( $post->ID ) * 100, 2 );
 					echo number_format_i18n( $bounces );
 					echo "<br><span title='" . sprintf( esc_attr__( '%s of totals', 'mailster' ), $rate . '%' ) . "' class='nonessential'>";
 					echo ' (' . $rate . '%)';
@@ -975,7 +1000,7 @@ class MailsterCampaigns {
 				} else {
 					echo '&ndash;';
 				}
-			break;
+				break;
 
 		}
 		error_reporting( $error );
@@ -1050,9 +1075,13 @@ class MailsterCampaigns {
 
 			wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_localize_script( 'mailster-overview', 'mailsterL10n', array(
-				'finish_campaign' => esc_html__( 'Do you really like to finish this campaign?', 'mailster' ),
-			) );
+			wp_localize_script(
+				'mailster-overview',
+				'mailsterL10n',
+				array(
+					'finish_campaign' => esc_html__( 'Do you really like to finish this campaign?', 'mailster' ),
+				)
+			);
 
 		} elseif ( 'newsletter' == $screen->id ) {
 
@@ -1134,74 +1163,82 @@ class MailsterCampaigns {
 			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_script( 'wp-color-picker' );
 
-			wp_localize_script( 'mailster-script', 'mailsterL10n', array(
-				'loading' => esc_html__( 'loading', 'mailster' ),
-				'add' => esc_html__( 'Add', 'mailster' ),
-				'or' => esc_html__( 'or', 'mailster' ),
-				'move_module_up' => esc_html__( 'Move module up', 'mailster' ),
-				'move_module_down' => esc_html__( 'Move module down', 'mailster' ),
-				'duplicate_module' => esc_html__( 'Duplicate module', 'mailster' ),
-				'remove_module' => esc_html__( 'Remove module', 'mailster' ),
-				'remove_all_modules' => esc_html__( 'Do you really like to remove all modules?', 'mailster' ),
-				'save_template' => esc_html__( 'Save Template File', 'mailster' ),
-				'add_module' => esc_html__( 'Add Module', 'mailster' ),
-				'module' => esc_html__( 'Module %s', 'mailster' ),
-				'codeview' => esc_html__( 'Codeview', 'mailster' ),
-				'module_label' => esc_html__( 'Name of the module (click to edit)', 'mailster' ),
-				'edit' => esc_html__( 'Edit', 'mailster' ),
-				'click_to_edit' => esc_html__( 'Click to edit %s', 'mailster' ),
-				'click_to_add' => esc_html__( 'Click to add %s', 'mailster' ),
-				'auto' => esc_html_x( 'Auto', 'for the autoimporter', 'mailster' ),
-				'add_button' => esc_html__( 'Add button', 'mailster' ),
-				'add_repeater' => esc_html__( 'Add repeater', 'mailster' ),
-				'remove_repeater' => esc_html__( 'Remove repeater', 'mailster' ),
-				'add_s' => esc_html__( 'Add %s', 'mailster' ),
-				'remove_s' => esc_html__( 'Remove %s', 'mailster' ),
-				'curr_selected' => esc_html__( 'Currently selected', 'mailster' ),
-				'remove_btn' => esc_html__( 'An empty link will remove this button! Continue?', 'mailster' ),
-				'preview_for' => esc_html__( 'Preview for %s', 'mailster' ),
-				'preview' => esc_html__( 'Preview', 'mailster' ),
-				'read_more' => esc_html__( 'Read more', 'mailster' ),
-				'invalid_image' => esc_html__( '%s does not contain a valid image', 'mailster' ),
-				'for_area' => esc_html__( 'Area %s', 'mailster' ),
-				'enter_list_name' => esc_html__( 'Enter name of the list', 'mailster' ),
-				'create_list' => esc_html_x( '%1$s of %2$s', '[recipientstype] of [campaignname]', 'mailster' ),
+			wp_localize_script(
+				'mailster-script',
+				'mailsterL10n',
+				array(
+					'loading'                => esc_html__( 'loading', 'mailster' ),
+					'add'                    => esc_html__( 'Add', 'mailster' ),
+					'or'                     => esc_html__( 'or', 'mailster' ),
+					'move_module_up'         => esc_html__( 'Move module up', 'mailster' ),
+					'move_module_down'       => esc_html__( 'Move module down', 'mailster' ),
+					'duplicate_module'       => esc_html__( 'Duplicate module', 'mailster' ),
+					'remove_module'          => esc_html__( 'Remove module', 'mailster' ),
+					'remove_all_modules'     => esc_html__( 'Do you really like to remove all modules?', 'mailster' ),
+					'save_template'          => esc_html__( 'Save Template File', 'mailster' ),
+					'add_module'             => esc_html__( 'Add Module', 'mailster' ),
+					'module'                 => esc_html__( 'Module %s', 'mailster' ),
+					'codeview'               => esc_html__( 'Codeview', 'mailster' ),
+					'module_label'           => esc_html__( 'Name of the module (click to edit)', 'mailster' ),
+					'edit'                   => esc_html__( 'Edit', 'mailster' ),
+					'click_to_edit'          => esc_html__( 'Click to edit %s', 'mailster' ),
+					'click_to_add'           => esc_html__( 'Click to add %s', 'mailster' ),
+					'auto'                   => esc_html_x( 'Auto', 'for the autoimporter', 'mailster' ),
+					'add_button'             => esc_html__( 'Add button', 'mailster' ),
+					'add_repeater'           => esc_html__( 'Add repeater', 'mailster' ),
+					'remove_repeater'        => esc_html__( 'Remove repeater', 'mailster' ),
+					'add_s'                  => esc_html__( 'Add %s', 'mailster' ),
+					'remove_s'               => esc_html__( 'Remove %s', 'mailster' ),
+					'curr_selected'          => esc_html__( 'Currently selected', 'mailster' ),
+					'remove_btn'             => esc_html__( 'An empty link will remove this button! Continue?', 'mailster' ),
+					'preview_for'            => esc_html__( 'Preview for %s', 'mailster' ),
+					'preview'                => esc_html__( 'Preview', 'mailster' ),
+					'read_more'              => esc_html__( 'Read more', 'mailster' ),
+					'invalid_image'          => esc_html__( '%s does not contain a valid image', 'mailster' ),
+					'for_area'               => esc_html__( 'Area %s', 'mailster' ),
+					'enter_list_name'        => esc_html__( 'Enter name of the list', 'mailster' ),
+					'create_list'            => esc_html_x( '%1$s of %2$s', '[recipientstype] of [campaignname]', 'mailster' ),
 
-				'next' => esc_html__( 'next', 'mailster' ),
-				'prev' => esc_html__( 'prev', 'mailster' ),
-				'start_of_week' => get_option( 'start_of_week' ),
-				'day_names' => $wp_locale->weekday,
-				'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
-				'month_names' => array_values( $wp_locale->month ),
-				'delete_colorschema' => esc_html__( 'Delete this color schema?', 'mailster' ),
-				'delete_colorschema_all' => esc_html__( 'Do you really like to delete all custom color schema for this template?', 'mailster' ),
-				'yourscore' => esc_html__( '%s out of 10', 'mailster' ),
-				'yourscores' => array(
-					esc_html__( 'This mail will hardly see any inbox!', 'mailster' ),
-					esc_html__( 'You have to make it better!', 'mailster' ),
-					esc_html__( 'Many inboxes will refuse this mail!', 'mailster' ),
-					esc_html__( 'Not bad at all. Improve it further!', 'mailster' ),
-					esc_html__( 'Almost perfect!', 'mailster' ),
-					esc_html__( 'Great! Your campaign is ready to send!', 'mailster' ),
-				),
-				'undosteps' => mailster_option( 'undosteps', 10 ),
-				'statuschanged' => esc_html__( 'The status of this campaign has changed. Please reload the page or %s', 'mailster' ),
-				'click_here' => esc_html__( 'click here', 'mailster' ),
-				'check_console' => esc_html__( 'Check the JS console for more info!', 'mailster' ),
-				'send_now' => esc_html__( 'Do you really like to send this campaign now?', 'mailster' ),
-				'select_image' => esc_html__( 'Select Image', 'mailster' ),
-				'add_attachment' => esc_html__( 'Add Attachment', 'mailster' ),
-				'edit_conditions' => esc_html__( 'Edit Conditions', 'mailster' ),
-				'remove_conditions' => esc_html__( 'Do you really like to remove all conditions?', 'mailster' ),
-			) );
+					'next'                   => esc_html__( 'next', 'mailster' ),
+					'prev'                   => esc_html__( 'prev', 'mailster' ),
+					'start_of_week'          => get_option( 'start_of_week' ),
+					'day_names'              => $wp_locale->weekday,
+					'day_names_min'          => array_values( $wp_locale->weekday_abbrev ),
+					'month_names'            => array_values( $wp_locale->month ),
+					'delete_colorschema'     => esc_html__( 'Delete this color schema?', 'mailster' ),
+					'delete_colorschema_all' => esc_html__( 'Do you really like to delete all custom color schema for this template?', 'mailster' ),
+					'yourscore'              => esc_html__( '%s out of 10', 'mailster' ),
+					'yourscores'             => array(
+						esc_html__( 'This mail will hardly see any inbox!', 'mailster' ),
+						esc_html__( 'You have to make it better!', 'mailster' ),
+						esc_html__( 'Many inboxes will refuse this mail!', 'mailster' ),
+						esc_html__( 'Not bad at all. Improve it further!', 'mailster' ),
+						esc_html__( 'Almost perfect!', 'mailster' ),
+						esc_html__( 'Great! Your campaign is ready to send!', 'mailster' ),
+					),
+					'undosteps'              => mailster_option( 'undosteps', 10 ),
+					'statuschanged'          => esc_html__( 'The status of this campaign has changed. Please reload the page or %s', 'mailster' ),
+					'click_here'             => esc_html__( 'click here', 'mailster' ),
+					'check_console'          => esc_html__( 'Check the JS console for more info!', 'mailster' ),
+					'send_now'               => esc_html__( 'Do you really like to send this campaign now?', 'mailster' ),
+					'select_image'           => esc_html__( 'Select Image', 'mailster' ),
+					'add_attachment'         => esc_html__( 'Add Attachment', 'mailster' ),
+					'edit_conditions'        => esc_html__( 'Edit Conditions', 'mailster' ),
+					'remove_conditions'      => esc_html__( 'Do you really like to remove all conditions?', 'mailster' ),
+				)
+			);
 
-			wp_localize_script( 'mailster-script', 'mailsterdata', array(
-				'ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'url' => MAILSTER_URI,
-				'inline' => $this->inline_editor(),
-				'codeview' => current_user_can( 'mailster_see_codeview' ),
-				'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
-			) );
+			wp_localize_script(
+				'mailster-script',
+				'mailsterdata',
+				array(
+					'ajaxurl'    => admin_url( 'admin-ajax.php' ),
+					'url'        => MAILSTER_URI,
+					'inline'     => $this->inline_editor(),
+					'codeview'   => current_user_can( 'mailster_see_codeview' ),
+					'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
+				)
+			);
 
 		}
 	}
@@ -1351,7 +1388,7 @@ class MailsterCampaigns {
 
 			// overcome post status issue where old slugs only for published post are stored
 			if ( $postarr['ID'] ) {
-				$fakepost = (object) $post;
+				$fakepost              = (object) $post;
 				$fakepost->post_status = 'publish';
 
 				wp_check_for_changed_slugs( $postarr['ID'], $fakepost, get_post( $postarr['ID'] ) );
@@ -1402,7 +1439,7 @@ class MailsterCampaigns {
 		kses_init_filters();
 
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
-		$now = time();
+		$now        = time();
 
 		$meta = $this->meta( $post_id );
 		if ( in_array( $post->post_status, array( 'active', 'finished' ) ) ) {
@@ -1414,17 +1451,17 @@ class MailsterCampaigns {
 
 		if ( isset( $postdata ) ) {
 
-			$meta['subject'] = $postdata['subject'];
-			$meta['preheader'] = $postdata['preheader'];
-			$meta['template'] = $postdata['template'];
-			$meta['file'] = $postdata['file'];
-			$meta['lists'] = isset( $postdata['lists'] ) ? (array) $postdata['lists'] : null;
-			$meta['ignore_lists'] = isset( $postdata['ignore_lists'] ) && $postdata['ignore_lists'];
-			$meta['from_name'] = $postdata['from_name'];
-			$meta['from_email'] = $postdata['from_email'];
-			$meta['reply_to'] = $postdata['reply_to'];
-			$meta['timezone'] = isset( $postdata['timezone'] ) && $postdata['timezone'];
-			$meta['webversion'] = isset( $postdata['webversion'] );
+			$meta['subject']       = $postdata['subject'];
+			$meta['preheader']     = $postdata['preheader'];
+			$meta['template']      = $postdata['template'];
+			$meta['file']          = $postdata['file'];
+			$meta['lists']         = isset( $postdata['lists'] ) ? (array) $postdata['lists'] : null;
+			$meta['ignore_lists']  = isset( $postdata['ignore_lists'] ) && $postdata['ignore_lists'];
+			$meta['from_name']     = $postdata['from_name'];
+			$meta['from_email']    = $postdata['from_email'];
+			$meta['reply_to']      = $postdata['reply_to'];
+			$meta['timezone']      = isset( $postdata['timezone'] ) && $postdata['timezone'];
+			$meta['webversion']    = isset( $postdata['webversion'] );
 			$meta['editor_height'] = (int) $postdata['editor_height'];
 
 			if ( isset( $postdata['newsletter_color'] ) ) {
@@ -1433,8 +1470,8 @@ class MailsterCampaigns {
 
 			if ( isset( $postdata['attachments'] ) ) {
 				$meta['attachments'] = array();
-				$total_size = 0;
-				$max_size = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );
+				$total_size          = 0;
+				$max_size            = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );
 				foreach ( $postdata['attachments'] as $attachment_id ) {
 					if ( ! $attachment_id ) {
 						continue;
@@ -1455,7 +1492,7 @@ class MailsterCampaigns {
 				$meta['attachments'] = array();
 			}
 
-			$meta['track_opens'] = isset( $postdata['track_opens'] );
+			$meta['track_opens']  = isset( $postdata['track_opens'] );
 			$meta['track_clicks'] = isset( $postdata['track_clicks'] );
 
 			$meta['head'] = $postdata['head'];
@@ -1464,7 +1501,7 @@ class MailsterCampaigns {
 
 			$autoresponder = $postdata['autoresponder'];
 
-			$post->post_parent = 0;
+			$post->post_parent   = 0;
 			$post->post_password = isset( $_POST['use_pwd'] ) ? $_POST['post_password'] : '';
 
 			if ( $meta['auto_post_thumbnail'] = isset( $_POST['auto_post_thumbnail'] ) ) {
@@ -1492,7 +1529,7 @@ class MailsterCampaigns {
 				if ( in_array( $autoresponder['action'], array( 'mailster_subscriber_insert', 'mailster_subscriber_unsubscribed' ) ) ) {
 					unset( $autoresponder['terms'] );
 
-					$localtime = strtotime( $postdata['autoresponder_signup_date'] . ' ' . $postdata['autoresponder_signup_time'] );
+					$localtime         = strtotime( $postdata['autoresponder_signup_date'] . ' ' . $postdata['autoresponder_signup_time'] );
 					$meta['timestamp'] = $localtime - $timeoffset;
 
 				} elseif ( 'mailster_post_published' == $autoresponder['action'] ) {
@@ -1507,9 +1544,9 @@ class MailsterCampaigns {
 				if ( 'mailster_autoresponder_timebased' == $autoresponder['action'] ) {
 
 					$autoresponder['interval'] = max( 1, (int) $autoresponder['interval'] );
-					$meta['timezone'] = isset( $autoresponder['timebased_timezone'] );
+					$meta['timezone']          = isset( $autoresponder['timebased_timezone'] );
 
-					$autoresponder['since'] = isset( $autoresponder['since'] ) ? ($autoresponder['since'] ? $autoresponder['since'] : $now) : false;
+					$autoresponder['since'] = isset( $autoresponder['since'] ) ? ( $autoresponder['since'] ? $autoresponder['since'] : $now ) : false;
 
 					$localtime = strtotime( $postdata['autoresponder_date'] . ' ' . $postdata['autoresponder_time'] );
 
@@ -1527,7 +1564,7 @@ class MailsterCampaigns {
 
 					if ( isset( $autoresponder['endschedule'] ) ) {
 
-						$localtime = strtotime( $postdata['autoresponder_enddate'] . ' ' . $postdata['autoresponder_endtime'] );
+						$localtime                     = strtotime( $postdata['autoresponder_enddate'] . ' ' . $postdata['autoresponder_endtime'] );
 						$autoresponder['endtimestamp'] = max( $meta['timestamp'], $localtime - $timeoffset );
 
 					}
@@ -1559,7 +1596,7 @@ class MailsterCampaigns {
 					}
 				} elseif ( 'mailster_autoresponder_usertime' == $autoresponder['action'] ) {
 
-					$meta['timezone'] = isset( $autoresponder['usertime_timezone'] );
+					$meta['timezone']      = isset( $autoresponder['usertime_timezone'] );
 					$autoresponder['once'] = isset( $autoresponder['usertime_once'] );
 
 				} elseif ( 'mailster_autoresponder_hook' == $autoresponder['action'] ) {
@@ -1574,7 +1611,7 @@ class MailsterCampaigns {
 					}
 
 					update_option( 'mailster_hooks', $hooks );
-					if ( $autoresponder['once'] = isset( $autoresponder['hook_once'] )&& isset( $autoresponder['multiple'] ) ) {
+					if ( $autoresponder['once'] = isset( $autoresponder['hook_once'] ) && isset( $autoresponder['multiple'] ) ) {
 						unset( $autoresponder['multiple'] );
 					}
 					if ( empty( $autoresponder['hook'] ) ) {
@@ -1605,15 +1642,15 @@ class MailsterCampaigns {
 				if ( isset( $_POST['sendnow'] ) ) {
 					$post->post_status = 'queued';
 					$meta['timestamp'] = $now;
-					$meta['active'] = true;
+					$meta['active']    = true;
 
 				} elseif ( isset( $_POST['resume'] ) ) {
 					$post->post_status = 'queued';
-					$meta['active'] = true;
+					$meta['active']    = true;
 
 				} elseif ( isset( $_POST['draft'] ) ) {
 					$post->post_status = 'draft';
-					$meta['active'] = false;
+					$meta['active']    = false;
 
 				} elseif ( ( isset( $postdata ) && empty( $meta['timestamp'] ) ) || $meta['active'] ) {
 					// save in UTC
@@ -1699,10 +1736,10 @@ class MailsterCampaigns {
 				switch ( $autoresponder['action'] ) {
 					case 'mailster_autoresponder_usertime':
 						mailster( 'queue' )->autoresponder_usertime( $post_id );
-					break;
+						break;
 					case 'mailster_autoresponder_timebased':
 						mailster( 'queue' )->autoresponder_timebased( $post_id );
-					break;
+						break;
 					default:
 						mailster( 'queue' )->autoresponder( $post_id );
 
@@ -1869,7 +1906,7 @@ class MailsterCampaigns {
 	public function update_meta( $id, $key, $value = null ) {
 
 		$cache_key = 'campaign_meta';
-		$meta = mailster_cache_get( $cache_key );
+		$meta      = mailster_cache_get( $cache_key );
 		if ( ! $meta ) {
 			$meta = array();
 		}
@@ -1912,31 +1949,31 @@ class MailsterCampaigns {
 	 */
 	public function meta_defaults( $key = null ) {
 		$defaults = array(
-			'parent_id' => null,
-			'timestamp' => null,
-			'finished' => null,
-			'active' => null,
-			'timezone' => mailster_option( 'timezone' ),
-			'sent' => null,
-			'error' => null,
-			'from_name' => mailster_option( 'from_name' ),
-			'from_email' => mailster_option( 'from' ),
-			'reply_to' => mailster_option( 'reply_to' ),
-			'subject' => null,
-			'preheader' => null,
-			'template' => null,
-			'file' => null,
-			'editor_height' => 500,
-			'lists' => null,
-			'ignore_lists' => null,
-			'autoresponder' => null,
-			'list_conditions' => null,
-			'head' => null,
-			'colors' => null,
-			'track_opens' => mailster_option( 'track_opens' ),
-			'track_clicks' => mailster_option( 'track_clicks' ),
-			'autoplaintext' => true,
-			'webversion' => true,
+			'parent_id'           => null,
+			'timestamp'           => null,
+			'finished'            => null,
+			'active'              => null,
+			'timezone'            => mailster_option( 'timezone' ),
+			'sent'                => null,
+			'error'               => null,
+			'from_name'           => mailster_option( 'from_name' ),
+			'from_email'          => mailster_option( 'from' ),
+			'reply_to'            => mailster_option( 'reply_to' ),
+			'subject'             => null,
+			'preheader'           => null,
+			'template'            => null,
+			'file'                => null,
+			'editor_height'       => 500,
+			'lists'               => null,
+			'ignore_lists'        => null,
+			'autoresponder'       => null,
+			'list_conditions'     => null,
+			'head'                => null,
+			'colors'              => null,
+			'track_opens'         => mailster_option( 'track_opens' ),
+			'track_clicks'        => mailster_option( 'track_clicks' ),
+			'autoplaintext'       => true,
+			'webversion'          => true,
 			'auto_post_thumbnail' => false,
 		);
 
@@ -2038,10 +2075,10 @@ class MailsterCampaigns {
 			return;
 		}
 
-		$meta = $this->meta( $id );
-		$meta['totals'] = $this->get_totals( $id );
-		$meta['sent'] = $this->get_sent( $id );
-		$meta['errors'] = $this->get_errors( $id );
+		$meta             = $this->meta( $id );
+		$meta['totals']   = $this->get_totals( $id );
+		$meta['sent']     = $this->get_sent( $id );
+		$meta['errors']   = $this->get_errors( $id );
 		$meta['finished'] = time();
 
 		$placeholder = mailster( 'placeholder' );
@@ -2068,11 +2105,13 @@ class MailsterCampaigns {
 		remove_action( 'save_post', array( &$this, 'save_campaign' ), 10, 3 );
 		kses_remove_filters();
 
-		wp_update_post( array(
-			'ID' => $id,
-			'post_title' => $campaign->post_title,
-			'post_content' => $campaign->post_content,
-		) );
+		wp_update_post(
+			array(
+				'ID'           => $id,
+				'post_title'   => $campaign->post_title,
+				'post_content' => $campaign->post_content,
+			)
+		);
 
 		kses_init_filters();
 		add_action( 'save_post', array( &$this, 'save_campaign' ), 10, 3 );
@@ -2084,7 +2123,7 @@ class MailsterCampaigns {
 		$parent_id = $this->meta( $id, 'parent_id' );
 
 		if ( $parent_id = $this->meta( $id, 'parent_id' ) ) {
-			$parent_sent = $this->meta( $parent_id, 'sent' );
+			$parent_sent   = $this->meta( $parent_id, 'sent' );
 			$parent_errors = $this->meta( $parent_id, 'errors' );
 
 			$this->update_meta( $parent_id, 'sent', $parent_sent + $sent );
@@ -2117,7 +2156,7 @@ class MailsterCampaigns {
 		}
 
 		$lists = $this->get_lists( $campaign->ID, true );
-		$meta = $this->meta( $campaign->ID );
+		$meta  = $this->meta( $campaign->ID );
 
 		$meta['active'] = $meta['date'] = $meta['time'] = $meta['timestamp'] = $meta['parent_id'] = $meta['finished'] = $meta['sent'] = $meta['error'] = null;
 
@@ -2136,7 +2175,7 @@ class MailsterCampaigns {
 			$campaign->post_title .= ' (2)';
 		}
 		if ( $campaign->post_status == 'autoresponder' ) {
-			$meta['autoresponder']['issue'] = 1;
+			$meta['autoresponder']['issue']             = 1;
 			$meta['autoresponder']['post_count_status'] = 0;
 		} else {
 			$campaign->post_status = 'draft';
@@ -2228,11 +2267,11 @@ class MailsterCampaigns {
 
 		$id = $campaign->ID;
 
-		$now = time();
+		$now        = time();
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 		$lists = $this->get_lists( $campaign->ID, true );
-		$meta = $this->meta( $campaign->ID );
+		$meta  = $this->meta( $campaign->ID );
 
 		$relative_to_absolute = true;
 
@@ -2474,7 +2513,7 @@ class MailsterCampaigns {
 		$defaults = array(
 			'post_status' => 'active',
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		return $this->get_campaigns( $args );
 	}
@@ -2490,7 +2529,7 @@ class MailsterCampaigns {
 		$defaults = array(
 			'post_status' => 'paused',
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		return $this->get_campaigns( $args );
 	}
@@ -2506,7 +2545,7 @@ class MailsterCampaigns {
 		$defaults = array(
 			'post_status' => 'queued',
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		return $this->get_campaigns( $args );
 	}
@@ -2522,7 +2561,7 @@ class MailsterCampaigns {
 		$defaults = array(
 			'post_status' => 'draft',
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		return $this->get_campaigns( $args );
 	}
@@ -2538,7 +2577,7 @@ class MailsterCampaigns {
 		$defaults = array(
 			'post_status' => 'finished',
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		return $this->get_campaigns( $args );
 	}
@@ -2554,7 +2593,7 @@ class MailsterCampaigns {
 		$defaults = array(
 			'post_status' => 'pending',
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		return $this->get_campaigns( $args );
 	}
@@ -2571,11 +2610,11 @@ class MailsterCampaigns {
 		$defaults = array(
 			'post_status' => 'autoresponder',
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 		if ( ! is_null( $type ) ) {
-			$args['meta_key'] = '_mailster_autoresponder';
+			$args['meta_key']     = '_mailster_autoresponder';
 			$args['meta_compare'] = 'LIKE';
-			$args['meta_value'] = '"mailster_' . $type . '"';
+			$args['meta_value']   = '"mailster_' . $type . '"';
 		}
 
 		return $this->get_campaigns( $args );
@@ -2591,16 +2630,16 @@ class MailsterCampaigns {
 	public function get_campaigns( $args = '' ) {
 
 		$defaults = array(
-			'post_type' => 'newsletter',
-			'post_status' => array( 'active', 'paused', 'queued', 'draft', 'finished', 'pending', 'autoresponder' ),
-			'orderby' => 'modified',
-			'order' => 'DESC',
-			'posts_per_page' => -1,
-			'no_found_rows' => true,
+			'post_type'              => 'newsletter',
+			'post_status'            => array( 'active', 'paused', 'queued', 'draft', 'finished', 'pending', 'autoresponder' ),
+			'orderby'                => 'modified',
+			'order'                  => 'DESC',
+			'posts_per_page'         => -1,
+			'no_found_rows'          => true,
 			'update_post_term_cache' => false,
 			'update_post_meta_cache' => false,
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		$campaigns = get_posts( $args );
 
@@ -2635,18 +2674,21 @@ class MailsterCampaigns {
 
 		$conditions = $this->meta( $id, 'list_conditions' );
 
-		return mailster( 'subscribers' )->query(array(
-			'lists' => $lists,
-			'conditions' => $conditions,
-			'status' => $statuses,
-			'return_ids' => $return_ids,
-			'return_count' => ! $return_ids,
-			'sent__not_in' => $ignore_sent ? $id : false,
-			'queue__not_in' => $ignore_queue ? $id : false,
-			'limit' => $limit,
-			'offset' => $offset,
-			'return_sql' => $returnsql,
-		), $id);
+		return mailster( 'subscribers' )->query(
+			array(
+				'lists'         => $lists,
+				'conditions'    => $conditions,
+				'status'        => $statuses,
+				'return_ids'    => $return_ids,
+				'return_count'  => ! $return_ids,
+				'sent__not_in'  => $ignore_sent ? $id : false,
+				'queue__not_in' => $ignore_queue ? $id : false,
+				'limit'         => $limit,
+				'offset'        => $offset,
+				'return_sql'    => $returnsql,
+			),
+			$id
+		);
 	}
 
 
@@ -2668,18 +2710,20 @@ class MailsterCampaigns {
 
 		_deprecated_function( __FUNCTION__, '2.3', 'mailster(\'subscribers\')->query()' );
 
-		return mailster( 'subscribers' )->query(array(
-			'lists' => $lists,
-			'conditions' => $conditions,
-			'status' => $statuses,
-			'return_ids' => $return_ids,
-			'return_count' => ! $return_ids,
-			'sent__not_in' => $ignore_sent,
-			'queue__not_in' => $ignore_queue,
-			'limit' => $limit,
-			'offset' => $offset,
-			'return_sql' => $returnsql,
-		));
+		return mailster( 'subscribers' )->query(
+			array(
+				'lists'         => $lists,
+				'conditions'    => $conditions,
+				'status'        => $statuses,
+				'return_ids'    => $return_ids,
+				'return_count'  => ! $return_ids,
+				'sent__not_in'  => $ignore_sent,
+				'queue__not_in' => $ignore_queue,
+				'limit'         => $limit,
+				'offset'        => $offset,
+				'return_sql'    => $returnsql,
+			)
+		);
 
 	}
 
@@ -2782,12 +2826,14 @@ class MailsterCampaigns {
 
 		$placeholder->set_campaign( $campaign->ID );
 
-		$placeholder->add( array(
-			'preheader' => '',
-			'subject' => '',
-			'can-spam' => '',
-			'copyright' => '',
-		) );
+		$placeholder->add(
+			array(
+				'preheader' => '',
+				'subject'   => '',
+				'can-spam'  => '',
+				'copyright' => '',
+			)
+		);
 
 		$content = $placeholder->get_content();
 		$content = preg_replace( '#<script[^>]*?>.*?</script>#si', '', $content );
@@ -2854,12 +2900,15 @@ class MailsterCampaigns {
 	 */
 	public function get_totals_by_lists( $lists = false, $conditions = null, $statuses = null, $campaign_id = null ) {
 
-		return mailster( 'subscribers' )->query(array(
-			'lists' => $lists,
-			'conditions' => $conditions,
-			'status' => $statuses,
-			'return_count' => true,
-		), $campaign_id);
+		return mailster( 'subscribers' )->query(
+			array(
+				'lists'        => $lists,
+				'conditions'   => $conditions,
+				'status'       => $statuses,
+				'return_count' => true,
+			),
+			$campaign_id
+		);
 
 	}
 
@@ -3289,22 +3338,22 @@ class MailsterCampaigns {
 			break;
 			case 'open':
 				$args['open'] = $campaign->ID;
-			break;
+				break;
 			case 'not_open':
 				$args['open__not_in'] = $campaign->ID;
 
-			break;
+				break;
 			case 'click':
-				$args['open'] = $campaign->ID;
+				$args['open']  = $campaign->ID;
 				$args['click'] = $campaign->ID;
 
-			break;
+				break;
 			case 'open_not_click':
-				$args['open'] = $campaign->ID;
+				$args['open']          = $campaign->ID;
 				$args['click__not_in'] = $campaign->ID;
-			break;
+				break;
 			default:
-			break;
+				break;
 		}
 
 		if ( $countonly ) {
@@ -3317,19 +3366,23 @@ class MailsterCampaigns {
 		$subscribers = mailster( 'subscribers' )->query( $args, $campaign->ID );
 
 		$options = array(
-			'sent' => esc_html__( 'who have received', 'mailster' ),
-			'not_sent' => esc_html__( 'who have not received', 'mailster' ),
-			'open' => esc_html__( 'who have opened', 'mailster' ),
+			'sent'           => esc_html__( 'who have received', 'mailster' ),
+			'not_sent'       => esc_html__( 'who have not received', 'mailster' ),
+			'open'           => esc_html__( 'who have opened', 'mailster' ),
 			'open_not_click' => esc_html__( 'who have opened but not clicked', 'mailster' ),
-			'click' => esc_html__( 'who have opened and clicked', 'mailster' ),
-			'not_open' => esc_html__( 'who have not opened', 'mailster' ),
+			'click'          => esc_html__( 'who have opened and clicked', 'mailster' ),
+			'not_open'       => esc_html__( 'who have not opened', 'mailster' ),
 		);
 
-		$list = mailster( 'lists' )->add_segment( array(
-			'name' => $name,
-			'description' => sprintf( esc_html_x( 'A segment of all %1$s of %2$s', 'segment of all [recipients] from campaign [campaign]', 'mailster' ), $options[ $option ], '"' . $campaign->post_title . '"' ),
-			'slug' => 'segment-' . $option . '-of-' . $campaign->ID,
-		), true, $subscribers );
+		$list = mailster( 'lists' )->add_segment(
+			array(
+				'name'        => $name,
+				'description' => sprintf( esc_html_x( 'A segment of all %1$s of %2$s', 'segment of all [recipients] from campaign [campaign]', 'mailster' ), $options[ $option ], '"' . $campaign->post_title . '"' ),
+				'slug'        => 'segment-' . $option . '-of-' . $campaign->ID,
+			),
+			true,
+			$subscribers
+		);
 
 		return true;
 
@@ -3352,25 +3405,25 @@ class MailsterCampaigns {
 
 		$return = '';
 
-		$track_opens = $this->meta( $campaign_id, 'track_opens' );
+		$track_opens  = $this->meta( $campaign_id, 'track_opens' );
 		$track_clicks = $this->meta( $campaign_id, 'track_clicks' );
 
-		$limit = apply_filters( 'mailster_get_recipients_part', 1000 );
+		$limit  = apply_filters( 'mailster_get_recipients_part', 1000 );
 		$offset = (int) $page * $limit;
 
 		$fields = array(
-			'ID' => esc_html__( 'ID', 'mailster' ),
-			'email' => mailster_text( 'email' ),
-			'status' => esc_html__( 'Status', 'mailster' ),
-			'firstname' => mailster_text( 'firstname' ),
-			'lastname' => mailster_text( 'lastname' ),
-			'sent' => esc_html__( 'Sent Date', 'mailster' ),
-			'open' => esc_html__( 'Open Date', 'mailster' ),
-			'open_count' => esc_html__( 'Open Count', 'mailster' ),
-			'clicks' => esc_html__( 'Click Date', 'mailster' ),
+			'ID'          => esc_html__( 'ID', 'mailster' ),
+			'email'       => mailster_text( 'email' ),
+			'status'      => esc_html__( 'Status', 'mailster' ),
+			'firstname'   => mailster_text( 'firstname' ),
+			'lastname'    => mailster_text( 'lastname' ),
+			'sent'        => esc_html__( 'Sent Date', 'mailster' ),
+			'open'        => esc_html__( 'Open Date', 'mailster' ),
+			'open_count'  => esc_html__( 'Open Count', 'mailster' ),
+			'clicks'      => esc_html__( 'Click Date', 'mailster' ),
 			'click_count' => esc_html__( 'Click Count', 'mailster' ),
-			'unsubs' => esc_html__( 'Unsubscribes', 'mailster' ),
-			'bounces' => esc_html__( 'Bounces', 'mailster' ),
+			'unsubs'      => esc_html__( 'Unsubscribes', 'mailster' ),
+			'bounces'     => esc_html__( 'Bounces', 'mailster' ),
 		);
 
 		if ( ! $track_opens ) {
@@ -3388,7 +3441,7 @@ class MailsterCampaigns {
 			$order = 'ASC';
 		}
 
-		$sql = $this->get_recipients_part_sql( $campaign_id, $parts );
+		$sql  = $this->get_recipients_part_sql( $campaign_id, $parts );
 		$sql .= " ORDER BY $orderby $order";
 		$sql .= " LIMIT $offset, $limit";
 
@@ -3400,12 +3453,12 @@ class MailsterCampaigns {
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 		$subscribers_count = count( $subscribers );
-		$deleted = $this->get_deleted( $campaign_id );
+		$deleted           = $this->get_deleted( $campaign_id );
 
-		$unopen = in_array( 'unopen', $parts );
-		$opens = in_array( 'opens', $parts );
-		$clicks = in_array( 'clicks', $parts );
-		$unsubs = in_array( 'unsubs', $parts );
+		$unopen  = in_array( 'unopen', $parts );
+		$opens   = in_array( 'opens', $parts );
+		$clicks  = in_array( 'clicks', $parts );
+		$unsubs  = in_array( 'unsubs', $parts );
 		$bounces = in_array( 'bounces', $parts );
 
 		if ( ! $offset ) {
@@ -3485,13 +3538,13 @@ class MailsterCampaigns {
 
 		global $wpdb;
 
-		$unopen = in_array( 'unopen', $parts );
-		$opens = in_array( 'opens', $parts );
-		$clicks = in_array( 'clicks', $parts );
-		$unsubs = in_array( 'unsubs', $parts );
+		$unopen  = in_array( 'unopen', $parts );
+		$opens   = in_array( 'opens', $parts );
+		$clicks  = in_array( 'clicks', $parts );
+		$unsubs  = in_array( 'unsubs', $parts );
 		$bounces = in_array( 'bounces', $parts );
 
-		$sql = 'SELECT a.ID, a.email, a.hash, a.status, firstname.meta_value AS firstname, lastname.meta_value AS lastname';
+		$sql  = 'SELECT a.ID, a.email, a.hash, a.status, firstname.meta_value AS firstname, lastname.meta_value AS lastname';
 		$sql .= ', sent.timestamp AS sent, sent.count AS sent_count';
 
 		if ( $unopen || $opens ) {
@@ -3591,12 +3644,11 @@ class MailsterCampaigns {
 		switch ( $data['mailster']['page'] ) {
 
 			case 'overview':
-
 				if ( ! isset( $_POST['data']['mailster']['ids'] ) ) {
 					break;
 				}
 
-				$ids = array_filter( $_POST['data']['mailster']['ids'], 'is_numeric' );
+				$ids    = array_filter( $_POST['data']['mailster']['ids'], 'is_numeric' );
 				$return = array_fill_keys( $ids, null );
 
 				foreach ( $ids as $id ) {
@@ -3606,9 +3658,9 @@ class MailsterCampaigns {
 						continue;
 					}
 
-					$meta = $this->meta( $id );
-					$totals = $this->get_totals( $id );
-					$sent = $this->get_sent( $id );
+					$meta           = $this->meta( $id );
+					$totals         = $this->get_totals( $id );
+					$sent           = $this->get_sent( $id );
 					$sent_formatted = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 					if ( is_wp_error( $cron_status ) ) {
 						$status_title = esc_html__( 'Sending Problem!', 'mailster' );
@@ -3625,26 +3677,25 @@ class MailsterCampaigns {
 					}
 
 					$return[ $id ] = array(
-						'cron' => ! is_wp_error( $cron_status ),
-						'status' => $post->post_status,
-						'is_active' => $meta['active'],
-						'status_title' => $status_title,
-						'total' => $totals,
-						'sent' => $sent,
+						'cron'           => ! is_wp_error( $cron_status ),
+						'status'         => $post->post_status,
+						'is_active'      => $meta['active'],
+						'status_title'   => $status_title,
+						'total'          => $totals,
+						'sent'           => $sent,
 						'sent_formatted' => '&nbsp;' . $sent_formatted,
-						'column-status' => $this->get_columns_content( 'status' ),
-						'column-total' => $this->get_columns_content( 'total' ),
-						'column-open' => $this->get_columns_content( 'open' ),
-						'column-click' => $this->get_columns_content( 'click' ),
-						'column-unsubs' => $this->get_columns_content( 'unsubs' ),
+						'column-status'  => $this->get_columns_content( 'status' ),
+						'column-total'   => $this->get_columns_content( 'total' ),
+						'column-open'    => $this->get_columns_content( 'open' ),
+						'column-click'   => $this->get_columns_content( 'click' ),
+						'column-unsubs'  => $this->get_columns_content( 'unsubs' ),
 						'column-bounces' => $this->get_columns_content( 'bounces' ),
 					);
 
 				}
-			break;
+				break;
 
 			case 'edit':
-
 				$id = (int) $_POST['data']['mailster']['id'];
 
 				$post = $this->get( $id );
@@ -3652,18 +3703,18 @@ class MailsterCampaigns {
 					break;
 				}
 
-				$meta = $this->meta( $id );
-				$totals = $this->get_totals( $id );
-				$sent = $this->get_sent( $id );
-				$deleted = $this->get_deleted( $id );
-				$opens = $this->get_opens( $id );
-				$clicks = $this->get_clicks( $id );
-				$clicks_total = $this->get_clicks( $id, true );
-				$unsubs = $this->get_unsubscribes( $id );
-				$bounces = $this->get_bounces( $id );
-				$open_rate = round( $this->get_open_rate( $id ) * 100, 2 );
-				$click_rate = round( $this->get_click_rate( $id ) * 100, 2 );
-				$bounce_rate = round( $this->get_bounce_rate( $id ) * 100, 2 );
+				$meta             = $this->meta( $id );
+				$totals           = $this->get_totals( $id );
+				$sent             = $this->get_sent( $id );
+				$deleted          = $this->get_deleted( $id );
+				$opens            = $this->get_opens( $id );
+				$clicks           = $this->get_clicks( $id );
+				$clicks_total     = $this->get_clicks( $id, true );
+				$unsubs           = $this->get_unsubscribes( $id );
+				$bounces          = $this->get_bounces( $id );
+				$open_rate        = round( $this->get_open_rate( $id ) * 100, 2 );
+				$click_rate       = round( $this->get_click_rate( $id ) * 100, 2 );
+				$bounce_rate      = round( $this->get_bounce_rate( $id ) * 100, 2 );
 				$unsubscribe_rate = round( $this->get_unsubscribe_rate( $id ) * 100, 2 );
 
 				$environment = $this->get_environment( $id );
@@ -3673,7 +3724,7 @@ class MailsterCampaigns {
 				if ( $geo_data = $this->get_geo_data( $post->ID ) ) :
 
 					$unknown_cities = array();
-					$countrycodes = array();
+					$countrycodes   = array();
 
 					foreach ( $geo_data as $countrycode => $data ) {
 						$x = wp_list_pluck( $data, 3 );
@@ -3689,7 +3740,7 @@ class MailsterCampaigns {
 					arsort( $countrycodes );
 					$total = array_sum( $countrycodes );
 
-					$i = 0;
+					$i           = 0;
 					$geolocation = '';
 
 					foreach ( $countrycodes as $countrycode => $count ) {
@@ -3708,38 +3759,38 @@ class MailsterCampaigns {
 				}
 
 				$return[ $id ] = array(
-					'cron' => ! is_wp_error( $cron_status ),
-					'status' => $post->post_status,
-					'total' => $post->post_type == 'autoresponder' ? $sent : $totals,
-					'sent' => $sent,
-					'deleted' => $deleted,
-					'opens' => $opens,
-					'clicks' => $clicks,
-					'clicks_total' => $clicks_total,
-					'unsubs' => $unsubs,
-					'bounces' => $bounces,
-					'open_rate' => $open_rate,
-					'click_rate' => $click_rate,
-					'unsub_rate' => $unsubscribe_rate,
-					'bounce_rate' => $bounce_rate,
-					'total_f' => number_format_i18n( $totals ),
-					'sent_f' => number_format_i18n( $sent ),
-					'deleted_f' => number_format_i18n( $deleted ),
-					'opens_f' => number_format_i18n( $opens ),
-					'clicks_f' => number_format_i18n( $clicks ),
+					'cron'           => ! is_wp_error( $cron_status ),
+					'status'         => $post->post_status,
+					'total'          => $post->post_type == 'autoresponder' ? $sent : $totals,
+					'sent'           => $sent,
+					'deleted'        => $deleted,
+					'opens'          => $opens,
+					'clicks'         => $clicks,
+					'clicks_total'   => $clicks_total,
+					'unsubs'         => $unsubs,
+					'bounces'        => $bounces,
+					'open_rate'      => $open_rate,
+					'click_rate'     => $click_rate,
+					'unsub_rate'     => $unsubscribe_rate,
+					'bounce_rate'    => $bounce_rate,
+					'total_f'        => number_format_i18n( $totals ),
+					'sent_f'         => number_format_i18n( $sent ),
+					'deleted_f'      => number_format_i18n( $deleted ),
+					'opens_f'        => number_format_i18n( $opens ),
+					'clicks_f'       => number_format_i18n( $clicks ),
 					'clicks_total_f' => number_format_i18n( $clicks_total ),
-					'unsubs_f' => number_format_i18n( $unsubs ),
-					'bounces_f' => number_format_i18n( $bounces ),
-					'environment' => $environment,
-					'clickbadges' => array(
-						'total' => $this->get_clicks( $id, true ),
+					'unsubs_f'       => number_format_i18n( $unsubs ),
+					'bounces_f'      => number_format_i18n( $bounces ),
+					'environment'    => $environment,
+					'clickbadges'    => array(
+						'total'  => $this->get_clicks( $id, true ),
 						'clicks' => $this->get_clicked_links( $id ),
 					),
 					'sent_formatted' => '&nbsp;' . sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) ),
-					'geo_location' => $geolocation,
+					'geo_location'   => $geolocation,
 				);
 
-			break;
+				break;
 		}
 
 		$response['mailster'] = $return;
@@ -3816,18 +3867,18 @@ class MailsterCampaigns {
 			return new WP_Error( 'sendlimit_reached', sprintf( esc_html__( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), mailster_option( 'send_limit' ), human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) ) );
 		}
 
-		$mail->to = $subscriber->email;
-		$mail->to_name = $subscriber->fullname;
-		$mail->subject = $campaign_meta['subject'];
-		$mail->from = $campaign_meta['from_email'];
-		$mail->from_name = $campaign_meta['from_name'];
-		$mail->reply_to = $campaign_meta['reply_to'];
-		$mail->bouncemail = mailster_option( 'bounce' );
-		$mail->preheader = $campaign_meta['preheader'];
+		$mail->to           = $subscriber->email;
+		$mail->to_name      = $subscriber->fullname;
+		$mail->subject      = $campaign_meta['subject'];
+		$mail->from         = $campaign_meta['from_email'];
+		$mail->from_name    = $campaign_meta['from_name'];
+		$mail->reply_to     = $campaign_meta['reply_to'];
+		$mail->bouncemail   = mailster_option( 'bounce' );
+		$mail->preheader    = $campaign_meta['preheader'];
 		$mail->embed_images = mailster_option( 'embed_images' );
 
 		$mail->add_tracking_image = $track || $campaign_meta['track_opens'];
-		$mail->hash = $subscriber->hash;
+		$mail->hash               = $subscriber->hash;
 		$mail->set_subscriber( $subscriber->ID );
 
 		$placeholder = mailster( 'placeholder' );
@@ -3869,9 +3920,12 @@ class MailsterCampaigns {
 		$placeholder->replace_custom_tags( true );
 
 		$placeholder->set_subscriber( $subscriber->ID );
-		$placeholder->add_custom( $campaign->ID, array(
-			'emailaddress' => $subscriber->email,
-		));
+		$placeholder->add_custom(
+			$campaign->ID,
+			array(
+				'emailaddress' => $subscriber->email,
+			)
+		);
 
 		// add subscriber info
 		$placeholder->add( (array) $subscriber );
@@ -3910,19 +3964,19 @@ class MailsterCampaigns {
 
 		$listunsubscribe = '';
 		if ( $mail->bouncemail ) {
-			$listunsubscribe_mail = $mail->bouncemail;
+			$listunsubscribe_mail    = $mail->bouncemail;
 			$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
-			$listunsubscribe_body = "X-Mailster: $subscriber->hash\nX-Mailster-Campaign: {$campaign->ID}\nX-Mailster-ID: $MID\n\n";
-			$listunsubscribe .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
+			$listunsubscribe_body    = "X-Mailster: $subscriber->hash\nX-Mailster-Campaign: {$campaign->ID}\nX-Mailster-ID: $MID\n\n";
+			$listunsubscribe        .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
 		}
 		$listunsubscribe .= '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $subscriber->hash, $campaign->ID ) . '>';
 		$listunsubscribe .= '<' . $unsubscribelink . '>';
 
 		$headers = array(
-			'X-Mailster' => $subscriber->hash,
-			'X-Mailster-Campaign' => $campaign->ID,
-			'X-Mailster-ID' => $MID,
-			'List-Unsubscribe' => $listunsubscribe,
+			'X-Mailster'            => $subscriber->hash,
+			'X-Mailster-Campaign'   => $campaign->ID,
+			'X-Mailster-ID'         => $MID,
+			'List-Unsubscribe'      => $listunsubscribe,
 			'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
 		);
 
@@ -4160,7 +4214,7 @@ class MailsterCampaigns {
 			}
 		}
 
-		$this->template = $slug;
+		$this->template     = $slug;
 		$this->templatefile = $file;
 
 		$this->templateobj = mailster( 'template', $slug, $file );
@@ -4217,8 +4271,14 @@ class MailsterCampaigns {
 
 		$url = 'https://s.wordpress.com/mshots/v1/' . ( rawurlencode( add_query_arg( 'c', $hash, $campaign_url ) ) ) . '?w=600&h=800';
 
-		$response = wp_remote_get( $url, array( 'redirection' => 0, 'method' => 'HEAD' ) );
-		$code = wp_remote_retrieve_response_code( $response );
+		$response = wp_remote_get(
+			$url,
+			array(
+				'redirection' => 0,
+				'method'      => 'HEAD',
+			)
+		);
+		$code     = wp_remote_retrieve_response_code( $response );
 
 		if ( 307 == $code ) {
 			wp_schedule_single_event( time() + 10, 'mailster_auto_post_thumbnail', array( $campaign_id ) );
@@ -4249,21 +4309,21 @@ class MailsterCampaigns {
 		}
 
 		$file = array(
-			'name' => $filename,
-			'type' => 'image/jpeg',
+			'name'     => $filename,
+			'type'     => 'image/jpeg',
 			'tmp_name' => $tmp_file,
-			'error' => 0,
-			'size' => filesize( $tmp_file ),
+			'error'    => 0,
+			'size'     => filesize( $tmp_file ),
 		);
 
 		$overrides = array(
-			'test_form' => false,
-			'test_size' => true,
+			'test_form'   => false,
+			'test_size'   => true,
 			'test_upload' => false,
 		);
 
 		$results = wp_handle_sideload( $file, $overrides, $time_string );
-		$file = $results['file'];
+		$file    = $results['file'];
 
 		if ( isset( $results['error'] ) ) {
 			return false;
@@ -4272,11 +4332,11 @@ class MailsterCampaigns {
 		$filetype = wp_check_filetype( $file, null );
 
 		$attachment = array(
-			'guid' => $wp_upload_dir['url'] . '/' . basename( $file ),
+			'guid'           => $wp_upload_dir['url'] . '/' . basename( $file ),
 			'post_mime_type' => $filetype['type'],
-			'post_title' => apply_filters( 'mymail_post_thumbnail_title', apply_filters( 'mailster_post_thumbnail_title', $campaign->post_title, $campaign ), $campaign ),
-			'post_content' => '',
-			'post_status' => 'inherit',
+			'post_title'     => apply_filters( 'mymail_post_thumbnail_title', apply_filters( 'mailster_post_thumbnail_title', $campaign->post_title, $campaign ), $campaign ),
+			'post_content'   => '',
+			'post_status'    => 'inherit',
 		);
 
 		if ( ( $post_thumbnail_id = get_post_thumbnail_id( $campaign_id ) ) && $file_exits ) {
@@ -4323,8 +4383,8 @@ class MailsterCampaigns {
 			if ( strpos( $html, 'data-editable' ) ) {
 
 				$templateobj = mailster( 'template' );
-				$x = $templateobj->new_template_language( $html );
-				$html = $x->saveHTML();
+				$x           = $templateobj->new_template_language( $html );
+				$html        = $x->saveHTML();
 
 			}
 		} elseif ( $post->post_type == 'newsletter' ) {
@@ -4354,7 +4414,7 @@ class MailsterCampaigns {
 	public function get_template_by_slug( $slug, $file = 'index.html', $modules = true, $editorstyle = false ) {
 
 		$template = mailster( 'template', $slug, $file );
-		$html = $template->get( $modules, true );
+		$html     = $template->get( $modules, true );
 
 		if ( $editorstyle ) {
 			$html = str_replace( '</head>', $this->iframe_script_styles() . '</head>', $html );
@@ -4380,28 +4440,33 @@ class MailsterCampaigns {
 		wp_register_script( 'mailster-editor-script', MAILSTER_URI . 'assets/js/editor-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
 		$mailsterdata = array(
-			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'url' => MAILSTER_URI,
+			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+			'url'      => MAILSTER_URI,
 			'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
-			'isrtl' => is_rtl(),
+			'isrtl'    => is_rtl(),
 			'plupload' => array(
-				'runtimes' => 'html5,flash',
-				'browse_button' => 'mailster-editorimage-upload-button',
-				'file_data_name' => 'async-upload',
-				'multiple_queues' => true,
-				'max_file_size' => wp_max_upload_size() . 'b',
-				'url' => admin_url( 'admin-ajax.php' ),
-				'flash_swf_url' => includes_url( 'js/plupload/plupload.flash.swf' ),
+				'runtimes'            => 'html5,flash',
+				'browse_button'       => 'mailster-editorimage-upload-button',
+				'file_data_name'      => 'async-upload',
+				'multiple_queues'     => true,
+				'max_file_size'       => wp_max_upload_size() . 'b',
+				'url'                 => admin_url( 'admin-ajax.php' ),
+				'flash_swf_url'       => includes_url( 'js/plupload/plupload.flash.swf' ),
 				'silverlight_xap_url' => includes_url( 'js/plupload/plupload.silverlight.xap' ),
-				'filters' => array( array( 'title' => esc_html__( 'Image files', 'mailster' ), 'extensions' => 'jpg,gif,png' ) ),
-				'multipart' => true,
-				'urlstream_upload' => true,
-				'multipart_params' => array(
-					'action' => 'mailster_editor_image_upload_handler',
-					'ID' => isset( $_GET['id'] ) ? (int) $_GET['id'] : null,
+				'filters'             => array(
+					array(
+						'title'      => esc_html__( 'Image files', 'mailster' ),
+						'extensions' => 'jpg,gif,png',
+					),
+				),
+				'multipart'           => true,
+				'urlstream_upload'    => true,
+				'multipart_params'    => array(
+					'action'   => 'mailster_editor_image_upload_handler',
+					'ID'       => isset( $_GET['id'] ) ? (int) $_GET['id'] : null,
 					'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
 				),
-				'multi_selection' => false,
+				'multi_selection'     => false,
 			),
 		);
 
@@ -4415,53 +4480,60 @@ class MailsterCampaigns {
 			$single_toolbar3 = (string) apply_filters( 'mailster_editor_single_toolbar3', '' );
 
 			$mailsterdata['tinymce'] = array(
-					'args' => apply_filters( 'mailster_editor_tinymce_args', array(
-						'cache_suffix' => 'mailster-mce-' . MAILSTER_VERSION,
-						'hidden_input' => false,
-						'forced_root_block' => false,
+				'args'   => apply_filters(
+					'mailster_editor_tinymce_args',
+					array(
+						'cache_suffix'           => 'mailster-mce-' . MAILSTER_VERSION,
+						'hidden_input'           => false,
+						'forced_root_block'      => false,
 						'force_hex_style_colors' => true,
-						'inline' => true,
-						'menubar' => false,
-						'branding' => false,
-						'invalid_elements' => 'script,iframe,frameset,applet,embed',
-						'block_formats' => 'Paragraph=p',
-						'relative_urls' => false,
-						'remove_script_host' => false,
-						'convert_urls' => true,
-						'browser_spellcheck' => false,
-						'directionality' => 'ltr',
-						'fontsize_formats' => '8px 10px 12px 14px 18px 24px 36px',
-						'skin_url' => MAILSTER_URI . 'assets/css/tinymce',
-						'plugins' => 'textcolor colorpicker charmap hr lists paste wordpress wplink wpdialogs',
-					)),
-					'single' => array(
-						'selector' => 'single',
-						'custom_elements' => 'single',
-						'toolbar1' => $single_toolbar1,
-						'toolbar2' => $single_toolbar2,
-						'toolbar3' => $single_toolbar3,
-					),
-					'multi' => array(
-						'selector' => 'multi',
-						'custom_elements' => 'multi',
-						'toolbar1' => $toolbar1,
-						'toolbar2' => $toolbar2,
-						'toolbar3' => $toolbar3,
-					),
+						'inline'                 => true,
+						'menubar'                => false,
+						'branding'               => false,
+						'invalid_elements'       => 'script,iframe,frameset,applet,embed',
+						'block_formats'          => 'Paragraph=p',
+						'relative_urls'          => false,
+						'remove_script_host'     => false,
+						'convert_urls'           => true,
+						'browser_spellcheck'     => false,
+						'directionality'         => 'ltr',
+						'fontsize_formats'       => '8px 10px 12px 14px 18px 24px 36px',
+						'skin_url'               => MAILSTER_URI . 'assets/css/tinymce',
+						'plugins'                => 'textcolor colorpicker charmap hr lists paste wordpress wplink wpdialogs',
+					)
+				),
+				'single' => array(
+					'selector'        => 'single',
+					'custom_elements' => 'single',
+					'toolbar1'        => $single_toolbar1,
+					'toolbar2'        => $single_toolbar2,
+					'toolbar3'        => $single_toolbar3,
+				),
+				'multi'  => array(
+					'selector'        => 'multi',
+					'custom_elements' => 'multi',
+					'toolbar1'        => $toolbar1,
+					'toolbar2'        => $toolbar2,
+					'toolbar3'        => $toolbar3,
+				),
 			);
 		}
 
 		wp_localize_script( 'mailster-editor-script', 'mailsterdata', $mailsterdata );
 
-		wp_localize_script( 'mailster-editor-script', 'mailsterL10n', array(
-			'ready' => esc_html__( 'ready!', 'mailster' ),
-			'error' => esc_html__( 'error!', 'mailster' ),
-			'error_occurs' => esc_html__( 'An error occurs while uploading', 'mailster' ),
-			'unsupported_format' => esc_html__( 'Unsupported file format', 'mailster' ),
-			'add_button' => esc_html__( 'Add button', 'mailster' ),
-			'add_repeater' => esc_html__( 'Duplicate element', 'mailster' ),
-			'remove_repeater' => esc_html__( 'Remove element', 'mailster' ),
-		) );
+		wp_localize_script(
+			'mailster-editor-script',
+			'mailsterL10n',
+			array(
+				'ready'              => esc_html__( 'ready!', 'mailster' ),
+				'error'              => esc_html__( 'error!', 'mailster' ),
+				'error_occurs'       => esc_html__( 'An error occurs while uploading', 'mailster' ),
+				'unsupported_format' => esc_html__( 'Unsupported file format', 'mailster' ),
+				'add_button'         => esc_html__( 'Add button', 'mailster' ),
+				'add_repeater'       => esc_html__( 'Duplicate element', 'mailster' ),
+				'remove_repeater'    => esc_html__( 'Remove element', 'mailster' ),
+			)
+		);
 
 		wp_register_script( 'mailster-tinymce', includes_url( 'js/tinymce/' ) . 'tinymce.min.js', array(), false, true );
 		wp_register_script( 'mailster-tinymce-compat', includes_url( 'js/tinymce/plugins/compat3x/' ) . 'plugin' . $suffix . '.js', array(), false, true );
@@ -4560,11 +4632,11 @@ class MailsterCampaigns {
 		global $post_id;
 		global $post;
 
-		$html = $this->templateobj->get( true );
+		$html   = $this->templateobj->get( true );
 		$colors = array();
 		preg_match_all( '/#[a-fA-F0-9]{6}/', $html, $hits );
 		$original_colors = array_unique( $hits[0] );
-		$html = $post->post_content;
+		$html            = $post->post_content;
 
 		if ( ! empty( $html ) && isset( $this->post_data['template'] ) && $this->post_data['template'] == $this->get_template() && $this->post_data['file'] == $this->get_file() ) {
 			preg_match_all( '/#[a-fA-F0-9]{6}/', $html, $hits );
@@ -4583,7 +4655,7 @@ class MailsterCampaigns {
 					continue;
 				}
 
-				$search[] = $from;
+				$search[]  = $from;
 				$replace[] = $to;
 			}
 			$content = str_replace( $search, $replace, $content );
