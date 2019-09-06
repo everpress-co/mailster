@@ -15,14 +15,14 @@ class MailsterTemplate {
 
 	private $templatepath;
 	private $download_url = 'https://static.mailster.co/templates/mymail.zip';
-	private $headers = array(
-		'name' => 'Template Name',
-		'label' => 'Name',
-		'uri' => 'Template URI',
+	private $headers      = array(
+		'name'        => 'Template Name',
+		'label'       => 'Name',
+		'uri'         => 'Template URI',
 		'description' => 'Description',
-		'author' => 'Author',
-		'author_uri' => 'Author URI',
-		'version' => 'Version',
+		'author'      => 'Author',
+		'author_uri'  => 'Author URI',
+		'version'     => 'Version',
 	);
 
 	/**
@@ -36,7 +36,7 @@ class MailsterTemplate {
 		$this->file = basename( $file );
 
 		$this->path = MAILSTER_UPLOAD_DIR . '/templates';
-		$this->url = MAILSTER_UPLOAD_URI . '/templates';
+		$this->url  = MAILSTER_UPLOAD_URI . '/templates';
 
 		if ( ! is_null( $slug ) ) {
 			$this->load_template( $slug );
@@ -59,7 +59,7 @@ class MailsterTemplate {
 				return '';
 			}
 
-			$xpath = new DOMXpath( $this->doc );
+			$xpath           = new DOMXpath( $this->doc );
 			$modulecontainer = $xpath->query( '//*/modules' );
 
 			foreach ( $modulecontainer as $container ) {
@@ -83,7 +83,7 @@ class MailsterTemplate {
 		}
 		if ( strpos( $html, 'data-editable' ) ) {
 
-			$x = $this->new_template_language( $html );
+			$x    = $this->new_template_language( $html );
 			$html = $x->saveHTML();
 
 		}
@@ -137,7 +137,7 @@ class MailsterTemplate {
 		$slug = basename( $slug );
 
 		$this->templatepath = $this->path . '/' . $slug;
-		$this->templateurl = $this->url . '/' . $slug;
+		$this->templateurl  = $this->url . '/' . $slug;
 
 		$file = $this->templatepath . '/' . $this->file;
 
@@ -149,9 +149,9 @@ class MailsterTemplate {
 			wp_die( "PHP Fatal error: Class 'DOMDocument' not found" );
 		}
 
-		$doc = new DOMDocument();
+		$doc                  = new DOMDocument();
 		$doc->validateOnParse = true;
-		$doc->formatOutput = true;
+		$doc->formatOutput    = true;
 
 		if ( file_exists( $file ) ) {
 			$data = file_get_contents( $file );
@@ -168,15 +168,15 @@ class MailsterTemplate {
 		$doc = $this->new_template_language( $doc );
 
 		if ( $logo_id = mailster_option( 'logo' ) ) {
-			$xpath = new DOMXPath( $doc );
-			$logos = $xpath->query( '//*/img[@label="Logo" or @label="logo" or @label="Your Logo"]' );
-			$high_dpi = mailster_option( 'high_dpi' ) ? 2 : 1;
+			$xpath     = new DOMXPath( $doc );
+			$logos     = $xpath->query( '//*/img[@label="Logo" or @label="logo" or @label="Your Logo"]' );
+			$high_dpi  = mailster_option( 'high_dpi' ) ? 2 : 1;
 			$logo_link = mailster_option( 'logo_link' );
 
 			foreach ( $logos as $logo ) {
 
-				$src = $logo->getAttribute( 'src' );
-				$width = $logo->getAttribute( 'width' );
+				$src    = $logo->getAttribute( 'src' );
+				$width  = $logo->getAttribute( 'width' );
 				$height = $logo->getAttribute( 'height' );
 
 				if ( ! $src || ! $height || ! $width ) {
@@ -206,16 +206,16 @@ class MailsterTemplate {
 
 		if ( $services = mailster_option( 'services' ) ) {
 
-			$xpath = new DOMXPath( $doc );
+			$xpath   = new DOMXPath( $doc );
 			$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
 
 			if ( $buttons->length ) {
 
 				$base_path = $this->templatepath . '/img/social/';
-				$base_url = $this->templateurl . '/img/social/';
+				$base_url  = $this->templateurl . '/img/social/';
 				if ( ! is_dir( $base_path ) ) {
 					$base_path = MAILSTER_DIR . 'templates/mymail/img/social/';
-					$base_url = MAILSTER_URI . 'templates/mymail/img/social/';
+					$base_url  = MAILSTER_URI . 'templates/mymail/img/social/';
 				}
 
 				$high_dpi = mailster_option( 'high_dpi' ) ? 2 : 1;
@@ -249,10 +249,10 @@ class MailsterTemplate {
 						continue;
 					}
 
-					$img = $doc->createElement( 'img' );
+					$img  = $doc->createElement( 'img' );
 					$link = $doc->createElement( 'a' );
 
-					$width = round( $dimensions[0] / $high_dpi );
+					$width  = round( $dimensions[0] / $high_dpi );
 					$height = round( $dimensions[1] / $high_dpi );
 
 					$img->setAttribute( 'src', str_replace( $base_path, $base_url, $icon ) );
@@ -277,13 +277,13 @@ class MailsterTemplate {
 
 		$data = $this->get_template_data( $file );
 		if ( $data['name'] ) {
-			$raw = preg_replace( '#<!--(.*?)-->#s', '', $raw, 1 );
+			$raw        = preg_replace( '#<!--(.*?)-->#s', '', $raw, 1 );
 			$this->data = $data;
 		}
 
 		$this->slug = $slug;
-		$this->doc = $doc;
-		$this->raw = $raw;
+		$this->doc  = $doc;
+		$this->raw  = $raw;
 
 	}
 
@@ -320,9 +320,12 @@ class MailsterTemplate {
 	 * @return unknown
 	 */
 	public function upload_template() {
-		$result = wp_handle_upload( $_FILES['templatefile'], array(
+		$result = wp_handle_upload(
+			$_FILES['templatefile'],
+			array(
 				'mimes' => array( 'zip' => 'multipart/x-zip' ),
-		) );
+			)
+		);
 		if ( isset( $result['error'] ) ) {
 			return $result;
 		}
@@ -387,7 +390,7 @@ class MailsterTemplate {
 		if ( $has_modules = preg_match( '#<modules[^>]*>(.*)</modules>#s', $content, $hits ) ) {
 
 			$original_modules_html = $modules ? $this->get_modules_html() : '';
-			$custom_modules = $hits[1];
+			$custom_modules        = $hits[1];
 			// remove all active
 			$custom_modules = preg_replace( '#<module([^>]+)?( active="([^"]*)?")([^>]+)?>#', '<module$1$4>', $custom_modules );
 
@@ -428,53 +431,53 @@ class MailsterTemplate {
 	public function get_module_list( $activeonly = false ) {
 
 		$modules = $this->get_modules( $activeonly );
-		$count = $modules->length;
-		$list = array();
+		$count   = $modules->length;
+		$list    = array();
 
 		if ( ! $count ) {
 			return $list;
 		}
 
 		$labels = array(
-			'full size image' => esc_html_x( 'Full Size Image', 'common module name', 'mailster' ),
-			'intro' => esc_html_x( 'Intro', 'common module name', 'mailster' ),
-			'separator' => esc_html_x( 'Separator', 'common module name', 'mailster' ),
-			'separator with button' => esc_html_x( 'Separator with button', 'common module name', 'mailster' ),
-			'full size text invert' => esc_html_x( 'Full Size Text Invert', 'common module name', 'mailster' ),
-			'iphone promotion' => esc_html_x( 'iPhone Promotion', 'common module name', 'mailster' ),
-			'macbook promotion' => esc_html_x( 'Macbook Promotion', 'common module name', 'mailster' ),
-			'quotation' => esc_html_x( 'Quotation', 'common module name', 'mailster' ),
-			'quotation left' => esc_html_x( 'Quotation left', 'common module name', 'mailster' ),
-			'quotation right' => esc_html_x( 'Quotation right', 'common module name', 'mailster' ),
-			'plans' => esc_html_x( 'Plans', 'common module name', 'mailster' ),
-			'1/2 image full' => sprintf( esc_html_x( '%s Image Full', 'common module name', 'mailster' ), '&#xBD;' ),
-			'1/2 text invert' => sprintf( esc_html_x( '%s Text Invert', 'common module name', 'mailster' ), '&#xBD;' ),
-			'1/3 image full' => sprintf( esc_html_x( '%s Image Full', 'common module name', 'mailster' ), '&#x2153;' ),
-			'1/3 text invert' => sprintf( esc_html_x( '%s Text Invert', 'common module name', 'mailster' ), '&#x2153;' ),
-			'1/4 image full' => sprintf( esc_html_x( '%s Image Full', 'common module name', 'mailster' ), '&#xBC;' ),
-			'1/4 text invert' => sprintf( esc_html_x( '%s Text Invert', 'common module name', 'mailster' ), '&#xBC;' ),
-			'image on the left' => esc_html_x( 'Image on the Left', 'common module name', 'mailster' ),
-			'image on the right' => esc_html_x( 'Image on the Right', 'common module name', 'mailster' ),
-			'1/2 image on the left' => sprintf( esc_html_x( '%s Image on the Left', 'common module name', 'mailster' ), '&#xBD;' ),
-			'1/2 image on the right' => sprintf( esc_html_x( '%s Image on the Right', 'common module name', 'mailster' ), '&#xBD;' ),
-			'1/3 image on the left' => sprintf( esc_html_x( '%s Image on the Left', 'common module name', 'mailster' ), '&#x2153;' ),
-			'1/3 image on the right' => sprintf( esc_html_x( '%s Image on the Right', 'common module name', 'mailster' ), '&#x2153;' ),
-			'1/4 image on the left' => sprintf( esc_html_x( '%s Image on the Left', 'common module name', 'mailster' ), '&#xBC;' ),
-			'1/4 image on the right' => sprintf( esc_html_x( '%s Image on the Right', 'common module name', 'mailster' ), '&#xBC;' ),
-			'1/2 floating image left' => sprintf( esc_html_x( '%s Floating Image left', 'common module name', 'mailster' ), '&#xBD;' ),
+			'full size image'          => esc_html_x( 'Full Size Image', 'common module name', 'mailster' ),
+			'intro'                    => esc_html_x( 'Intro', 'common module name', 'mailster' ),
+			'separator'                => esc_html_x( 'Separator', 'common module name', 'mailster' ),
+			'separator with button'    => esc_html_x( 'Separator with button', 'common module name', 'mailster' ),
+			'full size text invert'    => esc_html_x( 'Full Size Text Invert', 'common module name', 'mailster' ),
+			'iphone promotion'         => esc_html_x( 'iPhone Promotion', 'common module name', 'mailster' ),
+			'macbook promotion'        => esc_html_x( 'Macbook Promotion', 'common module name', 'mailster' ),
+			'quotation'                => esc_html_x( 'Quotation', 'common module name', 'mailster' ),
+			'quotation left'           => esc_html_x( 'Quotation left', 'common module name', 'mailster' ),
+			'quotation right'          => esc_html_x( 'Quotation right', 'common module name', 'mailster' ),
+			'plans'                    => esc_html_x( 'Plans', 'common module name', 'mailster' ),
+			'1/2 image full'           => sprintf( esc_html_x( '%s Image Full', 'common module name', 'mailster' ), '&#xBD;' ),
+			'1/2 text invert'          => sprintf( esc_html_x( '%s Text Invert', 'common module name', 'mailster' ), '&#xBD;' ),
+			'1/3 image full'           => sprintf( esc_html_x( '%s Image Full', 'common module name', 'mailster' ), '&#x2153;' ),
+			'1/3 text invert'          => sprintf( esc_html_x( '%s Text Invert', 'common module name', 'mailster' ), '&#x2153;' ),
+			'1/4 image full'           => sprintf( esc_html_x( '%s Image Full', 'common module name', 'mailster' ), '&#xBC;' ),
+			'1/4 text invert'          => sprintf( esc_html_x( '%s Text Invert', 'common module name', 'mailster' ), '&#xBC;' ),
+			'image on the left'        => esc_html_x( 'Image on the Left', 'common module name', 'mailster' ),
+			'image on the right'       => esc_html_x( 'Image on the Right', 'common module name', 'mailster' ),
+			'1/2 image on the left'    => sprintf( esc_html_x( '%s Image on the Left', 'common module name', 'mailster' ), '&#xBD;' ),
+			'1/2 image on the right'   => sprintf( esc_html_x( '%s Image on the Right', 'common module name', 'mailster' ), '&#xBD;' ),
+			'1/3 image on the left'    => sprintf( esc_html_x( '%s Image on the Left', 'common module name', 'mailster' ), '&#x2153;' ),
+			'1/3 image on the right'   => sprintf( esc_html_x( '%s Image on the Right', 'common module name', 'mailster' ), '&#x2153;' ),
+			'1/4 image on the left'    => sprintf( esc_html_x( '%s Image on the Left', 'common module name', 'mailster' ), '&#xBC;' ),
+			'1/4 image on the right'   => sprintf( esc_html_x( '%s Image on the Right', 'common module name', 'mailster' ), '&#xBC;' ),
+			'1/2 floating image left'  => sprintf( esc_html_x( '%s Floating Image left', 'common module name', 'mailster' ), '&#xBD;' ),
 			'1/2 floating image right' => sprintf( esc_html_x( '%s Floating Image right', 'common module name', 'mailster' ), '&#xBD;' ),
-			'1/2 image features left' => sprintf( esc_html_x( '%s Image Features left', 'common module name', 'mailster' ), '&#xBD;' ),
+			'1/2 image features left'  => sprintf( esc_html_x( '%s Image Features left', 'common module name', 'mailster' ), '&#xBD;' ),
 			'1/2 image features right' => sprintf( esc_html_x( '%s Image Features right', 'common module name', 'mailster' ), '&#xBD;' ),
-			'1/3 image features left' => sprintf( esc_html_x( '%s Image Features left', 'common module name', 'mailster' ), '&#x2153;' ),
+			'1/3 image features left'  => sprintf( esc_html_x( '%s Image Features left', 'common module name', 'mailster' ), '&#x2153;' ),
 			'1/3 image features right' => sprintf( esc_html_x( '%s Image Features right', 'common module name', 'mailster' ), '&#x2153;' ),
-			'1/1 text' => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '1/1' ),
-			'1/2 text' => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#xBD;' ),
-			'1/3 text' => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#x2153;' ),
-			'1/4 text' => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#xBC;' ),
-			'1/1 column' => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '1/1' ),
-			'1/2 column' => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#xBD;' ),
-			'1/3 column' => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#x2153;' ),
-			'1/4 column' => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#xBC;' ),
+			'1/1 text'                 => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '1/1' ),
+			'1/2 text'                 => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#xBD;' ),
+			'1/3 text'                 => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#x2153;' ),
+			'1/4 text'                 => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#xBC;' ),
+			'1/1 column'               => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '1/1' ),
+			'1/2 column'               => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#xBD;' ),
+			'1/3 column'               => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#x2153;' ),
+			'1/4 column'               => sprintf( esc_html_x( '%s Text', 'common module name', 'mailster' ), '&#xBC;' ),
 		);
 
 		$screenshots = $this->get_module_screenshots();
@@ -484,7 +487,7 @@ class MailsterTemplate {
 			if ( isset( $labels[ strtolower( $label ) ] ) ) {
 				$label = $labels[ strtolower( $label ) ];
 			} elseif ( empty( $label ) ) {
-				$label = sprintf( esc_html__( 'Module %s', 'mailster' ), '#' . ($i + 1) );
+				$label = sprintf( esc_html__( 'Module %s', 'mailster' ), '#' . ( $i + 1 ) );
 			}
 			$list[] = $label;
 		}
@@ -603,7 +606,7 @@ class MailsterTemplate {
 		if ( ! is_string( $doc_or_html ) ) {
 			$doc = $doc_or_html;
 		} else {
-			$doc = new DOMDocument();
+			$doc                  = new DOMDocument();
 			$doc->validateOnParse = true;
 			@$doc->loadHTML( $doc_or_html );
 
@@ -776,13 +779,13 @@ class MailsterTemplate {
 	public function get_templates( $slugsonly = false ) {
 
 		$templates = array();
-		$files = list_files( $this->path );
+		$files     = list_files( $this->path );
 		sort( $files );
 		foreach ( $files as $file ) {
 			if ( basename( $file ) == 'index.html' ) {
 
 				$filename = str_replace( $this->path . '/', '', $file );
-				$slug = dirname( $filename );
+				$slug     = dirname( $filename );
 				if ( ! $slugsonly ) {
 					$templates[ $slug ] = $this->get_template_data( $file );
 				} else {
@@ -808,7 +811,7 @@ class MailsterTemplate {
 		}
 
 		$templates = array();
-		$files = list_files( $this->path . '/' . $slug, 1 );
+		$files     = list_files( $this->path . '/' . $slug, 1 );
 
 		sort( $files );
 
@@ -841,7 +844,7 @@ class MailsterTemplate {
 	public function get_versions( $slugsonly = false ) {
 
 		$templates = $this->get_templates();
-		$return = array();
+		$return    = array();
 		foreach ( $templates as $slug => $data ) {
 
 			$return[ $slug ] = $data['version'];
@@ -892,20 +895,20 @@ class MailsterTemplate {
 
 			$rootbtn = '';
 
-?>
+			?>
 		<div class="button-nav-wrap">
 			<?php
-			$nav = $btn = '';
-			$id = basename( $file );
+			$nav   = $btn = '';
+			$id    = basename( $file );
 			$files = list_files( dirname( $file ) . '/' . $id, 1 );
 			natsort( $files );
 			foreach ( $files as $file ) {
 				if ( is_dir( $file ) ) {
-					$file = str_replace( '//', '/', $file );
-					$name = basename( $file );
+					$file      = str_replace( '//', '/', $file );
+					$name      = basename( $file );
 					$folders[] = $name;
-					$nav .= '<a class="nav-tab" href="#buttons-' . $id . '-' . $name . '">' . __( $name, 'mailster' ) . '</a>';
-					$btn .= $this->list_buttons( substr( $file, 0, -1 ), $id );
+					$nav      .= '<a class="nav-tab" href="#buttons-' . $id . '-' . $name . '">' . __( $name, 'mailster' ) . '</a>';
+					$btn      .= $this->list_buttons( substr( $file, 0, -1 ), $id );
 				} else {
 					if ( ! in_array( strrchr( $file, '.' ), array( '.png', '.gif', '.jpg', '.jpeg' ) ) ) {
 						continue;
@@ -920,17 +923,20 @@ class MailsterTemplate {
 				}
 			}
 
-			if ( $nav ) : ?>
-		<div id="button-nav-<?php echo $id ?>" class="button-nav nav-tab-wrapper hide-if-no-js" data-folders="<?php echo implode( '-', $folders ) ?>"><?php echo $nav ?></div>
-			<?php endif;
+			if ( $nav ) :
+				?>
+		<div id="button-nav-<?php echo $id; ?>" class="button-nav nav-tab-wrapper hide-if-no-js" data-folders="<?php echo implode( '-', $folders ); ?>"><?php echo $nav; ?></div>
+				<?php
+			endif;
 			echo $btn;
-?>
+			?>
 		</div>
 
 
-		<?php if ( $rootbtn ) : ?>
+			<?php if ( $rootbtn ) : ?>
 		<div class="button-nav-wrap button-nav-wrap-root"><?php echo $rootbtn; ?></div>
-		<?php endif;
+				<?php
+		endif;
 
 		}
 
@@ -961,8 +967,8 @@ class MailsterTemplate {
 			}
 
 			$filename = str_replace( $folder . '/', '', $file );
-			$service = substr( $filename, 0, strrpos( $filename, '.' ) );
-			$btn .= '<li><a class="btnsrc" title="' . $service . '" data-link="' . mailster( 'helper' )->get_social_link( $service, 'USERNAME' ) . '"><img src="' . str_replace( $this->path . '/', $this->url . '/', $file ) . '"></a></li>';
+			$service  = substr( $filename, 0, strrpos( $filename, '.' ) );
+			$btn     .= '<li><a class="btnsrc" title="' . $service . '" data-link="' . mailster( 'helper' )->get_social_link( $service, 'USERNAME' ) . '"><img src="' . str_replace( $this->path . '/', $this->url . '/', $file ) . '"></a></li>';
 
 		}
 
@@ -1018,9 +1024,9 @@ class MailsterTemplate {
 		$filedir = MAILSTER_UPLOAD_DIR . '/templates/' . $slug . '/' . $file;
 		$fileuri = MAILSTER_UPLOAD_URI . '/templates/' . $slug . '/' . $file;
 
-		$hash = base_convert( md5_file( $filedir ) , 10, 36 );
+		$hash = base_convert( md5_file( $filedir ), 10, 36 );
 
-		$screenshot_modules_folder = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/modules/' . $hash;
+		$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/modules/' . $hash;
 		$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/modules/' . $hash;
 
 		if ( ! is_dir( $screenshot_modules_folder ) ) {
