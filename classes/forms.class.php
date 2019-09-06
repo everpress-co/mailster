@@ -90,7 +90,6 @@ class MailsterForms {
 			wp_register_style( 'mailster-form-button-style', MAILSTER_URI . 'assets/css/button-' . $buttonstyle[0] . '-style' . $suffix . '.css', array( 'mailster-form-button-base-style' ), MAILSTER_VERSION );
 
 			do_action( 'mailster_form_head_button' );
-			do_action( 'mymail_form_head_button' );
 
 			mailster( 'helper' )->wp_print_embedded_styles( 'mailster-form-button-style' );
 
@@ -101,14 +100,12 @@ class MailsterForms {
 		} elseif ( $is_embeded ) {
 
 			do_action( 'mailster_form_head_embeded' );
-			do_action( 'mymail_form_head_embeded' );
 			wp_print_styles( 'mailster-form-default-style' );
 
 		} elseif ( $is_iframe ) {
 
 			wp_register_style( 'mailster-form-iframe-style', MAILSTER_URI . 'assets/css/form-iframe-style' . $suffix . '.css', array( 'mailster-form-default-style' ), MAILSTER_VERSION );
 			do_action( 'mailster_form_head_iframe' );
-			do_action( 'mymail_form_head_iframe' );
 			mailster( 'helper' )->wp_print_embedded_styles( 'mailster-form-iframe-style' );
 			$width = preg_match( '#\d+%#', $width ) ? (int) $width . '%' : (int) $width . 'px';
 			echo '<style type="text/css">.mailster-form-wrap{width:' . $width . '}</style>';
@@ -125,13 +122,11 @@ class MailsterForms {
 		if ( $is_button ) {
 
 			do_action( 'mailster_form_body_button' );
-			do_action( 'mymail_form_body_button' );
 			include MAILSTER_DIR . 'views/forms/button.php';
 
 		} elseif ( $is_iframe ) {
 
 			do_action( 'mailster_form_body_iframe' );
-			do_action( 'mymail_form_body_iframe' );
 			$form = mailster( 'form' )->id( $form_id );
 			$form->add_class( 'in-iframe' );
 			$form->render();
@@ -168,7 +163,6 @@ class MailsterForms {
 		if ( $is_button ) {
 
 			do_action( 'mailster_form_footer_button' );
-			do_action( 'mymail_form_footer_button' );
 			wp_register_script( 'mailster-form-button-script', MAILSTER_URI . 'assets/js/form-button-script' . $suffix . '.js', array(), MAILSTER_VERSION );
 			mailster( 'helper' )->wp_print_embedded_scripts( 'mailster-form-button-script' );
 		} elseif ( $is_editable ) {
@@ -179,13 +173,11 @@ class MailsterForms {
 		} elseif ( $is_embeded ) {
 
 			do_action( 'mailster_form_footer_embeded' );
-			do_action( 'mymail_form_footer_embeded' );
 			wp_print_scripts( 'mailster-form' );
 
 		} elseif ( $is_iframe ) {
 
 			do_action( 'mailster_form_footer_iframe' );
-			do_action( 'mymail_form_footer_iframe' );
 			wp_register_script( 'mailster-form-iframe-script', MAILSTER_URI . 'assets/js/form-iframe-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 			wp_print_scripts( 'mailster-form-iframe-script' );
 			wp_print_scripts( 'mailster-form' );
@@ -448,7 +440,6 @@ class MailsterForms {
 					} elseif ( $success ) {
 						mailster_notice( sprintf( esc_html__( 'Form %s has been removed', 'mailster' ), '<strong>&quot;' . $form->name . '&quot;</strong>' ), 'error', true );
 						do_action( 'mailster_form_delete', $form->ID );
-						do_action( 'mymail_form_delete', $form->ID );
 					}
 
 					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_forms' );
@@ -578,7 +569,6 @@ class MailsterForms {
 			}
 
 			do_action( 'mailster_update_form', $form_id );
-			do_action( 'mymail_update_form', $form_id );
 
 			mailster_clear_cache( 'form' );
 
@@ -646,7 +636,6 @@ class MailsterForms {
 			$form_id = $wpdb->insert_id;
 
 			do_action( 'mailster_add_form', $form_id );
-			do_action( 'mymail_add_form', $form_id );
 
 			return $form_id;
 
@@ -802,7 +791,6 @@ class MailsterForms {
 		if ( false !== $wpdb->query( $sql ) ) {
 
 			do_action( 'mailster_unassign_form_lists', $form_ids, $lists, $not_list );
-			do_action( 'mymail_unassign_form_lists', $form_ids, $lists, $not_list );
 
 			return true;
 		}
