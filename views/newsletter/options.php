@@ -32,12 +32,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 		$original_names[ $i ] = isset( $x[1] ) ? $x[1] : '';
 	}
 	?>
-	<ul class="colors
-	<?php
-	if ( count( array_count_values( $original_names ) ) > 1 ) {
-		echo ' has-labels'; }
-	?>
-	" data-original-colors='<?php echo json_encode( $original_colors ); ?>'>
+	<ul class="colors<?php echo count( array_count_values( $original_names ) ) > 1 ? ' has-labels' : ''; ?>" data-original-colors='<?php echo json_encode( $original_colors ); ?>'>
 	<?php
 
 	$html = $post->post_content;
@@ -76,20 +71,18 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	<ul class="colorschema" title="<?php esc_html_e( 'original', 'mailster' ); ?>">
 	<?php
 	$original_colors_temp = array();
-	foreach ( $original_colors as $i => $color ) {
+	foreach ( $original_colors as $i => $color ) :
 		$color                  = strtolower( $color );
 		$original_colors_temp[] = $color;
 		?>
 		<li class="colorschema-field" title="<?php echo isset( $original_names[ $i ] ) ? $original_names[ $i ] : ''; ?>" data-hex="<?php echo $color; ?>" style="background-color:<?php echo $color; ?>"></li>
-		<?php
-	}
-	?>
+	<?php endforeach; ?>
 	</ul>
 	<?php if ( strtolower( implode( '', $original_colors_temp ) ) != strtolower( implode( '', $current_colors ) ) ) : ?>
 		<ul class="colorschema" title="<?php esc_html_e( 'current', 'mailster' ); ?>">
-			<?php foreach ( $colors as $i => $color ) { ?>
+			<?php foreach ( $colors as $i => $color ) : ?>
 				<li class="colorschema-field" title="<?php echo isset( $original_names[ $i ] ) ? $original_names[ $i ] : ''; ?>" data-hex="<?php echo strtolower( $color ); ?>" style="background-color:<?php echo $color; ?>"></li>
-			<?php } ?>
+			<?php endforeach; ?>
 		</ul>
 	<?php endif; ?>
 
@@ -105,24 +98,12 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	<?php endif; ?>
 <?php else : ?>
 	<p>
-		<?php
-		if ( $this->post_data['track_opens'] ) {
-			?>
-			&#10004;
-			<?php
-		} else {
-			?>
-			&#10005;<?php } ?> <?php esc_html_e( 'Track Opens', 'mailster' ); ?>
+	<?php echo $this->post_data['track_opens'] ? '&#10004;' : '&#10004;'; ?>
+	<?php esc_html_e( 'Track Opens', 'mailster' ); ?>
 	</p>
 	<p>
-		<?php
-		if ( $this->post_data['track_clicks'] ) {
-			?>
-			&#10004;
-			<?php
-		} else {
-			?>
-			&#10005;<?php } ?> <?php esc_html_e( 'Track Clicks', 'mailster' ); ?>
+	<?php echo $this->post_data['track_clicks'] ? '&#10004;' : '&#10004;'; ?>
+	<?php esc_html_e( 'Track Clicks', 'mailster' ); ?>
 	</p>
 	<label><?php esc_html_e( 'Colors Schema', 'mailster' ); ?></label><br>
 	<ul class="colorschema finished">

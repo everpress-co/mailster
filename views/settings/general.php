@@ -66,12 +66,7 @@
 		mailster( 'helper' )->notifcation_template_dropdown( mailster_option( 'system_mail_template', 'notification.html' ), 'mailster_options[system_mail_template]', ! mailster_option( 'system_mail' ) );
 		esc_html_e( 'and', 'mailster' );
 		?>
-			<select name="mailster_options[respect_content_type]" 
-			<?php
-			if ( ! mailster_option( 'system_mail' ) ) {
-				echo 'disabled';}
-			?>
-			>
+			<select name="mailster_options[respect_content_type]"<?php echo ! mailster_option( 'system_mail' ) ? ' disabled' : ''; ?>>
 				<option value="0" <?php selected( ! mailster_option( 'respect_content_type' ) ); ?>><?php esc_html_e( 'ignore', 'mailster' ); ?></option>
 				<option value="1" <?php selected( mailster_option( 'respect_content_type' ) ); ?>><?php esc_html_e( 'respect', 'mailster' ); ?></option>
 			</select>
@@ -120,9 +115,9 @@
 		?>
 		 /
 		<select name="mailster_options[encoding]">
-			<?php foreach ( $encoding as $code ) { ?>
+			<?php foreach ( $encoding as $code ) : ?>
 			<option value="<?php echo $code; ?>" <?php selected( $is == $code ); ?>><?php echo $code; ?></option>
-			<?php } ?>
+			<?php endforeach; ?>
 		</select>
 		<p class="description"><?php esc_html_e( 'change Charset and encoding of your mails if you have problems with some characters', 'mailster' ); ?></p>
 		</td>

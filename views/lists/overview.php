@@ -1,4 +1,3 @@
-
 <div class="wrap">
 <h1><?php esc_html_e( 'Lists', 'mailster' ); ?>
 <?php if ( current_user_can( 'mailster_add_lists' ) ) : ?>

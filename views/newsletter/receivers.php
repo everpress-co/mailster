@@ -31,13 +31,8 @@ $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data
 
 			<?php $checked = wp_parse_args( isset( $_GET['lists'] ) ? $_GET['lists'] : array(), $this->post_data['lists'] ); ?>
 
-			<div id="list-checkboxes" 
-			<?php
-			if ( $ignore_lists ) {
-				echo 'style="display:none"';}
-			?>
-			>
-			<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', true, $checked ); ?>
+			<div id="list-checkboxes"<?php echo $ignore_lists ? ' style="display:none"' : ''; ?>>
+				<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', true, $checked ); ?>
 				<label><input type="checkbox" id="all_lists"> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label>
 			</div>
 			<ul>

@@ -12,27 +12,23 @@ unset( $roles['administrator'] );
 			<thead>
 				<tr>
 				<th>&nbsp;</th>
-				<?php
-				foreach ( $roles as $role => $name ) {
-					echo '<th><input type="hidden" name="mailster_options[roles][' . $role . '][]" value="">' . $name . ' <input type="checkbox" class="selectall" value="' . $role . '" title="' . esc_html__( 'toggle all', 'mailster' ) . '"></th>';
-
-				}
-				?>
+				<?php foreach ( $roles as $role => $name ) : ?>
+					<th><input type="hidden" name="mailster_options[roles][<?php echo esc_attr( $role ); ?>][]" value=""><?php echo esc_html( $name ); ?> <input type="checkbox" class="selectall" value="<?php echo esc_attr( $role ); ?>" title="<?php echo esc_html__( 'toggle all', 'mailster' ); ?>"></th>
+				<?php endforeach; ?>
 				</tr>
 			</thead>
 			<tbody>
-<?php include MAILSTER_DIR . 'includes/capability.php'; ?>
 
-	<?php foreach ( $mailster_capabilities as $capability => $data ) { ?>
-			<tr><th><?php echo $data['title']; ?></th>
-		<?php foreach ( $roles as $role => $name ) { ?>
-			<?php
-			$r = get_role( $role );
-			echo '<td><label title="' . sprintf( esc_html__( '%1$s can %2$s', 'mailster' ), $name, $data['title'] ) . '"><input name="mailster_options[roles][' . $role . '][]" type="checkbox" class="cap-check-' . $role . '" value="' . $capability . '" ' . checked( ! empty( $r->capabilities[ $capability ] ), 1, false ) . ' ' . ( $role == 'administrator' ? 'readonly' : '' ) . '></label></td>';
-			?>
-		<?php } ?>
+		<?php require MAILSTER_DIR . 'includes/capability.php'; ?>
+
+		<?php foreach ( $mailster_capabilities as $capability => $data ) : ?>
+			<tr><th><?php echo esc_html( $data['title'] ); ?></th>
+			<?php foreach ( $roles as $role => $name ) : ?>
+				<?php $r = get_role( $role ); ?>
+				<td><label title="<?php printf( esc_html__( '%1$s can %2$s', 'mailster' ), $name, $data['title'] ); ?>"><input name="mailster_options[roles][<?php echo esc_attr( $role ); ?>][]" type="checkbox" class="cap-check-<?php echo esc_attr( $role ); ?>" value="<?php echo esc_attr( $capability ); ?>" <?php echo checked( ! empty( $r->capabilities[ $capability ] ), 1, false ); ?> <?php echo ( $role == 'administrator' ? 'readonly' : '' ); ?>></label></td>
+			<?php endforeach; ?>
 			</tr>
-	<?php } ?>
+		<?php endforeach; ?>
 			</tbody>
 		</table>
 	</td>

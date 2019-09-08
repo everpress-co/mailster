@@ -27,8 +27,8 @@ if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) : ?>
 
 	<?php if ( ! $this->is_dashboard ) : ?>
 <p class="alignright">
-<a class="" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=import"><?php esc_html_e( 'Import', 'mailster' ); ?></a>,
-<a class="" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export"><?php esc_html_e( 'Export', 'mailster' ); ?></a>
+<a href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=import"><?php esc_html_e( 'Import', 'mailster' ); ?></a>,
+<a href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export"><?php esc_html_e( 'Export', 'mailster' ); ?></a>
 		<?php esc_html_e( 'or', 'mailster' ); ?>
 
 <a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_subscribers&new"><?php esc_html_e( 'Add Subscriber', 'mailster' ); ?></a>

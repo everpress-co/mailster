@@ -62,27 +62,18 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 		?>
 	<form id="searchform" action method="get">
-		<?php
-		if ( isset( $_GET['post_type'] ) ) :
-			?>
-			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>"><?php endif; ?>
-		<?php
-		if ( isset( $_GET['page'] ) ) :
-			?>
-			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>"><?php endif; ?>
-		<?php
-		if ( isset( $_GET['paged'] ) ) :
-			?>
-			<input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ); ?>"><?php endif; ?>
+		<?php if ( isset( $_GET['post_type'] ) ) : ?>
+			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>">
+		<?php endif; ?>
+		<?php if ( isset( $_GET['page'] ) ) : ?>
+			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>">
+		<?php endif; ?>
+		<?php if ( isset( $_GET['paged'] ) ) : ?>
+			<input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ); ?>">
+		<?php endif; ?>
 	<p class="search-box">
 		<label class="screen-reader-text" for="sa-search-input"><?php echo $text; ?></label>
-		<input type="search" id="<?php echo $input_id; ?>" name="s" value="
-											<?php
-											if ( isset( $_GET['s'] ) ) {
-												echo esc_attr( $_GET['s'] );
-											}
-											?>
-		">
+		<input type="search" id="<?php echo $input_id; ?>" name="s" value="<?php echo isset( $_GET['s'] ) ? esc_attr( $_GET['s'] ) : ''; ?>">
 		<input type="submit" name="" id="search-submit" class="button" value="<?php echo esc_attr( $text ); ?>">
 	</p>
 	</form>

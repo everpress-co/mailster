@@ -35,12 +35,10 @@ $file     = $this->get_file();
 			$templates = $currenttemplate + $templates;
 
 			?>
-			<li class="current_template 
-			<?php
-			if ( $single ) {
-				echo 'single'; }
-			?>
-			"><span class="change_template" title="<?php echo esc_attr( sprintf( esc_html__( 'Your currently working with %s', 'mailster' ), '"' . $all_files[ $template ][ $file ]['label'] . '"' ) ); ?>"><?php echo esc_html( $all_files[ $template ][ $file ]['label'] ); ?></span>
+			<li class="current_template<?php echo $single ? ' single' : ''; ?> ">
+				<span class="change_template" title="<?php echo esc_attr( sprintf( esc_html__( 'Your currently working with %s', 'mailster' ), '"' . $all_files[ $template ][ $file ]['label'] . '"' ) ); ?>">
+				<?php echo esc_html( $all_files[ $template ][ $file ]['label'] ); ?>
+				</span>
 				<div class="dropdown">
 					<div class="ddarrow"></div>
 					<div class="inner">
@@ -48,21 +46,21 @@ $file     = $this->get_file();
 						<ul>
 							<?php
 							$current = $template . '/' . $file;
-							foreach ( $templates as $slug => $data ) {
+							foreach ( $templates as $slug => $data ) :
 								?>
 								<li>
 								<?php
 								if ( ! $single ) :
 									?>
 									<a class="template"><?php echo esc_html( $data['name'] ); ?><i class="version"><?php echo esc_html( $data['version'] ); ?></i></a><?php endif; ?>
-								<ul 
+								<ul
 								<?php
 								if ( $template == $slug ) {
 									echo ' style="display:block"'; }
 								?>
 								>
 								<?php
-								foreach ( $all_files[ $slug ] as $name => $data ) {
+								foreach ( $all_files[ $slug ] as $name => $data ) :
 									$value      = $slug . '/' . $name;
 									$is_current = ( $current == $value );
 									$url        = ! $is_current ? add_query_arg(
@@ -80,10 +78,10 @@ $file     = $this->get_file();
 										echo ' active'; }
 									?>
 								" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $data['label'] ); ?></a></li>
-								<?php } ?>
+								<?php endforeach; ?>
 								</ul>
 							</li>
-							<?php } ?>
+							<?php endforeach; ?>
 					</ul>
 				</div>
 			</div>

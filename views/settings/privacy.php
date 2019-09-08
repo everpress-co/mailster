@@ -5,11 +5,11 @@
 		<p><label><input type="hidden" name="mailster_options[track_opens]" value=""><input type="checkbox" name="mailster_options[track_opens]" value="1" <?php checked( mailster_option( 'track_opens' ) ); ?>> <?php esc_html_e( 'Track opens in your campaigns', 'mailster' ); ?></label></p>
 		<p><label><input type="hidden" name="mailster_options[track_clicks]" value=""><input type="checkbox" name="mailster_options[track_clicks]" value="1" <?php checked( mailster_option( 'track_clicks' ) ); ?>> <?php esc_html_e( 'Track clicks in your campaigns', 'mailster' ); ?></label></p>
 
-<?php
-	$geoip                 = isset( $_GET['nogeo'] ) ? false : mailster_option( 'track_location' );
-	$geo_db_file_countries = mailster( 'geo' )->get_file_path( 'country' );
-	$geo_db_file_cities    = mailster( 'geo' )->get_file_path( 'city' );
-?>
+		<?php
+			$geoip                 = isset( $_GET['nogeo'] ) ? false : mailster_option( 'track_location' );
+			$geo_db_file_countries = mailster( 'geo' )->get_file_path( 'country' );
+			$geo_db_file_cities    = mailster( 'geo' )->get_file_path( 'city' );
+		?>
 
 		<p><label><input type="hidden" name="mailster_options[track_location]" value=""><input type="checkbox" id="mailster_geoip" name="mailster_options[track_location]" value="1" <?php checked( $geoip ); ?>> <?php esc_html_e( 'Track location in campaigns', 'mailster' ); ?>*</label>
 			<br>&nbsp;&#x2514;&nbsp;<label><input type="hidden" name="mailster_options[track_location_update]" value=""><input type="checkbox" name="mailster_options[track_location_update]" value="1" <?php checked( mailster_option( 'track_location_update' ) ); ?>> <?php esc_html_e( 'Update location database automatically', 'mailster' ); ?></label>
@@ -80,5 +80,5 @@
 		<td><p class="description">* This product includes GeoLite data created by MaxMind, available from <a href="https://www.maxmind.com" class="external">maxmind.com</a></p>
 		</td>
 	</tr>
-	</table>
+</table>
 

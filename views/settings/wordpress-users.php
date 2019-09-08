@@ -7,23 +7,19 @@
 		</td>
 	</tr>
 </table>
-<div id="sync_list" 
-<?php
-if ( ! mailster_option( 'sync' ) ) {
-	echo 'style="display:none"'; }
-?>
->
+<div id="sync_list"<?php echo ! mailster_option( 'sync' ) ? ' style="display:none"' : ''; ?>>
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Meta Data List', 'mailster' ); ?><p class="description"><?php esc_html_e( 'select the custom field which should sync with a certain meta field', 'mailster' ); ?></p></th>
 		<td>
-
 		<?php
 		$synclist    = mailster_option( 'synclist', array() );
 		$synclist    = array( '_' => '_' ) + $synclist;
 		$meta_values = wp_parse_args( mailster( 'helper' )->get_wpuser_meta_fields(), array( 'user_login', 'user_nicename', 'user_email', 'user_url', 'display_name', 'first_name', 'last_name', 'nickname' ) );
-		$i           = 0;
-		foreach ( $synclist as $field => $metavalue ) {
+
+		$i = 0;
+
+		foreach ( $synclist as $field => $metavalue ) :
 			$customfield_dropdown = '<option value="-1">--</option><optgroup label="' . esc_html__( 'Custom Fields', 'mailster' ) . '">';
 			foreach ( array(
 				'email'     => esc_html__( 'Email', 'mailster' ),
@@ -47,7 +43,8 @@ if ( ! mailster_option( 'sync' ) ) {
 				<select name="mailster_options[synclist][<?php echo $i; ?>][field]"><?php echo $customfield_dropdown; ?>:</select>
 				<a class="remove-sync-item">&#10005;</a>
 			</div>
-			<?php $i++;} ?>
+			<?php $i++; ?>
+		<?php endforeach; ?>
 			<a class="button" id="add_sync_item"><?php esc_html_e( 'add', 'mailster' ); ?></a>
 		</td>
 	</tr>
@@ -57,9 +54,9 @@ if ( ! mailster_option( 'sync' ) ) {
 		<th scope="row"><p class="description"><?php esc_html_e( 'manually sync all existing users based on the above settings. (save required)', 'mailster' ); ?></p></th>
 		<td>
 		<p>
-		<button class="button sync-button" id="sync_subscribers_wp"><?php esc_html_e( 'Subscribers', 'mailster' ); ?> &#x21D2; <?php esc_html_e( 'WordPress Users', 'mailster' ); ?></button>
-		<button class="button sync-button" id="sync_wp_subscribers"><?php esc_html_e( 'WordPress Users', 'mailster' ); ?> &#x21D2; <?php esc_html_e( 'Subscribers', 'mailster' ); ?></button>
-		<span class="loading sync-ajax-loading"></span>
+			<button class="button sync-button" id="sync_subscribers_wp"><?php esc_html_e( 'Subscribers', 'mailster' ); ?> &#x21D2; <?php esc_html_e( 'WordPress Users', 'mailster' ); ?></button>
+			<button class="button sync-button" id="sync_wp_subscribers"><?php esc_html_e( 'WordPress Users', 'mailster' ); ?> &#x21D2; <?php esc_html_e( 'Subscribers', 'mailster' ); ?></button>
+			<span class="loading sync-ajax-loading"></span>
 		</p>
 		</td>
 	</tr>
@@ -98,12 +95,7 @@ if ( ! mailster_option( 'sync' ) ) {
 		</td>
 	</tr>
 </table>
-<div id="users-register_signup" 
-<?php
-if ( ! get_option( 'users_can_register' ) || ! mailster_option( 'register_signup' ) ) {
-	echo ' style="display:none"'; }
-?>
->
+<div id="users-register_signup"<?php echo ! get_option( 'users_can_register' ) || ! mailster_option( 'register_signup' ) ? ' style="display:none"' : ''; ?>>
 	<table class="form-table">
 		<tr valign="top">
 			<th scope="row"></th>
@@ -124,12 +116,7 @@ if ( ! get_option( 'users_can_register' ) || ! mailster_option( 'register_signup
 		</td>
 	</tr>
 </table>
-<div id="users-register_comment_form" 
-<?php
-if ( ! mailster_option( 'register_comment_form' ) ) {
-	echo ' style="display:none"'; }
-?>
->
+<div id="users-register_comment_form"<?php echo ! mailster_option( 'register_comment_form' ) ? ' style="display:none"' : ''; ?>>
 	<table class="form-table">
 		<tr valign="top">
 			<th scope="row"></th>
@@ -156,12 +143,7 @@ if ( ! mailster_option( 'register_comment_form' ) ) {
 		</td>
 	</tr>
 </table>
-<div id="users-register_other" 
-<?php
-if ( ! mailster_option( 'register_other' ) ) {
-	echo ' style="display:none"'; }
-?>
->
+<div id="users-register_other"<?php echo ! mailster_option( 'register_other' ) ? ' style="display:none"' : ''; ?>>
 	<table class="form-table">
 		<tr valign="top">
 			<th scope="row"></th>
@@ -173,10 +155,9 @@ if ( ! mailster_option( 'register_other' ) ) {
 			<ul>
 			<?php
 			$set = mailster_option( 'register_other_roles', array() );
-			foreach ( $roles as $role => $name ) {
-				echo '<li><input type="checkbox" name="mailster_options[register_other_roles][]" value="' . $role . '" ' . checked( in_array( $role, $set ), true, false ) . '> ' . $name . '</li>';
-
-			}
+			foreach ( $roles as $role => $name ) :
+				echo '<li><input type="checkbox" name="mailster_options[register_other_roles][]" value="' . esc_attr( $role ) . '" ' . checked( in_array( $role, $set ), true, false ) . '> ' . esc_html( $name ) . '</li>';
+			endforeach;
 			?>
 			</ul>
 			</td>
