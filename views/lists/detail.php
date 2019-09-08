@@ -32,12 +32,7 @@ $now = time();
 $tabindex = 1;
 
 ?>
-<div class="wrap
-<?php
-if ( $is_new ) {
-	echo ' new'; }
-?>
-">
+<div class="wrap<?php echo( $is_new ) ? ' new' : ''; ?>">
 <form id="subscriber_form" action="edit.php?post_type=newsletter&page=mailster_lists<?php echo ( $is_new ) ? '&new' : '&ID=' . $id; ?>" method="post">
 <input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo $list->ID; ?>">
 <?php wp_nonce_field( 'mailster_nonce' ); ?>

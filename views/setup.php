@@ -249,94 +249,29 @@ $utm = array(
 			<?php $method = mailster_option( 'deliverymethod', 'simple' ); ?>
 
 			<div id="deliverynav" class="nav-tab-wrapper hide-if-no-js">
-				<a class="nav-tab
-				<?php
-				if ( 'simple' == $method ) {
-					echo ' nav-tab-active'; }
-				?>
-				" href="#simple"><?php esc_html_e( 'Simple', 'mailster' ); ?></a>
-				<a class="nav-tab
-				<?php
-				if ( 'smtp' == $method ) {
-					echo ' nav-tab-active'; }
-				?>
-				" href="#smtp">SMTP</a>
-				<a class="nav-tab
-				<?php
-				if ( 'gmail' == $method ) {
-					echo ' nav-tab-active'; }
-				?>
-				" href="#gmail">GMail</a>
-				<a class="nav-tab
-				<?php
-				if ( 'amazonses' == $method ) {
-					echo ' nav-tab-active'; }
-				?>
-				" href="#amazonses">AmazonSES</a>
-				<a class="nav-tab
-				<?php
-				if ( 'sparkpost' == $method ) {
-					echo ' nav-tab-active'; }
-				?>
-				" href="#sparkpost">SparkPost</a>
-				<a class="nav-tab
-				<?php
-				if ( 'mailgun' == $method ) {
-					echo ' nav-tab-active'; }
-				?>
-				" href="#mailgun">Mailgun</a>
-				<a class="nav-tab
-				<?php
-				if ( 'sendgrid' == $method ) {
-					echo ' nav-tab-active'; }
-				?>
-				" href="#sendgrid">SendGrid</a>
-				<a class="nav-tab
-				<?php
-				if ( 'mandrill' == $method ) {
-					echo ' nav-tab-active'; }
-				?>
-				" href="#mandrill">Mandrill</a>
-				<a class="nav-tab
-				<?php
-				if ( 'dummymailer' == $method ) {
-					echo ' nav-tab-active'; }
-				?>
-				" href="#dummymailer">DummyMailer</a>
+				<a class="nav-tab<?php echo 'simple' == $method ? ' nav-tab-active' : ''; ?>" href="#simple"><?php esc_html_e( 'Simple', 'mailster' ); ?></a>
+				<a class="nav-tab<?php echo 'smtp' == $method ? ' nav-tab-active' : ''; ?>" href="#smtp">SMTP</a>
+				<a class="nav-tab<?php echo 'gmail' == $method ? ' nav-tab-active' : ''; ?>" href="#gmail">GMail</a>
+				<a class="nav-tab<?php echo 'amazonses' == $method ? ' nav-tab-active' : ''; ?>" href="#amazonses">AmazonSES</a>
+				<a class="nav-tab<?php echo 'sparkpost' == $method ? ' nav-tab-active' : ''; ?>" href="#sparkpost">SparkPost</a>
+				<a class="nav-tab<?php echo 'mailgun' == $method ? ' nav-tab-active' : ''; ?>" href="#mailgun">Mailgun</a>
+				<a class="nav-tab<?php echo 'sendgrid' == $method ? ' nav-tab-active' : ''; ?>" href="#sendgrid">SendGrid</a>
+				<a class="nav-tab<?php echo 'mandrill' == $method ? ' nav-tab-active' : ''; ?>" href="#mandrill">Mandrill</a>
+				<a class="nav-tab<?php echo 'dummymailer' == $method ? ' nav-tab-active' : ''; ?>" href="#dummymailer">DummyMailer</a>
 			</div>
 
 			<input type="hidden" name="mailster_options[deliverymethod]" id="deliverymethod" value="<?php echo esc_attr( $method ); ?>" class="regular-text">
 
-			<div class="deliverytab" id="deliverytab-simple" 
-			<?php
-			if ( 'simple' == $method ) {
-				echo 'style="display:block"'; }
-			?>
-			>
+			<div class="deliverytab" id="deliverytab-simple"<?php echo 'simple' == $method ? ' style="display:block"' : ''; ?>>
 				<?php do_action( 'mailster_deliverymethod_tab_simple' ); ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-gmail" 
-			<?php
-			if ( 'gmail' == $method ) {
-				echo 'style="display:block"'; }
-			?>
-			>
+			<div class="deliverytab" id="deliverytab-gmail"<?php echo 'gmail' == $method ? ' style="display:block"' : ''; ?>>
 				<?php do_action( 'mailster_deliverymethod_tab_gmail' ); ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-smtp" 
-			<?php
-			if ( 'smtp' == $method ) {
-				echo 'style="display:block"'; }
-			?>
-			>
+			<div class="deliverytab" id="deliverytab-smtp"<?php echo 'smtp' == $method ? ' style="display:block"' : ''; ?>>
 				<?php do_action( 'mailster_deliverymethod_tab_smtp' ); ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-amazonses" 
-			<?php
-			if ( 'amazonses' == $method ) {
-				echo 'style="display:block"'; }
-			?>
-			>
+			<div class="deliverytab" id="deliverytab-amazonses"<?php echo 'amazonses' == $method ? ' style="display:block"' : ''; ?>>
 				<?php
 				if ( in_array( 'mailster-amazonses', $active_pluginslugs ) ) :
 					do_action( 'mailster_deliverymethod_tab_amazonses' );
@@ -353,12 +288,7 @@ $utm = array(
 				</a>
 				<?php endif; ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-sparkpost" 
-			<?php
-			if ( 'sparkpost' == $method ) {
-				echo 'style="display:block"'; }
-			?>
-			>
+			<div class="deliverytab" id="deliverytab-sparkpost"<?php echo 'sparkpost' == $method ? ' style="display:block"' : ''; ?>>
 				<?php
 				if ( in_array( 'mailster-sparkpost', $active_pluginslugs ) ) :
 					do_action( 'mailster_deliverymethod_tab_sparkpost' );
@@ -375,12 +305,7 @@ $utm = array(
 				</a>
 				<?php endif; ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-mailgun" 
-			<?php
-			if ( 'mailgun' == $method ) {
-				echo 'style="display:block"'; }
-			?>
-			>
+			<div class="deliverytab" id="deliverytab-mailgun"<?php echo 'mailgun' == $method ? ' style="display:block"' : ''; ?>>
 				<?php
 				if ( in_array( 'mailster-mailgun', $active_pluginslugs ) ) :
 					do_action( 'mailster_deliverymethod_tab_mailgun' );
@@ -397,12 +322,7 @@ $utm = array(
 				</a>
 				<?php endif; ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-sendgrid" 
-			<?php
-			if ( 'sendgrid' == $method ) {
-				echo 'style="display:block"'; }
-			?>
-			>
+			<div class="deliverytab" id="deliverytab-sendgrid"<?php echo 'sendgrid' == $method ? ' style="display:block"' : ''; ?>>
 				<?php
 				if ( in_array( 'mailster-sendgrid', $active_pluginslugs ) ) :
 					do_action( 'mailster_deliverymethod_tab_sendgrid' );
@@ -419,12 +339,7 @@ $utm = array(
 				</a>
 				<?php endif; ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-mandrill" 
-			<?php
-			if ( 'mandrill' == $method ) {
-				echo 'style="display:block"'; }
-			?>
-			>
+			<div class="deliverytab" id="deliverytab-mandrill"<?php echo 'mandrill' == $method ? ' style="display:block"' : ''; ?>>
 				<?php
 				if ( in_array( 'mailster-mandrill', $active_pluginslugs ) ) :
 					do_action( 'mailster_deliverymethod_tab_mandrill' );
@@ -441,12 +356,7 @@ $utm = array(
 				</a>
 				<?php endif; ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-dummymailer" 
-			<?php
-			if ( 'dummymailer' == $method ) {
-				echo 'style="display:block"'; }
-			?>
-			>
+			<div class="deliverytab" id="deliverytab-dummymailer"<?php echo 'dummymailer' == $method ? ' style="display:block"' : ''; ?>>
 				<?php
 				if ( in_array( 'mailster-dummy-mailer', $active_pluginslugs ) ) :
 					do_action( 'mailster_deliverymethod_tab_dummymailer' );
@@ -492,7 +402,7 @@ $utm = array(
 			<p><?php esc_html_e( 'If you have users in the European Union you have to comply with the General Data Protection Regulation (GDPR). Please check our knowledge base on how Mailster can help you.', 'mailster' ); ?></p>
 			<p><a href="https://kb.mailster.co/tag/gdpr/" class="external button button-primary"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a></p>
 
-			<?php include MAILSTER_DIR . '/views/settings/privacy.php'; ?>
+			<?php require MAILSTER_DIR . '/views/settings/privacy.php'; ?>
 
 			</div>
 
@@ -527,18 +437,8 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step validation-skip-step 
-				<?php
-				if ( $is_verified ) {
-					echo 'disabled'; }
-				?>
-				" href="#finish"><?php esc_html_e( 'Remind me later', 'mailster' ); ?></a>
-				<a class="button button-large button-primary next-step validation-next-step 
-				<?php
-				if ( ! $is_verified ) {
-					echo 'disabled'; }
-				?>
-				" href="#finish"><?php esc_html_e( 'Next Step', 'mailster' ); ?></a>
+				<a class="button button-large skip-step validation-skip-step<?php echo $is_verified ? ' disabled' : ''; ?>" href="#finish"><?php esc_html_e( 'Remind me later', 'mailster' ); ?></a>
+				<a class="button button-large button-primary next-step validation-next-step<?php echo ! $is_verified ? ' disabled' : ''; ?>" href="#finish"><?php esc_html_e( 'Next Step', 'mailster' ); ?></a>
 
 			</div>
 
