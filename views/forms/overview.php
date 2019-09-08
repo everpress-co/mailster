@@ -1,4 +1,3 @@
-
 <div class="wrap">
 <h1><?php esc_html_e( 'Forms', 'mailster' ); ?>
 <?php if ( current_user_can( 'mailster_add_forms' ) ) : ?>
@@ -6,7 +5,7 @@
 <?php endif; ?>
 <?php if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) : ?>
 	<span class="subtitle"><?php printf( esc_html__( 'Search result for %s', 'mailster' ), '&quot;' . esc_html( stripslashes( $_GET['s'] ) ) . '&quot;' ); ?></span>
-	<?php endif; ?>
+<?php endif; ?>
 </h1>
 <?php
 

@@ -12,12 +12,7 @@
 	</tr>
 
 </table>
-<div id="bounce-options" 
-<?php
-if ( ! mailster_option( 'bounce_active' ) ) {
-	echo 'style="display:none"';}
-?>
->
+<div id="bounce-options"<?php echo ! mailster_option( 'bounce_active' ) ? ' style="display:none"' : ''; ?>>
 	<table class="form-table">
 		<tr valign="top">
 			<th scope="row">&nbsp;</th>
@@ -67,17 +62,19 @@ if ( ! mailster_option( 'bounce_active' ) ) {
 			<th scope="row"><?php esc_html_e( 'Soft Bounces', 'mailster' ); ?></th>
 			<td><p><?php printf( esc_html__( 'Resend soft bounced mails after %s minutes', 'mailster' ), '<input type="text" name="mailster_options[bounce_delay]" value="' . mailster_option( 'bounce_delay' ) . '" class="small-text">' ); ?></p>
 			<p>
-<?php
-			$dropdown = '<select name="mailster_options[bounce_attempts]" class="postform">';
-			$value    = mailster_option( 'bounce_attempts' );
-for ( $i = 1; $i <= 10; $i++ ) {
-	$selected  = ( $value == $i ) ? ' selected' : '';
-	$dropdown .= '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
-}
+			<?php
+				$dropdown = '<select name="mailster_options[bounce_attempts]" class="postform">';
+				$value    = mailster_option( 'bounce_attempts' );
+			?>
+			<?php
+			for ( $i = 1; $i <= 10; $i++ ) {
+				$selected  = ( $value == $i ) ? ' selected' : '';
+				$dropdown .= '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
+			}
 			$dropdown .= '</select>';
 
 			printf( esc_html__( '%s attempts to deliver message until hardbounce', 'mailster' ), $dropdown );
-?>
+			?>
 			</p>
 			</td>
 		</tr>

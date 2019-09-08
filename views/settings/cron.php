@@ -73,7 +73,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 		<?php
 		if ( 'multi_cron' == $cron_service && ! $process_id ) :
 			continue;
-endif;
+			endif;
 		?>
 				<?php $cron_url = mailster( 'cron' )->url( false, $process_id ); ?>
 				<?php $cron_url2 = mailster( 'cron' )->url( true, $process_id ); ?>
@@ -94,7 +94,7 @@ endif;
 				<p class="description"><?php esc_html_e( 'You can setup an interval as low as one minute, but should consider a reasonable value of 5-15 minutes as well.', 'mailster' ); ?></p>
 				<p class="description"><?php esc_html_e( 'If you need help setting up a cron job please refer to the documentation that your provider offers.', 'mailster' ); ?></p>
 				<p class="description"><?php printf( __( 'You can also find additional help on our %s.', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-a-cron-job/" class="external">' . __( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
-<?php endfor; ?>
+		<?php endfor; ?>
 			</div>
 
 
@@ -110,7 +110,7 @@ endif;
 		<?php
 		if ( 'multi_cron' != $cron_service && $process_id ) :
 			continue;
-endif;
+		endif;
 		?>
 		<?php $last_hit = isset( $last_hit_array[ $process_id ] ) ? $last_hit_array[ $process_id ] : null; ?>
 	<tr valign="top" class="lasthitstats lasthitstats-<?php echo $process_id; ?>">
@@ -127,7 +127,7 @@ endif;
 		if ( $last_hit ) :
 			$interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 );
 			?>
-			<li>IP: 
+			<li>IP:
 			<?php
 			echo $last_hit['ip'];
 			if ( $last_hit['ip'] == mailster_get_ip() ) {
@@ -136,7 +136,7 @@ endif;
 			</li>
 			<li><?php echo $last_hit['user']; ?></li>
 			<li><?php echo date( $timeformat, $last_hit['timestamp'] + $timeoffset ) . ', <strong>' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) . '</strong>'; ?></li>
-			<?php if ( $interv ) : ?>
+			<?php if ( $interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 ) ) : ?>
 			<li><?php echo esc_html__( 'Interval', 'mailster' ) . ': <strong>' . $interv . ' ' . esc_html_x( 'min', 'short for minute', 'mailster' ) . '</strong>'; ?></li>
 			<?php endif; ?>
 			<?php if ( $last_hit['mail'] ) : ?>

@@ -29,12 +29,7 @@
 		<td><label><input type="hidden" name="mailster_options[dkim]" value=""><input type="checkbox" name="mailster_options[dkim]" id="mailster_dkim" value="1" <?php checked( $dkim ); ?>> <?php esc_html_e( 'Use DomainKeys Identified Mail', 'mailster' ); ?>. <a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail" class="external"><?php esc_html_e( 'read more', 'mailster' ); ?></a></label> </td>
 	</tr>
 </table>
-<div class="dkim-info" 
-<?php
-if ( ! $dkim ) {
-	echo ' style="display:none"'; }
-?>
->
+<div class="dkim-info"<?php echo ! $dkim ? ' style="display:none"' : ''; ?>>
 <table class="form-table no-margin">
 <?php if ( $dkim && mailster_option( 'dkim_private_key' ) && mailster_option( 'dkim_public_key' ) ) : ?>
 	<tr valign="top">
@@ -103,12 +98,7 @@ if ( ! $dkim ) {
 		</td>
 	</tr>
 </table>
-<div class="dkim-keys" 
-<?php
-if ( ! mailster_option( 'dkim_private_key' ) || ! mailster_option( 'dkim_public_key' ) ) {
-	echo ' style="display:none"'; }
-?>
->
+<div class="dkim-keys"<?php echo ! mailster_option( 'dkim_private_key' ) || ! mailster_option( 'dkim_public_key' ) ? ' style="display:none"' : ''; ?>>
 <table class="form-table" id="dkim_keys_active">
 	<tr valign="top">
 		<th scope="row">DKIM Public Key</th>

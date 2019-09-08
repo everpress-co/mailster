@@ -29,11 +29,9 @@ if ( $updates = $t->get_updates() ) : ?>
 <?php endif; ?>
 <div class="wrap">
 <div id="mailster_templates">
-<?php
-$template = $templates[ $default ];
+<?php $template = $templates[ $default ]; ?>
 
-if ( ! isset( $_GET['more'] ) ) :
-	?>
+<?php if ( ! isset( $_GET['more'] ) ) : ?>
 
 <ul>
 <li id="templateeditor">
@@ -70,7 +68,7 @@ if ( ! isset( $_GET['more'] ) ) :
 	if ( $notice ) {
 		foreach ( $notice as $note ) {
 			?>
-<div class="updated below-h2"><p><?php echo $note; ?></p></div>
+		<div class="updated below-h2"><p><?php echo $note; ?></p></div>
 			<?php
 		}
 	}
@@ -116,26 +114,26 @@ if ( ! isset( $_GET['more'] ) ) :
 
 		echo '<div class="error below-h2"><p>' . esc_html__( 'Looks like there was a problem getting the list of templates', 'mailster' ) . '</p></div>';
 
-else :
+	else :
 
-	?>
+		?>
 <ul id="available-templates">
 	<li class="mailster-box more-templates-field">
 		<div><a href="edit.php?post_type=newsletter&page=mailster_templates" class="button button-primary button-hero"> <?php esc_html_e( 'Back to Overview', 'mailster' ); ?></a></div>
 	</li>
-	<?php
+		<?php
 
-	$existing = @array_intersect_assoc( $mailster_templates, $templates );
-	$others   = @array_diff_assoc( $mailster_templates, $existing );
+		$existing = @array_intersect_assoc( $mailster_templates, $templates );
+		$others   = @array_diff_assoc( $mailster_templates, $existing );
 
-	$mailster_templates = $existing + $others;
+		$mailster_templates = $existing + $others;
 
-	foreach ( $mailster_templates as $slug => $data ) {
+		foreach ( $mailster_templates as $slug => $data ) {
 
-		include MAILSTER_DIR . 'views/templates/available-template.php';
+			include MAILSTER_DIR . 'views/templates/available-template.php';
 
-	}
-	?>
+		}
+		?>
 </ul>
 <div class="clear affiliate-note">
 	Disclosure: Some of the links on this page are affiliate links. This means if you click on the link and purchase the item, we may receive an affiliate commission.
