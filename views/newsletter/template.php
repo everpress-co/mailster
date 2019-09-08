@@ -11,14 +11,7 @@ $templates = mailster( 'templates' )->get_templates();
 $all_files = mailster( 'templates' )->get_all_files();
 
 ?>
-<div id="template-wrap" class="load 
-<?php
-if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $modules ) ) {
-	echo ' show-modules';
-} if ( $editable && ! empty( $modules ) ) {
-	echo ' has-modules'; }
-?>
-									">
+<div id="template-wrap" class="load<?php echo $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $modules ) ? ' show-modules' : ''; ?><?php echo $editable && ! empty( $modules ) ? ' has-modules' : ''; ?>">
 
 <?php if ( $editable ) : ?>
 
@@ -47,12 +40,7 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 			<label><input type="checkbox" id="plaintext" name="mailster_data[autoplaintext]" value="1" <?php checked( $autoplaintext ); ?>> <?php esc_html_e( 'Create the plain text version based on the HTML version of the campaign', 'mailster' ); ?></label> <a class="alignright button button-primary getplaintext"><?php esc_html_e( 'get text from HTML version', 'mailster' ); ?></a>
 		</p>
 
-		<textarea id="excerpt" name="excerpt" class="
-		<?php
-		if ( $autoplaintext ) {
-			echo ' disabled'; }
-		?>
-			" autocomplete="off" <?php disabled( $autoplaintext ); ?>><?php echo $post->post_excerpt; ?></textarea>
+		<textarea id="excerpt" name="excerpt" class="<?php echo $autoplaintext ? ' disabled' : ''; ?>" autocomplete="off" <?php disabled( $autoplaintext ); ?>><?php echo $post->post_excerpt; ?></textarea>
 	</div>
 
 	<div id="html-wrap">
@@ -91,9 +79,9 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 
 		<input type="hidden" id="editor-height" name="mailster_data[editor_height]" value="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>">
 		<div id="iframe-wrap">
-			<iframe id="mailster_iframe" src="
+
 			<?php
-			echo add_query_arg(
+			$url = add_query_arg(
 				array(
 					'action'       => 'mailster_get_template',
 					'id'           => $post->ID,
@@ -106,7 +94,7 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 				admin_url( 'admin-ajax.php' )
 			)
 			?>
-			" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
+			<iframe id="mailster_iframe" src="<?php echo esc_url( $url ); ?>" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
 			</iframe>
 		</div>
 	</div>
