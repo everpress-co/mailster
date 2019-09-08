@@ -21,12 +21,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			<?php endif; ?>
 		</td>
 	</tr>
-	<tr valign="top" class="cron_opts cron" 
-	<?php
-	if ( $cron != 'cron' ) {
-		echo ' style="display:none"'; }
-	?>
-	>
+	<tr valign="top" class="cron_opts cron"<?php echo $cron != 'cron' ? ' style="display:none"' : ''; ?>>
 		<th scope="row"><?php esc_html_e( 'Cron Settings', 'mailster' ); ?>
 			<p class="description">
 				<?php printf( esc_html__( 'Use the alternative Cron URL if you have troubles with this one by clicking %s.', 'mailster' ), '<a class="switch-cron-url" href="#">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?>
@@ -83,9 +78,8 @@ if ( is_wp_error( $cron_status ) ) : ?>
 		<ul class="lasthit highlight">
 		<?php
 		if ( $last_hit ) :
-				$interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 );
 			?>
-			<li>IP: 
+			<li>IP:
 			<?php
 			echo $last_hit['ip'];
 			if ( $last_hit['ip'] == mailster_get_ip() ) {
@@ -94,7 +88,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			</li>
 			<li><?php echo $last_hit['user']; ?></li>
 			<li><?php echo date( $timeformat, $last_hit['timestamp'] + $timeoffset ) . ', <strong>' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) . '</strong>'; ?></li>
-			<?php if ( $interv ) : ?>
+			<?php if ( $interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 ) ) : ?>
 			<li><?php echo esc_html__( 'Interval', 'mailster' ) . ': <strong>' . $interv . ' ' . esc_html_x( 'min', 'short for minute', 'mailster' ) . '</strong>'; ?></li>
 			<?php endif; ?>
 			<?php if ( $last_hit['mail'] ) : ?>
