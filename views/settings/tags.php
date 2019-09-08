@@ -8,7 +8,7 @@
 		<td class="tags">
 		<p class="description"><?php esc_html_e( 'These are permanent tags which cannot get deleted. The CAN-SPAM tag is required in many countries.', 'mailster' ); ?> <a href="https://en.wikipedia.org/wiki/CAN-SPAM_Act_of_2003" class="external"><?php esc_html_e( 'Read more', 'mailster' ); ?></a></p>
 <?php if ( $tags = mailster_option( 'tags' ) ) : ?>
-	<?php foreach ( $tags as $tag => $content ) { ?>
+	<?php foreach ( $tags as $tag => $content ) : ?>
 		<div class="tag">
 		<span><code>{<?php echo $tag; ?>}</code></span> &#10152;
 		<?php if ( 'address' == $tag ) : ?>
@@ -17,7 +17,7 @@
 		<input type="text" name="mailster_options[tags][<?php echo esc_attr( $tag ); ?>]" value="<?php echo esc_attr( $content ); ?>" class="regular-text tag-value">
 		<?php endif; ?>
 		</div>
-<?php } ?>
+	<?php endforeach; ?>
 <?php endif; ?>
 		</td>
 	</tr>
@@ -26,9 +26,9 @@
 		<td class="tags">
 		<p class="description"><?php esc_html_e( 'Add your custom tags here. They work like permanent tags', 'mailster' ); ?></p>
 <?php if ( $tags = mailster_option( 'custom_tags' ) ) : ?>
-	<?php foreach ( $tags as $tag => $content ) { ?>
-		<div class="tag"><span><code>{<?php echo $tag; ?>}</code></span> &#10152; <input type="text" name="mailster_options[custom_tags][<?php echo $tag; ?>]" value="<?php echo esc_attr( $content ); ?>" class="regular-text tag-value"> <a class="tag-remove">&#10005;</a></div>
-<?php } ?>
+	<?php foreach ( $tags as $tag => $content ) : ?>
+		<div class="tag"><span><code>{<?php echo esc_html( $tag ); ?>}</code></span> &#10152; <input type="text" name="mailster_options[custom_tags][<?php echo $tag; ?>]" value="<?php echo esc_attr( $content ); ?>" class="regular-text tag-value"> <a class="tag-remove">&#10005;</a></div>
+	<?php endforeach; ?>
 <?php endif; ?>
 
 	<input type="button" value="<?php esc_html_e( 'add', 'mailster' ); ?>" class="button" id="mailster_add_tag">
@@ -75,9 +75,7 @@
 		<th scope="row"><?php esc_html_e( 'Image Fallback', 'mailster' ); ?></th>
 		<td><label>
 		<p class="description"><?php esc_html_e( 'Use a fallback for dynamic image tags if the image doesn\'t exist.', 'mailster' ); ?></p>
-		<?php
-		mailster( 'helper' )->media_editor_link( mailster_option( 'fallback_image', 0 ), 'mailster_options[fallback_image]' );
-		?>
+		<?php mailster( 'helper' )->media_editor_link( mailster_option( 'fallback_image', 0 ), 'mailster_options[fallback_image]' ); ?>
 		</td>
 	</tr>
 </table>

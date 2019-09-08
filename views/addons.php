@@ -25,35 +25,23 @@
 			$addon->link = isset( $addon->link ) ? $addon->link : ( isset( $addon->wpslug ) ? 'https://wordpress.org/plugins/' . dirname( $addon->wpslug ) . '/' : '' );
 
 			?>
-		<li class="mailster-addon 
-			<?php
-			if ( ! empty( $addon->is_free ) ) {
-				echo ' is-free'; }
-			?>
-			<?php
-			if ( ! empty( $addon->is_feature ) ) {
-				echo ' is-feature';}
-			?>
-">
+		<li class="mailster-addon<?php echo ! empty( $addon->is_free ) ? ' is-free' : ''; ?><?php echo ! empty( $addon->is_feature ) ? ' is-feature' : ''; ?>">
 			<div class="bgimage" style="background-image:url(<?php echo isset( $addon->image ) ? esc_url( $addon->image ) : ''; ?>)">
 				<?php if ( isset( $addon->wpslug ) && current_user_can( 'manage_plugins' ) ) : ?>
-					<a href="
 					<?php
-					echo esc_url(
-						add_query_arg(
-							array(
-								'tab'       => 'plugin-information',
-								'plugin'    => dirname( $addon->wpslug ),
-								'from'      => 'import',
-								'TB_iframe' => true,
-								'width'     => 745,
-								'height'    => 745,
-							),
-							network_admin_url( 'plugin-install.php' )
-						)
+					$url = add_query_arg(
+						array(
+							'tab'       => 'plugin-information',
+							'plugin'    => dirname( $addon->wpslug ),
+							'from'      => 'import',
+							'TB_iframe' => true,
+							'width'     => 745,
+							'height'    => 745,
+						),
+						network_admin_url( 'plugin-install.php' )
 					);
 					?>
-					" class="thickbox">&nbsp;</a>
+					<a href="<?php echo esc_url( $url ); ?>" class="thickbox">&nbsp;</a>
 				<?php else : ?>
 					<a href="<?php echo esc_url( $addon->link ); ?>" class="external">&nbsp;</a>
 				<?php endif; ?>
@@ -62,7 +50,7 @@
 			<p class="author"><?php esc_html_e( 'by', 'mailster' ); ?>
 			<?php
 			if ( $addon->author_url ) :
-				echo '<a href="' . esc_url( $addon->author_url ) . '">' . esc_html( $addon->author ) . '</a>';
+				echo '<a href="' . esc_url( $addon->author_url ) . '" class="external">' . esc_html( $addon->author ) . '</a>';
 			else :
 				esc_html_e( $addon->author );
 			endif;
@@ -78,12 +66,8 @@
 					<?php elseif ( is_plugin_inactive( $addon->wpslug ) ) : ?>
 						<a class="button" href="<?php echo wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . $addon->wpslug, 'activate-plugin_' . $addon->wpslug ); ?>"><?php esc_html_e( 'Activate', 'mailster' ); ?></a>
 					<?php endif; ?>
-				<?php else : ?>
-						<a class="button button-primary" href="<?php echo wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . dirname( $addon->wpslug ) . '&mailster-addon' ), 'install-plugin_' . dirname( $addon->wpslug ) ); ?>" 
-																		  <?php
-																			if ( ! current_user_can( 'install_plugins' ) && ! current_user_can( 'update_plugins' ) ) :
-																				?>
-							disabled<?php endif; ?>><?php esc_html_e( 'Install', 'mailster' ); ?></a>
+				<?php elseif ( current_user_can( 'install_plugins' ) && current_user_can( 'update_plugins' ) ) : ?>
+						<a class="button button-primary" href="<?php echo wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . dirname( $addon->wpslug ) . '&mailster-addon' ), 'install-plugin_' . dirname( $addon->wpslug ) ); ?>"><?php esc_html_e( 'Install', 'mailster' ); ?></a>
 				<?php endif; ?>
 
 			<?php else : ?>

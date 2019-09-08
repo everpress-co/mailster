@@ -54,14 +54,7 @@ if ( $simple_output ) {
 
 ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" 
-<?php
-if ( function_exists( 'language_attributes' ) && function_exists( 'is_rtl' ) ) {
-	language_attributes();
-} else {
-	echo "dir='$text_direction'"; }
-?>
-	>
+<html xmlns="http://www.w3.org/1999/xhtml" <?php echo function_exists( 'get_language_attributes' ) && function_exists( 'is_rtl' ) ? get_language_attributes() : "dir='$text_direction'"; ?>>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width">
