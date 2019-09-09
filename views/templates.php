@@ -2,10 +2,10 @@
 
 $t = mailster( 'templates' );
 
-$templates = $t->get_templates();
+$templates          = $t->get_templates();
 $mailster_templates = $t->get_mailster_templates();
 
-$notice = false;
+$notice  = false;
 $default = mailster_option( 'default_template', 'mymail' );
 if ( ! isset( $templates[ $default ] ) ) {
 	$default = 'mymail';
@@ -24,16 +24,14 @@ if ( ! isset( $templates[ $default ] ) ) {
 }
 if ( $updates = $t->get_updates() ) : ?>
 <div class="update-nag below-h2">
-	<?php printf( esc_html__( _n( '%d Update available', '%d Updates available', $updates, 'mailster' ) ), $updates ) ?>
+	<?php printf( esc_html__( _n( '%d Update available', '%d Updates available', $updates, 'mailster' ) ), $updates ); ?>
 </div>
 <?php endif; ?>
 <div class="wrap">
 <div id="mailster_templates">
-<?php
-$template = $templates[ $default ];
+<?php $template = $templates[ $default ]; ?>
 
-if ( ! isset( $_GET['more'] ) ) :
-?>
+<?php if ( ! isset( $_GET['more'] ) ) : ?>
 
 <ul>
 <li id="templateeditor">
@@ -43,95 +41,99 @@ if ( ! isset( $_GET['more'] ) ) :
 
 		<div class="inner">
 			<div class="template-file-selector">
-				<label><?php esc_html_e( 'Select template file', 'mailster' ) ?>:</label> <span></span>
+				<label><?php esc_html_e( 'Select template file', 'mailster' ); ?>:</label> <span></span>
 			</div>
 			<div class="edit-buttons">
 				<span class="spinner template-ajax-loading"></span>
 				<span class="message"></span>
-				<button class="button-primary save"><?php esc_html_e( 'Save', 'mailster' ) ?></button>
-				<button class="button saveas"><?php esc_html_e( 'Save as', 'mailster' ) ?>&hellip;</button> <?php esc_html_e( 'or', 'mailster' ) ?>
-				<a class="cancel" href="#"><?php esc_html_e( 'Cancel', 'mailster' ) ?></a>
+				<button class="button-primary save"><?php esc_html_e( 'Save', 'mailster' ); ?></button>
+				<button class="button saveas"><?php esc_html_e( 'Save as', 'mailster' ); ?>&hellip;</button> <?php esc_html_e( 'or', 'mailster' ); ?>
+				<a class="cancel" href="#"><?php esc_html_e( 'Cancel', 'mailster' ); ?></a>
 			</div>
 				<textarea class="editor"></textarea>
 			<div class="edit-buttons">
 				<span class="message"></span>
 				<span class="spinner template-ajax-loading"></span>
-				<button class="button-primary save"><?php esc_html_e( 'Save', 'mailster' ) ?></button>
-				<button class="button saveas"><?php esc_html_e( 'Save as', 'mailster' ) ?>&hellip;</button> <?php esc_html_e( 'or', 'mailster' ) ?>
-				<a class="cancel" href="#"><?php esc_html_e( 'Cancel', 'mailster' ) ?></a>
+				<button class="button-primary save"><?php esc_html_e( 'Save', 'mailster' ); ?></button>
+				<button class="button saveas"><?php esc_html_e( 'Save as', 'mailster' ); ?>&hellip;</button> <?php esc_html_e( 'or', 'mailster' ); ?>
+				<a class="cancel" href="#"><?php esc_html_e( 'Cancel', 'mailster' ); ?></a>
 			</div>
 		</div>
 	<br class="clear">
 </li>
 </ul>
-<h1><?php esc_html_e( 'Templates', 'mailster' ) ?> <a class="page-title-action upload-template"> <?php esc_html_e( 'Add New', 'mailster' );?> </a></h1>
-<?php
-wp_nonce_field( 'mailster_nonce' );
-if ( $notice ) {
-	foreach ( $notice as $note ) {?>
-<div class="updated below-h2"><p><?php echo $note ?></p></div>
-<?php }
-}?>
-<div class="upload-field"><?php $t->media_upload_form();?></div>
+<h1><?php esc_html_e( 'Templates', 'mailster' ); ?> <a class="page-title-action upload-template"> <?php esc_html_e( 'Add New', 'mailster' ); ?> </a></h1>
+	<?php
+	wp_nonce_field( 'mailster_nonce' );
+	if ( $notice ) {
+		foreach ( $notice as $note ) {
+			?>
+		<div class="updated below-h2"><p><?php echo $note; ?></p></div>
+			<?php
+		}
+	}
+	?>
+<div class="upload-field"><?php $t->media_upload_form(); ?></div>
 <ul id="installed-templates">
-<?php
-$i = 0;
-unset( $templates[ $default ] );
+	<?php
+	$i = 0;
+	unset( $templates[ $default ] );
 
-$new = isset( $_GET['new'] ) && isset( $templates[ $_GET['new'] ] ) ? esc_attr( $_GET['new'] ) : null;
+	$new = isset( $_GET['new'] ) && isset( $templates[ $_GET['new'] ] ) ? esc_attr( $_GET['new'] ) : null;
 
-if ( $new ) {
-	$new_template = $templates[ $new ];
-	unset( $templates[ $new ] );
-	$templates = array( $new => $new_template ) + $templates;
-}
-$templates = array( $default => $template ) + $templates;
+	if ( $new ) {
+		$new_template = $templates[ $new ];
+		unset( $templates[ $new ] );
+		$templates = array( $new => $new_template ) + $templates;
+	}
+	$templates = array( $default => $template ) + $templates;
 
 
-foreach ( $templates as $slug => $data ) {
+	foreach ( $templates as $slug => $data ) {
 
-	include MAILSTER_DIR . 'views/templates/installed-template.php';
+		include MAILSTER_DIR . 'views/templates/installed-template.php';
 
-}
+	}
 
-if ( current_user_can( 'mailster_upload_templates' ) ) : ?>
+	if ( current_user_can( 'mailster_upload_templates' ) ) :
+		?>
 	<li class="mailster-box more-templates-field">
-		<div><a href="edit.php?post_type=newsletter&page=mailster_templates&more" class="button button-primary button-hero"> <?php esc_html_e( 'More Templates', 'mailster' );?></a></div>
+		<div><a href="edit.php?post_type=newsletter&page=mailster_templates&more" class="button button-primary button-hero"> <?php esc_html_e( 'More Templates', 'mailster' ); ?></a></div>
 	</li>
-<?php endif; ?>
+	<?php endif; ?>
 
 </ul>
 
 <?php else : ?>
 
-<h1><?php esc_html_e( 'More Templates', 'mailster' ) ?></h1>
+<h1><?php esc_html_e( 'More Templates', 'mailster' ); ?></h1>
 
-<?php
+	<?php
 
-if ( empty( $mailster_templates ) ) :
+	if ( empty( $mailster_templates ) ) :
 
-	echo '<div class="error below-h2"><p>' . esc_html__( 'Looks like there was a problem getting the list of templates', 'mailster' ) . '</p></div>';
+		echo '<div class="error below-h2"><p>' . esc_html__( 'Looks like there was a problem getting the list of templates', 'mailster' ) . '</p></div>';
 
-else :
+	else :
 
-	?>
+		?>
 <ul id="available-templates">
 	<li class="mailster-box more-templates-field">
-		<div><a href="edit.php?post_type=newsletter&page=mailster_templates" class="button button-primary button-hero"> <?php esc_html_e( 'Back to Overview', 'mailster' );?></a></div>
+		<div><a href="edit.php?post_type=newsletter&page=mailster_templates" class="button button-primary button-hero"> <?php esc_html_e( 'Back to Overview', 'mailster' ); ?></a></div>
 	</li>
-<?php
+		<?php
 
-	$existing = @array_intersect_assoc( $mailster_templates, $templates );
-	$others = @array_diff_assoc( $mailster_templates, $existing );
+		$existing = @array_intersect_assoc( $mailster_templates, $templates );
+		$others   = @array_diff_assoc( $mailster_templates, $existing );
 
-	$mailster_templates = $existing + $others;
+		$mailster_templates = $existing + $others;
 
-foreach ( $mailster_templates as $slug => $data ) {
+		foreach ( $mailster_templates as $slug => $data ) {
 
-	include MAILSTER_DIR . 'views/templates/available-template.php';
+			include MAILSTER_DIR . 'views/templates/available-template.php';
 
-}
-?>
+		}
+		?>
 </ul>
 <div class="clear affiliate-note">
 	Disclosure: Some of the links on this page are affiliate links. This means if you click on the link and purchase the item, we may receive an affiliate commission.

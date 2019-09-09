@@ -244,6 +244,9 @@ module[data-rss][selected]:after {
 	padding: 4px;
 	white-space: nowrap;
 	z-index: 1000000;
+	max-width: 200px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 [mailster-is-rtl] module[label]:before,
 [mailster-is-rtl] module[label][selected]:before,
@@ -554,9 +557,9 @@ img.mailster-loading{
 }
 modules.ui-sortable.dragging module.ui-sortable-helper, module.ui-sortable-fly-over{
 	box-shadow: 0 5px 18px rgba(0,0,0,.22),0 9px 45px rgba(0,0,0,.25);
-	-webkit-transform: scale(1.03) translateZ(200px);;
-	-ms-transform: scale(1.03) translateZ(0px);;
-	transform: scale(1.03) translateZ(0px);;
+	-webkit-transform: scale(1.03) translateZ(0px);
+	-ms-transform: scale(1.03) translateZ(0px);
+	transform: scale(1.03) translateZ(0px);
 }
 modules.ui-sortable.dragging module.ui-sortable-helper{
 	opacity: 0.9;
@@ -565,15 +568,19 @@ modules.ui-sortable.dragging module.ui-sortable-helper{
 modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	display: none;
 }
-.mailster-upload-info{
+upload{
+	display: block;
+	position: relative;
+}
+upload .mailster-upload-info{
 	position: absolute;
-	top: -99999px;
-	left: 0px;
-	z-index: 1000000;
+	height: 100%;
+	width: 100%;
+	z-index: 20;
 	overflow: hidden;
 	transition: height .25s ease-in-out, width .25s ease-in-out;
 }
-.mailster-upload-info .mailster-upload-info-bar{
+upload .mailster-upload-info .mailster-upload-info-bar{
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -581,12 +588,12 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	width: 1px;
 	height: 100%;
 	background-color: rgba(0,0,0,0.6);
-	background-size: cover;
+	_background-size: cover;
 	background-repeat: no-repeat;
-	-webkit-filter: blur(4px);
-	filter: blur(4px);
+	-webkit-filter: blur(2px) grayscale(50%);
+	filter: blur(2px) grayscale(50%);
 }
-.mailster-upload-info .mailster-upload-info-text{
+upload .mailster-upload-info .mailster-upload-info-text{
 	font: 20px "Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-weight: 400;
 	position: absolute;
@@ -602,7 +609,7 @@ modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
 	color: #fff;
 	text-shadow: -1px -1px 0 #333,1px -1px 0 #333,-1px 1px 0 #333,1px 1px 0 #333;
 }
-.mailster-upload-info.error .mailster-upload-info-text{
+upload .mailster-upload-info.error .mailster-upload-info-text{
 	background: #f33;
 }
 .mce-notification-error{

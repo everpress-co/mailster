@@ -14,8 +14,8 @@
 /*
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
   @font-face {
-    font-family: 'fontello';
-    src: url('../font/fontello.svg?9736362#fontello') format('svg');
+	font-family: 'fontello';
+	src: url('../font/fontello.svg?9736362#fontello') format('svg');
   }
 }
 */
@@ -110,15 +110,16 @@
 .mailster-icon-lock:before { content: '\e833'; } /* '' */
 .mailster-icon-notice:before { content: '\e834'; } /* '' */
 .mailster-icon-link:before { content: '\e835'; } /* '' */
-.mailster-icon-list:before { content: '\f0ca'; } /* '' */
-.mailster-icon-unlink:before { content: '\f127'; } /* '' */
-.mailster-icon-unlock:before { content: '\f13e'; } /* '' */
-.mailster-icon-support:before { content: '\f1cd'; } /* '' */
-.mailster-icon-forms:before { content: '\f298'; } /* '' */
 .mailster-icon-picture:before { content: '\e836'; } /* '' */
 .mailster-icon-plus:before { content: '\e837'; } /* '' */
 .mailster-icon-minus:before { content: '\e838'; } /* '' */
-
+.mailster-icon-link-ext:before { content: '\f08e'; } /* '' */
+.mailster-icon-list:before { content: '\f0ca'; } /* '' */
+.mailster-icon-unlink:before { content: '\f127'; } /* '' */
+.mailster-icon-anchor:before { content: '\f13d'; } /* '' */
+.mailster-icon-unlock:before { content: '\f13e'; } /* '' */
+.mailster-icon-support:before { content: '\f1cd'; } /* '' */
+.mailster-icon-forms:before { content: '\f298'; } /* '' */
 .mailster-icon-translate:before { content: '\f326'; } /* '' */
 /*
    Animation example, for spinners

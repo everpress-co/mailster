@@ -64,7 +64,7 @@ class MailsterFrontpage {
 
 			$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
-			$rules['^(index\.php/)?(mailster|mymail)/(subscribe)/?$'] = 'index.php?_mailster=$matches[3]';
+			$rules['^(index\.php/)?(mailster|mymail)/(subscribe)/?$']                             = 'index.php?_mailster=$matches[3]';
 			$rules[ '(index\.php/)?(mailster)/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
 			if ( get_option( 'page_on_front' ) == $homepage && get_option( 'show_on_front' ) == 'page' ) {
@@ -161,13 +161,13 @@ class MailsterFrontpage {
 
 		if ( $is_permalink ) {
 
-			$url = trailingslashit( $homepage ) . trailingslashit( $subpage . '/' . ($hash ? $hash . '/' : '') . $extra );
+			$url = trailingslashit( $homepage ) . trailingslashit( $subpage . '/' . ( $hash ? $hash . '/' : '' ) . $extra );
 
 		} else {
 
 			$query = array(
-				'_mailster_page' => $subpage,
-				'_mailster_hash' => $hash,
+				'_mailster_page'  => $subpage,
+				'_mailster_hash'  => $hash,
 				'_mailster_extra' => $extra,
 			);
 
@@ -199,9 +199,9 @@ class MailsterFrontpage {
 		// Mailster < 2 method
 		if ( isset( $_GET['mailster'] ) ) {
 
-			$target = isset( $_GET['t'] ) ? str_replace( '&amp;', '&', preg_replace( '/\s+/', '', $_GET['t'] ) ) : null;
-			$hash = isset( $_GET['k'] ) ? preg_replace( '/\s+/', '', $_GET['k'] ) : null;
-			$count = isset( $_GET['c'] ) ? (int) $_GET['c'] : 0;
+			$target      = isset( $_GET['t'] ) ? str_replace( '&amp;', '&', preg_replace( '/\s+/', '', $_GET['t'] ) ) : null;
+			$hash        = isset( $_GET['k'] ) ? preg_replace( '/\s+/', '', $_GET['k'] ) : null;
+			$count       = isset( $_GET['c'] ) ? (int) $_GET['c'] : 0;
 			$campaign_id = (int) $_GET['mailster'];
 			if ( isset( $_GET['s'] ) ) {
 				$target = ( ! empty( $_GET['s'] ) ? 'https://' : 'http://' ) . $target;
@@ -303,13 +303,13 @@ class MailsterFrontpage {
 		switch ( get_query_var( '_mailster' ) ) {
 			case 'subscribe':
 				mailster( 'form' )->submit();
-			break;
+				break;
 			case 'update':
 				mailster( 'form' )->submit();
-			break;
+				break;
 			case 'unsubscribe':
 				mailster( 'form' )->unsubscribe();
-			break;
+				break;
 		}
 		exit;
 	}
@@ -318,26 +318,26 @@ class MailsterFrontpage {
 	private function do_tracking_actions() {
 
 		$campaign_id = (int) get_query_var( '_mailster', 0 );
-		$target = mailster()->decode_link( get_query_var( '_mailster_page' ) );
-		$hash = get_query_var( '_mailster_hash' );
-		$index = get_query_var( '_mailster_extra' );
+		$target      = mailster()->decode_link( get_query_var( '_mailster_page' ) );
+		$hash        = get_query_var( '_mailster_hash' );
+		$index       = get_query_var( '_mailster_extra' );
 		$redirect_to = null;
 
-		if ( ! ($campaign = mailster( 'campaigns' )->get( $campaign_id, false )) ) {
+		if ( ! ( $campaign = mailster( 'campaigns' )->get( $campaign_id, false ) ) ) {
 			$this->do_404();
 		}
-		if ( ! ($subscriber = mailster( 'subscribers' )->get_by_hash( $hash, false )) ) {
+		if ( ! ( $subscriber = mailster( 'subscribers' )->get_by_hash( $hash, false ) ) ) {
 			$subscriber = (object) array(
-				'ID' => null,
+				'ID'   => null,
 				'hash' => $hash,
 			);
 		}
 		$campaign_id = $campaign->ID;
-		$meta = mailster( 'campaigns' )->meta( $campaign_id );
+		$meta        = mailster( 'campaigns' )->meta( $campaign_id );
 
 		if ( $target ) {
 
-			if ( filter_var( $target, FILTER_VALIDATE_URL ) === false ) {
+			if ( ! preg_match( '#^https?:#', $target ) ) {
 				wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 			}
 
@@ -350,23 +350,21 @@ class MailsterFrontpage {
 			// append hash and campaign_id if unsubscribe link
 			if ( mailster()->get_unsubscribe_link( $campaign_id, $hash ) == $redirect_to ) :
 				$redirect_to = $this->get_link( 'unsubscribe', $subscriber->hash, get_query_var( '_mailster' ) );
-				$target = $this->get_link( 'unsubscribe' );
+				$target      = $this->get_link( 'unsubscribe' );
 
 			elseif ( mailster()->get_profile_link( $campaign_id, $hash ) == $redirect_to ) :
 				$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . $subscriber->hash ), get_query_var( '_mailster' ) );
-				$target = $this->get_link( 'profile' );
+				$target      = $this->get_link( 'profile' );
 
 			endif;
 
 			if ( $subscriber->ID && $meta['track_clicks'] ) {
 				do_action( 'mailster_click', $subscriber->ID, $campaign_id, $target, $index );
-				do_action( 'mymail_click', $subscriber->ID, $campaign_id, $target, $index );
 			}
 		} else {
 
 			if ( $subscriber->ID && $meta['track_opens'] ) {
 				do_action( 'mailster_open', $subscriber->ID, $campaign_id );
-				do_action( 'mymail_open', $subscriber->ID, $campaign_id );
 			}
 		}
 
@@ -405,31 +403,26 @@ class MailsterFrontpage {
 		switch ( get_query_var( '_mailster_page' ) ) {
 
 			case 'subscribe':
-
 				do_action( 'mailster_homepage_subscribe' );
-				do_action( 'mymail_homepage_subscribe' );
 
-			break;
+				break;
 
 			case 'unsubscribe':
-
 				$unsubscribe_url = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
 
 				// if tracking is disabled
 				if ( strpos( $unsubscribe_url, $wp->request ) === false ) {
 					$this->setcookie( get_query_var( '_mailster_hash' ) );
-					$redirect_to = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ) , get_query_var( '_mailster_extra' ) );
+					$redirect_to = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
 					wp_redirect( $redirect_to, 301 );
 					exit;
 				}
 
 				do_action( 'mailster_homepage_unsubscribe' );
-				do_action( 'mymail_homepage_unsubscribe' );
 
-			break;
+				break;
 
 			case 'profile':
-
 				$profile_url = $this->get_link( 'profile', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
 
 				// if tracking is disabled
@@ -441,7 +434,6 @@ class MailsterFrontpage {
 				}
 
 				do_action( 'mailster_homepage_profile' );
-				do_action( 'mymail_homepage_profile' );
 				$hash = get_query_var( '_mailster_hash' );
 
 				// redirect if no hash is set
@@ -461,12 +453,10 @@ class MailsterFrontpage {
 					}
 				}
 
-			break;
+				break;
 
 			case 'confirm':
-
 				do_action( 'mailster_homepage_confirm' );
-				do_action( 'mymail_homepage_confirm' );
 
 				$subscriber = mailster( 'subscribers' )->get_by_hash( get_query_var( '_mailster_hash' ) );
 				// redirect if no such subscriber
@@ -502,14 +492,14 @@ class MailsterFrontpage {
 				// subscriber no "pending" anymore
 				if ( 0 == $subscriber->status ) {
 
-					$ip = mailster_option( 'track_users' ) ? mailster_get_ip() : null;
+					$ip        = mailster_option( 'track_users' ) ? mailster_get_ip() : null;
 					$user_meta = array(
-						'ID' => $subscriber->ID,
-						'confirm' => time(),
-						'status' => 1,
+						'ID'         => $subscriber->ID,
+						'confirm'    => time(),
+						'status'     => 1,
 						'ip_confirm' => $ip,
-						'ip' => $ip,
-						'lang' => mailster_get_lang(),
+						'ip'         => $ip,
+						'lang'       => mailster_get_lang(),
 					);
 
 					if ( 'unknown' !== ( $geo = mailster_ip2City() ) ) {
@@ -524,9 +514,7 @@ class MailsterFrontpage {
 
 						if ( ! is_wp_error( $subscriber_id ) ) {
 							do_action( 'mailster_subscriber_subscribed', $subscriber->ID );
-							do_action( 'mymail_subscriber_subscribed', $subscriber->ID );
 							// old hook for backward compatibility
-							do_action( 'mymail_subscriber_insert', $subscriber->ID );
 						}
 					} else {
 
@@ -540,7 +528,7 @@ class MailsterFrontpage {
 				$redirect_to = apply_filters( 'mymail_confirm_target', apply_filters( 'mailster_confirm_target', $target, $subscriber->ID ), $subscriber->ID );
 
 				wp_redirect( $redirect_to, 301 );
-			exit;
+				exit;
 			break;
 
 		}
@@ -601,7 +589,9 @@ class MailsterFrontpage {
 
 	private function do_frontpage() {
 
-		if ( have_posts() ) : while ( have_posts() ) : the_post();
+		if ( have_posts() ) :
+			while ( have_posts() ) :
+				the_post();
 
 				$meta = mailster( 'campaigns' )->meta( get_the_ID() );
 
@@ -609,7 +599,7 @@ class MailsterFrontpage {
 					$this->do_404();
 				}
 
-				if ( ! mailster_option( 'webversion_bar' ) || (isset( $_GET['frame'] ) && $_GET['frame'] == '0' ) ) {
+				if ( ! mailster_option( 'webversion_bar' ) || ( isset( $_GET['frame'] ) && $_GET['frame'] == '0' ) ) {
 
 					do_action( 'mailster_frontpage' );
 
@@ -626,8 +616,8 @@ class MailsterFrontpage {
 						// unlock post if pwd hash is provided
 						if ( isset( $_GET['pwd'] ) && $_GET['pwd'] == md5( $post->post_password . AUTH_KEY ) ) {
 							require_once ABSPATH . WPINC . '/class-phpass.php';
-							$hasher = new PasswordHash( 8, true );
-							$pwd = $hasher->HashPassword( wp_unslash( $post->post_password ) );
+							$hasher                                 = new PasswordHash( 8, true );
+							$pwd                                    = $hasher->HashPassword( wp_unslash( $post->post_password ) );
 							$_COOKIE[ 'wp-postpass_' . COOKIEHASH ] = $pwd;
 						}
 					}
@@ -650,23 +640,25 @@ class MailsterFrontpage {
 
 					if ( mailster_option( 'tags_webversion' ) ) {
 						$subscriber = mailster( 'subscribers' )->get_current_user();
-						$userdata = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
+						$userdata   = mailster( 'subscribers' )->get_custom_fields( $subscriber->ID );
 
 						$placeholder->set_subscriber( $subscriber->ID );
 						$placeholder->add( $userdata );
 
-						$placeholder->add( array(
-							'firstname' => $subscriber->firstname,
-							'lastname' => $subscriber->lastname,
-							'fullname' => $subscriber->fullname,
-						) );
+						$placeholder->add(
+							array(
+								'firstname' => $subscriber->firstname,
+								'lastname'  => $subscriber->lastname,
+								'fullname'  => $subscriber->fullname,
+							)
+						);
 					}
 
 					$placeholder->add_defaults( get_the_ID() );
 					$placeholder->add_custom( get_the_ID() );
 
 					$content = $placeholder->get_content();
-					$search = array( '<a ',  '@media only screen and (max-device-width:' );
+					$search  = array( '<a ', '@media only screen and (max-device-width:' );
 					$replace = array( '<a target="_top" ', '@media only screen and (max-width:' );
 					$content = str_replace( $search, $replace, $content );
 
@@ -710,17 +702,17 @@ class MailsterFrontpage {
 
 		endwhile;
 
-		else :
+			else :
 
-			wp_old_slug_redirect();
+				wp_old_slug_redirect();
 
-			// NOT FOUND
-			$this->do_404();
+				// NOT FOUND
+				$this->do_404();
 
 		endif;
 
-		// Reset Post Data
-		wp_reset_postdata();
+			// Reset Post Data
+			wp_reset_postdata();
 
 	}
 
@@ -753,14 +745,14 @@ class MailsterFrontpage {
 				add_filter( 'get_the_content', '__return_empty_string', -1 );
 				remove_filter( 'the_content', array( &$this, 'content_as_iframe' ), -1 );
 				add_filter( 'the_content', '__return_empty_string', -1 );
-			break;
+				break;
 			case 'the_content':
 			case 'get_the_content':
 				remove_filter( 'get_the_excerpt', array( &$this, 'content_as_iframe' ), -1 );
 				add_filter( 'get_the_excerpt', '__return_empty_string', -1 );
 				remove_filter( 'the_excerpt', array( &$this, 'content_as_iframe' ), -1 );
 				add_filter( 'the_excerpt', '__return_empty_string', -1 );
-			break;
+				break;
 		}
 
 		return '<iframe class="mailster-frame mailster-frame-' . $campaign->ID . '" src="' . add_query_arg( 'frame', 0, get_permalink( $campaign->ID ) ) . '" style="width:' . $width . 'px;' . ( $height ? 'height=' . (int) $height . 'px;' : '' ) . '" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) ) . '" scrolling="auto" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
@@ -877,11 +869,9 @@ class MailsterFrontpage {
 		switch ( get_query_var( '_mailster_page' ) ) {
 
 			case 'confirm':
-
-			break;
+				break;
 
 			case 'subscribe':
-
 				if ( $hash = get_query_var( '_mailster_hash' ) ) {
 					$subscriber = mailster( 'subscribers' )->get_by_hash( $hash );
 
@@ -901,7 +891,6 @@ class MailsterFrontpage {
 			break;
 
 			case 'profile':
-
 				$form = mailster( 'form' )->id( mailster_option( 'profile_form', 1 ) );
 				$form->is_profile();
 
@@ -910,9 +899,8 @@ class MailsterFrontpage {
 			break;
 
 			case 'unsubscribe':
-
 				$pattern = '\[(\[?)(newsletter_unsubscribe)(?![\w-])([^\]\/]*(?:\/(?!\])[^\]\/]*)*?)(?:(\/)\]|\](?:([^\[]*+(?:\[(?!\/\2\])[^\[]*+)*+)\[\/\2\])?)(\]?)';
-				$return = '';
+				$return  = '';
 				if ( preg_match( '/' . $pattern . '/s', $content, $matches ) ) {
 					$return .= do_shortcode( wpautop( $matches[5] ) );
 				}
@@ -935,8 +923,7 @@ class MailsterFrontpage {
 			break;
 
 			default:
-
-			return do_shortcode( $content );
+				return do_shortcode( $content );
 
 		}
 
@@ -981,9 +968,14 @@ class MailsterFrontpage {
 			return '';
 		}
 
-		extract( shortcode_atts( array(
-			'scrolling' => true,
-		), $atts ) );
+		extract(
+			shortcode_atts(
+				array(
+					'scrolling' => true,
+				),
+				$atts
+			)
+		);
 
 		return '<iframe class="mailster_frame" src="' . add_query_arg( 'frame', 0, $link ) . '" style="min-width:610px;" width="' . apply_filters( 'mymail_iframe_width', apply_filters( 'mailster_iframe_width', '100%' ) . '" scrolling="' . ( $scrolling ? 'auto' : 'no' ) ) . '" frameborder="0" onload="this.height=this.contentWindow.document.body.scrollHeight+20;" data-no-lazy=""></iframe>';
 
@@ -998,31 +990,39 @@ class MailsterFrontpage {
 	 * @return unknown
 	 */
 	public function newsletter_list( $atts, $content ) {
-		extract( shortcode_atts( array(
-			'date' => false,
-			'count' => 10,
-			'status' => array( 'finished', 'active' ),
-			'order' => 'desc',
-			'orderby' => 'date',
-		), $atts ) );
+		extract(
+			shortcode_atts(
+				array(
+					'date'    => false,
+					'count'   => 10,
+					'status'  => array( 'finished', 'active' ),
+					'order'   => 'desc',
+					'orderby' => 'date',
+				),
+				$atts
+			)
+		);
 
-		$r = new WP_Query( array(
-			'post_type' => 'newsletter',
-			'posts_per_page' => $count,
-			'no_found_rows' => true,
-			'post_status' => $status,
-			'ignore_sticky_posts' => true,
-			'order' => $order,
-			'orderby' => $orderby,
-		) );
+		$r = new WP_Query(
+			array(
+				'post_type'           => 'newsletter',
+				'posts_per_page'      => $count,
+				'no_found_rows'       => true,
+				'post_status'         => $status,
+				'ignore_sticky_posts' => true,
+				'order'               => $order,
+				'orderby'             => $orderby,
+			)
+		);
 
 		$return = '';
 
 		if ( $r->have_posts() ) :
 
 			$return .= '<ul class="mailster-newsletter-list">';
-			while ( $r->have_posts() ) : $r->the_post();
-				$title = get_the_title();
+			while ( $r->have_posts() ) :
+				$r->the_post();
+				$title   = get_the_title();
 				$return .= '<li><a href="' . get_permalink() . '" title="' . esc_attr( $title ) . '">' . $title . '</a>';
 				if ( $date ) {
 					$return .= ' <span class="mailster-newsletter-date">' . get_the_date() . '</span>';
@@ -1049,16 +1049,21 @@ class MailsterFrontpage {
 	 * @return unknown
 	 */
 	public function newsletter_subscribers( $atts ) {
-		extract( shortcode_atts( array(
-			'formatted' => true,
-			'round' => 1,
-			'lists' => null,
-		), $atts ) );
+		extract(
+			shortcode_atts(
+				array(
+					'formatted' => true,
+					'round'     => 1,
+					'lists'     => null,
+				),
+				$atts
+			)
+		);
 
 		$round = max( 1, $round );
 
 		if ( ! is_null( $lists ) ) {
-			$lists = explode( ',', (string) $lists );
+			$lists       = explode( ',', (string) $lists );
 			$subscribers = mailster( 'lists' )->count( $lists, 1 );
 		} else {
 			$subscribers = mailster( 'subscribers' )->get_count_by_status( 1 );
@@ -1116,9 +1121,12 @@ class MailsterFrontpage {
 			return;
 		}
 
-		$atts = wp_parse_args( $atts, array(
-			'id' => mailster_option( 'profile_form', 1 ),
-		));
+		$atts = wp_parse_args(
+			$atts,
+			array(
+				'id' => mailster_option( 'profile_form', 1 ),
+			)
+		);
 
 		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		$form->is_profile();
@@ -1140,9 +1148,12 @@ class MailsterFrontpage {
 			return;
 		}
 
-		$atts = wp_parse_args( $atts, array(
-			'id' => mailster( 'helper' )->get_first_form_id(),
-		));
+		$atts = wp_parse_args(
+			$atts,
+			array(
+				'id' => mailster( 'helper' )->get_first_form_id(),
+			)
+		);
 
 		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		$form->is_unsubscribe();
@@ -1194,13 +1205,16 @@ class MailsterFrontpage {
 	 */
 	public function newsletter_button( $atts, $content ) {
 
-		$args = shortcode_atts( array(
-			'id' => 1,
-			'showcount' => false,
-			'label' => mailster_text( 'submitbutton' ),
-			'design' => 'default',
-			'width' => 480,
-		), $atts );
+		$args = shortcode_atts(
+			array(
+				'id'        => 1,
+				'showcount' => false,
+				'label'     => mailster_text( 'submitbutton' ),
+				'design'    => 'default',
+				'width'     => 480,
+			),
+			$atts
+		);
 
 		return mailster( 'forms' )->get_subscribe_button( $args['id'], $args );
 

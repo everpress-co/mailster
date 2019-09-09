@@ -8,11 +8,13 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 	public function __construct() {
 
-		parent::__construct( array(
+		parent::__construct(
+			array(
 				'singular' => esc_html__( 'List', 'mailster' ), // singular name of the listed records
-				'plural' => esc_html__( 'Lists', 'mailster' ), // plural name of the listed records
-				'ajax' => false, // does this table support ajax?
-		) );
+				'plural'   => esc_html__( 'Lists', 'mailster' ), // plural name of the listed records
+				'ajax'     => false, // does this table support ajax?
+			)
+		);
 
 		add_action( 'admin_footer', array( &$this, 'script' ) );
 
@@ -27,7 +29,7 @@ class Mailster_Lists_Table extends WP_List_Table {
 	public function get_views() {
 
 		$counts = mailster( 'lists' )->get_list_count();
-		$link = 'edit.php?post_type=newsletter&page=mailster_lists';
+		$link   = 'edit.php?post_type=newsletter&page=mailster_lists';
 
 		$views = array( 'view-all' => '<a href="' . $link . '">' . esc_html__( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $counts ) . ')</span></a>' );
 
@@ -58,21 +60,24 @@ class Mailster_Lists_Table extends WP_List_Table {
 			return;
 		}
 
-?>
+		?>
 	<form id="searchform" action method="get">
-	<?php if ( isset( $_GET['post_type'] ) ) : ?><input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ) ?>"><?php endif; ?>
-	<?php if ( isset( $_GET['page'] ) ) : ?><input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ) ?>"><?php endif; ?>
-	<?php if ( isset( $_GET['paged'] ) ) : ?><input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ) ?>"><?php endif; ?>
+		<?php if ( isset( $_GET['post_type'] ) ) : ?>
+			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>">
+		<?php endif; ?>
+		<?php if ( isset( $_GET['page'] ) ) : ?>
+			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>">
+		<?php endif; ?>
+		<?php if ( isset( $_GET['paged'] ) ) : ?>
+			<input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ); ?>">
+		<?php endif; ?>
 	<p class="search-box">
 		<label class="screen-reader-text" for="sa-search-input"><?php echo $text; ?></label>
-		<input type="search" id="<?php echo $input_id ?>" name="s" value="<?php if ( isset( $_GET['s'] ) ) {
-			echo esc_attr( $_GET['s'] );
-}
-		?>">
+		<input type="search" id="<?php echo $input_id; ?>" name="s" value="<?php echo isset( $_GET['s'] ) ? esc_attr( $_GET['s'] ) : ''; ?>">
 		<input type="submit" name="" id="search-submit" class="button" value="<?php echo esc_attr( $text ); ?>">
 	</p>
 	</form>
-<?php
+		<?php
 	}
 
 
@@ -97,18 +102,18 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 			case 'name':
 				$parentindicator = $item->parent_id && ! isset( $_GET['orderby'] ) && ! isset( $_GET['s'] );
-			return ( $parentindicator ? '&nbsp;&#x2517; ' : '' ) . '<a class="name" href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $item->ID . '">' . $item->{$column_name} . '</a>' . ( $parentindicator ? '' : ' <span class="description" title="' . esc_attr( sprintf( esc_html__( 'Child of %s', 'mailster' ), '"' . $item->parent_name . '"' ) ) . '">' . $item->parent_name . '</span>' );
+				return ( $parentindicator ? '&nbsp;&#x2517; ' : '' ) . '<a class="name" href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $item->ID . '">' . $item->{$column_name} . '</a>' . ( $parentindicator ? '' : ' <span class="description" title="' . esc_attr( sprintf( esc_html__( 'Child of %s', 'mailster' ), '"' . $item->parent_name . '"' ) ) . '">' . $item->parent_name . '</span>' );
 
 			case 'description':
-			return $item->{$column_name};
+				return $item->{$column_name};
 
 			case 'updated':
 			case 'added':
 				$timestring = date_i18n( mailster( 'helper' )->timeformat(), $item->{$column_name} + mailster( 'helper' )->gmt_offset( true ) );
-			return $timestring;
+				return $timestring;
 
 			case 'subscribers':
-			return '<a href="' . add_query_arg( array( 'lists' => array( $item->ID ) ), 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '">' . number_format_i18n( mailster( 'lists' )->get_member_count( $item->ID, 1 ) ) . '</a>';
+				return '<a href="' . add_query_arg( array( 'lists' => array( $item->ID ) ), 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '">' . number_format_i18n( mailster( 'lists' )->get_member_count( $item->ID, 1 ) ) . '</a>';
 
 			default:
 		}
@@ -145,12 +150,12 @@ class Mailster_Lists_Table extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		$actions = array(
-			'delete' => esc_html__( 'Delete', 'mailster' ),
+			'delete'             => esc_html__( 'Delete', 'mailster' ),
 			'delete_subscribers' => esc_html__( 'Delete with subscribers', 'mailster' ),
-			'subscribe' => esc_html__( 'Subscribe subscribers', 'mailster' ),
-			'unsubscribe' => esc_html__( 'Unsubscribe subscribers', 'mailster' ),
-			'merge' => esc_html__( 'Merge selected Lists', 'mailster' ),
-			'send_campaign' => esc_html__( 'Send new Campaign', 'mailster' ),
+			'subscribe'          => esc_html__( 'Subscribe subscribers', 'mailster' ),
+			'unsubscribe'        => esc_html__( 'Unsubscribe subscribers', 'mailster' ),
+			'merge'              => esc_html__( 'Merge selected Lists', 'mailster' ),
+			'send_campaign'      => esc_html__( 'Send new Campaign', 'mailster' ),
 		);
 		return $actions;
 	}
@@ -164,7 +169,8 @@ class Mailster_Lists_Table extends WP_List_Table {
 	 */
 	public function column_cb( $item ) {
 		return sprintf(
-			'<input type="checkbox" name="lists[]" value="%s" />', $item->ID
+			'<input type="checkbox" name="lists[]" value="%s" />',
+			$item->ID
 		);
 	}
 
@@ -189,9 +195,9 @@ class Mailster_Lists_Table extends WP_List_Table {
 	public function prepare_items( $domain = null, $post_id = null ) {
 
 		global $wpdb;
-		$screen = get_current_screen();
-		$columns = $this->get_columns();
-		$hidden = get_hidden_columns( $screen );
+		$screen   = get_current_screen();
+		$columns  = $this->get_columns();
+		$hidden   = get_hidden_columns( $screen );
 		$sortable = $this->get_sortable_columns();
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
@@ -199,7 +205,7 @@ class Mailster_Lists_Table extends WP_List_Table {
 		$extrasql = '';
 
 		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : '_sort';
-		$order = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'ASC';
+		$order   = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'ASC';
 
 		$sql = 'SELECT';
 		if ( $orderby != 'name' ) {
@@ -217,21 +223,21 @@ class Mailster_Lists_Table extends WP_List_Table {
 			$search = explode( ' ', $search );
 
 			$extrasql .= ' AND (';
-			$terms = array();
+			$terms     = array();
 			foreach ( $search as $term ) {
 
 				if ( substr( $term, 0, 1 ) == '-' ) {
-					$term = substr( $term, 1 );
+					$term     = substr( $term, 1 );
 					$operator = 'AND';
-					$like = 'NOT LIKE';
-					$end = '(1=1)';
+					$like     = 'NOT LIKE';
+					$end      = '(1=1)';
 				} else {
 					$operator = 'OR';
-					$like = 'LIKE';
-					$end = '(1=0)';
+					$like     = 'LIKE';
+					$end      = '(1=0)';
 				}
 
-				$termsql = ' ( ';
+				$termsql  = ' ( ';
 				$termsql .= " (a.name $like '%" . $term . "%') $operator ";
 				$termsql .= " (a.description $like '%" . $term . "%') $operator ";
 				$termsql .= " $end )";
@@ -262,7 +268,8 @@ class Mailster_Lists_Table extends WP_List_Table {
 		// Which page is this?
 		$paged = ! empty( $_GET['paged'] ) ? esc_sql( $_GET['paged'] ) : '';
 		// Page Number
-		if ( empty( $paged ) || ! is_numeric( $paged ) || $paged <= 0 ) {$paged = 1;}
+		if ( empty( $paged ) || ! is_numeric( $paged ) || $paged <= 0 ) {
+			$paged = 1;}
 		// How many pages do we have in total?
 		$totalpages = ceil( $totalitems / $perpage );
 		// adjust the query to take pagination into account
@@ -270,11 +277,13 @@ class Mailster_Lists_Table extends WP_List_Table {
 			$offset = ( $paged - 1 ) * $perpage;
 		}
 
-		$this->set_pagination_args( array(
-			'total_items' => $totalitems,
-			'total_pages' => $totalpages,
-			'per_page' => $perpage,
-		) );
+		$this->set_pagination_args(
+			array(
+				'total_items' => $totalitems,
+				'total_pages' => $totalpages,
+				'per_page'    => $perpage,
+			)
+		);
 
 		if ( isset( $offset ) ) {
 			$sql .= " LIMIT $offset, $perpage";

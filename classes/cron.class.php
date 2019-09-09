@@ -38,11 +38,9 @@ class MailsterCron {
 
 		// check for bounced emails
 		do_action( 'mailster_check_bounces' );
-		do_action( 'mymail_check_bounces' );
 
 		// send confirmations again
 		do_action( 'mailster_resend_confirmations' );
-		do_action( 'mymail_resend_confirmations' );
 
 		$this->update();
 
@@ -162,7 +160,7 @@ class MailsterCron {
 
 		$cron_schedules['mailster_cron_interval'] = array(
 			'interval' => mailster_option( 'interval', 5 ) * 60, // seconds
-			'display' => 'Mailster Cronjob Interval',
+			'display'  => 'Mailster Cronjob Interval',
 		);
 
 		return $cron_schedules;
@@ -187,7 +185,7 @@ class MailsterCron {
 
 		global $wpdb;
 
-		$now = time();
+		$now          = time();
 		$cron_service = mailster_option( 'cron_service' );
 
 		if ( ! mailster( 'queue' )->size() && ! $strict ) :
@@ -210,7 +208,7 @@ class MailsterCron {
 			}
 
 			// get real delay...
-			$real_delay = max( $interval, $last_hit['timestamp'] - $last_hit['oldtimestamp'] );
+			$real_delay    = max( $interval, $last_hit['timestamp'] - $last_hit['oldtimestamp'] );
 			$current_delay = $now - $last_hit['timestamp'];
 
 			// ..and compare it with the interval (3 times) - also something in the queue
@@ -361,16 +359,30 @@ class MailsterCron {
 			if ( mailster_option( 'got_url_rewrite' ) ) {
 				return apply_filters( 'mailster_cron_url', get_home_url( null, 'mailster/' . mailster_option( 'cron_secret' ) ), $alternative );
 			} else {
-				return apply_filters( 'mailster_cron_url', add_query_arg( array(
-					'secret' => mailster_option( 'cron_secret' ),
-				), MAILSTER_URI . 'cron.php' ), $alternative );
+				return apply_filters(
+					'mailster_cron_url',
+					add_query_arg(
+						array(
+							'secret' => mailster_option( 'cron_secret' ),
+						),
+						MAILSTER_URI . 'cron.php'
+					),
+					$alternative
+				);
 
 			}
 		} else {
-			return apply_filters( 'mailster_cron_url', add_query_arg( array(
-				'action' => 'mailster_cron',
-				'secret' => mailster_option( 'cron_secret' ),
-			), admin_url( 'admin-ajax.php' ) ), $alternative );
+			return apply_filters(
+				'mailster_cron_url',
+				add_query_arg(
+					array(
+						'action' => 'mailster_cron',
+						'secret' => mailster_option( 'cron_secret' ),
+					),
+					admin_url( 'admin-ajax.php' )
+				),
+				$alternative
+			);
 
 		}
 
