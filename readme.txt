@@ -94,7 +94,7 @@ Xaver Birsak – https://everpress.co
 * improved: drag n drop images from your desktop now respects cropped image setting.
 * improved: import screen.
 * improved: test mails now fallback to the current users email if not defined.
-* improved: subscriber query now search for ID by default.
+* improved: subscriber query now search for ID as well.
 * fixed: notifications to multiple addresses.
 * fixed: modules without content sometimes preserve in the campaign.
 * fixed: issue with RSS campaigns on time based autoresponders.
