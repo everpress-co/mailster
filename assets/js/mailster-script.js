@@ -66,22 +66,6 @@ mailster = (function (mailster, $, window, document) {
 mailster = (function (mailster, $, window, document) {
 	"use strict";
 
-	mailster.window = {};
-	mailster.window.height = $(window).height();
-	mailster.window.width = $(window).width();
-
-	$(window).on('resize', function () {
-		mailster.window.height = $(window).height();
-		mailster.window.width = $(window).width();
-	});
-
-	return mailster;
-}(mailster, jQuery, window, document));
-
-
-mailster = (function (mailster, $, window, document) {
-	"use strict";
-
 	mailster.util = {};
 
 	mailster.util.requestAnimationFrame = window.requestAnimationFrame ||
@@ -89,11 +73,9 @@ mailster = (function (mailster, $, window, document) {
 		window.webkitRequestAnimationFrame ||
 		window.msRequestAnimationFrame;
 
-	mailster.util.documentReady = function ($) {
-	};
+	mailster.util.documentReady = function ($) {};
 
-	mailster.util.windowLoad = function ($) {
-	};
+	mailster.util.windowLoad = function ($) {};
 
 	mailster.util.ajax = function (action, data, callback, errorCallback, dataType) {
 
@@ -108,10 +90,10 @@ mailster = (function (mailster, $, window, document) {
 		dataType = dataType ? dataType : "JSON";
 		$.ajax({
 			type: 'POST',
-			url: ajaxurl,
+			url: mailster.ajaxurl,
 			data: $.extend({
 				action: 'mailster_' + action,
-				_wpnonce: wpnonce
+				_wpnonce: mailster.wpnonce
 			}, data),
 			success: function (data, textStatus, jqXHR) {
 				callback && callback.call(this, data, textStatus, jqXHR);
@@ -142,6 +124,25 @@ mailster = (function (mailster, $, window, document) {
 	mailster.util.sanitize = function (string) {
 		return $.trim(string).toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_-]*/g, '');
 	}
+
+	mailster.util.sprintf = function () {
+		var a = Array.prototype.slice.call(arguments),
+			str = a.shift(),
+			total = a.length,
+			reg;
+		for (var i = 0; i < total; i++) {
+			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
+			str = str.replace(reg, a[i]);
+		}
+		return str;
+	}
+
+	mailster.util.isWebkit = 'WebkitAppearance' in document.documentElement.style;
+	mailster.util.isMozilla = (/firefox/i).test(navigator.userAgent);
+	mailster.util.isMSIE = (/msie|trident/i).test(navigator.userAgent);
+	mailster.util.isTouchDevice = 'ontouchstart' in document.documentElement;
+	mailster.util.isTinyMCE = typeof tinymce == 'object';
+
 
 	mailster.components.documentReady.push(mailster.util.documentReady);
 	mailster.components.windowLoad.push(mailster.util.windowLoad);
