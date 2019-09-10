@@ -275,7 +275,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', 'a.plaintext', o.plainText)
 		.on('click', 'a.dfw', o.dfw)
 
-		.on('click', 'a.template', showFiles)
+	.on('click', 'a.template', showFiles)
 		.on('click', 'a.file', changeTemplate);
 
 	mailster.optionbar = o;

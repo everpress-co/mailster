@@ -254,5 +254,3 @@ mailster = (function (mailster, $, window, document) {
 
 }(mailster, jQuery, window, document));
 // end block
-
-

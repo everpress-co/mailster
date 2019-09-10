@@ -145,7 +145,7 @@ mailster = (function (mailster, $, window, document) {
 
 
 	mailster.components.windowLoad.push(
-		function(){
+		function () {
 			mailster.events.refresh.push(dom, sortable, draggable);
 			mailster.events.resize.push(buttons);
 			mailster.events.selectModule.push(select);
@@ -154,7 +154,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 	)
 
-	function dom(){
+	function dom() {
 		mailster.editor.$.container = $('modules');
 		mailster.editor.$.modules = $('module');
 		mailster.editor.$.images = $('img[editable]');
@@ -162,7 +162,7 @@ mailster = (function (mailster, $, window, document) {
 		mailster.editor.$.repeatable = $('[repeatable]');
 	}
 
-	function sortable(){
+	function sortable() {
 		if (mailster.editor.$.container.data('sortable')) mailster.editor.$.container.sortable('destroy');
 
 		if (mailster.editor.$.modules.length < 2) return;
@@ -196,7 +196,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 	}
 
-	function draggable(){
+	function draggable() {
 		if (mailster.editor.$.images.data('draggable')) mailster.editor.$.images.draggable('destroy');
 		if (mailster.editor.$.images.data('droppable')) mailster.editor.$.images.droppable('destroy');
 
@@ -334,7 +334,7 @@ mailster = (function (mailster, $, window, document) {
 			});
 	}
 
-	function buttons(){
+	function buttons() {
 		if (mailster.editor.$.buttons) {
 			$.each(mailster.editor.$.buttons, function () {
 
@@ -412,7 +412,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 	}
 
-	function select(module){
+	function select(module) {
 		if (!module.length) {
 			return;
 		}
@@ -423,7 +423,7 @@ mailster = (function (mailster, $, window, document) {
 		mailster.editor.currentmodule.attr('selected', true);
 	}
 
-	function upload(){
+	function upload() {
 		$.each(mailster.editor.$.images, function () {
 
 			var _this = $(this),
@@ -603,7 +603,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 	}
 
-	function inlineEditor(){
+	function inlineEditor() {
 		tinymce.init($.extend(mailsterdata.tinymce.args, mailsterdata.tinymce.multi, {
 			urlconverter_callback: urlconverter,
 			setup: setup
