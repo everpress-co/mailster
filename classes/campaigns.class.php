@@ -1111,7 +1111,7 @@ class MailsterCampaigns {
 				$this->set_template( mailster_option( 'default_template' ), $this->post_data['file'] );
 			}
 
-			wp_enqueue_script( 'mailster-script', MAILSTER_URI . 'assets/js/newsletter-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-newsletter', MAILSTER_URI . 'assets/js/newsletter-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 			wp_enqueue_style( 'mailster-newsletter', MAILSTER_URI . 'assets/css/newsletter-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
@@ -1164,7 +1164,7 @@ class MailsterCampaigns {
 			wp_enqueue_script( 'wp-color-picker' );
 
 			wp_localize_script(
-				'mailster-script',
+				'mailster-newsletter',
 				'mailsterL10n',
 				array(
 					'loading'                => esc_html__( 'loading', 'mailster' ),
@@ -1229,7 +1229,7 @@ class MailsterCampaigns {
 			);
 
 			wp_localize_script(
-				'mailster-script',
+				'mailster-newsletter',
 				'mailsterdata',
 				array(
 					'ajaxurl'    => admin_url( 'admin-ajax.php' ),
