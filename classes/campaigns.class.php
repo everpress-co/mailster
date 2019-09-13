@@ -1242,6 +1242,8 @@ class MailsterCampaigns {
 					'inline'     => $this->inline_editor(),
 					'codeview'   => current_user_can( 'mailster_see_codeview' ),
 					'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
+					'modules'    => $this->replace_colors( $this->templateobj->get_modules_html() ),
+
 				)
 			);
 

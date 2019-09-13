@@ -7,15 +7,15 @@ mailster = (function (mailster, $, window, document) {
 	$el.window = $(window);
 	$el.document = $(document);
 	$el.wpbody = $('#wpbody');
+	$el.form = $('#post');
 	$el.title = $('#title');
 	$el.iframe = $('#mailster_iframe');
 	$el.templateWrap = $('#template-wrap');
-	$el.container = $('#mailster_template .inside');
-	$el.subject = $('#mailster_subject');
-	$el.preheader = $('#mailster_preheader');
+	$el.template = $('#mailster_template .inside');
+	$el.datafields = $('[name^="mailster_data"]'),
+
 	$el.content = $('#content');
 	$el.excerpt = $('#excerpt');
-	$el.modulesraw = $('#modules');
 	$el.plaintext = $('#plain-text-wrap');
 	$el.html = $('#html-wrap');
 	$el.head = $('#head');
@@ -30,6 +30,8 @@ mailster = (function (mailster, $, window, document) {
 	mailster.dom = dom;
 	mailster.campaign_id = parseInt($('#post_ID').val(), 10);
 	mailster.user_id = parseInt($('#user-id').val(), 10);
+	mailster.enabled = true;
+	mailster.editable = !$('#mailster_disabled').val();
 
 	return mailster;
 
@@ -40,51 +42,69 @@ mailster = (function (mailster, $, window, document) {
 mailster = (function (mailster, $, window, document) {
 	"use strict";
 
-	var triggertimeout,
-		isEnabled = !$('#mailster_disabled').val();
-
-	mailster.events = {};
-
-	mailster.events.refresh = [];
-	mailster.events.resize = [];
-	mailster.events.save = [];
-	mailster.events.disable = [];
-	mailster.events.enable = [];
-	mailster.events.selectModule = [];
-	mailster.events.updateCount = [];
-
-	mailster.events.disable.push(
-		function () {
-			isEnabled = false;
-			$('.button').prop('disabled', true);
-			$('input:visible').prop('disabled', true);
+	mailster.events.push('documentReady', function () {
+		if(!mailster.editable){
+			mailster.$.iframe.on('load', function(){
+				mailster.trigger('iframeLoaded');
+			});
 		}
-	)
-	mailster.events.enable.push(
-		function () {
-			$('.button').prop('disabled', false);
-			$('input:visible, input.wp-color-picker').prop('disabled', false);
-			isEnabled = true;
+		mailster.$.iframe.attr('src', mailster.$.iframe.data('src'));
+	});
+
+	mailster.events.push('editorLoaded', function () {
+		mailster.$.iframe.removeClass('loading');
+	});
+
+	mailster.events.push('iframeLoaded', function () {
+		mailster.$.iframe.removeClass('loading');
+	});
+
+	mailster.events.push('disable', function () {
+		mailster.enabled = false;
+		$('.button').prop('disabled', true);
+		$('input:visible').prop('disabled', true);
+	});
+
+	mailster.events.push('enable', function () {
+		$('.button').prop('disabled', false);
+		$('input:visible, input.wp-color-picker').prop('disabled', false);
+		mailster.enabled = true;
+	});
+
+	mailster.events.push('redraw', function () {
+		mailster.trigger('refresh');
+	});
+
+	mailster.events.push('resize', function () {
+		$('#editor-height').val(mailster.editor.getHeight());
+	});
+
+
+	mailster.events.push('save', function () {
+
+		if (!mailster.editor.loaded) return
+
+		var content = mailster.editor.getFrameContent(),
+			length = mailster.optionbar.undos.length,
+			lastundo = mailster.optionbar.undos[length - 1];
+
+		if (lastundo != content) {
+
+			mailster.$.content.val(content);
+			mailster.details.$.preheader.prop('readonly', !content.match('{preheader}'));
+			mailster.optionbar.undos = mailster.optionbar.undos.splice(0, mailster.optionbar.currentUndo + 1);
+			mailster.optionbar.undos.push(content);
+
+			if (length >= mailsterL10n.undosteps) mailster.optionbar.undos.shift();
+			mailster.optionbar.currentUndo = mailster.optionbar.undos.length - 1;
+
+			if (mailster.optionbar.currentUndo) mailster.$.optionbar.find('a.undo').removeClass('disabled');
+			mailster.$.optionbar.find('a.redo').addClass('disabled');
+
+			if (wp && wp.autosave) wp.autosave.local.save();
 		}
-	)
 
-	mailster.disable = function () {
-		mailster.trigger('disable');
-	}
-	mailster.trigger = function () {
-
-		var params = Array.prototype.slice.call(arguments),
-			triggerevent = params.shift(),
-			args = params || null;
-
-		if (mailster.events[triggerevent]) {
-			for (var i = 0; i < mailster.events[triggerevent].length; i++) {
-				mailster.events[triggerevent][i].apply(mailster, args);
-			}
-			$(window).trigger('Mailster:' + triggerevent, args);
-		}
-		console.log('Event Mailster:' + triggerevent, mailster);
-	}
+	});
 
 	return mailster;
 
@@ -93,125 +113,182 @@ mailster = (function (mailster, $, window, document) {
 
 
 
-// editor
+// block clickmap
 mailster = (function (mailster, $, window, document) {
 	"use strict";
 
-	mailster.editor = mailster.editor || {};
+	mailster.clickmap = mailster.clickmap || {};
 
-	mailster.editor.getFrameContent = function () {
+	mailster.clickmap.$ = {};
+	mailster.clickmap.$.popup = $('#clickmap-stats');
 
-		var body = mailster.dom.iframe.contentWindow.document.body,
-			clone, content, bodyattributes, attrcount, s = '';
 
-		if (typeof body == 'null' || !body) {
-			return '';
-		}
+	mailster.$.template
+		.on('mouseenter', 'a.clickbadge', function () {
+			var _this = $(this),
+				_position = _this.position(),
+				p = _this.data('p'),
+				link = _this.data('link'),
+				clicks = _this.data('clicks'),
+				total = _this.data('total');
 
-		clone = $('<div>' + body.innerHTML + '</div>');
+			mailster.clickmap.$.popup.find('.piechart').data('easyPieChart').update(p);
+			mailster.clickmap.$.popup.find('.link').html(link);
+			mailster.clickmap.$.popup.find('.clicks').html(clicks);
+			mailster.clickmap.$.popup.find('.total').html(total);
+			mailster.clickmap.$.popup.stop().fadeIn(100).css({
+				top: _position.top - 85,
+				left: _position.left - (mailster.clickmap.$.popup.width() / 2 - _this.width() / 2)
+			});
 
-		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
+		})
+		.on('mouseleave', 'a.clickbadge', function () {
+			mailster.clickmap.$.popup.stop().fadeOut(400);
+		});
 
-		// remove some third party elements
-		clone.find('#droplr-chrome-extension-is-installed').remove();
-		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
-		content = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
+	mailster.clickmap.updateBadges = function(stats) {
+		mailster.$.templateWrap.find('.clickbadge').remove();
+		var stats = stats || $('#mailster_click_stats').data('stats'),
+			total = parseInt(stats.total, 10);
 
-		bodyattributes = body.attributes || [];
-		attrcount = bodyattributes.length;
+		if (!total) return;
 
-		if (attrcount) {
-			while (attrcount--) {
-				s = ' ' + bodyattributes[attrcount].name + '="' + $.trim(bodyattributes[attrcount].value) + '"' + s;
+		$.each(stats.clicks, function (href, countobjects) {
+
+			$.each(countobjects, function (index, counts) {
+
+				var link = mailster.$.iframe.contents().find('a[href="' + href.replace('&amp;', '&') + '"]').eq(index);
+
+				if (link.length) {
+					link.css({
+						'display': 'inline-block'
+					});
+
+					var offset = link.offset(),
+						top = offset.top,
+						left = offset.left + 5,
+						percentage = (counts.clicks / total) * 100,
+						v = (percentage < 1 ? '&lsaquo;1' : Math.round(percentage)) + '%',
+						badge = $('<a class="clickbadge ' + (percentage < 40 ? 'clickbadge-outside' : '') + '" data-p="' + percentage + '" data-link="' + href + '" data-clicks="' + counts.clicks + '" data-total="' + counts.total + '"><span style="width:' + (Math.max(0, percentage - 2)) + '%">' + (percentage < 40 ? '&nbsp;' : v) + '</span>' + (percentage < 40 ? ' ' + v : '') + '</a>')
+						.css({
+							top: top,
+							left: left
+						}).appendTo(mailster.$.templateWrap);
+
+				}
+
+			});
+		});
+	}
+
+	!mailster.editable && mailster.events.push('documentReady', function(){
+		$.easyPieChart && mailster.clickmap.$.popup.find('.piechart').easyPieChart({
+			animate: 2000,
+			rotate: 180,
+			barColor: mailster.colors.main,
+			trackColor: '#50626f',
+			trackColor: '#f3f3f3',
+			lineWidth: 9,
+			size: 75,
+			lineCap: 'butt',
+			onStep: function (value) {
+				this.$el.find('span').text(Math.round(value));
+			},
+			onStop: function (value) {
+				this.$el.find('span').text(Math.round(value));
 			}
-		}
-		s = $.trim(
-			s
-			.replace(/(webkit |wp\-editor|mceContentBody|position: relative;|cursor: auto;|modal-open| spellcheck="(true|false)")/g, '')
-			.replace(/(class="(\s*)"|style="(\s*)")/g, '')
-		);
+		});
+	})
 
-		return mailster.$.head.val() + "\n<body" + (s ? ' ' + s : '') + ">\n" + content + "\n</body>\n</html>";
-	}
+	!mailster.editable && mailster.events.push('iframeLoaded', function () {
+		mailster.clickmap.updateBadges();
+	});
 
-	mailster.editor.getContent = function () {
-		return mailster.$.content.val() || mailster.editor.getFrameContent();
-	}
+	return mailster;
 
-	mailster.editor.getStructure = function (html) {
-		var parts = html.match(/([^]*)<body([^>]*)?>([^]*)<\/body>([^]*)/m);
 
-		return {
-			parts: parts ? parts : ['', '', '', '<multi>' + html + '</multi>'],
-			content: parts ? parts[3] : '<multi>' + html + '</multi>',
-			head: parts ? $.trim(parts[1]) : '',
-			bodyattributes: parts ? $('<div' + (parts[2] || '') + '></div>')[0].attributes : ''
-		};
-	}
+}(mailster, jQuery, window, document));
+// end editor
 
-	mailster.editor.setContent = function (content, delay, saveit, extrastyle) {
 
-		var structure = e.getStructure(content);
 
-		var attrcount = structure.bodyattributes.length,
-			doc = (isWebkit || isMozilla) ? mailster.$.iframe[0].contentWindow.document : _idoc,
-			headstyles = $(doc).find('head').find('link'),
-			headdoc = doc.getElementsByTagName('head')[0];
+// block heartbeat
+mailster = (function (mailster, $, window, document) {
+	"use strict";
 
-		_head.val(structure.head);
-		if (!extrastyle) {
-			extrastyle = '';
-		}
-		headdoc.innerHTML = structure.head.replace(/([^]*)<head([^>]*)?>([^]*)<\/head>([^]*)/m, '$3' + extrastyle);
-		$(headdoc).append(headstyles);
+	mailster.events.push('documentReady', function(){
+		if (typeof wp != 'undefined' && wp.heartbeat) wp.heartbeat.interval('fast');
+	})
+	mailster.$.document
+		.on('heartbeat-send', function (e, data) {
 
-		doc.body.innerHTML = structure.content;
+			if(mailster.editable){
+				if (data && data['wp_autosave']) {
+					data['wp_autosave']['content'] = mailster.editor.getContent();
+					data['wp_autosave']['excerpt'] = mailster.$.excerpt.val();
+					data['mailsterdata'] = mailster.$.datafields.serialize();
+				}
+			}else{
+				if (data['wp_autosave'])
+					delete data['wp_autosave'];
 
-		if (attrcount) {
-			while (attrcount--) {
-				doc.body.setAttribute(structure.bodyattributes[attrcount].name, structure.bodyattributes[attrcount].value)
+				data['mailster'] = {
+					page: 'edit',
+					id: mailster.campaign_id
+				};
 			}
-		}
 
-		if (delay !== false) {
-			clearTimeout(timeout);
-			timeout = setTimeout(
-				function () {
-					modules && modules.refresh && modules.refresh();
-					mailster.trigger('refresh');
-				},
-				delay || 100
-			);
-		} else {
-			mailster.trigger('refresh');
-		}
+		})
+		.on('heartbeat-tick', function (e, data) {
 
-		if (typeof saveit == 'undefined' || saveit === true) {
-			mailster.trigger('save');
-		}
-	}
+			if (mailster.editable || !data.mailster[mailster.campaign_id]) return;
 
-	function initFrame() {
-		if (mailster.editor.loaded) {
-			return false;
-		}
+			var _data = data.mailster[mailster.campaign_id],
+				stats = $('#stats').find('.verybold'),
+				charts = $('#stats').find('.piechart'),
+				progress = $('.progress'),
+				p = (_data.sent / _data.total * 100);
 
-		mailster.$.templateWrap.removeClass('load');
-		// add current content to undo list
-		mailster.optionbar.undos.push(mailster.editor.getFrameContent());
+			$('.hb-sent').html(_data.sent_f);
+			$('.hb-deleted').html(_data.deleted_f);
+			$('.hb-opens').html(_data.opens_f);
+			$('.hb-clicks').html(_data.clicks_f);
+			$('.hb-clicks_total').html(_data.clicks_total_f);
+			$('.hb-unsubs').html(_data.unsubs_f);
+			$('.hb-bounces').html(_data.bounces_f);
+			$('.hb-geo_location').html(_data.geo_location);
 
-		mailster.trigger('iframeLoaded');
-	}
+			$.each(_data.environment, function (type) {
+				$('.hb-' + type).html((this.percentage * 100).toFixed(2) + '%');
+			});
 
-	mailster.editor.loaded = false;
+			if ($('#stats_opens').length) $('#stats_opens').data('easyPieChart').update(Math.round(_data.open_rate));
+			if ($('#stats_clicks').length) $('#stats_clicks').data('easyPieChart').update(Math.round(_data.click_rate));
+			if ($('#stats_unsubscribes').length) $('#stats_unsubscribes').data('easyPieChart').update(Math.round(_data.unsub_rate));
+			if ($('#stats_bounces').length) $('#stats_bounces').data('easyPieChart').update(Math.round(_data.bounce_rate));
 
-	mailster.$.iframe
-		.on('load', initFrame)
+			progress.find('.bar').width(p + '%');
+			progress.find('span').eq(1).html(_data.sent_formatted);
+			progress.find('span').eq(2).html(_data.sent_formatted);
+			progress.find('var').html(Math.round(p) + '%');
+
+			mailster.clickmap.updateBadges(_data.clickbadges);
+
+			if (_data.status != $('#original_post_status').val() && !$('#mailster_status_changed_info').length) {
+
+				$('<div id="mailster_status_changed_info" class="error inline"><p>' + maislter.util.sprintf(mailsterL10n.statuschanged, '<a href="post.php?post=' + mailster.campaign_id + '&action=edit">' + mailsterL10n.click_here + '</a></p></div>'))
+					.hide()
+					.prependTo('#postbox-container-2')
+					.slideDown(200);
+			}
+
+		});
+
 
 	return mailster;
 
 }(mailster, jQuery, window, document));
-// end editor
+// end heartbeat
 
 
 
@@ -220,6 +297,8 @@ mailster = (function (mailster, $, window, document) {
 	"use strict";
 
 	mailster.util = mailster.util || {};
+
+	mailster.util.isTinyMCE = typeof tinymce == 'object';
 
 	mailster.util.getRealDimensions = function (el, callback) {
 		el = el.eq(0);
@@ -234,6 +313,73 @@ mailster = (function (mailster, $, window, document) {
 		};
 	}
 
+	mailster.util.tempMsg = function (message, type, el, callback) {
+
+		var msg = $('<div class="' + (type) + '"><p>' + message + '</p></div>').hide().prependTo(el).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
+			msg.remove();
+			callback && callback();
+		});
+
+		return msg;
+
+	}
+
+
+	mailster.util.selectRange = function (input, startPos, endPos) {
+		if (document.selection && document.selection.createRange) {
+			input.focus();
+			input.select();
+			var range = document.selection.createRange();
+			range.collapse(true);
+			range.moveEnd("character", endPos);
+			range.moveStart("character", startPos);
+			range.select();
+		} else {
+			input.selectionStart = startPos;
+			input.selectionEnd = endPos;
+		}
+		return true;
+	}
+
+
+	mailster.util.getSelect = function (input) {
+		var selText = "";
+		if (document.activeElement && (document.activeElement.tagName.toLowerCase() == "textarea" || document.activeElement.tagName.toLowerCase() == "input")) {
+			var text = document.activeElement.value;
+			selText = text.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
+		} else {
+			var selRange = window.getSelection();
+			selText = selRange.toString();
+		}
+
+		return selText;
+	}
+
+
+	mailster.util.changeColor = function (color_from, color_to, element) {
+		if (!color_from) color_from = color_to;
+		if (!color_to) return false;
+		color_from = color_from.toLowerCase();
+		color_to = color_to.toLowerCase();
+		if (color_from == color_to) return false;
+		var raw = mailster.editor.getContent(),
+			reg = new RegExp(color_from, 'gi');
+
+		if (element)
+			element.data('value', color_to);
+
+		$('#mailster-color-' + color_from.substr(1)).attr('id', 'mailster-color-' + color_to.substr(1));
+
+		// if (reg.test(m))
+		// 	_modulesraw.val(m.replace(reg, color_to));
+
+		if (reg.test(raw)) {
+			mailster.editor.setContent(raw.replace(reg, color_to), 30);
+		}
+
+
+	}
+
 	return mailster;
 
 }(mailster, jQuery, window, document));
@@ -241,6 +387,1492 @@ mailster = (function (mailster, $, window, document) {
 
 
 
+// block Details
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	mailster.$.details = $('#mailster_details .inside');
+
+	mailster.details = mailster.details || {};
+
+	mailster.details.$ = {};
+	mailster.details.$.subject = $('#mailster_subject');
+	mailster.details.$.preheader = $('#mailster_preheader');
+	mailster.details.$.from = $('#mailster_from');
+	mailster.details.$.from_name = $('#mailster_from-name');
+	mailster.details.$.replyto = $('#mailster_reply-to');
+
+	function showWorld() {
+		var options = {
+			'region': 'world',
+			'displayMode': 'region',
+			'resolution': 'countries',
+			'colors': ['#D7E4E9', mailster.colors.main]
+		};
+
+		data = countrydata;
+		drawMap(options);
+
+		$('#countries_table').find('tr').removeClass('wp-ui-highlight');
+		$('#mapinfo').hide();
+
+		location.hash = '#region=';
+
+	}
+
+	function regionClick(event) {
+
+		var options = {},
+			region = event.region ? event.region : event,
+			d;
+
+		if (region.match(/-/)) return false;
+
+		options['region'] = region;
+
+		(response.unknown_cities[region]) ?
+		$('#mapinfo').show().html('+ ' + response.unknown_cities[region] + ' unknown locations'): $('#mapinfo').hide();
+
+		d = response.geodata[region] ? response.geodata[region] : [];
+
+		options['resolution'] = 'provinces';
+		options['displayMode'] = 'markers';
+		options['dataMode'] = 'markers';
+		options['colors'] = ['#4EBEE9', mailster.colors.main];
+
+		data = new google.visualization.DataTable()
+		data.addColumn('number', 'Lat');
+		data.addColumn('number', 'Long');
+		data.addColumn('string', 'tooltip');
+		data.addColumn('number', 'Value');
+		data.addColumn({
+			type: 'string',
+			role: 'tooltip'
+		});
+
+		data.addRows(d);
+
+		$('#countries_table').find('tr').removeClass('wp-ui-highlight');
+		$('#country-row-' + region).addClass('wp-ui-highlight');
+
+		location.hash = '#region=' + region
+		drawMap(options);
+
+	}
+
+	function drawMap(options) {
+		options = $.extend(mapoptions, options);
+		geomap.draw(data, options);
+		$('a.zoomout').css({
+			'visibility': (mapoptions['region'] != 'world' ? 'visible' : 'hidden')
+		});
+	}
+
+	function regTo3dig(region) {
+		var regioncode = region;
+		$.each(regions, function (code, regions) {
+			if ($.inArray(region, regions) != -1) regioncode = code;
+		})
+		return regioncode;
+	}
+
+
+	mailster.$.details
+		.on('click', '.default-value', function () {
+			var _this = $(this);
+			$('#' + _this.data('for')).val(_this.data('value'));
+		})
+		.on('click', '#show_recipients', function () {
+			var $this = $(this),
+				list = $('#recipients-list'),
+				loader = $('#recipients-ajax-loading');
+
+			if (!list.is(':hidden')) {
+				$this.removeClass('open');
+				list.slideUp(100);
+				return false;
+			}
+			loader.css('display', 'inline');
+
+			mailster.util.ajax('get_recipients', {
+				id: mailster.campaign_id
+			}, function (response) {
+				$this.addClass('open');
+				loader.hide();
+				list.html(response.html).slideDown(100);
+			}, function (jqXHR, textStatus, errorThrown) {
+				loader.hide();
+			})
+			return false;
+		})
+		.on('click', '#show_clicks', function () {
+			var $this = $(this),
+				list = $('#clicks-list'),
+				loader = $('#clicks-ajax-loading');
+
+			if (!list.is(':hidden')) {
+				$this.removeClass('open');
+				list.slideUp(100);
+				return false;
+			}
+			loader.css('display', 'inline');
+
+			mailster.util.ajax('get_clicks', {
+				id: mailster.campaign_id
+			}, function (response) {
+				$this.addClass('open');
+				loader.hide();
+				list.html(response.html).slideDown(100);
+			}, function (jqXHR, textStatus, errorThrown) {
+				loader.hide();
+			})
+			return false;
+		})
+		.on('click', '#show_environment', function () {
+			var $this = $(this),
+				list = $('#environment-list'),
+				loader = $('#environment-ajax-loading');
+
+			if (!list.is(':hidden')) {
+				$this.removeClass('open');
+				list.slideUp(100);
+				return false;
+			}
+			loader.css('display', 'inline');
+
+			mailster.util.ajax('get_environment', {
+				id: mailster.campaign_id
+			}, function (response) {
+				$this.addClass('open');
+				loader.hide();
+				list.html(response.html).slideDown(100);
+			}, function (jqXHR, textStatus, errorThrown) {
+				loader.hide();
+			})
+			return false;
+		})
+		.on('click', '#show_geolocation', function () {
+			var $this = $(this),
+				list = $('#geolocation-list'),
+				loader = $('#geolocation-ajax-loading');
+
+			if (!list.is(':hidden')) {
+				$this.removeClass('open');
+				list.slideUp(100);
+				return false;
+			}
+			loader.css('display', 'inline');
+
+			mailster.util.ajax('get_geolocation', {
+				id: mailster.campaign_id
+			}, function (response) {
+				$this.addClass('open');
+				loader.hide();
+				list.html(response.html).slideDown(100, function () {
+
+					var data, countrydata,
+						mapoptions = {
+							legend: false,
+							region: 'world',
+							resolution: 'countries',
+							datalessRegionColor: '#ffffff',
+							enableRegionInteractivity: true,
+							colors: ['#d7f1fc', mailster.colors.main],
+							backgroundColor: {
+								fill: 'none',
+								stroke: null,
+								strokeWidth: 0
+							}
+						},
+						hash;
+
+					var geomap;
+
+					google.load('visualization', '1.0', {
+						packages: ['geochart', 'corechart'],
+						callback: function () {
+
+							geomap = new google.visualization.GeoChart(document.getElementById('countries_map'));
+							data = countrydata = google.visualization.arrayToDataTable(response.countrydata);
+
+							if (location.hash && (hash = location.hash.match(/region=([A-Z]{2})/))) {
+								regionClick(hash[1]);
+							} else {
+								drawMap();
+							}
+
+							google.visualization.events.addListener(geomap, 'regionClick', regionClick);
+
+						}
+					});
+
+					$('a.zoomout').on('click', function () {
+						showWorld();
+						return false;
+					});
+
+					$('#countries_table').find('tbody').find('tr').on('click', function () {
+						var code = $(this).data('code');
+						(code == 'unknown' || !code) ?
+						showWorld(): regionClick(code);
+
+						return false;
+					});
+
+				});
+
+			}, function (jqXHR, textStatus, errorThrown) {
+				loader.hide();
+			})
+			return false;
+		})
+		.on('click', '#show_errors', function () {
+			var $this = $(this),
+				list = $('#error-list'),
+				loader = $('#error-ajax-loading');
+
+			if (!list.is(':hidden')) {
+				$this.removeClass('open');
+				list.slideUp(100);
+				return false;
+			}
+			loader.css('display', 'inline');
+
+			mailster.util.ajax('get_errors', {
+				id: mailster.campaign_id
+			}, function (response) {
+				$this.addClass('open');
+				loader.hide();
+				list.html(response.html).slideDown(100);
+			}, function (jqXHR, textStatus, errorThrown) {
+				loader.hide();
+			})
+			return false;
+		})
+		.on('click', '#show_countries', function () {
+			$('#countries_wrap').toggle();
+			return false;
+		})
+		.on('click', '.load-more-receivers', function () {
+			var $this = $(this),
+				page = $this.data('page'),
+				types = $this.data('types'),
+				orderby = $this.data('orderby'),
+				order = $this.data('order'),
+				loader = $this.next().css({
+					'display': 'inline'
+				});
+
+			mailster.util.ajax('get_recipients_page', {
+				id: mailster.campaign_id,
+				types: types,
+				page: page,
+				orderby: orderby,
+				order: order
+			}, function (response) {
+				loader.hide();
+				if (response.success) {
+					$this.parent().parent().replaceWith(response.html);
+				}
+			}, function (jqXHR, textStatus, errorThrown) {
+				detailbox.removeClass('loading');
+			});
+
+			return false;
+		})
+		.on('click', '.recipients-limit', function (event) {
+			if (event.altKey) {
+				$('input.recipients-limit').prop('checked', false);
+				$(this).prop('checked', true);
+			}
+		})
+		.on('change', '.recipients-limit, select.recipients-order', function (event) {
+
+			var list = $('#recipients-list'),
+				loader = $('#recipients-ajax-loading'),
+				types = $('input.recipients-limit:checked').map(function () {
+					return this.value
+				}).get(),
+				orderby = $('select.recipients-order').val(),
+				order = $('a.recipients-order').hasClass('asc') ? 'ASC' : 'DESC';
+
+			loader.css({
+				'display': 'inline'
+			});
+			$('input.recipients-limit').prop('disabled', true);
+
+			mailster.util.ajax('get_recipients', {
+				id: mailster.campaign_id,
+				types: types.join(','),
+				orderby: orderby,
+				order: order
+			}, function (response) {
+				loader.hide();
+				$('input.recipients-limit').prop('disabled', false);
+				list.html(response.html).slideDown(100);
+			}, function (jqXHR, textStatus, errorThrown) {
+				loader.hide();
+			})
+			return false;
+		})
+		.on('click', 'a.recipients-order', function () {
+			$(this).toggleClass('asc');
+			$('select.recipients-order').trigger('change');
+		})
+		.on('click', '.show-receiver-detail', function () {
+			var $this = $(this),
+				id = $this.data('id'),
+				detailbox = $('#receiver-detail-' + id).show();
+
+			$this.parent().addClass('loading').parent().addClass('expanded');
+
+			mailster.util.ajax('get_recipient_detail', {
+				id: id,
+				campaignid: mailster.campaign_id
+			}, function (response) {
+				$this.parent().removeClass('loading');
+				if (response.success) {
+					detailbox.find('div.receiver-detail-body').html(response.html).slideDown(100);
+				}
+			}, function (jqXHR, textStatus, errorThrown) {
+				detailbox.removeClass('loading');
+			});
+
+			return false;
+		})
+		.on('click', '#stats label', function () {
+			$('#recipients-list')
+				.find('input').prop('checked', false)
+				.filter('input.' + $(this).attr('class')).prop('checked', true)
+				.trigger('change');
+		});
+
+	mailster.events.push('documentReady', function(){
+		$.easyPieChart && mailster.$.details.find('.piechart').easyPieChart({
+			animate: 2000,
+			rotate: 180,
+			barColor: mailster.colors.main,
+			trackColor: '#50626f',
+			trackColor: '#f3f3f3',
+			lineWidth: 9,
+			size: 75,
+			lineCap: 'butt',
+			onStep: function (value) {
+				this.$el.find('span').text(Math.round(value));
+			},
+			onStop: function (value) {
+				this.$el.find('span').text(Math.round(value));
+			}
+		});
+	})
+
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+// end Details
+
+
+
+// block submit
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	mailster.$.submit = $('#mailster_submitdiv .inside');
+
+	mailster.submit = mailster.submit || {};
+
+	mailster.$.submit
+		.on('change', '#use_pwd', function () {
+			$('#password-wrap').slideToggle(200).find('input').focus().select();
+			$('#post_password').prop('disabled', !$(this).is(':checked'));
+		})
+		.on('click', '.sendnow-button', function () {
+			if (!confirm(mailsterL10n.send_now)) return false;
+		});
+
+	mailster.submit.$ = {};
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+// end submit
+
+
+// block delivery
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	mailster.$.delivery = $('#mailster_delivery .inside');
+
+	mailster.delivery = mailster.delivery || {};
+	mailster.delivery.$ = {};
+
+	function loader(show) {
+		if (null == show || true === show) {
+			$('#delivery-ajax-loading').css('display', 'inline');
+		} else {
+			$('#delivery-ajax-loading').hide();
+		}
+	}
+
+
+	function checkSpamScore(id, round) {
+
+		mailster.util.ajax('check_spam_score', {
+			ID: id,
+		}, function (response) {
+
+			if (response.score) {
+				loader(false);
+				$this.prop('disabled', false);
+				progress.addClass('spam-score');
+				progressbar.css('width', (parseFloat(response.score) * 10) + '%');
+
+				$('.score').html('<strong>' + mailster.util.sprintf(mailsterL10n.yourscore, response.score) + '</strong>:<br>' + mailsterL10n.yourscores[Math.floor((response.score / 10) * mailsterL10n.yourscores.length)]);
+			} else {
+
+				if (round <= 5 && !response.abort) {
+					var percentage = (round * 10) + 50;
+					progressbar.css('width', (percentage) + '%');
+					setTimeout(function () {
+						checkSpamScore(id, ++round);
+					}, round * 400);
+				} else {
+
+					loader(false);
+					$this.prop('disabled', false);
+					progressbar.css('width', '100%');
+					progress.slideUp(200);
+					mailster.util.tempMsg(response.msg, 'error', $this.parent(), function () {
+						progressbar.css('width', 0);
+					});
+
+				}
+
+			}
+		}, function (jqXHR, textStatus, errorThrown) {
+			loader(false);
+			$this.prop('disabled', false);
+			mailster.util.tempMsg(rtextStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $this.parent());
+			var msg = $('<div class="error"><p>' + textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
+				msg.remove();
+			});
+		})
+	}
+
+	mailster.$.delivery
+		.on('change', 'input.timezone', function () {
+			$('.active_wrap').toggleClass('timezone-enabled');
+		})
+		.on('change', 'input.autoresponder-timezone', function () {
+			$('.autoresponderfield-mailster_autoresponder_timebased').toggleClass('timezone-enabled');
+		})
+		.on('change', 'input.userexactdate', function () {
+			$(this).parent().parent().parent().find('span').addClass('disabled');
+		})
+		.on('change', '#autoresponder-post_type', function () {
+			var cats = $('#autoresponder-taxonomies');
+			cats.find('select').prop('disabled', true);
+			mailster.util.ajax('get_post_term_dropdown', {
+				labels: false,
+				names: true,
+				posttype: $(this).val()
+			}, function (response) {
+				if (response.success) {
+					cats.html(response.html);
+				}
+			}, function (jqXHR, textStatus, errorThrown) {
+
+				loader(false);
+
+			});
+		})
+		.on('click', '.category-tabs a', function () {
+			var _this = $(this),
+				href = _this.attr('href');
+
+			mailster.$.delivery.find('.tabs-panel').hide();
+			mailster.$.delivery.find('.tabs').removeClass('tabs');
+			_this.parent().addClass('tabs');
+			$(href).show();
+			$('#mailster_is_autoresponder').val((href == '#autoresponder') ? 1 : '');
+			return false;
+		})
+		.on('click', '.mailster_sendtest', function () {
+			var $this = $(this);
+
+			loader(true);
+			$this.prop('disabled', true);
+			mailster.trigger('save');
+
+			mailster.util.ajax('send_test', {
+				formdata: mailster.$.form.serialize(),
+				to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
+				content: mailster.$.content.val(),
+				head: mailster.$.head.val(),
+				plaintext: mailster.$.excerpt.val()
+
+			}, function (response) {
+
+				loader(false);
+				$this.prop('disabled', false);
+				mailster.util.tempMsg(response.msg, (!response.success ? 'error' : 'updated'), $this.parent());
+			}, function (jqXHR, textStatus, errorThrown) {
+
+				loader(false);
+				$this.prop('disabled', false);
+				mailster.util.tempMsg(rtextStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $this.parent());
+
+			})
+		})
+		.on('change', '#mailster_data_active', function () {
+			$(this).is(':checked') ?
+				$('.active_wrap').addClass('disabled') :
+				$('.active_wrap').removeClass('disabled');
+
+			$('.deliverydate, .deliverytime').prop('disabled', !$(this).is(':checked'));
+
+		})
+		.on('change', '#mailster_data_autoresponder_active', function () {
+			$(this).is(':checked') ?
+				$('.autoresponder_active_wrap').addClass('disabled') :
+				$('.autoresponder_active_wrap').removeClass('disabled');
+
+		})
+		.on('click', '.mailster_spamscore', function () {
+			var $this = $(this),
+				progress = $('#spam_score_progress').removeClass('spam-score').slideDown(200),
+				progressbar = progress.find('.bar');
+
+			loader(true);
+			$this.prop('disabled', true);
+			$('.score').html('');
+			mailster.trigger('save');
+			progressbar.css('width', '20%');
+
+			mailster.util.ajax('send_test', {
+				spamtest: true,
+				formdata: mailster.$.form.serialize(),
+				to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
+				content: mailster.$.content.val(),
+				head: mailster.$.head.val(),
+				plaintext: mailster.$.excerpt.val()
+
+			}, function (response) {
+
+				if (response.success) {
+					progressbar.css('width', '40%');
+					checkSpamScore(response.id, 1);
+				} else {
+					loader(false);
+					progress.slideUp(200);
+					mailster.util.tempMsg(response.msg, 'error', $this.parent());
+				}
+			}, function (jqXHR, textStatus, errorThrown) {
+				loader(false);
+				$this.prop('disabled', false);
+				mailster.util.tempMsg(rtextStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $this.parent());
+
+			})
+
+		})
+		.on('blur', 'input.deliverytime', function () {
+			mailster.$.document.unbind('.mailster_deliverytime');
+		})
+		.on('focus, click', 'input.deliverytime', function (event) {
+			var $this = $(this),
+				input = $(this)[0],
+				l = $this.offset().left,
+				c = 0,
+				startPos = 0,
+				endPos = 2;
+
+			if (event.clientX - l > 23) {
+				c = 1,
+					startPos = 3,
+					endPos = 5;
+			}
+			mailster.$.document.unbind('.mailster_deliverytime')
+				.on('keypress.mailster_deliverytime', function (event) {
+					if (event.keyCode == 9) {
+						return (c = !c) ? !mailster.util.selectRange(input, 3, 5) : (event.shiftKey) ? !mailster.util.selectRange(input, 0, 2) : true;
+					}
+				})
+				.on('keyup.mailster_deliverytime', function (event) {
+					if ($this.val().length == 1) {
+						$this.val($this.val() + ':00');
+						mailster.util.selectRange(input, 1, 1);
+					}
+					if (document.activeElement.selectionStart == 2) {
+						if ($this.val().substr(0, 2) > 23) {
+							$this.trigger('change');
+							return false;
+						}
+						mailster.util.selectRange(input, 3, 5);
+					}
+				});
+			mailster.util.selectRange(input, startPos, endPos);
+
+		})
+		.on('change', 'input.deliverytime', function () {
+			var $this = $(this),
+				val = $this.val(),
+				time;
+			$this.addClass('inactive');
+			if (!/^\d+:\d+$/.test(val)) {
+
+				if (val.length == 1) {
+					val = "0" + val + ":00";
+				} else if (val.length == 2) {
+					val = val + ":00";
+				} else if (val.length == 3) {
+					val = val.substr(0, 2) + ":" + val.substr(2, 3) + "0";
+				} else if (val.length == 4) {
+					val = val.substr(0, 2) + ":" + val.substr(2, 4);
+				}
+			}
+			time = val.split(':');
+
+			if (!/\d\d:\d\d$/.test(val) && val != "" || time[0] > 23 || time[1] > 59) {
+				$this.val('00:00').focus();
+				mailster.util.selectRange($this[0], 0, 2);
+			} else {
+				$this.val(val);
+			}
+		})
+		.on('change', '#mailster_autoresponder_action', function () {
+			$('#autoresponder_wrap').removeAttr('class').addClass('autoresponder-' + $(this).val());
+		})
+		.on('change', '#time_extra', function () {
+			$('#autoresponderfield-mailster_timebased_advanced').slideToggle();
+		})
+		.on('click', '.mailster_autoresponder_timebased-end-schedule', function () {
+			$(this).is(':checked') ?
+				$('.mailster_autoresponder_timebased-end-schedule-field').slideDown() :
+				$('.mailster_autoresponder_timebased-end-schedule-field').slideUp();
+		})
+		.on('change', '.mailster-action-hooks', function () {
+			var val = $(this).val();
+			$('.mailster-action-hook').val(val);
+			if (!val) {
+				$('.mailster-action-hook').focus();
+			}
+		})
+		.on('change', '.mailster-action-hook', function () {
+			var val = $(this).val();
+			if (!$(".mailster-action-hooks option[value='" + val + "']").length) {
+				$('.mailster-action-hooks').append('<option>' + val + '</option>');
+			}
+			$('.mailster-action-hooks').val(val);
+		})
+		.on('click', '.mailster-total', function () {
+			mailster.trigger('updateCount');
+		})
+		.on('change', '#list_extra', function () {
+			if ($(this).is(':checked')) {
+				$('#mailster_list_advanced').slideDown();
+			} else {
+				$('#mailster_list_advanced').slideUp();
+			}
+			$('#list-checkboxes').find('input.list').eq(0).trigger('change');
+		})
+		.on('focus', 'input.datepicker', function () {
+			$(this).removeClass('inactive').trigger('click');
+		})
+		.on('blur', 'input.datepicker', function () {
+			$('.deliverydate').html($(this).val());
+			$(this).addClass('inactive');
+		});
+
+	mailster.events.push('documentReady', function () {
+		$.datepicker && mailster.$.delivery
+				.find('input.datepicker').datepicker({
+					dateFormat: 'yy-mm-dd',
+					minDate: new Date(),
+					firstDay: mailsterL10n.start_of_week,
+					showWeek: true,
+					dayNames: mailsterL10n.day_names,
+					dayNamesMin: mailsterL10n.day_names_min,
+					monthNames: mailsterL10n.month_names,
+					prevText: mailsterL10n.prev,
+					nextText: mailsterL10n.next,
+					showAnim: 'fadeIn',
+					onClose: function () {
+						var date = $(this).datepicker('getDate');
+						$('.deliverydate').html($(this).val());
+					}
+				});
+
+			$.datepicker && $('input.datepicker.nolimit').datepicker("option", "minDate", null);
+
+			mailster.$.delivery.find('input.datepicker').not('.hasDatepicker').prop('readonly', false);
+
+		//switch to autoresponder if referer is right or post_status is set
+		if (/post_status=autoresponder/.test($('#referredby').val()) || /post_status=autoresponder/.test(location.search)) {
+			mailster.$.delivery.find('a[href="#autoresponder"]').click();
+		}
+
+	});
+
+	(function () {
+
+		var t, x, h, m, l, usertime = new Date(),
+			elements = $('.time'),
+			deliverytime = $('.deliverytime').eq(0),
+			activecheck = $('#mailster_data_active'),
+			servertime = parseInt(elements.data('timestamp'), 10) * 1000,
+			seconds = false,
+			offset = servertime - usertime.getTime() + (usertime.getTimezoneOffset() * 60000);
+
+		var delay = (seconds) ? 1000 : 20000;
+
+		function set() {
+			t = new Date();
+
+			usertime = t.getTime();
+			t.setTime(usertime + offset);
+			h = t.getHours();
+			m = t.getMinutes();
+
+			if (mailster.enabled && x && m != x[1] && !activecheck.is(':checked')) {
+				deliverytime.val(zero(h) + ':' + zero(m));
+			}
+			x = [];
+			x.push(t.getHours());
+			x.push(t.getMinutes());
+			if (seconds) x.push(t.getSeconds());
+			l = x.length;
+			for (var i = 0; i < l; i++) {
+				x[i] = zero(x[i]);
+			};
+			elements.html(x.join('<span class="blink">:</span>'));
+			setTimeout(function () {
+				set();
+			}, delay);
+		}
+
+		function zero(value) {
+			if (value < 10) {
+				value = '0' + value;
+			}
+			return value;
+		}
+
+		set();
+
+	})();
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+// end delivery
+
+
+
+
+
+// block Receivers
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	var updateCountTimout;
+
+	mailster.$.receivers = $('#mailster_receivers .inside');
+
+	mailster.receivers = mailster.receivers || {};
+
+	mailster.receivers.$ = {};
+	mailster.receivers.$.conditions = $('.mailster-conditions-thickbox');
+	mailster.receivers.$.conditionsOutput = $('#mailster_conditions_render');
+	mailster.receivers.$.total = $('.mailster-total');
+
+	function loader(show, html) {
+		if (null == show || true === show) {
+			mailster.receivers.$.total.addClass('loading');
+		} else {
+			mailster.receivers.$.total.removeClass('loading');
+		}
+		if (null != html) {
+			mailster.receivers.$.total.html(html);
+		}
+	}
+
+	mailster.$.receivers
+		.on('change', 'input.list', function () {
+			mailster.trigger('updateCount');
+		})
+		.on('change', '#all_lists', function () {
+			$('#list-checkboxes').find('input.list').prop('checked', $(this).is(':checked'));
+			mailster.trigger('updateCount');
+		})
+		.on('change', '#ignore_lists', function () {
+			var checked = $(this).is(':checked');
+			$('#list-checkboxes').each(function () {
+				(checked) ?
+				$(this).slideUp(200): $(this).slideDown(200);
+			});
+			mailster.trigger('updateCount');
+		})
+		.on('click', '.edit-conditions', function () {
+			tb_show(mailsterL10n.edit_conditions, '#TB_inline?x=1&width=720&height=520&inlineId=receivers-dialog', null);
+			return false;
+		})
+		.on('click', '.remove-conditions', function () {
+			if (confirm(mailsterL10n.remove_conditions)) {
+				$('#receivers-dialog').find('.mailster-conditions-wrap').empty();
+				mailster.trigger('updateCount');
+			}
+			return false;
+		})
+		.on('click', '.mailster-total', function () {
+			mailster.trigger('updateCount');
+		})
+
+
+	//disabled
+	.on('click', '.create-new-list', function () {
+			var $this = $(this).hide();
+			$('.create-new-list-wrap').slideDown();
+			$('.create-list-type').trigger('change');
+			return false;
+		})
+		.on('click', '.create-list', function () {
+			var $this = $(this),
+				listtype = $('.create-list-type'),
+				name = '';
+			if (listtype.val() == -1) return false;
+
+			if (name = prompt(mailsterL10n.enter_list_name, mailster.util.sprintf(mailsterL10n.create_list, listtype.find(':selected').text(), $('#title').val()))) {
+
+				loader(true);
+
+				mailster.util.ajax('create_list', {
+					name: name,
+					listtype: listtype.val(),
+					id: mailster.campaign_id
+				}, function (response) {
+					loader(false);
+					mailster.util.tempMsg(response.msg, (!response.success ? 'error' : 'updated'), $('.create-new-list-wrap'));
+				}, function (jqXHR, textStatus, errorThrown) {
+					loader(false);
+					mailster.util.tempMsg(rtextStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $('.create-new-list-wrap'));
+				});
+			}
+
+			return false;
+		})
+		.on('change', '.create-list-type', function () {
+			var listtype = $(this);
+
+			if (listtype.val() == -1) return false;
+			listtype.prop('disabled', true);
+
+			loader(true);
+
+			mailster.util.ajax('get_create_list_count', {
+				listtype: listtype.val(),
+				id: mailster.campaign_id
+			}, function (response) {
+				listtype.prop('disabled', false);
+				loader(false, response.count);
+
+			}, function (jqXHR, textStatus, errorThrown) {
+				listtype.prop('disabled', false);
+				loader(false, '');
+			});
+		})
+		.on('click', '.mailster-total', function () {
+			$('.create-list-type').trigger('change');
+		});
+
+
+	mailster.receivers.$.conditions
+		.on('click', '.close-conditions', tb_remove);
+
+
+	mailster.editable && mailster.events.push('documentReady', function () {
+		mailster.trigger('updateCount');
+	})
+
+	mailster.editable && mailster.events.push('updateCount', function () {
+
+		clearTimeout(updateCountTimout);
+		updateCountTimout = setTimeout(function () {
+			var lists = [],
+				conditions = [],
+				inputs = $('#list-checkboxes').find('input, select'),
+				listinputs = $('#list-checkboxes').find('input.list'),
+				extra = $('#list_extra'),
+				data = {},
+				groups = $('.mailster-conditions-wrap > .mailster-condition-group'),
+				i = 0;
+
+			$.each(listinputs, function () {
+				var id = $(this).val();
+				if ($(this).is(':checked')) lists.push(id);
+			});
+
+			data.id = mailster.campaign_id;
+			data.lists = lists;
+			data.ignore_lists = $('#ignore_lists').is(':checked');
+
+			$.each(groups, function () {
+				var c = $(this).find('.mailster-condition');
+				$.each(c, function () {
+					var _this = $(this),
+						value,
+						field = _this.find('.condition-field').val(),
+						operator = _this.find('.mailster-conditions-operator-field.active').find('.condition-operator').val();
+
+					if (!operator || !field) return;
+
+					value = _this.find('.mailster-conditions-value-field.active').find('.condition-value').map(function () {
+						return $(this).val();
+					}).toArray();
+					if (value.length == 1) {
+						value = value[0];
+					}
+					if (!conditions[i]) {
+						conditions[i] = [];
+					}
+
+					conditions[i].push({
+						field: field,
+						operator: operator,
+						value: value,
+					});
+				});
+				i++;
+			});
+
+			data.operator = $('select.mailster-list-operator').val();
+			data.conditions = conditions;
+
+			loader(true);
+
+			mailster.trigger('disable');
+
+			mailster.util.ajax('get_totals', data, function (response) {
+				mailster.trigger('enable');
+				loader(false, response.totalformatted);
+				mailster.receivers.$.conditionsOutput.html(response.conditions);
+			}, function (jqXHR, textStatus, errorThrown) {
+				mailster.trigger('enable');
+				loader(false, '?');
+			});
+		}, 10);
+
+	})
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+// end Receivers
+
+
+
+
+// block modules
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	var metabox = $('#mailster_template'),
+		selector = $('#module-selector'),
+		search = $('#module-search'),
+		module_thumbs = selector.find('li'),
+		toggle = $('a.toggle-modules');
+
+	mailster.modules = mailster.modules || {};
+	mailster.modules.showSelector = !!parseInt(window.getUserSetting('mailstershowmodules', 1), 10);
+	mailster.modules.dragging = false
+	mailster.modules.selected = false;
+
+	function addmodule() {
+		var module = selector.data('current');
+		insert($(this).parent().find('script').html(), (module && module.is('module') ? module : false), true, true);
+	}
+
+	function up() {
+		var module = $(this).parent().parent().parent().addClass('ui-sortable-fly-over'),
+			prev = module.prev('module').addClass('ui-sortable-fly-under'),
+			pos = mailster.util.top() - prev.height();
+
+		module.css({
+			'transform': 'translateY(-' + prev.height() + 'px)'
+		});
+		prev.css({
+			'transform': 'translateY(' + module.height() + 'px)'
+		});
+
+		mailster.util.scroll(pos, function () {
+			module.insertBefore(prev.css({
+				'transform': ''
+			}).removeClass('ui-sortable-fly-under')).css({
+				'transform': ''
+			}).removeClass('ui-sortable-fly-over');
+			mailster.trigger('refresh');
+			mailster.trigger('save');
+		}, 250);
+	}
+
+	function down() {
+		var module = $(this).parent().parent().parent().addClass('ui-sortable-fly-over'),
+			next = module.next('module').addClass('ui-sortable-fly-under'),
+			pos = mailster.util.top() + next.height();
+		module.css({
+			'transform': 'translateY(' + next.height() + 'px)'
+		});
+		next.css({
+			'transform': 'translateY(-' + module.height() + 'px)'
+		});
+		mailster.util.scroll(pos, function () {
+			module.insertAfter(next.css({
+				'transform': ''
+			}).removeClass('ui-sortable-fly-under')).css({
+				'transform': ''
+			}).removeClass('ui-sortable-fly-over');
+			mailster.trigger('refresh');
+			mailster.trigger('save');
+		}, 250);
+	}
+
+	function duplicate() {
+		var module = $(this).parent().parent().parent(),
+			clone = module.clone().removeAttr('selected').hide();
+
+		insert(clone, module, false, true);
+	}
+
+	function auto() {
+		var module = $(this).parent().parent().parent();
+		mailster.editbar.open({
+			element: module,
+			name: module.attr('label'),
+			type: 'auto',
+			offset: module.offset()
+		});
+	}
+
+	function changeName() {
+		var _this = $(this),
+			value = _this.val(),
+			module = _this.parent().parent();
+
+		if (!value) {
+			value = _this.attr('placeholder');
+			_this.val(value);
+		}
+
+		module.attr('label', value);
+	}
+
+	function remove() {
+		var module = $(this).parent().parent().parent();
+		module.fadeTo(25, 0, function () {
+			module.slideUp(100, function () {
+				module.remove();
+				mailster.trigger('refresh');
+				if (!mailster.editor.$.modules.length) mailster.editor.$.container.html('');
+				mailster.trigger('save');
+			});
+		});
+	}
+
+	function insert(html_or_clone, element, before, scroll) {
+
+		var clone;
+
+		if (typeof html_or_clone == 'string') {
+			clone = $(html_or_clone);
+		} else if (html_or_clone instanceof jQuery) {
+			clone = $(html_or_clone);
+			clone.find('single, multi, buttons').removeAttr('contenteditable spellcheck id dir style class');
+		} else {
+			return false;
+		}
+
+		if (!element && !mailster.editor.$.container.length) return false;
+
+		//mailster.editor.updateElements();
+
+		if (element) {
+			(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
+		} else {
+			if ('footer' == mailster.editor.$.modules.last().attr('type')) {
+				clone.hide().insertBefore(mailster.editor.$.modules.last());
+			} else {
+				clone.hide().appendTo(mailster.editor.$.container);
+			}
+		}
+
+		mailster.editor.updateElements();
+		mailster.editor.moduleButtons();
+
+		clone.slideDown(100, function () {
+			clone.css('display', 'block');
+			mailster.trigger('refresh');
+			mailster.trigger('save');
+		});
+
+		if (scroll) {
+			var offset = clone.offset().top + mailster.$.template.offset().top - (mailster.$.window.height() / 2);
+			mailster.util.scroll(offset);
+		}
+
+	}
+
+	function codeView() {
+		var module = $(this).parent().parent().parent();
+		mailster.editbar.open({
+			element: module,
+			name: module.attr('label'),
+			type: 'codeview',
+			offset: module.offset()
+		});
+	}
+
+	function toggleModules() {
+		mailster.$.templateWrap.toggleClass('show-modules');
+		mailster.modules.showSelector = !mailster.modules.showSelector;
+		window.setUserSetting('mailstershowmodules', mailster.modules.showSelector ? 1 : 0);
+		setTimeout(function () {
+			mailster.trigger('resize');
+		}, 200);
+	}
+
+	function searchModules() {
+		module_thumbs.hide();
+		selector.find("li:contains('" + $(this).val() + "')").show();
+	}
+
+	function initFrame() {
+
+		var currentmodule,
+			pre_dropzone = $('<dropzone></dropzone>'),
+			post_dropzone = pre_dropzone.clone(),
+			dropzones = pre_dropzone.add(post_dropzone);
+
+		mailster.editor.$.document
+			.off('.mailster')
+			.on('click', 'button.up', up)
+			.on('click', 'button.down', down)
+			.on('click', 'button.auto', auto)
+			.on('click', 'button.duplicate', duplicate)
+			.on('click', 'button.remove', remove)
+			.on('click', 'button.codeview', codeView)
+			.on('change', 'input.modulelabel', changeName);
+
+		selector
+			.off('.mailster')
+			.on('dragstart.mailster', 'li', function (startevent) {
+
+				console.log('Asdasd');
+
+				//required for Firefox
+				startevent.originalEvent.dataTransfer.setData('Text', this.id);
+
+				mailster.modules.dragging = true;
+
+				mailster.editor.$.body.addClass('drag-active');
+
+				mailster.editor.$.container
+					.on('dragenter.mailster', function (event) {
+						var selectedmodule = $(event.target).closest('module');
+						if (!selectedmodule.length || currentmodule && currentmodule[0] === selectedmodule[0]) return;
+						currentmodule = selectedmodule;
+						post_dropzone.appendTo(currentmodule);
+						pre_dropzone.prependTo(currentmodule);
+						setTimeout(function () {
+							post_dropzone.addClass('visible');
+							pre_dropzone.addClass('visible');
+							mailster.editor.$.modules.removeClass('drag-up drag-down');
+							selectedmodule.prevAll('module').addClass('drag-up');
+							selectedmodule.nextAll('module').addClass('drag-down')
+						}, 1);
+					})
+					.on('dragover.mailster', function (event) {
+						event.preventDefault();
+					})
+					.on('drop.mailster', function (event) {
+						insert($(startevent.target).find('script').html(), mailster.editor.$.modules.length ? (currentmodule && currentmodule[0] === mailster.editor.$.container ? false : currentmodule) : false, pre_dropzone[0] === event.target, false, true);
+						event.preventDefault();
+					});
+
+				dropzones
+					.on('dragenter.mailster', function (event) {
+						$(this).addClass('drag-over');
+					})
+					.on('dragleave.mailster', function (event) {
+						$(this).removeClass('drag-over');
+					});
+
+			})
+			.on('dragend.mailster', 'li', function (event) {
+				currentmodule = null;
+				mailster.editor.$.body.removeClass('drag-active');
+				dropzones.removeClass('visible drag-over').remove();
+				mailster.editor.$.modules.removeClass('drag-up drag-down');
+
+				mailster.editor.$.container
+					.off('dragenter.mailster')
+					.off('dragover.mailster')
+					.off('drop.mailster');
+
+				dropzones
+					.off('dragenter.mailster')
+					.off('dragleave.mailster');
+
+				mailster.modules.dragging = false;
+
+			});
+	}
+
+	mailster.$.template
+		.on('click', 'a.toggle-modules', toggleModules)
+		.on('keydown', 'a.addmodule', function (event) {
+			if (13 == event.which) {
+				addmodule.call(this);
+			}
+		})
+		.on('click', 'a.addmodule', addmodule);
+
+	search
+		.on('keyup', searchModules)
+		.on('focus', function () {
+			search.select();
+		});
+
+	$('#module-search-remove').on('click', function () {
+		search.val('').trigger('keyup').focus();
+		return false;
+	})
+
+	mailster.events.push('editorLoaded', initFrame);
+	//mailster.events.push('redraw', initFrame);
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+// end modules
+
+
+// block Options
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	mailster.$.options = $('#mailster_options .inside');
+
+	mailster.options = mailster.options || {};
+
+	mailster.options.$ = {};
+	mailster.options.$.colorInputs = mailster.$.options.find('input.color');
+
+	function loader(show) {
+		if (null == show || true === show) {
+			$('#olorschema-ajax-loading').css('display', 'inline');
+		} else {
+			$('#olorschema-ajax-loading').hide();
+		}
+	}
+
+	mailster.$.options
+		.on('click', '.wp-color-result', function () {
+			$(this).closest('li.mailster-color').addClass('open');
+		})
+		.on('click', 'a.default-value', function () {
+			var el = $(this).prev().find('input'),
+				color = el.data('default');
+
+			el.wpColorPicker('color', color);
+			return false;
+		})
+		.on('click', 'ul.colorschema', function () {
+			var colorfields = mailster.$.options.find('input.color'),
+				li = $(this).find('li.colorschema-field');
+
+			mailster.trigger('disable');
+
+			$.each(li, function (i) {
+				var color = li.eq(i).data('hex');
+				colorfields.eq(i).wpColorPicker('color', color);
+			});
+
+			mailster.trigger('enable');
+
+		})
+		.on('click', 'a.savecolorschema', function () {
+			var colors = $.map(mailster.$.options.find('.color'), function (e) {
+				return $(e).val();
+			});
+
+			loader(true);
+
+			mailster.util.ajax('save_color_schema', {
+				template: $('#mailster_template_name').val(),
+				colors: colors
+			}, function (response) {
+				loader(false);
+				if (response.success) {
+					$('.colorschema').last().after($(response.html).hide().fadeIn());
+				}
+			}, function (jqXHR, textStatus, errorThrown) {
+				loader(false);
+			})
+
+		})
+		.on('click', '.colorschema-delete', function () {
+
+			if (confirm(mailsterL10n.delete_colorschema)) {
+
+				var schema = $(this).parent().parent();
+
+				loader(true);
+
+				mailster.util.ajax('delete_color_schema', {
+					template: $('#mailster_template_name').val(),
+					hash: schema.data('hash')
+				}, function (response) {
+					loader(false);
+					if (response.success) {
+						schema.fadeOut(100, function () {
+							schema.remove()
+						});
+					}
+				}, function (jqXHR, textStatus, errorThrown) {
+					loader(false);
+				});
+
+			}
+
+			return false;
+
+		})
+		.on('click', '.colorschema-delete-all', function () {
+
+			if (confirm(mailsterL10n.delete_colorschema_all)) {
+
+				var schema = $('.colorschema.custom');
+
+				loader(true);
+
+				mailster.util.ajax('delete_color_schema_all', {
+					template: $('#mailster_template_name').val(),
+				}, function (response) {
+					loader(false);
+					if (response.success) {
+						schema.fadeOut(100, function () {
+							schema.remove()
+						});
+					}
+				}, function (jqXHR, textStatus, errorThrown) {
+					loader(false);
+				});
+
+			}
+
+			return false;
+
+		})
+		.on('change', '#mailster_version', function () {
+			var val = $(this).val();
+			_changeElements(val);
+		})
+		.on('change', 'input.color', function () {
+			var _this = $(this);
+			var from = _this.data('value');
+			_changeColor(from, _this.val(), _this);
+		});
+
+
+	mailster.events.push('documentReady', function () {
+		mailster.options.$.colorInputs.wpColorPicker({
+			color: true,
+			width: 250,
+			mode: 'hsl',
+			palettes: $('.colors').data('original-colors'),
+			change: function (event, ui) {
+				$(this).val(ui.color.toString()).trigger('change');
+			},
+			clear: function (event, ui) {}
+		});
+	});
+
+
+
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+
+
+// end Options
+
+// block Attachments
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	mailster.$.attachments = $('#mailster_attachments .inside');
+
+	mailster.attachments = mailster.attachments || {};
+
+	mailster.attachments.$ = {};
+
+	mailster.$.attachments
+		.on('click', '.delete-attachment', function (event) {
+			event.preventDefault();
+			$(this).parent().remove();
+		})
+		.on('click', '.add-attachment', function (event) {
+			event.preventDefault();
+			if (!wp.media.frames.mailster_attachments) {
+				wp.media.frames.mailster_attachments = wp.media({
+					title: mailsterL10n.add_attachment,
+					button: {
+						text: mailsterL10n.add_attachment,
+					},
+					multiple: false
+				});
+				wp.media.frames.mailster_attachments.on('select', function () {
+					var attachment = wp.media.frames.mailster_attachments.state().get('selection').first().toJSON(),
+						el = $('.mailster-attachment').eq(0).clone();
+					el.find('img').attr('src', attachment.icon);
+					el.find('.mailster-attachment-label').html(attachment.filename);
+					el.find('input').attr('name', 'mailster_data[attachments][]').val(attachment.id);
+					el.appendTo('.mailster-attachments');
+
+				});
+			}
+			wp.media.frames.mailster_attachments.open();
+		});
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+// end Attachments
+
+
+
+// block XXX
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	mailster.$.xxx = $('#mailster_xxx .inside');
+
+	mailster.xxx = mailster.xxx || {};
+
+	mailster.xxx.$ = {};
+	mailster.xxx.$.subject = $('#mailster_subject');
+	mailster.xxx.$.preheader = $('#mailster_preheader');
+	mailster.xxx.$.from = $('#mailster_from');
+	mailster.xxx.$.from_name = $('#mailster_from-name');
+	mailster.xxx.$.replyto = $('#mailster_reply-to');
+
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+// end XXX
 
 
 

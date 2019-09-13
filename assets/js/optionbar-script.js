@@ -3,39 +3,38 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
-	var o = {};
-	o.undos = [];
-	o.currentUndo = 0;
+	mailster.optionbar = {};
 
-	o.undo = function () {
+	mailster.optionbar.undos = [];
+	mailster.optionbar.currentUndo = 0;
 
-		if (o.currentUndo) {
-			o.currentUndo--;
-			mailster.editor.setContent(o.undos[o.currentUndo], 100, false);
-			mailster.$.content.val(o.undos[o.currentUndo]);
+	mailster.optionbar.undo = function () {
+
+		if (mailster.optionbar.currentUndo) {
+			mailster.optionbar.currentUndo--;
+			mailster.editor.setContent(mailster.optionbar.undos[mailster.optionbar.currentUndo], 100, false);
 			mailster.$.optionbar.find('a.redo').removeClass('disabled');
-			if (!o.currentUndo) {
+			if (!mailster.optionbar.currentUndo) {
 				$(this).addClass('disabled');
 			}
 		}
 
 	};
 
-	o.redo = function () {
-		var length = o.undos.length;
+	mailster.optionbar.redo = function () {
+		var length = mailster.optionbar.undos.length;
 
-		if (o.currentUndo < length - 1) {
-			o.currentUndo++;
-			mailster.editor.setContent(o.undos[o.currentUndo], 100, false);
-			mailster.$.content.val(o.undos[o.currentUndo]);
+		if (mailster.optionbar.currentUndo < length - 1) {
+			mailster.optionbar.currentUndo++;
+			mailster.editor.setContent(mailster.optionbar.undos[mailster.optionbar.currentUndo], 100, false);
 			mailster.$.optionbar.find('a.undo').removeClass('disabled');
-			if (o.currentUndo >= length - 1) {
+			if (mailster.optionbar.currentUndo >= length - 1) {
 				$(this).addClass('disabled');
 			}
 		}
 	}
 
-	o.removeModules = function () {
+	mailster.optionbar.removeModules = function () {
 		if (confirm(mailsterL10n.remove_all_modules)) {
 			var modulecontainer = mailster.$.iframe.contents().find('modules');
 			var modules = modulecontainer.find('module');
@@ -50,7 +49,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 	}
 
-	o.codeView = function () {
+	mailster.optionbar.codeView = function () {
 
 		var structure;
 
@@ -117,7 +116,7 @@ mailster = (function (mailster, $, window, document) {
 		return false;
 	}
 
-	o.plainText = function () {
+	mailster.optionbar.plainText = function () {
 
 		if (mailster.$.iframe.is(':visible')) {
 
@@ -140,7 +139,7 @@ mailster = (function (mailster, $, window, document) {
 
 	}
 
-	o.openSaveDialog = function () {
+	mailster.optionbar.openSaveDialog = function () {
 
 		tb_show(mailsterL10n.save_template, '#TB_inline?x=1&width=480&height=320&inlineId=mailster_template_save', null);
 		$('#new_template_name').focus().select();
@@ -192,7 +191,7 @@ mailster = (function (mailster, $, window, document) {
 		return false;
 	}
 
-	o.preview = function () {
+	mailster.optionbar.preview = function () {
 
 		if (mailster.$.optionbar.find('a.preview').is('.loading')) {
 			return false;
@@ -224,13 +223,13 @@ mailster = (function (mailster, $, window, document) {
 
 	}
 
-	o.dfw = function (event) {
+	mailster.optionbar.dfw = function (event) {
 
 		if (event.type == 'mouseout' && !/DIV|H3/.test(event.target.nodeName)) {
 			return;
 		}
 
-		containeroffset = mailster.$.container.offset();
+		containeroffset = mailster.$.template.offset();
 
 		if (!mailster.$.body.hasClass('focus-on')) {
 			mailster.$.body.removeClass('focus-off').addClass('focus-on');
@@ -266,19 +265,22 @@ mailster = (function (mailster, $, window, document) {
 	mailster.$.optionbar
 
 		.on('click', 'a', false)
-		.on('click', 'a.save-template', o.openSaveDialog)
-		.on('click', 'a.clear-modules', o.removeModules)
-		.on('click', 'a.preview', o.preview)
-		.on('click', 'a.undo', o.undo)
-		.on('click', 'a.redo', o.redo)
-		.on('click', 'a.code', o.codeView)
-		.on('click', 'a.plaintext', o.plainText)
-		.on('click', 'a.dfw', o.dfw)
+		.on('click', 'a.save-template', mailster.optionbar.openSaveDialog)
+		.on('click', 'a.clear-modules', mailster.optionbar.removeModules)
+		.on('click', 'a.preview', mailster.optionbar.preview)
+		.on('click', 'a.undo', mailster.optionbar.undo)
+		.on('click', 'a.redo', mailster.optionbar.redo)
+		.on('click', 'a.code', mailster.optionbar.codeView)
+		.on('click', 'a.plaintext', mailster.optionbar.plainText)
+		.on('click', 'a.dfw', mailster.optionbar.dfw)
 
 	.on('click', 'a.template', showFiles)
 		.on('click', 'a.file', changeTemplate);
 
-	mailster.optionbar = o;
+	mailster.events.push('editorLoaded', function () {
+		mailster.optionbar.undos.push(mailster.editor.getFrameContent());
+	});
+
 
 	return mailster;
 

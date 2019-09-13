@@ -5,13 +5,13 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
 
-$modules = $this->replace_colors( $this->templateobj->get_modules_html() );
+$module_list = $this->templateobj->get_module_list();
 
 $templates = mailster( 'templates' )->get_templates();
 $all_files = mailster( 'templates' )->get_all_files();
 
 ?>
-<div id="template-wrap" class="load<?php echo $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $modules ) ? ' show-modules' : ''; ?><?php echo $editable && ! empty( $modules ) ? ' has-modules' : ''; ?>">
+<div id="template-wrap" class="load<?php echo $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $module_list ) ? ' show-modules' : ''; ?><?php echo $editable && ! empty( $module_list ) ? ' has-modules' : ''; ?>">
 
 <?php if ( $editable ) : ?>
 
@@ -45,8 +45,7 @@ $all_files = mailster( 'templates' )->get_all_files();
 
 	<div id="html-wrap">
 		<?php
-		if ( $editable && ! empty( $modules ) ) :
-			$module_list                   = $this->templateobj->get_module_list();
+		if ( $editable && ! empty( $module_list ) ) :
 			$screenshots                   = $this->templateobj->get_module_screenshots();
 			$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/' . $this->get_template() . '/modules/';
 			$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $this->get_template() . '/modules/';
@@ -69,7 +68,7 @@ $all_files = mailster( 'templates' )->get_all_files();
 							$has_screenshots = false;
 						}
 
-						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / $factor ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $module . '"' ) ) . '" data-id="' . $i . '" tabindex="0"><span>' . esc_html( $module ) . '</span><span class="hidden">' . esc_html( strtolower( $module ) ) . '</span></a></li>';
+						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / $factor ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $module['name'] . '"' ) ) . '" data-id="' . $i . '" tabindex="0"><span>' . esc_html( $module['name'] ) . '</span><span class="hidden">' . esc_html( strtolower( $module['name'] ) ) . '</span></a><script type="text/html">' . $module['html'] . '</script></li>';
 					}
 					?>
 					</ul>
@@ -94,7 +93,7 @@ $all_files = mailster( 'templates' )->get_all_files();
 				admin_url( 'admin-ajax.php' )
 			)
 			?>
-			<iframe id="mailster_iframe" src="<?php echo esc_url( $url ); ?>" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
+			<iframe id="mailster_iframe" class="loading" data-src="<?php echo esc_url( $url ); ?>" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
 			</iframe>
 		</div>
 	</div>
@@ -127,5 +126,4 @@ $all_files = mailster( 'templates' )->get_all_files();
 	</div>
 </div>
 <textarea id="content" autocomplete="off" name="content"><?php echo ( $post->post_content ); ?></textarea>
-<textarea id="modules" autocomplete="off"><?php echo ( $modules ); ?></textarea>
 <textarea id="head" name="mailster_data[head]" autocomplete="off"><?php echo ( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>

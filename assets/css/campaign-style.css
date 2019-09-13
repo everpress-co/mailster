@@ -1403,6 +1403,10 @@ a.mailster-btn.editbutton {
 	margin-top: -3px;
 	margin-bottom: -4px;
 }
+#mailster_template .inside iframe#mailster_iframe.loading {
+	-webkit-filter: blur(3px);
+	filter: blur(3px);
+}
 #mailster_template .inside #template-wrap.load{
 	cursor: progress !important;
 }

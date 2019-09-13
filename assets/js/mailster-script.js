@@ -1,45 +1,64 @@
 window.mailster = window.mailster || {};
 
+// events
 mailster = (function (mailster, $, window, document) {
-
 	"use strict";
 
-	mailster = mailster || {};
+	var triggertimeout,
+		isEnabled = !$('#mailster_disabled').val(),
+		events = {
+			documentReady: [],
+			windowLoad: [],
+		},
+		last;
 
-	var components = {
-		documentReady: [],
-		documentReadyDeferred: [],
-		windowLoad: [],
-		windowLoadDeferred: []
-	};
+	mailster.events = mailster.events || false;
 
 	mailster.status = {
-		documentReadyRan: false,
-		windowLoadPending: false
+		documentReady: false,
+		windowLoad: false,
+		windowLoadPending: false,
 	};
+
+	//already events registered
+	if (mailster.events) {
+		for (var i in mailster.events) {
+			console.log(i, mailster.events[i]);
+			if (typeof mailster.events[i] == 'string') {
+				last = mailster.events[i];
+				events[last] = events[last] || [];
+				continue;
+			}
+			events[last].push(mailster.events[i]);
+		}
+	}
+
+	mailster.events = events;
 
 	$(document).ready(documentReady);
 	$(window).on("load", windowLoad);
 
 	function documentReady(context) {
-
+		console.log('DOM LOADED');
 		context = typeof context === typeof undefined ? $ : context;
-		components.documentReady.concat(components.documentReadyDeferred).forEach(function (component) {
+		events.documentReady.forEach(function (component) {
 			component(context);
 		});
-		mailster.status.documentReadyRan = true;
+		mailster.status.documentReady = true;
 		if (mailster.status.windowLoadPending) {
 			windowLoad(mailster.setContext());
 		}
 	}
 
 	function windowLoad(context) {
-		if (mailster.status.documentReadyRan) {
+		console.log('WINDOW LOADED');
+		if (mailster.status.documentReady) {
 			mailster.status.windowLoadPending = false;
 			context = typeof context === "object" ? $ : context;
-			components.windowLoad.concat(components.windowLoadDeferred).forEach(function (component) {
+			events.windowLoad.forEach(function (component) {
 				component(context);
 			});
+			mailster.status.windowLoad = true;
 		} else {
 			mailster.status.windowLoadPending = true;
 		}
@@ -55,12 +74,42 @@ mailster = (function (mailster, $, window, document) {
 		return context;
 	};
 
-	mailster.components = components;
-	mailster.documentReady = documentReady;
-	mailster.windowLoad = windowLoad;
+	mailster.events.push = function () {
+
+		var params = Array.prototype.slice.call(arguments),
+			event = params.shift(),
+			callbacks = params || null;
+
+		mailster.events[event] = mailster.events[event] || [];
+
+		for (var i in callbacks) {
+			mailster.events[event].push(callbacks[i]);
+		}
+
+		return true;
+
+	}
+
+	mailster.trigger = function () {
+
+		var params = Array.prototype.slice.call(arguments),
+			triggerevent = params.shift(),
+			args = params || null;
+
+		console.log('Event Mailster: ' + triggerevent.toUpperCase(), mailster);
+
+		if (mailster.events[triggerevent]) {
+			for (var i = 0; i < mailster.events[triggerevent].length; i++) {
+				mailster.events[triggerevent][i].apply(mailster, args);
+			}
+		} else {
+			//events[triggerevent] = [];
+		}
+	}
 
 	return mailster;
-}(window.mailster, jQuery, window, document));
+
+}(mailster, jQuery, window, document));
 
 
 mailster = (function (mailster, $, window, document) {
@@ -72,10 +121,6 @@ mailster = (function (mailster, $, window, document) {
 		window.mozRequestAnimationFrame ||
 		window.webkitRequestAnimationFrame ||
 		window.msRequestAnimationFrame;
-
-	mailster.util.documentReady = function ($) {};
-
-	mailster.util.windowLoad = function ($) {};
 
 	mailster.util.ajax = function (action, data, callback, errorCallback, dataType) {
 
@@ -141,11 +186,37 @@ mailster = (function (mailster, $, window, document) {
 	mailster.util.isMozilla = (/firefox/i).test(navigator.userAgent);
 	mailster.util.isMSIE = (/msie|trident/i).test(navigator.userAgent);
 	mailster.util.isTouchDevice = 'ontouchstart' in document.documentElement;
-	mailster.util.isTinyMCE = typeof tinymce == 'object';
 
+	mailster.util.top = function () {
+		return $('html,body').scrollTop() || document.scrollingElement.scrollTop;
+	}
 
-	mailster.components.documentReady.push(mailster.util.documentReady);
-	mailster.components.windowLoad.push(mailster.util.windowLoad);
+	mailster.util.scroll = function (pos, callback, speed) {
+		var t;
+		pos = Math.round(pos);
+		if (isNaN(speed)) speed = 200;
+		if (!mailster.util.isMSIE && mailster.util.top() == pos) {
+			callback && callback();
+			return
+		}
+		$('html,body').stop().animate({
+			'scrollTop': pos
+		}, speed, function () {
+			//prevent double execution
+			clearTimeout(t);
+			t = setTimeout(callback, 0);
+		});
+	}
+
+	mailster.util.jump = function (val, rel) {
+		val = Math.round(val);
+		if (rel) {
+			window.scrollBy(0, val);
+		} else {
+			window.scrollTo(0, val);
+		}
+	}
+
 	return mailster;
 
 }(mailster, jQuery, window, document));

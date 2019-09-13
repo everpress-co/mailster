@@ -1213,7 +1213,8 @@ class Mailster {
 		wp_enqueue_style( 'mailster-icons', MAILSTER_URI . 'assets/css/icons' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_style( 'mailster-admin', MAILSTER_URI . 'assets/css/admin' . $suffix . '.css', array( 'mailster-icons' ), MAILSTER_VERSION );
 
-		wp_register_script( 'mailster-script', MAILSTER_URI . 'assets/js/mailster-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_register_script( 'mailster-script', MAILSTER_URI . 'assets/js/mailster-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+
 		wp_localize_script(
 			'mailster-script',
 			'mailster',
@@ -1221,6 +1222,10 @@ class Mailster {
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'wpnonce' => wp_create_nonce( 'mailster_nonce' ),
 				'isrtl'   => is_rtl(),
+				'version' => MAILSTER_VERSION,
+				'colors'  => array(
+					'main' => '#2BB3E7',
+				),
 			)
 		);
 

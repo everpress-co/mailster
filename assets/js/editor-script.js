@@ -8,7 +8,6 @@ if (parent.window === window) {
 }
 
 document.getElementsByTagName("html")[0].className += ' mailster-loading';
-
 window.mailster = parent.window.mailster || {};
 
 // block
@@ -17,108 +16,291 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.editor = mailster.editor || {};
 
-	mailster.editor.currentmodule = false;
+	mailster.editor.loaded = false;
 
 	mailster.editor.$ = mailster.editor.$ || {};
 	mailster.editor.$.html = $('html');
 	mailster.editor.$.body = $('body');
 
-	mailster.components.windowLoad.push(
-		function () {
-			mailster.editor.$.html.removeClass('mailster-loading');
-			mailster.editor.$.body = $('body');
-			mailster.editor.$.body
-				.on(
-					'click',
-					'a',
-					function (event) {
-						event.preventDefault();
+	$(window).one('load', function () {
+		mailster.editor.$.html.removeClass('mailster-loading');
+		mailster.editor.$.body = $('body');
+		mailster.editor.$.body
+			.on('click', 'a', function (event) {
+				event.preventDefault();
+			})
+			.on('click', function (event) {
+				mailster.modules.selected && mailster.modules.selected.removeAttr('selected');
+			})
+			.on('click', 'module', function (event) {
+				if ('MODULE' == event.target.nodeName) {
+					var module = $(this);
+					event.stopPropagation();
+					if (mailster.modules.selected[0] != module[0]) {
+						mailster.trigger('selectModule', module);
 					}
-				)
-				.on(
-					'click',
-					function (event) {
-						if (mailster.editor.currentmodule) {
-							mailster.editor.currentmodule.removeAttr('selected');
-						}
+				}
+			})
+			.on('click', 'button.addbutton', function () {
+				var data = $(this).data(),
+					element = decodeURIComponent(data.element.data('tmpl')) || '<a href="" editable label="Button"></a>';
+
+				mailster.editbar.open({
+					type: 'btn',
+					offset: data.offset,
+					element: $(element).attr('tmpbutton', '').appendTo(data.element),
+					name: data.name
+				});
+				return false;
+			})
+			.on('click', 'button.addrepeater', function () {
+				var data = $(this).data();
+
+				if ('TH' == data.element[0].nodeName || 'TD' == data.element[0].nodeName) {
+					var table = data.element.closest('table'),
+						index = data.element.prevAll().length;
+					for (var i = table[0].rows.length - 1; i >= 0; i--) {
+						$(table[0].rows[i].cells[index]).clone().insertAfter(table[0].rows[i].cells[index]);
 					}
-				)
-				.on(
-					'click',
-					'module',
-					function (event) {
-						if ('MODULE' == event.target.nodeName) {
-							event.stopPropagation();
-							mailster.trigger('selectModule', $(this));
-						}
+				} else {
+					data.element.clone().insertAfter(data.element);
+				}
+
+				mailster.trigger('save');
+				mailster.trigger('refresh');
+
+				return false;
+			})
+			.on('click', 'button.removerepeater', function () {
+				var data = $(this).data();
+
+				if ('TH' == data.element[0].nodeName || 'TD' == data.element[0].nodeName) {
+					var table = data.element.closest('table'),
+						index = data.element.prevAll().length;
+					for (var i = table[0].rows.length - 1; i >= 0; i--) {
+						$(table[0].rows[i].cells[index]).remove();
 					}
-				)
-				.on(
-					'click',
-					'button.addbutton',
-					function () {
-						var data = $(this).data(),
-							element = decodeURIComponent(data.element.data('tmpl')) || '<a href="" editable label="Button"></a>';
+				} else {
+					data.element.remove();
+				}
 
-						parent.window.Mailster.editbar.open({
-							type: 'btn',
-							offset: data.offset,
-							element: $(element).attr('tmpbutton', '').appendTo(data.element),
-							name: data.name
-						});
-						return false;
-					}
-				)
-				.on(
-					'click',
-					'button.addrepeater',
-					function () {
-						var data = $(this).data();
+				mailster.trigger('save');
+				mailster.trigger('refresh');
 
-						if ('TH' == data.element[0].nodeName || 'TD' == data.element[0].nodeName) {
-							var table = data.element.closest('table'),
-								index = data.element.prevAll().length;
-							for (var i = table[0].rows.length - 1; i >= 0; i--) {
-								$(table[0].rows[i].cells[index]).clone().insertAfter(table[0].rows[i].cells[index]);
-							}
-						} else {
-							data.element.clone().insertAfter(data.element);
-						}
+				return false;
+			});
 
-						mailster.trigger('save');
-						mailster.trigger('refresh');
-
-						return false;
-					}
-				)
-				.on(
-					'click',
-					'button.removerepeater',
-					function () {
-						var data = $(this).data();
-
-						if ('TH' == data.element[0].nodeName || 'TD' == data.element[0].nodeName) {
-							var table = data.element.closest('table'),
-								index = data.element.prevAll().length;
-							for (var i = table[0].rows.length - 1; i >= 0; i--) {
-								$(table[0].rows[i].cells[index]).remove();
-							}
-						} else {
-							data.element.remove();
-						}
-
-						mailster.trigger('save');
-						mailster.trigger('refresh');
-
-						return false;
-					}
-				);
-
+		if(!mailster.editor.loaded){
 			mailster.editor.loaded = true;
-			mailster.trigger('refresh');
-
+			mailster.trigger('editorLoaded');
 		}
-	);
+
+	});
+
+	mailster.editor.getFrameContent = function () {
+
+		if (!mailster.editor.$.body.length) {
+			return false;
+		}
+
+		var body = mailster.editor.$.body[0],
+			clone, content, bodyattributes, attrcount, s = '';
+
+		clone = $('<div>' + body.innerHTML + '</div>');
+
+		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
+
+		// remove some third party elements
+		clone.find('#droplr-chrome-extension-is-installed').remove();
+		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
+		content = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
+
+		bodyattributes = body.attributes || [];
+		attrcount = bodyattributes.length;
+
+		if (attrcount) {
+			while (attrcount--) {
+				s = ' ' + bodyattributes[attrcount].name + '="' + $.trim(bodyattributes[attrcount].value) + '"' + s;
+			}
+		}
+		s = $.trim(
+			s
+			.replace(/(webkit |wp\-editor|mceContentBody|position: relative;|cursor: auto;|modal-open| spellcheck="(true|false)")/g, '')
+			.replace(/(class="(\s*)"|style="(\s*)")/g, '')
+		);
+
+		return mailster.$.head.val() + "\n<body" + (s ? ' ' + s : '') + ">\n" + content + "\n</body>\n</html>";
+	}
+
+	mailster.editor.getStructure = function (html) {
+		var parts = html.match(/([^]*)<body([^>]*)?>([^]*)<\/body>([^]*)/m);
+
+		return {
+			parts: parts ? parts : ['', '', '', '<multi>' + html + '</multi>'],
+			content: parts ? parts[3] : '<multi>' + html + '</multi>',
+			head: parts ? $.trim(parts[1]) : '',
+			bodyattributes: parts ? $('<div' + (parts[2] || '') + '></div>')[0].attributes : ''
+		};
+	}
+
+	mailster.editor.getContent = function () {
+		return mailster.$.content.val() || mailster.editor.getFrameContent();
+	}
+
+	mailster.editor.setContent = function (content, delay, saveit, extrastyle) {
+
+		var structure = mailster.editor.getStructure(content);
+
+		var attrcount = structure.bodyattributes.length,
+			head = mailster.editor.$.document.find('head'),
+			headstyles = head.find('link');
+
+		mailster.$.head.val(structure.head);
+		if (!extrastyle) {
+			extrastyle = '';
+		}
+		head[0].innerHTML = structure.head.replace(/([^]*)<head([^>]*)?>([^]*)<\/head>([^]*)/m, '$3' + extrastyle);
+		head.append(headstyles);
+
+		mailster.editor.$.body[0].innerHTML = structure.content;
+
+		if (attrcount) {
+			while (attrcount--) {
+				doc.body.setAttribute(structure.bodyattributes[attrcount].name, structure.bodyattributes[attrcount].value)
+			}
+		}
+
+		mailster.$.content.val(content);
+
+		if (typeof saveit == 'undefined' || saveit === true) {
+			mailster.trigger('save');
+		}
+
+		setTimeout(function () {
+			mailster.trigger('redraw');
+		}, 100);
+	}
+
+	mailster.editor.getHeight = function () {
+		return Math.max(500, mailster.editor.$.body.outerHeight() + 4);
+	}
+
+
+	mailster.editor.resize = function () {
+		if (!mailster.editor.loaded) return false;
+		setTimeout(function () {
+			mailster.$.iframe.attr("height", mailster.editor.getHeight());
+			mailster.trigger('resize');
+		}, 50);
+	}
+
+
+	function initFrame() {
+		mailster.$.templateWrap.removeClass('load');
+		// add current content to undo list
+		mailster.trigger('iframeLoaded');
+
+		makeEditable();
+	}
+
+	function makeEditable() {
+
+		mailster.editor.$.document.find('.content.mailster-btn').remove();
+		var modulehelper = null;
+
+		if (!mailster.editor.$.document) return;
+
+		mailster.editor.$.document
+			//.off('.mailster')
+			.on('click.mailster', 'img[editable]', function (event) {
+				event.stopPropagation();
+				var $this = $(this),
+					offset = $this.offset(),
+					top = offset.top + 61,
+					left = offset.left,
+					name = $this.attr('label'),
+					type = 'img';
+
+				mailster.editbar.open({
+					'offset': offset,
+					'type': type,
+					'name': name,
+					'element': $this
+				});
+
+			})
+			.on('click.mailster', 'module td[background],module th[background]', function (event) {
+				event.stopPropagation();
+				modulehelper = true;
+			})
+			.on('click.mailster', 'td[background], th[background]', function (event) {
+				event.stopPropagation();
+				if (!modulehelper && event.target != this) return;
+				modulehelper = null;
+
+				var $this = $(this),
+					offset = $this.offset(),
+					top = offset.top + 61,
+					left = offset.left,
+					name = $this.attr('label'),
+					type = 'img';
+
+				mailster.editbar.open({
+					'offset': offset,
+					'type': type,
+					'name': name,
+					'element': $this
+				});
+
+			})
+			.on('click.mailster', 'a[editable]', function (event) {
+				event.stopPropagation();
+				event.preventDefault();
+				var $this = $(this),
+					offset = $this.offset(),
+					top = offset.top + 40,
+					left = offset.left,
+					name = $this.attr('label'),
+					type = 'btn';
+
+				mailster.editbar.open({
+					'offset': offset,
+					'type': type,
+					'name': name,
+					'element': $this
+				});
+
+
+			})
+
+		if (!mailsterdata.inline) {
+			mailster.editor.$.container
+				.on('click.mailster', 'multi, single', function (event) {
+					event.stopPropagation();
+					var $this = $(this),
+						offset = $this.offset(),
+						top = offset.top + 40,
+						left = offset.left,
+						name = $this.attr('label'),
+						type = $this.prop('tagName').toLowerCase();
+
+					mailster.editbar.open({
+						'offset': offset,
+						'type': type,
+						'name': name,
+						'element': $this
+					});
+				});
+		}
+
+	}
+
+	mailster.events = mailster.events || [];
+
+	mailster.events.push('refresh', mailster.editor.resize);
+	mailster.events.push('editorLoaded', initFrame, mailster.editor.resize);
+	mailster.events.push('redraw', makeEditable);
+
 
 	// legacy buttons
 	mailster.editor.$.body.find('div.modulebuttons').remove();
@@ -141,25 +323,71 @@ mailster = (function (mailster, $, window, document) {
 		change = false,
 		uploader = false;
 
-	mailster.editor.$ = mailster.editor.$ || {};
+	mailster.events = mailster.events || [];
 
-
-	mailster.components.windowLoad.push(
+	mailster.events.push('editorLoaded',
 		function () {
-			mailster.events.refresh.push(dom, sortable, draggable);
-			mailster.events.resize.push(buttons);
-			mailster.events.selectModule.push(select);
-			typeof mOxie != 'undefined' && mailster.events.refresh.push(upload);
-			typeof tinymce != 'undefined' && mailster.events.refresh.push(inlineEditor);
+			mailster.events.push('refresh', updateElements, sortable, draggable);
+			sortable();
+			draggable();
+			mailster.events.push('resize', buttons) && buttons();
+			mailster.events.push('selectModule', select);
+			typeof mOxie != 'undefined' && mailster.events.push('refresh', upload) && upload();
+			typeof tinymce != 'undefined' && mailster.events.push('refresh', inlineEditor) && inlineEditor();
 		}
 	)
 
-	function dom() {
+	$(document).ready(updateElements);
+
+	function updateElements() {
+		mailster.editor.$ = mailster.editor.$ || {};
+		mailster.editor.$.document = $(document);
+		mailster.editor.$.window = $(window);
+		mailster.editor.$.html = $('html');
+		mailster.editor.$.body = $('body');
 		mailster.editor.$.container = $('modules');
 		mailster.editor.$.modules = $('module');
 		mailster.editor.$.images = $('img[editable]');
 		mailster.editor.$.buttons = $('buttons');
 		mailster.editor.$.repeatable = $('[repeatable]');
+	}
+
+	function moduleButtons() {
+
+		var elements = $(mailsterdata.modules).add(mailster.editor.$.modules),
+			mc = 0;
+
+		//no modules at all
+		if (!mailster.editor.$.modules.length) {
+			//selector.remove();
+			return;
+		}
+
+		elements = mailster.editor.$.modules;
+
+		//reset
+		//mailster.modules.items = [];
+		//add module buttons and add them to the list
+		$.each(elements, function (j) {
+			var $this = $(this);
+			if ($this.is('module') && !$this.find('modulebuttons').length) {
+				var name = $this.attr('label') || sprintf(mailsterL10n.module, '#' + (++mc)),
+					codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></button>' : '',
+					auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailsterL10n.auto + '"></button>' : '');
+
+				$('<modulebuttons>' + '<span>' + auto + '<button class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></button><button class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></button></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
+
+
+				// if (!$this.parent().length) {
+
+				// 	mailster.modules.items.push({
+				// 		name: name,
+				// 		el: $this
+				// 	});
+				// }
+			}
+		});
+
 	}
 
 	function sortable() {
@@ -197,6 +425,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function draggable() {
+
 		if (mailster.editor.$.images.data('draggable')) mailster.editor.$.images.draggable('destroy');
 		if (mailster.editor.$.images.data('droppable')) mailster.editor.$.images.droppable('destroy');
 
@@ -413,14 +642,15 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function select(module) {
+		console.log(module);
 		if (!module.length) {
 			return;
 		}
-		if (mailster.editor.currentmodule) {
-			mailster.editor.currentmodule.removeAttr('selected');
+		if (mailster.modules.selected) {
+			mailster.modules.selected.removeAttr('selected');
 		}
-		mailster.editor.currentmodule = module;
-		mailster.editor.currentmodule.attr('selected', true);
+		mailster.modules.selected = module;
+		mailster.modules.selected.attr('selected', true);
 	}
 
 	function upload() {
@@ -437,7 +667,7 @@ mailster = (function (mailster, $, window, document) {
 
 			dropzone.ondrop = function (e) {
 
-				if (parent.window.mailster_is_modulde_dragging) return;
+				if (mailster.modules.dragging) return;
 				_this.removeClass('ui-drag-over-file ui-drag-over-file-alt');
 
 				var file = dropzone.files.shift(),
@@ -481,16 +711,16 @@ mailster = (function (mailster, $, window, document) {
 
 			};
 			dropzone.ondragenter = function (e) {
-				if (parent.window.mailster_is_modulde_dragging) return;
+				if (mailster.modules.dragging) return;
 				_this.addClass('ui-drag-over-file');
 				if (window.event && event.altKey) _this.addClass('ui-drag-over-file-alt');
 			};
 			dropzone.ondragleave = function (e) {
-				if (parent.window.mailster_is_modulde_dragging) return;
+				if (mailster.modules.dragging) return;
 				_this.removeClass('ui-drag-over-file ui-drag-over-file-alt');
 			};
 			dropzone.onerror = function (e) {
-				if (parent.window.mailster_is_modulde_dragging) return;
+				if (mailster.modules.dragging) return;
 				_this.removeClass('ui-drag-over-file ui-drag-over-file-alt');
 			};
 
@@ -683,7 +913,10 @@ mailster = (function (mailster, $, window, document) {
 				$(event.currentTarget).prop('spellcheck', true);
 			})
 			.on('click', function (event) {
-				mailster.trigger('selectModule', $(event.currentTarget).closest('module'));
+				var module = $(event.currentTarget).closest('module');
+				if (mailster.modules.selected[0] != module[0]) {
+					mailster.trigger('selectModule', module);
+				}
 				event.stopPropagation();
 				editor.focus();
 			})
@@ -708,9 +941,17 @@ mailster = (function (mailster, $, window, document) {
 		return this.documentBaseURI.toAbsolute(url, mailsterdata.tinymce.remove_script_host);
 	}
 
+	mailster.editor.updateElements = updateElements;
+	mailster.editor.moduleButtons = moduleButtons;
+
+	//mailster.events.push('refresh', refresh);
+	mailster.events.push('editorLoaded', updateElements, moduleButtons);
+	mailster.events.push('redraw', updateElements, moduleButtons);
+
 	return mailster;
 
 }(mailster, jQuery, window, document));
 // end Modules
+
 
 parent.window.mailster = mailster;
