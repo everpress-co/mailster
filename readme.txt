@@ -90,6 +90,9 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.5 =
 
+* fixed: issue saving 'send campaign only once' option
+* changed: action hook auto responders no longer sent to all subscribers if subscriber id is set to `false` (use `null` instead)
+
 = Version 2.4.4 =
 
 * improved: you can now encode tags output with an exclamation mark `{!mytag}`.

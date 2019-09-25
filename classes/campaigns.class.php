@@ -108,6 +108,11 @@ class MailsterCampaigns {
 			return;
 		}
 
+		// prevent if empty or not null
+		if ( empty( $subscriber_ids ) && ! is_null( $subscriber_id ) ) {
+			return;
+		}
+
 		$query_args = array(
 			'lists'        => $meta['ignore_lists'] ? false : $meta['lists'],
 			'conditions'   => $meta['list_conditions'],
@@ -1611,8 +1616,12 @@ class MailsterCampaigns {
 					}
 
 					update_option( 'mailster_hooks', $hooks );
-					if ( $autoresponder['once'] = isset( $autoresponder['hook_once'] ) && isset( $autoresponder['multiple'] ) ) {
-						unset( $autoresponder['multiple'] );
+
+					if ( isset( $autoresponder['hook_once'] ) ) {
+						$autoresponder['once'] = true;
+						if ( isset( $autoresponder['multiple'] ) ) {
+							$autoresponder['once'] = false;
+						}
 					}
 					if ( empty( $autoresponder['hook'] ) ) {
 						mailster_notice( esc_html__( 'Please define a hook which should trigger the campaign!', 'mailster' ), 'error', true );
