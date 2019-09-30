@@ -676,6 +676,9 @@ class MailsterAjax {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
+				// strip all unwanted stuff from the content
+				$content = mailster( 'helper' )->strip_unwanted_html( $content );
+
 				$mail->content = apply_filters( 'mailster_campaign_content', $content, get_post( $ID ), $subscriber );
 
 				if ( ! $autoplain ) {

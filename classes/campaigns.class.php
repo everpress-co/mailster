@@ -1843,7 +1843,13 @@ class MailsterCampaigns {
 				$meta[ $metadata->ID ] = $defaults;
 			}
 
-			$meta[ $metadata->ID ][ str_replace( '_mailster_', '', $metadata->meta_key ) ] = $metadata->meta_value;
+			$meta_key = str_replace( '_mailster_', '', $metadata->meta_key );
+
+			// emojis are urlencoded
+			if ( in_array( $meta_key, array( 'subject', 'from_name', 'preheader' ) ) ) {
+				$metadata->meta_value = rawurldecode( $metadata->meta_value );
+			}
+			$meta[ $metadata->ID ][ $meta_key ] = $metadata->meta_value;
 
 			if ( ! empty( $meta[ $metadata->ID ]['lists'] ) ) {
 				$meta[ $metadata->ID ]['lists'] = maybe_unserialize( $meta[ $metadata->ID ]['lists'] );
@@ -1935,6 +1941,9 @@ class MailsterCampaigns {
 				// default is true => don't save
 			} elseif ( $v != '' && in_array( $k, array( 'webversion', 'autoplaintext' ) ) ) {
 				delete_post_meta( $id, '_mailster_' . $k );
+			} elseif ( in_array( $k, array( 'subject', 'from_name', 'preheader' ) ) ) {
+				// emojis are urlencoded
+				update_post_meta( $id, '_mailster_' . $k, rawurlencode( $v ) );
 			} else {
 				update_post_meta( $id, '_mailster_' . $k, $v );
 			}
@@ -3959,6 +3968,9 @@ class MailsterCampaigns {
 			$content = mailster()->replace_links( $content, $subscriber->hash, $campaign->ID );
 
 		}
+
+		// strip all unwanted stuff from the content
+		$content = mailster( 'helper' )->strip_unwanted_html( $content );
 
 		$mail->content = apply_filters( 'mailster_campaign_content', $content, $campaign, $subscriber );
 
