@@ -422,6 +422,8 @@ class MailsterAjax {
 
 		$content = $placeholder->get_content();
 
+		$content = mailster( 'helper' )->strip_unwanted_html( $content );
+
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
 		$content = mailster( 'helper' )->add_mailster_styles( $content );
 

@@ -259,7 +259,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 .optionbar ul li a.mailster-icon:hover {
 	background-position: 999px 999px;
 }
-.optionbar ul li a.mailster-icon{padding-bottom: 1px;}
+.optionbar ul li a.mailster-icon{padding-bottom: 1px;min-height: 23px;}
 .optionbar ul li a.mailster-icon:before{padding: 0px;margin: 0;display: block;text-indent: -4px;font-size: 125%;}
 .dark-mode .optionbar ul li a.mailster-icon:before{color:#fff;}
 
