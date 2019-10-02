@@ -108,6 +108,11 @@ class MailsterCampaigns {
 			return;
 		}
 
+		// prevent if empty or not null
+		if ( empty( $subscriber_ids ) && ! is_null( $subscriber_id ) ) {
+			return;
+		}
+
 		$query_args = array(
 			'lists'        => $meta['ignore_lists'] ? false : $meta['lists'],
 			'conditions'   => $meta['list_conditions'],
@@ -1611,8 +1616,12 @@ class MailsterCampaigns {
 					}
 
 					update_option( 'mailster_hooks', $hooks );
-					if ( $autoresponder['once'] = isset( $autoresponder['hook_once'] ) && isset( $autoresponder['multiple'] ) ) {
-						unset( $autoresponder['multiple'] );
+
+					if ( isset( $autoresponder['hook_once'] ) ) {
+						$autoresponder['once'] = true;
+						if ( isset( $autoresponder['multiple'] ) ) {
+							$autoresponder['once'] = false;
+						}
 					}
 					if ( empty( $autoresponder['hook'] ) ) {
 						mailster_notice( esc_html__( 'Please define a hook which should trigger the campaign!', 'mailster' ), 'error', true );
@@ -1834,7 +1843,13 @@ class MailsterCampaigns {
 				$meta[ $metadata->ID ] = $defaults;
 			}
 
-			$meta[ $metadata->ID ][ str_replace( '_mailster_', '', $metadata->meta_key ) ] = $metadata->meta_value;
+			$meta_key = str_replace( '_mailster_', '', $metadata->meta_key );
+
+			// emojis are urlencoded
+			if ( in_array( $meta_key, array( 'subject', 'from_name', 'preheader' ) ) ) {
+				$metadata->meta_value = rawurldecode( $metadata->meta_value );
+			}
+			$meta[ $metadata->ID ][ $meta_key ] = $metadata->meta_value;
 
 			if ( ! empty( $meta[ $metadata->ID ]['lists'] ) ) {
 				$meta[ $metadata->ID ]['lists'] = maybe_unserialize( $meta[ $metadata->ID ]['lists'] );
@@ -1926,6 +1941,9 @@ class MailsterCampaigns {
 				// default is true => don't save
 			} elseif ( $v != '' && in_array( $k, array( 'webversion', 'autoplaintext' ) ) ) {
 				delete_post_meta( $id, '_mailster_' . $k );
+			} elseif ( in_array( $k, array( 'subject', 'from_name', 'preheader' ) ) ) {
+				// emojis are urlencoded
+				update_post_meta( $id, '_mailster_' . $k, rawurlencode( $v ) );
 			} else {
 				update_post_meta( $id, '_mailster_' . $k, $v );
 			}
@@ -3950,6 +3968,9 @@ class MailsterCampaigns {
 			$content = mailster()->replace_links( $content, $subscriber->hash, $campaign->ID );
 
 		}
+
+		// strip all unwanted stuff from the content
+		$content = mailster( 'helper' )->strip_structure_html( $content );
 
 		$mail->content = apply_filters( 'mailster_campaign_content', $content, $campaign, $subscriber );
 
