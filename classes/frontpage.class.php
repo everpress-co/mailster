@@ -658,6 +658,7 @@ class MailsterFrontpage {
 					$placeholder->add_custom( get_the_ID() );
 
 					$content = $placeholder->get_content();
+					$content = mailster( 'helper' )->strip_structure_html( $content );
 					$search  = array( '<a ', '@media only screen and (max-device-width:' );
 					$replace = array( '<a target="_top" ', '@media only screen and (max-width:' );
 					$content = str_replace( $search, $replace, $content );

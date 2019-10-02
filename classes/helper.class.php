@@ -751,7 +751,7 @@ class MailsterHelper {
 		if ( ! function_exists( 'wpview_media_sandbox_styles' ) ) { // since 4.0
 			?>
 			<?php if ( $image_url ) : ?>
-			<img src="<?php echo esc_attr( $image_url[0] ); ?> width="150">
+			<img src="<?php echo esc_attr( $image_url[0] ); ?>" width="150">
 			<?php endif; ?>
 			<label><?php esc_html_e( 'Image ID', 'mailster' ); ?>:
 			<input class="small-text" type="text" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>"></label>
@@ -761,8 +761,7 @@ class MailsterHelper {
 			wp_enqueue_media();
 			wp_add_inline_style(
 				'media-views',
-				'
-				.media-editor-link{
+				'.media-editor-link{
 					display: inline-block;
 					height: 80px;
 					overflow: hidden;
@@ -806,8 +805,9 @@ class MailsterHelper {
 
 			wp_enqueue_script( 'mailster-media-editor-link-script', MAILSTER_URI . 'assets/js/media-editor-link-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
+			$classes = array( 'media-editor-link' );
+
 			$image_url = $image_url ? $image_url[0] : '';
-			$classes   = array( 'media-editor-link' );
 			if ( $image_url ) {
 				$classes[] = 'media-editor-link-has-image';
 			}
@@ -815,11 +815,7 @@ class MailsterHelper {
 			?>
 
 			<div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" title="<?php esc_attr_e( 'Change Image', 'mailster' ); ?>" data-title="<?php esc_attr_e( 'Add Image', 'mailster' ); ?>">
-				<img class="media-editor-link-img" 
-				<?php
-				if ( $image_url ) :
-					?>
-					src="<?php echo esc_attr( $image_url ); ?>"<?php endif; ?>>
+				<img class="media-editor-link-img"<?php echo $image_url ? ' src="' . esc_attr( $image_url ) . '"' : ''; ?>>
 				<a class="media-editor-link-select button" href="#"><?php esc_html_e( 'Select Image', 'mailster' ); ?></a>
 				<a class="media-editor-link-remove" href="#" title="<?php esc_attr_e( 'Remove Image', 'mailster' ); ?>">&#10005;</a>
 				<input class="media-editor-link-input" type="hidden" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>">
@@ -1884,6 +1880,22 @@ class MailsterHelper {
 	}
 
 
+	public function strip_structure_html( $content ) {
+
+		if ( ! empty( $content ) ) {
+			// template language stuff
+			$content = preg_replace( '#<(modules?|buttons|multi|single)([^>]*)>#', '', $content );
+			$content = preg_replace( '#<\/(modules?|buttons|multi|single)>#', '', $content );
+
+			// remove comments
+			$content = preg_replace( '#<!-- (.*) -->\s*#', '', $content );
+		}
+
+		return $content;
+
+	}
+
+
 	/**
 	 *
 	 *
@@ -1896,13 +1908,14 @@ class MailsterHelper {
 		if ( empty( $object ) ) {
 			$d = html_entity_decode( $serialized_string, ENT_QUOTES, 'UTF-8' );
 
-			$d      = preg_replace_callback(
+			$d = preg_replace_callback(
 				'!s:(\d+):"(.*?)";!',
 				function( $matches ) {
 					return 's:' . strlen( $matches[2] ) . ':"' . $matches[2] . '";';
 				},
 				$d
 			);
+
 			$object = maybe_unserialize( $d );
 		}
 
