@@ -1880,7 +1880,7 @@ class MailsterHelper {
 	}
 
 
-	public function strip_unwanted_html( $content ) {
+	public function strip_structure_html( $content ) {
 
 		if ( ! empty( $content ) ) {
 			// template language stuff
@@ -1908,13 +1908,14 @@ class MailsterHelper {
 		if ( empty( $object ) ) {
 			$d = html_entity_decode( $serialized_string, ENT_QUOTES, 'UTF-8' );
 
-			$d      = preg_replace_callback(
+			$d = preg_replace_callback(
 				'!s:(\d+):"(.*?)";!',
 				function( $matches ) {
 					return 's:' . strlen( $matches[2] ) . ':"' . $matches[2] . '";';
 				},
 				$d
 			);
+
 			$object = maybe_unserialize( $d );
 		}
 

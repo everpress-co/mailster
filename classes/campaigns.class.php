@@ -3970,7 +3970,7 @@ class MailsterCampaigns {
 		}
 
 		// strip all unwanted stuff from the content
-		$content = mailster( 'helper' )->strip_unwanted_html( $content );
+		$content = mailster( 'helper' )->strip_structure_html( $content );
 
 		$mail->content = apply_filters( 'mailster_campaign_content', $content, $campaign, $subscriber );
 

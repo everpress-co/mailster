@@ -422,7 +422,7 @@ class MailsterAjax {
 
 		$content = $placeholder->get_content();
 
-		$content = mailster( 'helper' )->strip_unwanted_html( $content );
+		$content = mailster( 'helper' )->strip_structure_html( $content );
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
 		$content = mailster( 'helper' )->add_mailster_styles( $content );
@@ -679,7 +679,7 @@ class MailsterAjax {
 				}
 
 				// strip all unwanted stuff from the content
-				$content = mailster( 'helper' )->strip_unwanted_html( $content );
+				$content = mailster( 'helper' )->strip_structure_html( $content );
 
 				$mail->content = apply_filters( 'mailster_campaign_content', $content, get_post( $ID ), $subscriber );
 
