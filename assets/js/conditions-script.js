@@ -1,6 +1,7 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
+	"use strict";
 
-	"use strict"
+	mailster.conditions = mailster.conditions || {};
 
 	$.each($('.mailster-conditions'), function () {
 
@@ -52,7 +53,7 @@ jQuery(document).ready(function ($) {
 				}
 				c.slideUp(100, function () {
 					$(this).remove();
-					_trigger('updateCount');
+					mailster.trigger('updateCount');
 				});
 			})
 			.on('change', '.condition-field', function () {
@@ -80,14 +81,14 @@ jQuery(document).ready(function ($) {
 					}
 				}
 
-				_trigger('updateCount');
+				mailster.trigger('updateCount');
 
 			})
 			.on('change', '.condition-operator', function () {
-				_trigger('updateCount');
+				mailster.trigger('updateCount');
 			})
 			.on('change', '.condition-value', function () {
-				_trigger('updateCount');
+				mailster.trigger('updateCount');
 			})
 			.on('click', '.mailster-condition-add-multiselect', function () {
 				$(this).parent().clone().insertAfter($(this).parent()).find('.condition-value').select().focus();
@@ -95,7 +96,7 @@ jQuery(document).ready(function ($) {
 			})
 			.on('click', '.mailster-condition-remove-multiselect', function () {
 				$(this).parent().remove();
-				_trigger('updateCount');
+				mailster.trigger('updateCount');
 				return false;
 			})
 			.on('change', '.mailster-conditions-value-field-multiselect > .condition-value', function () {
@@ -111,7 +112,7 @@ jQuery(document).ready(function ($) {
 			})
 			.find('.condition-field').prop('disabled', false).trigger('change');
 
-		_trigger('updateCount');
+		mailster.trigger('updateCount');
 
 		function datepicker() {
 			conditions.find('.datepicker').datepicker({
@@ -129,23 +130,6 @@ jQuery(document).ready(function ($) {
 
 	});
 
-	function sprintf() {
-		var a = Array.prototype.slice.call(arguments),
-			str = a.shift(),
-			total = a.length,
-			reg;
-		for (var i = 0; i < total; i++) {
-			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
-			str = str.replace(reg, a[i]);
-		}
-		return str;
-	}
+	return mailster;
 
-	function _trigger() {
-		if (!window.Mailster) return;
-		var args = jQuery.makeArray(arguments);
-		var triggerevent = args.shift();
-		window.Mailster.trigger(triggerevent, args);
-	}
-
-});
+}(mailster || {}, jQuery, window, document));

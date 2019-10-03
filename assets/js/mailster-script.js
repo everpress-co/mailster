@@ -109,13 +109,13 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 
 
 mailster = (function (mailster, $, window, document) {
 	"use strict";
 
-	mailster.util = {};
+	mailster.util = mailster.util || {};
 
 	mailster.util.requestAnimationFrame = window.requestAnimationFrame ||
 		window.mozRequestAnimationFrame ||
@@ -219,4 +219,45 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
+
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	mailster.$ = {};
+	mailster.dom = {};
+
+	mailster.$.window = $(window);
+	mailster.$.document = $(document);
+
+	mailster.events.push('documentReady', function () {
+		for (var i in mailster.$) {
+			mailster.dom[i] = mailster.$[i][0];
+		}
+	})
+
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));
+
+
+
+// block XXX
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	mailster.xxx = mailster.xxx || {};
+
+	mailster.xxx.$ = {};
+	mailster.xxx.$.subject = $('#mailster_subject');
+	mailster.xxx.$.preheader = $('#mailster_preheader');
+	mailster.xxx.$.from = $('#mailster_from');
+	mailster.xxx.$.from_name = $('#mailster_from-name');
+	mailster.xxx.$.replyto = $('#mailster_reply-to');
+
+	mailster.events.push('documentReady', function () {})
+
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));
+// end XXX

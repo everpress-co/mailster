@@ -1,11 +1,12 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
+	"use strict";
 
-	"use strict"
+	mailster.notices = mailster.notices || {};
 
-	var notices = $('.mailster-notice');
+	mailster.notices.$ = $('.mailster-notice');
 
-	notices
-		.on('click', '.notice-dismiss, .dismiss', function (event) {
+	mailster.$.document
+		.on('click', '.mailster-notice .notice-dismiss, .mailster-notice .dismiss', function (event) {
 
 			event.preventDefault();
 
@@ -16,7 +17,7 @@ jQuery(document).ready(function ($) {
 			if (event.altKey) el = notices;
 
 			if (id) {
-				_ajax(type, {
+				mailster.util.ajax(type, {
 					id: id
 				});
 				el.fadeTo(100, 0, function () {
@@ -27,34 +28,6 @@ jQuery(document).ready(function ($) {
 			}
 		});
 
+	return mailster;
 
-
-	function _ajax(action, data, callback, errorCallback) {
-
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
-		}
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-			},
-			dataType: "JSON"
-		});
-	}
-
-
-});
+}(mailster || {}, jQuery, window, document));

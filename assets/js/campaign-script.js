@@ -1,33 +1,23 @@
 mailster = (function (mailster, $, window, document) {
 	"use strict";
 
-	var $el = {},
-		dom = {};
+	mailster.$ = mailster.$ || {};
 
-	$el.window = $(window);
-	$el.document = $(document);
-	$el.wpbody = $('#wpbody');
-	$el.form = $('#post');
-	$el.title = $('#title');
-	$el.iframe = $('#mailster_iframe');
-	$el.templateWrap = $('#template-wrap');
-	$el.template = $('#mailster_template .inside');
-	$el.datafields = $('[name^="mailster_data"]'),
+	mailster.$.wpbody = $('#wpbody');
+	mailster.$.form = $('#post');
+	mailster.$.title = $('#title');
+	mailster.$.iframe = $('#mailster_iframe');
+	mailster.$.templateWrap = $('#template-wrap');
+	mailster.$.template = $('#mailster_template .inside');
+	mailster.$.datafields = $('[name^="mailster_data"]');
+	mailster.$.content = $('#content');
+	mailster.$.excerpt = $('#excerpt');
+	mailster.$.plaintext = $('#plain-text-wrap');
+	mailster.$.html = $('#html-wrap');
+	mailster.$.head = $('#head');
+	mailster.$.optionbar = $('#optionbar');
+	mailster.$.editbar = $('#editbar');
 
-		$el.content = $('#content');
-	$el.excerpt = $('#excerpt');
-	$el.plaintext = $('#plain-text-wrap');
-	$el.html = $('#html-wrap');
-	$el.head = $('#head');
-	$el.optionbar = $('#optionbar');
-	$el.editbar = $('#editbar');
-
-	for (var i in $el) {
-		dom[i] = $el[i][0];
-	}
-
-	mailster.$ = $el;
-	mailster.dom = dom;
 	mailster.campaign_id = parseInt($('#post_ID').val(), 10);
 	mailster.user_id = parseInt($('#user-id').val(), 10);
 	mailster.enabled = true;
@@ -35,7 +25,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 
 
 // events
@@ -82,7 +72,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.events.push('save', function () {
 
-		if (!mailster.editor.loaded) return
+		if (!mailster.editor || !mailster.editor.loaded) return;
 
 		var content = mailster.editor.getFrameContent(),
 			length = mailster.optionbar.undos.length,
@@ -108,7 +98,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end events
 
 // block general
@@ -120,7 +110,8 @@ mailster = (function (mailster, $, window, document) {
 	if (mailster.util.isMSIE) mailster.$.body.addClass('ie');
 	if (mailster.util.isTouchDevice) mailster.$.body.addClass('touch');
 
-	mailster.$.window.on('resize.mailster', doResize);
+	mailster.$.window
+		.on('resize.mailster', doResize);
 
 	mailster.$.document
 		.on('change', 'input[name=screen_columns]', doResize)
@@ -139,6 +130,16 @@ mailster = (function (mailster, $, window, document) {
 			mailster.trigger('save');
 		});
 
+
+	window.tb_position = function () {
+		if (!window.TB_WIDTH || !window.TB_HEIGHT) return;
+		$('#TB_window').css({
+			marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px',
+			marginLeft: '-' + parseInt((TB_WIDTH / 2), 10) + 'px',
+			width: TB_WIDTH + 'px'
+		});
+	}
+
 	function doResize() {
 		clearTimeout(resizeTimout);
 		resizeTimout = setTimeout(function () {
@@ -148,7 +149,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end general
 
 
@@ -178,7 +179,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end thickbox
 
 
@@ -208,7 +209,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end template
 
 
@@ -306,7 +307,7 @@ mailster = (function (mailster, $, window, document) {
 	return mailster;
 
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end editor
 
 
@@ -386,7 +387,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end heartbeat
 
 
@@ -481,7 +482,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end block
 
 
@@ -871,7 +872,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end Details
 
 
@@ -897,7 +898,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end submit
 
 
@@ -1267,7 +1268,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end delivery
 
 
@@ -1469,7 +1470,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end Receivers
 
 
@@ -1755,7 +1756,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end modules
 
 
@@ -1905,7 +1906,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 
 
 // end Options
@@ -1950,31 +1951,8 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end Attachments
-
-
-
-// block XXX
-mailster = (function (mailster, $, window, document) {
-	"use strict";
-
-	mailster.$.xxx = $('#mailster_xxx .inside');
-
-	mailster.xxx = mailster.xxx || {};
-
-	mailster.xxx.$ = {};
-	mailster.xxx.$.subject = $('#mailster_subject');
-	mailster.xxx.$.preheader = $('#mailster_preheader');
-	mailster.xxx.$.from = $('#mailster_from');
-	mailster.xxx.$.from_name = $('#mailster_from-name');
-	mailster.xxx.$.replyto = $('#mailster_reply-to');
-
-
-	return mailster;
-
-}(mailster, jQuery, window, document));
-// end XXX
 
 
 
@@ -1986,5 +1964,5 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end block

@@ -308,7 +308,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end block
 
 
@@ -373,7 +373,7 @@ mailster = (function (mailster, $, window, document) {
 		$.each(elements, function (j) {
 			var $this = $(this);
 			if ($this.is('module') && !$this.find('modulebuttons').length) {
-				var name = $this.attr('label') || sprintf(mailsterL10n.module, '#' + (++mc)),
+				var name = $this.attr('label') || mailster.util.sprintf(mailsterL10n.module, '#' + (++mc)),
 					codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></button>' : '',
 					auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailsterL10n.auto + '"></button>' : '');
 
@@ -952,7 +952,7 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end Modules
 
 

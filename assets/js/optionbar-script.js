@@ -284,5 +284,5 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end optiobar

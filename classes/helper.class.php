@@ -1952,7 +1952,7 @@ class MailsterHelper {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-dialog', MAILSTER_URI . 'assets/js/dialog-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-dialog', MAILSTER_URI . 'assets/js/dialog-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 		wp_enqueue_style( 'mailster-dialog', MAILSTER_URI . 'assets/css/dialog-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		?>

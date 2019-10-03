@@ -321,7 +321,7 @@ mailster = (function (mailster, $, window, document) {
 						if (is_img) {
 							current.element.one('load error', function (event) {
 								if ('error' == event.type) {
-									alert(sprintf(mailsterL10n.invalid_image, response.image.url));
+									alert(mailster.util.sprintf(mailsterL10n.invalid_image, response.image.url));
 								}
 								current.element.removeClass('mailster-loading');
 								mailster.trigger('save');
@@ -1200,7 +1200,7 @@ mailster = (function (mailster, $, window, document) {
 				}
 
 				if ((current.elements.multi.length || current.elements.single.length || current.elements.images.length) > 1) {
-					bar.find('.editbarpostion').html(sprintf(mailsterL10n.for_area, '#' + (position + 1))).show();
+					bar.find('.editbarpostion').html(mailster.util.sprintf(mailsterL10n.for_area, '#' + (position + 1))).show();
 				} else {
 					bar.find('.editbarpostion').hide();
 				}
@@ -1488,7 +1488,7 @@ mailster = (function (mailster, $, window, document) {
 					loader(false);
 				};
 				img.onerror = function () {
-					if (e.type != 'paste') alert(sprintf(mailsterL10n.invalid_image, '"' + url + '"'));
+					if (e.type != 'paste') alert(mailster.util.sprintf(mailsterL10n.invalid_image, '"' + url + '"'));
 				};
 				img.src = url;
 			}
@@ -1589,5 +1589,5 @@ mailster = (function (mailster, $, window, document) {
 
 	return mailster;
 
-}(mailster, jQuery, window, document));
+}(mailster || {}, jQuery, window, document));
 // end Editbar
