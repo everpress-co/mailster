@@ -156,7 +156,7 @@ mailster = (function (mailster, $, window, document) {
 				if (values) extra[i] = values;
 			});
 			postargs = {
-				id: campaign_id,
+				id: mailster.campaign_id,
 				post_type: post_type,
 				relative: relative,
 				extra: extra,
@@ -204,7 +204,7 @@ mailster = (function (mailster, $, window, document) {
 		o = typeof o == 'undefined' ? original.prop(':checked') : o;
 		if (/^\{([a-z0-9-_,;:|~]+)\}$/.test(val)) {
 			var f = factor.val();
-			val = mailsterdata.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&o=' + (o ? 1 : 0) + '&f=' + f;
+			val = mailster.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&o=' + (o ? 1 : 0) + '&f=' + f;
 		}
 		return val;
 	}

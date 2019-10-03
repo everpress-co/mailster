@@ -1238,20 +1238,6 @@ class MailsterCampaigns {
 				)
 			);
 
-			wp_localize_script(
-				'mailster-campaign',
-				'mailsterdata',
-				array(
-					'ajaxurl'    => admin_url( 'admin-ajax.php' ),
-					'url'        => MAILSTER_URI,
-					'inline'     => $this->inline_editor(),
-					'codeview'   => current_user_can( 'mailster_see_codeview' ),
-					'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
-					'modules'    => $this->replace_colors( $this->templateobj->get_modules_html() ),
-
-				)
-			);
-
 		}
 	}
 
@@ -4467,12 +4453,17 @@ class MailsterCampaigns {
 		wp_register_style( 'mailster-editor-style', MAILSTER_URI . 'assets/css/editor-style' . $suffix . '.css', array( 'mailster-icons' ), MAILSTER_VERSION );
 		wp_register_script( 'mailster-editor-script', MAILSTER_URI . 'assets/js/editor-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
+		$inline = $this->inline_editor();
+
 		$mailsterdata = array(
-			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-			'url'      => MAILSTER_URI,
-			'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
-			'isrtl'    => is_rtl(),
-			'plupload' => array(
+			'ajaxurl'    => admin_url( 'admin-ajax.php' ),
+			'url'        => MAILSTER_URI,
+			'inline'     => $inline,
+			'codeview'   => current_user_can( 'mailster_see_codeview' ),
+			'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
+			'_wpnonce'   => wp_create_nonce( 'mailster_nonce' ),
+			'isrtl'      => is_rtl(),
+			'plupload'   => array(
 				'runtimes'            => 'html5,flash',
 				'browse_button'       => 'mailster-editorimage-upload-button',
 				'file_data_name'      => 'async-upload',
@@ -4498,7 +4489,7 @@ class MailsterCampaigns {
 			),
 		);
 
-		if ( $inline = $this->inline_editor() ) {
+		if ( $inline ) {
 			$toolbar1 = (string) apply_filters( 'mymail_editor_toolbar1', apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat,|,mailster_remove_element' ) );
 			$toolbar2 = (string) apply_filters( 'mymail_editor_toolbar2', apply_filters( 'mailster_editor_toolbar2', 'bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify' ) );
 			$toolbar3 = (string) apply_filters( 'mymail_editor_toolbar3', apply_filters( 'mailster_editor_toolbar3', '' ) );

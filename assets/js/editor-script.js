@@ -90,7 +90,7 @@ mailster = (function (mailster, $, window, document) {
 				return false;
 			});
 
-		if(!mailster.editor.loaded){
+		if (!mailster.editor.loaded) {
 			mailster.editor.loaded = true;
 			mailster.trigger('editorLoaded');
 		}
@@ -364,6 +364,8 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		elements = mailster.editor.$.modules;
+
+		console.log(mailsterdata);
 
 		//reset
 		//mailster.modules.items = [];

@@ -14,7 +14,7 @@ mailster = (function (mailster, $, window, document) {
 	$el.template = $('#mailster_template .inside');
 	$el.datafields = $('[name^="mailster_data"]'),
 
-	$el.content = $('#content');
+		$el.content = $('#content');
 	$el.excerpt = $('#excerpt');
 	$el.plaintext = $('#plain-text-wrap');
 	$el.html = $('#html-wrap');
@@ -43,8 +43,8 @@ mailster = (function (mailster, $, window, document) {
 	"use strict";
 
 	mailster.events.push('documentReady', function () {
-		if(!mailster.editable){
-			mailster.$.iframe.on('load', function(){
+		if (!mailster.editable) {
+			mailster.$.iframe.on('load', function () {
 				mailster.trigger('iframeLoaded');
 			});
 		}
@@ -111,6 +111,106 @@ mailster = (function (mailster, $, window, document) {
 }(mailster, jQuery, window, document));
 // end events
 
+// block general
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	var resizeTimout;
+
+	if (mailster.util.isMSIE) mailster.$.body.addClass('ie');
+	if (mailster.util.isTouchDevice) mailster.$.body.addClass('touch');
+
+	mailster.$.window.on('resize.mailster', doResize);
+
+	mailster.$.document
+		.on('change', 'input[name=screen_columns]', doResize)
+		.on('click', 'a.external', function () {
+			window.open(this.href);
+			return false;
+		})
+		.on('click', '.restore-backup', function (e, data) {
+			var data = wp.autosave.local.getSavedPostData();
+			mailster.editor.setContent(data.content);
+			mailster.$.title.val(data.post_title);
+			return false;
+		})
+		.on('submit', 'form#post', function () {
+			if (!mailster.enabled) return false;
+			mailster.trigger('save');
+		});
+
+	function doResize() {
+		clearTimeout(resizeTimout);
+		resizeTimout = setTimeout(function () {
+			mailster.trigger('refresh');
+		}, 250);
+	}
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+// end general
+
+
+
+// block thickbox
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	mailster.thickbox = mailster.thickbox || {};
+
+	mailster.thickbox.$ = {};
+	mailster.thickbox.$.preview = $('.mailster-preview-iframe');
+
+	mailster.thickbox.$.preview
+		.on('load', function () {
+			var $this = $(this),
+				contents = $this.contents(),
+				body = contents.find('body');
+
+			body.on('click', 'a', function () {
+				var href = $(this).attr('href');
+				if (href && href != '#') window.open(href);
+				return false;
+			});
+		});
+
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+// end thickbox
+
+
+
+
+// block template
+mailster = (function (mailster, $, window, document) {
+	"use strict";
+
+	mailster.$.template
+		.on('click', 'a.getplaintext', function () {
+			var oldval = mailster.$.excerpt.val();
+			mailster.$.excerpt.val(mailsterL10n.loading);
+			mailster.util.ajax('get_plaintext', {
+				html: mailster.editor.getContent()
+			}, function (response) {
+				mailster.$.excerpt.val(response);
+			}, function (jqXHR, textStatus, errorThrown) {
+				mailster.$.excerpt.val(oldval);
+			}, 'HTML');
+		})
+		.on('change', '#plaintext', function () {
+			var checked = $(this).is(':checked');
+			mailster.$.excerpt.prop('disabled', checked)[checked ? 'addClass' : 'removeClass']('disabled');
+		});
+
+
+	return mailster;
+
+}(mailster, jQuery, window, document));
+// end template
+
 
 
 // block clickmap
@@ -121,7 +221,6 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.clickmap.$ = {};
 	mailster.clickmap.$.popup = $('#clickmap-stats');
-
 
 	mailster.$.template
 		.on('mouseenter', 'a.clickbadge', function () {
@@ -146,7 +245,7 @@ mailster = (function (mailster, $, window, document) {
 			mailster.clickmap.$.popup.stop().fadeOut(400);
 		});
 
-	mailster.clickmap.updateBadges = function(stats) {
+	mailster.clickmap.updateBadges = function (stats) {
 		mailster.$.templateWrap.find('.clickbadge').remove();
 		var stats = stats || $('#mailster_click_stats').data('stats'),
 			total = parseInt(stats.total, 10);
@@ -181,7 +280,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 	}
 
-	!mailster.editable && mailster.events.push('documentReady', function(){
+	!mailster.editable && mailster.events.push('documentReady', function () {
 		$.easyPieChart && mailster.clickmap.$.popup.find('.piechart').easyPieChart({
 			animate: 2000,
 			rotate: 180,
@@ -216,19 +315,19 @@ mailster = (function (mailster, $, window, document) {
 mailster = (function (mailster, $, window, document) {
 	"use strict";
 
-	mailster.events.push('documentReady', function(){
+	mailster.events.push('documentReady', function () {
 		if (typeof wp != 'undefined' && wp.heartbeat) wp.heartbeat.interval('fast');
 	})
 	mailster.$.document
 		.on('heartbeat-send', function (e, data) {
 
-			if(mailster.editable){
+			if (mailster.editable) {
 				if (data && data['wp_autosave']) {
 					data['wp_autosave']['content'] = mailster.editor.getContent();
 					data['wp_autosave']['excerpt'] = mailster.$.excerpt.val();
 					data['mailsterdata'] = mailster.$.datafields.serialize();
 				}
-			}else{
+			} else {
 				if (data['wp_autosave'])
 					delete data['wp_autosave'];
 
@@ -292,7 +391,7 @@ mailster = (function (mailster, $, window, document) {
 
 
 
-// block
+// block utils
 mailster = (function (mailster, $, window, document) {
 	"use strict";
 
@@ -476,6 +575,9 @@ mailster = (function (mailster, $, window, document) {
 		return regioncode;
 	}
 
+	mailster.$.title.on('change', function () {
+		if (!mailster.details.$.subject.val()) mailster.details.$.subject.val($(this).val());
+	});
 
 	mailster.$.details
 		.on('click', '.default-value', function () {
@@ -747,7 +849,7 @@ mailster = (function (mailster, $, window, document) {
 				.trigger('change');
 		});
 
-	mailster.events.push('documentReady', function(){
+	mailster.events.push('documentReady', function () {
 		$.easyPieChart && mailster.$.details.find('.piechart').easyPieChart({
 			animate: 2000,
 			rotate: 180,
@@ -1087,26 +1189,26 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.events.push('documentReady', function () {
 		$.datepicker && mailster.$.delivery
-				.find('input.datepicker').datepicker({
-					dateFormat: 'yy-mm-dd',
-					minDate: new Date(),
-					firstDay: mailsterL10n.start_of_week,
-					showWeek: true,
-					dayNames: mailsterL10n.day_names,
-					dayNamesMin: mailsterL10n.day_names_min,
-					monthNames: mailsterL10n.month_names,
-					prevText: mailsterL10n.prev,
-					nextText: mailsterL10n.next,
-					showAnim: 'fadeIn',
-					onClose: function () {
-						var date = $(this).datepicker('getDate');
-						$('.deliverydate').html($(this).val());
-					}
-				});
+			.find('input.datepicker').datepicker({
+				dateFormat: 'yy-mm-dd',
+				minDate: new Date(),
+				firstDay: mailsterL10n.start_of_week,
+				showWeek: true,
+				dayNames: mailsterL10n.day_names,
+				dayNamesMin: mailsterL10n.day_names_min,
+				monthNames: mailsterL10n.month_names,
+				prevText: mailsterL10n.prev,
+				nextText: mailsterL10n.next,
+				showAnim: 'fadeIn',
+				onClose: function () {
+					var date = $(this).datepicker('getDate');
+					$('.deliverydate').html($(this).val());
+				}
+			});
 
-			$.datepicker && $('input.datepicker.nolimit').datepicker("option", "minDate", null);
+		$.datepicker && $('input.datepicker.nolimit').datepicker("option", "minDate", null);
 
-			mailster.$.delivery.find('input.datepicker').not('.hasDatepicker').prop('readonly', false);
+		mailster.$.delivery.find('input.datepicker').not('.hasDatepicker').prop('readonly', false);
 
 		//switch to autoresponder if referer is right or post_status is set
 		if (/post_status=autoresponder/.test($('#referredby').val()) || /post_status=autoresponder/.test(location.search)) {

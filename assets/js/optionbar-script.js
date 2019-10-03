@@ -206,14 +206,14 @@ mailster = (function (mailster, $, window, document) {
 				content: mailster.editor.getContent(),
 				head: mailster.$.head.val(),
 				issue: $('#mailster_autoresponder_issue').val(),
-				subject: mailster.$.subject.val(),
-				preheader: mailster.$.preheader.val()
+				subject: mailster.details.$.subject.val(),
+				preheader: mailster.details.$.preheader.val()
 			},
 			function (response) {
 				mailster.$.optionbar.find('a.preview').removeClass('loading');
 
-				$('.mailster-preview-iframe').attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
-				tb_show((title ? mailster.util.sprintf(mailsterL10n.preview_for, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=mailster_campaign_preview', null);
+				mailster.thickbox.$.preview.attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
+				tb_show((mailster.$.title.val() ? mailster.util.sprintf(mailsterL10n.preview_for, '"' + mailster.$.title.val() + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=mailster_campaign_preview', null);
 
 			},
 			function (jqXHR, textStatus, errorThrown) {
