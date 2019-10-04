@@ -88,9 +88,8 @@ class MailsterSubscribers {
 
 			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_enqueue_script( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/js/subscriber-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
-
 			wp_enqueue_style( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/css/subscriber-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/js/subscriber-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 			wp_localize_script(
 				'mailster-subscriber-detail',
 				'mailsterL10n',
@@ -109,7 +108,7 @@ class MailsterSubscribers {
 		else :
 
 			wp_enqueue_style( 'mailster-subscribers-table', MAILSTER_URI . 'assets/css/subscribers-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_script( 'mailster-subscribers-table', MAILSTER_URI . 'assets/js/subscribers-table-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-subscribers-table', MAILSTER_URI . 'assets/js/subscribers-table-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 			wp_localize_script(
 				'mailster-subscribers-table',
 				'mailsterL10n',

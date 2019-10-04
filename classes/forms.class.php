@@ -238,9 +238,8 @@ class MailsterForms {
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'jquery-ui-datepicker' );
 
-			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION );
-
 			wp_enqueue_style( 'mailster-form-detail', MAILSTER_URI . 'assets/css/form-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
 			wp_localize_script(
 				'mailster-form-detail',
 				'mailsterL10n',

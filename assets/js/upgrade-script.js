@@ -1,21 +1,12 @@
-jQuery(document).ready(function ($) {
-
-	"use strict"
+mailster = (function (mailster, $, window, document) {
+	"use strict";
 
 	if (typeof mailster_updates == 'undefined') {
 		return;
 	}
 
-	$(document).ajaxError(function () {
-		_error.append('script paused...continues in 5 seconds<br>');
-		setTimeout(function () {
-			_error.empty();
-			run(current_i, true);
-		}, 5000);
-	});
-	var _output = $('#output'),
-		_error = $('#error-list'),
-		wpnonce = $('#mailster_nonce').val(),
+	var $output = $('#output'),
+		$error = $('#error-list'),
 		finished = [],
 		current, current_i,
 		skip = $('<span>&nbsp;</span><a class="skipbutton button button-small" href title="skip this step">skip</a>'),
@@ -25,14 +16,18 @@ jQuery(document).ready(function ($) {
 			return index
 		});
 
-	function _init() {
+	$output.on('click', '.skipbutton', function () {
+		skipit = true;
+		return false;
+	});
 
-		_output.on('click', '.skipbutton', function () {
-			skipit = true;
-			return false;
-		});
-
-	}
+	mailster.$.document.ajaxError(function () {
+		$error.append('script paused...continues in 5 seconds<br>');
+		setTimeout(function () {
+			$error.empty();
+			run(current_i, true);
+		}, 5000);
+	});
 
 	if (mailster_updates_options.autostart) {
 		$('#mailster-update-process').show();
@@ -79,7 +74,7 @@ jQuery(document).ready(function ($) {
 
 	function do_update(id, onsuccess, onerror, round) {
 
-		_ajax('batch_update', {
+		mailster.util.ajax('batch_update', {
 			id: id,
 			performance: performance
 		}, function (response) {
@@ -140,7 +135,7 @@ jQuery(document).ready(function ($) {
 
 		var el = $('#output_' + id).length ?
 			$('#output_' + id) :
-			$('<div id="output_' + id + '" class="' + (nobox ? '' : 'updated inline') + '" style="padding: 0.5em 6px;word-wrap: break-word;"></div>').appendTo(_output);
+			$('<div id="output_' + id + '" class="' + (nobox ? '' : 'updated inline') + '" style="padding: 0.5em 6px;word-wrap: break-word;"></div>').appendTo($output);
 
 
 		el.append(content);
@@ -158,34 +153,8 @@ jQuery(document).ready(function ($) {
 
 	}
 
-	function _ajax(action, data, callback, errorCallback) {
+	mailster.events.push('documentReady', function () {})
 
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
-		}
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action,
-				_wpnonce: wpnonce
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-			},
-			dataType: "JSON"
-		});
-	}
+	return mailster;
 
-	_init();
-
-});
+}(mailster || {}, jQuery, window, document));

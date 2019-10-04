@@ -1,8 +1,5 @@
-jQuery(document).ready(function ($) {
-
-	"use strict"
-
-	if (typeof wp == 'undefined' || !wp.heartbeat) return;
+mailster = (function (mailster, $, window, document) {
+	"use strict";
 
 	var current = [],
 		scrolltimeout = false,
@@ -26,7 +23,7 @@ jQuery(document).ready(function ($) {
 
 		});
 
-	$(document)
+	mailster.$.document
 		.on('scroll', function () {
 			clearTimeout(scrolltimeout);
 			scrolltimeout = setTimeout(function () {
@@ -41,7 +38,7 @@ jQuery(document).ready(function ($) {
 			rows.each(function () {
 				id = parseInt($(this).find('input').eq(0).val(), 10);
 				current[id] = current[id] || {};
-				if (isElementInViewport(this))
+				if (mailster.util.inViewport(this))
 					ids.push(id);
 			});
 
@@ -127,17 +124,6 @@ jQuery(document).ready(function ($) {
 	wp.heartbeat.interval('fast');
 	if (wp.heartbeat.connectNow) wp.heartbeat.connectNow();
 
-	function isElementInViewport(el, offset) {
+	return mailster;
 
-		var rect = el.getBoundingClientRect();
-
-		if (!offset) offset = 0;
-
-		//only need top and bottom
-		return (
-			rect.top + offset >= 0 &&
-			rect.top - offset <= (window.innerHeight || document.documentElement.clientHeight) /*or $(window).height() */
-		);
-	}
-
-});
+}(mailster || {}, jQuery, window, document));

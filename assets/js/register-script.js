@@ -1,8 +1,5 @@
-jQuery(document).ready(function ($) {
-
-	"use strict"
-
-	var wpnonce = mailsterregisterL10n.wpnonce;
+mailster = (function (mailster, $, window, document) {
+	"use strict";
 
 	$('.register_form_wrap')
 		.on('focus', 'input', function () {
@@ -36,7 +33,7 @@ jQuery(document).ready(function ($) {
 			form.removeClass('has-error').prop('disabled', true);
 			wrap.addClass('loading');
 
-			_ajax('register', {
+			mailster.util.ajax('register', {
 				purchasecode: purchasecode,
 				slug: slug
 			}, function (response) {
@@ -72,7 +69,7 @@ jQuery(document).ready(function ($) {
 			form.removeClass('has-error').prop('disabled', true);
 			wrap.addClass('loading');
 
-			_ajax('register', {
+			mailster.util.ajax('register', {
 				purchasecode: purchasecode,
 				slug: slug,
 				data: form.serialize()
@@ -82,7 +79,7 @@ jQuery(document).ready(function ($) {
 				wrap.removeClass('loading');
 				if (response.success) {
 					wrap.addClass('step-3').removeClass('step-2')
-					$(document).trigger('verified.' + slug, [response.purchasecode, response.username, response.email]);
+					mailster.$.document.trigger('verified.' + slug, [response.purchasecode, response.username, response.email]);
 				} else {
 					if (response.code == 406 || response.code == 679 || response.code == 680) {
 						form = wrap.find('.register_form');
@@ -120,35 +117,6 @@ jQuery(document).ready(function ($) {
 
 	}
 
-	function _ajax(action, data, callback, errorCallback, dataType) {
-
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
-		}
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action,
-				_wpnonce: wpnonce
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-
-			},
-			dataType: dataType ? dataType : "JSON"
-		});
-	}
-
 	window.verifyMailster = function (slug, purchasecode, username, email) {
 
 		var wrap = $('.register_form_wrap-' + slug);
@@ -164,7 +132,7 @@ jQuery(document).ready(function ($) {
 
 	}
 
-	$(document)
+	mailster.$.document
 		.on('verified.mailster', function (event, purchasecode, username, email) {
 
 			! function (f, b, e, v, n, t, s) {
@@ -195,4 +163,8 @@ jQuery(document).ready(function ($) {
 
 		});
 
-});
+	mailster.events.push('documentReady', function () {})
+
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));

@@ -1,9 +1,7 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
+	"use strict";
 
-	"use strict"
-
-	var wpnonce = $('#mailster_nonce').val(),
-		isMobile = $(document.body).hasClass('mobile'),
+	var isMobile = $(document.body).hasClass('mobile'),
 		isWPDashboard = $(document.body).hasClass('index-php'),
 		$handleButtons = $('.postbox .handlediv'),
 		subscribers = $('.mailster-mb-subscribers'),
@@ -25,7 +23,7 @@ jQuery(document).ready(function ($) {
 				caretSize: 8,
 				callbacks: {
 					label: function (a, b) {
-						return sprintf(mailsterdashboardL10n.subscribers, _number_format(a.yLabel));
+						return mailster.util.sprintf(mailsterdashboardL10n.subscribers, number_format(a.yLabel));
 					}
 				}
 			},
@@ -44,7 +42,7 @@ jQuery(document).ready(function ($) {
 				yAxes: [{
 					ticks: {
 						callback: function (value) {
-							return _format(value, true);
+							return format(value, true);
 						},
 					}
 				}]
@@ -128,7 +126,7 @@ jQuery(document).ready(function ($) {
 		.on('click', '.check-for-update', function () {
 			var _this = $(this);
 			_this.html(mailsterdashboardL10n.checking);
-			_ajax('check_for_update', function (response) {
+			mailster.util.ajax('check_for_update', function (response) {
 				_this.html(mailsterdashboardL10n.check_again);
 				if (response.success) {
 					_this.closest('.postbox')[response.update ? 'addClass' : 'removeClass']('has-update');
@@ -142,7 +140,7 @@ jQuery(document).ready(function ($) {
 		.one('click', '.load-language', function () {
 			var _this = $(this);
 			_this.html(mailsterdashboardL10n.downloading);
-			_ajax('load_language', function (response) {
+			mailster.util.ajax('load_language', function (response) {
 				if (response.success) {
 					_this.html(mailsterdashboardL10n.reload_page);
 				}
@@ -209,7 +207,7 @@ jQuery(document).ready(function ($) {
 				box.addClass('mailster-loading');
 			}
 
-			_ajax('get_dashboard_data', {
+			mailster.util.ajax('get_dashboard_data', {
 				type: type,
 				id: ID
 			}, function (response) {
@@ -246,7 +244,7 @@ jQuery(document).ready(function ($) {
 
 		subscribers.addClass('mailster-loading');
 
-		_ajax('get_dashboard_chart', {
+		mailster.util.ajax('get_dashboard_chart', {
 			range: subscriberselect.val()
 		}, function (response) {
 
@@ -336,19 +334,7 @@ jQuery(document).ready(function ($) {
 
 	}
 
-	function sprintf() {
-		var a = Array.prototype.slice.call(arguments),
-			str = a.shift(),
-			total = a.length,
-			reg;
-		for (var i = 0; i < total; i++) {
-			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
-			str = str.replace(reg, a[i]);
-		}
-		return str;
-	}
-
-	function _format(value, konly) {
+	function format(value, konly) {
 
 		if (value >= 1000000) {
 			return (value / 1000).toFixed(1) + 'M';
@@ -356,10 +342,10 @@ jQuery(document).ready(function ($) {
 			return (value / 1000).toFixed(1) + 'K';
 		}
 
-		return !(value % 1) ? _number_format(value) : '';
+		return !(value % 1) ? number_format(value) : '';
 	}
 
-	function _number_format(number, decimals, decPoint, thousandsSep) {
+	function number_format(number, decimals, decPoint, thousandsSep) {
 
 		number = (number + '').replace(/[^0-9+\-Ee.]/g, '')
 		var n = !isFinite(+number) ? 0 : +number
@@ -383,37 +369,8 @@ jQuery(document).ready(function ($) {
 		return s.join(dec)
 	}
 
-	function _ajax(action, data, callback, errorCallback, dataType) {
+	mailster.events.push('documentReady', function () {})
 
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
-		}
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action,
-				_wpnonce: wpnonce
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) {
-					return;
-				}
-				if (console) {
-					console.error($.trim(jqXHR.responseText));
-				}
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
+	return mailster;
 
-			},
-			dataType: dataType ? dataType : "JSON"
-		});
-	}
-
-});
+}(mailster || {}, jQuery, window, document));

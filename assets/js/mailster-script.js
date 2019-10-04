@@ -217,6 +217,18 @@ mailster = (function (mailster, $, window, document) {
 		}
 	}
 
+	mailster.util.inViewport = function (el, offset) {
+		var rect = el.getBoundingClientRect();
+
+		if (!offset) offset = 0;
+
+		//only need top and bottom
+		return (
+			rect.top + offset >= 0 &&
+			rect.top - offset <= (window.innerHeight || document.documentElement.clientHeight) /*or $(window).height() */
+		);
+	}
+
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));

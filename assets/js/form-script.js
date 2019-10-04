@@ -1,9 +1,7 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
+	"use strict";
 
-	"use strict"
-
-	var _win = $(window),
-		saverequired = false,
+	var saverequired = false,
 		useitnav = $('.useit-nav'),
 		useittabs = $('.useit-tab'),
 		ID = $('#ID').val(),
@@ -16,10 +14,9 @@ jQuery(document).ready(function ($) {
 		window.onbeforeunload = null;
 	});
 
-
 	$('#use-it')
 		.on('click', function () {
-			tb_show(mailsterL10n.useit, '#TB_inline?&width=' + (Math.min(1200, _win.width() - 50)) + '&height=' + (_win.height() - 100) + '&inlineId=useitbox', null);
+			tb_show(mailsterL10n.useit, '#TB_inline?&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=useitbox', null);
 			if (saverequired) alert(mailsterL10n.not_saved);
 			return false;
 		});
@@ -204,7 +201,6 @@ jQuery(document).ready(function ($) {
 		style += customstyle.val().replace(/(<([^>]+)>)/ig, "");
 		_style.html(style);
 		styleinput.val(escape(JSON.stringify(selectors)));
-		//console.log(selectors);
 		iframe[0].height = iframe[0].contentWindow.document.body.scrollHeight + "px";
 
 	}
@@ -230,7 +226,7 @@ jQuery(document).ready(function ($) {
 				inputs = parent.find('.embed-form-input'),
 				output = parent.find('.embed-form-output');
 
-			output.val(sprintf(output.data('embedcode'), inputs.eq(0).val(), inputs.eq(1).val(), (inputs.eq(2).is(':checked') ? '&style=1' : '')));
+			output.val(mailster.util.sprintf(output.data('embedcode'), inputs.eq(0).val(), inputs.eq(1).val(), (inputs.eq(2).is(':checked') ? '&style=1' : '')));
 
 		}).eq(0).trigger('change');
 
@@ -288,26 +284,8 @@ jQuery(document).ready(function ($) {
 
 	};
 
-	function sprintf() {
-		var a = Array.prototype.slice.call(arguments),
-			str = a.shift(),
-			total = a.length,
-			reg;
-		for (var i = 0; i < total; i++) {
-			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
-			str = str.replace(reg, a[i]);
-		}
-		return str;
-	}
+	mailster.events.push('documentReady', function () {})
 
-	window.tb_position = function () {
-		if (!window.TB_WIDTH || !window.TB_HEIGHT) return;
-		jQuery("#TB_window").css({
-			marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px',
-			marginLeft: '-' + parseInt((TB_WIDTH / 2), 10) + 'px',
-			width: TB_WIDTH + 'px'
-		});
-	}
+	return mailster;
 
-
-});
+}(mailster || {}, jQuery, window, document));

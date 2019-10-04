@@ -1,6 +1,5 @@
-jQuery(document).ready(function ($) {
-
-	"use strict"
+mailster = (function (mailster, $, window, document) {
+	"use strict";
 
 	var bulk_update_info, form_submitted = false,
 		count, per_page;
@@ -77,5 +76,8 @@ jQuery(document).ready(function ($) {
 		});
 
 	}
+	mailster.events.push('documentReady', function () {})
 
-});
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));

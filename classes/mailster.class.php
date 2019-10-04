@@ -380,8 +380,8 @@ class Mailster {
 
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-			wp_enqueue_script( 'mailster-notice', MAILSTER_URI . 'assets/js/notice-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 			wp_enqueue_style( 'mailster-notice', MAILSTER_URI . 'assets/css/notice-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-notice', MAILSTER_URI . 'assets/js/notice-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 			echo implode( '', $successes );
 			echo implode( '', $errors );
@@ -1284,8 +1284,8 @@ class Mailster {
 
 		}
 
-		wp_enqueue_script( 'mailster-deactivate', MAILSTER_URI . 'assets/js/deactivate-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 		wp_enqueue_style( 'mailster-deactivate', MAILSTER_URI . 'assets/css/deactivate-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-deactivate', MAILSTER_URI . 'assets/js/deactivate-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 		wp_localize_script(
 			'mailster-deactivate',
 			'mailsterL10n',
@@ -1351,7 +1351,7 @@ class Mailster {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
 		wp_localize_script(
 			'mailster-tests',
 			'mailsterL10n',
@@ -1376,7 +1376,7 @@ class Mailster {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-addons', MAILSTER_URI . 'assets/css/addons-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-addons', MAILSTER_URI . 'assets/js/addons-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-addons', MAILSTER_URI . 'assets/js/addons-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 	}
 

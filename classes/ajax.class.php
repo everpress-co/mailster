@@ -2541,7 +2541,7 @@ class MailsterAjax {
 
 		$return['success'] = false;
 
-		$this->ajax_nonce( json_encode( $return ), 'mailster_register' );
+		$this->ajax_nonce( json_encode( $return ) );
 		$purchasecode = trim( $_POST['purchasecode'] );
 		$slug         = trim( $_POST['slug'] );
 

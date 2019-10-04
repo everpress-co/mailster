@@ -138,30 +138,6 @@ jQuery(document).ready(function ($) {
 		if (!_disabled) {
 
 
-			_doc
-				.on('change', '.dynamic_embed_options_taxonomy', function () {
-					var $this = $(this),
-						val = $this.val();
-					$this.parent().find('.button').remove();
-					if (val != -1) {
-						if ($this.parent().find('select').length < $this.find('option').length - 1)
-							$(' <a class="button button-small add_embed_options_taxonomy">' + mailsterL10n.add + '</a>').insertAfter($this);
-					} else {
-						$this.parent().html('').append($this);
-					}
-
-					return false;
-				})
-				.on('click', '.add_embed_options_taxonomy', function () {
-					var $this = $(this),
-						el = $this.prev().clone();
-
-					el.insertBefore($this).val('-1');
-					$('<span> ' + mailsterL10n.or + ' </span>').insertBefore(el);
-					$this.remove();
-
-					return false;
-				});
 
 
 
@@ -183,111 +159,7 @@ jQuery(document).ready(function ($) {
 	}
 
 
-	function _scroll(pos, callback, speed) {
-		pos = Math.round(pos);
-		if (isNaN(speed)) speed = 200;
-		if (!isMSIE && (animateDOM.scrollTop() == pos || document.scrollingElement.scrollTop == pos)) {
-			callback && callback();
-			return
-		}
-		animateDOM.stop().animate({
-			'scrollTop': pos
-		}, speed, function () {
-			callback && callback()
-		});
-	}
 
-	function _jump(val, rel) {
-		val = Math.round(val);
-		if (rel) {
-			window.scrollBy(0, val);
-		} else {
-			window.scrollTo(0, val);
-		}
-	}
-
-	$(window)
-
-	.on('Mailster:refresh', function () {
-		clearTimeout(refreshtimout);
-		refreshtimout = setTimeout(function () {
-			_trigger('resize');
-
-			if (!_disabled) {
-				_editButtons();
-			} else {
-				_clickBadges();
-			}
-		}, 10);
-	})
-
-	.on('Mailster:resize', function () {
-		if (!iframeloaded) return false;
-		setTimeout(function () {
-			if (!_iframe[0].contentWindow.document.body) return;
-			var height = _iframe.contents().find('body').outerHeight() ||
-				_iframe.contents().height() ||
-				_iframe[0].contentWindow.document.body.offsetHeight ||
-				_iframe.contents().find("html")[0].innerHeight ||
-				_iframe.contents().find("html").height();
-
-			height = Math.max(500, height + 4);
-			$('#editor-height').val(height);
-			_iframe.attr("height", height);
-		}, 50);
-	})
-
-	.on('Mailster:save', function () {
-		if (!_disabled && iframeloaded) {
-
-			var content = _getFrameContent();
-
-			var length = _undo.length,
-				lastundo = _undo[length - 1];
-
-			if (lastundo != content) {
-
-				_content.val(content);
-
-				_preheader.prop('readonly', !content.match('{preheader}'));
-
-				_undo = _undo.splice(0, _currentundo + 1);
-
-				_undo.push(content);
-				if (length >= mailsterL10n.undosteps) _undo.shift();
-				_currentundo = _undo.length - 1;
-
-				if (_currentundo) _obar.find('a.undo').removeClass('disabled');
-				_obar.find('a.redo').addClass('disabled');
-
-				if (wp && wp.autosave) wp.autosave.local.save();
-			}
-
-		}
-	})
-
-	.on('Mailster:disable', function () {
-		isDisabled = true;
-		$('.button').prop('disabled', true);
-		$('input:visible').prop('disabled', true);
-	})
-
-	.on('Mailster:enable', function () {
-		$('.button').prop('disabled', false);
-		$('input:visible, input.wp-color-picker').prop('disabled', false);
-		isDisabled = false;
-	})
-
-	.on('Mailster:selectModule', function (event) {
-		if (!event.detail) return;
-		var module = event.detail[0];
-	})
-
-	.on('Mailster:updateCount', function () {})
-
-	.on('Mailster:xxx', function () {
-
-	});
 
 	function _trigger() {
 

@@ -1076,7 +1076,7 @@ class MailsterCampaigns {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		if ( 'edit-newsletter' == $screen->id ) {
-			wp_enqueue_script( 'mailster-overview', MAILSTER_URI . 'assets/js/overview-script' . $suffix . '.js', array(), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-overview', MAILSTER_URI . 'assets/js/overview-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 			wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
