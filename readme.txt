@@ -90,6 +90,8 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.6 =
 
+fixed: single quote in subject now correctly encoded
+
 = Version 2.4.5 =
 
 * fixed: issue saving 'send campaign only once' option
