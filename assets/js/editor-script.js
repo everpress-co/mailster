@@ -12,6 +12,7 @@ window.mailster = parent.window.mailster || {};
 
 // block
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.editor = mailster.editor || {};
@@ -314,6 +315,7 @@ mailster = (function (mailster, $, window, document) {
 
 // block Modules
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var l10n = mailster_mce_button.l10n,
@@ -903,7 +905,7 @@ mailster = (function (mailster, $, window, document) {
 						c = content.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/g);
 					if (c) {
 						for (var i = c.length - 1; i >= 0; i--) {
-							content = content.replace(c[i], _hex(c[i]));
+							content = content.replace(c[i], mailster.util.rgb2hex(c[i]));
 						}
 						_self.bodyElement.innerHTML = content;
 					}

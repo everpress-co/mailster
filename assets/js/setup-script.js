@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var steps = $('.mailster-setup-step'),
@@ -20,11 +21,6 @@ mailster = (function (mailster, $, window, document) {
 
 	$('form.mailster-setup-step-form').on('submit', function () {
 		$('.next-step:visible').hide();
-		return false;
-	});
-
-	$('a.external').on('click', function () {
-		if (this.href) window.open(this.href);
 		return false;
 	});
 
@@ -77,7 +73,7 @@ mailster = (function (mailster, $, window, document) {
 			$(this).parent().parent().find('span').hide().filter('.edit-slug-area').show().find('input').focus().select();
 		});
 
-	$(document)
+	mailster.$.document
 		.on('verified.mailster', function () {
 			$('.validation-next-step').removeClass('disabled');
 			$('.validation-skip-step').addClass('disabled');

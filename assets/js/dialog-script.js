@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.dialog = mailster.dialog || {};

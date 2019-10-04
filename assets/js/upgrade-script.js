@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	if (typeof mailster_updates == 'undefined') {
@@ -41,7 +42,6 @@ mailster = (function (mailster, $, window, document) {
 				run(0);
 			});
 	}
-
 
 	function run(i, nooutput) {
 
@@ -152,8 +152,6 @@ mailster = (function (mailster, $, window, document) {
 		$('#textoutput').val($.trim(content));
 
 	}
-
-	mailster.events.push('documentReady', function () {})
 
 	return mailster;
 

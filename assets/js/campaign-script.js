@@ -1,5 +1,6 @@
 // block DOM
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.$ = mailster.$ || {};
@@ -31,6 +32,7 @@ mailster = (function (mailster, $, window, document) {
 
 // events
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.events.push('documentReady', function () {
@@ -71,7 +73,6 @@ mailster = (function (mailster, $, window, document) {
 		$('#editor-height').val(mailster.editor.getHeight());
 	});
 
-
 	mailster.events.push('save', function () {
 
 		if (!mailster.editor || !mailster.editor.loaded) return;
@@ -105,6 +106,7 @@ mailster = (function (mailster, $, window, document) {
 
 // block general
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var resizeTimout;
@@ -117,10 +119,6 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.$.document
 		.on('change', 'input[name=screen_columns]', doResize)
-		.on('click', 'a.external', function () {
-			window.open(this.href);
-			return false;
-		})
 		.on('click', '.restore-backup', function (e, data) {
 			var data = wp.autosave.local.getSavedPostData();
 			mailster.editor.setContent(data.content);
@@ -178,6 +176,7 @@ mailster = (function (mailster, $, window, document) {
 
 // block utils
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.util = mailster.util || {};
@@ -205,9 +204,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 		return msg;
-
 	}
-
 
 	mailster.util.selectRange = function (input, startPos, endPos) {
 		if (document.selection && document.selection.createRange) {
@@ -225,7 +222,6 @@ mailster = (function (mailster, $, window, document) {
 		return true;
 	}
 
-
 	mailster.util.getSelect = function (input) {
 		var selText = "";
 		if (document.activeElement && (document.activeElement.tagName.toLowerCase() == "textarea" || document.activeElement.tagName.toLowerCase() == "input")) {
@@ -238,7 +234,6 @@ mailster = (function (mailster, $, window, document) {
 
 		return selText;
 	}
-
 
 	mailster.util.changeColor = function (color_from, color_to, element) {
 		if (!color_from) color_from = color_to;
@@ -258,7 +253,15 @@ mailster = (function (mailster, $, window, document) {
 			mailster.editor.setContent(raw.replace(reg, color_to), 30);
 		}
 
+	}
 
+	mailster.util.replace = function (str, match, repl) {
+		if (match === repl)
+			return str;
+		do {
+			str = str.replace(match, repl);
+		} while (match && str.indexOf(match) !== -1);
+		return str;
 	}
 
 	return mailster;
@@ -269,6 +272,7 @@ mailster = (function (mailster, $, window, document) {
 
 // block thickbox
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.thickbox = mailster.thickbox || {};
@@ -289,39 +293,16 @@ mailster = (function (mailster, $, window, document) {
 			});
 		});
 
-	window.tb_position = function () {
-		if (!window.TB_WIDTH || !window.TB_HEIGHT) return;
-		$('#TB_window').css({
-			marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px',
-			marginLeft: '-' + parseInt((TB_WIDTH / 2), 10) + 'px',
-			width: TB_WIDTH + 'px'
-		});
-	}
-
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));
 // end thickbox
 
 
-// block clickmap
-mailster = (function (mailster, $, window, document) {
-	"use strict";
-
-
-	return mailster;
-
-
-}(mailster || {}, jQuery, window, document));
-// end editor
-
-
-
-
-
 
 // block modules
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var metabox = $('#mailster_template'),
@@ -514,8 +495,6 @@ mailster = (function (mailster, $, window, document) {
 			.off('.mailster')
 			.on('dragstart.mailster', 'li', function (startevent) {
 
-				console.log('Asdasd');
-
 				//required for Firefox
 				startevent.originalEvent.dataTransfer.setData('Text', this.id);
 
@@ -582,7 +561,11 @@ mailster = (function (mailster, $, window, document) {
 				addmodule.call(this);
 			}
 		})
-		.on('click', 'a.addmodule', addmodule);
+		.on('click', 'a.addmodule', addmodule)
+		.on('click', '#module-search-remove', function () {
+			search.val('').focus().trigger('keyup');
+			return false;
+		});
 
 	search
 		.on('keyup', searchModules)
@@ -590,13 +573,8 @@ mailster = (function (mailster, $, window, document) {
 			search.select();
 		});
 
-	$('#module-search-remove').on('click', function () {
-		search.val('').trigger('keyup').focus();
-		return false;
-	})
 
 	mailster.events.push('editorLoaded', initFrame);
-	//mailster.events.push('redraw', initFrame);
 
 	return mailster;
 
@@ -606,6 +584,7 @@ mailster = (function (mailster, $, window, document) {
 
 // block Details
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.$.details = $('#mailster_details .inside');
@@ -618,80 +597,6 @@ mailster = (function (mailster, $, window, document) {
 	mailster.details.$.from = $('#mailster_from');
 	mailster.details.$.from_name = $('#mailster_from-name');
 	mailster.details.$.replyto = $('#mailster_reply-to');
-
-	function showWorld() {
-		var options = {
-			'region': 'world',
-			'displayMode': 'region',
-			'resolution': 'countries',
-			'colors': ['#D7E4E9', mailster.colors.main]
-		};
-
-		data = countrydata;
-		drawMap(options);
-
-		$('#countries_table').find('tr').removeClass('wp-ui-highlight');
-		$('#mapinfo').hide();
-
-		location.hash = '#region=';
-
-	}
-
-	function regionClick(event) {
-
-		var options = {},
-			region = event.region ? event.region : event,
-			d;
-
-		if (region.match(/-/)) return false;
-
-		options['region'] = region;
-
-		(response.unknown_cities[region]) ?
-		$('#mapinfo').show().html('+ ' + response.unknown_cities[region] + ' unknown locations'): $('#mapinfo').hide();
-
-		d = response.geodata[region] ? response.geodata[region] : [];
-
-		options['resolution'] = 'provinces';
-		options['displayMode'] = 'markers';
-		options['dataMode'] = 'markers';
-		options['colors'] = ['#4EBEE9', mailster.colors.main];
-
-		data = new google.visualization.DataTable()
-		data.addColumn('number', 'Lat');
-		data.addColumn('number', 'Long');
-		data.addColumn('string', 'tooltip');
-		data.addColumn('number', 'Value');
-		data.addColumn({
-			type: 'string',
-			role: 'tooltip'
-		});
-
-		data.addRows(d);
-
-		$('#countries_table').find('tr').removeClass('wp-ui-highlight');
-		$('#country-row-' + region).addClass('wp-ui-highlight');
-
-		location.hash = '#region=' + region
-		drawMap(options);
-
-	}
-
-	function drawMap(options) {
-		options = $.extend(mapoptions, options);
-		geomap.draw(data, options);
-		$('a.zoomout').css({
-			'visibility': (mapoptions['region'] != 'world' ? 'visible' : 'hidden')
-		});
-	}
-
-	function regTo3dig(region) {
-		var regioncode = region;
-		$.each(regions, function (code, regions) {
-			if ($.inArray(region, regions) != -1) regioncode = code;
-		})
-		return regioncode;
-	}
 
 	mailster.$.title.on('change', function () {
 		if (!mailster.details.$.subject.val()) mailster.details.$.subject.val($(this).val());
@@ -987,6 +892,81 @@ mailster = (function (mailster, $, window, document) {
 	})
 
 
+	function showWorld() {
+		var options = {
+			'region': 'world',
+			'displayMode': 'region',
+			'resolution': 'countries',
+			'colors': ['#D7E4E9', mailster.colors.main]
+		};
+
+		data = countrydata;
+		drawMap(options);
+
+		$('#countries_table').find('tr').removeClass('wp-ui-highlight');
+		$('#mapinfo').hide();
+
+		location.hash = '#region=';
+
+	}
+
+	function regionClick(event) {
+
+		var options = {},
+			region = event.region ? event.region : event,
+			d;
+
+		if (region.match(/-/)) return false;
+
+		options['region'] = region;
+
+		(response.unknown_cities[region]) ?
+		$('#mapinfo').show().html('+ ' + response.unknown_cities[region] + ' unknown locations'): $('#mapinfo').hide();
+
+		d = response.geodata[region] ? response.geodata[region] : [];
+
+		options['resolution'] = 'provinces';
+		options['displayMode'] = 'markers';
+		options['dataMode'] = 'markers';
+		options['colors'] = ['#4EBEE9', mailster.colors.main];
+
+		data = new google.visualization.DataTable()
+		data.addColumn('number', 'Lat');
+		data.addColumn('number', 'Long');
+		data.addColumn('string', 'tooltip');
+		data.addColumn('number', 'Value');
+		data.addColumn({
+			type: 'string',
+			role: 'tooltip'
+		});
+
+		data.addRows(d);
+
+		$('#countries_table').find('tr').removeClass('wp-ui-highlight');
+		$('#country-row-' + region).addClass('wp-ui-highlight');
+
+		location.hash = '#region=' + region
+		drawMap(options);
+
+	}
+
+	function drawMap(options) {
+		options = $.extend(mapoptions, options);
+		geomap.draw(data, options);
+		$('a.zoomout').css({
+			'visibility': (mapoptions['region'] != 'world' ? 'visible' : 'hidden')
+		});
+	}
+
+	function regTo3dig(region) {
+		var regioncode = region;
+		$.each(regions, function (code, regions) {
+			if ($.inArray(region, regions) != -1) regioncode = code;
+		})
+		return regioncode;
+	}
+
+
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));
@@ -995,6 +975,7 @@ mailster = (function (mailster, $, window, document) {
 
 // block Template
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.clickmap = mailster.clickmap || {};
@@ -1111,6 +1092,7 @@ mailster = (function (mailster, $, window, document) {
 
 // block Submit
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.$.submit = $('#mailster_submitdiv .inside');
@@ -1136,65 +1118,13 @@ mailster = (function (mailster, $, window, document) {
 
 // block Delivery
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.$.delivery = $('#mailster_delivery .inside');
 
 	mailster.delivery = mailster.delivery || {};
 	mailster.delivery.$ = {};
-
-	function loader(show) {
-		if (null == show || true === show) {
-			$('#delivery-ajax-loading').css('display', 'inline');
-		} else {
-			$('#delivery-ajax-loading').hide();
-		}
-	}
-
-
-	function checkSpamScore(id, round) {
-
-		mailster.util.ajax('check_spam_score', {
-			ID: id,
-		}, function (response) {
-
-			if (response.score) {
-				loader(false);
-				$this.prop('disabled', false);
-				progress.addClass('spam-score');
-				progressbar.css('width', (parseFloat(response.score) * 10) + '%');
-
-				$('.score').html('<strong>' + mailster.util.sprintf(mailsterL10n.yourscore, response.score) + '</strong>:<br>' + mailsterL10n.yourscores[Math.floor((response.score / 10) * mailsterL10n.yourscores.length)]);
-			} else {
-
-				if (round <= 5 && !response.abort) {
-					var percentage = (round * 10) + 50;
-					progressbar.css('width', (percentage) + '%');
-					setTimeout(function () {
-						checkSpamScore(id, ++round);
-					}, round * 400);
-				} else {
-
-					loader(false);
-					$this.prop('disabled', false);
-					progressbar.css('width', '100%');
-					progress.slideUp(200);
-					mailster.util.tempMsg(response.msg, 'error', $this.parent(), function () {
-						progressbar.css('width', 0);
-					});
-
-				}
-
-			}
-		}, function (jqXHR, textStatus, errorThrown) {
-			loader(false);
-			$this.prop('disabled', false);
-			mailster.util.tempMsg(rtextStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $this.parent());
-			var msg = $('<div class="error"><p>' + textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
-				msg.remove();
-			});
-		})
-	}
 
 	mailster.$.delivery
 		.on('change', 'input.timezone', function () {
@@ -1498,6 +1428,58 @@ mailster = (function (mailster, $, window, document) {
 
 	})();
 
+
+	function loader(show) {
+		if (null == show || true === show) {
+			$('#delivery-ajax-loading').css('display', 'inline');
+		} else {
+			$('#delivery-ajax-loading').hide();
+		}
+	}
+
+	function checkSpamScore(id, round) {
+
+		mailster.util.ajax('check_spam_score', {
+			ID: id,
+		}, function (response) {
+
+			if (response.score) {
+				loader(false);
+				$this.prop('disabled', false);
+				progress.addClass('spam-score');
+				progressbar.css('width', (parseFloat(response.score) * 10) + '%');
+
+				$('.score').html('<strong>' + mailster.util.sprintf(mailsterL10n.yourscore, response.score) + '</strong>:<br>' + mailsterL10n.yourscores[Math.floor((response.score / 10) * mailsterL10n.yourscores.length)]);
+			} else {
+
+				if (round <= 5 && !response.abort) {
+					var percentage = (round * 10) + 50;
+					progressbar.css('width', (percentage) + '%');
+					setTimeout(function () {
+						checkSpamScore(id, ++round);
+					}, round * 400);
+				} else {
+
+					loader(false);
+					$this.prop('disabled', false);
+					progressbar.css('width', '100%');
+					progress.slideUp(200);
+					mailster.util.tempMsg(response.msg, 'error', $this.parent(), function () {
+						progressbar.css('width', 0);
+					});
+
+				}
+
+			}
+		}, function (jqXHR, textStatus, errorThrown) {
+			loader(false);
+			$this.prop('disabled', false);
+			mailster.util.tempMsg(rtextStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $this.parent());
+			var msg = $('<div class="error"><p>' + textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
+				msg.remove();
+			});
+		})
+	}
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));
@@ -1506,6 +1488,7 @@ mailster = (function (mailster, $, window, document) {
 
 // block Receivers
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var updateCountTimout;
@@ -1518,17 +1501,6 @@ mailster = (function (mailster, $, window, document) {
 	mailster.receivers.$.conditions = $('.mailster-conditions-thickbox');
 	mailster.receivers.$.conditionsOutput = $('#mailster_conditions_render');
 	mailster.receivers.$.total = $('.mailster-total');
-
-	function loader(show, html) {
-		if (null == show || true === show) {
-			mailster.receivers.$.total.addClass('loading');
-		} else {
-			mailster.receivers.$.total.removeClass('loading');
-		}
-		if (null != html) {
-			mailster.receivers.$.total.html(html);
-		}
-	}
 
 	mailster.$.receivers
 		.on('change', 'input.list', function () {
@@ -1560,10 +1532,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.mailster-total', function () {
 			mailster.trigger('updateCount');
 		})
-
-
-	//disabled
-	.on('click', '.create-new-list', function () {
+		.on('click', '.create-new-list', function () {
 			var $this = $(this).hide();
 			$('.create-new-list-wrap').slideDown();
 			$('.create-list-type').trigger('change');
@@ -1697,6 +1666,17 @@ mailster = (function (mailster, $, window, document) {
 
 	})
 
+	function loader(show, html) {
+		if (null == show || true === show) {
+			mailster.receivers.$.total.addClass('loading');
+		} else {
+			mailster.receivers.$.total.removeClass('loading');
+		}
+		if (null != html) {
+			mailster.receivers.$.total.html(html);
+		}
+	}
+
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));
@@ -1705,6 +1685,7 @@ mailster = (function (mailster, $, window, document) {
 
 // block Options
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.$.options = $('#mailster_options .inside');
@@ -1713,14 +1694,6 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.options.$ = {};
 	mailster.options.$.colorInputs = mailster.$.options.find('input.color');
-
-	function loader(show) {
-		if (null == show || true === show) {
-			$('#olorschema-ajax-loading').css('display', 'inline');
-		} else {
-			$('#olorschema-ajax-loading').hide();
-		}
-	}
 
 	mailster.$.options
 		.on('click', '.wp-color-result', function () {
@@ -1830,6 +1803,20 @@ mailster = (function (mailster, $, window, document) {
 			changeColor(from, _this.val(), _this);
 		});
 
+	mailster.events.push('documentReady', function () {
+		mailster.options.$.colorInputs.wpColorPicker({
+			color: true,
+			width: 250,
+			mode: 'hsl',
+			palettes: $('.colors').data('original-colors'),
+			change: function (event, ui) {
+				$(this).val(ui.color.toString()).trigger('change');
+			},
+			clear: function (event, ui) {}
+		});
+	});
+
+
 	function changeColor(color_from, color_to, element) {
 		if (!color_from) color_from = color_to;
 		if (!color_to) return false;
@@ -1850,26 +1837,24 @@ mailster = (function (mailster, $, window, document) {
 
 	}
 
-	mailster.events.push('documentReady', function () {
-		mailster.options.$.colorInputs.wpColorPicker({
-			color: true,
-			width: 250,
-			mode: 'hsl',
-			palettes: $('.colors').data('original-colors'),
-			change: function (event, ui) {
-				$(this).val(ui.color.toString()).trigger('change');
-			},
-			clear: function (event, ui) {}
-		});
-	});
+	function loader(show) {
+		if (null == show || true === show) {
+			$('#olorschema-ajax-loading').css('display', 'inline');
+		} else {
+			$('#olorschema-ajax-loading').hide();
+		}
+	}
+
 
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));
 // end Options
 
+
 // block Attachments
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.$.attachments = $('#mailster_attachments .inside');
@@ -1915,6 +1900,7 @@ mailster = (function (mailster, $, window, document) {
 
 // block heartbeat
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.events.push('documentReady', function () {

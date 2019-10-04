@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var timeout,
@@ -137,7 +138,6 @@ mailster = (function (mailster, $, window, document) {
 		}, callback);
 	}
 
-	mailster.events.push('documentReady', function () {})
 
 	return mailster;
 

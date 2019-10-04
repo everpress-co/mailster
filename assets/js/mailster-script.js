@@ -2,6 +2,7 @@ window.mailster = window.mailster || {};
 
 // events
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var triggertimeout,
@@ -113,6 +114,7 @@ mailster = (function (mailster, $, window, document) {
 
 
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.util = mailster.util || {};
@@ -164,6 +166,17 @@ mailster = (function (mailster, $, window, document) {
 			},
 			dataType: dataType
 		});
+	}
+
+	mailster.util.rgb2hex = function (str) {
+		var colors = str.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/);
+
+		function nullify(val) {
+			val = parseInt(val, 10).toString(16);
+			return val.length > 1 ? val : '0' + val; // 0 -> 00
+		}
+		return colors ? '#' + nullify(colors[1]) + nullify(colors[2]) + nullify(colors[3]) : str;
+
 	}
 
 	mailster.util.sanitize = function (string) {
@@ -233,7 +246,10 @@ mailster = (function (mailster, $, window, document) {
 
 }(mailster || {}, jQuery, window, document));
 
+
+
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.$ = {};
@@ -246,7 +262,23 @@ mailster = (function (mailster, $, window, document) {
 		for (var i in mailster.$) {
 			mailster.dom[i] = mailster.$[i][0];
 		}
-	})
+	});
+
+	//open externals in a new tab
+	mailster.$.document
+		.on('click', 'a.external', function () {
+			window.open(this.href);
+			return false;
+		})
+
+	window.tb_position = function () {
+		if (!window.TB_WIDTH || !window.TB_HEIGHT) return;
+		$('#TB_window').css({
+			marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px',
+			marginLeft: '-' + parseInt((TB_WIDTH / 2), 10) + 'px',
+			width: TB_WIDTH + 'px'
+		});
+	}
 
 	return mailster;
 
@@ -256,18 +288,12 @@ mailster = (function (mailster, $, window, document) {
 
 // block XXX
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	mailster.xxx = mailster.xxx || {};
 
 	mailster.xxx.$ = {};
-	mailster.xxx.$.subject = $('#mailster_subject');
-	mailster.xxx.$.preheader = $('#mailster_preheader');
-	mailster.xxx.$.from = $('#mailster_from');
-	mailster.xxx.$.from_name = $('#mailster_from-name');
-	mailster.xxx.$.replyto = $('#mailster_reply-to');
-
-	mailster.events.push('documentReady', function () {})
 
 	return mailster;
 

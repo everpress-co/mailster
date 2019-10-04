@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var saverequired = false,
@@ -284,7 +285,6 @@ mailster = (function (mailster, $, window, document) {
 
 	};
 
-	mailster.events.push('documentReady', function () {})
 
 	return mailster;
 

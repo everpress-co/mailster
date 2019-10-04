@@ -3,6 +3,24 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
+	var codemirror,
+		codemirrorargs = {
+			mode: {
+				name: "htmlmixed",
+				scriptTypes: [{
+					matches: /\/x-handlebars-template|\/x-mustache/i,
+					mode: null
+				}, {
+					matches: /(text|application)\/(x-)?vb(a|script)/i,
+					mode: "vbscript"
+				}]
+			},
+			tabMode: "indent",
+			lineNumbers: true,
+			viewportMargin: Infinity,
+			autofocus: true
+		};
+
 	mailster.optionbar = {};
 
 	mailster.optionbar.undos = [];
@@ -53,9 +71,9 @@ mailster = (function (mailster, $, window, document) {
 
 		var structure;
 
-		if (!mailster.$.iframe.is(':visible')) {
+		if (mailster.$.iframe.is(':visible')) {
 
-			structure = mailster.editor.getStructure(_getFrameContent());
+			structure = mailster.editor.getStructure(mailster.editor.getFrameContent());
 
 			mailster.$.optionbar.find('a.code').addClass('loading');
 			mailster.trigger('disable');
@@ -145,52 +163,6 @@ mailster = (function (mailster, $, window, document) {
 		$('#new_template_name').focus().select();
 	};
 
-	function saveTemplate() {
-
-		mailster.trigger('disable');
-
-		var name = $('#new_template_name').val();
-		if (!name) {
-			return false;
-		}
-		mailster.trigger('save');
-
-		var loader = $('#new_template-ajax-loading').css('display', 'inline'),
-			modules = $('#new_template_modules').is(':checked'),
-			activemodules = $('#new_template_active_modules').is(':checked'),
-			file = $('#new_template_saveas_dropdown').val(),
-			overwrite = !!parseInt($('input[name="new_template_overwrite"]:checked').val(), 10),
-			content = mailster.editor.getContent();
-
-		mailster.util.ajax(
-			'create_new_template', {
-				name: name,
-				modules: modules,
-				activemodules: activemodules,
-				overwrite: overwrite ? file : false,
-				template: $('#mailster_template_name').val(),
-				content: content,
-				head: mailster.$.head.val()
-			},
-			function (response) {
-				loader.hide();
-				if (response.success) {
-					// destroy wp object
-					if (window.wp) {
-						window.wp = null;
-					}
-					window.location = response.url;
-				} else {
-					alert(response.msg);
-				}
-			},
-			function (jqXHR, textStatus, errorThrown) {
-				loader.hide();
-			}
-		);
-		return false;
-	}
-
 	mailster.optionbar.preview = function () {
 
 		if (mailster.$.optionbar.find('a.preview').is('.loading')) {
@@ -247,23 +219,11 @@ mailster = (function (mailster, $, window, document) {
 
 	}
 
-	function showFiles(name) {
-		var $this = $(this);
-		$this.parent().find('ul').eq(0).slideToggle(100);
-	}
-
-	function changeTemplate() {
-
-		window.onbeforeunload = null;
-		window.location = this.href;
-	}
-
 	mailster.$.document
 		.on('click', 'button.save-template', saveTemplate)
 		.on('click', 'button.save-template-cancel', tb_remove);
 
 	mailster.$.optionbar
-
 		.on('click', 'a', false)
 		.on('click', 'a.save-template', mailster.optionbar.openSaveDialog)
 		.on('click', 'a.clear-modules', mailster.optionbar.removeModules)
@@ -280,6 +240,64 @@ mailster = (function (mailster, $, window, document) {
 	mailster.events.push('editorLoaded', function () {
 		mailster.optionbar.undos.push(mailster.editor.getFrameContent());
 	});
+
+
+	function showFiles(name) {
+		var $this = $(this);
+		$this.parent().find('ul').eq(0).slideToggle(100);
+	}
+
+	function changeTemplate() {
+
+		window.onbeforeunload = null;
+		window.location = this.href;
+	}
+
+	function saveTemplate() {
+
+		mailster.trigger('disable');
+
+		var name = $('#new_template_name').val();
+		if (!name) {
+			return false;
+		}
+		mailster.trigger('save');
+
+		var loader = $('#new_template-ajax-loading').css('display', 'inline'),
+			modules = $('#new_template_modules').is(':checked'),
+			activemodules = $('#new_template_active_modules').is(':checked'),
+			file = $('#new_template_saveas_dropdown').val(),
+			overwrite = !!parseInt($('input[name="new_template_overwrite"]:checked').val(), 10),
+			content = mailster.editor.getContent();
+
+		mailster.util.ajax(
+			'create_new_template', {
+				name: name,
+				modules: modules,
+				activemodules: activemodules,
+				overwrite: overwrite ? file : false,
+				template: $('#mailster_template_name').val(),
+				content: content,
+				head: mailster.$.head.val()
+			},
+			function (response) {
+				loader.hide();
+				if (response.success) {
+					// destroy wp object
+					if (window.wp) {
+						window.wp = null;
+					}
+					window.location = response.url;
+				} else {
+					alert(response.msg);
+				}
+			},
+			function (jqXHR, textStatus, errorThrown) {
+				loader.hide();
+			}
+		);
+		return false;
+	}
 
 
 	return mailster;

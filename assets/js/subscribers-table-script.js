@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var bulk_update_info, form_submitted = false,
@@ -76,7 +77,6 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 	}
-	mailster.events.push('documentReady', function () {})
 
 	return mailster;
 

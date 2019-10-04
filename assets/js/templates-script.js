@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var iframe = $('#mailster_iframe'),
@@ -7,13 +8,6 @@ mailster = (function (mailster, $, window, document) {
 		templatecontent = $('textarea.editor'),
 		uploadinfo = $('.uploadinfo'),
 		codemirror;
-
-	$('a.external').on('click', function () {
-		if (this.href) window.open(this.href);
-		return false;
-	});
-
-
 
 	$('.upload-template').on('click', function () {
 		$('.upload-field').show();

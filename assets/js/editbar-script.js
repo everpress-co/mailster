@@ -1,5 +1,6 @@
 // block Editbar
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var e = {},
@@ -50,6 +51,179 @@ mailster = (function (mailster, $, window, document) {
 		postsearch = $('#post-search'),
 		imagesearch = $('#image-search'),
 		imagesearchtype = $('[name="image-search-type"]');
+
+	bar
+		.on('keyup change', 'input.live', change)
+		.on('keyup change', '#mailster-editor', change)
+		.on('click', '.replace-image', replaceImage)
+		.on('change', '.highdpi', toggleHighDPI)
+		.on('click', 'button.save', save)
+		.on('click', '.cancel', cancel)
+		.on('click', 'a.remove', remove)
+		.on('click', 'a.reload', loadPosts)
+		.on('click', 'a.single-link-content', loadSingleLink)
+		.on('click', 'a.add_image', openMedia)
+		.on('click', 'a.add_image_url', openURL)
+		.on('click', '.imagelist li', choosePic)
+		.on('dblclick', '.imagelist li', save)
+		.on('change', '#post_type_select input', loadPosts)
+		.on('click', '.postlist li', choosePost)
+		.on('click', '.load-more-posts', loadMorePosts)
+		.on('click', 'a.btnsrc', changeBtn)
+		.on('click', '.imagepreview', toggleImgZoom)
+		.on('click', 'a.nav-tab', openTab)
+		.on('change', 'select.check-for-posts', checkForPosts)
+		.on('change paste', '#dynamic_rss_url', checkForPosts)
+		.on('keyup change', '#post-search', searchPost)
+		.on('keyup change', '#image-search', searchPost)
+		.on('change', '[name="image-search-type"]', searchPost)
+		.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
+		.on('mouseleave', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', enabledrag)
+		.on('click', '.current-tag a', false)
+		.on('keypress.mailster', function (event) {
+			if (event.keyCode == 13 && event.target.nodeName.toLowerCase() != 'textarea') return false;
+		})
+		.on('keyup.mailster', function (event) {
+			switch (event.keyCode) {
+			case 27:
+				cancel();
+				return false;
+				break;
+			case 13:
+				if (current.type != 'multi' && current.type != 'codeview') {
+					save();
+					return false;
+				}
+				break;
+			}
+		})
+
+	mailster.util.getRealDimensions(mailster.$.iframe.contents().find("img").eq(0), function (w, h, f) {
+		var ishighdpi = f >= 1.5;
+		factor.val(f);
+		highdpi.prop('checked', ishighdpi);
+		(ishighdpi) ? bar.addClass('high-dpi'): bar.removeClass('high-dpi');
+	});
+
+	buttonnav.on('click', 'a', function () {
+		$(this).parent().find('a').removeClass('nav-tab-active');
+		$(this).parent().parent().find('ul.buttons').hide();
+		var hash = $(this).addClass('nav-tab-active').attr('href');
+		$('#tab-' + hash.substr(1)).show();
+		return false;
+	});
+
+	imageurl.on('paste change', function (e) {
+		var $this = $(this);
+		setTimeout(function () {
+			var url = dynamicImage($this.val()),
+				img = new Image();
+			if (url) {
+				loader();
+				img.onload = function () {
+					imagepreview.attr('src', url);
+					imageheight.val(Math.round(img.width / (img.width / img.height)));
+					currentimage = {
+						width: img.width,
+						height: img.height,
+						asp: img.width / img.height
+					};
+					loader(false);
+				};
+				img.onerror = function () {
+					if (e.type != 'paste') alert(mailster.util.sprintf(mailsterL10n.invalid_image, '"' + url + '"'));
+				};
+				img.src = url;
+			}
+		}, 1);
+	});
+
+	imagewidth.on('keyup change', function () {
+		if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / currentimage.asp));
+		adjustImagePreview();
+	});
+	imageheight.on('keyup change', function () {
+		if (!imagecrop.is(':checked')) imagewidth.val(Math.round(imageheight.val() * currentimage.asp));
+		adjustImagePreview();
+	});
+	imagecrop.on('change', function () {
+		if (!imagecrop.is(':checked')) {
+			imageheight.val(Math.round(imagewidth.val() / currentimage.asp));
+			imagecrop.parent().removeClass('not-cropped');
+		} else {
+			imagecrop.parent().addClass('not-cropped');
+		}
+		adjustImagePreview();
+	});
+
+	$('#dynamic_embed_options_post_type').on('change', function () {
+
+		var cats = $('#dynamic_embed_options_cats'),
+			val = $(this).val();
+		cats.find('select').prop('disabled', true);
+		bar.find('.dynamic-rss')[val == 'rss' ? 'show' : 'hide']();
+		loader();
+		mailster.util.ajax('get_post_term_dropdown', {
+			posttype: val
+		}, function (response) {
+			loader(false);
+			if (response.success) {
+				cats.html(response.html);
+				if (currenttag && currenttag.terms) {
+					var taxonomies = cats.find('.dynamic_embed_options_taxonomy_wrap');
+					$.each(currenttag.terms, function (i, term) {
+						if (!term) return;
+						var term_ids = term.split(',');
+						$.each(term_ids, function (j, id) {
+							var select = taxonomies.eq(i).find('select').eq(j),
+								last;
+							if (!select.length) {
+								last = taxonomies.eq(i).find('select').last();
+								select = last.clone();
+								select.insertAfter(last);
+								$('<span> ' + mailsterL10n.or + ' </span>').insertBefore(select);
+							}
+							select.val(id);
+						});
+					});
+				}
+
+
+
+			}
+			checkForPosts();
+		}, function (jqXHR, textStatus, errorThrown) {
+			loader(false);
+		});
+
+	});
+
+	mailster.events.documentReady.push(function () {
+		bar.draggable && bar.draggable({
+			'distance': 20,
+			'axis': 'y'
+		});
+		if (mailster.util.isTinyMCE && tinymce.get('mailster-editor')) {
+			if (tinymce.majorVersion >= 4) {
+
+				tinymce.get('mailster-editor').on('keyup', function () {
+					mceUpdater(this);
+				});
+				tinymce.get('mailster-editor').on('ExecCommand', function () {
+					mceUpdater(this);
+				});
+
+			} else {
+				tinymce.get('mailster-editor').onKeyUp.add(function () {
+					mceUpdater(this);
+				});
+				tinymce.get('mailster-editor').onExecCommand.add(function () {
+					mceUpdater(this);
+				});
+			}
+		}
+	});
+
 
 	function disabledrag() {
 		draggable(false);
@@ -357,10 +531,10 @@ mailster = (function (mailster, $, window, document) {
 							if (orgimageurl.val()) {
 								if (is_root) {
 									if (is_root = html.match(new RegExp('<v:background(.*)<\/v:background>', 's'))) {
-										current.element.html(_replace(html, is_root[0], _replace(is_root[0], orgimageurl.val(), currentimage.url)));
+										current.element.html(mailster.util.replace(html, is_root[0], mailster.util.replace(is_root[0], orgimageurl.val(), currentimage.url)));
 									}
 								} else {
-									current.element.html(_replace(html, orgimageurl.val(), currentimage.url));
+									current.element.html(mailster.util.replace(html, orgimageurl.val(), currentimage.url));
 									//remove id to re trigger tinymce
 									current.element.find('single, multi').removeAttr('id');
 								}
@@ -622,7 +796,7 @@ mailster = (function (mailster, $, window, document) {
 											.data('id', currenttext.image[i].id)
 											.css('background-image', '');
 
-										current.element.html(_replace(current.element.html(), orgurl, response.image.url));
+										current.element.html(mailster.util.replace(current.element.html(), orgurl, response.image.url));
 
 										//remove id to re trigger tinymce
 										current.element.find('single, multi').removeAttr('id');
@@ -669,7 +843,7 @@ mailster = (function (mailster, $, window, document) {
 									})
 									.removeData('id')
 									.css('background-image', '');
-								current.element.html(_replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop, org)));
+								current.element.html(mailster.util.replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop, org)));
 								//remove id to re trigger tinymce
 								current.element.find('single, multi').removeAttr('id');
 							}
@@ -1408,178 +1582,6 @@ mailster = (function (mailster, $, window, document) {
 		return false;
 
 	}
-
-	bar
-		.on('keyup change', 'input.live', change)
-		.on('keyup change', '#mailster-editor', change)
-		.on('click', '.replace-image', replaceImage)
-		.on('change', '.highdpi', toggleHighDPI)
-		.on('click', 'button.save', save)
-		.on('click', '.cancel', cancel)
-		.on('click', 'a.remove', remove)
-		.on('click', 'a.reload', loadPosts)
-		.on('click', 'a.single-link-content', loadSingleLink)
-		.on('click', 'a.add_image', openMedia)
-		.on('click', 'a.add_image_url', openURL)
-		.on('click', '.imagelist li', choosePic)
-		.on('dblclick', '.imagelist li', save)
-		.on('change', '#post_type_select input', loadPosts)
-		.on('click', '.postlist li', choosePost)
-		.on('click', '.load-more-posts', loadMorePosts)
-		.on('click', 'a.btnsrc', changeBtn)
-		.on('click', '.imagepreview', toggleImgZoom)
-		.on('click', 'a.nav-tab', openTab)
-		.on('change', 'select.check-for-posts', checkForPosts)
-		.on('change paste', '#dynamic_rss_url', checkForPosts)
-		.on('keyup change', '#post-search', searchPost)
-		.on('keyup change', '#image-search', searchPost)
-		.on('change', '[name="image-search-type"]', searchPost)
-		.on('mouseenter', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', disabledrag)
-		.on('mouseleave', '#wp-mailster-editor-wrap, .imagelist, .postlist, .CodeMirror', enabledrag)
-		.on('click', '.current-tag a', false)
-		.on('keypress.mailster', function (event) {
-			if (event.keyCode == 13 && event.target.nodeName.toLowerCase() != 'textarea') return false;
-		})
-		.on('keyup.mailster', function (event) {
-			switch (event.keyCode) {
-			case 27:
-				cancel();
-				return false;
-				break;
-			case 13:
-				if (current.type != 'multi' && current.type != 'codeview') {
-					save();
-					return false;
-				}
-				break;
-			}
-		})
-
-	mailster.util.getRealDimensions(mailster.$.iframe.contents().find("img").eq(0), function (w, h, f) {
-		var ishighdpi = f >= 1.5;
-		factor.val(f);
-		highdpi.prop('checked', ishighdpi);
-		(ishighdpi) ? bar.addClass('high-dpi'): bar.removeClass('high-dpi');
-	});
-
-	buttonnav.on('click', 'a', function () {
-		$(this).parent().find('a').removeClass('nav-tab-active');
-		$(this).parent().parent().find('ul.buttons').hide();
-		var hash = $(this).addClass('nav-tab-active').attr('href');
-		$('#tab-' + hash.substr(1)).show();
-		return false;
-	});
-
-	imageurl.on('paste change', function (e) {
-		var $this = $(this);
-		setTimeout(function () {
-			var url = dynamicImage($this.val()),
-				img = new Image();
-			if (url) {
-				loader();
-				img.onload = function () {
-					imagepreview.attr('src', url);
-					imageheight.val(Math.round(img.width / (img.width / img.height)));
-					currentimage = {
-						width: img.width,
-						height: img.height,
-						asp: img.width / img.height
-					};
-					loader(false);
-				};
-				img.onerror = function () {
-					if (e.type != 'paste') alert(mailster.util.sprintf(mailsterL10n.invalid_image, '"' + url + '"'));
-				};
-				img.src = url;
-			}
-		}, 1);
-	});
-
-	imagewidth.on('keyup change', function () {
-		if (!imagecrop.is(':checked')) imageheight.val(Math.round(imagewidth.val() / currentimage.asp));
-		adjustImagePreview();
-	});
-	imageheight.on('keyup change', function () {
-		if (!imagecrop.is(':checked')) imagewidth.val(Math.round(imageheight.val() * currentimage.asp));
-		adjustImagePreview();
-	});
-	imagecrop.on('change', function () {
-		if (!imagecrop.is(':checked')) {
-			imageheight.val(Math.round(imagewidth.val() / currentimage.asp));
-			imagecrop.parent().removeClass('not-cropped');
-		} else {
-			imagecrop.parent().addClass('not-cropped');
-		}
-		adjustImagePreview();
-	});
-
-	$('#dynamic_embed_options_post_type').on('change', function () {
-
-		var cats = $('#dynamic_embed_options_cats'),
-			val = $(this).val();
-		cats.find('select').prop('disabled', true);
-		bar.find('.dynamic-rss')[val == 'rss' ? 'show' : 'hide']();
-		loader();
-		mailster.util.ajax('get_post_term_dropdown', {
-			posttype: val
-		}, function (response) {
-			loader(false);
-			if (response.success) {
-				cats.html(response.html);
-				if (currenttag && currenttag.terms) {
-					var taxonomies = cats.find('.dynamic_embed_options_taxonomy_wrap');
-					$.each(currenttag.terms, function (i, term) {
-						if (!term) return;
-						var term_ids = term.split(',');
-						$.each(term_ids, function (j, id) {
-							var select = taxonomies.eq(i).find('select').eq(j),
-								last;
-							if (!select.length) {
-								last = taxonomies.eq(i).find('select').last();
-								select = last.clone();
-								select.insertAfter(last);
-								$('<span> ' + mailsterL10n.or + ' </span>').insertBefore(select);
-							}
-							select.val(id);
-						});
-					});
-				}
-
-
-
-			}
-			checkForPosts();
-		}, function (jqXHR, textStatus, errorThrown) {
-			loader(false);
-		});
-
-	});
-
-	mailster.events.documentReady.push(function () {
-		bar.draggable && bar.draggable({
-			'distance': 20,
-			'axis': 'y'
-		});
-		if (mailster.util.isTinyMCE && tinymce.get('mailster-editor')) {
-			if (tinymce.majorVersion >= 4) {
-
-				tinymce.get('mailster-editor').on('keyup', function () {
-					mceUpdater(this);
-				});
-				tinymce.get('mailster-editor').on('ExecCommand', function () {
-					mceUpdater(this);
-				});
-
-			} else {
-				tinymce.get('mailster-editor').onKeyUp.add(function () {
-					mceUpdater(this);
-				});
-				tinymce.get('mailster-editor').onExecCommand.add(function () {
-					mceUpdater(this);
-				});
-			}
-		}
-	});
 
 	e.save = save;
 	e.open = open;

@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var single_test = $('#singletest').val() || null,
@@ -12,11 +13,6 @@ mailster = (function (mailster, $, window, document) {
 		outputnav = $('#outputnav'),
 		outputtabs = $('.subtab'),
 		errors, tests_run;
-
-	$('a.external').on('click', function () {
-		if (this.href) window.open(this.href);
-		return false;
-	});
 
 	start_button.on('click', function () {
 		start_button.hide();

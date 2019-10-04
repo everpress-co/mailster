@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var nav = $('.mainnav'),
@@ -7,11 +8,6 @@ mailster = (function (mailster, $, window, document) {
 		deliverytabs = $('#tab-delivery').find('.subtab'),
 		wpnonce = $('#mailster_nonce').val(),
 		reservedtags = $('#reserved-tags').data('tags');
-
-	$('a.external').on('click', function () {
-		if (this.href) window.open(this.href);
-		return false;
-	});
 
 	$('form#mailster-settings-form')
 		.on('submit.lock', function () {

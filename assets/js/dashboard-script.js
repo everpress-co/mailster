@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	var isMobile = $(document.body).hasClass('mobile'),
@@ -56,11 +57,6 @@ mailster = (function (mailster, $, window, document) {
 	subscriberselect.on('change', function () {
 		drawChart();
 	}).trigger('change');
-
-	$('a.external').on('click', function () {
-		if (this.href) window.open(this.href);
-		return false;
-	});
 
 	if (!isWPDashboard) {
 		$('.meta-box-sortables').sortable({
@@ -369,7 +365,6 @@ mailster = (function (mailster, $, window, document) {
 		return s.join(dec)
 	}
 
-	mailster.events.push('documentReady', function () {})
 
 	return mailster;
 

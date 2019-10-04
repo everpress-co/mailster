@@ -1,4 +1,5 @@
 mailster = (function (mailster, $, window, document) {
+
 	"use strict";
 
 	$('.register_form_wrap')
@@ -163,7 +164,6 @@ mailster = (function (mailster, $, window, document) {
 
 		});
 
-	mailster.events.push('documentReady', function () {})
 
 	return mailster;
 
