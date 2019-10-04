@@ -2,11 +2,6 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
-	var timeout,
-		_id = $('#ID'),
-		_form = $('form#subscriber_form'),
-		wpnonce = $('#_wpnonce').val();
-
 	$.easyPieChart && $('.piechart').easyPieChart({
 		animate: 1000,
 		rotate: 180,
