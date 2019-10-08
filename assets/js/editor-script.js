@@ -23,7 +23,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.editor.$.html = $('html');
 	mailster.editor.$.body = $('body');
 
-	$(window).one('load', function () {
+	mailster.$.window.one('load', function () {
 		mailster.editor.$.html.removeClass('mailster-loading');
 		mailster.editor.$.body = $('body');
 		mailster.editor.$.body
@@ -195,6 +195,7 @@ mailster = (function (mailster, $, window, document) {
 		}, 50);
 	}
 
+	mailster.editor.colors = mailster.$.options.find('.colors').data();
 
 	function initFrame() {
 		mailster.$.templateWrap.removeClass('load');

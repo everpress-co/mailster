@@ -17,7 +17,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.howto-purchasecode', function () {
 
-			Mailster.dialog('registration-dialog');
+			mailster.dialog.open('registration-dialog');
 			return false;
 		})
 		.on('change', '.tos', function () {

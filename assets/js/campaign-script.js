@@ -235,11 +235,11 @@ mailster = (function (mailster, $, window, document) {
 		return selText;
 	}
 
-	mailster.util.changeColor = function (color_from, color_to, element) {
+	mailster.util.changeColor = function (color_from, color_to, element, original) {
 		if (!color_from) color_from = color_to;
 		if (!color_to) return false;
-		color_from = color_from.toLowerCase();
-		color_to = color_to.toLowerCase();
+		color_from = color_from.toUpperCase();
+		color_to = color_to.toUpperCase();
 		if (color_from == color_to) return false;
 		var raw = mailster.editor.getContent(),
 			reg = new RegExp(color_from, 'gi');
@@ -250,7 +250,11 @@ mailster = (function (mailster, $, window, document) {
 		$('#mailster-color-' + color_from.substr(1)).attr('id', 'mailster-color-' + color_to.substr(1));
 
 		if (reg.test(raw)) {
-			mailster.editor.setContent(raw.replace(reg, color_to), 30);
+			mailster.editor.setContent(raw.replace(reg, color_to), 0);
+		}
+
+		if (original) {
+			mailster.editor.colors.map[original] = color_to;
 		}
 
 	}
@@ -316,9 +320,17 @@ mailster = (function (mailster, $, window, document) {
 	mailster.modules.dragging = false
 	mailster.modules.selected = false;
 
+	function colorSwap(html) {
+		for (var c_from in mailster.editor.colors.map) {
+			html = mailster.util.replace(html, c_from, mailster.editor.colors.map[c_from]);
+		}
+		return html;
+	}
+
 	function addmodule() {
-		var module = selector.data('current');
-		insert($(this).parent().find('script').html(), (module && module.is('module') ? module : false), true, true);
+		var module = selector.data('current'),
+			html = $(this).parent().find('script').html();
+		insert(colorSwap(html), (module && module.is('module') ? module : false), true, true);
 	}
 
 	function up() {
@@ -483,13 +495,13 @@ mailster = (function (mailster, $, window, document) {
 
 		mailster.editor.$.document
 			.off('.mailster')
-			.on('click', 'button.up', up)
-			.on('click', 'button.down', down)
-			.on('click', 'button.auto', auto)
-			.on('click', 'button.duplicate', duplicate)
-			.on('click', 'button.remove', remove)
-			.on('click', 'button.codeview', codeView)
-			.on('change', 'input.modulelabel', changeName);
+			.on('click.mailster', 'button.up', up)
+			.on('click.mailster', 'button.down', down)
+			.on('click.mailster', 'button.auto', auto)
+			.on('click.mailster', 'button.duplicate', duplicate)
+			.on('click.mailster', 'button.remove', remove)
+			.on('click.mailster', 'button.codeview', codeView)
+			.on('change.mailster', 'input.modulelabel', changeName);
 
 		selector
 			.off('.mailster')
@@ -521,7 +533,8 @@ mailster = (function (mailster, $, window, document) {
 						event.preventDefault();
 					})
 					.on('drop.mailster', function (event) {
-						insert($(startevent.target).find('script').html(), mailster.editor.$.modules.length ? (currentmodule && currentmodule[0] === mailster.editor.$.container ? false : currentmodule) : false, pre_dropzone[0] === event.target, false, true);
+						var html = $(startevent.target).find('script').html();
+						insert(colorSwap(html), mailster.editor.$.modules.length ? (currentmodule && currentmodule[0] === mailster.editor.$.container ? false : currentmodule) : false, pre_dropzone[0] === event.target, false, true);
 						event.preventDefault();
 					});
 
@@ -1797,45 +1810,29 @@ mailster = (function (mailster, $, window, document) {
 			var val = $(this).val();
 			_changeElements(val);
 		})
-		.on('change', 'input.color', function () {
+		.on('change', 'input.color', function (event, ui) {
 			var _this = $(this);
-			var from = _this.data('value');
-			changeColor(from, _this.val(), _this);
+			var _val = Color(_this.val()).toString().toUpperCase();
+			var _from = _this.data('value');
+			var original = _this.data('default-color');
+
+			_this.val(_val);
+
+			mailster.util.changeColor(_from, _val, _this, original);
 		});
 
 	mailster.events.push('documentReady', function () {
-		mailster.options.$.colorInputs.wpColorPicker({
+		$.wp.wpColorPicker && mailster.options.$.colorInputs.wpColorPicker({
 			color: true,
 			width: 250,
 			mode: 'hsl',
-			palettes: $('.colors').data('original-colors'),
+			palettes: $('.colors').data('original'),
 			change: function (event, ui) {
 				$(this).val(ui.color.toString()).trigger('change');
 			},
 			clear: function (event, ui) {}
 		});
 	});
-
-
-	function changeColor(color_from, color_to, element) {
-		if (!color_from) color_from = color_to;
-		if (!color_to) return false;
-		color_from = color_from.toLowerCase();
-		color_to = color_to.toLowerCase();
-		if (color_from == color_to) return false;
-		var raw = mailster.editor.getContent(),
-			reg = new RegExp(color_from, 'gi');
-
-		if (element)
-			element.data('value', color_to);
-
-		$('#mailster-color-' + color_from.substr(1)).attr('id', 'mailster-color-' + color_to.substr(1));
-
-		if (reg.test(raw)) {
-			mailster.editor.setContent(raw.replace(reg, color_to), 30);
-		}
-
-	}
 
 	function loader(show) {
 		if (null == show || true === show) {
