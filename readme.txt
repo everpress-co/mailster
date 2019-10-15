@@ -2,7 +2,7 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.2.3
+Tested up to: 5.2.4
 Stable tag: 2.4.6
 Author: EverPress
 Author URI: https://everpress.co
@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.6 =
 
+fixed: XSS vulnerable on the subscribers detail page identified by Compass Security
 fixed: single quote in subject now correctly encoded
 
 = Version 2.4.5 =
