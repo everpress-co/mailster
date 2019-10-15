@@ -254,7 +254,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		if (original) {
-			mailster.editor.colors.map[original] = color_to;
+			//mailster.editor.colors.map[original] = color_to;
 		}
 
 	}

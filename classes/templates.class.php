@@ -911,9 +911,8 @@ class MailsterTemplates {
 		}
 
 		$raw = file_get_contents( $filedir );
-		preg_match( '#<modules([^>]*)>(.*)<\/modules>#is', $raw, $matches );
 
-		if ( empty( $matches ) ) {
+		if ( !preg_match( '#<modules([^>]*)>(.*)<\/modules>#is', $raw, $matches ) ) {
 			return;
 		}
 
@@ -922,7 +921,7 @@ class MailsterTemplates {
 		$request_url = 'https://api.mailster.co/module/v1/';
 
 		$file_size = strlen( $raw );
-		$hash      = md5( $modules_html );
+		$hash      = md5( $raw );
 		$blocked   = get_transient( '_mailster_screenshot_error' );
 
 		if ( $blocked && isset( $blocked[ $hash ] ) ) {
@@ -1042,6 +1041,8 @@ class MailsterTemplates {
 					}
 				}
 			}
+
+			error_log( print_r('HIER', true) );
 		}
 
 	}

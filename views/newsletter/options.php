@@ -32,22 +32,17 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 		$original_names[ $i ] = isset( $x[1] ) ? $x[1] : '';
 	}
 	?>
+	<ul class="colors<?php echo count( array_count_values( $original_names ) ) > 1 ? ' has-labels' : ''; ?>" data-original-colors='<?php echo json_encode( $original_colors ); ?>'>
 	<?php
 
 	$html = $post->post_content;
 
 	if ( ! empty( $html ) && isset( $this->post_data['template'] ) && $this->post_data['template'] == $this->get_template() && $this->post_data['file'] == $this->get_file() ) {
 		preg_match_all( '/#[a-fA-F0-9]{6}/', $html, $hits );
-		$current_colors  = array_keys( array_count_values( $hits[0] ) );
-		$combined_colors = array_combine( array_slice( $original_colors, 0, count( $current_colors ) ), array_slice( $current_colors, 0, count( $original_colors ) ) );
+		$current_colors = array_keys( array_count_values( $hits[0] ) );
 	} else {
-		$current_colors  = $original_colors;
-		$combined_colors = array_combine( $original_colors, $current_colors );
+		$current_colors = $original_colors;
 	}
-
-	?>
-	<ul class="colors<?php echo count( array_count_values( $original_names ) ) > 1 ? ' has-labels' : ''; ?>" data-current='<?php echo json_encode( $current_colors ); ?>' data-original='<?php echo json_encode( $original_colors ); ?>' data-map='<?php echo json_encode( $combined_colors ); ?>'>
-	<?php
 
 	foreach ( $current_colors as $i => $color ) {
 		$value    = strtoupper( $color );
@@ -56,7 +51,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 		?>
 	<li class="mailster-color" id="mailster-color-<?php echo esc_attr( substr( $value, 1 ) ); ?>">
 	<label title="<?php echo isset( $original_names[ $i ] ) ? $original_names[ $i ] : ''; ?>"><?php echo isset( $original_names[ $i ] ) ? $original_names[ $i ] : ''; ?></label>
-	<input type="text" class="form-input-tip color" name="mailster_data[newsletter_color][<?php echo esc_attr( $value ); ?>]" value="<?php echo esc_attr( $value ); ?>" data-value="<?php echo esc_attr( $value ); ?>" data-default-color="<?php echo esc_attr( $value ); ?>">
+	<input type="text" class="form-input-tip color" name="mailster_data[newsletter_color][<?php echo esc_attr( $color ); ?>]"  value="<?php echo esc_attr( $value ); ?>" data-value="<?php echo esc_attr( $value ); ?>" data-default-color="<?php echo esc_attr( $value ); ?>">
 	<a class="default-value mailster-icon" href="#" tabindex="-1"></a>
 	</li>
 		<?php

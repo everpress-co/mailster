@@ -15,7 +15,7 @@ mailster = (function (mailster, $, window, document) {
 				id = el.data('id'),
 				type = !event.altKey ? 'notice_dismiss' : 'notice_dismiss_all';
 
-			if (event.altKey) el = notices;
+			if (event.altKey) el = mailster.notices.$;
 
 			if (id) {
 				mailster.util.ajax(type, {
