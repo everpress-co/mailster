@@ -242,6 +242,48 @@ mailster = (function (mailster, $, window, document) {
 		);
 	}
 
+	mailster.util.debounce = function (callback, delay) {
+
+		return mailster.util.throttle(callback, delay, true);
+
+	}
+
+	mailster.util.throttle = function (callback, delay, debounce) {
+		var timeout,
+			last = 0;
+
+		if (delay === undefined) delay = 250;
+
+		function api() {
+			var that = this,
+				elapsed = +new Date() - last,
+				args = arguments;
+
+			function run() {
+				last = +new Date();
+				callback.apply(that, args);
+			};
+
+			function clear() {
+				timeout = undefined;
+			};
+
+			if (debounce && !timeout) {
+				run();
+			}
+
+			timeout && clearTimeout(timeout);
+
+			if (debounce === undefined && elapsed > delay) {
+				run();
+			} else {
+				timeout = setTimeout(debounce ? clear : run, debounce === undefined ? delay - elapsed : delay);
+			}
+		};
+
+		return api;
+	};
+
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));

@@ -5,12 +5,13 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.$ = mailster.$ || {};
 
+	mailster.$.body = $('body');
 	mailster.$.wpbody = $('#wpbody');
 	mailster.$.form = $('#post');
 	mailster.$.title = $('#title');
 	mailster.$.iframe = $('#mailster_iframe');
 	mailster.$.templateWrap = $('#template-wrap');
-	mailster.$.template = $('#mailster_template .inside');
+	mailster.$.template = $('#mailster_template');
 	mailster.$.datafields = $('[name^="mailster_data"]');
 	mailster.$.content = $('#content');
 	mailster.$.excerpt = $('#excerpt');
@@ -118,7 +119,9 @@ mailster = (function (mailster, $, window, document) {
 		.on('resize.mailster', doResize);
 
 	mailster.$.document
-		.on('change', 'input[name=screen_columns]', doResize)
+		.on('change', 'input[name=screen_columns]', function () {
+			mailster.$.window.trigger('resize');
+		})
 		.on('click', '.restore-backup', function (e, data) {
 			var data = wp.autosave.local.getSavedPostData();
 			mailster.editor.setContent(data.content);
@@ -153,7 +156,7 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		});
 
-	//overwrite autosave function since we don't need it
+	// overwrite autosave function since we don't need it
 	if (!mailster.editable) {
 		window.autosave = wp.autosave = function () {
 			return true;
@@ -567,6 +570,13 @@ mailster = (function (mailster, $, window, document) {
 			});
 	}
 
+	$('.meta-box-sortables').on("sortstop", function (event, ui) {
+		if (ui.item[0] === mailster.dom.template) {
+			console.log(mailster.editor.$.body);
+			mailster.editor.$.body.addClass('reload-page');
+		}
+	});
+
 	mailster.$.template
 		.on('click', 'a.toggle-modules', toggleModules)
 		.on('keydown', 'a.addmodule', function (event) {
@@ -599,6 +609,26 @@ mailster = (function (mailster, $, window, document) {
 mailster = (function (mailster, $, window, document) {
 
 	"use strict";
+
+	var googledata = {
+		unknown_cities: [],
+		geodata: null,
+		map: null,
+		options: {
+			legend: false,
+			region: 'world',
+			resolution: 'countries',
+			datalessRegionColor: '#ffffff',
+			enableRegionInteractivity: true,
+			colors: ['#d7f1fc', mailster.colors.main],
+			backgroundColor: {
+				fill: 'none',
+				stroke: null,
+				strokeWidth: 0
+			},
+		}
+
+	};
 
 	mailster.$.details = $('#mailster_details .inside');
 
@@ -706,40 +736,28 @@ mailster = (function (mailster, $, window, document) {
 			}, function (response) {
 				$this.addClass('open');
 				loader.hide();
+
+				googledata.geodata = response.geodata;
+				googledata.unknown_cities = response.unknown_cities;
+
 				list.html(response.html).slideDown(100, function () {
-
-					var data, countrydata,
-						mapoptions = {
-							legend: false,
-							region: 'world',
-							resolution: 'countries',
-							datalessRegionColor: '#ffffff',
-							enableRegionInteractivity: true,
-							colors: ['#d7f1fc', mailster.colors.main],
-							backgroundColor: {
-								fill: 'none',
-								stroke: null,
-								strokeWidth: 0
-							}
-						},
-						hash;
-
-					var geomap;
 
 					google.load('visualization', '1.0', {
 						packages: ['geochart', 'corechart'],
+						mapsApiKey: google_jsapi ? google_jsapi.key : null,
 						callback: function () {
+							var hash;
 
-							geomap = new google.visualization.GeoChart(document.getElementById('countries_map'));
-							data = countrydata = google.visualization.arrayToDataTable(response.countrydata);
+							googledata.map = new google.visualization.GeoChart(document.getElementById('countries_map'));
+							google.countrydata = google.visualization.arrayToDataTable(response.countrydata);
 
 							if (location.hash && (hash = location.hash.match(/region=([A-Z]{2})/))) {
 								regionClick(hash[1]);
 							} else {
-								drawMap();
+								drawMap(google.countrydata);
 							}
 
-							google.visualization.events.addListener(geomap, 'regionClick', regionClick);
+							google.visualization.events.addListener(googledata.map, 'regionClick', regionClick);
 
 						}
 					});
@@ -885,25 +903,22 @@ mailster = (function (mailster, $, window, document) {
 				.trigger('change');
 		});
 
-	mailster.events.push('documentReady', function () {
-		$.easyPieChart && mailster.$.details.find('.piechart').easyPieChart({
-			animate: 2000,
-			rotate: 180,
-			barColor: mailster.colors.main,
-			trackColor: '#50626f',
-			trackColor: '#f3f3f3',
-			lineWidth: 9,
-			size: 75,
-			lineCap: 'butt',
-			onStep: function (value) {
-				this.$el.find('span').text(Math.round(value));
-			},
-			onStop: function (value) {
-				this.$el.find('span').text(Math.round(value));
-			}
-		});
-	})
-
+	$.easyPieChart && mailster.$.details.find('.piechart').easyPieChart({
+		animate: 2000,
+		rotate: 180,
+		barColor: mailster.colors.main,
+		trackColor: '#50626f',
+		trackColor: '#f3f3f3',
+		lineWidth: 9,
+		size: 75,
+		lineCap: 'butt',
+		onStep: function (value) {
+			this.$el.find('span').text(Math.round(value));
+		},
+		onStop: function (value) {
+			this.$el.find('span').text(Math.round(value));
+		}
+	});
 
 	function showWorld() {
 		var options = {
@@ -913,8 +928,7 @@ mailster = (function (mailster, $, window, document) {
 			'colors': ['#D7E4E9', mailster.colors.main]
 		};
 
-		data = countrydata;
-		drawMap(options);
+		drawMap(google.countrydata, options);
 
 		$('#countries_table').find('tr').removeClass('wp-ui-highlight');
 		$('#mapinfo').hide();
@@ -927,16 +941,17 @@ mailster = (function (mailster, $, window, document) {
 
 		var options = {},
 			region = event.region ? event.region : event,
-			d;
+			d, data;
 
 		if (region.match(/-/)) return false;
 
 		options['region'] = region;
 
-		(response.unknown_cities[region]) ?
-		$('#mapinfo').show().html('+ ' + response.unknown_cities[region] + ' unknown locations'): $('#mapinfo').hide();
+		googledata.unknown_cities[region] ?
+			$('#mapinfo').show().html(mailster.util.sprintf(mailsterL10n.unknown_locations, googledata.unknown_cities[region])) :
+			$('#mapinfo').hide();
 
-		d = response.geodata[region] ? response.geodata[region] : [];
+		d = googledata.geodata[region] ? googledata.geodata[region] : [];
 
 		options['resolution'] = 'provinces';
 		options['displayMode'] = 'markers';
@@ -959,15 +974,15 @@ mailster = (function (mailster, $, window, document) {
 		$('#country-row-' + region).addClass('wp-ui-highlight');
 
 		location.hash = '#region=' + region
-		drawMap(options);
+		drawMap(data, options);
 
 	}
 
-	function drawMap(options) {
-		options = $.extend(mapoptions, options);
-		geomap.draw(data, options);
+	function drawMap(data, options) {
+		options = $.extend(googledata.options, options);
+		googledata.map.draw(data, options);
 		$('a.zoomout').css({
-			'visibility': (mapoptions['region'] != 'world' ? 'visible' : 'hidden')
+			'visibility': (options['region'] != 'world' ? 'visible' : 'hidden')
 		});
 	}
 
@@ -978,7 +993,6 @@ mailster = (function (mailster, $, window, document) {
 		})
 		return regioncode;
 	}
-
 
 	return mailster;
 
@@ -1089,6 +1103,7 @@ mailster = (function (mailster, $, window, document) {
 	})
 
 	!mailster.editable && mailster.events.push('iframeLoaded', function () {
+		mailster.$.iframe.height(mailster.dom.iframe.contentWindow.document.body.scrollHeight);
 		mailster.clickmap.updateBadges();
 		mailster.$.iframecontents && mailster.$.iframecontents.on('click', 'a', function () {
 			window.open(this.href);
@@ -1363,29 +1378,29 @@ mailster = (function (mailster, $, window, document) {
 			$(this).addClass('inactive');
 		});
 
+	$.datepicker && mailster.$.delivery
+		.find('input.datepicker').datepicker({
+			dateFormat: 'yy-mm-dd',
+			minDate: new Date(),
+			firstDay: mailsterL10n.start_of_week,
+			showWeek: true,
+			dayNames: mailsterL10n.day_names,
+			dayNamesMin: mailsterL10n.day_names_min,
+			monthNames: mailsterL10n.month_names,
+			prevText: mailsterL10n.prev,
+			nextText: mailsterL10n.next,
+			showAnim: 'fadeIn',
+			onClose: function () {
+				var date = $(this).datepicker('getDate');
+				$('.deliverydate').html($(this).val());
+			}
+		});
+
+	$.datepicker && $('input.datepicker.nolimit').datepicker("option", "minDate", null);
+
+	mailster.$.delivery.find('input.datepicker').not('.hasDatepicker').prop('readonly', false);
+
 	mailster.events.push('documentReady', function () {
-		$.datepicker && mailster.$.delivery
-			.find('input.datepicker').datepicker({
-				dateFormat: 'yy-mm-dd',
-				minDate: new Date(),
-				firstDay: mailsterL10n.start_of_week,
-				showWeek: true,
-				dayNames: mailsterL10n.day_names,
-				dayNamesMin: mailsterL10n.day_names_min,
-				monthNames: mailsterL10n.month_names,
-				prevText: mailsterL10n.prev,
-				nextText: mailsterL10n.next,
-				showAnim: 'fadeIn',
-				onClose: function () {
-					var date = $(this).datepicker('getDate');
-					$('.deliverydate').html($(this).val());
-				}
-			});
-
-		$.datepicker && $('input.datepicker.nolimit').datepicker("option", "minDate", null);
-
-		mailster.$.delivery.find('input.datepicker').not('.hasDatepicker').prop('readonly', false);
-
 		//switch to autoresponder if referer is right or post_status is set
 		if (/post_status=autoresponder/.test($('#referredby').val()) || /post_status=autoresponder/.test(location.search)) {
 			mailster.$.delivery.find('a[href="#autoresponder"]').click();
@@ -1821,24 +1836,22 @@ mailster = (function (mailster, $, window, document) {
 			mailster.util.changeColor(_from, _val, _this, original);
 		});
 
-	mailster.events.push('documentReady', function () {
-		$.wp.wpColorPicker && mailster.options.$.colorInputs.wpColorPicker({
-			color: true,
-			width: 250,
-			mode: 'hsl',
-			palettes: $('.colors').data('original'),
-			change: function (event, ui) {
-				$(this).val(ui.color.toString()).trigger('change');
-			},
-			clear: function (event, ui) {}
-		});
+	$.wp.wpColorPicker && mailster.options.$.colorInputs.wpColorPicker({
+		color: true,
+		width: 250,
+		mode: 'hsl',
+		palettes: $('.colors').data('original'),
+		change: function (event, ui) {
+			$(this).val(ui.color.toString()).trigger('change');
+		},
+		clear: function (event, ui) {}
 	});
 
 	function loader(show) {
 		if (null == show || true === show) {
-			$('#olorschema-ajax-loading').css('display', 'inline');
+			$('#colorschema-ajax-loading').css('display', 'inline');
 		} else {
-			$('#olorschema-ajax-loading').hide();
+			$('#colorschema-ajax-loading').hide();
 		}
 	}
 
@@ -1960,7 +1973,7 @@ mailster = (function (mailster, $, window, document) {
 
 			if (_data.status != $('#original_post_status').val() && !$('#mailster_status_changed_info').length) {
 
-				$('<div id="mailster_status_changed_info" class="error inline"><p>' + maislter.util.sprintf(mailsterL10n.statuschanged, '<a href="post.php?post=' + mailster.campaign_id + '&action=edit">' + mailsterL10n.click_here + '</a></p></div>'))
+				$('<div id="mailster_status_changed_info" class="error inline"><p>' + mailster.util.sprintf(mailsterL10n.statuschanged, '<a href="post.php?post=' + mailster.campaign_id + '&action=edit">' + mailsterL10n.click_here + '</a></p></div>'))
 					.hide()
 					.prependTo('#postbox-container-2')
 					.slideDown(200);

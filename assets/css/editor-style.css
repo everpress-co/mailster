@@ -1,8 +1,10 @@
 html{
-	padding: 2px !important;
 	width: auto !important;
 	max-width: 100% !important;
 	background: url(../img/trans_bg.png) repeat left top #fff !important;
+}
+body.reload-page{
+	border:2px solid red;
 }
 html.mailster-loading{
 	 -webkit-filter: blur(3px);
@@ -368,7 +370,7 @@ td[background]:before, th[background]:before{
 	height: 16px;
 	line-height: 16px;
 	text-align: center;
-	left: -2px;
+	left: 0px;
 	top: 14px;
 	right: auto;
 	padding: 3px;
@@ -381,7 +383,7 @@ td[background]:before, th[background]:before{
 }
 [mailster-is-rtl] td[background]:before, [mailster-is-rtl] th[background]:before {
 	left: auto;
-	right: -2px;
+	right: 0px;
 }
 td[background]:hover:before, th[background]:hover:before{
 	display: block;

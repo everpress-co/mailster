@@ -790,7 +790,7 @@ class MailsterTemplates {
 		if ( file_exists( $screenshotfile ) ) {
 			$url = str_replace( ' ', '%20', $screenshoturi );
 		} elseif ( ! file_exists( $filedir ) ) {
-				$url = 'https://static.mailster.co/preview/not_available.gif';
+			$url = 'https://static.mailster.co/preview/not_available.gif';
 		} elseif ( mailster_is_local() ) {
 			$url = 'https://static.mailster.co/preview/not_available.gif';
 		} else {
@@ -912,7 +912,7 @@ class MailsterTemplates {
 
 		$raw = file_get_contents( $filedir );
 
-		if ( !preg_match( '#<modules([^>]*)>(.*)<\/modules>#is', $raw, $matches ) ) {
+		if ( ! preg_match( '#<modules([^>]*)>(.*)<\/modules>#is', $raw, $matches ) ) {
 			return;
 		}
 
@@ -1042,7 +1042,7 @@ class MailsterTemplates {
 				}
 			}
 
-			error_log( print_r('HIER', true) );
+			error_log( print_r( 'HIER', true ) );
 		}
 
 	}

@@ -201,19 +201,17 @@ mailster = (function (mailster, $, window, document) {
 			return;
 		}
 
-		containeroffset = mailster.$.template.offset();
-
 		if (!mailster.$.body.hasClass('focus-on')) {
 			mailster.$.body.removeClass('focus-off').addClass('focus-on');
-			mailster.$.wpbody.on('mouseleave.dfw', dfw);
+			mailster.$.wpbody.on('mouseleave.dfw', mailster.optionbar.dfw);
 			mailster.$.optionbar.find('a.dfw').addClass('active');
-			if (mailster.$.window.scrollTop() < containeroffset.top) {
-				_scroll(containeroffset.top - 80);
+			if (mailster.$.window.scrollTop() < containerOffset()) {
+				mailster.util.scroll(containerOffset() - 80);
 			}
 
 		} else {
 			mailster.$.body.removeClass('focus-on').addClass('focus-off');
-			mailster.$.wpbody.off('mouseleave', dfw);
+			mailster.$.wpbody.off('mouseleave', mailster.optionbar.dfw);
 			mailster.$.optionbar.find('a.dfw').removeClass('active');
 		}
 
@@ -233,14 +231,44 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', 'a.code', mailster.optionbar.codeView)
 		.on('click', 'a.plaintext', mailster.optionbar.plainText)
 		.on('click', 'a.dfw', mailster.optionbar.dfw)
-
-	.on('click', 'a.template', showFiles)
+		.on('click', 'a.template', showFiles)
 		.on('click', 'a.file', changeTemplate);
+
+	mailster.$.window
+		//.on('scroll.optionbar', mailster.util.throttle(togglefix, 100))
+		.on('resize.optionbar', function () {
+			mailster.$.window.trigger('scroll.optionbar');
+		});
 
 	mailster.events.push('editorLoaded', function () {
 		mailster.optionbar.undos.push(mailster.editor.getFrameContent());
 	});
 
+	$('.meta-box-sortables').on("sortstop", function (event, ui) {
+		mailster.$.window.trigger('resize.optionbar');
+	});
+
+	function containerOffset() {
+		if (!mailster.dom.template) return 0;
+		return mailster.$.template.offset().top;
+	}
+
+
+	function togglefix() {
+		var scrolltop = mailster.util.top();
+
+		if (scrolltop < containerOffset() || scrolltop > containerOffset() + mailster.$.template.height() - 120) {
+			if (/fixed-optionbar/.test(mailster.dom.body.className)) {
+				mailster.$.body.removeClass('fixed-optionbar');
+				mailster.$.optionbar.width('auto');
+			}
+		} else {
+			if (!/fixed-optionbar/.test(mailster.dom.body.className)) {
+				mailster.$.body.addClass('fixed-optionbar');
+				mailster.$.optionbar.width(mailster.$.template.width() - 22);
+			}
+		}
+	}
 
 	function showFiles(name) {
 		var $this = $(this);
@@ -248,7 +276,6 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function changeTemplate() {
-
 		window.onbeforeunload = null;
 		window.location = this.href;
 	}

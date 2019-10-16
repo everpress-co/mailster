@@ -23,7 +23,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.editor.$.html = $('html');
 	mailster.editor.$.body = $('body');
 
-	mailster.$.window.one('load', function () {
+	mailster.$.window.on('load', function () {
 		mailster.editor.$.html.removeClass('mailster-loading');
 		mailster.editor.$.body = $('body');
 		mailster.editor.$.body
@@ -150,9 +150,8 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.editor.setContent = function (content, delay, saveit, extrastyle) {
 
-		var structure = mailster.editor.getStructure(content);
-
-		var attrcount = structure.bodyattributes.length,
+		var structure = mailster.editor.getStructure(content),
+			attrcount = structure.bodyattributes.length,
 			head = mailster.editor.$.document.find('head'),
 			headstyles = head.find('link');
 
@@ -167,7 +166,7 @@ mailster = (function (mailster, $, window, document) {
 
 		if (attrcount) {
 			while (attrcount--) {
-				doc.body.setAttribute(structure.bodyattributes[attrcount].name, structure.bodyattributes[attrcount].value)
+				mailster.editor.$.body[0].setAttribute(structure.bodyattributes[attrcount].name, structure.bodyattributes[attrcount].value)
 			}
 		}
 
@@ -183,7 +182,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	mailster.editor.getHeight = function () {
-		return Math.max(500, mailster.editor.$.body.outerHeight() + 4);
+		return Math.max(500, mailster.editor.$.body.outerHeight());
 	}
 
 
@@ -199,9 +198,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function initFrame() {
 		mailster.$.templateWrap.removeClass('load');
-		// add current content to undo list
 		mailster.trigger('iframeLoaded');
-
 		makeEditable();
 	}
 
