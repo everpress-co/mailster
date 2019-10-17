@@ -157,12 +157,9 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 	// overwrite autosave function since we don't need it
-	if (!mailster.editable) {
-		window.autosave = wp.autosave = function () {
-			return true;
-		};
-		window.onbeforeunload = null;
-	}
+	!mailster.editable && mailster.events.push('documentReady', function () {
+		mailster.$.window.off('beforeunload.edit-post');
+	});
 
 	function doResize() {
 		clearTimeout(resizeTimout);
