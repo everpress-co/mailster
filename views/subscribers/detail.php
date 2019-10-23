@@ -11,7 +11,7 @@ if ( ! $is_new ) {
 	}
 
 	$meta     = (object) $this->meta( $subscriber->ID );
-	$nicename = ( ! empty( $subscriber->fullname ) ? $subscriber->fullname : $subscriber->email );
+	$nicename = empty( $subscriber->fullname ) ? $subscriber->email : $subscriber->fullname;
 
 } else {
 

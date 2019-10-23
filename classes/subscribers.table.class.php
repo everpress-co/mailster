@@ -185,7 +185,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				}
 
 				if ( $data['fullname'] ) {
-					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '">' . $this->searchmark( $data['fullname'] ) . '</a><br><a class="email" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $this->searchmark( $item->{'email'} ) . '</a>';
+					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '">' . $this->searchmark( $data['fullname'] ) . '</a><br><a class="email" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . esc_attr( $item->{'email'} ) . '">' . $this->searchmark( $item->{'email'} ) . '</a>';
 				} else {
 					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $this->searchmark( $item->{'email'} ) . '</a><br><span class="email">&nbsp;</span>';
 				}

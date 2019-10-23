@@ -4,12 +4,13 @@ $id = isset( $_GET['ID'] ) ? (int) $_GET['ID'] : null;
 
 $is_new = isset( $_GET['new'] );
 
-if ( ! $is_new ) {
+if ( ! $is_new ) :
 	if ( ! ( $list = $this->get( $id, null, true ) ) ) {
 		echo '<h2>' . esc_html__( 'This list does not exist or has been deleted!', 'mailster' ) . '</h2>';
 		return;
 	}
-} else {
+
+else :
 
 	if ( ! current_user_can( 'mailster_add_subscribers' ) ) {
 		echo '<h2>' . esc_html__( 'You don\'t have the right permission to add new lists', 'mailster' ) . '</h2>';
@@ -22,7 +23,7 @@ if ( ! $is_new ) {
 		$list = (object) wp_parse_args( $_POST['mailster_data'], (array) $list );
 
 	}
-}
+endif;
 
 $timeformat = mailster( 'helper' )->timeformat();
 $timeoffset = mailster( 'helper' )->gmt_offset( true );

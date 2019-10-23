@@ -2913,7 +2913,7 @@ class MailsterSubscribers {
 		endif;
 
 		$html .= '<div class="receiver-detail-data ' . ( $avatar ? 'has-avatar' : '' ) . '">';
-		$html .= '<h4>' . ( $subscriber->fullname ? $subscriber->fullname : $subscriber->email ) . ' <a href="edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID . '">' . esc_html__( 'edit', 'mailster' ) . '</a></h4>';
+		$html .= '<h4>' . esc_html( $subscriber->fullname ? $subscriber->fullname : $subscriber->email ) . ' <a href="edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID . '">' . esc_html__( 'edit', 'mailster' ) . '</a></h4>';
 		$html .= '<ul>';
 
 		$html .= '<li><label>' . esc_html__( 'sent', 'mailster' ) . ':</label> ' . ( $actions->sent ? date( $timeformat, $actions->sent + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->sent ) ) . ( $actions->sent_total > 1 ? ' <span class="count">(' . sprintf( esc_html__( '%d times', 'mailster' ), $actions->sent_total ) . ')</span>' : '' ) : esc_html__( 'not yet', 'mailster' ) );
