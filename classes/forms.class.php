@@ -577,6 +577,14 @@ class MailsterForms {
 		$lists = isset( $data['lists'] ) ? $data['lists'] : false;
 		unset( $data['lists'] );
 
+		if ( isset( $data['redirect'] ) ) {
+			$data['redirect'] = trim( $data['redirect'] );
+		}
+
+		if ( isset( $data['confirmredirect'] ) ) {
+			$data['confirmredirect'] = trim( $data['confirmredirect'] );
+		}
+
 		$wpdb->suppress_errors();
 
 		if ( false !== $wpdb->update( "{$wpdb->prefix}mailster_forms", $data, array( 'ID' => $data['ID'] ) ) ) {

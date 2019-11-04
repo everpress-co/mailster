@@ -1943,7 +1943,7 @@ class MailsterCampaigns {
 				delete_post_meta( $id, '_mailster_' . $k );
 			} elseif ( in_array( $k, array( 'subject', 'from_name', 'preheader' ) ) ) {
 				// emojis are urlencoded
-				update_post_meta( $id, '_mailster_' . $k, rawurlencode( $v ) );
+				update_post_meta( $id, '_mailster_' . $k, rawurlencode( wp_unslash( $v ) ) );
 			} else {
 				update_post_meta( $id, '_mailster_' . $k, $v );
 			}
