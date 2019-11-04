@@ -302,7 +302,7 @@ else :
 <p class="section-nav"><span class="alignleft"><input type="submit" name="design" value="&laquo; <?php esc_html_e( 'Back to Design', 'mailster' ); ?>" class="button-primary button-small"></span></p>
 
 <div id="form-options">
-		<div class="subtab form" id="form-tab-<?php echo $id; ?>">
+		<div class="subtab form" id="form-tab-<?php echo esc_attr( $id ); ?>">
 
 		<fieldset>
 			<legend><?php esc_html_e( 'Form Options', 'mailster' ); ?></legend>
@@ -315,8 +315,8 @@ else :
 				<p><label><input type="hidden" name="mailster_data[prefill]" value="0"><input type="checkbox" name="mailster_data[prefill]" value="1" <?php checked( $form->prefill ); ?>> <?php esc_html_e( 'Fill fields with known data if user is logged in', 'mailster' ); ?></label>
 				</p>
 
-				<p><label><input type="hidden" name="mailster_data[redirect]" value=""><input id="redirect-cb" type="checkbox" <?php checked( ! ! $form->redirect ); ?>> <?php esc_html_e( 'Redirect after submit', 'mailster' ); ?></label>
-				<input type="text" id="redirect-tf" name="mailster_data[redirect]" class="widefat regular-text" value="<?php echo $form->redirect; ?>" placeholder="https://www.example.com" >
+				<p><label><input type="hidden" name="mailster_data[redirect]" value=""><input id="redirect-cb" type="checkbox" <?php checked( ! empty( $form->redirect ) ); ?>> <?php esc_html_e( 'Redirect after submit', 'mailster' ); ?></label>
+				<input type="url" id="redirect-tf" name="mailster_data[redirect]" class="widefat regular-text" value="<?php echo esc_attr( $form->redirect ); ?>" placeholder="https://www.example.com" >
 				</p>
 
 				<p><label><input type="hidden" name="mailster_data[overwrite]" value="0"><input type="checkbox" name="mailster_data[overwrite]" value="1" <?php checked( $form->overwrite ); ?>> <?php esc_html_e( 'Allow users to update their data with this form', 'mailster' ); ?></label>
@@ -399,7 +399,7 @@ else :
 									<td><div><input type="hidden" name="mailster_data[resend]" value="0"><input type="checkbox" name="mailster_data[resend]" value="1" <?php checked( $form->resend ); ?>> <?php printf( esc_html__( 'Resend confirmation %1$s times with a delay of %2$s hours if user hasn\'t confirmed the subscription', 'mailster' ), '<input type="text" name="mailster_data[resend_count]" value="' . esc_attr( $form->resend_count ) . '" class="small-text">', '<input type="text" name="mailster_data[resend_time]" value="' . esc_attr( $form->resend_time ) . '" class="small-text">' ); ?></div></td>
 								</tr>
 
-								<tr><td><?php esc_html_e( 'Redirect after confirm', 'mailster' ); ?></td><td><input type="text" name="mailster_data[confirmredirect]" class="widefat" value="<?php echo isset( $form->confirmredirect ) ? esc_attr( $form->confirmredirect ) : ''; ?>" placeholder="http://www.example.com" ></td>
+								<tr><td><?php esc_html_e( 'Redirect after confirm', 'mailster' ); ?></td><td><input type="url" name="mailster_data[confirmredirect]" class="widefat" value="<?php echo isset( $form->confirmredirect ) ? esc_attr( $form->confirmredirect ) : ''; ?>" placeholder="http://www.example.com" ></td>
 								</tr>
 								<tr>
 									<td>&nbsp;</td>
@@ -434,7 +434,6 @@ else :
 
 		$form = mailster( 'form' )->id( $id );
 
-
 		$form_use_it_tabs = array(
 			'intro'             => esc_html__( 'Use your form as', 'mailster' ) . '&hellip;',
 			'code'              => esc_html__( 'Shortcode or PHP', 'mailster' ),
@@ -445,7 +444,6 @@ else :
 		$form_use_it_tabs = apply_filters( 'mailster_form_use_it_tabs', $form_use_it_tabs );
 
 		?>
-
 	<div class="useit-wrap">
 		<div class="useit-nav">
 			<div class="mainnav contextual-help-tabs hide-if-no-js">
@@ -456,9 +454,7 @@ else :
 				</ul>
 			</div>
 		</div>
-
 		<div class="useit-tabs">
-
 			<?php foreach ( $form_use_it_tabs as $key => $name ) : ?>
 
 			<div id="tab-<?php echo esc_attr( $key ); ?>" class="useit-tab">
@@ -469,11 +465,8 @@ else :
 			</div>
 
 			<?php endforeach; ?>
-
 		</div>
-
 	</div>
-
 </div>
 <?php endif; ?>
 
