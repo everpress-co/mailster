@@ -23,15 +23,19 @@ jQuery(document).ready(function ($) {
 
 		$.post(form.attr('action'), data, handlerResponse, 'JSON')
 			.fail(function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				var html = jqXHR.responseText,
-					response;
+				var response;
 
 				try {
 					response = $.parseJSON(jqXHR.responseText);
+					if (!response.html) {
+						response = {
+							html: 'There was an error with the response:<br><code>[' + response.code + '] ' + response.message + '</code>',
+							success: false
+						}
+					}
 				} catch (err) {
 					response = {
-						html: 'There was an error while parsing the response: <code>' + jqXHR.responseText + '</code>',
+						html: 'There was an error while parsing the response:<br><code>' + jqXHR.responseText + '</code>',
 						success: false
 					}
 				}

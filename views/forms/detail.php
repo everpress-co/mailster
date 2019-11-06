@@ -110,20 +110,15 @@ else :
 			<li class="field-<?php echo $field->field_id; ?> form-field">
 				<label><?php echo strip_tags( $field->name ); ?></label>
 				<div>
-				<span class="label"><?php esc_html_e( 'Label', 'mailster' ); ?>:</span>
-				<input class="label widefat" type="text" name="mailster_structure[fields][<?php echo $field->field_id; ?>]" data-name="mailster_structure[fields][<?php echo $field->field_id; ?>]" value="<?php echo esc_attr( $field->name ); ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' ); ?>" placeholder="<?php echo esc_attr( $field->name ); ?>">
-					<span class="alignright required-field"><input type="checkbox" name="mailster_structure[required][<?php echo $field->field_id; ?>]" data-name="mailster_structure[required][<?php echo $field->field_id; ?>]" class="form-order-check-required" value="1" <?php checked( $field->required ); ?> <?php
-					if ( $field->field_id == 'email' ) {
-						echo ' disabled'; }
-					?>
-					> <?php esc_html_e( 'required', 'mailster' ); ?>
+					<span class="label"><?php esc_html_e( 'Label', 'mailster' ); ?>:</span>
+					<input class="label widefat" type="text" name="mailster_structure[fields][<?php echo $field->field_id; ?>]" data-name="mailster_structure[fields][<?php echo $field->field_id; ?>]" value="<?php echo esc_attr( $field->name ); ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' ); ?>" placeholder="<?php echo esc_attr( $field->name ); ?>">
+					<span class="alignright required-field"><input type="checkbox" name="mailster_structure[required][<?php echo $field->field_id; ?>]" data-name="mailster_structure[required][<?php echo $field->field_id; ?>]" class="form-order-check-required" value="1" <?php checked( $field->required ); ?> <?php disabled( $field->field_id == 'email' ); ?> <?php esc_html_e( 'required', 'mailster' ); ?>>
 						<a class="field-remove" title="<?php esc_html_e( 'remove field', 'mailster' ); ?>">&#10005;</a>
-
 					</span>
 				</div>
 				<div>
-				<span class="label"><?php esc_html_e( 'Error Message', 'mailster' ); ?>:</span>
-				<input class="label widefat error-msg" type="text" name="mailster_structure[error_msg][<?php echo $field->field_id; ?>]" data-name="mailster_structure[error_msg][<?php echo $field->field_id; ?>]" value="<?php echo esc_attr( $field->error_msg ); ?>" title="<?php esc_html_e( 'define an error message for this field', 'mailster' ); ?>" placeholder="<?php esc_html_e( 'Error Message (optional)', 'mailster' ); ?>">
+					<span class="label"><?php esc_html_e( 'Error Message', 'mailster' ); ?>:</span>
+					<input class="label widefat error-msg" type="text" name="mailster_structure[error_msg][<?php echo $field->field_id; ?>]" data-name="mailster_structure[error_msg][<?php echo $field->field_id; ?>]" value="<?php echo esc_attr( $field->error_msg ); ?>" title="<?php esc_html_e( 'define an error message for this field', 'mailster' ); ?>" placeholder="<?php esc_html_e( 'Error Message (optional)', 'mailster' ); ?>">
 				</div>
 			</li>
 			<?php endforeach; ?>
@@ -146,7 +141,7 @@ else :
 			?>
 
 			<li class="field-<?php echo $field_id; ?> form-field">
-				<label><?php echo strip_tags( $name ); ?></label>
+				<label><?php esc_html_e( strip_tags( $name ) ); ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ); ?>:</span>
 				<input class="label widefat" type="text" data-name="mailster_structure[fields][<?php echo $field_id; ?>]" value="<?php echo esc_attr( $name ); ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' ); ?>" placeholder="<?php echo esc_attr( $name ); ?>">
@@ -269,30 +264,30 @@ else :
 		<legend><?php esc_html_e( 'Custom Style', 'mailster' ); ?></legend>
 		<p class="description"><?php esc_html_e( 'Add custom CSS to your form', 'mailster' ); ?></p>
 		<div id="custom-style-wrap" class="wrapper">
-		<div class="wrapper-left">
-		<textarea id="custom-style" class="code" name="mailster_design[custom]"><?php echo esc_textarea( $form->custom_style ); ?></textarea>
-		</div>
-		<div class="wrapper-right">
-		<input type="text" class="widefat" placeholder="<?php esc_html_e( 'Selector Prefix', 'mailster' ); ?>" id="custom-style-prefix">
-		<select id="custom-style-samples" multiple>
-			<option value=""><?php esc_html_e( 'Form selector', 'mailster' ); ?></option>
-			<option value=" .mailster-wrapper"><?php esc_html_e( 'Field wrapper', 'mailster' ); ?></option>
-			<optgroup label="<?php esc_html_e( 'Custom Field Wrapper divs', 'mailster' ); ?>">
-			<?php foreach ( $defaultfields as $key => $field ) : ?>
-			<option value=" .mailster-<?php echo $key; ?>-wrapper"><?php echo $field; ?></option>
-			<?php endforeach; ?>
-			</optgroup>
-			<optgroup label="<?php esc_html_e( 'Custom Field Inputs', 'mailster' ); ?>">
-			<?php foreach ( $defaultfields as $key => $field ) : ?>
-			<option value=" .mailster-<?php echo $key; ?>-wrapper input.input"><?php echo $field; ?></option>
-			<?php endforeach; ?>
-			</optgroup>
-			<optgroup label="<?php esc_html_e( 'Other', 'mailster' ); ?>">
-			<option value=" label .mailster-required"><?php esc_html_e( 'Required Asterisk', 'mailster' ); ?></option>
-			<option value=" .mailster-submit-wrapper .submit-button"><?php esc_html_e( 'Submit Button', 'mailster' ); ?></option>
-			</optgroup>
-		</select>
-		</div>
+			<div class="wrapper-left">
+				<textarea id="custom-style" class="code" name="mailster_design[custom]"><?php echo esc_textarea( $form->custom_style ); ?></textarea>
+			</div>
+			<div class="wrapper-right">
+			<input type="text" class="widefat" placeholder="<?php esc_html_e( 'Selector Prefix', 'mailster' ); ?>" id="custom-style-prefix">
+			<select id="custom-style-samples" multiple>
+				<option value=""><?php esc_html_e( 'Form selector', 'mailster' ); ?></option>
+				<option value=" .mailster-wrapper"><?php esc_html_e( 'Field wrapper', 'mailster' ); ?></option>
+				<optgroup label="<?php esc_html_e( 'Custom Field Wrapper divs', 'mailster' ); ?>">
+				<?php foreach ( $defaultfields as $key => $field ) : ?>
+				<option value=" .mailster-<?php echo esc_attr( $key ); ?>-wrapper"><?php echo $field; ?></option>
+				<?php endforeach; ?>
+				</optgroup>
+				<optgroup label="<?php esc_html_e( 'Custom Field Inputs', 'mailster' ); ?>">
+				<?php foreach ( $defaultfields as $key => $field ) : ?>
+				<option value=" .mailster-<?php echo esc_attr( $key ); ?>-wrapper input.input"><?php echo $field; ?></option>
+				<?php endforeach; ?>
+				</optgroup>
+				<optgroup label="<?php esc_html_e( 'Other', 'mailster' ); ?>">
+				<option value=" label .mailster-required"><?php esc_html_e( 'Required Asterisk', 'mailster' ); ?></option>
+				<option value=" .mailster-submit-wrapper .submit-button"><?php esc_html_e( 'Submit Button', 'mailster' ); ?></option>
+				</optgroup>
+			</select>
+			</div>
 		</div>
 	</fieldset>
 
@@ -307,7 +302,7 @@ else :
 <p class="section-nav"><span class="alignleft"><input type="submit" name="design" value="&laquo; <?php esc_html_e( 'Back to Design', 'mailster' ); ?>" class="button-primary button-small"></span></p>
 
 <div id="form-options">
-		<div class="subtab form" id="form-tab-<?php echo $id; ?>">
+		<div class="subtab form" id="form-tab-<?php echo esc_attr( $id ); ?>">
 
 		<fieldset>
 			<legend><?php esc_html_e( 'Form Options', 'mailster' ); ?></legend>
@@ -320,8 +315,8 @@ else :
 				<p><label><input type="hidden" name="mailster_data[prefill]" value="0"><input type="checkbox" name="mailster_data[prefill]" value="1" <?php checked( $form->prefill ); ?>> <?php esc_html_e( 'Fill fields with known data if user is logged in', 'mailster' ); ?></label>
 				</p>
 
-				<p><label><input type="hidden" name="mailster_data[redirect]" value=""><input id="redirect-cb" type="checkbox" <?php checked( ! ! $form->redirect ); ?>> <?php esc_html_e( 'Redirect after submit', 'mailster' ); ?></label>
-				<input type="text" id="redirect-tf" name="mailster_data[redirect]" class="widefat regular-text" value="<?php echo $form->redirect; ?>" placeholder="https://www.example.com" >
+				<p><label><input type="hidden" name="mailster_data[redirect]" value=""><input id="redirect-cb" type="checkbox" <?php checked( ! empty( $form->redirect ) ); ?>> <?php esc_html_e( 'Redirect after submit', 'mailster' ); ?></label>
+				<input type="url" id="redirect-tf" name="mailster_data[redirect]" class="widefat regular-text" value="<?php echo esc_attr( $form->redirect ); ?>" placeholder="https://www.example.com" >
 				</p>
 
 				<p><label><input type="hidden" name="mailster_data[overwrite]" value="0"><input type="checkbox" name="mailster_data[overwrite]" value="1" <?php checked( $form->overwrite ); ?>> <?php esc_html_e( 'Allow users to update their data with this form', 'mailster' ); ?></label>
@@ -331,11 +326,7 @@ else :
 		<fieldset>
 			<legend><?php esc_html_e( 'Profile', 'mailster' ); ?></legend>
 				<p><label>
-					<input type="hidden" name="profile_form" value="0"><input type="checkbox" name="profile_form" value="1" <?php checked( $is_profile ); ?> <?php
-					if ( $is_profile ) {
-						echo 'disabled'; }
-					?>
-					> <?php esc_html_e( 'Use this form as user profile.', 'mailster' ); ?>
+					<input type="hidden" name="profile_form" value="0"><input type="checkbox" name="profile_form" value="1" <?php checked( $is_profile ); ?> <?php disabled( $is_profile ); ?>> <?php esc_html_e( 'Use this form as user profile.', 'mailster' ); ?>
 				</label>
 				</p>
 					<?php
@@ -351,22 +342,12 @@ else :
 		<fieldset>
 			<legend><?php esc_html_e( 'List Options', 'mailster' ); ?></legend>
 				<p>
-				<label><input type="hidden" name="mailster_data[userschoice]" value="0"><input type="checkbox" name="mailster_data[userschoice]" class="mailster_userschoice" value="1" <?php checked( $form->userschoice ); ?>> <?php esc_html_e( 'Users decide which list they subscribe to', 'mailster' ); ?></label>
-				<br> &nbsp; <label><input type="hidden" name="mailster_data[dropdown]" value="0"><input type="checkbox" name="mailster_data[dropdown]" class="mailster_dropdown" value="1" <?php checked( $form->dropdown ); ?><?php disabled( ! $form->userschoice ); ?>> <?php esc_html_e( 'Show drop down instead of check boxes', 'mailster' ); ?></label>
+					<label><input type="hidden" name="mailster_data[userschoice]" value="0"><input type="checkbox" name="mailster_data[userschoice]" class="mailster_userschoice" value="1" <?php checked( $form->userschoice ); ?>> <?php esc_html_e( 'Users decide which list they subscribe to', 'mailster' ); ?></label>
+					<br> &nbsp; <label><input type="hidden" name="mailster_data[dropdown]" value="0"><input type="checkbox" name="mailster_data[dropdown]" class="mailster_dropdown" value="1" <?php checked( $form->dropdown ); ?><?php disabled( ! $form->userschoice ); ?>> <?php esc_html_e( 'Show drop down instead of check boxes', 'mailster' ); ?></label>
 				</p>
 				<fieldset>
-				<legend class="mailster_userschoice_td"
-				<?php
-				if ( $form->userschoice ) {
-					echo ' style="display:none"';}
-				?>
-				><?php esc_html_e( 'Subscribe new users to', 'mailster' ); ?></legend>
-				<legend class="mailster_userschoice_td"
-				<?php
-				if ( ! $form->userschoice ) {
-					echo ' style="display:none"';}
-				?>
-				><?php esc_html_e( 'Users can subscribe to', 'mailster' ); ?></legend>
+				<legend class="mailster_userschoice_td"<?php echo $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Subscribe new users to', 'mailster' ); ?></legend>
+				<legend class="mailster_userschoice_td"<?php echo $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Users can subscribe to', 'mailster' ); ?></legend>
 
 				<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', false, $form->lists ); ?>
 
@@ -385,17 +366,10 @@ else :
 				</p>
 				<p><label><input type="radio" name="mailster_data[doubleoptin]" class="double-opt-in" data-id="<?php echo $id; ?>" value="1" <?php checked( $form->doubleoptin ); ?>> [Double-Opt-In] <?php esc_html_e( 'new subscribers must confirm their subscription.', 'mailster' ); ?></label>
 				</p>
-				<div id="double-opt-in-field" class="double-opt-in-field"
-				<?php
-				if ( ! $form->doubleoptin ) {
-					echo ' style="display:none"'; }
-				?>
-				>
-
+				<div id="double-opt-in-field" class="double-opt-in-field"<?php echo ! $form->doubleoptin ? ' style="display:none"' : ''; ?>>
 					<fieldset>
 						<legend><?php esc_html_e( 'Confirmation Settings', 'mailster' ); ?></legend>
-					<table class="nested">
-
+						<table class="nested">
 						<tr>
 							<td colspan="2">
 							<table class="form-table">
@@ -425,22 +399,12 @@ else :
 									<td><div><input type="hidden" name="mailster_data[resend]" value="0"><input type="checkbox" name="mailster_data[resend]" value="1" <?php checked( $form->resend ); ?>> <?php printf( esc_html__( 'Resend confirmation %1$s times with a delay of %2$s hours if user hasn\'t confirmed the subscription', 'mailster' ), '<input type="text" name="mailster_data[resend_count]" value="' . esc_attr( $form->resend_count ) . '" class="small-text">', '<input type="text" name="mailster_data[resend_time]" value="' . esc_attr( $form->resend_time ) . '" class="small-text">' ); ?></div></td>
 								</tr>
 
-								<tr><td><?php esc_html_e( 'Redirect after confirm', 'mailster' ); ?></td><td><input type="text" name="mailster_data[confirmredirect]" class="widefat" value="
-														  <?php
-															if ( isset( $form->confirmredirect ) ) {
-																echo $form->confirmredirect; }
-															?>
-								" placeholder="http://www.example.com" ></td>
+								<tr><td><?php esc_html_e( 'Redirect after confirm', 'mailster' ); ?></td><td><input type="url" name="mailster_data[confirmredirect]" class="widefat" value="<?php echo isset( $form->confirmredirect ) ? esc_attr( $form->confirmredirect ) : ''; ?>" placeholder="http://www.example.com" ></td>
 								</tr>
 								<tr>
 									<td>&nbsp;</td>
 									<td><label><input type="hidden" name="mailster_data[vcard]" class="vcard" value="0"><input type="checkbox" name="mailster_data[vcard]" class="vcard" value="1" <?php checked( $form->vcard ); ?> data-id="<?php echo $id; ?>"> <?php esc_html_e( 'Attach vCard to all confirmation mails', 'mailster' ); ?></label>
-									<div id="vcard-field"
-									<?php
-									if ( ! $form->vcard ) {
-										echo ' style="display:none"'; }
-									?>
-									 class="vcard-field">
+									<div id="vcard-field"<?php echo ! $form->vcard ? ' style="display:none"' : ''; ?> class="vcard-field">
 									<p class="description"><?php printf( esc_html__( 'Paste in your vCard content. You can use %s to generate your personal vcard', 'mailster' ), '<a href="http://vcardmaker.com/" class="external">vcardmaker.com</a>' ); ?></p>
 									<?php $vcard = $form->vcard_content ? $form->vcard_content : $this->get_vcard(); ?><textarea name="mailster_data[vcard_content]" rows="10" cols="50" class="large-text code"><?php echo esc_textarea( $vcard ); ?></textarea>
 									</div>
@@ -451,7 +415,6 @@ else :
 							</table>
 							</td>
 						</tr>
-
 					</table>
 					</fieldset>
 				</div>
@@ -471,7 +434,6 @@ else :
 
 		$form = mailster( 'form' )->id( $id );
 
-
 		$form_use_it_tabs = array(
 			'intro'             => esc_html__( 'Use your form as', 'mailster' ) . '&hellip;',
 			'code'              => esc_html__( 'Shortcode or PHP', 'mailster' ),
@@ -482,7 +444,6 @@ else :
 		$form_use_it_tabs = apply_filters( 'mailster_form_use_it_tabs', $form_use_it_tabs );
 
 		?>
-
 	<div class="useit-wrap">
 		<div class="useit-nav">
 			<div class="mainnav contextual-help-tabs hide-if-no-js">
@@ -493,9 +454,7 @@ else :
 				</ul>
 			</div>
 		</div>
-
 		<div class="useit-tabs">
-
 			<?php foreach ( $form_use_it_tabs as $key => $name ) : ?>
 
 			<div id="tab-<?php echo esc_attr( $key ); ?>" class="useit-tab">
@@ -506,11 +465,8 @@ else :
 			</div>
 
 			<?php endforeach; ?>
-
 		</div>
-
 	</div>
-
 </div>
 <?php endif; ?>
 

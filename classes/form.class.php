@@ -908,7 +908,7 @@ class MailsterForm {
 
 		$customfields = mailster()->get_custom_fields();
 
-		$formdata = isset( $_BASE['userdata'] ) ? $_BASE['userdata'] : $_BASE;
+		$formdata = stripslashes_deep( isset( $_BASE['userdata'] ) ? $_BASE['userdata'] : $_BASE );
 		$formdata = apply_filters( 'mymail_pre_submit', apply_filters( 'mailster_pre_submit', $formdata, $this->form ), $this->form );
 
 		foreach ( $this->form->fields as $field_id => $field ) {
