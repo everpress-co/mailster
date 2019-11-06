@@ -90,6 +90,8 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.7 =
 
+* improved: form submission on errors
+
 = Version 2.4.6 =
 
 * tested with WordPress 5.3
