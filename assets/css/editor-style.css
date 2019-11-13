@@ -129,6 +129,7 @@ modulebuttons {
 	text-align: right;
 	z-index: 100;
 	display: block;
+	line-height: 100%;
 }
 module.ui-sortable-fly-over modulebuttons button{
 	pointer-events: none;

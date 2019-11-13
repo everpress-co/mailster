@@ -669,20 +669,9 @@ mailster = (function (mailster, $, window, document) {
 					current.elements.single.each(function (i, e) {
 						var _this = $(this),
 							expected = _this.attr('expect') || 'title',
-							org_content = currenttext[expected] ? currenttext[expected] : '',
-							content = [],
-							array = [];
+							content = currenttext[expected] ? currenttext[expected] : '';
 
-						if (!$.isArray(org_content)) {
-							content[position] = org_content;
-						} else {
-							content = org_content;
-						}
-
-						if (content[i]) {
-							$(this).html(content[i]);
-						}
-
+						if (content) _this.html(content);
 					});
 
 				}
@@ -692,19 +681,9 @@ mailster = (function (mailster, $, window, document) {
 					current.elements.multi.each(function (i, e) {
 						var _this = $(this),
 							expected = _this.attr('expect') || contenttype,
-							org_content = currenttext[expected] ? currenttext[expected] : '',
-							content = [],
-							array = [];
+							content = currenttext[expected] ? currenttext[expected] : '';
 
-						if (!$.isArray(org_content)) {
-							content[position] = org_content;
-						} else {
-							content = org_content;
-						}
-
-						if (content[i]) {
-							$(this).html(content[i]);
-						}
+						if (content) _this.html(content);
 
 					});
 
@@ -855,7 +834,7 @@ mailster = (function (mailster, $, window, document) {
 
 				}
 
-				position = position + 1 >= (current.elements.multi.length || current.elements.single.length || current.elements.images.length) ? 0 : position + 1;
+				position = position + 1 >= current.areas.length ? 0 : position + 1;
 
 				current.element.data('position', position);
 
@@ -1363,21 +1342,27 @@ mailster = (function (mailster, $, window, document) {
 				assetstype = 'post';
 				assetslist = base.find('.postlist').eq(0);
 				loadPosts();
+
+				current.areas = current.element.find('[area]');
+				if (!current.areas.length) {
+					current.areas = current.element;
+				}
 				current.elements = {
-					single: current.element.find('single'),
-					multi: current.element.find('multi'),
-					buttons: current.element.find('a[editable]'),
-					images: current.element.find('img[editable], td[background], th[background]'),
-					expects: current.element.find('[expect]').map(function () {
+					single: current.areas.eq(position).find('single'),
+					multi: current.areas.eq(position).find('multi'),
+					buttons: current.areas.eq(position).find('a[editable]'),
+					images: current.areas.eq(position).find('img[editable], td[background], th[background]'),
+					expects: current.areas.eq(position).find('[expect]').map(function () {
 						return $(this).attr('expect');
 					}).toArray()
 				}
 
-				if ((current.elements.multi.length || current.elements.single.length || current.elements.images.length) > 1) {
-					bar.find('.editbarpostion').html(mailster.util.sprintf(mailsterL10n.for_area, '#' + (position + 1))).show();
+				if (current.areas.length > 1) {
+					bar.find('.editbarposition').html(mailster.util.sprintf(mailsterL10n.for_area, '#' + (position + 1))).show();
 				} else {
-					bar.find('.editbarpostion').hide();
+					bar.find('.editbarposition').hide();
 				}
+				console.log(position, current.elements.single);
 
 			} else if (type == 'codeview') {
 
