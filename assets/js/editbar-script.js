@@ -334,6 +334,7 @@ mailster = (function (mailster, $, window, document) {
 				post_type: post_type,
 				relative: relative,
 				extra: extra,
+				content: content,
 				modulename: current.name,
 				expect: current.elements.expects,
 				rss_url: rss_url
