@@ -1891,6 +1891,7 @@ jQuery(document).ready(function ($) {
 					id: campaign_id,
 					post_type: post_type,
 					relative: relative,
+					content: content,
 					extra: extra,
 					modulename: current.name,
 					expect: current.elements.expects,

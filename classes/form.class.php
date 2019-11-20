@@ -1180,11 +1180,13 @@ class MailsterForm {
 
 			if ( $this->valid() ) {
 				$return = array(
+					'action'  => $submissiontype,
 					'success' => true,
 					'html'    => '<p>' . mailster_text( $message ) . '</p>',
 				);
 			} else {
 				$return = array(
+					'action'  => $submissiontype,
 					'success' => false,
 					'fields'  => $this->object['errors'],
 					'html'    => '<p>' . $this->get_message( 'errors', true ) . '</p>',
@@ -1199,6 +1201,7 @@ class MailsterForm {
 		} else {
 
 			$return = array(
+				'action'  => $submissiontype,
 				'success' => false,
 				'fields'  => $this->object['errors'],
 				'html'    => $this->get_message(),
@@ -1243,6 +1246,7 @@ class MailsterForm {
 
 	public function unsubscribe() {
 
+		$return['action']  = 'unsubscribe';
 		$return['success'] = false;
 
 		$_BASE = $_POST;
