@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.7 =
 
 * improved: form submission on errors
+* fixed: content type selection not respected on dynamic insertion mode
 
 = Version 2.4.6 =
 
