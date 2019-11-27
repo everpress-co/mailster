@@ -373,7 +373,6 @@ class MailsterForms {
 
 					if ( is_wp_error( $id ) ) {
 						mailster_notice( sprintf( esc_html__( 'There was an error while adding the form: %s', 'mailster' ), $id->get_error_message() ), 'error', true );
-
 					}
 
 					$redirect = remove_query_arg(
@@ -393,7 +392,6 @@ class MailsterForms {
 
 					if ( is_wp_error( $id ) ) {
 						mailster_notice( sprintf( esc_html__( 'There was an error while updating the form: %s', 'mailster' ), $id->get_error_message() ), 'error', true );
-
 					}
 				}
 
@@ -422,9 +420,7 @@ class MailsterForms {
 				}
 
 				if ( isset( $data->options ) ) {
-
 					$this->update_options( $id, $data->options );
-
 				}
 
 				mailster_notice( isset( $urlparams['new'] ) ? esc_html__( 'Form added', 'mailster' ) : esc_html__( 'Form updated', 'mailster' ), 'success', true );
@@ -577,6 +573,8 @@ class MailsterForms {
 		$lists = isset( $data['lists'] ) ? $data['lists'] : false;
 		unset( $data['lists'] );
 
+		$data['listorder'] = maybe_serialize( $lists );
+
 		if ( isset( $data['redirect'] ) ) {
 			$data['redirect'] = trim( $data['redirect'] );
 		}
@@ -634,6 +632,7 @@ class MailsterForms {
 				'inline'          => false,
 				'overwrite'       => true,
 				'addlists'        => false,
+				'listorder'       => false,
 				'prefill'         => false,
 				'style'           => '',
 				'custom_style'    => '',
@@ -700,6 +699,7 @@ class MailsterForms {
 			unset( $form->fields );
 			unset( $form->required );
 			unset( $form->lists );
+			unset( $form->listorder );
 			unset( $form->added );
 			unset( $form->updated );
 			unset( $form->stylesheet );
@@ -993,8 +993,10 @@ class MailsterForms {
 				}
 			}
 
+			$forms[ $i ]->listorder = maybe_unserialize( $forms[ $i ]->listorder );
+
 			if ( $lists ) {
-				$forms[ $i ]->lists = $this->get_lists( $forms[ $i ]->ID, true );
+				$forms[ $i ]->lists = $this->get_lists( $forms[ $i ]->ID, true, $forms[ $i ]->listorder );
 			}
 
 			$forms[ $i ]->style      = ( $forms[ $i ]->style ) ? json_decode( $forms[ $i ]->style ) : array();
@@ -1065,9 +1067,10 @@ class MailsterForms {
 	 *
 	 * @param unknown $id
 	 * @param unknown $ids_only (optional)
+	 * @param unknown $order    (optional)
 	 * @return unknown
 	 */
-	public function get_lists( $id, $ids_only = false ) {
+	public function get_lists( $id, $ids_only = false, $order = null ) {
 
 		global $wpdb;
 
@@ -1076,7 +1079,15 @@ class MailsterForms {
 			return $cache[ $id ];
 		}
 
-		$sql = "SELECT lists.* FROM {$wpdb->prefix}mailster_lists AS lists LEFT JOIN {$wpdb->prefix}mailster_forms_lists AS forms_lists ON lists.ID = forms_lists.list_id WHERE forms_lists.form_id = %d";
+		if ( is_null( $order ) ) {
+			$order_by = '';
+		} elseif ( is_array( $order ) ) {
+			$order_by = 'ORDER BY field(lists.ID, ' . implode( ',', $order ) . ') ASC';
+		} else {
+			$order_by = 'ORDER BY ' . sanitize_key( $order ) . ' ASC';
+		}
+
+		$sql = "SELECT lists.* FROM {$wpdb->prefix}mailster_lists AS lists LEFT JOIN {$wpdb->prefix}mailster_forms_lists AS forms_lists ON lists.ID = forms_lists.list_id WHERE forms_lists.form_id = %d $order_by";
 
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 

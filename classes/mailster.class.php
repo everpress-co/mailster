@@ -1886,6 +1886,7 @@ class Mailster {
                 `inline` tinyint(1) DEFAULT 0,
                 `overwrite` tinyint(1) DEFAULT 0,
                 `addlists` tinyint(1) DEFAULT 0,
+                `listorder` varchar(191) NOT NULL DEFAULT '',
                 `style` longtext,
                 `custom_style` longtext,
                 `doubleoptin` tinyint(1) DEFAULT 1,

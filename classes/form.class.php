@@ -463,7 +463,8 @@ class MailsterForm {
 		}
 
 		if ( $this->form->userschoice ) {
-			$lists = mailster( 'forms' )->get_lists( $this->ID );
+
+			$lists = mailster( 'forms' )->get_lists( $this->ID, false, $this->form->listorder );
 
 			if ( ! empty( $lists ) ) {
 

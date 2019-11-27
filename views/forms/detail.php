@@ -344,12 +344,13 @@ else :
 				<p>
 					<label><input type="hidden" name="mailster_data[userschoice]" value="0"><input type="checkbox" name="mailster_data[userschoice]" class="mailster_userschoice" value="1" <?php checked( $form->userschoice ); ?>> <?php esc_html_e( 'Users decide which list they subscribe to', 'mailster' ); ?></label>
 					<br> &nbsp; <label><input type="hidden" name="mailster_data[dropdown]" value="0"><input type="checkbox" name="mailster_data[dropdown]" class="mailster_dropdown" value="1" <?php checked( $form->dropdown ); ?><?php disabled( ! $form->userschoice ); ?>> <?php esc_html_e( 'Show drop down instead of check boxes', 'mailster' ); ?></label>
+					<br> &nbsp; <label><input type="hidden" name="mailster_data[orderbyname]" value="0"><input type="checkbox" name="mailster_data[orderbyname]" class="mailster_orderbyname" value="1" <?php checked( $form->listorder == 'name' ); ?><?php disabled( ! $form->userschoice ); ?>> <?php esc_html_e( 'Order List by Name', 'mailster' ); ?></label>
 				</p>
 				<fieldset>
 				<legend class="mailster_userschoice_td"<?php echo $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Subscribe new users to', 'mailster' ); ?></legend>
-				<legend class="mailster_userschoice_td"<?php echo $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Users can subscribe to', 'mailster' ); ?></legend>
+				<legend class="mailster_userschoice_td"<?php echo ! $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Users can subscribe to', 'mailster' ); ?></legend>
 
-				<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', false, $form->lists ); ?>
+				<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', false, $form->lists, 'checkbox', $form->listorder ); ?>
 
 				<p><label><input type="hidden" name="mailster_data[precheck]" value="0"><input type="checkbox" name="mailster_data[precheck]" value="1" <?php checked( $form->precheck ); ?>> <?php esc_html_e( 'checked by default', 'mailster' ); ?></label>
 				</p>

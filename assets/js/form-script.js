@@ -170,6 +170,19 @@ jQuery(document).ready(function ($) {
 			$('#vcard-field').slideDown(200): $('#vcard-field').slideUp(200);
 		});
 
+	$('#form-options')
+		.find(".mailster-lists").sortable({
+			placeholder: "ui-state-highlight",
+			start: function (event, ui) {},
+			stop: function (event, ui) {},
+			receive: function (event, ui) {},
+			update: function (event, ui) {
+				requireSave();
+			},
+			remove: function (event, ui) {}
+		});
+
+
 	function updateStyle() {
 
 		style = '';
