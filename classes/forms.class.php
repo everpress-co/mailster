@@ -1075,7 +1075,7 @@ class MailsterForms {
 			return $cache[ $id ];
 		}
 
-		$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_forms_lists AS ab ON a.ID = ab.list_id WHERE ab.form_id = %d";
+		$sql = "SELECT lists.* FROM {$wpdb->prefix}mailster_lists AS lists LEFT JOIN {$wpdb->prefix}mailster_forms_lists AS forms_lists ON lists.ID = forms_lists.list_id WHERE forms_lists.form_id = %d";
 
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
@@ -1094,7 +1094,7 @@ class MailsterForms {
 
 		global $wpdb;
 
-		$sql = "SELECT a.field_id, a.name, a.error_msg ,a.required FROM {$wpdb->prefix}mailster_form_fields AS a WHERE a.form_id = %d ORDER BY a.position ASC";
+		$sql = "SELECT forms_fields.field_id, forms_fields.name, forms_fields.error_msg, forms_fields.required FROM {$wpdb->prefix}mailster_form_fields AS forms_fields WHERE forms_fields.form_id = %d ORDER BY forms_fields.position ASC";
 
 		$fields = $wpdb->get_results( $wpdb->prepare( $sql, $form_id ) );
 
@@ -1157,7 +1157,6 @@ class MailsterForms {
 			$sql = "SELECT ID, post_title AS name, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%[newsletter_signup_form%' AND post_status NOT IN ('inherit') AND post_type NOT IN ('newsletter', 'attachment')";
 
 			$result = $wpdb->get_results( $sql );
-			$i      = 100;
 
 			foreach ( $result as $row ) {
 				preg_match_all( '#\[newsletter_signup_form((.*)id="?(\d+)"?)?#i', $row->post_content, $matches );
@@ -1180,8 +1179,7 @@ class MailsterForms {
 						continue;
 					}
 
-					$found_form_id                             = $data['form'];
-					$occurrence[ $found_form_id ]['widgets'][] = $data['title'];
+					$occurrence[ $data['form'] ]['widgets'][] = $data['title'];
 				}
 			}
 
@@ -1208,19 +1206,6 @@ class MailsterForms {
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $style
-	 * @param unknown $selector
-	 * @param unknown $property
-	 */
-	private function _get_style( $style, $selector, $property ) {
-
-		echo ( isset( $style->{$selector} ) && isset( $style->{$selector}->{$property} ) ) ? $style->{$selector}->{$property} : '';
-
-	}
 
 
 	/**
@@ -1271,7 +1256,7 @@ class MailsterForms {
 
 		$html = '<a href="' . $options['endpoint'] . '" class="mailster-subscribe-button" data-design="' . esc_attr( $options['design'] ) . '" data-showcount="' . ( $options['showcount'] ? 1 : 0 ) . '" data-width="' . esc_attr( $options['width'] ) . '">' . strip_tags( $options['label'] ) . '</a>';
 
-		$script = "<script type=\"text/javascript\">!function(m,a,i,l,s,t,r){m[s]=m[s]||(function(){t=a.createElement(i);r=a.getElementsByTagName(i)[0];t.async=1;t.src=l;r.parentNode.insertBefore(t,r);return !0}())}(window,document,'script','$button_src','MailsterSubscribe');</script>";
+		$script = "<script type=\"text/javascript\">!function(m,a,i,l,s,t,e,r){m[s]=m[s]||(function(){t=a.createElement(i);r=a.getElementsByTagName(i)[0];t.async=1;t.src=l;r.parentNode.insertBefore(t,r);return !0}())}(window,document,'script','$button_src','MailsterSubscribe');</script>";
 
 		return $html . $script;
 	}

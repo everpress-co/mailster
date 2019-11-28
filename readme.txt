@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.7 =
 
+* improved: CSS for WordPress 5.3
 * improved: action type is now returned in form submission
 * improved: form submission on errors
 * fixed: content type selection not respected on dynamic insertion mode
