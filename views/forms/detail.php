@@ -347,7 +347,7 @@ else :
 				</p>
 				<fieldset>
 				<legend class="mailster_userschoice_td"<?php echo $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Subscribe new users to', 'mailster' ); ?></legend>
-				<legend class="mailster_userschoice_td"<?php echo $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Users can subscribe to', 'mailster' ); ?></legend>
+				<legend class="mailster_userschoice_td"<?php echo ! $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Users can subscribe to', 'mailster' ); ?></legend>
 
 				<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', false, $form->lists ); ?>
 
