@@ -9,7 +9,17 @@ class MailsterSettings {
 		add_action( 'admin_init', array( &$this, 'register_settings' ) );
 		add_action( 'admin_init', array( &$this, 'actions' ) );
 		add_action( 'admin_init', array( &$this, 'maybe_create_homepage' ) );
+		add_action( 'init', array( &$this, 'init' ) );
 
+	}
+
+
+	public function init() {
+		if ( isset( $_POST ) && ! empty( $_POST ) && ! is_admin() && get_user_meta( get_current_user_id(), '_mailster_learn_mode' ) ) {
+
+			error_log( print_r( 'learn-mode', true ) );
+			error_log( print_r( $_POST, true ) );
+		}
 	}
 
 
@@ -342,6 +352,10 @@ class MailsterSettings {
 			$this->reset_lasthit( true );
 		}
 
+		if ( isset( $_GET['learn-mode'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'mailster-learn-mode' ) ) {
+			$this->learn_mode( true );
+		}
+
 	}
 
 
@@ -546,6 +560,16 @@ class MailsterSettings {
 		update_option( 'mailster_cron_lasthit', array() );
 		if ( $redirect ) {
 			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
+			exit;
+		}
+
+	}
+
+	public function learn_mode( $redirect = false ) {
+
+		update_user_meta( get_current_user_id(), '_mailster_learn_mode', true );
+		if ( $redirect ) {
+			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' );
 			exit;
 		}
 

@@ -58,6 +58,12 @@
 		<p class="description"><?php printf( esc_html__( 'Define in which order names appear in your language or country. This is used for the %s tag.', 'mailster' ), '<code>{fullname}</code>' ); ?></p>
 		</td>
 	</tr>
+	<tr>
+		<th scope="row"><?php esc_html_e( 'Learn Mode', 'mailster' ); ?></th>
+		<td><a href="edit.php?post_type=newsletter&page=mailster_settings&learn-mode=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-learn-mode' ); ?>" class="button button-primary"><?php esc_html_e( 'Enable Learn Mode', 'mailster' ); ?></a>
+		<p class="description"><?php printf( esc_html__( 'Define in which order names appear in your language or country. This is used for the %s tag.', 'mailster' ), '<code>{fullname}</code>' ); ?></p>
+		</td>
+	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Custom Fields', 'mailster' ); ?>:
 			<p class="description"><?php esc_html_e( 'Custom field tags are individual tags for each subscriber. You can ask for them on subscription and/or make it a required field.', 'mailster' ); ?></p>
