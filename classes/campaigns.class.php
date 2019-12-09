@@ -109,7 +109,7 @@ class MailsterCampaigns {
 		}
 
 		// prevent if empty or not null
-		if ( empty( $subscriber_ids ) && ! is_null( $subscriber_id ) ) {
+		if ( empty( $subscriber_ids ) && ! is_null( $subscriber_ids ) ) {
 			return;
 		}
 
