@@ -94,6 +94,7 @@ Xaver Birsak – https://everpress.co
 * improved: action type is now returned in form submission
 * improved: form submission on errors
 * fixed: content type selection not respected on dynamic insertion mode
+* fixed: 'ERR_CONNECTION_RESET' issue on some Apache installations
 
 = Version 2.4.6 =
 
