@@ -1944,13 +1944,6 @@ class MailsterCampaigns {
 			} elseif ( in_array( $k, array( 'subject', 'from_name', 'preheader' ) ) ) {
 				// emojis are urlencoded
 				update_post_meta( $id, '_mailster_' . $k, rawurlencode( wp_unslash( $v ) ) );
-				// add '#' back to color codes to prevent ERR_CONNECTION_RESET on some Apache (since 2.4.7)
-			} elseif ( 'colors' == $k ) {
-				$x = array();
-				foreach ( (array) $v as $vk => $vv ) {
-					$x[ '#' . str_replace( '#', '', $vk ) ] = $vv;
-				}
-				update_post_meta( $id, '_mailster_' . $k, $x );
 			} else {
 				update_post_meta( $id, '_mailster_' . $k, $v );
 			}
@@ -4673,19 +4666,21 @@ class MailsterCampaigns {
 			$current_colors = $original_colors;
 		}
 
-		if ( isset( $this->post_data ) && isset( $this->post_data['newsletter_color'] ) ) {
+		if ( isset( $this->post_data ) && isset( $this->post_data['colors'] ) ) {
 
 			$search = $replace = array();
-			foreach ( $this->post_data['newsletter_color'] as $from => $to ) {
+			foreach ( $this->post_data['colors'] as $from => $to ) {
 
 				$to = array_shift( $current_colors );
 				if ( $from == $to ) {
 					continue;
 				}
 
-				$search[]  = $from;
+				// add '#' back to color codes to prevent ERR_CONNECTION_RESET on some Apache (since 2.4.7)
+				$search[]  = '#' . str_replace( '#', '', $from );
 				$replace[] = $to;
 			}
+
 			$content = str_replace( $search, $replace, $content );
 		}
 
