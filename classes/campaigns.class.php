@@ -109,7 +109,7 @@ class MailsterCampaigns {
 		}
 
 		// prevent if empty or not null
-		if ( empty( $subscriber_ids ) && ! is_null( $subscriber_id ) ) {
+		if ( empty( $subscriber_ids ) && ! is_null( $subscriber_ids ) ) {
 			return;
 		}
 
@@ -4666,19 +4666,21 @@ class MailsterCampaigns {
 			$current_colors = $original_colors;
 		}
 
-		if ( isset( $this->post_data ) && isset( $this->post_data['newsletter_color'] ) ) {
+		if ( isset( $this->post_data ) && isset( $this->post_data['colors'] ) ) {
 
 			$search = $replace = array();
-			foreach ( $this->post_data['newsletter_color'] as $from => $to ) {
+			foreach ( $this->post_data['colors'] as $from => $to ) {
 
 				$to = array_shift( $current_colors );
 				if ( $from == $to ) {
 					continue;
 				}
 
-				$search[]  = $from;
+				// add '#' back to color codes to prevent ERR_CONNECTION_RESET on some Apache (since 2.4.7)
+				$search[]  = '#' . str_replace( '#', '', $from );
 				$replace[] = $to;
 			}
+
 			$content = str_replace( $search, $replace, $content );
 		}
 

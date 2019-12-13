@@ -2239,11 +2239,11 @@ class MailsterSubscribers {
 			$lists = mailster( 'campaigns' )->get_lists( $campaign_id, true );
 			if ( $this->unassign_lists( $subscriber->ID, $lists ) ) {
 				$status .= '_list';
-				do_action( 'mailster_list_unsubscribe', $subscriber->ID, $campaign_id, $lists, $status );
 
 				if ( $status ) {
 					$this->update_meta( $subscriber->ID, $campaign_id, 'unsubscribe', $status );
 				}
+				do_action( 'mailster_list_unsubscribe', $subscriber->ID, $campaign_id, $lists, $status );
 				$this->subscriber_unsubscribe_notification( $subscriber->ID, null, $lists );
 				return true;
 			}
@@ -2258,11 +2258,10 @@ class MailsterSubscribers {
 
 		if ( $this->change_status( $subscriber->ID, 2 ) ) {
 
-			do_action( 'mailster_unsubscribe', $subscriber->ID, $campaign_id, $status );
-
 			if ( $status ) {
 				$this->update_meta( $subscriber->ID, $campaign_id, 'unsubscribe', $status );
 			}
+			do_action( 'mailster_unsubscribe', $subscriber->ID, $campaign_id, $status );
 
 			$this->subscriber_unsubscribe_notification( $subscriber->ID );
 			return true;

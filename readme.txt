@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.3
-Stable tag: 2.4.6
+Tested up to: 5.3.1
+Stable tag: 2.4.7
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -87,6 +87,14 @@ Xaver Birsak – https://everpress.co
 
 
 == Changelog ==
+
+= Version 2.4.7 =
+
+* improved: CSS for WordPress 5.3
+* improved: action type is now returned in form submission
+* improved: form submission on errors
+* fixed: content type selection not respected on dynamic insertion mode
+* fixed: 'ERR_CONNECTION_RESET' issue on some Apache installations
 
 = Version 2.4.6 =
 

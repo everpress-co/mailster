@@ -293,7 +293,7 @@ else :
 
 </div>
 
-<p class="section-nav"><span class="alignleft"><input type="submit" name="structure" value="&laquo; <?php esc_html_e( 'Back to Fields', 'mailster' ); ?>" class="button-primary button-small"></span><span class="alignright"><input type="submit" name="settings" value="<?php esc_html_e( 'define the Options', 'mailster' ); ?> &raquo;" class="button-primary button-small"></span></p>
+<p class="section-nav"><span class="alignleft"><input type="submit" name="structure" value="&laquo; <?php esc_html_e( 'Back to Fields', 'mailster' ); ?>" class="button-primary button-small"></span><span class="alignright"><input type="submit" name="settings" value="<?php esc_html_e( 'Define the Options', 'mailster' ); ?> &raquo;" class="button-primary button-small"></span></p>
 
 <?php elseif ( 'settings' == $currentpage ) : ?>
 
@@ -347,7 +347,7 @@ else :
 				</p>
 				<fieldset>
 				<legend class="mailster_userschoice_td"<?php echo $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Subscribe new users to', 'mailster' ); ?></legend>
-				<legend class="mailster_userschoice_td"<?php echo $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Users can subscribe to', 'mailster' ); ?></legend>
+				<legend class="mailster_userschoice_td"<?php echo ! $form->userschoice ? ' style="display:none"' : ''; ?>><?php esc_html_e( 'Users can subscribe to', 'mailster' ); ?></legend>
 
 				<?php mailster( 'lists' )->print_it( null, null, 'mailster_data[lists]', false, $form->lists ); ?>
 
