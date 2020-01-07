@@ -23,6 +23,9 @@
 	text-align: center;
 	transition: opacity 1.15s ease-in;
 }
+.mailster-dashboard .postbox a{
+	text-decoration: none;
+}
 .mailster-dashboard .register_form_wrap{
 	height: 260px;
 	width: 70%;
@@ -156,6 +159,7 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
+	text-decoration: none;
 }
 .mailster-mb-link:before{
 	font: normal 16px/1 'mailster-icons';
