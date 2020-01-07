@@ -55,7 +55,9 @@ function mailster_options( $option = null, $fallback = null ) {
 	}
 
 	if ( ! ( $options = get_option( 'mailster_options', array() ) ) ) {
-		$options = mailster( 'settings' )->maybe_repair_options( $options );
+		if ( mailster() ) {
+			$options = mailster( 'settings' )->maybe_repair_options( $options );
+		}
 	}
 
 	return $options;

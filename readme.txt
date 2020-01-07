@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.2.3
-Stable tag: 2.4.4
+Tested up to: 5.3.2
+Stable tag: 2.4.8
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,20 +88,46 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
-= Version 2.4.4 =
+= Version 2.4.8 =
 
+= Version 2.4.7 =
+
+* improved: CSS for WordPress 5.3
+* improved: action type is now returned in form submission
+* improved: form submission on errors
+* fixed: content type selection not respected on dynamic insertion mode
+* fixed: 'ERR_CONNECTION_RESET' issue on some Apache installations
+
+= Version 2.4.6 =
+
+* tested with WordPress 5.3
+* fixed: potential XSS vulnerable on the subscribers detail page identified by Compass Security
+* fixed: single quote in subject now correctly encoded
+* fixed: confirm redirection issues on some installations
+* change: Redirect after submit and Redirect after confirmation must be a URL
+
+= Version 2.4.5 =
+
+* fixed: issue saving 'send campaign only once' option
+* fixed: duplication of finished campaign no longer breaks module selection
+* improved: some fields are now stored urlencoded for better emoji support in databases with collation other than utf8mb4
+* changed: action hook auto responders no longer sent to all subscribers if subscriber id is set to `false` (use `null` instead)
+
+= Version 2.4.4 =
 
 * improved: you can now encode tags output with an exclamation mark `{!mytag}`.
 * improved: drag n drop images from your desktop now respects cropped image setting.
 * improved: import screen.
 * improved: test mails now fallback to the current users email if not defined.
-* improved: subscriber query now search for ID by default.
+* improved: subscriber query now search for ID as well.
 * fixed: notifications to multiple addresses.
 * fixed: modules without content sometimes preserve in the campaign.
 * fixed: issue with RSS campaigns on time based autoresponders.
 * fixed: wrong subscriber count if status "pending" in subscriber query.
 * fixed: cumulative count calculations.
 * fixed: redirecting issue with spaces in URLs.
+* updated to latest coding standards
+* code refactoring
 
 = Version 2.4.3 =
 

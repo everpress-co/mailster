@@ -1,12 +1,12 @@
 <table class="form-table">
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Subscription Form', 'mailster' ); ?><p class="description"><?php esc_html_e( 'Define messages for the subscription form', 'mailster' ); ?>.<br>
-<?php
-if ( mailster_option( 'homepage' ) ) :
-		printf( esc_html__( 'Some text can get defined on the %s as well', 'mailster' ), '<a href="post.php?post=' . mailster_option( 'homepage' ) . '&action=edit">Newsletter Homepage</a>' );
-endif;
-?>
-</p></th>
+		<th scope="row"><?php esc_html_e( 'Subscription Form', 'mailster' ); ?>
+		<p class="description"><?php esc_html_e( 'Define messages for the subscription form', 'mailster' ); ?>.<br>
+		<?php if ( mailster_option( 'homepage' ) ) : ?>
+			<?php printf( esc_html__( 'Some text can get defined on the %s as well', 'mailster' ), '<a href="post.php?post=' . mailster_option( 'homepage' ) . '&action=edit">Newsletter Homepage</a>' ); ?>
+		<?php endif; ?>
+		</p>
+		</th>
 		<td>
 		<div class="mailster_text"><label><?php esc_html_e( 'Confirmation', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[confirmation]" value="<?php echo esc_attr( mailster_text( 'confirmation' ) ); ?>" class="regular-text"></div>
 		<div class="mailster_text"><label><?php esc_html_e( 'Successful', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[success]" value="<?php echo esc_attr( mailster_text( 'success' ) ); ?>" class="regular-text"></div>
@@ -63,8 +63,8 @@ if ( is_dir( $dir ) ) {
 	$files = list_files( $dir );
 	$files = preg_grep( '/mailster-(.*)\.po$/', $files );
 }
-if ( ! empty( $files ) ) :
-	?>
+?>
+<?php if ( ! empty( $files ) ) : ?>
 <table class="form-table language-switcher-field">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Change Language', 'mailster' ); ?></th>

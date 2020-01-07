@@ -908,7 +908,7 @@ class MailsterForm {
 
 		$customfields = mailster()->get_custom_fields();
 
-		$formdata = isset( $_BASE['userdata'] ) ? $_BASE['userdata'] : $_BASE;
+		$formdata = stripslashes_deep( isset( $_BASE['userdata'] ) ? $_BASE['userdata'] : $_BASE );
 		$formdata = apply_filters( 'mymail_pre_submit', apply_filters( 'mailster_pre_submit', $formdata, $this->form ), $this->form );
 
 		foreach ( $this->form->fields as $field_id => $field ) {
@@ -1180,11 +1180,13 @@ class MailsterForm {
 
 			if ( $this->valid() ) {
 				$return = array(
+					'action'  => $submissiontype,
 					'success' => true,
 					'html'    => '<p>' . mailster_text( $message ) . '</p>',
 				);
 			} else {
 				$return = array(
+					'action'  => $submissiontype,
 					'success' => false,
 					'fields'  => $this->object['errors'],
 					'html'    => '<p>' . $this->get_message( 'errors', true ) . '</p>',
@@ -1199,6 +1201,7 @@ class MailsterForm {
 		} else {
 
 			$return = array(
+				'action'  => $submissiontype,
 				'success' => false,
 				'fields'  => $this->object['errors'],
 				'html'    => $this->get_message(),
@@ -1243,6 +1246,7 @@ class MailsterForm {
 
 	public function unsubscribe() {
 
+		$return['action']  = 'unsubscribe';
 		$return['success'] = false;
 
 		$_BASE = $_POST;

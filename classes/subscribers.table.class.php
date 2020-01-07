@@ -100,37 +100,26 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		?>
 	<form id="searchform" action method="get">
-		<?php
-		if ( isset( $_GET['post_type'] ) ) :
-			?>
-			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>"><?php endif; ?>
-		<?php
-		if ( isset( $_GET['page'] ) ) :
-			?>
-			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>"><?php endif; ?>
-		<?php
-		if ( isset( $_GET['paged'] ) ) :
-			?>
-			<input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ); ?>"><?php endif; ?>
-		<?php
-		if ( isset( $_GET['status'] ) ) :
-			?>
-			<input type="hidden" name="status" value="<?php echo esc_attr( $_GET['status'] ); ?>"><?php endif; ?>
-		<?php
-		if ( isset( $_GET['lists'] ) ) :
-			foreach ( array_filter( (array) $_GET['lists'], 'is_numeric' ) as $list_id ) {
-				?>
+		<?php if ( isset( $_GET['post_type'] ) ) : ?>
+			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>">
+		<?php endif; ?>
+		<?php if ( isset( $_GET['page'] ) ) : ?>
+			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>">
+		<?php endif; ?>
+		<?php if ( isset( $_GET['paged'] ) ) : ?>
+			<input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ); ?>">
+		<?php endif; ?>
+		<?php if ( isset( $_GET['status'] ) ) : ?>
+			<input type="hidden" name="status" value="<?php echo esc_attr( $_GET['status'] ); ?>">
+		<?php endif; ?>
+		<?php if ( isset( $_GET['lists'] ) ) : ?>
+			<?php foreach ( array_filter( (array) $_GET['lists'], 'is_numeric' ) as $list_id ) : ?>
 				<input type="hidden" name="lists[]" value="<?php echo $list_id; ?>">
-				<?php }endif; ?>
+			<?php endforeach ?>
+		<?php endif; ?>
 	<p class="search-box">
-		<label class="screen-reader-text" for="sa-search-input"><?php echo $text; ?></label>
-		<input type="search" id="<?php echo $input_id; ?>" name="s" value="
-											<?php
-											if ( isset( $_GET['s'] ) ) {
-												echo esc_attr( stripslashes( $_GET['s'] ) );
-											}
-											?>
-		">
+		<label class="screen-reader-text" for="sa-search-input"><?php echo esc_html( $text ); ?></label>
+		<input type="search" id="<?php echo $input_id; ?>" name="s" value="<?php echo isset( $_GET['s'] ) ? esc_attr( $_GET['s'] ) : ''; ?>">
 		<input type="submit" name="" id="search-submit" class="button" value="<?php echo esc_attr( $text ); ?>">
 	</p>
 	</form>
@@ -196,7 +185,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				}
 
 				if ( $data['fullname'] ) {
-					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '">' . $this->searchmark( $data['fullname'] ) . '</a><br><a class="email" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $this->searchmark( $item->{'email'} ) . '</a>';
+					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '">' . $this->searchmark( $data['fullname'] ) . '</a><br><a class="email" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . esc_attr( $item->{'email'} ) . '">' . $this->searchmark( $item->{'email'} ) . '</a>';
 				} else {
 					$html = '<a class="name" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '" title="' . $item->{'email'} . '">' . $this->searchmark( $item->{'email'} ) . '</a><br><span class="email">&nbsp;</span>';
 				}

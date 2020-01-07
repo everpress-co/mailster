@@ -32,35 +32,26 @@ $now = time();
 $tabindex = 1;
 
 ?>
-<div class="wrap
-<?php
-if ( $is_new ) {
-	echo ' new'; }
-?>
-">
+<div class="wrap<?php echo( $is_new ) ? ' new' : ''; ?>">
 <form id="subscriber_form" action="edit.php?post_type=newsletter&page=mailster_lists<?php echo ( $is_new ) ? '&new' : '&ID=' . $id; ?>" method="post">
 <input type="hidden" id="ID" name="mailster_data[ID]" value="<?php echo $list->ID; ?>">
 <?php wp_nonce_field( 'mailster_nonce' ); ?>
 <div style="height:0px; width:0px; overflow:hidden;"><input type="submit" name="save" value="1"></div>
 <h1>
 <?php
-
-if ( $is_new ) {
+if ( $is_new ) :
 	esc_html_e( 'Add new List', 'mailster' );
-} else {
+else :
 	if ( $list->parent_id && $parent = $this->get( $list->parent_id ) ) {
 		echo '<div class="parent_list"><strong><a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $parent->ID . '">' . $parent->name . '</a></strong> &rsaquo; </div>';
 	}
 	printf( esc_html__( 'Edit List %s', 'mailster' ), '<strong>' . $list->name . '</strong>' );
 	?>
 	<?php if ( current_user_can( 'mailster_add_subscribers' ) ) : ?>
-	<a href="edit.php?post_type=newsletter&page=mailster_lists&new" class="page-title-action"><?php esc_html_e( 'Add New', 'mailster' ); ?></a>
+		<a href="edit.php?post_type=newsletter&page=mailster_lists&new" class="page-title-action"><?php esc_html_e( 'Add New', 'mailster' ); ?></a>
+	<?php endif; ?>
+
 <?php endif; ?>
-
-	<?php
-
-}
-?>
 <span class="alignright">
 	<?php if ( ! $is_new && current_user_can( 'mailster_delete_lists' ) ) : ?>
 		<input type="submit" name="delete" class="button button-large" value="<?php esc_html_e( 'Delete List', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this list?', 'mailster' ); ?>');">
@@ -71,8 +62,6 @@ if ( $is_new ) {
 	<input type="submit" name="save" class="button button-primary button-large" value="<?php esc_html_e( 'Save', 'mailster' ); ?>">
 </span>
 </h1>
-
-
 <table class="form-table">
 	<tr>
 		<th scope="row"><h3><?php esc_html_e( 'Name', 'mailster' ); ?></h3></th>
@@ -151,13 +140,8 @@ if ( ! $is_new ) :
 						<tr><th><?php esc_html_e( 'Date', 'mailster' ); ?></th><th></th><th><?php esc_html_e( 'Action', 'mailster' ); ?></th><th><?php esc_html_e( 'Campaign', 'mailster' ); ?></th><th></th></tr>
 					</thead>
 					<tbody>
-				<?php foreach ( $activities as $i => $activity ) { ?>
-						<tr class="
-						<?php
-						if ( ! ( $i % 2 ) ) {
-							echo ' alternate'; }
-						?>
-						">
+				<?php foreach ( $activities as $i => $activity ) : ?>
+						<tr class="<?php echo ! ( $i % 2 ) ? ' alternate' : ''; ?>">
 							<td><?php echo $now - $activity->timestamp < 3600 ? sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $activity->timestamp ) ) : date( $timeformat, $activity->timestamp + $timeoffset ); ?></td>
 							<td>
 							<?php
@@ -200,7 +184,7 @@ if ( ! $is_new ) :
 							<?php endif; ?>
 						</td>
 					</tr>
-			<?php } ?>
+			<?php endforeach; ?>
 				</tbody>
 			</table>
 <?php else : ?>

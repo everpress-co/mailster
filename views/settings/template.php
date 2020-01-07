@@ -5,14 +5,9 @@
 		<?php
 		$templates = mailster( 'templates' )->get_templates();
 		$selected  = mailster_option( 'default_template' );
-		foreach ( $templates as $slug => $data ) :
-			?>
-			<option value="<?php echo $slug; ?>"
-									  <?php
-										if ( $slug == $selected ) {
-											echo ' selected'; }
-										?>
-			><?php echo esc_attr( $data['name'] ); ?></option>
+		?>
+		<?php foreach ( $templates as $slug => $data ) : ?>
+			<option value="<?php echo $slug; ?>"<?php selected( $selected, $slug ); ?>><?php echo esc_html( $data['name'] ); ?></option>
 		<?php endforeach; ?>
 		</select> <a href="edit.php?post_type=newsletter&page=mailster_templates"><?php esc_html_e( 'show Templates', 'mailster' ); ?></a> | <a href="edit.php?post_type=newsletter&page=mailster_templates&more"><?php esc_html_e( 'get more', 'mailster' ); ?></a>
 		</p></td>
@@ -35,9 +30,9 @@
 		</th>
 		<td>
 		<?php
-		$social_links = mailster( 'helper' )->get_social_links( '%s', true );
-		$services     = mailster_option( 'services', array() );
-		$services     = array( '0' => '' ) + $services;
+			$social_links = mailster( 'helper' )->get_social_links( '%s', true );
+			$services     = mailster_option( 'services', array() );
+			$services     = array( '0' => '' ) + $services;
 		?>
 			<ul id="social-services">
 		<?php foreach ( $services as $service => $username ) : ?>
@@ -45,14 +40,14 @@
 					<a href="" class="social-service-remove" title="<?php esc_html_e( 'remove', 'mailster' ); ?>">&#10005;</a>
 					<select class="social-service-dropdown">
 						<option value="0"><?php esc_html_e( 'choose', 'mailster' ); ?></option>
-			<?php foreach ( $social_links as $social_link_service => $link ) { ?>
+					<?php foreach ( $social_links as $social_link_service => $link ) : ?>
 						<option value="<?php echo esc_attr( $social_link_service ); ?>" data-url="<?php echo esc_attr( $link ); ?>" <?php selected( $service, $social_link_service ); ?>><?php echo esc_html( $social_link_service ); ?></option>
-			<?php } ?>
+					<?php endforeach; ?>
 					</select>
 					<span class="social-service-url-field">
-			<?php if ( $service ) : ?>
-					<label><span class="description"><?php echo str_replace( '%s', '<input type="text" name="mailster_options[services][' . esc_attr( $service ) . ']" value="' . esc_attr( $username ) . '" class="regular-text">', $social_links[ $service ] ); ?></span></label>
-			<?php endif; ?>
+					<?php if ( $service ) : ?>
+						<label><span class="description"><?php echo str_replace( '%s', '<input type="text" name="mailster_options[services][' . esc_attr( $service ) . ']" value="' . esc_attr( $username ) . '" class="regular-text">', $social_links[ $service ] ); ?></span></label>
+					<?php endif; ?>
 					</span>
 				</li>
 		<?php endforeach; ?>

@@ -172,7 +172,7 @@ textarea{
 	height: 35px;
 }
 #form-builder #form-structure .form-order.sortable li{
-	height: 68px;
+	min-height: 74px;
 }
 #form-structure:hover .form-order.sortable li.ui-sortable-helper{
 }
@@ -316,7 +316,8 @@ textarea{
 }
 #custom-style-samples{
 	width: 100%;
-	height: 400px;
+	max-width: none;
+	height: 370px;
 	float: right;
 }
 textarea.embed-form-output{

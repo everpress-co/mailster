@@ -1155,7 +1155,7 @@ class MailsterTemplates {
 		}
 
 		if ( empty( $file_data['author'] ) ) {
-			$file_data['author'] = esc_html__( 'unknown', 'mailster' );
+			$file_data['author'] = '';
 		}
 
 		if ( preg_match( '#index(-([0-9.]+))?\.html?#', $basename, $hits ) ) {
