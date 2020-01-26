@@ -29,8 +29,8 @@ $all_files = mailster( 'templates' )->get_all_files();
 		<p><strong class="link"></strong></p>
 		<p><?php esc_html_e( 'Clicks', 'mailster' ); ?>: <strong class="clicks">0</strong><br><?php esc_html_e( 'Total', 'mailster' ); ?>: <strong class="total">0</strong></p>
 	</div>
-	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo ( $post->post_content ); ?></textarea>
-	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo ( $post->post_excerpt ); ?></textarea>
+	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_content ); ?></textarea>
+	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_excerpt ); ?></textarea>
 
 <?php endif; ?>
 
@@ -126,6 +126,6 @@ $all_files = mailster( 'templates' )->get_all_files();
 		</div>
 	</div>
 </div>
-<textarea id="content" autocomplete="off" name="content"><?php echo ( $post->post_content ); ?></textarea>
-<textarea id="modules" autocomplete="off"><?php echo ( $modules ); ?></textarea>
-<textarea id="head" name="mailster_data[head]" autocomplete="off"><?php echo ( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>
+<textarea id="content" autocomplete="off" name="content"><?php echo esc_textarea( $post->post_content ); ?></textarea>
+<textarea id="modules" autocomplete="off"><?php echo esc_textarea( $modules ); ?></textarea>
+<textarea id="head" name="mailster_data[head]" autocomplete="off"><?php echo esc_textarea( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>

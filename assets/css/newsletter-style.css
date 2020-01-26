@@ -2153,6 +2153,7 @@ div.mailster-list-operator span{
 	color: #ccc;
 	font-size: 15px;
 	display: none;
+	line-height: 100%;
 }
 #mailster_list_conditions.operator-is-OR div.mailster-list-operator span.operator-or{
 	display: block;

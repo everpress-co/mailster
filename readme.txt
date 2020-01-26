@@ -90,6 +90,9 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.8 =
 
+* fixed: escaped content on edit screen.
+* improved: United Kingdom is no longer part of the European Union.
+
 = Version 2.4.7 =
 
 * improved: CSS for WordPress 5.3
