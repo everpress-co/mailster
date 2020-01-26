@@ -320,9 +320,6 @@ class MailsterPlaceholder {
 			? strip_shortcodes( $this->content )
 			: do_shortcode( $this->content );
 
-		// strip all unwanted stuff from the content
-		$this->strip_unwanted_html();
-
 		return $this->content;
 
 	}
@@ -1311,20 +1308,6 @@ class MailsterPlaceholder {
 			$this->keeptags = array_unique( (array) apply_filters( 'mailster_keep_tags', array() ) );
 		}
 		return $this->keeptags;
-
-	}
-
-
-	private function strip_unwanted_html() {
-
-		if ( ! empty( $this->content ) ) {
-			// template language stuff
-			$this->content = preg_replace( '#<(modules?|buttons|multi|single)([^>]*)>#', '', $this->content );
-			$this->content = preg_replace( '#<\/(modules?|buttons|multi|single)>#', '', $this->content );
-
-			// remove comments
-			$this->content = preg_replace( '#<!-- (.*) -->\s*#', '', $this->content );
-		}
 
 	}
 

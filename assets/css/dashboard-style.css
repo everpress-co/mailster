@@ -23,6 +23,9 @@
 	text-align: center;
 	transition: opacity 1.15s ease-in;
 }
+.mailster-dashboard .postbox a{
+	text-decoration: none;
+}
 .mailster-dashboard .register_form_wrap{
 	height: 260px;
 	width: 70%;
@@ -40,9 +43,6 @@
 .mailster-dashboard .welcome-panel h3{
 	font-size: 18px;
 	line-height: 160%;
-}
-.mailster-dashboard #dashboard-widgets-wrap{
-	margin-top: 5px;
 }
 .mailster-dashboard .welcome-panel .welcome-panel-column:first-child{
 	width: 54%;
@@ -65,7 +65,6 @@
 	margin-top: 0px;
 	width: 70%;
 	font-size: 20px;
-	padding: 11px 12px 12px;
 	vertical-align: bottom;
 }
 .mailster-dashboard dl{
@@ -86,15 +85,11 @@
 }
 .mailster-dashboard dl dd{
 	margin-left: 55px;
-	_color: #23282d;
 }
 .mailster-dashboard dl dd span.lighter{
 	color: #aaa;
 }
-.postbox-container{
-}
-.postbox-container .meta-box-sortables{
-}
+
 @media screen and (max-width: 1500px) {
 
 	.mailster-dashboard #dashboard-widgets .meta-box-sortables:empty {
@@ -102,8 +97,7 @@
 	}
 }
 @media screen and (min-width: 1500px) {
-
-	.mailster-dashboard #dashboard-widgets  .meta-box-sortables:empty {
+	.mailster-dashboard #dashboard-widgets .meta-box-sortables:empty {
 		border: 3px dashed #b4b9be;
 		height: 250px;
 		position: relative;
@@ -111,7 +105,6 @@
 	}
 }
 @media screen and (max-width: 1800px) {
-
 	.mailster-dashboard #dashboard-widgets #postbox-container-4 .meta-box-sortables:empty {
 		display: none;
 	}
@@ -166,6 +159,7 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
+	text-decoration: none;
 }
 .mailster-mb-link:before{
 	font: normal 16px/1 'mailster-icons';

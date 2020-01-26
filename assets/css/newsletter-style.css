@@ -150,7 +150,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 .fixed-optionbar .optionbar:after{
 	content: '.';
 	display: block;
-	border-bottom: 1px solid #DFDFDF;
+	border-bottom: 1px solid #CCD0D4;
 	margin-top: 23px;
 }
 .fixed-optionbar .has-modules .optionbar:after{
@@ -259,7 +259,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 .optionbar ul li a.mailster-icon:hover {
 	background-position: 999px 999px;
 }
-.optionbar ul li a.mailster-icon{padding-bottom: 1px;}
+.optionbar ul li a.mailster-icon{padding-bottom: 1px;min-height: 23px;}
 .optionbar ul li a.mailster-icon:before{padding: 0px;margin: 0;display: block;text-indent: -4px;font-size: 125%;}
 .dark-mode .optionbar ul li a.mailster-icon:before{color:#fff;}
 
@@ -284,7 +284,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	overflow: hidden;
 	background-color: #fafafa !important;
 	border: 1px solid #999;
-	border-radius: 2px;
+	border-radius: 4px;
 	color: #23282d;
 	box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba( 0, 0, 0, 0.08 );
 }
@@ -337,7 +337,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 }
 .optionbar ul li .inner {
 	position: static;
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 	background: #f9f9f9;
 	padding: 5px 0 0;
 	min-width: 220px;
@@ -372,7 +372,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 }
 .mailster_template_save .foot {
 	padding: 10px 20px;
-	border-top: 1px solid #DFDFDF;
+	border-top: 1px solid #CCD0D4;
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -468,7 +468,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 #editbar {
 	background: #fff;
 	color: #333;
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -484,13 +484,10 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	cursor: ns-resize;
 	cursor: hand;
 	cursor: grab;
-	cursor: grabbing;
-	cursor: -moz-grab;
 	cursor: -webkit-grab;
 }
 #editbar.ui-draggable.ui-draggable-dragging{
 	cursor: grabbing;
-	cursor: -moz-grabbing;
 	cursor: -webkit-grabbing;
 }
 #editbar.ui-state-disabled{
@@ -742,13 +739,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	margin: 4px 0;
 }
 #editbar div.type input.input {
-	background-color: #F9F9F9;
-	border: 1px solid #DFDFDF;
-	border-radius: 3px;
 	width: 100%;
-	padding: 3px;
-	font-size: 16px;
-	font-weight: 100;
 	box-sizing: border-box;
 }
 #editbar.has-conditions div.type .type-input {
@@ -777,13 +768,16 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	position: absolute;
 	top: 5px;
 	right: 5px;
-	display: block;
 	background-color: #464646;
 	color: white;
 	font-size: 10px;
 	padding: 3px 6px;
 	z-index: 2;
 	display: none;
+}
+.rtl #editbar .editbarpostion {
+	right: inherit;
+	left: 5px;
 }
 
 #editbar .image-search-wrap, #editbar .image-search-type-wrap{
@@ -944,7 +938,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	display: block;
 	height: 55px;
 	border-top: 1px solid #F9F9F9;
-	border-bottom: 1px solid #DFDFDF;
+	border-bottom: 1px solid #CCD0D4;
 	margin: 0;
 	line-height: 1.1em;
 	position: relative;
@@ -1029,6 +1023,9 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	overflow: auto;
 	white-space: pre;
 }
+.rtl #editbar .tab .current-tag{
+	direction: rtl;
+}
 #editbar .tab p{
 	padding: 0 5px;
 }
@@ -1059,7 +1056,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	width: 270px;
 }
 .dynamic_embed_options_taxonomy_container{
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 	border-radius: 3px;
 	margin: 3px 10px 3px 0;
 	padding: 8px 5px;
@@ -1258,7 +1255,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 .rtl #TB_ajaxContent{
 	text-align: right;
 }
-
 /*----------------------------------------------------------------------*/
 /* Table
 /*----------------------------------------------------------------------*/
@@ -1275,7 +1271,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 #mailster_details table td,#mailster_details table th {
 	vertical-align: text-top;
 	padding: 7px;
-	border-bottom: 1px solid #DFDFDF;
+	border-bottom: 1px solid #CCD0D4;
 }
 .dark-mode #mailster_details table td,.dark-mode #mailster_details table th{
 	border-color: #191f25;
@@ -1314,7 +1310,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	vertical-align: inherit;
 }
 #mailster_details .ajax-list {
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 	border-bottom: 0;
 	margin-top: 5px;
 	display: none;
@@ -1536,20 +1532,20 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 #mailster_details table .countries{
 	overflow: hidden;
 	border: 0;
-	border-top: 1px solid #DFDFDF;
+	border-top: 1px solid #CCD0D4;
 	margin-top: 0;
 }
 #mailster_details table .countries .big{
 	width: 70px;
 }
 #mailster_details table .countries tr{
-	border-left: 1px solid #DFDFDF;
-	border-right: 1px solid #DFDFDF;
+	border-left: 1px solid #CCD0D4;
+	border-right: 1px solid #CCD0D4;
 }
 #mailster_details table .countries td{
 	padding-top: 0;
 	padding-bottom: 0;
-	border-bottom: 1px solid #DFDFDF;
+	border-bottom: 1px solid #CCD0D4;
 }
 #mailster_details table .countries td .mailster-flag-24{
 	margin-top: 5px;
@@ -1665,7 +1661,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	display: none;
 }
 .tabs-panel{
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 	padding: 0.5em 5px;
 	overflow: hidden;
 }
@@ -1701,7 +1697,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	width: 85px;
 }
 .mailster_autoresponder_condition{
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 	border-radius: 3px;
 	margin: 3px 0;
 	padding: 5px;
@@ -1717,7 +1713,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 .mailster_autoresponder_condition input{
 	margin: 3px 0;
 	width: 95%;
-	border-color: #DFDFDF;
+	border-color: #CCD0D4;
 }
 .mailster_sendtest{
 	float: right;
@@ -1849,7 +1845,7 @@ label.weekday input{
 	white-space: nowrap;
 }
 .mailster_list_condition{
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 	border-radius: 3px;
 	margin: 3px 0;
 	padding: 5px;
@@ -1882,13 +1878,13 @@ label.weekday input{
 .mailster_list_condition input{
 	margin: 3px 0;
 	width: 95%;
-	border-color: #DFDFDF;
+	border-color: #CCD0D4;
 }
 #mailster_conditions_render{
 	position: relative;
 }
 #mailster_conditions_render .mailster-conditions-render:empty{
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 	border-radius: 2px;
 	padding: 10px 6px;
 	min-height: 18px;
@@ -1909,7 +1905,7 @@ label.weekday input{
 	white-space: nowrap;
 }
 .mailster-condition-render-group{
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 	padding: 3px 6px;
 	border-radius: 2px;
 	background: #fdfdfd;
@@ -1930,7 +1926,7 @@ label.weekday input{
 
 .create-new-list-wrap{
 	display: none;
-	border-top: 1px solid #DFDFDF;
+	border-top: 1px solid #CCD0D4;
 }
 div.mailster-list-operator{
 	position: absolute;
@@ -1946,6 +1942,7 @@ div.mailster-list-operator span{
 	color: #ccc;
 	font-size: 15px;
 	display: none;
+	line-height: 100%;
 }
 #mailster_list_conditions.operator-is-OR div.mailster-list-operator span.operator-or{
 	display: block;
@@ -2017,7 +2014,7 @@ a.savecolorschema, a.colorschema-delete-all {
 }
 ul.colorschema {
 	margin: 5px 0;
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 	overflow: hidden;
 	display: inline-block !important;
 	max-width: 234px;
@@ -2038,7 +2035,7 @@ ul.colorschema:hover .colorschema-delete-field{
 	display: block;
 }
 ul.colorschema.finished:hover {
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 }
 ul.colorschema li{
 	cursor: pointer;
@@ -2241,7 +2238,7 @@ a.mailster-btn.editbutton {
 #mailster_template #iframe-wrap {
 	transition: margin-right .15s ease-in-out;
 	margin-right: 0px;
-	border: 1px solid #DFDFDF;
+	border: 1px solid #CCD0D4;
 }
 .rtl #mailster_template #iframe-wrap {
 	transition: margin-left .15s ease-in-out;
@@ -2260,7 +2257,7 @@ a.mailster-btn.editbutton {
 #mailster_template a.toggle-modules{
 	transition: margin-left .15s ease-in-out;
 	border: 1px solid;
-	border-color: #fff #fff #DFDFDF #DFDFDF;
+	border-color: #fff #fff #CCD0D4 #CCD0D4;
 	background: #fff;
 	padding: 5px;
 	z-index: 98;
@@ -2282,7 +2279,7 @@ a.mailster-btn.editbutton {
 }
 .rtl #mailster_template a.toggle-modules{
 	transition: margin-right .15s ease-in-out;
-	border-color: #fff #DFDFDF #DFDFDF #fff;
+	border-color: #fff #CCD0D4 #CCD0D4 #fff;
 	margin-left: 0;
 	margin-right: -40px;
 }
@@ -2301,6 +2298,12 @@ a.mailster-btn.editbutton {
 }
 #mailster_template .show-modules a.toggle-modules:before{
 	content: '\e808'
+}
+.rtl #mailster_template a.toggle-modules:before{
+	content: '\e808'
+}
+.rtl #mailster_template .show-modules a.toggle-modules:before{
+	content: '\e807';
 }
 #mailster_template .inside iframe#mailster_iframe {
 	transition: height .25s ease-in-out;
@@ -2350,7 +2353,7 @@ a.mailster-btn.editbutton {
 }
 .fixed-optionbar #module-selector{
 	right: 321px;
-	top: 90px;
+	top: 92px;
 	position: fixed;
 }
 .rtl.fixed-optionbar #module-selector{
@@ -2387,6 +2390,10 @@ a.mailster-btn.editbutton {
 	padding: 2px;
 	display: none;
 }
+.rtl #module-selector #module-search-wrap #module-search-remove{
+	right:inherit;
+	left: 14px;
+}
 #module-selector #module-search-wrap:hover #module-search-remove{
 	display: block;
 }
@@ -2404,7 +2411,7 @@ a.mailster-btn.editbutton {
 	float: none;
 }
 #module-selector ul li a.mailster-btn {
-	border: 1px solid #e5e5e5;
+	border: 1px solid #CCD0D4;
 	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 	display: block;
 	position: static;
@@ -2466,7 +2473,7 @@ a.mailster-btn.editbutton {
 		margin-top: 0;
 	}
 	#module-selector{
-		border-left: 1px solid #e5e5e5;
+		border-left: 1px solid #CCD0D4;
 		border-right: 0;
 		right: 10px;
 		top: 42px;

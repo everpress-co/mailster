@@ -11,7 +11,7 @@ if ( ! $is_new ) {
 	}
 
 	$meta     = (object) $this->meta( $subscriber->ID );
-	$nicename = ( ! empty( $subscriber->fullname ) ? $subscriber->fullname : $subscriber->email );
+	$nicename = empty( $subscriber->fullname ) ? $subscriber->email : $subscriber->fullname;
 
 } else {
 
@@ -105,7 +105,7 @@ if ( $is_new ) {
 					<li><?php echo esc_attr( $subscriber->email ); ?>&nbsp;</li>
 					<li><input id="email" type="email" name="mailster_data[email]" value="<?php echo esc_attr( $subscriber->email ); ?>" placeholder="<?php echo mailster_text( 'email' ); ?>" autofocus></li>
 				</ul>
-				<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{emailaddress}', '&quot;' . $subscriber->email . '&quot;' ); ?>">{emailaddress}</code>
+				<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{emailaddress}', '&quot;' . esc_attr( $subscriber->email ) . '&quot;' ); ?>">{emailaddress}</code>
 			</h3>
 			<div class="detail">
 				<label for="mailster_firstname" class="label-type-name"><?php esc_html_e( 'Name', 'mailster' ); ?>:</label>
@@ -121,9 +121,9 @@ if ( $is_new ) {
 				<?php endif; ?>
 					</li>
 				</ul>
-				<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{fullname}', '&quot;' . $subscriber->fullname . '&quot;' ); ?>">{fullname}</code>
-				<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{lastname}', '&quot;' . $subscriber->lastname . '&quot;' ); ?>">{lastname}</code>
-				<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{firstname}', '&quot;' . $subscriber->firstname . '&quot;' ); ?>">{firstname}</code>
+				<code title="<?php printf( esc_attr__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{fullname}', '&quot;' . esc_attr( $subscriber->fullname ) . '&quot;' ); ?>">{fullname}</code>
+				<code title="<?php printf( esc_attr__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{lastname}', '&quot;' . esc_attr( $subscriber->lastname ) . '&quot;' ); ?>">{lastname}</code>
+				<code title="<?php printf( esc_attr__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{firstname}', '&quot;' . esc_attr( $subscriber->firstname ) . '&quot;' ); ?>">{firstname}</code>
 			</div>
 			<div class="detail">
 				<label for="mailster_status"><?php esc_html_e( 'Status', 'mailster' ); ?>:</label>
@@ -133,13 +133,13 @@ if ( $is_new ) {
 						<select name="mailster_data[status]" id="mailster_status">
 						<?php
 						$statuses = $this->get_status( null, true );
-						foreach ( $statuses as $id => $status ) {
+						foreach ( $statuses as $id => $status ) :
 							if ( $id == 4 && $subscriber->status != 4 ) {
 								continue;
 							}
 							?>
 							<option value="<?php echo (int) $id; ?>" <?php selected( $id, $subscriber->status ); ?> ><?php echo $status; ?></option>
-						<?php } ?>
+						<?php endforeach; ?>
 						</select>
 					</li>
 				</ul>
@@ -186,7 +186,7 @@ if ( $is_new ) {
 				<?php foreach ( $customfields as $field => $data ) : ?>
 				<div class="detail">
 					<label for="mailster_data_<?php echo $field; ?>" class="label-type-<?php echo $data['type']; ?>"><?php echo strip_tags( $data['name'] ); ?>:</label>
-						<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{' . $field . '}', '&quot;' . $subscriber->{$field} . '&quot;' ); ?>">{<?php echo $field; ?>}</code>
+						<code title="<?php printf( esc_html__( 'use %1$s as placeholder tag to replace it with %2$s', 'mailster' ), '{' . esc_attr( $field ) . '}', '&quot;' . esc_attr( $subscriber->{$field} ) . '&quot;' ); ?>">{<?php echo esc_attr( $field ); ?>}</code>
 					<ul class="click-to-edit type-<?php echo $data['type']; ?>">
 					<?php
 					switch ( $data['type'] ) {

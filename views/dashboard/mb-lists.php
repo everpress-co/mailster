@@ -4,11 +4,11 @@ if ( $lists = mailster( 'lists' )->get() ) : ?>
 <div class="mailster-mb-lists mailster-loading">
 	<div class="mailster-mb-heading">
 		<select class="mailster-mb-select">
-		<?php foreach ( $lists as $list ) { ?>
+		<?php foreach ( $lists as $list ) : ?>
 			<option value="<?php echo (int) $list->ID; ?>"><?php esc_html_e( $list->name ); ?></option>
-		<?php } ?>
+		<?php endforeach; ?>
 		</select>
-		<span class="mailster-mb-label"><?php esc_html_e( 'List', 'mailster' ); ?></span>: <a class="mailster-mb-link" href="edit.php?post_type=newsletter&page=mailster_lists&ID=%d" title="<?php esc_html_e( 'edit', 'mailster' ); ?>"><?php esc_html_e( $list->name ); ?></a>
+		<span class="mailster-mb-label"><?php esc_html_e( 'List', 'mailster' ); ?>:</span> <a class="mailster-mb-link" href="edit.php?post_type=newsletter&page=mailster_lists&ID=%d" title="<?php esc_html_e( 'edit', 'mailster' ); ?>"><?php esc_html_e( $list->name ); ?></a>
 	</div>
 	<div class="mailster-mb-stats">
 		<ul class="campaign-charts">

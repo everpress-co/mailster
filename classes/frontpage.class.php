@@ -658,6 +658,7 @@ class MailsterFrontpage {
 					$placeholder->add_custom( get_the_ID() );
 
 					$content = $placeholder->get_content();
+					$content = mailster( 'helper' )->strip_structure_html( $content );
 					$search  = array( '<a ', '@media only screen and (max-device-width:' );
 					$replace = array( '<a target="_top" ', '@media only screen and (max-width:' );
 					$content = str_replace( $search, $replace, $content );
@@ -936,7 +937,7 @@ class MailsterFrontpage {
 	 * @param unknown $hash
 	 * @return unknown
 	 */
-	public function setcookie( $hash, $timeout = 3600 ) {
+	private function setcookie( $hash, $timeout = 3600 ) {
 
 		$cookietime = apply_filters( 'mailster_cookie_time', $timeout );
 
