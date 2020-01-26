@@ -41,7 +41,7 @@ class MailsterRegister {
 		$args = wp_parse_args(
 			$args,
 			array(
-				'pretext'      => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . esc_url( 'https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=' . $page ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
+				'pretext'      => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . esc_url( 'https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=' . $page . '&utm_source=mailster_plugin' ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
 				'purchasecode' => mailster()->license(),
 			)
 		);

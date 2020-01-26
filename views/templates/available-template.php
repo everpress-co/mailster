@@ -18,8 +18,8 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 }
 
 ?>
-<li class="<?php echo implode( ' ', $class ); ?>" id="template-<?php echo esc_attr( $slug ); ?>" data-id="<?php echo esc_attr( $slug ); ?>" data-support="<?php echo esc_attr( sprintf( esc_html__( 'This Template requires at least version %s of Mailster.', 'mailster' ), $data['requires'] ) ); ?>">
-	<a class="external screenshot" title="<?php echo $data['name'] . ' ' . $data['new_version'] . ' ' . esc_attr__( 'by', 'mailster' ) . ' ' . $data['author']; ?>" <?php echo ! empty( $data['uri'] ) ? 'href="' . esc_url( $data['uri'] ) . '" ' : ''; ?> data-slug="<?php echo esc_attr( $slug ); ?>">
+<li class="<?php echo esc_attr( implode( ' ', $class ) ); ?>" id="template-<?php echo esc_attr( $slug ); ?>" data-id="<?php echo esc_attr( $slug ); ?>" data-support="<?php echo esc_attr( sprintf( esc_html__( 'This Template requires at least version %s of Mailster.', 'mailster' ), $data['requires'] ) ); ?>">
+	<a class="external screenshot" title="<?php echo esc_attr( $data['name'] . ' ' . $data['new_version'] ) . ' ' . esc_attr__( 'by', 'mailster' ) . ' ' . esc_attr( $data['author'] ); ?>" <?php echo ! empty( $data['uri'] ) ? 'href="' . esc_url( $data['uri'] ) . '" ' : ''; ?> data-slug="<?php echo esc_attr( $slug ); ?>">
 			<img alt="" src="<?php echo esc_url( $data['image'] ); ?>" width="300" height="225">
 	</a>
 	<div class="meta">

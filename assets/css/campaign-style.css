@@ -1042,6 +1042,7 @@ div.mailster-list-operator span{
 	color: #ccc;
 	font-size: 15px;
 	display: none;
+	line-height: 100%;
 }
 #mailster_list_conditions.operator-is-OR div.mailster-list-operator span.operator-or{
 	display: block;
@@ -1398,6 +1399,12 @@ a.mailster-btn.editbutton {
 #mailster_template .show-modules a.toggle-modules:before{
 	content: '\e808'
 }
+.rtl #mailster_template a.toggle-modules:before{
+	content: '\e808'
+}
+.rtl #mailster_template .show-modules a.toggle-modules:before{
+	content: '\e807';
+}
 #mailster_template .inside iframe#mailster_iframe {
 	transition: height .25s ease-in-out;
 	margin-top: -3px;
@@ -1450,7 +1457,7 @@ a.mailster-btn.editbutton {
 }
 .fixed-optionbar #module-selector{
 	right: 321px;
-	top: 90px;
+	top: 92px;
 	position: fixed;
 }
 .rtl.fixed-optionbar #module-selector{
@@ -1486,6 +1493,10 @@ a.mailster-btn.editbutton {
 	top: 2px;
 	padding: 2px;
 	display: none;
+}
+.rtl #module-selector #module-search-wrap #module-search-remove{
+	right:inherit;
+	left: 14px;
 }
 #module-selector #module-search-wrap:hover #module-search-remove{
 	display: block;

@@ -49,9 +49,9 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 		$colors[] = $value;
 
 		?>
-	<li class="mailster-color" id="mailster-color-<?php echo esc_attr( substr( $value, 1 ) ); ?>">
-	<label title="<?php echo isset( $original_names[ $i ] ) ? $original_names[ $i ] : ''; ?>"><?php echo isset( $original_names[ $i ] ) ? $original_names[ $i ] : ''; ?></label>
-	<input type="text" class="form-input-tip color" name="mailster_data[newsletter_color][<?php echo esc_attr( $color ); ?>]"  value="<?php echo esc_attr( $value ); ?>" data-value="<?php echo esc_attr( $value ); ?>" data-default-color="<?php echo esc_attr( $value ); ?>">
+	<li class="mailster-color" id="mailster-color-<?php echo strtolower( substr( $value, 1 ) ); ?>">
+	<label title="<?php echo isset( $original_names[ $i ] ) ? esc_attr( $original_names[ $i ] ) : ''; ?>"><?php echo isset( $original_names[ $i ] ) ? esc_attr( $original_names[ $i ] ) : ''; ?></label>
+	<input type="text" class="form-input-tip color" name="mailster_data[newsletter_color][<?php echo substr( esc_attr( $color ), 1 ); ?>]"  value="<?php echo esc_attr( $value ); ?>" data-value="<?php echo esc_attr( $value ); ?>" data-default-color="<?php echo esc_attr( $value ); ?>">
 	<a class="default-value mailster-icon" href="#" tabindex="-1"></a>
 	</li>
 		<?php
@@ -75,22 +75,22 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 		$color                  = strtolower( $color );
 		$original_colors_temp[] = $color;
 		?>
-		<li class="colorschema-field" title="<?php echo isset( $original_names[ $i ] ) ? $original_names[ $i ] : ''; ?>" data-hex="<?php echo $color; ?>" style="background-color:<?php echo $color; ?>"></li>
+		<li class="colorschema-field" title="<?php echo isset( $original_names[ $i ] ) ? $original_names[ $i ] : ''; ?>" data-hex="<?php echo esc_attr( $color ); ?>" style="background-color:<?php echo $color; ?>"></li>
 	<?php endforeach; ?>
 	</ul>
 	<?php if ( strtolower( implode( '', $original_colors_temp ) ) != strtolower( implode( '', $current_colors ) ) ) : ?>
 		<ul class="colorschema" title="<?php esc_html_e( 'current', 'mailster' ); ?>">
 			<?php foreach ( $colors as $i => $color ) : ?>
-				<li class="colorschema-field" title="<?php echo isset( $original_names[ $i ] ) ? $original_names[ $i ] : ''; ?>" data-hex="<?php echo strtolower( $color ); ?>" style="background-color:<?php echo $color; ?>"></li>
+				<li class="colorschema-field" title="<?php echo isset( $original_names[ $i ] ) ? esc_attr( $original_names[ $i ] ) : ''; ?>" data-hex="<?php echo esc_attr( strtolower( $color ) ); ?>" style="background-color:<?php echo esc_attr( $color ); ?>"></li>
 			<?php endforeach; ?>
 		</ul>
 	<?php endif; ?>
 
 	<?php if ( isset( $customcolors[ $this->get_template() ] ) ) : ?>
 		<?php foreach ( $customcolors[ $this->get_template() ] as $hash => $colorschema ) : ?>
-		<ul class="colorschema custom" data-hash="<?php echo $hash; ?>">
+		<ul class="colorschema custom" data-hash="<?php echo esc_attr( $hash ); ?>">
 			<?php foreach ( $colorschema as $i => $color ) { ?>
-			<li class="colorschema-field" title="<?php echo isset( $original_names[ $i ] ) ? $original_names[ $i ] : ''; ?>" data-hex="<?php echo strtolower( $color ); ?>" style="background-color:<?php echo $color; ?>"></li>
+			<li class="colorschema-field" title="<?php echo isset( $original_names[ $i ] ) ? esc_attr( $original_names[ $i ] ) : ''; ?>" data-hex="<?php echo esc_attr( strtolower( $color ) ); ?>" style="background-color:<?php echo esc_attr( $color ); ?>"></li>
 		<?php } ?>
 		<li class="colorschema-delete-field"><a class="colorschema-delete">&#10005;</a></li>
 		</ul>
@@ -111,7 +111,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$colors = $this->post_data['colors'];
 	foreach ( $colors as $color ) :
 		?>
-		<li data-hex="<?php echo $color; ?>" style="background-color:<?php echo $color; ?>"></li>
+		<li data-hex="<?php echo esc_attr( $color ); ?>" style="background-color:<?php echo esc_attr( $color ); ?>"></li>
 	<?php endforeach; ?>
 	</ul>
 <?php endif; ?>

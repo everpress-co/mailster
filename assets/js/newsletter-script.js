@@ -214,7 +214,7 @@ jQuery(document).ready(function ($) {
 
 		clone = $('<div>' + body.innerHTML + '</div>');
 
-		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
+		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, .a11y-speak-region, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
 		//remove some third party elements
 		clone.find('#droplr-chrome-extension-is-installed').remove();
 		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');

@@ -217,6 +217,7 @@ class MailsterForms {
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'jquery-ui-sortable' );
 			wp_enqueue_script( 'jquery-touch-punch' );
+			wp_enqueue_script( 'jquery-ui-datepicker' );
 
 			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_script( 'wp-color-picker' );
@@ -235,11 +236,8 @@ class MailsterForms {
 			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'jquery-ui-datepicker' );
-
 			wp_enqueue_style( 'mailster-form-detail', MAILSTER_URI . 'assets/css/form-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'jquery', 'jquery-ui-sortable', 'mailster-clipboard-script', 'wp-color-picker' ), MAILSTER_VERSION );
 			wp_localize_script(
 				'mailster-form-detail',
 				'mailsterL10n',
@@ -1207,6 +1205,19 @@ class MailsterForms {
 	}
 
 
+
+	/**
+	 *
+	 *
+	 * @param unknown $style
+	 * @param unknown $selector
+	 * @param unknown $property
+	 */
+	private function _get_style( $style, $selector, $property ) {
+
+		echo ( isset( $style->{$selector} ) && isset( $style->{$selector}->{$property} ) ) ? $style->{$selector}->{$property} : '';
+
+	}
 
 	/**
 	 *

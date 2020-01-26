@@ -937,7 +937,7 @@ class MailsterFrontpage {
 	 * @param unknown $hash
 	 * @return unknown
 	 */
-	public function setcookie( $hash, $timeout = 3600 ) {
+	private function setcookie( $hash, $timeout = 3600 ) {
 
 		$cookietime = apply_filters( 'mailster_cookie_time', $timeout );
 

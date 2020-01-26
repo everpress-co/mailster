@@ -54,6 +54,7 @@ if ( $new == $slug ) {
 				<?php endif; ?>
 			<?php endif; ?>
 		</h3>
+		<?php if ( $data['author'] ) : ?>
 		<div>
 			<?php esc_html_e( 'by', 'mailster' ); ?>
 			<?php if ( ! empty( $data['author_uri'] ) ) : ?>
@@ -62,6 +63,7 @@ if ( $new == $slug ) {
 				<?php echo esc_html( $data['author'] ); ?>
 			<?php endif; ?>
 		</div>
+		<?php endif; ?>
 	</div>
 	<?php if ( ! empty( $data['description'] ) ) : ?>
 		<p class="description"><?php echo $data['description']; ?></p>

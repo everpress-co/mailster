@@ -754,8 +754,7 @@ class MailsterManage {
 
 			delete_option( 'mailster_bulk_import' );
 			delete_option( 'mailster_bulk_import_errors' );
-			$wpdb->query( $wpdb->prepare( 'DROP TABLE %s', "{$wpdb->prefix}mailster_temp_import" ) );
-
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
 			$return['wpusers'] = mailster( 'subscribers' )->wp_id();
 
 		} else {
