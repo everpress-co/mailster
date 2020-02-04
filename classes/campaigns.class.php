@@ -75,16 +75,16 @@ class MailsterCampaigns {
 	 *
 	 * @return unknown
 	 * @param unknown $func
-	 * @param unknown $args
+	 * @param unknown $org_args
 	 */
-	public function __call( $func, $args ) {
+	public function __call( $func, $org_args ) {
 
 		if ( substr( $func, 0, 19 ) == 'autoresponder_hook_' ) {
 
 			$campaign_id = (int) substr( $func, 19 );
 
-			$subscribers = isset( $args[0] ) ? array_shift( $args ) : null;
-			$args        = isset( $args[0] ) ? array_shift( $args ) : array();
+			$subscribers = isset( $org_args[0] ) && $org_args[0] != '' ? $org_args[0] : null;
+			$args        = isset( $org_args[1] ) && ! empty( $org_args[1] ) ? (array) $org_args[1] : null;
 
 			$this->autoresponder_hook( $campaign_id, $subscribers, $args );
 
@@ -117,7 +117,7 @@ class MailsterCampaigns {
 			'lists'        => $meta['ignore_lists'] ? false : $meta['lists'],
 			'conditions'   => $meta['list_conditions'],
 			// 'queue__not_in' => $campaign_id,
-			'sent__not_in' => $meta['autoresponder']['once'] ? $campaign_id : false,
+			'sent__not_in' => isset( $meta['autoresponder']['once'] ) && $meta['autoresponder']['once'] ? $campaign_id : false,
 			'include'      => $subscriber_ids,
 		);
 
