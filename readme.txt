@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.9 =
 
 * fixed: empty strings on action hook based campaigns
+* fixed: unchecked required checkbox prevents form fields page from saving.
 
 = Version 2.4.8 =
 
