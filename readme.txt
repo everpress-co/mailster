@@ -90,6 +90,8 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.9 =
 
+* change: moved text strings for GDPR to text tab for better localization.
+* added: `mailster_gdpr_label` filter to change the content.
 * fixed: empty strings on action hook based campaigns
 * fixed: unchecked required checkbox prevents form fields page from saving.
 
