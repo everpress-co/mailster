@@ -94,6 +94,7 @@ Xaver Birsak – https://everpress.co
 * added: `mailster_gdpr_label` filter to change the content.
 * fixed: empty strings on action hook based campaigns
 * fixed: unchecked required checkbox prevents form fields page from saving.
+* fixed: wrong less memory warning
 
 = Version 2.4.8 =
 
