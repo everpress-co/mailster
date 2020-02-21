@@ -1,0 +1,108 @@
+/**
+ * The following styles get applied both on the front of your site and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.wp-block-mailster-form {
+}
+.wp-block-mailster-form input[type="text"],
+.wp-block-mailster-form input[type="email"],
+.wp-block-mailster-form input[type="url"],
+.wp-block-mailster-form input[type="password"],
+.wp-block-mailster-form input[type="search"],
+.wp-block-mailster-form input[type="number"],
+.wp-block-mailster-form input[type="tel"],
+.wp-block-mailster-form input[type="range"],
+.wp-block-mailster-form input[type="date"],
+.wp-block-mailster-form input[type="month"],
+.wp-block-mailster-form input[type="week"],
+.wp-block-mailster-form input[type="time"],
+.wp-block-mailster-form input[type="datetime"],
+.wp-block-mailster-form input[type="datetime-local"],
+.wp-block-mailster-form input[type="color"],
+.wp-block-mailster-form textarea{
+	width: 100%;
+
+}
+.wp-block-mailster-form.has-asterisk .wp-block-mailster-field.is-required label.mailster-label:after{
+	content: ' *';
+	color: #d94f4f;
+}
+.wp-block-mailster-form .mailster-input{
+	margin-bottom: 15px;
+	box-sizing: border-box;
+	outline: none;
+	padding: 0.36rem 0.66rem;
+	-webkit-appearance: none;
+	outline-offset: 0;
+	border-radius: 0;
+	min-height: 2em;
+}
+.wp-block-mailster-form div.mailster-input{
+	border:1px solid #ccc;
+}
+
+.wp-block-mailster-form .mailster-notice{
+	border-radius: 2px;
+	padding: 5px;
+	margin-bottom: 4px;
+	color: #fff;
+	padding: 9px 16px;
+	transition: all 0.2s;
+}
+.wp-block-mailster-form .mailster-notice.mailster-notice-error{
+	background-color: #BF4D4D;
+}
+.wp-block-mailster-form .mailster-notice.mailster-notice-success{
+	background-color: #6fbf4d;
+}
+
+.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field{
+	padding-bottom: 2em;
+}
+.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field label.mailster-label{
+	font-size: 1rem;
+	display: inline-block;
+	padding-bottom: 0.3em;
+}
+
+
+/*.wp-block-mailster-form .mailster-form-fields{
+	display: grid;
+	grid-template-columns: 9% 9% 9% 9% 9% 9% 9% 9% 9% 9%;
+	grid-template-rows: auto;
+	grid-auto-flow:row;
+	grid-column-gap: 1%;
+}
+.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field{
+	grid-column: span 10;
+}
+
+.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field-input{
+	width: 100%;
+	_grid-column: span 5;
+}
+*/
+
+
+.wp-block-mailster-form.is-style-fancy{
+}
+
+.wp-block-mailster-form.is-style-fancy label{
+	display: none;
+}
+.wp-block-mailster-form.is-style-fancy .mailster-form-fields{
+	display: grid;
+	grid-template-columns: 66% 34%;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr) ) ;
+   grid-gap: 0px;
+}
+.wp-block-mailster-form.is-style-fancy .mailster-wrapper{
+	grid-column-start: span 1;
+	grid-row-start: 1;
+}
+.wp-block-mailster-form.is-style-fancy .mailster-wrapper.mailster-wrapper-_submit{
+	grid-column-start: 2;
+
+}

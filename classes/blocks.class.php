@@ -32,9 +32,9 @@ class MailsterBlocks {
 	public function register_blocks() {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_register_script( 'mailster-form-block-editor', MAILSTER_URI . 'blocks/blocks' . $suffix . '.js', array( 'wp-blocks', 'wp-i18n', 'wp-element' ), MAILSTER_VERSION );
-		wp_register_style( 'mailster-form-block-editor', MAILSTER_URI . 'blocks/editor' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_register_style( 'mailster-form-block', MAILSTER_URI . 'blocks/style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_register_script( 'mailster-form-block-editor', MAILSTER_URI . 'assets/js/blocks' . $suffix . '.js', array( 'wp-blocks', 'wp-i18n', 'wp-element' ), MAILSTER_VERSION );
+		wp_register_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_register_style( 'mailster-form-block', MAILSTER_URI . 'assets/css/blocks-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		$form_attributes = array(
 			'align'           => '',
