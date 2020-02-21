@@ -17,14 +17,21 @@
 	var __ = wp.i18n.__;
 
 	const ALLOWED_BLOCKS = [ 'mailster/*' ];
-	const TEMPLATE = [ [ 'mailster/input' ] , [ 'mailster/input' ] ];
+	const TEMPLATE = [ [ 'mailster/field-email' ] ];
 
 	class Form extends Component {
 
+		constructor() {
+			super(...arguments);
+			this.state = {
+				displaySuccessMessages: false,
+				displayErrorMessages: false,
+			}
+		}
 
 		render(props) {
 			// Setup the attributes
-			const {
+			let {
 				attributes,
 				setAttributes,
 				className
@@ -33,15 +40,24 @@
 				InnerBlocks,
 				RichText,
 				InspectorControls,
+				PanelColorSettings,
 			} = wp.blockEditor;
 			const {
+				Disabled,
+				Buttons,
+				Button,
+				Text,
 				TextControl,
 				CheckboxControl,
+				ColorPalette,
+				ColorPicker,
+				ColorIndicator,
 				RadioControl,
 				SelectControl,
 				TextareaControl,
 				ToggleControl,
 				RangeControl,
+				PlainText,
 				Panel,
 				PanelHeader,
 				PanelBody,
@@ -52,33 +68,211 @@
 				Fragment
 			} = wp.element
 
+			const {
+				withState
+			} = wp.compose
+
+			const themeColors = [
+				{ name: 'red', color: '#f00' },
+				{ name: 'white', color: '#fff' },
+				{ name: 'blue', color: '#00f' },
+				{ name: 'sblue', color: '#0ef' },
+				{ name: 'gblue', color: '#0ff' },
+			];
+
+			if(attributes.asterisk)	className += ' has-asterisk';
+			if(attributes.align)	className += ' align'+attributes.align;
+
+			const listSelector = [];
+
+			for (var i = 0; i < attributes.available_lists.length; i++) {
+				listSelector.push(
+					el( CheckboxControl,
+						{
+							label: attributes.available_lists[i].name,
+							checked: attributes.lists.indexOf(parseInt(attributes.available_lists[i].ID, 10)) != -1,
+							onChange: ( value ) => {
+								console.log(value);
+								setAttributes( { userchoice: value } );
+							},
+						}
+					)
+				);
+			};
+
+
 			return [
 				el('div', {
 					className: className,
-					key: 'form',
+					key: 'mailster-form',
 				},
-					el(InnerBlocks,{
-						allowedBlocks: ALLOWED_BLOCKS,
-						//template: TEMPLATE,
-					}),
-					attributes.gdpr && el( RichText, {
-						tagName: 'p',
-						value: attributes.gdpr_text,
-						formattingControls: [ 'bold', 'italic', 'link' ],
-						onChange: ( value ) => {
-							setAttributes( { gdpr_text: value } );
-						},
-					}),
-					el( attributes.submittype, {
 
-					}, 'Subscribe' ),
+					// Messages
+					(this.state.displaySuccessMessages || this.state.displayErrorMessages) && el( 'div', {
+						className: 'wp-block'
+					},
+						this.state.displaySuccessMessages && el(RichText, {
+							value: attributes.doubleoptin ? attributes.confirmMessage : attributes.successMessage,
+							allowedFormats: [ 'core/bold', 'core/italic', 'core/link' ],
+							style: {color: attributes.successColor, backgroundColor: attributes.successBGColor},
+							className: 'mailster-notice mailster-notice-success',
+							onChange: ( value ) => {
+								if(attributes.doubleoptin){
+									setAttributes( { confirmMessage: value } );
+								}else{
+									setAttributes( { successMessage: value } );
+								}
+							},
+						}),
+						this.state.displayErrorMessages && el(RichText, {
+							value: attributes.errorMessage,
+							allowedFormats: [ 'core/bold', 'core/italic', 'core/link' ],
+							style: {color: attributes.errorColor, backgroundColor: attributes.errorBGColor},
+							className: 'mailster-notice mailster-notice-error',
+							onChange: ( value ) => {
+								setAttributes( { errorMessage: value } );
+							},
+						}),
+					),
+
+					// The fields
+					el(InnerBlocks,{
+						className: 'mailster-form-fields',
+						allowedBlocks: ALLOWED_BLOCKS,
+						template: TEMPLATE,
+					}),
+
+					// GDPR checkbox
+					attributes.gdpr && el( 'label', {
+						className: 'gdpr-line',
+					},
+						el( 'input', {
+							type: 'checkbox',
+							disabled: true,
+						}),
+						el( RichText, {
+							tagName: 'span',
+							value: attributes.gdpr_text,
+							allowedFormats: [ 'core/bold', 'core/italic', 'core/link' ],
+							onChange: ( value ) => {
+								setAttributes( { gdpr_text: value } );
+							},
+						}),
+					),
+
+					// Submit button
+					el( 'div', {
+						className: 'wp-block-button'
+					},
+						el( RichText, {
+							value: attributes.submit,
+							allowedFormats: ['core/align'],
+							className: 'wp-block-button__link',
+							onChange: ( value ) => {
+								setAttributes( { submit: value } );
+							},
+						}),
+						el( Fragment, { key:'inspector-form-button' },
+							el( InspectorControls, {},
+
+								el( PanelBody, { title: __('Options', 'mailster'), initialOpen: false },
+
+									//el( Fragment, {}, requiredToggle),
+									el( Fragment, {},
+										el( TextControl,
+											{
+												label: __('Label', 'mailster'),
+												value: attributes.label,
+												onChange: ( value ) => {
+													setAttributes( { label: value } );
+												},
+											}
+										),
+									),
+
+								),
+
+							),
+						),
+					),
 				),
 				el( Fragment, {key:'inspector'},
 					el( InspectorControls, {},
 
-						el( PanelBody, { title: __('Options', 'mailster'), initialOpen: true },
+						el( PanelColorSettings,
+							{
+								title: __('Success Message', 'mailster'),
+								initialOpen: this.state.displaySuccessMessages,
+								onToggle: () => {
+									this.setState({ displaySuccessMessages: !this.state.displaySuccessMessages });
+								},
+								colorSettings: [
+								{
+									label: __('Text Color', 'mailster'),
+									value: attributes.successColor,
+									onChange: ( value ) => {
+										setAttributes( { successColor: value } );
+									},
+								},
+								{
+									label: __('Background', 'mailster'),
+									value: attributes.successBGColor,
+									onChange: ( value ) => {
+										setAttributes( { successBGColor: value } );
+									},
+								},
+								],
+							}
+						),
 
-							el( PanelRow, {},
+
+						el( PanelColorSettings,
+							{
+								title: __('Error Message', 'mailster'),
+								initialOpen: this.state.displayErrorMessages,
+								onToggle: () => {
+									this.setState({ displayErrorMessages: !this.state.displayErrorMessages });
+								},
+								colorSettings: [
+								{
+									label: __('Text Color', 'mailster'),
+									value: attributes.errorColor,
+									onChange: ( value ) => {
+										setAttributes( { errorColor: value } );
+									},
+								},
+								{
+									label: __('Background', 'mailster'),
+									value: attributes.errorBGColor,
+									onChange: ( value ) => {
+										setAttributes( { errorBGColor: value } );
+									},
+								},
+								],
+							}
+						),
+
+
+						el( PanelBody, { title: __('List Settings', 'mailster'), initialOpen: true },
+
+							el( Fragment, {},
+								el( ToggleControl,
+									{
+										label: __('Users decide which lists they subscribe to.', 'mailster'),
+										checked: attributes.userchoice,
+										onChange: ( value ) => {
+											setAttributes( { userchoice: value } );
+										},
+									}
+								),
+								listSelector,
+							),
+
+						),
+
+						el( PanelBody, { title: __('Options', 'mailster'), initialOpen: false },
+
+							el( Fragment, {},
 								el( ToggleControl,
 									{
 										label: __('Fill fields with known data if user is logged in.', 'mailster'),
@@ -89,7 +283,7 @@
 									}
 								),
 							),
-							el( PanelRow, {},
+							el( Fragment, {},
 								el( ToggleControl,
 									{
 										label: __('Allow users to update their data with this form.', 'mailster'),
@@ -100,14 +294,12 @@
 									}
 								),
 							),
-
-							el( PanelRow, {},
-								el( ToggleControl,
-									{
-										label: __('Use <button> instead of <a>nchor tags', 'mailster'),
-										checked: attributes.submittype == 'button',
-										onChange: ( value ) => {
-											setAttributes( { submittype: value ? 'button' : 'a' } );
+							el( Fragment, {},
+								el( ToggleControl, {
+										label: __('Show Asterisk', 'mailster'),
+										checked: attributes.asterisk,
+										onChange: function( value ){
+											setAttributes( { asterisk: value } );
 										},
 									}
 								),
@@ -115,9 +307,9 @@
 
 						),
 
-						el( PanelBody, { title: __('Double Opt in', 'mailster'), initialOpen: true },
+						el( PanelBody, { title: __('Double Opt in', 'mailster'), initialOpen: false },
 
-							el( PanelRow, {},
+							el( Fragment, {},
 								el( ToggleControl,
 									{
 										label: __('Enable Double opt In', 'mailster'),
@@ -129,61 +321,63 @@
 								),
 							),
 
-							el( PanelRow, {},
-								el( TextControl,
-									{
-										label: __('Subject', 'mailster') +  ' - {subject}',
-										value: attributes.subject,
-										onChange: ( value ) => {
-											setAttributes( { subject: value } );
-										},
-									}
+							attributes.doubleoptin && el( Fragment, {},
+								el( Fragment, {},
+									el( TextControl,
+										{
+											label: __('Subject', 'mailster') +  ' - {subject}',
+											value: attributes.subject,
+											onChange: ( value ) => {
+												setAttributes( { subject: value } );
+											},
+										}
+									),
 								),
-							),
 
-							el( PanelRow, {},
-								el( TextControl,
-									{
-										label: __('Headline', 'mailster') + ' - {headline}',
-										value: attributes.headline,
-										onChange: ( value ) => {
-											setAttributes( { headline: value } );
-										},
-									}
+								el( Fragment, {},
+									el( TextControl,
+										{
+											label: __('Headline', 'mailster') + ' - {headline}',
+											value: attributes.headline,
+											onChange: ( value ) => {
+												setAttributes( { headline: value } );
+											},
+										}
+									),
 								),
-							),
 
-							el( PanelRow, {},
-								el( TextControl,
-									{
-										label: __('Linktext', 'mailster') + ' - {link}',
-										value: attributes.link,
-										onChange: ( value ) => {
-											setAttributes( { link: value } );
-										},
-									}
+								el( Fragment, {},
+									el( TextControl,
+										{
+											label: __('Linktext', 'mailster') + ' - {link}',
+											value: attributes.link,
+											onChange: ( value ) => {
+												setAttributes( { link: value } );
+											},
+										}
+									),
 								),
-							),
 
-							el( PanelRow, {},
-								el( TextareaControl,
-									{
-										label: __('Text', 'mailster')+ ' - {content}',
-										value: attributes.content,
-										help: __('The text new subscribers get when Double-Opt-In is selected. Use {link} for the link placeholder. Basic HTML is allowed.', 'mailster'),
-										onChange: ( value ) => {
-											setAttributes( { content: value } );
-										},
-									}
+								el( Fragment, {},
+									el( TextareaControl,
+										{
+											label: __('Text', 'mailster')+ ' - {content}',
+											value: attributes.content,
+											help: __('The text new subscribers get when Double-Opt-In is selected. Use {link} for the link placeholder. Basic HTML is allowed.', 'mailster'),
+											onChange: ( value ) => {
+												setAttributes( { content: value } );
+											},
+										}
+									),
 								),
 							),
 
 						),
 
 
-						el( PanelBody, { title: __('GDPR', 'mailster'), initialOpen: true },
+						el( PanelBody, { title: __('GDPR', 'mailster'), initialOpen: false },
 
-							el( PanelRow, {},
+							el( Fragment, {},
 								el( ToggleControl,
 									{
 										label: __('Add Checkbox', 'mailster'),
@@ -195,12 +389,11 @@
 								),
 							),
 
-							el( PanelRow, {},
+							attributes.gdpr && el( Fragment, {},
 								el( TextareaControl,
 									{
 										label: __('Text', 'mailster'),
 										value: attributes.gdpr_text,
-										help: __('The text new subscribers get when Double-Opt-In is selected. Use {link} for the link placeholder. Basic HTML is allowed.', 'mailster'),
 										onChange: ( value ) => {
 											setAttributes( { gdpr_text: value } );
 										},
@@ -225,11 +418,12 @@
 
 		render() {
 			// Setup the attributes
-			const {
+			let {
 				attributes,
 				setAttributes,
 				className,
 				name,
+				clientId,
 			} = this.props;
 
 			const {
@@ -266,27 +460,37 @@
 				requiredToggle = el(Disabled, {}, requiredToggle);
 			}
 
+			className = 'wp-block-mailster-field ' + className;
+			if(attributes.required)	className += ' is-required';
+
 			return [
 				el('div', {
 					className: className,
-					key: 'input',
+					key: 'input-'+this.type,
 				},
-					requiredToggle,
-					el('label', {
+					//requiredToggle,
+					el(RichText, {
+						tagName: 'label',
 						className: 'mailster-label',
-					}, attributes.label),
-					el(TextControl, {
-						readOnly: true,
-						value: '',
+						value: attributes.label,
+						allowedFormats: [ 'core/bold', 'core/italic', 'core/link' ],
+						onChange: ( value ) => {
+							setAttributes( { label: value } );
+						},
+					}),
+					el('input', {
+						type: 'text',
+						className: 'mailster-input mailster-input-'+name,
 					}),
 				),
-				el( Fragment, {key:'inspectossr'},
+
+				el( Fragment, { key:'inspector-input-'+this.type },
 					el( InspectorControls, {},
 
-						el( PanelBody, { title: __('Options', 'mailster'), initialOpen: true },
+						el( PanelBody, { title: __('Options', 'mailster'), initialOpen: false },
 
-							el( PanelRow, {}, requiredToggle),
-							el( PanelRow, {},
+							el( Fragment, {}, requiredToggle),
+							el( Fragment, {},
 								el( TextControl,
 									{
 										label: __('Label', 'mailster'),
@@ -333,7 +537,8 @@
 	} );
 
 	registerBlockType( 'mailster/field-email', { edit: Email });
-	registerBlockType( 'mailster/field-input', { edit: Input });
+	registerBlockType( 'mailster/field-firstname', { edit: Input });
+	registerBlockType( 'mailster/field-lastname', { edit: Input });
 
 
 } )(
