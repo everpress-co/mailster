@@ -43,6 +43,7 @@ class MailsterBlocks {
 			'submit'          => 'Subscribe',
 			'submittype'      => 'button',
 			'doubleoptin'     => true,
+			'dropdown'        => false,
 			'asterisk'        => true,
 			'prefill'         => true,
 			'overwrite'       => false,
@@ -63,7 +64,7 @@ class MailsterBlocks {
 			'confirmMessage'  => mailster_text( 'confirmation' ),
 			'successMessage'  => mailster_text( 'success' ),
 			'errorMessage'    => mailster_text( 'error' ),
-			'lists'           => array( 1, 3 ),
+			'lists'           => array( 3 ),
 			'available_lists' => mailster( 'lists' )->get(),
 		);
 
@@ -75,7 +76,7 @@ class MailsterBlocks {
 				'editor_style'    => 'mailster-form-block-editor',
 				'title'           => esc_html__( 'Newsletter Sign up', 'mailster' ),
 				'description'     => esc_html__( 'Add A Newsletter Signup Form', 'mailster' ),
-				'keywords'        => array( esc_html__( 'newsletter', 'mailster' ), esc_html__( 'signup', 'mailster' ) ),
+				'keywords'        => array( 'mailster', esc_html__( 'newsletter', 'mailster' ), esc_html__( 'signup', 'mailster' ) ),
 				'category'        => 'widgets',
 				'supports'        => array(
 					'align' => array( 'wide', 'full' ),
@@ -99,10 +100,15 @@ class MailsterBlocks {
 				'style'           => 'mailster-form-block',
 				'attributes'      => array_map(
 					function( $k ) {
-						return array(
+						$a = array(
 							'type'    => gettype( $k ),
 							'default' => $k,
 						);
+						if ( $a['type'] == 'array' ) {
+							$a['items'] = null;
+						};
+
+						return $a;
 					},
 					$form_attributes
 				),
@@ -194,7 +200,6 @@ class MailsterBlocks {
 			$attr['className'] .= ' align' . $attr['align'];
 		}
 
-		error_log( print_r( $attr, true ) );
 		ob_start();
 		?>
 

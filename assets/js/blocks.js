@@ -26,7 +26,7 @@
 	class Form extends Component {
 
 		constructor() {
-			super();
+			super(...arguments);
 			this.state = {
 				displaySuccessMessages: false,
 				displayErrorMessages: false,
@@ -56,11 +56,12 @@
 				ColorPalette,
 				ColorPicker,
 				ColorIndicator,
+				Draggable,
 				RadioControl,
+				RangeControl,
 				SelectControl,
 				TextareaControl,
 				ToggleControl,
-				RangeControl,
 				PlainText,
 				Panel,
 				PanelHeader,
@@ -96,23 +97,32 @@
 			if (attributes.asterisk) className += ' has-asterisk';
 			if (attributes.align) className += ' align' + attributes.align;
 
-			const listSelector = [];
+			var listSelector = Object.values(attributes.available_lists).map(function (list) {
+				var listID = parseInt(list.ID, 10);
+				return el(CheckboxControl, {
+					className: 'asdasdasd',
+					key: 'list-' + listID,
+					label: list.name,
+					checked: attributes.lists.indexOf(listID) != -1,
+					onChange: (isChecked) => {
 
-			for (var i = 0; i < attributes.available_lists.length; i++) {
-				listSelector.push(
-					el(CheckboxControl, {
-						label: attributes.available_lists[i].name,
-						checked: attributes.lists.indexOf(parseInt(attributes.available_lists[i].ID, 10)) != -1,
-						onChange: function (value) {
-							console.log(value);
-							setAttributes({
-								userchoice: value
-							});
-						},
-					})
-				);
-			};
+						var added = attributes.lists.indexOf(listID) != -1;
+						// Don't mutate the original object but make a copy of it and mutate that one
+						var copy = Object.assign([], attributes.lists);
 
+						if (!added && isChecked) {
+							copy.push(listID);
+						} else if (added && !isChecked) {
+							copy.splice(copy.indexOf(listID), 1);
+						}
+
+						setAttributes({
+							lists: copy
+						});
+
+					},
+				});
+			});
 
 			return [
 				el('div', {
@@ -132,7 +142,7 @@
 								backgroundColor: attributes.successBGColor
 							},
 							className: 'mailster-notice mailster-notice-success',
-							onChange: function (value) {
+							onChange: (value) => {
 								if (attributes.doubleoptin) {
 									setAttributes({
 										confirmMessage: value
@@ -152,7 +162,7 @@
 								backgroundColor: attributes.errorBGColor
 							},
 							className: 'mailster-notice mailster-notice-error',
-							onChange: function (value) {
+							onChange: (value) => {
 								setAttributes({
 									errorMessage: value
 								});
@@ -167,6 +177,34 @@
 						template: TEMPLATE,
 					}),
 
+					attributes.userchoice && Object.values(attributes.available_lists).map(function (list) {
+						var listID = parseInt(list.ID, 10);
+
+						if (attributes.dropdown) {
+							return null;
+						} else {
+							// return el('div', {
+							// 	id: 'list-' + listID,
+							// 	key: 'list-' + listID,
+							// }, el(Draggable, {
+							// 	elementId: 'list-' + listID,
+							// 	transferData: {},
+							// }, el(Disabled, {}, attributes.lists.indexOf(listID) != -1 && el(CheckboxControl, {
+							// 	label: list.name,
+							// 	draggable: true,
+							// 	onChange: (isChecked) => {},
+							// }))));
+							return el(Disabled, {
+								key: 'list-' + listID,
+							}, attributes.lists.indexOf(listID) != -1 && el(CheckboxControl, {
+								label: list.name,
+								draggable: true,
+								onChange: (isChecked) => {},
+							}));
+						}
+
+					}),
+
 					// GDPR checkbox
 					attributes.gdpr && el('label', {
 							className: 'gdpr-line',
@@ -179,7 +217,7 @@
 							tagName: 'span',
 							value: attributes.gdpr_text,
 							allowedFormats: ['core/bold', 'core/italic', 'core/link'],
-							onChange: function (value) {
+							onChange: (value) => {
 								setAttributes({
 									gdpr_text: value
 								});
@@ -195,7 +233,7 @@
 							value: attributes.submit,
 							allowedFormats: ['core/align'],
 							className: 'wp-block-button__link',
-							onChange: function (value) {
+							onChange: (value) => {
 								setAttributes({
 									submit: value
 								});
@@ -216,7 +254,7 @@
 										el(TextControl, {
 											label: __('Label', 'mailster'),
 											value: attributes.label,
-											onChange: function (value) {
+											onChange: (value) => {
 												setAttributes({
 													label: value
 												});
@@ -238,7 +276,7 @@
 						el(PanelColorSettings, {
 							title: __('Success Message', 'mailster'),
 							initialOpen: this.state.displaySuccessMessages,
-							onToggle: function () {
+							onToggle: () => {
 								this.setState({
 									displaySuccessMessages: !this.state.displaySuccessMessages
 								});
@@ -246,7 +284,7 @@
 							colorSettings: [{
 								label: __('Text Color', 'mailster'),
 								value: attributes.successColor,
-								onChange: function (value) {
+								onChange: (value) => {
 									setAttributes({
 										successColor: value
 									});
@@ -254,7 +292,7 @@
 							}, {
 								label: __('Background', 'mailster'),
 								value: attributes.successBGColor,
-								onChange: function (value) {
+								onChange: (value) => {
 									setAttributes({
 										successBGColor: value
 									});
@@ -266,7 +304,7 @@
 						el(PanelColorSettings, {
 							title: __('Error Message', 'mailster'),
 							initialOpen: this.state.displayErrorMessages,
-							onToggle: function () {
+							onToggle: () => {
 								this.setState({
 									displayErrorMessages: !this.state.displayErrorMessages
 								});
@@ -274,7 +312,7 @@
 							colorSettings: [{
 								label: __('Text Color', 'mailster'),
 								value: attributes.errorColor,
-								onChange: function (value) {
+								onChange: (value) => {
 									setAttributes({
 										errorColor: value
 									});
@@ -282,7 +320,7 @@
 							}, {
 								label: __('Background', 'mailster'),
 								value: attributes.errorBGColor,
-								onChange: function (value) {
+								onChange: (value) => {
 									setAttributes({
 										errorBGColor: value
 									});
@@ -300,13 +338,22 @@
 								el(ToggleControl, {
 									label: __('Users decide which lists they subscribe to.', 'mailster'),
 									checked: attributes.userchoice,
-									onChange: function (value) {
+									onChange: (value) => {
 										setAttributes({
 											userchoice: value
 										});
 									},
 								}),
 								listSelector,
+								attributes.userchoice && el(ToggleControl, {
+									label: __('Use dropdown', 'mailster'),
+									checked: attributes.dropdown,
+									onChange: (value) => {
+										setAttributes({
+											dropdown: value
+										});
+									},
+								}),
 							),
 
 						),
@@ -320,7 +367,7 @@
 								el(ToggleControl, {
 									label: __('Fill fields with known data if user is logged in.', 'mailster'),
 									checked: attributes.prefill,
-									onChange: function (value) {
+									onChange: (value) => {
 										setAttributes({
 											prefill: value
 										});
@@ -331,7 +378,7 @@
 								el(ToggleControl, {
 									label: __('Allow users to update their data with this form.', 'mailster'),
 									checked: attributes.overwrite,
-									onChange: function (value) {
+									onChange: (value) => {
 										setAttributes({
 											overwrite: value
 										});
@@ -361,7 +408,7 @@
 								el(ToggleControl, {
 									label: __('Enable Double opt In', 'mailster'),
 									checked: attributes.doubleoptin,
-									onChange: function (value) {
+									onChange: (value) => {
 										setAttributes({
 											doubleoptin: value
 										});
@@ -374,7 +421,7 @@
 									el(TextControl, {
 										label: __('Subject', 'mailster') + ' - {subject}',
 										value: attributes.subject,
-										onChange: function (value) {
+										onChange: (value) => {
 											setAttributes({
 												subject: value
 											});
@@ -386,7 +433,7 @@
 									el(TextControl, {
 										label: __('Headline', 'mailster') + ' - {headline}',
 										value: attributes.headline,
-										onChange: function (value) {
+										onChange: (value) => {
 											setAttributes({
 												headline: value
 											});
@@ -398,7 +445,7 @@
 									el(TextControl, {
 										label: __('Linktext', 'mailster') + ' - {link}',
 										value: attributes.link,
-										onChange: function (value) {
+										onChange: (value) => {
 											setAttributes({
 												link: value
 											});
@@ -411,7 +458,7 @@
 										label: __('Text', 'mailster') + ' - {content}',
 										value: attributes.content,
 										help: __('The text new subscribers get when Double-Opt-In is selected. Use {link} for the link placeholder. Basic HTML is allowed.', 'mailster'),
-										onChange: function (value) {
+										onChange: (value) => {
 											setAttributes({
 												content: value
 											});
@@ -432,7 +479,7 @@
 								el(ToggleControl, {
 									label: __('Add Checkbox', 'mailster'),
 									checked: attributes.gdpr,
-									onChange: function (value) {
+									onChange: (value) => {
 										setAttributes({
 											gdpr: value
 										});
@@ -444,7 +491,7 @@
 								el(TextareaControl, {
 									label: __('Text', 'mailster'),
 									value: attributes.gdpr_text,
-									onChange: function (value) {
+									onChange: (value) => {
 										setAttributes({
 											gdpr_text: value
 										});
@@ -526,7 +573,7 @@
 						className: 'mailster-label',
 						value: attributes.label,
 						allowedFormats: ['core/bold', 'core/italic', 'core/link'],
-						onChange: function (value) {
+						onChange: (value) => {
 							setAttributes({
 								label: value
 							});
@@ -553,7 +600,7 @@
 								el(TextControl, {
 									label: __('Label', 'mailster'),
 									value: attributes.label,
-									onChange: function (value) {
+									onChange: (value) => {
 										setAttributes({
 											label: value
 										});
