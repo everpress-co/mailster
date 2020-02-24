@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.3.2
-Stable tag: 2.4.8
+Stable tag: 2.4.9
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,9 +88,18 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.9 =
+
+* change: moved text strings for GDPR to text tab for better localization.
+* added: `mailster_gdpr_label` filter to change the content.
+* fixed: empty strings on action hook based campaigns
+* fixed: unchecked required checkbox prevents form fields page from saving.
+* fixed: wrong less memory warning
+
 = Version 2.4.8 =
 
 * fixed: escaped content on edit screen.
+* fixed: escaped several strings.
 * improved: United Kingdom is no longer part of the European Union.
 
 = Version 2.4.7 =

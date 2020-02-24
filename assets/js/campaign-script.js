@@ -1160,6 +1160,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('change', 'input.userexactdate', function () {
 			$(this).parent().parent().parent().find('span').addClass('disabled');
+			$(this).parent().find('span').removeClass('disabled');
 		})
 		.on('change', '#autoresponder-post_type', function () {
 			var cats = $('#autoresponder-taxonomies');
