@@ -62,6 +62,7 @@
 				SelectControl,
 				TextareaControl,
 				ToggleControl,
+				Icon,
 				PlainText,
 				Panel,
 				PanelHeader,
@@ -77,52 +78,69 @@
 				withState
 			} = wp.compose
 
-			const themeColors = [{
-				name: 'red',
-				color: '#f00'
-			}, {
-				name: 'white',
-				color: '#fff'
-			}, {
-				name: 'blue',
-				color: '#00f'
-			}, {
-				name: 'sblue',
-				color: '#0ef'
-			}, {
-				name: 'gblue',
-				color: '#0ff'
-			}, ];
-
 			if (attributes.asterisk) className += ' has-asterisk';
 			if (attributes.align) className += ' align' + attributes.align;
 
-			var listSelector = Object.values(attributes.available_lists).map(function (list) {
-				var listID = parseInt(list.ID, 10);
-				return el(CheckboxControl, {
-					className: 'asdasdasd',
-					key: 'list-' + listID,
-					label: list.name,
-					checked: attributes.lists.indexOf(listID) != -1,
-					onChange: (isChecked) => {
+			var listSelector =
+				Object.values(attributes.lists_order).map(function (listID, i) {
+					return el('div', {
+							key: 'list-' + listID,
+						},
 
-						var added = attributes.lists.indexOf(listID) != -1;
-						// Don't mutate the original object but make a copy of it and mutate that one
-						var copy = Object.assign([], attributes.lists);
+						attributes.userchoice && el('div', {
+								className: 'list-mover'
+							},
+							el(Icon, {
+								icon: 'arrow-up',
+								className: (!i ? 'list-mover-is-hidden' : ''),
+								title: __('Move list up', 'mailster'),
+								label: 'more',
+								onClick: () => {
+									var copy = Object.assign([], attributes.lists_order);
+									copy.splice(i, 0, copy.splice(i - 1, 1)[0]);
+									setAttributes({
+										lists_order: copy
+									});
+								}
+							}),
+							el(Icon, {
+								icon: 'arrow-down',
+								className: (i == (attributes.lists_order.length - 1) ? 'list-mover-is-hidden' : ''),
+								title: __('Move list down', 'mailster'),
+								label: 'more',
+								onClick: () => {
+									var copy = Object.assign([], attributes.lists_order);
+									copy.splice(i, 0, copy.splice(i + 1, 1)[0]);
+									setAttributes({
+										lists_order: copy
+									});
+								}
+							}),
+						),
+						el(CheckboxControl, {
+							label: attributes.lists[listID],
+							checked: attributes.lists_selected.indexOf(listID) != -1,
+							onChange: (isChecked) => {
 
-						if (!added && isChecked) {
-							copy.push(listID);
-						} else if (added && !isChecked) {
-							copy.splice(copy.indexOf(listID), 1);
-						}
+								var added = attributes.lists_selected.indexOf(listID) != -1;
+								// Don't mutate the original object but make a copy of it and mutate that one
+								var copy = Object.assign([], attributes.lists_selected);
 
-						setAttributes({
-							lists: copy
-						});
+								if (!added && isChecked) {
+									copy.push(listID);
+								} else if (added && !isChecked) {
+									copy.splice(copy.indexOf(listID), 1);
+								}
 
-					},
+								setAttributes({
+									lists_selected: copy
+								});
+
+							},
+						}),
+
+					);
 				});
-			});
 
 			return [
 				el('div', {
@@ -177,33 +195,26 @@
 						template: TEMPLATE,
 					}),
 
-					attributes.userchoice && Object.values(attributes.available_lists).map(function (list) {
-						var listID = parseInt(list.ID, 10);
+					attributes.userchoice &&
 
-						if (attributes.dropdown) {
-							return null;
-						} else {
-							// return el('div', {
-							// 	id: 'list-' + listID,
-							// 	key: 'list-' + listID,
-							// }, el(Draggable, {
-							// 	elementId: 'list-' + listID,
-							// 	transferData: {},
-							// }, el(Disabled, {}, attributes.lists.indexOf(listID) != -1 && el(CheckboxControl, {
-							// 	label: list.name,
-							// 	draggable: true,
-							// 	onChange: (isChecked) => {},
-							// }))));
-							return el(Disabled, {
-								key: 'list-' + listID,
-							}, attributes.lists.indexOf(listID) != -1 && el(CheckboxControl, {
-								label: list.name,
-								draggable: true,
-								onChange: (isChecked) => {},
-							}));
-						}
+					((attributes.dropdown && el('select', {}, Object.values(attributes.lists_order).map(function (listID) {
+							return attributes.lists_selected.indexOf(listID) != -1 && el('option', {
+								key: 'list-block-' + listID,
+							}, attributes.lists[listID]);
+						}))) ||
 
-					}),
+						(!attributes.dropdown && Object.values(attributes.lists_order).map(function (listID) {
+
+							return el('div', {
+									key: 'list-block-' + listID,
+								},
+								el(Disabled, {}, attributes.lists_selected.indexOf(listID) != -1 && el(CheckboxControl, {
+									label: attributes.lists[listID],
+									onChange: (isChecked) => {},
+								}))
+							);
+
+						}))),
 
 					// GDPR checkbox
 					attributes.gdpr && el('label', {
@@ -331,12 +342,13 @@
 
 						el(PanelBody, {
 								title: __('List Settings', 'mailster'),
+								className: 'mailster-options-lists',
 								initialOpen: true
 							},
 
 							el(Fragment, {},
 								el(ToggleControl, {
-									label: __('Users decide which lists they subscribe to.', 'mailster'),
+									label: __('Users decide which list they subscribe to', 'mailster'),
 									checked: attributes.userchoice,
 									onChange: (value) => {
 										setAttributes({
@@ -344,7 +356,9 @@
 										});
 									},
 								}),
+								el('h2', {}, attributes.userchoice ? __('Users can subscribe to:', 'mailster') : __('Subscribe new users to:', 'mailster')),
 								listSelector,
+
 								attributes.userchoice && el(ToggleControl, {
 									label: __('Use dropdown', 'mailster'),
 									checked: attributes.dropdown,

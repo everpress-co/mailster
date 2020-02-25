@@ -4,6 +4,15 @@
  * Replace them with your own styles or remove the file completely.
  */
 
+
+.list-mover{
+	position: absolute;
+	right: 10px;
+	cursor: pointer;
+ }
+ .list-mover .list-mover-is-hidden{
+	visibility: hidden;
+ }
 .wp-block-mailster-form {
 }
 .wp-block-mailster-form .mailster-required-toggle{
