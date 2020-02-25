@@ -463,6 +463,10 @@ jQuery(document).ready(function ($) {
 					($(this).is(':checked')) ?
 					$('.mailster_autoresponder_timebased-end-schedule-field').slideDown(): $('.mailster_autoresponder_timebased-end-schedule-field').slideUp();
 				})
+				.on('change', 'select[name="mailster_data[autoresponder][hook_type]"]', function () {
+					($(this).val()) ?
+					$('.hide-if-hook-type').hide(): $('.hide-if-hook-type').show();
+				})
 				.on('change', '.mailster-action-hooks', function () {
 					var val = $(this).val();
 					$('.mailster-action-hook').val(val);
