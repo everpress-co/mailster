@@ -231,8 +231,8 @@ jQuery(document).ready(function ($) {
 					$('.autoresponderfield-mailster_autoresponder_timebased').toggleClass('timezone-enabled');
 				})
 				.on('change', 'input.userexactdate', function () {
-					var wrap = $(this).parent().parent().parent();
-					wrap.find('span').addClass('disabled');
+					$(this).parent().parent().parent().find('span').addClass('disabled');
+					$(this).parent().find('span').removeClass('disabled');
 				})
 				.on('change', '#autoresponder-post_type', function () {
 					var cats = $('#autoresponder-taxonomies');
