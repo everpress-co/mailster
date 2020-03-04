@@ -3972,6 +3972,9 @@ class MailsterCampaigns {
 		// strip all unwanted stuff from the content
 		$content = mailster( 'helper' )->strip_structure_html( $content );
 
+		// maybe inline again
+		$content = mailster( 'helper' )->inline_style( $content );
+
 		$mail->content = apply_filters( 'mailster_campaign_content', $content, $campaign, $subscriber );
 
 		if ( ! $campaign_meta['autoplaintext'] ) {

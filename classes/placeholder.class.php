@@ -1063,10 +1063,11 @@ class MailsterPlaceholder {
 
 	public function get_replace( $post, $what ) {
 
-		$extra      = null;
-		$replace_to = null;
-		$author     = null;
-		$post_type  = $post->post_type;
+		$extra        = null;
+		$replace_to   = null;
+		$author       = null;
+		$post_type    = $post->post_type;
+		$post_content = $post->post_content;
 
 		if ( 0 === strpos( $what, 'author' ) ) {
 			$author = get_user_by( 'id', $post->post_author );
@@ -1178,11 +1179,15 @@ class MailsterPlaceholder {
 				if ( ! empty( $post->{'post_excerpt'} ) ) {
 					$replace_to = wpautop( $post->{'post_excerpt'} );
 				} else {
-					$replace_to = mailster( 'helper' )->get_excerpt( $post->{'post_content'} );
+					$replace_to = mailster( 'helper' )->get_excerpt( $post_content );
 				}
 				break;
 			case 'content':
-				$replace_to = wpautop( $post->{'post_content'} );
+				$replace_to = $post_content;
+				if ( function_exists( 'do_blocks' ) && has_blocks( $replace_to ) ) {
+					$replace_to = do_blocks( $replace_to );
+				}
+				$replace_to = wpautop( $replace_to );
 				break;
 			case 'meta':
 				$replace_to = maybe_unserialize( $metavalue );
