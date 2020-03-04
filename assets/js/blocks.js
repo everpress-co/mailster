@@ -197,24 +197,85 @@
 
 					attributes.userchoice &&
 
-					((attributes.dropdown && el('select', {}, Object.values(attributes.lists_order).map(function (listID) {
-							return attributes.lists_selected.indexOf(listID) != -1 && el('option', {
+					Object.values(attributes.lists_order).map(function (listID, i) {
+
+						return attributes.lists_selected.indexOf(listID) != -1 && el('div', {
 								key: 'list-block-' + listID,
-							}, attributes.lists[listID]);
-						}))) ||
+								className: '',
+							},
 
-						(!attributes.dropdown && Object.values(attributes.lists_order).map(function (listID) {
 
-							return el('div', {
-									key: 'list-block-' + listID,
+							el('span', {
+									className: 'list-mover'
 								},
-								el(Disabled, {}, attributes.lists_selected.indexOf(listID) != -1 && el(CheckboxControl, {
-									label: attributes.lists[listID],
-									onChange: (isChecked) => {},
-								}))
-							);
+								el(Icon, {
+									icon: 'arrow-up',
+									className: (!i ? 'list-mover-is-hidden' : ''),
+									title: __('Move list up', 'mailster'),
+									label: 'more',
+									onClick: () => {
+										var copy = Object.assign([], attributes.lists_order);
+										copy.splice(i, 0, copy.splice(i - 1, 1)[0]);
+										console.log(copy);
+										setAttributes({
+											lists_order: copy
+										});
+									}
+								}),
+								el(Icon, {
+									icon: 'arrow-down',
+									className: (i == (attributes.lists_order.length - 1) ? 'list-mover-is-hidden' : ''),
+									title: __('Move list down', 'mailster'),
+									label: 'more',
+									onClick: () => {
+										var copy = Object.assign([], attributes.lists_order);
+										copy.splice(i, 0, copy.splice(i + 1, 1)[0]);
+										console.log(copy);
+										setAttributes({
+											lists_order: copy
+										});
+									}
+								}),
+							),
 
-						}))),
+							el('input', {
+								type: 'checkbox',
+								disabled: true,
+								'style': {
+									'visibility': attributes.dropdown ? 'hidden' : 'visible',
+								}
+							}),
+
+							el(RichText, {
+								tagName: 'span',
+								placeholder: attributes.lists[listID],
+								value: attributes.lists[listID],
+								allowedFormats: ['core/bold', 'core/italic', 'core/link'],
+								onChange: (value) => {
+									var copy = Object.assign([], attributes.lists);
+									copy[listID] = value;
+									//copy.splice(i, 0, copy.splice(i + 1, 1)[0]);
+									console.log(copy);
+									console.log(i, listID, value);
+									setAttributes({
+										lists: copy
+									});
+								},
+							}),
+
+
+						);
+
+						return el('div', {
+								key: 'list-block-' + listID,
+							},
+							el(Disabled, {}, attributes.lists_selected.indexOf(listID) != -1 && el(CheckboxControl, {
+								label: attributes.lists[listID],
+								onChange: (isChecked) => {},
+							}))
+						);
+
+					}),
 
 					// GDPR checkbox
 					attributes.gdpr && el('label', {
@@ -236,13 +297,25 @@
 						}),
 					),
 
+					// el(InnerBlocks, {
+					// 	className: 'wp-block-button',
+					// 	allowedBlocks: ['core/*'],
+					// 	//template: [[Button]],
+					// }),
+
 					// Submit button
 					el('div', {
 							className: 'wp-block-button'
 						},
 						el(RichText, {
 							value: attributes.submit,
+							placeholder: __('Enter Label', 'mailster'),
 							allowedFormats: ['core/align'],
+							withoutInteractiveFormatting: true,
+							style: {
+								color: attributes.buttonColor,
+								backgroundColor: attributes.buttonBGColor
+							},
 							className: 'wp-block-button__link',
 							onChange: (value) => {
 								setAttributes({
@@ -250,34 +323,55 @@
 								});
 							},
 						}),
-						el(Fragment, {
+
+						el(InspectorControls, {
 								key: 'inspector-form-button'
 							},
-							el(InspectorControls, {},
 
-								el(PanelBody, {
-										title: __('Options', 'mailster'),
-										initialOpen: false
+							el(PanelColorSettings, {
+								title: __('Button Color', 'mailster'),
+								initialOpen: false,
+								colorSettings: [{
+									label: __('Text Color', 'mailster'),
+									value: attributes.buttonColor,
+									onChange: (value) => {
+										setAttributes({
+											buttonColor: value
+										});
 									},
+								}, {
+									label: __('Background', 'mailster'),
+									value: attributes.buttonBGColor,
+									onChange: (value) => {
+										setAttributes({
+											buttonBGColor: value
+										});
+									},
+								}, ],
+							}),
 
-									//el( Fragment, {}, requiredToggle),
-									el(Fragment, {},
-										el(TextControl, {
-											label: __('Label', 'mailster'),
-											value: attributes.label,
-											onChange: (value) => {
-												setAttributes({
-													label: value
-												});
-											},
-										}),
-									),
-
+							el(PanelBody, {
+									title: __('Button Option', 'mailster'),
+									initialOpen: false
+								},
+								//el( Fragment, {}, requiredToggle),
+								el(Fragment, {},
+									el(TextControl, {
+										label: __('Label', 'mailster'),
+										value: attributes.label,
+										onChange: (value) => {
+											setAttributes({
+												label: value
+											});
+										},
+									}),
 								),
 
 							),
+
 						),
 					),
+
 				),
 				el(Fragment, {
 						key: 'inspector'
@@ -524,8 +618,22 @@
 	class Input extends Component {
 
 		constructor() {
-			super();
+			super(...arguments);
 			this.type = 'text';
+			this.parentBlock;
+			this.state = {
+				width: 100,
+			}
+		}
+
+		componentDidMount() {
+			this.parentBlock = document.getElementById('block-' + this.props.clientId);
+			this.updateBlock();
+		}
+
+		updateBlock(value) {
+
+			this.props.clientId && (this.parentBlock.style.width = this.parentBlock.style.maxWidth = (value || this.props.attributes.width) + '%');
 		}
 
 		render() {
@@ -547,6 +655,7 @@
 				TextControl,
 				ToggleControl,
 				Text,
+				RangeControl,
 			} = wp.components;
 
 			const {
@@ -580,6 +689,13 @@
 				el('div', {
 						className: className,
 						key: 'input-' + this.type,
+						onLoad: () => {
+							console.log('load');
+						},
+						// style: {
+						// 	width: 'calc(6 * ('+attributes.width+'vw / 12 ))',
+						// 	asd: 'calc(6 * ('+attributes.width+'vw / 12 ))',
+						// },
 					},
 					//requiredToggle,
 					el(RichText, {
@@ -606,11 +722,48 @@
 
 						el(PanelBody, {
 								title: __('Options', 'mailster'),
-								initialOpen: false
+								initialOpen: true
 							},
 
 							el(Fragment, {}, requiredToggle),
+							// el(Fragment, {}, el(DimensionControl, {
+							// 	label: __('Label', 'mailster'),
+							// 	icon: 'desktop',
+							// 	value: attributes.width,
+							// 	onChange: (value) => {
+							// 		setAttributes({
+							// 			width: value
+							// 		});
+							// 	},
+
+							// })),
 							el(Fragment, {},
+								el(RangeControl, {
+									label: __('Width', 'mailster'),
+									value: attributes.width,
+									min: 0,
+									max: 100,
+									icon: 'dashicons-sticky',
+									onChange: (value) => {
+										setAttributes({
+											width: value
+										});
+										this.updateBlock(value);
+									},
+								}),
+								// el(RangeControl, {
+								// 	label: __('margin', 'mailster'),
+								// 	value: attributes.width,
+								// 	min: 0,
+								// 	max: 100,
+								// 	icon: 'dashicons-sticky',
+								// 	onChange: (value) => {
+								// 		setAttributes({
+								// 			width: value
+								// 		});
+								// 		this.updateBlock(value;
+								// 	},
+								// }),
 								el(TextControl, {
 									label: __('Label', 'mailster'),
 									value: attributes.label,
@@ -648,8 +801,8 @@
 			src: el('svg', {
 					width: 20,
 					height: 20,
-					'viewBox': "0 0 512 512",
-					'transform': "scale(0.8)"
+					viewBox: "0 0 512 512",
+					transform: "scale(0.8)"
 				},
 				el('path', {
 					d: "M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"
@@ -659,12 +812,27 @@
 		edit: Form,
 		save: function (props) {
 			return el(wp.blockEditor.InnerBlocks.Content);
-			//return el('div', {className: props.attributes.className}, el(wp.blockEditor.InnerBlocks.Content));
 		},
 	});
 
 	registerBlockType('mailster/field-email', {
-		edit: Email
+		edit: Email,
+		icon: {
+			foreground: '#000',
+			src: el('svg', {
+					width: 24,
+					height: 24,
+					viewBox: "0 0 24 24",
+				},
+				el('path', {
+					d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10h5v-2h-5c-4.34 0-8-3.66-8-8s3.66-8 8-8 8 3.66 8 8v1.43c0 .79-.71 1.57-1.5 1.57s-1.5-.78-1.5-1.57V12c0-2.76-2.24-5-5-5s-5 2.24-5 5 2.24 5 5 5c1.38 0 2.64-.56 3.54-1.47.65.89 1.77 1.47 2.96 1.47 1.97 0 3.5-1.6 3.5-3.57V12c0-5.52-4.48-10-10-10zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"
+				}),
+				el('path', {
+					fill: 'none',
+					d: "M0 0h24v24H0z"
+				}),
+			),
+		},
 	});
 	registerBlockType('mailster/field-firstname', {
 		edit: Input

@@ -25,11 +25,15 @@
 .wp-block-mailster-form .wp-block-mailster-field:hover .mailster-required-toggle{
 	opacity: 1;
 }
+.wp-block-mailster-form .wp-block-mailster-field {
+	_width: calc(6 * (100vw / 12 ))
+}
 .wp-block-mailster-form .wp-block-mailster-field input.mailster-input {
 	pointer-events: none;
 	padding: 10px 8px;
 	border-radius: inherit;
 	border-color: inherit;
+	margin: 0;
 }
 .wp-block-mailster-form .gdpr-line{
 	width: 100%;
@@ -43,17 +47,35 @@
 	display: inline;
 }
 
-.wp-block-mailster-form .block-list-appender{
-	margin:0;
-	right: 0;
-	position: absolute;
-	z-index: 20000;
-}
+
 .wp-block-mailster-form .block-list-appender .block-editor-inserter button{
 	background: none;
 	outline: none;
 }
-
+.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field label.mailster-label{
+	display: inline-block;
+	white-space: nowrap !important;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-width: 100%;
+}
+.wp-block-mailster-form .mailster-form-fields .is-selected .wp-block-mailster-field label.mailster-label{
+	white-space: nowrap;
+	overflow: visible;
+}
+.wp-block-mailster-form .mailster-form-fields .block-editor-block-list__block.wp-block {
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left:0;
+	margin-right: 0;
+	width: unset;
+}
+.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field{
+	padding-top: 0.3rem;
+	padding-bottom: 0.3rem;
+	padding-left: 0.3rem;
+	padding-right: 0.3rem;
+}
 .editor-block-list__block[data-align=wide] > .editor-block-list__block-edit .wp-block-mailster-form .block-editor-block-list__block {
 	margin:0;
 }

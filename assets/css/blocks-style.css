@@ -58,33 +58,21 @@
 	background-color: #6fbf4d;
 }
 
-.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field{
-	padding-bottom: 2em;
-}
-.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field label.mailster-label{
-	font-size: 1rem;
-	display: inline-block;
-	padding-bottom: 0.3em;
-}
-
-
-/*.wp-block-mailster-form .mailster-form-fields{
-	display: grid;
-	grid-template-columns: 9% 9% 9% 9% 9% 9% 9% 9% 9% 9%;
-	grid-template-rows: auto;
-	grid-auto-flow:row;
-	grid-column-gap: 1%;
+.wp-block-mailster-form .mailster-form-fields{
+	display: flex;
+	flex-wrap: wrap;
+	align-items: stretch;
 }
 .wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field{
-	grid-column: span 10;
+	min-width: 100%;
+	flex-shrink: 1;
+	flex-grow: 1;
+	flex-basis: 100%;
+	padding-top: 0.3rem;
+	padding-bottom: 0.3rem;
 }
-
-.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field-input{
-	width: 100%;
-	_grid-column: span 5;
+.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field.wp-block-mailster-field-submit{
 }
-*/
-
 
 .wp-block-mailster-form.is-style-fancy{
 }
