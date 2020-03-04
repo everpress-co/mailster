@@ -95,6 +95,7 @@ Xaver Birsak – https://everpress.co
 * fixed: empty strings on action hook based campaigns
 * fixed: unchecked required checkbox prevents form fields page from saving.
 * fixed: wrong less memory warning
+* fixed: problem with CodeEditor on Avada
 
 = Version 2.4.8 =
 
