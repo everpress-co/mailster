@@ -2515,18 +2515,6 @@ class Mailster {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
-	public function has_update() {
-
-		$new_version = $this->plugin_info( 'new_version' );
-
-		return version_compare( $new_version, MAILSTER_VERSION, '>' );
-	}
-
 
 	/**
 	 *
@@ -2655,15 +2643,35 @@ class Mailster {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
+	public function has_update( $force = false ) {
+
+		$new_version = $this->plugin_info( 'new_version', $force );
+
+		return version_compare( $new_version, MAILSTER_VERSION, '>' );
+	}
+
 	public function is_outdated() {
 
 		// make sure Mailster has been updated within a year
 		return defined( 'MAILSTER_BUILT' ) && MAILSTER_BUILT && MAILSTER_BUILT + YEAR_IN_SECONDS < time();
+
+	}
+
+	public function has_support( $force = false ) {
+
+		return $this->support( $force ) - time() > 0;
+
+	}
+
+	public function support( $force = false ) {
+
+		$support = (int) $this->plugin_info( 'support', $force );
+
+		if ( $support ) {
+			$support += DAY_IN_SECONDS;
+		}
+
+		return $support;
 
 	}
 
