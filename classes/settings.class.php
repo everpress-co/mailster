@@ -1588,9 +1588,9 @@ class MailsterSettings {
 
 	public function deliverytab_simple() {
 		?>
-		<p class="description">
-		<?php esc_html_e( 'use this option if you don\'t have access to a SMTP server or any other provided options', 'mailster' ); ?>
-		</p>
+		<div class="notice notice-error inline">
+			<p><strong><?php esc_html_e( 'Sending via your host is not recommended. Please consider using a dedicate Email Service Provider instead.', 'mailster' ); ?></strong></p>
+		</div>
 		<?php $basicmethod = mailster_option( 'simplemethod' ); ?>
 		<table class="form-table">
 			<tr valign="top">

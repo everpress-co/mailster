@@ -1063,6 +1063,10 @@ class MailsterPlaceholder {
 
 	public function get_replace( $post, $what ) {
 
+		if ( is_wp_error( $post ) ) {
+			return $post->get_error_message();
+		}
+
 		$extra        = null;
 		$replace_to   = null;
 		$author       = null;
@@ -1122,7 +1126,7 @@ class MailsterPlaceholder {
 					$replace_to = $post->post_link;
 				}
 			case 'permalink':
-				if ( ! $replace_to ) {
+				if ( ! $replace_to && $post->ID ) {
 					$replace_to = get_permalink( $post->ID );
 				}
 				if ( ! $replace_to ) {
@@ -1133,7 +1137,11 @@ class MailsterPlaceholder {
 				}
 				break;
 			case 'shortlink':
-				$replace_to = wp_get_shortlink( $post->ID );
+				if ( $post->ID ) {
+					$replace_to = wp_get_shortlink( $post->ID );
+				} else {
+					$replace_to = $post->post_permalink;
+				}
 				break;
 			case 'author':
 			case 'author_strip':

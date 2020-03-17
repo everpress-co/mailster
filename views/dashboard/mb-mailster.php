@@ -20,7 +20,7 @@ if ( mailster()->is_verified() ) {
 	<dd><?php printf( esc_html__( 'User: %1$s - %2$s', 'mailster' ), '<span class="mailster-username">' . esc_html( $license_user ) . '</span>', '<span class="mailster-email lighter">' . esc_html( $license_email ) . '</span>' ); ?></dd>
 	<dd>
 		<?php if ( current_user_can( 'mailster_manage_licenses' ) ) : ?>
-		<a href="https://mailster.co/manage-licenses/" class="external"><?php esc_html_e( 'Manage Licenses', 'mailster' ); ?></a> |
+		<a href="https://mailster.co/manage-licenses/?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Manage Licenses', 'mailster' ); ?></a> |
 		<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard&reset_license=' . wp_create_nonce( 'mailster_reset_license' ) ); ?>" class="reset-license"><?php esc_html_e( 'Reset License', 'mailster' ); ?></a> |
 		<?php endif; ?>
 		<a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Buy new License', 'mailster' ); ?></a>

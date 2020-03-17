@@ -295,7 +295,7 @@ class Mailster {
 				}
 				if ( isset( $notice['screen'] ) && ! empty( $notice['screen'] ) ) {
 					$screen = get_current_screen();
-					if ( $screen->id != $notice['screen'] ) {
+					if ( ! in_array( $screen->id, (array) $notice['screen'] ) ) {
 						continue;
 					}
 				}
