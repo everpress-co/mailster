@@ -112,7 +112,7 @@ else :
 				<div>
 					<span class="label"><?php esc_html_e( 'Label', 'mailster' ); ?>:</span>
 					<input class="label widefat" type="text" name="mailster_structure[fields][<?php echo $field->field_id; ?>]" data-name="mailster_structure[fields][<?php echo $field->field_id; ?>]" value="<?php echo esc_attr( $field->name ); ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' ); ?>" placeholder="<?php echo esc_attr( $field->name ); ?>">
-					<span class="alignright required-field"><input type="checkbox" name="mailster_structure[required][<?php echo $field->field_id; ?>]" data-name="mailster_structure[required][<?php echo $field->field_id; ?>]" class="form-order-check-required" value="1" <?php checked( $field->required ); ?> <?php disabled( $field->field_id == 'email' ); ?> <?php esc_html_e( 'required', 'mailster' ); ?>>
+					<span class="alignright required-field"><input type="checkbox" name="mailster_structure[required][<?php echo $field->field_id; ?>]" data-name="mailster_structure[required][<?php echo $field->field_id; ?>]" class="form-order-check-required" value="1" <?php checked( $field->required ); ?> <?php disabled( $field->field_id == 'email' ); ?>> <?php esc_html_e( 'required', 'mailster' ); ?>
 						<a class="field-remove" title="<?php esc_html_e( 'remove field', 'mailster' ); ?>">&#10005;</a>
 					</span>
 				</div>

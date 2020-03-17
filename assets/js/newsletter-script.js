@@ -33,6 +33,7 @@ jQuery(document).ready(function ($) {
 		getSelect, selectRange, isDisabled = false,
 		is_touch_device = 'ontouchstart' in document.documentElement,
 		isTinyMCE = typeof tinymce == 'object',
+		CM = wp.CodeMirror || window.CodeMirror,
 		codemirror, codemirrorargs = {
 			mode: {
 				name: "htmlmixed",
@@ -230,8 +231,8 @@ jQuery(document).ready(function ($) {
 					$('.autoresponderfield-mailster_autoresponder_timebased').toggleClass('timezone-enabled');
 				})
 				.on('change', 'input.userexactdate', function () {
-					var wrap = $(this).parent().parent().parent();
-					wrap.find('span').addClass('disabled');
+					$(this).parent().parent().parent().find('span').addClass('disabled');
+					$(this).parent().find('span').removeClass('disabled');
 				})
 				.on('change', '#autoresponder-post_type', function () {
 					var cats = $('#autoresponder-taxonomies');
@@ -1352,7 +1353,7 @@ jQuery(document).ready(function ($) {
 					_content.val(response.content);
 					_obar.find('a').not('a.redo, a.undo, a.code').addClass('disabled');
 
-					codemirror = CodeMirror.fromTextArea(_content.get(0), codemirrorargs);
+					codemirror = CM.fromTextArea(_content.get(0), codemirrorargs);
 
 				}, function (jqXHR, textStatus, errorThrown) {
 					_obar.find('a.code').addClass('active').removeClass('loading');
@@ -2862,7 +2863,7 @@ jQuery(document).ready(function ($) {
 
 					} else if (type == 'codeview') {
 
-						codemirror = CodeMirror.fromTextArea(textarea.get(0), codemirrorargs);
+						codemirror = CM.fromTextArea(textarea.get(0), codemirrorargs);
 
 					}
 

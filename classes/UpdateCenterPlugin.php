@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.5
+// Version 3.7
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -526,6 +526,7 @@ class UpdateCenterPlugin {
 					'package'       => null,
 					'version'       => null,
 					'last_update'   => 0,
+					'support'       => null,
 					'update'        => null,
 					'verified'      => false,
 					'compatibility' => new StdClass(),
@@ -593,6 +594,10 @@ class UpdateCenterPlugin {
 
 					if ( isset( $updatecenterinfo->verified ) ) {
 						self::$plugins[ $slug ]->verified = $updatecenterinfo->verified;
+					}
+
+					if ( isset( $updatecenterinfo->support ) ) {
+						self::$plugins[ $slug ]->support = $updatecenterinfo->support;
 					}
 
 					if ( isset( $updatecenterinfo->compatibility ) ) {
@@ -847,7 +852,7 @@ class UpdateCenterPlugin {
 
 			if ( version_compare( $plugin->version, $plugin->new_version, '<' ) ) {
 				$value->response[ $plugin->plugin ] = self::$plugins[ $slug ];
-			} else {
+			} elseif ( isset( $value->no_update ) ) {
 				$value->no_update[ $plugin->plugin ] = self::$plugins[ $slug ];
 			}
 		}

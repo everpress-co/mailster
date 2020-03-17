@@ -1063,10 +1063,15 @@ class MailsterPlaceholder {
 
 	public function get_replace( $post, $what ) {
 
-		$extra      = null;
-		$replace_to = null;
-		$author     = null;
-		$post_type  = $post->post_type;
+		if ( is_wp_error( $post ) ) {
+			return $post->get_error_message();
+		}
+
+		$extra        = null;
+		$replace_to   = null;
+		$author       = null;
+		$post_type    = $post->post_type;
+		$post_content = $post->post_content;
 
 		if ( 0 === strpos( $what, 'author' ) ) {
 			$author = get_user_by( 'id', $post->post_author );
@@ -1121,7 +1126,7 @@ class MailsterPlaceholder {
 					$replace_to = $post->post_link;
 				}
 			case 'permalink':
-				if ( ! $replace_to ) {
+				if ( ! $replace_to && $post->ID ) {
 					$replace_to = get_permalink( $post->ID );
 				}
 				if ( ! $replace_to ) {
@@ -1132,7 +1137,11 @@ class MailsterPlaceholder {
 				}
 				break;
 			case 'shortlink':
-				$replace_to = wp_get_shortlink( $post->ID );
+				if ( $post->ID ) {
+					$replace_to = wp_get_shortlink( $post->ID );
+				} else {
+					$replace_to = $post->post_permalink;
+				}
 				break;
 			case 'author':
 			case 'author_strip':
@@ -1178,11 +1187,15 @@ class MailsterPlaceholder {
 				if ( ! empty( $post->{'post_excerpt'} ) ) {
 					$replace_to = wpautop( $post->{'post_excerpt'} );
 				} else {
-					$replace_to = mailster( 'helper' )->get_excerpt( $post->{'post_content'} );
+					$replace_to = mailster( 'helper' )->get_excerpt( $post_content );
 				}
 				break;
 			case 'content':
-				$replace_to = wpautop( $post->{'post_content'} );
+				$replace_to = $post_content;
+				if ( function_exists( 'do_blocks' ) && has_blocks( $replace_to ) ) {
+					$replace_to = do_blocks( $replace_to );
+				}
+				$replace_to = wpautop( $replace_to );
 				break;
 			case 'meta':
 				$replace_to = maybe_unserialize( $metavalue );

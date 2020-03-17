@@ -511,16 +511,17 @@ class MailsterForm {
 			if ( ! is_numeric( $this->form->gdpr ) ) {
 				$label = $this->form->gdpr;
 			} else {
-				$label = mailster_option( 'gdpr_text' );
+				$label = mailster_text( 'gdpr_text' );
 			}
-			$fields['_gdpr']  = '<div class="mailster-wrapper mailster-_gdpr-wrapper">';
-			$fields['_gdpr'] .= '<label for="mailster-_gdpr-' . $this->ID . '">';
-			$fields['_gdpr'] .= '<input type="hidden" name="_gdpr" value="0"><input id="mailster-_gdpr-' . $this->ID . '" name="_gdpr" type="checkbox" value="1" class="mailster-_gdpr mailster-required" aria-required="true" aria-label="' . esc_attr( $label ) . '"> ';
-			$fields['_gdpr'] .= ' ' . $label;
+			$fields['_gdpr']    = '<div class="mailster-wrapper mailster-_gdpr-wrapper">';
+			$fields['_gdpr']   .= '<label for="mailster-_gdpr-' . $this->ID . '">';
+			$fields['_gdpr']   .= '<input type="hidden" name="_gdpr" value="0"><input id="mailster-_gdpr-' . $this->ID . '" name="_gdpr" type="checkbox" value="1" class="mailster-_gdpr mailster-required" aria-required="true" aria-label="' . esc_attr( $label ) . '"> ';
+			$gdpr_label_content = $label;
 			if ( mailster_option( 'gdpr_link' ) ) {
-				$fields['_gdpr'] .= ' (<a href="' . mailster_option( 'gdpr_link' ) . '">' . esc_html__( 'Link', 'mailster' ) . '</a>)';
+				$gdpr_label_content .= ' (<a href="' . mailster_option( 'gdpr_link' ) . '">' . esc_html__( 'Link', 'mailster' ) . '</a>)';
 			}
 
+			$fields['_gdpr'] .= apply_filters( 'mailster_gdpr_label', $gdpr_label_content );
 			$fields['_gdpr'] .= '</label>';
 			$fields['_gdpr'] .= '</div>';
 		}
@@ -948,7 +949,7 @@ class MailsterForm {
 
 		if ( isset( $_BASE['_gdpr'] ) ) {
 			if ( empty( $_BASE['_gdpr'] ) ) {
-				$this->object['errors']['_gdpr'] = mailster_option( 'gdpr_error' );
+				$this->object['errors']['_gdpr'] = mailster_text( 'gdpr_error' );
 			} else {
 				$this->object['userdata']['gdpr'] = $now;
 			}
