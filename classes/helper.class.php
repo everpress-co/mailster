@@ -1591,6 +1591,9 @@ class MailsterHelper {
 				);
 
 				if ( is_wp_error( $response ) ) {
+					if ( ! is_admin() ) {
+						mailster_notice( sprintf( esc_html__( 'There\'s a problem receiving the feed from `%1$s`: %2$s', 'mailster' ), $url, $response->get_error_message() ), 'error', false, $feed_id );
+					}
 					return $response;
 				}
 
@@ -1711,10 +1714,15 @@ class MailsterHelper {
 		}
 
 		$feed = $this->feed( $url, 0, $cache_duration );
+
 		if ( is_wp_error( $feed ) ) {
-			return false;
+			return $feed;
 		}
 		$last = strtotime( $feed->post_date_gmt );
+
+		if ( is_null( $timestamp ) ) {
+			return $last;
+		}
 
 		if ( $last > $timestamp ) {
 			return $last;

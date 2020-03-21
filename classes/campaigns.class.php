@@ -3873,7 +3873,7 @@ class MailsterCampaigns {
 		}
 
 		if ( ! $force && ! mailster( 'helper' )->in_timeframe() ) {
-			return new WP_Error( 'system_error', 'Not in Time Frame' );
+			return new WP_Error( 'system_error', esc_html__( 'Not in Time Frame', 'mailster' ) );
 		}
 
 		$campaign_meta = $this->meta( $campaign->ID );
@@ -4013,6 +4013,9 @@ class MailsterCampaigns {
 		$placeholder->set_content( $mail->subject );
 		$mail->subject = $placeholder->get_content();
 
+		if ( $placeholder->has_error() ) {
+			return new WP_Error( 'error', sprintf( esc_html__( 'There was an error during replacing tags in this campaign! %s', 'mailster' ), '<br>' . implode( '<br>', $placeholder->get_error_messages() ) ) );
+		}
 		$result = $mail->send();
 
 		if ( $result && ! is_wp_error( $result ) ) {

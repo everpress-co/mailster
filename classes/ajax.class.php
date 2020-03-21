@@ -693,31 +693,41 @@ class MailsterAjax {
 
 				$mail->add_tracking_image = $track_opens;
 
-				if ( $spam_test ) {
+				if ( $placeholder->has_error() ) {
 
-					if ( false === ( $count = get_transient( '_mailster_spam_score_count' ) ) ) {
+					$return['success'] = false;
 
-						$count = 0;
-						set_transient( '_mailster_spam_score_count', $count, 3600 );
-					}
-
-					if ( $count < 10 ) {
-
-						$return['success'] = $return['success'] && $mail->send();
-						$return['id']      = $spam_check_id;
-						update_option( '_transient__mailster_spam_score_count', ++$count );
-
-					} else {
-
-						$return['success'] = false;
-						$return['msg']     = esc_html__( 'You can only perform 10 test within an hour. Please try again later!', 'mailster' );
-
-					}
+					$errors = sprintf( esc_html__( 'There was an error during replacing tags in this campaign! %s', 'mailster' ), '<br>' . implode( '<br>', $placeholder->get_error_messages() ) );
 				} else {
 
-					$return['success'] = $return['success'] && $mail->send();
-				}
+					if ( $spam_test ) {
 
+						if ( false === ( $count = get_transient( '_mailster_spam_score_count' ) ) ) {
+
+							$count = 0;
+							set_transient( '_mailster_spam_score_count', $count, 3600 );
+						}
+
+						if ( $count < 10 ) {
+
+							$return['success'] = $return['success'] && $mail->send();
+							$return['id']      = $spam_check_id;
+							update_option( '_transient__mailster_spam_score_count', ++$count );
+
+						} else {
+
+							$return['success'] = false;
+							$return['msg']     = esc_html__( 'You can only perform 10 test within an hour. Please try again later!', 'mailster' );
+
+						}
+					} else {
+
+						$return['success'] = $return['success'] && $mail->send();
+					}
+
+					$errors = $mail->get_errors( 'br' );
+
+				}
 				$mail->close();
 			}
 		}
@@ -725,7 +735,7 @@ class MailsterAjax {
 		if ( ! isset( $return['msg'] ) ) {
 			$return['msg'] = ( $return['success'] )
 				? esc_html__( 'Message sent. Check your inbox!', 'mailster' )
-				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . '<strong>' . $mail->get_errors( 'br' ) . '</strong>';
+				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . ' <strong>' . $errors . '</strong>';
 		}
 
 		if ( isset( $return['log'] ) ) {

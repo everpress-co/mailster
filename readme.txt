@@ -93,6 +93,7 @@ Xaver Birsak – https://everpress.co
 * change: moved text strings for GDPR to text tab for better localization.
 * improved: block tags removed in final output
 * improved: RSS feed method for more flexible feed support.
+* improved: tags now can return WP_Error object which prevents the campaign from sending.
 * added: `mailster_gdpr_label` filter to change the content.
 * fixed: empty strings on action hook based campaigns
 * fixed: unchecked required checkbox prevents form fields page from saving.

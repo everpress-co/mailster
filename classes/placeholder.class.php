@@ -18,6 +18,7 @@ class MailsterPlaceholder {
 	private $social_services;
 	private $apply_the_excerpt_filters = true;
 	private $last_post_args            = null;
+	private $errors                    = array();
 
 	/**
 	 *
@@ -128,6 +129,37 @@ class MailsterPlaceholder {
 		return ! empty( $html );
 	}
 
+	public function error( $error, $html_tag = true ) {
+		if ( ! is_wp_error( $error ) ) {
+			$error = new WP_Error( 'placeholder_error', (string) $error );
+		}
+		$this->errors[] = $error;
+
+		// output error only on the preview screen
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+
+			$message = $error->get_error_message();
+			return $html_tag ? '<span style="background-color:#e74e2b;color:#fff;padding:2px;font-size:smaller;">' . esc_html( $message ) . '</span>' : esc_html( $message );
+		}
+		return '';
+	}
+
+	public function has_error() {
+		return ! empty( $this->errors );
+	}
+
+	public function get_error_messages() {
+		$errors = array();
+		foreach ( $this->errors as $error ) {
+			if ( is_wp_error( $error ) ) {
+				$errors[] = $error->get_error_message();
+			} else {
+				$errors[] = $error;
+			}
+		}
+
+		return $errors;
+	}
 
 	public function clear_placeholder() {
 		$this->placeholder = array();
@@ -286,8 +318,9 @@ class MailsterPlaceholder {
 
 		// as long there are tags in the content.
 		while ( false !== strpos( $this->content, '{' ) ) {
-			// temporary remove style blocks
-			if ( preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $styles ) ) {
+
+			// temporary remove style blocks if exists
+			if ( strpos( $this->content, '<style' ) !== false && preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $styles ) ) {
 				foreach ( $styles[0] as $style ) {
 					$this->content  = str_replace( $style, '<!--Mailster:styleblock' . count( $this->styles ) . '-->', $this->content );
 					$this->styles[] = $style;
@@ -424,11 +457,10 @@ class MailsterPlaceholder {
 				$search   = $modules[0][ $i ];
 				$feed_url = $modules[1][ $i ];
 
-				// check if there's a new feed since.
-				if ( $this->rss_timestamp && ! mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url ) ) {
-					$replace = '';
-				} else {
+				$last_feed_timestamp = mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url );
 
+				if ( $last_feed_timestamp ) {
+					$replace        = '';
 					$id             = md5( $feed_url );
 					$temp_post_type = 'mailster_rss_' . $id;
 
@@ -445,6 +477,8 @@ class MailsterPlaceholder {
 					$replace            = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $temp_post_type, $replace );
 					$replace            = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . $temp_post_type, $replace );
 
+				} else {
+					$replace = '';
 				}
 
 				$this->content = str_replace( $search, $replace, $this->content );
@@ -842,7 +876,12 @@ class MailsterPlaceholder {
 					}
 
 					if ( false !== $replace_to ) {
-						$replace_to    = apply_filters( 'mailster_replace_image', $replace_to, $search, $this->campaignID, $this->subscriberID );
+						$replace_to = apply_filters( 'mailster_replace_image', $replace_to, $search, $this->campaignID, $this->subscriberID );
+						if ( is_wp_error( $replace_to ) ) {
+							$this->error( $replace_to );
+							continue;
+						}
+
 						$this->content = str_replace( $search, $replace_to, $this->content );
 					}
 				}
@@ -952,6 +991,9 @@ class MailsterPlaceholder {
 					$what = $hits[4][ $i ];
 
 					$replace_to = $this->get_replace( $post, $what );
+					if ( is_wp_error( $replace_to ) ) {
+						$replace_to = $this->error( $replace_to, ! $encode );
+					}
 
 					if ( is_null( $replace_to ) ) {
 						continue;
@@ -1051,6 +1093,10 @@ class MailsterPlaceholder {
 				}
 				$replace_to = apply_filters( 'mailster_replace_' . $tag, $replace, $option, $fallback, $this->campaignID, $this->subscriberID );
 
+				if ( is_wp_error( $replace_to ) ) {
+					$replace_to = $this->error( $replace_to, ! $encode );
+				}
+
 				if ( $encode ) {
 					$replace_to = rawurlencode( $replace_to );
 				}
@@ -1064,7 +1110,7 @@ class MailsterPlaceholder {
 	public function get_replace( $post, $what ) {
 
 		if ( is_wp_error( $post ) ) {
-			return $post->get_error_message();
+			return $post;
 		}
 
 		$extra        = null;
