@@ -3868,12 +3868,12 @@ class MailsterCampaigns {
 			return new WP_Error( 'no_subscriber', esc_html__( 'No subscriber found', 'mailster' ) );
 		}
 
-		if ( ! $force && ! in_array( $subscriber->status, array( 0, 1, 2 ) ) ) {
+		if ( ! $force && $subscriber->status > 2 ) {
 			return new WP_Error( 'user_unsubscribed', esc_html__( 'User has not subscribed', 'mailster' ) );
 		}
 
 		if ( ! $force && ! mailster( 'helper' )->in_timeframe() ) {
-			return new WP_Error( 'system_error', esc_html__( 'Not in Time Frame', 'mailster' ) );
+			return new WP_Error( 'system_error', esc_html__( 'Not in time frame', 'mailster' ) );
 		}
 
 		$campaign_meta = $this->meta( $campaign->ID );
