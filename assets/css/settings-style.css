@@ -48,6 +48,10 @@
 	min-height: 600px;
 	position: relative;
 }
+.settings-tabs input,.settings-tabs textarea{
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
 .dark-mode .settings-tabs{
 	background: #23282d;
 	border-left-color: #32373c;

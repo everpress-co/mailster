@@ -214,7 +214,7 @@ class MailsterTemplates {
 						// sanitize HTML upload
 						if ( 'text/html' == $mimetype ) {
 							$raw = file_get_contents( $file );
-							$wp_filesystem->put_contents( $file, mailster()->sanitize_content( $raw, false, null, true ), FS_CHMOD_FILE );
+							$wp_filesystem->put_contents( $file, mailster()->sanitize_content( $raw, null, true ), FS_CHMOD_FILE );
 						}
 					}
 
@@ -583,8 +583,19 @@ class MailsterTemplates {
 			if ( isset( $_GET['mailster_error'] ) ) {
 
 				$error = urldecode( $_GET['mailster_error'] );
-				$error = sprintf( 'There was an error loading the template: %s', $error );
+				// thanks Envato :(
+				if ( 'The purchase you have requested is not downloadable at this time.' == $error ) {
+					$error .= '<p>' . esc_html__( 'Please make sure you have signed in to the account you have purchased the template!', 'mailster' ) . '</p>';
+					$error .= '<p>';
+					if ( isset( $_GET['mailster_slug'] ) ) {
+						$template = $this->get_mailster_templates( sanitize_key( $_GET['mailster_slug'] ) );
+						$error   .= '<a href="' . esc_url( $template['uri'] ) . '" class="external button button-primary">' . sprintf( esc_html__( 'Buy %1$s from %2$s now!', 'mailster' ), $template['name'], 'Envato' ) . '</a> ';
+						$error   .= esc_html__( 'or', 'mailster' ) . ' <a href="https://account.envato.com/" class="external">' . esc_html__( 'Visit Envato Account', 'mailster' ) . '</a>';
+					}
+					$error .= '</p>';
+				}
 
+				$error = sprintf( 'There was an error loading the template: %s', $error );
 				mailster_notice( $error, 'error', true );
 			}
 
@@ -1267,6 +1278,7 @@ class MailsterTemplates {
 			'requires'       => '2.2',
 			'is_feature'     => false,
 			'is_free'        => false,
+			'is_sale'        => false,
 			'hidden'         => false,
 			'author_profile' => '',
 			'homepage'       => null,

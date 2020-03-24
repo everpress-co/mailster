@@ -295,7 +295,7 @@ class Mailster {
 				}
 				if ( isset( $notice['screen'] ) && ! empty( $notice['screen'] ) ) {
 					$screen = get_current_screen();
-					if ( $screen->id != $notice['screen'] ) {
+					if ( ! in_array( $screen->id, (array) $notice['screen'] ) ) {
 						continue;
 					}
 				}
@@ -934,12 +934,11 @@ class Mailster {
 	 *
 	 *
 	 * @param unknown $content
-	 * @param unknown $userstyle  (optional)
 	 * @param unknown $customhead (optional)
 	 * @param unknown $preserve_comments (optional)
 	 * @return unknown
 	 */
-	public function sanitize_content( $content, $userstyle = false, $customhead = null, $preserve_comments = false ) {
+	public function sanitize_content( $content, $customhead = null, $preserve_comments = false ) {
 		if ( empty( $content ) ) {
 			return '';
 		}
@@ -976,21 +975,6 @@ class Mailster {
 			$body           = $matches[2];
 		} else {
 			$body = $content;
-		}
-
-		// custom styles
-		global $mailster_mystyles;
-
-		if ( $userstyle && ! empty( $mailster_mystyles ) ) {
-			// check for existing styles
-			preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $body, $originalstyles );
-
-			if ( ! empty( $originalstyles[0] ) ) {
-				foreach ( $mailster_mystyles as $style ) {
-					$block = end( $originalstyles[0] );
-					$body  = str_replace( $block, $block . '<style type="text/css">' . $style . '</style>', $body );
-				}
-			}
 		}
 
 		$content = $head . "\n<body$bodyattributes>" . apply_filters( 'mymail_sanitize_content_body', apply_filters( 'mailster_sanitize_content_body', $body ) ) . "</body>\n</html>";
@@ -1632,7 +1616,8 @@ class Mailster {
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
 		}
-		if ( $max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT ) < 128 ) {
+		$max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
+		if ( $max < 128 ) {
 			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		}
 
@@ -2514,18 +2499,6 @@ class Mailster {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
-	public function has_update() {
-
-		$new_version = $this->plugin_info( 'new_version' );
-
-		return version_compare( $new_version, MAILSTER_VERSION, '>' );
-	}
-
 
 	/**
 	 *
@@ -2654,15 +2627,35 @@ class Mailster {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
+	public function has_update( $force = false ) {
+
+		$new_version = $this->plugin_info( 'new_version', $force );
+
+		return version_compare( $new_version, MAILSTER_VERSION, '>' );
+	}
+
 	public function is_outdated() {
 
 		// make sure Mailster has been updated within a year
 		return defined( 'MAILSTER_BUILT' ) && MAILSTER_BUILT && MAILSTER_BUILT + YEAR_IN_SECONDS < time();
+
+	}
+
+	public function has_support( $force = false ) {
+
+		return $this->support( $force ) - time() > 0;
+
+	}
+
+	public function support( $force = false ) {
+
+		$support = (int) $this->plugin_info( 'support', $force );
+
+		if ( $support ) {
+			$support += DAY_IN_SECONDS;
+		}
+
+		return $support;
 
 	}
 

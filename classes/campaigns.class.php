@@ -75,16 +75,16 @@ class MailsterCampaigns {
 	 *
 	 * @return unknown
 	 * @param unknown $func
-	 * @param unknown $args
+	 * @param unknown $org_args
 	 */
-	public function __call( $func, $args ) {
+	public function __call( $func, $org_args ) {
 
 		if ( substr( $func, 0, 19 ) == 'autoresponder_hook_' ) {
 
 			$campaign_id = (int) substr( $func, 19 );
 
-			$subscribers = isset( $args[0] ) ? array_shift( $args ) : null;
-			$args        = isset( $args[0] ) ? array_shift( $args ) : array();
+			$subscribers = isset( $org_args[0] ) && $org_args[0] != '' ? $org_args[0] : null;
+			$args        = isset( $org_args[1] ) && ! empty( $org_args[1] ) ? (array) $org_args[1] : null;
 
 			$this->autoresponder_hook( $campaign_id, $subscribers, $args );
 
@@ -117,7 +117,7 @@ class MailsterCampaigns {
 			'lists'        => $meta['ignore_lists'] ? false : $meta['lists'],
 			'conditions'   => $meta['list_conditions'],
 			// 'queue__not_in' => $campaign_id,
-			'sent__not_in' => $meta['autoresponder']['once'] ? $campaign_id : false,
+			'sent__not_in' => isset( $meta['autoresponder']['once'] ) && $meta['autoresponder']['once'] ? $campaign_id : false,
 			'include'      => $subscriber_ids,
 		);
 
@@ -1377,7 +1377,7 @@ class MailsterCampaigns {
 		}
 
 		// sanitize the content and remove all content filters
-		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], null, $postdata['head'] );
+		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], $postdata['head'] );
 
 		$post['post_excerpt'] = ! empty( $postdata['autoplaintext'] )
 			? mailster( 'helper' )->plain_text( $post['post_content'] )
@@ -3868,12 +3868,12 @@ class MailsterCampaigns {
 			return new WP_Error( 'no_subscriber', esc_html__( 'No subscriber found', 'mailster' ) );
 		}
 
-		if ( ! $force && ! in_array( $subscriber->status, array( 0, 1, 2 ) ) ) {
+		if ( ! $force && $subscriber->status > 2 ) {
 			return new WP_Error( 'user_unsubscribed', esc_html__( 'User has not subscribed', 'mailster' ) );
 		}
 
 		if ( ! $force && ! mailster( 'helper' )->in_timeframe() ) {
-			return new WP_Error( 'system_error', 'Not in Time Frame' );
+			return new WP_Error( 'system_error', esc_html__( 'Not in time frame', 'mailster' ) );
 		}
 
 		$campaign_meta = $this->meta( $campaign->ID );
@@ -3923,7 +3923,7 @@ class MailsterCampaigns {
 		// campaign specific stuff (cache it)
 		if ( ! ( $content = mailster_cache_get( 'campaign_send_' . $campaign->ID ) ) ) {
 
-			$content = mailster()->sanitize_content( $campaign->post_content, null, $campaign_meta['head'] );
+			$content = mailster()->sanitize_content( $campaign->post_content, $campaign_meta['head'] );
 
 			$content = mailster( 'helper' )->prepare_content( $content );
 
@@ -3972,6 +3972,9 @@ class MailsterCampaigns {
 		// strip all unwanted stuff from the content
 		$content = mailster( 'helper' )->strip_structure_html( $content );
 
+		// maybe inline again
+		$content = mailster( 'helper' )->inline_style( $content );
+
 		$mail->content = apply_filters( 'mailster_campaign_content', $content, $campaign, $subscriber );
 
 		if ( ! $campaign_meta['autoplaintext'] ) {
@@ -4010,6 +4013,9 @@ class MailsterCampaigns {
 		$placeholder->set_content( $mail->subject );
 		$mail->subject = $placeholder->get_content();
 
+		if ( $placeholder->has_error() ) {
+			return new WP_Error( 'error', sprintf( esc_html__( 'There was an error during replacing tags in this campaign! %s', 'mailster' ), '<br>' . implode( '<br>', $placeholder->get_error_messages() ) ) );
+		}
 		$result = $mail->send();
 
 		if ( $result && ! is_wp_error( $result ) ) {
