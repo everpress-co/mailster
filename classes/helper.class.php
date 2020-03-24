@@ -1237,8 +1237,14 @@ class MailsterHelper {
 
 
 	public function get_mailster_styles( $echo = false ) {
+
 		// custom styles
 		global $mailster_mystyles;
+
+		if ( ! did_action( 'mailster_add_style' ) ) {
+			do_action( 'mailster_add_style' );
+		}
+
 		$mailster_styles = '';
 
 		if ( $mailster_mystyles ) {

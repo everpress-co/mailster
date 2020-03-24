@@ -248,7 +248,7 @@ class MailsterAjax {
 
 			if ( $revision ) {
 				$revision = get_post( $revision );
-				$html     = mailster()->sanitize_content( $revision->post_content, null, $head );
+				$html     = mailster()->sanitize_content( $revision->post_content, $head );
 			}
 
 			$placeholder = mailster( 'placeholder', $html );
@@ -301,12 +301,15 @@ class MailsterAjax {
 
 		$this->ajax_filesystem();
 
-		$content = mailster()->sanitize_content( stripslashes( $_POST['content'] ), null, ( isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null ) );
+		$head    = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
+		$content = isset( $_POST['content'] ) ? stripslashes( $_POST['content'] ) : null;
+
+		$content = mailster()->sanitize_content( $content, $head );
 
 		$name          = esc_attr( $_POST['name'] );
 		$template      = esc_attr( $_POST['template'] );
-		$modules       = ! ! ( $_POST['modules'] === 'true' );
-		$activemodules = ! ! ( $_POST['activemodules'] === 'true' );
+		$modules       = (bool) ( $_POST['modules'] === 'true' );
+		$activemodules = (bool) ( $_POST['activemodules'] === 'true' );
 		$overwrite     = $_POST['overwrite'] === 'false' ? false : $_POST['overwrite'];
 
 		$t        = mailster( 'template', $template );
@@ -341,7 +344,7 @@ class MailsterAjax {
 		$bodyattributes = isset( $_POST['bodyattributes'] ) ? stripslashes( $_POST['bodyattributes'] ) : '';
 		$content        = isset( $_POST['content'] ) ? '<body' . $bodyattributes . '>' . stripslashes( $_POST['content'] ) . '</body>' : null;
 
-		$return['content'] = mailster()->sanitize_content( $content, null, $head );
+		$return['content'] = mailster()->sanitize_content( $content, $head );
 		$return['style']   = mailster( 'helper' )->get_mailster_styles();
 		$this->json_return( $return );
 
@@ -361,7 +364,7 @@ class MailsterAjax {
 		$head      = isset( $_POST['head'] ) ? stripslashes( $_POST['head'] ) : null;
 		$userid    = isset( $_POST['userid'] ) ? (int) $_POST['userid'] : null;
 
-		$html = mailster()->sanitize_content( $content, true, $head );
+		$html = mailster()->sanitize_content( $content, $head );
 
 		$placeholder = mailster( 'placeholder', $html );
 
@@ -423,9 +426,9 @@ class MailsterAjax {
 		$content = $placeholder->get_content();
 
 		$content = mailster( 'helper' )->strip_structure_html( $content );
+		$content = mailster( 'helper' )->add_mailster_styles( $content );
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
-		$content = mailster( 'helper' )->add_mailster_styles( $content );
 
 		$hash = md5( NONCE_SALT . $content );
 
@@ -487,7 +490,7 @@ class MailsterAjax {
 
 		if ( isset( $_POST['test'] ) ) {
 
-			$basic = ! ! ( $_POST['basic'] === 'true' );
+			$basic = (bool) ( $_POST['basic'] === 'true' );
 
 			$n = mailster( 'notification' );
 			$n->debug();
@@ -579,7 +582,7 @@ class MailsterAjax {
 				$mail->embed_images = $embed_images;
 				$mail->hash         = str_repeat( '0', 32 );
 
-				$content = mailster()->sanitize_content( $content, null, $head );
+				$content = mailster()->sanitize_content( $content, $head );
 
 				$placeholder = mailster( 'placeholder', $content );
 
@@ -1089,7 +1092,7 @@ class MailsterAjax {
 		$campaign_id   = (int) $_POST['campaignid'];
 
 		$return['html']    = mailster( 'subscribers' )->get_recipient_detail( $subscriber_id, $campaign_id );
-		$return['success'] = ! ! $return['html'];
+		$return['success'] = (bool) $return['html'];
 
 		$this->json_return( $return );
 
@@ -1110,7 +1113,7 @@ class MailsterAjax {
 			$height   = isset( $_POST['height'] ) && $crop ? (int) $_POST['height'] : null;
 			$original = isset( $_POST['original'] ) ? ( $_POST['original'] == 'true' ) : false;
 
-			$return['success'] = ! ! ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop, $original ) );
+			$return['success'] = (bool) ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop, $original ) );
 		}
 
 		$this->json_return( $return );
@@ -1299,7 +1302,7 @@ class MailsterAjax {
 						}
 
 						$relative = ( --$return['itemcount'][ $post->post_type ] );
-						$hasthumb = ! ! ( $thumbid = get_post_thumbnail_id( $post->ID ) );
+						$hasthumb = (bool) ( $thumbid = get_post_thumbnail_id( $post->ID ) );
 						$html    .= '<li data-id="' . $post->ID . '" data-name="' . esc_attr( $post->post_title ) . '" class="status-' . $post->post_status . '';
 						if ( $current_id == $post->ID ) {
 							$html .= ' selected';
@@ -1392,7 +1395,7 @@ class MailsterAjax {
 			if ( isset( $results ) ) {
 				$html = '';
 				foreach ( $results as $entry ) {
-					$hasthumb = ! ! ( $thumbid = get_post_thumbnail_id( $entry['ID'] ) );
+					$hasthumb = (bool) ( $thumbid = get_post_thumbnail_id( $entry['ID'] ) );
 					$html    .= '<li data-id="' . $entry['ID'] . '" data-name="' . $entry['title'] . '"';
 					if ( $hasthumb ) {
 						$html .= ' data-thumbid="' . $thumbid . '" class="has-thumb"';
@@ -1717,7 +1720,7 @@ class MailsterAjax {
 		$return['files'] = mailster( 'templates' )->get_files( $return['slug'], true );
 
 		if ( file_exists( $file ) ) {
-			$return['success'] = ! ! $return['html'] = @file_get_contents( $file );
+			$return['success'] = (bool) $return['html'] = @file_get_contents( $file );
 		}
 
 		$this->json_return( $return );
@@ -1753,7 +1756,7 @@ class MailsterAjax {
 			$path = mailster( 'templates', $return['slug'] )->get_path();
 			$file = $path . '/' . $return['slug'] . '/' . $return['file'];
 
-			$content = mailster()->sanitize_content( $content, false, null, true );
+			$content = mailster()->sanitize_content( $content, null, true );
 
 			if ( $wp_filesystem->put_contents( $file, $content, FS_CHMOD_FILE ) ) {
 				$filename = $file;
@@ -2012,7 +2015,7 @@ class MailsterAjax {
 		$email = esc_attr( $_POST['email'] );
 
 		$subscriber        = mailster( 'subscribers' )->get_by_mail( $email );
-		$return['exists']  = ! ! $subscriber && $subscriber->ID != (int) $_POST['id'];
+		$return['exists']  = (bool) $subscriber && $subscriber->ID != (int) $_POST['id'];
 		$return['success'] = true;
 
 		$this->json_return( $return );

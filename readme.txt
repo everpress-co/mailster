@@ -91,6 +91,9 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.9 =
 
 * change: moved text strings for GDPR to text tab for better localization.
+* change: sanitize_content method no longer handles custom Mailster styles (changes to the methods arguments)
+* added: `mailster_add_tag` action hook to add custom tags.
+* added: `mailster_add_style` action hook to add custom styles.
 * improved: block tags removed in final output
 * improved: RSS feed method for more flexible feed support.
 * improved: tags now can return WP_Error object which prevents the campaign from sending.

@@ -1377,7 +1377,7 @@ class MailsterCampaigns {
 		}
 
 		// sanitize the content and remove all content filters
-		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], null, $postdata['head'] );
+		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], $postdata['head'] );
 
 		$post['post_excerpt'] = ! empty( $postdata['autoplaintext'] )
 			? mailster( 'helper' )->plain_text( $post['post_content'] )
@@ -3923,7 +3923,7 @@ class MailsterCampaigns {
 		// campaign specific stuff (cache it)
 		if ( ! ( $content = mailster_cache_get( 'campaign_send_' . $campaign->ID ) ) ) {
 
-			$content = mailster()->sanitize_content( $campaign->post_content, null, $campaign_meta['head'] );
+			$content = mailster()->sanitize_content( $campaign->post_content, $campaign_meta['head'] );
 
 			$content = mailster( 'helper' )->prepare_content( $content );
 

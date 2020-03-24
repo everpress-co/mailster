@@ -214,7 +214,7 @@ class MailsterTemplates {
 						// sanitize HTML upload
 						if ( 'text/html' == $mimetype ) {
 							$raw = file_get_contents( $file );
-							$wp_filesystem->put_contents( $file, mailster()->sanitize_content( $raw, false, null, true ), FS_CHMOD_FILE );
+							$wp_filesystem->put_contents( $file, mailster()->sanitize_content( $raw, null, true ), FS_CHMOD_FILE );
 						}
 					}
 

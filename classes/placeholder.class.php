@@ -1037,6 +1037,10 @@ class MailsterPlaceholder {
 
 		global $mailster_tags;
 
+		if ( ! did_action( 'mailster_add_tag' ) ) {
+			do_action( 'mailster_add_tag' );
+		}
+
 		$keep = $this->get_keep_tags();
 
 		// replace static

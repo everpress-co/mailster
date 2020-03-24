@@ -934,12 +934,11 @@ class Mailster {
 	 *
 	 *
 	 * @param unknown $content
-	 * @param unknown $userstyle  (optional)
 	 * @param unknown $customhead (optional)
 	 * @param unknown $preserve_comments (optional)
 	 * @return unknown
 	 */
-	public function sanitize_content( $content, $userstyle = false, $customhead = null, $preserve_comments = false ) {
+	public function sanitize_content( $content, $customhead = null, $preserve_comments = false ) {
 		if ( empty( $content ) ) {
 			return '';
 		}
@@ -976,21 +975,6 @@ class Mailster {
 			$body           = $matches[2];
 		} else {
 			$body = $content;
-		}
-
-		// custom styles
-		global $mailster_mystyles;
-
-		if ( $userstyle && ! empty( $mailster_mystyles ) ) {
-			// check for existing styles
-			preg_match_all( '#(<style ?[^<]+?>([^<]+)<\/style>)#', $body, $originalstyles );
-
-			if ( ! empty( $originalstyles[0] ) ) {
-				foreach ( $mailster_mystyles as $style ) {
-					$block = end( $originalstyles[0] );
-					$body  = str_replace( $block, $block . '<style type="text/css">' . $style . '</style>', $body );
-				}
-			}
 		}
 
 		$content = $head . "\n<body$bodyattributes>" . apply_filters( 'mymail_sanitize_content_body', apply_filters( 'mailster_sanitize_content_body', $body ) ) . "</body>\n</html>";
