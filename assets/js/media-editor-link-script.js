@@ -1,9 +1,9 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
+	"use strict";
 
-	$('.media-editor-link')
-		.on('click', function (event) {
+	mailster.$.document
+		.on('click', '.media-editor-link', function (event) {
 
 			event.preventDefault();
 
@@ -51,4 +51,6 @@ jQuery(document).ready(function ($) {
 
 		});
 
-});
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));

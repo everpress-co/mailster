@@ -547,13 +547,27 @@ if ( $old_version ) {
 			// prefix mailster entries with "_"
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET `meta_key` = replace(meta_key, %s, %s) WHERE meta_key LIKE 'mailster_%'", 'mailster_', '_mailster_' ) );
 
+		case '2.4.4':
+		case '2.4.5':
+		case '2.4.5.1':
+			// remove white space from these fields
+			$wpdb->query( "UPDATE {$wpdb->prefix}mailster_forms SET `redirect` = TRIM(redirect)" );
+			$wpdb->query( "UPDATE {$wpdb->prefix}mailster_forms SET `confirmredirect` = TRIM(confirmredirect)" );
+
+		case '2.4.6':
+		case '2.4.7':
+		case '2.4.8':
+			$texts['gdpr_text']  = $mailster_options['gdpr_text'];
+			$texts['gdpr_error'] = $mailster_options['gdpr_error'];
+
+			update_option( 'mailster_templates', '' );
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
 
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
-
 
 	}
 

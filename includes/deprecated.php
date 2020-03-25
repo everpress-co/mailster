@@ -1,5 +1,113 @@
 <?php
 
+/**
+ *
+ *
+ * @param unknown $headline
+ * @param unknown $content
+ * @param unknown $to            (optional)
+ * @param unknown $replace       (optional)
+ * @param unknown $attachments   (optional)
+ * @param unknown $template_file (optional)
+ * @param unknown $headers       (optional)
+ * @return unknown
+ */
+function mailster_send( $headline, $content, $to = '', $replace = array(), $attachments = array(), $template_file = 'notification.html', $headers = null ) {
+
+	_deprecated_function( __FUNCTION__, '2.0', 'mailster(\'notification\')->send($args)' );
+
+	if ( empty( $to ) ) {
+		$current_user = wp_get_current_user();
+		$to           = $current_user->user_email;
+	}
+
+	$defaults = array( 'notification' => '' );
+
+	$replace = apply_filters( 'mymail_send_replace', apply_filters( 'mailster_send_replace', wp_parse_args( $replace, $defaults ), $defaults ) );
+
+	$mail = mailster( 'mail' );
+
+	// extract the header if it's already Mime encoded
+	if ( ! empty( $headers ) ) {
+		if ( is_string( $headers ) ) {
+			$headerlines = explode( "\n", trim( $headers ) );
+			foreach ( $headerlines as $header ) {
+				$parts = explode( ':', $header, 2 );
+				$key   = trim( $parts[0] );
+				$value = trim( $parts[1] );
+
+				// if fom is set, use it!
+				if ( 'from' == strtolower( $key ) ) {
+					if ( preg_match( '#(.*)?<([^>]+)>#', $value, $matches ) ) {
+						$mail->from      = trim( $matches[2] );
+						$mail->from_name = trim( $matches[1] );
+					} else {
+						$mail->from      = $value;
+						$mail->from_name = '';
+					}
+				} elseif ( ! in_array( strtolower( $key ), array( 'content-type' ) ) ) {
+					$mail->headers[ $key ] = trim( $value );
+				}
+			}
+		} elseif ( is_array( $headers ) ) {
+			foreach ( $headers as $key => $value ) {
+				$mail->mailer->addCustomHeader( $key, $value );
+			}
+		}
+	}
+
+	$mail->to          = $to;
+	$mail->subject     = $headline;
+	$mail->attachments = $attachments;
+
+	return $mail->send_notification( $content, $headline, $replace, false, $template_file );
+}
+
+
+/**
+ *
+ *
+ * @param unknown $to
+ * @param unknown $subject
+ * @param unknown $message
+ * @param unknown $headers       (optional)
+ * @param unknown $attachments   (optional)
+ * @param unknown $template_file (optional)
+ * @return unknown
+ */
+function mailster_wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $template_file = 'notification.html' ) {
+	_deprecated_function( __FUNCTION__, '2.3', 'mailster()->wp_mail' );
+	return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments = array(), $template_file );
+}
+
+
+/**
+ * deprecated
+ *
+ * @param unknown $campaign
+ * @param unknown $subscriber
+ * @param unknown $track      (optional)
+ * @param unknown $forcesend  (optional)
+ * @param unknown $force      (optional)
+ * @return unknown
+ */
+function mailster_send_campaign_to_subscriber( $campaign, $subscriber, $track = false, $forcesend = false, $force = false ) {
+
+	_deprecated_function( __FUNCTION__, '2.3', 'mailster(\'campaigns\')->send' );
+
+	$campaign_id   = is_numeric( $campaign ) ? $campaign : $campaign->ID;
+	$subscriber_id = is_numeric( $subscriber ) ? $subscriber : $subscriber->ID;
+
+	$result = mailster( 'campaigns' )->send( $campaign_id, $subscriber_id, $track, $forcesend || $force, false );
+
+	if ( is_wp_error( $result ) ) {
+		return false;
+	}
+
+	return $result;
+
+}
+
 if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 
 	require_once MAILSTER_DIR . 'includes/deprecated_actions.php';
@@ -46,116 +154,6 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 				}
 			}
 		);
-	}
-
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $headline
-	 * @param unknown $content
-	 * @param unknown $to            (optional)
-	 * @param unknown $replace       (optional)
-	 * @param unknown $attachments   (optional)
-	 * @param unknown $template_file (optional)
-	 * @param unknown $headers       (optional)
-	 * @return unknown
-	 */
-	function mailster_send( $headline, $content, $to = '', $replace = array(), $attachments = array(), $template_file = 'notification.html', $headers = null ) {
-
-		_deprecated_function( __FUNCTION__, '2.0', 'mailster(\'notification\')->send($args)' );
-
-		if ( empty( $to ) ) {
-			$current_user = wp_get_current_user();
-			$to           = $current_user->user_email;
-		}
-
-		$defaults = array( 'notification' => '' );
-
-		$replace = apply_filters( 'mymail_send_replace', apply_filters( 'mailster_send_replace', wp_parse_args( $replace, $defaults ), $defaults ) );
-
-		$mail = mailster( 'mail' );
-
-		// extract the header if it's already Mime encoded
-		if ( ! empty( $headers ) ) {
-			if ( is_string( $headers ) ) {
-				$headerlines = explode( "\n", trim( $headers ) );
-				foreach ( $headerlines as $header ) {
-					$parts = explode( ':', $header, 2 );
-					$key   = trim( $parts[0] );
-					$value = trim( $parts[1] );
-
-					// if fom is set, use it!
-					if ( 'from' == strtolower( $key ) ) {
-						if ( preg_match( '#(.*)?<([^>]+)>#', $value, $matches ) ) {
-							$mail->from      = trim( $matches[2] );
-							$mail->from_name = trim( $matches[1] );
-						} else {
-							$mail->from      = $value;
-							$mail->from_name = '';
-						}
-					} elseif ( ! in_array( strtolower( $key ), array( 'content-type' ) ) ) {
-						$mail->headers[ $key ] = trim( $value );
-					}
-				}
-			} elseif ( is_array( $headers ) ) {
-				foreach ( $headers as $key => $value ) {
-					$mail->mailer->addCustomHeader( $key, $value );
-				}
-			}
-		}
-
-		$mail->to          = $to;
-		$mail->subject     = $headline;
-		$mail->attachments = $attachments;
-
-		return $mail->send_notification( $content, $headline, $replace, false, $template_file );
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $to
-	 * @param unknown $subject
-	 * @param unknown $message
-	 * @param unknown $headers       (optional)
-	 * @param unknown $attachments   (optional)
-	 * @param unknown $template_file (optional)
-	 * @return unknown
-	 */
-	function mailster_wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $template_file = 'notification.html' ) {
-		_deprecated_function( __FUNCTION__, '2.3', 'mailster()->wp_mail' );
-		return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments = array(), $template_file );
-	}
-
-
-	/**
-	 * deprecated
-	 *
-	 * @param unknown $campaign
-	 * @param unknown $subscriber
-	 * @param unknown $track      (optional)
-	 * @param unknown $forcesend  (optional)
-	 * @param unknown $force      (optional)
-	 * @return unknown
-	 */
-	function mailster_send_campaign_to_subscriber( $campaign, $subscriber, $track = false, $forcesend = false, $force = false ) {
-
-		_deprecated_function( __FUNCTION__, '2.3', 'mailster(\'campaigns\')->send' );
-
-		$campaign_id   = is_numeric( $campaign ) ? $campaign : $campaign->ID;
-		$subscriber_id = is_numeric( $subscriber ) ? $subscriber : $subscriber->ID;
-
-		$result = mailster( 'campaigns' )->send( $campaign_id, $subscriber_id, $track, $forcesend || $force, false );
-
-		if ( is_wp_error( $result ) ) {
-			return false;
-		}
-
-		return $result;
-
 	}
 
 	/**

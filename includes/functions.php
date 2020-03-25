@@ -55,7 +55,9 @@ function mailster_options( $option = null, $fallback = null ) {
 	}
 
 	if ( ! ( $options = get_option( 'mailster_options', array() ) ) ) {
-		$options = mailster( 'settings' )->maybe_repair_options( $options );
+		if ( mailster() ) {
+			$options = mailster( 'settings' )->maybe_repair_options( $options );
+		}
 	}
 
 	return $options;
@@ -962,6 +964,17 @@ function mailster_get_subscriber( $id_email_or_hash, $type = null ) {
  */
 function mailster_add_tag( $tag, $callback ) {
 
+	if ( false && ! did_action( 'mailster_add_tag' ) ) {
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				__( 'Custom Mailster tags should be added by using the %s action. Please check the documentation.', 'mailster' ),
+				'<code>mailster_add_tag</code>'
+			),
+			'2.5'
+		);
+	}
+
 	if ( is_callable( $callback ) ) {
 
 	} elseif ( is_array( $callback ) ) {
@@ -996,6 +1009,17 @@ function mailster_add_tag( $tag, $callback ) {
  */
 function mailster_remove_tag( $tag ) {
 
+	if ( false && ! did_action( 'mailster_add_tag' ) ) {
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				__( 'Custom Mailster tags should be removed by using the %s action. Please check the documentation.', 'mailster' ),
+				'<code>mailster_add_tag</code>'
+			),
+			'2.5'
+		);
+	}
+
 	global $mailster_tags;
 
 	if ( isset( $mailster_tags[ $tag ] ) ) {
@@ -1015,6 +1039,17 @@ function mailster_remove_tag( $tag ) {
  */
 function mailster_add_style( $callback ) {
 
+	if ( false && ! did_action( 'mailster_add_style' ) ) {
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				__( 'Custom Mailster styles should be added by using the %s action. Please check the documentation.', 'mailster' ),
+				'<code>mailster_add_style</code>'
+			),
+			'2.5'
+		);
+	}
+
 	$args = func_get_args();
 	$args = array_slice( $args, 1 );
 	return mailster( 'helper' )->add_style( $callback, $args );
@@ -1027,6 +1062,17 @@ function mailster_add_style( $callback ) {
  * @return unknown
  */
 function mailster_add_embeded_style( $callback ) {
+
+	if ( false && ! did_action( 'mailster_add_style' ) ) {
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				__( 'Custom Mailster styles should be added by using the %s action. Please check the documentation.', 'mailster' ),
+				'<code>mailster_add_style</code>'
+			),
+			'2.5'
+		);
+	}
 
 	$args = func_get_args();
 	$args = array_slice( $args, 1 );

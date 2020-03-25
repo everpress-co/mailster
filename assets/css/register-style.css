@@ -26,7 +26,7 @@
 .register_form_wrap input[type="text"], .register_form_wrap input[type="email"], .register_form_wrap input[type="submit"]{
 	width: 100%;
 	font-size: 20px;
-	padding: 11px 12px 12px;
+	padding: 0.3rem 1rem;
 	margin-bottom: 10px;
 	vertical-align: bottom;
 }

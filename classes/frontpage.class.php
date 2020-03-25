@@ -632,7 +632,7 @@ class MailsterFrontpage {
 						wp_die( esc_html__( 'There is no content for this newsletter.', 'mailster' ) . ( current_user_can( 'edit_newsletters' ) ? ' <a href="' . admin_url( 'post.php?post=' . get_the_ID() . '&action=edit' ) . '">' . esc_html__( 'Add content', 'mailster' ) . '</a>' : '' ) );
 					}
 
-					$content = mailster()->sanitize_content( $content, null, $meta['head'] );
+					$content = mailster()->sanitize_content( $content, $meta['head'] );
 
 					$placeholder = mailster( 'placeholder', $content );
 					$placeholder->excerpt_filters( false );
@@ -658,6 +658,7 @@ class MailsterFrontpage {
 					$placeholder->add_custom( get_the_ID() );
 
 					$content = $placeholder->get_content();
+					$content = mailster( 'helper' )->strip_structure_html( $content );
 					$search  = array( '<a ', '@media only screen and (max-device-width:' );
 					$replace = array( '<a target="_top" ', '@media only screen and (max-width:' );
 					$content = str_replace( $search, $replace, $content );
@@ -665,6 +666,7 @@ class MailsterFrontpage {
 					if ( mailster_option( 'frontpage_public' ) || ! get_option( 'blog_public' ) ) {
 						$content = str_replace( '</head>', "<meta name='robots' content='noindex,nofollow' />\n</head>", $content );
 					}
+					$content = mailster( 'helper' )->add_mailster_styles( $content );
 
 					echo $content;
 
@@ -936,7 +938,7 @@ class MailsterFrontpage {
 	 * @param unknown $hash
 	 * @return unknown
 	 */
-	public function setcookie( $hash, $timeout = 3600 ) {
+	private function setcookie( $hash, $timeout = 3600 ) {
 
 		$cookietime = apply_filters( 'mailster_cookie_time', $timeout );
 

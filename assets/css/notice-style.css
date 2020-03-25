@@ -14,19 +14,17 @@ div.mailster-notice{
 }
 div.mailster-notice h2{
 	margin: 0.5em 0 0;
-	font-size: 21px;
+	font-size: 1.6em;
 	font-weight: 400;
 	line-height: 1.2;
 }
 div.mailster-notice h3{
 	margin: 17px 0 0;
-	font-size: 16px;
+	font-size: 1.2em;
 	line-height: 1.4;
 }
 div.mailster-notice > p{
-	font-size: 16px;
-	margin: 0;
-	padding: 0;
+	font-size: 1.2em;
 	color: #72777c;
 }
 div.mailster-notice > hr{

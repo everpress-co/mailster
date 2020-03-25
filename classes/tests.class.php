@@ -406,7 +406,9 @@ class MailsterTests {
 
 		foreach ( $support_emails as $email ) {
 			if ( $user = get_user_by( 'email', $email ) ) {
-				$this->warning( sprintf( 'Please remove any unused Support account: %s', '<a href="' . admin_url( 'users.php?s=' . urlencode( $user->user_email ) ) . '">' . $user->user_email . '</a>' ) );
+				if ( strtotime( $user->user_registered ) < time() - HOUR_IN_SECONDS ) {
+					$this->warning( sprintf( 'Please remove any unused Support account: %s', '<a href="' . admin_url( 'users.php?s=' . urlencode( $user->user_email ) ) . '">' . $user->user_email . '</a>' ) );
+				}
 			}
 		}
 	}
@@ -503,6 +505,11 @@ class MailsterTests {
 		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_forms AUTO_INCREMENT = %d", 1 ) );
 		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_lists AUTO_INCREMENT = %d", 1 ) );
 		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_links AUTO_INCREMENT = %d", 1 ) );
+
+		// remove temp table
+		delete_option( 'mailster_bulk_import' );
+		delete_option( 'mailster_bulk_import_errors' );
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
 
 	}
 	private function test_memory_limit() {
