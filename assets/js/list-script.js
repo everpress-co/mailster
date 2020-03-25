@@ -1,81 +1,38 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
+	"use strict";
 
-	var timeout,
-		_id = $('#ID'),
-		_form = $('form#subscriber_form'),
-		wpnonce = $('#_wpnonce').val();
-
-	function _init() {
-
-		_events();
-
-		$('.piechart').easyPieChart({
-			animate: 1000,
-			rotate: 180,
-			barColor: '#2BB3E7',
-			trackColor: '#50626f',
-			trackColor: '#ffffff',
-			lineWidth: 9,
-			size: 75,
-			lineCap: 'butt',
-			onStep: function (value) {
-				this.$el.find('span').text(Math.round(value));
-			},
-			onStop: function (value) {
-				this.$el.find('span').text(Math.round(value));
-			}
-		});
-
-	}
-
-	function _events() {
-
-		$('.detail').on('click', function () {
-
-			var _this = $(this).addClass('active'),
-				_ul = _this.find('.click-to-edit'),
-				_first = _ul.find('> li').first(),
-				_last = _ul.find('> li').last();
-
-			if (!_first.is(':hidden')) {
-				_first.hide();
-				_last.show().find('input').first().focus().select();
-			}
-
-		});
-	}
-
-
-	function _ajax(action, data, callback, errorCallback) {
-
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
+	$.easyPieChart && $('.piechart').easyPieChart({
+		animate: 1000,
+		rotate: 180,
+		barColor: '#2BB3E7',
+		trackColor: '#50626f',
+		trackColor: '#ffffff',
+		lineWidth: 9,
+		size: 75,
+		lineCap: 'butt',
+		onStep: function (value) {
+			this.$el.find('span').text(Math.round(value));
+		},
+		onStop: function (value) {
+			this.$el.find('span').text(Math.round(value));
 		}
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action,
-				_wpnonce: wpnonce
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-			},
-			dataType: "JSON"
-		});
-	}
+	});
 
-	_init();
+	$('.detail').on('click', function () {
 
-});
+		var _this = $(this).addClass('active'),
+			_ul = _this.find('.click-to-edit'),
+			_first = _ul.find('> li').first(),
+			_last = _ul.find('> li').last();
+
+		if (!_first.is(':hidden')) {
+			_first.hide();
+			_last.show().find('input').first().focus().select();
+		}
+
+	});
+
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));

@@ -1,46 +1,52 @@
-jQuery(document).ready(function ($) {
+// not in an iframe
+if (parent.window === window) {
 
-	"use strict"
-
-	var html = $('html'),
-		body = $('body'),
-		uploader, container, modules, images, buttons, repeatable, selection,
-		currentmodule,
-		isTinymce = typeof tinymce != 'undefined';
-
-	//not in an iframe
-	if (parent.window == window) {
-
-		var campaign_id;
-		if (campaign_id = location.search.match(/id=(\d+)/i)[1]) {
-			window.location = location.protocol + '//' + location.host + location.pathname.replace('admin-ajax.php', 'post.php') + '?post=' + campaign_id + '&action=edit';
-		}
+	var campaign_id;
+	if (campaign_id = location.search.match(/id=(\d+)/i)[1]) {
+		window.location = location.protocol + '//' + location.host + location.pathname.replace('admin-ajax.php', 'post.php') + '?post=' + campaign_id + '&action=edit';
 	}
+}
 
-	window.ajaxurl = window.ajaxurl || window.mailsterdata.ajaxurl;
+document.getElementsByTagName("html")[0].className += ' mailster-loading';
+window.mailster = parent.window.mailster || {};
 
-	$(window).on('load', function () {
+// block
+mailster = (function (mailster, $, window, document) {
 
-		body
+	"use strict";
+
+	mailster.editor = mailster.editor || {};
+
+	mailster.editor.loaded = false;
+
+	mailster.editor.$ = mailster.editor.$ || {};
+	mailster.editor.$.html = $('html');
+	mailster.editor.$.body = $('body');
+
+	mailster.$.window.on('load', function () {
+		mailster.editor.$.html.removeClass('mailster-loading');
+		mailster.editor.$.body = $('body');
+		mailster.editor.$.body
 			.on('click', 'a', function (event) {
 				event.preventDefault();
 			})
 			.on('click', function (event) {
-				if (currentmodule) {
-					currentmodule.removeAttr('selected');
-				}
+				mailster.modules.selected && mailster.modules.selected.removeAttr('selected');
 			})
 			.on('click', 'module', function (event) {
 				if ('MODULE' == event.target.nodeName) {
+					var module = $(this);
 					event.stopPropagation();
-					_trigger('selectModule', $(this));
+					if (mailster.modules.selected[0] != module[0]) {
+						mailster.trigger('selectModule', module);
+					}
 				}
 			})
 			.on('click', 'button.addbutton', function () {
 				var data = $(this).data(),
 					element = decodeURIComponent(data.element.data('tmpl')) || '<a href="" editable label="Button"></a>';
 
-				parent.window.Mailster.editbar.open({
+				mailster.editbar.open({
 					type: 'btn',
 					offset: data.offset,
 					element: $(element).attr('tmpbutton', '').appendTo(data.element),
@@ -61,8 +67,8 @@ jQuery(document).ready(function ($) {
 					data.element.clone().insertAfter(data.element);
 				}
 
-				_trigger('save');
-				_trigger('refresh');
+				mailster.trigger('save');
+				mailster.trigger('refresh');
 
 				return false;
 			})
@@ -79,187 +85,330 @@ jQuery(document).ready(function ($) {
 					data.element.remove();
 				}
 
-				_trigger('save');
-				_trigger('refresh');
+				mailster.trigger('save');
+				mailster.trigger('refresh');
 
 				return false;
 			});
 
-		//legacy buttons
-		body.find('div.modulebuttons').remove();
-		(mailsterdata.isrtl) ? html.attr('mailster-is-rtl', ''): html.removeAttr('mailster-is-rtl');
+		if (!mailster.editor.loaded) {
+			mailster.editor.loaded = true;
+			mailster.trigger('editorLoaded');
+		}
 
 	});
 
-	function _refresh() {
+	mailster.editor.getFrameContent = function () {
 
-		container = $('modules');
-		modules = container.find('module');
-		images = $('img[editable]');
-		buttons = $('buttons');
-		repeatable = $('[repeatable]');
-
-		_sortable();
-		_draggable();
-		_upload();
-		if (isTinymce) _inlineeditor();
-
-		html.removeClass('mailster-loading');
-
-	}
-
-	function _resize() {
-		_buttons();
-	}
-
-	function _inlineeditor() {
-
-		var l10n = mailster_mce_button.l10n,
-			tags = mailster_mce_button.tags,
-			designs = mailster_mce_button.designs,
-			tiny = mailsterdata.tinymce,
-			changetimeout,
-			change = false;
-
-		tinymce.init($.extend(tiny.args, tiny.multi, {
-			urlconverter_callback: _urlconverter,
-			setup: _setup
-		}));
-		tinymce.init($.extend(tiny.args, tiny.single, {
-			urlconverter_callback: _urlconverter,
-			setup: _setup
-		}));
-
-		function _urlconverter(url, node, on_save, name) {
-			if ('_wp_link_placeholder' == url) {
-				return url;
-			} else if (/^https?:\/\/{.+}/g.test(url)) {
-				return url.replace(/^https?:\/\//, '');
-			} else if (/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(url)) {
-				return 'mailto:' + url;
-			}
-			return this.documentBaseURI.toAbsolute(url, tiny.remove_script_host);
+		if (!mailster.editor.$.body.length) {
+			return false;
 		}
 
-		function _setup(editor) {
+		var body = mailster.editor.$.body[0],
+			clone, content, bodyattributes, attrcount, s = '';
 
-			editor.addButton('mailster_mce_button', {
-				title: l10n.tags.title,
-				type: 'menubutton',
-				icon: 'icon mailster-tags-icon',
-				menu: $.map(tags, function (group, id) {
-					return {
-						text: group.name,
-						menu: $.map(group.tags, function (name, tag) {
-							return {
-								text: name,
-								onclick: function () {
-									var poststuff = '';
-									switch (tag) {
-									case 'webversion':
-									case 'unsub':
-									case 'forward':
-									case 'profile':
-										poststuff = 'link';
-									case 'homepage':
-										if (selection = editor.selection.getContent({
-												format: "text"
-											})) {
-											editor.insertContent('<a href="{' + tag + poststuff + '}">' + selection + '</a>');
-											break;
-										}
-									default:
-										editor.insertContent('{' + tag + '} ');
-									}
-								}
-							};
+		clone = $('<div>' + body.innerHTML + '</div>');
 
-						})
-					};
-				})
-			});
+		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
 
-			editor.addButton('mailster_remove_element', {
-				title: l10n.remove.title,
-				icon: 'icon mailster-remove-icon',
-				onclick: function () {
-					editor.targetElm.remove();
-					editor.remove();
-					_trigger('save');
-				}
-			});
+		// remove some third party elements
+		clone.find('#droplr-chrome-extension-is-installed').remove();
+		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
+		content = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 
-			editor
-				.on('change', function (event) {
-					var _self = this;
-					clearTimeout(changetimeout);
-					changetimeout = setTimeout(function () {
-						var content = event.level.content,
-							c = content.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/g);
-						if (c) {
-							for (var i = c.length - 1; i >= 0; i--) {
-								content = content.replace(c[i], _hex(c[i]));
-							}
-							_self.bodyElement.innerHTML = content;
-						}
-						_trigger('save');
-						change = true;
-					}, 100)
-				})
-				.on('keyup', function (event) {
-					$(event.currentTarget).prop('spellcheck', true);
-				})
-				.on('click', function (event) {
-					// if(editor.theme && editor.theme.panel && editor.theme.panel.$el){
-					// 	var toolbar = $(editor.theme.panel.$el);
-					// }
-					_trigger('selectModule', $(event.currentTarget).closest('module'));
-					event.stopPropagation();
-					editor.focus();
-				})
-				.on('focus', function (event) {
-					event.stopPropagation();
-					editor.selection.select(editor.getBody(), true);
-					if (container.data('uiSortable')) container.sortable('destroy');
-				})
-				.on('blur', function (event) {
-					_trigger('refresh');
-					_sortable();
+		bodyattributes = body.attributes || [];
+		attrcount = bodyattributes.length;
+
+		if (attrcount) {
+			while (attrcount--) {
+				s = ' ' + bodyattributes[attrcount].name + '="' + $.trim(bodyattributes[attrcount].value) + '"' + s;
+			}
+		}
+		s = $.trim(
+			s
+			.replace(/(webkit |wp\-editor|mceContentBody|position: relative;|cursor: auto;|modal-open| spellcheck="(true|false)")/g, '')
+			.replace(/(class="(\s*)"|style="(\s*)")/g, '')
+		);
+
+		return mailster.$.head.val() + "\n<body" + (s ? ' ' + s : '') + ">\n" + content + "\n</body>\n</html>";
+	}
+
+	mailster.editor.getStructure = function (html) {
+		var parts = html.match(/([^]*)<body([^>]*)?>([^]*)<\/body>([^]*)/m);
+
+		return {
+			parts: parts ? parts : ['', '', '', '<multi>' + html + '</multi>'],
+			content: parts ? parts[3] : '<multi>' + html + '</multi>',
+			head: parts ? $.trim(parts[1]) : '',
+			bodyattributes: parts ? $('<div' + (parts[2] || '') + '></div>')[0].attributes : ''
+		};
+	}
+
+	mailster.editor.getContent = function () {
+		return mailster.$.content.val() || mailster.editor.getFrameContent();
+	}
+
+	mailster.editor.setContent = function (content, delay, saveit, extrastyle) {
+
+		var structure = mailster.editor.getStructure(content),
+			attrcount = structure.bodyattributes.length,
+			head = mailster.editor.$.document.find('head'),
+			headstyles = head.find('link');
+
+		mailster.$.head.val(structure.head);
+		if (!extrastyle) {
+			extrastyle = '';
+		}
+		head[0].innerHTML = structure.head.replace(/([^]*)<head([^>]*)?>([^]*)<\/head>([^]*)/m, '$3' + extrastyle);
+		head.append(headstyles);
+
+		mailster.editor.$.body[0].innerHTML = structure.content;
+
+		if (attrcount) {
+			while (attrcount--) {
+				mailster.editor.$.body[0].setAttribute(structure.bodyattributes[attrcount].name, structure.bodyattributes[attrcount].value)
+			}
+		}
+
+		mailster.$.content.val(content);
+
+		if (typeof saveit == 'undefined' || saveit === true) {
+			mailster.trigger('save');
+		}
+
+		setTimeout(function () {
+			mailster.trigger('redraw');
+		}, 100);
+	}
+
+	mailster.editor.getHeight = function () {
+		return Math.max(500, mailster.editor.$.body.outerHeight());
+	}
+
+
+	mailster.editor.resize = function () {
+		if (!mailster.editor.loaded) return false;
+		setTimeout(function () {
+			mailster.$.iframe.attr("height", mailster.editor.getHeight());
+			mailster.trigger('resize');
+		}, 50);
+	}
+
+	mailster.editor.colors = mailster.$.options.find('.colors').data();
+
+	function initFrame() {
+		mailster.$.templateWrap.removeClass('load');
+		mailster.trigger('iframeLoaded');
+		makeEditable();
+	}
+
+	function makeEditable() {
+
+		mailster.editor.$.document.find('.content.mailster-btn').remove();
+		var modulehelper = null;
+
+		if (!mailster.editor.$.document) return;
+
+		mailster.editor.$.document
+			//.off('.mailster')
+			.on('click.mailster', 'img[editable]', function (event) {
+				event.stopPropagation();
+				var $this = $(this),
+					offset = $this.offset(),
+					top = offset.top + 61,
+					left = offset.left,
+					name = $this.attr('label'),
+					type = 'img';
+
+				mailster.editbar.open({
+					'offset': offset,
+					'type': type,
+					'name': name,
+					'element': $this
 				});
 
+			})
+			.on('click.mailster', 'module td[background],module th[background]', function (event) {
+				event.stopPropagation();
+				modulehelper = true;
+			})
+			.on('click.mailster', 'td[background], th[background]', function (event) {
+				event.stopPropagation();
+				if (!modulehelper && event.target != this) return;
+				modulehelper = null;
+
+				var $this = $(this),
+					offset = $this.offset(),
+					top = offset.top + 61,
+					left = offset.left,
+					name = $this.attr('label'),
+					type = 'img';
+
+				mailster.editbar.open({
+					'offset': offset,
+					'type': type,
+					'name': name,
+					'element': $this
+				});
+
+			})
+			.on('click.mailster', 'a[editable]', function (event) {
+				event.stopPropagation();
+				event.preventDefault();
+				var $this = $(this),
+					offset = $this.offset(),
+					top = offset.top + 40,
+					left = offset.left,
+					name = $this.attr('label'),
+					type = 'btn';
+
+				mailster.editbar.open({
+					'offset': offset,
+					'type': type,
+					'name': name,
+					'element': $this
+				});
+
+
+			})
+
+		if (!mailsterdata.inline) {
+			mailster.editor.$.container
+				.on('click.mailster', 'multi, single', function (event) {
+					event.stopPropagation();
+					var $this = $(this),
+						offset = $this.offset(),
+						top = offset.top + 40,
+						left = offset.left,
+						name = $this.attr('label'),
+						type = $this.prop('tagName').toLowerCase();
+
+					mailster.editbar.open({
+						'offset': offset,
+						'type': type,
+						'name': name,
+						'element': $this
+					});
+				});
 		}
 
 	}
 
-	function _hex(str) {
-		var colors = str.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/);
+	mailster.events = mailster.events || [];
 
-		function hex(val) {
-			val = parseInt(val, 10).toString(16);
-			return val.length > 1 ? val : '0' + val; // 0 -> 00
+	mailster.events.push('refresh', mailster.editor.resize);
+	mailster.events.push('editorLoaded', initFrame, mailster.editor.resize);
+	mailster.events.push('redraw', makeEditable);
+
+
+	// legacy buttons
+	mailster.editor.$.body.find('div.modulebuttons').remove();
+	(mailster.isrtl) ? mailster.editor.$.html.attr('mailster-is-rtl', ''): mailster.editor.$.html.removeAttr('mailster-is-rtl');
+
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));
+// end block
+
+
+// block Modules
+mailster = (function (mailster, $, window, document) {
+
+	"use strict";
+
+	var l10n = mailster_mce_button.l10n,
+		tags = mailster_mce_button.tags,
+		designs = mailster_mce_button.designs,
+		changetimeout,
+		change = false,
+		uploader = false;
+
+	mailster.events = mailster.events || [];
+
+	mailster.events.push('editorLoaded',
+		function () {
+			mailster.events.push('refresh', updateElements, sortable, draggable);
+			sortable();
+			draggable();
+			mailster.events.push('resize', buttons) && buttons();
+			mailster.events.push('selectModule', select);
+			typeof mOxie != 'undefined' && mailster.events.push('refresh', upload) && upload();
+			typeof tinymce != 'undefined' && mailster.events.push('refresh', inlineEditor) && inlineEditor();
 		}
-		return colors ? '#' + hex(colors[1]) + hex(colors[2]) + hex(colors[3]) : str;
+	)
+
+	$(document).ready(updateElements);
+
+	function updateElements() {
+		mailster.editor.$ = mailster.editor.$ || {};
+		mailster.editor.$.document = $(document);
+		mailster.editor.$.window = $(window);
+		mailster.editor.$.html = $('html');
+		mailster.editor.$.body = $('body');
+		mailster.editor.$.container = $('modules');
+		mailster.editor.$.modules = $('module');
+		mailster.editor.$.images = $('img[editable]');
+		mailster.editor.$.buttons = $('buttons');
+		mailster.editor.$.repeatable = $('[repeatable]');
+	}
+
+	function moduleButtons() {
+
+		var elements = $(mailsterdata.modules).add(mailster.editor.$.modules),
+			mc = 0;
+
+		//no modules at all
+		if (!mailster.editor.$.modules.length) {
+			//selector.remove();
+			return;
+		}
+
+		elements = mailster.editor.$.modules;
+
+		console.log(mailsterdata);
+
+		//reset
+		//mailster.modules.items = [];
+		//add module buttons and add them to the list
+		$.each(elements, function (j) {
+			var $this = $(this);
+			if ($this.is('module') && !$this.find('modulebuttons').length) {
+				var name = $this.attr('label') || mailster.util.sprintf(mailsterL10n.module, '#' + (++mc)),
+					codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></button>' : '',
+					auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailsterL10n.auto + '"></button>' : '');
+
+				$('<modulebuttons>' + '<span>' + auto + '<button class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></button><button class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></button></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
+
+
+				// if (!$this.parent().length) {
+
+				// 	mailster.modules.items.push({
+				// 		name: name,
+				// 		el: $this
+				// 	});
+				// }
+			}
+		});
 
 	}
 
-	function _sortable() {
+	function sortable() {
+		if (mailster.editor.$.container.data('sortable')) mailster.editor.$.container.sortable('destroy');
 
-		if (container.data('sortable')) container.sortable('destroy');
+		if (mailster.editor.$.modules.length < 2) return;
 
-		if (modules.length < 2) return;
-
-		container.sortable({
+		mailster.editor.$.container.sortable({
 			stop: function (event, ui) {
 				event.stopPropagation();
-				container.removeClass('dragging');
+				mailster.editor.$.container.removeClass('dragging');
 				setTimeout(function () {
-					_trigger('refresh');
-					_trigger('save');
+					mailster.trigger('refresh');
+					mailster.trigger('save');
 				}, 200);
 			},
 			start: function (event, ui) {
 				event.stopPropagation();
-				container.addClass('dragging');
+				mailster.editor.$.container.addClass('dragging');
 			},
 			containment: 'body',
 			revert: 100,
@@ -275,15 +424,14 @@ jQuery(document).ready(function ($) {
 			zIndex: 10000
 
 		});
-
 	}
 
-	function _draggable() {
+	function draggable() {
 
-		if (images.data('draggable')) images.draggable('destroy');
-		if (images.data('droppable')) images.droppable('destroy');
+		if (mailster.editor.$.images.data('draggable')) mailster.editor.$.images.draggable('destroy');
+		if (mailster.editor.$.images.data('droppable')) mailster.editor.$.images.droppable('destroy');
 
-		images
+		mailster.editor.$.images
 			.draggable({
 				helper: "clone",
 				scroll: true,
@@ -296,11 +444,11 @@ jQuery(document).ready(function ($) {
 					$(event.target).removeClass('ui-draggable-handle');
 				},
 				start: function () {
-					body.addClass('ui-dragging');
+					mailster.editor.$.body.addClass('ui-dragging');
 				},
 				stop: function () {
-					body.removeClass('ui-dragging');
-					_trigger('refresh');
+					mailster.editor.$.body.removeClass('ui-dragging');
+					mailster.trigger('refresh');
 
 				}
 			})
@@ -329,15 +477,15 @@ jQuery(document).ready(function ($) {
 					org.addClass('mailster-loading');
 					target.addClass('mailster-loading');
 
-					_getRealDimensions(org, function (org_w, org_h, org_f) {
-						_getRealDimensions(target, function (target_w, target_h, target_f) {
+					mailster.util.getRealDimensions(org, function (org_w, org_h, org_f) {
+						mailster.util.getRealDimensions(target, function (target_w, target_h, target_f) {
 
 							if (event.altKey) {
 								org.removeClass('mailster-loading');
 								target.removeClass('mailster-loading');
 							} else if (target_id) {
 
-								_ajax('create_image', {
+								mailster.util.ajax('create_image', {
 									id: target_id,
 									width: org_w,
 									height: org_h,
@@ -372,7 +520,7 @@ jQuery(document).ready(function ($) {
 							}
 
 							if (org_id) {
-								_ajax('create_image', {
+								mailster.util.ajax('create_image', {
 									id: org_id,
 									width: target_w,
 									height: target_h,
@@ -388,7 +536,7 @@ jQuery(document).ready(function ($) {
 										'height': Math.round(response.image.height / target_f)
 									}).data('id', org_id).removeClass('mailster-loading');
 
-									_trigger('refresh');
+									mailster.trigger('refresh');
 
 								}, function (jqXHR, textStatus, errorThrown) {
 
@@ -408,20 +556,18 @@ jQuery(document).ready(function ($) {
 
 							}
 
-							if (!org_id && !target_id) _trigger('refresh');
+							if (!org_id && !target_id) mailster.trigger('refresh');
 
 						});
 					});
 
 				}
 			});
-
 	}
 
-	function _buttons() {
-
-		if (buttons) {
-			$.each(buttons, function () {
+	function buttons() {
+		if (mailster.editor.$.buttons) {
+			$.each(mailster.editor.$.buttons, function () {
 
 				var $this = $(this),
 					name = $this.attr('label'),
@@ -457,8 +603,8 @@ jQuery(document).ready(function ($) {
 
 		$('button.addrepeater, button.removerepeater').remove();
 
-		if (repeatable) {
-			$.each(repeatable, function () {
+		if (mailster.editor.$.repeatable) {
+			$.each(mailster.editor.$.repeatable, function () {
 				var $this = $(this),
 					module = $this.closest('module'),
 					name = $this.attr('label'),
@@ -476,8 +622,6 @@ jQuery(document).ready(function ($) {
 					del_top = 0;
 					del_left = offset.width - 18;
 				}
-
-				//top = left = 0;
 
 				btn = $('<button class="addrepeater mailster-btn mailster-btn-inline" title="' + mailsterL10n.add_repeater + '"></button>').css({
 					top: add_top,
@@ -497,277 +641,319 @@ jQuery(document).ready(function ($) {
 
 			});
 		}
-
 	}
 
-	function _upload() {
+	function select(module) {
+		console.log(module);
+		if (!module.length) {
+			return;
+		}
+		if (mailster.modules.selected) {
+			mailster.modules.selected.removeAttr('selected');
+		}
+		mailster.modules.selected = module;
+		mailster.modules.selected.attr('selected', true);
+	}
 
-		if (typeof mOxie != 'undefined') {
+	function upload() {
+		$.each(mailster.editor.$.images, function () {
 
-			$.each(images, function () {
+			var _this = $(this),
+				dropzone;
 
-				var _this = $(this),
-					dropzone;
+			if (_this.data('has-dropzone')) return;
 
-				if (_this.data('has-dropzone')) return;
+			dropzone = new mOxie.FileDrop({
+				drop_zone: this,
+			});
 
-				dropzone = new mOxie.FileDrop({
-					drop_zone: this,
+			dropzone.ondrop = function (e) {
+
+				if (mailster.modules.dragging) return;
+				_this.removeClass('ui-drag-over-file ui-drag-over-file-alt');
+
+				var file = dropzone.files.shift(),
+					altkey = window.event && event.altKey,
+					dimensions = [_this.width(), _this.height()],
+					crop = _this.data('crop'),
+					position = _this.offset(),
+					upload = $('<upload><div class="mailster-upload-info"><div class="mailster-upload-info-bar"></div><div class="mailster-upload-info-text"></div></div></upload>'),
+					preview = upload.find('.mailster-upload-info-bar'),
+					previewtext = upload.find('.mailster-upload-info-text'),
+					preloader = new mOxie.Image(file);
+
+				preloader.onerror = function (e) {
+
+					alert(mailsterL10n.unsupported_format);
+
+				}
+				preloader.onload = function (e) {
+
+					upload.insertAfter(_this);
+					_this.appendTo(upload);
+
+					file._element = _this;
+					file._altKey = altkey;
+					file._crop = crop;
+					file._upload = upload;
+					file._preview = preview;
+					file._previewtext = previewtext;
+					file._dimensions = [preloader.width, preloader.height, preloader.width / preloader.height];
+
+					preloader.downsize(dimensions[0], dimensions[1]);
+					preview.css({
+						'background-image': 'url(' + preloader.getAsDataURL() + ')',
+						'background-size': dimensions[0] + 'px ' + (crop ? dimensions[1] : dimensions[0] / file._dimensions[2]) + 'px'
+					});
+
+					uploader.addFile(file);
+				};
+
+				preloader.load(file);
+
+			};
+			dropzone.ondragenter = function (e) {
+				if (mailster.modules.dragging) return;
+				_this.addClass('ui-drag-over-file');
+				if (window.event && event.altKey) _this.addClass('ui-drag-over-file-alt');
+			};
+			dropzone.ondragleave = function (e) {
+				if (mailster.modules.dragging) return;
+				_this.removeClass('ui-drag-over-file ui-drag-over-file-alt');
+			};
+			dropzone.onerror = function (e) {
+				if (mailster.modules.dragging) return;
+				_this.removeClass('ui-drag-over-file ui-drag-over-file-alt');
+			};
+
+			dropzone.init();
+
+			_this.data('has-dropzone', true);
+
+		});
+
+
+		if (!uploader) {
+
+			$('<button id="mailster-editorimage-upload-button" />').hide().appendTo('mailster');
+			uploader = new plupload.Uploader(mailsterdata.plupload);
+
+			uploader.bind('Init', function (up) {
+				$('.moxie-shim').remove();
+			});
+
+			uploader.bind('FilesAdded', function (up, files) {
+
+				var source = files[0].getSource();
+
+				_getRealDimensions(source._element, function (width, height, factor) {
+
+					up.settings.multipart_params.width = width;
+					up.settings.multipart_params.height = height;
+					up.settings.multipart_params.factor = factor;
+					up.settings.multipart_params.crop = source._crop;
+					up.settings.multipart_params.altKey = source._altKey;
+					up.refresh();
+					up.start();
 				});
-
-				dropzone.ondrop = function (e) {
-
-					if (parent.window.mailster_is_modulde_dragging) return;
-					_this.removeClass('ui-drag-over-file ui-drag-over-file-alt');
-
-					var file = dropzone.files.shift(),
-						altkey = window.event && event.altKey,
-						dimensions = [_this.width(), _this.height()],
-						crop = _this.data('crop'),
-						position = _this.offset(),
-						upload = $('<upload><div class="mailster-upload-info"><div class="mailster-upload-info-bar"></div><div class="mailster-upload-info-text"></div></div></upload>'),
-						preview = upload.find('.mailster-upload-info-bar'),
-						previewtext = upload.find('.mailster-upload-info-text'),
-						preloader = new mOxie.Image(file);
-
-					preloader.onerror = function (e) {
-
-						alert(mailsterL10n.unsupported_format);
-
-					}
-					preloader.onload = function (e) {
-
-						upload.insertAfter(_this);
-						_this.appendTo(upload);
-
-						file._element = _this;
-						file._altKey = altkey;
-						file._crop = crop;
-						file._upload = upload;
-						file._preview = preview;
-						file._previewtext = previewtext;
-						file._dimensions = [preloader.width, preloader.height, preloader.width / preloader.height];
-
-						preloader.downsize(dimensions[0], dimensions[1]);
-						preview.css({
-							'background-image': 'url(' + preloader.getAsDataURL() + ')',
-							'background-size': dimensions[0] + 'px ' + (crop ? dimensions[1] : dimensions[0] / file._dimensions[2]) + 'px'
-						});
-
-						uploader.addFile(file);
-					};
-
-					preloader.load(file);
-
-				};
-				dropzone.ondragenter = function (e) {
-					if (parent.window.mailster_is_modulde_dragging) return;
-					_this.addClass('ui-drag-over-file');
-					if (window.event && event.altKey) _this.addClass('ui-drag-over-file-alt');
-				};
-				dropzone.ondragleave = function (e) {
-					if (parent.window.mailster_is_modulde_dragging) return;
-					_this.removeClass('ui-drag-over-file ui-drag-over-file-alt');
-				};
-				dropzone.onerror = function (e) {
-					if (parent.window.mailster_is_modulde_dragging) return;
-					_this.removeClass('ui-drag-over-file ui-drag-over-file-alt');
-				};
-
-				dropzone.init();
-
-				_this.data('has-dropzone', true);
 
 			});
 
+			uploader.bind('BeforeUpload', function (up, file) {});
 
-			if (!uploader) {
+			uploader.bind('UploadFile', function (up, file) {});
 
+			uploader.bind('UploadProgress', function (up, file) {
 
-				$('<button id="mailster-editorimage-upload-button" />').hide().appendTo('mailster');
-				uploader = new plupload.Uploader(mailsterdata.plupload);
+				var source = file.getSource();
 
-				uploader.bind('Init', function (up) {
-					$('.moxie-shim').remove();
-				});
+				source._preview.width(file.percent + '%');
+				source._previewtext.html(file.percent + '%');
 
-				uploader.bind('FilesAdded', function (up, files) {
+			});
 
-					var source = files[0].getSource();
+			uploader.bind('Error', function (up, err) {
+				var source = err.file.getSource();
 
-					_getRealDimensions(source._element, function (width, height, factor) {
+				alert(err.message);
 
-						up.settings.multipart_params.width = width;
-						up.settings.multipart_params.height = height;
-						up.settings.multipart_params.factor = factor;
-						up.settings.multipart_params.crop = source._crop;
-						up.settings.multipart_params.altKey = source._altKey;
-						up.refresh();
-						up.start();
-					});
+				source._element.insertAfter(source._upload);
+				source._upload.remove();
+			});
 
-				});
+			uploader.bind('FileUploaded', function (up, file, response) {
 
-				uploader.bind('BeforeUpload', function (up, file) {});
+				var source = file.getSource(),
+					delay, height;
 
-				uploader.bind('UploadFile', function (up, file) {});
+				try {
+					response = $.parseJSON(response.response);
 
-				uploader.bind('UploadProgress', function (up, file) {
-
-					var source = file.getSource();
-
-					source._preview.width(file.percent + '%');
-					source._previewtext.html(file.percent + '%');
-
-				});
-
-				uploader.bind('Error', function (up, err) {
-					var source = err.file.getSource();
-
-					alert(err.message);
-
-					source._element.insertAfter(source._upload);
-					source._upload.remove();
-				});
-
-				uploader.bind('FileUploaded', function (up, file, response) {
-
-					var source = file.getSource(),
-						delay, height;
-
-					try {
-						response = $.parseJSON(response.response);
-
-						source._previewtext.html(mailsterL10n.ready);
-						source._element.on('load', function () {
-							clearTimeout(delay);
-							source._preview.fadeOut(function () {
-								source._element.insertAfter(source._upload);
-								source._upload.remove();
-								_trigger('refresh');
-							});
-						});
-
-						height = Math.round(source._element.width() / response.image.asp);
-
-						source._element.attr({
-							'src': response.image.url,
-							'alt': response.name,
-							'height': height,
-							'data-id': response.image.id || 0
-						}).data('id', response.image.id || 0);
-
-						source._preview.height(height);
-
-						delay = setTimeout(function () {
-							source._preview.fadeOut(function () {
-								source._element.insertAfter(source._upload);
-								source._upload.remove();
-								_trigger('refresh');
-							});
-						}, 3000);
-					} catch (err) {
-						source._preview.addClass('error').find('.mailster-upload-info-text').html(mailsterL10n.error);
-						alert(mailsterL10n.error_occurs + "\n" + err.message);
+					source._previewtext.html(mailsterL10n.ready);
+					source._element.on('load', function () {
+						clearTimeout(delay);
 						source._preview.fadeOut(function () {
 							source._element.insertAfter(source._upload);
 							source._upload.remove();
+							_trigger('refresh');
 						});
-					}
+					});
 
-				});
+					height = Math.round(source._element.width() / response.image.asp);
 
-				uploader.bind('UploadComplete', function (up, files) {});
+					source._element.attr({
+						'src': response.image.url,
+						'alt': response.name,
+						'height': height,
+						'data-id': response.image.id || 0
+					}).data('id', response.image.id || 0);
 
-				uploader.init();
+					source._preview.height(height);
 
-			}
+					delay = setTimeout(function () {
+						source._preview.fadeOut(function () {
+							source._element.insertAfter(source._upload);
+							source._upload.remove();
+							_trigger('refresh');
+						});
+					}, 3000);
+				} catch (err) {
+					source._preview.addClass('error').find('.mailster-upload-info-text').html(mailsterL10n.error);
+					alert(mailsterL10n.error_occurs + "\n" + err.message);
+					source._preview.fadeOut(function () {
+						source._element.insertAfter(source._upload);
+						source._upload.remove();
+					});
+				}
 
-		}
+			});
 
-	}
+			uploader.bind('UploadComplete', function (up, files) {});
 
+			uploader.init();
 
-	$(window)
-		.on('Mailster:refresh', function () {
-			_refresh();
-		})
-		.on('Mailster:resize', function () {
-			_resize();
-		})
-		.on('Mailster:selectModule', function (event) {
-			if (!event.detail) return;
-			var module = $(event.detail[0]);
-			if (currentmodule) {
-				currentmodule.removeAttr('selected');
-			}
-			currentmodule = module;
-			currentmodule.attr('selected', true);
-		})
-
-	function _trigger() {
-		if (!window.Mailster) {
-			window.Mailster = parent.window.Mailster;
-		}
-		if (!window.Mailster) return;
-		var args = jQuery.makeArray(arguments);
-		var triggerevent = args.shift();
-		window.Mailster.trigger(triggerevent, args);
-	}
-
-	function _getRealDimensions(el, callback) {
-		el = el.eq(0);
-		if (el.is('img') && el.attr('src') && callback) {
-			var image = new Image(),
-				factor;
-			image.onload = function () {
-				factor = Math.max(1, Math.min(2, ((image.width / (el.attr('width') || el.width())).toFixed(1) || 1)));
-				callback.call(this, image.width, image.height, isFinite(factor) ? parseFloat(factor) : 1)
-			}
-			image.src = el.attr('src');
 		}
 	}
 
-	function _ajax(action, data, callback, errorCallback, dataType) {
+	function inlineEditor() {
+		tinymce.init($.extend(mailsterdata.tinymce.args, mailsterdata.tinymce.multi, {
+			urlconverter_callback: urlconverter,
+			setup: setup
+		}));
+		tinymce.init($.extend(mailsterdata.tinymce.args, mailsterdata.tinymce.single, {
+			urlconverter_callback: urlconverter,
+			setup: setup
+		}));
+	}
 
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
-		}
-		$.ajax({
-			type: 'POST',
-			url: window.mailsterdata.ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action,
-				_wpnonce: window.mailsterdata._wpnonce
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
+	function setup(editor) {
 
-			},
-			dataType: dataType ? dataType : "JSON"
+		editor.addButton('mailster_mce_button', {
+			title: l10n.tags.title,
+			type: 'menubutton',
+			icon: 'icon mailster-tags-icon',
+			menu: $.map(tags, function (group, id) {
+				return {
+					text: group.name,
+					menu: $.map(group.tags, function (name, tag) {
+						return {
+							text: name,
+							onclick: function () {
+								var poststuff = '';
+								switch (tag) {
+								case 'webversion':
+								case 'unsub':
+								case 'forward':
+								case 'profile':
+									poststuff = 'link';
+								case 'homepage':
+									if (selection = editor.selection.getContent({
+											format: "text"
+										})) {
+										editor.insertContent('<a href="{' + tag + poststuff + '}">' + selection + '</a>');
+										break;
+									}
+								default:
+									editor.insertContent('{' + tag + '} ');
+								}
+							}
+						};
+
+					})
+				};
+			})
 		});
+
+		editor.addButton('mailster_remove_element', {
+			title: l10n.remove.title,
+			icon: 'icon mailster-remove-icon',
+			onclick: function () {
+				editor.targetElm.remove();
+				editor.remove();
+				mailster.trigger('save');
+			}
+		});
+
+		editor
+			.on('change', function (event) {
+				var _self = this;
+				clearTimeout(changetimeout);
+				changetimeout = setTimeout(function () {
+					var content = event.level.content,
+						c = content.match(/rgb\((\d+), ?(\d+), ?(\d+)\)/g);
+					if (c) {
+						for (var i = c.length - 1; i >= 0; i--) {
+							content = content.replace(c[i], mailster.util.rgb2hex(c[i]));
+						}
+						_self.bodyElement.innerHTML = content;
+					}
+					mailster.trigger('save');
+					change = true;
+				}, 100)
+			})
+			.on('keyup', function (event) {
+				$(event.currentTarget).prop('spellcheck', true);
+			})
+			.on('click', function (event) {
+				var module = $(event.currentTarget).closest('module');
+				if (mailster.modules.selected[0] != module[0]) {
+					mailster.trigger('selectModule', module);
+				}
+				event.stopPropagation();
+				editor.focus();
+			})
+			.on('focus', function (event) {
+				event.stopPropagation();
+				editor.selection.select(editor.getBody(), true);
+				if (mailster.editor.$.container.data('uiSortable')) mailster.editor.$.container.sortable('destroy');
+			})
+			.on('blur', function (event) {
+				mailster.trigger('refresh');
+			});
 	}
 
-	function sprintf() {
-		var a = Array.prototype.slice.call(arguments),
-			str = a.shift(),
-			total = a.length,
-			reg;
-		for (var i = 0; i < total; i++) {
-			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
-			str = str.replace(reg, a[i]);
+	function urlconverter(url, node, on_save, name) {
+		if ('_wp_link_placeholder' == url) {
+			return url;
+		} else if (/^https?:\/\/{.+}/g.test(url)) {
+			return url.replace(/^https?:\/\//, '');
+		} else if (/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(url)) {
+			return 'mailto:' + url;
 		}
-		return str;
+		return this.documentBaseURI.toAbsolute(url, mailsterdata.tinymce.remove_script_host);
 	}
 
-});
-document.getElementsByTagName("html")[0].className += ' mailster-loading';
+	mailster.editor.updateElements = updateElements;
+	mailster.editor.moduleButtons = moduleButtons;
+
+	//mailster.events.push('refresh', refresh);
+	mailster.events.push('editorLoaded', updateElements, moduleButtons);
+	mailster.events.push('redraw', updateElements, moduleButtons);
+
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));
+// end Modules
+
+
+parent.window.mailster = mailster;
