@@ -25,6 +25,9 @@
 .new .click-to-edit li:first-child{
 	display: none;
 }
+.click-to-edit:hover{
+	background-color: #F9F9F9;
+}
 .click-to-edit li li{
 	display: inherit;
 }

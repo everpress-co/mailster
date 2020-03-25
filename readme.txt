@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.3.2
-Stable tag: 2.4.8
+Tested up to: 5.4
+Stable tag: 2.4.10
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,7 +88,29 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.10 =
+
+= Version 2.4.9 =
+
+* change: moved text strings for GDPR to text tab for better localization.
+* change: sanitize_content method no longer handles custom Mailster styles (changes to the methods arguments)
+* added: `mailster_add_tag` action hook to add custom tags.
+* added: `mailster_add_style` action hook to add custom styles.
+* improved: block tags removed in final output
+* improved: RSS feed method for more flexible feed support.
+* improved: tags now can return WP_Error object which prevents the campaign from sending.
+* added: `mailster_gdpr_label` filter to change the content.
+* fixed: empty strings on action hook based campaigns
+* fixed: unchecked required checkbox prevents form fields page from saving.
+* fixed: wrong less memory warning
+* fixed: problem with CodeEditor on Avada
+* fixed: missing inline styles on html elements from tags.
+
 = Version 2.4.8 =
+
+* fixed: escaped content on edit screen.
+* fixed: escaped several strings.
+* improved: United Kingdom is no longer part of the European Union.
 
 = Version 2.4.7 =
 
