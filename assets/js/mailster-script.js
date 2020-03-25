@@ -40,7 +40,6 @@ mailster = (function (mailster, $, window, document) {
 	$(window).on("load", windowLoad);
 
 	function documentReady(context) {
-		mailster.log('DOM LOADED');
 		context = typeof context === typeof undefined ? $ : context;
 		events.documentReady.forEach(function (component) {
 			component(context);
@@ -52,7 +51,6 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function windowLoad(context) {
-		mailster.log('WINDOW LOADED');
 		if (mailster.status.documentReady) {
 			mailster.status.windowLoadPending = false;
 			context = typeof context === "object" ? $ : context;
@@ -104,8 +102,6 @@ mailster = (function (mailster, $, window, document) {
 		var params = Array.prototype.slice.call(arguments),
 			triggerevent = params.shift(),
 			args = params || null;
-
-		mailster.log('Event Mailster: ' + triggerevent.toUpperCase(), mailster);
 
 		if (mailster.events[triggerevent]) {
 			for (var i = 0; i < mailster.events[triggerevent].length; i++) {
