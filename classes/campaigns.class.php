@@ -1095,7 +1095,7 @@ class MailsterCampaigns {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		if ( 'edit-newsletter' == $screen->id ) {
-			wp_enqueue_script( 'mailster-overview', MAILSTER_URI . 'assets/js/overview-script' . $suffix . '.js', array(), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-overview', MAILSTER_URI . 'assets/js/overview-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 			wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
@@ -1135,18 +1135,13 @@ class MailsterCampaigns {
 				$this->set_template( mailster_option( 'default_template' ), $this->post_data['file'] );
 			}
 
-			wp_enqueue_script( 'mailster-script', MAILSTER_URI . 'assets/js/newsletter-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
-
-			wp_enqueue_style( 'mailster-newsletter', MAILSTER_URI . 'assets/css/newsletter-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+			$googlejsapi_url = 'https://www.gstatic.com/charts/loader.js';
 
 			if ( in_array( $post->post_status, array( 'active', 'finished' ) ) || isset( $_GET['showstats'] ) ) {
 
-				wp_enqueue_script( 'google-jsapi', 'https://www.google.com/jsapi' );
-
+				wp_enqueue_script( 'google-jsapi', $googlejsapi_url, array(), null, true );
 				wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
-
 				wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
-
 				wp_add_inline_style( 'mailster-newsletter', '#local-storage-notice{display:none !important}' );
 
 			} else {
@@ -1156,7 +1151,7 @@ class MailsterCampaigns {
 				}
 
 				if ( $post->post_status == 'autoresponder' ) {
-					wp_enqueue_script( 'google-jsapi', 'https://www.google.com/jsapi' );
+					wp_enqueue_script( 'google-jsapi', $googlejsapi_url, array(), null, true );
 					wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 					wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
 				}
@@ -1182,13 +1177,29 @@ class MailsterCampaigns {
 
 			}
 
-			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
-
+			wp_localize_script(
+				'google-jsapi',
+				'google_jsapi',
+				array(
+					'key' => mailster_option( 'google_api_key' ),
+				)
+			);
 			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_script( 'wp-color-picker' );
 
+			wp_enqueue_script( 'mailster-campaign', MAILSTER_URI . 'assets/js/campaign-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+			wp_enqueue_style( 'mailster-campaign', MAILSTER_URI . 'assets/css/campaign-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+			wp_enqueue_script( 'mailster-editbar', MAILSTER_URI . 'assets/js/editbar-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );
+			wp_enqueue_style( 'mailster-editbar', MAILSTER_URI . 'assets/css/editbar-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+			wp_enqueue_script( 'mailster-optionbar', MAILSTER_URI . 'assets/js/optionbar-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );
+			wp_enqueue_style( 'mailster-optionbar', MAILSTER_URI . 'assets/css/optionbar-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
+
 			wp_localize_script(
-				'mailster-script',
+				'mailster-campaign',
 				'mailsterL10n',
 				array(
 					'loading'                => esc_html__( 'loading', 'mailster' ),
@@ -1249,18 +1260,7 @@ class MailsterCampaigns {
 					'add_attachment'         => esc_html__( 'Add Attachment', 'mailster' ),
 					'edit_conditions'        => esc_html__( 'Edit Conditions', 'mailster' ),
 					'remove_conditions'      => esc_html__( 'Do you really like to remove all conditions?', 'mailster' ),
-				)
-			);
-
-			wp_localize_script(
-				'mailster-script',
-				'mailsterdata',
-				array(
-					'ajaxurl'    => admin_url( 'admin-ajax.php' ),
-					'url'        => MAILSTER_URI,
-					'inline'     => $this->inline_editor(),
-					'codeview'   => current_user_can( 'mailster_see_codeview' ),
-					'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
+					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
 				)
 			);
 
@@ -4485,12 +4485,17 @@ class MailsterCampaigns {
 		wp_register_style( 'mailster-editor-style', MAILSTER_URI . 'assets/css/editor-style' . $suffix . '.css', array( 'mailster-icons' ), MAILSTER_VERSION );
 		wp_register_script( 'mailster-editor-script', MAILSTER_URI . 'assets/js/editor-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
+		$inline = $this->inline_editor();
+
 		$mailsterdata = array(
-			'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-			'url'      => MAILSTER_URI,
-			'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
-			'isrtl'    => is_rtl(),
-			'plupload' => array(
+			'ajaxurl'    => admin_url( 'admin-ajax.php' ),
+			'url'        => MAILSTER_URI,
+			'inline'     => $inline,
+			'codeview'   => current_user_can( 'mailster_see_codeview' ),
+			'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
+			'_wpnonce'   => wp_create_nonce( 'mailster_nonce' ),
+			'isrtl'      => is_rtl(),
+			'plupload'   => array(
 				'runtimes'            => 'html5,flash',
 				'browse_button'       => 'mailster-editorimage-upload-button',
 				'file_data_name'      => 'async-upload',
@@ -4516,7 +4521,7 @@ class MailsterCampaigns {
 			),
 		);
 
-		if ( $inline = $this->inline_editor() ) {
+		if ( $inline ) {
 			$toolbar1 = (string) apply_filters( 'mymail_editor_toolbar1', apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat,|,mailster_remove_element' ) );
 			$toolbar2 = (string) apply_filters( 'mymail_editor_toolbar2', apply_filters( 'mailster_editor_toolbar2', 'bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify' ) );
 			$toolbar3 = (string) apply_filters( 'mymail_editor_toolbar3', apply_filters( 'mailster_editor_toolbar3', '' ) );
