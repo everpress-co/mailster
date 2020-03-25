@@ -491,7 +491,10 @@ class MailsterTemplate {
 			} elseif ( empty( $label ) ) {
 				$label = sprintf( esc_html__( 'Module %s', 'mailster' ), '#' . ( $i + 1 ) );
 			}
-			$list[] = $label;
+			$list[] = array(
+				'name' => $label,
+				'html' => $this->get_html_from_node( $modules->item( $i ) ),
+			);
 		}
 
 		return $list;

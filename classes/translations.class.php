@@ -10,6 +10,7 @@ class MailsterTranslations {
 		add_action( 'plugins_loaded', array( &$this, 'load' ), 1 );
 		add_filter( 'site_transient_update_plugins', array( &$this, 'update_plugins_filter' ), 1 );
 		add_action( 'delete_site_transient_update_plugins', array( &$this, 're_check' ) );
+		add_action( 'add_option_WPLANG', array( &$this, 're_check' ), 999 );
 		add_action( 'update_option_WPLANG', array( &$this, 're_check' ), 999 );
 
 	}

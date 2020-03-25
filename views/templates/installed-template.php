@@ -5,18 +5,21 @@ $envato_item_id = isset( $mailster_templates[ $slug ]['envato_item_id'] ) ? $mai
 $is_free = isset( $mailster_templates[ $slug ] ) && isset( $mailster_templates[ $slug ]['is_free'] ) && $mailster_templates[ $slug ]['is_free'];
 
 $class = array( 'mailster-box' );
+$badge = '';
 if ( $update ) {
 	$class[] = 'update';
 }
 if ( $default == $slug ) {
 	$class[] = 'is-default';
+	$badge   = esc_attr__( 'Default', 'mailster' );
 }
 if ( $new == $slug ) {
 	$class[] = 'is-new';
+	$badge   = esc_attr__( 'New', 'mailster' );
 }
 
 ?>
-<li class="<?php echo implode( ' ', $class ); ?>" id="template-<?php echo esc_attr( $slug ); ?>" name="mailster_template_<?php echo $i; ?>" data-id="<?php echo $i++; ?>">
+<li class="<?php echo implode( ' ', $class ); ?>" id="template-<?php echo esc_attr( $slug ); ?>" name="mailster_template_<?php echo $i; ?>" data-id="<?php echo $i++; ?>" data-badge="<?php echo esc_attr( $badge ); ?>">
 	<?php if ( isset( $updates[ $slug ] ) ) : ?>
 		<span class="update-badge"><?php echo $updates[ $slug ]; ?></span>
 	<?php endif; ?>
@@ -54,6 +57,7 @@ if ( $new == $slug ) {
 				<?php endif; ?>
 			<?php endif; ?>
 		</h3>
+		<?php if ( $data['author'] ) : ?>
 		<div>
 			<?php esc_html_e( 'by', 'mailster' ); ?>
 			<?php if ( ! empty( $data['author_uri'] ) ) : ?>
@@ -62,6 +66,7 @@ if ( $new == $slug ) {
 				<?php echo esc_html( $data['author'] ); ?>
 			<?php endif; ?>
 		</div>
+		<?php endif; ?>
 	</div>
 	<?php if ( ! empty( $data['description'] ) ) : ?>
 		<p class="description"><?php echo $data['description']; ?></p>

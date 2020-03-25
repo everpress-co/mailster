@@ -89,8 +89,6 @@ class MailsterSettings {
 			'tags_webversion'                    => false,
 			'gdpr_forms'                         => false,
 			'gdpr_link'                          => $gdpr_link,
-			'gdpr_text'                          => esc_html__( 'I agree to the privacy policy and terms.', 'mailster' ),
-			'gdpr_error'                         => esc_html__( 'You have to agree to the privacy policy and terms!', 'mailster' ),
 			'module_thumbnails'                  => false,
 			'charset'                            => 'UTF-8',
 			'encoding'                           => '8bit',
@@ -255,6 +253,8 @@ class MailsterSettings {
 			'already_registered'    => esc_html__( 'You are already registered', $domain ),
 			'new_confirmation_sent' => esc_html__( 'A new confirmation message has been sent', $domain ),
 			'enter_email'           => esc_html__( 'Please enter your email address', $domain ),
+			'gdpr_text'             => esc_html__( 'I agree to the privacy policy and terms.', $domain ),
+			'gdpr_error'            => esc_html__( 'You have to agree to the privacy policy and terms!', $domain ),
 		);
 
 	}
@@ -369,7 +369,11 @@ class MailsterSettings {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION );
+		wp_enqueue_style( 'thickbox' );
+		wp_enqueue_script( 'thickbox' );
+
+		wp_enqueue_style( 'mailster-settings-style', MAILSTER_URI . 'assets/css/settings-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
 		wp_localize_script(
 			'mailster-settings-script',
 			'mailsterL10n',
@@ -402,10 +406,6 @@ class MailsterSettings {
 				'sync_subscriber'  => esc_html__( 'You are about to overwrite all WordPress User data with the matching subscriber data. Continue?', 'mailster' ),
 			)
 		);
-		wp_enqueue_style( 'thickbox' );
-		wp_enqueue_script( 'thickbox' );
-		wp_enqueue_script( 'jquery' );
-		wp_enqueue_style( 'mailster-settings-style', MAILSTER_URI . 'assets/css/settings-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 	}
 
@@ -1588,9 +1588,9 @@ class MailsterSettings {
 
 	public function deliverytab_simple() {
 		?>
-		<p class="description">
-		<?php esc_html_e( 'use this option if you don\'t have access to a SMTP server or any other provided options', 'mailster' ); ?>
-		</p>
+		<div class="notice notice-error inline">
+			<p><strong><?php esc_html_e( 'Sending via your host is not recommended. Please consider using a dedicate Email Service Provider instead.', 'mailster' ); ?></strong></p>
+		</div>
 		<?php $basicmethod = mailster_option( 'simplemethod' ); ?>
 		<table class="form-table">
 			<tr valign="top">

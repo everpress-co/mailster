@@ -554,6 +554,14 @@ if ( $old_version ) {
 			$wpdb->query( "UPDATE {$wpdb->prefix}mailster_forms SET `redirect` = TRIM(redirect)" );
 			$wpdb->query( "UPDATE {$wpdb->prefix}mailster_forms SET `confirmredirect` = TRIM(confirmredirect)" );
 
+		case '2.4.6':
+		case '2.4.7':
+		case '2.4.8':
+			$texts['gdpr_text']  = $mailster_options['gdpr_text'];
+			$texts['gdpr_error'] = $mailster_options['gdpr_error'];
+
+			update_option( 'mailster_templates', '' );
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
