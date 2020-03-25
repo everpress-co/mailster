@@ -746,7 +746,7 @@ mailster = (function (mailster, $, window, document) {
 
 				var source = files[0].getSource();
 
-				_getRealDimensions(source._element, function (width, height, factor) {
+				mailster.util.getRealDimensions(source._element, function (width, height, factor) {
 
 					up.settings.multipart_params.width = width;
 					up.settings.multipart_params.height = height;
@@ -795,7 +795,7 @@ mailster = (function (mailster, $, window, document) {
 						source._preview.fadeOut(function () {
 							source._element.insertAfter(source._upload);
 							source._upload.remove();
-							_trigger('refresh');
+							mailster.trigger('refresh');
 						});
 					});
 
@@ -814,7 +814,7 @@ mailster = (function (mailster, $, window, document) {
 						source._preview.fadeOut(function () {
 							source._element.insertAfter(source._upload);
 							source._upload.remove();
-							_trigger('refresh');
+							mailster.trigger('refresh');
 						});
 					}, 3000);
 				} catch (err) {
@@ -859,7 +859,8 @@ mailster = (function (mailster, $, window, document) {
 						return {
 							text: name,
 							onclick: function () {
-								var poststuff = '';
+								var poststuff = '',
+									selection;
 								switch (tag) {
 								case 'webversion':
 								case 'unsub':
