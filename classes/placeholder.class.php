@@ -18,6 +18,7 @@ class MailsterPlaceholder {
 	private $social_services;
 	private $apply_the_excerpt_filters = true;
 	private $last_post_args            = null;
+	private $errors                    = array();
 
 	/**
 	 *
@@ -128,6 +129,37 @@ class MailsterPlaceholder {
 		return ! empty( $html );
 	}
 
+	public function error( $error, $html_tag = true ) {
+		if ( ! is_wp_error( $error ) ) {
+			$error = new WP_Error( 'placeholder_error', (string) $error );
+		}
+		$this->errors[] = $error;
+
+		// output error only on the preview screen
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+
+			$message = $error->get_error_message();
+			return $html_tag ? '<span style="background-color:#e74e2b;color:#fff;padding:2px;font-size:smaller;">' . esc_html( $message ) . '</span>' : esc_html( $message );
+		}
+		return '';
+	}
+
+	public function has_error() {
+		return ! empty( $this->errors );
+	}
+
+	public function get_error_messages() {
+		$errors = array();
+		foreach ( $this->errors as $error ) {
+			if ( is_wp_error( $error ) ) {
+				$errors[] = $error->get_error_message();
+			} else {
+				$errors[] = $error;
+			}
+		}
+
+		return $errors;
+	}
 
 	public function clear_placeholder() {
 		$this->placeholder = array();
@@ -286,8 +318,9 @@ class MailsterPlaceholder {
 
 		// as long there are tags in the content.
 		while ( false !== strpos( $this->content, '{' ) ) {
-			// temporary remove style blocks
-			if ( preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $styles ) ) {
+
+			// temporary remove style blocks if exists
+			if ( strpos( $this->content, '<style' ) !== false && preg_match_all( '#(<style(>|[^<]+?>)([^<]+)<\/style>)#', $this->content, $styles ) ) {
 				foreach ( $styles[0] as $style ) {
 					$this->content  = str_replace( $style, '<!--Mailster:styleblock' . count( $this->styles ) . '-->', $this->content );
 					$this->styles[] = $style;
@@ -319,9 +352,6 @@ class MailsterPlaceholder {
 		$this->content = apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) )
 			? strip_shortcodes( $this->content )
 			: do_shortcode( $this->content );
-
-		// strip all unwanted stuff from the content
-		$this->strip_unwanted_html();
 
 		return $this->content;
 
@@ -427,11 +457,10 @@ class MailsterPlaceholder {
 				$search   = $modules[0][ $i ];
 				$feed_url = $modules[1][ $i ];
 
-				// check if there's a new feed since.
-				if ( $this->rss_timestamp && ! mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url ) ) {
-					$replace = '';
-				} else {
+				$last_feed_timestamp = mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url );
 
+				if ( $last_feed_timestamp ) {
+					$replace        = '';
 					$id             = md5( $feed_url );
 					$temp_post_type = 'mailster_rss_' . $id;
 
@@ -448,6 +477,8 @@ class MailsterPlaceholder {
 					$replace            = str_replace( 'mailster_image_placeholder&amp;tag=rss', 'mailster_image_placeholder&amp;tag=' . $temp_post_type, $replace );
 					$replace            = str_replace( 'mailster_image_placeholder&tag=rss', 'mailster_image_placeholder&tag=' . $temp_post_type, $replace );
 
+				} else {
+					$replace = '';
 				}
 
 				$this->content = str_replace( $search, $replace, $this->content );
@@ -845,7 +876,12 @@ class MailsterPlaceholder {
 					}
 
 					if ( false !== $replace_to ) {
-						$replace_to    = apply_filters( 'mailster_replace_image', $replace_to, $search, $this->campaignID, $this->subscriberID );
+						$replace_to = apply_filters( 'mailster_replace_image', $replace_to, $search, $this->campaignID, $this->subscriberID );
+						if ( is_wp_error( $replace_to ) ) {
+							$this->error( $replace_to );
+							continue;
+						}
+
 						$this->content = str_replace( $search, $replace_to, $this->content );
 					}
 				}
@@ -955,6 +991,9 @@ class MailsterPlaceholder {
 					$what = $hits[4][ $i ];
 
 					$replace_to = $this->get_replace( $post, $what );
+					if ( is_wp_error( $replace_to ) ) {
+						$replace_to = $this->error( $replace_to, ! $encode );
+					}
 
 					if ( is_null( $replace_to ) ) {
 						continue;
@@ -997,6 +1036,10 @@ class MailsterPlaceholder {
 	private function replace_static( $removeunused = true ) {
 
 		global $mailster_tags;
+
+		if ( ! did_action( 'mailster_add_tag' ) ) {
+			do_action( 'mailster_add_tag' );
+		}
 
 		$keep = $this->get_keep_tags();
 
@@ -1054,6 +1097,10 @@ class MailsterPlaceholder {
 				}
 				$replace_to = apply_filters( 'mailster_replace_' . $tag, $replace, $option, $fallback, $this->campaignID, $this->subscriberID );
 
+				if ( is_wp_error( $replace_to ) ) {
+					$replace_to = $this->error( $replace_to, ! $encode );
+				}
+
 				if ( $encode ) {
 					$replace_to = rawurlencode( $replace_to );
 				}
@@ -1066,10 +1113,15 @@ class MailsterPlaceholder {
 
 	public function get_replace( $post, $what ) {
 
-		$extra      = null;
-		$replace_to = null;
-		$author     = null;
-		$post_type  = $post->post_type;
+		if ( is_wp_error( $post ) ) {
+			return $post;
+		}
+
+		$extra        = null;
+		$replace_to   = null;
+		$author       = null;
+		$post_type    = $post->post_type;
+		$post_content = $post->post_content;
 
 		if ( 0 === strpos( $what, 'author' ) ) {
 			$author = get_user_by( 'id', $post->post_author );
@@ -1124,7 +1176,7 @@ class MailsterPlaceholder {
 					$replace_to = $post->post_link;
 				}
 			case 'permalink':
-				if ( ! $replace_to ) {
+				if ( ! $replace_to && $post->ID ) {
 					$replace_to = get_permalink( $post->ID );
 				}
 				if ( ! $replace_to ) {
@@ -1135,7 +1187,11 @@ class MailsterPlaceholder {
 				}
 				break;
 			case 'shortlink':
-				$replace_to = wp_get_shortlink( $post->ID );
+				if ( $post->ID ) {
+					$replace_to = wp_get_shortlink( $post->ID );
+				} else {
+					$replace_to = $post->post_permalink;
+				}
 				break;
 			case 'author':
 			case 'author_strip':
@@ -1181,11 +1237,15 @@ class MailsterPlaceholder {
 				if ( ! empty( $post->{'post_excerpt'} ) ) {
 					$replace_to = wpautop( $post->{'post_excerpt'} );
 				} else {
-					$replace_to = mailster( 'helper' )->get_excerpt( $post->{'post_content'} );
+					$replace_to = mailster( 'helper' )->get_excerpt( $post_content );
 				}
 				break;
 			case 'content':
-				$replace_to = wpautop( $post->{'post_content'} );
+				$replace_to = $post_content;
+				if ( function_exists( 'do_blocks' ) && has_blocks( $replace_to ) ) {
+					$replace_to = do_blocks( $replace_to );
+				}
+				$replace_to = wpautop( $replace_to );
 				break;
 			case 'meta':
 				$replace_to = maybe_unserialize( $metavalue );
@@ -1311,20 +1371,6 @@ class MailsterPlaceholder {
 			$this->keeptags = array_unique( (array) apply_filters( 'mailster_keep_tags', array() ) );
 		}
 		return $this->keeptags;
-
-	}
-
-
-	private function strip_unwanted_html() {
-
-		if ( ! empty( $this->content ) ) {
-			// template language stuff
-			$this->content = preg_replace( '#<(modules?|buttons|multi|single)([^>]*)>#', '', $this->content );
-			$this->content = preg_replace( '#<\/(modules?|buttons|multi|single)>#', '', $this->content );
-
-			// remove comments
-			$this->content = preg_replace( '#<!-- (.*) -->\s*#', '', $this->content );
-		}
 
 	}
 

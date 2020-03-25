@@ -5,11 +5,11 @@
 		<p><label><input type="hidden" name="mailster_options[track_opens]" value=""><input type="checkbox" name="mailster_options[track_opens]" value="1" <?php checked( mailster_option( 'track_opens' ) ); ?>> <?php esc_html_e( 'Track opens in your campaigns', 'mailster' ); ?></label></p>
 		<p><label><input type="hidden" name="mailster_options[track_clicks]" value=""><input type="checkbox" name="mailster_options[track_clicks]" value="1" <?php checked( mailster_option( 'track_clicks' ) ); ?>> <?php esc_html_e( 'Track clicks in your campaigns', 'mailster' ); ?></label></p>
 
-<?php
-	$geoip                 = isset( $_GET['nogeo'] ) ? false : mailster_option( 'track_location' );
-	$geo_db_file_countries = mailster( 'geo' )->get_file_path( 'country' );
-	$geo_db_file_cities    = mailster( 'geo' )->get_file_path( 'city' );
-?>
+		<?php
+			$geoip                 = isset( $_GET['nogeo'] ) ? false : mailster_option( 'track_location' );
+			$geo_db_file_countries = mailster( 'geo' )->get_file_path( 'country' );
+			$geo_db_file_cities    = mailster( 'geo' )->get_file_path( 'city' );
+		?>
 
 		<p><label><input type="hidden" name="mailster_options[track_location]" value=""><input type="checkbox" id="mailster_geoip" name="mailster_options[track_location]" value="1" <?php checked( $geoip ); ?>> <?php esc_html_e( 'Track location in campaigns', 'mailster' ); ?>*</label>
 			<br>&nbsp;&#x2514;&nbsp;<label><input type="hidden" name="mailster_options[track_location_update]" value=""><input type="checkbox" name="mailster_options[track_location_update]" value="1" <?php checked( mailster_option( 'track_location_update' ) ); ?>> <?php esc_html_e( 'Update location database automatically', 'mailster' ); ?></label>
@@ -59,17 +59,12 @@
 		<th scope="row"><?php esc_html_e( 'GDPR Compliance Forms', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[gdpr_forms]" value=""><input type="checkbox" name="mailster_options[gdpr_forms]" value="1" <?php checked( mailster_option( 'gdpr_forms' ) ); ?>> <?php esc_html_e( 'Add a checkbox on your forms for user consent.', 'mailster' ); ?></label>
 		<p class="description"><?php esc_html_e( 'Users must check this checkbox to submit the form.', 'mailster' ); ?></p>
+		<p class="description"><?php printf( esc_html__( 'You can define Texts on the %s settings tab.', 'mailster' ), '<strong>' . esc_html__( 'Text Strings', 'mailster' ) . '</strong>' ); ?></p>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"></th>
 		<td>
-		<p><?php esc_html_e( 'Define a custom terms confirmation text.', 'mailster' ); ?>
-			<input type="text" name="mailster_options[gdpr_text]" value="<?php echo esc_attr( mailster_option( 'gdpr_text' ) ); ?>" class="large-text">
-		</p>
-		<p><?php esc_html_e( 'Define the error text if the checkbox is unchecked.', 'mailster' ); ?>
-			<input type="text" name="mailster_options[gdpr_error]" value="<?php echo esc_attr( mailster_option( 'gdpr_error' ) ); ?>" class="large-text">
-		</p>
 		<p><?php esc_html_e( 'Link to your privacy policy page.', 'mailster' ); ?>
 			<input type="text" name="mailster_options[gdpr_link]" value="<?php echo esc_attr( mailster_option( 'gdpr_link' ) ); ?>" class="large-text">
 		</p>
@@ -80,5 +75,5 @@
 		<td><p class="description">* This product includes GeoLite data created by MaxMind, available from <a href="https://www.maxmind.com" class="external">maxmind.com</a></p>
 		</td>
 	</tr>
-	</table>
+</table>
 

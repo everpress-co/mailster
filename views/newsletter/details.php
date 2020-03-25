@@ -42,8 +42,8 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 <?php else : ?>
 	<?php
-	$totals  = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $this->get_sent( $post->ID );
 	$sent    = $this->get_sent( $post->ID );
+	$totals  = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $sent;
 	$deleted = $this->get_deleted( $post->ID );
 
 	$errors = $this->get_errors( $post->ID );
@@ -60,13 +60,13 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<tr><th width="16.666%"><?php esc_html_e( 'Subject', 'mailster' ); ?></th><td><strong><?php echo $this->post_data['subject']; ?></strong></td></tr>
 	<?php if ( 'autoresponder' != $post->post_status ) : ?>
 	<tr><th><?php esc_html_e( 'Date', 'mailster' ); ?></th><td>
-							  <?php
-								echo date( $timeformat, $this->post_data['timestamp'] + $timeoffset );
-								if ( 'finished' == $post->post_status ) :
-									echo ' &ndash; ' . date( $timeformat, $this->post_data['finished'] + $timeoffset );
-									echo ' (' . sprintf( esc_html__( 'took %s', 'mailster' ), human_time_diff( $this->post_data['timestamp'], $this->post_data['finished'] ) ) . ')';
-		endif;
-								?>
+		<?php echo date( $timeformat, $this->post_data['timestamp'] + $timeoffset ); ?>
+		<?php
+		if ( 'finished' == $post->post_status ) :
+			echo ' &ndash; ' . date( $timeformat, $this->post_data['finished'] + $timeoffset );
+			echo ' (' . sprintf( esc_html__( 'took %s', 'mailster' ), human_time_diff( $this->post_data['timestamp'], $this->post_data['finished'] ) ) . ')';
+			endif;
+		?>
 	</td></tr>
 	<?php endif; ?>
 	<tr><th><?php esc_html_e( 'Preheader', 'mailster' ); ?></th><td><?php echo $this->post_data['preheader'] ? $this->post_data['preheader'] : '<span class="description">' . esc_html__( 'no preheader', 'mailster' ) . '</span>'; ?></td></tr>
@@ -189,7 +189,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 		<div class="ajax-list countries" id="geolocation-list"></div>
 	</td></tr>
 
-		<?php endif; ?>
+	<?php endif; ?>
 
 </table>
 

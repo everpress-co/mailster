@@ -5,20 +5,13 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	$editable = false;
 }
 
-$modules = $this->replace_colors( $this->templateobj->get_modules_html() );
+$module_list = $this->templateobj->get_module_list();
 
 $templates = mailster( 'templates' )->get_templates();
 $all_files = mailster( 'templates' )->get_all_files();
 
 ?>
-<div id="template-wrap" class="load 
-<?php
-if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $modules ) ) {
-	echo ' show-modules';
-} if ( $editable && ! empty( $modules ) ) {
-	echo ' has-modules'; }
-?>
-									">
+<div id="template-wrap" class="load<?php echo $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $module_list ) ? ' show-modules' : ''; ?><?php echo $editable && ! empty( $module_list ) ? ' has-modules' : ''; ?>">
 
 <?php if ( $editable ) : ?>
 
@@ -36,8 +29,8 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 		<p><strong class="link"></strong></p>
 		<p><?php esc_html_e( 'Clicks', 'mailster' ); ?>: <strong class="clicks">0</strong><br><?php esc_html_e( 'Total', 'mailster' ); ?>: <strong class="total">0</strong></p>
 	</div>
-	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo ( $post->post_content ); ?></textarea>
-	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo ( $post->post_excerpt ); ?></textarea>
+	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_content ); ?></textarea>
+	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_excerpt ); ?></textarea>
 
 <?php endif; ?>
 
@@ -47,18 +40,12 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 			<label><input type="checkbox" id="plaintext" name="mailster_data[autoplaintext]" value="1" <?php checked( $autoplaintext ); ?>> <?php esc_html_e( 'Create the plain text version based on the HTML version of the campaign', 'mailster' ); ?></label> <a class="alignright button button-primary getplaintext"><?php esc_html_e( 'get text from HTML version', 'mailster' ); ?></a>
 		</p>
 
-		<textarea id="excerpt" name="excerpt" class="
-		<?php
-		if ( $autoplaintext ) {
-			echo ' disabled'; }
-		?>
-			" autocomplete="off" <?php disabled( $autoplaintext ); ?>><?php echo $post->post_excerpt; ?></textarea>
+		<textarea id="excerpt" name="excerpt" class="<?php echo $autoplaintext ? ' disabled' : ''; ?>" autocomplete="off" <?php disabled( $autoplaintext ); ?>><?php echo $post->post_excerpt; ?></textarea>
 	</div>
 
 	<div id="html-wrap">
 		<?php
-		if ( $editable && ! empty( $modules ) ) :
-			$module_list                   = $this->templateobj->get_module_list();
+		if ( $editable && ! empty( $module_list ) ) :
 			$screenshots                   = $this->templateobj->get_module_screenshots();
 			$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/' . $this->get_template() . '/modules/';
 			$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $this->get_template() . '/modules/';
@@ -81,7 +68,7 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 							$has_screenshots = false;
 						}
 
-						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / $factor ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $module . '"' ) ) . '" data-id="' . $i . '" tabindex="0"><span>' . esc_html( $module ) . '</span><span class="hidden">' . esc_html( strtolower( $module ) ) . '</span></a></li>';
+						echo '<li data-id="' . $i . '" draggable="true"><a class="mailster-btn addmodule ' . ( $has_screenshots ? 'has-screenshot" style="background-image:url(\'' . $screenshot_modules_folder_uri . $screenshots[ $i ] . '\');height:' . ( ceil( $has_screenshots[1] / $factor ) + 6 ) . 'px;' : '' ) . '" title="' . esc_attr( sprintf( esc_html__( 'Click to add %s', 'mailster' ), '"' . $module['name'] . '"' ) ) . '" data-id="' . $i . '" tabindex="0"><span>' . esc_html( $module['name'] ) . '</span><span class="hidden">' . esc_html( strtolower( $module['name'] ) ) . '</span></a><script type="text/html">' . $module['html'] . '</script></li>';
 					}
 					?>
 					</ul>
@@ -91,9 +78,9 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 
 		<input type="hidden" id="editor-height" name="mailster_data[editor_height]" value="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>">
 		<div id="iframe-wrap">
-			<iframe id="mailster_iframe" src="
+
 			<?php
-			echo add_query_arg(
+			$url = add_query_arg(
 				array(
 					'action'       => 'mailster_get_template',
 					'id'           => $post->ID,
@@ -106,7 +93,7 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 				admin_url( 'admin-ajax.php' )
 			)
 			?>
-			" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
+			<iframe id="mailster_iframe" class="loading" data-src="<?php echo esc_url( $url ); ?>" width="100%" height="<?php echo esc_attr( $this->post_data['editor_height'] ); ?>" scrolling="no" frameborder="0" data-no-lazy="">
 			</iframe>
 		</div>
 	</div>
@@ -138,6 +125,5 @@ if ( $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $
 		</div>
 	</div>
 </div>
-<textarea id="content" autocomplete="off" name="content"><?php echo ( $post->post_content ); ?></textarea>
-<textarea id="modules" autocomplete="off"><?php echo ( $modules ); ?></textarea>
-<textarea id="head" name="mailster_data[head]" autocomplete="off"><?php echo ( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>
+<textarea id="content" autocomplete="off" name="content"><?php echo esc_textarea( $post->post_content ); ?></textarea>
+<textarea id="head" name="mailster_data[head]" autocomplete="off"><?php echo esc_textarea( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>
