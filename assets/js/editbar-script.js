@@ -1363,7 +1363,6 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 					bar.find('.editbarposition').hide();
 				}
-				console.log(position, current.elements.single);
 
 			} else if (type == 'codeview') {
 

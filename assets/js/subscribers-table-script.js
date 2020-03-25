@@ -63,8 +63,8 @@ mailster = (function (mailster, $, window, document) {
 		}, function (response) {
 
 			bulk_update_info.html(response.message);
-			if (response.success_message) console.log(response.success_message);
-			if (response.error_message) console.error(response.error_message);
+			if (response.success_message) mailster.log(response.success_message);
+			if (response.error_message) mailster.log(response.error_message, 'error');
 
 			if (!response.finished) {
 				setTimeout(function () {

@@ -55,8 +55,8 @@ mailster = (function (mailster, $, window, document) {
 			textarea.val('...');
 			mailster.util.ajax('get_system_info', function (response) {
 
-				if (response.log && console)
-					console.log(response.log);
+				if (response.log)
+					mailster.log(response.log);
 				textarea.val(response.msg);
 			});
 		}

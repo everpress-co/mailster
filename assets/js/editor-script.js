@@ -365,8 +365,6 @@ mailster = (function (mailster, $, window, document) {
 
 		elements = mailster.editor.$.modules;
 
-		console.log(mailsterdata);
-
 		//reset
 		//mailster.modules.items = [];
 		//add module buttons and add them to the list
@@ -644,7 +642,6 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function select(module) {
-		console.log(module);
 		if (!module.length) {
 			return;
 		}

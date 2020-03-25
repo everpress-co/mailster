@@ -8,9 +8,7 @@ $file     = $this->get_file();
 	<ul class="alignleft">
 		<li class="no-border-left"><a class="mailster-icon undo disabled" title="<?php esc_html_e( 'undo', 'mailster' ); ?>">&nbsp;</a></li>
 		<li><a class="mailster-icon redo disabled" title="<?php esc_html_e( 'redo', 'mailster' ); ?>">&nbsp;</a></li>
-		<?php if ( ! empty( $modules ) ) : ?>
 		<li><a class="mailster-icon clear-modules" title="<?php esc_html_e( 'remove modules', 'mailster' ); ?>">&nbsp;</a></li>
-		<?php endif; ?>
 		<?php if ( current_user_can( 'mailster_see_codeview' ) ) : ?>
 		<li><a class="mailster-icon code" title="<?php esc_html_e( 'toggle HTML/code view', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>

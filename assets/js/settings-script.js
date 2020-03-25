@@ -17,7 +17,7 @@ mailster = (function (mailster, $, window, document) {
 		$('.submit-form').prop('disabled', false);
 		$('form#mailster-settings-form').off('submit.lock');
 	} else {
-		if (console) console.log('error loading settings page');
+		mailster.log('error loading settings page');
 	}
 
 	deliverynav.on('click', 'a.nav-tab', function () {
@@ -202,8 +202,8 @@ mailster = (function (mailster, $, window, document) {
 
 		}, function (response) {
 
-			if (response.log && console)
-				response.success ? console.log(response.log) : console.error(response.log);
+			if (response.log)
+				response.success ? mailster.log(response.log) : mailster.log(response.log, 'error');
 
 			loader.css({
 				'visibility': 'hidden'

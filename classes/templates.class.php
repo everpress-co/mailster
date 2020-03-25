@@ -1052,8 +1052,6 @@ class MailsterTemplates {
 					}
 				}
 			}
-
-			error_log( print_r( 'HIER', true ) );
 		}
 
 	}

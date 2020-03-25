@@ -569,7 +569,6 @@ mailster = (function (mailster, $, window, document) {
 
 	$('.meta-box-sortables').on("sortstop", function (event, ui) {
 		if (ui.item[0] === mailster.dom.template) {
-			console.log(mailster.editor.$.body);
 			mailster.editor.$.body.addClass('reload-page');
 		}
 	});
