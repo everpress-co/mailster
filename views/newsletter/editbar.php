@@ -204,7 +204,7 @@
 
 		<div class="type auto">
 
-			<p class="editbarpostion" title="<?php esc_attr_e( 'The area in which content gets placed.', 'mailster' ); ?>"></p>
+			<p class="editbarposition" title="<?php esc_attr_e( 'The area in which content gets placed.', 'mailster' ); ?>"></p>
 
 			<div id="embedoption-bar" class="nav-tab-wrapper hide-if-no-js">
 				<a class="nav-tab nav-tab-active" href="#static_embed_options" data-type="static"><?php esc_html_e( 'Static', 'mailster' ); ?></a>

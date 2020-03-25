@@ -59,11 +59,11 @@ class MailsterLists {
 
 		if ( isset( $_GET['ID'] ) || isset( $_GET['new'] ) ) :
 
-			wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 			wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
-			wp_enqueue_script( 'mailster-list-detail', MAILSTER_URI . 'assets/js/list-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 			wp_enqueue_style( 'mailster-list-detail', MAILSTER_URI . 'assets/css/list-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-list-detail', MAILSTER_URI . 'assets/js/list-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 			wp_localize_script(
 				'mailster-list-detail',
 				'mailsterL10n',
