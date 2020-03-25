@@ -1,6 +1,6 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
+	"use strict";
 
 	var nav = $('.mainnav'),
 		deliverynav = $('#deliverynav'),
@@ -8,11 +8,6 @@ jQuery(document).ready(function ($) {
 		deliverytabs = $('#tab-delivery').find('.subtab'),
 		wpnonce = $('#mailster_nonce').val(),
 		reservedtags = $('#reserved-tags').data('tags');
-
-	$('a.external').on('click', function () {
-		if (this.href) window.open(this.href);
-		return false;
-	});
 
 	$('form#mailster-settings-form')
 		.on('submit.lock', function () {
@@ -83,7 +78,7 @@ jQuery(document).ready(function ($) {
 
 		$('button').prop('disabled', true);
 
-		_ajax('load_geo_data', function (response) {
+		mailster.util.ajax('load_geo_data', function (response) {
 
 			$('button').prop('disabled', false);
 			loader.css({
@@ -199,7 +194,7 @@ jQuery(document).ready(function ($) {
 
 		$this.prop('disabled', true);
 
-		_ajax('send_test', {
+		mailster.util.ajax('send_test', {
 			test: true,
 			formdata: formdata,
 			basic: true,
@@ -241,7 +236,7 @@ jQuery(document).ready(function ($) {
 
 		$this.prop('disabled', true);
 
-		_ajax('bounce_test', {
+		mailster.util.ajax('bounce_test', {
 			formdata: formdata
 		}, function (response) {
 
@@ -279,7 +274,7 @@ jQuery(document).ready(function ($) {
 		.on('change', '.tag-key', function () {
 			var _this = $(this),
 				_base = _this.parent().parent(),
-				val = _sanitize(_this.val());
+				val = sanitize(_this.val());
 
 			if (!val) _this.parent().parent().remove();
 
@@ -331,7 +326,7 @@ jQuery(document).ready(function ($) {
 
 			$('.sync-button').prop('disabled', true);
 
-			_ajax('sync_all_subscriber', {
+			mailster.util.ajax('sync_all_subscriber', {
 				offset: _this.data('offset')
 			}, function (response) {
 
@@ -365,7 +360,7 @@ jQuery(document).ready(function ($) {
 
 			$('.sync-button').prop('disabled', true);
 
-			_ajax('sync_all_wp_user', {
+			mailster.util.ajax('sync_all_wp_user', {
 				offset: _this.data('offset')
 			}, function (response) {
 
@@ -401,7 +396,7 @@ jQuery(document).ready(function ($) {
 		.on('change', '.customfield-key', function () {
 			var _this = $(this),
 				_base = _this.parent().parent().parent(),
-				val = _sanitize(_this.val());
+				val = sanitize(_this.val());
 
 			if (!val) _base.remove();
 
@@ -462,7 +457,7 @@ jQuery(document).ready(function ($) {
 			}),
 			status = $('.bouncetest_status');
 
-		_ajax('bounce_test_check', {
+		mailster.util.ajax('bounce_test_check', {
 			identifier: identifier,
 			passes: count,
 			formdata: formdata
@@ -499,7 +494,7 @@ jQuery(document).ready(function ($) {
 			'visibility': 'visible'
 		});
 
-		_ajax('spf_check', function (response) {
+		mailster.util.ajax('spf_check', function (response) {
 
 			if (response.success) {
 				loader
@@ -520,7 +515,7 @@ jQuery(document).ready(function ($) {
 			'visibility': 'visible'
 		});
 
-		_ajax('dkim_check', function (response) {
+		mailster.util.ajax('dkim_check', function (response) {
 
 			if (response.success) {
 				loader
@@ -536,53 +531,15 @@ jQuery(document).ready(function ($) {
 		});
 	}
 
-	function _sanitize(string) {
+	function sanitize(string) {
 		var tag = $.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '').replace(/^[_]*/, '').replace(/[_]*$/, '');
 		if ($.inArray(tag, reservedtags) != -1) {
-			alert(sprintf(mailsterL10n.reserved_tag, '"' + tag + '"'));
+			alert(mailster.util.sprintf(mailsterL10n.reserved_tag, '"' + tag + '"'));
 			tag += '-a';
 		}
 		return tag;
 	}
 
-	function _ajax(action, data, callback, errorCallback) {
+	return mailster;
 
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
-		}
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action,
-				_wpnonce: wpnonce
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-			},
-			dataType: "JSON"
-		});
-	}
-
-	function sprintf() {
-		var a = Array.prototype.slice.call(arguments),
-			str = a.shift(),
-			total = a.length,
-			reg;
-		for (var i = 0; i < total; i++) {
-			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
-			str = str.replace(reg, a[i]);
-		}
-		return str;
-	}
-
-});
+}(mailster || {}, jQuery, window, document));

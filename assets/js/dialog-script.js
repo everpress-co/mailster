@@ -1,67 +1,57 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
+	"use strict";
 
-	window.Mailster = window.Mailster || {};
+	mailster.dialog = mailster.dialog || {};
 
-	window.Mailster.dialog = window.Mailster.dialog || function (id, callback, cancelcallback) {
+	var current,
+		dialog;
 
-		var api,
-			current,
-			dialog = $('.mailster-' + id);
+	mailster.$.document
+		.on('click', '.notification-dialog-dismiss', function (event) {
+			event.stopPropagation();
+			cancel();
+		})
+		.on('click', '.notification-dialog-background', function (event) {
+			event.stopPropagation();
+			cancel();
+		})
+		.on('click', '.notification-dialog-submit', function (event) {
+			event.stopPropagation();
+			submit();
+		});
 
-		if (!dialog.length) return false;
+	function cancel() {
+		close();
+	}
 
-		dialog
-			.one('click', '.notification-dialog-dismiss', function (event) {
-				event.stopPropagation();
-				_cancel();
-			})
-			.one('click', '.notification-dialog-background', function (event) {
-				event.stopPropagation();
-				_cancel();
-			})
-			.one('click', '.notification-dialog-submit', function (event) {
-				event.stopPropagation();
-				_submit();
+	function submit() {
+		close();
+	}
+
+	function close() {
+		dialog.addClass('hidden');
+		mailster.$.document
+			.off('keyup.mailster_dialog');
+		current = null;
+	}
+
+	function open(id) {
+		dialog = $('.mailster-' + id);
+		current = id;
+		dialog.removeClass('hidden');
+		mailster.$.document
+			.on('keyup.mailster_dialog', function (event) {
+				if (event.which == 27) {
+					cancel();
+				}
 			});
+	}
 
-		function _cancel() {
-			cancelcallback && cancelcallback.apply(api);
-			_close();
-		}
+	mailster.dialog.current = current;
+	mailster.dialog.close = close;
+	mailster.dialog.open = open;
 
-		function _submit() {
-			callback && callback.apply(api);
-			_close();
-		}
+	return mailster;
 
-		function _close() {
-			dialog.addClass('hidden');
-			$(document).off('keyup.mailster_dialog');
-			current = null;
-		}
-
-		function _open() {
-			current = id;
-			dialog.removeClass('hidden');
-			$(document)
-				.on('keyup.mailster_dialog', function (event) {
-					if (event.which == 27) {
-						_cancel();
-					}
-				});
-		}
-
-		_open();
-
-		api = {
-			'current': current,
-			'close': _close,
-		}
-
-		return api;
-
-	};
-
-});
+}(mailster || {}, jQuery, window, document));

@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.7
+// Version 3.6
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;

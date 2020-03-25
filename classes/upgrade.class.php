@@ -160,7 +160,7 @@ class MailsterUpgrade {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-update-script', MAILSTER_URI . 'assets/js/upgrade-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-update-script', MAILSTER_URI . 'assets/js/upgrade-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 		$db_version = get_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 

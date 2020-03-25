@@ -1237,8 +1237,14 @@ class MailsterHelper {
 
 
 	public function get_mailster_styles( $echo = false ) {
+
 		// custom styles
 		global $mailster_mystyles;
+
+		if ( ! did_action( 'mailster_add_style' ) ) {
+			do_action( 'mailster_add_style' );
+		}
+
 		$mailster_styles = '';
 
 		if ( $mailster_mystyles ) {
@@ -1591,6 +1597,9 @@ class MailsterHelper {
 				);
 
 				if ( is_wp_error( $response ) ) {
+					if ( ! is_admin() ) {
+						mailster_notice( sprintf( esc_html__( 'There\'s a problem receiving the feed from `%1$s`: %2$s', 'mailster' ), $url, $response->get_error_message() ), 'error', false, $feed_id );
+					}
 					return $response;
 				}
 
@@ -1711,10 +1720,15 @@ class MailsterHelper {
 		}
 
 		$feed = $this->feed( $url, 0, $cache_duration );
+
 		if ( is_wp_error( $feed ) ) {
-			return false;
+			return $feed;
 		}
 		$last = strtotime( $feed->post_date_gmt );
+
+		if ( is_null( $timestamp ) ) {
+			return $last;
+		}
 
 		if ( $last > $timestamp ) {
 			return $last;
@@ -1974,7 +1988,7 @@ class MailsterHelper {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-dialog', MAILSTER_URI . 'assets/js/dialog-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-dialog', MAILSTER_URI . 'assets/js/dialog-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 		wp_enqueue_style( 'mailster-dialog', MAILSTER_URI . 'assets/css/dialog-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		?>

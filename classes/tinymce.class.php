@@ -74,6 +74,10 @@ class MailsterTinymce {
 
 		global $mailster_tags;
 
+		if ( ! did_action( 'mailster_add_tag' ) ) {
+			do_action( 'mailster_add_tag' );
+		}
+
 		$user = array(
 			'firstname'    => esc_html__( 'First Name', 'mailster' ),
 			'lastname'     => esc_html__( 'Last Name', 'mailster' ),
