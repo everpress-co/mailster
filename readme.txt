@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.2.3
-Stable tag: 2.4.4
+Tested up to: 5.4
+Stable tag: 2.4.10
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,24 +88,71 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
-
 * new: cron options
 
+= Version 2.4.10 =
+
+= Version 2.4.9 =
+
+* change: moved text strings for GDPR to text tab for better localization.
+* change: sanitize_content method no longer handles custom Mailster styles (changes to the methods arguments)
+* added: `mailster_add_tag` action hook to add custom tags.
+* added: `mailster_add_style` action hook to add custom styles.
+* improved: block tags removed in final output
+* improved: RSS feed method for more flexible feed support.
+* improved: tags now can return WP_Error object which prevents the campaign from sending.
+* added: `mailster_gdpr_label` filter to change the content.
+* fixed: empty strings on action hook based campaigns
+* fixed: unchecked required checkbox prevents form fields page from saving.
+* fixed: wrong less memory warning
+* fixed: problem with CodeEditor on Avada
+* fixed: missing inline styles on html elements from tags.
+
+= Version 2.4.8 =
+
+* fixed: escaped content on edit screen.
+* fixed: escaped several strings.
+* improved: United Kingdom is no longer part of the European Union.
+
+= Version 2.4.7 =
+
+* improved: CSS for WordPress 5.3
+* improved: action type is now returned in form submission
+* improved: form submission on errors
+* fixed: content type selection not respected on dynamic insertion mode
+* fixed: 'ERR_CONNECTION_RESET' issue on some Apache installations
+>>>>>>> origin/develop
+
+= Version 2.4.6 =
+
+* tested with WordPress 5.3
+* fixed: potential XSS vulnerable on the subscribers detail page identified by Compass Security
+* fixed: single quote in subject now correctly encoded
+* fixed: confirm redirection issues on some installations
+* change: Redirect after submit and Redirect after confirmation must be a URL
+
+= Version 2.4.5 =
+
+* fixed: issue saving 'send campaign only once' option
+* fixed: duplication of finished campaign no longer breaks module selection
+* improved: some fields are now stored urlencoded for better emoji support in databases with collation other than utf8mb4
+* changed: action hook auto responders no longer sent to all subscribers if subscriber id is set to `false` (use `null` instead)
 
 = Version 2.4.4 =
-
 
 * improved: you can now encode tags output with an exclamation mark `{!mytag}`.
 * improved: drag n drop images from your desktop now respects cropped image setting.
 * improved: import screen.
 * improved: test mails now fallback to the current users email if not defined.
-* improved: subscriber query now search for ID by default.
+* improved: subscriber query now search for ID as well.
 * fixed: notifications to multiple addresses.
 * fixed: modules without content sometimes preserve in the campaign.
 * fixed: issue with RSS campaigns on time based autoresponders.
 * fixed: wrong subscriber count if status "pending" in subscriber query.
 * fixed: cumulative count calculations.
 * fixed: redirecting issue with spaces in URLs.
+* updated to latest coding standards
+* code refactoring
 
 = Version 2.4.3 =
 
@@ -190,6 +237,7 @@ Xaver Birsak – https://everpress.co
 * improved: handling of options
 * improved: removed some variables from the global space
 
+
 = Version 2.3.16 =
 
 * new: option to choose original image in editbar (for animated gifs)
@@ -253,6 +301,7 @@ Xaver Birsak – https://everpress.co
 * improved: queue handling of time based auto responders
 * improved: query for dashboard widget
 * improved: sql query
+>>>>>>> origin/develop
 
 = Version 2.3.11 =
 

@@ -38,7 +38,7 @@ class MailsterManage {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 		wp_localize_script(
 			'mailster-manage-script',
 			'mailsterL10n',
@@ -754,8 +754,7 @@ class MailsterManage {
 
 			delete_option( 'mailster_bulk_import' );
 			delete_option( 'mailster_bulk_import_errors' );
-			$wpdb->query( $wpdb->prepare( 'DROP TABLE %s', "{$wpdb->prefix}mailster_temp_import" ) );
-
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
 			$return['wpusers'] = mailster( 'subscribers' )->wp_id();
 
 		} else {

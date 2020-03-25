@@ -1,19 +1,19 @@
-jQuery(document).ready(function (jQuery) {
+jQuery(document).ready(function ($) {
 
 	"use strict"
 
-	jQuery('body')
+	$('body')
 
 	.on('submit.mailster', 'form.mailster-ajax-form', function (event) {
 
 		event.preventDefault();
 
-		var form = jQuery(this),
+		var form = $(this),
 			data = form.serialize(),
-			info = jQuery('<div class="mailster-form-info"></div>'),
+			info = $('<div class="mailster-form-info"></div>'),
 			c;
 
-		if (jQuery.isFunction(window.mailster_pre_submit)) {
+		if ($.isFunction(window.mailster_pre_submit)) {
 			c = window.mailster_pre_submit.call(this, data);
 			if (c === false) return false;
 			if (typeof c !== 'undefined') data = c;
@@ -21,18 +21,21 @@ jQuery(document).ready(function (jQuery) {
 
 		form.addClass('loading').find('.submit-button').prop('disabled', true);
 
-		jQuery
-			.post(form.attr('action'), data, handlerResponse, 'JSON')
+		$.post(form.attr('action'), data, handlerResponse, 'JSON')
 			.fail(function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				var html = jqXHR.responseText,
-					response;
+				var response;
 
 				try {
-					response = jQuery.parseJSON(jqXHR.responseText);
+					response = $.parseJSON(jqXHR.responseText);
+					if (!response.html) {
+						response = {
+							html: 'There was an error with the response:<br><code>[' + response.code + '] ' + response.message + '</code>',
+							success: false
+						}
+					}
 				} catch (err) {
 					response = {
-						html: 'There was an error while parsing the response: <code>' + jqXHR.responseText + '</code>',
+						html: 'There was an error while parsing the response:<br><code>' + jqXHR.responseText + '</code>',
 						success: false
 					}
 				}
@@ -46,7 +49,7 @@ jQuery(document).ready(function (jQuery) {
 
 			form.find('.mailster-form-info').remove();
 
-			if (jQuery.isFunction(window.mailster_post_submit)) {
+			if ($.isFunction(window.mailster_post_submit)) {
 				c = window.mailster_post_submit.call(form[0], response);
 				if (c === false) return false;
 				if (typeof c !== 'undefined') response = c;
@@ -55,7 +58,7 @@ jQuery(document).ready(function (jQuery) {
 			form.find('.submit-button').prop('disabled', false);
 
 			if (response.html) info.html(response.html);
-			if (jQuery(document).scrollTop() < form.offset().top) {
+			if ($(document).scrollTop() < form.offset().top) {
 				info.prependTo(form);
 			} else {
 				info.appendTo(form);
@@ -73,7 +76,7 @@ jQuery(document).ready(function (jQuery) {
 			} else {
 
 				if (response.fields)
-					jQuery.each(response.fields, function (field) {
+					$.each(response.fields, function (field) {
 						form.addClass('has-errors').find('.mailster-' + field + '-wrapper').addClass('error');
 					})
 				info.show().addClass('error');

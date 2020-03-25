@@ -53,6 +53,15 @@
 		</td>
 	</tr>
 </table>
+<table class="form-table">
+	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'GDPR', 'mailster' ); ?></th>
+		<td>
+		<div class="mailster_text"><label><?php esc_html_e( 'Terms confirmation text', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[gdpr_text]" value="<?php echo esc_attr( mailster_text( 'gdpr_text' ) ); ?>" class="regular-text"></div>
+		<div class="mailster_text"><label><?php esc_html_e( 'Error text', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[gdpr_error]" value="<?php echo esc_attr( mailster_text( 'gdpr_error' ) ); ?>" class="regular-text"></div>
+		</td>
+	</tr>
+</table>
 <?php
 
 $dir    = defined( 'WP_LANG_DIR' ) ? WP_LANG_DIR : MAILSTER_DIR . '/languages/';

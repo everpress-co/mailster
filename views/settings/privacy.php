@@ -59,17 +59,12 @@
 		<th scope="row"><?php esc_html_e( 'GDPR Compliance Forms', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[gdpr_forms]" value=""><input type="checkbox" name="mailster_options[gdpr_forms]" value="1" <?php checked( mailster_option( 'gdpr_forms' ) ); ?>> <?php esc_html_e( 'Add a checkbox on your forms for user consent.', 'mailster' ); ?></label>
 		<p class="description"><?php esc_html_e( 'Users must check this checkbox to submit the form.', 'mailster' ); ?></p>
+		<p class="description"><?php printf( esc_html__( 'You can define Texts on the %s settings tab.', 'mailster' ), '<strong>' . esc_html__( 'Text Strings', 'mailster' ) . '</strong>' ); ?></p>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"></th>
 		<td>
-		<p><?php esc_html_e( 'Define a custom terms confirmation text.', 'mailster' ); ?>
-			<input type="text" name="mailster_options[gdpr_text]" value="<?php echo esc_attr( mailster_option( 'gdpr_text' ) ); ?>" class="large-text">
-		</p>
-		<p><?php esc_html_e( 'Define the error text if the checkbox is unchecked.', 'mailster' ); ?>
-			<input type="text" name="mailster_options[gdpr_error]" value="<?php echo esc_attr( mailster_option( 'gdpr_error' ) ); ?>" class="large-text">
-		</p>
 		<p><?php esc_html_e( 'Link to your privacy policy page.', 'mailster' ); ?>
 			<input type="text" name="mailster_options[gdpr_link]" value="<?php echo esc_attr( mailster_option( 'gdpr_link' ) ); ?>" class="large-text">
 		</p>

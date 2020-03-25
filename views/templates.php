@@ -125,10 +125,17 @@ if ( $updates = $t->get_updates() ) : ?>
 
 		$existing = @array_intersect_assoc( $mailster_templates, $templates );
 		$others   = @array_diff_assoc( $mailster_templates, $existing );
+		shuffle( $others );
+		$author = isset( $_GET['from'] ) ? trim( strtolower( $_GET['from'] ) ) : null;
 
 		$mailster_templates = $existing + $others;
 
+
 		foreach ( $mailster_templates as $slug => $data ) {
+
+			if ( $author && strtolower( $data['author'] ) != $author ) {
+				continue;
+			}
 
 			include MAILSTER_DIR . 'views/templates/available-template.php';
 
