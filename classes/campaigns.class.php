@@ -1180,6 +1180,8 @@ class MailsterCampaigns {
 			wp_enqueue_script( 'mailster-optionbar', MAILSTER_URI . 'assets/js/optionbar-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );
 			wp_enqueue_style( 'mailster-optionbar', MAILSTER_URI . 'assets/css/optionbar-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
+			wp_enqueue_script( 'mailster-preflight', MAILSTER_URI . 'assets/js/preflight-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );
+
 			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			wp_localize_script(
