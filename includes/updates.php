@@ -560,6 +560,8 @@ if ( $old_version ) {
 			$texts['gdpr_text']  = $mailster_options['gdpr_text'];
 			$texts['gdpr_error'] = $mailster_options['gdpr_error'];
 
+			update_option( 'mailster_templates', '' );
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );

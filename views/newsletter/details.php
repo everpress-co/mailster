@@ -42,8 +42,8 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 <?php else : ?>
 	<?php
-	$totals  = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $this->get_sent( $post->ID );
 	$sent    = $this->get_sent( $post->ID );
+	$totals  = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $sent;
 	$deleted = $this->get_deleted( $post->ID );
 
 	$errors = $this->get_errors( $post->ID );

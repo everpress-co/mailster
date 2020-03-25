@@ -318,38 +318,36 @@ only screen and (                min-resolution: 2dppx) {
 	border: 1px solid #191f25;
 	background-color: #50626f;
 }
-.mailster-box.is-free:after, .mailster-box.is-default:after, .mailster-box.is-feature:after, .mailster-box.is-new:after, .mailster-box.edit:after, .mailster-box.update:after{
+.mailster-box.is-free:after, .mailster-box.is-sale:after, .mailster-box.is-default:after, .mailster-box.is-feature:after, .mailster-box.is-new:after, .mailster-box.edit:after, .mailster-box.update:after{
+	content: attr(data-badge);
+	background-color: #2BB3E7;
+	white-space: nowrap;
 	position: absolute;
-	top: 12px;
-	right: -31px;
-	content: 'free';
-	padding: 4px 44px;
-	background-color: #5AA6CC;
-	color: #fff;
-	-webkit-transform: rotate(45deg);
-	-moz-transform: rotate(45deg);
-	-ms-transform: rotate(45deg);
-	-o-transform: rotate(45deg);
-	transform: rotate(45deg);
+	padding: 5px 50px;
+	-webkit-transform: rotate(45deg) translate(37%, 0);
+	transform: rotate(45deg) translate(37%, 0);
+	color: white;
+	text-align: center;
+	text-transform: uppercase;
+	right: 0;
+	top: -17px;
+	box-sizing: border-box;
 }
 .mailster-box.is-feature:after{
-	top: 17px;
-	right: -41px;
-	content: 'featured';
 	background-color: #F26B6B;
 }
 .mailster-box.is-default:after{
-	right: -40px;
 	background-color: #5BCD6A;
-	content: 'default';
+}
+.mailster-box.is-sale:after{
+	font-size: 16px;
+	background-color: #F26B6B;
 }
 .mailster-box.is-default{
 	border-color: #5BCD6A;
 }
 .mailster-box.is-new:after{
-	right: -34px;
 	background-color: #F26B6B;
-	content: 'fresh';
 }
 .mailster-box.is-unsupported > *{
 	opacity: 0.2;

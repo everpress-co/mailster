@@ -33,6 +33,7 @@ jQuery(document).ready(function ($) {
 		getSelect, selectRange, isDisabled = false,
 		is_touch_device = 'ontouchstart' in document.documentElement,
 		isTinyMCE = typeof tinymce == 'object',
+		CM = wp.CodeMirror || window.CodeMirror,
 		codemirror, codemirrorargs = {
 			mode: {
 				name: "htmlmixed",

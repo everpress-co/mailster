@@ -1377,7 +1377,7 @@ class MailsterCampaigns {
 		}
 
 		// sanitize the content and remove all content filters
-		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], null, $postdata['head'] );
+		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], $postdata['head'] );
 
 		$post['post_excerpt'] = ! empty( $postdata['autoplaintext'] )
 			? mailster( 'helper' )->plain_text( $post['post_content'] )
@@ -3868,12 +3868,12 @@ class MailsterCampaigns {
 			return new WP_Error( 'no_subscriber', esc_html__( 'No subscriber found', 'mailster' ) );
 		}
 
-		if ( ! $force && ! in_array( $subscriber->status, array( 0, 1, 2 ) ) ) {
+		if ( ! $force && $subscriber->status > 2 ) {
 			return new WP_Error( 'user_unsubscribed', esc_html__( 'User has not subscribed', 'mailster' ) );
 		}
 
 		if ( ! $force && ! mailster( 'helper' )->in_timeframe() ) {
-			return new WP_Error( 'system_error', 'Not in Time Frame' );
+			return new WP_Error( 'system_error', esc_html__( 'Not in time frame', 'mailster' ) );
 		}
 
 		$campaign_meta = $this->meta( $campaign->ID );
@@ -3923,7 +3923,7 @@ class MailsterCampaigns {
 		// campaign specific stuff (cache it)
 		if ( ! ( $content = mailster_cache_get( 'campaign_send_' . $campaign->ID ) ) ) {
 
-			$content = mailster()->sanitize_content( $campaign->post_content, null, $campaign_meta['head'] );
+			$content = mailster()->sanitize_content( $campaign->post_content, $campaign_meta['head'] );
 
 			$content = mailster( 'helper' )->prepare_content( $content );
 
@@ -3972,6 +3972,9 @@ class MailsterCampaigns {
 		// strip all unwanted stuff from the content
 		$content = mailster( 'helper' )->strip_structure_html( $content );
 
+		// maybe inline again
+		$content = mailster( 'helper' )->inline_style( $content );
+
 		$mail->content = apply_filters( 'mailster_campaign_content', $content, $campaign, $subscriber );
 
 		if ( ! $campaign_meta['autoplaintext'] ) {
@@ -4010,6 +4013,9 @@ class MailsterCampaigns {
 		$placeholder->set_content( $mail->subject );
 		$mail->subject = $placeholder->get_content();
 
+		if ( $placeholder->has_error() ) {
+			return new WP_Error( 'error', sprintf( esc_html__( 'There was an error during replacing tags in this campaign! %s', 'mailster' ), '<br>' . implode( '<br>', $placeholder->get_error_messages() ) ) );
+		}
 		$result = $mail->send();
 
 		if ( $result && ! is_wp_error( $result ) ) {

@@ -632,7 +632,7 @@ class MailsterFrontpage {
 						wp_die( esc_html__( 'There is no content for this newsletter.', 'mailster' ) . ( current_user_can( 'edit_newsletters' ) ? ' <a href="' . admin_url( 'post.php?post=' . get_the_ID() . '&action=edit' ) . '">' . esc_html__( 'Add content', 'mailster' ) . '</a>' : '' ) );
 					}
 
-					$content = mailster()->sanitize_content( $content, null, $meta['head'] );
+					$content = mailster()->sanitize_content( $content, $meta['head'] );
 
 					$placeholder = mailster( 'placeholder', $content );
 					$placeholder->excerpt_filters( false );
@@ -666,6 +666,7 @@ class MailsterFrontpage {
 					if ( mailster_option( 'frontpage_public' ) || ! get_option( 'blog_public' ) ) {
 						$content = str_replace( '</head>', "<meta name='robots' content='noindex,nofollow' />\n</head>", $content );
 					}
+					$content = mailster( 'helper' )->add_mailster_styles( $content );
 
 					echo $content;
 
