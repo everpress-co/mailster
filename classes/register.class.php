@@ -22,15 +22,14 @@ class MailsterRegister {
 
 		wp_enqueue_style( 'mailster-register-style', MAILSTER_URI . 'assets/css/register-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-		wp_enqueue_script( 'mailster-register-script', MAILSTER_URI . 'assets/js/register-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-register-script', MAILSTER_URI . 'assets/js/register-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 		wp_localize_script(
 			'mailster-register-script',
 			'mailsterregisterL10n',
 			array(
-				'wpnonce' => wp_create_nonce( 'mailster_register' ),
-				'error'   => esc_html__( 'There was an error while processing your request!', 'mailster' ),
-				'help'    => esc_html__( 'Help me!', 'mailster' ),
+				'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
+				'help'  => esc_html__( 'Help me!', 'mailster' ),
 			)
 		);
 
@@ -42,7 +41,7 @@ class MailsterRegister {
 		$args = wp_parse_args(
 			$args,
 			array(
-				'pretext'      => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . esc_url( 'https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=' . $page ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
+				'pretext'      => sprintf( esc_html__( 'Enter Your Purchase Code To Register (Don\'t have one for this site? %s)', 'mailster' ), '<a href="' . esc_url( 'https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=' . $page . '&utm_source=mailster_plugin' ) . '" class="external">' . esc_html__( 'Buy Now!', 'mailster' ) . '</a>' ),
 				'purchasecode' => mailster()->license(),
 			)
 		);
