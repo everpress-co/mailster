@@ -19,8 +19,8 @@ mailster = (function (mailster, $, window, document) {
 
 		$('#use-it')
 			.on('click', function () {
-				tb_show(mailsterL10n.useit, '#TB_inline?&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=useitbox', null);
-				if (saverequired) alert(mailsterL10n.not_saved);
+				tb_show(mailster.l10n.form.useit, '#TB_inline?&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=useitbox', null);
+				if (saverequired) alert(mailster.l10n.form.not_saved);
 				return false;
 			});
 
@@ -75,7 +75,7 @@ mailster = (function (mailster, $, window, document) {
 		function requireSave() {
 			saverequired = true;
 			window.onbeforeunload = function () {
-				return mailsterL10n.require_save;
+				return mailster.l10n.form.require_save;
 			};
 		}
 
@@ -96,8 +96,6 @@ mailster = (function (mailster, $, window, document) {
 		iframe.on('load', function () {
 			_style = $('<style id="mailster_form_preview_css"></style>').appendTo(iframe.contents().find('head'));
 			updateStyle();
-
-
 			iframe.contents().find('style.mailster-custom-form-css').remove();
 
 		});

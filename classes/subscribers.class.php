@@ -90,9 +90,9 @@ class MailsterSubscribers {
 
 			wp_enqueue_style( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/css/subscriber-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/js/subscriber-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-			wp_localize_script(
-				'mailster-subscriber-detail',
-				'mailsterL10n',
+
+			mailster_localize_script(
+				'subscribers',
 				array(
 					'next'          => esc_html__( 'next', 'mailster' ),
 					'prev'          => esc_html__( 'prev', 'mailster' ),
@@ -109,9 +109,8 @@ class MailsterSubscribers {
 
 			wp_enqueue_style( 'mailster-subscribers-table', MAILSTER_URI . 'assets/css/subscribers-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-subscribers-table', MAILSTER_URI . 'assets/js/subscribers-table-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-			wp_localize_script(
-				'mailster-subscribers-table',
-				'mailsterL10n',
+			mailster_localize_script(
+				'subscribers',
 				array(
 					'onbeforeunload' => esc_html__( 'Bulk process in progress!', 'mailster' ),
 					'initprogess'    => sprintf( esc_html__( 'processing page %d', 'mailster' ), 1 ),

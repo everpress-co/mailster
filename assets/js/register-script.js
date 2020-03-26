@@ -45,7 +45,7 @@ mailster = (function (mailster, $, window, document) {
 					wrap.addClass('step-2').removeClass('step-1')
 				} else {
 					error = response.error;
-					error += ' <a href="https://evp.to/error-' + response.code + '" target="_blank">' + mailsterregisterL10n.help + '</a>';
+					error += ' <a href="https://evp.to/error-' + response.code + '" target="_blank">' + mailster.l10n.register.help + '</a>';
 					form.addClass('has-error').find('.error-msg').html(error);
 				}
 
@@ -53,7 +53,7 @@ mailster = (function (mailster, $, window, document) {
 
 				form.prop('disabled', false);
 				wrap.removeClass('loading');
-				alert(mailsterregisterL10n.error + "\n\n" + errorThrown);
+				alert(mailster.l10n.register.error + "\n\n" + errorThrown);
 			});
 
 			return false;
@@ -87,14 +87,14 @@ mailster = (function (mailster, $, window, document) {
 						form.parent().removeClass('step-2').addClass('step-1');
 					}
 					error = response.error;
-					error += ' (<a href="https://evp.to/error-' + response.code + '" target="_blank">' + mailsterregisterL10n.help + '</a>)';
+					error += ' (<a href="https://evp.to/error-' + response.code + '" target="_blank">' + mailster.l10n.register.help + '</a>)';
 					form.addClass('has-error').find('.error-msg').html(error);
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
 
 				form.prop('disabled', false);
 				wrap.removeClass('loading');
-				alert(mailsterregisterL10n.error + "\n\n" + errorThrown);
+				alert(mailster.l10n.register.error + "\n\n" + errorThrown);
 			});
 
 			return false;

@@ -70,12 +70,12 @@ mailster = (function (mailster, $, window, document) {
 
 	$.datepicker && $('input.datepicker').datepicker({
 		dateFormat: 'yy-mm-dd',
-		firstDay: mailsterL10n.start_of_week,
-		dayNames: mailsterL10n.day_names,
-		dayNamesMin: mailsterL10n.day_names_min,
-		monthNames: mailsterL10n.month_names,
-		prevText: mailsterL10n.prev,
-		nextText: mailsterL10n.next,
+		firstDay: mailster.l10n.subscribers.start_of_week,
+		dayNames: mailster.l10n.subscribers.day_names,
+		dayNamesMin: mailster.l10n.subscribers.day_names_min,
+		monthNames: mailster.l10n.subscribers.month_names,
+		prevText: mailster.l10n.subscribers.prev,
+		nextText: mailster.l10n.subscribers.next,
 		showAnim: 'fadeIn',
 		onClose: function () {
 			var date = $(this).datepicker('getDate');
@@ -119,7 +119,7 @@ mailster = (function (mailster, $, window, document) {
 						$(this).remove();
 					});
 					if (data.exists) {
-						$('<p class="email-error">&#9650; ' + mailsterL10n.email_exists + '</p>').hide().insertAfter(_this).slideDown(100);
+						$('<p class="email-error">&#9650; ' + mailster.l10n.subscribers.email_exists + '</p>').hide().insertAfter(_this).slideDown(100);
 						setTimeout(function () {
 							_this.focus(), 1
 						});
