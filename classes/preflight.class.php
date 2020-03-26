@@ -51,13 +51,13 @@ class MailsterPreflight {
 			case 'spam_report':
 				$html .= '<p>';
 				$html .= sprintf( 'SpamAssasin Score: <strong>%s</strong>.<br>', $response->score );
-				$html .= '(<span class="description">' . sprintf( esc_html__( 'A score below %s is considered spam.', 'mailster' ), '<strong>' . $response->threshold . '</strong>' ) . '</span>)';
+				$html .= '(<span class="description">' . sprintf( esc_html__( 'A score below %s is considered spam.', 'mailster' ), '<strong>' . esc_html( $response->threshold ) . '</strong>' ) . '</span>)';
 				$html .= '</p>';
 				$html .= '<table class="wp-list-table widefat striped spamreport-table">';
 				foreach ( $response->rules as $key => $data ) {
 					$html .= '<tr>';
-					$html .= '<td>' . $data->score . '</td>';
-					$html .= '<td><strong>' . $data->code . '</strong><br>' . esc_html( $data->message ) . '</td>';
+					$html .= '<td>' . esc_html( $data->score ) . '</td>';
+					$html .= '<td><strong>' . esc_html( $data->code ) . '</strong><br>' . esc_html( $data->message ) . '</td>';
 					$html .= '<td><a href="' . esc_attr( $data->link ) . '" target="_blank">' . esc_html__( 'info', 'mailster' ) . '</a></td>';
 					$html .= '</tr>';
 				}
@@ -66,17 +66,17 @@ class MailsterPreflight {
 
 			case 'tests/spf':
 			case 'tests/senderid':
-				$html .= $response->message;
-				$html .= '<pre>' . $response->record . '</pre>';
+				$html .= esc_html( $response->message );
+				$html .= '<pre>' . esc_html( $response->record ) . '</pre>';
 				break;
 
 			case 'tests/dkim':
 				if ( 'fail' == $response->result ) {
-					$html .= 'The DKIM Signature doesn\'t match: <pre>' . $response->signature . '</pre>';
+					$html .= 'The DKIM Signature doesn\'t match: <pre>' . esc_html( $response->signature ) . '</pre>';
 				} elseif ( 'none' == $response->result ) {
 					$html .= 'You do not have a DKIM Signature setup.';
 				} else {
-					$html .= 'You DKIM setup is correct. <pre>' . $response->signature . '</pre>';
+					$html .= 'You DKIM setup is correct. <pre>' . esc_html( $response->signature ) . '</pre>';
 				}
 				break;
 
@@ -84,7 +84,7 @@ class MailsterPreflight {
 				if ( 'fail' == $response->result ) {
 					$html .= 'You do not have a valid DMARC record.';
 				} elseif ( 'pass' == $response->result ) {
-					$html .= 'You DMARC setup is correct. <pre>' . $response->record . '</pre>';
+					$html .= 'You DMARC setup is correct. <pre>' . esc_html( $response->record ) . '</pre>';
 				}
 				break;
 
@@ -92,15 +92,15 @@ class MailsterPreflight {
 				if ( 'fail' == $response->result ) {
 					$html .= 'Your Reverse DNS doesn\'t resolve correctly.';
 				} elseif ( 'pass' == $response->result ) {
-					$html .= 'You Reverse DNS is correct. <p><strong>IP:</strong> ' . $response->ip . '<br><strong>HELO:</strong> ' . $response->helo . '<br><strong>DNS:</strong> ' . $response->rdns . '</p>';
+					$html .= 'You Reverse DNS is correct. <p><strong>IP:</strong> ' . esc_html( $response->ip ) . '<br><strong>HELO:</strong> ' . $response->helo . '<br><strong>DNS:</strong> ' . $response->rdns . '</p>';
 				}
 				break;
 
 			case 'tests/mx':
 				if ( 'fail' == $response->result ) {
-					$html .= 'You do not have a valid MX record. <br><strong>HOST:</strong> ' . $response->host;
+					$html .= 'You do not have a valid MX record. <br><strong>HOST:</strong> ' . esc_html( $response->host );
 				} elseif ( 'pass' == $response->result ) {
-					$html .= 'Your server has a MX record. <br><strong>HOST:</strong> ' . $response->host . '<pre>' . $response->record . '</pre>';
+					$html .= 'Your server has a MX record. <br><strong>HOST:</strong> ' . esc_html( $response->host ) . '<pre>' . esc_html( $response->record ) . '</pre>';
 				}
 				break;
 
@@ -108,7 +108,7 @@ class MailsterPreflight {
 				if ( 'fail' == $response->result ) {
 					$html .= 'You do not have a valid A record.';
 				} elseif ( 'pass' == $response->result ) {
-					$html .= 'Your server has an A record. <br><strong>IP:</strong> ' . $response->ip . '<pre>' . $response->record . '</pre>';
+					$html .= 'Your server has an A record. <br><strong>IP:</strong> ' . esc_html( $response->ip ) . '<pre>' . esc_html( $response->record ) . '</pre>';
 				}
 				break;
 
@@ -163,7 +163,7 @@ class MailsterPreflight {
 
 			case 'blacklist':
 				if ( $response->hits ) {
-					$html .= '<p>' . sprintf( esc_html__( 'Your IP %1$s is blacklisted on %2$d %3$s:', 'mailster' ), '<strong>' . $response->ip . '</strong>', $response->hits, _n( 'list', 'lists', $response->hits, 'mailster' ) ) . '</p>';
+					$html .= '<p>' . sprintf( esc_html__( 'Your IP %1$s is blacklisted on %2$d %3$s:', 'mailster' ), '<strong>' . esc_html( $response->ip ) . '</strong>', $response->hits, _n( 'list', 'lists', $response->hits, 'mailster' ) ) . '</p>';
 
 					foreach ( $response->blacklists as $i => $service ) {
 						$html .= '<div>';

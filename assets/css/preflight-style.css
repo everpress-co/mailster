@@ -351,6 +351,7 @@ details summary::-webkit-details-marker { display:none; }
 	content: '\e834';
 }
 .score-wrap .wp-list-table{
+	border:none;
 	margin-left: -2em;
 	width: calc(100% + 4em);
 }
