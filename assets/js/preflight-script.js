@@ -246,7 +246,7 @@ mailster = (function (mailster, $, window, document) {
 			clear();
 			mailster.util.ajax('set_preview', args, function (response) {
 				$iframe.one('load', initFrame).attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
-				tb_show((title ? sprintf(mailsterL10n.preflight, '"' + title + '"') : mailsterL10n.preview), '#TB_inline?hash=' +
+				tb_show((title ? sprintf(mailster.l10n.campaigns.preflight, '"' + title + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' +
 					response.hash +
 					'&_wpnonce=' + response.nonce +
 					'&width=' + (Math.min(1440, mailster.$.window.width() - 50)) +
@@ -331,7 +331,7 @@ mailster = (function (mailster, $, window, document) {
 		agreeTerms = function () {
 
 			if (!$('#preflight-agree-checkbox').is(':checked')) {
-				alert(mailsterL10n.enter_list_name);
+				alert(mailster.l10n.campaigns.enter_list_name);
 				return false;
 			}
 			mailster.util.ajax('preflight_agree', function (response) {

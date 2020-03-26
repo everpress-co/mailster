@@ -1209,7 +1209,6 @@ class MailsterCampaigns {
 					'remove_s'               => esc_html__( 'Remove %s', 'mailster' ),
 					'curr_selected'          => esc_html__( 'Currently selected', 'mailster' ),
 					'remove_btn'             => esc_html__( 'An empty link will remove this button! Continue?', 'mailster' ),
-					'preflight'              => esc_html__( 'Preflight %s', 'mailster' ),
 					'preview'                => esc_html__( 'Preview', 'mailster' ),
 					'read_more'              => esc_html__( 'Read more', 'mailster' ),
 					'invalid_image'          => esc_html__( '%s does not contain a valid image', 'mailster' ),
@@ -1242,6 +1241,8 @@ class MailsterCampaigns {
 					'add_attachment'         => esc_html__( 'Add Attachment', 'mailster' ),
 					'edit_conditions'        => esc_html__( 'Edit Conditions', 'mailster' ),
 					'remove_conditions'      => esc_html__( 'Do you really like to remove all conditions?', 'mailster' ),
+					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
+					'preflight'              => esc_html__( 'Preflight %s', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
 				)
 			);
