@@ -212,6 +212,7 @@ class Mailster {
 		if ( is_admin() ) {
 
 			add_action( 'admin_enqueue_scripts', array( &$this, 'admin_scripts_styles' ), 10, 1 );
+			add_action( 'wp_print_scripts', array( &$this, 'localize_scripts' ), 10, 1 );
 			add_action( 'admin_menu', array( &$this, 'special_pages' ), 60 );
 			add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 
@@ -1213,16 +1214,24 @@ class Mailster {
 			)
 		);
 
+		mailster_localize_script( array( 'check_console' => esc_html__( 'Check the JS console for more info!', 'mailster' ) ) );
+
 		wp_register_script( 'mailster-clipboard', MAILSTER_URI . 'assets/js/libs/clipboard' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 		wp_register_script( 'mailster-clipboard-script', MAILSTER_URI . 'assets/js/clipboard-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-clipboard-script',
-			'mailsterClipboardL10',
+
+		mailster_localize_script(
+			'clipboard',
 			array(
 				'copied' => esc_html__( 'Copied!', 'mailster' ),
 			)
 		);
 
+	}
+	public function localize_scripts() {
+		$scripts = apply_filters( 'mailster_localize_script', array() );
+		if ( ! empty( $scripts ) ) {
+			wp_localize_script( 'mailster-script', 'mailsterStrings', $scripts );
+		}
 	}
 
 
@@ -1270,9 +1279,9 @@ class Mailster {
 
 		wp_enqueue_style( 'mailster-deactivate', MAILSTER_URI . 'assets/css/deactivate-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-deactivate', MAILSTER_URI . 'assets/js/deactivate-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-deactivate',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'deactivate',
 			array(
 				'select_reason' => esc_html__( 'Please select a reason for the deactivation.', 'mailster' ),
 			)
@@ -1294,9 +1303,9 @@ class Mailster {
 
 		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-setup',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'setup',
 			array(
 				'load_language'      => esc_html__( 'Loading Languages', 'mailster' ),
 				'enable_first'       => esc_html__( 'Enable %s first', 'mailster' ),
@@ -1336,9 +1345,9 @@ class Mailster {
 
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-tests',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'tests',
 			array(
 				'restart_test'   => esc_html__( 'Restart Test', 'mailster' ),
 				'running_test'   => esc_html__( 'Running Test %1$s of %2$s: %3$s', 'mailster' ),

@@ -365,19 +365,17 @@ mailster = (function (mailster, $, window, document) {
 
 		elements = mailster.editor.$.modules;
 
-		console.log(mailsterdata);
-
 		//reset
 		//mailster.modules.items = [];
 		//add module buttons and add them to the list
 		$.each(elements, function (j) {
 			var $this = $(this);
 			if ($this.is('module') && !$this.find('modulebuttons').length) {
-				var name = $this.attr('label') || mailster.util.sprintf(mailsterL10n.module, '#' + (++mc)),
-					codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></button>' : '',
-					auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailsterL10n.auto + '"></button>' : '');
+				var name = $this.attr('label') || mailster.util.sprintf(mailster.l10n.campaigns.module, '#' + (++mc)),
+					codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailster.l10n.campaigns.codeview + '"></button>' : '',
+					auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailster.l10n.campaigns.auto + '"></button>' : '');
 
-				$('<modulebuttons>' + '<span>' + auto + '<button class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></button><button class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></button></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
+				$('<modulebuttons>' + '<span>' + auto + '<button class="mailster-btn duplicate" title="' + mailster.l10n.campaigns.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailster.l10n.campaigns.move_module_up + '"></button><button class="mailster-btn down" title="' + mailster.l10n.campaigns.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailster.l10n.campaigns.remove_module + '"></button></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailster.l10n.campaigns.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
 
 
 				// if (!$this.parent().length) {
@@ -578,7 +576,7 @@ mailster = (function (mailster, $, window, document) {
 
 				if ($this.data('has-buttons')) return;
 
-				btn = $('<button class="addbutton mailster-btn mailster-btn-inline" title="' + mailsterL10n.add_button + '"></button>').appendTo($this);
+				btn = $('<button class="addbutton mailster-btn mailster-btn-inline" title="' + mailster.l10n.campaigns.add_button + '"></button>').appendTo($this);
 
 				btn.data('offset', offset).data('name', name);
 				btn.data('element', $this);
@@ -623,7 +621,7 @@ mailster = (function (mailster, $, window, document) {
 					del_left = offset.width - 18;
 				}
 
-				btn = $('<button class="addrepeater mailster-btn mailster-btn-inline" title="' + mailsterL10n.add_repeater + '"></button>').css({
+				btn = $('<button class="addrepeater mailster-btn mailster-btn-inline" title="' + mailster.l10n.campaigns.add_repeater + '"></button>').css({
 					top: add_top,
 					left: add_left
 				}).appendTo($this);
@@ -631,7 +629,7 @@ mailster = (function (mailster, $, window, document) {
 				btn.data('offset', offset).data('name', name);
 				btn.data('element', $this);
 
-				btn = $('<button class="removerepeater mailster-btn mailster-btn-inline" title="' + mailsterL10n.remove_repeater + '"></button>').css({
+				btn = $('<button class="removerepeater mailster-btn mailster-btn-inline" title="' + mailster.l10n.campaigns.remove_repeater + '"></button>').css({
 					top: del_top,
 					left: del_left
 				}).appendTo($this);
@@ -644,7 +642,6 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function select(module) {
-		console.log(module);
 		if (!module.length) {
 			return;
 		}
@@ -684,7 +681,7 @@ mailster = (function (mailster, $, window, document) {
 
 				preloader.onerror = function (e) {
 
-					alert(mailsterL10n.unsupported_format);
+					alert(mailster.l10n.campaigns.unsupported_format);
 
 				}
 				preloader.onload = function (e) {
@@ -789,7 +786,7 @@ mailster = (function (mailster, $, window, document) {
 				try {
 					response = $.parseJSON(response.response);
 
-					source._previewtext.html(mailsterL10n.ready);
+					source._previewtext.html(mailster.l10n.campaigns.ready);
 					source._element.on('load', function () {
 						clearTimeout(delay);
 						source._preview.fadeOut(function () {
@@ -818,8 +815,8 @@ mailster = (function (mailster, $, window, document) {
 						});
 					}, 3000);
 				} catch (err) {
-					source._preview.addClass('error').find('.mailster-upload-info-text').html(mailsterL10n.error);
-					alert(mailsterL10n.error_occurs + "\n" + err.message);
+					source._preview.addClass('error').find('.mailster-upload-info-text').html(mailster.l10n.campaigns.error);
+					alert(mailster.l10n.campaigns.error_occurs + "\n" + err.message);
 					source._preview.fadeOut(function () {
 						source._element.insertAfter(source._upload);
 						source._upload.remove();

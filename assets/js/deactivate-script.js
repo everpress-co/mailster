@@ -28,7 +28,7 @@ mailster = (function (mailster, $, window, document) {
 	form
 		.on('submit', function () {
 			if (!$('[name="mailster_surey_reason"]:checked').length) {
-				alert(mailsterL10n.select_reason);
+				alert(mailster.l10n.deactivate.select_reason);
 				return false;
 			}
 		})

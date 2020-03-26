@@ -9,7 +9,7 @@ mailster = (function (mailster, $, window, document) {
 	$('.column-status')
 		.on('click', 'a.live-action', function () {
 
-			if ($(this).hasClass('finish') && !confirm(mailsterL10n.finish_campaign)) {
+			if ($(this).hasClass('finish') && !confirm(mailster.l10n.campaigns.finish_campaign)) {
 				return false;
 			}
 

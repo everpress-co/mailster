@@ -64,9 +64,9 @@ class MailsterLists {
 
 			wp_enqueue_style( 'mailster-list-detail', MAILSTER_URI . 'assets/css/list-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-list-detail', MAILSTER_URI . 'assets/js/list-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-			wp_localize_script(
-				'mailster-list-detail',
-				'mailsterL10n',
+
+			mailster_localize_script(
+				'lists',
 				array(
 					'next' => esc_html__( 'next', 'mailster' ),
 					'prev' => esc_html__( 'prev', 'mailster' ),

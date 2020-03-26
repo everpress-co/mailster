@@ -39,9 +39,9 @@ class MailsterManage {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-manage-script',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'manage',
 			array(
 				'select_status'        => esc_html__( 'Please select the status for the importing contacts!', 'mailster' ),
 				'select_emailcolumn'   => esc_html__( 'Please select at least the column with the email addresses!', 'mailster' ),
