@@ -554,9 +554,9 @@ class MailsterTemplates {
 		wp_enqueue_script( 'thickbox' );
 		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_script( 'mailster-templates', MAILSTER_URI . 'assets/js/templates-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-templates',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'templates',
 			array(
 				'delete_template_file' => esc_html__( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
 				'enter_template_name'  => esc_html__( 'Please enter the name of the new template', 'mailster' ),

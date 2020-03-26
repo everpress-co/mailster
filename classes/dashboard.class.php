@@ -227,19 +227,15 @@ class MailsterDashboard {
 		wp_enqueue_script( 'mailster-dashboard-script', MAILSTER_URI . 'assets/js/dashboard-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 		wp_enqueue_style( 'mailster-dashboard-style', MAILSTER_URI . 'assets/css/dashboard-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-		wp_localize_script(
-			'mailster-dashboard-script',
-			'mailsterdashboardL10n',
-			apply_filters(
-				'mailster-dashboard-script_mailsterL10n',
-				array(
-					'subscribers'   => esc_html__( '%s Subscribers', 'mailster' ),
-					'reset_license' => esc_html__( 'Do you really like to reset your license for this site?', 'mailster' ),
-					'check_again'   => esc_html__( 'Check Again', 'mailster' ),
-					'checking'      => esc_html__( 'Checking...', 'mailster' ),
-					'downloading'   => esc_html__( 'Downloading...', 'mailster' ),
-					'reload_page'   => esc_html__( 'Complete. Reload page!', 'mailster' ),
-				)
+		mailster_localize_script(
+			'dashboard',
+			array(
+				'subscribers'   => esc_html__( '%s Subscribers', 'mailster' ),
+				'reset_license' => esc_html__( 'Do you really like to reset your license for this site?', 'mailster' ),
+				'check_again'   => esc_html__( 'Check Again', 'mailster' ),
+				'checking'      => esc_html__( 'Checking...', 'mailster' ),
+				'downloading'   => esc_html__( 'Downloading...', 'mailster' ),
+				'reload_page'   => esc_html__( 'Complete. Reload page!', 'mailster' ),
 			)
 		);
 	}

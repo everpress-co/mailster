@@ -14,6 +14,9 @@ mailster = (function (mailster, $, window, document) {
 		last;
 
 	mailster.events = mailster.events || false;
+	mailster.l10n = window.mailsterStrings;
+
+	console.log(mailster.l10n);
 
 	mailster.status = {
 		documentReady: false,
@@ -177,7 +180,7 @@ mailster = (function (mailster, $, window, document) {
 					}
 				}
 				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console)
+				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailster.l10n.common.check_console)
 
 			},
 			dataType: dataType

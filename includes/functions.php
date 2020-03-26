@@ -229,6 +229,31 @@ function mailster_get_current_user_id() {
 	return mailster( 'subscribers' )->get_current_user_id();
 
 }
+/**
+ *
+ *
+ * @return unknown
+ */
+function mailster_localize_script( $hook, $strings = array() ) {
+
+	if ( is_array( $hook ) ) {
+		$strings = $hook;
+		$hook    = 'common';
+	}
+
+	add_filter(
+		'mailster_localize_script',
+		function( $array ) use ( $hook, $strings ) {
+			if ( isset( $array[ $hook ] ) ) {
+				$array[ $hook ] += $strings;
+			} else {
+				$array[ $hook ] = $strings;
+			}
+			return $array;
+		}
+	);
+
+}
 
 
 /**

@@ -26,7 +26,7 @@ mailster = (function (mailster, $, window, document) {
 		var hash = $(this).addClass('nav-tab-active').attr('href');
 		$('#deliverymethod').val(hash.substr(1));
 		$('#subtab-' + hash.substr(1)).show();
-		$('input.mailster_sendtest').val(mailsterL10n.save_to_test).prop('disabled', true);
+		$('input.mailster_sendtest').val(mailster.l10n.settings.save_to_test).prop('disabled', true);
 		return false;
 	});
 
@@ -163,7 +163,7 @@ mailster = (function (mailster, $, window, document) {
 
 
 	$('#mailster_generate_dkim_keys').on('click', function () {
-		return ($('#dkim_keys_active').length && confirm(mailsterL10n.create_new_keys));
+		return ($('#dkim_keys_active').length && confirm(mailster.l10n.settings.create_new_keys));
 		return false;
 	});
 
@@ -289,7 +289,7 @@ mailster = (function (mailster, $, window, document) {
 
 	$('#mailster_add_field').on('click', function () {
 
-		var el = $('<div class="customfield"><a class="customfield-move-up" title="' + mailsterL10n.move_up + '">&#9650;</a><a class="customfield-move-down" title="' + mailsterL10n.move_down + '">&#9660;</a><div><span class="label">' + mailsterL10n.fieldname + ':</span><label><input type="text" class="regular-text customfield-name"></label></div><div><span class="label">' + mailsterL10n.tag + ':</span><span><code>{</code><input type="text" class="customfield-key code"><code>}</code></span></div><div><span class="label">' + mailsterL10n.type + ':</span><select class="customfield-type"><option value="textfield">' + mailsterL10n.textfield + '</option><option value="textarea">' + mailsterL10n.textarea + '</option><option value="dropdown">' + mailsterL10n.dropdown + '</option><option value="radio">' + mailsterL10n.radio + '</option><option value="checkbox">' + mailsterL10n.checkbox + '</option><option value="date">' + mailsterL10n.datefield + '</option></select></div><ul class="customfield-additional customfield-dropdown customfield-radio"><li><ul class="customfield-values"><li><span>&nbsp;</span> <span class="customfield-value-box"><input type="text" class="regular-text customfield-value" value=""> <label><input type="radio" value="" title="' + mailsterL10n.default_selected + '" class="customfield-default" disabled> ' + mailsterL10n.default_field + '</label></span></li></ul><span>&nbsp;</span> <a class="customfield-value-add">' + mailsterL10n.add_field + '</a></li></ul><div class="customfield-additional customfield-checkbox"><span>&nbsp;</span><label><input type="checkbox" value="1" title="' + mailsterL10n.default_field + '" class="customfield-default" disabled> ' + mailsterL10n.default_checked + '</label></div><a class="customfield-remove">remove field</a><br></div>').appendTo($('.customfields').eq(0));
+		var el = $('<div class="customfield"><a class="customfield-move-up" title="' + mailster.l10n.settings.move_up + '">&#9650;</a><a class="customfield-move-down" title="' + mailster.l10n.settings.move_down + '">&#9660;</a><div><span class="label">' + mailster.l10n.settings.fieldname + ':</span><label><input type="text" class="regular-text customfield-name"></label></div><div><span class="label">' + mailster.l10n.settings.tag + ':</span><span><code>{</code><input type="text" class="customfield-key code"><code>}</code></span></div><div><span class="label">' + mailster.l10n.settings.type + ':</span><select class="customfield-type"><option value="textfield">' + mailster.l10n.settings.textfield + '</option><option value="textarea">' + mailster.l10n.settings.textarea + '</option><option value="dropdown">' + mailster.l10n.settings.dropdown + '</option><option value="radio">' + mailster.l10n.settings.radio + '</option><option value="checkbox">' + mailster.l10n.settings.checkbox + '</option><option value="date">' + mailster.l10n.settings.datefield + '</option></select></div><ul class="customfield-additional customfield-dropdown customfield-radio"><li><ul class="customfield-values"><li><span>&nbsp;</span> <span class="customfield-value-box"><input type="text" class="regular-text customfield-value" value=""> <label><input type="radio" value="" title="' + mailster.l10n.settings.default_selected + '" class="customfield-default" disabled> ' + mailster.l10n.settings.default_field + '</label></span></li></ul><span>&nbsp;</span> <a class="customfield-value-add">' + mailster.l10n.settings.add_field + '</a></li></ul><div class="customfield-additional customfield-checkbox"><span>&nbsp;</span><label><input type="checkbox" value="1" title="' + mailster.l10n.settings.default_field + '" class="customfield-default" disabled> ' + mailster.l10n.settings.default_checked + '</label></div><a class="customfield-remove">remove field</a><br></div>').appendTo($('.customfields').eq(0));
 		el.find('.customfield-name').focus();
 	});
 
@@ -317,7 +317,7 @@ mailster = (function (mailster, $, window, document) {
 			$('.sync-button').prop('disabled', true);
 		})
 		.on('click', '#sync_subscribers_wp', function () {
-			if (event.target == this && !confirm(mailsterL10n.sync_subscriber)) return false;
+			if (event.target == this && !confirm(mailster.l10n.settings.sync_subscriber)) return false;
 
 			var _this = $(this),
 				loader = $('.sync-ajax-loading').css({
@@ -351,7 +351,7 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		})
 		.on('click', '#sync_wp_subscribers', function () {
-			if (event.target == this && !confirm(mailsterL10n.sync_wp_user)) return false;
+			if (event.target == this && !confirm(mailster.l10n.settings.sync_wp_user)) return false;
 
 			var _this = $(this),
 				loader = $('.sync-ajax-loading').css({
@@ -444,10 +444,10 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 	$('#mailster_import_data').on('click', function () {
-		if (!confirm(mailsterL10n.import_data)) return false;
+		if (!confirm(mailster.l10n.settings.import_data)) return false;
 	});
 	$('#mailster_reset_data').on('click', function () {
-		if (!confirm(mailsterL10n.reset_data)) return false;
+		if (!confirm(mailster.l10n.settings.reset_data)) return false;
 	});
 
 	function bounce_test_check(identifier, count, formdata, callback) {
@@ -534,7 +534,7 @@ mailster = (function (mailster, $, window, document) {
 	function sanitize(string) {
 		var tag = $.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '').replace(/^[_]*/, '').replace(/[_]*$/, '');
 		if ($.inArray(tag, reservedtags) != -1) {
-			alert(mailster.util.sprintf(mailsterL10n.reserved_tag, '"' + tag + '"'));
+			alert(mailster.util.sprintf(mailster.l10n.settings.reserved_tag, '"' + tag + '"'));
 			tag += '-a';
 		}
 		return tag;

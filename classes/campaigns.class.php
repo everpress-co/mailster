@@ -1080,9 +1080,8 @@ class MailsterCampaigns {
 
 			wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_localize_script(
-				'mailster-overview',
-				'mailsterL10n',
+			mailster_localize_script(
+				'campaigns',
 				array(
 					'finish_campaign' => esc_html__( 'Do you really like to finish this campaign?', 'mailster' ),
 				)
@@ -1158,9 +1157,8 @@ class MailsterCampaigns {
 
 			}
 
-			wp_localize_script(
-				'google-jsapi',
-				'google_jsapi',
+			mailster_localize_script(
+				'google',
 				array(
 					'key' => mailster_option( 'google_api_key' ),
 				)
@@ -1179,9 +1177,8 @@ class MailsterCampaigns {
 
 			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_localize_script(
-				'mailster-campaign',
-				'mailsterL10n',
+			mailster_localize_script(
+				'campaigns',
 				array(
 					'loading'                => esc_html__( 'loading', 'mailster' ),
 					'add'                    => esc_html__( 'Add', 'mailster' ),
@@ -1235,7 +1232,6 @@ class MailsterCampaigns {
 					'undosteps'              => mailster_option( 'undosteps', 10 ),
 					'statuschanged'          => esc_html__( 'The status of this campaign has changed. Please reload the page or %s', 'mailster' ),
 					'click_here'             => esc_html__( 'click here', 'mailster' ),
-					'check_console'          => esc_html__( 'Check the JS console for more info!', 'mailster' ),
 					'send_now'               => esc_html__( 'Do you really like to send this campaign now?', 'mailster' ),
 					'select_image'           => esc_html__( 'Select Image', 'mailster' ),
 					'add_attachment'         => esc_html__( 'Add Attachment', 'mailster' ),

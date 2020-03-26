@@ -87,14 +87,14 @@ mailster = (function (mailster, $, window, document) {
 
 			if (response.nexttest && !single_test) {
 				progressbar.width(((++tests_run) / response.total * 100) + '%');
-				testinfo.html(mailster.util.sprintf(mailsterL10n.running_test, tests_run, response.total, response.next));
+				testinfo.html(mailster.util.sprintf(mailster.l10n.tests.running_test, tests_run, response.total, response.next));
 			} else {
 				progressbar.width('100%');
 				setTimeout(function () {
-					start_button.html(mailsterL10n.restart_test).show();
+					start_button.html(mailster.l10n.tests.restart_test).show();
 					progress.hide();
 					progressbar.width(0);
-					testinfo.html(mailster.util.sprintf(mailsterL10n.tests_finished, errors.error, errors.warning, errors.notice));
+					testinfo.html(mailster.util.sprintf(mailster.l10n.tests.tests_finished, errors.error, errors.warning, errors.notice));
 				}, 500);
 			}
 

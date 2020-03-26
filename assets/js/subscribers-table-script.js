@@ -33,10 +33,10 @@ mailster = (function (mailster, $, window, document) {
 				form_submitted = true;
 
 				window.onbeforeunload = function () {
-					return mailsterL10n.onbeforeunload;
+					return mailster.l10n.subscribers.onbeforeunload;
 				};
 
-				bulk_update_info = $('<div class="alignright bulk-update-info spinner">' + mailsterL10n.initprogess + '</div>').prependTo('.bulkactions');
+				bulk_update_info = $('<div class="alignright bulk-update-info spinner">' + mailster.l10n.subscribers.initprogess + '</div>').prependTo('.bulkactions');
 
 				do_batch($this.serialize(), 0, function () {
 					bulk_update_info.removeClass('spinner');
