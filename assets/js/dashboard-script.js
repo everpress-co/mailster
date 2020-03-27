@@ -183,9 +183,8 @@ mailster = (function (mailster, $, window, document) {
 		box.find('.piechart').easyPieChart({
 			animate: 1000,
 			rotate: 180,
-			barColor: '#2BB3E7',
-			trackColor: '#50626f',
-			trackColor: '#f3f3f3',
+			barColor: mailster.colors.main,
+			trackColor: mailster.colors.track,
 			lineWidth: 9,
 			size: 75,
 			lineCap: 'butt',

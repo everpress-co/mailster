@@ -1,5 +1,17 @@
 window.mailster = window.mailster || {};
 
+// block localization
+mailster = (function (mailster, $, window, document) {
+
+	"use strict";
+
+	mailster.l10n = window.mailster_l10n;
+
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));
+// end localization
+
 // events
 mailster = (function (mailster, $, window, document) {
 
@@ -14,9 +26,6 @@ mailster = (function (mailster, $, window, document) {
 		last;
 
 	mailster.events = mailster.events || false;
-	mailster.l10n = window.mailsterStrings;
-
-	console.log(mailster.l10n);
 
 	mailster.status = {
 		documentReady: false,
@@ -49,7 +58,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 		mailster.status.documentReady = true;
 		if (mailster.status.windowLoadPending) {
-			windowLoad(mailster.setContext());
+			windowLoad(setContext());
 		}
 	}
 
@@ -74,7 +83,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 	}
 
-	mailster.setContext = function (contextSelector) {
+	function setContext(contextSelector) {
 		var context = $;
 		if (typeof contextSelector !== typeof undefined) {
 			return function (selector) {
@@ -82,7 +91,7 @@ mailster = (function (mailster, $, window, document) {
 			};
 		}
 		return context;
-	};
+	}
 
 	mailster.events.push = function () {
 
@@ -118,12 +127,16 @@ mailster = (function (mailster, $, window, document) {
 	mailster.log = function () {
 
 		debug(arguments, 'log');
-
 	}
 
 	mailster.error = function () {
 
 		debug(arguments, 'error');
+	}
+
+	mailster.warning = function () {
+
+		debug(arguments, 'warn');
 	}
 
 
@@ -344,19 +357,3 @@ mailster = (function (mailster, $, window, document) {
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));
-
-
-
-// // block XXX
-// mailster = (function (mailster, $, window, document) {
-
-// 	"use strict";
-
-// 	mailster.xxx = mailster.xxx || {};
-
-// 	mailster.xxx.$ = {};
-
-// 	return mailster;
-
-// }(mailster || {}, jQuery, window, document));
-// // end XXX
