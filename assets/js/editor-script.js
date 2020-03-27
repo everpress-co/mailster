@@ -365,9 +365,7 @@ mailster = (function (mailster, $, window, document) {
 
 		elements = mailster.editor.$.modules;
 
-		//reset
-		//mailster.modules.items = [];
-		//add module buttons and add them to the list
+		// add module buttons and add them to the list
 		$.each(elements, function (j) {
 			var $this = $(this);
 			if ($this.is('module') && !$this.find('modulebuttons').length) {
@@ -375,16 +373,8 @@ mailster = (function (mailster, $, window, document) {
 					codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailster.l10n.campaigns.codeview + '"></button>' : '',
 					auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailster.l10n.campaigns.auto + '"></button>' : '');
 
-				$('<modulebuttons>' + '<span>' + auto + '<button class="mailster-btn duplicate" title="' + mailster.l10n.campaigns.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailster.l10n.campaigns.move_module_up + '"></button><button class="mailster-btn down" title="' + mailster.l10n.campaigns.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailster.l10n.campaigns.remove_module + '"></button></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailster.l10n.campaigns.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
+				$('<modulebuttons>' + '<input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailster.l10n.campaigns.module_label + '" tabindex="-1"><span>' + auto + '<button class="mailster-btn duplicate" title="' + mailster.l10n.campaigns.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailster.l10n.campaigns.move_module_up + '"></button><button class="mailster-btn down" title="' + mailster.l10n.campaigns.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailster.l10n.campaigns.remove_module + '"></button></span></modulebuttons>').prependTo($this);
 
-
-				// if (!$this.parent().length) {
-
-				// 	mailster.modules.items.push({
-				// 		name: name,
-				// 		el: $this
-				// 	});
-				// }
 			}
 		});
 

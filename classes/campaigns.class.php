@@ -1211,7 +1211,6 @@ class MailsterCampaigns {
 					'for_area'               => esc_html__( 'Area %s', 'mailster' ),
 					'enter_list_name'        => esc_html__( 'Enter name of the list', 'mailster' ),
 					'create_list'            => esc_html_x( '%1$s of %2$s', '[recipientstype] of [campaignname]', 'mailster' ),
-
 					'next'                   => esc_html__( 'next', 'mailster' ),
 					'prev'                   => esc_html__( 'prev', 'mailster' ),
 					'start_of_week'          => get_option( 'start_of_week' ),
@@ -1237,6 +1236,10 @@ class MailsterCampaigns {
 					'add_attachment'         => esc_html__( 'Add Attachment', 'mailster' ),
 					'edit_conditions'        => esc_html__( 'Edit Conditions', 'mailster' ),
 					'remove_conditions'      => esc_html__( 'Do you really like to remove all conditions?', 'mailster' ),
+					'ready'                  => esc_html__( 'ready!', 'mailster' ),
+					'error'                  => esc_html__( 'error!', 'mailster' ),
+					'error_occurs'           => esc_html__( 'An error occurs while uploading', 'mailster' ),
+					'unsupported_format'     => esc_html__( 'Unsupported file format', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
 				)
 			);
@@ -4548,20 +4551,6 @@ class MailsterCampaigns {
 		}
 
 		wp_localize_script( 'mailster-editor-script', 'mailsterdata', $mailsterdata );
-
-		wp_localize_script(
-			'mailster-editor-script',
-			'mailsterL10n',
-			array(
-				'ready'              => esc_html__( 'ready!', 'mailster' ),
-				'error'              => esc_html__( 'error!', 'mailster' ),
-				'error_occurs'       => esc_html__( 'An error occurs while uploading', 'mailster' ),
-				'unsupported_format' => esc_html__( 'Unsupported file format', 'mailster' ),
-				'add_button'         => esc_html__( 'Add button', 'mailster' ),
-				'add_repeater'       => esc_html__( 'Duplicate element', 'mailster' ),
-				'remove_repeater'    => esc_html__( 'Remove element', 'mailster' ),
-			)
-		);
 
 		wp_register_script( 'mailster-tinymce', includes_url( 'js/tinymce/' ) . 'tinymce.min.js', array(), false, true );
 		wp_register_script( 'mailster-tinymce-compat', includes_url( 'js/tinymce/plugins/compat3x/' ) . 'plugin' . $suffix . '.js', array(), false, true );
