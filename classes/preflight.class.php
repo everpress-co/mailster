@@ -229,17 +229,21 @@ class MailsterPreflight {
 		}
 		$url .= '.json';
 
-		$token = 'mytoken';
+		if ( $token = get_option( 'mailster_preflight_tokens' ) ) {
+			$authorization = 'Bearer ' . $token;
+		} else {
+			$authorization = mailster()->license();
+		}
 
-		$response = wp_remote_get(
-			$url,
-			array(
-				'timeout' => (int) $timeout,
-				'headers' => array(
-					'Authorization' => 'Bearer ' . $token,
-				),
-			)
+		$args = array(
+			'timeout' => (int) $timeout,
+			'headers' => array(
+				'Authorization' => $authorization,
+				'X-Domain'      => parse_url( is_multisite() ? network_site_url() : home_url(), PHP_URL_HOST ),
+			),
 		);
+
+		$response = wp_remote_get( $url, $args );
 
 		$code    = wp_remote_retrieve_response_code( $response );
 		$headers = wp_remote_retrieve_headers( $response );
@@ -247,6 +251,9 @@ class MailsterPreflight {
 		if ( is_wp_error( $response ) || 503 === $code ) {
 			return new WP_Error( 503, esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' ) );
 		} elseif ( 200 === $code ) {
+			if ( isset( $headers['token'] ) && $token != $headers['token'] ) {
+				update_option( 'mailster_preflight_token', $headers['token'] );
+			}
 			$body = wp_remote_retrieve_body( $response );
 			$json = json_decode( $body );
 			if ( null === $json ) {
@@ -254,6 +261,11 @@ class MailsterPreflight {
 			}
 			return $json;
 		} elseif ( 429 === $code ) {
+			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) );
+		} elseif ( 498 === $code ) {
+			delete_option( 'mailster_preflight_token' );
+			return new WP_Error( $code, sprintf( esc_html__( 'Your token is invalid. Please check %s.', 'mailster' ), 'HELP' ) );
+		} else {
 			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) );
 		}
 

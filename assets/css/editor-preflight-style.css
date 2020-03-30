@@ -1,6 +1,9 @@
+body{
+	overflow: hidden;
+	overflow-y: auto;
+}
 body.preflight-highlighter{
 	position: relative;
-	overflow: hidden;
 }
 highlighterx, highlightery{
 	display: block;
@@ -13,12 +16,11 @@ highlighterx, highlightery{
 body.preflight-images-hidden [background]{
 	background-image: none !important;
 }
+body.preflight-structure-enabled td{
+	box-shadow: 0 0 0 1px #2BB3E7 !important;
+}
 .preflight-highlighter highlighterx,.preflight-highlighter highlightery{
 	opacity: 1;
-}
-._preflight-highlighted, ._preflight-highlighted *{
-	position: relative;
-	z-index: 9999999;
 }
 highlighterx, highlightery{
 	z-index: 10;
