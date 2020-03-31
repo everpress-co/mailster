@@ -1639,13 +1639,6 @@ class MailsterHelper {
 
 			$rss_items = $feed->get_items( 0, $max_items );
 
-			$recent_feeds                       = get_option( 'mailster_recent_feeds', array() );
-			$recent_feeds                       = array_reverse( $recent_feeds );
-			$recent_feeds[ $feed->get_title() ] = $url;
-			$recent_feeds                       = array_reverse( $recent_feeds );
-			$recent_feeds                       = array_slice( $recent_feeds, 0, 5 );
-			update_option( 'mailster_recent_feeds', $recent_feeds );
-
 			$posts = array();
 
 			foreach ( $rss_items as $id => $rss_item ) {

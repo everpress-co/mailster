@@ -90,6 +90,8 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.10 =
 
+* fixed: creating campaigns with feeds which timeout causes empty autoresponders.
+
 = Version 2.4.9 =
 
 * change: moved text strings for GDPR to text tab for better localization.

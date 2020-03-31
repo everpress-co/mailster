@@ -1209,7 +1209,9 @@ class Mailster {
 				'isrtl'   => is_rtl(),
 				'version' => MAILSTER_VERSION,
 				'colors'  => array(
-					'main' => '#2BB3E7',
+					'main'        => '#2BB3E7',
+					'track'       => '#f3f3f3',
+					'track_light' => '#ffffff',
 				),
 			)
 		);
@@ -1230,7 +1232,7 @@ class Mailster {
 	public function localize_scripts() {
 		$scripts = apply_filters( 'mailster_localize_script', array() );
 		if ( ! empty( $scripts ) ) {
-			wp_localize_script( 'mailster-script', 'mailsterStrings', $scripts );
+			wp_localize_script( 'mailster-script', 'mailster_l10n', $scripts );
 		}
 	}
 

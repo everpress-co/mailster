@@ -562,6 +562,9 @@ if ( $old_version ) {
 
 			update_option( 'mailster_templates', '' );
 
+		case '2.4.9':
+			delete_option( 'mailster_recent_feeds' );
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
