@@ -560,7 +560,7 @@ class MailsterFrontpage {
 	 */
 	public function status_to_publish( $post_status, $post ) {
 
-		if ( 'newsletter' == $post->post_type && in_array( $post_status, array( 'finished', 'paused', 'queued' ) ) ) {
+		if ( 'newsletter' == $post->post_type && in_array( $post_status, array( 'finished', 'paused', 'queued', 'notification' ) ) ) {
 			return 'publish';
 		}
 

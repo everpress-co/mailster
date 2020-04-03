@@ -172,11 +172,13 @@ class MailsterNotification {
 
 			case 'new_subscriber_replace':
 			case 'new_subscriber_delayed_replace':
-				return array(
+				$replace             = array(
 					'preheader'    => $subscriber ? ( ( $subscriber->fullname ? $subscriber->fullname . ' - ' : '' ) . $subscriber->email ) : '',
 					'notification' => sprintf( esc_html__( 'You are receiving this email because you have enabled notifications for new subscribers %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' ) . '">' . esc_html__( 'on your settings page', 'mailster' ) . '</a>' ),
 					'can-spam'     => '',
 				);
+				$replace['can-spam'] = $replace['notification'];
+				return $replace;
 
 			// unsubscription
 			case 'unsubscribe_to':
@@ -200,11 +202,13 @@ class MailsterNotification {
 
 			case 'unsubscribe_replace':
 			case 'unsubscribe_delayed_replace':
-				return array(
+				$replace             = array(
 					'preheader'    => $subscriber ? ( ( $subscriber->fullname ? $subscriber->fullname . ' - ' : '' ) . $subscriber->email ) : '',
 					'notification' => sprintf( esc_html__( 'You are receiving this email because you have enabled notifications for unsubscriptions %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#subscribers' ) . '">' . esc_html__( 'on your settings page', 'mailster' ) . '</a>' ),
 					'can-spam'     => '',
 				);
+				$replace['can-spam'] = $replace['notification'];
+				return $replace;
 
 			// confirmation
 			case 'confirmation_to':
@@ -265,10 +269,12 @@ class MailsterNotification {
 				return esc_html__( 'Mailster Test Email', 'mailster' );
 
 			case 'test_replace':
-				return array(
+				$replace             = array(
 					'notification' => sprintf( esc_html__( 'This is a test mail sent from %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' ) . '">' . esc_html__( 'from your settings page', 'mailster' ) . '</a>' ),
 					'can-spam'     => '',
 				);
+				$replace['can-spam'] = $replace['notification'];
+				return $replace;
 
 			default:
 				return apply_filters( "mailster_notification_{$template}_{$filter}", $content, $subscriber, $options );
@@ -413,8 +419,40 @@ class MailsterNotification {
 
 		$this->replace = apply_filters( 'mailster_notification_replace', $this->replace, $template, $subscriber, $options );
 
+		$this->attachments = apply_filters( 'mailster_notification_attachments', $this->attachments, $template, $subscriber, $options );
+
 		if ( ! isset( $this->file ) || empty( $this->file ) ) {
 			$this->file = 'notification.html';
+		}
+
+		// if it's a campaign
+		if ( is_numeric( $this->file ) && mailster( 'campaigns' )->get( $this->file ) ) {
+
+			if ( ! $subscriber_id ) {
+				$subscriber = (object) array(
+					'ID'       => null,
+					'email'    => $this->to,
+					'status'   => 1,
+					'hash'     => md5( $this->to ),
+					'fullname' => '',
+				);
+			}
+
+			$tags = array(
+				'subject'      => $this->subject,
+				'preheader'    => $this->preheader,
+				'headline'     => $this->headline,
+				'content'      => $this->message,
+				'emailaddress' => $subscriber->email,
+				'hash'         => $subscriber->hash,
+			);
+
+			$tags  = array_merge( $tags, $this->replace );
+			$track = null;
+			$force = true;
+			$log   = false;
+
+			return mailster( 'campaigns' )->send( $this->file, $subscriber, $track, $force, $log, $tags, $this->attachments );
 		}
 
 		$this->mail = mailster( 'mail' );
@@ -430,7 +468,7 @@ class MailsterNotification {
 		$this->mail->add_header( 'X-Mailster-ID', $MID );
 
 		$this->mail->bouncemail  = mailster_option( 'bounce' );
-		$this->mail->attachments = apply_filters( 'mailster_notification_attachments', $this->attachments, $template, $subscriber, $options );
+		$this->mail->attachments = $this->attachments;
 
 		$t   = mailster( 'template', null, $this->file );
 		$raw = $t->get( true, true );

@@ -11,10 +11,10 @@ $table->prepare_items();
 <?php if ( current_user_can( 'mailster_add_subscribers' ) ) : ?>
 	<a href="edit.php?post_type=newsletter&page=mailster_subscribers&new" class="page-title-action"><?php esc_html_e( 'Add New', 'mailster' ); ?></a>
 <?php endif; ?>
-<?php if ( current_user_can( 'mailster_import_subscribers' ) ) : ?>
+<?php if ( current_user_can( 'mailster_manage_subscribers' ) && current_user_can( 'mailster_import_subscribers' ) ) : ?>
 	<a href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=import" class="page-title-action"><?php esc_html_e( 'Import', 'mailster' ); ?></a>
 <?php endif; ?>
-<?php if ( current_user_can( 'mailster_export_subscribers' ) ) : ?>
+<?php if ( current_user_can( 'mailster_manage_subscribers' ) && current_user_can( 'mailster_export_subscribers' ) ) : ?>
 	<a href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export" class="page-title-action"><?php esc_html_e( 'Export', 'mailster' ); ?></a>
 <?php endif; ?>
 <?php if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) : ?>

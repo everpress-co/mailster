@@ -139,6 +139,14 @@ class MailsterTinymce {
 			),
 		);
 
+		$tags['notification'] = array(
+			'name' => esc_html__( 'Notification', 'mailster' ),
+			'tags' => array(
+				'headline' => esc_html__( 'Headline', 'mailster' ),
+				'content'  => esc_html__( 'Content', 'mailster' ),
+			),
+		);
+
 		echo '<script type="text/javascript">';
 		echo 'mailster_mce_button = ' . json_encode(
 			array(

@@ -500,9 +500,9 @@ class MailsterAjax {
 
 			$return['success'] = $n->add();
 
-			$mail = $n->mail;
+			// $mail = $n->mail;
 
-			$return['log'] = $mail->get_error_log();
+			// $return['log'] = $mail->get_error_log();
 
 		} else {
 

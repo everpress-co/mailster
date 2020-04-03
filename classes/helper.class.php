@@ -726,12 +726,25 @@ class MailsterHelper {
 			unset( $templatefiles['index.html'] );
 		}
 
+		$notification = mailster( 'campaigns' )->get_notification();
+
 		?>
 		<select name="<?php echo esc_attr( $fieldname ); ?>" <?php echo $disabled ? 'disabled' : ''; ?>>
-				<option value="-1" <?php selected( -1 == $selected ); ?>><?php esc_html_e( 'Plain Text (no template file)', 'mailster' ); ?></option>
-		<?php foreach ( $templatefiles as $slug => $filedata ) : ?>
-				<option value="<?php echo $slug; ?>"<?php selected( $slug == $selected ); ?>><?php echo esc_attr( $filedata['label'] ); ?> (<?php echo esc_html( $slug ); ?>)</option>
+			<option value="-1" <?php selected( $selected, -1 ); ?>><?php esc_html_e( 'Plain Text (no template file)', 'mailster' ); ?></option>
+		<?php if ( ! empty( $templatefiles ) ) : ?>
+			<optgroup label="<?php esc_attr_e( 'File Based', 'mailster' ); ?>">
+			<?php foreach ( $templatefiles as $slug => $filedata ) : ?>
+				<option value="<?php esc_attr_e( $slug ); ?>"<?php selected( $slug, $selected ); ?>><?php echo esc_attr( $filedata['label'] ); ?> (<?php esc_html_e( $slug ); ?>)</option>
 		<?php endforeach; ?>
+			</optgroup>
+		<?php endif; ?>
+		<?php if ( ! empty( $notification ) ) : ?>
+			<optgroup label="<?php esc_attr_e( 'Campaign Based', 'mailster' ); ?>">
+			<?php foreach ( $notification as $slug => $campaign ) : ?>
+				<option value="<?php esc_attr_e( $campaign->ID ); ?>"<?php selected( $campaign->ID, $selected ); ?>><?php echo esc_attr( $campaign->post_title ? $campaign->post_title : '[' . __( 'No Title', 'mailster' ) . ']' ); ?> (#<?php esc_html_e( $campaign->ID ); ?>)</option>
+		<?php endforeach; ?>
+			</optgroup>
+		<?php endif; ?>
 		</select>
 		<?php
 	}
@@ -1034,7 +1047,7 @@ class MailsterHelper {
 		switch ( $status ) {
 			case 'list_unsubscribe':
 			case 'list_unsubscribe_list':
-				return  esc_html__( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
+				return esc_html__( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
 			case 'link_unsubscribe':
 			case 'link_unsubscribe_list':
 				return esc_html__( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
@@ -1583,7 +1596,7 @@ class MailsterHelper {
 
 		if ( ! ( $posts = mailster_cache_get( 'feed_' . $feed_id ) ) ) {
 			if ( ! class_exists( 'SimplePie', false ) ) {
-				require_once( ABSPATH . WPINC . '/class-simplepie.php' );
+				require_once ABSPATH . WPINC . '/class-simplepie.php';
 			}
 
 			$feed = new SimplePie();

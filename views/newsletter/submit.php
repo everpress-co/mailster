@@ -19,6 +19,7 @@ $sent = $this->get_sent( $post->ID );
 
 			<span class="spinner ajax-loading" id="ajax-loading"></span>
 
+			<?php if ( 'notification' != $post->post_status ) : ?>
 			<p class="clear" id="webversion-field" title="<?php esc_attr_e( 'Offer a public web version for this campaign. If disabled this campaign will be marked as "private"', 'mailster' ); ?>">
 				<label for="use_webversion"><input type="checkbox" id="use_webversion" name="mailster_data[webversion]" value="1" <?php checked( $this->post_data['webversion'] ); ?>> <?php esc_html_e( 'Web version', 'mailster' ); ?></label>
 			</p>
@@ -31,6 +32,7 @@ $sent = $this->get_sent( $post->ID );
 					<span class="description"><?php esc_html_e( 'Protect the web version with a password.', 'mailster' ); ?></span>
 				</span>
 			</p>
+			<?php endif; ?>
 
 			<div id="delete-action">
 				<?php if ( current_user_can( 'delete_post', $post->ID ) ) : ?>
@@ -60,7 +62,7 @@ $sent = $this->get_sent( $post->ID );
 
 				<?php if ( isset( $_GET['showstats'] ) ) : ?>
 
-					<?php if ( $can_publish && in_array( $post->post_status, array( 'paused', 'autoresponder' ) ) ) : ?>
+					<?php if ( $can_publish && in_array( $post->post_status, array( 'paused', 'autoresponder', 'notification' ) ) ) : ?>
 					<a class="button" href="post.php?post=<?php echo $post->ID; ?>&action=edit"><?php esc_html_e( 'Edit', 'mailster' ); ?></a>
 					<?php else : ?>
 					<a class="button pause" href="edit.php?post_type=newsletter&pause=<?php echo $post->ID; ?>&edit=1&_wpnonce=<?php echo wp_create_nonce( 'mailster_pause_nonce' ); ?>"><?php esc_html_e( 'Pause', 'mailster' ); ?></a>
@@ -87,7 +89,7 @@ $sent = $this->get_sent( $post->ID );
 							<input name="sendnow" type="submit" value="<?php esc_attr_e( 'Send now', 'mailster' ); ?>" class="button sendnow-button" title=" <?php esc_attr_e( 'Save and send campaign', 'mailster' ); ?>" />
 						<?php endif; ?>
 
-					<?php elseif ( 'autoresponder' == $post->post_status ) : ?>
+					<?php elseif ( in_array( $post->post_status, array( 'autoresponder', 'notification' ) ) ) : ?>
 
 						<?php if ( $queuecount = mailster( 'queue' )->get_job_count( $post->ID, false ) ) : ?>
 
@@ -112,12 +114,14 @@ $sent = $this->get_sent( $post->ID );
 					<?php elseif ( in_array( $post->post_status, array( 'draft', 'auto-draft' ) ) ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ); ?>" />
+						<?php submit_button( esc_html__( 'Save as Notification', 'mailster' ), '', 'notification', false, array( 'accesskey' => 'n' ) ); ?>
 						<?php submit_button( esc_html__( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
 						<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 					<?php elseif ( in_array( $post->post_status, array( 'pending' ) ) ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ); ?>" />
+						<?php submit_button( esc_html__( 'Save as Notification', 'mailster' ), '', 'notification', false, array( 'accesskey' => 'n' ) ); ?>
 						<?php submit_button( esc_html__( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
 						<?php submit_button( esc_html__( 'Confirm', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 

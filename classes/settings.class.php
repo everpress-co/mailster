@@ -784,6 +784,21 @@ class MailsterSettings {
 
 					break;
 
+				case 'system_mail_template':
+					if ( $value && is_numeric( $value ) ) {
+
+						$campaign = get_post( $value );
+						if ( false === strpos( $campaign->post_content, '{headline}' ) ) {
+							$this->add_settings_error( sprintf( esc_html__( '[System Mails] %1$s does not contain a required %2$s tag. Please update the %3$s first!', 'mailster' ), '"' . $campaign->post_title . '"', '<code>{headline}</code>', '<a href="' . admin_url( 'post.php?post=' . $campaign->ID . '&action=edit' ) . '" class="external">' . esc_html__( 'Campaign', 'mailster' ) . '</a>' ), 'no_headline_email' );
+							$value = $old;
+						}
+						if ( false === strpos( $campaign->post_content, '{content}' ) ) {
+							$this->add_settings_error( sprintf( esc_html__( '[System Mails] %1$s does not contain a required %2$s tag. Please update the %3$s first!', 'mailster' ), '"' . $campaign->post_title . '"', '<code>{content}</code>', '<a href="' . admin_url( 'post.php?post=' . $campaign->ID . '&action=edit' ) . '" class="external">' . esc_html__( 'Campaign', 'mailster' ) . '</a>' ), 'no_content_email' );
+							$value = $old;
+						}
+					}
+					break;
+
 				case 'services':
 					if ( $value ) {
 						$value = array_map( 'trim', $value );
