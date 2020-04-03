@@ -1034,7 +1034,7 @@ class MailsterHelper {
 		switch ( $status ) {
 			case 'list_unsubscribe':
 			case 'list_unsubscribe_list':
-				return  esc_html__( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
+				return esc_html__( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
 			case 'link_unsubscribe':
 			case 'link_unsubscribe_list':
 				return esc_html__( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
@@ -1583,7 +1583,7 @@ class MailsterHelper {
 
 		if ( ! ( $posts = mailster_cache_get( 'feed_' . $feed_id ) ) ) {
 			if ( ! class_exists( 'SimplePie', false ) ) {
-				require_once( ABSPATH . WPINC . '/class-simplepie.php' );
+				require_once ABSPATH . WPINC . '/class-simplepie.php';
 			}
 
 			$feed = new SimplePie();
@@ -1602,6 +1602,8 @@ class MailsterHelper {
 					}
 					return $response;
 				}
+
+				mailster_remove_notice( $feed_id );
 
 				$body = wp_remote_retrieve_body( $response );
 
