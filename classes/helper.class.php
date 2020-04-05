@@ -1589,16 +1589,12 @@ class MailsterHelper {
 			$feed = new SimplePie();
 
 			if ( ! $cache_duration || false === ( $body = get_transient( 'mailster_feed_' . $feed_id ) ) ) {
-				$response = wp_remote_get(
-					$url,
-					array(
-						'timeout' => 5,
-					)
-				);
+
+				$response = wp_remote_get( $url, array( 'timeout' => 10 ) );
 
 				if ( is_wp_error( $response ) ) {
 					if ( ! is_admin() ) {
-						mailster_notice( sprintf( esc_html__( 'There\'s a problem receiving the feed from `%1$s`: %2$s', 'mailster' ), $url, $response->get_error_message() ), 'error', false, $feed_id );
+						mailster_notice( sprintf( esc_html__( 'There\'s a problem receiving the feed from `%1$s`: %2$s', 'mailster' ), $url, $response->get_error_message() ), 'error', $cache_duration, $feed_id );
 					}
 					return $response;
 				}

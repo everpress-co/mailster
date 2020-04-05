@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.10 =
 
 * fixed: creating campaigns with feeds which timeout causes empty autoresponders.
+* added: 'mailster_register_form_signup_field' filter hook to modify signup checkbox on registration screen.
 
 = Version 2.4.9 =
 

@@ -3074,9 +3074,10 @@ class MailsterSubscribers {
 			return;
 		}
 
-		?>
-		<p><label for="mailster_user_newsletter_signup"><input name="mailster_user_newsletter_signup" type="checkbox" id="mailster_user_newsletter_signup" value="1" <?php checked( mailster_option( 'register_signup_checked' ) ); ?> /><?php echo mailster_text( 'newsletter_signup' ); ?></label><br><br></p>
-		<?php
+		$output = '<p><label for="mailster_user_newsletter_signup"><input name="mailster_user_newsletter_signup" type="checkbox" id="mailster_user_newsletter_signup" value="1" ' . checked( mailster_option( 'register_signup_checked' ), true, false ) . ' />' . mailster_text( 'newsletter_signup' ) . '</label></p>';
+
+		echo apply_filters( 'mailster_register_form_signup_field', $output ) . "\n";
+
 	}
 
 
