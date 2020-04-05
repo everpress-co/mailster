@@ -1347,8 +1347,9 @@ class MailsterTemplates {
 
 			$response_code = wp_remote_retrieve_response_code( $response );
 			$response_body = trim( wp_remote_retrieve_body( $response ) );
+			$response      = json_decode( $response_body, true );
 
-			if ( $response_code != 200 || is_wp_error( $response ) ) {
+			if ( $response_code != 200 || is_wp_error( $response ) || json_last_error() !== JSON_ERROR_NONE ) {
 				foreach ( $items as $slug => $data ) {
 					if ( isset( $mailster_templates[ $slug ] ) ) {
 						$mailster_templates[ $slug ]             = wp_parse_args( $mailster_templates[ $slug ], $default );
@@ -1359,8 +1360,7 @@ class MailsterTemplates {
 
 			} else {
 
-				$response = ! empty( $response_body ) ? array_values( json_decode( $response_body, true ) ) : false;
-				$i        = -1;
+				$i = -1;
 				foreach ( $items as $slug => $data ) {
 					$i++;
 
