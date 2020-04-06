@@ -1421,9 +1421,7 @@ class MailsterSubscribers {
 		}
 
 		// delete from subscribers, lists_subscribers, subscriber_fields, subscriber_meta, queue
-		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . "subscriber_meta,queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
-
-		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_actions ? 'actions,' : '' ) . ( $remove_meta ? 'subscriber_meta,' : '' ) . "queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON ( subscribers.ID = actions.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
+		$sql = 'DELETE subscribers,lists_subscribers,subscriber_fields,' . ( $remove_meta ? 'subscriber_meta,' : '' ) . "queue FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS lists_subscribers ON ( subscribers.ID = lists_subscribers.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS subscriber_fields ON ( subscribers.ID = subscriber_fields.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS subscriber_meta ON ( subscribers.ID = subscriber_meta.subscriber_id ) LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON ( subscribers.ID = queue.subscriber_id ) WHERE subscribers.ID IN (" . $subscriber_ids_concat . ' )';
 
 		if ( $success = ( false !== $wpdb->query( $sql ) ) ) {
 			if ( $wpdb->last_error ) {
@@ -1432,9 +1430,17 @@ class MailsterSubscribers {
 
 			// anonymize action data
 			if ( ! $remove_actions ) {
-				$sql = "UPDATE {$wpdb->prefix}mailster_actions AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')';
-
-				$wpdb->query( $sql );
+				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_sent AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_opens AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_clicks AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_unsubs AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_bounces AS actions SET subscriber_id = NULL WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+			} else {
+				$wpdb->query( "DELETE actions {$wpdb->prefix}mailster_action_sent AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "DELETE actions {$wpdb->prefix}mailster_action_opens AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "DELETE actions {$wpdb->prefix}mailster_action_clicks AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "DELETE actions {$wpdb->prefix}mailster_action_unsubs AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
+				$wpdb->query( "DELETE actions {$wpdb->prefix}mailster_action_bounces AS actions WHERE actions.subscriber_id IN (" . $subscriber_ids_concat . ')' );
 			}
 			// anonymize subscriber_meta data
 			if ( ! $remove_meta ) {
@@ -1853,7 +1859,7 @@ class MailsterSubscribers {
 	public function get_sent_campaigns( $id, $ids_only = false ) {
 		global $wpdb;
 
-		$sql = "SELECT p.post_title AS campaign_title, a.* FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id WHERE a.subscriber_id = %d AND a.type = 1";
+		$sql = "SELECT p.post_title AS campaign_title, a.* FROM {$wpdb->prefix}mailster_action_sent AS a LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id WHERE a.subscriber_id = %d";
 
 		$campaigns = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
@@ -1887,7 +1893,7 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$sql = "SELECT p.post_title AS campaign_title, a.* FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->postmeta} AS c ON c.post_id = a.campaign_id AND c.meta_key = '_mailster_autoresponder' LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id WHERE a.subscriber_id = %d AND c.meta_value = '' AND a.type = 2";
+		$sql = "SELECT p.post_title AS campaign_title, a.* FROM {$wpdb->prefix}mailster_action_opens AS a LEFT JOIN {$wpdb->postmeta} AS c ON c.post_id = a.campaign_id AND c.meta_key = '_mailster_autoresponder' LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id WHERE a.subscriber_id = %d AND c.meta_value = ''";
 
 		$campaigns = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
@@ -1984,7 +1990,7 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$sql = "SELECT p.post_title AS campaign_title, a.* FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->postmeta} AS c ON c.post_id = a.campaign_id AND c.meta_key = '_mailster_autoresponder' LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id WHERE a.subscriber_id = %d AND c.meta_value = '' AND a.type = 3";
+		$sql = "SELECT p.post_title AS campaign_title, a.* FROM {$wpdb->prefix}mailster_action_clicks AS a LEFT JOIN {$wpdb->postmeta} AS c ON c.post_id = a.campaign_id AND c.meta_key = '_mailster_autoresponder' LEFT JOIN {$wpdb->posts} AS p ON p.ID = a.campaign_id WHERE a.subscriber_id = %d AND c.meta_value = ''";
 
 		$campaigns = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
@@ -2045,6 +2051,7 @@ class MailsterSubscribers {
 	 * @return unknown
 	 */
 	public function open_time( $id ) {
+		return $this->compare( $id, 'sends', '2' );
 		return $this->compare( $id, 1, 2 );
 	}
 
@@ -2057,6 +2064,7 @@ class MailsterSubscribers {
 	 * @return unknown
 	 */
 	public function click_time( $id, $since_open = true ) {
+		return $this->compare( $id, $since_open ? 'opens' : 'sends', 'clicks' );
 		return $this->compare( $id, $since_open ? 2 : 1, 3 );
 	}
 
@@ -2073,9 +2081,9 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
-		$sql = "SELECT (b.timestamp - a.timestamp) AS time FROM {$wpdb->prefix}mailster_actions AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.subscriber_id = b.subscriber_id AND a.campaign_id = b.campaign_id WHERE a.type = %d AND b.type = %d AND a.subscriber_id = %d GROUP BY a.subscriber_id, a.campaign_id ORDER BY a.timestamp ASC, b.timestamp ASC";
+		$sql = "SELECT (b.timestamp - a.timestamp) AS time FROM {$wpdb->prefix}mailster_action_$actionA AS a LEFT JOIN {$wpdb->prefix}mailster_action_$actionB AS b ON a.subscriber_id = b.subscriber_id AND a.campaign_id = b.campaign_id WHERE a.subscriber_id = %d GROUP BY a.subscriber_id, a.campaign_id ORDER BY a.timestamp ASC, b.timestamp ASC";
 
-		$times = $wpdb->get_col( $wpdb->prepare( $sql, $actionA, $actionB, $id ) );
+		$times = $wpdb->get_col( $wpdb->prepare( $sql, $id ) );
 		if ( empty( $times ) ) {
 			return false;
 		}
@@ -3242,7 +3250,7 @@ class MailsterSubscribers {
 		$bounce_attempts = mailster_option( 'bounce_attempts' );
 
 		// check if bounce limit has been reached => hardbounce
-		if ( $bounce_attempts == 1 || $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}mailster_actions WHERE type = 5 AND subscriber_id = %d AND campaign_id = %d AND count >= %d LIMIT 1", $subscriber->ID, $campaign_id, $bounce_attempts ) ) ) {
+		if ( $bounce_attempts == 1 || $wpdb->get_var( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 0 AND subscriber_id = %d AND campaign_id = %d AND count >= %d LIMIT 1", $subscriber->ID, $campaign_id, $bounce_attempts ) ) ) {
 
 			return $this->bounce( $subscriber->ID, $campaign_id, true, $status );
 

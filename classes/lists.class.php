@@ -690,7 +690,17 @@ class MailsterLists {
 		$ids = is_numeric( $ids ) ? array( (int) $ids ) : array_filter( $ids, 'is_numeric' );
 
 		if ( $subscribers ) {
-			$sql = "DELETE a,b,c,d,e,f FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields c ON a.ID = c.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS d ON a.ID = d.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_actions AS e ON a.ID = e.subscriber_id LEFT JOIN {$wpdb->prefix}mailster_queue AS f ON a.ID = f.subscriber_id WHERE b.list_id IN (" . implode( ', ', $ids ) . ')';
+			$sql = "DELETE a,b,c,d,e,g,h,i,j,k FROM {$wpdb->prefix}mailster_subscribers AS a
+			LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers b ON a.ID = b.subscriber_id
+			LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields c ON a.ID = c.subscriber_id
+			LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS d ON a.ID = d.subscriber_id
+			LEFT JOIN {$wpdb->prefix}mailster_queue AS e ON a.ID = e.subscriber_id
+			LEFT JOIN {$wpdb->prefix}mailster_action_sent AS g ON a.ID = g.subscriber_id
+			LEFT JOIN {$wpdb->prefix}mailster_action_opens AS h ON a.ID = h.subscriber_id
+			LEFT JOIN {$wpdb->prefix}mailster_action_clicks AS i ON a.ID = i.subscriber_id
+			LEFT JOIN {$wpdb->prefix}mailster_action_unsubs AS j ON a.ID = j.subscriber_id
+			LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS k ON a.ID = k.subscriber_id
+			WHERE b.list_id IN (" . implode( ', ', $ids ) . ')';
 
 			$wpdb->query( $sql );
 		}

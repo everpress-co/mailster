@@ -572,6 +572,8 @@ if ( $old_version ) {
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
 
+			$mailster_options['db_update_required'] = true;
+
 	}
 
 	update_option( 'mailster_version_old', $old_version );

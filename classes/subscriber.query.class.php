@@ -372,7 +372,7 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['unsubscribe'] || $this->args['unsubscribe__not_in'] ) {
-			$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS actions_unsubscribe ON actions_unsubscribe.type = 4 AND subscribers.ID = actions_unsubscribe.subscriber_id";
+			$join = "LEFT JOIN {$wpdb->prefix}mailster_action_unsubs AS actions_unsubscribe ON subscribers.ID = actions_unsubscribe.subscriber_id";
 			if ( $this->args['unsubscribe'] && $this->args['unsubscribe'][0] != -1 ) {
 				$join .= ' AND actions_unsubscribe.campaign_id IN (' . implode( ',', array_filter( $this->args['unsubscribe'], 'is_numeric' ) ) . ')';
 			}
@@ -503,7 +503,7 @@ class MailsterSubscriberQuery {
 
 						} elseif ( 0 === strpos( $field, '_sent' ) ) {
 
-							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS $alias ON $alias.type = 1 AND subscribers.ID = $alias.subscriber_id";
+							$join = "LEFT JOIN {$wpdb->prefix}mailster_action_sent AS $alias ON subscribers.ID = $alias.subscriber_id";
 							if ( ( '_sent' == $field || '_sent__not_in' == $field ) && $value && $value != -1 ) {
 								$join .= " AND $alias.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
 							}
@@ -522,7 +522,7 @@ class MailsterSubscriberQuery {
 
 						} elseif ( 0 === strpos( $field, '_open' ) ) {
 
-							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS $alias ON $alias.type = 2 AND subscribers.ID = $alias.subscriber_id";
+							$join = "LEFT JOIN {$wpdb->prefix}mailster_action_opens AS $alias ON subscribers.ID = $alias.subscriber_id";
 							if ( ( '_open' === $field || '_open__not_in' === $field ) && $value && $value != -1 ) {
 								$join .= " AND $alias.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
 							}
@@ -541,7 +541,7 @@ class MailsterSubscriberQuery {
 
 						} elseif ( 0 === strpos( $field, '_click' ) ) {
 
-							$join = "LEFT JOIN {$wpdb->prefix}mailster_actions AS $alias ON $alias.type = 3 AND subscribers.ID = $alias.subscriber_id";
+							$join = "LEFT JOIN {$wpdb->prefix}mailster_action_clicks AS $alias ON subscribers.ID = $alias.subscriber_id";
 
 							if ( ( '_click' === $field || '_click__not_in' === $field ) && $value && $value != -1 ) {
 								$join .= " AND $alias.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';

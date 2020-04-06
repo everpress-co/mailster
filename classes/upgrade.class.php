@@ -28,11 +28,6 @@ class MailsterUpgrade {
 			if ( ! $old_version ) {
 				$old_version = get_option( 'mymail_version' );
 			}
-
-			// update db structure
-			if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
-				mailster()->dbstructure();
-			}
 		}
 
 		if ( mailster_option( 'db_update_required' ) ) {
@@ -71,7 +66,7 @@ class MailsterUpgrade {
 			}
 
 			update_option( 'mailster_version', MAILSTER_VERSION );
-			update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+			// update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 		} elseif ( mailster_option( 'setup' ) ) {
 
@@ -87,6 +82,11 @@ class MailsterUpgrade {
 				wp_redirect( 'admin.php?page=mailster_welcome', 302 );
 				exit;
 			}
+		}
+
+		// update db structure
+		if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
+			mailster()->dbstructure();
 		}
 
 	}
@@ -265,6 +265,21 @@ class MailsterUpgrade {
 
 		if ( $db_version < 20170201 || false ) {
 			$actions = wp_parse_args( array(), $actions );
+		}
+
+		if ( $db_version < 20200406 ) {
+			$actions = wp_parse_args(
+				array(
+					'update_action_table_sent'        => 'Update Action Tables Sent',
+					'update_action_table_opens'       => 'Update Action Tables Opens',
+					'update_action_table_clicks'      => 'Update Action Tables Clicks',
+					'update_action_table_unsubs'      => 'Update Action Tables Unsubs',
+					'update_action_table_softbounces' => 'Update Action Tables Softbounces',
+					'update_action_table_bounces'     => 'Update Action Tables Bounces',
+					'update_action_table_errors'      => 'Update Action Tables Errors',
+				),
+				$actions
+			);
 		}
 
 		$actions = wp_parse_args(
@@ -926,6 +941,49 @@ class MailsterUpgrade {
 
 		return true;
 
+	}
+
+
+	private function do_update_action_table_sent() {
+		return $this->update_action_table( 'sent', 1 );
+	}
+	private function do_update_action_table_opens() {
+		return $this->update_action_table( 'opens', 2 );
+	}
+	private function do_update_action_table_clicks() {
+		return $this->update_action_table( 'clicks', 3 );
+	}
+	private function do_update_action_table_unsubs() {
+		return $this->update_action_table( 'unsubs', 4 );
+	}
+	private function do_update_action_table_softbounces() {
+		return $this->update_action_table( 'bounces', 5 );
+	}
+	private function do_update_action_table_bounces() {
+		return $this->update_action_table( 'bounces', 6 );
+	}
+	private function do_update_action_table_errors() {
+		return $this->update_action_table( 'errors', 7 );
+	}
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	private function update_action_table( $table, $type, $limit = 10 ) {
+
+		global $wpdb;
+
+		$sql = "INSERT IGNORE INTO {$wpdb->prefix}mailster_action_$table` (subscriber_id, campaign_id, timestamp, count) SELECT subscriber_id, campaign_id, timestamp, count FROM {$wpdb->prefix}mailster_actions WHERE type = %d ORDER BY timestamp LIMIT %d";
+
+		$wpdb->query( $wpdb->prepare( $sql, $type, $limit ) );
+
+		echo '<pre>' . print_r( $wpdb->prepare( $sql, $type, $limit ), true ) . '</pre>';
+
+		sleep( 3 );
+
+		return true;
 	}
 
 

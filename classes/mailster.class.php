@@ -1472,7 +1472,12 @@ class Mailster {
 
 		if ( $remove_tables ) {
 
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_actions" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_sent" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_opens" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_clicks" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_unsubs" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_bounces" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_errors" );
 			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_links" );
 			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_lists" );
 			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_lists_subscribers" );
@@ -1859,6 +1864,68 @@ class Mailster {
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`),
                 KEY `type` (`type`)
+            ) $collate;",
+
+				"CREATE TABLE {$wpdb->prefix}mailster_action_sent (
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
+            ) $collate;",
+
+				"CREATE TABLE {$wpdb->prefix}mailster_action_opens (
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
+            ) $collate;",
+
+				"CREATE TABLE {$wpdb->prefix}mailster_action_clicks (
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                `link_id` bigint(20) unsigned NOT NULL DEFAULT 0,
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`link_id`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
+            ) $collate;",
+
+				"CREATE TABLE {$wpdb->prefix}mailster_action_unsubs (
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
+            ) $collate;",
+
+				"CREATE TABLE {$wpdb->prefix}mailster_action_bounces (
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                `hard` tinyint(1) NOT NULL DEFAULT 0,
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`hard`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
+            ) $collate;",
+
+				"CREATE TABLE {$wpdb->prefix}mailster_action_errors (
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
             ) $collate;",
 
 				"CREATE TABLE {$wpdb->prefix}mailster_links (

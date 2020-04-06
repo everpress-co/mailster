@@ -1068,7 +1068,7 @@ endforeach;
 		// get timestamp in UTC
 		$timestamp = mailster( 'helper' )->get_timestamp_by_string( $delay, true );
 
-		$sql = $wpdb->prepare( "SELECT a.ID FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_ID AND b.type = 4 WHERE b.timestamp >= %d AND a.status = 2 GROUP BY a.ID ORDER BY b.timestamp DESC, a.signup DESC", $timestamp );
+		$sql = $wpdb->prepare( "SELECT a.ID FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_action_unsubs AS b ON a.ID = b.subscriber_ID WHERE b.timestamp >= %d AND a.status = 2 GROUP BY a.ID ORDER BY b.timestamp DESC, a.signup DESC", $timestamp );
 
 		$subscribers = $wpdb->get_results( $sql );
 
