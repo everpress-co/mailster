@@ -977,7 +977,21 @@ class MailsterQueue {
 
 		global $wpdb;
 
-		$last_hit = get_option( 'mailster_cron_lasthit' );
+		$last_hit   = get_option( 'mailster_cron_lasthit' );
+		$db_version = get_option( 'mailster_dbversion' );
+
+		if ( $db_version != MAILSTER_DBVERSION ) {
+			echo '<h2>' . esc_html__( 'Database update required!', 'mailster' ) . '</h2>';
+
+			if ( is_user_logged_in() ) {
+				$redirectto = admin_url( 'admin.php?page=mailster_update' );
+				$update_msg = '<p><strong>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</strong></p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . esc_html__( 'Progress Update now', 'mailster' ) . '</a>';
+
+				echo $update_msg;
+
+			}
+			return false;
+		}
 
 		if ( ( $pid = mailster( 'cron' )->lock( $process_id ) ) !== true ) {
 

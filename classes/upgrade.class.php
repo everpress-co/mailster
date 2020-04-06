@@ -971,18 +971,18 @@ class MailsterUpgrade {
 	 *
 	 * @return unknown
 	 */
-	private function update_action_table( $table, $type, $limit = 10 ) {
+	private function update_action_table( $table, $type, $limit = 1500 ) {
 
 		global $wpdb;
 
-		$sql = "INSERT IGNORE INTO {$wpdb->prefix}mailster_action_$table` (subscriber_id, campaign_id, timestamp, count) SELECT subscriber_id, campaign_id, timestamp, count FROM {$wpdb->prefix}mailster_actions WHERE type = %d ORDER BY timestamp LIMIT %d";
+		$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` (subscriber_id, campaign_id, timestamp, count) SElECT a.subscriber_id, a.campaign_id, a.timestamp, a.count FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN {$wpdb->prefix}mailster_action_sent AS b ON a.subscriber_id = a.subscriber_id AND a.campaign_id = b.campaign_id AND a.timestamp = b.timestamp AND a.count = b.count WHERE b.subscriber_id IS NULL AND a.type = %d LIMIT %d";
 
-		$wpdb->query( $wpdb->prepare( $sql, $type, $limit ) );
+		if ( $count = $wpdb->query( $wpdb->prepare( $sql, $type, $limit ) ) ) {
+			echo $count . ' entries moved' . "\n";
+			return false;
+		}
 
-		echo '<pre>' . print_r( $wpdb->prepare( $sql, $type, $limit ), true ) . '</pre>';
-
-		sleep( 3 );
-
+		echo 'done' . "\n";
 		return true;
 	}
 
