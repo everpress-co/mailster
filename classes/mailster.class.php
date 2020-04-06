@@ -1853,19 +1853,6 @@ class Mailster {
                 KEY `ignore_status` (`ignore_status`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_actions (
-                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
-                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
-                `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
-                `count` int(11) unsigned NOT NULL DEFAULT 0,
-                `type` tinyint(1) NOT NULL DEFAULT 0,
-                `link_id` bigint(20) unsigned NOT NULL DEFAULT 0,
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`type`,`link_id`),
-                KEY `subscriber_id` (`subscriber_id`),
-                KEY `campaign_id` (`campaign_id`),
-                KEY `type` (`type`)
-            ) $collate;",
-
 				"CREATE TABLE {$wpdb->prefix}mailster_action_sent (
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,

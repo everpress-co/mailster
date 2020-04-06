@@ -28,14 +28,23 @@ class MailsterUpgrade {
 			if ( ! $old_version ) {
 				$old_version = get_option( 'mymail_version' );
 			}
+
+			if ( version_compare( $old_version, MAILSTER_VERSION, '<' ) ) {
+				include MAILSTER_DIR . 'includes/updates.php';
+			}
+
+			update_option( 'mailster_version', MAILSTER_VERSION );
 		}
 
 		if ( mailster_option( 'db_update_required' ) ) {
 
 			$db_version = get_option( 'mailster_dbversion' );
 
-			$redirectto = admin_url( 'admin.php?page=mailster_update' );
-			$update_msg = '<p><strong>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</strong></p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . esc_html__( 'Progress Update now', 'mailster' ) . '</a>';
+			$redirectto  = admin_url( 'admin.php?page=mailster_update' );
+			$update_msg  = '<h2>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</h2>';
+			$update_msg .= '<p>' . esc_html__( 'To continue using Mailster we need some update on the database structure. Depending on the size of your database this can take a couple of minutes.', 'mailster' ) . '</p>';
+			$update_msg .= '<p>' . esc_html__( 'Please continue by clicking the button.', 'mailster' ) . '</p>';
+			$update_msg .= '<p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . esc_html__( 'Progress Update now', 'mailster' ) . '</a></p>';
 
 			if ( 'update.php' == $pagenow ) {
 
@@ -61,12 +70,12 @@ class MailsterUpgrade {
 			}
 		} elseif ( ! $version_match ) {
 
-			if ( version_compare( $old_version, MAILSTER_VERSION, '<' ) ) {
-				include MAILSTER_DIR . 'includes/updates.php';
+			// update db structure
+			if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
+				mailster()->dbstructure();
 			}
 
-			update_option( 'mailster_version', MAILSTER_VERSION );
-			// update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
+			update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 
 		} elseif ( mailster_option( 'setup' ) ) {
 
@@ -82,11 +91,6 @@ class MailsterUpgrade {
 				wp_redirect( 'admin.php?page=mailster_welcome', 302 );
 				exit;
 			}
-		}
-
-		// update db structure
-		if ( MAILSTER_DBVERSION != get_option( 'mailster_dbversion' ) ) {
-			mailster()->dbstructure();
 		}
 
 	}
@@ -267,7 +271,7 @@ class MailsterUpgrade {
 			$actions = wp_parse_args( array(), $actions );
 		}
 
-		if ( $db_version < 20200406 ) {
+		if ( $db_version < 20200405 ) {
 			$actions = wp_parse_args(
 				array(
 					'update_action_table_sent'        => 'Update Action Tables Sent',
@@ -309,7 +313,10 @@ class MailsterUpgrade {
 
 		?>
 	<div class="wrap">
-		<h2>Mailster Batch Update</h2>
+		<style>
+			#mailster-notice-db_update_required{display: none;}
+		</style>
+		<h1>Mailster Batch Update</h1>
 		<?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>
 
 		<p><strong>Some additional updates are required! Please keep this browser tab open until all updates are finished!</strong></p>
@@ -951,7 +958,20 @@ class MailsterUpgrade {
 		return $this->update_action_table( 'opens', 2 );
 	}
 	private function do_update_action_table_clicks() {
-		return $this->update_action_table( 'clicks', 3 );
+		global $wpdb;
+
+		$table = 'clicks';
+
+		$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` (subscriber_id, campaign_id, timestamp, count, link_id) SELECT a.subscriber_id, a.campaign_id, a.timestamp, a.count, a.link_id FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN {$wpdb->prefix}mailster_action_$table AS b ON a.subscriber_id <=> a.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp AND a.count <=> b.count AND a.link_id <=> b.link_id WHERE b.subscriber_id IS NULL AND a.type = %d LIMIT %d";
+
+		if ( $count = $wpdb->query( $wpdb->prepare( $sql, 3, 5000 ) ) ) {
+			echo $count . ' of ' . $table . ' entries moved' . "\n";
+			return false;
+		}
+
+		echo 'Table "' . $table . '" finished' . "\n";
+		sleep( 1 );
+		return true;
 	}
 	private function do_update_action_table_unsubs() {
 		return $this->update_action_table( 'unsubs', 4 );
@@ -960,7 +980,20 @@ class MailsterUpgrade {
 		return $this->update_action_table( 'bounces', 5 );
 	}
 	private function do_update_action_table_bounces() {
-		return $this->update_action_table( 'bounces', 6 );
+		global $wpdb;
+
+		$table = 'bounces';
+
+		$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` (subscriber_id, campaign_id, timestamp, count, hard) SELECT a.subscriber_id, a.campaign_id, a.timestamp, a.count, 1 AS 'hard' FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN {$wpdb->prefix}mailster_action_$table AS b ON a.subscriber_id <=> a.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp AND a.count <=> b.count WHERE b.subscriber_id IS NULL AND a.type = %d LIMIT %d";
+
+		if ( $count = $wpdb->query( $wpdb->prepare( $sql, 6, 5000 ) ) ) {
+			echo $count . ' of ' . $table . ' entries moved' . "\n";
+			return false;
+		}
+
+		echo 'Table "' . $table . '" finished' . "\n";
+		sleep( 1 );
+		return true;
 	}
 	private function do_update_action_table_errors() {
 		return $this->update_action_table( 'errors', 7 );
@@ -971,18 +1004,19 @@ class MailsterUpgrade {
 	 *
 	 * @return unknown
 	 */
-	private function update_action_table( $table, $type, $limit = 1500 ) {
+	private function update_action_table( $table, $type, $limit = 5000 ) {
 
 		global $wpdb;
 
-		$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` (subscriber_id, campaign_id, timestamp, count) SElECT a.subscriber_id, a.campaign_id, a.timestamp, a.count FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN {$wpdb->prefix}mailster_action_sent AS b ON a.subscriber_id = a.subscriber_id AND a.campaign_id = b.campaign_id AND a.timestamp = b.timestamp AND a.count = b.count WHERE b.subscriber_id IS NULL AND a.type = %d LIMIT %d";
+		$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` (subscriber_id, campaign_id, timestamp, count) SELECT a.subscriber_id, a.campaign_id, a.timestamp, a.count FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN {$wpdb->prefix}mailster_action_$table AS b ON a.subscriber_id <=> a.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp AND a.count <=> b.count WHERE b.subscriber_id IS NULL AND a.type = %d LIMIT %d";
 
 		if ( $count = $wpdb->query( $wpdb->prepare( $sql, $type, $limit ) ) ) {
-			echo $count . ' entries moved' . "\n";
+			echo $count . ' of ' . $table . ' entries moved' . "\n";
 			return false;
 		}
 
-		echo 'done' . "\n";
+		echo 'Table "' . $table . '" finished' . "\n";
+		sleep( 1 );
 		return true;
 	}
 
@@ -1812,6 +1846,7 @@ class MailsterUpgrade {
 
 		update_option( 'mailster_dbversion', MAILSTER_DBVERSION );
 		mailster_update_option( 'db_update_required', false );
+		mailster_remove_notice( 'db_update_required' );
 
 		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_actions AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
 			echo "removed actions where's no campaign\n";

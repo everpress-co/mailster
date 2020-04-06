@@ -565,6 +565,9 @@ if ( $old_version ) {
 		case '2.4.9':
 			delete_option( 'mailster_recent_feeds' );
 
+		case '2.4.10':
+		case '2.4.11':
+			$mailster_options['db_update_required'] = true;
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
@@ -572,7 +575,6 @@ if ( $old_version ) {
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
 
-			$mailster_options['db_update_required'] = true;
 
 	}
 
