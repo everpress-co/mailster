@@ -98,16 +98,16 @@ if ( ! $is_new ) :
 
 	$actions = mailster( 'actions' )->get_by_list( $list->ID, null, true );
 
-	$sent         = $actions['sent'];
-	$opens        = $actions['opens'];
-	$clicks       = $actions['clicks'];
-	$unsubscribes = $actions['unsubscribes'];
-	$bounces      = $actions['bounces'];
+	$sent    = $actions['sent'];
+	$opens   = $actions['opens'];
+	$clicks  = $actions['clicks'];
+	$unsubs  = $actions['unsubs'];
+	$bounces = $actions['bounces'];
 
-	$openrate        = ( $sent ) ? $opens / $sent * 100 : 0;
-	$clickrate       = ( $opens ) ? $clicks / $opens * 100 : 0;
-	$unsubscriberate = ( $opens ) ? $unsubscribes / $opens * 100 : 0;
-	$bouncerate      = ( $sent ) ? $bounces / $sent * 100 : 0;
+	$openrate   = ( $sent ) ? $opens / $sent * 100 : 0;
+	$clickrate  = ( $opens ) ? $clicks / $opens * 100 : 0;
+	$unsubrate  = ( $opens ) ? $unsubs / $opens * 100 : 0;
+	$bouncerate = ( $sent ) ? $bounces / $sent * 100 : 0;
 
 	?>
 		<div class="stats-wrap">
@@ -121,7 +121,7 @@ if ( ! $is_new ) :
 					<div id="stats_click" class="piechart" data-percent="<?php echo $clickrate; ?>"><span>0</span>%</div>
 				</td><td><span class="verybold"></span> <?php esc_html_e( 'click rate', 'mailster' ); ?></td>
 				<td width="60">
-					<div id="stats_unsub" class="piechart" data-percent="<?php echo $unsubscriberate; ?>"><span>0</span>%</div>
+					<div id="stats_unsub" class="piechart" data-percent="<?php echo $unsubrate; ?>"><span>0</span>%</div>
 				</td><td><span class="verybold"></span> <?php esc_html_e( 'unsubscribe rate', 'mailster' ); ?></td>
 				<td width="60">
 					<div id="stats_bounce" class="piechart" data-percent="<?php echo $bouncerate; ?>"><span>0</span>%</div>

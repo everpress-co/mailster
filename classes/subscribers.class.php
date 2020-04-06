@@ -2051,7 +2051,7 @@ class MailsterSubscribers {
 	 * @return unknown
 	 */
 	public function open_time( $id ) {
-		return $this->compare( $id, 'sends', '2' );
+		return $this->compare( $id, 'sent', 'opens' );
 		return $this->compare( $id, 1, 2 );
 	}
 
@@ -2064,7 +2064,7 @@ class MailsterSubscribers {
 	 * @return unknown
 	 */
 	public function click_time( $id, $since_open = true ) {
-		return $this->compare( $id, $since_open ? 'opens' : 'sends', 'clicks' );
+		return $this->compare( $id, $since_open ? 'opens' : 'sent', 'clicks' );
 		return $this->compare( $id, $since_open ? 2 : 1, 3 );
 	}
 
@@ -2947,9 +2947,9 @@ class MailsterSubscribers {
 			$html .= '</ul></li>';
 		}
 
-		if ( $actions->unsubscribes ) {
+		if ( $actions->unsubs ) {
 			$message = mailster( 'helper' )->get_unsubscribe_message( $this->meta( $id, 'unsubscribe', $campaign_id ) );
-			$html   .= '<li>' . sprintf( esc_html__( 'Unsubscribes on %s', 'mailster' ), date( $timeformat, $actions->unsubscribes + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->unsubscribes ) ) ) . '<br>' . esc_html( $message ) . '</li>';
+			$html   .= '<li>' . sprintf( esc_html__( 'Unsubscribes on %s', 'mailster' ), date( $timeformat, $actions->unsubs + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->unsubs ) ) ) . '<br>' . esc_html( $message ) . '</li>';
 		}
 
 		if ( $actions->bounces ) {

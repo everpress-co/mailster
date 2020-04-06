@@ -561,8 +561,6 @@ class MailsterActions {
 
 		$result = $wpdb->get_results( $sql );
 
-		error_log( print_r( $sql, true ) );
-
 		foreach ( $subscriber_ids as $id ) {
 			if ( ! isset( $action_counts[ $id ] ) ) {
 				$action_counts[ $id ] = $default;
