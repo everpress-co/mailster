@@ -9,20 +9,16 @@ mailster = (function (mailster, $, window, document) {
 		$loader = $('#preflight-ajax-loading'),
 		$authentication = $('#preflight-authentication'),
 		runbtn = $('.preflight-run'),
+		strcturebtn = $('.preflight-toggle-structure'),
+		imagebtn = $('.preflight-toggle-images'),
 		$iframe = $('.mailster-preview-iframe'),
 		$iframebody,
 		$hx, $hy,
 		started = 0,
-		images, structure;
+		images = true,
+		structure = false;
 
 	mailster.preflight = mailster.preflight || {};
-
-	//preflight box
-	$('#mailster_preflight')
-		.on('click', '.mailster_preflight', function () {
-			mailster.preflight.open();
-			return;
-		});
 
 	preflight
 		.on('click', '.preflight-switch', switchPane)
@@ -45,10 +41,6 @@ mailster = (function (mailster, $, window, document) {
 				}, function (data) {
 					response(data);
 				}, function (jqXHR, textStatus, errorThrown) {});
-			},
-			classes: {
-				"ui-autocomplete": "bbbb",
-				"ui-state-focus": "aaaa",
 			},
 			appendTo: '.preflight-emailheader',
 			minLength: 1,
@@ -93,7 +85,7 @@ mailster = (function (mailster, $, window, document) {
 	function initTest() {
 		clear();
 		loader(true);
-		status('Sending your campaign.');
+		status(mailster.l10n.preflight.sending);
 		runbtn.prop('disabled', true);
 		started = 0;
 
@@ -109,7 +101,7 @@ mailster = (function (mailster, $, window, document) {
 		}, function (response) {
 
 			if (response.success) {
-				status('Check for delivery.');
+				status(mailster.l10n.preflight.checking);
 				id = response.id;
 				setTimeout(function () {
 					checkTest(1);
@@ -119,19 +111,21 @@ mailster = (function (mailster, $, window, document) {
 				runbtn.prop('disabled', false);
 			}
 
-
 		}, function (jqXHR, textStatus, errorThrown) {
 
 			loader(false);
 			runbtn.prop('disabled', false);
 
-		})
+		});
+
+		return false;
 
 	};
 
 	function clear() {
 		preflight.find('summary').removeAttr('class');
 		preflight.find('.preflight-result').empty();
+		status(mailster.l10n.preflight.ready);
 	};
 
 	function checkTest(tries) {
@@ -152,7 +146,7 @@ mailster = (function (mailster, $, window, document) {
 						checkTest(++tries);
 					}, 1000);
 				} else {
-					status('Email delivered, gathering results...');
+					status(mailster.l10n.preflight.email_delivered);
 
 					$.when.apply($, [
 							getResult('blacklist'),
@@ -163,7 +157,7 @@ mailster = (function (mailster, $, window, document) {
 							getResult('images', 'tests/images'),
 						])
 						.done(function () {
-							status('Preflight finished. Please check results.');
+							status(mailster.l10n.preflight.finished);
 							loader(false);
 							runbtn.prop('disabled', false);
 						});
@@ -206,7 +200,7 @@ mailster = (function (mailster, $, window, document) {
 
 		return $.when.apply($, promises)
 			.done(function () {
-				var status, statuses = {
+				var s, statuses = {
 					'error': 0,
 					'warning': 0,
 					'notice': 0,
@@ -217,15 +211,15 @@ mailster = (function (mailster, $, window, document) {
 						arguments[i] && statuses[arguments[i][0].status]++;
 					}
 					if (statuses.error) {
-						status = 'error';
+						s = 'error';
 					} else if (statuses.warning) {
-						status = 'warning';
+						s = 'warning';
 					} else if (statuses.notice) {
-						status = 'notice';
+						s = 'notice';
 					} else {
-						status = 'success';
+						s = 'success';
 					}
-					$('#preflight-' + part).find('summary').eq(0).removeClass('loading').addClass('loaded is-' + status);
+					$('#preflight-' + part).find('summary').eq(0).removeClass('loading').addClass('loaded is-' + s);
 				}
 			});
 
@@ -269,6 +263,8 @@ mailster = (function (mailster, $, window, document) {
 		$iframebody = $iframe.contents().find('html,body');
 		$hx = $iframebody.find('highlighterx');
 		$hy = $iframebody.find('highlightery');
+		images = true;
+		mailster.trigger('enable');
 	};
 
 	function loadPreview() {
@@ -287,6 +283,8 @@ mailster = (function (mailster, $, window, document) {
 		clear();
 		mailster.util.ajax('set_preview', args, function (response) {
 			$iframe.one('load', initFrame).attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
+			imagebtn.addClass('active');
+			strcturebtn.removeClass('active');
 			tb_show((title ? sprintf(mailster.l10n.campaigns.preflight, '"' + title + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' +
 				response.hash +
 				'&_wpnonce=' + response.nonce +
@@ -295,8 +293,6 @@ mailster = (function (mailster, $, window, document) {
 				'&inlineId=mailster_preflight_wrap', null);
 			$('.preflight-subject').html(response.subject);
 			$('.preflight-subscriber').val(response.to);
-			mailster.trigger('enable');
-			images = true;
 
 		}, function (jqXHR, textStatus, errorThrown) {
 			mailster.trigger('enable');
@@ -304,36 +300,33 @@ mailster = (function (mailster, $, window, document) {
 
 	};
 
+
 	function toggleStructure() {
-		var body = $iframe.contents().find('body'),
-			btn = $('.preflight-toggle-structure');
 
 		if (structure) {
-			body.removeClass('preflight-structure-enabled');
+			$iframebody.removeClass('preflight-structure-enabled');
 		} else {
-			body.addClass('preflight-structure-enabled');
+			$iframebody.addClass('preflight-structure-enabled');
 		}
-		btn.toggleClass('active');
+		strcturebtn.toggleClass('active');
 		structure = !structure;
 	};
 
 	function toggleImages() {
-		var body = $iframe.contents().find('body'),
-			img = body.find('img'),
-			btn = $('.preflight-toggle-images');
+		var img = $iframebody.find('img');
 
 		if (!images) {
-			body.removeClass('preflight-images-hidden');
+			$iframebody.removeClass('preflight-images-hidden');
 			$.each(img, function (i, e) {
 				$(e).attr('src', $(e).attr('data-src')).removeAttr('data-src');
 			});
 		} else {
-			body.addClass('preflight-images-hidden');
+			$iframebody.addClass('preflight-images-hidden');
 			$.each(img, function (i, e) {
 				$(e).attr('data-src', $(e).attr('src')).attr('src', '');
 			});
 		}
-		btn.toggleClass('active');
+		imagebtn.toggleClass('active');
 		images = !images;
 	};
 

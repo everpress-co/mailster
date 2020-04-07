@@ -1228,43 +1228,6 @@ mailster = (function (mailster, $, window, document) {
 				$('.autoresponder_active_wrap').removeClass('disabled');
 
 		})
-		.on('click', '.mailster_spamscore', function () {
-			var $this = $(this),
-				progress = $('#spam_score_progress').removeClass('spam-score').slideDown(200),
-				progressbar = progress.find('.bar');
-
-			loader(true);
-			$this.prop('disabled', true);
-			$('.score').html('');
-			mailster.trigger('save');
-			progressbar.css('width', '20%');
-
-			mailster.util.ajax('send_test', {
-				spamtest: true,
-				formdata: mailster.$.form.serialize(),
-				to: $('#mailster_testmail').val() ? $('#mailster_testmail').val() : $('#mailster_testmail').attr('placeholder'),
-				content: mailster.$.content.val(),
-				head: mailster.$.head.val(),
-				plaintext: mailster.$.excerpt.val()
-
-			}, function (response) {
-
-				if (response.success) {
-					progressbar.css('width', '40%');
-					checkSpamScore(response.id, 1);
-				} else {
-					loader(false);
-					progress.slideUp(200);
-					mailster.util.tempMsg(response.msg, 'error', $this.parent());
-				}
-			}, function (jqXHR, textStatus, errorThrown) {
-				loader(false);
-				$this.prop('disabled', false);
-				mailster.util.tempMsg(rtextStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $this.parent());
-
-			})
-
-		})
 		.on('blur', 'input.deliverytime', function () {
 			mailster.$.document.unbind('.mailster_deliverytime');
 		})
@@ -1460,49 +1423,6 @@ mailster = (function (mailster, $, window, document) {
 		}
 	}
 
-	function checkSpamScore(id, round) {
-
-		mailster.util.ajax('check_spam_score', {
-			ID: id,
-		}, function (response) {
-
-			if (response.score) {
-				loader(false);
-				$this.prop('disabled', false);
-				progress.addClass('spam-score');
-				progressbar.css('width', (parseFloat(response.score) * 10) + '%');
-
-				$('.score').html('<strong>' + mailster.util.sprintf(mailster.l10n.campaigns.yourscore, response.score) + '</strong>:<br>' + mailster.l10n.campaigns.yourscores[Math.floor((response.score / 10) * mailster.l10n.campaigns.yourscores.length)]);
-			} else {
-
-				if (round <= 5 && !response.abort) {
-					var percentage = (round * 10) + 50;
-					progressbar.css('width', (percentage) + '%');
-					setTimeout(function () {
-						checkSpamScore(id, ++round);
-					}, round * 400);
-				} else {
-
-					loader(false);
-					$this.prop('disabled', false);
-					progressbar.css('width', '100%');
-					progress.slideUp(200);
-					mailster.util.tempMsg(response.msg, 'error', $this.parent(), function () {
-						progressbar.css('width', 0);
-					});
-
-				}
-
-			}
-		}, function (jqXHR, textStatus, errorThrown) {
-			loader(false);
-			$this.prop('disabled', false);
-			mailster.util.tempMsg(rtextStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $this.parent());
-			var msg = $('<div class="error"><p>' + textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '</p></div>').hide().prependTo($this.parent()).slideDown(200).delay(200).fadeIn().delay(3000).fadeTo(200, 0).delay(200).slideUp(200, function () {
-				msg.remove();
-			});
-		})
-	}
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));

@@ -25,22 +25,13 @@ if ( $subscriber = mailster( 'subscribers' )->get_by_mail( $current_user->user_e
 $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 
 ?>
-
-<button type="button" class="button mailster_preflight" title="<?php esc_attr_e( 'check your spam score', 'mailster' ); ?> (beta)">Preflight</button>
-
-
 <div id="mailster_preflight_wrap" style="display:none;">
-	<div class="mailster-preflight
-	<?php
-	if ( $terms_agreed ) {
-		echo 'preflight-terms-agreed';}
-	?>
-	">
+	<div class="mailster-preflight<?php echo ( $terms_agreed ) ? ' preflight-terms-agreed' : ''; ?>">
 		<div class="preflight-bar">
 			<ul class="preflight-emailheader">
 				<li><label><?php esc_html_e( 'From', 'mailster' ); ?>:</label><span class="preflight-from"></span></li>
 				<li><label><?php esc_html_e( 'Subject', 'mailster' ); ?>:</label><span class="preflight-subject"></span></li>
-				<li><label><?php esc_html_e( 'To', 'mailster' ); ?>:</label><span class="preflight-to" title="<?php esc_attr_e( 'Search for subscribers...', 'mailster' ); ?>"><input type="hidden" value="<?php echo (int) $subscriber_id; ?>" id="subscriber_id"><input type="text" class="preflight-subscriber button button-small" value="" placeholder="<?php echo esc_attr( $to ); ?>"></span></li>
+				<li><label><?php esc_html_e( 'To', 'mailster' ); ?>:</label><span class="preflight-to" title="<?php esc_attr_e( 'Search for subscribers...', 'mailster' ); ?>"><input type="hidden" value="<?php echo (int) $subscriber_id; ?>" id="subscriber_id"><input type="text" class="preflight-subscriber" value="" placeholder="<?php echo esc_attr( $to ); ?>"></span></li>
 			</ul>
 			<div class="preflight-images button-group">
 				<a class="button preflight-toggle-images mailster-icon active" title="<?php esc_attr_e( 'Toggle Images', 'mailster' ); ?>"></a>
@@ -79,11 +70,14 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 				<?php else : ?>
 
 					<h3><?php esc_html_e( 'Please register the plugin first!', 'mailster' ); ?></h3>
-					<p><?php esc_html_e( 'To use the prelfight service you have to register the Mailster plugin on the dashboard', 'mailster' ); ?></p>
+					<p><?php esc_html_e( 'To use the preflight service you have to register the Mailster plugin on the dashboard', 'mailster' ); ?></p>
 					<a href="<?php echo admin_url( 'admin.php?page=mailster_dashboard' ); ?>" class="button button-primary"><?php esc_html_e( 'Go to Dashboard', 'mailster' ); ?></a>
 
 				<?php endif; ?>
 
+			</div>
+			<div class="notice notice-warning inline">
+				<p><?php printf( esc_html__( 'This service is currently in beta and we may change results over time. Please %s if you have things to share.', 'mailster' ), '<a href="" class="external">' . esc_html__( 'submit your feedback', 'mailster' ) . '</a>' ); ?></p>
 			</div>
 			<div class="preflight-score">
 				<h3 class="preflight-status"><?php esc_html_e( 'Ready for Preflight!', 'mailster' ); ?></h3>

@@ -271,7 +271,6 @@ class MailsterCampaigns {
 		add_meta_box( 'mailster_details', esc_html__( 'Details', 'mailster' ), array( &$this, 'newsletter_details' ), 'newsletter', 'normal', 'high' );
 		add_meta_box( 'mailster_template', ( ! in_array( $post->post_status, array( 'active', 'finished' ) ) && ! isset( $_GET['showstats'] ) ) ? esc_html__( 'Template', 'mailster' ) : esc_html__( 'Clickmap', 'mailster' ), array( &$this, 'newsletter_template' ), 'newsletter', 'normal', 'high' );
 		add_meta_box( 'mailster_submitdiv', esc_html__( 'Save', 'mailster' ), array( &$this, 'newsletter_submit' ), 'newsletter', 'side', 'high' );
-		add_meta_box( 'mailster_preflight', esc_html__( 'Preflight', 'mailster' ), array( &$this, 'newsletter_preflight' ), 'newsletter', 'side', 'high' );
 		add_meta_box( 'mailster_delivery', esc_html__( 'Delivery', 'mailster' ), array( &$this, 'newsletter_delivery' ), 'newsletter', 'side', 'high' );
 		add_meta_box( 'mailster_receivers', esc_html__( 'Receivers', 'mailster' ), array( &$this, 'newsletter_receivers' ), 'newsletter', 'side', 'high' );
 		add_meta_box( 'mailster_options', esc_html__( 'Options', 'mailster' ), array( &$this, 'newsletter_options' ), 'newsletter', 'side', 'high' );
@@ -324,6 +323,7 @@ class MailsterCampaigns {
 		global $post;
 		global $post_id;
 		include MAILSTER_DIR . 'views/newsletter/template.php';
+		include MAILSTER_DIR . 'views/newsletter/preflight.php';
 	}
 
 
@@ -362,10 +362,6 @@ class MailsterCampaigns {
 		$post_type_object = get_post_type_object( $post_type );
 		$can_publish      = current_user_can( $post_type_object->cap->publish_posts );
 		include MAILSTER_DIR . 'views/newsletter/submit.php';
-	}
-
-	public function newsletter_preflight( $post ) {
-		include MAILSTER_DIR . 'views/newsletter/preflight.php';
 	}
 
 
@@ -1183,6 +1179,17 @@ class MailsterCampaigns {
 			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			mailster_localize_script(
+				'preflight',
+				array(
+					'ready'           => esc_html__( 'Ready for Preflight!', 'mailster' ),
+					'email_delivered' => esc_html__( 'Email delivered, gathering results...', 'mailster' ),
+					'finished'        => esc_html__( 'Preflight finished. Please check results.', 'mailster' ),
+					'sending'         => esc_html__( 'Sending your campaign.', 'mailster' ),
+					'checking'        => esc_html__( 'Check for delivery.', 'mailster' ),
+				)
+			);
+
+			mailster_localize_script(
 				'campaigns',
 				array(
 					'loading'                => esc_html__( 'loading', 'mailster' ),
@@ -1223,15 +1230,6 @@ class MailsterCampaigns {
 					'month_names'            => array_values( $wp_locale->month ),
 					'delete_colorschema'     => esc_html__( 'Delete this color schema?', 'mailster' ),
 					'delete_colorschema_all' => esc_html__( 'Do you really like to delete all custom color schema for this template?', 'mailster' ),
-					'yourscore'              => esc_html__( '%s out of 10', 'mailster' ),
-					'yourscores'             => array(
-						esc_html__( 'This mail will hardly see any inbox!', 'mailster' ),
-						esc_html__( 'You have to make it better!', 'mailster' ),
-						esc_html__( 'Many inboxes will refuse this mail!', 'mailster' ),
-						esc_html__( 'Not bad at all. Improve it further!', 'mailster' ),
-						esc_html__( 'Almost perfect!', 'mailster' ),
-						esc_html__( 'Great! Your campaign is ready to send!', 'mailster' ),
-					),
 					'undosteps'              => mailster_option( 'undosteps', 10 ),
 					'statuschanged'          => esc_html__( 'The status of this campaign has changed. Please reload the page or %s', 'mailster' ),
 					'click_here'             => esc_html__( 'click here', 'mailster' ),

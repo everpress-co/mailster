@@ -8,9 +8,7 @@ class MailsterPreflight {
 	}
 
 
-	public function init() {
-
-	}
+	public function init() {}
 
 
 	/**

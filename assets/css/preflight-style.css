@@ -21,6 +21,10 @@
 .preflight-bar div{
 	padding:20px 0;
 }
+.preflight-bar ul.ui-autocomplete li{
+	font-size: 1em;
+	padding: 0.3em 0;
+}
 .preflight-emailheader{
 	margin: 0;
 
@@ -217,7 +221,7 @@ details summary::-webkit-details-marker { display:none; }
 	position: absolute;
 	left: 0;
 	right: 0;
-	top: 70px;
+	top: 160px;
 	bottom:0;
 	overflow: auto;
 	border-top: 1px solid #dfdfdf;

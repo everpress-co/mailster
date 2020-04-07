@@ -16,7 +16,9 @@ highlighterx, highlightery{
 body.preflight-images-hidden [background]{
 	background-image: none !important;
 }
-body.preflight-structure-enabled td{
+body.preflight-structure-enabled td,
+body.preflight-structure-enabled div,
+body.preflight-structure-enabled p{
 	box-shadow: 0 0 0 1px #2BB3E7 !important;
 }
 .preflight-highlighter highlighterx,.preflight-highlighter highlightery{
