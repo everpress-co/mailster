@@ -277,10 +277,12 @@ class MailsterUpgrade {
 					'update_action_table_sent'        => 'Update Action Tables Sent',
 					'update_action_table_opens'       => 'Update Action Tables Opens',
 					'update_action_table_clicks'      => 'Update Action Tables Clicks',
-					'update_action_table_unsubs'      => 'Update Action Tables Unsubs',
+					'update_action_table_unsubs'      => 'Update Action Tables Unsubscribes',
+					'update_action_table_unsubs_msg'  => 'Update Unsubscribes Messages',
 					'update_action_table_softbounces' => 'Update Action Tables Softbounces',
 					'update_action_table_bounces'     => 'Update Action Tables Bounces',
 					'update_action_table_errors'      => 'Update Action Tables Errors',
+					'update_action_table_errors_msg'  => 'Update Errors Messages',
 				),
 				$actions
 			);
@@ -997,6 +999,81 @@ class MailsterUpgrade {
 	}
 	private function do_update_action_table_errors() {
 		return $this->update_action_table( 'errors', 7 );
+	}
+
+	private function do_update_action_table_unsubs_msg() {
+		global $wpdb;
+
+		$sql = "SELECT * FROM `{$wpdb->prefix}mailster_subscriber_meta` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_unsubs` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id WHERE a.meta_key = 'unsubscribe' AND b.timestamp IS NOT NULL AND a.meta_value != b.text";
+
+		$result = $wpdb->get_results( $sql );
+
+		$count = count( $result );
+
+		if ( ! $count ) {
+			echo 'Moving unsubscribe messages finished!' . "\n";
+			$wpdb->query( "DELETE FROM `{$wpdb->prefix}mailster_subscriber_meta` WHERE meta_key = 'unsubscribe'" );
+			return true;
+		}
+
+		foreach ( $result as $entry ) {
+			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}mailster_action_unsubs` SET text = %s WHERE subscriber_id = %d AND campaign_id = %d AND timestamp = %d", $entry->meta_value, $entry->subscriber_id, $entry->campaign_id, $entry->timestamp ) );
+		}
+
+		echo $count . ' unsubscribe messages moved' . "\n";
+		sleep( 1 );
+		return false;
+
+	}
+
+	private function do_update_action_table_bounce_msg() {
+		global $wpdb;
+
+		$sql = "SELECT * FROM `{$wpdb->prefix}mailster_subscriber_meta` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_bounces` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id WHERE a.meta_key = 'bounce' AND b.timestamp IS NOT NULL AND a.meta_value != b.text";
+
+		$result = $wpdb->get_results( $sql );
+
+		$count = count( $result );
+
+		if ( ! $count ) {
+			echo 'Moving bounce messages finished!' . "\n";
+			$wpdb->query( "DELETE FROM `{$wpdb->prefix}mailster_subscriber_meta` WHERE meta_key = 'bounce'" );
+			return true;
+		}
+
+		foreach ( $result as $entry ) {
+			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}mailster_action_bounces` SET text = %s WHERE subscriber_id = %d AND campaign_id = %d AND timestamp = %d", $entry->meta_value, $entry->subscriber_id, $entry->campaign_id, $entry->timestamp ) );
+		}
+
+		echo $count . ' bounce messages moved' . "\n";
+		sleep( 1 );
+		return false;
+
+	}
+
+	private function do_update_action_table_errors_msg() {
+		global $wpdb;
+
+		$sql = "SELECT * FROM `{$wpdb->prefix}mailster_subscriber_meta` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_errors` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id WHERE a.meta_key = 'error' AND b.timestamp IS NOT NULL AND a.meta_value != b.text";
+
+		$result = $wpdb->get_results( $sql );
+
+		$count = count( $result );
+
+		if ( ! $count ) {
+			echo 'Moving error messages finished!' . "\n";
+			$wpdb->query( "DELETE FROM `{$wpdb->prefix}mailster_subscriber_meta` WHERE meta_key = 'error'" );
+			return true;
+		}
+
+		foreach ( $result as $entry ) {
+			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}mailster_action_errors` SET text = %s WHERE subscriber_id = %d AND campaign_id = %d AND timestamp = %d", $entry->meta_value, $entry->subscriber_id, $entry->campaign_id, $entry->timestamp ) );
+		}
+
+		echo $count . ' error messages moved' . "\n";
+		sleep( 1 );
+		return false;
+
 	}
 
 	/**

@@ -1858,7 +1858,7 @@ class Mailster {
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -1868,7 +1868,7 @@ class Mailster {
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -1879,7 +1879,7 @@ class Mailster {
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `link_id` bigint(20) unsigned NOT NULL DEFAULT 0,
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`link_id`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`link_id`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -1889,7 +1889,8 @@ class Mailster {
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                `text` varchar(191) NOT NULL,
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -1900,7 +1901,8 @@ class Mailster {
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `hard` tinyint(1) NOT NULL DEFAULT 0,
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`hard`),
+                `text` varchar(191) NOT NULL,
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`hard`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -1910,7 +1912,8 @@ class Mailster {
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                `text` varchar(191) NOT NULL,
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",

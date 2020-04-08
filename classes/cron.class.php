@@ -187,8 +187,9 @@ class MailsterCron {
 
 		$now          = time();
 		$cron_service = mailster_option( 'cron_service' );
+		$db_structure_up_to_date = MAILSTER_DBVERSION == get_option( 'mailster_dbversion' );
 
-		if ( ! mailster( 'queue' )->size() && ! $strict ) :
+		if ( (! mailster( 'queue' )->size() && ! $strict) || !$db_structure_up_to_date ) :
 
 			mailster_remove_notice( 'check_cron' );
 

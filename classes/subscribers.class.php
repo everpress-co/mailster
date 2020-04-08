@@ -1666,7 +1666,7 @@ class MailsterSubscribers {
 		}
 
 		foreach ( $ids as $id ) {
-			$actions = mailster( 'actions' )->get_by_subscriber( $id, null, false, true );
+			$actions = mailster( 'actions' )->get_by_subscriber( $id, null, false );
 			$rating  = 0.25;
 			if ( $this->get_sent( $id ) ) {
 				$openrate   = $this->get_open_rate( $id );

@@ -438,7 +438,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		$item_ids = wp_list_pluck( $this->items, 'ID' );
 
-		mailster( 'actions' )->get_by_subscriber( $item_ids );
+		//mailster( 'actions' )->get_by_subscriber( $item_ids );
 
 		$this->total_pages = ceil( $this->total_items / $this->per_page );
 
