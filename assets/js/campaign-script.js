@@ -1462,13 +1462,17 @@ mailster = (function (mailster, $, window, document) {
 
 	function checkSpamScore(id, round) {
 
+		var $button = $('.mailster_spamscore'),
+			progress = $('#spam_score_progress'),
+			progressbar = progress.find('.bar');
+
 		mailster.util.ajax('check_spam_score', {
 			ID: id,
 		}, function (response) {
 
 			if (response.score) {
 				loader(false);
-				$this.prop('disabled', false);
+				$button.prop('disabled', false);
 				progress.addClass('spam-score');
 				progressbar.css('width', (parseFloat(response.score) * 10) + '%');
 
@@ -1484,10 +1488,10 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 
 					loader(false);
-					$this.prop('disabled', false);
+					$button.prop('disabled', false);
 					progressbar.css('width', '100%');
 					progress.slideUp(200);
-					mailster.util.tempMsg(response.msg, 'error', $this.parent(), function () {
+					mailster.util.tempMsg(response.msg, 'error', $button.parent(), function () {
 						progressbar.css('width', 0);
 					});
 
