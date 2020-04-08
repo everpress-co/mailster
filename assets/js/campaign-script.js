@@ -740,7 +740,7 @@ mailster = (function (mailster, $, window, document) {
 
 					google.load('visualization', '1.0', {
 						packages: ['geochart', 'corechart'],
-						mapsApiKey: google_jsapi ? google_jsapi.key : null,
+						mapsApiKey: mailster.l10n.google ? mailster.l10n.google.key : null,
 						callback: function () {
 							var hash;
 
