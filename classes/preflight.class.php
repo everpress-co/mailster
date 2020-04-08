@@ -48,8 +48,8 @@ class MailsterPreflight {
 
 			case 'spam_report':
 				$html .= '<p>';
-				$html .= sprintf( 'SpamAssasin Score: <strong>%s</strong>.<br>', $response->score );
-				$html .= '(<span class="description">' . sprintf( esc_html__( 'A score below %s is considered spam.', 'mailster' ), '<strong>' . esc_html( $response->threshold ) . '</strong>' ) . '</span>)';
+				$html .= sprintf( 'SpamAssassin Score: <strong>%s</strong>.<br>', $response->score );
+				$html .= '(<span class="description">' . sprintf( esc_html__( 'A score above %s is considered spam.', 'mailster' ), '<strong>' . esc_html( $response->threshold ) . '</strong>' ) . '</span>)';
 				$html .= '</p>';
 				$html .= '<table class="wp-list-table widefat striped spamreport-table">';
 				foreach ( $response->rules as $key => $data ) {
