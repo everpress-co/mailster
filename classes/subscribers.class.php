@@ -1666,7 +1666,7 @@ class MailsterSubscribers {
 		}
 
 		foreach ( $ids as $id ) {
-			$actions = mailster( 'actions' )->get_by_subscriber( $id, null, false );
+			$actions = mailster( 'actions' )->get_by_subscriber( $id, null );
 			$rating  = 0.25;
 			if ( $this->get_sent( $id ) ) {
 				$openrate   = $this->get_open_rate( $id );
@@ -2903,7 +2903,22 @@ class MailsterSubscribers {
 		$timeformat = mailster( 'helper' )->timeformat();
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
-		$actions = (object) mailster( 'actions' )->get_campaign_actions( $campaign_id, $id, null, false );
+		$actions = (object) mailster( 'actions' )->get_campaign_actions( $campaign_id, $id );
+
+		$activities = mailster( 'actions' )->get_activity( $campaign_id, $id );
+		error_log( print_r( $activities, true ) );
+		$actiions = new StdClass;
+
+		foreach ( $activities as $activity ) {
+			$actiions->{$activity->type} = array(
+				'count'     => $activity->count,
+				'timestamp' => $activity->timestamp,
+				'link'      => $activity->link,
+				'text'      => $activity->text,
+			);
+		}
+
+		error_log( print_r( $actiions, true ) );
 
 		$meta = $this->meta( $id, null, $campaign_id );
 

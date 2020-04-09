@@ -944,7 +944,7 @@ class MailsterQueue {
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a LEFT JOIN {$wpdb->prefix}mailster_subscribers AS b ON a.subscriber_id = b.ID WHERE (a.sent = 0 OR a.ignore_status = 1) AND b.status != 1 AND a.campaign_id != 0" );
 
 		// select all active campaigns
-		$sql = "SELECT posts.ID, queue.sent FROM {$wpdb->prefix}posts AS posts LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON posts.ID = queue.campaign_id LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON actions.subscriber_id = queue.subscriber_id AND actions.campaign_id = queue.campaign_id AND actions.type = 1 WHERE posts.post_status IN ('active') AND posts.post_type = 'newsletter' AND queue.requeued = 0 GROUP BY posts.ID HAVING SUM(queue.sent = 0) = 0 OR queue.sent IS NULL";
+		$sql = "SELECT posts.ID, queue.sent FROM {$wpdb->prefix}posts AS posts LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON posts.ID = queue.campaign_id LEFT JOIN {$wpdb->prefix}mailster_action_sent AS actions ON actions.subscriber_id = queue.subscriber_id AND actions.campaign_id = queue.campaign_id WHERE posts.post_status IN ('active') AND posts.post_type = 'newsletter' AND queue.requeued = 0 GROUP BY posts.ID HAVING SUM(queue.sent = 0) = 0 OR queue.sent IS NULL";
 
 		$ids = $wpdb->get_col( $sql );
 
@@ -1151,7 +1151,7 @@ class MailsterQueue {
 
 					if ( ! $data->_requeued ) {
 						// prevent to send duplicates within one minute
-						if ( $duplicate = $wpdb->get_results( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_actions WHERE campaign_id = %d AND subscriber_id = %d AND type = %d && `timestamp` > %d", $data->campaign_id, $data->subscriber_id, 1, time() - 60 ) ) ) {
+						if ( $duplicate = $wpdb->get_results( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_action_sent WHERE campaign_id = %d AND subscriber_id = %d && `timestamp` > %d", $data->campaign_id, $data->subscriber_id, time() - 60 ) ) ) {
 							$this->cron_log( '', '&nbsp;<span class="error">' . $data->subscriber_id . ' ' . $data->email . '<br>' . esc_html__( 'Prevented to send duplicate within one minute.', 'mailster' ) . '</span>', $data->campaign_id, $data->_count, '' );
 							continue;
 						}

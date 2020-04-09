@@ -54,10 +54,6 @@ class MailsterCampaigns {
 		add_action( 'admin_enqueue_scripts', array( &$this, 'assets' ) );
 		add_filter( 'update_post_metadata', array( &$this, 'prevent_edit_lock' ), 10, 5 );
 
-		add_action( 'load-post-new.php', array( &$this, 'maybe_render_blank_state' ) );
-
-		add_filter( 'admin_body_class', array( &$this, 'maybe_add_body_class' ) );
-
 	}
 
 
@@ -370,35 +366,6 @@ class MailsterCampaigns {
 		global $post;
 		global $post_id;
 		include MAILSTER_DIR . 'views/newsletter/attachment.php';
-	}
-
-	public function maybe_render_blank_state() {
-
-		if ( array_key_exists( 'post_type', $_GET ) && 'newsletter' == $_GET['post_type'] ) {
-			add_action( 'edit_form_top', array( &$this, 'render_blank_state' ) );
-		}
-
-	}
-
-	public function maybe_add_body_class( $classes ) {
-
-		global $post;
-
-		if ( $post && $post->post_type == 'newsletter' ) {
-			$classes .= ' post-status-' . esc_attr( $post->post_status );
-		}
-
-		return $classes;
-
-	}
-
-	public function render_blank_state() {
-
-		global $post;
-		wp_dequeue_script( 'autosave' );
-		get_current_screen()->remove_help_tabs();
-		include MAILSTER_DIR . 'views/newsletter/blank.php';
-
 	}
 
 

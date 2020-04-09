@@ -507,12 +507,12 @@ if ( ! $is_new ) :
 
 							<?php
 						elseif ( ( $activity->type == 'softbounce' || $activity->type == 'bounce' ) && $activity->text ) :
-							$message = mailster( 'helper' )->get_bounce_message($activity->text );
+							$message = mailster( 'helper' )->get_bounce_message( $activity->text );
 							?>
 							<p class="bounce-message code"><?php echo esc_html( $message ); ?></p>
 
 						<?php elseif ( $activity->type == 'error' && $activity->text ) : ?>
-							<p class="error-message code"><strong class="red"><?php echo esc_html($activity->text); ?></strong></p>
+							<p class="error-message code"><strong class="red"><?php echo esc_html( $activity->text ); ?></strong></p>
 						<?php endif; ?>
 						</td>
 					</tr>

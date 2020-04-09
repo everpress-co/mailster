@@ -96,13 +96,11 @@ else :
 <?php
 if ( ! $is_new ) :
 
-	$actions = mailster( 'actions' )->get_by_list( $list->ID, null, true );
-
-	$sent    = $actions['sent'];
-	$opens   = $actions['opens'];
-	$clicks  = $actions['clicks'];
-	$unsubs  = $actions['unsubs'];
-	$bounces = $actions['bounces'];
+	$sent    = mailster( 'actions' )->get_by_list( $list->ID, 'sent', true );
+	$opens   = mailster( 'actions' )->get_by_list( $list->ID, 'opens', true );
+	$clicks  = mailster( 'actions' )->get_by_list( $list->ID, 'clicks', true );
+	$unsubs  = mailster( 'actions' )->get_by_list( $list->ID, 'unsubs', true );
+	$bounces = mailster( 'actions' )->get_by_list( $list->ID, 'bounces', true );
 
 	$openrate   = ( $sent ) ? $opens / $sent * 100 : 0;
 	$clickrate  = ( $opens ) ? $clicks / $opens * 100 : 0;
@@ -146,28 +144,32 @@ if ( ! $is_new ) :
 							<td>
 							<?php
 							switch ( $activity->type ) {
-								case 1:
+								case 'sent':
 									echo '<span class="mailster-icon mailster-icon-progress"></span></td><td>';
 									printf( esc_html__( 'Campaign %s has start sending', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 									break;
-								case 2:
+								case 'open':
 										echo '<span class="mailster-icon mailster-icon-open"></span></td><td>';
 										printf( esc_html__( 'First open in Campaign %s', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 									break;
-								case 3:
+								case 'click':
 										echo '<span class="mailster-icon mailster-icon-click"></span></td><td>';
 										printf( esc_html__( '%1$s in Campaign %2$s clicked', 'mailster' ), '<a href="' . $activity->link . '">' . esc_html__( 'Link', 'mailster' ) . '</a>', '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 									break;
-								case 4:
+								case 'unsub':
 										echo '<span class="mailster-icon mailster-icon-unsubscribe"></span></td><td>';
 										echo esc_html__( 'First subscription canceled', 'mailster' );
 									break;
-								case 5:
+								case 'softbounce':
 										echo '<span class="mailster-icon mailster-icon-bounce"></span></td><td>';
 										printf( esc_html__( 'Soft bounce (%d tries)', 'mailster' ), $activity->count );
 									break;
-								case 6:
+								case 'bounce':
 										echo '<span class="mailster-icon mailster-icon-bounce hard"></span></td><td>';
+										echo esc_html__( 'Hard bounce', 'mailster' );
+									break;
+								case 'error':
+										echo '<span class="mailster-icon mailster-icon-error"></span></td><td>';
 										echo esc_html__( 'Hard bounce', 'mailster' );
 									break;
 								default:
