@@ -1080,9 +1080,8 @@ class MailsterCampaigns {
 
 			wp_enqueue_style( 'mailster-overview', MAILSTER_URI . 'assets/css/overview-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_localize_script(
-				'mailster-overview',
-				'mailsterL10n',
+			mailster_localize_script(
+				'campaigns',
 				array(
 					'finish_campaign' => esc_html__( 'Do you really like to finish this campaign?', 'mailster' ),
 				)
@@ -1158,9 +1157,8 @@ class MailsterCampaigns {
 
 			}
 
-			wp_localize_script(
-				'google-jsapi',
-				'google_jsapi',
+			mailster_localize_script(
+				'google',
 				array(
 					'key' => mailster_option( 'google_api_key' ),
 				)
@@ -1179,9 +1177,8 @@ class MailsterCampaigns {
 
 			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_localize_script(
-				'mailster-campaign',
-				'mailsterL10n',
+			mailster_localize_script(
+				'campaigns',
 				array(
 					'loading'                => esc_html__( 'loading', 'mailster' ),
 					'add'                    => esc_html__( 'Add', 'mailster' ),
@@ -1214,7 +1211,6 @@ class MailsterCampaigns {
 					'for_area'               => esc_html__( 'Area %s', 'mailster' ),
 					'enter_list_name'        => esc_html__( 'Enter name of the list', 'mailster' ),
 					'create_list'            => esc_html_x( '%1$s of %2$s', '[recipientstype] of [campaignname]', 'mailster' ),
-
 					'next'                   => esc_html__( 'next', 'mailster' ),
 					'prev'                   => esc_html__( 'prev', 'mailster' ),
 					'start_of_week'          => get_option( 'start_of_week' ),
@@ -1235,12 +1231,15 @@ class MailsterCampaigns {
 					'undosteps'              => mailster_option( 'undosteps', 10 ),
 					'statuschanged'          => esc_html__( 'The status of this campaign has changed. Please reload the page or %s', 'mailster' ),
 					'click_here'             => esc_html__( 'click here', 'mailster' ),
-					'check_console'          => esc_html__( 'Check the JS console for more info!', 'mailster' ),
 					'send_now'               => esc_html__( 'Do you really like to send this campaign now?', 'mailster' ),
 					'select_image'           => esc_html__( 'Select Image', 'mailster' ),
 					'add_attachment'         => esc_html__( 'Add Attachment', 'mailster' ),
 					'edit_conditions'        => esc_html__( 'Edit Conditions', 'mailster' ),
 					'remove_conditions'      => esc_html__( 'Do you really like to remove all conditions?', 'mailster' ),
+					'ready'                  => esc_html__( 'ready!', 'mailster' ),
+					'error'                  => esc_html__( 'error!', 'mailster' ),
+					'error_occurs'           => esc_html__( 'An error occurs while uploading', 'mailster' ),
+					'unsupported_format'     => esc_html__( 'Unsupported file format', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
 				)
 			);
@@ -4552,20 +4551,6 @@ class MailsterCampaigns {
 		}
 
 		wp_localize_script( 'mailster-editor-script', 'mailsterdata', $mailsterdata );
-
-		wp_localize_script(
-			'mailster-editor-script',
-			'mailsterL10n',
-			array(
-				'ready'              => esc_html__( 'ready!', 'mailster' ),
-				'error'              => esc_html__( 'error!', 'mailster' ),
-				'error_occurs'       => esc_html__( 'An error occurs while uploading', 'mailster' ),
-				'unsupported_format' => esc_html__( 'Unsupported file format', 'mailster' ),
-				'add_button'         => esc_html__( 'Add button', 'mailster' ),
-				'add_repeater'       => esc_html__( 'Duplicate element', 'mailster' ),
-				'remove_repeater'    => esc_html__( 'Remove element', 'mailster' ),
-			)
-		);
 
 		wp_register_script( 'mailster-tinymce', includes_url( 'js/tinymce/' ) . 'tinymce.min.js', array(), false, true );
 		wp_register_script( 'mailster-tinymce-compat', includes_url( 'js/tinymce/plugins/compat3x/' ) . 'plugin' . $suffix . '.js', array(), false, true );

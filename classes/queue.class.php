@@ -592,7 +592,8 @@ class MailsterQueue {
 
 					foreach ( $feed_urls as $feed_url ) {
 						// check if latest feed item is in timeframe.
-						if ( ! ( $last = mailster( 'helper' )->new_feed_since( $autoresponder_meta['since'], $feed_url ) ) ) {
+						$last = mailster( 'helper' )->new_feed_since( $autoresponder_meta['since'], $feed_url );
+						if ( ! $last || is_wp_error( $last ) ) {
 							continue;
 						}
 

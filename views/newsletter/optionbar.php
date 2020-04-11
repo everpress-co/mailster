@@ -8,7 +8,7 @@ $file     = $this->get_file();
 	<ul class="alignleft">
 		<li class="no-border-left"><a class="mailster-icon undo disabled" title="<?php esc_html_e( 'undo', 'mailster' ); ?>">&nbsp;</a></li>
 		<li><a class="mailster-icon redo disabled" title="<?php esc_html_e( 'redo', 'mailster' ); ?>">&nbsp;</a></li>
-		<?php if ( ! empty( $modules ) ) : ?>
+		<?php if ( ! empty( $module_list ) ) : ?>
 		<li><a class="mailster-icon clear-modules" title="<?php esc_html_e( 'remove modules', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
 		<?php if ( current_user_can( 'mailster_see_codeview' ) ) : ?>
@@ -41,43 +41,30 @@ $file     = $this->get_file();
 					<div class="inner">
 						<h4><?php esc_html_e( 'Change Template', 'mailster' ); ?></h4>
 						<ul>
-							<?php
-							$current = $template . '/' . $file;
-							foreach ( $templates as $slug => $data ) :
-								?>
+							<?php $current = $template . '/' . $file; ?>
+							<?php foreach ( $templates as $slug => $data ) : ?>
 								<li>
-								<?php
-								if ( ! $single ) :
-									?>
-									<a class="template"><?php echo esc_html( $data['name'] ); ?><i class="version"><?php echo esc_html( $data['version'] ); ?></i></a><?php endif; ?>
-								<ul
-								<?php
-								if ( $template == $slug ) {
-									echo ' style="display:block"'; }
-								?>
-								>
-								<?php
-								foreach ( $all_files[ $slug ] as $name => $data ) :
-									$value      = $slug . '/' . $name;
-									$is_current = ( $current == $value );
-									$url        = ! $is_current ? add_query_arg(
-										array(
-											'template' => $slug,
-											'file'     => $name,
-											'message'  => 2,
-										),
-										admin_url( 'post.php?post=' . $post->ID . '&action=edit' )
-									) : '#';
-									?>
-								<li><a class="file
+								<?php if ( ! $single ) : ?>
+									<a class="template"><?php echo esc_html( $data['name'] ); ?><i class="version"><?php echo esc_html( $data['version'] ); ?></i></a>
+								<?php endif; ?>
+									<ul <?php echo ( $template == $slug ) ? ' style="display:block"' : ''; ?>>
 									<?php
-									if ( $is_current ) {
-										echo ' active'; }
-									?>
-								" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $data['label'] ); ?></a></li>
-								<?php endforeach; ?>
-								</ul>
-							</li>
+									foreach ( $all_files[ $slug ] as $name => $data ) :
+										$value      = $slug . '/' . $name;
+										$is_current = ( $current == $value );
+										$url        = ! $is_current ? add_query_arg(
+											array(
+												'template' => $slug,
+												'file'     => $name,
+												'message'  => 2,
+											),
+											admin_url( 'post.php?post=' . $post->ID . '&action=edit' )
+										) : '#';
+										?>
+									<li><a class="file<?php echo ( $is_current ) ? ' active' : ''; ?>" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $data['label'] ); ?></a></li>
+									<?php endforeach; ?>
+									</ul>
+								</li>
 							<?php endforeach; ?>
 					</ul>
 				</div>

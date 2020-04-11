@@ -5,9 +5,8 @@ mailster = (function (mailster, $, window, document) {
 	$.easyPieChart && $('.piechart').easyPieChart({
 		animate: 1000,
 		rotate: 180,
-		barColor: '#2BB3E7',
-		trackColor: '#50626f',
-		trackColor: '#ffffff',
+		barColor: mailster.colors.main,
+		trackColor: mailster.colors.track_light,
 		lineWidth: 9,
 		size: 75,
 		lineCap: 'butt',
