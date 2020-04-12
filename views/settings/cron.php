@@ -1,5 +1,6 @@
 <?php
 	$cron_status = mailster( 'cron' )->check();
+	$interval    = mailster_option( 'interval' );
 if ( is_wp_error( $cron_status ) ) : ?>
 	<div class="error inline"><p><strong><?php echo $cron_status->get_error_message(); ?></strong></p></div>
 	<?php endif; ?>
@@ -7,7 +8,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 <table class="form-table cron-service <?php echo 'cron-service-' . $cron_service; ?>">
 	<tr valign="top" class="wp_cron">
 		<th scope="row"><?php esc_html_e( 'Interval for sending emails', 'mailster' ); ?></th>
-		<td><p><?php printf( esc_html__( 'Send emails at most every %1$s minutes', 'mailster' ), '<input type="text" name="mailster_options[interval]" value="' . mailster_option( 'interval' ) . '" class="small-text">' ); ?></p><p class="description"><?php esc_html_e( 'Optional if a real cron service is used', 'mailster' ); ?></p></td>
+		<td><p><?php printf( esc_html__( 'Send emails at most every %1$s minutes', 'mailster' ), '<input type="text" name="mailster_options[interval]" value="' . $interval . '" class="small-text">' ); ?></p><p class="description"><?php esc_html_e( 'Optional if a real cron service is used', 'mailster' ); ?></p></td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Cron Setup', 'mailster' ); ?>
@@ -67,52 +68,53 @@ if ( is_wp_error( $cron_status ) ) : ?>
 				<p class="description"><?php printf( __( 'You can also find additional help on our %s.', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-a-cron-job/" class="external">' . __( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
 			</div>
 
-			<div id="advanced-cron-setup" style="display: none;">
-
-	<?php for ( $process_id = 0; $process_id < mailster_option( 'cron_processes' ); $process_id++ ) : ?>
-		<?php
-		if ( 'multi_cron' == $cron_service && ! $process_id ) :
-			continue;
-			endif;
-		?>
-				<?php $cron_url = mailster( 'cron' )->url( false, $process_id ); ?>
-				<?php $cron_url2 = mailster( 'cron' )->url( true, $process_id ); ?>
+			<div id="advanced-cron-setup" style="display: _none;">
+			<?php $code = array(); ?>
+			<?php for ( $process_id = 1; $process_id <= mailster_option( 'cron_processes' ); $process_id++ ) : ?>
+				<?php
+				if ( 'multi_cron' == $cron_service && ! $process_id ) :
+					continue;
+				endif;
+				?>
 				<?php $cron_path = mailster( 'cron' )->path( true, $process_id ); ?>
-				<p><?php esc_html_e( 'You can keep a browser window open with following URLs', 'mailster' ); ?> (<a class="switch-cron-url" href="#"><?php esc_html_e( 'alternative Cron URL', 'mailster' ); ?></a>)</p>
-				<div class="verified regular-cron-url"><a href="<?php echo $cron_url; ?>" class="external"><code id="copy-cronurl-1"><?php echo $cron_url; ?></code></a> <a class="clipboard" data-clipboard-target="#copy-cronurl-1"><?php esc_html_e( 'copy', 'mailster' ); ?></a></div>
-				<div class="verified alternative-cron-url"><a href="<?php echo $cron_url2; ?>" class="external"><code id="copy-cronurl-2"><?php echo $cron_url2; ?></code></a> <a class="clipboard" data-clipboard-target="#copy-cronurl-2"><?php esc_html_e( 'copy', 'mailster' ); ?></a></div>
-				<p><?php esc_html_e( 'or setup a crontab with one of the following commands:', 'mailster' ); ?></p>
-				<ul>
-				<li class="regular-cron-url"><code id="copy-cmd-1">wget -O- '<?php echo $cron_url; ?>' > /dev/null</code> <a class="clipboard" data-clipboard-target="#copy-cmd-1"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
-				<li class="alternative-cron-url"><code id="copy-cmd-2">wget -O- '<?php echo $cron_url2; ?>' > /dev/null</code> <a class="clipboard" data-clipboard-target="#copy-cmd-2"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
-				<li class="regular-cron-url"><code id="copy-cmd-3">curl --silent '<?php echo $cron_url; ?>'</code> <a class="clipboard" data-clipboard-target="#copy-cmd-3"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
-				<li class="alternative-cron-url"><code id="copy-cmd-4">curl --silent '<?php echo $cron_url2; ?>'</code> <a class="clipboard" data-clipboard-target="#copy-cmd-4"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
-				<li class="regular-cron-url"><code id="copy-cmd-5">GET '<?php echo $cron_url; ?>' > /dev/null</code> <a class="clipboard" data-clipboard-target="#copy-cmd-5"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
-				<li class="alternative-cron-url"><code id="copy-cmd-6">GET '<?php echo $cron_url2; ?>' > /dev/null</code> <a class="clipboard" data-clipboard-target="#copy-cmd-6"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
-				<li><code id="copy-cmd-7">php <?php echo $cron_path; ?> > /dev/null</code> <a class="clipboard" data-clipboard-target="#copy-cmd-7"><?php esc_html_e( 'copy', 'mailster' ); ?></a></li>
-				</ul>
-				<p class="description"><?php esc_html_e( 'You can setup an interval as low as one minute, but should consider a reasonable value of 5-15 minutes as well.', 'mailster' ); ?></p>
-				<p class="description"><?php esc_html_e( 'If you need help setting up a cron job please refer to the documentation that your provider offers.', 'mailster' ); ?></p>
-				<p class="description"><?php printf( __( 'You can also find additional help on our %s.', 'mailster' ), '<a href="https://kb.mailster.co/how-can-i-setup-a-cron-job/" class="external">' . __( 'knowledge base', 'mailster' ) . '</a>' ); ?></p>
-		<?php endfor; ?>
-			</div>
+				<?php $code[] = $process_id . '-59/' . mailster_option( 'cron_processes' ) . ' * * * * php ' . $cron_path . ' >/dev/null 2>&1'; ?>
+			<?php endfor; ?>
+			<textarea rows="10" cols="40" class="large-text code" id="copy-cmd-code"><?php echo esc_html( implode( "\n", $code ) ); ?></textarea>
+			<a class="clipboard" data-clipboard-target="#copy-cmd-code"><?php esc_html_e( 'copy', 'mailster' ); ?></a>
+			<textarea rows="10" cols="40" class="large-text code" id="copy-cmd-code2">
+# copy the current cron into a new file
+crontab -l > mailstercron.txt
 
+#remove prexisting commands
+sed -i '/./{H;$!d} ; x ; s/\n### Mailster Cron start ###.*### Mailster Cron end ###//g' mailstercron.txt
+
+# add the new entries into the file
+echo -e "\n### Mailster Cron start ###" >> mailstercron.txt
+<?php echo 'echo "' . implode( "\" >> mailstercron.txt\necho \"", $code ) . '" >> mailstercron.txt'; ?>
+
+echo "### Mailster Cron end ###" >> mailstercron.txt
+
+# install the new cron
+crontab mailstercron.txt
+
+# remove the crontab file since it has been installed and we don't use it anymore.
+rm mailstercron.txt
+
+</textarea>
+			<a class="clipboard" data-clipboard-target="#copy-cmd-code2"><?php esc_html_e( 'copy', 'mailster' ); ?></a>
+			</div>
 
 		</div>
 
 		</td>
 	</tr>
-	<?php
-	$last_hit_array = (array) get_option( 'mailster_cron_lasthit', array() );
-	ksort( $last_hit_array );
-	?>
 	<?php for ( $process_id = 0; $process_id <= mailster_option( 'cron_processes' ); $process_id++ ) : ?>
 		<?php
-		if ( 'multi_cron' != $cron_service && $process_id ) :
+		if ( ( 'multi_cron' != $cron_service && $process_id ) || ( 'multi_cron' == $cron_service && ! $process_id ) ) :
 			continue;
 		endif;
 		?>
-		<?php $last_hit = isset( $last_hit_array[ $process_id ] ) ? $last_hit_array[ $process_id ] : null; ?>
+		<?php $last_hit = get_option( 'mailster_cron_lasthit_' . $process_id, false ); ?>
 	<tr valign="top" class="lasthitstats lasthitstats-<?php echo $process_id; ?>">
 		<th scope="row"><?php printf( esc_html__( 'Last hit %s', 'mailster' ), $process_id ? '#' . $process_id : '' ); ?></th>
 		<td>
@@ -123,10 +125,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 				</div>
 			<?php endif; ?>
 		<ul class="lasthit <?php echo ( $last_hit ) ? 'verified' : 'not-verified'; ?>">
-		<?php
-		if ( $last_hit ) :
-			$interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 );
-			?>
+		<?php if ( $last_hit ) : ?>
 			<li>IP:
 			<?php
 			echo $last_hit['ip'];
@@ -136,7 +135,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			</li>
 			<li><?php echo $last_hit['user']; ?></li>
 			<li><?php echo date( $timeformat, $last_hit['timestamp'] + $timeoffset ) . ', <strong>' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) . '</strong>'; ?></li>
-			<?php if ( $interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 ) ) : ?>
+			<?php if ( $last_hit['oldtimestamp'] && $interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 ) ) : ?>
 			<li><?php echo esc_html__( 'Interval', 'mailster' ) . ': <strong>' . $interv . ' ' . esc_html_x( 'min', 'short for minute', 'mailster' ) . '</strong>'; ?></li>
 			<?php endif; ?>
 			<?php if ( $last_hit['mail'] ) : ?>

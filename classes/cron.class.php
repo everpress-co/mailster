@@ -193,13 +193,10 @@ class MailsterCron {
 
 		$interval = $this->get_interval();
 
-		$last_hit_array = get_option( 'mailster_cron_lasthit', array() );
-		if ( ! is_array( $last_hit_array ) ) {
-			$last_hit_array = array( $last_hit_array );
-		}
+		$processes = mailster_option( 'cron_processes' );
 
-		foreach ( $last_hit_array as $process_id => $last_hit ) :
-
+		for ( $i = 1; $i <= mailster_option( 'cron_processes' ); $i++ ) {
+			$last_hit = get_option( 'mailster_cron_lasthit_' . $i, array() );
 			if ( ! $last_hit ) {
 				if ( is_array( $last_hit ) ) {
 					return new WP_Error( 'cron_error', sprintf( esc_html__( 'Your Cron page hasn\'t get triggered recently. This is required to send campaigns. Please check the %s', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#cron' ) . '"><strong>' . esc_html__( 'settings page', 'mailster' ) . '</strong></a>.' ) );
@@ -224,8 +221,7 @@ class MailsterCron {
 				return true;
 
 			endif;
-
-		endforeach;
+		}
 
 	}
 

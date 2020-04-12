@@ -1001,25 +1001,25 @@ class MailsterQueue {
 			return false;
 		}
 
-		$last_hit = get_option( 'mailster_cron_lasthit', array() );
+		$last_hit = get_option( 'mailster_cron_lasthit_' . $process_id, array() );
 
 		if ( ( $pid = mailster( 'cron' )->lock( $process_id ) ) !== true ) {
 
 			echo '<h2>' . esc_html__( 'Cron Lock Enabled!', 'mailster' ) . '</h2>';
-			$sec = isset( $last_hit[ $process_id ] ) && isset( $last_hit[ $process_id ]['timestamp'] ) ? ( round( time() - $last_hit[ $process_id ]['timestamp'] ) ) : 0;
+			$sec = isset( $last_hit ) && isset( $last_hit['timestamp'] ) ? ( round( time() - $last_hit['timestamp'] ) ) : 0;
 
 			if ( is_user_logged_in() ) {
 				echo '<p>' . esc_html__( 'Another process is currently running the cron process and you have been temporary blocked to prevent duplicate emails getting sent out.', 'mailster' ) . '</p>';
 
 				echo '<p>' . sprintf( esc_html__( 'Read more about Cron Locks %s.', 'mailster' ), '<a href="https://kb.mailster.co/what-is-a-cron-lock/">' . esc_html__( 'here', 'mailster' ) . '</a>' );
 
-				if ( isset( $last_hit[ $process_id ] ) ) {
+				if ( isset( $last_hit ) ) {
 					echo '<p>' . sprintf(
 						esc_html__( 'Cron Lock requested %s ago from:', 'mailster' ),
 						'<strong>' . ( $sec > 60 ? human_time_diff( time() + $sec ) : sprintf( esc_html__( _n( '%d second', '%d seconds', $sec, 'mailster' ) ), $sec ) ) . '</strong>'
 					) . '</p>';
 
-					echo '<p><strong>IP: ' . $last_hit[ $process_id ]['ip'] . '<br>PID: ' . $pid . '<br>' . $last_hit[ $process_id ]['user'] . '</strong></p>';
+					echo '<p><strong>IP: ' . $last_hit['ip'] . '<br>PID: ' . $pid . '<br>' . $last_hit['user'] . '</strong></p>';
 				}
 			}
 
@@ -1047,8 +1047,8 @@ class MailsterQueue {
 			$last_hit = array();
 		}
 
-		if ( ! isset( $last_hit[ $process_id ] ) ) {
-			$last_hit[ $process_id ] = array(
+		if ( ! isset( $last_hit ) ) {
+			$last_hit = array(
 				'timestamp' => $microtime,
 				'time'      => 0,
 				'timemax'   => 0,
@@ -1056,14 +1056,14 @@ class MailsterQueue {
 			);
 		}
 
-		$last_hit[ $process_id ] = array(
+		$last_hit = array(
 			'ip'           => mailster_get_ip(),
 			'timestamp'    => $microtime,
-			'user'         => isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : 'unknown',
-			'oldtimestamp' => $last_hit[ $process_id ]['timestamp'],
-			'time'         => $last_hit[ $process_id ]['timemax'],
-			'timemax'      => $last_hit[ $process_id ]['timemax'],
-			'mail'         => $last_hit[ $process_id ]['mail'],
+			'user'         => isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : null,
+			'oldtimestamp' => $last_hit['timestamp'],
+			'time'         => $last_hit['timemax'],
+			'timemax'      => $last_hit['timemax'],
+			'mail'         => $last_hit['mail'],
 		);
 
 		update_option( 'mailster_cron_lasthit', $last_hit );
@@ -1073,7 +1073,7 @@ class MailsterQueue {
 
 		@ignore_user_abort( true );
 		@set_time_limit( 0 );
-		$send_at_once       = mailster_option( 'send_at_once' );
+		$send_at_once       = max( 1, round( mailster_option( 'send_at_once' ) / $processes ) );
 		$max_bounces        = mailster_option( 'bounce_attempts' );
 		$max_execution_time = mailster_option( 'max_execution_time', 0 );
 
@@ -1315,8 +1315,8 @@ class MailsterQueue {
 			$mailtook = round( $took / $sent_this_turn, 4 );
 			$this->cron_log( 'time', round( $took, 2 ) . ' sec., (' . $mailtook . ' sec./mail)' );
 			mailster_remove_notice( 'max_execution_time' );
-			$last_hit[ $process_id ]['timemax'] = max( $last_hit['timemax'], $took );
-			$last_hit[ $process_id ]['mail']    = $mailtook;
+			$last_hit['timemax'] = max( $last_hit['timemax'], $took );
+			$last_hit['mail']    = $mailtook;
 		}
 
 		if ( is_user_logged_in() ) {
@@ -1325,8 +1325,8 @@ class MailsterQueue {
 
 		mailster( 'cron' )->unlock( $process_id );
 
-		$last_hit[ $process_id ]['time'] = $took;
-		update_option( 'mailster_cron_lasthit', $last_hit );
+		$last_hit['time'] = $took;
+		update_option( 'mailster_cron_lasthit_' . $process_id, $last_hit );
 
 		do_action( 'mailster_cron_finished' );
 
@@ -1351,9 +1351,8 @@ class MailsterQueue {
 			$microtime = microtime( true );
 		}
 
-		if ( $process_id ) {
-			$processes = (int) mailster_option( 'cron_processes', 1 );
-			$sql       = 'SELECT COUNT(*) AS count, (FLOOR(1+RAND(subscriber_id)*' . $processes . " )) AS process_id FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id WHERE queue.timestamp <= " . (int) $microtime . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error} AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder') OR queue.campaign_id = 0) AND (subscribers.status = 1 OR queue.ignore_status = 1) AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0) GROUP BY (FLOOR(1+RAND(subscriber_id)*" . $processes . ' )) HAVING process_id = ' . ( (int) $process_id );
+		if ( $process_id && ( $processes = (int) mailster_option( 'cron_processes', 1 ) ) > 1 ) {
+			$sql = 'SELECT COUNT(*) AS count, (FLOOR(1+RAND(subscriber_id)*' . $processes . " )) AS process_id FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id WHERE queue.timestamp <= " . (int) $microtime . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error} AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder') OR queue.campaign_id = 0) AND (subscribers.status = 1 OR queue.ignore_status = 1) AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0) GROUP BY (FLOOR(1+RAND(subscriber_id)*" . $processes . ' )) HAVING process_id = ' . ( (int) $process_id );
 
 		} else {
 			$sql = "SELECT COUNT(*) AS count FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id WHERE queue.timestamp <= " . (int) $microtime . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error} AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder') OR queue.campaign_id = 0) AND (subscribers.status = 1 OR queue.ignore_status = 1) AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0)";

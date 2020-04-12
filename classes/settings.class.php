@@ -541,14 +541,17 @@ class MailsterSettings {
 
 	}
 
-	public function reset_lasthit( $redirect = false, $process_id = 0 ) {
+	public function reset_lasthit( $redirect = false, $process_id = null ) {
 
-		$last_hit_array = get_option( 'mailster_cron_lasthit', array() );
-		if ( isset( $last_hit_array[ $process_id ] ) ) {
-			$last_hit_array[ $process_id ] = array();
-			unset( $last_hit_array[ $process_id ] );
-			update_option( 'mailster_cron_lasthit', $last_hit_array );
+		if ( is_null( $process_id ) ) {
+
+			global $wpdb;
+			$wpdb->query( "UPDATE {$wpdb->options} SET option_value = '' WHERE option_name LIKE 'mailster_cron_lasthit%'" );
+
+		} else {
+			update_option( 'mailster_cron_lasthit_' . $process_id, array(), 'no' );
 		}
+
 		if ( $redirect ) {
 			wp_redirect( 'edit.php?post_type=newsletter&page=mailster_settings#cron' );
 			exit;
@@ -902,7 +905,7 @@ class MailsterSettings {
 
 				case 'cron_service':
 					if ( $old != $value ) {
-						update_option( 'mailster_cron_lasthit', false );
+						$this->reset_lasthit();
 					}
 
 					if ( 'wp_cron' == $value ) {
@@ -918,12 +921,12 @@ class MailsterSettings {
 					break;
 
 				case 'cron_processes':
-					if ( $old != $value ) {
+					if ( $old != $value && 'multi_cron' == $options['cron_service'] ) {
 						if ( mailster( 'queue' )->size() ) {
 							$value = $old;
-							$this->add_settings_error( __( 'Not able to update process count. Please wait until the queue is empty.', 'mailster' ), 'dkim' );
+							$this->add_settings_error( __( 'Not able to update process count. Please wait until the queue is empty.', 'mailster' ), 'cron_processes' );
 						} else {
-							update_option( 'mailster_cron_lasthit', false );
+							$this->reset_lasthit();
 						}
 					}
 

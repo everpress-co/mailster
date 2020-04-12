@@ -582,6 +582,11 @@ function mailster_get_ip() {
 			}
 		}
 	}
+
+	if ( ! $ip && function_exists( 'getHostByName' ) && function_exists( 'getHostName' ) ) {
+		$ip = getHostByName( getHostName() );
+	}
+
 	return $ip;
 }
 
