@@ -16,15 +16,30 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Subject', 'mailster' ); ?></th>
-			<td><input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['subject'] ); ?>" name="mailster_data[subject]" id="mailster_subject" aria-label="<?php esc_attr_e( 'Subject', 'mailster' ); ?>"></td>
+			<td>
+				<div class="emoji-selector">
+					<input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['subject'] ); ?>" name="mailster_data[subject]" id="mailster_subject" aria-label="<?php esc_attr_e( 'Subject', 'mailster' ); ?>">
+					<button class="button emoji" data-input="mailster_subject">&#128578;</button>
+				</div>
+			</td>
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Preheader', 'mailster' ); ?></th>
-			<td><input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['preheader'] ); ?>" name="mailster_data[preheader]" id="mailster_preheader" aria-label="<?php esc_attr_e( 'Preheader', 'mailster' ); ?>"></td>
+			<td>
+				<div class="emoji-selector">
+					<input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['preheader'] ); ?>" name="mailster_data[preheader]" id="mailster_preheader" aria-label="<?php esc_attr_e( 'Preheader', 'mailster' ); ?>">
+					<button class="button emoji" data-input="mailster_preheader">&#128578;</button>
+				</div>
+			</td>
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'From Name', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from-name" data-value="<?php echo esc_attr( mailster_option( 'from_name' ) ); ?>" title="<?php esc_html_e( 'restore default', 'mailster' ); ?>"></a></th>
-			<td><input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['from_name'] ); ?>" name="mailster_data[from_name]" id="mailster_from-name" aria-label="<?php esc_attr_e( 'From Name', 'mailster' ); ?>"></td>
+			<td>
+				<div class="emoji-selector">
+					<input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['from_name'] ); ?>" name="mailster_data[from_name]" id="mailster_from-name" aria-label="<?php esc_attr_e( 'From Name', 'mailster' ); ?>">
+					<button class="button emoji" data-input="mailster_from-name">&#128578;</button>
+				</div>
+			</td>
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'From Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from" data-value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" title="<?php esc_html_e( 'restore default', 'mailster' ); ?>"></a></th>

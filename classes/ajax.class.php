@@ -810,7 +810,7 @@ class MailsterAjax {
 		if ( ! isset( $return['msg'] ) ) {
 			$return['msg'] = ( $return['success'] )
 				? esc_html__( 'Message sent. Check your inbox!', 'mailster' )
-				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . ' <strong>' . $errors . '</strong>';
+				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . '<br><strong>' . $mail->get_errors() . '</strong>';
 		}
 
 		if ( isset( $return['log'] ) ) {

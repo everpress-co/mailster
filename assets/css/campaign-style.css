@@ -178,6 +178,30 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 #mailster_details table ul {
 	margin: 0;
 }
+#mailster_details .emoji-selector {
+	position: relative;
+	display: inline-block;
+	width: 100%;
+	white-space: nowrap;
+	vertical-align: middle;
+}
+#mailster_details .emoji-selector input {
+	width: 90%;
+	width: calc(100% - 45px);
+}
+#mailster_details .emoji-selector button {
+	transition: filter .15s ease;
+	width: 10%;
+	width: calc(40px);
+	font-size: 21px;
+	padding: 0px;
+	line-height: 0;
+	filter: grayscale(70%);
+	text-align: center;
+}
+#mailster_details .emoji-selector button:hover {
+	filter: none;
+}
 #mailster_details table .default-value {
 	float: right;
 	text-decoration: none;

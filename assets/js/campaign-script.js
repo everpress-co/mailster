@@ -740,7 +740,7 @@ mailster = (function (mailster, $, window, document) {
 
 					google.load('visualization', '1.0', {
 						packages: ['geochart', 'corechart'],
-						mapsApiKey: google_jsapi ? google_jsapi.key : null,
+						mapsApiKey: mailster.l10n.google ? mailster.l10n.google.key : null,
 						callback: function () {
 							var hash;
 
@@ -1077,6 +1077,28 @@ mailster = (function (mailster, $, window, document) {
 			});
 		});
 	}
+
+	mailster.editable && window.EmojiButton && mailster.events.push('documentReady', function () {
+		$('.emoji-selector')
+			.on('click', 'button', function () {
+				var input = document.querySelector('#' + $(this).data('input')),
+					picker = new EmojiButton({
+						emojiVersion: '3.0',
+						showVariants: false,
+						zIndex: 1000,
+					});
+
+				picker.togglePicker(this);
+				picker.on('emoji', function (emoji) {
+					var caretPos = input.selectionStart;
+					input.value = input.value.substring(0, caretPos) + '' + emoji + input.value.substring(caretPos);
+					setTimeout(function () {
+						input.focus()
+					}, 10);
+				});
+				return false;
+			});
+	});
 
 	!mailster.editable && mailster.events.push('documentReady', function () {
 		$.easyPieChart && mailster.clickmap.$.popup.find('.piechart').easyPieChart({
