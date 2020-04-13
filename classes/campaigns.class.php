@@ -1272,6 +1272,9 @@ class MailsterCampaigns {
 				wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
 				wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
 
+				remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+				wp_enqueue_script( 'mailster-emojipicker', MAILSTER_URI . 'assets/js/libs/emoji-button.js', array(), MAILSTER_VERSION );
+
 				if ( user_can_richedit() ) {
 					wp_enqueue_script( 'editor' );
 				}

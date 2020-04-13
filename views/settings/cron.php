@@ -15,7 +15,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 		<td>
 			<?php $cron = mailster_option( 'cron_service' ); ?>
 			<label><input type="radio" class="cron_radio" name="mailster_options[cron_service]" value="wp_cron" <?php checked( $cron == 'wp_cron' ); ?> > <?php esc_html_e( 'Use the wp_cron function to send newsletters', 'mailster' ); ?></label><br>
-			<label><input type="radio" class="cron_radio" name="mailster_options[cron_service]" value="cron" <?php checked( $cron == 'cron' ); ?> > <?php esc_html_e( 'Use a real cron to send newsletters', 'mailster' ); ?></label> <span class="description"><?php esc_html_e( 'reccomended for many subscribers', 'mailster' ); ?></span>
+			<label><input type="radio" class="cron_radio" name="mailster_options[cron_service]" value="cron" <?php checked( $cron == 'cron' ); ?> > <?php esc_html_e( 'Use a real cron to send newsletters', 'mailster' ); ?></label> <span class="description"><?php esc_html_e( 'recommended for many subscribers', 'mailster' ); ?></span>
 			<?php if ( file_exists( MAILSTER_UPLOAD_DIR . '/CRON_LOCK' ) && ( time() - filemtime( MAILSTER_UPLOAD_DIR . '/CRON_LOCK' ) ) < 10 ) : ?>
 			<div class="error inline"><p><strong><?php esc_html_e( 'Cron is currently running!', 'mailster' ); ?></strong></p></div>
 			<?php endif; ?>
