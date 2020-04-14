@@ -26,7 +26,7 @@ mailster = (function (mailster, $, window, document) {
 
 	$('#mailster-setup')
 		.on('click', '.validation-skip-step', function () {
-			return confirm(mailsterL10n.skip_validation);
+			return confirm(mailster.l10n.setup.skip_validation);
 		})
 		.on('click', '.next-step', function () {
 
@@ -46,7 +46,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.load-language', function () {
 
-			status.html(mailsterL10n.load_language);
+			status.html(mailster.l10n.setup.load_language);
 			spinner.css('visibility', 'visible');
 			mailster.util.ajax('load_language', function (response) {
 
@@ -93,9 +93,9 @@ mailster = (function (mailster, $, window, document) {
 		$('#deliverytab-' + hash).show();
 
 		if ($('#deliverytab-' + hash).find('.quick-install').length) {
-			$('.delivery-next-step').addClass('disabled').html(sprintf(mailsterL10n.enable_first, $(this).html()));
+			$('.delivery-next-step').addClass('disabled').html(sprintf(mailster.l10n.setup.enable_first, $(this).html()));
 		} else {
-			$('.delivery-next-step').removeClass('disabled').html(sprintf(mailsterL10n.use_deliverymethod, $(this).html()));
+			$('.delivery-next-step').removeClass('disabled').html(sprintf(mailster.l10n.setup.use_deliverymethod, $(this).html()));
 		}
 		return false;
 	});
@@ -131,7 +131,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function check_language() {
 
-		status.html(mailsterL10n.check_language);
+		status.html(mailster.l10n.setup.check_language);
 		spinner.css('visibility', 'visible');
 
 		mailster.util.ajax('check_language', function (response) {
@@ -158,7 +158,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function install(plugin, method, element, callback) {
 
-		status.html(mailsterL10n.install_addon);
+		status.html(mailster.l10n.setup.install_addon);
 		spinner.css('visibility', 'visible');
 
 		mailster.util.ajax('quick_install', {
@@ -167,14 +167,14 @@ mailster = (function (mailster, $, window, document) {
 			step: 'install'
 		}, function (response) {
 
-			status.html(mailsterL10n.activate_addon);
+			status.html(mailster.l10n.setup.activate_addon);
 			mailster.util.ajax('quick_install', {
 				plugin: plugin,
 				method: method,
 				step: 'activate'
 			}, function (response) {
 
-				status.html(mailsterL10n.receiving_content);
+				status.html(mailster.l10n.setup.receiving_content);
 				mailster.util.ajax('quick_install', {
 					plugin: plugin,
 					method: method,

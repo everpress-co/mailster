@@ -1034,7 +1034,7 @@ class MailsterHelper {
 		switch ( $status ) {
 			case 'list_unsubscribe':
 			case 'list_unsubscribe_list':
-				return  esc_html__( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
+				return esc_html__( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
 			case 'link_unsubscribe':
 			case 'link_unsubscribe_list':
 				return esc_html__( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );
@@ -1583,25 +1583,23 @@ class MailsterHelper {
 
 		if ( ! ( $posts = mailster_cache_get( 'feed_' . $feed_id ) ) ) {
 			if ( ! class_exists( 'SimplePie', false ) ) {
-				require_once( ABSPATH . WPINC . '/class-simplepie.php' );
+				require_once ABSPATH . WPINC . '/class-simplepie.php';
 			}
 
 			$feed = new SimplePie();
 
 			if ( ! $cache_duration || false === ( $body = get_transient( 'mailster_feed_' . $feed_id ) ) ) {
-				$response = wp_remote_get(
-					$url,
-					array(
-						'timeout' => 5,
-					)
-				);
+
+				$response = wp_remote_get( $url, array( 'timeout' => 10 ) );
 
 				if ( is_wp_error( $response ) ) {
 					if ( ! is_admin() ) {
-						mailster_notice( sprintf( esc_html__( 'There\'s a problem receiving the feed from `%1$s`: %2$s', 'mailster' ), $url, $response->get_error_message() ), 'error', false, $feed_id );
+						mailster_notice( sprintf( esc_html__( 'There\'s a problem receiving the feed from `%1$s`: %2$s', 'mailster' ), $url, $response->get_error_message() ), 'error', $cache_duration, $feed_id );
 					}
 					return $response;
 				}
+
+				mailster_remove_notice( $feed_id );
 
 				$body = wp_remote_retrieve_body( $response );
 
@@ -1638,13 +1636,6 @@ class MailsterHelper {
 			}
 
 			$rss_items = $feed->get_items( 0, $max_items );
-
-			$recent_feeds                       = get_option( 'mailster_recent_feeds', array() );
-			$recent_feeds                       = array_reverse( $recent_feeds );
-			$recent_feeds[ $feed->get_title() ] = $url;
-			$recent_feeds                       = array_reverse( $recent_feeds );
-			$recent_feeds                       = array_slice( $recent_feeds, 0, 5 );
-			update_option( 'mailster_recent_feeds', $recent_feeds );
 
 			$posts = array();
 

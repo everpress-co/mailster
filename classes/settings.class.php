@@ -376,9 +376,9 @@ class MailsterSettings {
 
 		wp_enqueue_style( 'mailster-settings-style', MAILSTER_URI . 'assets/css/settings-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-settings-script',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'settings',
 			array(
 				'add'              => esc_html__( 'add', 'mailster' ),
 				'fieldname'        => esc_html__( 'Field Name', 'mailster' ),

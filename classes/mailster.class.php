@@ -212,6 +212,7 @@ class Mailster {
 		if ( is_admin() ) {
 
 			add_action( 'admin_enqueue_scripts', array( &$this, 'admin_scripts_styles' ), 10, 1 );
+			add_action( 'wp_print_scripts', array( &$this, 'localize_scripts' ), 10, 1 );
 			add_action( 'admin_menu', array( &$this, 'special_pages' ), 60 );
 			add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 
@@ -260,137 +261,141 @@ class Mailster {
 
 		global $mailster_notices;
 
-		if ( $mailster_notices = get_option( 'mailster_notices' ) ) {
+		if ( ! ( $mailster_notices = get_option( 'mailster_notices' ) ) ) {
+			return;
+		}
 
-			$successes = array();
-			$errors    = array();
-			$infos     = array();
-			$warnings  = array();
-			$dismiss   = isset( $_GET['mailster_remove_notice_all'] ) ? esc_attr( $_GET['mailster_remove_notice_all'] ) : false;
+		$successes = array();
+		$errors    = array();
+		$infos     = array();
+		$warnings  = array();
+		$dismiss   = isset( $_GET['mailster_remove_notice_all'] ) ? esc_attr( $_GET['mailster_remove_notice_all'] ) : false;
 
-			if ( ! is_array( $mailster_notices ) ) {
-				$mailster_notices = array();
-			}
+		if ( ! is_array( $mailster_notices ) ) {
+			$mailster_notices = array();
+		}
 
-			if ( isset( $_GET['mailster_remove_notice'] ) && isset( $mailster_notices[ $_GET['mailster_remove_notice'] ] ) ) {
-				unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
-			}
+		if ( isset( $_GET['mailster_remove_notice'] ) && isset( $mailster_notices[ $_GET['mailster_remove_notice'] ] ) ) {
+			unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
+		}
 
-			foreach ( $mailster_notices as $id => $notice ) {
+		foreach ( $mailster_notices as $id => $notice ) {
 
-				if ( isset( $notice['cap'] ) && ! empty( $notice['cap'] ) ) {
+			if ( isset( $notice['cap'] ) && ! empty( $notice['cap'] ) ) {
 
-					// specific users or admin
-					if ( is_numeric( $notice['cap'] ) ) {
-						if ( get_current_user_id() != $notice['cap'] && ! current_user_can( 'manage_options' ) ) {
-							continue;
-						}
-
-						// certain capability
-					} else {
-						if ( ! current_user_can( $notice['cap'] ) ) {
-							continue;
-						}
+				// specific users or admin
+				if ( is_numeric( $notice['cap'] ) ) {
+					if ( get_current_user_id() != $notice['cap'] && ! current_user_can( 'manage_options' ) ) {
+						continue;
 					}
-				}
-				if ( isset( $notice['screen'] ) && ! empty( $notice['screen'] ) ) {
-					$screen = get_current_screen();
-					if ( ! in_array( $screen->id, (array) $notice['screen'] ) ) {
+
+					// certain capability
+				} else {
+					if ( ! current_user_can( $notice['cap'] ) ) {
 						continue;
 					}
 				}
-
-				$type        = esc_attr( $notice['type'] );
-				$dismissable = ! $notice['once'] || is_numeric( $notice['once'] );
-
-				$classes = array( 'hidden', 'notice', 'mailster-notice', 'notice-' . $type );
-				if ( 'success' == $type ) {
-					$classes[] = 'updated';
-				}
-				if ( 'error' == $type ) {
-					$classes[] = 'error';
-				}
-				if ( $dismissable ) {
-					$classes[] = 'mailster-notice-dismissable';
-				}
-
-				$msg = '<div data-id="' . esc_attr( $id ) . '" id="mailster-notice-' . esc_attr( $id ) . '" class="' . implode( ' ', $classes ) . '">';
-
-				$text = ( isset( $notice['text'] ) ? $notice['text'] : '' );
-				$text = isset( $notice['cb'] ) && function_exists( $notice['cb'] )
-					? call_user_func( $notice['cb'], $text )
-					: $text;
-
-				if ( $text === false ) {
+			}
+			if ( isset( $notice['screen'] ) && ! empty( $notice['screen'] ) ) {
+				$screen = get_current_screen();
+				if ( ! in_array( $screen->id, (array) $notice['screen'] ) ) {
 					continue;
-				}
-				if ( ! is_string( $text ) ) {
-					$text = print_r( $text, true );
-				}
-
-				if ( 'error' == $type ) {
-					$text = '<strong>' . $text . '</strong>';
-				}
-
-				$msg .= ( $text ? $text : '&nbsp;' );
-				if ( $dismissable ) {
-					$msg .= '<a class="notice-dismiss" title="' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '" href="' . add_query_arg( array( 'mailster_remove_notice' => $id ) ) . '">' . esc_attr__( 'Dismiss', 'mailster' ) . '<span class="screen-reader-text">' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '</span></a>';
-
-					if ( is_numeric( $notice['once'] ) && (int) $notice['once'] - time() < 0 ) {
-						unset( $mailster_notices[ $id ] );
-					}
-				} else {
-					unset( $mailster_notices[ $id ] );
-				}
-
-				$msg .= '</div>';
-
-				if ( $notice['type'] == 'success' && $dismiss != 'success' ) {
-					$successes[] = $msg;
-				}
-
-				if ( $notice['type'] == 'error' && $dismiss != 'error' ) {
-					$errors[] = $msg;
-				}
-
-				if ( $notice['type'] == 'info' && $dismiss != 'info' ) {
-					$infos[] = $msg;
-				}
-
-				if ( $notice['type'] == 'warning' && $dismiss != 'warning' ) {
-					$warnings[] = $msg;
-				}
-
-				if ( 'success' == $dismiss && isset( $mailster_notices[ $id ] ) ) {
-					unset( $mailster_notices[ $id ] );
-				}
-
-				if ( 'error' == $dismiss && isset( $mailster_notices[ $id ] ) ) {
-					unset( $mailster_notices[ $id ] );
-				}
-
-				if ( 'info' == $dismiss && isset( $mailster_notices[ $id ] ) ) {
-					unset( $mailster_notices[ $id ] );
-				}
-
-				if ( 'warning' == $dismiss && isset( $mailster_notices[ $id ] ) ) {
-					unset( $mailster_notices[ $id ] );
 				}
 			}
 
-			$suffix = SCRIPT_DEBUG ? '' : '.min';
+			$type        = esc_attr( $notice['type'] );
+			$dismissable = ! $notice['once'] || is_numeric( $notice['once'] );
 
-			wp_enqueue_style( 'mailster-notice', MAILSTER_URI . 'assets/css/notice-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_script( 'mailster-notice', MAILSTER_URI . 'assets/js/notice-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+			$classes = array( 'hidden', 'notice', 'mailster-notice', 'notice-' . $type );
+			if ( 'success' == $type ) {
+				$classes[] = 'updated';
+			}
+			if ( 'error' == $type ) {
+				$classes[] = 'error';
+			}
+			if ( $dismissable ) {
+				$classes[] = 'mailster-notice-dismissable';
+			}
 
-			echo implode( '', $successes );
-			echo implode( '', $errors );
-			echo implode( '', $infos );
-			echo implode( '', $warnings );
+			$msg = '<div data-id="' . esc_attr( $id ) . '" id="mailster-notice-' . esc_attr( $id ) . '" class="' . implode( ' ', $classes ) . '">';
 
-			add_action( 'shutdown', array( &$this, 'save_admin_notices' ) );
+			$text = ( isset( $notice['text'] ) ? $notice['text'] : '' );
+			$text = isset( $notice['cb'] ) && function_exists( $notice['cb'] )
+				? call_user_func( $notice['cb'], $text )
+				: $text;
 
+			if ( $text === false ) {
+				continue;
+			}
+			if ( ! is_string( $text ) ) {
+				$text = print_r( $text, true );
+			}
+
+			if ( 'error' == $type ) {
+				$text = '<strong>' . $text . '</strong>';
+			}
+
+			$msg .= ( $text ? $text : '&nbsp;' );
+			if ( $dismissable ) {
+				$msg .= '<a class="notice-dismiss" title="' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '" href="' . add_query_arg( array( 'mailster_remove_notice' => $id ) ) . '">' . esc_attr__( 'Dismiss', 'mailster' ) . '<span class="screen-reader-text">' . esc_attr__( 'Dismiss this notice (Alt-click to dismiss all notices)', 'mailster' ) . '</span></a>';
+
+				$mailster_notices[ $id ]['seen'] = true;
+				if ( is_numeric( $notice['once'] ) && (int) $notice['once'] - time() < 0 ) {
+					unset( $mailster_notices[ $id ] );
+					if ( isset( $notice['seen'] ) ) {
+						continue;
+					}
+				}
+			} else {
+				unset( $mailster_notices[ $id ] );
+			}
+
+			$msg .= '</div>';
+
+			if ( $notice['type'] == 'success' && $dismiss != 'success' ) {
+				$successes[] = $msg;
+			}
+
+			if ( $notice['type'] == 'error' && $dismiss != 'error' ) {
+				$errors[] = $msg;
+			}
+
+			if ( $notice['type'] == 'info' && $dismiss != 'info' ) {
+				$infos[] = $msg;
+			}
+
+			if ( $notice['type'] == 'warning' && $dismiss != 'warning' ) {
+				$warnings[] = $msg;
+			}
+
+			if ( 'success' == $dismiss && isset( $mailster_notices[ $id ] ) ) {
+				unset( $mailster_notices[ $id ] );
+			}
+
+			if ( 'error' == $dismiss && isset( $mailster_notices[ $id ] ) ) {
+				unset( $mailster_notices[ $id ] );
+			}
+
+			if ( 'info' == $dismiss && isset( $mailster_notices[ $id ] ) ) {
+				unset( $mailster_notices[ $id ] );
+			}
+
+			if ( 'warning' == $dismiss && isset( $mailster_notices[ $id ] ) ) {
+				unset( $mailster_notices[ $id ] );
+			}
 		}
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_style( 'mailster-notice', MAILSTER_URI . 'assets/css/notice-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-notice', MAILSTER_URI . 'assets/js/notice-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
+		echo implode( '', $successes );
+		echo implode( '', $errors );
+		echo implode( '', $infos );
+		echo implode( '', $warnings );
+
+		add_action( 'shutdown', array( &$this, 'save_admin_notices' ) );
 
 	}
 
@@ -1208,21 +1213,31 @@ class Mailster {
 				'isrtl'   => is_rtl(),
 				'version' => MAILSTER_VERSION,
 				'colors'  => array(
-					'main' => '#2BB3E7',
+					'main'        => '#2BB3E7',
+					'track'       => '#f3f3f3',
+					'track_light' => '#ffffff',
 				),
 			)
 		);
 
+		mailster_localize_script( array( 'check_console' => esc_html__( 'Check the JS console for more info!', 'mailster' ) ) );
+
 		wp_register_script( 'mailster-clipboard', MAILSTER_URI . 'assets/js/libs/clipboard' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 		wp_register_script( 'mailster-clipboard-script', MAILSTER_URI . 'assets/js/clipboard-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-clipboard-script',
-			'mailsterClipboardL10',
+
+		mailster_localize_script(
+			'clipboard',
 			array(
 				'copied' => esc_html__( 'Copied!', 'mailster' ),
 			)
 		);
 
+	}
+	public function localize_scripts() {
+		$scripts = apply_filters( 'mailster_localize_script', array() );
+		if ( ! empty( $scripts ) ) {
+			wp_localize_script( 'mailster-script', 'mailster_l10n', $scripts );
+		}
 	}
 
 
@@ -1270,9 +1285,9 @@ class Mailster {
 
 		wp_enqueue_style( 'mailster-deactivate', MAILSTER_URI . 'assets/css/deactivate-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-deactivate', MAILSTER_URI . 'assets/js/deactivate-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-deactivate',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'deactivate',
 			array(
 				'select_reason' => esc_html__( 'Please select a reason for the deactivation.', 'mailster' ),
 			)
@@ -1294,9 +1309,9 @@ class Mailster {
 
 		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-setup',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'setup',
 			array(
 				'load_language'      => esc_html__( 'Loading Languages', 'mailster' ),
 				'enable_first'       => esc_html__( 'Enable %s first', 'mailster' ),
@@ -1336,9 +1351,9 @@ class Mailster {
 
 		wp_enqueue_style( 'mailster-tests', MAILSTER_URI . 'assets/css/tests-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-tests', MAILSTER_URI . 'assets/js/tests-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-tests',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'tests',
 			array(
 				'restart_test'   => esc_html__( 'Restart Test', 'mailster' ),
 				'running_test'   => esc_html__( 'Running Test %1$s of %2$s: %3$s', 'mailster' ),
