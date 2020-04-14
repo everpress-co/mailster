@@ -478,6 +478,7 @@ class MailsterLists {
 				$ids = array( (int) $ids );
 			}
 
+			$ids = array_filter( $ids, 'is_numeric' );
 			if ( empty( $ids ) ) {
 				return true;
 			}
@@ -487,6 +488,7 @@ class MailsterLists {
 				$subscriber_ids = array( (int) $subscriber_ids );
 			}
 
+			$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
 			if ( empty( $subscriber_ids ) ) {
 				return true;
 			}
