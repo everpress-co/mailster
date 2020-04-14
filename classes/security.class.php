@@ -5,14 +5,9 @@ class MailsterSecurity {
 
 	public function __construct() {
 
-		add_filter( 'plugins_loaded', array( &$this, 'init' ) );
 		add_action( 'mailster_verify_subscriber', array( $this, 'verify_subscriber' ) );
 		add_action( 'mailster_add_subscriber', array( $this, 'flood' ) );
 
-	}
-
-
-	public function init() {
 	}
 
 	/**
@@ -28,9 +23,6 @@ class MailsterSecurity {
 		}
 
 		if ( ! isset( $entry['email'] ) ) {
-			return $entry;
-		}
-		if ( ! mailster_option( 'sev_import' ) && defined( 'MAILSTER_DO_BULKIMPORT' ) && MAILSTER_DO_BULKIMPORT ) {
 			return $entry;
 		}
 
@@ -65,7 +57,7 @@ class MailsterSecurity {
 
 		// check for email addresses
 		if ( $this->match( $email, mailster_option( 'blacklisted_emails' ) ) ) {
-			return new WP_Error( 'error_blacklisted', 'blacklisted_email', 'blacklisted' );
+			return new WP_Error( 'error_blacklisted', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'blacklisted' );
 		}
 
 		// check for white listed
@@ -75,35 +67,35 @@ class MailsterSecurity {
 
 		// check for domains
 		if ( $this->match( $domain, mailster_option( 'blacklisted_domains' ) ) ) {
-			return new WP_Error( 'error_blacklisted', 'blacklisted', 'email' );
+			return new WP_Error( 'error_blacklisted', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
 		}
 
 		// check DEP
-		if ( $this->match( $domain, $this->get_dep_domains() ) ) {
-			return new WP_Error( 'error_dep', 'dep_domain', 'email' );
+		if ( mailster_option( 'reject_dep' ) && $this->match( $domain, $this->get_dep_domains() ) ) {
+			return new WP_Error( 'error_dep', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
 		}
 
 		// check MX record
 		if ( mailster_option( 'check_mx' ) && function_exists( 'checkdnsrr' ) ) {
 			if ( ! checkdnsrr( $domain, 'MX' ) ) {
-				return new WP_Error( 'error_mx', 'mx_check', 'email' );
+				return new WP_Error( 'error_mx', esc_html__( 'We weren\'t able to check your email address.', 'mailster' ), 'email' );
 			}
 		}
 
 		// check via SMTP server
 		if ( mailster_option( 'check_smtp' ) ) {
 			if ( ! $this->smtp_check( $email ) ) {
-				return new WP_Error( 'error_smtp', 'smtpcheck', 'email' );
+				return new WP_Error( 'error_smtp', esc_html__( 'We weren\'t able to check your email address.', 'mailster' ), 'email' );
 			}
 		}
 
 		// check via Akismet if enabled
 		if ( $this->is_akismet_block( $email, $ip ) ) {
-			return new WP_Error( 'error_aksimet', 'aksimet', 'email' );
+			return new WP_Error( 'error_aksimet', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
 		}
 
 		// check Antiflood
-		if ( $timestamp = $this->is_flood( $ip ) ) {
+		if ( mailster_option( 'antiflood' ) && $timestamp = $this->is_flood( $ip ) ) {
 			$t = ( $timestamp - time() > 60 ) ? human_time_diff( $timestamp ) : sprintf( esc_html__( '%d seconds', 'mailster' ), $timestamp - time() );
 			return new WP_Error( 'error_antiflood', sprintf( esc_html__( 'Please wait %s', 'mailster' ), $t ), 'email' );
 		}
@@ -140,19 +132,7 @@ class MailsterSecurity {
 	}
 
 
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $check (optional)
-	 * @return unknown
-	 */
 	public function get_dep_domains() {
-
-		if ( ! mailster_option( 'reject_dep' ) ) {
-			return array();
-		}
 
 		include MAILSTER_DIR . 'includes/dep.php';
 
@@ -166,16 +146,10 @@ class MailsterSecurity {
 			$ip = mailster_get_ip();
 			set_transient( 'mailster_ip_check_' . md5( NONCE_SALT . ip2long( $ip ) ), time() + $time, $time );
 		}
-
-		return $object;
 	}
 
 
 	public function is_flood( $ip ) {
-
-		if ( ! mailster_option( 'antiflood' ) ) {
-			return false;
-		}
 
 		return get_transient( 'mailster_ip_check_' . md5( NONCE_SALT . ip2long( $ip ) ) );
 
