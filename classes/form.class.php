@@ -362,8 +362,8 @@ class MailsterForm {
 					}
 					$fields[ $field->field_id ] .= '<select id="mailster-' . $field->field_id . '-' . $this->ID . '" name="' . $field->field_id . '" class="input mailster-' . $field->field_id . '' . ( $required ? ' mailster-required' : '' ) . '" aria-required="' . ( $required ? 'true' : 'false' ) . '" aria-label="' . $esc_label . '">';
 
-					$stati = mailster( 'subscribers' )->get_status( null, true );
-					foreach ( $stati as $status => $name ) {
+					$statuses = mailster( 'subscribers' )->get_status( null, true );
+					foreach ( $statuses as $status => $name ) {
 						if ( in_array( $status, array( 1, 2 ) ) || $status == $subscriber_status ) {
 							$fields[ $field->field_id ] .= '<option value="' . $status . '" ' . selected( $subscriber_status, $status, false ) . '>' . $name . '</option>';
 						}
