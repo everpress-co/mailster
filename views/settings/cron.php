@@ -77,28 +77,28 @@ if ( is_wp_error( $cron_status ) ) : ?>
 				endif;
 				?>
 				<?php $cron_path = mailster( 'cron' )->path( true, $process_id ); ?>
-				<?php $code[] = $process_id . '-59/' . mailster_option( 'cron_processes' ) . ' * * * * php ' . $cron_path . ' >/dev/null 2>&1'; ?>
+				<?php $code[] = '*/' . mailster_option( 'cron_processes' ) . ' * * * * php ' . $cron_path . ' >/dev/null 2>&1'; ?>
 			<?php endfor; ?>
 			<textarea rows="10" cols="40" class="large-text code" id="copy-cmd-code"><?php echo esc_html( implode( "\n", $code ) ); ?></textarea>
 			<a class="clipboard" data-clipboard-target="#copy-cmd-code"><?php esc_html_e( 'copy', 'mailster' ); ?></a>
 			<textarea rows="10" cols="40" class="large-text code" id="copy-cmd-code2">
 # copy the current cron into a new file
-crontab -l > mailstercron.txt
+crontab -l > mailstercron
 
 #remove prexisting commands
-sed -i '/./{H;$!d} ; x ; s/\n### Mailster Cron start ###.*### Mailster Cron end ###//g' mailstercron.txt
+sed -i '/./{H;$!d} ; x ; s/\n### Mailster Cron start ###.*### Mailster Cron end ###//g' mailstercron
 
 # add the new entries into the file
-echo -e "\n### Mailster Cron start ###" >> mailstercron.txt
-<?php echo 'echo "' . implode( "\" >> mailstercron.txt\necho \"", $code ) . '" >> mailstercron.txt'; ?>
+echo -e "\n### Mailster Cron start ###" >> mailstercron
+<?php echo 'echo "' . implode( "\" >> mailstercron\necho \"", $code ) . '" >> mailstercron'; ?>
 
-echo "### Mailster Cron end ###" >> mailstercron.txt
+echo "### Mailster Cron end ###" >> mailstercron
 
 # install the new cron
-crontab mailstercron.txt
+crontab mailstercron
 
 # remove the crontab file since it has been installed and we don't use it anymore.
-rm mailstercron.txt
+rm mailstercron
 
 </textarea>
 			<a class="clipboard" data-clipboard-target="#copy-cmd-code2"><?php esc_html_e( 'copy', 'mailster' ); ?></a>
