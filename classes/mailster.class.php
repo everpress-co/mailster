@@ -1662,7 +1662,7 @@ class Mailster {
 				$html = implode( '<br>', $errors->errors->get_error_messages() );
 
 				if ( $die ) {
-					die( '<div style="font-family:sans-serif;"><strong>' . $html . '</strong</div>' );
+					die( '<div style="font-family:sans-serif;"><strong>' . $html . '</strong></div>' );
 				} else {
 					mailster_notice( $html, 'error', false, 'errors' );
 				}
