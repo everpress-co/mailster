@@ -77,7 +77,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 				endif;
 				?>
 				<?php $cron_path = mailster( 'cron' )->path( true, $process_id ); ?>
-				<?php $code[] = '*/' . mailster_option( 'cron_processes' ) . ' * * * * php ' . $cron_path . ' >/dev/null 2>&1'; ?>
+				<?php $code[] = '*/' . $interval . ' * * * * php ' . $cron_path . ' >/dev/null 2>&1'; ?>
 			<?php endfor; ?>
 			<textarea rows="10" cols="40" class="large-text code" id="copy-cmd-code"><?php echo esc_html( implode( "\n", $code ) ); ?></textarea>
 			<a class="clipboard" data-clipboard-target="#copy-cmd-code"><?php esc_html_e( 'copy', 'mailster' ); ?></a>
