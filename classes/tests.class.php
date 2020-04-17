@@ -3,6 +3,7 @@
 class MailsterTests {
 
 	private $message;
+	private $tests_to_run;
 	private $tests;
 	private $current;
 	private $next;
@@ -13,11 +14,11 @@ class MailsterTests {
 	public function __construct( $test = null ) {
 
 		if ( ! is_null( $test ) ) {
-			$this->tests = is_array( $test ) ? array_keys( $test ) : array( $test => 0 );
+			$this->tests_to_run = is_array( $test ) ? array_keys( $test ) : array( $test => 0 );
 		} else {
-			$this->tests = $this->get_tests();
+			$this->tests_to_run = array_flip( $this->get_tests() );
 		}
-		$this->total  = count( $this->tests );
+		$this->total  = count( $this->tests_to_run );
 		$this->errors = array(
 			'count'         => 0,
 			'error_count'   => 0,
@@ -34,6 +35,45 @@ class MailsterTests {
 	}
 
 	public function __call( $method, $args ) {
+
+		if ( strpos( $method, 'get_health_test_' ) === 0 ) {
+
+			$test = str_replace( 'get_health_test_', 'test_', $method );
+
+			if ( method_exists( $this, $test ) ) {
+				$this->run( $test );
+				$result = array(
+					'label'       => $test,
+					'status'      => $this->last_error_message,
+					'badge'       => array(
+						'label' => __( 'Performance' ),
+						'color' => 'orange',
+					),
+					'description' => sprintf(
+						'<p>%s</p>',
+						$this->last_error_message
+					),
+					'actions'     => '',
+					'test'        => $test,
+				);
+
+				if ( true ) {
+					$result['status']      = 'recommended';
+					$result['label']       = $this->last_error_message;
+					$result['description'] = sprintf(
+						'<p>%s</p>',
+						__( 'Caching is not currently enabled on your site. Caching can help load your site more quickly for visitors.' )
+					);
+					$result['actions']    .= sprintf(
+						'<p><a href="%s">%s</a></p>',
+						esc_url( admin_url( 'admin.php?page=cachingplugin&action=enable-caching' ) ),
+						__( 'Enable Caching' )
+					);
+				}
+
+				return $result;
+			}
+		}
 
 		switch ( $method ) {
 			case 'error':
@@ -54,10 +94,10 @@ class MailsterTests {
 	public function run( $test_id = null, $args = array() ) {
 
 		if ( $test_id == null ) {
-			$test_id = key( $this->tests );
+			$test_id = key( $this->tests_to_run );
 		}
 
-		if ( isset( $this->tests[ $test_id ] ) ) {
+		if ( isset( $this->tests_to_run[ $test_id ] ) ) {
 
 			$this->last_is_error      = false;
 			$this->last_error_test    = null;
@@ -66,7 +106,7 @@ class MailsterTests {
 			$this->last_error_link    = null;
 
 			$this->current_id = $test_id;
-			$this->current    = $this->tests[ $test_id ];
+			$this->current    = $this->tests_to_run[ $test_id ];
 
 			try {
 				if ( is_callable( $this->current ) ) {
@@ -86,15 +126,37 @@ class MailsterTests {
 		return null;
 	}
 
+	public function get_health_tests() {
+		$site_health_tests = array(
+			'direct' => array(),
+			'async'  => array(),
+		);
+
+		foreach ( $this->get_tests() as $test ) {
+			$site_health_tests['direct'][ 'mailster_' . $test ] = array(
+				'label' => $this->nicename( $test ),
+				'test'  => array( &$this, 'get_health_test_' . $test ),
+			);
+
+			break;
+		}
+
+		return $site_health_tests;
+
+	}
+
 	public function get_tests() {
 
-		$tests = get_class_methods( $this );
-		$tests = preg_grep( '/^test_/', $tests );
-		$tests = array_values( $tests );
-		$tests = preg_replace( '/^test_/', '', $tests );
-		$tests = array_flip( $tests );
+		if ( ! empty( $this->tests ) ) {
+			return $this->tests;
+		}
 
-		return apply_filters( 'mailster_tests', $tests );
+		$this->tests = get_class_methods( $this );
+		$this->tests = preg_grep( '/^test_/', $this->tests );
+		$this->tests = array_values( $this->tests );
+		$this->tests = preg_replace( '/^test_/', '', $this->tests );
+
+		return apply_filters( 'mailster_tests', $this->tests );
 
 	}
 
@@ -103,7 +165,7 @@ class MailsterTests {
 		$time   = date( 'Y-m-d H:i:s' );
 		$html   = '';
 		$text   = '';
-		$maxlen = max( array_map( 'strlen', array_keys( $this->get_tests() ) ) );
+		$maxlen = max( array_map( 'strlen', $this->get_tests() ) );
 
 		foreach ( array( 'error', 'warning', 'notice', 'success' ) as $type ) {
 			if ( ! $this->errors[ $type . '_count' ] ) {
@@ -137,14 +199,14 @@ class MailsterTests {
 
 	public function get_next() {
 
-		foreach ( $this->tests as $key => $value ) {
-			unset( $this->tests[ $key ] );
+		foreach ( $this->tests_to_run as $key => $value ) {
+			unset( $this->tests_to_run[ $key ] );
 
 			if ( $key == $this->current_id ) {
 				break;
 			}
 		}
-		$next = key( $this->tests );
+		$next = key( $this->tests_to_run );
 		return $next;
 	}
 
