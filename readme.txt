@@ -95,6 +95,7 @@ Xaver Birsak – https://everpress.co
 * fixed: creating campaigns with feeds which timeout causes empty autoresponders.
 * fixed: redirection error on confirmation
 * fixed: result of empty lists is no longer null
+* fixed: links in iframe forms open now in parent window.
 * added: 'mailster_register_form_signup_field' filter hook to modify signup checkbox on registration screen.
 * added: more bulk options to campaign overview.
 

@@ -518,7 +518,7 @@ class MailsterForm {
 			$fields['_gdpr']   .= '<input type="hidden" name="_gdpr" value="0"><input id="mailster-_gdpr-' . $this->ID . '" name="_gdpr" type="checkbox" value="1" class="mailster-_gdpr mailster-required" aria-required="true" aria-label="' . esc_attr( $label ) . '"> ';
 			$gdpr_label_content = $label;
 			if ( mailster_option( 'gdpr_link' ) ) {
-				$gdpr_label_content .= ' (<a href="' . mailster_option( 'gdpr_link' ) . '">' . esc_html__( 'Link', 'mailster' ) . '</a>)';
+				$gdpr_label_content .= ' (<a href="' . mailster_option( 'gdpr_link' ) . '" target="_top">' . esc_html__( 'Link', 'mailster' ) . '</a>)';
 			}
 
 			$fields['_gdpr'] .= apply_filters( 'mailster_gdpr_label', $gdpr_label_content );
