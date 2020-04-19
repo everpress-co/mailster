@@ -291,6 +291,7 @@ mailster = (function (mailster, $, window, document) {
 					if (window.wp) {
 						window.wp = null;
 					}
+					window.onbeforeunload = null;
 					window.location = response.url;
 				} else {
 					alert(response.msg);

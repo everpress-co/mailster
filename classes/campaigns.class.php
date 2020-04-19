@@ -526,7 +526,7 @@ class MailsterCampaigns {
 			5  => isset( $_GET['revision'] ) ? sprintf( esc_html__( 'Campaign restored to revision from %s', 'mailster' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
 			6  => sprintf( esc_html__( 'Campaign published. %s', 'mailster' ), '<a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html__( 'View Newsletter', 'mailster' ) . '</a>' ),
 			7  => esc_html__( 'Campaign saved.', 'mailster' ),
-			8  => sprintf( esc_html__( 'Campaign submitted. %s', 'mailster' ), '<a target="_blank" href="' . esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_id ) ) ) . '">' . esc_html__( 'Preview Newsletter', 'mailster' ) . '</a>' ),
+			8  => sprintf( esc_html__( 'Campaign submitted. %s', 'mailster' ), '<a href="' . esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_id ) ) ) . '" target="_blank" rel="noopener">' . esc_html__( 'Preview Newsletter', 'mailster' ) . '</a>' ),
 			9  => esc_html__( 'Campaign scheduled.', 'mailster' ),
 			10 => esc_html__( 'Campaign draft updated.', 'mailster' ),
 		);
@@ -1322,6 +1322,17 @@ class MailsterCampaigns {
 					'finished'        => esc_html__( 'Preflight finished. Please check results.', 'mailster' ),
 					'sending'         => esc_html__( 'Sending your campaign.', 'mailster' ),
 					'checking'        => esc_html__( 'Check for delivery.', 'mailster' ),
+				)
+			);
+			mailster_localize_script(
+				'conditions',
+				array(
+					'next'          => esc_html__( 'next', 'mailster' ),
+					'prev'          => esc_html__( 'prev', 'mailster' ),
+					'start_of_week' => get_option( 'start_of_week' ),
+					'day_names'     => $wp_locale->weekday,
+					'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
+					'month_names'   => array_values( $wp_locale->month ),
 				)
 			);
 

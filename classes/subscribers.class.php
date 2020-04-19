@@ -2115,36 +2115,6 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @return unknown
-	 */
-	public function get_unassigned() {
-
-		global $wpdb;
-
-		$custom_fields = mailster()->get_custom_fields( true );
-
-		$sql = 'SELECT a.' . implode( ', a.', $fields ) . ', ab.list_id';
-
-		foreach ( $custom_fields as $i => $name ) {
-			$sql .= ", meta_$i.meta_value AS '$name'";
-		}
-
-		$sql .= " FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN ({$wpdb->prefix}mailster_lists AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.list_id) ON a.ID = ab.subscriber_id";
-
-		foreach ( $custom_fields as $i => $name ) {
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS meta_$i ON meta_$i.subscriber_id = a.ID AND meta_$i.meta_key = '$name'";
-		}
-
-		$sql .= ' WHERE a.status IN (' . implode( ',', $stati ) . ') AND ab.list_id IN (' . implode( ',', $listids ) . ") GROUP BY ab.list_id, a.ID LIMIT $offset, $limit";
-
-		return $wpdb->get_results( $sql );
-
-	}
-
-
-	/**
-	 *
-	 *
 	 * @param unknown $id
 	 * @param unknown $campaign_id (optional)
 	 * @param unknown $status      (optional)

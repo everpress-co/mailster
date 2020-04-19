@@ -245,7 +245,7 @@ class MailsterAjax {
 		if ( ! $editorstyle ) {
 			$revision = isset( $_REQUEST['revision'] ) ? (int) $_REQUEST['revision'] : false;
 			$campaign = get_post( $id );
-			$subject  = isset( $_REQUEST['subject'] ) ? esc_attr( $_REQUEST['subject'] ) : isset( $meta['subject'] ) ? esc_attr( $meta['subject'] ) : '';
+			$subject  = isset( $_REQUEST['subject'] ) ? esc_attr( $_REQUEST['subject'] ) : ( isset( $meta['subject'] ) ? esc_attr( $meta['subject'] ) : '' );
 
 			$current_user = wp_get_current_user();
 

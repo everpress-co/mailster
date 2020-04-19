@@ -126,14 +126,14 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 
 				if ( strpos( $_SERVER['REQUEST_URI'], 'myMail/form.php' ) !== false && isset( $_SERVER['HTTP_REFERER'] ) && 'form.php' == $pagenow ) {
 
-					$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
+					$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank" rel="noopener">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
 					if ( isset( $_GET['button'] ) ) {
 						$msg = 'A deprecated Subscriber Button for Mailster has been found at %1$s. Please update the HTML following %2$s.';
 					} else {
 						$msg = 'An deprecated external form for Mailster has been found at %1$s. Please update the HTML following %2$s.';
 					}
 
-					mailster_notice( sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank">this guide</a>' ), 'error', 3600, 'oldsubscriberbtn' );
+					mailster_notice( sprintf( $msg, $referer, '<a href="https://kb.mailster.co/updating-mymail-to-mailster/" target="_blank" rel="noopener">this guide</a>' ), 'error', 3600, 'oldsubscriberbtn' );
 				}
 			}
 		);
@@ -146,7 +146,7 @@ if ( ! function_exists( 'mymail' ) && mailster_option( 'legacy_hooks' ) ) :
 
 				if ( strpos( $_SERVER['REQUEST_URI'], 'myMail/cron.php' ) !== false && isset( $_SERVER['HTTP_REFERER'] ) && 'cron.php' == $pagenow ) {
 
-					$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
+					$referer = '<a href="' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '" target="_blank" rel="noopener">' . esc_url_raw( $_SERVER['HTTP_REFERER'] ) . '</a>';
 
 					$msg = 'The URL to the cron has changed but still get triggered! Please update your cron service to the new URL.</strong></p><a class="button button-primary" href="edit.php?post_type=newsletter&page=mailster_settings#cron">Get the new URL</a>';
 
