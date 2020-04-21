@@ -434,8 +434,6 @@ mailster = (function (mailster, $, window, document) {
 
 		if (!element && !mailster.editor.$.container.length) return false;
 
-		//mailster.editor.updateElements();
-
 		if (element) {
 			(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
 		} else {
