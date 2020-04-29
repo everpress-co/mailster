@@ -759,7 +759,7 @@ class MailsterCampaigns {
 									);
 									echo ' &ndash; ' . sprintf( '#%s', '<strong title="' . sprintf( esc_html__( 'Next issue: %s', 'mailster' ), '#' . $autoresponder['issue'] ) . '">' . $autoresponder['issue'] . '</strong>' );
 									if ( isset( $autoresponder['since'] ) && $autoresponder['since'] ) {
-											echo '<br>' . esc_html__( 'only if new content is available.', 'mailster' );
+										echo '<br>' . esc_html__( 'only if new content is available.', 'mailster' );
 									}
 									if ( isset( $autoresponder['time_conditions'] ) ) {
 										if ( $posts_required = max( 0, ( $autoresponder['time_post_count'] - $autoresponder['post_count_status'] ) ) ) {
@@ -1781,6 +1781,7 @@ class MailsterCampaigns {
 
 				if ( isset( $_POST['post_count_status_reset'] ) ) {
 					$autoresponder['post_count_status'] = 0;
+					$autoresponder['since']             = time();
 				}
 
 				$meta['autoresponder'] = $autoresponder;
@@ -2302,6 +2303,7 @@ class MailsterCampaigns {
 		$placeholder = mailster( 'placeholder' );
 
 		$placeholder->do_conditions( false );
+		$placeholder->do_remove_modules( true );
 
 		$placeholder->clear_placeholder();
 
@@ -2338,14 +2340,12 @@ class MailsterCampaigns {
 
 		$this->change_status( $campaign, 'finished' );
 
-		$parent_id = $this->meta( $id, 'parent_id' );
-
 		if ( $parent_id = $this->meta( $id, 'parent_id' ) ) {
 			$parent_sent   = $this->meta( $parent_id, 'sent' );
 			$parent_errors = $this->meta( $parent_id, 'errors' );
 
-			$this->update_meta( $parent_id, 'sent', $parent_sent + $sent );
-			$this->update_meta( $parent_id, 'errors', $parent_errors + $errors );
+			$this->update_meta( $parent_id, 'sent', $parent_sent + $meta['sent'] );
+			$this->update_meta( $parent_id, 'errors', $parent_errors + $meta['errors'] );
 		}
 
 		do_action( 'mailster_finish_campaign', $id );
@@ -2467,11 +2467,12 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
-	 * @param unknown $delay (optional)
-	 * @param unknown $issue (optional)
+	 * @param unknown $delay                 (optional)
+	 * @param unknown $issue                 (optional)
+	 * @param unknown $index_offset          (optional)
 	 * @return unknown
 	 */
-	public function autoresponder_to_campaign( $id, $delay = 0, $issue = '' ) {
+	public function autoresponder_to_campaign( $id, $delay = 0, $issue = '', $index_offset = 0 ) {
 
 		$campaign = get_post( $id );
 
@@ -2491,11 +2492,12 @@ class MailsterCampaigns {
 		$lists = $this->get_lists( $campaign->ID, true );
 		$meta  = $this->meta( $campaign->ID );
 
-		$relative_to_absolute = true;
-
 		$meta['autoresponder'] = $meta['sent'] = $meta['errors'] = $meta['finished'] = null;
 
 		$meta['active'] = true;
+
+		$relative_to_absolute = false;
+		$remove_unused        = false;
 
 		$meta['timestamp'] = max( $now, $now + $delay );
 
@@ -2511,27 +2513,29 @@ class MailsterCampaigns {
 
 		$placeholder = mailster( 'placeholder' );
 		$placeholder->set_campaign( $id );
+		$placeholder->set_index_offset( $index_offset );
 
 		$placeholder->do_conditions( false );
+		$placeholder->do_remove_modules( true );
 		$placeholder->replace_custom_tags( false );
 
 		$placeholder->clear_placeholder();
 		$placeholder->add( array( 'issue' => $issue ) );
 
 		$placeholder->set_content( $campaign->post_title );
-		$campaign->post_title = $placeholder->get_content( false );
+		$campaign->post_title = $placeholder->get_content( $remove_unused );
 
 		$placeholder->set_content( $campaign->post_content );
-		$campaign->post_content = $placeholder->get_content( false, array(), $relative_to_absolute );
+		$campaign->post_content = $placeholder->get_content( $remove_unused, array(), $relative_to_absolute );
 
 		$placeholder->set_content( $meta['subject'] );
-		$meta['subject'] = $placeholder->get_content( false, array(), $relative_to_absolute );
+		$meta['subject'] = $placeholder->get_content( $remove_unused, array(), $relative_to_absolute );
 
 		$placeholder->set_content( $meta['preheader'] );
-		$meta['preheader'] = $placeholder->get_content( false, array(), $relative_to_absolute );
+		$meta['preheader'] = $placeholder->get_content( $remove_unused, array(), $relative_to_absolute );
 
 		$placeholder->set_content( $meta['from_name'] );
-		$meta['from_name'] = $placeholder->get_content( false, array(), $relative_to_absolute );
+		$meta['from_name'] = $placeholder->get_content( $remove_unused, array(), $relative_to_absolute );
 
 		remove_action( 'save_post', array( &$this, 'save_campaign' ), 10, 3 );
 		kses_remove_filters();
@@ -4335,6 +4339,8 @@ class MailsterCampaigns {
 			return;
 		}
 
+		$timeoffset = mailster( 'helper' )->gmt_offset( true );
+
 		// delete cache;
 		mailster_cache_delete( 'get_last_post' );
 
@@ -4344,7 +4350,8 @@ class MailsterCampaigns {
 				continue;
 			}
 
-			$meta = $this->meta( $campaign->ID, 'autoresponder' );
+			$meta    = $this->meta( $campaign->ID, 'autoresponder' );
+			$created = 0;
 
 			if ( 'mailster_post_published' == $meta['action'] ) {
 
@@ -4352,8 +4359,10 @@ class MailsterCampaigns {
 					continue;
 				}
 
+				$meta['post_count_status']++;
+
 				// if post count is reached
-				if ( ! ( ++$meta['post_count_status'] % ( $meta['post_count'] + 1 ) ) ) {
+				if ( ! ( $meta['post_count_status'] % ( $meta['post_count'] + 1 ) ) ) {
 
 					if ( isset( $meta['terms'] ) ) {
 
@@ -4387,11 +4396,20 @@ class MailsterCampaigns {
 
 					$send_offset = ( strtotime( '+' . $integer . ' ' . $meta['unit'], 0 ) + ( strtotime( '+1 ' . $meta['unit'], 0 ) * $decimal ) );
 
+					// multiply the offset with the number of created campaigns
+					$send_offset = $send_offset * ( $created + 1 );
+
+					// sleep one second if multiples are created to prevent the same timestamps
+					if ( $created ) {
+						sleep( 1 );
+					}
+
 					if ( $new_id = $this->autoresponder_to_campaign( $campaign->ID, $send_offset, $meta['issue']++ ) ) {
 
+						$created++;
 						$new_campaign = $this->get( $new_id );
 
-						mailster_notice( sprintf( esc_html__( 'New campaign %1$s has been created and is going to be sent in %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . $new_campaign->ID . '&action=edit">' . $new_campaign->post_title . '</a>"</strong>', '<strong>' . human_time_diff( $now + $send_offset ) . '</strong>' ), 'info', true );
+						mailster_notice( sprintf( esc_html__( 'New campaign %1$s has been created and is going to be sent in %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . $new_campaign->ID . '&action=edit">' . $new_campaign->post_title . '</a>"</strong>', '<strong>' . date( mailster( 'helper' )->timeformat(), $now + $send_offset + $timeoffset ) . '</strong>' ), 'info', true );
 
 						do_action( 'mailster_autoresponder_post_published', $campaign->ID, $new_id );
 

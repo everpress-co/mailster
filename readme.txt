@@ -92,6 +92,7 @@ Xaver Birsak – https://everpress.co
 
 * new: option to pick emoji for subject, preheader and from name
 * improved: refactoring of JavaScript
+* improved: refactoring of action based auto responders
 * fixed: creating campaigns with feeds which timeout causes empty autoresponders.
 * fixed: redirection error on confirmation
 * fixed: result of empty lists is no longer null
