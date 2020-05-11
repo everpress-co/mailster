@@ -1593,7 +1593,7 @@ class MailsterCampaigns {
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 		$now        = time();
 
-		$meta = $this->meta( $post_id );
+		$meta = $old_meta = $this->meta( $post_id );
 		if ( in_array( $post->post_status, array( 'active', 'finished' ) ) ) {
 
 			$meta['webversion'] = isset( $postdata['webversion'] );
@@ -1773,7 +1773,13 @@ class MailsterCampaigns {
 					if ( empty( $autoresponder['hook'] ) ) {
 						mailster_notice( esc_html__( 'Please define a hook which should trigger the campaign!', 'mailster' ), 'error', true );
 					}
-				} else {
+				} elseif ( 'mailster_post_published' == $autoresponder['action'] ) {
+
+					// if it has been activated or post type has changed => reset it
+					if ( ( $meta['active'] && $meta['active'] != $old_meta['active'] ) || $autoresponder['post_type'] != $old_meta['autoresponder']['post_type'] ) {
+						$autoresponder['post_count_status'] = 0;
+						$autoresponder['since']             = time();
+					}
 
 					$meta['timezone'] = isset( $autoresponder['post_published_timezone'] );
 
@@ -2436,6 +2442,16 @@ class MailsterCampaigns {
 		if ( $current ) {
 			return true;
 		}
+
+		if ( 'autoresponder' == $campaign->post_status ) {
+			$autoresponder = $this->meta( $id, 'autoresponder' );
+			if ( ! empty( $autoresponder['since'] ) ) {
+				$autoresponder['post_count_status'] = 0;
+				$autoresponder['since']             = time();
+				$this->update_meta( $id, 'autoresponder', $autoresponder );
+			}
+		}
+
 		return $this->update_meta( $id, 'active', true );
 	}
 
