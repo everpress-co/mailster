@@ -23,7 +23,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.editor.$.html = $('html');
 	mailster.editor.$.body = $('body');
 
-	mailster.$.window.on('load', function () {
+	$(window).on('load', function () {
 		mailster.editor.$.html.removeClass('mailster-loading');
 		mailster.editor.$.body = $('body');
 		mailster.editor.$.body
