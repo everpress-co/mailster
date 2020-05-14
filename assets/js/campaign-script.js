@@ -222,19 +222,6 @@ mailster = (function (mailster, $, window, document) {
 		return true;
 	}
 
-	mailster.util.getSelect = function (input) {
-		var selText = "";
-		if (document.activeElement && (document.activeElement.tagName.toLowerCase() == "textarea" || document.activeElement.tagName.toLowerCase() == "input")) {
-			var text = document.activeElement.value;
-			selText = text.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
-		} else {
-			var selRange = window.getSelection();
-			selText = selRange.toString();
-		}
-
-		return selText;
-	}
-
 	mailster.util.changeColor = function (color_from, color_to, element, original) {
 		if (!color_from) color_from = color_to;
 		if (!color_to) return false;
@@ -433,8 +420,6 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		if (!element && !mailster.editor.$.container.length) return false;
-
-		//mailster.editor.updateElements();
 
 		if (element) {
 			(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
@@ -1091,9 +1076,10 @@ mailster = (function (mailster, $, window, document) {
 				picker.togglePicker(this);
 				picker.on('emoji', function (emoji) {
 					var caretPos = input.selectionStart;
-					input.value = input.value.substring(0, caretPos) + '' + emoji + input.value.substring(caretPos);
+					input.value = input.value.substring(0, caretPos) + emoji + input.value.substring(caretPos);
 					setTimeout(function () {
-						input.focus()
+						input.focus();
+						input.setSelectionRange(caretPos + 1, caretPos + 1);
 					}, 10);
 				});
 				return false;

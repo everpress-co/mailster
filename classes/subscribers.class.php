@@ -1102,6 +1102,9 @@ class MailsterSubscribers {
 
 		$entry = is_string( $entry ) ? array( 'email' => $entry ) : (array) $entry;
 
+		if ( ! isset( $entry['email'] ) ) {
+			return new WP_Error( 'email_missing', esc_html__( 'You must define an email address.', 'mailster' ) );
+		}
 		$entry = wp_parse_args(
 			$entry,
 			array(
@@ -1320,7 +1323,7 @@ class MailsterSubscribers {
 	 * @param unknown $subscriber_ids
 	 * @param unknown $lists
 	 * @param unknown $remove_old     (optional)
-	 * @param unknown $added     (optional)
+	 * @param unknown $added          (optional)
 	 * @return unknown
 	 */
 	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {

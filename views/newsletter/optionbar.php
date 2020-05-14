@@ -94,7 +94,7 @@ $file     = $this->get_file();
 					</select>
 					</label>
 				</p>
-				<?php if ( ! empty( $modules ) ) : ?>
+				<?php if ( ! empty( $module_list ) ) : ?>
 				<p>
 					<label><input type="checkbox" id="new_template_modules" value="1"> <?php printf( esc_html__( 'include original modules from %s', 'mailster' ), '&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot;' ); ?></label>
 					<span class="help" title="<?php esc_html_e( 'will append the existing modules to your custom ones', 'mailster' ); ?>">(?)</span><br>

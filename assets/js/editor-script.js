@@ -23,7 +23,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.editor.$.html = $('html');
 	mailster.editor.$.body = $('body');
 
-	mailster.$.window.on('load', function () {
+	$(window).on('load', function () {
 		mailster.editor.$.html.removeClass('mailster-loading');
 		mailster.editor.$.body = $('body');
 		mailster.editor.$.body
@@ -111,8 +111,6 @@ mailster = (function (mailster, $, window, document) {
 
 		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
 
-		// remove some third party elements
-		clone.find('#droplr-chrome-extension-is-installed').remove();
 		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
 		content = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 
@@ -131,6 +129,13 @@ mailster = (function (mailster, $, window, document) {
 		);
 
 		return mailster.$.head.val() + "\n<body" + (s ? ' ' + s : '') + ">\n" + content + "\n</body>\n</html>";
+	}
+
+	mailster.editor.cleanup = function () {
+
+		// remove some third party elements
+		mailster.editor.$.document.find('#a11y-speak-assertive, #a11y-speak-polite, #droplr-chrome-extension-is-installed').remove();
+
 	}
 
 	mailster.editor.getStructure = function (html) {
@@ -291,6 +296,8 @@ mailster = (function (mailster, $, window, document) {
 					});
 				});
 		}
+
+		mailster.editor.cleanup();
 
 	}
 

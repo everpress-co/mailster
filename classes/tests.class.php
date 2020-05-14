@@ -457,12 +457,12 @@ class MailsterTests {
 	}
 	private function test_dom_document_extension() {
 		if ( ! class_exists( 'DOMDocument' ) ) {
-			$this->error( 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank">DOMDocument</a> library.' );
+			$this->error( 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank" rel="noopener">DOMDocument</a> library.' );
 		}
 	}
 	private function test_fsockopen_extension() {
 		if ( ! function_exists( 'fsockopen' ) ) {
-			$this->warning( 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank">fsockopen</a>.' );
+			$this->warning( 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank" rel="noopener">fsockopen</a>.' );
 		}
 	}
 	private function test_database_structure() {
