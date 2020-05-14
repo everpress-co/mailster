@@ -94,6 +94,7 @@ Xaver Birsak – https://everpress.co
 * improved: refactoring of JavaScript
 * improved: refactoring of action based auto responders
 * improved: campaigns in conditions are now ordered alphabetically.
+* improved: content is now pasted as plain text instead of rich type
 * fixed: creating campaigns with feeds which timeout causes empty autoresponders.
 * fixed: redirection error on confirmation
 * fixed: result of empty lists is no longer null

@@ -4770,6 +4770,7 @@ class MailsterCampaigns {
 				),
 				'single' => array(
 					'selector'        => 'single',
+					'paste_as_text'   => true,
 					'custom_elements' => 'single',
 					'toolbar1'        => $single_toolbar1,
 					'toolbar2'        => $single_toolbar2,
@@ -4777,6 +4778,7 @@ class MailsterCampaigns {
 				),
 				'multi'  => array(
 					'selector'        => 'multi',
+					'paste_as_text'   => true,
 					'custom_elements' => 'multi',
 					'toolbar1'        => $toolbar1,
 					'toolbar2'        => $toolbar2,
