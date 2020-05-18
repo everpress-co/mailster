@@ -12,8 +12,10 @@ class MailsterPlaceholder {
 	private $rss_timestamp       = null;
 	private $campaignID          = null;
 	private $subscriberID        = null;
+	private $index_offset        = 0;
 	private $subscriberHash      = null;
 	private $progress_conditions = false;
+	private $remove_modules      = true;
 	private $replace_custom      = true;
 	private $social_services;
 	private $apply_the_excerpt_filters = true;
@@ -72,6 +74,15 @@ class MailsterPlaceholder {
 	 */
 	public function set_subscriber( $id ) {
 		$this->subscriberID = $id;
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 */
+	public function set_index_offset( $offset ) {
+		$this->index_offset = $offset;
 	}
 
 	/**
@@ -288,6 +299,15 @@ class MailsterPlaceholder {
 		$this->progress_conditions = (bool) $bool;
 	}
 
+	/**
+	 *
+	 *
+	 * @param unknown $bool (optional)
+	 */
+	public function do_remove_modules( $bool = true ) {
+		$this->remove_modules = (bool) $bool;
+	}
+
 
 	/**
 	 *
@@ -309,10 +329,8 @@ class MailsterPlaceholder {
 		$this->add( mailster_option( 'tags', array() ) );
 
 		$this->rss();
-		if ( $removeunused ) {
-			$this->remove_modules();
-			$this->conditions();
-		}
+		$this->conditions();
+		$this->remove_modules();
 
 		$k = 0;
 
@@ -457,9 +475,10 @@ class MailsterPlaceholder {
 				$search   = $modules[0][ $i ];
 				$feed_url = $modules[1][ $i ];
 
-				$last_feed_timestamp = mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url );
+				// $last_feed_timestamp = mailster( 'helper' )->new_feed_since( $this->rss_timestamp, $feed_url );
+				$feeds = mailster( 'helper' )->get_feed_since( $this->rss_timestamp, $feed_url );
 
-				if ( $last_feed_timestamp ) {
+				if ( ! empty( $feeds ) ) {
 					$replace        = '';
 					$id             = md5( $feed_url );
 					$temp_post_type = 'mailster_rss_' . $id;
@@ -521,6 +540,10 @@ class MailsterPlaceholder {
 	 */
 	private function remove_modules() {
 
+		if ( ! $this->remove_modules ) {
+			return;
+		}
+
 		if ( preg_match_all( '#<module[^>]*?data-tag="{(([a-z0-9_-]+):(-|~)?([\d]+)(;([0-9;,-]+))?)\}"(.*?)".*?</module>#ms', $this->content, $modules ) ) {
 
 			foreach ( $modules[0] as $i => $html ) {
@@ -538,11 +561,11 @@ class MailsterPlaceholder {
 					if ( '~' == $type ) {
 						$post = mailster()->get_random_post( $post_or_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 					} else {
-						$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+						$post = mailster()->get_last_post( $post_or_offset - 1 + $this->index_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 					}
 				}
 
-				if ( ! $post ) {
+				if ( ! $post || is_wp_error( $post ) ) {
 					$this->content = str_replace( $search, '', $this->content );
 				}
 			}
@@ -777,7 +800,7 @@ class MailsterPlaceholder {
 
 							} elseif ( $post_id_or_identifier < 0 ) {
 
-								$post = mailster()->get_last_post( abs( $post_id_or_identifier ) - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+								$post = mailster()->get_last_post( abs( $post_id_or_identifier ) - 1 + $this->index_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 							} elseif ( $post_id_or_identifier > 0 ) {
 
@@ -975,7 +998,7 @@ class MailsterPlaceholder {
 					$post_offset = $post_or_offset - 1;
 					$term_ids    = ! empty( $hits[8][ $i ] ) ? explode( ';', trim( $hits[8][ $i ] ) ) : array();
 
-					$post = mailster()->get_last_post( $post_or_offset - 1, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
+					$post = mailster()->get_last_post( $post_or_offset - 1 + $this->index_offset, $post_type, $term_ids, $this->last_post_args, $this->campaignID, $this->subscriberID );
 
 				}
 

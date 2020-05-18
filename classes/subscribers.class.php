@@ -90,9 +90,9 @@ class MailsterSubscribers {
 
 			wp_enqueue_style( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/css/subscriber-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/js/subscriber-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-			wp_localize_script(
-				'mailster-subscriber-detail',
-				'mailsterL10n',
+
+			mailster_localize_script(
+				'subscribers',
 				array(
 					'next'          => esc_html__( 'next', 'mailster' ),
 					'prev'          => esc_html__( 'prev', 'mailster' ),
@@ -109,9 +109,8 @@ class MailsterSubscribers {
 
 			wp_enqueue_style( 'mailster-subscribers-table', MAILSTER_URI . 'assets/css/subscribers-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-subscribers-table', MAILSTER_URI . 'assets/js/subscribers-table-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-			wp_localize_script(
-				'mailster-subscribers-table',
-				'mailsterL10n',
+			mailster_localize_script(
+				'subscribers',
 				array(
 					'onbeforeunload' => esc_html__( 'Bulk process in progress!', 'mailster' ),
 					'initprogess'    => sprintf( esc_html__( 'processing page %d', 'mailster' ), 1 ),
@@ -1113,6 +1112,9 @@ class MailsterSubscribers {
 
 		$entry = is_string( $entry ) ? array( 'email' => $entry ) : (array) $entry;
 
+		if ( ! isset( $entry['email'] ) ) {
+			return new WP_Error( 'email_missing', esc_html__( 'You must define an email address.', 'mailster' ) );
+		}
 		$entry = wp_parse_args(
 			$entry,
 			array(
@@ -1331,7 +1333,7 @@ class MailsterSubscribers {
 	 * @param unknown $subscriber_ids
 	 * @param unknown $lists
 	 * @param unknown $remove_old     (optional)
-	 * @param unknown $added     (optional)
+	 * @param unknown $added          (optional)
 	 * @return unknown
 	 */
 	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {
@@ -3196,9 +3198,10 @@ class MailsterSubscribers {
 			return;
 		}
 
-		?>
-		<p><label for="mailster_user_newsletter_signup"><input name="mailster_user_newsletter_signup" type="checkbox" id="mailster_user_newsletter_signup" value="1" <?php checked( mailster_option( 'register_signup_checked' ) ); ?> /><?php echo mailster_text( 'newsletter_signup' ); ?></label><br><br></p>
-		<?php
+		$output = '<p><label for="mailster_user_newsletter_signup"><input name="mailster_user_newsletter_signup" type="checkbox" id="mailster_user_newsletter_signup" value="1" ' . checked( mailster_option( 'register_signup_checked' ), true, false ) . ' />' . mailster_text( 'newsletter_signup' ) . '</label></p>';
+
+		echo apply_filters( 'mailster_register_form_signup_field', $output ) . "\n";
+
 	}
 
 

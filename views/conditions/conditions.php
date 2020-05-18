@@ -18,6 +18,7 @@
 		array(
 			'post__not_in' => $post ? array( $post->ID ) : null,
 			'orderby'      => 'post_title',
+			'order'        => 'ASC',
 		)
 	);
 	$all_campaigns_stati = wp_list_pluck( $all_campaigns, 'post_status' );

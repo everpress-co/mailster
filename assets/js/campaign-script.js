@@ -89,7 +89,7 @@ mailster = (function (mailster, $, window, document) {
 			mailster.optionbar.undos = mailster.optionbar.undos.splice(0, mailster.optionbar.currentUndo + 1);
 			mailster.optionbar.undos.push(content);
 
-			if (length >= mailsterL10n.undosteps) mailster.optionbar.undos.shift();
+			if (length >= mailster.l10n.campaigns.undosteps) mailster.optionbar.undos.shift();
 			mailster.optionbar.currentUndo = mailster.optionbar.undos.length - 1;
 
 			if (mailster.optionbar.currentUndo) mailster.$.optionbar.find('a.undo').removeClass('disabled');
@@ -138,7 +138,7 @@ mailster = (function (mailster, $, window, document) {
 			$this.parent().find('.button').remove();
 			if (val != -1) {
 				if ($this.parent().find('select').length < $this.find('option').length - 1)
-					$(' <a class="button button-small add_embed_options_taxonomy">' + mailsterL10n.add + '</a>').insertAfter($this);
+					$(' <a class="button button-small add_embed_options_taxonomy">' + mailster.l10n.campaigns.add + '</a>').insertAfter($this);
 			} else {
 				$this.parent().html('').append($this);
 			}
@@ -150,7 +150,7 @@ mailster = (function (mailster, $, window, document) {
 				el = $this.prev().clone();
 
 			el.insertBefore($this).val('-1');
-			$('<span> ' + mailsterL10n.or + ' </span>').insertBefore(el);
+			$('<span> ' + mailster.l10n.campaigns.or + ' </span>').insertBefore(el);
 			$this.remove();
 
 			return false;
@@ -220,19 +220,6 @@ mailster = (function (mailster, $, window, document) {
 			input.selectionEnd = endPos;
 		}
 		return true;
-	}
-
-	mailster.util.getSelect = function (input) {
-		var selText = "";
-		if (document.activeElement && (document.activeElement.tagName.toLowerCase() == "textarea" || document.activeElement.tagName.toLowerCase() == "input")) {
-			var text = document.activeElement.value;
-			selText = text.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
-		} else {
-			var selRange = window.getSelection();
-			selText = selRange.toString();
-		}
-
-		return selText;
 	}
 
 	mailster.util.changeColor = function (color_from, color_to, element, original) {
@@ -434,8 +421,6 @@ mailster = (function (mailster, $, window, document) {
 
 		if (!element && !mailster.editor.$.container.length) return false;
 
-		//mailster.editor.updateElements();
-
 		if (element) {
 			(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
 		} else {
@@ -569,7 +554,6 @@ mailster = (function (mailster, $, window, document) {
 
 	$('.meta-box-sortables').on("sortstop", function (event, ui) {
 		if (ui.item[0] === mailster.dom.template) {
-			console.log(mailster.editor.$.body);
 			mailster.editor.$.body.addClass('reload-page');
 		}
 	});
@@ -741,7 +725,7 @@ mailster = (function (mailster, $, window, document) {
 
 					google.load('visualization', '1.0', {
 						packages: ['geochart', 'corechart'],
-						mapsApiKey: google_jsapi ? google_jsapi.key : null,
+						mapsApiKey: mailster.l10n.google ? mailster.l10n.google.key : null,
 						callback: function () {
 							var hash;
 
@@ -904,8 +888,7 @@ mailster = (function (mailster, $, window, document) {
 		animate: 2000,
 		rotate: 180,
 		barColor: mailster.colors.main,
-		trackColor: '#50626f',
-		trackColor: '#f3f3f3',
+		trackColor: mailster.colors.track,
 		lineWidth: 9,
 		size: 75,
 		lineCap: 'butt',
@@ -945,7 +928,7 @@ mailster = (function (mailster, $, window, document) {
 		options['region'] = region;
 
 		googledata.unknown_cities[region] ?
-			$('#mapinfo').show().html(mailster.util.sprintf(mailsterL10n.unknown_locations, googledata.unknown_cities[region])) :
+			$('#mapinfo').show().html(mailster.util.sprintf(mailster.l10n.campaigns.unknown_locations, googledata.unknown_cities[region])) :
 			$('#mapinfo').hide();
 
 		d = googledata.geodata[region] ? googledata.geodata[region] : [];
@@ -1010,7 +993,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.$.template
 		.on('click', 'a.getplaintext', function () {
 			var oldval = mailster.$.excerpt.val();
-			mailster.$.excerpt.val(mailsterL10n.loading);
+			mailster.$.excerpt.val(mailster.l10n.campaigns.loading);
 			mailster.util.ajax('get_plaintext', {
 				html: mailster.editor.getContent()
 			}, function (response) {
@@ -1080,13 +1063,35 @@ mailster = (function (mailster, $, window, document) {
 		});
 	}
 
+	mailster.editable && window.EmojiButton && mailster.events.push('documentReady', function () {
+		$('.emoji-selector')
+			.on('click', 'button', function () {
+				var input = document.querySelector('#' + $(this).data('input')),
+					picker = new EmojiButton({
+						emojiVersion: '3.0',
+						showVariants: false,
+						zIndex: 1000,
+					});
+
+				picker.togglePicker(this);
+				picker.on('emoji', function (emoji) {
+					var caretPos = input.selectionStart;
+					input.value = input.value.substring(0, caretPos) + emoji + input.value.substring(caretPos);
+					setTimeout(function () {
+						input.focus();
+						input.setSelectionRange(caretPos + 1, caretPos + 1);
+					}, 10);
+				});
+				return false;
+			});
+	});
+
 	!mailster.editable && mailster.events.push('documentReady', function () {
 		$.easyPieChart && mailster.clickmap.$.popup.find('.piechart').easyPieChart({
 			animate: 2000,
 			rotate: 180,
 			barColor: mailster.colors.main,
-			trackColor: '#50626f',
-			trackColor: '#f3f3f3',
+			trackColor: mailster.colors.track,
 			lineWidth: 9,
 			size: 75,
 			lineCap: 'butt',
@@ -1130,7 +1135,7 @@ mailster = (function (mailster, $, window, document) {
 			$('#post_password').prop('disabled', !$(this).is(':checked'));
 		})
 		.on('click', '.sendnow-button', function () {
-			if (!confirm(mailsterL10n.send_now)) return false;
+			if (!confirm(mailster.l10n.campaigns.send_now)) return false;
 		});
 
 	mailster.submit.$ = {};
@@ -1380,13 +1385,13 @@ mailster = (function (mailster, $, window, document) {
 		.find('input.datepicker').datepicker({
 			dateFormat: 'yy-mm-dd',
 			minDate: new Date(),
-			firstDay: mailsterL10n.start_of_week,
+			firstDay: mailster.l10n.campaigns.start_of_week,
 			showWeek: true,
-			dayNames: mailsterL10n.day_names,
-			dayNamesMin: mailsterL10n.day_names_min,
-			monthNames: mailsterL10n.month_names,
-			prevText: mailsterL10n.prev,
-			nextText: mailsterL10n.next,
+			dayNames: mailster.l10n.campaigns.day_names,
+			dayNamesMin: mailster.l10n.campaigns.day_names_min,
+			monthNames: mailster.l10n.campaigns.month_names,
+			prevText: mailster.l10n.campaigns.prev,
+			nextText: mailster.l10n.campaigns.next,
 			showAnim: 'fadeIn',
 			onClose: function () {
 				var date = $(this).datepicker('getDate');
@@ -1465,17 +1470,21 @@ mailster = (function (mailster, $, window, document) {
 
 	function checkSpamScore(id, round) {
 
+		var $button = $('.mailster_spamscore'),
+			progress = $('#spam_score_progress'),
+			progressbar = progress.find('.bar');
+
 		mailster.util.ajax('check_spam_score', {
 			ID: id,
 		}, function (response) {
 
 			if (response.score) {
 				loader(false);
-				$this.prop('disabled', false);
+				$button.prop('disabled', false);
 				progress.addClass('spam-score');
 				progressbar.css('width', (parseFloat(response.score) * 10) + '%');
 
-				$('.score').html('<strong>' + mailster.util.sprintf(mailsterL10n.yourscore, response.score) + '</strong>:<br>' + mailsterL10n.yourscores[Math.floor((response.score / 10) * mailsterL10n.yourscores.length)]);
+				$('.score').html('<strong>' + mailster.util.sprintf(mailster.l10n.campaigns.yourscore, response.score) + '</strong>:<br>' + mailster.l10n.campaigns.yourscores[Math.floor((response.score / 10) * mailster.l10n.campaigns.yourscores.length)]);
 			} else {
 
 				if (round <= 5 && !response.abort) {
@@ -1487,10 +1496,10 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 
 					loader(false);
-					$this.prop('disabled', false);
+					$button.prop('disabled', false);
 					progressbar.css('width', '100%');
 					progress.slideUp(200);
-					mailster.util.tempMsg(response.msg, 'error', $this.parent(), function () {
+					mailster.util.tempMsg(response.msg, 'error', $button.parent(), function () {
 						progressbar.css('width', 0);
 					});
 
@@ -1545,11 +1554,11 @@ mailster = (function (mailster, $, window, document) {
 			mailster.trigger('updateCount');
 		})
 		.on('click', '.edit-conditions', function () {
-			tb_show(mailsterL10n.edit_conditions, '#TB_inline?x=1&width=720&height=520&inlineId=receivers-dialog', null);
+			tb_show(mailster.l10n.campaigns.edit_conditions, '#TB_inline?x=1&width=720&height=520&inlineId=receivers-dialog', null);
 			return false;
 		})
 		.on('click', '.remove-conditions', function () {
-			if (confirm(mailsterL10n.remove_conditions)) {
+			if (confirm(mailster.l10n.campaigns.remove_conditions)) {
 				$('#receivers-dialog').find('.mailster-conditions-wrap').empty();
 				mailster.trigger('updateCount');
 			}
@@ -1570,7 +1579,7 @@ mailster = (function (mailster, $, window, document) {
 				name = '';
 			if (listtype.val() == -1) return false;
 
-			if (name = prompt(mailsterL10n.enter_list_name, mailster.util.sprintf(mailsterL10n.create_list, listtype.find(':selected').text(), $('#title').val()))) {
+			if (name = prompt(mailster.l10n.campaigns.enter_list_name, mailster.util.sprintf(mailster.l10n.campaigns.create_list, listtype.find(':selected').text(), $('#title').val()))) {
 
 				loader(true);
 
@@ -1768,7 +1777,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.colorschema-delete', function () {
 
-			if (confirm(mailsterL10n.delete_colorschema)) {
+			if (confirm(mailster.l10n.campaigns.delete_colorschema)) {
 
 				var schema = $(this).parent().parent();
 
@@ -1795,7 +1804,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.colorschema-delete-all', function () {
 
-			if (confirm(mailsterL10n.delete_colorschema_all)) {
+			if (confirm(mailster.l10n.campaigns.delete_colorschema_all)) {
 
 				var schema = $('.colorschema.custom');
 
@@ -1880,9 +1889,9 @@ mailster = (function (mailster, $, window, document) {
 			event.preventDefault();
 			if (!wp.media.frames.mailster_attachments) {
 				wp.media.frames.mailster_attachments = wp.media({
-					title: mailsterL10n.add_attachment,
+					title: mailster.l10n.campaigns.add_attachment,
 					button: {
-						text: mailsterL10n.add_attachment,
+						text: mailster.l10n.campaigns.add_attachment,
 					},
 					multiple: false
 				});
@@ -1971,7 +1980,7 @@ mailster = (function (mailster, $, window, document) {
 
 			if (_data.status != $('#original_post_status').val() && !$('#mailster_status_changed_info').length) {
 
-				$('<div id="mailster_status_changed_info" class="error inline"><p>' + mailster.util.sprintf(mailsterL10n.statuschanged, '<a href="post.php?post=' + mailster.campaign_id + '&action=edit">' + mailsterL10n.click_here + '</a></p></div>'))
+				$('<div id="mailster_status_changed_info" class="error inline"><p>' + mailster.util.sprintf(mailster.l10n.campaigns.statuschanged, '<a href="post.php?post=' + mailster.campaign_id + '&action=edit">' + mailster.l10n.campaigns.click_here + '</a></p></div>'))
 					.hide()
 					.prependTo('#postbox-container-2')
 					.slideDown(200);

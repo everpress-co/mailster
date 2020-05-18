@@ -24,9 +24,8 @@ class MailsterRegister {
 
 		wp_enqueue_script( 'mailster-register-script', MAILSTER_URI . 'assets/js/register-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
-		wp_localize_script(
-			'mailster-register-script',
-			'mailsterregisterL10n',
+		mailster_localize_script(
+			'register',
 			array(
 				'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
 				'help'  => esc_html__( 'Help me!', 'mailster' ),

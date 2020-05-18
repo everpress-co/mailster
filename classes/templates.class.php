@@ -554,9 +554,9 @@ class MailsterTemplates {
 		wp_enqueue_script( 'thickbox' );
 		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_script( 'mailster-templates', MAILSTER_URI . 'assets/js/templates-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-templates',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'templates',
 			array(
 				'delete_template_file' => esc_html__( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
 				'enter_template_name'  => esc_html__( 'Please enter the name of the new template', 'mailster' ),
@@ -787,7 +787,8 @@ class MailsterTemplates {
 			return;
 		}
 
-		$hash = base_convert( md5_file( $filedir ), 10, 36 );
+		// prevent error output as 7.4 throws deprecate notice
+		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
 
 		$screenshotfile = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 		$screenshoturi  = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
@@ -849,7 +850,8 @@ class MailsterTemplates {
 			return;
 		}
 
-		$hash = base_convert( md5_file( $filedir ), 10, 36 );
+		// prevent error output as 7.4 throws deprecate notice
+		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
 
 		$screenshot_folder_base = mailster( 'helper' )->mkdir( 'screenshots' );
 
@@ -1052,8 +1054,6 @@ class MailsterTemplates {
 					}
 				}
 			}
-
-			error_log( print_r( 'HIER', true ) );
 		}
 
 	}
@@ -1349,8 +1349,9 @@ class MailsterTemplates {
 
 			$response_code = wp_remote_retrieve_response_code( $response );
 			$response_body = trim( wp_remote_retrieve_body( $response ) );
+			$response      = json_decode( $response_body, true );
 
-			if ( $response_code != 200 || is_wp_error( $response ) ) {
+			if ( $response_code != 200 || is_wp_error( $response ) || json_last_error() !== JSON_ERROR_NONE ) {
 				foreach ( $items as $slug => $data ) {
 					if ( isset( $mailster_templates[ $slug ] ) ) {
 						$mailster_templates[ $slug ]             = wp_parse_args( $mailster_templates[ $slug ], $default );
@@ -1361,8 +1362,7 @@ class MailsterTemplates {
 
 			} else {
 
-				$response = ! empty( $response_body ) ? array_values( json_decode( $response_body, true ) ) : false;
-				$i        = -1;
+				$i = -1;
 				foreach ( $items as $slug => $data ) {
 					$i++;
 
