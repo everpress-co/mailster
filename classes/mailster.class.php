@@ -1893,13 +1893,10 @@ class Mailster {
 				"CREATE TABLE {$wpdb->prefix}mailster_tags (
                 `ID` bigint(20) NOT NULL AUTO_INCREMENT,
                 `name` varchar(191) NOT NULL,
-                `slug` varchar(191) NOT NULL,
-                `description` longtext NOT NULL,
                 `added` int(11) unsigned NOT NULL,
                 `updated` int(11) unsigned NOT NULL,
                 PRIMARY KEY  (`ID`),
-                UNIQUE KEY `name` (`name`),
-                UNIQUE KEY `slug` (`slug`)
+                UNIQUE KEY `name` (`name`)
             ) $collate;",
 
 				"CREATE TABLE {$wpdb->prefix}mailster_tags_subscribers (
@@ -1959,6 +1956,15 @@ class Mailster {
                 UNIQUE KEY `id` (`form_id`,`list_id`),
                 KEY `form_id` (`form_id`),
                 KEY `list_id` (`list_id`)
+            ) $collate;",
+
+				"CREATE TABLE {$wpdb->prefix}mailster_forms_tags (
+                `form_id` bigint(20) unsigned NOT NULL,
+                `tag_id` bigint(20) unsigned NOT NULL,
+                `added` int(11) unsigned NOT NULL,
+                UNIQUE KEY `id` (`form_id`,`tag_id`),
+                KEY `form_id` (`form_id`),
+                KEY `list_id` (`tag_id`)
             ) $collate;",
 
 			),

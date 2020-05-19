@@ -72,6 +72,12 @@ mailster = (function (mailster, $, window, document) {
 
 			});
 
+		$.fn.select2 && $('.tags-input').select2({
+			placeholder: mailster.l10n.form.choose_tags,
+			tags: true,
+			theme: 'mailster'
+		});
+
 		function requireSave() {
 			saverequired = true;
 			window.onbeforeunload = function () {

@@ -225,6 +225,10 @@ class MailsterForms {
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_script( 'thickbox' );
 
+			wp_enqueue_style( 'mailster-select2-theme', MAILSTER_URI . 'assets/css/select2' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_style( 'mailster-select2', MAILSTER_URI . 'assets/css/libs/select2' . $suffix . '.css', array( 'mailster-select2-theme' ), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+
 			wp_enqueue_style( 'form-button-style', MAILSTER_URI . 'assets/css/button-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			wp_enqueue_style( 'form-button-default-style', MAILSTER_URI . 'assets/css/button-default-style' . $suffix . '.css', array( 'form-button-style' ), MAILSTER_VERSION );
@@ -243,6 +247,7 @@ class MailsterForms {
 				'form',
 				array(
 					'require_save' => esc_html__( 'The changes you made will be lost if you navigate away from this page.', 'mailster' ),
+					'choose_tags'  => esc_html__( 'Choose your tags.', 'mailster' ),
 					'not_saved'    => esc_html__( 'You haven\'t saved your recent changes on this form!', 'mailster' ),
 					'prev'         => esc_html__( 'prev', 'mailster' ),
 					'useit'        => esc_html__( 'Use your form as', 'mailster' ) . '&hellip;',
@@ -423,6 +428,18 @@ class MailsterForms {
 					$this->update_options( $id, $data->options );
 
 				}
+
+				if ( isset( $_POST['mailster_tags'] ) ) {
+					$tags     = array_filter( $_POST['mailster_tags'], 'is_numeric' );
+					$new_tags = array_values( array_diff( $_POST['mailster_tags'], $tags ) );
+					foreach ( $new_tags as $tagname ) {
+						$tags[] = mailster( 'tags' )->add( $tagname );
+					}
+				} else {
+					$tags = array();
+				}
+
+				$this->assign_tags( $id, $tags, true );
 
 				mailster_notice( isset( $urlparams['new'] ) ? esc_html__( 'Form added', 'mailster' ) : esc_html__( 'Form updated', 'mailster' ), 'success', true );
 
@@ -830,6 +847,104 @@ class MailsterForms {
 	/**
 	 *
 	 *
+	 * @param unknown $form_ids
+	 * @param unknown $tags
+	 * @param unknown $remove_old (optional)
+	 * @return unknown
+	 */
+	public function assign_tags( $form_ids, $tags, $remove_old = false ) {
+
+		global $wpdb;
+
+		if ( ! is_array( $form_ids ) ) {
+			$form_ids = array( $form_ids );
+		}
+
+		if ( ! is_array( $tags ) ) {
+			$tags = array( $tags );
+		}
+
+		$now = time();
+
+		$inserts = array();
+		foreach ( $tags as $tag_id ) {
+			foreach ( $form_ids as $form_id ) {
+				$inserts[] = "($tag_id, $form_id, $now)";
+			}
+		}
+
+		if ( empty( $inserts ) ) {
+			return true;
+		}
+
+		$chunks = array_chunk( $inserts, 200 );
+
+		$success = true;
+
+		if ( $remove_old ) {
+			$this->unassign_tags( $form_ids, null, $tags );
+		}
+
+		foreach ( $chunks as $insert ) {
+
+			$sql  = "INSERT INTO {$wpdb->prefix}mailster_forms_tags (tag_id, form_id, added) VALUES ";
+			$sql .= ' ' . implode( ',', $insert );
+			$sql .= ' ON DUPLICATE KEY UPDATE tag_id = values(tag_id), form_id = values(form_id)';
+
+			$success = $success && ( false !== $wpdb->query( $sql ) );
+
+		}
+		return $success;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $form_ids
+	 * @param unknown $tags    (optional)
+	 * @param unknown $not_tag (optional)
+	 * @return unknown
+	 */
+	public function unassign_tags( $form_ids, $tags = null, $not_tag = null ) {
+
+		global $wpdb;
+
+		$form_ids = ! is_array( $form_ids ) ? array( (int) $form_ids ) : array_filter( $form_ids, 'is_numeric' );
+
+		$sql = "DELETE FROM {$wpdb->prefix}mailster_forms_tags WHERE form_id IN (" . implode( ', ', $form_ids ) . ')';
+
+		if ( ! is_null( $tags ) && ! empty( $tags ) ) {
+			if ( ! is_array( $tags ) ) {
+				$tags = array( $tags );
+			}
+
+			$sql .= ' AND tag_id IN (' . implode( ', ', array_filter( $tags, 'is_numeric' ) ) . ')';
+		}
+		if ( ! is_null( $not_tag ) && ! empty( $not_tag ) ) {
+			if ( ! is_array( $not_tag ) ) {
+				$not_tag = array( $not_tag );
+			}
+
+			$sql .= ' AND tag_id NOT IN (' . implode( ', ', array_filter( $not_tag, 'is_numeric' ) ) . ')';
+		}
+
+		if ( false !== $wpdb->query( $sql ) ) {
+
+			do_action( 'mailster_unassign_form_tags', $form_ids, $tags, $not_tag );
+
+			return true;
+		}
+
+		return false;
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $form_id
 	 * @param unknown $field
 	 * @param unknown $value
@@ -958,9 +1073,10 @@ class MailsterForms {
 	 * @param unknown $ID
 	 * @param unknown $fields (optional)
 	 * @param unknown $lists  (optional)
+	 * @param unknown $tags   (optional)
 	 * @return unknown
 	 */
-	public function get( $ID = null, $fields = true, $lists = true ) {
+	public function get( $ID = null, $fields = true, $lists = true, $tags = true ) {
 
 		global $wpdb;
 
@@ -992,6 +1108,10 @@ class MailsterForms {
 
 			if ( $lists ) {
 				$forms[ $i ]->lists = $this->get_lists( $forms[ $i ]->ID, true );
+			}
+
+			if ( $tags ) {
+				$forms[ $i ]->tags = $this->get_tags( $forms[ $i ]->ID, true );
 			}
 
 			$forms[ $i ]->style      = ( $forms[ $i ]->style ) ? json_decode( $forms[ $i ]->style ) : array();
@@ -1078,6 +1198,30 @@ class MailsterForms {
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $lists, 'ID' ) : $lists;
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 * @param unknown $ids_only (optional)
+	 * @return unknown
+	 */
+	public function get_tags( $id, $ids_only = false ) {
+
+		global $wpdb;
+
+		$cache = mailster_cache_get( 'forms_tags' );
+		if ( isset( $cache[ $id ] ) ) {
+			return $cache[ $id ];
+		}
+
+		$sql = "SELECT tags.* FROM {$wpdb->prefix}mailster_tags AS tags LEFT JOIN {$wpdb->prefix}mailster_forms_tags AS forms_tags ON tags.ID = forms_tags.tag_id WHERE forms_tags.form_id = %d";
+
+		$tags = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
+
+		return $ids_only ? wp_list_pluck( $tags, 'ID' ) : $tags;
 
 	}
 

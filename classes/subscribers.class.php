@@ -80,6 +80,10 @@ class MailsterSubscribers {
 			wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 			wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
 
+			wp_enqueue_style( 'mailster-select2-theme', MAILSTER_URI . 'assets/css/select2' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_style( 'mailster-select2', MAILSTER_URI . 'assets/css/libs/select2' . $suffix . '.css', array( 'mailster-select2-theme' ), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+
 			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
 
@@ -89,7 +93,7 @@ class MailsterSubscribers {
 			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			wp_enqueue_style( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/css/subscriber-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_script( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/js/subscriber-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/js/subscriber-script' . $suffix . '.js', array( 'mailster-script', 'mailster-select2' ), MAILSTER_VERSION, true );
 
 			mailster_localize_script(
 				'subscribers',
@@ -102,6 +106,7 @@ class MailsterSubscribers {
 					'month_names'   => array_values( $wp_locale->month ),
 					'invalid_email' => esc_html__( 'This isn\'t a valid email address!', 'mailster' ),
 					'email_exists'  => esc_html__( 'This email address already exists!', 'mailster' ),
+					'choose_tags'   => esc_html__( 'Choose your tags.', 'mailster' ),
 				)
 			);
 
@@ -448,6 +453,7 @@ class MailsterSubscribers {
 					} else {
 						$lists = array();
 					}
+
 					$current_lists = $this->get_lists( $subscriber->ID, true );
 
 					if ( $unasssign = array_diff( $current_lists, $lists ) ) {
@@ -455,6 +461,25 @@ class MailsterSubscribers {
 					}
 					if ( $assign = array_diff( $lists, $current_lists ) ) {
 						$this->assign_lists( $subscriber->ID, $assign, false, true );
+					}
+
+					$current_tags = $this->get_tags( $subscriber->ID, true );
+
+					if ( isset( $_POST['mailster_tags'] ) ) {
+						$tags     = array_filter( $_POST['mailster_tags'], 'is_numeric' );
+						$new_tags = array_values( array_diff( $_POST['mailster_tags'], $tags ) );
+						foreach ( $new_tags as $tagname ) {
+							$tags[] = mailster( 'tags' )->add( $tagname );
+						}
+					} else {
+						$tags = array();
+					}
+
+					if ( $unasssign = array_diff( $current_tags, $tags ) ) {
+						$this->unassign_tags( $subscriber->ID, $unasssign );
+					}
+					if ( $assign = array_diff( $tags, $current_tags ) ) {
+						$this->assign_tags( $subscriber->ID, $assign, false, true );
 					}
 
 					if ( ! $old_subscriber_data || $subscriber->status != $old_subscriber_data->status ) {
@@ -1406,7 +1431,7 @@ class MailsterSubscribers {
 
 		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
 		if ( ! is_array( $tags ) ) {
-			$tags = array( (int) $tags );
+			$tags = array( $tags );
 		}
 
 		if ( $remove_old ) {

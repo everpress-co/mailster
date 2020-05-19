@@ -274,29 +274,29 @@ if ( $is_new ) {
 				$checked   = wp_list_pluck( $lists, 'ID' );
 				$all_lists = mailster( 'lists' )->get();
 				echo '<ul>';
-				foreach ( $all_lists as $list ) {
+				foreach ( $all_lists as $list ) :
 					echo '<li>';
 					echo '<label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="mailster_lists[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . '</label>';
 					if ( in_array( $list->ID, $checked ) ) {
 						echo '<span class="confirmation-status">' . ( isset( $confirmed[ $list->ID ] ) ? esc_html__( 'confirmed at', 'mailster' ) . ': ' . date( $timeformat, $confirmed[ $list->ID ] + $timeoffset ) : esc_html__( 'not confirmed', 'mailster' ) ) . '</span>';
 					}
 					echo '</li>';
-				}
+				endforeach;
 				echo '</ul>';
 				?>
 				</li>
 				</ul>
 			</div>
-			<div class="detail v-top">
+			<div class="mailster-tags">
 				<label><?php esc_html_e( 'Tags', 'mailster' ); ?>:</label>
-				<ul class="click-to-edit type-list">
-				<li>
-				<?php $this->print_tags( $subscriber->ID ); ?>
-				</li>
-				<li>
-				<?php $this->print_tags( $subscriber->ID, true ); ?>
-				</li>
-				</ul>
+				<select multiple name="mailster_tags[]" class="tags-input hide-if-js">
+					 <option></option>
+				<?php $tags = mailster( 'tags' )->get(); ?>
+				<?php $subscriber_tags = mailster( 'tags' )->get_by_subscriber( $subscriber->ID, true ); ?>
+				<?php foreach ( $tags as $tag ) : ?>
+					<option value="<?php echo esc_attr( $tag->ID ); ?>" <?php selected( in_array( $tag->ID, $subscriber_tags ) ); ?>><?php echo esc_html( $tag->name ); ?></option>
+				<?php endforeach; ?>
+				</select>
 			</div>
 		</td>
 		<td class="user-meta" align="right">

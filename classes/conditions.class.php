@@ -166,6 +166,13 @@ class MailsterConditions {
 		);
 
 	}
+	private function get_tag_related() {
+		return array(
+			'_tags__in'     => esc_html__( 'has Tag', 'mailster' ),
+			'_tags__not_in' => esc_html__( 'doesn\'t has Tag', 'mailster' ),
+		);
+
+	}
 	private function get_operators() {
 		return array(
 			'is'               => esc_html__( 'is', 'mailster' ),
@@ -312,6 +319,11 @@ class MailsterConditions {
 				$value = array( $value );
 			}
 			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_list_title' ), $value ) ) . $closing_quote;
+		} elseif ( isset( $this->tag_related[ $field ] ) ) {
+			if ( ! is_array( $value ) ) {
+				$value = array( $value );
+			}
+			$return['value'] = $opening_quote . implode( $closing_quote . ' ' . esc_html__( 'or', 'mailster' ) . ' ' . $opening_quote, array_map( array( $this, 'get_tag_title' ), $value ) ) . $closing_quote;
 		} elseif ( 'geo' == $field ) {
 			if ( ! is_array( $value ) ) {
 				$value = array( $value );
@@ -377,6 +389,14 @@ class MailsterConditions {
 		return $list_id;
 	}
 
+	public function get_tag_title( $tag_id ) {
+
+		if ( $tag = mailster( 'tags' )->get( $tag_id ) ) {
+			return $tag->name;
+		}
+		return $tag_id;
+	}
+
 	public function get_country_name( $code ) {
 
 		return mailster( 'geo' )->code2Country( $code );
@@ -398,6 +418,9 @@ class MailsterConditions {
 				}
 				if ( isset( $this->list_related[ $string ] ) ) {
 					return $this->list_related[ $string ];
+				}
+				if ( isset( $this->tag_related[ $string ] ) ) {
+					return $this->tag_related[ $string ];
 				}
 				if ( isset( $this->meta_fields[ $string ] ) ) {
 					return $this->meta_fields[ $string ];

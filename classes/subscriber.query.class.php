@@ -41,6 +41,7 @@ class MailsterSubscriberQuery {
 		'lists__not_in'       => null,
 
 		'tags'                => false,
+		'tags__in'            => null,
 		'tags__not_in'        => null,
 
 		'unsubscribe'         => null,
@@ -325,6 +326,13 @@ class MailsterSubscriberQuery {
 			$this->add_condition( '_lists__not_in', '=', ( $this->args['lists__not_in'] ) );
 		}
 
+		if ( $this->args['tags__in'] ) {
+			$this->add_condition( '_tags__in', '=', ( $this->args['tags__in'] ) );
+		}
+		if ( $this->args['tags__not_in'] ) {
+			$this->add_condition( '_tags__not_in', '=', ( $this->args['tags__not_in'] ) );
+		}
+
 		if ( ! $this->args['return_count'] ) {
 			if ( ! empty( $this->args['fields'] ) ) {
 				foreach ( $this->args['fields'] as $field ) {
@@ -522,6 +530,14 @@ class MailsterSubscriberQuery {
 						} elseif ( $field == '_lists__not_in' ) {
 
 							$sub_cond[] = "subscribers.ID NOT IN ( SELECT subscriber_id FROM {$wpdb->prefix}mailster_lists_subscribers WHERE list_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ') )';
+
+						} elseif ( $field == '_tags__in' ) {
+
+							$sub_cond[] = "subscribers.ID IN ( SELECT subscriber_id FROM {$wpdb->prefix}mailster_tags_subscribers WHERE tag_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ') )';
+
+						} elseif ( $field == '_tags__not_in' ) {
+
+							$sub_cond[] = "subscribers.ID NOT IN ( SELECT subscriber_id FROM {$wpdb->prefix}mailster_tags_subscribers WHERE tag_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ') )';
 
 						} elseif ( 0 === strpos( $field, '_sent' ) ) {
 
@@ -1372,7 +1388,7 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_action_fields() {
-		$action_fields = array( '_sent', '_sent__not_in', '_sent_before', '_sent_after', '_open', '_open__not_in', '_open_before', '_open_after', '_click', '_click__not_in', '_click_before', '_click_after', '_click_link', '_click_link__not_in', '_lists__in', '_lists__not_in' );
+		$action_fields = array( '_sent', '_sent__not_in', '_sent_before', '_sent_after', '_open', '_open__not_in', '_open_before', '_open_after', '_click', '_click__not_in', '_click_before', '_click_after', '_click_link', '_click_link__not_in', '_lists__in', '_lists__not_in', '_tags__in', '_tags__not_in' );
 
 		return $action_fields;
 	}

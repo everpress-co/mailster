@@ -23,8 +23,6 @@ class MailsterTags {
 		return (object) array(
 			'ID'          => 0,
 			'name'        => '',
-			'slug'        => '',
-			'description' => '',
 			'added'       => 0,
 			'updated'     => 0,
 			'subscribers' => 0,
@@ -49,12 +47,10 @@ class MailsterTags {
 		$entry = (array) $entry;
 
 		$field_names = array(
-			'ID'          => '%d',
-			'name'        => '%s',
-			'slug'        => '%s',
-			'description' => '%d',
-			'added'       => '%d',
-			'updated'     => '%d',
+			'ID'      => '%d',
+			'name'    => '%s',
+			'added'   => '%d',
+			'updated' => '%d',
 		);
 
 		$now = time();
@@ -130,14 +126,10 @@ class MailsterTags {
 		$entry = wp_parse_args(
 			$entry,
 			array(
-				'slug'        => sanitize_title( $entry['name'] ),
-				'description' => '',
-				'added'       => $now,
-				'updated'     => $now,
+				'added'   => $now,
+				'updated' => $now,
 			)
 		);
-
-		add_action( 'mailster_update_tag', array( &$this, 'update_forms' ) );
 
 		return $this->update( $entry, $overwrite, $subscriber_ids );
 
@@ -250,6 +242,19 @@ class MailsterTags {
 	 *
 	 *
 	 * @param unknown $ids
+	 * @return unknown
+	 */
+	public function remove_if_not_asigned( $ids ) {
+
+		error_log( print_r( 're', true ) );
+		error_log( print_r( $ids, true ) );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $ids
 	 * @param unknown $subscribers (optional)
 	 * @return unknown
 	 */
@@ -307,11 +312,6 @@ class MailsterTags {
 
 			if ( is_null( $id ) ) {
 
-				// if ( $counts ) {
-				// $sql = "SELECT a.*, COUNT(DISTINCT c.ID) AS subscribers FROM {$wpdb->prefix}mailster_tags AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS c INNER JOIN {$wpdb->prefix}mailster_tags_subscribers AS ac ON c.ID = ac.subscriber_id AND c.status IN('" . implode( ', ', $statuses ) . "')) ON a.ID = ac.tag_id GROUP BY a.ID ORDER BY CASE WHEN parent_id = 0 THEN name ELSE ( SELECT name FROM {$wpdb->prefix}mailster_tags AS b WHERE b.ID = a.parent_id ) END, CASE WHEN parent_id = 0 THEN 1 END DESC, name";
-				// } else {
-				// $sql = "SELECT a.* FROM {$wpdb->prefix}mailster_tags AS a ORDER BY CASE WHEN parent_id = 0 THEN name ELSE ( SELECT name FROM {$wpdb->prefix}mailster_tags AS b WHERE b.ID = a.parent_id ) END, CASE WHEN parent_id = 0 THEN 1 END DESC, name";
-				// }
 				if ( $counts ) {
 					$sql = "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers FROM {$wpdb->prefix}mailster_tags AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_tags_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ')) ON a.ID = ab.tag_id GROUP BY a.ID ORDER BY name ASC';
 				} else {
@@ -373,7 +373,7 @@ class MailsterTags {
 
 			if ( ! is_null( $field ) && $field != 'subscribers' ) {
 
-				$result = $wpdb->get_var( $wpdb->prepare( 'SELECT ' . esc_sql( $field ) . " FROM {$wpdb->prefix}mailster_tags WHERE (name = %s OR slug = %s) LIMIT 1", $name, $name ) );
+				$result = $wpdb->get_var( $wpdb->prepare( 'SELECT ' . esc_sql( $field ) . " FROM {$wpdb->prefix}mailster_tags WHERE name = %s LIMIT 1", $name ) );
 
 			} else {
 
@@ -381,7 +381,7 @@ class MailsterTags {
 
 				$stati = array_filter( $stati, 'is_numeric' );
 
-				$result = $wpdb->get_row( $wpdb->prepare( "SELECT a.*, COUNT(DISTINCT ab.subscriber_id) as subscribers FROM {$wpdb->prefix}mailster_tags as a LEFT JOIN ({$wpdb->prefix}mailster_subscribers as b INNER JOIN {$wpdb->prefix}mailster_tags_subscribers AS ab ON b.ID = ab.subscriber_id) ON a.ID = ab.tag_id WHERE b.status IN(" . implode( ', ', $stati ) . ') AND (a.name = %s OR a.slug = %s) GROUP BY a.ID', $name, $name ) );
+				$result = $wpdb->get_row( $wpdb->prepare( "SELECT a.*, COUNT(DISTINCT ab.subscriber_id) as subscribers FROM {$wpdb->prefix}mailster_tags as a LEFT JOIN ({$wpdb->prefix}mailster_subscribers as b INNER JOIN {$wpdb->prefix}mailster_tags_subscribers AS ab ON b.ID = ab.subscriber_id) ON a.ID = ab.tag_id WHERE b.status IN(" . implode( ', ', $stati ) . ') AND a.name = %s GROUP BY a.ID', $name ) );
 
 				if ( is_null( $field ) ) {
 					$result = $result;
@@ -404,11 +404,11 @@ class MailsterTags {
 	/**
 	 *
 	 *
-	 * @param unknown $tags    (optional)
-	 * @param unknown $statuses (optional)
+	 * @param unknown $subscriber_id
+	 * @param unknown $ids_only (optional)
 	 * @return unknown
 	 */
-	public function get_by_subscriber( $subscriber_id ) {
+	public function get_by_subscriber( $subscriber_id, $ids_only = false ) {
 
 		global $wpdb;
 
@@ -416,7 +416,7 @@ class MailsterTags {
 
 		$result = $wpdb->get_results( $wpdb->prepare( $sql, $subscriber_id ) );
 
-		return $result;
+		return $ids_only ? wp_list_pluck( $result, 'ID' ) : $result;
 
 	}
 

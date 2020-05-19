@@ -304,6 +304,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 					$extra = array(
 						'_statuscode' => esc_html__( 'Statuscode', 'mailster' ),
 						'_listnames'  => esc_html__( 'Listnames', 'mailster' ),
+						'_tagnames'   => esc_html__( 'Tagnames', 'mailster' ),
 					);
 
 					$meta = array(
