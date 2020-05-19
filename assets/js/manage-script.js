@@ -334,11 +334,11 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		});
 
-	$('#delete-subscribers').on('change', 'input, select', update_deleteion_count);
+	$('#delete-subscribers').on('change', 'input, select', update_deletion_count);
 
-	update_deleteion_count();
+	update_deletion_count();
 
-	function update_deleteion_count() {
+	function update_deletion_count() {
 
 		setTimeout(function () {
 			var data = $('#delete-subscribers').serialize();
