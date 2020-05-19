@@ -230,7 +230,7 @@ mailster = (function (mailster, $, window, document) {
 
 
 	mailster.events.push('documentReady', function () {
-		$.sortable && $(".export-order")
+		$.fn.sortable && $(".export-order")
 			.sortable({
 				connectWith: '.export-order',
 				_placeholder: "ui-state-highlight",
@@ -241,7 +241,6 @@ mailster = (function (mailster, $, window, document) {
 			})
 			.on('change', 'input', function () {
 				var _this = $(this);
-
 				_this.parent().appendTo(_this.is(':checked') ? $('.export-order.selected') : $('.export-order.unselected'))
 			});
 	});
@@ -285,58 +284,58 @@ mailster = (function (mailster, $, window, document) {
 		}, function (jqXHR, textStatus, errorThrown) {
 			alert(textStatus);
 		});
-
-
 		return false;
 	});
 
-	$('#delete-subscribers').on('submit', function () {
+	$('#delete-subscribers')
+		.on('submit', function () {
 
-		var input = prompt(mailster.l10n.manage.confirm_delete, '');
+			var input = prompt(mailster.l10n.manage.confirm_delete, '');
 
-		if (!input) return false;
+			if (!input) return false;
 
-		if ('delete' == input.toLowerCase()) {
+			if ('delete' == input.toLowerCase()) {
 
-			var data = $(this).serialize();
+				var data = $(this).serialize();
 
-			progress.removeClass('finished error hidden');
+				progress.removeClass('finished error hidden');
 
-			progressbar.stop().animate({
-				'width': '99%'
-			}, 25000);
+				progressbar.stop().animate({
+					'width': '99%'
+				}, 25000);
 
-			mailster.util.ajax('delete_contacts', {
-				data: data,
-			}, function (response) {
+				mailster.util.ajax('delete_contacts', {
+					data: data,
+				}, function (response) {
 
-				if (response.success) {
-					progressbar.stop().animate({
-						'width': '100%'
-					}, 200, function () {
+					if (response.success) {
+						progressbar.stop().animate({
+							'width': '100%'
+						}, 200, function () {
+							$('.delete-status').html(response.msg);
+							progress.addClass('finished');
+						});
+					} else {
+						progressbar.stop();
 						$('.delete-status').html(response.msg);
-						progress.addClass('finished');
-					});
-				} else {
+						progress.addClass('error');
+					}
+
+				}, function (jqXHR, textStatus, errorThrown) {
+
 					progressbar.stop();
-					$('.delete-status').html(response.msg);
+					$('.delete-status').html('[' + jqXHR.status + '] ' + errorThrown);
 					progress.addClass('error');
-				}
 
-			}, function (jqXHR, textStatus, errorThrown) {
+				});
 
-				progressbar.stop();
-				$('.delete-status').html('[' + jqXHR.status + '] ' + errorThrown);
-				progress.addClass('error');
+			}
 
-			});
-
-		}
-
-		return false;
-	});
+			return false;
+		});
 
 	$('#delete-subscribers').on('change', 'input, select', update_deleteion_count);
+
 	update_deleteion_count();
 
 	function update_deleteion_count() {
