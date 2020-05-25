@@ -99,6 +99,7 @@ Xaver Birsak – https://everpress.co
 * fixed: redirection error on confirmation
 * fixed: result of empty lists is no longer null
 * fixed: links in iframe forms open now in parent window.
+* fixed: issue where resuming a campaign on stats page is not possible.
 * added: 'mailster_register_form_signup_field' filter hook to modify signup checkbox on registration screen.
 * added: more bulk options to campaign overview.
 

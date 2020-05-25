@@ -409,6 +409,7 @@ class MailsterCampaigns {
 				} else {
 					$this->start( $id );
 				}
+
 				// resume campaign
 			} elseif ( isset( $_GET['resume'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_start_nonce' ) ) {
 				$id = (int) $_GET['resume'];
@@ -417,6 +418,7 @@ class MailsterCampaigns {
 				} else {
 					$this->resume( $id );
 				}
+
 				// finish campaign
 			} elseif ( isset( $_GET['finish'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_finish_nonce' ) ) {
 				$id = (int) $_GET['finish'];
@@ -425,6 +427,7 @@ class MailsterCampaigns {
 				} else {
 					$this->finish( $id );
 				}
+
 				// activate autoresponder
 			} elseif ( isset( $_GET['activate'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'mailster_activate_nonce' ) ) {
 				$id = (int) $_GET['activate'];
