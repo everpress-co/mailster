@@ -38,10 +38,23 @@ class MailsterManage {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
-		wp_localize_script(
-			'mailster-manage-script',
-			'mailsterL10n',
+		wp_enqueue_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
+		global $wp_locale;
+
+		mailster_localize_script(
+			'conditions',
+			array(
+				'next'          => esc_html__( 'next', 'mailster' ),
+				'prev'          => esc_html__( 'prev', 'mailster' ),
+				'start_of_week' => get_option( 'start_of_week' ),
+				'day_names'     => $wp_locale->weekday,
+				'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
+				'month_names'   => array_values( $wp_locale->month ),
+			)
+		);
+		mailster_localize_script(
+			'manage',
 			array(
 				'select_status'        => esc_html__( 'Please select the status for the importing contacts!', 'mailster' ),
 				'select_emailcolumn'   => esc_html__( 'Please select at least the column with the email addresses!', 'mailster' ),

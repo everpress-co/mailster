@@ -242,7 +242,7 @@ class MailsterAjax {
 		if ( ! $editorstyle ) {
 			$revision = isset( $_REQUEST['revision'] ) ? (int) $_REQUEST['revision'] : false;
 			$campaign = get_post( $id );
-			$subject  = isset( $_REQUEST['subject'] ) ? esc_attr( $_REQUEST['subject'] ) : isset( $meta['subject'] ) ? esc_attr( $meta['subject'] ) : '';
+			$subject  = isset( $_REQUEST['subject'] ) ? esc_attr( $_REQUEST['subject'] ) : ( isset( $meta['subject'] ) ? esc_attr( $meta['subject'] ) : '' );
 
 			$current_user = wp_get_current_user();
 
@@ -738,7 +738,7 @@ class MailsterAjax {
 		if ( ! isset( $return['msg'] ) ) {
 			$return['msg'] = ( $return['success'] )
 				? esc_html__( 'Message sent. Check your inbox!', 'mailster' )
-				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . ' <strong>' . $errors . '</strong>';
+				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . '<br><strong>' . $mail->get_errors() . '</strong>';
 		}
 
 		if ( isset( $return['log'] ) ) {
@@ -2481,7 +2481,7 @@ class MailsterAjax {
 
 		$return['success'] = false;
 
-		$this->ajax_nonce( json_encode( $return ), 'mailster_register' );
+		$this->ajax_nonce( json_encode( $return ) );
 		$purchasecode = trim( $_POST['purchasecode'] );
 		$slug         = trim( $_POST['slug'] );
 

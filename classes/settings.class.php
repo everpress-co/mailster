@@ -369,10 +369,14 @@ class MailsterSettings {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION );
-		wp_localize_script(
-			'mailster-settings-script',
-			'mailsterL10n',
+		wp_enqueue_style( 'thickbox' );
+		wp_enqueue_script( 'thickbox' );
+
+		wp_enqueue_style( 'mailster-settings-style', MAILSTER_URI . 'assets/css/settings-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
+
+		mailster_localize_script(
+			'settings',
 			array(
 				'add'              => esc_html__( 'add', 'mailster' ),
 				'fieldname'        => esc_html__( 'Field Name', 'mailster' ),
@@ -402,10 +406,6 @@ class MailsterSettings {
 				'sync_subscriber'  => esc_html__( 'You are about to overwrite all WordPress User data with the matching subscriber data. Continue?', 'mailster' ),
 			)
 		);
-		wp_enqueue_style( 'thickbox' );
-		wp_enqueue_script( 'thickbox' );
-		wp_enqueue_script( 'jquery' );
-		wp_enqueue_style( 'mailster-settings-style', MAILSTER_URI . 'assets/css/settings-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 	}
 

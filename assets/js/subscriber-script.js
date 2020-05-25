@@ -1,209 +1,143 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
+	"use strict";
 
 	var timeout,
-		_email = $('#email'),
-		_id = $('#ID'),
-		_userimage = $('.avatar'),
-		_form = $('form#subscriber_form'),
-		wpnonce = $('#_wpnonce').val();
+		email = $('#email'),
+		id = $('#ID').val(),
+		userimage = $('.avatar'),
+		form = $('form#subscriber_form');
 
-	//init the whole thing
-	function _init() {
 
-		_events();
+	$.easyPieChart && $('.piechart').easyPieChart({
+		animate: 1000,
+		rotate: 180,
+		barColor: mailster.colors.main,
+		trackColor: mailster.colors.track_light,
+		lineWidth: 9,
+		size: 75,
+		lineCap: 'butt',
+		onStep: function (value) {
+			this.$el.find('span').text(Math.round(value));
+		},
+		onStop: function (value) {
+			this.$el.find('span').text(Math.round(value));
+		}
+	});
 
-		$('.piechart').easyPieChart({
-			animate: 1000,
-			rotate: 180,
-			barColor: '#2BB3E7',
-			trackColor: '#50626f',
-			trackColor: '#ffffff',
-			lineWidth: 9,
-			size: 75,
-			lineCap: 'butt',
-			onStep: function (value) {
-				this.$el.find('span').text(Math.round(value));
-			},
-			onStop: function (value) {
-				this.$el.find('span').text(Math.round(value));
-			}
-		});
+	$('#subscriber_form').on('submit', function () {
+		clearTimeout(timeout);
+		email.off('blur').off('keyup');
+		$(this).submit(false);
+	});
 
-	}
+	$('.detail').on('click', function () {
 
-	function _events() {
+		var _this = $(this).addClass('active'),
+			_ul = _this.find('.click-to-edit'),
+			_first = _ul.find('> li').first(),
+			_last = _ul.find('> li').last();
 
-		$('#subscriber_form').on('submit', function () {
-			clearTimeout(timeout);
-			_email.off('blur').off('keyup');
-			$(this).submit(false);
-		});
-
-		$('.detail').on('click', function () {
-
-			var _this = $(this).addClass('active'),
-				_ul = _this.find('.click-to-edit'),
-				_first = _ul.find('> li').first(),
-				_last = _ul.find('> li').last();
-
-			if (!_first.is(':hidden')) {
-				_first.hide();
-				_last.show().find('input').first().focus().select();
-				_last.show().find('textarea').first().focus().select();
-			}
-
-		});
-		$('#mailster_status').on('change', function () {
-			if ($(this).val() <= 0) {
-				$('.pending-info').show();
-			} else {
-				$('.pending-info').hide();
-			}
-		});
-		$('.show-more-info').on('click', function () {
-			$('.more-info').slideToggle(100);
-		});
-
-		$('.map.zoomable').on('click', function () {
-			var _this = $(this),
-				_img = _this.find('img');
-
-			if (!_img.hasClass('zoomed')) {
-				_img.attr('src', _img.attr('src').replace(/zoom=\d+/, 'zoom=11')).addClass('zoomed');
-			} else {
-				_img.attr('src', _img.attr('src').replace(/zoom=\d+/, 'zoom=5')).removeClass('zoomed');
-			}
-		})
-
-		if (typeof jQuery.datepicker == 'object') {
-			$('input.datepicker').datepicker({
-				dateFormat: 'yy-mm-dd',
-				firstDay: mailsterL10n.start_of_week,
-				dayNames: mailsterL10n.day_names,
-				dayNamesMin: mailsterL10n.day_names_min,
-				monthNames: mailsterL10n.month_names,
-				prevText: mailsterL10n.prev,
-				nextText: mailsterL10n.next,
-				showAnim: 'fadeIn',
-				onClose: function () {
-					var date = $(this).datepicker('getDate');
-					$('.deliverydate').html($(this).val());
-				}
-			});
+		if (!_first.is(':hidden')) {
+			_first.hide();
+			_last.show().find('input').first().focus().select();
+			_last.show().find('textarea').first().focus().select();
 		}
 
-		_email
-			.on('blur', function () {
-				var _this = $(this),
-					email = $.trim(_this.val()),
-					valid = _verify(email);
+	});
+	$('#mailster_status').on('change', function () {
+		if ($(this).val() <= 0) {
+			$('.pending-info').show();
+		} else {
+			$('.pending-info').hide();
+		}
+	});
+	$('.show-more-info').on('click', function () {
+		$('.more-info').slideToggle(100);
+	});
 
-				if (!valid) {
+	$('.map.zoomable').on('click', function () {
+		var _this = $(this),
+			_img = _this.find('img');
+
+		if (!_img.hasClass('zoomed')) {
+			_img.attr('src', _img.attr('src').replace(/zoom=\d+/, 'zoom=11')).addClass('zoomed');
+		} else {
+			_img.attr('src', _img.attr('src').replace(/zoom=\d+/, 'zoom=5')).removeClass('zoomed');
+		}
+	})
+
+	$.datepicker && $('input.datepicker').datepicker({
+		dateFormat: 'yy-mm-dd',
+		firstDay: mailster.l10n.subscribers.start_of_week,
+		dayNames: mailster.l10n.subscribers.day_names,
+		dayNamesMin: mailster.l10n.subscribers.day_names_min,
+		monthNames: mailster.l10n.subscribers.month_names,
+		prevText: mailster.l10n.subscribers.prev,
+		nextText: mailster.l10n.subscribers.next,
+		showAnim: 'fadeIn',
+		onClose: function () {
+			var date = $(this).datepicker('getDate');
+			$('.deliverydate').html($(this).val());
+		}
+	});
+
+	email
+		.on('blur', function () {
+			var _this = $(this),
+				email = $.trim(_this.val());
+
+			$(this).val(email);
+
+			if (userimage.data('email') != email) {
+				userimage.addClass('avatar-loading');
+				getGravatar(email, function (data) {
+					if (data.success)
+						userimage.data('email', email).removeClass('avatar-loading').css({
+							'background-image': 'url(' + data.url.replace(/&amp;/, '&') + ')'
+						});
+				});
+			}
+
+			if (!email) form.prop('disabled', true);
+			_this.trigger('keyup');
+
+		})
+		.on('keyup', function () {
+			var _this = $(this);
+			clearTimeout(timeout);
+			timeout = setTimeout(function () {
+				var email = $.trim(_this.val());
+
+				mailster.util.ajax('check_email', {
+					email: email,
+					id: id
+				}, function (data) {
+					form.prop('disabled', data.exists);
 					$('.email-error').slideUp(100, function () {
 						$(this).remove();
 					});
-
-					$('<p class="email-error">&#9650; ' + mailsterL10n.invalid_email + '</p>').hide().insertAfter(_this).slideDown(100);
-					setTimeout(function () {
-						_this.focus(), 1
-					});
-					_form.prop('disabled', true);
-
-				} else {
-					$(this).val(email);
-
-					if (_userimage.data('email') != email) {
-						_userimage.addClass('avatar-loading');
-						_getGravatar(email, function (data) {
-							if (data.success)
-								_userimage.data('email', email).removeClass('avatar-loading').css({
-									'background-image': 'url(' + data.url.replace(/&amp;/, '&') + ')'
-								});
+					if (data.exists) {
+						$('<p class="email-error">&#9650; ' + mailster.l10n.subscribers.email_exists + '</p>').hide().insertAfter(_this).slideDown(100);
+						setTimeout(function () {
+							_this.focus(), 1
 						});
 					}
+				});
 
-				}
-				if (!email || !valid) _form.prop('disabled', true);
-				_this.trigger('keyup');
+			}, 400);
 
-			})
-			.on('keyup', function () {
-				var _this = $(this);
-				clearTimeout(timeout);
-				timeout = setTimeout(function () {
-					var email = $.trim(_this.val()),
-						valid = _verify(email);
-					if (!valid) return false;
+			form.prop('disabled', true);
 
-					_ajax('check_email', {
-						email: email,
-						id: _id.val()
-					}, function (data) {
-						_form.prop('disabled', data.exists);
-						$('.email-error').slideUp(100, function () {
-							$(this).remove();
-						});
-						if (data.exists) {
-							$('<p class="email-error">&#9650; ' + mailsterL10n.email_exists + '</p>').hide().insertAfter(_this).slideDown(100);
-							setTimeout(function () {
-								_this.focus(), 1
-							});
-						}
-					});
+		});
 
-				}, 400);
-
-				_form.prop('disabled', true);
-
-			});
-
-	}
-
-
-	function _verify(email) {
-
-		return true;
-
-		return !email || /^([\w-+]+(?:\.[\w-]+)*)\@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$|(\[?(\d{1,3}\.){3}\d{1,64}\]?)$/.test(email);
-
-	}
-
-	function _getGravatar(email, callback) {
-		_ajax('get_gravatar', {
+	function getGravatar(email, callback) {
+		mailster.util.ajax('get_gravatar', {
 			email: email
 		}, callback);
 	}
 
-	function _ajax(action, data, callback, errorCallback) {
 
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
-		}
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action,
-				_wpnonce: wpnonce
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-			},
-			dataType: "JSON"
-		});
-	}
+	return mailster;
 
-	_init();
-
-});
+}(mailster || {}, jQuery, window, document));

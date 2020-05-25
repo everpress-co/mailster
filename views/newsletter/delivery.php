@@ -253,16 +253,15 @@ $sent = $this->get_sent( $post->ID );
 
 				$autoresponderdata['endschedule'] = isset( $autoresponderdata['endschedule'] );
 			?>
-
 			<?php if ( mailster_option( 'track_location' ) ) : ?>
-			<label title="<?php esc_html_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
-			<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][timebased_timezone]" value="1" <?php checked( $this->post_data['timezone'] ); ?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ); ?>
-			</label>
-		<?php endif; ?>
+				<label title="<?php esc_html_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
+				<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][timebased_timezone]" value="1" <?php checked( $this->post_data['timezone'] ); ?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ); ?>
+				</label>
+			<?php endif; ?>
 			</p>
 			<p>
 			<label><input type="checkbox" name="mailster_data[autoresponder][endschedule]" class="mailster_autoresponder_timebased-end-schedule" <?php checked( $autoresponderdata['endschedule'] ); ?> value="1"> <?php esc_html_e( 'end schedule', 'mailster' ); ?></label>
-				<span class="mailster_autoresponder_timebased-end-schedule-field"<?php echo ! $autoresponderdata['endschedule'] ? ' style="display:none"' : ''; ?>>
+				<div class="mailster_autoresponder_timebased-end-schedule-field"<?php echo ! $autoresponderdata['endschedule'] ? ' style="display:none"' : ''; ?>>
 					<?php
 					$timestamp = max( $timestamp, $autoresponderdata['endtimestamp'] );
 
@@ -273,7 +272,7 @@ $sent = $this->get_sent( $post->ID );
 					);
 					?>
 					<span class="description"><?php esc_html_e( 'set an end date for your campaign', 'mailster' ); ?></span>
-				</span>
+				</div>
 			</p>
 			<p>
 				<?php
@@ -345,6 +344,13 @@ $sent = $this->get_sent( $post->ID );
 					'<strong>' . $autoresponderdata['post_count_status'] . '</strong>',
 					'<strong>' . $post_type_label . '</strong>'
 				);
+				if ( $autoresponderdata['since'] ) {
+					printf(
+						'<br><span title="' . esc_attr( 'The time which is used in this campaign. All posts must have been published after this date.', 'mailster' ) . '">' . esc_html__( 'Only %1$s after %2$s count.', 'mailster' ) . '</span>',
+						strip_tags( $post_type_label ),
+						date( $timeformat, $autoresponderdata['since'] + $timeoffset )
+					);
+				}
 				?>
 				<br><label><input type="checkbox" name="post_count_status_reset" value="1"> <?php esc_html_e( 'reset counter', 'mailster' ); ?></label>
 			</p>

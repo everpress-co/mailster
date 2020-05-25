@@ -1,33 +1,28 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
+	"use strict";
 
 	var iframe = $('#mailster_iframe'),
-		wpnonce = $('#_wpnonce').val(),
 		base = iframe.data('base'),
 		templateeditor = $('#templateeditor'),
 		templatecontent = $('textarea.editor'),
 		uploadinfo = $('.uploadinfo'),
-		animateDOM = $('html,body'),
 		codemirror;
-
-	$('a.external').on('click', function () {
-		if (this.href) window.open(this.href);
-		return false;
-	});
 
 	$('.upload-template').on('click', function () {
 		$('.upload-field').show();
 	})
 
 	$('#mailster_templates')
+		.on('click', '.screenshot a', function (event) {
+			event.stopPropagation();
+		})
 		.on('click', '.edit', function () {
 			var $this = $(this),
 				$container = $this.closest('.mailster-box'),
 				$templates = $('.mailster-box'),
 				href = $this.attr('href'),
 				slug = $this.data('slug');
-
 
 			if ($this.parent().hasClass('disabled')) return false;
 
@@ -44,7 +39,7 @@ jQuery(document).ready(function ($) {
 			templateeditor.slideDown();
 
 			templateeditor.insertAfter($templates.eq(pos).length ? $templates.eq(pos) : $templates.last());
-			_scroll(templateeditor.offset().top - 50);
+			mailster.util.scroll(templateeditor.offset().top - 50);
 
 			$container.removeClass('loading');
 			get_template_html(href);
@@ -61,7 +56,7 @@ jQuery(document).ready(function ($) {
 
 				$('#templateeditor').addClass('loading');
 
-				_ajax('remove_template', {
+				mailster.util.ajax('remove_template', {
 					file: $this.data('file'),
 				}, function (response) {
 					$('#templateeditor').removeClass('loading');
@@ -90,15 +85,14 @@ jQuery(document).ready(function ($) {
 				message = $('span.message'),
 				name;
 
-			if ($this.is('.saveas') && !(name = prompt(mailsterL10n.enter_template_name + ':', ''))) return false;
-
+			if ($this.is('.saveas') && !(name = prompt(mailster.l10n.templates.enter_template_name + ':', ''))) return false;
 
 			loader.css({
-					'display': 'inline'
-				}),
-				$this.prop('disabled', true);
+				'display': 'inline'
+			});
+			$this.prop('disabled', true);
 
-			_ajax('set_template_html', {
+			mailster.util.ajax('set_template_html', {
 				content: content,
 				name: name,
 				slug: $('#slug').val(),
@@ -136,7 +130,7 @@ jQuery(document).ready(function ($) {
 			$('.thickbox-filelist').empty().hide();
 			tb_show(name, '?&width=900&inlineId=thickboxbox&TB_inline', null);
 			$('#TB_window').width(936).height(700).css('margin-left', -936 / 2).css('margin-top', -700 / 2);
-			_ajax('get_file_list', {
+			mailster.util.ajax('get_file_list', {
 				slug: slug
 			}, function (response) {
 				if (response.success) {
@@ -180,7 +174,7 @@ jQuery(document).ready(function ($) {
 		})
 		.on('click', 'a.update', function () {
 
-			if (confirm(mailsterL10n.update_note)) {
+			if (confirm(mailster.l10n.templates.update_note)) {
 				$(this).closest('.mailster-box').addClass('loading');
 				return true;
 			}
@@ -188,7 +182,7 @@ jQuery(document).ready(function ($) {
 		})
 		.on('click', 'a.deletion', function () {
 
-			if (confirm(sprintf(mailsterL10n.confirm_delete, $(this).data('name')))) {
+			if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, $(this).data('name')))) {
 				$(this).closest('.mailster-box').addClass('loading');
 				return true;
 			}
@@ -199,10 +193,7 @@ jQuery(document).ready(function ($) {
 			$(this).closest('.mailster-box').addClass('loading');
 		});
 
-
-	;
-
-	$(document)
+	mailster.$.document
 		.on('click', 'a.thickbox-file', function () {
 
 			$('.thickbox-iframe').attr('src', $(this).attr('href'));
@@ -216,11 +207,11 @@ jQuery(document).ready(function ($) {
 				slug = $this.data('slug'),
 				file = $this.data('file');
 
-			if (confirm(sprintf(mailsterL10n.delete_template_file, file, slug))) {
+			if (confirm(mailster.util.sprintf(mailster.l10n.templates.delete_template_file, file, slug))) {
 
 				$el.addClass('loading');
 
-				_ajax('remove_template', {
+				mailster.util.ajax('remove_template', {
 					file: slug + '/' + file,
 				}, function (response) {
 					if (response.success) {
@@ -236,12 +227,9 @@ jQuery(document).ready(function ($) {
 			return false;
 		});
 
+	function uploader_init() {
 
-
-
-	var uploader_init = function () {
 		var uploader = new plupload.Uploader(wpUploaderInit);
-
 
 		uploader.bind('Init', function (up) {
 			var uploaddiv = $('#plupload-upload-ui');
@@ -279,7 +267,7 @@ jQuery(document).ready(function ($) {
 		uploader.bind('UploadFile', function (up, file) {});
 
 		uploader.bind('UploadProgress', function (up, file) {
-			uploadinfo.html(sprintf(mailsterL10n.uploading, file.percent + '%'));
+			uploadinfo.html(mailster.util.sprintf(mailster.l10n.templates.uploading, file.percent + '%'));
 		});
 
 		uploader.bind('Error', function (up, err) {
@@ -299,17 +287,12 @@ jQuery(document).ready(function ($) {
 		uploader.bind('UploadComplete', function (up, files) {});
 	}
 
-	if (typeof (wpUploaderInit) == 'object')
-		uploader_init();
-
-
-
 	function get_template_html(href) {
 		var loader = $('.template-ajax-loading').css({
 			'display': 'inline'
 		});
 		$('#templateeditor').addClass('loading');
-		_ajax('get_template_html', {
+		mailster.util.ajax('get_template_html', {
 			href: href
 		}, function (response) {
 			loader.hide();
@@ -358,58 +341,14 @@ jQuery(document).ready(function ($) {
 			});
 			html += '</select>';
 
-			if (response.file != 'index.html' && response.file != 'notification.html') html += '<a class="remove-file mailster-icon" data-file="' + response.slug + '/' + response.file + '" data-confirm="' + sprintf(mailsterL10n.delete_template_file, selected.label, selected.name) + '"></a>';
+			if (response.file != 'index.html' && response.file != 'notification.html') html += '<a class="remove-file mailster-icon" data-file="' + response.slug + '/' + response.file + '" data-confirm="' + mailster.util.sprintf(mailster.l10n.templates.delete_template_file, selected.label, selected.name) + '"></a>';
 
 			templateeditor.find('.template-file-selector span').html(html);
 		});
 	}
 
-	function _scroll(pos, callback) {
-		animateDOM.animate({
-			'scrollTop': pos
-		}, callback && function () {
-			callback();
-		});
-	}
+	typeof wpUploaderInit == 'object' && mailster.events.push('documentReady', uploader_init);
 
-	function sprintf() {
-		var a = Array.prototype.slice.call(arguments),
-			str = a.shift(),
-			total = a.length,
-			reg;
-		for (var i = 0; i < total; i++) {
-			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
-			str = str.replace(reg, a[i]);
-		}
-		return str;
-	}
+	return mailster;
 
-	function _ajax(action, data, callback, errorCallback) {
-
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
-		}
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action,
-				_wpnonce: wpnonce
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-			},
-			dataType: "JSON"
-		});
-	}
-
-});
+}(mailster || {}, jQuery, window, document));

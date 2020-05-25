@@ -17,6 +17,7 @@
 	display: none;
 }
 .click-to-edit li:first-child{
+	cursor: pointer;
 	display: block;
 }
 .new .click-to-edit li{
@@ -24,6 +25,9 @@
 }
 .new .click-to-edit li:first-child{
 	display: none;
+}
+.click-to-edit li:hover{
+	background-color: #F9F9F9;
 }
 .click-to-edit li li{
 	display: inherit;
@@ -58,7 +62,6 @@ h3 input{
 .stats-wrap .big {
 	font-size: 18px;
 	font-weight: 100;
-	_text-shadow: 1px 1px 0 rgba(255,255,255,1);
 	display: inline-block;
 	width: 90px;
 	margin-right: 5px
@@ -67,7 +70,6 @@ h3 input{
 	line-height: 2.5em;
 	font-size: 22px;
 	font-weight: 700;
-	_text-shadow: 1px 1px 0 rgba(255,255,255,1);
 }
 .activity-wrap .red{
 	color: #D8605F;

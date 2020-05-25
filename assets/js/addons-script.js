@@ -1,10 +1,8 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
+	"use strict";
 
-	$('a.external').on('click', function () {
-		if (this.href) window.open(this.href);
-		return false;
-	});
 
-});
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));

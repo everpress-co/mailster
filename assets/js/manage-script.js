@@ -1,6 +1,6 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
+	"use strict";
 
 	var importstatus = $('.import-status'),
 		exportstatus = $('.export-status'),
@@ -54,7 +54,7 @@ jQuery(document).ready(function ($) {
 			uploader.bind('UploadFile', function (up, file) {});
 
 			uploader.bind('UploadProgress', function (up, file) {
-				importstatus.html(sprintf(mailsterL10n.uploading, file.percent + '%'));
+				importstatus.html(mailster.util.sprintf(mailster.l10n.manage.uploading, file.percent + '%'));
 				progressbar.stop().animate({
 					'width': file.percent + '%'
 				}, 100);
@@ -78,7 +78,7 @@ jQuery(document).ready(function ($) {
 			});
 
 			uploader.bind('UploadComplete', function (up, files) {
-				importstatus.html(mailsterL10n.prepare_data);
+				importstatus.html(mailster.l10n.manage.prepare_data);
 				progress.addClass('finished');
 				get_import_data();
 			});
@@ -86,9 +86,7 @@ jQuery(document).ready(function ($) {
 			uploader.init();
 		}
 
-	if (typeof (wpUploaderInit) == 'object')
-		uploader_init();
-
+	typeof wpUploaderInit == 'object' && mailster.events.push('documentReady', uploader_init);
 
 	$('.wrap')
 		.on('change', '#signup', function () {
@@ -100,15 +98,15 @@ jQuery(document).ready(function ($) {
 				order = $('#subscriber-table').serialize();
 
 			if (!/%5D=email/.test(order)) {
-				alert(mailsterL10n.select_emailcolumn);
+				alert(mailster.l10n.manage.select_emailcolumn);
 				return false;
 			}
 			if (!$('input[name="status"]:checked').length) {
-				alert(mailsterL10n.select_status);
+				alert(mailster.l10n.manage.select_status);
 				return false;
 			}
 
-			if (!confirm(mailsterL10n.confirm_import)) return false;
+			if (!confirm(mailster.l10n.manage.confirm_import)) return false;
 
 
 			var _this = $(this).prop('disabled', true),
@@ -143,10 +141,10 @@ jQuery(document).ready(function ($) {
 				performance: performance
 			});
 
-			importstatus.html(mailsterL10n.prepare_import);
+			importstatus.html(mailster.l10n.manage.prepare_import);
 
 			window.onbeforeunload = function () {
-				return mailsterL10n.onbeforeunloadimport;
+				return mailster.l10n.manage.onbeforeunloadimport;
 			};
 
 
@@ -184,7 +182,7 @@ jQuery(document).ready(function ($) {
 			var value = $.trim($(this).val());
 
 			if (value) {
-				_ajax('import_subscribers_upload_handler', {
+				mailster.util.ajax('import_subscribers_upload_handler', {
 					data: value
 				}, function (response) {
 
@@ -206,7 +204,7 @@ jQuery(document).ready(function ($) {
 		.on('submit', function () {
 
 			var data = $(this).serialize();
-			_ajax('import_subscribers_upload_handler', {
+			mailster.util.ajax('import_subscribers_upload_handler', {
 				wordpressusers: data
 			}, function (response) {
 
@@ -230,20 +228,22 @@ jQuery(document).ready(function ($) {
 		$('#csv-separator')[$(this).val() == 'csv' ? 'show' : 'hide']();
 	});
 
-	$(".export-order")
-		.sortable({
-			connectWith: '.export-order',
-			_placeholder: "ui-state-highlight",
-			containment: ".export-order-wrap",
-			receive: function (event, ui) {
-				ui.item.find('input').prop('checked', ui.item.closest('.export-order').is('.selected'));
-			},
-		})
-		.on('change', 'input', function () {
-			var _this = $(this);
 
-			_this.parent().appendTo(_this.is(':checked') ? $('.export-order.selected') : $('.export-order.unselected'))
-		});
+	mailster.events.push('documentReady', function () {
+		$.fn.sortable && $(".export-order")
+			.sortable({
+				connectWith: '.export-order',
+				_placeholder: "ui-state-highlight",
+				containment: ".export-order-wrap",
+				receive: function (event, ui) {
+					ui.item.find('input').prop('checked', ui.item.closest('.export-order').is('.selected'));
+				},
+			})
+			.on('change', 'input', function () {
+				var _this = $(this);
+				_this.parent().appendTo(_this.is(':checked') ? $('.export-order.selected') : $('.export-order.unselected'))
+			});
+	});
 
 	$('.export-order-wrap')
 		.on('click', '.export-order-add', function () {
@@ -259,102 +259,97 @@ jQuery(document).ready(function ($) {
 
 		var data = $(this).serialize();
 
-
-		_ajax('export_contacts', {
+		mailster.util.ajax('export_contacts', {
 			data: data,
 		}, function (response) {
 
 			if (response.success) {
 
 				window.onbeforeunload = function () {
-					return mailsterL10n.onbeforeunloadexport;
+					return mailster.l10n.manage.onbeforeunloadexport;
 				};
 
 				var limit = $('.performance').val();
 
 				$('.step2').slideDown();
-				$('.step2-body').html(sprintf(mailsterL10n.write_file, '0.00 Kb'));
+				$('.step2-body').html(mailster.util.sprintf(mailster.l10n.manage.write_file, '0.00 Kb'));
 				progress.removeClass('finished error hidden');
 				progressbar.stop().width(0);
 				do_export(0, limit, response.count, data);
 
 			} else {
-
 				alert(response.msg);
-
 			}
 
 		}, function (jqXHR, textStatus, errorThrown) {
-
 			alert(textStatus);
+		});
+		return false;
+	});
 
+	$('#delete-subscribers')
+		.on('submit', function () {
+
+			var input = prompt(mailster.l10n.manage.confirm_delete, '');
+
+			if (!input) return false;
+
+			if ('delete' == input.toLowerCase()) {
+
+				var data = $(this).serialize();
+
+				progress.removeClass('finished error hidden');
+
+				progressbar.stop().animate({
+					'width': '99%'
+				}, 25000);
+
+				mailster.util.ajax('delete_contacts', {
+					data: data,
+				}, function (response) {
+
+					if (response.success) {
+						progressbar.stop().animate({
+							'width': '100%'
+						}, 200, function () {
+							$('.delete-status').html(response.msg);
+							progress.addClass('finished');
+						});
+					} else {
+						progressbar.stop();
+						$('.delete-status').html(response.msg);
+						progress.addClass('error');
+					}
+
+				}, function (jqXHR, textStatus, errorThrown) {
+
+					progressbar.stop();
+					$('.delete-status').html('[' + jqXHR.status + '] ' + errorThrown);
+					progress.addClass('error');
+
+				});
+
+			}
+
+			return false;
 		});
 
+	$('#delete-subscribers').on('change', 'input, select', update_deletion_count);
 
-		return false;
-	});
+	update_deletion_count();
 
-	$('#delete-subscribers').on('submit', function () {
-
-		var input = prompt(mailsterL10n.confirm_delete, '');
-
-		if (!input) return false;
-
-		if ('delete' == input.toLowerCase()) {
-
-			var data = $(this).serialize();
-
-			progress.removeClass('finished error hidden');
-
-			progressbar.stop().animate({
-				'width': '99%'
-			}, 25000);
-
-			_ajax('delete_contacts', {
-				data: data,
-			}, function (response) {
-
-				if (response.success) {
-					progressbar.stop().animate({
-						'width': '100%'
-					}, 200, function () {
-						$('.delete-status').html(response.msg);
-						progress.addClass('finished');
-					});
-				} else {
-					progressbar.stop();
-					$('.delete-status').html(response.msg);
-					progress.addClass('error');
-				}
-
-			}, function (jqXHR, textStatus, errorThrown) {
-
-				progressbar.stop();
-				$('.delete-status').html('[' + jqXHR.status + '] ' + errorThrown);
-				progress.addClass('error');
-
-			});
-
-		}
-
-		return false;
-	});
-
-	$('#delete-subscribers').on('change', 'input, select', update_deleteion_count);
-	update_deleteion_count();
-
-	function update_deleteion_count() {
+	function update_deletion_count() {
 
 		setTimeout(function () {
 			var data = $('#delete-subscribers').serialize();
 			$('#delete-subscriber-button').prop('disabled', true);
 
-			_ajax('get_subscriber_count', {
+			mailster.util.ajax('get_subscriber_count', {
 				data: data
 			}, function (response) {
 
 				if (response.success) {
-					$('#delete-subscriber-button').val(sprintf(mailsterL10n.delete_n_subscribers, response.count)).prop('disabled', !response.count);
+					$('#delete-subscriber-button').val(mailster.util.sprintf(mailster.l10n.manage.delete_n_subscribers, response.count)).prop('disabled', !response.count);
 				}
 
 			});
@@ -375,9 +370,9 @@ jQuery(document).ready(function ($) {
 		var t = new Date().getTime(),
 			percentage = (Math.min(1, (limit * offset) / count) * 100);
 
-		exportstatus.html(sprintf(mailsterL10n.prepare_download, count, ''));
+		exportstatus.html(mailster.util.sprintf(mailster.l10n.manage.prepare_download, count, ''));
 
-		_ajax('do_export', {
+		mailster.util.ajax('do_export', {
 			limit: limit,
 			offset: offset,
 			data: data
@@ -396,22 +391,22 @@ jQuery(document).ready(function ($) {
 					easing: 'swing',
 					queue: false,
 					step: function (percentage) {
-						exportstatus.html(sprintf(mailsterL10n.prepare_download, count, Math.ceil(percentage) + '%'));
+						exportstatus.html(mailster.util.sprintf(mailster.l10n.manage.prepare_download, count, Math.ceil(percentage) + '%'));
 					},
 					complete: function () {
-						exportstatus.html(sprintf(mailsterL10n.prepare_download, count, Math.ceil(percentage) + '%'));
+						exportstatus.html(mailster.util.sprintf(mailster.l10n.manage.prepare_download, count, Math.ceil(percentage) + '%'));
 						if (finished) {
 							window.onbeforeunload = null;
 							progress.addClass('finished');
-							$('.step2-body').html(mailsterL10n.export_finished);
+							$('.step2-body').html(mailster.l10n.manage.export_finished);
 
-							exportstatus.html(sprintf(mailsterL10n.downloading, count));
+							exportstatus.html(mailster.util.sprintf(mailster.l10n.manage.downloading, count));
 							if (response.filename) setTimeout(function () {
 								document.location = response.filename
 							}, 1000);
 
 						} else {
-							$('.step2-body').html(sprintf(mailsterL10n.write_file, response.total));
+							$('.step2-body').html(mailster.util.sprintf(mailster.l10n.manage.write_file, response.total));
 						}
 					}
 				});
@@ -421,7 +416,7 @@ jQuery(document).ready(function ($) {
 				progressbar.stop();
 				progress.addClass('error');
 				window.onbeforeunload = null;
-				exportstatus.html(mailsterL10n.error_export);
+				exportstatus.html(mailster.l10n.manage.error_export);
 				$('.step2-body').html(response.msg);
 
 			}
@@ -435,12 +430,11 @@ jQuery(document).ready(function ($) {
 
 	function do_import(id, options) {
 
-		var t = new Date().getTime(),
-			percentage = 0;
+		var percentage = 0;
 
 		if (!id) id = 0;
 
-		_ajax('do_import', {
+		mailster.util.ajax('do_import', {
 			id: id,
 			options: options
 		}, function (response) {
@@ -462,10 +456,10 @@ jQuery(document).ready(function ($) {
 					easing: 'swing',
 					queue: false,
 					step: function (percentage) {
-						importstatus.html(sprintf(mailsterL10n.import_contacts, Math.ceil(percentage) + '%'));
+						importstatus.html(mailster.util.sprintf(mailster.l10n.manage.import_contacts, Math.ceil(percentage) + '%'));
 					},
 					complete: function () {
-						importstatus.html(sprintf(mailsterL10n.import_contacts, Math.ceil(percentage) + '%'));
+						importstatus.html(mailster.util.sprintf(mailster.l10n.manage.import_contacts, Math.ceil(percentage) + '%'));
 						if (finished) {
 							window.onbeforeunload = null;
 							progress.addClass('finished');
@@ -489,7 +483,7 @@ jQuery(document).ready(function ($) {
 
 		progress.removeClass('finished error');
 
-		_ajax('get_import_data', {
+		mailster.util.ajax('get_import_data', {
 			identifier: importidentifier
 		}, function (response) {
 			progress.addClass('hidden');
@@ -516,7 +510,7 @@ jQuery(document).ready(function ($) {
 
 		if (importerrors >= 5) {
 
-			alert(mailsterL10n.error_importing);
+			alert(mailster.l10n.manage.error_importing);
 			window.onbeforeunload = null;
 			return;
 		}
@@ -532,10 +526,10 @@ jQuery(document).ready(function ($) {
 					str = Math.round(percentage) + '%';
 				} else {
 					progress.addClass('paused');
-					str = '<span class="error">' + sprintf(mailsterL10n.continues_in, (i--)) + '</span>';
+					str = '<span class="error">' + mailster.util.sprintf(mailster.l10n.manage.continues_in, (i--)) + '</span>';
 
 				}
-				importstatus.html(sprintf(mailsterL10n.import_contacts, str));
+				importstatus.html(mailster.util.sprintf(mailster.l10n.manage.import_contacts, str));
 
 
 			}, 1000);
@@ -547,50 +541,11 @@ jQuery(document).ready(function ($) {
 		var timepast = new Date().getTime() - importstarttime.getTime(),
 			timeleft = Math.ceil(((100 - percentage) * (timepast / percentage)) / 60000);
 
-		return sprintf(mailsterL10n.current_stats, '<strong>' + imported + '</strong>', '<strong>' + total + '</strong>', '<strong>' + errors + '</strong>', '<strong>' + memoryusage + '</strong>') + '<br>' +
-			sprintf(mailsterL10n.estimate_time, timeleft);
+		return mailster.util.sprintf(mailster.l10n.manage.current_stats, '<strong>' + imported + '</strong>', '<strong>' + total + '</strong>', '<strong>' + errors + '</strong>', '<strong>' + memoryusage + '</strong>') + '<br>' +
+			mailster.util.sprintf(mailster.l10n.manage.estimate_time, timeleft);
 
 	}
 
+	return mailster;
 
-	function _ajax(action, data, callback, errorCallback) {
-
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
-		}
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action,
-				_wpnonce: wpnonce
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-			},
-			dataType: "JSON"
-		});
-	}
-
-	function sprintf() {
-		var a = Array.prototype.slice.call(arguments),
-			str = a.shift(),
-			total = a.length,
-			reg;
-		for (var i = 0; i < total; i++) {
-			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
-			str = str.replace(reg, a[i]);
-		}
-		return str;
-	}
-
-});
+}(mailster || {}, jQuery, window, document));

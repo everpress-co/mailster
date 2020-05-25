@@ -236,12 +236,11 @@ class MailsterForms {
 			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
 
+			wp_enqueue_style( 'mailster-form-detail', MAILSTER_URI . 'assets/css/form-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'jquery', 'jquery-ui-sortable', 'mailster-clipboard-script', 'wp-color-picker' ), MAILSTER_VERSION );
 
-			wp_enqueue_style( 'mailster-form-detail', MAILSTER_URI . 'assets/css/form-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_localize_script(
-				'mailster-form-detail',
-				'mailsterL10n',
+			mailster_localize_script(
+				'form',
 				array(
 					'require_save' => esc_html__( 'The changes you made will be lost if you navigate away from this page.', 'mailster' ),
 					'not_saved'    => esc_html__( 'You haven\'t saved your recent changes on this form!', 'mailster' ),

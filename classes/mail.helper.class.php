@@ -71,7 +71,7 @@ class mailster_mail_helper extends _mailster_mail_helper {
 	public function setAsSMTP() {
 
 		if ( ! is_object( $this->smtp ) ) {
-			$this->smtp = new _mailster_SMTP;
+			$this->smtp = new _mailster_SMTP();
 		}
 		return $this->smtp;
 	}

@@ -1,17 +1,33 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
-
-	if (typeof wp == 'undefined' || !wp.heartbeat) return;
+	"use strict";
 
 	var current = [],
 		scrolltimeout = false,
-		rows = $('tr.type-newsletter');
+		rows = $('tr.type-newsletter'),
+		select1 = $('#bulk-action-selector-top'),
+		select2 = $('#bulk-action-selector-bottom');
+
+	$('#posts-filter').on('submit', function () {
+		var s1 = select1.val(),
+			s2 = select2.val(),
+			v = s1 != -1 ? s1 : (s2 != -1 ? s2 : false);
+
+		switch (v) {
+		case 'finish':
+			return confirm(mailster.l10n.campaigns.finish_campaigns);
+			break;
+		case 'start':
+			return confirm(mailster.l10n.campaigns.start_campaigns);
+			break;
+		}
+
+	});
 
 	$('.column-status')
 		.on('click', 'a.live-action', function () {
 
-			if ($(this).hasClass('finish') && !confirm(mailsterL10n.finish_campaign)) {
+			if ($(this).hasClass('finish') && !confirm(mailster.l10n.campaigns.finish_campaign)) {
 				return false;
 			}
 
@@ -26,7 +42,7 @@ jQuery(document).ready(function ($) {
 
 		});
 
-	$(document)
+	mailster.$.document
 		.on('scroll', function () {
 			clearTimeout(scrolltimeout);
 			scrolltimeout = setTimeout(function () {
@@ -41,7 +57,7 @@ jQuery(document).ready(function ($) {
 			rows.each(function () {
 				id = parseInt($(this).find('input').eq(0).val(), 10);
 				current[id] = current[id] || {};
-				if (isElementInViewport(this))
+				if (mailster.util.inViewport(this))
 					ids.push(id);
 			});
 
@@ -127,17 +143,6 @@ jQuery(document).ready(function ($) {
 	wp.heartbeat.interval('fast');
 	if (wp.heartbeat.connectNow) wp.heartbeat.connectNow();
 
-	function isElementInViewport(el, offset) {
+	return mailster;
 
-		var rect = el.getBoundingClientRect();
-
-		if (!offset) offset = 0;
-
-		//only need top and bottom
-		return (
-			rect.top + offset >= 0 &&
-			rect.top - offset <= (window.innerHeight || document.documentElement.clientHeight) /*or $(window).height() */
-		);
-	}
-
-});
+}(mailster || {}, jQuery, window, document));
