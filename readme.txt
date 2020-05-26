@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.4.1
-Stable tag: 2.4.10
+Stable tag: 2.4.11
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -101,6 +101,7 @@ Xaver Birsak – https://everpress.co
 * fixed: redirection error on confirmation
 * fixed: result of empty lists is no longer null
 * fixed: links in iframe forms open now in parent window.
+* fixed: issue where resuming a campaign on stats page is not possible.
 * added: 'mailster_register_form_signup_field' filter hook to modify signup checkbox on registration screen.
 * added: more bulk options to campaign overview.
 

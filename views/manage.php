@@ -335,12 +335,12 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 								continue;
 							}
 							?>
-							<li><input type="checkbox" name="column[]" value="<?php echo $id; ?>"> <?php echo esc_html( strip_tags( $data ) ); ?></li>
+							<li><input type="checkbox" name="column[]" value="<?php echo esc_attr( $id ); ?>"> <?php echo esc_html( strip_tags( $data ) ); ?></li>
 						<?php endforeach; ?>
 					</ul>
 					<div class="export-order-middle">
-						<button class="export-order-add button-secondary">&gt;&gt;</button>
-						<button class="export-order-remove button-secondary">&lt;&lt;</button>
+						<button class="export-order-add button-secondary">&#8680;</button><br>
+						<button class="export-order-remove button-secondary">&#8678;</button>
 					</div>
 					<ul class="export-order selected">
 					<?php foreach ( $user_settings['column'] as $id ) : ?>
@@ -349,7 +349,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 							continue;
 						}
 						?>
-						<li><input type="checkbox" name="column[]" value="<?php echo $id; ?>" checked> <?php echo esc_html( $fields[ $id ] ); ?></li>
+						<li><input type="checkbox" name="column[]" value="<?php echo esc_attr( $id ); ?>" checked> <?php echo esc_html( $fields[ $id ] ); ?></li>
 					<?php endforeach; ?>
 					</ul>
 				</div>
