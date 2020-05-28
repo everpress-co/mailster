@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.4
-Stable tag: 2.4.10
+Tested up to: 5.4.1
+Stable tag: 2.4.11
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,7 +88,25 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.11 =
+
+* fixed: issue where editor is not loading with some themes activated
+* improved: pasting text from external source.
+
 = Version 2.4.10 =
+
+* new: option to pick emoji for subject, preheader and from name
+* improved: refactoring of JavaScript
+* improved: refactoring of action based auto responders
+* improved: campaigns in conditions are now ordered alphabetically.
+* improved: content is now pasted as plain text instead of rich type
+* fixed: creating campaigns with feeds which timeout causes empty autoresponders.
+* fixed: redirection error on confirmation
+* fixed: result of empty lists is no longer null
+* fixed: links in iframe forms open now in parent window.
+* fixed: issue where resuming a campaign on stats page is not possible.
+* added: 'mailster_register_form_signup_field' filter hook to modify signup checkbox on registration screen.
+* added: more bulk options to campaign overview.
 
 = Version 2.4.9 =
 

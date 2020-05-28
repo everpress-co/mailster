@@ -53,7 +53,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	mailster.optionbar.removeModules = function () {
-		if (confirm(mailsterL10n.remove_all_modules)) {
+		if (confirm(mailster.l10n.campaigns.remove_all_modules)) {
 			var modulecontainer = mailster.$.iframe.contents().find('modules');
 			var modules = modulecontainer.find('module');
 			modulecontainer.slideUp(
@@ -159,7 +159,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.optionbar.openSaveDialog = function () {
 
-		tb_show(mailsterL10n.save_template, '#TB_inline?x=1&width=480&height=320&inlineId=mailster_template_save', null);
+		tb_show(mailster.l10n.campaigns.save_template, '#TB_inline?x=1&width=480&height=320&inlineId=mailster_template_save', null);
 		$('#new_template_name').focus().select();
 	};
 
@@ -185,7 +185,7 @@ mailster = (function (mailster, $, window, document) {
 				mailster.$.optionbar.find('a.preview').removeClass('loading');
 
 				mailster.thickbox.$.preview.attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
-				tb_show((mailster.$.title.val() ? mailster.util.sprintf(mailsterL10n.preview_for, '"' + mailster.$.title.val() + '"') : mailsterL10n.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=mailster_campaign_preview', null);
+				tb_show((mailster.$.title.val() ? mailster.util.sprintf(mailster.l10n.campaigns.preview_for, '"' + mailster.$.title.val() + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=mailster_campaign_preview', null);
 
 			},
 			function (jqXHR, textStatus, errorThrown) {
@@ -314,6 +314,7 @@ mailster = (function (mailster, $, window, document) {
 					if (window.wp) {
 						window.wp = null;
 					}
+					window.onbeforeunload = null;
 					window.location = response.url;
 				} else {
 					alert(response.msg);

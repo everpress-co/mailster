@@ -1,5 +1,17 @@
 window.mailster = window.mailster || {};
 
+// block localization
+mailster = (function (mailster, $, window, document) {
+
+	"use strict";
+
+	mailster.l10n = window.mailster_l10n;
+
+	return mailster;
+
+}(mailster || {}, jQuery, window, document));
+// end localization
+
 // events
 mailster = (function (mailster, $, window, document) {
 
@@ -24,7 +36,7 @@ mailster = (function (mailster, $, window, document) {
 	//already events registered
 	if (mailster.events) {
 		for (var i in mailster.events) {
-			console.log(i, mailster.events[i]);
+			mailster.log(i, mailster.events[i]);
 			if (typeof mailster.events[i] == 'string') {
 				last = mailster.events[i];
 				events[last] = events[last] || [];
@@ -40,19 +52,17 @@ mailster = (function (mailster, $, window, document) {
 	$(window).on("load", windowLoad);
 
 	function documentReady(context) {
-		console.log('DOM LOADED');
 		context = typeof context === typeof undefined ? $ : context;
 		events.documentReady.forEach(function (component) {
 			component(context);
 		});
 		mailster.status.documentReady = true;
 		if (mailster.status.windowLoadPending) {
-			windowLoad(mailster.setContext());
+			windowLoad(setContext());
 		}
 	}
 
 	function windowLoad(context) {
-		console.log('WINDOW LOADED');
 		if (mailster.status.documentReady) {
 			mailster.status.windowLoadPending = false;
 			context = typeof context === "object" ? $ : context;
@@ -65,7 +75,15 @@ mailster = (function (mailster, $, window, document) {
 		}
 	}
 
-	mailster.setContext = function (contextSelector) {
+	function debug(data, type) {
+		if (console) {
+			for (var i = 0; i < data.length; i++) {
+				console[type](data[i]);
+			}
+		}
+	}
+
+	function setContext(contextSelector) {
 		var context = $;
 		if (typeof contextSelector !== typeof undefined) {
 			return function (selector) {
@@ -73,7 +91,7 @@ mailster = (function (mailster, $, window, document) {
 			};
 		}
 		return context;
-	};
+	}
 
 	mailster.events.push = function () {
 
@@ -97,8 +115,6 @@ mailster = (function (mailster, $, window, document) {
 			triggerevent = params.shift(),
 			args = params || null;
 
-		console.log('Event Mailster: ' + triggerevent.toUpperCase(), mailster);
-
 		if (mailster.events[triggerevent]) {
 			for (var i = 0; i < mailster.events[triggerevent].length; i++) {
 				mailster.events[triggerevent][i].apply(mailster, args);
@@ -107,6 +123,22 @@ mailster = (function (mailster, $, window, document) {
 			//events[triggerevent] = [];
 		}
 	}
+
+	mailster.log = function () {
+
+		debug(arguments, 'log');
+	}
+
+	mailster.error = function () {
+
+		debug(arguments, 'error');
+	}
+
+	mailster.warning = function () {
+
+		debug(arguments, 'warn');
+	}
+
 
 	return mailster;
 
@@ -148,20 +180,20 @@ mailster = (function (mailster, $, window, document) {
 			error: function (jqXHR, textStatus, errorThrown) {
 				var response = $.trim(jqXHR.responseText);
 				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error(response);
+				mailster.log(response, 'error');
 				if ('JSON' == dataType) {
 					var maybe_json = response.match(/{(.*)}$/);
 					if (maybe_json && callback) {
 						try {
 							callback.call(this, $.parseJSON(maybe_json[0]));
 						} catch (e) {
-							if (console) console.error(e);
+							mailster.log(e, 'error');
 						}
 						return;
 					}
 				}
 				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailsterL10n.check_console)
+				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\n' + mailster.l10n.common.check_console)
 
 			},
 			dataType: dataType
@@ -325,19 +357,3 @@ mailster = (function (mailster, $, window, document) {
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));
-
-
-
-// block XXX
-mailster = (function (mailster, $, window, document) {
-
-	"use strict";
-
-	mailster.xxx = mailster.xxx || {};
-
-	mailster.xxx.$ = {};
-
-	return mailster;
-
-}(mailster || {}, jQuery, window, document));
-// end XXX

@@ -344,6 +344,13 @@ $sent = $this->get_sent( $post->ID );
 					'<strong>' . $autoresponderdata['post_count_status'] . '</strong>',
 					'<strong>' . $post_type_label . '</strong>'
 				);
+				if ( $autoresponderdata['since'] ) {
+					printf(
+						'<br><span title="' . esc_attr( 'The time which is used in this campaign. All posts must have been published after this date.', 'mailster' ) . '">' . esc_html__( 'Only %1$s after %2$s count.', 'mailster' ) . '</span>',
+						strip_tags( $post_type_label ),
+						date( $timeformat, $autoresponderdata['since'] + $timeoffset )
+					);
+				}
 				?>
 				<br><label><input type="checkbox" name="post_count_status_reset" value="1"> <?php esc_html_e( 'reset counter', 'mailster' ); ?></label>
 			</p>

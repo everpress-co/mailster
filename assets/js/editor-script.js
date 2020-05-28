@@ -23,7 +23,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.editor.$.html = $('html');
 	mailster.editor.$.body = $('body');
 
-	mailster.$.window.on('load', function () {
+	$(window).on('load', function () {
 		mailster.editor.$.html.removeClass('mailster-loading');
 		mailster.editor.$.body = $('body');
 		mailster.editor.$.body
@@ -111,8 +111,6 @@ mailster = (function (mailster, $, window, document) {
 
 		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
 
-		// remove some third party elements
-		clone.find('#droplr-chrome-extension-is-installed').remove();
 		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
 		content = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 
@@ -131,6 +129,13 @@ mailster = (function (mailster, $, window, document) {
 		);
 
 		return mailster.$.head.val() + "\n<body" + (s ? ' ' + s : '') + ">\n" + content + "\n</body>\n</html>";
+	}
+
+	mailster.editor.cleanup = function () {
+
+		// remove some third party elements
+		mailster.editor.$.document.find('#a11y-speak-assertive, #a11y-speak-polite, #droplr-chrome-extension-is-installed').remove();
+
 	}
 
 	mailster.editor.getStructure = function (html) {
@@ -292,6 +297,8 @@ mailster = (function (mailster, $, window, document) {
 				});
 		}
 
+		mailster.editor.cleanup();
+
 	}
 
 	mailster.events = mailster.events || [];
@@ -365,28 +372,16 @@ mailster = (function (mailster, $, window, document) {
 
 		elements = mailster.editor.$.modules;
 
-		console.log(mailsterdata);
-
-		//reset
-		//mailster.modules.items = [];
-		//add module buttons and add them to the list
+		// add module buttons and add them to the list
 		$.each(elements, function (j) {
 			var $this = $(this);
 			if ($this.is('module') && !$this.find('modulebuttons').length) {
-				var name = $this.attr('label') || mailster.util.sprintf(mailsterL10n.module, '#' + (++mc)),
-					codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailsterL10n.codeview + '"></button>' : '',
-					auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailsterL10n.auto + '"></button>' : '');
+				var name = $this.attr('label') || mailster.util.sprintf(mailster.l10n.campaigns.module, '#' + (++mc)),
+					codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailster.l10n.campaigns.codeview + '"></button>' : '',
+					auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailster.l10n.campaigns.auto + '"></button>' : '');
 
-				$('<modulebuttons>' + '<span>' + auto + '<button class="mailster-btn duplicate" title="' + mailsterL10n.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailsterL10n.move_module_up + '"></button><button class="mailster-btn down" title="' + mailsterL10n.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailsterL10n.remove_module + '"></button></span><input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailsterL10n.module_label + '" tabindex="-1"></modulebuttons>').prependTo($this);
+				$('<modulebuttons>' + '<input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailster.l10n.campaigns.module_label + '" tabindex="-1"><span>' + auto + '<button class="mailster-btn duplicate" title="' + mailster.l10n.campaigns.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailster.l10n.campaigns.move_module_up + '"></button><button class="mailster-btn down" title="' + mailster.l10n.campaigns.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailster.l10n.campaigns.remove_module + '"></button></span></modulebuttons>').prependTo($this);
 
-
-				// if (!$this.parent().length) {
-
-				// 	mailster.modules.items.push({
-				// 		name: name,
-				// 		el: $this
-				// 	});
-				// }
 			}
 		});
 
@@ -578,7 +573,7 @@ mailster = (function (mailster, $, window, document) {
 
 				if ($this.data('has-buttons')) return;
 
-				btn = $('<button class="addbutton mailster-btn mailster-btn-inline" title="' + mailsterL10n.add_button + '"></button>').appendTo($this);
+				btn = $('<button class="addbutton mailster-btn mailster-btn-inline" title="' + mailster.l10n.campaigns.add_button + '"></button>').appendTo($this);
 
 				btn.data('offset', offset).data('name', name);
 				btn.data('element', $this);
@@ -623,7 +618,7 @@ mailster = (function (mailster, $, window, document) {
 					del_left = offset.width - 18;
 				}
 
-				btn = $('<button class="addrepeater mailster-btn mailster-btn-inline" title="' + mailsterL10n.add_repeater + '"></button>').css({
+				btn = $('<button class="addrepeater mailster-btn mailster-btn-inline" title="' + mailster.l10n.campaigns.add_repeater + '"></button>').css({
 					top: add_top,
 					left: add_left
 				}).appendTo($this);
@@ -631,7 +626,7 @@ mailster = (function (mailster, $, window, document) {
 				btn.data('offset', offset).data('name', name);
 				btn.data('element', $this);
 
-				btn = $('<button class="removerepeater mailster-btn mailster-btn-inline" title="' + mailsterL10n.remove_repeater + '"></button>').css({
+				btn = $('<button class="removerepeater mailster-btn mailster-btn-inline" title="' + mailster.l10n.campaigns.remove_repeater + '"></button>').css({
 					top: del_top,
 					left: del_left
 				}).appendTo($this);
@@ -644,7 +639,6 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function select(module) {
-		console.log(module);
 		if (!module.length) {
 			return;
 		}
@@ -684,7 +678,7 @@ mailster = (function (mailster, $, window, document) {
 
 				preloader.onerror = function (e) {
 
-					alert(mailsterL10n.unsupported_format);
+					alert(mailster.l10n.campaigns.unsupported_format);
 
 				}
 				preloader.onload = function (e) {
@@ -789,7 +783,7 @@ mailster = (function (mailster, $, window, document) {
 				try {
 					response = $.parseJSON(response.response);
 
-					source._previewtext.html(mailsterL10n.ready);
+					source._previewtext.html(mailster.l10n.campaigns.ready);
 					source._element.on('load', function () {
 						clearTimeout(delay);
 						source._preview.fadeOut(function () {
@@ -818,8 +812,8 @@ mailster = (function (mailster, $, window, document) {
 						});
 					}, 3000);
 				} catch (err) {
-					source._preview.addClass('error').find('.mailster-upload-info-text').html(mailsterL10n.error);
-					alert(mailsterL10n.error_occurs + "\n" + err.message);
+					source._preview.addClass('error').find('.mailster-upload-info-text').html(mailster.l10n.campaigns.error);
+					alert(mailster.l10n.campaigns.error_occurs + "\n" + err.message);
 					source._preview.fadeOut(function () {
 						source._element.insertAfter(source._upload);
 						source._upload.remove();
@@ -837,13 +831,74 @@ mailster = (function (mailster, $, window, document) {
 
 	function inlineEditor() {
 		tinymce.init($.extend(mailsterdata.tinymce.args, mailsterdata.tinymce.multi, {
+			paste_preprocess: paste_preprocess,
 			urlconverter_callback: urlconverter,
 			setup: setup
 		}));
 		tinymce.init($.extend(mailsterdata.tinymce.args, mailsterdata.tinymce.single, {
+			paste_preprocess: paste_preprocess,
 			urlconverter_callback: urlconverter,
 			setup: setup
 		}));
+	}
+
+	function paste_preprocess(pl, o) {
+
+		var str = o.content,
+			allowed_tags = '<a><br><i><em><u><p><h1><h2><h3><h4><h5><h6><ul><ol><li>',
+			key = '',
+			allowed = false,
+			matches = [],
+			allowed_array = [],
+			allowed_tag = '',
+			i = 0,
+			k = '',
+			html = '',
+			replacer = function (search, replace, str) {
+				return str.split(search).join(replace);
+			};
+		if (allowed_tags) {
+			allowed_array = allowed_tags.match(/([a-zA-Z0-9]+)/gi);
+		}
+		str += '';
+
+		matches = str.match(/(<\/?[\S][^>]*>)/gi);
+		for (key in matches) {
+			if (isNaN(key)) {
+				// IE7
+				continue;
+			}
+
+			html = matches[key].toString();
+			allowed = false;
+
+			for (k in allowed_array) { // Init
+				allowed_tag = allowed_array[k];
+				i = -1;
+
+				if (i != 0) {
+					i = html.toLowerCase().indexOf('<' + allowed_tag + '>');
+				}
+				if (i != 0) {
+					i = html.toLowerCase().indexOf('<' + allowed_tag + ' ');
+				}
+				if (i != 0) {
+					i = html.toLowerCase().indexOf('</' + allowed_tag);
+				}
+
+				// Determine
+				if (i == 0) {
+					allowed = true;
+					break;
+				}
+			}
+			if (!allowed) {
+				str = replacer(html, "", str);
+			}
+		}
+
+		o.content = str;
+		return str;
 	}
 
 	function setup(editor) {
