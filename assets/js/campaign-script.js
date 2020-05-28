@@ -1926,6 +1926,8 @@ mailster = (function (mailster, $, window, document) {
 	mailster.$.document
 		.on('heartbeat-send', function (e, data) {
 
+			if (!mailster.editor) return;
+
 			if (mailster.editable) {
 				if (data && data['wp_autosave']) {
 					data['wp_autosave']['content'] = mailster.editor.getContent();

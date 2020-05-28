@@ -11,6 +11,7 @@ class MailsterUpdate {
 
 		add_filter( 'upgrader_pre_download', array( &$this, 'upgrader_pre_download' ), 10, 3 );
 		add_action( 'after_plugin_row_' . MAILSTER_SLUG, array( &$this, 'add_license_info' ), 10, 3 );
+		add_filter( 'upgrader_package_options', array( &$this, 'upgrader_package_options' ) );
 
 	}
 
@@ -206,12 +207,6 @@ class MailsterUpdate {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $actions
-	 * @return unknown
-	 */
 	public function add_update_action_link( $actions ) {
 
 		$actions['mailster_get_license'] = '<a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=action+link&utm_source=mailster_plugin">' . esc_html__( 'Buy a new Mailster License', 'mailster' ) . '</a>';
@@ -221,12 +216,6 @@ class MailsterUpdate {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $actions
-	 * @return unknown
-	 */
 	public function add_license_info( $plugin_file, $plugin_data, $status ) {
 
 		if ( mailster()->is_outdated() ) {
@@ -241,5 +230,14 @@ class MailsterUpdate {
 		}
 
 	}
+
+	public function upgrader_package_options( $options ) {
+		if ( isset( $options['package'] ) && preg_match( '/^mailster-([0-9.]+)-dev\./', basename( $options['package'] ) ) ) {
+			$options['clear_destination'] = true;
+		}
+
+		return $options;
+	}
+
 
 }

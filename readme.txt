@@ -88,6 +88,11 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.11 =
+
+* fixed: issue where editor is not loading with some themes activated
+* improved: pasting text from external source.
+
 = Version 2.4.10 =
 
 * new: option to pick emoji for subject, preheader and from name
