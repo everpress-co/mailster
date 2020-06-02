@@ -805,6 +805,10 @@ class Mailster {
 			return $posts[ $key ];
 		}
 
+		if ( ! did_action( 'mailster_register_dynamic_post_type' ) ) {
+			do_action( 'mailster_register_dynamic_post_type' );
+		}
+
 		$post = apply_filters( 'mailster_get_last_post_' . $post_type, null, $args, $offset, $term_ids, $campaign_id, $subscriber_id );
 
 		if ( is_null( $post ) ) {
