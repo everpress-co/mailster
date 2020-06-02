@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.11 =
 
 * fixed: issue where editor is not loading with some themes activated
+* fixed: JS error if inline editor is not used
 * improved: pasting text from external source.
 
 = Version 2.4.10 =
