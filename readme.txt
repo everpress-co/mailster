@@ -90,7 +90,6 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.11 =
 
-* added: `mailster_register_dynamic_post_type` action hook to add custom dynamic post types.
 * fixed: issue where editor is not loading with some themes activated
 * fixed: JS error if inline editor is not used
 * improved: pasting text from external source.

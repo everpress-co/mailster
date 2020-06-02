@@ -1561,10 +1561,6 @@ class MailsterHelper {
 	 */
 	public function get_dynamic_post_types( $public_only = true, $output = 'names', $exclude = array( 'attachment', 'newsletter' ) ) {
 
-		if ( ! did_action( 'mailster_register_dynamic_post_type' ) ) {
-			do_action( 'mailster_register_dynamic_post_type' );
-		}
-
 		return apply_filters( 'mailster_dynamic_post_types', $this->get_post_types( $public_only, $output, $exclude ), $output );
 
 	}
