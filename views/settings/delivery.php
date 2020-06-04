@@ -1,9 +1,17 @@
 <table class="form-table">
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Number of mails sent', 'mailster' ); ?></th>
-		<td><p><?php printf( esc_html__( 'Send max %1$s emails at once and max %2$s within %3$s hours', 'mailster' ), '<input type="text" name="mailster_options[send_at_once]" value="' . mailster_option( 'send_at_once' ) . '" class="small-text">', '<input type="text" name="mailster_options[send_limit]" value="' . mailster_option( 'send_limit' ) . '" class="small-text">', '<input type="text" name="mailster_options[send_period]" value="' . mailster_option( 'send_period' ) . '" class="small-text">' ); ?></p>
-		<p class="description"><?php esc_html_e( 'Depending on your hosting provider you can increase these values', 'mailster' ); ?></p>
-		<?php
+		<td>
+			<p><?php printf( esc_html__( 'Send max %s emails in one batch.', 'mailster' ), '<input type="number" min="1" name="mailster_options[send_at_once]" value="' . mailster_option( 'send_at_once' ) . '" class="small-text" ' . disabled( mailster_option( 'auto_send_at_once' ), true, false ) . '>' ); ?></p>
+			<p><label><input type="hidden" name="mailster_options[auto_send_at_once]" value=""><input class="toggle-auto_send_at_once" type="checkbox" name="mailster_options[auto_send_at_once]" value="1" <?php checked( mailster_option( 'auto_send_at_once' ) ); ?>> <?php esc_html_e( 'automatically calculate this value.', 'mailster' ); ?></label></p>
+
+		</td>
+	</tr>
+	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'ESP Limits', 'mailster' ); ?></th>
+		<td><p><?php printf( esc_html__( 'My email service provider can send %1$s within %2$s hours.', 'mailster' ), '<input type="number" min="1" name="mailster_options[send_limit]" value="' . mailster_option( 'send_limit' ) . '" class="small-text" style="width:70px">', '<input type="number" min="1" name="mailster_options[send_period]" value="' . mailster_option( 'send_period' ) . '" class="small-text">' ); ?></p>
+	<?php
+
 		global $wp_locale;
 
 		$sent_this_period = get_transient( '_mailster_send_period', 0 );
@@ -12,14 +20,14 @@
 		$timeoffset       = mailster( 'helper' )->gmt_offset( true );
 		$timestamp        = current_time( 'timestamp' );
 
-		if ( ! $next_reset || $next_reset < time() ) {
-			$next_reset = time() + mailster_option( 'send_period' ) * 3600;
-			$mails_left = mailster_option( 'send_limit' );
-		}
-		?>
+	if ( ! $next_reset || $next_reset < time() ) {
+		$next_reset = time() + mailster_option( 'send_period' ) * 3600;
+		$mails_left = mailster_option( 'send_limit' );
+	}
+	?>
 
 	<p class="description"><?php printf( esc_html__( 'You can still send %1$s mails within the next %2$s', 'mailster' ), '<strong>' . number_format_i18n( $mails_left ) . '</strong>', '<strong title="' . date_i18n( $timeformat, $next_reset + $timeoffset, true ) . '">' . human_time_diff( $next_reset ) . '</strong>' ); ?> &ndash; <a href="edit.php?post_type=newsletter&page=mailster_settings&reset-limits=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-limits' ); ?>"><?php esc_html_e( 'reset these limits', 'mailster' ); ?></a></p>
-
+		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Time Frame', 'mailster' ); ?><br>

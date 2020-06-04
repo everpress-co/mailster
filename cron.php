@@ -114,7 +114,7 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 		}
 		?>
 	<p>
-		<a onclick="location.reload();clearInterval(i);" class="button" id="button"><?php esc_html_e( 'reload', 'mailster' ); ?></a>
+		<a onclick="location.reload();clearInterval(f);" class="button" id="button"><?php esc_html_e( 'reload', 'mailster' ); ?></a>
 	</p>
 	<p>
 		<small><?php echo $time = round( microtime( true ) - $time_start, 4 ); ?> <?php esc_html_e( 'sec', 'mailster' ); ?>.</small>
@@ -126,10 +126,9 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 <?php else : ?>
 	<h2><?php esc_html_e( 'The Secret is missing or wrong!', 'mailster' ); ?></h2>
 <?php endif; ?>
-
 </div>
 <script type="text/javascript">
-var a = <?php echo floor( $interval ); ?>,
+var a = <?php echo max( 1, ceil( $interval - $time ) ); ?>,
 	b = document.getElementById('button'),
 	c = document.title,
 	d = b.innerHTML,
@@ -147,6 +146,7 @@ var a = <?php echo floor( $interval ); ?>,
 			o = '&#x27F2;';
 			p = '<?php esc_html_e( 'progressing', 'mailster' ); ?>';
 			clearInterval(f);
+			location.reload();
 		}
 	document.title = p+' '+c;
 	b.innerHTML = d+' ('+o+')';

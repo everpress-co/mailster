@@ -68,6 +68,7 @@
 	text-decoration: none;
 	text-align: center;
 	margin: auto 2px;
+	line-height: 127%;
 }
 .infolink:after{
 	content:'?';

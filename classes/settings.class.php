@@ -735,7 +735,10 @@ class MailsterSettings {
 		$options['bounce_check'] = max( 1, (int) $options['bounce_check'] );
 		$options['bounce_delay'] = max( 1, (int) $options['bounce_delay'] );
 
-		if ( ! $options['send_at_once'] ) {
+		if ( $options['auto_send_at_once'] ) {
+			$options['send_at_once'] = $old_options['send_at_once'];
+
+		} elseif ( ! $options['send_at_once'] ) {
 			$options['send_at_once'] = 10;
 		}
 
