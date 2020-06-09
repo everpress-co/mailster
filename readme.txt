@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.11 =
 
+* change: changing the email address on the profile sets status to pending and sends confirmation message if double opt in is enabled.
 * added: `mailster_register_dynamic_post_type` action hook to add custom dynamic post types.
 * fixed: issue where editor is not loading with some themes activated
 * fixed: JS error if inline editor is not used
