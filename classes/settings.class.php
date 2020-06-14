@@ -17,7 +17,7 @@ class MailsterSettings {
 
 		add_action( 'mailster_deliverymethod_tab_simple', array( &$this, 'deliverytab_simple' ) );
 		add_action( 'mailster_deliverymethod_tab_smtp', array( &$this, 'deliverytab_smtp' ) );
-		add_action( 'mailster_deliverymethod_tab_gmail', array( &$this, 'deliverytab_gmail' ) );
+		add_action( 'mailster_deliverymethod_tab_gmail', array( &$this, 'deliverytab_gmail_deprecated' ) );
 	}
 
 
@@ -1073,42 +1073,6 @@ class MailsterSettings {
 				case 'deliverymethod':
 					if ( $old != $value ) {
 
-						if ( 'gmail' == $value ) {
-							if ( $options['send_limit'] != 500 ) {
-								$options['send_limit']  = 500;
-								$options['send_period'] = 24;
-								update_option( '_transient__mailster_send_period_timeout', false );
-								$this->add_settings_error( sprintf( esc_html__( 'Send limit has been adjusted to %d for Gmail', 'mailster' ), 500 ), 'deliverymethod', 'updated' );
-							}
-
-							if ( $options['gmail_user'] ) {
-								if ( $options['from_name'] && $options['gmail_user'] != $options['from_name'] ) {
-									$this->add_settings_error( sprintf( esc_html__( 'Please make sure you are sending from your Gmail address %s', 'mailster' ), $options['gmail_user'] ), 'gmail_user_from_name', 'error' );
-								}
-								if ( $options['reply_to'] && $options['gmail_user'] != $options['reply_to'] ) {
-									$this->add_settings_error( sprintf( esc_html__( 'Please make sure you the Reply to address is the same as your Gmail address %s', 'mailster' ), $options['gmail_user_reply_to'] ), 'gmail_user', 'error' );
-								}
-								if ( $options['bounce'] && $options['gmail_user'] != $options['bounce'] ) {
-									$this->add_settings_error( sprintf( esc_html__( 'Please make sure you the bounce address is the same as your Gmail address %s', 'mailster' ), $options['gmail_user_bounce'] ), 'gmail_user', 'error' );
-								}
-							}
-
-							if ( function_exists( 'fsockopen' ) ) {
-								$host = 'smtp.googlemail.com';
-								$port = 587;
-								$conn = @fsockopen( $host, $port, $errno, $errstr, 5 );
-
-								if ( is_resource( $conn ) ) {
-
-									fclose( $conn );
-
-								} else {
-
-									$this->add_settings_error( sprintf( esc_html__( 'Not able to connected to %1$s via port %2$s! You may not be able to send mails cause of the locked port %3$s. Please contact your host or choose a different delivery method!', 'mailster' ), '"' . $host . '"', $port, $port ), 'deliverymethod' );
-
-								}
-							}
-						}
 					}
 
 					break;
@@ -1662,8 +1626,15 @@ class MailsterSettings {
 	}
 
 
-	public function deliverytab_gmail() {
+	public function deliverytab_gmail_deprecated() {
+
+		if ( is_plugin_active( 'mailster-gmail/mailster-gmail.php' ) ) {
+			return;
+		}
 		?>
+		<div class="notice notice-error inline">
+			<p><strong><?php printf( esc_html__( 'The Gmail Sending Method is deprecated and will soon not work anymore! Please update to the new plugin %1$s and follow our setup guide %2$s.', 'mailster-gmail' ), '<a href="' . admin_url( 'plugin-install.php?s=mailster-gmail+everpress&tab=search&type=term' ) . '">Mailster Gmail Integration</a>', '<a href="https://kb.mailster.co/send-your-newsletters-via-gmail/" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></strong></p>
+		</div>
 		<p class="description">
 		<?php esc_html_e( 'Gmail has a limit of 500 mails within 24 hours! Also sending a mail can take up to one second which is quite long. This options is only recommended for few subscribers. DKIM works only if set the from address to your Gmail address.', 'mailster' ); ?>
 		</p>

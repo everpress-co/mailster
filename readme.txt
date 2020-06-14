@@ -2,7 +2,7 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.4.1
+Tested up to: 5.4.2
 Stable tag: 2.4.11
 Author: EverPress
 Author URI: https://everpress.co
@@ -95,6 +95,7 @@ Xaver Birsak – https://everpress.co
 * fixed: issue where editor is not loading with some themes activated
 * fixed: JS error if inline editor is not used
 * improved: pasting text from external source.
+* deprecated: use of Gmail via LSA as announced via [Google](https://gsuiteupdates.googleblog.com/2019/12/less-secure-apps-oauth-google-username-password-incorrect.html). Please use our dedicate Gmail addon instead.
 
 = Version 2.4.10 =
 

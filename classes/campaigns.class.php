@@ -54,6 +54,8 @@ class MailsterCampaigns {
 		add_action( 'admin_enqueue_scripts', array( &$this, 'assets' ) );
 		add_filter( 'update_post_metadata', array( &$this, 'prevent_edit_lock' ), 10, 5 );
 
+		add_filter( 'mailster_campaign_action', array( &$this, 'trigger_campaign_action' ), 10, 2 );
+
 	}
 
 
@@ -2161,18 +2163,32 @@ class MailsterCampaigns {
 	}
 
 
+	public function trigger_campaign_action( $action, $campaign_id ) {
+
+		if ( in_array( $action, array( 'pause', 'start', 'resume', 'finish', 'duplicate', 'activate', 'deactivate' ) ) ) {
+			error_log( print_r( func_get_args(), true ) );
+			call_user_func( array( $this, $action ), $campaign_id );
+		}
+	}
+
 	/**
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function pause( $id ) {
+	public function pause( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
 
 		$meta = $this->meta( $id );
@@ -2194,15 +2210,22 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function start( $id ) {
+	public function start( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
 		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		}
+
 		$now = time();
 
 		$meta = $this->meta( $id );
@@ -2240,15 +2263,22 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function resume( $id ) {
+	public function resume( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
 		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		}
+
 		$now = time();
 
 		$meta = $this->meta( $id );
@@ -2289,14 +2319,25 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function finish( $id ) {
+	public function finish( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
-			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+			return new WP_Error(
+				'no_campaign',
+				esc_html__(
+					'This campaign doesn\'t exists.
+				',
+					'mailster'
+				)
+			);
+		}wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
 
 		if ( ! in_array( $campaign->post_status, array( 'active', 'queued', 'paused' ) ) ) {
@@ -2372,14 +2413,20 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function duplicate( $id ) {
+	public function duplicate( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
 
 		$lists = $this->get_lists( $campaign->ID, true );
@@ -2431,14 +2478,20 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function activate( $id ) {
+	public function activate( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
 
 		$current = $this->meta( $id, 'active' );
@@ -2463,14 +2516,20 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function deactivate( $id ) {
+	public function deactivate( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
 
 		$current = $this->meta( $id, 'active' );
@@ -4212,8 +4271,8 @@ class MailsterCampaigns {
 		$listunsubscribe = '';
 		if ( $mail->bouncemail ) {
 			$listunsubscribe_mail    = $mail->bouncemail;
-			$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
-			$listunsubscribe_body    = "X-Mailster: $subscriber->hash\nX-Mailster-Campaign: {$campaign->ID}\nX-Mailster-ID: $MID\n\n";
+			$listunsubscribe_subject = '[Mailster] Please remove me from the list!';
+			$listunsubscribe_body    = "Please remove me from your list!\nX-Mailster: $subscriber->hash\nX-Mailster-Campaign: {$campaign->ID}\nX-Mailster-ID: $MID\n\n";
 			$listunsubscribe        .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
 		}
 		$listunsubscribe .= '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $subscriber->hash, $campaign->ID ) . '>';
