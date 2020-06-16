@@ -1945,7 +1945,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('heartbeat-tick', function (e, data) {
 
-			if (mailster.editable || !data.mailster[mailster.campaign_id]) return;
+			if (mailster.editable || !data.mailster || !data.mailster[mailster.campaign_id]) return;
 
 			var _data = data.mailster[mailster.campaign_id],
 				stats = $('#stats').find('.verybold'),

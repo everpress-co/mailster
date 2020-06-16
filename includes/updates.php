@@ -566,8 +566,8 @@ if ( $old_version ) {
 			delete_option( 'mailster_recent_feeds' );
 
 		case '2.4.10':
-		case '2.4.11':
-		case '2.4.12':
+			$options['mail_opt_out'] = isset( $options['bounce'] ) && $options['bounce'];
+
 			if ( ! is_plugin_active( 'mailster-gmail/mailster-gmail.php' ) && 'gmail' == $mailster_options['deliverymethod'] ) {
 
 				if ( $mailster_option['gmail_user'] && $mailster_option['gmail_pwd'] ) {

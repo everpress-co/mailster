@@ -131,6 +131,7 @@ class MailsterSettings {
 			'do_not_track'                       => false,
 			'list_based_opt_in'                  => true,
 			'single_opt_out'                     => false,
+			'mail_opt_out'                       => true,
 			'custom_field'                       => array(),
 			'sync'                               => false,
 			'synclist'                           => array(

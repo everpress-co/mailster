@@ -279,7 +279,9 @@ class Mailster {
 			unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
 		}
 
-		foreach ( $mailster_notices as $id => $notice ) {
+		$notices = array_reverse( $mailster_notices, true );
+
+		foreach ( $notices as $id => $notice ) {
 
 			if ( isset( $notice['cap'] ) && ! empty( $notice['cap'] ) ) {
 
