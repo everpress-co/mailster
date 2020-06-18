@@ -27,7 +27,7 @@ class MailsterCampaigns {
 
 	public function init() {
 
-		add_filter( 'transition_post_status', array( &$this, 'check_for_autoresponder' ), 10, 3 );
+		add_action( 'transition_post_status', array( &$this, 'check_for_autoresponder' ), 10, 3 );
 		add_action( 'mailster_finish_campaign', array( &$this, 'remove_revisions' ) );
 
 		add_action( 'mailster_auto_post_thumbnail', array( &$this, 'get_post_thumbnail' ), 10, 1 );
@@ -2166,7 +2166,6 @@ class MailsterCampaigns {
 	public function trigger_campaign_action( $action, $campaign_id ) {
 
 		if ( in_array( $action, array( 'pause', 'start', 'resume', 'finish', 'duplicate', 'activate', 'deactivate' ) ) ) {
-			error_log( print_r( func_get_args(), true ) );
 			call_user_func( array( $this, $action ), $campaign_id );
 		}
 	}
@@ -2547,10 +2546,11 @@ class MailsterCampaigns {
 	 * @param unknown $id
 	 * @param unknown $delay                 (optional)
 	 * @param unknown $issue                 (optional)
+	 * @param unknown $relative_to_absolute  (optional)
 	 * @param unknown $index_offset          (optional)
 	 * @return unknown
 	 */
-	public function autoresponder_to_campaign( $id, $delay = 0, $issue = '', $index_offset = 0 ) {
+	public function autoresponder_to_campaign( $id, $delay = 0, $issue = '', $relative_to_absolute = true, $index_offset = 0 ) {
 
 		$campaign = get_post( $id );
 
@@ -2574,8 +2574,7 @@ class MailsterCampaigns {
 
 		$meta['active'] = true;
 
-		$relative_to_absolute = false;
-		$remove_unused        = false;
+		$remove_unused = false;
 
 		$meta['timestamp'] = max( $now, $now + $delay );
 
@@ -4273,8 +4272,6 @@ class MailsterCampaigns {
 			$listunsubscribe_mail    = $mail->bouncemail;
 			$listunsubscribe_subject = 'Please remove me from the list';
 			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign->ID} X-Mailster-ID: {$MID}" );
-
-			error_log( print_r( $listunsubscribe_body, true ) );
 
 			$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 		}

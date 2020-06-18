@@ -449,6 +449,8 @@ class MailsterHelper {
 	 */
 	public function get_social_links( $username = '', $only_with_username = false ) {
 
+		global $wp_rewrite;
+
 		$links = array(
 			'amazon'      => 'https://amazon.com',
 			'android'     => 'https://android.com',
@@ -476,7 +478,7 @@ class MailsterHelper {
 			'paypal'      => 'https://paypal.com',
 			'picasa'      => 'https://picasa.com',
 			'pinterest'   => 'https://pinterest.com/%%USERNAME%%',
-			'rss'         => get_bloginfo( 'rss2_url' ),
+			'rss'         => $wp_rewrite ? get_bloginfo( 'rss2_url' ) : '',
 			'skype'       => 'skype:%%USERNAME%%',
 			'soundcloud'  => 'https://soundcloud.com/%%USERNAME%%',
 			'stumbleupon' => 'https://stumbleupon.com',

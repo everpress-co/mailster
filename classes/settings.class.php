@@ -17,7 +17,6 @@ class MailsterSettings {
 
 		add_action( 'mailster_deliverymethod_tab_simple', array( &$this, 'deliverytab_simple' ) );
 		add_action( 'mailster_deliverymethod_tab_smtp', array( &$this, 'deliverytab_smtp' ) );
-		add_action( 'mailster_deliverymethod_tab_gmail', array( &$this, 'deliverytab_gmail_deprecated' ) );
 	}
 
 
@@ -660,7 +659,7 @@ class MailsterSettings {
 	 */
 	public function verify( $options ) {
 
-		global $wpdb;
+		global $wpdb, $wp_rewrite;
 
 		// merge old data
 		if ( isset( $_POST['mymail_options'] ) ) {
@@ -825,7 +824,7 @@ class MailsterSettings {
 						mailster_remove_notice( 'no_homepage' );
 						$options['_flush_rewrite_rules'] = true;
 					}
-					if ( ! get_permalink( $value ) ) {
+					if ( $wp_rewrite && ! get_permalink( $value ) ) {
 						$this->add_settings_error( sprintf( esc_html__( 'Please define a homepage for the newsletter on the %s tab!', 'mailster' ), '<a href="#frontend">' . esc_html__( 'Front End', 'mailster' ) . '</a>' ), 'no_homepage' );
 					}
 
@@ -1623,32 +1622,6 @@ class MailsterSettings {
 			</td>
 		</tr>
 	</table>
-		<?php
-	}
-
-
-	public function deliverytab_gmail_deprecated() {
-
-		if ( is_plugin_active( 'mailster-gmail/mailster-gmail.php' ) ) {
-			return;
-		}
-		?>
-		<div class="notice notice-error inline">
-			<p><strong><?php printf( esc_html__( 'The Gmail Sending Method is deprecated and will soon not work anymore! Please update to the new plugin %1$s and follow our setup guide %2$s.', 'mailster-gmail' ), '<a href="' . admin_url( 'plugin-install.php?s=mailster-gmail+everpress&tab=search&type=term' ) . '">Mailster Gmail Integration</a>', '<a href="https://kb.mailster.co/send-your-newsletters-via-gmail/" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?></strong></p>
-		</div>
-		<p class="description">
-		<?php esc_html_e( 'Gmail has a limit of 500 mails within 24 hours! Also sending a mail can take up to one second which is quite long. This options is only recommended for few subscribers. DKIM works only if set the from address to your Gmail address.', 'mailster' ); ?>
-		</p>
-		<table class="form-table">
-			<tr valign="top">
-				<th scope="row"><?php esc_html_e( 'Username', 'mailster' ); ?></th>
-				<td><input type="text" name="mailster_options[gmail_user]" value="<?php echo esc_attr( mailster_option( 'gmail_user' ) ); ?>" class="regular-text" placeholder="@gmail.com"></td>
-			</tr>
-			<tr valign="top">
-				<th scope="row"><?php esc_html_e( 'Password', 'mailster' ); ?></th>
-				<td><input type="password" name="mailster_options[gmail_pwd]" value="<?php echo esc_attr( mailster_option( 'gmail_pwd' ) ); ?>" class="regular-text" autocomplete="new-password"></td>
-			</tr>
-		</table>
 		<?php
 	}
 
