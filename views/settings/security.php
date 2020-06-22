@@ -26,24 +26,24 @@
 		</td>
 	</tr>
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Blacklisted Email Addresses', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Blocked Email Addresses', 'mailster' ); ?></th>
 		<td>
-		<p><?php esc_html_e( 'List of blacklisted email addresses. One email each line.', 'mailster' ); ?><br>
-		<textarea name="mailster_options[blacklisted_emails]" placeholder="<?php echo "john@blacklisted.com\njane@blacklisted.co.uk\nhans@blacklisted.de"; ?>" class="code large-text" rows="10"><?php echo esc_attr( mailster_option( 'blacklisted_emails' ) ); ?></textarea></p>
+		<p><?php esc_html_e( 'List of blocked email addresses. One email each line.', 'mailster' ); ?><br>
+		<textarea name="mailster_options[blocked_emails]" placeholder="<?php echo "john@blocked.com\njane@blocked.co.uk\nhans@blocked.de"; ?>" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_emails' ) ); ?></textarea></p>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Blacklisted Domains', 'mailster' ); ?></th>
 		<td>
-		<p><?php esc_html_e( 'List of blacklisted domains. One domain each line.', 'mailster' ); ?><br>
-		<textarea name="mailster_options[blacklisted_domains]" placeholder="<?php echo "blacklisted.com\nblacklisted.co.uk\nblacklisted.de"; ?>" class="code large-text" rows="10"><?php echo esc_attr( mailster_option( 'blacklisted_domains' ) ); ?></textarea></p>
+		<p><?php esc_html_e( 'List of blocked domains. One domain each line.', 'mailster' ); ?><br>
+		<textarea name="mailster_options[blocked_domains]" placeholder="<?php echo "blocked.com\nblocked.co.uk\nblocked.de"; ?>" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_domains' ) ); ?></textarea></p>
 		</td>
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'White listed Domains', 'mailster' ); ?></th>
 		<td>
 		<p><?php esc_html_e( 'List domains which bypass the above rules. One domain each line.', 'mailster' ); ?><br>
-		<textarea name="mailster_options[whitelisted_domains]" placeholder="<?php echo "whitelisted.com\nwhitelisted.co.uk\nwhitelisted.de"; ?>" class="code large-text" rows="10"><?php echo esc_attr( mailster_option( 'whitelisted_domains' ) ); ?></textarea></p>
+		<textarea name="mailster_options[safe_domains]" placeholder="<?php echo "safe.com\nsafe.co.uk\nsafe.de"; ?>" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'safe_domains' ) ); ?></textarea></p>
 		</td>
 	</tr>
 </table>
