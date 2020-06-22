@@ -2326,15 +2326,10 @@ class MailsterCampaigns {
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
-			return new WP_Error(
-				'no_campaign',
-				esc_html__(
-					'This campaign doesn\'t exists.
-				',
-					'mailster'
-				)
-			);
-		}wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		if ( ! is_null( $timestamp ) ) {
 			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
