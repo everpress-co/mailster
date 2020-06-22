@@ -449,6 +449,8 @@ class MailsterHelper {
 	 */
 	public function get_social_links( $username = '', $only_with_username = false ) {
 
+		global $wp_rewrite;
+
 		$links = array(
 			'amazon'      => 'https://amazon.com',
 			'android'     => 'https://android.com',
@@ -476,7 +478,7 @@ class MailsterHelper {
 			'paypal'      => 'https://paypal.com',
 			'picasa'      => 'https://picasa.com',
 			'pinterest'   => 'https://pinterest.com/%%USERNAME%%',
-			'rss'         => get_bloginfo( 'rss2_url' ),
+			'rss'         => $wp_rewrite ? get_bloginfo( 'rss2_url' ) : '',
 			'skype'       => 'skype:%%USERNAME%%',
 			'soundcloud'  => 'https://soundcloud.com/%%USERNAME%%',
 			'stumbleupon' => 'https://stumbleupon.com',
@@ -1125,6 +1127,12 @@ class MailsterHelper {
 				}
 			}
 
+			if ( $has_data_image = preg_match_all( '/url\(data:image.*\)/', $content, $data_images ) ) {
+				foreach ( $data_images[0] as $i => $data_image ) {
+					$content = str_replace( $data_image, '/*Mailster:html_data_image_' . $i . '*/', $content );
+				}
+			}
+
 			require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
@@ -1141,6 +1149,11 @@ class MailsterHelper {
 			}
 			$content = $html;
 
+			if ( $has_data_image ) {
+				foreach ( $data_images[0] as $i => $data_image ) {
+					$content = str_replace( '/*Mailster:html_data_image_' . $i . '*/', $data_image, $content );
+				}
+			}
 		}
 
 		foreach ( $comments[0] as $i => $comment ) {
@@ -1560,6 +1573,10 @@ class MailsterHelper {
 	 * @return unknown
 	 */
 	public function get_dynamic_post_types( $public_only = true, $output = 'names', $exclude = array( 'attachment', 'newsletter' ) ) {
+
+		if ( ! did_action( 'mailster_register_dynamic_post_type' ) ) {
+			do_action( 'mailster_register_dynamic_post_type' );
+		}
 
 		return apply_filters( 'mailster_dynamic_post_types', $this->get_post_types( $public_only, $output, $exclude ), $output );
 

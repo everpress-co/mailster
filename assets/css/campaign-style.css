@@ -975,7 +975,7 @@ label.weekday input{
 	padding: 5px;
 	position: relative;
 }
-.mailster-conditions:empty:before{
+.mailster-conditions-render:empty:before{
 	content: attr(data-emptytext);
 	display: block;
 	position: absolute;

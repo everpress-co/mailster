@@ -279,7 +279,9 @@ class Mailster {
 			unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
 		}
 
-		foreach ( $mailster_notices as $id => $notice ) {
+		$notices = array_reverse( $mailster_notices, true );
+
+		foreach ( $notices as $id => $notice ) {
 
 			if ( isset( $notice['cap'] ) && ! empty( $notice['cap'] ) ) {
 
@@ -803,6 +805,10 @@ class Mailster {
 
 		if ( $posts && isset( $posts[ $key ] ) ) {
 			return $posts[ $key ];
+		}
+
+		if ( ! did_action( 'mailster_register_dynamic_post_type' ) ) {
+			do_action( 'mailster_register_dynamic_post_type' );
 		}
 
 		$post = apply_filters( 'mailster_get_last_post_' . $post_type, null, $args, $offset, $term_ids, $campaign_id, $subscriber_id );
@@ -2226,11 +2232,22 @@ class Mailster {
 
 		$content_type             = 'text/plain';
 		$third_party_content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
-		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", (array) $args['headers'] ) ) ) {
+		$contains_html_header     = isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", (array) $args['headers'] ) );
+
+		if ( $contains_html_header ) {
 			$third_party_content_type = 'text/html';
 		}
 		if ( mailster_option( 'respect_content_type' ) ) {
 			$content_type = $third_party_content_type;
+		} else {
+			// should be html so lets add the headers
+			if ( ! $contains_html_header ) {
+				if ( is_array( $args['headers'] ) ) {
+					$args['headers'][] = 'Content-Type: text/html;';
+				} else {
+					$args['headers'] = "Content-Type: text/html;\n" . $args['headers'];
+				}
+			}
 		}
 
 		$template = mailster_option( 'default_template' );

@@ -95,7 +95,6 @@
 	$deliverymethods = array(
 		'simple' => esc_html__( 'Simple', 'mailster' ),
 		'smtp'   => 'SMTP',
-		'gmail'  => 'Gmail',
 	);
 	$deliverymethods = apply_filters( 'mymail_delivery_methods', apply_filters( 'mailster_delivery_methods', $deliverymethods ) );
 
@@ -116,7 +115,7 @@ foreach ( $deliverymethods as $id => $name ) {
 	}
 
 	?>
-	<a class="<?php echo implode( ' ', $classes ); ?>" href="#<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $name ); ?></a>
+	<a class="<?php echo implode( ' ', $classes ); ?>" href="#<?php echo esc_attr( $id ); ?>"><?php esc_html_e( $name ); ?></a>
 	<?php } ?>
 	<a href="plugin-install.php?tab=search&s=mailster+everpress&plugin-search-input=Search+Plugins" class="alignright"><?php esc_html_e( 'search for more delivery methods', 'mailster' ); ?></a>
 </div>

@@ -49,6 +49,11 @@
 		</td>
 	</tr>
 	<tr>
+		<th scope="row"><?php esc_html_e( 'Mail App Unsubscribe', 'mailster' ); ?></th>
+		<td><label><input type="hidden" name="mailster_options[mail_opt_out]" value=""><input type="checkbox" name="mailster_options[mail_opt_out]" value="1" <?php checked( mailster_option( 'mail_opt_out' ) ); ?>> <?php esc_html_e( 'Allow Subscribers to opt out from their mail application if applicable.', 'mailster' ); ?></label>
+		</td>
+	</tr>
+	<tr>
 		<th scope="row"><?php esc_html_e( 'Name Order', 'mailster' ); ?></th>
 		<td>
 		<select name="mailster_options[name_order]">
