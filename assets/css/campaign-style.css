@@ -390,7 +390,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	transition: filter .15s ease;
 	width: 10%;
 	width: calc(40px);
-	font-size: 21px;
+	font-size: 19px;
 	padding: 0px;
 	line-height: 0;
 	filter: grayscale(70%);
@@ -975,7 +975,7 @@ label.weekday input{
 	padding: 5px;
 	position: relative;
 }
-.mailster-conditions:empty:before{
+.mailster-conditions-render:empty:before{
 	content: attr(data-emptytext);
 	display: block;
 	position: absolute;
@@ -1471,10 +1471,13 @@ a.mailster-btn.editbutton {
 }
 #module-selector .inner{
 	position: relative;
+	overflow: hidden;
+	height: 94%;
+}
+#module-selector .inner:hover{
 	overflow: scroll;
 	overflow-y: auto;
 	overflow-x: hidden;
-	height: 94%;
 }
 #mailster_template .inner #template-wrap.load, #mailster_template .inner #template-wrap.load *{
 	cursor: progress !important;

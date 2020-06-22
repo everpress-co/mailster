@@ -449,6 +449,8 @@ class MailsterHelper {
 	 */
 	public function get_social_links( $username = '', $only_with_username = false ) {
 
+		global $wp_rewrite;
+
 		$links = array(
 			'amazon'      => 'https://amazon.com',
 			'android'     => 'https://android.com',
@@ -476,7 +478,7 @@ class MailsterHelper {
 			'paypal'      => 'https://paypal.com',
 			'picasa'      => 'https://picasa.com',
 			'pinterest'   => 'https://pinterest.com/%%USERNAME%%',
-			'rss'         => get_bloginfo( 'rss2_url' ),
+			'rss'         => $wp_rewrite ? get_bloginfo( 'rss2_url' ) : '',
 			'skype'       => 'skype:%%USERNAME%%',
 			'soundcloud'  => 'https://soundcloud.com/%%USERNAME%%',
 			'stumbleupon' => 'https://stumbleupon.com',
@@ -1125,6 +1127,12 @@ class MailsterHelper {
 				}
 			}
 
+			if ( $has_data_image = preg_match_all( '/url\(data:image.*\)/', $content, $data_images ) ) {
+				foreach ( $data_images[0] as $i => $data_image ) {
+					$content = str_replace( $data_image, '/*Mailster:html_data_image_' . $i . '*/', $content );
+				}
+			}
+
 			require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
@@ -1141,6 +1149,11 @@ class MailsterHelper {
 			}
 			$content = $html;
 
+			if ( $has_data_image ) {
+				foreach ( $data_images[0] as $i => $data_image ) {
+					$content = str_replace( '/*Mailster:html_data_image_' . $i . '*/', $data_image, $content );
+				}
+			}
 		}
 
 		foreach ( $comments[0] as $i => $comment ) {
@@ -1561,6 +1574,10 @@ class MailsterHelper {
 	 */
 	public function get_dynamic_post_types( $public_only = true, $output = 'names', $exclude = array( 'attachment', 'newsletter' ) ) {
 
+		if ( ! did_action( 'mailster_register_dynamic_post_type' ) ) {
+			do_action( 'mailster_register_dynamic_post_type' );
+		}
+
 		return apply_filters( 'mailster_dynamic_post_types', $this->get_post_types( $public_only, $output, $exclude ), $output );
 
 	}
@@ -1577,10 +1594,6 @@ class MailsterHelper {
 
 		$feed_id = md5( trim( $url ) );
 
-		if ( is_null( $cache_duration ) ) {
-			$cache_duration = 360;
-		}
-
 		if ( ! ( $posts = mailster_cache_get( 'feed_' . $feed_id ) ) ) {
 			if ( ! class_exists( 'SimplePie', false ) ) {
 				require_once ABSPATH . WPINC . '/class-simplepie.php';
@@ -1588,9 +1601,18 @@ class MailsterHelper {
 
 			$feed = new SimplePie();
 
+			if ( is_null( $cache_duration ) ) {
+				$cache_duration = apply_filters( 'mailster_feed_cache_duration', 360 );
+			}
+
 			if ( ! $cache_duration || false === ( $body = get_transient( 'mailster_feed_' . $feed_id ) ) ) {
 
 				$response = wp_remote_get( $url, array( 'timeout' => 10 ) );
+				$code     = wp_remote_retrieve_response_code( $response );
+
+				if ( $code != 200 ) {
+					$response = new WP_Error( 'mailster-feed-error', sprintf( esc_html__( 'The server responded with error code %d.', 'mailster' ), $code ) );
+				}
 
 				if ( is_wp_error( $response ) ) {
 					if ( ! is_admin() ) {
@@ -1621,6 +1643,7 @@ class MailsterHelper {
 			$feed->set_output_encoding( get_option( 'blog_charset' ) );
 
 			if ( $feed->error() ) {
+				set_transient( 'mailster_feed_' . $feed_id, $body, 0 );
 				return new WP_Error( 'simplepie-error', $feed->error() );
 			}
 
@@ -1639,6 +1662,8 @@ class MailsterHelper {
 
 			$posts = array();
 
+			$gmt_offset = $this->gmt_offset( true );
+
 			foreach ( $rss_items as $id => $rss_item ) {
 
 				$post_content = $rss_item->get_content();
@@ -1654,6 +1679,15 @@ class MailsterHelper {
 				$category  = $rss_item->get_categories();
 				$permalink = $rss_item->get_permalink();
 				$category  = wp_list_pluck( (array) $category, 'term' );
+				$comments  = $rss_item->get_item_tags( 'http://purl.org/rss/1.0/modules/slash/', 'comments' );
+				if ( isset( $comments[0]['data'] ) ) {
+					$comment_count = (int) $comments[0]['data'];
+				} else {
+					$comment_count = 0;
+				}
+
+				$gmt_date     = $rss_item->get_gmdate( 'U' );
+				$gmt_modified = $rss_item->get_updated_gmdate( 'U' );
 
 				$post = new WP_Post(
 					(object) array(
@@ -1668,10 +1702,11 @@ class MailsterHelper {
 						'post_excerpt'      => $post_excerpt,
 						'post_content'      => $post_content,
 						'post_category'     => $category,
-						'post_date'         => $rss_item->get_date( 'Y-m-d H:i:s' ),
-						'post_date_gmt'     => $rss_item->get_gmdate( 'Y-m-d H:i:s' ),
-						'post_modified'     => $rss_item->get_updated_date( 'Y-m-d H:i:s' ),
-						'post_modified_gmt' => $rss_item->get_updated_gmdate( 'Y-m-d H:i:s' ),
+						'post_date'         => date( 'Y-m-d H:i:s', $gmt_date + $gmt_offset ),
+						'post_date_gmt'     => date( 'Y-m-d H:i:s', $gmt_date ),
+						'post_modified'     => date( 'Y-m-d H:i:s', $gmt_date + $gmt_offset ),
+						'post_modified_gmt' => date( 'Y-m-d H:i:s', $gmt_date ),
+						'comment_count'     => $comment_count,
 					)
 				);
 
@@ -1706,10 +1741,6 @@ class MailsterHelper {
 	 */
 	public function new_feed_since( $timestamp, $url, $cache_duration = null ) {
 
-		if ( is_null( $cache_duration ) ) {
-			$cache_duration = 60;
-		}
-
 		$feed = $this->feed( $url, 0, $cache_duration );
 
 		if ( is_wp_error( $feed ) ) {
@@ -1738,10 +1769,6 @@ class MailsterHelper {
 	 */
 	public function get_feed_since( $timestamp, $url, $cache_duration = null ) {
 
-		if ( is_null( $cache_duration ) ) {
-			$cache_duration = 60;
-		}
-
 		$posts = $this->feed( $url, null, $cache_duration );
 		if ( is_wp_error( $posts ) ) {
 			return false;
@@ -1750,9 +1777,7 @@ class MailsterHelper {
 		$return = array();
 
 		foreach ( $posts as $post ) {
-			$last = strtotime( $post->post_date_gmt );
-
-			if ( $last > $timestamp ) {
+			if ( strtotime( $post->post_date_gmt ) > $timestamp ) {
 				$return[] = $post;
 			}
 		}
@@ -1774,12 +1799,7 @@ class MailsterHelper {
 		$cache_key = 'mailster_meta_tags_' . md5( $url );
 
 		if ( $force || false === ( $tags = get_transient( $cache_key ) ) ) {
-			$response = wp_remote_get(
-				$url,
-				array(
-					'timeout' => 5,
-				)
-			);
+			$response = wp_remote_get( $url, array( 'timeout' => 5 ) );
 
 			$tags = array();
 

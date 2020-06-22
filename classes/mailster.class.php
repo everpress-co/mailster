@@ -279,7 +279,9 @@ class Mailster {
 			unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
 		}
 
-		foreach ( $mailster_notices as $id => $notice ) {
+		$notices = array_reverse( $mailster_notices, true );
+
+		foreach ( $notices as $id => $notice ) {
 
 			if ( isset( $notice['cap'] ) && ! empty( $notice['cap'] ) ) {
 
@@ -803,6 +805,10 @@ class Mailster {
 
 		if ( $posts && isset( $posts[ $key ] ) ) {
 			return $posts[ $key ];
+		}
+
+		if ( ! did_action( 'mailster_register_dynamic_post_type' ) ) {
+			do_action( 'mailster_register_dynamic_post_type' );
 		}
 
 		$post = apply_filters( 'mailster_get_last_post_' . $post_type, null, $args, $offset, $term_ids, $campaign_id, $subscriber_id );
@@ -1639,10 +1645,10 @@ class Mailster {
 			$errors->errors->add( 'minphpversion', sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', get_bloginfo( 'version' ) ) );
 		}
 		if ( ! class_exists( 'DOMDocument' ) ) {
-			$errors->errors->add( 'DOMDocument', 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank">DOMDocument</a> library.' );
+			$errors->errors->add( 'DOMDocument', 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank" rel="noopener">DOMDocument</a> library.' );
 		}
 		if ( ! function_exists( 'fsockopen' ) ) {
-			$errors->warnings->add( 'fsockopen', 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank">fsockopen</a>.' );
+			$errors->warnings->add( 'fsockopen', 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank" rel="noopener">fsockopen</a>.' );
 		}
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
@@ -1662,7 +1668,7 @@ class Mailster {
 				$html = implode( '<br>', $errors->errors->get_error_messages() );
 
 				if ( $die ) {
-					die( '<div style="font-family:sans-serif;"><strong>' . $html . '</strong</div>' );
+					die( '<div style="font-family:sans-serif;"><strong>' . $html . '</strong></div>' );
 				} else {
 					mailster_notice( $html, 'error', false, 'errors' );
 				}
@@ -2226,11 +2232,22 @@ class Mailster {
 
 		$content_type             = 'text/plain';
 		$third_party_content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
-		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", (array) $args['headers'] ) ) ) {
+		$contains_html_header     = isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", (array) $args['headers'] ) );
+
+		if ( $contains_html_header ) {
 			$third_party_content_type = 'text/html';
 		}
 		if ( mailster_option( 'respect_content_type' ) ) {
 			$content_type = $third_party_content_type;
+		} else {
+			// should be html so lets add the headers
+			if ( ! $contains_html_header ) {
+				if ( is_array( $args['headers'] ) ) {
+					$args['headers'][] = 'Content-Type: text/html;';
+				} else {
+					$args['headers'] = "Content-Type: text/html;\n" . $args['headers'];
+				}
+			}
 		}
 
 		$template = mailster_option( 'default_template' );
