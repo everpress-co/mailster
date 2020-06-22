@@ -93,11 +93,13 @@ Xaver Birsak – https://everpress.co
 * change: changing the email address on the profile sets status to pending and sends confirmation message if double opt in is enabled.
 * change: the most recent notification is now displayed at the top.
 * added: `mailster_register_dynamic_post_type` action hook to add custom dynamic post types.
+* added: option to disable in-app-unsubscribe option
 * fixed: issue where editor is not loading with some themes activated
 * fixed: JS error if inline editor is not used
 * improved: User Agent handling.
 * improved: pasting text from external source.
-* added: option to disable in-app-unsubscribe option
+* improved: better support fro data-uris in style declarations.
+* improved: better handling of sending HTML message with third party plugins
 * removed: Gmail delivery option (fallback to SMTP)
 * deprecated: use of Gmail via LSA as announced via [Google](https://gsuiteupdates.googleblog.com/2019/12/less-secure-apps-oauth-google-username-password-incorrect.html). Please use our dedicate Gmail addon instead.
 

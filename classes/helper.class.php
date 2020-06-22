@@ -1127,6 +1127,12 @@ class MailsterHelper {
 				}
 			}
 
+			if ( $has_data_image = preg_match_all( '/url\(data:image.*\)/', $content, $data_images ) ) {
+				foreach ( $data_images[0] as $i => $data_image ) {
+					$content = str_replace( $data_image, '/*Mailster:html_data_image_' . $i . '*/', $content );
+				}
+			}
+
 			require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
@@ -1143,6 +1149,11 @@ class MailsterHelper {
 			}
 			$content = $html;
 
+			if ( $has_data_image ) {
+				foreach ( $data_images[0] as $i => $data_image ) {
+					$content = str_replace( '/*Mailster:html_data_image_' . $i . '*/', $data_image, $content );
+				}
+			}
 		}
 
 		foreach ( $comments[0] as $i => $comment ) {
