@@ -439,7 +439,8 @@ class MailsterNotification {
 
 		$placeholder->add_defaults();
 
-		if ( $subscriber ) {
+		// only if the subscriber is in the list of receivers
+		if ( $subscriber && in_array( $subscriber->email, $this->to ) ) {
 			$this->mail->hash = $subscriber->hash;
 			$this->mail->add_header( 'X-Mailster', $subscriber->hash );
 			$placeholder->set_subscriber( $subscriber->ID );
