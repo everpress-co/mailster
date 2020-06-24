@@ -96,6 +96,7 @@ Xaver Birsak – https://everpress.co
 * added: option to disable in-app-unsubscribe option
 * fixed: issue where editor is not loading with some themes activated
 * fixed: JS error if inline editor is not used
+* fixed: people got unsubscribed if bounce address is the same as sign up notifications email.
 * improved: User Agent handling.
 * improved: pasting text from external source.
 * improved: better support fro data-uris in style declarations.
