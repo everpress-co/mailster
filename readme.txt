@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.4
-Stable tag: 2.4.11
+Stable tag: 2.4.12
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,6 +88,8 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.12 =
+
 = Version 2.4.11 =
 
 * change: changing the email address on the profile sets status to pending and sends confirmation message if double opt in is enabled.
@@ -96,6 +98,7 @@ Xaver Birsak – https://everpress.co
 * added: option to disable in-app-unsubscribe option
 * fixed: issue where editor is not loading with some themes activated
 * fixed: JS error if inline editor is not used
+* fixed: people got unsubscribed if bounce address is the same as sign up notifications email.
 * improved: User Agent handling.
 * improved: pasting text from external source.
 * improved: better support fro data-uris in style declarations.
