@@ -105,8 +105,8 @@ mailster = (function (mailster, $, window, document) {
 
 			$('#mailster-mb-mailster').addClass('verified');
 
-			$('#welcome-panel').delay(2500).fadeTo(400, 0, function () {
-				$('#welcome-panel').slideUp(400);
+			$('#mailster-register-panel').delay(2500).fadeTo(400, 0, function () {
+				$('#mailster-register-panel').slideUp(400);
 			})
 		})
 		.on('click', '.toggle-indicator', toggleMetaBoxes)

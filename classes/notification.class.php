@@ -419,6 +419,8 @@ class MailsterNotification {
 
 		$this->mail = mailster( 'mail' );
 
+		$this->to = (array) $this->to;
+
 		$this->mail->to        = $this->to;
 		$this->mail->from      = apply_filters( 'mailster_notification_from', $this->mail->from, $template, $subscriber, $options );
 		$this->mail->from_name = apply_filters( 'mailster_notification_from_name', $this->mail->from_name, $template, $subscriber, $options );
@@ -439,7 +441,8 @@ class MailsterNotification {
 
 		$placeholder->add_defaults();
 
-		if ( $subscriber ) {
+		// only if the subscriber is in the list of receivers
+		if ( $subscriber && in_array( $subscriber->email, $this->to ) ) {
 			$this->mail->hash = $subscriber->hash;
 			$this->mail->add_header( 'X-Mailster', $subscriber->hash );
 			$placeholder->set_subscriber( $subscriber->ID );
