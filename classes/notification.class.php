@@ -419,6 +419,8 @@ class MailsterNotification {
 
 		$this->mail = mailster( 'mail' );
 
+		$this->to = (array) $this->to;
+
 		$this->mail->to        = $this->to;
 		$this->mail->from      = apply_filters( 'mailster_notification_from', $this->mail->from, $template, $subscriber, $options );
 		$this->mail->from_name = apply_filters( 'mailster_notification_from_name', $this->mail->from_name, $template, $subscriber, $options );
