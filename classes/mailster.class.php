@@ -1239,6 +1239,7 @@ class Mailster {
 		);
 
 	}
+
 	public function localize_scripts() {
 		$scripts = apply_filters( 'mailster_localize_script', array() );
 		if ( ! empty( $scripts ) ) {
@@ -1247,11 +1248,6 @@ class Mailster {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $hook
-	 */
 	public function deactivation_survey( $hook ) {
 
 		if ( ! mailster_option( 'usage_tracking' ) ) {
