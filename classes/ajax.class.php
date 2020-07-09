@@ -780,6 +780,9 @@ class MailsterAjax {
 
 				$content = $placeholder->get_content();
 				$content = mailster( 'helper' )->prepare_content( $content );
+				if ( apply_filters( 'mailster_inline_css', true, $ID, $subscriber ? $subscriber->ID : null ) ) {
+					$content = mailster( 'helper' )->inline_css( $content );
+				}
 
 				// replace links with fake hash to prevent tracking, not during preflight.
 				if ( $track_clicks && ! $preflight ) {
