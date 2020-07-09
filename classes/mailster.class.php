@@ -2302,7 +2302,10 @@ class Mailster {
 		$message = $placeholder->get_content();
 
 		$message = mailster( 'helper' )->add_mailster_styles( $message );
-		$message = mailster( 'helper' )->inline_style( $message );
+
+		if ( apply_filters( 'mailster_inline_css', true ) ) {
+			$content = mailster( 'helper' )->inline_css( $content );
+		}
 
 		$args['message'] = $message;
 

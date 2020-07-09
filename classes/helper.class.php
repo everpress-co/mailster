@@ -1080,9 +1080,6 @@ class MailsterHelper {
 		// custom styles
 		$content = $this->add_mailster_styles( $content );
 
-		// Inline CSS
-		$content = $this->inline_style( $content );
-
 		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
 
 		return apply_filters( 'mailster_prepare_content', $content );
@@ -1097,6 +1094,17 @@ class MailsterHelper {
 	 * @return unknown
 	 */
 	public function inline_style( $content ) {
+		return $this->inline_css( $content );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $content
+	 * @return unknown
+	 */
+	public function inline_css( $content ) {
 
 		// save comments with conditional stuff
 		preg_match_all( '#<!--\s?\[\s?if(.*)?>(.*)?<!\[endif\]-->#sU', $content, $comments );
