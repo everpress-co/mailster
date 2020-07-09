@@ -181,7 +181,11 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.util = mailster.util || {};
 
-	mailster.util.isTinyMCE = typeof tinymce == 'object';
+	mailster.util.isTinyMCE = null;
+
+	mailster.events.push('documentReady', function () {
+		mailster.util.isTinyMCE = typeof tinymce == 'object';
+	});
 
 	mailster.util.getRealDimensions = function (el, callback) {
 		el = el.eq(0);
@@ -220,19 +224,6 @@ mailster = (function (mailster, $, window, document) {
 			input.selectionEnd = endPos;
 		}
 		return true;
-	}
-
-	mailster.util.getSelect = function (input) {
-		var selText = "";
-		if (document.activeElement && (document.activeElement.tagName.toLowerCase() == "textarea" || document.activeElement.tagName.toLowerCase() == "input")) {
-			var text = document.activeElement.value;
-			selText = text.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
-		} else {
-			var selRange = window.getSelection();
-			selText = selRange.toString();
-		}
-
-		return selText;
 	}
 
 	mailster.util.changeColor = function (color_from, color_to, element, original) {
@@ -433,8 +424,6 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		if (!element && !mailster.editor.$.container.length) return false;
-
-		//mailster.editor.updateElements();
 
 		if (element) {
 			(before ? clone.hide().insertBefore(element) : clone.hide().insertAfter(element))
@@ -740,7 +729,7 @@ mailster = (function (mailster, $, window, document) {
 
 					google.load('visualization', '1.0', {
 						packages: ['geochart', 'corechart'],
-						mapsApiKey: google_jsapi ? google_jsapi.key : null,
+						mapsApiKey: mailster.l10n.google ? mailster.l10n.google.key : null,
 						callback: function () {
 							var hash;
 
@@ -811,9 +800,7 @@ mailster = (function (mailster, $, window, document) {
 				types = $this.data('types'),
 				orderby = $this.data('orderby'),
 				order = $this.data('order'),
-				loader = $this.next().css({
-					'display': 'inline'
-				});
+				loader = $this.next().css('display', 'inline');
 
 			mailster.util.ajax('get_recipients_page', {
 				id: mailster.campaign_id,
@@ -848,9 +835,7 @@ mailster = (function (mailster, $, window, document) {
 				orderby = $('select.recipients-order').val(),
 				order = $('a.recipients-order').hasClass('asc') ? 'ASC' : 'DESC';
 
-			loader.css({
-				'display': 'inline'
-			});
+			loader.css('display', 'inline');
 			$('input.recipients-limit').prop('disabled', true);
 
 			mailster.util.ajax('get_recipients', {
@@ -1057,9 +1042,7 @@ mailster = (function (mailster, $, window, document) {
 				var link = mailster.$.iframe.contents().find('a[href="' + href.replace('&amp;', '&') + '"]').eq(index);
 
 				if (link.length) {
-					link.css({
-						'display': 'inline-block'
-					});
+					link.css('display', 'inline-block');
 
 					var offset = link.offset(),
 						top = offset.top,
@@ -1077,6 +1060,29 @@ mailster = (function (mailster, $, window, document) {
 			});
 		});
 	}
+
+	mailster.editable && window.EmojiButton && mailster.events.push('documentReady', function () {
+		$('.emoji-selector')
+			.on('click', 'button', function () {
+				var input = document.querySelector('#' + $(this).data('input')),
+					picker = new EmojiButton({
+						emojiVersion: '3.0',
+						showVariants: false,
+						zIndex: 1000,
+					});
+
+				picker.togglePicker(this);
+				picker.on('emoji', function (emoji) {
+					var caretPos = input.selectionStart;
+					input.value = input.value.substring(0, caretPos) + emoji + input.value.substring(caretPos);
+					setTimeout(function () {
+						input.focus();
+						input.setSelectionRange(caretPos + 1, caretPos + 1);
+					}, 10);
+				});
+				return false;
+			});
+	});
 
 	!mailster.editable && mailster.events.push('documentReady', function () {
 		$.easyPieChart && mailster.clickmap.$.popup.find('.piechart').easyPieChart({
@@ -1462,13 +1468,17 @@ mailster = (function (mailster, $, window, document) {
 
 	function checkSpamScore(id, round) {
 
+		var $button = $('.mailster_spamscore'),
+			progress = $('#spam_score_progress'),
+			progressbar = progress.find('.bar');
+
 		mailster.util.ajax('check_spam_score', {
 			ID: id,
 		}, function (response) {
 
 			if (response.score) {
 				loader(false);
-				$this.prop('disabled', false);
+				$button.prop('disabled', false);
 				progress.addClass('spam-score');
 				progressbar.css('width', (parseFloat(response.score) * 10) + '%');
 
@@ -1484,10 +1494,10 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 
 					loader(false);
-					$this.prop('disabled', false);
+					$button.prop('disabled', false);
 					progressbar.css('width', '100%');
 					progress.slideUp(200);
-					mailster.util.tempMsg(response.msg, 'error', $this.parent(), function () {
+					mailster.util.tempMsg(response.msg, 'error', $button.parent(), function () {
 						progressbar.css('width', 0);
 					});
 
@@ -1914,6 +1924,8 @@ mailster = (function (mailster, $, window, document) {
 	mailster.$.document
 		.on('heartbeat-send', function (e, data) {
 
+			if (!mailster.editor) return;
+
 			if (mailster.editable) {
 				if (data && data['wp_autosave']) {
 					data['wp_autosave']['content'] = mailster.editor.getContent();
@@ -1933,7 +1945,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('heartbeat-tick', function (e, data) {
 
-			if (mailster.editable || !data.mailster[mailster.campaign_id]) return;
+			if (mailster.editable || !data.mailster || !data.mailster[mailster.campaign_id]) return;
 
 			var _data = data.mailster[mailster.campaign_id],
 				stats = $('#stats').find('.verybold'),

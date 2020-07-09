@@ -14,7 +14,7 @@ if ( $this->update ) {
 <h1><?php esc_html_e( 'Dashboard', 'mailster' ); ?></h1>
 
 <?php if ( ! $this->verified && current_user_can( 'mailster_manage_licenses' ) ) : ?>
-	<div id="welcome-panel" class="welcome-panel">
+	<div id="mailster-register-panel" class="welcome-panel" style="display:block !important">
 		<div class="welcome-panel-content">
 			<p class="about-description"></p>
 			<div class="welcome-panel-column-container">

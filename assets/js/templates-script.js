@@ -313,7 +313,7 @@ mailster = (function (mailster, $, window, document) {
 						mode: "vbscript"
 					}]
 				};
-				codemirror = CodeMirror.fromTextArea(templatecontent.get(0), {
+				codemirror = mailster.util.CodeMirror.fromTextArea(templatecontent.get(0), {
 					mode: mixedMode,
 					tabMode: "indent",
 					lineNumbers: true,

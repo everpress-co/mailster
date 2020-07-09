@@ -48,6 +48,11 @@ class MailsterConditions {
 		$output = ob_get_contents();
 		ob_end_clean();
 
+		// remove any whitespace so :empty selector works
+		if ( empty( $conditions ) ) {
+			$output = preg_replace( '/>(\s+)<\//', '></', $output );
+		}
+
 		if ( $plain ) {
 			$output = trim( strip_tags( $output ) );
 			$output = preg_replace( '/\s*$^\s*/mu', "\n\n", $output );
@@ -421,7 +426,11 @@ class MailsterConditions {
 				break;
 			case 'value':
 				if ( in_array( $field, $this->time_fields ) ) {
-					return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+					if ( $string ) {
+						return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+					} else {
+						return '';
+					}
 				}
 				if ( 'form' == $field ) {
 					if ( $form = mailster( 'forms' )->get( (int) $string, false, false ) ) {

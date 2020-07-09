@@ -242,7 +242,7 @@ class MailsterAjax {
 		if ( ! $editorstyle ) {
 			$revision = isset( $_REQUEST['revision'] ) ? (int) $_REQUEST['revision'] : false;
 			$campaign = get_post( $id );
-			$subject  = isset( $_REQUEST['subject'] ) ? esc_attr( $_REQUEST['subject'] ) : isset( $meta['subject'] ) ? esc_attr( $meta['subject'] ) : '';
+			$subject  = isset( $_REQUEST['subject'] ) ? esc_attr( $_REQUEST['subject'] ) : ( isset( $meta['subject'] ) ? esc_attr( $meta['subject'] ) : '' );
 
 			$current_user = wp_get_current_user();
 
@@ -675,6 +675,9 @@ class MailsterAjax {
 
 				$content = $placeholder->get_content();
 				$content = mailster( 'helper' )->prepare_content( $content );
+				if ( apply_filters( 'mailster_inline_css', true, $ID, $subscriber ? $subscriber->ID : null ) ) {
+					$content = mailster( 'helper' )->inline_css( $content );
+				}
 
 				// replace links with fake hash to prevent tracking
 				if ( $track_clicks ) {
@@ -738,7 +741,7 @@ class MailsterAjax {
 		if ( ! isset( $return['msg'] ) ) {
 			$return['msg'] = ( $return['success'] )
 				? esc_html__( 'Message sent. Check your inbox!', 'mailster' )
-				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . ' <strong>' . $errors . '</strong>';
+				: esc_html__( 'Couldn\'t send message. Check your settings!', 'mailster' ) . '<br><strong>' . $mail->get_errors() . '</strong>';
 		}
 
 		if ( isset( $return['log'] ) ) {
