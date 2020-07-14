@@ -1079,7 +1079,7 @@ class MailsterSubscribers {
 			}
 
 			if ( $mysql_errno == 1062 ) {
-				return new WP_Error( 'email_exists', sprintf( esc_html__( 'The email "%s" already exists.', 'mailster' ), $entry['email'] ) );
+				return new WP_Error( 'email_exists', sprintf( esc_html__( 'The email "%s" already exists.', 'mailster' ), $entry['email'] ), array( 'status' => 403 ) );
 			}
 			return new WP_Error( $mysql_errno, $wpdb->last_error );
 		}
