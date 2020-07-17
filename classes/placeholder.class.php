@@ -29,7 +29,7 @@ class MailsterPlaceholder {
 	 */
 	public function __construct( $content = '', $deprecated = null ) {
 
-		$this->content = $content;
+		$this->set_content( $content );
 
 	}
 

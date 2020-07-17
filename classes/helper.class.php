@@ -1080,8 +1080,6 @@ class MailsterHelper {
 		// custom styles
 		$content = $this->add_mailster_styles( $content );
 
-		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
-
 		return apply_filters( 'mailster_prepare_content', $content );
 
 	}
@@ -1162,6 +1160,9 @@ class MailsterHelper {
 					$content = str_replace( '/*Mailster:html_data_image_' . $i . '*/', $data_image, $content );
 				}
 			}
+
+			$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
+
 		}
 
 		foreach ( $comments[0] as $i => $comment ) {
