@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.12 =
 
 * added: `mailster_inline_css` filter hook to disable auto inline css
+* fixed: problem with third part shortcodes in excerpt
 
 = Version 2.4.11 =
 

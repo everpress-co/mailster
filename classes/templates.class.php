@@ -788,6 +788,7 @@ class MailsterTemplates {
 		}
 
 		// prevent error output as 7.4 throws deprecate notice
+		// $hash = hash( 'crc32', md5_file( $filedir ) );
 		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
 
 		$screenshotfile = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/' . $hash . '.jpg';
@@ -851,6 +852,7 @@ class MailsterTemplates {
 		}
 
 		// prevent error output as 7.4 throws deprecate notice
+		// $hash = hash( 'crc32', md5_file( $filedir ) );
 		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
 
 		$screenshot_folder_base = mailster( 'helper' )->mkdir( 'screenshots' );

@@ -931,6 +931,10 @@ class MailsterSubscribers {
 
 		$entry = (array) $entry;
 
+		if ( isset( $entry['id'] ) ) {
+			$entry['ID'] = $entry['id'];
+			unset( $entry['id'] );
+		}
 		if ( isset( $entry['email'] ) ) {
 			if ( ! mailster_is_email( $entry['email'] ) ) {
 				return new WP_Error( 'invalid_email', esc_html__( 'invalid email address', 'mailster' ) );

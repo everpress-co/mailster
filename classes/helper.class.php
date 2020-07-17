@@ -1860,7 +1860,9 @@ class MailsterHelper {
 			return $excerpt;
 		}
 
-		$string            = str_replace( "\n", '<!--Mailster:newline-->', $org_string );
+		$stripped_string = strip_shortcodes( $org_string );
+
+		$string            = str_replace( "\n", '<!--Mailster:newline-->', $stripped_string );
 		$string            = html_entity_decode( wp_trim_words( htmlentities( $string ), $length, $more ) );
 		$maybe_broken_html = str_replace( '<!--Mailster:newline-->', "\n", $string );
 
@@ -1880,7 +1882,7 @@ class MailsterHelper {
 
 			$excerpt = $doc->saveHTML( $body );
 		} else {
-			$excerpt = $org_string;
+			$excerpt = $stripped_string;
 		}
 
 		$excerpt = trim( strip_tags( $excerpt, '<p><br><a><strong><em><i><b><ul><ol><li><span>' ) );
