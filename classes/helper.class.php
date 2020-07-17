@@ -1860,7 +1860,13 @@ class MailsterHelper {
 			return $excerpt;
 		}
 
-		$stripped_string = strip_shortcodes( $org_string );
+		if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) ) ) {
+			// remove shortcodes but keep content
+			$stripped_string = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $org_string );
+		} else {
+			// do shortocdes
+			$stripped_string = do_shortcode( $org_string );
+		}
 
 		$string            = str_replace( "\n", '<!--Mailster:newline-->', $stripped_string );
 		$string            = html_entity_decode( wp_trim_words( htmlentities( $string ), $length, $more ) );

@@ -366,11 +366,6 @@ class MailsterPlaceholder {
 			}
 		}
 
-		// handle shortcodes.
-		$this->content = apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) )
-			? strip_shortcodes( $this->content )
-			: do_shortcode( $this->content );
-
 		return $this->content;
 
 	}
