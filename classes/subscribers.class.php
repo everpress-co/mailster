@@ -2686,7 +2686,7 @@ class MailsterSubscribers {
 			}
 			$type = esc_sql( $type );
 		} elseif ( 'md5' == $type ) {
-			$type = "md5('email')";
+			$type = 'md5(`email`)';
 		} else {
 			$type = esc_sql( $type );
 		}
