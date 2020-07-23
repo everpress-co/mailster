@@ -528,6 +528,9 @@ class MailsterMail {
 
 		$this->content = $placeholder->get_content();
 		$this->content = mailster( 'helper' )->prepare_content( $this->content );
+		if ( apply_filters( 'mailster_inline_css', true ) ) {
+			$content = mailster( 'helper' )->inline_css( $this->content );
+		}
 
 		$placeholder->set_content( $this->subject );
 		$this->subject = $placeholder->get_content();

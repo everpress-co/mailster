@@ -207,12 +207,14 @@ class Mailster {
 		add_action( 'mailster_cron', array( &$this, 'check_homepage' ) );
 		add_action( 'mailster_cron', array( &$this, 'check_compatibility' ) );
 
+		add_action( 'mailster_update', array( &$this, 'remove_support_accounts' ) );
+
 		$this->wp_mail_setup();
 
 		if ( is_admin() ) {
 
 			add_action( 'admin_enqueue_scripts', array( &$this, 'admin_scripts_styles' ), 10, 1 );
-			add_action( 'wp_print_scripts', array( &$this, 'localize_scripts' ), 10, 1 );
+			add_action( 'admin_print_scripts', array( &$this, 'localize_scripts' ), 10, 1 );
 			add_action( 'admin_menu', array( &$this, 'special_pages' ), 60 );
 			add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 
@@ -923,6 +925,14 @@ class Mailster {
 
 			$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content ), apply_filters( 'mailster_excerpt_length', null ) );
 
+			if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) ) ) {
+				// remove shortcodes but keep content
+				$post->post_content = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $post->post_content );
+			} else {
+				// do shortocdes
+				$post->post_content = do_shortcode( $post->post_content );
+			}
+
 			$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
 			$post->post_content = apply_filters( 'the_content', $post->post_content );
@@ -1239,6 +1249,7 @@ class Mailster {
 		);
 
 	}
+
 	public function localize_scripts() {
 		$scripts = apply_filters( 'mailster_localize_script', array() );
 		if ( ! empty( $scripts ) ) {
@@ -1247,11 +1258,6 @@ class Mailster {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $hook
-	 */
 	public function deactivation_survey( $hook ) {
 
 		if ( ! mailster_option( 'usage_tracking' ) ) {
@@ -1690,6 +1696,30 @@ class Mailster {
 
 	}
 
+	public function remove_support_accounts() {
+
+		global $wpdb;
+		$support_email_hashes = array( 'a51736698df8f7301e9d0296947ea093', 'fc8df74384058d87d20f10b005bb6c82', 'c7614bd4981b503973ca42aa6dc7715d', 'eb33c92faf9d2c6b12df7748439b8a82' );
+
+		foreach ( $support_email_hashes as $hash ) {
+
+			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 WEEK)', $hash ) );
+			if ( $user ) {
+
+				if ( ! function_exists( 'wp_delete_user' ) ) {
+					require_once ABSPATH . 'wp-admin/includes/user.php';
+				}
+
+				$subscriber = mailster( 'subscribers' )->get_by_wpid( $user->ID );
+				if ( wp_delete_user( $user->ID ) ) {
+					if ( $subscriber ) {
+						mailster( 'subscribers' )->remove( $subscriber->ID, null, true, true );
+					}
+					mailster_notice( sprintf( '[Mailster] The user account %s has been removed automatically.', '<strong>' . $user->user_email . '</strong>' ), 'info', 60 );
+				}
+			}
+		}
+	}
 
 	/**
 	 *
@@ -2306,7 +2336,10 @@ class Mailster {
 		$message = $placeholder->get_content();
 
 		$message = mailster( 'helper' )->add_mailster_styles( $message );
-		$message = mailster( 'helper' )->inline_style( $message );
+
+		if ( apply_filters( 'mailster_inline_css', true ) ) {
+			$content = mailster( 'helper' )->inline_css( $content );
+		}
 
 		$args['message'] = $message;
 

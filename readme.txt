@@ -90,6 +90,12 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.12 =
 
+* added: `mailster_inline_css` filter hook to disable auto inline css
+* improved: consistent behavior on handling shortcodes
+* fixed: problem with third part shortcodes in excerpt
+* fixed: several small bugfixes
+* improved: automatically remove support accounts after one week
+
 = Version 2.4.11 =
 
 * change: changing the email address on the profile sets status to pending and sends confirmation message if double opt in is enabled.

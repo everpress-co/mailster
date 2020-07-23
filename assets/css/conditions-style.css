@@ -40,17 +40,6 @@
 .mailster-conditions-saved select{
 	width: 40%;
 }
-.mailster-conditions-wrap:empty:before{
-	content: attr(data-emptytext);
-	display: block;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%,-50%);
-	text-align: center;
-	color: #999;
-}
-
 .mailster-conditions-wrap .mailster-condition-group{
 	border: 1px solid #DFDFDF;
 	background: #fdfdfd;
