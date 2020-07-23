@@ -182,7 +182,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', 'a.deletion', function () {
 
-			if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, $(this).data('name')))) {
+			if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, '"' + $(this).data('name') + '"'))) {
 				$(this).closest('.mailster-box').addClass('loading');
 				return true;
 			}

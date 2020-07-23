@@ -865,6 +865,7 @@ class MailsterSubscribers {
 	public function save_screen_options( $status, $option, $value ) {
 
 		if ( 'mailster_subscribers_per_page' == $option ) {
+			update_user_option( get_current_user_id(), 'mailster_subscribers_per_page', (int) $value );
 			return $value;
 		}
 

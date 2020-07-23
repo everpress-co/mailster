@@ -561,7 +561,7 @@ class MailsterTemplates {
 				'delete_template_file' => esc_html__( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
 				'enter_template_name'  => esc_html__( 'Please enter the name of the new template', 'mailster' ),
 				'uploading'            => esc_html__( 'uploading zip file %s', 'mailster' ),
-				'confirm_delete'       => esc_html__( 'You are about to delete this template "%s"', 'mailster' ),
+				'confirm_delete'       => esc_html__( 'You are about to delete this template %s', 'mailster' ),
 				'update_note'          => esc_html__( 'You are about to update your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Old template files will be preserved in the templates folder.', 'mailster' ),
 			)
 		);
