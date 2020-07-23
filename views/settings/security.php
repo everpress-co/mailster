@@ -33,14 +33,21 @@
 		</td>
 	</tr>
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Blacklisted Domains', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Blocked Domains', 'mailster' ); ?></th>
 		<td>
 		<p><?php esc_html_e( 'List of blocked domains. One domain each line.', 'mailster' ); ?><br>
 		<textarea name="mailster_options[blocked_domains]" placeholder="<?php echo "blocked.com\nblocked.co.uk\nblocked.de"; ?>" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_domains' ) ); ?></textarea></p>
 		</td>
 	</tr>
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'White listed Domains', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Blocked IP Addresses', 'mailster' ); ?></th>
+		<td>
+		<p><?php esc_html_e( 'List of blocked IP addresses. One domain each line.', 'mailster' ); ?><br>
+		<textarea name="mailster_options[blocked_ips]" placeholder="<?php echo "192.168.1.0-192.168.1.100\n192.168.*.*\n192.*.*.*\n192.168.0.0/16\n192.169.1.0/24\n192.168.1.95\n"; ?>" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_ips' ) ); ?></textarea></p>
+		</td>
+	</tr>
+	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'Safe Domains', 'mailster' ); ?></th>
 		<td>
 		<p><?php esc_html_e( 'List domains which bypass the above rules. One domain each line.', 'mailster' ); ?><br>
 		<textarea name="mailster_options[safe_domains]" placeholder="<?php echo "safe.com\nsafe.co.uk\nsafe.de"; ?>" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'safe_domains' ) ); ?></textarea></p>

@@ -128,7 +128,7 @@ class MailsterSettings {
 			'unsubscribe_notification_template'  => 'notification.html',
 			'track_users'                        => false,
 			'do_not_track'                       => false,
-			'antiflood'                          => 10,
+			'antiflood'                          => 60,
 			'reject_dep'                         => true,
 			'list_based_opt_in'                  => true,
 			'single_opt_out'                     => false,
@@ -885,6 +885,14 @@ class MailsterSettings {
 
 						$options['_flush_rewrite_rules'] = true;
 					}
+					break;
+
+				case 'blocked_domains':
+				case 'safe_domains':
+					$value = strtolower( $value );
+				case 'blocked_ips':
+				case 'blocked_emails':
+					$value = trim( $value );
 					break;
 
 				case 'interval':

@@ -905,12 +905,17 @@ class MailsterSubscribers {
 	 *
 	 *
 	 * @param unknown $entry
+	 * @param unknown $new_subscriber (optional)
 	 * @return unknown
 	 */
-	public function verify( $entry ) {
+	public function verify( $entry, $new_subscriber = false ) {
 
 		if ( is_numeric( $entry ) ) {
 			$entry = $this->get( $entry, true );
+		}
+
+		if ( $new_subscriber ) {
+			return apply_filters( 'mailster_verify_new_subscriber', (array) $entry );
 		}
 
 		return apply_filters( 'mymail_verify_subscriber', apply_filters( 'mailster_verify_subscriber', (array) $entry ) );
@@ -1147,6 +1152,13 @@ class MailsterSubscribers {
 				)
 			);
 
+		}
+
+		$entry = $this->verify( $entry, true );
+		if ( is_wp_error( $entry ) ) {
+			return $entry;
+		} elseif ( $entry === false ) {
+			return new WP_Error( 'not_verified', esc_html__( 'Subscriber failed verification', 'mailster' ) );
 		}
 
 		$subscriber_id = $this->update( $entry, $overwrite, $merge, $subscriber_notification );

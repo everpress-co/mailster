@@ -5,7 +5,7 @@ class MailsterSecurity {
 
 	public function __construct() {
 
-		add_action( 'mailster_verify_subscriber', array( $this, 'verify_subscriber' ) );
+		add_action( 'mailster_verify_new_subscriber', array( $this, 'verify_subscriber' ) );
 		add_action( 'mailster_add_subscriber', array( $this, 'flood' ) );
 
 	}
@@ -24,13 +24,6 @@ class MailsterSecurity {
 
 		if ( ! isset( $entry['email'] ) ) {
 			return $entry;
-		}
-
-		if ( is_admin() && isset( $entry['ID'] ) && ! isset( $_POST['action'] ) ) {
-			$subscriber = mailster( 'subscribers' )->get( $entry['ID'], false );
-			if ( $subscriber && $subscriber->email == $entry['email'] ) {
-				return $entry;
-			}
 		}
 
 		$is_valid = $this->verify( $entry );
@@ -56,18 +49,22 @@ class MailsterSecurity {
 		list( $user, $domain ) = explode( '@', $email );
 
 		// check for email addresses
-		if ( $this->match( $email, mailster_option( 'blacklisted_emails' ) ) ) {
+		if ( $this->match( $email, mailster_option( 'blocked_emails' ) ) ) {
 			return new WP_Error( 'error_blacklisted', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'blacklisted' );
 		}
 
-		// check for white listed
-		if ( $this->match( $domain, mailster_option( 'whitelisted_emails' ) ) ) {
+		// // check for white listed
+		if ( $this->match( $domain, mailster_option( 'safe_domains' ) ) ) {
 			return true;
 		}
 
-		// check for domains
-		if ( $this->match( $domain, mailster_option( 'blacklisted_domains' ) ) ) {
+		// // check for domains
+		if ( $this->match( $domain, mailster_option( 'blocked_domains' ) ) ) {
 			return new WP_Error( 'error_blacklisted', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
+		}
+		// check for domains
+		if ( $this->match( $ip, mailster_option( 'blocked_ips' ), true ) ) {
+			return new WP_Error( 'error_blacklisted', esc_html__( 'Sorry, you cannot signup right now.', 'mailster' ), 'email' );
 		}
 
 		// check DEP
@@ -97,7 +94,7 @@ class MailsterSecurity {
 		// check Antiflood
 		if ( mailster_option( 'antiflood' ) && $timestamp = $this->is_flood( $ip ) ) {
 			$t = ( $timestamp - time() > 60 ) ? human_time_diff( $timestamp ) : sprintf( esc_html__( '%d seconds', 'mailster' ), $timestamp - time() );
-			return new WP_Error( 'error_antiflood', sprintf( esc_html__( 'Please wait %s', 'mailster' ), $t ), 'email' );
+			return new WP_Error( 'error_antiflood', sprintf( esc_html__( 'Please wait %s.', 'mailster' ), $t ), 'email' );
 		}
 
 		return true;
@@ -113,17 +110,24 @@ class MailsterSecurity {
 	 * @param unknown $check (optional)
 	 * @return unknown
 	 */
-	public function match( $string, $haystack ) {
-		if ( ! $haystack ) {
+	public function match( $string, $haystack, $net_match = false ) {
+		if ( empty( $haystack ) ) {
 			return false;
 		}
 		$lines = is_array( $haystack ) ? $haystack : explode( "\n", $haystack );
 		foreach ( $lines as $line ) {
 			$line = trim( $line );
+			if ( '' === $line ) {
+				continue;
+			}
 			if ( $line == $string ) {
 				return true;
 			}
-			if ( preg_match( '/^' . preg_quote( $line ) . '$/', $string ) ) {
+			if ( $net_match ) {
+				if ( $this->net_match( $line, $string ) ) {
+					return true;
+				}
+			} elseif ( preg_match( '/^' . preg_quote( $line ) . '$/', $string ) ) {
 				return true;
 			}
 		}
@@ -131,6 +135,56 @@ class MailsterSecurity {
 		return false;
 	}
 
+	public function net_match( $network, $ip ) {
+		$network      = trim( $network );
+		$orig_network = $network;
+		$ip           = trim( $ip );
+		if ( $ip == $network ) {
+			return true;
+		}
+		$network = str_replace( ' ', '', $network );
+		if ( strpos( $network, '*' ) !== false ) {
+			if ( strpos( $network, '/' ) !== false ) {
+				$asParts = explode( '/', $network );
+				$network = @ $asParts[0];
+			}
+			$nCount  = substr_count( $network, '*' );
+			$network = str_replace( '*', '0', $network );
+			if ( $nCount == 1 ) {
+				$network .= '/24';
+			} elseif ( $nCount == 2 ) {
+				$network .= '/16';
+			} elseif ( $nCount == 3 ) {
+				$network .= '/8';
+			} elseif ( $nCount > 3 ) {
+				return true; // *.*.*.*
+			}
+		}
+
+		$d = strpos( $network, '-' );
+		if ( $d === false ) {
+			$ip_arr = explode( '/', $network );
+			if ( ! preg_match( '@\d*\.\d*\.\d*\.\d*@', $ip_arr[0], $matches ) ) {
+				$ip_arr[0] .= '.0';
+			}
+			if ( ! isset( $ip_arr[1] ) ) {
+				$ip_arr[1] = '32';
+			}
+			$network_long = ip2long( $ip_arr[0] );
+			$x            = ip2long( $ip_arr[1] );
+			$mask         = long2ip( $x ) == $ip_arr[1] ? $x : ( 0xffffffff << ( 32 - $ip_arr[1] ) );
+			$ip_long      = ip2long( $ip );
+
+			$match = ( $ip_long & $mask ) == ( $network_long & $mask );
+		} else {
+			$from  = trim( ip2long( substr( $network, 0, $d ) ) );
+			$to    = trim( ip2long( substr( $network, $d + 1 ) ) );
+			$ip    = ip2long( $ip );
+			$match = ( $ip >= $from and $ip <= $to );
+		}
+
+		return $match;
+	}
 
 	public function get_dep_domains() {
 
