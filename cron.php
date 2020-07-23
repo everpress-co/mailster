@@ -89,7 +89,7 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 	<script type="text/javascript">
 		var finished = false;
 		window.addEventListener('load', function () {
-			if(!finished) document.getElementById('info').innerHTML = '<h2>Your servers execution time has been exceed!</h2><p>No worries, emails still get sent. But it\'s recommended to increase the "max_execution_time" for your server, add <code>define("WP_MEMORY_LIMIT", "256M");</code> to your wp-config.php file  or decrease the <a href="<?php echo admin_url( '/edit.php?post_type=newsletter&page=mailster_settings' ); ?>#delivery" target="_blank">number of mails sent</a> maximum in the settings!</p><p><a onclick="location.reload();" class="button" id="button">OK, now reload</a></p>';
+			if(!finished) document.getElementById('info').innerHTML = '<h2>Your servers execution time has been exceed!</h2><p>No worries, emails still get sent. But it\'s recommended to increase the "max_execution_time" for your server, add <code>define("WP_MEMORY_LIMIT", "256M");</code> to your wp-config.php file  or decrease the <a href="<?php echo admin_url( '/edit.php?post_type=newsletter&page=mailster_settings' ); ?>#delivery" target="_blank" rel="noopener">number of mails sent</a> maximum in the settings!</p><p><a onclick="location.reload();" class="button" id="button">OK, now reload</a></p>';
 		});
 
 	</script>

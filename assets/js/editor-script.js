@@ -23,7 +23,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.editor.$.html = $('html');
 	mailster.editor.$.body = $('body');
 
-	mailster.$.window.on('load', function () {
+	$(window).on('load', function () {
 		mailster.editor.$.html.removeClass('mailster-loading');
 		mailster.editor.$.body = $('body');
 		mailster.editor.$.body
@@ -111,8 +111,6 @@ mailster = (function (mailster, $, window, document) {
 
 		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button').remove();
 
-		// remove some third party elements
-		clone.find('#droplr-chrome-extension-is-installed').remove();
 		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
 		content = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 
@@ -131,6 +129,13 @@ mailster = (function (mailster, $, window, document) {
 		);
 
 		return mailster.$.head.val() + "\n<body" + (s ? ' ' + s : '') + ">\n" + content + "\n</body>\n</html>";
+	}
+
+	mailster.editor.cleanup = function () {
+
+		// remove some third party elements
+		mailster.editor.$.document.find('#a11y-speak-assertive, #a11y-speak-polite, #droplr-chrome-extension-is-installed').remove();
+
 	}
 
 	mailster.editor.getStructure = function (html) {
@@ -292,6 +297,8 @@ mailster = (function (mailster, $, window, document) {
 				});
 		}
 
+		mailster.editor.cleanup();
+
 	}
 
 	mailster.events = mailster.events || [];
@@ -316,10 +323,7 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
-	var l10n = mailster_mce_button.l10n,
-		tags = mailster_mce_button.tags,
-		designs = mailster_mce_button.designs,
-		changetimeout,
+	var changetimeout,
 		change = false,
 		uploader = false;
 
@@ -824,22 +828,83 @@ mailster = (function (mailster, $, window, document) {
 
 	function inlineEditor() {
 		tinymce.init($.extend(mailsterdata.tinymce.args, mailsterdata.tinymce.multi, {
+			paste_preprocess: paste_preprocess,
 			urlconverter_callback: urlconverter,
 			setup: setup
 		}));
 		tinymce.init($.extend(mailsterdata.tinymce.args, mailsterdata.tinymce.single, {
+			paste_preprocess: paste_preprocess,
 			urlconverter_callback: urlconverter,
 			setup: setup
 		}));
 	}
 
+	function paste_preprocess(pl, o) {
+
+		var str = o.content,
+			allowed_tags = '<a><br><i><em><u><p><h1><h2><h3><h4><h5><h6><ul><ol><li>',
+			key = '',
+			allowed = false,
+			matches = [],
+			allowed_array = [],
+			allowed_tag = '',
+			i = 0,
+			k = '',
+			html = '',
+			replacer = function (search, replace, str) {
+				return str.split(search).join(replace);
+			};
+		if (allowed_tags) {
+			allowed_array = allowed_tags.match(/([a-zA-Z0-9]+)/gi);
+		}
+		str += '';
+
+		matches = str.match(/(<\/?[\S][^>]*>)/gi);
+		for (key in matches) {
+			if (isNaN(key)) {
+				// IE7
+				continue;
+			}
+
+			html = matches[key].toString();
+			allowed = false;
+
+			for (k in allowed_array) { // Init
+				allowed_tag = allowed_array[k];
+				i = -1;
+
+				if (i != 0) {
+					i = html.toLowerCase().indexOf('<' + allowed_tag + '>');
+				}
+				if (i != 0) {
+					i = html.toLowerCase().indexOf('<' + allowed_tag + ' ');
+				}
+				if (i != 0) {
+					i = html.toLowerCase().indexOf('</' + allowed_tag);
+				}
+
+				// Determine
+				if (i == 0) {
+					allowed = true;
+					break;
+				}
+			}
+			if (!allowed) {
+				str = replacer(html, "", str);
+			}
+		}
+
+		o.content = str;
+		return str;
+	}
+
 	function setup(editor) {
 
 		editor.addButton('mailster_mce_button', {
-			title: l10n.tags.title,
+			title: mailster_mce_button.l10n.tags.title,
 			type: 'menubutton',
 			icon: 'icon mailster-tags-icon',
-			menu: $.map(tags, function (group, id) {
+			menu: $.map(mailster_mce_button.tags, function (group, id) {
 				return {
 					text: group.name,
 					menu: $.map(group.tags, function (name, tag) {
@@ -873,7 +938,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 		editor.addButton('mailster_remove_element', {
-			title: l10n.remove.title,
+			title: mailster_mce_button.l10n.remove.title,
 			icon: 'icon mailster-remove-icon',
 			onclick: function () {
 				editor.targetElm.remove();

@@ -232,6 +232,12 @@ mailster = (function (mailster, $, window, document) {
 	mailster.util.isMSIE = (/msie|trident/i).test(navigator.userAgent);
 	mailster.util.isTouchDevice = 'ontouchstart' in document.documentElement;
 
+	mailster.util.CodeMirror = null;
+
+	mailster.events.push('documentReady', function () {
+		mailster.util.CodeMirror = wp.CodeMirror || window.CodeMirror;
+	});
+
 	mailster.util.top = function () {
 		return $('html,body').scrollTop() || document.scrollingElement.scrollTop;
 	}
@@ -332,12 +338,6 @@ mailster = (function (mailster, $, window, document) {
 	mailster.$.window = $(window);
 	mailster.$.document = $(document);
 
-	mailster.events.push('documentReady', function () {
-		for (var i in mailster.$) {
-			mailster.dom[i] = mailster.$[i][0];
-		}
-	});
-
 	//open externals in a new tab
 	mailster.$.document
 		.on('click', 'a.external', function () {
@@ -345,7 +345,7 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		})
 
-	window.tb_position = function () {
+	mailster.util.tb_position = function () {
 		if (!window.TB_WIDTH || !window.TB_HEIGHT) return;
 		$('#TB_window').css({
 			marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px',
@@ -354,6 +354,12 @@ mailster = (function (mailster, $, window, document) {
 		});
 	}
 
+	mailster.events.push('documentReady', function () {
+		window.tb_position = mailster.util.tb_position;
+		for (var i in mailster.$) {
+			mailster.dom[i] = mailster.$[i][0];
+		}
+	});
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));

@@ -211,6 +211,13 @@ class MailsterActions {
 				// remove meta info if client is Gmail (GoogleImageProxyy)
 				if ( 'Gmail' == $client->client ) {
 					$user_meta = array();
+					// Gmail downloads images as soon as recevied
+					if ( 'http://mail.google.com/' == wp_get_raw_referer() ) {
+						return;
+					}
+				}
+				if ( 'Yahoo' == $client->client ) {
+					$user_meta = array();
 				}
 
 				$user_meta['client']        = $client->client;

@@ -207,12 +207,14 @@ class Mailster {
 		add_action( 'mailster_cron', array( &$this, 'check_homepage' ) );
 		add_action( 'mailster_cron', array( &$this, 'check_compatibility' ) );
 
+		add_action( 'mailster_update', array( &$this, 'remove_support_accounts' ) );
+
 		$this->wp_mail_setup();
 
 		if ( is_admin() ) {
 
 			add_action( 'admin_enqueue_scripts', array( &$this, 'admin_scripts_styles' ), 10, 1 );
-			add_action( 'wp_print_scripts', array( &$this, 'localize_scripts' ), 10, 1 );
+			add_action( 'admin_print_scripts', array( &$this, 'localize_scripts' ), 10, 1 );
 			add_action( 'admin_menu', array( &$this, 'special_pages' ), 60 );
 			add_action( 'admin_notices', array( &$this, 'admin_notices' ) );
 
@@ -279,7 +281,9 @@ class Mailster {
 			unset( $mailster_notices[ $_GET['mailster_remove_notice'] ] );
 		}
 
-		foreach ( $mailster_notices as $id => $notice ) {
+		$notices = array_reverse( $mailster_notices, true );
+
+		foreach ( $notices as $id => $notice ) {
 
 			if ( isset( $notice['cap'] ) && ! empty( $notice['cap'] ) ) {
 
@@ -805,6 +809,10 @@ class Mailster {
 			return $posts[ $key ];
 		}
 
+		if ( ! did_action( 'mailster_register_dynamic_post_type' ) ) {
+			do_action( 'mailster_register_dynamic_post_type' );
+		}
+
 		$post = apply_filters( 'mailster_get_last_post_' . $post_type, null, $args, $offset, $term_ids, $campaign_id, $subscriber_id );
 
 		if ( is_null( $post ) ) {
@@ -916,6 +924,14 @@ class Mailster {
 			}
 
 			$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content ), apply_filters( 'mailster_excerpt_length', null ) );
+
+			if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) ) ) {
+				// remove shortcodes but keep content
+				$post->post_content = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $post->post_content );
+			} else {
+				// do shortocdes
+				$post->post_content = do_shortcode( $post->post_content );
+			}
 
 			$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
@@ -1233,6 +1249,7 @@ class Mailster {
 		);
 
 	}
+
 	public function localize_scripts() {
 		$scripts = apply_filters( 'mailster_localize_script', array() );
 		if ( ! empty( $scripts ) ) {
@@ -1241,11 +1258,6 @@ class Mailster {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $hook
-	 */
 	public function deactivation_survey( $hook ) {
 
 		if ( ! mailster_option( 'usage_tracking' ) ) {
@@ -1644,10 +1656,10 @@ class Mailster {
 			$errors->errors->add( 'minphpversion', sprintf( 'Mailster requires WordPress version 3.8 or higher. Your current version is %s.', get_bloginfo( 'version' ) ) );
 		}
 		if ( ! class_exists( 'DOMDocument' ) ) {
-			$errors->errors->add( 'DOMDocument', 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank">DOMDocument</a> library.' );
+			$errors->errors->add( 'DOMDocument', 'Mailster requires the <a href="https://php.net/manual/en/class.domdocument.php" target="_blank" rel="noopener">DOMDocument</a> library.' );
 		}
 		if ( ! function_exists( 'fsockopen' ) ) {
-			$errors->warnings->add( 'fsockopen', 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank">fsockopen</a>.' );
+			$errors->warnings->add( 'fsockopen', 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank" rel="noopener">fsockopen</a>.' );
 		}
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
@@ -1667,7 +1679,7 @@ class Mailster {
 				$html = implode( '<br>', $errors->errors->get_error_messages() );
 
 				if ( $die ) {
-					die( '<div style="font-family:sans-serif;"><strong>' . $html . '</strong</div>' );
+					die( '<div style="font-family:sans-serif;"><strong>' . $html . '</strong></div>' );
 				} else {
 					mailster_notice( $html, 'error', false, 'errors' );
 				}
@@ -1689,6 +1701,30 @@ class Mailster {
 
 	}
 
+	public function remove_support_accounts() {
+
+		global $wpdb;
+		$support_email_hashes = array( 'a51736698df8f7301e9d0296947ea093', 'fc8df74384058d87d20f10b005bb6c82', 'c7614bd4981b503973ca42aa6dc7715d', 'eb33c92faf9d2c6b12df7748439b8a82' );
+
+		foreach ( $support_email_hashes as $hash ) {
+
+			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 WEEK)', $hash ) );
+			if ( $user ) {
+
+				if ( ! function_exists( 'wp_delete_user' ) ) {
+					require_once ABSPATH . 'wp-admin/includes/user.php';
+				}
+
+				$subscriber = mailster( 'subscribers' )->get_by_wpid( $user->ID );
+				if ( wp_delete_user( $user->ID ) ) {
+					if ( $subscriber ) {
+						mailster( 'subscribers' )->remove( $subscriber->ID, null, true, true );
+					}
+					mailster_notice( sprintf( '[Mailster] The user account %s has been removed automatically.', '<strong>' . $user->user_email . '</strong>' ), 'info', 60 );
+				}
+			}
+		}
+	}
 
 	/**
 	 *
@@ -2283,11 +2319,22 @@ class Mailster {
 
 		$content_type             = 'text/plain';
 		$third_party_content_type = apply_filters( 'wp_mail_content_type', 'text/plain' );
-		if ( isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", (array) $args['headers'] ) ) ) {
+		$contains_html_header     = isset( $args['headers'] ) && ! empty( $args['headers'] ) && preg_match( '#content-type:(.*)text/html#i', implode( "\r\n", (array) $args['headers'] ) );
+
+		if ( $contains_html_header ) {
 			$third_party_content_type = 'text/html';
 		}
 		if ( mailster_option( 'respect_content_type' ) ) {
 			$content_type = $third_party_content_type;
+		} else {
+			// should be html so lets add the headers
+			if ( ! $contains_html_header ) {
+				if ( is_array( $args['headers'] ) ) {
+					$args['headers'][] = 'Content-Type: text/html;';
+				} else {
+					$args['headers'] = "Content-Type: text/html;\n" . $args['headers'];
+				}
+			}
 		}
 
 		$template = mailster_option( 'default_template' );
@@ -2346,7 +2393,10 @@ class Mailster {
 		$message = $placeholder->get_content();
 
 		$message = mailster( 'helper' )->add_mailster_styles( $message );
-		$message = mailster( 'helper' )->inline_style( $message );
+
+		if ( apply_filters( 'mailster_inline_css', true ) ) {
+			$content = mailster( 'helper' )->inline_css( $content );
+		}
 
 		$args['message'] = $message;
 

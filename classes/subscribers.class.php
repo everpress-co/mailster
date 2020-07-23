@@ -865,6 +865,7 @@ class MailsterSubscribers {
 	public function save_screen_options( $status, $option, $value ) {
 
 		if ( 'mailster_subscribers_per_page' == $option ) {
+			update_user_option( get_current_user_id(), 'mailster_subscribers_per_page', (int) $value );
 			return $value;
 		}
 
@@ -931,6 +932,10 @@ class MailsterSubscribers {
 
 		$entry = (array) $entry;
 
+		if ( isset( $entry['id'] ) ) {
+			$entry['ID'] = $entry['id'];
+			unset( $entry['id'] );
+		}
 		if ( isset( $entry['email'] ) ) {
 			if ( ! mailster_is_email( $entry['email'] ) ) {
 				return new WP_Error( 'invalid_email', esc_html__( 'invalid email address', 'mailster' ) );
@@ -1058,7 +1063,7 @@ class MailsterSubscribers {
 
 				if ( isset( $data['status'] ) ) {
 					if ( $data['status'] == 0 ) {
-						$this->send_confirmations( $subscriber_id, false, true );
+						$this->send_confirmations( $subscriber_id, $subscriber_notification, true );
 					}
 					if ( $data['status'] == 1 && $subscriber_notification ) {
 						$this->subscriber_notification( $subscriber_id );
@@ -1102,6 +1107,9 @@ class MailsterSubscribers {
 
 		$entry = is_string( $entry ) ? array( 'email' => $entry ) : (array) $entry;
 
+		if ( ! isset( $entry['email'] ) ) {
+			return new WP_Error( 'email_missing', esc_html__( 'You must define an email address.', 'mailster' ) );
+		}
 		$entry = wp_parse_args(
 			$entry,
 			array(
@@ -1320,7 +1328,7 @@ class MailsterSubscribers {
 	 * @param unknown $subscriber_ids
 	 * @param unknown $lists
 	 * @param unknown $remove_old     (optional)
-	 * @param unknown $added     (optional)
+	 * @param unknown $added          (optional)
 	 * @return unknown
 	 */
 	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {
@@ -2123,36 +2131,6 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @return unknown
-	 */
-	public function get_unassigned() {
-
-		global $wpdb;
-
-		$custom_fields = mailster()->get_custom_fields( true );
-
-		$sql = 'SELECT a.' . implode( ', a.', $fields ) . ', ab.list_id';
-
-		foreach ( $custom_fields as $i => $name ) {
-			$sql .= ", meta_$i.meta_value AS '$name'";
-		}
-
-		$sql .= " FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN ({$wpdb->prefix}mailster_lists AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.list_id) ON a.ID = ab.subscriber_id";
-
-		foreach ( $custom_fields as $i => $name ) {
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS meta_$i ON meta_$i.subscriber_id = a.ID AND meta_$i.meta_key = '$name'";
-		}
-
-		$sql .= ' WHERE a.status IN (' . implode( ',', $stati ) . ') AND ab.list_id IN (' . implode( ',', $listids ) . ") GROUP BY ab.list_id, a.ID LIMIT $offset, $limit";
-
-		return $wpdb->get_results( $sql );
-
-	}
-
-
-	/**
-	 *
-	 *
 	 * @param unknown $id
 	 * @param unknown $campaign_id (optional)
 	 * @param unknown $status      (optional)
@@ -2717,7 +2695,7 @@ class MailsterSubscribers {
 			}
 			$type = esc_sql( $type );
 		} elseif ( 'md5' == $type ) {
-			$type = "md5('email')";
+			$type = 'md5(`email`)';
 		} else {
 			$type = esc_sql( $type );
 		}

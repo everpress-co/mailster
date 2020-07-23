@@ -567,8 +567,28 @@ if ( $old_version ) {
 
 		case '2.4.10':
 		case '2.4.11':
-			$mailster_options['db_update_required'] = true;
+			$options['mail_opt_out']                = isset( $options['bounce'] ) && $options['bounce'];
+
+			if ( ! is_plugin_active( 'mailster-gmail/mailster-gmail.php' ) && 'gmail' == $mailster_options['deliverymethod'] ) {
+
+				if ( $mailster_option['gmail_user'] && $mailster_option['gmail_pwd'] ) {
+					$mailster_options['smtp_host']    = 'smtp.googlemail.com';
+					$mailster_options['smtp_port']    = 587;
+					$mailster_options['smtp_timeout'] = 10;
+					$mailster_options['smtp_auth']    = true;
+					$mailster_options['smtp_user']    = mailster_option( 'gmail_user' );
+					$mailster_options['smtp_pwd']     = mailster_option( 'gmail_pwd' );
+					$mailster_options['smtp_secure']  = 'tls';
+					$mailster_options['gmail_user']   = '';
+					$mailster_options['gmail_pwd']    = '';
+
+				}
+
+				mailster_notice( sprintf( esc_html__( 'The Gmail Sending Method is deprecated and will soon not work anymore! Please update to the new plugin %1$s and follow our setup guide %2$s.', 'mailster-gmail' ), '<a href="' . admin_url( 'plugin-install.php?s=mailster-gmail+everpress&tab=search&type=term' ) . '">Mailster Gmail Integration</a>', '<a href="https://kb.mailster.co/send-your-newsletters-via-gmail/" class="external">' . esc_html__( 'here', 'mailster' ) . '</a>' ), 'error', false, 'gmail_deprecated' );
+			}
+
 		default:
+			$mailster_options['db_update_required'] = true;
 			// reset translations
 			update_option( 'mailster_translation', '' );
 
