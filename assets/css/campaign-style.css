@@ -824,6 +824,16 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	width: 95%;
 	border-color: #CCD0D4;
 }
+.mailster-conditions-wrap:empty:before{
+	content: attr(data-emptytext);
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	color: #999;
+}
 .mailster_sendtest{
 	float: right;
 }
@@ -975,7 +985,7 @@ label.weekday input{
 	padding: 5px;
 	position: relative;
 }
-.mailster-conditions:empty:before{
+.mailster-conditions-render:empty:before{
 	content: attr(data-emptytext);
 	display: block;
 	position: absolute;

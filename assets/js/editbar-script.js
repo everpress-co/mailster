@@ -1402,7 +1402,7 @@ mailster = (function (mailster, $, window, document) {
 
 				} else if (type == 'codeview') {
 
-					codemirror = CodeMirror.fromTextArea(textarea.get(0), codemirrorargs);
+					codemirror = mailster.util.CodeMirror.fromTextArea(textarea.get(0), codemirrorargs);
 
 				}
 

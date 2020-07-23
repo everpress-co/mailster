@@ -1070,7 +1070,7 @@ class MailsterLists {
 
 		if ( false === ( $list_counts = mailster_cache_get( $key ) ) ) {
 
-			$sql = "SELECT a.ID, a.parent_id, COUNT(DISTINCT ab.subscriber_id) AS count FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ({$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND ab.added != 0) ON a.ID = ab.list_id";
+			$sql = "SELECT a.ID, a.parent_id, COUNT(DISTINCT ab.subscriber_id) AS count FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ({$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND (ab.added != 0 OR b.status = 0)) ON a.ID = ab.list_id";
 
 			if ( is_array( $statuses ) ) {
 				$sql .= ' AND b.status IN (' . implode( ',', array_filter( $statuses, 'is_numeric' ) ) . ')';

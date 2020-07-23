@@ -8,6 +8,14 @@ class MailsterRegister {
 		add_action( 'mailster_remove_notice_verify', array( &$this, 'verified_notice_closed' ) );
 		add_action( 'wp_version_check', array( &$this, 'verified_notice' ) );
 
+		mailster_localize_script(
+			'register',
+			array(
+				'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
+				'help'  => esc_html__( 'Help me!', 'mailster' ),
+			)
+		);
+
 	}
 
 
@@ -23,14 +31,6 @@ class MailsterRegister {
 		wp_enqueue_style( 'mailster-register-style', MAILSTER_URI . 'assets/css/register-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		wp_enqueue_script( 'mailster-register-script', MAILSTER_URI . 'assets/js/register-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-
-		mailster_localize_script(
-			'register',
-			array(
-				'error' => esc_html__( 'There was an error while processing your request!', 'mailster' ),
-				'help'  => esc_html__( 'Help me!', 'mailster' ),
-			)
-		);
 
 		$slug     = 'mailster';
 		$verified = mailster()->is_verified();
@@ -68,20 +68,6 @@ class MailsterRegister {
 				<input type="submit" class="button button-hero button-primary dashboard-register" value="<?php esc_attr_e( 'Verify Purchase Code', 'mailster' ); ?>">
 				<div class="howto">
 					<a href="https://static.mailster.co/images/purchasecode.gif" class="howto-purchasecode"><?php esc_html_e( 'Where can I find my item purchase code?', 'mailster' ); ?></a>
-					<!-- &ndash;
-					<a href="
-					<?php
-					echo add_query_arg(
-						array(
-							'action'   => 'mailster_envato_verify',
-							'slug'     => $slug,
-							'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
-						),
-						admin_url( 'admin-ajax.php' )
-					);
-					?>
-								" class="envato-signup"><?php esc_html_e( 'Register via Envato', 'mailster' ); ?></a>
-					-->
 				</div>
 			</form>
 			<form class="register_form_2" action="" method="POST">

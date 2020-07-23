@@ -1103,7 +1103,7 @@ mailster = (function (mailster, $, window, document) {
 	})
 
 	!mailster.editable && mailster.events.push('iframeLoaded', function () {
-		mailster.$.iframe.height(mailster.dom.iframe.contentWindow.document.body.scrollHeight);
+		mailster.$.iframe.height(Math.max(500, mailster.dom.iframe.contentWindow.document.body.scrollHeight));
 		mailster.clickmap.updateBadges();
 		mailster.$.iframecontents && mailster.$.iframecontents.on('click', 'a', function () {
 			window.open(this.href);
@@ -1945,7 +1945,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('heartbeat-tick', function (e, data) {
 
-			if (mailster.editable || !data.mailster[mailster.campaign_id]) return;
+			if (mailster.editable || !data.mailster || !data.mailster[mailster.campaign_id]) return;
 
 			var _data = data.mailster[mailster.campaign_id],
 				stats = $('#stats').find('.verybold'),

@@ -89,23 +89,6 @@ class MailsterMail {
 			add_action( 'mailster_presend', array( &$this, 'pre_send' ), 1, 10 );
 			add_action( 'mailster_dosend', array( &$this, 'do_send' ), 1, 10 );
 
-		} elseif ( $this->deliverymethod == 'gmail' ) {
-
-			$this->mailer->IsSMTP();
-
-			$this->mailer->Host     = 'smtp.googlemail.com';
-			$this->mailer->Port     = 587;
-			$this->mailer->SMTPAuth = true;
-
-			$this->mailer->Username = mailster_option( 'gmail_user' );
-			$this->mailer->Password = mailster_option( 'gmail_pwd' );
-
-			$this->mailer->SMTPSecure    = 'tls';
-			$this->mailer->SMTPKeepAlive = true;
-
-			add_action( 'mailster_presend', array( &$this, 'pre_send' ), 1, 10 );
-			add_action( 'mailster_dosend', array( &$this, 'do_send' ), 1, 10 );
-
 		} elseif ( $this->deliverymethod == 'simple' ) {
 
 			$method = mailster_option( 'simplemethod' );
@@ -545,6 +528,9 @@ class MailsterMail {
 
 		$this->content = $placeholder->get_content();
 		$this->content = mailster( 'helper' )->prepare_content( $this->content );
+		if ( apply_filters( 'mailster_inline_css', true ) ) {
+			$content = mailster( 'helper' )->inline_css( $this->content );
+		}
 
 		$placeholder->set_content( $this->subject );
 		$this->subject = $placeholder->get_content();

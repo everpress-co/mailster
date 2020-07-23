@@ -624,7 +624,7 @@ class MailsterQueue {
 									sleep( 1 );
 								}
 
-								if ( $new_id = mailster( 'campaigns' )->autoresponder_to_campaign( $campaign->ID, $send_offset, $autoresponder_meta['issue'], $index_offset ) ) {
+								if ( $new_id = mailster( 'campaigns' )->autoresponder_to_campaign( $campaign->ID, $send_offset, $autoresponder_meta['issue'], false, $index_offset ) ) {
 
 									$created++;
 									$new_campaign = mailster( 'campaigns' )->get( $new_id );

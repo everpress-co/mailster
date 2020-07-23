@@ -865,6 +865,7 @@ class MailsterSubscribers {
 	public function save_screen_options( $status, $option, $value ) {
 
 		if ( 'mailster_subscribers_per_page' == $option ) {
+			update_user_option( get_current_user_id(), 'mailster_subscribers_per_page', (int) $value );
 			return $value;
 		}
 
@@ -931,6 +932,10 @@ class MailsterSubscribers {
 
 		$entry = (array) $entry;
 
+		if ( isset( $entry['id'] ) ) {
+			$entry['ID'] = $entry['id'];
+			unset( $entry['id'] );
+		}
 		if ( isset( $entry['email'] ) ) {
 			if ( ! mailster_is_email( $entry['email'] ) ) {
 				return new WP_Error( 'invalid_email', esc_html__( 'invalid email address', 'mailster' ) );
@@ -1058,7 +1063,7 @@ class MailsterSubscribers {
 
 				if ( isset( $data['status'] ) ) {
 					if ( $data['status'] == 0 ) {
-						$this->send_confirmations( $subscriber_id, false, true );
+						$this->send_confirmations( $subscriber_id, $subscriber_notification, true );
 					}
 					if ( $data['status'] == 1 && $subscriber_notification ) {
 						$this->subscriber_notification( $subscriber_id );
@@ -2682,7 +2687,7 @@ class MailsterSubscribers {
 			}
 			$type = esc_sql( $type );
 		} elseif ( 'md5' == $type ) {
-			$type = "md5('email')";
+			$type = 'md5(`email`)';
 		} else {
 			$type = esc_sql( $type );
 		}

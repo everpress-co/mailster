@@ -29,7 +29,7 @@ class MailsterPlaceholder {
 	 */
 	public function __construct( $content = '', $deprecated = null ) {
 
-		$this->content = $content;
+		$this->set_content( $content );
 
 	}
 
@@ -365,11 +365,6 @@ class MailsterPlaceholder {
 				$this->content = str_replace( '<!--Mailster:styleblock' . $i . '-->', $style, $this->content );
 			}
 		}
-
-		// handle shortcodes.
-		$this->content = apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) )
-			? strip_shortcodes( $this->content )
-			: do_shortcode( $this->content );
 
 		return $this->content;
 
