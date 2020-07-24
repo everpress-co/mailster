@@ -3,7 +3,7 @@
 		<th scope="row"><?php esc_html_e( 'Number of mails sent', 'mailster' ); ?></th>
 		<td>
 			<p><?php printf( esc_html__( 'Send max %s emails in one batch.', 'mailster' ), '<input type="number" min="1" name="mailster_options[send_at_once]" value="' . mailster_option( 'send_at_once' ) . '" class="small-text" ' . disabled( mailster_option( 'auto_send_at_once' ), true, false ) . '>' ); ?></p>
-			<p><label><input type="hidden" name="mailster_options[auto_send_at_once]" value=""><input class="toggle-auto_send_at_once" type="checkbox" name="mailster_options[auto_send_at_once]" value="1" <?php checked( mailster_option( 'auto_send_at_once' ) ); ?>> <?php esc_html_e( 'automatically calculate this value.', 'mailster' ); ?></label></p>
+			<p><label><input type="hidden" name="mailster_options[auto_send_at_once]" value=""><input class="toggle-auto_send_at_once" type="checkbox" name="mailster_options[auto_send_at_once]" value="1" <?php checked( mailster_option( 'auto_send_at_once' ) ); ?>> <?php esc_html_e( 'automatically calculate this value.', 'mailster' ); ?></label> <a class="infolink external" href="#" title="<?php esc_attr_e( 'Mailster tries to calculate this value based on your cron interval. It usually takes a couple of batches until this number will level off.', 'mailster' ); ?>"></a></p>
 
 		</td>
 	</tr>
