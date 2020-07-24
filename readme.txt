@@ -94,6 +94,7 @@ Xaver Birsak – https://everpress.co
 * improved: consistent behavior on handling shortcodes
 * fixed: problem with third part shortcodes in excerpt
 * fixed: several small bugfixes
+* fixed: wrong counting on dashboard widget
 * improved: automatically remove support accounts after one week
 * improved: you can now click on form fields to add them to the form
 * improved: added missing aria labels
