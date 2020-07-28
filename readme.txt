@@ -95,6 +95,7 @@ Xaver Birsak – https://everpress.co
 * fixed: problem with third part shortcodes in excerpt
 * fixed: several small bugfixes
 * fixed: wrong counting on dashboard widget
+* fixed: calculation of aggregated campaigns not accurate
 * improved: automatically remove support accounts after one week
 * improved: you can now click on form fields to add them to the form
 * improved: added missing aria labels
