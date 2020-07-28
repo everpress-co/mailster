@@ -11,6 +11,8 @@
 		<?php endif; ?>
 		<p><label><input type="hidden" name="mailster_options[check_honeypot]" value=""><input type="checkbox" name="mailster_options[check_honeypot]" value="1" <?php checked( mailster_option( 'check_honeypot' ) ); ?> ><?php esc_html_e( 'Honeypot', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Add an invisible input field to trick bots during signup.', 'mailster' ); ?></span>
 		</p>
+		<p><label><input type="hidden" name="mailster_options[check_ip]" value=""><input type="checkbox" name="mailster_options[check_ip]" value="1" <?php checked( mailster_option( 'check_ip' ) ); ?> ><?php esc_html_e( 'IP Check', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'This prevents a signup from an IP if there\'s already a pending subscriber with the same IP address. Most bots signup with the same IP address so if this checked an additional signup can only be made once the previous email has been confirmed. Only works if double-opt-in is enabled.', 'mailster' ); ?></span>
+		</p>
 		</td>
 	</tr>
 	<tr valign="top">

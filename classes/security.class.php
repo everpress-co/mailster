@@ -60,16 +60,21 @@ class MailsterSecurity {
 
 		// // check for domains
 		if ( $this->match( $domain, mailster_option( 'blocked_domains' ) ) ) {
-			return new WP_Error( 'error_blacklisted', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
+			return new WP_Error( 'error_blocked', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
 		}
 		// check for domains
 		if ( $this->match( $ip, mailster_option( 'blocked_ips' ), true ) ) {
-			return new WP_Error( 'error_blacklisted', esc_html__( 'Sorry, you cannot signup right now.', 'mailster' ), 'email' );
+			return new WP_Error( 'error_blocked', esc_html__( 'Sorry, you cannot signup right now.', 'mailster' ), 'email' );
 		}
 
 		// check DEP
 		if ( mailster_option( 'reject_dep' ) && $this->match( $domain, $this->get_dep_domains() ) ) {
 			return new WP_Error( 'error_dep', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
+		}
+
+		// check IP record
+		if ( mailster_option( 'check_ip' ) && $this->ip_has_pending_subscriber( $ip ) ) {
+			return new WP_Error( 'error_ip', esc_html__( 'Sorry, you cannot signup right now.', 'mailster' ), 'email' );
 		}
 
 		// check MX record
@@ -236,7 +241,19 @@ class MailsterSecurity {
 
 	}
 
-	function is_akismet_block( $email, $ip ) {
+	private function ip_has_pending_subscriber( $ip ) {
+		global $wpdb;
+
+		$sql = "SELECT COUNT(DISTINCT ID) FROM `{$wpdb->prefix}mailster_subscribers` WHERE (ip_confirm = %s OR ip_signup = %s) AND status = 0";
+
+		if ( $wpdb->get_var( $wpdb->prepare( $sql, $ip, $ip ) ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private function is_akismet_block( $email, $ip ) {
 		if ( ! class_exists( 'Akismet' ) ) {
 			return false;
 		}
