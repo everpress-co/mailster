@@ -493,7 +493,7 @@ class MailsterTemplate {
 			}
 			$list[] = array(
 				'name' => $label,
-				'html' => $this->get_html_from_node( $modules->item( $i ) ),
+				'html' => $this->make_paths_absolute( $this->get_html_from_node( $modules->item( $i ) ) ),
 			);
 		}
 

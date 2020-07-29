@@ -1901,7 +1901,7 @@ class Mailster {
             ) $collate;",
 
 				"CREATE TABLE {$wpdb->prefix}mailster_lists (
-                `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `parent_id` bigint(20) unsigned NOT NULL,
                 `name` varchar(191) NOT NULL,
                 `slug` varchar(191) NOT NULL,
@@ -1923,7 +1923,7 @@ class Mailster {
             ) $collate;",
 
 				"CREATE TABLE {$wpdb->prefix}mailster_forms (
-                `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `name` varchar(191) NOT NULL DEFAULT '',
                 `submit` varchar(191) NOT NULL DEFAULT '',
                 `asterisk` tinyint(1) DEFAULT 1,
