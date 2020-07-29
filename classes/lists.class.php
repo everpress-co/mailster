@@ -346,6 +346,9 @@ class MailsterLists {
 			}
 		}
 
+		if ( isset( $data['ID'] ) && empty( $data['ID'] ) ) {
+			unset( $data['ID'] );
+		}
 		if ( isset( $data['name'] ) && empty( $data['name'] ) ) {
 			$data['name'] = esc_html__( 'undefined', 'mailster' );
 		}

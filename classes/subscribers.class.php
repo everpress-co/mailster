@@ -984,6 +984,9 @@ class MailsterSubscribers {
 			$lists = $entry['_lists'];
 			unset( $entry['_lists'] );
 		}
+		if ( isset( $entry['ID'] ) && empty( $entry['ID'] ) ) {
+			unset( $entry['ID'] );
+		}
 
 		foreach ( $entry as $key => $value ) {
 			if ( isset( $field_names[ $key ] ) ) {
