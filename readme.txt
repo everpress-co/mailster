@@ -97,6 +97,7 @@ Xaver Birsak – https://everpress.co
 * fixed: wrong counting on dashboard widget
 * fixed: calculation of aggregated campaigns not accurate
 * fixed: relative path in modules
+* fixed: High DPI images on dynamic posts tags got wrong eight in some cases.
 * improved: automatically remove support accounts after one week
 * improved: you can now click on form fields to add them to the form
 * improved: added missing aria labels

@@ -857,7 +857,7 @@ class MailsterPlaceholder {
 								if ( $org_src[1] && $org_src[2] ) {
 									$asp    = $org_src[1] / $org_src[2];
 									$height = $height ? $height : round( ( $width / $asp ) / $factor );
-									$img    = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height, $crop, $original );
+									$img    = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height * $factor, $crop, $original );
 								} else {
 									$img = array( 'url' => $org_src[0] );
 								}
