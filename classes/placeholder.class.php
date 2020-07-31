@@ -1083,6 +1083,11 @@ class MailsterPlaceholder {
 				if ( isset( $this->placeholder[ $search ] ) ) {
 					$replace = $this->placeholder[ $search ];
 
+					// using preview text fix from https://www.litmus.com/blog?p=4367
+					if ( $replace && '{preheader}' == $search && apply_filters( 'mailster_preview_text_fix', true ) ) {
+						$replace .= str_repeat( '&nbsp;&zwnj;', 220 - strlen( $replace ) );
+					}
+
 					// tag is a custom tag
 				} elseif ( isset( $this->placeholder[ '{' . $tag . '}' ] ) ) {
 					$replace = $this->placeholder[ '{' . $tag . '}' ];
