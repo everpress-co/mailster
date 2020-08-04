@@ -91,7 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.12 =
 
 * added: `mailster_inline_css` filter hook to disable auto inline css
-* fixed: problem with third part shortcodes in excerpt
+* fixed: problem with third party shortcodes in excerpt
 * fixed: several small bugfixes
 * fixed: wrong counting on dashboard widget
 * fixed: calculation of aggregated campaigns not accurate
