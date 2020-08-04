@@ -73,7 +73,7 @@ class MailsterManage {
 				'error_export'         => esc_html__( 'There was an error while exporting', 'mailster' ),
 				'confirm_import'       => esc_html__( 'Do you really like to import these contacts?', 'mailster' ),
 				'import_complete'      => esc_html__( 'Import complete!', 'mailster' ),
-				'confirm_delete'       => esc_html__( 'You are about to delete these subscribers permanently. This step is irreversible!', 'mailster' ) . "\n" . sprintf( esc_html__( 'Type "%s" to confirm deletion', 'mailster' ), 'DELETE' ),
+				'confirm_delete'       => esc_html__( 'You are about to delete these subscribers permanently. This step is irreversible!', 'mailster' ) . "\n" . sprintf( esc_html__( 'Type %s to confirm deletion', 'mailster' ), '"DELETE"' ),
 				'delete_n_subscribers' => esc_html__( 'Delete %s Subscribers permanently', 'mailster' ),
 				'onbeforeunloadimport' => esc_html__( 'You are currently importing subscribers! If you leave the page all pending subscribers don\'t get imported!', 'mailster' ),
 				'onbeforeunloadexport' => esc_html__( 'Your download is preparing! If you leave this page the progress will abort!', 'mailster' ),

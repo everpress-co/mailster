@@ -4202,6 +4202,9 @@ class MailsterCampaigns {
 			$content = mailster()->sanitize_content( $campaign->post_content, $campaign_meta['head'] );
 
 			$content = mailster( 'helper' )->prepare_content( $content );
+			if ( apply_filters( 'mailster_inline_css', true, $campaign->ID, $subscriber->ID ) ) {
+				$content = mailster( 'helper' )->inline_css( $content );
+			}
 
 			mailster_cache_set( 'campaign_send_' . $campaign->ID, $content );
 
@@ -4249,7 +4252,9 @@ class MailsterCampaigns {
 		$content = mailster( 'helper' )->strip_structure_html( $content );
 
 		// maybe inline again
-		$content = mailster( 'helper' )->inline_style( $content );
+		if ( apply_filters( 'mailster_inline_css', true, $campaign->ID, $subscriber->ID ) ) {
+			$content = mailster( 'helper' )->inline_css( $content );
+		}
 
 		$mail->content = apply_filters( 'mailster_campaign_content', $content, $campaign, $subscriber );
 

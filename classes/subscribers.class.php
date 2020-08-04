@@ -865,6 +865,7 @@ class MailsterSubscribers {
 	public function save_screen_options( $status, $option, $value ) {
 
 		if ( 'mailster_subscribers_per_page' == $option ) {
+			update_user_option( get_current_user_id(), 'mailster_subscribers_per_page', (int) $value );
 			return $value;
 		}
 
@@ -931,6 +932,10 @@ class MailsterSubscribers {
 
 		$entry = (array) $entry;
 
+		if ( isset( $entry['id'] ) ) {
+			$entry['ID'] = $entry['id'];
+			unset( $entry['id'] );
+		}
 		if ( isset( $entry['email'] ) ) {
 			if ( ! mailster_is_email( $entry['email'] ) ) {
 				return new WP_Error( 'invalid_email', esc_html__( 'invalid email address', 'mailster' ) );
@@ -978,6 +983,9 @@ class MailsterSubscribers {
 		if ( isset( $entry['_lists'] ) ) {
 			$lists = $entry['_lists'];
 			unset( $entry['_lists'] );
+		}
+		if ( isset( $entry['ID'] ) && empty( $entry['ID'] ) ) {
+			unset( $entry['ID'] );
 		}
 
 		foreach ( $entry as $key => $value ) {
@@ -2682,7 +2690,7 @@ class MailsterSubscribers {
 			}
 			$type = esc_sql( $type );
 		} elseif ( 'md5' == $type ) {
-			$type = "md5('email')";
+			$type = 'md5(`email`)';
 		} else {
 			$type = esc_sql( $type );
 		}
@@ -3481,7 +3489,7 @@ class MailsterSubscribers {
 
 			$old_status = $subscriber->status;
 
-			if ( false !== $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_subscribers SET status = %d WHERE ID = %d", $new_status, $subscriber->ID ) ) ) {
+			if ( false !== $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_subscribers SET status = %d, updated = %d WHERE ID = %d", $new_status, time(), $subscriber->ID ) ) ) {
 				if ( ! $silent ) {
 					do_action( 'mailster_subscriber_change_status', $new_status, $old_status, $subscriber );
 				}

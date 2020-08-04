@@ -1080,11 +1080,6 @@ class MailsterHelper {
 		// custom styles
 		$content = $this->add_mailster_styles( $content );
 
-		// Inline CSS
-		$content = $this->inline_style( $content );
-
-		$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
-
 		return apply_filters( 'mailster_prepare_content', $content );
 
 	}
@@ -1097,6 +1092,17 @@ class MailsterHelper {
 	 * @return unknown
 	 */
 	public function inline_style( $content ) {
+		return $this->inline_css( $content );
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $content
+	 * @return unknown
+	 */
+	public function inline_css( $content ) {
 
 		// save comments with conditional stuff
 		preg_match_all( '#<!--\s?\[\s?if(.*)?>(.*)?<!\[endif\]-->#sU', $content, $comments );
@@ -1154,6 +1160,9 @@ class MailsterHelper {
 					$content = str_replace( '/*Mailster:html_data_image_' . $i . '*/', $data_image, $content );
 				}
 			}
+
+			$content = str_replace( array( '%7B', '%7D' ), array( '{', '}' ), $content );
+
 		}
 
 		foreach ( $comments[0] as $i => $comment ) {
@@ -1852,7 +1861,15 @@ class MailsterHelper {
 			return $excerpt;
 		}
 
-		$string            = str_replace( "\n", '<!--Mailster:newline-->', $org_string );
+		if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) ) ) {
+			// remove shortcodes but keep content
+			$stripped_string = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $org_string );
+		} else {
+			// do shortocdes
+			$stripped_string = do_shortcode( $org_string );
+		}
+
+		$string            = str_replace( "\n", '<!--Mailster:newline-->', $stripped_string );
 		$string            = html_entity_decode( wp_trim_words( htmlentities( $string ), $length, $more ) );
 		$maybe_broken_html = str_replace( '<!--Mailster:newline-->', "\n", $string );
 
@@ -1872,7 +1889,7 @@ class MailsterHelper {
 
 			$excerpt = $doc->saveHTML( $body );
 		} else {
-			$excerpt = $org_string;
+			$excerpt = $stripped_string;
 		}
 
 		$excerpt = trim( strip_tags( $excerpt, '<p><br><a><strong><em><i><b><ul><ol><li><span>' ) );
@@ -2043,9 +2060,7 @@ class MailsterHelper {
 		switch ( $command ) {
 			case 'search':
 				$path     = 'search/photos';
-				$defaults = array(
-					'per_page' => 30,
-				);
+				$defaults = array( 'per_page' => 30 );
 				$args     = wp_parse_args( $args, $defaults );
 				if ( empty( $args['query'] ) ) {
 					unset( $args['query'] );
@@ -2067,21 +2082,14 @@ class MailsterHelper {
 				break;
 		}
 
-		$headers = array(
-			'Authorization' => 'Client-ID ' . $key,
-		);
+		$headers = array( 'Authorization' => 'Client-ID ' . $key );
 
 		$url = add_query_arg( $args, $endpoint . $path );
 
 		$cache_key = 'mailster_unsplash_' . md5( $url );
 
 		if ( false === ( $body = get_transient( $cache_key ) ) ) {
-			$response = wp_remote_get(
-				$url,
-				array(
-					'headers' => $headers,
-				)
-			);
+			$response = wp_remote_get( $url, array( 'headers' => $headers ) );
 
 			if ( is_wp_error( $response ) ) {
 				return $response;

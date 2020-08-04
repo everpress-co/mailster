@@ -109,7 +109,26 @@ mailster = (function (mailster, $, window, document) {
 				$('#mailster-register-panel').slideUp(400);
 			})
 		})
-		.on('click', '.toggle-indicator', toggleMetaBoxes)
+		.on('click', '.order-lower-indicator', function () {
+			var current = $(this).closest('.postbox'),
+				sibling = current.next();
+			if (sibling.length) {
+				current.insertAfter(sibling);
+			}
+			orderMetaBoxes();
+		})
+		.on('click', '.order-higher-indicator', function () {
+			var current = $(this).closest('.postbox'),
+				sibling = current.prev();
+			if (sibling.length) {
+				current.insertBefore(sibling);
+			}
+			orderMetaBoxes();
+		})
+		.on('click', '.toggle-indicator', function () {
+			$(this).closest('.postbox').toggleClass('closed');
+			toggleMetaBoxes();
+		})
 		.on('click', '.hide-postbox-tog', function () {
 
 			$('#' + $(this).val())[$(this).is(':checked') ? 'show' : 'hide']().removeClass('closed');

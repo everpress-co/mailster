@@ -468,6 +468,9 @@ class MailsterNotification {
 
 		$content = $placeholder->get_content();
 		$content = mailster( 'helper' )->prepare_content( $content );
+		if ( apply_filters( 'mailster_inline_css', true ) ) {
+			$content = mailster( 'helper' )->inline_css( $content );
+		}
 
 		$this->mail->content = $content;
 
