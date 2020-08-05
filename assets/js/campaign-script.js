@@ -1103,7 +1103,7 @@ mailster = (function (mailster, $, window, document) {
 	})
 
 	!mailster.editable && mailster.events.push('iframeLoaded', function () {
-		mailster.$.iframe.height(mailster.dom.iframe.contentWindow.document.body.scrollHeight);
+		mailster.$.iframe.height(Math.max(500, mailster.dom.iframe.contentWindow.document.body.scrollHeight));
 		mailster.clickmap.updateBadges();
 		mailster.$.iframecontents && mailster.$.iframecontents.on('click', 'a', function () {
 			window.open(this.href);

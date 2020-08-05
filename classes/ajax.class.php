@@ -1346,7 +1346,7 @@ class MailsterAjax {
 							: $html .= '<div class="no-feature"></div>';
 						$html       .= '<span class="post-type">' . $pts[ $post->post_type ]->labels->singular_name . '</span>';
 						$html       .= '<strong>' . $post->post_title . '' . ( $post->post_status != 'publish' ? ' <em class="post-status wp-ui-highlight">' . $wp_post_statuses[ $post->post_status ]->label . '</em>' : '' ) . '</strong>';
-						$html       .= '<span class="excerpt">' . trim( wp_trim_words( strip_shortcodes( $post->post_content ), 25 ) ) . '</span>';
+						$html       .= '<span class="excerpt">' . trim( wp_trim_words( preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $post->post_content ), 25 ) ) . '</span>';
 						$html       .= '<span class="date">' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $post->post_date ) ) . '</span>';
 						$html       .= '</li>';
 					}
@@ -1506,9 +1506,14 @@ class MailsterAjax {
 				}
 
 				$content = str_replace( '<img ', '<img editable ', $content );
-				$content = ( $strip_shortcodes ) ? strip_shortcodes( $content ) : do_shortcode( $content );
-
-				$excerpt = ( $strip_shortcodes ) ? strip_shortcodes( $excerpt ) : do_shortcode( $excerpt );
+				if ( $strip_shortcodes ) {
+					// remove shortcodes but keep content
+					$content = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $content );
+					$excerpt = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $excerpt );
+				} else {
+					$content = do_shortcode( $content );
+					$excerpt = do_shortcode( $excerpt );
+				}
 
 				$data = array(
 					'title'   => $post->post_title,
@@ -2532,7 +2537,7 @@ class MailsterAjax {
 
 				if ( is_wp_error( $result ) ) {
 					$return['error'] = mailster()->get_update_error( $result );
-					$return['code']  = $result->get_error_code();
+					$return['code']  = str_replace( '_', '', $result->get_error_code() );
 
 				} else {
 					update_option( 'mailster_username', $result['username'] );

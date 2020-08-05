@@ -6,23 +6,23 @@ $file     = $this->get_file();
 ?>
 <div id="optionbar" class="optionbar">
 	<ul class="alignleft">
-		<li class="no-border-left"><a class="mailster-icon undo disabled" title="<?php esc_html_e( 'undo', 'mailster' ); ?>">&nbsp;</a></li>
-		<li><a class="mailster-icon redo disabled" title="<?php esc_html_e( 'redo', 'mailster' ); ?>">&nbsp;</a></li>
+		<li class="no-border-left"><a class="mailster-icon undo disabled" title="<?php esc_html_e( 'undo', 'mailster' ); ?>" aria-label="<?php esc_html_e( 'undo', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon redo disabled" title="<?php esc_html_e( 'redo', 'mailster' ); ?>" aria-label="<?php esc_html_e( 'redo', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php if ( ! empty( $module_list ) ) : ?>
-		<li><a class="mailster-icon clear-modules" title="<?php esc_html_e( 'remove modules', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon clear-modules" title="<?php esc_html_e( 'remove modules', 'mailster' ); ?>" aria-label="<?php esc_html_e( 'remove modules', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
 		<?php if ( current_user_can( 'mailster_see_codeview' ) ) : ?>
-		<li><a class="mailster-icon code" title="<?php esc_html_e( 'toggle HTML/code view', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon code" title="<?php esc_html_e( 'toggle HTML/code view', 'mailster' ); ?>" aria-label="<?php esc_html_e( 'toggle HTML/code view', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
 		<?php if ( current_user_can( 'mailster_change_plaintext' ) ) : ?>
-		<li><a class="mailster-icon plaintext" title="<?php esc_html_e( 'toggle HTML/Plain-Text view', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon plaintext" title="<?php esc_html_e( 'toggle HTML/Plain-Text view', 'mailster' ); ?>" aria-label="<?php esc_html_e( 'toggle HTML/Plain-Text view', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
-		<li class="no-border-right"><a class="mailster-icon preview" title="<?php esc_html_e( 'preview', 'mailster' ); ?>">&nbsp;</a></li>
+		<li class="no-border-right"><a class="mailster-icon preview" title="<?php esc_html_e( 'preview', 'mailster' ); ?>" aria-label="<?php esc_html_e( 'preview', 'mailster' ); ?>">&nbsp;</a></li>
 	</ul>
 	<ul class="alignright">
-		<li><a class="mailster-icon dfw" title="<?php esc_html_e( 'Distraction-free edit mode', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon dfw" title="<?php esc_html_e( 'Distraction-free edit mode', 'mailster' ); ?>" aria-label="<?php esc_html_e( 'Distraction-free edit mode', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php if ( $templates && current_user_can( 'mailster_save_template' ) ) : ?>
-		<li><a class="mailster-icon save-template" title="<?php esc_html_e( 'save template', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon save-template" title="<?php esc_html_e( 'save template', 'mailster' ); ?>" aria-label="<?php esc_html_e( 'save template', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
 		<?php
 		if ( $templates && current_user_can( 'mailster_change_template' ) ) :

@@ -656,6 +656,10 @@ class MailsterForms {
 			$entry['style'] = json_encode( $entry['style'] );
 		}
 
+		if ( isset( $entry['ID'] ) && empty( $entry['ID'] ) ) {
+			unset( $entry['ID'] );
+		}
+
 		$wpdb->suppress_errors();
 
 		if ( $wpdb->insert( "{$wpdb->prefix}mailster_forms", $entry ) ) {

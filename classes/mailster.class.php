@@ -207,6 +207,8 @@ class Mailster {
 		add_action( 'mailster_cron', array( &$this, 'check_homepage' ) );
 		add_action( 'mailster_cron', array( &$this, 'check_compatibility' ) );
 
+		add_action( 'mailster_update', array( &$this, 'remove_support_accounts' ) );
+
 		$this->wp_mail_setup();
 
 		if ( is_admin() ) {
@@ -922,6 +924,14 @@ class Mailster {
 			}
 
 			$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content ), apply_filters( 'mailster_excerpt_length', null ) );
+
+			if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) ) ) {
+				// remove shortcodes but keep content
+				$post->post_content = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $post->post_content );
+			} else {
+				// do shortocdes
+				$post->post_content = do_shortcode( $post->post_content );
+			}
 
 			$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
@@ -1686,6 +1696,30 @@ class Mailster {
 
 	}
 
+	public function remove_support_accounts() {
+
+		global $wpdb;
+		$support_email_hashes = array( 'a51736698df8f7301e9d0296947ea093', 'fc8df74384058d87d20f10b005bb6c82', 'c7614bd4981b503973ca42aa6dc7715d', 'eb33c92faf9d2c6b12df7748439b8a82' );
+
+		foreach ( $support_email_hashes as $hash ) {
+
+			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 MONTH)', $hash ) );
+			if ( $user ) {
+
+				if ( ! function_exists( 'wp_delete_user' ) ) {
+					require_once ABSPATH . 'wp-admin/includes/user.php';
+				}
+
+				$subscriber = mailster( 'subscribers' )->get_by_wpid( $user->ID );
+				if ( wp_delete_user( $user->ID ) ) {
+					if ( $subscriber ) {
+						mailster( 'subscribers' )->remove( $subscriber->ID, null, true, true );
+					}
+					mailster_notice( sprintf( '[Mailster] The user account %s has been removed automatically.', '<strong>' . $user->user_email . '</strong>' ), 'info', 60 );
+				}
+			}
+		}
+	}
 
 	/**
 	 *
@@ -1871,7 +1905,7 @@ class Mailster {
             ) $collate;",
 
 				"CREATE TABLE {$wpdb->prefix}mailster_lists (
-                `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `parent_id` bigint(20) unsigned NOT NULL,
                 `name` varchar(191) NOT NULL,
                 `slug` varchar(191) NOT NULL,
@@ -1893,7 +1927,7 @@ class Mailster {
             ) $collate;",
 
 				"CREATE TABLE {$wpdb->prefix}mailster_forms (
-                `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `name` varchar(191) NOT NULL DEFAULT '',
                 `submit` varchar(191) NOT NULL DEFAULT '',
                 `asterisk` tinyint(1) DEFAULT 1,
