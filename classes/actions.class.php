@@ -285,6 +285,8 @@ class MailsterActions {
 
 		$sql .= ( $explicit ) ? ' timestamp = timestamp, count = count+1' : ' count = values(count)';
 
+		$sql = apply_filters( 'mailster_actions_add_sql', $sql, $args, $explicit );
+
 		$result = $wpdb->query( $sql );
 
 		if ( false !== $result ) {

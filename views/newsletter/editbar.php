@@ -77,23 +77,23 @@
 		<div class="type btn">
 
 			<div id="button-type-bar" class="nav-tab-wrapper hide-if-no-js">
-				<a class="nav-tab" href="#text_button" data-type="dynamic"><?php esc_html_e( 'Text Button', 'mailster' ); ?></a>
-				<a class="nav-tab nav-tab-active" href="#image_button"><?php esc_html_e( 'Image Button', 'mailster' ); ?></a>
+				<a class="nav-tab" href="#text_button" data-type="dynamic" aria-label="<?php esc_attr_e( 'Text Button', 'mailster' ); ?>"><?php esc_html_e( 'Text Button', 'mailster' ); ?></a>
+				<a class="nav-tab nav-tab-active" href="#image_button" aria-label="<?php esc_attr_e( 'Image Button', 'mailster' ); ?>"><?php esc_html_e( 'Image Button', 'mailster' ); ?></a>
 			</div>
 			<div id="image_button" class="tab">
 			<?php $this->templateobj->buttons(); ?>
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_html_e( 'image description', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_html_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
 			</div>
 			</div>
 			<div id="text_button" class="tab" style="display:none">
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Button Label', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonlabel" value="" placeholder="<?php esc_html_e( 'button label', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Button Label', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonlabel" value="" placeholder="<?php esc_html_e( 'button label', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Button Label', 'mailster' ); ?>"></div></label>
 			</div>
 			</div>
 
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Link Button', 'mailster' ); ?> <span class="description">(<?php esc_html_e( 'required', 'mailster' ); ?>)</span></div><div class="right"><input type="text" class="input buttonlink" value="" placeholder="<?php esc_html_e( 'insert URL', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Link Button', 'mailster' ); ?> <span class="description">(<?php esc_html_e( 'required', 'mailster' ); ?>)</span></div><div class="right"><input type="text" class="input buttonlink" value="" placeholder="<?php esc_html_e( 'insert URL', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Link of the button', 'mailster' ); ?>"></div></label>
 			</div>
 			<div class="link-wrap">
 				<div class="postlist">
@@ -166,8 +166,8 @@
 		<div class="type img">
 			<div class="imagecontentwrap">
 				<div class="left">
-					<p><input type="number" class="imagewidth">&times;<input type="number" class="imageheight">px
-					<label class="imagecroplabel" title="<?php esc_attr_e( 'Toggle Crop', 'mailster' ); ?>"><input type="checkbox" class="imagecrop"><span class="mailster-icon"></span></label>
+					<p><input type="number" class="imagewidth" aria-label="<?php esc_attr_e( 'Image width', 'mailster' ); ?>">&times;<input type="number" class="imageheight" aria-label="<?php esc_attr_e( 'Image height', 'mailster' ); ?>">px
+					<label class="imagecroplabel" title="<?php esc_attr_e( 'Toggle Crop', 'mailster' ); ?>"><input type="checkbox" class="imagecrop" aria-label="<?php esc_attr_e( 'Toggle crop option', 'mailster' ); ?>"><span class="mailster-icon"></span></label>
 					</p>
 					<div class="imagewrap">
 					<img src="" alt="" class="imagepreview">
@@ -175,28 +175,28 @@
 				</div>
 				<div class="right">
 					<p class="image-search-wrap">
-						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'Search for images', 'mailster' ); ?>&hellip;" autocomplete="off"></label>
+						<label><input type="text" class="widefat" id="image-search" placeholder="<?php esc_attr_e( 'Search for images', 'mailster' ); ?>&hellip;" autocomplete="off" aria-label="<?php esc_attr_e( 'Search for images', 'mailster' ); ?>"></label>
 					</p>
 					<p class="image-search-type-wrap">
-						<label><input type="radio" name="image-search-type" value="media" checked> <?php esc_html_e( 'Media Library', 'mailster' ); ?> </label>
-						<label><input type="radio" name="image-search-type" value="unsplash"> Unsplash </label>
+						<label><input type="radio" name="image-search-type" value="media" checked aria-label="<?php esc_attr_e( 'Media Library', 'mailster' ); ?>"> <?php esc_html_e( 'Media Library', 'mailster' ); ?> </label>
+						<label><input type="radio" name="image-search-type" value="unsplash" aria-label="Unsplash"> Unsplash </label>
 					</p>
 					<div class="imagelist">
 					</div>
 					<p>
-						<a class="button button-small add_image"><?php esc_html_e( 'Media Manager', 'mailster' ); ?></a>
-						<a class="button button-small reload"><?php esc_html_e( 'Reload', 'mailster' ); ?></a>
-						<a class="button button-small add_image_url"><?php esc_html_e( 'Insert from URL', 'mailster' ); ?></a>
+						<a class="button button-small add_image"  aria-label="<?php esc_attr_e( 'Media Manager', 'mailster' ); ?>" aria-role="button"><?php esc_html_e( 'Media Manager', 'mailster' ); ?></a>
+						<a class="button button-small reload" aria-label="<?php esc_attr_e( 'Reload', 'mailster' ); ?>" aria-role="button"><?php esc_html_e( 'Reload', 'mailster' ); ?></a>
+						<a class="button button-small add_image_url" aria-label="<?php esc_attr_e( 'Insert from URL', 'mailster' ); ?>" aria-role="button"><?php esc_html_e( 'Insert from URL', 'mailster' ); ?></a>
 					</p>
 				</div>
 			<br class="clear">
 			</div>
 			<div class="clearfix">
 				<div class="imageurl-popup">
-					<label class="block"><div class="left"><?php esc_html_e( 'Image URL', 'mailster' ); ?></div><div class="right"><input type="text" class="input imageurl" value="" placeholder="https://example.com/image.jpg"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Image URL', 'mailster' ); ?></div><div class="right"><input type="text" class="input imageurl" value="" placeholder="https://example.com/image.jpg" aria-label="<?php esc_attr_e( 'Image URL', 'mailster' ); ?>"></div></label>
 				</div>
-					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input imagealt" value="" placeholder="<?php esc_html_e( 'image description', 'mailster' ); ?>"></div></label>
-					<label class="block"><div class="left"><?php esc_html_e( 'Link image to the this URL', 'mailster' ); ?></div><div class="right"><input type="text" class="input imagelink" value="" placeholder="<?php esc_html_e( 'insert URL', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input imagealt" value="" placeholder="<?php esc_html_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Link image to the this URL', 'mailster' ); ?></div><div class="right"><input type="text" class="input imagelink" value="" placeholder="<?php esc_html_e( 'insert URL', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>"></div></label>
 					<input type="hidden" class="input orgimageurl" value="">
 			</div>
 			<br class="clear">
@@ -214,13 +214,13 @@
 			<div id="static_embed_options" class="tab">
 				<p class="editbarinfo"><?php esc_html_e( 'Select a post', 'mailster' ); ?></p>
 				<p class="alignleft">
-					<label title="<?php esc_html_e( 'use the excerpt if exists otherwise use the content', 'mailster' ); ?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="excerpt" checked> <?php esc_html_e( 'Excerpt', 'mailster' ); ?> </label>
-					<label title="<?php esc_html_e( 'use the content', 'mailster' ); ?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="content"> <?php esc_html_e( 'Full Content', 'mailster' ); ?> </label>
+					<label title="<?php esc_attr_e( 'use the excerpt if exists otherwise use the content', 'mailster' ); ?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="excerpt" checked> <?php esc_html_e( 'Excerpt', 'mailster' ); ?> </label>
+					<label title="<?php esc_attr_e( 'use the content', 'mailster' ); ?>"><input type="radio" name="embed_options_content" class="embed_options_content" value="content"> <?php esc_html_e( 'Full Content', 'mailster' ); ?> </label>
 				</p>
 				<p id="post_type_select" class="alignright">
 				<?php $pts = mailster( 'helper' )->get_post_types( true, 'objects' ); ?>
 				<?php foreach ( $pts as $pt => $data ) : ?>
-					<label><input type="checkbox" name="post_types[]" value="<?php echo esc_attr( $pt ); ?>" <?php checked( 'post' == $pt, true ); ?>> <?php echo esc_html( $data->labels->name ); ?> </label>
+					<label><input type="checkbox" name="post_types[]" value="<?php esc_attr_e( $pt ); ?>" <?php checked( 'post' == $pt, true ); ?>> <?php esc_html_e( $data->labels->name ); ?> </label>
 				<?php endforeach; ?>
 				</p>
 				<p>
@@ -328,15 +328,15 @@
 		</div>
 
 		<div class="buttons clearfix">
-			<button class="button button-primary save"><?php esc_html_e( 'Save', 'mailster' ); ?></button>
-			<button class="button cancel"><?php esc_html_e( 'Cancel', 'mailster' ); ?></button>
-			<label class="original-checkbox" title="<?php esc_html_e( 'use the original image file and prevent cropping/modifing the image.', 'mailster' ); ?>">
-				<input type="checkbox" class="original"> <?php esc_html_e( 'Use original image', 'mailster' ); ?>
+			<button class="button button-primary save" aria-label="<?php esc_attr_e( 'Save', 'mailster' ); ?>"><?php esc_html_e( 'Save', 'mailster' ); ?></button>
+			<button class="button cancel" aria-label="<?php esc_attr_e( 'Cancel', 'mailster' ); ?>"><?php esc_html_e( 'Cancel', 'mailster' ); ?></button>
+			<label class="original-checkbox" title="<?php esc_attr_e( 'use the original image file and prevent cropping/modifing the image.', 'mailster' ); ?>">
+				<input type="checkbox" class="original" aria-label="<?php esc_attr_e( 'Use original image', 'mailster' ); ?>"> <?php esc_html_e( 'Use original image', 'mailster' ); ?>
 			</label>
-			<label class="highdpi-checkbox" title="<?php esc_html_e( 'use HighDPI/Retina ready images if available', 'mailster' ); ?>">
-				<input type="checkbox" class="highdpi" <?php checked( mailster_option( 'high_dpi' ) ); ?>> <?php esc_html_e( 'HighDPI/Retina ready', 'mailster' ); ?>
+			<label class="highdpi-checkbox" title="<?php esc_attr_e( 'use HighDPI/Retina ready images if available', 'mailster' ); ?>">
+				<input type="checkbox" class="highdpi" <?php checked( mailster_option( 'high_dpi' ) ); ?> aria-label="<?php esc_attr_e( 'use High DPI image', 'mailster' ); ?>"> <?php esc_html_e( 'HighDPI/Retina ready', 'mailster' ); ?>
 			</label>
-			<a class="remove mailster-icon" title="<?php esc_html_e( 'remove element', 'mailster' ); ?>"></a>
+			<a class="remove mailster-icon" title="<?php esc_attr_e( 'remove element', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'remove element', 'mailster' ); ?>"></a>
 		</div>
 		<input type="hidden" class="factor" value="1">
 

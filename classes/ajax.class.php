@@ -2511,7 +2511,7 @@ class MailsterAjax {
 
 				if ( is_wp_error( $result ) ) {
 					$return['error'] = mailster()->get_update_error( $result );
-					$return['code']  = $result->get_error_code();
+					$return['code']  = str_replace( '_', '', $result->get_error_code() );
 
 				} else {
 					update_option( 'mailster_username', $result['username'] );

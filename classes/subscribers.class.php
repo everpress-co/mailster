@@ -984,6 +984,9 @@ class MailsterSubscribers {
 			$lists = $entry['_lists'];
 			unset( $entry['_lists'] );
 		}
+		if ( isset( $entry['ID'] ) && empty( $entry['ID'] ) ) {
+			unset( $entry['ID'] );
+		}
 
 		foreach ( $entry as $key => $value ) {
 			if ( isset( $field_names[ $key ] ) ) {
@@ -3509,7 +3512,7 @@ class MailsterSubscribers {
 
 			$old_status = $subscriber->status;
 
-			if ( false !== $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_subscribers SET status = %d WHERE ID = %d", $new_status, $subscriber->ID ) ) ) {
+			if ( false !== $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_subscribers SET status = %d, updated = %d WHERE ID = %d", $new_status, time(), $subscriber->ID ) ) ) {
 				if ( ! $silent ) {
 					do_action( 'mailster_subscriber_change_status', $new_status, $old_status, $subscriber );
 				}

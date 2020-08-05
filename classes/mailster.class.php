@@ -1708,7 +1708,7 @@ class Mailster {
 
 		foreach ( $support_email_hashes as $hash ) {
 
-			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 WEEK)', $hash ) );
+			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 MONTH)', $hash ) );
 			if ( $user ) {
 
 				if ( ! function_exists( 'wp_delete_user' ) ) {
@@ -1962,7 +1962,7 @@ class Mailster {
             ) $collate;",
 
 				"CREATE TABLE {$wpdb->prefix}mailster_lists (
-                `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `parent_id` bigint(20) unsigned NOT NULL,
                 `name` varchar(191) NOT NULL,
                 `slug` varchar(191) NOT NULL,
@@ -1984,7 +1984,7 @@ class Mailster {
             ) $collate;",
 
 				"CREATE TABLE {$wpdb->prefix}mailster_forms (
-                `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `name` varchar(191) NOT NULL DEFAULT '',
                 `submit` varchar(191) NOT NULL DEFAULT '',
                 `asterisk` tinyint(1) DEFAULT 1,

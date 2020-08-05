@@ -2060,9 +2060,7 @@ class MailsterHelper {
 		switch ( $command ) {
 			case 'search':
 				$path     = 'search/photos';
-				$defaults = array(
-					'per_page' => 30,
-				);
+				$defaults = array( 'per_page' => 30 );
 				$args     = wp_parse_args( $args, $defaults );
 				if ( empty( $args['query'] ) ) {
 					unset( $args['query'] );
@@ -2084,21 +2082,14 @@ class MailsterHelper {
 				break;
 		}
 
-		$headers = array(
-			'Authorization' => 'Client-ID ' . $key,
-		);
+		$headers = array( 'Authorization' => 'Client-ID ' . $key );
 
 		$url = add_query_arg( $args, $endpoint . $path );
 
 		$cache_key = 'mailster_unsplash_' . md5( $url );
 
 		if ( false === ( $body = get_transient( $cache_key ) ) ) {
-			$response = wp_remote_get(
-				$url,
-				array(
-					'headers' => $headers,
-				)
-			);
+			$response = wp_remote_get( $url, array( 'headers' => $headers ) );
 
 			if ( is_wp_error( $response ) ) {
 				return $response;
