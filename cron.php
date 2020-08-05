@@ -12,10 +12,13 @@ if ( ! defined( 'DISABLE_WP_CRON' ) ) {
 	define( 'DISABLE_WP_CRON', true );
 }
 
+
 if ( ! defined( 'ABSPATH' ) ) {
 
 	$p = null;
-	if ( isset( $argv[2] ) ) {
+	if ( isset( $argv[3] ) ) {
+		$p = rtrim( $argv[3], '/' ) . '/';
+	} elseif ( isset( $argv[2] ) ) {
 		$p = rtrim( $argv[2], '/' ) . '/';
 	} elseif ( isset( $_GET['path'] ) ) {
 		$p = rtrim( $_GET['path'], '/' ) . '/';
@@ -35,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			)
 		) . 'wp-load.php';
 	} else {
-		$path = realpath( dirname( $_SERVER['SCRIPT_NAME'] ) . '/../../../wp-load.php' );
+		$path = realpath( dirname( $_SERVER['SCRIPT_FILENAME'] ) . '/../../../wp-load.php' );
 	}
 
 	if ( file_exists( $path ) ) {

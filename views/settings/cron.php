@@ -85,7 +85,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 # copy the current cron into a new file
 crontab -l > mailstercron
 
-#remove prexisting commands
+#remove preexisting commands
 sed -i '/./{H;$!d} ; x ; s/\n### Mailster Cron start ###.*### Mailster Cron end ###//g' mailstercron
 
 # add the new entries into the file

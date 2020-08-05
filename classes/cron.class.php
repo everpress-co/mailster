@@ -441,6 +441,9 @@ class MailsterCron {
 				$path .= ' ' . (string) $process_id;
 			}
 		}
+		if ( defined( 'WP_CONTENT_DIR' ) ) {
+			$path .= ' ' . ABSPATH;
+		}
 
 		return $path;
 
