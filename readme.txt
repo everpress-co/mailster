@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.4.1
-Stable tag: 2.4.10
+Tested up to: 5.5
+Stable tag: 2.4.13
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,7 +88,39 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
-* new: cron options
+= Version 2.4.13 =
+
+= Version 2.4.12 =
+
+* added: `mailster_inline_css` filter hook to disable auto inline css
+* fixed: problem with third party shortcodes in excerpt
+* fixed: several small bugfixes
+* fixed: wrong counting on dashboard widget
+* fixed: calculation of aggregated campaigns not accurate
+* fixed: relative path in modules
+* fixed: High DPI images on dynamic posts tags got wrong eight in some cases.
+* improved: consistent behavior on handling shortcodes
+* improved: Only the preheader text is shown in the email preview of email clients.
+* improved: `mailster_preview_text_fix` filter to disable preview text fix.
+* improved: automatically remove support accounts after one month after an update
+* improved: you can now click on form fields to add them to the form
+* improved: added missing aria labels
+
+= Version 2.4.11 =
+
+* change: changing the email address on the profile sets status to pending and sends confirmation message if double opt in is enabled.
+* change: the most recent notification is now displayed at the top.
+* added: `mailster_register_dynamic_post_type` action hook to add custom dynamic post types.
+* added: option to disable in-app-unsubscribe option
+* fixed: issue where editor is not loading with some themes activated
+* fixed: JS error if inline editor is not used
+* fixed: people got unsubscribed if bounce address is the same as sign up notifications email.
+* improved: User Agent handling.
+* improved: pasting text from external source.
+* improved: better support fro data-uris in style declarations.
+* improved: better handling of sending HTML message with third party plugins
+* removed: Gmail delivery option (fallback to SMTP)
+* deprecated: use of Gmail via LSA as announced via [Google](https://gsuiteupdates.googleblog.com/2019/12/less-secure-apps-oauth-google-username-password-incorrect.html). Please use our dedicate Gmail addon instead.
 
 = Version 2.4.10 =
 
@@ -101,6 +133,8 @@ Xaver Birsak – https://everpress.co
 * fixed: redirection error on confirmation
 * fixed: result of empty lists is no longer null
 * fixed: links in iframe forms open now in parent window.
+* fixed: issue where resuming a campaign on stats page is not possible.
+* fixed: issue where feature images are not displayed in autoresponder campaigns.
 * added: 'mailster_register_form_signup_field' filter hook to modify signup checkbox on registration screen.
 * added: more bulk options to campaign overview.
 

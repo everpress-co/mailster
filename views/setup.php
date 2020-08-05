@@ -252,7 +252,7 @@ $utm = array(
 			<div id="deliverynav" class="nav-tab-wrapper hide-if-no-js">
 				<a class="nav-tab<?php echo 'simple' == $method ? ' nav-tab-active' : ''; ?>" href="#simple"><?php esc_html_e( 'Simple', 'mailster' ); ?></a>
 				<a class="nav-tab<?php echo 'smtp' == $method ? ' nav-tab-active' : ''; ?>" href="#smtp">SMTP</a>
-				<a class="nav-tab<?php echo 'gmail' == $method ? ' nav-tab-active' : ''; ?>" href="#gmail">GMail</a>
+				<a class="nav-tab<?php echo 'gmail' == $method ? ' nav-tab-active' : ''; ?>" href="#gmail">Gmail</a>
 				<a class="nav-tab<?php echo 'amazonses' == $method ? ' nav-tab-active' : ''; ?>" href="#amazonses">AmazonSES</a>
 				<a class="nav-tab<?php echo 'sparkpost' == $method ? ' nav-tab-active' : ''; ?>" href="#sparkpost">SparkPost</a>
 				<a class="nav-tab<?php echo 'mailgun' == $method ? ' nav-tab-active' : ''; ?>" href="#mailgun">Mailgun</a>
@@ -266,11 +266,25 @@ $utm = array(
 			<div class="deliverytab" id="deliverytab-simple"<?php echo 'simple' == $method ? ' style="display:block"' : ''; ?>>
 				<?php do_action( 'mailster_deliverymethod_tab_simple' ); ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-gmail"<?php echo 'gmail' == $method ? ' style="display:block"' : ''; ?>>
-				<?php do_action( 'mailster_deliverymethod_tab_gmail' ); ?>
-			</div>
 			<div class="deliverytab" id="deliverytab-smtp"<?php echo 'smtp' == $method ? ' style="display:block"' : ''; ?>>
 				<?php do_action( 'mailster_deliverymethod_tab_smtp' ); ?>
+			</div>
+			<div class="deliverytab" id="deliverytab-gmail"<?php echo 'gmail' == $method ? ' style="display:block"' : ''; ?>>
+				<?php
+				if ( in_array( 'mailster-gmail', $active_pluginslugs ) ) :
+					do_action( 'mailster_deliverymethod_tab_gmail' );
+				else :
+					?>
+				<div class="wp-plugin">
+				<a href="https://wordpress.org/plugins/mailster-gmail/" class="external">
+					<img src="//ps.w.org/mailster-gmail/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
+					<span>Mailster Gmail Integration</span>
+				</a>
+				</div>
+				<a class="button button-primary quick-install" data-plugin="mailster-gmail" data-method="gmail">
+					<?php echo in_array( 'mailster-gmail', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Gmail' ); ?>
+				</a>
+				<?php endif; ?>
 			</div>
 			<div class="deliverytab" id="deliverytab-amazonses"<?php echo 'amazonses' == $method ? ' style="display:block"' : ''; ?>>
 				<?php

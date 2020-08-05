@@ -323,10 +323,7 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
-	var l10n = mailster_mce_button.l10n,
-		tags = mailster_mce_button.tags,
-		designs = mailster_mce_button.designs,
-		changetimeout,
+	var changetimeout,
 		change = false,
 		uploader = false;
 
@@ -831,22 +828,83 @@ mailster = (function (mailster, $, window, document) {
 
 	function inlineEditor() {
 		tinymce.init($.extend(mailsterdata.tinymce.args, mailsterdata.tinymce.multi, {
+			paste_preprocess: paste_preprocess,
 			urlconverter_callback: urlconverter,
 			setup: setup
 		}));
 		tinymce.init($.extend(mailsterdata.tinymce.args, mailsterdata.tinymce.single, {
+			paste_preprocess: paste_preprocess,
 			urlconverter_callback: urlconverter,
 			setup: setup
 		}));
 	}
 
+	function paste_preprocess(pl, o) {
+
+		var str = o.content,
+			allowed_tags = '<a><br><i><em><u><p><h1><h2><h3><h4><h5><h6><ul><ol><li>',
+			key = '',
+			allowed = false,
+			matches = [],
+			allowed_array = [],
+			allowed_tag = '',
+			i = 0,
+			k = '',
+			html = '',
+			replacer = function (search, replace, str) {
+				return str.split(search).join(replace);
+			};
+		if (allowed_tags) {
+			allowed_array = allowed_tags.match(/([a-zA-Z0-9]+)/gi);
+		}
+		str += '';
+
+		matches = str.match(/(<\/?[\S][^>]*>)/gi);
+		for (key in matches) {
+			if (isNaN(key)) {
+				// IE7
+				continue;
+			}
+
+			html = matches[key].toString();
+			allowed = false;
+
+			for (k in allowed_array) { // Init
+				allowed_tag = allowed_array[k];
+				i = -1;
+
+				if (i != 0) {
+					i = html.toLowerCase().indexOf('<' + allowed_tag + '>');
+				}
+				if (i != 0) {
+					i = html.toLowerCase().indexOf('<' + allowed_tag + ' ');
+				}
+				if (i != 0) {
+					i = html.toLowerCase().indexOf('</' + allowed_tag);
+				}
+
+				// Determine
+				if (i == 0) {
+					allowed = true;
+					break;
+				}
+			}
+			if (!allowed) {
+				str = replacer(html, "", str);
+			}
+		}
+
+		o.content = str;
+		return str;
+	}
+
 	function setup(editor) {
 
 		editor.addButton('mailster_mce_button', {
-			title: l10n.tags.title,
+			title: mailster_mce_button.l10n.tags.title,
 			type: 'menubutton',
 			icon: 'icon mailster-tags-icon',
-			menu: $.map(tags, function (group, id) {
+			menu: $.map(mailster_mce_button.tags, function (group, id) {
 				return {
 					text: group.name,
 					menu: $.map(group.tags, function (name, tag) {
@@ -880,7 +938,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 		editor.addButton('mailster_remove_element', {
-			title: l10n.remove.title,
+			title: mailster_mce_button.l10n.remove.title,
 			icon: 'icon mailster-remove-icon',
 			onclick: function () {
 				editor.targetElm.remove();
