@@ -675,6 +675,11 @@ class MailsterActions {
 		}
 
 		$table = str_replace( array( '_total', '_deleted' ), '', $action );
+		if ( 'total' == $table ) {
+			$table = 'sent';
+		} elseif ( 'unsubscribes' == $table ) {
+			$table = 'unsubs';
+		}
 
 		$default = $this->get_default_action_counts();
 

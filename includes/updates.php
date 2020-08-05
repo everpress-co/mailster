@@ -567,7 +567,7 @@ if ( $old_version ) {
 
 		case '2.4.10':
 		case '2.4.11':
-			$options['mail_opt_out']                = isset( $options['bounce'] ) && $options['bounce'];
+			$options['mail_opt_out'] = isset( $options['bounce'] ) && $options['bounce'];
 
 			if ( ! is_plugin_active( 'mailster-gmail/mailster-gmail.php' ) && 'gmail' == $mailster_options['deliverymethod'] ) {
 
