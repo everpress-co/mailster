@@ -16,8 +16,12 @@ if ( mailster()->is_verified() ) {
 	</h2>
 </div>
 <dl class="mailster-icon mailster-icon-finished valid">
-	<dt><?php esc_html_e( 'Verified', 'mailster' ); ?></dt>
+	<dt><?php esc_html_e( 'Verified License', 'mailster' ); ?>
+	</dt>
 	<dd><?php printf( esc_html__( 'User: %1$s - %2$s', 'mailster' ), '<span class="mailster-username">' . esc_html( $license_user ) . '</span>', '<span class="mailster-email lighter">' . esc_html( $license_email ) . '</span>' ); ?></dd>
+	<?php if ( ! mailster()->is_email_verified() ) : ?>
+		<dd class="error inline" style="color:#c00"><?php esc_html_e( 'Your email address has not been verified yet!', 'mailster' ); ?></dd>
+	<?php endif; ?>
 	<dd>
 		<?php if ( current_user_can( 'mailster_manage_licenses' ) ) : ?>
 		<a href="https://mailster.co/manage-licenses/?utm_campaign=plugin&utm_medium=dashboard&utm_source=mailster_plugin" class="external"><?php esc_html_e( 'Manage Licenses', 'mailster' ); ?></a> |

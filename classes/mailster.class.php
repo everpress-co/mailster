@@ -2674,7 +2674,7 @@ class Mailster {
 
 		$old = get_option( '_transient_mailster_verified', 'maybe' );
 
-		if ( ! ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
+		if ( ! ( $result = get_transient( 'mailster_verified' ) ) || $force ) {
 
 			$verified = 'no';
 			$recheck  = DAY_IN_SECONDS;
@@ -2699,12 +2699,23 @@ class Mailster {
 				mailster_remove_notice( 'verify' );
 			}
 
-			set_transient( 'mailster_verified', $verified, $recheck );
+			set_transient( 'mailster_verified', $result, $recheck );
 
 		}
 
-		return 'yes' == $verified;
+		return is_array( $result ) || 'maybe' == $result;
 
+	}
+
+
+	public function is_email_verified( $force = false ) {
+
+		if ( ! ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
+			$this->is_verified( $force );
+			$verified = get_transient( 'mailster_verified' );
+		}
+
+		return isset( $verified['email_verfied'] ) && $verified['email_verfied'];
 	}
 
 
