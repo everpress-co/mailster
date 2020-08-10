@@ -56,7 +56,9 @@ class MailsterPreflight {
 					$html .= '<tr>';
 					$html .= '<td>' . esc_html( $data->score ) . '</td>';
 					$html .= '<td><strong>' . esc_html( $data->code ) . '</strong><br>' . esc_html( $data->message ) . '</td>';
-					$html .= '<td><a href="' . esc_attr( $data->link ) . '" target="_blank">' . esc_html__( 'info', 'mailster' ) . '</a></td>';
+					if ( ! empty( $data->link ) ) {
+						$html .= '<td><a href="' . esc_attr( $data->link ) . '" target="_blank">' . esc_html__( 'info', 'mailster' ) . '</a></td>';
+					}
 					$html .= '</tr>';
 				}
 				$html .= '</table>';
