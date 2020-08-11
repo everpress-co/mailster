@@ -2656,12 +2656,6 @@ class Mailster {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $force (optional)
-	 * @return unknown
-	 */
 	public function is_verified( $force = false ) {
 
 		$license       = $this->license();
@@ -2672,16 +2666,32 @@ class Mailster {
 			return false;
 		}
 
-		$old = get_option( '_transient_mailster_verified', 'maybe' );
+		$verified = $this->get_verfied_object( $force );
 
-		if ( ! ( $result = get_transient( 'mailster_verified' ) ) || $force ) {
+		return is_array( $verified );
 
-			$verified = 'no';
+	}
+
+
+	public function is_email_verified( $force = false ) {
+
+		$verified = $this->get_verfied_object( $force );
+
+		return is_array( $verified ) && isset( $verified['email_verfied'] ) && $verified['email_verfied'];
+	}
+
+	private function get_verfied_object( $force = false ) {
+
+		$old = get_option( '_transient_mailster_verified', array() );
+
+		if ( false === ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
+
+			$verified = null;
 			$recheck  = DAY_IN_SECONDS;
 
 			$result = UpdateCenterPlugin::verify( 'mailster' );
 			if ( ! is_wp_error( $result ) ) {
-				$verified = 'yes';
+				$verified = $result;
 			} else {
 				switch ( $result->get_error_code() ) {
 					case 500: // Internal Server Error
@@ -2695,29 +2705,16 @@ class Mailster {
 				}
 			}
 
-			if ( 'no' != $verified ) {
+			if ( null !== $verified ) {
 				mailster_remove_notice( 'verify' );
 			}
 
-			set_transient( 'mailster_verified', $result, $recheck );
+			set_transient( 'mailster_verified', $verified, $recheck );
 
 		}
 
-		return is_array( $result ) || 'maybe' == $result;
-
+		return $verified;
 	}
-
-
-	public function is_email_verified( $force = false ) {
-
-		if ( ! ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
-			$this->is_verified( $force );
-			$verified = get_transient( 'mailster_verified' );
-		}
-
-		return isset( $verified['email_verfied'] ) && $verified['email_verfied'];
-	}
-
 
 	public function has_update( $force = false ) {
 
