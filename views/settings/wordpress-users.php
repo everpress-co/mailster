@@ -2,7 +2,7 @@
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'Sync WordPress Users', 'mailster' ); ?></th>
 		<td>
-		<label><input type="hidden" name="mailster_options[sync]" value=""><input type="checkbox" name="mailster_options[sync]" value="1" <?php checked( mailster_option( 'sync' ) ); ?> id="sync_list_check"> <?php esc_html_e( 'Sync WordPress Users with Subscribers', 'mailster' ); ?></label>
+		<label><input type="hidden" name="mailster_options[sync]" value=""><input type="checkbox" name="mailster_options[sync]" value="1" <?php checked( mailster_option( 'sync' ) ); ?> id="sync_list_check"> <?php esc_html_e( 'Mailster handles your WordPress users.', 'mailster' ); ?></label>
 		<p class="description"><?php esc_html_e( 'keep WordPress User data and Subscriber data synchronized. Only affects existing Subscribers', 'mailster' ); ?></p>
 		</td>
 	</tr>
@@ -61,27 +61,18 @@
 		</td>
 	</tr>
 </table>
-</div>
 <table class="form-table">
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Delete Subscriber', 'mailster' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'User Roles', 'mailster' ); ?><p class="description"><?php esc_html_e( 'Decide how Mailster should handle certain user roles.', 'mailster' ); ?></p></th>
 		<td>
-		<label><input type="hidden" name="mailster_options[delete_wp_subscriber]" value=""><input type="checkbox" name="mailster_options[delete_wp_subscriber]" value="1" <?php checked( mailster_option( 'delete_wp_subscriber' ) ); ?>> <?php esc_html_e( 'Delete Subscriber if the WordPress User gets deleted', 'mailster' ); ?></label>
-		</td>
-	</tr>
-	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Delete WordPress User', 'mailster' ); ?></th>
-		<td>
-		<label>
-		<?php if ( ! current_user_can( 'delete_users' ) ) : ?>
-		<input type="hidden" name="mailster_options[delete_wp_user]" value="<?php echo ! ! mailster_option( 'delete_wp_user' ); ?>">
-		<input type="hidden" name="mailster_options[delete_wp_user]" value=""><input type="checkbox" name="mailster_options[delete_wp_user]" value="1" <?php checked( mailster_option( 'delete_wp_user' ) ); ?> disabled readonly>
-		<?php else : ?>
-		<input type="hidden" name="mailster_options[delete_wp_user]" value=""><input type="checkbox" name="mailster_options[delete_wp_user]" value="1" <?php checked( mailster_option( 'delete_wp_user' ) ); ?>>
-		<?php endif; ?>
-
-		<?php esc_html_e( 'Delete WordPress User if the Subscriber gets deleted', 'mailster' ); ?></label>
-			<p class="description"><?php esc_html_e( 'Attention! This option will remove assigned WordPress Users without further notice. You must have the capability to delete WordPress Users. Administrators and the current user can not get deleted with this option', 'mailster' ); ?></p>
+		<?php foreach ( $roles as $role => $name ) : ?>
+			<details class="user-role" open>
+				<summary><?php echo esc_html( $name ); ?></summary>
+					<p><label><input type="hidden" name="mailster_options[wp_role_<?php echo esc_attr( $role ); ?>_optin]" value=""><input type="checkbox" name="mailster_options[wp_role_<?php echo esc_attr( $role ); ?>_optin]" value="1" <?php checked( mailster_option( 'wp_role_' . esc_attr( $role ) . '_optin' ) ); ?>> <?php esc_html_e( 'send confirmation (double-opt-in)', 'mailster' ); ?></label></p>
+					<p class="description"><?php esc_html_e( 'Subscribe them to these lists:', 'mailster' ); ?></p>
+					<?php mailster( 'lists' )->print_it( null, null, 'mailster_options[wp_role_' . esc_attr( $role ) . ']', false, mailster_option( 'wp_role_' . esc_attr( $role ) ) ); ?>
+			</details>
+		<?php endforeach; ?>
 		</td>
 	</tr>
 	<tr valign="top">
@@ -102,8 +93,6 @@
 			<td>
 			<label><input type="hidden" name="mailster_options[register_signup_checked]" value=""><input type="checkbox" name="mailster_options[register_signup_checked]" value="1" <?php checked( mailster_option( 'register_signup_checked' ) ); ?>> <?php esc_html_e( 'checked by default', 'mailster' ); ?></label>
 			<br><label><input type="hidden" name="mailster_options[register_signup_confirmation]" value=""><input type="checkbox" name="mailster_options[register_signup_confirmation]" value="1" <?php checked( mailster_option( 'register_signup_confirmation' ) ); ?>> <?php esc_html_e( 'send confirmation (double-opt-in)', 'mailster' ); ?></label>
-			<p class="description"><?php esc_html_e( 'Subscribe them to these lists:', 'mailster' ); ?></p>
-			<?php mailster( 'lists' )->print_it( null, null, 'mailster_options[register_signup_lists]', false, mailster_option( 'register_signup_lists' ) ); ?>
 			</td>
 		</tr>
 	</table>
@@ -135,32 +124,27 @@
 		</tr>
 	</table>
 </div>
-
 <table class="form-table">
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Others', 'mailster' ); ?></th>
-		<td><label><input type="hidden" name="mailster_options[register_other]" value=""><input type="checkbox" name="mailster_options[register_other]" value="1" <?php checked( mailster_option( 'register_other' ) ); ?> class="users-register" data-section="users-register_other"> <?php esc_html_e( 'Add people who are added via the backend or any third party plugin', 'mailster' ); ?></label>
+		<th scope="row"><?php esc_html_e( 'Delete Subscriber', 'mailster' ); ?></th>
+		<td>
+		<label><input type="hidden" name="mailster_options[delete_wp_subscriber]" value=""><input type="checkbox" name="mailster_options[delete_wp_subscriber]" value="1" <?php checked( mailster_option( 'delete_wp_subscriber' ) ); ?>> <?php esc_html_e( 'Delete Subscriber if the WordPress User gets deleted', 'mailster' ); ?></label>
+		</td>
+	</tr>
+	<tr valign="top">
+		<th scope="row"><?php esc_html_e( 'Delete WordPress User', 'mailster' ); ?></th>
+		<td>
+		<label>
+		<?php if ( ! current_user_can( 'delete_users' ) ) : ?>
+		<input type="hidden" name="mailster_options[delete_wp_user]" value="<?php echo ! ! mailster_option( 'delete_wp_user' ); ?>">
+		<input type="hidden" name="mailster_options[delete_wp_user]" value=""><input type="checkbox" name="mailster_options[delete_wp_user]" value="1" <?php checked( mailster_option( 'delete_wp_user' ) ); ?> disabled readonly>
+		<?php else : ?>
+		<input type="hidden" name="mailster_options[delete_wp_user]" value=""><input type="checkbox" name="mailster_options[delete_wp_user]" value="1" <?php checked( mailster_option( 'delete_wp_user' ) ); ?>>
+		<?php endif; ?>
+
+		<?php esc_html_e( 'Delete WordPress User if the Subscriber gets deleted', 'mailster' ); ?></label>
+			<p class="description"><?php esc_html_e( 'Attention! This option will remove assigned WordPress Users without further notice. You must have the capability to delete WordPress Users. Administrators and the current user can not get deleted with this option', 'mailster' ); ?></p>
 		</td>
 	</tr>
 </table>
-<div id="users-register_other"<?php echo ! mailster_option( 'register_other' ) ? ' style="display:none"' : ''; ?>>
-	<table class="form-table">
-		<tr valign="top">
-			<th scope="row"></th>
-			<td>
-			<p><label><input type="hidden" name="mailster_options[register_other_confirmation]" value=""><input type="checkbox" name="mailster_options[register_other_confirmation]" value="1" <?php checked( mailster_option( 'register_other_confirmation' ) ); ?>> <?php esc_html_e( 'send confirmation (double-opt-in)', 'mailster' ); ?></label></p>
-			<p class="description"><?php esc_html_e( 'Subscribe them to these lists:', 'mailster' ); ?></p>
-			<?php mailster( 'lists' )->print_it( null, null, 'mailster_options[register_other_lists]', false, mailster_option( 'register_other_lists' ) ); ?>
-			<p class="description"><?php esc_html_e( 'only with these user roles:', 'mailster' ); ?></p>
-			<ul>
-			<?php
-			$set = mailster_option( 'register_other_roles', array() );
-			foreach ( $roles as $role => $name ) :
-				echo '<li><input type="checkbox" name="mailster_options[register_other_roles][]" value="' . esc_attr( $role ) . '" ' . checked( in_array( $role, $set ), true, false ) . '> ' . esc_html( $name ) . '</li>';
-			endforeach;
-			?>
-			</ul>
-			</td>
-		</tr>
-	</table>
 </div>

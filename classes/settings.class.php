@@ -375,6 +375,8 @@ class MailsterSettings {
 		wp_enqueue_style( 'mailster-settings-style', MAILSTER_URI . 'assets/css/settings-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
 
+		wp_enqueue_script( 'mailster-wordpress-users-script', MAILSTER_URI . 'assets/js/wordpress-users-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
 		mailster_localize_script(
 			'settings',
 			array(
@@ -1019,6 +1021,16 @@ class MailsterSettings {
 							$timestamp = apply_filters( 'mymail_subscriber_unsubscribe_notification_delay', apply_filters( 'mailster_subscriber_unsubscribe_notification_delay', $timestamp ) );
 							wp_schedule_single_event( $timestamp, 'mailster_unsubscribe_notification' );
 						}
+					}
+
+					break;
+
+				case 'sync':
+					if ( wp_next_scheduled( 'mailster_wordpress_users' ) ) {
+						wp_clear_scheduled_hook( 'mailster_wordpress_users' );
+					}
+					if ( $value ) {
+						wp_schedule_single_event( time() + 60, 'mailster_wordpress_users' );
 					}
 
 					break;
