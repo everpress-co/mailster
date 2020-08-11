@@ -19,18 +19,63 @@ class Mailster {
 		register_activation_hook( MAILSTER_FILE, array( &$this, 'activate' ) );
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
-		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy', 'export', 'empty' );
+		require_once MAILSTER_DIR . 'classes/settings.class.php';
+		require_once MAILSTER_DIR . 'classes/translations.class.php';
+		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
+		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
+		require_once MAILSTER_DIR . 'classes/lists.class.php';
+		require_once MAILSTER_DIR . 'classes/forms.class.php';
+		require_once MAILSTER_DIR . 'classes/manage.class.php';
+		require_once MAILSTER_DIR . 'classes/templates.class.php';
+		require_once MAILSTER_DIR . 'classes/widget.class.php';
+		require_once MAILSTER_DIR . 'classes/frontpage.class.php';
+		require_once MAILSTER_DIR . 'classes/statistics.class.php';
+		require_once MAILSTER_DIR . 'classes/ajax.class.php';
+		require_once MAILSTER_DIR . 'classes/tinymce.class.php';
+		require_once MAILSTER_DIR . 'classes/cron.class.php';
+		require_once MAILSTER_DIR . 'classes/queue.class.php';
+		require_once MAILSTER_DIR . 'classes/actions.class.php';
+		require_once MAILSTER_DIR . 'classes/bounce.class.php';
+		require_once MAILSTER_DIR . 'classes/dashboard.class.php';
+		require_once MAILSTER_DIR . 'classes/update.class.php';
+		require_once MAILSTER_DIR . 'classes/upgrade.class.php';
+		require_once MAILSTER_DIR . 'classes/helpmenu.class.php';
+		require_once MAILSTER_DIR . 'classes/register.class.php';
+		require_once MAILSTER_DIR . 'classes/geo.class.php';
+		require_once MAILSTER_DIR . 'classes/privacy.class.php';
+		require_once MAILSTER_DIR . 'classes/export.class.php';
+		require_once MAILSTER_DIR . 'classes/empty.class.php';
+
+		$this->_classes = array(
+			'settings'     => new MailsterSettings(),
+			'translations' => new MailsterTranslations(),
+			'campaigns'    => new MailsterCampaigns(),
+			'subscribers'  => new MailsterSubscribers(),
+			'lists'        => new MailsterLists(),
+			'forms'        => new MailsterForms(),
+			'manage'       => new MailsterManage(),
+			'templates'    => new MailsterTemplates(),
+			'frontpage'    => new MailsterFrontpage(),
+			'statistics'   => new MailsterStatistics(),
+			'ajax'         => new MailsterAjax(),
+			'tinymce'      => new MailsterTinymce(),
+			'cron'         => new MailsterCron(),
+			'queue'        => new MailsterQueue(),
+			'actions'      => new MailsterActions(),
+			'bounce'       => new MailsterBounce(),
+			'dashboard'    => new MailsterDashboard(),
+			'update'       => new MailsterUpdate(),
+			'upgrade'      => new MailsterUpgrade(),
+			'helpmenu'     => new MailsterHelpmenu(),
+			'register'     => new MailsterRegister(),
+			'geo'          => new MailsterGeo(),
+			'privacy'      => new MailsterPrivacy(),
+			'export'       => new MailsterExport(),
+			'empty'        => new MailsterEmpty(),
+		);
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
-
-		foreach ( $classes as $class ) {
-			require_once MAILSTER_DIR . "classes/$class.class.php";
-			$classname = 'Mailster' . ucwords( $class );
-			if ( class_exists( $classname ) ) {
-				$this->_classes[ $class ] = new $classname();
-			}
-		}
 
 		$this->wp_mail = function_exists( 'wp_mail' );
 

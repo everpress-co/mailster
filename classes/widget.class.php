@@ -29,27 +29,22 @@ class Mailster_Signup_Widget extends WP_Widget {
 		?>
 		<p>
 		<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php esc_html_e( 'Title', 'mailster' ); ?>:</label>
-		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
+		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php esc_attr_e( $title ); ?>" />
 		<label for="<?php echo $this->get_field_id( 'form' ); ?>"><?php esc_html_e( 'Form', 'mailster' ); ?>:</label>
 		<select class="widefat" id="<?php echo $this->get_field_id( 'form' ); ?>" name="<?php echo $this->get_field_name( 'form' ); ?>" >
-		<?php foreach ( $forms as $id => $f ) { ?>
-			<option value="<?php echo $f->ID; ?>"
-									  <?php
-										if ( $form == $f->ID ) {
-											echo ' selected'; }
-										?>
-			>
-				<?php echo '#' . $f->ID . ' ' . $f->name; ?>
+		<?php foreach ( $forms as $id => $f ) : ?>
+			<option value="<?php echo $f->ID; ?>"<?php echo $form == $f->ID ? ' selected' : ''; ?>>
+				<?php echo esc_html( '#' . $f->ID . ' ' . $f->name ); ?>
 			</option>
-		<?php } ?>
+		<?php endforeach; ?>
 		</select>
 		<a href="edit.php?post_type=newsletter&page=mailster_forms&new"><?php esc_html_e( 'add form', 'mailster' ); ?></a>
 		</p>
 		<p>
 		<label for="<?php echo $this->get_field_id( 'text_before' ); ?>"><?php esc_html_e( 'Text before the form', 'mailster' ); ?>:</label>
-		<input class="widefat" id="<?php echo $this->get_field_id( 'text_before' ); ?>" name="<?php echo $this->get_field_name( 'text_before' ); ?>" type="text" value="<?php echo esc_attr( $text_before ); ?>" />
+		<input class="widefat" id="<?php echo $this->get_field_id( 'text_before' ); ?>" name="<?php echo $this->get_field_name( 'text_before' ); ?>" type="text" value="<?php esc_attr_e( $text_before ); ?>" />
 		<label for="<?php echo $this->get_field_id( 'text_after' ); ?>"><?php esc_html_e( 'Text after the form', 'mailster' ); ?>:</label>
-		<input class="widefat" id="<?php echo $this->get_field_id( 'text_after' ); ?>" name="<?php echo $this->get_field_name( 'text_after' ); ?>" type="text" value="<?php echo esc_attr( $text_after ); ?>" />
+		<input class="widefat" id="<?php echo $this->get_field_id( 'text_after' ); ?>" name="<?php echo $this->get_field_name( 'text_after' ); ?>" type="text" value="<?php esc_attr_e( $text_after ); ?>" />
 		</p>
 		<p>
 		<label><input id="<?php echo $this->get_field_id( 'on_homepage' ); ?>" name="<?php echo $this->get_field_name( 'on_homepage' ); ?>" type="checkbox" value="1" <?php checked( $on_homepage ); ?> /> <?php esc_html_e( 'Show form on the newsletter homepage.', 'mailster' ); ?></label>
@@ -185,7 +180,8 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 		if ( $r->have_posts() ) :
 			echo $before_widget;
 			if ( $title ) {
-				echo $before_title . $title . $after_title; }
+				echo $before_title . $title . $after_title;
+			}
 			?>
 		<div class="mailster-widget mailster-widget-recent-newsletter">
 		<ul>
@@ -193,7 +189,7 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 			while ( $r->have_posts() ) :
 				$r->the_post();
 				?>
-			<li><a href="<?php the_permalink(); ?>" title="<?php echo esc_attr( get_the_title() ? get_the_title() : get_the_ID() ); ?>">
+			<li><a href="<?php the_permalink(); ?>" title="<?php esc_attr_e( get_the_title() ? get_the_title() : get_the_ID() ); ?>">
 				<?php
 				if ( get_the_title() ) {
 					the_title();
@@ -365,13 +361,13 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 	public function form( $instance ) {
 		$prefix    = isset( $instance['prefix'] ) ? $instance['prefix'] : '';
 		$postfix   = isset( $instance['postfix'] ) ? $instance['postfix'] : esc_html__( 'Subscribers', 'mailster' );
-		$formatted = isset( $instance['formatted'] ) ? ! ! $instance['formatted'] : true;
+		$formatted = isset( $instance['formatted'] ) ? (bool) $instance['formatted'] : true;
 		$round     = isset( $instance['round'] ) ? absint( $instance['round'] ) : 1;
 		?>
 		<p><label for="<?php echo $this->get_field_id( 'prefix' ); ?>"><?php esc_html_e( 'Prefix', 'mailster' ); ?>:</label>
-		<input id="<?php echo $this->get_field_id( 'prefix' ); ?>" name="<?php echo $this->get_field_name( 'prefix' ); ?>" type="text" value="<?php echo esc_attr( $prefix ); ?>" /></p>
+		<input id="<?php echo $this->get_field_id( 'prefix' ); ?>" name="<?php echo $this->get_field_name( 'prefix' ); ?>" type="text" value="<?php esc_attr_e( $prefix ); ?>" /></p>
 		<p><label for="<?php echo $this->get_field_id( 'postfix' ); ?>"><?php esc_html_e( 'Postfix', 'mailster' ); ?>:</label>
-		<input id="<?php echo $this->get_field_id( 'postfix' ); ?>" name="<?php echo $this->get_field_name( 'postfix' ); ?>" type="text" value="<?php echo esc_attr( $postfix ); ?>" /></p>
+		<input id="<?php echo $this->get_field_id( 'postfix' ); ?>" name="<?php echo $this->get_field_name( 'postfix' ); ?>" type="text" value="<?php esc_attr_e( $postfix ); ?>" /></p>
 
 		<p><label for="<?php echo $this->get_field_id( 'number' ); ?>"><?php esc_html_e( 'Round up to the next', 'mailster' ); ?></label>
 		<select name="<?php echo $this->get_field_name( 'round' ); ?>" >
@@ -522,24 +518,19 @@ class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
 
 		?>
 		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php esc_html_e( 'Title', 'mailster' ); ?>:</label>
-		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" /></p>
+		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php esc_attr_e( $title ); ?>" /></p>
 
 		<p><label for="<?php echo $this->get_field_id( 'prefix' ); ?>"><?php esc_html_e( 'Prefix', 'mailster' ); ?>:</label>
-		<input id="<?php echo $this->get_field_id( 'prefix' ); ?>" name="<?php echo $this->get_field_name( 'prefix' ); ?>" type="text" value="<?php echo esc_attr( $prefix ); ?>" /></p>
+		<input id="<?php echo $this->get_field_id( 'prefix' ); ?>" name="<?php echo $this->get_field_name( 'prefix' ); ?>" type="text" value="<?php esc_attr_e( $prefix ); ?>" /></p>
 		<p><label for="<?php echo $this->get_field_id( 'postfix' ); ?>"><?php esc_html_e( 'Postfix', 'mailster' ); ?>:</label>
-		<input id="<?php echo $this->get_field_id( 'postfix' ); ?>" name="<?php echo $this->get_field_name( 'postfix' ); ?>" type="text" value="<?php echo esc_attr( $postfix ); ?>" /></p>
+		<input id="<?php echo $this->get_field_id( 'postfix' ); ?>" name="<?php echo $this->get_field_name( 'postfix' ); ?>" type="text" value="<?php esc_attr_e( $postfix ); ?>" /></p>
 
 		<p>
 		<label for="<?php echo $this->get_field_id( 'form' ); ?>"><?php esc_html_e( 'Form', 'mailster' ); ?>:</label>
 		<select class="widefat" id="<?php echo $this->get_field_id( 'form' ); ?>" name="<?php echo $this->get_field_name( 'form' ); ?>" >
 		<?php foreach ( $forms as $id => $f ) { ?>
-			<option value="<?php echo $f->ID; ?>"
-									  <?php
-										if ( $form == $f->ID ) {
-											echo ' selected'; }
-										?>
-			>
-				<?php echo '#' . $f->ID . ' ' . $f->name; ?>
+			<option value="<?php echo $f->ID; ?>"<?php echo $form == $f->ID ? ' selected' : ''; ?>>
+				<?php echo esc_html( '#' . $f->ID . ' ' . $f->name ); ?>
 			</option>
 		<?php } ?>
 		</select>
@@ -553,9 +544,9 @@ class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
 			<option value="minimal" <?php selected( $design, 'minimal' ); ?>><?php esc_html_e( 'Minimal', 'mailster' ); ?></option>
 		</select></p>
 		<p><label for="<?php echo $this->get_field_id( 'label' ); ?>"><?php esc_html_e( 'Label', 'mailster' ); ?>:</label>
-		<input id="<?php echo $this->get_field_id( 'label' ); ?>" name="<?php echo $this->get_field_name( 'label' ); ?>" type="text" value="<?php echo esc_attr( $label ); ?>" /></p>
+		<input id="<?php echo $this->get_field_id( 'label' ); ?>" name="<?php echo $this->get_field_name( 'label' ); ?>" type="text" value="<?php esc_attr_e( $label ); ?>" /></p>
 		<p><label for="<?php echo $this->get_field_id( 'width' ); ?>"><?php esc_html_e( 'Width', 'mailster' ); ?>:</label>
-		<input id="<?php echo $this->get_field_id( 'width' ); ?>" name="<?php echo $this->get_field_name( 'width' ); ?>" type="text" value="<?php echo esc_attr( $width ); ?>" class="small-text" /></p>
+		<input id="<?php echo $this->get_field_id( 'width' ); ?>" name="<?php echo $this->get_field_name( 'width' ); ?>" type="text" value="<?php esc_attr_e( $width ); ?>" class="small-text" /></p>
 		<p><label for="<?php echo $this->get_field_id( 'showcount' ); ?>"><input id="<?php echo $this->get_field_id( 'showcount' ); ?>" name="<?php echo $this->get_field_name( 'showcount' ); ?>" type="checkbox" value="1" <?php checked( $showcount ); ?> /><?php esc_html_e( 'Show Count', 'mailster' ); ?></label></p>
 		<p><label for="<?php echo $this->get_field_id( 'ontop' ); ?>"><input id="<?php echo $this->get_field_id( 'ontop' ); ?>" name="<?php echo $this->get_field_name( 'ontop' ); ?>" type="hidden" value=""><input id="<?php echo $this->get_field_id( 'ontop' ); ?>" name="<?php echo $this->get_field_name( 'ontop' ); ?>" type="checkbox" value="1" <?php checked( $ontop ); ?> /><?php esc_html_e( 'Count above Button', 'mailster' ); ?></label></p>
 		<?php
