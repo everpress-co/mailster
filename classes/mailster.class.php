@@ -23,6 +23,7 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
+		require_once MAILSTER_DIR . 'classes/wordpressusers.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
 		require_once MAILSTER_DIR . 'classes/forms.class.php';
 		require_once MAILSTER_DIR . 'classes/manage.class.php';
@@ -51,6 +52,7 @@ class Mailster {
 			'translations' => new MailsterTranslations(),
 			'campaigns'    => new MailsterCampaigns(),
 			'subscribers'  => new MailsterSubscribers(),
+			'wpusers'      => new MailsterWordPressUsers(),
 			'lists'        => new MailsterLists(),
 			'forms'        => new MailsterForms(),
 			'manage'       => new MailsterManage(),
@@ -1264,6 +1266,8 @@ class Mailster {
 		wp_enqueue_style( 'mailster-admin', MAILSTER_URI . 'assets/css/admin' . $suffix . '.css', array( 'mailster-icons' ), MAILSTER_VERSION );
 
 		wp_register_script( 'mailster-script', MAILSTER_URI . 'assets/js/mailster-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+
+		wp_enqueue_script( 'mailster-wordpress-users-script', MAILSTER_URI . 'assets/js/wordpress-users-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 		wp_localize_script(
 			'mailster-script',

@@ -25,6 +25,7 @@ $utm = array(
 		<li><a href="#homepage"><?php esc_html_e( 'Homepage', 'mailster' ); ?></a></li>
 		<li><a href="#delivery"><?php esc_html_e( 'Delivery', 'mailster' ); ?></a></li>
 		<li><a href="#privacy"><?php esc_html_e( 'Privacy', 'mailster' ); ?></a></li>
+		<li><a href="#users"><?php esc_html_e( 'WordPress Users', 'mailster' ); ?></a></li>
 		<li><a href="#validation"><?php esc_html_e( 'Validation', 'mailster' ); ?></a></li>
 		<li class="not-hidden"><a href="#finish"><?php esc_html_e( 'Ready!', 'mailster' ); ?></a></li>
 	</ol>
@@ -417,6 +418,42 @@ $utm = array(
 			<p><a href="https://kb.mailster.co/tag/gdpr/" class="external button button-primary"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a></p>
 
 			<?php require MAILSTER_DIR . '/views/settings/privacy.php'; ?>
+
+			</div>
+
+			</form>
+
+			<div class="mailster-setup-step-buttons">
+
+				<span class="alignleft status"></span>
+				<i class="spinner"></i>
+
+				<a class="button button-large skip-step" href="#users"><?php esc_html_e( 'Skip this Step', 'mailster' ); ?></a>
+				<a class="button button-large button-primary next-step" href="#users"><?php esc_html_e( 'Next Step', 'mailster' ); ?></a>
+
+			</div>
+
+		</div>
+
+
+		<div class="mailster-setup-step" id="step_users">
+
+			<h2><?php esc_html_e( 'WordPress Users', 'mailster' ); ?></h2>
+
+			<div class="mailster-setup-step-body">
+
+			<form class="mailster-setup-step-form">
+
+			<p><?php esc_html_e( 'Mailster can work with your WordPress users by syncing them with your Mailster subscribers. Define which roles you would like to keep tracked and Mailster will handle the list assignments. If users are added to a new user role Mailster will automatically update their lists.', 'mailster' ); ?></p>
+			<p><?php esc_html_e( 'Learn more about how Mailster can work with your WordPress users on our knowledge base.', 'mailster' ); ?></p>
+			<p><a href="https://kb.mailster.co/wordpress-users-in-mailster/" class="external button button-primary"><?php esc_html_e( 'Knowledge Base', 'mailster' ); ?></a></p>
+			<?php
+			global  $wp_roles;
+
+			$roles = $wp_roles->get_names();
+			?>
+
+			<?php require MAILSTER_DIR . '/views/settings/wordpress-users.php'; ?>
 
 			</div>
 

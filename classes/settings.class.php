@@ -136,6 +136,7 @@ class MailsterSettings {
 			'synclist'                           => array(
 				'firstname' => 'first_name',
 				'lastname'  => 'last_name',
+				'email'     => 'user_email',
 			),
 			'delete_wp_subscriber'               => false,
 			'delete_wp_user'                     => false,
@@ -1026,13 +1027,6 @@ class MailsterSettings {
 					break;
 
 				case 'sync':
-					if ( wp_next_scheduled( 'mailster_wordpress_users' ) ) {
-						wp_clear_scheduled_hook( 'mailster_wordpress_users' );
-					}
-					if ( $value ) {
-						wp_schedule_single_event( time() + 60, 'mailster_wordpress_users' );
-					}
-
 					break;
 
 				case 'synclist':

@@ -1,9 +1,9 @@
 mailster = (function (mailster, $, window, document) {
 
 	"use strict";
-	$('#sync_list_check').on('change', function () {
+	$('.sync_list_check').on('change', function () {
 		$('#sync_list').slideToggle(200);
-		$('.sync-button').prop('disabled', true);
+		$('.sync-button').prop('disabled', $(this).val());
 	});
 
 	$('#sync_list')

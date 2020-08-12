@@ -1,9 +1,9 @@
 <table class="form-table">
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'Sync WordPress Users', 'mailster' ); ?></th>
-		<td>
-		<label><input type="hidden" name="mailster_options[sync]" value=""><input type="checkbox" name="mailster_options[sync]" value="1" <?php checked( mailster_option( 'sync' ) ); ?> id="sync_list_check"> <?php esc_html_e( 'Mailster handles your WordPress users.', 'mailster' ); ?></label>
-		<p class="description"><?php esc_html_e( 'keep WordPress User data and Subscriber data synchronized. Only affects existing Subscribers', 'mailster' ); ?></p>
+		<th scope="row"><?php esc_html_e( 'Enable Sync', 'mailster' ); ?></th>
+		<td valign="top">
+		<label><input type="radio" name="mailster_options[sync]" value="0" <?php checked( ! mailster_option( 'sync' ) ); ?> class="sync_list_check"> <?php esc_html_e( 'Do not handle WordPress users.', 'mailster' ); ?></label><br>
+		<label><input type="radio" name="mailster_options[sync]" value="1" <?php checked( mailster_option( 'sync' ) ); ?> class="sync_list_check"> <?php esc_html_e( 'Keep WordPress users in sync.', 'mailster' ); ?></label>
 		</td>
 	</tr>
 </table>
@@ -63,8 +63,8 @@
 </table>
 <table class="form-table">
 	<tr valign="top">
-		<th scope="row"><?php esc_html_e( 'User Roles', 'mailster' ); ?><p class="description"><?php esc_html_e( 'Decide how Mailster should handle certain user roles.', 'mailster' ); ?></p></th>
-		<td>
+		<th scope="row"><?php esc_html_e( 'User Roles', 'mailster' ); ?><p class="description"><?php esc_html_e( 'Decide how Mailster should handle certain user roles. Mailster will add or remove subscribers from selected lists whenever the users role is updated.', 'mailster' ); ?></p></th>
+		<td valign="top">
 		<?php foreach ( $roles as $role => $name ) : ?>
 			<details class="user-role" open>
 				<summary><?php echo esc_html( $name ); ?></summary>

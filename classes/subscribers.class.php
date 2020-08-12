@@ -1208,8 +1208,7 @@ class MailsterSubscribers {
 			return new WP_Error( 'no_user', esc_html__( 'User doesn\'t exist!', 'mailster' ) );
 		}
 
-		$email = $user->data->user_email;
-
+		$email             = $user->data->user_email;
 		$subscriber_exists = $this->get_by_mail( $email );
 
 		if ( ! $merge && $subscriber_exists ) {
@@ -1236,10 +1235,12 @@ class MailsterSubscribers {
 				'wp_id'     => $user_id,
 				'firstname' => $first_name,
 				'lastname'  => $last_name,
+				'signup'    => strtotime( $user->data->user_registered ),
 			)
 		);
 
 		$subscriber_id = $this->add( $userdata, true, $merge, $subscriber_notification );
+		$this->sync_wp_user( $user->ID );
 
 		return $subscriber_id;
 
