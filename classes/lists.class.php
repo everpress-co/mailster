@@ -347,6 +347,7 @@ class MailsterLists {
 		}
 
 		if ( isset( $data['ID'] ) && empty( $data['ID'] ) ) {
+			$list_id = (int) $data['ID'];
 			unset( $data['ID'] );
 		}
 		if ( isset( $data['name'] ) && empty( $data['name'] ) ) {
@@ -368,7 +369,9 @@ class MailsterLists {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
-			$list_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
+			if ( ! empty( $wpdb->insert_id ) ) {
+				$list_id = $wpdb->insert_id;
+			}
 
 			if ( ! empty( $subscriber_ids ) ) {
 				$this->assign_subscribers( $list_id, $subscriber_ids, false, true );
