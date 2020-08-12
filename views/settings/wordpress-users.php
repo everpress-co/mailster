@@ -66,13 +66,23 @@
 		<th scope="row"><?php esc_html_e( 'User Roles', 'mailster' ); ?><p class="description"><?php esc_html_e( 'Decide how Mailster should handle certain user roles. Mailster will add or remove subscribers from selected lists whenever the users role is updated.', 'mailster' ); ?></p></th>
 		<td valign="top">
 		<?php foreach ( $roles as $role => $name ) : ?>
-			<details class="user-role" open>
-				<summary><?php echo esc_html( $name ); ?></summary>
+			<details class="user-role" <?php echo in_array( $role, mailster_option( 'wp_roles', array() ) ) ? 'open' : ''; ?>>
+				<summary><input type="checkbox" name="mailster_options[wp_roles][]" value="<?php echo esc_attr( $role ); ?>" <?php checked( in_array( $role, mailster_option( 'wp_roles', array() ) ) ); ?>> <?php echo esc_html( $name ); ?></summary>
 					<p><label><input type="hidden" name="mailster_options[wp_role_<?php echo esc_attr( $role ); ?>_optin]" value=""><input type="checkbox" name="mailster_options[wp_role_<?php echo esc_attr( $role ); ?>_optin]" value="1" <?php checked( mailster_option( 'wp_role_' . esc_attr( $role ) . '_optin' ) ); ?>> <?php esc_html_e( 'send confirmation (double-opt-in)', 'mailster' ); ?></label></p>
 					<p class="description"><?php esc_html_e( 'Subscribe them to these lists:', 'mailster' ); ?></p>
 					<?php mailster( 'lists' )->print_it( null, null, 'mailster_options[wp_role_' . esc_attr( $role ) . ']', false, mailster_option( 'wp_role_' . esc_attr( $role ) ) ); ?>
 			</details>
 		<?php endforeach; ?>
+		<?php
+		$role = '_none_';
+		$name = 'No role assigned';
+		?>
+			<details class="user-role" <?php echo in_array( $role, mailster_option( 'wp_roles', array() ) ) ? 'open' : ''; ?>>
+				<summary><input type="checkbox" name="mailster_options[wp_roles][]" value="<?php echo esc_attr( $role ); ?>" <?php checked( in_array( $role, mailster_option( 'wp_roles', array() ) ) ); ?>> <?php echo esc_html( $name ); ?></summary>
+					<p><label><input type="hidden" name="mailster_options[wp_role_<?php echo esc_attr( $role ); ?>_optin]" value=""><input type="checkbox" name="mailster_options[wp_role_<?php echo esc_attr( $role ); ?>_optin]" value="1" <?php checked( mailster_option( 'wp_role_' . esc_attr( $role ) . '_optin' ) ); ?>> <?php esc_html_e( 'send confirmation (double-opt-in)', 'mailster' ); ?></label></p>
+					<p class="description"><?php esc_html_e( 'Subscribe them to these lists:', 'mailster' ); ?></p>
+					<?php mailster( 'lists' )->print_it( null, null, 'mailster_options[wp_role_' . esc_attr( $role ) . ']', false, mailster_option( 'wp_role_' . esc_attr( $role ) ) ); ?>
+			</details>
 		</td>
 	</tr>
 	<tr valign="top">

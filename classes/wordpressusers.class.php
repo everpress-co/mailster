@@ -20,7 +20,7 @@ class MailsterWordPressUsers {
 	public function verify_options( $options ) {
 
 		if ( $options['sync'] ) {
-			$this->schedule_runner();
+			$this->schedule_runner( 1 );
 		}
 		return $options;
 	}
@@ -35,46 +35,75 @@ class MailsterWordPressUsers {
 
 	public function maybe_run() {
 
-		if ( $this->get_count() ) {
-			$this->run();
+		if ( ! mailster_option( 'sync' ) || ! mailster_option( 'wp_roles' ) ) {
+			return;
+		}
+
+		if ( $this->run() ) {
 			$this->schedule_runner( 10 );
 		}
 	}
 
 	public function run() {
 
-		global $wp_roles;
+		global $wpdb, $wp_roles;
+
+		$affected_roles = mailster_option( 'wp_roles', array() );
+
+		if ( empty( $affected_roles ) ) {
+			return 0;
+		}
 
 		$roles = $wp_roles->get_names();
 
-		foreach ( $roles as $role => $name ) {
-			if ( $lists = mailster_option( 'wp_role_' . $role ) ) {
-				$userdata = array(
-					'_lists'  => $lists,
-					'referer' => 'wpuser',
-				);
-				$this->create_subscribers_from_wprole( $role, $userdata );
+		$sql = 'SELECT SQL_CALC_FOUND_ROWS users.ID';
+
+		foreach ( $affected_roles as $role ) {
+			if ( '_none_' == $role ) {
+				$sql .= ", NULLIF(usermeta.meta_value = 'a:0:{}', false) AS _none_";
+			} else {
+				$sql .= ", NULLIF(usermeta.meta_value LIKE '%\"$role\"%', false) AS $role";
 			}
 		}
 
-	}
+		$sql .= " FROM {$wpdb->users} AS users LEFT JOIN {$wpdb->usermeta} AS usermeta ON usermeta.user_id = users.ID AND usermeta.meta_key = '{$wpdb->prefix}capabilities' LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON users.user_email = subscribers.email WHERE 1=1";
 
-	public function get_count( $role = null ) {
-
-		global $wpdb;
-
-		$sql = "SELECT COUNT(DISTINCT users.ID) FROM {$wpdb->users} AS users LEFT JOIN {$wpdb->usermeta} AS usermeta ON usermeta.user_id = users.ID AND usermeta.meta_key = '{$wpdb->prefix}capabilities' LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON users.user_email = subscribers.email WHERE 1=1";
-
-		if ( ! is_null( $role ) ) {
-			$sql .= " AND usermeta.meta_value LIKE '%s:" . strlen( $role ) . ":\"$role\";b:1;%'";
+		$sql .= ' AND (1=0';
+		foreach ( $affected_roles as $role ) {
+			if ( '_none_' == $role ) {
+				$sql .= " OR usermeta.meta_value = 'a:0:{}'";
+			} else {
+				$sql .= " OR usermeta.meta_value LIKE '%\"$role\"%'";
+			}
 		}
+		$sql .= ' )';
 
-		$sql  .= ' AND subscribers.ID IS NULL';
-		$count = $wpdb->get_var( $sql );
+		$sql  .= ' AND subscribers.ID IS NULL ORDER BY users.ID LIMIT 1000';
+		$users = $wpdb->get_results( $sql );
+		$total = $wpdb->get_var( 'SELECT FOUND_ROWS();' );
+		$count = count( $users );
 
 		error_log( print_r( $count, true ) );
+		error_log( print_r( $total, true ) );
 
-		return $count;
+		$subscriber_ids = array();
+
+		foreach ( $users as $user ) {
+
+			$userdata = array(
+				'referer' => 'wpuser',
+			);
+			foreach ( $affected_roles as $role ) {
+
+				if ( $user->{$role} ) {
+					$userdata['_lists'] = mailster_option( 'wp_role_' . $role );
+					$userdata['status'] = mailster_option( 'wp_role_' . $role . '_optin' ) ? 0 : 1;
+					$subscriber_ids[]   = mailster( 'subscribers' )->add_from_wp_user( $user->ID, $userdata, true, false );
+				}
+			}
+		}
+
+		return $total;
 
 	}
 
