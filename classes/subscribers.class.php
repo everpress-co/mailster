@@ -984,7 +984,9 @@ class MailsterSubscribers {
 			$lists = $entry['_lists'];
 			unset( $entry['_lists'] );
 		}
+
 		if ( isset( $entry['ID'] ) && empty( $entry['ID'] ) ) {
+			$subscriber_id = (int) $entry['ID'];
 			unset( $entry['ID'] );
 		}
 
@@ -1023,8 +1025,10 @@ class MailsterSubscribers {
 
 		if ( false !== $wpdb->query( $wpdb->prepare( $sql, $data ) ) ) {
 
-			$subscriber_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
-			$bulkimport    = defined( 'MAILSTER_DO_BULKIMPORT' ) && MAILSTER_DO_BULKIMPORT;
+			if ( ! empty( $wpdb->insert_id ) ) {
+				$subscriber_id = $wpdb->insert_id;
+			}
+			$bulkimport = defined( 'MAILSTER_DO_BULKIMPORT' ) && MAILSTER_DO_BULKIMPORT;
 
 			if ( ! $bulkimport ) {
 				mailster_cache_delete( 'subscriber_' . $subscriber_id );
