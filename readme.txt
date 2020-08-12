@@ -90,6 +90,8 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.13 =
 
+* fixed: multisite no longer share user meta data in conditions data between subsites.
+
 = Version 2.4.12 =
 
 * added: `mailster_inline_css` filter hook to disable auto inline css
