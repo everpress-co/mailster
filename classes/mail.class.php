@@ -695,6 +695,8 @@ class MailsterMail {
 
 			if ( $this->embed_images ) {
 				$this->content = $this->make_img_relative( $this->content );
+				// fix for https://github.com/PHPMailer/PHPMailer/issues/2107
+				$this->content = str_replace( array( ' src=""', ' background=""' ), '', $this->content );
 				$this->mailer->msgHTML( $this->content, trailingslashit( dirname( MAILSTER_UPLOAD_DIR ) ) );
 			} else {
 				$this->mailer->Body = $this->mailer->normalizeBreaks( $this->content );
