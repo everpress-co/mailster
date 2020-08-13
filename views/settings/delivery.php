@@ -1,5 +1,5 @@
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-number-of-mails-sent">
 		<th scope="row"><?php esc_html_e( 'Number of mails sent', 'mailster' ); ?></th>
 		<td><p><?php printf( esc_html__( 'Send max %1$s emails at once and max %2$s within %3$s hours', 'mailster' ), '<input type="text" name="mailster_options[send_at_once]" value="' . mailster_option( 'send_at_once' ) . '" class="small-text">', '<input type="text" name="mailster_options[send_limit]" value="' . mailster_option( 'send_limit' ) . '" class="small-text">', '<input type="text" name="mailster_options[send_period]" value="' . mailster_option( 'send_period' ) . '" class="small-text">' ); ?></p>
 		<p class="description"><?php esc_html_e( 'Depending on your hosting provider you can increase these values', 'mailster' ); ?></p>
@@ -21,7 +21,7 @@
 	<p class="description"><?php printf( esc_html__( 'You can still send %1$s mails within the next %2$s', 'mailster' ), '<strong>' . number_format_i18n( $mails_left ) . '</strong>', '<strong title="' . date_i18n( $timeformat, $next_reset + $timeoffset, true ) . '">' . human_time_diff( $next_reset ) . '</strong>' ); ?> &ndash; <a href="edit.php?post_type=newsletter&page=mailster_settings&reset-limits=1&_wpnonce=<?php echo wp_create_nonce( 'mailster-reset-limits' ); ?>"><?php esc_html_e( 'reset these limits', 'mailster' ); ?></a></p>
 
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-time-frame">
 		<th scope="row"><?php esc_html_e( 'Time Frame', 'mailster' ); ?><br>
 		<p class="howto"><?php printf( esc_html__( 'It\'s %1$s, %2$s', 'mailster' ), $wp_locale->weekday[ date( 'w', $timestamp ) ], date( 'H:i', $timestamp ) ); ?><br>
 		<?php esc_html_e( 'Status', 'mailster' ); ?> : <?php mailster( 'helper' )->in_timeframe() ? esc_html_e( 'active', 'mailster' ) : esc_html_e( 'paused', 'mailster' ); ?></p>
@@ -58,27 +58,25 @@
 			</p>
 			<p class="description"><?php esc_html_e( 'Only affects Campaigns and Auto responders but not transactional emails.', 'mailster' ); ?></p>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-split-campaigns">
 		<th scope="row"><?php esc_html_e( 'Split campaigns', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[split_campaigns]" value=""><input type="checkbox" name="mailster_options[split_campaigns]" value="1" <?php checked( mailster_option( 'split_campaigns' ) ); ?>> <?php esc_html_e( 'send campaigns simultaneously instead of one after the other', 'mailster' ); ?></label> </td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-pause-campaigns">
 		<th scope="row"><?php esc_html_e( 'Pause campaigns', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[pause_campaigns]" value=""><input type="checkbox" name="mailster_options[pause_campaigns]" value="1" <?php checked( mailster_option( 'pause_campaigns' ) ); ?>> <?php esc_html_e( 'pause campaigns if an error occurs', 'mailster' ); ?></label><p class="description"><?php esc_html_e( 'Mailster will change the status to "pause" if an error occur otherwise it tries to finish the campaign', 'mailster' ); ?></p></td>
 	</tr>
-	<tr valign="top">
-		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'Time between mails', 'mailster' ); ?></th>
-			<td><p><input type="text" name="mailster_options[send_delay]" value="<?php echo mailster_option( 'send_delay' ); ?>" class="small-text"> <?php esc_html_e( 'milliseconds', 'mailster' ); ?></p><p class="description"><?php esc_html_e( 'define a delay between mails in milliseconds if you have problems with sending two many mails at once', 'mailster' ); ?></p>
+	<tr valign="top" class="settings-row settings-row-time-between-mails">
+		<th scope="row"><?php esc_html_e( 'Time between mails', 'mailster' ); ?></th>
+		<td><p><input type="text" name="mailster_options[send_delay]" value="<?php echo mailster_option( 'send_delay' ); ?>" class="small-text"> <?php esc_html_e( 'milliseconds', 'mailster' ); ?></p><p class="description"><?php esc_html_e( 'define a delay between mails in milliseconds if you have problems with sending two many mails at once', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top">
-		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'Max. Execution Time', 'mailster' ); ?></th>
-			<td><p><input type="text" name="mailster_options[max_execution_time]" value="<?php echo mailster_option( 'max_execution_time', 0 ); ?>" class="small-text"> <?php esc_html_e( 'seconds', 'mailster' ); ?></p><p class="description"><?php esc_html_e( 'define a maximum execution time to prevent server timeouts. If set to zero, no time limit is imposed.', 'mailster' ); ?></p>
+	<tr valign="top" class="settings-row settings-row-max-execution-time">
+		<th scope="row"><?php esc_html_e( 'Max. Execution Time', 'mailster' ); ?></th>
+		<td><p><input type="text" name="mailster_options[max_execution_time]" value="<?php echo mailster_option( 'max_execution_time', 0 ); ?>" class="small-text"> <?php esc_html_e( 'seconds', 'mailster' ); ?></p><p class="description"><?php esc_html_e( 'define a maximum execution time to prevent server timeouts. If set to zero, no time limit is imposed.', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-send-test">
 		<th scope="row"><?php esc_html_e( 'Send Test', 'mailster' ); ?></th>
 		<td>
 		<div class="mailster-testmail">

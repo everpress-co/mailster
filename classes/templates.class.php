@@ -794,9 +794,14 @@ class MailsterTemplates {
 		$screenshotfile = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 		$screenshoturi  = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 
-		if ( 'index.html' == $file && file_exists( $this->path . '/' . $slug . '/screenshot.jpg' ) ) {
-			$screenshotfile = $this->path . '/' . $slug . '/screenshot.jpg';
-			$screenshoturi  = $this->url . '/' . $slug . '/screenshot.jpg';
+		if ( 'index.html' == $file ) {
+			if ( file_exists( $this->path . '/' . $slug . '/screenshot.jpg' ) ) {
+				$screenshotfile = $this->path . '/' . $slug . '/screenshot.jpg';
+				$screenshoturi  = $this->url . '/' . $slug . '/screenshot.jpg';
+			} elseif ( file_exists( $this->path . '/' . $slug . '/screenshot.png' ) ) {
+				$screenshotfile = $this->path . '/' . $slug . '/screenshot.png';
+				$screenshoturi  = $this->url . '/' . $slug . '/screenshot.png';
+			}
 		}
 
 		// serve saved

@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.4
-Stable tag: 2.4.12
+Tested up to: 5.5
+Stable tag: 2.4.13
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,15 +88,25 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.13 =
+
+* added: classes to settings rows
+* fixed: error in PHPMailer (#2107) where exception is thrown when background attribute is empty
+* fixed: multisite no longer share user meta data in conditions data between subsites.
+
 = Version 2.4.12 =
 
 * added: `mailster_inline_css` filter hook to disable auto inline css
-* improved: consistent behavior on handling shortcodes
-* fixed: problem with third part shortcodes in excerpt
+* fixed: problem with third party shortcodes in excerpt
 * fixed: several small bugfixes
 * fixed: wrong counting on dashboard widget
 * fixed: calculation of aggregated campaigns not accurate
-* improved: automatically remove support accounts after one week
+* fixed: relative path in modules
+* fixed: High DPI images on dynamic posts tags got wrong eight in some cases.
+* improved: consistent behavior on handling shortcodes
+* improved: Only the preheader text is shown in the email preview of email clients.
+* improved: `mailster_preview_text_fix` filter to disable preview text fix.
+* improved: automatically remove support accounts after one month after an update
 * improved: you can now click on form fields to add them to the form
 * improved: added missing aria labels
 
