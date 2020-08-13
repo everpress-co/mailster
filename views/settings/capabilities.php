@@ -6,7 +6,7 @@
 unset( $roles['administrator'] );
 
 ?>
-<tr valign="top">
+<tr valign="top" class="settings-row settings-row-capabilities">
 	<td>
 		<table id="capabilities-table">
 			<thead>

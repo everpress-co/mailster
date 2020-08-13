@@ -1,5 +1,5 @@
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-enable-sync">
 		<th scope="row"><?php esc_html_e( 'Enable Sync', 'mailster' ); ?></th>
 		<td valign="top">
 		<label><input type="radio" name="mailster_options[sync]" value="0" <?php checked( ! mailster_option( 'sync' ) ); ?> class="sync_list_check"> <?php esc_html_e( 'Do not handle WordPress users.', 'mailster' ); ?></label><br>
@@ -9,7 +9,7 @@
 </table>
 <div id="sync_list"<?php echo ! mailster_option( 'sync' ) ? ' style="display:none"' : ''; ?>>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-meta-data-list">
 		<th scope="row"><?php esc_html_e( 'Meta Data List', 'mailster' ); ?><p class="description"><?php esc_html_e( 'select the custom field which should sync with a certain meta field', 'mailster' ); ?></p></th>
 		<td>
 		<?php
@@ -50,7 +50,7 @@
 	</tr>
 </table>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-manually-sync">
 		<th scope="row"><p class="description"><?php esc_html_e( 'manually sync all existing users based on the above settings. (save required)', 'mailster' ); ?></p></th>
 		<td>
 		<p>
@@ -62,7 +62,7 @@
 	</tr>
 </table>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-user-roles">
 		<th scope="row"><?php esc_html_e( 'User Roles', 'mailster' ); ?><p class="description"><?php esc_html_e( 'Decide how Mailster should handle certain user roles. Mailster will add or remove subscribers from selected lists whenever the users role is updated.', 'mailster' ); ?></p></th>
 		<td valign="top">
 		<?php foreach ( $roles as $role => $name ) : ?>
@@ -85,7 +85,7 @@
 			</details>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-registered-users">
 		<th scope="row"><?php esc_html_e( 'Registered Users', 'mailster' ); ?></th>
 		<td>
 		<?php if ( get_option( 'users_can_register' ) ) : ?>
@@ -98,7 +98,7 @@
 </table>
 <div id="users-register_signup"<?php echo ! get_option( 'users_can_register' ) || ! mailster_option( 'register_signup' ) ? ' style="display:none"' : ''; ?>>
 	<table class="form-table">
-		<tr valign="top">
+		<tr valign="top" class="settings-row settings-row-user-register-signup">
 			<th scope="row"></th>
 			<td>
 			<label><input type="hidden" name="mailster_options[register_signup_checked]" value=""><input type="checkbox" name="mailster_options[register_signup_checked]" value="1" <?php checked( mailster_option( 'register_signup_checked' ) ); ?>> <?php esc_html_e( 'checked by default', 'mailster' ); ?></label>
@@ -109,7 +109,7 @@
 </div>
 
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-new-comments">
 		<th scope="row"><?php esc_html_e( 'New Comments', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[register_comment_form]" value=""><input type="checkbox" name="mailster_options[register_comment_form]" value="1" <?php checked( mailster_option( 'register_comment_form' ) ); ?> class="users-register" data-section="users-register_comment_form"> <?php esc_html_e( 'Allow users to signup on the comment form if they are currently not subscribed to any list', 'mailster' ); ?></label>
 		</td>
@@ -117,7 +117,7 @@
 </table>
 <div id="users-register_comment_form"<?php echo ! mailster_option( 'register_comment_form' ) ? ' style="display:none"' : ''; ?>>
 	<table class="form-table">
-		<tr valign="top">
+		<tr valign="top" class="settings-row settings-row-register-comment-form-options">
 			<th scope="row"></th>
 			<td>
 			<p><label><input type="hidden" name="mailster_options[register_comment_form_checked]" value=""><input type="checkbox" name="mailster_options[register_comment_form_checked]" value="1" <?php checked( mailster_option( 'register_comment_form_checked' ) ); ?>> <?php esc_html_e( 'checked by default', 'mailster' ); ?></label></p>
@@ -135,13 +135,13 @@
 	</table>
 </div>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-delete-subscribers">
 		<th scope="row"><?php esc_html_e( 'Delete Subscriber', 'mailster' ); ?></th>
 		<td>
 		<label><input type="hidden" name="mailster_options[delete_wp_subscriber]" value=""><input type="checkbox" name="mailster_options[delete_wp_subscriber]" value="1" <?php checked( mailster_option( 'delete_wp_subscriber' ) ); ?>> <?php esc_html_e( 'Delete Subscriber if the WordPress User gets deleted', 'mailster' ); ?></label>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-delete-wordpress-users">
 		<th scope="row"><?php esc_html_e( 'Delete WordPress User', 'mailster' ); ?></th>
 		<td>
 		<label>

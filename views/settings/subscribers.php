@@ -1,5 +1,5 @@
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-notification">
 		<th scope="row"><?php esc_html_e( 'Notification', 'mailster' ); ?></th>
 		<td>
 		<p>
@@ -17,9 +17,7 @@
 		</p>
 		</td>
 	</tr>
-</table>
-<table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-notification">
 		<th scope="row">&nbsp;</th>
 		<td>
 		<p>
@@ -38,22 +36,22 @@
 		</p>
 		</td>
 	</tr>
-	<tr>
+	<tr valign="top" class="settings-row settings-row-list-based-subscription">
 		<th scope="row"><?php esc_html_e( 'List Based Subscription', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[list_based_opt_in]" value=""><input type="checkbox" name="mailster_options[list_based_opt_in]" value="1" <?php checked( mailster_option( 'list_based_opt_in' ) ); ?>> <?php esc_html_e( 'Subscribers sign up on a per list basis instead of globally.', 'mailster' ); ?></label>
 		</td>
 	</tr>
-	<tr>
+	<tr valign="top" class="settings-row settings-row-single-opt-out">
 		<th scope="row"><?php esc_html_e( 'Single-Opt-Out', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[single_opt_out]" value=""><input type="checkbox" name="mailster_options[single_opt_out]" value="1" <?php checked( mailster_option( 'single_opt_out' ) ); ?>> <?php esc_html_e( 'Subscribers instantly signed out after clicking the unsubscribe link in mails', 'mailster' ); ?></label>
 		</td>
 	</tr>
-	<tr>
+	<tr valign="top" class="settings-row settings-row-mail-app-unsubscribe">
 		<th scope="row"><?php esc_html_e( 'Mail App Unsubscribe', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[mail_opt_out]" value=""><input type="checkbox" name="mailster_options[mail_opt_out]" value="1" <?php checked( mailster_option( 'mail_opt_out' ) ); ?>> <?php esc_html_e( 'Allow Subscribers to opt out from their mail application if applicable.', 'mailster' ); ?></label>
 		</td>
 	</tr>
-	<tr>
+	<tr valign="top" class="settings-row settings-row-name-order">
 		<th scope="row"><?php esc_html_e( 'Name Order', 'mailster' ); ?></th>
 		<td>
 		<select name="mailster_options[name_order]">
@@ -63,7 +61,7 @@
 		<p class="description"><?php printf( esc_html__( 'Define in which order names appear in your language or country. This is used for the %s tag.', 'mailster' ), '<code>{fullname}</code>' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-custom-fields">
 		<th scope="row"><?php esc_html_e( 'Custom Fields', 'mailster' ); ?>:
 			<p class="description"><?php esc_html_e( 'Custom field tags are individual tags for each subscriber. You can ask for them on subscription and/or make it a required field.', 'mailster' ); ?></p>
 			<p class="description"><?php esc_html_e( 'You have to enable Custom fields for each form:', 'mailster' ); ?><br><a href="edit.php?post_type=newsletter&page=mailster_forms"><?php esc_html_e( 'Forms', 'mailster' ); ?></a></p>
