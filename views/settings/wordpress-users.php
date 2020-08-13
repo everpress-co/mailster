@@ -110,7 +110,7 @@
 </div>
 
 <table class="form-table">
-	<tr valign="top" class="settings-row settings-row-new-comment">
+	<tr valign="top" class="settings-row settings-row-new-comments">
 		<th scope="row"><?php esc_html_e( 'New Comments', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[register_comment_form]" value=""><input type="checkbox" name="mailster_options[register_comment_form]" value="1" <?php checked( mailster_option( 'register_comment_form' ) ); ?> class="users-register" data-section="users-register_comment_form"> <?php esc_html_e( 'Allow users to signup on the comment form if they are currently not subscribed to any list', 'mailster' ); ?></label>
 		</td>
