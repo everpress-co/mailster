@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.13 =
 
+* added: classes to settings rows
 * fixed: multisite no longer share user meta data in conditions data between subsites.
 
 = Version 2.4.12 =
