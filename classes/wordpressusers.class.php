@@ -40,7 +40,7 @@ class MailsterWordPressUsers {
 		}
 
 		if ( $this->run() ) {
-			$this->schedule_runner( 10 );
+			$this->schedule_runner( 60 );
 		}
 	}
 
@@ -50,10 +50,10 @@ class MailsterWordPressUsers {
 
 		$affected_roles = mailster_option( 'wp_roles', array() );
 
-		if ( empty( $affected_roles ) ) {
+		if ( ! mailster_option( 'sync' ) || ! $affected_roles ) {
+			error_log( print_r( 'NO MORE :(', true ) );
 			return 0;
 		}
-
 		$roles = $wp_roles->get_names();
 
 		$sql = 'SELECT SQL_CALC_FOUND_ROWS users.ID';
@@ -78,29 +78,44 @@ class MailsterWordPressUsers {
 		}
 		$sql .= ' )';
 
+		$sql  .= ' AND users.ID > ' . absint( get_option( 'mailster_wp_last_user', 0 ) );
 		$sql  .= ' AND subscribers.ID IS NULL ORDER BY users.ID LIMIT 1000';
 		$users = $wpdb->get_results( $sql );
+
+		error_log( print_r( $sql, true ) );
 		$total = $wpdb->get_var( 'SELECT FOUND_ROWS();' );
 		$count = count( $users );
-
-		error_log( print_r( $count, true ) );
-		error_log( print_r( $total, true ) );
 
 		$subscriber_ids = array();
 
 		foreach ( $users as $user ) {
 
 			$userdata = array(
-				'referer' => 'wpuser',
+				'referer' => 'import',
+				'status'  => 1,
+				'_lists'  => array(),
 			);
 			foreach ( $affected_roles as $role ) {
 
 				if ( $user->{$role} ) {
-					$userdata['_lists'] = mailster_option( 'wp_role_' . $role );
+					$userdata['_lists'] = array_merge( $userdata['_lists'], mailster_option( 'wp_role_' . $role ) );
 					$userdata['status'] = mailster_option( 'wp_role_' . $role . '_optin' ) ? 0 : 1;
-					$subscriber_ids[]   = mailster( 'subscribers' )->add_from_wp_user( $user->ID, $userdata, true, false );
 				}
 			}
+
+			$subscriber_ids[] = mailster( 'subscribers' )->add_from_wp_user( $user->ID, $userdata, false, false );
+
+		}
+
+		if ( $total > $count ) {
+			mailster_notice( sprintf( esc_html__( 'Mailster is currently importing WordPress users. (%s left)', 'mailster' ), number_format_i18n( $total ) ), 'info', false, 'wordpress_user_import' );
+		} else {
+			mailster_remove_notice( 'wordpress_user_import' );
+		}
+
+		if ( $count ) {
+			$latest_id = max( wp_list_pluck( $users, 'ID' ) );
+			update_option( 'mailster_wp_last_user', $latest_id );
 		}
 
 		return $total;

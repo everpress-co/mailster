@@ -146,68 +146,6 @@ class MailsterManage {
 			// single quotes cause problems
 			$raw_data = str_replace( '&#039;', "'", $raw_data );
 
-		} elseif ( isset( $_POST['wordpressusers'] ) ) {
-
-			if ( ! current_user_can( 'mailster_import_wordpress_users' ) ) {
-
-				@header( 'Content-type: application/json' );
-				echo json_encode( $return );
-				exit;
-			}
-
-			parse_str( $_POST['wordpressusers'], $data );
-
-			$roles       = isset( $data['roles'] ) ? (array) $data['roles'] : array();
-			$no_role     = isset( $data['no_role'] );
-			$meta_values = isset( $data['meta_values'] ) ? (array) $data['meta_values'] : array();
-
-			$sql = "SELECT u.user_email, IF(meta_role.meta_value = 'a:0:{}',NULL,meta_role.meta_value) AS '_role', meta_firstname.meta_value AS 'firstname', meta_lastname.meta_value AS 'lastname', u.display_name, u.user_nicename, u.user_registered";
-
-			foreach ( $meta_values as $i => $meta_value ) {
-				$sql .= ", meta_$i.meta_value AS '$meta_value'";
-			}
-
-			$sql .= " FROM {$wpdb->users} AS u";
-			$sql .= " LEFT JOIN {$wpdb->usermeta} AS meta_role ON meta_role.user_id = u.id AND meta_role.meta_key = '{$wpdb->prefix}capabilities'";
-			$sql .= " LEFT JOIN {$wpdb->usermeta} AS meta_firstname ON meta_firstname.user_id = u.id AND meta_firstname.meta_key = 'first_name'";
-			$sql .= " LEFT JOIN {$wpdb->usermeta} AS meta_lastname ON meta_lastname.user_id = u.id AND meta_lastname.meta_key = 'last_name'";
-			foreach ( $meta_values as $i => $meta_value ) {
-				$sql .= " LEFT JOIN {$wpdb->usermeta} AS meta_$i ON meta_$i.user_id = u.id AND meta_$i.meta_key = '$meta_value'";
-			}
-
-			$sql .= ' WHERE meta_role.user_id IS NOT NULL';
-
-			$users = $wpdb->get_results( $sql );
-
-			$raw_data = '<b>' . mailster_text( 'email' ) . '</b>;<b>' . mailster_text( 'firstname' ) . '</b>;<b>' . mailster_text( 'lastname' ) . '</b>;<b>' . esc_html__( 'nickname', 'mailster' ) . '</b>;<b>' . esc_html__( 'display name', 'mailster' ) . '</b>;<b>' . esc_html__( 'registered', 'mailster' ) . '</b>;<b>' . implode( '</b>;<b>', $meta_values ) . "</b>;\n";
-
-			foreach ( $users as $user ) {
-
-				// no role set and roles is a must
-				if ( ! $user->_role && ! $no_role ) {
-					continue;
-				}
-
-				// role is set but not in the list
-				if ( $user->_role && ! array_intersect( array_keys( unserialize( $user->_role ) ), $roles ) ) {
-					continue;
-				}
-
-				foreach ( $user as $key => $data ) {
-					if ( $key == '_role' ) {
-						continue;
-					}
-
-					if ( $key == 'firstname' && ! $data ) {
-						$data = $user->display_name;
-					}
-
-					$raw_data .= $data . ';';
-				}
-
-				$raw_data .= "\n";
-
-			}
 		} else {
 
 			die( 'not allowed' );

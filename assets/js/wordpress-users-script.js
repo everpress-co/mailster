@@ -93,5 +93,6 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		})
 
+	return mailster;
 
 }(mailster || {}, jQuery, window, document));
