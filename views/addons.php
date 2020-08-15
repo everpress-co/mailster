@@ -9,7 +9,7 @@
 <?php if ( is_wp_error( $addons ) ) : ?>
 
 	<div class="error below-h2">
-		<p><strong><?php esc_html_e( 'There was an error retrieving the list from the server:', 'mailster' ); ?></strong><br><?php esc_html_e( $addons->get_error_message() ); ?></p>
+		<p><strong><?php esc_html_e( 'There was an error retrieving the list from the server:', 'mailster' ); ?></strong><br><?php echo esc_html( $addons->get_error_message() ); ?></p>
 	</div>
 
 <?php else : ?>
@@ -46,13 +46,13 @@
 					<a href="<?php echo esc_url( $addon->link ); ?>" class="external">&nbsp;</a>
 				<?php endif; ?>
 			</div>
-			<h4><?php esc_html_e( $addon->name ); ?></h4>
+			<h4><?php echo esc_html( $addon->name ); ?></h4>
 			<p class="author"><?php esc_html_e( 'by', 'mailster' ); ?>
 			<?php
 			if ( $addon->author_url ) :
 				echo '<a href="' . esc_url( $addon->author_url ) . '" class="external">' . esc_html( $addon->author ) . '</a>';
 			else :
-				esc_html_e( $addon->author );
+				echo esc_html( $addon->author );
 			endif;
 			?>
 			</p>

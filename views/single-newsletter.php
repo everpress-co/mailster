@@ -65,7 +65,7 @@
 			<?php if ( ! $meta['webversion'] ) : ?>
 				<strong>[ <?php esc_html_e( 'Private', 'mailster' ); ?> ]</strong>
 			<?php endif; ?>
-			<?php esc_html_e( $title ); ?></a>
+			<?php echo esc_html( $title ); ?></a>
 		</li>
 <?php if ( current_user_can( 'edit_post', $post_id ) ) : ?>
 		<li class="editlink header"><a href="<?php echo admin_url( 'post.php?post=' . $post_id . '&action=edit' ); ?>"><?php esc_html_e( 'Edit', 'mailster' ); ?></a></li>
@@ -95,7 +95,7 @@
 									?>
 								<li>
 									<a title="<?php printf( esc_html__( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ); ?>" class="<?php echo $service; ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? (int) $social_services[ $service ]['width'] : 650; ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? (int) $social_services[ $service ]['height'] : 405; ?>" >
-									<?php esc_html_e( $social_services[ $service ]['name'] ); ?>
+									<?php echo esc_html( $social_services[ $service ]['name'] ); ?>
 									</a>
 								</li>
 								<?php endforeach; ?>
