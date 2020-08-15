@@ -65,7 +65,7 @@
 			</div>
 			<div id="single-link">
 				<div class="clearfix">
-						<label class="block"><div class="left"><?php esc_html_e( 'Link', 'mailster' ); ?></div><div class="right"><input type="text" class="input singlelink" value="" placeholder="<?php esc_html_e( 'insert URL', 'mailster' ); ?>"></div></label>
+						<label class="block"><div class="left"><?php esc_html_e( 'Link', 'mailster' ); ?></div><div class="right"><input type="text" class="input singlelink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>"></div></label>
 				</div>
 				<div class="link-wrap">
 					<div class="postlist">
@@ -83,17 +83,17 @@
 			<div id="image_button" class="tab">
 			<?php $this->templateobj->buttons(); ?>
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_html_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_attr_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
 			</div>
 			</div>
 			<div id="text_button" class="tab" style="display:none">
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Button Label', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonlabel" value="" placeholder="<?php esc_html_e( 'button label', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Button Label', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Button Label', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonlabel" value="" placeholder="<?php esc_attr_e( 'button label', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Button Label', 'mailster' ); ?>"></div></label>
 			</div>
 			</div>
 
 			<div class="clearfix">
-					<label class="block"><div class="left"><?php esc_html_e( 'Link Button', 'mailster' ); ?> <span class="description">(<?php esc_html_e( 'required', 'mailster' ); ?>)</span></div><div class="right"><input type="text" class="input buttonlink" value="" placeholder="<?php esc_html_e( 'insert URL', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Link of the button', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Link Button', 'mailster' ); ?> <span class="description">(<?php esc_html_e( 'required', 'mailster' ); ?>)</span></div><div class="right"><input type="text" class="input buttonlink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Link of the button', 'mailster' ); ?>"></div></label>
 			</div>
 			<div class="link-wrap">
 				<div class="postlist">
@@ -195,8 +195,8 @@
 				<div class="imageurl-popup">
 					<label class="block"><div class="left"><?php esc_html_e( 'Image URL', 'mailster' ); ?></div><div class="right"><input type="text" class="input imageurl" value="" placeholder="https://example.com/image.jpg" aria-label="<?php esc_attr_e( 'Image URL', 'mailster' ); ?>"></div></label>
 				</div>
-					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input imagealt" value="" placeholder="<?php esc_html_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
-					<label class="block"><div class="left"><?php esc_html_e( 'Link image to the this URL', 'mailster' ); ?></div><div class="right"><input type="text" class="input imagelink" value="" placeholder="<?php esc_html_e( 'insert URL', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input imagealt" value="" placeholder="<?php esc_attr_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
+					<label class="block"><div class="left"><?php esc_html_e( 'Link image to the this URL', 'mailster' ); ?></div><div class="right"><input type="text" class="input imagelink" value="" placeholder="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'insert URL', 'mailster' ); ?>"></div></label>
 					<input type="hidden" class="input orgimageurl" value="">
 			</div>
 			<br class="clear">
@@ -226,7 +226,7 @@
 				<?php endforeach; ?>
 				</p>
 				<p>
-					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_html_e( 'Search for posts', 'mailster' ); ?>..." ></label>
+					<label><input type="text" class="widefat" id="post-search" placeholder="<?php esc_attr_e( 'Search for posts', 'mailster' ); ?>..." ></label>
 				</p>
 				<div class="postlist">
 				</div>

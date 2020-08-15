@@ -108,20 +108,20 @@
 						<div>
 							<form id="emailform" novalidate>
 								<p>
-									<input type="text" name="sendername" id="sendername" placeholder="<?php esc_html_e( 'Your name', 'mailster' ); ?>" value="">
+									<input type="text" name="sendername" id="sendername" placeholder="<?php esc_attr_e( 'Your name', 'mailster' ); ?>" value="">
 								</p>
 								<p>
-									<input type="email" name="sender" id="sender" placeholder="<?php esc_html_e( 'Your email address', 'mailster' ); ?>" value="<?php echo $is_forward; ?>">
+									<input type="email" name="sender" id="sender" placeholder="<?php esc_attr_e( 'Your email address', 'mailster' ); ?>" value="<?php echo $is_forward; ?>">
 								</p>
 								<p>
-									<input type="email" name="receiver" id="receiver" placeholder="<?php esc_html_e( 'Your friend\'s email address', 'mailster' ); ?>" value="">
+									<input type="email" name="receiver" id="receiver" placeholder="<?php esc_attr_e( 'Your friend\'s email address', 'mailster' ); ?>" value="">
 								</p>
 								<p>
-									<textarea name="message" id="message" placeholder="<?php esc_html_e( 'A personal note to your friend', 'mailster' ); ?>"></textarea>
+									<textarea name="message" id="message" placeholder="<?php esc_attr_e( 'A personal note to your friend', 'mailster' ); ?>"></textarea>
 								</p>
 								<p>
 									<span class="status">&nbsp;</span>
-									<input type="submit" class="button" value="<?php esc_html_e( 'Send now', 'mailster' ); ?>" >
+									<input type="submit" class="button" value="<?php esc_attr_e( 'Send now', 'mailster' ); ?>" >
 								</p>
 									<div class="loading" id="ajax-loading"></div>
 								<p>

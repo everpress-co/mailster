@@ -8,7 +8,7 @@ if ( $lists = mailster( 'lists' )->get() ) : ?>
 			<option value="<?php echo (int) $list->ID; ?>"><?php echo esc_html( $list->name ); ?></option>
 		<?php endforeach; ?>
 		</select>
-		<span class="mailster-mb-label"><?php esc_html_e( 'List', 'mailster' ); ?>:</span> <a class="mailster-mb-link" href="edit.php?post_type=newsletter&page=mailster_lists&ID=%d" title="<?php esc_html_e( 'edit', 'mailster' ); ?>"><?php echo esc_html( $list->name ); ?></a>
+		<span class="mailster-mb-label"><?php esc_html_e( 'List', 'mailster' ); ?>:</span> <a class="mailster-mb-link" href="edit.php?post_type=newsletter&page=mailster_lists&ID=%d" title="<?php esc_attr_e( 'edit', 'mailster' ); ?>"><?php echo esc_html( $list->name ); ?></a>
 	</div>
 	<div class="mailster-mb-stats">
 		<ul class="campaign-charts">
