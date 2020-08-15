@@ -220,10 +220,9 @@
 				<p id="post_type_select" class="alignright">
 				<?php
 				$pts = mailster( 'helper' )->get_post_types( true, 'objects' );
-				error_log( print_r( $pts, true ) );
 				?>
 				<?php foreach ( $pts as $pt => $data ) : ?>
-					<label><?php echo ( $pt ); ?><input type="checkbox" name="post_types[]" value="<?php echo esc_attr( $pt ); ?>" <?php checked( 'post' == $pt, true ); ?>> <?php echo esc_html( $data->labels->name ); ?> </label>
+					<label><input type="checkbox" name="post_types[]" value="<?php echo esc_attr( $pt ); ?>" <?php checked( 'post' == $pt, true ); ?>> <?php echo esc_html( $data->labels->name ); ?> </label>
 				<?php endforeach; ?>
 				</p>
 				<p>
