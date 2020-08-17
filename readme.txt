@@ -91,9 +91,10 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.13 =
 
 * added: classes to settings rows
+* improved: handling of one click post requests for unsubscribes according to RFC8058
 * fixed: do not localize variables
 * fixed: error in PHPMailer (#2107) where exception is thrown when background attribute is empty
-* fixed: multisite no longer share user meta data in conditions data between subsites.
+* fixed: multi site no longer share user meta data in conditions data between sub sites.
 
 = Version 2.4.12 =
 

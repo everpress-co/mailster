@@ -591,21 +591,26 @@ class MailsterAjax {
 
 				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
 
-				$listunsubscribe = '';
-				if ( $mail->bouncemail ) {
-					$listunsubscribe_mail    = $mail->bouncemail;
-					$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
-					$listunsubscribe_body    = "X-Mailster: $mail->hash\nX-Mailster-Campaign: $ID\nX-Mailster-ID: $MID\n\n";
-					$listunsubscribe        .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
+				$listunsubscribe = array();
+				if ( mailster_option( 'mail_opt_out' ) ) {
+					$listunsubscribe_mail    = $bouncemail ? $bouncemail : $from;
+					$listunsubscribe_subject = 'Please remove me from the list';
+					$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$mail->to} X-Mailster: {$mail->hash} X-Mailster-Campaign: {$ID} X-Mailster-ID: {$MID}" );
+
+					$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 				}
-				$listunsubscribe .= '<' . $unsubscribelink . '>';
+				$listunsubscribe[] = '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $mail->hash, $ID ) . '>';
 
 				$headers = array(
-					'X-Mailster-Campaign'   => $ID,
-					'X-Mailster-ID'         => $MID,
-					'List-Unsubscribe'      => $listunsubscribe,
-					'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+					'X-Mailster'          => $mail->hash,
+					'X-Mailster-Campaign' => $ID,
+					'X-Mailster-ID'       => $MID,
+					'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
 				);
+
+				if ( mailster_option( 'single_opt_out' ) ) {
+					$headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
+				}
 
 				if ( 'autoresponder' != get_post_status( $ID ) ) {
 					$headers['Precedence'] = 'bulk';
