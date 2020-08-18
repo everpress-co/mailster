@@ -92,6 +92,7 @@ Xaver Birsak – https://everpress.co
 
 * added: classes to settings rows
 * added: option to handle short codes from the advanced settings tab
+* added: support for `{attachment_image:XX}` to display images
 * improved: handling of one click post requests for unsubscribes according to RFC8058
 * fixed: do not localize variables
 * fixed: error in PHPMailer (#2107) where exception is thrown when background attribute is empty
