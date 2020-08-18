@@ -427,6 +427,7 @@ class MailsterAjax {
 
 		$content = mailster( 'helper' )->strip_structure_html( $content );
 		$content = mailster( 'helper' )->add_mailster_styles( $content );
+		$content = mailster( 'helper' )->handle_shortcodes( $content );
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
 
@@ -1445,8 +1446,6 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$strip_shortcodes = apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) );
-
 		if ( is_numeric( $_POST['id'] ) ) {
 			$post    = get_post( (int) $_POST['id'] );
 			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
@@ -1485,14 +1484,9 @@ class MailsterAjax {
 				}
 
 				$content = str_replace( '<img ', '<img editable ', $content );
-				if ( $strip_shortcodes ) {
-					// remove shortcodes but keep content
-					$content = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $content );
-					$excerpt = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $excerpt );
-				} else {
-					$content = do_shortcode( $content );
-					$excerpt = do_shortcode( $excerpt );
-				}
+
+				$content = mailster( 'helper' )->handle_shortcodes( $content );
+				$excerpt = mailster( 'helper' )->handle_shortcodes( $excerpt );
 
 				$data = array(
 					'title'   => $post->post_title,

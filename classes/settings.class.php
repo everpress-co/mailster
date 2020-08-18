@@ -210,6 +210,7 @@ class MailsterSettings {
 			'usage_tracking'                     => false,
 			'ask_usage_tracking'                 => true,
 			'disable_cache'                      => false,
+			'shortcodes'                         => false,
 			'remove_data'                        => false,
 			'got_url_rewrite'                    => mailster( 'helper' )->got_url_rewrite(),
 			'post_nonce'                         => wp_create_nonce( uniqid() ),

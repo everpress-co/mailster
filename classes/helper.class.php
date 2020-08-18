@@ -1080,7 +1080,33 @@ class MailsterHelper {
 		// custom styles
 		$content = $this->add_mailster_styles( $content );
 
+		// handle shortcodes
+		$content = $this->handle_shortcodes( $content );
+
 		return apply_filters( 'mailster_prepare_content', $content );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $content
+	 * @return unknown
+	 */
+	public function handle_shortcodes( $content ) {
+
+		if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', ! mailster_option( 'shortcodes' ) ) ) ) {
+			global $shortcode_tags;
+			$to_strip = array_map( 'preg_quote', array_keys( $shortcode_tags ) );
+			$pattern  = '/\[(\/)?(' . implode( '|', $to_strip ) . ')([^\]]*)\]/';
+			// remove shortcodes but keep content
+			$content = preg_replace( $pattern, '', $content );
+		} else {
+			error_log( print_r( 'asdasd', true ) );
+			$content = do_shortcode( $content );
+		}
+
+		return apply_filters( 'mailster_handle_shortcodes', $content );
 
 	}
 
@@ -1861,13 +1887,7 @@ class MailsterHelper {
 			return $excerpt;
 		}
 
-		if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) ) ) {
-			// remove shortcodes but keep content
-			$stripped_string = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $org_string );
-		} else {
-			// do shortocdes
-			$stripped_string = do_shortcode( $org_string );
-		}
+		$stripped_string = mailster( 'helper' )->handle_shortcodes( $org_string );
 
 		$string            = str_replace( "\n", '<!--Mailster:newline-->', $stripped_string );
 		$string            = html_entity_decode( wp_trim_words( htmlentities( $string ), $length, $more ) );

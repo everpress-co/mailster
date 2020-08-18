@@ -970,13 +970,7 @@ class Mailster {
 
 			$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content ), apply_filters( 'mailster_excerpt_length', null ) );
 
-			if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) ) ) {
-				// remove shortcodes but keep content
-				$post->post_content = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $post->post_content );
-			} else {
-				// do shortocdes
-				$post->post_content = do_shortcode( $post->post_content );
-			}
+			$post->post_content = mailster( 'helper' )->handle_shortcodes( $post->post_content );
 
 			$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
