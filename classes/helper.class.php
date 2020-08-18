@@ -1093,20 +1093,30 @@ class MailsterHelper {
 	 * @param unknown $content
 	 * @return unknown
 	 */
-	public function handle_shortcodes( $content ) {
+	public function handle_shortcodes( $org_content ) {
 
-		if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', ! mailster_option( 'shortcodes' ) ) ) ) {
-			global $shortcode_tags;
-			$to_strip = array_map( 'preg_quote', array_keys( $shortcode_tags ) );
-			$pattern  = '/\[(\/)?(' . implode( '|', $to_strip ) . ')([^\]]*)\]/';
-			// remove shortcodes but keep content
-			$content = preg_replace( $pattern, '', $content );
-		} else {
-			error_log( print_r( 'asdasd', true ) );
-			$content = do_shortcode( $content );
+		global $shortcode_tags;
+
+		$key = 'handle_shortcodes_' . md5( $org_content );
+
+		if ( ! ( $content = mailster_cache_get( $key ) ) ) {
+
+			if ( ! ( apply_filters( 'mailster_strip_shortcodes', ! mailster_option( 'shortcodes' ) ) ) ) {
+				$org_content = do_shortcode( $org_content );
+			}
+			if ( $shortcodes = apply_filters( 'mailster_strip_shortcode_tags', array_keys( $shortcode_tags ) ) ) {
+				$pattern = '/\[(\/)?(' . implode( '|', $shortcodes ) . ')([^\]]*)\]/';
+
+				// remove short codes but keep content
+				$content = preg_replace( $pattern, '', $org_content );
+			}
+
+			$content = apply_filters( 'mailster_handle_shortcodes', $content );
+			mailster_cache_set( $key, $content );
+
 		}
 
-		return apply_filters( 'mailster_handle_shortcodes', $content );
+		return $content;
 
 	}
 
