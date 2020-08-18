@@ -1137,23 +1137,32 @@ class MailsterAjax {
 		$height = $factor * ( ! empty( $_GET['h'] ) ? (int) $_GET['h'] : round( $width / 1.6 ) );
 		$tag    = isset( $_GET['tag'] ) ? '' . esc_attr( $_GET['tag'] ) . '' : '';
 
-		$text      = '{' . $tag . '}';
-		$font_size = max( 11, round( $width / strlen( $text ) ) );
-		$font      = MAILSTER_DIR . 'assets/font/FredokaOne-Regular.ttf';
+		$text      = '{' . strtoupper( $tag ) . '}';
+		$font_size = max( 11, round( $width / strlen( $text ) * 1.0 ) );
+		error_log( print_r( $font_size, true ) );
+		$font = MAILSTER_DIR . 'assets/font/Jost-Regular.ttf';
 
 		$im = imagecreatetruecolor( $width, $height );
 
-		$bg         = imagecolorallocate( $im, 43, 179, 231 );
-		$font_color = imagecolorallocate( $im, 255, 255, 255 );
+		$bg           = imagecolorallocate( $im, 248, 248, 248 );
+		$font_color   = imagecolorallocate( $im, 221, 224, 229 );
+		$font_color   = imagecolorallocate( $im, 210, 213, 218 );
+		$border_color = imagecolorallocate( $im, 237, 237, 237 );
 
-		imagefilledrectangle( $im, 0, 0, $width, $height, $bg );
+		$bordersize     = 4;
+		$halfbordersize = round( $bordersize / 2 );
+
+		imagefilledrectangle( $im, 0, 0, $width, $height, $border_color );
+		imagefilledrectangle( $im, $bordersize, $bordersize, $width - $bordersize, $height - $bordersize, $bg );
+		imagefilledpolygon( $im, array( 0, -$halfbordersize, $width + $halfbordersize, $height, $width, $height + $halfbordersize, -$halfbordersize, 0 ), 4, $border_color );
+		imagefilledpolygon( $im, array( $width, -$halfbordersize, $width, $halfbordersize, 0, $height + $halfbordersize, -$halfbordersize, $height ), 4, $border_color );
 
 		if ( function_exists( 'imagettftext' ) ) {
 
 			$bbox = imagettfbbox( $font_size, 0, $font, $text );
 
-			$center_x = $width / 2 - ( abs( $bbox[4] - $bbox[0] ) / 2 );
-			$center_y = $height / 2;
+			$center_x = $width / 2 - ( abs( $bbox[4] - $bbox[6] ) / 2 );
+			$center_y = $height / 2 + ( abs( $bbox[3] - $bbox[5] ) / 3 );
 
 			imagettftext( $im, $font_size, 0, $center_x, $center_y, $font_color, $font, $text );
 
