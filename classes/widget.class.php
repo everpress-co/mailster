@@ -32,16 +32,11 @@ class Mailster_Signup_Widget extends WP_Widget {
 		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
 		<label for="<?php echo $this->get_field_id( 'form' ); ?>"><?php esc_html_e( 'Form', 'mailster' ); ?>:</label>
 		<select class="widefat" id="<?php echo $this->get_field_id( 'form' ); ?>" name="<?php echo $this->get_field_name( 'form' ); ?>" >
-		<?php foreach ( $forms as $id => $f ) { ?>
-			<option value="<?php echo $f->ID; ?>"
-									  <?php
-										if ( $form == $f->ID ) {
-											echo ' selected'; }
-										?>
-			>
-				<?php echo '#' . $f->ID . ' ' . $f->name; ?>
+		<?php foreach ( $forms as $id => $f ) : ?>
+			<option value="<?php echo $f->ID; ?>"<?php echo $form == $f->ID ? ' selected' : ''; ?>>
+				<?php echo esc_html( '#' . $f->ID . ' ' . $f->name ); ?>
 			</option>
-		<?php } ?>
+		<?php endforeach; ?>
 		</select>
 		<a href="edit.php?post_type=newsletter&page=mailster_forms&new"><?php esc_html_e( 'add form', 'mailster' ); ?></a>
 		</p>
@@ -185,7 +180,8 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 		if ( $r->have_posts() ) :
 			echo $before_widget;
 			if ( $title ) {
-				echo $before_title . $title . $after_title; }
+				echo $before_title . $title . $after_title;
+			}
 			?>
 		<div class="mailster-widget mailster-widget-recent-newsletter">
 		<ul>
@@ -193,7 +189,7 @@ class Mailster_Newsletter_List_Widget extends WP_Widget {
 			while ( $r->have_posts() ) :
 				$r->the_post();
 				?>
-			<li><a href="<?php the_permalink(); ?>" title="<?php echo esc_attr( get_the_title() ? get_the_title() : get_the_ID() ); ?>">
+			<li><a href="<?php the_permalink(); ?>" title="<?php esc_attr_e( get_the_title() ? get_the_title() : get_the_ID() ); ?>">
 				<?php
 				if ( get_the_title() ) {
 					the_title();
@@ -365,7 +361,7 @@ class Mailster_Newsletter_Subscribers_Count_Widget extends WP_Widget {
 	public function form( $instance ) {
 		$prefix    = isset( $instance['prefix'] ) ? $instance['prefix'] : '';
 		$postfix   = isset( $instance['postfix'] ) ? $instance['postfix'] : esc_html__( 'Subscribers', 'mailster' );
-		$formatted = isset( $instance['formatted'] ) ? ! ! $instance['formatted'] : true;
+		$formatted = isset( $instance['formatted'] ) ? (bool) $instance['formatted'] : true;
 		$round     = isset( $instance['round'] ) ? absint( $instance['round'] ) : 1;
 		?>
 		<p><label for="<?php echo $this->get_field_id( 'prefix' ); ?>"><?php esc_html_e( 'Prefix', 'mailster' ); ?>:</label>
@@ -522,7 +518,7 @@ class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
 
 		?>
 		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php esc_html_e( 'Title', 'mailster' ); ?>:</label>
-		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" /></p>
+		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" /></p>
 
 		<p><label for="<?php echo $this->get_field_id( 'prefix' ); ?>"><?php esc_html_e( 'Prefix', 'mailster' ); ?>:</label>
 		<input id="<?php echo $this->get_field_id( 'prefix' ); ?>" name="<?php echo $this->get_field_name( 'prefix' ); ?>" type="text" value="<?php echo esc_attr( $prefix ); ?>" /></p>
@@ -533,13 +529,8 @@ class Mailster_Newsletter_Subscriber_Button_Widget extends WP_Widget {
 		<label for="<?php echo $this->get_field_id( 'form' ); ?>"><?php esc_html_e( 'Form', 'mailster' ); ?>:</label>
 		<select class="widefat" id="<?php echo $this->get_field_id( 'form' ); ?>" name="<?php echo $this->get_field_name( 'form' ); ?>" >
 		<?php foreach ( $forms as $id => $f ) { ?>
-			<option value="<?php echo $f->ID; ?>"
-									  <?php
-										if ( $form == $f->ID ) {
-											echo ' selected'; }
-										?>
-			>
-				<?php echo '#' . $f->ID . ' ' . $f->name; ?>
+			<option value="<?php echo $f->ID; ?>"<?php echo $form == $f->ID ? ' selected' : ''; ?>>
+				<?php echo esc_html( '#' . $f->ID . ' ' . $f->name ); ?>
 			</option>
 		<?php } ?>
 		</select>
