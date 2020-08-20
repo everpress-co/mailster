@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.5
-Stable tag: 2.4.13
+Stable tag: 2.4.14
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -94,6 +94,7 @@ Xaver Birsak – https://everpress.co
 * added: option to handle short codes from the advanced settings tab
 * added: support for `{attachment_image:XX}` to display images
 * improved: handling of one click post requests for unsubscribes according to RFC8058
+* fixed: auto update feature in WP 5.5
 * fixed: do not localize variables
 * fixed: error in PHPMailer (#2107) where exception is thrown when background attribute is empty
 * fixed: multi site no longer share user meta data in conditions data between sub sites.
