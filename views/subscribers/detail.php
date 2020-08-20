@@ -62,12 +62,12 @@ if ( $is_new ) {
 <?php } ?>
 	<span class="alignright">
 		<?php if ( ! $is_new && $subscriber->status == 0 ) : ?>
-			<input type="submit" name="confirmation" class="button button-large" value="<?php esc_html_e( 'Resend Confirmation', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to resend the confirmation?', 'mailster' ); ?>');">
+			<input type="submit" name="confirmation" class="button button-large" value="<?php esc_attr_e( 'Resend Confirmation', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to resend the confirmation?', 'mailster' ); ?>');">
 		<?php endif; ?>
 		<?php if ( ! $is_new && current_user_can( 'mailster_delete_subscribers' ) ) : ?>
-			<input type="submit" name="delete" class="button button-large" value="<?php esc_html_e( 'Delete Subscriber', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
+			<input type="submit" name="delete" class="button button-large" value="<?php esc_attr_e( 'Delete Subscriber', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
 		<?php endif; ?>
-		<input type="submit" name="save" class="button button-primary button-large" value="<?php esc_html_e( 'Save', 'mailster' ); ?>">
+		<input type="submit" name="save" class="button button-primary button-large" value="<?php esc_attr_e( 'Save', 'mailster' ); ?>">
 	</span>
 </h1>
 
@@ -77,14 +77,14 @@ if ( $is_new ) {
 		<td scope="row" class="avatar-wrap">
 			<?php if ( get_option( 'show_avatars' ) ) : ?>
 				<?php $avatar_url = $this->get_gravatar_uri( $subscriber->email, 400 ); ?>
-				<div class="avatar<?php echo $subscriber->wp_id ? ' wp-user' : ''; ?>" title="<?php esc_html_e( 'Source', 'mailster' ); ?>: Gravatar.com" style="background-image:url(<?php echo $avatar_url; ?>)"></div>
+				<div class="avatar<?php echo $subscriber->wp_id ? ' wp-user' : ''; ?>" title="<?php esc_attr_e( 'Source', 'mailster' ); ?>: Gravatar.com" style="background-image:url(<?php echo $avatar_url; ?>)"></div>
 				<?php if ( false !== strpos( $avatar_url, 'gravatar.com' ) ) : ?>
 				<p class="info"><?php esc_html_e( 'Source', 'mailster' ); ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
 				<?php endif; ?>
 			<?php endif; ?>
 			<?php if ( ! $is_new ) : ?>
 
-				<h4 title="<?php esc_html_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ); ?>"><?php esc_html_e( 'User Rating', 'mailster' ); ?>:<br />
+				<h4 title="<?php esc_attr_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ); ?>"><?php esc_html_e( 'User Rating', 'mailster' ); ?>:<br />
 				<?php
 					$stars = ( round( $subscriber->rating / 10, 2 ) * 50 );
 					$full  = max( 0, min( 5, floor( $stars ) ) );

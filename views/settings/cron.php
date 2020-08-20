@@ -6,11 +6,11 @@ if ( is_wp_error( $cron_status ) ) : ?>
 	endif;
 ?>
 <table class="form-table">
-	<tr valign="top" class="wp_cron">
+	<tr valign="top" class="settings-row settings-row-interval wp_cron">
 		<th scope="row"><?php esc_html_e( 'Interval for sending emails', 'mailster' ); ?></th>
 		<td><p><?php printf( esc_html__( 'Send emails at most every %1$s minutes', 'mailster' ), '<input type="text" name="mailster_options[interval]" value="' . mailster_option( 'interval' ) . '" class="small-text">' ); ?></p><p class="description"><?php esc_html_e( 'Optional if a real cron service is used', 'mailster' ); ?></p></td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-cron-service">
 		<th scope="row"><?php esc_html_e( 'Cron Service', 'mailster' ); ?></th>
 		<td>
 			<?php $cron = mailster_option( 'cron_service' ); ?>
@@ -21,7 +21,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			<?php endif; ?>
 		</td>
 	</tr>
-	<tr valign="top" class="cron_opts cron"<?php echo $cron != 'cron' ? ' style="display:none"' : ''; ?>>
+	<tr valign="top" class="settings-row settings-row-cron-settings cron_opts cron"<?php echo $cron != 'cron' ? ' style="display:none"' : ''; ?>>
 		<th scope="row"><?php esc_html_e( 'Cron Settings', 'mailster' ); ?>
 			<p class="description">
 				<?php printf( esc_html__( 'Use the alternative Cron URL if you have troubles with this one by clicking %s.', 'mailster' ), '<a class="switch-cron-url" href="#">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?>
@@ -53,7 +53,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 		</td>
 	</tr>
 	<?php $last_hit = get_option( 'mailster_cron_lasthit' ); ?>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-cron-lock">
 		<th scope="row"><?php esc_html_e( 'Cron Lock', 'mailster' ); ?></th>
 		<td>
 			<?php if ( $last_hit && time() - $last_hit['timestamp'] > 720 && mailster( 'cron' )->is_locked() ) : ?>
@@ -72,7 +72,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			<p class="description"><?php esc_html_e( 'A Cron Lock ensures your cron is not overlapping and causing duplicate emails. Select which method you like to use.', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-last-hit">
 		<th scope="row"><?php esc_html_e( 'Last hit', 'mailster' ); ?></th>
 		<td>
 		<ul class="lasthit highlight">

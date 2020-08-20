@@ -3,7 +3,7 @@
 		<?php $reserved = array( 'unsub', 'unsublink', 'webversion', 'webversionlink', 'forward', 'forwardlink', 'subject', 'preheader', 'profile', 'profilelink', 'headline', 'content', 'link', 'email', 'emailaddress', 'firstname', 'lastname', 'fullname', 'year', 'month', 'day', 'share', 'tweet', 'hash', 'wp_id', 'status', 'added', 'updated', 'signup', 'confirm', 'ip_signup', 'ip_confirm', 'rating' ); ?>
 <p id="reserved-tags" data-tags='["<?php echo implode( '","', $reserved ); ?>"]'><?php esc_html_e( 'reserved tags', 'mailster' ); ?>: <code>{<?php echo implode( '}</code>, <code>{', $reserved ); ?>}</code></p>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-permanent-tags">
 		<th scope="row"><?php esc_html_e( 'Permanent Tags', 'mailster' ); ?>:</th>
 		<td class="tags">
 		<p class="description"><?php esc_html_e( 'These are permanent tags which cannot get deleted. The CAN-SPAM tag is required in many countries.', 'mailster' ); ?> <a href="https://en.wikipedia.org/wiki/CAN-SPAM_Act_of_2003" class="external"><?php esc_html_e( 'Read more', 'mailster' ); ?></a></p>
@@ -21,7 +21,7 @@
 <?php endif; ?>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-custom-tags">
 		<th scope="row"><?php esc_html_e( 'Custom Tags', 'mailster' ); ?>:</th>
 		<td class="tags">
 		<p class="description"><?php esc_html_e( 'Add your custom tags here. They work like permanent tags', 'mailster' ); ?></p>
@@ -31,10 +31,10 @@
 	<?php endforeach; ?>
 <?php endif; ?>
 
-	<input type="button" value="<?php esc_html_e( 'add', 'mailster' ); ?>" class="button" id="mailster_add_tag">
+	<input type="button" value="<?php esc_attr_e( 'add', 'mailster' ); ?>" class="button" id="mailster_add_tag">
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-special-tags">
 		<th scope="row"><?php esc_html_e( 'Special Tags', 'mailster' ); ?>:</th>
 		<td class="customfields">
 		<p class="description"><?php esc_html_e( 'Special tags display dynamic content and are equally for all subscribers', 'mailster' ); ?></p>
@@ -55,7 +55,7 @@
 		<div class="customfield"><span><code>{share:linkedin}</code></span> &#10152; <?php printf( esc_html__( 'displays %1$s to share the newsletter via %2$s', 'mailster' ), '<img src="' . MAILSTER_URI . '/assets/img/share/share_linkedin.png">', 'LinkedIn' ); ?></div>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-dynamic-tags">
 		<th scope="row"><?php esc_html_e( 'Dynamic Tags', 'mailster' ); ?></th>
 		<td><p class="description"><?php esc_html_e( 'Dynamic tags let you display your posts or pages in a reverse chronicle order. Some examples:', 'mailster' ); ?></p>
 		<div class="customfield"><span><code>{post_title:-1}</code></span> &#10152; <?php esc_html_e( 'displays the latest post title', 'mailster' ); ?></div>
@@ -71,7 +71,7 @@
 		<p class="description"><?php esc_html_e( 'Instead of "post_" and "page_" you can use custom post types too', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-image-fallback">
 		<th scope="row"><?php esc_html_e( 'Image Fallback', 'mailster' ); ?></th>
 		<td><label>
 		<p class="description"><?php esc_html_e( 'Use a fallback for dynamic image tags if the image doesn\'t exist.', 'mailster' ); ?></p>

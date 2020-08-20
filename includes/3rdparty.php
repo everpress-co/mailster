@@ -7,6 +7,14 @@ function mailster_vc_settings_exclude_post_type( $post_types ) {
 	return $post_types;
 };
 
+// add Visual Composer shortcodes
+if ( defined( 'WPB_VC_VERSION' ) ) {
+	add_filter( 'mailster_strip_shortcode_tags', 'mailster_add_vc_shortcode_tags' );
+	function mailster_add_vc_shortcode_tags( $shortcode_tags ) {
+		$shortcode_tags[] = 'vc_([a-z_]+)';
+		return $shortcode_tags;
+	};
+}
 
 // do not cache newsletter homepage on WP Rocket
 add_filter( 'rocket_cache_reject_uri', 'mailster_rocket_cache_reject_uri' );

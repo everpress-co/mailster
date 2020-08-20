@@ -59,7 +59,7 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 
 				<?php if ( in_array( $slug, array_keys( $templates ) ) ) : ?>
 					<li class="alignright">
-						<a title="<?php esc_html_e( 'update template', 'mailster' ); ?>" class="update button button-primary" href="edit.php?post_type=newsletter&page=mailster_templates&action=update&template=<?php echo $slug; ?>&_wpnonce=<?php echo wp_create_nonce( 'download-' . $slug ); ?>">
+						<a title="<?php esc_attr_e( 'update template', 'mailster' ); ?>" class="update button button-primary" href="edit.php?post_type=newsletter&page=mailster_templates&action=update&template=<?php echo $slug; ?>&_wpnonce=<?php echo wp_create_nonce( 'download-' . $slug ); ?>">
 						<?php if ( $data['update'] && $updates ) : ?>
 							<?php echo sprintf( esc_html__( 'Update to %s', 'mailster' ), $data['new_version'] ); ?>
 						<?php else : ?>
@@ -69,7 +69,7 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 					</li>
 				<?php else : ?>
 
-					<li class="alignright"><a title="<?php esc_html_e( 'download template', 'mailster' ); ?>" class="download button button-primary" href="edit.php?post_type=newsletter&page=mailster_templates&action=download&template=<?php echo $slug; ?>&_wpnonce=<?php echo wp_create_nonce( 'download-' . $slug ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a></li>
+					<li class="alignright"><a title="<?php esc_attr_e( 'download template', 'mailster' ); ?>" class="download button button-primary" href="edit.php?post_type=newsletter&page=mailster_templates&action=download&template=<?php echo $slug; ?>&_wpnonce=<?php echo wp_create_nonce( 'download-' . $slug ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a></li>
 
 				<?php endif; ?>
 
@@ -90,7 +90,7 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 						)
 						?>
 					<li>
-						<a title="<?php esc_html_e( 'download via Envato', 'mailster' ); ?>" class="envato-activate button" href="<?php echo esc_url( $url ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
+						<a title="<?php esc_attr_e( 'download via Envato', 'mailster' ); ?>" class="envato-activate button" href="<?php echo esc_url( $url ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
 							<?php esc_html_e( 'Download', 'mailster' ); ?>
 						</a>
 					</li>
@@ -113,7 +113,7 @@ if ( $unsupported = version_compare( $data['requires'], MAILSTER_VERSION, '>' ) 
 						?>
 
 					<li class="alignright">
-						<a title="<?php esc_html_e( 'activate on Envato', 'mailster' ); ?>" class="envato-activate update button button-primary" href="<?php echo esc_url( $url ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
+						<a title="<?php esc_attr_e( 'activate on Envato', 'mailster' ); ?>" class="envato-activate update button button-primary" href="<?php echo esc_url( $url ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
 						<?php if ( $data['update'] && $updates ) : ?>
 							<?php printf( esc_html__( 'Update to %s', 'mailster' ), $data['new_version'] ); ?>
 						<?php else : ?>

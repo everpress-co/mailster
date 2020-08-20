@@ -19,18 +19,63 @@ class Mailster {
 		register_activation_hook( MAILSTER_FILE, array( &$this, 'activate' ) );
 		register_deactivation_hook( MAILSTER_FILE, array( &$this, 'deactivate' ) );
 
-		$classes = array( 'settings', 'translations', 'campaigns', 'subscribers', 'lists', 'forms', 'manage', 'templates', 'widget', 'frontpage', 'statistics', 'ajax', 'tinymce', 'cron', 'queue', 'actions', 'bounce', 'dashboard', 'update', 'upgrade', 'helpmenu', 'register', 'geo', 'privacy', 'export', 'empty' );
+		require_once MAILSTER_DIR . 'classes/settings.class.php';
+		require_once MAILSTER_DIR . 'classes/translations.class.php';
+		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
+		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
+		require_once MAILSTER_DIR . 'classes/lists.class.php';
+		require_once MAILSTER_DIR . 'classes/forms.class.php';
+		require_once MAILSTER_DIR . 'classes/manage.class.php';
+		require_once MAILSTER_DIR . 'classes/templates.class.php';
+		require_once MAILSTER_DIR . 'classes/widget.class.php';
+		require_once MAILSTER_DIR . 'classes/frontpage.class.php';
+		require_once MAILSTER_DIR . 'classes/statistics.class.php';
+		require_once MAILSTER_DIR . 'classes/ajax.class.php';
+		require_once MAILSTER_DIR . 'classes/tinymce.class.php';
+		require_once MAILSTER_DIR . 'classes/cron.class.php';
+		require_once MAILSTER_DIR . 'classes/queue.class.php';
+		require_once MAILSTER_DIR . 'classes/actions.class.php';
+		require_once MAILSTER_DIR . 'classes/bounce.class.php';
+		require_once MAILSTER_DIR . 'classes/dashboard.class.php';
+		require_once MAILSTER_DIR . 'classes/update.class.php';
+		require_once MAILSTER_DIR . 'classes/upgrade.class.php';
+		require_once MAILSTER_DIR . 'classes/helpmenu.class.php';
+		require_once MAILSTER_DIR . 'classes/register.class.php';
+		require_once MAILSTER_DIR . 'classes/geo.class.php';
+		require_once MAILSTER_DIR . 'classes/privacy.class.php';
+		require_once MAILSTER_DIR . 'classes/export.class.php';
+		require_once MAILSTER_DIR . 'classes/empty.class.php';
+
+		$this->_classes = array(
+			'settings'     => new MailsterSettings(),
+			'translations' => new MailsterTranslations(),
+			'campaigns'    => new MailsterCampaigns(),
+			'subscribers'  => new MailsterSubscribers(),
+			'lists'        => new MailsterLists(),
+			'forms'        => new MailsterForms(),
+			'manage'       => new MailsterManage(),
+			'templates'    => new MailsterTemplates(),
+			'frontpage'    => new MailsterFrontpage(),
+			'statistics'   => new MailsterStatistics(),
+			'ajax'         => new MailsterAjax(),
+			'tinymce'      => new MailsterTinymce(),
+			'cron'         => new MailsterCron(),
+			'queue'        => new MailsterQueue(),
+			'actions'      => new MailsterActions(),
+			'bounce'       => new MailsterBounce(),
+			'dashboard'    => new MailsterDashboard(),
+			'update'       => new MailsterUpdate(),
+			'upgrade'      => new MailsterUpgrade(),
+			'helpmenu'     => new MailsterHelpmenu(),
+			'register'     => new MailsterRegister(),
+			'geo'          => new MailsterGeo(),
+			'privacy'      => new MailsterPrivacy(),
+			'export'       => new MailsterExport(),
+			'empty'        => new MailsterEmpty(),
+		);
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
 		add_action( 'widgets_init', array( &$this, 'register_widgets' ), 1 );
-
-		foreach ( $classes as $class ) {
-			require_once MAILSTER_DIR . "classes/$class.class.php";
-			$classname = 'Mailster' . ucwords( $class );
-			if ( class_exists( $classname ) ) {
-				$this->_classes[ $class ] = new $classname();
-			}
-		}
 
 		$this->wp_mail = function_exists( 'wp_mail' );
 
@@ -925,13 +970,7 @@ class Mailster {
 
 			$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content ), apply_filters( 'mailster_excerpt_length', null ) );
 
-			if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) ) ) {
-				// remove shortcodes but keep content
-				$post->post_content = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $post->post_content );
-			} else {
-				// do shortocdes
-				$post->post_content = do_shortcode( $post->post_content );
-			}
+			$post->post_content = mailster( 'helper' )->handle_shortcodes( $post->post_content );
 
 			$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
@@ -2713,12 +2752,6 @@ class Mailster {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $force (optional)
-	 * @return unknown
-	 */
 	public function is_verified( $force = false ) {
 
 		$license       = $this->license();
@@ -2729,16 +2762,32 @@ class Mailster {
 			return false;
 		}
 
-		$old = get_option( '_transient_mailster_verified', 'maybe' );
+		$verified = $this->get_verfied_object( $force );
 
-		if ( ! ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
+		return is_array( $verified );
 
-			$verified = 'no';
+	}
+
+
+	public function is_email_verified( $force = false ) {
+
+		$verified = $this->get_verfied_object( $force );
+
+		return is_array( $verified ) && isset( $verified['email_verfied'] ) && $verified['email_verfied'];
+	}
+
+	private function get_verfied_object( $force = false ) {
+
+		$old = get_option( '_transient_mailster_verified', array() );
+
+		if ( false === ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
+
+			$verified = null;
 			$recheck  = DAY_IN_SECONDS;
 
 			$result = UpdateCenterPlugin::verify( 'mailster' );
 			if ( ! is_wp_error( $result ) ) {
-				$verified = 'yes';
+				$verified = $result;
 			} else {
 				switch ( $result->get_error_code() ) {
 					case 500: // Internal Server Error
@@ -2752,7 +2801,7 @@ class Mailster {
 				}
 			}
 
-			if ( 'no' != $verified ) {
+			if ( null !== $verified ) {
 				mailster_remove_notice( 'verify' );
 			}
 
@@ -2760,10 +2809,8 @@ class Mailster {
 
 		}
 
-		return 'yes' == $verified;
-
+		return $verified;
 	}
-
 
 	public function has_update( $force = false ) {
 
