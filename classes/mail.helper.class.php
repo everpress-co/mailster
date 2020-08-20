@@ -14,6 +14,21 @@ if ( $phpmailerversion = mailster_option( 'php_mailer' ) ) :
 	class _mailster_mail_helper extends PHPMailer_mailster {};
 	class _mailster_phpmailerException extends phpmailerException_mailster{};
 
+	// since WordPress 5.5
+elseif ( file_exists( ABSPATH . WPINC . '/PHPMailer/PHPMailer.php' ) ) :
+
+	require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+	require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
+	require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
+
+	class_alias( PHPMailer\PHPMailer\PHPMailer::class, 'PHPMailer' );
+	class_alias( PHPMailer\PHPMailer\Exception::class, 'phpmailerException' );
+	class_alias( PHPMailer\PHPMailer\SMTP::class, 'SMTP' );
+
+	class _mailster_SMTP extends SMTP {};
+	class _mailster_mail_helper extends PHPMailer {};
+	class _mailster_phpmailerException extends phpmailerException {};
+
 else :
 
 	global $phpmailer;
@@ -31,7 +46,6 @@ else :
 
 endif;
 
-
 // this class extends PHPMailer and offers some fixes
 class mailster_mail_helper extends _mailster_mail_helper {
 
@@ -41,6 +55,7 @@ class mailster_mail_helper extends _mailster_mail_helper {
 	 * @param unknown $exceptions (optional)
 	 */
 	public function __construct( $exceptions = false ) {
+		$this->Version     = defined( 'self::VERSION' ) ? self::VERSION : $this->Version;
 		$this->XMailer     = 'Mailster ' . MAILSTER_VERSION . ' (' . $this->Version . ')';
 		$this->CharSet     = mailster_option( 'charset', 'UTF-8' );
 		$this->Encoding    = mailster_option( 'encoding', '8bit' );
@@ -71,7 +86,7 @@ class mailster_mail_helper extends _mailster_mail_helper {
 	public function setAsSMTP() {
 
 		if ( ! is_object( $this->smtp ) ) {
-			$this->smtp = new _mailster_SMTP;
+			$this->smtp = new _mailster_SMTP();
 		}
 		return $this->smtp;
 	}

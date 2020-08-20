@@ -12,6 +12,9 @@ mailster = (function (mailster, $, window, document) {
 			cond = _self.find('.mailster-condition');
 
 		groups.eq(0).appendTo(_self.find('.mailster-condition-container'));
+
+		!$.trim(conditions.html()) && conditions.empty();
+
 		datepicker();
 
 		_self
@@ -118,13 +121,13 @@ mailster = (function (mailster, $, window, document) {
 		function datepicker() {
 			conditions.find('.datepicker').datepicker({
 				dateFormat: 'yy-mm-dd',
-				firstDay: mailsterL10n.start_of_week,
+				firstDay: mailster.l10n.conditions.start_of_week,
 				showWeek: true,
-				dayNames: mailsterL10n.day_names,
-				dayNamesMin: mailsterL10n.day_names_min,
-				monthNames: mailsterL10n.month_names,
-				prevText: mailsterL10n.prev,
-				nextText: mailsterL10n.next,
+				dayNames: mailster.l10n.conditions.day_names,
+				dayNamesMin: mailster.l10n.conditions.day_names_min,
+				monthNames: mailster.l10n.conditions.month_names,
+				prevText: mailster.l10n.conditions.prev,
+				nextText: mailster.l10n.conditions.next,
 				showAnim: 'fadeIn',
 			});
 		}

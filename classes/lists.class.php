@@ -64,9 +64,9 @@ class MailsterLists {
 
 			wp_enqueue_style( 'mailster-list-detail', MAILSTER_URI . 'assets/css/list-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-list-detail', MAILSTER_URI . 'assets/js/list-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-			wp_localize_script(
-				'mailster-list-detail',
-				'mailsterL10n',
+
+			mailster_localize_script(
+				'lists',
 				array(
 					'next' => esc_html__( 'next', 'mailster' ),
 					'prev' => esc_html__( 'prev', 'mailster' ),
@@ -318,6 +318,10 @@ class MailsterLists {
 		global $wpdb;
 
 		$entry = (array) $entry;
+		if ( isset( $entry['id'] ) ) {
+			$entry['ID'] = $entry['id'];
+			unset( $entry['id'] );
+		}
 
 		$field_names = array(
 			'ID'          => '%d',
@@ -331,13 +335,22 @@ class MailsterLists {
 
 		$now = time();
 
-		$data = array();
+		$data    = array();
+		$list_id = null;
 
 		$entry = apply_filters( 'mymail_verify_list', apply_filters( 'mailster_verify_list', $entry ) );
 		if ( is_wp_error( $entry ) ) {
 			return $entry;
 		} elseif ( $entry === false ) {
 			return new WP_Error( 'not_verified', esc_html__( 'List failed verification', 'mailster' ) );
+		}
+
+		if ( isset( $entry['ID'] ) ) {
+			if ( ! empty( $entry['ID'] ) ) {
+				$list_id = (int) $entry['ID'];
+			} else {
+				unset( $entry['ID'] );
+			}
 		}
 
 		foreach ( $entry as $key => $value ) {
@@ -365,7 +378,9 @@ class MailsterLists {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
-			$list_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
+			if ( ! empty( $wpdb->insert_id ) ) {
+				$list_id = $wpdb->insert_id;
+			}
 
 			if ( ! empty( $subscriber_ids ) ) {
 				$this->assign_subscribers( $list_id, $subscriber_ids, false, true );
@@ -478,6 +493,7 @@ class MailsterLists {
 				$ids = array( (int) $ids );
 			}
 
+			$ids = array_filter( $ids, 'is_numeric' );
 			if ( empty( $ids ) ) {
 				return true;
 			}
@@ -487,6 +503,7 @@ class MailsterLists {
 				$subscriber_ids = array( (int) $subscriber_ids );
 			}
 
+			$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
 			if ( empty( $subscriber_ids ) ) {
 				return true;
 			}
@@ -948,11 +965,17 @@ class MailsterLists {
 
 			} else {
 
-				$stati = ! is_array( $status ) ? array( $status ) : $status;
+				$statuses = ! is_array( $status ) ? array( $status ) : $status;
 
-				$stati = array_filter( $stati, 'is_numeric' );
+				$statuses = array_filter( $statuses, 'is_numeric' );
 
-				$result = $wpdb->get_row( $wpdb->prepare( "SELECT a.*, COUNT(DISTINCT ab.subscriber_id) as subscribers FROM {$wpdb->prefix}mailster_lists as a LEFT JOIN ({$wpdb->prefix}mailster_subscribers as b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id) ON a.ID = ab.list_id WHERE b.status IN(" . implode( ', ', $stati ) . ') AND (a.name = %s OR a.slug = %s) GROUP BY a.ID', $name, $name ) );
+				$sql = "SELECT a.*, COUNT(DISTINCT b.ID) AS subscribers FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ( {$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND b.status IN(" . implode( ', ', $statuses ) . ')';
+				if ( ! in_array( 0, $statuses ) ) {
+					$sql .= ' AND ab.added != 0';
+				}
+				$sql .= ') ON a.ID = ab.list_id WHERE (a.name = %s OR a.slug = %s) GROUP BY a.ID';
+
+				$result = $wpdb->get_row( $wpdb->prepare( $sql, $name, $name ) );
 
 				if ( is_null( $field ) ) {
 					$result = $result;
@@ -1062,7 +1085,7 @@ class MailsterLists {
 
 		if ( false === ( $list_counts = mailster_cache_get( $key ) ) ) {
 
-			$sql = "SELECT a.ID, a.parent_id, COUNT(DISTINCT ab.subscriber_id) AS count FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ({$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND ab.added != 0) ON a.ID = ab.list_id";
+			$sql = "SELECT a.ID, a.parent_id, COUNT(DISTINCT ab.subscriber_id) AS count FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN ({$wpdb->prefix}mailster_subscribers AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.subscriber_id AND (ab.added != 0 OR b.status = 0)) ON a.ID = ab.list_id";
 
 			if ( is_array( $statuses ) ) {
 				$sql .= ' AND b.status IN (' . implode( ',', array_filter( $statuses, 'is_numeric' ) ) . ')';

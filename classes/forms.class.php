@@ -238,9 +238,9 @@ class MailsterForms {
 
 			wp_enqueue_style( 'mailster-form-detail', MAILSTER_URI . 'assets/css/form-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'jquery', 'jquery-ui-sortable', 'mailster-clipboard-script', 'wp-color-picker' ), MAILSTER_VERSION );
-			wp_localize_script(
-				'mailster-form-detail',
-				'mailsterL10n',
+
+			mailster_localize_script(
+				'form',
 				array(
 					'require_save' => esc_html__( 'The changes you made will be lost if you navigate away from this page.', 'mailster' ),
 					'not_saved'    => esc_html__( 'You haven\'t saved your recent changes on this form!', 'mailster' ),
@@ -654,6 +654,10 @@ class MailsterForms {
 
 		if ( ! empty( $entry['style'] ) && ! is_string( $entry['style'] ) ) {
 			$entry['style'] = json_encode( $entry['style'] );
+		}
+
+		if ( isset( $entry['ID'] ) && empty( $entry['ID'] ) ) {
+			unset( $entry['ID'] );
 		}
 
 		$wpdb->suppress_errors();
@@ -1496,7 +1500,7 @@ class MailsterForms {
 		<div>
 			<label><?php esc_html_e( 'width', 'mailster' ); ?>: <input type="text" class="small-text embed-form-input" value="100%"></label>
 			<label><?php esc_html_e( 'height', 'mailster' ); ?>: <input type="text" class="small-text embed-form-input" value="500"></label>
-			<label title="<?php esc_html_e( 'check this option to include the style.css of your theme into the form', 'mailster' ); ?>"><input type="checkbox" value="1" class="embed-form-input" checked> <?php esc_html_e( 'include themes style.css', 'mailster' ); ?></label>
+			<label title="<?php esc_attr_e( 'check this option to include the style.css of your theme into the form', 'mailster' ); ?>"><input type="checkbox" value="1" class="embed-form-input" checked> <?php esc_html_e( 'include themes style.css', 'mailster' ); ?></label>
 			<textarea id="form-iframe" class="widefat code embed-form-output" data-embedcode="<?php echo esc_attr( $embedcode ); ?>"><?php echo esc_textarea( $embedcode ); ?></textarea>
 			<a class="clipboard" data-clipboard-target="#form-iframe"><?php esc_html_e( 'copy to clipboard', 'mailster' ); ?></a>
 		</div>

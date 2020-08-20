@@ -635,14 +635,14 @@ class MailsterTemplates {
 		wp_enqueue_script( 'thickbox' );
 		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_script( 'mailster-templates', MAILSTER_URI . 'assets/js/templates-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
-		wp_localize_script(
-			'mailster-templates',
-			'mailsterL10n',
+
+		mailster_localize_script(
+			'templates',
 			array(
 				'delete_template_file' => esc_html__( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
 				'enter_template_name'  => esc_html__( 'Please enter the name of the new template', 'mailster' ),
 				'uploading'            => esc_html__( 'uploading zip file %s', 'mailster' ),
-				'confirm_delete'       => esc_html__( 'You are about to delete this template "%s"', 'mailster' ),
+				'confirm_delete'       => esc_html__( 'You are about to delete this template %s', 'mailster' ),
 				'update_note'          => esc_html__( 'You are about to update your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Old template files will be preserved in the templates folder.', 'mailster' ),
 			)
 		);
@@ -868,14 +868,21 @@ class MailsterTemplates {
 			return;
 		}
 
-		$hash = base_convert( md5_file( $filedir ), 10, 36 );
+		// prevent error output as 7.4 throws deprecate notice
+		// $hash = hash( 'crc32', md5_file( $filedir ) );
+		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
 
 		$screenshotfile = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 		$screenshoturi  = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 
-		if ( 'index.html' == $file && file_exists( $this->path . '/' . $slug . '/screenshot.jpg' ) ) {
-			$screenshotfile = $this->path . '/' . $slug . '/screenshot.jpg';
-			$screenshoturi  = $this->url . '/' . $slug . '/screenshot.jpg';
+		if ( 'index.html' == $file ) {
+			if ( file_exists( $this->path . '/' . $slug . '/screenshot.jpg' ) ) {
+				$screenshotfile = $this->path . '/' . $slug . '/screenshot.jpg';
+				$screenshoturi  = $this->url . '/' . $slug . '/screenshot.jpg';
+			} elseif ( file_exists( $this->path . '/' . $slug . '/screenshot.png' ) ) {
+				$screenshotfile = $this->path . '/' . $slug . '/screenshot.png';
+				$screenshoturi  = $this->url . '/' . $slug . '/screenshot.png';
+			}
 		}
 
 		// serve saved
@@ -930,7 +937,9 @@ class MailsterTemplates {
 			return;
 		}
 
-		$hash = base_convert( md5_file( $filedir ), 10, 36 );
+		// prevent error output as 7.4 throws deprecate notice
+		// $hash = hash( 'crc32', md5_file( $filedir ) );
+		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
 
 		$screenshot_folder_base = mailster( 'helper' )->mkdir( 'screenshots' );
 
@@ -1133,8 +1142,6 @@ class MailsterTemplates {
 					}
 				}
 			}
-
-			error_log( print_r( 'HIER', true ) );
 		}
 
 	}
@@ -1430,8 +1437,9 @@ class MailsterTemplates {
 
 			$response_code = wp_remote_retrieve_response_code( $response );
 			$response_body = trim( wp_remote_retrieve_body( $response ) );
+			$response      = json_decode( $response_body, true );
 
-			if ( $response_code != 200 || is_wp_error( $response ) ) {
+			if ( $response_code != 200 || is_wp_error( $response ) || json_last_error() !== JSON_ERROR_NONE ) {
 				foreach ( $items as $slug => $data ) {
 					if ( isset( $mailster_templates[ $slug ] ) ) {
 						$mailster_templates[ $slug ]             = wp_parse_args( $mailster_templates[ $slug ], $default );
@@ -1442,8 +1450,7 @@ class MailsterTemplates {
 
 			} else {
 
-				$response = ! empty( $response_body ) ? array_values( json_decode( $response_body, true ) ) : false;
-				$i        = -1;
+				$i = -1;
 				foreach ( $items as $slug => $data ) {
 					$i++;
 

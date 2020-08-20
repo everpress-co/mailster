@@ -1,5 +1,5 @@
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-newsletter-homepage">
 		<?php $mailster_homepage = mailster_option( 'homepage' ); ?>
 		<th scope="row"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?></th>
 		<td>
@@ -42,12 +42,12 @@
 		<?php endif; ?>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-search-engine-visibility">
 		<th scope="row"><?php esc_html_e( 'Search Engine Visibility', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[frontpage_public]" value=""><input type="checkbox" name="mailster_options[frontpage_public]" value="1" <?php checked( mailster_option( 'frontpage_public' ) ); ?>> <?php esc_html_e( 'Discourage search engines from indexing your campaigns', 'mailster' ); ?></label>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-webversion-bar">
 		<th scope="row"><?php esc_html_e( 'Webversion Bar', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[webversion_bar]" value=""><input type="checkbox" class="webversion-bar-checkbox" name="mailster_options[webversion_bar]" value="1" <?php checked( mailster_option( 'webversion_bar' ) ); ?>> <?php esc_html_e( 'Show the top bar on the web version', 'mailster' ); ?></label>
 		</td>
@@ -55,17 +55,17 @@
 </table>
 <div id="webversion-bar-options"<?php echo ! mailster_option( 'webversion_bar' ) ? ' style="display:none"' : ''; ?>>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-pagination">
 		<th scope="row"><?php esc_html_e( 'Pagination', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[frontpage_pagination]" value=""><input type="checkbox" name="mailster_options[frontpage_pagination]" value="1" <?php checked( mailster_option( 'frontpage_pagination' ) ); ?>> <?php esc_html_e( 'Allow users to view the next/last newsletters', 'mailster' ); ?></label>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-share-button">
 		<th scope="row"><?php esc_html_e( 'Share Button', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[share_button]" value=""><input type="checkbox" name="mailster_options[share_button]" value="1" <?php checked( mailster_option( 'share_button' ) ); ?>> <?php esc_html_e( 'Offer share option for your customers', 'mailster' ); ?></label>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-services">
 		<th scope="row"><?php esc_html_e( 'Services', 'mailster' ); ?></th>
 		<td><ul class="frontpage-social-services">
 		<?php
@@ -82,7 +82,7 @@
 </table>
 </div>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-campaign-slug">
 		<th scope="row"><?php esc_html_e( 'Campaign slug', 'mailster' ); ?></th>
 		<td><p>
 		<?php if ( mailster( 'helper' )->using_permalinks() ) : ?>
@@ -108,7 +108,7 @@
 	if ( mailster( 'helper' )->using_permalinks() && mailster_option( 'homepage' ) ) :
 		$homepage = trailingslashit( get_permalink( mailster_option( 'homepage' ) ) );
 		?>
-		<tr valign="top">
+		<tr valign="top" class="settings-row settings-row-homepage-slugs">
 			<th scope="row"><?php esc_html_e( 'Homepage slugs', 'mailster' ); ?></th>
 			<td class="homepage-slugs">
 			<p>
@@ -163,7 +163,7 @@
 	<?php endif; ?>
 
 	<?php if ( mailster( 'helper' )->using_permalinks() ) : ?>
-		<tr valign="top">
+		<tr valign="top" class="settings-row settings-row-archive">
 			<th scope="row"><?php esc_html_e( 'Archive', 'mailster' ); ?></th>
 			<td class="homepage-slugs"><p><label><input type="hidden" name="mailster_options[hasarchive]" value=""><input type="checkbox" name="mailster_options[hasarchive]" class="has-archive-check" value="1" <?php checked( mailster_option( 'hasarchive' ) ); ?>> <?php esc_html_e( 'enable archive function to display your newsletters in a reverse chronological order', 'mailster' ); ?></label>
 				</p>
