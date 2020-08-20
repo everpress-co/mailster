@@ -83,7 +83,7 @@
 		<tr valign="top" class="settings-row settings-row-test-bounce-settings">
 			<th scope="row"></th>
 			<td>
-			<input type="button" value="<?php esc_html_e( 'Test bounce settings', 'mailster' ); ?>" class="button mailster_bouncetest">
+			<input type="button" value="<?php esc_attr_e( 'Test bounce settings', 'mailster' ); ?>" class="button mailster_bouncetest">
 			<div class="loading bounce-ajax-loading"></div>
 			<span class="bouncetest_status"></span>
 			</td>

@@ -14,6 +14,11 @@
 			<br><label><input type="hidden" name="mailster_options[disable_cache]" value=""><input type="checkbox" name="mailster_options[disable_cache]" value="1" <?php checked( mailster_option( 'disable_cache' ) ); ?>> <?php esc_html_e( 'Disable Object Cache for Mailster', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If enabled Mailster doesn\'t use cache anymore. This causes an increase in page load time! This option is not recommended!', 'mailster' ); ?></p>
 		</td>
 	</tr>
+	<tr valign="top" class="settings-row settings-short-codes">
+		<th scope="row"><?php esc_html_e( 'Short Codes', 'mailster' ); ?></th>
+		<td><label><input type="hidden" name="mailster_options[shortcodes]" value=""><input type="checkbox" name="mailster_options[shortcodes]" value="1" <?php checked( mailster_option( 'shortcodes' ) ); ?>> <?php esc_html_e( 'Process short codes in emails.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'Check this option to process short codes. This may cause unexpected results.', 'mailster' ); ?></p>
+		</td>
+	</tr>
 	<tr valign="top" class="settings-row settings-row-remove-data">
 		<th scope="row"><?php esc_html_e( 'Remove Data', 'mailster' ); ?></th>
 		<td><label><input type="hidden" name="mailster_options[remove_data]" value=""><input type="checkbox" name="mailster_options[remove_data]" value="1" <?php checked( mailster_option( 'remove_data' ) ); ?>> <?php esc_html_e( 'Remove all data on plugin deletion', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'Mailster will remove all it\'s data if you delete the plugin via the plugin page.', 'mailster' ); ?></p>
@@ -50,7 +55,7 @@
 		<td>
 		<div class="mailster-testmail">
 			<input type="text" value="<?php echo esc_attr( $test_email ); ?>" autocomplete="off" class="form-input-tip mailster-testmail-email">
-			<input type="button" value="<?php esc_html_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest" data-role="basic">
+			<input type="button" value="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest" data-role="basic">
 			<div class="loading test-ajax-loading"></div>
 		</div>
 		</td>

@@ -4272,14 +4272,13 @@ class MailsterCampaigns {
 
 		$listunsubscribe = array();
 		if ( mailster_option( 'mail_opt_out' ) ) {
-			$listunsubscribe_mail    = $mail->bouncemail;
+			$listunsubscribe_mail    = $mail->bouncemail ? $mail->bouncemail : $mail->from;
 			$listunsubscribe_subject = 'Please remove me from the list';
 			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign->ID} X-Mailster-ID: {$MID}" );
 
 			$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 		}
 		$listunsubscribe[] = '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $subscriber->hash, $campaign->ID ) . '>';
-		$listunsubscribe[] = '<' . $unsubscribelink . '>';
 
 		$headers = array(
 			'X-Mailster'          => $subscriber->hash,

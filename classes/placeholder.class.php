@@ -825,8 +825,12 @@ class MailsterPlaceholder {
 							if ( ! empty( $post ) ) {
 
 								if ( ! empty( $post->ID ) ) {
-									$thumb_id = get_post_thumbnail_id( $post->ID );
 
+									if ( 'attachment' == $post->post_type ) {
+										$thumb_id = $post->ID;
+									} else {
+										$thumb_id = get_post_thumbnail_id( $post->ID );
+									}
 									$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
 								}
 
