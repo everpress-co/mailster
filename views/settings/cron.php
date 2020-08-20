@@ -6,11 +6,11 @@ if ( is_wp_error( $cron_status ) ) : ?>
 	<?php endif; ?>
 	<?php $cron_service = mailster_option( 'cron_service' ); ?>
 <table class="form-table cron-service <?php echo 'cron-service-' . $cron_service; ?>">
-	<tr valign="top" class="wp_cron">
+	<tr valign="top" class="settings-row settings-row-interval wp_cron">
 		<th scope="row"><?php esc_html_e( 'Interval for sending emails', 'mailster' ); ?></th>
 		<td><p><?php printf( esc_html__( 'Send emails at most every %1$s minutes', 'mailster' ), '<input type="text" name="mailster_options[interval]" value="' . $interval . '" class="small-text">' ); ?></p><p class="description"><?php esc_html_e( 'Optional if a real cron service is used', 'mailster' ); ?></p></td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-cron-setup">
 		<th scope="row"><?php esc_html_e( 'Cron Setup', 'mailster' ); ?>
 			<p class="description">
 				<?php esc_html_e( 'Choose between three types of cron services you like to use.', 'mailster' ); ?>
@@ -115,7 +115,7 @@ rm mailstercron
 		endif;
 		?>
 		<?php $last_hit = get_option( 'mailster_cron_lasthit_' . $process_id, false ); ?>
-	<tr valign="top" class="lasthitstats lasthitstats-<?php echo $process_id; ?>">
+	<tr valign="top" class="settings-row settings-last-hit lasthitstats lasthitstats-<?php echo $process_id; ?>">
 		<th scope="row"><?php printf( esc_html__( 'Last hit %s', 'mailster' ), $process_id ? '#' . $process_id : '' ); ?></th>
 		<td>
 
@@ -170,7 +170,7 @@ rm mailstercron
 		</td>
 	</tr>
 <?php endfor; ?>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-cron-lock">
 		<th scope="row"><?php esc_html_e( 'Cron Lock', 'mailster' ); ?></th>
 		<td>
 			<?php $cron_lock = mailster_option( 'cron_lock' ); ?>

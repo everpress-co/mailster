@@ -318,6 +318,10 @@ class MailsterLists {
 		global $wpdb;
 
 		$entry = (array) $entry;
+		if ( isset( $entry['id'] ) ) {
+			$entry['ID'] = $entry['id'];
+			unset( $entry['id'] );
+		}
 
 		$field_names = array(
 			'ID'          => '%d',
@@ -331,7 +335,8 @@ class MailsterLists {
 
 		$now = time();
 
-		$data = array();
+		$data    = array();
+		$list_id = null;
 
 		$entry = apply_filters( 'mymail_verify_list', apply_filters( 'mailster_verify_list', $entry ) );
 		if ( is_wp_error( $entry ) ) {
@@ -340,15 +345,20 @@ class MailsterLists {
 			return new WP_Error( 'not_verified', esc_html__( 'List failed verification', 'mailster' ) );
 		}
 
+		if ( isset( $entry['ID'] ) ) {
+			if ( ! empty( $entry['ID'] ) ) {
+				$list_id = (int) $entry['ID'];
+			} else {
+				unset( $entry['ID'] );
+			}
+		}
+
 		foreach ( $entry as $key => $value ) {
 			if ( isset( $field_names[ $key ] ) ) {
 				$data[ $key ] = $value;
 			}
 		}
 
-		if ( isset( $data['ID'] ) && empty( $data['ID'] ) ) {
-			unset( $data['ID'] );
-		}
 		if ( isset( $data['name'] ) && empty( $data['name'] ) ) {
 			$data['name'] = esc_html__( 'undefined', 'mailster' );
 		}
@@ -368,7 +378,9 @@ class MailsterLists {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 
-			$list_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
+			if ( ! empty( $wpdb->insert_id ) ) {
+				$list_id = $wpdb->insert_id;
+			}
 
 			if ( ! empty( $subscriber_ids ) ) {
 				$this->assign_subscribers( $list_id, $subscriber_ids, false, true );
