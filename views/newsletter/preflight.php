@@ -48,9 +48,6 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 			</ul>
 		</div>
 		<div class="device-wrap">
-			<div class="notice notice-warning inline">
-				<p><?php printf( esc_html__( 'The Preflight service is currently in beta and we may change results over time. Please %s if you have things to share.', 'mailster' ), '<a href="" class="external">' . esc_html__( 'submit your feedback', 'mailster' ) . '</a>' ); ?></p>
-			</div>
 			<div class="device desktop">
 				<div class="desktop-body">
 					<div class="preview-body">

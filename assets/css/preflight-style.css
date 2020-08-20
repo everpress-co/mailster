@@ -115,15 +115,15 @@
 .device.desktop{
 	min-width: 320px;
 	max-height: 100%;
-	max-height: 90%;
+	/*max-height: 90%;*/
 	height: 100%;
 	top: 50%;
 	top: 38%;
 	left: 50%;
 	width: 100%;
 	position: relative;
-	transform: translate(-50%,-50%);
-	transform: translate(-50%,-40%);
+	/*transform: translate(-50%,-40%);*/
+	transform: translate(-50%,-38%);
 	border: 1px solid #dfdfdf;
 	box-shadow: 0px 2px 5px rgba(0,0,0,0.1)
 }
