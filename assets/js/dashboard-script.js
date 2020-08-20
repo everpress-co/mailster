@@ -24,7 +24,7 @@ mailster = (function (mailster, $, window, document) {
 				caretSize: 8,
 				callbacks: {
 					label: function (a, b) {
-						return mailster.util.sprintf(mailsterdashboardL10n.subscribers, number_format(a.yLabel));
+						return mailster.util.sprintf(mailster.l10n.dashboard.subscribers, number_format(a.yLabel));
 					}
 				}
 			},
@@ -105,11 +105,30 @@ mailster = (function (mailster, $, window, document) {
 
 			$('#mailster-mb-mailster').addClass('verified');
 
-			$('#welcome-panel').delay(2500).fadeTo(400, 0, function () {
-				$('#welcome-panel').slideUp(400);
+			$('#mailster-register-panel').delay(2500).fadeTo(400, 0, function () {
+				$('#mailster-register-panel').slideUp(400);
 			})
 		})
-		.on('click', '.toggle-indicator', toggleMetaBoxes)
+		.on('click', '.order-lower-indicator', function () {
+			var current = $(this).closest('.postbox'),
+				sibling = current.next();
+			if (sibling.length) {
+				current.insertAfter(sibling);
+			}
+			orderMetaBoxes();
+		})
+		.on('click', '.order-higher-indicator', function () {
+			var current = $(this).closest('.postbox'),
+				sibling = current.prev();
+			if (sibling.length) {
+				current.insertBefore(sibling);
+			}
+			orderMetaBoxes();
+		})
+		.on('click', '.toggle-indicator', function () {
+			$(this).closest('.postbox').toggleClass('closed');
+			toggleMetaBoxes();
+		})
 		.on('click', '.hide-postbox-tog', function () {
 
 			$('#' + $(this).val())[$(this).is(':checked') ? 'show' : 'hide']().removeClass('closed');
@@ -121,9 +140,9 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.check-for-update', function () {
 			var _this = $(this);
-			_this.html(mailsterdashboardL10n.checking);
+			_this.html(mailster.l10n.dashboard.checking);
 			mailster.util.ajax('check_for_update', function (response) {
-				_this.html(mailsterdashboardL10n.check_again);
+				_this.html(mailster.l10n.dashboard.check_again);
 				if (response.success) {
 					_this.closest('.postbox')[response.update ? 'addClass' : 'removeClass']('has-update');
 					$('.update-version').html(response.version);
@@ -135,17 +154,17 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.one('click', '.load-language', function () {
 			var _this = $(this);
-			_this.html(mailsterdashboardL10n.downloading);
+			_this.html(mailster.l10n.dashboard.downloading);
 			mailster.util.ajax('load_language', function (response) {
 				if (response.success) {
-					_this.html(mailsterdashboardL10n.reload_page);
+					_this.html(mailster.l10n.dashboard.reload_page);
 				}
 			});
 			return false;
 		})
 		.on('click', '.reset-license', function () {
 
-			if (!confirm(mailsterdashboardL10n.reset_license)) {
+			if (!confirm(mailster.l10n.dashboard.reset_license)) {
 				return false;
 			}
 		});
@@ -183,9 +202,8 @@ mailster = (function (mailster, $, window, document) {
 		box.find('.piechart').easyPieChart({
 			animate: 1000,
 			rotate: 180,
-			barColor: '#2BB3E7',
-			trackColor: '#50626f',
-			trackColor: '#f3f3f3',
+			barColor: mailster.colors.main,
+			trackColor: mailster.colors.track,
 			lineWidth: 9,
 			size: 75,
 			lineCap: 'butt',

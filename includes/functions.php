@@ -188,17 +188,15 @@ function mailster_update_option( $option, $value = null, $temp = false ) {
 	}
 
 	if ( $temp ) {
-		$mailster_options = mailster( 'settings' )->verify( $mailster_options );
+		$temp_options = mailster( 'settings' )->verify( $mailster_options );
+
 		add_filter(
-			'mailster_option',
-			function( $value, $option, $fallback ) use ( $mailster_options ) {
-
-				return isset( $mailster_options[ $option ] ) ? $mailster_options[ $option ] : $value;
-
-			},
-			0,
-			3
+			'pre_option_mailster_options',
+			function() use ( $temp_options ) {
+				return $temp_options;
+			}
 		);
+
 		return true;
 	}
 
@@ -229,6 +227,31 @@ function mailster_get_current_user_id() {
 	return mailster( 'subscribers' )->get_current_user_id();
 
 }
+/**
+ *
+ *
+ * @return unknown
+ */
+function mailster_localize_script( $hook, $strings = array() ) {
+
+	if ( is_array( $hook ) ) {
+		$strings = $hook;
+		$hook    = 'common';
+	}
+
+	add_filter(
+		'mailster_localize_script',
+		function( $array ) use ( $hook, $strings ) {
+			if ( isset( $array[ $hook ] ) ) {
+				$array[ $hook ] += $strings;
+			} else {
+				$array[ $hook ] = $strings;
+			}
+			return $array;
+		}
+	);
+
+}
 
 
 /**
@@ -248,9 +271,7 @@ function mailster_register_dynamic_post_type( $post_type, $args = array(), $call
 	$args = wp_parse_args(
 		$args,
 		array(
-			'labels' => array(
-				'name' => is_string( $args ) ? $args : ucwords( str_replace( '_', ' ', $post_type ) ),
-			),
+			'labels' => array( 'name' => is_string( $args ) ? $args : ucwords( str_replace( '_', ' ', $post_type ) ) ),
 		)
 	);
 
@@ -437,7 +458,8 @@ function mailster_list_newsletter( $args = '' ) {
 		'post_status' => array( 'finished', 'active' ),
 		'echo'        => 1,
 	);
-	$r        = wp_parse_args( $args, $defaults );
+
+	$r = wp_parse_args( $args, $defaults );
 
 	extract( $r, EXTR_SKIP );
 
@@ -639,12 +661,7 @@ function mailster_get_user_client( $string = null ) {
  */
 function mailster_subscribe( $email, $userdata = array(), $lists = array(), $double_opt_in = null, $overwrite = true, $mergelists = null, $template = 'notification.html' ) {
 
-	$entry = wp_parse_args(
-		array(
-			'email' => $email,
-		),
-		$userdata
-	);
+	$entry = wp_parse_args( array( 'email' => $email ), $userdata );
 
 	$added = null;
 	if ( ! is_null( $double_opt_in ) ) {
@@ -702,6 +719,8 @@ function mailster_unsubscribe( $email_hash_id, $campaign_id = null, $status = nu
 
 		return mailster( 'subscribers' )->unsubscribe_by_mail( $email_hash_id, $campaign_id, $status );
 	}
+
+	return false;
 
 }
 

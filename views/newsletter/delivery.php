@@ -68,7 +68,7 @@ $sent = $this->get_sent( $post->ID );
 		);
 		?>
 		<?php if ( mailster_option( 'track_location' ) ) : ?>
-			<br><label title="<?php esc_html_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
+			<br><label title="<?php esc_attr_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
 			<input type="checkbox" class="timezone" name="mailster_data[timezone]" value="1" <?php checked( $this->post_data['timezone'] ); ?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ); ?>
 			</label>
 		<?php endif; ?>
@@ -199,7 +199,7 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 			<p>
 			<?php if ( mailster_option( 'track_location' ) ) : ?>
-				<label title="<?php esc_html_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
+				<label title="<?php esc_attr_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
 				<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][post_published_timezone]" value="1" <?php checked( $this->post_data['timezone'] ); ?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ); ?>
 				</label>
 			<?php endif; ?>
@@ -255,7 +255,7 @@ $sent = $this->get_sent( $post->ID );
 				$autoresponderdata['endschedule'] = isset( $autoresponderdata['endschedule'] );
 			?>
 			<?php if ( mailster_option( 'track_location' ) ) : ?>
-				<label title="<?php esc_html_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
+				<label title="<?php esc_attr_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
 				<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][timebased_timezone]" value="1" <?php checked( $this->post_data['timezone'] ); ?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ); ?>
 				</label>
 			<?php endif; ?>
@@ -345,6 +345,13 @@ $sent = $this->get_sent( $post->ID );
 					'<strong>' . $autoresponderdata['post_count_status'] . '</strong>',
 					'<strong>' . $post_type_label . '</strong>'
 				);
+				if ( $autoresponderdata['since'] ) {
+					printf(
+						'<br><span title="' . esc_attr( 'The time which is used in this campaign. All posts must have been published after this date.', 'mailster' ) . '">' . esc_html__( 'Only %1$s after %2$s count.', 'mailster' ) . '</span>',
+						strip_tags( $post_type_label ),
+						date( $timeformat, $autoresponderdata['since'] + $timeoffset )
+					);
+				}
 				?>
 				<br><label><input type="checkbox" name="post_count_status_reset" value="1"> <?php esc_html_e( 'reset counter', 'mailster' ); ?></label>
 			</p>
@@ -413,7 +420,7 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 			<p>
 				<?php if ( mailster_option( 'track_location' ) ) : ?>
-				<label title="<?php esc_html_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
+				<label title="<?php esc_attr_e( 'Send this campaign based on the subscribers timezone if known', 'mailster' ); ?>">
 					<input type="checkbox" class="autoresponder-timezone" name="mailster_data[autoresponder][usertime_timezone]" value="1" <?php checked( $this->post_data['timezone'] ); ?>> <?php esc_html_e( 'Use Subscribers timezone', 'mailster' ); ?>
 				</label>
 				<?php endif; ?>
@@ -550,9 +557,9 @@ $sent = $this->get_sent( $post->ID );
 		$test_email = apply_filters( 'mailster_test_email', $test_email );
 		?>
 		<input type="text" value="<?php echo esc_attr( $test_email ); ?>" placeholder="<?php echo esc_attr( $current_user->user_email ); ?>" autocomplete="off" id="mailster_testmail" class="widefat" aria-label="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>">
-		<button type="button" class="button mailster_spamscore" title="<?php esc_html_e( 'check your spam score', 'mailster' ); ?> (beta)">Spam Score</button>
+		<button type="button" class="button mailster_spamscore" title="<?php esc_attr_e( 'check your spam score', 'mailster' ); ?> (beta)">Spam Score</button>
 		<span class="spinner" id="delivery-ajax-loading"></span>
-		<input type="button" value="<?php esc_html_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest">
+		<input type="button" value="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest">
 
 		<div id="spam_score_progress">
 		<div class="progress"><span class="bar" style="width:1%"></span></div>

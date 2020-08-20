@@ -408,6 +408,23 @@ class MailsterFrontpage {
 				break;
 
 			case 'unsubscribe':
+				// handle one click unsubscribe for RFC8058 (https://tools.ietf.org/html/rfc8058)
+				if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
+
+					$hash        = get_query_var( '_mailster_hash' );
+					$campaign_id = get_query_var( '_mailster_extra' );
+					$status      = 'list_unsubscribe';
+
+					if ( mailster( 'subscribers' )->unsubscribe_by_hash( $hash, $campaign_id, $status ) ) {
+						status_header( 200 );
+					} else {
+						status_header( 404 );
+					}
+					nocache_headers();
+					exit;
+
+				}
+
 				$unsubscribe_url = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
 
 				// if tracking is disabled
@@ -1106,6 +1123,9 @@ class MailsterFrontpage {
 		}
 
 		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
+		if ( isset( $atts['profile'] ) && $atts['profile'] ) {
+			$form->is_profile();
+		}
 		return $form->render( false );
 	}
 
@@ -1123,12 +1143,7 @@ class MailsterFrontpage {
 			return;
 		}
 
-		$atts = wp_parse_args(
-			$atts,
-			array(
-				'id' => mailster_option( 'profile_form', 1 ),
-			)
-		);
+		$atts = wp_parse_args( $atts, array( 'id' => mailster_option( 'profile_form', 1 ) ) );
 
 		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		$form->is_profile();

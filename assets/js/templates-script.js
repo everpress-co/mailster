@@ -85,7 +85,7 @@ mailster = (function (mailster, $, window, document) {
 				message = $('span.message'),
 				name;
 
-			if ($this.is('.saveas') && !(name = prompt(mailsterL10n.enter_template_name + ':', ''))) return false;
+			if ($this.is('.saveas') && !(name = prompt(mailster.l10n.templates.enter_template_name + ':', ''))) return false;
 
 			loader.css({
 				'display': 'inline'
@@ -174,7 +174,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', 'a.update', function () {
 
-			if (confirm(mailsterL10n.update_note)) {
+			if (confirm(mailster.l10n.templates.update_note)) {
 				$(this).closest('.mailster-box').addClass('loading');
 				return true;
 			}
@@ -182,7 +182,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', 'a.deletion', function () {
 
-			if (confirm(mailster.util.sprintf(mailsterL10n.confirm_delete, $(this).data('name')))) {
+			if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, '"' + $(this).data('name') + '"'))) {
 				$(this).closest('.mailster-box').addClass('loading');
 				return true;
 			}
@@ -207,7 +207,7 @@ mailster = (function (mailster, $, window, document) {
 				slug = $this.data('slug'),
 				file = $this.data('file');
 
-			if (confirm(mailster.util.sprintf(mailsterL10n.delete_template_file, file, slug))) {
+			if (confirm(mailster.util.sprintf(mailster.l10n.templates.delete_template_file, file, slug))) {
 
 				$el.addClass('loading');
 
@@ -267,7 +267,7 @@ mailster = (function (mailster, $, window, document) {
 		uploader.bind('UploadFile', function (up, file) {});
 
 		uploader.bind('UploadProgress', function (up, file) {
-			uploadinfo.html(mailster.util.sprintf(mailsterL10n.uploading, file.percent + '%'));
+			uploadinfo.html(mailster.util.sprintf(mailster.l10n.templates.uploading, file.percent + '%'));
 		});
 
 		uploader.bind('Error', function (up, err) {
@@ -313,7 +313,7 @@ mailster = (function (mailster, $, window, document) {
 						mode: "vbscript"
 					}]
 				};
-				codemirror = CodeMirror.fromTextArea(templatecontent.get(0), {
+				codemirror = mailster.util.CodeMirror.fromTextArea(templatecontent.get(0), {
 					mode: mixedMode,
 					tabMode: "indent",
 					lineNumbers: true,
@@ -341,7 +341,7 @@ mailster = (function (mailster, $, window, document) {
 			});
 			html += '</select>';
 
-			if (response.file != 'index.html' && response.file != 'notification.html') html += '<a class="remove-file mailster-icon" data-file="' + response.slug + '/' + response.file + '" data-confirm="' + mailster.util.sprintf(mailsterL10n.delete_template_file, selected.label, selected.name) + '"></a>';
+			if (response.file != 'index.html' && response.file != 'notification.html') html += '<a class="remove-file mailster-icon" data-file="' + response.slug + '/' + response.file + '" data-confirm="' + mailster.util.sprintf(mailster.l10n.templates.delete_template_file, selected.label, selected.name) + '"></a>';
 
 			templateeditor.find('.template-file-selector span').html(html);
 		});
