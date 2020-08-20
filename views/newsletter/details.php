@@ -33,7 +33,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 			</td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'From Name', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from-name" data-value="<?php echo esc_attr( mailster_option( 'from_name' ) ); ?>" title="<?php esc_html_e( 'restore default', 'mailster' ); ?>"></a></th>
+			<th scope="row"><?php esc_html_e( 'From Name', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from-name" data-value="<?php echo esc_attr( mailster_option( 'from_name' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
 			<td>
 				<div class="emoji-selector">
 					<input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['from_name'] ); ?>" name="mailster_data[from_name]" id="mailster_from-name" aria-label="<?php esc_attr_e( 'From Name', 'mailster' ); ?>">
@@ -42,11 +42,11 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 			</td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'From Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from" data-value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" title="<?php esc_html_e( 'restore default', 'mailster' ); ?>"></a></th>
+			<th scope="row"><?php esc_html_e( 'From Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from" data-value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
 			<td><input type="email" class="widefat" value="<?php echo esc_attr( $this->post_data['from_email'] ); ?>" name="mailster_data[from_email]" id="mailster_from" aria-label="<?php esc_attr_e( 'From Email', 'mailster' ); ?>"></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'Reply-to Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_reply_to" data-value="<?php echo esc_attr( mailster_option( 'reply_to' ) ); ?>" title="<?php esc_html_e( 'restore default', 'mailster' ); ?>"></a></th>
+			<th scope="row"><?php esc_html_e( 'Reply-to Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_reply_to" data-value="<?php echo esc_attr( mailster_option( 'reply_to' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
 			<td><input type="email" class="widefat" value="<?php echo esc_attr( $this->post_data['reply_to'] ); ?>" name="mailster_data[reply_to]" id="mailster_reply_to" aria-label="<?php esc_attr_e( 'reply-to email', 'mailster' ); ?>"></td>
 		</tr>
 	 </tbody>

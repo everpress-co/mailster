@@ -1168,7 +1168,7 @@ class MailsterQueue {
 					if ( ! $data->_requeued ) {
 						// prevent to send duplicates within one minute
 						if ( $duplicate = $wpdb->get_results( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_actions WHERE campaign_id = %d AND subscriber_id = %d AND type = %d && `timestamp` > %d", $data->campaign_id, $data->subscriber_id, 1, time() - 60 ) ) ) {
-							$this->cron_log( '', '&nbsp;<span class="error">' . $data->subscriber_id . ' ' . $data->email . '<br>' . esc_html__( 'Prevented to send duplicate within one minute.', 'mailster' ) . '</span>', $data->campaign_id, $data->_count, '' );
+							$this->cron_log( '', '&nbsp;<span class="error">' . $data->subscriber_id . ' ' . $data->email . '<br>' . esc_html__( 'Prevent to send duplicate within one minute.', 'mailster' ) . '</span>', $data->campaign_id, $data->_count, '' );
 							continue;
 						}
 					}

@@ -825,8 +825,12 @@ class MailsterPlaceholder {
 							if ( ! empty( $post ) ) {
 
 								if ( ! empty( $post->ID ) ) {
-									$thumb_id = get_post_thumbnail_id( $post->ID );
 
+									if ( 'attachment' == $post->post_type ) {
+										$thumb_id = $post->ID;
+									} else {
+										$thumb_id = get_post_thumbnail_id( $post->ID );
+									}
 									$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
 								}
 
@@ -1082,6 +1086,11 @@ class MailsterPlaceholder {
 				// tag is in placeholders
 				if ( isset( $this->placeholder[ $search ] ) ) {
 					$replace = $this->placeholder[ $search ];
+
+					// using preview text fix from https://www.litmus.com/blog?p=4367
+					if ( $replace && '{preheader}' == $search && apply_filters( 'mailster_preview_text_fix', true ) ) {
+						$replace .= str_repeat( '&nbsp;&zwnj;', 220 - strlen( $replace ) );
+					}
 
 					// tag is a custom tag
 				} elseif ( isset( $this->placeholder[ '{' . $tag . '}' ] ) ) {
