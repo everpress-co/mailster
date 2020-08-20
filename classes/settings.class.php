@@ -210,6 +210,7 @@ class MailsterSettings {
 			'usage_tracking'                     => false,
 			'ask_usage_tracking'                 => true,
 			'disable_cache'                      => false,
+			'shortcodes'                         => false,
 			'remove_data'                        => false,
 			'got_url_rewrite'                    => mailster( 'helper' )->got_url_rewrite(),
 			'post_nonce'                         => wp_create_nonce( uniqid() ),
@@ -1633,7 +1634,7 @@ class MailsterSettings {
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Self Signed Certificates', 'mailster' ); ?></th>
-			<td><label title="<?php esc_html_e( 'Enabling this option may solve connection problems to SMTP servers', 'mailster' ); ?>"><input type="hidden" name="mailster_options[allow_self_signed]" value=""><input type="checkbox" name="mailster_options[allow_self_signed]" value="1" <?php checked( mailster_option( 'allow_self_signed' ) ); ?>> <?php esc_html_e( 'allow self signed certificates', 'mailster' ); ?></label>
+			<td><label title="<?php esc_attr_e( 'Enabling this option may solve connection problems to SMTP servers', 'mailster' ); ?>"><input type="hidden" name="mailster_options[allow_self_signed]" value=""><input type="checkbox" name="mailster_options[allow_self_signed]" value="1" <?php checked( mailster_option( 'allow_self_signed' ) ); ?>> <?php esc_html_e( 'allow self signed certificates', 'mailster' ); ?></label>
 			</td>
 		</tr>
 	</table>

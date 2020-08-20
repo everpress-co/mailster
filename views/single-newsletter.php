@@ -65,7 +65,7 @@
 			<?php if ( ! $meta['webversion'] ) : ?>
 				<strong>[ <?php esc_html_e( 'Private', 'mailster' ); ?> ]</strong>
 			<?php endif; ?>
-			<?php esc_html_e( $title ); ?></a>
+			<?php echo esc_html( $title ); ?></a>
 		</li>
 <?php if ( current_user_can( 'edit_post', $post_id ) ) : ?>
 		<li class="editlink header"><a href="<?php echo admin_url( 'post.php?post=' . $post_id . '&action=edit' ); ?>"><?php esc_html_e( 'Edit', 'mailster' ); ?></a></li>
@@ -95,7 +95,7 @@
 									?>
 								<li>
 									<a title="<?php printf( esc_html__( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ); ?>" class="<?php echo $service; ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? (int) $social_services[ $service ]['width'] : 650; ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? (int) $social_services[ $service ]['height'] : 405; ?>" >
-									<?php esc_html_e( $social_services[ $service ]['name'] ); ?>
+									<?php echo esc_html( $social_services[ $service ]['name'] ); ?>
 									</a>
 								</li>
 								<?php endforeach; ?>
@@ -108,20 +108,20 @@
 						<div>
 							<form id="emailform" novalidate>
 								<p>
-									<input type="text" name="sendername" id="sendername" placeholder="<?php esc_html_e( 'Your name', 'mailster' ); ?>" value="">
+									<input type="text" name="sendername" id="sendername" placeholder="<?php esc_attr_e( 'Your name', 'mailster' ); ?>" value="">
 								</p>
 								<p>
-									<input type="email" name="sender" id="sender" placeholder="<?php esc_html_e( 'Your email address', 'mailster' ); ?>" value="<?php echo $is_forward; ?>">
+									<input type="email" name="sender" id="sender" placeholder="<?php esc_attr_e( 'Your email address', 'mailster' ); ?>" value="<?php echo $is_forward; ?>">
 								</p>
 								<p>
-									<input type="email" name="receiver" id="receiver" placeholder="<?php esc_html_e( 'Your friend\'s email address', 'mailster' ); ?>" value="">
+									<input type="email" name="receiver" id="receiver" placeholder="<?php esc_attr_e( 'Your friend\'s email address', 'mailster' ); ?>" value="">
 								</p>
 								<p>
-									<textarea name="message" id="message" placeholder="<?php esc_html_e( 'A personal note to your friend', 'mailster' ); ?>"></textarea>
+									<textarea name="message" id="message" placeholder="<?php esc_attr_e( 'A personal note to your friend', 'mailster' ); ?>"></textarea>
 								</p>
 								<p>
 									<span class="status">&nbsp;</span>
-									<input type="submit" class="button" value="<?php esc_html_e( 'Send now', 'mailster' ); ?>" >
+									<input type="submit" class="button" value="<?php esc_attr_e( 'Send now', 'mailster' ); ?>" >
 								</p>
 									<div class="loading" id="ajax-loading"></div>
 								<p>

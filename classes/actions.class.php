@@ -296,6 +296,8 @@ class MailsterActions {
 
 		$sql .= ( $explicit ) ? ' timestamp = timestamp, count = count+1' : ' count = values(count)';
 
+		$sql = apply_filters( 'mailster_actions_add_sql', $sql, $args, $explicit );
+
 		if ( false !== $wpdb->query( $sql ) ) {
 			if ( $args['type'] != 1 && $explicit && isset( $args['subscriber_id'] ) ) {
 				wp_schedule_single_event( time() + 120, 'mailster_update_rating', array( $args['subscriber_id'] ) );

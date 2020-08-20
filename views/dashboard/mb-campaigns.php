@@ -13,10 +13,10 @@ if ( $campaigns = mailster( 'campaigns' )->get_campaigns(
 	<div class="mailster-mb-heading">
 		<select class="mailster-mb-select">
 		<?php foreach ( $campaigns as $campaign ) : ?>
-			<option value="<?php echo esc_attr( $campaign->ID ); ?>"><?php esc_html_e( $campaign->post_title ); ?></option>
+			<option value="<?php echo esc_attr( $campaign->ID ); ?>"><?php echo esc_html( $campaign->post_title ); ?></option>
 		<?php endforeach; ?>
 		</select>
-		<span class="mailster-mb-label"><?php esc_html_e( 'Campaign', 'mailster' ); ?>:</span> <a class="mailster-mb-link" href="post.php?post=%d&action=edit" title="<?php esc_attr_e( 'edit', 'mailster' ); ?>"><?php esc_html_e( $campaign->post_title ); ?></a>
+		<span class="mailster-mb-label"><?php esc_html_e( 'Campaign', 'mailster' ); ?>:</span> <a class="mailster-mb-link" href="post.php?post=%d&action=edit" title="<?php esc_attr_e( 'edit', 'mailster' ); ?>"><?php echo esc_html( $campaign->post_title ); ?></a>
 	</div>
 	<div class="mailster-mb-stats">
 		<ul class="campaign-charts">

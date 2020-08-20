@@ -138,10 +138,7 @@ class MailsterConditions {
 			mailster( 'helper' )->get_wpuser_meta_fields(),
 			array(
 				'wp_user_level'   => esc_html__( 'User Level', 'mailster' ),
-				'wp_capabilities' => esc_html__(
-					'User Role',
-					'mailster'
-				),
+				'wp_capabilities' => esc_html__( 'User Role', 'mailster' ),
 			)
 		);
 		// removing custom fields from wp user meta to prevent conflicts

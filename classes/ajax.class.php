@@ -427,6 +427,7 @@ class MailsterAjax {
 
 		$content = mailster( 'helper' )->strip_structure_html( $content );
 		$content = mailster( 'helper' )->add_mailster_styles( $content );
+		$content = mailster( 'helper' )->handle_shortcodes( $content );
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
 
@@ -591,21 +592,26 @@ class MailsterAjax {
 
 				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
 
-				$listunsubscribe = '';
-				if ( $mail->bouncemail ) {
-					$listunsubscribe_mail    = $mail->bouncemail;
-					$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
-					$listunsubscribe_body    = "X-Mailster: $mail->hash\nX-Mailster-Campaign: $ID\nX-Mailster-ID: $MID\n\n";
-					$listunsubscribe        .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
+				$listunsubscribe = array();
+				if ( mailster_option( 'mail_opt_out' ) ) {
+					$listunsubscribe_mail    = $bouncemail ? $bouncemail : $from;
+					$listunsubscribe_subject = 'Please remove me from the list';
+					$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$mail->to} X-Mailster: {$mail->hash} X-Mailster-Campaign: {$ID} X-Mailster-ID: {$MID}" );
+
+					$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 				}
-				$listunsubscribe .= '<' . $unsubscribelink . '>';
+				$listunsubscribe[] = '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $mail->hash, $ID ) . '>';
 
 				$headers = array(
-					'X-Mailster-Campaign'   => $ID,
-					'X-Mailster-ID'         => $MID,
-					'List-Unsubscribe'      => $listunsubscribe,
-					'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+					'X-Mailster'          => $mail->hash,
+					'X-Mailster-Campaign' => $ID,
+					'X-Mailster-ID'       => $MID,
+					'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
 				);
+
+				if ( mailster_option( 'single_opt_out' ) ) {
+					$headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
+				}
 
 				if ( 'autoresponder' != get_post_status( $ID ) ) {
 					$headers['Precedence'] = 'bulk';
@@ -1320,7 +1326,7 @@ class MailsterAjax {
 							: $html .= '<div class="no-feature"></div>';
 						$html       .= '<span class="post-type">' . $pts[ $post->post_type ]->labels->singular_name . '</span>';
 						$html       .= '<strong>' . $post->post_title . '' . ( $post->post_status != 'publish' ? ' <em class="post-status wp-ui-highlight">' . $wp_post_statuses[ $post->post_status ]->label . '</em>' : '' ) . '</strong>';
-						$html       .= '<span class="excerpt">' . trim( wp_trim_words( strip_shortcodes( $post->post_content ), 25 ) ) . '</span>';
+						$html       .= '<span class="excerpt">' . trim( wp_trim_words( preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $post->post_content ), 25 ) ) . '</span>';
 						$html       .= '<span class="date">' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $post->post_date ) ) . '</span>';
 						$html       .= '</li>';
 					}
@@ -1440,8 +1446,6 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$strip_shortcodes = apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) );
-
 		if ( is_numeric( $_POST['id'] ) ) {
 			$post    = get_post( (int) $_POST['id'] );
 			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
@@ -1480,9 +1484,9 @@ class MailsterAjax {
 				}
 
 				$content = str_replace( '<img ', '<img editable ', $content );
-				$content = ( $strip_shortcodes ) ? strip_shortcodes( $content ) : do_shortcode( $content );
 
-				$excerpt = ( $strip_shortcodes ) ? strip_shortcodes( $excerpt ) : do_shortcode( $excerpt );
+				$content = mailster( 'helper' )->handle_shortcodes( $content );
+				$excerpt = mailster( 'helper' )->handle_shortcodes( $excerpt );
 
 				$data = array(
 					'title'   => $post->post_title,
@@ -2506,7 +2510,7 @@ class MailsterAjax {
 
 				if ( is_wp_error( $result ) ) {
 					$return['error'] = mailster()->get_update_error( $result );
-					$return['code']  = $result->get_error_code();
+					$return['code']  = str_replace( '_', '', $result->get_error_code() );
 
 				} else {
 					update_option( 'mailster_username', $result['username'] );

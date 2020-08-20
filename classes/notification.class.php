@@ -635,7 +635,7 @@ class MailsterNotification {
 			  <link itemprop="url" href="{linkaddress}"/>
 			</div>
 			</div>
-			<meta itemprop="description" content="<?php esc_html_e( 'Confirmation Message', 'mailster' ); ?>"/>
+			<meta itemprop="description" content="<?php esc_attr_e( 'Confirmation Message', 'mailster' ); ?>"/>
 		</div>
 		<?php
 
