@@ -105,11 +105,30 @@ mailster = (function (mailster, $, window, document) {
 
 			$('#mailster-mb-mailster').addClass('verified');
 
-			$('#welcome-panel').delay(2500).fadeTo(400, 0, function () {
-				$('#welcome-panel').slideUp(400);
+			$('#mailster-register-panel').delay(2500).fadeTo(400, 0, function () {
+				$('#mailster-register-panel').slideUp(400);
 			})
 		})
-		.on('click', '.toggle-indicator', toggleMetaBoxes)
+		.on('click', '.order-lower-indicator', function () {
+			var current = $(this).closest('.postbox'),
+				sibling = current.next();
+			if (sibling.length) {
+				current.insertAfter(sibling);
+			}
+			orderMetaBoxes();
+		})
+		.on('click', '.order-higher-indicator', function () {
+			var current = $(this).closest('.postbox'),
+				sibling = current.prev();
+			if (sibling.length) {
+				current.insertBefore(sibling);
+			}
+			orderMetaBoxes();
+		})
+		.on('click', '.toggle-indicator', function () {
+			$(this).closest('.postbox').toggleClass('closed');
+			toggleMetaBoxes();
+		})
 		.on('click', '.hide-postbox-tog', function () {
 
 			$('#' + $(this).val())[$(this).is(':checked') ? 'show' : 'hide']().removeClass('closed');

@@ -62,12 +62,12 @@ if ( $is_new ) {
 <?php } ?>
 	<span class="alignright">
 		<?php if ( ! $is_new && $subscriber->status == 0 ) : ?>
-			<input type="submit" name="confirmation" class="button button-large" value="<?php esc_html_e( 'Resend Confirmation', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to resend the confirmation?', 'mailster' ); ?>');">
+			<input type="submit" name="confirmation" class="button button-large" value="<?php esc_attr_e( 'Resend Confirmation', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to resend the confirmation?', 'mailster' ); ?>');">
 		<?php endif; ?>
 		<?php if ( ! $is_new && current_user_can( 'mailster_delete_subscribers' ) ) : ?>
-			<input type="submit" name="delete" class="button button-large" value="<?php esc_html_e( 'Delete Subscriber', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
+			<input type="submit" name="delete" class="button button-large" value="<?php esc_attr_e( 'Delete Subscriber', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
 		<?php endif; ?>
-		<input type="submit" name="save" class="button button-primary button-large" value="<?php esc_html_e( 'Save', 'mailster' ); ?>">
+		<input type="submit" name="save" class="button button-primary button-large" value="<?php esc_attr_e( 'Save', 'mailster' ); ?>">
 	</span>
 </h1>
 
@@ -77,14 +77,14 @@ if ( $is_new ) {
 		<td scope="row" class="avatar-wrap">
 			<?php if ( get_option( 'show_avatars' ) ) : ?>
 				<?php $avatar_url = $this->get_gravatar_uri( $subscriber->email, 400 ); ?>
-				<div class="avatar<?php echo $subscriber->wp_id ? ' wp-user' : ''; ?>" title="<?php esc_html_e( 'Source', 'mailster' ); ?>: Gravatar.com" style="background-image:url(<?php echo $avatar_url; ?>)"></div>
+				<div class="avatar<?php echo $subscriber->wp_id ? ' wp-user' : ''; ?>" title="<?php esc_attr_e( 'Source', 'mailster' ); ?>: Gravatar.com" style="background-image:url(<?php echo $avatar_url; ?>)"></div>
 				<?php if ( false !== strpos( $avatar_url, 'gravatar.com' ) ) : ?>
 				<p class="info"><?php esc_html_e( 'Source', 'mailster' ); ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
 				<?php endif; ?>
 			<?php endif; ?>
 			<?php if ( ! $is_new ) : ?>
 
-				<h4 title="<?php esc_html_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ); ?>"><?php esc_html_e( 'User Rating', 'mailster' ); ?>:<br />
+				<h4 title="<?php esc_attr_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ); ?>"><?php esc_html_e( 'User Rating', 'mailster' ); ?>:<br />
 				<?php
 					$stars = ( round( $subscriber->rating / 10, 2 ) * 50 );
 					$full  = max( 0, min( 5, floor( $stars ) ) );
@@ -314,7 +314,7 @@ if ( $is_new ) {
 					<p class="alignright">
 						<?php
 						if ( $geo[1] ) {
-							echo esc_html__( 'from', 'mailster' ) . sprintf( ' %s, %s', '<strong><a href="https://www.google.com/maps/@' . $meta->coords . ',11z" class="external">' . $geo[1] . '</a></strong>', '<span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ) );
+							esc_html_e( 'from', 'mailster' ) . sprintf( ' %s, %s', '<strong><a href="https://www.google.com/maps/@' . $meta->coords . ',11z" class="external">' . $geo[1] . '</a></strong>', '<span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ) );
 						}
 						?>
 				<?php elseif ( $meta->geo ) : ?>
@@ -337,7 +337,7 @@ if ( $is_new ) {
 					<img src="<?php echo esc_url( $mapurl ); ?>" width="300" heigth="250">
 				</div>
 				<p class="alignright">
-					<?php echo esc_html__( 'from', 'mailster' ) . ' <span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ); ?>
+					<?php esc_html_e( 'from', 'mailster' ) . ' <span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ); ?>
 				<?php endif; ?>
 					<?php
 					if ( ! is_null( $meta->timeoffset ) ) :
@@ -364,7 +364,7 @@ if ( ! $is_new ) :
 		<div class="stats-wrap">
 			<table id="stats">
 				<tr>
-				<td><span class="verybold"><?php echo $sent; ?></span> <?php echo esc_html__( _n( 'Campaign sent', 'Campaigns sent', $sent, 'mailster' ) ); ?></td>
+				<td><span class="verybold"><?php echo esc_html( $sent ); ?></span> <?php esc_html_e( _n( 'Campaign sent', 'Campaigns sent', $sent, 'mailster' ) ); ?></td>
 				<td width="60">
 				<div id="stats_open" class="piechart" data-percent="<?php echo $openrate * 100; ?>"><span>0</span>%</div>
 				</td>
@@ -386,13 +386,13 @@ if ( ! $is_new ) :
 
 			<?php $mostpopular = array_shift( $clients ); ?>
 
-			<h3><?php esc_html_e( 'Most popular client', 'mailster' ); ?>: <span class="mailster-icon client-<?php echo $mostpopular['type']; ?>"></span><?php echo $mostpopular['name'] . ' <span class="count">(' . round( $mostpopular['percentage'] * 100, 2 ) . '%)</span> '; ?></h3>
+			<h3><?php esc_html_e( 'Most popular client', 'mailster' ); ?>: <span class="mailster-icon client-<?php echo esc_attr( $mostpopular['type'] ); ?>"></span><?php echo esc_html( $mostpopular['name'] ) . ' <span class="count">(' . round( $mostpopular['percentage'] * 100, 2 ) . '%)</span> '; ?></h3>
 
 			<?php if ( ! empty( $clients ) ) : ?>
 			<p><?php esc_html_e( 'Other used clients', 'mailster' ); ?>:
 				<?php
 				foreach ( $clients as $client ) {
-					echo '<span class="mailster-icon client-' . $client['type'] . '"></span> <strong>' . $client['name'] . '</strong> <span class="count">(' . round( $client['percentage'] * 100, 2 ) . '%)</span>, ';
+					echo '<span class="mailster-icon client-' . esc_attr( $client['type'] ) . '"></span> <strong>' . esc_html( $client['name'] ) . '</strong> <span class="count">(' . round( $client['percentage'] * 100, 2 ) . '%)</span>, ';
 				}
 				?>
 
@@ -451,10 +451,10 @@ if ( ! $is_new ) :
 							case 4:
 									echo '<span class="mailster-icon mailster-icon-unsubscribe"></span></td><td>';
 									$unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id );
-								if ( 'link_unsubscribe_list' == $unsub_status ) {
-									echo esc_html__( 'unsubscribed from a list', 'mailster' );
+								if ( preg_match( '/_list$/', $unsub_status ) ) {
+									esc_html_e( 'unsubscribed from a list', 'mailster' );
 								} else {
-									echo esc_html__( 'unsubscribed your newsletter', 'mailster' );
+									esc_html_e( 'unsubscribed your newsletter', 'mailster' );
 								}
 								break;
 							case 5:
@@ -464,11 +464,11 @@ if ( ! $is_new ) :
 								break;
 							case 6:
 									echo '<span class="mailster-icon mailster-icon-bounce hard"></span></td><td>';
-									echo esc_html__( 'Hard bounce', 'mailster' );
+									esc_html_e( 'Hard bounce', 'mailster' );
 								break;
 							case 7:
 									echo '<span class="mailster-icon mailster-icon-error"></span></td><td>';
-									echo esc_html__( 'Error', 'mailster' );
+									esc_html_e( 'Error', 'mailster' );
 								break;
 							default:
 									echo '</td><td>';

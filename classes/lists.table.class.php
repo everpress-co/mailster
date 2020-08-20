@@ -113,7 +113,13 @@ class Mailster_Lists_Table extends WP_List_Table {
 				return $timestring;
 
 			case 'subscribers':
-				return '<a href="' . add_query_arg( array( 'lists' => array( $item->ID ) ), 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '">' . number_format_i18n( mailster( 'lists' )->get_member_count( $item->ID, 1 ) ) . '</a>';
+				$total = mailster( 'lists' )->get_member_count( $item->ID );
+				$count = '<a href="' . add_query_arg( array( 'lists' => array( $item->ID ) ), 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '">' . number_format_i18n( $total ) . '</a>';
+				if ( $total ) {
+					$subscribed = mailster( 'lists' )->get_member_count( $item->ID, 1 );
+					$count     .= ' (<a href="' . add_query_arg( array( 'lists' => array( $item->ID ) ), 'edit.php?post_type=newsletter&page=mailster_subscribers&status=1' ) . '">' . sprintf( esc_html__( '%s subscribed', 'mailster' ), number_format_i18n( $subscribed ) ) . '</a>)';
+				}
+				return $count;
 
 			default:
 		}

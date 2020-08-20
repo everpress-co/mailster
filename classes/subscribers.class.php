@@ -865,6 +865,7 @@ class MailsterSubscribers {
 	public function save_screen_options( $status, $option, $value ) {
 
 		if ( 'mailster_subscribers_per_page' == $option ) {
+			update_user_option( get_current_user_id(), 'mailster_subscribers_per_page', (int) $value );
 			return $value;
 		}
 
@@ -931,6 +932,10 @@ class MailsterSubscribers {
 
 		$entry = (array) $entry;
 
+		if ( isset( $entry['id'] ) ) {
+			$entry['ID'] = $entry['id'];
+			unset( $entry['id'] );
+		}
 		if ( isset( $entry['email'] ) ) {
 			if ( ! mailster_is_email( $entry['email'] ) ) {
 				return new WP_Error( 'invalid_email', esc_html__( 'invalid email address', 'mailster' ) );
@@ -962,11 +967,12 @@ class MailsterSubscribers {
 
 		$now = time();
 
-		$data         = array();
-		$meta         = array();
-		$customfields = array();
-		$lists        = null;
-		$meta_keys    = $this->get_meta_keys( true );
+		$data          = array();
+		$meta          = array();
+		$customfields  = array();
+		$lists         = null;
+		$subscriber_id = null;
+		$meta_keys     = $this->get_meta_keys( true );
 
 		$entry = $this->verify( $entry );
 		if ( is_wp_error( $entry ) ) {
@@ -978,6 +984,14 @@ class MailsterSubscribers {
 		if ( isset( $entry['_lists'] ) ) {
 			$lists = $entry['_lists'];
 			unset( $entry['_lists'] );
+		}
+
+		if ( isset( $entry['ID'] ) ) {
+			if ( ! empty( $entry['ID'] ) ) {
+				$subscriber_id = (int) $entry['ID'];
+			} else {
+				unset( $entry['ID'] );
+			}
 		}
 
 		foreach ( $entry as $key => $value ) {
@@ -1015,8 +1029,10 @@ class MailsterSubscribers {
 
 		if ( false !== $wpdb->query( $wpdb->prepare( $sql, $data ) ) ) {
 
-			$subscriber_id = ! empty( $wpdb->insert_id ) ? $wpdb->insert_id : (int) $data['ID'];
-			$bulkimport    = defined( 'MAILSTER_DO_BULKIMPORT' ) && MAILSTER_DO_BULKIMPORT;
+			if ( ! empty( $wpdb->insert_id ) ) {
+				$subscriber_id = $wpdb->insert_id;
+			}
+			$bulkimport = defined( 'MAILSTER_DO_BULKIMPORT' ) && MAILSTER_DO_BULKIMPORT;
 
 			if ( ! $bulkimport ) {
 				mailster_cache_delete( 'subscriber_' . $subscriber_id );
@@ -1058,7 +1074,7 @@ class MailsterSubscribers {
 
 				if ( isset( $data['status'] ) ) {
 					if ( $data['status'] == 0 ) {
-						$this->send_confirmations( $subscriber_id, false, true );
+						$this->send_confirmations( $subscriber_id, $subscriber_notification, true );
 					}
 					if ( $data['status'] == 1 && $subscriber_notification ) {
 						$this->subscriber_notification( $subscriber_id );
@@ -1102,6 +1118,9 @@ class MailsterSubscribers {
 
 		$entry = is_string( $entry ) ? array( 'email' => $entry ) : (array) $entry;
 
+		if ( ! isset( $entry['email'] ) ) {
+			return new WP_Error( 'email_missing', esc_html__( 'You must define an email address.', 'mailster' ) );
+		}
 		$entry = wp_parse_args(
 			$entry,
 			array(
@@ -1320,7 +1339,7 @@ class MailsterSubscribers {
 	 * @param unknown $subscriber_ids
 	 * @param unknown $lists
 	 * @param unknown $remove_old     (optional)
-	 * @param unknown $added     (optional)
+	 * @param unknown $added          (optional)
 	 * @return unknown
 	 */
 	public function assign_lists( $subscriber_ids, $lists, $remove_old = false, $added = null ) {
@@ -2679,7 +2698,7 @@ class MailsterSubscribers {
 			}
 			$type = esc_sql( $type );
 		} elseif ( 'md5' == $type ) {
-			$type = "md5('email')";
+			$type = 'md5(`email`)';
 		} else {
 			$type = esc_sql( $type );
 		}
@@ -3478,7 +3497,7 @@ class MailsterSubscribers {
 
 			$old_status = $subscriber->status;
 
-			if ( false !== $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_subscribers SET status = %d WHERE ID = %d", $new_status, $subscriber->ID ) ) ) {
+			if ( false !== $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_subscribers SET status = %d, updated = %d WHERE ID = %d", $new_status, time(), $subscriber->ID ) ) ) {
 				if ( ! $silent ) {
 					do_action( 'mailster_subscriber_change_status', $new_status, $old_status, $subscriber );
 				}

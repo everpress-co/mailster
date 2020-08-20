@@ -48,6 +48,11 @@ class MailsterConditions {
 		$output = ob_get_contents();
 		ob_end_clean();
 
+		// remove any whitespace so :empty selector works
+		if ( empty( $conditions ) ) {
+			$output = preg_replace( '/>(\s+)<\//', '></', $output );
+		}
+
 		if ( $plain ) {
 			$output = trim( strip_tags( $output ) );
 			$output = preg_replace( '/\s*$^\s*/mu', "\n\n", $output );
@@ -133,10 +138,7 @@ class MailsterConditions {
 			mailster( 'helper' )->get_wpuser_meta_fields(),
 			array(
 				'wp_user_level'   => esc_html__( 'User Level', 'mailster' ),
-				'wp_capabilities' => esc_html__(
-					'User Role',
-					'mailster'
-				),
+				'wp_capabilities' => esc_html__( 'User Role', 'mailster' ),
 			)
 		);
 		// removing custom fields from wp user meta to prevent conflicts
@@ -421,7 +423,11 @@ class MailsterConditions {
 				break;
 			case 'value':
 				if ( in_array( $field, $this->time_fields ) ) {
-					return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+					if ( $string ) {
+						return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+					} else {
+						return '';
+					}
 				}
 				if ( 'form' == $field ) {
 					if ( $form = mailster( 'forms' )->get( (int) $string, false, false ) ) {

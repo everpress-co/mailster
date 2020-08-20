@@ -6,23 +6,23 @@ $file     = $this->get_file();
 ?>
 <div id="optionbar" class="optionbar">
 	<ul class="alignleft">
-		<li class="no-border-left"><a class="mailster-icon undo disabled" title="<?php esc_html_e( 'undo', 'mailster' ); ?>">&nbsp;</a></li>
-		<li><a class="mailster-icon redo disabled" title="<?php esc_html_e( 'redo', 'mailster' ); ?>">&nbsp;</a></li>
+		<li class="no-border-left"><a class="mailster-icon undo disabled" title="<?php esc_attr_e( 'undo', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'undo', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon redo disabled" title="<?php esc_attr_e( 'redo', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'redo', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php if ( ! empty( $module_list ) ) : ?>
-		<li><a class="mailster-icon clear-modules" title="<?php esc_html_e( 'remove modules', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon clear-modules" title="<?php esc_attr_e( 'remove modules', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'remove modules', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
 		<?php if ( current_user_can( 'mailster_see_codeview' ) ) : ?>
-		<li><a class="mailster-icon code" title="<?php esc_html_e( 'toggle HTML/code view', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon code" title="<?php esc_attr_e( 'toggle HTML/code view', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'toggle HTML/code view', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
 		<?php if ( current_user_can( 'mailster_change_plaintext' ) ) : ?>
-		<li><a class="mailster-icon plaintext" title="<?php esc_html_e( 'toggle HTML/Plain-Text view', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon plaintext" title="<?php esc_attr_e( 'toggle HTML/Plain-Text view', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'toggle HTML/Plain-Text view', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
-		<li class="no-border-right"><a class="mailster-icon preview" title="<?php esc_html_e( 'preview', 'mailster' ); ?>">&nbsp;</a></li>
+		<li class="no-border-right"><a class="mailster-icon preview" title="<?php esc_attr_e( 'preview', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'preview', 'mailster' ); ?>">&nbsp;</a></li>
 	</ul>
 	<ul class="alignright">
-		<li><a class="mailster-icon dfw" title="<?php esc_html_e( 'Distraction-free edit mode', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon dfw" title="<?php esc_attr_e( 'Distraction-free edit mode', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Distraction-free edit mode', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php if ( $templates && current_user_can( 'mailster_save_template' ) ) : ?>
-		<li><a class="mailster-icon save-template" title="<?php esc_html_e( 'save template', 'mailster' ); ?>">&nbsp;</a></li>
+		<li><a class="mailster-icon save-template" title="<?php esc_attr_e( 'save template', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'save template', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
 		<?php
 		if ( $templates && current_user_can( 'mailster_change_template' ) ) :
@@ -77,7 +77,7 @@ $file     = $this->get_file();
 	<div class="mailster_template_save">
 			<div class="inner">
 				<p>
-					<label><?php esc_html_e( 'Name', 'mailster' ); ?><br><input type="text" class="widefat" id="new_template_name" placeholder="<?php esc_html_e( 'template name', 'mailster' ); ?>" value="<?php echo $all_files[ $template ][ $file ]['label']; ?>"></label>
+					<label><?php esc_html_e( 'Name', 'mailster' ); ?><br><input type="text" class="widefat" id="new_template_name" placeholder="<?php esc_attr_e( 'template name', 'mailster' ); ?>" value="<?php echo $all_files[ $template ][ $file ]['label']; ?>"></label>
 				</p>
 				<p>
 					<label><input type="radio" name="new_template_overwrite" checked value="0"> <?php esc_html_e( 'save as a new template file', 'mailster' ); ?></label><br>
@@ -94,10 +94,10 @@ $file     = $this->get_file();
 					</select>
 					</label>
 				</p>
-				<?php if ( ! empty( $modules ) ) : ?>
+				<?php if ( ! empty( $module_list ) ) : ?>
 				<p>
 					<label><input type="checkbox" id="new_template_modules" value="1"> <?php printf( esc_html__( 'include original modules from %s', 'mailster' ), '&quot;' . $all_files[ $template ][ $file ]['label'] . '&quot;' ); ?></label>
-					<span class="help" title="<?php esc_html_e( 'will append the existing modules to your custom ones', 'mailster' ); ?>">(?)</span><br>
+					<span class="help" title="<?php esc_attr_e( 'will append the existing modules to your custom ones', 'mailster' ); ?>">(?)</span><br>
 					<label><input type="checkbox" id="new_template_active_modules" value="1"> <?php esc_html_e( 'show custom modules by default', 'mailster' ); ?></label><br>
 				</p>
 				<?php endif; ?>

@@ -90,7 +90,7 @@ mailster = (function (mailster, $, window, document) {
 					mailster.$.content.val(response.content);
 					mailster.$.optionbar.find('a').not('a.redo, a.undo, a.code').addClass('disabled');
 
-					codemirror = CodeMirror.fromTextArea(mailster.$.content.get(0), codemirrorargs);
+					codemirror = mailster.util.CodeMirror.fromTextArea(mailster.$.content.get(0), codemirrorargs);
 
 				},
 				function (jqXHR, textStatus, errorThrown) {
@@ -314,6 +314,7 @@ mailster = (function (mailster, $, window, document) {
 					if (window.wp) {
 						window.wp = null;
 					}
+					window.onbeforeunload = null;
 					window.location = response.url;
 				} else {
 					alert(response.msg);
