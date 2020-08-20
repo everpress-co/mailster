@@ -1138,8 +1138,7 @@ class MailsterAjax {
 		$tag    = isset( $_GET['tag'] ) ? '' . esc_attr( $_GET['tag'] ) . '' : '';
 
 		$text      = '{' . strtoupper( $tag ) . '}';
-		$font_size = max( 11, round( $width / strlen( $text ) * 1.0 ) );
-		error_log( print_r( $font_size, true ) );
+		$font_size = max( 11, round( $width / strlen( $text ) * 1.2 ) );
 		$font = MAILSTER_DIR . 'assets/font/Jost-Regular.ttf';
 
 		$im = imagecreatetruecolor( $width, $height );
