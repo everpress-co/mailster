@@ -122,6 +122,9 @@ class MailsterMail {
 			$this->mailer->DKIM_private    = $folder . '/' . mailster_option( 'dkim_private_hash' ) . '.pem';
 			$this->mailer->DKIM_passphrase = mailster_option( 'dkim_passphrase' );
 			$this->mailer->DKIM_identity   = mailster_option( 'dkim_identity' );
+
+			// required for https://tools.ietf.org/html/rfc8058
+			$this->mailer->DKIM_extraHeaders = array_merge( $this->mailer->DKIM_extraHeaders, array( 'List-Unsubscribe', 'List-Unsubscribe-Post' ) );
 		}
 
 		$this->from      = mailster_option( 'from' );
@@ -458,7 +461,7 @@ class MailsterMail {
 		}
 
 		foreach ( $header as $k => $v ) {
-			$this->headers[ $k ] = str_replace( array( "\n", ' ' ), array( '%0D%0A', '%20' ), (string) $v );
+			$this->headers[ $k ] = $v;
 		}
 	}
 
@@ -477,7 +480,13 @@ class MailsterMail {
 		$this->mailer->clearCustomHeaders();
 
 		foreach ( $this->headers as $key => $value ) {
-			$this->mailer->addCustomHeader( $key . ':' . $value );
+			if ( is_array( $value ) ) {
+				foreach ( $value as $v ) {
+					$this->mailer->addCustomHeader( $key . ':' . ( str_replace( array( "\n", ' ' ), array( '%0D%0A', '%20' ), (string) $v ) ) );
+				}
+			} else {
+				$this->mailer->addCustomHeader( $key . ':' . str_replace( array( "\n", ' ' ), array( '%0D%0A', '%20' ), (string) $value ) );
+			}
 		}
 
 	}

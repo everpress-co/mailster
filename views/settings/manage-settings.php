@@ -16,7 +16,7 @@
 		</p>
 		</th>
 		<td><textarea rows="10" cols="40" class="large-text code" name="mailster_settings_data"></textarea>
-		<p class="alignright"><input type="submit" class="button button-primary" value="<?php esc_html_e( 'Import Data', 'mailster' ); ?>" name="mailster_import_data" id="mailster_import_data" /></p>
+		<p class="alignright"><input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Import Data', 'mailster' ); ?>" name="mailster_import_data" id="mailster_import_data" /></p>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-reset-settings">

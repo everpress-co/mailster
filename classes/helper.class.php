@@ -1080,7 +1080,43 @@ class MailsterHelper {
 		// custom styles
 		$content = $this->add_mailster_styles( $content );
 
+		// handle shortcodes
+		$content = $this->handle_shortcodes( $content );
+
 		return apply_filters( 'mailster_prepare_content', $content );
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $content
+	 * @return unknown
+	 */
+	public function handle_shortcodes( $org_content ) {
+
+		global $shortcode_tags;
+
+		$key = 'handle_shortcodes_' . md5( $org_content );
+
+		if ( ! ( $content = mailster_cache_get( $key ) ) ) {
+
+			if ( ! ( apply_filters( 'mailster_strip_shortcodes', ! mailster_option( 'shortcodes' ) ) ) ) {
+				$org_content = do_shortcode( $org_content );
+			}
+			if ( $shortcodes = apply_filters( 'mailster_strip_shortcode_tags', array_keys( $shortcode_tags ) ) ) {
+				$pattern = '/\[(\/)?(' . implode( '|', $shortcodes ) . ')([^\]]*)\]/';
+
+				// remove short codes but keep content
+				$content = preg_replace( $pattern, '', $org_content );
+			}
+
+			$content = apply_filters( 'mailster_handle_shortcodes', $content );
+			mailster_cache_set( $key, $content );
+
+		}
+
+		return $content;
 
 	}
 
@@ -1861,13 +1897,7 @@ class MailsterHelper {
 			return $excerpt;
 		}
 
-		if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) ) ) {
-			// remove shortcodes but keep content
-			$stripped_string = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $org_string );
-		} else {
-			// do shortocdes
-			$stripped_string = do_shortcode( $org_string );
-		}
+		$stripped_string = mailster( 'helper' )->handle_shortcodes( $org_string );
 
 		$string            = str_replace( "\n", '<!--Mailster:newline-->', $stripped_string );
 		$string            = html_entity_decode( wp_trim_words( htmlentities( $string ), $length, $more ) );

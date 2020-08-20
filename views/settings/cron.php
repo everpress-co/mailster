@@ -10,7 +10,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 		<th scope="row"><?php esc_html_e( 'Interval for sending emails', 'mailster' ); ?></th>
 		<td><p><?php printf( esc_html__( 'Send emails at most every %1$s minutes', 'mailster' ), '<input type="text" name="mailster_options[interval]" value="' . mailster_option( 'interval' ) . '" class="small-text">' ); ?></p><p class="description"><?php esc_html_e( 'Optional if a real cron service is used', 'mailster' ); ?></p></td>
 	</tr>
-	<tr valign="top" class="settings-row settings-row-cron-serivce">
+	<tr valign="top" class="settings-row settings-row-cron-service">
 		<th scope="row"><?php esc_html_e( 'Cron Service', 'mailster' ); ?></th>
 		<td>
 			<?php $cron = mailster_option( 'cron_service' ); ?>

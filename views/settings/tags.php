@@ -31,7 +31,7 @@
 	<?php endforeach; ?>
 <?php endif; ?>
 
-	<input type="button" value="<?php esc_html_e( 'add', 'mailster' ); ?>" class="button" id="mailster_add_tag">
+	<input type="button" value="<?php esc_attr_e( 'add', 'mailster' ); ?>" class="button" id="mailster_add_tag">
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-special-tags">
