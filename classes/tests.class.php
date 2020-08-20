@@ -402,13 +402,14 @@ class MailsterTests {
 	}
 	private function test_support_account_found() {
 
-		$support_emails = array( 'help@everpress.co', 'help@everpress.io', 'help@revaxarts.com', 'support@mailster.co' );
+		global $wpdb;
+		$support_email_hashes = array( 'a51736698df8f7301e9d0296947ea093', 'fc8df74384058d87d20f10b005bb6c82', 'c7614bd4981b503973ca42aa6dc7715d', 'eb33c92faf9d2c6b12df7748439b8a82' );
 
-		foreach ( $support_emails as $email ) {
-			if ( $user = get_user_by( 'email', $email ) ) {
-				if ( strtotime( $user->user_registered ) < time() - HOUR_IN_SECONDS ) {
-					$this->warning( sprintf( 'Please remove any unused Support account: %s', '<a href="' . admin_url( 'users.php?s=' . urlencode( $user->user_email ) ) . '">' . $user->user_email . '</a>' ) );
-				}
+		foreach ( $support_email_hashes as $hash ) {
+
+			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 60 MINUTE)', $hash ) );
+			if ( $user ) {
+				$this->warning( sprintf( 'Please remove any unused support account: %s', '<a href="' . admin_url( 'users.php?s=' . urlencode( $user->user_email ) ) . '">' . $user->user_email . '</a>' ) );
 			}
 		}
 	}

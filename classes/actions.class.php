@@ -235,6 +235,13 @@ class MailsterActions {
 				// remove meta info if client is Gmail (GoogleImageProxyy)
 				if ( 'Gmail' == $client->client ) {
 					$user_meta = array();
+					// Gmail downloads images as soon as recevied
+					if ( 'http://mail.google.com/' == wp_get_raw_referer() ) {
+						return;
+					}
+				}
+				if ( 'Yahoo' == $client->client ) {
+					$user_meta = array();
 				}
 
 				$user_meta['client']        = $client->client;
@@ -288,6 +295,8 @@ class MailsterActions {
 		$sql .= " VALUES ('" . implode( "','", array_values( $args ) ) . "') ON DUPLICATE KEY UPDATE";
 
 		$sql .= ( $explicit ) ? ' timestamp = timestamp, count = count+1' : ' count = values(count)';
+
+		$sql = apply_filters( 'mailster_actions_add_sql', $sql, $args, $explicit );
 
 		if ( false !== $wpdb->query( $sql ) ) {
 			if ( $args['type'] != 1 && $explicit && isset( $args['subscriber_id'] ) ) {

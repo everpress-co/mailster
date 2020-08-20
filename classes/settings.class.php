@@ -17,7 +17,6 @@ class MailsterSettings {
 
 		add_action( 'mailster_deliverymethod_tab_simple', array( &$this, 'deliverytab_simple' ) );
 		add_action( 'mailster_deliverymethod_tab_smtp', array( &$this, 'deliverytab_smtp' ) );
-		add_action( 'mailster_deliverymethod_tab_gmail', array( &$this, 'deliverytab_gmail' ) );
 	}
 
 
@@ -131,6 +130,7 @@ class MailsterSettings {
 			'do_not_track'                       => false,
 			'list_based_opt_in'                  => true,
 			'single_opt_out'                     => false,
+			'mail_opt_out'                       => true,
 			'custom_field'                       => array(),
 			'sync'                               => false,
 			'synclist'                           => array(
@@ -210,6 +210,7 @@ class MailsterSettings {
 			'usage_tracking'                     => false,
 			'ask_usage_tracking'                 => true,
 			'disable_cache'                      => false,
+			'shortcodes'                         => false,
 			'remove_data'                        => false,
 			'got_url_rewrite'                    => mailster( 'helper' )->got_url_rewrite(),
 			'post_nonce'                         => wp_create_nonce( uniqid() ),
@@ -659,7 +660,7 @@ class MailsterSettings {
 	 */
 	public function verify( $options ) {
 
-		global $wpdb;
+		global $wpdb, $wp_rewrite;
 
 		// merge old data
 		if ( isset( $_POST['mymail_options'] ) ) {
@@ -824,7 +825,7 @@ class MailsterSettings {
 						mailster_remove_notice( 'no_homepage' );
 						$options['_flush_rewrite_rules'] = true;
 					}
-					if ( ! get_permalink( $value ) ) {
+					if ( $wp_rewrite && ! get_permalink( $value ) ) {
 						$this->add_settings_error( sprintf( esc_html__( 'Please define a homepage for the newsletter on the %s tab!', 'mailster' ), '<a href="#frontend">' . esc_html__( 'Front End', 'mailster' ) . '</a>' ), 'no_homepage' );
 					}
 
@@ -1073,42 +1074,6 @@ class MailsterSettings {
 				case 'deliverymethod':
 					if ( $old != $value ) {
 
-						if ( 'gmail' == $value ) {
-							if ( $options['send_limit'] != 500 ) {
-								$options['send_limit']  = 500;
-								$options['send_period'] = 24;
-								update_option( '_transient__mailster_send_period_timeout', false );
-								$this->add_settings_error( sprintf( esc_html__( 'Send limit has been adjusted to %d for Gmail', 'mailster' ), 500 ), 'deliverymethod', 'updated' );
-							}
-
-							if ( $options['gmail_user'] ) {
-								if ( $options['from_name'] && $options['gmail_user'] != $options['from_name'] ) {
-									$this->add_settings_error( sprintf( esc_html__( 'Please make sure you are sending from your Gmail address %s', 'mailster' ), $options['gmail_user'] ), 'gmail_user_from_name', 'error' );
-								}
-								if ( $options['reply_to'] && $options['gmail_user'] != $options['reply_to'] ) {
-									$this->add_settings_error( sprintf( esc_html__( 'Please make sure you the Reply to address is the same as your Gmail address %s', 'mailster' ), $options['gmail_user_reply_to'] ), 'gmail_user', 'error' );
-								}
-								if ( $options['bounce'] && $options['gmail_user'] != $options['bounce'] ) {
-									$this->add_settings_error( sprintf( esc_html__( 'Please make sure you the bounce address is the same as your Gmail address %s', 'mailster' ), $options['gmail_user_bounce'] ), 'gmail_user', 'error' );
-								}
-							}
-
-							if ( function_exists( 'fsockopen' ) ) {
-								$host = 'smtp.googlemail.com';
-								$port = 587;
-								$conn = @fsockopen( $host, $port, $errno, $errstr, 5 );
-
-								if ( is_resource( $conn ) ) {
-
-									fclose( $conn );
-
-								} else {
-
-									$this->add_settings_error( sprintf( esc_html__( 'Not able to connected to %1$s via port %2$s! You may not be able to send mails cause of the locked port %3$s. Please contact your host or choose a different delivery method!', 'mailster' ), '"' . $host . '"', $port, $port ), 'deliverymethod' );
-
-								}
-							}
-						}
 					}
 
 					break;
@@ -1654,29 +1619,10 @@ class MailsterSettings {
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Self Signed Certificates', 'mailster' ); ?></th>
-			<td><label title="<?php esc_html_e( 'Enabling this option may solve connection problems to SMTP servers', 'mailster' ); ?>"><input type="hidden" name="mailster_options[allow_self_signed]" value=""><input type="checkbox" name="mailster_options[allow_self_signed]" value="1" <?php checked( mailster_option( 'allow_self_signed' ) ); ?>> <?php esc_html_e( 'allow self signed certificates', 'mailster' ); ?></label>
+			<td><label title="<?php esc_attr_e( 'Enabling this option may solve connection problems to SMTP servers', 'mailster' ); ?>"><input type="hidden" name="mailster_options[allow_self_signed]" value=""><input type="checkbox" name="mailster_options[allow_self_signed]" value="1" <?php checked( mailster_option( 'allow_self_signed' ) ); ?>> <?php esc_html_e( 'allow self signed certificates', 'mailster' ); ?></label>
 			</td>
 		</tr>
 	</table>
-		<?php
-	}
-
-
-	public function deliverytab_gmail() {
-		?>
-		<p class="description">
-		<?php esc_html_e( 'Gmail has a limit of 500 mails within 24 hours! Also sending a mail can take up to one second which is quite long. This options is only recommended for few subscribers. DKIM works only if set the from address to your Gmail address.', 'mailster' ); ?>
-		</p>
-		<table class="form-table">
-			<tr valign="top">
-				<th scope="row"><?php esc_html_e( 'Username', 'mailster' ); ?></th>
-				<td><input type="text" name="mailster_options[gmail_user]" value="<?php echo esc_attr( mailster_option( 'gmail_user' ) ); ?>" class="regular-text" placeholder="@gmail.com"></td>
-			</tr>
-			<tr valign="top">
-				<th scope="row"><?php esc_html_e( 'Password', 'mailster' ); ?></th>
-				<td><input type="password" name="mailster_options[gmail_pwd]" value="<?php echo esc_attr( mailster_option( 'gmail_pwd' ) ); ?>" class="regular-text" autocomplete="new-password"></td>
-			</tr>
-		</table>
 		<?php
 	}
 

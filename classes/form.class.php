@@ -1063,8 +1063,11 @@ class MailsterForm {
 					}
 
 					if ( $subscriber ) {
-						$unassign_lists = null;
-						$assign_lists   = null;
+
+						$unassign_lists          = null;
+						$assign_lists            = null;
+						$subscriber_notification = false;
+
 						if ( $this->form->userschoice ) {
 							$assigned_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID, true );
 
@@ -1091,6 +1094,11 @@ class MailsterForm {
 							$status = (int) $_BASE['_status'];
 						}
 
+						if ( isset( $entry['email'] ) && $entry['email'] != $subscriber->email && $double_opt_in ) {
+							$status                  = 0;
+							$subscriber_notification = true;
+						}
+
 						$entry = wp_parse_args(
 							array(
 								'status' => $status,
@@ -1103,7 +1111,7 @@ class MailsterForm {
 							unset( $entry['form'] );
 						}
 
-						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true, $subscriber_notification );
 						if ( is_wp_error( $subscriber_id ) ) {
 							$subscriber_id = $subscriber->ID;
 						}

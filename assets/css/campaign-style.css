@@ -824,6 +824,16 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	width: 95%;
 	border-color: #CCD0D4;
 }
+.mailster-conditions-wrap:empty:before{
+	content: attr(data-emptytext);
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	color: #999;
+}
 .mailster_sendtest{
 	float: right;
 }
@@ -975,7 +985,7 @@ label.weekday input{
 	padding: 5px;
 	position: relative;
 }
-.mailster-conditions:empty:before{
+.mailster-conditions-render:empty:before{
 	content: attr(data-emptytext);
 	display: block;
 	position: absolute;
@@ -1385,7 +1395,7 @@ a.mailster-btn.editbutton {
 	background: #fff;
 	padding: 5px;
 	z-index: 98;
-	margin-left: -40px;
+	margin-left: -42px;
 	margin-top: -2px;
 	color: #a8a8a8;
 	position: absolute;
@@ -1411,7 +1421,7 @@ a.mailster-btn.editbutton {
 	color: #686868;
 }
 #mailster_template .show-modules a.toggle-modules{
-	margin-left: -30px;
+	margin-left: -31px;
 }
 .rtl #mailster_template .show-modules a.toggle-modules{
 	margin-left: 0;

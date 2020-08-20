@@ -323,10 +323,7 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
-	var l10n = mailster_mce_button.l10n,
-		tags = mailster_mce_button.tags,
-		designs = mailster_mce_button.designs,
-		changetimeout,
+	var changetimeout,
 		change = false,
 		uploader = false;
 
@@ -904,10 +901,10 @@ mailster = (function (mailster, $, window, document) {
 	function setup(editor) {
 
 		editor.addButton('mailster_mce_button', {
-			title: l10n.tags.title,
+			title: mailster_mce_button.l10n.tags.title,
 			type: 'menubutton',
 			icon: 'icon mailster-tags-icon',
-			menu: $.map(tags, function (group, id) {
+			menu: $.map(mailster_mce_button.tags, function (group, id) {
 				return {
 					text: group.name,
 					menu: $.map(group.tags, function (name, tag) {
@@ -941,7 +938,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 		editor.addButton('mailster_remove_element', {
-			title: l10n.remove.title,
+			title: mailster_mce_button.l10n.remove.title,
 			icon: 'icon mailster-remove-icon',
 			onclick: function () {
 				editor.targetElm.remove();

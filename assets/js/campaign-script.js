@@ -181,7 +181,11 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.util = mailster.util || {};
 
-	mailster.util.isTinyMCE = typeof tinymce == 'object';
+	mailster.util.isTinyMCE = null;
+
+	mailster.events.push('documentReady', function () {
+		mailster.util.isTinyMCE = typeof tinymce == 'object';
+	});
 
 	mailster.util.getRealDimensions = function (el, callback) {
 		el = el.eq(0);
@@ -796,9 +800,7 @@ mailster = (function (mailster, $, window, document) {
 				types = $this.data('types'),
 				orderby = $this.data('orderby'),
 				order = $this.data('order'),
-				loader = $this.next().css({
-					'display': 'inline'
-				});
+				loader = $this.next().css('display', 'inline');
 
 			mailster.util.ajax('get_recipients_page', {
 				id: mailster.campaign_id,
@@ -833,9 +835,7 @@ mailster = (function (mailster, $, window, document) {
 				orderby = $('select.recipients-order').val(),
 				order = $('a.recipients-order').hasClass('asc') ? 'ASC' : 'DESC';
 
-			loader.css({
-				'display': 'inline'
-			});
+			loader.css('display', 'inline');
 			$('input.recipients-limit').prop('disabled', true);
 
 			mailster.util.ajax('get_recipients', {
@@ -1042,9 +1042,7 @@ mailster = (function (mailster, $, window, document) {
 				var link = mailster.$.iframe.contents().find('a[href="' + href.replace('&amp;', '&') + '"]').eq(index);
 
 				if (link.length) {
-					link.css({
-						'display': 'inline-block'
-					});
+					link.css('display', 'inline-block');
 
 					var offset = link.offset(),
 						top = offset.top,
@@ -1105,7 +1103,7 @@ mailster = (function (mailster, $, window, document) {
 	})
 
 	!mailster.editable && mailster.events.push('iframeLoaded', function () {
-		mailster.$.iframe.height(mailster.dom.iframe.contentWindow.document.body.scrollHeight);
+		mailster.$.iframe.height(Math.max(500, mailster.dom.iframe.contentWindow.document.body.scrollHeight));
 		mailster.clickmap.updateBadges();
 		mailster.$.iframecontents && mailster.$.iframecontents.on('click', 'a', function () {
 			window.open(this.href);
@@ -1947,7 +1945,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('heartbeat-tick', function (e, data) {
 
-			if (mailster.editable || !data.mailster[mailster.campaign_id]) return;
+			if (mailster.editable || !data.mailster || !data.mailster[mailster.campaign_id]) return;
 
 			var _data = data.mailster[mailster.campaign_id],
 				stats = $('#stats').find('.verybold'),
