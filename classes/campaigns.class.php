@@ -4279,7 +4279,7 @@ class MailsterCampaigns {
 
 		$headers = array(
 			'X-Mailster'          => $subscriber->hash,
-			'X-Mailster-Campaign' => $campaign->ID,
+			'X-Mailster-Campaign' => (string) $campaign->ID,
 			'X-Mailster-ID'       => $MID,
 			'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
 		);
