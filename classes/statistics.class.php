@@ -59,7 +59,7 @@ class MailsterStatistics {
 
 		wp_enqueue_script( 'mailster-chartjs', MAILSTER_URI . 'assets/js/libs/chart' . $suffix . '.js', array(), MAILSTER_VERSION );
 
-		wp_enqueue_script( 'mailster-statistics-script', MAILSTER_URI . 'assets/js/statistics-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-statistics-script', MAILSTER_URI . 'assets/js/statistics-script' . $suffix . '.js', array( 'mailster-script', 'postbox' ), MAILSTER_VERSION, true );
 		wp_localize_script( 'mailster-statistics-script', 'mailsterL10n', array() );
 
 		$today           = date( 'Y-m-d' );
@@ -72,12 +72,11 @@ class MailsterStatistics {
 		$this_month      = date( 'Y-m-d', mktime( 0, 0, 0, date( 'n' ), 1, date( 'Y' ) ) );
 		$last_12_month   = date( 'Y-m-d', strtotime( '-12 month' ) );
 
-		wp_localize_script(
-			'mailster-statistics-script',
-			'mailsterL10n',
+		mailster_localize_script(
+			'statistics',
 			array(
-				'next'          => __( 'next', 'mailster' ),
-				'prev'          => __( 'prev', 'mailster' ),
+				'next'          => esc_html__( 'next', 'mailster' ),
+				'prev'          => esc_html__( 'prev', 'mailster' ),
 				'start_of_week' => get_option( 'start_of_week' ),
 				'day_names'     => $wp_locale->weekday,
 				'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
