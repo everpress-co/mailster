@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.6
+// Version 3.7
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -361,7 +361,7 @@ class UpdateCenterPlugin {
 		}
 
 		if ( ! isset( self::$plugin_data[ $item->slug ] ) ) {
-			return false;
+			return $update;
 		}
 
 		// return default if not set

@@ -493,7 +493,7 @@ class MailsterTemplate {
 			}
 			$list[] = array(
 				'name' => $label,
-				'html' => $this->get_html_from_node( $modules->item( $i ) ),
+				'html' => $this->make_paths_absolute( $this->get_html_from_node( $modules->item( $i ) ) ),
 			);
 		}
 
@@ -1029,7 +1029,9 @@ class MailsterTemplate {
 		$filedir = MAILSTER_UPLOAD_DIR . '/templates/' . $slug . '/' . $file;
 		$fileuri = MAILSTER_UPLOAD_URI . '/templates/' . $slug . '/' . $file;
 
-		$hash = base_convert( md5_file( $filedir ), 10, 36 );
+		// prevent error output as 7.4 throws deprecate notice
+		// $hash = hash( 'crc32', md5_file( $filedir ) );
+		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
 
 		$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/modules/' . $hash;
 		$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/modules/' . $hash;

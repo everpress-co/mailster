@@ -18,6 +18,7 @@
 		array(
 			'post__not_in' => $post ? array( $post->ID ) : null,
 			'orderby'      => 'post_title',
+			'order'        => 'ASC',
 		)
 	);
 	$all_campaigns_stati = wp_list_pluck( $all_campaigns, 'post_status' );
@@ -46,42 +47,42 @@
 			<div class="mailster-conditions-field-fields">
 				<select name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][field]" class="condition-field" disabled>
 
-					<optgroup label="<?php esc_html_e( 'Fields', 'mailster' ); ?>">
+					<optgroup label="<?php esc_attr_e( 'Fields', 'mailster' ); ?>">
 					<?php
 					foreach ( $this->fields as $key => $name ) {
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
 					}
 					?>
 					</optgroup>
-					<optgroup label="<?php esc_html_e( 'User related', 'mailster' ); ?>">
+					<optgroup label="<?php esc_attr_e( 'User related', 'mailster' ); ?>">
 					<?php
 					foreach ( $this->custom_fields as $key => $customfield ) {
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $customfield['name'] . '</option>';
 					}
 					?>
 					</optgroup>
-					<optgroup label="<?php esc_html_e( 'Campaign related', 'mailster' ); ?>">
+					<optgroup label="<?php esc_attr_e( 'Campaign related', 'mailster' ); ?>">
 					<?php
 					foreach ( $this->campaign_related as $key => $name ) {
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
 					}
 					?>
 					</optgroup>
-					<optgroup label="<?php esc_html_e( 'List related', 'mailster' ); ?>">
+					<optgroup label="<?php esc_attr_e( 'List related', 'mailster' ); ?>">
 					<?php
 					foreach ( $this->list_related as $key => $name ) {
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
 					}
 					?>
 					</optgroup>
-					<optgroup label="<?php esc_html_e( 'Meta Data', 'mailster' ); ?>">
+					<optgroup label="<?php esc_attr_e( 'Meta Data', 'mailster' ); ?>">
 					<?php
 					foreach ( $this->meta_fields as $key => $name ) {
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
 					}
 					?>
 					</optgroup>
-					<optgroup label="<?php esc_html_e( 'WordPress User Meta', 'mailster' ); ?>">
+					<optgroup label="<?php esc_attr_e( 'WordPress User Meta', 'mailster' ); ?>">
 					<?php
 					foreach ( $this->wp_user_meta as $key => $name ) {
 						if ( is_integer( $key ) ) {

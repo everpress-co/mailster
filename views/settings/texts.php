@@ -1,5 +1,5 @@
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-subscription-form">
 		<th scope="row"><?php esc_html_e( 'Subscription Form', 'mailster' ); ?>
 		<p class="description"><?php esc_html_e( 'Define messages for the subscription form', 'mailster' ); ?>.<br>
 		<?php if ( mailster_option( 'homepage' ) ) : ?>
@@ -19,7 +19,7 @@
 	</tr>
 </table>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-field-labels">
 		<th scope="row"><?php esc_html_e( 'Field Labels', 'mailster' ); ?><p class="description"><?php esc_html_e( 'Define texts for the labels of forms. Custom field labels can be defined on the Subscribers tab', 'mailster' ); ?></p></th>
 		<td>
 		<div class="mailster_text"><label><?php esc_html_e( 'Email', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[email]" value="<?php echo esc_attr( mailster_text( 'email' ) ); ?>" class="regular-text"></div>
@@ -33,7 +33,7 @@
 	</tr>
 </table>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-mail">
 		<th scope="row"><?php esc_html_e( 'Mail', 'mailster' ); ?><p class="description"><?php esc_html_e( 'Define texts for the mails', 'mailster' ); ?></p></th>
 		<td>
 		<div class="mailster_text"><label><?php esc_html_e( 'Unsubscribe Link', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[unsubscribelink]" value="<?php echo esc_attr( mailster_text( 'unsubscribelink' ) ); ?>" class="regular-text"></div>
@@ -44,7 +44,7 @@
 	</tr>
 </table>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-order">
 		<th scope="row"><?php esc_html_e( 'Other', 'mailster' ); ?></th>
 		<td>
 		<div class="mailster_text"><label><?php esc_html_e( 'Already registered', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[already_registered]" value="<?php echo esc_attr( mailster_text( 'already_registered' ) ); ?>" class="regular-text"></div>
@@ -54,7 +54,7 @@
 	</tr>
 </table>
 <table class="form-table">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-gdpr">
 		<th scope="row"><?php esc_html_e( 'GDPR', 'mailster' ); ?></th>
 		<td>
 		<div class="mailster_text"><label><?php esc_html_e( 'Terms confirmation text', 'mailster' ); ?>:</label> <input type="text" name="mailster_texts[gdpr_text]" value="<?php echo esc_attr( mailster_text( 'gdpr_text' ) ); ?>" class="regular-text"></div>
@@ -75,7 +75,7 @@ if ( is_dir( $dir ) ) {
 ?>
 <?php if ( ! empty( $files ) ) : ?>
 <table class="form-table language-switcher-field">
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-change-language">
 		<th scope="row"><?php esc_html_e( 'Change Language', 'mailster' ); ?></th>
 		<td>
 			<p class="description">

@@ -171,9 +171,9 @@ $sent = $this->get_sent( $post->ID );
 						?>
 						<a href="<?php echo esc_url( $url ); ?>" class="button statistics edit"><?php esc_html_e( 'Edit', 'mailster' ); ?></a>
 						<?php if ( $sent ) : ?>
-							<input name="resume" type="submit" value="<?php esc_attr_e( 'Resume', 'mailster' ); ?>" class="button resume-button" title="<?php esc_attr_e( 'Save and resume campaign', 'mailster' ); ?>" />
+							<a class="button" href="<?php echo admin_url( 'edit.php?post_type=newsletter&resume=' . $post->ID . '&edit=1&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) ); ?>" title="<?php esc_attr_e( 'Resume Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Resume', 'mailster' ); ?></a>
 						<?php else : ?>
-							<input name="sendnow" type="submit" value="<?php esc_attr_e( 'Send now', 'mailster' ); ?>" class="button sendnow-button" title=" <?php esc_attr_e( 'Save and send campaign', 'mailster' ); ?>" />
+							<a class="button" href="<?php echo admin_url( 'edit.php?post_type=newsletter&start=' . $post->ID . '&edit=1&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) ); ?>" title="<?php esc_attr_e( 'Start Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Send now', 'mailster' ); ?></a>
 						<?php endif; ?>
 					</p>
 
