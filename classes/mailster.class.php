@@ -2019,8 +2019,8 @@ class Mailster {
 		// Display width specification for integer data types was deprecated in MySQL 8.0.17 (https://stackoverflow.com/questions/60892749/mysql-8-ignoring-integer-lengths)
 		if ( version_compare( $wpdb->db_version(), '8.0.17', '>=' ) ) {
 			$table_structure = array_map(
-				function( $a ) {
-					return preg_replace( '/ (bigint|int|tinyint)\((\d+)\)/', ' $1', $a );
+				function( $table ) {
+					return preg_replace( '/ (bigint|int|tinyint)\((\d+)\)/', ' $1', $table );
 				},
 				$table_structure
 			);

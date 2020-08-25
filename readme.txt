@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.14 =
 
 * fixed: Display width specification for integer data types was deprecated in MySQL 8.0.17 which causes an error in the self test
+* fixed: toggle behavior of meta boxes in WP 5.5
 
 = Version 2.4.13 =
 
