@@ -88,6 +88,10 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.14 =
+
+* fixed: Display width specification for integer data types was deprecated in MySQL 8.0.17 which causes an error in the self test
+
 = Version 2.4.13 =
 
 * added: classes to settings rows
