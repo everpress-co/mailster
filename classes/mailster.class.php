@@ -1742,7 +1742,7 @@ class Mailster {
 
 		foreach ( $support_email_hashes as $hash ) {
 
-			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 MONTH)', $hash ) );
+			$user = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->users} WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 MONTH)", $hash ) );
 			if ( $user ) {
 
 				if ( ! function_exists( 'wp_delete_user' ) ) {

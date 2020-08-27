@@ -93,6 +93,7 @@ Xaver Birsak – https://everpress.co
 * fixed: Display width specification for integer data types was deprecated in MySQL 8.0.17 which causes an error in the self test
 * fixed: unwanted 'a11y-speak-intro-text' element in email body
 * fixed: toggle behavior of meta boxes in WP 5.5
+* fixed: missing content on custom dynamic post types without post ID
 
 = Version 2.4.13 =
 
