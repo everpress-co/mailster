@@ -1409,105 +1409,73 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_campaign_ids_from_value( $value ) {
+
+		global $wpdb;
 		if ( ! is_array( $value ) ) {
 			$value = explode( ',', $value );
 		}
+
+		$sql = "SELECT posts.ID FROM `{$wpdb->posts}` AS posts LEFT JOIN `{$wpdb->postmeta}` AS postmeta ON posts.ID = postmeta.post_id AND postmeta.meta_key = '_mailster_timestamp' LEFT JOIN `{$wpdb->postmeta}` AS postmeta_f ON posts.ID = postmeta_f.post_id AND postmeta_f.meta_key = '_mailster_finished' WHERE posts.post_type = 'newsletter' AND posts.post_status IN ('paused', 'queued', 'active', 'finished') AND ((postmeta.meta_value > %d AND posts.post_status != 'finished') OR (postmeta_f.meta_value > %d AND posts.post_status = 'finished'))";
+
 		if ( false !== ( $pos = array_search( '_last_5', $value ) ) ) {
 			unset( $value[ $pos ] );
-			$value = array_merge(
-				$value,
-				array( -1 ),
-				mailster( 'campaigns' )->get_campaigns(
-					array(
-						'post_status'    => array( 'active', 'finished' ),
-						'posts_per_page' => 5,
-						'fields'         => 'ids',
-					)
+
+			$campaign_ids = mailster( 'campaigns' )->get_campaigns(
+				array(
+					'post_status'    => array( 'active', 'finished' ),
+					'posts_per_page' => 5,
+					'fields'         => 'ids',
 				)
 			);
+			if ( $campaign_ids ) {
+				$value = array_merge( $value, $campaign_ids );
+			}
 		}
 		if ( false !== ( $pos = array_search( '_last_7day', $value ) ) ) {
 			unset( $value[ $pos ] );
-			$value = array_merge(
-				$value,
-				array( -1 ),
-				mailster( 'campaigns' )->get_campaigns(
-					array(
-						'post_status'  => array( 'active', 'finished' ),
-						'meta_key'     => '_mailster_finished',
-						'meta_compare' => '>',
-						'meta_value'   => strtotime( '-7 days' ),
-						'fields'       => 'ids',
-					)
-				)
-			);
+			$timestamp = strtotime( '-7 days' );
 
+			if ( $campaign_ids = $wpdb->get_col( $wpdb->prepare( $sql, $timestamp, $timestamp ) ) ) {
+				$value = array_merge( $value, $campaign_ids );
+			}
 		}
 		if ( false !== ( $pos = array_search( '_last_1month', $value ) ) ) {
 			unset( $value[ $pos ] );
-			$value = array_merge(
-				$value,
-				array( -1 ),
-				mailster( 'campaigns' )->get_campaigns(
-					array(
-						'post_status'  => array( 'active', 'finished' ),
-						'meta_key'     => '_mailster_finished',
-						'meta_compare' => '>',
-						'meta_value'   => strtotime( '-1 month' ),
-						'fields'       => 'ids',
-					)
-				)
-			);
+			$timestamp = strtotime( '-1 month' );
+
+			if ( $campaign_ids = $wpdb->get_col( $wpdb->prepare( $sql, $timestamp, $timestamp ) ) ) {
+				$value = array_merge( $value, $campaign_ids );
+			}
 		}
 		if ( false !== ( $pos = array_search( '_last_3month', $value ) ) ) {
 			unset( $value[ $pos ] );
-			$value = array_merge(
-				$value,
-				array( -1 ),
-				mailster( 'campaigns' )->get_campaigns(
-					array(
-						'post_status'  => array( 'active', 'finished' ),
-						'meta_key'     => '_mailster_finished',
-						'meta_compare' => '>',
-						'meta_value'   => strtotime( '-3 month' ),
-						'fields'       => 'ids',
-					)
-				)
-			);
+			$timestamp = strtotime( '-3 month' );
+
+			if ( $campaign_ids = $wpdb->get_col( $wpdb->prepare( $sql, $timestamp, $timestamp ) ) ) {
+				$value = array_merge( $value, $campaign_ids );
+			}
 		}
 		if ( false !== ( $pos = array_search( '_last_6month', $value ) ) ) {
 			unset( $value[ $pos ] );
-			$value = array_merge(
-				$value,
-				array( -1 ),
-				mailster( 'campaigns' )->get_campaigns(
-					array(
-						'post_status'  => array( 'active', 'finished' ),
-						'meta_key'     => '_mailster_finished',
-						'meta_compare' => '>',
-						'meta_value'   => strtotime( '-6 month' ),
-						'fields'       => 'ids',
-					)
-				)
-			);
+			$timestamp = strtotime( '-6 month' );
+
+			if ( $campaign_ids = $wpdb->get_col( $wpdb->prepare( $sql, $timestamp, $timestamp ) ) ) {
+				$value = array_merge( $value, $campaign_ids );
+			}
 		}
 		if ( false !== ( $pos = array_search( '_last_12month', $value ) ) ) {
 			unset( $value[ $pos ] );
-			$value = array_merge(
-				$value,
-				array( -1 ),
-				mailster( 'campaigns' )->get_campaigns(
-					array(
-						'post_status'  => array( 'active', 'finished' ),
-						'meta_key'     => '_mailster_finished',
-						'meta_compare' => '>',
-						'meta_value'   => strtotime( '-12 month' ),
-						'fields'       => 'ids',
-					)
-				)
-			);
+			$timestamp = strtotime( '-12 month' );
+
+			if ( $campaign_ids = $wpdb->get_col( $wpdb->prepare( $sql, $timestamp, $timestamp ) ) ) {
+				$value = array_merge( $value, $campaign_ids );
+			}
 		}
 		$campaign_ids = array_unique( $value );
+
+		if ( empty( $campaign_ids ) ) {
+			$campaign_ids = array( -1 );
+		}
 		return $campaign_ids;
 	}
 

@@ -673,6 +673,10 @@ class MailsterForms {
 			$entry['style'] = json_encode( $entry['style'] );
 		}
 
+		if ( isset( $entry['ID'] ) && empty( $entry['ID'] ) ) {
+			unset( $entry['ID'] );
+		}
+
 		$wpdb->suppress_errors();
 
 		if ( $wpdb->insert( "{$wpdb->prefix}mailster_forms", $entry ) ) {
@@ -1640,7 +1644,7 @@ class MailsterForms {
 		<div>
 			<label><?php esc_html_e( 'width', 'mailster' ); ?>: <input type="text" class="small-text embed-form-input" value="100%"></label>
 			<label><?php esc_html_e( 'height', 'mailster' ); ?>: <input type="text" class="small-text embed-form-input" value="500"></label>
-			<label title="<?php esc_html_e( 'check this option to include the style.css of your theme into the form', 'mailster' ); ?>"><input type="checkbox" value="1" class="embed-form-input" checked> <?php esc_html_e( 'include themes style.css', 'mailster' ); ?></label>
+			<label title="<?php esc_attr_e( 'check this option to include the style.css of your theme into the form', 'mailster' ); ?>"><input type="checkbox" value="1" class="embed-form-input" checked> <?php esc_html_e( 'include themes style.css', 'mailster' ); ?></label>
 			<textarea id="form-iframe" class="widefat code embed-form-output" data-embedcode="<?php echo esc_attr( $embedcode ); ?>"><?php echo esc_textarea( $embedcode ); ?></textarea>
 			<a class="clipboard" data-clipboard-target="#form-iframe"><?php esc_html_e( 'copy to clipboard', 'mailster' ); ?></a>
 		</div>

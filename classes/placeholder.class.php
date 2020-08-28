@@ -29,7 +29,7 @@ class MailsterPlaceholder {
 	 */
 	public function __construct( $content = '', $deprecated = null ) {
 
-		$this->content = $content;
+		$this->set_content( $content );
 
 	}
 
@@ -365,11 +365,6 @@ class MailsterPlaceholder {
 				$this->content = str_replace( '<!--Mailster:styleblock' . $i . '-->', $style, $this->content );
 			}
 		}
-
-		// handle shortcodes.
-		$this->content = apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) )
-			? strip_shortcodes( $this->content )
-			: do_shortcode( $this->content );
 
 		return $this->content;
 
@@ -830,8 +825,12 @@ class MailsterPlaceholder {
 							if ( ! empty( $post ) ) {
 
 								if ( ! empty( $post->ID ) ) {
-									$thumb_id = get_post_thumbnail_id( $post->ID );
 
+									if ( 'attachment' == $post->post_type ) {
+										$thumb_id = $post->ID;
+									} else {
+										$thumb_id = get_post_thumbnail_id( $post->ID );
+									}
 									$org_src = wp_get_attachment_image_src( $thumb_id, 'full' );
 								}
 
@@ -862,7 +861,7 @@ class MailsterPlaceholder {
 								if ( $org_src[1] && $org_src[2] ) {
 									$asp    = $org_src[1] / $org_src[2];
 									$height = $height ? $height : round( ( $width / $asp ) / $factor );
-									$img    = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height, $crop, $original );
+									$img    = mailster( 'helper' )->create_image( $thumb_id, $org_src[0], $width, $height * $factor, $crop, $original );
 								} else {
 									$img = array( 'url' => $org_src[0] );
 								}
@@ -892,6 +891,10 @@ class MailsterPlaceholder {
 							mailster_cache_set( 'mailster_' . $querystring, $replace_to );
 
 						} else {
+							// not if no ID is provided (custom dynamic post types)
+							if ( ! $post->ID ) {
+								continue;
+							}
 							if ( $post && ! $is_random ) {
 								$replace_to = str_replace( 'tag=' . $query['tag'], 'tag=' . $post_type . '_image:' . $post->ID, $search );
 							}
@@ -1004,6 +1007,11 @@ class MailsterPlaceholder {
 
 				if ( $relative_to_absolute && $post ) {
 
+					// not if no ID is provided (custom dynamic post types)
+					if ( ! $post->ID ) {
+						continue;
+					}
+
 					if ( $encode ) {
 						$replace_to = '{!' . $post_type . '_' . $hits[4][ $i ] . ':' . $post->ID . '}';
 					} else {
@@ -1087,6 +1095,11 @@ class MailsterPlaceholder {
 				// tag is in placeholders
 				if ( isset( $this->placeholder[ $search ] ) ) {
 					$replace = $this->placeholder[ $search ];
+
+					// using preview text fix from https://www.litmus.com/blog?p=4367
+					if ( $replace && '{preheader}' == $search && apply_filters( 'mailster_preview_text_fix', true ) ) {
+						$replace .= str_repeat( '&nbsp;&zwnj;', 220 - strlen( $replace ) );
+					}
 
 					// tag is a custom tag
 				} elseif ( isset( $this->placeholder[ '{' . $tag . '}' ] ) ) {

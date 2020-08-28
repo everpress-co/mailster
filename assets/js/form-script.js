@@ -58,6 +58,17 @@ mailster = (function (mailster, $, window, document) {
 				remove: function (event, ui) {}
 			});
 
+		form_fields
+			.on('click', '.form-field', function () {
+				$(this).appendTo('#form-structure .form-order');
+				form_structure.find('input').each(function () {
+					$(this).attr('name', $(this).data('name'));
+				});
+				form_fields.find('input').each(function () {
+					$(this).removeAttr('name');
+				});
+			});
+
 		form_structure
 			.on('click', '.submitbutton input', function (event) {
 				event.preventDefault();

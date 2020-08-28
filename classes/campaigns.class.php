@@ -27,7 +27,7 @@ class MailsterCampaigns {
 
 	public function init() {
 
-		add_filter( 'transition_post_status', array( &$this, 'check_for_autoresponder' ), 10, 3 );
+		add_action( 'transition_post_status', array( &$this, 'check_for_autoresponder' ), 10, 3 );
 		add_action( 'mailster_finish_campaign', array( &$this, 'remove_revisions' ) );
 
 		add_action( 'mailster_auto_post_thumbnail', array( &$this, 'get_post_thumbnail' ), 10, 1 );
@@ -53,6 +53,8 @@ class MailsterCampaigns {
 		add_action( 'get_the_excerpt', array( &$this, 'get_the_excerpt' ) );
 		add_action( 'admin_enqueue_scripts', array( &$this, 'assets' ) );
 		add_filter( 'update_post_metadata', array( &$this, 'prevent_edit_lock' ), 10, 5 );
+
+		add_filter( 'mailster_campaign_action', array( &$this, 'trigger_campaign_action' ), 10, 2 );
 
 	}
 
@@ -2161,18 +2163,31 @@ class MailsterCampaigns {
 	}
 
 
+	public function trigger_campaign_action( $action, $campaign_id ) {
+
+		if ( in_array( $action, array( 'pause', 'start', 'resume', 'finish', 'duplicate', 'activate', 'deactivate' ) ) ) {
+			call_user_func( array( $this, $action ), $campaign_id );
+		}
+	}
+
 	/**
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function pause( $id ) {
+	public function pause( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
 
 		$meta = $this->meta( $id );
@@ -2194,15 +2209,22 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function start( $id ) {
+	public function start( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
 		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		}
+
 		$now = time();
 
 		$meta = $this->meta( $id );
@@ -2240,15 +2262,22 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function resume( $id ) {
+	public function resume( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
 		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		}
+
 		$now = time();
 
 		$meta = $this->meta( $id );
@@ -2289,14 +2318,20 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function finish( $id ) {
+	public function finish( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
 
 		if ( ! in_array( $campaign->post_status, array( 'active', 'queued', 'paused' ) ) ) {
@@ -2372,14 +2407,20 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function duplicate( $id ) {
+	public function duplicate( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
 
 		$lists = $this->get_lists( $campaign->ID, true );
@@ -2431,14 +2472,20 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function activate( $id ) {
+	public function activate( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
 
 		$current = $this->meta( $id, 'active' );
@@ -2463,14 +2510,20 @@ class MailsterCampaigns {
 	 *
 	 *
 	 * @param unknown $id
+	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function deactivate( $id ) {
+	public function deactivate( $id, $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
 		if ( ! $campaign ) {
 			return new WP_Error( 'no_campaign', esc_html__( 'This campaign doesn\'t exists.', 'mailster' ) );
+		}
+
+		wp_clear_scheduled_hook( 'mailster_campaign_action', array( __FUNCTION__, $id ) );
+		if ( ! is_null( $timestamp ) ) {
+			return wp_schedule_single_event( (int) $timestamp, 'mailster_campaign_action', array( __FUNCTION__, $id ) );
 		}
 
 		$current = $this->meta( $id, 'active' );
@@ -2488,10 +2541,11 @@ class MailsterCampaigns {
 	 * @param unknown $id
 	 * @param unknown $delay                 (optional)
 	 * @param unknown $issue                 (optional)
+	 * @param unknown $relative_to_absolute  (optional)
 	 * @param unknown $index_offset          (optional)
 	 * @return unknown
 	 */
-	public function autoresponder_to_campaign( $id, $delay = 0, $issue = '', $index_offset = 0 ) {
+	public function autoresponder_to_campaign( $id, $delay = 0, $issue = '', $relative_to_absolute = true, $index_offset = 0 ) {
 
 		$campaign = get_post( $id );
 
@@ -2515,8 +2569,7 @@ class MailsterCampaigns {
 
 		$meta['active'] = true;
 
-		$relative_to_absolute = false;
-		$remove_unused        = false;
+		$remove_unused = false;
 
 		$meta['timestamp'] = max( $now, $now + $delay );
 
@@ -4149,6 +4202,9 @@ class MailsterCampaigns {
 			$content = mailster()->sanitize_content( $campaign->post_content, $campaign_meta['head'] );
 
 			$content = mailster( 'helper' )->prepare_content( $content );
+			if ( apply_filters( 'mailster_inline_css', true, $campaign->ID, $subscriber->ID ) ) {
+				$content = mailster( 'helper' )->inline_css( $content );
+			}
 
 			mailster_cache_set( 'campaign_send_' . $campaign->ID, $content );
 
@@ -4196,7 +4252,9 @@ class MailsterCampaigns {
 		$content = mailster( 'helper' )->strip_structure_html( $content );
 
 		// maybe inline again
-		$content = mailster( 'helper' )->inline_style( $content );
+		if ( apply_filters( 'mailster_inline_css', true, $campaign->ID, $subscriber->ID ) ) {
+			$content = mailster( 'helper' )->inline_css( $content );
+		}
 
 		$mail->content = apply_filters( 'mailster_campaign_content', $content, $campaign, $subscriber );
 
@@ -4209,23 +4267,26 @@ class MailsterCampaigns {
 
 		$MID = mailster_option( 'ID' );
 
-		$listunsubscribe = '';
-		if ( $mail->bouncemail ) {
-			$listunsubscribe_mail    = $mail->bouncemail;
-			$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
-			$listunsubscribe_body    = "X-Mailster: $subscriber->hash\nX-Mailster-Campaign: {$campaign->ID}\nX-Mailster-ID: $MID\n\n";
-			$listunsubscribe        .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
+		$listunsubscribe = array();
+		if ( mailster_option( 'mail_opt_out' ) ) {
+			$listunsubscribe_mail    = $mail->bouncemail ? $mail->bouncemail : $mail->from;
+			$listunsubscribe_subject = 'Please remove me from the list';
+			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign->ID} X-Mailster-ID: {$MID}" );
+
+			$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 		}
-		$listunsubscribe .= '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $subscriber->hash, $campaign->ID ) . '>';
-		$listunsubscribe .= '<' . $unsubscribelink . '>';
+		$listunsubscribe[] = '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $subscriber->hash, $campaign->ID ) . '>';
 
 		$headers = array(
-			'X-Mailster'            => $subscriber->hash,
-			'X-Mailster-Campaign'   => $campaign->ID,
-			'X-Mailster-ID'         => $MID,
-			'List-Unsubscribe'      => $listunsubscribe,
-			'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+			'X-Mailster'          => $subscriber->hash,
+			'X-Mailster-Campaign' => (string) $campaign->ID,
+			'X-Mailster-ID'       => $MID,
+			'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
 		);
+
+		if ( mailster_option( 'single_opt_out' ) ) {
+			$headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
+		}
 
 		if ( 'autoresponder' != get_post_status( $campaign->ID ) ) {
 			$headers['Precedence'] = 'bulk';
@@ -4773,7 +4834,6 @@ class MailsterCampaigns {
 				),
 				'single' => array(
 					'selector'        => 'single',
-					'paste_as_text'   => true,
 					'custom_elements' => 'single',
 					'toolbar1'        => $single_toolbar1,
 					'toolbar2'        => $single_toolbar2,
@@ -4781,7 +4841,6 @@ class MailsterCampaigns {
 				),
 				'multi'  => array(
 					'selector'        => 'multi',
-					'paste_as_text'   => true,
 					'custom_elements' => 'multi',
 					'toolbar1'        => $toolbar1,
 					'toolbar2'        => $toolbar2,

@@ -6,7 +6,7 @@ mailster = (function (mailster, $, window, document) {
 		var clipboard = new Clipboard('.clipboard');
 		clipboard.on('success', function (e) {
 			var html = $(e.trigger).html();
-			$(e.trigger).html(mailsterClipboardL10.copied);
+			$(e.trigger).html(mailster.l10n.clipboard.copied);
 			setTimeout(function () {
 				$(e.trigger).html(html);
 				e.clearSelection();

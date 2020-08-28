@@ -59,9 +59,9 @@ if ( $customfields ) {
 <?php if ( $currentpage != 'use' ) : ?>
 <p class="alignright">
 	<?php if ( ! $is_new && current_user_can( 'mailster_delete_forms' ) ) : ?>
-		<input type="submit" name="delete" class="button button-large" value="<?php esc_html_e( 'Delete Form', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this form?', 'mailster' ); ?>');">
+		<input type="submit" name="delete" class="button button-large" value="<?php esc_attr_e( 'Delete Form', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this form?', 'mailster' ); ?>');">
 	<?php endif; ?>
-	<input type="submit" name="save" class="button button-primary" value="<?php esc_html_e( 'Save', 'mailster' ); ?>">
+	<input type="submit" name="save" class="button button-primary" value="<?php esc_attr_e( 'Save', 'mailster' ); ?>">
 </p>
 <?php endif; ?>
 <h1>
@@ -92,12 +92,12 @@ else :
 </h1>
 <?php endif; ?>
 <div id="titlewrap">
-	<input type="text" class="widefat" name="mailster_data[name]" size="30" value="<?php echo esc_attr( $form->name ); ?>" id="title" spellcheck="true" autocomplete="off" autofocus placeholder="<?php esc_html_e( 'Enter Form Name', 'mailster' ); ?>">
+	<input type="text" class="widefat" name="mailster_data[name]" size="30" value="<?php echo esc_attr( $form->name ); ?>" id="title" spellcheck="true" autocomplete="off" autofocus placeholder="<?php esc_attr_e( 'Enter Form Name', 'mailster' ); ?>">
 
 </div>
 <?php if ( 'structure' == $currentpage ) : ?>
 	<?php if ( ! $is_new ) : ?>
-<p class="section-nav"><span class="alignright"><input type="submit" name="design" value="<?php esc_html_e( 'Design', 'mailster' ); ?> &raquo;" class="button-primary button-small"></span></p>
+<p class="section-nav"><span class="alignright"><input type="submit" name="design" value="<?php esc_attr_e( 'Design', 'mailster' ); ?> &raquo;" class="button-primary button-small"></span></p>
 	<?php endif; ?>
 
 <p class="description"><?php esc_html_e( 'Define the structure of your form below. Drag available fields in the left area to add them to your form. Rearrange fields by dragging fields around', 'mailster' ); ?></p>
@@ -111,14 +111,14 @@ else :
 				<label><?php echo strip_tags( $field->name ); ?></label>
 				<div>
 					<span class="label"><?php esc_html_e( 'Label', 'mailster' ); ?>:</span>
-					<input class="label widefat" type="text" name="mailster_structure[fields][<?php echo $field->field_id; ?>]" data-name="mailster_structure[fields][<?php echo $field->field_id; ?>]" value="<?php echo esc_attr( $field->name ); ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' ); ?>" placeholder="<?php echo esc_attr( $field->name ); ?>">
+					<input class="label widefat" type="text" name="mailster_structure[fields][<?php echo $field->field_id; ?>]" data-name="mailster_structure[fields][<?php echo $field->field_id; ?>]" value="<?php echo esc_attr( $field->name ); ?>" title="<?php esc_attr_e( 'define a label for this field', 'mailster' ); ?>" placeholder="<?php echo esc_attr( $field->name ); ?>">
 					<span class="alignright required-field"><input type="checkbox" name="mailster_structure[required][<?php echo $field->field_id; ?>]" data-name="mailster_structure[required][<?php echo $field->field_id; ?>]" class="form-order-check-required" value="1" <?php checked( $field->required ); ?> <?php disabled( $field->field_id == 'email' ); ?>> <?php esc_html_e( 'required', 'mailster' ); ?>
-						<a class="field-remove" title="<?php esc_html_e( 'remove field', 'mailster' ); ?>">&#10005;</a>
+						<a class="field-remove" title="<?php esc_attr_e( 'remove field', 'mailster' ); ?>">&#10005;</a>
 					</span>
 				</div>
 				<div>
 					<span class="label"><?php esc_html_e( 'Error Message', 'mailster' ); ?>:</span>
-					<input class="label widefat error-msg" type="text" name="mailster_structure[error_msg][<?php echo $field->field_id; ?>]" data-name="mailster_structure[error_msg][<?php echo $field->field_id; ?>]" value="<?php echo esc_attr( $field->error_msg ); ?>" title="<?php esc_html_e( 'define an error message for this field', 'mailster' ); ?>" placeholder="<?php esc_html_e( 'Error Message (optional)', 'mailster' ); ?>">
+					<input class="label widefat error-msg" type="text" name="mailster_structure[error_msg][<?php echo $field->field_id; ?>]" data-name="mailster_structure[error_msg][<?php echo $field->field_id; ?>]" value="<?php echo esc_attr( $field->error_msg ); ?>" title="<?php esc_attr_e( 'define an error message for this field', 'mailster' ); ?>" placeholder="<?php esc_attr_e( 'Error Message (optional)', 'mailster' ); ?>">
 				</div>
 			</li>
 			<?php endforeach; ?>
@@ -144,14 +144,14 @@ else :
 				<label><?php esc_html_e( strip_tags( $name ) ); ?></label>
 				<div>
 				<span class="label"><?php esc_html_e( 'Label', 'mailster' ); ?>:</span>
-				<input class="label widefat" type="text" data-name="mailster_structure[fields][<?php echo $field_id; ?>]" value="<?php echo esc_attr( $name ); ?>" title="<?php esc_html_e( 'define a label for this field', 'mailster' ); ?>" placeholder="<?php echo esc_attr( $name ); ?>">
+				<input class="label widefat" type="text" data-name="mailster_structure[fields][<?php echo $field_id; ?>]" value="<?php echo esc_attr( $name ); ?>" title="<?php esc_attr_e( 'define a label for this field', 'mailster' ); ?>" placeholder="<?php echo esc_attr( $name ); ?>">
 					<span class="alignright required-field"><input type="checkbox" data-name="mailster_structure[required][<?php echo $field_id; ?>]" class="form-order-check-required" value="1"> <?php esc_html_e( 'required', 'mailster' ); ?>
-					<a class="field-remove" title="<?php esc_html_e( 'remove field', 'mailster' ); ?>">&#10005;</a>
+					<a class="field-remove" title="<?php esc_attr_e( 'remove field', 'mailster' ); ?>">&#10005;</a>
 					</span>
 				</div>
 				<div>
 				<span class="label"><?php esc_html_e( 'Error Message', 'mailster' ); ?>:</span>
-				<input class="label widefat error-msg" type="text" name="mailster_structure[error_msg][<?php echo $field_id; ?>]" data-name="mailster_structure[error_msg][<?php echo $field_id; ?>]" value="" title="<?php esc_html_e( 'define an error message for this field', 'mailster' ); ?>" placeholder="<?php esc_html_e( 'Error Message (optional)', 'mailster' ); ?>">
+				<input class="label widefat error-msg" type="text" name="mailster_structure[error_msg][<?php echo $field_id; ?>]" data-name="mailster_structure[error_msg][<?php echo $field_id; ?>]" value="" title="<?php esc_attr_e( 'define an error message for this field', 'mailster' ); ?>" placeholder="<?php esc_attr_e( 'Error Message (optional)', 'mailster' ); ?>">
 				</div>
 			</li>
 		<?php endforeach; ?>
@@ -163,7 +163,7 @@ else :
 
 	<?php if ( ! $is_new ) : ?>
 
-	<p class="section-nav"><span class="alignright"><input type="submit" name="design" value="<?php esc_html_e( 'Design', 'mailster' ); ?> &raquo;" class="button-primary button-small"></span></p>
+	<p class="section-nav"><span class="alignright"><input type="submit" name="design" value="<?php esc_attr_e( 'Design', 'mailster' ); ?> &raquo;" class="button-primary button-small"></span></p>
 
 	<?php endif; ?>
 
@@ -171,7 +171,7 @@ else :
 
 	<?php $style = $form->style; ?>
 
-<p class="section-nav"><span class="alignleft"><input type="submit" name="structure" value="&laquo; <?php esc_html_e( 'Back to Fields', 'mailster' ); ?>" class="button-primary button-small"></span><span class="alignright"><input type="submit" name="settings" value="<?php esc_html_e( 'Define the Options', 'mailster' ); ?> &raquo;" class="button-primary button-small"></span></p>
+<p class="section-nav"><span class="alignleft"><input type="submit" name="structure" value="&laquo; <?php esc_html_e( 'Back to Fields', 'mailster' ); ?>" class="button-primary button-small"></span><span class="alignright"><input type="submit" name="settings" value="<?php esc_attr_e( 'Define the Options', 'mailster' ); ?> &raquo;" class="button-primary button-small"></span></p>
 
 <div id="form-preview">
 
@@ -268,21 +268,21 @@ else :
 				<textarea id="custom-style" class="code" name="mailster_design[custom]"><?php echo esc_textarea( $form->custom_style ); ?></textarea>
 			</div>
 			<div class="wrapper-right">
-			<input type="text" class="widefat" placeholder="<?php esc_html_e( 'Selector Prefix', 'mailster' ); ?>" id="custom-style-prefix">
+			<input type="text" class="widefat" placeholder="<?php esc_attr_e( 'Selector Prefix', 'mailster' ); ?>" id="custom-style-prefix">
 			<select id="custom-style-samples" multiple>
 				<option value=""><?php esc_html_e( 'Form selector', 'mailster' ); ?></option>
 				<option value=" .mailster-wrapper"><?php esc_html_e( 'Field wrapper', 'mailster' ); ?></option>
-				<optgroup label="<?php esc_html_e( 'Custom Field Wrapper divs', 'mailster' ); ?>">
+				<optgroup label="<?php esc_attr_e( 'Custom Field Wrapper divs', 'mailster' ); ?>">
 				<?php foreach ( $defaultfields as $key => $field ) : ?>
 				<option value=" .mailster-<?php echo esc_attr( $key ); ?>-wrapper"><?php echo $field; ?></option>
 				<?php endforeach; ?>
 				</optgroup>
-				<optgroup label="<?php esc_html_e( 'Custom Field Inputs', 'mailster' ); ?>">
+				<optgroup label="<?php esc_attr_e( 'Custom Field Inputs', 'mailster' ); ?>">
 				<?php foreach ( $defaultfields as $key => $field ) : ?>
 				<option value=" .mailster-<?php echo esc_attr( $key ); ?>-wrapper input.input"><?php echo $field; ?></option>
 				<?php endforeach; ?>
 				</optgroup>
-				<optgroup label="<?php esc_html_e( 'Other', 'mailster' ); ?>">
+				<optgroup label="<?php esc_attr_e( 'Other', 'mailster' ); ?>">
 				<option value=" label .mailster-required"><?php esc_html_e( 'Required Asterisk', 'mailster' ); ?></option>
 				<option value=" .mailster-submit-wrapper .submit-button"><?php esc_html_e( 'Submit Button', 'mailster' ); ?></option>
 				</optgroup>
@@ -293,7 +293,7 @@ else :
 
 </div>
 
-<p class="section-nav"><span class="alignleft"><input type="submit" name="structure" value="&laquo; <?php esc_html_e( 'Back to Fields', 'mailster' ); ?>" class="button-primary button-small"></span><span class="alignright"><input type="submit" name="settings" value="<?php esc_html_e( 'Define the Options', 'mailster' ); ?> &raquo;" class="button-primary button-small"></span></p>
+<p class="section-nav"><span class="alignleft"><input type="submit" name="structure" value="&laquo; <?php esc_html_e( 'Back to Fields', 'mailster' ); ?>" class="button-primary button-small"></span><span class="alignright"><input type="submit" name="settings" value="<?php esc_attr_e( 'Define the Options', 'mailster' ); ?> &raquo;" class="button-primary button-small"></span></p>
 
 <?php elseif ( 'settings' == $currentpage ) : ?>
 
@@ -484,7 +484,7 @@ else :
 <hr>
 
 <p class="alignright">
-	<input type="submit" name="save" class="button button-primary" value="<?php esc_html_e( 'Save', 'mailster' ); ?>">
+	<input type="submit" name="save" class="button button-primary" value="<?php esc_attr_e( 'Save', 'mailster' ); ?>">
 </p>
 
 </form>

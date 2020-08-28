@@ -53,7 +53,7 @@ $currentstep = isset( $_GET['step'] ) ? (int) $_GET['step'] : 1;
 			<div class="upload-method">
 				<h2><?php esc_html_e( 'Paste', 'mailster' ); ?></h2>
 				<p class="description"><?php esc_html_e( 'Copy and paste from your spreadsheet app', 'mailster' ); ?></p>
-				<textarea id="paste-import" class="widefat" rows="13" placeholder="<?php esc_html_e( 'paste your list here', 'mailster' ); ?>">
+				<textarea id="paste-import" class="widefat" rows="13" placeholder="<?php esc_attr_e( 'paste your list here', 'mailster' ); ?>">
 justin.case@<?php echo $_SERVER['HTTP_HOST']; ?>; Justin; Case; Custom;
 john.doe@<?php echo $_SERVER['HTTP_HOST']; ?>; John; Doe
 jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
@@ -122,7 +122,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 			</div>
 			<?php endif; ?>
 			<div class="clearfix clear">
-				<input type="submit" class="button button-primary button-large" value="<?php esc_html_e( 'Next Step', 'mailster' ); ?> &#x2192;">
+				<input type="submit" class="button button-primary button-large" value="<?php esc_attr_e( 'Next Step', 'mailster' ); ?> &#x2192;">
 			</div>
 		</form>
 	</div>
@@ -354,7 +354,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 					</ul>
 				</div>
 				<p>
-					<input class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Download Subscribers', 'mailster' ); ?>" />
+					<input class="button button-large button-primary" type="submit" value="<?php esc_attr_e( 'Download Subscribers', 'mailster' ); ?>" />
 				</p>
 			</form>
 			</div>
@@ -417,7 +417,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 					<label><input type="checkbox" name="remove_actions" value="1"> <?php esc_html_e( 'Remove all actions from affected users', 'mailster' ); ?> </label>
 				</p>
 				<p>
-					<input id="delete-subscriber-button" class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Delete Subscribers permanently', 'mailster' ); ?>" />
+					<input id="delete-subscriber-button" class="button button-large button-primary" type="submit" value="<?php esc_attr_e( 'Delete Subscribers permanently', 'mailster' ); ?>" />
 				</p>
 				<h2 class="delete-status"></h2>
 				</form>

@@ -44,13 +44,13 @@ if ( $new == $slug ) {
 					);
 					?>
 
-					<a title="<?php esc_html_e( 'update via Envato', 'mailster' ); ?>" class="update envato-activate button button-primary button-small alignright" href="<?php echo esc_url( $url ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
+					<a title="<?php esc_attr_e( 'update via Envato', 'mailster' ); ?>" class="update envato-activate button button-primary button-small alignright" href="<?php echo esc_url( $url ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
 						<?php printf( esc_html__( 'Update to %s', 'mailster' ), $mailster_templates[ $slug ]['new_version'] ); ?>
 					</a>
 
 				<?php else : ?>
 
-					<a title="<?php esc_html_e( 'update template', 'mailster' ); ?>" class="update button button-primary button-small alignright" href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&action=update&template=' . $slug . '&_wpnonce=' . wp_create_nonce( 'download-' . $slug ) ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
+					<a title="<?php esc_attr_e( 'update template', 'mailster' ); ?>" class="update button button-primary button-small alignright" href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&action=update&template=' . $slug . '&_wpnonce=' . wp_create_nonce( 'download-' . $slug ) ); ?>" data-slug="<?php echo esc_attr( $slug ); ?>">
 						<?php printf( esc_html__( 'Update to %s', 'mailster' ), $mailster_templates[ $slug ]['new_version'] ); ?>
 					</a>
 
