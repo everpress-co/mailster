@@ -9,7 +9,7 @@
 	</tr>
 	<tr valign="top">
 		<th scope="row"><?php esc_html_e( 'ESP Limits', 'mailster' ); ?></th>
-		<td><p><?php printf( esc_html__( 'My email service provider can send %1$s within %2$s hours.', 'mailster' ), '<input type="number" min="1" name="mailster_options[send_limit]" value="' . mailster_option( 'send_limit' ) . '" class="small-text" style="width:70px">', '<input type="number" min="1" name="mailster_options[send_period]" value="' . mailster_option( 'send_period' ) . '" class="small-text">' ); ?></p>
+		<td><p><?php printf( esc_html__( 'My email service provider let me send %1$s within %2$s hours.', 'mailster' ), '<input type="number" min="1" name="mailster_options[send_limit]" value="' . mailster_option( 'send_limit' ) . '" class="small-text" style="width:70px">', '<input type="number" min="1" name="mailster_options[send_period]" value="' . mailster_option( 'send_period' ) . '" class="small-text">' ); ?></p>
 	<?php
 
 		global $wp_locale;

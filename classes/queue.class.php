@@ -1332,38 +1332,37 @@ class MailsterQueue {
 					$possible_mails_per_interval = $possible_mails_per_minute * ( $interval / MINUTE_IN_SECONDS );
 				}
 
-				$possible_mails_per_interval = round( $percentage * $possible_mails_per_interval );
-
-				error_log( 'possible_mails_per_interval: ' . print_r( $possible_mails_per_interval, true ) );
+				$possible_mails_per_interval_adjusted = round( $percentage * $possible_mails_per_interval );
+				$possible_mails_per_interval_adjusted = max( 1, $possible_mails_per_interval_adjusted );
 
 				error_log( 'send_at_once: ' . print_r( $send_at_once, true ) );
 				error_log( 'sent_this_turn: ' . print_r( $sent_this_turn, true ) );
 				error_log( 'to_send: ' . print_r( $to_send, true ) );
 
-				$ratio = $send_at_once / $possible_mails_per_interval;
-				$diff  = abs( $send_at_once - $possible_mails_per_interval );
+				$ratio = $send_at_once / $possible_mails_per_interval_adjusted;
+				$diff  = abs( $send_at_once - $possible_mails_per_interval_adjusted );
 
 				$prefix = '';
 
 				if ( $ratio < 1 ) {
 					if ( $to_send == $send_this_turn ) {
-						$possible_mails_per_interval = round( $sent_this_turn + ( $diff * $ratio ) );
+						$possible_mails_per_interval_adjusted = round( $sent_this_turn + ( $diff * $ratio ) );
 					} else {
-						$possible_mails_per_interval = round( $send_at_once + ( $diff * $ratio ) );
+						$possible_mails_per_interval_adjusted = round( $send_at_once + ( $diff * $ratio ) );
 					}
 					error_log( '' . print_r( 'MORE', true ) );
 					$prefix = '+';
 				}
 
-				$this->cron_log( 'send next turn', $possible_mails_per_interval . ' (' . $prefix . ( round( 100 * $possible_mails_per_interval / $send_at_once ) - 100 ) . '%)' );
+				$this->cron_log( 'send next turn', $possible_mails_per_interval_adjusted . '(' . $prefix . ( round( 100 * $possible_mails_per_interval_adjusted / $send_at_once ) - 100 ) . '%)' );
 				error_log( 'diff: ' . print_r( $diff, true ) );
 
 				error_log( 'ratio: ' . print_r( $ratio, true ) );
 
-				error_log( 'possible_mails_per_interval: ' . print_r( $possible_mails_per_interval, true ) );
+				error_log( 'possible_mails_per_interval_adjusted: ' . print_r( $possible_mails_per_interval_adjusted, true ) );
 
 				if ( $diff && mailster_force_option( 'auto_send_at_once' ) ) {
-					mailster_force_update_option( 'send_at_once', $possible_mails_per_interval );
+					mailster_force_update_option( 'send_at_once', $possible_mails_per_interval_adjusted );
 				}
 			}
 
