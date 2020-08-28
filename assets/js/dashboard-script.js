@@ -4,7 +4,6 @@ mailster = (function (mailster, $, window, document) {
 
 	var isMobile = $(document.body).hasClass('mobile'),
 		isWPDashboard = $(document.body).hasClass('index-php'),
-		$handleButtons = $('.postbox .handlediv'),
 		subscribers = $('.mailster-mb-subscribers'),
 		subscriberselect = $('#mailster-subscriber-range'),
 		chartelement = $('#subscriber-chart-wrap'),
@@ -58,43 +57,8 @@ mailster = (function (mailster, $, window, document) {
 		drawChart();
 	}).trigger('change');
 
-	if (!isWPDashboard) {
-		$('.meta-box-sortables').sortable({
-			placeholder: 'sortable-placeholder',
-			connectWith: '.meta-box-sortables',
-			items: '.postbox',
-			handle: '.hndle',
-			cursor: 'move',
-			delay: (isMobile ? 200 : 0),
-			distance: 2,
-			tolerance: 'pointer',
-			forcePlaceholderSize: true,
-			helper: function (event, element) {
-				return element.clone()
-					.find(':input')
-					.attr('name', function (i, currentName) {
-						return 'sort_' + parseInt(Math.random() * 100000, 10).toString() + '_' + currentName;
-					})
-					.end();
-			},
-			opacity: 0.65,
-			update: function (e, ui) {
-				orderMetaBoxes();
-			}
-		});
-
-		$('.postbox .handlediv')
-			.each(function () {
-				var $el = $(this);
-				$el.attr('aria-expanded', !$el.parent('.postbox').hasClass('closed'));
-			})
-			.on('click', function () {
-				var $el = $(this);
-				$el.parent('.postbox').toggleClass('closed');
-				$el.attr('aria-expanded', !$el.parent('.postbox').hasClass('closed'));
-			});
-	}
-
+	// init only on Mailster Dashboard
+	!isWPDashboard && window.postboxes.add_postbox_toggles('newsletter_page_mailster_dashboard');
 
 	$(document)
 		.on('verified.mailster', function (event, purchasecode, username, email) {
@@ -108,32 +72,6 @@ mailster = (function (mailster, $, window, document) {
 			$('#mailster-register-panel').delay(2500).fadeTo(400, 0, function () {
 				$('#mailster-register-panel').slideUp(400);
 			})
-		})
-		.on('click', '.order-lower-indicator', function () {
-			var current = $(this).closest('.postbox'),
-				sibling = current.next();
-			if (sibling.length) {
-				current.insertAfter(sibling);
-			}
-			orderMetaBoxes();
-		})
-		.on('click', '.order-higher-indicator', function () {
-			var current = $(this).closest('.postbox'),
-				sibling = current.prev();
-			if (sibling.length) {
-				current.insertBefore(sibling);
-			}
-			orderMetaBoxes();
-		})
-		.on('click', '.toggle-indicator', function () {
-			$(this).closest('.postbox').toggleClass('closed');
-			toggleMetaBoxes();
-		})
-		.on('click', '.hide-postbox-tog', function () {
-
-			$('#' + $(this).val())[$(this).is(':checked') ? 'show' : 'hide']().removeClass('closed');
-			toggleMetaBoxes();
-
 		})
 		.on('click', '.locked', function () {
 			$('.purchasecode').focus().select();
@@ -291,62 +229,6 @@ mailster = (function (mailster, $, window, document) {
 
 	}
 
-	function updateMetaBoxes() {
-		orderMetaBoxes();
-		toggleMetaBoxes();
-	};
-
-	function orderMetaBoxes() {
-
-		var order = {};
-
-		$.each($('.postbox-container'), function () {
-			var col = $(this).data('id');
-
-			$.each($(this).find('.postbox'), function () {
-				if (!order[col]) {
-					order[col] = [];
-				}
-				order[col].push(this.id);
-			});
-
-			if (order[col]) {
-				order[col] = order[col].join(',');
-			}
-
-		});
-
-		var data = {
-			action: 'meta-box-order',
-			_ajax_nonce: $('#meta-box-order-nonce').val(),
-			page: 'newsletter_page_mailster_dashboard',
-			order: order
-		};
-
-		$.post(ajaxurl, data);
-
-	}
-
-	function toggleMetaBoxes() {
-
-		var hidden = $('.postbox:hidden').map(function () {
-				return this.id;
-			}).toArray(),
-			closed = $('.postbox.closed').map(function () {
-				return this.id;
-			}).toArray();
-
-		var data = {
-			action: 'closed-postboxes',
-			closedpostboxesnonce: $('#closedpostboxesnonce').val(),
-			closed: closed.length ? closed.join(',') : '',
-			hidden: hidden.length ? hidden.join(',') : '',
-			page: 'newsletter_page_mailster_dashboard'
-		};
-
-		$.post(ajaxurl, data);
-
-	}
 
 	function format(value, konly) {
 

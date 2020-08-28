@@ -604,7 +604,7 @@ class MailsterAjax {
 
 				$headers = array(
 					'X-Mailster'          => $mail->hash,
-					'X-Mailster-Campaign' => $ID,
+					'X-Mailster-Campaign' => (string) $ID,
 					'X-Mailster-ID'       => $MID,
 					'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
 				);
