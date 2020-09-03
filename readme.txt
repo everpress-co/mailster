@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.14 =
 
+* improved: internal handling for sending limits
 * fixed: Display width specification for integer data types was deprecated in MySQL 8.0.17 which causes an error in the self test
 * fixed: unwanted 'a11y-speak-intro-text' element in email body
 * fixed: toggle behavior of meta boxes in WP 5.5
