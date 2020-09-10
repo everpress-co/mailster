@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.7
+// Version 3.8
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -637,7 +637,7 @@ class UpdateCenterPlugin {
 		$timeout = 12 * HOUR_IN_SECONDS;
 
 		if ( 'updatecenterplugin_check' == current_filter() ) {
-				$timeout = 60;
+			$timeout = 60;
 		}
 
 		$collection = array();
@@ -777,6 +777,10 @@ class UpdateCenterPlugin {
 		);
 
 		if ( is_wp_error( $response ) ) {
+
+			if ( 'http_request_failed' == $response->get_error_code() ) {
+				return new WP_Error( 'http_err', sprintf( 'Not able to get request from %s', parse_url( self::$plugin_data[ $slug ]->remote_url, PHP_URL_HOST ) ) );
+			}
 			return $response;
 		}
 
@@ -817,7 +821,7 @@ class UpdateCenterPlugin {
 				'x-ip'           => isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : null,
 			),
 			'body'    => $body,
-			'timeout' => 20,
+			'timeout' => 5,
 		);
 
 		$response = wp_remote_post( $url, $args );
