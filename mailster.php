@@ -15,7 +15,7 @@ if ( defined( 'MAILSTER_VERSION' ) || ! defined( 'ABSPATH' ) ) {
 
 define( 'MAILSTER_VERSION', '2.4.14' );
 define( 'MAILSTER_BUILT', 0000000000 );
-define( 'MAILSTER_DBVERSION', 20200825 );
+define( 'MAILSTER_DBVERSION', 20200910 );
 define( 'MAILSTER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MAILSTER_URI', plugin_dir_url( __FILE__ ) );
 define( 'MAILSTER_FILE', __FILE__ );
