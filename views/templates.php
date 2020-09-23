@@ -31,8 +31,6 @@ if ( $updates = $t->get_updates() ) : ?>
 <div id="mailster_templates">
 <?php $template = $templates[ $default ]; ?>
 
-<?php if ( ! isset( $_GET['more'] ) ) : ?>
-
 <ul>
 <li id="templateeditor">
 	<h3></h3>
@@ -73,7 +71,6 @@ if ( $updates = $t->get_updates() ) : ?>
 		}
 	}
 	?>
-<div class="upload-field"><?php $t->media_upload_form(); ?></div>
 <ul id="installed-templates">
 	<?php
 	$i = 0;
@@ -88,65 +85,15 @@ if ( $updates = $t->get_updates() ) : ?>
 	}
 	$templates = array( $default => $template ) + $templates;
 
-
 	foreach ( $templates as $slug => $data ) {
 
 		include MAILSTER_DIR . 'views/templates/installed-template.php';
 
 	}
-
-	if ( current_user_can( 'mailster_upload_templates' ) ) :
-		?>
-	<li class="mailster-box more-templates-field">
-		<div><a href="edit.php?post_type=newsletter&page=mailster_templates&more" class="button button-primary button-hero"> <?php esc_html_e( 'More Templates', 'mailster' ); ?></a></div>
-	</li>
-	<?php endif; ?>
-
+	?>
 </ul>
 
-<?php else : ?>
 
-<h1><?php esc_html_e( 'More Templates', 'mailster' ); ?></h1>
-
-	<?php
-
-	if ( empty( $mailster_templates ) ) :
-
-		echo '<div class="error below-h2"><p>' . esc_html__( 'Looks like there was a problem getting the list of templates', 'mailster' ) . '</p></div>';
-
-	else :
-
-		?>
-<ul id="available-templates">
-	<li class="mailster-box more-templates-field">
-		<div><a href="edit.php?post_type=newsletter&page=mailster_templates" class="button button-primary button-hero"> <?php esc_html_e( 'Back to Overview', 'mailster' ); ?></a></div>
-	</li>
-		<?php
-
-		$existing = @array_intersect_assoc( $mailster_templates, $templates );
-		$others   = @array_diff_assoc( $mailster_templates, $existing );
-		$author   = isset( $_GET['from'] ) ? trim( strtolower( $_GET['from'] ) ) : null;
-
-		$mailster_templates = $existing + $others;
-
-
-		foreach ( $mailster_templates as $slug => $data ) {
-
-			if ( $author && strtolower( $data['author'] ) != $author ) {
-				continue;
-			}
-
-			include MAILSTER_DIR . 'views/templates/available-template.php';
-
-		}
-		?>
-</ul>
-<div class="clear affiliate-note">
-	Disclosure: Some of the links on this page are affiliate links. This means if you click on the link and purchase the item, we may receive an affiliate commission.
-</div>
-<?php endif; ?>
-
-<?php endif; ?>
 <div id="thickboxbox">
 	<ul class="thickbox-filelist"></ul>
 	<iframe class="thickbox-iframe" src="" data-no-lazy=""></iframe>

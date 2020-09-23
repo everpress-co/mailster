@@ -49,6 +49,11 @@ class MailsterTemplates {
 		add_action( 'load-' . $page, array( &$this, 'edit_entry' ), 99 );
 		add_action( 'load-' . $page, array( &$this, 'download_envato_template' ), 99 );
 
+		$page = add_submenu_page( true, esc_html__( 'Install Templates', 'mailster' ), esc_html__( 'Install Templates', 'mailster' ) . $updates, 'mailster_manage_templates', 'mailster_templates_install', array( &$this, 'install_templates' ) );
+
+		add_action( 'load-' . $page, array( &$this, 'scripts_styles_install' ) );
+		// add_action( 'load-' . $page, array( &$this, 'edit_entry' ), 99 );
+		// add_action( 'load-' . $page, array( &$this, 'download_envato_template' ), 99 );
 	}
 
 
@@ -341,6 +346,17 @@ class MailsterTemplates {
 
 	}
 
+	public function install_templates() {
+
+		if ( current_user_can( 'mailster_upload_templates' ) ) {
+			remove_action( 'post-plupload-upload-ui', 'media_upload_flash_bypass' );
+			wp_enqueue_script( 'plupload-all' );
+		}
+
+		include MAILSTER_DIR . 'views/templates-install.php';
+
+	}
+
 
 	/**
 	 *
@@ -549,6 +565,35 @@ class MailsterTemplates {
 
 		wp_register_style( 'mailster-templates', MAILSTER_URI . 'assets/css/templates-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_style( 'mailster-templates' );
+		wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'thickbox' );
+		wp_enqueue_style( 'thickbox' );
+		wp_enqueue_script( 'mailster-templates', MAILSTER_URI . 'assets/js/templates-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
+		mailster_localize_script(
+			'templates',
+			array(
+				'delete_template_file' => esc_html__( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
+				'enter_template_name'  => esc_html__( 'Please enter the name of the new template', 'mailster' ),
+				'uploading'            => esc_html__( 'uploading zip file %s', 'mailster' ),
+				'confirm_delete'       => esc_html__( 'You are about to delete this template %s', 'mailster' ),
+				'update_note'          => esc_html__( 'You are about to update your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Old template files will be preserved in the templates folder.', 'mailster' ),
+			)
+		);
+
+	}
+
+	public function scripts_styles_install() {
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_register_style( 'mailster-templates-install', MAILSTER_URI . 'assets/css/templates-install-style' . $suffix . '.css', array( 'thickbox' ), MAILSTER_VERSION );
+		wp_enqueue_style( 'mailster-templates-install' );
+
+		wp_enqueue_script( 'mailster-templates-install', MAILSTER_URI . 'assets/js/templates-install-script' . $suffix . '.js', array( 'mailster-script', 'thickbox' ), MAILSTER_VERSION, true );
+
+		return;
 		wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 		wp_enqueue_script( 'thickbox' );
