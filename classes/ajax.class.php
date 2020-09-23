@@ -62,6 +62,8 @@ class MailsterAjax {
 		'editor_image_upload_handler',
 		'template_upload_handler',
 
+		'query_templates',
+
 		// dashboard
 		'get_dashboard_data',
 		'get_dashboard_chart',
@@ -73,6 +75,7 @@ class MailsterAjax {
 		'load_language',
 		'quick_install',
 		'wizard_save',
+
 
 		'test',
 
@@ -2371,6 +2374,20 @@ class MailsterAjax {
 
 		}
 
+	}
+
+	private function query_templates() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$search = esc_attr( $_POST['search'] );
+		$browse = esc_attr( $_POST['browse'] );
+
+		error_log( print_r( $_POST, true ) );
+
+		$this->json_return( $return );
 	}
 
 

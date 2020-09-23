@@ -1,103 +1,30 @@
-<?php
-
-$t = mailster( 'templates' );
-
-$templates          = $t->get_templates();
-$mailster_templates = $t->get_mailster_templates();
-
-$notice  = false;
-$default = mailster_option( 'default_template', 'mymail' );
-if ( ! isset( $templates[ $default ] ) ) {
-	$default = 'mymail';
-	mailster_update_option( 'default_template', 'mymail' );
-	$notice[] = sprintf( esc_html__( 'Template %s is missing or broken. Reset to default', 'mailster' ), '"' . $default . '"' );
-
-	// mymail template is missing => redownload it.
-	if ( ! isset( $templates[ $default ] ) ) {
-		$result = $t->renew_default_template();
-		if ( is_wp_error( $result ) ) {
-			echo '<div class="error"><h3>' . esc_html__( 'There was a problem loading the templates', 'mailster' ) . '</h3><p>' . $result->get_error_message() . '</p></div>';
-			return;
-		}
-		$templates = $t->get_templates();
-	}
-}
-if ( $updates = $t->get_updates() ) : ?>
-<div class="update-nag below-h2">
-	<?php printf( esc_html__( _n( '%d Update available', '%d Updates available', $updates, 'mailster' ) ), $updates ); ?>
-</div>
-<?php endif; ?>
 <div class="wrap">
 <div id="mailster_templates">
-<?php $template = $templates[ $default ]; ?>
 
-<ul>
-<li id="templateeditor">
-	<h3></h3>
-	<input type="hidden" id="slug">
-	<input type="hidden" id="file">
+<h1><?php esc_html_e( 'Templates', 'mailster' ); ?> <a class="page-title-action upload-template"> <?php esc_html_e( 'Upload Template', 'mailster' ); ?> </a></h1>
 
-		<div class="inner">
-			<div class="template-file-selector">
-				<label><?php esc_html_e( 'Select template file', 'mailster' ); ?>:</label> <span></span>
-			</div>
-			<div class="edit-buttons">
-				<span class="spinner template-ajax-loading"></span>
-				<span class="message"></span>
-				<button class="button-primary save"><?php esc_html_e( 'Save', 'mailster' ); ?></button>
-				<button class="button saveas"><?php esc_html_e( 'Save as', 'mailster' ); ?>&hellip;</button> <?php esc_html_e( 'or', 'mailster' ); ?>
-				<a class="cancel" href="#"><?php esc_html_e( 'Cancel', 'mailster' ); ?></a>
-			</div>
-				<textarea class="editor"></textarea>
-			<div class="edit-buttons">
-				<span class="message"></span>
-				<span class="spinner template-ajax-loading"></span>
-				<button class="button-primary save"><?php esc_html_e( 'Save', 'mailster' ); ?></button>
-				<button class="button saveas"><?php esc_html_e( 'Save as', 'mailster' ); ?>&hellip;</button> <?php esc_html_e( 'or', 'mailster' ); ?>
-				<a class="cancel" href="#"><?php esc_html_e( 'Cancel', 'mailster' ); ?></a>
-			</div>
-		</div>
-	<br class="clear">
-</li>
-</ul>
-<h1><?php esc_html_e( 'Templates', 'mailster' ); ?> <a class="page-title-action upload-template"> <?php esc_html_e( 'Add New', 'mailster' ); ?> </a></h1>
-	<?php
-	wp_nonce_field( 'mailster_nonce' );
-	if ( $notice ) {
-		foreach ( $notice as $note ) {
-			?>
-		<div class="updated below-h2"><p><?php echo $note; ?></p></div>
-			<?php
-		}
-	}
-	?>
-<ul id="installed-templates">
-	<?php
-	$i = 0;
-	unset( $templates[ $default ] );
+<h2 class="screen-reader-text hide-if-no-js"><?php esc_html_e( 'Filter template list', 'mailster' ); ?></h2>
+<div class="wp-filter hide-if-no-js">
+	<div class="filter-count">
+		<span class="count theme-count">3</span>
+	</div>
 
-	$new = isset( $_GET['new'] ) && isset( $templates[ $_GET['new'] ] ) ? esc_attr( $_GET['new'] ) : null;
+	<ul class="filter-links">
+		<li><a href="#" data-sort="installed"><?php _ex( 'Installed', 'templates', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="featured"><?php _ex( 'Featured', 'templates', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="popular"><?php _ex( 'Popular', 'templates', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="new"><?php _ex( 'Latest', 'templates', 'mailster' ); ?></a></li>
+	</ul>
 
-	if ( $new ) {
-		$new_template = $templates[ $new ];
-		unset( $templates[ $new ] );
-		$templates = array( $new => $new_template ) + $templates;
-	}
-	$templates = array( $default => $template ) + $templates;
+	<?php get_search_form(); ?>
 
-	foreach ( $templates as $slug => $data ) {
-
-		include MAILSTER_DIR . 'views/templates/installed-template.php';
-
-	}
-	?>
-</ul>
-
-
-<div id="thickboxbox">
-	<ul class="thickbox-filelist"></ul>
-	<iframe class="thickbox-iframe" src="" data-no-lazy=""></iframe>
 </div>
+
+<h2 class="screen-reader-text hide-if-no-js"><?php esc_html_e( 'Template list', 'mailster' ); ?></h2>
+<div class="template-browser content-filterable"></div>
+<p class="no-templates"><?php esc_html_e( 'No templates found. Try a different search.', 'mailster' ); ?></p>
+<span class="spinner"></span>
+
 <div id="ajax-response"></div>
 <br class="clear">
 </div>
