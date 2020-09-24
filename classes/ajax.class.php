@@ -2382,10 +2382,21 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$search = esc_attr( $_POST['search'] );
-		$browse = esc_attr( $_POST['browse'] );
+		$query = array(
+			's' => esc_attr( $_POST['search'] ),
+			'browse' => esc_attr( $_POST['browse'] ),
+			'page'   => absint( $_POST['page'] ),
+			'author'   => esc_attr( $_POST['author'] ),
+		);
 
-		error_log( print_r( $_POST, true ) );
+
+		$result = mailster( 'templates' )->query( $query );
+
+		if ( ! is_wp_error( $result ) ) {
+			$return['total'] = $result['total'];
+			$return['html']  = mailster( 'templates' )->result_to_html( $result );
+			$return['templates'] = $result['items'];
+		}
 
 		$this->json_return( $return );
 	}

@@ -1161,12 +1161,81 @@ class MailsterTemplates {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $file
-	 * @return unknown
-	 */
+
+	public function query( $query ) {
+
+		$result = array();
+
+		$endpoint = 'https://mailster.dev/templates.json';
+
+		$args = wp_parse_args( $query, array(
+			'browse' =>  'new',
+			'page'   => 1,
+		));
+
+		if ( $args['browse'] == 'installed' ) {
+			$templates         = $this->get_templates( true );
+			$args['templates'] = implode( ',', $templates );
+		}
+		// $args     = wp_parse_args( $args, array( 'sslverify' => false ) );
+		// $endpoint = 'https://mailster.local/templates.json';
+
+		$url = add_query_arg( $args, $endpoint );
+
+		$response = wp_remote_get( $url, $args );
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+
+		$response_body = wp_remote_retrieve_body( $response );
+
+		if ( $response_code != 200 || is_wp_error( $response ) ) {
+
+		} else {
+			$result = json_decode( $response_body, true );
+		}
+
+		return $this->prepare_results( $result );
+
+	}
+
+	public function prepare_results( $result ) {
+
+		$templates = $this->get_templates();
+
+		foreach ( $result['items'] as $slug => $item ) {
+			if ( isset( $templates[ $slug ] ) ) {
+				$result['items'][ $slug ]['update_available'] = $item['new_version'] ? version_compare( $item['new_version'], $templates[ $slug ]['version'], '>' ) : strtotime( $item['updated'] ) > strtotime( $templates[ $slug ]['update'] );
+				$result['items'][ $slug ]                     = wp_parse_args( $templates[ $slug ], $result['items'][ $slug ] );
+				$result['items'][ $slug ]['installed']        = true;
+				$temp = $result['items'][ $slug ];
+				unset( $result['items'][ $slug ] );
+				$result['items'] = array( $slug => $temp ) + $result['items'];
+			} else {
+				$result['items'][ $slug ]['update_available'] = false;
+				$result['items'][ $slug ]['installed']        = false;
+			}
+		}
+
+
+		return $result;
+	}
+
+	public function result_to_html( $result ) {
+
+		ob_start();
+
+		foreach ( $result['items'] as $i => $item ) {
+			include MAILSTER_DIR . 'views/templates/template.php';
+		}
+
+		$html = ob_get_contents();
+
+		ob_end_clean();
+
+		return $html;
+
+	}
+
 	public function get_template_data( $file ) {
 
 		$cache_key = 'get_template_data_' . md5( $file );
@@ -1217,6 +1286,9 @@ class MailsterTemplates {
 		if ( empty( $file_data['label'] ) ) {
 			$file_data['label'] = substr( $basename, 0, strrpos( $basename, '.' ) );
 		}
+
+		$file_data['update'] = date( 'Y-m-d H:i:s', filemtime( $file ) );
+		$file_data['added']  = date( 'Y-m-d H:i:s', filectime( $file ) );
 
 		$file_data['label'] = str_replace( ' rtl', ' (RTL)', $file_data['label'] );
 
