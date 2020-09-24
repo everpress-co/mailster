@@ -1,34 +1,47 @@
-<div class="template" tabindex="0" data-slug="<?php echo esc_attr( $item['slug'] ); ?>" data-item='<?php echo json_encode( $item ); ?>'>
-	<div class="template-screenshot">
-		<img loading="_lazy" src="<?php echo esc_attr( $item['image'] ); ?>" alt="" class="template-screenshot-bg">
-		<img loading="_lazy" src="<?php echo esc_attr( $item['image'] ); ?>" alt="" class="template-screenshot-img">
+<?php
+$classes   = array( 'theme' );
+$classes[] = 'theme-' . $item['slug'];
+if ( $item['is_default'] ) {
+	$classes[] = 'active';
+}
+if ( $item['installed'] ) {
+	$classes[] = 'installed';
+}
+if ( $item['update_available'] ) {
+	$classes[] = 'update-available';
+}
+?>
+<div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $item['slug'] ); ?>" data-item='<?php echo json_encode( $item ); ?>'>
+	<div class="theme-screenshot">
+		<img loading="lazy" src="<?php echo esc_attr( $item['image'] ); ?>" alt="" class="theme-screenshot-bg">
+		<?php if ( $item['index'] ) : ?>
+		<iframe src="<?php echo esc_url( $item['index'] ); ?>" class="theme-screenshot-iframe" scrolling="no" allowTransparency="true" frameBorder="0" sandbox="allow-presentation" loading="lazy"></iframe>
+		<?php else : ?>
+		<img loading="lazy" src="<?php echo esc_attr( $item['image'] ); ?>" alt="" class="theme-screenshot-img">
+		<?php endif; ?>
 	</div>
 	<?php if ( $item['installed'] ) : ?>
-	<div class="notice notice-success notice-alt"><p>Installed</p></div>
+	<div class="notice notice-success notice-alt theme-is-installed"><p><?php esc_html_e( 'Installed', 'mailster' ); ?></p></div>
 	<?php endif; ?>
 	<?php if ( $item['update_available'] ) : ?>
-	<div class="notice notice-warning notice-alt"><p>Update available</p></div>
+	<div class="update-message notice inline notice-warning notice-alt theme-has-update"><p><?php esc_html_e( 'New version available.', 'mailster' ); ?> <button class="button-link" type="button"><?php esc_html_e( 'Update now', 'mailster' ); ?></button></p></div>
 	<?php endif; ?>
 	<span class="more-details">Details &amp; Preview</span>
-	<div class="template-author"><?php printf( esc_html__( 'By %s', 'mailster' ), $item['author'] ); ?></div>
-	<div class="template-id-container">
-		<h3 class="template-name"><?php echo esc_html( $item['name'] ); ?></h3>
-		<div class="template-actions">
-			<a class="button button-primary activate" href="<?php echo esc_attr( $item['url'] ); ?>" aria-label="Activate Twenty Twenty">Activate</a>
-			<?php
-		$item_id = (int) preg_replace( '#[^0-9]#', '', $item['url'] );
-		$url     = add_query_arg(
-			array(
-				'license'                   => 'regular',
-				'open_purchase_for_item_id' => $item_id,
-				'purchasable'               => 'source',
-			),
-			$item['url']
-		);
-
-		error_log( print_r($url, true) );
-			 ?>
-			<a class="button load-customize" href="<?php echo esc_attr( $url  ); ?>" onclick="window.open('<?php echo esc_attr( $url  ); ?>','MyWindow','width=800,height=500,toolbar=no,menubar=no,location=no,status=no,scrollbars=no,resizable=no,left=320,top=200');return false;">Buy</a>
+	<div class="theme-author"><?php printf( esc_html__( 'By %s', 'mailster' ), $item['author'] ); ?></div>
+	<div class="theme-id-container">
+		<h3 class="theme-name">
+			<?php echo esc_html( $item['name'] ); ?>
+			<?php if ( $item['is_default'] ) : ?>
+			<span class="theme-default-badge"><?php esc_html_e( 'Current', 'mailster' ); ?></a>
+			<?php endif; ?>
+			</h3>
+		<div class="theme-actions">
+			<?php if ( $item['installed'] ) : ?>
+			<a class="button button-primary create-campaign" href="<?php echo admin_url( 'post-new.php?post_type=newsletter&template=' . $item['slug'] ); ?>" aria-label="<?php esc_attr_e( 'Create Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
+			<?php endif; ?>
+			<?php if ( $item['price'] ) : ?>
+			<a class="button button-primary buy" href="<?php echo esc_attr( $url ); ?>" onclick="window.open('<?php echo esc_attr( $url ); ?>','MyWindow','width=800,height=500,toolbar=no,menubar=no,location=no,status=no,scrollbars=no,resizable=no,left=320,top=200');return false;"><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
+			<?php endif; ?>
 		</div>
 	</div>
 </div>

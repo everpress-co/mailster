@@ -1,531 +1,75 @@
+.wp-filter .search-form select, .wp-filter .search-form .wp-filter-search {
+	display: inline-block;
+	margin-top: 10px;
+	vertical-align: top;
+}
 .wp-filter .search-form .search-submit{
 	display: none;
 }
-
-p.no-templates, p.no-templates-local {
-	clear: both;
-	color: #666;
-	font-size: 18px;
-	font-style: normal;
+.wrap .theme-browser .notice {
 	margin: 0;
-	padding: 100px 0;
-	text-align: center;
+}
+.theme-browser .theme .theme-screenshot {
+	height: 400px;
+}
+.theme-browser .theme .theme-screenshot img {
+	pointer-events: none;
+}
+.theme-count:empty{
+	visibility: hidden;
+}
+.browse-installed .theme-browser .theme-is-installed{
 	display: none;
 }
+.theme-browser .theme.installed .theme-actions .buy{
+	display: none;
+}
+.theme-default-badge{
+	border:1px solid;
+	font-size: 10px;
+	font-weight: normal;
+	border-radius: 4px;
+	padding: 0.2em 0.4em;
+	margin-left:0.6em;
+}
 
-.template-browser .template {
-	cursor: pointer;
-	float: left;
-	margin: 0 4% 4% 0;
-	position: relative;
-	width: 30.6%;
-	border: 1px solid #ddd;
-	box-shadow: 0 1px 1px -1px rgba(0, 0, 0, 0.1);
-	box-sizing: border-box;
-}
-.template-browser .template:nth-child(3n) {
-	margin-right: 0;
-}
-.template .notice, .template .notice.is-dismissible {
-	left: 0;
-	margin: 0;
-	position: absolute;
-	right: 0;
-	top: 0;
-}
-.template-browser .template .template-screenshot {
-	display: block;
-	overflow: hidden;
-	position: relative;
-	-webkit-backface-visibility: hidden;
-	transition: opacity 0.2s ease-in-out;
-	height: 400px;
-	background: #aaa;
-}
-.template-browser .template .template-screenshot-img {
+.theme-browser .theme .theme-screenshot .theme-screenshot-img, .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
 	position: absolute;
 	width: 75%;
-	left: 50%;
 	border-radius: 3px;
 	transform: translate(-50%, 10%);
+	left: 50%;
 	transition: transform 0.2s ease-in-out;
 	top: 0;
 	box-shadow: 0 4px 6px rgba(0,0,0,0.11), 0 1px 3px rgba(0,0,0,0.075);
+	pointer-events: none;
 }
-.template-browser .template:hover .template-screenshot-img {
-	transform: translate(-50%, 7%);
+.theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
+	width: 650px;
+	height: 1200px;
+	transform: translate(-50%, -22%) scale(0.5);
 }
-.template-browser .template .template-screenshot-bg {
+
+.theme-browser .theme .theme-screenshot .theme-screenshot-bg {
 	filter: blur(20px);
 	transform: scale(2);
 	opacity: 0.8;
 }
-.template-browser .template .template-screenshot:after {
-	content: "";
-	display: block;
-	padding-top: 66.66666%;
-}
-.template-browser .template .more-details {
-	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-	opacity: 0;
-	position: absolute;
-	top: 35%;
-	right: 20%;
-	left: 20%;
-	background: #23282d;
-	background: rgba(0, 0, 0, 0.7);
-	color: #fff;
-	font-size: 15px;
-	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
-	-webkit-font-smoothing: antialiased;
-	font-weight: 600;
-	padding: 15px 12px;
-	text-align: center;
-	border-radius: 3px;
-	transition: opacity 0.1s ease-in-out;
-}
-.template-id-container {
-	position: relative;
-}
-.template-browser .template .more-details {
-	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-	opacity: 0;
-	position: absolute;
-	top: 35%;
-	right: 20%;
-	left: 20%;
-	background: #23282d;
-	background: rgba(0, 0, 0, 0.7);
-	color: #fff;
-	font-size: 15px;
-	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
-	-webkit-font-smoothing: antialiased;
-	font-weight: 600;
-	padding: 15px 12px;
-	text-align: center;
-	border-radius: 3px;
-	transition: opacity 0.1s ease-in-out;
-}
-.template-browser .template .template-name {
-	font-size: 15px;
-	font-weight: 600;
-	height: 18px;
-	margin: 0;
-	padding: 15px;
-	box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1);
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	background: #fff;
-	background: rgba(255, 255, 255, 0.65);
-}
-.template-browser .template.active .template-actions, .template-browser .template .template-actions {
-	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
-	right: 0;
-	padding: 9px 15px;
-	box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1);
-}
-.template-browser .template:hover .more-details, .template-browser .template:focus .more-details {
-	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-	opacity: 1;
-}
-.template-browser .template .template-author {
-	background: #23282d;
-	color: #eee;
-	font-size: 14px;
-	margin: 0 10px;
-	padding: 5px 10px;
-	position: absolute;
-	bottom: 56px;
-}
 
-
-/**
- * Theme Overlay
- * Shown when clicking a template
- */
-.template-overlay{
-	display: none;
-}
-.template-overlay .template-backdrop {
-	position: absolute;
-	left: -20px;
-	right: 0;
-	top: 0;
-	bottom: 0;
-	background: #f1f1f1;
-	background: rgba(238, 238, 238, 0.9);
-	z-index: 10000; /* Over WP Pointers. */
-}
-
-.template-overlay .template-header {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 48px;
-	border-bottom: 1px solid #ddd;
-}
-
-.template-overlay .template-header button {
-	padding: 0;
-}
-
-.template-overlay .template-header .close {
-	cursor: pointer;
-	height: 48px;
-	width: 50px;
-	text-align: center;
-	float: right;
-	border: 0;
-	border-left: 1px solid #ddd;
-	background-color: transparent;
-	transition: color .1s ease-in-out, background .1s ease-in-out;
-}
-
-.template-overlay .template-header .close:before {
-	font: normal 22px/50px dashicons !important;
-	color: #72777c;
-	display: inline-block;
-	content: "\f335";
-	font-weight: 300;
-}
-
-/* Left and right navigation */
-.template-overlay .template-header .right,
-.template-overlay .template-header .left {
-	cursor: pointer;
-	color: #72777c;
-	background-color: transparent;
-	height: 48px;
-	width: 54px;
-	float: left;
-	text-align: center;
-	border: 0;
-	border-right: 1px solid #ddd;
-	transition: color .1s ease-in-out, background .1s ease-in-out;
-}
-
-.template-overlay .template-header .close:focus,
-.template-overlay .template-header .close:hover,
-.template-overlay .template-header .right:focus,
-.template-overlay .template-header .right:hover,
-.template-overlay .template-header .left:focus,
-.template-overlay .template-header .left:hover {
-	background: #ddd;
-	border-color: #ccc;
-	color: #000;
-}
-
-.template-overlay .template-header .close:focus:before,
-.template-overlay .template-header .close:hover:before {
-	color: #000;
-}
-
-.template-overlay .template-header .close:focus,
-.template-overlay .template-header .right:focus,
-.template-overlay .template-header .left:focus {
-	box-shadow: none;
-	outline: none;
-}
-
-.template-overlay .template-header .left.disabled,
-.template-overlay .template-header .right.disabled,
-.template-overlay .template-header .left.disabled:hover,
-.template-overlay .template-header .right.disabled:hover {
-	color: #ccc;
-	background: inherit;
-	cursor: inherit;
-}
-
-.template-overlay .template-header .right:before,
-.template-overlay .template-header .left:before {
-	font: normal 20px/50px dashicons !important;
-	display: inline;
-	font-weight: 300;
-}
-
-.template-overlay .template-header .left:before {
-	content: "\f341";
-}
-
-.template-overlay .template-header .right:before {
-	content: "\f345";
-}
-
-.template-overlay .template-wrap {
-	clear: both;
-	position: fixed;
-	top: 9%;
-	left: 190px;
-	right: 30px;
-	bottom: 3%;
-	background: #fff;
-	box-shadow: 0 1px 20px 5px rgba(0, 0, 0, 0.1);
-	z-index: 10000; /* Over WP Pointers. */
-	box-sizing: border-box;
-	-webkit-overflow-scrolling: touch;
-}
-
-body.folded .template-browser ~ .template-overlay .template-wrap {
-	left: 70px;
-}
-
-.template-overlay .template-about {
-	position: absolute;
-	top: 49px;
-	bottom: 57px;
-	left: 0;
-	right: 0;
+.theme-overlay .screenshot{
+	height: 70vh;
 	overflow: auto;
-	padding: 2% 4%;
 }
-
-.template-overlay .template-actions {
-	position: absolute;
-	text-align: center;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	padding: 10px 25px 5px;
-	background: #f3f3f3;
-	z-index: 30;
-	box-sizing: border-box;
-	border-top: 1px solid #eee;
+.theme-overlay .screenshot img{
 }
-
-.template-overlay .template-actions a {
-	margin-right: 5px;
-	margin-bottom: 5px;
-}
-
-/* Hide-if-customize for items we can't add classes to */
-.customize-support .template-overlay .template-actions a[href="templates.php?page=custom-header"],
-.customize-support .template-overlay .template-actions a[href="templates.php?page=custom-background"] {
+.browse-installed .theme-overlay .screenshot img{
 	display: none;
 }
-
-.broken-templates a.delete-template,
-.template-overlay .template-actions .delete-template {
-	color: #a00;
-	text-decoration: none;
-	border-color: transparent;
-	box-shadow: none;
-	background: transparent;
-}
-
-.template-overlay .template-actions .delete-template {
-	position: absolute;
-	right: 10px;
-	bottom: 5px;
-}
-
-.broken-templates a.delete-template:hover,
-.broken-templates a.delete-template:focus,
-.template-overlay .template-actions .delete-template:hover,
-.template-overlay .template-actions .delete-template:focus {
-	background: #d54e21;
-	color: #fff;
-	border-color: #d54e21;
-}
-
-.template-overlay .template-actions .active-template,
-.template-overlay.active .template-actions .inactive-template {
+.theme-overlay .screenshot iframe{
+	width: 100%;
+	height: 100%;
 	display: none;
 }
-
-.template-overlay .template-actions .inactive-template,
-.template-overlay.active .template-actions .active-template {
+.browse-installed .theme-overlay .screenshot iframe{
 	display: block;
-}
-
-/**
- * Theme Screenshots gallery
- */
-.template-overlay .template-screenshots {
-	float: left;
-	margin: 0 30px 0 0;
-	width: 55%;
-	max-width: 1200px; /* Recommended template screenshot width, set here to avoid stretching */
-	text-align: center;
-}
-
-/* First screenshot, shown big */
-.template-overlay .screenshot {
-	border: 1px solid #fff;
-	box-sizing: border-box;
-	overflow: hidden;
-	position: relative;
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
-}
-
-.template-overlay .screenshot:after {
-	content: "";
-	display: block;
-	padding-top: 75%; /* using a 4/3 aspect ratio */
-}
-
-.template-overlay .screenshot img {
-	height: auto;
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-}
-/* Handles old 300px screenshots */
-.template-overlay.small-screenshot .template-screenshots {
-	position: absolute;
-	width: 302px;
-}
-.template-overlay.small-screenshot .template-info {
-	margin-left: 350px;
-	width: auto;
-}
-
-/* Other screenshots, shown small and square */
-.template-overlay .screenshot.thumb {
-	background: #ccc;
-	border: 1px solid #eee;
-	float: none;
-	display: inline-block;
-	margin: 10px 5px 0;
-	width: 140px;
-	height: 80px;
-	cursor: pointer;
-}
-
-.template-overlay .screenshot.thumb:after {
-	content: "";
-	display: block;
-	padding-top: 100%; /* using a 1/1 aspect ratio */
-}
-
-.template-overlay .screenshot.thumb img {
-	cursor: pointer;
-	height: auto;
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: auto;
-}
-
-.template-overlay .screenshot.selected {
-	background: transparent;
-	border: 2px solid #00a0d2;
-}
-
-.template-overlay .screenshot.selected img {
-	opacity: 0.8;
-}
-
-/* No screenshot placeholder */
-.template-browser .template .template-screenshot.blank,
-.template-overlay .screenshot.blank {
-	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAALElEQVQYGWO8d+/efwYkoKioiMRjYGBC4WHhUK6A8T8QIJt8//59ZC493AAAQssKpBK4F5AAAAAASUVORK5CYII=);
-}
-
-/**
- * Theme heading information
- */
-.template-overlay .template-info {
-	width: 40%;
-	float: left;
-}
-
-.template-overlay .current-label {
-	background: #32373c;
-	color: #fff;
-	font-size: 11px;
-	display: inline-block;
-	padding: 2px 8px;
-	border-radius: 2px;
-	margin: 0 0 -10px;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-.template-overlay .template-name {
-	color: #23282d;
-	font-size: 32px;
-	font-weight: 100;
-	margin: 10px 0 0;
-	line-height: 1.3;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-}
-
-.template-overlay .template-version {
-	color: #72777c;
-	font-size: 13px;
-	font-weight: 400;
-	float: none;
-	display: inline-block;
-	margin-left: 10px;
-}
-
-.template-overlay .template-author {
-	margin: 15px 0 25px;
-	color: #72777c;
-	font-size: 16px;
-	font-weight: 400;
-	line-height: inherit;
-}
-
-.template-overlay .toggle-auto-update {
-	/* Better align spin icon and text. */
-	display: inline-flex;
-	align-items: center;
-	/* Prevents content after the auto-update toggler from jumping down and up. */
-	min-height: 20px; /* Same height as the spinning dashicon. */
-	vertical-align: top;
-}
-
-.template-overlay .template-autoupdate .toggle-auto-update {
-	text-decoration: none;
-}
-
-.template-overlay .template-autoupdate .toggle-auto-update .label {
-	text-decoration: underline;
-}
-
-.template-overlay .template-description {
-	color: #555;
-	font-size: 15px;
-	font-weight: 400;
-	line-height: 1.5;
-	margin: 30px 0 0 0;
-}
-
-.template-overlay .template-tags {
-	border-top: 3px solid #eee;
-	color: #82878c;
-	font-size: 13px;
-	font-weight: 400;
-	margin: 30px 0 0 0;
-	padding-top: 20px;
-}
-
-.template-overlay .template-tags span {
-	color: #444;
-	font-weight: 600;
-	margin-right: 5px;
-}
-
-.template-overlay .parent-template {
-	background: #f7fcfe;
-	border: 1px solid #eee;
-	border-left: 4px solid #00a0d2;
-	font-size: 14px;
-	font-weight: 400;
-	margin-top: 30px;
-	padding: 10px 10px 10px 20px;
-}
-
-.template-overlay .parent-template strong {
-	font-weight: 600;
 }

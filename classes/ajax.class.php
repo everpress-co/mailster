@@ -2383,18 +2383,17 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$query = array(
-			's' => esc_attr( $_POST['search'] ),
+			's'      => esc_attr( $_POST['search'] ),
 			'browse' => esc_attr( $_POST['browse'] ),
 			'page'   => absint( $_POST['page'] ),
-			'author'   => esc_attr( $_POST['author'] ),
+			'author' => esc_attr( $_POST['author'] ),
 		);
-
 
 		$result = mailster( 'templates' )->query( $query );
 
 		if ( ! is_wp_error( $result ) ) {
-			$return['total'] = $result['total'];
-			$return['html']  = mailster( 'templates' )->result_to_html( $result );
+			$return['total']     = $result['total'];
+			$return['html']      = mailster( 'templates' )->result_to_html( $result );
 			$return['templates'] = $result['items'];
 		}
 

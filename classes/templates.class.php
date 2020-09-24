@@ -408,7 +408,8 @@ class MailsterTemplates {
 			include ABSPATH . 'wp-admin/includes/file.php';
 		}
 
-		$files = list_files( $this->path, 2 );
+		$files   = list_files( $this->path, 2 );
+		$current = mailster_option( 'default_template' );
 		sort( $files );
 
 		foreach ( $files as $file ) {
@@ -416,14 +417,24 @@ class MailsterTemplates {
 
 				$filename = str_replace( $this->path . '/', '', $file );
 				$slug     = dirname( $filename );
-				if ( ! $slugsonly ) {
-					$templates[ $slug ] = $this->get_template_data( $file );
-				} else {
+				if ( $slugsonly ) {
 					$templates[] = $slug;
+				} else {
+					$templates[ $slug ] = $this->get_template_data( $file );
 				}
 			}
 		}
-		ksort( $templates );
+
+		if ( $slugsonly ) {
+			sort( $templates );
+		} else {
+			ksort( $templates );
+			// bring the current one to the first position
+			if ( $current && isset( $templates[ $current ] ) ) {
+				$templates = array( $current => $templates[ $current ] ) + $templates;
+			}
+		}
+
 		return $templates;
 
 	}
@@ -573,7 +584,7 @@ class MailsterTemplates {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_style( 'mailster-templates', MAILSTER_URI . 'assets/css/templates-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_register_style( 'mailster-templates', MAILSTER_URI . 'assets/css/templates-style' . $suffix . '.css', array( 'themes' ), MAILSTER_VERSION );
 		wp_enqueue_style( 'mailster-templates' );
 		wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION, true );
@@ -1164,19 +1175,27 @@ class MailsterTemplates {
 
 	public function query( $query ) {
 
-		$result = array();
+		$result = array(
+			'total' => 0,
+			'items' => array(),
+		);
 
 		$endpoint = 'https://mailster.dev/templates.json';
 
-		$args = wp_parse_args( $query, array(
-			'browse' =>  'new',
-			'page'   => 1,
-		));
+		$args = wp_parse_args(
+			$query,
+			array(
+				'browse' => 'new',
+				'page'   => 1,
+			)
+		);
 
 		if ( $args['browse'] == 'installed' ) {
-			$templates         = $this->get_templates( true );
-			$args['templates'] = implode( ',', $templates );
+			$templates         = $this->get_templates();
+			$result['items']   = $templates;
+			$args['templates'] = implode( ',', array_keys( $templates ) );
 		}
+
 		// $args     = wp_parse_args( $args, array( 'sslverify' => false ) );
 		// $endpoint = 'https://mailster.local/templates.json';
 
@@ -1191,7 +1210,11 @@ class MailsterTemplates {
 		if ( $response_code != 200 || is_wp_error( $response ) ) {
 
 		} else {
-			$result = json_decode( $response_body, true );
+			$response_result = json_decode( $response_body, true );
+			error_log( print_r( $response_result, true ) );
+			$result['items'] = wp_parse_args( $response_result['items'], $result['items'] );
+			$result['total'] = max( count( $result['items'] ), $response_result['total'] );
+			error_log( print_r( $result, true ) );
 		}
 
 		return $this->prepare_results( $result );
@@ -1207,15 +1230,15 @@ class MailsterTemplates {
 				$result['items'][ $slug ]['update_available'] = $item['new_version'] ? version_compare( $item['new_version'], $templates[ $slug ]['version'], '>' ) : strtotime( $item['updated'] ) > strtotime( $templates[ $slug ]['update'] );
 				$result['items'][ $slug ]                     = wp_parse_args( $templates[ $slug ], $result['items'][ $slug ] );
 				$result['items'][ $slug ]['installed']        = true;
-				$temp = $result['items'][ $slug ];
-				unset( $result['items'][ $slug ] );
-				$result['items'] = array( $slug => $temp ) + $result['items'];
+
+				// $temp = $result['items'][ $slug ];
+				// unset( $result['items'][ $slug ] );
+				// $result['items'] = array( $slug => $temp ) + $result['items'];
 			} else {
 				$result['items'][ $slug ]['update_available'] = false;
 				$result['items'][ $slug ]['installed']        = false;
 			}
 		}
-
 
 		return $result;
 	}
@@ -1244,7 +1267,32 @@ class MailsterTemplates {
 			return $cached;
 		}
 
+		$defaults = array(
+			'name'           => esc_html__( 'unknown', 'mailster' ),
+			// 'image'          => null,
+			'description'    => null,
+			'index'          => null,
+			'uri'            => null,
+			'endpoint'       => null,
+			'version'        => null,
+			'new_version'    => false,
+			'update'         => false,
+			'author'         => false,
+			'author_profile' => false,
+			'requires'       => '2.2',
+			'is_feature'     => false,
+			'is_default'     => false,
+			'is_free'        => false,
+			'is_sale'        => false,
+			'hidden'         => false,
+			'author_profile' => '',
+			'homepage'       => null,
+			'download_url'   => null,
+		);
+
 		$basename = false;
+		$path     = dirname( $file );
+		$slug     = basename( $path );
 		if ( ! file_exists( $file ) && is_string( $file ) ) {
 			$file_data = $file;
 		} else {
@@ -1264,9 +1312,12 @@ class MailsterTemplates {
 		}
 
 		$file_data = compact( array_keys( $this->headers ) );
+		$file_data = wp_parse_args( $file_data, $defaults );
+
+		$file_data['index'] = str_replace( MAILSTER_UPLOAD_DIR, MAILSTER_UPLOAD_URI, $path ) . '/index.html';
 
 		if ( empty( $file_data['name'] ) ) {
-			$file_data['name'] = ucwords( basename( dirname( $file ) ) );
+			$file_data['name'] = ucwords( $slug );
 		}
 
 		if ( empty( $file_data['author'] ) ) {
@@ -1285,6 +1336,14 @@ class MailsterTemplates {
 
 		if ( empty( $file_data['label'] ) ) {
 			$file_data['label'] = substr( $basename, 0, strrpos( $basename, '.' ) );
+		}
+		if ( mailster_option( 'default_template' ) == $slug ) {
+			$file_data['is_default'] = true;
+		}
+		if ( file_exists( $path . '/screenshot.png' ) ) {
+			$file_data['image'] = str_replace( MAILSTER_UPLOAD_DIR, MAILSTER_UPLOAD_URI, $path ) . '/screenshot.png';
+		} elseif ( file_exists( $path . '/screenshot.jpg' ) ) {
+			$file_data['image'] = str_replace( MAILSTER_UPLOAD_DIR, MAILSTER_UPLOAD_URI, $path ) . '/screenshot.jpg';
 		}
 
 		$file_data['update'] = date( 'Y-m-d H:i:s', filemtime( $file ) );
