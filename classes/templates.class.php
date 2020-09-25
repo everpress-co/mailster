@@ -10,10 +10,35 @@ class MailsterTemplates {
 		'name'        => 'Template Name',
 		'label'       => 'Name',
 		'uri'         => 'Template URI',
+		'url'         => 'Template URI',
 		'description' => 'Description',
 		'author'      => 'Author',
 		'author_uri'  => 'Author URI',
+		'author_url'  => 'Author URI',
 		'version'     => 'Version',
+	);
+
+	private $template_fields = array(
+		'name'           => null,
+		'slug'           => null,
+		'image'          => null,
+		'description'    => null,
+		'index'          => null,
+		'url'            => null,
+		'endpoint'       => null,
+		'version'        => null,
+		'new_version'    => null,
+		'update'         => null,
+		'updated'        => null,
+		'author'         => null,
+		'author_profile' => null,
+		'requires'       => '2.2',
+		'is_default'     => null,
+		'is_verified'    => null,
+		'author_profile' => null,
+		'homepage'       => null,
+		'download_url'   => null,
+		'price'          => null,
 	);
 
 	public function __construct() {
@@ -1173,51 +1198,70 @@ class MailsterTemplates {
 
 
 
-	public function query( $query ) {
+	public function query( $query_args ) {
 
-		$result = array(
-			'total' => 0,
-			'items' => array(),
-		);
-
+		$endpoint = 'https://mailster.local/templates.json';
 		$endpoint = 'https://mailster.dev/templates.json';
 
-		$args = wp_parse_args(
-			$query,
+		$query_args = wp_parse_args(
+			rawurlencode_deep( $query_args ),
 			array(
+				'type'   => 'keyword',
 				'browse' => 'new',
 				'page'   => 1,
 			)
 		);
 
-		if ( $args['browse'] == 'installed' ) {
-			$templates         = $this->get_templates();
-			$result['items']   = $templates;
-			$args['templates'] = implode( ',', array_keys( $templates ) );
+		$cache_key = 'mailster_templates_' . md5( serialize( $query_args ) . $endpoint );
+
+		if ( ! ( $result = get_transient( $cache_key ) ) ) {
+
+			$result = array(
+				'total' => 0,
+				'items' => array(),
+			);
+
+			if ( $query_args['browse'] == 'installed' ) {
+				$templates               = $this->get_templates();
+				$result['items']         = $templates;
+				$query_args['templates'] = implode( ',', array_keys( $templates ) );
+			}
+
+			$args = array(
+				'sslverify' => false,
+				'headers'   => array( 'hash' => sha1( mailster_option( 'ID' ) ) ),
+			);
+
+			$url = add_query_arg( $query_args, $endpoint );
+
+			$response = wp_remote_get( $url, $args );
+
+			$response_code = wp_remote_retrieve_response_code( $response );
+
+			$response_body = wp_remote_retrieve_body( $response );
+
+			if ( $response_code != 200 || is_wp_error( $response ) ) {
+
+			} else {
+				$response_result = json_decode( $response_body, true );
+
+				// $result['items'] = wp_parse_args( $response_result['items'], $result['items'] );
+				error_log( print_r( $result['items'], true ) );
+				error_log( print_r( $response_result['items'], true ) );
+
+				$result['items'] = wp_parse_args( $result['items'], $response_result['items'] );
+				$result['total'] = max( count( $result['items'] ), $response_result['total'] );
+
+			}
+
+			$result = $this->prepare_results( $result );
+			set_transient( $cache_key, $result, 120 );
+
 		}
 
-		// $args     = wp_parse_args( $args, array( 'sslverify' => false ) );
-		// $endpoint = 'https://mailster.local/templates.json';
+		error_log( print_r( $result['items'], true ) );
 
-		$url = add_query_arg( $args, $endpoint );
-
-		$response = wp_remote_get( $url, $args );
-
-		$response_code = wp_remote_retrieve_response_code( $response );
-
-		$response_body = wp_remote_retrieve_body( $response );
-
-		if ( $response_code != 200 || is_wp_error( $response ) ) {
-
-		} else {
-			$response_result = json_decode( $response_body, true );
-			error_log( print_r( $response_result, true ) );
-			$result['items'] = wp_parse_args( $response_result['items'], $result['items'] );
-			$result['total'] = max( count( $result['items'] ), $response_result['total'] );
-			error_log( print_r( $result, true ) );
-		}
-
-		return $this->prepare_results( $result );
+		return $result;
 
 	}
 
@@ -1226,6 +1270,9 @@ class MailsterTemplates {
 		$templates = $this->get_templates();
 
 		foreach ( $result['items'] as $slug => $item ) {
+
+			$result['items'][ $slug ] = wp_parse_args( $result['items'][ $slug ], $this->template_fields );
+
 			if ( isset( $templates[ $slug ] ) ) {
 				$result['items'][ $slug ]['update_available'] = $item['new_version'] ? version_compare( $item['new_version'], $templates[ $slug ]['version'], '>' ) : strtotime( $item['updated'] ) > strtotime( $templates[ $slug ]['update'] );
 				$result['items'][ $slug ]                     = wp_parse_args( $templates[ $slug ], $result['items'][ $slug ] );
@@ -1267,29 +1314,6 @@ class MailsterTemplates {
 			return $cached;
 		}
 
-		$defaults = array(
-			'name'           => esc_html__( 'unknown', 'mailster' ),
-			// 'image'          => null,
-			'description'    => null,
-			'index'          => null,
-			'uri'            => null,
-			'endpoint'       => null,
-			'version'        => null,
-			'new_version'    => false,
-			'update'         => false,
-			'author'         => false,
-			'author_profile' => false,
-			'requires'       => '2.2',
-			'is_feature'     => false,
-			'is_default'     => false,
-			'is_free'        => false,
-			'is_sale'        => false,
-			'hidden'         => false,
-			'author_profile' => '',
-			'homepage'       => null,
-			'download_url'   => null,
-		);
-
 		$basename = false;
 		$path     = dirname( $file );
 		$slug     = basename( $path );
@@ -1312,8 +1336,9 @@ class MailsterTemplates {
 		}
 
 		$file_data = compact( array_keys( $this->headers ) );
-		$file_data = wp_parse_args( $file_data, $defaults );
+		$file_data = wp_parse_args( $file_data, $this->template_fields );
 
+		$file_data['slug']  = $slug;
 		$file_data['index'] = str_replace( MAILSTER_UPLOAD_DIR, MAILSTER_UPLOAD_URI, $path ) . '/index.html';
 
 		if ( empty( $file_data['name'] ) ) {
@@ -1339,11 +1364,6 @@ class MailsterTemplates {
 		}
 		if ( mailster_option( 'default_template' ) == $slug ) {
 			$file_data['is_default'] = true;
-		}
-		if ( file_exists( $path . '/screenshot.png' ) ) {
-			$file_data['image'] = str_replace( MAILSTER_UPLOAD_DIR, MAILSTER_UPLOAD_URI, $path ) . '/screenshot.png';
-		} elseif ( file_exists( $path . '/screenshot.jpg' ) ) {
-			$file_data['image'] = str_replace( MAILSTER_UPLOAD_DIR, MAILSTER_UPLOAD_URI, $path ) . '/screenshot.jpg';
 		}
 
 		$file_data['update'] = date( 'Y-m-d H:i:s', filemtime( $file ) );

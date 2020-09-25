@@ -10,6 +10,9 @@ if ( $item['installed'] ) {
 if ( $item['update_available'] ) {
 	$classes[] = 'update-available';
 }
+if ( $item['envato_item_id'] ) {
+	$classes[] = 'envato-item';
+}
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $item['slug'] ); ?>" data-item='<?php echo json_encode( $item ); ?>'>
 	<div class="theme-screenshot">
@@ -39,8 +42,11 @@ if ( $item['update_available'] ) {
 			<?php if ( $item['installed'] ) : ?>
 			<a class="button button-primary create-campaign" href="<?php echo admin_url( 'post-new.php?post_type=newsletter&template=' . $item['slug'] ); ?>" aria-label="<?php esc_attr_e( 'Create Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
 			<?php endif; ?>
+			<?php if ( $item['download_url'] ) : ?>
+			<a class="button button-primary download popup updating-message" data-width="800" data-height="80%" href="<?php echo esc_url( $item['download_url'] ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
+			<?php endif; ?>
 			<?php if ( $item['price'] ) : ?>
-			<a class="button button-primary buy" href="<?php echo esc_attr( $url ); ?>" onclick="window.open('<?php echo esc_attr( $url ); ?>','MyWindow','width=800,height=500,toolbar=no,menubar=no,location=no,status=no,scrollbars=no,resizable=no,left=320,top=200');return false;"><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
+			<a class="button button-primary buy" href="<?php echo esc_url( $item['purchase_url'] ); ?>" onclick="window.open('<?php echo esc_url( $item['purchase_url'] ); ?>','MyWindow','width=800,height=1000,toolbar=no,menubar=no,location=no,status=no,scrollbars=no,resizable=no');return false;"><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
 			<?php endif; ?>
 		</div>
 	</div>

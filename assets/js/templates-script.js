@@ -6,14 +6,17 @@ mailster = (function (mailster, $, window, document) {
 		templatebrowser = $('.theme-browser'),
 		filterlinks = filterbar.find('.filter-links a'),
 		searchform = filterbar.find('.search-form'),
-		searchfield = filterbar.find('.search-field'),
+		searchfield = filterbar.find('.wp-filter-search'),
+		typeselector = filterbar.find('#typeselector'),
 		searchdelay,
 		currentfilter,
 		lastsearchquery = '',
+		lastsearchtype = '',
 		currentpage = 1,
 		total = 0,
 		currentdisplayed = 0,
 		searchquery = searchfield.val(),
+		searchtype = typeselector.val(),
 		templates = [],
 		busy = false;
 
@@ -22,10 +25,6 @@ mailster = (function (mailster, $, window, document) {
 			event.preventDefault();
 			setFilter($(this).data('sort'));
 			return;
-			searchfield.val('');
-			removeQueryStringParameter('search');
-			lastsearchquery = '';
-			setQueryStringParameter('browse', $(this).data('sort'));
 		});
 
 	searchform.on('submit', function (event) {
@@ -41,11 +40,44 @@ mailster = (function (mailster, $, window, document) {
 		searchdelay && clearTimeout(searchdelay);
 		searchdelay = setTimeout(search, 1000);
 	});
+	typeselector.on('change', function (event) {
+		searchdelay && clearTimeout(searchdelay);
+		search();
+	});
 
 	templatebrowser
 		.on('click', '.theme-screenshot', function () {
-			console.log('Asdasd');
 			overlay.open($(this).closest('.theme'));
+		})
+		.on('click', '.popup', function () {
+			var href = this.href;
+
+			if (!/^https?/.test(href)) return true;
+
+			var dimensions = $(this).data(),
+				dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left,
+				dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top,
+				width = mailster.$.window.width(),
+				height = mailster.$.window.height(),
+				left, top, newWindow;
+
+			if (/%/.test(dimensions.width)) {
+				dimensions.width = width * (parseInt(dimensions.width, 10) / 100);
+			}
+
+			if (/%/.test(dimensions.height)) {
+				dimensions.height = height * (parseInt(dimensions.height, 10) / 100);
+			}
+
+			left = ((width / 2) - (dimensions.width / 2)) + dualScreenLeft;
+			top = ((height / 2) - (dimensions.height / 2)) + dualScreenTop;
+			newWindow = window.open(href, 'mailster_themebrowser', 'scrollbars=auto,resizable=1,menubar=0,toolbar=0,location=0,directories=0,status=0, width=' + dimensions.width + ', height=' + dimensions.height + ', top=' + top + ', left=' + left);
+
+			if (window.focus)
+				newWindow.focus();
+
+			return false;
+
 		});
 
 	mailster.$.window
@@ -119,6 +151,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function init() {
 		searchfield.val(getQueryStringParameter('search'));
+		typeselector.val(getQueryStringParameter('type') || 'term');
 		if (currentfilter = getQueryStringParameter('browse')) {} else {
 			currentfilter = 'installed';
 		}
@@ -136,12 +169,11 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function setFilter(filter) {
-
 		currentfilter && $('body').removeClass('browse-' + currentfilter);
 		currentfilter = filter;
 		filterlinks.removeClass('current');
 		$(filterlinks.filter('[data-sort="' + currentfilter + '"]')).addClass('current');
-		removeQueryStringParameter('search');
+		//removeQueryStringParameter('search');
 		setQueryStringParameter('browse', currentfilter);
 		currentpage = 1;
 		templates = [];
@@ -150,13 +182,16 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function search() {
-		if (searchquery = searchfield.val()) {
+		if (searchquery = $.trim(searchfield.val())) {
 			setQueryStringParameter('search', searchquery);
 		} else {
 			removeQueryStringParameter('search');
 		}
-		if (lastsearchquery != searchquery) {
+		searchtype = typeselector.val();
+		setQueryStringParameter('type', searchtype);
+		if (lastsearchquery != searchquery || lastsearchtype != searchtype) {
 			query();
+			lastsearchtype = searchtype;
 			lastsearchquery = searchquery;
 		}
 
@@ -174,8 +209,8 @@ mailster = (function (mailster, $, window, document) {
 
 		mailster.util.ajax('query_templates', {
 			search: searchfield.val(),
+			type: typeselector.val(),
 			browse: getQueryStringParameter('browse'),
-			author: getQueryStringParameter('author'),
 			page: currentpage,
 		}, function (response) {
 

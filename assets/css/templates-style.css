@@ -1,3 +1,24 @@
+@media only screen and (max-width: 600px){
+	.theme-browser .theme {
+		width: 100%;
+		margin-right: 0;
+	}
+}
+.wrap .theme-browser .notice {
+	margin: 0;
+}
+.wrap > .notice.inline {
+	display: none;
+}
+.browse-installed .wrap > .notice.inline.theme-notice-installed,
+.browse-free .wrap > .notice.inline.theme-notice-free,
+.browse-updated .wrap > .notice.inline.theme-notice-updated,
+.browse-popular .wrap > .notice.inline.theme-notice-popular {
+	display: block;
+}
+.browse-installed .wp-filter .search-form {
+	display: none;
+}
 .wp-filter .search-form select, .wp-filter .search-form .wp-filter-search {
 	display: inline-block;
 	margin-top: 10px;
@@ -5,9 +26,6 @@
 }
 .wp-filter .search-form .search-submit{
 	display: none;
-}
-.wrap .theme-browser .notice {
-	margin: 0;
 }
 .theme-browser .theme .theme-screenshot {
 	height: 400px;
@@ -32,7 +50,6 @@
 	padding: 0.2em 0.4em;
 	margin-left:0.6em;
 }
-
 .theme-browser .theme .theme-screenshot .theme-screenshot-img, .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
 	position: absolute;
 	width: 75%;
@@ -66,9 +83,12 @@
 	display: none;
 }
 .theme-overlay .screenshot iframe{
-	width: 100%;
-	height: 100%;
-	display: none;
+	position: absolute;
+	width: 125%;
+	height: 125%;
+	transform: scale(0.8);
+	transform-origin: top left;
+	left: 0
 }
 .browse-installed .theme-overlay .screenshot iframe{
 	display: block;

@@ -2385,8 +2385,8 @@ class MailsterAjax {
 		$query = array(
 			's'      => esc_attr( $_POST['search'] ),
 			'browse' => esc_attr( $_POST['browse'] ),
+			'type'   => esc_attr( $_POST['type'] ),
 			'page'   => absint( $_POST['page'] ),
-			'author' => esc_attr( $_POST['author'] ),
 		);
 
 		$result = mailster( 'templates' )->query( $query );
