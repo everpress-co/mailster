@@ -88,6 +88,10 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.15 =
+
+* improved: handling of folder names during template upload
+
 = Version 2.4.14 =
 
 * improved: internal handling for sending limits
