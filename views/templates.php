@@ -29,7 +29,6 @@
 		<input type="submit" id="search-submit" class="button hide-if-js" value="<?php esc_attr_e( 'Search Templates', 'mailster' ); ?>">
 	</form>
 
-
 </div>
 
 <div class="notice notice-alt notice-large inline theme-notice-free">

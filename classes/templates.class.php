@@ -206,14 +206,24 @@ class MailsterTemplates {
 					}
 				}
 
+				$data = $this->get_template_data( $uploadfolder . '/' . $folder . '/index.html' );
+
 				// need index.html file
-				if ( ! file_exists( $uploadfolder . '/' . $folder . '/index.html' ) ) {
+				if ( ! $data ) {
 
 					$all_files = list_files( $uploadfolder );
-					$zips      = preg_grep( '#\/([^\/]+)?(mailster|mymail)([^\/]+)?\.zip$#i', $all_files );
+					$all_files = str_replace( trailingslashit( $uploadfolder ), '', $all_files );
+
+					// strict search (only in filename)
+					$zips = preg_grep( '#(mailster|mymail)([^\/]+)?\.zip$#i', $all_files );
+					if ( empty( $zips ) ) {
+						// lazy search (also in dirname)
+						$zips = preg_grep( '#(mailster|mymail)(.*)?\.zip$#i', $all_files );
+					}
+
 					foreach ( $zips as $zip ) {
 
-						$result = $this->unzip_template( $zip, $renamefolder, $overwrite, $backup_old );
+						$result = $this->unzip_template( trailingslashit( $uploadfolder ) . $zip, $renamefolder, $overwrite, $backup_old );
 						if ( ! is_wp_error( $result ) ) {
 							$wp_filesystem->delete( $uploadfolder, true );
 							return $result;
@@ -273,7 +283,7 @@ class MailsterTemplates {
 					}
 				}
 
-					// with name value
+				// with name value
 				if ( ! empty( $data['name'] ) ) {
 					wp_mkdir_p( $this->path . '/' . $templateslug );
 
@@ -1317,11 +1327,18 @@ class MailsterTemplates {
 		$slug     = basename( $path );
 		if ( ! file_exists( $file ) && is_string( $file ) ) {
 			$file_data = $file;
+		} elseif ( ! file_exists( $file ) ) {
+			return false;
 		} else {
 			$basename  = basename( $file );
 			$fp        = fopen( $file, 'r' );
 			$file_data = fread( $fp, 2048 );
 			fclose( $fp );
+		}
+
+		// no header
+		if ( 0 !== strpos( trim( $file_data ), '<!--' ) ) {
+			return false;
 		}
 
 		foreach ( $this->headers as $field => $regex ) {
