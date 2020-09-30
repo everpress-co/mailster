@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.15 =
 
 * improved: handling of folder names during template upload
+* fixed: saving queued campaigns cause sending them immediately
 
 = Version 2.4.14 =
 
