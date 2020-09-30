@@ -49,6 +49,11 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.theme-screenshot', function () {
 			overlay.open($(this).closest('.theme'));
 		})
+		.on('click', '.download', function (event) {
+			event.preventDefault();
+			$(this).addClass('updating-message');
+			downloadTemplateFromUrl(this.href, $(this).closest('.theme').data('slug'));
+		})
 		.on('click', '.popup', function () {
 			var href = this.href;
 
@@ -80,12 +85,20 @@ mailster = (function (mailster, $, window, document) {
 
 		});
 
+	$('.upload-template').on('click', function () {
+		$('.upload-field').toggle();
+	})
+
 	mailster.$.window
 		.on('popstate', function (event) {
 			//updateState(event);
+		})
+		.on('click', '.upload-template', function () {
+			$('.upload-field').show();
 		});
 
 	mailster.events.push('documentReady', function () {
+		uploader_init();
 		mailster.$.window.on('scroll.mailster', mailster.util.throttle(maybeLoadTemplates, 500))
 	});
 
@@ -101,16 +114,18 @@ mailster = (function (mailster, $, window, document) {
 			nextbtn = overlay.find('.right'),
 			prevbtn = overlay.find('.left'),
 			closebtn = overlay.find('.close'),
+			deletebtn = overlay.find('.delete-theme'),
 			data = {};
 
 		var open = function (template) {
 				currentTemplate = template;
 				data = template.data('item');
+				console.log(data);
 				overlay.find('.theme-name').html(data.name + '<span class="theme-version">' + data.updated + '</span>');
 				overlay.find('.theme-author-name').html(data.author);
 				overlay.find('.theme-description').html(data.description);
-				overlay.find('.theme-tags').html('<span>Tags:</span> ' + data.tags.join(', '));
-				overlay.find('.theme-screenshots img').attr('src', data.image);
+				overlay.find('.theme-tags').html(data.tags ? '<span>Tags:</span> ' + data.tags.join(', ') : '');
+				overlay.find('.theme-screenshots img').attr('src', data.image_full).attr('srcset', data.image_full + ' 1x, ' + data.image_fullx2 + ' 2x');
 				overlay.find('.theme-screenshots iframe').attr('src', data.index);
 				prevTemplate = currentTemplate.prev();
 				nextTemplate = currentTemplate.next();
@@ -131,10 +146,19 @@ mailster = (function (mailster, $, window, document) {
 				open(currentTemplate.prev());
 			},
 
+			remove = function () {
+				if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, '"' + data.name + '"'))) {
+					deleteTemplate(data.slug);
+					close();
+				}
+				return false;
+			},
+
 			init = function () {
 				nextbtn.on('click', next);
 				prevbtn.on('click', prev);
 				closebtn.on('click', close);
+				deletebtn.on('click', remove);
 			};
 
 		init();
@@ -144,6 +168,7 @@ mailster = (function (mailster, $, window, document) {
 			close: close,
 			next: next,
 			prev: prev,
+			delete: remove,
 		}
 
 	}();
@@ -152,10 +177,13 @@ mailster = (function (mailster, $, window, document) {
 	function init() {
 		searchfield.val(getQueryStringParameter('search'));
 		typeselector.val(getQueryStringParameter('type') || 'term');
-		if (currentfilter = getQueryStringParameter('browse')) {} else {
-			currentfilter = 'installed';
+		currentfilter = getQueryStringParameter('browse') || 'installed';
+		if (getQueryStringParameter('search')) {
+			search();
+		} else {
+			setFilter(currentfilter);
+
 		}
-		setFilter(currentfilter);
 	}
 
 	function maybeLoadTemplates() {
@@ -169,31 +197,123 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function setFilter(filter) {
-		currentfilter && $('body').removeClass('browse-' + currentfilter);
-		currentfilter = filter;
-		filterlinks.removeClass('current');
-		$(filterlinks.filter('[data-sort="' + currentfilter + '"]')).addClass('current');
-		//removeQueryStringParameter('search');
-		setQueryStringParameter('browse', currentfilter);
+		currentfilter && $('body').removeClass('browse-' + currentfilter) && filterlinks.filter('[data-sort="' + currentfilter + '"]').removeClass('current');
+		currentfilter = filter || false;
+		if (currentfilter) {
+			resetSearch();
+			filterlinks.filter('[data-sort="' + currentfilter + '"]').addClass('current');
+			setQueryStringParameter('browse', currentfilter);
+			$('body').addClass('browse-' + currentfilter);
+			query();
+		}
+	}
+
+	function resetFilter() {
+		currentfilter && $('body').removeClass('browse-' + currentfilter) && filterlinks.filter('[data-sort="' + currentfilter + '"]').removeClass('current');
+		removeQueryStringParameter('browse');
+		currentfilter = false;
 		currentpage = 1;
 		templates = [];
-		$('body').addClass('browse-' + currentfilter);
-		query();
+	}
+
+	function resetSearch() {
+		removeQueryStringParameter('search');
+		removeQueryStringParameter('type');
+		lastsearchtype = '';
+		lastsearchquery = '';
+		searchfield.val('');
+		typeselector.val('term');
+		currentpage = 1;
+		templates = [];
 	}
 
 	function search() {
-		if (searchquery = $.trim(searchfield.val())) {
-			setQueryStringParameter('search', searchquery);
-		} else {
-			removeQueryStringParameter('search');
-		}
+		searchquery = $.trim(searchfield.val());
+		// Escape the term string for RegExp meta characters.
+		searchquery = searchquery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
 		searchtype = typeselector.val();
-		setQueryStringParameter('type', searchtype);
 		if (lastsearchquery != searchquery || lastsearchtype != searchtype) {
-			query();
 			lastsearchtype = searchtype;
 			lastsearchquery = searchquery;
+			resetFilter();
+			query();
+			setQueryStringParameter('search', searchquery);
+			setQueryStringParameter('type', searchtype);
 		}
+		return;
+
+
+	}
+
+	function downloadTemplate(slug) {
+		var template = $('[data-slug="' + slug + '"]');
+
+		busy = true;
+
+
+		template.addClass('loading');
+
+		mailster.util.ajax('download_template', {
+			slug: slug,
+		}, function (response) {
+
+			// template.animate({width:0, 'margin-right':0}, function(){
+			// 	template.remove();
+			// 	busy = false;
+			// });
+
+		}, function (jqXHR, textStatus, errorThrown) {})
+
+	}
+
+	function downloadTemplateFromUrl(url, slug) {
+
+		var template = $('[data-slug="' + slug + '"]');
+
+		busy = true;
+
+		template.find('.request-download').addClass('updating-message');
+
+		mailster.util.ajax('download_template', {
+			url: url,
+			slug: slug,
+		}, function (response) {
+
+
+			if (response.redirect) {
+				//document.location = response.redirect;
+			}
+			template.find('.updating-message').removeClass('updating-message');
+			setFilter('installed');
+
+			busy = false;
+
+		}, function (jqXHR, textStatus, errorThrown) {})
+
+	}
+
+	function deleteTemplate(slug) {
+
+		var template = $('[data-slug="' + slug + '"]');
+
+		busy = true;
+
+		template.addClass('loading');
+
+		mailster.util.ajax('delete_template', {
+			slug: slug,
+		}, function (response) {
+
+			template.animate({
+				width: 0,
+				'margin-right': 0
+			}, function () {
+				template.remove();
+				busy = false;
+			});
+
+		}, function (jqXHR, textStatus, errorThrown) {})
 
 	}
 
@@ -247,7 +367,72 @@ mailster = (function (mailster, $, window, document) {
 		window.history.pushState({}, "", decodeURIComponent(window.location.pathname + '?' + params));
 	}
 
+	function uploader_init() {
+
+		var uploader = new plupload.Uploader(wpUploaderInit),
+			uploadinfo = $('.uploadinfo');
+
+		uploader.bind('Init', function (up) {
+			var uploaddiv = $('#plupload-upload-ui');
+
+			if (up.features.dragdrop && !mailster.util.isTouchDevice) {
+				uploaddiv.addClass('drag-drop');
+				$('#drag-drop-area').bind('dragover.wp-uploader', function () { // dragenter doesn't fire right :(
+					uploaddiv.addClass('drag-over');
+				}).bind('dragleave.wp-uploader, drop.wp-uploader', function () {
+					uploaddiv.removeClass('drag-over');
+				});
+			} else {
+				uploaddiv.removeClass('drag-drop');
+				$('#drag-drop-area').unbind('.wp-uploader');
+			}
+
+			if (up.runtime == 'html4')
+				$('.upload-flash-bypass').hide();
+
+		});
+
+		uploader.init();
+
+		uploader.bind('FilesAdded', function (up, files) {
+
+			setTimeout(function () {
+				up.refresh();
+				up.start();
+			}, 1);
+
+		});
+
+		uploader.bind('BeforeUpload', function (up, file) {});
+
+		uploader.bind('UploadFile', function (up, file) {});
+
+		uploader.bind('UploadProgress', function (up, file) {
+			uploadinfo.html(mailster.util.sprintf(mailster.l10n.templates.uploading, file.percent + '%'));
+		});
+
+		uploader.bind('Error', function (up, err) {
+			uploadinfo.html(err.message);
+			up.refresh();
+		});
+
+		uploader.bind('FileUploaded', function (up, file, response) {
+			response = $.parseJSON(response.response);
+			if (response.success) {
+				location.reload();
+			} else {
+				uploadinfo.html(response.error);
+			}
+		});
+
+		uploader.bind('UploadComplete', function (up, files) {});
+	}
+
 	init();
+	mailster.templates = mailster.templates || {};
+	mailster.templates.download = downloadTemplate;
+	mailster.templates.downloadFromUrl = downloadTemplateFromUrl;
+	mailster.templates.delete = deleteTemplate;
 
 	return mailster;
 

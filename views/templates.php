@@ -1,6 +1,8 @@
 <div class="wrap">
 <h1><?php esc_html_e( 'Templates', 'mailster' ); ?> <a class="page-title-action upload-template"> <?php esc_html_e( 'Upload Template', 'mailster' ); ?> </a></h1>
 
+<div class="upload-field"><?php mailster( 'templates' )->media_upload_form(); ?></div>
+
 <h2 class="screen-reader-text hide-if-no-js"><?php esc_html_e( 'Filter template list', 'mailster' ); ?></h2>
 <div class="wp-filter hide-if-no-js">
 	<div class="filter-count">
@@ -87,7 +89,7 @@
 					<a href="https://fresh.local/wp-admin/themes.php?action=activate&amp;stylesheet=Cayse&amp;_wpnonce=89d90450a2" class="button activate" aria-label="Activate Cayse">Activate</a>
 					<a href="https://fresh.local/wp-admin/customize.php?theme=Cayse&amp;return=%2Fwp-admin%2Fthemes.php" class="button button-primary load-customize hide-if-no-customize">Live Preview</a>
 				</div>
-				<a href="https://fresh.local/wp-admin/themes.php?action=delete&amp;stylesheet=Cayse&amp;_wpnonce=a1ced50138" class="button delete-theme">Delete</a>
+				<a class="button delete-theme">Delete</a>
 			</div>
 		</div>
 	</div>

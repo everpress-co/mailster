@@ -63,6 +63,9 @@ class MailsterAjax {
 		'template_upload_handler',
 
 		'query_templates',
+		'delete_template',
+		'download_template',
+		'template_endpoint',
 
 		// dashboard
 		'get_dashboard_data',
@@ -1790,24 +1793,31 @@ class MailsterAjax {
 	}
 
 
-	private function remove_template() {
+	private function delete_template() {
 		$return['success'] = false;
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$path = mailster( 'templates' )->get_path();
+		$slug = basename( $_POST['slug'] );
 
-		$file = $path . '/' . esc_attr( $_POST['file'] );
-
-		if ( file_exists( $file ) && current_user_can( 'mailster_delete_templates' ) ) {
-			mailster_require_filesystem();
-
-			global $wp_filesystem;
-
-			$return['success'] = $wp_filesystem->delete( $file );
-		}
-
+		$return['success'] = mailster( 'templates' )->remove_template( $slug );
 		$this->json_return( $return );
+
+	}
+
+	private function download_template() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$url  = esc_url( $_POST['url'] );
+		$slug = basename( $_POST['slug'] );
+
+		if ( $return['redirect'] = mailster( 'templates' )->download_template( $url, $slug ) ) {
+			$return['success'] = true;
+		}
+		$this->json_return( $return );
+
 	}
 
 
@@ -2376,6 +2386,26 @@ class MailsterAjax {
 
 	}
 
+	private function remove_template() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$path = mailster( 'templates' )->get_path();
+
+		$file = $path . '/' . esc_attr( $_POST['file'] );
+
+		if ( file_exists( $file ) && current_user_can( 'mailster_delete_templates' ) ) {
+			mailster_require_filesystem();
+
+			global $wp_filesystem;
+
+			$return['success'] = $wp_filesystem->delete( $file );
+		}
+
+		$this->json_return( $return );
+	}
+
 	private function query_templates() {
 
 		$return['success'] = false;
@@ -2400,6 +2430,35 @@ class MailsterAjax {
 		$this->json_return( $return );
 	}
 
+
+	private function template_endpoint() {
+
+		$return['success'] = false;
+
+		$args = $_GET;
+		$slug = basename( $_GET['slug'] );
+
+		$this->ajax_nonce( 'Nonce Expired!', 'mailster_download_template_' . esc_attr( $slug ) );
+
+		if ( isset( $_GET['download_url'] ) ) {
+			?><script>window.opener.mailster.templates.downloadFromUrl('<?php echo esc_url( $_GET['download_url'] ); ?>', '<?php echo esc_attr( $slug ); ?>');window.close();</script>
+			<?php
+			exit;
+		}
+
+		$url = esc_url( $_GET['url'] );
+
+		$location = add_query_arg(
+			array(
+				'redirect_to' => rawurlencode( add_query_arg( $_GET, admin_url( 'admin-ajax.php' ) ) ),
+			),
+			$url
+		);
+
+		wp_redirect( $location );
+		exit;
+
+	}
 
 	private function get_dashboard_data() {
 
@@ -2583,7 +2642,8 @@ class MailsterAjax {
 
 			$args = array( trim( $_GET['slug'] ), trim( $_GET['purchasecode'] ), trim( $_GET['username'] ), trim( $_GET['email'] ) );
 
-			?><script>window.opener.verifymailster('<?php echo implode( "','", $args ); ?>');window.close();</script>
+			?>
+			<script>window.opener.verifymailster('<?php echo implode( "','", $args ); ?>');window.close();</script>
 			<?php
 
 			exit;

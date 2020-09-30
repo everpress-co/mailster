@@ -10,23 +10,64 @@
 .wrap > .notice.inline {
 	display: none;
 }
+.upload-field{
+	padding: 10px 0;
+	display: none;
+
+}
+.upload-field #drag-drop-area{
+	min-height: 260px;
+}
+
 .browse-installed .wrap > .notice.inline.theme-notice-installed,
 .browse-free .wrap > .notice.inline.theme-notice-free,
 .browse-updated .wrap > .notice.inline.theme-notice-updated,
 .browse-popular .wrap > .notice.inline.theme-notice-popular {
 	display: block;
 }
-.browse-installed .wp-filter .search-form {
-	display: none;
-}
-.wp-filter .search-form select, .wp-filter .search-form .wp-filter-search {
+.wp-filter .search-form select {
 	display: inline-block;
 	margin-top: 10px;
 	vertical-align: top;
 }
+.wp-filter .search-form input[type="search"].wp-filter-search {
+	margin-top: 0px;
+}
 .wp-filter .search-form .search-submit{
 	display: none;
 }
+.theme-browser .theme .spinner{
+	visibility: visible;
+	display: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1;
+}
+.theme-browser .theme.loading .spinner{
+	display: block;
+}
+.theme-browser .theme{
+	overflow: hidden;
+}
+.theme-browser .theme.envato-item .theme-name:after{
+	content:'';
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	line-height: 1em;
+	margin-left: 2px;
+	background-image: url(data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNDIgNDgiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGcgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTM5MS4wMDAwMDAsIC01MDMuMDAwMDAwKSIgZmlsbD0iIzgxQjYzNiI+PHBhdGggZD0iTTQyNi42MDcyNjEsNTAzLjI2MzA5MSBDNDI4Ljc1NjYxNyw1MDQuMzE3NTkgNDM3LjUwMzAzNyw1MjMuMTkyMDY4IDQzMC4wNDE1MSw1MzkuNjMwNTQ5IEM0MjQuMDQ5Mjc2LDU1Mi44MzA1MzQgNDA5LjAwNjczMiw1NTIuODMyMDM0IDQwMS4zODE0NTksNTQ4LjE4MDUzOSBDMzk0Ljg2ODQ4Miw1NDQuMjA1NTQ0IDM4NC45MTk3OCw1MzEuNjgyMDU4IDM5NS45MzM1NzEsNTE2LjM4OTU3NiBDMzk2LjM5OTczMiw1MTUuODA5MDc3IDM5Ny41MTc5MjksNTE1Ljg2MTU3NyAzOTcuMjY1NjcxLDUxNy42MTUwNzUgQzM5Ny4wODcxNzIsNTE4Ljg2MDA3MyAzOTUuNDg5NTM4LDUyNy43OTg1NjMgMzk4LjUzODc2Miw1MzEuNjgyMDU4IEMzOTkuOTMxMzQ0LDUzMy42MjQ1NTYgNDAwLjI1NzM2Miw1MzIuMjg1MDU4IDQwMC4yNTczNjIsNTMyLjI4NTA1OCBDNDAwLjI1NzM2Miw1MzIuMjg1MDU4IDQwMC4wMTk4NTYsNTE5LjI3ODU3MyA0MDkuOTA4MDc1LDUwOS40MDQwODQgQzQxNi4xODUwMjIsNTAzLjM4MzA5MSA0MjQuODkwMTM2LDUwMi40MjAwOTIgNDI2LjYwNzI2MSw1MDMuMjYzMDkxIiBpZD0iRW52YXRvIj48L3BhdGg+PC9nPjwvZz48L3N2Zz4=);
+	background-repeat: no-repeat;
+	background-position: center;
+	vertical-align: bottom;
+}
+.theme-browser .theme.loading .theme-screenshot {
+	filter:saturate(60%);
+	opacity: 0.4;
+}
+
 .theme-browser .theme .theme-screenshot {
 	height: 400px;
 }
