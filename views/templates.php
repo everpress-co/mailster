@@ -26,8 +26,8 @@
 			<option value="author"><?php esc_html_e( 'Author', 'mailster' ); ?></option>
 			<option value="tag"><?php esc_html_e( 'Tag', 'mailster' ); ?></option>
 		</select>
-		<label class="screen-reader-text" for="search-plugins"><?php esc_html_e( 'Search Templates', 'mailster' ); ?></label>
-		<input type="search" name="s" id="search-plugins" value="" class="wp-filter-search" placeholder="<?php esc_attr_e( 'Search templates', 'mailster' ); ?>..." aria-describedby="live-search-desc">
+		<label class="screen-reader-text" for="search-templates"><?php esc_html_e( 'Search Templates', 'mailster' ); ?></label>
+		<input type="search" name="s" id="search-templates" value="" class="wp-filter-search" placeholder="<?php esc_attr_e( 'Search templates', 'mailster' ); ?>..." aria-describedby="live-search-desc">
 		<input type="submit" id="search-submit" class="button hide-if-js" value="<?php esc_attr_e( 'Search Templates', 'mailster' ); ?>">
 	</form>
 

@@ -40,6 +40,9 @@ if ( $item['envato_item_id'] ) {
 			<?php endif; ?>
 			</h3>
 		<div class="theme-actions">
+			<?php if ( $item['post_id'] ) : ?>
+			<a href="<?php echo esc_url( 'https://mailster.dev/wp-admin/post.php?post=' . $item['post_id'] . '&action=edit' ); ?>" target="_blank"><?php esc_html_e( 'Edit', 'mailster' ); ?></a>
+			<?php endif; ?>
 			<?php if ( $item['installed'] ) : ?>
 			<a class="button button-primary create-campaign" href="<?php echo admin_url( 'post-new.php?post_type=newsletter&template=' . $item['slug'] ); ?>" aria-label="<?php esc_attr_e( 'Create Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
 			<?php endif; ?>
