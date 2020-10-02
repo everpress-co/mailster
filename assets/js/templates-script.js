@@ -233,7 +233,8 @@ mailster = (function (mailster, $, window, document) {
 		searchquery = searchquery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
 		searchtype = typeselector.val();
-		if (lastsearchquery != searchquery || lastsearchtype != searchtype) {
+
+		if (searchquery && (lastsearchquery != searchquery || lastsearchtype != searchtype)) {
 			lastsearchtype = searchtype;
 			lastsearchquery = searchquery;
 			resetFilter();
@@ -242,8 +243,6 @@ mailster = (function (mailster, $, window, document) {
 			setQueryStringParameter('type', searchtype);
 		}
 		return;
-
-
 	}
 
 	function downloadTemplate(slug) {
