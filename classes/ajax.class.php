@@ -1813,9 +1813,16 @@ class MailsterAjax {
 		$url  = esc_url( $_POST['url'] );
 		$slug = basename( $_POST['slug'] );
 
-		if ( $return['redirect'] = mailster( 'templates' )->download_template( $url, $slug ) ) {
-			$return['success'] = true;
+		$result = mailster( 'templates' )->download_template( $url, $slug );
+
+		if ( is_wp_error( $result ) ) {
+			$return['msg'] = sprintf( esc_html__( 'There was an error loading the template: %s', 'mailster' ), $result->get_error_message() );
+		} else {
+			$return['msg']      = esc_html__( 'Template successful loaded!', 'mailster' );
+			$return['redirect'] = $result;
+			$return['success']  = true;
 		}
+
 		$this->json_return( $return );
 
 	}

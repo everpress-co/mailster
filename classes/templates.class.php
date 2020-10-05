@@ -20,28 +20,28 @@ class MailsterTemplates {
 	);
 
 	private $template_fields = array(
-		'name'           => null,
-		'slug'           => null,
-		'image'          => null,
-		'description'    => null,
-		'index'          => null,
-		'url'            => null,
-		'endpoint'       => null,
-		'version'        => null,
-		'new_version'    => null,
-		'update'         => null,
-		'updated'        => null,
-		'author'         => null,
-		'author_profile' => null,
-		'requires'       => '2.2',
-		'is_default'     => null,
-		'is_verified'    => null,
-		'author_profile' => null,
-		'homepage'       => null,
-		'download'       => null,
-		'download_url'   => null,
-		'price'          => null,
-		'envato_item_id' => null,
+		'name'             => null,
+		'slug'             => null,
+		'image'            => null,
+		'description'      => null,
+		'index'            => null,
+		'url'              => null,
+		'endpoint'         => null,
+		'version'          => null,
+		'new_version'      => null,
+		'updated'          => null,
+		'author'           => null,
+		'author_profile'   => null,
+		'requires'         => '2.2',
+		'is_default'       => null,
+		'is_verified'      => null,
+		'author_profile'   => null,
+		'homepage'         => null,
+		'download'         => null,
+		'download_url'     => null,
+		'price'            => null,
+		'envato_item_id'   => null,
+		'update_available' => false,
 	);
 
 	public function __construct() {
@@ -75,23 +75,8 @@ class MailsterTemplates {
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Templates', 'mailster' ), esc_html__( 'Templates', 'mailster' ) . $updates, 'mailster_manage_templates', 'mailster_templates', array( &$this, 'templates' ) );
 		add_action( 'load-' . $page, array( &$this, 'scripts_styles' ) );
 		add_action( 'load-' . $page, array( &$this, 'edit_entry' ), 99 );
-		add_action( 'load-' . $page, array( &$this, 'disclosure_notice' ) );
 		add_action( 'load-' . $page, array( &$this, 'download_envato_template' ), 99 );
 
-	}
-
-
-	/**
-	 *
-	 *
-	 * @return unknown
-	 */
-	public function disclosure_notice( $notice ) {
-		add_filter( 'admin_footer_text', array( &$this, 'add_disclosure_notice' ) );
-	}
-
-	public function add_disclosure_notice( $notice ) {
-		return '<span id="footer-thankyou">' . esc_html__( 'Disclosure: Some of the links on this page are affiliate links. This means if you click on the link and purchase the item, we may receive an affiliate commission.', 'mailster' ) . '</span>';
 	}
 
 
@@ -131,14 +116,14 @@ class MailsterTemplates {
 		}
 
 		$tempfile = download_url( $download_url );
-
+		if ( is_wp_error( $tempfile ) ) {
+			return $tempfile;
+		}
 		$result = $this->unzip_template( $tempfile, $slug, true, true );
 
 		if ( is_wp_error( $result ) ) {
-			mailster_notice( sprintf( 'There was an error loading the template: %s', $result->get_error_message() ), 'error', true );
+			return $result;
 		} else {
-			mailster_notice( esc_html__( 'Template successful loaded!', 'mailster' ), 'success', true );
-
 			$redirect = admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' );
 			$redirect = add_query_arg( array( 'new' => $slug ), $redirect );
 
@@ -1286,11 +1271,19 @@ class MailsterTemplates {
 				$result['items'] = wp_parse_args( $result['items'], $response_result['items'] );
 				$result['total'] = max( count( $result['items'] ), $response_result['total'] );
 
-				error_log( print_r( $result, true ) );
-
 			}
 
 			$result = $this->prepare_results( $result );
+			if ( $query_args['browse'] == 'installed' ) {
+				$default = mailster_option( 'default_template' );
+
+				if ( $default && isset( $result['items'][ $default ] ) ) {
+					$temp = $result['items'][ $default ];
+					unset( $result['items'][ $default ] );
+					$result['items'] = array( $default => $temp ) + $result['items'];
+				}
+			}
+
 			// set_transient( $cache_key, $result, DAY_IN_SECONDS );
 			set_transient( $cache_key, $result, 12 );
 
@@ -1306,19 +1299,14 @@ class MailsterTemplates {
 
 		foreach ( $result['items'] as $slug => $item ) {
 
-			$result['items'][ $slug ] = wp_parse_args( $result['items'][ $slug ], $this->template_fields );
+			// fill response with default values
+			$result['items'][ $slug ] = array_merge( $this->template_fields, $result['items'][ $slug ] );
 
-			if ( isset( $templates[ $slug ] ) ) {
-				$result['items'][ $slug ]['update_available'] = $item['new_version'] ? version_compare( $item['new_version'], $templates[ $slug ]['version'], '>' ) : strtotime( $item['updated'] ) > strtotime( $templates[ $slug ]['update'] );
-				$result['items'][ $slug ]                     = wp_parse_args( $templates[ $slug ], $result['items'][ $slug ] );
-				$result['items'][ $slug ]['installed']        = true;
+			if ( $result['items'][ $slug ]['installed'] = isset( $templates[ $slug ] ) ) {
 
-				// $temp = $result['items'][ $slug ];
-				// unset( $result['items'][ $slug ] );
-				// $result['items'] = array( $slug => $temp ) + $result['items'];
-			} else {
-				$result['items'][ $slug ]['update_available'] = false;
-				$result['items'][ $slug ]['installed']        = false;
+				$result['items'][ $slug ]                     = array_merge( $templates[ $slug ], $result['items'][ $slug ] );
+				$result['items'][ $slug ]['update_available'] = version_compare( $templates[ $slug ]['new_version'], $templates[ $slug ]['version'], '>' );
+
 			}
 		}
 

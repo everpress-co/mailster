@@ -45,14 +45,36 @@ mailster = (function (mailster, $, window, document) {
 		search();
 	});
 
+	var gumloaded = false,
+		current_slug = false;
+
 	templatebrowser
-		.on('click', '.theme-screenshot', function () {
+		.on('click', '.theme-screenshot, .more-details', function () {
 			overlay.open($(this).closest('.theme'));
 		})
 		.on('click', '.download', function (event) {
 			event.preventDefault();
 			$(this).addClass('updating-message');
 			downloadTemplateFromUrl(this.href, $(this).closest('.theme').data('slug'));
+		})
+		.on('click', '.buy-gumroad', function (event) {
+			var _self = $(this);
+			event.preventDefault();
+			_self.addClass('updating-message');
+
+			current_slug = $(this).closest('.theme').data('slug');
+
+			!gumloaded && $.getScript('https://gumroad.com/js/gumroad.js', function () {
+				var t = setInterval(function () {
+					if (typeof createGumroadOverlay == 'function') {
+						clearInterval(t);
+						gumloaded = true;
+						createGumroadOverlay();
+						_self.click();
+						_self.removeClass('updating-message');
+					}
+				}, 100)
+			});
 		})
 		.on('click', '.popup', function () {
 			var href = this.href;
@@ -90,6 +112,26 @@ mailster = (function (mailster, $, window, document) {
 	})
 
 	mailster.$.window
+		.on('message', function (e) {
+
+			if (!e.originalEvent.data) return;
+			console.log(e.originalEvent.data);
+			var data = typeof e.originalEvent.data === 'string' ? $.parseJSON(e.originalEvent.data.replace('/*framebus*/', '')) : e.originalEvent.data;
+
+			console.log(data);
+
+			if (data.post_message_name === "sale") {
+				if (data.custom_delivery_url) {
+					GumroadOverlay.redirect = function () {
+						GumroadOverlay.minimizeIframe();
+						downloadTemplateFromUrl(data.custom_delivery_url, current_slug);
+					};
+				}
+				console.log(data.custom_delivery_url);
+				console.log(data);
+
+			}
+		})
 		.on('popstate', function (event) {
 			//updateState(event);
 		})
@@ -102,6 +144,9 @@ mailster = (function (mailster, $, window, document) {
 		mailster.$.window.on('scroll.mailster', mailster.util.throttle(maybeLoadTemplates, 500))
 	});
 
+	var gumroad = function () {
+
+	}
 	var overlay = function () {
 
 		if (this === window) return new overlay();
@@ -118,9 +163,12 @@ mailster = (function (mailster, $, window, document) {
 			data = {};
 
 		var open = function (template) {
+				if ('string' === typeof template) {
+					template = $('[data-slug="' + template + '"]');
+				}
+				if (!template.length) return false;
 				currentTemplate = template;
 				data = template.data('item');
-				console.log(data);
 				overlay.find('.theme-name').html(data.name + '<span class="theme-version">' + data.updated + '</span>');
 				overlay.find('.theme-author-name').html(data.author);
 				overlay.find('.theme-description').html(data.description);
@@ -132,9 +180,11 @@ mailster = (function (mailster, $, window, document) {
 				prevbtn.prop('disabled', !prevTemplate.length)[!prevTemplate.length ? 'addClass' : 'removeClass']('disabled');
 				nextbtn.prop('disabled', !nextTemplate.length)[!nextTemplate.length ? 'addClass' : 'removeClass']('disabled');
 				overlay.show();
+				setQueryStringParameter('template', data.slug);
 			},
 
 			close = function () {
+				removeQueryStringParameter('template');
 				overlay.hide();
 			},
 
@@ -182,7 +232,7 @@ mailster = (function (mailster, $, window, document) {
 			search();
 		} else {
 			setFilter(currentfilter);
-
+			overlay.open(getQueryStringParameter('template'));
 		}
 	}
 
@@ -196,21 +246,23 @@ mailster = (function (mailster, $, window, document) {
 		}
 	}
 
-	function setFilter(filter) {
+	function setFilter(filter, cb) {
 		currentfilter && $('body').removeClass('browse-' + currentfilter) && filterlinks.filter('[data-sort="' + currentfilter + '"]').removeClass('current');
 		currentfilter = filter || false;
+		removeQueryStringParameter('template');
 		if (currentfilter) {
 			resetSearch();
 			filterlinks.filter('[data-sort="' + currentfilter + '"]').addClass('current');
 			setQueryStringParameter('browse', currentfilter);
 			$('body').addClass('browse-' + currentfilter);
-			query();
+			query(cb);
 		}
 	}
 
 	function resetFilter() {
 		currentfilter && $('body').removeClass('browse-' + currentfilter) && filterlinks.filter('[data-sort="' + currentfilter + '"]').removeClass('current');
 		removeQueryStringParameter('browse');
+		removeQueryStringParameter('template');
 		currentfilter = false;
 		currentpage = 1;
 		templates = [];
@@ -279,13 +331,18 @@ mailster = (function (mailster, $, window, document) {
 			slug: slug,
 		}, function (response) {
 
+			console.log(response);
 
-			if (response.redirect) {
-				//document.location = response.redirect;
+			if (response.success) {
+				setFilter('installed', function () {
+					$('[data-slug="' + slug + '"]').find('.notice-success').html('<p>' + response.msg + '</p>');
+				});
+				template.find('.notice-error').empty();
+			} else {
+				template.find('.notice-error').html('<p>' + response.msg + '</p>');
 			}
-			template.find('.updating-message').removeClass('updating-message');
-			setFilter('installed');
 
+			template.find('.updating-message').removeClass('updating-message');
 			busy = false;
 
 		}, function (jqXHR, textStatus, errorThrown) {})
@@ -316,7 +373,7 @@ mailster = (function (mailster, $, window, document) {
 
 	}
 
-	function query() {
+	function query(cb) {
 
 		if (currentpage == 1) {
 			$('body').removeClass('no-results');
@@ -345,6 +402,8 @@ mailster = (function (mailster, $, window, document) {
 			!currentdisplayed && $('body').addClass('no-results');
 
 			busy = false;
+
+			cb && cb();
 		}, function (jqXHR, textStatus, errorThrown) {})
 	}
 

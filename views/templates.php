@@ -33,19 +33,13 @@
 
 </div>
 
-<div class="notice notice-alt notice-large inline theme-notice-free">
-	<h3 class="notice-title">Update Available</h3>
-	<p><strong>There is a new version of Chaplin available. <a href="https://wordpress.org/themes/chaplin/?TB_iframe=true&amp;width=1024&amp;height=800" class="thickbox open-plugin-details-modal" aria-label="View Chaplin version 2.5.16 details">View version 2.5.16 details</a> or <a href="https://fresh.local/wp-admin/update.php?action=upgrade-theme&amp;theme=chaplin&amp;_wpnonce=4d874535f3" aria-label="Update Chaplin now" id="update-theme" data-slug="chaplin">update now</a>.</strong></p>
-</div>
-<div class="notice notice-alt notice-large inline theme-notice-popular">
-	<p>Browser the most popular templates for Mailster</p>
-</div>
-<div class="notice notice-alt notice-large inline theme-notice-updated">
-	<p>This page displayed the most recent updated templates</p>
-</div>
+<div class="notice notice-success notice-alt inline"></div>
+<div class="notice notice-alt notice-large inline theme-notice-free"></div>
+<div class="notice notice-alt notice-large inline theme-notice-popular"></div>
+<div class="notice notice-alt notice-large inline theme-notice-updated"></div>
 
 <h2 class="screen-reader-text hide-if-no-js"><?php esc_html_e( 'Template list', 'mailster' ); ?></h2>
-<div class="theme-browser content-filterable _single-theme"></div>
+<div class="theme-browser content-filterable _single-theme rendered"></div>
 
 <div class="theme-overlay hidden" tabindex="0" role="dialog" aria-label="Theme Details">
 	<div class="theme-overlay">
@@ -100,4 +94,5 @@
 <p class="no-themes"><?php esc_html_e( 'No templates found. Try a different search.', 'mailster' ); ?></p>
 <span class="spinner"></span>
 
+<p class="clear disclosure description"><?php esc_html_e( 'Disclosure: Some of the links on this page are affiliate links. This means if you click on the link and purchase the item, we may receive an affiliate commission.', 'mailster' ); ?></p>
 </div>
