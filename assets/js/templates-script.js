@@ -166,7 +166,7 @@ mailster = (function (mailster, $, window, document) {
 				if ('string' === typeof template) {
 					template = $('[data-slug="' + template + '"]');
 				}
-				if (!template.length) return false;
+				if (!template || !template.length) return false;
 				currentTemplate = template;
 				data = template.data('item');
 				overlay.find('.theme-name').html(data.name + '<span class="theme-version">' + data.updated + '</span>');
@@ -324,14 +324,12 @@ mailster = (function (mailster, $, window, document) {
 
 		busy = true;
 
-		template.find('.request-download').addClass('updating-message');
+		template.addClass('loading').find('.request-download').addClass('updating-message');
 
 		mailster.util.ajax('download_template', {
 			url: url,
 			slug: slug,
 		}, function (response) {
-
-			console.log(response);
 
 			if (response.success) {
 				setFilter('installed', function () {
@@ -342,7 +340,7 @@ mailster = (function (mailster, $, window, document) {
 				template.find('.notice-error').html('<p>' + response.msg + '</p>');
 			}
 
-			template.find('.updating-message').removeClass('updating-message');
+			template.removeClass('loading').find('.updating-message').removeClass('updating-message');
 			busy = false;
 
 		}, function (jqXHR, textStatus, errorThrown) {})
@@ -352,6 +350,35 @@ mailster = (function (mailster, $, window, document) {
 	function deleteTemplate(slug) {
 
 		var template = $('[data-slug="' + slug + '"]');
+
+		busy = true;
+
+		template.addClass('loading');
+
+		mailster.util.ajax('delete_template', {
+			slug: slug,
+		}, function (response) {
+
+			template.animate({
+				width: 0,
+				'margin-right': 0
+			}, function () {
+				template.remove();
+				busy = false;
+			});
+
+		}, function (jqXHR, textStatus, errorThrown) {})
+
+	}
+
+	function errorTemplate(slug, errormsg) {
+
+		var template = $('[data-slug="' + slug + '"]');
+
+		template.find('.notice-error').html('<p>' + $('<div>' + errormsg + '</div>').text() + '</p>');
+
+		return;
+
 
 		busy = true;
 
@@ -487,10 +514,12 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	init();
+
 	mailster.templates = mailster.templates || {};
 	mailster.templates.download = downloadTemplate;
 	mailster.templates.downloadFromUrl = downloadTemplateFromUrl;
 	mailster.templates.delete = deleteTemplate;
+	mailster.templates.error = errorTemplate;
 
 	return mailster;
 

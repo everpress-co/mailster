@@ -41,6 +41,7 @@ class MailsterTemplates {
 		'download_url'     => null,
 		'price'            => null,
 		'envato_item_id'   => null,
+		'gumroad_url'      => null,
 		'update_available' => false,
 	);
 
@@ -126,6 +127,8 @@ class MailsterTemplates {
 		} else {
 			$redirect = admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' );
 			$redirect = add_query_arg( array( 'new' => $slug ), $redirect );
+
+			$this->schedule_screenshot( $slug, 'index.html', true );
 
 			return $redirect;
 		}
@@ -1235,6 +1238,9 @@ class MailsterTemplates {
 		if ( $query_args['browse'] == 'installed' ) {
 			$templates               = $this->get_templates();
 			$query_args['templates'] = implode( ',', array_keys( $templates ) );
+		} elseif ( $query_args['browse'] == 'purchased' ) {
+			$purchased_id      = (array) get_option( 'mailster_templates_purchased', array() );
+			$query_args['ids'] = implode( ',', $purchased_id );
 		}
 
 		$cache_key = 'mailster_templates_' . $query_args['browse'] . '_' . md5( serialize( $query_args ) . $endpoint );
@@ -1295,7 +1301,8 @@ class MailsterTemplates {
 
 	public function prepare_results( $result ) {
 
-		$templates = $this->get_templates();
+		$templates     = $this->get_templates();
+		$purchased_ids = get_option( 'mailster_templates_purchased', false );
 
 		foreach ( $result['items'] as $slug => $item ) {
 
@@ -1308,6 +1315,8 @@ class MailsterTemplates {
 				$result['items'][ $slug ]['update_available'] = version_compare( $templates[ $slug ]['new_version'], $templates[ $slug ]['version'], '>' );
 
 			}
+
+			$result['items'][ $slug ]['purchased'] = $purchased_ids && in_array( $result['items'][ $slug ]['ID'], $purchased_ids );
 		}
 
 		return $result;

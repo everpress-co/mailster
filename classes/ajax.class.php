@@ -2442,13 +2442,23 @@ class MailsterAjax {
 
 		$return['success'] = false;
 
-		$args = $_GET;
 		$slug = basename( $_GET['slug'] );
 
 		$this->ajax_nonce( 'Nonce Expired!', 'mailster_download_template_' . esc_attr( $slug ) );
 
+		if ( isset( $_GET['purchased_ids'] ) ) {
+			$purchased_ids = array_filter( $_GET['purchased_ids'], 'is_numeric' );
+			$purchased_ids = array_merge( $purchased_ids, get_option( 'mailster_templates_purchased', array() ) );
+			update_option( 'mailster_templates_purchased', array_unique( $purchased_ids ) );
+		}
+
 		if ( isset( $_GET['download_url'] ) ) {
 			?><script>window.opener.mailster.templates.downloadFromUrl('<?php echo esc_url( $_GET['download_url'] ); ?>', '<?php echo esc_attr( $slug ); ?>');window.close();</script>
+			<?php
+			exit;
+		} elseif ( isset( $_GET['mailster_error'] ) ) {
+			?>
+			<script>window.opener.mailster.templates.error('<?php echo esc_attr( $slug ); ?>', '<?php echo esc_attr( $_GET['mailster_error'] ); ?>');window.close();</script>
 			<?php
 			exit;
 		}

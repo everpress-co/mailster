@@ -16,6 +16,9 @@ if ( $item['envato_item_id'] ) {
 if ( $item['gumroad_url'] ) {
 	$classes[] = 'gumroad-item';
 }
+if ( $item['purchased'] ) {
+	$classes[] = 'is-purchased';
+}
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $item['slug'] ); ?>" data-item='<?php echo esc_attr( json_encode( $item ) ); ?>'>
 	<span class="spinner"></span>
@@ -70,8 +73,8 @@ if ( $item['gumroad_url'] ) {
 				?>
 			<a class="button button-primary request-download popup" data-width="800" data-height="80%" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
 			<?php endif; ?>
-			<?php if ( $item['price'] ) : ?>
-			<a class="button button-primary buy" href="<?php echo esc_url( $item['purchase_url'] ); ?>" onclick="window.open('<?php echo esc_url( $item['purchase_url'] ); ?>','MyWindow','width=800,height=1000,toolbar=no,menubar=no,location=no,status=no,scrollbars=no,resizable=no');return false;"><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
+			<?php if ( $item['price'] && ! $item['purchased'] ) : ?>
+			<a class="button button-primary buy popup" data-width="800" data-height="80%" href="<?php echo esc_url( $item['purchase_url'] ); ?>"><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
 			<?php endif; ?>
 		</div>
 	</div>
