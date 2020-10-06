@@ -236,9 +236,9 @@ mailster = (function (mailster, $, window, document) {
 	function draggable(bool) {
 		if (bar.draggable) {
 			if (bool !== false) {
-				bar.draggable("enable");
+				bar.draggable('enable');
 			} else {
-				bar.draggable("disable");
+				bar.draggable('disable');
 			}
 		}
 	}
