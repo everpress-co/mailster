@@ -145,6 +145,10 @@
 			return [
 				el('div', {
 						className: className,
+						style: {
+							color: attributes.formColor,
+							backgroundColor: attributes.formBGColor
+						},
 						key: 'mailster-form',
 					},
 
@@ -327,6 +331,28 @@
 						el(InspectorControls, {
 								key: 'inspector-form-button'
 							},
+
+							el(PanelColorSettings, {
+								title: __('Form Color', 'mailster'),
+								initialOpen: false,
+								colorSettings: [{
+									label: __('Text Color', 'mailster'),
+									value: attributes.formColor,
+									onChange: (value) => {
+										setAttributes({
+											formColor: value
+										});
+									},
+								}, {
+									label: __('Background', 'mailster'),
+									value: attributes.formBGColor,
+									onChange: (value) => {
+										setAttributes({
+											formBGColor: value
+										});
+									},
+								}, ],
+							}),
 
 							el(PanelColorSettings, {
 								title: __('Button Color', 'mailster'),

@@ -40,6 +40,11 @@ class MailsterBlocks {
 		$lists_order = array_keys( $lists );
 
 		$form_attributes = array(
+			'formColor'      => '',
+			'formBGColor'    => '',
+			'buttonColor'    => '',
+			'buttonBGColor'  => '',
+			'align'          => '',
 			'align'          => '',
 			'className'      => '',
 			'name'           => 'Form',
@@ -73,6 +78,19 @@ class MailsterBlocks {
 			'lists_a'        => array(),
 		);
 
+		$styles = array(
+			array(
+				'name'         => 'fancy',
+				'label'        => esc_html__( 'Fancy', 'mailster' ),
+				'style_handle' => 'mailster-form-block-fancy',
+			),
+			array(
+				'name'         => 'boxed',
+				'label'        => esc_html__( 'Boxed', 'mailster' ),
+				'style_handle' => 'mailster-form-block-boxed',
+			),
+		);
+
 		register_block_type(
 			'mailster/form',
 			array(
@@ -87,21 +105,7 @@ class MailsterBlocks {
 					'align' => array( 'wide', 'full' ),
 					'html'  => false,
 				),
-				'styles'          => array(
-					array(
-						'name'      => 'default',
-						'label'     => esc_html__( 'Default', 'mailster' ),
-						'isDefault' => true,
-					),
-					array(
-						'name'  => 'fancy',
-						'label' => esc_html__( 'Fancy', 'mailster' ),
-					),
-					array(
-						'name'  => 'squared',
-						'label' => esc_html__( 'Squared', 'mailster' ),
-					),
-				),
+				'styles'          => $styles,
 
 				'style'           => 'mailster-form-block',
 				'attributes'      => array_map(
@@ -120,6 +124,13 @@ class MailsterBlocks {
 				),
 			)
 		);
+
+		foreach ( $styles as $style ) {
+			if ( isset( $style['style_handle'] ) ) {
+				wp_register_style( $style['style_handle'], MAILSTER_URI . 'assets/css/blocks-style-' . $style['name'] . $suffix . '.css', array(), MAILSTER_VERSION );
+			}
+			register_block_style( 'mailster/form', $style );
+		}
 
 		$customfields = mailster()->get_custom_fields();
 
@@ -202,7 +213,9 @@ class MailsterBlocks {
 
 	public function render_form( $attr, $content ) {
 
-		$classes = array( 'mailster-form' );
+		$classes      = array( 'mailster-form' );
+		$formstyles   = array();
+		$buttonstyles = array();
 
 		if ( $attr['asterisk'] ) {
 			$attr['className'] .= ' has-asterisk';
@@ -211,10 +224,25 @@ class MailsterBlocks {
 			$attr['className'] .= ' align' . $attr['align'];
 		}
 
+		if ( $attr['formColor'] ) {
+			$formstyles[] = 'color:' . $attr['formColor'];
+		}
+		if ( $attr['formBGColor'] ) {
+			$formstyles[] = 'background-color:' . $attr['formBGColor'];
+		}
+
+		if ( $attr['buttonColor'] ) {
+			$buttonstyles[] = 'color:' . $attr['buttonColor'];
+		}
+		if ( $attr['buttonBGColor'] ) {
+			$buttonstyles[] = 'background-color:' . $attr['buttonBGColor'];
+		}
+
 		ob_start();
+
 		?>
 
-		<div class="wp-block-mailster-form <?php echo esc_attr( $attr['className'] ); ?>">
+		<div class="wp-block-mailster-form <?php echo esc_attr( $attr['className'] ); ?>"<?php echo $formstyles ? ' style="' . esc_attr( implode( ';', $formstyles ) ) . '"' : ''; ?>>
 			<form action="" method="post" class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" novalidate>
 
 			<input name="_referer" type="hidden" value="<?php echo esc_attr( wp_get_referer() ); ?>">
@@ -232,7 +260,7 @@ class MailsterBlocks {
 				<?php endif; ?>
 
 				<div class="wp-block-mailster-field wp-block-mailster-field-submit wp-block-button">
-					<button type="submit" class="wp-block-button__link" aria-label="<?php echo esc_attr( $attr['submit'] ); ?>"><?php echo esc_html( $attr['submit'] ); ?></button>
+					<button type="submit" class="wp-block-button__link" aria-label="<?php echo esc_attr( $attr['submit'] ); ?>"<?php echo $buttonstyles ? ' style="' . esc_attr( implode( ';', $buttonstyles ) ) . '"' : ''; ?>><?php echo esc_html( $attr['submit'] ); ?></button>
 				</div>
 
 			</div>
