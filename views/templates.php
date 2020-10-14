@@ -23,7 +23,7 @@ if ( ! isset( $templates[ $default ] ) ) {
 	}
 }
 if ( $updates = $t->get_updates() ) : ?>
-<div class="update-nag below-h2">
+<div class="notice notice-warning update-nag below-h2">
 	<?php printf( esc_html__( _n( '%d Update available', '%d Updates available', $updates, 'mailster' ) ), $updates ); ?>
 </div>
 <?php endif; ?>
