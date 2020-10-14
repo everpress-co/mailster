@@ -4158,7 +4158,7 @@ class MailsterCampaigns {
 
 		// stop if send limit is reached
 		if ( $mail->sentlimitreached ) {
-			return new WP_Error( 'sendlimit_reached', sprintf( esc_html__( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), mailster_option( 'send_limit' ), human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) ) );
+			return new WP_Error( 'system_error', sprintf( esc_html__( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), mailster_option( 'send_limit' ), human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) ) );
 		}
 
 		$mail->to           = $subscriber->email;
