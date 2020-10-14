@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.5
-Stable tag: 2.4.14
+Stable tag: 2.4.15
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,8 +88,16 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
- = Version 2.4.14 =
+= Version 2.4.15 =
 
+* improved: handling of folder names during template upload
+* fixed: saving queued campaigns cause sending them immediately
+* fixed: campaigns with no web version show in archive
+* fixed: small JS issues
+
+= Version 2.4.14 =
+
+* improved: internal handling for sending limits
 * fixed: Display width specification for integer data types was deprecated in MySQL 8.0.17 which causes an error in the self test
 * fixed: unwanted 'a11y-speak-intro-text' element in email body
 * fixed: toggle behavior of meta boxes in WP 5.5
