@@ -98,7 +98,6 @@
 }
 @media screen and (min-width: 1500px) {
 	.mailster-dashboard #dashboard-widgets .meta-box-sortables:empty {
-		border: 3px dashed #b4b9be;
 		height: 250px;
 		position: relative;
 		margin-bottom: 20px;
