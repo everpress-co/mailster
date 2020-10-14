@@ -891,6 +891,10 @@ class MailsterPlaceholder {
 							mailster_cache_set( 'mailster_' . $querystring, $replace_to );
 
 						} else {
+							// not if no ID is provided (custom dynamic post types)
+							if ( ! $post->ID ) {
+								continue;
+							}
 							if ( $post && ! $is_random ) {
 								$replace_to = str_replace( 'tag=' . $query['tag'], 'tag=' . $post_type . '_image:' . $post->ID, $search );
 							}
@@ -1002,6 +1006,11 @@ class MailsterPlaceholder {
 				}
 
 				if ( $relative_to_absolute && $post ) {
+
+					// not if no ID is provided (custom dynamic post types)
+					if ( ! $post->ID ) {
+						continue;
+					}
 
 					if ( $encode ) {
 						$replace_to = '{!' . $post_type . '_' . $hits[4][ $i ] . ':' . $post->ID . '}';
