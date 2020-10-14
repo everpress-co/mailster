@@ -143,8 +143,6 @@ class MailsterCampaigns {
 
 		if ( $hook_type ) {
 
-			error_log( print_r( $subscribers, true ) );
-
 			if ( $subscriber_ids && $subscribers ) {
 				if ( count( $subscribers ) == 1 ) {
 					$condition = array(
@@ -159,7 +157,10 @@ class MailsterCampaigns {
 						'value'    => '^(' . implode( '|', $subscribers ) . ')$',
 					);
 				}
-				array_unshift( $meta['list_conditions'], array( $condition ) );
+				if ( ! isset( $meta['list_conditions'] ) ) {
+					$meta['list_conditions'] = array();
+				}
+				array_unshift( (array) $meta['list_conditions'], array( $condition ) );
 			}
 
 			$original = get_post( $campaign_id );
