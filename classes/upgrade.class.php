@@ -1293,7 +1293,9 @@ class MailsterUpgrade {
 				'autoresponder' => $autoresponder,
 				'head'          => trim( $meta['head'] ),
 				'background'    => $meta['background'],
-				'colors'        => ( $meta['newsletter_color'] ),
+				'colors'        => $meta['newsletter_color'],
+				'track_opens'   => mailster_option( 'trackcountries' ),
+				'track_clicks'  => mailster_option( 'trackcountries' ),
 			);
 
 			if ( $data->post_status == 'active' ) {
