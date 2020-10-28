@@ -25,12 +25,7 @@ $sent = $this->get_sent( $post->ID );
 
 			<p class="clear" id="password-field" title="<?php esc_attr_e( 'Protect the web version with a password.', 'mailster' ); ?>">
 				<label for="use_pwd"><input type="checkbox" name="use_pwd" id="use_pwd" value="1" <?php checked( ! ! $post->post_password ); ?>> <?php esc_html_e( 'Password', 'mailster' ); ?></label>
-				<span id="password-wrap" 
-				<?php
-				if ( ! $post->post_password ) {
-					echo 'style="display:none;"'; }
-				?>
-				>
+				<span id="password-wrap"<?php echo ! $post->post_password ? ' style="display:none;"' : ''; ?>>
 					<input type="hidden" name="post_password" value="">
 					<input type="text" class="widefat" name="post_password" id="post_password" value="<?php echo $post->post_password; ?>" maxlength="20"><br>
 					<span class="description"><?php esc_html_e( 'Protect the web version with a password.', 'mailster' ); ?></span>
@@ -100,10 +95,8 @@ $sent = $this->get_sent( $post->ID );
 
 						<?php endif; ?>
 
-						<input name="save" type="submit" class="button-primary" id="publish" tabindex="15" accesskey="p" value="<?php esc_attr_e( 'Update', 'mailster' ); ?>" />
-						<a href="
 						<?php
-						echo add_query_arg(
+						$url = add_query_arg(
 							array(
 								'post'      => $post->ID,
 								'action'    => 'edit',
@@ -112,7 +105,9 @@ $sent = $this->get_sent( $post->ID );
 							''
 						);
 						?>
-									" class="button statistics"><?php esc_html_e( 'Statistic', 'mailster' ); ?></a>
+
+						<input name="save" type="submit" class="button-primary" id="publish" tabindex="15" accesskey="p" value="<?php esc_attr_e( 'Update', 'mailster' ); ?>" />
+						<a href="<?php echo esc_url( $url ); ?>" class="button statistics"><?php esc_html_e( 'Statistic', 'mailster' ); ?></a>
 
 					<?php elseif ( in_array( $post->post_status, array( 'draft', 'auto-draft' ) ) ) : ?>
 
@@ -148,9 +143,8 @@ $sent = $this->get_sent( $post->ID );
 							<input name="sendnow" type="submit" value="<?php esc_attr_e( 'Send now', 'mailster' ); ?>" class="button sendnow-button" title=" <?php esc_attr_e( 'Save and send campaign', 'mailster' ); ?>" />
 						<?php endif; ?>
 
-						<a href="
 						<?php
-						echo add_query_arg(
+						$url = add_query_arg(
 							array(
 								'post'      => $post->ID,
 								'action'    => 'edit',
@@ -159,15 +153,15 @@ $sent = $this->get_sent( $post->ID );
 							''
 						);
 						?>
-						" class="button statistics"><?php esc_html_e( 'Statistic', 'mailster' ); ?></a>
+
+						<a href="<?php echo esc_url( $url ); ?>" class="button statistics"><?php esc_html_e( 'Statistic', 'mailster' ); ?></a>
 					<?php endif; ?>
 
 				<?php else : ?>
 
 					<p class="clear">
-						<a href="
 						<?php
-						echo add_query_arg(
+						$url = add_query_arg(
 							array(
 								'post'   => $post->ID,
 								'action' => 'edit',
@@ -175,11 +169,11 @@ $sent = $this->get_sent( $post->ID );
 							''
 						);
 						?>
-						" class="button statistics edit"><?php esc_html_e( 'Edit', 'mailster' ); ?></a>
+						<a href="<?php echo esc_url( $url ); ?>" class="button statistics edit"><?php esc_html_e( 'Edit', 'mailster' ); ?></a>
 						<?php if ( $sent ) : ?>
-							<input name="resume" type="submit" value="<?php esc_attr_e( 'Resume', 'mailster' ); ?>" class="button resume-button" title="<?php esc_attr_e( 'Save and resume campaign', 'mailster' ); ?>" />
+							<a class="button" href="<?php echo admin_url( 'edit.php?post_type=newsletter&resume=' . $post->ID . '&edit=1&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) ); ?>" title="<?php esc_attr_e( 'Resume Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Resume', 'mailster' ); ?></a>
 						<?php else : ?>
-							<input name="sendnow" type="submit" value="<?php esc_attr_e( 'Send now', 'mailster' ); ?>" class="button sendnow-button" title=" <?php esc_attr_e( 'Save and send campaign', 'mailster' ); ?>" />
+							<a class="button" href="<?php echo admin_url( 'edit.php?post_type=newsletter&start=' . $post->ID . '&edit=1&_wpnonce=' . wp_create_nonce( 'mailster_start_nonce' ) ); ?>" title="<?php esc_attr_e( 'Start Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Send now', 'mailster' ); ?></a>
 						<?php endif; ?>
 					</p>
 

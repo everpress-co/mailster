@@ -362,8 +362,8 @@ class MailsterForm {
 					}
 					$fields[ $field->field_id ] .= '<select id="mailster-' . $field->field_id . '-' . $this->ID . '" name="' . $field->field_id . '" class="input mailster-' . $field->field_id . '' . ( $required ? ' mailster-required' : '' ) . '" aria-required="' . ( $required ? 'true' : 'false' ) . '" aria-label="' . $esc_label . '">';
 
-					$stati = mailster( 'subscribers' )->get_status( null, true );
-					foreach ( $stati as $status => $name ) {
+					$statuses = mailster( 'subscribers' )->get_status( null, true );
+					foreach ( $statuses as $status => $name ) {
 						if ( in_array( $status, array( 1, 2 ) ) || $status == $subscriber_status ) {
 							$fields[ $field->field_id ] .= '<option value="' . $status . '" ' . selected( $subscriber_status, $status, false ) . '>' . $name . '</option>';
 						}
@@ -511,16 +511,17 @@ class MailsterForm {
 			if ( ! is_numeric( $this->form->gdpr ) ) {
 				$label = $this->form->gdpr;
 			} else {
-				$label = mailster_option( 'gdpr_text' );
+				$label = mailster_text( 'gdpr_text' );
 			}
-			$fields['_gdpr']  = '<div class="mailster-wrapper mailster-_gdpr-wrapper">';
-			$fields['_gdpr'] .= '<label for="mailster-_gdpr-' . $this->ID . '">';
-			$fields['_gdpr'] .= '<input type="hidden" name="_gdpr" value="0"><input id="mailster-_gdpr-' . $this->ID . '" name="_gdpr" type="checkbox" value="1" class="mailster-_gdpr mailster-required" aria-required="true" aria-label="' . esc_attr( $label ) . '"> ';
-			$fields['_gdpr'] .= ' ' . $label;
+			$fields['_gdpr']    = '<div class="mailster-wrapper mailster-_gdpr-wrapper">';
+			$fields['_gdpr']   .= '<label for="mailster-_gdpr-' . $this->ID . '">';
+			$fields['_gdpr']   .= '<input type="hidden" name="_gdpr" value="0"><input id="mailster-_gdpr-' . $this->ID . '" name="_gdpr" type="checkbox" value="1" class="mailster-_gdpr mailster-required" aria-required="true" aria-label="' . esc_attr( $label ) . '"> ';
+			$gdpr_label_content = $label;
 			if ( mailster_option( 'gdpr_link' ) ) {
-				$fields['_gdpr'] .= ' (<a href="' . mailster_option( 'gdpr_link' ) . '">' . esc_html__( 'Link', 'mailster' ) . '</a>)';
+				$gdpr_label_content .= ' (<a href="' . mailster_option( 'gdpr_link' ) . '" target="_top">' . esc_html__( 'Link', 'mailster' ) . '</a>)';
 			}
 
+			$fields['_gdpr'] .= apply_filters( 'mailster_gdpr_label', $gdpr_label_content );
 			$fields['_gdpr'] .= '</label>';
 			$fields['_gdpr'] .= '</div>';
 		}
@@ -908,7 +909,7 @@ class MailsterForm {
 
 		$customfields = mailster()->get_custom_fields();
 
-		$formdata = isset( $_BASE['userdata'] ) ? $_BASE['userdata'] : $_BASE;
+		$formdata = stripslashes_deep( isset( $_BASE['userdata'] ) ? $_BASE['userdata'] : $_BASE );
 		$formdata = apply_filters( 'mymail_pre_submit', apply_filters( 'mailster_pre_submit', $formdata, $this->form ), $this->form );
 
 		foreach ( $this->form->fields as $field_id => $field ) {
@@ -948,7 +949,7 @@ class MailsterForm {
 
 		if ( isset( $_BASE['_gdpr'] ) ) {
 			if ( empty( $_BASE['_gdpr'] ) ) {
-				$this->object['errors']['_gdpr'] = mailster_option( 'gdpr_error' );
+				$this->object['errors']['_gdpr'] = mailster_text( 'gdpr_error' );
 			} else {
 				$this->object['userdata']['gdpr'] = $now;
 			}
@@ -1062,8 +1063,11 @@ class MailsterForm {
 					}
 
 					if ( $subscriber ) {
-						$unassign_lists = null;
-						$assign_lists   = null;
+
+						$unassign_lists          = null;
+						$assign_lists            = null;
+						$subscriber_notification = false;
+
 						if ( $this->form->userschoice ) {
 							$assigned_lists = mailster( 'subscribers' )->get_lists( $subscriber->ID, true );
 
@@ -1090,6 +1094,11 @@ class MailsterForm {
 							$status = (int) $_BASE['_status'];
 						}
 
+						if ( isset( $entry['email'] ) && $entry['email'] != $subscriber->email && $double_opt_in ) {
+							$status                  = 0;
+							$subscriber_notification = true;
+						}
+
 						$entry = wp_parse_args(
 							array(
 								'status' => $status,
@@ -1102,7 +1111,7 @@ class MailsterForm {
 							unset( $entry['form'] );
 						}
 
-						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true );
+						$subscriber_id = mailster( 'subscribers' )->update( $entry, true, true, $subscriber_notification );
 						if ( is_wp_error( $subscriber_id ) ) {
 							$subscriber_id = $subscriber->ID;
 						}
@@ -1180,11 +1189,13 @@ class MailsterForm {
 
 			if ( $this->valid() ) {
 				$return = array(
+					'action'  => $submissiontype,
 					'success' => true,
 					'html'    => '<p>' . mailster_text( $message ) . '</p>',
 				);
 			} else {
 				$return = array(
+					'action'  => $submissiontype,
 					'success' => false,
 					'fields'  => $this->object['errors'],
 					'html'    => '<p>' . $this->get_message( 'errors', true ) . '</p>',
@@ -1199,6 +1210,7 @@ class MailsterForm {
 		} else {
 
 			$return = array(
+				'action'  => $submissiontype,
 				'success' => false,
 				'fields'  => $this->object['errors'],
 				'html'    => $this->get_message(),
@@ -1243,6 +1255,7 @@ class MailsterForm {
 
 	public function unsubscribe() {
 
+		$return['action']  = 'unsubscribe';
 		$return['success'] = false;
 
 		$_BASE = $_POST;

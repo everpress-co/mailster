@@ -11,6 +11,7 @@ class MailsterUpdate {
 
 		add_filter( 'upgrader_pre_download', array( &$this, 'upgrader_pre_download' ), 10, 3 );
 		add_action( 'after_plugin_row_' . MAILSTER_SLUG, array( &$this, 'add_license_info' ), 10, 3 );
+		add_filter( 'upgrader_package_options', array( &$this, 'upgrader_package_options' ) );
 
 	}
 
@@ -60,7 +61,7 @@ class MailsterUpdate {
 
 			$this->tracker_obj = new Plugin_Usage_Tracker(
 				MAILSTER_FILE,
-				'https://mailster.co',
+				'https://track.mailster.co',
 				false, // options by filter
 				false, // opt in form (custom)
 				false, // goodbye form (custom)
@@ -142,7 +143,7 @@ class MailsterUpdate {
 				switch ( $code ) {
 
 					case 680:
-						$error_msg = $error_msg . ' <a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=inline+link" target="_blank"><strong>' . sprintf( esc_html__( 'Buy an additional license for %s.', 'mailster' ), ( mailster_is_local() ? esc_html__( 'your new site', 'mailster' ) : $_SERVER['HTTP_HOST'] ) . '</strong></a>' );
+						$error_msg = $error_msg . ' <a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=inline+link&utm_source=mailster_plugin" target="_blank" rel="noopener"><strong>' . sprintf( esc_html__( 'Buy an additional license for %s.', 'mailster' ), ( mailster_is_local() ? esc_html__( 'your new site', 'mailster' ) : $_SERVER['HTTP_HOST'] ) . '</strong></a>' );
 
 					case 679: // No Licensecode provided
 					case 678:
@@ -206,27 +207,15 @@ class MailsterUpdate {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $actions
-	 * @return unknown
-	 */
 	public function add_update_action_link( $actions ) {
 
-		$actions['mailster_get_license'] = '<a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=action+link">' . esc_html__( 'Buy a new Mailster License', 'mailster' ) . '</a>';
+		$actions['mailster_get_license'] = '<a href="https://mailster.co/go/buy/?utm_campaign=plugin&utm_medium=action+link&utm_source=mailster_plugin">' . esc_html__( 'Buy a new Mailster License', 'mailster' ) . '</a>';
 
 		return $actions;
 
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $actions
-	 * @return unknown
-	 */
 	public function add_license_info( $plugin_file, $plugin_data, $status ) {
 
 		if ( mailster()->is_outdated() ) {
@@ -241,5 +230,14 @@ class MailsterUpdate {
 		}
 
 	}
+
+	public function upgrader_package_options( $options ) {
+		if ( isset( $options['package'] ) && preg_match( '/^mailster-([0-9.]+)-dev\./', basename( $options['package'] ) ) ) {
+			$options['clear_destination'] = true;
+		}
+
+		return $options;
+	}
+
 
 }

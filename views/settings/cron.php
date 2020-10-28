@@ -6,27 +6,22 @@ if ( is_wp_error( $cron_status ) ) : ?>
 	endif;
 ?>
 <table class="form-table">
-	<tr valign="top" class="wp_cron">
+	<tr valign="top" class="settings-row settings-row-interval wp_cron">
 		<th scope="row"><?php esc_html_e( 'Interval for sending emails', 'mailster' ); ?></th>
 		<td><p><?php printf( esc_html__( 'Send emails at most every %1$s minutes', 'mailster' ), '<input type="text" name="mailster_options[interval]" value="' . mailster_option( 'interval' ) . '" class="small-text">' ); ?></p><p class="description"><?php esc_html_e( 'Optional if a real cron service is used', 'mailster' ); ?></p></td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-cron-service">
 		<th scope="row"><?php esc_html_e( 'Cron Service', 'mailster' ); ?></th>
 		<td>
 			<?php $cron = mailster_option( 'cron_service' ); ?>
 			<label><input type="radio" class="cron_radio" name="mailster_options[cron_service]" value="wp_cron" <?php checked( $cron == 'wp_cron' ); ?> > <?php esc_html_e( 'Use the wp_cron function to send newsletters', 'mailster' ); ?></label><br>
-			<label><input type="radio" class="cron_radio" name="mailster_options[cron_service]" value="cron" <?php checked( $cron == 'cron' ); ?> > <?php esc_html_e( 'Use a real cron to send newsletters', 'mailster' ); ?></label> <span class="description"><?php esc_html_e( 'reccomended for many subscribers', 'mailster' ); ?></span>
+			<label><input type="radio" class="cron_radio" name="mailster_options[cron_service]" value="cron" <?php checked( $cron == 'cron' ); ?> > <?php esc_html_e( 'Use a real cron to send newsletters', 'mailster' ); ?></label> <span class="description"><?php esc_html_e( 'recommended for many subscribers', 'mailster' ); ?></span>
 			<?php if ( file_exists( MAILSTER_UPLOAD_DIR . '/CRON_LOCK' ) && ( time() - filemtime( MAILSTER_UPLOAD_DIR . '/CRON_LOCK' ) ) < 10 ) : ?>
 			<div class="error inline"><p><strong><?php esc_html_e( 'Cron is currently running!', 'mailster' ); ?></strong></p></div>
 			<?php endif; ?>
 		</td>
 	</tr>
-	<tr valign="top" class="cron_opts cron" 
-	<?php
-	if ( $cron != 'cron' ) {
-		echo ' style="display:none"'; }
-	?>
-	>
+	<tr valign="top" class="settings-row settings-row-cron-settings cron_opts cron"<?php echo $cron != 'cron' ? ' style="display:none"' : ''; ?>>
 		<th scope="row"><?php esc_html_e( 'Cron Settings', 'mailster' ); ?>
 			<p class="description">
 				<?php printf( esc_html__( 'Use the alternative Cron URL if you have troubles with this one by clicking %s.', 'mailster' ), '<a class="switch-cron-url" href="#">' . esc_html__( 'here', 'mailster' ) . '</a>' ); ?>
@@ -58,7 +53,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 		</td>
 	</tr>
 	<?php $last_hit = get_option( 'mailster_cron_lasthit' ); ?>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-cron-lock">
 		<th scope="row"><?php esc_html_e( 'Cron Lock', 'mailster' ); ?></th>
 		<td>
 			<?php if ( $last_hit && time() - $last_hit['timestamp'] > 720 && mailster( 'cron' )->is_locked() ) : ?>
@@ -77,15 +72,14 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			<p class="description"><?php esc_html_e( 'A Cron Lock ensures your cron is not overlapping and causing duplicate emails. Select which method you like to use.', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top">
+	<tr valign="top" class="settings-row settings-row-last-hit">
 		<th scope="row"><?php esc_html_e( 'Last hit', 'mailster' ); ?></th>
 		<td>
 		<ul class="lasthit highlight">
 		<?php
 		if ( $last_hit ) :
-				$interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 );
 			?>
-			<li>IP: 
+			<li>IP:
 			<?php
 			echo $last_hit['ip'];
 			if ( $last_hit['ip'] == mailster_get_ip() ) {
@@ -94,7 +88,7 @@ if ( is_wp_error( $cron_status ) ) : ?>
 			</li>
 			<li><?php echo $last_hit['user']; ?></li>
 			<li><?php echo date( $timeformat, $last_hit['timestamp'] + $timeoffset ) . ', <strong>' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $last_hit['timestamp'] ) ) . '</strong>'; ?></li>
-			<?php if ( $interv ) : ?>
+			<?php if ( $interv = round( ( $last_hit['timestamp'] - $last_hit['oldtimestamp'] ) / 60 ) ) : ?>
 			<li><?php echo esc_html__( 'Interval', 'mailster' ) . ': <strong>' . $interv . ' ' . esc_html_x( 'min', 'short for minute', 'mailster' ) . '</strong>'; ?></li>
 			<?php endif; ?>
 			<?php if ( $last_hit['mail'] ) : ?>

@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.2.3
-Stable tag: 2.4.4
+Tested up to: 5.5
+Stable tag: 2.4.15
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,22 +88,140 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
-* new: Conditions!
+= Version 2.4.15 =
+
+* improved: handling of folder names during template upload
+* fixed: saving queued campaigns cause sending them immediately
+* fixed: campaigns with no web version show in archive
+* fixed: small JS issues
+
+= Version 2.4.14 =
+
+* improved: internal handling for sending limits
+* fixed: Display width specification for integer data types was deprecated in MySQL 8.0.17 which causes an error in the self test
+* fixed: unwanted 'a11y-speak-intro-text' element in email body
+* fixed: toggle behavior of meta boxes in WP 5.5
+* fixed: missing content on custom dynamic post types without post ID
+
+= Version 2.4.13 =
+
+* added: classes to settings rows
+* added: option to handle short codes from the advanced settings tab
+* added: support for `{attachment_image:XX}` to display images
+* improved: handling of one click post requests for unsubscribes according to RFC8058
+* fixed: auto update feature in WP 5.5
+* fixed: do not localize variables
+* fixed: error in PHPMailer (#2107) where exception is thrown when background attribute is empty
+* fixed: multi site no longer share user meta data in conditions data between sub sites.
+
+= Version 2.4.12 =
+
+* added: `mailster_inline_css` filter hook to disable auto inline css
+* fixed: problem with third party short codes in excerpt
+* fixed: several small bugfixes
+* fixed: wrong counting on dashboard widget
+* fixed: calculation of aggregated campaigns not accurate
+* fixed: relative path in modules
+* fixed: High DPI images on dynamic posts tags got wrong eight in some cases.
+* improved: consistent behavior on handling short codes
+* improved: Only the preheader text is shown in the email preview of email clients.
+* improved: `mailster_preview_text_fix` filter to disable preview text fix.
+* improved: automatically remove support accounts after one month after an update
+* improved: you can now click on form fields to add them to the form
+* improved: added missing aria labels
+
+= Version 2.4.11 =
+
+* change: changing the email address on the profile sets status to pending and sends confirmation message if double opt in is enabled.
+* change: the most recent notification is now displayed at the top.
+* added: `mailster_register_dynamic_post_type` action hook to add custom dynamic post types.
+* added: option to disable in-app-unsubscribe option
+* fixed: issue where editor is not loading with some themes activated
+* fixed: JS error if inline editor is not used
+* fixed: people got unsubscribed if bounce address is the same as sign up notifications email.
+* improved: User Agent handling.
+* improved: pasting text from external source.
+* improved: better support fro data-uris in style declarations.
+* improved: better handling of sending HTML message with third party plugins
+* removed: Gmail delivery option (fallback to SMTP)
+* deprecated: use of Gmail via LSA as announced via [Google](https://gsuiteupdates.googleblog.com/2019/12/less-secure-apps-oauth-google-username-password-incorrect.html). Please use our dedicate Gmail addon instead.
+
+= Version 2.4.10 =
+
+* new: option to pick emoji for subject, preheader and from name
+* improved: refactoring of JavaScript
+* improved: refactoring of action based auto responders
+* improved: campaigns in conditions are now ordered alphabetically.
+* improved: content is now pasted as plain text instead of rich type
+* fixed: creating campaigns with feeds which timeout causes empty autoresponders.
+* fixed: redirection error on confirmation
+* fixed: result of empty lists is no longer null
+* fixed: links in iframe forms open now in parent window.
+* fixed: issue where resuming a campaign on stats page is not possible.
+* fixed: issue where feature images are not displayed in autoresponder campaigns.
+* added: 'mailster_register_form_signup_field' filter hook to modify signup checkbox on registration screen.
+* added: more bulk options to campaign overview.
+
+= Version 2.4.9 =
+
+* change: moved text strings for GDPR to text tab for better localization.
+* change: sanitize_content method no longer handles custom Mailster styles (changes to the methods arguments)
+* added: `mailster_add_tag` action hook to add custom tags.
+* added: `mailster_add_style` action hook to add custom styles.
+* improved: block tags removed in final output
+* improved: RSS feed method for more flexible feed support.
+* improved: tags now can return WP_Error object which prevents the campaign from sending.
+* added: `mailster_gdpr_label` filter to change the content.
+* fixed: empty strings on action hook based campaigns
+* fixed: unchecked required checkbox prevents form fields page from saving.
+* fixed: wrong less memory warning
+* fixed: problem with CodeEditor on Avada
+* fixed: missing inline styles on html elements from tags.
+
+= Version 2.4.8 =
+
+* fixed: escaped content on edit screen.
+* fixed: escaped several strings.
+* improved: United Kingdom is no longer part of the European Union.
+
+= Version 2.4.7 =
+
+* improved: CSS for WordPress 5.3
+* improved: action type is now returned in form submission
+* improved: form submission on errors
+* fixed: content type selection not respected on dynamic insertion mode
+* fixed: 'ERR_CONNECTION_RESET' issue on some Apache installations
+
+= Version 2.4.6 =
+
+* tested with WordPress 5.3
+* fixed: potential XSS vulnerable on the subscribers detail page identified by Compass Security
+* fixed: single quote in subject now correctly encoded
+* fixed: confirm redirection issues on some installations
+* change: Redirect after submit and Redirect after confirmation must be a URL
+
+= Version 2.4.5 =
+
+* fixed: issue saving 'send campaign only once' option
+* fixed: duplication of finished campaign no longer breaks module selection
+* improved: some fields are now stored urlencoded for better emoji support in databases with collation other than utf8mb4
+* changed: action hook auto responders no longer sent to all subscribers if subscriber id is set to `false` (use `null` instead)
 
 = Version 2.4.4 =
-
 
 * improved: you can now encode tags output with an exclamation mark `{!mytag}`.
 * improved: drag n drop images from your desktop now respects cropped image setting.
 * improved: import screen.
 * improved: test mails now fallback to the current users email if not defined.
-* improved: subscriber query now search for ID by default.
+* improved: subscriber query now search for ID as well.
 * fixed: notifications to multiple addresses.
 * fixed: modules without content sometimes preserve in the campaign.
 * fixed: issue with RSS campaigns on time based autoresponders.
 * fixed: wrong subscriber count if status "pending" in subscriber query.
 * fixed: cumulative count calculations.
 * fixed: redirecting issue with spaces in URLs.
+* updated to latest coding standards
+* code refactoring
 
 = Version 2.4.3 =
 

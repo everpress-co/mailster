@@ -53,7 +53,7 @@ $currentstep = isset( $_GET['step'] ) ? (int) $_GET['step'] : 1;
 			<div class="upload-method">
 				<h2><?php esc_html_e( 'Paste', 'mailster' ); ?></h2>
 				<p class="description"><?php esc_html_e( 'Copy and paste from your spreadsheet app', 'mailster' ); ?></p>
-				<textarea id="paste-import" class="widefat" rows="13" placeholder="<?php esc_html_e( 'paste your list here', 'mailster' ); ?>">
+				<textarea id="paste-import" class="widefat" rows="13" placeholder="<?php esc_attr_e( 'paste your list here', 'mailster' ); ?>">
 justin.case@<?php echo $_SERVER['HTTP_HOST']; ?>; Justin; Case; Custom;
 john.doe@<?php echo $_SERVER['HTTP_HOST']; ?>; John; Doe
 jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
@@ -122,7 +122,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 			</div>
 			<?php endif; ?>
 			<div class="clearfix clear">
-				<input type="submit" class="button button-primary button-large" value="<?php esc_html_e( 'Next Step', 'mailster' ); ?> &#x2192;">
+				<input type="submit" class="button button-primary button-large" value="<?php esc_attr_e( 'Next Step', 'mailster' ); ?> &#x2192;">
 			</div>
 		</form>
 	</div>
@@ -204,52 +204,28 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 					<label><?php esc_html_e( 'Date Format', 'mailster' ); ?>:
 					<select name="dateformat">
 					<option value="0" <?php selected( $user_settings['dateformat'], 0 ); ?>>timestamp - (<?php echo current_time( 'timestamp' ); ?>)</option>
-					<option value="
-					<?php
-					$d = mailster( 'helper' )->timeformat();
-					echo $d;
-					?>
-					" <?php selected( $user_settings['dateformat'], $d ); ?>>
+					<?php $d = mailster( 'helper' )->timeformat(); ?>
+					<option value="<?php echo $d; ?>" <?php selected( $user_settings['dateformat'], $d ); ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
-					<option value="
-					<?php
-					$d = mailster( 'helper' )->dateformat();
-					echo $d;
-					?>
-					" <?php selected( $user_settings['dateformat'], $d ); ?>>
+					<?php $d = mailster( 'helper' )->dateformat(); ?>
+					<option value="<?php echo $d; ?>" <?php selected( $user_settings['dateformat'], $d ); ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
-					<option value="
-					<?php
-					$d = 'Y-m-d H:i:s';
-					echo $d;
-					?>
-					" <?php selected( $user_settings['dateformat'], $d ); ?>>
+					<?php $d = 'Y-m-d H:i:s'; ?>
+					<option value="<?php echo $d; ?>" <?php selected( $user_settings['dateformat'], $d ); ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
-					<option value="
-					<?php
-					$d = 'Y-m-d';
-					echo $d;
-					?>
-					" <?php selected( $user_settings['dateformat'], $d ); ?>>
+					<?php $d = 'Y-m-d'; ?>
+					<option value="<?php echo $d; ?>" <?php selected( $user_settings['dateformat'], $d ); ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
-					<option value="
-					<?php
-					$d = 'Y-d-m H:i:s';
-					echo $d;
-					?>
-					" <?php selected( $user_settings['dateformat'], $d ); ?>>
+					<?php $d = 'Y-d-m H:i:s'; ?>
+					<option value="<?php echo $d; ?>" <?php selected( $user_settings['dateformat'], $d ); ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
-					<option value="
-					<?php
-					$d = 'Y-d-m';
-					echo $d;
-					?>
-					" <?php selected( $user_settings['dateformat'], $d ); ?>>
+					<?php $d = 'Y-d-m'; ?>
+					<option value="<?php echo $d; ?>" <?php selected( $user_settings['dateformat'], $d ); ?>>
 					<?php echo $d . ' - (' . date( $d, current_time( 'timestamp' ) ) . ')'; ?>
 					</option>
 					</select>
@@ -263,12 +239,7 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 						<option value="html" <?php selected( $user_settings['outputformat'], 'html' ); ?>><?php esc_html_e( 'HTML', 'mailster' ); ?></option>
 						</select>
 					</label>
-					<label id="csv-separator" 
-					<?php
-					if ( 'csv' != $user_settings['outputformat'] ) {
-						echo ' style="display: none;"';}
-					?>
-					><?php esc_html_e( 'Separator', 'mailster' ); ?>:
+					<label id="csv-separator"<?php echo 'csv' != $user_settings['outputformat'] ? ' style="display: none;"' : ''; ?>><?php esc_html_e( 'Separator', 'mailster' ); ?>:
 					<select name="separator">
 						<option value=";" <?php selected( $user_settings['separator'], ';' ); ?>>;</option>
 						<option value="," <?php selected( $user_settings['separator'], ',' ); ?>>,</option>
@@ -360,27 +331,29 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 						<?php foreach ( $fields as $id => $data ) : ?>
 							<?php
 							if ( in_array( $id, $user_settings['column'] ) ) {
-								continue; }
+								continue;
+							}
 							?>
-							<li><input type="checkbox" name="column[]" value="<?php echo $id; ?>"> <?php echo esc_html( strip_tags( $data ) ); ?></li>
+							<li><input type="checkbox" name="column[]" value="<?php echo esc_attr( $id ); ?>"> <?php echo esc_html( strip_tags( $data ) ); ?></li>
 						<?php endforeach; ?>
 					</ul>
 					<div class="export-order-middle">
-						<button class="export-order-add button-secondary">&gt;&gt;</button>
-						<button class="export-order-remove button-secondary">&lt;&lt;</button>
+						<button class="export-order-add button-secondary">&#8680;</button><br>
+						<button class="export-order-remove button-secondary">&#8678;</button>
 					</div>
 					<ul class="export-order selected">
 					<?php foreach ( $user_settings['column'] as $id ) : ?>
 						<?php
 						if ( ! isset( $fields[ $id ] ) ) {
-							continue; }
+							continue;
+						}
 						?>
-						<li><input type="checkbox" name="column[]" value="<?php echo $id; ?>" checked> <?php echo esc_html( $fields[ $id ] ); ?></li>
+						<li><input type="checkbox" name="column[]" value="<?php echo esc_attr( $id ); ?>" checked> <?php echo esc_html( $fields[ $id ] ); ?></li>
 					<?php endforeach; ?>
 					</ul>
 				</div>
 				<p>
-					<input class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Download Subscribers', 'mailster' ); ?>" />
+					<input class="button button-large button-primary" type="submit" value="<?php esc_attr_e( 'Download Subscribers', 'mailster' ); ?>" />
 				</p>
 			</form>
 			</div>
@@ -403,8 +376,8 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 			$lists   = mailster( 'lists' )->get( null, false );
 			$no_list = mailster( 'lists' )->count( false );
 
-			if ( ! empty( $lists ) || $no_list ) :
-				?>
+			?>
+			<?php if ( ! empty( $lists ) || $no_list ) : ?>
 
 			<div class="step1">
 				<form method="post" id="delete-subscribers">
@@ -422,10 +395,12 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 
 				<?php if ( $no_list ) : ?>
 				<ul>
-					<li><label><input type="checkbox" name="nolists" value="1"> <?php echo esc_html__( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . esc_html__( 'total', 'mailster' ) . ')</span>'; ?></label></li>
+					<li><label><input type="checkbox" name="nolists" value="1"> <?php esc_html_e( 'subscribers not assigned to a list', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $no_list ) . ' ' . esc_html__( 'total', 'mailster' ) . ')</span>'; ?></label></li>
 				</ul>
 				<?php endif; ?>
+
 				<h3><?php esc_html_e( 'Conditions', 'mailster' ); ?>:</h3>
+
 				<?php mailster( 'conditions' )->view( array(), 'conditions' ); ?>
 
 				<h3><?php esc_html_e( 'Status', 'mailster' ); ?>:</h3>
@@ -441,12 +416,14 @@ jane.roe@<?php echo $_SERVER['HTTP_HOST']; ?>; Jane; Roe
 					<label><input type="checkbox" name="remove_actions" value="1"> <?php esc_html_e( 'Remove all actions from affected users', 'mailster' ); ?> </label>
 				</p>
 				<p>
-					<input id="delete-subscriber-button" class="button button-large button-primary" type="submit" value="<?php esc_html_e( 'Delete Subscribers permanently', 'mailster' ); ?>" />
+					<input id="delete-subscriber-button" class="button button-large button-primary" type="submit" value="<?php esc_attr_e( 'Delete Subscribers permanently', 'mailster' ); ?>" />
 				</p>
 				<h2 class="delete-status"></h2>
 				</form>
 			</div>
+
 			<?php else : ?>
+
 		<p><?php esc_html_e( 'No Subscriber found!', 'mailster' ); ?></p>
 
 	<?php endif; ?>

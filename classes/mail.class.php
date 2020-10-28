@@ -89,23 +89,6 @@ class MailsterMail {
 			add_action( 'mailster_presend', array( &$this, 'pre_send' ), 1, 10 );
 			add_action( 'mailster_dosend', array( &$this, 'do_send' ), 1, 10 );
 
-		} elseif ( $this->deliverymethod == 'gmail' ) {
-
-			$this->mailer->IsSMTP();
-
-			$this->mailer->Host     = 'smtp.googlemail.com';
-			$this->mailer->Port     = 587;
-			$this->mailer->SMTPAuth = true;
-
-			$this->mailer->Username = mailster_option( 'gmail_user' );
-			$this->mailer->Password = mailster_option( 'gmail_pwd' );
-
-			$this->mailer->SMTPSecure    = 'tls';
-			$this->mailer->SMTPKeepAlive = true;
-
-			add_action( 'mailster_presend', array( &$this, 'pre_send' ), 1, 10 );
-			add_action( 'mailster_dosend', array( &$this, 'do_send' ), 1, 10 );
-
 		} elseif ( $this->deliverymethod == 'simple' ) {
 
 			$method = mailster_option( 'simplemethod' );
@@ -139,6 +122,9 @@ class MailsterMail {
 			$this->mailer->DKIM_private    = $folder . '/' . mailster_option( 'dkim_private_hash' ) . '.pem';
 			$this->mailer->DKIM_passphrase = mailster_option( 'dkim_passphrase' );
 			$this->mailer->DKIM_identity   = mailster_option( 'dkim_identity' );
+
+			// required for https://tools.ietf.org/html/rfc8058
+			$this->mailer->DKIM_extraHeaders = array_merge( $this->mailer->DKIM_extraHeaders, array( 'List-Unsubscribe', 'List-Unsubscribe-Post' ) );
 		}
 
 		$this->from      = mailster_option( 'from' );
@@ -168,10 +154,14 @@ class MailsterMail {
 			}
 		}
 
-		$this->sentlimitreached = $this->sent_within_period >= $this->send_limit;
+		$this->sentlimitreached = $this->sent_within_period && $this->sent_within_period >= $this->send_limit;
 
 		if ( $this->sentlimitreached ) {
-			$msg = sprintf( esc_html__( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), '<strong>' . $this->send_limit . '</strong>', '<strong>' . human_time_diff( get_option( '_transient_timeout__mailster_send_period_timeout' ) ) . '</strong>' );
+			$delay = get_option( '_transient_timeout__mailster_send_period_timeout' );
+			if ( ! $delay ) {
+				$delay = time() + mailster_option( 'send_period' ) * 3600;
+			}
+			$msg = sprintf( esc_html__( 'Sent limit of %1$s reached! You have to wait %2$s before you can send more mails!', 'mailster' ), '<strong>' . $this->send_limit . '</strong>', '<strong>' . human_time_diff( $delay ) . '</strong>' );
 			mailster_notice( $msg, 'error', false, 'dailylimit' );
 
 			$e                = new Exception( $msg, 1 );
@@ -475,7 +465,7 @@ class MailsterMail {
 		}
 
 		foreach ( $header as $k => $v ) {
-			$this->headers[ $k ] = str_replace( array( "\n", ' ' ), array( '%0D%0A', '%20' ), (string) $v );
+			$this->headers[ $k ] = $v;
 		}
 	}
 
@@ -494,7 +484,13 @@ class MailsterMail {
 		$this->mailer->clearCustomHeaders();
 
 		foreach ( $this->headers as $key => $value ) {
-			$this->mailer->addCustomHeader( $key . ':' . $value );
+			if ( is_array( $value ) ) {
+				foreach ( $value as $v ) {
+					$this->mailer->addCustomHeader( $key . ':' . ( str_replace( array( "\n", ' ' ), array( '%0D%0A', '%20' ), (string) $v ) ) );
+				}
+			} else {
+				$this->mailer->addCustomHeader( $key . ':' . str_replace( array( "\n", ' ' ), array( '%0D%0A', '%20' ), (string) $value ) );
+			}
 		}
 
 	}
@@ -545,6 +541,9 @@ class MailsterMail {
 
 		$this->content = $placeholder->get_content();
 		$this->content = mailster( 'helper' )->prepare_content( $this->content );
+		if ( apply_filters( 'mailster_inline_css', true ) ) {
+			$content = mailster( 'helper' )->inline_css( $this->content );
+		}
 
 		$placeholder->set_content( $this->subject );
 		$this->subject = $placeholder->get_content();
@@ -709,6 +708,8 @@ class MailsterMail {
 
 			if ( $this->embed_images ) {
 				$this->content = $this->make_img_relative( $this->content );
+				// fix for https://github.com/PHPMailer/PHPMailer/issues/2107
+				$this->content = str_replace( array( ' src=""', ' background=""' ), '', $this->content );
 				$this->mailer->msgHTML( $this->content, trailingslashit( dirname( MAILSTER_UPLOAD_DIR ) ) );
 			} else {
 				$this->mailer->Body = $this->mailer->normalizeBreaks( $this->content );

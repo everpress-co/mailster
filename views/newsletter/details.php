@@ -16,22 +16,37 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Subject', 'mailster' ); ?></th>
-			<td><input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['subject'] ); ?>" name="mailster_data[subject]" id="mailster_subject" aria-label="<?php esc_attr_e( 'Subject', 'mailster' ); ?>"></td>
+			<td>
+				<div class="emoji-selector">
+					<input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['subject'] ); ?>" name="mailster_data[subject]" id="mailster_subject" aria-label="<?php esc_attr_e( 'Subject', 'mailster' ); ?>">
+					<button class="button emoji" data-input="mailster_subject">&#128578;</button>
+				</div>
+			</td>
 		</tr>
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Preheader', 'mailster' ); ?></th>
-			<td><input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['preheader'] ); ?>" name="mailster_data[preheader]" id="mailster_preheader" aria-label="<?php esc_attr_e( 'Preheader', 'mailster' ); ?>"></td>
+			<td>
+				<div class="emoji-selector">
+					<input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['preheader'] ); ?>" name="mailster_data[preheader]" id="mailster_preheader" aria-label="<?php esc_attr_e( 'Preheader', 'mailster' ); ?>">
+					<button class="button emoji" data-input="mailster_preheader">&#128578;</button>
+				</div>
+			</td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'From Name', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from-name" data-value="<?php echo esc_attr( mailster_option( 'from_name' ) ); ?>" title="<?php esc_html_e( 'restore default', 'mailster' ); ?>"></a></th>
-			<td><input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['from_name'] ); ?>" name="mailster_data[from_name]" id="mailster_from-name" aria-label="<?php esc_attr_e( 'From Name', 'mailster' ); ?>"></td>
+			<th scope="row"><?php esc_html_e( 'From Name', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from-name" data-value="<?php echo esc_attr( mailster_option( 'from_name' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
+			<td>
+				<div class="emoji-selector">
+					<input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['from_name'] ); ?>" name="mailster_data[from_name]" id="mailster_from-name" aria-label="<?php esc_attr_e( 'From Name', 'mailster' ); ?>">
+					<button class="button emoji" data-input="mailster_from-name">&#128578;</button>
+				</div>
+			</td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'From Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from" data-value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" title="<?php esc_html_e( 'restore default', 'mailster' ); ?>"></a></th>
+			<th scope="row"><?php esc_html_e( 'From Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from" data-value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
 			<td><input type="email" class="widefat" value="<?php echo esc_attr( $this->post_data['from_email'] ); ?>" name="mailster_data[from_email]" id="mailster_from" aria-label="<?php esc_attr_e( 'From Email', 'mailster' ); ?>"></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'Reply-to Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_reply_to" data-value="<?php echo esc_attr( mailster_option( 'reply_to' ) ); ?>" title="<?php esc_html_e( 'restore default', 'mailster' ); ?>"></a></th>
+			<th scope="row"><?php esc_html_e( 'Reply-to Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_reply_to" data-value="<?php echo esc_attr( mailster_option( 'reply_to' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
 			<td><input type="email" class="widefat" value="<?php echo esc_attr( $this->post_data['reply_to'] ); ?>" name="mailster_data[reply_to]" id="mailster_reply_to" aria-label="<?php esc_attr_e( 'reply-to email', 'mailster' ); ?>"></td>
 		</tr>
 	 </tbody>
@@ -42,8 +57,8 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 <?php else : ?>
 	<?php
-	$totals  = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $this->get_sent( $post->ID );
 	$sent    = $this->get_sent( $post->ID );
+	$totals  = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $sent;
 	$deleted = $this->get_deleted( $post->ID );
 
 	$errors = $this->get_errors( $post->ID );
@@ -60,13 +75,13 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<tr><th width="16.666%"><?php esc_html_e( 'Subject', 'mailster' ); ?></th><td><strong><?php echo $this->post_data['subject']; ?></strong></td></tr>
 	<?php if ( 'autoresponder' != $post->post_status ) : ?>
 	<tr><th><?php esc_html_e( 'Date', 'mailster' ); ?></th><td>
-							  <?php
-								echo date( $timeformat, $this->post_data['timestamp'] + $timeoffset );
-								if ( 'finished' == $post->post_status ) :
-									echo ' &ndash; ' . date( $timeformat, $this->post_data['finished'] + $timeoffset );
-									echo ' (' . sprintf( esc_html__( 'took %s', 'mailster' ), human_time_diff( $this->post_data['timestamp'], $this->post_data['finished'] ) ) . ')';
-		endif;
-								?>
+		<?php echo date( $timeformat, $this->post_data['timestamp'] + $timeoffset ); ?>
+		<?php
+		if ( 'finished' == $post->post_status ) :
+			echo ' &ndash; ' . date( $timeformat, $this->post_data['finished'] + $timeoffset );
+			echo ' (' . sprintf( esc_html__( 'took %s', 'mailster' ), human_time_diff( $this->post_data['timestamp'], $this->post_data['finished'] ) ) . ')';
+			endif;
+		?>
 	</td></tr>
 	<?php endif; ?>
 	<tr><th><?php esc_html_e( 'Preheader', 'mailster' ); ?></th><td><?php echo $this->post_data['preheader'] ? $this->post_data['preheader'] : '<span class="description">' . esc_html__( 'no preheader', 'mailster' ) . '</span>'; ?></td></tr>
@@ -189,7 +204,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 		<div class="ajax-list countries" id="geolocation-list"></div>
 	</td></tr>
 
-		<?php endif; ?>
+	<?php endif; ?>
 
 </table>
 

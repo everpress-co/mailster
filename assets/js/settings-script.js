@@ -1,6 +1,6 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
+	"use strict";
 
 	var nav = $('.mainnav'),
 		deliverynav = $('#deliverynav'),
@@ -8,11 +8,6 @@ jQuery(document).ready(function ($) {
 		deliverytabs = $('#tab-delivery').find('.subtab'),
 		wpnonce = $('#mailster_nonce').val(),
 		reservedtags = $('#reserved-tags').data('tags');
-
-	$('a.external').on('click', function () {
-		if (this.href) window.open(this.href);
-		return false;
-	});
 
 	$('form#mailster-settings-form')
 		.on('submit.lock', function () {
@@ -22,7 +17,7 @@ jQuery(document).ready(function ($) {
 		$('.submit-form').prop('disabled', false);
 		$('form#mailster-settings-form').off('submit.lock');
 	} else {
-		if (console) console.log('error loading settings page');
+		mailster.log('error loading settings page');
 	}
 
 	deliverynav.on('click', 'a.nav-tab', function () {
@@ -31,7 +26,7 @@ jQuery(document).ready(function ($) {
 		var hash = $(this).addClass('nav-tab-active').attr('href');
 		$('#deliverymethod').val(hash.substr(1));
 		$('#subtab-' + hash.substr(1)).show();
-		$('input.mailster_sendtest').val(mailsterL10n.save_to_test).prop('disabled', true);
+		$('input.mailster_sendtest').val(mailster.l10n.settings.save_to_test).prop('disabled', true);
 		return false;
 	});
 
@@ -83,7 +78,7 @@ jQuery(document).ready(function ($) {
 
 		$('button').prop('disabled', true);
 
-		_ajax('load_geo_data', function (response) {
+		mailster.util.ajax('load_geo_data', function (response) {
 
 			$('button').prop('disabled', false);
 			loader.css({
@@ -168,7 +163,7 @@ jQuery(document).ready(function ($) {
 
 
 	$('#mailster_generate_dkim_keys').on('click', function () {
-		return ($('#dkim_keys_active').length && confirm(mailsterL10n.create_new_keys));
+		return ($('#dkim_keys_active').length && confirm(mailster.l10n.settings.create_new_keys));
 		return false;
 	});
 
@@ -199,7 +194,7 @@ jQuery(document).ready(function ($) {
 
 		$this.prop('disabled', true);
 
-		_ajax('send_test', {
+		mailster.util.ajax('send_test', {
 			test: true,
 			formdata: formdata,
 			basic: true,
@@ -207,8 +202,8 @@ jQuery(document).ready(function ($) {
 
 		}, function (response) {
 
-			if (response.log && console)
-				response.success ? console.log(response.log) : console.error(response.log);
+			if (response.log)
+				response.success ? mailster.log(response.log) : mailster.log(response.log, 'error');
 
 			loader.css({
 				'visibility': 'hidden'
@@ -241,7 +236,7 @@ jQuery(document).ready(function ($) {
 
 		$this.prop('disabled', true);
 
-		_ajax('bounce_test', {
+		mailster.util.ajax('bounce_test', {
 			formdata: formdata
 		}, function (response) {
 
@@ -279,7 +274,7 @@ jQuery(document).ready(function ($) {
 		.on('change', '.tag-key', function () {
 			var _this = $(this),
 				_base = _this.parent().parent(),
-				val = _sanitize(_this.val());
+				val = sanitize(_this.val());
 
 			if (!val) _this.parent().parent().remove();
 
@@ -294,7 +289,7 @@ jQuery(document).ready(function ($) {
 
 	$('#mailster_add_field').on('click', function () {
 
-		var el = $('<div class="customfield"><a class="customfield-move-up" title="' + mailsterL10n.move_up + '">&#9650;</a><a class="customfield-move-down" title="' + mailsterL10n.move_down + '">&#9660;</a><div><span class="label">' + mailsterL10n.fieldname + ':</span><label><input type="text" class="regular-text customfield-name"></label></div><div><span class="label">' + mailsterL10n.tag + ':</span><span><code>{</code><input type="text" class="customfield-key code"><code>}</code></span></div><div><span class="label">' + mailsterL10n.type + ':</span><select class="customfield-type"><option value="textfield">' + mailsterL10n.textfield + '</option><option value="textarea">' + mailsterL10n.textarea + '</option><option value="dropdown">' + mailsterL10n.dropdown + '</option><option value="radio">' + mailsterL10n.radio + '</option><option value="checkbox">' + mailsterL10n.checkbox + '</option><option value="date">' + mailsterL10n.datefield + '</option></select></div><ul class="customfield-additional customfield-dropdown customfield-radio"><li><ul class="customfield-values"><li><span>&nbsp;</span> <span class="customfield-value-box"><input type="text" class="regular-text customfield-value" value=""> <label><input type="radio" value="" title="' + mailsterL10n.default_selected + '" class="customfield-default" disabled> ' + mailsterL10n.default_field + '</label></span></li></ul><span>&nbsp;</span> <a class="customfield-value-add">' + mailsterL10n.add_field + '</a></li></ul><div class="customfield-additional customfield-checkbox"><span>&nbsp;</span><label><input type="checkbox" value="1" title="' + mailsterL10n.default_field + '" class="customfield-default" disabled> ' + mailsterL10n.default_checked + '</label></div><a class="customfield-remove">remove field</a><br></div>').appendTo($('.customfields').eq(0));
+		var el = $('<div class="customfield"><a class="customfield-move-up" title="' + mailster.l10n.settings.move_up + '">&#9650;</a><a class="customfield-move-down" title="' + mailster.l10n.settings.move_down + '">&#9660;</a><div><span class="label">' + mailster.l10n.settings.fieldname + ':</span><label><input type="text" class="regular-text customfield-name"></label></div><div><span class="label">' + mailster.l10n.settings.tag + ':</span><span><code>{</code><input type="text" class="customfield-key code"><code>}</code></span></div><div><span class="label">' + mailster.l10n.settings.type + ':</span><select class="customfield-type"><option value="textfield">' + mailster.l10n.settings.textfield + '</option><option value="textarea">' + mailster.l10n.settings.textarea + '</option><option value="dropdown">' + mailster.l10n.settings.dropdown + '</option><option value="radio">' + mailster.l10n.settings.radio + '</option><option value="checkbox">' + mailster.l10n.settings.checkbox + '</option><option value="date">' + mailster.l10n.settings.datefield + '</option></select></div><ul class="customfield-additional customfield-dropdown customfield-radio"><li><ul class="customfield-values"><li><span>&nbsp;</span> <span class="customfield-value-box"><input type="text" class="regular-text customfield-value" value=""> <label><input type="radio" value="" title="' + mailster.l10n.settings.default_selected + '" class="customfield-default" disabled> ' + mailster.l10n.settings.default_field + '</label></span></li></ul><span>&nbsp;</span> <a class="customfield-value-add">' + mailster.l10n.settings.add_field + '</a></li></ul><div class="customfield-additional customfield-checkbox"><span>&nbsp;</span><label><input type="checkbox" value="1" title="' + mailster.l10n.settings.default_field + '" class="customfield-default" disabled> ' + mailster.l10n.settings.default_checked + '</label></div><a class="customfield-remove">remove field</a><br></div>').appendTo($('.customfields').eq(0));
 		el.find('.customfield-name').focus();
 	});
 
@@ -322,7 +317,7 @@ jQuery(document).ready(function ($) {
 			$('.sync-button').prop('disabled', true);
 		})
 		.on('click', '#sync_subscribers_wp', function () {
-			if (event.target == this && !confirm(mailsterL10n.sync_subscriber)) return false;
+			if (event.target == this && !confirm(mailster.l10n.settings.sync_subscriber)) return false;
 
 			var _this = $(this),
 				loader = $('.sync-ajax-loading').css({
@@ -331,7 +326,7 @@ jQuery(document).ready(function ($) {
 
 			$('.sync-button').prop('disabled', true);
 
-			_ajax('sync_all_subscriber', {
+			mailster.util.ajax('sync_all_subscriber', {
 				offset: _this.data('offset')
 			}, function (response) {
 
@@ -356,7 +351,7 @@ jQuery(document).ready(function ($) {
 			return false;
 		})
 		.on('click', '#sync_wp_subscribers', function () {
-			if (event.target == this && !confirm(mailsterL10n.sync_wp_user)) return false;
+			if (event.target == this && !confirm(mailster.l10n.settings.sync_wp_user)) return false;
 
 			var _this = $(this),
 				loader = $('.sync-ajax-loading').css({
@@ -365,7 +360,7 @@ jQuery(document).ready(function ($) {
 
 			$('.sync-button').prop('disabled', true);
 
-			_ajax('sync_all_wp_user', {
+			mailster.util.ajax('sync_all_wp_user', {
 				offset: _this.data('offset')
 			}, function (response) {
 
@@ -401,7 +396,7 @@ jQuery(document).ready(function ($) {
 		.on('change', '.customfield-key', function () {
 			var _this = $(this),
 				_base = _this.parent().parent().parent(),
-				val = _sanitize(_this.val());
+				val = sanitize(_this.val());
 
 			if (!val) _base.remove();
 
@@ -449,10 +444,10 @@ jQuery(document).ready(function ($) {
 		});
 
 	$('#mailster_import_data').on('click', function () {
-		if (!confirm(mailsterL10n.import_data)) return false;
+		if (!confirm(mailster.l10n.settings.import_data)) return false;
 	});
 	$('#mailster_reset_data').on('click', function () {
-		if (!confirm(mailsterL10n.reset_data)) return false;
+		if (!confirm(mailster.l10n.settings.reset_data)) return false;
 	});
 
 	function bounce_test_check(identifier, count, formdata, callback) {
@@ -462,7 +457,7 @@ jQuery(document).ready(function ($) {
 			}),
 			status = $('.bouncetest_status');
 
-		_ajax('bounce_test_check', {
+		mailster.util.ajax('bounce_test_check', {
 			identifier: identifier,
 			passes: count,
 			formdata: formdata
@@ -499,7 +494,7 @@ jQuery(document).ready(function ($) {
 			'visibility': 'visible'
 		});
 
-		_ajax('spf_check', function (response) {
+		mailster.util.ajax('spf_check', function (response) {
 
 			if (response.success) {
 				loader
@@ -520,7 +515,7 @@ jQuery(document).ready(function ($) {
 			'visibility': 'visible'
 		});
 
-		_ajax('dkim_check', function (response) {
+		mailster.util.ajax('dkim_check', function (response) {
 
 			if (response.success) {
 				loader
@@ -536,53 +531,15 @@ jQuery(document).ready(function ($) {
 		});
 	}
 
-	function _sanitize(string) {
+	function sanitize(string) {
 		var tag = $.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '').replace(/^[_]*/, '').replace(/[_]*$/, '');
 		if ($.inArray(tag, reservedtags) != -1) {
-			alert(sprintf(mailsterL10n.reserved_tag, '"' + tag + '"'));
+			alert(mailster.util.sprintf(mailster.l10n.settings.reserved_tag, '"' + tag + '"'));
 			tag += '-a';
 		}
 		return tag;
 	}
 
-	function _ajax(action, data, callback, errorCallback) {
+	return mailster;
 
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
-				errorCallback = callback;
-			}
-			callback = data;
-			data = {};
-		}
-		$.ajax({
-			type: 'POST',
-			url: ajaxurl,
-			data: $.extend({
-				action: 'mailster_' + action,
-				_wpnonce: wpnonce
-			}, data),
-			success: function (data, textStatus, jqXHR) {
-				callback && callback.call(this, data, textStatus, jqXHR);
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				if (textStatus == 'error' && !errorThrown) return;
-				if (console) console.error($.trim(jqXHR.responseText));
-				errorCallback && errorCallback.call(this, jqXHR, textStatus, errorThrown);
-			},
-			dataType: "JSON"
-		});
-	}
-
-	function sprintf() {
-		var a = Array.prototype.slice.call(arguments),
-			str = a.shift(),
-			total = a.length,
-			reg;
-		for (var i = 0; i < total; i++) {
-			reg = new RegExp('%(' + (i + 1) + '\\$)?(s|d|f)');
-			str = str.replace(reg, a[i]);
-		}
-		return str;
-	}
-
-});
+}(mailster || {}, jQuery, window, document));

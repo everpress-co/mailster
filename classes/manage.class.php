@@ -38,10 +38,23 @@ class MailsterManage {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
-		wp_localize_script(
-			'mailster-manage-script',
-			'mailsterL10n',
+		wp_enqueue_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
+		global $wp_locale;
+
+		mailster_localize_script(
+			'conditions',
+			array(
+				'next'          => esc_html__( 'next', 'mailster' ),
+				'prev'          => esc_html__( 'prev', 'mailster' ),
+				'start_of_week' => get_option( 'start_of_week' ),
+				'day_names'     => $wp_locale->weekday,
+				'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
+				'month_names'   => array_values( $wp_locale->month ),
+			)
+		);
+		mailster_localize_script(
+			'manage',
 			array(
 				'select_status'        => esc_html__( 'Please select the status for the importing contacts!', 'mailster' ),
 				'select_emailcolumn'   => esc_html__( 'Please select at least the column with the email addresses!', 'mailster' ),
@@ -60,7 +73,7 @@ class MailsterManage {
 				'error_export'         => esc_html__( 'There was an error while exporting', 'mailster' ),
 				'confirm_import'       => esc_html__( 'Do you really like to import these contacts?', 'mailster' ),
 				'import_complete'      => esc_html__( 'Import complete!', 'mailster' ),
-				'confirm_delete'       => esc_html__( 'You are about to delete these subscribers permanently. This step is irreversible!', 'mailster' ) . "\n" . sprintf( esc_html__( 'Type "%s" to confirm deletion', 'mailster' ), 'DELETE' ),
+				'confirm_delete'       => esc_html__( 'You are about to delete these subscribers permanently. This step is irreversible!', 'mailster' ) . "\n" . sprintf( esc_html__( 'Type %s to confirm deletion', 'mailster' ), '"DELETE"' ),
 				'delete_n_subscribers' => esc_html__( 'Delete %s Subscribers permanently', 'mailster' ),
 				'onbeforeunloadimport' => esc_html__( 'You are currently importing subscribers! If you leave the page all pending subscribers don\'t get imported!', 'mailster' ),
 				'onbeforeunloadexport' => esc_html__( 'Your download is preparing! If you leave this page the progress will abort!', 'mailster' ),
@@ -754,8 +767,7 @@ class MailsterManage {
 
 			delete_option( 'mailster_bulk_import' );
 			delete_option( 'mailster_bulk_import_errors' );
-			$wpdb->query( $wpdb->prepare( 'DROP TABLE %s', "{$wpdb->prefix}mailster_temp_import" ) );
-
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
 			$return['wpusers'] = mailster( 'subscribers' )->wp_id();
 
 		} else {

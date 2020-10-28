@@ -62,27 +62,18 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 		?>
 	<form id="searchform" action method="get">
-		<?php
-		if ( isset( $_GET['post_type'] ) ) :
-			?>
-			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>"><?php endif; ?>
-		<?php
-		if ( isset( $_GET['page'] ) ) :
-			?>
-			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>"><?php endif; ?>
-		<?php
-		if ( isset( $_GET['paged'] ) ) :
-			?>
-			<input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ); ?>"><?php endif; ?>
+		<?php if ( isset( $_GET['post_type'] ) ) : ?>
+			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>">
+		<?php endif; ?>
+		<?php if ( isset( $_GET['page'] ) ) : ?>
+			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>">
+		<?php endif; ?>
+		<?php if ( isset( $_GET['paged'] ) ) : ?>
+			<input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ); ?>">
+		<?php endif; ?>
 	<p class="search-box">
 		<label class="screen-reader-text" for="sa-search-input"><?php echo $text; ?></label>
-		<input type="search" id="<?php echo $input_id; ?>" name="s" value="
-											<?php
-											if ( isset( $_GET['s'] ) ) {
-												echo esc_attr( $_GET['s'] );
-											}
-											?>
-		">
+		<input type="search" id="<?php echo $input_id; ?>" name="s" value="<?php echo isset( $_GET['s'] ) ? esc_attr( $_GET['s'] ) : ''; ?>">
 		<input type="submit" name="" id="search-submit" class="button" value="<?php echo esc_attr( $text ); ?>">
 	</p>
 	</form>
@@ -122,7 +113,13 @@ class Mailster_Lists_Table extends WP_List_Table {
 				return $timestring;
 
 			case 'subscribers':
-				return '<a href="' . add_query_arg( array( 'lists' => array( $item->ID ) ), 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '">' . number_format_i18n( mailster( 'lists' )->get_member_count( $item->ID, 1 ) ) . '</a>';
+				$total = mailster( 'lists' )->get_member_count( $item->ID );
+				$count = '<a href="' . add_query_arg( array( 'lists' => array( $item->ID ) ), 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '">' . number_format_i18n( $total ) . '</a>';
+				if ( $total ) {
+					$subscribed = mailster( 'lists' )->get_member_count( $item->ID, 1 );
+					$count     .= ' (<a href="' . add_query_arg( array( 'lists' => array( $item->ID ) ), 'edit.php?post_type=newsletter&page=mailster_subscribers&status=1' ) . '">' . sprintf( esc_html__( '%s subscribed', 'mailster' ), number_format_i18n( $subscribed ) ) . '</a>)';
+				}
+				return $count;
 
 			default:
 		}

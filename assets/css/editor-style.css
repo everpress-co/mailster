@@ -1,8 +1,10 @@
 html{
-	padding: 2px !important;
 	width: auto !important;
 	max-width: 100% !important;
 	background: url(../img/trans_bg.png) repeat left top #fff !important;
+}
+body.reload-page{
+	border:2px solid red;
 }
 html.mailster-loading{
 	 -webkit-filter: blur(3px);
@@ -127,6 +129,7 @@ modulebuttons {
 	text-align: right;
 	z-index: 100;
 	display: block;
+	line-height: 100%;
 }
 module.ui-sortable-fly-over modulebuttons button{
 	pointer-events: none;
@@ -160,28 +163,25 @@ modulebuttons:hover button.mailster-btn {
 [mailster-is-rtl] modulebuttons button.mailster-btn {
 }
 modulebuttons input.modulelabel {
-	transition: all .15s ease-in-out;
-	display: block;
+	display: inline-block;
 	width: 110px;
+	height: 25px;
 	border: 0;
 	background: none;
 	padding: 5px;
 	outline: none;
 	color: #aaa;
 	margin: 0;
-	right: -83px;
-	position: absolute;
+	text-align: right;
+}
+module[selected] input.modulelabel {
 }
 [mailster-is-rtl] modulebuttons input.modulelabel {
-	right: inherit;
-	left: -83px;
+	float: right;
+	text-align: left;
 }
 modulebuttons input.modulelabel:hover, modulebuttons input.modulelabel:focus {
-	right: 0;
 	color: #333;
-	outline: 1px solid #DFDFDF;
-	outline-offset: 0;
-	background: #fff;
 }
 [mailster-is-rtl] modulebuttons input.modulelabel:hover, [mailster-is-rtl] modulebuttons input.modulelabel:focus {
 	right: inherit;
@@ -377,7 +377,7 @@ td[background]:before, th[background]:before{
 	height: 16px;
 	line-height: 16px;
 	text-align: center;
-	left: -2px;
+	left: 0px;
 	top: 14px;
 	right: auto;
 	padding: 3px;
@@ -390,7 +390,7 @@ td[background]:before, th[background]:before{
 }
 [mailster-is-rtl] td[background]:before, [mailster-is-rtl] th[background]:before {
 	left: auto;
-	right: -2px;
+	right: 0px;
 }
 td[background]:hover:before, th[background]:hover:before{
 	display: block;
@@ -517,16 +517,13 @@ modules.ui-sortable module{
 	cursor: ns-resize;
 	cursor: hand;
 	cursor: grab;
-	cursor: grabbing;
-	curso
 	cursor: -webkit-grab;
 }
 modules.ui-sortable module table{
 	cursor: inherit !important;
 }
-modules.ui-sortable module.ui-draggable-dragging{
+modules.ui-sortable module.ui-draggable-dragging, modules.ui-sortable module.ui-sortable-helper{
 	cursor: grabbing;
-	curso
 	cursor: -webkit-grabbing;
 }
 .ui-dragging img[editable]{

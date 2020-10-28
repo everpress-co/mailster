@@ -408,6 +408,23 @@ class MailsterFrontpage {
 				break;
 
 			case 'unsubscribe':
+				// handle one click unsubscribe for RFC8058 (https://tools.ietf.org/html/rfc8058)
+				if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
+
+					$hash        = get_query_var( '_mailster_hash' );
+					$campaign_id = get_query_var( '_mailster_extra' );
+					$status      = 'list_unsubscribe';
+
+					if ( mailster( 'subscribers' )->unsubscribe_by_hash( $hash, $campaign_id, $status ) ) {
+						status_header( 200 );
+					} else {
+						status_header( 404 );
+					}
+					nocache_headers();
+					exit;
+
+				}
+
 				$unsubscribe_url = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
 
 				// if tracking is disabled
@@ -632,7 +649,7 @@ class MailsterFrontpage {
 						wp_die( esc_html__( 'There is no content for this newsletter.', 'mailster' ) . ( current_user_can( 'edit_newsletters' ) ? ' <a href="' . admin_url( 'post.php?post=' . get_the_ID() . '&action=edit' ) . '">' . esc_html__( 'Add content', 'mailster' ) . '</a>' : '' ) );
 					}
 
-					$content = mailster()->sanitize_content( $content, null, $meta['head'] );
+					$content = mailster()->sanitize_content( $content, $meta['head'] );
 
 					$placeholder = mailster( 'placeholder', $content );
 					$placeholder->excerpt_filters( false );
@@ -658,6 +675,7 @@ class MailsterFrontpage {
 					$placeholder->add_custom( get_the_ID() );
 
 					$content = $placeholder->get_content();
+					$content = mailster( 'helper' )->strip_structure_html( $content );
 					$search  = array( '<a ', '@media only screen and (max-device-width:' );
 					$replace = array( '<a target="_top" ', '@media only screen and (max-width:' );
 					$content = str_replace( $search, $replace, $content );
@@ -665,6 +683,7 @@ class MailsterFrontpage {
 					if ( mailster_option( 'frontpage_public' ) || ! get_option( 'blog_public' ) ) {
 						$content = str_replace( '</head>', "<meta name='robots' content='noindex,nofollow' />\n</head>", $content );
 					}
+					$content = mailster( 'helper' )->add_mailster_styles( $content );
 
 					echo $content;
 
@@ -772,6 +791,8 @@ class MailsterFrontpage {
 
 		if ( $query->is_main_query() && $query->is_post_type_archive( 'newsletter' ) ) {
 			$query->set( 'post_status', mailster_option( 'archive_types', array( 'finished', 'active' ) ) );
+			$query->set( 'meta_key', '_mailster_webversion' );
+			$query->set( 'meta_compare', 'NOT EXISTS' );
 		}
 
 	}
@@ -936,7 +957,7 @@ class MailsterFrontpage {
 	 * @param unknown $hash
 	 * @return unknown
 	 */
-	public function setcookie( $hash, $timeout = 3600 ) {
+	private function setcookie( $hash, $timeout = 3600 ) {
 
 		$cookietime = apply_filters( 'mailster_cookie_time', $timeout );
 
@@ -1104,6 +1125,9 @@ class MailsterFrontpage {
 		}
 
 		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
+		if ( isset( $atts['profile'] ) && $atts['profile'] ) {
+			$form->is_profile();
+		}
 		return $form->render( false );
 	}
 
@@ -1121,12 +1145,7 @@ class MailsterFrontpage {
 			return;
 		}
 
-		$atts = wp_parse_args(
-			$atts,
-			array(
-				'id' => mailster_option( 'profile_form', 1 ),
-			)
-		);
+		$atts = wp_parse_args( $atts, array( 'id' => mailster_option( 'profile_form', 1 ) ) );
 
 		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		$form->is_profile();

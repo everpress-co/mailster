@@ -1,18 +1,21 @@
-jQuery(document).ready(function ($) {
+mailster = (function (mailster, $, window, document) {
 
-	"use strict"
+	"use strict";
 
-	var clipboard = new Clipboard('.clipboard');
+	mailster.events.push('documentReady', function () {
+		var clipboard = new Clipboard('.clipboard');
+		clipboard.on('success', function (e) {
+			var html = $(e.trigger).html();
+			$(e.trigger).html(mailster.l10n.clipboard.copied);
+			setTimeout(function () {
+				$(e.trigger).html(html);
+				e.clearSelection();
+			}, 3000);
+		});
 
-	clipboard.on('success', function (e) {
-		var html = $(e.trigger).html();
-		$(e.trigger).html(mailsterClipboardL10.copied);
-		setTimeout(function () {
-			$(e.trigger).html(html);
-			e.clearSelection();
-		}, 3000);
-	});
+		clipboard.on('error', function (e) {});
+	})
 
-	clipboard.on('error', function (e) {});
+	return mailster;
 
-});
+}(mailster || {}, jQuery, window, document));

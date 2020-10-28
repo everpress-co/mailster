@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.5
+// Version 3.8
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -361,7 +361,7 @@ class UpdateCenterPlugin {
 		}
 
 		if ( ! isset( self::$plugin_data[ $item->slug ] ) ) {
-			return false;
+			return $update;
 		}
 
 		// return default if not set
@@ -526,6 +526,7 @@ class UpdateCenterPlugin {
 					'package'       => null,
 					'version'       => null,
 					'last_update'   => 0,
+					'support'       => null,
 					'update'        => null,
 					'verified'      => false,
 					'compatibility' => new StdClass(),
@@ -595,6 +596,10 @@ class UpdateCenterPlugin {
 						self::$plugins[ $slug ]->verified = $updatecenterinfo->verified;
 					}
 
+					if ( isset( $updatecenterinfo->support ) ) {
+						self::$plugins[ $slug ]->support = $updatecenterinfo->support;
+					}
+
 					if ( isset( $updatecenterinfo->compatibility ) ) {
 						self::$plugins[ $slug ]->compatibility = (object) $updatecenterinfo->compatibility;
 					}
@@ -632,7 +637,7 @@ class UpdateCenterPlugin {
 		$timeout = 12 * HOUR_IN_SECONDS;
 
 		if ( 'updatecenterplugin_check' == current_filter() ) {
-				$timeout = 60;
+			$timeout = 60;
 		}
 
 		$collection = array();
@@ -772,6 +777,10 @@ class UpdateCenterPlugin {
 		);
 
 		if ( is_wp_error( $response ) ) {
+
+			if ( 'http_request_failed' == $response->get_error_code() ) {
+				return new WP_Error( 'http_err', sprintf( 'Not able to get request from %s', parse_url( self::$plugin_data[ $slug ]->remote_url, PHP_URL_HOST ) ) );
+			}
 			return $response;
 		}
 
@@ -812,7 +821,7 @@ class UpdateCenterPlugin {
 				'x-ip'           => isset( $_SERVER['SERVER_ADDR'] ) ? $_SERVER['SERVER_ADDR'] : null,
 			),
 			'body'    => $body,
-			'timeout' => 20,
+			'timeout' => 5,
 		);
 
 		$response = wp_remote_post( $url, $args );
@@ -847,7 +856,7 @@ class UpdateCenterPlugin {
 
 			if ( version_compare( $plugin->version, $plugin->new_version, '<' ) ) {
 				$value->response[ $plugin->plugin ] = self::$plugins[ $slug ];
-			} else {
+			} elseif ( isset( $value->no_update ) ) {
 				$value->no_update[ $plugin->plugin ] = self::$plugins[ $slug ];
 			}
 		}

@@ -217,6 +217,7 @@ class MailsterForms {
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'jquery-ui-sortable' );
 			wp_enqueue_script( 'jquery-touch-punch' );
+			wp_enqueue_script( 'jquery-ui-datepicker' );
 
 			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_script( 'wp-color-picker' );
@@ -235,15 +236,11 @@ class MailsterForms {
 			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'jquery-ui-datepicker' );
-
-			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'jquery', 'mailster-clipboard-script' ), MAILSTER_VERSION );
-
 			wp_enqueue_style( 'mailster-form-detail', MAILSTER_URI . 'assets/css/form-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_localize_script(
-				'mailster-form-detail',
-				'mailsterL10n',
+			wp_enqueue_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'jquery', 'jquery-ui-sortable', 'mailster-clipboard-script', 'wp-color-picker' ), MAILSTER_VERSION );
+
+			mailster_localize_script(
+				'form',
 				array(
 					'require_save' => esc_html__( 'The changes you made will be lost if you navigate away from this page.', 'mailster' ),
 					'not_saved'    => esc_html__( 'You haven\'t saved your recent changes on this form!', 'mailster' ),
@@ -577,6 +574,14 @@ class MailsterForms {
 		$lists = isset( $data['lists'] ) ? $data['lists'] : false;
 		unset( $data['lists'] );
 
+		if ( isset( $data['redirect'] ) ) {
+			$data['redirect'] = trim( $data['redirect'] );
+		}
+
+		if ( isset( $data['confirmredirect'] ) ) {
+			$data['confirmredirect'] = trim( $data['confirmredirect'] );
+		}
+
 		$wpdb->suppress_errors();
 
 		if ( false !== $wpdb->update( "{$wpdb->prefix}mailster_forms", $data, array( 'ID' => $data['ID'] ) ) ) {
@@ -649,6 +654,10 @@ class MailsterForms {
 
 		if ( ! empty( $entry['style'] ) && ! is_string( $entry['style'] ) ) {
 			$entry['style'] = json_encode( $entry['style'] );
+		}
+
+		if ( isset( $entry['ID'] ) && empty( $entry['ID'] ) ) {
+			unset( $entry['ID'] );
 		}
 
 		$wpdb->suppress_errors();
@@ -1068,7 +1077,7 @@ class MailsterForms {
 			return $cache[ $id ];
 		}
 
-		$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_lists AS a LEFT JOIN {$wpdb->prefix}mailster_forms_lists AS ab ON a.ID = ab.list_id WHERE ab.form_id = %d";
+		$sql = "SELECT lists.* FROM {$wpdb->prefix}mailster_lists AS lists LEFT JOIN {$wpdb->prefix}mailster_forms_lists AS forms_lists ON lists.ID = forms_lists.list_id WHERE forms_lists.form_id = %d";
 
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
@@ -1087,7 +1096,7 @@ class MailsterForms {
 
 		global $wpdb;
 
-		$sql = "SELECT a.field_id, a.name, a.error_msg ,a.required FROM {$wpdb->prefix}mailster_form_fields AS a WHERE a.form_id = %d ORDER BY a.position ASC";
+		$sql = "SELECT forms_fields.field_id, forms_fields.name, forms_fields.error_msg, forms_fields.required FROM {$wpdb->prefix}mailster_form_fields AS forms_fields WHERE forms_fields.form_id = %d ORDER BY forms_fields.position ASC";
 
 		$fields = $wpdb->get_results( $wpdb->prepare( $sql, $form_id ) );
 
@@ -1150,7 +1159,6 @@ class MailsterForms {
 			$sql = "SELECT ID, post_title AS name, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%[newsletter_signup_form%' AND post_status NOT IN ('inherit') AND post_type NOT IN ('newsletter', 'attachment')";
 
 			$result = $wpdb->get_results( $sql );
-			$i      = 100;
 
 			foreach ( $result as $row ) {
 				preg_match_all( '#\[newsletter_signup_form((.*)id="?(\d+)"?)?#i', $row->post_content, $matches );
@@ -1173,8 +1181,7 @@ class MailsterForms {
 						continue;
 					}
 
-					$found_form_id                             = $data['form'];
-					$occurrence[ $found_form_id ]['widgets'][] = $data['title'];
+					$occurrence[ $data['form'] ]['widgets'][] = $data['title'];
 				}
 			}
 
@@ -1202,6 +1209,7 @@ class MailsterForms {
 	}
 
 
+
 	/**
 	 *
 	 *
@@ -1214,7 +1222,6 @@ class MailsterForms {
 		echo ( isset( $style->{$selector} ) && isset( $style->{$selector}->{$property} ) ) ? $style->{$selector}->{$property} : '';
 
 	}
-
 
 	/**
 	 *
@@ -1264,7 +1271,7 @@ class MailsterForms {
 
 		$html = '<a href="' . $options['endpoint'] . '" class="mailster-subscribe-button" data-design="' . esc_attr( $options['design'] ) . '" data-showcount="' . ( $options['showcount'] ? 1 : 0 ) . '" data-width="' . esc_attr( $options['width'] ) . '">' . strip_tags( $options['label'] ) . '</a>';
 
-		$script = "<script type=\"text/javascript\">!function(m,a,i,l,s,t,r){m[s]=m[s]||(function(){t=a.createElement(i);r=a.getElementsByTagName(i)[0];t.async=1;t.src=l;r.parentNode.insertBefore(t,r);return !0}())}(window,document,'script','$button_src','MailsterSubscribe');</script>";
+		$script = "<script type=\"text/javascript\">!function(m,a,i,l,s,t,e,r){m[s]=m[s]||(function(){t=a.createElement(i);r=a.getElementsByTagName(i)[0];t.async=1;t.src=l;r.parentNode.insertBefore(t,r);return !0}())}(window,document,'script','$button_src','MailsterSubscribe');</script>";
 
 		return $html . $script;
 	}
@@ -1493,7 +1500,7 @@ class MailsterForms {
 		<div>
 			<label><?php esc_html_e( 'width', 'mailster' ); ?>: <input type="text" class="small-text embed-form-input" value="100%"></label>
 			<label><?php esc_html_e( 'height', 'mailster' ); ?>: <input type="text" class="small-text embed-form-input" value="500"></label>
-			<label title="<?php esc_html_e( 'check this option to include the style.css of your theme into the form', 'mailster' ); ?>"><input type="checkbox" value="1" class="embed-form-input" checked> <?php esc_html_e( 'include themes style.css', 'mailster' ); ?></label>
+			<label title="<?php esc_attr_e( 'check this option to include the style.css of your theme into the form', 'mailster' ); ?>"><input type="checkbox" value="1" class="embed-form-input" checked> <?php esc_html_e( 'include themes style.css', 'mailster' ); ?></label>
 			<textarea id="form-iframe" class="widefat code embed-form-output" data-embedcode="<?php echo esc_attr( $embedcode ); ?>"><?php echo esc_textarea( $embedcode ); ?></textarea>
 			<a class="clipboard" data-clipboard-target="#form-iframe"><?php esc_html_e( 'copy to clipboard', 'mailster' ); ?></a>
 		</div>
