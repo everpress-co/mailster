@@ -23,7 +23,7 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.campaign_id = parseInt($('#post_ID').val(), 10);
 	mailster.user_id = parseInt($('#user-id').val(), 10);
-	mailster.enabled = true;
+	mailster.enabled = false;
 	mailster.editable = !$('#mailster_disabled').val();
 
 	return mailster;
@@ -56,13 +56,9 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.events.push('disable', function () {
 		mailster.enabled = false;
-		$('.button').prop('disabled', true);
-		$('input:visible').prop('disabled', true);
 	});
 
 	mailster.events.push('enable', function () {
-		$('.button').prop('disabled', false);
-		$('input:visible, input.wp-color-picker').prop('disabled', false);
 		mailster.enabled = true;
 	});
 
@@ -1627,7 +1623,11 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.editable && mailster.events.push('documentReady', function () {
 		mailster.trigger('updateCount');
-	})
+	});
+
+	mailster.events.push('documentReady', function () {
+		mailster.trigger('enable');
+	});
 
 	mailster.editable && mailster.events.push('updateCount', function () {
 
