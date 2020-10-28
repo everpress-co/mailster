@@ -354,7 +354,7 @@ class MailsterQueue {
 			}
 
 			// check if subscribers have to get queue
-			if ( ! mailster( 'campaigns' )->get_unsent_subscribers( $campaign->ID, array( 1 ), false, true ) ) {
+			if ( ! mailster( 'campaigns' )->get_unsent_subscribers( $campaign->ID, array( 1 ), true, true ) ) {
 				continue;
 			}
 
@@ -591,37 +591,62 @@ class MailsterQueue {
 					$feed_urls = array_unique( $hits[1] );
 
 					foreach ( $feed_urls as $feed_url ) {
-						// check if latest feed item is in timeframe.
-						if ( ! ( $last = mailster( 'helper' )->new_feed_since( $autoresponder_meta['since'], $feed_url ) ) ) {
+						$feeds = mailster( 'helper' )->get_feed_since( $autoresponder_meta['since'], $feed_url );
+
+						if ( is_wp_error( $feeds ) || empty( $feeds ) ) {
 							continue;
 						}
 
-						if ( ! ( ( ++$autoresponder_meta['post_count_status'] ) % ( $autoresponder_meta['post_count'] + 1 ) ) ) {
+						$count = count( $feeds );
+						$last  = strtotime( $feeds[0]->post_date_gmt );
 
-							$integer = floor( $autoresponder_meta['amount'] );
-							$decimal = $autoresponder_meta['amount'] - $integer;
+						$created = 0;
 
-							$send_offset = ( strtotime( '+' . $integer . ' ' . $autoresponder_meta['unit'], 0 ) + ( strtotime( '+1 ' . $autoresponder_meta['unit'], 0 ) * $decimal ) );
+						foreach ( $feeds as $i => $feed ) {
 
-							// recalculate send offset by the publishing time of the last post
-							$send_offset = max( 0, $send_offset - ( $now - $last ) );
+							$autoresponder_meta['post_count_status']++;
 
-							if ( $new_id = mailster( 'campaigns' )->autoresponder_to_campaign( $campaign->ID, $send_offset, $autoresponder_meta['issue']++ ) ) {
+							if ( ! ( $autoresponder_meta['post_count_status'] % ( $autoresponder_meta['post_count'] + 1 ) ) ) {
 
-								$new_campaign = mailster( 'campaigns' )->get( $new_id );
+								$integer = floor( $autoresponder_meta['amount'] );
+								$decimal = $autoresponder_meta['amount'] - $integer;
 
-								mailster_notice( sprintf( __( 'New campaign %1$s has been created and is going to be sent in %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . $new_campaign->ID . '&action=edit">' . $new_campaign->post_title . '</a>"</strong>', '<strong>' . human_time_diff( $now + $send_offset ) . '</strong>' ), 'info', true );
+								$send_offset = ( strtotime( '+' . $integer . ' ' . $autoresponder_meta['unit'], 0 ) + ( strtotime( '+1 ' . $autoresponder_meta['unit'], 0 ) * $decimal ) );
 
-								do_action( 'mailster_autoresponder_post_published', $campaign->ID, $new_id );
+								// multiply the offset with the number of created campaigns
+								$send_offset = $send_offset * ( $created + 1 );
 
+								// define an offset to move the "pointer" in the feed
+								$index_offset = $count - $i - 1;
+
+								// sleep one second if multiples are created to prevent the same timestamps
+								if ( $created ) {
+									sleep( 1 );
+								}
+
+								if ( $new_id = mailster( 'campaigns' )->autoresponder_to_campaign( $campaign->ID, $send_offset, $autoresponder_meta['issue'], false, $index_offset ) ) {
+
+									$created++;
+									$new_campaign = mailster( 'campaigns' )->get( $new_id );
+									$autoresponder_meta['issue']++;
+
+									mailster_notice( sprintf( __( 'New campaign %1$s has been created and is going to be sent on %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . esc_attr( $new_campaign->ID ) . '&action=edit">' . esc_html( $new_campaign->post_title ) . '</a>"</strong>', '<strong>' . date( mailster( 'helper' )->timeformat(), $now + $send_offset + $timeoffset ) . '</strong>' ), 'info', true );
+
+									do_action( 'mailster_autoresponder_post_published', $campaign->ID, $new_id );
+
+								}
 							}
 						}
 
-						$autoresponder_meta['since'] = $now;
-						mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
-						// do not create two campaigns here.
-						break;
+						if ( $count ) {
+
+							$autoresponder_meta['since'] = $last;
+							// do not create more than one campaign here.
+							break;
+						}
 					}
+
+					mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
 				}
 			}
 		}
@@ -713,10 +738,11 @@ class MailsterQueue {
 						$feed_urls = array_unique( $hits[1] );
 
 						foreach ( $feed_urls as $feed_url ) {
-							$posts = mailster( 'helper' )->get_feed_since( $new_content_since, $feed_url );
-							if ( $autoresponder_meta['post_count_status'] = count( $posts ) ) {
-								mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
-								break;
+							if ( $posts = mailster( 'helper' )->get_feed_since( $new_content_since, $feed_url ) ) {
+								if ( $autoresponder_meta['post_count_status'] = count( $posts ) ) {
+									mailster( 'campaigns' )->update_meta( $campaign->ID, 'autoresponder', $autoresponder_meta );
+									break;
+								}
 							}
 						}
 					}
@@ -1137,7 +1163,7 @@ class MailsterQueue {
 					if ( ! $data->_requeued ) {
 						// prevent to send duplicates within one minute
 						if ( $duplicate = $wpdb->get_results( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_actions WHERE campaign_id = %d AND subscriber_id = %d AND type = %d && `timestamp` > %d", $data->campaign_id, $data->subscriber_id, 1, time() - 60 ) ) ) {
-							$this->cron_log( '', '&nbsp;<span class="error">' . $data->subscriber_id . ' ' . $data->email . '<br>' . esc_html__( 'Prevented to send duplicate within one minute.', 'mailster' ) . '</span>', $data->campaign_id, $data->_count, '' );
+							$this->cron_log( '', '&nbsp;<span class="error">' . $data->subscriber_id . ' ' . $data->email . '<br>' . esc_html__( 'Prevent to send duplicate within one minute.', 'mailster' ) . '</span>', $data->campaign_id, $data->_count, '' );
 							continue;
 						}
 					}

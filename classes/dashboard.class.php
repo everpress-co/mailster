@@ -224,22 +224,18 @@ class MailsterDashboard {
 		wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-chartjs', MAILSTER_URI . 'assets/js/libs/chart' . $suffix . '.js', array( 'easy-pie-chart' ), MAILSTER_VERSION, true );
 
-		wp_enqueue_script( 'mailster-dashboard-script', MAILSTER_URI . 'assets/js/dashboard-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-dashboard-script', MAILSTER_URI . 'assets/js/dashboard-script' . $suffix . '.js', array( 'mailster-script', 'postbox' ), MAILSTER_VERSION, true );
 		wp_enqueue_style( 'mailster-dashboard-style', MAILSTER_URI . 'assets/css/dashboard-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-		wp_localize_script(
-			'mailster-dashboard-script',
-			'mailsterdashboardL10n',
-			apply_filters(
-				'mailster-dashboard-script_mailsterL10n',
-				array(
-					'subscribers'   => esc_html__( '%s Subscribers', 'mailster' ),
-					'reset_license' => esc_html__( 'Do you really like to reset your license for this site?', 'mailster' ),
-					'check_again'   => esc_html__( 'Check Again', 'mailster' ),
-					'checking'      => esc_html__( 'Checking...', 'mailster' ),
-					'downloading'   => esc_html__( 'Downloading...', 'mailster' ),
-					'reload_page'   => esc_html__( 'Complete. Reload page!', 'mailster' ),
-				)
+		mailster_localize_script(
+			'dashboard',
+			array(
+				'subscribers'   => esc_html__( '%s Subscribers', 'mailster' ),
+				'reset_license' => esc_html__( 'You can reset your license up to three times!', 'mailster' ) . "\n" . esc_html__( 'Do you really like to reset your license for this site?', 'mailster' ),
+				'check_again'   => esc_html__( 'Check Again', 'mailster' ),
+				'checking'      => esc_html__( 'Checking...', 'mailster' ),
+				'downloading'   => esc_html__( 'Downloading...', 'mailster' ),
+				'reload_page'   => esc_html__( 'Complete. Reload page!', 'mailster' ),
 			)
 		);
 	}
@@ -272,15 +268,15 @@ class MailsterDashboard {
 		$elements[]    = '</ul><br><ul>';
 
 		if ( $campaigns = count( mailster_get_campaigns() ) ) {
-			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_type=newsletter">' . number_format_i18n( $campaigns - $autoresponder ) . ' ' . esc_html__( _n( 'Campaign', 'Campaigns', $campaigns - $autoresponder, 'mailster' ) ) . '</a>';
+			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_type=newsletter">' . number_format_i18n( $campaigns - $autoresponder ) . ' ' . esc_html__( _nx( 'Campaign', 'Campaigns', $campaigns - $autoresponder, 'number of', 'mailster' ) ) . '</a>';
 		}
 
 		if ( $autoresponder ) {
-			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_status=autoresponder&post_type=newsletter">' . number_format_i18n( $autoresponder ) . ' ' . esc_html__( _n( 'Autoresponder', 'Autoresponders', $autoresponder, 'mailster' ) ) . '</a>';
+			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_status=autoresponder&post_type=newsletter">' . number_format_i18n( $autoresponder ) . ' ' . esc_html__( _nx( 'Autoresponder', 'Autoresponders', $autoresponder, 'number of', 'mailster' ) ) . '</a>';
 		}
 
 		if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) {
-			$elements[] = '<a class="mailster-subscribers" href="edit.php?post_type=newsletter&page=mailster_subscribers">' . number_format_i18n( $subscribers ) . ' ' . esc_html__( _n( 'Subscriber', 'Subscribers', $subscribers, 'mailster' ) ) . '</a>';
+			$elements[] = '<a class="mailster-subscribers" href="edit.php?post_type=newsletter&page=mailster_subscribers">' . number_format_i18n( $subscribers ) . ' ' . esc_html__( _nx( 'Subscriber', 'Subscribers', $subscribers, 'number of', 'mailster' ) ) . '</a>';
 		}
 
 		return $elements;

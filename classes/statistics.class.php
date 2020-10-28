@@ -2,11 +2,7 @@
 
 class MailsterStatistics {
 
-	private $calendar_table = null;
-
-	public function __construct() {
-
-	}
+	public function __construct() {}
 
 
 	/**
@@ -103,7 +99,7 @@ class MailsterStatistics {
 		$dates = $this->get_date_range( $from, $to );
 		$dates = array_fill_keys( $dates, 0 );
 
-		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) < %d", $from ) );
+		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(DISTINCT subscribers.ID) FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) AND IF(subscribers.confirm, subscribers.confirm, subscribers.signup) < %d", $from ) );
 
 		$sql = "SELECT FROM_UNIXTIME(IF(subscribers.confirm, subscribers.confirm, subscribers.signup), '%Y-%m-%d') AS the_date, COUNT(DISTINCT subscribers.ID) AS increase FROM {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_lists_subscribers AS list_subscribers ON subscribers.ID = list_subscribers.subscriber_id WHERE subscribers.status = 1 AND (list_subscribers.added != 0 OR list_subscribers.added IS NULL) GROUP BY the_date HAVING the_date >= '" . date( 'Y-m-d', $from ) . "' AND the_date <= '" . date( 'Y-m-d', $to ) . "'";
 
@@ -121,7 +117,8 @@ class MailsterStatistics {
 			$dates[ $date ] = $total;
 		}
 
-			return $dates;
+		return $dates;
+
 	}
 
 

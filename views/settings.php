@@ -10,7 +10,7 @@ $roles        = $wp_roles->get_names();
 <input style="display:none" autocomplete="off" readonly ><input type="password" style="display:none" autocomplete="off" readonly>
 <div class="wrap">
 	<p class="alignright">
-		<input type="submit" class="submit-form button-primary" value="<?php esc_html_e( 'Save Changes', 'mailster' ); ?>" disabled />
+		<input type="submit" class="submit-form button-primary" value="<?php esc_attr_e( 'Save Changes', 'mailster' ); ?>" disabled />
 	</p>
 <h1><?php esc_html_e( 'Newsletter Settings', 'mailster' ); ?></h1>
 <?php
@@ -99,7 +99,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 			</div>
 	<?php endforeach; ?>
 			<p class="submitbutton">
-				<input type="submit" class="submit-form button-primary" value="<?php esc_html_e( 'Save Changes', 'mailster' ); ?>" disabled />
+				<input type="submit" class="submit-form button-primary" value="<?php esc_attr_e( 'Save Changes', 'mailster' ); ?>" disabled />
 			</p>
 		</div>
 

@@ -26,7 +26,7 @@
 				<iframe id="ytplayer" type="text/html" src="https://www.youtube.com/embed/ZG9V0sSbwvo?autoplay=1&showinfo=0&modestbranding=1&controls=0&rel=0&vq=hd720" frameborder="0"></iframe>
 			</div>
 			<p class="about-text"><a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ); ?>" class="button button-primary button-hero">Create a new Campaign</a></p>
-			<p><a href="https://kb.mailster.co/unsplash/" target="_blank">Learn more</a> or <a href="https://unsplash.com/" target="_blank">visit Unsplash.com</a></p>
+			<p><a href="https://kb.mailster.co/unsplash/" target="_blank" rel="noopener">Learn more</a> or <a href="https://unsplash.com/" target="_blank" rel="noopener">visit Unsplash.com</a></p>
 		</div>
 
 		<div class="feature-section two-col">
@@ -35,14 +35,14 @@
 				</div>
 				<h3>Random Dynamic Posts</h3>
 				<p>You can now add random posts in your email campaigns.</p>
-				<div class="return-to-dashboard"><a href="https://kb.mailster.co/random-dynamic-posts/" target="_blank">Learn more</a></div>
+				<div class="return-to-dashboard"><a href="https://kb.mailster.co/random-dynamic-posts/" target="_blank" rel="noopener">Learn more</a></div>
 			</div>
 			<div class="col">
 				<div class="media-container">
 				</div>
 				<h3>RSS Email Campaigns</h3>
 				<p>Create real RSS Email Campaigns with sources from third party web sites.</p>
-				<div class="return-to-dashboard"><a href="https://kb.mailster.co/rss-email-campaigns/" target="_blank">Learn more</a></div>
+				<div class="return-to-dashboard"><a href="https://kb.mailster.co/rss-email-campaigns/" target="_blank" rel="noopener">Learn more</a></div>
 			</div>
 		</div>
 

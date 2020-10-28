@@ -68,7 +68,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 			<a class="colorschema-delete-all"><?php esc_html_e( 'Delete all custom schemas', 'mailster' ); ?></a>
 		<?php endif; ?>
 	</p>
-	<ul class="colorschema" title="<?php esc_html_e( 'original', 'mailster' ); ?>">
+	<ul class="colorschema" title="<?php esc_attr_e( 'original', 'mailster' ); ?>">
 	<?php
 	$original_colors_temp = array();
 	foreach ( $original_colors as $i => $color ) :
@@ -79,7 +79,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	<?php endforeach; ?>
 	</ul>
 	<?php if ( strtolower( implode( '', $original_colors_temp ) ) != strtolower( implode( '', $current_colors ) ) ) : ?>
-		<ul class="colorschema" title="<?php esc_html_e( 'current', 'mailster' ); ?>">
+		<ul class="colorschema" title="<?php esc_attr_e( 'current', 'mailster' ); ?>">
 			<?php foreach ( $colors as $i => $color ) : ?>
 				<li class="colorschema-field" title="<?php echo isset( $original_names[ $i ] ) ? esc_attr( $original_names[ $i ] ) : ''; ?>" data-hex="<?php echo esc_attr( strtolower( $color ) ); ?>" style="background-color:<?php echo esc_attr( $color ); ?>"></li>
 			<?php endforeach; ?>

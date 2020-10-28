@@ -131,7 +131,7 @@ mailster = (function (mailster, $, window, document) {
 					loader(false);
 				};
 				img.onerror = function () {
-					if (e.type != 'paste') alert(mailster.util.sprintf(mailsterL10n.invalid_image, '"' + url + '"'));
+					if (e.type != 'paste') alert(mailster.util.sprintf(mailster.l10n.campaigns.invalid_image, '"' + url + '"'));
 				};
 				img.src = url;
 			}
@@ -181,7 +181,7 @@ mailster = (function (mailster, $, window, document) {
 								last = taxonomies.eq(i).find('select').last();
 								select = last.clone();
 								select.insertAfter(last);
-								$('<span> ' + mailsterL10n.or + ' </span>').insertBefore(select);
+								$('<span> ' + mailster.l10n.campaigns.or + ' </span>').insertBefore(select);
 							}
 							select.val(id);
 						});
@@ -236,9 +236,9 @@ mailster = (function (mailster, $, window, document) {
 	function draggable(bool) {
 		if (bar.draggable) {
 			if (bool !== false) {
-				bar.draggable("enable");
+				bar.draggable('enable');
 			} else {
-				bar.draggable("disable");
+				bar.draggable('disable');
 			}
 		}
 	}
@@ -496,7 +496,7 @@ mailster = (function (mailster, $, window, document) {
 						if (is_img) {
 							current.element.one('load error', function (event) {
 								if ('error' == event.type) {
-									alert(mailster.util.sprintf(mailsterL10n.invalid_image, response.image.url));
+									alert(mailster.util.sprintf(mailster.l10n.campaigns.invalid_image, response.image.url));
 								}
 								current.element.removeClass('mailster-loading');
 								mailster.trigger('save');
@@ -574,12 +574,12 @@ mailster = (function (mailster, $, window, document) {
 		} else if (current.type == 'btn') {
 
 			var link = buttonlink.val();
-			if (!link && !confirm(mailsterL10n.remove_btn)) return false;
+			if (!link && !confirm(mailster.l10n.campaigns.remove_btn)) return false;
 
 			var btnsrc = base.find('a.active').find('img').attr('src');
 			if (typeof btnsrc == 'undefined') {
 				buttontype = 'text';
-				if (!buttonlabel.val()) buttonlabel.val(mailsterL10n.read_more);
+				if (!buttonlabel.val()) buttonlabel.val(mailster.l10n.campaigns.read_more);
 			}
 
 			current.element.removeAttr('tmpbutton');
@@ -1030,7 +1030,7 @@ mailster = (function (mailster, $, window, document) {
 				_this.addClass('selected')
 				if (response.success) {
 					currenttext = response.pattern;
-					base.find('.editbarinfo').html(mailsterL10n.curr_selected + ': <span>' + currenttext.title + '</span>');
+					base.find('.editbarinfo').html(mailster.l10n.campaigns.curr_selected + ': <span>' + currenttext.title + '</span>');
 				}
 			}, function (jqXHR, textStatus, errorThrown) {
 
@@ -1359,11 +1359,10 @@ mailster = (function (mailster, $, window, document) {
 				}
 
 				if (current.areas.length > 1) {
-					bar.find('.editbarposition').html(mailster.util.sprintf(mailsterL10n.for_area, '#' + (position + 1))).show();
+					bar.find('.editbarposition').html(mailster.util.sprintf(mailster.l10n.campaigns.for_area, '#' + (position + 1))).show();
 				} else {
 					bar.find('.editbarposition').hide();
 				}
-				console.log(position, current.elements.single);
 
 			} else if (type == 'codeview') {
 
@@ -1403,7 +1402,7 @@ mailster = (function (mailster, $, window, document) {
 
 				} else if (type == 'codeview') {
 
-					codemirror = CodeMirror.fromTextArea(textarea.get(0), codemirrorargs);
+					codemirror = mailster.util.CodeMirror.fromTextArea(textarea.get(0), codemirrorargs);
 
 				}
 
@@ -1525,7 +1524,7 @@ mailster = (function (mailster, $, window, document) {
 		if (!wp.media.frames.mailster_editbar) {
 
 			wp.media.frames.mailster_editbar = wp.media({
-				title: mailsterL10n.select_image,
+				title: mailster.l10n.campaigns.select_image,
 				library: {
 					type: 'image'
 				},

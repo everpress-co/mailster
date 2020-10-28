@@ -23,7 +23,7 @@ if ( ! isset( $templates[ $default ] ) ) {
 	}
 }
 if ( $updates = $t->get_updates() ) : ?>
-<div class="update-nag below-h2">
+<div class="notice notice-warning update-nag below-h2">
 	<?php printf( esc_html__( _n( '%d Update available', '%d Updates available', $updates, 'mailster' ) ), $updates ); ?>
 </div>
 <?php endif; ?>
@@ -125,8 +125,7 @@ if ( $updates = $t->get_updates() ) : ?>
 
 		$existing = @array_intersect_assoc( $mailster_templates, $templates );
 		$others   = @array_diff_assoc( $mailster_templates, $existing );
-		shuffle( $others );
-		$author = isset( $_GET['from'] ) ? trim( strtolower( $_GET['from'] ) ) : null;
+		$author   = isset( $_GET['from'] ) ? trim( strtolower( $_GET['from'] ) ) : null;
 
 		$mailster_templates = $existing + $others;
 

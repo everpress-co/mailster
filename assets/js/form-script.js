@@ -19,8 +19,8 @@ mailster = (function (mailster, $, window, document) {
 
 		$('#use-it')
 			.on('click', function () {
-				tb_show(mailsterL10n.useit, '#TB_inline?&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=useitbox', null);
-				if (saverequired) alert(mailsterL10n.not_saved);
+				tb_show(mailster.l10n.form.useit, '#TB_inline?&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=useitbox', null);
+				if (saverequired) alert(mailster.l10n.form.not_saved);
 				return false;
 			});
 
@@ -58,6 +58,17 @@ mailster = (function (mailster, $, window, document) {
 				remove: function (event, ui) {}
 			});
 
+		form_fields
+			.on('click', '.form-field', function () {
+				$(this).appendTo('#form-structure .form-order');
+				form_structure.find('input').each(function () {
+					$(this).attr('name', $(this).data('name'));
+				});
+				form_fields.find('input').each(function () {
+					$(this).removeAttr('name');
+				});
+			});
+
 		form_structure
 			.on('click', '.submitbutton input', function (event) {
 				event.preventDefault();
@@ -75,7 +86,7 @@ mailster = (function (mailster, $, window, document) {
 		function requireSave() {
 			saverequired = true;
 			window.onbeforeunload = function () {
-				return mailsterL10n.require_save;
+				return mailster.l10n.form.require_save;
 			};
 		}
 
@@ -96,8 +107,6 @@ mailster = (function (mailster, $, window, document) {
 		iframe.on('load', function () {
 			_style = $('<style id="mailster_form_preview_css"></style>').appendTo(iframe.contents().find('head'));
 			updateStyle();
-
-
 			iframe.contents().find('style.mailster-custom-form-css').remove();
 
 		});
