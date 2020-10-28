@@ -354,7 +354,7 @@ class MailsterQueue {
 			}
 
 			// check if subscribers have to get queue
-			if ( ! mailster( 'campaigns' )->get_unsent_subscribers( $campaign->ID, array( 1 ), false, true ) ) {
+			if ( ! mailster( 'campaigns' )->get_unsent_subscribers( $campaign->ID, array( 1 ), true, true ) ) {
 				continue;
 			}
 
