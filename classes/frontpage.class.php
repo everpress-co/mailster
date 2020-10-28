@@ -408,6 +408,23 @@ class MailsterFrontpage {
 				break;
 
 			case 'unsubscribe':
+				// handle one click unsubscribe for RFC8058 (https://tools.ietf.org/html/rfc8058)
+				if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
+
+					$hash        = get_query_var( '_mailster_hash' );
+					$campaign_id = get_query_var( '_mailster_extra' );
+					$status      = 'list_unsubscribe';
+
+					if ( mailster( 'subscribers' )->unsubscribe_by_hash( $hash, $campaign_id, $status ) ) {
+						status_header( 200 );
+					} else {
+						status_header( 404 );
+					}
+					nocache_headers();
+					exit;
+
+				}
+
 				$unsubscribe_url = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
 
 				// if tracking is disabled
@@ -774,6 +791,8 @@ class MailsterFrontpage {
 
 		if ( $query->is_main_query() && $query->is_post_type_archive( 'newsletter' ) ) {
 			$query->set( 'post_status', mailster_option( 'archive_types', array( 'finished', 'active' ) ) );
+			$query->set( 'meta_key', '_mailster_webversion' );
+			$query->set( 'meta_compare', 'NOT EXISTS' );
 		}
 
 	}

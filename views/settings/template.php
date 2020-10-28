@@ -37,7 +37,7 @@
 			<ul id="social-services">
 		<?php foreach ( $services as $service => $username ) : ?>
 				<li>
-					<a href="" class="social-service-remove" title="<?php esc_html_e( 'remove', 'mailster' ); ?>">&#10005;</a>
+					<a href="" class="social-service-remove" title="<?php esc_attr_e( 'remove', 'mailster' ); ?>">&#10005;</a>
 					<select class="social-service-dropdown">
 						<option value="0"><?php esc_html_e( 'choose', 'mailster' ); ?></option>
 					<?php foreach ( $social_links as $social_link_service => $link ) : ?>

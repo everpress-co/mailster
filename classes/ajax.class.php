@@ -427,6 +427,7 @@ class MailsterAjax {
 
 		$content = mailster( 'helper' )->strip_structure_html( $content );
 		$content = mailster( 'helper' )->add_mailster_styles( $content );
+		$content = mailster( 'helper' )->handle_shortcodes( $content );
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
 
@@ -591,21 +592,26 @@ class MailsterAjax {
 
 				$unsubscribelink = mailster()->get_unsubscribe_link( $ID );
 
-				$listunsubscribe = '';
-				if ( $mail->bouncemail ) {
-					$listunsubscribe_mail    = $mail->bouncemail;
-					$listunsubscribe_subject = 'Unsubscribe from ' . $mail->from;
-					$listunsubscribe_body    = "X-Mailster: $mail->hash\nX-Mailster-Campaign: $ID\nX-Mailster-ID: $MID\n\n";
-					$listunsubscribe        .= "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>,";
+				$listunsubscribe = array();
+				if ( mailster_option( 'mail_opt_out' ) ) {
+					$listunsubscribe_mail    = $bouncemail ? $bouncemail : $from;
+					$listunsubscribe_subject = 'Please remove me from the list';
+					$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$mail->to} X-Mailster: {$mail->hash} X-Mailster-Campaign: {$ID} X-Mailster-ID: {$MID}" );
+
+					$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 				}
-				$listunsubscribe .= '<' . $unsubscribelink . '>';
+				$listunsubscribe[] = '<' . mailster( 'frontpage' )->get_link( 'unsubscribe', $mail->hash, $ID ) . '>';
 
 				$headers = array(
-					'X-Mailster-Campaign'   => $ID,
-					'X-Mailster-ID'         => $MID,
-					'List-Unsubscribe'      => $listunsubscribe,
-					'List-Unsubscribe-Post' => 'List-Unsubscribe=One-Click',
+					'X-Mailster'          => $mail->hash,
+					'X-Mailster-Campaign' => (string) $ID,
+					'X-Mailster-ID'       => $MID,
+					'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
 				);
+
+				if ( mailster_option( 'single_opt_out' ) ) {
+					$headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
+				}
 
 				if ( 'autoresponder' != get_post_status( $ID ) ) {
 					$headers['Precedence'] = 'bulk';
@@ -1440,8 +1446,6 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$strip_shortcodes = apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) );
-
 		if ( is_numeric( $_POST['id'] ) ) {
 			$post    = get_post( (int) $_POST['id'] );
 			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
@@ -1480,14 +1484,9 @@ class MailsterAjax {
 				}
 
 				$content = str_replace( '<img ', '<img editable ', $content );
-				if ( $strip_shortcodes ) {
-					// remove shortcodes but keep content
-					$content = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $content );
-					$excerpt = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $excerpt );
-				} else {
-					$content = do_shortcode( $content );
-					$excerpt = do_shortcode( $excerpt );
-				}
+
+				$content = mailster( 'helper' )->handle_shortcodes( $content );
+				$excerpt = mailster( 'helper' )->handle_shortcodes( $excerpt );
 
 				$data = array(
 					'title'   => $post->post_title,
@@ -2059,14 +2058,20 @@ class MailsterAjax {
 
 				$records = mailster( 'helper' )->dns_query( $spf_domain, 'A' );
 
-				$ips = wp_list_pluck( (array) $records, 'ip' );
+				if ( $records ) {
+					$ips = wp_list_pluck( (array) $records, 'ip' );
+					$rec = 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all';
+				} else {
+					$ips = array();
+					$rec = 'v=spf1 mx a include:' . $spf_domain . ' ~all';
+				}
 
 				$return['message']  = sprintf( esc_html__( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ';
 				$return['message'] .= '<code>' . esc_html__( 'no TXT record found', 'mailster' ) . '</code>';
 				$return['message'] .= '<p>' . sprintf( esc_html__( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . '</p>';
 
 				$return['message'] .= '<dl><dt><strong>' . $spf_domain . '</strong> IN TXT</dt>';
-				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
+				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', $rec ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
 
 			endif;
 

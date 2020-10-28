@@ -972,13 +972,7 @@ class Mailster {
 
 			$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content ), apply_filters( 'mailster_excerpt_length', null ) );
 
-			if ( apply_filters( 'mymail_strip_shortcodes', apply_filters( 'mailster_strip_shortcodes', true ) ) ) {
-				// remove shortcodes but keep content
-				$post->post_content = preg_replace( '~(?:\[/?)[^/\]]+/?\]~s', '', $post->post_content );
-			} else {
-				// do shortocdes
-				$post->post_content = do_shortcode( $post->post_content );
-			}
+			$post->post_content = mailster( 'helper' )->handle_shortcodes( $post->post_content );
 
 			$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
@@ -1752,7 +1746,7 @@ class Mailster {
 
 		foreach ( $support_email_hashes as $hash ) {
 
-			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 MONTH)', $hash ) );
+			$user = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->users} WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 MONTH)", $hash ) );
 			if ( $user ) {
 
 				if ( ! function_exists( 'wp_delete_user' ) ) {
@@ -1864,11 +1858,9 @@ class Mailster {
 			$collate = $wpdb->get_charset_collate();
 		}
 
-		return apply_filters(
-			'mailster_table_structure',
-			array(
+		$table_structure = array(
 
-				"CREATE TABLE {$wpdb->prefix}mailster_subscribers (
+			"CREATE TABLE {$wpdb->prefix}mailster_subscribers (
                 `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `hash` varchar(32) NOT NULL,
                 `email` varchar(191) NOT NULL,
@@ -1889,7 +1881,7 @@ class Mailster {
                 KEY `rating` (`rating`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_subscriber_fields (
+			"CREATE TABLE {$wpdb->prefix}mailster_subscriber_fields (
                 `subscriber_id` bigint(20) unsigned NOT NULL,
                 `meta_key` varchar(191) NOT NULL,
                 `meta_value` longtext NOT NULL,
@@ -1898,7 +1890,7 @@ class Mailster {
                 KEY `meta_key` (`meta_key`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_subscriber_meta (
+			"CREATE TABLE {$wpdb->prefix}mailster_subscriber_meta (
                 `subscriber_id` bigint(20) unsigned NOT NULL,
                 `campaign_id` bigint(20) unsigned NOT NULL,
                 `meta_key` varchar(191) NOT NULL,
@@ -1909,7 +1901,7 @@ class Mailster {
                 KEY `meta_key` (`meta_key`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_queue (
+			"CREATE TABLE {$wpdb->prefix}mailster_queue (
                 `subscriber_id` bigint(20) unsigned NOT NULL DEFAULT 0,
                 `campaign_id` bigint(20) unsigned NOT NULL DEFAULT 0,
                 `requeued` tinyint(1) unsigned NOT NULL DEFAULT 0,
@@ -1933,7 +1925,7 @@ class Mailster {
                 KEY `ignore_status` (`ignore_status`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_actions (
+			"CREATE TABLE {$wpdb->prefix}mailster_actions (
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
@@ -1946,14 +1938,14 @@ class Mailster {
                 KEY `type` (`type`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_links (
+			"CREATE TABLE {$wpdb->prefix}mailster_links (
                 `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `link` varchar(2083) NOT NULL,
                 `i` tinyint(1) unsigned NOT NULL,
                 PRIMARY KEY  (`ID`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_lists (
+			"CREATE TABLE {$wpdb->prefix}mailster_lists (
                 `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `parent_id` bigint(20) unsigned NOT NULL,
                 `name` varchar(191) NOT NULL,
@@ -1966,7 +1958,7 @@ class Mailster {
                 UNIQUE KEY `slug` (`slug`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_lists_subscribers (
+			"CREATE TABLE {$wpdb->prefix}mailster_lists_subscribers (
                 `list_id` bigint(20) unsigned NOT NULL,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
                 `added` int(11) unsigned NOT NULL,
@@ -1975,7 +1967,7 @@ class Mailster {
                 KEY `subscriber_id` (`subscriber_id`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_forms (
+			"CREATE TABLE {$wpdb->prefix}mailster_forms (
                 `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `name` varchar(191) NOT NULL DEFAULT '',
                 `submit` varchar(191) NOT NULL DEFAULT '',
@@ -2007,7 +1999,7 @@ class Mailster {
                 PRIMARY KEY  (`ID`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_form_fields (
+			"CREATE TABLE {$wpdb->prefix}mailster_form_fields (
                 `form_id` bigint(20) unsigned NOT NULL,
                 `field_id` varchar(191) NOT NULL,
                 `name` longtext NOT NULL,
@@ -2017,7 +2009,7 @@ class Mailster {
                 UNIQUE KEY `id` (`form_id`,`field_id`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_forms_lists (
+			"CREATE TABLE {$wpdb->prefix}mailster_forms_lists (
                 `form_id` bigint(20) unsigned NOT NULL,
                 `list_id` bigint(20) unsigned NOT NULL,
                 `added` int(11) unsigned NOT NULL,
@@ -2026,9 +2018,19 @@ class Mailster {
                 KEY `list_id` (`list_id`)
             ) $collate;",
 
-			),
-			$collate
 		);
+
+		// Display width specification for integer data types was deprecated in MySQL 8.0.17 (https://stackoverflow.com/questions/60892749/mysql-8-ignoring-integer-lengths)
+		if ( version_compare( $wpdb->db_version(), '8.0.17', '>=' ) ) {
+			$table_structure = array_map(
+				function( $table ) {
+					return preg_replace( '/ (bigint|int|tinyint)\((\d+)\)/', ' $1', $table );
+				},
+				$table_structure
+			);
+		}
+
+		return apply_filters( 'mailster_table_structure', $table_structure, $collate );
 	}
 
 

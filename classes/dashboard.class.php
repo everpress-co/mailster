@@ -224,7 +224,7 @@ class MailsterDashboard {
 		wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-chartjs', MAILSTER_URI . 'assets/js/libs/chart' . $suffix . '.js', array( 'easy-pie-chart' ), MAILSTER_VERSION, true );
 
-		wp_enqueue_script( 'mailster-dashboard-script', MAILSTER_URI . 'assets/js/dashboard-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-dashboard-script', MAILSTER_URI . 'assets/js/dashboard-script' . $suffix . '.js', array( 'mailster-script', 'postbox' ), MAILSTER_VERSION, true );
 		wp_enqueue_style( 'mailster-dashboard-style', MAILSTER_URI . 'assets/css/dashboard-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		mailster_localize_script(
@@ -268,15 +268,15 @@ class MailsterDashboard {
 		$elements[]    = '</ul><br><ul>';
 
 		if ( $campaigns = count( mailster_get_campaigns() ) ) {
-			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_type=newsletter">' . number_format_i18n( $campaigns - $autoresponder ) . ' ' . esc_html__( _n( 'Campaign', 'Campaigns', $campaigns - $autoresponder, 'mailster' ) ) . '</a>';
+			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_type=newsletter">' . number_format_i18n( $campaigns - $autoresponder ) . ' ' . esc_html__( _nx( 'Campaign', 'Campaigns', $campaigns - $autoresponder, 'number of', 'mailster' ) ) . '</a>';
 		}
 
 		if ( $autoresponder ) {
-			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_status=autoresponder&post_type=newsletter">' . number_format_i18n( $autoresponder ) . ' ' . esc_html__( _n( 'Autoresponder', 'Autoresponders', $autoresponder, 'mailster' ) ) . '</a>';
+			$elements[] = '<a class="mailster-campaigns" href="edit.php?post_status=autoresponder&post_type=newsletter">' . number_format_i18n( $autoresponder ) . ' ' . esc_html__( _nx( 'Autoresponder', 'Autoresponders', $autoresponder, 'number of', 'mailster' ) ) . '</a>';
 		}
 
 		if ( $subscribers = mailster( 'subscribers' )->get_totals( 1 ) ) {
-			$elements[] = '<a class="mailster-subscribers" href="edit.php?post_type=newsletter&page=mailster_subscribers">' . number_format_i18n( $subscribers ) . ' ' . esc_html__( _n( 'Subscriber', 'Subscribers', $subscribers, 'mailster' ) ) . '</a>';
+			$elements[] = '<a class="mailster-subscribers" href="edit.php?post_type=newsletter&page=mailster_subscribers">' . number_format_i18n( $subscribers ) . ' ' . esc_html__( _nx( 'Subscriber', 'Subscribers', $subscribers, 'number of', 'mailster' ) ) . '</a>';
 		}
 
 		return $elements;

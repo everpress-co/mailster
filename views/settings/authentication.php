@@ -91,7 +91,7 @@
 			<label> <input type="radio" name="mailster_options[dkim_bitsize]" value="768" <?php checked( $bitsize, 768 ); ?>> 768</label>&nbsp;
 			<label> <input type="radio" name="mailster_options[dkim_bitsize]" value="1024" <?php checked( $bitsize, 1024 ); ?>> 1024</label>&nbsp;
 			<label> <input type="radio" name="mailster_options[dkim_bitsize]" value="2048" <?php checked( $bitsize, 2048 ); ?>> 2048</label>&nbsp;
-			<input type="submit" class="button-primary" value="<?php esc_html_e( 'generate Keys', 'mailster' ); ?>" name="mailster_generate_dkim_keys" id="mailster_generate_dkim_keys" />
+			<input type="submit" class="button-primary" value="<?php esc_attr_e( 'generate Keys', 'mailster' ); ?>" name="mailster_generate_dkim_keys" id="mailster_generate_dkim_keys" />
 			<?php esc_html_e( 'or', 'mailster' ); ?>
 			<a href="#" class="dkim-enter-keys"><?php esc_html_e( 'enter keys manually', 'mailster' ); ?></a>
 		</p>

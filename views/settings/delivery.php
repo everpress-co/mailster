@@ -81,7 +81,7 @@
 		<td>
 		<div class="mailster-testmail">
 			<input type="text" value="<?php echo esc_attr( $test_email ); ?>" autocomplete="off" class="form-input-tip mailster-testmail-email">
-			<input type="button" value="<?php esc_html_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest" data-role="basic">
+			<input type="button" value="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest" data-role="basic">
 			<div class="loading test-ajax-loading"></div>
 		</div>
 		</td>
@@ -113,7 +113,7 @@ foreach ( $deliverymethods as $id => $name ) {
 	}
 
 	?>
-	<a class="<?php echo implode( ' ', $classes ); ?>" href="#<?php echo esc_attr( $id ); ?>"><?php esc_html_e( $name ); ?></a>
+	<a class="<?php echo implode( ' ', $classes ); ?>" href="#<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $name ); ?></a>
 	<?php } ?>
 	<a href="plugin-install.php?tab=search&s=mailster+everpress&plugin-search-input=Search+Plugins" class="alignright"><?php esc_html_e( 'search for more delivery methods', 'mailster' ); ?></a>
 </div>
