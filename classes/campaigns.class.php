@@ -160,7 +160,11 @@ class MailsterCampaigns {
 				if ( ! isset( $meta['list_conditions'] ) ) {
 					$meta['list_conditions'] = array();
 				}
-				array_unshift( (array) $meta['list_conditions'], array( $condition ) );
+				if ( ! is_array( $meta['list_conditions'] ) ) {
+					$meta['list_conditions'] = (array) $meta['list_conditions'];
+				}
+
+				array_unshift( $meta['list_conditions'], array( $condition ) );
 			}
 
 			$original = get_post( $campaign_id );
