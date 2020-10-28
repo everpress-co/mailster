@@ -791,6 +791,8 @@ class MailsterFrontpage {
 
 		if ( $query->is_main_query() && $query->is_post_type_archive( 'newsletter' ) ) {
 			$query->set( 'post_status', mailster_option( 'archive_types', array( 'finished', 'active' ) ) );
+			$query->set( 'meta_key', '_mailster_webversion' );
+			$query->set( 'meta_compare', 'NOT EXISTS' );
 		}
 
 	}

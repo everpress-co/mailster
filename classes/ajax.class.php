@@ -604,7 +604,7 @@ class MailsterAjax {
 
 				$headers = array(
 					'X-Mailster'          => $mail->hash,
-					'X-Mailster-Campaign' => $ID,
+					'X-Mailster-Campaign' => (string) $ID,
 					'X-Mailster-ID'       => $MID,
 					'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
 				);
@@ -2058,14 +2058,20 @@ class MailsterAjax {
 
 				$records = mailster( 'helper' )->dns_query( $spf_domain, 'A' );
 
-				$ips = wp_list_pluck( (array) $records, 'ip' );
+				if ( $records ) {
+					$ips = wp_list_pluck( (array) $records, 'ip' );
+					$rec = 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all';
+				} else {
+					$ips = array();
+					$rec = 'v=spf1 mx a include:' . $spf_domain . ' ~all';
+				}
 
 				$return['message']  = sprintf( esc_html__( 'Domain %s', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . ': ';
 				$return['message'] .= '<code>' . esc_html__( 'no TXT record found', 'mailster' ) . '</code>';
 				$return['message'] .= '<p>' . sprintf( esc_html__( 'No or wrong record found for %s. Please adjust the namespace records and add these lines:', 'mailster' ), '<strong>' . $spf_domain . '</strong>' ) . '</p>';
 
 				$return['message'] .= '<dl><dt><strong>' . $spf_domain . '</strong> IN TXT</dt>';
-				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', 'v=spf1 mx a ip4:' . implode( ' ip4:', $ips ) . '  ~all' ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
+				$return['message'] .= '<dd><textarea class="widefat" rows="1" id="spf-record" readonly>' . esc_textarea( apply_filters( 'mailster_spf_record', $rec ) ) . '</textarea><a class="clipboard" data-clipboard-target="#spf-record">' . esc_html__( 'copy', 'mailster' ) . '</a></dd></dl>';
 
 			endif;
 
