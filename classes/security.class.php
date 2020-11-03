@@ -73,7 +73,7 @@ class MailsterSecurity {
 		}
 
 		// check IP record
-		if ( mailster_option( 'check_ip' ) && $this->ip_has_pending_subscriber( $ip ) ) {
+		if ( mailster_option( 'check_ip' ) && !is_user_logged_in() && $this->ip_has_pending_subscriber( $ip ) ) {
 			return new WP_Error( 'error_ip', esc_html__( 'Sorry, you cannot signup right now.', 'mailster' ), 'email' );
 		}
 
