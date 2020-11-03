@@ -71,7 +71,7 @@ class Mailster {
 			'register'     => new MailsterRegister(),
 			'geo'          => new MailsterGeo(),
 			'privacy'      => new MailsterPrivacy(),
-			'security'      => new MailsterSecurity(),
+			'security'     => new MailsterSecurity(),
 			'export'       => new MailsterExport(),
 			'empty'        => new MailsterEmpty(),
 		);
