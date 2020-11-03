@@ -36,7 +36,6 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 			<div class="preflight-images button-group">
 				<a class="button preflight-toggle-images mailster-icon active" title="<?php esc_attr_e( 'Toggle Images', 'mailster' ); ?>"></a>
 				<a class="button preflight-toggle-structure mailster-icon" title="<?php esc_attr_e( 'Toggle Structure', 'mailster' ); ?>"></a>
-				<a class="button preflight-toggle-plaintext mailster-icon" title="<?php esc_attr_e( 'Toggle Plain Text', 'mailster' ); ?>"></a>
 			</div>
 			<div class="preflight-resize button-group">
 				<a class="button preflight-switch mailster-icon preflight-switch-desktop active" data-dimensions='{"w":"100%","h":"100%"}'></a>
