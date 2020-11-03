@@ -33,7 +33,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 			</td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'From Name', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from-name" data-value="<?php echo esc_attr( mailster_option( 'from_name' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
+			<th scope="row"><?php esc_html_e( 'From Name', 'mailster' ); ?> <a class="default-value mailster-icon mailster-icon-restore" data-for="mailster_from-name" data-value="<?php echo esc_attr( mailster_option( 'from_name' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
 			<td>
 				<div class="emoji-selector">
 					<input type="text" class="widefat" value="<?php echo esc_attr( $this->post_data['from_name'] ); ?>" name="mailster_data[from_name]" id="mailster_from-name" aria-label="<?php esc_attr_e( 'From Name', 'mailster' ); ?>">
@@ -42,11 +42,11 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 			</td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'From Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_from" data-value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
+			<th scope="row"><?php esc_html_e( 'From Email', 'mailster' ); ?> <a class="default-value mailster-icon mailster-icon-restore" data-for="mailster_from" data-value="<?php echo esc_attr( mailster_option( 'from' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
 			<td><input type="email" class="widefat" value="<?php echo esc_attr( $this->post_data['from_email'] ); ?>" name="mailster_data[from_email]" id="mailster_from" aria-label="<?php esc_attr_e( 'From Email', 'mailster' ); ?>"></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><?php esc_html_e( 'Reply-to Email', 'mailster' ); ?> <a class="default-value mailster-icon" data-for="mailster_reply_to" data-value="<?php echo esc_attr( mailster_option( 'reply_to' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
+			<th scope="row"><?php esc_html_e( 'Reply-to Email', 'mailster' ); ?> <a class="default-value mailster-icon mailster-icon-restore" data-for="mailster_reply_to" data-value="<?php echo esc_attr( mailster_option( 'reply_to' ) ); ?>" title="<?php esc_attr_e( 'restore default', 'mailster' ); ?>"></a></th>
 			<td><input type="email" class="widefat" value="<?php echo esc_attr( $this->post_data['reply_to'] ); ?>" name="mailster_data[reply_to]" id="mailster_reply_to" aria-label="<?php esc_attr_e( 'reply-to email', 'mailster' ); ?>"></td>
 		</tr>
 	 </tbody>
@@ -128,14 +128,14 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	endif;
 	?>
 	<?php if ( ! empty( $sent ) ) : ?>
-		<a href="#" id="show_recipients" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ); ?></a>
+		<a href="#" id="show_recipients" class="alignright mailster-icon mailster-icon-arrow-down showdetails"><?php esc_html_e( 'details', 'mailster' ); ?></a>
 		<span class="spinner" id="recipients-ajax-loading"></span><div class="ajax-list" id="recipients-list"></div>
 	<?php endif; ?>
 	</td></tr>
 	<?php if ( ! empty( $errors ) ) : ?>
 	<tr><th><?php esc_html_e( 'Total Errors', 'mailster' ); ?></th><td class="nopadding"> <span class="big hb-errors"><?php echo number_format_i18n( $errors ); ?></span>
 		<?php if ( ! empty( $errors ) ) : ?>
-		<a href="#" id="show_errors" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ); ?></a>
+		<a href="#" id="show_errors" class="alignright mailster-icon mailster-icon-arrow-down showdetails"><?php esc_html_e( 'details', 'mailster' ); ?></a>
 		<span class="spinner" id="error-ajax-loading"></span><div class="ajax-list" id="error-list"></div>
 	<?php endif; ?>
 	</td></tr>
@@ -143,7 +143,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 	<?php if ( $this->post_data['track_clicks'] ) : ?>
 	<tr><th><?php esc_html_e( 'Total Clicks', 'mailster' ); ?></th><td class="nopadding"> <span class="big hb-clicks_total"><?php echo number_format_i18n( $clicks_total ); ?></span>
 		<?php if ( ! empty( $clicks_total ) ) : ?>
-		<a href="#" id="show_clicks" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ); ?></a>
+		<a href="#" id="show_clicks" class="alignright mailster-icon mailster-icon-arrow-down showdetails"><?php esc_html_e( 'details', 'mailster' ); ?></a>
 		<span class="spinner" id="clicks-ajax-loading"></span><div class="ajax-list" id="clicks-list"></div>
 	<?php endif; ?>
 	</td></tr>
@@ -160,7 +160,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 		<?php foreach ( $environment as $type => $data ) { ?>
 		<label><span class="big"><span class="hb-<?php echo $type; ?>"><?php echo round( $data['percentage'] * 100, 2 ); ?>%</span> <span class="mailster-icon client-<?php echo $type; ?>"></span></span> <?php echo isset( $types[ $type ] ) ? $types[ $type ] : esc_html__( 'unknown', 'mailster' ); ?></label>
 		<?php } ?>
-		<a href="#" id="show_environment" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ); ?></a>
+		<a href="#" id="show_environment" class="alignright mailster-icon mailster-icon-arrow-down showdetails"><?php esc_html_e( 'details', 'mailster' ); ?></a>
 		<span class="spinner" id="environment-ajax-loading"></span><div class="ajax-list" id="environment-list"></div>
 	</td></tr>
 	<?php endif; ?>
@@ -198,7 +198,7 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 		}
 		?>
 		</span>
-		<a href="#" id="show_geolocation" class="alignright mailster-icon showdetails"><?php esc_html_e( 'details', 'mailster' ); ?></a>
+		<a href="#" id="show_geolocation" class="alignright mailster-icon mailster-icon-arrow-down showdetails"><?php esc_html_e( 'details', 'mailster' ); ?></a>
 		<span class="spinner" id="geolocation-ajax-loading"></span>
 		</td></tr><tr><td colspan="2" class="nopadding">
 		<div class="ajax-list countries" id="geolocation-list"></div>

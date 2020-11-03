@@ -239,24 +239,24 @@ ul li.share .sharebox-inner .sharebox-panel-option ul li a:before {
 	font-size: 22px;
 	line-height: 40px;
 }
-ul li.share ul li a.twitter:before { content: '\e809'; color: #55acee; }
-ul li.share ul li a.delicious:before { content: '\e801'; color: #3399ff; }
-ul li.share ul li a.google:before { content: '\e802'; color: #dd4b39; }
-ul li.share ul li a.blogger:before { content: '\e803'; color: #f57d00; }
-ul li.share ul li a.reddit:before { content: '\e804'; color: #ff4500; }
-ul li.share ul li a.digg:before { content: '\e805'; color: #000000; }
-ul li.share ul li a.linkedin:before { content: '\e806'; color: #0976b4; }
-ul li.share ul li a.pinterest:before { content: '\e807'; color: #cc2127; }
-ul li.share ul li a.xing:before { content: '\e808'; color: #cfdc00; }
-ul li.share ul li a.facebook:before { content: '\e80a'; color: #3b5998; }
-ul li.share ul li a.yahoo:before { content: '\e80b'; color: #400191; }
-ul li.share ul li a.evernote:before { content: '\e80c'; color: #7ac142; }
-ul li.share ul li a.stumbleupon:before { content: '\e80d'; color: #eb4924; }
-ul li.share ul li a.sharethis:before { content: '\e80e'; color: #01BF01; }
-ul li.share ul li a.buffer:before { content: '\e800'; color: #323b43; }
-ul li.share ul li a.vk:before { content: '\e80f'; color: #507299; }
-ul li.share ul li a.whatsapp:before { content: '\f232'; color: #25d366; }
-ul li.share ul li a.telegram:before { content: '\f2c6'; color: #54b3e6; }
+ul li.share ul li a.twitter:before { content_: '\e809'; color: #55acee; }
+ul li.share ul li a.delicious:before { content_: '\e801'; color: #3399ff; }
+ul li.share ul li a.google:before { content_: '\e802'; color: #dd4b39; }
+ul li.share ul li a.blogger:before { content_: '\e803'; color: #f57d00; }
+ul li.share ul li a.reddit:before { content_: '\e804'; color: #ff4500; }
+ul li.share ul li a.digg:before { content_: '\e805'; color: #000000; }
+ul li.share ul li a.linkedin:before { content_: '\e806'; color: #0976b4; }
+ul li.share ul li a.pinterest:before { content_: '\e807'; color: #cc2127; }
+ul li.share ul li a.xing:before { content_: '\e808'; color: #cfdc00; }
+ul li.share ul li a.facebook:before { content_: '\e80a'; color: #3b5998; }
+ul li.share ul li a.yahoo:before { content_: '\e80b'; color: #400191; }
+ul li.share ul li a.evernote:before { content_: '\e80c'; color: #7ac142; }
+ul li.share ul li a.stumbleupon:before { content_: '\e80d'; color: #eb4924; }
+ul li.share ul li a.sharethis:before { content_: '\e80e'; color: #01BF01; }
+ul li.share ul li a.buffer:before { content_: '\e800'; color: #323b43; }
+ul li.share ul li a.vk:before { content_: '\e80f'; color: #507299; }
+ul li.share ul li a.whatsapp:before { content_: '\f232'; color: #25d366; }
+ul li.share ul li a.telegram:before { content_: '\f2c6'; color: #54b3e6; }
 ul li.share .sharebox-inner label {
 	display: block;
 	margin: 0 3%;

@@ -161,10 +161,10 @@
 	padding: 3px 0;
 }
 .mailster-condition .mailster-rating span:before{
-	content: '\e82e';
+	content_: '\e82e';
 }
 .mailster-condition .mailster-rating span.enabled:before{
-	content: '\e82d';
+	content_: '\e82d';
 }
 .mailster-conditions-wrap .mailster-conditions-value-field-multiselect:first-child{
 	display: inline-block;

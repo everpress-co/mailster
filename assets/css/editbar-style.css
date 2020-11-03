@@ -270,7 +270,7 @@
 	right: 18px;
 
 }
-#editbar div.buttons a.remove:before{content: '\e82a';}
+#editbar div.buttons a.remove:before{content_: '\e82a';}
 #editbar div.buttons a.remove:hover {
 	opacity: 1;
 }
@@ -351,7 +351,7 @@
 }
 #editbar div.type.img .imagecroplabel span:before {
 	visibility: visible;
-	content: '\e835';
+	content_: '\e835';
 	font-size: 18px;
 	margin-top: 10px;
 }
@@ -381,7 +381,7 @@
 	margin: 1px 24px 10px 0;
 }
 #editbar div.type.img .asp span.asp-lock:before {
-	content: '\e815';
+	content_: '\e815';
 	font-size: 14px;
 	vertical-align: middle;
 	background: #fff;
@@ -389,7 +389,7 @@
 	margin: 0;
 }
 #editbar div.type.img .asp span.asp-lock.locked:before {
-	content: '\e816';
+	content_: '\e816';
 }
 #editbar div.type.img .imagewrap {
 	padding: 5px;
