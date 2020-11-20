@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.15 =
 
+* added: option to remove subscribers with all assigned actions.
 * improved: handling of folder names during template upload
 * fixed: saving queued campaigns cause sending them immediately
 * fixed: campaigns with no web version show in archive
