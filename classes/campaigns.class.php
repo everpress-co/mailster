@@ -4630,7 +4630,7 @@ class MailsterCampaigns {
 		$filename = apply_filters( 'mymail_post_thumbnail_filename', apply_filters( 'mailster_post_thumbnail_filename', 'newsletter-' . $campaign_id, $campaign ), $campaign ) . '.jpg';
 
 		if ( $file_exits = file_exists( $wp_upload_dir['path'] . '/' . $filename ) ) {
-			@unlink( $wp_upload_dir['path'] . '/' . $filename );
+			unlink( $wp_upload_dir['path'] . '/' . $filename );
 		}
 
 		$file = array(

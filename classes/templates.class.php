@@ -724,8 +724,9 @@ class MailsterTemplates {
 
 								$redirect = isset( $_SERVER['HTTP_REFERER'] ) ? remove_query_arg( 'more', $_SERVER['HTTP_REFERER'] ) : admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' );
 								$redirect = add_query_arg( array( 'new' => $slug ), $redirect );
-
-								@unlink( $tempfile );
+								if ( file_exists( $tempfile ) ) {
+									unlink( $tempfile );
+								}
 							}
 						}
 
@@ -795,9 +796,7 @@ class MailsterTemplates {
 			return;
 		}
 
-		// prevent error output as 7.4 throws deprecate notice
-		// $hash = hash( 'crc32', md5_file( $filedir ) );
-		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
+		$hash = hash( 'crc32', md5_file( $filedir ) );
 
 		$screenshotfile = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 		$screenshoturi  = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
@@ -864,9 +863,7 @@ class MailsterTemplates {
 			return;
 		}
 
-		// prevent error output as 7.4 throws deprecate notice
-		// $hash = hash( 'crc32', md5_file( $filedir ) );
-		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
+		$hash = hash( 'crc32', md5_file( $filedir ) );
 
 		$screenshot_folder_base = mailster( 'helper' )->mkdir( 'screenshots' );
 
@@ -916,7 +913,7 @@ class MailsterTemplates {
 							}
 
 							if ( ! $wp_filesystem->copy( $tmp_file, $screenshotfile ) ) {
-								@copy( $tmp_file, $screenshotfile );
+								copy( $tmp_file, $screenshotfile );
 							}
 						}
 					} else {

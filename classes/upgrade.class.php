@@ -137,9 +137,7 @@ class MailsterUpgrade {
 			}
 		}
 
-		@header( 'Content-type: application/json' );
-		echo json_encode( $return );
-		exit;
+		wp_send_json( $return );
 
 	}
 
@@ -434,14 +432,14 @@ class MailsterUpgrade {
 		$new_location = MAILSTER_DIR . '/mailster.php';
 
 		if ( ! $wp_filesystem->move( $old_location, $new_location, true ) ) {
-			@rename( $old_location, $new_location );
+			rename( $old_location, $new_location );
 		}
 
 		$old_location = MAILSTER_DIR;
 		$new_location = dirname( MAILSTER_DIR ) . '/mailster';
 
 		if ( ! $wp_filesystem->move( $old_location, $new_location, true ) ) {
-			@rename( $old_location, $new_location );
+			rename( $old_location, $new_location );
 		}
 
 		deactivate_plugins( array( MAILSTER_SLUG ), false, true );
@@ -663,14 +661,14 @@ class MailsterUpgrade {
 
 		if ( is_dir( $new_location ) ) {
 			if ( ! $wp_filesystem->move( $new_location, $new_location . '_bak', true ) ) {
-				@rename( $new_location, $new_location . '_bak' );
+				rename( $new_location, $new_location . '_bak' );
 			}
 		}
 
 		if ( is_dir( $old_location ) && ! is_dir( $new_location ) ) {
 
 			if ( ! $wp_filesystem->move( $old_location, $new_location, true ) ) {
-				@rename( $old_location, $new_location );
+				rename( $old_location, $new_location );
 			}
 		}
 
@@ -692,7 +690,7 @@ class MailsterUpgrade {
 		$to_copy = list_files( $old_location, 1 );
 		foreach ( $to_copy as $file ) {
 			if ( ! $wp_filesystem->copy( $file, $new_location . basename( $file ), false ) ) {
-				@copy( $file, $new_location . basename( $file ) );
+				copy( $file, $new_location . basename( $file ) );
 			}
 		}
 
@@ -802,14 +800,14 @@ class MailsterUpgrade {
 		$to   = WP_PLUGIN_DIR . '/myMail/form.php';
 
 		if ( ! $wp_filesystem->copy( $from, $to, true ) ) {
-			@copy( $from, $to );
+			copy( $from, $to );
 		}
 
 		$from = MAILSTER_DIR . '/cron.php';
 		$to   = WP_PLUGIN_DIR . '/myMail/cron.php';
 
 		if ( ! $wp_filesystem->copy( $from, $to, true ) ) {
-			@copy( $from, $to );
+			copy( $from, $to );
 		}
 
 		$content = "<?php\n/*\nPlugin Name: MyMail Legacy Code Helper\nDescription: Helper for legacy external forms and cron of Mailster (former MyMail). You can delete this 'plugin' if you have no external forms or subscriber buttons or you have update them already to the new version.\n */\ndie('There\'s no need to activate this plugin! If you experience any issues upgrading please reach out to us via our member area <a href=\"https://mailster.co/go/register\" target=\"_blank\">here</a>.');\n";

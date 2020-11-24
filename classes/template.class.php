@@ -611,9 +611,12 @@ class MailsterTemplate {
 		if ( ! is_string( $doc_or_html ) ) {
 			$doc = $doc_or_html;
 		} else {
+			$i_error              = libxml_use_internal_errors( true );
 			$doc                  = new DOMDocument();
 			$doc->validateOnParse = true;
-			@$doc->loadHTML( $doc_or_html );
+			$doc->loadHTML( $doc_or_html );
+			libxml_clear_errors();
+			libxml_use_internal_errors( $i_error );
 
 		}
 		$xpath = new DOMXpath( $doc );
@@ -1029,9 +1032,7 @@ class MailsterTemplate {
 		$filedir = MAILSTER_UPLOAD_DIR . '/templates/' . $slug . '/' . $file;
 		$fileuri = MAILSTER_UPLOAD_URI . '/templates/' . $slug . '/' . $file;
 
-		// prevent error output as 7.4 throws deprecate notice
-		// $hash = hash( 'crc32', md5_file( $filedir ) );
-		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
+		$hash = hash( 'crc32', md5_file( $filedir ) );
 
 		$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/modules/' . $hash;
 		$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/modules/' . $hash;
