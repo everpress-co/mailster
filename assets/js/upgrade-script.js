@@ -124,8 +124,8 @@ mailster = (function (mailster, $, window, document) {
 
 		window.onbeforeunload = null;
 
-		output('finished', '<strong>Alright, all updates have been finished!</strong>', true, 0, true);
-		output('finished_button', '<a href="admin.php?page=mailster_welcome" class="button button-primary">Ok, fine!</a>', true, 0, true);
+		output('finished', '<h3>Alright, all updates have been finished!</h3>', true, 0, true);
+		output('finished_button', '<a href="admin.php?page=mailster_welcome" class="button button-primary button-hero">Ok, fine!</a>', true, 0, true);
 
 		$('#mailster-post-upgrade').show();
 

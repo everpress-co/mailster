@@ -1883,19 +1883,23 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_subscriber_fields (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
                 `meta_key` varchar(191) NOT NULL,
                 `meta_value` longtext NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`meta_key`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `meta_key` (`meta_key`)
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_subscriber_meta (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
                 `campaign_id` bigint(20) unsigned NOT NULL,
                 `meta_key` varchar(191) NOT NULL,
                 `meta_value` longtext NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`meta_key`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`),
@@ -1903,6 +1907,7 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_queue (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NOT NULL DEFAULT 0,
                 `campaign_id` bigint(20) unsigned NOT NULL DEFAULT 0,
                 `requeued` tinyint(1) unsigned NOT NULL DEFAULT 0,
@@ -1915,6 +1920,7 @@ class Mailster {
                 `ignore_status` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `options` varchar(191) NOT NULL DEFAULT '',
                 `tags` longtext NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`requeued`,`options`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`),
@@ -1926,66 +1932,78 @@ class Mailster {
                 KEY `ignore_status` (`ignore_status`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_action_sent (
+			"CREATE TABLE {$wpdb->prefix}mailster_action_sent (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_action_opens (
+			"CREATE TABLE {$wpdb->prefix}mailster_action_opens (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_action_clicks (
+			"CREATE TABLE {$wpdb->prefix}mailster_action_clicks (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `link_id` bigint(20) unsigned NOT NULL DEFAULT 0,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`link_id`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_action_unsubs (
+			"CREATE TABLE {$wpdb->prefix}mailster_action_unsubs (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `text` varchar(191) NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_action_bounces (
+			"CREATE TABLE {$wpdb->prefix}mailster_action_bounces (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `hard` tinyint(1) NOT NULL DEFAULT 0,
                 `text` varchar(191) NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`hard`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
 
-				"CREATE TABLE {$wpdb->prefix}mailster_action_errors (
+			"CREATE TABLE {$wpdb->prefix}mailster_action_errors (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `text` varchar(191) NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
@@ -2012,9 +2030,11 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_lists_subscribers (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `list_id` bigint(20) unsigned NOT NULL,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
                 `added` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`list_id`,`subscriber_id`),
                 KEY `list_id` (`list_id`),
                 KEY `subscriber_id` (`subscriber_id`)
@@ -2053,19 +2073,23 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_form_fields (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `form_id` bigint(20) unsigned NOT NULL,
                 `field_id` varchar(191) NOT NULL,
                 `name` longtext NOT NULL,
                 `error_msg` longtext NOT NULL,
                 `required` tinyint(1) unsigned NOT NULL,
                 `position` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`form_id`,`field_id`)
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_forms_lists (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `form_id` bigint(20) unsigned NOT NULL,
                 `list_id` bigint(20) unsigned NOT NULL,
                 `added` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`form_id`,`list_id`),
                 KEY `form_id` (`form_id`),
                 KEY `list_id` (`list_id`)

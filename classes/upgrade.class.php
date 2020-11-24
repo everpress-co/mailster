@@ -271,9 +271,12 @@ class MailsterUpgrade {
 			$actions = wp_parse_args( array(), $actions );
 		}
 
-		if ( $db_version < 20200405 ) {
+		if ( $db_version < 20201124 ) {
+			unset( $actions['db_structure'] );
 			$actions = wp_parse_args(
 				array(
+					'create_missing_primary_keys'     => 'Create missing primary keys',
+					'db_structure'                    => 'Checking DB structure',
 					'update_action_table_sent'        => 'Update Action Tables Sent',
 					'update_action_table_opens'       => 'Update Action Tables Opens',
 					'update_action_table_clicks'      => 'Update Action Tables Clicks',
@@ -900,6 +903,7 @@ class MailsterUpgrade {
 	 * @return unknown
 	 */
 	private function do_db_structure() {
+
 		mailster()->dbstructure( true, true, true, true );
 		return true;
 	}
@@ -950,6 +954,31 @@ class MailsterUpgrade {
 
 		return true;
 
+	}
+
+
+	private function do_create_missing_primary_keys() {
+
+		global $wpdb;
+		$tables = mailster()->get_tables( true );
+
+		foreach ( $tables as $table ) {
+			if ( $this->table_exists( $table ) ) {
+				if ( ! $this->column_exists( 'ID', $table ) ) {
+					$wpdb->query( "ALTER TABLE {$table} ADD `ID` bigint(20) unsigned NOT NULL FIRST" );
+					$wpdb->query( 'SET @a = 0;' );
+					$wpdb->query( "UPDATE {$table} SET ID = @a:=@a+1;" );
+					$wpdb->query( "ALTER TABLE {$table} MODIFY COLUMN `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY" );
+					if ( ! $this->column_exists( 'ID', $table ) ) {
+						echo 'Not able to create primary Key for  "' . $table . '"!' . "\n";
+					} else {
+						echo 'Primary Key for "' . $table . '" created!' . "\n";
+					}
+				}
+			}
+		}
+
+		return true;
 	}
 
 
@@ -1980,6 +2009,19 @@ class MailsterUpgrade {
 
 		global $wpdb;
 		return $wpdb->query( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $column
+	 * @param unknown $table
+	 * @return unknown
+	 */
+	private function column_exists( $column, $table ) {
+
+		global $wpdb;
+		return $wpdb->query( $wpdb->prepare( "SHOW COLUMNS FROM {$table} LIKE %s", $column ) );
 	}
 
 
