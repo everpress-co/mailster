@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.5
-Stable tag: 2.4.15
+Tested up to: 5.6
+Stable tag: 2.4.16
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.15 =
 
+* added: option to remove subscribers with all assigned actions.
 * improved: handling of folder names during template upload
 * fixed: saving queued campaigns cause sending them immediately
 * fixed: campaigns with no web version show in archive
