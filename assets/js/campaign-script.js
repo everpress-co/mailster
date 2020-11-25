@@ -1623,7 +1623,11 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.editable && mailster.events.push('documentReady', function () {
 		mailster.trigger('updateCount');
-	})
+	});
+
+	mailster.events.push('documentReady', function () {
+		mailster.trigger('enable');
+	});
 
 	mailster.editable && mailster.events.push('updateCount', function () {
 
