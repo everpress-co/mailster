@@ -1002,9 +1002,13 @@ class MailsterTemplates {
 
 		if ( ! ( $result = get_transient( $cache_key ) ) ) {
 
+			$cachetime = DAY_IN_SECONDS;
+			$cachetime = 12;
+
 			$result = array(
 				'total' => 0,
 				'items' => array(),
+				'error' => null,
 			);
 
 			if ( $query_args['browse'] == 'installed' ) {
@@ -1018,15 +1022,16 @@ class MailsterTemplates {
 
 			$url = add_query_arg( $query_args, $endpoint );
 
-			$response = wp_remote_get( $url, $args );
-
+			$response      = wp_remote_get( $url, $args );
 			$response_code = wp_remote_retrieve_response_code( $response );
 
-			$response_body = wp_remote_retrieve_body( $response );
-
 			if ( $response_code != 200 || is_wp_error( $response ) ) {
-
+				$result['error'] = esc_html__( 'We are currently not able to handle your request. Please try again later.', 'mailster' );
+				$cachetime       = 120;
 			} else {
+
+				$response_body = wp_remote_retrieve_body( $response );
+
 				$response_result = json_decode( $response_body, true );
 
 				$result['items'] = wp_parse_args( $result['items'], $response_result['items'] );
@@ -1045,8 +1050,7 @@ class MailsterTemplates {
 				}
 			}
 
-			// set_transient( $cache_key, $result, DAY_IN_SECONDS );
-			set_transient( $cache_key, $result, 12 );
+			set_transient( $cache_key, $result, $cachetime );
 
 		}
 

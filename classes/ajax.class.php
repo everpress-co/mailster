@@ -2432,6 +2432,7 @@ class MailsterAjax {
 			$return['total']     = $result['total'];
 			$return['html']      = mailster( 'templates' )->result_to_html( $result );
 			$return['templates'] = $result['items'];
+			$return['error']     = $result['error'];
 		}
 
 		$this->json_return( $return );

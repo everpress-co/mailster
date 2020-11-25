@@ -428,6 +428,10 @@ mailster = (function (mailster, $, window, document) {
 
 			!currentdisplayed && $('body').addClass('no-results');
 
+			if (response.error) {
+				alert(response.error);
+			}
+
 			busy = false;
 
 			cb && cb();
