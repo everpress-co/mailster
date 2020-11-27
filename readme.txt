@@ -88,6 +88,10 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.16 =
+
+* fixed: warning on dashboard
+
 = Version 2.4.15 =
 
 * added: option to remove subscribers with all assigned actions.
