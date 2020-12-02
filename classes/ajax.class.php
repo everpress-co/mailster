@@ -65,6 +65,7 @@ class MailsterAjax {
 		'query_templates',
 		'delete_template',
 		'download_template',
+		'default_template',
 		'template_endpoint',
 
 		// dashboard
@@ -1821,6 +1822,26 @@ class MailsterAjax {
 			$return['msg']      = esc_html__( 'Template successful loaded!', 'mailster' );
 			$return['redirect'] = $result;
 			$return['success']  = true;
+		}
+
+		$this->json_return( $return );
+
+	}
+
+	private function default_template() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$slug = basename( $_POST['slug'] );
+
+		$result = mailster_update_option( 'default_template', $slug );
+
+		if ( is_wp_error( $result ) ) {
+			$return['msg'] = sprintf( esc_html__( 'There was an error using this template as default: %s', 'mailster' ), $result->get_error_message() );
+		} else {
+			$return['msg']     = esc_html__( 'New default template!', 'mailster' );
+			$return['success'] = true;
 		}
 
 		$this->json_return( $return );

@@ -18,7 +18,9 @@ mailster = (function (mailster, $, window, document) {
 		searchquery = searchfield.val(),
 		searchtype = typeselector.val(),
 		templates = [],
-		busy = false;
+		busy = false,
+		gumloaded = false,
+		current_slug = false;
 
 	filterlinks
 		.on('click', function (event) {
@@ -44,9 +46,6 @@ mailster = (function (mailster, $, window, document) {
 		searchdelay && clearTimeout(searchdelay);
 		search();
 	});
-
-	var gumloaded = false,
-		current_slug = false;
 
 	templatebrowser
 		.on('click', '.theme-screenshot, .more-details', function () {
@@ -159,6 +158,8 @@ mailster = (function (mailster, $, window, document) {
 			nextbtn = overlay.find('.right'),
 			prevbtn = overlay.find('.left'),
 			closebtn = overlay.find('.close'),
+			defaultbtn = overlay.find('.default'),
+			campaignbtn = overlay.find('.campaign'),
 			deletebtn = overlay.find('.delete-theme'),
 			data = {};
 
@@ -169,12 +170,19 @@ mailster = (function (mailster, $, window, document) {
 				if (!template || !template.length) return false;
 				currentTemplate = template;
 				data = template.data('item');
-				overlay.find('.theme-name').html(data.name + '<span class="theme-version">' + data.updated + '</span>');
+				overlay.find('.theme-name').html(data.name + '<span class="theme-version">' + (data.version ? data.version : '') + '</span>');
 				overlay.find('.theme-author-name').html(data.author);
 				overlay.find('.theme-description').html(data.description);
 				overlay.find('.theme-tags').html(data.tags ? '<span>Tags:</span> ' + data.tags.join(', ') : '');
 				overlay.find('.theme-screenshots img').attr('src', data.image_full).attr('srcset', data.image_full + ' 1x, ' + data.image_fullx2 + ' 2x');
+				overlay.find('.theme-screenshots iframe').attr('src', '');
 				overlay.find('.theme-screenshots iframe').attr('src', data.index);
+
+				var files = '';
+				for (var key in data.files) {
+					if (data.files.hasOwnProperty(key)) files += '<a class="file nav-tab" href="#' + key + '" title="' + key + '">' + data.files[key].label + '</a>';
+				}
+				overlay.find('.theme-files').html(files);
 				prevTemplate = currentTemplate.prev();
 				nextTemplate = currentTemplate.next();
 				prevbtn.prop('disabled', !prevTemplate.length)[!prevTemplate.length ? 'addClass' : 'removeClass']('disabled');
@@ -204,11 +212,59 @@ mailster = (function (mailster, $, window, document) {
 				return false;
 			},
 
+			makedefault = function () {
+				if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, '"' + data.name + '"'))) {
+
+					var template = $('[data-slug="' + data.slug + '"]');
+
+					busy = true;
+
+					mailster.util.ajax('default_template', {
+						slug: data.slug,
+					}, function (response) {
+
+						if (response.success) {
+							setFilter('installed', function () {
+								$('[data-slug="' + data.slug + '"]').find('.notice-success').html('<p>' + response.msg + '</p>');
+							});
+							template.find('.notice-error').empty();
+						} else {
+							template.find('.notice-error').html('<p>' + response.msg + '</p>');
+						}
+
+						template.removeClass('loading').find('.updating-message').removeClass('updating-message');
+						busy = false;
+						close();
+
+					}, function (jqXHR, textStatus, errorThrown) {})
+
+				}
+				return false;
+			},
+
+			campaign = function () {
+
+				document.location = this.href + '&template=' + data.slug;
+
+				return false;
+			},
+
+			file = function () {
+
+				overlay.find('.nav-tab-active').removeClass('nav-tab-active');
+				$(this).addClass('nav-tab-active');
+				overlay.find('.theme-screenshots iframe').attr('src', data.files[$(this).attr('href').substr(1)].src);
+
+			},
+
 			init = function () {
 				nextbtn.on('click', next);
 				prevbtn.on('click', prev);
 				closebtn.on('click', close);
 				deletebtn.on('click', remove);
+				defaultbtn.on('click', makedefault);
+				campaignbtn.on('click', campaign);
+				overlay.on('click', '.file', file);
 			};
 
 		init();

@@ -29,6 +29,7 @@ class MailsterTemplates {
 		'index'            => null,
 		'url'              => null,
 		'endpoint'         => null,
+		'files'            => null,
 		'version'          => null,
 		'new_version'      => null,
 		'updated'          => null,
@@ -1072,6 +1073,7 @@ class MailsterTemplates {
 
 				$result['items'][ $slug ]                     = array_merge( $templates[ $slug ], $result['items'][ $slug ] );
 				$result['items'][ $slug ]['update_available'] = version_compare( $templates[ $slug ]['new_version'], $templates[ $slug ]['version'], '>' );
+				$result['items'][ $slug ]['files']            = $this->get_files( $slug );
 
 			}
 
@@ -1135,6 +1137,7 @@ class MailsterTemplates {
 		$template_data['slug'] = $slug;
 
 		$template_data['index'] = str_replace( MAILSTER_UPLOAD_DIR, MAILSTER_UPLOAD_URI, $path ) . '/index.html';
+		$template_data['src']   = str_replace( MAILSTER_UPLOAD_DIR, MAILSTER_UPLOAD_URI, $file );
 
 		if ( empty( $template_data['name'] ) ) {
 			$template_data['name'] = ucwords( $slug );
