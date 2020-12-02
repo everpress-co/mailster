@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.16 =
 
 * fixed: warning on dashboard
+* improved: order by status now respects timestamps of campaigns.
 
 = Version 2.4.15 =
 
