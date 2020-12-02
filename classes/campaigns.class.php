@@ -464,7 +464,7 @@ class MailsterCampaigns {
 			add_filter( 'manage_edit-newsletter_columns', array( &$this, 'columns' ) );
 			add_filter( 'manage_newsletter_posts_custom_column', array( &$this, 'columns_content' ) );
 			add_filter( 'manage_edit-newsletter_sortable_columns', array( &$this, 'columns_sortable' ) );
-			add_filter( 'parse_query', array( &$this, 'columns_sortable_helper' ) );
+			add_filter( 'pre_get_posts', array( &$this, 'pre_get_posts' ) );
 
 			$this->handle_bulk_actions();
 
@@ -586,31 +586,34 @@ class MailsterCampaigns {
 	 *
 	 * @param unknown $query
 	 */
-	public function columns_sortable_helper( $query ) {
+	public function pre_get_posts( $query ) {
 
-		$qv = $query->query_vars;
+		if ( ! is_admin() ) {
+			return;
+		}
 
-		if ( isset( $qv['post_type'] ) && $qv['post_type'] == 'newsletter' && isset( $qv['orderby'] ) ) {
+		if ( 'newsletter' == get_query_var( 'post_type' ) ) {
 
-			switch ( $qv['orderby'] ) {
-
+			switch ( get_query_var( 'orderby' ) ) {
 				case 'status':
-					add_filter( 'posts_orderby', array( &$this, 'columns_orderby_status' ) );
+					$query->set( 'meta_key', '_mailster_timestamp' );
+					// order by post status is not supported by WordPress so we sort by date and fix it later with 'allow_order_by_status'
+					add_filter( 'posts_orderby', array( &$this, 'allow_order_by_status' ) );
+					$query->set(
+						'orderby',
+						array(
+							'post_date'      => $query->get( 'order' ),
+							'meta_value_num' => $query->get( 'order' ),
+						)
+					);
 					break;
-
 			}
 		}
 
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $orderby
-	 * @return unknown
-	 */
-	public function columns_orderby_status( $orderby ) {
+	public function allow_order_by_status( $orderby ) {
 
 		return str_replace( 'posts.post_date', 'posts.post_status', $orderby );
 
