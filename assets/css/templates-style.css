@@ -14,10 +14,14 @@
 }
 
 .disclosure{
+	display: none;
 	font-style: italic;
 }
-.browse-installed .disclosure, .browse-free .disclosure, .loading-content .disclosure, .no-results .disclosure{
-	display: none;
+.loading-content .disclosure{
+	display: none !important;
+}
+.browse-popular .disclosure, .browse-new .disclosure, .browse-updated .disclosure{
+	display: block;
 }
 .wrap .notice:empty{
 	display: none !important;
@@ -138,6 +142,9 @@
 .theme-overlay .screenshot{
 	height: 70vh;
 	overflow: auto;
+}
+.theme-overlay.loading .screenshot iframe{
+	visibility: hidden;
 }
 .theme-overlay .screenshot img{
 }

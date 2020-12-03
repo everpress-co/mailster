@@ -168,6 +168,7 @@ mailster = (function (mailster, $, window, document) {
 					template = $('[data-slug="' + template + '"]');
 				}
 				if (!template || !template.length) return false;
+				overlay.addClass('loading');
 				currentTemplate = template;
 				data = template.data('item');
 				overlay.find('.theme-name').html(data.name + '<span class="theme-version">' + (data.version ? data.version : '') + '</span>');
@@ -175,8 +176,7 @@ mailster = (function (mailster, $, window, document) {
 				overlay.find('.theme-description').html(data.description);
 				overlay.find('.theme-tags').html(data.tags ? '<span>Tags:</span> ' + data.tags.join(', ') : '');
 				overlay.find('.theme-screenshots img').attr('src', data.image_full).attr('srcset', data.image_full + ' 1x, ' + data.image_fullx2 + ' 2x');
-				overlay.find('.theme-screenshots iframe').attr('src', '');
-				overlay.find('.theme-screenshots iframe').attr('src', data.index);
+				overlay.find('.theme-screenshots iframe').attr('src', data.index + '?nocache=' + (+new Date()));
 
 				var files = '';
 				for (var key in data.files) {
@@ -265,6 +265,10 @@ mailster = (function (mailster, $, window, document) {
 				defaultbtn.on('click', makedefault);
 				campaignbtn.on('click', campaign);
 				overlay.on('click', '.file', file);
+
+				overlay.find('.theme-screenshots iframe').on('load', function () {
+					overlay.removeClass('loading');
+				})
 			};
 
 		init();

@@ -335,7 +335,7 @@ class MailsterTests {
 	}
 	private function test_default_template() {
 
-		$default      = 'mymail';
+		$default      = 'mailster';
 		$template     = mailster_option( 'default_template' );
 		$template_dir = trailingslashit( MAILSTER_UPLOAD_DIR ) . 'templates/' . $template;
 

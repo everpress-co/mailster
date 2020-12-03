@@ -5,7 +5,7 @@ class MailsterTemplates {
 	public $path;
 	public $url;
 
-	private $download_url = 'https://static.mailster.co/templates/mymail.zip';
+	private $download_url = 'https://static.mailster.co/templates/mailster.zip';
 	private $headers      = array(
 		'name'        => 'Template Name',
 		'label'       => 'Name',
@@ -373,7 +373,7 @@ class MailsterTemplates {
 	 * @param unknown $slug (optional)
 	 * @return unknown
 	 */
-	public function renew_default_template( $slug = 'mymail' ) {
+	public function renew_default_template( $slug = 'mailster' ) {
 
 		if ( ! function_exists( 'download_url' ) ) {
 			include ABSPATH . 'wp-admin/includes/file.php';
