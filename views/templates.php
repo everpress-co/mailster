@@ -54,7 +54,7 @@
 			</div>
 			<div class="theme-about wp-clearfix">
 				<div class="theme-screenshots">
-					<div class="theme-files nav-tab-wrapper hide-if-no-js"></div>
+					<div class="theme-files nav-tab-wrapper nav-tab-small hide-if-no-js"></div>
 					<div class="screenshot">
 						<img src="" alt="">
 						<iframe src="" allowTransparency="true" frameBorder="0" sandbox="allow-presentation"></iframe>
@@ -62,14 +62,10 @@
 				</div>
 				<div class="theme-info">
 					<h2 class="theme-name"></h2>
-					<p class="theme-author">
-						<div class="notice notice-warning notice-alt notice-large inline">
-							<h3 class="notice-title"><?php esc_html_e( 'Update Available', 'mailster' ); ?></h3>
-							<p><strong><?php esc_html_e( 'There is a new version available.', 'mailster' ); ?> <a href="" aria-label="Update now" id="update-theme" data-slug="chaplin"><?php esc_html_e( 'update now', 'mailster' ); ?></a>.</strong></p>
-						</div>
-					</p>
-					<div class="theme-autoupdate">
-						<div class="notice notice-error notice-alt inline hidden"><p></p></div>
+					<p class="theme-author"></p>
+					<div class="notice notice-warning notice-alt notice-large inline">
+						<h3 class="notice-title"><?php esc_html_e( 'Update Available', 'mailster' ); ?></h3>
+						<p><strong><?php esc_html_e( 'There is a new version available.', 'mailster' ); ?> <a href="" aria-label="Update now" id="update-theme"><?php esc_html_e( 'update now', 'mailster' ); ?></a>.</strong></p>
 					</div>
 					<p class="theme-description"></p>
 					<p class="theme-tags"></p>

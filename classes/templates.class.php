@@ -28,18 +28,18 @@ class MailsterTemplates {
 		'description'      => null,
 		'index'            => null,
 		'url'              => null,
-		'endpoint'         => null,
-		'files'            => null,
+		// 'endpoint'         => null,
+		// 'files'            => null,
 		'version'          => null,
-		'new_version'      => null,
-		'updated'          => null,
+		// 'new_version'      => null,
+		// 'updated'          => null,
 		'author'           => null,
 		'author_profile'   => null,
 		'requires'         => '2.2',
 		'is_default'       => null,
-		'is_verified'      => null,
+		// 'is_verified'      => null,
 		'author_profile'   => null,
-		'homepage'         => null,
+		// 'homepage'         => null,
 		'download'         => null,
 		'download_url'     => null,
 		'price'            => null,
@@ -1028,15 +1028,19 @@ class MailsterTemplates {
 
 			if ( $response_code != 200 || is_wp_error( $response ) ) {
 				$result['error'] = esc_html__( 'We are currently not able to handle your request. Please try again later.', 'mailster' );
-				$cachetime       = 120;
+				$cachetime       = 12;
 			} else {
 
 				$response_body = wp_remote_retrieve_body( $response );
 
 				$response_result = json_decode( $response_body, true );
+				error_log( print_r( $result['items'], true ) );
+				error_log( print_r( $response_result['items'], true ) );
 
-				$result['items'] = wp_parse_args( $result['items'], $response_result['items'] );
+				// $result['items'] = array_replace_recursive( ($response_result['items']), ($result['items'] ));
+				$result['items'] = array_replace_recursive( ( $result['items'] ), ( $response_result['items'] ) );
 				$result['total'] = max( count( $result['items'] ), $response_result['total'] );
+				error_log( print_r( $result['items'], true ) );
 
 			}
 
@@ -1072,7 +1076,7 @@ class MailsterTemplates {
 			if ( $result['items'][ $slug ]['installed'] = isset( $templates[ $slug ] ) ) {
 
 				$result['items'][ $slug ]                     = array_merge( $templates[ $slug ], $result['items'][ $slug ] );
-				$result['items'][ $slug ]['update_available'] = version_compare( $templates[ $slug ]['new_version'], $templates[ $slug ]['version'], '>' );
+				$result['items'][ $slug ]['update_available'] = isset( $result['items'][ $slug ]['new_version'] ) && version_compare( $result['items'][ $slug ]['new_version'], $result['items'][ $slug ]['version'], '>' );
 				$result['items'][ $slug ]['files']            = $this->get_files( $slug );
 
 			}
@@ -1130,7 +1134,7 @@ class MailsterTemplates {
 
 		foreach ( $this->headers as $field => $regex ) {
 			if ( preg_match( '/^[ \t\/*#@]*' . preg_quote( $regex, '/' ) . ':(.*)$/mi', $file_data, $match ) ) {
-				$template_data[ $field ] = $match[1];
+				$template_data[ $field ] = trim( $match[1] );
 			}
 		}
 
@@ -1164,14 +1168,17 @@ class MailsterTemplates {
 			$template_data['is_default'] = true;
 		}
 
-		$template_data['update'] = date( 'Y-m-d H:i:s', filemtime( $file ) );
-		$template_data['added']  = date( 'Y-m-d H:i:s', filectime( $file ) );
+		$template_data['added'] = date( 'Y-m-d H:i:s', filectime( $file ) );
 
 		if ( empty( $template_data['slug'] ) ) {
 			$template_data['slug'] = sanitize_key( $template_data['name'] );
 		}
 
 		$template_data['label'] = str_replace( ' rtl', ' (RTL)', $template_data['label'] );
+
+		if ( isset( $template_data['uri'] ) ) {
+			unset( $template_data['uri'] );
+		}
 
 		mailster_cache_set( $cache_key, $template_data );
 		return $template_data;

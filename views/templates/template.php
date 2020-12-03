@@ -36,7 +36,7 @@ if ( $item['purchased'] ) {
 	<div class="notice notice-success notice-alt theme-is-installed"><p><?php esc_html_e( 'Installed', 'mailster' ); ?></p></div>
 	<?php endif; ?>
 	<?php if ( $item['update_available'] ) : ?>
-	<div class="update-message notice inline notice-warning notice-alt theme-has-update"><p><?php esc_html_e( 'New version available.', 'mailster' ); ?> <button class="button-link" type="button"><?php esc_html_e( 'Update now', 'mailster' ); ?></button></p></div>
+	<div class="update-message notice inline notice-warning notice-alt theme-has-update"><p><?php esc_html_e( 'New version available.', 'mailster' ); ?> <a class="button-link update" href="<?php echo esc_attr( $item['download_url'] ); ?>"><?php esc_html_e( 'Update now', 'mailster' ); ?></a></p></div>
 	<?php endif; ?>
 	<span class="more-details"><?php esc_html_e( 'Details & Preview', 'mailster' ); ?></span>
 	<div class="theme-author"><?php printf( esc_html__( 'By %s', 'mailster' ), $item['author'] ); ?></div>

@@ -143,6 +143,12 @@
 	height: 70vh;
 	overflow: auto;
 }
+.theme-overlay .theme-info .notice{
+	display: none;
+}
+.theme-overlay.has-update .theme-info .notice{
+	display: block;
+}
 .theme-overlay.loading .screenshot iframe{
 	visibility: hidden;
 }
@@ -163,7 +169,12 @@
 	display: block;
 }
 
-
+.theme-overlay .nav-tab:not(.file){
+	background: unset;
+	border: 0;
+	padding-left: 0;
+	padding-right: 0;
+}
 
 
 

@@ -51,7 +51,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.theme-screenshot, .more-details', function () {
 			overlay.open($(this).closest('.theme'));
 		})
-		.on('click', '.download', function (event) {
+		.on('click', '.download, .update', function (event) {
 			event.preventDefault();
 			$(this).addClass('updating-message');
 			downloadTemplateFromUrl(this.href, $(this).closest('.theme').data('slug'));
@@ -174,13 +174,17 @@ mailster = (function (mailster, $, window, document) {
 				overlay.find('.theme-name').html(data.name + '<span class="theme-version">' + (data.version ? data.version : '') + '</span>');
 				overlay.find('.theme-author-name').html(data.author);
 				overlay.find('.theme-description').html(data.description);
-				overlay.find('.theme-tags').html(data.tags ? '<span>Tags:</span> ' + data.tags.join(', ') : '');
+				overlay.find('.theme-tags').html(data.tags.length ? '<span>Tags:</span> ' + data.tags.join(', ') : '');
 				overlay.find('.theme-screenshots img').attr('src', data.image_full).attr('srcset', data.image_full + ' 1x, ' + data.image_fullx2 + ' 2x');
 				overlay.find('.theme-screenshots iframe').attr('src', data.index + '?nocache=' + (+new Date()));
+				overlay[data.update_available ? 'addClass' : 'removeClass']('has-update');
 
 				var files = '';
-				for (var key in data.files) {
-					if (data.files.hasOwnProperty(key)) files += '<a class="file nav-tab" href="#' + key + '" title="' + key + '">' + data.files[key].label + '</a>';
+				if(data.files.length){
+					files += '<span class="nav-tab" href="#">Template Files:</span>';
+					for (var key in data.files) {
+						if (data.files.hasOwnProperty(key)) files += '<a class="file nav-tab'+('index.html' == key ? ' nav-tab-active' : '')+'" href="#' + key + '" title="' + key + '">' + data.files[key].label + '</a>';
+					}
 				}
 				overlay.find('.theme-files').html(files);
 				prevTemplate = currentTemplate.prev();
@@ -244,7 +248,7 @@ mailster = (function (mailster, $, window, document) {
 
 			campaign = function () {
 
-				document.location = this.href + '&template=' + data.slug;
+				document.location = this.href + '&template=' + data.slug + '&file=' + overlay.find('.nav-tab-active').attr('href').substr(1);
 
 				return false;
 			},
