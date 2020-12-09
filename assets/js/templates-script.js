@@ -25,7 +25,7 @@ mailster = (function (mailster, $, window, document) {
 	filterlinks
 		.on('click', function (event) {
 			event.preventDefault();
-			setFilter($(this).data('sort'));
+			if (!busy) setFilter($(this).data('sort'));
 			return;
 		});
 
@@ -51,7 +51,12 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.theme-screenshot, .more-details', function () {
 			overlay.open($(this).closest('.theme'));
 		})
-		.on('click', '.download, .update', function (event) {
+		.on('click', '.update', function (event) {
+			event.preventDefault();
+			$(this).addClass('updating-message');
+			updateTemplateFromUrl(this.href, $(this).closest('.theme').data('slug'));
+		})
+		.on('click', '.download', function (event) {
 			event.preventDefault();
 			$(this).addClass('updating-message');
 			downloadTemplateFromUrl(this.href, $(this).closest('.theme').data('slug'));
@@ -168,22 +173,30 @@ mailster = (function (mailster, $, window, document) {
 					template = $('[data-slug="' + template + '"]');
 				}
 				if (!template || !template.length) return false;
-				overlay.addClass('loading');
+				overlay.removeAttr('class');
+				overlay.addClass('theme-overlay loading');
 				currentTemplate = template;
 				data = template.data('item');
 				overlay.find('.theme-name').html(data.name + '<span class="theme-version">' + (data.version ? data.version : '') + '</span>');
-				overlay.find('.theme-author-name').html(data.author);
+				overlay.find('.theme-author').html(mailster.util.sprintf('By ' + data.author));
 				overlay.find('.theme-description').html(data.description);
-				overlay.find('.theme-tags').html(data.tags.length ? '<span>Tags:</span> ' + data.tags.join(', ') : '');
-				overlay.find('.theme-screenshots img').attr('src', data.image_full).attr('srcset', data.image_full + ' 1x, ' + data.image_fullx2 + ' 2x');
-				overlay.find('.theme-screenshots iframe').attr('src', data.index + '?nocache=' + (+new Date()));
-				overlay[data.update_available ? 'addClass' : 'removeClass']('has-update');
+				overlay.find('.theme-tags').html(data.tags && data.tags.length ? '<span>Tags:</span> ' + data.tags.join(', ') : '');
+
+				if (data.src) {
+					overlay.find('.theme-screenshots iframe').show().attr('src', data.src + '?nocache=' + (+new Date()));
+					overlay.find('.theme-screenshots img').hide();
+				} else {
+					overlay.find('.theme-screenshots iframe').hide();
+					overlay.find('.theme-screenshots img').show().attr('src', data.image_full).attr('srcset', data.image_full + ' 1x, ' + data.image_fullx2 + ' 2x');
+				}
+				if (data.update_available) overlay.addClass('has-update');
+				if (data.installed) overlay.addClass('is-installed');
 
 				var files = '';
-				if(data.files.length){
+				if (data.files) {
 					files += '<span class="nav-tab" href="#">Template Files:</span>';
 					for (var key in data.files) {
-						if (data.files.hasOwnProperty(key)) files += '<a class="file nav-tab'+('index.html' == key ? ' nav-tab-active' : '')+'" href="#' + key + '" title="' + key + '">' + data.files[key].label + '</a>';
+						if (data.files.hasOwnProperty(key)) files += '<a class="file nav-tab' + ('index.html' == key ? ' nav-tab-active' : '') + '" href="#' + key + '" title="' + key + '">' + data.files[key].label + '</a>';
 					}
 				}
 				overlay.find('.theme-files').html(files);
@@ -193,6 +206,7 @@ mailster = (function (mailster, $, window, document) {
 				nextbtn.prop('disabled', !nextTemplate.length)[!nextTemplate.length ? 'addClass' : 'removeClass']('disabled');
 				overlay.show();
 				setQueryStringParameter('template', data.slug);
+				overlay.removeClass('loading');
 			},
 
 			close = function () {
@@ -366,8 +380,9 @@ mailster = (function (mailster, $, window, document) {
 
 		busy = true;
 
-
 		template.addClass('loading');
+
+		template.find('.notice-warning').addClass('updating-message').html('<p>Updating...</p>');
 
 		mailster.util.ajax('download_template', {
 			slug: slug,
@@ -377,7 +392,7 @@ mailster = (function (mailster, $, window, document) {
 			// 	template.remove();
 			// 	busy = false;
 			// });
-
+			busy = false;
 		}, function (jqXHR, textStatus, errorThrown) {})
 
 	}
@@ -389,16 +404,43 @@ mailster = (function (mailster, $, window, document) {
 		busy = true;
 
 		template.addClass('loading').find('.request-download').addClass('updating-message');
-
+		template.find('.notice-warning').addClass('updating-message').html('<p>Downloading...</p>');
 		mailster.util.ajax('download_template', {
 			url: url,
 			slug: slug,
 		}, function (response) {
 
 			if (response.success) {
+				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>Downloaded!</p>');
 				setFilter('installed', function () {
 					$('[data-slug="' + slug + '"]').find('.notice-success').html('<p>' + response.msg + '</p>');
 				});
+				template.find('.notice-error').empty();
+			} else {
+				template.find('.notice-error').html('<p>' + response.msg + '</p>');
+			}
+
+			template.removeClass('loading').find('.updating-message').removeClass('updating-message');
+			busy = false;
+
+		}, function (jqXHR, textStatus, errorThrown) {})
+	}
+
+	function updateTemplateFromUrl(url, slug) {
+
+		var template = $('[data-slug="' + slug + '"]');
+
+		busy = true;
+
+		template.addClass('loading').find('.request-download').addClass('updating-message');
+		template.find('.notice-warning').addClass('updating-message').html('<p>Updating...</p>');
+		mailster.util.ajax('download_template', {
+			url: url,
+			slug: slug,
+		}, function (response) {
+
+			if (response.success) {
+				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>Updated!</p>');
 				template.find('.notice-error').empty();
 			} else {
 				template.find('.notice-error').html('<p>' + response.msg + '</p>');
@@ -441,27 +483,6 @@ mailster = (function (mailster, $, window, document) {
 
 		template.find('.notice-error').html('<p>' + $('<div>' + errormsg + '</div>').text() + '</p>');
 
-		return;
-
-
-		busy = true;
-
-		template.addClass('loading');
-
-		mailster.util.ajax('delete_template', {
-			slug: slug,
-		}, function (response) {
-
-			template.animate({
-				width: 0,
-				'margin-right': 0
-			}, function () {
-				template.remove();
-				busy = false;
-			});
-
-		}, function (jqXHR, textStatus, errorThrown) {})
-
 	}
 
 	function query(cb) {
@@ -490,10 +511,10 @@ mailster = (function (mailster, $, window, document) {
 			$('.theme-browser').append(response.html);
 			currentdisplayed = $('.theme').length;
 
-			!currentdisplayed && $('body').addClass('no-results');
-
 			if (response.error) {
 				alert(response.error);
+			} else if (!currentdisplayed) {
+				$('body').addClass('no-results');
 			}
 
 			busy = false;

@@ -1,11 +1,11 @@
 <?php
 $classes   = array( 'theme' );
-$classes[] = 'theme-' . $item['slug'];
+$classes[] = 'theme-' . $slug;
 if ( $item['is_default'] ) {
 	$classes[] = 'active';
 }
 if ( $item['installed'] ) {
-	$classes[] = 'installed';
+	$classes[] = 'is-installed';
 }
 if ( $item['update_available'] ) {
 	$classes[] = 'update-available';
@@ -16,11 +16,8 @@ if ( $item['envato_item_id'] ) {
 if ( $item['gumroad_url'] ) {
 	$classes[] = 'gumroad-item';
 }
-if ( $item['purchased'] ) {
-	$classes[] = 'is-purchased';
-}
 ?>
-<div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $item['slug'] ); ?>" data-item='<?php echo esc_attr( json_encode( $item ) ); ?>'>
+<div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $slug ); ?>" data-item='<?php echo esc_attr( json_encode( $item ) ); ?>'>
 	<span class="spinner"></span>
 	<div class="theme-screenshot">
 		<img loading="lazy" alt="" class="theme-screenshot-bg" srcset="<?php echo esc_attr( $item['image'] ); ?> 1x, <?php echo esc_attr( $item['imagex2'] ); ?> 2x" src="<?php echo esc_attr( $item['image'] ); ?>" >
@@ -31,12 +28,29 @@ if ( $item['purchased'] ) {
 		<?php endif; ?>
 	</div>
 	<div class="notice update-message notice-success notice-alt"></div>
+	<div class="notice update-message notice-warning notice-alt"></div>
 	<div class="notice update-message notice-error notice-alt"></div>
-	<?php if ( $item['installed'] ) : ?>
-	<div class="notice notice-success notice-alt theme-is-installed"><p><?php esc_html_e( 'Installed', 'mailster' ); ?></p></div>
-	<?php endif; ?>
 	<?php if ( $item['update_available'] ) : ?>
-	<div class="update-message notice inline notice-warning notice-alt theme-has-update"><p><?php esc_html_e( 'New version available.', 'mailster' ); ?> <a class="button-link update" href="<?php echo esc_attr( $item['download_url'] ); ?>"><?php esc_html_e( 'Update now', 'mailster' ); ?></a></p></div>
+	<div class="update-message notice inline notice-warning notice-alt theme-has-update">
+		<p><?php esc_html_e( 'New version available.', 'mailster' ); ?>
+		<?php if ( $item['download_url'] ) : ?>
+		<a class="button-link update" data-width="800" data-height="80%" href="<?php echo esc_url( $item['download_url'] ); ?>"><?php esc_html_e( 'Update now', 'mailster' ); ?></a>
+		<?php elseif ( $item['download'] ) : ?>
+			<?php
+			$url = add_query_arg(
+				array(
+					'action'   => 'mailster_template_endpoint',
+					'slug'     => $slug,
+					'url'      => rawurlencode( $item['download'] ),
+					'_wpnonce' => wp_create_nonce( 'mailster_download_template_' . $slug ),
+				),
+				admin_url( 'admin-ajax.php' )
+			);
+			?>
+		<a class="button-link request-update popup" data-width="800" data-height="80%" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Update now', 'mailster' ); ?></a>
+		<?php endif; ?>
+		</p>
+	</div>
 	<?php endif; ?>
 	<span class="more-details"><?php esc_html_e( 'Details & Preview', 'mailster' ); ?></span>
 	<div class="theme-author"><?php printf( esc_html__( 'By %s', 'mailster' ), $item['author'] ); ?></div>
@@ -52,7 +66,7 @@ if ( $item['purchased'] ) {
 			<a class="button button-small" href="<?php echo esc_url( 'https://mailster.dev/wp-admin/post.php?post=' . $item['ID'] . '&action=edit' ); ?>" target="_blank"><?php esc_html_e( 'Edit', 'mailster' ); ?></a>
 			<?php endif; ?>
 			<?php if ( $item['installed'] ) : ?>
-			<a class="button button-primary create-campaign" href="<?php echo admin_url( 'post-new.php?post_type=newsletter&template=' . $item['slug'] ); ?>" aria-label="<?php esc_attr_e( 'Create Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
+			<a class="button button-primary create-campaign" href="<?php echo admin_url( 'post-new.php?post_type=newsletter&template=' . esc_attr( $slug ) ); ?>" aria-label="<?php esc_attr_e( 'Create Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
 			<?php endif; ?>
 			<?php if ( $item['gumroad_url'] ) : ?>
 			<a class="button button-primary buy-gumroad" href="<?php echo esc_url( $item['gumroad_url'] ); ?>?wanted=true" aria-label="<?php esc_attr_e( 'Buy via Gumroad', 'mailster' ); ?>"><?php esc_html_e( 'Buy via Gumroad', 'mailster' ); ?></a>
@@ -64,17 +78,17 @@ if ( $item['purchased'] ) {
 				$url = add_query_arg(
 					array(
 						'action'   => 'mailster_template_endpoint',
-						'slug'     => $item['slug'],
+						'slug'     => $slug,
 						'url'      => rawurlencode( $item['download'] ),
-						'_wpnonce' => wp_create_nonce( 'mailster_download_template_' . $item['slug'] ),
+						'_wpnonce' => wp_create_nonce( 'mailster_download_template_' . $slug ),
 					),
 					admin_url( 'admin-ajax.php' )
 				);
 				?>
 			<a class="button button-primary request-download popup" data-width="800" data-height="80%" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
 			<?php endif; ?>
-			<?php if ( $item['price'] && ! $item['purchased'] ) : ?>
-			<a class="button button-primary buy popup" data-width="800" data-height="80%" href="<?php echo esc_url( $item['purchase_url'] ); ?>"><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
+			<?php if ( $item['price'] ) : ?>
+			<a class="button button-primary buy external" data-width="800" data-height="80%" href="<?php echo esc_url( $item['purchase_url'] ); ?>"><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
 			<?php endif; ?>
 		</div>
 	</div>

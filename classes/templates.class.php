@@ -114,6 +114,7 @@ class MailsterTemplates {
 		if ( is_wp_error( $tempfile ) ) {
 			return $tempfile;
 		}
+
 		$result = $this->unzip_template( $tempfile, $slug, true, true );
 
 		if ( is_wp_error( $result ) ) {
@@ -994,16 +995,13 @@ class MailsterTemplates {
 		if ( $query_args['browse'] == 'installed' ) {
 			$templates               = $this->get_templates();
 			$query_args['templates'] = implode( ',', array_keys( $templates ) );
-		} elseif ( $query_args['browse'] == 'purchased' ) {
-			$purchased_id      = (array) get_option( 'mailster_templates_purchased', array() );
-			$query_args['ids'] = implode( ',', $purchased_id );
 		}
 
 		$cache_key = 'mailster_templates_' . $query_args['browse'] . '_' . md5( serialize( $query_args ) . $endpoint );
 
 		if ( ! ( $result = get_transient( $cache_key ) ) ) {
 
-			$cachetime = DAY_IN_SECONDS;
+			$cachetime = HOUR_IN_SECONDS * 6;
 			$cachetime = 12;
 
 			$result = array(
@@ -1017,8 +1015,8 @@ class MailsterTemplates {
 			}
 
 			$args = array(
-				'sslverify' => false,
-				'headers'   => array( 'hash' => sha1( mailster_option( 'ID' ) ) ),
+				'timeout' => 5,
+				'headers' => array( 'hash' => sha1( mailster_option( 'ID' ) ) ),
 			);
 
 			$url = add_query_arg( $query_args, $endpoint );
@@ -1047,6 +1045,8 @@ class MailsterTemplates {
 			$result = $this->prepare_results( $result );
 			if ( $query_args['browse'] == 'installed' ) {
 				$default = mailster_option( 'default_template' );
+				// reset error on installed page
+				$result['error'] = null;
 
 				if ( $default && isset( $result['items'][ $default ] ) ) {
 					$temp = $result['items'][ $default ];
@@ -1065,13 +1065,13 @@ class MailsterTemplates {
 
 	public function prepare_results( $result ) {
 
-		$templates     = $this->get_templates();
-		$purchased_ids = get_option( 'mailster_templates_purchased', false );
+		$templates = $this->get_templates();
 
 		foreach ( $result['items'] as $slug => $item ) {
 
 			// fill response with default values
-			$result['items'][ $slug ] = array_merge( $this->template_fields, $result['items'][ $slug ] );
+			$result['items'][ $slug ]                = array_merge( $this->template_fields, $result['items'][ $slug ] );
+			$result['items'][ $slug ]['description'] = wpautop( $result['items'][ $slug ]['description'] );
 
 			if ( $result['items'][ $slug ]['installed'] = isset( $templates[ $slug ] ) ) {
 
@@ -1080,8 +1080,6 @@ class MailsterTemplates {
 				$result['items'][ $slug ]['files']            = $this->get_files( $slug );
 
 			}
-
-			$result['items'][ $slug ]['purchased'] = $purchased_ids && in_array( $result['items'][ $slug ]['ID'], $purchased_ids );
 		}
 
 		return $result;
@@ -1091,7 +1089,7 @@ class MailsterTemplates {
 
 		ob_start();
 
-		foreach ( $result['items'] as $i => $item ) {
+		foreach ( $result['items'] as $slug => $item ) {
 			include MAILSTER_DIR . 'views/templates/template.php';
 		}
 

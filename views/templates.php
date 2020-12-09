@@ -11,10 +11,8 @@
 
 	<ul class="filter-links">
 		<li><a href="#" data-sort="installed"><?php _ex( 'Installed', 'templates', 'mailster' ); ?></a></li>
-		<?php if ( get_option( 'mailster_templates_purchased' ) ) : ?>
-		<li><a href="#" data-sort="purchased"><?php _ex( 'Purchased', 'templates', 'mailster' ); ?></a></li>
-		<?php endif; ?>
 		<li><a href="#" data-sort="free"><?php _ex( 'Free', 'templates', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="featured"><?php _ex( 'Featured', 'templates', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="popular"><?php _ex( 'Popular', 'templates', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="new"><?php _ex( 'Latest', 'templates', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="updated"><?php _ex( 'Recently Updated', 'templates', 'mailster' ); ?></a></li>
@@ -44,51 +42,43 @@
 <div class="theme-browser content-filterable _single-theme rendered"></div>
 
 <div class="theme-overlay hidden" tabindex="0" role="dialog" aria-label="Theme Details">
-	<div class="theme-overlay">
-		<div class="theme-backdrop"></div>
-		<div class="theme-wrap wp-clearfix" role="document">
-			<div class="theme-header">
-				<button class="left dashicons dashicons-no"><span class="screen-reader-text"><?php esc_html_e( 'Show previous template', 'mailster' ); ?></span></button>
-				<button class="right dashicons dashicons-no"><span class="screen-reader-text"><?php esc_html_e( 'Show next template', 'mailster' ); ?></span></button>
-				<button class="close dashicons dashicons-no"><span class="screen-reader-text"><?php esc_html_e( 'Close details dialog', 'mailster' ); ?></span></button>
-			</div>
-			<div class="theme-about wp-clearfix">
-				<div class="theme-screenshots">
-					<div class="theme-files nav-tab-wrapper nav-tab-small hide-if-no-js"></div>
-					<div class="screenshot">
-						<img src="" alt="">
-						<iframe src="" allowTransparency="true" frameBorder="0" sandbox="allow-presentation"></iframe>
-					</div>
-				</div>
-				<div class="theme-info">
-					<h2 class="theme-name"></h2>
-					<p class="theme-author"></p>
-					<div class="notice notice-warning notice-alt notice-large inline">
-						<h3 class="notice-title"><?php esc_html_e( 'Update Available', 'mailster' ); ?></h3>
-						<p><strong><?php esc_html_e( 'There is a new version available.', 'mailster' ); ?> <a href="" aria-label="Update now" id="update-theme"><?php esc_html_e( 'update now', 'mailster' ); ?></a>.</strong></p>
-					</div>
-					<p class="theme-description"></p>
-					<p class="theme-tags"></p>
+	<div class="theme-backdrop"></div>
+	<div class="theme-wrap wp-clearfix" role="document">
+		<div class="theme-header">
+			<button class="left dashicons dashicons-no"><span class="screen-reader-text"><?php esc_html_e( 'Show previous template', 'mailster' ); ?></span></button>
+			<button class="right dashicons dashicons-no"><span class="screen-reader-text"><?php esc_html_e( 'Show next template', 'mailster' ); ?></span></button>
+			<button class="close dashicons dashicons-no"><span class="screen-reader-text"><?php esc_html_e( 'Close details dialog', 'mailster' ); ?></span></button>
+		</div>
+		<div class="theme-about wp-clearfix">
+			<div class="theme-screenshots">
+				<div class="theme-files nav-tab-wrapper nav-tab-small hide-if-no-js"></div>
+				<div class="screenshot">
+					<img src="" alt="">
+					<iframe src="" allowTransparency="true" frameBorder="0" sandbox="allow-presentation"></iframe>
 				</div>
 			</div>
+			<div class="theme-info">
+				<h2 class="theme-name"></h2>
+				<p class="theme-author"></p>
+				<p class="theme-description"></p>
+				<p class="theme-tags"></p>
+			</div>
+		</div>
 
-			<div class="theme-actions">
-				<div class="active-theme">
-					<a href="https://fresh.local/wp-admin/customize.php?theme=Cayse&amp;return=%2Fwp-admin%2Fthemes.php" class="button button-primary customize load-customize hide-if-no-customize"><?php esc_html_e( 'Customize', 'mailster' ); ?></a>
-					<a class="button" href="widgets.php"><?php esc_html_e( 'Widgets', 'mailster' ); ?></a> <a class="button" href="nav-menus.php"><?php esc_html_e( 'Menus', 'mailster' ); ?></a>
-					<a class="button duplicate-campaign" href="" aria-label="<?php esc_attr_e( 'Duplicate Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Duplicate', 'mailster' ); ?></a>
-				</div>
-				<div class="inactive-theme">
-					<a href="" class="button default" aria-label="Activate Cayse"><?php esc_html_e( 'Use as default', 'mailster' ); ?></a>
-					<a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ); ?>" class="button button-primary campaign"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
-				</div>
-				<a class="button delete-theme"><?php esc_html_e( 'Delete', 'mailster' ); ?></a>
+		<div class="theme-actions">
+			<div class="active-theme">
+				<a href="https://fresh.local/wp-admin/customize.php?theme=Cayse&amp;return=%2Fwp-admin%2Fthemes.php" class="button button-primary customize load-customize hide-if-no-customize"><?php esc_html_e( 'Customize', 'mailster' ); ?></a>
+				<a class="button" href="widgets.php"><?php esc_html_e( 'Widgets', 'mailster' ); ?></a> <a class="button" href="nav-menus.php"><?php esc_html_e( 'Menus', 'mailster' ); ?></a>
+				<a class="button duplicate-campaign" href="" aria-label="<?php esc_attr_e( 'Duplicate Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Duplicate', 'mailster' ); ?></a>
 			</div>
+			<div class="inactive-theme">
+				<a href="" class="button default" aria-label="Activate Cayse"><?php esc_html_e( 'Use as default', 'mailster' ); ?></a>
+				<a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ); ?>" class="button button-primary campaign"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
+			</div>
+			<a class="button delete-theme"><?php esc_html_e( 'Delete', 'mailster' ); ?></a>
 		</div>
 	</div>
 </div>
-
-
 
 <p class="no-themes"><?php esc_html_e( 'No templates found. Try a different search.', 'mailster' ); ?></p>
 <span class="spinner"></span>

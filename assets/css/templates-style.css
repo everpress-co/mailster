@@ -92,10 +92,13 @@
 .theme-count:empty{
 	visibility: hidden;
 }
-.browse-installed .theme-browser .theme-is-installed{
+
+.browse-installed .theme-browser .theme-actions .buy-gumroad,
+.browse-installed .theme-browser .theme-actions .request-download,
+.browse-installed .theme-browser .theme-actions .download{
 	display: none;
 }
-.theme-browser .theme.installed .theme-actions .buy{
+.theme-browser .theme.is-installed .theme-actions .buy{
 	display: none;
 }
 .theme-default-badge{
@@ -139,6 +142,15 @@
 	opacity: 0.8;
 }
 
+
+.theme-overlay .theme-about{
+	top: 49px;
+	top: 75px;
+}
+
+.theme-overlay .theme-screenshots{
+	margin-top: -26px;
+}
 .theme-overlay .screenshot{
 	height: 70vh;
 	overflow: auto;
@@ -169,6 +181,9 @@
 	display: block;
 }
 
+.theme-overlay .theme-files{
+	min-height: 26px;
+}
 .theme-overlay .nav-tab:not(.file){
 	background: unset;
 	border: 0;
@@ -176,7 +191,15 @@
 	padding-right: 0;
 }
 
+.theme-overlay .theme-description {
+    max-height: 250px;
+    overflow: auto;
+    text-overflow: ellipsis;
+}
 
+.theme-overlay:not(.is-installed) .delete-theme{
+	display: none;
+}
 
 .theme-browser .theme.envato-item .theme-name:after{
 	content:'';
