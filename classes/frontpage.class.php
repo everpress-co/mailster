@@ -341,6 +341,8 @@ class MailsterFrontpage {
 				wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 			}
 
+			$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id ), $campaign_id );
+
 			// check if external URLS are actually in the campaign to prevent URL hijacking
 			$target_host = wp_parse_url( $target, PHP_URL_HOST );
 			$home_host   = wp_parse_url( home_url(), PHP_URL_HOST );
@@ -377,11 +379,8 @@ class MailsterFrontpage {
 				}
 			}
 
-			$this->setcookie( $subscriber->hash );
-
-			$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id ), $campaign_id );
-
 			$redirect_to = $target;
+			$this->setcookie( $subscriber->hash );
 
 			// append hash and campaign_id if unsubscribe link
 			if ( mailster()->get_unsubscribe_link( $campaign_id, $hash ) == $redirect_to ) :
