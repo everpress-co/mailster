@@ -92,6 +92,7 @@ Xaver Birsak – https://everpress.co
 
 * fixed: warning on dashboard
 * improved: order by status now respects timestamps of campaigns.
+* fixed: prevent URL hijacking by only allowing links from either the same domain or explicitly in the campaign.
 
 = Version 2.4.15 =
 
