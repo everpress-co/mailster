@@ -224,15 +224,22 @@ class MailsterSubscribers {
 		switch ( $action ) {
 
 			case 'delete':
+			case 'delete_actions':
 				if ( current_user_can( 'mailster_delete_subscribers' ) ) {
 
-					$success = $this->remove( $subscriber_ids );
+					$remove_actions = 'delete_actions' == $action;
+
+					$success = $this->remove( $subscriber_ids, null, $remove_actions );
 					if ( is_wp_error( $success ) ) {
 						$error_message = sprintf( esc_html__( 'There was an error while deleting subscribers: %s', 'mailster' ), $success->get_error_message() );
 
 					} elseif ( $success ) {
-						$count         = count( $subscriber_ids );
-						$error_message = sprintf( esc_html__( '%d Subscribers have been removed', 'mailster' ), $count );
+						$count = count( $subscriber_ids );
+						if ( $remove_actions ) {
+							$error_message = sprintf( esc_html__( _n( '%d subscriber has been removed!', '%d subscribers have been removed!', $count, 'mailster' ) ), $count );
+						} else {
+							$error_message = sprintf( esc_html__( _n( '%d subscriber has been removed!', '%d subscribers have been removed!', $count, 'mailster' ) ), $count );
+						}
 					}
 				}
 				break;
@@ -471,14 +478,16 @@ class MailsterSubscribers {
 					wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
 					exit;
 
-				} elseif ( isset( $_POST['delete'] ) ) :
+				} elseif ( isset( $_POST['delete'] ) || isset( $_POST['delete_actions'] ) ) :
 
 					if ( ! current_user_can( 'mailster_delete_subscribers' ) ) {
 						wp_die( esc_html__( 'You are not allowed to delete subscribers!', 'mailster' ) );
 					}
 
+					$remove_actions = isset( $_POST['delete_actions'] );
+
 					if ( $subscriber = $this->get( (int) $_POST['mailster_data']['ID'], true ) ) {
-						$success = $this->remove( $subscriber->ID );
+						$success = $this->remove( $subscriber->ID, null, $remove_actions );
 						if ( ! $success ) {
 							mailster_notice( esc_html__( 'There was an error while deleting subscribers!', 'mailster' ), 'error', true );
 
@@ -487,8 +496,8 @@ class MailsterSubscribers {
 							do_action( 'mailster_subscriber_delete', $subscriber->ID, $subscriber->email );
 						}
 
-							wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
-							exit;
+						wp_redirect( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
+						exit;
 
 					};
 
