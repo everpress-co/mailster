@@ -423,6 +423,13 @@ class MailsterAjax {
 			)
 		);
 
+		$placeholder->add(
+			array(
+				'headline' => esc_html__( 'This is a generic headline.', 'mailster' ),
+				'content'  => esc_html__( 'This is some example content text used in your notification template file.', 'mailster' ),
+			)
+		);
+
 		$content = $placeholder->get_content();
 
 		$content = mailster( 'helper' )->strip_structure_html( $content );

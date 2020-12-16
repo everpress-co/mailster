@@ -1123,6 +1123,12 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.submit = mailster.submit || {};
 
+	mailster.$.document
+		.on('submit', '.post-status-notification form#post', function () {
+			if (!mailster.enabled) return false;
+			return checkNotification();
+		})
+
 	mailster.$.submit
 		.on('change', '#use_pwd', function () {
 			$('#password-wrap').slideToggle(200).find('input').focus().select();
@@ -1130,7 +1136,20 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '.sendnow-button', function () {
 			if (!confirm(mailster.l10n.campaigns.send_now)) return false;
+		})
+		.on('click', '#notification', function () {
+			return checkNotification();
 		});
+
+	function checkNotification() {
+		var c = mailster.editor.getContent();
+		if (!/{headline}/.test(c) || !/{content}/.test(c)) {
+			alert(mailster.util.sprintf(mailster.l10n.campaigns.notification, '{headline}', '{content}'));
+			return false;
+		}
+		return true;
+
+	}
 
 	mailster.submit.$ = {};
 

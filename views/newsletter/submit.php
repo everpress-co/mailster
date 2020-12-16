@@ -34,7 +34,11 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 			<?php endif; ?>
 
+
 			<div id="delete-action">
+			<?php if ( in_array( $post->post_status, array( 'draft', 'auto-draft', 'pending' ) ) ) : ?>
+				<?php submit_button( esc_html__( 'Save as Notification', 'mailster' ), '', 'notification', false, array( 'accesskey' => 'n' ) ); ?>
+			<?php endif; ?>
 				<?php if ( current_user_can( 'delete_post', $post->ID ) ) : ?>
 				<p class="clear" id="delete-field">
 					<a class="submitdelete deletion" href="<?php echo get_delete_post_link( $post->ID ); ?>">
@@ -114,14 +118,12 @@ $sent = $this->get_sent( $post->ID );
 					<?php elseif ( in_array( $post->post_status, array( 'draft', 'auto-draft' ) ) ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ); ?>" />
-						<?php submit_button( esc_html__( 'Save as Notification', 'mailster' ), '', 'notification', false, array( 'accesskey' => 'n' ) ); ?>
 						<?php submit_button( esc_html__( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
 						<?php submit_button( esc_html__( 'Save', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 
 					<?php elseif ( in_array( $post->post_status, array( 'pending' ) ) ) : ?>
 
 						<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e( 'Publish', 'mailster' ); ?>" />
-						<?php submit_button( esc_html__( 'Save as Notification', 'mailster' ), '', 'notification', false, array( 'accesskey' => 'n' ) ); ?>
 						<?php submit_button( esc_html__( 'Save as draft', 'mailster' ), '', 'draft', false, array( 'accesskey' => 'd' ) ); ?>
 						<?php submit_button( esc_html__( 'Confirm', 'mailster' ), 'primary', 'publish', false, array( 'accesskey' => 'p' ) ); ?>
 

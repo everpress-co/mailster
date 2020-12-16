@@ -343,6 +343,11 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 /*----------------------------------------------------------------------*/
 /* Table
 /*----------------------------------------------------------------------*/
+.post-status-notification #titlediv .inside,
+.post-status-notification #mailster_details .form-table .field-subject,
+.post-status-notification #mailster_details .form-table .field-date{
+	display: none;
+}
 #mailster_details .red {
 	color: #D8605F;
 }

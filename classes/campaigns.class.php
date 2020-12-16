@@ -1247,17 +1247,6 @@ class MailsterCampaigns {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $title
-	 * @return unknown
-	 */
-	public function title( $title ) {
-		return esc_html__( 'Enter Campaign Title here', 'mailster' );
-	}
-
-
 	public function assets() {
 
 		$screen = get_current_screen();
@@ -1281,7 +1270,6 @@ class MailsterCampaigns {
 		} elseif ( 'newsletter' == $screen->id ) {
 
 			global $post, $wp_locale;
-			add_filter( 'enter_title_here', array( &$this, 'title' ) );
 
 			add_action( 'dbx_post_sidebar', array( mailster( 'ajax' ), 'add_ajax_nonce' ) );
 
@@ -1447,6 +1435,8 @@ class MailsterCampaigns {
 					'error_occurs'           => esc_html__( 'An error occurs while uploading', 'mailster' ),
 					'unsupported_format'     => esc_html__( 'Unsupported file format', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
+					'notification'           => esc_html__( 'Notifications must contain a %1$s and a %2$s tag!', 'mailster' ),
+
 				)
 			);
 
@@ -1590,6 +1580,14 @@ class MailsterCampaigns {
 
 		if ( isset( $_POST['notification'] ) ) {
 			$post['post_status'] = 'notification';
+		}
+
+		if ( 'notification' == $post['post_status'] ) {
+			if ( false === strpos( $post['post_content'], '{headline}' ) || false === strpos( $post['post_content'], '{headline}' ) ) {
+				mailster_notice( sprintf( esc_html__( 'Notifications must contain a %1$s and a %2$s tag!', 'mailster' ), '<code>{headline}</code>', '<code>{content}</code>' ), 'error', true );
+				$post['post_status'] = 'draft';
+
+			}
 		}
 
 		if ( ! in_array( $post['post_status'], array( 'pending', 'draft', 'notification', 'auto-draft', 'trash' ) ) ) {

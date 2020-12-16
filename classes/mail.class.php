@@ -515,7 +515,34 @@ class MailsterMail {
 
 		$template = ! is_null( $template ) ? $template : mailster_option( 'default_template' );
 
-		if ( $template && $file ) {
+		if ( is_numeric( $file ) ) {
+
+			if ( $campaign = get_post( $file ) ) {
+
+				$campaign_meta = mailster( 'campaigns' )->meta( $campaign->ID );
+
+				$attachments = $campaign_meta['attachments'];
+
+				if ( ! empty( $attachments ) ) {
+					$this->attachments = array();
+					foreach ( (array) $attachments as $attachment_id ) {
+						if ( ! $attachment_id ) {
+							continue;
+						}
+						$file = get_attached_file( $attachment_id );
+						if ( ! @is_file( $file ) ) {
+							continue;
+						}
+						$this->attachments[ basename( $file ) ] = $file;
+					}
+				}
+
+				$this->content = mailster()->sanitize_content( $campaign->post_content, $campaign_meta['head'] );
+
+			} else {
+				$file = false;
+			}
+		} elseif ( $template && $file ) {
 			$template_obj  = mailster( 'template', $template, $file );
 			$this->content = $template_obj->get( true, true );
 		} else {

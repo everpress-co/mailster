@@ -2339,7 +2339,39 @@ class Mailster {
 		}
 		$file = apply_filters( 'mymail_wp_mail_template_file', apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter ), $caller, $current_filter );
 
-		if ( $template && $file ) {
+		$replace  = apply_filters( 'mymail_send_replace', apply_filters( 'mailster_send_replace', array( 'notification' => '' ), $caller, $current_filter ) );
+		$message  = apply_filters( 'mymail_send_message', apply_filters( 'mailster_send_message', $args['message'], $caller, $current_filter ) );
+		$subject  = apply_filters( 'mymail_send_subject', apply_filters( 'mailster_send_subject', $args['subject'], $caller, $current_filter ) );
+		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $args['subject'], $caller, $current_filter ) );
+
+		if ( is_numeric( $file ) ) {
+			if ( $campaign = get_post( $file ) ) {
+
+				$campaign_meta = mailster( 'campaigns' )->meta( $campaign->ID );
+
+				if ( ! empty( $campaign_meta['attachments'] ) ) {
+					$attachments = array();
+					foreach ( (array) $campaign_meta['attachments'] as $attachment_id ) {
+						if ( ! $attachment_id ) {
+							continue;
+						}
+						$file = get_attached_file( $attachment_id );
+						if ( ! @is_file( $file ) ) {
+							continue;
+						}
+						$attachments[ basename( $file ) ] = $file;
+					}
+
+					$args['attachments'] = array_merge( $attachments, $campaign_meta['attachments'] );
+
+				}
+
+				$content = mailster()->sanitize_content( $campaign->post_content, $campaign_meta['head'] );
+
+			} else {
+				$file = false;
+			}
+		} elseif ( $template && $file ) {
 			$template = mailster( 'template', $template, $file );
 			$content  = $template->get( true, true );
 		} else {
@@ -2349,11 +2381,6 @@ class Mailster {
 				$content = '{content}';
 			}
 		}
-
-		$replace  = apply_filters( 'mymail_send_replace', apply_filters( 'mailster_send_replace', array( 'notification' => '' ), $caller, $current_filter ) );
-		$message  = apply_filters( 'mymail_send_message', apply_filters( 'mailster_send_message', $args['message'], $caller, $current_filter ) );
-		$subject  = apply_filters( 'mymail_send_subject', apply_filters( 'mailster_send_subject', $args['subject'], $caller, $current_filter ) );
-		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $args['subject'], $caller, $current_filter ) );
 
 		if ( 'text/plain' == $content_type ) {
 
