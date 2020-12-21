@@ -91,6 +91,7 @@ Xaver Birsak – https://everpress.co
 = Version 2.4.16 =
 
 * fixed: warning on dashboard
+* fixed: JS error in Firefox on WP 5.6
 * improved: order by status now respects timestamps of campaigns.
 * fixed: prevent URL hijacking by only allowing links from either the same domain or explicitly in the campaign.
 * enabled: honeypot mechanism as the bug in Chrome has been fixed
