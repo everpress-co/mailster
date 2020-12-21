@@ -135,7 +135,7 @@ class MailsterRegister {
 		if ( ! mailster()->is_verified() ) {
 			if ( time() - get_option( 'mailster' ) > WEEK_IN_SECONDS
 				&& get_option( 'mailster_setup' ) ) {
-				mailster_notice( sprintf( esc_html__( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ), 'error', false, 'verify', 'mailster_manage_licenses' );
+				mailster_notice( sprintf( esc_html__( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster.', 'mailster' ), '<a href="admin.php?page=mailster_dashboard">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ), 'error', false, 'verify', 'mailster_manage_licenses' );
 			}
 		} else {
 			mailster_remove_notice( 'verify' );

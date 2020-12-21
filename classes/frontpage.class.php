@@ -341,11 +341,46 @@ class MailsterFrontpage {
 				wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 			}
 
-			$this->setcookie( $subscriber->hash );
-
 			$target = apply_filters( 'mymail_click_target', apply_filters( 'mailster_click_target', $target, $campaign_id ), $campaign_id );
 
+			// check if external URLS are actually in the campaign to prevent URL hijacking
+			$target_host = wp_parse_url( $target, PHP_URL_HOST );
+			$home_host   = wp_parse_url( home_url(), PHP_URL_HOST );
+			if ( $target_host !== $home_host ) {
+
+				// link is not in campaign => further checks
+				if ( false === strpos( $campaign->post_content, $target ) ) {
+
+					$placeholder = mailster( 'placeholder' );
+					$placeholder->set_campaign( $campaign_id );
+					$placeholder->set_hash( $subscriber->hash );
+
+					$proccessed_content = mailster()->sanitize_content( $campaign->post_content, $meta['head'] );
+
+					$placeholder->add_defaults( $campaign_id );
+					$placeholder->set_content( $proccessed_content );
+
+					$placeholder->set_subscriber( $subscriber->ID );
+
+					// add subscriber info
+					$placeholder->add( (array) $subscriber );
+
+					// add subscriber specific tags
+					if ( $subscriber_tags = mailster( 'subscribers' )->meta( $subscriber->ID, 'tags', $campaign_id ) ) {
+						$placeholder->add( (array) $subscriber_tags );
+					}
+
+					$proccessed_content = $placeholder->get_content();
+
+					// target link is not in processed content
+					if ( false === strpos( $proccessed_content, $target ) ) {
+						wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
+					}
+				}
+			}
+
 			$redirect_to = $target;
+			$this->setcookie( $subscriber->hash );
 
 			// append hash and campaign_id if unsubscribe link
 			if ( mailster()->get_unsubscribe_link( $campaign_id, $hash ) == $redirect_to ) :

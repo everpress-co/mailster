@@ -32,8 +32,8 @@ class MailsterForm {
 	static $add_style  = false;
 
 	public function __construct() {
-		$this->scheme = is_ssl() ? 'https' : 'http';
-		$this->form   = new StdClass();
+		$this->scheme   = is_ssl() ? 'https' : 'http';
+		$this->form     = new StdClass();
 	}
 
 
@@ -541,9 +541,10 @@ class MailsterForm {
 		$fields = apply_filters( 'mymail_form_fields', apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form ), $this->ID, $this->form );
 
 		if ( ! is_admin() && apply_filters( 'mailster_honeypot', mailster_option( 'check_honeypot' ) ) ) {
-			$position = rand( count( $fields ), 0 ) - 1;
+			// place honeypot after email field
+			$position = array_search( 'email', array_keys( $fields ) ) + 1;
 			$fields   = array_slice( $fields, 0, $position, true ) +
-				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="new-password" autofill="off" readonly></label>' ) +
+				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'mailster_honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="noton" autofill="off"></label>' ) +
 				array_slice( $fields, $position, null, true );
 		}
 
@@ -957,6 +958,15 @@ class MailsterForm {
 			$this->object['userdata']['formkey'] = $_BASE['_formkey'];
 		}
 
+		if ( ! is_admin() && apply_filters( 'mailster_honeypot', $this->honeypot ) && empty( $this->object['errors'] ) ) {
+			$honeypotnonce = wp_create_nonce( 'mailster_honeypot' );
+			$honeypot      = isset( $_BASE[ 'n_' . $honeypotnonce . '_email' ] ) ? $_BASE[ 'n_' . $honeypotnonce . '_email' ] : null;
+
+			if ( ! empty( $honeypot ) ) {
+				$this->object['errors']['_honeypot'] = esc_html__( 'Honeypot is for bears only!', 'mailster' );
+			}
+		}
+
 		// to hook into the system
 		$this->object = apply_filters( 'mymail_submit', apply_filters( 'mailster_submit', $this->object ) );
 		$this->object = apply_filters( 'mymail_submit_' . $this->ID, apply_filters( 'mailster_submit_' . $this->ID, $this->object ) );
@@ -985,7 +995,6 @@ class MailsterForm {
 							'lang'    => mailster_get_lang(),
 							'referer' => $referer,
 							'form'    => $this->ID,
-							'ip'      => (bool) mailster_option( 'track_users' ),
 						),
 						$this->object['userdata']
 					);
