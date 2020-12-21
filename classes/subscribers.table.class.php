@@ -151,7 +151,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		}
 
 		if ( empty( $search ) ) {
-			return $string;
+			return esc_html( $string );
 		}
 
 		foreach ( explode( ' ', $search ) as $term ) {

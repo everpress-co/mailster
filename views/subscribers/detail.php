@@ -47,7 +47,7 @@ $tabindex = 1;
 if ( $is_new ) {
 	esc_html_e( 'Add new Subscriber', 'mailster' );
 } else {
-	printf( esc_html__( 'Edit %s', 'mailster' ), '<strong>' . $nicename . '</strong>' );
+	printf( esc_html__( 'Edit %s', 'mailster' ), '<strong>' . esc_html( $nicename ) . '</strong>' );
 	if ( $subscriber->status == 4 ) {
 		echo '<div class="error"><p>' . sprintf( esc_html__( 'This subscriber has caused an error: %s', 'mailster' ), '<strong>' . ( $meta->error ? $meta->error : esc_html__( 'unknown', 'mailster' ) ) . '</strong>' ) . '</p></div>';
 	}
