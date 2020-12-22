@@ -60,7 +60,7 @@ mailster = (function (mailster, $, window, document) {
 			return
 		}
 
-		if (!nooutput) output(id, '<strong>' + current + '</strong> ...', true);
+		if (!nooutput) output(id, '<span>' + current + '</span> ...', true);
 
 		do_update(id, function () {
 			setTimeout(function () {
@@ -133,10 +133,11 @@ mailster = (function (mailster, $, window, document) {
 
 	function output(id, content, newline, round, nobox) {
 
-		var el = $('#output_' + id).length ?
-			$('#output_' + id) :
-			$('<div id="output_' + id + '" class="' + (nobox ? '' : 'updated inline') + '" style="padding: 0.5em 6px;word-wrap: break-word;"></div>').appendTo($output);
+		if (!$('#output_' + id).length) {
+			$('<div class="' + (nobox ? '' : 'notice notice-info inline') + '" style="padding: 0.5em 6px;word-wrap: break-word;"><div id="output_' + id + '"></div></div>').appendTo($output);
+		}
 
+		var el = $('#output_' + id);
 
 		el.append(content);
 		round > 20 ? el.append(skip.show()) : skip.hide();
@@ -145,11 +146,14 @@ mailster = (function (mailster, $, window, document) {
 
 	function textoutput(content) {
 
-		var curr_content = $('#textoutput').val();
+		var textarea = $('#textoutput');
+		var curr_content = textarea.val();
 
-		content = content + "\n\n" + curr_content;
+		content = curr_content + content;
 
-		$('#textoutput').val($.trim(content));
+		textarea.val($.trim(content) + "\n\n");
+
+		textarea.scrollTop(textarea[0].scrollHeight);
 
 	}
 

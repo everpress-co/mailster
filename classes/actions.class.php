@@ -532,7 +532,7 @@ class MailsterActions {
 
 		if ( ! $action ) {
 			$return = array();
-			foreach ( array( 'sent', 'opens', 'clicks', 'unsubs', 'bounces', 'errors' ) as $a ) {
+			foreach ( array( 'sent', 'opens', 'clicks', 'unsubs', 'bounces', 'errors', 'softbounces' ) as $a ) {
 				$return[ $a ] = $this->get_by_subscriber( $subscriber_id, $a, $campaign_id );
 			}
 
@@ -565,20 +565,25 @@ class MailsterActions {
 
 		}
 
-		$table = str_replace( array( '_total', '_deleted' ), '', $action );
+		$table = str_replace( array( '_total', '_deleted', 'soft' ), '', $action );
 
 		$default = $this->get_default_action_counts();
 
-		$sql = "SELECT a.campaign_id, a.subscriber_id AS ID, COUNT(DISTINCT a.subscriber_id) AS count, SUM(a.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS a WHERE 1";
+		$sql = "SELECT action_table.*, COUNT(DISTINCT action_table.subscriber_id) AS count, SUM(action_table.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS action_table WHERE 1";
 
 		if ( ! empty( $subscriber_ids ) ) {
-			$sql .= ' AND a.subscriber_id IN (' . implode( ',', $subscriber_ids ) . ')';
+			$sql .= ' AND action_table.subscriber_id IN (' . implode( ',', $subscriber_ids ) . ')';
 		}
 		if ( ! empty( $campaign_ids ) ) {
-			$sql .= ' WHERE a.campaign_id = ' . (int) $campaign_id;
+			$sql .= ' AND action_table.campaign_id = ' . (int) $campaign_id;
 		}
+		if ( 'softbounces' == $action ) {
+			$sql .= ' AND action_table.hard = 0';
+		} elseif ( 'bounces' == $action ) {
+			$sql .= ' AND action_table.hard = 1';
 
-		$sql .= ' GROUP BY a.subscriber_id, a.campaign_id';
+		}
+		$sql .= ' GROUP BY action_table.subscriber_id, action_table.campaign_id';
 
 		$result = $wpdb->get_results( $sql );
 
@@ -590,28 +595,28 @@ class MailsterActions {
 
 		foreach ( $result as $row ) {
 
-			if ( ! isset( $action_counts[ $row->ID ] ) ) {
-				$action_counts[ $row->ID ] = $default;
+			if ( ! isset( $action_counts[ $row->subscriber_id ] ) ) {
+				$action_counts[ $row->subscriber_id ] = $default;
 			}
 
 			if ( 'sent' == $action ) {
-				$action_counts[ $row->ID ]['sent']       += (int) $row->count;
-				$action_counts[ $row->ID ]['sent_total'] += (int) $row->total;
+				$action_counts[ $row->subscriber_id ]['sent']       += (int) $row->count;
+				$action_counts[ $row->subscriber_id ]['sent_total'] += (int) $row->total;
 			} elseif ( 'opens' == $action ) {
-				$action_counts[ $row->ID ]['opens']       += (int) $row->count;
-				$action_counts[ $row->ID ]['opens_total'] += (int) $row->total;
+				$action_counts[ $row->subscriber_id ]['opens']       += (int) $row->count;
+				$action_counts[ $row->subscriber_id ]['opens_total'] += (int) $row->total;
 			} elseif ( 'clicks' == $action ) {
-				$action_counts[ $row->ID ]['clicks']       += (int) $row->count;
-				$action_counts[ $row->ID ]['clicks_total'] += (int) $row->total;
+				$action_counts[ $row->subscriber_id ]['clicks']       += (int) $row->count;
+				$action_counts[ $row->subscriber_id ]['clicks_total'] += (int) $row->total;
 			} elseif ( 'unsubs' == $action ) {
-				$action_counts[ $row->ID ]['unsubs'] += (int) $row->count;
+				$action_counts[ $row->subscriber_id ]['unsubs'] += (int) $row->count;
 			} elseif ( 'softbounces' == $action ) {
-				$action_counts[ $row->ID ]['softbounces'] += (int) $row->count;
+				$action_counts[ $row->subscriber_id ]['softbounces'] += (int) $row->count;
 			} elseif ( 'bounces' == $action ) {
-				$action_counts[ $row->ID ]['bounces'] += (int) $row->count;
+				$action_counts[ $row->subscriber_id ]['bounces'] += (int) $row->count;
 			} elseif ( 'error' == $action ) {
-				$action_counts[ $row->ID ]['errors']       += floor( $row->count );
-				$action_counts[ $row->ID ]['errors_total'] += floor( $row->total );
+				$action_counts[ $row->subscriber_id ]['errors']       += floor( $row->count );
+				$action_counts[ $row->subscriber_id ]['errors_total'] += floor( $row->total );
 			}
 		}
 

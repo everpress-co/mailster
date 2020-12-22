@@ -1692,7 +1692,8 @@ class MailsterSubscribers {
 
 		foreach ( $ids as $id ) {
 			$actions = mailster( 'actions' )->get_by_subscriber( $id, null );
-			$rating  = 0.25;
+
+			$rating = 0.25;
 			if ( $this->get_sent( $id ) ) {
 				$openrate   = $this->get_open_rate( $id );
 				$aclickrate = $this->get_adjusted_click_rate( $id );
@@ -1707,7 +1708,7 @@ class MailsterSubscribers {
 					$rating -= 0.2;
 				}
 
-				if ( $actions['unsubscribes'] ) {
+				if ( $actions['unsubs'] ) {
 					$rating -= 0.3;
 				}
 			}
@@ -1716,7 +1717,7 @@ class MailsterSubscribers {
 			$rating = (float) apply_filters( 'mailster_subscriber_rating_' . $id, $rating );
 			$rating = max( 0.1, min( $rating, 1 ) );
 
-			$sql = "UPDATE {$wpdb->prefix}mailster_subscribers AS a SET a.rating = %f WHERE a.ID = %d AND a.rating != %f";
+			$sql = "UPDATE {$wpdb->prefix}mailster_subscribers AS subscribers SET subscribers.rating = %f WHERE subscribers.ID = %d AND subscribers.rating != %f";
 			$wpdb->query( $wpdb->prepare( $sql, $rating, $id, $rating ) );
 
 		}

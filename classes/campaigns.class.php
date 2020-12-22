@@ -4244,7 +4244,7 @@ class MailsterCampaigns {
 		$placeholder->set_hash( $subscriber->hash );
 		$placeholder->replace_custom_tags( false );
 
-		$attachments = array_merge( $attachments, $campaign_meta['attachments'] );
+		$attachments = array_merge( $attachments, (array) $campaign_meta['attachments'] );
 
 		if ( ! empty( $attachments ) ) {
 			$mail->attachments = array();
