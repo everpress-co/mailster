@@ -345,6 +345,13 @@ class MailsterActions {
 		// delete all softbounces where a hardbounce exists
 		$wpdb->query( $wpdb->prepare( "DELETE b FROM {$wpdb->prefix}mailster_action_bounces AS a LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS b ON a.campaign_id = b.campaign_id AND a.subscriber_id = b.subscriber_id WHERE a.hard = %d AND b.hard = %d", 1, 0 ) );
 
+		// remove actions where's either a subscriber nor a campaign assigned
+		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_sent AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
+		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_opens AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
+		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_clicks AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
+		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_unsubs AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
+		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_bounces AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
+
 	}
 
 
