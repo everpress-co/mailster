@@ -352,9 +352,6 @@ class MailsterActions {
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_unsubs AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_bounces AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 
-		// remove actions where's either a subscriber nor a campaign assigned
-		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_actions AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
-
 	}
 
 
