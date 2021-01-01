@@ -346,7 +346,12 @@ class MailsterFrontpage {
 			// check if external URLS are actually in the campaign to prevent URL hijacking
 			$target_host = wp_parse_url( $target, PHP_URL_HOST );
 			$home_host   = wp_parse_url( home_url(), PHP_URL_HOST );
-			if ( $target_host !== $home_host ) {
+
+			// either the target url is in the home url or vice versa - to allow subdomains (improvable)
+			$home_in_target_host = ( false !== strpos( $home_host, $target_host ) );
+			$target_in_home_host = ( false !== strpos( $target_host, $home_host ) );
+
+			if ( ! $home_in_target_host && ! $target_in_home_host ) {
 
 				// link is not in campaign => further checks
 				if ( false === strpos( $campaign->post_content, $target ) ) {
