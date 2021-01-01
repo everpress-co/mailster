@@ -90,6 +90,8 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.17 =
 
+* fixed: post taxonomies are not respected for some autoresponder campaigns if the initial post status is publish
+
 = Version 2.4.16 =
 
 * fixed: warning on dashboard
