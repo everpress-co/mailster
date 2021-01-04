@@ -453,7 +453,9 @@ class MailsterTests {
 	}
 	private function test_wp_debug() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$this->failure( ( mailster_is_local() ? 'notice' : 'warning' ), 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
+			if ( function_exists( 'wp_get_environment_type' ) && 'production' == wp_get_environment_type() ) {
+				$this->failure( ( mailster_is_local() ? 'notice' : 'warning' ), 'WP_DEBUG is enabled and should be disabled on a production site.', 'https://codex.wordpress.org/WP_DEBUG' );
+			}
 		}
 	}
 	private function test_dom_document_extension() {
