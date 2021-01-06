@@ -35,6 +35,7 @@ class MailsterSubscriberQuery {
 
 		'fields'              => null,
 		'meta'                => null,
+		'actions'             => null,
 
 		'lists'               => false,
 		'lists__in'           => null,
@@ -132,9 +133,10 @@ class MailsterSubscriberQuery {
 		if ( $this->args['return_ids'] ) {
 			$this->args['select'] = array( 'subscribers.ID' );
 		} elseif ( $this->args['return_count'] ) {
-			$this->args['select'] = array( 'COUNT(DISTINCT subscribers.ID)' );
-			$this->args['fields'] = null;
-			$this->args['meta']   = null;
+			$this->args['select']  = array( 'COUNT(DISTINCT subscribers.ID)' );
+			$this->args['fields']  = null;
+			$this->args['meta']    = null;
+			$this->args['actions'] = null;
 		} elseif ( empty( $this->args['fields'] ) && empty( $this->args['select'] ) ) {
 			$this->args['select'] = array( 'subscribers.*' );
 		} elseif ( is_null( $this->args['select'] ) ) {
@@ -191,6 +193,9 @@ class MailsterSubscriberQuery {
 		}
 		if ( $this->args['meta'] && ! is_array( $this->args['meta'] ) ) {
 			$this->args['meta'] = explode( ',', $this->args['meta'] );
+		}
+		if ( $this->args['actions'] && ! is_array( $this->args['actions'] ) ) {
+			$this->args['actions'] = explode( ',', $this->args['actions'] );
 		}
 		if ( 'OR' != $this->args['operator'] ) {
 			$this->args['operator'] = 'AND' === strtoupper( $this->args['operator'] ) ? 'AND' : 'OR';
@@ -342,6 +347,11 @@ class MailsterSubscriberQuery {
 					}
 				}
 			}
+			if ( ! empty( $this->args['actions'] ) ) {
+				foreach ( $this->args['actions'] as $field ) {
+					$this->args['select'][] = "IFNULL(SUM(`action_$field`.count), 0) AS `action_$field`";
+				}
+			}
 		}
 
 		$this->args = apply_filters( 'mailster_subscriber_query_args', $this->args, $campaign_id );
@@ -483,7 +493,13 @@ class MailsterSubscriberQuery {
 						}
 					}
 
-					if ( ! in_array( $field, $this->action_fields ) ) {
+					if ( in_array( $field, $this->action_tables ) ) {
+
+						// we need the field joined => remove '_action'
+						$this->args['actions'][] = substr( $field, 8 );
+						$sub_cond[]              = $this->get_condition( $field, $operator, $value );
+
+					} elseif ( ! in_array( $field, $this->action_fields ) ) {
 
 						$sub_cond[] = $this->get_condition( $field, $operator, $value );
 
@@ -491,7 +507,7 @@ class MailsterSubscriberQuery {
 
 						$value = $this->get_campaign_ids_from_value( $value );
 
-						$alias = 'actions' . $field . '_' . $i . '_' . $j;
+						$alias = '`actions' . $field . '_' . $i . '_' . $j . '`';
 
 						if ( $field == '_lists__in' ) {
 
@@ -603,6 +619,32 @@ class MailsterSubscriberQuery {
 				$wheres[] = 'AND lists_subscribers.list_id IS NULL';
 				// ignore lists
 			} elseif ( is_null( $this->args['lists'] ) ) {
+			}
+		}
+
+		if ( ! empty( $this->args['actions'] ) ) {
+
+			foreach ( $this->args['actions'] as $action_field ) {
+
+				$action_field = esc_sql( $action_field );
+
+				if ( 'bounces' == $action_field ) {
+					$join = "LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS `action_$action_field` ON `action_$action_field`.subscriber_id = subscribers.ID AND `action_$action_field`.hard = 0";
+
+				} elseif ( 'hardbounces' == $action_field ) {
+					$join = "LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS `action_$action_field` ON `action_$action_field`.subscriber_id = subscribers.ID AND `action_$action_field`.hard = 1";
+
+				} else {
+					$join = "LEFT JOIN {$wpdb->prefix}mailster_action_$action_field AS `action_$action_field` ON `action_$action_field`.subscriber_id = subscribers.ID";
+				}
+
+				// only from the current campaign if set
+				if ( $campaign_id ) {
+					$join .= " AND `action_$action_field`.campaign_id = " . (int) $campaign_id;
+				}
+
+				$joins[] = $join;
+
 			}
 		}
 
@@ -844,7 +886,7 @@ class MailsterSubscriberQuery {
 			$this->args['select'] = array_unique( $this->args['select'] );
 		}
 
-		$select .= ' ' . implode( ', ', $this->args['select'] );
+		$select .= ' ' . implode( ",\n", $this->args['select'] );
 
 		$from = "FROM {$wpdb->prefix}mailster_subscribers AS subscribers";
 
@@ -1041,6 +1083,8 @@ class MailsterSubscriberQuery {
 						return "`meta_wp_$field`.meta_value " . ( in_array( $operator, array( 'is', '=' ) ) ? 'LIKE' : 'NOT LIKE' ) . " '%$value%'";
 						break;
 					}
+				} elseif ( in_array( $field, $this->action_tables ) ) {
+					$f = '`' . substr( $field, 1 ) . '`.count';
 				} else {
 					$f = "subscribers.$field";
 				}
@@ -1077,6 +1121,8 @@ class MailsterSubscriberQuery {
 					$f = "`meta_$field`.meta_value";
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
+				} elseif ( in_array( $field, $this->action_tables ) ) {
+					$f = '`' . substr( $field, 1 ) . '`.count';
 				} else {
 					$f = "subscribers.$field";
 				}
@@ -1104,6 +1150,8 @@ class MailsterSubscriberQuery {
 					$f = "`meta_$field`.meta_value";
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
+				} elseif ( in_array( $field, $this->action_tables ) ) {
+					$f = '`' . substr( $field, 1 ) . '`.count';
 				} else {
 					$f = "subscribers.$field";
 				}
@@ -1129,6 +1177,8 @@ class MailsterSubscriberQuery {
 					$f = "`meta_$field`.meta_value";
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
+				} elseif ( in_array( $field, $this->action_tables ) ) {
+					$f = '`' . substr( $field, 1 ) . '`.count';
 				} else {
 					$f = "subscribers.$field";
 				}
@@ -1165,6 +1215,8 @@ class MailsterSubscriberQuery {
 					if ( $field == 'wp_capabilities' ) {
 						$value = "'NOTPOSSIBLE'";
 					}
+				} elseif ( in_array( $field, $this->action_tables ) ) {
+					$f = '`' . substr( $field, 1 ) . '`.count';
 				} else {
 					$f     = "subscribers.$field";
 					$value = (float) $value;
@@ -1193,6 +1245,8 @@ class MailsterSubscriberQuery {
 					$f = "`meta_$field`.meta_value";
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
+				} elseif ( in_array( $field, $this->action_tables ) ) {
+					$f = '`' . substr( $field, 1 ) . '`.count';
 				} else {
 					$f = "subscribers.$field";
 					if ( $field == 'wp_capabilities' ) {
@@ -1296,6 +1350,12 @@ class MailsterSubscriberQuery {
 		$action_fields = array( '_sent', '_sent__not_in', '_sent_before', '_sent_after', '_open', '_open__not_in', '_open_before', '_open_after', '_click', '_click__not_in', '_click_before', '_click_after', '_click_link', '_click_link__not_in', '_lists__in', '_lists__not_in' );
 
 		return $action_fields;
+	}
+
+	private function get_action_tables() {
+		$action_tables = array( '_action_sent', '_action_opens', '_action_clicks', '_action_unsubs', '_action_bounces' );
+
+		return $action_tables;
 	}
 
 	private function add_condition( $field, $operator, $value ) {
