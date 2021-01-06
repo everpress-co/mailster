@@ -438,7 +438,7 @@ if ( ! $is_new ) :
 						<?php
 						switch ( $activity->type ) {
 							case 1:
-								echo '<span class="mailster-icon mailster-icon-progress"></span></td><td>';
+								echo '<span class="mailster-icon mailster-icon-sent"></span></td><td>';
 								printf( esc_html__( 'Campaign %s has been sent', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
 							case 2:
@@ -504,16 +504,16 @@ if ( ! $is_new ) :
 						elseif ( $activity->type == 4 && $unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id ) ) :
 							$message = mailster( 'helper' )->get_unsubscribe_message( $unsub_status );
 							?>
-							<p class="unsubscribe-message code">[<?php echo esc_html( $unsub_status ); ?>] <?php echo esc_html( $message ); ?></p>
+							<div class="unsubscribe-message code">[<?php echo esc_html( $unsub_status ); ?>] <?php echo esc_html( $message ); ?></div>
 
 							<?php
 						elseif ( ( $activity->type == 5 || $activity->type == 6 ) && $bounce_status = $this->meta( $subscriber->ID, 'bounce', $activity->campaign_id ) ) :
 							$message = mailster( 'helper' )->get_bounce_message( $bounce_status );
 							?>
-							<p class="bounce-message code"><?php echo esc_html( $message ); ?></p>
+							<div class="bounce-message code"><?php echo esc_html( $message ); ?></div>
 
 						<?php elseif ( $activity->error && $activity->type == 7 ) : ?>
-							<p class="error-message code"><strong class="red"><?php echo $activity->error; ?></strong></p>
+							<div class="error-message code"><strong class="red"><?php echo $activity->error; ?></strong></div>
 						<?php endif; ?>
 						</td>
 					</tr>

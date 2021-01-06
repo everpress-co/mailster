@@ -472,18 +472,14 @@ modules:empty:after, dropzone, body.drag-active modules:empty:after, body.drag-a
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 24px 24px;
-	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23323232" fill="none" stroke-linejoin="round"><path d="M12 15v-14"></path><path d="M21 19c0 2.209-1.791 4-4 4h-10c-2.209 0-4-1.791-4-4"></path><path d="M17 10l-5.001 5.001 -5-5.001"></path></g><path fill="none" d="M0 0h24v24h-24Z"></path></svg>');
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"><path d="M12 15v-14"></path><path d="M21 19c0 2.209-1.791 4-4 4h-10c-2.209 0-4-1.791-4-4"></path><path d="M17 10l-5.001 5.001 -5-5.001"></path></g><path fill="none" d="M0 0h24v24h-24Z"></path></svg>');
 }
-
-
-
-
 body.drag-active modules dropzone.drag-over{
 	outline: 2px solid #2BB3E7;
 	outline-offset: -2px;
 	background-color: rgba(43, 179, 231, 0.3);
 	opacity: 1;
-	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23323232" fill="none" stroke-linejoin="round"><path d="M12 17v-14"></path><path d="M21 17c0 2.209-1.791 4-4 4h-10c-2.209 0-4-1.791-4-4"></path><path d="M17 12l-5.001 5.001 -5-5.001"></path></g><path fill="none" d="M0 0h24v24h-24Z"></path></svg>');
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"><path d="M12 17v-14"></path><path d="M21 17c0 2.209-1.791 4-4 4h-10c-2.209 0-4-1.791-4-4"></path><path d="M17 12l-5.001 5.001 -5-5.001"></path></g><path fill="none" d="M0 0h24v24h-24Z"></path></svg>');
 }
 body.drag-active modules dropzone.drag-over:before{
 	font-size: 24px;
@@ -629,10 +625,10 @@ upload .mailster-upload-info.error .mailster-upload-info-text{
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 20px 20px;
-	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M18.571 20v0c1.262 0 2.286-1.023 2.286-2.286v-4.571l1.143-1.143 -1.143-1.143v-4.571c3.55271e-15-1.263-1.023-2.286-2.286-2.286v0" stroke-linecap="round" stroke-width="1.5" fill-rule="evenodd" stroke="%23323232" fill="none" stroke-linejoin="round"></path><path d="M5.429 4v0c-1.263 0-2.286 1.023-2.286 2.286v4.571l-1.143 1.143 1.143 1.143v4.571c4.44089e-16 1.263 1.023 2.286 2.286 2.286v0" stroke-linecap="round" stroke-width="1.5" fill-rule="evenodd" stroke="%23323232" fill="none" stroke-linejoin="round"></path><rect width="24" height="24" fill="none" transform="matrix(-1 -1.22465e-16 1.22465e-16 -1 24 24)"></rect></svg>');
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M18.571 20v0c1.262 0 2.286-1.023 2.286-2.286v-4.571l1.143-1.143 -1.143-1.143v-4.571c3.55271e-15-1.263-1.023-2.286-2.286-2.286v0" stroke-linecap="round" stroke-width="2.0" fill-rule="evenodd" stroke="%23545454" fill="none" stroke-linejoin="round"></path><path d="M5.429 4v0c-1.263 0-2.286 1.023-2.286 2.286v4.571l-1.143 1.143 1.143 1.143v4.571c4.44089e-16 1.263 1.023 2.286 2.286 2.286v0" stroke-linecap="round" stroke-width="2.0" fill-rule="evenodd" stroke="%23545454" fill="none" stroke-linejoin="round"></path><rect width="24" height="24" fill="none" transform="matrix(-1 -1.22465e-16 1.22465e-16 -1 24 24)"></rect></svg>');
 }
 .mce-ico.mailster-remove-icon:before {
-	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.54143,21H8.45857A2.25,2.25,0,0,1,6.2152,18.92257L5.25,6.375h13.5l-.9652,12.54757A2.25,2.25,0,0,1,15.54143,21Z" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="20" y1="6.375" x2="4" y2="6.375" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M9.1875,3h5.625a1.125,1.125,0,0,1,1.125,1.125v2.25a0,0,0,0,1,0,0H8.0625a0,0,0,0,1,0,0V4.125A1.125,1.125,0,0,1,9.1875,3Z" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="13.96875" y1="10.875" x2="13.96875" y2="16.5" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="10.03125" y1="10.875" x2="10.03125" y2="16.5" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><rect width="24" height="24" fill="none"/></svg>');
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.54143,21H8.45857A2.25,2.25,0,0,1,6.2152,18.92257L5.25,6.375h13.5l-.9652,12.54757A2.25,2.25,0,0,1,15.54143,21Z" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0"/><line x1="20" y1="6.375" x2="4" y2="6.375" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0"/><path d="M9.1875,3h5.625a1.125,1.125,0,0,1,1.125,1.125v2.25a0,0,0,0,1,0,0H8.0625a0,0,0,0,1,0,0V4.125A1.125,1.125,0,0,1,9.1875,3Z" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0"/><line x1="13.96875" y1="10.875" x2="13.96875" y2="16.5" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0"/><line x1="10.03125" y1="10.875" x2="10.03125" y2="16.5" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0"/><rect width="24" height="24" fill="none"/></svg>');
 }
 .ui-helper-hidden-accessible, .screen-reader-text{
 	border: 0;
