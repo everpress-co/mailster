@@ -109,7 +109,10 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	width: 100%;
 }
 .default-value:before {
-	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>');
+	background-size: 20px 20px;
+	width: 20px;
+	height: 20px;
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"><path d="M4 13l9.14824e-14 1.20797e-06c6.67141e-07 4.41828 3.58172 8 8 8 4.41828-6.67141e-07 8-3.58172 8-8 -6.67141e-07-4.41828-3.58172-8-8-8h-7"></path><polyline points="8,8 5,5 8,2"></polyline><path d="M12 12.927h-3.19093e-09c-.0403168 1.7623e-09-.073.0326832-.073.073 1.7623e-09.0403168.0326832.073.073.073 .0403168-1.7623e-09.073-.0326832.073-.073v3.19093e-09c0-.0403168-.0326832-.073-.073-.073"></path></g></svg>');
 }
 .default-value {
 	display: inline-block;
@@ -619,9 +622,9 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 }
 
 #mailster_details .mailster-icon:before{
-	width: 24px;
-	height: 24px;
-	background-size: 24px 24px;
+	width: 20px;
+	height: 20px;
+	background-size: 20px 20px;
 	background-repeat: no-repeat;
 	background-position: center;
 	vertical-align: bottom;
