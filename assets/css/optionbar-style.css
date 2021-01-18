@@ -102,8 +102,6 @@
 	border: 1px solid #fff;
 	line-height: 1em;
 	cursor: pointer;
-	opacity: .7;
-	filter: alpha(opacity=70);
 	outline: 0;
 }
 .dark-mode .optionbar ul li.current_template span, .dark-mode .optionbar ul li a{
