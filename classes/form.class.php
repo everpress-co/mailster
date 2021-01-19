@@ -32,8 +32,8 @@ class MailsterForm {
 	static $add_style  = false;
 
 	public function __construct() {
-		$this->scheme   = is_ssl() ? 'https' : 'http';
-		$this->form     = new StdClass();
+		$this->scheme = is_ssl() ? 'https' : 'http';
+		$this->form   = new StdClass();
 	}
 
 

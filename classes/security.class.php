@@ -53,15 +53,16 @@ class MailsterSecurity {
 			return new WP_Error( 'error_blacklisted', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'blacklisted' );
 		}
 
-		// // check for white listed
+		// check for white listed
 		if ( $this->match( $domain, mailster_option( 'safe_domains' ) ) ) {
 			return true;
 		}
 
-		// // check for domains
+		// check for domains
 		if ( $this->match( $domain, mailster_option( 'blocked_domains' ) ) ) {
 			return new WP_Error( 'error_blocked', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'email' );
 		}
+
 		// check for domains
 		if ( $this->match( $ip, mailster_option( 'blocked_ips' ), true ) ) {
 			return new WP_Error( 'error_blocked', esc_html__( 'Sorry, you cannot signup right now.', 'mailster' ), 'email' );
