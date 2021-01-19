@@ -328,8 +328,8 @@ mailster = (function (mailster, $, window, document) {
 		.on('change', 'select', function () {
 			$('.sync-button').prop('disabled', true);
 		})
-		.on('click', '#sync_subscribers_wp', function () {
-			if (event.target == this && !confirm(mailster.l10n.settings.sync_subscriber)) return false;
+		.on('click', '#sync_subscribers_wp', function (event) {
+			if (event && event.originalEvent && !confirm(mailster.l10n.settings.sync_subscriber)) return false;
 
 			var _this = $(this),
 				loader = $('.sync-ajax-loading').css({
@@ -362,8 +362,8 @@ mailster = (function (mailster, $, window, document) {
 			});
 			return false;
 		})
-		.on('click', '#sync_wp_subscribers', function () {
-			if (event.target == this && !confirm(mailster.l10n.settings.sync_wp_user)) return false;
+		.on('click', '#sync_wp_subscribers', function (event) {
+			if (event && event.originalEvent && !confirm(mailster.l10n.settings.sync_wp_user)) return false;
 
 			var _this = $(this),
 				loader = $('.sync-ajax-loading').css({
