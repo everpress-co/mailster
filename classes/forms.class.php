@@ -1094,7 +1094,7 @@ class MailsterForms {
 		}
 
 		if ( ! ( $forms = $wpdb->get_results( $sql ) ) ) {
-			return false;
+			return array();
 		}
 
 		foreach ( $forms as $i => $form ) {
