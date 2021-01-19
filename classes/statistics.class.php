@@ -13,7 +13,7 @@ class MailsterStatistics {
 	public function init() {
 
 		if ( is_admin() ) {
-			add_action( 'admin_menu', array( &$this, 'add_menu' ), 30 );
+			add_action( 'admin_menu', array( &$this, 'add_menu' ), 20 );
 		}
 
 	}

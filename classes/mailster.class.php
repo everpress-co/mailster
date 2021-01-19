@@ -23,13 +23,13 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/translations.class.php';
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
+		require_once MAILSTER_DIR . 'classes/statistics.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
 		require_once MAILSTER_DIR . 'classes/forms.class.php';
 		require_once MAILSTER_DIR . 'classes/manage.class.php';
 		require_once MAILSTER_DIR . 'classes/templates.class.php';
 		require_once MAILSTER_DIR . 'classes/widget.class.php';
 		require_once MAILSTER_DIR . 'classes/frontpage.class.php';
-		require_once MAILSTER_DIR . 'classes/statistics.class.php';
 		require_once MAILSTER_DIR . 'classes/ajax.class.php';
 		require_once MAILSTER_DIR . 'classes/tinymce.class.php';
 		require_once MAILSTER_DIR . 'classes/cron.class.php';
@@ -51,12 +51,12 @@ class Mailster {
 			'translations' => new MailsterTranslations(),
 			'campaigns'    => new MailsterCampaigns(),
 			'subscribers'  => new MailsterSubscribers(),
+			'statistics'   => new MailsterStatistics(),
 			'lists'        => new MailsterLists(),
 			'forms'        => new MailsterForms(),
 			'manage'       => new MailsterManage(),
 			'templates'    => new MailsterTemplates(),
 			'frontpage'    => new MailsterFrontpage(),
-			'statistics'   => new MailsterStatistics(),
 			'ajax'         => new MailsterAjax(),
 			'tinymce'      => new MailsterTinymce(),
 			'cron'         => new MailsterCron(),
