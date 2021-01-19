@@ -38,14 +38,16 @@ class Ip2City {
 	 */
 	public function get_countries() {
 
-		$rawcountries = $this->gi->GEOIP_COUNTRY_NAMES;
-		$countries    = array();
-		foreach ( $rawcountries as $key => $country ) {
-			if ( ! $key ) {
-				continue;
-			}
+		$countries = array();
+		if ( $this->gi ) {
+			$rawcountries = $this->gi->GEOIP_COUNTRY_NAMES;
+			foreach ( $rawcountries as $key => $country ) {
+				if ( ! $key ) {
+					continue;
+				}
 
-			$countries[ $this->gi->GEOIP_COUNTRY_CODES[ $key ] ] = $country;
+				$countries[ $this->gi->GEOIP_COUNTRY_CODES[ $key ] ] = $country;
+			}
 		}
 
 		return $countries;
