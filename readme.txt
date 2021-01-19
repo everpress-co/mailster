@@ -90,6 +90,9 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.17 =
 
+* fixed: issue with subscriber button on some versions of Firefox
+* fixed: problem downloading templates with special characters in filepath
+* fixed: issue with manual sync button in Firefox
 * fixed: post taxonomies are not respected for some autoresponder campaigns if the initial post status is publish
 * improved: URL hijacking mechanics to handle subdomains
 
