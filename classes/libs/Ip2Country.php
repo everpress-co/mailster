@@ -2,8 +2,7 @@
 
 class Ip2Country {
 
-	// maxmind doesn't provide a zip version so I've uploaded it to bitbucket (updated weekly)
-	public $zip = 'https://static.mailster.co/GeoIPv6.zip';
+	public $zip = 'https://static.mailster.co/geo/CountryDB.zip';
 	private $dbfile;
 	public $gi;
 	private $renew = false;
@@ -38,14 +37,16 @@ class Ip2Country {
 	 */
 	public function get_countries() {
 
-		$rawcountries = $this->gi->GEOIP_COUNTRY_NAMES;
 		$countries = array();
-		foreach ( $rawcountries as $key => $country ) {
-			if ( ! $key ) {
-				continue;
-			}
+		if ( $this->gi ) {
+			$rawcountries = $this->gi->GEOIP_COUNTRY_NAMES;
+			foreach ( $rawcountries as $key => $country ) {
+				if ( ! $key ) {
+					continue;
+				}
 
-			$countries[ $this->gi->GEOIP_COUNTRY_CODES[ $key ] ] = $country;
+				$countries[ $this->gi->GEOIP_COUNTRY_CODES[ $key ] ] = $country;
+			}
 		}
 
 		return $countries;
@@ -78,8 +79,8 @@ class Ip2Country {
 			}
 		}
 		$return = (object) array(
-			'id' => call_user_func( array( $this->gi, 'geoip_country_ip_by_addr_v6' ), $ip ),
-			'code' => call_user_func( array( $this->gi, 'geoip_country_code_by_addr_v6' ), $ip ),
+			'id'      => call_user_func( array( $this->gi, 'geoip_country_ip_by_addr_v6' ), $ip ),
+			'code'    => call_user_func( array( $this->gi, 'geoip_country_code_by_addr_v6' ), $ip ),
 			'country' => call_user_func( array( $this->gi, 'geoip_country_name_by_addr_v6' ), $ip ),
 		);
 
@@ -104,7 +105,7 @@ class Ip2Country {
 		if ( ! $filemtime || $force || $this->renew ) {
 			$do_renew = true;
 		} else {
-			$r = wp_remote_get( $this->zip, array( 'method' => 'HEAD' ) );
+			$r       = wp_remote_get( $this->zip, array( 'method' => 'HEAD' ) );
 			$headers = wp_remote_retrieve_headers( $r );
 			// check header
 			if ( ! isset( $headers['content-type'] ) || $headers['content-type'] != 'application/zip' ) {
@@ -112,7 +113,7 @@ class Ip2Country {
 			}
 
 			$lastmodified = strtotime( $headers['last-modified'] );
-			$do_renew = $lastmodified - $filemtime > 0;
+			$do_renew     = $lastmodified - $filemtime > 0;
 		}
 
 		if ( $do_renew ) {
@@ -126,6 +127,10 @@ class Ip2Country {
 
 			// download
 			$tempfile = download_url( $this->zip );
+
+			if ( is_wp_error( $tempfile ) ) {
+				return $tempfile;
+			}
 
 			// create directory
 			if ( ! is_dir( dirname( $this->dbfile ) ) ) {

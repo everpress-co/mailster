@@ -90,10 +90,10 @@ class MailsterGeo {
 		switch ( $which ) {
 			case 'country':
 			case 'countries':
-				return apply_filters( 'mailster_location_db_file_country', $folder . 'GeoIPv6.dat' );
+				return apply_filters( 'mailster_location_db_file_country', $folder . 'CountryDB.dat' );
 			case 'city':
 			case 'cities':
-				return apply_filters( 'mailster_location_db_file_city', $folder . 'GeoIPCity.dat' );
+				return apply_filters( 'mailster_location_db_file_city', $folder . 'CityDB.dat' );
 				break;
 		}
 		return false;

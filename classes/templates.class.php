@@ -1206,7 +1206,7 @@ class MailsterTemplates {
 		}
 
 		if ( empty( $file_data['slug'] ) ) {
-			$file_data['slug'] = sanitize_title( $file_data['name'] );
+			$file_data['slug'] = basename( dirname( $file ) );
 		}
 
 		$file_data['label'] = str_replace( ' rtl', ' (RTL)', $file_data['label'] );
