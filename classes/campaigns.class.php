@@ -7,6 +7,8 @@ class MailsterCampaigns {
 	private $templatefile;
 	private $templateobj;
 
+	private $post_changed = array();
+
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ) );
@@ -27,7 +29,8 @@ class MailsterCampaigns {
 
 	public function init() {
 
-		add_action( 'transition_post_status', array( &$this, 'check_for_autoresponder' ), 10, 3 );
+		add_action( 'transition_post_status', array( &$this, 'maybe_queue_post_changed' ), 10, 3 );
+
 		add_action( 'mailster_finish_campaign', array( &$this, 'remove_revisions' ) );
 
 		add_action( 'mailster_auto_post_thumbnail', array( &$this, 'get_post_thumbnail' ), 10, 1 );
@@ -4448,7 +4451,7 @@ class MailsterCampaigns {
 	 * @param unknown $old_status
 	 * @param unknown $post
 	 */
-	public function check_for_autoresponder( $new_status, $old_status, $post ) {
+	public function maybe_queue_post_changed( $new_status, $old_status, $post ) {
 
 		if ( defined( 'WP_IMPORTING' ) ) {
 			return;
@@ -4462,10 +4465,6 @@ class MailsterCampaigns {
 			return;
 		}
 
-		if ( get_post_meta( $post->ID, 'mailster_ignore', true ) ) {
-			return;
-		}
-
 		$accepted_status = apply_filters( 'mailster_check_for_autoresponder_accepted_status', 'publish', $post );
 
 		if ( ! is_array( $accepted_status ) ) {
@@ -4475,6 +4474,41 @@ class MailsterCampaigns {
 		if ( ! in_array( $new_status, $accepted_status ) ) {
 			return;
 		}
+
+		$this->post_changed[] = $post->ID;
+
+		add_action( 'shutdown', array( &$this, 'process_queue_post_changed' ) );
+
+	}
+
+
+	public function process_queue_post_changed() {
+
+		foreach ( $this->post_changed as $post_id ) {
+
+			$this->check_for_autoresponder( $post_id );
+
+		}
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $post
+	 */
+	public function check_for_autoresponder( $post ) {
+
+		$post = get_post( $post );
+
+		if ( ! $post || get_post_meta( $post->ID, 'mailster_ignore', true ) ) {
+			return;
+		}
+
+		if ( 'newsletter' == $post->post_type ) {
+			return;
+		}
+
 		$now = time();
 
 		$campaigns = $this->get_autoresponder();

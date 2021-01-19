@@ -566,8 +566,7 @@ if ( $old_version ) {
 			delete_option( 'mailster_recent_feeds' );
 
 		case '2.4.10':
-		case '2.4.11':
-			$options['mail_opt_out'] = isset( $options['bounce'] ) && $options['bounce'];
+			$mailster_options['mail_opt_out'] = isset( $mailster_options['bounce'] ) && $mailster_options['bounce'];
 
 			if ( ! is_plugin_active( 'mailster-gmail/mailster-gmail.php' ) && 'gmail' == $mailster_options['deliverymethod'] ) {
 
@@ -590,6 +589,14 @@ if ( $old_version ) {
 		case '2.4.11':
 		case '2.4.12':
 			delete_transient( 'mailster_verified' );
+
+		case '2.4.13':
+		case '2.4.14':
+		case '2.4.15':
+		case '2.4.16':
+			if ( $mailster_options['track_location'] && $mailster_options['track_location_update'] ) {
+				mailster( 'geo' )->update();
+			}
 
 		default:
 			$mailster_options['db_update_required'] = true;
