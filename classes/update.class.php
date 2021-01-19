@@ -61,7 +61,7 @@ class MailsterUpdate {
 
 			$this->tracker_obj = new Plugin_Usage_Tracker(
 				MAILSTER_FILE,
-				'https://mailster.co',
+				'https://track.mailster.co',
 				false, // options by filter
 				false, // opt in form (custom)
 				false, // goodbye form (custom)

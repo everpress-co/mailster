@@ -795,6 +795,7 @@ class Mailster {
 		$key                             = md5( serialize( array( $identifier, $post_type, $term_ids, $args, $campaign_id ) ) );
 		$args['mailster_identifier']     = $identifier;
 		$args['mailster_identifier_key'] = $key;
+		// $args['date_query'] = array();
 
 		// check if there's a cached version.
 		$posts = mailster_cache_get( 'get_random_post' );
@@ -805,6 +806,10 @@ class Mailster {
 
 		// get the actual post.
 		$post = $this->get_last_post( 0, $post_type, $term_ids, $args, $campaign_id, $subscriber_id );
+
+		if ( ! $post ) {
+			return false;
+		}
 
 		if ( ! isset( $posts[ $campaign_id ] ) ) {
 			$posts[ $campaign_id ] = $stored = array();
@@ -1742,7 +1747,7 @@ class Mailster {
 
 		foreach ( $support_email_hashes as $hash ) {
 
-			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 MONTH)', $hash ) );
+			$user = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->users} WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 1 MONTH)", $hash ) );
 			if ( $user ) {
 
 				if ( ! function_exists( 'wp_delete_user' ) ) {

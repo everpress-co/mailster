@@ -151,7 +151,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		}
 
 		if ( empty( $search ) ) {
-			return $string;
+			return esc_html( $string );
 		}
 
 		foreach ( explode( ' ', $search ) as $term ) {
@@ -271,14 +271,16 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		$actions = array(
-			'delete'        => esc_html__( 'Delete', 'mailster' ),
-			'send_campaign' => esc_html__( 'Send new Campaign', 'mailster' ),
-			'confirmation'  => esc_html__( 'Resend Confirmation', 'mailster' ),
-			'verify'        => esc_html__( 'Verify', 'mailster' ),
+			'delete'         => esc_html__( 'Delete', 'mailster' ),
+			'delete_actions' => esc_html__( 'Delete (with Actions)', 'mailster' ),
+			'send_campaign'  => esc_html__( 'Send new Campaign', 'mailster' ),
+			'confirmation'   => esc_html__( 'Resend Confirmation', 'mailster' ),
+			'verify'         => esc_html__( 'Verify', 'mailster' ),
 		);
 
 		if ( ! current_user_can( 'mailster_delete_subscribers' ) ) {
 			unset( $actions['delete'] );
+			unset( $actions['delete_actions'] );
 		}
 
 		return $actions;

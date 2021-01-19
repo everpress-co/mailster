@@ -34,7 +34,7 @@ class MailsterForm {
 
 	public function __construct() {
 		$this->scheme   = is_ssl() ? 'https' : 'http';
-		$this->honeypot = false; // disabled https://bugs.chromium.org/p/chromium/issues/detail?id=132135
+		$this->honeypot = true; // check https://bugs.chromium.org/p/chromium/issues/detail?id=132135
 		$this->form     = new StdClass();
 	}
 
@@ -543,9 +543,10 @@ class MailsterForm {
 		$fields = apply_filters( 'mymail_form_fields', apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form ), $this->ID, $this->form );
 
 		if ( ! is_admin() && apply_filters( 'mailster_honeypot', $this->honeypot ) ) {
-			$position = rand( count( $fields ), 0 ) - 1;
+			// place honeypot after email field
+			$position = array_search( 'email', array_keys( $fields ) ) + 1;
 			$fields   = array_slice( $fields, 0, $position, true ) +
-				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="off" autofill="off"></label>' ) +
+				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'mailster_honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="noton" autofill="off"></label>' ) +
 				array_slice( $fields, $position, null, true );
 		}
 
@@ -865,15 +866,6 @@ class MailsterForm {
 			wp_die( 'wrong submissiontype' );
 		};
 
-		if ( ! is_admin() && apply_filters( 'mailster_honeypot', $this->honeypot ) ) {
-			$honeypotnonce = wp_create_nonce( 'honeypot' );
-			$honeypot      = isset( $_BASE[ 'n_' . $honeypotnonce . '_email' ] ) ? $_BASE[ 'n_' . $honeypotnonce . '_email' ] : null;
-
-			if ( ! empty( $honeypot ) ) {
-				$this->object['errors']['_honeypot'] = esc_html__( 'Honeypot is for bears only!', 'mailster' );
-			}
-		}
-
 		$_nonce     = isset( $_BASE['_nonce'] ) ? $_BASE['_nonce'] : null;
 		$_formkey   = isset( $_BASE['_formkey'] ) ? $_BASE['_formkey'] : null;
 		$post_nonce = mailster_option( 'post_nonce' );
@@ -959,6 +951,15 @@ class MailsterForm {
 			$this->object['userdata']['formkey'] = $_BASE['_formkey'];
 		}
 
+		if ( ! is_admin() && apply_filters( 'mailster_honeypot', $this->honeypot ) && empty( $this->object['errors'] ) ) {
+			$honeypotnonce = wp_create_nonce( 'mailster_honeypot' );
+			$honeypot      = isset( $_BASE[ 'n_' . $honeypotnonce . '_email' ] ) ? $_BASE[ 'n_' . $honeypotnonce . '_email' ] : null;
+
+			if ( ! empty( $honeypot ) ) {
+				$this->object['errors']['_honeypot'] = esc_html__( 'Honeypot is for bears only!', 'mailster' );
+			}
+		}
+
 		// to hook into the system
 		$this->object = apply_filters( 'mymail_submit', apply_filters( 'mailster_submit', $this->object ) );
 		$this->object = apply_filters( 'mymail_submit_' . $this->ID, apply_filters( 'mailster_submit_' . $this->ID, $this->object ) );
@@ -987,7 +988,6 @@ class MailsterForm {
 							'lang'    => mailster_get_lang(),
 							'referer' => $referer,
 							'form'    => $this->ID,
-							'ip'      => (bool) mailster_option( 'track_users' ),
 						),
 						$this->object['userdata']
 					);
