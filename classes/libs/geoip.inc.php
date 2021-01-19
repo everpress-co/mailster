@@ -603,7 +603,7 @@ class mailster_GeoIP {
 	 */
 	public function geoip_country_name_by_addr_v6( $addr ) {
 		$country_id = $this->geoip_country_id_by_addr_v6( $addr );
-		if ( $country_id !== false ) {
+		if ( $country_id !== false && isset( $this->GEOIP_COUNTRY_NAMES[$country_id] ) ) {
 			return $this->GEOIP_COUNTRY_NAMES[$country_id];
 		}
 		return false;

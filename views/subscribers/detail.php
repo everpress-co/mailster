@@ -47,7 +47,7 @@ $tabindex = 1;
 if ( $is_new ) {
 	esc_html_e( 'Add new Subscriber', 'mailster' );
 } else {
-	printf( esc_html__( 'Edit %s', 'mailster' ), '<strong>' . $nicename . '</strong>' );
+	printf( esc_html__( 'Edit %s', 'mailster' ), '<strong>' . esc_html( $nicename ) . '</strong>' );
 	if ( $subscriber->status == 4 ) {
 		echo '<div class="error"><p>' . sprintf( esc_html__( 'This subscriber has caused an error: %s', 'mailster' ), '<strong>' . ( $meta->error ? $meta->error : esc_html__( 'unknown', 'mailster' ) ) . '</strong>' ) . '</p></div>';
 	}
@@ -65,7 +65,8 @@ if ( $is_new ) {
 			<input type="submit" name="confirmation" class="button button-large" value="<?php esc_attr_e( 'Resend Confirmation', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to resend the confirmation?', 'mailster' ); ?>');">
 		<?php endif; ?>
 		<?php if ( ! $is_new && current_user_can( 'mailster_delete_subscribers' ) ) : ?>
-			<input type="submit" name="delete" class="button button-large" value="<?php esc_attr_e( 'Delete Subscriber', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
+			<input type="submit" name="delete" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Subscriber', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
+			<input type="submit" name="delete_actions" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Subscriber with Actions', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
 		<?php endif; ?>
 		<input type="submit" name="save" class="button button-primary button-large" value="<?php esc_attr_e( 'Save', 'mailster' ); ?>">
 	</span>
@@ -79,7 +80,7 @@ if ( $is_new ) {
 				<?php $avatar_url = $this->get_gravatar_uri( $subscriber->email, 400 ); ?>
 				<div class="avatar<?php echo $subscriber->wp_id ? ' wp-user' : ''; ?>" title="<?php esc_attr_e( 'Source', 'mailster' ); ?>: Gravatar.com" style="background-image:url(<?php echo $avatar_url; ?>)"></div>
 				<?php if ( false !== strpos( $avatar_url, 'gravatar.com' ) ) : ?>
-				<p class="info"><?php esc_html_e( 'Source', 'mailster' ); ?>: <a href="https://gravatar.com">Gravatar.com</a></p>
+				<p class="info"><?php esc_html_e( 'Source', 'mailster' ); ?>: <a href="https://gravatar.com" rel=”nofollow”>Gravatar.com</a></p>
 				<?php endif; ?>
 			<?php endif; ?>
 			<?php if ( ! $is_new ) : ?>
@@ -314,7 +315,7 @@ if ( $is_new ) {
 					<p class="alignright">
 						<?php
 						if ( $geo[1] ) {
-							esc_html_e( 'from', 'mailster' ) . sprintf( ' %s, %s', '<strong><a href="https://www.google.com/maps/@' . $meta->coords . ',11z" class="external">' . $geo[1] . '</a></strong>', '<span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ) );
+							echo esc_html__( 'from', 'mailster' ) . sprintf( ' %1$s, %2$s', '<strong><a href="https://www.google.com/maps/@' . $meta->coords . ',11z" class="external">' . $geo[1] . '</a></strong>', '<span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ) );
 						}
 						?>
 				<?php elseif ( $meta->geo ) : ?>
@@ -337,7 +338,7 @@ if ( $is_new ) {
 					<img src="<?php echo esc_url( $mapurl ); ?>" width="300" heigth="250">
 				</div>
 				<p class="alignright">
-					<?php esc_html_e( 'from', 'mailster' ) . ' <span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ); ?>
+					<?php echo esc_html__( 'from', 'mailster' ) . ' <span class="mailster-flag-24 flag-' . strtolower( $geo[0] ) . '"></span> ' . mailster( 'geo' )->code2Country( $geo[0] ); ?>
 				<?php endif; ?>
 					<?php
 					if ( ! is_null( $meta->timeoffset ) ) :
