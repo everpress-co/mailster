@@ -1,12 +1,12 @@
-jQuery(document).ready(function ($) {
+(function () {
 
 	"use strict"
 
-	var html = $('html'),
-		body = $('body'),
+	var html = jQuery('html'),
+		body = jQuery('body'),
 		origin = decodeURIComponent(location.search.match(/origin=(.+)&/)[1]);
 
-	$('.mailster-form-wrap')
+	jQuery('.mailster-form-wrap')
 		.on('click tap touchstart', function (event) {
 			event.stopPropagation();
 		});
@@ -20,12 +20,12 @@ jQuery(document).ready(function ($) {
 			}, 150);
 		});
 
-	$(window).on('load', function () {
+	jQuery(window).on('load', function () {
 		html.addClass('loaded');
-		$('.mailster-wrapper').eq(0).find('input').focus().select();
+		jQuery('.mailster-wrapper').eq(0).find('input').focus().select();
 	});
 
-	$(document).keydown(function (e) {
+	jQuery(document).keydown(function (e) {
 		if (e.keyCode == 27) {
 			setTimeout(function () {
 				window.parent.postMessage('mailster|c', origin)
@@ -34,4 +34,4 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
-});
+})();
