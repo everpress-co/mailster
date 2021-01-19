@@ -24,8 +24,10 @@ mailster = (function (mailster, $, window, document) {
 	mailster.editor.$.body = $('body');
 
 	$(window).on('load', function () {
+
+		mailster.editor.updateElements();
+
 		mailster.editor.$.html.removeClass('mailster-loading');
-		mailster.editor.$.body = $('body');
 		mailster.editor.$.body
 			.on('click', 'a', function (event) {
 				event.preventDefault();

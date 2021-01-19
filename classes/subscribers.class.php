@@ -1151,11 +1151,8 @@ class MailsterSubscribers {
 			$entry['confirm'] = ( isset( $entry['status'] ) && $entry['status'] == 1 ) ? $now : null;
 		}
 
-		if ( mailster_option( 'track_users' ) && isset( $entry['ip'] ) && $entry['ip'] !== false ) {
+		if ( ! is_admin() && mailster_option( 'track_users' ) ) {
 
-			if ( $entry['ip'] === true ) {
-				unset( $entry['ip'] );
-			}
 			$ip = mailster_get_ip();
 
 			$entry = wp_parse_args(
