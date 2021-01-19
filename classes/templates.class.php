@@ -1168,8 +1168,8 @@ class MailsterTemplates {
 
 		$template_data['added'] = date( 'Y-m-d H:i:s', filectime( $file ) );
 
-		if ( empty( $template_data['slug'] ) ) {
-			$template_data['slug'] = sanitize_key( $template_data['name'] );
+		if ( empty( $file_data['slug'] ) ) {
+			$template_data['slug'] = basename( dirname( $file ) );
 		}
 
 		$template_data['label'] = str_replace( ' rtl', ' (RTL)', $template_data['label'] );
