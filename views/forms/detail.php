@@ -59,7 +59,7 @@ if ( $customfields ) {
 <?php if ( $currentpage != 'use' ) : ?>
 <p class="alignright">
 	<?php if ( ! $is_new && current_user_can( 'mailster_delete_forms' ) ) : ?>
-		<input type="submit" name="delete" class="button button-large" value="<?php esc_attr_e( 'Delete Form', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this form?', 'mailster' ); ?>');">
+		<input type="submit" name="delete" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Form', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this form?', 'mailster' ); ?>');">
 	<?php endif; ?>
 	<input type="submit" name="save" class="button button-primary" value="<?php esc_attr_e( 'Save', 'mailster' ); ?>">
 </p>

@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.5
-Stable tag: 2.4.15
+Tested up to: 5.6
+Stable tag: 2.4.17
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,8 +88,25 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.17 =
+
+* fixed: issue with subscriber button on some versions of Firefox
+* fixed: problem downloading templates with special characters in filepath
+* fixed: issue with manual sync button in Firefox
+* fixed: post taxonomies are not respected for some autoresponder campaigns if the initial post status is publish
+* improved: URL hijacking mechanics to handle subdomains
+
+= Version 2.4.16 =
+
+* fixed: warning on dashboard
+* fixed: JS error in Firefox on WP 5.6
+* improved: order by status now respects timestamps of campaigns.
+* fixed: prevent URL hijacking by only allowing links from either the same domain or explicitly in the campaign.
+* enabled: honeypot mechanism as the bug in Chrome has been fixed
+
 = Version 2.4.15 =
 
+* added: option to remove subscribers with all assigned actions.
 * improved: handling of folder names during template upload
 * fixed: saving queued campaigns cause sending them immediately
 * fixed: campaigns with no web version show in archive
