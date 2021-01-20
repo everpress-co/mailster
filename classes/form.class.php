@@ -939,6 +939,8 @@ class MailsterForm {
 			$this->object['lists'] = $this->form->lists;
 		}
 
+		$this->object['tags'] = $this->form->tags;
+
 		if ( isset( $_BASE['_gdpr'] ) ) {
 			if ( empty( $_BASE['_gdpr'] ) ) {
 				$this->object['errors']['_gdpr'] = mailster_text( 'gdpr_error' );
@@ -968,12 +970,7 @@ class MailsterForm {
 
 			$email = $this->object['userdata']['email'];
 
-			$entry = wp_parse_args(
-				array(
-					'lang' => mailster_get_lang(),
-				),
-				$this->object['userdata']
-			);
+			$entry = wp_parse_args( array( 'lang' => mailster_get_lang() ), $this->object['userdata'] );
 
 			$remove_old_lists = false;
 
@@ -1020,6 +1017,7 @@ class MailsterForm {
 					}
 
 					$assign_lists = $this->object['lists'];
+					$assign_tags  = $this->object['tags'];
 
 					break;
 
@@ -1066,6 +1064,7 @@ class MailsterForm {
 
 						$unassign_lists          = null;
 						$assign_lists            = null;
+						$assign_tags             = $this->object['tags'];
 						$subscriber_notification = false;
 
 						if ( $this->form->userschoice ) {
@@ -1174,13 +1173,11 @@ class MailsterForm {
 				if ( ! empty( $unassign_lists ) ) {
 					mailster( 'subscribers' )->unassign_lists( $subscriber_id, $unassign_lists );
 				}
+				if ( ! empty( $assign_tags ) ) {
+					mailster( 'subscribers' )->assign_tags( $subscriber_id, $assign_tags );
+				}
 
-				$target = add_query_arg(
-					array(
-						'subscribe' => '',
-					),
-					$baselink
-				);
+				$target = add_query_arg( array( 'subscribe' => '' ), $baselink );
 
 			}
 

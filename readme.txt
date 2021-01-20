@@ -323,6 +323,7 @@ Xaver Birsak – https://everpress.co
 * improved: handling of options
 * improved: removed some variables from the global space
 
+
 = Version 2.3.16 =
 
 * new: option to choose original image in editbar (for animated gifs)

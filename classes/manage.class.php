@@ -550,6 +550,7 @@ class MailsterManage {
 				foreach ( $raw_list as $line ) {
 
 					$list_array = array();
+					$tag_array  = array();
 					$list_ids   = $option_list_ids;
 
 					if ( ! trim( $line ) ) {
@@ -608,6 +609,11 @@ class MailsterManage {
 							case '_lists':
 								$list_array = explode( ',', $d );
 								$list_array = array_map( 'trim', $list_array );
+
+								break;
+							case '_tags':
+								$tag_array = explode( ',', $d );
+								$tag_array = array_map( 'trim', $tag_array );
 
 								break;
 							case '_ip_all':
@@ -733,6 +739,35 @@ class MailsterManage {
 								$added = isset( $insert['signup'] ) ? $insert['signup'] : time();
 							}
 							mailster( 'subscribers' )->assign_lists( $subscriber_id, $list_ids, $bulkdata['existing'] == 'overwrite', $added );
+						}
+
+						foreach ( $tag_array as $tag ) {
+
+							if ( empty( $tag ) ) {
+								continue;
+							}
+
+							if ( isset( $tag_cache[ $tag ] ) ) {
+								$tag_id = $tag_cache[ $tag ];
+							} else {
+								$tag_id = mailster( 'tags' )->get_by_name( $tag, 'ID' );
+							}
+
+							if ( ! $tag_id ) {
+								$tag_id = mailster( 'tags' )->add( $tag );
+								if ( is_wp_error( $tag_id ) ) {
+									continue;
+								}
+								$tag_cache[ $tag ] = $tag_id;
+							}
+
+							$tag_ids[] = $tag_id;
+
+						}
+
+						if ( ! empty( $tag_ids ) ) {
+							$tag_ids = array_unique( $tag_ids );
+							mailster( 'subscribers' )->assign_tags( $subscriber_id, $tag_ids, $bulkdata['existing'] == 'overwrite' );
 						}
 
 						$bulkdata['imported']++;
@@ -943,6 +978,9 @@ class MailsterManage {
 					case '_listnames':
 						$val = esc_html__( 'Lists', 'mailster' );
 						break;
+					case '_tagnames':
+						$val = esc_html__( 'Tags', 'mailster' );
+						break;
 					case 'hash':
 						$val = esc_html__( 'Hash', 'mailster' );
 						break;
@@ -1064,6 +1102,10 @@ class MailsterManage {
 					case '_listnames':
 						$list = mailster( 'subscribers' )->get_lists( $user->ID );
 						$val  = implode( ', ', wp_list_pluck( $list, 'name' ) );
+						break;
+					case '_tagnames':
+						$tag = mailster( 'subscribers' )->get_tags( $user->ID );
+						$val = implode( ', ', wp_list_pluck( $tag, 'name' ) );
 						break;
 					case 'status':
 						$val = $statusnames[ $user->status ];

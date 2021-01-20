@@ -80,6 +80,10 @@ class MailsterSubscribers {
 			wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 			wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
 
+			wp_enqueue_style( 'mailster-select2-theme', MAILSTER_URI . 'assets/css/select2' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_style( 'mailster-select2', MAILSTER_URI . 'assets/css/libs/select2' . $suffix . '.css', array( 'mailster-select2-theme' ), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+
 			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
 
@@ -89,7 +93,7 @@ class MailsterSubscribers {
 			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			wp_enqueue_style( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/css/subscriber-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_script( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/js/subscriber-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-subscriber-detail', MAILSTER_URI . 'assets/js/subscriber-script' . $suffix . '.js', array( 'mailster-script', 'mailster-select2' ), MAILSTER_VERSION, true );
 
 			mailster_localize_script(
 				'subscribers',
@@ -102,6 +106,7 @@ class MailsterSubscribers {
 					'month_names'   => array_values( $wp_locale->month ),
 					'invalid_email' => esc_html__( 'This isn\'t a valid email address!', 'mailster' ),
 					'email_exists'  => esc_html__( 'This email address already exists!', 'mailster' ),
+					'choose_tags'   => esc_html__( 'Choose your tags.', 'mailster' ),
 				)
 			);
 
@@ -397,6 +402,7 @@ class MailsterSubscribers {
 
 			}
 		}
+
 		if ( isset( $_POST['mailster_data'] ) ) {
 
 			if ( isset( $_POST['save'] ) ) :
@@ -454,6 +460,7 @@ class MailsterSubscribers {
 					} else {
 						$lists = array();
 					}
+
 					$current_lists = $this->get_lists( $subscriber->ID, true );
 
 					if ( $unasssign = array_diff( $current_lists, $lists ) ) {
@@ -461,6 +468,25 @@ class MailsterSubscribers {
 					}
 					if ( $assign = array_diff( $lists, $current_lists ) ) {
 						$this->assign_lists( $subscriber->ID, $assign, false, true );
+					}
+
+					$current_tags = $this->get_tags( $subscriber->ID, true );
+
+					if ( isset( $_POST['mailster_tags'] ) ) {
+						$tags     = array_filter( $_POST['mailster_tags'], 'is_numeric' );
+						$new_tags = array_values( array_diff( $_POST['mailster_tags'], $tags ) );
+						foreach ( $new_tags as $tagname ) {
+							$tags[] = mailster( 'tags' )->add( $tagname );
+						}
+					} else {
+						$tags = array();
+					}
+
+					if ( $unasssign = array_diff( $current_tags, $tags ) ) {
+						$this->unassign_tags( $subscriber->ID, $unasssign );
+					}
+					if ( $assign = array_diff( $tags, $current_tags ) ) {
+						$this->assign_tags( $subscriber->ID, $assign, false, true );
 					}
 
 					if ( ! $old_subscriber_data || $subscriber->status != $old_subscriber_data->status ) {
@@ -981,6 +1007,7 @@ class MailsterSubscribers {
 		$customfields  = array();
 		$lists         = null;
 		$subscriber_id = null;
+		$tags          = null;
 		$meta_keys     = $this->get_meta_keys( true );
 
 		$entry = $this->verify( $entry );
@@ -993,6 +1020,10 @@ class MailsterSubscribers {
 		if ( isset( $entry['_lists'] ) ) {
 			$lists = $entry['_lists'];
 			unset( $entry['_lists'] );
+		}
+		if ( isset( $entry['_tags'] ) ) {
+			$lists = $entry['_tags'];
+			unset( $entry['_tags'] );
 		}
 
 		if ( isset( $entry['ID'] ) ) {
@@ -1066,6 +1097,9 @@ class MailsterSubscribers {
 			}
 			if ( $lists ) {
 				$this->assign_lists( $subscriber_id, $lists, false, $data['status'] == 0 ? false : true );
+			}
+			if ( $tags ) {
+				$this->assign_tags( $subscriber_id, $tags );
 			}
 
 			$this->add_custom_value( $subscriber_id, $customfields, null, ! $merge );
@@ -1397,6 +1431,72 @@ class MailsterSubscribers {
 
 		if ( false !== $wpdb->query( $sql ) ) {
 			do_action( 'mailster_unassign_lists', $subscriber_ids, $lists, $not_list );
+
+			return true;
+		}
+
+		return false;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_ids
+	 * @param unknown $tags
+	 * @param unknown $remove_old     (optional)
+	 * @return unknown
+	 */
+	public function assign_tags( $subscriber_ids, $tags, $remove_old = false ) {
+
+		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
+		if ( ! is_array( $tags ) ) {
+			$tags = array( $tags );
+		}
+
+		if ( $remove_old ) {
+			$this->unassign_tags( $subscriber_ids, null, $tags );
+		}
+
+		return mailster( 'tags' )->assign_subscribers( $tags, $subscriber_ids, $remove_old );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_ids
+	 * @param unknown $tags          (optional)
+	 * @param unknown $not_tag       (optional)
+	 * @return unknown
+	 */
+	public function unassign_tags( $subscriber_ids, $tags = null, $not_tag = null ) {
+
+		global $wpdb;
+
+		$subscriber_ids = ! is_array( $subscriber_ids ) ? array( (int) $subscriber_ids ) : array_filter( $subscriber_ids, 'is_numeric' );
+
+		$sql = "DELETE FROM {$wpdb->prefix}mailster_tags_subscribers WHERE subscriber_id IN (" . implode( ', ', $subscriber_ids ) . ')';
+
+		if ( ! is_null( $tags ) && ! empty( $tags ) ) {
+			if ( ! is_array( $tags ) ) {
+				$tags = array( $tags );
+			}
+
+			$sql .= ' AND tag_id IN (' . implode( ', ', array_filter( $tags, 'is_numeric' ) ) . ')';
+		}
+		if ( ! is_null( $not_tag ) && ! empty( $not_tag ) ) {
+			if ( ! is_array( $not_tag ) ) {
+				$not_tag = array( $not_tag );
+			}
+
+			$sql .= ' AND tag_id NOT IN (' . implode( ', ', array_filter( $not_tag, 'is_numeric' ) ) . ')';
+		}
+
+		if ( false !== $wpdb->query( $sql ) ) {
+			do_action( 'mailster_unassign_tags', $subscriber_ids, $tags, $not_tag );
 
 			return true;
 		}
@@ -2142,6 +2242,81 @@ class MailsterSubscribers {
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $lists, 'ID' ) : $lists;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id
+	 * @param unknown $ids_only (optional)
+	 * @return unknown
+	 */
+	public function get_tags( $id, $ids_only = false ) {
+
+		global $wpdb;
+
+		$cache = mailster_cache_get( 'subscribers_tags' );
+		if ( isset( $cache[ $id ] ) ) {
+			return $cache[ $id ];
+		}
+
+		$sql = "SELECT a.* FROM {$wpdb->prefix}mailster_tags AS a LEFT JOIN {$wpdb->prefix}mailster_tags_subscribers AS ab ON a.ID = ab.tag_id WHERE ab.subscriber_id = %d";
+
+		$tags = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
+
+		return $ids_only ? wp_list_pluck( $tags, 'ID' ) : $tags;
+
+	}
+
+	public function print_tags( $id, $editable = false ) {
+
+		$tags = mailster( 'tags' )->get_by_subscriber( $id );
+
+		echo '<ul class="mailster-tags">';
+
+		foreach ( $tags as $i => $tag ) {
+
+			if ( $editable ) {
+				echo '<li class="mailster-tag mailster-tag-' . sanitize_key( $tag->name ) . '"><input type="hidden" value="' . esc_attr( $tag->ID ) . '" name="mailster_data[_tags][' . $i . '][ID]"><input type="text" value="' . esc_attr( $tag->name ) . '" name="mailster_data[_tags][' . $i . '][name]"><a class="remove-tag">x</a></li>';
+			} else {
+
+				echo '<li class="mailster-tag mailster-tag-' . sanitize_key( $tag->name ) . '"><label>' . esc_html( $tag->name ) . ' </label><a class="remove-tag">x</a></li>';
+			}
+		}
+
+		echo '</ul>';
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @return unknown
+	 */
+	public function get_unassigned() {
+
+		global $wpdb;
+
+		$custom_fields = mailster()->get_custom_fields( true );
+
+		$sql = 'SELECT a.' . implode( ', a.', $fields ) . ', ab.list_id';
+
+		foreach ( $custom_fields as $i => $name ) {
+			$sql .= ", meta_$i.meta_value AS '$name'";
+		}
+
+		$sql .= " FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN ({$wpdb->prefix}mailster_lists AS b INNER JOIN {$wpdb->prefix}mailster_lists_subscribers AS ab ON b.ID = ab.list_id) ON a.ID = ab.subscriber_id";
+
+		foreach ( $custom_fields as $i => $name ) {
+			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS meta_$i ON meta_$i.subscriber_id = a.ID AND meta_$i.meta_key = '$name'";
+		}
+
+		$sql .= ' WHERE a.status IN (' . implode( ',', $stati ) . ') AND ab.list_id IN (' . implode( ',', $listids ) . ") GROUP BY ab.list_id, a.ID LIMIT $offset, $limit";
+
+		return $wpdb->get_results( $sql );
 
 	}
 

@@ -68,7 +68,7 @@ h3.detail .click-to-edit{
 .click-to-edit li{
 	display: none;
 }
-.click-to-edit li:first-child{
+.click-to-edit > li:first-child{
 	display: block;
 	min-width: 102%;
 }
@@ -297,6 +297,23 @@ h3 input{
 .activity-wrap .unsubscribe-message, .activity-wrap .bounce-message, .activity-wrap .error-message{
 	white-space: pre-line;
 }
+
+.mailster-tags{
+	padding: 11px 8px 2px;
+	margin-right: 20px;
+	box-sizing: border-box;
+}
+.mailster-tags label{
+	display: block;
+	padding-bottom: 8px;
+}
+.mailster-tags .select2-container.select2-container--mailster .select2-search--inline{
+	opacity: 0.3;
+}
+.mailster-tags:hover .select2-container.select2-container--mailster .select2-search--inline{
+	opacity: 1;
+}
+
 @media screen and (max-width: 782px) {
 	.wrap h2{
 		overflow: hidden;

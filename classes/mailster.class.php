@@ -24,6 +24,7 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/campaigns.class.php';
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
+		require_once MAILSTER_DIR . 'classes/tags.class.php';
 		require_once MAILSTER_DIR . 'classes/forms.class.php';
 		require_once MAILSTER_DIR . 'classes/manage.class.php';
 		require_once MAILSTER_DIR . 'classes/templates.class.php';
@@ -52,6 +53,7 @@ class Mailster {
 			'campaigns'    => new MailsterCampaigns(),
 			'subscribers'  => new MailsterSubscribers(),
 			'lists'        => new MailsterLists(),
+			'tags'         => new MailsterTags(),
 			'forms'        => new MailsterForms(),
 			'manage'       => new MailsterManage(),
 			'templates'    => new MailsterTemplates(),
@@ -2045,6 +2047,25 @@ class Mailster {
                 KEY `subscriber_id` (`subscriber_id`)
             ) $collate;",
 
+			"CREATE TABLE {$wpdb->prefix}mailster_tags (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `name` varchar(191) NOT NULL,
+                `added` int(11) unsigned NOT NULL,
+                `updated` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `name` (`name`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_tags_subscribers (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `tag_id` bigint(20) unsigned NOT NULL,
+                `subscriber_id` bigint(20) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY id (`tag_id`,`subscriber_id`),
+                KEY `tag_id` (`tag_id`),
+                KEY `subscriber_id` (`subscriber_id`)
+            ) $collate;",
+
 			"CREATE TABLE {$wpdb->prefix}mailster_forms (
                 `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `name` varchar(191) NOT NULL DEFAULT '',
@@ -2098,6 +2119,17 @@ class Mailster {
                 UNIQUE KEY `id` (`form_id`,`list_id`),
                 KEY `form_id` (`form_id`),
                 KEY `list_id` (`list_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_forms_tags (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `form_id` bigint(20) unsigned NOT NULL,
+                `tag_id` bigint(20) unsigned NOT NULL,
+                `added` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `id` (`form_id`,`tag_id`),
+                KEY `form_id` (`form_id`),
+                KEY `list_id` (`tag_id`)
             ) $collate;",
 
 		);
