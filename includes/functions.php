@@ -40,6 +40,20 @@ function mailster_option( $option, $fallback = null ) {
 
 }
 
+/**
+ *
+ *
+ * @param unknown $option
+ * @param unknown $fallback (optional)
+ * @return unknown
+ */
+function mailster_force_option( $option, $fallback = null ) {
+
+	wp_cache_delete( 'alloptions', 'options' );
+	return mailster_option( $option, $fallback );
+
+}
+
 
 /**
  *
@@ -201,6 +215,21 @@ function mailster_update_option( $option, $value = null, $temp = false ) {
 	}
 
 	return update_option( 'mailster_options', $mailster_options );
+}
+
+
+/**
+ *
+ *
+ * @param unknown $option
+ * @param unknown $value  (optional)
+ * @param unknown $temp   (optional)
+ * @return unknown
+ */
+function mailster_force_update_option( $option, $value = null, $temp = false ) {
+
+	wp_cache_delete( 'alloptions', 'options' );
+	return mailster_update_option( $option, $value, $temp );
 }
 
 

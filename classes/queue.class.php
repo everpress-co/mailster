@@ -1040,6 +1040,11 @@ class MailsterQueue {
 
 			// unlock?
 			$unlock = apply_filters( 'mymail_unlock_cron', apply_filters( 'mailster_unlock_cron', false ) );
+
+			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] && ! get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
+				set_transient( 'mailster_cron_lock_triggered_' . $process_id, time() );
+			}
+
 			if ( $unlock && $sec > max( 600, $unlock ) ) {
 				// unlock automatically but with a minimum of 10 minutes
 				mailster( 'cron' )->unlock( $process_id );
@@ -1311,10 +1316,72 @@ class MailsterQueue {
 		$took = ( microtime( true ) - $microtime );
 		if ( $sent_this_turn ) {
 			$mailtook = round( $took / $sent_this_turn, 4 );
-			$this->cron_log( 'time', round( $took, 2 ) . ' sec., (' . $mailtook . ' sec./mail)' );
 			mailster_remove_notice( 'max_execution_time' );
 			$last_hit['timemax'] = max( $last_hit['timemax'], $took );
 			$last_hit['mail']    = $mailtook;
+
+			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] ) {
+
+				error_log( print_r( $last_hit, true ) );
+
+				if ( $cron_lock_timestamp = get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
+					$percentage = 0.5;
+					$interval   = abs( $cron_lock_timestamp - $last_hit['timestamp'] );
+					delete_transient( 'mailster_cron_lock_triggered_' . $process_id );
+					error_log( 'mailster_cron_lock_triggered_:' . print_r( $interval, true ) );
+				} else {
+					$percentage = 0.9;
+					$interval   = $last_hit['timestamp'] - $last_hit['oldtimestamp'];
+				}
+
+				error_log( 'interval: ' . print_r( $interval, true ) );
+
+				$possible_mails_per_minute = MINUTE_IN_SECONDS / $last_hit['mail'];
+
+				error_log( 'possible_mails_per_minute: ' . print_r( $possible_mails_per_minute, true ) );
+
+				if ( $max_execution_time ) {
+					$possible_mails_per_interval = $possible_mails_per_minute * ( min( $max_execution_time, $interval ) / MINUTE_IN_SECONDS );
+				} else {
+					$possible_mails_per_interval = $possible_mails_per_minute * ( $interval / MINUTE_IN_SECONDS );
+				}
+
+				$possible_mails_per_interval_adjusted = round( $percentage * $possible_mails_per_interval );
+				$possible_mails_per_interval_adjusted = max( 1, $possible_mails_per_interval_adjusted );
+
+				error_log( 'send_at_once: ' . print_r( $send_at_once, true ) );
+				error_log( 'sent_this_turn: ' . print_r( $sent_this_turn, true ) );
+				error_log( 'to_send: ' . print_r( $to_send, true ) );
+
+				$ratio = $send_at_once / $possible_mails_per_interval_adjusted;
+				$diff  = abs( $send_at_once - $possible_mails_per_interval_adjusted );
+
+				$prefix = '';
+
+				if ( $ratio < 1 ) {
+					if ( $to_send == $send_this_turn ) {
+						$possible_mails_per_interval_adjusted = round( $sent_this_turn + ( $diff * $ratio ) );
+					} else {
+						$possible_mails_per_interval_adjusted = round( $send_at_once + ( $diff * $ratio ) );
+					}
+					error_log( '' . print_r( 'MORE', true ) );
+					$prefix = '+';
+				}
+
+				$this->cron_log( 'send next turn', $possible_mails_per_interval_adjusted . '(' . $prefix . ( round( 100 * $possible_mails_per_interval_adjusted / $send_at_once ) - 100 ) . '%)' );
+				error_log( 'diff: ' . print_r( $diff, true ) );
+
+				error_log( 'ratio: ' . print_r( $ratio, true ) );
+
+				error_log( 'possible_mails_per_interval_adjusted: ' . print_r( $possible_mails_per_interval_adjusted, true ) );
+
+				if ( $diff && mailster_force_option( 'auto_send_at_once' ) ) {
+					mailster_force_update_option( 'send_at_once', $possible_mails_per_interval_adjusted );
+				}
+			}
+
+			$this->cron_log( 'time', round( $took, 2 ) . ' sec., (' . $mailtook . ' sec./mail)' );
+
 		}
 
 		if ( is_user_logged_in() ) {
