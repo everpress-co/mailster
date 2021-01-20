@@ -146,20 +146,6 @@ class MailsterAjax {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $return
-	 */
-	public function json_return( $return ) {
-
-		@header( 'Content-type: application/json' );
-		echo json_encode( $return );
-		exit;
-
-	}
-
-
 	public function form_css() {
 		_deprecated_function( __FUNCTION__, '2.2' );
 	}
@@ -228,7 +214,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		@error_reporting( 0 );
+		error_reporting( 0 );
 
 		$id          = (int) $_GET['id'];
 		$template    = basename( $_GET['template'] );
@@ -340,7 +326,7 @@ class MailsterAjax {
 			$return['msg'] = esc_html__( 'Unable to save template!', 'mailster' );
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -356,7 +342,7 @@ class MailsterAjax {
 
 		$return['content'] = mailster()->sanitize_content( $content, $head );
 		$return['style']   = mailster( 'helper' )->get_mailster_styles();
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -453,7 +439,7 @@ class MailsterAjax {
 		$return['nonce']   = wp_create_nonce( 'mailster_nonce' );
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -495,7 +481,7 @@ class MailsterAjax {
 			}
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -524,7 +510,7 @@ class MailsterAjax {
 			$return['part'] = basename( $endpoint );
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -539,7 +525,7 @@ class MailsterAjax {
 
 		$return['success'] = (bool) update_user_meta( $current_user->ID, '_mailster_preflight_agreed', time() );
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -575,7 +561,7 @@ class MailsterAjax {
 			}
 		}
 
-		$this->json_return( $return['subscribers'] );
+		wp_send_json( $return['subscribers'] );
 
 	}
 
@@ -833,7 +819,7 @@ class MailsterAjax {
 			$return['msg'] .= '<br>' . esc_html__( 'Check your console for more info.', 'mailster' );
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -854,7 +840,7 @@ class MailsterAjax {
 		$return['conditions']     = mailster( 'conditions' )->render( $conditions, false );
 		$return['totalformatted'] = number_format_i18n( $return['total'] );
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -881,7 +867,7 @@ class MailsterAjax {
 
 		$return['success'] = update_option( 'mailster_colors', $colors );
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -909,7 +895,7 @@ class MailsterAjax {
 
 		$return['success'] = update_option( 'mailster_colors', $colors );
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -929,7 +915,7 @@ class MailsterAjax {
 
 		$return['success'] = update_option( 'mailster_colors', $colors );
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -958,7 +944,7 @@ class MailsterAjax {
 		$return['html'] .= '</tbody>';
 		$return['html'] .= '</table>';
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -985,7 +971,7 @@ class MailsterAjax {
 		$return['html'] .= '</tbody>';
 		$return['html'] .= '</table>';
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1011,7 +997,7 @@ class MailsterAjax {
 		$return['html'] .= '</tbody>';
 		$return['html'] .= '</table>';
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1074,7 +1060,7 @@ class MailsterAjax {
 
 		$return['html'] .= '</tbody></table></div>';
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1098,7 +1084,7 @@ class MailsterAjax {
 		$return['html'] .= '</tbody>';
 		$return['html'] .= '</table>';
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1119,7 +1105,7 @@ class MailsterAjax {
 		$return['html']    = mailster( 'campaigns' )->get_recipients_part( $campaign_ID, $parts, $page, $orderby, $order );
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1136,7 +1122,7 @@ class MailsterAjax {
 		$return['html']    = mailster( 'subscribers' )->get_recipient_detail( $subscriber_id, $campaign_id );
 		$return['success'] = (bool) $return['html'];
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1158,7 +1144,7 @@ class MailsterAjax {
 			$return['success'] = (bool) ( $return['image'] = mailster( 'helper' )->create_image( $id, $src, $width, $height, $crop, $original ) );
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1480,7 +1466,7 @@ class MailsterAjax {
 			}
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1554,7 +1540,7 @@ class MailsterAjax {
 			}
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1631,7 +1617,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1648,7 +1634,7 @@ class MailsterAjax {
 		$return['html']    = '<div class="dynamic_embed_options_taxonomies">' . mailster( 'helper' )->get_post_term_dropdown( $post_type, $labels, $names ) . '</div>';
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1666,7 +1652,7 @@ class MailsterAjax {
 
 			$return['msg'] = esc_html__( 'Please fill out all fields correctly!', 'mailster' );
 
-			$this->json_return( $return );
+			wp_send_json( $return );
 
 		}
 
@@ -1686,7 +1672,7 @@ class MailsterAjax {
 
 		$return['msg'] = ( $return['success'] ) ? esc_html__( 'Your message was sent successfully!', 'mailster' ) : esc_html__( 'Sorry, we couldn\'t deliver your message. Please try again later!', 'mailster' );
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1711,7 +1697,7 @@ class MailsterAjax {
 
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1754,7 +1740,7 @@ class MailsterAjax {
 			}
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -1774,7 +1760,7 @@ class MailsterAjax {
 			$return['success'] = (bool) $return['html'] = @file_get_contents( $file );
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -1827,7 +1813,7 @@ class MailsterAjax {
 			$return['msg'] = esc_html__( 'Not able to save file!', 'mailster' );
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -1839,7 +1825,7 @@ class MailsterAjax {
 		$slug = basename( $_POST['slug'] );
 
 		$return['success'] = mailster( 'templates' )->remove_template( $slug );
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1861,7 +1847,7 @@ class MailsterAjax {
 			$return['success']  = true;
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1881,8 +1867,7 @@ class MailsterAjax {
 			$return['success'] = true;
 		}
 
-		$this->json_return( $return );
-
+		wp_send_json( $return );
 	}
 
 
@@ -1893,7 +1878,7 @@ class MailsterAjax {
 			mailster_remove_notice( $_POST['id'] );
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -1902,7 +1887,7 @@ class MailsterAjax {
 
 		update_option( 'mailster_notices', array() );
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -1912,7 +1897,7 @@ class MailsterAjax {
 			$return['msg']    .= "\n" . sprintf( esc_html__( 'Please add following lines to the wp-config.php %s', 'mailster' ), "\n\ndefine('FTP_HOST', 'your-ftp-host');\ndefine('FTP_USER', 'your-ftp-user');\ndefine('FTP_PASS', 'your-ftp-password');\n" );
 			$return['success'] = false;
 
-			$this->json_return( $return );
+			wp_send_json( $return );
 		}
 
 	}
@@ -1931,7 +1916,7 @@ class MailsterAjax {
 			$return['msg'] = esc_html__( 'Couldn\'t load Location Database', 'mailster' );
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1946,7 +1931,7 @@ class MailsterAjax {
 		$return['success'] = true;
 		$return['offset']  = $limit + $offset;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1961,7 +1946,7 @@ class MailsterAjax {
 		$return['success'] = true;
 		$return['offset']  = $limit + $offset;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -1991,7 +1976,7 @@ class MailsterAjax {
 
 		$return['success'] = $mail->send_notification( $identifier, $mail->subject, $replace );
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2033,7 +2018,7 @@ class MailsterAjax {
 
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2046,7 +2031,7 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			$this->json_return( $return );
+			wp_send_json( $return );
 		}
 
 		$space   = 30;
@@ -2066,7 +2051,7 @@ class MailsterAjax {
 
 		$return['msg'] = $output;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2086,7 +2071,7 @@ class MailsterAjax {
 			$return['url'] = null;
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2103,7 +2088,7 @@ class MailsterAjax {
 		$return['exists']  = (bool) $subscriber && $subscriber->ID != (int) $_POST['id'];
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2157,7 +2142,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2207,7 +2192,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2225,7 +2210,7 @@ class MailsterAjax {
 		$return['success'] = mailster( 'campaigns' )->create_list_from_option( $name, $campaign_id, $listtype );
 		$return['msg']     = $return['success'] ? esc_html__( 'List has been created', 'mailster' ) : esc_html__( 'Couldn\'t create List', 'mailster' );
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2242,7 +2227,7 @@ class MailsterAjax {
 		$return['count']   = mailster( 'campaigns' )->create_list_from_option( '', $campaign_id, $listtype, true );
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2269,7 +2254,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2278,18 +2263,18 @@ class MailsterAjax {
 
 		global $wpdb;
 
-		$memory_limit       = @ini_get( 'memory_limit' );
-		$max_execution_time = @ini_get( 'max_execution_time' );
+		$memory_limit       = ini_get( 'memory_limit' );
+		$max_execution_time = ini_get( 'max_execution_time' );
 
 		$return['success'] = false;
 
-		@set_time_limit( 0 );
+		set_time_limit( 0 );
 
 		if ( (int) $max_execution_time < 300 ) {
-			@ini_set( 'max_execution_time', 300 );
+			ini_set( 'max_execution_time', 300 );
 		}
 		if ( (int) $memory_limit < 256 ) {
-			@ini_set( 'memory_limit', '256M' );
+			ini_set( 'memory_limit', '256M' );
 		}
 
 		if ( isset( $_FILES['async-upload'] ) ) {
@@ -2379,7 +2364,7 @@ class MailsterAjax {
 
 		if ( isset( $return ) ) {
 
-			$this->json_return( $return );
+			wp_send_json( $return );
 
 		}
 
@@ -2394,18 +2379,18 @@ class MailsterAjax {
 			die( 'not allowed' );
 		}
 
-		$memory_limit       = @ini_get( 'memory_limit' );
-		$max_execution_time = @ini_get( 'max_execution_time' );
+		$memory_limit       = ini_get( 'memory_limit' );
+		$max_execution_time = ini_get( 'max_execution_time' );
 
 		$return['success'] = false;
 
-		@set_time_limit( 0 );
+		set_time_limit( 0 );
 
 		if ( (int) $max_execution_time < 300 ) {
-			@ini_set( 'max_execution_time', 300 );
+			ini_set( 'max_execution_time', 300 );
 		}
 		if ( (int) $memory_limit < 256 ) {
-			@ini_set( 'memory_limit', '256M' );
+			ini_set( 'memory_limit', '256M' );
 		}
 
 		if ( isset( $_FILES['async-upload'] ) ) {
@@ -2445,7 +2430,7 @@ class MailsterAjax {
 
 		if ( isset( $return ) ) {
 
-			$this->json_return( $return );
+			wp_send_json( $return );
 
 		}
 
@@ -2468,7 +2453,7 @@ class MailsterAjax {
 			$return['success'] = $wp_filesystem->delete( $file );
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 	private function query_templates() {
@@ -2493,7 +2478,7 @@ class MailsterAjax {
 			$return['error']     = $result['error'];
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -2582,7 +2567,7 @@ class MailsterAjax {
 				break;
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -2596,7 +2581,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -2626,7 +2611,7 @@ class MailsterAjax {
 
 		$return['success'] = true;
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -2642,7 +2627,7 @@ class MailsterAjax {
 			$return['html'] = esc_html__( 'Couldn\'t load language file. Please try again later.', 'mailster' );
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -2698,7 +2683,7 @@ class MailsterAjax {
 			}
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -2745,7 +2730,7 @@ class MailsterAjax {
 			exit;
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -2763,7 +2748,7 @@ class MailsterAjax {
 			$return['success'] = true;
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -2797,7 +2782,7 @@ class MailsterAjax {
 				break;
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 	}
 
 
@@ -2858,7 +2843,7 @@ class MailsterAjax {
 				break;
 		}
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 
@@ -2879,7 +2864,7 @@ class MailsterAjax {
 		$return['current']  = $test->get_current();
 		$return['type']     = $test->get_current_type();
 
-		$this->json_return( $return );
+		wp_send_json( $return );
 
 	}
 

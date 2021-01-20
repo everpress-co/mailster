@@ -50,8 +50,8 @@ if ( ! defined( 'MAILSTER_VERSION' ) ) {
 }
 
 $interval = isset( $_GET['interval'] ) ? (int) $_GET['interval'] : mailster_option( 'interval', 5 ) * 60;
-if ( $request_url ) {
-	@header( "Refresh: $interval;url=" . $request_url, true );
+if ( $request_url && ! headers_sent() ) {
+	header( "Refresh: $interval;url=" . $request_url, true );
 }
 
 $text_direction = function_exists( 'is_rtl' ) && is_rtl() ? 'rtl' : 'ltr';

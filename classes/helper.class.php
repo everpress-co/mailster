@@ -7,13 +7,13 @@ class MailsterHelper {
 	 *
 	 * @param unknown $attach_id (optional)
 	 * @param unknown $img_url   (optional)
-	 * @param unknown $width
-	 * @param unknown $height   (optional)
-	 * @param unknown $crop     (optional)
-	 * @param unknown $original (optional)
+	 * @param unknown $width     (optional)
+	 * @param unknown $height    (optional)
+	 * @param unknown $crop      (optional)
+	 * @param unknown $original  (optional)
 	 * @return unknown
 	 */
-	public function create_image( $attach_id = null, $img_url = null, $width, $height = null, $crop = false, $original = false ) {
+	public function create_image( $attach_id = null, $img_url = null, $width = null, $height = null, $crop = false, $original = false ) {
 
 		$org_url = $img_url;
 
@@ -956,11 +956,12 @@ class MailsterHelper {
 	 */
 	public function format_html( $html, $body = false ) {
 
-		$doc = new DOMDocument();
+		$i_error = libxml_use_internal_errors( true );
 
+		$doc                     = new DOMDocument();
 		$doc->preserveWhiteSpace = false;
-		$i_error                 = libxml_use_internal_errors( true );
 		$doc->loadHTML( $html );
+
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
 
@@ -1150,9 +1151,6 @@ class MailsterHelper {
 		// get all style blocks
 		if ( preg_match_all( '#<style([^><]*)>(.*?)</style>#is', $content, $originalstyles ) ) {
 
-			@error_reporting( E_ERROR | E_PARSE );
-			@ini_set( 'display_errors', '0' );
-
 			$apply_styles = array();
 
 			// strip media queries
@@ -1177,11 +1175,14 @@ class MailsterHelper {
 
 			require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
+			$i_error = libxml_use_internal_errors( true );
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
 
 			$htmldoc->applyStylesheet( $apply_styles );
 
 			$html = $htmldoc->getHTML();
+			libxml_clear_errors();
+			libxml_use_internal_errors( $i_error );
 
 			// convert urlencode back for links with unallowed characters (only images)
 			preg_match_all( "/(src|background)=[\"'](.*)[\"']/Ui", $html, $urls );
