@@ -3849,13 +3849,16 @@ class MailsterCampaigns {
 
 			$return .= '<tr ' . ( ! ( $i % 2 ) ? ' class="alternate" ' : '' ) . '>';
 			$return .= '<td class="textright">' . ( $count + $offset + 1 ) . '</td><td><a class="show-receiver-detail" data-id="' . $subscriber->ID . '">' . ( $name ? $name . ' &ndash; ' : '' ) . $subscriber->email . '</a></td>';
-			$return .= '<td title="' . esc_html__( 'sent', 'mailster' ) . '">' . ( $subscriber->sent ? str_replace( ' ', '&nbsp;', date( $timeformat, $subscriber->sent + $timeoffset ) ) : '&ndash;' ) . '</td>';
-			$return .= '<td>' . ( isset( $subscriber->open_count ) && $subscriber->open_count ? '<span title="' . esc_html__( 'has opened', 'mailster' ) . '" class="mailster-icon mailster-icon-open"></span>' : '<span title="' . esc_html__( 'has not opened yet', 'mailster' ) . '" class="mailster-icon mailster-icon-unopen"></span>' ) . '</td>';
-			$return .= '<td>' . ( isset( $subscriber->click_count_total ) && $subscriber->click_count_total ? sprintf( esc_html__( _n( '%s click', '%s clicks', $subscriber->click_count_total, 'mailster' ) ), $subscriber->click_count_total ) : '' ) . '</td>';
-			$return .= '<td>' . ( isset( $subscriber->unsubs ) && $subscriber->unsubs ? '<span title="' . esc_html__( 'has unsubscribed', 'mailster' ) . '" class="mailster-icon mailster-icon-unsubscribe"></span>' : '' ) . '</td>';
+			$return .= '<td title="' . esc_attr__( 'sent', 'mailster' ) . '">' . ( $subscriber->sent ? str_replace( ' ', '&nbsp;', date( $timeformat, $subscriber->sent + $timeoffset ) ) : '&ndash;' ) . '</td>';
+
+			$return .= '<td>' . ( isset( $subscriber->open_count ) && $subscriber->open_count ? '<span title="' . esc_attr__( 'has opened', 'mailster' ) . '" class="mailster-icon mailster-icon-open"></span>' : '<span title="' . esc_attr__( 'has not opened yet', 'mailster' ) . '" class="mailster-icon mailster-icon-unopen"></span>' ) . '</td>';
+			// $return .= '<td>' . ( isset( $subscriber->click_count_total ) && $subscriber->click_count_total ? sprintf( esc_attr__( _n( '%s click', '%s clicks', $subscriber->click_count_total, 'mailster' ) ), $subscriber->click_count_total ) : '' ) . '</td>';
+			$return .= '<td>' . ( isset( $subscriber->click_count_total ) && $subscriber->click_count_total ? '<span title="' . sprintf( esc_attr__( _n( '%s click', '%s clicks', $subscriber->click_count_total, 'mailster' ) ), $subscriber->click_count_total ) . '" class="mailster-icon mailster-icon-click"></span>' : '<span title="' . esc_attr__( 'has not clicked yet', 'mailster' ) . '" class="mailster-icon mailster-icon-noclick"></span>' ) . '</td>';
+
+			$return .= '<td>' . ( isset( $subscriber->unsubs ) && $subscriber->unsubs ? '<span title="' . esc_attr__( 'has unsubscribed', 'mailster' ) . '" class="mailster-icon mailster-icon-unsubscribe"></span>' : '' ) . '</td>';
 			$return .= '<td>';
-			$return .= ( isset( $subscriber->bounce_count ) ? '<span class="bounce-indicator mailster-icon mailster-icon-bounce ' . ( $subscriber->status == 3 ? 'hard' : 'soft' ) . '" title="' . sprintf( esc_html__( _n( '%s bounce', '%s bounces', $subscriber->bounce_count, 'mailster' ) ), $subscriber->bounce_count ) . '"></span>' : '' );
-			$return .= ( $subscriber->status == 4 ) ? '<span class="bounce-indicator mailster-icon mailster-icon-bounce" title="' . esc_html__( 'an error occurred while sending to this receiver', 'mailster' ) . '">E</span>' : '';
+			$return .= ( isset( $subscriber->bounce_count ) ? '<span class="bounce-indicator mailster-icon mailster-icon-bounce ' . ( $subscriber->status == 3 ? 'hard' : 'soft' ) . '" title="' . sprintf( esc_attr__( _n( '%s bounce', '%s bounces', $subscriber->bounce_count, 'mailster' ) ), $subscriber->bounce_count ) . '"></span>' : '' );
+			$return .= ( $subscriber->status == 4 ) ? '<span class="bounce-indicator mailster-icon mailster-icon-bounce" title="' . esc_attr__( 'an error occurred while sending to this receiver', 'mailster' ) . '">E</span>' : '';
 			$return .= '</td>';
 			$return .= '</tr>';
 			$return .= '<tr id="receiver-detail-' . $subscriber->ID . '" class="receiver-detail' . ( ! ( $i % 2 ) ? '  alternate' : '' ) . '">';

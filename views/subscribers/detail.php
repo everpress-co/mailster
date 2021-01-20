@@ -449,7 +449,7 @@ if ( ! $is_new ) :
 						<?php
 						switch ( $activity->type ) {
 							case 'sent':
-								echo '<span class="mailster-icon mailster-icon-progress"></span></td><td>';
+								echo '<span class="mailster-icon mailster-icon-sent"></span></td><td>';
 								printf( esc_html__( 'Campaign %s has been sent', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
 							case 'open':
@@ -515,16 +515,16 @@ if ( ! $is_new ) :
 						elseif ( $activity->type == 'unsub' && $activity->text ) :
 							$message = mailster( 'helper' )->get_unsubscribe_message( $activity->text );
 							?>
-							<p class="unsubscribe-message code">[<?php echo esc_html( $activity->text ); ?>] <?php echo esc_html( $message ); ?></p>
+							<div class="unsubscribe-message code">[<?php echo esc_html( $unsub_status ); ?>] <?php echo esc_html( $message ); ?></div>
 
 							<?php
 						elseif ( ( $activity->type == 'softbounce' || $activity->type == 'bounce' ) && $activity->text ) :
 							$message = mailster( 'helper' )->get_bounce_message( $activity->text );
 							?>
-							<p class="bounce-message code"><?php echo esc_html( $message ); ?></p>
+							<div class="bounce-message code"><?php echo esc_html( $message ); ?></div>
 
 						<?php elseif ( $activity->type == 'error' && $activity->text ) : ?>
-							<p class="error-message code"><strong class="red"><?php echo esc_html( $activity->text ); ?></strong></p>
+							<div class="error-message code"><strong class="red"><?php echo esc_html( $activity->text ); ?></strong></div>
 						<?php endif; ?>
 						</td>
 					</tr>

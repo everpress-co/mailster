@@ -150,7 +150,7 @@ html.mailster-embeded-form, .mailster-embeded-form body{
 	-moz-osx-font-smoothing: grayscale;
 	transition: all .1s ease-in-out;
 	color: #555;
-	content: '\e800';
+	content_: '\e800';
 	opacity: .8;
 }
 .btn-widget .btn:hover:before{

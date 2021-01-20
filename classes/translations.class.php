@@ -153,7 +153,8 @@ class MailsterTranslations {
 			$root_locale = preg_replace( '/([a-z]+)_([A-Z]+)/', '$1', $base_locale );
 
 			$response = wp_remote_get( $url );
-			$body     = wp_remote_retrieve_body( $response );
+			error_log( print_r( $response, true ) );
+			$body = wp_remote_retrieve_body( $response );
 
 			if ( empty( $body ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 				$object['expires'] = $now + 3600;

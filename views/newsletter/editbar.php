@@ -338,7 +338,7 @@
 			<label class="highdpi-checkbox" title="<?php esc_attr_e( 'use HighDPI/Retina ready images if available', 'mailster' ); ?>">
 				<input type="checkbox" class="highdpi" <?php checked( mailster_option( 'high_dpi' ) ); ?> aria-label="<?php esc_attr_e( 'use High DPI image', 'mailster' ); ?>"> <?php esc_html_e( 'HighDPI/Retina ready', 'mailster' ); ?>
 			</label>
-			<a class="remove mailster-icon" title="<?php esc_attr_e( 'remove element', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'remove element', 'mailster' ); ?>"></a>
+			<a class="remove button button-small button-link-delete" title="<?php esc_attr_e( 'remove element', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'remove element', 'mailster' ); ?>"><?php esc_html_e( 'Remove Element', 'mailster' ); ?></a>
 		</div>
 		<input type="hidden" class="factor" value="1">
 
