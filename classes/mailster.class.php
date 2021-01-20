@@ -45,6 +45,7 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/register.class.php';
 		require_once MAILSTER_DIR . 'classes/geo.class.php';
 		require_once MAILSTER_DIR . 'classes/privacy.class.php';
+		require_once MAILSTER_DIR . 'classes/security.class.php';
 		require_once MAILSTER_DIR . 'classes/export.class.php';
 		require_once MAILSTER_DIR . 'classes/empty.class.php';
 
@@ -74,6 +75,7 @@ class Mailster {
 			'register'     => new MailsterRegister(),
 			'geo'          => new MailsterGeo(),
 			'privacy'      => new MailsterPrivacy(),
+			'security'     => new MailsterSecurity(),
 			'export'       => new MailsterExport(),
 			'empty'        => new MailsterEmpty(),
 		);

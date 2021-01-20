@@ -15,7 +15,6 @@ class MailsterForm {
 	private $form          = null;
 	private $formkey       = null;
 	private $campaignID    = null;
-	private $honeypot      = true;
 	private $hash          = null;
 	private $profile       = false;
 	private $unsubscribe   = false;
@@ -33,9 +32,8 @@ class MailsterForm {
 	static $add_style  = false;
 
 	public function __construct() {
-		$this->scheme   = is_ssl() ? 'https' : 'http';
-		$this->honeypot = true; // check https://bugs.chromium.org/p/chromium/issues/detail?id=132135
-		$this->form     = new StdClass();
+		$this->scheme = is_ssl() ? 'https' : 'http';
+		$this->form   = new StdClass();
 	}
 
 
@@ -542,7 +540,7 @@ class MailsterForm {
 
 		$fields = apply_filters( 'mymail_form_fields', apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form ), $this->ID, $this->form );
 
-		if ( ! is_admin() && apply_filters( 'mailster_honeypot', $this->honeypot ) ) {
+		if ( ! is_admin() && apply_filters( 'mailster_honeypot', mailster_option( 'check_honeypot' ) ) ) {
 			// place honeypot after email field
 			$position = array_search( 'email', array_keys( $fields ) ) + 1;
 			$fields   = array_slice( $fields, 0, $position, true ) +
@@ -865,6 +863,15 @@ class MailsterForm {
 		if ( ! $submissiontype ) {
 			wp_die( 'wrong submissiontype' );
 		};
+
+		if ( ! is_admin() && apply_filters( 'mailster_honeypot', mailster_option( 'check_honeypot' ) ) ) {
+			$honeypotnonce = wp_create_nonce( 'honeypot' );
+			$honeypot      = isset( $_BASE[ 'n_' . $honeypotnonce . '_email' ] ) ? $_BASE[ 'n_' . $honeypotnonce . '_email' ] : null;
+
+			if ( ! empty( $honeypot ) ) {
+				$this->object['errors']['_honeypot'] = esc_html__( 'Honeypot is for bears only!', 'mailster' );
+			}
+		}
 
 		$_nonce     = isset( $_BASE['_nonce'] ) ? $_BASE['_nonce'] : null;
 		$_formkey   = isset( $_BASE['_formkey'] ) ? $_BASE['_formkey'] : null;

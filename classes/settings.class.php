@@ -128,6 +128,8 @@ class MailsterSettings {
 			'unsubscribe_notification_template'  => 'notification.html',
 			'track_users'                        => false,
 			'do_not_track'                       => false,
+			'antiflood'                          => 60,
+			'reject_dep'                         => true,
 			'list_based_opt_in'                  => true,
 			'single_opt_out'                     => false,
 			'mail_opt_out'                       => true,
@@ -886,6 +888,14 @@ class MailsterSettings {
 					}
 					break;
 
+				case 'blocked_domains':
+				case 'safe_domains':
+					$value = strtolower( $value );
+				case 'blocked_ips':
+				case 'blocked_emails':
+					$value = trim( $value );
+					break;
+
 				case 'interval':
 					$value = max( 0.1, $value );
 					if ( $old != $value ) {
@@ -1196,6 +1206,24 @@ class MailsterSettings {
 						$options['dkim_private_hash'] = $hash;
 					}
 
+					break;
+
+				case 'check_mx':
+					if ( $old != $value ) {
+						if ( $value && ! function_exists( 'checkdnsrr' ) || ! checkdnsrr( 'google.com', 'MX' ) ) {
+							$this->add_settings_error( esc_html__( 'Your server is not able to do a DNS lookup. MX check disabled.', 'mailster' ), 'dkim' );
+							$value = false;
+						}
+					}
+					break;
+
+				case 'check_smtp':
+					if ( $old != $value ) {
+						if ( $value && ! mailster( 'security' )->smtp_check( 'hello@google.com' ) ) {
+							$this->add_settings_error( esc_html__( 'Your server is not able to validate via SMTP. SMTP check disabled.', 'mailster' ), 'dkim' );
+							$value = false;
+						}
+					}
 					break;
 
 			}
