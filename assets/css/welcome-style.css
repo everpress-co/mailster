@@ -183,8 +183,8 @@
 .campaign-progress span.bar{
 	text-shadow: none;
 	background: #2BB3E7;
-	background: -webkit-linear-gradient(to right, #084067, #2BB3E7);
-	background: linear-gradient(to right, #084067, #2BB3E7);
+	_background: -webkit-linear-gradient(to right, #084067, #2BB3E7);
+	_background: linear-gradient(to right, #084067, #2BB3E7);
 }
 .campaign-progress span.bar:before{
 	content: '';

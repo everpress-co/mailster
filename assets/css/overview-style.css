@@ -63,13 +63,9 @@ table tr th.manage-column{
 table.wp-list-table tr.status-active div.campaign-progress span.bar{
 	text-shadow: none;
 	background: #2BB3E7;
-	background: -webkit-linear-gradient(to right, #084067, #2BB3E7);
-	background: linear-gradient(to right, #084067, #2BB3E7);
 }
 table.wp-list-table tr.status-paused div.campaign-progress span.bar{
 	background: #8a8a8a;
-	background: -webkit-linear-gradient(to right, #383838, #8a8a8a);
-	background: linear-gradient(to right, #383838, #8a8a8a);
 }
 table.wp-list-table div.campaign-progress span.bar span{
 	color: #fff !important;
