@@ -118,11 +118,13 @@ class MailsterCampaigns {
 			return;
 		}
 
+		$hook_type = isset( $meta['autoresponder']['hook_type'] ) && $meta['autoresponder']['hook_type'];
+
 		$query_args = array(
 			'lists'        => $meta['ignore_lists'] ? false : $meta['lists'],
 			'conditions'   => $meta['list_conditions'],
 			// 'queue__not_in' => $campaign_id,
-			'sent__not_in' => isset( $meta['autoresponder']['once'] ) && $meta['autoresponder']['once'] ? $campaign_id : false,
+			'sent__not_in' => ! $hook_type && isset( $meta['autoresponder']['once'] ) && $meta['autoresponder']['once'] ? $campaign_id : false,
 			'include'      => $subscriber_ids,
 		);
 
@@ -142,7 +144,53 @@ class MailsterCampaigns {
 		$options       = isset( $meta['autoresponder']['multiple'] ) ? uniqid() : false;
 		$tags          = $args;
 
-		mailster( 'queue' )->bulk_add( $campaign_id, $subscribers, $timestamp, $priority, $clear, $ignore_status, $reset, $options, $tags );
+		if ( $hook_type ) {
+
+			if ( $subscriber_ids && $subscribers ) {
+				if ( count( $subscribers ) == 1 ) {
+					$condition = array(
+						'field'    => 'id',
+						'operator' => 'is',
+						'value'    => (int) $subscribers,
+					);
+				} else {
+					$condition = array(
+						'field'    => 'id',
+						'operator' => 'pattern',
+						'value'    => '^(' . implode( '|', $subscribers ) . ')$',
+					);
+				}
+				if ( ! isset( $meta['list_conditions'] ) ) {
+					$meta['list_conditions'] = array();
+				}
+				if ( ! is_array( $meta['list_conditions'] ) ) {
+					$meta['list_conditions'] = (array) $meta['list_conditions'];
+				}
+
+				array_unshift( $meta['list_conditions'], array( $condition ) );
+			}
+
+			$original = get_post( $campaign_id );
+
+			$campaign_id = mailster( 'campaigns' )->duplicate(
+				$campaign_id,
+				array(
+					'post_title'  => $original->post_title,
+					'post_status' => 'queued',
+				),
+				array(
+					'parent_id'       => $campaign_id,
+					'active'          => true,
+					'tags'            => $tags,
+					'timestamp'       => $timestamp,
+					'list_conditions' => $meta['list_conditions'],
+					'autoresponder'   => array(),
+				)
+			);
+
+		} else {
+			mailster( 'queue' )->bulk_add( $campaign_id, $subscribers, $timestamp, $priority, $clear, $ignore_status, $reset, $options, $tags );
+		}
 
 		// handle instant delivery
 		if ( $timestamp - time() <= 0 ) {
@@ -725,8 +773,14 @@ class MailsterCampaigns {
 							if ( $meta['timezone'] && $timestamp - $now < 86400 ) :
 								$sub       = $this->get_unsent_subscribers( $post->ID, array( 1 ), true );
 								$timestamp = min( mailster( 'subscribers' )->get_timeoffset_timestamps( $sub, $timestamp ) );
-								endif;
-							printf( esc_html__( 'starts in %s', 'mailster' ), ( $timestamp - $now > 60 ) ? human_time_diff( $timestamp ) : esc_html__( 'less than a minute', 'mailster' ) );
+							endif;
+							if ( $timestamp - $now > 60 ) :
+								printf( esc_html__( 'starts in %s', 'mailster' ), human_time_diff( $timestamp ) );
+							elseif ( $timestamp - $now < 0 ) :
+								esc_html_e( 'starts right now', 'mailster' );
+							else :
+								printf( esc_html__( 'starts in %s', 'mailster' ), esc_html__( 'less than a minute', 'mailster' ) );
+							endif;
 							echo $meta['timezone'] ? ' <span class="timezonebased"  title="' . esc_attr__( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '';
 							echo "<br><span class='nonessential'>(" . date( $timeformat, $timestamp + $timeoffset ) . ')</span>';
 							echo '<div class="campaign-status"></div>';
@@ -2078,6 +2132,9 @@ class MailsterCampaigns {
 			if ( ! empty( $meta[ $metadata->ID ]['attachments'] ) ) {
 				$meta[ $metadata->ID ]['attachments'] = maybe_unserialize( $meta[ $metadata->ID ]['attachments'] );
 			}
+			if ( ! empty( $meta[ $metadata->ID ]['tags'] ) ) {
+				$meta[ $metadata->ID ]['tags'] = maybe_unserialize( $meta[ $metadata->ID ]['tags'] );
+			}
 		}
 
 		mailster_cache_set( $cache_key, $meta );
@@ -2190,6 +2247,7 @@ class MailsterCampaigns {
 			'autoplaintext'       => true,
 			'webversion'          => true,
 			'auto_post_thumbnail' => false,
+			'tags'                => array(),
 		);
 
 		if ( ! is_null( $key ) ) {
@@ -2448,7 +2506,7 @@ class MailsterCampaigns {
 	 * @param unknown $timestamp (optional)
 	 * @return unknown
 	 */
-	public function duplicate( $id, $timestamp = null ) {
+	public function duplicate( $id, $campaign_args = array(), $campaign_meta = array(), $timestamp = null ) {
 
 		$campaign = get_post( $id );
 
@@ -2486,6 +2544,15 @@ class MailsterCampaigns {
 		} elseif ( $campaign->post_status == 'notification' ) {
 		} else {
 			$campaign->post_status = 'draft';
+		}
+
+		if ( ! empty( $campaign_args ) ) {
+			$original      = (array) $campaign;
+			$campaign_data = (object) wp_parse_args( (array) $campaign_args, (array) $campaign );
+			$campaign      = new WP_Post( $campaign_data );
+		}
+		if ( ! empty( $campaign_meta ) ) {
+			$meta = wp_parse_args( $campaign_meta, $meta );
 		}
 
 		kses_remove_filters();
@@ -4300,6 +4367,10 @@ class MailsterCampaigns {
 		// add subscriber info
 		$placeholder->add( (array) $subscriber );
 
+		// add campaign specific tags
+		if ( isset( $campaign_meta['tags'] ) ) {
+			$placeholder->add( (array) $campaign_meta['tags'] );
+		}
 		// add subscriber specific tags
 		if ( $subscriber_tags = mailster( 'subscribers' )->meta( $subscriber->ID, 'tags', $campaign->ID ) ) {
 			$placeholder->add( (array) $subscriber_tags );

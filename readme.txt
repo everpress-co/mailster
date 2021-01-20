@@ -181,6 +181,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.9 =
 
+* new: option to create new campaigns on action hook based auto responders
 * change: moved text strings for GDPR to text tab for better localization.
 * change: sanitize_content method no longer handles custom Mailster styles (changes to the methods arguments)
 * added: `mailster_add_tag` action hook to add custom tags.
@@ -233,7 +234,7 @@ Xaver Birsak – https://everpress.co
 * improved: subscriber query now search for ID as well.
 * fixed: notifications to multiple addresses.
 * fixed: modules without content sometimes preserve in the campaign.
-* fixed: issue with RSS campaigns on time based autoresponders.
+* fixed: issue with RSS campaigns on time based auto responders.
 * fixed: wrong subscriber count if status "pending" in subscriber query.
 * fixed: cumulative count calculations.
 * fixed: redirecting issue with spaces in URLs.
@@ -259,7 +260,7 @@ Xaver Birsak – https://everpress.co
 * improved: forms no longer use native validation
 * fixed: remember usage tracking opt in setting
 * fixed: correctly redirect after campaign duplication
-* fixed: images from dynamic random post type in autoresponders
+* fixed: images from dynamic random post type in auto responders
 * fixed: subscriberID is now correctly populated in confirmation messages
 * fixed: deprecated embed option
 
@@ -271,7 +272,7 @@ Xaver Birsak – https://everpress.co
 * fixed: unsubscribe auto responder works with list based subscriptions
 * fixed: small JavaScript issues in the editor
 * improved: better support for third party email with content type text/html
-* improved: better checks for content related autoresponders
+* improved: better checks for content related auto responders
 * improved: fixing broken settings automatically
 * improved: database update checks
 

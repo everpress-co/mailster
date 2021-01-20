@@ -113,6 +113,7 @@ $sent = $this->get_sent( $post->ID );
 				'time_frame'        => 'day',
 				'timezone'          => false,
 				'hook'              => '',
+				'hook_type'         => false,
 				'priority'          => 10,
 				'once'              => false,
 				'multiple'          => false,
@@ -480,15 +481,23 @@ $sent = $this->get_sent( $post->ID );
 		</div>
 
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_autoresponder_hook">
-			<p>
+			<div>
+				<p><label>
+					<select name="mailster_data[autoresponder][hook_type]">
+						<option value="" <?php selected( ! $autoresponderdata['hook_type'] ); ?>><?php esc_html_e( 'Send this auto responder', 'mailster' ); ?></option>
+						<option value="1" <?php selected( $autoresponderdata['hook_type'] ); ?>><?php esc_html_e( 'Create a new campaign based on this auto responder', 'mailster' ); ?></option>
+					</select>
+				</label></p>
+			</div>
+			<div>
 				<label>
-					<?php esc_html_e( 'Action used to trigger campaign', 'mailster' ); ?> (<abbr title="<?php esc_attr_e( 'use `do_action("hook_name")`, or `do_action("hook_name", $subscriber_id)` to trigger this campaign', 'mailster' ); ?>">?</abbr>)
+					<?php esc_html_e( 'whenever the action hook', 'mailster' ); ?>
 				</label>
-			</p>
+			</div>
 				<?php
 				$hooks = apply_filters( 'mailster_action_hooks', array() );
 				if ( $autoresponderdata['hook'] && ! isset( $hooks[ $autoresponderdata['hook'] ] ) ) {
-					$hooks[ $autoresponderdata['hook'] ] = $autoresponderdata['hook'];
+					// $hooks[ $autoresponderdata['hook'] ] = $autoresponderdata['hook'];
 				}
 				?>
 			<?php if ( $hooks ) : ?>
@@ -507,6 +516,11 @@ $sent = $this->get_sent( $post->ID );
 				<input type="text" class="widefat code mailster-action-hook" name="mailster_data[autoresponder][hook]" value="<?php echo $autoresponderdata['hook']; ?>" placeholder="hook_name">
 			</p>
 			<div>
+				<label>
+					<?php esc_html_e( 'is triggered.', 'mailster' ); ?> (<abbr title="<?php esc_attr_e( 'use `do_action("hook_name")`, or `do_action("hook_name", $subscriber_id)` to trigger this campaign', 'mailster' ); ?>">?</abbr>)
+				</label>
+			</div>
+			<div class="hide-if-hook-type"<?php echo ( $autoresponderdata['hook_type'] ) ? ' style="display:none"' : ''; ?>>
 				<p><label>
 				<?php esc_html_e( 'Priority', 'mailster' ); ?>:
 					<select name="mailster_data[autoresponder][priority]">
@@ -516,12 +530,12 @@ $sent = $this->get_sent( $post->ID );
 					</select>
 				</label></p>
 			</div>
-			<div>
+			<div class="hide-if-hook-type"<?php echo ( $autoresponderdata['hook_type'] ) ? ' style="display:none"' : ''; ?>>
 				<p><label>
 					<input type="checkbox" name="mailster_data[autoresponder][hook_once]" value="1" <?php checked( $autoresponderdata['once'] ); ?>> <?php esc_html_e( 'send campaign only once', 'mailster' ); ?>
 				</label></p>
 			</div>
-			<div>
+			<div class="hide-if-hook-type"<?php echo ( $autoresponderdata['hook_type'] ) ? ' style="display:none"' : ''; ?>>
 				<label>
 					<input type="checkbox" name="mailster_data[autoresponder][multiple]" value="1" <?php checked( $autoresponderdata['multiple'] ); ?>> <?php esc_html_e( 'allow multiple triggers', 'mailster' ); ?>
 				</label>
