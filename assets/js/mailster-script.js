@@ -167,7 +167,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		dataType = dataType ? dataType : "JSON";
-		$.ajax({
+		return $.ajax({
 			type: 'POST',
 			url: mailster.ajaxurl,
 			data: $.extend({

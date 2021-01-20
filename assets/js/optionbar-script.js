@@ -168,31 +168,8 @@ mailster = (function (mailster, $, window, document) {
 		if (mailster.$.optionbar.find('a.preview').is('.loading')) {
 			return false;
 		}
-
-		mailster.trigger('save');
-
-		mailster.$.optionbar.find('a.preview').addClass('loading');
-		mailster.util.ajax(
-			'set_preview', {
-				id: mailster.campaign_id,
-				content: mailster.editor.getContent(),
-				head: mailster.$.head.val(),
-				issue: $('#mailster_autoresponder_issue').val(),
-				subject: mailster.details.$.subject.val(),
-				preheader: mailster.details.$.preheader.val()
-			},
-			function (response) {
-				mailster.$.optionbar.find('a.preview').removeClass('loading');
-
-				mailster.thickbox.$.preview.attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
-				tb_show((mailster.$.title.val() ? mailster.util.sprintf(mailster.l10n.campaigns.preview_for, '"' + mailster.$.title.val() + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=mailster_campaign_preview', null);
-
-			},
-			function (jqXHR, textStatus, errorThrown) {
-				mailster.$.optionbar.find('a.preview').removeClass('loading');
-			}
-		);
-
+		mailster.preflight.open();
+		return;
 	}
 
 	mailster.optionbar.dfw = function (event) {

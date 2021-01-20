@@ -199,7 +199,7 @@ class MailsterPlaceholder {
 		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
 
 		$defaults = array(
-			'email'  => '<a href="">{emailaddress}</a>',
+			'email'  => '<a href="mailto:{emailaddress}">{emailaddress}</a>',
 			'year'   => $time[0],
 			'month'  => $time[1],
 			'day'    => $time[2],

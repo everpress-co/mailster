@@ -343,6 +343,7 @@ class MailsterCampaigns {
 		global $post;
 		global $post_id;
 		include MAILSTER_DIR . 'views/newsletter/template.php';
+		include MAILSTER_DIR . 'views/newsletter/preflight.php';
 	}
 
 
@@ -374,11 +375,7 @@ class MailsterCampaigns {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $post
-	 */
+
 	public function newsletter_submit( $post ) {
 		global $action;
 		$post_type        = $post->post_type;
@@ -1304,6 +1301,8 @@ class MailsterCampaigns {
 				wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
 				wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
 
+				wp_enqueue_style( 'mailster-preflight', MAILSTER_URI . 'assets/css/preflight-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+
 				remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
 				wp_enqueue_script( 'mailster-emojipicker', MAILSTER_URI . 'assets/js/libs/emoji-button.js', array(), MAILSTER_VERSION );
 
@@ -1343,8 +1342,20 @@ class MailsterCampaigns {
 			wp_enqueue_script( 'mailster-optionbar', MAILSTER_URI . 'assets/js/optionbar-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );
 			wp_enqueue_style( 'mailster-optionbar', MAILSTER_URI . 'assets/css/optionbar-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
+			wp_enqueue_script( 'mailster-preflight', MAILSTER_URI . 'assets/js/preflight-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );
+
 			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
+			mailster_localize_script(
+				'preflight',
+				array(
+					'ready'           => esc_html__( 'Ready for Preflight!', 'mailster' ),
+					'email_delivered' => esc_html__( 'Email delivered, gathering results...', 'mailster' ),
+					'finished'        => esc_html__( 'Preflight finished. Please check results.', 'mailster' ),
+					'sending'         => esc_html__( 'Sending your campaign.', 'mailster' ),
+					'checking'        => esc_html__( 'Check for delivery.', 'mailster' ),
+				)
+			);
 			mailster_localize_script(
 				'conditions',
 				array(
@@ -1384,7 +1395,6 @@ class MailsterCampaigns {
 					'remove_s'               => esc_html__( 'Remove %s', 'mailster' ),
 					'curr_selected'          => esc_html__( 'Currently selected', 'mailster' ),
 					'remove_btn'             => esc_html__( 'An empty link will remove this button! Continue?', 'mailster' ),
-					'preview_for'            => esc_html__( 'Preview for %s', 'mailster' ),
 					'preview'                => esc_html__( 'Preview', 'mailster' ),
 					'read_more'              => esc_html__( 'Read more', 'mailster' ),
 					'invalid_image'          => esc_html__( '%s does not contain a valid image', 'mailster' ),
@@ -1399,15 +1409,6 @@ class MailsterCampaigns {
 					'month_names'            => array_values( $wp_locale->month ),
 					'delete_colorschema'     => esc_html__( 'Delete this color schema?', 'mailster' ),
 					'delete_colorschema_all' => esc_html__( 'Do you really like to delete all custom color schema for this template?', 'mailster' ),
-					'yourscore'              => esc_html__( '%s out of 10', 'mailster' ),
-					'yourscores'             => array(
-						esc_html__( 'This mail will hardly see any inbox!', 'mailster' ),
-						esc_html__( 'You have to make it better!', 'mailster' ),
-						esc_html__( 'Many inboxes will refuse this mail!', 'mailster' ),
-						esc_html__( 'Not bad at all. Improve it further!', 'mailster' ),
-						esc_html__( 'Almost perfect!', 'mailster' ),
-						esc_html__( 'Great! Your campaign is ready to send!', 'mailster' ),
-					),
 					'undosteps'              => mailster_option( 'undosteps', 10 ),
 					'statuschanged'          => esc_html__( 'The status of this campaign has changed. Please reload the page or %s', 'mailster' ),
 					'click_here'             => esc_html__( 'click here', 'mailster' ),
@@ -1420,6 +1421,8 @@ class MailsterCampaigns {
 					'error'                  => esc_html__( 'error!', 'mailster' ),
 					'error_occurs'           => esc_html__( 'An error occurs while uploading', 'mailster' ),
 					'unsupported_format'     => esc_html__( 'Unsupported file format', 'mailster' ),
+					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
+					'preflight'              => esc_html__( 'Preflight %s', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
 				)
 			);

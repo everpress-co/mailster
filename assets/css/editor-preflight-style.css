@@ -1,0 +1,58 @@
+body{
+	overflow: hidden;
+	overflow-y: auto;
+}
+body.preflight-highlighter{
+	position: relative;
+}
+highlighterx, highlightery{
+	display: block;
+	position: absolute;
+	top: 0;
+	transition: all .25s ease-out;
+	opacity: 0;
+	z-index: 1000;
+}
+body.preflight-images-hidden [background]{
+	background-image: none !important;
+}
+body.preflight-structure-enabled td,
+body.preflight-structure-enabled div,
+body.preflight-structure-enabled p{
+	box-shadow: 0 0 0 1px #2BB3E7 !important;
+}
+.preflight-highlighter highlighterx,.preflight-highlighter highlightery{
+	opacity: 1;
+}
+highlighterx, highlightery{
+	z-index: 10;
+	background: rgba(43, 179, 231, 0.2);
+}
+highlighterx:before, highlighterx:after, highlightery:before, highlightery:after{
+	content: '';
+	position: absolute;
+	border-color: #2BB3E7;
+	border-style: dashed;
+}
+highlighterx:before{
+	width: 400vh;
+	border-width: 1px 0 0 0;
+	margin: 0 -200vh;
+}
+highlighterx:after{
+	width: 400vh;
+	border-width: 0 0 1px 0;
+	margin: 0 -200vh;
+	bottom:0;
+}
+highlightery:before{
+	height: 400vh;
+	border-width: 0 1px 0 0;
+	margin: -200vw 0;
+}
+highlightery:after{
+	height: 400vh;
+	border-width: 0 0 0 1px;
+	margin: -200vw 0;
+	right: 0;
+}
