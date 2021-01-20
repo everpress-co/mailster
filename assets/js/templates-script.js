@@ -2,239 +2,554 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
-	var iframe = $('#mailster_iframe'),
-		base = iframe.data('base'),
-		templateeditor = $('#templateeditor'),
-		templatecontent = $('textarea.editor'),
-		uploadinfo = $('.uploadinfo'),
-		codemirror;
+	var filterbar = $('.wp-filter'),
+		templatebrowser = $('.theme-browser'),
+		filterlinks = filterbar.find('.filter-links a'),
+		searchform = filterbar.find('.search-form'),
+		searchfield = filterbar.find('.wp-filter-search'),
+		typeselector = filterbar.find('#typeselector'),
+		searchdelay,
+		currentfilter,
+		lastsearchquery = '',
+		lastsearchtype = '',
+		currentpage = 1,
+		total = 0,
+		currentdisplayed = 0,
+		searchquery = searchfield.val(),
+		searchtype = typeselector.val(),
+		templates = [],
+		busy = false,
+		gumloaded = false,
+		current_slug = false;
 
-	$('.upload-template').on('click', function () {
-		$('.upload-field').show();
+	filterlinks
+		.on('click', function (event) {
+			event.preventDefault();
+			if (!busy) setFilter($(this).data('sort'));
+			return;
+		});
+
+	searchform.on('submit', function (event) {
+		event.preventDefault();
+		searchdelay && clearTimeout(searchdelay);
+		search();
 	})
 
-	$('#mailster_templates')
-		.on('click', '.screenshot a', function (event) {
-			event.stopPropagation();
+	searchfield.on('keyup change', function (event) {
+		if (13 == event.keyCode) {
+			return;
+		}
+		searchdelay && clearTimeout(searchdelay);
+		searchdelay = setTimeout(search, 1000);
+	});
+	typeselector.on('change', function (event) {
+		searchdelay && clearTimeout(searchdelay);
+		search();
+	});
+
+	templatebrowser
+		.on('click', '.theme-screenshot, .more-details', function () {
+			overlay.open($(this).closest('.theme'));
 		})
-		.on('click', '.edit', function () {
-			var $this = $(this),
-				$container = $this.closest('.mailster-box'),
-				$templates = $('.mailster-box'),
-				href = $this.attr('href'),
-				slug = $this.data('slug');
-
-			if ($this.parent().hasClass('disabled')) return false;
-
-			$templates.removeClass('edit');
-
-			$container.addClass('edit');
-
-			var id = $container.data('id');
-			var count = Math.floor(($('#mailster_templates').outerWidth()) / ($container.width() + 22));
-			var pos = Math.floor(id / count) * count + count - 1;
-
-			templateeditor.find('textarea').val('');
-			templateeditor.find('h3').html($container.find('h3').html());
-			templateeditor.slideDown();
-
-			templateeditor.insertAfter($templates.eq(pos).length ? $templates.eq(pos) : $templates.last());
-			mailster.util.scroll(templateeditor.offset().top - 50);
-
-			$container.removeClass('loading');
-			get_template_html(href);
-			return false;
+		.on('click', '.update', function (event) {
+			event.preventDefault();
+			$(this).addClass('updating-message');
+			updateTemplateFromUrl(this.href, $(this).closest('.theme').data('slug'));
 		})
-		.on('change', '.template-file-selector-dd', function () {
-			get_template_html($(this).val());
+		.on('click', '.download', function (event) {
+			event.preventDefault();
+			$(this).addClass('updating-message');
+			downloadTemplateFromUrl(this.href, $(this).closest('.theme').data('slug'));
 		})
-		.on('click', '.remove-file', function () {
+		.on('click', '.buy-gumroad', function (event) {
+			var _self = $(this);
+			event.preventDefault();
+			_self.addClass('updating-message');
 
-			var $this = $(this);
+			current_slug = $(this).closest('.theme').data('slug');
 
-			if (confirm($this.data('confirm'))) {
-
-				$('#templateeditor').addClass('loading');
-
-				mailster.util.ajax('remove_template', {
-					file: $this.data('file'),
-				}, function (response) {
-					$('#templateeditor').removeClass('loading');
-					if (response.success) {
-
-						$('.template-file-selector-dd').find(':selected').prev('option').prop('selected', true).trigger('change');
-
+			!gumloaded && $.getScript('https://gumroad.com/js/gumroad.js', function () {
+				var t = setInterval(function () {
+					if (typeof createGumroadOverlay == 'function') {
+						clearInterval(t);
+						gumloaded = true;
+						createGumroadOverlay();
+						_self.click();
+						_self.removeClass('updating-message');
 					}
+				}, 100)
+			});
+		})
+		.on('click', '.popup', function () {
+			var href = this.href;
 
-				});
+			if (!/^https?/.test(href)) return true;
 
+			var dimensions = $(this).data(),
+				dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left,
+				dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top,
+				width = mailster.$.window.width(),
+				height = mailster.$.window.height(),
+				left, top, newWindow;
+
+			if (/%/.test(dimensions.width)) {
+				dimensions.width = width * (parseInt(dimensions.width, 10) / 100);
 			}
 
-			event.stopPropagation();
+			if (/%/.test(dimensions.height)) {
+				dimensions.height = height * (parseInt(dimensions.height, 10) / 100);
+			}
+
+			left = ((width / 2) - (dimensions.width / 2)) + dualScreenLeft;
+			top = ((height / 2) - (dimensions.height / 2)) + dualScreenTop;
+			newWindow = window.open(href, 'mailster_themebrowser', 'scrollbars=auto,resizable=1,menubar=0,toolbar=0,location=0,directories=0,status=0, width=' + dimensions.width + ', height=' + dimensions.height + ', top=' + top + ', left=' + left);
+
+			if (window.focus)
+				newWindow.focus();
+
 			return false;
-		})
-		.on('click', 'a.cancel', function () {
-			templateeditor.slideUp();
-			$('.mailster-box').removeClass('edit');
-			return false;
-		})
-		.on('click', 'button.save, button.saveas', function () {
-			var $this = $(this),
-				loader = $('.template-ajax-loading'),
-				content = codemirror.getValue(),
-				message = $('span.message'),
-				name;
 
-			if ($this.is('.saveas') && !(name = prompt(mailster.l10n.templates.enter_template_name + ':', ''))) return false;
+		});
 
-			loader.css({
-				'display': 'inline'
-			});
-			$this.prop('disabled', true);
+	$('.upload-template').on('click', function () {
+		$('.upload-field').toggle();
+	})
 
-			mailster.util.ajax('set_template_html', {
-				content: content,
-				name: name,
-				slug: $('#slug').val(),
-				file: $('#file').val()
-			}, function (response) {
-				loader.hide();
-				$this.prop('disabled', false);
+	mailster.$.window
+		.on('message', function (e) {
 
-				if (response.success) {
-					message.fadeIn(10).html(response.msg).delay(2000).fadeOut();
-					if (response.newfile) {
-						get_template_html('mailster/' + response.newfile);
-					}
-				} else {
-					alert(response.msg);
+			if (!e.originalEvent.data) return;
+			console.log(e.originalEvent.data);
+			var data = typeof e.originalEvent.data === 'string' ? $.parseJSON(e.originalEvent.data.replace('/*framebus*/', '')) : e.originalEvent.data;
+
+			console.log(data);
+
+			if (data.post_message_name === "sale") {
+				if (data.custom_delivery_url) {
+					GumroadOverlay.redirect = function () {
+						GumroadOverlay.minimizeIframe();
+						downloadTemplateFromUrl(data.custom_delivery_url, current_slug);
+					};
 				}
+				console.log(data.custom_delivery_url);
+				console.log(data);
 
-			}, function (jqXHR, textStatus, errorThrown) {
-				loader.hide();
-				$this.prop('disabled', false);
-
-				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\nCheck the JS console for more info!');
-			});
-
-			return false;
+			}
 		})
-		.on('click', '.thickbox-preview', function () {
+		.on('popstate', function (event) {
+			//updateState(event);
+		})
+		.on('click', '.upload-template', function () {
+			$('.upload-field').show();
+		});
 
-			var _this = $(this),
-				name = _this.parent().attr('title'),
-				slug = _this.data('slug'),
-				href = _this.attr('href');
+	mailster.events.push('documentReady', function () {
+		uploader_init();
+		mailster.$.window.on('scroll.mailster', mailster.util.throttle(maybeLoadTemplates, 500))
+	});
 
-			$('#thickboxbox').find('iframe').attr('src', href);
-			$('.thickbox-filelist').empty().hide();
-			tb_show(name, '?&width=900&inlineId=thickboxbox&TB_inline', null);
-			$('#TB_window').width(936).height(700).css('margin-left', -936 / 2).css('margin-top', -700 / 2);
-			mailster.util.ajax('get_file_list', {
-				slug: slug
-			}, function (response) {
-				if (response.success) {
-					var html = '';
-					$.each(response.files, function (file, data) {
-						html += '<li>';
-						if ('index.html' != file && 'notification.html' != file) {
-							html += '<a href="" class="thickbox-remove-file mailster-icon" data-slug="' + response.slug + '" data-file="' + file + '"></a>';
+	var gumroad = function () {
+
+	}
+	var overlay = function () {
+
+		if (this === window) return new overlay();
+
+		var overlay = $('.theme-overlay'),
+			currentTemplate = null,
+			prevTemplate = null,
+			nextTemplate = null,
+			current = null,
+			nextbtn = overlay.find('.right'),
+			prevbtn = overlay.find('.left'),
+			closebtn = overlay.find('.close'),
+			defaultbtn = overlay.find('.default'),
+			campaignbtn = overlay.find('.campaign'),
+			deletebtn = overlay.find('.delete-theme'),
+			data = {};
+
+		var open = function (template) {
+				if ('string' === typeof template) {
+					template = $('[data-slug="' + template + '"]');
+				}
+				if (!template || !template.length) return false;
+				overlay.removeAttr('class');
+				overlay.addClass('theme-overlay loading');
+				currentTemplate = template;
+				data = template.data('item');
+				overlay.find('.theme-name').html(data.name + '<span class="theme-version">' + (data.version ? data.version : '') + '</span>');
+				overlay.find('.theme-author').html(mailster.util.sprintf('By ' + data.author));
+				overlay.find('.theme-description').html(data.description);
+				overlay.find('.theme-tags').html(data.tags && data.tags.length ? '<span>Tags:</span> ' + data.tags.join(', ') : '');
+
+				if (data.src) {
+					overlay.find('.theme-screenshots iframe').show().attr('src', data.src + '?nocache=' + (+new Date()));
+					overlay.find('.theme-screenshots img').hide();
+				} else {
+					overlay.find('.theme-screenshots iframe').hide();
+					overlay.find('.theme-screenshots img').show().attr('src', data.image_full).attr('srcset', data.image_full + ' 1x, ' + data.image_fullx2 + ' 2x');
+				}
+				if (data.update_available) overlay.addClass('has-update');
+				if (data.installed) overlay.addClass('is-installed');
+
+				var files = '';
+				if (data.files) {
+					files += '<span class="nav-tab" href="#">Template Files:</span>';
+					for (var key in data.files) {
+						if (data.files.hasOwnProperty(key)) files += '<a class="file nav-tab' + ('index.html' == key ? ' nav-tab-active' : '') + '" href="#' + key + '" title="' + key + '">' + data.files[key].label + '</a>';
+					}
+				}
+				overlay.find('.theme-files').html(files);
+				prevTemplate = currentTemplate.prev();
+				nextTemplate = currentTemplate.next();
+				prevbtn.prop('disabled', !prevTemplate.length)[!prevTemplate.length ? 'addClass' : 'removeClass']('disabled');
+				nextbtn.prop('disabled', !nextTemplate.length)[!nextTemplate.length ? 'addClass' : 'removeClass']('disabled');
+				overlay.show();
+				setQueryStringParameter('template', data.slug);
+				overlay.removeClass('loading');
+			},
+
+			close = function () {
+				removeQueryStringParameter('template');
+				overlay.hide();
+			},
+
+			next = function () {
+				open(currentTemplate.next());
+			},
+
+			prev = function () {
+				open(currentTemplate.prev());
+			},
+
+			remove = function () {
+				if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, '"' + data.name + '"'))) {
+					deleteTemplate(data.slug);
+					close();
+				}
+				return false;
+			},
+
+			makedefault = function () {
+				if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, '"' + data.name + '"'))) {
+
+					var template = $('[data-slug="' + data.slug + '"]');
+
+					busy = true;
+
+					mailster.util.ajax('default_template', {
+						slug: data.slug,
+					}, function (response) {
+
+						if (response.success) {
+							setFilter('installed', function () {
+								$('[data-slug="' + data.slug + '"]').find('.notice-success').html('<p>' + response.msg + '</p>');
+							});
+							template.find('.notice-error').empty();
+						} else {
+							template.find('.notice-error').html('<p>' + response.msg + '</p>');
 						}
-						html += '<a href="' + response.base + '/' + file + '" class="thickbox-file" style="background-image:url(' + data.screenshot + ')"></a><span>' + data.label + ' (' + file + ')</span></li>';
-					});
 
-					$('.thickbox-filelist').html(html).slideDown();
+						template.removeClass('loading').find('.updating-message').removeClass('updating-message');
+						busy = false;
+						close();
 
-				} else {
-					alert(response.msg);
+					}, function (jqXHR, textStatus, errorThrown) {})
+
 				}
+				return false;
+			},
 
-			}, function (jqXHR, textStatus, errorThrown) {
-				loader.hide();
-				$this.prop('disabled', false);
+			campaign = function () {
 
-				alert(textStatus + ' ' + jqXHR.status + ': ' + errorThrown + '\n\nCheck the JS console for more info!');
-			});
-			return false;
-		})
-		.on('click', 'a.activate', function () {
+				document.location = this.href + '&template=' + data.slug + '&file=' + overlay.find('.nav-tab-active').attr('href').substr(1);
 
-			var _this = $(this),
-				license = '',
-				oldlicense = _this.data('license') || '',
-				slug = _this.data('slug');
+				return false;
+			},
 
-			$('#template-' + slug).addClass('add-license').find('.license').val(oldlicense).focus().select();
+			file = function () {
 
-			return false;
-		})
-		.on('click', 'a.download', function () {
+				overlay.find('.nav-tab-active').removeClass('nav-tab-active');
+				$(this).addClass('nav-tab-active');
+				overlay.find('.theme-screenshots iframe').attr('src', data.files[$(this).attr('href').substr(1)].src);
 
-			$(this).prop('disabled', true);
-		})
-		.on('click', 'a.update', function () {
+			},
 
-			if (confirm(mailster.l10n.templates.update_note)) {
-				$(this).closest('.mailster-box').addClass('loading');
-				return true;
-			}
-			return false;
-		})
-		.on('click', 'a.deletion', function () {
+			init = function () {
+				nextbtn.on('click', next);
+				prevbtn.on('click', prev);
+				closebtn.on('click', close);
+				deletebtn.on('click', remove);
+				defaultbtn.on('click', makedefault);
+				campaignbtn.on('click', campaign);
+				overlay.on('click', '.file', file);
 
-			if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, '"' + $(this).data('name') + '"'))) {
-				$(this).closest('.mailster-box').addClass('loading');
-				return true;
-			}
-			return false;
-		})
-		.on('click', 'a.download, a.activatelink, .save-license', function () {
+				overlay.find('.theme-screenshots iframe').on('load', function () {
+					overlay.removeClass('loading');
+				})
+			};
 
-			$(this).closest('.mailster-box').addClass('loading');
-		});
+		init();
 
-	mailster.$.document
-		.on('click', 'a.thickbox-file', function () {
+		return {
+			open: open,
+			close: close,
+			next: next,
+			prev: prev,
+			delete: remove,
+		}
 
-			$('.thickbox-iframe').attr('src', $(this).attr('href'));
+	}();
 
-			return false;
-		})
-		.on('click', '.thickbox-remove-file', function () {
 
-			var $this = $(this),
-				$el = $this.parent(),
-				slug = $this.data('slug'),
-				file = $this.data('file');
+	function init() {
+		searchfield.val(getQueryStringParameter('search'));
+		typeselector.val(getQueryStringParameter('type') || 'term');
+		currentfilter = getQueryStringParameter('browse') || 'installed';
+		if (getQueryStringParameter('search')) {
+			search();
+		} else {
+			setFilter(currentfilter);
+			overlay.open(getQueryStringParameter('template'));
+		}
+	}
 
-			if (confirm(mailster.util.sprintf(mailster.l10n.templates.delete_template_file, file, slug))) {
+	function maybeLoadTemplates() {
 
-				$el.addClass('loading');
+		var bottom = mailster.util.top() + mailster.$.window.height();
 
-				mailster.util.ajax('remove_template', {
-					file: slug + '/' + file,
-				}, function (response) {
-					if (response.success) {
-						$el.slideUp();
-					} else {
-						$el.removeClass('loading');
-					}
+		if (!busy && bottom > Math.round(document.documentElement.scrollHeight * 0.9) && total > currentdisplayed) {
+			currentpage++;
+			query();
+		}
+	}
+
+	function setFilter(filter, cb) {
+		currentfilter && $('body').removeClass('browse-' + currentfilter) && filterlinks.filter('[data-sort="' + currentfilter + '"]').removeClass('current');
+		currentfilter = filter || false;
+		removeQueryStringParameter('template');
+		if (currentfilter) {
+			resetSearch();
+			filterlinks.filter('[data-sort="' + currentfilter + '"]').addClass('current');
+			setQueryStringParameter('browse', currentfilter);
+			$('body').addClass('browse-' + currentfilter);
+			query(cb);
+		}
+	}
+
+	function resetFilter() {
+		currentfilter && $('body').removeClass('browse-' + currentfilter) && filterlinks.filter('[data-sort="' + currentfilter + '"]').removeClass('current');
+		removeQueryStringParameter('browse');
+		removeQueryStringParameter('template');
+		currentfilter = false;
+		currentpage = 1;
+		templates = [];
+	}
+
+	function resetSearch() {
+		removeQueryStringParameter('search');
+		removeQueryStringParameter('type');
+		lastsearchtype = '';
+		lastsearchquery = '';
+		searchfield.val('');
+		typeselector.val('term');
+		currentpage = 1;
+		templates = [];
+	}
+
+	function search() {
+		searchquery = $.trim(searchfield.val());
+		// Escape the term string for RegExp meta characters.
+		searchquery = searchquery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+		searchtype = typeselector.val();
+
+		if (searchquery && (lastsearchquery != searchquery || lastsearchtype != searchtype)) {
+			lastsearchtype = searchtype;
+			lastsearchquery = searchquery;
+			resetFilter();
+			query();
+			setQueryStringParameter('search', searchquery);
+			setQueryStringParameter('type', searchtype);
+		}
+		return;
+	}
+
+	function downloadTemplate(slug) {
+		var template = $('[data-slug="' + slug + '"]');
+
+		busy = true;
+
+		template.addClass('loading');
+
+		template.find('.notice-warning').addClass('updating-message').html('<p>Updating...</p>');
+
+		mailster.util.ajax('download_template', {
+			slug: slug,
+		}, function (response) {
+
+			// template.animate({width:0, 'margin-right':0}, function(){
+			// 	template.remove();
+			// 	busy = false;
+			// });
+			busy = false;
+		}, function (jqXHR, textStatus, errorThrown) {})
+
+	}
+
+	function downloadTemplateFromUrl(url, slug) {
+
+		var template = $('[data-slug="' + slug + '"]');
+
+		busy = true;
+
+		template.addClass('loading').find('.request-download').addClass('updating-message');
+		template.find('.notice-warning').addClass('updating-message').html('<p>Downloading...</p>');
+		mailster.util.ajax('download_template', {
+			url: url,
+			slug: slug,
+		}, function (response) {
+
+			if (response.success) {
+				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>Downloaded!</p>');
+				setFilter('installed', function () {
+					$('[data-slug="' + slug + '"]').find('.notice-success').html('<p>' + response.msg + '</p>');
 				});
-
+				template.find('.notice-error').empty();
+			} else {
+				template.find('.notice-error').html('<p>' + response.msg + '</p>');
 			}
 
-			event.stopPropagation();
-			return false;
-		});
+			template.removeClass('loading').find('.updating-message').removeClass('updating-message');
+			busy = false;
+
+		}, function (jqXHR, textStatus, errorThrown) {})
+	}
+
+	function updateTemplateFromUrl(url, slug) {
+
+		var template = $('[data-slug="' + slug + '"]');
+
+		busy = true;
+
+		template.addClass('loading').find('.request-download').addClass('updating-message');
+		template.find('.notice-warning').addClass('updating-message').html('<p>Updating...</p>');
+		mailster.util.ajax('download_template', {
+			url: url,
+			slug: slug,
+		}, function (response) {
+
+			if (response.success) {
+				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>Updated!</p>');
+				template.find('.notice-error').empty();
+			} else {
+				template.find('.notice-error').html('<p>' + response.msg + '</p>');
+			}
+
+			template.removeClass('loading').find('.updating-message').removeClass('updating-message');
+			busy = false;
+
+		}, function (jqXHR, textStatus, errorThrown) {})
+
+	}
+
+	function deleteTemplate(slug) {
+
+		var template = $('[data-slug="' + slug + '"]');
+
+		busy = true;
+
+		template.addClass('loading');
+
+		mailster.util.ajax('delete_template', {
+			slug: slug,
+		}, function (response) {
+
+			template.animate({
+				width: 0,
+				'margin-right': 0
+			}, function () {
+				template.remove();
+				busy = false;
+			});
+
+		}, function (jqXHR, textStatus, errorThrown) {})
+
+	}
+
+	function errorTemplate(slug, errormsg) {
+
+		var template = $('[data-slug="' + slug + '"]');
+
+		template.find('.notice-error').html('<p>' + $('<div>' + errormsg + '</div>').text() + '</p>');
+
+	}
+
+	function query(cb) {
+
+		if (currentpage == 1) {
+			$('body').removeClass('no-results');
+			$('body').addClass('loading-content');
+			$('.theme-browser').html('');
+			templates = [];
+		}
+		busy = true;
+
+		mailster.util.ajax('query_templates', {
+			search: searchfield.val(),
+			type: typeselector.val(),
+			browse: getQueryStringParameter('browse'),
+			page: currentpage,
+		}, function (response) {
+
+			if (currentpage == 1) {
+				$('body').removeClass('loading-content');
+				$('.theme-count').html(response.total);
+				total = response.total;
+			}
+			templates.concat(response.templates);
+			$('.theme-browser').append(response.html);
+			currentdisplayed = $('.theme').length;
+
+			if (response.error) {
+				alert(response.error);
+			} else if (!currentdisplayed) {
+				$('body').addClass('no-results');
+			}
+
+			busy = false;
+
+			cb && cb();
+		}, function (jqXHR, textStatus, errorThrown) {})
+	}
+
+
+	function getQueryStringParameter(name) {
+		var params = new URLSearchParams(window.location.search);
+		return params.get(name);
+	}
+
+	function setQueryStringParameter(name, value) {
+		var params = new URLSearchParams(window.location.search);
+		params.set(name, value);
+		window.history.pushState({}, "", decodeURIComponent(window.location.pathname + '?' + params));
+	}
+
+	function removeQueryStringParameter(name) {
+		var params = new URLSearchParams(window.location.search);
+		params.delete(name)
+		window.history.pushState({}, "", decodeURIComponent(window.location.pathname + '?' + params));
+	}
 
 	function uploader_init() {
 
-		var uploader = new plupload.Uploader(wpUploaderInit);
+		var uploader = new plupload.Uploader(wpUploaderInit),
+			uploadinfo = $('.uploadinfo');
 
 		uploader.bind('Init', function (up) {
 			var uploaddiv = $('#plupload-upload-ui');
 
-			if (up.features.dragdrop && !$(document.body).hasClass('mobile')) {
+			if (up.features.dragdrop && !mailster.util.isTouchDevice) {
 				uploaddiv.addClass('drag-drop');
 				$('#drag-drop-area').bind('dragover.wp-uploader', function () { // dragenter doesn't fire right :(
 					uploaddiv.addClass('drag-over');
@@ -287,67 +602,13 @@ mailster = (function (mailster, $, window, document) {
 		uploader.bind('UploadComplete', function (up, files) {});
 	}
 
-	function get_template_html(href) {
-		var loader = $('.template-ajax-loading').css({
-			'display': 'inline'
-		});
-		$('#templateeditor').addClass('loading');
-		mailster.util.ajax('get_template_html', {
-			href: href
-		}, function (response) {
-			loader.hide();
-			$('#templateeditor').removeClass('loading');
+	init();
 
-			$('#file').val(response.file);
-			$('#slug').val(response.slug);
-			templatecontent.val(response.html);
-
-			if (!codemirror) {
-				var mixedMode = {
-					name: "htmlmixed",
-					scriptTypes: [{
-						matches: /\/x-handlebars-template|\/x-mustache/i,
-						mode: null
-					}, {
-						matches: /(text|application)\/(x-)?vb(a|script)/i,
-						mode: "vbscript"
-					}]
-				};
-				codemirror = mailster.util.CodeMirror.fromTextArea(templatecontent.get(0), {
-					mode: mixedMode,
-					tabMode: "indent",
-					lineNumbers: true,
-					autofocus: true
-				});
-			} else {
-				codemirror.setValue(response.html);
-			}
-			var html = '<select class="template-file-selector-dd">',
-				length = Object.keys(response.files).length,
-				selected;
-
-			$.each(response.files, function (version, files) {
-
-				if (length > 1) html += '<optgroup label="' + version + '">';
-
-				$.each(files, function (name, data) {
-
-					if (name == response.file)
-						selected = data;
-					html += ' <option value="' + response.slug + '/' + name + '" ' + (name == response.file ? 'selected' : '') + ' data-slug="' + response.slug + '">' + data.label + ' (' + name + ')</option>';
-				});
-
-				if (length > 1) html += '</optgroup>';
-			});
-			html += '</select>';
-
-			if (response.file != 'index.html' && response.file != 'notification.html') html += '<a class="remove-file mailster-icon" data-file="' + response.slug + '/' + response.file + '" data-confirm="' + mailster.util.sprintf(mailster.l10n.templates.delete_template_file, selected.label, selected.name) + '"></a>';
-
-			templateeditor.find('.template-file-selector span').html(html);
-		});
-	}
-
-	typeof wpUploaderInit == 'object' && mailster.events.push('documentReady', uploader_init);
+	mailster.templates = mailster.templates || {};
+	mailster.templates.download = downloadTemplate;
+	mailster.templates.downloadFromUrl = downloadTemplateFromUrl;
+	mailster.templates.delete = deleteTemplate;
+	mailster.templates.error = errorTemplate;
 
 	return mailster;
 

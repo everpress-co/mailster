@@ -14,8 +14,7 @@ class MailsterTemplate {
 	private $file;
 
 	private $templatepath;
-	private $download_url = 'https://static.mailster.co/templates/mymail.zip';
-	private $headers      = array(
+	private $headers = array(
 		'name'        => 'Template Name',
 		'label'       => 'Name',
 		'uri'         => 'Template URI',
@@ -151,8 +150,8 @@ class MailsterTemplate {
 			}
 		}
 
-		if ( 'mymail' == $slug && ! file_exists( $file ) ) {
-			mailster( 'templates' )->renew_default_template( 'mymail' );
+		if ( 'mailster' == $slug && ! file_exists( $file ) ) {
+			mailster( 'templates' )->renew_default_template( 'mailster' );
 		}
 
 		if ( ! class_exists( 'DOMDocument' ) ) {
@@ -224,8 +223,8 @@ class MailsterTemplate {
 				$base_path = $this->templatepath . '/img/social/';
 				$base_url  = $this->templateurl . '/img/social/';
 				if ( ! is_dir( $base_path ) ) {
-					$base_path = MAILSTER_DIR . 'templates/mymail/img/social/';
-					$base_url  = MAILSTER_URI . 'templates/mymail/img/social/';
+					$base_path = MAILSTER_DIR . 'templates/mailster/img/social/';
+					$base_url  = MAILSTER_URI . 'templates/mailster/img/social/';
 				}
 
 				$high_dpi = mailster_option( 'high_dpi' ) ? 2 : 1;

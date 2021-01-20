@@ -65,6 +65,12 @@ class MailsterAjax {
 		'editor_image_upload_handler',
 		'template_upload_handler',
 
+		'query_templates',
+		'delete_template',
+		'download_template',
+		'default_template',
+		'template_endpoint',
+
 		// dashboard
 		'get_dashboard_data',
 		'get_dashboard_chart',
@@ -76,6 +82,7 @@ class MailsterAjax {
 		'load_language',
 		'quick_install',
 		'wizard_save',
+
 
 		'test',
 
@@ -1824,24 +1831,58 @@ class MailsterAjax {
 	}
 
 
-	private function remove_template() {
+	private function delete_template() {
 		$return['success'] = false;
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$path = mailster( 'templates' )->get_path();
+		$slug = basename( $_POST['slug'] );
 
-		$file = $path . '/' . esc_attr( $_POST['file'] );
+		$return['success'] = mailster( 'templates' )->remove_template( $slug );
+		$this->json_return( $return );
 
-		if ( file_exists( $file ) && current_user_can( 'mailster_delete_templates' ) ) {
-			mailster_require_filesystem();
+	}
 
-			global $wp_filesystem;
+	private function download_template() {
+		$return['success'] = false;
 
-			$return['success'] = $wp_filesystem->delete( $file );
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$url  = esc_url( $_POST['url'] );
+		$slug = basename( $_POST['slug'] );
+
+		$result = mailster( 'templates' )->download_template( $url, $slug );
+
+		if ( is_wp_error( $result ) ) {
+			$return['msg'] = sprintf( esc_html__( 'There was an error loading the template: %s', 'mailster' ), $result->get_error_message() );
+		} else {
+			$return['msg']      = esc_html__( 'Template successful loaded!', 'mailster' );
+			$return['redirect'] = $result;
+			$return['success']  = true;
 		}
 
 		$this->json_return( $return );
+
+	}
+
+	private function default_template() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$slug = basename( $_POST['slug'] );
+
+		$result = mailster_update_option( 'default_template', $slug );
+
+		if ( is_wp_error( $result ) ) {
+			$return['msg'] = sprintf( esc_html__( 'There was an error using this template as default: %s', 'mailster' ), $result->get_error_message() );
+		} else {
+			$return['msg']     = esc_html__( 'New default template!', 'mailster' );
+			$return['success'] = true;
+		}
+
+		$this->json_return( $return );
+
 	}
 
 
@@ -2410,6 +2451,84 @@ class MailsterAjax {
 
 	}
 
+	private function remove_template() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$path = mailster( 'templates' )->get_path();
+
+		$file = $path . '/' . esc_attr( $_POST['file'] );
+
+		if ( file_exists( $file ) && current_user_can( 'mailster_delete_templates' ) ) {
+			mailster_require_filesystem();
+
+			global $wp_filesystem;
+
+			$return['success'] = $wp_filesystem->delete( $file );
+		}
+
+		$this->json_return( $return );
+	}
+
+	private function query_templates() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$query = array(
+			's'      => esc_attr( $_POST['search'] ),
+			'browse' => esc_attr( $_POST['browse'] ),
+			'type'   => esc_attr( $_POST['type'] ),
+			'page'   => absint( $_POST['page'] ),
+		);
+
+		$result = mailster( 'templates' )->query( $query );
+
+		if ( ! is_wp_error( $result ) ) {
+			$return['total']     = $result['total'];
+			$return['html']      = mailster( 'templates' )->result_to_html( $result );
+			$return['templates'] = $result['items'];
+			$return['error']     = $result['error'];
+		}
+
+		$this->json_return( $return );
+	}
+
+
+	private function template_endpoint() {
+
+		$return['success'] = false;
+
+		$slug = basename( $_GET['slug'] );
+
+		$this->ajax_nonce( 'Nonce Expired!', 'mailster_download_template_' . esc_attr( $slug ) );
+
+		if ( isset( $_GET['download_url'] ) ) {
+			?><script>window.opener.mailster.templates.downloadFromUrl('<?php echo esc_url( $_GET['download_url'] ); ?>', '<?php echo esc_attr( $slug ); ?>');window.close();</script>
+			<?php
+			exit;
+		} elseif ( isset( $_GET['mailster_error'] ) ) {
+			?>
+			<script>window.opener.mailster.templates.error('<?php echo esc_attr( $slug ); ?>', '<?php echo esc_attr( $_GET['mailster_error'] ); ?>');window.close();</script>
+			<?php
+			exit;
+		}
+
+		$url = esc_url( $_GET['url'] );
+
+		$location = add_query_arg(
+			array(
+				'redirect_to' => rawurlencode( add_query_arg( $_GET, admin_url( 'admin-ajax.php' ) ) ),
+			),
+			$url
+		);
+
+		wp_redirect( $location );
+		exit;
+
+	}
 
 	private function get_dashboard_data() {
 
@@ -2593,7 +2712,8 @@ class MailsterAjax {
 
 			$args = array( trim( $_GET['slug'] ), trim( $_GET['purchasecode'] ), trim( $_GET['username'] ), trim( $_GET['email'] ) );
 
-			?><script>window.opener.verifymailster('<?php echo implode( "','", $args ); ?>');window.close();</script>
+			?>
+			<script>window.opener.verifymailster('<?php echo implode( "','", $args ); ?>');window.close();</script>
 			<?php
 
 			exit;
