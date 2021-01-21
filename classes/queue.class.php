@@ -1146,19 +1146,20 @@ class MailsterQueue {
 
 			$sql .= " LIMIT $send_at_once";
 
-			$result = $wpdb->get_results( $sql );
+			$queue_result = $wpdb->get_results( $sql );
 
 			if ( $wpdb->last_error ) {
 				$this->cron_log( 'DB Error', '&nbsp;<span class="error">' . $wpdb->last_error . '</span>' );
 			}
+			$queue_result_count = count( $queue_result );
 
-			$this->cron_log( 'subscribers found', '<strong>' . number_format_i18n( count( $result ) ) . '</strong>' );
+			$this->cron_log( 'subscribers found', '<strong>' . number_format_i18n( $queue_result_count ) . '</strong>' );
 
 			$this->cron_log();
 
 			$this->cron_log( '#', 'email', 'campaign', 'try', 'time (sec.)' );
 
-			foreach ( $result as $i => $data ) {
+			foreach ( $queue_result as $i => $data ) {
 
 				if ( connection_aborted() ) {
 					break;
@@ -1297,9 +1298,12 @@ class MailsterQueue {
 					}
 				}
 
-				// pause between mails
-				if ( $send_delay ) {
-					usleep( max( 1, round( ( $send_delay - ( microtime( true ) - $send_start_time ) ), 3 ) * 1000000 ) );
+				// pause between mails if defined and not very last email in this batch
+				if ( $send_delay && $i + 1 < $queue_result_count ) {
+					$delay = round( ( $send_delay - ( microtime( true ) - $send_start_time ) ), 3 ) * 1000000;
+					if ( $delay > 0 ) {
+						usleep( $delay );
+					}
 				}
 			}
 		}
@@ -1324,17 +1328,19 @@ class MailsterQueue {
 
 				error_log( print_r( $last_hit, true ) );
 
+				$percentage = 0.9;
+
 				if ( $cron_lock_timestamp = get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
-					$percentage = 0.5;
+					$percentage = min( 0.5, $percentage );
 					$interval   = abs( $cron_lock_timestamp - $last_hit['timestamp'] );
 					delete_transient( 'mailster_cron_lock_triggered_' . $process_id );
 					error_log( 'mailster_cron_lock_triggered_:' . print_r( $interval, true ) );
 				} else {
-					$percentage = 0.9;
-					$interval   = $last_hit['timestamp'] - $last_hit['oldtimestamp'];
+					$interval = $last_hit['timestamp'] - $last_hit['oldtimestamp'];
 				}
 
 				error_log( 'interval: ' . print_r( $interval, true ) );
+				error_log( 'took: ' . print_r( $took, true ) );
 
 				$possible_mails_per_minute = MINUTE_IN_SECONDS / $last_hit['mail'];
 
@@ -1368,7 +1374,7 @@ class MailsterQueue {
 					$prefix = '+';
 				}
 
-				$this->cron_log( 'send next turn', $possible_mails_per_interval_adjusted . '(' . $prefix . ( round( 100 * $possible_mails_per_interval_adjusted / $send_at_once ) - 100 ) . '%)' );
+				$this->cron_log( 'send next turn', $possible_mails_per_interval_adjusted . ' (' . $prefix . ( round( 100 * $possible_mails_per_interval_adjusted / $send_at_once ) - 100 ) . '%)' );
 				error_log( 'diff: ' . print_r( $diff, true ) );
 
 				error_log( 'ratio: ' . print_r( $ratio, true ) );
