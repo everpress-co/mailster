@@ -1166,7 +1166,7 @@ class MailsterQueue {
 
 				if ( $max_execution_time && microtime( true ) - $globaltime > $max_execution_time - 1 ) {
 					$this->cron_log( '', '&nbsp;<span class="error">' . esc_html__( 'timeout reached', 'mailster' ) . '</span>', '', '', '' );
-					if ( ! $send_this_turn ) {
+					if ( ! $sent_this_turn ) {
 						mailster_notice( sprintf( esc_html__( 'Mailster is not able to send your campaign cause of a server timeout. Please increase the %1$s on the %2$s', 'mailster' ), '<strong>&quot;' . esc_html__( 'Max. Execution Time', 'mailster' ) . '&quot;</strong>', '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=max_execution_time#delivery">' . esc_html__( 'settings page', 'mailster' ) . '</a>' ), 'error', false, 'max_execution_time' );
 					}
 
@@ -1359,7 +1359,7 @@ class MailsterQueue {
 				$prefix = '';
 
 				if ( $ratio < 1 ) {
-					if ( $to_send == $send_this_turn ) {
+					if ( $to_send == $sent_this_turn ) {
 						$possible_mails_per_interval_adjusted = round( $sent_this_turn + ( $diff * $ratio ) );
 					} else {
 						$possible_mails_per_interval_adjusted = round( $send_at_once + ( $diff * $ratio ) );

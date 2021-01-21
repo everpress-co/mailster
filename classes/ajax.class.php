@@ -1178,7 +1178,7 @@ class MailsterAjax {
 
 		if ( function_exists( 'imagettftext' ) ) {
 
-			$font_size = max( 11, round( $width / strlen( $text ) * 1.3 ) );
+			$font_size = max( 8, round( $width / strlen( $text ) * 1.3 ) );
 			$font      = MAILSTER_DIR . 'assets/font/Jost-Regular.ttf';
 			$bbox      = imagettfbbox( $font_size, 0, $font, $text );
 
