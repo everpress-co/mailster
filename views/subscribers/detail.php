@@ -437,7 +437,7 @@ if ( ! $is_new ) :
 					<?php esc_html_e( 'User has never opened a campaign', 'mailster' ); ?>
 				<?php endif; ?>
 					</p>
-					<table class="wp-list-table widefat activities">
+			<table class="wp-list-table widefat activities">
 				<thead>
 					<tr><th><?php esc_html_e( 'Date', 'mailster' ); ?></th><th></th><th><?php esc_html_e( 'Action', 'mailster' ); ?></th><th><?php esc_html_e( 'Campaign', 'mailster' ); ?></th><th></th></tr>
 				</thead>

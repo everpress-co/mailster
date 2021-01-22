@@ -83,7 +83,7 @@ class MailsterConditions {
 				'firstname' => array( 'name' => mailster_text( 'firstname' ) ),
 				'lastname'  => array( 'name' => mailster_text( 'lastname' ) ),
 				'rating'    => array( 'name' => esc_html__( 'Rating', 'mailster' ) ),
-				'tag'       => array( 'name' => esc_html__( 'Tag', 'mailster' ) ),
+				// 'tag'       => array( 'name' => esc_html__( 'Tag', 'mailster' ) ),
 			)
 		);
 
@@ -171,7 +171,7 @@ class MailsterConditions {
 	private function get_tag_related() {
 		return array(
 			'_tags__in'     => esc_html__( 'has Tag', 'mailster' ),
-			'_tags__not_in' => esc_html__( 'doesn\'t has Tag', 'mailster' ),
+			'_tags__not_in' => esc_html__( 'doesn\'t have Tag', 'mailster' ),
 		);
 
 	}

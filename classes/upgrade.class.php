@@ -997,7 +997,7 @@ class MailsterUpgrade {
 				break;
 		}
 
-		$sql = "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` as b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp WHERE b.ID IS NULL AND a.type = $type ORDER BY a.ID ASC";
+		$sql = "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp WHERE b.ID IS NULL AND a.type = $type ORDER BY a.ID ASC";
 
 		// get first missing primary key
 		if ( $key = $wpdb->get_var( $sql ) ) {
@@ -1008,8 +1008,11 @@ class MailsterUpgrade {
 
 			$count = $wpdb->query( $sql );
 
+			$total = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.type = $type" );
+			$moved = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_action_$table` AS a" );
+
 			if ( $count ) {
-				echo $count . ' entries of table ' . $table . ' moved. (ID ' . $key . ')' . "\n";
+				echo $moved . ' of ' . $total . ' entries from table ' . $table . ' moved.' . "\n";
 				return false;
 			}
 		}

@@ -163,8 +163,9 @@ class MailsterSettings {
 
 			'tweet_cache_time'                   => 60,
 
-			'interval'                           => 5,
+			'interval'                           => 2,
 			'send_at_once'                       => 20,
+			'auto_send_at_once'                  => false,
 			'send_limit'                         => 10000,
 			'send_period'                        => 24,
 			'time_frame_from'                    => 0,

@@ -3103,8 +3103,6 @@ class MailsterSubscribers {
 			);
 		}
 
-		error_log( print_r( $actions, true ) );
-
 		$meta = $this->meta( $id, null, $campaign_id );
 
 		$return['success'] = true;
@@ -3139,13 +3137,22 @@ class MailsterSubscribers {
 
 		$html .= '</li>';
 
-		if ( $actions->clicks ) {
+		if ( $links = array_filter( wp_list_pluck( $activities, 'link' ) ) ) {
 			$html .= '<li><ul>';
-			foreach ( $actions->clicks as $link => $count ) {
-				$html .= '<li class=""><a href="' . $link . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( esc_html__( _n( '%s click', '%s clicks', (int) $count, 'mailster' ) ), $count ) . ')</span></li>';
+			foreach ( $links as $activity_id => $link ) {
+				$count = $activities[ $activity_id ]->count;
+				$html .= '<li class=""><a href="' . esc_url( $link ) . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( esc_html__( _n( '%s click', '%s clicks', (int) $count, 'mailster' ) ), $count ) . ')</span></li>';
 			}
 			$html .= '</ul></li>';
 		}
+
+		// if ( $actions->clicks ) {
+		// $html .= '<li><ul>';
+		// foreach ( $actions->clicks as $link => $count ) {
+		// $html .= '<li class=""><a href="' . $link . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( esc_html__( _n( '%s click', '%s clicks', (int) $count, 'mailster' ) ), $count ) . ')</span></li>';
+		// }
+		// $html .= '</ul></li>';
+		// }
 
 		if ( $actions->unsubs ) {
 			$message = mailster( 'helper' )->get_unsubscribe_message( $this->meta( $id, 'unsubscribe', $campaign_id ) );

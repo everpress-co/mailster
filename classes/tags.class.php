@@ -246,8 +246,6 @@ class MailsterTags {
 	 */
 	public function remove_if_not_asigned( $ids ) {
 
-		error_log( print_r( 're', true ) );
-		error_log( print_r( $ids, true ) );
 	}
 
 
