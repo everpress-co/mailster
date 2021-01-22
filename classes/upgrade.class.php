@@ -276,15 +276,15 @@ class MailsterUpgrade {
 				array(
 					'create_primary_keys'             => 'Create primary keys',
 					'db_structure'                    => 'Checking DB structure',
-					'update_action_table_sent'        => 'Update Action Tables - Sent',
-					'update_action_table_opens'       => 'Update Action Tables - Opens',
-					'update_action_table_clicks'      => 'Update Action Tables - Clicks',
-					'update_action_table_unsubs'      => 'Update Action Tables - Unsubscribes',
+					'update_action_table_sent'        => 'Update Action Table - Sent',
+					'update_action_table_opens'       => 'Update Action Table - Opens',
+					'update_action_table_clicks'      => 'Update Action Table - Clicks',
+					'update_action_table_unsubs'      => 'Update Action Table - Unsubscribes',
 					'update_action_table_unsubs_msg'  => 'Update Unsubscribes Messages',
-					'update_action_table_softbounces' => 'Update Action Tables - Softbounces',
-					'update_action_table_bounces'     => 'Update Action Tables - Bounces',
+					'update_action_table_softbounces' => 'Update Action Table - Softbounces',
+					'update_action_table_bounces'     => 'Update Action Table - Bounces',
 					'update_action_table_bounce_msg'  => 'Update Bounce Messages',
-					'update_action_table_errors'      => 'Update Action Tables - Errors',
+					'update_action_table_errors'      => 'Update Action Table - Errors',
 					'update_action_table_errors_msg'  => 'Update Errors Messages',
 					// 'delete_legacy_action_table'      => 'Remove Legacy Table',
 				),
@@ -997,10 +997,10 @@ class MailsterUpgrade {
 				break;
 		}
 
-		// get first missing primary key
-		$key = $wpdb->get_var( "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` as b ON a.subscriber_id = b.subscriber_id AND a.campaign_id = b.campaign_id AND a.timestamp = b.timestamp WHERE b.ID IS NULL AND a.type = $type ORDER BY a.ID ASC" );
+		$sql = "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` as b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp WHERE b.ID IS NULL AND a.type = $type ORDER BY a.ID ASC";
 
-		if ( $key ) {
+		// get first missing primary key
+		if ( $key = $wpdb->get_var( $sql ) ) {
 
 			$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` ($fields_string) SELECT $select_string FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.ID >= %d AND a.type = %d ORDER BY a.ID ASC LIMIT %d;";
 
@@ -1009,14 +1009,12 @@ class MailsterUpgrade {
 			$count = $wpdb->query( $sql );
 
 			if ( $count ) {
-				echo $count . ' entries of table ' . $table . ' moved.' . "\n";
+				echo $count . ' entries of table ' . $table . ' moved. (ID ' . $key . ')' . "\n";
 				return false;
-			} else {
-
 			}
 		}
 		echo 'Table "' . $table . '" finished.' . "\n";
-		usleep( 1000 );
+		usleep( 200 );
 
 		return true;
 	}

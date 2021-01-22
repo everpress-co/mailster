@@ -494,7 +494,7 @@ if ( ! $is_new ) :
 						<?php if ( $activity->campaign_status == 'trash' ) : ?>
 							<?php esc_html_e( 'campaign deleted', 'mailster' ); ?>
 
-						<?php elseif ( $activity->type == 'send' && current_user_can( 'publish_newsletters' ) ) : ?>
+						<?php elseif ( $activity->type == 'sent' && current_user_can( 'publish_newsletters' ) ) : ?>
 							<?php
 							$url = add_query_arg(
 								array(

@@ -1004,9 +1004,7 @@ class MailsterCampaigns {
 				break;
 
 			case 'total':
-				if ( 'finished' == $post->post_status ) {
-					echo number_format_i18n( $this->get_sent( $post->ID ) );
-				} elseif ( 'autoresponder' == $post->post_status ) {
+				if ( 'autoresponder' == $post->post_status ) {
 					echo number_format_i18n( $this->get_sent( $post->ID, true ) );
 				} elseif ( 'notification' == $post->post_status ) {
 					echo number_format_i18n( $this->get_sent( $post->ID, true ) );
@@ -3961,7 +3959,7 @@ class MailsterCampaigns {
 	 * @param unknown $parts       (optional)
 	 * @return unknown
 	 */
-	public function get_recipients_part_sql( $campaign_id, $parts = array( 'unopen', 'opens', 'clicks', 'unsubs', 'bounces' ) ) {
+	private function get_recipients_part_sql( $campaign_id, $parts = array( 'unopen', 'opens', 'clicks', 'unsubs', 'bounces' ) ) {
 
 		global $wpdb;
 
@@ -3974,18 +3972,18 @@ class MailsterCampaigns {
 		$sql  = 'SELECT a.ID, a.email, a.hash, a.status, firstname.meta_value AS firstname, lastname.meta_value AS lastname';
 		$sql .= ', sent.timestamp AS sent, sent.count AS sent_count';
 
-		if ( $unopen || $opens ) {
+		// if ( $unopen || $opens ) {
 			$sql .= ', open.timestamp AS open, COUNT(open.count) AS open_count';
-		}
-		if ( $clicks ) {
+		// }
+		// if ( $clicks ) {
 			$sql .= ', click.timestamp AS clicks, COUNT(click.count) AS click_count, SUM(click.count) AS click_count_total';
-		}
-		if ( $unsubs ) {
+		// }
+		// if ( $unsubs ) {
 			$sql .= ', unsub.timestamp AS unsubs, unsub.count AS unsub_count';
-		}
-		if ( $bounces ) {
+		// }
+		// if ( $bounces ) {
 			$sql .= ', bounce.timestamp AS bounces, bounce.count AS bounce_count';
-		}
+		// }
 		$sql .= " FROM {$wpdb->prefix}mailster_subscribers AS a";
 
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS firstname ON a.ID = firstname.subscriber_id AND firstname.meta_key = 'firstname'";
@@ -3993,18 +3991,18 @@ class MailsterCampaigns {
 
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_sent AS sent ON a.ID = sent.subscriber_id";
 
-		if ( $unopen || $opens ) {
+		// if ( $unopen || $opens ) {
 			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_opens AS open ON a.ID = open.subscriber_id AND open.campaign_id = sent.campaign_id";
-		}
-		if ( $clicks ) {
+		// }
+		// if ( $clicks ) {
 			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_clicks AS click ON a.ID = click.subscriber_id AND click.campaign_id = sent.campaign_id";
-		}
-		if ( $unsubs ) {
+		// }
+		// if ( $unsubs ) {
 			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_unsubs AS unsub ON a.ID = unsub.subscriber_id AND unsub.campaign_id = sent.campaign_id";
-		}
-		if ( $bounces ) {
+		// }
+		// if ( $bounces ) {
 			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS bounce ON a.ID = bounce.subscriber_id AND bounce.campaign_id = sent.campaign_id";
-		}
+		// }
 
 		$sql .= ' WHERE sent.campaign_id = %d';
 

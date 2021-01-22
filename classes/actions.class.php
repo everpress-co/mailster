@@ -16,7 +16,7 @@ class MailsterActions {
 		add_action( 'mailster_click', array( &$this, 'click' ), 10, 4 );
 		add_action( 'mailster_unsubscribe', array( &$this, 'unsubscribe' ), 10, 3 );
 		add_action( 'mailster_list_unsubscribe', array( &$this, 'list_unsubscribe' ), 10, 4 );
-		add_action( 'mailster_bounce', array( &$this, 'bounce' ), 10, 3 );
+		add_action( 'mailster_bounce', array( &$this, 'bounce' ), 10, 4 );
 		add_action( 'mailster_subscriber_error', array( &$this, 'error' ), 10, 3 );
 		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ) );
 
@@ -138,9 +138,10 @@ class MailsterActions {
 	 * @param unknown $subscriber_id
 	 * @param unknown $campaign_id
 	 * @param unknown $hard          (optional)
+	 * @param unknown $status        (optional)
 	 * @return unknown
 	 */
-	public function bounce( $subscriber_id, $campaign_id, $hard = false ) {
+	public function bounce( $subscriber_id, $campaign_id, $hard = false, $status = null ) {
 
 		return $this->add_action(
 			array(
@@ -148,6 +149,7 @@ class MailsterActions {
 				'campaign_id'   => $campaign_id,
 				'type'          => 'bounces',
 				'hard'          => $hard,
+				'text'          => $status,
 				'count'         => 1,
 			)
 		);
@@ -258,21 +260,11 @@ class MailsterActions {
 
 		$type = $args['type'];
 		unset( $args['type'] );
-		switch ( $type ) {
-			case 'clicks':
-			case 'opens':
-				// make sure clicks and opens count only once per minute
-				$now = floor( time() / 60 ) * 60;
-				break;
-			default:
-				$now = time();
-				break;
-		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
-				'timestamp' => $now,
+				'timestamp' => time(),
 				'count'     => 1,
 			)
 		);
@@ -283,9 +275,11 @@ class MailsterActions {
 
 		$sql .= " VALUES ('" . implode( "','", array_values( $args ) ) . "') ON DUPLICATE KEY UPDATE";
 
-		$sql .= ( $explicit ) ? ' timestamp = timestamp, count = count+1' : ' count = values(count)';
+		$sql .= ( $explicit ) ? ' timestamp = timestamp, count = count+1' : ' count = count';
 
 		$sql = apply_filters( 'mailster_actions_add_sql', $sql, $args, $explicit );
+
+		error_log( print_r( $sql, true ) );
 
 		$result = $wpdb->query( $sql );
 
@@ -342,15 +336,13 @@ class MailsterActions {
 
 		global $wpdb;
 
-		// delete all softbounces where a hardbounce exists
-		$wpdb->query( $wpdb->prepare( "DELETE b FROM {$wpdb->prefix}mailster_action_bounces AS a LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS b ON a.campaign_id = b.campaign_id AND a.subscriber_id = b.subscriber_id WHERE a.hard = %d AND b.hard = %d", 1, 0 ) );
-
 		// remove actions where's either a subscriber nor a campaign assigned
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_sent AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_opens AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_clicks AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_unsubs AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_bounces AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
+		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_errors AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 
 	}
 
@@ -1055,7 +1047,11 @@ class MailsterActions {
 
 		global $wpdb;
 
-		$sql       = 'SELECT p.post_title AS campaign_title, p.post_status AS campaign_status, a.*, l.link FROM';
+		$sql = 'SELECT';
+		if ( ! is_null( $limit ) ) {
+			$sql .= ' SQL_CALC_FOUND_ROWS';
+		}
+		$sql      .= ' p.post_title AS campaign_title, p.post_status AS campaign_status, a.*, l.link FROM';
 		$union_sql = '';
 
 		if ( ! is_null( $campaign_id ) ) {
@@ -1070,26 +1066,26 @@ class MailsterActions {
 			' UNION ',
 			array(
 
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_sent WHERE 1$union_sql", 'sent' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_opens WHERE 1$union_sql", 'open' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_clicks WHERE 1$union_sql", 'click' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_unsubs WHERE 1$union_sql", 'unsub' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 0$union_sql", 'softbounce' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_errors WHERE 1=1$union_sql", 'error' ),
 				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 1$union_sql", 'bounce' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_errors WHERE 1$union_sql", 'error' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 0$union_sql", 'softbounce' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_unsubs WHERE 1=1$union_sql", 'unsub' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_clicks WHERE 1=1$union_sql", 'click' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_opens WHERE 1=1$union_sql", 'open' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_sent WHERE 1=1$union_sql", 'sent' ),
 
 			)
 		) . ') AS a';
 
 		$sql .= " LEFT JOIN `{$wpdb->posts}` as p ON p.ID = a.campaign_id";
 		$sql .= " LEFT JOIN `{$wpdb->prefix}mailster_links` AS l ON l.ID = a.link_id";
-		$sql .= ' WHERE 1';
+		$sql .= ' WHERE 1=1';
+
+		$sql .= ' ORDER BY a.timestamp DESC';
 
 		if ( ! is_null( $limit ) ) {
 			$sql .= ' LIMIT ' . (int) $limit;
 		}
-
-		$sql .= ' ORDER BY a.timestamp DESC, a.type DESC';
 
 		return $wpdb->get_results( $sql );
 

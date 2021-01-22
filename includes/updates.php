@@ -598,11 +598,9 @@ if ( $old_version ) {
 				mailster( 'geo' )->update();
 			}
 
-			$mailster_options['auto_send_at_once'] = false;
+			$mailster_options['auto_send_at_once'] = true;
 
 		default:
-
-
 			$mailster_options['db_update_required'] = true;
 			// reset translations
 			update_option( 'mailster_translation', '' );

@@ -853,7 +853,7 @@ class MailsterFrontpage {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_register_script( 'mailster-frontpage-script', MAILSTER_URI . 'assets/js/frontpage' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
-		wp_localize_script( 'mailster-frontpage-script', 'ajaxurl', admin_url( 'admin-ajax.php' ) );
+		wp_localize_script( 'mailster-frontpage-script', 'mailster', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
 		wp_print_scripts( 'mailster-frontpage-script' );
 

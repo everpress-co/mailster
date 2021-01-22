@@ -83,7 +83,7 @@ jQuery(document).ready(function ($) {
 
 		_this.find('input.button').prop('disabled', true);
 
-		$.post(ajaxurl, {
+		$.post(window.mailster.ajaxurl, {
 			action: 'mailster_forward_message',
 			data: data
 		}, function (response) {

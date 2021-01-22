@@ -140,7 +140,7 @@ mailster = (function (mailster, $, window, document) {
 		var el = $('#output_' + id);
 
 		el.append(content);
-		round > 20 ? el.append(skip.show()) : skip.hide();
+		round > 100 ? el.append(skip.show()) : skip.hide();
 
 	}
 

@@ -2194,7 +2194,6 @@ class MailsterSubscribers {
 	 */
 	public function open_time( $id ) {
 		return $this->compare( $id, 'sent', 'opens' );
-		return $this->compare( $id, 1, 2 );
 	}
 
 
@@ -2207,7 +2206,6 @@ class MailsterSubscribers {
 	 */
 	public function click_time( $id, $since_open = true ) {
 		return $this->compare( $id, $since_open ? 'opens' : 'sent', 'clicks' );
-		return $this->compare( $id, $since_open ? 2 : 1, 3 );
 	}
 
 
@@ -2219,11 +2217,11 @@ class MailsterSubscribers {
 	 * @param unknown $actionB
 	 * @return unknown
 	 */
-	public function compare( $id, $actionA, $actionB ) {
+	private function compare( $id, $actionA, $actionB ) {
 
 		global $wpdb;
 
-		$sql = "SELECT (b.timestamp - a.timestamp) AS time FROM {$wpdb->prefix}mailster_action_$actionA AS a LEFT JOIN {$wpdb->prefix}mailster_action_$actionB AS b ON a.subscriber_id = b.subscriber_id AND a.campaign_id = b.campaign_id WHERE a.subscriber_id = %d GROUP BY a.subscriber_id, a.campaign_id ORDER BY a.timestamp ASC, b.timestamp ASC";
+		$sql = "SELECT ABS(b.timestamp - a.timestamp) AS time FROM {$wpdb->prefix}mailster_action_$actionA AS a LEFT JOIN {$wpdb->prefix}mailster_action_$actionB AS b ON a.subscriber_id = b.subscriber_id AND a.campaign_id = b.campaign_id WHERE a.subscriber_id = %d GROUP BY a.subscriber_id, a.campaign_id ORDER BY a.timestamp ASC, b.timestamp ASC";
 
 		$times = $wpdb->get_col( $wpdb->prepare( $sql, $id ) );
 		if ( empty( $times ) ) {
@@ -3094,10 +3092,10 @@ class MailsterSubscribers {
 
 		$activities = mailster( 'actions' )->get_activity( $campaign_id, $id );
 		error_log( print_r( $activities, true ) );
-		$actiions = new StdClass;
+		$actions = new StdClass;
 
 		foreach ( $activities as $activity ) {
-			$actiions->{$activity->type} = array(
+			$actions->{$activity->type} = array(
 				'count'     => $activity->count,
 				'timestamp' => $activity->timestamp,
 				'link'      => $activity->link,
@@ -3105,7 +3103,7 @@ class MailsterSubscribers {
 			);
 		}
 
-		error_log( print_r( $actiions, true ) );
+		error_log( print_r( $actions, true ) );
 
 		$meta = $this->meta( $id, null, $campaign_id );
 
@@ -3123,8 +3121,8 @@ class MailsterSubscribers {
 		$html .= '<h4>' . esc_html( $subscriber->fullname ? $subscriber->fullname : $subscriber->email ) . ' <a href="edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID . '">' . esc_html__( 'edit', 'mailster' ) . '</a></h4>';
 		$html .= '<ul>';
 
-		$html .= '<li><label>' . esc_html__( 'sent', 'mailster' ) . ':</label> ' . ( $actions->sent ? date( $timeformat, $actions->sent + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->sent ) ) . ( $actions->sent_total > 1 ? ' <span class="count">(' . sprintf( esc_html__( '%d times', 'mailster' ), $actions->sent_total ) . ')</span>' : '' ) : esc_html__( 'not yet', 'mailster' ) );
-		$html .= '<li><label>' . esc_html__( 'opens', 'mailster' ) . ':</label> ' . ( $actions->opens ? date( $timeformat, $actions->opens + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->opens ) ) . ( $actions->opens_total > 1 ? ' <span class="count">(' . sprintf( esc_html__( '%d times', 'mailster' ), $actions->opens_total ) . ')</span>' : '' ) : esc_html__( 'not yet', 'mailster' ) );
+		$html .= '<li><label>' . esc_html__( 'sent', 'mailster' ) . ':</label> ' . ( $actions->sent['count'] ? date( $timeformat, $actions->sent['timestamp'] + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->sent['timestamp'] ) ) . ( $actions->sent['count'] > 1 ? ' <span class="count">(' . sprintf( esc_html__( '%d times', 'mailster' ), $actions->sent['count'] ) . ')</span>' : '' ) : esc_html__( 'not yet', 'mailster' ) );
+		$html .= '<li><label>' . esc_html__( 'opens', 'mailster' ) . ':</label> ' . ( $actions->open['count'] ? date( $timeformat, $actions->open['timestamp'] + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->open['timestamp'] ) ) . ( $actions->open['count'] > 1 ? ' <span class="count">(' . sprintf( esc_html__( '%d times', 'mailster' ), $actions->open['count'] ) . ')</span>' : '' ) : esc_html__( 'not yet', 'mailster' ) );
 
 		$html .= '<p class="meta"><label>&nbsp;</label>';
 		if ( $meta['client'] ) {
@@ -3438,9 +3436,6 @@ class MailsterSubscribers {
 
 			if ( $this->change_status( $subscriber->ID, $this->get_status_by_name( 'hardbounced' ) ) ) {
 				do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, true, $status );
-				if ( $status ) {
-					$this->update_meta( $subscriber->ID, $campaign_id, 'bounce', $status );
-				}
 
 				return true;
 			}
@@ -3460,9 +3455,6 @@ class MailsterSubscribers {
 
 		// softbounce
 		do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, false, $status );
-		if ( $status ) {
-			$this->update_meta( $subscriber->ID, $campaign_id, 'bounce', $status );
-		}
 
 		return true;
 
