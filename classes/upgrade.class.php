@@ -274,7 +274,7 @@ class MailsterUpgrade {
 			unset( $actions['db_structure'] );
 			$actions = wp_parse_args(
 				array(
-					'create_missing_primary_keys'     => 'Create missing primary keys',
+					'create_primary_keys'             => 'Create primary keys',
 					'db_structure'                    => 'Checking DB structure',
 					'update_action_table_sent'        => 'Update Action Tables - Sent',
 					'update_action_table_opens'       => 'Update Action Tables - Opens',
@@ -283,9 +283,10 @@ class MailsterUpgrade {
 					'update_action_table_unsubs_msg'  => 'Update Unsubscribes Messages',
 					'update_action_table_softbounces' => 'Update Action Tables - Softbounces',
 					'update_action_table_bounces'     => 'Update Action Tables - Bounces',
+					'update_action_table_bounce_msg'  => 'Update Bounce Messages',
 					'update_action_table_errors'      => 'Update Action Tables - Errors',
 					'update_action_table_errors_msg'  => 'Update Errors Messages',
-					'delete_legacy_action_table'      => 'Remove Legacy Table',
+					// 'delete_legacy_action_table'      => 'Remove Legacy Table',
 				),
 				$actions
 			);
@@ -553,7 +554,7 @@ class MailsterUpgrade {
 			mailster_notice( $post_notice, 'error', false, 'update_post_notice' );
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
@@ -579,7 +580,7 @@ class MailsterUpgrade {
 			}
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 	}
 
@@ -611,7 +612,7 @@ class MailsterUpgrade {
 			}
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
@@ -728,7 +729,7 @@ class MailsterUpgrade {
 			}
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
@@ -751,7 +752,7 @@ class MailsterUpgrade {
 			}
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
@@ -769,7 +770,7 @@ class MailsterUpgrade {
 		$wpdb->query( "DELETE FROM `$wpdb->options` WHERE `$wpdb->options`.`option_name` LIKE 'mymail_%'" );
 		$wpdb->query( "DELETE FROM `$wpdb->options` WHERE `$wpdb->options`.`option_name` = 'mymail'" );
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
@@ -812,7 +813,7 @@ class MailsterUpgrade {
 			}
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
@@ -835,7 +836,7 @@ class MailsterUpgrade {
 
 		}
 
-		sleep( 1 );
+		usleep( 1000 );
 		return true;
 
 	}
@@ -898,7 +899,7 @@ class MailsterUpgrade {
 	}
 
 
-	private function do_create_missing_primary_keys() {
+	private function do_create_primary_keys() {
 
 		global $wpdb;
 		$tables = mailster()->get_tables( true );
@@ -911,7 +912,7 @@ class MailsterUpgrade {
 				continue;
 			}
 			if ( false !== strpos( $table, 'mailster_actions' ) ) {
-				continue;
+				// continue;
 			}
 
 			$wpdb->query( "ALTER TABLE {$table} ADD `ID` bigint(20) unsigned NOT NULL FIRST" );
@@ -923,6 +924,8 @@ class MailsterUpgrade {
 			} else {
 				echo 'Primary Key for "' . $table . '" created.' . "\n";
 			}
+			usleep( 1000 );
+			return false;
 		}
 
 		return true;
@@ -930,142 +933,142 @@ class MailsterUpgrade {
 
 
 	private function do_update_action_table_sent() {
-		return $this->update_action_table( 'sent', 1 );
+		return $this->update_action_table( 'sent' );
 	}
 	private function do_update_action_table_opens() {
-		return $this->update_action_table( 'opens', 2 );
+		return $this->update_action_table( 'opens' );
 	}
 	private function do_update_action_table_clicks() {
-		global $wpdb;
-
-		$table = 'clicks';
-
-		$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` (subscriber_id, campaign_id, timestamp, count, link_id) SELECT a.subscriber_id, a.campaign_id, a.timestamp, a.count, a.link_id FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN {$wpdb->prefix}mailster_action_$table AS b ON a.subscriber_id <=> a.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp AND a.count <=> b.count AND a.link_id <=> b.link_id WHERE b.subscriber_id IS NULL AND a.type = %d LIMIT %d";
-
-		if ( $count = $wpdb->query( $wpdb->prepare( $sql, 3, 5000 ) ) ) {
-			echo $count . ' of ' . $table . ' entries moved.' . "\n";
-			return false;
-		}
-
-		echo 'Table "' . $table . '" finished.' . "\n";
-		sleep( 1 );
-		return true;
+		return $this->update_action_table( 'clicks', array( 'link_id' ) );
 	}
 	private function do_update_action_table_unsubs() {
-		return $this->update_action_table( 'unsubs', 4 );
+		return $this->update_action_table( 'unsubs' );
 	}
 	private function do_update_action_table_softbounces() {
-		return $this->update_action_table( 'bounces', 5 );
+		return $this->update_action_table( 'softbounces' );
 	}
 	private function do_update_action_table_bounces() {
-		global $wpdb;
-
-		$table = 'bounces';
-
-		$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` (subscriber_id, campaign_id, timestamp, count, hard) SELECT a.subscriber_id, a.campaign_id, a.timestamp, a.count, 1 AS 'hard' FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN {$wpdb->prefix}mailster_action_$table AS b ON a.subscriber_id <=> a.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp AND a.count <=> b.count WHERE b.subscriber_id IS NULL AND a.type = %d LIMIT %d";
-
-		if ( $count = $wpdb->query( $wpdb->prepare( $sql, 6, 5000 ) ) ) {
-			echo $count . ' of ' . $table . ' entries moved.' . "\n";
-			return false;
-		}
-
-		echo 'Table "' . $table . '" finished.' . "\n";
-		sleep( 1 );
-		return true;
+		return $this->update_action_table( 'bounces' );
 	}
 	private function do_update_action_table_errors() {
-		return $this->update_action_table( 'errors', 7 );
+		return $this->update_action_table( 'errors' );
+	}
+
+	private function update_action_table( $table, $fields = array() ) {
+
+		global $wpdb;
+
+		$types = array(
+			'sent'        => 1,
+			'opens'       => 2,
+			'clicks'      => 3,
+			'unsubs'      => 4,
+			'softbounces' => 5,
+			'bounces'     => 6,
+			'errors'      => 7,
+		);
+
+		if ( ! isset( $types[ $table ] ) ) {
+			return true;
+		}
+
+		$type = $types[ $table ];
+
+		$fields        = array_merge( array( 'subscriber_id', 'campaign_id', 'timestamp', 'count' ), $fields );
+		$fields_string = implode( ', ', $fields );
+		$select_string = implode( ', ', $fields );
+
+		$limit = 1000;
+
+		switch ( $table ) {
+			case 'softbounces':
+				$table          = 'bounces';
+				$select_string .= ", '0'";
+				$fields[]       = 'hard';
+				$fields_string  = implode( ', ', $fields );
+				break;
+			case 'bounces':
+				$select_string .= ", '1'";
+				$fields[]       = 'hard';
+				$fields_string  = implode( ', ', $fields );
+				break;
+
+			default:
+				break;
+		}
+
+		// get first missing primary key
+		$key = $wpdb->get_var( "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` as b ON a.subscriber_id = b.subscriber_id AND a.campaign_id = b.campaign_id AND a.timestamp = b.timestamp WHERE b.ID IS NULL AND a.type = $type ORDER BY a.ID ASC" );
+
+		if ( $key ) {
+
+			$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` ($fields_string) SELECT $select_string FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.ID >= %d AND a.type = %d ORDER BY a.ID ASC LIMIT %d;";
+
+			$sql = $wpdb->prepare( $sql, $key, $type, $limit );
+
+			$count = $wpdb->query( $sql );
+
+			if ( $count ) {
+				echo $count . ' entries of table ' . $table . ' moved.' . "\n";
+				return false;
+			} else {
+
+			}
+		}
+		echo 'Table "' . $table . '" finished.' . "\n";
+		usleep( 1000 );
+
+		return true;
 	}
 
 	private function do_update_action_table_unsubs_msg() {
-		global $wpdb;
-
-		$sql = "SELECT * FROM `{$wpdb->prefix}mailster_subscriber_meta` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_unsubs` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id WHERE a.meta_key = 'unsubscribe' AND b.timestamp IS NOT NULL AND a.meta_value != b.text";
-
-		$result = $wpdb->get_results( $sql );
-
-		$count = count( $result );
-
-		if ( ! $count ) {
-			echo 'Moving unsubscribe messages finished.' . "\n";
-			$wpdb->query( "DELETE FROM `{$wpdb->prefix}mailster_subscriber_meta` WHERE meta_key = 'unsubscribe'" );
-			return true;
-		}
-
-		foreach ( $result as $entry ) {
-			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}mailster_action_unsubs` SET text = %s WHERE subscriber_id = %d AND campaign_id = %d AND timestamp = %d", $entry->meta_value, $entry->subscriber_id, $entry->campaign_id, $entry->timestamp ) );
-		}
-
-		echo $count . ' unsubscribe messages moved.' . "\n";
-		sleep( 1 );
-		return false;
-
+		return $this->do_update_action_table_msg( 'unsubscribe' );
 	}
 
 	private function do_update_action_table_bounce_msg() {
-		global $wpdb;
-
-		$sql = "SELECT * FROM `{$wpdb->prefix}mailster_subscriber_meta` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_bounces` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id WHERE a.meta_key = 'bounce' AND b.timestamp IS NOT NULL AND a.meta_value != b.text";
-
-		$result = $wpdb->get_results( $sql );
-
-		$count = count( $result );
-
-		if ( ! $count ) {
-			echo 'Moving bounce messages finished.' . "\n";
-			$wpdb->query( "DELETE FROM `{$wpdb->prefix}mailster_subscriber_meta` WHERE meta_key = 'bounce'" );
-			return true;
-		}
-
-		foreach ( $result as $entry ) {
-			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}mailster_action_bounces` SET text = %s WHERE subscriber_id = %d AND campaign_id = %d AND timestamp = %d", $entry->meta_value, $entry->subscriber_id, $entry->campaign_id, $entry->timestamp ) );
-		}
-
-		echo $count . ' bounce messages moved.' . "\n";
-		sleep( 1 );
-		return false;
-
+		return $this->do_update_action_table_msg( 'bounce' );
 	}
 
 	private function do_update_action_table_errors_msg() {
+		return $this->do_update_action_table_msg( 'error' );
+
+	}
+
+	private function do_update_action_table_msg( $type ) {
 		global $wpdb;
 
-		$sql = "SELECT * FROM `{$wpdb->prefix}mailster_subscriber_meta` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_errors` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id WHERE a.meta_key = 'error' AND b.timestamp IS NOT NULL AND a.meta_value != b.text";
+		$types = array(
+			'error'       => 'errors',
+			'bounce'      => 'bounces',
+			'unsubscribe' => 'unsubs',
+		);
 
-		$result = $wpdb->get_results( $sql );
+		if ( ! isset( $types[ $type ] ) ) {
+			return true;
+		}
+
+		$table = $types[ $type ];
+
+		$sql = "SELECT * FROM `{$wpdb->prefix}mailster_subscriber_meta` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id WHERE a.meta_key = %s AND b.timestamp IS NOT NULL AND a.meta_value != b.text";
+
+		$result = $wpdb->get_results( $wpdb->prepare( $sql, $type ) );
 
 		$count = count( $result );
 
 		if ( ! $count ) {
-			echo 'Moving error messages finished.' . "\n";
-			$wpdb->query( "DELETE FROM `{$wpdb->prefix}mailster_subscriber_meta` WHERE meta_key = 'error'" );
+			echo 'Moving ' . $type . ' messages finished.' . "\n";
+			$wpdb->query( $wpdb->prepare( "DELETE FROM `{$wpdb->prefix}mailster_subscriber_meta` WHERE meta_key = %s", $type ) );
 			return true;
 		}
 
 		foreach ( $result as $entry ) {
-			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}mailster_action_errors` SET text = %s WHERE subscriber_id = %d AND campaign_id = %d AND timestamp = %d", $entry->meta_value, $entry->subscriber_id, $entry->campaign_id, $entry->timestamp ) );
+			$wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->prefix}mailster_action_$table` SET text = %s WHERE subscriber_id = %d AND campaign_id = %d AND timestamp = %d", $entry->meta_value, $entry->subscriber_id, $entry->campaign_id, $entry->timestamp ) );
 		}
 
-		echo $count . ' error messages moved.' . "\n";
-		sleep( 1 );
+		echo $count . ' messages moved to table $table.' . "\n";
+		usleep( 1000 );
 		return false;
 
-	}
-
-	private function update_action_table( $table, $type, $limit = 5000 ) {
-
-		global $wpdb;
-
-		$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` (subscriber_id, campaign_id, timestamp, count) SELECT a.subscriber_id, a.campaign_id, a.timestamp, a.count FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN {$wpdb->prefix}mailster_action_$table AS b ON a.subscriber_id <=> a.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp AND a.count <=> b.count WHERE b.subscriber_id IS NULL AND a.type = %d LIMIT %d";
-
-		if ( $count = $wpdb->query( $wpdb->prepare( $sql, $type, $limit ) ) ) {
-			echo $count . ' of ' . $table . ' entries moved.' . "\n";
-			return false;
-		}
-
-		echo 'Table "' . $table . '" finished.' . "\n";
-		sleep( 1 );
-		return true;
 	}
 
 

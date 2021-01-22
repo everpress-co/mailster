@@ -36,7 +36,7 @@ mailster = (function (mailster, $, window, document) {
 	} else {
 		$('#mailster-update-info').show();
 		$('#mailster-start-upgrade')
-			.on('click', function () {
+			.one('click', function () {
 				$('#mailster-update-process').slideDown(200);
 				$('#mailster-update-info').slideUp(200);
 				run(0);
