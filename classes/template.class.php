@@ -269,7 +269,7 @@ class MailsterTemplate {
 					$img->setAttribute( 'height', $height );
 					$img->setAttribute( 'style', "max-width:{$width}px;max-height:{$height}px;display:inline;" );
 					$img->setAttribute( 'class', 'social' );
-					$img->setAttribute( 'alt', esc_attr( sprintf( esc_html__( 'Share this on %s', 'mailster' ), ucwords( $service ) ) ) );
+					$img->setAttribute( 'alt', esc_attr( sprintf( __( 'Share this on %s', 'mailster' ), ucwords( $service ) ) ) );
 
 					$link->setAttribute( 'href', $url );
 					$link->setAttribute( 'editable', '' );

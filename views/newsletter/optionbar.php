@@ -17,7 +17,7 @@ $file     = $this->get_file();
 		<?php if ( current_user_can( 'mailster_change_plaintext' ) ) : ?>
 		<li><a class="mailster-icon plaintext" title="<?php esc_attr_e( 'toggle HTML/Plain-Text view', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'toggle HTML/Plain-Text view', 'mailster' ); ?>">&nbsp;</a></li>
 		<?php endif; ?>
-		<li class="no-border-right"><a class="mailster-icon preview" title="<?php esc_attr_e( 'preview', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'preview', 'mailster' ); ?>">&nbsp;</a></li>
+		<li class="no-border-right"><a class="mailster-icon preflight" title="<?php esc_attr_e( 'Preflight your campaign', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Preflight your campaign', 'mailster' ); ?>">&nbsp;</a></li>
 	</ul>
 	<ul class="alignright">
 		<li><a class="mailster-icon dfw" title="<?php esc_attr_e( 'Distraction-free edit mode', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Distraction-free edit mode', 'mailster' ); ?>">&nbsp;</a></li>

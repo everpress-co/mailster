@@ -43,7 +43,7 @@ mailster = (function (mailster, $, window, document) {
 				}, function (jqXHR, textStatus, errorThrown) {});
 			},
 			appendTo: '.preflight-emailheader',
-			minLength: 1,
+			minLength: 3,
 			select: function (event, ui) {
 				$('#subscriber_id').val(ui.item.id);
 				loadPreview();
@@ -105,7 +105,7 @@ mailster = (function (mailster, $, window, document) {
 				id = response.id;
 				setTimeout(function () {
 					checkTest(1);
-				}, 1000);
+				}, 2000);
 			} else {
 				loader(false);
 				runbtn.prop('disabled', false);
@@ -131,7 +131,7 @@ mailster = (function (mailster, $, window, document) {
 	function checkTest(tries) {
 
 		if (tries > 5) {
-			error('The email wasn\'t sent');
+			error(mailster.l10n.preflight.email_not_sent);
 			loader(false);
 			runbtn.prop('disabled', false);
 			return;
@@ -238,7 +238,7 @@ mailster = (function (mailster, $, window, document) {
 
 			if (response.success) {
 				summary.removeClass('loading').addClass('loaded is-' + response.status);
-				if ('success' != response.status) {
+				if ('error' == response.status) {
 					//base.prop('open', true);
 				}
 				body.html(response.html)

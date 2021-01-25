@@ -1402,10 +1402,11 @@ class MailsterCampaigns {
 				'preflight',
 				array(
 					'ready'           => esc_html__( 'Ready for Preflight!', 'mailster' ),
-					'email_delivered' => esc_html__( 'Email delivered, gathering results...', 'mailster' ),
-					'finished'        => esc_html__( 'Preflight finished. Please check results.', 'mailster' ),
+					'email_delivered' => esc_html__( 'Email delivered, collecting results...', 'mailster' ),
+					'finished'        => esc_html__( 'Preflight finished. Please check your results.', 'mailster' ),
 					'sending'         => esc_html__( 'Sending your campaign.', 'mailster' ),
 					'checking'        => esc_html__( 'Check for delivery.', 'mailster' ),
+					'email_not_sent'  => esc_html__( 'The email was not sent. Please check your delivery settings and try again.', 'mailster' ),
 				)
 			);
 			mailster_localize_script(

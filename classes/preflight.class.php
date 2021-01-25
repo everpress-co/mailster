@@ -222,6 +222,10 @@ class MailsterPreflight {
 
 	public function request( $id, $endpoint = null, $timeout = 5 ) {
 
+		if ( ! mailster()->is_verified() ) {
+			return new WP_Error( 503, esc_html__( 'Please verify your Mailster license on the Dashboard!', 'mailster' ) );
+		}
+
 		$url  = 'https://api.preflight.email/v1';
 		$url .= '/' . $id;
 		if ( $endpoint ) {
