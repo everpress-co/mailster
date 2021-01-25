@@ -132,11 +132,12 @@ class MailsterHelper {
 				}
 			}
 
-			$actual_file_path = ltrim( $file_path['path'], '/' );
-			$actual_file_path = rtrim( ABSPATH, '/' ) . $file_path['path'];
-
 			if ( ! file_exists( $actual_file_path ) ) {
-				$actual_file_path = ABSPATH . str_replace( site_url( '/' ), '', $img_url );
+				$actual_file_path = ltrim( $file_path['path'], '/' );
+				$actual_file_path = rtrim( ABSPATH, '/' ) . $file_path['path'];
+				if ( ! file_exists( $actual_file_path ) ) {
+					$actual_file_path = ABSPATH . str_replace( site_url( '/' ), '', $img_url );
+				}
 			}
 
 			$orig_size = getimagesize( $actual_file_path );
