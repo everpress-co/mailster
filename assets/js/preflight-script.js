@@ -65,7 +65,7 @@ mailster = (function (mailster, $, window, document) {
 	};
 
 	function error(msg) {
-		var box = $('<div class="error"><p><strong>' + msg + '</strong></p></div>').hide().prependTo($('.score-wrap')).slideDown(200).delay(200).fadeIn().delay(8000).fadeTo(200, 0).delay(1500).slideUp(200, function () {
+		var box = $('<div class="error"><p><strong>' + msg + '</strong></p></div>').hide().appendTo($('.score-message')).slideDown(200).delay(200).fadeIn().delay(8000).fadeTo(200, 0).delay(1500).slideUp(200, function () {
 			box.remove();
 		});
 		mailster.error(msg);

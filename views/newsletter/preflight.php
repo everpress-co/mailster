@@ -57,6 +57,7 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 			<div class="device-notice"><?php esc_html_e( 'Your email may look different on mobile devices.', 'mailster' ); ?></div>
 		</div>
 		<div class="score-wrap">
+			<div class="score-message"></div>
 			<div class="preflight-tos-box">
 
 				<?php if ( mailster()->is_verified() ) : ?>
@@ -81,32 +82,32 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 			<div class="preflight-results-wrap">
 				<div class="preflight-results">
 					<details id="preflight-message">
-						<summary data-count="10">Message</summary>
+						<summary data-count="10"><?php esc_html_e( 'Message', 'mailster' ); ?></summary>
 						<div class="preflight-body">
 							<details id="preflight-subject">
-								<summary data-count="10">Subject</summary>
+								<summary data-count="10"><?php esc_html_e( 'Subject', 'mailster' ); ?></summary>
 								<div class="preflight-result"></div>
 							</details>
 							<details id="preflight-email">
-								<summary data-count="10">Email</summary>
+								<summary data-count="10"><?php esc_html_e( 'Email', 'mailster' ); ?></summary>
 								<div class="preflight-result"></div>
 							</details>
 						</div>
 					</details>
 					<details id="preflight-links">
-						<summary data-count="10">Links</summary>
+						<summary data-count="10"><?php esc_html_e( 'Links', 'mailster' ); ?></summary>
 						<div class="preflight-result"></div>
 					</details>
 					<details id="preflight-images">
-						<summary data-count="10">Images</summary>
+						<summary data-count="10"><?php esc_html_e( 'Images', 'mailster' ); ?></summary>
 						<div class="preflight-result"></div>
 					</details>
 					<details id="preflight-spam_report">
-						<summary data-count="10">Spam Report</summary>
+						<summary data-count="10"><?php esc_html_e( 'Spam Report', 'mailster' ); ?></summary>
 						<div class="preflight-result"></div>
 					</details>
 					<details id="preflight-authentication">
-						<summary data-count="10">Authentication</summary>
+						<summary data-count="10"><?php esc_html_e( 'Authentication', 'mailster' ); ?></summary>
 						<div class="preflight-body">
 							<details id="preflight-spf">
 								<summary data-count="10">SPF</summary>

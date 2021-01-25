@@ -229,7 +229,7 @@ class MailsterPreflight {
 		}
 		$url .= '.json';
 
-		if ( $token = get_option( 'mailster_preflight_tokens' ) ) {
+		if ( $token = get_option( 'mailster_preflight_token' ) ) {
 			$authorization = 'Bearer ' . $token;
 		} else {
 			$authorization = mailster()->license();
