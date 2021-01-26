@@ -31,7 +31,7 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 			<ul class="preflight-emailheader">
 				<li><label><?php esc_html_e( 'From', 'mailster' ); ?>:</label><span class="preflight-from"></span></li>
 				<li><label><?php esc_html_e( 'Subject', 'mailster' ); ?>:</label><span class="preflight-subject"></span></li>
-				<li><label><?php esc_html_e( 'To', 'mailster' ); ?>:</label><span class="preflight-to" title="<?php esc_attr_e( 'Search for subscribers...', 'mailster' ); ?>"><input type="hidden" value="<?php echo (int) $subscriber_id; ?>" id="subscriber_id"><input type="text" class="preflight-subscriber" value="" placeholder="<?php echo esc_attr( $to ); ?>"></span></li>
+				<li><label><?php esc_html_e( 'To', 'mailster' ); ?>:</label><span class="preflight-to"></span><a class="change-receiver mailster-icon"></a><span class="preflight-to-input" title="<?php esc_attr_e( 'Search for subscribers...', 'mailster' ); ?>"><input type="hidden" value="<?php echo (int) $subscriber_id; ?>" id="subscriber_id"><input type="text" class="preflight-subscriber" value="" placeholder="<?php echo esc_attr( $to ); ?>"></span></li>
 			</ul>
 			<div class="preflight-images button-group">
 				<a class="button preflight-toggle-images mailster-icon active" title="<?php esc_attr_e( 'Toggle Images', 'mailster' ); ?>"></a>

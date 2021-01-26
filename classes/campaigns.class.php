@@ -1608,7 +1608,9 @@ class MailsterCampaigns {
 
 		} else {
 
-			$postdata = $this->meta( $postarr['ID'] );
+			if ( ! ( $postdata = $this->meta( $postarr['ID'] ) ) ) {
+				$postdata = $this->meta_defaults();
+			}
 		}
 
 		// sanitize the content and remove all content filters

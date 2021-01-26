@@ -27,6 +27,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.preflight-toggle-structure', toggleStructure)
 		.on('mouseenter', '.assets-table tr', highlightElement)
 		.on('mouseleave', '.assets-table tr', highlightElement)
+		.on('click', '.change-receiver', showSubscriberInput)
 		.on('click', '#preflight-agree', agreeTerms);
 
 	$(".preflight-subscriber")
@@ -259,6 +260,12 @@ mailster = (function (mailster, $, window, document) {
 
 	};
 
+	function showSubscriberInput() {
+		$('.preflight-to').hide();
+		$('.change-receiver').hide();
+		$('.preflight-to-input').show().find('input').focus().select();
+	}
+
 	function initFrame() {
 		$iframebody = $iframe.contents().find('html,body');
 		$hx = $iframebody.find('highlighterx');
@@ -267,7 +274,7 @@ mailster = (function (mailster, $, window, document) {
 		mailster.trigger('enable');
 	};
 
-	function loadPreview() {
+	function loadPreview(cb) {
 
 		var args = {
 				id: mailster.campaign_id,
@@ -293,6 +300,8 @@ mailster = (function (mailster, $, window, document) {
 				'&inlineId=mailster_preflight_wrap', null);
 			$('.preflight-subject').html(response.subject);
 			$('.preflight-subscriber').val(response.to);
+			$('.preflight-to').text(response.to);
+			cb && cb();
 
 		}, function (jqXHR, textStatus, errorThrown) {
 			mailster.trigger('enable');
@@ -390,12 +399,12 @@ mailster = (function (mailster, $, window, document) {
 
 	};
 
-	mailster.preflight.open = function () {
+	mailster.preflight.open = function (cb) {
 		mailster.trigger('save');
 		mailster.trigger('disable');
 
 		$('.preflight-from').html($('#mailster_from-name').val());
-		loadPreview();
+		loadPreview(cb);
 
 	};
 

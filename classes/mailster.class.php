@@ -1112,14 +1112,14 @@ class Mailster {
 		$content = $pre_stuff . $content;
 
 		// en_US => en
-		$lang = substr( get_bloginfo( 'language' ), 0, 2 );
+		$lang  = substr( get_bloginfo( 'language' ), 0, 2 );
+		$regex = '/<html([^>]*?)lang=(\\\\)?"(.*?)(\\\\)?" /';
 
 		// add language tag for accessibility
-		if ( preg_match( '/<html([^>]*?)lang="(.*?)"/', $content, $matches ) ) {
-			$content = str_replace( '<html' . $matches[1] . 'lang="' . $matches[2] . '"', '<html' . $matches[1] . 'lang="' . $lang . '"', $content );
-		} else {
-			$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
+		if ( preg_match( $regex, $content, $matches ) ) {
+			$content = preg_replace( $regex, '<html$1', $content );
 		}
+		$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
 
 		return apply_filters( 'mymail_sanitize_content', apply_filters( 'mailster_sanitize_content', $content ) );
 	}

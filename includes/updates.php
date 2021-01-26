@@ -600,8 +600,10 @@ if ( $old_version ) {
 
 			$mailster_options['auto_send_at_once'] = true;
 
-		default:
+			// move to "default" or after latests release versions
 			$mailster_options['db_update_required'] = true;
+
+		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
 

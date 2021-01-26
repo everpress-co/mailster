@@ -168,7 +168,10 @@ mailster = (function (mailster, $, window, document) {
 		if (mailster.$.optionbar.find('a.preflight').is('.loading')) {
 			return false;
 		}
-		mailster.preflight.open();
+		mailster.$.optionbar.find('a.preflight').addClass('loading');
+		mailster.preflight.open(function () {
+			mailster.$.optionbar.find('a.preflight').removeClass('loading');
+		});
 		return;
 	}
 

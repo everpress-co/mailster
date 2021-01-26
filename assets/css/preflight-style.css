@@ -40,8 +40,19 @@
 	border:0;
 	outline:1px solid #545454;
 }
+
 .preflight-switch.preflight-switch-mobile:before{
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.5 3v1.8l-3.03311e-08 3.6816e-07c-.0249563.302922.197544.569922.5.6h4l-3.08771e-09 3.07058e-10c.302457-.030078.524956-.297078.5-.6v-1.8"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 18h4"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 21h-8l-8.74228e-08-3.55271e-15c-1.10457-4.82823e-08-2-.895431-2-2 0 0 0 0 0 0v-14l2.30926e-14 3.01992e-07c-1.66785e-07-1.10457.89543-2 2-2h8l-8.74228e-08 1.77636e-15c1.10457-4.82823e-08 2 .89543 2 2v14l-3.55271e-15 2.13163e-14c0 1.10457-.89543 2-2 2Z"></path></g></svg>');
+}
+.preflight-bar .preflight-to-input{
+	display: none;
+}
+.preflight-bar .change-receiver{
+	margin-left: 8px;
+	cursor: pointer;
+}
+.preflight-bar .change-receiver:before{
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M24,24H0V0H24Z" fill="none"/><path d="M21,15V14a2.94645,2.94645,0,0,0-3-3H16" fill="none" stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M12,15V14a2.94645,2.94645,0,0,0-3-3H6a2.94645,2.94645,0,0,0-3,3v1" fill="none" stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><circle cx="7.5" cy="5.5" r="2.5" fill="none" stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><circle cx="17" cy="6" r="2" fill="none" stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M18,20.1045V17.54844H15.40808" fill="none" stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M6,17.54845a6.61481,6.61481,0,0,0,11.61886,0" fill="none" stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>');
 }
 .preflight-switch.preflight-switch-landscape:before{
 	transform: rotateZ(90deg) translate(-1px, 1px);
