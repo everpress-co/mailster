@@ -332,24 +332,23 @@ table.form-table th{
 	display: inline-block;
 	font-size: 12px;
 }
-.frontpage-social-services li.twitter label:before { content_: '\e809'; color: #55acee; }
-.frontpage-social-services li.delicious label:before { content_: '\e801'; color: #3399ff; }
-.frontpage-social-services li.google label:before { content_: '\e802'; color: #dd4b39; }
-.frontpage-social-services li.blogger label:before { content_: '\e803'; color: #f57d00; }
-.frontpage-social-services li.reddit label:before { content_: '\e804'; color: #ff4500; }
-.frontpage-social-services li.digg label:before { content_: '\e805'; color: #000000; }
-.frontpage-social-services li.linkedin label:before { content_: '\e806'; color: #0976b4; }
-.frontpage-social-services li.pinterest label:before { content_: '\e807'; color: #cc2127; }
-.frontpage-social-services li.xing label:before { content_: '\e808'; color: #cfdc00; }
-.frontpage-social-services li.facebook label:before { content_: '\e80a'; color: #3b5998; }
-.frontpage-social-services li.yahoo label:before { content_: '\e80b'; color: #400191; }
-.frontpage-social-services li.evernote label:before { content_: '\e80c'; color: #7ac142; }
-.frontpage-social-services li.stumbleupon label:before { content_: '\e80d'; color: #eb4924; }
-.frontpage-social-services li.sharethis label:before { content_: '\e80e'; color: #01BF01; }
-.frontpage-social-services li.buffer label:before { content_: '\e800'; color: #323b43; }
-.frontpage-social-services li.vk label:before { content_: '\e80f'; color: #507299; }
-.frontpage-social-services li.whatsapp label:before { content_: '\f232'; color: #25d366; }
-.frontpage-social-services li.telegram label:before { content_: '\f2c6'; color: #54b3e6; }
+.frontpage-social-services li.twitter label:before { content: '\e809'; color: #55acee; }
+.frontpage-social-services li.delicious label:before { content: '\e801'; color: #3399ff; }
+.frontpage-social-services li.blogger label:before { content: '\e803'; color: #f57d00; }
+.frontpage-social-services li.reddit label:before { content: '\e804'; color: #ff4500; }
+.frontpage-social-services li.digg label:before { content: '\e805'; color: #000000; }
+.frontpage-social-services li.linkedin label:before { content: '\e806'; color: #0976b4; }
+.frontpage-social-services li.pinterest label:before { content: '\e807'; color: #cc2127; }
+.frontpage-social-services li.xing label:before { content: '\e808'; color: #cfdc00; }
+.frontpage-social-services li.facebook label:before { content: '\e80a'; color: #3b5998; }
+.frontpage-social-services li.yahoo label:before { content: '\e80b'; color: #400191; }
+.frontpage-social-services li.evernote label:before { content: '\e80c'; color: #7ac142; }
+.frontpage-social-services li.stumbleupon label:before { content: '\e80d'; color: #eb4924; }
+.frontpage-social-services li.sharethis label:before { content: '\e80e'; color: #01BF01; }
+.frontpage-social-services li.buffer label:before { content: '\e800'; color: #323b43; }
+.frontpage-social-services li.vk label:before { content: '\e80f'; color: #507299; }
+.frontpage-social-services li.whatsapp label:before { content: '\f232'; color: #25d366; }
+.frontpage-social-services li.telegram label:before { content: '\f2c6'; color: #54b3e6; }
 .homepage-slugs span{
 	font-size: 13px;
 }
