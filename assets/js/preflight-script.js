@@ -106,7 +106,7 @@ mailster = (function (mailster, $, window, document) {
 				id = response.id;
 				setTimeout(function () {
 					checkTest(1);
-				}, 2000);
+				}, 5000);
 			} else {
 				loader(false);
 				runbtn.prop('disabled', false);
@@ -131,7 +131,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function checkTest(tries) {
 
-		if (tries > 5) {
+		if (tries > 6) {
 			error(mailster.l10n.preflight.email_not_sent);
 			loader(false);
 			runbtn.prop('disabled', false);
@@ -145,7 +145,7 @@ mailster = (function (mailster, $, window, document) {
 				if (!response.ready) {
 					setTimeout(function () {
 						checkTest(++tries);
-					}, 1000);
+					}, 3000);
 				} else {
 					status(mailster.l10n.preflight.email_delivered);
 
