@@ -26,7 +26,7 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
 		require_once MAILSTER_DIR . 'classes/tags.class.php';
 		require_once MAILSTER_DIR . 'classes/forms.class.php';
-		require_once MAILSTER_DIR . 'classes/preflight.class.php';
+		require_once MAILSTER_DIR . 'classes/precheck.class.php';
 		require_once MAILSTER_DIR . 'classes/manage.class.php';
 		require_once MAILSTER_DIR . 'classes/templates.class.php';
 		require_once MAILSTER_DIR . 'classes/widget.class.php';
@@ -57,7 +57,7 @@ class Mailster {
 			'lists'        => new MailsterLists(),
 			'tags'         => new MailsterTags(),
 			'forms'        => new MailsterForms(),
-			'preflight'    => new MailsterPreflight(),
+			'precheck'     => new MailsterPrecheck(),
 			'manage'       => new MailsterManage(),
 			'templates'    => new MailsterTemplates(),
 			'frontpage'    => new MailsterFrontpage(),

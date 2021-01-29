@@ -39,7 +39,7 @@
 			<div class="col">
 				<div class="media-container">
 				</div>
-				<h3>Preflight your Email Campaigns.</h3>
+				<h3>Precheck your Email Campaigns.</h3>
 				<p>XXX</p>
 				<div class="return-to-dashboard"><a href="https://kb.mailster.co/rss-email-campaigns/" target="_blank" rel="noopener">Learn more</a></div>
 			</div>

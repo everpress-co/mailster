@@ -2,7 +2,7 @@ body{
 	overflow: hidden;
 	overflow-y: auto;
 }
-body.preflight-highlighter{
+body.precheck-highlighter{
 	position: relative;
 }
 highlighterx, highlightery{
@@ -13,15 +13,15 @@ highlighterx, highlightery{
 	opacity: 0;
 	z-index: 1000;
 }
-body.preflight-images-hidden [background]{
+body.precheck-images-hidden [background]{
 	background-image: none !important;
 }
-body.preflight-structure-enabled td,
-body.preflight-structure-enabled div,
-body.preflight-structure-enabled p{
+body.precheck-structure-enabled td,
+body.precheck-structure-enabled div,
+body.precheck-structure-enabled p{
 	box-shadow: 0 0 0 1px #2BB3E7 !important;
 }
-.preflight-highlighter highlighterx,.preflight-highlighter highlightery{
+.precheck-highlighter highlighterx,.precheck-highlighter highlightery{
 	opacity: 1;
 }
 highlighterx, highlightery{
@@ -56,7 +56,7 @@ highlightery:after{
 	right: 0;
 	margin:0 0;
 }
-.preflight-highlighter highlightery:before,.preflight-highlighter  highlightery:after{
+.precheck-highlighter highlightery:before,.precheck-highlighter  highlightery:after{
 	height: 800vh;
 	margin: -400vw 0;
 }

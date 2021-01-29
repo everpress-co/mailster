@@ -1,6 +1,6 @@
 <?php
 
-class MailsterPreflight {
+class MailsterPrecheck {
 
 	public function __construct() {
 
@@ -21,15 +21,15 @@ class MailsterPreflight {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_register_style( 'mailster-icons', MAILSTER_URI . 'assets/css/icons' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_register_style( 'mailster-editor-preflight-style', MAILSTER_URI . 'assets/css/editor-preflight-style' . $suffix . '.css', array( 'mailster-icons' ), MAILSTER_VERSION );
-		wp_register_script( 'mailster-editor-preflight-script', MAILSTER_URI . 'assets/js/editor-preflight-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+		wp_register_style( 'mailster-editor-precheck-style', MAILSTER_URI . 'assets/css/editor-precheck-style' . $suffix . '.css', array( 'mailster-icons' ), MAILSTER_VERSION );
+		wp_register_script( 'mailster-editor-precheck-script', MAILSTER_URI . 'assets/js/editor-precheck-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
 		ob_start();
 
-		wp_print_styles( 'mailster-editor-preflight-style' );
-		wp_print_scripts( 'mailster-editor-preflight-script' );
+		wp_print_styles( 'mailster-editor-precheck-style' );
+		wp_print_scripts( 'mailster-editor-precheck-script' );
 
-		do_action( 'mailster_preflight_script_styles' );
+		do_action( 'mailster_precheck_script_styles' );
 
 		$script_styles = ob_get_contents();
 
@@ -226,14 +226,14 @@ class MailsterPreflight {
 			return new WP_Error( 503, esc_html__( 'Please verify your Mailster license on the Dashboard!', 'mailster' ) );
 		}
 
-		$url  = 'https://api.preflight.email/v1';
+		$url  = 'https://api.precheck.email/v1';
 		$url .= '/' . $id;
 		if ( $endpoint ) {
 			$url .= '/' . $endpoint;
 		}
 		$url .= '.json';
 
-		if ( $token = get_option( 'mailster_preflight_token' ) ) {
+		if ( $token = get_option( 'mailster_precheck_token' ) ) {
 			$authorization = 'Bearer ' . $token;
 		} else {
 			$authorization = mailster()->license();
@@ -253,10 +253,10 @@ class MailsterPreflight {
 		$headers = wp_remote_retrieve_headers( $response );
 
 		if ( is_wp_error( $response ) || 503 === $code ) {
-			return new WP_Error( 503, esc_html__( 'The Preflight service is currently not available. Please check back later.', 'mailster' ) );
+			return new WP_Error( 503, esc_html__( 'The Precheck service is currently not available. Please check back later.', 'mailster' ) );
 		} elseif ( 200 === $code ) {
 			if ( isset( $headers['token'] ) && $token != $headers['token'] ) {
-				update_option( 'mailster_preflight_token', $headers['token'] );
+				update_option( 'mailster_precheck_token', $headers['token'] );
 			}
 			$body = wp_remote_retrieve_body( $response );
 			$json = json_decode( $body );
@@ -267,7 +267,7 @@ class MailsterPreflight {
 		} elseif ( 429 === $code ) {
 			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) );
 		} elseif ( 498 === $code ) {
-			delete_option( 'mailster_preflight_token' );
+			delete_option( 'mailster_precheck_token' );
 			return new WP_Error( $code, sprintf( esc_html__( 'Your token is invalid. Please check %s.', 'mailster' ), 'HELP' ) );
 		} else {
 			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) );

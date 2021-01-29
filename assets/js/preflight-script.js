@@ -4,13 +4,13 @@ mailster = (function (mailster, $, window, document) {
 
 	var api = {},
 		id,
-		preflight = $('.mailster-preflight'),
-		$status = $('.preflight-status'),
-		$loader = $('#preflight-ajax-loading'),
-		$authentication = $('#preflight-authentication'),
-		runbtn = $('.preflight-run'),
-		strcturebtn = $('.preflight-toggle-structure'),
-		imagebtn = $('.preflight-toggle-images'),
+		precheck = $('.mailster-precheck'),
+		$status = $('.precheck-status'),
+		$loader = $('#precheck-ajax-loading'),
+		$authentication = $('#precheck-authentication'),
+		runbtn = $('.precheck-run'),
+		strcturebtn = $('.precheck-toggle-structure'),
+		imagebtn = $('.precheck-toggle-images'),
 		$iframe = $('.mailster-preview-iframe'),
 		$iframebody,
 		$hx, $hy,
@@ -18,19 +18,19 @@ mailster = (function (mailster, $, window, document) {
 		images = true,
 		structure = false;
 
-	mailster.preflight = mailster.preflight || {};
+	mailster.precheck = mailster.precheck || {};
 
-	preflight
-		.on('click', '.preflight-switch', switchPane)
-		.on('click', '.preflight-run', initTest)
-		.on('click', '.preflight-toggle-images', toggleImages)
-		.on('click', '.preflight-toggle-structure', toggleStructure)
+	precheck
+		.on('click', '.precheck-switch', switchPane)
+		.on('click', '.precheck-run', initTest)
+		.on('click', '.precheck-toggle-images', toggleImages)
+		.on('click', '.precheck-toggle-structure', toggleStructure)
 		.on('mouseenter', '.assets-table tr', highlightElement)
 		.on('mouseleave', '.assets-table tr', highlightElement)
 		.on('click', '.change-receiver', showSubscriberInput)
-		.on('click', '#preflight-agree', agreeTerms);
+		.on('click', '#precheck-agree', agreeTerms);
 
-	$(".preflight-subscriber")
+	$(".precheck-subscriber")
 		.on('focus', function () {
 			$(this).select();
 		})
@@ -43,7 +43,7 @@ mailster = (function (mailster, $, window, document) {
 					response(data);
 				}, function (jqXHR, textStatus, errorThrown) {});
 			},
-			appendTo: '.preflight-emailheader',
+			appendTo: '.precheck-emailheader',
 			minLength: 3,
 			select: function (event, ui) {
 				$('#subscriber_id').val(ui.item.id);
@@ -79,19 +79,19 @@ mailster = (function (mailster, $, window, document) {
 	function switchPane() {
 		var dimensions = $(this).data('dimensions');
 		$('.device.desktop').width(dimensions.w).height(dimensions.h);
-		$('.preflight-resize').find('.button').removeClass('active');
+		$('.precheck-resize').find('.button').removeClass('active');
 		$(this).addClass('active');
 	};
 
 	function initTest() {
 		clear();
 		loader(true);
-		status(mailster.l10n.preflight.sending);
+		status(mailster.l10n.precheck.sending);
 		runbtn.prop('disabled', true);
 		started = 0;
 
 		mailster.util.ajax('send_test', {
-			preflight: true,
+			precheck: true,
 			subscriber_id: $('#subscriber_id').val(),
 			formdata: $('#post').serialize(),
 			to: $('#mailster_testmail').val(),
@@ -102,7 +102,7 @@ mailster = (function (mailster, $, window, document) {
 		}, function (response) {
 
 			if (response.success) {
-				status(mailster.l10n.preflight.checking);
+				status(mailster.l10n.precheck.checking);
 				id = response.id;
 				setTimeout(function () {
 					checkTest(1);
@@ -124,21 +124,21 @@ mailster = (function (mailster, $, window, document) {
 	};
 
 	function clear() {
-		preflight.find('summary').removeAttr('class');
-		preflight.find('.preflight-result').empty();
-		status(mailster.l10n.preflight.ready);
+		precheck.find('summary').removeAttr('class');
+		precheck.find('.precheck-result').empty();
+		status(mailster.l10n.precheck.ready);
 	};
 
 	function checkTest(tries) {
 
 		if (tries > 6) {
-			error(mailster.l10n.preflight.email_not_sent);
+			error(mailster.l10n.precheck.email_not_sent);
 			loader(false);
 			runbtn.prop('disabled', false);
 			return;
 		}
 
-		mailster.util.ajax('preflight', {
+		mailster.util.ajax('precheck', {
 			id: id,
 		}, function (response) {
 			if (response.success) {
@@ -147,7 +147,7 @@ mailster = (function (mailster, $, window, document) {
 						checkTest(++tries);
 					}, 3000);
 				} else {
-					status(mailster.l10n.preflight.email_delivered);
+					status(mailster.l10n.precheck.email_delivered);
 
 					$.when.apply($, [
 							getResult('blacklist'),
@@ -158,7 +158,7 @@ mailster = (function (mailster, $, window, document) {
 							getResult('images', 'tests/images'),
 						])
 						.done(function () {
-							status(mailster.l10n.preflight.finished);
+							status(mailster.l10n.precheck.finished);
 							loader(false);
 							runbtn.prop('disabled', false);
 						});
@@ -179,7 +179,7 @@ mailster = (function (mailster, $, window, document) {
 	};
 
 	function getResult(part, endpoint) {
-		var base = $('#preflight-' + part),
+		var base = $('#precheck-' + part),
 			children = base.find('details'),
 			child_part,
 			promises = [];
@@ -187,7 +187,7 @@ mailster = (function (mailster, $, window, document) {
 		if (children.length) {
 			base.find('summary').eq(0).removeAttr('class').addClass('loading');
 			for (var i = 0; i < children.length; i++) {
-				child_part = children[i].id.replace('preflight-', '');
+				child_part = children[i].id.replace('precheck-', '');
 				if (child_part) {
 					endpoint = 'tests/' + child_part;
 					promises.push(getEndpoint(child_part, endpoint));
@@ -220,7 +220,7 @@ mailster = (function (mailster, $, window, document) {
 					} else {
 						s = 'success';
 					}
-					$('#preflight-' + part).find('summary').eq(0).removeClass('loading').addClass('loaded is-' + s);
+					$('#precheck-' + part).find('summary').eq(0).removeClass('loading').addClass('loaded is-' + s);
 				}
 			});
 
@@ -228,11 +228,11 @@ mailster = (function (mailster, $, window, document) {
 
 	function getEndpoint(part, endpoint) {
 
-		var base = $('#preflight-' + part),
+		var base = $('#precheck-' + part),
 			summary = base.find('summary').eq(0).removeAttr('class').addClass('loading'),
-			body = base.find('.preflight-result');
+			body = base.find('.precheck-result');
 
-		return mailster.util.ajax('preflight_result', {
+		return mailster.util.ajax('precheck_result', {
 			id: id,
 			endpoint: endpoint,
 		}, function (response) {
@@ -261,9 +261,9 @@ mailster = (function (mailster, $, window, document) {
 	};
 
 	function showSubscriberInput() {
-		$('.preflight-to').hide();
+		$('.precheck-to').hide();
 		$('.change-receiver').hide();
-		$('.preflight-to-input').show().find('input').focus().select();
+		$('.precheck-to-input').show().find('input').focus().select();
 	}
 
 	function initFrame() {
@@ -292,15 +292,15 @@ mailster = (function (mailster, $, window, document) {
 			$iframe.one('load', initFrame).attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
 			imagebtn.addClass('active');
 			strcturebtn.removeClass('active');
-			tb_show((title ? sprintf(mailster.l10n.campaigns.preflight, '"' + title + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' +
+			tb_show((title ? sprintf(mailster.l10n.campaigns.precheck, '"' + title + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' +
 				response.hash +
 				'&_wpnonce=' + response.nonce +
 				'&width=' + (Math.min(1440, mailster.$.window.width() - 50)) +
 				'&height=' + (mailster.$.window.height() - 100) +
-				'&inlineId=mailster_preflight_wrap', null);
-			$('.preflight-subject').html(response.subject);
-			$('.preflight-subscriber').val(response.to);
-			$('.preflight-to').text(response.to);
+				'&inlineId=mailster_precheck_wrap', null);
+			$('.precheck-subject').html(response.subject);
+			$('.precheck-subscriber').val(response.to);
+			$('.precheck-to').text(response.to);
 			cb && cb();
 
 		}, function (jqXHR, textStatus, errorThrown) {
@@ -313,9 +313,9 @@ mailster = (function (mailster, $, window, document) {
 	function toggleStructure() {
 
 		if (structure) {
-			$iframebody.removeClass('preflight-structure-enabled');
+			$iframebody.removeClass('precheck-structure-enabled');
 		} else {
-			$iframebody.addClass('preflight-structure-enabled');
+			$iframebody.addClass('precheck-structure-enabled');
 		}
 		strcturebtn.toggleClass('active');
 		structure = !structure;
@@ -325,12 +325,12 @@ mailster = (function (mailster, $, window, document) {
 		var img = $iframebody.find('img');
 
 		if (!images) {
-			$iframebody.removeClass('preflight-images-hidden');
+			$iframebody.removeClass('precheck-images-hidden');
 			$.each(img, function (i, e) {
 				$(e).attr('src', $(e).attr('data-src')).removeAttr('data-src');
 			});
 		} else {
-			$iframebody.addClass('preflight-images-hidden');
+			$iframebody.addClass('precheck-images-hidden');
 			$.each(img, function (i, e) {
 				$(e).attr('data-src', $(e).attr('src')).attr('src', '');
 			});
@@ -359,12 +359,12 @@ mailster = (function (mailster, $, window, document) {
 			return;
 		}
 		if ('mouseleave' == type) {
-			$iframebody.removeClass('preflight-highlighter');
-			$(el).removeClass('preflight-highlighted');
+			$iframebody.removeClass('precheck-highlighter');
+			$(el).removeClass('precheck-highlighted');
 			return;
 		} else {
-			$(el).addClass('preflight-highlighted');
-			$iframebody.addClass('preflight-highlighter');
+			$(el).addClass('precheck-highlighted');
+			$iframebody.addClass('precheck-highlighter');
 		}
 
 		el.scrollIntoView({
@@ -389,21 +389,21 @@ mailster = (function (mailster, $, window, document) {
 
 	function agreeTerms() {
 
-		if (!$('#preflight-agree-checkbox').is(':checked')) {
+		if (!$('#precheck-agree-checkbox').is(':checked')) {
 			alert(mailster.l10n.campaigns.enter_list_name);
 			return false;
 		}
-		mailster.util.ajax('preflight_agree', function (response) {
-			preflight.addClass('preflight-terms-agreed');
+		mailster.util.ajax('precheck_agree', function (response) {
+			precheck.addClass('precheck-terms-agreed');
 		}, function (jqXHR, textStatus, errorThrown) {});
 
 	};
 
-	mailster.preflight.open = function (cb) {
+	mailster.precheck.open = function (cb) {
 		mailster.trigger('save');
 		mailster.trigger('disable');
 
-		$('.preflight-from').html($('#mailster_from-name').val());
+		$('.precheck-from').html($('#mailster_from-name').val());
 		loadPreview(cb);
 
 	};

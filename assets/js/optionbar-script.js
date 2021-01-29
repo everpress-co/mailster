@@ -142,14 +142,14 @@ mailster = (function (mailster, $, window, document) {
 			mailster.$.html.hide();
 			mailster.$.excerpt.show();
 			mailster.$.plaintext.show();
-			mailster.$.optionbar.find('a').not('a.redo, a.undo, a.plaintext, a.preflight').addClass('disabled');
+			mailster.$.optionbar.find('a').not('a.redo, a.undo, a.plaintext, a.precheck').addClass('disabled');
 
 		} else {
 
 			mailster.$.html.show();
 			mailster.$.plaintext.hide();
 			mailster.$.optionbar.find('a.plaintext').removeClass('active');
-			mailster.$.optionbar.find('a').not('a.redo, a.undo, a.plaintext, a.preflight').removeClass('disabled');
+			mailster.$.optionbar.find('a').not('a.redo, a.undo, a.plaintext, a.precheck').removeClass('disabled');
 
 			mailster.trigger('refresh');
 
@@ -163,14 +163,14 @@ mailster = (function (mailster, $, window, document) {
 		$('#new_template_name').focus().select();
 	};
 
-	mailster.optionbar.preflight = function () {
+	mailster.optionbar.precheck = function () {
 
-		if (mailster.$.optionbar.find('a.preflight').is('.loading')) {
+		if (mailster.$.optionbar.find('a.precheck').is('.loading')) {
 			return false;
 		}
-		mailster.$.optionbar.find('a.preflight').addClass('loading');
-		mailster.preflight.open(function () {
-			mailster.$.optionbar.find('a.preflight').removeClass('loading');
+		mailster.$.optionbar.find('a.precheck').addClass('loading');
+		mailster.precheck.open(function () {
+			mailster.$.optionbar.find('a.precheck').removeClass('loading');
 		});
 		return;
 	}
@@ -205,7 +205,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', 'a', false)
 		.on('click', 'a.save-template', mailster.optionbar.openSaveDialog)
 		.on('click', 'a.clear-modules', mailster.optionbar.removeModules)
-		.on('click', 'a.preflight', mailster.optionbar.preflight)
+		.on('click', 'a.precheck', mailster.optionbar.precheck)
 		.on('click', 'a.undo', mailster.optionbar.undo)
 		.on('click', 'a.redo', mailster.optionbar.redo)
 		.on('click', 'a.code', mailster.optionbar.codeView)

@@ -13,9 +13,9 @@ class MailsterAjax {
 		'toggle_codeview',
 		'set_preview',
 		'get_preview',
-		'preflight',
-		'preflight_result',
-		'preflight_agree',
+		'precheck',
+		'precheck_result',
+		'precheck_agree',
 		'search_subscribers',
 		'send_test',
 		'get_totals',
@@ -424,7 +424,7 @@ class MailsterAjax {
 
 		$content = str_replace( '@media only screen and (max-device-width:', '@media only screen and (max-width:', $content );
 
-		$content = str_replace( '</head>', mailster( 'preflight' )->script_styles() . '</head>', $content );
+		$content = str_replace( '</head>', mailster( 'precheck' )->script_styles() . '</head>', $content );
 		$content = str_replace( '</body>', '<highlighterx></highlighterx><highlightery></highlightery></body>', $content );
 
 		$hash = md5( NONCE_SALT . MAILSTER_VERSION . $content );
@@ -461,7 +461,7 @@ class MailsterAjax {
 	}
 
 
-	private function preflight() {
+	private function precheck() {
 
 		$return['success'] = false;
 
@@ -471,7 +471,7 @@ class MailsterAjax {
 
 		if ( $id ) {
 
-			$response = mailster( 'preflight' )->request( $id );
+			$response = mailster( 'precheck' )->request( $id );
 
 			if ( is_wp_error( $response ) ) {
 				$return['error'] = $response->get_error_message();
@@ -486,7 +486,7 @@ class MailsterAjax {
 	}
 
 
-	private function preflight_result() {
+	private function precheck_result() {
 
 		$return['success'] = false;
 
@@ -497,14 +497,14 @@ class MailsterAjax {
 
 		if ( $id ) {
 
-			$response = mailster( 'preflight' )->request( $id, $endpoint, 25 );
+			$response = mailster( 'precheck' )->request( $id, $endpoint, 25 );
 
 			if ( is_wp_error( $response ) ) {
 				$return['error'] = $response->get_error_message();
 			} else {
 				$return['success'] = true;
 				$return['status']  = $response->status;
-				$return['html']    = mailster( 'preflight' )->convert( $response, $endpoint );
+				$return['html']    = mailster( 'precheck' )->convert( $response, $endpoint );
 			}
 
 			$return['part'] = basename( $endpoint );
@@ -515,7 +515,7 @@ class MailsterAjax {
 	}
 
 
-	private function preflight_agree() {
+	private function precheck_agree() {
 
 		$return['success'] = false;
 
@@ -523,7 +523,7 @@ class MailsterAjax {
 
 		$current_user = wp_get_current_user();
 
-		$return['success'] = (bool) update_user_meta( $current_user->ID, '_mailster_preflight_agreed', time() );
+		$return['success'] = (bool) update_user_meta( $current_user->ID, '_mailster_precheck_agreed', time() );
 
 		wp_send_json( $return );
 
@@ -583,7 +583,7 @@ class MailsterAjax {
 			}
 		}
 
-		$preflight = (bool) ( isset( $_POST['preflight'] ) && $_POST['preflight'] === 'true' );
+		$precheck = (bool) ( isset( $_POST['precheck'] ) && $_POST['precheck'] === 'true' );
 
 		$to           = trim( stripslashes( $_POST['to'] ) );
 		$current_user = wp_get_current_user();
@@ -612,10 +612,10 @@ class MailsterAjax {
 
 			$return['success'] = true;
 
-			if ( $preflight ) {
-				$preflight_id = uniqid();
-				$to           = apply_filters( 'mailster_preflight_mail', 'mailster-' . $preflight_id . '@preflight.email', $preflight_id );
-				$return['id'] = $preflight_id;
+			if ( $precheck ) {
+				$precheck_id  = uniqid();
+				$to           = apply_filters( 'mailster_precheck_mail', 'mailster-' . $precheck_id . '@precheck.email', $precheck_id );
+				$return['id'] = $precheck_id;
 			}
 			$receivers = explode( ',', $to );
 
@@ -783,8 +783,8 @@ class MailsterAjax {
 					$content = mailster( 'helper' )->inline_css( $content );
 				}
 
-				// replace links with fake hash to prevent tracking, not during preflight.
-				if ( $track_clicks && ! $preflight ) {
+				// replace links with fake hash to prevent tracking, not during precheck.
+				if ( $track_clicks && ! $precheck ) {
 					$content = mailster()->replace_links( $content, $mail->hash, $ID );
 				}
 
@@ -801,7 +801,7 @@ class MailsterAjax {
 				$placeholder->set_content( $mail->subject );
 				$mail->subject = $placeholder->get_content();
 
-				$mail->add_tracking_image = $track_opens && ! $preflight;
+				$mail->add_tracking_image = $track_opens && ! $precheck;
 
 				$return['success'] = $return['success'] && $mail->send();
 

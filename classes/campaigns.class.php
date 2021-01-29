@@ -391,7 +391,7 @@ class MailsterCampaigns {
 		global $post;
 		global $post_id;
 		include MAILSTER_DIR . 'views/newsletter/template.php';
-		include MAILSTER_DIR . 'views/newsletter/preflight.php';
+		include MAILSTER_DIR . 'views/newsletter/precheck.php';
 	}
 
 
@@ -1353,7 +1353,7 @@ class MailsterCampaigns {
 				wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
 				wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-				wp_enqueue_style( 'mailster-preflight', MAILSTER_URI . 'assets/css/preflight-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+				wp_enqueue_style( 'mailster-precheck', MAILSTER_URI . 'assets/css/precheck-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 				remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
 				wp_enqueue_script( 'mailster-emojipicker', MAILSTER_URI . 'assets/js/libs/emoji-button.js', array(), MAILSTER_VERSION );
@@ -1394,16 +1394,16 @@ class MailsterCampaigns {
 			wp_enqueue_script( 'mailster-optionbar', MAILSTER_URI . 'assets/js/optionbar-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );
 			wp_enqueue_style( 'mailster-optionbar', MAILSTER_URI . 'assets/css/optionbar-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_enqueue_script( 'mailster-preflight', MAILSTER_URI . 'assets/js/preflight-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );
+			wp_enqueue_script( 'mailster-precheck', MAILSTER_URI . 'assets/js/precheck-script' . $suffix . '.js', array( 'mailster-campaign' ), MAILSTER_VERSION, true );
 
 			wp_enqueue_style( 'mailster-flags', MAILSTER_URI . 'assets/css/flags' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			mailster_localize_script(
-				'preflight',
+				'precheck',
 				array(
-					'ready'           => esc_html__( 'Ready for Preflight!', 'mailster' ),
+					'ready'           => esc_html__( 'Ready for Precheck!', 'mailster' ),
 					'email_delivered' => esc_html__( 'Email delivered, collecting results...', 'mailster' ),
-					'finished'        => esc_html__( 'Preflight finished. Please check your results.', 'mailster' ),
+					'finished'        => esc_html__( 'Precheck finished. Please check your results.', 'mailster' ),
 					'sending'         => esc_html__( 'Sending your campaign.', 'mailster' ),
 					'checking'        => esc_html__( 'Check for delivery.', 'mailster' ),
 					'email_not_sent'  => esc_html__( 'The email was not sent. Please check your delivery settings and try again.', 'mailster' ),
@@ -1475,7 +1475,7 @@ class MailsterCampaigns {
 					'error_occurs'           => esc_html__( 'An error occurs while uploading', 'mailster' ),
 					'unsupported_format'     => esc_html__( 'Unsupported file format', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
-					'preflight'              => esc_html__( 'Preflight %s', 'mailster' ),
+					'precheck'               => esc_html__( 'Precheck %s', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
 				)
 			);
