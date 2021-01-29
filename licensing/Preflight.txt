@@ -1,3 +1,0 @@
-To use the Preflight service Mailster needs to send your campaign to our third party service. The email which is sent is the same as sent as test. All personalized information included but not limited to links, images, attachments etc. are sent via your current selected delivery method.
-
-We keep the right to track anonymously usage data.
