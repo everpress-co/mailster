@@ -377,8 +377,9 @@ class MailsterFrontpage {
 
 					$proccessed_content = $placeholder->get_content();
 
-					// target link is not in processed content
-					if ( false === strpos( $proccessed_content, $target ) ) {
+					// check if in all links is at least one from the target host => should be save
+					if ( preg_match_all( '# href=(\'|")?(https?[^\'"]+)(\'|")?#', $proccessed_content, $all_links ) && preg_grep( '/https?:\/\/' . preg_quote( $target_host ) . '/', array_unique( $all_links[2] ) ) ) {
+					} else {
 						wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 					}
 				}
