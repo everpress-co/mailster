@@ -1092,6 +1092,7 @@ class MailsterQueue {
 		$send_at_once       = mailster_option( 'send_at_once' );
 		$max_bounces        = mailster_option( 'bounce_attempts' );
 		$max_execution_time = mailster_option( 'max_execution_time', 0 );
+		$delay_time         = 0;
 
 		$sent_this_turn       = 0;
 		$send_delay           = mailster_option( 'send_delay', 0 ) / 1000;
@@ -1302,6 +1303,7 @@ class MailsterQueue {
 				if ( $send_delay && $i + 1 < $queue_result_count ) {
 					$delay = round( ( $send_delay - ( microtime( true ) - $send_start_time ) ), 3 ) * 1000000;
 					if ( $delay > 0 ) {
+						$delay_time += $delay;
 						usleep( $delay );
 					}
 				}
@@ -1328,7 +1330,8 @@ class MailsterQueue {
 
 				error_log( print_r( $last_hit, true ) );
 
-				$percentage = 0.9;
+				$percentage     = 0.9;
+				$new_send_delay = $send_delay * 1000;
 
 				if ( $cron_lock_timestamp = get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
 					$percentage = min( 0.5, $percentage );
@@ -1337,10 +1340,18 @@ class MailsterQueue {
 					error_log( 'mailster_cron_lock_triggered_:' . print_r( $interval, true ) );
 				} else {
 					$interval = $last_hit['timestamp'] - $last_hit['oldtimestamp'];
+
+					// use time between mails // todo improve
+					if ( false ) {
+						$percentage     = 0.95;
+						$new_send_delay = round( $send_delay * 1000 / ( $took / $interval ) );
+					}
 				}
 
 				error_log( 'interval: ' . print_r( $interval, true ) );
 				error_log( 'took: ' . print_r( $took, true ) );
+				error_log( 'delay_time: ' . print_r( $delay_time / 1000000, true ) );
+				error_log( 'delay_time-took: ' . print_r( $took - $delay_time / 1000000, true ) );
 
 				$possible_mails_per_minute = MINUTE_IN_SECONDS / $last_hit['mail'];
 
@@ -1370,18 +1381,19 @@ class MailsterQueue {
 					} else {
 						$possible_mails_per_interval_adjusted = round( $send_at_once + ( $diff * $ratio ) );
 					}
-					error_log( '' . print_r( 'MORE', true ) );
 					$prefix = '+';
 				}
 
 				$this->cron_log( 'send next turn', $possible_mails_per_interval_adjusted . ' (' . $prefix . ( round( 100 * $possible_mails_per_interval_adjusted / $send_at_once ) - 100 ) . '%)' );
-				error_log( 'diff: ' . print_r( $diff, true ) );
 
+				error_log( 'diff: ' . print_r( $diff, true ) );
 				error_log( 'ratio: ' . print_r( $ratio, true ) );
 
 				error_log( 'possible_mails_per_interval_adjusted: ' . print_r( $possible_mails_per_interval_adjusted, true ) );
+				error_log( 'new send_delay: ' . print_r( $new_send_delay, true ) );
 
 				if ( $diff && mailster_force_option( 'auto_send_at_once' ) ) {
+					// mailster_force_update_option( 'send_delay', $new_send_delay );
 					mailster_force_update_option( 'send_at_once', $possible_mails_per_interval_adjusted );
 				}
 			}

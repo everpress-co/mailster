@@ -279,8 +279,6 @@ class MailsterActions {
 
 		$sql = apply_filters( 'mailster_actions_add_sql', $sql, $args, $explicit );
 
-		error_log( print_r( $sql, true ) );
-
 		$result = $wpdb->query( $sql );
 
 		if ( false !== $result ) {
