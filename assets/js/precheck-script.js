@@ -106,7 +106,7 @@ mailster = (function (mailster, $, window, document) {
 				id = response.id;
 				setTimeout(function () {
 					checkTest(1);
-				}, 5000);
+				}, 3000);
 			} else {
 				loader(false);
 				runbtn.prop('disabled', false);
@@ -131,7 +131,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function checkTest(tries) {
 
-		if (tries > 6) {
+		if (tries > 10) {
 			error(mailster.l10n.precheck.email_not_sent);
 			loader(false);
 			runbtn.prop('disabled', false);

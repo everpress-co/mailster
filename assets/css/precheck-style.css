@@ -202,20 +202,17 @@ details { visibility: hidden; }
 details > summary { visibility:  visible; }
 details details { visibility:  visible; }
 details > summary:before {
-
+	content: '';
 	display: inline-block;
-	font-family: 'mailster-icons' !important;
-	font-size: 10px;
-	font-style: normal;
-	font-weight: normal;
-	speak: none;
-	display: inline-block !important;
 	vertical-align: bottom;
 	margin: 0 8px 0 -14px;
-	transform: rotate(-90deg);
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 16l4-4 -4-4"></path></g></svg>');
 	transition: transform 0.3s;
+	width: 20px;
+	height: 20px;
+
 }
-details[open] > summary:before { transform: rotate(0deg); }
+details[open] > summary:before { transform: rotate(90deg); }
 details[open] { visibility: visible; }
 details summary { cursor: pointer; }
 summary:hover { cursor: pointer; }
@@ -328,15 +325,7 @@ details summary::-webkit-details-marker { display:none; }
 }
 .score-wrap ul.tips{
 	margin-left: 30px;
-}
-.score-wrap ul.tips li:before{
-	float: right;
-	vertical-align: bottom;
-	width: 20px;
-	height: 20px;
-	content: '';
-	display: inline-block !important;
-	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%2300a0d2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0" d="M12 3v0c4.971 0 9 4.029 9 9v0c0 4.971-4.029 9-9 9v0c-4.971 0-9-4.029-9-9v0c0-4.971 4.029-9 9-9Z"></path><path stroke="%2300a0d2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0" d="M12 12.5v-5"></path><path stroke="%2300a0d2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0" d="M11.999 16c-.138 0-.25.112-.249.25 0 .138.112.25.25.25 .138 0 .25-.112.25-.25 0-.138-.112-.25-.251-.25"></path></g></svg>');
+	list-style: initial;
 }
 .score-wrap .wp-list-table{
 	border:none;

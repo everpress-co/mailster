@@ -141,16 +141,18 @@ class MailsterPrecheck {
 				if ( $response->count ) {
 					$html .= '<table class="wp-list-table widefat striped assets-table">';
 					foreach ( $response->images as $i => $image ) {
-						$html .= '<tr class="asset is-' . esc_attr( $image->status ) . '" data-url="' . esc_attr( $image->src ) . '" data-tag="img" data-attr="src" data-index="' . esc_attr( $image->index ) . '">';
+						$html .= '<tr class="asset is-' . esc_attr( $image->status ) . '" data-url="' . esc_attr( $image->src ) . '" data-tag="' . esc_attr( $image->tag ) . '" data-attr="' . esc_attr( $image->attr ) . '" data-index="' . esc_attr( $image->index ) . '">';
 						$html .= '<td><span class="asset-type asset-type-image mailster-icon"></span></td>';
 						$html .= '<td title="' . esc_attr( $image->message ) . '">' . $image->code . '</td>';
 						$html .= '<td>';
 						$html .= '<strong class="the-link" title="' . esc_attr( $image->src ) . '">' . basename( $image->src ) . '</strong>';
 						$html .= esc_html( $image->message ) . '<br>';
-						if ( $image->alt ) {
-							$html .= esc_html__( 'Alt text', 'mailster' ) . ': ' . esc_html( $image->alt );
-						} else {
-							$html .= esc_html__( 'No Alt text found.', 'mailster' );
+						if ( 'img' == $image->tag ) {
+							if ( $image->alt ) {
+								$html .= esc_html__( 'Alt text', 'mailster' ) . ': ' . esc_html( $image->alt );
+							} else {
+								$html .= esc_html__( 'No Alt text found.', 'mailster' );
+							}
 						}
 						$html .= '</td>';
 						$html .= '</tr>';
@@ -165,14 +167,16 @@ class MailsterPrecheck {
 				if ( $response->hits ) {
 					$html .= '<p>' . sprintf( esc_html__( 'Your IP %1$s is blacklisted on %2$d %3$s:', 'mailster' ), '<strong>' . esc_html( $response->ip ) . '</strong>', $response->hits, _n( 'list', 'lists', $response->hits, 'mailster' ) ) . '</p>';
 
+					$html .= '<ul class="blacklist">';
 					foreach ( $response->blacklists as $i => $service ) {
-						$html .= '<div>';
+						$html .= '<li>';
 						if ( $service->link ) {
 							$html .= '<a href="' . esc_attr( $service->link ) . '" target="_blank" title="' . esc_attr__( 'open link', 'mailster' ) . '" class="open-link mailster-icon"></a>';
 						}
 						$html .= sprintf( '<strong>%s</strong>: %s', $service->name, $service->message );
-						$html .= '</div>';
+						$html .= '</li>';
 					}
+					$html .= '</ul>';
 				} else {
 
 				}
@@ -252,7 +256,7 @@ class MailsterPrecheck {
 		$code    = wp_remote_retrieve_response_code( $response );
 		$headers = wp_remote_retrieve_headers( $response );
 
-		if ( is_wp_error( $response ) || 503 === $code ) {
+		if ( is_wp_error( $response ) || 503 === $code || 500 === $code ) {
 			return new WP_Error( 503, esc_html__( 'The Precheck service is currently not available. Please check back later.', 'mailster' ) );
 		} elseif ( 200 === $code ) {
 			if ( isset( $headers['token'] ) && $token != $headers['token'] ) {
