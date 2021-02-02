@@ -102,9 +102,9 @@ mailster = (function (mailster, $, window, document) {
 		}, function (response) {
 
 			if (response.success) {
-				status(mailster.l10n.precheck.checking);
 				id = response.id;
 				setTimeout(function () {
+					status(mailster.l10n.precheck.checking);
 					checkTest(1);
 				}, 3000);
 			} else {
