@@ -267,6 +267,12 @@ class MailsterPrecheck {
 			if ( null === $json ) {
 				return new WP_Error( 503, $body );
 			}
+			if ( isset( $headers['points'] ) ) {
+				$json->points = floatval( $headers['points'] );
+			}
+			if ( isset( $headers['penalty'] ) ) {
+				$json->penalty = floatval( $headers['penalty'] );
+			}
 			return $json;
 		} elseif ( 429 === $code ) {
 			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) );

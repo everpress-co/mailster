@@ -300,7 +300,7 @@ class MailsterUpgrade {
 			$actions
 		);
 
-		return $actions;
+		return array_unique( $actions );
 	}
 
 	public function scripts_styles() {

@@ -504,6 +504,8 @@ class MailsterAjax {
 			} else {
 				$return['success'] = true;
 				$return['status']  = $response->status;
+				$return['points']  = $response->points;
+				$return['penalty'] = $response->penalty;
 				$return['html']    = mailster( 'precheck' )->convert( $response, $endpoint );
 			}
 

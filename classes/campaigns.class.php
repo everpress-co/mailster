@@ -1401,12 +1401,12 @@ class MailsterCampaigns {
 			mailster_localize_script(
 				'precheck',
 				array(
-					'ready'           => esc_html__( 'Ready for Precheck!', 'mailster' ),
-					'email_delivered' => esc_html__( 'Email delivered, collecting results...', 'mailster' ),
-					'finished'        => esc_html__( 'Precheck finished. Please check your results.', 'mailster' ),
-					'sending'         => esc_html__( 'Sending your campaign.', 'mailster' ),
-					'checking'        => esc_html__( 'Check for delivery.', 'mailster' ),
-					'email_not_sent'  => esc_html__( 'The email was not sent. Please check your delivery settings and try again.', 'mailster' ),
+					'ready'          => esc_html__( 'Ready for Precheck!', 'mailster' ),
+					'collecting'     => esc_html__( 'Collecting results...', 'mailster' ),
+					'finished'       => esc_html__( 'Precheck finished!', 'mailster' ),
+					'sending'        => esc_html__( 'Send your campaign to precheck.email.', 'mailster' ),
+					'checking'       => esc_html__( 'Check for delivery.', 'mailster' ),
+					'email_not_sent' => esc_html__( 'The email was not sent. Please check your delivery settings and try again.', 'mailster' ),
 				)
 			);
 			mailster_localize_script(

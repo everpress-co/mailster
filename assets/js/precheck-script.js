@@ -6,9 +6,10 @@ mailster = (function (mailster, $, window, document) {
 		id,
 		precheck = $('.mailster-precheck'),
 		$status = $('.precheck-status'),
+		$score = $('.precheck-score'),
 		$loader = $('#precheck-ajax-loading'),
 		$authentication = $('#precheck-authentication'),
-		runbtn = $('.precheck-run'),
+		runbtn = $('.precheck-run-btn'),
 		strcturebtn = $('.precheck-toggle-structure'),
 		imagebtn = $('.precheck-toggle-images'),
 		$iframe = $('.mailster-preview-iframe'),
@@ -22,7 +23,7 @@ mailster = (function (mailster, $, window, document) {
 
 	precheck
 		.on('click', '.precheck-switch', switchPane)
-		.on('click', '.precheck-run', initTest)
+		.on('click', '.precheck-run-btn', initTest)
 		.on('click', '.precheck-toggle-images', toggleImages)
 		.on('click', '.precheck-toggle-structure', toggleStructure)
 		.on('mouseenter', '.assets-table tr', highlightElement)
@@ -57,7 +58,9 @@ mailster = (function (mailster, $, window, document) {
 			}
 		});
 
-	function status(msg, append) {
+	function status(id, append) {
+		var msg = mailster.l10n.precheck[id] || id;
+		$score.removeAttr('class').addClass('precheck-score precheck-status-' + id);
 		if (append) {
 			$status.html($status.html() + msg);
 		} else {
@@ -86,9 +89,10 @@ mailster = (function (mailster, $, window, document) {
 	function initTest() {
 		clear();
 		loader(true);
-		status(mailster.l10n.precheck.sending);
+		status('sending');
 		runbtn.prop('disabled', true);
 		started = 0;
+		$('.precheck-status-icon').html('');
 
 		mailster.util.ajax('send_test', {
 			precheck: true,
@@ -104,7 +108,7 @@ mailster = (function (mailster, $, window, document) {
 			if (response.success) {
 				id = response.id;
 				setTimeout(function () {
-					status(mailster.l10n.precheck.checking);
+					status('checking');
 					checkTest(1);
 				}, 3000);
 			} else {
@@ -126,7 +130,7 @@ mailster = (function (mailster, $, window, document) {
 	function clear() {
 		precheck.find('summary').removeAttr('class');
 		precheck.find('.precheck-result').empty();
-		status(mailster.l10n.precheck.ready);
+		status('ready');
 	};
 
 	function checkTest(tries) {
@@ -147,7 +151,8 @@ mailster = (function (mailster, $, window, document) {
 						checkTest(++tries);
 					}, 3000);
 				} else {
-					status(mailster.l10n.precheck.email_delivered);
+					status('collecting');
+					$('.precheck-status-icon').html(mailster.util.sprintf('%s of 100', 100));
 
 					$.when.apply($, [
 							getResult('blacklist'),
@@ -157,8 +162,9 @@ mailster = (function (mailster, $, window, document) {
 							getResult('links', 'tests/links'),
 							getResult('images', 'tests/images'),
 						])
-						.done(function () {
-							status(mailster.l10n.precheck.finished);
+						.done(function (r) {
+							//console.log(r);
+							status('finished');
 							loader(false);
 							runbtn.prop('disabled', false);
 						});
@@ -242,6 +248,8 @@ mailster = (function (mailster, $, window, document) {
 				if ('error' == response.status) {
 					//base.prop('open', true);
 				}
+				//summary.find('.precheck-penality').html(response.penalty);
+				$('.precheck-status-icon').html(mailster.util.sprintf('%s of 100', response.points));
 				body.html(response.html)
 			}
 
@@ -276,6 +284,13 @@ mailster = (function (mailster, $, window, document) {
 
 	function loadPreview(cb) {
 
+		if (!mailster.editor || !mailster.editor.loaded) {
+			mailster.events.push('editorLoaded', function () {
+				loadPreview(cb);
+			});
+			return;
+		}
+
 		var args = {
 				id: mailster.campaign_id,
 				subscriber_id: $('#subscriber_id').val(),
@@ -292,7 +307,7 @@ mailster = (function (mailster, $, window, document) {
 			$iframe.one('load', initFrame).attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
 			imagebtn.addClass('active');
 			strcturebtn.removeClass('active');
-			tb_show((title ? sprintf(mailster.l10n.campaigns.precheck, '"' + title + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' +
+			tb_show((title ? mailster.util.sprintf(mailster.l10n.campaigns.precheck, '"' + title + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' +
 				response.hash +
 				'&_wpnonce=' + response.nonce +
 				'&width=' + (Math.min(1440, mailster.$.window.width() - 50)) +
@@ -404,6 +419,7 @@ mailster = (function (mailster, $, window, document) {
 		mailster.trigger('disable');
 
 		$('.precheck-from').html($('#mailster_from-name').val());
+		$('.precheck-status-icon').html('');
 		loadPreview(cb);
 
 	};

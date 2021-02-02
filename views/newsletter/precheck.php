@@ -43,7 +43,7 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 				<a class="button precheck-switch mailster-icon precheck-switch-landscape" data-dimensions='{"w":640,"h":320}'></a>
 			</div>
 			<ul class="precheck-run">
-				<li class="alignright"><span class="spinner" id="precheck-ajax-loading"></span><button class="button button-primary precheck-run"><?php esc_html_e( 'Precheck Campaign', 'mailster' ); ?></button></li>
+				<li class="alignright"><span class="spinner" id="precheck-ajax-loading"></span><button class="button button-primary precheck-run-btn"><?php esc_html_e( 'Precheck Campaign', 'mailster' ); ?></button></li>
 			</ul>
 		</div>
 		<div class="device-wrap">
@@ -77,70 +77,71 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 
 			</div>
 			<div class="precheck-score">
+				<div class="precheck-status-icon"></div>
 				<h3 class="precheck-status"><?php esc_html_e( 'Ready for Precheck!', 'mailster' ); ?></h3>
 			</div>
 			<div class="precheck-results-wrap">
 				<div class="precheck-results">
 					<details id="precheck-message">
-						<summary data-count="10"><?php esc_html_e( 'Message', 'mailster' ); ?></summary>
+						<summary><?php esc_html_e( 'Message', 'mailster' ); ?><span class="precheck-penality"></span></summary>
 						<div class="precheck-body">
 							<details id="precheck-subject">
-								<summary data-count="10"><?php esc_html_e( 'Subject', 'mailster' ); ?></summary>
+								<summary><?php esc_html_e( 'Subject', 'mailster' ); ?><span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-email">
-								<summary data-count="10"><?php esc_html_e( 'Email', 'mailster' ); ?></summary>
+								<summary><?php esc_html_e( 'Email', 'mailster' ); ?><span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 						</div>
 					</details>
 					<details id="precheck-links">
-						<summary data-count="10"><?php esc_html_e( 'Links', 'mailster' ); ?></summary>
+						<summary><?php esc_html_e( 'Links', 'mailster' ); ?><span class="precheck-penality"></span></summary>
 						<div class="precheck-result"></div>
 					</details>
 					<details id="precheck-images">
-						<summary data-count="10"><?php esc_html_e( 'Images', 'mailster' ); ?></summary>
+						<summary><?php esc_html_e( 'Images', 'mailster' ); ?><span class="precheck-penality"></span></summary>
 						<div class="precheck-result"></div>
 					</details>
 					<details id="precheck-spam_report">
-						<summary data-count="10"><?php esc_html_e( 'Spam Report', 'mailster' ); ?></summary>
+						<summary><?php esc_html_e( 'Spam Report', 'mailster' ); ?><span class="precheck-penality"></span></summary>
 						<div class="precheck-result"></div>
 					</details>
 					<details id="precheck-authentication">
-						<summary data-count="10"><?php esc_html_e( 'Authentication', 'mailster' ); ?></summary>
+						<summary><?php esc_html_e( 'Authentication', 'mailster' ); ?><span class="precheck-penality"></span></summary>
 						<div class="precheck-body">
 							<details id="precheck-spf">
-								<summary data-count="10">SPF</summary>
+								<summary>SPF<span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-senderid">
-								<summary data-count="10">Sender ID</summary>
+								<summary>Sender ID<span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-dkim">
-								<summary data-count="10">DKIM</summary>
+								<summary>DKIM<span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-dmarc">
-								<summary data-count="10">DMARC</summary>
+								<summary>DMARC<span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-rdns">
-								<summary data-count="10">RDNS</summary>
+								<summary>RDNS<span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-mx">
-								<summary data-count="10">MX</summary>
+								<summary>MX<span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 							<details id="precheck-a">
-								<summary data-count="10">A</summary>
+								<summary>A<span class="precheck-penality"></span></summary>
 								<div class="precheck-result"></div>
 							</details>
 						</div>
 					</details>
 					<details id="precheck-blacklist">
-						<summary data-count="10">Blacklist</summary>
+						<summary>Blacklist<span class="precheck-penality"></span></summary>
 						<div class="precheck-result"></div>
 					</details>
 
