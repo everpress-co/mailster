@@ -269,9 +269,13 @@ class MailsterPrecheck {
 			}
 			if ( isset( $headers['points'] ) ) {
 				$json->points = floatval( $headers['points'] );
+			} else {
+				$json->points = null;
 			}
 			if ( isset( $headers['penalty'] ) ) {
 				$json->penalty = floatval( $headers['penalty'] );
+			} else {
+				$json->penalty = null;
 			}
 			return $json;
 		} elseif ( 429 === $code ) {

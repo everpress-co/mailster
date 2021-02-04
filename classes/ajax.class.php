@@ -615,7 +615,7 @@ class MailsterAjax {
 			$return['success'] = true;
 
 			if ( $precheck ) {
-				$precheck_id  = uniqid();
+				$precheck_id  = hash( 'crc32', uniqid() );
 				$to           = apply_filters( 'mailster_precheck_mail', 'mailster-' . $precheck_id . '@precheck.email', $precheck_id );
 				$return['id'] = $precheck_id;
 			}

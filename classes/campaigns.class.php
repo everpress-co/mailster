@@ -1404,7 +1404,7 @@ class MailsterCampaigns {
 					'ready'          => esc_html__( 'Ready for Precheck!', 'mailster' ),
 					'collecting'     => esc_html__( 'Collecting results...', 'mailster' ),
 					'finished'       => esc_html__( 'Precheck finished!', 'mailster' ),
-					'sending'        => esc_html__( 'Send your campaign to precheck.email.', 'mailster' ),
+					'sending'        => esc_html__( 'Sending your campaign.', 'mailster' ),
 					'checking'       => esc_html__( 'Check for delivery.', 'mailster' ),
 					'email_not_sent' => esc_html__( 'The email was not sent. Please check your delivery settings and try again.', 'mailster' ),
 				)
