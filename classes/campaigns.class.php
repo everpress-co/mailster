@@ -1667,7 +1667,7 @@ class MailsterCampaigns {
 			$post->post_parent   = 0;
 			$post->post_password = isset( $_POST['use_pwd'] ) ? $_POST['post_password'] : '';
 
-			if ( $meta['auto_post_thumbnail'] = isset( $_POST['auto_post_thumbnail'] ) ) {
+			if ( ! mailster_is_local() && $meta['auto_post_thumbnail'] = isset( $_POST['auto_post_thumbnail'] ) ) {
 
 				wp_schedule_single_event( time(), 'mailster_auto_post_thumbnail', array( $post_id ) );
 
@@ -4611,11 +4611,6 @@ class MailsterCampaigns {
 	 * @return unknown
 	 */
 	public function get_post_thumbnail( $campaign_id ) {
-
-		// not on localhost
-		if ( mailster_is_local() ) {
-			return;
-		}
 
 		$campaign = $this->get( $campaign_id );
 
