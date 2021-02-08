@@ -1189,6 +1189,10 @@ class MailsterQueue {
 						}
 					}
 
+					// if ( ! $wpdb->get_var( $wpdb->prepare( "SELECT ID from {$wpdb->posts} WHERE ID = %d AND post_status = %s", $data->campaign_id, 'active' ) ) ) {
+					// array_push( $campaign_errors, $data->campaign_id );
+					// }
+
 					if ( in_array( $data->campaign_id, $campaign_errors ) ) {
 						continue;
 					}
