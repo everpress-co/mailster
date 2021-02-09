@@ -2335,7 +2335,7 @@ class MailsterCampaigns {
 
 		$meta['active'] = true;
 
-		if ( empty( $meta['timestamp'] ) || $campaign->post_status == 'queued' ) {
+		if ( empty( $meta['timestamp'] ) || $campaign->post_status == 'queued' || ! $this->get_sent( $id ) ) {
 			$meta['timestamp'] = $now;
 		}
 

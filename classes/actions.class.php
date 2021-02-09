@@ -206,7 +206,7 @@ class MailsterActions {
 		}
 
 		// only explicitly opened
-		if ( $args['type'] == 2 && $explicit ) {
+		if ( 'opens' == $args['type'] && $explicit ) {
 
 			if ( $client = mailster_get_user_client() ) {
 

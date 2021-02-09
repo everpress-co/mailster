@@ -9,9 +9,19 @@ $module_list = $this->templateobj->get_module_list();
 
 $templates = mailster( 'templates' )->get_templates();
 $all_files = mailster( 'templates' )->get_all_files();
+$classes   = array( 'load' );
+if ( $editable ) {
+		$classes[] = 'is-editable';
+	if ( ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $module_list ) ) {
+		$classes[] = 'show-modules';
+	}
+	if ( ! empty( $module_list ) ) {
+		$classes[] = 'has-modules';
+	}
+}
 
 ?>
-<div id="template-wrap" class="load<?php echo $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $module_list ) ? ' show-modules' : ''; ?><?php echo $editable && ! empty( $module_list ) ? ' has-modules' : ''; ?>">
+<div id="template-wrap" class="<?php echo implode( ' ', $classes ); ?>">
 
 <?php if ( $editable ) : ?>
 

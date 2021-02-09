@@ -1181,7 +1181,11 @@ a.mailster-btn.editbutton {
 #mailster_template #iframe-wrap {
 	transition: margin-right .15s ease-in-out;
 	margin-right: 0px;
+	margin-top: 12px;
 	border: 1px solid #CCD0D4;
+}
+#mailster_template .is-editable #iframe-wrap {
+	margin-top: 0;
 }
 .rtl #mailster_template #iframe-wrap {
 	transition: margin-left .15s ease-in-out;
@@ -1237,21 +1241,26 @@ a.mailster-btn.editbutton {
 	margin-right: -30px;
 }
 #mailster_template a.toggle-modules:before{
-	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>');
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M14,8l-4,4l4,4" stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
+	background-size: 20px 20px;
+	background-position: center;
 }
 #mailster_template .show-modules a.toggle-modules:before{
-	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>');
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 16l4-4 -4-4"></path></g></svg>');
 }
 .rtl #mailster_template a.toggle-modules:before{
-	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>');
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 16l4-4 -4-4"></path></g></svg>');
 }
 .rtl #mailster_template .show-modules a.toggle-modules:before{
-	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>');
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M14,8l-4,4l4,4" stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
 }
 #mailster_template .inside iframe#mailster_iframe {
 	transition: height .25s ease-in-out;
-	margin-top: -3px;
+	margin-top: 0px;
 	margin-bottom: -4px;
+}
+#mailster_template .inside .is-editable iframe#mailster_iframe {
+	margin-top: -3px;
 }
 #mailster_template .inside iframe#mailster_iframe.loading {
 	-webkit-filter: blur(3px);
