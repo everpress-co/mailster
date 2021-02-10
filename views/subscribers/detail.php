@@ -96,6 +96,7 @@ if ( $is_new ) {
 				echo str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty )
+				. ' ' . number_format_i18n( $stars, 1 )
 				?>
 				</h4>
 			<?php endif; ?>
