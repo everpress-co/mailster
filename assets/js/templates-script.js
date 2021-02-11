@@ -173,6 +173,8 @@ mailster = (function (mailster, $, window, document) {
 					template = $('[data-slug="' + template + '"]');
 				}
 				if (!template || !template.length) return false;
+				overlay.find('.theme-screenshots img').hide();
+				overlay.find('.theme-screenshots iframe').hide();
 				overlay.removeAttr('class');
 				overlay.addClass('theme-overlay loading');
 				currentTemplate = template;
@@ -182,12 +184,11 @@ mailster = (function (mailster, $, window, document) {
 				overlay.find('.theme-description').html(data.description);
 				overlay.find('.theme-tags').html(data.tags && data.tags.length ? '<span>Tags:</span> ' + data.tags.join(', ') : '');
 
+
 				if (data.src) {
 					overlay.find('.theme-screenshots iframe').show().attr('src', data.src + '?nocache=' + (+new Date()));
-					overlay.find('.theme-screenshots img').hide();
 				} else {
-					overlay.find('.theme-screenshots iframe').hide();
-					overlay.find('.theme-screenshots img').show().attr('src', data.image_full).attr('srcset', data.image_full + ' 1x, ' + data.image_fullx2 + ' 2x');
+					overlay.find('.theme-screenshots img').attr('src', data.image_full).attr('srcset', data.image_full + ' 1x, ' + data.image_fullx2 + ' 2x');
 				}
 				if (data.update_available) overlay.addClass('has-update');
 				if (data.installed) overlay.addClass('is-installed');
@@ -286,6 +287,9 @@ mailster = (function (mailster, $, window, document) {
 
 				overlay.find('.theme-screenshots iframe').on('load', function () {
 					overlay.removeClass('loading');
+				})
+				overlay.find('.theme-screenshots img').on('load', function () {
+					$(this).show();
 				})
 			};
 

@@ -1267,13 +1267,10 @@ class MailsterTemplates {
 				$response_body = wp_remote_retrieve_body( $response );
 
 				$response_result = json_decode( $response_body, true );
-				error_log( print_r( $result['items'], true ) );
-				error_log( print_r( $response_result['items'], true ) );
 
 				// $result['items'] = array_replace_recursive( ($response_result['items']), ($result['items'] ));
 				$result['items'] = array_replace_recursive( ( $result['items'] ), ( $response_result['items'] ) );
 				$result['total'] = max( count( $result['items'] ), $response_result['total'] );
-				error_log( print_r( $result['items'], true ) );
 
 			}
 
@@ -1309,8 +1306,8 @@ class MailsterTemplates {
 			$result['items'][ $slug ]['description'] = wpautop( $result['items'][ $slug ]['description'] );
 
 			if ( $result['items'][ $slug ]['installed'] = isset( $templates[ $slug ] ) ) {
+				$result['items'][ $slug ] = array_merge( $templates[ $slug ], array_filter( $result['items'][ $slug ] ) );
 
-				$result['items'][ $slug ]                     = array_merge( $templates[ $slug ], $result['items'][ $slug ] );
 				$result['items'][ $slug ]['update_available'] = isset( $result['items'][ $slug ]['new_version'] ) && version_compare( $result['items'][ $slug ]['new_version'], $result['items'][ $slug ]['version'], '>' );
 				$result['items'][ $slug ]['files']            = $this->get_files( $slug );
 

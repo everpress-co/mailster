@@ -110,10 +110,22 @@
 	padding: 0.2em 0.4em;
 	margin-left:0.6em;
 }
+.browse-installed .theme-browser .theme .theme-screenshot .theme-screenshot-bg {
+	display: none;
+}
+.browse-installed .theme-browser .theme .theme-screenshot .theme-screenshot-img {
+	display: none;
+}
+.theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
+	display: none;
+}
+.browse-installed .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
+	display: block;
+}
 .theme-browser .theme .theme-screenshot .theme-screenshot-img, .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
 	position: absolute;
 	width: 75%;
-	border-radius: 3px;
+	border-radius: 2px;
 	transform: translate(-50%, 50px);
 	left: 50%;
 	transition: transform 0.2s ease-in-out;
@@ -122,9 +134,10 @@
 	pointer-events: none;
 }
 .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
-	width: 650px;
+	width: 700px;
 	height: 1200px;
 	transform: translate(-50%, -22%) scale(0.5);
+	box-shadow: none;
 }
 
 .theme-browser .theme .theme-screenshot .theme-screenshot-bg {
@@ -142,16 +155,28 @@
 .theme-browser .theme:hover .theme-screenshot .theme-screenshot-bg {
 	opacity: 0.8;
 }
-
-
 .theme-overlay .theme-about{
 	top: 49px;
 	top: 75px;
 }
-
 .theme-overlay .theme-screenshots{
 	margin-top: -26px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 20px 20px;
+	background-image: url(../img/loading.gif) !important;
 }
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+	only screen and (-o-min-device-pixel-ratio: 32),
+	only screen and (min--moz-device-pixel-ratio: 1.5),
+	only screen and (min-device-pixel-ratio: 1.5) {
+
+
+	.theme-overlay .theme-screenshots{
+		background-image: url(../img/loading_2x.gif) !important;
+	}
+}
+
 .theme-overlay .screenshot{
 	height: 70vh;
 	overflow: auto;

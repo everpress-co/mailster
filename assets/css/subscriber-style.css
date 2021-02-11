@@ -119,7 +119,7 @@ label{
 .custom-field-wrap{
 	margin-top: 36px;
 }
-.form-table td{
+.wp-admin .form-table td{
 	vertical-align: top;
 	padding: 0;
 }

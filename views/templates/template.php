@@ -23,9 +23,8 @@ if ( $item['gumroad_url'] ) {
 		<img loading="lazy" alt="" class="theme-screenshot-bg" srcset="<?php echo esc_attr( $item['image'] ); ?> 1x, <?php echo esc_attr( $item['imagex2'] ); ?> 2x" src="<?php echo esc_attr( $item['image'] ); ?>" >
 		<?php if ( $item['index'] ) : ?>
 		<iframe src="<?php echo esc_url( add_query_arg( array( 'nocache' => time() ), $item['index'] ) ); ?>" class="theme-screenshot-iframe" scrolling="no" allowTransparency="true" frameBorder="0" sandbox="allow-presentation allow-scripts" loading="lazy"></iframe>
-		<?php else : ?>
-		<img loading="lazy" alt="" class="theme-screenshot-img" srcset="<?php echo esc_attr( $item['image'] ); ?> 1x, <?php echo esc_attr( $item['imagex2'] ); ?> 2x" src="<?php echo esc_attr( $item['image'] ); ?>" >
 		<?php endif; ?>
+		<img loading="lazy" alt="" class="theme-screenshot-img" srcset="<?php echo esc_attr( $item['image'] ); ?> 1x, <?php echo esc_attr( $item['imagex2'] ); ?> 2x" src="<?php echo esc_attr( $item['image'] ); ?>" >
 	</div>
 	<div class="notice update-message notice-success notice-alt"></div>
 	<div class="notice update-message notice-warning notice-alt"></div>

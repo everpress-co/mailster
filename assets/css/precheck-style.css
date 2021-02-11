@@ -352,14 +352,12 @@ details summary::-webkit-details-marker { display:none; }
 	only screen and (min--moz-device-pixel-ratio: 1.5),
 	only screen and (min-device-pixel-ratio: 1.5) {
 
-
 	.score-wrap details summary.loading{
-		background-position: 94% center;
-		background-repeat: no-repeat;
 		background-image: url(../img/loading_2x.gif) !important;
 	}
 
-}.score-wrap details summary.loaded{
+}
+.score-wrap details summary.loaded{
 	color: inherit;
 }
 .score-wrap details > div{
