@@ -184,7 +184,6 @@ mailster = (function (mailster, $, window, document) {
 				overlay.find('.theme-description').html(data.description);
 				overlay.find('.theme-tags').html(data.tags && data.tags.length ? '<span>Tags:</span> ' + data.tags.join(', ') : '');
 
-
 				if (data.src) {
 					overlay.find('.theme-screenshots iframe').show().attr('src', data.src + '?nocache=' + (+new Date()));
 				} else {
@@ -192,13 +191,17 @@ mailster = (function (mailster, $, window, document) {
 				}
 				if (data.update_available) overlay.addClass('has-update');
 				if (data.installed) overlay.addClass('is-installed');
+				if (data.is_default) overlay.addClass('is-default');
+				if (data.download) overlay.addClass('has-download');
+				if (data.purchase_url) overlay.addClass('has-purchase');
 
 				var files = '';
 				if (data.files) {
-					files += '<span class="nav-tab" href="#">Template Files:</span>';
+					files += '<label>Template Files: <select class="theme-file-selector">';
 					for (var key in data.files) {
-						if (data.files.hasOwnProperty(key)) files += '<a class="file nav-tab' + ('index.html' == key ? ' nav-tab-active' : '') + '" href="#' + key + '" title="' + key + '">' + data.files[key].label + '</a>';
+						if (data.files.hasOwnProperty(key)) files += '<option value="' + key + '">' + data.files[key].label + ' (' + key + ')</option>';
 					}
+					files += '</select></label>';
 				}
 				overlay.find('.theme-files').html(files);
 				prevTemplate = currentTemplate.prev();
@@ -224,15 +227,22 @@ mailster = (function (mailster, $, window, document) {
 			},
 
 			remove = function () {
-				if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, '"' + data.name + '"'))) {
+
+				var file = $('.theme-file-selector').val();
+
+				if ('index.html' == file && confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, '"' + data.name + '"'))) {
 					deleteTemplate(data.slug);
 					close();
+				} else if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete_file, '"' + file + '"', '"' + data.name + '"'))) {
+					deleteTemplate(data.slug, file, function () {
+						$('.theme-file-selector').val('index.html').trigger('change').find('option[value="' + file + '"]').remove();
+					});
 				}
 				return false;
 			},
 
 			makedefault = function () {
-				if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_delete, '"' + data.name + '"'))) {
+				if (confirm(mailster.util.sprintf(mailster.l10n.templates.confirm_default, '"' + data.name + '"'))) {
 
 					var template = $('[data-slug="' + data.slug + '"]');
 
@@ -263,16 +273,14 @@ mailster = (function (mailster, $, window, document) {
 
 			campaign = function () {
 
-				document.location = this.href + '&template=' + data.slug + '&file=' + overlay.find('.nav-tab-active').attr('href').substr(1);
+				document.location = this.href + '&template=' + data.slug + '&file=' + overlay.find('.theme-file-selector').val();
 
 				return false;
 			},
 
 			file = function () {
 
-				overlay.find('.nav-tab-active').removeClass('nav-tab-active');
-				$(this).addClass('nav-tab-active');
-				overlay.find('.theme-screenshots iframe').attr('src', data.files[$(this).attr('href').substr(1)].src);
+				overlay.find('.theme-screenshots iframe').attr('src', data.files[$(this).val()].src);
 
 			},
 
@@ -283,7 +291,7 @@ mailster = (function (mailster, $, window, document) {
 				deletebtn.on('click', remove);
 				defaultbtn.on('click', makedefault);
 				campaignbtn.on('click', campaign);
-				overlay.on('click', '.file', file);
+				overlay.on('change', '.theme-file-selector', file);
 
 				overlay.find('.theme-screenshots iframe').on('load', function () {
 					overlay.removeClass('loading');
@@ -457,7 +465,7 @@ mailster = (function (mailster, $, window, document) {
 
 	}
 
-	function deleteTemplate(slug) {
+	function deleteTemplate(slug, file, cb) {
 
 		var template = $('[data-slug="' + slug + '"]');
 
@@ -467,15 +475,21 @@ mailster = (function (mailster, $, window, document) {
 
 		mailster.util.ajax('delete_template', {
 			slug: slug,
+			file: file || null,
 		}, function (response) {
 
-			template.animate({
-				width: 0,
-				'margin-right': 0
-			}, function () {
-				template.remove();
-				busy = false;
-			});
+			if (cb) {
+				template.removeClass('loading');
+				cb();
+			} else {
+				template.animate({
+					width: 0,
+					'margin-right': 0
+				}, function () {
+					template.remove();
+					busy = false;
+				});
+			}
 
 		}, function (jqXHR, textStatus, errorThrown) {})
 

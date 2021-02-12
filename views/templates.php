@@ -66,14 +66,13 @@
 		</div>
 
 		<div class="theme-actions">
-			<div class="active-theme">
-				<a href="https://fresh.local/wp-admin/customize.php?theme=Cayse&amp;return=%2Fwp-admin%2Fthemes.php" class="button button-primary customize load-customize hide-if-no-customize"><?php esc_html_e( 'Customize', 'mailster' ); ?></a>
-				<a class="button" href="widgets.php"><?php esc_html_e( 'Widgets', 'mailster' ); ?></a> <a class="button" href="nav-menus.php"><?php esc_html_e( 'Menus', 'mailster' ); ?></a>
-				<a class="button duplicate-campaign" href="" aria-label="<?php esc_attr_e( 'Duplicate Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Duplicate', 'mailster' ); ?></a>
-			</div>
-			<div class="inactive-theme">
+			<div>
 				<a href="" class="button default" aria-label="Activate Cayse"><?php esc_html_e( 'Use as default', 'mailster' ); ?></a>
 				<a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ); ?>" class="button button-primary campaign"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
+				<a class="button button-primary request-download popup" data-width="800" data-height="80%" href=""><?php esc_html_e( 'Download', 'mailster' ); ?></a>
+				<a class="button button-primary buy external" data-width="800" data-height="80%" href=""><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
+				<a href="" class="button button-primary buy"><?php esc_html_e( 'Buy this Template', 'mailster' ); ?></a>
+				<a href="" class="button button-primary download"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
 			</div>
 			<a class="button delete-theme"><?php esc_html_e( 'Delete', 'mailster' ); ?></a>
 		</div>

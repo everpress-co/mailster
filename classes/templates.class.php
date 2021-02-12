@@ -133,22 +133,25 @@ class MailsterTemplates {
 	}
 
 
-	public function remove_template( $slug ) {
+	public function remove_template( $slug, $file = null ) {
 
-		$this->templatepath = $this->path . '/' . $slug;
+		$location = $this->path . '/' . $slug;
 
-		if ( ! file_exists( $this->templatepath . '/index.html' ) ) {
-			return false;
-		}
+		if ( ! is_null( $file ) ) {
+			$location .= '/' . $file;
+		};
 
 		mailster_require_filesystem();
 
 		global $wp_filesystem;
-		if ( $wp_filesystem->delete( $this->templatepath, true ) ) {
 
-			$screenshots = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug;
-			if ( is_dir( $screenshots ) ) {
-				$wp_filesystem->delete( $screenshots, true );
+		if ( $wp_filesystem->delete( $location, true ) ) {
+
+			if ( is_null( $file ) ) {
+				$screenshots = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug;
+				if ( is_dir( $screenshots ) ) {
+					$wp_filesystem->delete( $screenshots, true );
+				}
 			}
 
 			return true;
@@ -642,9 +645,11 @@ class MailsterTemplates {
 			'templates',
 			array(
 				'delete_template_file' => esc_html__( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
-				'enter_template_name'  => esc_html__( 'Please enter the name of the new template', 'mailster' ),
+				'enter_template_name'  => esc_html__( 'Please enter the name of the new template.', 'mailster' ),
 				'uploading'            => esc_html__( 'uploading zip file %s', 'mailster' ),
-				'confirm_delete'       => esc_html__( 'You are about to delete this template %s', 'mailster' ),
+				'confirm_delete'       => esc_html__( 'You are about to delete this template %s.', 'mailster' ),
+				'confirm_delete_file'  => esc_html__( 'You are about to delete file %1$s from template %2$s.', 'mailster' ),
+				'confirm_default'      => esc_html__( 'You are about to make %s your default template.', 'mailster' ),
 				'update_note'          => esc_html__( 'You are about to update your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Old template files will be preserved in the templates folder.', 'mailster' ),
 			)
 		);
@@ -1268,7 +1273,6 @@ class MailsterTemplates {
 
 				$response_result = json_decode( $response_body, true );
 
-				// $result['items'] = array_replace_recursive( ($response_result['items']), ($result['items'] ));
 				$result['items'] = array_replace_recursive( ( $result['items'] ), ( $response_result['items'] ) );
 				$result['total'] = max( count( $result['items'] ), $response_result['total'] );
 

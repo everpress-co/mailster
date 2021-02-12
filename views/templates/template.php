@@ -57,18 +57,17 @@ if ( $item['gumroad_url'] ) {
 		<h3 class="theme-name">
 			<?php echo esc_html( $item['name'] ); ?>
 			<?php if ( $item['is_default'] ) : ?>
-			<span class="theme-default-badge"><?php esc_html_e( 'Current', 'mailster' ); ?></a>
+			<span class="theme-badge theme-default-badge"><?php esc_html_e( 'Current', 'mailster' ); ?></a>
+			<?php elseif ( $item['installed'] ) : ?>
+			<span class="theme-badge theme-installed-badge"><?php esc_html_e( 'Installed', 'mailster' ); ?></a>
 			<?php endif; ?>
-			</h3>
+		</h3>
 		<div class="theme-actions">
 			<?php if ( $item['ID'] ) : ?>
-			<a class="button button-small" href="<?php echo esc_url( 'https://mailster.dev/wp-admin/post.php?post=' . $item['ID'] . '&action=edit' ); ?>" target="_blank"><?php esc_html_e( 'Edit', 'mailster' ); ?></a>
+			<a class="" href="<?php echo esc_url( 'https://mailster.dev/wp-admin/post.php?post=' . $item['ID'] . '&action=edit' ); ?>" target="_blank"><?php esc_html_e( 'E', 'mailster' ); ?></a>
 			<?php endif; ?>
 			<?php if ( $item['installed'] ) : ?>
 			<a class="button button-primary create-campaign" href="<?php echo admin_url( 'post-new.php?post_type=newsletter&template=' . esc_attr( $slug ) ); ?>" aria-label="<?php esc_attr_e( 'Create Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
-			<?php endif; ?>
-			<?php if ( $item['gumroad_url'] ) : ?>
-			<a class="button button-primary buy-gumroad" href="<?php echo esc_url( $item['gumroad_url'] ); ?>?wanted=true" aria-label="<?php esc_attr_e( 'Buy via Gumroad', 'mailster' ); ?>"><?php esc_html_e( 'Buy via Gumroad', 'mailster' ); ?></a>
 			<?php endif; ?>
 			<?php if ( $item['download_url'] ) : ?>
 			<a class="button button-primary download" data-width="800" data-height="80%" href="<?php echo esc_url( $item['download_url'] ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a>

@@ -1825,8 +1825,9 @@ class MailsterAjax {
 		$this->ajax_nonce( json_encode( $return ) );
 
 		$slug = basename( $_POST['slug'] );
+		$file = basename( $_POST['file'] );
 
-		$return['success'] = mailster( 'templates' )->remove_template( $slug );
+		$return['success'] = mailster( 'templates' )->remove_template( $slug, $file );
 		wp_send_json( $return );
 
 	}
