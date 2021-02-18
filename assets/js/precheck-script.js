@@ -303,6 +303,8 @@ mailster = (function (mailster, $, window, document) {
 			title = mailster.$.title.val();
 
 		clear();
+		$('.precheck-status-icon').html('');
+
 		mailster.util.ajax('set_preview', args, function (response) {
 			$iframe.one('load', initFrame).attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
 			imagebtn.addClass('active');
@@ -405,12 +407,12 @@ mailster = (function (mailster, $, window, document) {
 	function agreeTerms() {
 
 		if (!$('#precheck-agree-checkbox').is(':checked')) {
-			alert(mailster.l10n.campaigns.enter_list_name);
+			alert(mailster.l10n.campaigns.agree_precheck_terms);
 			return false;
 		}
 		mailster.util.ajax('precheck_agree', function (response) {
 			precheck.addClass('precheck-terms-agreed');
-		}, function (jqXHR, textStatus, errorThrown) {});
+		});
 
 	};
 
@@ -419,7 +421,6 @@ mailster = (function (mailster, $, window, document) {
 		mailster.trigger('disable');
 
 		$('.precheck-from').html($('#mailster_from-name').val());
-		$('.precheck-status-icon').html('');
 		loadPreview(cb);
 
 	};

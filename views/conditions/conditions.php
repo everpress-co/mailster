@@ -277,7 +277,7 @@
 						</div>
 						<?php endforeach; ?>
 					<?php else : ?>
-					<p><?php esc_html_e( 'No campaigns available', 'mailster' ); ?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value]"></p>
+					<p><?php esc_html_e( 'No lists available', 'mailster' ); ?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value]"></p>
 					<?php endif; ?>
 					</div>
 					<div class="mailster-conditions-value-field" data-fields=",_tags__not_in,_tags__in,">
@@ -299,7 +299,7 @@
 						</div>
 						<?php endforeach; ?>
 					<?php else : ?>
-					<p><?php esc_html_e( 'No campaigns available', 'mailster' ); ?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value]"></p>
+					<p><?php esc_html_e( 'No tags available', 'mailster' ); ?><input type="hidden" class="condition-value" disabled value="0" name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value]"></p>
 					<?php endif; ?>
 					</div>
 					<div class="mailster-conditions-value-field" data-fields=",_click_link,_click_link__not_in,">

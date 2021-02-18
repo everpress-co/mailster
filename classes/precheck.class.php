@@ -247,7 +247,7 @@ class MailsterPrecheck {
 			'timeout' => (int) $timeout,
 			'headers' => array(
 				'Authorization' => $authorization,
-				'X-Domain'      => parse_url( is_multisite() ? network_site_url() : home_url(), PHP_URL_HOST ),
+				'X-Domain'      => parse_url( is_multisite() ? network_site_url() : site_url(), PHP_URL_HOST ),
 			),
 		);
 
@@ -279,12 +279,12 @@ class MailsterPrecheck {
 			}
 			return $json;
 		} elseif ( 429 === $code ) {
-			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) );
+			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the test limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) );
 		} elseif ( 498 === $code ) {
 			delete_option( 'mailster_precheck_token' );
 			return new WP_Error( $code, sprintf( esc_html__( 'Your token is invalid. Please check %s.', 'mailster' ), 'HELP' ) );
 		} else {
-			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the rate limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) );
+			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the test limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) );
 		}
 
 	}

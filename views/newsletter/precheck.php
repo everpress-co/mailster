@@ -65,7 +65,7 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 					<?php $terms = file_get_contents( MAILSTER_DIR . 'licensing/Precheck.txt' ); ?>
 					<?php echo wpautop( $terms, false ); ?>
 					<p><label><input type="checkbox" id="precheck-agree-checkbox"><?php esc_html_e( 'I\'ve read the Terms of Service and agree.', 'mailster' ); ?></label></p>
-					<?php submit_button( 'Agree', 'primary', 'precheck-agree' ); ?>
+					<?php submit_button( esc_html__( 'Submit', 'mailster' ), 'primary', 'precheck-agree' ); ?>
 
 				<?php else : ?>
 

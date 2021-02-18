@@ -1476,6 +1476,7 @@ class MailsterCampaigns {
 					'unsupported_format'     => esc_html__( 'Unsupported file format', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
 					'precheck'               => esc_html__( 'Precheck %s', 'mailster' ),
+					'agree_precheck_terms'   => esc_html__( 'Please check the checkbox first.', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
 				)
 			);

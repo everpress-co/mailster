@@ -48,6 +48,7 @@ mailster = (function (mailster, $, window, document) {
 		},
 		buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, lastpostsargs, searchTimeout, checkRSSfeedInterval,
 		searchstring = '',
+		is_loading = false,
 		postsearch = $('#post-search'),
 		imagesearch = $('#image-search'),
 		imagesearchtype = $('[name="image-search-type"]');
@@ -97,6 +98,8 @@ mailster = (function (mailster, $, window, document) {
 				break;
 			}
 		})
+
+	$('.imagelist, .postlist').on('scroll', mailster.util.throttle(checkScrollPosition, 500));
 
 	mailster.util.getRealDimensions(mailster.$.iframe.contents().find("img").eq(0), function (w, h, f) {
 		var ishighdpi = f >= 1.5;
@@ -401,7 +404,9 @@ mailster = (function (mailster, $, window, document) {
 		if (bool === false) {
 			$('#editbar-ajax-loading').hide();
 			bar.find('.buttons').find('button').prop('disabled', false);
+			is_loading = false;
 		} else {
+			is_loading = true;
 			$('#editbar-ajax-loading').css('display', 'inline');
 			bar.find('.buttons').find('button').prop('disabled', true);
 		}
@@ -1477,6 +1482,16 @@ mailster = (function (mailster, $, window, document) {
 
 		});
 		return false;
+	}
+
+	function checkScrollPosition() {
+		var t = $(this);
+		var top = t.scrollTop();
+		var h = t.innerHeight();
+		var sh = this.scrollHeight;
+		if (!is_loading && top + h >= sh - 15) {
+			t.find('.load-more-posts').click();
+		}
 	}
 
 	function searchPost() {
