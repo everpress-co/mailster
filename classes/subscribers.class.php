@@ -1301,9 +1301,7 @@ class MailsterSubscribers {
 				$value = mailster( 'helper' )->do_timestamp( $value, 'Y-m-d' );
 			}
 
-			if ( $value != '' ) {
-				$inserts[] = $wpdb->prepare( '(%d, %s, %s)', $subscriber_id, $key, $value );
-			}
+			$inserts[] = $wpdb->prepare( '(%d, %s, %s)', $subscriber_id, $key, $value );
 		}
 
 		if ( empty( $inserts ) ) {
