@@ -57,7 +57,7 @@ class MailsterPrecheck {
 					$html .= '<td>' . esc_html( $data->score ) . '</td>';
 					$html .= '<td><strong>' . esc_html( $data->code ) . '</strong><br>' . esc_html( $data->message ) . '</td>';
 					if ( ! empty( $data->link ) ) {
-						$html .= '<td><a href="' . esc_attr( $data->link ) . '" target="_blank">' . esc_html__( 'info', 'mailster' ) . '</a></td>';
+						$html .= '<td><a href="' . esc_attr( $data->link ) . '" target="_blank" rel="nooopener noreferrer">' . esc_html__( 'info', 'mailster' ) . '</a></td>';
 					}
 					$html .= '</tr>';
 				}
@@ -121,9 +121,13 @@ class MailsterPrecheck {
 						$html .= '<td title="' . esc_attr( $link->message ) . '">' . $link->code . '</td>';
 						$html .= '<td>';
 						if ( $link->href && 'anchor' != $link->type ) {
-							$html .= '<a href="' . esc_attr( $link->href ) . '" target="_blank" title="' . esc_attr__( 'open link', 'mailster' ) . '" class="open-link mailster-icon"></a>';
+							$html .= '<a href="' . esc_attr( $link->href ) . '" target="_blank" title="' . esc_attr__( 'open link', 'mailster' ) . '" class="open-link mailster-icon" rel="nooopener noreferrer"></a>';
 						}
-						$html .= '<strong class="the-link" title="' . esc_attr( $link->href ) . '">' . preg_replace( '/^https?:\/\//', '', $link->href ) . '</strong>';
+						$html .= '<strong class="the-link" title="' . esc_attr( $link->href ) . '">' . preg_replace( '/^https?:\/\//', '', $link->href );
+						$html .= '</strong>';
+						if ( $link->location ) {
+							$html .= '<span title="' . sprintf( esc_attr__( 'This address redirects to %s.', 'mailster' ), "\n" . esc_attr( $link->location ) ) . '"> ↳ ' . esc_url( $link->location ) . '</span><br>';
+						}
 						$html .= esc_html( $link->message ) . '<br>';
 						if ( $link->text ) {
 							$html .= esc_html( $link->text );
@@ -144,14 +148,14 @@ class MailsterPrecheck {
 						$html .= '<tr class="asset is-' . esc_attr( $image->status ) . '" data-url="' . esc_attr( $image->src ) . '" data-tag="' . esc_attr( $image->tag ) . '" data-attr="' . esc_attr( $image->attr ) . '" data-index="' . esc_attr( $image->index ) . '">';
 						$html .= '<td><span class="asset-type asset-type-image mailster-icon"></span></td>';
 						$html .= '<td title="' . esc_attr( $image->message ) . '">' . $image->code;
-						if ( $image->size ) {
-							$html .= '<br>' . size_format( $image->size, 2 ) . ' ';
-							$html .= '<br>' . $image->size . ' ';
-						}
 						$html .= '</td>';
 						$html .= '<td>';
 						$html .= '<strong class="the-link" title="' . esc_attr( $image->src ) . '">' . basename( $image->src ) . '</strong>';
-						$html .= esc_html( $image->message ) . '<br>';
+						$html .= esc_html( $image->message );
+						if ( $image->size ) {
+							$html .= ' &ndash; ' . size_format( $image->size, 2 );
+						}
+						$html .= '<br>';
 						if ( 'img' == $image->tag ) {
 							if ( $image->alt ) {
 								$html .= esc_html__( 'Alt text', 'mailster' ) . ': ' . esc_html( $image->alt );
@@ -176,7 +180,7 @@ class MailsterPrecheck {
 					foreach ( $response->blacklists as $i => $service ) {
 						$html .= '<li>';
 						if ( $service->link ) {
-							$html .= '<a href="' . esc_attr( $service->link ) . '" target="_blank" title="' . esc_attr__( 'open link', 'mailster' ) . '" class="open-link mailster-icon"></a>';
+							$html .= '<a href="' . esc_attr( $service->link ) . '" target="_blank" title="' . esc_attr__( 'open link', 'mailster' ) . '" class="open-link mailster-icon" rel="nooopener noreferrer"></a>';
 						}
 						$html .= sprintf( '<strong>%s</strong>: %s', $service->name, $service->message );
 						$html .= '</li>';
