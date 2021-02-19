@@ -143,7 +143,12 @@ class MailsterPrecheck {
 					foreach ( $response->images as $i => $image ) {
 						$html .= '<tr class="asset is-' . esc_attr( $image->status ) . '" data-url="' . esc_attr( $image->src ) . '" data-tag="' . esc_attr( $image->tag ) . '" data-attr="' . esc_attr( $image->attr ) . '" data-index="' . esc_attr( $image->index ) . '">';
 						$html .= '<td><span class="asset-type asset-type-image mailster-icon"></span></td>';
-						$html .= '<td title="' . esc_attr( $image->message ) . '">' . $image->code . '</td>';
+						$html .= '<td title="' . esc_attr( $image->message ) . '">' . $image->code;
+						if ( $image->size ) {
+							$html .= '<br>' . size_format( $image->size, 2 ) . ' ';
+							$html .= '<br>' . $image->size . ' ';
+						}
+						$html .= '</td>';
 						$html .= '<td>';
 						$html .= '<strong class="the-link" title="' . esc_attr( $image->src ) . '">' . basename( $image->src ) . '</strong>';
 						$html .= esc_html( $image->message ) . '<br>';
