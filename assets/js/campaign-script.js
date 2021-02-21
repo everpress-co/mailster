@@ -1617,7 +1617,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 
-	mailster.receivers.$.conditions
+	window.tb_remove && mailster.receivers.$.conditions
 		.on('click', '.close-conditions', tb_remove);
 
 

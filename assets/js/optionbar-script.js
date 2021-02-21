@@ -182,8 +182,8 @@ mailster = (function (mailster, $, window, document) {
 				preheader: mailster.details.$.preheader.val()
 			},
 			function (response) {
-				mailster.$.optionbar.find('a.preview').removeClass('loading');
 
+				mailster.$.optionbar.find('a.preview').removeClass('loading');
 				mailster.thickbox.$.preview.attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
 				tb_show((mailster.$.title.val() ? mailster.util.sprintf(mailster.l10n.campaigns.preview_for, '"' + mailster.$.title.val() + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=mailster_campaign_preview', null);
 
@@ -217,11 +217,11 @@ mailster = (function (mailster, $, window, document) {
 
 	}
 
-	mailster.$.document
+	mailster.editable && mailster.$.document
 		.on('click', 'button.save-template', saveTemplate)
 		.on('click', 'button.save-template-cancel', tb_remove);
 
-	mailster.$.optionbar
+	mailster.editable && mailster.$.optionbar
 		.on('click', 'a', false)
 		.on('click', 'a.save-template', mailster.optionbar.openSaveDialog)
 		.on('click', 'a.clear-modules', mailster.optionbar.removeModules)
@@ -234,13 +234,13 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', 'a.template', showFiles)
 		.on('click', 'a.file', changeTemplate);
 
-	mailster.$.window
+	mailster.editable && mailster.$.window
 		//.on('scroll.optionbar', mailster.util.throttle(togglefix, 100))
 		.on('resize.optionbar', function () {
 			mailster.$.window.trigger('scroll.optionbar');
 		});
 
-	mailster.events.push('editorLoaded', function () {
+	mailster.editable && mailster.events.push('editorLoaded', function () {
 		mailster.optionbar.undos.push(mailster.editor.getFrameContent());
 	});
 
@@ -252,7 +252,6 @@ mailster = (function (mailster, $, window, document) {
 		if (!mailster.dom.template) return 0;
 		return mailster.$.template.offset().top;
 	}
-
 
 	function togglefix() {
 		var scrolltop = mailster.util.top();
