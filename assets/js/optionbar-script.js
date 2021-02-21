@@ -197,11 +197,11 @@ mailster = (function (mailster, $, window, document) {
 
 	}
 
-	mailster.$.document
+	mailster.editable && mailster.$.document
 		.on('click', 'button.save-template', saveTemplate)
 		.on('click', 'button.save-template-cancel', tb_remove);
 
-	mailster.$.optionbar
+	mailster.editable && mailster.$.optionbar
 		.on('click', 'a', false)
 		.on('click', 'a.save-template', mailster.optionbar.openSaveDialog)
 		.on('click', 'a.clear-modules', mailster.optionbar.removeModules)
@@ -214,13 +214,13 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', 'a.template', showFiles)
 		.on('click', 'a.file', changeTemplate);
 
-	mailster.$.window
+	mailster.editable && mailster.$.window
 		//.on('scroll.optionbar', mailster.util.throttle(togglefix, 100))
 		.on('resize.optionbar', function () {
 			mailster.$.window.trigger('scroll.optionbar');
 		});
 
-	mailster.events.push('editorLoaded', function () {
+	mailster.editable && mailster.events.push('editorLoaded', function () {
 		mailster.optionbar.undos.push(mailster.editor.getFrameContent());
 	});
 
