@@ -212,7 +212,7 @@ class MailsterConditions {
 			'begin_with'   => esc_html__( 'begins with', 'mailster' ),
 			'end_with'     => esc_html__( 'ends with', 'mailster' ),
 			'pattern'      => esc_html__( 'match regex pattern', 'mailster' ),
-			'not_pattern'  => esc_html__( 'does not match regex pattern', 'mailster' ),
+			'not_pattern'  => esc_html__( 'doesn\'t match regex pattern', 'mailster' ),
 		);
 
 	}
