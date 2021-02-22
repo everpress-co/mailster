@@ -601,7 +601,7 @@ if ( $old_version ) {
 		case '2.4.17':
 			// move to "default" or after latests release versions
 			$mailster_options['db_update_required'] = true;
-			$mailster_options['auto_send_at_once'] = false;
+			$mailster_options['auto_send_at_once']  = false;
 
 		default:
 			// reset translations
