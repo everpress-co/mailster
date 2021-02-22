@@ -4775,7 +4775,8 @@ class MailsterCampaigns {
 				'method'      => 'HEAD',
 			)
 		);
-		$code     = wp_remote_retrieve_response_code( $response );
+
+		$code = wp_remote_retrieve_response_code( $response );
 
 		if ( 307 == $code ) {
 			wp_schedule_single_event( time() + 10, 'mailster_auto_post_thumbnail', array( $campaign_id ) );
@@ -4820,12 +4821,12 @@ class MailsterCampaigns {
 		);
 
 		$results = wp_handle_sideload( $file, $overrides, $time_string );
-		$file    = $results['file'];
 
 		if ( isset( $results['error'] ) ) {
 			return false;
 		}
 
+		$file     = $results['file'];
 		$filetype = wp_check_filetype( $file, null );
 
 		$attachment = array(
@@ -4834,6 +4835,7 @@ class MailsterCampaigns {
 			'post_title'     => apply_filters( 'mymail_post_thumbnail_title', apply_filters( 'mailster_post_thumbnail_title', $campaign->post_title, $campaign ), $campaign ),
 			'post_content'   => '',
 			'post_status'    => 'inherit',
+			'post_author'    => $campaign->post_author,
 		);
 
 		if ( ( $post_thumbnail_id = get_post_thumbnail_id( $campaign_id ) ) && $file_exits ) {
