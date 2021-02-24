@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.6
-Stable tag: 2.4.16
+Stable tag: 2.4.17
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -87,6 +87,16 @@ Xaver Birsak – https://everpress.co
 
 
 == Changelog ==
+
+= Version 2.4.17 =
+
+* fixed: issue with subscriber button on some versions of Firefox
+* fixed: problem downloading templates with special characters in filepath
+* fixed: issue with manual sync button in Firefox
+* fixed: post taxonomies are not respected for some autoresponder campaigns if the initial post status is publish
+* fixed: issue creating images if content folder is outside of WordPress root
+* fixed: empty values in form submission were not stored
+* improved: URL hijacking mechanics to handle subdomains
 
 = Version 2.4.16 =
 

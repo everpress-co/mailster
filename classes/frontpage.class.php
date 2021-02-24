@@ -346,7 +346,12 @@ class MailsterFrontpage {
 			// check if external URLS are actually in the campaign to prevent URL hijacking
 			$target_host = wp_parse_url( $target, PHP_URL_HOST );
 			$home_host   = wp_parse_url( home_url(), PHP_URL_HOST );
-			if ( $target_host !== $home_host ) {
+
+			// either the target url is in the home url or vice versa - to allow subdomains (improvable)
+			$home_in_target_host = ( false !== strpos( $home_host, $target_host ) );
+			$target_in_home_host = ( false !== strpos( $target_host, $home_host ) );
+
+			if ( ! $home_in_target_host && ! $target_in_home_host ) {
 
 				// link is not in campaign => further checks
 				if ( false === strpos( $campaign->post_content, $target ) ) {
@@ -372,8 +377,9 @@ class MailsterFrontpage {
 
 					$proccessed_content = $placeholder->get_content();
 
-					// target link is not in processed content
-					if ( false === strpos( $proccessed_content, $target ) ) {
+					// check if in all links is at least one from the target host => should be save
+					if ( preg_match_all( '# href=(\'|")?(https?[^\'"]+)(\'|")?#', $proccessed_content, $all_links ) && preg_grep( '/https?:\/\/' . preg_quote( $target_host ) . '/', array_unique( $all_links[2] ) ) ) {
+					} else {
 						wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 					}
 				}
