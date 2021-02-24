@@ -2,7 +2,7 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 4.5
-Tested up to: 5.6
+Tested up to: 5.7
 Stable tag: 3.0
 Author: EverPress
 Author URI: https://everpress.co
@@ -87,6 +87,8 @@ Xaver Birsak – https://everpress.co
 
 
 == Changelog ==
+
+= Version 2.4.18 =
 
 = Version 2.4.17 =
 
