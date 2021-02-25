@@ -114,6 +114,7 @@ window.jTour = function (tourdata, options) {
 			onHide: settings.onHide,
 			onStep: settings.onStep,
 			element: 'body',
+			index: 0,
 			buttons: settings.buttons,
 			steps: {},
 		};
@@ -232,6 +233,8 @@ window.jTour = function (tourdata, options) {
 			start(current);
 			return false;
 		}
+
+		current = settings.startAt;
 
 		// start immediately if required
 		if (settings.autostart) start(settings.startAt);
@@ -550,6 +553,8 @@ window.jTour = function (tourdata, options) {
 			// $element = $element.call(api, $element);
 			$element = $($element());
 		}
+
+		$element = $element.eq(options.index);
 
 		// the jQuery DOM element doesn't exist
 		if (!$element.length) {
@@ -884,7 +889,7 @@ window.jTour = function (tourdata, options) {
 					// set the element realtive and a zindex higher than the overlay
 					if (options.overlayOpacity) {
 						var polygonpoints = '0,0 0,0 0,0 0,0';
-						if (options.expose && $element != animateDOM) {
+						if (options.expose && 'body' != options.element && 'html' != options.element) {
 
 							var exposeelement = $element[0],
 								bound, exposeoffset;

@@ -72,6 +72,13 @@ class MailsterTours {
 				$tours[] = 'edit';
 				$tours[] = 'play';
 				break;
+			case 'admin.php//newsletter_page_mailster_dashboard':
+				$tours[] = 'dashboard';
+				break;
+
+			case 'edit.php/newsletter/newsletter_page_mailster_templates':
+				$tours[] = 'templates';
+				break;
 
 			default:
 				break;
@@ -95,7 +102,7 @@ class MailsterTours {
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
-		$seen_tours = get_user_meta( get_current_user_id(), '_mailster_tours', true );
+		$seen_tours = get_user_meta( get_current_user_id(), '__mailster_tours', true );
 
 		if ( empty( $seen_tours ) ) {
 			return array();
@@ -113,7 +120,7 @@ class MailsterTours {
 		$seen_tours             = $this->get_seen_tours( $user_id );
 		$seen_tours[ $test_id ] = time();
 
-		return update_user_meta( $user_id, 'mailster_tours', $seen_tours );
+		return update_user_meta( $user_id, '_mailster_tours', $seen_tours );
 
 	}
 

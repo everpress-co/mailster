@@ -627,6 +627,7 @@ mailster = (function (mailster, $, window, document) {
 	mailster.templates.downloadFromUrl = downloadTemplateFromUrl;
 	mailster.templates.delete = deleteTemplate;
 	mailster.templates.error = errorTemplate;
+	mailster.templates.filter = setFilter;
 
 	return mailster;
 
