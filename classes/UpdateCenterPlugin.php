@@ -1,6 +1,6 @@
 <?php
 
-// Version 3.8
+// Version 4.0
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -75,8 +75,6 @@ class UpdateCenterPlugin {
 		add_action( 'wp_update_plugins', array( &$this, 'check_periodic_updates' ), 99 );
 		add_action( 'updatecenterplugin_check', array( &$this, 'check_periodic_updates' ) );
 		add_filter( 'upgrader_post_install', array( &$this, 'upgrader_post_install' ), 99, 3 );
-
-		add_filter( 'auto_update_plugin', array( &$this, 'auto_update' ), 10, 2 );
 
 		add_filter( 'http_request_args', array( &$this, 'http_request_args' ), 100, 2 );
 
@@ -345,38 +343,6 @@ class UpdateCenterPlugin {
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $update
-	 * @param unknown $item
-	 * @return unknown
-	 */
-	public function auto_update( $update, $item ) {
-
-		// explicit
-		if ( $update ) {
-			return true;
-		}
-
-		if ( ! isset( self::$plugin_data[ $item->slug ] ) ) {
-			return $update;
-		}
-
-		// return default if not set
-		if ( ! isset( self::$plugin_data[ $item->slug ]->autoupdate ) ) {
-			return $update;
-		}
-
-		// if only "minor" updates
-		if ( self::$plugin_data[ $item->slug ]->autoupdate === 'minor' ) {
-			return $this->version_compare( self::$plugins[ $item->slug ]->new_version, self::$plugins[ $item->slug ]->version, true );
-		}
-
-		return ! ! ( self::$plugin_data[ $item->slug ]->autoupdate );
-
-	}
 
 
 	/**

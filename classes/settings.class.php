@@ -92,7 +92,6 @@ class MailsterSettings {
 			'charset'                            => 'UTF-8',
 			'encoding'                           => '8bit',
 			'post_count'                         => 30,
-			'autoupdate'                         => 'minor',
 
 			'system_mail'                        => false,
 

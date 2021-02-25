@@ -27,7 +27,6 @@ class MailsterUpdate {
 				'remote_url'  => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
 				'plugin'      => MAILSTER_SLUG,
 				'slug'        => 'mailster',
-				'autoupdate'  => mailster_option( 'autoupdate', true ),
 			)
 		);
 
