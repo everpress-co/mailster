@@ -83,6 +83,7 @@ class MailsterAjax {
 		'quick_install',
 		'wizard_save',
 
+		'tour_mark_as_seen',
 
 		'test',
 
@@ -2845,6 +2846,19 @@ class MailsterAjax {
 				}
 				break;
 		}
+
+		wp_send_json( $return );
+
+	}
+
+
+	private function tour_mark_as_seen() {
+
+		$return['success'] = false;
+
+		$tour_id = isset( $_POST['tour_id'] ) ? basename( $_POST['tour_id'] ) : null;
+
+		$return['success'] = mailster( 'tours' )->mark_as_seen( $tour_id );
 
 		wp_send_json( $return );
 

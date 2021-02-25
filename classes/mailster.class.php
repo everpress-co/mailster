@@ -47,6 +47,7 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/privacy.class.php';
 		require_once MAILSTER_DIR . 'classes/security.class.php';
 		require_once MAILSTER_DIR . 'classes/export.class.php';
+		require_once MAILSTER_DIR . 'classes/tours.class.php';
 		require_once MAILSTER_DIR . 'classes/empty.class.php';
 
 		$this->_classes = array(
@@ -77,6 +78,7 @@ class Mailster {
 			'privacy'      => new MailsterPrivacy(),
 			'security'     => new MailsterSecurity(),
 			'export'       => new MailsterExport(),
+			'tours'        => new MailsterTours(),
 			'empty'        => new MailsterEmpty(),
 		);
 
