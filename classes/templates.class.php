@@ -154,7 +154,7 @@ class MailsterTemplates {
 						$moved = true;
 					} else {
 						if ( ! ( $moved = $wp_filesystem->move( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder, true ) ) ) {
-							$moved = @rename( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder );
+							$moved = rename( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder );
 						}
 					}
 
@@ -725,7 +725,7 @@ class MailsterTemplates {
 								$redirect = isset( $_SERVER['HTTP_REFERER'] ) ? remove_query_arg( 'more', $_SERVER['HTTP_REFERER'] ) : admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' );
 								$redirect = add_query_arg( array( 'new' => $slug ), $redirect );
 
-								@unlink( $tempfile );
+								unlink( $tempfile );
 							}
 						}
 
@@ -916,7 +916,7 @@ class MailsterTemplates {
 							}
 
 							if ( ! $wp_filesystem->copy( $tmp_file, $screenshotfile ) ) {
-								@copy( $tmp_file, $screenshotfile );
+								copy( $tmp_file, $screenshotfile );
 							}
 						}
 					} else {

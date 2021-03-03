@@ -926,7 +926,7 @@ class MailsterSettings {
 							case 'file':
 								$lockfiles = glob( MAILSTER_UPLOAD_DIR . '/CRON_*.lockfile' );
 								foreach ( $lockfiles as $lockfile ) {
-									@unlink( $lockfile );
+									unlink( $lockfile );
 								}
 								break;
 							case 'db':

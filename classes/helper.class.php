@@ -1133,12 +1133,6 @@ class MailsterHelper {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $content
-	 * @return unknown
-	 */
 	public function inline_css( $content ) {
 
 		// save comments with conditional stuff
@@ -1150,9 +1144,6 @@ class MailsterHelper {
 		}
 		// get all style blocks
 		if ( preg_match_all( '#<style([^><]*)>(.*?)</style>#is', $content, $originalstyles ) ) {
-
-			@error_reporting( E_ERROR | E_PARSE );
-			@ini_set( 'display_errors', '0' );
 
 			$apply_styles = array();
 
@@ -1178,11 +1169,14 @@ class MailsterHelper {
 
 			require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
+			$i_error = libxml_use_internal_errors( true );
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
 
 			$htmldoc->applyStylesheet( $apply_styles );
 
 			$html = $htmldoc->getHTML();
+			libxml_clear_errors();
+			libxml_use_internal_errors( $i_error );
 
 			// convert urlencode back for links with unallowed characters (only images)
 			preg_match_all( "/(src|background)=[\"'](.*)[\"']/Ui", $html, $urls );
