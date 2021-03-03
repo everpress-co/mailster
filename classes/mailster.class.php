@@ -2833,10 +2833,10 @@ class Mailster {
 	 *
 	 * @param unknown $post_id
 	 * @param unknown $part     (optional)
-	 * @param unknown $meta_key
+	 * @param unknown $meta_key (optional)
 	 * @return unknown
 	 */
-	public function meta( $post_id, $part = null, $meta_key ) {
+	public function meta( $post_id, $part = null, $meta_key = null ) {
 
 		$meta = get_post_meta( $post_id, $meta_key, true );
 
@@ -2859,10 +2859,10 @@ class Mailster {
 	 * @param unknown $id
 	 * @param unknown $key
 	 * @param unknown $value    (optional)
-	 * @param unknown $meta_key
+	 * @param unknown $meta_key (optional)
 	 * @return unknown
 	 */
-	public function update_meta( $id, $key, $value = null, $meta_key ) {
+	public function update_meta( $id, $key, $value = null, $meta_key = null ) {
 		if ( is_array( $key ) ) {
 			$meta = $key;
 			return update_post_meta( $id, $meta_key, $meta );

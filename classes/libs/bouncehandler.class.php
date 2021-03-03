@@ -54,8 +54,8 @@ class MailsterBounceHandler {
 
 		try {
 
-			@imap_timeout( IMAP_OPENTIMEOUT, $timeout );
-			@imap_timeout( IMAP_READTIMEOUT, $timeout );
+			@imap_timeout( IMAP_OPENTIMEOUT, (int) $timeout );
+			@imap_timeout( IMAP_READTIMEOUT, (int) $timeout );
 
 			$this->mailbox = new PhpImap\Mailbox( $path, $user, $pwd );
 			$this->mailbox->checkMailbox();

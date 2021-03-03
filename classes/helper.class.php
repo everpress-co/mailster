@@ -7,13 +7,13 @@ class MailsterHelper {
 	 *
 	 * @param unknown $attach_id (optional)
 	 * @param unknown $img_url   (optional)
-	 * @param unknown $width
+	 * @param unknown $width    (optional)
 	 * @param unknown $height   (optional)
 	 * @param unknown $crop     (optional)
 	 * @param unknown $original (optional)
 	 * @return unknown
 	 */
-	public function create_image( $attach_id = null, $img_url = null, $width, $height = null, $crop = false, $original = false ) {
+	public function create_image( $attach_id = null, $img_url = null, $width = null, $height = null, $crop = false, $original = false ) {
 
 		$org_url = $img_url;
 
