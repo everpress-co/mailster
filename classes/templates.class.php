@@ -212,7 +212,7 @@ class MailsterTemplates {
 						$moved = true;
 					} else {
 						if ( ! ( $moved = $wp_filesystem->move( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder, true ) ) ) {
-							$moved = @rename( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder );
+							$moved = rename( $uploadfolder . '/' . $folder, $uploadfolder . '/' . $renamefolder );
 						}
 					}
 

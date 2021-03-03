@@ -655,7 +655,7 @@ class MailsterAjax {
 						continue;
 					}
 					$file = get_attached_file( $attachment_id );
-					if ( ! @is_file( $file ) ) {
+					if ( ! is_file( $file ) ) {
 						continue;
 					}
 					$total_size += filesize( $file );

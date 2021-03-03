@@ -1475,12 +1475,12 @@ class MailsterForm {
 	/**
 	 *
 	 *
-	 * @param unknown $form_id (optional)
+	 * @param unknown $form_id
 	 * @param unknown $key
 	 * @param unknown $value
 	 * @return unknown
 	 */
-	public function set( $form_id = 0, $key, $value ) {
+	public function set( $form_id, $key, $value ) {
 
 		_deprecated_function( __FUNCTION__, '2.1', "mailster('forms')->update_field()" );
 

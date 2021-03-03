@@ -6,7 +6,7 @@ $request_url = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null
 if ( $request_url ) {
 	header( 'Refresh: 15;url=' . $request_url, true );
 }
-@ini_set( 'display_errors', true );
+ini_set( 'display_errors', true );
 
 if ( ! defined( 'DISABLE_WP_CRON' ) ) {
 	define( 'DISABLE_WP_CRON', true );
