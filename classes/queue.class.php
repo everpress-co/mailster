@@ -1065,8 +1065,8 @@ class MailsterQueue {
 
 		update_option( 'mailster_cron_lasthit', $last_hit );
 
-		$memory_limit           = @ini_get( 'memory_limit' );
-		$max_execution_time_ini = @ini_get( 'max_execution_time' );
+		$memory_limit           = ini_get( 'memory_limit' );
+		$max_execution_time_ini = ini_get( 'max_execution_time' );
 
 		ignore_user_abort( true );
 		set_time_limit( 0 );

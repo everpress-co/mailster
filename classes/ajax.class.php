@@ -553,7 +553,7 @@ class MailsterAjax {
 						continue;
 					}
 					$file = get_attached_file( $attachment_id );
-					if ( ! @is_file( $file ) ) {
+					if ( ! is_file( $file ) ) {
 						continue;
 					}
 					$total_size += filesize( $file );
@@ -2200,8 +2200,8 @@ class MailsterAjax {
 
 		global $wpdb;
 
-		$memory_limit       = @ini_get( 'memory_limit' );
-		$max_execution_time = @ini_get( 'max_execution_time' );
+		$memory_limit       = ini_get( 'memory_limit' );
+		$max_execution_time = ini_get( 'max_execution_time' );
 
 		$return['success'] = false;
 
@@ -2316,8 +2316,8 @@ class MailsterAjax {
 			die( 'not allowed' );
 		}
 
-		$memory_limit       = @ini_get( 'memory_limit' );
-		$max_execution_time = @ini_get( 'max_execution_time' );
+		$memory_limit       = @ ( 'memory_limit' );
+		$max_execution_time = ini_get( 'max_execution_time' );
 
 		$return['success'] = false;
 

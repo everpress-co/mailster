@@ -105,8 +105,8 @@ class MailsterManage {
 
 		global $wpdb;
 
-		$memory_limit       = @ini_get( 'memory_limit' );
-		$max_execution_time = @ini_get( 'max_execution_time' );
+		$memory_limit       = ini_get( 'memory_limit' );
+		$max_execution_time = ini_get( 'max_execution_time' );
 
 		set_time_limit( 0 );
 
@@ -472,8 +472,8 @@ class MailsterManage {
 
 		define( 'MAILSTER_DO_BULKIMPORT', true );
 
-		$memory_limit       = @ini_get( 'memory_limit' );
-		$max_execution_time = @ini_get( 'max_execution_time' );
+		$memory_limit       = ini_get( 'memory_limit' );
+		$max_execution_time = ini_get( 'max_execution_time' );
 
 		ini_set( 'display_errors', 0 );
 

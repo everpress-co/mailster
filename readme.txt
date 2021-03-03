@@ -90,6 +90,8 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.18 =
 
+* fixes for PHP 8
+
 = Version 2.4.17 =
 
 * fixed: issue with subscriber button on some versions of Firefox

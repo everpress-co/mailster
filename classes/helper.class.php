@@ -1345,7 +1345,7 @@ class MailsterHelper {
 
 		ob_start();
 
-		( @file_exists( $path . $wp_scripts->registered[ $handle ]->src ) )
+		( file_exists( $path . $wp_scripts->registered[ $handle ]->src ) )
 			? include $path . $wp_scripts->registered[ $handle ]->src
 			: include str_replace( MAILSTER_URI, MAILSTER_DIR, $wp_scripts->registered[ $handle ]->src );
 		$output = ob_get_contents();
@@ -1390,7 +1390,7 @@ class MailsterHelper {
 
 		ob_start();
 
-		( @file_exists( $path . $wp_styles->registered[ $handle ]->src ) )
+		( file_exists( $path . $wp_styles->registered[ $handle ]->src ) )
 			? include $path . $wp_styles->registered[ $handle ]->src
 			: include str_replace( MAILSTER_URI, MAILSTER_DIR, $wp_styles->registered[ $handle ]->src );
 		$output = ob_get_contents();
@@ -1428,7 +1428,7 @@ class MailsterHelper {
 			wp_mkdir_p( dirname( $filename ) );
 		}
 
-		if ( $file_handle = @fopen( $filename, $flags ) ) {
+		if ( $file_handle = fopen( $filename, $flags ) ) {
 			fwrite( $file_handle, $data );
 			fclose( $file_handle );
 		}
@@ -1692,7 +1692,7 @@ class MailsterHelper {
 			}
 
 			$max_items = apply_filters( 'mailster_feed_max_items', 100 );
-			$max_items = @$feed->get_item_quantity( (int) $max_items );
+			$max_items = $feed->get_item_quantity( (int) $max_items );
 
 			if ( $item >= $max_items ) {
 				return new WP_Error( 'feed_to_short', sprintf( esc_html__( 'The feed only contains %d items', 'mailster' ), $max_items ) );

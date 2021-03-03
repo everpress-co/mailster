@@ -1640,7 +1640,7 @@ class MailsterCampaigns {
 						continue;
 					}
 					$file = get_attached_file( $attachment_id );
-					if ( @is_file( $file ) ) {
+					if ( is_file( $file ) ) {
 						$total_size += filesize( $file );
 						if ( $total_size <= $max_size ) {
 							$meta['attachments'][] = $attachment_id;
@@ -4195,7 +4195,7 @@ class MailsterCampaigns {
 					continue;
 				}
 				$file = get_attached_file( $attachment_id );
-				if ( ! @is_file( $file ) ) {
+				if ( ! is_file( $file ) ) {
 					continue;
 				}
 				$mail->attachments[ basename( $file ) ] = $file;
