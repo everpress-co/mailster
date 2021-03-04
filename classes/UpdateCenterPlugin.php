@@ -1,6 +1,6 @@
 <?php
 
-// Version 4.0
+// Version 4.1
 // UpdateCenterPlugin Class
 if ( class_exists( 'UpdateCenterPlugin' ) ) {
 	return;
@@ -303,7 +303,11 @@ class UpdateCenterPlugin {
 
 		global $pagenow;
 
-		if ( ! current_user_can( 'update_plugins' ) || $pagenow == 'update.php' ) {
+		if ( 'update-core.php' == $pagenow || 'update.php' == $pagenow ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'update_plugins' ) ) {
 			return;
 		}
 
@@ -337,7 +341,7 @@ class UpdateCenterPlugin {
 				);
 			}
 
-			echo '<div class="update-nag update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
+			echo '<div class="update-nag notice notice-warning inline update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
 
 		}
 
@@ -810,7 +814,7 @@ class UpdateCenterPlugin {
 	 */
 	public function update_plugins_filter( $value ) {
 
-		if ( empty( self::$plugins ) ) {
+		if ( empty( self::$plugins ) || ! $value ) {
 			return $value;
 		}
 
