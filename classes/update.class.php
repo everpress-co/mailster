@@ -160,8 +160,8 @@ class MailsterUpdate {
 
 					default:
 						$error = esc_html__( 'An error occurred while updating Mailster!', 'mailster' );
-						if ( $message ) {
-							$error .= '<br>' . $message;
+						if ( $error_msg ) {
+							$error .= '<br>' . $error_msg;
 						}
 						break;
 				}
