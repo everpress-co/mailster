@@ -13,6 +13,8 @@ class MailsterUpdate {
 		add_action( 'after_plugin_row_' . MAILSTER_SLUG, array( &$this, 'add_license_info' ), 10, 3 );
 		add_filter( 'upgrader_package_options', array( &$this, 'upgrader_package_options' ) );
 
+		add_action( 'install_plugins_pre_plugin-information', array( &$this, 'add_css_for_information_screen' ) );
+
 	}
 
 
@@ -27,7 +29,6 @@ class MailsterUpdate {
 				'remote_url'  => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
 				'plugin'      => MAILSTER_SLUG,
 				'slug'        => 'mailster',
-				'autoupdate'  => mailster_option( 'autoupdate', true ),
 			)
 		);
 
@@ -159,8 +160,8 @@ class MailsterUpdate {
 
 					default:
 						$error = esc_html__( 'An error occurred while updating Mailster!', 'mailster' );
-						if ( $message ) {
-							$error .= '<br>' . $message;
+						if ( $error_msg ) {
+							$error .= '<br>' . $error_msg;
 						}
 						break;
 				}
@@ -220,15 +221,23 @@ class MailsterUpdate {
 
 		if ( mailster()->is_outdated() ) {
 
-			echo '<tr class="plugin-update-tr" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="3" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( esc_html__( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
+			echo '<tr class="plugin-update-tr active" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="4" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( esc_html__( 'Hey! Looks like you have an outdated version of Mailster! It\'s recommended to keep the plugin up to date for security reasons and new features. Check the %s for the most recent version.', 'mailster' ), '<a href="https://mailster.co/changelog">' . esc_html__( 'changelog page', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
 
 		}
 		if ( ! mailster()->is_verified() ) {
 
-			echo '<tr class="plugin-update-tr" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="3" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( esc_html__( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
+			echo '<tr class="plugin-update-tr active" id="mailster-update" data-slug="mailster" data-plugin="' . MAILSTER_SLUG . '"><td colspan="4" class="plugin-update colspanchange"><div class="error notice inline notice-error notice-alt"><p><strong>' . sprintf( esc_html__( 'Hey! Would you like automatic updates and premium support? Please %s of Mailster.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">' . esc_html__( 'activate your copy', 'mailster' ) . '</a>' ) . '</strong></p></td></tr>';
 
 		}
 
+	}
+
+	public function add_css_for_information_screen() {
+
+		// remove ugly h2 headline in plugin info screen for Mailster only
+		if ( isset( $_GET['plugin'] ) && 'mailster' == $_GET['plugin'] ) {
+			wp_add_inline_style( 'common', '#plugin-information #plugin-information-title h2{display: none;}' );
+		}
 	}
 
 	public function upgrader_package_options( $options ) {
