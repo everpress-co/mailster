@@ -1445,7 +1445,9 @@ class MailsterHelper {
 
 		mailster_require_filesystem();
 
-		if ( 0 === strrpos( $folder, ABSPATH ) ) {
+		$upload_dir = wp_upload_dir();
+
+		if ( 0 === strrpos( $folder, $upload_dir['basedir'] ) ) {
 			$path = trailingslashit( $folder );
 		} else {
 			$path = trailingslashit( trailingslashit( MAILSTER_UPLOAD_DIR ) . $folder );
