@@ -49,8 +49,6 @@ class UpdateCenterPlugin {
 
 		self::$plugin_data[ $plugin_data->slug ] = $plugin_data;
 
-		add_filter( 'updatecenter_verify', array( 'UpdateCenterPlugin', 'verify' ), 10, 2 );
-
 		register_deactivation_hook( $plugin_data->plugin, array( 'UpdateCenterPlugin', 'deactivate' ) );
 
 		return self::$_instance;
@@ -127,12 +125,6 @@ class UpdateCenterPlugin {
 	 */
 	public static function verify( $pluginslug, $licensecode = null, $returnWPError = true ) {
 
-		if ( is_wp_error( $pluginslug ) ) {
-			if ( ! $returnWPError ) {
-				return false;
-			}
-			return $pluginslug;
-		}
 		$pluginslug = strtolower( $pluginslug );
 
 		if ( ! isset( self::$plugin_data[ $pluginslug ] ) ) {
@@ -183,12 +175,6 @@ class UpdateCenterPlugin {
 	 */
 	public static function register( $pluginslug, $userdata = array(), $licensecode = null, $returnWPError = true ) {
 
-		if ( is_wp_error( $pluginslug ) ) {
-			if ( ! $returnWPError ) {
-				return false;
-			}
-			return $pluginslug;
-		}
 		$pluginslug = strtolower( $pluginslug );
 
 		if ( ! isset( self::$plugin_data[ $pluginslug ] ) ) {
@@ -238,12 +224,6 @@ class UpdateCenterPlugin {
 	 */
 	public static function reset( $pluginslug, $licensecode = null, $returnWPError = true ) {
 
-		if ( is_wp_error( $pluginslug ) ) {
-			if ( ! $returnWPError ) {
-				return false;
-			}
-			return $pluginslug;
-		}
 		$pluginslug = strtolower( $pluginslug );
 
 		if ( ! isset( self::$plugin_data[ $pluginslug ] ) ) {
