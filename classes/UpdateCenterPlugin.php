@@ -127,6 +127,12 @@ class UpdateCenterPlugin {
 	 */
 	public static function verify( $pluginslug, $licensecode = null, $returnWPError = true ) {
 
+		if ( is_wp_error( $pluginslug ) ) {
+			if ( ! $returnWPError ) {
+				return false;
+			}
+			return $pluginslug;
+		}
 		$pluginslug = strtolower( $pluginslug );
 
 		if ( ! isset( self::$plugin_data[ $pluginslug ] ) ) {
@@ -177,6 +183,12 @@ class UpdateCenterPlugin {
 	 */
 	public static function register( $pluginslug, $userdata = array(), $licensecode = null, $returnWPError = true ) {
 
+		if ( is_wp_error( $pluginslug ) ) {
+			if ( ! $returnWPError ) {
+				return false;
+			}
+			return $pluginslug;
+		}
 		$pluginslug = strtolower( $pluginslug );
 
 		if ( ! isset( self::$plugin_data[ $pluginslug ] ) ) {
@@ -226,6 +238,12 @@ class UpdateCenterPlugin {
 	 */
 	public static function reset( $pluginslug, $licensecode = null, $returnWPError = true ) {
 
+		if ( is_wp_error( $pluginslug ) ) {
+			if ( ! $returnWPError ) {
+				return false;
+			}
+			return $pluginslug;
+		}
 		$pluginslug = strtolower( $pluginslug );
 
 		if ( ! isset( self::$plugin_data[ $pluginslug ] ) ) {
