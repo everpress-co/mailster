@@ -150,10 +150,6 @@ class MailsterTemplate {
 			}
 		}
 
-		if ( 'mailster' == $slug && ! file_exists( $file ) ) {
-			mailster( 'templates' )->renew_default_template( 'mailster' );
-		}
-
 		if ( ! class_exists( 'DOMDocument' ) ) {
 			wp_die( "PHP Fatal error: Class 'DOMDocument' not found" );
 		}

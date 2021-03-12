@@ -289,6 +289,10 @@ class MailsterPrecheck {
 			return $json;
 		} elseif ( 429 === $code ) {
 			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the test limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) );
+		} elseif ( 404 === $code ) {
+			delete_option( 'mailster_precheck_token' );
+			sleep( 3 );
+			return $this->request( $id, $endpoint, $timeout );
 		} elseif ( 498 === $code ) {
 			delete_option( 'mailster_precheck_token' );
 			return new WP_Error( $code, sprintf( esc_html__( 'Your token is invalid. Please check %s.', 'mailster' ), 'HELP' ) );

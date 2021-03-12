@@ -5,8 +5,7 @@ class MailsterTemplates {
 	public $path;
 	public $url;
 
-	private $download_url = 'https://static.mailster.co/templates/mailster.zip';
-	private $headers      = array(
+	private $headers = array(
 		'name'        => 'Template Name',
 		'label'       => 'Name',
 		'uri'         => 'Template URI',
@@ -379,17 +378,7 @@ class MailsterTemplates {
 	 */
 	public function renew_default_template( $slug = 'mailster' ) {
 
-		if ( ! function_exists( 'download_url' ) ) {
-			include ABSPATH . 'wp-admin/includes/file.php';
-		}
-
-		$zip = download_url( $this->download_url, 60 );
-
-		if ( is_wp_error( $zip ) ) {
-			return $zip;
-		}
-
-		return $this->unzip_template( $zip, $slug );
+		$this->copy_template();
 
 	}
 
@@ -446,10 +435,11 @@ class MailsterTemplates {
 	/**
 	 *
 	 *
-	 * @param unknown $slugsonly (optional)
+	 * @param unknown $slugsonly     (optional)
+	 * @param unknown $load_if_empty (optional)
 	 * @return unknown
 	 */
-	public function get_templates( $slugsonly = false ) {
+	public function get_templates( $slugsonly = false, $load_if_empty = false ) {
 
 		$templates = array();
 
@@ -457,7 +447,13 @@ class MailsterTemplates {
 			include ABSPATH . 'wp-admin/includes/file.php';
 		}
 
-		$files   = list_files( $this->path, 2 );
+		$files = list_files( $this->path, 2 );
+
+		if ( $load_if_empty && empty( $files ) ) {
+			$this->renew_default_template();
+			$files = list_files( $this->path, 2 );
+		}
+
 		$current = mailster_option( 'default_template' );
 		sort( $files );
 
@@ -478,6 +474,11 @@ class MailsterTemplates {
 			sort( $templates );
 		} else {
 			ksort( $templates );
+			// set new default if it doesn't exist
+			if ( $current && ! isset( $templates[ $current ] ) ) {
+				$current = key( array_slice( $templates, 0, 1 ) );
+				mailster_update_option( 'default_template', $current );
+			}
 			// bring the current one to the first position
 			if ( $current && isset( $templates[ $current ] ) ) {
 				$templates = array( $current => $templates[ $current ] ) + $templates;
@@ -1220,8 +1221,7 @@ class MailsterTemplates {
 
 	public function query( $query_args ) {
 
-		$endpoint = 'https://mailster.local/templates.json';
-		$endpoint = 'https://mailster.dev/templates.json';
+		$endpoint = 'https://staging.mailster.dev/templates.json';
 
 		$query_args = wp_parse_args(
 			rawurlencode_deep( $query_args ),
@@ -1233,7 +1233,7 @@ class MailsterTemplates {
 		);
 
 		if ( $query_args['browse'] == 'installed' ) {
-			$templates               = $this->get_templates();
+			$templates               = $this->get_templates( false, true );
 			$query_args['templates'] = implode( ',', array_keys( $templates ) );
 		}
 
