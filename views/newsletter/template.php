@@ -7,9 +7,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 
 $module_list = $this->templateobj->get_module_list();
 
-$templates = mailster( 'templates' )->get_templates();
-$all_files = mailster( 'templates' )->get_all_files();
-$classes   = array( 'load' );
+$classes = array( 'load' );
 if ( $editable ) {
 		$classes[] = 'is-editable';
 	if ( ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $module_list ) ) {
@@ -41,6 +39,17 @@ if ( $editable ) {
 	</div>
 	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_content ); ?></textarea>
 	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_excerpt ); ?></textarea>
+
+<?php endif; ?>
+
+<?php if ( ! $this->templateobj->exists ) : ?>
+
+	<div class="notice notice-warning inline">
+		<p>
+			<strong><?php esc_html_e( 'The template file for this campaign is missing. Make sure you have installed the correct template.', 'mailster' ); ?></strong>
+			<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&search=' . esc_attr( $this->templateobj->slug ) . '&type=slug' ) ); ?>"><?php esc_html_e( 'Find the missing template file.', 'mailster' ); ?></a>
+		</p>
+	</div>
 
 <?php endif; ?>
 

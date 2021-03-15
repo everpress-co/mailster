@@ -25,6 +25,7 @@
 			<option value="term" selected="selected"><?php esc_html_e( 'Keyword', 'mailster' ); ?></option>
 			<option value="author"><?php esc_html_e( 'Author', 'mailster' ); ?></option>
 			<option value="tag"><?php esc_html_e( 'Tag', 'mailster' ); ?></option>
+			<option value="slug"><?php esc_html_e( 'Slug', 'mailster' ); ?></option>
 		</select>
 		<label class="screen-reader-text" for="search-templates"><?php esc_html_e( 'Search Templates', 'mailster' ); ?></label>
 		<input type="search" name="s" id="search-templates" value="" class="wp-filter-search" placeholder="<?php esc_attr_e( 'Search templates', 'mailster' ); ?>..." aria-describedby="live-search-desc">

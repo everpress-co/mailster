@@ -10,7 +10,7 @@ class MailsterTemplate {
 	public $path;
 	public $url;
 
-	private $slug;
+	public $slug;
 	private $file;
 
 	private $templatepath;
@@ -278,17 +278,17 @@ class MailsterTemplate {
 			}
 		}
 
-		$raw = $doc->saveHTML();
-
+		$raw  = $doc->saveHTML();
 		$data = $this->get_template_data( $file );
-		if ( $data['name'] ) {
+		if ( $data && $data['name'] ) {
 			$raw        = preg_replace( '#<!--(.*?)-->#s', '', $raw, 1 );
 			$this->data = $data;
 		}
 
-		$this->slug = $slug;
-		$this->doc  = $doc;
-		$this->raw  = $raw;
+		$this->slug   = $slug;
+		$this->doc    = $doc;
+		$this->raw    = $raw;
+		$this->exists = file_exists( $file );
 
 	}
 

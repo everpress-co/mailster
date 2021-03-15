@@ -1843,7 +1843,14 @@ class MailsterAjax {
 		$result = mailster( 'templates' )->download_template( $url, $slug );
 
 		if ( is_wp_error( $result ) ) {
-			$return['msg'] = sprintf( esc_html__( 'There was an error loading the template: %s', 'mailster' ), $result->get_error_message() );
+			switch ( $result->get_error_code() ) {
+				case 'http_404':
+					$return['msg'] = mailster()->get_update_error( 678, true );
+					break;
+				default:
+					$return['msg'] = sprintf( esc_html__( 'There was an error loading the template: %s', 'mailster' ), $result->get_error_message() );
+					break;
+			}
 		} else {
 			$return['msg']      = esc_html__( 'Template successful loaded!', 'mailster' );
 			$return['redirect'] = $result;

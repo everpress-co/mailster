@@ -13,9 +13,6 @@ if ( $item['update_available'] ) {
 if ( $item['envato_item_id'] ) {
 	$classes[] = 'envato-item';
 }
-if ( $item['gumroad_url'] ) {
-	$classes[] = 'gumroad-item';
-}
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $slug ); ?>" data-item='<?php echo esc_attr( json_encode( $item ) ); ?>'>
 	<span class="spinner"></span>
@@ -63,9 +60,6 @@ if ( $item['gumroad_url'] ) {
 			<?php endif; ?>
 		</h3>
 		<div class="theme-actions">
-			<?php if ( $item['ID'] ) : ?>
-			<a class="" href="<?php echo esc_url( 'https://mailster.dev/wp-admin/post.php?post=' . $item['ID'] . '&action=edit' ); ?>" target="_blank"><?php esc_html_e( 'E', 'mailster' ); ?></a>
-			<?php endif; ?>
 			<?php if ( $item['installed'] ) : ?>
 			<a class="button button-primary create-campaign" href="<?php echo admin_url( 'post-new.php?post_type=newsletter&template=' . esc_attr( $slug ) ); ?>" aria-label="<?php esc_attr_e( 'Create Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
 			<?php endif; ?>

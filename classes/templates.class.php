@@ -43,7 +43,7 @@ class MailsterTemplates {
 		'download_url'     => null,
 		'price'            => null,
 		'envato_item_id'   => null,
-		'gumroad_url'      => null,
+		// 'gumroad_url'      => null,
 		'update_available' => false,
 	);
 
@@ -109,7 +109,9 @@ class MailsterTemplates {
 			include ABSPATH . 'wp-admin/includes/file.php';
 		}
 
+		add_filter( 'http_request_args', array( &$this, 'additional_download_headers' ), 10, 2 );
 		$tempfile = download_url( $download_url );
+		remove_filter( 'http_request_args', array( &$this, 'additional_download_headers' ), 10, 2 );
 		if ( is_wp_error( $tempfile ) ) {
 			return $tempfile;
 		}
@@ -129,6 +131,20 @@ class MailsterTemplates {
 
 		return false;
 
+	}
+
+
+	public function additional_download_headers( $parsed_args, $url ) {
+
+		$headers = array(
+			'x-mailster-version' => MAILSTER_VERSION,
+			'x-mailster-site'    => get_bloginfo( 'url' ),
+			'x-mailster-license' => mailster()->license(),
+		);
+
+		$parsed_args['headers'] = wp_parse_args( $parsed_args['headers'], $headers );
+
+		return $parsed_args;
 	}
 
 
@@ -333,28 +349,8 @@ class MailsterTemplates {
 					mailster_notice( '<strong>' . esc_html__( 'Following files have been removed during upload:', 'mailster' ) . '</strong><ul><li>' . implode( '</li><li>', $removed_files ) . '</li></ul>', 'info', true );
 				}
 
-				if ( file_exists( $uploadfolder . '/' . $folder . '/colors.json' ) ) {
+				$this->process_colors( $data['slug'] );
 
-					$colors = $wp_filesystem->get_contents( $uploadfolder . '/' . $folder . '/colors.json' );
-
-					if ( $colors ) {
-						$colorschemas = json_decode( $colors );
-
-						$customcolors = get_option( 'mailster_colors', array() );
-
-						if ( ! isset( $customcolors[ $folder ] ) ) {
-
-							$customcolors[ $folder ] = array();
-							foreach ( $colorschemas as $colorschema ) {
-								$hash                             = md5( implode( '', $colorschema ) );
-								$customcolors[ $folder ][ $hash ] = $colorschema;
-							}
-
-							update_option( 'mailster_colors', $customcolors );
-
-						}
-					}
-				}
 			}
 
 			$wp_filesystem->delete( $uploadfolder, true );
@@ -379,6 +375,56 @@ class MailsterTemplates {
 	public function renew_default_template( $slug = 'mailster' ) {
 
 		$this->copy_template();
+		$this->process_colors( $slug );
+
+	}
+
+
+	public function process_colors( $slug = null ) {
+
+		global $wp_filesystem;
+
+		mailster_require_filesystem();
+
+		$path = mailster( 'helper' )->mkdir( 'templates' );
+
+		if ( is_null( $slug ) ) {
+
+			$files = list_files( $path, 1 );
+
+			foreach ( $files as $file ) {
+				if ( is_dir( $file ) ) {
+					$this->process_colors( basename( $file ) );
+				}
+			}
+			return;
+
+		}
+
+		$folder = trailingslashit( $path ) . $slug;
+
+		if ( file_exists( $folder . '/colors.json' ) ) {
+
+			$colors = $wp_filesystem->get_contents( $folder . '/colors.json' );
+
+			if ( $colors ) {
+				$colorschemas = json_decode( $colors );
+
+				$customcolors = (array) get_option( 'mailster_colors', array() );
+
+				if ( true || ! isset( $customcolors[ $slug ] ) ) {
+
+					$customcolors[ $slug ] = array();
+					foreach ( $colorschemas as $colorschema ) {
+						$hash                           = md5( implode( '', $colorschema ) );
+						$customcolors[ $slug ][ $hash ] = $colorschema;
+					}
+
+					update_option( 'mailster_colors', $customcolors );
+
+				}
+			}
+		}
 
 	}
 
@@ -1024,7 +1070,7 @@ class MailsterTemplates {
 
 		$modules_html = $matches[0];
 
-		$request_url = 'https://api.mailster.co/module/v1/';
+		$request_url = 'https://api.mailster.co/module/v2/';
 
 		$file_size = strlen( $raw );
 		$hash      = md5( $raw );
@@ -1205,6 +1251,7 @@ class MailsterTemplates {
 
 		if ( $path = mailster( 'helper' )->mkdir( 'templates' ) ) {
 			copy_dir( MAILSTER_DIR . 'templates', $path );
+			$this->process_colors();
 		}
 
 	}
