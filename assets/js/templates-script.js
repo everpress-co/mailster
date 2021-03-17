@@ -119,10 +119,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('message', function (e) {
 
 			if (!e.originalEvent.data) return;
-			console.log(e.originalEvent.data);
 			var data = typeof e.originalEvent.data === 'string' ? $.parseJSON(e.originalEvent.data.replace('/*framebus*/', '')) : e.originalEvent.data;
-
-			console.log(data);
 
 			if (data.post_message_name === "sale") {
 				if (data.custom_delivery_url) {
@@ -131,8 +128,6 @@ mailster = (function (mailster, $, window, document) {
 						downloadTemplateFromUrl(data.custom_delivery_url, current_slug);
 					};
 				}
-				console.log(data.custom_delivery_url);
-				console.log(data);
 
 			}
 		})
@@ -148,9 +143,6 @@ mailster = (function (mailster, $, window, document) {
 		mailster.$.window.on('scroll.mailster', mailster.util.throttle(maybeLoadTemplates, 500))
 	});
 
-	var gumroad = function () {
-
-	}
 	var overlay = function () {
 
 		if (this === window) return new overlay();
@@ -416,7 +408,7 @@ mailster = (function (mailster, $, window, document) {
 		busy = true;
 
 		template.addClass('loading').find('.request-download').addClass('updating-message');
-		template.find('.notice-warning').addClass('updating-message').html('<p>Downloading...</p>');
+		template.find('.notice-warning').addClass('updating-message').html('<p>' + mailster.l10n.templates.downloading + '</p>');
 		mailster.util.ajax('download_template', {
 			url: url,
 			slug: slug,
@@ -425,7 +417,7 @@ mailster = (function (mailster, $, window, document) {
 			if (response.success) {
 				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>Downloaded!</p>');
 				setFilter('installed', function () {
-					$('[data-slug="' + slug + '"]').find('.notice-success').html('<p>' + response.msg + '</p>');
+					$('[data-slug="' + slug + '"]').prependTo(templatebrowser).find('.notice-success').html('<p>' + response.msg + '</p>');
 				});
 				template.find('.notice-error').empty();
 			} else {
@@ -445,7 +437,7 @@ mailster = (function (mailster, $, window, document) {
 		busy = true;
 
 		template.addClass('loading').find('.request-download').addClass('updating-message');
-		template.find('.notice-warning').addClass('updating-message').html('<p>Updating...</p>');
+		template.find('.notice-warning').addClass('updating-message').html('<p>' + mailster.l10n.templates.updating + '</p>');
 		mailster.util.ajax('download_template', {
 			url: url,
 			slug: slug,
@@ -508,7 +500,7 @@ mailster = (function (mailster, $, window, document) {
 		if (currentpage == 1) {
 			$('body').removeClass('no-results');
 			$('body').addClass('loading-content');
-			$('.theme-browser').html('');
+			templatebrowser.html('');
 			templates = [];
 		}
 		busy = true;
@@ -526,11 +518,12 @@ mailster = (function (mailster, $, window, document) {
 				total = response.total;
 			}
 			templates.concat(response.templates);
-			$('.theme-browser').append(response.html);
+			templatebrowser.append(response.html);
 			currentdisplayed = $('.theme').length;
 
 			if (response.error) {
 				alert(response.error);
+				$('body').addClass('no-results');
 			} else if (!currentdisplayed) {
 				$('body').addClass('no-results');
 			}

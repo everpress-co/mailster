@@ -694,6 +694,8 @@ class MailsterTemplates {
 				'delete_template_file' => esc_html__( 'Do you really like to remove file %1$s from template %2$s?', 'mailster' ),
 				'enter_template_name'  => esc_html__( 'Please enter the name of the new template.', 'mailster' ),
 				'uploading'            => esc_html__( 'uploading zip file %s', 'mailster' ),
+				'downloading'          => esc_html__( 'Downloading...', 'mailster' ),
+				'updating'             => esc_html__( 'Updating...', 'mailster' ),
 				'confirm_delete'       => esc_html__( 'You are about to delete this template %s.', 'mailster' ),
 				'confirm_delete_file'  => esc_html__( 'You are about to delete file %1$s from template %2$s.', 'mailster' ),
 				'confirm_default'      => esc_html__( 'You are about to make %s your default template.', 'mailster' ),
@@ -1269,6 +1271,7 @@ class MailsterTemplates {
 	public function query( $query_args ) {
 
 		$endpoint = 'https://staging.mailster.dev/templates.json';
+		// $endpoint = 'https://mailster.local/templates.json';
 
 		$query_args = wp_parse_args(
 			rawurlencode_deep( $query_args ),
@@ -1302,8 +1305,9 @@ class MailsterTemplates {
 			}
 
 			$args = array(
-				'timeout' => 5,
-				'headers' => array( 'hash' => sha1( mailster_option( 'ID' ) ) ),
+				'timeout'   => 5,
+				'sslverify' => false,
+				'headers'   => array( 'hash' => sha1( mailster_option( 'ID' ) ) ),
 			);
 
 			$url = add_query_arg( $query_args, $endpoint );
@@ -1319,6 +1323,8 @@ class MailsterTemplates {
 				$response_body = wp_remote_retrieve_body( $response );
 
 				$response_result = json_decode( $response_body, true );
+
+				error_log( print_r( count( $response_result['items'] ), true ) );
 
 				$result['items'] = array_replace_recursive( ( $result['items'] ), ( $response_result['items'] ) );
 				$result['total'] = max( count( $result['items'] ), $response_result['total'] );

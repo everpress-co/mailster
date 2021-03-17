@@ -247,14 +247,24 @@ module[data-rss][selected]:after {
 	transform: translate(4px, -15px);
 	height: 9px;
 	font: 10px sans-serif;
+	font-weight: normal;
 	text-transform: uppercase;
 	line-height: 1em;
+	letter-spacing: 0;
+	top: 0;
 	padding: 4px;
 	white-space: nowrap;
 	z-index: 1000000;
 	max-width: 200px;
 	text-overflow: ellipsis;
 	overflow: hidden;
+}
+single[label]:before,
+img[editable][label]:before,
+a[editable][label]:before,
+td[background][label]:before,
+th[background][label]:before{
+	display: inline-block;
 }
 [mailster-is-rtl] module[label]:before,
 [mailster-is-rtl] module[label][selected]:before,

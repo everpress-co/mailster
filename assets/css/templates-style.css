@@ -17,7 +17,7 @@
 	display: none;
 	font-style: italic;
 }
-.loading-content .disclosure{
+.loading-content .disclosure, .no-results .disclosure{
 	display: none !important;
 }
 .browse-popular .disclosure, .browse-new .disclosure, .browse-updated .disclosure{
