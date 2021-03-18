@@ -82,6 +82,7 @@
 			</div>
 			<div id="image_button" class="tab">
 			<?php $this->templateobj->buttons(); ?>
+			<?php $this->templateobj->buttons( MAILSTER_DIR . 'assets/img/social/' ); ?>
 			<div class="clearfix">
 					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_attr_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
 			</div>

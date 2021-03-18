@@ -201,11 +201,9 @@
 }
 #editbar.high-dpi .btnsrc img{
 	box-sizing: border-box;
-	width: 100%;
+	display: block;
 }
 #editbar.high-dpi .btnsrc{
-	box-sizing: border-box;
-	width: 50%;
 }
 #editbar div.buttons {
 	padding-top: 5px;
@@ -743,10 +741,7 @@
 #editbar .nav-tab:hover, #editbar .nav-tab-active{
 }
 #editbar div.type.btn ul.buttons li {
-	float: left;
-}
-.rtl #editbar div.type.btn ul.buttons li {
-	float: right;
+	display: inline-block;
 }
 #editbar div.type.btn ul.buttons li a {
 	display: block;
@@ -754,7 +749,6 @@
 	padding: 5px;
 	border: 1px solid #D3D6DB;
 	margin: 0 3px;
-	float: left;
 	background: url(../img/trans_bg.png) repeat center center #fff;
 }
 #editbar div.type.btn ul.buttons.buttons-dark li a {
