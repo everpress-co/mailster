@@ -677,7 +677,7 @@ mailster = (function (mailster, $, window, document) {
 							expected = _this.attr('expect') || 'title',
 							content = currenttext[expected] ? currenttext[expected] : '';
 
-						if (content) _this.html(content);
+						if (content && !_this.is('[ignore]')) _this.html(content);
 					});
 
 				}
@@ -689,7 +689,7 @@ mailster = (function (mailster, $, window, document) {
 							expected = _this.attr('expect') || contenttype,
 							content = currenttext[expected] ? currenttext[expected] : '';
 
-						if (content) _this.html(content);
+						if (content && !_this.is('[ignore]')) _this.html(content);
 
 					});
 
@@ -697,16 +697,24 @@ mailster = (function (mailster, $, window, document) {
 
 				if (currenttext.link) {
 
-					if (current.elements.buttons.length) {
-						current.elements.buttons.eq(position).attr('href', currenttext.link);
-					}
+					current.elements.buttons.each(function (i, e) {
+						var _this = $(this),
+							expected = _this.attr('expect') || 'link',
+							content = currenttext[expected] ? currenttext[expected] : '';
+
+						if (_this.is('[ignore]')) return;
+
+						if (content) _this.attr('href', content);
+						if (currenttext['button']) _this.html(currenttext['button']);
+
+					});
 
 				} else {
 
 					if (current.elements.buttons.parent().length && current.elements.buttons.parent()[0].nodeName == 'TD') {
-						current.elements.buttons.eq(position).closest('.textbutton').remove();
+						current.elements.buttons.closest('.textbutton').remove();
 					} else if (current.elements.buttons.length) {
-						if (current.elements.buttons.eq(position).last().find('img').length) {
+						if (current.elements.buttons.last().find('img').length) {
 							current.elements.buttons.remove();
 						}
 					}
@@ -715,70 +723,57 @@ mailster = (function (mailster, $, window, document) {
 
 				if (currenttext.image && current.elements.images.length) {
 
-					if (!$.isArray(currenttext.image)) {
-						images[position] = currenttext.image;
-					} else {
-						images = currenttext.image;
-					}
-
-					currenttext.image = images;
-
 					loader();
 
 					current.elements.images.each(function (i, e) {
 
-						if (!currenttext.image[i]) return;
-
-						var imgelement = $(this);
-						var f = factor.val();
+						var _this = $(this),
+							f = factor.val();
 
 						if ('static' == insertmethod) {
 							mailster.util.ajax('create_image', {
-								id: currenttext.image[i].id,
+								id: currenttext.image.id,
 								original: original.is(':checked'),
-								width: imgelement.width() * f,
-								height: imgelement.height() * f,
-								crop: imgelement.data('crop'),
+								width: _this.width() * f,
+								height: _this.height() * f,
+								crop: _this.data('crop'),
 							}, function (response) {
 
 								if (response.success) {
 									loader(false);
 
 									if (original.is(':checked')) {
-										imgelement.attr({
-											'data-original': true,
-										}).data('original', true);
+										_this.attr('data-original', true).data('original', true);
 									}
-									if ('img' == imgelement.prop('tagName').toLowerCase()) {
-										imgelement
+									if ('img' == _this.prop('tagName').toLowerCase()) {
+										_this
 											.attr({
-												'data-id': currenttext.image[i].id,
+												'data-id': currenttext.image.id,
 												'src': response.image.url,
 												'width': Math.round(response.image.width / f),
-												'alt': currenttext.alt || currenttext.title[i]
+												'alt': currenttext.alt || currenttext.title
 											})
-											.data('id', currenttext.image[i].id);
+											.data('id', currenttext.image.id);
 
-										if (imgelement.attr('height') && imgelement.attr('height') != 'auto') {
-											imgelement.attr('height', Math.round(response.image.height / f));
+										if (_this.attr('height') && _this.attr('height') != 'auto') {
+											_this.attr('height', Math.round(response.image.height / f));
 										}
 
-										if (imgelement.parent().is('a')) {
-											imgelement.unwrap();
+										if (_this.parent().is('a')) {
+											_this.unwrap();
 										}
 
 										if (currenttext.link) {
-											imgelement.wrap('<a>');
-											imgelement.parent().attr('href', currenttext.link);
+											_this.wrap('<a href="' + currenttext.link + '">');
 										}
 									} else {
-										var orgurl = imgelement.attr('background');
-										imgelement
+										var orgurl = _this.attr('background');
+										_this
 											.attr({
-												'data-id': currenttext.image[i].id,
+												'data-id': currenttext.image.id,
 												'background': response.image.url,
 											})
-											.data('id', currenttext.image[i].id)
+											.data('id', currenttext.image.id)
 											.css('background-image', '');
 
 										current.element.html(mailster.util.replace(current.element.html(), orgurl, response.image.url));
@@ -811,9 +806,9 @@ mailster = (function (mailster, $, window, document) {
 								imgelement
 									.removeAttr('data-id')
 									.attr({
-										'src': dynamicImage(currenttext.image[i], width, height, crop, org),
+										'src': dynamicImage(currenttext.image, width, height, crop, org),
 										'width': width,
-										'alt': currenttext.alt || currenttext.title[i]
+										'alt': currenttext.alt || currenttext.title
 									})
 									.removeData('id');
 								if (imgelement.attr('height')) {
@@ -824,11 +819,11 @@ mailster = (function (mailster, $, window, document) {
 								imgelement
 									.removeAttr('data-id')
 									.attr({
-										'background': dynamicImage(currenttext.image[i], width)
+										'background': dynamicImage(currenttext.image, width)
 									})
 									.removeData('id')
 									.css('background-image', '');
-								current.element.html(mailster.util.replace(current.element.html(), orgurl, dynamicImage(currenttext.image[i], width, height, crop, org)));
+								current.element.html(mailster.util.replace(current.element.html(), orgurl, dynamicImage(currenttext.image, width, height, crop, org)));
 								//remove id to re trigger tinymce
 								current.element.find('single, multi').removeAttr('id');
 							}

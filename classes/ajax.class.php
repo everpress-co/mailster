@@ -1527,6 +1527,7 @@ class MailsterAjax {
 					'excerpt' => $excerpt,
 					'link'    => get_permalink( $post->ID ),
 					'image'   => $image,
+					'button'  => esc_html__( 'Read More', 'mailster' ),
 				);
 
 				foreach ( $expects as $expect ) {
@@ -1603,6 +1604,7 @@ class MailsterAjax {
 			'content' => '{' . $post_type . '_content:' . $options . '}',
 			'excerpt' => '{' . $post_type . '_excerpt:' . $options . '}',
 			'link'    => '{' . $post_type . '_link:' . $options . '}',
+			'button'  => '{' . $post_type . '_button:' . $options . '}',
 			'image'   => '{' . $post_type . '_image:' . $options . '}',
 		);
 

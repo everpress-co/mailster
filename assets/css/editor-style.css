@@ -225,6 +225,9 @@ module:hover, module[selected] {
 module[selected] {
 	background-color: rgba(43, 179, 231, 0.2);
 }
+module:hover [area]{
+	outline:1px dotted #2BB3E7;
+}
 module[label]:before,
 module[label][selected]:before,
 multi[label]:before,
