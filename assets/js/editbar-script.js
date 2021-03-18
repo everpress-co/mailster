@@ -796,14 +796,14 @@ mailster = (function (mailster, $, window, document) {
 							// dynamic
 						} else if ('dynamic' == insertmethod) {
 
-							var width = imgelement.width(),
-								crop = imgelement.data('crop'),
+							var width = _this.width(),
+								crop = _this.data('crop'),
 								org = original.is(':checked'),
-								height = crop ? imgelement.height() : null;
+								height = crop ? _this.height() : null;
 
-							if ('img' == imgelement.prop('tagName').toLowerCase()) {
+							if ('img' == _this.prop('tagName').toLowerCase()) {
 
-								imgelement
+								_this
 									.removeAttr('data-id')
 									.attr({
 										'src': dynamicImage(currenttext.image, width, height, crop, org),
@@ -811,12 +811,12 @@ mailster = (function (mailster, $, window, document) {
 										'alt': currenttext.alt || currenttext.title
 									})
 									.removeData('id');
-								if (imgelement.attr('height')) {
-									imgelement.attr('height', height || Math.round(width / 1.6));
+								if (_this.attr('height')) {
+									_this.attr('height', height || Math.round(width / 1.6));
 								}
 							} else {
-								var orgurl = imgelement.attr('background');
-								imgelement
+								var orgurl = _this.attr('background');
+								_this
 									.removeAttr('data-id')
 									.attr({
 										'background': dynamicImage(currenttext.image, width)

@@ -1271,7 +1271,7 @@ class MailsterTemplates {
 	public function query( $query_args ) {
 
 		$endpoint = 'https://staging.mailster.dev/templates.json';
-		// $endpoint = 'https://mailster.local/templates.json';
+		$endpoint = 'https://mailster.local/templates.json';
 
 		$query_args = wp_parse_args(
 			rawurlencode_deep( $query_args ),
