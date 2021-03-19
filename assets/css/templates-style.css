@@ -44,7 +44,6 @@
 }
 .wp-filter .search-form select {
 	display: inline-block;
-	margin-top: 10px;
 	vertical-align: top;
 }
 .wp-filter .search-form input[type="search"].wp-filter-search {
