@@ -7,6 +7,9 @@ if ( $item['is_default'] ) {
 if ( $item['installed'] ) {
 	$classes[] = 'is-installed';
 }
+if ( ! $item['is_supported'] ) {
+	$classes[] = 'not-supported';
+}
 if ( $item['update_available'] ) {
 	$classes[] = 'update-available';
 }
@@ -26,6 +29,9 @@ if ( $item['envato_item_id'] ) {
 	<div class="notice update-message notice-success notice-alt"></div>
 	<div class="notice update-message notice-warning notice-alt"></div>
 	<div class="notice update-message notice-error notice-alt"></div>
+	<?php if ( ! $item['is_supported'] ) : ?>
+	<div class="notice update-message notice-error notice-alt"><p><?php printf( esc_html__( 'This template requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>
+	<?php endif; ?>
 	<?php if ( $item['update_available'] ) : ?>
 	<div class="update-message notice inline notice-warning notice-alt theme-has-update">
 		<p><?php esc_html_e( 'New version available.', 'mailster' ); ?>

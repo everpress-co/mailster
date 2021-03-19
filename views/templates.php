@@ -70,10 +70,6 @@
 			<div>
 				<a href="" class="button default" aria-label="Activate Cayse"><?php esc_html_e( 'Use as default', 'mailster' ); ?></a>
 				<a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ); ?>" class="button button-primary campaign"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
-				<a class="button button-primary request-download popup" data-width="800" data-height="80%" href=""><?php esc_html_e( 'Download', 'mailster' ); ?></a>
-				<a class="button button-primary buy external" data-width="800" data-height="80%" href=""><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
-				<a href="" class="button button-primary buy"><?php esc_html_e( 'Buy this Template', 'mailster' ); ?></a>
-				<a href="" class="button button-primary download"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
 			</div>
 			<a class="button delete-theme"><?php esc_html_e( 'Delete', 'mailster' ); ?></a>
 		</div>

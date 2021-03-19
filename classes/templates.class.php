@@ -34,7 +34,7 @@ class MailsterTemplates {
 		// 'updated'          => null,
 		'author'           => null,
 		'author_profile'   => null,
-		'requires'         => '2.2',
+		'requires'         => '3.0',
 		'is_default'       => null,
 		// 'is_verified'      => null,
 		'author_profile'   => null,
@@ -63,6 +63,8 @@ class MailsterTemplates {
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 50 );
 		add_action( 'mailster_copy_template', array( &$this, 'copy_template' ) );
 		add_action( 'mailster_copy_backgrounds', array( &$this, 'copy_backgrounds' ) );
+		add_action( 'wp_version_check', array( &$this, 'check_for_updates' ) );
+
 	}
 
 
@@ -98,6 +100,7 @@ class MailsterTemplates {
 	public function get_url() {
 		return $this->url;
 	}
+
 
 
 	public function download_template( $url, $slug = null ) {
@@ -642,24 +645,20 @@ class MailsterTemplates {
 			return 0;
 		}
 
-		$updates = get_option( 'mailster_templates_updates', null );
-
-		if ( ! is_null( $updates ) ) {
-			return (int) $updates;
-		}
-
-		if ( ! $templates = get_option( 'mailster_templates' ) ) {
-			return 0;
-		}
-
-		if ( empty( $templates['templates'] ) ) {
-			return 0;
-		}
-
-		return array_sum( wp_list_pluck( $templates['templates'], 'update' ) );
-
+		return (int) get_option( 'mailster_templates_updates' );
 	}
 
+
+	public function check_for_updates( $force = false ) {
+
+		$result = $this->query( array(), $force );
+
+		if ( ! is_wp_error( $result ) ) {
+			$updates = array_sum( wp_list_pluck( $result['items'], 'update_available' ) );
+			update_option( 'mailster_templates_updates', $updates );
+		}
+
+	}
 
 	/**
 	 *
@@ -1268,7 +1267,7 @@ class MailsterTemplates {
 	}
 
 
-	public function query( $query_args ) {
+	public function query( $query_args = array(), $force = false ) {
 
 		$endpoint = 'https://staging.mailster.dev/templates.json';
 
@@ -1276,7 +1275,7 @@ class MailsterTemplates {
 			rawurlencode_deep( $query_args ),
 			array(
 				'type'   => 'keyword',
-				'browse' => 'new',
+				'browse' => 'installed',
 				'page'   => 1,
 			)
 		);
@@ -1286,9 +1285,9 @@ class MailsterTemplates {
 			$query_args['templates'] = implode( ',', array_keys( $templates ) );
 		}
 
-		$cache_key = 'mailster_templates_' . $query_args['browse'] . '_' . md5( serialize( $query_args ) . $endpoint );
+		$cache_key = 'mailster_templates_' . $query_args['browse'] . '_' . md5( serialize( $query_args ) . $endpoint . MAILSTER_VERSION );
 
-		if ( ! ( $result = get_transient( $cache_key ) ) ) {
+		if ( $force || ! ( $result = get_transient( $cache_key ) ) ) {
 
 			$cachetime = HOUR_IN_SECONDS * 6;
 			$cachetime = 12;
@@ -1304,9 +1303,8 @@ class MailsterTemplates {
 			}
 
 			$args = array(
-				'timeout'   => 5,
-				'sslverify' => false,
-				'headers'   => array( 'hash' => sha1( mailster_option( 'ID' ) ) ),
+				'timeout' => 5,
+				'headers' => array( 'hash' => sha1( mailster_option( 'ID' ) ) ),
 			);
 
 			$url = add_query_arg( $query_args, $endpoint );
@@ -1329,8 +1327,13 @@ class MailsterTemplates {
 			}
 
 			$result = $this->prepare_results( $result );
+
 			if ( $query_args['browse'] == 'installed' ) {
 				$default = mailster_option( 'default_template' );
+
+				$updates = array_sum( wp_list_pluck( $result['items'], 'update_available' ) );
+				update_option( 'mailster_templates_updates', $updates );
+
 				// reset error on installed page
 				$result['error'] = null;
 
@@ -1356,8 +1359,9 @@ class MailsterTemplates {
 		foreach ( $result['items'] as $slug => $item ) {
 
 			// fill response with default values
-			$result['items'][ $slug ]                = array_merge( $this->template_fields, $result['items'][ $slug ] );
-			$result['items'][ $slug ]['description'] = wpautop( $result['items'][ $slug ]['description'] );
+			$result['items'][ $slug ]                 = array_merge( $this->template_fields, $result['items'][ $slug ] );
+			$result['items'][ $slug ]['description']  = wpautop( $result['items'][ $slug ]['description'] );
+			$result['items'][ $slug ]['is_supported'] = empty( $result['items'][ $slug ]['requires'] ) || version_compare( $result['items'][ $slug ]['requires'], MAILSTER_VERSION, '<=' );
 
 			if ( $result['items'][ $slug ]['installed'] = isset( $templates[ $slug ] ) ) {
 				$result['items'][ $slug ] = array_merge( $templates[ $slug ], array_filter( $result['items'][ $slug ] ) );

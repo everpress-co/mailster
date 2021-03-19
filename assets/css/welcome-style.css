@@ -9,15 +9,15 @@
 	text-align: center;
 	font-weight: 600;
 	margin: 5px 0 0;
-	padding-top: 120px;
+	padding-top: 130px;
 	height: 40px;
 	display: inline-block;
 	width: 150px;
 	text-rendering: optimizeLegibility;
 	box-shadow: 0 1px 3px rgba(0,0,0,.2);
-	background: #2BB3E7 url(../img/logo.png) no-repeat 50% 34%;
-	background-size: 50%;
-	color: #fff;
+	background: #fff url(../img/logo.svg) no-repeat 50% 34%;
+	background-size: 90%;
+	color: #2BB3E7;
 }
 .rtl .mailster-badge{
 	right: inherit;

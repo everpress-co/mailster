@@ -93,7 +93,6 @@
 .theme-count:empty{
 	visibility: hidden;
 }
-
 .browse-installed .theme-browser .theme-actions .buy-gumroad,
 .browse-installed .theme-browser .theme-actions .request-download,
 .browse-installed .theme-browser .theme-actions .download{
@@ -124,6 +123,13 @@
 }
 .browse-installed .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
 	display: block;
+}
+.theme-browser .not-supported .theme-actions{
+	display: none;
+}
+.theme-browser .not-supported .theme-screenshot{
+	opacity: 0.5;
+	filter:grayscale(100%);
 }
 .theme-browser .theme .theme-screenshot .theme-screenshot-img, .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
 	position: absolute;

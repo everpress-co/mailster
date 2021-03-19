@@ -281,7 +281,6 @@ class MailsterTemplate {
 
 				$link->setAttribute( 'href', $url );
 				$link->setAttribute( 'editable', '' );
-				$link->setAttribute( 'label', ucwords( $service ) );
 				$link->appendChild( $img );
 
 				$parent->appendChild( $link );

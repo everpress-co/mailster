@@ -446,6 +446,14 @@ mailster = (function (mailster, $, window, document) {
 			if (response.success) {
 				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>Updated!</p>');
 				template.find('.notice-error').empty();
+				var updatebadge = $('#menu-posts-newsletter').find('.current').find('.update-plugins');
+				if (updatebadge) {
+					if (updatebadge.text() > 1) {
+						updatebadge.find('.update-count').text(updatebadge.text() - 1);
+					} else {
+						updatebadge.remove();
+					}
+				}
 			} else {
 				template.find('.notice-error').html('<p>' + response.msg + '</p>');
 			}
