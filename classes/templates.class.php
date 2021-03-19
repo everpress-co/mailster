@@ -1066,7 +1066,7 @@ class MailsterTemplates {
 
 		$raw = file_get_contents( $filedir );
 
-		if ( ! preg_match( '#<modules([^>]*)>(.*)<\/modules>#is', $raw, $matches ) ) {
+		if ( ! preg_match( '#<module([^>]*)>(.*)<\/module>#is', $raw, $matches ) ) {
 			return;
 		}
 
@@ -1271,7 +1271,6 @@ class MailsterTemplates {
 	public function query( $query_args ) {
 
 		$endpoint = 'https://staging.mailster.dev/templates.json';
-		$endpoint = 'https://mailster.local/templates.json';
 
 		$query_args = wp_parse_args(
 			rawurlencode_deep( $query_args ),
@@ -1323,8 +1322,6 @@ class MailsterTemplates {
 				$response_body = wp_remote_retrieve_body( $response );
 
 				$response_result = json_decode( $response_body, true );
-
-				error_log( print_r( count( $response_result['items'] ), true ) );
 
 				$result['items'] = array_replace_recursive( ( $result['items'] ), ( $response_result['items'] ) );
 				$result['total'] = max( count( $result['items'] ), $response_result['total'] );

@@ -170,10 +170,25 @@ class MailsterTemplate {
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
 
-		$doc = $this->new_template_language( $doc );
+		$doc   = $this->new_template_language( $doc );
+		$xpath = new DOMXPath( $doc );
+
+		$modulecontainer = $xpath->query( '//*/modules' );
+		if ( ! $modulecontainer->length ) {
+			$modules = $xpath->query( '//*/module' );
+			if ( $modules->length ) {
+				$wrapper = $doc->createElement( 'modules' );
+				$modules->item( 0 )->parentNode->insertBefore(
+					$wrapper,
+					$modules->item( 0 )
+				);
+				foreach ( $modules as $child ) {
+					$wrapper->appendChild( $child );
+				}
+			}
+		}
 
 		if ( $logo_id = mailster_option( 'logo' ) ) {
-			$xpath     = new DOMXPath( $doc );
 			$logos     = $xpath->query( '//*/img[@label="Logo" or @label="logo" or @label="Your Logo"]' );
 			$high_dpi  = mailster_option( 'high_dpi' ) ? 2 : 1;
 			$logo_link = mailster_option( 'logo_link' );
@@ -211,7 +226,6 @@ class MailsterTemplate {
 
 		$services = mailster_option( 'services', array() );
 
-		$xpath   = new DOMXPath( $doc );
 		$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
 
 		if ( $buttons->length ) {
@@ -952,7 +966,7 @@ class MailsterTemplate {
 	public function list_buttons( $folder, $id ) {
 
 		$files = list_files( $folder, 1 );
-
+		natsort( $files );
 		$btn = '<ul class="buttons buttons-' . basename( $folder ) . '" id="tab-buttons-' . $id . '-' . basename( $folder ) . '">';
 
 		foreach ( $files as $file ) {

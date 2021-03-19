@@ -653,7 +653,7 @@
 	position: absolute;
 	top: 12px;
 	right: 12px;
-	background-image: url(../img/unsplash.png);
+	background-image: url(../img/social/dark/unsplash.png);
 	background-size: cover;
 }
 .rtl #editbar div.type.img .imagelist ul li {

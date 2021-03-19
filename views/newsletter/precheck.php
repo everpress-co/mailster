@@ -39,8 +39,8 @@ $to = $fullname ? $fullname . ' <' . $email . '>' : $email;
 			</div>
 			<div class="precheck-resize button-group">
 				<a class="button precheck-switch mailster-icon precheck-switch-desktop active" data-dimensions='{"w":"100%","h":"100%"}'></a>
-				<a class="button precheck-switch mailster-icon precheck-switch-mobile" data-dimensions='{"w":320,"h":640}'></a>
-				<a class="button precheck-switch mailster-icon precheck-switch-landscape" data-dimensions='{"w":640,"h":320}'></a>
+				<a class="button precheck-switch mailster-icon precheck-switch-mobile" data-dimensions='{"w":319,"h":639}'></a>
+				<a class="button precheck-switch mailster-icon precheck-switch-landscape" data-dimensions='{"w":639,"h":319}'></a>
 			</div>
 			<ul class="precheck-run">
 				<li class="alignright"><span class="spinner" id="precheck-ajax-loading"></span><button class="button button-primary precheck-run-btn"><?php esc_html_e( 'Precheck Campaign', 'mailster' ); ?></button></li>

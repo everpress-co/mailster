@@ -77,7 +77,7 @@ if ( $item['envato_item_id'] ) {
 					admin_url( 'admin-ajax.php' )
 				);
 				?>
-			<a class="button button-primary request-download popup" data-width="800" data-height="80%" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
+			<a class="button button-primary request-download popup" data-width="800" data-height="90%" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
 			<?php endif; ?>
 			<?php if ( $item['price'] ) : ?>
 			<a class="button button-primary buy external" data-width="800" data-height="80%" href="<?php echo esc_url( $item['purchase_url'] ); ?>"><?php esc_html_e( 'Buy Template', 'mailster' ); ?></a>
