@@ -1,7 +1,7 @@
 === Mailster - Email Newsletter Plugin for WordPress ===
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
-Requires at least: 4.5
+Requires at least: 4.6
 Tested up to: 5.7
 Stable tag: 3.0
 Author: EverPress

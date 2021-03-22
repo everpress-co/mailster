@@ -1812,7 +1812,6 @@ class MailsterAjax {
 
 			$return['msg']     = esc_html__( 'File has been saved!', 'mailster' );
 			$return['success'] = true;
-			wp_remote_get( mailster( 'templates' )->get_screenshot( $return['slug'], $file ) );
 		} else {
 			$return['msg'] = esc_html__( 'Not able to save file!', 'mailster' );
 		}

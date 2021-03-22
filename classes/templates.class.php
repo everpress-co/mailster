@@ -909,70 +909,6 @@ class MailsterTemplates {
 	 *
 	 *
 	 * @param unknown $slug
-	 * @param unknown $file (optional)
-	 * @param unknown $size (optional)
-	 * @return unknown
-	 */
-	public function get_screenshot( $slug, $file = 'index.html', $size = 600 ) {
-
-		global $wp_filesystem;
-
-		$fileuri = $this->url . '/' . $slug . '/' . $file;
-		$filedir = $this->path . '/' . $slug . '/' . $file;
-
-		if ( ! file_exists( $filedir ) ) {
-			return;
-		}
-
-		$hash = hash( 'crc32', md5_file( $filedir ) );
-
-		$screenshotfile = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/' . $hash . '.jpg';
-		$screenshoturi  = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
-
-		if ( 'index.html' == $file ) {
-			if ( file_exists( $this->path . '/' . $slug . '/screenshot.jpg' ) ) {
-				$screenshotfile = $this->path . '/' . $slug . '/screenshot.jpg';
-				$screenshoturi  = $this->url . '/' . $slug . '/screenshot.jpg';
-			} elseif ( file_exists( $this->path . '/' . $slug . '/screenshot.png' ) ) {
-				$screenshotfile = $this->path . '/' . $slug . '/screenshot.png';
-				$screenshoturi  = $this->url . '/' . $slug . '/screenshot.png';
-			}
-		}
-
-		// serve saved
-		if ( file_exists( $screenshotfile ) ) {
-			$url = str_replace( ' ', '%20', $screenshoturi );
-		} elseif ( ! file_exists( $filedir ) ) {
-			$url = 'https://static.mailster.co/preview/not_available.gif';
-		} elseif ( mailster_is_local() ) {
-			$url = 'https://static.mailster.co/preview/not_available.gif';
-		} else {
-
-			static $mailster_get_screenshot_delay;
-
-			// get count based on the numbers in the "queue" (cron)
-			if ( ! $mailster_get_screenshot_delay ) {
-				$mailster_get_screenshot_delay = substr_count( serialize( get_option( 'cron' ) ), 'mailster_get_screenshots' );
-			}
-
-			$process_module = $is_default = $slug == mailster_option( 'default_template' );
-			// $process_module = true;
-			$delay = $is_default ? 0 : 60 * ( $mailster_get_screenshot_delay++ );
-
-			$this->schedule_screenshot( $slug, $file, $process_module, $delay );
-
-			$url = 'https://static.mailster.co/preview/create.gif';
-
-		}
-
-		return $url;
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $slug
 	 * @param unknown $file    (optional)
 	 * @param unknown $modules (optional)
 	 * @param unknown $async   (optional)
@@ -997,7 +933,6 @@ class MailsterTemplates {
 
 		$screenshot_folder         = $screenshot_folder_base . $slug . '/';
 		$screenshot_modules_folder = $screenshot_folder_base . $slug . '/modules/' . $hash . '/';
-		$screenshotfile            = $screenshot_folder_base . $slug . '/' . $hash . '.jpg';
 		$screenshoturi             = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/' . $hash . '.jpg';
 
 		mailster_require_filesystem();
@@ -1006,70 +941,16 @@ class MailsterTemplates {
 			mailster( 'helper' )->mkdir( $screenshot_folder, true );
 		}
 
-		// not on localhost
-		if ( ! mailster_is_local() ) {
-
-			$url = 'https://s.wordpress.com/mshots/v1/' . ( rawurlencode( $fileuri . '?c=' . $hash ) ) . '?w=600&h=800';
-
-			$response = wp_remote_get(
-				$url,
-				array(
-					'redirection' => 0,
-					'method'      => 'HEAD',
-				)
-			);
-
-			$code = wp_remote_retrieve_response_code( $response );
-
-			if ( 200 == $code ) {
-
-				if ( ! function_exists( 'download_url' ) ) {
-					include ABSPATH . 'wp-admin/includes/file.php';
-				}
-
-				$tmp_file = download_url( $url );
-
-				if ( is_file( $tmp_file ) && is_readable( $tmp_file ) ) {
-
-					$image_data = getimagesize( $tmp_file );
-
-					if ( 'image/jpeg' == $image_data['mime'] ) {
-
-						if ( ! is_wp_error( $tmp_file ) ) {
-							if ( ! is_dir( dirname( $screenshotfile ) ) ) {
-								mailster( 'helper' )->mkdir( dirname( $screenshotfile ), true );
-							}
-
-							if ( ! $wp_filesystem->copy( $tmp_file, $screenshotfile ) ) {
-								copy( $tmp_file, $screenshotfile );
-							}
-						}
-					} else {
-
-						$this->schedule_screenshot( $slug, $file, false, 30 );
-
-					}
-				}
-			} elseif ( 307 == $code ) {
-
-					$this->schedule_screenshot( $slug, $file, false, 60 );
-
-			} else {
-
-			}
-		}
-
 		if ( ! $modules ) {
 			return;
 		}
 
 		$raw = file_get_contents( $filedir );
 
+		// no modules found
 		if ( ! preg_match( '#<module([^>]*)>(.*)<\/module>#is', $raw, $matches ) ) {
 			return;
 		}
-
-		$modules_html = $matches[0];
 
 		$request_url = 'https://api.mailster.co/module/v2/';
 
