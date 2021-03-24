@@ -1746,8 +1746,6 @@ class MailsterCampaigns {
 
 			$is_autoresponder = isset( $postdata['is_autoresponder'] ) && $postdata['is_autoresponder'];
 
-			$autoresponder = isset( $postdata['autoresponder'] ) && $postdata['autoresponder'];
-
 			$post->post_parent   = 0;
 			$post->post_password = isset( $_POST['use_pwd'] ) ? $_POST['post_password'] : '';
 
@@ -1763,6 +1761,8 @@ class MailsterCampaigns {
 			}
 
 			if ( $is_autoresponder ) {
+
+				$autoresponder = $postdata['autoresponder'];
 
 				if ( $post->post_status != 'autoresponder' && ! $is_autosave && ! isset( $_POST['draft'] ) ) {
 					$this->change_status( $post, 'autoresponder' );
