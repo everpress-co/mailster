@@ -262,9 +262,9 @@ class MailsterPrecheck {
 
 		$response = wp_remote_get( $url, $args );
 
-		$code     = wp_remote_retrieve_response_code( $response );
-		$headers  = wp_remote_retrieve_headers( $response );
-			$body = wp_remote_retrieve_body( $response );
+		$code    = wp_remote_retrieve_response_code( $response );
+		$headers = wp_remote_retrieve_headers( $response );
+		$body    = wp_remote_retrieve_body( $response );
 
 		if ( is_wp_error( $response ) || 503 === $code || 500 === $code ) {
 			return new WP_Error( 503, esc_html__( 'The Precheck service is currently not available. Please check back later.', 'mailster' ) . $body );
@@ -289,6 +289,8 @@ class MailsterPrecheck {
 			return $json;
 		} elseif ( 429 === $code ) {
 			return new WP_Error( $code, sprintf( esc_html__( 'You have hit the test limit. Please try again in %s.', 'mailster' ), human_time_diff( strtotime( $headers['retry-after'] ) ) ) . $body );
+		} elseif ( 403 === $code ) {
+			return new WP_Error( $code, esc_html__( 'Your license code is invalid.', 'mailster' ) . $body );
 		} elseif ( 404 === $code ) {
 			delete_option( 'mailster_precheck_token' );
 			sleep( 3 );
