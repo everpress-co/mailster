@@ -347,7 +347,7 @@ class MailsterTemplates {
 				}
 
 				// looks like an update
-				if ( version_compare( $data['version'], $templates[ $data['slug'] ]['version'], '>' ) ) {
+				if ( isset( $templates[ $data['slug'] ] ) && version_compare( $data['version'], $templates[ $data['slug'] ]['version'], '>' ) ) {
 					$this->reset_query_cache();
 					if ( $update_count = $this->get_updates() ) {
 						update_option( 'mailster_templates_updates', --$update_count );
