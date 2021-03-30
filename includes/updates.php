@@ -598,12 +598,19 @@ if ( $old_version ) {
 				mailster( 'geo' )->update();
 			}
 
+		case '2.4.17':
+		case '2.4.18':
+			// move to "default" or after latests release versions
+			$mailster_options['db_update_required'] = true;
+			$mailster_options['auto_send_at_once']  = false;
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
 
 			do_action( 'mailster_update', $old_version_sanitized, $new_version );
 			do_action( 'mailster_update_' . $old_version_sanitized, $new_version );
+
 
 	}
 

@@ -36,7 +36,7 @@ mailster = (function (mailster, $, window, document) {
 	} else {
 		$('#mailster-update-info').show();
 		$('#mailster-start-upgrade')
-			.on('click', function () {
+			.one('click', function () {
 				$('#mailster-update-process').slideDown(200);
 				$('#mailster-update-info').slideUp(200);
 				run(0);
@@ -60,7 +60,7 @@ mailster = (function (mailster, $, window, document) {
 			return
 		}
 
-		if (!nooutput) output(id, '<strong>' + current + '</strong> ...', true);
+		if (!nooutput) output(id, '<span>' + current + '</span> ...', true);
 
 		do_update(id, function () {
 			setTimeout(function () {
@@ -124,8 +124,8 @@ mailster = (function (mailster, $, window, document) {
 
 		window.onbeforeunload = null;
 
-		output('finished', '<strong>Alright, all updates have been finished!</strong>', true, 0, true);
-		output('finished_button', '<a href="admin.php?page=mailster_welcome" class="button button-primary">Ok, fine!</a>', true, 0, true);
+		output('finished', '<h3>Alright, all updates have been finished!</h3>', true, 0, true);
+		output('finished_button', '<a href="admin.php?page=mailster_welcome" class="button button-primary button-hero">Ok, fine!</a>', true, 0, true);
 
 		$('#mailster-post-upgrade').show();
 
@@ -133,23 +133,27 @@ mailster = (function (mailster, $, window, document) {
 
 	function output(id, content, newline, round, nobox) {
 
-		var el = $('#output_' + id).length ?
-			$('#output_' + id) :
-			$('<div id="output_' + id + '" class="' + (nobox ? '' : 'updated inline') + '" style="padding: 0.5em 6px;word-wrap: break-word;"></div>').appendTo($output);
+		if (!$('#output_' + id).length) {
+			$('<div class="' + (nobox ? '' : 'notice notice-info inline') + '" style="padding: 0.5em 6px;word-wrap: break-word;"><div id="output_' + id + '"></div></div>').appendTo($output);
+		}
 
+		var el = $('#output_' + id);
 
 		el.append(content);
-		round > 20 ? el.append(skip.show()) : skip.hide();
+		round > 100 ? el.append(skip.show()) : skip.hide();
 
 	}
 
 	function textoutput(content) {
 
-		var curr_content = $('#textoutput').val();
+		var textarea = $('#textoutput');
+		var curr_content = textarea.val();
 
-		content = content + "\n\n" + curr_content;
+		content = curr_content + content;
 
-		$('#textoutput').val($.trim(content));
+		textarea.val($.trim(content) + "\n\n");
+
+		textarea.scrollTop(textarea[0].scrollHeight);
 
 	}
 

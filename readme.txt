@@ -1,9 +1,9 @@
 === Mailster - Email Newsletter Plugin for WordPress ===
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
-Requires at least: 3.8
-Tested up to: 5.6
-Stable tag: 2.4.17
+Requires at least: 4.6
+Tested up to: 5.7
+Stable tag: 3.0
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -88,12 +88,19 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.18 =
+
+* fixes for PHP 8
+* fixed: comparing empty date values on MySQL 8
+
 = Version 2.4.17 =
 
 * fixed: issue with subscriber button on some versions of Firefox
 * fixed: problem downloading templates with special characters in filepath
 * fixed: issue with manual sync button in Firefox
 * fixed: post taxonomies are not respected for some autoresponder campaigns if the initial post status is publish
+* fixed: issue creating images if content folder is outside of WordPress root
+* fixed: empty values in form submission were not stored
 * improved: URL hijacking mechanics to handle subdomains
 
 = Version 2.4.16 =
@@ -181,6 +188,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.9 =
 
+* new: option to create new campaigns on action hook based auto responders
 * change: moved text strings for GDPR to text tab for better localization.
 * change: sanitize_content method no longer handles custom Mailster styles (changes to the methods arguments)
 * added: `mailster_add_tag` action hook to add custom tags.
@@ -233,7 +241,7 @@ Xaver Birsak – https://everpress.co
 * improved: subscriber query now search for ID as well.
 * fixed: notifications to multiple addresses.
 * fixed: modules without content sometimes preserve in the campaign.
-* fixed: issue with RSS campaigns on time based autoresponders.
+* fixed: issue with RSS campaigns on time based auto responders.
 * fixed: wrong subscriber count if status "pending" in subscriber query.
 * fixed: cumulative count calculations.
 * fixed: redirecting issue with spaces in URLs.
@@ -259,7 +267,7 @@ Xaver Birsak – https://everpress.co
 * improved: forms no longer use native validation
 * fixed: remember usage tracking opt in setting
 * fixed: correctly redirect after campaign duplication
-* fixed: images from dynamic random post type in autoresponders
+* fixed: images from dynamic random post type in auto responders
 * fixed: subscriberID is now correctly populated in confirmation messages
 * fixed: deprecated embed option
 
@@ -271,7 +279,7 @@ Xaver Birsak – https://everpress.co
 * fixed: unsubscribe auto responder works with list based subscriptions
 * fixed: small JavaScript issues in the editor
 * improved: better support for third party email with content type text/html
-* improved: better checks for content related autoresponders
+* improved: better checks for content related auto responders
 * improved: fixing broken settings automatically
 * improved: database update checks
 
@@ -322,6 +330,7 @@ Xaver Birsak – https://everpress.co
 * improved: editor behavior
 * improved: handling of options
 * improved: removed some variables from the global space
+
 
 = Version 2.3.16 =
 

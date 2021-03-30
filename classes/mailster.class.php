@@ -25,7 +25,9 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/subscribers.class.php';
 		require_once MAILSTER_DIR . 'classes/statistics.class.php';
 		require_once MAILSTER_DIR . 'classes/lists.class.php';
+		require_once MAILSTER_DIR . 'classes/tags.class.php';
 		require_once MAILSTER_DIR . 'classes/forms.class.php';
+		require_once MAILSTER_DIR . 'classes/precheck.class.php';
 		require_once MAILSTER_DIR . 'classes/manage.class.php';
 		require_once MAILSTER_DIR . 'classes/templates.class.php';
 		require_once MAILSTER_DIR . 'classes/widget.class.php';
@@ -43,6 +45,7 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/register.class.php';
 		require_once MAILSTER_DIR . 'classes/geo.class.php';
 		require_once MAILSTER_DIR . 'classes/privacy.class.php';
+		require_once MAILSTER_DIR . 'classes/security.class.php';
 		require_once MAILSTER_DIR . 'classes/export.class.php';
 		require_once MAILSTER_DIR . 'classes/empty.class.php';
 
@@ -53,7 +56,9 @@ class Mailster {
 			'subscribers'  => new MailsterSubscribers(),
 			'statistics'   => new MailsterStatistics(),
 			'lists'        => new MailsterLists(),
+			'tags'         => new MailsterTags(),
 			'forms'        => new MailsterForms(),
+			'precheck'     => new MailsterPrecheck(),
 			'manage'       => new MailsterManage(),
 			'templates'    => new MailsterTemplates(),
 			'frontpage'    => new MailsterFrontpage(),
@@ -70,6 +75,7 @@ class Mailster {
 			'register'     => new MailsterRegister(),
 			'geo'          => new MailsterGeo(),
 			'privacy'      => new MailsterPrivacy(),
+			'security'     => new MailsterSecurity(),
 			'export'       => new MailsterExport(),
 			'empty'        => new MailsterEmpty(),
 		);
@@ -859,10 +865,6 @@ class Mailster {
 			return $posts[ $key ];
 		}
 
-		if ( ! did_action( 'mailster_register_dynamic_post_type' ) ) {
-			do_action( 'mailster_register_dynamic_post_type' );
-		}
-
 		$post = apply_filters( 'mailster_get_last_post_' . $post_type, null, $args, $offset, $term_ids, $campaign_id, $subscriber_id );
 
 		if ( is_null( $post ) ) {
@@ -1110,14 +1112,14 @@ class Mailster {
 		$content = $pre_stuff . $content;
 
 		// en_US => en
-		$lang = substr( get_bloginfo( 'language' ), 0, 2 );
+		$lang  = substr( get_bloginfo( 'language' ), 0, 2 );
+		$regex = '/<html([^>]*?)lang=(\\\\)?"(.*?)(\\\\)?" /';
 
 		// add language tag for accessibility
-		if ( preg_match( '/<html([^>]*?)lang="(.*?)"/', $content, $matches ) ) {
-			$content = str_replace( '<html' . $matches[1] . 'lang="' . $matches[2] . '"', '<html' . $matches[1] . 'lang="' . $lang . '"', $content );
-		} else {
-			$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
+		if ( preg_match( $regex, $content, $matches ) ) {
+			$content = preg_replace( $regex, '<html$1', $content );
 		}
+		$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
 
 		return apply_filters( 'mymail_sanitize_content', apply_filters( 'mailster_sanitize_content', $content ) );
 	}
@@ -1528,7 +1530,12 @@ class Mailster {
 
 		if ( $remove_tables ) {
 
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_actions" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_sent" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_opens" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_clicks" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_unsubs" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_bounces" );
+			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_errors" );
 			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_links" );
 			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_lists" );
 			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_lists_subscribers" );
@@ -1703,7 +1710,7 @@ class Mailster {
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
 		}
-		$max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
+		$max = max( (int) ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
 		if ( $max < 128 ) {
 			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		}
@@ -1883,19 +1890,23 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_subscriber_fields (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
                 `meta_key` varchar(191) NOT NULL,
                 `meta_value` longtext NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`meta_key`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `meta_key` (`meta_key`)
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_subscriber_meta (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
                 `campaign_id` bigint(20) unsigned NOT NULL,
                 `meta_key` varchar(191) NOT NULL,
                 `meta_value` longtext NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`meta_key`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`),
@@ -1903,11 +1914,12 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_queue (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NOT NULL DEFAULT 0,
                 `campaign_id` bigint(20) unsigned NOT NULL DEFAULT 0,
                 `requeued` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `added` int(11) unsigned NOT NULL DEFAULT 0,
-                `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
                 `sent` int(11) unsigned NOT NULL DEFAULT 0,
                 `priority` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `count` tinyint(1) unsigned NOT NULL DEFAULT 0,
@@ -1915,6 +1927,7 @@ class Mailster {
                 `ignore_status` tinyint(1) unsigned NOT NULL DEFAULT 0,
                 `options` varchar(191) NOT NULL DEFAULT '',
                 `tags` longtext NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`requeued`,`options`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`),
@@ -1926,17 +1939,81 @@ class Mailster {
                 KEY `ignore_status` (`ignore_status`)
             ) $collate;",
 
-			"CREATE TABLE {$wpdb->prefix}mailster_actions (
+			"CREATE TABLE {$wpdb->prefix}mailster_action_sent (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
-                `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
-                `type` tinyint(1) NOT NULL DEFAULT 0,
-                `link_id` bigint(20) unsigned NOT NULL DEFAULT 0,
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`type`,`link_id`),
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
                 KEY `subscriber_id` (`subscriber_id`),
-                KEY `campaign_id` (`campaign_id`),
-                KEY `type` (`type`)
+                KEY `campaign_id` (`campaign_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_action_opens (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_action_clicks (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                `link_id` bigint(20) unsigned NOT NULL DEFAULT 0,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`link_id`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_action_unsubs (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                `text` varchar(191) NOT NULL,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_action_bounces (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                `hard` tinyint(1) NOT NULL DEFAULT 0,
+                `text` varchar(191) NOT NULL,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`,`hard`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_action_errors (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
+                `timestamp` int(11) NOT NULL DEFAULT 0,
+                `count` int(11) unsigned NOT NULL DEFAULT 0,
+                `text` varchar(191) NOT NULL,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
+                KEY `subscriber_id` (`subscriber_id`),
+                KEY `campaign_id` (`campaign_id`)
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_links (
@@ -1960,11 +2037,32 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_lists_subscribers (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `list_id` bigint(20) unsigned NOT NULL,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
                 `added` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`list_id`,`subscriber_id`),
                 KEY `list_id` (`list_id`),
+                KEY `subscriber_id` (`subscriber_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_tags (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `name` varchar(191) NOT NULL,
+                `added` int(11) unsigned NOT NULL,
+                `updated` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `name` (`name`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_tags_subscribers (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `tag_id` bigint(20) unsigned NOT NULL,
+                `subscriber_id` bigint(20) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY id (`tag_id`,`subscriber_id`),
+                KEY `tag_id` (`tag_id`),
                 KEY `subscriber_id` (`subscriber_id`)
             ) $collate;",
 
@@ -2001,22 +2099,37 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_form_fields (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `form_id` bigint(20) unsigned NOT NULL,
                 `field_id` varchar(191) NOT NULL,
                 `name` longtext NOT NULL,
                 `error_msg` longtext NOT NULL,
                 `required` tinyint(1) unsigned NOT NULL,
                 `position` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`form_id`,`field_id`)
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_forms_lists (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `form_id` bigint(20) unsigned NOT NULL,
                 `list_id` bigint(20) unsigned NOT NULL,
                 `added` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`form_id`,`list_id`),
                 KEY `form_id` (`form_id`),
                 KEY `list_id` (`list_id`)
+            ) $collate;",
+
+			"CREATE TABLE {$wpdb->prefix}mailster_forms_tags (
+                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                `form_id` bigint(20) unsigned NOT NULL,
+                `tag_id` bigint(20) unsigned NOT NULL,
+                `added` int(11) unsigned NOT NULL,
+                PRIMARY KEY  (`ID`),
+                UNIQUE KEY `id` (`form_id`,`tag_id`),
+                KEY `form_id` (`form_id`),
+                KEY `list_id` (`tag_id`)
             ) $collate;",
 
 		);
@@ -2833,10 +2946,10 @@ class Mailster {
 	 *
 	 * @param unknown $post_id
 	 * @param unknown $part     (optional)
-	 * @param unknown $meta_key
+	 * @param unknown $meta_key (optional)
 	 * @return unknown
 	 */
-	public function meta( $post_id, $part = null, $meta_key ) {
+	public function meta( $post_id, $part = null, $meta_key = '' ) {
 
 		$meta = get_post_meta( $post_id, $meta_key, true );
 
@@ -2859,10 +2972,10 @@ class Mailster {
 	 * @param unknown $id
 	 * @param unknown $key
 	 * @param unknown $value    (optional)
-	 * @param unknown $meta_key
+	 * @param unknown $meta_key (optional)
 	 * @return unknown
 	 */
-	public function update_meta( $id, $key, $value = null, $meta_key ) {
+	public function update_meta( $id, $key, $value = null, $meta_key = '' ) {
 		if ( is_array( $key ) ) {
 			$meta = $key;
 			return update_post_meta( $id, $meta_key, $meta );

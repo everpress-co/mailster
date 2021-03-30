@@ -111,7 +111,7 @@ class Ip2City {
 		if ( $do_renew ) {
 
 			mailster_require_filesystem();
-			@set_time_limit( 120 );
+			set_time_limit( 120 );
 
 			if ( ! function_exists( 'download_url' ) ) {
 				include ABSPATH . 'wp-admin/includes/file.php';

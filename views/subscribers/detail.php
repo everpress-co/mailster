@@ -96,6 +96,7 @@ if ( $is_new ) {
 				echo str_repeat( '<span class="mailster-icon mailster-icon-star"></span>', $full )
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-half"></span>', $half )
 				. str_repeat( '<span class="mailster-icon mailster-icon-star-empty"></span>', $empty )
+				. ' ' . number_format_i18n( $stars, 1 )
 				?>
 				</h4>
 			<?php endif; ?>
@@ -275,18 +276,29 @@ if ( $is_new ) {
 				$checked   = wp_list_pluck( $lists, 'ID' );
 				$all_lists = mailster( 'lists' )->get();
 				echo '<ul>';
-				foreach ( $all_lists as $list ) {
+				foreach ( $all_lists as $list ) :
 					echo '<li>';
 					echo '<label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="mailster_lists[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . '</label>';
 					if ( in_array( $list->ID, $checked ) ) {
 						echo '<span class="confirmation-status">' . ( isset( $confirmed[ $list->ID ] ) ? esc_html__( 'confirmed at', 'mailster' ) . ': ' . date( $timeformat, $confirmed[ $list->ID ] + $timeoffset ) : esc_html__( 'not confirmed', 'mailster' ) ) . '</span>';
 					}
 					echo '</li>';
-				}
+				endforeach;
 				echo '</ul>';
 				?>
 				</li>
 				</ul>
+			</div>
+			<div class="mailster-tags">
+				<label><?php esc_html_e( 'Tags', 'mailster' ); ?>:</label>
+				<select multiple name="mailster_tags[]" class="tags-input hide-if-js">
+					 <option></option>
+				<?php $tags = mailster( 'tags' )->get(); ?>
+				<?php $subscriber_tags = mailster( 'tags' )->get_by_subscriber( $subscriber->ID, true ); ?>
+				<?php foreach ( $tags as $tag ) : ?>
+					<option value="<?php echo esc_attr( $tag->ID ); ?>" <?php selected( in_array( $tag->ID, $subscriber_tags ) ); ?>><?php echo esc_html( $tag->name ); ?></option>
+				<?php endforeach; ?>
+				</select>
 			</div>
 		</td>
 		<td class="user-meta" align="right">
@@ -426,7 +438,7 @@ if ( ! $is_new ) :
 					<?php esc_html_e( 'User has never opened a campaign', 'mailster' ); ?>
 				<?php endif; ?>
 					</p>
-					<table class="wp-list-table widefat activities">
+			<table class="wp-list-table widefat activities">
 				<thead>
 					<tr><th><?php esc_html_e( 'Date', 'mailster' ); ?></th><th></th><th><?php esc_html_e( 'Action', 'mailster' ); ?></th><th><?php esc_html_e( 'Campaign', 'mailster' ); ?></th><th></th></tr>
 				</thead>
@@ -437,19 +449,19 @@ if ( ! $is_new ) :
 						<td>
 						<?php
 						switch ( $activity->type ) {
-							case 1:
-								echo '<span class="mailster-icon mailster-icon-progress"></span></td><td>';
+							case 'sent':
+								echo '<span class="mailster-icon mailster-icon-sent"></span></td><td>';
 								printf( esc_html__( 'Campaign %s has been sent', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
-							case 2:
+							case 'open':
 									echo '<span class="mailster-icon mailster-icon-open"></span></td><td>';
 									printf( esc_html__( 'opened Campaign %s', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
-							case 3:
+							case 'click':
 									echo '<span class="mailster-icon mailster-icon-click"></span></td><td>';
 									printf( esc_html__( 'clicked %1$s in Campaign %2$s', 'mailster' ), '<a href="' . $activity->link . '">' . esc_html__( 'a link', 'mailster' ) . '</a>', '<a href="' . admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ) . '">' . $activity->campaign_title . '</a>' );
 								break;
-							case 4:
+							case 'unsub':
 									echo '<span class="mailster-icon mailster-icon-unsubscribe"></span></td><td>';
 									$unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id );
 								if ( preg_match( '/_list$/', $unsub_status ) ) {
@@ -458,16 +470,16 @@ if ( ! $is_new ) :
 									esc_html_e( 'unsubscribed your newsletter', 'mailster' );
 								}
 								break;
-							case 5:
+							case 'softbounce':
 									echo '<span class="mailster-icon mailster-icon-bounce"></span></td><td>';
 									printf( esc_html__( 'Soft bounce (%d tries)', 'mailster' ), $activity->count );
 
 								break;
-							case 6:
+							case 'bounce':
 									echo '<span class="mailster-icon mailster-icon-bounce hard"></span></td><td>';
 									esc_html_e( 'Hard bounce', 'mailster' );
 								break;
-							case 7:
+							case 'error':
 									echo '<span class="mailster-icon mailster-icon-error"></span></td><td>';
 									esc_html_e( 'Error', 'mailster' );
 								break;
@@ -483,7 +495,7 @@ if ( ! $is_new ) :
 						<?php if ( $activity->campaign_status == 'trash' ) : ?>
 							<?php esc_html_e( 'campaign deleted', 'mailster' ); ?>
 
-						<?php elseif ( $activity->type == 1 && current_user_can( 'publish_newsletters' ) ) : ?>
+						<?php elseif ( $activity->type == 'sent' && current_user_can( 'publish_newsletters' ) ) : ?>
 							<?php
 							$url = add_query_arg(
 								array(
@@ -497,23 +509,23 @@ if ( ! $is_new ) :
 							<?php esc_html_e( 'resend this campaign', 'mailster' ); ?>
 							</a>
 
-						<?php elseif ( $activity->link && $activity->type == 3 ) : ?>
+						<?php elseif ( $activity->link && $activity->type == 'click' ) : ?>
 							<a href="<?php echo esc_url( $activity->link ); ?>"><?php echo esc_url( $activity->link ); ?></a>
 
 							<?php
-						elseif ( $activity->type == 4 && $unsub_status = $this->meta( $subscriber->ID, 'unsubscribe', $activity->campaign_id ) ) :
-							$message = mailster( 'helper' )->get_unsubscribe_message( $unsub_status );
+						elseif ( $activity->type == 'unsub' && $activity->text ) :
+							$message = mailster( 'helper' )->get_unsubscribe_message( $activity->text );
 							?>
-							<p class="unsubscribe-message code">[<?php echo esc_html( $unsub_status ); ?>] <?php echo esc_html( $message ); ?></p>
+							<div class="unsubscribe-message code">[<?php echo esc_html( $unsub_status ); ?>] <?php echo esc_html( $message ); ?></div>
 
 							<?php
-						elseif ( ( $activity->type == 5 || $activity->type == 6 ) && $bounce_status = $this->meta( $subscriber->ID, 'bounce', $activity->campaign_id ) ) :
-							$message = mailster( 'helper' )->get_bounce_message( $bounce_status );
+						elseif ( ( $activity->type == 'softbounce' || $activity->type == 'bounce' ) && $activity->text ) :
+							$message = mailster( 'helper' )->get_bounce_message( $activity->text );
 							?>
-							<p class="bounce-message code"><?php echo esc_html( $message ); ?></p>
+							<div class="bounce-message code"><?php echo esc_html( $message ); ?></div>
 
-						<?php elseif ( $activity->error && $activity->type == 7 ) : ?>
-							<p class="error-message code"><strong class="red"><?php echo $activity->error; ?></strong></p>
+						<?php elseif ( $activity->type == 'error' && $activity->text ) : ?>
+							<div class="error-message code"><strong class="red"><?php echo esc_html( $activity->text ); ?></strong></div>
 						<?php endif; ?>
 						</td>
 					</tr>

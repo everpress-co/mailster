@@ -82,6 +82,12 @@ mailster = (function (mailster, $, window, document) {
 		}
 	});
 
+	$.fn.select2 && $('.tags-input').select2({
+		placeholder: mailster.l10n.subscribers.choose_tags,
+		tags: true,
+		theme: 'mailster'
+	});
+
 	email
 		.on('blur', function () {
 			var _this = $(this),

@@ -7,13 +7,13 @@ class MailsterHelper {
 	 *
 	 * @param unknown $attach_id (optional)
 	 * @param unknown $img_url   (optional)
-	 * @param unknown $width
-	 * @param unknown $height   (optional)
-	 * @param unknown $crop     (optional)
-	 * @param unknown $original (optional)
+	 * @param unknown $width     (optional)
+	 * @param unknown $height    (optional)
+	 * @param unknown $crop      (optional)
+	 * @param unknown $original  (optional)
 	 * @return unknown
 	 */
-	public function create_image( $attach_id = null, $img_url = null, $width, $height = null, $crop = false, $original = false ) {
+	public function create_image( $attach_id = null, $img_url = null, $width = null, $height = null, $crop = false, $original = false ) {
 
 		$org_url = $img_url;
 
@@ -132,11 +132,12 @@ class MailsterHelper {
 				}
 			}
 
-			$actual_file_path = ltrim( $file_path['path'], '/' );
-			$actual_file_path = rtrim( ABSPATH, '/' ) . $file_path['path'];
-
 			if ( ! file_exists( $actual_file_path ) ) {
-				$actual_file_path = ABSPATH . str_replace( site_url( '/' ), '', $img_url );
+				$actual_file_path = ltrim( $file_path['path'], '/' );
+				$actual_file_path = rtrim( ABSPATH, '/' ) . $file_path['path'];
+				if ( ! file_exists( $actual_file_path ) ) {
+					$actual_file_path = ABSPATH . str_replace( site_url( '/' ), '', $img_url );
+				}
 			}
 
 			$orig_size = getimagesize( $actual_file_path );
@@ -452,45 +453,40 @@ class MailsterHelper {
 		global $wp_rewrite;
 
 		$links = array(
-			'amazon'      => 'https://amazon.com',
-			'android'     => 'https://android.com',
-			'apple'       => 'https://apple.com',
-			'appstore'    => 'https://apple.com',
-			'behance'     => 'https://www.behance.net/%%USERNAME%%',
-			'blogger'     => 'https://%%USERNAME%%.blogspot.com/',
-			'delicious'   => 'https://delicious.com/%%USERNAME%%',
-			'deviantart'  => 'https://%%USERNAME%%.deviantart.com',
-			'digg'        => 'https://digg.com/users/%%USERNAME%%',
-			'dribbble'    => 'https://dribbble.com/%%USERNAME%%',
-			'drive'       => 'https://drive.google.com',
-			'dropbox'     => 'https://dropbox.com',
-			'ebay'        => 'https://www.ebay.com',
-			'facebook'    => 'https://facebook.com/%%USERNAME%%',
-			'flickr'      => 'https://www.flickr.com/photos/%%USERNAME%%',
-			'forrst'      => 'https://forrst.me/%%USERNAME%%',
-			'google'      => 'https://www.google.com',
-			'googleplus'  => 'https://plus.google.com/%%USERNAME%%',
-			'html5'       => 'https://html5.com',
-			'instagram'   => 'https://instagram.com/%%USERNAME%%',
-			'lastfm'      => 'https://www.lastfm.de/user/%%USERNAME%%',
-			'linkedin'    => 'https://www.linkedin.com/%%USERNAME%%',
-			'myspace'     => 'https://www.myspace.com/%%USERNAME%%',
-			'paypal'      => 'https://paypal.com',
-			'picasa'      => 'https://picasa.com',
-			'pinterest'   => 'https://pinterest.com/%%USERNAME%%',
-			'rss'         => $wp_rewrite ? get_bloginfo( 'rss2_url' ) : '',
-			'skype'       => 'skype:%%USERNAME%%',
-			'soundcloud'  => 'https://soundcloud.com/%%USERNAME%%',
-			'stumbleupon' => 'https://stumbleupon.com',
-			'technorati'  => 'https://technorati.com',
-			'tumblr'      => 'https://%%USERNAME%%.tumblr.com',
-			'twitter'     => 'https://twitter.com/%%USERNAME%%',
-			'vimeo'       => 'https://vimeo.com/%%USERNAME%%',
-			'windows'     => 'https://microsoft.com',
-			'windows_8'   => 'https://microsoft.com',
-			'wordpress'   => 'https://profiles.wordpress.org/%%USERNAME%%',
-			'yahoo'       => 'https://yahoo.com',
-			'youtube'     => 'https://youtube.com/%%USERNAME%%',
+			'amazon'     => 'https://amazon.com',
+			'android'    => 'https://android.com',
+			'apple'      => 'https://apple.com',
+			'appstore'   => 'https://apple.com',
+			'behance'    => 'https://www.behance.net/%%USERNAME%%',
+			'blogger'    => 'https://%%USERNAME%%.blogspot.com/',
+			'deviantart' => 'https://%%USERNAME%%.deviantart.com',
+			'digg'       => 'https://digg.com/users/%%USERNAME%%',
+			'dribbble'   => 'https://dribbble.com/%%USERNAME%%',
+			'drive'      => 'https://drive.google.com',
+			'dropbox'    => 'https://dropbox.com',
+			'ebay'       => 'https://www.ebay.com',
+			'facebook'   => 'https://facebook.com/%%USERNAME%%',
+			'flickr'     => 'https://www.flickr.com/photos/%%USERNAME%%',
+			'forrst'     => 'https://forrst.me/%%USERNAME%%',
+			'google'     => 'https://www.google.com',
+			'html5'      => 'https://html5.com',
+			'instagram'  => 'https://instagram.com/%%USERNAME%%',
+			'lastfm'     => 'https://www.lastfm.de/user/%%USERNAME%%',
+			'linkedin'   => 'https://www.linkedin.com/%%USERNAME%%',
+			'myspace'    => 'https://www.myspace.com/%%USERNAME%%',
+			'paypal'     => 'https://paypal.me',
+			'pinterest'  => 'https://pinterest.com/%%USERNAME%%',
+			'rss'        => $wp_rewrite ? get_bloginfo( 'rss2_url' ) : '',
+			'skype'      => 'skype:%%USERNAME%%',
+			'soundcloud' => 'https://soundcloud.com/%%USERNAME%%',
+			'tumblr'     => 'https://%%USERNAME%%.tumblr.com',
+			'twitter'    => 'https://twitter.com/%%USERNAME%%',
+			'vimeo'      => 'https://vimeo.com/%%USERNAME%%',
+			'windows'    => 'https://microsoft.com',
+			'windows_8'  => 'https://microsoft.com',
+			'wordpress'  => 'https://profiles.wordpress.org/%%USERNAME%%',
+			'yahoo'      => 'https://yahoo.com',
+			'youtube'    => 'https://youtube.com/%%USERNAME%%',
 		);
 
 		$links = apply_filters( 'mailster_get_social_links', $links );
@@ -956,11 +952,12 @@ class MailsterHelper {
 	 */
 	public function format_html( $html, $body = false ) {
 
-		$doc = new DOMDocument();
+		$i_error = libxml_use_internal_errors( true );
 
+		$doc                     = new DOMDocument();
 		$doc->preserveWhiteSpace = false;
-		$i_error                 = libxml_use_internal_errors( true );
 		$doc->loadHTML( $html );
+
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
 
@@ -1132,12 +1129,6 @@ class MailsterHelper {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $content
-	 * @return unknown
-	 */
 	public function inline_css( $content ) {
 
 		// save comments with conditional stuff
@@ -1149,9 +1140,6 @@ class MailsterHelper {
 		}
 		// get all style blocks
 		if ( preg_match_all( '#<style([^><]*)>(.*?)</style>#is', $content, $originalstyles ) ) {
-
-			@error_reporting( E_ERROR | E_PARSE );
-			@ini_set( 'display_errors', '0' );
 
 			$apply_styles = array();
 
@@ -1177,11 +1165,14 @@ class MailsterHelper {
 
 			require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
+			$i_error = libxml_use_internal_errors( true );
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
 
 			$htmldoc->applyStylesheet( $apply_styles );
 
 			$html = $htmldoc->getHTML();
+			libxml_clear_errors();
+			libxml_use_internal_errors( $i_error );
 
 			// convert urlencode back for links with unallowed characters (only images)
 			preg_match_all( "/(src|background)=[\"'](.*)[\"']/Ui", $html, $urls );
@@ -1350,7 +1341,7 @@ class MailsterHelper {
 
 		ob_start();
 
-		( @file_exists( $path . $wp_scripts->registered[ $handle ]->src ) )
+		( file_exists( $path . $wp_scripts->registered[ $handle ]->src ) )
 			? include $path . $wp_scripts->registered[ $handle ]->src
 			: include str_replace( MAILSTER_URI, MAILSTER_DIR, $wp_scripts->registered[ $handle ]->src );
 		$output = ob_get_contents();
@@ -1395,7 +1386,7 @@ class MailsterHelper {
 
 		ob_start();
 
-		( @file_exists( $path . $wp_styles->registered[ $handle ]->src ) )
+		( file_exists( $path . $wp_styles->registered[ $handle ]->src ) )
 			? include $path . $wp_styles->registered[ $handle ]->src
 			: include str_replace( MAILSTER_URI, MAILSTER_DIR, $wp_styles->registered[ $handle ]->src );
 		$output = ob_get_contents();
@@ -1433,7 +1424,7 @@ class MailsterHelper {
 			wp_mkdir_p( dirname( $filename ) );
 		}
 
-		if ( $file_handle = @fopen( $filename, $flags ) ) {
+		if ( $file_handle = fopen( $filename, $flags ) ) {
 			fwrite( $file_handle, $data );
 			fclose( $file_handle );
 		}
@@ -1454,7 +1445,9 @@ class MailsterHelper {
 
 		mailster_require_filesystem();
 
-		if ( 0 === strrpos( $folder, ABSPATH ) ) {
+		$upload_dir = wp_upload_dir();
+
+		if ( 0 === strrpos( $folder, $upload_dir['basedir'] ) ) {
 			$path = trailingslashit( $folder );
 		} else {
 			$path = trailingslashit( trailingslashit( MAILSTER_UPLOAD_DIR ) . $folder );
@@ -1619,10 +1612,6 @@ class MailsterHelper {
 	 */
 	public function get_dynamic_post_types( $public_only = true, $output = 'names', $exclude = array( 'attachment', 'newsletter' ) ) {
 
-		if ( ! did_action( 'mailster_register_dynamic_post_type' ) ) {
-			do_action( 'mailster_register_dynamic_post_type' );
-		}
-
 		return apply_filters( 'mailster_dynamic_post_types', $this->get_post_types( $public_only, $output, $exclude ), $output );
 
 	}
@@ -1697,7 +1686,7 @@ class MailsterHelper {
 			}
 
 			$max_items = apply_filters( 'mailster_feed_max_items', 100 );
-			$max_items = @$feed->get_item_quantity( (int) $max_items );
+			$max_items = $feed->get_item_quantity( (int) $max_items );
 
 			if ( $item >= $max_items ) {
 				return new WP_Error( 'feed_to_short', sprintf( esc_html__( 'The feed only contains %d items', 'mailster' ), $max_items ) );

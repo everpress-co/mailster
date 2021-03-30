@@ -305,7 +305,7 @@ class MailsterQueue {
 		global $wpdb;
 
 		// remove all entries from the queue where subscribers are hardbounced
-		$wpdb->query( "DELETE queue FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON queue.subscriber_id = b.subscriber_id AND queue.campaign_id = b.campaign_id WHERE b.type = 5 AND queue.requeued = 1 AND queue.sent != 0" );
+		$wpdb->query( "DELETE queue FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS b ON queue.subscriber_id = b.subscriber_id AND queue.campaign_id = b.campaign_id WHERE b.hard = 0 AND queue.requeued = 1 AND queue.sent != 0" );
 
 		// remove all entries from the queue where subscribers got queue certain autoresponder and are sent already.
 		$wpdb->query( "DELETE queue FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->posts} AS p ON p.ID = queue.campaign_id AND p.post_status = 'autoresponder' WHERE sent != 0 AND sent < " . ( time() ) );
@@ -969,7 +969,7 @@ class MailsterQueue {
 		$wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_queue AS a LEFT JOIN {$wpdb->prefix}mailster_subscribers AS b ON a.subscriber_id = b.ID WHERE (a.sent = 0 OR a.ignore_status = 1) AND b.status != 1 AND a.campaign_id != 0" );
 
 		// select all active campaigns
-		$sql = "SELECT posts.ID, queue.sent FROM {$wpdb->prefix}posts AS posts LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON posts.ID = queue.campaign_id LEFT JOIN {$wpdb->prefix}mailster_actions AS actions ON actions.subscriber_id = queue.subscriber_id AND actions.campaign_id = queue.campaign_id AND actions.type = 1 WHERE posts.post_status IN ('active') AND posts.post_type = 'newsletter' AND queue.requeued = 0 GROUP BY posts.ID HAVING SUM(queue.sent = 0) = 0 OR queue.sent IS NULL";
+		$sql = "SELECT posts.ID, queue.sent FROM {$wpdb->prefix}posts AS posts LEFT JOIN {$wpdb->prefix}mailster_queue AS queue ON posts.ID = queue.campaign_id LEFT JOIN {$wpdb->prefix}mailster_action_sent AS actions ON actions.subscriber_id = queue.subscriber_id AND actions.campaign_id = queue.campaign_id WHERE posts.post_status IN ('active') AND posts.post_type = 'newsletter' AND queue.requeued = 0 GROUP BY posts.ID HAVING SUM(queue.sent = 0) = 0 OR queue.sent IS NULL";
 
 		$ids = $wpdb->get_col( $sql );
 
@@ -1002,7 +1002,21 @@ class MailsterQueue {
 
 		global $wpdb;
 
-		$last_hit = get_option( 'mailster_cron_lasthit' );
+		$last_hit   = get_option( 'mailster_cron_lasthit' );
+		$db_version = get_option( 'mailster_dbversion' );
+
+		if ( $db_version != MAILSTER_DBVERSION ) {
+			echo '<h2>' . esc_html__( 'Database update required!', 'mailster' ) . '</h2>';
+
+			if ( is_user_logged_in() ) {
+				$redirectto = admin_url( 'admin.php?page=mailster_update' );
+				$update_msg = '<p><strong>' . esc_html__( 'An additional update is required for Mailster!', 'mailster' ) . '</strong></p><a class="button button-primary" href="' . $redirectto . '" target="_top">' . esc_html__( 'Progress Update now', 'mailster' ) . '</a>';
+
+				echo $update_msg;
+
+			}
+			return false;
+		}
 
 		if ( ( $pid = mailster( 'cron' )->lock( $process_id ) ) !== true ) {
 
@@ -1026,6 +1040,11 @@ class MailsterQueue {
 
 			// unlock?
 			$unlock = apply_filters( 'mymail_unlock_cron', apply_filters( 'mailster_unlock_cron', false ) );
+
+			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] && ! get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
+				set_transient( 'mailster_cron_lock_triggered_' . $process_id, time() );
+			}
+
 			if ( $unlock && $sec > max( 600, $unlock ) ) {
 				// unlock automatically but with a minimum of 10 minutes
 				mailster( 'cron' )->unlock( $process_id );
@@ -1065,14 +1084,15 @@ class MailsterQueue {
 
 		update_option( 'mailster_cron_lasthit', $last_hit );
 
-		$memory_limit           = @ini_get( 'memory_limit' );
-		$max_execution_time_ini = @ini_get( 'max_execution_time' );
+		$memory_limit           = ini_get( 'memory_limit' );
+		$max_execution_time_ini = ini_get( 'max_execution_time' );
 
-		@ignore_user_abort( true );
-		@set_time_limit( 0 );
+		ignore_user_abort( true );
+		set_time_limit( 0 );
 		$send_at_once       = mailster_option( 'send_at_once' );
 		$max_bounces        = mailster_option( 'bounce_attempts' );
 		$max_execution_time = mailster_option( 'max_execution_time', 0 );
+		$delay_time         = 0;
 
 		$sent_this_turn       = 0;
 		$send_delay           = mailster_option( 'send_delay', 0 ) / 1000;
@@ -1108,7 +1128,7 @@ class MailsterQueue {
 			$sql .= ' WHERE queue.timestamp <= ' . (int) $microtime . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error}";
 
 			// post status is important or is '0' (transactional email)
-			$sql .= " AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder') OR queue.campaign_id = 0)";
+			$sql .= " AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder', 'notification') OR queue.campaign_id = 0)";
 
 			// subscriber status is 1 (subscribed) or ignore_status
 			$sql .= ' AND (subscribers.status = 1 OR queue.ignore_status = 1)';
@@ -1127,19 +1147,20 @@ class MailsterQueue {
 
 			$sql .= " LIMIT $send_at_once";
 
-			$result = $wpdb->get_results( $sql );
+			$queue_result = $wpdb->get_results( $sql );
 
 			if ( $wpdb->last_error ) {
 				$this->cron_log( 'DB Error', '&nbsp;<span class="error">' . $wpdb->last_error . '</span>' );
 			}
+			$queue_result_count = count( $queue_result );
 
-			$this->cron_log( 'subscribers found', '<strong>' . number_format_i18n( count( $result ) ) . '</strong>' );
+			$this->cron_log( 'subscribers found', '<strong>' . number_format_i18n( $queue_result_count ) . '</strong>' );
 
 			$this->cron_log();
 
 			$this->cron_log( '#', 'email', 'campaign', 'try', 'time (sec.)' );
 
-			foreach ( $result as $i => $data ) {
+			foreach ( $queue_result as $i => $data ) {
 
 				if ( connection_aborted() ) {
 					break;
@@ -1147,7 +1168,7 @@ class MailsterQueue {
 
 				if ( $max_execution_time && microtime( true ) - $globaltime > $max_execution_time - 1 ) {
 					$this->cron_log( '', '&nbsp;<span class="error">' . esc_html__( 'timeout reached', 'mailster' ) . '</span>', '', '', '' );
-					if ( ! $send_this_turn ) {
+					if ( ! $sent_this_turn ) {
 						mailster_notice( sprintf( esc_html__( 'Mailster is not able to send your campaign cause of a server timeout. Please increase the %1$s on the %2$s', 'mailster' ), '<strong>&quot;' . esc_html__( 'Max. Execution Time', 'mailster' ) . '&quot;</strong>', '<a href="edit.php?post_type=newsletter&page=mailster_settings&mailster_remove_notice=max_execution_time#delivery">' . esc_html__( 'settings page', 'mailster' ) . '</a>' ), 'error', false, 'max_execution_time' );
 					}
 
@@ -1162,11 +1183,15 @@ class MailsterQueue {
 
 					if ( ! $data->_requeued ) {
 						// prevent to send duplicates within one minute
-						if ( $duplicate = $wpdb->get_results( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_actions WHERE campaign_id = %d AND subscriber_id = %d AND type = %d && `timestamp` > %d", $data->campaign_id, $data->subscriber_id, 1, time() - 60 ) ) ) {
+						if ( $duplicate = $wpdb->get_results( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_action_sent WHERE campaign_id = %d AND subscriber_id = %d && `timestamp` > %d", $data->campaign_id, $data->subscriber_id, time() - 60 ) ) ) {
 							$this->cron_log( '', '&nbsp;<span class="error">' . $data->subscriber_id . ' ' . $data->email . '<br>' . esc_html__( 'Prevent to send duplicate within one minute.', 'mailster' ) . '</span>', $data->campaign_id, $data->_count, '' );
 							continue;
 						}
 					}
+
+					// if ( ! $wpdb->get_var( $wpdb->prepare( "SELECT ID from {$wpdb->posts} WHERE ID = %d AND post_status = %s", $data->campaign_id, 'active' ) ) ) {
+					// array_push( $campaign_errors, $data->campaign_id );
+					// }
 
 					if ( in_array( $data->campaign_id, $campaign_errors ) ) {
 						continue;
@@ -1278,9 +1303,13 @@ class MailsterQueue {
 					}
 				}
 
-				// pause between mails
-				if ( $send_delay ) {
-					usleep( max( 1, round( ( $send_delay - ( microtime( true ) - $send_start_time ) ), 3 ) * 1000000 ) );
+				// pause between mails if defined and not very last email in this batch
+				if ( $send_delay && $i + 1 < $queue_result_count ) {
+					$delay = round( ( $send_delay - ( microtime( true ) - $send_start_time ) ), 3 ) * 1000000;
+					if ( $delay > 0 ) {
+						$delay_time += $delay;
+						usleep( $delay );
+					}
 				}
 			}
 		}
@@ -1297,10 +1326,55 @@ class MailsterQueue {
 		$took = ( microtime( true ) - $microtime );
 		if ( $sent_this_turn ) {
 			$mailtook = round( $took / $sent_this_turn, 4 );
-			$this->cron_log( 'time', round( $took, 2 ) . ' sec., (' . $mailtook . ' sec./mail)' );
 			mailster_remove_notice( 'max_execution_time' );
 			$last_hit['timemax'] = max( $last_hit['timemax'], $took );
 			$last_hit['mail']    = $mailtook;
+
+			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] ) {
+
+				$percentage = 0.9;
+
+				if ( $cron_lock_timestamp = get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
+					$percentage = min( 0.5, $percentage );
+					$interval   = abs( $cron_lock_timestamp - $last_hit['timestamp'] );
+					delete_transient( 'mailster_cron_lock_triggered_' . $process_id );
+				} else {
+					$interval = $last_hit['timestamp'] - $last_hit['oldtimestamp'];
+				}
+
+				$possible_mails_per_minute = MINUTE_IN_SECONDS / $last_hit['mail'];
+
+				if ( $max_execution_time ) {
+					$possible_mails_per_interval = $possible_mails_per_minute * ( min( $max_execution_time, $interval ) / MINUTE_IN_SECONDS );
+				} else {
+					$possible_mails_per_interval = $possible_mails_per_minute * ( $interval / MINUTE_IN_SECONDS );
+				}
+
+				$possible_mails_per_interval = max( 1, round( $percentage * $possible_mails_per_interval ) );
+
+				$ratio = $send_at_once / $possible_mails_per_interval;
+				$diff  = abs( $send_at_once - $possible_mails_per_interval );
+
+				$prefix = '';
+
+				if ( $ratio < 1 ) {
+					if ( $to_send == $sent_this_turn ) {
+						$possible_mails_per_interval = round( $sent_this_turn + ( $diff * $ratio ) );
+					} else {
+						$possible_mails_per_interval = round( $send_at_once + ( $diff * $ratio ) );
+					}
+					$prefix = '+';
+				}
+
+				$this->cron_log( 'send next turn', $possible_mails_per_interval . ' (' . $prefix . ( round( 100 * $possible_mails_per_interval / $sent_this_turn ) - 100 ) . '%)' );
+
+				if ( $diff && mailster_force_option( 'auto_send_at_once' ) ) {
+					mailster_force_update_option( 'send_at_once', $possible_mails_per_interval );
+				}
+			}
+
+			$this->cron_log( 'time', round( $took, 2 ) . ' sec., (' . $mailtook . ' sec./mail)' );
+
 		}
 
 		if ( is_user_logged_in() ) {
@@ -1338,7 +1412,7 @@ class MailsterQueue {
 			$campaign_id = array( $campaign_id );
 		}
 
-		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id WHERE queue.timestamp <= " . (int) $microtime . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error} AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder') OR queue.campaign_id = 0) AND (subscribers.status = 1 OR queue.ignore_status = 1) AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0)";
+		$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_queue AS queue LEFT JOIN {$wpdb->prefix}mailster_subscribers AS subscribers ON subscribers.ID = queue.subscriber_id LEFT JOIN {$wpdb->posts} AS posts ON posts.ID = queue.campaign_id WHERE queue.timestamp <= " . (int) $microtime . " AND queue.sent = 0 AND queue.error < {$this->max_retry_after_error} AND (posts.post_status IN ('finished', 'active', 'queued', 'autoresponder', 'notification') OR queue.campaign_id = 0) AND (subscribers.status = 1 OR queue.ignore_status = 1) AND (subscribers.ID IS NOT NULL OR queue.subscriber_id = 0)";
 
 		if ( $campaign_id ) {
 			$campaign_id = array_filter( $campaign_id, 'is_numeric' );

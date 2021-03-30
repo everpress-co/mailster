@@ -199,7 +199,7 @@ class MailsterPlaceholder {
 		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
 
 		$defaults = array(
-			'email'  => '<a href="">{emailaddress}</a>',
+			'email'  => '<a href="mailto:{emailaddress}">{emailaddress}</a>',
 			'year'   => $time[0],
 			'month'  => $time[1],
 			'day'    => $time[2],
@@ -1211,6 +1211,8 @@ class MailsterPlaceholder {
 				if ( isset( $post->post_link ) ) {
 					$replace_to = $post->post_link;
 				}
+			case 'button':
+				$replace_to = esc_html__( 'Read More', 'mailster' );
 			case 'permalink':
 				if ( ! $replace_to && $post->ID ) {
 					$replace_to = get_permalink( $post->ID );

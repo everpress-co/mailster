@@ -10,12 +10,11 @@ class MailsterTemplate {
 	public $path;
 	public $url;
 
-	private $slug;
+	public $slug;
 	private $file;
 
 	private $templatepath;
-	private $download_url = 'https://static.mailster.co/templates/mymail.zip';
-	private $headers      = array(
+	private $headers = array(
 		'name'        => 'Template Name',
 		'label'       => 'Name',
 		'uri'         => 'Template URI',
@@ -151,10 +150,6 @@ class MailsterTemplate {
 			}
 		}
 
-		if ( 'mymail' == $slug && ! file_exists( $file ) ) {
-			mailster( 'templates' )->renew_default_template( 'mymail' );
-		}
-
 		if ( ! class_exists( 'DOMDocument' ) ) {
 			wp_die( "PHP Fatal error: Class 'DOMDocument' not found" );
 		}
@@ -175,10 +170,25 @@ class MailsterTemplate {
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
 
-		$doc = $this->new_template_language( $doc );
+		$doc   = $this->new_template_language( $doc );
+		$xpath = new DOMXPath( $doc );
+
+		$modulecontainer = $xpath->query( '//*/modules' );
+		if ( ! $modulecontainer->length ) {
+			$modules = $xpath->query( '//*/module' );
+			if ( $modules->length ) {
+				$wrapper = $doc->createElement( 'modules' );
+				$modules->item( 0 )->parentNode->insertBefore(
+					$wrapper,
+					$modules->item( 0 )
+				);
+				foreach ( $modules as $child ) {
+					$wrapper->appendChild( $child );
+				}
+			}
+		}
 
 		if ( $logo_id = mailster_option( 'logo' ) ) {
-			$xpath     = new DOMXPath( $doc );
 			$logos     = $xpath->query( '//*/img[@label="Logo" or @label="logo" or @label="Your Logo"]' );
 			$high_dpi  = mailster_option( 'high_dpi' ) ? 2 : 1;
 			$logo_link = mailster_option( 'logo_link' );
@@ -214,86 +224,81 @@ class MailsterTemplate {
 			}
 		}
 
-		if ( $services = mailster_option( 'services' ) ) {
+		$services = mailster_option( 'services', array() );
 
-			$xpath   = new DOMXPath( $doc );
-			$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
+		$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
 
-			if ( $buttons->length ) {
+		if ( $buttons->length ) {
 
-				$base_path = $this->templatepath . '/img/social/';
-				$base_url  = $this->templateurl . '/img/social/';
-				if ( ! is_dir( $base_path ) ) {
-					$base_path = MAILSTER_DIR . 'templates/mymail/img/social/';
-					$base_url  = MAILSTER_URI . 'templates/mymail/img/social/';
-				}
+			$base_path = $this->templatepath . '/img/social/';
+			$base_url  = $this->templateurl . '/img/social/';
+			if ( ! is_dir( $base_path ) ) {
+				$base_path = MAILSTER_DIR . 'assets/img/social/';
+				$base_url  = MAILSTER_URI . 'assets/img/social/';
+			}
 
-				$high_dpi = mailster_option( 'high_dpi' ) ? 2 : 1;
+			$high_dpi = mailster_option( 'high_dpi' ) ? 2 : 1;
 
-				$parent = $buttons->item( 0 )->parentNode;
+			$parent = $buttons->item( 0 )->parentNode;
 
-				foreach ( $buttons as $button ) {
+			foreach ( $buttons as $button ) {
+				$button->parentNode->removeChild( $button );
+			}
 
-					$button->parentNode->removeChild( $button );
+			foreach ( $services as $service => $username ) {
 
-				}
+				$url = mailster( 'helper' )->get_social_link( $service, $username );
 
-				foreach ( $services as $service => $username ) {
-
-					$url = mailster( 'helper' )->get_social_link( $service, $username );
-
-					$icon = $base_path . 'dark/' . $service . '.png';
+				$icon = $base_path . 'dark/' . $service . '.png';
+				if ( ! file_exists( $icon ) ) {
+					$icon = $base_path . 'light/' . $service . '.png';
 					if ( ! file_exists( $icon ) ) {
-						$icon = $base_path . 'light/' . $service . '.png';
+						$icon = $base_path . $service . '.png';
 						if ( ! file_exists( $icon ) ) {
-							$icon = $base_path . $service . '.png';
-							if ( ! file_exists( $icon ) ) {
-								continue;
-							}
+							continue;
 						}
 					}
-
-					$dimensions = getimagesize( $icon );
-
-					if ( ! $dimensions ) {
-						continue;
-					}
-
-					$img  = $doc->createElement( 'img' );
-					$link = $doc->createElement( 'a' );
-
-					$width  = round( $dimensions[0] / $high_dpi );
-					$height = round( $dimensions[1] / $high_dpi );
-
-					$img->setAttribute( 'src', str_replace( $base_path, $base_url, $icon ) );
-					$img->setAttribute( 'width', $width );
-					$img->setAttribute( 'height', $height );
-					$img->setAttribute( 'style', "max-width:{$width}px;max-height:{$height}px;display:inline;" );
-					$img->setAttribute( 'class', 'social' );
-					$img->setAttribute( 'alt', esc_attr( sprintf( esc_html__( 'Share this on %s', 'mailster' ), ucwords( $service ) ) ) );
-
-					$link->setAttribute( 'href', $url );
-					$link->setAttribute( 'editable', '' );
-					$link->setAttribute( 'label', ucwords( $service ) );
-					$link->appendChild( $img );
-
-					$parent->appendChild( $link );
-
 				}
+
+				$dimensions = getimagesize( $icon );
+
+				if ( ! $dimensions ) {
+					continue;
+				}
+
+				$img  = $doc->createElement( 'img' );
+				$link = $doc->createElement( 'a' );
+
+				$width  = round( $dimensions[0] / $high_dpi );
+				$height = round( $dimensions[1] / $high_dpi );
+
+				$img->setAttribute( 'src', str_replace( $base_path, $base_url, $icon ) );
+				$img->setAttribute( 'width', $width );
+				$img->setAttribute( 'height', $height );
+				$img->setAttribute( 'style', "max-width:{$width}px;max-height:{$height}px;display:inline;" );
+				$img->setAttribute( 'class', 'social' );
+				$img->setAttribute( 'alt', esc_attr( sprintf( __( 'Share this on %s', 'mailster' ), ucwords( $service ) ) ) );
+
+				$link->setAttribute( 'href', $url );
+				$link->setAttribute( 'editable', '' );
+				$link->appendChild( $img );
+
+				$parent->appendChild( $link );
+
 			}
 		}
 
-		$raw = $doc->saveHTML();
-
+		$raw  = $doc->saveHTML();
 		$data = $this->get_template_data( $file );
-		if ( $data['name'] ) {
+		if ( $data && $data['name'] ) {
 			$raw        = preg_replace( '#<!--(.*?)-->#s', '', $raw, 1 );
 			$this->data = $data;
 		}
 
-		$this->slug = $slug;
-		$this->doc  = $doc;
-		$this->raw  = $raw;
+		$this->slug   = $slug;
+		$this->doc    = $doc;
+		$this->raw    = $raw;
+		$this->exists = file_exists( $file );
 
 	}
 
@@ -611,9 +616,12 @@ class MailsterTemplate {
 		if ( ! is_string( $doc_or_html ) ) {
 			$doc = $doc_or_html;
 		} else {
+			$i_error              = libxml_use_internal_errors( true );
 			$doc                  = new DOMDocument();
 			$doc->validateOnParse = true;
-			@$doc->loadHTML( $doc_or_html );
+			$doc->loadHTML( $doc_or_html );
+			libxml_clear_errors();
+			libxml_use_internal_errors( $i_error );
 
 		}
 		$xpath = new DOMXpath( $doc );
@@ -883,7 +891,11 @@ class MailsterTemplate {
 	 */
 	public function buttons( $basefolder = 'img' ) {
 
-		$root = list_files( $this->path . '/' . $this->slug . '/' . $basefolder, 1 );
+		if ( ! is_dir( $basefolder ) ) {
+			$root = list_files( $this->path . '/' . $this->slug . '/' . $basefolder, 1 );
+		} else {
+			$root = list_files( $basefolder, 1 );
+		}
 
 		sort( $root );
 		$folders = array();
@@ -915,14 +927,9 @@ class MailsterTemplate {
 					$nav      .= '<a class="nav-tab" href="#buttons-' . $id . '-' . $name . '">' . __( $name, 'mailster' ) . '</a>';
 					$btn      .= $this->list_buttons( substr( $file, 0, -1 ), $id );
 				} else {
-					if ( ! in_array( strrchr( $file, '.' ), array( '.png', '.gif', '.jpg', '.jpeg' ) ) ) {
-						continue;
-					}
-
 					if ( $rootbtn ) {
 						continue;
 					}
-
 					$rootbtn = $this->list_buttons( dirname( $file ), 'root' );
 
 				}
@@ -958,7 +965,7 @@ class MailsterTemplate {
 	public function list_buttons( $folder, $id ) {
 
 		$files = list_files( $folder, 1 );
-
+		natsort( $files );
 		$btn = '<ul class="buttons buttons-' . basename( $folder ) . '" id="tab-buttons-' . $id . '-' . basename( $folder ) . '">';
 
 		foreach ( $files as $file ) {
@@ -971,9 +978,9 @@ class MailsterTemplate {
 				continue;
 			}
 
-			$filename = str_replace( $folder . '/', '', $file );
+			$filename = basename( $file );
 			$service  = substr( $filename, 0, strrpos( $filename, '.' ) );
-			$btn     .= '<li><a class="btnsrc" title="' . $service . '" data-link="' . mailster( 'helper' )->get_social_link( $service, 'USERNAME' ) . '"><img src="' . str_replace( $this->path . '/', $this->url . '/', $file ) . '"></a></li>';
+			$btn     .= '<li><a class="btnsrc" title="' . ucwords( esc_attr( $service ) ) . '" data-link="' . mailster( 'helper' )->get_social_link( $service, 'USERNAME' ) . '"><img src="' . str_replace( array( MAILSTER_DIR, $this->path ), array( MAILSTER_URI, $this->url ), $file ) . '" loading="lazy" width="32" height ="32"></a></li>';
 
 		}
 
@@ -1029,9 +1036,7 @@ class MailsterTemplate {
 		$filedir = MAILSTER_UPLOAD_DIR . '/templates/' . $slug . '/' . $file;
 		$fileuri = MAILSTER_UPLOAD_URI . '/templates/' . $slug . '/' . $file;
 
-		// prevent error output as 7.4 throws deprecate notice
-		// $hash = hash( 'crc32', md5_file( $filedir ) );
-		$hash = @base_convert( md5_file( $filedir ), 10, 36 );
+		$hash = hash( 'crc32', md5_file( $filedir ) );
 
 		$screenshot_modules_folder     = MAILSTER_UPLOAD_DIR . '/screenshots/' . $slug . '/modules/' . $hash;
 		$screenshot_modules_folder_uri = MAILSTER_UPLOAD_URI . '/screenshots/' . $slug . '/modules/' . $hash;

@@ -82,6 +82,7 @@
 			</div>
 			<div id="image_button" class="tab">
 			<?php $this->templateobj->buttons(); ?>
+			<?php $this->templateobj->buttons( MAILSTER_DIR . 'assets/img/social/' ); ?>
 			<div class="clearfix">
 					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_attr_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
 			</div>
@@ -338,7 +339,7 @@
 			<label class="highdpi-checkbox" title="<?php esc_attr_e( 'use HighDPI/Retina ready images if available', 'mailster' ); ?>">
 				<input type="checkbox" class="highdpi" <?php checked( mailster_option( 'high_dpi' ) ); ?> aria-label="<?php esc_attr_e( 'use High DPI image', 'mailster' ); ?>"> <?php esc_html_e( 'HighDPI/Retina ready', 'mailster' ); ?>
 			</label>
-			<a class="remove mailster-icon" title="<?php esc_attr_e( 'remove element', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'remove element', 'mailster' ); ?>"></a>
+			<a class="remove button button-small button-link-delete" title="<?php esc_attr_e( 'remove element', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'remove element', 'mailster' ); ?>"><?php esc_html_e( 'Remove Element', 'mailster' ); ?></a>
 		</div>
 		<input type="hidden" class="factor" value="1">
 
