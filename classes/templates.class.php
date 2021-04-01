@@ -353,6 +353,11 @@ class MailsterTemplates {
 						update_option( 'mailster_templates_updates', --$update_count );
 					}
 				}
+
+				// newly added
+				if ( ! isset( $templates[ $data['slug'] ] ) ) {
+					$this->reset_query_cache();
+				}
 				$this->process_colors( $data['slug'] );
 
 			}
@@ -695,7 +700,9 @@ class MailsterTemplates {
 				'enter_template_name'  => esc_html__( 'Please enter the name of the new template.', 'mailster' ),
 				'uploading'            => esc_html__( 'uploading zip file %s', 'mailster' ),
 				'downloading'          => esc_html__( 'Downloading...', 'mailster' ),
+				'downloaded'           => esc_html__( 'Template loaded!', 'mailster' ),
 				'updating'             => esc_html__( 'Updating...', 'mailster' ),
+				'updated'              => esc_html__( 'Template has been updated!', 'mailster' ),
 				'confirm_delete'       => esc_html__( 'You are about to delete this template %s.', 'mailster' ),
 				'confirm_delete_file'  => esc_html__( 'You are about to delete file %1$s from template %2$s.', 'mailster' ),
 				'confirm_default'      => esc_html__( 'You are about to make %s your default template.', 'mailster' ),

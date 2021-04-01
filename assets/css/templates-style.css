@@ -92,7 +92,7 @@
 .theme-count:empty{
 	visibility: hidden;
 }
-.browse-installed .theme-browser .theme-actions .buy-gumroad,
+.theme-browser .theme-actions .create-campaign,
 .browse-installed .theme-browser .theme-actions .request-download,
 .browse-installed .theme-browser .theme-actions .download{
 	display: none;
@@ -122,6 +122,9 @@
 }
 .browse-installed .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
 	display: block;
+}
+.theme-browser .is-installed .theme-actions .create-campaign {
+	display: inline-block;
 }
 .theme-browser .not-supported .theme-actions{
 	display: none;

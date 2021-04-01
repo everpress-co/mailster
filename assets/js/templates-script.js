@@ -19,7 +19,6 @@ mailster = (function (mailster, $, window, document) {
 		searchtype = typeselector.val(),
 		templates = [],
 		busy = false,
-		gumloaded = false,
 		current_slug = false;
 
 	filterlinks
@@ -61,25 +60,6 @@ mailster = (function (mailster, $, window, document) {
 			$(this).addClass('updating-message');
 			downloadTemplateFromUrl(this.href, $(this).closest('.theme').data('slug'));
 		})
-		.on('click', '.buy-gumroad', function (event) {
-			var _self = $(this);
-			event.preventDefault();
-			_self.addClass('updating-message');
-
-			current_slug = $(this).closest('.theme').data('slug');
-
-			!gumloaded && $.getScript('https://gumroad.com/js/gumroad.js', function () {
-				var t = setInterval(function () {
-					if (typeof createGumroadOverlay == 'function') {
-						clearInterval(t);
-						gumloaded = true;
-						createGumroadOverlay();
-						_self.click();
-						_self.removeClass('updating-message');
-					}
-				}, 100)
-			});
-		})
 		.on('click', '.popup', function () {
 			var href = this.href;
 
@@ -116,24 +96,6 @@ mailster = (function (mailster, $, window, document) {
 	})
 
 	mailster.$.window
-		.on('message', function (e) {
-
-			if (!e.originalEvent.data) return;
-			var data = typeof e.originalEvent.data === 'string' ? $.parseJSON(e.originalEvent.data.replace('/*framebus*/', '')) : e.originalEvent.data;
-
-			if (data.post_message_name === "sale") {
-				if (data.custom_delivery_url) {
-					GumroadOverlay.redirect = function () {
-						GumroadOverlay.minimizeIframe();
-						downloadTemplateFromUrl(data.custom_delivery_url, current_slug);
-					};
-				}
-
-			}
-		})
-		.on('popstate', function (event) {
-			//updateState(event);
-		})
 		.on('click', '.upload-template', function () {
 			$('.upload-field').show();
 		});
@@ -415,10 +377,7 @@ mailster = (function (mailster, $, window, document) {
 		}, function (response) {
 
 			if (response.success) {
-				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>Downloaded!</p>');
-				setFilter('installed', function () {
-					$('[data-slug="' + slug + '"]').prependTo(templatebrowser).find('.notice-success').html('<p>' + response.msg + '</p>');
-				});
+				template.addClass('is-installed').find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>' + mailster.l10n.templates.downloaded + '</p>');
 				template.find('.notice-error').empty();
 			} else {
 				template.find('.notice-error').html('<p>' + response.msg + '</p>');
@@ -444,7 +403,7 @@ mailster = (function (mailster, $, window, document) {
 		}, function (response) {
 
 			if (response.success) {
-				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>Updated!</p>');
+				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>' + mailster.l10n.templates.updated + '</p>');
 				template.find('.notice-error').empty();
 				var updatebadge = $('#menu-posts-newsletter').find('.current').find('.update-plugins');
 				if (updatebadge) {
