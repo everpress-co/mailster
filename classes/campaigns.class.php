@@ -1350,8 +1350,12 @@ class MailsterCampaigns {
 					wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
 				}
 
-				wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
-				wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
+				if ( function_exists( 'wp_enqueue_code_editor' ) ) {
+					wp_enqueue_code_editor( array( 'type' => 'htmlmixed' ) );
+				} else {
+					wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
+					wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
+				}
 
 				wp_enqueue_style( 'mailster-precheck', MAILSTER_URI . 'assets/css/precheck-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 

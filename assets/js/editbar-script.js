@@ -30,22 +30,7 @@ mailster = (function (mailster, $, window, document) {
 		buttonalt = bar.find('.buttonalt'),
 		buttonnav = bar.find('.button-nav'),
 		buttontabs = bar.find('ul.buttons'),
-		codemirror, codemirrorargs = {
-			mode: {
-				name: "htmlmixed",
-				scriptTypes: [{
-					matches: /\/x-handlebars-template|\/x-mustache/i,
-					mode: null
-				}, {
-					matches: /(text|application)\/(x-)?vb(a|script)/i,
-					mode: "vbscript"
-				}]
-			},
-			tabMode: "indent",
-			lineNumbers: true,
-			viewportMargin: Infinity,
-			autofocus: true
-		},
+		codeeditor,
 		buttontype, current, currentimage, currenttext, currenttag, assetstype, assetslist, itemcount, checkForPostsTimeout, lastpostsargs, searchTimeout, checkRSSfeedInterval,
 		searchstring = '',
 		is_loading = false,
@@ -871,7 +856,7 @@ mailster = (function (mailster, $, window, document) {
 
 		} else if (current.type == 'codeview') {
 
-			var html = codemirror.getValue();
+			var html = codeeditor.codemirror.getValue();
 			current.element.html(html);
 			current.modulebuttons.prependTo(current.element);
 
@@ -1366,9 +1351,9 @@ mailster = (function (mailster, $, window, document) {
 
 			} else if (type == 'codeview') {
 
-				if (codemirror) {
-					codemirror.clearHistory();
-					codemirror.setValue('');
+				if (codeeditor) {
+					codeeditor.codemirror.clearHistory();
+					codeeditor.codemirror.setValue('');
 					base.find('.CodeMirror').remove();
 				}
 
@@ -1402,7 +1387,15 @@ mailster = (function (mailster, $, window, document) {
 
 				} else if (type == 'codeview') {
 
-					codemirror = mailster.util.CodeMirror.fromTextArea(textarea.get(0), codemirrorargs);
+					if (wp.codeEditor) {
+						codeeditor = wp.codeEditor.initialize(textarea, {
+							codemirror: mailster.util.codemirrorargs
+						});
+					} else {
+						codeeditor = {
+							codemirror: window.CodeMirror.fromTextArea(textarea.get(0), mailster.util.codemirrorargs)
+						};
+					}
 
 				}
 

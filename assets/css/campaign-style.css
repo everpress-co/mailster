@@ -1214,6 +1214,20 @@ a.mailster-btn.editbutton {
 	position: absolute;
 	display: block;
 }
+.CodeMirror {
+  font-family: monospace;
+  color: black;
+  height: auto;
+  width: 100%;
+  direction: ltr;
+  border: 1px solid #CCD0D4;
+
+}
+.CodeMirror-code {
+  background-image:url(../img/pre_bg.png);
+  background-attachment:scroll;
+}
+
 .dark-mode #mailster_template a.toggle-modules{
 	background: #32373c;
 	border-color: #32373c #32373c #191f25 #191f25;
