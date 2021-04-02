@@ -90,8 +90,9 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.18 =
 
-* fixes for PHP 8
 * fixed: comparing empty date values on MySQL 8
+* fixed: issue with merge tags when rss and regular tag is used
+* improved: support for PHP 8
 
 = Version 2.4.17 =
 
