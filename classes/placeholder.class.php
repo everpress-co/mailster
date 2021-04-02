@@ -1194,12 +1194,13 @@ class MailsterPlaceholder {
 			case 'title':
 				$replace_to = str_replace( array( '"', "'" ), array( '&quot;', '&#039;' ), $post->post_title );
 				break;
+			case 'button':
+				$replace_to = esc_html__( 'Read More', 'mailster' );
+				break;
 			case 'link':
 				if ( isset( $post->post_link ) ) {
 					$replace_to = $post->post_link;
 				}
-			case 'button':
-				$replace_to = esc_html__( 'Read More', 'mailster' );
 			case 'permalink':
 				if ( ! $replace_to && $post->ID ) {
 					$replace_to = get_permalink( $post->ID );
