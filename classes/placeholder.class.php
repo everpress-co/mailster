@@ -30,6 +30,7 @@ class MailsterPlaceholder {
 	public function __construct( $content = '', $deprecated = null ) {
 
 		$this->set_content( $content );
+		$this->post_types = mailster( 'helper' )->get_dynamic_post_types();
 
 	}
 
@@ -919,25 +920,11 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
-	 */
-	private function get_post_types_to_replace() {
-		if ( empty( $this->post_types ) ) {
-			$this->post_types = mailster( 'helper' )->get_dynamic_post_types();
-		}
-
-		return $this->post_types;
-	}
-
-
-	/**
-	 *
-	 *
 	 * @param unknown $relative_to_absolute (optional)
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
-		$pts = $this->get_post_types_to_replace();
-		$pts = implode( '|', $pts );
+		$pts = implode( '|', $this->post_types );
 
 		// all dynamic post type tags
 		if ( $count = preg_match_all( '#\{(!)?((' . $pts . ')_([^}]+):(-|~)?([\d]+)(;([0-9;,-]+))?)\}#i', $this->content, $hits ) ) {
