@@ -151,7 +151,7 @@ mailster = (function (mailster, $, window, document) {
 
 		content = curr_content + content;
 
-		textarea.val($.trim(content) + "\n\n");
+		textarea.val(mailster.util.trim(content) + "\n\n");
 
 		textarea.scrollTop(textarea[0].scrollHeight);
 

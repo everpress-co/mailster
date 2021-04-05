@@ -1036,7 +1036,7 @@ mailster = (function (mailster, $, window, document) {
 			top = (type != 'img') ? data.offset.top : 0,
 			name = data.name || '',
 			type = data.type,
-			content = $.trim(el.html()),
+			content = mailster.util.trim(el.html()),
 			condition = el.find('if'),
 			conditions,
 			position = current.element.data('position') || 0,
@@ -1118,7 +1118,7 @@ mailster = (function (mailster, $, window, document) {
 
 			original.prop('checked', current.original);
 			imagecrop.prop('checked', current.crop).parent()[current.crop ? 'addClass' : 'removeClass']('not-cropped');
-			searchstring = $.trim(imagesearch.val());
+			searchstring = mailster.util.trim(imagesearch.val());
 
 			factor.val(1);
 			mailster.util.getRealDimensions(el, function (w, h, f) {
@@ -1168,7 +1168,7 @@ mailster = (function (mailster, $, window, document) {
 			} else {
 
 				$('#button-type-bar').find('a').eq(0).trigger('click');
-				buttonlabel.val($.trim(el.text())).focus().select();
+				buttonlabel.val(mailster.util.trim(el.text())).focus().select();
 				buttonlink.val(current.element.attr('href'));
 				bar.find('ul.buttons').hide();
 			}
@@ -1176,7 +1176,7 @@ mailster = (function (mailster, $, window, document) {
 		} else if (type == 'auto') {
 
 			openTab('#' + (currenttag ? 'dynamic' : 'static') + '_embed_options', true);
-			searchstring = $.trim(postsearch.val());
+			searchstring = mailster.util.trim(postsearch.val());
 
 			if (currenttag) {
 
@@ -1209,7 +1209,7 @@ mailster = (function (mailster, $, window, document) {
 			clone.find('single, multi')
 				.removeAttr('contenteditable spellcheck id dir style class');
 
-			var html = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
+			var html = mailster.util.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 			textarea.show().html(html);
 
 		}
@@ -1268,7 +1268,7 @@ mailster = (function (mailster, $, window, document) {
 						}
 					}
 
-					base.find('input').eq(0).val($.trim(val));
+					base.find('input').eq(0).val(mailster.util.trim(val));
 
 				}
 
@@ -1484,7 +1484,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function searchPost() {
 		var $this = $(this),
-			temp = $.trim('attachment' == assetstype ? imagesearch.val() : postsearch.val());
+			temp = mailster.util.trim('attachment' == assetstype ? imagesearch.val() : postsearch.val());
 		if ((!$this.is(':checked') && searchstring == temp)) {
 			return false;
 		}
@@ -1555,7 +1555,7 @@ mailster = (function (mailster, $, window, document) {
 		clearTimeout(timeout);
 		timeout = setTimeout(function () {
 			if (!editor) return;
-			var val = $.trim(editor.save());
+			var val = mailster.util.trim(editor.save());
 			current.element.html(val);
 		}, 100);
 	}

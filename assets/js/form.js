@@ -13,7 +13,7 @@ jQuery(document).ready(function ($) {
 			info = $('<div class="mailster-form-info"></div>'),
 			c;
 
-		if ($.isFunction(window.mailster_pre_submit)) {
+		if ('function' === typeof window.mailster_pre_submit) {
 			c = window.mailster_pre_submit.call(this, data);
 			if (c === false) return false;
 			if (typeof c !== 'undefined') data = c;
@@ -26,7 +26,7 @@ jQuery(document).ready(function ($) {
 				var response;
 
 				try {
-					response = $.parseJSON(jqXHR.responseText);
+					response = JSON.parse(jqXHR.responseText);
 					if (!response.html) {
 						response = {
 							html: 'There was an error with the response:<br><code>[' + response.code + '] ' + response.message + '</code>',
@@ -49,7 +49,7 @@ jQuery(document).ready(function ($) {
 
 			form.find('.mailster-form-info').remove();
 
-			if ($.isFunction(window.mailster_post_submit)) {
+			if ('function' === typeof window.mailster_post_submit) {
 				c = window.mailster_post_submit.call(form[0], response);
 				if (c === false) return false;
 				if (typeof c !== 'undefined') response = c;
