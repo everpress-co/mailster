@@ -1513,28 +1513,45 @@ class MailsterHelper {
 
 	public function in_timeframe( $timestamp = null ) {
 
-		$from = mailster_option( 'time_frame_from', 0 );
-		$to   = mailster_option( 'time_frame_to', 0 );
-		$days = mailster_option( 'time_frame_day' );
 		if ( is_null( $timestamp ) ) {
 			$timestamp = current_time( 'timestamp' );
 		}
+
+		$from = mailster_option( 'time_frame_from', 0 );
+		$to   = mailster_option( 'time_frame_to', 0 );
+		$days = mailster_option( 'time_frame_day' );
 		$hour = date( 'G', $timestamp );
 		$day  = date( 'w', $timestamp );
 
+		// no weekday at all or current day is not in the list
+		if ( empty( $days ) || ! in_array( $day, $days ) ) {
+			return false;
+		}
+
 		// further check if not 24h
 		if ( abs( $from - $to ) ) {
-			if ( $to < $from ) {
-				$to += 24;
+
+			$t_from = strtotime( $from . ':00' );
+			$t_to   = strtotime( $to . ':00' );
+
+			// current hour is smaller as the requested from one => set it to yesterday
+			if ( $hour < $from ) {
+				$t_from = strtotime( 'yesterday ' . $from . ':00' );
+
+				// to is smaller as from so after midnight => set as tomorrow
+			} elseif ( $to < $from ) {
+				$t_to = strtotime( 'tomorrow ' . $to . ':00' );
 			}
-			if ( $from > $hour || $hour >= $to ) {
+
+			// check if its in the range
+			if ( $t_from > $timestamp || $timestamp > $t_to ) {
 				return false;
 			}
 		}
-		return ! is_array( $days ) || in_array( $day, $days );
+
+		return true;
 
 	}
-
 	/**
 	 *
 	 *
