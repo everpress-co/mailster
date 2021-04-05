@@ -92,6 +92,7 @@ Xaver Birsak – https://everpress.co
 
 * fixed: comparing empty date values on MySQL 8
 * fixed: issue with merge tags when rss and regular tag is used
+* improved: removed/replaced deprecated jQuey methods
 * improved: support for PHP 8
 
 = Version 2.4.17 =

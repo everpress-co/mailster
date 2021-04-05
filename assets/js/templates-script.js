@@ -276,7 +276,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 		uploader.bind('FileUploaded', function (up, file, response) {
-			response = $.parseJSON(response.response);
+			response = JSON.parse(response.response);
 			if (response.success) {
 				location.reload();
 			} else {
