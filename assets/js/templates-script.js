@@ -324,7 +324,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function search() {
-		searchquery = $.trim(searchfield.val());
+		searchquery = mailster.util.trim(searchfield.val());
 		// Escape the term string for RegExp meta characters.
 		searchquery = searchquery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
