@@ -113,16 +113,16 @@ if ( ! $is_new ) :
 				<tr>
 				<td><span class="verybold"><?php echo number_format_i18n( $sent ); ?></span> <?php echo esc_html__( _n( 'Mail sent', 'Mails sent', $sent, 'mailster' ) ); ?></td>
 				<td width="60">
-					<div id="stats_open" class="piechart" data-percent="<?php echo $openrate; ?>"><span>0</span>%</div>
+					<div id="stats_open" class="piechart" data-percent="<?php echo $openrate; ?>"></div>
 				</td><td><span class="verybold"></span> <?php esc_html_e( 'open rate', 'mailster' ); ?></td>
 				<td width="60">
-					<div id="stats_click" class="piechart" data-percent="<?php echo $clickrate; ?>"><span>0</span>%</div>
+					<div id="stats_click" class="piechart" data-percent="<?php echo $clickrate; ?>"></div>
 				</td><td><span class="verybold"></span> <?php esc_html_e( 'click rate', 'mailster' ); ?></td>
 				<td width="60">
-					<div id="stats_unsub" class="piechart" data-percent="<?php echo $unsubrate; ?>"><span>0</span>%</div>
+					<div id="stats_unsub" class="piechart" data-percent="<?php echo $unsubrate; ?>"></div>
 				</td><td><span class="verybold"></span> <?php esc_html_e( 'unsubscribe rate', 'mailster' ); ?></td>
 				<td width="60">
-					<div id="stats_bounce" class="piechart" data-percent="<?php echo $bouncerate; ?>"><span>0</span>%</div>
+					<div id="stats_bounce" class="piechart" data-percent="<?php echo $bouncerate; ?>"></div>
 				</td><td><span class="verybold"></span> <?php esc_html_e( 'bounce rate', 'mailster' ); ?></td>
 				</tr>
 			</table>

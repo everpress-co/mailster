@@ -884,27 +884,13 @@ mailster = (function (mailster, $, window, document) {
 	mailster.$.details.find('.piechart').each(function () {
 		var el = $(this),
 			p = el.data('percent');
+
 		mailster.chart.create(this, 'radialBar', {
 			series: [Math.round(p)]
 		});
 
 	})
 
-	$.easyPieChart && mailster.$.details.find('.piechart').easyPieChart({
-		animate: 2000,
-		rotate: 180,
-		barColor: mailster.colors.main,
-		trackColor: mailster.colors.track,
-		lineWidth: 9,
-		size: 75,
-		lineCap: 'butt',
-		onStep: function (value) {
-			this.$el.find('span').text(Math.round(value));
-		},
-		onStop: function (value) {
-			this.$el.find('span').text(Math.round(value));
-		}
-	});
 
 	function showWorld() {
 		var options = {
@@ -1020,7 +1006,9 @@ mailster = (function (mailster, $, window, document) {
 				clicks = _this.data('clicks'),
 				total = _this.data('total');
 
-			mailster.clickmap.$.popup.find('.piechart').data('easyPieChart').update(p);
+
+			mailster.chart.update(mailster.clickmap.$.popup.find('.piechart')[0], Math.round(p));
+
 			mailster.clickmap.$.popup.find('.link').html(link);
 			mailster.clickmap.$.popup.find('.clicks').html(clicks);
 			mailster.clickmap.$.popup.find('.total').html(total);
@@ -1091,20 +1079,19 @@ mailster = (function (mailster, $, window, document) {
 	});
 
 	!mailster.editable && mailster.events.push('documentReady', function () {
-		$.easyPieChart && mailster.clickmap.$.popup.find('.piechart').easyPieChart({
-			animate: 2000,
-			rotate: 180,
-			barColor: mailster.colors.main,
-			trackColor: mailster.colors.track,
-			lineWidth: 9,
-			size: 75,
-			lineCap: 'butt',
-			onStep: function (value) {
-				this.$el.find('span').text(Math.round(value));
-			},
-			onStop: function (value) {
-				this.$el.find('span').text(Math.round(value));
-			}
+		mailster.clickmap.$.popup.find('.piechart').each(function () {
+			var el = $(this),
+				p = el.data('percent');
+
+			mailster.chart.create(this, 'radialBar', {
+				series: [Math.round(p)],
+				chart: {
+					offsetX: -25,
+					width: 120,
+				},
+
+			});
+
 		});
 	})
 
@@ -1890,10 +1877,10 @@ mailster = (function (mailster, $, window, document) {
 				$('.hb-' + type).html((this.percentage * 100).toFixed(2) + '%');
 			});
 
-			if ($('#stats_opens').length) $('#stats_opens').data('easyPieChart').update(Math.round(_data.open_rate));
-			if ($('#stats_clicks').length) $('#stats_clicks').data('easyPieChart').update(Math.round(_data.click_rate));
-			if ($('#stats_unsubscribes').length) $('#stats_unsubscribes').data('easyPieChart').update(Math.round(_data.unsub_rate));
-			if ($('#stats_bounces').length) $('#stats_bounces').data('easyPieChart').update(Math.round(_data.bounce_rate));
+			mailster.chart.update($('#stats_open')[0], Math.round(_data.open_rate));
+			mailster.chart.update($('#stats_clicks')[0], Math.round(_data.click_rate));
+			mailster.chart.update($('#stats_unsubscribes')[0], Math.round(_data.unsub_rate));
+			mailster.chart.update($('#stats_bounces')[0], Math.round(_data.bounce_rate));
 
 			progress.find('.bar').width(p + '%');
 			progress.find('span').eq(1).html(_data.sent_formatted);

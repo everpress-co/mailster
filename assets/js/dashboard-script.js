@@ -137,21 +137,31 @@ mailster = (function (mailster, $, window, document) {
 				}
 			});
 
-		box.find('.piechart').easyPieChart({
-			animate: 1000,
-			rotate: 180,
-			barColor: mailster.colors.main,
-			trackColor: mailster.colors.track,
-			lineWidth: 9,
-			size: 75,
-			lineCap: 'butt',
-			onStep: function (value) {
-				this.$el.find('span').text(Math.round(value));
-			},
-			onStop: function (value) {
-				this.$el.find('span').text(Math.round(value));
-			}
-		});
+		// box.find('.piechart').easyPieChart({
+		// 	animate: 1000,
+		// 	rotate: 180,
+		// 	barColor: mailster.colors.main,
+		// 	trackColor: mailster.colors.track,
+		// 	lineWidth: 9,
+		// 	size: 75,
+		// 	lineCap: 'butt',
+		// 	onStep: function (value) {
+		// 		this.$el.find('span').text(Math.round(value));
+		// 	},
+		// 	onStop: function (value) {
+		// 		this.$el.find('span').text(Math.round(value));
+		// 	}
+		// });
+
+		box.find('.piechart').each(function () {
+			var el = $(this),
+				p = el.data('percent');
+
+			mailster.chart.create(this, 'radialBar', {
+				series: [Math.round(p)]
+			});
+
+		})
 
 		function loadEntry(ID, silent) {
 
@@ -176,10 +186,11 @@ mailster = (function (mailster, $, window, document) {
 				}
 
 				box.find('.stats-total').html(data.sent_formatted);
-				box.find('.stats-open').data('easyPieChart').update(data.openrate * 100);
-				box.find('.stats-clicks').data('easyPieChart').update(data.clickrate * 100);
-				box.find('.stats-unsubscribes').data('easyPieChart').update(data.unsubscriberate * 100);
-				box.find('.stats-bounces').data('easyPieChart').update(data.bouncerate * 100);
+
+				mailster.chart.update(box.find('.stats-open')[0], Math.round(data.openrate * 100));
+				mailster.chart.update(box.find('.stats-clicks')[0], Math.round(data.clickrate * 100));
+				mailster.chart.update(box.find('.stats-unsubscribes')[0], Math.round(data.unsubscriberate * 100));
+				mailster.chart.update(box.find('.stats-bounces')[0], Math.round(data.bouncerate * 100));
 
 				current = data.ID;
 				box.removeClass('mailster-loading');
@@ -200,7 +211,11 @@ mailster = (function (mailster, $, window, document) {
 			range: subscriberselect.val()
 		}, function (response) {
 
-			resetChart();
+			console.log(response);
+
+			return;
+
+			//resetChart();
 			subscribers.removeClass('mailster-loading');
 
 			if (!chart) {

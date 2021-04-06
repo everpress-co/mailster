@@ -13,10 +13,10 @@ if ( $lists = mailster( 'lists' )->get() ) : ?>
 	<div class="mailster-mb-stats">
 		<ul class="campaign-charts">
 			<li><div class="stats-total"></div></li>
-			<li><div class="stats-open piechart" data-percent="0"><span>0</span>%</div></li>
-			<li><div class="stats-clicks piechart" data-percent="0"><span>0</span>%</div></li>
-			<li><div class="stats-unsubscribes piechart" data-percent="0"><span>0</span>%</div></li>
-			<li><div class="stats-bounces piechart" data-percent="0"><span>0</span>%</div></li>
+			<li><div class="stats-open piechart" data-percent="0"></div></li>
+			<li><div class="stats-clicks piechart" data-percent="0"></div></li>
+			<li><div class="stats-unsubscribes piechart" data-percent="0"></div></li>
+			<li><div class="stats-bounces piechart" data-percent="0"></div></li>
 		</ul>
 		<ul class="labels">
 			<li><label><?php echo esc_html_x( 'total', 'in pie chart', 'mailster' ); ?></label></li>

@@ -379,15 +379,15 @@ if ( ! $is_new ) :
 				<tr>
 				<td><span class="verybold"><?php echo esc_html( $sent ); ?></span> <?php esc_html_e( _n( 'Campaign sent', 'Campaigns sent', $sent, 'mailster' ) ); ?></td>
 				<td width="60">
-				<div id="stats_open" class="piechart" data-percent="<?php echo $openrate * 100; ?>"><span>0</span>%</div>
+				<div id="stats_open" class="piechart" data-percent="<?php echo $openrate * 100; ?>"></div>
 				</td>
 				<td><span class="verybold"></span> <?php esc_html_e( 'open rate', 'mailster' ); ?></td>
 				<td width="60">
-				<div id="stats_click" class="piechart" data-percent="<?php echo $clickrate * 100; ?>"><span>0</span>%</div>
+				<div id="stats_click" class="piechart" data-percent="<?php echo $clickrate * 100; ?>"></div>
 				</td>
 				<td><span class="verybold"></span> <?php esc_html_e( 'click rate', 'mailster' ); ?></td>
 				<td width="60">
-				<div id="stats_click" class="piechart" data-percent="<?php echo $aclickrate * 100; ?>"><span>0</span>%</div>
+				<div id="stats_click" class="piechart" data-percent="<?php echo $aclickrate * 100; ?>"></div>
 				</td>
 				<td><span class="verybold"></span> <?php esc_html_e( 'adjusted click rate', 'mailster' ); ?></td>
 				</tr>

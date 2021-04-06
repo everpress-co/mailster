@@ -56,18 +56,18 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 <?php else : ?>
 	<?php
-	$sent    = 1 * $this->get_sent( $post->ID );
+	$sent    = $this->get_sent( $post->ID );
 	$totals  = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $sent;
 	$deleted = $this->get_deleted( $post->ID );
 
 	$errors = $this->get_errors( $post->ID );
 
-	$opens        = 1 * $this->get_opens( $post->ID );
-	$opens_total  = 1 * $this->get_opens( $post->ID, true );
-	$clicks       = 1 * $this->get_clicks( $post->ID );
-	$clicks_total = 1 * $this->get_clicks( $post->ID, true );
-	$unsubscribes = 1 * $this->get_unsubscribes( $post->ID );
-	$bounces      = 1 * $this->get_bounces( $post->ID );
+	$opens        = $this->get_opens( $post->ID );
+	$opens_total  = $this->get_opens( $post->ID, true );
+	$clicks       = $this->get_clicks( $post->ID );
+	$clicks_total = $this->get_clicks( $post->ID, true );
+	$unsubscribes = $this->get_unsubscribes( $post->ID );
+	$bounces      = $this->get_bounces( $post->ID );
 	?>
 
 <table>

@@ -8,23 +8,15 @@ mailster = (function (mailster, $, window, document) {
 		userimage = $('.avatar'),
 		form = $('form#subscriber_form');
 
+	$('.piechart').each(function () {
+		var el = $(this),
+			p = el.data('percent');
 
-	$.easyPieChart && $('.piechart').easyPieChart({
-		animate: 1000,
-		rotate: 180,
-		barColor: mailster.colors.main,
-		trackColor: mailster.colors.track_light,
-		lineWidth: 9,
-		size: 75,
-		lineCap: 'butt',
-		onStep: function (value) {
-			this.$el.find('span').text(Math.round(value));
-		},
-		onStop: function (value) {
-			this.$el.find('span').text(Math.round(value));
-		}
-	});
+		mailster.chart.create(this, 'radialBar', {
+			series: [Math.round(p)]
+		});
 
+	})
 	$('#subscriber_form').on('submit', function () {
 		clearTimeout(timeout);
 		email.off('blur').off('keyup');

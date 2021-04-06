@@ -402,29 +402,28 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	grid-template-columns: 70px auto;
 	width: 22%;
 	align-items: center;
-
 	width: 21%;
-	background: #fafafa;
+	_box-shadow: rgb(51, 51, 51,0.2) 0px 0px 0px 1px;
 	margin-left:1%;
-	border-radius: 10px;
+	border-radius: 2px;
 }
 #mailster_details #stats li:first-child {
 	width: 12%;
 	margin-left:0;
 	grid-template-columns:auto;
 	justify-items: center;
+	text-align: center;
 }
 #mailster_details #stats li .piechart {
-	width: 30%;
 	display: inline-block;
-	_border-left: 1px solid #CCD0D4;
+	border-left:1px solid #ccc;
 }
 #mailster_details #stats li label {
-	width: 70%;
 	display: inline-block;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	z-index: 2;
+	max-width: 100%;
 }
 #mailster_details #stats_ li label {
 	white-space: nowrap;
@@ -437,10 +436,17 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 @media screen and (max-width: 1200px) {
 
 	#mailster_details #stats li {
-		width: 50%;
+		margin-left:0%;
+		width: 100%;
 	}
 	#mailster_details #stats li:first-child {
 		width: 100%;
+	}
+	#mailster_details #stats li {
+		border-top:1px solid #ccc;
+	}
+	#mailster_details #stats li .piechart {
+		border-left:0;
 	}
 }
 #mailster_details .big {

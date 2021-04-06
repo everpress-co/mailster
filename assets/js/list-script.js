@@ -2,22 +2,15 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
-	$.easyPieChart && $('.piechart').easyPieChart({
-		animate: 1000,
-		rotate: 180,
-		barColor: mailster.colors.main,
-		trackColor: mailster.colors.track_light,
-		lineWidth: 9,
-		size: 75,
-		lineCap: 'butt',
-		onStep: function (value) {
-			this.$el.find('span').text(Math.round(value));
-		},
-		onStop: function (value) {
-			this.$el.find('span').text(Math.round(value));
-		}
-	});
+	$('.piechart').each(function () {
+		var el = $(this),
+			p = el.data('percent');
 
+		mailster.chart.create(this, 'radialBar', {
+			series: [Math.round(p)]
+		});
+
+	})
 	$('.detail').on('click', function () {
 
 		var _this = $(this).addClass('active'),
