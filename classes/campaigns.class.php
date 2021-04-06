@@ -1334,8 +1334,9 @@ class MailsterCampaigns {
 			if ( in_array( $post->post_status, array( 'active', 'finished' ) ) || isset( $_GET['showstats'] ) ) {
 
 				wp_enqueue_script( 'google-jsapi', $googlejsapi_url, array(), null, true );
-				wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
-				wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
+				// wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+				// wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
+				wp_enqueue_script( 'mailster-charts-script' );
 				wp_add_inline_style( 'mailster-newsletter', '#local-storage-notice{display:none !important}' );
 
 			} else {
@@ -1346,8 +1347,9 @@ class MailsterCampaigns {
 
 				if ( $post->post_status == 'autoresponder' ) {
 					wp_enqueue_script( 'google-jsapi', $googlejsapi_url, array(), null, true );
-					wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
-					wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
+					// wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+					// wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
+					wp_enqueue_script( 'mailster-charts-script' );
 				}
 
 				if ( function_exists( 'wp_enqueue_code_editor' ) ) {

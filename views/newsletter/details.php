@@ -13,7 +13,6 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 <?php if ( $editable ) : ?>
 <table class="form-table">
 		<tbody>
-
 		<tr valign="top">
 			<th scope="row"><?php esc_html_e( 'Subject', 'mailster' ); ?></th>
 			<td>
@@ -57,18 +56,18 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 <?php else : ?>
 	<?php
-	$sent    = $this->get_sent( $post->ID );
+	$sent    = 1 * $this->get_sent( $post->ID );
 	$totals  = 'autoresponder' != $post->post_status ? $this->get_totals( $post->ID ) : $sent;
 	$deleted = $this->get_deleted( $post->ID );
 
 	$errors = $this->get_errors( $post->ID );
 
-	$opens        = $this->get_opens( $post->ID );
-	$opens_total  = $this->get_opens( $post->ID, true );
-	$clicks       = $this->get_clicks( $post->ID );
-	$clicks_total = $this->get_clicks( $post->ID, true );
-	$unsubscribes = $this->get_unsubscribes( $post->ID );
-	$bounces      = $this->get_bounces( $post->ID );
+	$opens        = 1 * $this->get_opens( $post->ID );
+	$opens_total  = 1 * $this->get_opens( $post->ID, true );
+	$clicks       = 1 * $this->get_clicks( $post->ID );
+	$clicks_total = 1 * $this->get_clicks( $post->ID, true );
+	$unsubscribes = 1 * $this->get_unsubscribes( $post->ID );
+	$bounces      = 1 * $this->get_bounces( $post->ID );
 	?>
 
 <table>
@@ -89,27 +88,27 @@ $timeoffset = mailster( 'helper' )->gmt_offset( true );
 
 <ul id="stats">
 	<li class="receivers">
-		<label class="recipients-limit"><span class="verybold hb-sent"><?php echo number_format_i18n( $sent ); ?></span> <?php echo ( 'autoresponder' == $post->post_status ) ? esc_html__( 'sent', 'mailster' ) : _nx( 'receiver', 'receivers', $sent, 'in pie chart', 'mailster' ); ?></label>
+		<label class="recipients-limit"><span class="verybold hb-sent"><?php echo number_format_i18n( $sent ); ?></span><br> <?php echo ( 'autoresponder' == $post->post_status ) ? esc_html__( 'sent', 'mailster' ) : _nx( 'receiver', 'receivers', $sent, 'in pie chart', 'mailster' ); ?></label>
 	</li>
 	<?php if ( $this->post_data['track_opens'] ) : ?>
 	<li>
-		<div id="stats_open" class="piechart" data-percent="<?php echo $this->get_open_rate( $post->ID ) * 100; ?>"><span>0</span>%</div>
-		<label class="show-open"><span class="verybold hb-opens"><?php echo number_format_i18n( $opens ); ?></span> <?php echo _nx( 'opened', 'opens', $opens, 'in pie chart', 'mailster' ); ?></label>
+		<div id="stats_open" class="piechart" data-percent="<?php echo $this->get_open_rate( $post->ID ) * 100; ?>"></div>
+		<label class="show-open"><span class="verybold hb-opens"><?php echo number_format_i18n( $opens ); ?></span><br> <?php echo _nx( 'opened', 'opens', $opens, 'in pie chart', 'mailster' ); ?></label>
 	</li>
 	<?php endif; ?>
 	<?php if ( $this->post_data['track_clicks'] ) : ?>
 	<li>
-		<div id="stats_click" class="piechart" data-percent="<?php echo $this->get_click_rate( $post->ID ) * 100; ?>"><span>0</span>%</div>
-		<label class="show-click"><span class="verybold hb-clicks"><?php echo number_format_i18n( $clicks ); ?></span> <?php echo _nx( 'click', 'clicks', $clicks, 'in pie chart', 'mailster' ); ?></label>
+		<div id="stats_click" class="piechart" data-percent="<?php echo $this->get_click_rate( $post->ID ) * 100; ?>"></div>
+		<label class="show-click"><span class="verybold hb-clicks"><?php echo number_format_i18n( $clicks ); ?></span><br> <?php echo _nx( 'click', 'clicks', $clicks, 'in pie chart', 'mailster' ); ?></label>
 	</li>
 	<?php endif; ?>
 	<li>
-		<div id="stats_unsubscribes" class="piechart" data-percent="<?php echo $this->get_unsubscribe_rate( $post->ID ) * 100; ?>"><span>0</span>%</div>
-		<label class="show-unsubscribes"><span class="verybold hb-unsubs"><?php echo number_format_i18n( $unsubscribes ); ?></span> <?php echo _nx( 'unsubscribe', 'unsubscribes', $unsubscribes, 'in pie chart', 'mailster' ); ?></label>
+		<div id="stats_unsubscribes" class="piechart" data-percent="<?php echo $this->get_unsubscribe_rate( $post->ID ) * 100; ?>"></div>
+		<label class="show-unsubscribes"><span class="verybold hb-unsubs"><?php echo number_format_i18n( $unsubscribes ); ?></span><br> <?php echo _nx( 'unsubscribe', 'unsubscribes', $unsubscribes, 'in pie chart', 'mailster' ); ?></label>
 	</li>
 	<li>
-		<div id="stats_bounces" class="piechart" data-percent="<?php echo $this->get_bounce_rate( $post->ID ) * 100; ?>"><span>0</span>%</div>
-		<label class="show-bounces"><span class="verybold hb-bounces"><?php echo number_format_i18n( $bounces ); ?></span> <?php echo _nx( 'bounce', 'bounces', $bounces, 'in pie chart', 'mailster' ); ?></label>
+		<div id="stats_bounces" class="piechart" data-percent="<?php echo $this->get_bounce_rate( $post->ID ) * 100; ?>"></div>
+		<label class="show-bounces"><span class="verybold hb-bounces"><?php echo number_format_i18n( $bounces ); ?></span><br> <?php echo _nx( 'bounce', 'bounces', $bounces, 'in pie chart', 'mailster' ); ?></label>
 	</li>
 </ul>
 <table>

@@ -880,6 +880,16 @@ mailster = (function (mailster, $, window, document) {
 				.trigger('change');
 		});
 
+
+	mailster.$.details.find('.piechart').each(function () {
+		var el = $(this),
+			p = el.data('percent');
+		mailster.chart.create(this, 'radialBar', {
+			series: [Math.round(p)]
+		});
+
+	})
+
 	$.easyPieChart && mailster.$.details.find('.piechart').easyPieChart({
 		animate: 2000,
 		rotate: 180,

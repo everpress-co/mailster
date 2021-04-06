@@ -1293,6 +1293,15 @@ class Mailster {
 				'copied' => esc_html__( 'Copied!', 'mailster' ),
 			)
 		);
+		wp_register_script( 'mailster-apexcharts', MAILSTER_URI . 'assets/js/libs/apexcharts' . $suffix . '.js', array(), MAILSTER_VERSION, true );
+		wp_register_script( 'mailster-charts-script', MAILSTER_URI . 'assets/js/charts-script' . $suffix . '.js', array( 'mailster-script', 'mailster-apexcharts' ), MAILSTER_VERSION, true );
+
+		mailster_localize_script(
+			'charts',
+			array(
+				'copied' => esc_html__( 'Copied!', 'mailster' ),
+			)
+		);
 
 	}
 

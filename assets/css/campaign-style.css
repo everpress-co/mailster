@@ -379,11 +379,11 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	margin-top: 5px;
 	display: none;
 }
-#mailster_details #stats {
+#mailster_details #stats_ {
 	margin-top: 20px;
 	margin-bottom: 20px;
 }
-#mailster_details #stats li {
+#mailster_details #stats_ li {
 	width: 22%;
 	display: block;
 	float: left;
@@ -391,16 +391,57 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	line-height: 70px;
 	box-sizing: border-box;
 }
+#mailster_details #stats {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
+#mailster_details #stats li {
+	display: grid;
+	min-height: 100px;
+	grid-template-columns: 70px auto;
+	width: 22%;
+	align-items: center;
+
+	width: 21%;
+	background: #fafafa;
+	margin-left:1%;
+	border-radius: 10px;
+}
 #mailster_details #stats li:first-child {
 	width: 12%;
+	margin-left:0;
+	grid-template-columns:auto;
+	justify-items: center;
+}
+#mailster_details #stats li .piechart {
+	width: 30%;
+	display: inline-block;
+	_border-left: 1px solid #CCD0D4;
 }
 #mailster_details #stats li label {
+	width: 70%;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	z-index: 2;
+}
+#mailster_details #stats_ li label {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	display: inline-block;
 	max-width: 60%;
 	min-width: 100px;
+}
+@media screen and (max-width: 1200px) {
+
+	#mailster_details #stats li {
+		width: 50%;
+	}
+	#mailster_details #stats li:first-child {
+		width: 100%;
+	}
 }
 #mailster_details .big {
 	font-size: 18px;
@@ -456,11 +497,6 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 }
 .receiver-detail-data .clicked-link{
 	float: left;
-}
-#mailster_details .piechart {
-	width: 75px;
-	height: 75px;
-	display: inline-block;
 }
 #mailster_details table .countries{
 	overflow: hidden;
@@ -1462,14 +1498,6 @@ a.mailster-btn.editbutton {
 
 	.fixed-optionbar #mailster_template a.toggle-modules{
 		margin-left: -27px;
-	}
-	#mailster_details #stats li.receivers {
-		line-height: 220px;
-		height: 140px;
-	}
-	#mailster_details #stats li label{
-		max-width: 20%;
-		min-width: 80px;
 	}
 	#mailster_details table th{
 		display: block;
