@@ -49,6 +49,16 @@ mailster = (function (mailster, $, window, document) {
 				wp.heartbeat.connectNow();
 			}, 400);
 		})
+		.on('change', '.hide-column-tog', function () {
+			wp.heartbeat.connectNow();
+		})
+		.on('click', '.toggle-row', function () {
+			var id = $(this).parent().parent().attr('id').substring(5);
+			if (current[id]) {
+				current[id] = [];
+			}
+			wp.heartbeat.connectNow();
+		})
 		.on('heartbeat-send', function (e, data) {
 
 			var ids = [],
@@ -63,7 +73,10 @@ mailster = (function (mailster, $, window, document) {
 
 			data['mailster'] = {
 				page: 'overview',
-				ids: ids
+				ids: ids,
+				columns: $('.hide-column-tog:checked').map(function () {
+					return this.value;
+				}).toArray()
 			};
 
 		})
@@ -111,11 +124,11 @@ mailster = (function (mailster, $, window, document) {
 						case 'column-status':
 							if (rowdata.status == 'active' && !statuschange) {
 								var progress = row.find('.campaign-progress'),
-									p = (rowdata.sent / rowdata.total * 100);
+									p = Math.round(rowdata.sent / rowdata.total * 100);
 								progress.find('.bar').width(p + '%');
 								progress.find('span').eq(1).html(rowdata.sent_formatted);
 								progress.find('span').eq(2).html(rowdata.sent_formatted);
-								progress.find('var').html(Math.round(p) + '%');
+								progress.find('var').html(p + '%');
 							}
 							if (!statuschange) break;
 						default:

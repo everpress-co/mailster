@@ -4081,8 +4081,9 @@ class MailsterCampaigns {
 					break;
 				}
 
-				$ids    = array_filter( $_POST['data']['mailster']['ids'], 'is_numeric' );
-				$return = array_fill_keys( $ids, null );
+				$ids     = array_filter( $_POST['data']['mailster']['ids'], 'is_numeric' );
+				$columns = $_POST['data']['mailster']['columns'];
+				$return  = array_fill_keys( $ids, null );
 
 				foreach ( $ids as $id ) {
 
@@ -4091,40 +4092,49 @@ class MailsterCampaigns {
 						continue;
 					}
 
-					$meta           = $this->meta( $id );
-					$totals         = $this->get_totals( $id );
-					$sent           = $this->get_sent( $id );
-					$sent_formatted = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
-					if ( is_wp_error( $cron_status ) ) {
-						$status_title = esc_html__( 'Sending Problem!', 'mailster' );
-						if ( current_user_can( 'activate_plugins' ) ) {
-							 $status_title .= ' <a href="' . admin_url( 'admin.php?page=mailster_tests&autostart' ) . '" class="button button-small">' . esc_html__( 'Self Test', 'mailster' ) . '</a>';
+					$total         = $this->get_totals( $id );
+					$sent          = $this->get_sent( $id );
+					$return[ $id ] = array();
+					if ( in_array( 'status', $columns ) ) {
+						$meta           = $this->meta( $id );
+						$sent_formatted = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $total ) );
+						if ( is_wp_error( $cron_status ) ) {
+							$status_title = esc_html__( 'Sending Problem!', 'mailster' );
+							if ( current_user_can( 'activate_plugins' ) ) {
+								 $status_title .= ' <a href="' . admin_url( 'admin.php?page=mailster_tests&autostart' ) . '" class="button button-small">' . esc_html__( 'Self Test', 'mailster' ) . '</a>';
+							}
+						} else {
+							$status_title = $sent_formatted;
 						}
-					} else {
-						$status_title = $sent_formatted;
-					}
+						$return[ $id ]['cron']           = ! is_wp_error( $cron_status );
+						$return[ $id ]['status']         = $post->post_status;
+						$return[ $id ]['is_active']      = (bool) $meta['active'];
+						$return[ $id ]['status_title']   = $status_title;
+						$return[ $id ]['sent']           = $sent;
+						$return[ $id ]['sent_formatted'] = '&nbsp;' . $sent_formatted;
+						$return[ $id ]['column-status']  = $this->get_columns_content( 'status' );
 
+					}
+					if ( in_array( 'total', $columns ) ) {
+						$return[ $id ]['total']        = $total;
+						$return[ $id ]['column-total'] = $this->get_columns_content( 'total' );
+					}
+					if ( in_array( 'open', $columns ) ) {
+						$return[ $id ]['column-open'] = $this->get_columns_content( 'open' );
+					}
+					if ( in_array( 'click', $columns ) ) {
+						$return[ $id ]['column-click'] = $this->get_columns_content( 'click' );
+					}
+					if ( in_array( 'unsubs', $columns ) ) {
+						$return[ $id ]['column-unsubs'] = $this->get_columns_content( 'unsubs' );
+					}
+					if ( in_array( 'bounces', $columns ) ) {
+						$return[ $id ]['column-bounces'] = $this->get_columns_content( 'bounces' );
+					}
 					// finish campaign
-					if ( 'active' == $post->post_status && $totals && $sent >= $totals ) {
+					if ( 'active' == $post->post_status && $total && $sent >= $total ) {
 						$this->finish( $id );
 					}
-
-					$return[ $id ] = array(
-						'cron'           => ! is_wp_error( $cron_status ),
-						'status'         => $post->post_status,
-						'is_active'      => $meta['active'],
-						'status_title'   => $status_title,
-						'total'          => $totals,
-						'sent'           => $sent,
-						'sent_formatted' => '&nbsp;' . $sent_formatted,
-						'column-status'  => $this->get_columns_content( 'status' ),
-						'column-total'   => $this->get_columns_content( 'total' ),
-						'column-open'    => $this->get_columns_content( 'open' ),
-						'column-click'   => $this->get_columns_content( 'click' ),
-						'column-unsubs'  => $this->get_columns_content( 'unsubs' ),
-						'column-bounces' => $this->get_columns_content( 'bounces' ),
-					);
-
 				}
 				break;
 
