@@ -102,6 +102,7 @@ table.wp-list-table .column-total a, table.wp-list-table .column-open a, table.w
 	text-align: right;
 }
 .campaign-conditions{
+	margin: 0.5em 0 0.5em;
 	line-height: 1.4em !important;
 	color: #999;
 	font-size: 12px;
@@ -180,9 +181,6 @@ table.wp-list-table .column-total a, table.wp-list-table .column-open a, table.w
 		width: 14px;
 		height: 14px;
 }
-.mailster-icon.mailster-icon-star-empty:before{
-}
-
 .mailster-condition-render{
 	white-space: nowrap;
 	overflow: hidden;

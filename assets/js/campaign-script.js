@@ -1877,7 +1877,7 @@ mailster = (function (mailster, $, window, document) {
 			$('.hb-geo_location').html(_data.geo_location);
 
 			$.each(_data.environment, function (type) {
-				$('.hb-' + type).html((this.percentage * 100).toFixed(2) + '%');
+				$('.hb-' + type).html((this.percentage * 100).toFixed(0) + '%');
 			});
 
 			if ($('#stats_opens').length) $('#stats_opens').data('easyPieChart').update(Math.round(_data.open_rate));

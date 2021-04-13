@@ -100,7 +100,7 @@ class MailsterSecurity {
 		// check Antiflood
 		if ( mailster_option( 'antiflood' ) && $timestamp = $this->is_flood( $ip ) ) {
 			$t = ( $timestamp - time() > 60 ) ? human_time_diff( $timestamp ) : sprintf( esc_html__( '%d seconds', 'mailster' ), $timestamp - time() );
-			return new WP_Error( 'error_antiflood', sprintf( esc_html__( 'Please wait %s.', 'mailster' ), $t ), 'email' );
+			return new WP_Error( 'error_antiflood', sprintf( esc_html__( 'Please wait %s for the next signup.', 'mailster' ), $t ), 'email' );
 		}
 
 		return true;
