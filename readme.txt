@@ -95,6 +95,7 @@ Xaver Birsak – https://everpress.co
 * fixed: issue with merge tags when rss and regular tag is used
 * fixed: use of hard-coded database prefix
 * improved: removed/replaced deprecated jQuey methods
+* improved: media editor link in settings
 * improved: support for PHP 8
 
 = Version 2.4.17 =

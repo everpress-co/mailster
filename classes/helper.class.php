@@ -762,51 +762,10 @@ class MailsterHelper {
 			<?php
 		} else {
 			wp_enqueue_media();
-			wp_add_inline_style(
-				'media-views',
-				'.media-editor-link{
-					display: inline-block;
-					height: 80px;
-					overflow: hidden;
-					max-width: 280px;
-					min-width: 80px;
-					position:relative;
-				}
-				.media-editor-link-has-image{
-					border: 1px solid #ccc;
-				}
-				.media-editor-link-remove{
-					position: absolute;
-					top: 0;
-					right: 0;
-					text-decoration: none;
-					padding: 0 2px;
-					display: none;
-				}
-				.media-editor-link-has-image .media-editor-link-select{
-					display: none;
-				}
-				.media-editor-link-has-image:hover .media-editor-link-remove{
-					display: block;
-				}
-				.media-editor-link-has-image:hover{
-					box-shadow: 0 0 0 1px white, 0 0 0 5px #1E8CBE;
-				}
-				.media-editor-link-empty:before{
-					content: "\f128";
-					font-size: 80px;
-				}
-				.media-editor-link img{
-					transform: translateY(-50%);
-					top: 50%;
-					position: relative;
-					max-width: 200px;
-				}'
-			);
-
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-			wp_enqueue_script( 'mailster-media-editor-link-script', MAILSTER_URI . 'assets/js/media-editor-link-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-media-editor-link', MAILSTER_URI . 'assets/js/media-editor-link-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+			wp_enqueue_style( 'mailster-media-editor-link', MAILSTER_URI . 'assets/css/media-editor-link-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			$classes = array( 'media-editor-link' );
 
