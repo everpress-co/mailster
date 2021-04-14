@@ -4,6 +4,7 @@ Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
 Description: Send Beautiful Email Newsletters in WordPress.
 Version: 3.0
+>>>>>>> origin/develop
 Author: EverPress
 Author URI: https://everpress.co
 Text Domain: mailster
