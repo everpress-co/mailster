@@ -746,41 +746,29 @@ class MailsterHelper {
 
 		$image_url = wp_get_attachment_image_src( $attachemnt_id, $size );
 
-		if ( ! function_exists( 'wpview_media_sandbox_styles' ) ) { // since 4.0
-			?>
-			<?php if ( $image_url ) : ?>
-			<img src="<?php echo esc_attr( $image_url[0] ); ?>" width="150">
-			<?php endif; ?>
-			<label><?php esc_html_e( 'Image ID', 'mailster' ); ?>:
-			<input class="small-text" type="text" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>"></label>
+		wp_enqueue_media();
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-			<?php
-		} else {
-			wp_enqueue_media();
-			$suffix = SCRIPT_DEBUG ? '' : '.min';
+		wp_enqueue_script( 'mailster-media-editor-link', MAILSTER_URI . 'assets/js/media-editor-link-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+		wp_enqueue_style( 'mailster-media-editor-link', MAILSTER_URI . 'assets/css/media-editor-link-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
-			wp_enqueue_script( 'mailster-media-editor-link', MAILSTER_URI . 'assets/js/media-editor-link-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
-			wp_enqueue_style( 'mailster-media-editor-link', MAILSTER_URI . 'assets/css/media-editor-link-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		$classes = array( 'media-editor-link' );
 
-			$classes = array( 'media-editor-link' );
-
-			$image_url = $image_url ? $image_url[0] : '';
-			if ( $image_url ) {
-				$classes[] = 'media-editor-link-has-image';
-			}
-
-			?>
-
-			<div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" title="<?php esc_attr_e( 'Change Image', 'mailster' ); ?>" data-title="<?php esc_attr_e( 'Add Image', 'mailster' ); ?>">
-				<img class="media-editor-link-img"<?php echo $image_url ? ' src="' . esc_attr( $image_url ) . '"' : ''; ?>>
-				<a class="media-editor-link-select button" href="#"><?php esc_html_e( 'Select Image', 'mailster' ); ?></a>
-				<a class="media-editor-link-remove" href="#" title="<?php esc_attr_e( 'Remove Image', 'mailster' ); ?>">&#10005;</a>
-				<input class="media-editor-link-input" type="hidden" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>">
-			</div>
-
-			<?php
-
+		$image_url = $image_url ? $image_url[0] : '';
+		if ( $image_url ) {
+			$classes[] = 'media-editor-link-has-image';
 		}
+
+		?>
+
+		<div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" title="<?php esc_attr_e( 'Change Image', 'mailster' ); ?>" data-title="<?php esc_attr_e( 'Add Image', 'mailster' ); ?>">
+			<img class="media-editor-link-img"<?php echo $image_url ? ' src="' . esc_attr( $image_url ) . '"' : ''; ?>>
+			<a class="media-editor-link-select button" href="#"><?php esc_html_e( 'Select Image', 'mailster' ); ?></a>
+			<a class="media-editor-link-remove" href="#" title="<?php esc_attr_e( 'Remove Image', 'mailster' ); ?>">&#10005;</a>
+			<input class="media-editor-link-input" type="hidden" name="<?php echo esc_attr( $fieldname ); ?>" value="<?php echo esc_attr( $attachemnt_id ); ?>">
+		</div>
+
+		<?php
 
 	}
 
