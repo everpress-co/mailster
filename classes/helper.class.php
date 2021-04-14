@@ -1898,7 +1898,7 @@ class MailsterHelper {
 			$length = 55;
 		}
 
-		$excerpt = apply_filters( 'mymail_pre_get_excerpt', apply_filters( 'mailster_pre_get_excerpt', null, $org_string, $length, $more ), $org_string, $length, $more );
+		$excerpt = apply_filters( 'mailster_pre_get_excerpt', null, $org_string, $length, $more );
 		if ( is_string( $excerpt ) ) {
 			return $excerpt;
 		}
@@ -1930,7 +1930,7 @@ class MailsterHelper {
 
 		$excerpt = trim( strip_tags( $excerpt, '<p><br><a><strong><em><i><b><ul><ol><li><span>' ) );
 
-		return apply_filters( 'mymail_get_excerpt', apply_filters( 'mailster_get_excerpt', $excerpt, $org_string, $length, $more ), $org_string, $length, $more );
+		return apply_filters( 'mailster_get_excerpt', $excerpt, $org_string, $length, $more );
 
 	}
 
@@ -1946,7 +1946,7 @@ class MailsterHelper {
 	public function plain_text( $html, $linksonly = false ) {
 
 		// allow to hook into this method
-		$result = apply_filters( 'mymail_plain_text', apply_filters( 'mailster_plain_text', null, $html, $linksonly ), $html, $linksonly );
+		$result = apply_filters( 'mailster_plain_text', null, $html, $linksonly );
 		if ( ! is_null( $result ) ) {
 			return $result;
 		}

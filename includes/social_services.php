@@ -81,4 +81,4 @@ $mailster_social_services = array(
 	),
 );
 
-$mailster_social_services = apply_filters( 'mymail_social_services', apply_filters( 'mailster_social_services', $mailster_social_services ) );
+$mailster_social_services = apply_filters( 'mailster_social_services', $mailster_social_services );

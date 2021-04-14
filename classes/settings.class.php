@@ -1015,7 +1015,7 @@ class MailsterSettings {
 						if ( $value ) {
 
 							$timestamp = mailster( 'helper' )->get_timestamp_by_string( $value );
-							$timestamp = apply_filters( 'mymail_subscriber_notification_delay', apply_filters( 'mailster_subscriber_notification_delay', $timestamp ) );
+							$timestamp = apply_filters( 'mailster_subscriber_notification_delay', $timestamp );
 							wp_schedule_single_event( $timestamp, 'mailster_subscriber_notification' );
 						}
 					}
@@ -1032,7 +1032,7 @@ class MailsterSettings {
 						if ( $value ) {
 
 							$timestamp = mailster( 'helper' )->get_timestamp_by_string( $value );
-							$timestamp = apply_filters( 'mymail_subscriber_unsubscribe_notification_delay', apply_filters( 'mailster_subscriber_unsubscribe_notification_delay', $timestamp ) );
+							$timestamp = apply_filters( 'mailster_subscriber_unsubscribe_notification_delay', $timestamp );
 							wp_schedule_single_event( $timestamp, 'mailster_unsubscribe_notification' );
 						}
 					}
@@ -1245,7 +1245,7 @@ class MailsterSettings {
 		// clear everything thats cached
 		mailster_clear_cache();
 
-		$options = apply_filters( 'mymail_verify_options', apply_filters( 'mailster_verify_options', $options ) );
+		$options = apply_filters( 'mailster_verify_options', $options );
 
 		return $options;
 
@@ -1282,7 +1282,7 @@ class MailsterSettings {
 
 		}
 
-		return apply_filters( 'mymail_verify_texts', apply_filters( 'mailster_verify_texts', $texts ) );
+		return apply_filters( 'mailster_verify_texts', $texts );
 
 	}
 
@@ -1579,7 +1579,7 @@ class MailsterSettings {
 			$settings['CURRENT THEME'] = $theme_data['Name'] . ': ' . $theme_data['Version'] . "\n" . str_repeat( ' ', $space ) . $theme_data['Author'] . ' (' . $theme_data['AuthorURI'] . ')';
 		}
 
-		return apply_filters( 'mymail_system_info', apply_filters( 'mailster_system_info', $settings ) );
+		return apply_filters( 'mailster_system_info', $settings );
 
 	}
 

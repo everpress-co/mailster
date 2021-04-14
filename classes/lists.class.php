@@ -338,7 +338,7 @@ class MailsterLists {
 		$data    = array();
 		$list_id = null;
 
-		$entry = apply_filters( 'mymail_verify_list', apply_filters( 'mailster_verify_list', $entry ) );
+		$entry = apply_filters( 'mailster_verify_list', $entry );
 		if ( is_wp_error( $entry ) ) {
 			return $entry;
 		} elseif ( $entry === false ) {

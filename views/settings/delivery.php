@@ -102,7 +102,7 @@
 		'simple' => esc_html__( 'Simple', 'mailster' ),
 		'smtp'   => 'SMTP',
 	);
-	$deliverymethods = apply_filters( 'mymail_delivery_methods', apply_filters( 'mailster_delivery_methods', $deliverymethods ) );
+	$deliverymethods = apply_filters( 'mailster_delivery_methods', $deliverymethods );
 
 	$method = mailster_option( 'deliverymethod', 'simple' );
 

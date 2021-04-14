@@ -533,7 +533,7 @@ class Mailster {
 				$unsubscribe_homepage = str_replace( trailingslashit( get_bloginfo( 'url' ) ), untrailingslashit( get_bloginfo( 'url' ) ) . $prefix, $unsubscribe_homepage );
 			}
 
-			$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage, $campaign_id ) );
+			$unsubscribe_homepage = apply_filters( 'mailster_unsubscribe_link', $unsubscribe_homepage, $campaign_id );
 
 			wp_parse_str( (string) parse_url( $unsubscribe_homepage, PHP_URL_QUERY ), $query_string );
 
@@ -1044,7 +1044,7 @@ class Mailster {
 			$body = $content;
 		}
 
-		$content = $head . "\n<body$bodyattributes>" . apply_filters( 'mymail_sanitize_content_body', apply_filters( 'mailster_sanitize_content_body', $body ) ) . "</body>\n</html>";
+		$content = $head . "\n<body$bodyattributes>" . apply_filters( 'mailster_sanitize_content_body', $body ) . "</body>\n</html>";
 
 		$content = str_replace( '<body >', '<body>', $content );
 		$content = str_replace( ' src="//', ' src="' . $protocol . '://', $content );
@@ -1085,7 +1085,7 @@ class Mailster {
 
 		$allowed_tags = array( 'address', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'source', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'script', 'amp-form', 'amp-selector', 'amp-bind', 'amp-state', 'amp-list', 'amp-mustache', 'amp-accordion', 'amp-carousel', 'amp-sidebar', 'amp-image-lightbox', 'amp-lightbox', 'amp-fit-text', 'amp-timeago', 'amp-img', 'amp-anim', 'template' );
 
-		$allowed_tags = apply_filters( 'mymail_allowed_tags', apply_filters( 'mailster_allowed_tags', $allowed_tags ) );
+		$allowed_tags = apply_filters( 'mailster_allowed_tags', $allowed_tags );
 
 		$allowed_tags = '<' . implode( '><', (array) $allowed_tags ) . '>';
 
@@ -1121,7 +1121,7 @@ class Mailster {
 		}
 		$content = str_replace( '<html ', '<html lang="' . $lang . '" ', $content );
 
-		return apply_filters( 'mymail_sanitize_content', apply_filters( 'mailster_sanitize_content', $content ) );
+		return apply_filters( 'mailster_sanitize_content', $content );
 	}
 
 
@@ -2455,7 +2455,7 @@ class Mailster {
 			remove_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 			$file = false;
 		}
-		$file = apply_filters( 'mymail_wp_mail_template_file', apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter ), $caller, $current_filter );
+		$file = apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter );
 
 		if ( $template && $file ) {
 			$template = mailster( 'template', $template, $file );
@@ -2468,14 +2468,14 @@ class Mailster {
 			}
 		}
 
-		$replace  = apply_filters( 'mymail_send_replace', apply_filters( 'mailster_send_replace', array( 'notification' => '' ), $caller, $current_filter ) );
-		$message  = apply_filters( 'mymail_send_message', apply_filters( 'mailster_send_message', $args['message'], $caller, $current_filter ) );
-		$subject  = apply_filters( 'mymail_send_subject', apply_filters( 'mailster_send_subject', $args['subject'], $caller, $current_filter ) );
-		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $args['subject'], $caller, $current_filter ) );
+		$replace  = apply_filters( 'mailster_send_replace', array( 'notification' => '' ), $caller, $current_filter );
+		$message  = apply_filters( 'mailster_send_message', $args['message'], $caller, $current_filter );
+		$subject  = apply_filters( 'mailster_send_subject', $args['subject'], $caller, $current_filter );
+		$headline = apply_filters( 'mailster_send_headline', $args['subject'], $caller, $current_filter );
 
 		if ( 'text/plain' == $content_type ) {
 
-			if ( apply_filters( 'mymail_wp_mail_htmlify', apply_filters( 'mailster_wp_mail_htmlify', true ) ) && 'text/html' != $third_party_content_type ) {
+			if ( apply_filters( 'mailster_wp_mail_htmlify', true ) && 'text/html' != $third_party_content_type ) {
 				$message = $this->wp_mail_map_links( $message );
 				$message = str_replace( array( '<br>', '<br />', '<br/>' ), "\n", $message );
 				$message = preg_replace( '/(?:(?:\r\n|\r|\n)\s*){2}/s', "\n", $message );
@@ -2625,7 +2625,7 @@ class Mailster {
 			add_filter( 'wp_mail_content_type', array( &$this, 'wp_mail_content_type' ), 99 );
 		}
 
-		$file = apply_filters( 'mymail_wp_mail_template_file', apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter ), $caller, $current_filter );
+		$file = apply_filters( 'mailster_wp_mail_template_file', $file, $caller, $current_filter );
 
 		$mail            = mailster( 'mail' );
 		$mail->from      = apply_filters( 'wp_mail_from', mailster_option( 'from' ) );
@@ -2663,9 +2663,9 @@ class Mailster {
 
 		$mail->attachments = $attachments;
 
-		$replace  = apply_filters( 'mymail_send_replace', apply_filters( 'mailster_send_replace', array( 'notification' => '' ) ) );
-		$message  = apply_filters( 'mymail_send_message', apply_filters( 'mailster_send_message', $message ) );
-		$headline = apply_filters( 'mymail_send_headline', apply_filters( 'mailster_send_headline', $subject ) );
+		$replace  = apply_filters( 'mailster_send_replace', array( 'notification' => '' ) );
+		$message  = apply_filters( 'mailster_send_message', $message );
+		$headline = apply_filters( 'mailster_send_headline', $subject );
 
 		$success = (bool) $mail->send_notification( $message, $headline, $replace, false, $file, $template );
 

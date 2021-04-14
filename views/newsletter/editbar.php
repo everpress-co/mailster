@@ -109,7 +109,7 @@
 	add_filter(
 		'quicktags_settings',
 		function( $qtint, $editor_id ) {
-			$qtint['buttons'] = apply_filters( 'mymail_editor_quicktags', apply_filters( 'mailster_editor_quicktags', 'strong,em,link,block,del,img,ul,ol,li,spell,close' ) );
+			$qtint['buttons'] = apply_filters( 'mailster_editor_quicktags', 'strong,em,link,block,del,img,ul,ol,li,spell,close' );
 			return $qtint;
 
 		},
@@ -117,9 +117,9 @@
 		2
 	);
 
-	$toolbar1 = (string) apply_filters( 'mymail_editor_toolbar1', apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat' ) );
-	$toolbar2 = (string) apply_filters( 'mymail_editor_toolbar2', apply_filters( 'mailster_editor_toolbar2', '' ) );
-	$toolbar3 = (string) apply_filters( 'mymail_editor_toolbar3', apply_filters( 'mailster_editor_toolbar3', '' ) );
+	$toolbar1 = (string) apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat' );
+	$toolbar2 = (string) apply_filters( 'mailster_editor_toolbar2', '' );
+	$toolbar3 = (string) apply_filters( 'mailster_editor_toolbar3', '' );
 
 	if ( ( $toolbar2 || $toolbar3 ) && false === strpos( $toolbar1, 'wp_adv' ) ) {
 		$toolbar1 .= ',|,wp_adv';

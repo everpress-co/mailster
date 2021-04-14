@@ -1039,7 +1039,7 @@ class MailsterQueue {
 			}
 
 			// unlock?
-			$unlock = apply_filters( 'mymail_unlock_cron', apply_filters( 'mailster_unlock_cron', false ) );
+			$unlock = apply_filters( 'mailster_unlock_cron', false );
 
 			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] && ! get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
 				set_transient( 'mailster_cron_lock_triggered_' . $process_id, time() );
@@ -1098,7 +1098,7 @@ class MailsterQueue {
 		$send_delay           = mailster_option( 'send_delay', 0 ) / 1000;
 		$mail_send_time       = 0;
 		$MID                  = mailster_option( 'ID' );
-		$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', ( get_page( mailster_option( 'homepage' ) ) ? get_permalink( mailster_option( 'homepage' ) ) : get_bloginfo( 'url' ) ) ) );
+		$unsubscribe_homepage = apply_filters( 'mailster_unsubscribe_link', ( get_page( mailster_option( 'homepage' ) ) ? get_permalink( mailster_option( 'homepage' ) ) : get_bloginfo( 'url' ) ) );
 
 		$campaign_errors = array();
 

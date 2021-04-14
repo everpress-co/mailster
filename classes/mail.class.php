@@ -138,7 +138,7 @@ class MailsterMail {
 			'Invalid address:',
 			'SMTP Error: Data not accepted',
 		);
-		$this->subscriber_errors = apply_filters( 'mymail_subscriber_errors', apply_filters( 'mailster_subscriber_errors', $subscriber_errors ) );
+		$this->subscriber_errors = apply_filters( 'mailster_subscriber_errors', $subscriber_errors );
 		$system_errors           = array(
 			'Not in Time Frame',
 		);

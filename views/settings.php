@@ -49,7 +49,7 @@ $sections = array(
 	'system_info'     => esc_html__( 'System Info', 'mailster' ),
 	'manage-settings' => esc_html__( 'Manage Settings', 'mailster' ),
 );
-$sections = apply_filters( 'mymail_setting_sections', apply_filters( 'mailster_setting_sections', $sections ) );
+$sections = apply_filters( 'mailster_setting_sections', $sections );
 
 if ( ! current_user_can( 'mailster_manage_capabilities' ) && ! current_user_can( 'manage_options' ) ) {
 	unset( $sections['capabilities'] );
@@ -90,7 +90,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 			</div>
 		<?php endforeach; ?>
 
-	<?php $extra_sections = apply_filters( 'mymail_extra_setting_sections', apply_filters( 'mailster_extra_setting_sections', array() ) ); ?>
+	<?php $extra_sections = apply_filters( 'mailster_extra_setting_sections', array() ); ?>
 
 	<?php foreach ( $extra_sections as $id => $name ) : ?>
 			<div id="tab-<?php echo esc_attr( $id ); ?>" class="tab">

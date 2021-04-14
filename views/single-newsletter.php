@@ -9,8 +9,8 @@
 	$description = wp_trim_words( mailster( 'campaigns' )->get_excerpt( $post_id ), 55, '...' );
 	$permalink   = get_permalink();
 	$blogname    = get_bloginfo( 'name' );
-	$logo_link   = apply_filters( 'mymail_frontpage_logo_link', apply_filters( 'mailster_frontpage_logo_link', get_bloginfo( 'url' ) ) );
-	$logo        = apply_filters( 'mymail_frontpage_logo', apply_filters( 'mailster_frontpage_logo', $blogname ) );
+	$logo_link   = apply_filters( 'mailster_frontpage_logo_link', get_bloginfo( 'url' ) );
+	$logo        = apply_filters( 'mailster_frontpage_logo', $blogname );
 
 	if ( $post_thumbnail_id = get_post_thumbnail_id( $post_id ) ) {
 
@@ -41,8 +41,8 @@
 	<meta property="og:image:height" content="<?php echo (int) $image[2]; ?>" />
 <?php endif; ?>
 
-	<meta name="twitter:card" content="<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_card', apply_filters( 'mailster_frontpage_twitter_card', 'summary' ) ) ); ?>"/>
-	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mymail_frontpage_twitter_username', apply_filters( 'mailster_frontpage_twitter_username', 'mailster' ) ) ); ?>"/>
+	<meta name="twitter:card" content="<?php echo esc_attr( apply_filters( 'mailster_frontpage_twitter_card', 'summary' ) ); ?>"/>
+	<meta name="twitter:site" content="@<?php echo esc_attr( apply_filters( 'mailster_frontpage_twitter_username', 'mailster' ) ); ?>"/>
 	<meta name="twitter:title" content="<?php echo esc_attr( $title ); ?>" />
 	<meta name="twitter:description" content="<?php echo esc_attr( $description ); ?>"/>
 

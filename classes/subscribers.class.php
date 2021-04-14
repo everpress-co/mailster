@@ -953,7 +953,7 @@ class MailsterSubscribers {
 			return apply_filters( 'mailster_verify_new_subscriber', (array) $entry );
 		}
 
-		return apply_filters( 'mymail_verify_subscriber', apply_filters( 'mailster_verify_subscriber', (array) $entry ) );
+		return apply_filters( 'mailster_verify_subscriber', (array) $entry );
 	}
 
 
@@ -2482,7 +2482,7 @@ class MailsterSubscribers {
 		if ( $delay = mailster_option( 'subscriber_notification_delay' ) ) {
 
 			$timestamp = mailster( 'helper' )->get_timestamp_by_string( $delay );
-			$timestamp = apply_filters( 'mymail_subscriber_notification_delay', apply_filters( 'mailster_subscriber_notification_delay', $timestamp ) );
+			$timestamp = apply_filters( 'mailster_subscriber_notification_delay', $timestamp );
 
 			return ( ! wp_next_scheduled( 'mailster_subscriber_notification' ) )
 				? wp_schedule_single_event( $timestamp, 'mailster_subscriber_notification' )
@@ -2554,7 +2554,7 @@ class MailsterSubscribers {
 		if ( $delay = mailster_option( 'unsubscribe_notification_delay' ) ) {
 
 			$timestamp = mailster( 'helper' )->get_timestamp_by_string( $delay );
-			$timestamp = apply_filters( 'mymail_subscriber_unsubscribe_notification_delay', apply_filters( 'mailster_subscriber_unsubscribe_notification_delay', $timestamp ) );
+			$timestamp = apply_filters( 'mailster_subscriber_unsubscribe_notification_delay', $timestamp );
 
 			return ( ! wp_next_scheduled( 'mailster_unsubscribe_notification' ) )
 				? wp_schedule_single_event( $timestamp, 'mailster_unsubscribe_notification' )
@@ -3209,7 +3209,7 @@ class MailsterSubscribers {
 	public function user_register( $user_id ) {
 
 		// for third party plugins
-		if ( ! apply_filters( 'mymail_user_register', apply_filters( 'mailster_user_register', true ) ) ) {
+		if ( ! apply_filters( 'mailster_user_register', true ) ) {
 			return;
 		}
 
@@ -3263,7 +3263,7 @@ class MailsterSubscribers {
 			$user_id,
 			array(
 				'status'  => $status,
-				'referer' => apply_filters( 'mymail_user_register_referer', apply_filters( 'mailster_user_register_referer', $referer ) ),
+				'referer' => apply_filters( 'mailster_user_register_referer', $referer ),
 				'_lists'  => $lists,
 			),
 			true
@@ -3341,7 +3341,7 @@ class MailsterSubscribers {
 				if ( $comment && ! $this->get_by_mail( $comment->comment_author_email ) ) {
 
 					$lists = mailster_option( 'register_comment_form_lists', array() );
-					$lists = apply_filters( 'mymail_comment_post_lists', apply_filters( 'mailster_comment_post_lists', $lists, $comment, $comment_approved ), $comment, $comment_approved );
+					$lists = apply_filters( 'mailster_comment_post_lists', $lists, $comment, $comment_approved );
 
 					$status = mailster_option( 'register_comment_form_confirmation' ) ? 0 : 1;
 
@@ -3351,7 +3351,7 @@ class MailsterSubscribers {
 						'firstname' => $comment->comment_author,
 						'referer'   => 'wpcomment_' . $comment->comment_ID,
 					);
-					$userdata = apply_filters( 'mymail_comment_post_userdata', apply_filters( 'mailster_comment_post_userdata', $userdata, $comment, $comment_approved ), $comment, $comment_approved );
+					$userdata = apply_filters( 'mailster_comment_post_userdata', $userdata, $comment, $comment_approved );
 
 					$subscriber_id = $this->add( $userdata );
 
@@ -3387,7 +3387,7 @@ class MailsterSubscribers {
 			if ( ! $this->get_by_mail( $comment->comment_author_email ) ) {
 
 				$lists = mailster_option( 'register_comment_form_lists', array() );
-				$lists = apply_filters( 'mymail_comment_post_lists', apply_filters( 'mailster_comment_post_lists', $lists, $comment, $comment_approved ), $comment, $comment_approved );
+				$lists = apply_filters( 'mailster_comment_post_lists', $lists, $comment, $comment_approved );
 
 				$status = mailster_option( 'register_comment_form_confirmation' ) ? 0 : 1;
 
@@ -3398,7 +3398,7 @@ class MailsterSubscribers {
 					'referer'   => 'wpcomment_' . $comment->comment_ID,
 					'signup'    => strtotime( $comment->comment_date_gmt ),
 				);
-				$userdata = apply_filters( 'mymail_comment_post_userdata', apply_filters( 'mailster_comment_post_userdata', $userdata, $comment, $comment_approved ), $comment, $comment_approved );
+				$userdata = apply_filters( 'mailster_comment_post_userdata', $userdata, $comment, $comment_approved );
 
 				$subscriber_id = $this->add( $userdata );
 

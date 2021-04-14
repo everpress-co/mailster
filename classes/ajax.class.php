@@ -280,7 +280,7 @@ class MailsterAjax {
 		$replace = array(
 			'//dummy.newsletter-plugin.com' => '//dummy.mailster.co',
 		);
-		$replace = apply_filters( 'mymail_get_template_replace', apply_filters( 'mailster_get_template_replace', $replace ) );
+		$replace = apply_filters( 'mailster_get_template_replace', $replace );
 
 		$html = strtr( $html, $replace );
 		echo $html;
@@ -633,7 +633,7 @@ class MailsterAjax {
 			$preheader    = stripslashes( $formdata['mailster_data']['preheader'] );
 			$bouncemail   = mailster_option( 'bounce' );
 			$attachments  = isset( $formdata['mailster_data']['attachments'] ) ? $formdata['mailster_data']['attachments'] : array();
-			$max_size     = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );
+			$max_size     = apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 );
 
 			$autoplain = isset( $formdata['mailster_data']['autoplaintext'] );
 			$plaintext = stripslashes( $_POST['plaintext'] );
@@ -1537,7 +1537,7 @@ class MailsterAjax {
 					$data[ $expect ] = mailster( 'placeholder' )->get_replace( $post, $expect );
 				}
 
-				$return['pattern'] = apply_filters( 'mymail_auto_post', apply_filters( 'mailster_auto_post', $data, $post ), $post );
+				$return['pattern'] = apply_filters( 'mailster_auto_post', $data, $post );
 				$return['success'] = true;
 
 			}
@@ -1615,7 +1615,7 @@ class MailsterAjax {
 			$pattern[ $expect ] = '{' . $post_type . '_' . $expect . ':' . $options . '}';
 		}
 
-		$return['pattern'] = apply_filters( 'mymail_auto_tag', apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post, $modulename ), $post_type, $options, $post, $modulename );
+		$return['pattern'] = apply_filters( 'mailster_auto_tag', $pattern, $post_type, $options, $post, $modulename );
 
 		$return['pattern']['tag'] = '{' . $post_type . ':' . $options . '}';
 

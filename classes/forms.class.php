@@ -1403,7 +1403,7 @@ class MailsterForms {
 
 		$button_src = MAILSTER_URI . 'assets/js/button' . $suffix . '.js';
 
-		$button_src = apply_filters( 'mymail_subscribe_button_src', apply_filters( 'mailster_subscribe_button_src', $button_src, $options ), $options );
+		$button_src = apply_filters( 'mailster_subscribe_button_src', $button_src, $options );
 
 		$options['endpoint'] = $this->url(
 			array(

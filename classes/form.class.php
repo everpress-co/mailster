@@ -538,7 +538,7 @@ class MailsterForm {
 			unset( $fields['_submit'] );
 		}
 
-		$fields = apply_filters( 'mymail_form_fields', apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form ), $this->ID, $this->form );
+		$fields = apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form );
 
 		if ( ! is_admin() && apply_filters( 'mailster_honeypot', mailster_option( 'check_honeypot' ) ) ) {
 			// place honeypot after email field
@@ -567,7 +567,7 @@ class MailsterForm {
 			$html = apply_filters( 'mailster_unsubscribe_form', $html, $this->ID, $this->form );
 		}
 
-		$html = apply_filters( 'mymail_form', apply_filters( 'mailster_form', $html, $this->ID, $this->form ), $this->ID, $this->form );
+		$html = apply_filters( 'mailster_form', $html, $this->ID, $this->form );
 
 		if ( ! $echo ) {
 			return $html;
@@ -846,7 +846,7 @@ class MailsterForm {
 		}
 		$html .= '</form>';
 
-		return apply_filters( 'mymail_unsubscribe_form', apply_filters( 'mailster_unsubscribe_form', $html, $this->campaignID ), $this->campaignID );
+		return apply_filters( 'mailster_unsubscribe_form', $html, $this->campaignID );
 	}
 
 
@@ -909,7 +909,7 @@ class MailsterForm {
 		$customfields = mailster()->get_custom_fields();
 
 		$formdata = stripslashes_deep( isset( $_BASE['userdata'] ) ? $_BASE['userdata'] : $_BASE );
-		$formdata = apply_filters( 'mymail_pre_submit', apply_filters( 'mailster_pre_submit', $formdata, $this->form ), $this->form );
+		$formdata = apply_filters( 'mailster_pre_submit', $formdata, $this->form );
 
 		foreach ( $this->form->fields as $field_id => $field ) {
 
@@ -970,8 +970,8 @@ class MailsterForm {
 		}
 
 		// to hook into the system
-		$this->object = apply_filters( 'mymail_submit', apply_filters( 'mailster_submit', $this->object ) );
-		$this->object = apply_filters( 'mymail_submit_' . $this->ID, apply_filters( 'mailster_submit_' . $this->ID, $this->object ) );
+		$this->object = apply_filters( 'mailster_submit', $this->object );
+		$this->object = apply_filters( 'mailster_submit_' . $this->ID, $this->object );
 
 		if ( $this->valid() ) {
 
@@ -1188,8 +1188,8 @@ class MailsterForm {
 
 			}
 
-			$this->object = apply_filters( 'mymail_post_submit', apply_filters( 'mailster_post_submit', $this->object ) );
-			$this->object = apply_filters( 'mymail_post_submit_' . $this->ID, apply_filters( 'mailster_post_submit_' . $this->ID, $this->object ) );
+			$this->object = apply_filters( 'mailster_post_submit', $this->object );
+			$this->object = $this->ID, apply_filters( 'mailster_post_submit_' . $this->ID, $this->object );
 
 			if ( $this->valid() ) {
 				$return = array(
@@ -1353,7 +1353,7 @@ class MailsterForm {
 
 			$html .= '<ul>';
 			foreach ( $this->object[ $type ] as $field => $name ) {
-				$html .= '<li>' . apply_filters( 'mymail_error_output_' . $field, apply_filters( 'mailster_error_output_' . $field, $name, $this->object ), $this->object ) . '</li>';
+				$html .= '<li>' . apply_filters( 'mailster_error_output_' . $field, $name, $this->object ) . '</li>';
 			}
 			$html .= '</ul>';
 		}

@@ -1722,7 +1722,7 @@ class MailsterCampaigns {
 			if ( isset( $postdata['attachments'] ) ) {
 				$meta['attachments'] = array();
 				$total_size          = 0;
-				$max_size            = apply_filters( 'mymail_attachments_max_filesize', apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 ) );
+				$max_size            = apply_filters( 'mailster_attachments_max_filesize', 1024 * 1024 );
 				foreach ( $postdata['attachments'] as $attachment_id ) {
 					if ( ! $attachment_id ) {
 						continue;
@@ -4814,7 +4814,7 @@ class MailsterCampaigns {
 
 		$wp_upload_dir = wp_upload_dir( $time_string );
 
-		$filename = apply_filters( 'mymail_post_thumbnail_filename', apply_filters( 'mailster_post_thumbnail_filename', 'newsletter-' . $campaign_id, $campaign ), $campaign ) . '.jpg';
+		$filename = apply_filters( 'mailster_post_thumbnail_filename', 'newsletter-' . $campaign_id, $campaign ) . '.jpg';
 
 		if ( $file_exits = file_exists( $wp_upload_dir['path'] . '/' . $filename ) ) {
 			unlink( $wp_upload_dir['path'] . '/' . $filename );
@@ -4846,7 +4846,7 @@ class MailsterCampaigns {
 		$attachment = array(
 			'guid'           => $wp_upload_dir['url'] . '/' . basename( $file ),
 			'post_mime_type' => $filetype['type'],
-			'post_title'     => apply_filters( 'mymail_post_thumbnail_title', apply_filters( 'mailster_post_thumbnail_title', $campaign->post_title, $campaign ), $campaign ),
+			'post_title'     => apply_filters( 'mailster_post_thumbnail_title', $campaign->post_title, $campaign ),
 			'post_content'   => '',
 			'post_status'    => 'inherit',
 			'post_author'    => $campaign->post_author,
@@ -4989,9 +4989,9 @@ class MailsterCampaigns {
 		);
 
 		if ( $inline ) {
-			$toolbar1 = (string) apply_filters( 'mymail_editor_toolbar1', apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat,|,mailster_remove_element' ) );
-			$toolbar2 = (string) apply_filters( 'mymail_editor_toolbar2', apply_filters( 'mailster_editor_toolbar2', 'bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify' ) );
-			$toolbar3 = (string) apply_filters( 'mymail_editor_toolbar3', apply_filters( 'mailster_editor_toolbar3', '' ) );
+			$toolbar1 = (string) apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat,|,mailster_remove_element' );
+			$toolbar2 = (string) apply_filters( 'mailster_editor_toolbar2', 'bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify' );
+			$toolbar3 = (string) apply_filters( 'mailster_editor_toolbar3', '' );
 
 			$single_toolbar1 = (string) apply_filters( 'mailster_editor_single_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,link,unlink,|,removeformat,|,mailster_remove_element' );
 			$single_toolbar2 = (string) apply_filters( 'mailster_editor_single_toolbar2', '' );

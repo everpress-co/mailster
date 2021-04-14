@@ -776,7 +776,7 @@ class MailsterNotification {
 		global $wpdb;
 
 		// should be odd
-		$limit = apply_filters( 'mymail_subscriber_notification_subscriber_limit', apply_filters( 'mailster_subscriber_notification_subscriber_limit', 7 ) );
+		$limit = apply_filters( 'mailster_subscriber_notification_subscriber_limit', 7 );
 
 		$delay = mailster_option( 'subscriber_notification_delay' );
 		if ( ! $delay ) {
@@ -1064,7 +1064,7 @@ endforeach;
 		global $wpdb;
 
 		// should be odd
-		$limit = apply_filters( 'mymail_subscriber_unsubscribe_notification_subscriber_limit', apply_filters( 'mailster_subscriber_unsubscribe_notification_subscriber_limit', 7 ) );
+		$limit = apply_filters( 'mailster_subscriber_unsubscribe_notification_subscriber_limit', 7 );
 
 		$delay = mailster_option( 'unsubscribe_notification_delay' );
 		if ( ! $delay ) {

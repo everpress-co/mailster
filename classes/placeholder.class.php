@@ -384,7 +384,7 @@ class MailsterPlaceholder {
 
 		$social = array( 'twitter', 'facebook', 'google', 'linkedin' );
 
-		$social = implode( '|', apply_filters( 'mymail_share_services', apply_filters( 'mailster_share_services', $social ) ) );
+		$social = implode( '|', apply_filters( 'mailster_share_services', $social ) );
 
 		if ( $count = preg_match_all( '#\{(share:(' . $social . ') ?([^}]+)?)\}#i', $this->content, $hits ) ) {
 
@@ -435,7 +435,7 @@ class MailsterPlaceholder {
 
 		$content = '<img alt="' . esc_attr( sprintf( esc_html__( 'Share this on %s', 'mailster' ), $this->social_services[ $service ]['name'] ) ) . '" src="' . MAILSTER_URI . 'assets/img/share/share_' . $service . '.png" style="display:inline;display:inline !important;" />';
 
-		$content = apply_filters( 'mymail_share_button_' . $service, apply_filters( 'mailster_share_button_' . $service, $content ) );
+		$content = apply_filters( 'mailster_share_button_' . $service, $content );
 
 		return '<a href="' . $_url . '" class="social">' . $content . '</a>' . "\n";
 
