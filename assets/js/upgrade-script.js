@@ -149,7 +149,7 @@ mailster = (function (mailster, $, window, document) {
 
 		content = content + "\n\n" + curr_content;
 
-		$('#textoutput').val($.trim(content));
+		$('#textoutput').val(mailster.util.trim(content));
 
 	}
 

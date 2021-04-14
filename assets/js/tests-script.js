@@ -51,7 +51,7 @@ mailster = (function (mailster, $, window, document) {
 		$('#subtab-' + hash.substr(1)).show();
 		if (hash == '#systeminfo') {
 			var textarea = $('#system_info_content');
-			if ($.trim(textarea.val())) return;
+			if (mailster.util.trim(textarea.val())) return;
 			textarea.val('...');
 			mailster.util.ajax('get_system_info', function (response) {
 

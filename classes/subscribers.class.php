@@ -1606,7 +1606,7 @@ class MailsterSubscribers {
 	 * @param unknown $value       (optional)
 	 * @return unknown
 	 */
-	public function update_meta( $id, $campaign_id = 0, $key, $value = null ) {
+	public function update_meta( $id, $campaign_id = 0, $key = null, $value = null ) {
 
 		global $wpdb;
 

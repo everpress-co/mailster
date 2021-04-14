@@ -123,8 +123,8 @@ if ( $updates = $t->get_updates() ) : ?>
 	</li>
 		<?php
 
-		$existing = @array_intersect_assoc( $mailster_templates, $templates );
-		$others   = @array_diff_assoc( $mailster_templates, $existing );
+		$existing = array_intersect_assoc( $mailster_templates, $templates );
+		$others   = array_diff_assoc( $mailster_templates, $existing );
 		$author   = isset( $_GET['from'] ) ? trim( strtolower( $_GET['from'] ) ) : null;
 
 		$mailster_templates = $existing + $others;

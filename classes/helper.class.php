@@ -7,13 +7,13 @@ class MailsterHelper {
 	 *
 	 * @param unknown $attach_id (optional)
 	 * @param unknown $img_url   (optional)
-	 * @param unknown $width
+	 * @param unknown $width    (optional)
 	 * @param unknown $height   (optional)
 	 * @param unknown $crop     (optional)
 	 * @param unknown $original (optional)
 	 * @return unknown
 	 */
-	public function create_image( $attach_id = null, $img_url = null, $width, $height = null, $crop = false, $original = false ) {
+	public function create_image( $attach_id = null, $img_url = null, $width = null, $height = null, $crop = false, $original = false ) {
 
 		$org_url = $img_url;
 
@@ -762,51 +762,10 @@ class MailsterHelper {
 			<?php
 		} else {
 			wp_enqueue_media();
-			wp_add_inline_style(
-				'media-views',
-				'.media-editor-link{
-					display: inline-block;
-					height: 80px;
-					overflow: hidden;
-					max-width: 280px;
-					min-width: 80px;
-					position:relative;
-				}
-				.media-editor-link-has-image{
-					border: 1px solid #ccc;
-				}
-				.media-editor-link-remove{
-					position: absolute;
-					top: 0;
-					right: 0;
-					text-decoration: none;
-					padding: 0 2px;
-					display: none;
-				}
-				.media-editor-link-has-image .media-editor-link-select{
-					display: none;
-				}
-				.media-editor-link-has-image:hover .media-editor-link-remove{
-					display: block;
-				}
-				.media-editor-link-has-image:hover{
-					box-shadow: 0 0 0 1px white, 0 0 0 5px #1E8CBE;
-				}
-				.media-editor-link-empty:before{
-					content: "\f128";
-					font-size: 80px;
-				}
-				.media-editor-link img{
-					transform: translateY(-50%);
-					top: 50%;
-					position: relative;
-					max-width: 200px;
-				}'
-			);
-
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-			wp_enqueue_script( 'mailster-media-editor-link-script', MAILSTER_URI . 'assets/js/media-editor-link-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-media-editor-link', MAILSTER_URI . 'assets/js/media-editor-link-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+			wp_enqueue_style( 'mailster-media-editor-link', MAILSTER_URI . 'assets/css/media-editor-link-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 			$classes = array( 'media-editor-link' );
 
@@ -1133,12 +1092,6 @@ class MailsterHelper {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $content
-	 * @return unknown
-	 */
 	public function inline_css( $content ) {
 
 		// save comments with conditional stuff
@@ -1150,9 +1103,6 @@ class MailsterHelper {
 		}
 		// get all style blocks
 		if ( preg_match_all( '#<style([^><]*)>(.*?)</style>#is', $content, $originalstyles ) ) {
-
-			@error_reporting( E_ERROR | E_PARSE );
-			@ini_set( 'display_errors', '0' );
 
 			$apply_styles = array();
 
@@ -1178,11 +1128,14 @@ class MailsterHelper {
 
 			require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
+			$i_error = libxml_use_internal_errors( true );
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
 
 			$htmldoc->applyStylesheet( $apply_styles );
 
 			$html = $htmldoc->getHTML();
+			libxml_clear_errors();
+			libxml_use_internal_errors( $i_error );
 
 			// convert urlencode back for links with unallowed characters (only images)
 			preg_match_all( "/(src|background)=[\"'](.*)[\"']/Ui", $html, $urls );
@@ -1351,7 +1304,7 @@ class MailsterHelper {
 
 		ob_start();
 
-		( @file_exists( $path . $wp_scripts->registered[ $handle ]->src ) )
+		( file_exists( $path . $wp_scripts->registered[ $handle ]->src ) )
 			? include $path . $wp_scripts->registered[ $handle ]->src
 			: include str_replace( MAILSTER_URI, MAILSTER_DIR, $wp_scripts->registered[ $handle ]->src );
 		$output = ob_get_contents();
@@ -1396,7 +1349,7 @@ class MailsterHelper {
 
 		ob_start();
 
-		( @file_exists( $path . $wp_styles->registered[ $handle ]->src ) )
+		( file_exists( $path . $wp_styles->registered[ $handle ]->src ) )
 			? include $path . $wp_styles->registered[ $handle ]->src
 			: include str_replace( MAILSTER_URI, MAILSTER_DIR, $wp_styles->registered[ $handle ]->src );
 		$output = ob_get_contents();
@@ -1434,7 +1387,7 @@ class MailsterHelper {
 			wp_mkdir_p( dirname( $filename ) );
 		}
 
-		if ( $file_handle = @fopen( $filename, $flags ) ) {
+		if ( $file_handle = fopen( $filename, $flags ) ) {
 			fwrite( $file_handle, $data );
 			fclose( $file_handle );
 		}
@@ -1521,28 +1474,45 @@ class MailsterHelper {
 
 	public function in_timeframe( $timestamp = null ) {
 
-		$from = mailster_option( 'time_frame_from', 0 );
-		$to   = mailster_option( 'time_frame_to', 0 );
-		$days = mailster_option( 'time_frame_day' );
 		if ( is_null( $timestamp ) ) {
 			$timestamp = current_time( 'timestamp' );
 		}
+
+		$from = mailster_option( 'time_frame_from', 0 );
+		$to   = mailster_option( 'time_frame_to', 0 );
+		$days = mailster_option( 'time_frame_day' );
 		$hour = date( 'G', $timestamp );
 		$day  = date( 'w', $timestamp );
 
+		// no weekday at all or current day is not in the list
+		if ( empty( $days ) || ! in_array( $day, $days ) ) {
+			return false;
+		}
+
 		// further check if not 24h
 		if ( abs( $from - $to ) ) {
-			if ( $to < $from ) {
-				$to += 24;
+
+			$t_from = strtotime( $from . ':00' );
+			$t_to   = strtotime( $to . ':00' );
+
+			// current hour is smaller as the requested from one => set it to yesterday
+			if ( $hour < $from ) {
+				$t_from = strtotime( 'yesterday ' . $from . ':00' );
+
+				// to is smaller as from so after midnight => set as tomorrow
+			} elseif ( $to < $from ) {
+				$t_to = strtotime( 'tomorrow ' . $to . ':00' );
 			}
-			if ( $from > $hour || $hour >= $to ) {
+
+			// check if its in the range
+			if ( $t_from > $timestamp || $timestamp > $t_to ) {
 				return false;
 			}
 		}
-		return ! is_array( $days ) || in_array( $day, $days );
+
+		return true;
 
 	}
-
 	/**
 	 *
 	 *
@@ -1698,7 +1668,7 @@ class MailsterHelper {
 			}
 
 			$max_items = apply_filters( 'mailster_feed_max_items', 100 );
-			$max_items = @$feed->get_item_quantity( (int) $max_items );
+			$max_items = $feed->get_item_quantity( (int) $max_items );
 
 			if ( $item >= $max_items ) {
 				return new WP_Error( 'feed_to_short', sprintf( esc_html__( 'The feed only contains %d items', 'mailster' ), $max_items ) );

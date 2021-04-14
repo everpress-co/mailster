@@ -1221,7 +1221,7 @@ class MailsterForm {
 		// ajax request
 		if ( ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) :
 
-			@header( 'Content-type: application/json' );
+			header( 'Content-type: application/json' );
 			echo json_encode( $return );
 			exit;
 
@@ -1281,7 +1281,7 @@ class MailsterForm {
 				? mailster_text( 'enter_email' )
 				: mailster_text( 'unsubscribeerror' ) );
 
-			@header( 'Content-type: application/json' );
+			header( 'Content-type: application/json' );
 			echo json_encode( $return );
 			exit;
 
@@ -1475,12 +1475,12 @@ class MailsterForm {
 	/**
 	 *
 	 *
-	 * @param unknown $form_id (optional)
+	 * @param unknown $form_id
 	 * @param unknown $key
 	 * @param unknown $value
 	 * @return unknown
 	 */
-	public function set( $form_id = 0, $key, $value ) {
+	public function set( $form_id, $key, $value ) {
 
 		_deprecated_function( __FUNCTION__, '2.1', "mailster('forms')->update_field()" );
 

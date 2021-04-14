@@ -143,7 +143,7 @@ class MailsterAjax {
 	 */
 	private function json_return( $return ) {
 
-		@header( 'Content-type: application/json' );
+		header( 'Content-type: application/json' );
 		echo json_encode( $return );
 		exit;
 
@@ -218,7 +218,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
-		@error_reporting( 0 );
+		error_reporting( 0 );
 
 		$id          = (int) $_GET['id'];
 		$template    = basename( $_GET['template'] );
@@ -553,7 +553,7 @@ class MailsterAjax {
 						continue;
 					}
 					$file = get_attached_file( $attachment_id );
-					if ( ! @is_file( $file ) ) {
+					if ( ! is_file( $file ) ) {
 						continue;
 					}
 					$total_size += filesize( $file );
@@ -2200,18 +2200,18 @@ class MailsterAjax {
 
 		global $wpdb;
 
-		$memory_limit       = @ini_get( 'memory_limit' );
-		$max_execution_time = @ini_get( 'max_execution_time' );
+		$memory_limit       = ini_get( 'memory_limit' );
+		$max_execution_time = ini_get( 'max_execution_time' );
 
 		$return['success'] = false;
 
-		@set_time_limit( 0 );
+		set_time_limit( 0 );
 
 		if ( (int) $max_execution_time < 300 ) {
-			@ini_set( 'max_execution_time', 300 );
+			ini_set( 'max_execution_time', 300 );
 		}
 		if ( (int) $memory_limit < 256 ) {
-			@ini_set( 'memory_limit', '256M' );
+			ini_set( 'memory_limit', '256M' );
 		}
 
 		if ( isset( $_FILES['async-upload'] ) ) {
@@ -2316,18 +2316,18 @@ class MailsterAjax {
 			die( 'not allowed' );
 		}
 
-		$memory_limit       = @ini_get( 'memory_limit' );
-		$max_execution_time = @ini_get( 'max_execution_time' );
+		$memory_limit       = ini_get( 'memory_limit' );
+		$max_execution_time = ini_get( 'max_execution_time' );
 
 		$return['success'] = false;
 
-		@set_time_limit( 0 );
+		set_time_limit( 0 );
 
 		if ( (int) $max_execution_time < 300 ) {
-			@ini_set( 'max_execution_time', 300 );
+			ini_set( 'max_execution_time', 300 );
 		}
 		if ( (int) $memory_limit < 256 ) {
-			@ini_set( 'memory_limit', '256M' );
+			ini_set( 'memory_limit', '256M' );
 		}
 
 		if ( isset( $_FILES['async-upload'] ) ) {

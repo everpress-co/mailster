@@ -67,7 +67,7 @@ mailster = (function (mailster, $, window, document) {
 			});
 
 			uploader.bind('FileUploaded', function (up, file, response) {
-				response = $.parseJSON(response.response);
+				response = JSON.parse(response.response);
 				importidentifier = response.identifier;
 				if (!response.success) {
 					importstatus.html(response.message);
@@ -179,7 +179,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('blur', function () {
 			$(this).removeClass('focus');
-			var value = $.trim($(this).val());
+			var value = mailster.util.trim($(this).val());
 
 			if (value) {
 				mailster.util.ajax('import_subscribers_upload_handler', {

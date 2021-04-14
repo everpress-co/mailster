@@ -407,7 +407,7 @@ class MailsterTests {
 
 		foreach ( $support_email_hashes as $hash ) {
 
-			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 60 MINUTE)', $hash ) );
+			$user = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->users} WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 60 MINUTE)", $hash ) );
 			if ( $user ) {
 				$this->warning( sprintf( 'Please remove any unused support account: %s', '<a href="' . admin_url( 'users.php?s=' . urlencode( $user->user_email ) ) . '">' . $user->user_email . '</a>' ) );
 			}
@@ -516,7 +516,7 @@ class MailsterTests {
 
 	}
 	private function test_memory_limit() {
-		$max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
+		$max = max( (int) ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
 		if ( $max < 128 ) {
 			$this->warning( 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		} else {

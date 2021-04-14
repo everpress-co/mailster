@@ -2,8 +2,8 @@
 Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
-Tested up to: 5.6
-Stable tag: 2.4.17
+Tested up to: 5.7
+Stable tag: 2.4.18
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -87,6 +87,16 @@ Xaver Birsak – https://everpress.co
 
 
 == Changelog ==
+
+= Version 2.4.18 =
+
+* fixed: comparing empty date values on MySQL 8
+* fixed: issue while calculating time frame over midnight
+* fixed: issue with merge tags when rss and regular tag is used
+* fixed: use of hard-coded database prefix
+* improved: removed/replaced deprecated jQuey methods
+* improved: media editor link in settings
+* improved: support for PHP 8
 
 = Version 2.4.17 =
 

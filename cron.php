@@ -6,7 +6,7 @@ $request_url = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null
 if ( $request_url ) {
 	header( 'Refresh: 15;url=' . $request_url, true );
 }
-@ini_set( 'display_errors', true );
+ini_set( 'display_errors', true );
 
 if ( ! defined( 'DISABLE_WP_CRON' ) ) {
 	define( 'DISABLE_WP_CRON', true );
@@ -51,7 +51,7 @@ if ( ! defined( 'MAILSTER_VERSION' ) ) {
 
 $interval = isset( $_GET['interval'] ) ? (int) $_GET['interval'] : mailster_option( 'interval', 5 ) * 60;
 if ( $request_url ) {
-	@header( "Refresh: $interval;url=" . $request_url, true );
+	header( "Refresh: $interval;url=" . $request_url, true );
 }
 
 $text_direction = function_exists( 'is_rtl' ) && is_rtl() ? 'rtl' : 'ltr';

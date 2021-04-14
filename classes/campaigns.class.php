@@ -1535,7 +1535,7 @@ class MailsterCampaigns {
 		}
 
 		// sanitize the content and remove all content filters
-		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], $postdata['head'] );
+		$post['post_content'] = mailster()->sanitize_content( $post['post_content'], isset( $postdata['head'] ) ? $postdata['head'] : null );
 
 		$post['post_excerpt'] = ! empty( $postdata['autoplaintext'] )
 			? mailster( 'helper' )->plain_text( $post['post_content'] )
@@ -1640,7 +1640,7 @@ class MailsterCampaigns {
 						continue;
 					}
 					$file = get_attached_file( $attachment_id );
-					if ( @is_file( $file ) ) {
+					if ( is_file( $file ) ) {
 						$total_size += filesize( $file );
 						if ( $total_size <= $max_size ) {
 							$meta['attachments'][] = $attachment_id;
@@ -4195,7 +4195,7 @@ class MailsterCampaigns {
 					continue;
 				}
 				$file = get_attached_file( $attachment_id );
-				if ( ! @is_file( $file ) ) {
+				if ( ! is_file( $file ) ) {
 					continue;
 				}
 				$mail->attachments[ basename( $file ) ] = $file;
@@ -4662,7 +4662,7 @@ class MailsterCampaigns {
 		$filename = apply_filters( 'mymail_post_thumbnail_filename', apply_filters( 'mailster_post_thumbnail_filename', 'newsletter-' . $campaign_id, $campaign ), $campaign ) . '.jpg';
 
 		if ( $file_exits = file_exists( $wp_upload_dir['path'] . '/' . $filename ) ) {
-			@unlink( $wp_upload_dir['path'] . '/' . $filename );
+			unlink( $wp_upload_dir['path'] . '/' . $filename );
 		}
 
 		$file = array(

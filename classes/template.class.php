@@ -611,9 +611,14 @@ class MailsterTemplate {
 		if ( ! is_string( $doc_or_html ) ) {
 			$doc = $doc_or_html;
 		} else {
+			$i_error = libxml_use_internal_errors( true );
+
 			$doc                  = new DOMDocument();
 			$doc->validateOnParse = true;
-			@$doc->loadHTML( $doc_or_html );
+			$doc->loadHTML( $doc_or_html );
+
+			libxml_clear_errors();
+			libxml_use_internal_errors( $i_error );
 
 		}
 		$xpath = new DOMXpath( $doc );

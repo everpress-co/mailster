@@ -26,18 +26,15 @@ jQuery(document).ready(function ($) {
 		if (event.target.id == 'header') sharebox.fadeOut(600);
 	});
 
-	iframe.load(function () {
-		iframe.contents().find("a").bind({
-			'click': function () {
+	iframe.on('load', function () {
+		iframe.contents().find('body')
+			.on('click', 'a', function () {
 				window.open(this.href);
 				return false;
-			}
-		});
-		iframe.contents().bind({
-			'mousedown': function (event) {
+			})
+			.on('mousedown', function () {
 				sharebox.fadeOut(600);
-			}
-		});
+			});
 	});
 
 	$('.social-services').on('click', 'a', function () {

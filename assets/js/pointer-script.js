@@ -14,7 +14,7 @@ jQuery(document).ready(function ($) {
 			buttons: function (event, t) {
 
 				var button = jQuery('<a id="pointer-close" class="close" style="margin:10px 0 0 13px;float:left;cursor:pointer" >' + MailsterPointer.close + '</a>');
-				button.bind('click.pointer', function () {
+				button.on('click.pointer', function () {
 					t.element.pointer('close');
 				});
 				return button;
@@ -84,7 +84,7 @@ jQuery(document).ready(function ($) {
 	};
 
 	MailsterPointer.iframe = $('#mailster_iframe').contents();
-	$('#mailster_iframe').load(function () {
+	$('#mailster_iframe').on('load', function () {
 		MailsterPointer.iframe = $('#mailster_iframe').contents();
 	});
 

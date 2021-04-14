@@ -1703,7 +1703,7 @@ class Mailster {
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
 		}
-		$max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
+		$max = max( (int) ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
 		if ( $max < 128 ) {
 			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		}
@@ -2833,10 +2833,10 @@ class Mailster {
 	 *
 	 * @param unknown $post_id
 	 * @param unknown $part     (optional)
-	 * @param unknown $meta_key
+	 * @param unknown $meta_key (optional)
 	 * @return unknown
 	 */
-	public function meta( $post_id, $part = null, $meta_key ) {
+	public function meta( $post_id, $part = null, $meta_key = null ) {
 
 		$meta = get_post_meta( $post_id, $meta_key, true );
 
@@ -2859,10 +2859,10 @@ class Mailster {
 	 * @param unknown $id
 	 * @param unknown $key
 	 * @param unknown $value    (optional)
-	 * @param unknown $meta_key
+	 * @param unknown $meta_key (optional)
 	 * @return unknown
 	 */
-	public function update_meta( $id, $key, $value = null, $meta_key ) {
+	public function update_meta( $id, $key, $value = null, $meta_key = null ) {
 		if ( is_array( $key ) ) {
 			$meta = $key;
 			return update_post_meta( $id, $meta_key, $meta );

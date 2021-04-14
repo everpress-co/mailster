@@ -1046,7 +1046,10 @@ class MailsterSubscriberQuery {
 				}
 
 				if ( in_array( $field, $this->custom_date_fields ) ) {
-					$f = "STR_TO_DATE($f,'%Y-%m-%d')";
+					// cannot compare with an empty value since mysql 8
+					if ( ! $is_empty ) {
+						$f = "STR_TO_DATE($f,'%Y-%m-%d')";
+					}
 				} elseif ( in_array( $field, $this->time_fields ) ) {
 					$f = "FROM_UNIXTIME($f, '%Y-%m-%d')";
 				}
@@ -1171,7 +1174,9 @@ class MailsterSubscriberQuery {
 				}
 
 				if ( in_array( $field, $this->custom_date_fields ) ) {
-					$f = "STR_TO_DATE($f,'%Y-%m-%d')";
+					if ( ! $is_empty ) {
+						$f = "STR_TO_DATE($f,'%Y-%m-%d')";
+					}
 				} elseif ( in_array( $field, $this->time_fields ) ) {
 					$f = "FROM_UNIXTIME($f, '%Y-%m-%d')";
 				}
