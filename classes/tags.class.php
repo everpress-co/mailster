@@ -539,34 +539,54 @@ class MailsterTags {
 	 * @param unknown $show_count (optional)
 	 * @param unknown $checked    (optional)
 	 */
-	public function print_it( $id = null, $status = null, $name = 'mailster_tags', $show_count = true, $checked = array(), $type = 'checkbox' ) {
+	public function return_it( $id = null, $status = null, $name = 'mailster_tags', $show_count = true, $checked = array(), $type = 'checkbox' ) {
 
-		if ( $tags = $this->get( $id, $status, ! ! $show_count ) ) {
+		$html = '';
+		if ( $tags = $this->get( $id, $status, (bool) $show_count ) ) {
 
 			if ( ! is_array( $checked ) ) {
 				$checked = array( $checked );
 			}
 
 			if ( $type == 'checkbox' ) {
-				echo '<ul>';
+				$html .= '<ul>';
 				foreach ( $tags as $tag ) {
-					echo '<li><label title="' . ( $tag->description ? $tag->description : $tag->name ) . '">' . '<input type="checkbox" value="' . $tag->ID . '" name="' . $name . '[]" ' . checked( in_array( $tag->ID, $checked ), true, false ) . ' class="tag' . '"> ' . $tag->name . '' . ( $show_count ? ' <span class="count">(' . number_format_i18n( $tag->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')</span>' : '' ) . '</label></li>';
+					$html .= '<li><label title="' . ( $tag->description ? $tag->description : $tag->name ) . '">' . '<input type="checkbox" value="' . $tag->ID . '" name="' . $name . '[]" ' . checked( in_array( $tag->ID, $checked ), true, false ) . ' class="tag' . '"> ' . $tag->name . '' . ( $show_count ? ' <span class="count">(' . number_format_i18n( $tag->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')</span>' : '' ) . '</label></li>';
 				}
-				echo '</ul>';
+				$html .= '</ul>';
 			} else {
-				echo '<select class="widefat" multiple name="' . $name . '">';
+				$html .= '<select class="widefat" multiple name="' . $name . '">';
 				foreach ( $tags as $tag ) {
-					echo '<option value="' . $tag->ID . '" ' . selected( in_array( $tag->ID, $checked ), true, false ) . '>' . $tag->name . '' . ( $show_count ? ' (' . number_format_i18n( $tag->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')' : '' ) . '</option>';
+					$html .= '<option value="' . $tag->ID . '" ' . selected( in_array( $tag->ID, $checked ), true, false ) . '>' . $tag->name . '' . ( $show_count ? ' (' . number_format_i18n( $tag->subscribers ) . ( is_string( $show_count ) ? ' ' . $show_count : '' ) . ')' : '' ) . '</option>';
 				}
-				echo '</select>';
+				$html .= '</select>';
 			}
 		} else {
 			if ( is_admin() ) {
-				echo '<ul><li>' . __( 'No Tags found!', 'mailster' ) . '</li><li><a href="edit.php?post_type=newsletter&page=mailster_tags&new">' . __( 'Create a Tag now', 'mailster' ) . '</a></li></ul>';
+				$html .= '<ul><li>' . __( 'No Tags found!', 'mailster' ) . '</li></ul>';
 			}
 		}
 
+		return $html;
+
 	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id         (optional)
+	 * @param unknown $status     (optional)
+	 * @param unknown $name       (optional)
+	 * @param unknown $show_count (optional)
+	 * @param unknown $checked    (optional)
+	 */
+	public function print_it( $id = null, $status = null, $name = 'mailster_lists', $show_count = true, $checked = array(), $type = 'checkbox' ) {
+
+		echo $this->return_it( $id, $status, $name, $show_count, $checked, $type );
+
+	}
+
 
 
 	/**
