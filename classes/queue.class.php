@@ -630,7 +630,7 @@ class MailsterQueue {
 									$new_campaign = mailster( 'campaigns' )->get( $new_id );
 									$autoresponder_meta['issue']++;
 
-									mailster_notice( sprintf( __( 'New campaign %1$s has been created and is going to be sent on %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . esc_attr( $new_campaign->ID ) . '&action=edit">' . esc_html( $new_campaign->post_title ) . '</a>"</strong>', '<strong>' . date( mailster( 'helper' )->timeformat(), $now + $send_offset + $timeoffset ) . '</strong>' ), 'info', true );
+									mailster_notice( sprintf( __( 'New campaign %1$s has been created and is going to be sent on %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . esc_attr( $new_campaign->ID ) . '&action=edit">' . esc_html( $new_campaign->post_title ) . '</a>"</strong>', '<strong>' . date_i18n( mailster( 'helper' )->timeformat(), $now + $send_offset + $timeoffset ) . '</strong>' ), 'info', true );
 
 									do_action( 'mailster_autoresponder_post_published', $campaign->ID, $new_id );
 

@@ -278,19 +278,17 @@ $sent = $this->get_sent( $post->ID );
 			<p>
 				<?php
 
-				global $wp_locale;
-
 				esc_html_e( 'send campaigns only on these weekdays', 'mailster' );
 				echo '<br>';
 				$start_at = get_option( 'start_of_week' );
 
 				for ( $i = $start_at; $i < 7 + $start_at; $i++ ) {
 					$j = $i;
-					if ( ! isset( $wp_locale->weekday[ $j ] ) ) {
+					if ( $j > 7 ) {
 						$j = $j - 7;
 					}
 
-					echo '<label title="' . $wp_locale->weekday[ $j ] . '" class="weekday"><input name="mailster_data[autoresponder][weekdays][]" type="checkbox" value="' . $j . '" ' . checked( ( in_array( $j, $autoresponderdata['weekdays'] ) || ! $autoresponderdata['weekdays'] ), true, false ) . '>' . $wp_locale->weekday_initial[ $wp_locale->weekday[ $j ] ] . '&nbsp;</label> ';
+					echo '<label title="' . date_i18n( 'l', strtotime( 'sunday +' . $j . ' days' ) ) . '" class="weekday"><input name="mailster_data[autoresponder][weekdays][]" type="checkbox" value="' . $j . '" ' . checked( ( in_array( $j, $autoresponderdata['weekdays'] ) || ! $autoresponderdata['weekdays'] ), true, false ) . '>' . date_i18n( 'D', strtotime( 'sunday +' . $j . ' days' ) ) . '&nbsp;</label> ';
 				}
 				?>
 			</p>
@@ -382,7 +380,7 @@ $sent = $this->get_sent( $post->ID );
 					$uservalue .= '<option value="-1">--</option>';
 
 					foreach ( $customfields as $key => $data ) {
-						$uservalue .= '<option value="' . $key . '"' . selected( $autoresponderdata['uservalue'], $key, false ) . '>' . $data['name'] . '</option>';
+						$uservalue .= '<option value="' . $key . '"' . selected( $autoresponderdata['uservalue'], $key, false ) . '>' . esc_html( $data['name'] ) . '</option>';
 					}
 					$uservalue .= '</select>';
 					?>
@@ -390,21 +388,11 @@ $sent = $this->get_sent( $post->ID );
 			<p id="userexactdate">
 				<label>
 					<input type="radio" class="userexactdate" name="mailster_data[autoresponder][userexactdate]" value="0" <?php checked( ! $autoresponderdata['userexactdate'] ); ?>>
-					<span
-					<?php
-					if ( $autoresponderdata['userexactdate'] ) {
-						echo ' class="disabled"'; }
-					?>
-					><?php printf( esc_html__( 'every %1$s %2$s', 'mailster' ), $amount, $unit ); ?></span>
+					<span <?php echo ( $autoresponderdata['userexactdate'] ) ? ' class="disabled"' : ''; ?>><?php printf( esc_html__( 'every %1$s %2$s', 'mailster' ), $amount, $unit ); ?></span>
 				</label><br>
 				<label>
 					<input type="radio" class="userexactdate" name="mailster_data[autoresponder][userexactdate]" value="1" <?php checked( $autoresponderdata['userexactdate'] ); ?>>
-					<span
-					<?php
-					if ( ! $autoresponderdata['userexactdate'] ) {
-						echo ' class="disabled"'; }
-					?>
-					><?php esc_html_e( 'on the exact date', 'mailster' ); ?></span>
+					<span <?php echo ( ! $autoresponderdata['userexactdate'] ) ? ' class="disabled"' : ''; ?>><?php esc_html_e( 'on the exact date', 'mailster' ); ?></span>
 				</label>
 			</p>
 			<p>
@@ -494,13 +482,7 @@ $sent = $this->get_sent( $post->ID );
 					<?php esc_html_e( 'whenever the action hook', 'mailster' ); ?>
 				</label>
 			</div>
-				<?php
-				$hooks = apply_filters( 'mailster_action_hooks', array() );
-				if ( $autoresponderdata['hook'] && ! isset( $hooks[ $autoresponderdata['hook'] ] ) ) {
-					// $hooks[ $autoresponderdata['hook'] ] = $autoresponderdata['hook'];
-				}
-				?>
-			<?php if ( $hooks ) : ?>
+			<?php if ( $hooks = apply_filters( 'mailster_action_hooks', array() ) ) : ?>
 			<p>
 				<label>
 					<select class="widefat mailster-action-hooks">
@@ -513,7 +495,7 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 				<?php endif; ?>
 			<p>
-				<input type="text" class="widefat code mailster-action-hook" name="mailster_data[autoresponder][hook]" value="<?php echo $autoresponderdata['hook']; ?>" placeholder="hook_name">
+				<input type="text" class="widefat code mailster-action-hook" name="mailster_data[autoresponder][hook]" value="<?php echo esc_attr( $autoresponderdata['hook'] ); ?>" placeholder="hook_name">
 			</p>
 			<div>
 				<label>

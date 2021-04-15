@@ -1115,6 +1115,8 @@ class MailsterHelper {
 			$i_error = libxml_use_internal_errors( true );
 			$htmldoc = new \InlineStyle\InlineStyle( $content );
 
+			$apply_styles = array_unique( $apply_styles );
+
 			$htmldoc->applyStylesheet( $apply_styles );
 
 			$html = $htmldoc->getHTML();

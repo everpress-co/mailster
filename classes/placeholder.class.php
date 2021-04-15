@@ -1185,6 +1185,14 @@ class MailsterPlaceholder {
 				$categories = implode( ', ', $categories );
 			}
 			$extra = $categories;
+
+		} elseif ( false !== strpos( $what, '[' ) ) {
+			preg_match( '#(.*)\[(.*)\]#i', $what, $withformat );
+			if ( ! isset( $withformat[1] ) ) {
+				return null;
+			}
+			$what  = trim( $withformat[1] );
+			$extra = trim( $withformat[2] );
 		}
 
 		switch ( $what ) {
@@ -1247,7 +1255,7 @@ class MailsterPlaceholder {
 			case 'date_gmt':
 			case 'modified':
 			case 'modified_gmt':
-				$replace_to = date( mailster( 'helper' )->dateformat(), strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date_i18n( $extra ? $extra : mailster( 'helper' )->dateformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'time':
 				$what = 'date';
@@ -1257,7 +1265,7 @@ class MailsterPlaceholder {
 				$what = isset( $what ) ? $what : 'modified';
 			case 'modified_time_gmt':
 				$what       = isset( $what ) ? $what : 'modified_gmt';
-				$replace_to = date( mailster( 'helper' )->timeformat(), strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date_i18n( $extra ? $extra : mailster( 'helper' )->timeformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'excerpt':
 				if ( ! empty( $post->{'post_excerpt'} ) ) {

@@ -967,7 +967,7 @@ class MailsterAjax {
 		$return['html'] = '<table class="wp-list-table widefat"><tbody>';
 
 		foreach ( $errors as $i => $data ) {
-			$return['html'] .= '<tr ' . ( ! ( $i % 2 ) ? ' class="alternate"' : '' ) . '><td class="textright">' . ( $i + 1 ) . '</td><td><a href="edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $data->ID . '">' . $data->email . '</a></td><td><span class="red">' . $data->errormsg . '</span></td><td>' . date( $timeformat, $data->timestamp + $timeoffset ) . '</td></tr>';
+			$return['html'] .= '<tr ' . ( ! ( $i % 2 ) ? ' class="alternate"' : '' ) . '><td class="textright">' . ( $i + 1 ) . '</td><td><a href="edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $data->ID . '">' . $data->email . '</a></td><td><span class="red">' . $data->errormsg . '</span></td><td>' . date_i18n( $timeformat, $data->timestamp + $timeoffset ) . '</td></tr>';
 		}
 
 		$return['html'] .= '</tbody>';
@@ -1508,9 +1508,9 @@ class MailsterAjax {
 				}
 
 				$image = null;
-				if ( has_post_thumbnail( $post->ID ) ) {
+				if ( $post_thumbnail_id = get_post_thumbnail_id( $post->ID ) ) {
 					$image = array(
-						'id'   => get_post_thumbnail_id( $post->ID ),
+						'id'   => $post_thumbnail_id,
 						'name' => $post->post_title,
 					);
 				}

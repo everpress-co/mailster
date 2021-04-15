@@ -153,21 +153,21 @@ if ( $is_new ) {
 				<strong><?php esc_html_e( 'subscribed at', 'mailster' ); ?>:</strong>
 				  <?php
 					echo $subscriber->signup
-					? date( $timeformat, $subscriber->signup + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->signup ) )
+					? date_i18n( $timeformat, $subscriber->signup + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->signup ) )
 					: esc_html__( 'unknown', 'mailster' )
 					?>
 
 				<div><?php $this->output_referer( $subscriber->ID ); ?></div>
 
 				<?php if ( $meta->gdpr ) : ?>
-				<strong><?php esc_html_e( 'Consent given (GDPR)', 'mailster' ); ?>:</strong> <?php echo date( $timeformat, $meta->gdpr + $timeoffset ); ?>
+				<strong><?php esc_html_e( 'Consent given (GDPR)', 'mailster' ); ?>:</strong> <?php echo date_i18n( $timeformat, $meta->gdpr + $timeoffset ); ?>
 				<?php endif; ?>
 				<a class="show-more-info alignright"><?php esc_html_e( 'more', 'mailster' ); ?></a>
 				<ul class="more-info">
 					<li><strong><?php esc_html_e( 'confirmed at', 'mailster' ); ?>:</strong>
 					  <?php
 						echo $subscriber->confirm
-						? date( $timeformat, $subscriber->confirm + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->confirm ) ) . ( $subscriber->ip_confirm ? ' ' . sprintf( esc_html__( 'with IP %s', 'mailster' ), $subscriber->ip_confirm ) : '' )
+						? date_i18n( $timeformat, $subscriber->confirm + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->confirm ) ) . ( $subscriber->ip_confirm ? ' ' . sprintf( esc_html__( 'with IP %s', 'mailster' ), $subscriber->ip_confirm ) : '' )
 						: esc_html__( 'unknown', 'mailster' )
 						?>
 					</li>
@@ -178,7 +178,7 @@ if ( $is_new ) {
 				<strong><?php esc_html_e( 'latest updated', 'mailster' ); ?>:</strong>
 				  <?php
 					echo $subscriber->updated
-					? date( $timeformat, $subscriber->updated + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->updated ) )
+					? date_i18n( $timeformat, $subscriber->updated + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $subscriber->updated ) )
 					: esc_html__( 'never', 'mailster' )
 					?>
 			</div>
@@ -226,7 +226,7 @@ if ( $is_new ) {
 
 						case 'date':
 							?>
-						<li><?php echo esc_html( $subscriber->{$field} ) ? '<p>' . date( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
+						<li><?php echo esc_html( $subscriber->{$field} ) ? '<p>' . date_i18n( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$field} ) ) . '</p>' : $subscriber->{$field} . '&nbsp;'; ?></li>
 						<li><input type="text" id="mailster_data_<?php echo $field; ?>" name="mailster_data[<?php echo $field; ?>]" value="<?php echo esc_attr( $subscriber->{$field} ); ?>" class="regular-text input datepicker"></li>
 							<?php
 							break;
@@ -280,7 +280,7 @@ if ( $is_new ) {
 					echo '<li>';
 					echo '<label title="' . ( $list->description ? $list->description : $list->name ) . '">' . ( $list->parent_id ? '&nbsp;&#x2517;&nbsp;' : '' ) . '<input type="checkbox" value="' . $list->ID . '" name="mailster_lists[]" ' . checked( in_array( $list->ID, $checked ), true, false ) . ' class="list' . ( $list->parent_id ? ' list-parent-' . $list->parent_id : '' ) . '"> ' . $list->name . '' . '</label>';
 					if ( in_array( $list->ID, $checked ) ) {
-						echo '<span class="confirmation-status">' . ( isset( $confirmed[ $list->ID ] ) ? esc_html__( 'confirmed at', 'mailster' ) . ': ' . date( $timeformat, $confirmed[ $list->ID ] + $timeoffset ) : esc_html__( 'not confirmed', 'mailster' ) ) . '</span>';
+						echo '<span class="confirmation-status">' . ( isset( $confirmed[ $list->ID ] ) ? esc_html__( 'confirmed at', 'mailster' ) . ': ' . date_i18n( $timeformat, $confirmed[ $list->ID ] + $timeoffset ) : esc_html__( 'not confirmed', 'mailster' ) ) . '</span>';
 					}
 					echo '</li>';
 				endforeach;
@@ -356,7 +356,7 @@ if ( $is_new ) {
 					if ( ! is_null( $meta->timeoffset ) ) :
 						$t = time() + ( $meta->timeoffset * 3600 );
 						?>
-						<?php echo '<br>' . esc_html__( 'Local Time', 'mailster' ) . ': <span title="' . date( $timeformat, $t ) . '">' . date( $timeformat, $t ) . '</span>'; ?>
+						<?php echo '<br>' . esc_html__( 'Local Time', 'mailster' ) . ': <span title="' . date_i18n( $timeformat, $t ) . '">' . date_i18n( $timeformat, $t ) . '</span>'; ?>
 						<?php echo '<br>UTC ' . ( $meta->timeoffset < 0 ? '' : '+' ) . $meta->timeoffset; ?>
 					<?php endif; ?>
 				</p>
@@ -445,7 +445,7 @@ if ( ! $is_new ) :
 				<tbody>
 					<?php foreach ( $activities as $i => $activity ) : ?>
 					<tr class="<?php echo ! ( $i % 2 ) ? ' alternate' : ''; ?>">
-						<td><?php echo $now - $activity->timestamp < 3600 ? sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $activity->timestamp ) ) : date( $timeformat, $activity->timestamp + $timeoffset ); ?></td>
+						<td><?php echo $now - $activity->timestamp < 3600 ? sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $activity->timestamp ) ) : date_i18n( $timeformat, $activity->timestamp + $timeoffset ); ?></td>
 						<td>
 						<?php
 						switch ( $activity->type ) {

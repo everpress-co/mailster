@@ -550,7 +550,7 @@ class MailsterCampaigns {
 			case 'finished':
 				$timeformat = mailster( 'helper' )->timeformat();
 				$timeoffset = mailster( 'helper' )->gmt_offset( true );
-				$msg        = sprintf( esc_html__( 'This Campaign was sent on %s', 'mailster' ), '<span class="nowrap">' . date( $timeformat, $this->meta( $post->ID, 'finished' ) + $timeoffset ) . '</span>' );
+				$msg        = sprintf( esc_html__( 'This Campaign was sent on %s', 'mailster' ), '<span class="nowrap">' . date_i18n( $timeformat, $this->meta( $post->ID, 'finished' ) + $timeoffset ) . '</span>' );
 				break;
 			case 'queued':
 				$msg = esc_html__( 'This Campaign is currently in the queue', 'mailster' );
@@ -782,12 +782,12 @@ class MailsterCampaigns {
 								printf( esc_html__( 'starts in %s', 'mailster' ), esc_html__( 'less than a minute', 'mailster' ) );
 							endif;
 							echo $meta['timezone'] ? ' <span class="timezonebased"  title="' . esc_attr__( 'This campaign is based on subscribers timezone and probably will take up to 24 hours', 'mailster' ) . '">24h</span>' : '';
-							echo "<br><span class='nonessential'>(" . date( $timeformat, $timestamp + $timeoffset ) . ')</span>';
+							echo "<br><span class='nonessential'>(" . date_i18n( $timeformat, $timestamp + $timeoffset ) . ')</span>';
 							echo '<div class="campaign-status"></div>';
 							break;
 						case 'finished':
 							echo '<span class="mailster-icon finished"></span> ' . esc_html__( 'Finished', 'mailster' );
-							echo '<br><span class="nonessential">(' . date( $timeformat, $meta['finished'] + $timeoffset ) . ')</span>';
+							echo '<br><span class="nonessential">(' . date_i18n( $timeformat, $meta['finished'] + $timeoffset ) . ')</span>';
 							break;
 						case 'draft':
 							echo '<span class="mailster-icon draft"></span> ' . $wp_post_statuses['draft']->label;
@@ -832,7 +832,7 @@ class MailsterCampaigns {
 									echo '<br>';
 									printf(
 										esc_html__( 'next campaign in %s', 'mailster' ),
-										'<strong title="' . date( $timeformat, $meta['timestamp'] + $timeoffset ) . '">' . human_time_diff( $meta['timestamp'] ) . '</strong>'
+										'<strong title="' . date_i18n( $timeformat, $meta['timestamp'] + $timeoffset ) . '">' . human_time_diff( $meta['timestamp'] ) . '</strong>'
 									);
 									echo ' &ndash; ' . sprintf( '#%s', '<strong title="' . sprintf( esc_html__( 'Next issue: %s', 'mailster' ), '#' . $autoresponder['issue'] ) . '">' . $autoresponder['issue'] . '</strong>' );
 									if ( isset( $autoresponder['since'] ) && $autoresponder['since'] ) {
@@ -853,23 +853,23 @@ class MailsterCampaigns {
 									echo '<br>';
 									printf(
 										esc_html__( 'until %s', 'mailster' ),
-										' <strong>' . date( $timeformat, $autoresponder['endtimestamp'] + $timeoffset ) . '</strong>'
+										' <strong>' . date_i18n( $timeformat, $autoresponder['endtimestamp'] + $timeoffset ) . '</strong>'
 									);
 								}
 
 								if ( count( $autoresponder['weekdays'] ) < 7 ) {
 
-									global $wp_locale;
 									$start_at = get_option( 'start_of_week' );
 									$days     = array();
+
 									for ( $i = $start_at; $i < 7 + $start_at; $i++ ) {
 										$j = $i;
-										if ( ! isset( $wp_locale->weekday[ $j ] ) ) {
+										if ( $j > 7 ) {
 											$j = $j - 7;
 										}
 
 										if ( in_array( $j, $autoresponder['weekdays'] ) ) {
-											$days[] = '<span title="' . $wp_locale->weekday[ $j ] . '">' . substr( $wp_locale->weekday[ $j ], 0, 2 ) . '</span>';
+											$days[] = '<span title="' . date_i18n( 'l', strtotime( 'sunday +' . $j . ' days' ) ) . '">' . date_i18n( 'D', strtotime( 'sunday +' . $j . ' days' ) ) . '</span>';
 										}
 									}
 
@@ -1803,7 +1803,7 @@ class MailsterCampaigns {
 
 					$autoresponder['weekdays'] = ( isset( $autoresponder['weekdays'] )
 						? $autoresponder['weekdays']
-						: array( date( 'w', $localtime ) ) );
+						: array( date_i18n( 'w', $localtime ) ) );
 
 					$localtime = mailster( 'helper' )->get_next_date_in_future( $localtime - $timeoffset, 0, $autoresponder['time_frame'], $autoresponder['weekdays'] );
 
@@ -3925,7 +3925,7 @@ class MailsterCampaigns {
 
 			$return .= '<tr ' . ( ! ( $i % 2 ) ? ' class="alternate" ' : '' ) . '>';
 			$return .= '<td class="textright">' . ( $count + $offset + 1 ) . '</td><td><a class="show-receiver-detail" data-id="' . $subscriber->ID . '">' . ( $name ? $name . ' &ndash; ' : '' ) . $subscriber->email . '</a></td>';
-			$return .= '<td title="' . esc_attr__( 'sent', 'mailster' ) . '">' . ( $subscriber->sent ? str_replace( ' ', '&nbsp;', date( $timeformat, $subscriber->sent + $timeoffset ) ) : '&ndash;' ) . '</td>';
+			$return .= '<td title="' . esc_attr__( 'sent', 'mailster' ) . '">' . ( $subscriber->sent ? str_replace( ' ', '&nbsp;', date_i18n( $timeformat, $subscriber->sent + $timeoffset ) ) : '&ndash;' ) . '</td>';
 
 			$return .= '<td>' . ( isset( $subscriber->open_count ) && $subscriber->open_count ? '<span title="' . esc_attr__( 'has opened', 'mailster' ) . '" class="mailster-icon mailster-icon-open"></span>' : '<span title="' . esc_attr__( 'has not opened yet', 'mailster' ) . '" class="mailster-icon mailster-icon-unopen"></span>' ) . '</td>';
 			// $return .= '<td>' . ( isset( $subscriber->click_count_total ) && $subscriber->click_count_total ? sprintf( esc_attr__( _n( '%s click', '%s clicks', $subscriber->click_count_total, 'mailster' ) ), $subscriber->click_count_total ) : '' ) . '</td>';
@@ -4680,7 +4680,7 @@ class MailsterCampaigns {
 						$created++;
 						$new_campaign = $this->get( $new_id );
 
-						mailster_notice( sprintf( esc_html__( 'New campaign %1$s has been created and is going to be sent in %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . $new_campaign->ID . '&action=edit">' . $new_campaign->post_title . '</a>"</strong>', '<strong>' . date( mailster( 'helper' )->timeformat(), $now + $send_offset + $timeoffset ) . '</strong>' ), 'info', true );
+						mailster_notice( sprintf( esc_html__( 'New campaign %1$s has been created and is going to be sent in %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . $new_campaign->ID . '&action=edit">' . $new_campaign->post_title . '</a>"</strong>', '<strong>' . date_i18n( mailster( 'helper' )->timeformat(), $now + $send_offset + $timeoffset ) . '</strong>' ), 'info', true );
 
 						do_action( 'mailster_autoresponder_post_published', $campaign->ID, $new_id );
 
@@ -4810,7 +4810,7 @@ class MailsterCampaigns {
 			return false;
 		}
 
-		$time_string = date( 'Y/m', strtotime( $campaign->post_date ) );
+		$time_string = date_i18n( 'Y/m', strtotime( $campaign->post_date ) );
 
 		$wp_upload_dir = wp_upload_dir( $time_string );
 

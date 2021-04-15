@@ -448,7 +448,7 @@ class MailsterConditions {
 			case 'value':
 				if ( in_array( $field, $this->time_fields ) ) {
 					if ( $string ) {
-						return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+						return date_i18n( mailster( 'helper' )->dateformat(), strtotime( $string ) );
 					} else {
 						return '';
 					}

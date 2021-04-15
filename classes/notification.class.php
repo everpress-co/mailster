@@ -700,7 +700,7 @@ class MailsterNotification {
 							break;
 						case 'date':
 							echo $subscriber->{$id} && is_integer( strtotime( $subscriber->{$id} ) )
-							? date( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$id} ) )
+							? date_i18n( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$id} ) )
 							: $subscriber->{$id};
 							break;
 						default:
@@ -810,7 +810,7 @@ class MailsterNotification {
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
-				<h2><?php printf( esc_html__( 'You have %1$s new subscribers since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date( $date_format, $timestamp + $gmt_offset ) ); ?></h2>
+				<h2><?php printf( esc_html__( 'You have %1$s new subscribers since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date_i18n( $date_format, $timestamp + $gmt_offset ) ); ?></h2>
 				<?php printf( esc_html__( 'You have now %s subscribers in total.', 'mailster' ), '<strong>' . number_format_i18n( $total ) . '</strong>' ); ?>
 			</td>
 			</tr>
@@ -1098,7 +1098,7 @@ endforeach;
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
-				<h2><?php printf( esc_html__( 'You have %1$s cancellations since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date( $date_format, $timestamp + $gmt_offset ) ); ?></h2>
+				<h2><?php printf( esc_html__( 'You have %1$s cancellations since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date_i18n( $date_format, $timestamp + $gmt_offset ) ); ?></h2>
 				<?php printf( esc_html__( 'You have now %s subscribers in total.', 'mailster' ), '<strong>' . number_format_i18n( $total ) . '</strong>' ); ?>
 			</td>
 			</tr>

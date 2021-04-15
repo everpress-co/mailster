@@ -716,7 +716,8 @@ mailster = (function (mailster, $, window, document) {
 							f = factor.val();
 
 						if ('static' == insertmethod) {
-							mailster.util.ajax('create_image', {
+
+							currenttext.image.id && mailster.util.ajax('create_image', {
 								id: currenttext.image.id,
 								original: original.is(':checked'),
 								width: _this.width() * f,

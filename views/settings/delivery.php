@@ -12,8 +12,6 @@
 		<td><p><?php printf( esc_html__( 'My email service provider let me send %1$s within %2$s hours.', 'mailster' ), '<input type="number" min="1" name="mailster_options[send_limit]" value="' . mailster_option( 'send_limit' ) . '" class="small-text" style="width:70px">', '<input type="number" min="1" name="mailster_options[send_period]" value="' . mailster_option( 'send_period' ) . '" class="small-text">' ); ?></p>
 	<?php
 
-		global $wp_locale;
-
 		$sent_this_period = get_transient( '_mailster_send_period', 0 );
 		$mails_left       = max( 0, mailster_option( 'send_limit' ) - $sent_this_period );
 		$next_reset       = get_option( '_transient_timeout__mailster_send_period_timeout' );
@@ -31,7 +29,7 @@
 	</tr>
 	<tr valign="top" class="settings-row settings-row-time-frame">
 		<th scope="row"><?php esc_html_e( 'Time Frame', 'mailster' ); ?><br>
-		<p class="howto"><?php printf( esc_html__( 'It\'s %1$s, %2$s', 'mailster' ), $wp_locale->weekday[ date( 'w', $timestamp ) ], date( 'H:i', $timestamp ) ); ?><br>
+		<p class="howto"><?php printf( esc_html__( 'It\'s %1$s, %2$s', 'mailster' ), date_i18n( 'l', $timestamp ), date_i18n( 'H:i', $timestamp ) ); ?><br>
 		<?php esc_html_e( 'Status', 'mailster' ); ?> : <?php mailster( 'helper' )->in_timeframe() ? esc_html_e( 'active', 'mailster' ) : esc_html_e( 'paused', 'mailster' ); ?></p>
 		</th>
 		<td><p><?php esc_html_e( 'send mails only between', 'mailster' ); ?>
@@ -56,11 +54,11 @@
 
 			for ( $i = $start_at; $i < 7 + $start_at; $i++ ) {
 				$j = $i;
-				if ( ! isset( $wp_locale->weekday[ $j ] ) ) {
+				if ( $j > 7 ) {
 					$j = $j - 7;
 				}
 
-				echo '<label title="' . $wp_locale->weekday[ $j ] . '" class="weekday"><input name="mailster_options[time_frame_day][]" type="checkbox" value="' . $j . '" ' . checked( ( in_array( $j, $time_frame_day ) || ! $time_frame_day ), true, false ) . '>' . $wp_locale->weekday[ $j ] . '&nbsp;</label> ';
+				echo '<label title="' . date_i18n( 'l', strtotime( 'sunday +' . $j . ' days' ) ) . '" class="weekday"><input name="mailster_options[time_frame_day][]" type="checkbox" value="' . $j . '" ' . checked( ( in_array( $j, $time_frame_day ) || ! $time_frame_day ), true, false ) . '>' . date_i18n( 'l', strtotime( 'sunday +' . $j . ' days' ) ) . '&nbsp;</label> ';
 			}
 			?>
 			</p>
