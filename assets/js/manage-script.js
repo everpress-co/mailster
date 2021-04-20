@@ -95,6 +95,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.do-import', function () {
 
 			var lists = $('#lists').serialize(),
+				tags = $('#tags').serialize(),
 				order = $('#subscriber-table').serialize();
 
 			if (!/%5D=email/.test(order)) {
@@ -121,8 +122,6 @@ mailster = (function (mailster, $, window, document) {
 				identifier = $('#identifier').val(),
 				performance = $('#performance').is(':checked');
 
-
-
 			progress.removeClass('hidden');
 			progressbar.stop().width(0);
 			$('.step1').slideUp();
@@ -134,6 +133,7 @@ mailster = (function (mailster, $, window, document) {
 				identifier: identifier,
 				order: order,
 				lists: lists,
+				tags: tags,
 				status: status,
 				keepstatus: keepstatus,
 				existing: existing,
@@ -495,6 +495,12 @@ mailster = (function (mailster, $, window, document) {
 				dateFormat: 'yy-mm-dd',
 				showAnim: 'fadeIn',
 				onClose: function () {}
+			});
+
+			$.fn.select2 && $('.tags-input').select2({
+				placeholder: mailster.l10n.manage.choose_tags,
+				tags: true,
+				theme: 'mailster'
 			});
 
 			importstatus.html('');

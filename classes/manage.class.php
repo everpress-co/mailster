@@ -73,12 +73,18 @@ class MailsterManage {
 				'error_export'         => esc_html__( 'There was an error while exporting', 'mailster' ),
 				'confirm_import'       => esc_html__( 'Do you really like to import these contacts?', 'mailster' ),
 				'import_complete'      => esc_html__( 'Import complete!', 'mailster' ),
+				'choose_tags'          => esc_html__( 'Choose your tags.', 'mailster' ),
 				'confirm_delete'       => esc_html__( 'You are about to delete these subscribers permanently. This step is irreversible!', 'mailster' ) . "\n" . sprintf( esc_html__( 'Type %s to confirm deletion', 'mailster' ), '"DELETE"' ),
 				'delete_n_subscribers' => esc_html__( 'Delete %s Subscribers permanently', 'mailster' ),
 				'onbeforeunloadimport' => esc_html__( 'You are currently importing subscribers! If you leave the page all pending subscribers don\'t get imported!', 'mailster' ),
 				'onbeforeunloadexport' => esc_html__( 'Your download is preparing! If you leave this page the progress will abort!', 'mailster' ),
 			)
 		);
+
+		wp_enqueue_style( 'mailster-select2', MAILSTER_URI . 'assets/css/libs/select2' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_style( 'mailster-select2-theme', MAILSTER_URI . 'assets/css/select2' . $suffix . '.css', array( 'mailster-select2' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
+
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_script( 'jquery-touch-punch' );
@@ -337,6 +343,7 @@ class MailsterManage {
 		);
 		$meta_other = array(
 			'_lists'  => esc_html__( 'Lists', 'mailster' ) . ' (' . esc_html__( 'comma separated', 'mailster' ) . ')',
+			'_tags'   => esc_html__( 'Tags', 'mailster' ) . ' (' . esc_html__( 'comma separated', 'mailster' ) . ')',
 			'_status' => esc_html__( 'Status', 'mailster' ) . ' [0...6]',
 			'_lang'   => esc_html__( 'Language', 'mailster' ),
 		);
@@ -424,9 +431,20 @@ class MailsterManage {
 				$html .= '<li><label><input name="lists[]" value="' . $list->name . '" type="checkbox"> ' . $list->name . ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ')</span></label></li>';
 			}
 		}
-		$html    .= '</ul></form>';
-		$html    .= '<p><label for="new_list_name">' . esc_html__( 'Add new list', 'mailster' ) . ': </label><input type="text" id="new_list_name" value=""> <button class="button" id="addlist">' . esc_html__( 'Add', 'mailster' ) . '</button></p>
-';
+		$html .= '</ul></form>';
+		$html .= '<p><label for="new_list_name">' . esc_html__( 'Add new list', 'mailster' ) . ': </label><input type="text" id="new_list_name" value=""> <button class="button" id="addlist">' . esc_html__( 'Add', 'mailster' ) . '</button></p>';
+
+		$html .= '<h3>' . esc_html__( 'Add contacts to following tags', 'mailster' ) . ':</h3>';
+		$html .= '<form id="tags"><p>';
+		$html .= '<select multiple name="tags[]" class="tags-input">';
+		$html .= '<option></option>';
+		$tags  = mailster( 'tags' )->get();
+		foreach ( $tags as $tag ) :
+			$html .= '<option value="' . esc_attr( $tag->ID ) . '">' . esc_html( $tag->name ) . '</option>';
+		endforeach;
+		$html .= '</select>';
+		$html .= '</p></form>';
+
 		$html    .= '<h3>' . esc_html__( 'Import as', 'mailster' ) . ':</h3><p>';
 		$html    .= '<p>';
 		$statuses = mailster( 'subscribers' )->get_status( null, true );
@@ -498,8 +516,11 @@ class MailsterManage {
 		$order = isset( $order['order'] ) ? $order['order'] : array();
 		parse_str( $bulkdata['lists'], $lists );
 		$lists = isset( $lists['lists'] ) ? $lists['lists'] : array();
+		parse_str( $bulkdata['tags'], $tags );
+		$tags = isset( $tags['tags'] ) ? $tags['tags'] : array();
 
 		$option_list_ids = array();
+		$option_tag_ids  = array();
 
 		if ( isset( $lists ) ) {
 			foreach ( (array) $lists as $list ) {
@@ -514,6 +535,27 @@ class MailsterManage {
 				}
 
 				$option_list_ids[] = $list_id;
+			}
+		}
+
+		if ( isset( $tags ) ) {
+			foreach ( (array) $tags as $tag ) {
+
+				if ( is_numeric( $tag ) ) {
+					$tag_id = mailster( 'tags' )->get( $tag );
+
+				} else {
+					$tag_id = mailster( 'tags' )->get_by_name( $tag, 'ID' );
+				}
+
+				if ( ! $tag_id ) {
+					$tag_id = mailster( 'tags' )->add( $tag );
+					if ( is_wp_error( $tag_id ) ) {
+						continue;
+					}
+				}
+
+				$option_tag_ids[] = $tag_id->ID;
 			}
 		}
 
@@ -540,6 +582,7 @@ class MailsterManage {
 					$list_array = array();
 					$tag_array  = array();
 					$list_ids   = $option_list_ids;
+					$tag_ids    = $option_tag_ids;
 
 					if ( ! trim( $line ) ) {
 						$bulkdata['lines']--;
