@@ -1189,7 +1189,7 @@ class MailsterForm {
 			}
 
 			$this->object = apply_filters( 'mailster_post_submit', $this->object );
-			$this->object = $this->ID, apply_filters( 'mailster_post_submit_' . $this->ID, $this->object );
+			$this->object = apply_filters( 'mailster_post_submit_' . $this->ID, $this->object );
 
 			if ( $this->valid() ) {
 				$return = array(
