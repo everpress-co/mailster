@@ -332,8 +332,9 @@ class MailsterFrontpage {
 				'hash' => $hash,
 			);
 		}
-		$campaign_id = $campaign->ID;
-		$meta        = mailster( 'campaigns' )->meta( $campaign_id );
+		$campaign_id   = $campaign->ID;
+		$subscriber_id = $subscriber->ID;
+		$meta          = mailster( 'campaigns' )->meta( $campaign_id );
 
 		if ( $target ) {
 
@@ -400,12 +401,28 @@ class MailsterFrontpage {
 			endif;
 
 			if ( $subscriber->ID && $meta['track_clicks'] ) {
-				do_action( 'mailster_click', $subscriber->ID, $campaign_id, $target, $index );
+
+				/**
+				 * Fires if user clicks on a link and tracking is enabled
+				 *
+				 * @param int $subscriber_id The ID of the subscriber
+				 * @param int $campaign_id Form The ID of the campaign
+				 * @param string $target The target link
+				 * @param int $index The index of the link
+				 */
+				do_action( 'mailster_click', $subscriber_id, $campaign_id, $target, $index );
 			}
 		} else {
 
 			if ( $subscriber->ID && $meta['track_opens'] ) {
-				do_action( 'mailster_open', $subscriber->ID, $campaign_id );
+
+				/**
+				 * Fires if user opens on a campaign and tracking is enabled
+				 *
+				 * @param int $subscriber_id The ID of the subscriber
+				 * @param int $campaign_id Form The ID of the campaign
+				 */
+				do_action( 'mailster_open', $subscriber_id, $campaign_id );
 			}
 		}
 
