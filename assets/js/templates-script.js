@@ -442,11 +442,15 @@ mailster = (function (mailster, $, window, document) {
 				cb();
 			} else {
 				template.animate({
-					width: 0,
-					'margin-right': 0
+					opacity: 0,
 				}, function () {
-					template.remove();
-					busy = false;
+					template.animate({
+						width: 0,
+						'margin-right': 0
+					}, function () {
+						template.remove();
+						busy = false;
+					});
 				});
 			}
 

@@ -164,6 +164,7 @@ class MailsterTemplates {
 				}
 			}
 
+			$this->reset_query_cache();
 			return true;
 
 		}

@@ -1336,6 +1336,7 @@ a.mailster-btn.editbutton {
 	position: relative;
 	overflow: hidden;
 	height: 94%;
+	height: calc(100% - 45px);
 }
 #module-selector .inner:hover{
 	overflow: scroll;
@@ -1353,9 +1354,6 @@ a.mailster-btn.editbutton {
 .rtl.fixed-optionbar #module-selector{
 	left: 321px;
 	right: initial;
-}
-.fixed-optionbar #module-selector .inner{
-	_height: 99%;
 }
 .fixed-optionbar #post-body.columns-1 #module-selector{
 	right: 21px;
