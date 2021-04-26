@@ -673,7 +673,18 @@ class MailsterTests {
 	}
 	private function test_mailfunction() {
 
-		$to      = 'deadend@newsletter-plugin.com';
+		$user = wp_get_current_user();
+
+		if ( ! $user ) {
+			$this->error( 'No current user found for test mail.' );
+			return;
+		}
+		if ( ! is_email( $user->user_email ) ) {
+			$this->error( 'The current user doesn\'t have a valid email address to send a test mail.' );
+			return;
+		}
+
+		$to      = $user->user_email;
 		$subject = 'This is a test mail from the Mailster Test page';
 		$message = 'This test message can sent from ' . admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) . ' and can get deleted.';
 
@@ -682,7 +693,7 @@ class MailsterTests {
 		$mail->subject = $subject;
 		$mail->debug();
 
-		if ( ! $mail->send_notification( 'Sendtest', $message, array( 'notification' => '' ), false ) ) {
+		if ( ! $mail->send_notification( $message, 'Sendtest', array( 'notification' => '' ), false ) ) {
 			$error_message = strip_tags( $mail->get_errors() );
 			$msg           = 'You are not able to send mails with the current delivery settings!';
 

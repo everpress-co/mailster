@@ -88,6 +88,10 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.19 =
+
+* improved: test mails are now sent to the current user
+
 = Version 2.4.18 =
 
 * fixed: comparing empty date values on MySQL 8
