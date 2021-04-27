@@ -90,6 +90,7 @@ Xaver Birsak – https://everpress.co
 
 = Version 2.4.19 =
 
+* fixed: Option bar is fixed after a certain scroll threshold again.
 * improved: test mails are now sent to the current user
 
 = Version 2.4.18 =
