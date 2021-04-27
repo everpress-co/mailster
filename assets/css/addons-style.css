@@ -12,16 +12,14 @@
 .upload-field #drag-drop-area{
 	min-height: 260px;
 }
-
+.theme-overlay .theme-wrap{
+	height: 690px;
+}
 .disclosure{
-	display: none;
 	font-style: italic;
 }
 .loading-content .disclosure, .no-results .disclosure{
 	display: none !important;
-}
-.browse-popular .disclosure, .browse-new .disclosure, .browse-updated .disclosure{
-	display: block;
 }
 .wrap .notice:empty{
 	display: none !important;
