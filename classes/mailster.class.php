@@ -29,6 +29,7 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/precheck.class.php';
 		require_once MAILSTER_DIR . 'classes/manage.class.php';
 		require_once MAILSTER_DIR . 'classes/templates.class.php';
+		require_once MAILSTER_DIR . 'classes/addons.class.php';
 		require_once MAILSTER_DIR . 'classes/widget.class.php';
 		require_once MAILSTER_DIR . 'classes/frontpage.class.php';
 		require_once MAILSTER_DIR . 'classes/statistics.class.php';
@@ -60,6 +61,7 @@ class Mailster {
 			'precheck'     => new MailsterPrecheck(),
 			'manage'       => new MailsterManage(),
 			'templates'    => new MailsterTemplates(),
+			'addons'       => new MailsterAddons(),
 			'frontpage'    => new MailsterFrontpage(),
 			'statistics'   => new MailsterStatistics(),
 			'ajax'         => new MailsterAjax(),
@@ -1195,9 +1197,6 @@ class Mailster {
 		$page = add_submenu_page( true, esc_html__( 'Welcome to Mailster', 'mailster' ), esc_html__( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
 
-		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Add Ons', 'mailster' ), esc_html__( 'Add Ons', 'mailster' ), 'mailster_manage_addons', 'mailster_addons', array( &$this, 'addon_page' ) );
-		add_action( 'load-' . $page, array( &$this, 'addon_scripts_styles' ) );
-
 		$page = add_submenu_page( defined( 'WP_DEBUG' ) && WP_DEBUG ? 'edit.php?post_type=newsletter' : true, esc_html__( 'Mailster Tests', 'mailster' ), esc_html__( 'Self Tests', 'mailster' ), 'activate_plugins', 'mailster_tests', array( &$this, 'tests_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'tests_scripts_styles' ) );
 
@@ -1241,15 +1240,6 @@ class Mailster {
 
 	}
 
-
-	public function addon_page() {
-
-		wp_enqueue_style( 'thickbox' );
-		wp_enqueue_script( 'thickbox' );
-
-		include MAILSTER_DIR . 'views/addons.php';
-
-	}
 
 
 	/**
@@ -1419,21 +1409,6 @@ class Mailster {
 				'support'        => esc_html__( 'Need Support?', 'mailster' ),
 			)
 		);
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $hook
-	 */
-	public function addon_scripts_styles( $hook ) {
-
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		wp_enqueue_style( 'mailster-addons', MAILSTER_URI . 'assets/css/addons-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-addons', MAILSTER_URI . 'assets/js/addons-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 	}
 

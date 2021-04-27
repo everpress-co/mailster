@@ -5,6 +5,8 @@ class MailsterTemplates {
 	public $path;
 	public $url;
 
+	private $endpoint = 'https://staging.mailster.dev/templates.json';
+
 	private $headers = array(
 		'name'        => 'Template Name',
 		'label'       => 'Name',
@@ -771,122 +773,6 @@ class MailsterTemplates {
 
 	}
 
-
-	public function edit_entry() {
-
-		if ( ! function_exists( 'download_url' ) ) {
-			include ABSPATH . 'wp-admin/includes/file.php';
-		}
-
-		if ( isset( $_GET['action'] ) ) {
-
-			$templates = $this->get_templates();
-
-			switch ( $_GET['action'] ) {
-
-				case 'activate':
-					$slug = esc_attr( $_GET['template'] );
-					if ( isset( $templates[ $slug ] ) && wp_verify_nonce( $_GET['_wpnonce'], 'activate-' . $slug ) && current_user_can( 'mailster_manage_templates' ) ) {
-
-						if ( mailster_update_option( 'default_template', esc_attr( $_GET['template'] ) ) ) {
-							mailster_notice( sprintf( esc_html__( 'Template %s is now your default template', 'mailster' ), '"' . $templates[ $slug ]['name'] . '"' ), 'success', true );
-							$this->get_screenshots( $slug );
-							wp_redirect( 'edit.php?post_type=newsletter&page=mailster_templates' );
-							exit;
-						}
-					}
-					break;
-
-				case 'delete':
-					$slug = esc_attr( $_GET['template'] );
-					if ( isset( $templates[ $slug ] ) && wp_verify_nonce( $_GET['_wpnonce'], 'delete-' . $slug ) && current_user_can( 'mailster_delete_templates' ) ) {
-
-						if ( $slug == mailster_option( 'default_template' ) ) {
-							mailster_notice( sprintf( esc_html__( 'Cannot delete the default template %s', 'mailster' ), '"' . $templates[ $slug ]['name'] . '"' ), 'error', true );
-						} elseif ( $this->remove_template( $slug ) ) {
-							mailster_notice( sprintf( esc_html__( 'Template %s has been deleted', 'mailster' ), '"' . $templates[ $slug ]['name'] . '"' ), 'success', true );
-						} else {
-							mailster_notice( sprintf( esc_html__( 'Template %s has not been deleted', 'mailster' ), '"' . $templates[ $slug ]['name'] . '"' ), 'error', true );
-						}
-						wp_redirect( 'edit.php?post_type=newsletter&page=mailster_templates' );
-						exit;
-
-					}
-					break;
-
-				case 'download':
-				case 'update':
-					$slug = esc_attr( $_GET['template'] );
-
-					if ( wp_verify_nonce( $_GET['_wpnonce'], 'download-' . $slug ) && current_user_can( 'mailster_manage_templates' ) ) {
-
-						if ( $template = $this->get_mailster_templates( $slug ) ) {
-
-							$this->download_slug = $slug;
-
-							if ( ! mailster()->is_verified() ) {
-								$tempfile = new WP_Error( 'licenses_required', sprintf( esc_html__( 'To download this free template you have to enter your Mailster license on %s.', 'mailster' ), '<a href="' . admin_url( 'admin.php?page=mailster_dashboard' ) . '">' . esc_html__( 'the dashboard', 'mailster' ) . '</a>' ) );
-							} else {
-								$tempfile = download_url( $template['download_url'], 3000 );
-							}
-
-							if ( is_wp_error( $tempfile ) ) {
-
-								( $tempfile->get_error_code() == 'http_404' && ! $tempfile->get_error_message() )
-									? mailster_notice( '[ 404 ] ' . sprintf( esc_html__( 'File does not exist. Please contact %s for help!', 'mailster' ), '<a href="' . $template['author_uri'] . '">' . $template['author'] . '</a>' ), 'error', true )
-									: mailster_notice( sprintf( esc_html__( 'There was an error: %s', 'mailster' ), '"<strong>' . $tempfile->get_error_message() . '</strong>"' ), 'error', true );
-
-								$redirect = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : 'edit.php?post_type=newsletter&page=mailster_templates&more';
-
-							} else {
-
-								$result = $this->unzip_template( $tempfile, null, true, true );
-
-								if ( is_wp_error( $result ) ) {
-									mailster_notice( sprintf( esc_html__( 'There was an error: %s', 'mailster' ), '"<strong>' . $result->get_error_message() . '</strong>"' ), 'error', true );
-
-									$redirect = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : 'edit.php?post_type=newsletter&page=mailster_templates&more';
-
-								} elseif ( $result ) {
-
-									( $_GET['action'] == 'update' )
-										? mailster_notice( esc_html__( 'Template successful updated!', 'mailster' ), 'success', true )
-										: mailster_notice( esc_html__( 'Template successful loaded!', 'mailster' ) . ' ' . ( $slug != mailster_option( 'default_template' ) ? '<a href="edit.php?post_type=newsletter&page=mailster_templates&action=activate&template=' . $slug . '&_wpnonce=' . wp_create_nonce( 'activate-' . $slug ) . '" class="button button-primary button-small">' . esc_html__( 'Use as default', 'mailster' ) . '</a>' : '' ), 'success', true );
-
-									$this->get_screenshots( $slug );
-									// force a reload
-									update_option( 'mailster_templates', false );
-
-								}
-
-								$redirect = isset( $_SERVER['HTTP_REFERER'] ) ? remove_query_arg( 'more', $_SERVER['HTTP_REFERER'] ) : admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' );
-								$redirect = add_query_arg( array( 'new' => $slug ), $redirect );
-								if ( file_exists( $tempfile ) ) {
-									unlink( $tempfile );
-								}
-							}
-						}
-
-						wp_redirect( $redirect );
-						exit;
-
-					}
-					break;
-
-				case 'reload':
-					// force a reload
-					update_option( 'mailster_templates', false );
-					$redirect = admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&more' );
-					wp_redirect( $redirect );
-					exit;
-				break;
-
-			}
-		}
-
-	}
-
-
 	/**
 	 *
 	 *
@@ -1146,8 +1032,6 @@ class MailsterTemplates {
 
 	public function query( $query_args = array(), $force = false ) {
 
-		$endpoint = 'https://staging.mailster.dev/templates.json';
-
 		$query_args = wp_parse_args(
 			rawurlencode_deep( $query_args ),
 			array(
@@ -1163,7 +1047,7 @@ class MailsterTemplates {
 			$query_args['templates'] = implode( ',', array_keys( $templates ) );
 		}
 
-		$cache_key = 'mailster_templates_' . $query_args['browse'] . '_' . md5( serialize( $query_args ) . $endpoint . MAILSTER_VERSION );
+		$cache_key = 'mailster_templates_' . $query_args['browse'] . '_' . md5( serialize( $query_args ) . MAILSTER_VERSION );
 
 		if ( $force || ! ( $result = get_transient( $cache_key ) ) ) {
 
@@ -1185,7 +1069,7 @@ class MailsterTemplates {
 				'headers' => array( 'hash' => sha1( mailster_option( 'ID' ) ) ),
 			);
 
-			$url = add_query_arg( $query_args, $endpoint );
+			$url = add_query_arg( $query_args, $this->endpoint );
 
 			$response      = wp_remote_get( $url, $args );
 			$response_code = wp_remote_retrieve_response_code( $response );

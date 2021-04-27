@@ -289,37 +289,9 @@ class MailsterHelper {
 		$plugins     = array_keys( get_plugins() );
 		$pluginslugs = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
 
-		// already installed
-		if ( in_array( $plugin, $pluginslugs ) ) {
-			return true;
-		}
-
 		include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 
-		$api = plugins_api(
-			'plugin_information',
-			array(
-				'slug'   => $plugin,
-				'fields' => array(
-					'short_description' => false,
-					'sections'          => false,
-					'requires'          => false,
-					'rating'            => false,
-					'ratings'           => false,
-					'downloaded'        => false,
-					'last_updated'      => false,
-					'added'             => false,
-					'tags'              => false,
-					'compatibility'     => false,
-					'homepage'          => false,
-					'donate_link'       => false,
-				),
-			)
-		);
-
-		if ( is_wp_error( $api ) ) {
-			wp_die( $api );
-		}
+		$api = plugins_api( 'plugin_information', array( 'slug' => $plugin ) );
 
 		$title        = esc_html__( 'Plugin Install', 'mailster' );
 		$parent_file  = 'plugins.php';
@@ -363,6 +335,34 @@ class MailsterHelper {
 		activate_plugin( $plugin );
 
 		return is_plugin_active( $plugin );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $plugin
+	 * @return unknown
+	 */
+	public function deactivate_plugin( $plugin ) {
+
+		$plugins = array_keys( get_plugins() );
+
+		$plugin = array_values( preg_grep( '/^' . $plugin . '\/.*$/', $plugins ) );
+		if ( empty( $plugin ) ) {
+			return false;
+		}
+
+		$plugin = $plugin[0];
+
+		if ( is_plugin_inactive( $plugin ) ) {
+			return true;
+		}
+
+		deactivate_plugins( $plugin );
+
+		return is_plugin_inactive( $plugin );
 
 	}
 

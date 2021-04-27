@@ -71,6 +71,8 @@ class MailsterAjax {
 		'default_template',
 		'template_endpoint',
 
+		'query_addons',
+
 		// dashboard
 		'get_dashboard_data',
 		'get_dashboard_chart',
@@ -2526,6 +2528,32 @@ class MailsterAjax {
 
 	}
 
+	private function query_addons() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$query = array(
+			's'      => esc_attr( $_POST['search'] ),
+			'browse' => esc_attr( $_POST['browse'] ),
+			'type'   => esc_attr( $_POST['type'] ),
+			'page'   => absint( $_POST['page'] ),
+		);
+
+		$result = mailster( 'addons' )->query( $query );
+
+		if ( ! is_wp_error( $result ) ) {
+			$return['total']  = $result['total'];
+			$return['html']   = mailster( 'addons' )->result_to_html( $result );
+			$return['addons'] = $result['items'];
+			$return['error']  = $result['error'];
+		}
+
+		wp_send_json( $return );
+	}
+
+
 	private function get_dashboard_data() {
 
 		$return['success'] = false;
@@ -2769,8 +2797,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$plugin = sanitize_key( $_POST['plugin'] );
-		$method = sanitize_key( $_POST['method'] );
+		$plugin = sanitize_key( dirname( $_POST['plugin'] ) );
 		$step   = sanitize_key( $_POST['step'] );
 
 		switch ( $step ) {
@@ -2780,9 +2807,13 @@ class MailsterAjax {
 			case 'activate':
 				$return['success'] = mailster( 'helper' )->activate_plugin( $plugin );
 				break;
+			case 'deactivate':
+				$return['success'] = mailster( 'helper' )->deactivate_plugin( $plugin );
+				break;
 			case 'content':
 				ob_start();
 
+				$method = sanitize_key( $_POST['method'] );
 				do_action( "mailster_deliverymethod_tab_{$method}" );
 
 				$content = ob_get_contents();
@@ -2792,6 +2823,8 @@ class MailsterAjax {
 				$return['success'] = true;
 				break;
 		}
+
+		mailster( 'addons' )->reset_query_cache();
 
 		wp_send_json( $return );
 	}
