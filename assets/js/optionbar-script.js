@@ -207,7 +207,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', 'a.file', changeTemplate);
 
 	mailster.editable && mailster.$.window
-		//.on('scroll.optionbar', mailster.util.throttle(togglefix, 100))
+		.on('scroll.optionbar', togglefix)
 		.on('resize.optionbar', function () {
 			mailster.$.window.trigger('scroll.optionbar');
 		});
@@ -229,7 +229,7 @@ mailster = (function (mailster, $, window, document) {
 	function togglefix() {
 		var scrolltop = mailster.util.top();
 
-		if (scrolltop < containerOffset() || scrolltop > containerOffset() + mailster.$.template.height() - 120) {
+		if (scrolltop < containerOffset() || scrolltop > containerOffset() + mailster.$.template.height() - 0) {
 			if (/fixed-optionbar/.test(mailster.dom.body.className)) {
 				mailster.$.body.removeClass('fixed-optionbar');
 				mailster.$.optionbar.width('auto');
