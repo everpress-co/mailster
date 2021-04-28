@@ -8,8 +8,9 @@
 	</div>
 
 	<ul class="filter-links">
-		<li><a href="#" data-sort="all"><?php _ex( 'All', 'add-ons', 'mailster' ); ?></a></li>
-		<li><a href="#" data-sort="installed"><?php _ex( 'Installed', 'add-ons', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="delivery"><?php _ex( 'Delivery', 'add-ons', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="forms"><?php _ex( 'Forms', 'add-ons', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="ecommerce"><?php _ex( 'Ecommerce', 'add-ons', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="featured"><?php _ex( 'Featured', 'add-ons', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="recommended"><?php _ex( 'Recommended', 'add-ons', 'mailster' ); ?></a></li>
 	</ul>

@@ -2,7 +2,7 @@
 $classes   = array( 'theme' );
 $classes[] = 'theme-' . dirname( $slug );
 if ( $item['is_active'] ) {
-	$classes[] = 'is-active';
+	$classes[] = 'active';
 }
 if ( $item['installed'] ) {
 	$classes[] = 'is-installed';
@@ -15,6 +15,9 @@ if ( $item['update_available'] ) {
 }
 if ( $item['envato_item_id'] ) {
 	$classes[] = 'envato-item';
+}
+if ( $item['wpslug'] ) {
+	$classes[] = 'wporg-item';
 }
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $slug ); ?>" data-item='<?php echo esc_attr( json_encode( $item ) ); ?>'>
@@ -55,18 +58,16 @@ if ( $item['envato_item_id'] ) {
 	<div class="theme-author"><?php printf( esc_html__( 'By %s', 'mailster' ), $item['author'] ); ?></div>
 	<div class="theme-id-container">
 		<h3 class="theme-name">
-			<?php echo esc_html( $item['name'] ); ?>
 			<?php if ( $item['is_active'] ) : ?>
-			<span class="theme-badge theme-default-badge"><?php esc_html_e( 'Active', 'mailster' ); ?></a>
-			<?php elseif ( $item['installed'] ) : ?>
-			<span class="theme-badge theme-installed-badge"><?php esc_html_e( 'Installed', 'mailster' ); ?></a>
+			<span><?php esc_html_e( 'Active', 'mailster' ); ?>: </span>
 			<?php endif; ?>
+			<?php echo esc_html( $item['name'] ); ?>
 		</h3>
 		<div class="theme-actions">
 			<a class="button button-primary deactivate" href="<?php echo wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . $item['wpslug'], 'deactivate-plugin_' . $item['wpslug'] ); ?>" aria-label="<?php esc_attr_e( 'Deactivate', 'mailster' ); ?>"><?php esc_html_e( 'Deactivate', 'mailster' ); ?></a>
-			<a class="button button-primary activate" href="<?php echo wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . $item['wpslug'], 'activate-plugin_' . $item['wpslug'] ); ?>" aria-label="<?php esc_attr_e( 'Activate', 'mailster' ); ?>"><?php esc_html_e( 'Activate', 'mailster' ); ?></a>
+			<a class="button activate" href="<?php echo wp_nonce_url( 'plugins.php?action=activate&amp;plugin=' . $item['wpslug'], 'activate-plugin_' . $item['wpslug'] ); ?>" aria-label="<?php esc_attr_e( 'Activate', 'mailster' ); ?>"><?php esc_html_e( 'Activate', 'mailster' ); ?></a>
 			<?php if ( $item['wpslug'] && current_user_can( 'install_plugins' ) && current_user_can( 'update_plugins' ) ) : ?>
-			<a class="button button-primary install" href="<?php echo wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . dirname( $item['wpslug'] ) . '&mailster-addon' ), 'install-plugin_' . dirname( $item['wpslug'] ) ); ?>"><?php esc_html_e( 'Install & Activate', 'mailster' ); ?></a>
+			<a class="button install" href="<?php echo wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . dirname( $item['wpslug'] ) . '&mailster-addon' ), 'install-plugin_' . dirname( $item['wpslug'] ) ); ?>"><?php esc_html_e( 'Install now', 'mailster' ); ?></a>
 			<?php elseif ( $item['download_url'] ) : ?>
 			<a class="button button-primary download" data-width="800" data-height="80%" href="<?php echo esc_url( $item['download_url'] ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
 			<?php endif; ?>

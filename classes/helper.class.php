@@ -247,36 +247,6 @@ class MailsterHelper {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $force (optional)
-	 * @return unknown
-	 */
-	public function get_addons( $force = false ) {
-
-		if ( $force || false === ( $addons = get_transient( 'mailster_addons' ) ) ) {
-
-			$url = 'https://static.mailster.co/v1/addons.json';
-
-			$response = wp_remote_get( $url, array() );
-
-			$response_code = wp_remote_retrieve_response_code( $response );
-			$response_body = wp_remote_retrieve_body( $response );
-
-			if ( is_wp_error( $response ) ) {
-				set_transient( 'mailster_addons', $response, 360 );
-				return $response;
-			}
-
-			$addons = json_decode( $response_body );
-			set_transient( 'mailster_addons', $addons, DAY_IN_SECONDS );
-		}
-
-		return $addons;
-
-	}
-
 
 	/**
 	 *

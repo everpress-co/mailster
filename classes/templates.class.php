@@ -493,6 +493,36 @@ class MailsterTemplates {
 	/**
 	 *
 	 *
+	 * @param unknown $force (optional)
+	 * @return unknown
+	 */
+	public function get_available_templates( $force = false ) {
+
+		if ( $force || ! ( $available_templates = get_transient( 'mailster_templates_count' ) ) ) {
+
+			$cachetime = HOUR_IN_SECONDS * 6;
+			$cachetime = 12;
+
+			$result = mailster( 'templates' )->query( array( 'browse' => 'latest' ) );
+
+			if ( is_wp_error( $response ) ) {
+				$available_templates = 400;
+				$cachetime           = 12;
+			} else {
+				$available_templates = $result['total'];
+			}
+
+			set_transient( 'mailster_templates_count', $available_templates, $cachetime );
+
+		}
+
+		return $available_templates;
+
+	}
+
+	/**
+	 *
+	 *
 	 * @param unknown $slugsonly     (optional)
 	 * @param unknown $load_if_empty (optional)
 	 * @return unknown

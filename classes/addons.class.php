@@ -114,22 +114,22 @@ class MailsterAddons {
 	/**
 	 *
 	 *
-	 * @param unknown $slugsonly     (optional)
-	 * @param unknown $load_if_empty (optional)
+	 * @param unknown $force (optional)
 	 * @return unknown
 	 */
-	public function get_addons( $slugsonly = false, $load_if_empty = false ) {
+	public function get_available_addons( $force = false ) {
 
-		if ( ! ( $all_addons = get_transient( 'mailster_addons_all' ) ) ) {
+		if ( $force || ! ( $available_addons = get_transient( 'mailster_addons_all' ) ) ) {
 
 			$cachetime = HOUR_IN_SECONDS * 6;
 			$cachetime = 12;
 
-			$response      = wp_remote_get( $this->endpoint );
+			$url = add_query_arg( array( 'page' => -1 ), $this->endpoint );
+
+			$response      = wp_remote_get( $url );
 			$response_code = wp_remote_retrieve_response_code( $response );
 
 			if ( $response_code != 200 || is_wp_error( $response ) ) {
-				// $result['error'] = esc_html__( 'We are currently not able to handle your request. Please try again later.', 'mailster' );
 				$cachetime = 12;
 			} else {
 
@@ -137,13 +137,28 @@ class MailsterAddons {
 
 				$response_result = json_decode( $response_body, true );
 
-				$all_addons = $response_result['items'];
+				$available_addons = $response_result['items'];
 
 			}
 
-			set_transient( 'mailster_addons_all', $all_addons, $cachetime );
+			set_transient( 'mailster_addons_all', $available_addons, $cachetime );
 
 		}
+
+		return $available_addons;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $force     (optional)
+	 * @return unknown
+	 */
+	public function get_addons( $force = false ) {
+
+		$all_addons = $this->get_available_addons( $force );
 
 		if ( ! function_exists( 'get_plugins' ) ) {
 			include ABSPATH . 'wp-admin/includes/plugin.php';
@@ -157,6 +172,7 @@ class MailsterAddons {
 		if ( ! function_exists( 'get_plugin_data' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
+
 		foreach ( $addons as $slug => $value ) {
 			$dir                        = plugin_dir_path( MAILSTER_DIR ) . $slug;
 			$plugin_data                = get_plugin_data( $dir );
@@ -350,15 +366,10 @@ class MailsterAddons {
 			array(
 				's'      => '',
 				'type'   => 'keyword',
-				'browse' => 'installed',
+				'browse' => 'all',
 				'page'   => 1,
 			)
 		);
-
-		if ( $query_args['browse'] == 'installed' ) {
-			$addons               = $this->get_addons( false, true );
-			$query_args['addons'] = implode( ',', array_keys( $addons ) );
-		}
 
 		$cache_key = 'mailster_addons_' . $query_args['browse'] . '_' . md5( serialize( $query_args ) . MAILSTER_VERSION );
 
@@ -372,10 +383,6 @@ class MailsterAddons {
 				'items' => array(),
 				'error' => null,
 			);
-
-			if ( $query_args['browse'] == 'installed' ) {
-				$result['items'] = $addons;
-			}
 
 			$args = array(
 				'timeout' => 5,
@@ -402,22 +409,6 @@ class MailsterAddons {
 			}
 
 			$result = $this->prepare_results( $result );
-
-			if ( $query_args['browse'] == 'installed' ) {
-				$default = mailster_option( 'default_addon' );
-
-				$updates = array_sum( wp_list_pluck( $result['items'], 'update_available' ) );
-				update_option( 'mailster_addons_updates', $updates );
-
-				// reset error on installed page
-				$result['error'] = null;
-
-				if ( $default && isset( $result['items'][ $default ] ) ) {
-					$temp = $result['items'][ $default ];
-					unset( $result['items'][ $default ] );
-					$result['items'] = array( $default => $temp ) + $result['items'];
-				}
-			}
 
 			set_transient( $cache_key, $result, $cachetime );
 

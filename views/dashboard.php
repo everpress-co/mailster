@@ -55,19 +55,20 @@ if ( $this->update ) {
 		</div>
 	</div>
 
-<?php $addons = mailster( 'helper' )->get_addons(); ?>
+<?php $addons = mailster( 'addons' )->get_available_addons(); ?>
 <?php if ( $addons && ! is_wp_error( $addons ) ) : ?>
+	<?php $templates = mailster( 'templates' )->get_available_templates(); ?>
 	<div id="addons-panel" class="welcome-panel">
 		<div class="welcome-panel-content">
 			<p class="about-description"></p>
 			<div class="welcome-panel-column-container">
 
 					<h2><?php esc_html_e( 'Supercharge Mailster!', 'mailster' ); ?></h2>
-					<h3><?php printf( esc_html__( 'Mailster comes with %1$s extensions and supports %2$s premium templates. Get the most out of your email campaigns and start utilizing the vast amount of add ons.', 'mailster' ), count( $addons ), '80+' ); ?></h3>
+					<h3><?php printf( esc_html__( 'Mailster comes with %1$s extensions and supports %2$s premium templates. Get the most out of your email campaigns and start utilizing the vast amount of add ons.', 'mailster' ), count( $addons ), number_format_i18n( $templates ) ); ?></h3>
 
 					<div class="cta-buttons">
-						<a class="button button-primary button-hero" href="edit.php?post_type=newsletter&page=mailster_addons"><?php esc_html_e( 'Browse Addons', 'mailster' ); ?></a>
-						<a class="button button-primary button-hero" href="edit.php?post_type=newsletter&page=mailster_templates&more"><?php esc_html_e( 'Browse Templates', 'mailster' ); ?></a>
+						<a class="button button-primary button-hero" href="edit.php?post_type=newsletter&page=mailster_addons"><?php esc_html_e( 'Browse Add ons', 'mailster' ); ?></a>
+						<a class="button button-primary button-hero" href="edit.php?post_type=newsletter&page=mailster_templates&browse=featured"><?php esc_html_e( 'Browse Templates', 'mailster' ); ?></a>
 					</div>
 
 			</div>

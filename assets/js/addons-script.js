@@ -370,11 +370,8 @@ mailster = (function (mailster, $, window, document) {
 
 			if (response.success) {
 				addon.addClass('is-installed').find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success')
-					//.html('<p>' + mailster.l10n.addons.installed + '</p>');
+					.html('<p>' + mailster.l10n.addons.installed + '</p>');
 				addon.find('.notice-error').empty();
-				setTimeout(function () {
-					activateAddon(slug);
-				}, 1000);
 			} else {
 				addon.find('.notice-error').html('<p>' + response.msg + '</p>');
 			}
@@ -430,7 +427,7 @@ mailster = (function (mailster, $, window, document) {
 		}, function (response) {
 
 			if (response.success) {
-				addon.addClass('is-active').find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>' + mailster.l10n.addons.activated + '</p>');
+				addon.addClass('active').find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>' + mailster.l10n.addons.activated + '</p>');
 				addon.find('.notice-error').empty();
 
 			} else {
@@ -458,8 +455,7 @@ mailster = (function (mailster, $, window, document) {
 		}, function (response) {
 
 			if (response.success) {
-				console.log(addon);
-				addon.removeClass('is-active').find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>' + mailster.l10n.addons.deactivated + '</p>');
+				addon.removeClass('active').find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>' + mailster.l10n.addons.deactivated + '</p>');
 				addon.find('.notice-error').empty();
 
 			} else {

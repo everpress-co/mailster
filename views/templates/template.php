@@ -60,9 +60,9 @@ if ( $item['envato_item_id'] ) {
 		<h3 class="theme-name">
 			<?php echo esc_html( $item['name'] ); ?>
 			<?php if ( $item['is_default'] ) : ?>
-			<span class="theme-badge theme-default-badge"><?php esc_html_e( 'Current', 'mailster' ); ?></a>
+			<span class="theme-badge theme-default-badge"><?php esc_html_e( 'Current', 'mailster' ); ?></span>
 			<?php elseif ( $item['installed'] ) : ?>
-			<span class="theme-badge theme-installed-badge"><?php esc_html_e( 'Installed', 'mailster' ); ?></a>
+			<span class="theme-badge theme-installed-badge"><?php esc_html_e( 'Installed', 'mailster' ); ?></span>
 			<?php endif; ?>
 		</h3>
 		<div class="theme-actions">
