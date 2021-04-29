@@ -19,6 +19,7 @@ if ( $item['envato_item_id'] ) {
 if ( $item['wpslug'] ) {
 	$classes[] = 'wporg-item';
 }
+error_log( print_r( $item, true ) );
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $slug ); ?>" data-item='<?php echo esc_attr( json_encode( $item ) ); ?>'>
 	<span class="spinner"></span>
@@ -72,7 +73,12 @@ if ( $item['wpslug'] ) {
 			<a class="button button-primary download" data-width="800" data-height="80%" href="<?php echo esc_url( $item['download_url'] ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
 			<?php endif; ?>
 			<?php if ( $item['price'] ) : ?>
-			<a class="button button-primary buy external" data-width="800" data-height="80%" href="<?php echo esc_url( $item['purchase_url'] ); ?>"><?php esc_html_e( 'Buy Add on', 'mailster' ); ?></a>
+			<a class="button button-primary buy external" href="<?php echo esc_url( $item['purchase_url'] ); ?>"><?php esc_html_e( 'Buy Add on', 'mailster' ); ?></a>
+			<?php endif; ?>
+			<?php if ( $item['wpslug'] ) : ?>
+			<a class="button button-primary thickbox" href="<?php echo esc_url( network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=' . dirname( $item['wpslug'] ) . '&TB_iframe=true&width=770&height=1000' ) ); ?>"><?php esc_html_e( 'View details', 'mailster' ); ?></a>
+			<?php elseif ( $item['url'] ) : ?>
+			<a class="button button-primary external" href="<?php echo esc_url( $item['url'] ); ?>"><?php esc_html_e( 'More Info', 'mailster' ); ?></a>
 			<?php endif; ?>
 		</div>
 	</div>

@@ -505,7 +505,7 @@ class MailsterTemplates {
 
 			$result = mailster( 'templates' )->query( array( 'browse' => 'latest' ) );
 
-			if ( is_wp_error( $response ) ) {
+			if ( is_wp_error( $result ) ) {
 				$available_templates = 400;
 				$cachetime           = 12;
 			} else {

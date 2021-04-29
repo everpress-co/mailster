@@ -256,6 +256,9 @@ class MailsterAddons {
 		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_script( 'mailster-addons', MAILSTER_URI . 'assets/js/addons-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
+		wp_enqueue_style( 'thickbox' );
+		wp_enqueue_script( 'thickbox' );
+
 		mailster_localize_script(
 			'addons',
 			array(

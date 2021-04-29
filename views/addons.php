@@ -1,5 +1,5 @@
 <div class="wrap">
-<h1><?php esc_html_e( 'Add-ons for Mailster', 'mailster' ); ?></h1>
+<h1><?php esc_html_e( 'Add-ons & Integrations for Mailster', 'mailster' ); ?></h1>
 
 <h2 class="screen-reader-text hide-if-no-js"><?php esc_html_e( 'Filter addon list', 'mailster' ); ?></h2>
 <div class="wp-filter hide-if-no-js">
@@ -11,8 +11,7 @@
 		<li><a href="#" data-sort="delivery"><?php _ex( 'Delivery', 'add-ons', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="forms"><?php _ex( 'Forms', 'add-ons', 'mailster' ); ?></a></li>
 		<li><a href="#" data-sort="ecommerce"><?php _ex( 'Ecommerce', 'add-ons', 'mailster' ); ?></a></li>
-		<li><a href="#" data-sort="featured"><?php _ex( 'Featured', 'add-ons', 'mailster' ); ?></a></li>
-		<li><a href="#" data-sort="recommended"><?php _ex( 'Recommended', 'add-ons', 'mailster' ); ?></a></li>
+		<li><a href="#" data-sort="membership"><?php _ex( 'Membership', 'add-ons', 'mailster' ); ?></a></li>
 	</ul>
 
 	<form class="search-form" method="get">

@@ -83,7 +83,8 @@
 }
 
 .theme-browser .theme .theme-screenshot {
-	height: 310px;
+	min-height: 310px;
+	height: 22vw;
 }
 .theme-browser .theme .theme-screenshot img {
 	pointer-events: none;
