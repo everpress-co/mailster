@@ -1012,7 +1012,7 @@ class MailsterUpgrade {
 			$moved = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_action_$table` AS a" );
 
 			if ( $count ) {
-				echo $moved . ' of ' . $total . ' entries from table ' . $table . ' moved.' . "\n";
+				echo number_format_i18n( $moved ) . ' of ' . number_format_i18n( $total ) . ' entries from table ' . $table . ' moved.' . "\n";
 				return false;
 			}
 		}
