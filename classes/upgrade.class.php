@@ -911,20 +911,17 @@ class MailsterUpgrade {
 			if ( $this->column_exists( 'ID', $table ) ) {
 				continue;
 			}
-			if ( false !== strpos( $table, 'mailster_actions' ) ) {
-				// continue;
-			}
 
 			$wpdb->query( "ALTER TABLE {$table} ADD `ID` bigint(20) unsigned NOT NULL FIRST" );
 			$wpdb->query( 'SET @a = 0;' );
 			$wpdb->query( "UPDATE {$table} SET ID = @a:=@a+1;" );
 			$wpdb->query( "ALTER TABLE {$table} MODIFY COLUMN `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY" );
+			usleep( 1000 );
 			if ( ! $this->column_exists( 'ID', $table ) ) {
 				echo 'Not able to create primary Key for  "' . $table . '".' . "\n";
 			} else {
 				echo 'Primary Key for "' . $table . '" created.' . "\n";
 			}
-			usleep( 1000 );
 			return false;
 		}
 
