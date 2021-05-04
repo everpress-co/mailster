@@ -2244,6 +2244,10 @@ class MailsterSubscribers {
 
 		global $wpdb;
 
+		if ( empty( $id ) ) {
+			return array();
+		}
+
 		$cache = mailster_cache_get( 'subscribers_lists' );
 		if ( isset( $cache[ $id ] ) ) {
 			return $cache[ $id ];

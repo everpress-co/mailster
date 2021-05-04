@@ -905,6 +905,18 @@ class MailsterUpgrade {
 		$tables = mailster()->get_tables( true );
 
 		foreach ( $tables as $table ) {
+			if ( false !== strpos( $table, 'mailster_lists_subscribers' ) ) {
+				continue;
+			}
+			if ( false !== strpos( $table, 'mailster_tags_subscribers' ) ) {
+				continue;
+			}
+			if ( false !== strpos( $table, 'mailster_forms_lists' ) ) {
+				continue;
+			}
+			if ( false !== strpos( $table, 'mailster_forms_tags' ) ) {
+				continue;
+			}
 			if ( ! $this->table_exists( $table ) ) {
 				continue;
 			}

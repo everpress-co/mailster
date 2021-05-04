@@ -2012,11 +2012,9 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_lists_subscribers (
-                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `list_id` bigint(20) unsigned NOT NULL,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
                 `added` int(11) unsigned NOT NULL,
-                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`list_id`,`subscriber_id`),
                 KEY `list_id` (`list_id`),
                 KEY `subscriber_id` (`subscriber_id`)
@@ -2032,10 +2030,8 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_tags_subscribers (
-                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `tag_id` bigint(20) unsigned NOT NULL,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
-                PRIMARY KEY  (`ID`),
                 UNIQUE KEY id (`tag_id`,`subscriber_id`),
                 KEY `tag_id` (`tag_id`),
                 KEY `subscriber_id` (`subscriber_id`)
@@ -2086,22 +2082,18 @@ class Mailster {
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_forms_lists (
-                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `form_id` bigint(20) unsigned NOT NULL,
                 `list_id` bigint(20) unsigned NOT NULL,
                 `added` int(11) unsigned NOT NULL,
-                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`form_id`,`list_id`),
                 KEY `form_id` (`form_id`),
                 KEY `list_id` (`list_id`)
             ) $collate;",
 
 			"CREATE TABLE {$wpdb->prefix}mailster_forms_tags (
-                `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
                 `form_id` bigint(20) unsigned NOT NULL,
                 `tag_id` bigint(20) unsigned NOT NULL,
                 `added` int(11) unsigned NOT NULL,
-                PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`form_id`,`tag_id`),
                 KEY `form_id` (`form_id`),
                 KEY `list_id` (`tag_id`)
