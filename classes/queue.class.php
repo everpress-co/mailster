@@ -1330,7 +1330,8 @@ class MailsterQueue {
 			$last_hit['timemax'] = max( $last_hit['timemax'], $took );
 			$last_hit['mail']    = $mailtook;
 
-			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] ) {
+			// if auto is enabled, has been triggered before and send the max amount possible
+			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] && $sent_this_turn == $send_at_once ) {
 
 				$percentage = 0.9;
 
