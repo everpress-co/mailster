@@ -284,7 +284,7 @@ class MailsterActions {
 		if ( false !== $result ) {
 			// re calculate rating on actions
 			if ( $result == 1 && $explicit && $type != 'sent' && isset( $args['subscriber_id'] ) ) {
-				wp_schedule_single_event( time() + 120, 'mailster_update_rating', array( $args['subscriber_id'] ) );
+				mailster( 'subscribers' )->update_meta( $args['subscriber_id'], 0, 'update_rating', true );
 			}
 
 			return true;
@@ -521,7 +521,7 @@ class MailsterActions {
 	 *
 	 * @param unknown $subscriber_id (optional)
 	 * @param unknown $action        (optional)
-	 * @param unknown $campaign_id        (optional)
+	 * @param unknown $campaign_id   (optional)
 	 * @return unknown
 	 */
 	public function get_by_subscriber( $subscriber_id = null, $action = null, $campaign_id = null ) {
@@ -568,7 +568,7 @@ class MailsterActions {
 
 		$default = $this->get_default_action_counts();
 
-		$sql = "SELECT action_table.*, COUNT(DISTINCT action_table.subscriber_id) AS count, SUM(action_table.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS action_table WHERE 1";
+		$sql = "SELECT action_table.subscriber_id, COUNT(DISTINCT action_table.subscriber_id) AS count, SUM(action_table.count) AS total FROM `{$wpdb->prefix}mailster_action_$table` AS action_table WHERE 1";
 
 		if ( ! empty( $subscriber_ids ) ) {
 			$sql .= ' AND action_table.subscriber_id IN (' . implode( ',', $subscriber_ids ) . ')';
