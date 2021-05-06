@@ -671,7 +671,7 @@ class MailsterTests {
 		}
 
 	}
-	private function test_mailfunction() {
+	private function get_test_mail_data() {
 
 		$user = wp_get_current_user();
 
@@ -684,16 +684,29 @@ class MailsterTests {
 			return;
 		}
 
-		$to      = $user->user_email;
-		$subject = 'This is a test mail from the Mailster Test page';
-		$message = 'This test message can sent from ' . admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) . ' and can get deleted.';
+		$return = array(
+			'to'      => $user->user_email,
+			'subject' => 'This is a test mail from the Mailster Test page',
+			'message' => sprintf( "This message has been sent from\n\n%s\n\n to ensure Mailster can send mails with your current delivery method.\n\nYou can delete this message.", admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) ),
+		);
+
+		return $return;
+
+	}
+	private function test_mail() {
+
+		$args = $this->get_test_mail_data();
+
+		$to      = $args['to'];
+		$subject = $args['subject'];
+		$message = $args['message'];
 
 		$mail          = mailster( 'mail' );
 		$mail->to      = $to;
 		$mail->subject = $subject;
 		$mail->debug();
 
-		if ( ! $mail->send_notification( $message, 'Sendtest', array( 'notification' => '' ), false ) ) {
+		if ( ! $mail->send_notification( wpautop( $message ), $subject, array( 'notification' => '' ), false ) ) {
 			$error_message = strip_tags( $mail->get_errors() );
 			$msg           = 'You are not able to send mails with the current delivery settings!';
 
@@ -707,6 +720,15 @@ class MailsterTests {
 		} else {
 			$this->success( 'Email was successfully delivery to ' . $to );
 		}
+
+	}
+	private function test_wpmail() {
+
+		$args = $this->get_test_mail_data();
+
+		$to      = $args['to'];
+		$subject = $args['subject'];
+		$message = $args['message'];
 
 		if ( mailster_option( 'system_mail' ) ) {
 

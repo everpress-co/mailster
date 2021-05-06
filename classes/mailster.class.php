@@ -284,8 +284,6 @@ class Mailster {
 
 			add_action( 'load-plugins.php', array( &$this, 'deactivation_survey' ) );
 
-		} else {
-
 		}
 
 		do_action( 'mailster', $this );
@@ -2313,53 +2311,50 @@ class Mailster {
 	/**
 	 *
 	 *
-	 * @param unknown $system_mail (optional)
 	 */
-	public function wp_mail_setup( $system_mail = null ) {
+	public function wp_mail_setup() {
 
-		if ( is_null( $system_mail ) ) {
-			$system_mail = mailster_option( 'system_mail' );
+		if ( ! ( $system_mail = mailster_option( 'system_mail' ) ) ) {
+			return;
 		}
 
-		if ( $system_mail ) {
+		if ( 'template' == $system_mail ) {
 
-			if ( $system_mail == 'template' ) {
+			add_filter( 'wp_mail', array( &$this, 'wp_mail_set' ), 99 );
 
-				add_filter( 'wp_mail', array( &$this, 'wp_mail_set' ), 99 );
+		} else {
 
-			} else {
+			if ( $this->wp_mail ) {
 
-				if ( $this->wp_mail ) {
+				$message = sprintf( esc_html__( 'The %s method already exists from a different plugin! Please disable it before using Mailster for system mails!', 'mailster' ), '<code>wp_mail()</code>' );
 
-					$message = sprintf( esc_html__( 'The %s method already exists from a different plugin! Please disable it before using Mailster for system mails!', 'mailster' ), '<code>wp_mail()</code>' );
+				if ( class_exists( 'ReflectionFunction' ) ) {
+					$reflFunc = new ReflectionFunction( 'wp_mail' );
 
-					if ( class_exists( 'ReflectionFunction' ) ) {
-						$reflFunc = new ReflectionFunction( 'wp_mail' );
+					$plugin_path = $reflFunc->getFileName();
 
-						$plugin_path = $reflFunc->getFileName();
+					if ( strpos( $plugin_path, WP_PLUGIN_DIR ) !== false ) {
 
-						if ( strpos( $plugin_path, WP_PLUGIN_DIR ) !== false ) {
+						require_once ABSPATH . '/wp-admin/includes/plugin.php';
 
-							require_once ABSPATH . '/wp-admin/includes/plugin.php';
+						if ( preg_match( '/([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\.php)$/', $plugin_path, $output_array ) ) {
+							$plugin_file = $output_array[1];
+							$plugin_data = get_plugin_data( $plugin_path );
 
-							if ( preg_match( '/([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\.php)$/', $plugin_path, $output_array ) ) {
-								$plugin_file = $output_array[1];
-								$plugin_data = get_plugin_data( $plugin_path );
-
-								$deactivate = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=', 'deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( esc_html_x( 'Deactivate %s', 'mailster' ), $plugin_data['Name'] ) ) . '">' . esc_html__( 'Deactivate', 'mailster' ) . '</a>';
-								$message   .= '<br>' . esc_html__( 'Plugin Name', 'mailster' ) . ': ' . esc_html( $plugin_data['Name'] );
-								$message   .= '<br>' . $deactivate;
-							}
+							$deactivate = '<a href="' . wp_nonce_url( 'plugins.php?action=deactivate&amp;plugin=' . urlencode( $plugin_file ) . '&amp;plugin_status=active&amp;paged=1&amp;s=', 'deactivate-plugin_' . $plugin_file ) . '" aria-label="' . esc_attr( sprintf( esc_html_x( 'Deactivate %s', 'mailster' ), $plugin_data['Name'] ) ) . '">' . esc_html__( 'Deactivate', 'mailster' ) . '</a>';
+							$message   .= '<br>' . esc_html__( 'Plugin Name', 'mailster' ) . ': ' . esc_html( $plugin_data['Name'] );
+							$message   .= '<br>' . $deactivate;
 						}
-
-						$message .= '<br>' . esc_html__( 'More info:', 'mailster' ) . ' - ' . $reflFunc->getFileName() . ':' . $reflFunc->getStartLine();
 					}
 
-					mailster_notice( $message, 'error', true, 'wp_mail_notice' );
-
+					$message .= '<br>' . esc_html__( 'More info:', 'mailster' ) . ' - ' . $reflFunc->getFileName() . ':' . $reflFunc->getStartLine();
 				}
+
+				mailster_notice( $message, 'error', true, 'wp_mail_notice' );
+
 			}
 		}
+
 	}
 
 
