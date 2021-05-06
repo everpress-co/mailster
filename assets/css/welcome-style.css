@@ -360,7 +360,7 @@
 }
 
 .wrap.mailster-welcome-wrap .feature-section .media-container img {
-	min-height: 284px;
+	width: 100%;
 	background-color: #585858;
 }
 
