@@ -19,7 +19,6 @@ if ( $item['envato_item_id'] ) {
 if ( $item['wpslug'] ) {
 	$classes[] = 'wporg-item';
 }
-error_log( print_r( $item, true ) );
 ?>
 <div class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" tabindex="0" data-slug="<?php echo esc_attr( $slug ); ?>" data-item='<?php echo esc_attr( json_encode( $item ) ); ?>'>
 	<span class="spinner"></span>
