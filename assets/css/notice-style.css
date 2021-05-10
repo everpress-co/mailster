@@ -12,6 +12,9 @@ div.mailster-notice{
 	max-height: 280px;
 	overflow: auto;
 }
+div.mailster-notice.idle{
+	opacity: 0.5;
+}
 div.mailster-notice h2{
 	margin: 0.5em 0 0;
 	font-size: 1.6em;

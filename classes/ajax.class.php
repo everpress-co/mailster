@@ -1888,7 +1888,7 @@ class MailsterAjax {
 		$return['success'] = true;
 
 		if ( isset( $_POST['id'] ) ) {
-			mailster_remove_notice( $_POST['id'] );
+			$return['success'] = mailster_remove_notice( $_POST['id'] );
 		}
 
 		wp_send_json( $return );
@@ -1898,7 +1898,7 @@ class MailsterAjax {
 	private function notice_dismiss_all() {
 		$return['success'] = true;
 
-		update_option( 'mailster_notices', array() );
+		$return['success'] = update_option( 'mailster_notices', array() );
 
 		wp_send_json( $return );
 	}

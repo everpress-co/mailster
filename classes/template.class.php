@@ -244,7 +244,13 @@ class MailsterTemplate {
 			}
 		}
 
-		$services = mailster_option( 'services', array( 'twitter' => '', 'facebook' => '' ) );
+		$services = mailster_option(
+			'services',
+			array(
+				'twitter'  => '',
+				'facebook' => '',
+			)
+		);
 
 		$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
 

@@ -922,7 +922,7 @@ function mailster_remove_notice( $key ) {
 		return update_option( 'mailster_notices', $mailster_notices );
 	}
 
-	return false;
+	return true;
 
 }
 
