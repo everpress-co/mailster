@@ -1,7 +1,7 @@
 .rtl div.mailster-notice{
 	padding: 0.7em 19px 0.9em 0;
 }
-.wrap div.mailster-notice, .branch-3-8 div.mailster-notice, .branch-3-9 div.mailster-notice, .branch-4 div.mailster-notice, .branch-4-1 div.mailster-notice, .branch-4-2 div.mailster-notice, .branch-4-3 div.mailster-notice{
+.wrap div.mailster-notice{
 	display: block;
 }
 div.mailster-notice{
@@ -83,15 +83,6 @@ div.mailster-notice .notice-dismiss:before {
 	margin-right: 1px;
 	margin-left: 1px;
 	float: left;
-}
-.branch-3-8 div.mailster-notice .notice-dismiss:before,
-.branch-3-9 div.mailster-notice .notice-dismiss:before,
-.branch-4 div.mailster-notice .notice-dismiss:before,
-.branch-4-1 div.mailster-notice .notice-dismiss:before
-{
-	content: '✕';
-	margin-right: 3px;
-	margin-left: 3px;
 }
 div.mailster-notice#mailster-notice-info-screen{
 	border-width:0;
