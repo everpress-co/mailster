@@ -81,6 +81,8 @@ button.mailster-btn { padding: 1px 4px; }
 
 buttons{
 	position: relative;
+	min-height: 1em;
+	min-width: 1em;
 }
 buttons:hover{
 	padding-right: 22px;
