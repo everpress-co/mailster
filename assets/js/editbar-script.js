@@ -110,12 +110,12 @@ mailster = (function (mailster, $, window, document) {
 				loader();
 				img.onload = function () {
 					imagepreview.attr('src', url);
-					imageheight.val(Math.round(img.width / (img.width / img.height)));
 					currentimage = {
-						width: img.width,
-						height: img.height,
-						asp: img.width / img.height
+						width: (current.width || img.width),
+						height: Math.round((current.width || img.width) / (img.width / img.height)),
+						asp: (img.width / img.height),
 					};
+					imageheight.val(currentimage.height);
 					loader(false);
 				};
 				img.onerror = function () {
