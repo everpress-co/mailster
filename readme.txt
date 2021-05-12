@@ -88,6 +88,17 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+* automatic calculate cron send rate
+* updated table structure
+* new: option to create new campaigns on action hook based auto responders
+* new add ons page
+* new templates page
+* new icons
+* new security section settings
+* pre-check your campaigns
+* removed deprecated mymail hooks and filters
+* subscriber tags
+
 = Version 2.4.19 =
 
 * fixed: Option bar is fixed after a certain scroll threshold again.
