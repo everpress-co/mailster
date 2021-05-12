@@ -11,9 +11,9 @@ class MailsterSubscribers {
 
 	public function init() {
 
-		add_action( 'mailster_cron', array( &$this, 'update_rating' ), 99 );
+		add_action( 'mailster_cron', array( &$this, 'maybe_update_rating' ), 99 );
 		add_action( 'mailster_cron_worker', array( &$this, 'send_confirmations' ) );
-		add_action( 'mailster_cron_worker', array( &$this, 'update_rating' ), 99 );
+		add_action( 'mailster_cron_worker', array( &$this, 'maybe_update_rating' ), 99 );
 
 		add_action( 'mailster_subscriber_subscribed', array( &$this, 'remove_pending_confirmations' ) );
 
@@ -1805,13 +1805,32 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $ids (optional)
 	 */
-	public function update_rating( $ids = null ) {
+	public function maybe_update_rating( $ids = null ) {
 
 		global $wpdb;
-
 		if ( empty( $ids ) ) {
 			$ids = (array) $wpdb->get_col( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_subscriber_meta WHERE meta_key = %s AND meta_value < %d ORDER BY meta_value ASC LIMIT %d", 'update_rating', time() - WEEK_IN_SECONDS, 100 ) );
 		} elseif ( ! is_array( $ids ) ) {
+			$ids = array( $ids );
+		}
+
+		if ( ! empty( $ids ) ) {
+			$this->update_rating( $ids );
+		}
+	}
+
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $ids
+	 */
+	public function update_rating( $ids ) {
+
+		global $wpdb;
+
+		if ( ! is_array( $ids ) ) {
 			$ids = array( $ids );
 		}
 
@@ -3269,8 +3288,7 @@ class MailsterSubscribers {
 		$actions = (object) mailster( 'actions' )->get_campaign_actions( $campaign_id, $id );
 
 		$activities = mailster( 'actions' )->get_activity( $campaign_id, $id );
-		error_log( print_r( $activities, true ) );
-		$actions = new StdClass();
+		$actions    = new StdClass();
 
 		foreach ( $activities as $activity ) {
 			$actions->{$activity->type} = array(

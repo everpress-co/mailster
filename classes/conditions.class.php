@@ -83,7 +83,6 @@ class MailsterConditions {
 				'firstname' => array( 'name' => mailster_text( 'firstname' ) ),
 				'lastname'  => array( 'name' => mailster_text( 'lastname' ) ),
 				'rating'    => array( 'name' => esc_html__( 'Rating', 'mailster' ) ),
-				// 'tag'       => array( 'name' => esc_html__( 'Tag', 'mailster' ) ),
 			)
 		);
 

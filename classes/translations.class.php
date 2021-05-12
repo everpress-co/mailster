@@ -140,7 +140,6 @@ class MailsterTranslations {
 				'set'     => null,
 			);
 
-			// $object['expires'] = $now + 20;
 			$file    = 'mailster-' . $locale;
 			$url     = $this->endpoint . '/api/projects/mailster';
 			$package = $this->endpoint . '/api/get/mailster/' . $locale;
@@ -153,8 +152,7 @@ class MailsterTranslations {
 			$root_locale = preg_replace( '/([a-z]+)_([A-Z]+)/', '$1', $base_locale );
 
 			$response = wp_remote_get( $url );
-			error_log( print_r( $response, true ) );
-			$body = wp_remote_retrieve_body( $response );
+			$body     = wp_remote_retrieve_body( $response );
 
 			if ( empty( $body ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 				$object['expires'] = $now + 3600;

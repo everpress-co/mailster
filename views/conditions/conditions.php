@@ -50,54 +50,54 @@
 
 					<optgroup label="<?php esc_attr_e( 'Fields', 'mailster' ); ?>">
 					<?php
-					foreach ( $this->fields as $key => $name ) {
+					foreach ( $this->fields as $key => $name ) :
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
-					}
+					endforeach;
 					?>
 					</optgroup>
 					<optgroup label="<?php esc_attr_e( 'User related', 'mailster' ); ?>">
 					<?php
-					foreach ( $this->custom_fields as $key => $customfield ) {
+					foreach ( $this->custom_fields as $key => $customfield ) :
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $customfield['name'] . '</option>';
-					}
+					endforeach;
 					?>
 					</optgroup>
 					<optgroup label="<?php esc_attr_e( 'Campaign related', 'mailster' ); ?>">
 					<?php
-					foreach ( $this->campaign_related as $key => $name ) {
+					foreach ( $this->campaign_related as $key => $name ) :
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
-					}
+					endforeach;
 					?>
 					</optgroup>
 					<optgroup label="<?php esc_attr_e( 'List related', 'mailster' ); ?>">
 					<?php
-					foreach ( $this->list_related as $key => $name ) {
+					foreach ( $this->list_related as $key => $name ) :
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
-					}
+					endforeach;
 					?>
 					</optgroup>
 					<optgroup label="<?php esc_html_e( 'Tag related', 'mailster' ); ?>">
 					<?php
-					foreach ( $this->tag_related as $key => $name ) {
+					foreach ( $this->tag_related as $key => $name ) :
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
-					}
+					endforeach;
 					?>
 					</optgroup>
 					<optgroup label="<?php esc_attr_e( 'Meta Data', 'mailster' ); ?>">
 					<?php
-					foreach ( $this->meta_fields as $key => $name ) {
+					foreach ( $this->meta_fields as $key => $name ) :
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
-					}
+					endforeach;
 					?>
 					</optgroup>
 					<optgroup label="<?php esc_attr_e( 'WordPress User Meta', 'mailster' ); ?>">
 					<?php
-					foreach ( $this->wp_user_meta as $key => $name ) {
+					foreach ( $this->wp_user_meta as $key => $name ) :
 						if ( is_integer( $key ) ) {
 							$key = $name;
 						}
 						echo '<option value="' . $key . '"' . selected( $condition['field'], $key, false ) . '>' . $name . '</option>';
-					}
+					endforeach;
 					?>
 					</optgroup>
 					</select>
@@ -109,7 +109,7 @@
 						<?php
 						foreach ( $this->operators as $key => $name ) :
 							echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
-									endforeach;
+						endforeach;
 						?>
 						</select>
 					</div>
@@ -118,7 +118,7 @@
 						<?php
 						foreach ( $this->simple_operators as $key => $name ) :
 							echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
-									endforeach;
+						endforeach;
 						?>
 						</select>
 					</div>
@@ -127,7 +127,7 @@
 						<?php
 						foreach ( $this->string_operators as $key => $name ) :
 							echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
-									endforeach;
+						endforeach;
 						?>
 						</select>
 					</div>
@@ -136,7 +136,7 @@
 						<?php
 						foreach ( $this->bool_operators as $key => $name ) :
 							echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
-									endforeach;
+						endforeach;
 						?>
 						</select>
 					</div>
@@ -145,7 +145,7 @@
 						<?php
 						foreach ( $this->date_operators as $key => $name ) :
 							echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
-									endforeach;
+						endforeach;
 						?>
 						</select>
 					</div>

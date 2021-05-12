@@ -3980,18 +3980,18 @@ class MailsterCampaigns {
 		$sql  = 'SELECT a.ID, a.email, a.hash, a.status, firstname.meta_value AS firstname, lastname.meta_value AS lastname';
 		$sql .= ', sent.timestamp AS sent, sent.count AS sent_count';
 
-		// if ( $unopen || $opens ) {
+		// unopen or opens
 			$sql .= ', open.timestamp AS open, COUNT(open.count) AS open_count';
-		// }
-		// if ( $clicks ) {
+
+		// clicks
 			$sql .= ', click.timestamp AS clicks, COUNT(click.count) AS click_count, SUM(click.count) AS click_count_total';
-		// }
-		// if ( $unsubs ) {
+
+		// unsubs
 			$sql .= ', unsub.timestamp AS unsubs, unsub.count AS unsub_count';
-		// }
-		// if ( $bounces ) {
+
+		// bounces
 			$sql .= ', bounce.timestamp AS bounces, bounce.count AS bounce_count';
-		// }
+
 		$sql .= " FROM {$wpdb->prefix}mailster_subscribers AS a";
 
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS firstname ON a.ID = firstname.subscriber_id AND firstname.meta_key = 'firstname'";
@@ -3999,18 +3999,17 @@ class MailsterCampaigns {
 
 		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_sent AS sent ON a.ID = sent.subscriber_id";
 
-		// if ( $unopen || $opens ) {
+		// unopen or opens
 			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_opens AS open ON a.ID = open.subscriber_id AND open.campaign_id = sent.campaign_id";
-		// }
-		// if ( $clicks ) {
+
+		// clicks
 			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_clicks AS click ON a.ID = click.subscriber_id AND click.campaign_id = sent.campaign_id";
-		// }
-		// if ( $unsubs ) {
+
+		// unsubs
 			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_unsubs AS unsub ON a.ID = unsub.subscriber_id AND unsub.campaign_id = sent.campaign_id";
-		// }
-		// if ( $bounces ) {
+
+		// bounces
 			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS bounce ON a.ID = bounce.subscriber_id AND bounce.campaign_id = sent.campaign_id";
-		// }
 
 		$sql .= ' WHERE sent.campaign_id = %d';
 
@@ -4275,7 +4274,7 @@ class MailsterCampaigns {
 	 * @param unknown $force         (optional)
 	 * @param unknown $log           (optional)
 	 * @param unknown $tags          (optional)
-	 * @param unknown $attachments          (optional)
+	 * @param unknown $attachments   (optional)
 	 * @return unknown
 	 */
 	public function send( $campaign_id, $subscriber_id, $track = null, $force = false, $log = true, $tags = array(), $attachments = array() ) {
