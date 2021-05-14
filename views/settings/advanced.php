@@ -39,17 +39,6 @@
 		<td><label><input type="checkbox" name="mailster_options[legacy_hooks]" value="1" <?php checked( mailster_option( 'legacy_hooks' ) ); ?>> <?php esc_html_e( 'Enable legacy hooks', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you still use deprecated MyMail hooks and filters you can keep them working by enabling this option.', 'mailster' ); ?></p>
 		</td>
 	</tr>
-	<tr valign="top" class="settings-row settings-row-php-mailer">
-		<th scope="row"><?php esc_html_e( 'PHP Mailer', 'mailster' ); ?></th>
-		<td>
-		<?php $phpmailerversion = mailster_option( 'php_mailer' ); ?>
-		<label><?php esc_html_e( 'Use version', 'mailster' ); ?>
-		<select name="mailster_options[php_mailer]">
-			<option value="0" <?php selected( ! $phpmailerversion ); ?>><?php esc_html_e( 'included in WordPress', 'mailster' ); ?></option>
-			<option value="latest" <?php selected( 'latest', $phpmailerversion ); ?>><?php printf( esc_html__( 'latest (%s)', 'mailster' ), '5.2.26' ); ?></option>
-		</select></label>
-		</td>
-	</tr>
 	<tr valign="top" class="settings-row settings-row-send-test">
 		<th scope="row"><?php esc_html_e( 'Send Test', 'mailster' ); ?></th>
 		<td>

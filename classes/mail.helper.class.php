@@ -1,21 +1,6 @@
 <?php
 
-if ( $phpmailerversion = mailster_option( 'php_mailer' ) ) :
-
-	if ( ! class_exists( 'PHPMailer_mailster' ) ) {
-		require_once MAILSTER_DIR . 'classes/libs/phpmailer/class.phpmailer.php';
-	}
-
-	if ( ! class_exists( 'SMTP_mailster' ) ) {
-		require_once MAILSTER_DIR . 'classes/libs/phpmailer/class.smtp.php';
-	}
-
-	class _mailster_SMTP extends SMTP_mailster {};
-	class _mailster_mail_helper extends PHPMailer_mailster {};
-	class _mailster_phpmailerException extends phpmailerException_mailster{};
-
-	// since WordPress 5.5
-elseif ( file_exists( ABSPATH . WPINC . '/PHPMailer/PHPMailer.php' ) ) :
+if ( file_exists( ABSPATH . WPINC . '/PHPMailer/PHPMailer.php' ) ) :
 
 	require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
 	require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';

@@ -98,6 +98,8 @@ Xaver Birsak – https://everpress.co
 * pre-check your campaigns
 * removed deprecated mymail hooks and filters
 * subscriber tags
+* removed bundled phpMailer version
+
 
 = Version 2.4.19 =
 
