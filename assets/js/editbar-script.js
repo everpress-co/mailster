@@ -1368,14 +1368,14 @@ mailster = (function (mailster, $, window, document) {
 
 				} else if (type == 'img') {
 
-					imagewidth.val(current.width);
-					imageheight.val(current.height);
+					imagewidth.val(Math.round(current.width));
+					imageheight.val(Math.round(current.height));
 					imagecrop.prop('checked', current.crop);
 
 				} else if (type == 'btn') {
 
-					imagewidth.val(maxwidth);
-					imageheight.val(maxheight);
+					imagewidth.val(Math.round(maxwidth));
+					imageheight.val(Math.round(maxheight));
 
 				} else if (type == 'multi') {
 
