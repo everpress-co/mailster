@@ -92,6 +92,7 @@ Xaver Birsak – https://everpress.co
 
 * fixed: Option bar is fixed after a certain scroll threshold again.
 * fixed: decimals in the height or width field of the editbar for the selected image in the editor prevents submitting the form on Firefox.
+* fixed: timeframe now respects sites timezone.
 * improved: test mails are now sent to the current user
 
 = Version 2.4.18 =

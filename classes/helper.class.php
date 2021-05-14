@@ -1475,11 +1475,21 @@ class MailsterHelper {
 	public function in_timeframe( $timestamp = null ) {
 
 		if ( is_null( $timestamp ) ) {
-			$timestamp = current_time( 'timestamp' );
+			$timestamp = time();
 		}
 
-		$from = mailster_option( 'time_frame_from', 0 );
-		$to   = mailster_option( 'time_frame_to', 0 );
+		$gmt_offset = $this->gmt_offset();
+
+		$from  = mailster_option( 'time_frame_from', 0 );
+		$from -= $gmt_offset;
+		if ( $from < 0 ) {
+			$from += 24;
+		}
+		$to  = mailster_option( 'time_frame_to', 0 );
+		$to -= $gmt_offset;
+		if ( $to < 0 ) {
+			$to += 24;
+		}
 		$days = mailster_option( 'time_frame_day' );
 		$hour = date( 'G', $timestamp );
 		$day  = date( 'w', $timestamp );
