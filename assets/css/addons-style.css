@@ -136,13 +136,17 @@
 	box-shadow: 0 4px 6px rgba(0,0,0,0.11), 0 1px 3px rgba(0,0,0,0.075);
 	pointer-events: none;
 }
+.rtl .theme-browser .theme .theme-screenshot .theme-screenshot-img,.rtl .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
+	transform: translate(50%, 50px);
+	left: auto;
+	right: 50%;
+}
 .theme-browser .theme .theme-screenshot .theme-screenshot-iframe {
 	width: 700px;
 	height: 1200px;
 	transform: translate(-50%, -22%) scale(0.5);
 	box-shadow: none;
 }
-
 .theme-browser .theme .theme-screenshot .theme-screenshot-bg {
 	filter: blur(20px);
 	-webkit-backface-visibility: hidden;

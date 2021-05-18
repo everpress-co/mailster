@@ -8,6 +8,9 @@
 #precheck-ajax-loading{
 	float: left;
 }
+.rtl #precheck-ajax-loading{
+	float: right;
+}
 .precheck-bar{
 	background: #f5f5f5;
 	grid-column-start: 1;
@@ -122,21 +125,19 @@
 .device.desktop{
 	min-width: 320px;
 	max-height: 100%;
-	/*max-height: 90%;*/
 	height: 100%;
-	top: 50%;
 	top: 38%;
 	left: 50%;
 	width: 100%;
 	position: relative;
-	/*transform: translate(-50%,-40%);*/
 	transform: translate(-50%,-38%);
 	border: 1px solid #dfdfdf;
 	box-shadow: 0px 2px 5px rgba(0,0,0,0.1)
 }
 .rtl .device.desktop{
 	left: auto;
-	right: 0;
+	right: 50%;
+	transform: translate(50%,-38%);
 }
 .desktop-body{
 	background: #dfdfdf;
@@ -211,6 +212,10 @@ details > summary:before {
 	width: 20px;
 	height: 20px;
 
+}
+.rtl details > summary:before {
+	margin: 0 -14px 0 8px;
+	transform: rotate(180deg);
 }
 details[open] > summary:before { transform: rotate(90deg); }
 details[open] { visibility: visible; }
@@ -320,6 +325,9 @@ details summary::-webkit-details-marker { display:none; }
 	width: 20px;
 	height: 20px;
 	content: '';
+}
+.rtl .score-wrap details summary:after{
+	float: left;
 }
 .score-wrap details summary.is-success:after{
 	background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g stroke-linecap="round" stroke-width="2.0" stroke="%2346b450" fill="none" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18Z"/><path d="M8.44 12.339l2.167 2.167 -.02-.02 4.88-4.89"/></g><path fill="none" d="M0 0h24v24H0Z"/></svg>');
