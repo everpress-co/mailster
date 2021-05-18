@@ -203,9 +203,6 @@ modules, module, multi {
 buttons {
 	display: inline-block;
 }
-single {
-	_display: inline;
-}
 if, elseif, else {
 	display: inline-block;
 }

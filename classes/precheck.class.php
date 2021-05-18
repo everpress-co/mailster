@@ -266,7 +266,12 @@ class MailsterPrecheck {
 		$headers = wp_remote_retrieve_headers( $response );
 		$body    = wp_remote_retrieve_body( $response );
 
-		if ( is_wp_error( $response ) || 503 === $code || 500 === $code ) {
+		if ( is_wp_error( $response ) ) {
+			if ( $response->get_error_code() == 'http_request_failed' ) {
+				return new WP_Error( 503, esc_html__( 'The Precheck service is currently not available. Please check back later.', 'mailster' ) . $body );
+			}
+			return $response;
+		} elseif ( 503 === $code || 500 === $code ) {
 			return new WP_Error( 503, esc_html__( 'The Precheck service is currently not available. Please check back later.', 'mailster' ) . $body );
 		} elseif ( 200 === $code ) {
 			if ( isset( $headers['token'] ) && $token != $headers['token'] ) {

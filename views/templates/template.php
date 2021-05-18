@@ -26,14 +26,14 @@ if ( $item['envato_item_id'] ) {
 		<?php endif; ?>
 		<img loading="lazy" alt="" class="theme-screenshot-img" srcset="<?php echo esc_attr( $item['image'] ); ?> 1x, <?php echo esc_attr( $item['imagex2'] ); ?> 2x" src="<?php echo esc_attr( $item['image'] ); ?>" >
 	</div>
-	<div class="notice update-message notice-success notice-alt"></div>
-	<div class="notice update-message notice-warning notice-alt"></div>
-	<div class="notice update-message notice-error notice-alt"></div>
+	<div class="notice inline update-message notice-success notice-alt"></div>
+	<div class="notice inline update-message notice-warning notice-alt"></div>
+	<div class="notice inline update-message notice-error notice-alt"></div>
 	<?php if ( ! $item['is_supported'] ) : ?>
-	<div class="notice update-message notice-error notice-alt"><p><?php printf( esc_html__( 'This template requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>
+	<div class="notice inline update-message notice-error notice-alt"><p><?php printf( esc_html__( 'This template requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>
 	<?php endif; ?>
 	<?php if ( $item['update_available'] ) : ?>
-	<div class="update-message notice inline notice-warning notice-alt theme-has-update">
+	<div class="notice inline update-message notice-warning notice-alt theme-has-update">
 		<p><?php esc_html_e( 'New version available.', 'mailster' ); ?>
 		<?php if ( $item['download_url'] ) : ?>
 		<a class="button-link update" data-width="800" data-height="80%" href="<?php echo esc_url( $item['download_url'] ); ?>"><?php esc_html_e( 'Update now', 'mailster' ); ?></a>

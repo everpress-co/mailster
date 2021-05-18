@@ -26,11 +26,11 @@ if ( $item['wpslug'] ) {
 		<img loading="lazy" alt="" class="theme-screenshot-bg" srcset="<?php echo esc_attr( $item['image'] ); ?> 1x, <?php echo esc_attr( $item['imagex2'] ); ?> 2x" src="<?php echo esc_attr( $item['image'] ); ?>" >
 		<img loading="lazy" alt="" class="theme-screenshot-img" srcset="<?php echo esc_attr( $item['image'] ); ?> 1x, <?php echo esc_attr( $item['imagex2'] ); ?> 2x" src="<?php echo esc_attr( $item['image'] ); ?>" >
 	</div>
-	<div class="notice update-message notice-success notice-alt"></div>
-	<div class="notice update-message notice-warning notice-alt"></div>
-	<div class="notice update-message notice-error notice-alt"></div>
+	<div class="notice inline update-message notice-success notice-alt"></div>
+	<div class="notice inline update-message notice-warning notice-alt"></div>
+	<div class="notice inline update-message notice-error notice-alt"></div>
 	<?php if ( ! $item['is_supported'] ) : ?>
-	<div class="notice update-message notice-error notice-alt"><p><?php printf( esc_html__( 'This template requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>
+	<div class="notice inline update-message notice-error notice-alt"><p><?php printf( esc_html__( 'This template requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>
 	<?php endif; ?>
 	<?php if ( $item['update_available'] ) : ?>
 	<div class="update-message notice inline notice-warning notice-alt theme-has-update">
