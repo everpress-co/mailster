@@ -1115,7 +1115,20 @@ class MailsterQueue {
 
 		$this->cron_log( 'max_execution_time', '<strong>' . $max_execution_time_ini . ' seconds</strong>' );
 		$this->cron_log( 'queue size', '<strong>' . number_format_i18n( $to_send ) . ' mails</strong>' );
-		$this->cron_log( 'send max at once', '<strong>' . number_format_i18n( $send_at_once ) . '</strong>' );
+
+		if ( $warmup = mailster_option( 'warmup' ) ) {
+			$diff_day = ( $warmup - time() ) / DAY_IN_SECONDS;
+			$p_days   = min( 1, 1 - $diff_day / 30 );
+			if ( $p_days == 1 ) {
+				mailster_force_update_option( 'warmup', false );
+			}
+			$send_at_once_limit = ceil( $send_at_once * $p_days );
+			$this->cron_log( 'send max at once', '<strong>' . number_format_i18n( $send_at_once_limit ) . '</strong> (' . ( round( 100 * $p_days ) ) . '% of ' . $send_at_once . ') Warmup ends in ' . human_time_diff( $warmup ) );
+		} else {
+			$p_days = 1;
+			$this->cron_log( 'send max at once', '<strong>' . number_format_i18n( $send_at_once ) . '</strong>' );
+			$send_at_once_limit = $send_at_once;
+		}
 
 		if ( $to_send ) {
 
@@ -1145,13 +1158,14 @@ class MailsterQueue {
 
 			$sql .= ! mailster_option( 'split_campaigns' ) ? ', queue.campaign_id ASC' : '';
 
-			$sql .= " LIMIT $send_at_once";
+			$sql .= " LIMIT $send_at_once_limit";
 
 			$queue_result = $wpdb->get_results( $sql );
 
 			if ( $wpdb->last_error ) {
 				$this->cron_log( 'DB Error', '&nbsp;<span class="error">' . $wpdb->last_error . '</span>' );
 			}
+
 			$queue_result_count = count( $queue_result );
 
 			$this->cron_log( 'subscribers found', '<strong>' . number_format_i18n( $queue_result_count ) . '</strong>' );
@@ -1331,7 +1345,7 @@ class MailsterQueue {
 			$last_hit['mail']    = $mailtook;
 
 			// if auto is enabled, has been triggered before and send the max amount possible
-			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] && $sent_this_turn == $send_at_once ) {
+			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] && $sent_this_turn == $send_at_once_limit ) {
 
 				$percentage = 0.9;
 

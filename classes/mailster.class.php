@@ -2785,14 +2785,6 @@ class Mailster {
 
 	public function is_verified( $force = false ) {
 
-		$license       = $this->license();
-		$license_email = $this->email();
-		$license_user  = $this->username();
-
-		if ( ! $license || ! $license_email || ! $license_user ) {
-			return false;
-		}
-
 		$verified = $this->get_verfied_object( $force );
 
 		return is_array( $verified );
@@ -2812,6 +2804,13 @@ class Mailster {
 		$old = get_option( '_transient_mailster_verified', array() );
 
 		if ( false === ( $verified = get_transient( 'mailster_verified' ) ) || $force ) {
+
+			$license       = $this->license();
+			$license_email = $this->email();
+			$license_user  = $this->username();
+			if ( ! $license || ! $license_email || ! $license_user ) {
+				return false;
+			}
 
 			$verified = null;
 			$recheck  = DAY_IN_SECONDS;

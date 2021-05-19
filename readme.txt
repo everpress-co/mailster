@@ -99,6 +99,7 @@ Xaver Birsak – https://everpress.co
 * removed deprecated mymail hooks and filters
 * subscriber tags
 * removed bundled phpMailer version
+* warmup
 
 
 = Version 2.4.19 =

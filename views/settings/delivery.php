@@ -4,7 +4,24 @@
 		<td>
 			<p><?php printf( esc_html__( 'Send max %s emails in one batch.', 'mailster' ), '<input type="number" min="1" name="mailster_options[send_at_once]" value="' . mailster_option( 'send_at_once' ) . '" class="small-text" ' . disabled( mailster_option( 'auto_send_at_once' ), true, false ) . '>' ); ?></p>
 			<p><label><input type="hidden" name="mailster_options[auto_send_at_once]" value=""><input class="toggle-auto_send_at_once" type="checkbox" name="mailster_options[auto_send_at_once]" value="1" <?php checked( mailster_option( 'auto_send_at_once' ) ); ?>> <?php esc_html_e( 'automatically calculate this value.', 'mailster' ); ?></label> <a class="infolink external" href="#" title="<?php esc_attr_e( 'Mailster tries to calculate this value based on your cron interval. It usually takes a couple of batches until this number will level off.', 'mailster' ); ?>"></a></p>
+			<p>
+		</td>
+	</tr>
+	<tr valign="top" class="settings-row settings-row-warmup">
+		<th scope="row"><?php esc_html_e( 'Warmup', 'mailster' ); ?></th>
+		<td><p>Throttle the throughput for the next <select name="mailster_options[warmup]">
+			<?php $mn = strtotime( 'midnight' ); ?>
+			<option value="" <?php selected( ! mailster_option( 'warmup' ) ); ?>><?php esc_html_e( 'no warmup', 'mailster' ); ?> - 100%</option>
+			<?php
+			for ( $i = 1; $i <= 30; $i++ ) :
+				$v = $mn + ( $i * DAY_IN_SECONDS );
+				?>
+				<option value="<?php echo $v; ?>" <?php selected( mailster_option( 'warmup' ), $v ); ?>><?php printf( esc_html__( _n( '%d day', '%d days', $i, 'mailster' ) ), $i ); ?> - <?php echo ceil( 100 * ( 1 - $i / 30 ) + 1 ) . '%'; ?></option>
+			<?php endfor; ?>
+			</select>
+			 <a class="infolink external" href="#" title="<?php esc_attr_e( 'Mailster tries to calculate this value based on your cron interval. It usually takes a couple of batches until this number will level off.', 'mailster' ); ?>"></a></p>
 
+			<p class="description"><?php esc_html_e( 'Mailster can "warmup" your current delivery method. It will gradually increase your sending volume over the defined time frame. This will help you getting started with a new domain or if you have recently switched your email provider.', 'mailster' ); ?></p>
 		</td>
 	</tr>
 	<tr valign="top">
