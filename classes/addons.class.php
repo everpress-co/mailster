@@ -2,7 +2,7 @@
 
 class MailsterAddons {
 
-	private $endpoint = 'https://staging.mailster.dev/addons.json';
+	private $endpoint = 'https://mailster.co/addons.json';
 
 	private $addon_fields = array(
 		'ID'               => null,

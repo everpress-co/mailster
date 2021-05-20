@@ -5,7 +5,7 @@ class MailsterTemplates {
 	public $path;
 	public $url;
 
-	private $endpoint = 'https://staging.mailster.dev/templates.json';
+	private $endpoint = 'https://mailster.co/templates.json';
 
 	private $headers = array(
 		'name'        => 'Template Name',
