@@ -723,8 +723,6 @@ class MailsterTemplates {
 		wp_enqueue_style( 'mailster-templates' );
 		wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION, true );
-		wp_enqueue_script( 'thickbox' );
-		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_script( 'mailster-templates', MAILSTER_URI . 'assets/js/templates-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(

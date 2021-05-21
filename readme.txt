@@ -88,12 +88,14 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
-* automatic calculate cron send rate
-* updated table structure
+* new: Test the Email Quality with the built in Pre-check Feature.
+* new: Subscriber Tags
+* new: Security Section for sign up verification
+* new: automatic batch size settings to calculate your optimal sending rate.
 * new: option to create new campaigns on action hook based auto responders
-* new add ons page
-* new templates page
-* new icons
+* new: updated add ons page
+* new: updated templates page now lists over 400 templates
+* new: UI update with new icons
 * new security section settings
 * pre-check your campaigns
 * removed deprecated mymail hooks and filters

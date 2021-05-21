@@ -18,15 +18,6 @@
 		<?php endif; ?>
 	</div>
 
-	<div class="feature-section one-col main-feature">
-		<h2>Meet the new Mailster</h2>
-		<p class="about-text">We have revamped the look of the plugin and brought a fresh new icons set.</p>
-		<div class="promo-video">
-			<iframe id="ytplayer" type="text/html" src="https://www.youtube.com/embed/ZG9V0sSbwvo?autoplay=1&showinfo=0&modestbranding=1&controls=0&rel=0&vq=hd720" frameborder="0"></iframe>
-		</div>
-		<p class="about-text"><a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ); ?>" class="button button-primary button-hero">Create a new Campaign</a></p>
-		<p><a href="https://mailster.co/support/" target="_blank" rel="noopener">Need Help? Get Support!</a></p>
-	</div>
 
 	<div class="feature-section two-col">
 		<div class="col">

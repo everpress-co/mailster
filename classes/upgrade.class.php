@@ -931,11 +931,11 @@ class MailsterUpgrade {
 
 			usleep( 500 );
 
-			$wpdb->query( "SET @m = (SELECT MAX(ID) + 1 FROM {$table}); " );
-			$wpdb->query( "SET @s = CONCAT('ALTER TABLE {$table} AUTO_INCREMENT=', @m);" );
-			$wpdb->query( 'PREPARE stmt1 FROM @s;' );
-			$wpdb->query( 'EXECUTE stmt1;' );
-			$wpdb->query( 'DEALLOCATE PREPARE stmt1;' );
+			// $wpdb->query( "SET @m = (SELECT MAX(ID) + 1 FROM {$table}); " );
+			// $wpdb->query( "SET @s = CONCAT('ALTER TABLE {$table} AUTO_INCREMENT=', @m);" );
+			// $wpdb->query( 'PREPARE stmt1 FROM @s;' );
+			// $wpdb->query( 'EXECUTE stmt1;' );
+			// $wpdb->query( 'DEALLOCATE PREPARE stmt1;' );
 
 			usleep( 500 );
 

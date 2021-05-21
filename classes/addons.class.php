@@ -252,8 +252,6 @@ class MailsterAddons {
 		wp_enqueue_style( 'mailster-addons' );
 		wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION, true );
-		wp_enqueue_script( 'thickbox' );
-		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_script( 'mailster-addons', MAILSTER_URI . 'assets/js/addons-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 		wp_enqueue_style( 'thickbox' );
