@@ -53,3 +53,20 @@ tr.status-active div.campaign-progress span.bar:before,.progress span.bar:before
 	0%{left:-20%;}
 	100%{left:120%;}
 }
+
+
+/*#adminmenu ul>li:not(:last-child) a[href^="post-new.php?post_type=newsletter"]:after,
+#adminmenu ul>li:not(:last-child) a[href^="edit.php?post_type=newsletter&page=mailster_manage_subscribers"]:after,
+#adminmenu ul>li:not(:last-child) a[href^="edit.php?post_type=newsletter&page=mailster_addons"]:after,
+#adminmenu ul>li:not(:last-child) a[href^="edit.php?post_type=newsletter&page=mailster_lists"]:after,
+#adminmenu ul>li:not(:last-child) a[href^="edit.php?post_status=autoresponder&post_type=newsletter"]:after {
+	border-bottom: 1px solid hsla(0,0%,100%,.2);
+	display: block;
+	float: left;
+	margin: 13px -15px 8px;
+	content: "";
+	width: calc(100% + 30px);
+}
+#adminmenu #menu-posts-newsletter ul.wp-submenu-wrap li {
+	clear: both;
+}*/
