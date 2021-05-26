@@ -132,17 +132,29 @@ class MailsterMail {
 
 		$this->send_limit = mailster_option( 'send_limit' );
 
-		$subscriber_errors       = array(
-			'SMTP Error: The following recipients failed',
-			'The following From address failed',
-			'Invalid address:',
-			'SMTP Error: Data not accepted',
+		$this->subscriber_errors = apply_filters(
+			'mailster_subscriber_errors',
+			array(
+				'SMTP Error: The following recipients failed',
+				'The following From address failed',
+				'Invalid address:',
+				'SMTP Error: Data not accepted',
+			)
 		);
-		$this->subscriber_errors = apply_filters( 'mailster_subscriber_errors', $subscriber_errors );
-		$system_errors           = array(
-			'Not in Time Frame',
+
+		$this->server_errors = apply_filters(
+			'mailster_server_errors',
+			array(
+				'Sender address rejected',
+			)
 		);
-		$this->system_errors     = apply_filters( 'mailster_system_errors', $system_errors );
+
+		$this->system_errors = apply_filters(
+			'mailster_system_errors',
+			array(
+				'Not in Time Frame',
+			)
+		);
 
 		if ( ! get_transient( '_mailster_send_period_timeout' ) ) {
 			set_transient( '_mailster_send_period_timeout', true, mailster_option( 'send_period' ) * 3600 );
@@ -717,9 +729,11 @@ class MailsterMail {
 
 			$this->mailer->AltBody = $this->mailer->normalizeBreaks( ! empty( $this->plaintext ) ? $this->plaintext : mailster( 'helper' )->plain_text( $this->content ) );
 
-			( $this->bouncemail )
-				? $this->mailer->ReturnPath = $this->mailer->Sender = $this->bouncemail
-				: $this->mailer->ReturnPath = $this->mailer->Sender = $this->from;
+			if ( $this->bouncemail ) {
+				$this->mailer->Sender = $this->bouncemail;
+			} else {
+				$this->mailer->Sender = $this->from;
+			}
 
 			// add the tracking image at the bottom
 			if ( $this->add_tracking_image ) {
@@ -799,6 +813,13 @@ class MailsterMail {
 		}
 
 		$errormsg = $error->getMessage();
+
+		// check for server error so it's not a user error
+		foreach ( $this->server_errors as $server_error ) {
+			if ( stripos( $errormsg, $server_error ) !== false ) {
+				return false;
+			}
+		}
 
 		// check for subscriber error
 		foreach ( $this->subscriber_errors as $subscriber_error ) {

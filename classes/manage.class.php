@@ -553,9 +553,11 @@ class MailsterManage {
 					if ( is_wp_error( $tag_id ) ) {
 						continue;
 					}
+				} else {
+					$tag_id = $tag_id->ID;
 				}
 
-				$option_tag_ids[] = $tag_id->ID;
+				$option_tag_ids[] = $tag_id;
 			}
 		}
 

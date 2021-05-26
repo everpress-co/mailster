@@ -913,11 +913,11 @@ class MailsterHelper {
 
 		if ( isset( $status_code_classes[ $status ] ) ) {
 			$message = $status_code_classes[ $status ];
-			return '[' . $message['title'] . '] ' . $message['descr'];
+			return '[' . $status . '] ' . $message['descr'];
 		}
 		if ( isset( $status_code_subclasses[ $status ] ) ) {
 			$message = $status_code_subclasses[ $status ];
-			return '[' . $message['title'] . '] ' . $message['descr'];
+			return '[' . $status . '] ' . $message['descr'];
 		}
 
 		if ( $status = substr( $status, 0, strrpos( $status, '.' ) ) ) {

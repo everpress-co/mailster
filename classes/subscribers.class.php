@@ -3285,10 +3285,9 @@ class MailsterSubscribers {
 		$timeformat = mailster( 'helper' )->timeformat();
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
-		$actions = (object) mailster( 'actions' )->get_campaign_actions( $campaign_id, $id );
-
 		$activities = mailster( 'actions' )->get_activity( $campaign_id, $id );
-		$actions    = new StdClass();
+
+		$actions = new StdClass();
 
 		foreach ( $activities as $activity ) {
 			$actions->{$activity->type} = array(
@@ -3315,8 +3314,8 @@ class MailsterSubscribers {
 		$html .= '<h4>' . esc_html( $subscriber->fullname ? $subscriber->fullname : $subscriber->email ) . ' <a href="edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID . '">' . esc_html__( 'edit', 'mailster' ) . '</a></h4>';
 		$html .= '<ul>';
 
-		$html .= '<li><label>' . esc_html__( 'sent', 'mailster' ) . ':</label> ' . ( $actions->sent['count'] ? date( $timeformat, $actions->sent['timestamp'] + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->sent['timestamp'] ) ) . ( $actions->sent['count'] > 1 ? ' <span class="count">(' . sprintf( esc_html__( '%d times', 'mailster' ), $actions->sent['count'] ) . ')</span>' : '' ) : esc_html__( 'not yet', 'mailster' ) );
-		$html .= '<li><label>' . esc_html__( 'opens', 'mailster' ) . ':</label> ' . ( $actions->open['count'] ? date( $timeformat, $actions->open['timestamp'] + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->open['timestamp'] ) ) . ( $actions->open['count'] > 1 ? ' <span class="count">(' . sprintf( esc_html__( '%d times', 'mailster' ), $actions->open['count'] ) . ')</span>' : '' ) : esc_html__( 'not yet', 'mailster' ) );
+		$html .= '<li><label>' . esc_html__( 'sent', 'mailster' ) . ':</label> ' . ( isset( $actions->sent ) ? date( $timeformat, $actions->sent['timestamp'] + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->sent['timestamp'] ) ) . ( $actions->sent['count'] > 1 ? ' <span class="count">(' . sprintf( esc_html__( '%d times', 'mailster' ), $actions->sent['count'] ) . ')</span>' : '' ) : esc_html__( 'not yet', 'mailster' ) );
+		$html .= '<li><label>' . esc_html__( 'opens', 'mailster' ) . ':</label> ' . ( isset( $actions->open ) ? date( $timeformat, $actions->open['timestamp'] + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->open['timestamp'] ) ) . ( $actions->open['count'] > 1 ? ' <span class="count">(' . sprintf( esc_html__( '%d times', 'mailster' ), $actions->open['count'] ) . ')</span>' : '' ) : esc_html__( 'not yet', 'mailster' ) );
 
 		$html .= '<p class="meta"><label>&nbsp;</label>';
 		if ( $meta['client'] ) {
@@ -3333,39 +3332,31 @@ class MailsterSubscribers {
 
 		$html .= '</li>';
 
-		if ( $links = array_filter( wp_list_pluck( $activities, 'link' ) ) ) {
-			$html .= '<li><ul>';
-			foreach ( $links as $activity_id => $link ) {
-				$count = $activities[ $activity_id ]->count;
-				$html .= '<li class=""><a href="' . esc_url( $link ) . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( esc_html__( _n( '%s click', '%s clicks', (int) $count, 'mailster' ) ), $count ) . ')</span></li>';
+		$html .= '<li><ul>';
+		foreach ( $activities as $key => $activity ) {
+			if ( empty( $activity->link ) ) {
+				continue;
 			}
-			$html .= '</ul></li>';
+			$html .= '<li class=""><a href="' . esc_url( $activity->link ) . '" class="external clicked-link">' . $activity->link . '</a> <span class="count">(' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $activity->timestamp ) ) . ')</span></li>';
 		}
+		$html .= '</ul></li>';
 
-		// if ( $actions->clicks ) {
-		// $html .= '<li><ul>';
-		// foreach ( $actions->clicks as $link => $count ) {
-		// $html .= '<li class=""><a href="' . $link . '" class="external clicked-link">' . $link . '</a> <span class="count">(' . sprintf( esc_html__( _n( '%s click', '%s clicks', (int) $count, 'mailster' ) ), $count ) . ')</span></li>';
-		// }
-		// $html .= '</ul></li>';
-		// }
-
-		if ( $actions->unsubs ) {
+		if ( isset( $actions->unsub ) ) {
 			$message = mailster( 'helper' )->get_unsubscribe_message( $this->meta( $id, 'unsubscribe', $campaign_id ) );
-			$html   .= '<li>' . sprintf( esc_html__( 'Unsubscribes on %s', 'mailster' ), date( $timeformat, $actions->unsubs + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->unsubs ) ) ) . '<br>' . esc_html( $message ) . '</li>';
+			$html   .= '<li>' . sprintf( esc_html__( 'Unsubscribes on %s', 'mailster' ), date( $timeformat, $actions->unsub['timestamp'] + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->unsub['timestamp'] ) ) ) . '<br>' . esc_html( $message ) . '</li>';
 		}
 
-		if ( $actions->bounces ) {
-			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
+		if ( isset( $actions->bounce ) ) {
+			$message = mailster( 'helper' )->get_bounce_message( $actions->bounce['text'] );
 			$html   .= '<li>';
-			if ( $actions->softbounces_total ) :
-				$html .= '<label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ) ), $actions->softbounces_total ) . '</label>';
+			if ( isset( $actions->softbounce ) ) :
+				$html .= '<label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounce['count'], 'mailster' ) ), $actions->softbounce['count'] ) . '</label>';
 			endif;
-			$html .= '<strong class="red">' . sprintf( esc_html__( 'Hard bounced at %s', 'mailster' ), date( $timeformat, $actions->bounces + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->bounces ) ) ) . '</strong><br>' . esc_html( $message );
+			$html .= '<strong class="red">' . sprintf( esc_html__( 'Hard bounced at %s', 'mailster' ), date( $timeformat, $actions->bounce['timestamp'] + $timeoffset ) . ', ' . sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $actions->bounce['timestamp'] ) ) ) . '</strong><br>' . esc_html( $message );
 			$html .= '</li>';
-		} elseif ( $actions->softbounces ) {
-			$message = mailster( 'helper' )->get_bounce_message( $this->meta( $id, 'bounce', $campaign_id ) );
-			$html   .= '<li><label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounces_total, 'mailster' ) ), $actions->softbounces_total ) . '</label><br>' . esc_html( $message ) . '</li>';
+		} elseif ( isset( $actions->softbounce ) ) {
+			$message = mailster( 'helper' )->get_bounce_message( $actions->bounce['text'] );
+			$html   .= '<li><label class="red">' . sprintf( esc_html__( _n( '%s soft bounce', '%s soft bounces', $actions->softbounce['count'], 'mailster' ) ), $actions->softbounce['count'] ) . '</label><br>' . esc_html( $message ) . '</li>';
 		}
 
 		$html .= '</ul>';

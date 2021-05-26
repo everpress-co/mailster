@@ -133,9 +133,7 @@ class MailsterBounceHandler {
 	 * @param unknown $id
 	 */
 	protected function delete_message( $id ) {
-
 		$this->mailbox->deleteMail( $id );
-
 	}
 
 
