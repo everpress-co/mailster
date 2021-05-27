@@ -1919,7 +1919,7 @@ class Mailster {
                 `timestamp` int(11) NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 PRIMARY KEY  (`ID`),
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",
@@ -1931,7 +1931,7 @@ class Mailster {
                 `timestamp` int(11) NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 PRIMARY KEY  (`ID`),
-                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`),
+                UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
                 KEY `subscriber_id` (`subscriber_id`),
                 KEY `campaign_id` (`campaign_id`)
             ) $collate;",

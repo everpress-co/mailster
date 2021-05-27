@@ -1004,8 +1004,13 @@ class MailsterCampaigns {
 				break;
 
 			case 'total':
-				if ( 'autoresponder' == $post->post_status ) {
-					echo number_format_i18n( $this->get_sent( $post->ID, true ) );
+				if ( in_array( $post->post_status, array( 'autoresponder', 'notification' ) ) ) {
+					$total      = $this->get_sent( $post->ID, false );
+					$cumm_total = $this->get_sent( $post->ID, true );
+					echo number_format_i18n( $total );
+					if ( $total != $cumm_total ) {
+						echo ' <span class="nonessential" title="' . esc_attr__( 'Some users may have received this mail more than once.', 'mailster' ) . '">(' . number_format_i18n( $cumm_total ) . ')</span>';
+					}
 				} elseif ( 'notification' == $post->post_status ) {
 					echo number_format_i18n( $this->get_sent( $post->ID, true ) );
 				} else {
@@ -1014,7 +1019,7 @@ class MailsterCampaigns {
 
 				$errors = $this->get_errors( $post->ID );
 				if ( ! empty( $errors ) ) {
-					echo '&nbsp;(<a href="edit.php?post_type=newsletter&page=mailster_subscribers&status=4" class="errors" title="' . sprintf( esc_html__( '%d emails have not been sent', 'mailster' ), $errors ) . '">+' . $errors . '</a>)';
+					echo '&nbsp;(<a href="edit.php?post_type=newsletter&page=mailster_subscribers&status=4" class="errors" title="' . sprintf( esc_attr__( '%d emails have not been sent', 'mailster' ), $errors ) . '">+' . $errors . '</a>)';
 				}
 
 				break;

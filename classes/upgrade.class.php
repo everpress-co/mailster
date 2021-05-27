@@ -292,6 +292,15 @@ class MailsterUpgrade {
 			);
 		}
 
+		if ( $db_version < 20210601 ) {
+			$actions = wp_parse_args(
+				array(
+					'maybe_fix_indexes' => 'Maybe fix indexes',
+				),
+				$actions
+			);
+		}
+
 		$actions = wp_parse_args(
 			array(
 				'db_check' => 'Database integrity',
@@ -929,15 +938,7 @@ class MailsterUpgrade {
 			$wpdb->query( "UPDATE {$table} SET ID = @a:=@a+1;" );
 			$wpdb->query( "ALTER TABLE {$table} MODIFY COLUMN `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY" );
 
-			usleep( 500 );
-
-			// $wpdb->query( "SET @m = (SELECT MAX(ID) + 1 FROM {$table}); " );
-			// $wpdb->query( "SET @s = CONCAT('ALTER TABLE {$table} AUTO_INCREMENT=', @m);" );
-			// $wpdb->query( 'PREPARE stmt1 FROM @s;' );
-			// $wpdb->query( 'EXECUTE stmt1;' );
-			// $wpdb->query( 'DEALLOCATE PREPARE stmt1;' );
-
-			usleep( 500 );
+			usleep( 1000 );
 
 			if ( ! $this->column_exists( 'ID', $table ) ) {
 				echo 'Not able to create primary Key for  "' . $table . '".' . "\n";
@@ -948,6 +949,23 @@ class MailsterUpgrade {
 		}
 
 		return true;
+
+	}
+
+
+	private function do_maybe_fix_indexes() {
+
+		global $wpdb;
+		foreach ( array( 'sent', 'opens' ) as $table ) {
+			$rows = $wpdb->get_results( "SHOW INDEX IN `{$wpdb->prefix}mailster_action_{$table}` WHERE Key_name = 'id'" );
+			if ( ! empty( $rows ) && count( $rows ) <= 2 ) {
+				echo 'Remove index for "mailster_action_' . $table . '".' . "\n";
+				$wpdb->query( "ALTER TABLE `{$wpdb->prefix}mailster_action_{$table}` DROP INDEX id" );
+			}
+		}
+
+		return true;
+
 	}
 
 

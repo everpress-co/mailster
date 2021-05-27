@@ -919,17 +919,16 @@ class MailsterQueue {
 
 			$conditions[] = array( $cond );
 
-			$subscribers = mailster( 'subscribers' )->query(
-				array(
-					'fields'        => array( 'ID', $autoresponder_meta['uservalue'] ),
-					'lists'         => $lists,
-					'conditions'    => $conditions,
-					'sent__not_in'  => $once ? $campaign->ID : false,
-					'queue__not_in' => $campaign->ID,
-					'orderby'       => $autoresponder_meta['uservalue'],
-				),
-				$campaign->ID
+			$query_args = array(
+				'fields'        => array( 'ID', $autoresponder_meta['uservalue'] ),
+				'lists'         => $lists,
+				'conditions'    => $conditions,
+				'sent__not_in'  => $once ? $campaign->ID : false,
+				'queue__not_in' => $campaign->ID,
+				'orderby'       => $autoresponder_meta['uservalue'],
 			);
+
+			$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign->ID );
 
 			foreach ( $subscribers as $subscriber ) {
 
@@ -1154,7 +1153,7 @@ class MailsterQueue {
 				$sql        .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
 			}
 
-			$sql .= ' ORDER BY queue.priority DESC, subscribers.rating DESC';
+			$sql .= ' ORDER BY queue.priority DESC, subscribers.rating DESC, queue.ID';
 
 			$sql .= ! mailster_option( 'split_campaigns' ) ? ', queue.campaign_id ASC' : '';
 
