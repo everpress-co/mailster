@@ -4406,6 +4406,10 @@ class MailsterCampaigns {
 			$track = $campaign_meta['track_clicks'];
 		}
 
+		if ( mailster_option( 'mailster_branding' ) ) {
+			$content = str_replace( '</body>', '<table width="100%" role="presentation"><tr><td align="center"><a href="https://mailster.co" title="Sent with Mailster"><img src="' . MAILSTER_URI . 'assets/img/sent_with_mailster.png" width="130" height="33"></a></td></tr><tr><td>&nbsp;</td></tr></table></body>', $content );
+		}
+
 		if ( $track ) {
 			// always replace links
 			$content = mailster()->replace_links( $content, $subscriber->hash, $campaign->ID );
