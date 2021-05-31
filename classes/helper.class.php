@@ -1025,7 +1025,7 @@ class MailsterHelper {
 				$content = preg_replace( $pattern, '', $org_content );
 			}
 
-			$content = apply_filters( 'mailster_handle_shortcodes', $content );
+			$content = apply_filters( 'mailster_handle_shortcodes', $content, $org_content );
 			mailster_cache_set( $key, $content );
 
 		}

@@ -1199,6 +1199,12 @@ class MailsterForms {
 
 		$sql = "SELECT lists.* FROM {$wpdb->prefix}mailster_lists AS lists LEFT JOIN {$wpdb->prefix}mailster_forms_lists AS forms_lists ON lists.ID = forms_lists.list_id WHERE forms_lists.form_id = %d";
 
+		if ( $order_by = apply_filters( 'mailster_form_list_order', false, $id ) ) {
+			if ( in_array( $order_by, array( 'id', 'name', 'slug', 'added' ) ) ) {
+				$sql .= ' ORDER BY lists.' . esc_sql( $order_by );
+			}
+		}
+
 		$lists = $wpdb->get_results( $wpdb->prepare( $sql, $id ) );
 
 		return $ids_only ? wp_list_pluck( $lists, 'ID' ) : $lists;
