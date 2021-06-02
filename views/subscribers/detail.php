@@ -490,7 +490,7 @@ if ( ! $is_new ) :
 						?>
 
 						</td>
-						<td><a href="<?php echo admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ); ?>"><?php echo $activity->campaign_title; ?></a></td>
+						<td><a href="<?php echo admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ); ?>"><?php esc_html_e( $activity->campaign_title ); ?></a><?php echo ( $activity->i ) ? ' (#' . ( $activity->i + 1 ) . ')' : ''; ?></td>
 						<td width="50%">
 						<?php if ( $activity->campaign_status == 'trash' ) : ?>
 							<?php esc_html_e( 'campaign deleted', 'mailster' ); ?>

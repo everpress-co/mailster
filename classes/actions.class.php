@@ -11,13 +11,13 @@ class MailsterActions {
 
 	public function init() {
 
-		add_action( 'mailster_send', array( &$this, 'send' ), 10, 2 );
+		add_action( 'mailster_send', array( &$this, 'send' ), 10, 3 );
 		add_action( 'mailster_open', array( &$this, 'open' ), 10, 3 );
-		add_action( 'mailster_click', array( &$this, 'click' ), 10, 4 );
-		add_action( 'mailster_unsubscribe', array( &$this, 'unsubscribe' ), 10, 3 );
-		add_action( 'mailster_list_unsubscribe', array( &$this, 'list_unsubscribe' ), 10, 4 );
-		add_action( 'mailster_bounce', array( &$this, 'bounce' ), 10, 4 );
-		add_action( 'mailster_subscriber_error', array( &$this, 'error' ), 10, 3 );
+		add_action( 'mailster_click', array( &$this, 'click' ), 10, 5 );
+		add_action( 'mailster_unsubscribe', array( &$this, 'unsubscribe' ), 10, 4 );
+		add_action( 'mailster_list_unsubscribe', array( &$this, 'list_unsubscribe' ), 10, 5 );
+		add_action( 'mailster_bounce', array( &$this, 'bounce' ), 10, 5 );
+		add_action( 'mailster_subscriber_error', array( &$this, 'error' ), 10, 4 );
 		add_action( 'mailster_cron_cleanup', array( &$this, 'cleanup' ) );
 
 	}
@@ -28,14 +28,16 @@ class MailsterActions {
 	 *
 	 * @param unknown $subscriber_id
 	 * @param unknown $campaign_id
+	 * @param unknown $index        (optional)
 	 * @return unknown
 	 */
-	public function send( $subscriber_id, $campaign_id ) {
+	public function send( $subscriber_id, $campaign_id, $index = null ) {
 
 		return $this->add_action(
 			array(
 				'subscriber_id' => $subscriber_id,
 				'campaign_id'   => $campaign_id,
+				'i'             => $index,
 				'type'          => 'sent',
 			),
 			true
@@ -49,19 +51,36 @@ class MailsterActions {
 	 *
 	 * @param unknown $subscriber_id
 	 * @param unknown $campaign_id
-	 * @param unknown $explicit      (optional)
+	 * @param unknown $index         (optional)
 	 * @return unknown
 	 */
-	public function open( $subscriber_id, $campaign_id, $explicit = true ) {
+	public function open( $subscriber_id, $campaign_id, $index = null ) {
 
 		return $this->add_subscriber_action(
 			array(
 				'subscriber_id' => $subscriber_id,
 				'campaign_id'   => $campaign_id,
+				'i'             => $index,
 				'type'          => 'opens',
-			),
-			$explicit
+			)
 		);
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_id
+	 * @param unknown $campaign_id
+	 * @param unknown $index         (optional)
+	 * @return unknown
+	 */
+	private function maybe_open( $subscriber_id, $campaign_id, $index = null ) {
+
+		if ( ! $this->get_by_subscriber( $subscriber_id, 'opens', $campaign_id, $index ) ) {
+			$this->open( $subscriber_id, $campaign_id, $index );
+		}
 
 	}
 
@@ -72,24 +91,24 @@ class MailsterActions {
 	 * @param unknown $subscriber_id
 	 * @param unknown $campaign_id
 	 * @param unknown $link
+	 * @param unknown $linkindex     (optional)
 	 * @param unknown $index         (optional)
-	 * @param unknown $explicit      (optional)
 	 * @return unknown
 	 */
-	public function click( $subscriber_id, $campaign_id, $link, $index = 0, $explicit = true ) {
+	public function click( $subscriber_id, $campaign_id, $link, $linkindex = 0, $index = null ) {
 
-		$this->open( $subscriber_id, $campaign_id, false );
+		$this->maybe_open( $subscriber_id, $campaign_id, $index );
 
-		$link_id = $this->get_link_id( $link, $index );
+		$link_id = $this->get_link_id( $link, $linkindex );
 
 		return $this->add_subscriber_action(
 			array(
 				'subscriber_id' => $subscriber_id,
 				'campaign_id'   => $campaign_id,
+				'i'             => $index,
 				'type'          => 'clicks',
 				'link_id'       => $link_id,
-			),
-			$explicit
+			)
 		);
 
 	}
@@ -100,15 +119,17 @@ class MailsterActions {
 	 *
 	 * @param unknown $subscriber_id
 	 * @param unknown $campaign_id
-	 * @param unknown $status (optional)
+	 * @param unknown $status        (optional)
+	 * @param unknown $index         (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe( $subscriber_id, $campaign_id, $status = null ) {
+	public function unsubscribe( $subscriber_id, $campaign_id, $status = null, $index = null ) {
 
 		return $this->add_action(
 			array(
 				'subscriber_id' => $subscriber_id,
 				'campaign_id'   => $campaign_id,
+				'i'             => $index,
 				'type'          => 'unsubs',
 			)
 		);
@@ -122,10 +143,11 @@ class MailsterActions {
 	 * @param unknown $subscriber_id
 	 * @param unknown $campaign_id
 	 * @param unknown $lists
-	 * @param unknown $status (optional)
+	 * @param unknown $status        (optional)
+	 * @param unknown $index         (optional)
 	 * @return unknown
 	 */
-	public function list_unsubscribe( $subscriber_id, $campaign_id, $lists, $status = null ) {
+	public function list_unsubscribe( $subscriber_id, $campaign_id, $lists, $status = null, $index = null ) {
 
 		return $this->unsubscribe( $subscriber_id, $campaign_id, $status );
 
@@ -139,14 +161,16 @@ class MailsterActions {
 	 * @param unknown $campaign_id
 	 * @param unknown $hard          (optional)
 	 * @param unknown $status        (optional)
+	 * @param unknown $index         (optional)
 	 * @return unknown
 	 */
-	public function bounce( $subscriber_id, $campaign_id, $hard = false, $status = null ) {
+	public function bounce( $subscriber_id, $campaign_id, $hard = false, $status = null, $index = null ) {
 
 		return $this->add_action(
 			array(
 				'subscriber_id' => $subscriber_id,
 				'campaign_id'   => $campaign_id,
+				'i'             => $index,
 				'type'          => 'bounces',
 				'hard'          => $hard,
 				'text'          => $status,
@@ -163,9 +187,10 @@ class MailsterActions {
 	 * @param unknown $subscriber_id
 	 * @param unknown $campaign_id
 	 * @param unknown $error         (optional)
+	 * @param unknown $index         (optional)
 	 * @return unknown
 	 */
-	public function error( $subscriber_id, $campaign_id, $error = '' ) {
+	public function error( $subscriber_id, $campaign_id, $error = '', $index = null ) {
 
 		mailster( 'subscribers' )->update_meta( $subscriber_id, $campaign_id, 'error', $error );
 
@@ -173,6 +198,7 @@ class MailsterActions {
 			array(
 				'subscriber_id' => $subscriber_id,
 				'campaign_id'   => $campaign_id,
+				'i'             => $index,
 				'type'          => 'errors',
 			)
 		);
@@ -184,9 +210,8 @@ class MailsterActions {
 	 *
 	 *
 	 * @param unknown $args
-	 * @param unknown $explicit (optional)
 	 */
-	private function add_subscriber_action( $args, $explicit = true ) {
+	private function add_subscriber_action( $args ) {
 
 		if ( mailster_option( 'do_not_track' ) && isset( $_SERVER['HTTP_DNT'] ) && $_SERVER['HTTP_DNT'] == 1 ) {
 			return;
@@ -206,7 +231,7 @@ class MailsterActions {
 		}
 
 		// only explicitly opened
-		if ( 'opens' == $args['type'] && $explicit ) {
+		if ( 'opens' == $args['type'] ) {
 
 			if ( $client = mailster_get_user_client() ) {
 
@@ -230,7 +255,7 @@ class MailsterActions {
 
 		mailster( 'subscribers' )->update_meta( $args['subscriber_id'], $args['campaign_id'], $user_meta );
 
-		$this->add( $args, $explicit );
+		$this->add( $args );
 
 	}
 
@@ -239,11 +264,10 @@ class MailsterActions {
 	 *
 	 *
 	 * @param unknown $args
-	 * @param unknown $explicit (optional)
 	 */
-	private function add_action( $args, $explicit = true ) {
+	private function add_action( $args ) {
 
-		$this->add( $args, $explicit );
+		$this->add( $args );
 	}
 
 
@@ -251,10 +275,9 @@ class MailsterActions {
 	 *
 	 *
 	 * @param unknown $args
-	 * @param unknown $explicit (optional)
 	 * @return unknown
 	 */
-	private function add( $args, $explicit = true ) {
+	private function add( $args ) {
 
 		global $wpdb;
 
@@ -271,26 +294,29 @@ class MailsterActions {
 
 		$table = 'action_' . $type;
 
-		$sql = "INSERT INTO {$wpdb->prefix}mailster_$table (" . implode( ', ', array_keys( $args ) ) . ')';
+		$sql  = "INSERT INTO {$wpdb->prefix}mailster_$table (" . implode( ', ', array_keys( $args ) ) . ')';
+		$sql .= " VALUES ('" . implode( "','", array_values( $args ) ) . "')";
 
-		$sql .= " VALUES ('" . implode( "','", array_values( $args ) ) . "') ON DUPLICATE KEY UPDATE";
+		$sql = apply_filters( 'mailster_actions_add_sql', $sql, $args );
 
-		$sql .= ( $explicit ) ? ' timestamp = timestamp, count = count+1' : ' count = count';
-
-		$sql = apply_filters( 'mailster_actions_add_sql', $sql, $args, $explicit );
-
+		$wpdb->suppress_errors();
 		$result = $wpdb->query( $sql );
+
+		if ( false === $result ) {
+			$sql   .= ' ON DUPLICATE KEY UPDATE';
+			$sql   .= ' timestamp = timestamp, count = count+1';
+			$result = $wpdb->query( $sql );
+
+		}
 
 		if ( false !== $result ) {
 			// re calculate rating on actions
-			if ( $result == 1 && $explicit && $type != 'sent' && isset( $args['subscriber_id'] ) ) {
+			if ( $result == 1 && $type != 'sent' && isset( $args['subscriber_id'] ) ) {
 				mailster( 'subscribers' )->update_meta( $args['subscriber_id'], 0, 'update_rating', true );
 			}
 
 			return true;
 		}
-
-		return false;
 
 	}
 
@@ -522,22 +548,23 @@ class MailsterActions {
 	 * @param unknown $subscriber_id (optional)
 	 * @param unknown $action        (optional)
 	 * @param unknown $campaign_id   (optional)
+	 * @param unknown $index         (optional)
 	 * @return unknown
 	 */
-	public function get_by_subscriber( $subscriber_id = null, $action = null, $campaign_id = null ) {
+	public function get_by_subscriber( $subscriber_id = null, $action = null, $campaign_id = null, $index = null ) {
 
 		global $wpdb;
 
 		if ( ! $action ) {
 			$return = array();
 			foreach ( array( 'sent', 'opens', 'clicks', 'unsubs', 'bounces', 'errors', 'softbounces' ) as $a ) {
-				$return[ $a ] = $this->get_by_subscriber( $subscriber_id, $a, $campaign_id );
+				$return[ $a ] = $this->get_by_subscriber( $subscriber_id, $a, $campaign_id, $index );
 			}
 
 			return $return;
 		}
 
-		$cache_key      = 'action_counts_by_subscriber_' . $action . $campaign_id;
+		$cache_key      = 'action_counts_by_subscriber_' . $action . $campaign_id . $index;
 		$subscriber_ids = array();
 
 		$action_counts = mailster_cache_get( $cache_key );
@@ -575,6 +602,9 @@ class MailsterActions {
 		}
 		if ( ! empty( $campaign_ids ) ) {
 			$sql .= ' AND action_table.campaign_id = ' . (int) $campaign_id;
+		}
+		if ( ! is_null( $index ) ) {
+			$sql .= ' AND action_table.i = ' . (int) $index;
 		}
 		if ( 'softbounces' == $action ) {
 			$sql .= ' AND action_table.hard = 0';
@@ -1038,10 +1068,11 @@ class MailsterActions {
 	 *
 	 * @param unknown $campaign_id   (optional)
 	 * @param unknown $subscriber_id (optional)
+	 * @param unknown $index         (optional)
 	 * @param unknown $limit         (optional)
 	 * @return unknown
 	 */
-	public function get_activity( $campaign_id = null, $subscriber_id = null, $limit = null ) {
+	public function get_activity( $campaign_id = null, $subscriber_id = null, $index = null, $limit = null ) {
 
 		global $wpdb;
 
@@ -1060,17 +1091,21 @@ class MailsterActions {
 			$union_sql .= ' AND subscriber_id = ' . (int) $subscriber_id;
 		}
 
+		if ( ! is_null( $index ) ) {
+			$union_sql .= ' AND i = ' . (int) $index;
+		}
+
 		$sql .= ' (' . implode(
 			' UNION ',
 			array(
 
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_errors WHERE 1=1$union_sql", 'error' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 1$union_sql", 'bounce' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 0$union_sql", 'softbounce' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_unsubs WHERE 1=1$union_sql", 'unsub' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_clicks WHERE 1=1$union_sql", 'click' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_opens WHERE 1=1$union_sql", 'open' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_sent WHERE 1=1$union_sql", 'sent' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_errors WHERE 1=1$union_sql", 'error' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 1$union_sql", 'bounce' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 0$union_sql", 'softbounce' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_unsubs WHERE 1=1$union_sql", 'unsub' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_clicks WHERE 1=1$union_sql", 'click' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_opens WHERE 1=1$union_sql", 'open' ),
+				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_sent WHERE 1=1$union_sql", 'sent' ),
 
 			)
 		) . ') AS a';
@@ -1084,6 +1119,8 @@ class MailsterActions {
 		if ( ! is_null( $limit ) ) {
 			$sql .= ' LIMIT ' . (int) $limit;
 		}
+
+		error_log( print_r( $sql, true ) );
 
 		return $wpdb->get_results( $sql );
 
@@ -1138,7 +1175,7 @@ class MailsterActions {
 	 * @param unknown $index (optional)
 	 * @return unknown
 	 */
-	public function get_link_id( $link, $index = 0 ) {
+	public function get_link_id( $link, $index = null ) {
 
 		global $wpdb;
 

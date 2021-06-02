@@ -26,6 +26,7 @@ class MailsterMail {
 	public $errors             = array();
 	public $sent               = false;
 	public $pre_send           = false;
+	public $index              = 0;
 
 	public $mailer;
 
@@ -737,6 +738,10 @@ class MailsterMail {
 
 			// add the tracking image at the bottom
 			if ( $this->add_tracking_image ) {
+
+				if ( $this->index ) {
+					$this->baselink .= '-' . absint( $this->index );
+				}
 
 				if ( mailster( 'helper' )->using_permalinks() ) {
 

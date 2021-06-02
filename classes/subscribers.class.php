@@ -2538,11 +2538,12 @@ class MailsterSubscribers {
 	 * @param unknown $id
 	 * @param unknown $campaign_id (optional)
 	 * @param unknown $status      (optional)
+	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe( $id, $campaign_id = null, $status = null ) {
+	public function unsubscribe( $id, $campaign_id = null, $status = null, $index = null ) {
 
-		return $this->unsubscribe_by_type( 'id', $id, $campaign_id, $status );
+		return $this->unsubscribe_by_type( 'id', $id, $campaign_id, $status, $index );
 
 	}
 
@@ -2553,11 +2554,12 @@ class MailsterSubscribers {
 	 * @param unknown $hash
 	 * @param unknown $campaign_id (optional)
 	 * @param unknown $status      (optional)
+	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe_by_hash( $hash, $campaign_id = null, $status = null ) {
+	public function unsubscribe_by_hash( $hash, $campaign_id = null, $status = null, $index = null ) {
 
-		return $this->unsubscribe_by_type( 'hash', $hash, $campaign_id, $status );
+		return $this->unsubscribe_by_type( 'hash', $hash, $campaign_id, $status, $index );
 
 	}
 
@@ -2568,11 +2570,12 @@ class MailsterSubscribers {
 	 * @param unknown $md5
 	 * @param unknown $campaign_id (optional)
 	 * @param unknown $status      (optional)
+	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe_by_md5( $md5, $campaign_id = null, $status = null ) {
+	public function unsubscribe_by_md5( $md5, $campaign_id = null, $status = null, $index = null ) {
 
-		return $this->unsubscribe_by_type( 'md5', $email, $campaign_id, $status );
+		return $this->unsubscribe_by_type( 'md5', $email, $campaign_id, $status, $index );
 
 	}
 
@@ -2583,11 +2586,12 @@ class MailsterSubscribers {
 	 * @param unknown $email
 	 * @param unknown $campaign_id (optional)
 	 * @param unknown $status      (optional)
+	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	public function unsubscribe_by_mail( $email, $campaign_id = null, $status = null ) {
+	public function unsubscribe_by_mail( $email, $campaign_id = null, $status = null, $index = null ) {
 
-		return $this->unsubscribe_by_type( 'email', $email, $campaign_id, $status );
+		return $this->unsubscribe_by_type( 'email', $email, $campaign_id, $status, $index );
 
 	}
 
@@ -2599,9 +2603,10 @@ class MailsterSubscribers {
 	 * @param unknown $value
 	 * @param unknown $campaign_id (optional)
 	 * @param unknown $status      (optional)
+	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	private function unsubscribe_by_type( $type, $value, $campaign_id = null, $status = null ) {
+	private function unsubscribe_by_type( $type, $value, $campaign_id = null, $status = null, $index = null ) {
 
 		switch ( $type ) {
 			case 'id':
@@ -2631,7 +2636,7 @@ class MailsterSubscribers {
 				if ( $status ) {
 					$this->update_meta( $subscriber->ID, $campaign_id, 'unsubscribe', $status );
 				}
-				do_action( 'mailster_list_unsubscribe', $subscriber->ID, $campaign_id, $lists, $status );
+				do_action( 'mailster_list_unsubscribe', $subscriber->ID, $campaign_id, $lists, $status, $index );
 				$this->subscriber_unsubscribe_notification( $subscriber->ID, null, $lists );
 				return true;
 			}
@@ -2649,7 +2654,7 @@ class MailsterSubscribers {
 			if ( $status ) {
 				$this->update_meta( $subscriber->ID, $campaign_id, 'unsubscribe', $status );
 			}
-			do_action( 'mailster_unsubscribe', $subscriber->ID, $campaign_id, $status );
+			do_action( 'mailster_unsubscribe', $subscriber->ID, $campaign_id, $status, $index );
 
 			$this->subscriber_unsubscribe_notification( $subscriber->ID );
 			return true;
@@ -3276,16 +3281,17 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $id
 	 * @param unknown $campaign_id
+	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	public function get_recipient_detail( $id, $campaign_id ) {
+	public function get_recipient_detail( $id, $campaign_id, $index = null ) {
 
 		$subscriber = $this->get( $id, true );
 
 		$timeformat = mailster( 'helper' )->timeformat();
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
-		$activities = mailster( 'actions' )->get_activity( $campaign_id, $id );
+		$activities = mailster( 'actions' )->get_activity( $campaign_id, $id, $index );
 
 		$actions = new StdClass();
 
@@ -3610,9 +3616,10 @@ class MailsterSubscribers {
 	 * @param unknown $campaign_id
 	 * @param unknown $hard          (optional)
 	 * @param unknown $status        (optional)
+	 * @param unknown $index         (optional)
 	 * @return unknown
 	 */
-	public function bounce( $subscriber_id, $campaign_id, $hard = false, $status = null ) {
+	public function bounce( $subscriber_id, $campaign_id, $hard = false, $status = null, $index = null ) {
 
 		global $wpdb;
 
@@ -3629,7 +3636,7 @@ class MailsterSubscribers {
 		if ( $hard ) {
 
 			if ( $this->change_status( $subscriber->ID, $this->get_status_by_name( 'hardbounced' ) ) ) {
-				do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, true, $status );
+				do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, true, $statu, $index );
 
 				return true;
 			}
@@ -3643,12 +3650,12 @@ class MailsterSubscribers {
 		// check if bounce limit has been reached => hardbounce
 		if ( $bounce_attempts == 1 || $wpdb->get_var( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 0 AND subscriber_id = %d AND campaign_id = %d AND count >= %d LIMIT 1", $subscriber->ID, $campaign_id, $bounce_attempts ) ) ) {
 
-			return $this->bounce( $subscriber->ID, $campaign_id, true, $status );
+			return $this->bounce( $subscriber->ID, $campaign_id, true, $status, $index );
 
 		}
 
 		// softbounce
-		do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, false, $status );
+		do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, false, $status, $index );
 
 		return true;
 

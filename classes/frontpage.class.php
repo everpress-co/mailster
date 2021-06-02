@@ -62,17 +62,17 @@ class MailsterFrontpage {
 
 			$pagename = get_page_uri( $homepage );
 
-			$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
+			$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
-			$rules['^(index\.php/)?(mailster|mymail)/(subscribe)/?$']                             = 'index.php?_mailster=$matches[3]';
-			$rules[ '(index\.php/)?(mailster)/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
+			$rules['^(index\.php/)?(mailster|mymail)/(subscribe)/?$']                              = 'index.php?_mailster=$matches[3]';
+			$rules[ '(index\.php/)?(mailster)/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
 			if ( get_option( 'page_on_front' ) == $homepage && get_option( 'show_on_front' ) == 'page' ) {
-				$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/]*)?' ] = 'index.php?page_id=' . $homepage . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
+				$rules[ '^(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?page_id=' . $homepage . '&_mailster_page=$matches[1]&_mailster_hash=$matches[2]&_mailster_extra=$matches[3]';
 			}
 		}
 
-		$rules['^(index\.php/)?(mailster|mymail)/([0-9]+)/([a-f0-9]{32})/?([a-zA-Z0-9=_+]+)?/?([0-9]+)?/?'] = 'index.php?_mailster=$matches[3]&_mailster_hash=$matches[4]&_mailster_page=$matches[5]&_mailster_extra=$matches[6]';
+		$rules['^(index\.php/)?(mailster|mymail)/([0-9-]+)/([a-f0-9]{32})/?([a-zA-Z0-9=_+]+)?/?([0-9]+)?/?'] = 'index.php?_mailster=$matches[3]&_mailster_hash=$matches[4]&_mailster_page=$matches[5]&_mailster_extra=$matches[6]';
 
 		if ( $secret = mailster_option( 'cron_secret' ) ) {
 			$rules[ '^(index\.php/)?mailster/(' . $secret . ')/?([0-9a-z]+)?/?$' ] = 'index.php?_mailster_cron=$matches[2]&_mailster_extra=$matches[3]';
@@ -317,7 +317,14 @@ class MailsterFrontpage {
 
 	private function do_tracking_actions() {
 
-		$campaign_id = (int) get_query_var( '_mailster', 0 );
+		$campaign_id    = get_query_var( '_mailster', 0 );
+		$campaign_index = 0;
+
+		// get the campaign index
+		if ( false !== strpos( $campaign_id, '-' ) ) {
+			$campaign_index = absint( strrchr( $campaign_id, '-' ) );
+			$campaign_id    = absint( $campaign_id );
+		}
 		$target      = mailster()->decode_link( get_query_var( '_mailster_page' ) );
 		$hash        = get_query_var( '_mailster_hash' );
 		$index       = get_query_var( '_mailster_extra' );
@@ -414,7 +421,7 @@ class MailsterFrontpage {
 				 * @param string $target The target link
 				 * @param int $index The index of the link
 				 */
-				do_action( 'mailster_click', $subscriber_id, $campaign_id, $target, $index );
+				do_action( 'mailster_click', $subscriber_id, $campaign_id, $target, $index, $campaign_index );
 			}
 		} else {
 
@@ -426,12 +433,12 @@ class MailsterFrontpage {
 				 * @param int $subscriber_id The ID of the subscriber
 				 * @param int $campaign_id Form The ID of the campaign
 				 */
-				do_action( 'mailster_open', $subscriber_id, $campaign_id );
+				do_action( 'mailster_open', $subscriber_id, $campaign_id, $campaign_index );
 			}
 		}
 
 		if ( ! $redirect_to ) {
-			$redirect_to = $target ? apply_filters( 'mailster_click_target', $target, $campaign_id, $subscriber->ID ) : false;
+			$redirect_to = $target ? apply_filters( 'mailster_click_target', $target, $campaign_id, $subscriber->ID, $campaign_index ) : false;
 		}
 
 		// no target => tracking image
@@ -444,7 +451,7 @@ class MailsterFrontpage {
 
 		} else {
 			// redirect in any case with 307 (temporary moved) to force tracking
-			$to = apply_filters( 'mailster_redirect_to', $redirect_to, $campaign_id, $subscriber->ID );
+			$to = apply_filters( 'mailster_redirect_to', $redirect_to, $campaign_id, $subscriber->ID, $campaign_index );
 			$to = str_replace( '&amp;', '&', $to );
 			header( 'Location: ' . $to, true, 307 );
 		}
@@ -488,7 +495,6 @@ class MailsterFrontpage {
 				}
 
 				$unsubscribe_url = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
-
 				// if tracking is disabled
 				if ( strpos( $unsubscribe_url, $wp->request ) === false ) {
 					$this->setcookie( get_query_var( '_mailster_hash' ) );
@@ -996,7 +1002,16 @@ class MailsterFrontpage {
 
 				$form = mailster( 'form' )->id( $form_id );
 				$form->is_unsubscribe();
-				$form->campaign_id( get_query_var( '_mailster', get_query_var( '_mailster_extra' ) ) );
+				$campaign_id    = get_query_var( '_mailster', get_query_var( '_mailster_extra' ) );
+				$campaign_index = null;
+
+				// get the campaign index
+				if ( false !== strpos( $campaign_id, '-' ) ) {
+					$campaign_index = absint( strrchr( $campaign_id, '-' ) );
+					$campaign_id    = absint( $campaign_id );
+				}
+
+				$form->campaign_id( $campaign_id, $campaign_index );
 
 				$return .= $form->render( false );
 
@@ -1237,7 +1252,16 @@ class MailsterFrontpage {
 
 		$form = mailster( 'form' )->id( (int) $atts['id'], $atts );
 		$form->is_unsubscribe();
-		$form->campaign_id( get_query_var( '_mailster', get_query_var( '_mailster_extra' ) ) );
+		$campaign_id    = get_query_var( '_mailster', get_query_var( '_mailster_extra' ) );
+		$campaign_index = null;
+
+		// get the campaign index
+		if ( false !== strpos( $campaign_id, '-' ) ) {
+			$campaign_index = absint( strrchr( $campaign_id, '-' ) );
+			$campaign_id    = absint( $campaign_id );
+		}
+
+		$form->campaign_id( $campaign_id, $campaign_index );
 
 		return $form->render( false );
 	}

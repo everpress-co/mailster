@@ -1075,15 +1075,15 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$campaign_ID = (int) $_POST['id'];
+		$campaign_id = (int) $_POST['id'];
 
 		$parts   = ! empty( $_POST['types'] ) ? explode( ',', $_POST['types'] ) : array( 'unopen', 'opens', 'clicks', 'unsubs', 'bounces' );
 		$orderby = ! empty( $_POST['orderby'] ) ? $_POST['orderby'] : 'sent';
-		$order   = ! isset( $_POST['order'] ) || $_POST['order'] == 'ASC' ? 'ASC' : 'DESC';
+		$order   = ! isset( $_POST['order'] ) || $_POST['order'] == 'DESC' ? 'DESC' : 'ASC';
 
 		$return['html'] = '<table class="wp-list-table widefat"><tbody>';
 
-		$return['html'] = mailster( 'campaigns' )->get_recipients_part( $campaign_ID, $parts, 0, $orderby, $order );
+		$return['html'] = mailster( 'campaigns' )->get_recipients_part( $campaign_id, $parts, 0, $orderby, $order );
 
 		$return['html'] .= '</tbody>';
 		$return['html'] .= '</table>';
@@ -1099,14 +1099,14 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$campaign_ID = (int) $_POST['id'];
+		$campaign_id = (int) $_POST['id'];
 		$page        = (int) $_POST['page'];
 
 		$parts   = ! empty( $_POST['types'] ) ? explode( ',', $_POST['types'] ) : array( 'unopen', 'opens', 'clicks', 'unsubs', 'bounces' );
 		$orderby = ! empty( $_POST['orderby'] ) ? $_POST['orderby'] : 'sent';
 		$order   = ! isset( $_POST['order'] ) || $_POST['order'] == 'ASC' ? 'ASC' : 'DESC';
 
-		$return['html']    = mailster( 'campaigns' )->get_recipients_part( $campaign_ID, $parts, $page, $orderby, $order );
+		$return['html']    = mailster( 'campaigns' )->get_recipients_part( $campaign_id, $parts, $page, $orderby, $order );
 		$return['success'] = true;
 
 		wp_send_json( $return );
@@ -1120,10 +1120,11 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$subscriber_id = (int) $_POST['id'];
-		$campaign_id   = (int) $_POST['campaignid'];
+		$subscriber_id  = (int) $_POST['id'];
+		$campaign_id    = (int) $_POST['campaignid'];
+		$campaign_index = (int) $_POST['index'];
 
-		$return['html']    = mailster( 'subscribers' )->get_recipient_detail( $subscriber_id, $campaign_id );
+		$return['html']    = mailster( 'subscribers' )->get_recipient_detail( $subscriber_id, $campaign_id, $campaign_index );
 		$return['success'] = (bool) $return['html'];
 
 		wp_send_json( $return );

@@ -855,12 +855,14 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.show-receiver-detail', function () {
 			var $this = $(this),
 				id = $this.data('id'),
-				detailbox = $('#receiver-detail-' + id).show();
+				index = $this.data('index'),
+				detailbox = $('#receiver-detail-' + id + '-' + index).show();
 
 			$this.parent().addClass('loading').parent().addClass('expanded');
 
 			mailster.util.ajax('get_recipient_detail', {
 				id: id,
+				index: index,
 				campaignid: mailster.campaign_id
 			}, function (response) {
 				$this.parent().removeClass('loading');

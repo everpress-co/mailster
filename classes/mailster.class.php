@@ -508,11 +508,16 @@ class Mailster {
 	 *
 	 * @param unknown $campaign_id (optional)
 	 * @param unknown $hash        (optional)
+	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	public function get_unsubscribe_link( $campaign_id = '', $hash = '' ) {
+	public function get_unsubscribe_link( $campaign_id = '', $hash = '', $index = null ) {
 
 		$is_permalink = mailster( 'helper' )->using_permalinks();
+
+		if ( ! is_null( $index ) ) {
+			$campaign_id .= '-' . absint( $index );
+		}
 
 		if ( empty( $hash ) ) {
 
@@ -603,11 +608,16 @@ class Mailster {
 	 *
 	 * @param unknown $campaign_id
 	 * @param unknown $hash        (optional)
+	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	public function get_profile_link( $campaign_id, $hash = '' ) {
+	public function get_profile_link( $campaign_id, $hash = '', $index = null ) {
 
 		$is_permalink = mailster( 'helper' )->using_permalinks();
+
+		if ( ! is_null( $index ) ) {
+			$campaign_id .= '-' . absint( $index );
+		}
 
 		if ( empty( $hash ) ) {
 
@@ -696,9 +706,10 @@ class Mailster {
 	 * @param unknown $content     (optional)
 	 * @param unknown $hash        (optional)
 	 * @param unknown $campaign_id (optional)
+	 * @param unknown $index       (optional)
 	 * @return unknown
 	 */
-	public function replace_links( $content = '', $hash = '', $campaign_id = '' ) {
+	public function replace_links( $content = '', $hash = '', $campaign_id = '', $index = 0 ) {
 
 		// get all links from the basecontent
 		preg_match_all( '# href=(\'|")?(https?[^\'"]+)(\'|")?#', $content, $links );
@@ -712,6 +723,9 @@ class Mailster {
 
 		$new_structure = mailster( 'helper' )->using_permalinks();
 		$base          = $this->get_base_link( $campaign_id );
+		if ( $index ) {
+			$base .= '-' . absint( $index );
+		}
 
 		foreach ( $links as $link ) {
 
@@ -1917,6 +1931,7 @@ class Mailster {
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) NOT NULL DEFAULT 0,
+                `i` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
@@ -1929,6 +1944,7 @@ class Mailster {
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) NOT NULL DEFAULT 0,
+                `i` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 PRIMARY KEY  (`ID`),
                 UNIQUE KEY `id` (`subscriber_id`,`campaign_id`,`timestamp`),
@@ -1941,6 +1957,7 @@ class Mailster {
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) NOT NULL DEFAULT 0,
+                `i` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `link_id` bigint(20) unsigned NOT NULL DEFAULT 0,
                 PRIMARY KEY  (`ID`),
@@ -1954,6 +1971,7 @@ class Mailster {
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) NOT NULL DEFAULT 0,
+                `i` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `text` longtext NOT NULL,
                 PRIMARY KEY  (`ID`),
@@ -1967,6 +1985,7 @@ class Mailster {
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) NOT NULL DEFAULT 0,
+                `i` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `hard` tinyint(1) NOT NULL DEFAULT 0,
                 `text` longtext NOT NULL,
@@ -1981,6 +2000,7 @@ class Mailster {
                 `subscriber_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `campaign_id` bigint(20) unsigned NULL DEFAULT NULL,
                 `timestamp` int(11) NOT NULL DEFAULT 0,
+                `i` int(11) unsigned NOT NULL DEFAULT 0,
                 `count` int(11) unsigned NOT NULL DEFAULT 0,
                 `text` longtext NOT NULL,
                 PRIMARY KEY  (`ID`),

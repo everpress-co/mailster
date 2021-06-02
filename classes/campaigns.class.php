@@ -3929,10 +3929,10 @@ class MailsterCampaigns {
 			$name = trim( $subscriber->firstname . ' ' . $subscriber->lastname );
 
 			$return .= '<tr ' . ( ! ( $i % 2 ) ? ' class="alternate" ' : '' ) . '>';
-			$return .= '<td class="textright">' . ( $count + $offset + 1 ) . '</td><td><a class="show-receiver-detail" data-id="' . $subscriber->ID . '">' . ( $name ? $name . ' &ndash; ' : '' ) . $subscriber->email . '</a></td>';
+			$return .= '<td class="textright">' . ( $count + $offset + 1 ) . '</td><td><a class="show-receiver-detail" data-id="' . $subscriber->ID . '" data-index="' . $subscriber->i . '">' . ( $name ? $name . ' &ndash; ' : '' ) . $subscriber->email . '</a></td>';
 			$return .= '<td title="' . esc_attr__( 'sent', 'mailster' ) . '">' . ( $subscriber->sent ? str_replace( ' ', '&nbsp;', date_i18n( $timeformat, $subscriber->sent + $timeoffset ) ) : '&ndash;' ) . '</td>';
 
-			$return .= '<td>' . ( isset( $subscriber->open_count ) && $subscriber->open_count ? '<span title="' . esc_attr__( 'has opened', 'mailster' ) . '" class="mailster-icon mailster-icon-open"></span>' : '<span title="' . esc_attr__( 'has not opened yet', 'mailster' ) . '" class="mailster-icon mailster-icon-unopen"></span>' ) . '</td>';
+			$return .= '<td>' . ( $subscriber->open_count && $subscriber->open > $subscriber->sent ? '<span title="' . esc_attr__( 'has opened', 'mailster' ) . '" class="mailster-icon mailster-icon-open"></span>' : '<span title="' . esc_attr__( 'has not opened yet', 'mailster' ) . '" class="mailster-icon mailster-icon-unopen"></span>' ) . '</td>';
 			// $return .= '<td>' . ( isset( $subscriber->click_count_total ) && $subscriber->click_count_total ? sprintf( esc_attr__( _n( '%s click', '%s clicks', $subscriber->click_count_total, 'mailster' ) ), $subscriber->click_count_total ) : '' ) . '</td>';
 			$return .= '<td>' . ( isset( $subscriber->click_count_total ) && $subscriber->click_count_total ? '<span title="' . sprintf( esc_attr__( _n( '%s click', '%s clicks', $subscriber->click_count_total, 'mailster' ) ), $subscriber->click_count_total ) . '" class="mailster-icon mailster-icon-click"></span>' : '<span title="' . esc_attr__( 'has not clicked yet', 'mailster' ) . '" class="mailster-icon mailster-icon-noclick"></span>' ) . '</td>';
 
@@ -3942,7 +3942,7 @@ class MailsterCampaigns {
 			$return .= ( $subscriber->status == 4 ) ? '<span class="bounce-indicator mailster-icon mailster-icon-bounce" title="' . esc_attr__( 'an error occurred while sending to this receiver', 'mailster' ) . '">E</span>' : '';
 			$return .= '</td>';
 			$return .= '</tr>';
-			$return .= '<tr id="receiver-detail-' . $subscriber->ID . '" class="receiver-detail' . ( ! ( $i % 2 ) ? '  alternate' : '' ) . '">';
+			$return .= '<tr id="receiver-detail-' . $subscriber->ID . '-' . $subscriber->i . '" class="receiver-detail' . ( ! ( $i % 2 ) ? '  alternate' : '' ) . '">';
 			$return .= '<td></td><td colspan="6">';
 			$return .= '<div class="receiver-detail-body"></div>';
 			$return .= '</td>';
@@ -3982,39 +3982,39 @@ class MailsterCampaigns {
 		$unsubs  = in_array( 'unsubs', $parts );
 		$bounces = in_array( 'bounces', $parts );
 
-		$sql  = 'SELECT a.ID, a.email, a.hash, a.status, firstname.meta_value AS firstname, lastname.meta_value AS lastname';
-		$sql .= ', sent.timestamp AS sent, sent.count AS sent_count';
+		$sql  = 'SELECT subscribers.ID, subscribers.email, subscribers.hash, subscribers.status, firstname.meta_value AS firstname, lastname.meta_value AS lastname';
+		$sql .= ', sent.timestamp AS sent, sent.count AS sent_count, sent.i AS i';
 
 		// unopen or opens
-			$sql .= ', open.timestamp AS open, COUNT(open.count) AS open_count';
+		$sql .= ', (open.timestamp) AS open, COUNT(open.count) AS open_count';
 
 		// clicks
-			$sql .= ', click.timestamp AS clicks, COUNT(click.count) AS click_count, SUM(click.count) AS click_count_total';
+		$sql .= ', (click.timestamp) AS clicks, COUNT(click.count) AS click_count, SUM(click.count) AS click_count_total';
 
 		// unsubs
-			$sql .= ', unsub.timestamp AS unsubs, unsub.count AS unsub_count';
+		$sql .= ', (unsub.timestamp) AS unsubs, unsub.count AS unsub_count';
 
 		// bounces
-			$sql .= ', bounce.timestamp AS bounces, bounce.count AS bounce_count';
+		$sql .= ', (bounce.timestamp) AS bounces, bounce.count AS bounce_count';
 
-		$sql .= " FROM {$wpdb->prefix}mailster_subscribers AS a";
+		$sql .= " FROM {$wpdb->prefix}mailster_subscribers AS subscribers";
 
-		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS firstname ON a.ID = firstname.subscriber_id AND firstname.meta_key = 'firstname'";
-		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS lastname ON a.ID = lastname.subscriber_id AND lastname.meta_key = 'lastname'";
+		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS firstname ON subscribers.ID = firstname.subscriber_id AND firstname.meta_key = 'firstname'";
+		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_subscriber_fields AS lastname ON subscribers.ID = lastname.subscriber_id AND lastname.meta_key = 'lastname'";
 
-		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_sent AS sent ON a.ID = sent.subscriber_id";
+		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_sent AS sent ON subscribers.ID = sent.subscriber_id";
 
 		// unopen or opens
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_opens AS open ON a.ID = open.subscriber_id AND open.campaign_id = sent.campaign_id";
+		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_opens AS open ON subscribers.ID = open.subscriber_id AND open.campaign_id = sent.campaign_id AND open.i = sent.i";
 
 		// clicks
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_clicks AS click ON a.ID = click.subscriber_id AND click.campaign_id = sent.campaign_id";
+		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_clicks AS click ON subscribers.ID = click.subscriber_id AND click.campaign_id = sent.campaign_id AND click.i = sent.i";
 
 		// unsubs
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_unsubs AS unsub ON a.ID = unsub.subscriber_id AND unsub.campaign_id = sent.campaign_id";
+		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_unsubs AS unsub ON subscribers.ID = unsub.subscriber_id AND unsub.campaign_id = sent.campaign_id AND unsub.i = sent.i";
 
 		// bounces
-			$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS bounce ON a.ID = bounce.subscriber_id AND bounce.campaign_id = sent.campaign_id";
+		$sql .= " LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS bounce ON subscribers.ID = bounce.subscriber_id AND bounce.campaign_id = sent.campaign_id AND bounce.i = sent.i";
 
 		$sql .= ' WHERE sent.campaign_id = %d';
 
@@ -4044,10 +4044,12 @@ class MailsterCampaigns {
 			$sql .= ' AND (' . implode( ' OR ', $extra ) . ')';
 		}
 
-		$sql .= ' GROUP BY a.ID';
+		$sql .= ' GROUP BY subscribers.ID, sent.i';
 
 		$wpdb->query( 'SET SQL_BIG_SELECTS=1' );
-		return $wpdb->prepare( $sql, $campaign_id );
+		$sql = $wpdb->prepare( $sql, $campaign_id );
+
+		return $sql;
 
 	}
 
@@ -4333,6 +4335,9 @@ class MailsterCampaigns {
 		$mail->hash               = $subscriber->hash;
 		$mail->set_subscriber( $subscriber->ID );
 
+		$campaignindex = $this->get_campaign_index( $campaign->ID, $subscriber->ID );
+		$mail->index   = $campaignindex;
+
 		$placeholder = mailster( 'placeholder' );
 
 		$mail->set_campaign( $campaign->ID );
@@ -4412,7 +4417,7 @@ class MailsterCampaigns {
 
 		if ( $track ) {
 			// always replace links
-			$content = mailster()->replace_links( $content, $subscriber->hash, $campaign->ID );
+			$content = mailster()->replace_links( $content, $subscriber->hash, $campaign->ID, $campaignindex );
 
 		}
 
@@ -4433,13 +4438,17 @@ class MailsterCampaigns {
 
 		$unsubscribelink = mailster()->get_unsubscribe_link( $campaign->ID );
 
-		$MID = mailster_option( 'ID' );
+		$MID             = mailster_option( 'ID' );
+		$campaign_string = (string) $campaign->ID;
+		if ( $campaignindex ) {
+			$campaign_string .= '-' . $campaignindex;
+		}
 
 		$listunsubscribe = array();
 		if ( mailster_option( 'mail_opt_out' ) ) {
 			$listunsubscribe_mail    = $mail->bouncemail ? $mail->bouncemail : $mail->from;
 			$listunsubscribe_subject = 'Please remove me from the list';
-			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign->ID} X-Mailster-ID: {$MID}" );
+			$listunsubscribe_body    = rawurlencode( "Please remove me from your list! {$subscriber->email} X-Mailster: {$subscriber->hash} X-Mailster-Campaign: {$campaign_string} X-Mailster-ID: {$MID}" );
 
 			$listunsubscribe[] = "<mailto:$listunsubscribe_mail?subject=$listunsubscribe_subject&body=$listunsubscribe_body>";
 		}
@@ -4447,7 +4456,7 @@ class MailsterCampaigns {
 
 		$headers = array(
 			'X-Mailster'          => $subscriber->hash,
-			'X-Mailster-Campaign' => (string) $campaign->ID,
+			'X-Mailster-Campaign' => $campaign_string,
 			'X-Mailster-ID'       => $MID,
 			'List-Unsubscribe'    => implode( ',', $listunsubscribe ),
 		);
@@ -4472,7 +4481,7 @@ class MailsterCampaigns {
 
 		if ( $result && ! is_wp_error( $result ) ) {
 			if ( $log ) {
-				do_action( 'mailster_send', $subscriber->ID, $campaign->ID, $result );
+				do_action( 'mailster_send', $subscriber->ID, $campaign->ID, $campaignindex );
 			}
 
 			return $result;
@@ -4508,6 +4517,20 @@ class MailsterCampaigns {
 
 		return new WP_Error( 'unknown', esc_html__( 'unknown', 'mailster' ) );
 
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $campaign_id
+	 * @param unknown $subscriber_id
+	 * @return unknown
+	 */
+	public function get_campaign_index( $campaign_id, $subscriber_id ) {
+		global $wpdb;
+
+		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM `{$wpdb->prefix}mailster_action_sent` WHERE campaign_id = %d AND subscriber_id = %d", $campaign_id, $subscriber_id ) );
 	}
 
 

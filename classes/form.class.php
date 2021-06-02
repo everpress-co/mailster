@@ -15,6 +15,7 @@ class MailsterForm {
 	private $form          = null;
 	private $formkey       = null;
 	private $campaignID    = null;
+	private $campaignIndex = null;
 	private $hash          = null;
 	private $profile       = false;
 	private $unsubscribe   = false;
@@ -639,6 +640,10 @@ class MailsterForm {
 			$html .= '<input name="_campaign_id" type="hidden" value="' . esc_attr( $this->campaignID ) . '">' . "\n";
 		}
 
+		if ( $this->campaignIndex ) {
+			$html .= '<input name="_campaign_index" type="hidden" value="' . esc_attr( absint( $this->campaignIndex ) ) . '">' . "\n";
+		}
+
 		if ( $nonce = $this->get_nonce() ) {
 			$html .= '<input name="_nonce" type="hidden" value="' . esc_attr( $nonce ) . '">' . "\n";
 		}
@@ -719,8 +724,9 @@ class MailsterForm {
 	 *
 	 * @param unknown $ID
 	 */
-	public function campaign_id( $ID ) {
-		$this->campaignID = (int) $ID;
+	public function campaign_id( $ID, $index = null ) {
+		$this->campaignID    = (int) $ID;
+		$this->campaignIndex = $index;
 	}
 
 
@@ -1029,8 +1035,9 @@ class MailsterForm {
 					break;
 
 				case 'unsubscribe':
-					$campaign_id   = ! empty( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null;
-					$subscriber_id = $subscriber = null;
+					$campaign_id    = ! empty( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null;
+					$campaign_index = isset( $_BASE['_campaign_index'] ) ? (int) $_BASE['_campaign_index'] : null;
+					$subscriber_id  = $subscriber = null;
 
 					if ( isset( $_BASE['email'] ) ) {
 						if ( ! empty( $_BASE['email'] ) ) {
@@ -1049,7 +1056,7 @@ class MailsterForm {
 
 					if ( $subscriber ) {
 						$subscriber_id = $subscriber->ID;
-						if ( ! ( $return['success'] = mailster( 'subscribers' )->unsubscribe( $subscriber_id, $campaign_id, $type ) ) ) {
+						if ( ! ( $return['success'] = mailster( 'subscribers' )->unsubscribe( $subscriber_id, $campaign_id, $type, $campaign_index ) ) ) {
 							$this->object['errors']['email'] = mailster_text( 'unsubscribeerror' );
 						} else {
 							$message = 'unsubscribe';
