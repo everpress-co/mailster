@@ -1151,7 +1151,7 @@ class MailsterManage {
 
 				foreach ( $row as $key => $r ) {
 					$type = 'String';
-					if ( is_numeric( $r ) ) {
+					if ( in_array( $key, array( 'ID', '_number', '_statuscode', 'rating', 'timeoffset' ) ) ) {
 						$type = 'Number';
 					}
 					$output .= '<mailster:Cell><mailster:Data mailster:Type="' . $type . '">' . esc_html( $r ) . '</mailster:Data></mailster:Cell>' . "\n";
@@ -1221,6 +1221,7 @@ class MailsterManage {
 				break;
 			case 'xls':
 				header( 'Content-Type: application/vnd.ms-excel; name="' . $filename . '"' );
+				break;
 			case 'csv':
 				header( 'Content-Type: text/csv; name="' . $filename . '"' );
 				header( 'Content-Transfer-Encoding: binary' );
@@ -1235,7 +1236,7 @@ class MailsterManage {
 		if ( 'html' == $format ) {
 			echo '<table>' . "\n";
 		} elseif ( 'xls' == $format ) {
-			echo '<?xml version="1.0"?>' . "\n";
+			echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 			echo '<mailster:Workbook xmlns:mailster="urn:schemas-microsoft-com:office:spreadsheet">' . "\n";
 			echo '<mailster:Styles><mailster:Style mailster:ID="1"><mailster:Font mailster:Bold="1"/></mailster:Style></mailster:Styles>' . "\n";
 			echo '<mailster:Worksheet mailster:Name="' . esc_attr__( 'Mailster Subscribers', 'mailster' ) . '">' . "\n";
