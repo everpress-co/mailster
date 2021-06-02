@@ -306,8 +306,8 @@ class MailsterActions {
 			$sql   .= ' ON DUPLICATE KEY UPDATE';
 			$sql   .= ' timestamp = timestamp, count = count+1';
 			$result = $wpdb->query( $sql );
-
 		}
+		$wpdb->suppress_errors( false );
 
 		if ( false !== $result ) {
 			// re calculate rating on actions

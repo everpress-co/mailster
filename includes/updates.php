@@ -6,6 +6,8 @@ This runs if an update was done.
 
 global $wpdb;
 
+$wpdb->suppress_errors();
+
 $mailster_options = mailster_options();
 $mailster_texts   = mailster_texts();
 
@@ -604,6 +606,14 @@ if ( $old_version ) {
 			// move to "default" or after latests release versions
 			$mailster_options['db_update_required'] = true;
 			$mailster_options['auto_send_at_once']  = false;
+
+		case '3.0':
+			if ( version_compare( $old_version, '3.0-beta.1', '<=' ) ) {
+				$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_action_sent DROP INDEX id" );
+				$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_action_opens DROP INDEX id" );
+				mailster()->dbstructure();
+			}
+			$mailster_options['_flush_rewrite_rules'] = true;
 
 		default:
 			// reset translations
