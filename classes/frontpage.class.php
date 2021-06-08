@@ -413,6 +413,20 @@ class MailsterFrontpage {
 
 			if ( $subscriber->ID && $meta['track_clicks'] ) {
 
+				// auto click prevention
+				if ( mailster_option( 'autoclickprevention' ) && ! isset( $_GET['autoclickprevention'] ) && time() - mailster( 'actions' )->get_timestamp( 'sent', $subscriber->ID, $campaign_id, $index ) < MINUTE_IN_SECONDS ) {
+					$redirect_url = esc_url( add_query_arg( array( 'autoclickprevention' => 'redirect' ) ) );
+					wp_die(
+						esc_html__( 'You are being redirected...', 'mailster' ) . '<meta http-equiv="Refresh" content="3; URL=' . $redirect_url . '">',
+						esc_html__( 'You are being redirected...', 'mailster' ),
+						array(
+							'link_url'  => $redirect_url,
+							'link_text' => $target,
+							'response'  => 200,
+						)
+					);
+				}
+
 				/**
 				 * Fires if user clicks on a link and tracking is enabled
 				 *

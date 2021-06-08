@@ -97,6 +97,7 @@ Xaver Birsak – https://everpress.co
 * new: updated templates page now lists over 400 templates
 * new: UI update with new icons
 * new security section settings
+* new: Auto click prevention
 * pre-check your campaigns
 * removed deprecated mymail hooks and filters
 * subscriber tags

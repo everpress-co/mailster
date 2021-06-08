@@ -1007,9 +1007,9 @@ class MailsterCampaigns {
 				if ( in_array( $post->post_status, array( 'autoresponder', 'notification' ) ) ) {
 					$total      = $this->get_sent( $post->ID, false );
 					$cumm_total = $this->get_sent( $post->ID, true );
-					echo number_format_i18n( $total );
+					echo number_format_i18n( $cumm_total );
 					if ( $total != $cumm_total ) {
-						echo ' <span class="nonessential" title="' . esc_attr__( 'Some users may have received this mail more than once.', 'mailster' ) . '">(' . number_format_i18n( $cumm_total ) . ')</span>';
+						echo ' <span class="nonessential" title="' . sprintf( esc_attr__( '%d subscribers received this at least one time.', 'mailster' ), $total ) . '">(' . number_format_i18n( $total ) . ')</span>';
 					}
 				} elseif ( 'notification' == $post->post_status ) {
 					echo number_format_i18n( $this->get_sent( $post->ID, true ) );
@@ -3303,8 +3303,11 @@ class MailsterCampaigns {
 		}
 
 		if ( 'finished' == $campaign->post_status || 'notification' == $campaign->post_status ) {
-			return $this->get_sent( $id, false );
+			$subscribers_count  = $this->get_sent( $id, false );
+			$subscribers_count -= $this->get_bounces( $id );
+			return $subscribers_count;
 		}
+
 		$subscribers_count = $this->get_subscribers( $id );
 
 		if ( $unsubscribes ) {

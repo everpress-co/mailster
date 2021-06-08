@@ -3636,7 +3636,7 @@ class MailsterSubscribers {
 		if ( $hard ) {
 
 			if ( $this->change_status( $subscriber->ID, $this->get_status_by_name( 'hardbounced' ) ) ) {
-				do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, true, $statu, $index );
+				do_action( 'mailster_bounce', $subscriber->ID, $campaign_id, true, $status, $index );
 
 				return true;
 			}

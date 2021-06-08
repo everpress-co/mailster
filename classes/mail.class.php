@@ -26,7 +26,6 @@ class MailsterMail {
 	public $errors             = array();
 	public $sent               = false;
 	public $pre_send           = false;
-	public $index              = 0;
 
 	public $mailer;
 
@@ -38,6 +37,7 @@ class MailsterMail {
 
 	private $campaignID   = null;
 	private $subscriberID = null;
+	private $index        = 0;
 	private $messageID    = null;
 
 	public $text = '';

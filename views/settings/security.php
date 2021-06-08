@@ -20,6 +20,12 @@
 			<td><p><input type="text" name="mailster_options[antiflood]" value="<?php echo mailster_option( 'antiflood' ); ?>" class="small-text"> <?php esc_html_e( 'seconds', 'mailster' ); ?></p><p class="description"><?php esc_html_e( 'Prevent repeated subscriptions from the same IP address.', 'mailster' ); ?></p>
 		</td>
 	</tr>
+	<tr valign="top" class="settings-row settings-row-auto-click-prevention">
+		<th scope="row"><?php esc_html_e( 'Auto Click Prevention', 'mailster' ); ?></th>
+		<td>
+		<p><label><input type="hidden" name="mailster_options[autoclickprevention]" value=""><input type="checkbox" name="mailster_options[autoclickprevention]" value="1" <?php checked( mailster_option( 'autoclickprevention' ) ); ?>><?php esc_html_e( 'Prevent automated clicks from email servers.', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Some Email Security Servers automatically click on one ore more links in your campaigns which can cause wrong open and click rates.', 'mailster' ); ?> <?php esc_html_e( 'Enable this option to add an additional redirect for clicks which happens after a short time after sending.', 'mailster' ); ?></span></p>
+		</td>
+	</tr>
 	<tr valign="top" class="settings-row settings-row-disposable-email-provider">
 		<th scope="row"><?php esc_html_e( 'Disposable Email Provider', 'mailster' ); ?></th>
 		<td>

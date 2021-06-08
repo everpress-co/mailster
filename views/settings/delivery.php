@@ -9,7 +9,7 @@
 	</tr>
 	<tr valign="top" class="settings-row settings-row-warmup">
 		<th scope="row"><?php esc_html_e( 'Warmup', 'mailster' ); ?></th>
-		<td><p>Throttle the throughput for the next <select name="mailster_options[warmup]">
+		<td><p><?php esc_html_e( 'Throttle the throughput for the next', 'mailster' ); ?> <select name="mailster_options[warmup]">
 			<?php $mn = strtotime( 'midnight' ); ?>
 			<option value="" <?php selected( ! mailster_option( 'warmup' ) ); ?>><?php esc_html_e( 'no warmup', 'mailster' ); ?> - 100%</option>
 			<?php

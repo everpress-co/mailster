@@ -295,7 +295,7 @@ class MailsterActions {
 		$table = 'action_' . $type;
 
 		$sql  = "INSERT INTO {$wpdb->prefix}mailster_$table (" . implode( ', ', array_keys( $args ) ) . ')';
-		$sql .= " VALUES ('" . implode( "','", array_values( $args ) ) . "')";
+		$sql .= " VALUES ('" . implode( "','", array_map( 'esc_sql', array_values( $args ) ) ) . "')";
 
 		$sql = apply_filters( 'mailster_actions_add_sql', $sql, $args );
 
@@ -367,6 +367,32 @@ class MailsterActions {
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_unsubs AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_bounces AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_errors AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $action
+	 * @param unknown $subscriber_id
+	 * @param unknown $campaign_id
+	 * @param unknown $index
+	 * @return unknown
+	 */
+	public function get_timestamp( $action, $subscriber_id, $campaign_id, $index = null ) {
+		global $wpdb;
+
+		$table = str_replace( array( '_total', '_deleted' ), '', $action );
+		$table = str_replace( array( 'soft' ), '', $table );
+
+		$sql = "SELECT timestamp FROM `{$wpdb->prefix}mailster_action_$table` AS action_table WHERE action_table.subscriber_id = %d AND action_table.campaign_id = %d";
+
+		if ( ! is_null( $index ) ) {
+			$sql .= $wpdb->prepare( ' AND action_table.i = %d', $index );
+		}
+
+		return $wpdb->get_var( $wpdb->prepare( $sql, $subscriber_id, $campaign_id ) );
 
 	}
 
@@ -1119,8 +1145,6 @@ class MailsterActions {
 		if ( ! is_null( $limit ) ) {
 			$sql .= ' LIMIT ' . (int) $limit;
 		}
-
-		error_log( print_r( $sql, true ) );
 
 		return $wpdb->get_results( $sql );
 

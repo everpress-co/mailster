@@ -1040,7 +1040,7 @@ class MailsterQueue {
 			// unlock?
 			$unlock = apply_filters( 'mailster_unlock_cron', false );
 
-			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] && ! get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
+			if ( $last_hit && $last_hit['time'] && mailster_option( 'auto_send_at_once' ) && ! get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
 				set_transient( 'mailster_cron_lock_triggered_' . $process_id, time() );
 			}
 
