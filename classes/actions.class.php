@@ -235,16 +235,18 @@ class MailsterActions {
 
 			if ( $client = mailster_get_user_client() ) {
 
-				// remove meta info if client is Gmail (GoogleImageProxyy)
-				if ( 'Gmail' == $client->client ) {
-					$user_meta = array();
-					// Gmail downloads images as soon as recevied
-					if ( 'http://mail.google.com/' == wp_get_raw_referer() ) {
-						return;
-					}
-				}
-				if ( 'Yahoo' == $client->client ) {
-					$user_meta = array();
+				switch ( $client->client ) {
+					// remove meta info if client is Gmail (GoogleImageProxyy)
+					case 'Gmail':
+						// Gmail downloads images as soon as recevied
+						if ( 'http://mail.google.com/' == wp_get_raw_referer() ) {
+							return;
+						}
+						// remove meta info if client is Yahoo (YahooMailProxy)
+					case 'Yahoo':
+						$user_meta = array();
+						break;
+
 				}
 
 				$user_meta['client']        = $client->client;

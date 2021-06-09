@@ -251,6 +251,15 @@ textarea.code {
 	padding: 0;
 	resize: vertical;
 }
+textarea.code::-webkit-input-placeholder {
+  color: #ccc;
+}
+textarea.code:-ms-input-placeholder {
+  color: #ccc;
+}
+textarea.code::placeholder {
+  color: #ccc;
+}
 textarea.code.large-text {
 	width: 100%;
 }
