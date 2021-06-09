@@ -112,12 +112,12 @@ mailster = (function (mailster, $, window, document) {
 					checkTest(1);
 				}, 3000);
 			} else {
+				error(response.msg);
 				loader(false);
 				runbtn.prop('disabled', false);
 			}
 
 		}, function (jqXHR, textStatus, errorThrown) {
-
 			loader(false);
 			runbtn.prop('disabled', false);
 
