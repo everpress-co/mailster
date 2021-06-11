@@ -2617,6 +2617,14 @@ class MailsterCampaigns {
 				$autoresponder['since']             = time();
 				$this->update_meta( $id, 'autoresponder', $autoresponder );
 			}
+			if ( 'mailster_autoresponder_hook' == $autoresponder['action'] ) {
+				$hooks = get_option( 'mailster_hooks', array() );
+				if ( ! is_array( $hooks ) ) {
+					$hooks = array();
+				}
+				$hooks[ $campaign->ID ] = $autoresponder['hook'];
+				update_option( 'mailster_hooks', $hooks );
+			}
 		}
 
 		return $this->update_meta( $id, 'active', true );
@@ -2647,6 +2655,19 @@ class MailsterCampaigns {
 		if ( ! $current ) {
 			return true;
 		}
+
+		if ( 'autoresponder' == $campaign->post_status ) {
+			$autoresponder = $this->meta( $id, 'autoresponder' );
+			if ( 'mailster_autoresponder_hook' == $autoresponder['action'] ) {
+				$hooks = get_option( 'mailster_hooks', array() );
+				if ( isset( $hooks[ $campaign->ID ] ) ) {
+					unset( $hooks[ $campaign->ID ] );
+					update_option( 'mailster_hooks', $hooks );
+
+				}
+			}
+		}
+
 		return $this->update_meta( $id, 'active', false );
 
 	}

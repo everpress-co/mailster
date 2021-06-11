@@ -78,7 +78,7 @@ class MailsterActions {
 	 */
 	private function maybe_open( $subscriber_id, $campaign_id, $index = null ) {
 
-		if ( ! $this->get_by_subscriber( $subscriber_id, 'opens', $campaign_id, $index ) ) {
+		if ( ! $this->get_timestamp( 'opens', $subscriber_id, $campaign_id, $index ) ) {
 			$this->open( $subscriber_id, $campaign_id, $index );
 		}
 

@@ -138,7 +138,7 @@
 						<div>
 							<input type="text" value="<?php echo esc_attr( $permalink ); ?>" onclick="this.select()">
 							<?php if ( ! apply_filters( 'mailster_hide_poweredby', false ) ) : ?>
-							<div class="powered-by">powered by <a href="https://mailster.co">Mailster</a></div>
+							<div class="powered-by">powered by <a href="https://mailster.co">Mailster Newsletter Plugin</a></div>
 							<?php endif; ?>
 						</div>
 					</li>
