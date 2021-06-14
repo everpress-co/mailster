@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 3.8
 Tested up to: 5.7
-Stable tag: 2.4.18
+Stable tag: 2.4.19
 Author: EverPress
 Author URI: https://everpress.co
 Requires PHP: 5.3.6
@@ -87,6 +87,16 @@ Xaver Birsak – https://everpress.co
 
 
 == Changelog ==
+
+= Version 2.4.19 =
+
+* fixed: Option bar is fixed after a certain scroll threshold again.
+* fixed: decimals in the height or width field of the editbar for the selected image in the editor prevents submitting the form on Firefox.
+* fixed: timeframe now respects sites timezone.
+* fixed: export into Excel file may strip leading 0
+* improved: test mails are now sent to the current user
+* added: $org_content argument to `mailster_handle_shortcodes` filter
+* added: `mailster_form_list_order` to handle list order in forms
 
 = Version 2.4.18 =
 

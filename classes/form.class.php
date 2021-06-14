@@ -546,7 +546,7 @@ class MailsterForm {
 			// place honeypot after email field
 			$position = array_search( 'email', array_keys( $fields ) ) + 1;
 			$fields   = array_slice( $fields, 0, $position, true ) +
-				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'mailster_honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="noton" autofill="off"></label>' ) +
+				array( '_honeypot' => '<div style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'mailster_honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="noton" autofill="off"></div>' ) +
 				array_slice( $fields, $position, null, true );
 		}
 
