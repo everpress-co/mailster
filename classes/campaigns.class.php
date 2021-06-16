@@ -1485,6 +1485,7 @@ class MailsterCampaigns {
 					'unsupported_format'     => esc_html__( 'Unsupported file format', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
 					'precheck'               => esc_html__( 'Precheck %s', 'mailster' ),
+					'receivers'              => esc_html__( '%1$s Receivers for %2$s', 'mailster' ),
 					'agree_precheck_terms'   => esc_html__( 'Please check the checkbox first.', 'mailster' ),
 					'unknown_locations'      => esc_html__( '+ %d unknown locations', 'mailster' ),
 				)
@@ -4074,6 +4075,60 @@ class MailsterCampaigns {
 		$sql = $wpdb->prepare( $sql, $campaign_id );
 
 		return $sql;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $campaign_id
+	 * @param unknown $query_args   (optional)
+	 * @return unknown
+	 */
+	public function get_totals_part( $campaign_id, $query_args = array() ) {
+
+		$return = '';
+
+		$limit    = 1000;
+		$defaults = array(
+			'fields'          => array( 'ID', 'firstname', 'lastname', 'email', 'rating' ),
+			'limit'           => $limit,
+			'orderby'         => 'subscribers.rating',
+			'order'           => 'DESC',
+			'page'            => 1,
+			'calc_found_rows' => true,
+		);
+
+		$query_args = wp_parse_args( $query_args, $defaults );
+
+		$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign_id );
+
+		$count = 0;
+
+		$timeformat = mailster( 'helper' )->timeformat();
+		$timeoffset = mailster( 'helper' )->gmt_offset( true );
+
+		$subscribers_count = count( $subscribers );
+
+		foreach ( $subscribers as $i => $subscriber ) {
+
+			$name = trim( $subscriber->firstname . ' ' . $subscriber->lastname );
+
+			$return .= '<tr ' . ( ! ( $i % 2 ) ? ' class="alternate" ' : '' ) . '>';
+			$return .= '<td class="textright">' . ( $count + ( $limit * ( $query_args['page'] - 1 ) ) + 1 ) . '</td>';
+			$return .= '<td><a class="show-receiver-detail" data-id="' . $subscriber->ID . '" href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID ) . '">' . ( $name ? $name . ' &ndash; ' : '' ) . $subscriber->email . '</a></td>';
+			$return .= '</tr>';
+
+			$count++;
+
+		}
+
+		if ( $count && $limit == $subscribers_count ) {
+			$return .= '<tr ' . ( $i % 2 ? ' class="alternate" ' : '' ) . '><td colspan="7"><a class="load-more-receivers button aligncenter" data-page="' . ( $query_args['page'] + 1 ) . '">' . esc_html__( 'load more recipients from this campaign', 'mailster' ) . '</a>' . '<span class="spinner"></span></td></tr>';
+		}
+
+		return $return;
 
 	}
 

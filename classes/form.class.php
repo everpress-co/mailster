@@ -648,6 +648,7 @@ class MailsterForm {
 			$html .= '<input name="_nonce" type="hidden" value="' . esc_attr( $nonce ) . '">' . "\n";
 		}
 
+		$html .= '<input name="_timestamp" type="hidden" value="' . time() . '">' . "\n";
 		$html .= '<input name="formid" type="hidden" value="' . $this->ID . '">' . "\n";
 
 		return $html;
@@ -972,6 +973,13 @@ class MailsterForm {
 
 			if ( ! empty( $honeypot ) ) {
 				$this->object['errors']['_honeypot'] = esc_html__( 'Honeypot is for bears only!', 'mailster' );
+			}
+		}
+
+		if ( ! is_admin() && isset( $_BASE['_timestamp'] ) && $this->valid() ) {
+
+			if ( isset( $_BASE['_timestamp'] ) && time() - $_BASE['_timestamp'] < 10 ) {
+				$this->object['errors']['_timestamp'] = esc_html__( 'Please not so fast!', 'mailster' );
 			}
 		}
 

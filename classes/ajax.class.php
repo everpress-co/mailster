@@ -19,6 +19,8 @@ class MailsterAjax {
 		'search_subscribers',
 		'send_test',
 		'get_totals',
+		'get_totals_list',
+		'get_totals_list_part',
 		'save_color_schema',
 		'delete_color_schema',
 		'delete_color_schema_all',
@@ -843,6 +845,70 @@ class MailsterAjax {
 		$return['total']          = mailster( 'campaigns' )->get_totals_by_lists( $lists, $conditions, $statuses, $campaign_ID );
 		$return['conditions']     = mailster( 'conditions' )->render( $conditions, false );
 		$return['totalformatted'] = number_format_i18n( $return['total'] );
+
+		wp_send_json( $return );
+
+	}
+
+
+	private function get_totals_list() {
+
+		$return['success'] = false;
+
+		global $wpdb;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$campaign_ID = (int) $_POST['id'];
+		$lists       = ( $_POST['ignore_lists'] == 'true' ) ? false : ( isset( $_POST['lists'] ) ? $_POST['lists'] : array() );
+		$conditions  = isset( $_POST['conditions'] ) ? stripslashes_deep( array_values( array_filter( $_POST['conditions'] ) ) ) : false;
+		$statuses    = null;
+
+		$query_args = array(
+			'lists'      => $lists,
+			'conditions' => $conditions,
+			'statuses'   => null,
+		);
+
+		$return['html']  = '<table class="wp-list-table widefat"><tbody>';
+		$return['html'] .= mailster( 'campaigns' )->get_totals_part( $campaign_ID, $query_args );
+		$return['html'] .= '</tbody>';
+		$return['html'] .= '</table>';
+
+		$return['total']          = (int) $wpdb->get_var( 'SELECT FOUND_ROWS();' );
+		$return['totalformatted'] = number_format_i18n( $return['total'] );
+
+		$return['success'] = true;
+
+		wp_send_json( $return );
+
+	}
+
+
+	private function get_totals_list_part() {
+
+		$return['success'] = false;
+
+		global $wpdb;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$campaign_ID = (int) $_POST['id'];
+		$page        = (int) $_POST['page'];
+		$lists       = ( $_POST['ignore_lists'] == 'true' ) ? false : ( isset( $_POST['lists'] ) ? $_POST['lists'] : array() );
+		$conditions  = isset( $_POST['conditions'] ) ? stripslashes_deep( array_values( array_filter( $_POST['conditions'] ) ) ) : false;
+		$statuses    = null;
+
+		$query_args = array(
+			'lists'      => $lists,
+			'conditions' => $conditions,
+			'statuses'   => null,
+			'page'       => $page,
+		);
+
+		$return['html'] = mailster( 'campaigns' )->get_totals_part( $campaign_ID, $query_args );
+
+		$return['success'] = true;
 
 		wp_send_json( $return );
 

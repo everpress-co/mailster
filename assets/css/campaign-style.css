@@ -913,6 +913,50 @@ div.mailster-list-operator span{
 #mailster_list_conditions.operator-is-AND div.mailster-list-operator span.operator-and{
 	display: block;
 }
+
+.mailster-receivers-thickbox{
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	bottom: 10px;
+}
+.mailster-receivers-thickbox .inner {
+	position: relative;
+	padding: 0 20px;
+	height: 70%;
+	height: calc(100% - 50px);
+	overflow: auto;
+}
+.mailster-receivers-thickbox #new_template_name{
+	font-size: 1.8em;
+}
+.mailster-receivers-thickbox #new_template_saveas_dropdown{
+	width: 280px;
+}
+.mailster-receivers-thickbox #new_template-ajax-loading{
+	visibility: visible;
+	display: none;
+	float: right;
+}
+.mailster-receivers-thickbox .foot {
+	padding: 10px 20px;
+	border-top: 1px solid #DFDFDF;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+.mailster-receivers-thickbox .foot button{
+	float: right;
+	margin-left: 6px;
+}
+.rtl .mailster-receivers-thickbox .foot button{
+	margin-left: 0px;
+	margin-right: 6px;
+	float: left;
+}
 /*----------------------------------------------------------------------*/
 /* Options
 /*----------------------------------------------------------------------*/
