@@ -26,7 +26,7 @@ class MailsterUpdate {
 		UpdateCenterPlugin::add(
 			array(
 				'licensecode' => mailster()->license(),
-				'remote_url'  => apply_filters( 'mailster_updatecenter_endpoint', 'https://update.mailster.co/' ),
+				'remote_url'  => apply_filters( 'mailster_updatecenter_endpoint', 'https://staging.mailster.co/' ),
 				'plugin'      => MAILSTER_SLUG,
 				'slug'        => 'mailster',
 			)

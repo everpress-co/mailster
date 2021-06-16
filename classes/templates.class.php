@@ -5,7 +5,7 @@ class MailsterTemplates {
 	public $path;
 	public $url;
 
-	private $endpoint = 'https://mailster.co/templates.json';
+	private $endpoint = 'https://staging.mailster.co/templates.json';
 
 	private $headers = array(
 		'name'        => 'Template Name',
@@ -1167,6 +1167,10 @@ class MailsterTemplates {
 	}
 
 	public function result_to_html( $result ) {
+
+		if ( empty( $result ) || empty( $result['items'] ) ) {
+			return '';
+		}
 
 		ob_start();
 
