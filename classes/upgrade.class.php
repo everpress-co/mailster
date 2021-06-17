@@ -1015,7 +1015,7 @@ class MailsterUpgrade {
 		$fields_string = implode( ', ', $fields );
 		$select_string = implode( ', ', $fields );
 
-		$limit = 1000;
+		$limit = 10000;
 
 		switch ( $table ) {
 			case 'softbounces':
@@ -1034,7 +1034,7 @@ class MailsterUpgrade {
 				break;
 		}
 
-		$sql = "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp WHERE b.ID IS NULL AND a.type = $type ORDER BY a.ID ASC";
+		$sql = "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp WHERE b.ID IS NULL AND a.type = $type ORDER BY a.ID ASC LIMIT 1";
 
 		// get first missing primary key
 		if ( $key = $wpdb->get_var( $sql ) ) {
@@ -1087,7 +1087,7 @@ class MailsterUpgrade {
 
 		$table = $types[ $type ];
 
-		$sql = "SELECT * FROM `{$wpdb->prefix}mailster_subscriber_meta` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id WHERE a.meta_key = %s AND b.timestamp IS NOT NULL AND a.meta_value != b.text";
+		$sql = "SELECT * FROM `{$wpdb->prefix}mailster_subscriber_meta` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id WHERE a.meta_key = %s AND b.timestamp IS NOT NULL AND a.meta_value != b.text LIMIT 1000";
 
 		$result = $wpdb->get_results( $wpdb->prepare( $sql, $type ) );
 
