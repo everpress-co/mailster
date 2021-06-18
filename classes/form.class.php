@@ -618,6 +618,9 @@ class MailsterForm {
 
 		if ( $this->action ) {
 			$html .= '<input name="_action" type="hidden" value="' . esc_attr( $this->action ) . '">' . "\n";
+			if ( 'subscribe' == $this->action ) {
+				$html .= '<input name="_timestamp" type="hidden" value="' . time() . '">' . "\n";
+			}
 		}
 
 		if ( $this->redirect ) {
@@ -648,7 +651,6 @@ class MailsterForm {
 			$html .= '<input name="_nonce" type="hidden" value="' . esc_attr( $nonce ) . '">' . "\n";
 		}
 
-		$html .= '<input name="_timestamp" type="hidden" value="' . time() . '">' . "\n";
 		$html .= '<input name="formid" type="hidden" value="' . $this->ID . '">' . "\n";
 
 		return $html;
