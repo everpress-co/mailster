@@ -1303,14 +1303,16 @@ class MailsterHelper {
 			}
 		}
 
-		ob_start();
+		$src = str_replace( MAILSTER_URI, MAILSTER_DIR, $wp_styles->registered[ $handle ]->src );
 
-		( file_exists( $path . $wp_styles->registered[ $handle ]->src ) )
-			? include $path . $wp_styles->registered[ $handle ]->src
-			: include str_replace( MAILSTER_URI, MAILSTER_DIR, $wp_styles->registered[ $handle ]->src );
-		$output = ob_get_contents();
+		if ( file_exists( $src ) ) {
+			ob_start();
 
-		ob_end_clean();
+			include $src;
+			$output = ob_get_contents();
+
+			ob_end_clean();
+		}
 
 		preg_match_all( '#url\((\'|")?([^\'"]+)(\'|")?\)#i', $output, $urls );
 		$base = trailingslashit( dirname( $wp_styles->registered[ $handle ]->src ) );
