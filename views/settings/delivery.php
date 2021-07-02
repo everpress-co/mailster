@@ -34,6 +34,7 @@
 		$next_reset       = get_option( '_transient_timeout__mailster_send_period_timeout' );
 		$timeoffset       = mailster( 'helper' )->gmt_offset( true );
 		$timestamp        = current_time( 'timestamp' );
+		$time_format      = get_option( 'time_format' );
 
 	if ( ! $next_reset || $next_reset < time() ) {
 		$next_reset = time() + mailster_option( 'send_period' ) * 3600;
@@ -46,21 +47,21 @@
 	</tr>
 	<tr valign="top" class="settings-row settings-row-time-frame">
 		<th scope="row"><?php esc_html_e( 'Time Frame', 'mailster' ); ?><br>
-		<p class="howto"><?php printf( esc_html__( 'It\'s %1$s, %2$s', 'mailster' ), date_i18n( 'l', $timestamp ), date_i18n( 'H:i', $timestamp ) ); ?><br>
+		<p class="howto"><?php printf( esc_html__( 'It\'s %1$s, %2$s', 'mailster' ), date_i18n( 'l', $timestamp ), date_i18n( $time_format, $timestamp ) ); ?><br>
 		<?php esc_html_e( 'Status', 'mailster' ); ?> : <?php mailster( 'helper' )->in_timeframe() ? esc_html_e( 'active', 'mailster' ) : esc_html_e( 'paused', 'mailster' ); ?></p>
 		</th>
 		<td><p><?php esc_html_e( 'send mails only between', 'mailster' ); ?>
 			<?php $selected = mailster_option( 'time_frame_from' ); ?>
 			<select name="mailster_options[time_frame_from]">
 			<?php for ( $i = 0; $i < 24; $i++ ) : ?>
-				<option value="<?php echo $i; ?>" <?php selected( $selected, $i ); ?>><?php echo ( $i < 10 ) ? '0' . $i : $i; ?>:00</option>
+				<option value="<?php echo $i; ?>" <?php selected( $selected, $i ); ?>><?php echo date_i18n( $time_format, strtotime( 'midnight +' . $i . ' hours' ) ); ?></option>
 			<?php endfor; ?>
 			</select>
 			<?php esc_html_e( 'and', 'mailster' ); ?>
 			<?php $selected = mailster_option( 'time_frame_to' ); ?>
 			<select name="mailster_options[time_frame_to]">
 			<?php for ( $i = 0; $i < 24; $i++ ) : ?>
-				<option value="<?php echo $i; ?>" <?php selected( $selected, $i ); ?>><?php echo ( $i < 10 ) ? '0' . $i : $i; ?>:00</option>
+				<option value="<?php echo $i; ?>" <?php selected( $selected, $i ); ?>><?php echo date_i18n( $time_format, strtotime( 'midnight +' . $i . ' hours' ) ); ?></option>
 			<?php endfor; ?>
 			</select>
 			 <span class="utcoffset"><?php echo ( ( $timeoffset > 0 ) ? 'UTC + ' . ( $timeoffset / 3600 ) : '' ); ?></span></p>
