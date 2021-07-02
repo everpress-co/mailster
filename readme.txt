@@ -88,6 +88,10 @@ Xaver Birsak – https://everpress.co
 
 == Changelog ==
 
+= Version 2.4.20 =
+
+* fixed: in timeframe bug
+
 = Version 2.4.19 =
 
 * fixed: Option bar is fixed after a certain scroll threshold again.
