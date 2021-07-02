@@ -104,6 +104,9 @@ Xaver Birsak – https://everpress.co
 * removed bundled phpMailer version
 * warmup
 
+= Version 2.4.20 =
+
+* fixed: in timeframe bug
 
 = Version 2.4.19 =
 
