@@ -8,23 +8,22 @@ mailster = (function (mailster, $, window, document) {
 		select1 = $('#bulk-action-selector-top'),
 		select2 = $('#bulk-action-selector-bottom');
 
-	$('#posts-filter').on('submit', function () {
-		var s1 = select1.val(),
-			s2 = select2.val(),
-			v = s1 != -1 ? s1 : (s2 != -1 ? s2 : false);
+	mailster.$.document
+		.on('submit', '#posts-filter', function () {
+			var s1 = select1.val(),
+				s2 = select2.val(),
+				v = s1 != -1 ? s1 : (s2 != -1 ? s2 : false);
 
-		switch (v) {
-		case 'finish':
-			return confirm(mailster.l10n.campaigns.finish_campaigns);
-			break;
-		case 'start':
-			return confirm(mailster.l10n.campaigns.start_campaigns);
-			break;
-		}
+			switch (v) {
+			case 'finish':
+				return confirm(mailster.l10n.campaigns.finish_campaigns);
+				break;
+			case 'start':
+				return confirm(mailster.l10n.campaigns.start_campaigns);
+				break;
+			}
 
-	});
-
-	$('.column-status')
+		})
 		.on('click', 'a.live-action', function () {
 
 			if ($(this).hasClass('finish') && !confirm(mailster.l10n.campaigns.finish_campaign)) {
@@ -40,9 +39,7 @@ mailster = (function (mailster, $, window, document) {
 			});
 			return false;
 
-		});
-
-	mailster.$.document
+		})
 		.on('scroll', function () {
 			clearTimeout(scrolltimeout);
 			scrolltimeout = setTimeout(function () {
