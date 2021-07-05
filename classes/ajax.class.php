@@ -618,14 +618,17 @@ class MailsterAjax {
 
 			$return['success'] = true;
 
+			$subject = stripslashes( $formdata['mailster_data']['subject'] );
+
 			if ( $precheck ) {
 				$precheck_id  = hash( 'crc32', uniqid( 1 ) ) . hash( 'crc32', uniqid( 9 ) );
-				$to           = apply_filters( 'mailster_precheck_mail', 'mailster-' . $precheck_id . '@precheck.email', $precheck_id );
+				$receivers    = array( apply_filters( 'mailster_precheck_mail', 'mailster-' . $precheck_id . '@precheck.email', $precheck_id ) );
 				$return['id'] = $precheck_id;
+			} else {
+				$receivers = explode( ',', $to );
+				$subject   = apply_filters( 'mailster_send_test_subject', $subject, $receivers );
 			}
-			$receivers = explode( ',', $to );
 
-			$subject      = stripslashes( $formdata['mailster_data']['subject'] );
 			$from         = $formdata['mailster_data']['from_email'];
 			$from_name    = stripslashes( $formdata['mailster_data']['from_name'] );
 			$reply_to     = $formdata['mailster_data']['reply_to'];
