@@ -287,16 +287,19 @@ class MailsterTemplate {
 				}
 
 				$dimensions = getimagesize( $icon );
-
 				if ( ! $dimensions ) {
 					continue;
 				}
 
+				if ( ! ( $width = $buttons->item( 0 )->firstChild->getAttribute( 'width' ) ) ) {
+					$width = round( $width / $high_dpi );
+				}
+				if ( ! ( $height = $buttons->item( 0 )->firstChild->getAttribute( 'height' ) ) ) {
+					$height = round( $height / $high_dpi );
+				}
+
 				$img  = $doc->createElement( 'img' );
 				$link = $doc->createElement( 'a' );
-
-				$width  = round( $dimensions[0] / $high_dpi );
-				$height = round( $dimensions[1] / $high_dpi );
 
 				$img->setAttribute( 'src', str_replace( $base_path, $base_url, $icon ) );
 				$img->setAttribute( 'width', $width );
