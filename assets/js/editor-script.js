@@ -377,9 +377,10 @@ mailster = (function (mailster, $, window, document) {
 			if ($this.is('module') && !$this.find('modulebuttons').length) {
 				var name = $this.attr('label') || mailster.util.sprintf(mailster.l10n.campaigns.module, '#' + (++mc)),
 					codeview = mailsterdata.codeview ? '<button class="mailster-btn codeview" title="' + mailster.l10n.campaigns.codeview + '"></button>' : '',
+					save = mailsterdata.save_template ? '<button class="mailster-btn save" title="' + mailster.l10n.campaigns.save_module + '"></button>' : '',
 					auto = ($this.is('[auto]') ? '<button class="mailster-btn auto" title="' + mailster.l10n.campaigns.auto + '"></button>' : '');
 
-				$('<modulebuttons>' + '<input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailster.l10n.campaigns.module_label + '" tabindex="-1"><span>' + auto + '<button class="mailster-btn duplicate" title="' + mailster.l10n.campaigns.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailster.l10n.campaigns.move_module_up + '"></button><button class="mailster-btn down" title="' + mailster.l10n.campaigns.move_module_down + '"></button>' + codeview + '<button class="mailster-btn remove" title="' + mailster.l10n.campaigns.remove_module + '"></button></span></modulebuttons>').prependTo($this);
+				$('<modulebuttons>' + '<input class="modulelabel" type="text" value="' + name + '" placeholder="' + name + '" title="' + mailster.l10n.campaigns.module_label + '" tabindex="-1"><span>' + auto + '<button class="mailster-btn duplicate" title="' + mailster.l10n.campaigns.duplicate_module + '"></button><button class="mailster-btn up" title="' + mailster.l10n.campaigns.move_module_up + '"></button><button class="mailster-btn down" title="' + mailster.l10n.campaigns.move_module_down + '"></button>' + codeview + save + '<button class="mailster-btn remove" title="' + mailster.l10n.campaigns.remove_module + '"></button></span></modulebuttons>').prependTo($this);
 
 			}
 		});

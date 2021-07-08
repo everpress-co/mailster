@@ -1033,10 +1033,10 @@ class Mailster {
 
 		$bodyattributes = '';
 		$pre_stuff      = '';
+		$head           = '';
 		$protocol       = ( is_ssl() ? 'https' : 'http' );
 
-		preg_match( '#^(.*?)<head([^>]*)>(.*?)<\/head>#is', ( is_null( $customhead ) ? $content : $customhead ), $matches );
-		if ( ! empty( $matches ) ) {
+		if ( preg_match( '#^(.*?)<head([^>]*)>(.*?)<\/head>#is', ( is_null( $customhead ) ? $content : $customhead ), $matches ) ) {
 			$pre_stuff = $matches[1];
 			// remove multiple heads
 			if ( substr_count( $pre_stuff, '<!DOCTYPE' ) > 1 ) {
@@ -1045,20 +1045,20 @@ class Mailster {
 			}
 			$head = '<head' . $matches[2] . '>' . $matches[3] . '</head>';
 		} else {
-			$pre_stuff = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' . "\n" . '<html xmlns="http://www.w3.org/1999/xhtml">' . "\n";
-			$head      = '<head>' . "\n\t" . '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' . "\n\t" . '<meta name="viewport" content="width=device-width" />' . "\n\t" . '<title>{subject}</title>' . "\n" . '</head>';
+			if ( false !== $customhead ) {
+				$pre_stuff = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' . "\n" . '<html xmlns="http://www.w3.org/1999/xhtml">' . "\n";
+				$head      = '<head>' . "\n\t" . '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' . "\n\t" . '<meta name="viewport" content="width=device-width" />' . "\n\t" . '<title>{subject}</title>' . "\n" . '</head>';
+			}
 		}
 
-		preg_match( '#<body([^>]*)>(.*)<\/body>#is', $content, $matches );
-		if ( ! empty( $matches ) ) {
+		if ( preg_match( '#<body([^>]*)>(.*)<\/body>#is', $content, $matches ) ) {
 			$bodyattributes = $matches[1];
 			$bodyattributes = ' ' . trim( str_replace( array( 'position: relative;', 'mailster-loading', ' class=""', ' style=""' ), '', $bodyattributes ) );
 			$body           = $matches[2];
+			$content        = $head . "\n<body$bodyattributes>" . apply_filters( 'mailster_sanitize_content_body', $body ) . "</body>\n</html>";
 		} else {
-			$body = $content;
+			$body = apply_filters( 'mailster_sanitize_content_body', $content );
 		}
-
-		$content = $head . "\n<body$bodyattributes>" . apply_filters( 'mailster_sanitize_content_body', $body ) . "</body>\n</html>";
 
 		$content = str_replace( '<body >', '<body>', $content );
 		$content = str_replace( ' src="//', ' src="' . $protocol . '://', $content );
@@ -1097,7 +1097,7 @@ class Mailster {
 
 		$content = str_replace( array( 'mailster-highlight', 'mailster-loading', 'ui-draggable', ' -handle', ' contenteditable="true"', ' spellcheck="false"' ), '', $content );
 
-		$allowed_tags = array( 'address', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'source', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'script', 'amp-form', 'amp-selector', 'amp-bind', 'amp-state', 'amp-list', 'amp-mustache', 'amp-accordion', 'amp-carousel', 'amp-sidebar', 'amp-image-lightbox', 'amp-lightbox', 'amp-fit-text', 'amp-timeago', 'amp-img', 'amp-anim', 'template' );
+		$allowed_tags = array( 'address', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'script', 'amp-form', 'amp-selector', 'amp-bind', 'amp-state', 'amp-list', 'amp-mustache', 'amp-accordion', 'amp-carousel', 'amp-sidebar', 'amp-image-lightbox', 'amp-lightbox', 'amp-fit-text', 'amp-timeago', 'amp-img', 'amp-anim', 'template' );
 
 		$allowed_tags = apply_filters( 'mailster_allowed_tags', $allowed_tags );
 

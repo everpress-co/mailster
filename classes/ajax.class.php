@@ -10,6 +10,7 @@ class MailsterAjax {
 		'get_template',
 		'get_plaintext',
 		'create_new_template',
+		'save_module',
 		'toggle_codeview',
 		'set_preview',
 		'get_preview',
@@ -332,6 +333,29 @@ class MailsterAjax {
 
 		wp_send_json( $return );
 
+	}
+
+
+	private function save_module() {
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$this->ajax_filesystem();
+
+		$name     = esc_attr( $_POST['name'] );
+		$html     = isset( $_POST['html'] ) ? stripslashes( $_POST['html'] ) : null;
+		$template = esc_attr( $_POST['template'] );
+		$file     = isset( $_POST['file'] ) ? basename( $_POST['file'] ) : null;
+
+		$html = mailster()->sanitize_content( $html, false );
+
+		$t = mailster( 'template', $template );
+
+		$return['html']    = $t->save_module( $name, $html, $template, $file );
+		$return['success'] = $return['html'] !== false;
+
+		wp_send_json( $return );
 	}
 
 

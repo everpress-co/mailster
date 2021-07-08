@@ -1439,6 +1439,7 @@ class MailsterCampaigns {
 					'move_module_up'         => esc_html__( 'Move module up', 'mailster' ),
 					'move_module_down'       => esc_html__( 'Move module down', 'mailster' ),
 					'duplicate_module'       => esc_html__( 'Duplicate module', 'mailster' ),
+					'save_module'            => esc_html__( 'Save module', 'mailster' ),
 					'remove_module'          => esc_html__( 'Remove module', 'mailster' ),
 					'remove_all_modules'     => esc_html__( 'Do you really like to remove all modules?', 'mailster' ),
 					'save_template'          => esc_html__( 'Save Template File', 'mailster' ),
@@ -1462,6 +1463,7 @@ class MailsterCampaigns {
 					'invalid_image'          => esc_html__( '%s does not contain a valid image', 'mailster' ),
 					'for_area'               => esc_html__( 'Area %s', 'mailster' ),
 					'enter_list_name'        => esc_html__( 'Enter name of the list', 'mailster' ),
+					'enter_module_name'      => esc_html__( 'Enter name of your module', 'mailster' ),
 					'create_list'            => esc_html_x( '%1$s of %2$s', '[recipientstype] of [campaignname]', 'mailster' ),
 					'next'                   => esc_html__( 'next', 'mailster' ),
 					'prev'                   => esc_html__( 'prev', 'mailster' ),
@@ -5065,14 +5067,15 @@ class MailsterCampaigns {
 		$inline = $this->inline_editor();
 
 		$mailsterdata = array(
-			'ajaxurl'    => admin_url( 'admin-ajax.php' ),
-			'url'        => MAILSTER_URI,
-			'inline'     => $inline,
-			'codeview'   => current_user_can( 'mailster_see_codeview' ),
-			'datefields' => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
-			'_wpnonce'   => wp_create_nonce( 'mailster_nonce' ),
-			'isrtl'      => is_rtl(),
-			'plupload'   => array(
+			'ajaxurl'       => admin_url( 'admin-ajax.php' ),
+			'url'           => MAILSTER_URI,
+			'inline'        => $inline,
+			'codeview'      => current_user_can( 'mailster_see_codeview' ),
+			'save_template' => current_user_can( 'mailster_save_template' ),
+			'datefields'    => array_merge( array( 'added', 'updated', 'signup', 'confirm' ), mailster()->get_custom_date_fields( true ) ),
+			'_wpnonce'      => wp_create_nonce( 'mailster_nonce' ),
+			'isrtl'         => is_rtl(),
+			'plupload'      => array(
 				'runtimes'            => 'html5,flash',
 				'browse_button'       => 'mailster-editorimage-upload-button',
 				'file_data_name'      => 'async-upload',

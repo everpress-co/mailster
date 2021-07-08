@@ -457,6 +457,42 @@ mailster = (function (mailster, $, window, document) {
 		});
 	}
 
+	function save() {
+		var module = $(this).parent().parent().parent();
+		if (name = prompt(mailster.l10n.campaigns.enter_module_name, module.attr('label'))) {
+
+			mailster.trigger('disable');
+			module.find('modulebuttons').remove();
+
+			mailster.util.ajax('save_module', {
+				name: name,
+				html: mailster.util.trim(module.html()),
+				template: $('#mailster_template_name').val(),
+				file: $('#mailster_template_file').val()
+			}, function (response) {
+				var clone = $('#module-selector').find('li').eq(0).clone();
+				clone
+					.find('a')
+					.removeClass('has-screenshot')
+					.removeAttr('style')
+					.find('span').text(name);
+
+				clone
+					.find('script')
+					.html(response.html);
+
+				clone
+					.insertBefore($('#module-selector').find('li').eq(0));
+
+				mailster.trigger('enable');
+				mailster.trigger('refresh');
+
+			}, function (jqXHR, textStatus, errorThrown) {
+				mailster.trigger('enable');
+			});
+		}
+	}
+
 	function toggleModules() {
 		mailster.$.templateWrap.toggleClass('show-modules');
 		mailster.modules.showSelector = !mailster.modules.showSelector;
@@ -486,6 +522,7 @@ mailster = (function (mailster, $, window, document) {
 			.on('click.mailster', 'button.duplicate', duplicate)
 			.on('click.mailster', 'button.remove', remove)
 			.on('click.mailster', 'button.codeview', codeView)
+			.on('click.mailster', 'button.save', save)
 			.on('change.mailster', 'input.modulelabel', changeName);
 
 		selector

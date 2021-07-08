@@ -417,8 +417,9 @@ class MailsterTemplate {
 
 		$pre = '<!--' . "\n\n";
 
-		foreach ( $this->data as $k => $v ) {
-			$pre .= "\t" . $this->headers[ $k ] . ': ' . ( $k == 'label' ? $name : $v ) . "\n";
+		foreach ( $this->headers as $k => $v ) {
+			$value = isset( $this->data[ $k ] ) ? $this->data[ $k ] : '';
+			$pre  .= "\t" . $this->headers[ $k ] . ': ' . ( $k == 'label' ? $name : $value ) . "\n";
 		}
 
 		$pre .= "\n-->\n";
@@ -451,6 +452,46 @@ class MailsterTemplate {
 
 		if ( $wp_filesystem->put_contents( $this->templatepath . '/' . $filename, $pre . $content, FS_CHMOD_FILE ) ) {
 			return $filename;
+		}
+
+		return false;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $name
+	 * @param unknown $html
+	 * @param unknown $template
+	 * @param unknown $file     (optional)
+	 * @return unknown
+	 */
+	public function save_module( $name, $html, $template, $file = 'index.html' ) {
+
+		if ( ! $this->slug ) {
+			return false;
+		}
+
+		$module_html  = '<module label="' . esc_attr( $name ) . '" auto>' . "\n";
+		$module_html .= trim( $html );
+		$module_html .= "\n</module>";
+
+		$content = str_replace( '<modules>', '<modules>' . "\n" . $module_html . "\n", $this->raw );
+
+		if ( $this->create_new( str_replace( '.html', '', $file ), $content, true, false, true ) ) {
+			return $module_html;
+		}
+		return false;
+
+		error_log( print_r( $this, true ) );
+
+		global $wp_filesystem;
+		mailster_require_filesystem();
+
+		if ( $wp_filesystem->put_contents( $this->templatepath . '/' . $file, $html, FS_CHMOD_FILE ) ) {
+			return $module_html;
 		}
 
 		return false;
