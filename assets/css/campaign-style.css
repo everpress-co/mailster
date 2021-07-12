@@ -785,6 +785,7 @@ label.weekday input{
 	display: inline-block;
 	width: 100%;
 	white-space: nowrap;
+	padding: 2px;
 }
 .mailster_list_condition{
 	border: 1px solid #CCD0D4;

@@ -1218,6 +1218,10 @@ mailster = (function (mailster, $, window, document) {
 
 			})
 		})
+		.on('click', '.mailster_precheck', function () {
+			mailster.optionbar.precheck && mailster.optionbar.precheck();
+			mailster.precheck.terms_accepted && mailster.precheck.start();
+		})
 		.on('change', '#mailster_data_active', function () {
 			$(this).is(':checked') ?
 				$('.active_wrap').addClass('disabled') :

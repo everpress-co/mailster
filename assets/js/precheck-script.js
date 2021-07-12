@@ -123,8 +123,6 @@ mailster = (function (mailster, $, window, document) {
 
 		});
 
-		return false;
-
 	};
 
 	function clear() {
@@ -412,6 +410,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 		mailster.util.ajax('precheck_agree', function (response) {
 			precheck.addClass('precheck-terms-agreed');
+			mailster.precheck.terms_accepted = true;
 		});
 
 	};
@@ -424,6 +423,9 @@ mailster = (function (mailster, $, window, document) {
 		loadPreview(cb);
 
 	};
+
+	mailster.precheck.start = initTest;
+	mailster.precheck.terms_accepted = !!$('.precheck-terms-agreed').length;
 
 
 	return mailster;
