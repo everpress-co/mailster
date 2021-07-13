@@ -94,12 +94,8 @@ class MailsterFrontpage {
 	 */
 	public function update_homepage( $post_id ) {
 
-		$post = get_post( $post_id );
-		if ( 'mailster' == $post->post_name ) {
-			mailster_notice( sprintf( esc_html__( 'Please do not use %1$s in %2$s as page slug as it conflicts with Mailster form submission!', 'mailster' ), '&quot;<strong>mailster</strong>&quot;', '<a>' . str_replace( 'mailster', '<strong>mailster</strong>', get_permalink( $post_id ) . '</a>' ) ), 'error', true );
-		}
-
 		if ( $post_id == mailster_option( 'homepage' ) ) {
+			$post = get_post( $post_id );
 			flush_rewrite_rules();
 			do_action( 'mailster_update_homepage', $post );
 		}

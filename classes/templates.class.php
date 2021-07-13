@@ -123,7 +123,7 @@ class MailsterTemplates {
 			$redirect = admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' );
 			$redirect = add_query_arg( array( 'new' => $slug ), $redirect );
 
-			$this->schedule_screenshot( $slug, 'index.html', true );
+			$this->get_screenshots( $slug, 'index.html' );
 
 			return $redirect;
 		}
@@ -922,7 +922,7 @@ class MailsterTemplates {
 			unset( $raw );
 
 			if ( $async ) {
-				$this->schedule_screenshot( $slug, $file, true, 20, $async );
+				$this->schedule_screenshot( $slug, $file, 10, $async );
 				return;
 
 			};
@@ -936,11 +936,11 @@ class MailsterTemplates {
 
 			switch ( $response_code ) {
 				case 201:
-					$this->schedule_screenshot( $slug, $file, true, 20, $async );
+					$this->schedule_screenshot( $slug, $file, 10, $async );
 					break;
 				case 500:
 				case 503:
-					$this->schedule_screenshot( $slug, $file, true, 1800, $async );
+					$this->schedule_screenshot( $slug, $file, 1800, $async );
 					break;
 				case 406:
 					if ( ! is_array( $blocked ) ) {
@@ -990,7 +990,7 @@ class MailsterTemplates {
 					$processed++;
 
 					if ( $processed >= 30 ) {
-						$this->schedule_screenshot( $slug, $file, true, 10 );
+						$this->schedule_screenshot( $slug, $file, 1 );
 						break;
 					}
 				}

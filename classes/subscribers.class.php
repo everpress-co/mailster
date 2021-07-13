@@ -1810,8 +1810,11 @@ class MailsterSubscribers {
 		global $wpdb;
 		if ( empty( $ids ) ) {
 			$ids = (array) $wpdb->get_col( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_subscriber_meta WHERE meta_key = %s AND meta_value < %d ORDER BY meta_value ASC LIMIT %d", 'update_rating', time() - WEEK_IN_SECONDS, 100 ) );
-		} elseif ( ! is_array( $ids ) ) {
-			$ids = array( $ids );
+		} else {
+			if ( ! is_array( $ids ) ) {
+				$ids = array( $ids );
+			}
+			$ids = (array) $wpdb->get_col( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_subscriber_meta WHERE meta_key = %s AND meta_value < %d AND subscriber_id IN(" . implode( ',', $ids ) . ') ORDER BY meta_value ASC', 'update_rating', time() - WEEK_IN_SECONDS ) );
 		}
 
 		if ( ! empty( $ids ) ) {
