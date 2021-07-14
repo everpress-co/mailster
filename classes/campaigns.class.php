@@ -1521,22 +1521,17 @@ class MailsterCampaigns {
 
 		global $post;
 
-		if ( isset( $post ) && $post->post_type == 'newsletter' ) {
+		if ( isset( $post ) && $post->post_type == 'newsletter' && ! mailster_is_local() ) {
 
 			if ( $meta = $this->meta( $post_id, 'auto_post_thumbnail' ) ) {
 				// don't cache auto post thumbnails
 				$content = str_replace( '.jpg" class="attachment-post-thumbnail', '.jpg?c=' . time() . '" class="attachment-post-thumbnail', $content );
 			}
 
-			if ( in_array( $post->post_status, array( 'active', 'finished' ) ) || isset( $_GET['showstats'] ) ) {
-
-			} else {
-				$content .= '<p><label><input type="checkbox" name="auto_post_thumbnail" value="1" ' . checked( $meta, true, false ) . '> ' . esc_html__( 'Create Screenshot for Feature Image', 'mailster' ) . '</label></p>';
-
-				$timestamp = wp_next_scheduled( 'mailster_auto_post_thumbnail', array( $post_id ) );
-				if ( $timestamp + 2 >= time() ) {
-					$content .= '<p class="description" title="' . esc_html__( 'Generating the screenshot may take a while. Please reload the page to update', 'mailster' ) . '"><span class="spinner"></span>' . esc_html__( 'Creating Screenshot', 'mailster' ) . '&hellip;</p>';
-				}
+			$content  .= '<p><label><input type="checkbox" name="auto_post_thumbnail" value="1" ' . checked( $meta, true, false ) . '> ' . esc_html__( 'Create Screenshot for Feature Image', 'mailster' ) . '</label></p>';
+			$timestamp = wp_next_scheduled( 'mailster_auto_post_thumbnail', array( $post_id ) );
+			if ( $timestamp + 2 >= time() ) {
+				$content .= '<p class="description" title="' . esc_html__( 'Generating the screenshot may take a while. Please reload the page to update', 'mailster' ) . '"><span class="spinner"></span>' . esc_html__( 'Creating Screenshot', 'mailster' ) . '&hellip;</p>';
 			}
 		}
 
@@ -1699,14 +1694,32 @@ class MailsterCampaigns {
 		$now        = time();
 
 		$meta = $old_meta = $this->meta( $post_id );
-		if ( in_array( $post->post_status, array( 'active', 'finished' ) ) ) {
 
-			$meta['webversion'] = isset( $postdata['webversion'] );
-			$this->update_meta( $post_id, $meta );
-			return $post;
+		if ( $meta['auto_post_thumbnail'] = isset( $_POST['auto_post_thumbnail'] ) ) {
+
+			$hash = md5( $post->post_content );
+
+			if ( $attachment_id = get_post_thumbnail_id( $post ) ) {
+				if ( $hash != get_post_meta( $attachment_id, '_mailster_thumbnail_hash', true ) ) {
+					wp_schedule_single_event( time(), 'mailster_auto_post_thumbnail', array( $post_id ) );
+				}
+			}
+		} else {
+
+			if ( $timestamp = wp_next_scheduled( 'mailster_auto_post_thumbnail', array( $post_id ) ) ) {
+				wp_unschedule_event( $timestamp, 'mailster_auto_post_thumbnail', array( $post_id ) );
+			}
 		}
 
 		if ( isset( $postdata ) ) {
+
+			$meta['webversion'] = isset( $postdata['webversion'] );
+
+			if ( in_array( $post->post_status, array( 'active', 'finished' ) ) ) {
+
+				$this->update_meta( $post_id, $meta );
+				return $post;
+			}
 
 			$meta['subject']       = $postdata['subject'];
 			$meta['preheader']     = $postdata['preheader'];
@@ -1718,7 +1731,6 @@ class MailsterCampaigns {
 			$meta['from_email']    = $postdata['from_email'];
 			$meta['reply_to']      = $postdata['reply_to'];
 			$meta['timezone']      = isset( $postdata['timezone'] ) && $postdata['timezone'];
-			$meta['webversion']    = isset( $postdata['webversion'] );
 			$meta['editor_height'] = (int) $postdata['editor_height'];
 
 			if ( isset( $postdata['newsletter_color'] ) ) {
@@ -1758,17 +1770,6 @@ class MailsterCampaigns {
 
 			$post->post_parent   = 0;
 			$post->post_password = isset( $_POST['use_pwd'] ) ? $_POST['post_password'] : '';
-
-			if ( ! mailster_is_local() && $meta['auto_post_thumbnail'] = isset( $_POST['auto_post_thumbnail'] ) ) {
-
-				wp_schedule_single_event( time(), 'mailster_auto_post_thumbnail', array( $post_id ) );
-
-			} else {
-
-				if ( $timestamp = wp_next_scheduled( 'mailster_auto_post_thumbnail', array( $post_id ) ) ) {
-					wp_unschedule_event( $timestamp, 'mailster_auto_post_thumbnail', array( $post_id ) );
-				}
-			}
 
 			if ( $is_autoresponder ) {
 
@@ -4881,6 +4882,9 @@ class MailsterCampaigns {
 		if ( ! $campaign ) {
 			return;
 		}
+		if ( ! mailster_is_local() ) {
+			return;
+		}
 
 		$campaign_url = add_query_arg( 'frame', 0, get_permalink( $campaign_id ) );
 
@@ -4890,20 +4894,20 @@ class MailsterCampaigns {
 
 		$hash = md5( $campaign->post_content );
 
-		$url = 'https://s.wordpress.com/mshots/v1/' . ( rawurlencode( add_query_arg( 'c', $hash, $campaign_url ) ) ) . '?w=600&h=800';
+		if ( $attachment_id = get_post_thumbnail_id( $campaign ) ) {
+			if ( $hash == get_post_meta( $attachment_id, '_mailster_thumbnail_hash', true ) ) {
+				return false;
+			}
+		}
 
-		$response = wp_remote_get(
-			$url,
-			array(
-				'redirection' => 0,
-				'method'      => 'HEAD',
-			)
-		);
+		$url      = 'https://s.wordpress.com/mshots/v1/' . ( rawurlencode( add_query_arg( 'c', $hash, $campaign_url ) ) ) . '?w=600&h=800';
+		$response = wp_remote_head( $url );
 
-		$code = wp_remote_retrieve_response_code( $response );
-
-		if ( 307 == $code ) {
-			wp_schedule_single_event( time() + 10, 'mailster_auto_post_thumbnail', array( $campaign_id ) );
+		$code    = wp_remote_retrieve_response_code( $response );
+		$headers = wp_remote_retrieve_headers( $response );
+		if ( 'image/jpeg' != wp_remote_retrieve_header( $response, 'content-type' ) ) {
+			wp_schedule_single_event( time() + 6, 'mailster_auto_post_thumbnail', array( $campaign_id ) );
+			return false;
 		}
 
 		if ( 200 != $code ) {
@@ -4915,6 +4919,12 @@ class MailsterCampaigns {
 		}
 
 		$tmp_file = download_url( $url );
+
+		// the default image from mshots
+		if ( 'e89e34619e53928489a0c703c761cd58' == md5_file( $tmp_file ) ) {
+			wp_schedule_single_event( time() + 6, 'mailster_auto_post_thumbnail', array( $campaign_id ) );
+			return false;
+		}
 
 		if ( is_wp_error( $tmp_file ) ) {
 			return false;
@@ -4966,14 +4976,20 @@ class MailsterCampaigns {
 			$attachment['ID'] = $post_thumbnail_id;
 		}
 
-		$attach_id = wp_insert_attachment( $attachment, $file, $campaign_id );
+		if ( $attachment_id ) {
+			wp_delete_attachment( $attachment_id, true );
+		}
+
+		$attachment_id = wp_insert_attachment( $attachment, $file, $campaign_id );
 
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 
-		$attach_data = wp_generate_attachment_metadata( $attach_id, $file );
-		wp_update_attachment_metadata( $attach_id, $attach_data );
+		$attach_data = wp_generate_attachment_metadata( $attachment_id, $file );
+		wp_update_attachment_metadata( $attachment_id, $attach_data );
 
-		set_post_thumbnail( $campaign_id, $attach_id );
+		update_post_meta( $attachment_id, '_mailster_thumbnail_hash', $hash );
+
+		set_post_thumbnail( $campaign_id, $attachment_id );
 
 		return true;
 
