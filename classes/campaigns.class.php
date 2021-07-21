@@ -33,7 +33,7 @@ class MailsterCampaigns {
 
 		add_action( 'mailster_finish_campaign', array( &$this, 'remove_revisions' ) );
 
-		add_action( 'mailster_auto_post_thumbnail', array( &$this, 'get_post_thumbnail' ), 10, 1 );
+		add_action( 'mailster_auto_post_thumbnail', array( &$this, 'get_post_thumbnail' ), 10, 2 );
 
 		add_action( 'admin_menu', array( &$this, 'remove_meta_boxs' ) );
 		add_action( 'admin_menu', array( &$this, 'autoresponder_menu' ), 20 );
@@ -1697,12 +1697,9 @@ class MailsterCampaigns {
 
 		if ( $meta['auto_post_thumbnail'] = isset( $_POST['auto_post_thumbnail'] ) ) {
 
-			$hash = md5( $post->post_content );
-
-			if ( $attachment_id = get_post_thumbnail_id( $post ) ) {
-				if ( $hash != get_post_meta( $attachment_id, '_mailster_thumbnail_hash', true ) ) {
-					wp_schedule_single_event( time(), 'mailster_auto_post_thumbnail', array( $post_id ) );
-				}
+			// either no attachment or the hash of the content doesn't match
+			if ( ! ( $attachment_id = get_post_thumbnail_id( $post ) ) || ( md5( $post->post_content ) != get_post_meta( $attachment_id, '_mailster_thumbnail_hash', true ) ) ) {
+				wp_schedule_single_event( time(), 'mailster_auto_post_thumbnail', array( $post_id ) );
 			}
 		} else {
 
@@ -3554,6 +3551,26 @@ class MailsterCampaigns {
 	 * @param unknown $id (optional)
 	 * @return unknown
 	 */
+	public function get_risk_rate( $id = null ) {
+
+		$clicks = $this->get_clicks( $id );
+		if ( ! $clicks ) {
+			return 0;
+		}
+
+		$unsubscribes = $this->get_unsubscribes( $id );
+
+		return $unsubscribes / $clicks;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id (optional)
+	 * @return unknown
+	 */
 	public function get_unsubscribes( $id = null ) {
 
 		return $this->get_action( 'unsubs', $id );
@@ -4875,11 +4892,14 @@ class MailsterCampaigns {
 	 * @param unknown $campaign_id
 	 * @return unknown
 	 */
-	public function get_post_thumbnail( $campaign_id ) {
+	public function get_post_thumbnail( $campaign_id, $try = 1 ) {
 
 		$campaign = $this->get( $campaign_id );
 
 		if ( ! $campaign ) {
+			return;
+		}
+		if ( $try > 8 ) {
 			return;
 		}
 		if ( ! mailster_is_local() ) {
@@ -4906,7 +4926,7 @@ class MailsterCampaigns {
 		$code    = wp_remote_retrieve_response_code( $response );
 		$headers = wp_remote_retrieve_headers( $response );
 		if ( 'image/jpeg' != wp_remote_retrieve_header( $response, 'content-type' ) ) {
-			wp_schedule_single_event( time() + 6, 'mailster_auto_post_thumbnail', array( $campaign_id ) );
+			wp_schedule_single_event( time() + 6, 'mailster_auto_post_thumbnail', array( $campaign_id, ++$try ) );
 			return false;
 		}
 
@@ -4922,7 +4942,7 @@ class MailsterCampaigns {
 
 		// the default image from mshots
 		if ( 'e89e34619e53928489a0c703c761cd58' == md5_file( $tmp_file ) ) {
-			wp_schedule_single_event( time() + 6, 'mailster_auto_post_thumbnail', array( $campaign_id ) );
+			wp_schedule_single_event( time() + 6, 'mailster_auto_post_thumbnail', array( $campaign_id, ++$try ) );
 			return false;
 		}
 
@@ -4934,7 +4954,8 @@ class MailsterCampaigns {
 
 		$wp_upload_dir = wp_upload_dir( $time_string );
 
-		$filename = apply_filters( 'mailster_post_thumbnail_filename', 'newsletter-' . $campaign_id, $campaign ) . '.jpg';
+		$filename = 'newsletter-' . $campaign_id . '-' . strtotime( $campaign->post_modified );
+		$filename = apply_filters( 'mailster_post_thumbnail_filename', $filename, $campaign ) . '.jpg';
 
 		if ( $file_exits = file_exists( $wp_upload_dir['path'] . '/' . $filename ) ) {
 			unlink( $wp_upload_dir['path'] . '/' . $filename );
