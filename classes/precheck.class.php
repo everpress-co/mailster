@@ -224,7 +224,7 @@ class MailsterPrecheck {
 				break;
 
 			default:
-				$html .= 'HTML for ' . $endpoint;
+				$html .= 'Missing check for <strong>' . $endpoint . '</strong>';
 				break;
 		}
 
