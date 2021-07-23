@@ -844,7 +844,7 @@ mailster = (function (mailster, $, window, document) {
 	function paste_preprocess(pl, o) {
 
 		var str = o.content,
-			allowed_tags = '<a><br><i><em><u><p><h1><h2><h3><h4><h5><h6><ul><ol><li>',
+			allowed_tags = '<a><br><i><em><strong><u><p><h1><h2><h3><h4><h5><h6><ul><ol><li>',
 			key = '',
 			allowed = false,
 			matches = [],

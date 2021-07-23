@@ -187,7 +187,7 @@ class MailsterPrecheck {
 					}
 					$html .= '</ul>';
 				} else {
-
+					$html .= '<p>' . sprintf( esc_html__( 'Your IP %s is currently not blacklisted.', 'mailster' ), '<strong>' . esc_html( $response->ip ) . '</strong>' ) . '</p>';
 				}
 				break;
 
@@ -204,8 +204,6 @@ class MailsterPrecheck {
 						$html .= '<li>' . esc_html( $tip ) . '</li>';
 					}
 					$html .= '<ul>';
-				} else {
-
 				}
 				break;
 
@@ -218,8 +216,6 @@ class MailsterPrecheck {
 						$html .= '<li>' . esc_html( $tip ) . '</li>';
 					}
 					$html .= '<ul>';
-				} else {
-
 				}
 				break;
 

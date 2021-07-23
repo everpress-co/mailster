@@ -980,7 +980,7 @@ class MailsterForm {
 
 		if ( ! is_admin() && isset( $_BASE['_timestamp'] ) && $this->valid() ) {
 
-			if ( isset( $_BASE['_timestamp'] ) && time() - $_BASE['_timestamp'] < 10 ) {
+			if ( isset( $_BASE['_timestamp'] ) && time() - $_BASE['_timestamp'] < 6 ) {
 				$this->object['errors']['_timestamp'] = esc_html__( 'Please not so fast!', 'mailster' );
 			}
 		}
