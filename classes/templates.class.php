@@ -5,7 +5,7 @@ class MailsterTemplates {
 	public $path;
 	public $url;
 
-	private $endpoint = 'https://staging.mailster.co/templates.json';
+	private $endpoint = 'https://mailster.co/templates.json';
 
 	private $headers = array(
 		'name'        => 'Template Name',
@@ -503,13 +503,12 @@ class MailsterTemplates {
 		if ( $force || ! ( $available_templates = get_transient( 'mailster_templates_count' ) ) ) {
 
 			$cachetime = HOUR_IN_SECONDS * 6;
-			$cachetime = 12;
 
 			$result = mailster( 'templates' )->query( array( 'browse' => 'latest' ) );
 
 			if ( is_wp_error( $result ) ) {
 				$available_templates = 400;
-				$cachetime           = 12;
+				$cachetime           = MINUTE_IN_SECONDS;
 			} else {
 				$available_templates = $result['total'];
 			}
@@ -1082,7 +1081,6 @@ class MailsterTemplates {
 		if ( $force || ! ( $result = get_transient( $cache_key ) ) ) {
 
 			$cachetime = HOUR_IN_SECONDS * 6;
-			$cachetime = 120;
 
 			$result = array(
 				'total' => 0,

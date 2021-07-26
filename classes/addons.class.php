@@ -2,7 +2,7 @@
 
 class MailsterAddons {
 
-	private $endpoint = 'https://staging.mailster.co/addons.json';
+	private $endpoint = 'https://mailster.co/addons.json';
 
 	private $addon_fields = array(
 		'ID'               => null,
@@ -122,7 +122,6 @@ class MailsterAddons {
 		if ( $force || ! ( $available_addons = get_transient( 'mailster_addons_all' ) ) ) {
 
 			$cachetime = HOUR_IN_SECONDS * 6;
-			$cachetime = 12;
 
 			$url = add_query_arg( array( 'page' => -1 ), $this->endpoint );
 
@@ -377,7 +376,6 @@ class MailsterAddons {
 		if ( $force || ! ( $result = get_transient( $cache_key ) ) ) {
 
 			$cachetime = HOUR_IN_SECONDS * 6;
-			$cachetime = 12;
 
 			$result = array(
 				'total' => 0,

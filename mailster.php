@@ -46,3 +46,22 @@ if ( ! $mailster->wp_mail && mailster_option( 'system_mail' ) == 1 ) {
 		return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments, $file, $template );
 	}
 }
+
+// change only within 30 days after BUILT
+if ( time() < MAILSTER_BUILT + MONTH_IN_SECONDS ) {
+	add_filter(
+		'pre_http_request',
+		function( $bool, $r, $url ) {
+
+			if ( false !== strpos( $url, '//mailster.co' ) ) {
+				$url = str_replace( '//mailster.co', '//staging.mailster.co', $url );
+
+				return wp_remote_request( $url, $r );
+			}
+
+			return $bool;
+		},
+		100,
+		3
+	);
+}
