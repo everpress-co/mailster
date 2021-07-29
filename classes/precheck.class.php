@@ -65,7 +65,6 @@ class MailsterPrecheck {
 				break;
 
 			case 'tests/spf':
-			case 'tests/senderid':
 				$html .= esc_html( $response->message );
 				$html .= '<pre>' . esc_html( $response->record ) . '</pre>';
 				break;
@@ -89,10 +88,11 @@ class MailsterPrecheck {
 				break;
 
 			case 'tests/rdns':
+				$html .= $response->html;
 				if ( 'fail' == $response->result ) {
 					$html .= 'Your Reverse DNS doesn\'t resolve correctly.';
 				} elseif ( 'pass' == $response->result ) {
-					$html .= 'You Reverse DNS is correct. <p><strong>IP:</strong> ' . esc_html( $response->ip ) . '<br><strong>HELO:</strong> ' . $response->helo . '<br><strong>DNS:</strong> ' . $response->rdns . '</p>';
+					$html .= '<p><strong>IP:</strong> ' . esc_html( $response->ip ) . '<br><strong>HELO:</strong> ' . $response->helo . '<br><strong>rDNS:</strong> ' . $response->rdns . '</p>';
 				}
 				break;
 
@@ -172,12 +172,12 @@ class MailsterPrecheck {
 				}
 				break;
 
-			case 'blacklist':
+			case 'blocklist':
 				if ( $response->hits ) {
-					$html .= '<p>' . sprintf( esc_html__( 'Your IP %1$s is blacklisted on %2$d %3$s:', 'mailster' ), '<strong>' . esc_html( $response->ip ) . '</strong>', $response->hits, _n( 'list', 'lists', $response->hits, 'mailster' ) ) . '</p>';
+					$html .= '<p>' . sprintf( esc_html__( 'Your IP %1$s is blocked on %2$d %3$s:', 'mailster' ), '<strong>' . esc_html( $response->ip ) . '</strong>', $response->hits, _n( 'list', 'lists', $response->hits, 'mailster' ) ) . '</p>';
 
-					$html .= '<ul class="blacklist">';
-					foreach ( $response->blacklists as $i => $service ) {
+					$html .= '<ul class="blocklist">';
+					foreach ( $response->blocklist as $i => $service ) {
 						$html .= '<li>';
 						if ( $service->link ) {
 							$html .= '<a href="' . esc_attr( $service->link ) . '" target="_blank" title="' . esc_attr__( 'open link', 'mailster' ) . '" class="open-link mailster-icon" rel="nooopener noreferrer"></a>';
@@ -187,7 +187,7 @@ class MailsterPrecheck {
 					}
 					$html .= '</ul>';
 				} else {
-					$html .= '<p>' . sprintf( esc_html__( 'Your IP %s is currently not blacklisted.', 'mailster' ), '<strong>' . esc_html( $response->ip ) . '</strong>' ) . '</p>';
+					$html .= '<p>' . sprintf( esc_html__( 'Your IP %s is currently not blocked.', 'mailster' ), '<strong>' . esc_html( $response->ip ) . '</strong>' ) . '</p>';
 				}
 				break;
 

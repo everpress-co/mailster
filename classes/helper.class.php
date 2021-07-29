@@ -948,9 +948,12 @@ class MailsterHelper {
 		}
 
 		switch ( $status ) {
+			case 'profile_unsubscribe':
+			case 'profile_unsubscribe_list':
+				return esc_html__( 'The user updated the status via the profile page.', 'mailster' );
 			case 'list_unsubscribe':
 			case 'list_unsubscribe_list':
-				return esc_html__( 'The user clicked on the unsubscribe option in the Mail application', 'mailster' );
+				return esc_html__( 'The user clicked on the unsubscribe option in the Mail application.', 'mailster' );
 			case 'link_unsubscribe':
 			case 'link_unsubscribe_list':
 				return esc_html__( 'The user clicked on an unsubscribe link in the campaign.', 'mailster' );

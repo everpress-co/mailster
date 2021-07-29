@@ -50,7 +50,7 @@ class MailsterSecurity {
 
 		// check for email addresses
 		if ( $this->match( $email, mailster_option( 'blocked_emails' ) ) ) {
-			return new WP_Error( 'error_blacklisted', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'blacklisted' );
+			return new WP_Error( 'error_blocked', esc_html__( 'Sorry, you cannot signup with this email address.', 'mailster' ), 'blocked' );
 		}
 
 		// check for white listed

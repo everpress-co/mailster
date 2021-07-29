@@ -362,6 +362,22 @@ class MailsterActions {
 
 		global $wpdb;
 
+		// set campaign_ids to null if they are no longer there.
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_sent as actions LEFT JOIN {$wpdb->prefix}posts AS p ON p.ID = actions.campaign_id SET campaign_id = null WHERE p.ID IS NULL" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_opens as actions LEFT JOIN {$wpdb->prefix}posts AS p ON p.ID = actions.campaign_id SET campaign_id = null WHERE p.ID IS NULL" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_clicks as actions LEFT JOIN {$wpdb->prefix}posts AS p ON p.ID = actions.campaign_id SET campaign_id = null WHERE p.ID IS NULL" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_unsubs as actions LEFT JOIN {$wpdb->prefix}posts AS p ON p.ID = actions.campaign_id SET campaign_id = null WHERE p.ID IS NULL" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_bounces as actions LEFT JOIN {$wpdb->prefix}posts AS p ON p.ID = actions.campaign_id SET campaign_id = null WHERE p.ID IS NULL" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_errors as actions LEFT JOIN {$wpdb->prefix}posts AS p ON p.ID = actions.campaign_id SET campaign_id = null WHERE p.ID IS NULL" );
+
+		// set subscribers_id to null if they are no longer there.
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_sent as actions LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = actions.subscriber_id SET subscriber_id = null WHERE s.ID IS NULL" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_opens as actions LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = actions.subscriber_id SET subscriber_id = null WHERE s.ID IS NULL" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_clicks as actions LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = actions.subscriber_id SET subscriber_id = null WHERE s.ID IS NULL" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_unsubs as actions LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = actions.subscriber_id SET subscriber_id = null WHERE s.ID IS NULL" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_bounces as actions LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = actions.subscriber_id SET subscriber_id = null WHERE s.ID IS NULL" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}mailster_action_errors as actions LEFT JOIN {$wpdb->prefix}mailster_subscribers AS s ON s.ID = actions.subscriber_id SET subscriber_id = null WHERE s.ID IS NULL" );
+
 		// remove actions where's either a subscriber nor a campaign assigned
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_sent AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
 		$wpdb->query( "DELETE actions FROM {$wpdb->prefix}mailster_action_opens AS actions WHERE actions.subscriber_id IS NULL AND actions.campaign_id IS NULL" );
@@ -1127,13 +1143,13 @@ class MailsterActions {
 			' UNION ',
 			array(
 
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_errors WHERE 1=1$union_sql", 'error' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 1$union_sql", 'bounce' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 0$union_sql", 'softbounce' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_unsubs WHERE 1=1$union_sql", 'unsub' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_clicks WHERE 1=1$union_sql", 'click' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_opens WHERE 1=1$union_sql", 'open' ),
-				$wpdb->prepare( "SELECT %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_sent WHERE 1=1$union_sql", 'sent' ),
+				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_errors WHERE 1=1$union_sql", 'error' ),
+				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 1$union_sql", 'bounce' ),
+				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 0$union_sql", 'softbounce' ),
+				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_unsubs WHERE 1=1$union_sql", 'unsub' ),
+				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_clicks WHERE 1=1$union_sql", 'click' ),
+				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_opens WHERE 1=1$union_sql", 'open' ),
+				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_sent WHERE 1=1$union_sql", 'sent' ),
 
 			)
 		) . ') AS a';

@@ -285,8 +285,8 @@ class MailsterTemplates {
 				$removed_files = array();
 
 				$allowed_mimes = array( 'text/html', 'text/xml', 'text/plain', 'image/svg+xml', 'image/svg', 'image/png', 'image/gif', 'image/jpeg', 'image/tiff', 'image/x-icon' );
-				$whitelist     = array( 'json', 'woff', 'woff2', 'ttf', 'eot' );
-				$blacklist     = array( 'php', 'bin', 'exe' );
+				$safelist      = array( 'json', 'woff', 'woff2', 'ttf', 'eot' );
+				$blocklist     = array( 'php', 'bin', 'exe' );
 
 				foreach ( $files as $file ) {
 
@@ -304,7 +304,7 @@ class MailsterTemplates {
 						$mimetype = $validate['type'];
 					}
 
-					if ( ( ! in_array( $mimetype, $allowed_mimes ) && ! preg_match( '#\.(' . implode( '|', $whitelist ) . ')$#i', $file ) || preg_match( '#\.(' . implode( '|', $blacklist ) . ')$#i', $file ) ) ) {
+					if ( ( ! in_array( $mimetype, $allowed_mimes ) && ! preg_match( '#\.(' . implode( '|', $safelist ) . ')$#i', $file ) || preg_match( '#\.(' . implode( '|', $blocklist ) . ')$#i', $file ) ) ) {
 						$removed_files[] = $basename;
 						$wp_filesystem->delete( $file, true );
 						continue;

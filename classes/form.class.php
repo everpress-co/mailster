@@ -911,6 +911,7 @@ class MailsterForm {
 		}
 
 		$this->id( isset( $_BASE['formid'] ) ? (int) $_BASE['formid'] : 1, $form_args );
+		$this->campaign_id( isset( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null, isset( $_BASE['_campaign_index'] ) ? (int) $_BASE['_campaign_index'] : 0 );
 
 		$double_opt_in = $this->form->doubleoptin;
 		$overwrite     = $this->form->overwrite;
@@ -1104,16 +1105,16 @@ class MailsterForm {
 						// change status if other than pending, subscribed or unsubscribed
 						$status = $subscriber->status >= 3 ? 1 : $subscriber->status;
 						if ( isset( $_BASE['_status'] ) ) {
-							if ( $status == 0 && (int) $_BASE['_status'] == 1 ) {
-
-								if ( mailster_option( 'track_users' ) ) {
-									$ip                  = mailster_get_ip();
-									$entry['ip']         = $ip;
-									$entry['ip_confirm'] = $ip;
+							if ( $status !== (int) $_BASE['_status'] ) {
+								if ( $status == 0 && (int) $_BASE['_status'] == 1 ) {
+									$entry['confirm'] = time();
 								}
-								$entry['confirm'] = time();
 
+								if ( 2 == (int) $_BASE['_status'] ) {
+									mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $this->campaignID, 'profile_unsubscribe' );
+								}
 							}
+
 							$status = (int) $_BASE['_status'];
 						}
 
@@ -1122,6 +1123,11 @@ class MailsterForm {
 							$subscriber_notification = true;
 						}
 
+						if ( mailster_option( 'track_users' ) ) {
+							$ip                  = mailster_get_ip();
+							$entry['ip']         = $ip;
+							$entry['ip_confirm'] = $ip;
+						}
 						$entry = wp_parse_args(
 							array(
 								'status' => $status,

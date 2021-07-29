@@ -446,7 +446,7 @@ if ( ! $is_new ) :
 				</thead>
 				<tbody>
 					<?php foreach ( $activities as $i => $activity ) : ?>
-					<tr class="<?php echo ! ( $i % 2 ) ? ' alternate' : ''; ?>">
+					<tr class="<?php echo ! ( $i % 2 ) ? ' alternate' : ''; ?>" data-id="<?php echo esc_attr( $activity->ID ); ?>">
 						<td><?php echo $now - $activity->timestamp < 3600 ? sprintf( esc_html__( '%s ago', 'mailster' ), human_time_diff( $now, $activity->timestamp ) ) : date_i18n( $timeformat, $activity->timestamp + $timeoffset ); ?></td>
 						<td>
 						<?php
@@ -492,9 +492,13 @@ if ( ! $is_new ) :
 						?>
 
 						</td>
-						<td><a href="<?php echo admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ); ?>"><?php esc_html_e( $activity->campaign_title ); ?></a><?php echo ( $activity->i ) ? ' (#' . ( $activity->i + 1 ) . ')' : ''; ?></td>
+						<td>
+						<?php if ( $activity->campaign_id ) : ?>
+							<a href="<?php echo admin_url( 'post.php?post=' . $activity->campaign_id . '&action=edit' ); ?>"><?php esc_html_e( $activity->campaign_title ); ?></a><?php echo ( $activity->i ) ? ' (#' . ( $activity->i + 1 ) . ')' : ''; ?>
+						<?php endif; ?>
+						</td>
 						<td width="50%">
-						<?php if ( $activity->campaign_status == 'trash' ) : ?>
+						<?php if ( $activity->campaign_status == 'trash' || ! $activity->campaign_id ) : ?>
 							<?php esc_html_e( 'campaign deleted', 'mailster' ); ?>
 
 						<?php elseif ( $activity->type == 'sent' && current_user_can( 'publish_newsletters' ) ) : ?>

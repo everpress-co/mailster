@@ -991,6 +991,15 @@ class MailsterFrontpage {
 			case 'profile':
 				$form = mailster( 'form' )->id( mailster_option( 'profile_form', 1 ) );
 				$form->is_profile();
+				$campaign_id    = get_query_var( '_mailster', get_query_var( '_mailster_extra' ) );
+				$campaign_index = null;
+
+				// get the campaign index
+				if ( false !== strpos( $campaign_id, '-' ) ) {
+					$campaign_index = absint( strrchr( $campaign_id, '-' ) );
+					$campaign_id    = absint( $campaign_id );
+				}
+				$form->campaign_id( $campaign_id, $campaign_index );
 
 				return $form->render( false );
 

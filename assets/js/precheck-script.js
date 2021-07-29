@@ -153,7 +153,7 @@ mailster = (function (mailster, $, window, document) {
 					$('.precheck-status-icon').html(mailster.util.sprintf('%s of 100', 100));
 
 					$.when.apply($, [
-							getResult('blacklist'),
+							getResult('blocklist'),
 							getResult('spam_report'),
 							getResult('authentication'),
 							getResult('message'),
