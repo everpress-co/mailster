@@ -553,7 +553,7 @@ class MailsterManage {
 					if ( is_wp_error( $tag_id ) ) {
 						continue;
 					}
-				} else {
+				} elseif ( isset( $tag_id->ID ) ) {
 					$tag_id = $tag_id->ID;
 				}
 

@@ -4,13 +4,6 @@ class MailsterActions {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
-
-	}
-
-
-	public function init() {
-
 		add_action( 'mailster_send', array( &$this, 'send' ), 10, 3 );
 		add_action( 'mailster_open', array( &$this, 'open' ), 10, 3 );
 		add_action( 'mailster_click', array( &$this, 'click' ), 10, 5 );
@@ -257,20 +250,10 @@ class MailsterActions {
 
 		mailster( 'subscribers' )->update_meta( $args['subscriber_id'], $args['campaign_id'], $user_meta );
 
-		$this->add( $args );
+		$this->add_action( $args );
 
 	}
 
-
-	/**
-	 *
-	 *
-	 * @param unknown $args
-	 */
-	private function add_action( $args ) {
-
-		$this->add( $args );
-	}
 
 
 	/**
@@ -279,7 +262,7 @@ class MailsterActions {
 	 * @param unknown $args
 	 * @return unknown
 	 */
-	private function add( $args ) {
+	private function add_action( $args ) {
 
 		global $wpdb;
 
@@ -418,15 +401,29 @@ class MailsterActions {
 	/**
 	 *
 	 *
-	 * @param unknown $campaign_id (optional)
+	 * @param unknown $campaign_id
 	 * @param unknown $action      (optional)
 	 * @return unknown
 	 */
-	public function get_by_campaign( $campaign_id = null, $action = null ) {
+	public function get_by_campaign( $campaign_id, $action = null ) {
 
 		global $wpdb;
 
-		$cache_key = 'action_counts_by_campaign_' . $action;
+		$default = $this->get_default_action_counts();
+
+		if ( is_null( $action ) ) {
+			foreach ( $default as $key => $value ) {
+				$default[ $key ] = $this->get_by_campaign( $campaign_id, $key ) + $value;
+			}
+			return $default;
+		}
+
+		if ( ! isset( $default[ $action ] ) ) {
+			return false;
+		}
+
+		$cache_key    = 'action_counts_by_campaign_' . $action;
+		$campaign_ids = null;
 
 		$action_counts = mailster_cache_get( $cache_key );
 		if ( ! $action_counts ) {
@@ -443,15 +440,13 @@ class MailsterActions {
 				return isset( $action_counts[ $campaign_id ][ $action ] ) ? $action_counts[ $campaign_id ][ $action ] : null;
 			}
 
-			$campaign_ids = array( $campaign_id );
+			$campaign_ids = array( (int) $campaign_id );
 
 		} elseif ( is_array( $campaign_id ) ) {
 
-			$campaign_ids = $campaign_id;
+			$campaign_ids = array_filter( $campaign_id, 'is_numeric' );
 
 		}
-
-		$default = $this->get_default_action_counts();
 
 		$sql = "SELECT a.post_id AS ID, a.meta_value AS parent_id FROM {$wpdb->postmeta} AS a WHERE a.meta_key = '_mailster_parent_id'";
 
@@ -573,7 +568,7 @@ class MailsterActions {
 			return $action_counts;
 		}
 
-		if ( is_array( $campaign_id ) && is_null( $action ) ) {
+		if ( is_array( $campaign_ids ) && is_null( $action ) ) {
 			return $action_counts;
 		}
 
@@ -1114,9 +1109,11 @@ class MailsterActions {
 	 * @param unknown $subscriber_id (optional)
 	 * @param unknown $index         (optional)
 	 * @param unknown $limit         (optional)
+	 * @param unknown $timestamp     (optional)
+	 * @param unknown $types         (optional)
 	 * @return unknown
 	 */
-	public function get_activity( $campaign_id = null, $subscriber_id = null, $index = null, $limit = null ) {
+	public function get_activity( $campaign_id = null, $subscriber_id = null, $index = null, $limit = null, $timestamp = null, $types = null ) {
 
 		global $wpdb;
 
@@ -1124,8 +1121,13 @@ class MailsterActions {
 		if ( ! is_null( $limit ) ) {
 			$sql .= ' SQL_CALC_FOUND_ROWS';
 		}
-		$sql      .= ' p.post_title AS campaign_title, p.post_status AS campaign_status, a.*, l.link FROM';
-		$union_sql = '';
+		if ( is_null( $types ) ) {
+			$types = array( 'errors', 'bounces', 'unsubs', 'clicks', 'opens', 'sent' );
+		} else {
+			$types = (array) $types;
+		}
+		$sql      .= ' posts.post_title AS campaign_title, posts.post_status AS campaign_status, actions.*, links.link FROM';
+		$union_sql = ' WHERE 1';
 
 		if ( ! is_null( $campaign_id ) ) {
 			$union_sql .= ' AND campaign_id = ' . (int) $campaign_id;
@@ -1139,26 +1141,25 @@ class MailsterActions {
 			$union_sql .= ' AND i = ' . (int) $index;
 		}
 
-		$sql .= ' (' . implode(
-			' UNION ',
-			array(
+		if ( ! is_null( $timestamp ) ) {
+			$union_sql .= ' AND timestamp > ' . (int) $timestamp;
+		}
 
-				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_errors WHERE 1=1$union_sql", 'error' ),
-				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 1$union_sql", 'bounce' ),
-				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces WHERE hard = 0$union_sql", 'softbounce' ),
-				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_unsubs WHERE 1=1$union_sql", 'unsub' ),
-				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_clicks WHERE 1=1$union_sql", 'click' ),
-				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_opens WHERE 1=1$union_sql", 'open' ),
-				$wpdb->prepare( "SELECT ID, %s AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_sent WHERE 1=1$union_sql", 'sent' ),
+		$action_queries = array(
+			'errors'  => "SELECT ID, 'error' AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_errors $union_sql",
+			'bounces' => "SELECT ID, 'bounce' AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_bounces $union_sql",
+			'unsubs'  => "SELECT ID, 'unsub' AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, text FROM {$wpdb->prefix}mailster_action_unsubs $union_sql",
+			'clicks'  => "SELECT ID, 'click' AS type, subscriber_id, campaign_id, i, timestamp, count, link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_clicks $union_sql",
+			'opens'   => "SELECT ID, 'open' AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_opens $union_sql",
+			'sent'    => "SELECT ID, 'sent' AS type, subscriber_id, campaign_id, i, timestamp, count, NULL AS link_id, NULL AS text FROM {$wpdb->prefix}mailster_action_sent $union_sql",
+		);
 
-			)
-		) . ') AS a';
+		$sql .= ' (' . implode( ' UNION ', array_intersect_key( $action_queries, array_flip( $types ) ) ) . ') AS actions';
 
-		$sql .= " LEFT JOIN `{$wpdb->posts}` as p ON p.ID = a.campaign_id";
-		$sql .= " LEFT JOIN `{$wpdb->prefix}mailster_links` AS l ON l.ID = a.link_id";
-		$sql .= ' WHERE 1=1';
+		$sql .= " LEFT JOIN `{$wpdb->posts}` as posts ON posts.ID = actions.campaign_id";
+		$sql .= " LEFT JOIN `{$wpdb->prefix}mailster_links` AS links ON links.ID = actions.link_id";
 
-		$sql .= ' ORDER BY a.timestamp DESC';
+		$sql .= ' ORDER BY actions.timestamp DESC';
 
 		if ( ! is_null( $limit ) ) {
 			$sql .= ' LIMIT ' . (int) $limit;

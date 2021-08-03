@@ -1808,13 +1808,19 @@ class MailsterSubscribers {
 	public function maybe_update_rating( $ids = null ) {
 
 		global $wpdb;
+
+		$update_rating_after = WEEK_IN_SECONDS;
+
 		if ( empty( $ids ) ) {
-			$ids = (array) $wpdb->get_col( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_subscriber_meta WHERE meta_key = %s AND meta_value < %d ORDER BY meta_value ASC LIMIT %d", 'update_rating', time() - WEEK_IN_SECONDS, 100 ) );
+			$ids = (array) $wpdb->get_col( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_subscriber_meta WHERE meta_key = %s AND meta_value < %d ORDER BY meta_value ASC LIMIT %d", 'update_rating', time() - $update_rating_after, 100 ) );
 		} else {
 			if ( ! is_array( $ids ) ) {
 				$ids = array( $ids );
 			}
-			$ids = (array) $wpdb->get_col( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_subscriber_meta WHERE meta_key = %s AND meta_value < %d AND subscriber_id IN(" . implode( ',', $ids ) . ') ORDER BY meta_value ASC', 'update_rating', time() - WEEK_IN_SECONDS ) );
+
+			// get ids of outdated ratings or none existence
+			$ids = (array) $wpdb->get_col( $wpdb->prepare( "SELECT subscribers.ID FROM  {$wpdb->prefix}mailster_subscribers AS subscribers LEFT JOIN {$wpdb->prefix}mailster_subscriber_meta AS meta ON meta.subscriber_id = subscribers.ID AND meta_key = 'update_rating' WHERE subscribers.ID IN(" . implode( ',', $ids ) . ') AND (meta_value < %d OR meta_value IS NULL) GROUP BY subscribers.ID', time() - $update_rating_after ) );
+
 		}
 
 		if ( ! empty( $ids ) ) {
@@ -1839,12 +1845,14 @@ class MailsterSubscribers {
 
 		foreach ( $ids as $id ) {
 			$rating = 0.25;
-			if ( $this->get_sent( $id ) ) {
+			if ( $sent = $this->get_sent( $id ) ) {
 
+				$rating    += 0.25;
 				$openrate   = $this->get_open_rate( $id );
 				$aclickrate = $this->get_adjusted_click_rate( $id );
+				$clickrate  = $this->get_click_rate( $id );
 
-				$rating = max( $rating, ( $openrate + $aclickrate ) / 2 );
+				$rating = max( $rating, ( $openrate + $aclickrate + $clickrate ) / 3 );
 
 				if ( $softbouncerate = $this->get_softbounce_rate( $id ) ) {
 					$rating -= $softbouncerate * 0.01;
@@ -2145,9 +2153,29 @@ class MailsterSubscribers {
 			return 0;
 		}
 
-		$clicks = $this->get_clicks( $id, $total );
+		$clicks = $this->get_clicks( $id, true );
 
 		return min( 1, ( $clicks / $open ) );
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $id (optional)
+	 * @return unknown
+	 */
+	public function get_risk_rate( $id = null, $total = false ) {
+
+		$clicks = $this->get_clicks( $id, $total );
+		if ( ! $clicks ) {
+			return 0;
+		}
+
+		$unsubscribes = $this->get_unsubs( $id, $total );
+
+		return $unsubscribes / $clicks;
 
 	}
 
@@ -2220,7 +2248,7 @@ class MailsterSubscribers {
 			return 0;
 		}
 
-		$opens = $this->get_unsubs( $id );
+		$opens = $this->get_unsubs( $id, $total );
 
 		return min( 1, ( $opens / $sent ) );
 

@@ -5,8 +5,7 @@ class Mailster {
 	private $template;
 	private $post_data;
 	private $campaign_data;
-	private $mail   = array();
-	private $tables = array( 'actions', 'forms', 'forms_lists', 'form_fields', 'links', 'lists', 'lists_subscribers', 'queue', 'subscribers', 'subscriber_fields', 'subscriber_meta' );
+	private $mail = array();
 
 	public $wp_mail = null;
 
@@ -1097,7 +1096,7 @@ class Mailster {
 
 		$content = str_replace( array( 'mailster-highlight', 'mailster-loading', 'ui-draggable', ' -handle', ' contenteditable="true"', ' spellcheck="false"' ), '', $content );
 
-		$allowed_tags = array( 'address', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'a', 'big', 'blockquote', 'body', 'br', 'b', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'img', 'i', 'kbd', 'li', 'meta', 'ol', 'pre', 'p', 'span', 'small', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'thead', 'tfoot', 'td', 'th', 'title', 'tr', 'tt', 'ul', 'u', 'map', 'area', 'video', 'audio', 'source', 'buttons', 'single', 'multi', 'modules', 'module', 'if', 'elseif', 'else', 'script', 'amp-form', 'amp-selector', 'amp-bind', 'amp-state', 'amp-list', 'amp-mustache', 'amp-accordion', 'amp-carousel', 'amp-sidebar', 'amp-image-lightbox', 'amp-lightbox', 'amp-fit-text', 'amp-timeago', 'amp-img', 'amp-anim', 'template' );
+		$allowed_tags = array( 'a', 'address', 'amp-accordion', 'amp-anim', 'amp-bind', 'amp-carousel', 'amp-fit-text', 'amp-form', 'amp-image-lightbox', 'amp-img', 'amp-lightbox', 'amp-list', 'amp-mustache', 'amp-selector', 'amp-sidebar', 'amp-state', 'amp-timeago', 'area', 'audio', 'b', 'big', 'blockquote', 'body', 'br', 'buttons', 'center', 'cite', 'code', 'dd', 'dfn', 'div', 'dl', 'dt', 'else', 'elseif', 'em', 'font', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'hr', 'html', 'i', 'if', 'img', 'kbd', 'li', 'map', 'meta', 'module', 'modules', 'multi', 'ol', 'p', 'pre', 'script', 'single', 'small', 'source', 'span', 'strike', 'strong', 'style', 'sub', 'sup', 'table', 'tbody', 'td', 'template', 'tfoot', 'th', 'thead', 'title', 'tr', 'tt', 'u', 'ul', 'video' );
 
 		$allowed_tags = apply_filters( 'mailster_allowed_tags', $allowed_tags );
 
@@ -1204,7 +1203,7 @@ class Mailster {
 
 		$page = add_submenu_page( true, esc_html__( 'Mailster Setup', 'mailster' ), esc_html__( 'Setup', 'mailster' ), 'activate_plugins', 'mailster_setup', array( &$this, 'setup_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'setup_scripts_styles' ) );
-		add_action( 'load-' . $page, array( &$this, 'remove_menu_enties' ) );
+		add_action( 'load-' . $page, array( &$this, 'remove_menu_entries' ) );
 
 		$page = add_submenu_page( true, esc_html__( 'Welcome to Mailster', 'mailster' ), esc_html__( 'Welcome', 'mailster' ), 'read', 'mailster_welcome', array( &$this, 'welcome_page' ) );
 		add_action( 'load-' . $page, array( &$this, 'welcome_scripts_styles' ) );
@@ -1215,7 +1214,7 @@ class Mailster {
 	}
 
 
-	public function remove_menu_enties() {
+	public function remove_menu_entries() {
 
 		global $submenu;
 
@@ -1517,23 +1516,11 @@ class Mailster {
 
 		if ( $remove_tables ) {
 
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_sent" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_opens" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_clicks" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_unsubs" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_bounces" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_action_errors" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_links" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_lists" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_lists_subscribers" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_queue" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_subscribers" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_subscriber_fields" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_subscriber_meta" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_forms" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_forms_lists" );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_form_fields" );
+			$tables = $this->get_tables();
 
+			foreach ( $tables as $table ) {
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_{$table}" );
+			}
 		}
 
 		if ( $remove_files ) {
@@ -1823,12 +1810,16 @@ class Mailster {
 
 		global $wpdb;
 
+		$tables = array( 'subscribers', 'subscriber_fields', 'subscriber_meta', 'queue', 'action_sent', 'action_opens', 'action_clicks', 'action_unsubs', 'action_bounces', 'action_errors', 'links', 'lists', 'lists_subscribers', 'tags', 'tags_subscribers', 'forms', 'form_fields', 'forms_lists', 'forms_tags' );
+
+		sort( $tables );
+
 		if ( ! $fullnames ) {
-			return $this->tables;
+			return $tables;
 		}
 
 		$tables = array();
-		foreach ( $this->tables as $table ) {
+		foreach ( $tables as $table ) {
 			$tables[] = "{$wpdb->prefix}mailster_$table";
 		}
 

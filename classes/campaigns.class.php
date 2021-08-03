@@ -3315,7 +3315,7 @@ class MailsterCampaigns {
 	 * @param unknown $deleted      (optional)
 	 * @return unknown
 	 */
-	public function get_totals( $id = null, $unsubscribes = true, $bounces = false, $deleted = true ) {
+	public function get_totals( $id = null, $unsubscribes = true, $bounces = true, $deleted = true ) {
 
 		$campaign = $this->get( $id );
 		if ( ! $campaign ) {

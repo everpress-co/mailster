@@ -759,8 +759,7 @@ mailster = (function (mailster, $, window, document) {
 												'data-id': currenttext.image.id,
 												'background': response.image.url,
 											})
-											.data('id', currenttext.image.id)
-											.css('background-image', '');
+											.data('id', currenttext.image.id);
 
 										current.element.html(mailster.util.replace(current.element.html(), orgurl, response.image.url));
 
@@ -807,8 +806,7 @@ mailster = (function (mailster, $, window, document) {
 									.attr({
 										'background': dynamicImage(currenttext.image, width)
 									})
-									.removeData('id')
-									.css('background-image', '');
+									.removeData('id');
 								current.element.html(mailster.util.replace(current.element.html(), orgurl, dynamicImage(currenttext.image, width, height, crop, org)));
 								//remove id to re trigger tinymce
 								current.element.find('single, multi').removeAttr('id');

@@ -87,7 +87,7 @@ if ( $is_new ) {
 			<?php endif; ?>
 			<?php if ( ! $is_new ) : ?>
 
-				<h4 title="<?php esc_attr_e( 'The user rating is based on different factors like open rate, click rate and bounces', 'mailster' ); ?>"><?php esc_html_e( 'User Rating', 'mailster' ); ?>:<br />
+				<h4 title="<?php esc_attr_e( 'The user rating is based on different factors like open rate, click rate and bounces.', 'mailster' ); ?>&#013;&#013;<?php printf( esc_attr__( 'Last Update: %s ago.', 'mailster' ), human_time_diff( $meta->update_rating ) ); ?>"><?php esc_html_e( 'User Rating', 'mailster' ); ?>:<br />
 				<?php
 					$stars = ( round( $subscriber->rating / 10, 2 ) * 50 );
 					$full  = max( 0, min( 5, floor( $stars ) ) );
