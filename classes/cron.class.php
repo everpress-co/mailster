@@ -250,7 +250,11 @@ class MailsterCron {
 				}
 			}
 
-			$this->pid = @getmypid();
+			if ( function_exists( 'getmypid' ) ) {
+				$this->pid = getmypid();
+			} else {
+				$this->pid = uniqid();
+			}
 			update_option( 'mailster_cron_lock_' . $key, $this->pid, false );
 			return true;
 
@@ -267,7 +271,11 @@ class MailsterCron {
 				}
 			}
 
-			$this->pid = @getmypid();
+			if ( function_exists( 'getmypid' ) ) {
+				$this->pid = getmypid();
+			} else {
+				$this->pid = uniqid();
+			}
 			register_shutdown_function( array( $this, 'unlock' ), $key );
 			file_put_contents( $lockfile, $this->pid );
 			return true;
