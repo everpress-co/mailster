@@ -123,7 +123,7 @@ class MailsterTemplates {
 			$redirect = admin_url( 'edit.php?post_type=newsletter&page=mailster_templates' );
 			$redirect = add_query_arg( array( 'new' => $slug ), $redirect );
 
-			$this->get_screenshots( $slug, 'index.html' );
+			$this->schedule_screenshot( $slug, 'index.html' );
 
 			return $redirect;
 		}

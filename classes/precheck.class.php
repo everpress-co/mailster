@@ -229,7 +229,7 @@ class MailsterPrecheck {
 	}
 
 
-	public function request( $id, $endpoint = null, $timeout = 5 ) {
+	public function request( $id, $endpoint = null, $timeout = 5, $try = 1 ) {
 
 		if ( ! mailster()->is_verified() ) {
 			return new WP_Error( 503, esc_html__( 'Please verify your Mailster license on the Dashboard!', 'mailster' ) );
@@ -294,8 +294,11 @@ class MailsterPrecheck {
 			return new WP_Error( $code, esc_html__( 'Your license code is invalid.', 'mailster' ) . $body );
 		} elseif ( 404 === $code ) {
 			delete_option( 'mailster_precheck_token' );
+			if ( $try > 1 ) {
+				return new WP_Error( $code, esc_html__( 'This service no longer available with the current Mailster version. Please update Mailster!', 'mailster' ) );
+			}
 			sleep( 3 );
-			return $this->request( $id, $endpoint, $timeout );
+			return $this->request( $id, $endpoint, $timeout, ++$try );
 		} elseif ( 498 === $code ) {
 			delete_option( 'mailster_precheck_token' );
 			return new WP_Error( $code, esc_html__( 'Your token is invalid!', 'mailster' ) . $body );

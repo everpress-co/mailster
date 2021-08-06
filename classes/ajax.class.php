@@ -2867,7 +2867,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$plugin = sanitize_key( dirname( $_POST['plugin'] ) );
+		$plugin = sanitize_key( basename( $_POST['plugin'] ) );
 		$step   = sanitize_key( $_POST['step'] );
 
 		switch ( $step ) {

@@ -808,11 +808,11 @@ class Mailster {
 		// get a seed to bring some randomness.
 		$seed = apply_filters( 'mailster_get_random_post_seed', 0 );
 
-		$args['orderby'] = 'RAND(' . ( (int) $seed . (int) $campaign_id . (int) $identifier ) . ')';
+		$args['mailster_identifier'] = (int) $campaign_id . (int) $identifier . (int) $seed;
+		$args['orderby']             = 'RAND(' . $args['mailster_identifier'] . ')';
 
 		// add an identifier to prevent results from being cached.
 		$key                             = md5( serialize( array( $identifier, $post_type, $term_ids, $args, $campaign_id ) ) );
-		$args['mailster_identifier']     = $identifier;
 		$args['mailster_identifier_key'] = $key;
 		// $args['date_query'] = array();
 
@@ -1818,12 +1818,12 @@ class Mailster {
 			return $tables;
 		}
 
-		$tables = array();
+		$return = array();
 		foreach ( $tables as $table ) {
-			$tables[] = "{$wpdb->prefix}mailster_$table";
+			$return[] = "{$wpdb->prefix}mailster_$table";
 		}
 
-		return $tables;
+		return $return;
 
 	}
 

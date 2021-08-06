@@ -1631,7 +1631,7 @@ class MailsterHelper {
 				if ( ! empty( $images[0] ) ) {
 					$post_image = $images[1][0];
 				} else {
-					$post_image = false;
+					$post_image = null;
 				}
 				$author    = $rss_item->get_author();
 				$category  = $rss_item->get_categories();

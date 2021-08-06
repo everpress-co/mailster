@@ -480,6 +480,13 @@ class MailsterTests {
 			$result      = mailster()->dbstructure( false, true, $set_charset, false );
 		}
 
+		if ( false !== strpos( $result, 'Key column \'ID\' doesn\'t exist in table' ) ) {
+			if ( $text = mailster( 'upgrade' )->create_primary_keys() ) {
+				$this->notice( $text );
+				$result = mailster()->dbstructure( false, true, $set_charset, false );
+			}
+		}
+
 		if ( true !== $result ) {
 			$second_result = mailster()->dbstructure( false, true, $set_charset, false );
 			if ( $result === $second_result ) {

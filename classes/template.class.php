@@ -234,6 +234,10 @@ class MailsterTemplate {
 				}
 
 				$logo->setAttribute( 'src', $new_logo['url'] );
+				$alt = $logo->getAttribute( 'alt' );
+				if ( empty( $alt ) ) {
+					$logo->setAttribute( 'alt', __( 'Logo', 'mailster' ) );
+				}
 
 				if ( $logo_link ) {
 					$link = $doc->createElement( 'a' );

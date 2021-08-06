@@ -908,42 +908,60 @@ class MailsterUpgrade {
 	}
 
 
+	public function create_primary_keys() {
+
+		$return = '';
+
+		ob_start();
+		while ( ! $this->do_create_primary_keys() ) {
+		}
+		$return .= ob_get_contents();
+		ob_end_clean();
+
+		return $return;
+
+	}
+
+
 	private function do_create_primary_keys() {
 
 		global $wpdb;
-		$tables = mailster()->get_tables( true );
+		$tables = mailster()->get_tables();
+		// legacy table may need also a primary key
+		$tables[] = 'actions';
 
 		foreach ( $tables as $table ) {
-			if ( false !== strpos( $table, 'mailster_lists_subscribers' ) ) {
+			$tablename = $wpdb->prefix . 'mailster_' . $table;
+			if ( 'lists_subscribers' == $table ) {
 				continue;
 			}
-			if ( false !== strpos( $table, 'mailster_tags_subscribers' ) ) {
+			if ( 'tags_subscribers' == $table ) {
 				continue;
 			}
-			if ( false !== strpos( $table, 'mailster_forms_lists' ) ) {
+			if ( 'forms_lists' == $table ) {
 				continue;
 			}
-			if ( false !== strpos( $table, 'mailster_forms_tags' ) ) {
+			if ( 'forms_tags' == $table ) {
 				continue;
 			}
-			if ( ! $this->table_exists( $table ) ) {
+			if ( ! $this->table_exists( $tablename ) ) {
 				continue;
 			}
-			if ( $this->column_exists( 'ID', $table ) ) {
+			if ( $this->column_exists( 'ID', $tablename ) ) {
 				continue;
 			}
 
-			$wpdb->query( "ALTER TABLE {$table} ADD `ID` bigint(20) unsigned NOT NULL FIRST" );
+			$wpdb->query( "ALTER TABLE {$tablename} ADD `ID` bigint(20) unsigned NOT NULL FIRST" );
 			$wpdb->query( 'SET @a = 0;' );
-			$wpdb->query( "UPDATE {$table} SET ID = @a:=@a+1;" );
-			$wpdb->query( "ALTER TABLE {$table} MODIFY COLUMN `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY" );
+			$wpdb->query( "UPDATE {$tablename} SET ID = @a:=@a+1;" );
+			$wpdb->query( "ALTER TABLE {$tablename} MODIFY COLUMN `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY" );
 
 			usleep( 1000 );
 
-			if ( ! $this->column_exists( 'ID', $table ) ) {
-				echo 'Not able to create primary Key for  "' . $table . '".' . "\n";
+			if ( ! $this->column_exists( 'ID', $tablename ) ) {
+				echo 'Not able to create primary Key for  "' . $tablename . '".' . "\n";
 			} else {
-				echo 'Primary Key for "' . $table . '" created.' . "\n";
+				echo 'Primary Key for "' . $tablename . '" created.' . "\n";
 			}
 			return false;
 		}
