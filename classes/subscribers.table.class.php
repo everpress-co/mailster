@@ -272,7 +272,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	public function get_bulk_actions() {
 		$actions = array(
 			'delete'         => esc_html__( 'Delete', 'mailster' ),
-			'delete_actions' => esc_html__( 'Delete (with Actions)', 'mailster' ),
+			'delete_actions' => esc_html__( 'Delete (with Activities)', 'mailster' ),
 			'send_campaign'  => esc_html__( 'Send new Campaign', 'mailster' ),
 			'confirmation'   => esc_html__( 'Resend Confirmation', 'mailster' ),
 			'verify'         => esc_html__( 'Verify', 'mailster' ),

@@ -158,8 +158,8 @@ mailster = (function (mailster, $, window, document) {
 
 	mailster.util.ajax = function (action, data, callback, errorCallback, dataType) {
 
-		if ($.isFunction(data)) {
-			if ($.isFunction(callback)) {
+		if ('function' === typeof data) {
+			if ('function' === typeof callback) {
 				errorCallback = callback;
 			}
 			callback = data;
@@ -167,7 +167,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		dataType = dataType ? dataType : "JSON";
-		$.ajax({
+		return $.ajax({
 			type: 'POST',
 			url: mailster.ajaxurl,
 			data: $.extend({
@@ -178,14 +178,14 @@ mailster = (function (mailster, $, window, document) {
 				callback && callback.call(this, data, textStatus, jqXHR);
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
-				var response = $.trim(jqXHR.responseText);
+				var response = mailster.util.trim(jqXHR.responseText);
 				if (textStatus == 'error' && !errorThrown) return;
 				mailster.log(response, 'error');
 				if ('JSON' == dataType) {
 					var maybe_json = response.match(/{(.*)}$/);
 					if (maybe_json && callback) {
 						try {
-							callback.call(this, $.parseJSON(maybe_json[0]));
+							callback.call(this, JSON.parse(maybe_json[0]));
 						} catch (e) {
 							mailster.log(e, 'error');
 						}
@@ -212,7 +212,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	mailster.util.sanitize = function (string) {
-		return $.trim(string).toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_-]*/g, '');
+		return mailster.util.trim(string).toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_-]*/g, '');
 	}
 
 	mailster.util.sprintf = function () {
@@ -227,16 +227,27 @@ mailster = (function (mailster, $, window, document) {
 		return str;
 	}
 
+	mailster.util.trim = function (string) {
+		if ('string' !== typeof string) {
+			return string;
+		}
+		return string.trim();
+	}
+
 	mailster.util.isWebkit = 'WebkitAppearance' in document.documentElement.style;
 	mailster.util.isMozilla = (/firefox/i).test(navigator.userAgent);
 	mailster.util.isMSIE = (/msie|trident/i).test(navigator.userAgent);
 	mailster.util.isTouchDevice = 'ontouchstart' in document.documentElement;
 
-	mailster.util.CodeMirror = null;
-
-	mailster.events.push('documentReady', function () {
-		mailster.util.CodeMirror = wp.CodeMirror || window.CodeMirror;
-	});
+	mailster.util.codemirrorargs = {
+		mode: {
+			name: "htmlmixed"
+		},
+		tabMode: "indent",
+		lineNumbers: true,
+		viewportMargin: Infinity,
+		autofocus: true
+	};
 
 	mailster.util.top = function () {
 		return $('html,body').scrollTop() || document.scrollingElement.scrollTop;
@@ -355,7 +366,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	mailster.events.push('documentReady', function () {
-		window.tb_position = mailster.util.tb_position;
+		//window.tb_position = mailster.util.tb_position;
 		for (var i in mailster.$) {
 			mailster.dom[i] = mailster.$[i][0];
 		}

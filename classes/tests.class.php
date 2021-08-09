@@ -335,7 +335,7 @@ class MailsterTests {
 	}
 	private function test_default_template() {
 
-		$default      = 'mymail';
+		$default      = 'mailster';
 		$template     = mailster_option( 'default_template' );
 		$template_dir = trailingslashit( MAILSTER_UPLOAD_DIR ) . 'templates/' . $template;
 
@@ -407,7 +407,7 @@ class MailsterTests {
 
 		foreach ( $support_email_hashes as $hash ) {
 
-			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 60 MINUTE)', $hash ) );
+			$user = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->users} WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 60 MINUTE)", $hash ) );
 			if ( $user ) {
 				$this->warning( sprintf( 'Please remove any unused support account: %s', '<a href="' . admin_url( 'users.php?s=' . urlencode( $user->user_email ) ) . '">' . $user->user_email . '</a>' ) );
 			}
@@ -480,6 +480,13 @@ class MailsterTests {
 			$result      = mailster()->dbstructure( false, true, $set_charset, false );
 		}
 
+		if ( false !== strpos( $result, 'Key column \'ID\' doesn\'t exist in table' ) ) {
+			if ( $text = mailster( 'upgrade' )->create_primary_keys() ) {
+				$this->notice( $text );
+				$result = mailster()->dbstructure( false, true, $set_charset, false );
+			}
+		}
+
 		if ( true !== $result ) {
 			$second_result = mailster()->dbstructure( false, true, $set_charset, false );
 			if ( $result === $second_result ) {
@@ -516,7 +523,7 @@ class MailsterTests {
 
 	}
 	private function test_memory_limit() {
-		$max = max( (int) @ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
+		$max = max( (int) ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
 		if ( $max < 128 ) {
 			$this->warning( 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
 		} else {
@@ -671,18 +678,42 @@ class MailsterTests {
 		}
 
 	}
-	private function test_mailfunction() {
+	private function get_test_mail_data() {
 
-		$to      = 'deadend@newsletter-plugin.com';
-		$subject = 'This is a test mail from the Mailster Test page';
-		$message = 'This test message can sent from ' . admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) . ' and can get deleted.';
+		$user = wp_get_current_user();
+
+		if ( ! $user ) {
+			$this->error( 'No current user found for test mail.' );
+			return;
+		}
+		if ( ! is_email( $user->user_email ) ) {
+			$this->error( 'The current user doesn\'t have a valid email address to send a test mail.' );
+			return;
+		}
+
+		$return = array(
+			'to'      => $user->user_email,
+			'subject' => 'This is a test mail from the Mailster Test page',
+			'message' => sprintf( "This message has been sent from\n\n%s\n\n to ensure Mailster can send mails with your current delivery method.\n\nYou can delete this message.", admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) ),
+		);
+
+		return $return;
+
+	}
+	private function test_mail() {
+
+		$args = $this->get_test_mail_data();
+
+		$to      = $args['to'];
+		$subject = $args['subject'];
+		$message = $args['message'];
 
 		$mail          = mailster( 'mail' );
 		$mail->to      = $to;
 		$mail->subject = $subject;
 		$mail->debug();
 
-		if ( ! $mail->send_notification( 'Sendtest', $message, array( 'notification' => '' ), false ) ) {
+		if ( ! $mail->send_notification( wpautop( $message ), $subject, array( 'notification' => '' ), false ) ) {
 			$error_message = strip_tags( $mail->get_errors() );
 			$msg           = 'You are not able to send mails with the current delivery settings!';
 
@@ -696,6 +727,15 @@ class MailsterTests {
 		} else {
 			$this->success( 'Email was successfully delivery to ' . $to );
 		}
+
+	}
+	private function test_wpmail() {
+
+		$args = $this->get_test_mail_data();
+
+		$to      = $args['to'];
+		$subject = $args['subject'];
+		$message = $args['message'];
 
 		if ( mailster_option( 'system_mail' ) ) {
 

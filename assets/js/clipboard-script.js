@@ -3,7 +3,7 @@ mailster = (function (mailster, $, window, document) {
 	"use strict";
 
 	mailster.events.push('documentReady', function () {
-		var clipboard = new Clipboard('.clipboard');
+		var clipboard = new ClipboardJS('.clipboard');
 		clipboard.on('success', function (e) {
 			var html = $(e.trigger).html();
 			$(e.trigger).html(mailster.l10n.clipboard.copied);

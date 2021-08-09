@@ -113,6 +113,7 @@ $sent = $this->get_sent( $post->ID );
 				'time_frame'        => 'day',
 				'timezone'          => false,
 				'hook'              => '',
+				'hook_type'         => false,
 				'priority'          => 10,
 				'once'              => false,
 				'multiple'          => false,
@@ -277,19 +278,17 @@ $sent = $this->get_sent( $post->ID );
 			<p>
 				<?php
 
-				global $wp_locale;
-
 				esc_html_e( 'send campaigns only on these weekdays', 'mailster' );
 				echo '<br>';
 				$start_at = get_option( 'start_of_week' );
 
 				for ( $i = $start_at; $i < 7 + $start_at; $i++ ) {
 					$j = $i;
-					if ( ! isset( $wp_locale->weekday[ $j ] ) ) {
+					if ( $j > 7 ) {
 						$j = $j - 7;
 					}
 
-					echo '<label title="' . $wp_locale->weekday[ $j ] . '" class="weekday"><input name="mailster_data[autoresponder][weekdays][]" type="checkbox" value="' . $j . '" ' . checked( ( in_array( $j, $autoresponderdata['weekdays'] ) || ! $autoresponderdata['weekdays'] ), true, false ) . '>' . $wp_locale->weekday_initial[ $wp_locale->weekday[ $j ] ] . '&nbsp;</label> ';
+					echo '<label title="' . date_i18n( 'l', strtotime( 'sunday +' . $j . ' days' ) ) . '" class="weekday"><input name="mailster_data[autoresponder][weekdays][]" type="checkbox" value="' . $j . '" ' . checked( ( in_array( $j, $autoresponderdata['weekdays'] ) || ! $autoresponderdata['weekdays'] ), true, false ) . '>' . date_i18n( 'D', strtotime( 'sunday +' . $j . ' days' ) ) . '&nbsp;</label> ';
 				}
 				?>
 			</p>
@@ -381,7 +380,7 @@ $sent = $this->get_sent( $post->ID );
 					$uservalue .= '<option value="-1">--</option>';
 
 					foreach ( $customfields as $key => $data ) {
-						$uservalue .= '<option value="' . $key . '"' . selected( $autoresponderdata['uservalue'], $key, false ) . '>' . $data['name'] . '</option>';
+						$uservalue .= '<option value="' . $key . '"' . selected( $autoresponderdata['uservalue'], $key, false ) . '>' . esc_html( $data['name'] ) . '</option>';
 					}
 					$uservalue .= '</select>';
 					?>
@@ -389,21 +388,11 @@ $sent = $this->get_sent( $post->ID );
 			<p id="userexactdate">
 				<label>
 					<input type="radio" class="userexactdate" name="mailster_data[autoresponder][userexactdate]" value="0" <?php checked( ! $autoresponderdata['userexactdate'] ); ?>>
-					<span
-					<?php
-					if ( $autoresponderdata['userexactdate'] ) {
-						echo ' class="disabled"'; }
-					?>
-					><?php printf( esc_html__( 'every %1$s %2$s', 'mailster' ), $amount, $unit ); ?></span>
+					<span <?php echo ( $autoresponderdata['userexactdate'] ) ? ' class="disabled"' : ''; ?>><?php printf( esc_html__( 'every %1$s %2$s', 'mailster' ), $amount, $unit ); ?></span>
 				</label><br>
 				<label>
 					<input type="radio" class="userexactdate" name="mailster_data[autoresponder][userexactdate]" value="1" <?php checked( $autoresponderdata['userexactdate'] ); ?>>
-					<span
-					<?php
-					if ( ! $autoresponderdata['userexactdate'] ) {
-						echo ' class="disabled"'; }
-					?>
-					><?php esc_html_e( 'on the exact date', 'mailster' ); ?></span>
+					<span <?php echo ( ! $autoresponderdata['userexactdate'] ) ? ' class="disabled"' : ''; ?>><?php esc_html_e( 'on the exact date', 'mailster' ); ?></span>
 				</label>
 			</p>
 			<p>
@@ -480,18 +469,20 @@ $sent = $this->get_sent( $post->ID );
 		</div>
 
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_autoresponder_hook">
-			<p>
+			<div>
+				<p><label>
+					<select name="mailster_data[autoresponder][hook_type]">
+						<option value="" <?php selected( ! $autoresponderdata['hook_type'] ); ?>><?php esc_html_e( 'Send this auto responder', 'mailster' ); ?></option>
+						<option value="1" <?php selected( $autoresponderdata['hook_type'] ); ?>><?php esc_html_e( 'Create a new campaign based on this auto responder', 'mailster' ); ?></option>
+					</select>
+				</label></p>
+			</div>
+			<div>
 				<label>
-					<?php esc_html_e( 'Action used to trigger campaign', 'mailster' ); ?> (<abbr title="<?php esc_attr_e( 'use `do_action("hook_name")`, or `do_action("hook_name", $subscriber_id)` to trigger this campaign', 'mailster' ); ?>">?</abbr>)
+					<?php esc_html_e( 'whenever the action hook', 'mailster' ); ?>
 				</label>
-			</p>
-				<?php
-				$hooks = apply_filters( 'mailster_action_hooks', array() );
-				if ( $autoresponderdata['hook'] && ! isset( $hooks[ $autoresponderdata['hook'] ] ) ) {
-					$hooks[ $autoresponderdata['hook'] ] = $autoresponderdata['hook'];
-				}
-				?>
-			<?php if ( $hooks ) : ?>
+			</div>
+			<?php if ( $hooks = apply_filters( 'mailster_action_hooks', array() ) ) : ?>
 			<p>
 				<label>
 					<select class="widefat mailster-action-hooks">
@@ -504,9 +495,14 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 				<?php endif; ?>
 			<p>
-				<input type="text" class="widefat code mailster-action-hook" name="mailster_data[autoresponder][hook]" value="<?php echo $autoresponderdata['hook']; ?>" placeholder="hook_name">
+				<input type="text" class="widefat code mailster-action-hook" name="mailster_data[autoresponder][hook]" value="<?php echo esc_attr( $autoresponderdata['hook'] ); ?>" placeholder="hook_name">
 			</p>
 			<div>
+				<label>
+					<?php esc_html_e( 'is triggered.', 'mailster' ); ?> (<abbr title="<?php esc_attr_e( 'use `do_action("hook_name")`, or `do_action("hook_name", $subscriber_id)` to trigger this campaign', 'mailster' ); ?>">?</abbr>)
+				</label>
+			</div>
+			<div class="hide-if-hook-type"<?php echo ( $autoresponderdata['hook_type'] ) ? ' style="display:none"' : ''; ?>>
 				<p><label>
 				<?php esc_html_e( 'Priority', 'mailster' ); ?>:
 					<select name="mailster_data[autoresponder][priority]">
@@ -516,12 +512,12 @@ $sent = $this->get_sent( $post->ID );
 					</select>
 				</label></p>
 			</div>
-			<div>
+			<div class="hide-if-hook-type"<?php echo ( $autoresponderdata['hook_type'] ) ? ' style="display:none"' : ''; ?>>
 				<p><label>
 					<input type="checkbox" name="mailster_data[autoresponder][hook_once]" value="1" <?php checked( $autoresponderdata['once'] ); ?>> <?php esc_html_e( 'send campaign only once', 'mailster' ); ?>
 				</label></p>
 			</div>
-			<div>
+			<div class="hide-if-hook-type"<?php echo ( $autoresponderdata['hook_type'] ) ? ' style="display:none"' : ''; ?>>
 				<label>
 					<input type="checkbox" name="mailster_data[autoresponder][multiple]" value="1" <?php checked( $autoresponderdata['multiple'] ); ?>> <?php esc_html_e( 'allow multiple triggers', 'mailster' ); ?>
 				</label>
@@ -543,14 +539,11 @@ $sent = $this->get_sent( $post->ID );
 		$test_email = apply_filters( 'mailster_test_email', $test_email );
 		?>
 		<input type="text" value="<?php echo esc_attr( $test_email ); ?>" placeholder="<?php echo esc_attr( $current_user->user_email ); ?>" autocomplete="off" id="mailster_testmail" class="widefat" aria-label="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>">
-		<button type="button" class="button mailster_spamscore" title="<?php esc_attr_e( 'check your spam score', 'mailster' ); ?> (beta)">Spam Score</button>
 		<span class="spinner" id="delivery-ajax-loading"></span>
+		<input type="button" value="<?php esc_attr_e( 'Run Precheck', 'mailster' ); ?>" class="button mailster_precheck">
 		<input type="button" value="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest">
+		<div class="clear"></div>
 
-		<div id="spam_score_progress">
-		<div class="progress"><span class="bar" style="width:1%"></span></div>
-		<div class="score"></div>
-		</div>
 	</div>
 
 <?php elseif ( 'active' == $post->post_status ) : ?>

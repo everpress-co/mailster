@@ -8,23 +8,22 @@ mailster = (function (mailster, $, window, document) {
 		select1 = $('#bulk-action-selector-top'),
 		select2 = $('#bulk-action-selector-bottom');
 
-	$('#posts-filter').on('submit', function () {
-		var s1 = select1.val(),
-			s2 = select2.val(),
-			v = s1 != -1 ? s1 : (s2 != -1 ? s2 : false);
+	mailster.$.document
+		.on('submit', '#posts-filter', function () {
+			var s1 = select1.val(),
+				s2 = select2.val(),
+				v = s1 != -1 ? s1 : (s2 != -1 ? s2 : false);
 
-		switch (v) {
-		case 'finish':
-			return confirm(mailster.l10n.campaigns.finish_campaigns);
-			break;
-		case 'start':
-			return confirm(mailster.l10n.campaigns.start_campaigns);
-			break;
-		}
+			switch (v) {
+			case 'finish':
+				return confirm(mailster.l10n.campaigns.finish_campaigns);
+				break;
+			case 'start':
+				return confirm(mailster.l10n.campaigns.start_campaigns);
+				break;
+			}
 
-	});
-
-	$('.column-status')
+		})
 		.on('click', 'a.live-action', function () {
 
 			if ($(this).hasClass('finish') && !confirm(mailster.l10n.campaigns.finish_campaign)) {
@@ -40,14 +39,22 @@ mailster = (function (mailster, $, window, document) {
 			});
 			return false;
 
-		});
-
-	mailster.$.document
+		})
 		.on('scroll', function () {
 			clearTimeout(scrolltimeout);
 			scrolltimeout = setTimeout(function () {
 				wp.heartbeat.connectNow();
 			}, 400);
+		})
+		.on('change', '.hide-column-tog', function () {
+			wp.heartbeat.connectNow();
+		})
+		.on('click', '.toggle-row', function () {
+			var id = $(this).parent().parent().attr('id').substring(5);
+			if (current[id]) {
+				current[id] = [];
+			}
+			wp.heartbeat.connectNow();
 		})
 		.on('heartbeat-send', function (e, data) {
 
@@ -63,7 +70,10 @@ mailster = (function (mailster, $, window, document) {
 
 			data['mailster'] = {
 				page: 'overview',
-				ids: ids
+				ids: ids,
+				columns: $('.hide-column-tog:checked').map(function () {
+					return this.value;
+				}).toArray()
 			};
 
 		})
@@ -111,11 +121,11 @@ mailster = (function (mailster, $, window, document) {
 						case 'column-status':
 							if (rowdata.status == 'active' && !statuschange) {
 								var progress = row.find('.campaign-progress'),
-									p = (rowdata.sent / rowdata.total * 100);
+									p = Math.round(rowdata.sent / rowdata.total * 100);
 								progress.find('.bar').width(p + '%');
 								progress.find('span').eq(1).html(rowdata.sent_formatted);
 								progress.find('span').eq(2).html(rowdata.sent_formatted);
-								progress.find('var').html(Math.round(p) + '%');
+								progress.find('var').html(p + '%');
 							}
 							if (!statuschange) break;
 						default:

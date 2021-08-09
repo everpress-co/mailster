@@ -46,7 +46,7 @@
 					</select>
 					<span class="social-service-url-field">
 					<?php if ( $service ) : ?>
-						<label><span class="description"><?php echo str_replace( '%s', '<input type="text" name="mailster_options[services][' . esc_attr( $service ) . ']" value="' . esc_attr( $username ) . '" class="regular-text">', $social_links[ $service ] ); ?></span></label>
+						<label><span class="description"><?php printf( $social_links[ $service ], '<input type="text" name="mailster_options[services][' . esc_attr( $service ) . ']" value="' . esc_attr( $username ) . '" class="regular-text">', $social_links[ $service ] ); ?></span></label>
 					<?php endif; ?>
 					</span>
 				</li>

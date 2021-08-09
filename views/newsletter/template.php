@@ -7,11 +7,19 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 
 $module_list = $this->templateobj->get_module_list();
 
-$templates = mailster( 'templates' )->get_templates();
-$all_files = mailster( 'templates' )->get_all_files();
+$classes = array( 'load' );
+if ( $editable ) {
+		$classes[] = 'is-editable';
+	if ( ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $module_list ) ) {
+		$classes[] = 'show-modules';
+	}
+	if ( ! empty( $module_list ) ) {
+		$classes[] = 'has-modules';
+	}
+}
 
 ?>
-<div id="template-wrap" class="load<?php echo $editable && ! ! get_user_setting( 'mailstershowmodules', 1 ) && ! empty( $module_list ) ? ' show-modules' : ''; ?><?php echo $editable && ! empty( $module_list ) ? ' has-modules' : ''; ?>">
+<div id="template-wrap" class="<?php echo implode( ' ', $classes ); ?>">
 
 <?php if ( $editable ) : ?>
 
@@ -31,6 +39,17 @@ $all_files = mailster( 'templates' )->get_all_files();
 	</div>
 	<textarea id="content" name="content" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_content ); ?></textarea>
 	<textarea id="excerpt" name="excerpt" class="hidden" autocomplete="off"><?php echo esc_textarea( $post->post_excerpt ); ?></textarea>
+
+<?php endif; ?>
+
+<?php if ( ! $this->templateobj->exists ) : ?>
+
+	<div class="notice notice-warning inline">
+		<p>
+			<strong><?php esc_html_e( 'The template file for this campaign is missing. Make sure you have installed the correct template.', 'mailster' ); ?></strong>
+			<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=newsletter&page=mailster_templates&search=' . esc_attr( $this->templateobj->slug ) . '&type=slug' ) ); ?>"><?php esc_html_e( 'Find the missing template file.', 'mailster' ); ?></a>
+		</p>
+	</div>
 
 <?php endif; ?>
 
@@ -100,30 +119,5 @@ $all_files = mailster( 'templates' )->get_all_files();
 
 </div>
 
-<div id="mailster_campaign_preview" style="display:none;">
-	<div class="device-wrap">
-		<div class="device desktop">
-			<div class="desktop-header">
-				<div class="desktop-header-bar"><i></i><i></i><i></i></div>
-				<div class="desktop-header-info"><u></u><i></i><i></i></div>
-			</div>
-			<div class="desktop-body">
-				<div class="preview-body">
-					<iframe class="mailster-preview-iframe desktop" src="" width="100%" scrolling="auto" frameborder="0" data-no-lazy=""></iframe>
-				</div>
-			</div>
-		</div>
-		<div class="device mobile">
-			<div class="mobile-header"><u></u></div>
-			<div class="mobile-body">
-				<div class="preview-body">
-					<iframe class="mailster-preview-iframe mobile" src="" width="100%" scrolling="auto" frameborder="0" data-no-lazy=""></iframe>
-				</div>
-			</div>
-			<div class="mobile-footer"><i></i></div>
-		<p class="device-info"><?php esc_html_e( 'Your email may look different on mobile devices', 'mailster' ); ?></p>
-		</div>
-	</div>
-</div>
 <textarea id="content" autocomplete="off" name="content"><?php echo esc_textarea( $post->post_content ); ?></textarea>
 <textarea id="head" name="mailster_data[head]" autocomplete="off"><?php echo esc_textarea( isset( $this->post_data['head'] ) ? $this->post_data['head'] : $this->templateobj->get_head() ); ?></textarea>

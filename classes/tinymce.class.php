@@ -149,7 +149,7 @@ class MailsterTinymce {
 						'tags'  => esc_html__( 'Tags', 'mailster' ),
 					),
 					'remove' => array(
-						'title' => esc_html__( 'Remove Block', 'mailster' ),
+						'title' => esc_html__( 'Remove Element', 'mailster' ),
 					),
 				),
 				'tags' => $tags,

@@ -75,7 +75,10 @@
 		$services = mailster_option( 'share_services', array() );
 		?>
 		<?php foreach ( $social_services as $service => $data ) : ?>
-			<li class="<?php echo $service; ?>"><label><input type="checkbox" name="mailster_options[share_services][]" value="<?php echo esc_attr( $service ); ?>" <?php checked( in_array( $service, $services ) ); ?>> <?php echo $data['name']; ?></label></li>
+			<li class="<?php echo esc_attr( $service ); ?>" style="background-image: url('data:image/svg+xml;base64,<?php echo base64_encode( $data['icon'] ); ?>');">
+				<label>
+					<input type="checkbox" name="mailster_options[share_services][]" value="<?php echo esc_attr( $service ); ?>" <?php checked( in_array( $service, $services ) ); ?>> <?php echo esc_html( $data['name'] ); ?></label>
+			</li>
 		<?php endforeach; ?>
 		</ul></td>
 	</tr>

@@ -23,7 +23,7 @@ function mailster_send( $headline, $content, $to = '', $replace = array(), $atta
 
 	$defaults = array( 'notification' => '' );
 
-	$replace = apply_filters( 'mymail_send_replace', apply_filters( 'mailster_send_replace', wp_parse_args( $replace, $defaults ), $defaults ) );
+	$replace = apply_filters( 'mailster_send_replace', wp_parse_args( $replace, $defaults ), $defaults );
 
 	$mail = mailster( 'mail' );
 

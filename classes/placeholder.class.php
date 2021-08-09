@@ -30,6 +30,7 @@ class MailsterPlaceholder {
 	public function __construct( $content = '', $deprecated = null ) {
 
 		$this->set_content( $content );
+		$this->post_types = mailster( 'helper' )->get_dynamic_post_types();
 
 	}
 
@@ -196,10 +197,10 @@ class MailsterPlaceholder {
 	 */
 	public function add_defaults( $campaign_id = null, $args = array() ) {
 
-		$time = explode( '|', date( 'Y|m|d|H|m', current_time( 'timestamp' ) ) );
+		$time = explode( '|', date( 'Y|m|d|H|i', current_time( 'timestamp' ) ) );
 
 		$defaults = array(
-			'email'  => '<a href="">{emailaddress}</a>',
+			'email'  => '<a href="mailto:{emailaddress}">{emailaddress}</a>',
 			'year'   => $time[0],
 			'month'  => $time[1],
 			'day'    => $time[2],
@@ -383,7 +384,7 @@ class MailsterPlaceholder {
 
 		$social = array( 'twitter', 'facebook', 'google', 'linkedin' );
 
-		$social = implode( '|', apply_filters( 'mymail_share_services', apply_filters( 'mailster_share_services', $social ) ) );
+		$social = implode( '|', apply_filters( 'mailster_share_services', $social ) );
 
 		if ( $count = preg_match_all( '#\{(share:(' . $social . ') ?([^}]+)?)\}#i', $this->content, $hits ) ) {
 
@@ -434,7 +435,7 @@ class MailsterPlaceholder {
 
 		$content = '<img alt="' . esc_attr( sprintf( esc_html__( 'Share this on %s', 'mailster' ), $this->social_services[ $service ]['name'] ) ) . '" src="' . MAILSTER_URI . 'assets/img/share/share_' . $service . '.png" style="display:inline;display:inline !important;" />';
 
-		$content = apply_filters( 'mymail_share_button_' . $service, apply_filters( 'mailster_share_button_' . $service, $content ) );
+		$content = apply_filters( 'mailster_share_button_' . $service, $content );
 
 		return '<a href="' . $_url . '" class="social">' . $content . '</a>' . "\n";
 
@@ -919,25 +920,11 @@ class MailsterPlaceholder {
 	/**
 	 *
 	 *
-	 */
-	private function get_post_types_to_replace() {
-		if ( empty( $this->post_types ) ) {
-			$this->post_types = mailster( 'helper' )->get_dynamic_post_types();
-		}
-
-		return $this->post_types;
-	}
-
-
-	/**
-	 *
-	 *
 	 * @param unknown $relative_to_absolute (optional)
 	 */
 	private function replace_dynamic( $relative_to_absolute = false ) {
 
-		$pts = $this->get_post_types_to_replace();
-		$pts = implode( '|', $pts );
+		$pts = implode( '|', $this->post_types );
 
 		// all dynamic post type tags
 		if ( $count = preg_match_all( '#\{(!)?((' . $pts . ')_([^}]+):(-|~)?([\d]+)(;([0-9;,-]+))?)\}#i', $this->content, $hits ) ) {
@@ -1198,6 +1185,14 @@ class MailsterPlaceholder {
 				$categories = implode( ', ', $categories );
 			}
 			$extra = $categories;
+
+		} elseif ( false !== strpos( $what, '[' ) ) {
+			preg_match( '#(.*)\[(.*)\]#i', $what, $withformat );
+			if ( ! isset( $withformat[1] ) ) {
+				return null;
+			}
+			$what  = trim( $withformat[1] );
+			$extra = trim( $withformat[2] );
 		}
 
 		switch ( $what ) {
@@ -1206,6 +1201,9 @@ class MailsterPlaceholder {
 				break;
 			case 'title':
 				$replace_to = str_replace( array( '"', "'" ), array( '&quot;', '&#039;' ), $post->post_title );
+				break;
+			case 'button':
+				$replace_to = esc_html__( 'Read More', 'mailster' );
 				break;
 			case 'link':
 				if ( isset( $post->post_link ) ) {
@@ -1257,7 +1255,7 @@ class MailsterPlaceholder {
 			case 'date_gmt':
 			case 'modified':
 			case 'modified_gmt':
-				$replace_to = date( mailster( 'helper' )->dateformat(), strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date_i18n( $extra ? $extra : mailster( 'helper' )->dateformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'time':
 				$what = 'date';
@@ -1267,7 +1265,7 @@ class MailsterPlaceholder {
 				$what = isset( $what ) ? $what : 'modified';
 			case 'modified_time_gmt':
 				$what       = isset( $what ) ? $what : 'modified_gmt';
-				$replace_to = date( mailster( 'helper' )->timeformat(), strtotime( $post->{'post_' . $what} ) );
+				$replace_to = date_i18n( $extra ? $extra : mailster( 'helper' )->timeformat(), strtotime( $post->{'post_' . $what} ) );
 				break;
 			case 'excerpt':
 				if ( ! empty( $post->{'post_excerpt'} ) ) {

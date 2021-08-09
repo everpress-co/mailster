@@ -155,6 +155,10 @@ mailster = (function (mailster, $, window, document) {
 		return false;
 	});
 
+	$('.toggle-auto_send_at_once').on('change', function () {
+		$('input[name="mailster_options[send_at_once]"]').prop('disabled', $(this).is(':checked'));
+	});
+
 
 	$('#bounce_active').on('change', function () {
 		($(this).is(':checked')) ?
@@ -532,7 +536,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function sanitize(string) {
-		var tag = $.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '').replace(/^[_]*/, '').replace(/[_]*$/, '');
+		var tag = mailster.util.trim(string).toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9_-]*/g, '').replace(/^[_]*/, '').replace(/[_]*$/, '');
 		if ($.inArray(tag, reservedtags) != -1) {
 			alert(mailster.util.sprintf(mailster.l10n.settings.reserved_tag, '"' + tag + '"'));
 			tag += '-a';
