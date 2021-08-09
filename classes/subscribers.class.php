@@ -12,7 +12,7 @@ class MailsterSubscribers {
 	public function init() {
 
 		add_action( 'mailster_cron', array( &$this, 'maybe_update_rating' ), 99 );
-		add_action( 'mailster_cron_worker', array( &$this, 'send_confirmations' ) );
+		add_action( 'mailster_cron_worker', array( &$this, 'send_confirmations' ), 99 );
 		add_action( 'mailster_cron_worker', array( &$this, 'maybe_update_rating' ), 99 );
 
 		add_action( 'mailster_subscriber_subscribed', array( &$this, 'remove_pending_confirmations' ) );
@@ -489,7 +489,7 @@ class MailsterSubscribers {
 						$this->unassign_tags( $subscriber->ID, $unasssign );
 					}
 					if ( $assign = array_diff( $tags, $current_tags ) ) {
-						$this->assign_tags( $subscriber->ID, $assign, false, true );
+						$this->assign_tags( $subscriber->ID, $assign, false );
 					}
 
 					if ( ! $old_subscriber_data || $subscriber->status != $old_subscriber_data->status ) {
@@ -804,32 +804,30 @@ class MailsterSubscribers {
 
 			switch ( $meta->referer ) {
 				case 'import':
-					?>
-
-					<strong><?php esc_html_e( 'via', 'mailster' ); ?></strong> <span><?php printf( esc_html__( 'import on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ); ?></span>
-							<?php
+					?><strong><?php esc_html_e( 'via', 'mailster' ); ?></strong> <span><?php printf( esc_html__( 'import on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ); ?></span>
+					<?php
 					break;
 				case 'wpuser':
 				case '/wp-admin/user-new.php':
 				case '/wp-login.php?action=register':
 					?>
 					<strong><?php esc_html_e( 'via', 'mailster' ); ?></strong> <span><?php printf( esc_html__( 'WP user on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ); ?></span>
-									<?php
+					<?php
 					break;
 				case 'backend':
 					?>
 					<strong><?php esc_html_e( 'via', 'mailster' ); ?></strong> <span><?php printf( esc_html__( 'Backend on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ); ?></span>
-							<?php
+					<?php
 					break;
 				case 'extern':
 					?>
 					<strong><?php esc_html_e( 'via', 'mailster' ); ?></strong> <span><?php printf( esc_html__( 'an extern form on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ); ?></span>
-							<?php
+					<?php
 					break;
 				case '/':
 					?>
 					<strong><?php esc_html_e( 'via', 'mailster' ); ?></strong> <span><?php printf( esc_html__( 'Homepage on %s', 'mailster' ), date( $timeformat, $subscriber->added + $timeoffset ) ); ?></span>
-						<?php
+					<?php
 					break;
 				default:
 					if ( preg_match( '#^wpcomment_(\d+)#', $meta->referer, $match ) ) :
@@ -839,7 +837,7 @@ class MailsterSubscribers {
 						<strong><?php esc_html_e( 'via', 'mailster' ); ?></strong> <span><?php printf( esc_html__( '%1$s on %2$s', 'mailster' ), '<a href="' . get_permalink( $comment->comment_post_ID ) . '#comment-' . $comment->comment_ID . '">' . esc_html__( 'Comment', 'mailster' ) . '</a>', date( $timeformat, $subscriber->added + $timeoffset ) ); ?></span>
 					<?php elseif ( preg_match( '#^https?://#', $meta->referer, $match ) ) : ?>
 
-					<strong><?php esc_html_e( 'via', 'mailster' ); ?></strong> <a href="<?php echo $meta->referer; ?>"><?php echo $meta->referer; ?></a>
+					<strong><?php esc_html_e( 'via', 'mailster' ); ?></strong> <a href="<?php echo esc_url( $meta->referer ); ?>"><?php echo esc_url( $meta->referer ); ?></a>
 					<?php else : ?>
 
 					<strong><?php esc_html_e( 'via', 'mailster' ); ?></strong> <?php echo $meta->referer; ?>
@@ -850,12 +848,10 @@ class MailsterSubscribers {
 					break;
 
 			}
-			if ( isset( $meta->form ) ) :
-				if ( $form = mailster( 'forms' )->get( $meta->form, false, false ) ) :
-					?>
+			if ( isset( $meta->form ) && $form = mailster( 'forms' )->get( $meta->form, false, false ) ) :
+				?>
 			<br><strong><?php esc_html_e( 'Form', 'mailster' ); ?> #<?php echo $form->ID; ?>:</strong> <a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_forms&ID=' . $form->ID ); ?>"><?php echo esc_html( $form->name ); ?></a>
 					<?php
-			endif;
 			endif;
 
 		endif;
@@ -2868,15 +2864,14 @@ class MailsterSubscribers {
 
 		// status is either pending or list assignment is pending
 		$sql .= ' AND (subscribers.status = 0 OR lists_subscribers.added = 0)';
-		// queue doesn"t exist or has been sent already (and not removed from queue)
+		// queue doesn't exist or has been sent already (and not removed from queue)
 		$sql .= ' AND (queue.subscriber_id IS NULL OR queue.sent != 0)';
 		// try is less den the count from the form settings
 		if ( ! $force ) {
 			$sql .= ' AND (IFNULL( confirmation.meta_value, 0 ) <= forms.resend_count)';
 			$sql .= ' AND (forms.resend = 1 OR IFNULL( confirmation.meta_value, 0 ) = 0)';
-		}
-		// resend is enabled or it's the first try
-		if ( ! $force ) {
+			// at least one minute old to not send confirmations more than once
+			$sql .= ' AND subscribers.signup < ' . ( time() + MINUTE_IN_SECONDS );
 		}
 
 		if ( ! is_null( $ids ) ) {

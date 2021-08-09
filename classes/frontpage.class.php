@@ -339,13 +339,11 @@ class MailsterFrontpage {
 		$subscriber_id = $subscriber->ID;
 		$meta          = mailster( 'campaigns' )->meta( $campaign_id );
 
-		if ( $target ) {
+		if ( $target = apply_filters( 'mailster_click_target', $target, $campaign_id, $subscriber_id, $campaign_index ) ) {
 
 			if ( ! preg_match( '#^https?:#', $target ) ) {
 				wp_die( sprintf( esc_html__( '%s is not a valid URL!', 'mailster' ), '<code>&quot;' . urldecode( $target ) . '&quot;</code>' ) );
 			}
-
-			$target = apply_filters( 'mailster_click_target', $target, $campaign_id );
 
 			// check if external URLS are actually in the campaign to prevent URL hijacking
 			$target_host = wp_parse_url( $target, PHP_URL_HOST );
@@ -413,7 +411,7 @@ class MailsterFrontpage {
 				if ( mailster_option( 'autoclickprevention' ) && ! isset( $_GET['autoclickprevention'] ) && time() - mailster( 'actions' )->get_timestamp( 'sent', $subscriber->ID, $campaign_id, $index ) < MINUTE_IN_SECONDS * 5 ) {
 					$redirect_url = esc_url( add_query_arg( array( 'autoclickprevention' => 'redirect' ) ) );
 					wp_die(
-						esc_html__( 'You are being redirected...', 'mailster' ) . '<meta http-equiv="Refresh" content="1; URL=' . $redirect_url . '">',
+						esc_html__( 'You are being redirected...', 'mailster' ) . '<meta http-equiv="Refresh" content="1; URL=' . esc_url( $redirect_url ) . '">',
 						esc_html__( 'You are being redirected...', 'mailster' ),
 						array(
 							'link_url'  => $redirect_url,

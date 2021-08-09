@@ -753,6 +753,8 @@ class MailsterMail {
 
 				}
 
+				$tracking_url = add_query_arg( array( 't' => time() ), $tracking_url );
+
 				$this->mailer->Body = str_replace( '</body>', '<img src="' . $tracking_url . '" alt="" width="1" height="1"></body>', $this->mailer->Body );
 
 			}
@@ -760,7 +762,7 @@ class MailsterMail {
 			$this->messageID         = uniqid();
 			$this->mailer->messageID = sprintf(
 				'<%s@%s>',
-				$this->messageID . '-' . $this->hash . '-' . $this->campaignID . '-' . mailster_option( 'ID' ),
+				$this->messageID . '-' . $this->hash . '-' . $this->campaignID . '|' . $this->index . '-' . mailster_option( 'ID' ),
 				$this->hostname
 			);
 

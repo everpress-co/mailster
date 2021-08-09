@@ -975,14 +975,21 @@ class MailsterForm {
 			$honeypot      = isset( $_BASE[ 'n_' . $honeypotnonce . '_email' ] ) ? $_BASE[ 'n_' . $honeypotnonce . '_email' ] : null;
 
 			if ( ! empty( $honeypot ) ) {
-				$this->object['errors']['_honeypot'] = esc_html__( 'Honeypot is for bears only!', 'mailster' );
+				$this->object['errors']['_honeypot'] = esc_html__( 'Please leave the honeypot field empty.', 'mailster' );
 			}
 		}
 
-		if ( ! is_admin() && isset( $_BASE['_timestamp'] ) && $this->valid() ) {
+		if ( ! is_admin() && ! is_user_logged_in() && isset( $_BASE['_timestamp'] ) && $this->valid() ) {
 
-			if ( isset( $_BASE['_timestamp'] ) && time() - $_BASE['_timestamp'] < 6 ) {
-				$this->object['errors']['_timestamp'] = esc_html__( 'Please not so fast!', 'mailster' );
+			/**
+			* Seconds to prevent forms being submitted
+			*
+			* @param int $time_in_seconds the time in seconds (default:4)
+			*/
+			$time_check_value = apply_filters( 'mailster_time_check_value', 4 );
+
+			if ( isset( $_BASE['_timestamp'] ) && time() - $_BASE['_timestamp'] <= $time_check_value ) {
+				$this->object['errors']['_timestamp'] = sprintf( esc_html__( 'Please wait at least %d seconds before submitting the form.', 'mailster' ), $time_check_value );
 			}
 		}
 
