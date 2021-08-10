@@ -274,6 +274,7 @@ class MailsterUpgrade {
 			unset( $actions['db_structure'] );
 			$actions = wp_parse_args(
 				array(
+					'cleanup_legacy_action_table'     => 'Cleanup Legacy Action Table',
 					'create_primary_keys'             => 'Create primary keys',
 					'db_structure'                    => 'Checking DB structure',
 					'update_action_table_sent'        => 'Update Action Table - Sent',
@@ -316,6 +317,7 @@ class MailsterUpgrade {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
+		wp_enqueue_style( 'mailster-update-style', MAILSTER_URI . 'assets/css/upgrade-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-update-script', MAILSTER_URI . 'assets/js/upgrade-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
 		$autostart = true;
@@ -345,17 +347,6 @@ class MailsterUpgrade {
 
 		?>
 	<div class="wrap">
-		<style>
-			#mailster-notice-db_update_required{display: none;}
-			#textoutput{
-				width:100%;
-				height: 100%;
-				font-size:14px;
-				font-family:monospace;
-				background:none;
-				white-space: nowrap;
-			}
-		</style>
 		<h1>Mailster Batch Update</h1>
 		<?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>
 
@@ -908,6 +899,22 @@ class MailsterUpgrade {
 	}
 
 
+	private function do_cleanup_legacy_action_table() {
+
+		global $wpdb;
+
+		if ( $this->table_exists( "{$wpdb->prefix}mailster_actions" ) ) {
+			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a WHERE campaign_id IS NULL" ) ) {
+				echo $count . " unassigned entries removed\n";
+				return false;
+			}
+		}
+
+		return true;
+
+	}
+
+
 	public function create_primary_keys() {
 
 		$return = '';
@@ -1033,7 +1040,9 @@ class MailsterUpgrade {
 		$fields_string = implode( ', ', $fields );
 		$select_string = implode( ', ', $fields );
 
-		$limit = 10000;
+		if ( ! $limit = get_transient( 'mailster_update_action_table_' . $table ) ) {
+			$limit = 100;
+		}
 
 		switch ( $table ) {
 			case 'softbounces':
@@ -1052,25 +1061,73 @@ class MailsterUpgrade {
 				break;
 		}
 
-		$sql = "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp WHERE b.ID IS NULL AND a.type = $type ORDER BY a.ID ASC LIMIT 1";
-
-		// get first missing primary key
-		if ( $key = $wpdb->get_var( $sql ) ) {
-
-			$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` ($fields_string) SELECT $select_string FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.ID >= %d AND a.type = %d ORDER BY a.ID ASC LIMIT %d;";
-
-			$sql = $wpdb->prepare( $sql, $key, $type, $limit );
-
-			$count = $wpdb->query( $sql );
-
+		if ( ! ( $start_id = get_transient( 'mailster_update_action_table_start_id_' . $table ) ) ) {
+			$start_id = 0;
+		}
+		if ( ! ( $total = get_transient( 'mailster_update_action_table_total_' . $table ) ) ) {
 			$total = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.type = $type" );
+			set_transient( 'mailster_update_action_table_total_' . $table, $total, HOUR_IN_SECONDS );
+		}
+
+		// method #1
+		if ( true ) {
+
+			$sql = "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp WHERE b.ID IS NULL AND a.type = %d AND a.ID > %d ORDER BY a.ID ASC LIMIT 1";
+			// get first missing primary key
+			if ( $key = $wpdb->get_var( $wpdb->prepare( $sql, $type, $start_id ) ) ) {
+
+				$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` ($fields_string) SELECT $select_string FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.ID >= %d AND a.type = %d ORDER BY a.ID ASC LIMIT %d;";
+
+				$sql = $wpdb->prepare( $sql, $key, $type, $limit );
+
+				$count = $wpdb->query( $sql );
+
+				$moved = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_action_$table` AS a" );
+
+				// get the limit from the 10th of the total within a range
+				$limit = max( 10000, min( 100000, round( $total / 10 ) ) );
+
+				if ( $count ) {
+					echo number_format_i18n( $moved ) . ' of ' . number_format_i18n( $total ) . ' entries from table ' . $table . ' moved.' . "\n";
+					set_transient( 'mailster_update_action_table_' . $table, $limit );
+					return false;
+				}
+			}
+
+			// method #2
+		} else {
+
+			// get old data
+			$old_data = $wpdb->get_results( $wpdb->prepare( "SELECT ID, $fields_string FROM `{$wpdb->prefix}mailster_actions` WHERE ID > %d AND type = %s ORDER by timestamp LIMIT %d", $start_id, $type, $limit ), ARRAY_A );
+
+			// get the limit from the 10th of the total within a range
+			$limit = max( 10000, min( 100000, round( $total / 10 ) ) );
+
+			$count = 0;
+
+			// insert old data and remember last ID for the next start ID
+			foreach ( $old_data as $data ) {
+				$start_id = $data['ID'];
+				unset( $data['ID'] );
+				$sql = "INSERT IGNORE INTO `{$wpdb->prefix}mailster_action_$table` ($fields_string) VALUES ('" . implode( "', '", array_values( $data ) ) . "')";
+				if ( $wpdb->query( $sql ) ) {
+					$count++;
+				}
+				set_transient( 'mailster_update_action_table_start_id_' . $table, $start_id );
+			}
+
 			$moved = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_action_$table` AS a" );
 
-			if ( $count ) {
-				echo number_format_i18n( $moved ) . ' of ' . number_format_i18n( $total ) . ' entries from table ' . $table . ' moved.' . "\n";
+			if ( $moved < $total ) {
+				echo number_format_i18n( $moved ) . ' of ' . number_format_i18n( $total ) . ' entries from table ' . $table . ' moved. ' . $count . "\n";
+				set_transient( 'mailster_update_action_table_' . $table, $limit );
 				return false;
 			}
 		}
+
+		delete_transient( 'mailster_update_action_table_start_id_' . $table );
+		delete_transient( 'mailster_update_action_table_' . $table );
+
 		echo 'Table "' . $table . '" finished.' . "\n";
 		usleep( 200 );
 
@@ -1908,6 +1965,7 @@ class MailsterUpgrade {
 		$action_tables = array( 'sent', 'opens', 'clicks', 'unsubs', 'bounces', 'errors' );
 
 		foreach ( $action_tables as $table ) {
+
 			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_action_{$table} AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_action_{$table} AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
 				echo "removed actions where's no campaign in $table\n";
 				return false;

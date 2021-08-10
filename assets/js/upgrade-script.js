@@ -60,7 +60,7 @@ mailster = (function (mailster, $, window, document) {
 			return
 		}
 
-		if (!nooutput) output(id, '<span>' + current + '</span> ...', true);
+		if (!nooutput) output(id, '<span>' + current + '</span> ...', true, 0);
 
 		do_update(id, function () {
 			setTimeout(function () {
@@ -140,6 +140,13 @@ mailster = (function (mailster, $, window, document) {
 		var el = $('#output_' + id);
 
 		el.append(content);
+
+		if (typeof round === 'undefined') {
+			el.parent().removeClass('active');
+		} else if (round > 1) {
+			el.parent().addClass('active');
+		}
+
 		round > 100 ? el.append(skip.show()) : skip.hide();
 
 	}
