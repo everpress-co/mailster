@@ -604,7 +604,7 @@ if ( $old_version ) {
 		case '2.4.18':
 		case '2.4.19':
 		case '2.4.20':
-			// move to "default" or after latests release versions
+			// move to "default" or after latest release versions
 			$mailster_options['db_update_required'] = true;
 			$mailster_options['auto_send_at_once']  = false;
 

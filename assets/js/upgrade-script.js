@@ -134,7 +134,7 @@ mailster = (function (mailster, $, window, document) {
 	function output(id, content, newline, round, nobox) {
 
 		if (!$('#output_' + id).length) {
-			$('<div class="' + (nobox ? '' : 'notice notice-info inline') + '" style="padding: 0.5em 6px;word-wrap: break-word;"><div id="output_' + id + '"></div></div>').appendTo($output);
+			$('<div class="' + (nobox ? '' : 'notice notice-info inline active') + '" style="padding: 0.5em 6px;word-wrap: break-word;"><div id="output_' + id + '"></div></div>').appendTo($output);
 		}
 
 		var el = $('#output_' + id);
@@ -143,8 +143,6 @@ mailster = (function (mailster, $, window, document) {
 
 		if (typeof round === 'undefined') {
 			el.parent().removeClass('active');
-		} else if (round > 1) {
-			el.parent().addClass('active');
 		}
 
 		round > 100 ? el.append(skip.show()) : skip.hide();
