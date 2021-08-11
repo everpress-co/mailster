@@ -298,6 +298,8 @@
 	white-space: nowrap;
 	padding: 5px 15px;
 	font-weight: 700;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 .optionbar ul li .inner ul li ul {
 	display: none;

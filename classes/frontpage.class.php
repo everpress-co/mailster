@@ -507,7 +507,7 @@ class MailsterFrontpage {
 				if ( strpos( $unsubscribe_url, $wp->request ) === false ) {
 					$this->setcookie( get_query_var( '_mailster_hash' ) );
 					$redirect_to = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
-					wp_redirect( $redirect_to, 301 );
+					wp_redirect( $redirect_to, 307 );
 					exit;
 				}
 
@@ -522,7 +522,7 @@ class MailsterFrontpage {
 				if ( strpos( $profile_url, $wp->request ) === false ) {
 					$this->setcookie( get_query_var( '_mailster_hash' ) );
 					$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . get_query_var( '_mailster_hash' ) ), get_query_var( '_mailster_extra' ) );
-					wp_redirect( $redirect_to, 301 );
+					wp_redirect( $redirect_to, 307 );
 					exit;
 				}
 
@@ -541,7 +541,7 @@ class MailsterFrontpage {
 
 					if ( empty( $hash ) ) {
 
-						wp_redirect( $this->get_link(), 301 );
+						wp_redirect( $this->get_link(), 307 );
 						exit;
 					}
 				}
@@ -555,9 +555,11 @@ class MailsterFrontpage {
 				// redirect if no such subscriber
 				if ( ! $subscriber ) {
 
-					wp_redirect( $this->get_link(), 301 );
+					wp_redirect( $this->get_link(), 307 );
 					exit;
 				}
+
+				$this->setcookie( get_query_var( '_mailster_hash' ) );
 
 				$extra = explode( '/', get_query_var( '_mailster_extra' ) );
 				if ( isset( $extra[0] ) ) {
@@ -611,7 +613,7 @@ class MailsterFrontpage {
 						}
 					} else {
 
-						wp_redirect( $this->get_link(), 301 );
+						wp_redirect( $this->get_link(), 307 );
 						exit;
 					}
 				}
@@ -620,7 +622,7 @@ class MailsterFrontpage {
 
 				$redirect_to = apply_filters( 'mailster_confirm_target', $target, $subscriber->ID );
 
-				wp_redirect( $redirect_to, 301 );
+				wp_redirect( $redirect_to, 307 );
 				exit;
 			break;
 
