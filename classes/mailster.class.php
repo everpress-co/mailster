@@ -2041,6 +2041,7 @@ class Mailster {
 			"CREATE TABLE {$wpdb->prefix}mailster_tags_subscribers (
                 `tag_id` bigint(20) unsigned NOT NULL,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
+                `added` int(11) unsigned NOT NULL,
                 UNIQUE KEY id (`tag_id`,`subscriber_id`),
                 KEY `tag_id` (`tag_id`),
                 KEY `subscriber_id` (`subscriber_id`)
