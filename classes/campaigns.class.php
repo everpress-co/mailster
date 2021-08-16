@@ -4405,10 +4405,6 @@ class MailsterCampaigns {
 			return new WP_Error( 'user_unsubscribed', esc_html__( 'User has not subscribed', 'mailster' ) );
 		}
 
-		if ( ! $force && ! mailster( 'helper' )->in_timeframe() ) {
-			return new WP_Error( 'system_error', esc_html__( 'Not in time frame', 'mailster' ) );
-		}
-
 		$campaign_meta = $this->meta( $campaign->ID );
 
 		$mail = mailster( 'mail' );
