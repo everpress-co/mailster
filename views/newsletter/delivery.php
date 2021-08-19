@@ -81,7 +81,9 @@ $sent = $this->get_sent( $post->ID );
 		$pg     = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 		?>
 		<p>
-			<div class="progress paused"><span class="bar" style="width:<?php echo $p; ?>%"><span>&nbsp;<?php echo $pg; ?></span></span><span>&nbsp;<?php echo $pg; ?></span><var><?php echo $p; ?>%</var></div>
+			<div class="progress paused">
+				<span class="bar" style="width:<?php echo esc_attr( $p ); ?>%"><span>&nbsp;<?php echo esc_attr( $pg ); ?></span></span><span>&nbsp;<?php echo esc_attr( $pg ); ?></span><var><?php echo esc_attr( $p ); ?>%</var>
+			</div>
 		</p>
 	<?php endif; ?>
 
@@ -421,12 +423,7 @@ $sent = $this->get_sent( $post->ID );
 		</div>
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_autoresponder_followup">
 				<?php
-				if ( $all_campaigns = $this->get_campaigns(
-					array(
-						'post__not_in' => array( $post->ID ),
-						'orderby'      => 'post_title',
-					)
-				) ) :
+				if ( $all_campaigns = $this->get_campaigns( 'post__not_in[]=' . $post->ID . '&orderby=post_title' ) ) :
 
 					// bypass post_status sort limitation.
 					$all_campaigns_stati = wp_list_pluck( $all_campaigns, 'post_status' );
@@ -457,7 +454,7 @@ $sent = $this->get_sent( $post->ID );
 							$status = $c->post_status;
 						}
 						?>
-					<option value="<?php echo $c->ID; ?>" <?php selected( $post->post_parent, $c->ID ); ?>><?php echo $c->post_title ? $c->post_title : '[' . esc_html__( 'no title', 'mailster' ) . ']'; ?></option>
+					<option value="<?php echo esc_attr( $c->ID ); ?>" <?php selected( $post->post_parent, $c->ID ); ?>><?php echo $c->post_title ? esc_html( $c->post_title ) : '[' . esc_html__( 'no title', 'mailster' ) . ']'; ?></option>
 						<?php
 					endforeach;
 					?>
@@ -564,7 +561,7 @@ $sent = $this->get_sent( $post->ID );
 		$pg     = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 		?>
 		<div class="progress">
-			<span class="bar" style="width:<?php echo $p; ?>%"><span>&nbsp;<?php echo $pg; ?></span></span><span>&nbsp;<?php echo $pg; ?></span><var><?php echo $p; ?>%</var>
+			<span class="bar" style="width:<?php echo esc_attr( $p ); ?>%"><span>&nbsp;<?php echo esc_attr( $pg ); ?></span></span><span>&nbsp;<?php echo esc_attr( $pg ); ?></span><var><?php echo esc_attr( $p ); ?>%</var>
 		</div>
 
 		<?php if ( $p ) : ?>
@@ -589,7 +586,7 @@ $sent = $this->get_sent( $post->ID );
 		$pg     = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 	?>
 	<div class="progress paused">
-		<span class="bar" style="width:<?php echo $p; ?>%"><span>&nbsp;<?php echo $pg; ?></span></span><span>&nbsp;<?php echo $pg; ?></span><var><?php echo $p; ?>%</var>
+		<span class="bar" style="width:<?php echo esc_attr( $p ); ?>%"><span>&nbsp;<?php echo esc_attr( $pg ); ?></span></span><span>&nbsp;<?php echo esc_attr( $pg ); ?></span><var><?php echo esc_attr( $p ); ?>%</var>
 	</div>
 <?php endif; ?>
 

@@ -1835,19 +1835,17 @@ class MailsterCampaigns {
 						case '2':
 							if ( ! $this->meta( $parent_id, 'track_opens' ) ) {
 								$parent_campaign = get_post( $parent_id );
-								mailster_notice( '<strong>' . sprintf( esc_html__( 'Tracking Opens is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaign->ID . '&action=edit' ) . '">' . $parent_campaign->post_title . '</a>' ) . '</strong>', 'error', true );
+								mailster_notice( '<strong>' . sprintf( esc_html__( 'Tracking Opens is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaign->ID . '&action=edit' ) . '">' . esc_html( $parent_campaign->post_title ) . '</a>' ) . '</strong>', 'error', true );
 							}
 							break;
 						// clicked
 						case '3':
-							if ( ! $this->meta( $_POST['parent_id'], 'track_clicks' ) ) {
+							if ( ! $this->meta( $parent_id, 'track_clicks' ) ) {
 								$parent_campaign = get_post( $parent_id );
-								mailster_notice( sprintf( esc_html__( 'Tracking Clicks is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaign->ID . '&action=edit' ) . '">' . $parent_campaign->post_title . '</a>' ), 'error', true );
+								mailster_notice( sprintf( esc_html__( 'Tracking Clicks is disabled in campaign %s! Please enable tracking or choose a different campaign.', 'mailster' ), '<a href="' . admin_url( 'post.php?post=' . $parent_campaign->ID . '&action=edit' ) . '">' . esc_html( $parent_campaign->post_title ) . '</a>' ), 'error', true );
 							}
 							break;
 
-						default:
-							break;
 					}
 				} elseif ( 'mailster_autoresponder_usertime' == $autoresponder['action'] ) {
 
@@ -5133,12 +5131,28 @@ class MailsterCampaigns {
 
 		if ( $inline ) {
 			$toolbar1 = (string) apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat,|,mailster_remove_element' );
-			$toolbar2 = (string) apply_filters( 'mailster_editor_toolbar2', 'bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify' );
+			$toolbar2 = (string) apply_filters( 'mailster_editor_toolbar2', 'fontselect,fontsizeselect|bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify' );
 			$toolbar3 = (string) apply_filters( 'mailster_editor_toolbar3', '' );
 
 			$single_toolbar1 = (string) apply_filters( 'mailster_editor_single_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,forecolor,backcolor,|,link,unlink,|,removeformat,|,mailster_remove_element' );
-			$single_toolbar2 = (string) apply_filters( 'mailster_editor_single_toolbar2', '' );
+			$single_toolbar2 = (string) apply_filters( 'mailster_editor_single_toolbar2', 'fontselect,fontsizeselect' );
 			$single_toolbar3 = (string) apply_filters( 'mailster_editor_single_toolbar3', '' );
+
+			$font_formats = apply_filters(
+				'mailster_editor_font_formats',
+				array(
+					'System'          => '-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Oxygen-Sans,Ubuntu,Cantarell,\'Helvetica Neue\',sans-serif',
+					'Arial'           => 'arial,helvetica,sans-serif',
+					'Arial Black'     => 'arial black,avant garde,serif',
+					'Courier New'     => 'courier new,courier,serif',
+					'Georgia'         => 'georgia,palatino,serif',
+					'Helvetica'       => 'helvetica,sans-serif',
+					'Tahoma'          => 'tahoma,arial,helvetica,sans-serif',
+					'Times New Roman' => 'times new roman,times,serif',
+					'Trebuchet MS'    => 'trebuchet ms,geneva,sans-serif',
+					'Verdana'         => 'verdana,geneva,sans-serif',
+				)
+			);
 
 			$mailsterdata['tinymce'] = array(
 				'args'   => apply_filters(
@@ -5158,7 +5172,8 @@ class MailsterCampaigns {
 						'convert_urls'           => true,
 						'browser_spellcheck'     => false,
 						'directionality'         => 'ltr',
-						'fontsize_formats'       => '8px 10px 12px 14px 18px 24px 36px',
+						'fontsize_formats'       => '8px 10px 12px 14px 18px 24px 36px 48px',
+						'font_formats'           => urldecode( http_build_query( $font_formats, '', ';' ) ),
 						'skin_url'               => MAILSTER_URI . 'assets/css/tinymce',
 						'plugins'                => 'textcolor colorpicker charmap hr lists paste wordpress wplink wpdialogs',
 					)

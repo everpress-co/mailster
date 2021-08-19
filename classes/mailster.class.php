@@ -981,14 +981,19 @@ class Mailster {
 
 		} elseif ( $post ) {
 
-			if ( ! $post->post_excerpt ) {
-				if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
-					$content            = explode( $matches[0], $post->post_content, 2 );
-					$post->post_excerpt = trim( $content[0] );
-				}
+			$length = apply_filters( 'mailster_excerpt_length', null );
+
+			if ( empty( $post->post_excerpt ) && preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
+				$content            = explode( $matches[0], $post->post_content, 2 );
+				$post->post_excerpt = trim( $content[0] );
+				$post->post_excerpt = mailster_remove_block_comments( $post->post_excerpt );
 			}
 
-			$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content ), apply_filters( 'mailster_excerpt_length', null ) );
+			if ( empty( $post->post_excerpt ) ) {
+				$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content, $length );
+			} elseif ( $length ) {
+				$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );
+			}
 
 			$post->post_content = mailster( 'helper' )->handle_shortcodes( $post->post_content );
 

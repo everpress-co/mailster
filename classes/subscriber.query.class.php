@@ -667,10 +667,10 @@ class MailsterSubscriberQuery {
 				$action_field = esc_sql( $action_field );
 
 				if ( 'bounces' == $action_field ) {
-					$join = "LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS `action_$action_field` ON `action_$action_field`.subscriber_id = subscribers.ID AND `action_$action_field`.hard = 0";
-
-				} elseif ( 'hardbounces' == $action_field ) {
 					$join = "LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS `action_$action_field` ON `action_$action_field`.subscriber_id = subscribers.ID AND `action_$action_field`.hard = 1";
+
+				} elseif ( 'softbounces' == $action_field ) {
+					$join = "LEFT JOIN {$wpdb->prefix}mailster_action_bounces AS `action_$action_field` ON `action_$action_field`.subscriber_id = subscribers.ID AND `action_$action_field`.hard = 0";
 
 				} else {
 					$join = "LEFT JOIN {$wpdb->prefix}mailster_action_$action_field AS `action_$action_field` ON `action_$action_field`.subscriber_id = subscribers.ID";

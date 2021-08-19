@@ -146,7 +146,7 @@ class MailsterSubscribers {
 			$columns[ $key ] = strip_tags( $field['name'] );
 		}
 
-		$columns['lists']  = esc_html__( 'Lists', 'mailster' );
+		$columns['lists']  = esc_html__( 'Lists & Tags', 'mailster' );
 		$columns['emails'] = esc_html__( 'Emails', 'mailster' );
 		$columns['status'] = esc_html__( 'Status', 'mailster' );
 		$columns['signup'] = esc_html__( 'Subscribed', 'mailster' );

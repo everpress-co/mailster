@@ -281,7 +281,6 @@ class MailsterUpgrade {
 					'update_action_table_clicks'     => 'Update Action Table - Clicks',
 					'update_action_table_unsubs'     => 'Update Action Table - Unsubscribes',
 					'update_action_table_unsubs_msg' => 'Update Unsubscribes Messages',
-					// 'update_action_table_softbounces' => 'Update Action Table - Softbounces',
 					'update_action_table_bounces'    => 'Update Action Table - Bounces',
 					'update_action_table_bounce_msg' => 'Update Bounce Messages',
 					'update_action_table_errors'     => 'Update Action Table - Errors',
@@ -1002,9 +1001,6 @@ class MailsterUpgrade {
 	}
 	private function do_update_action_table_unsubs() {
 		return $this->update_action_table( 'unsubs' );
-	}
-	private function do_update_action_table_softbounces() {
-		return $this->update_action_table( 'softbounces' );
 	}
 	private function do_update_action_table_bounces() {
 		return $this->update_action_table( 'bounces' );
