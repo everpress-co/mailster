@@ -119,3 +119,15 @@ $ignore_lists = isset( $this->post_data['ignore_lists'] ) ? ! ! $this->post_data
 		</p>
 	</div>
 <?php endif; ?>
+
+<div id="mailster_totals_lists" style="display:none;">
+	<div class="mailster-receivers-thickbox">
+			<div class="inner">
+			</div>
+			<div class="foot">
+				<p class="description alignleft"></p>
+				<button class="button button-primary total-lists-close"><?php esc_html_e( 'Close', 'mailster' ); ?></button>
+				<span class="spinner" id="snew_template-ajax-loading"></span>
+			</div>
+	</div>
+</div>

@@ -339,7 +339,7 @@ class UpdateCenterPlugin {
 				);
 			}
 
-			echo '<div class="update-nag update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
+			echo '<div class="update-nag notice notice-warning inline update-nag-' . $slug . '"><div>' . implode( '</div><div>', $output ) . '</div></div>';
 
 		}
 

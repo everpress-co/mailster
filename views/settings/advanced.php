@@ -7,6 +7,12 @@
 			<input type="hidden" name="mailster_options[ask_usage_tracking]" value="<?php echo mailster_option( 'ask_usage_tracking' ); ?>">
 		</td>
 	</tr>
+	<tr valign="top" class="settings-row settings-row-usage-mailster-logo">
+		<th scope="row"><?php esc_html_e( 'Mailster Branding', 'mailster' ); ?></th>
+		<td>
+			<label><input type="hidden" name="mailster_options[mailster_branding]" value=""><input type="checkbox" name="mailster_options[mailster_branding]" value="1" <?php checked( mailster_option( 'mailster_branding' ) ); ?>> <?php esc_html_e( 'Show Mailster Branding in your campaigns.', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you enable this option your campaigns contain a small logo of Mailster at the very bottom of the email.', 'mailster' ); ?>
+		</td>
+	</tr>
 	<tr valign="top" class="settings-row settings-row-cache">
 		<th scope="row"><?php esc_html_e( 'Cache', 'mailster' ); ?></th>
 		<td>
@@ -37,17 +43,6 @@
 	<tr valign="top" class="settings-row settings-row-legacy-hooks">
 		<th scope="row"><?php esc_html_e( 'Legacy Hooks', 'mailster' ); ?></th>
 		<td><label><input type="checkbox" name="mailster_options[legacy_hooks]" value="1" <?php checked( mailster_option( 'legacy_hooks' ) ); ?>> <?php esc_html_e( 'Enable legacy hooks', 'mailster' ); ?></label> <p class="description"><?php esc_html_e( 'If you still use deprecated MyMail hooks and filters you can keep them working by enabling this option.', 'mailster' ); ?></p>
-		</td>
-	</tr>
-	<tr valign="top" class="settings-row settings-row-php-mailer">
-		<th scope="row"><?php esc_html_e( 'PHP Mailer', 'mailster' ); ?></th>
-		<td>
-		<?php $phpmailerversion = mailster_option( 'php_mailer' ); ?>
-		<label><?php esc_html_e( 'Use version', 'mailster' ); ?>
-		<select name="mailster_options[php_mailer]">
-			<option value="0" <?php selected( ! $phpmailerversion ); ?>><?php esc_html_e( 'included in WordPress', 'mailster' ); ?></option>
-			<option value="latest" <?php selected( 'latest', $phpmailerversion ); ?>><?php printf( esc_html__( 'latest (%s)', 'mailster' ), '5.2.26' ); ?></option>
-		</select></label>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-send-test">

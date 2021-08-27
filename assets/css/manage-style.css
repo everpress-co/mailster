@@ -192,7 +192,7 @@ span.error{
 	text-align: right;
 	line-height: 20px;
 	margin-top: 24px;
-	border-radius: 4px;
+	border-radius: 2px;
 }
 .dark-mode .progress{
 	background: #50626f;
@@ -206,13 +206,11 @@ span.error{
 	top: 0;
 	bottom: 0;
 	left: 0;
-	border-radius: 4px;
+	border-radius: 2px;
 	overflow: hidden;
 }
 .progress span.bar{
 	background: #2BB3E7;
-	background: -webkit-linear-gradient(to right, #084067, #2BB3E7);
-	background: linear-gradient(to right, #084067, #2BB3E7);
 }
 .progress.paused span.bar,
 .progress.error span.bar{

@@ -54,6 +54,11 @@ class MailsterDashboard {
 			exit;
 		}
 
+		if ( get_option( 'mailster_dbversion' ) != MAILSTER_DBVERSION ) {
+			wp_redirect( admin_url( 'admin.php?page=mailster_update' ) );
+			exit;
+		}
+
 	}
 
 

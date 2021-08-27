@@ -133,6 +133,7 @@ span.mailster-required {
 .mailster-form-info ul, .mailster-form .mailster-form-info p{
 	margin: 0;
 	padding: 0;
+	max-width: initial;
 }
 .mailster-form-info ul li{
 	color: inherit;

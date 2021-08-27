@@ -40,6 +40,20 @@ function mailster_option( $option, $fallback = null ) {
 
 }
 
+/**
+ *
+ *
+ * @param unknown $option
+ * @param unknown $fallback (optional)
+ * @return unknown
+ */
+function mailster_force_option( $option, $fallback = null ) {
+
+	wp_cache_delete( 'alloptions', 'options' );
+	return mailster_option( $option, $fallback );
+
+}
+
 
 /**
  *
@@ -154,7 +168,7 @@ function mailster_text( $option, $fallback = '' ) {
 
 	$string = isset( $mailster_texts[ $option ] ) ? $mailster_texts[ $option ] : $fallback;
 
-	return apply_filters( 'mymail_text', apply_filters( 'mailster_text', $string, $option, $fallback ), $option, $fallback );
+	return apply_filters( 'mailster_text', $string, $option, $fallback );
 }
 
 
@@ -201,6 +215,21 @@ function mailster_update_option( $option, $value = null, $temp = false ) {
 	}
 
 	return update_option( 'mailster_options', $mailster_options );
+}
+
+
+/**
+ *
+ *
+ * @param unknown $option
+ * @param unknown $value  (optional)
+ * @param unknown $temp   (optional)
+ * @return unknown
+ */
+function mailster_force_update_option( $option, $value = null, $temp = false ) {
+
+	wp_cache_delete( 'alloptions', 'options' );
+	return mailster_update_option( $option, $value, $temp );
 }
 
 
@@ -470,7 +499,7 @@ function mailster_list_newsletter( $args = '' ) {
 
 	// Allow plugins to filter an array of excluded pages (but don't put a nullstring into the array).
 	$exclude_array = ( $r['exclude'] ) ? explode( ',', $r['exclude'] ) : array();
-	$r['exclude']  = implode( ',', apply_filters( 'mymail_list_newsletter_excludes', apply_filters( 'mailster_list_newsletter_excludes', $exclude_array ) ) );
+	$r['exclude']  = implode( ',', apply_filters( 'mailster_list_newsletter_excludes', $exclude_array ) );
 
 	$newsletters = get_posts( $r );
 
@@ -488,7 +517,7 @@ function mailster_list_newsletter( $args = '' ) {
 		}
 	}
 
-	$output = apply_filters( 'mymail_list_newsletter', apply_filters( 'mailster_list_newsletter', $output, $r ), $r );
+	$output = apply_filters( 'mailster_list_newsletter', $output, $r );
 
 	if ( $r['echo'] ) {
 		echo $output;
@@ -562,7 +591,7 @@ function mailster_ip2City( $ip = '', $get = null ) {
  */
 function mailster_get_ip() {
 
-	$ip = apply_filters( 'mymail_get_ip', apply_filters( 'mailster_get_ip', null ) );
+	$ip = apply_filters( 'mailster_get_ip', null );
 
 	if ( ! is_null( $ip ) ) {
 		return $ip;
@@ -633,7 +662,7 @@ function mailster_get_lang( $fallback = false ) {
  */
 function mailster_get_user_client( $string = null ) {
 
-	$client = apply_filters( 'mymail_get_user_client', apply_filters( 'mailster_get_user_client', null ) );
+	$client = apply_filters( 'mailster_get_user_client', null );
 
 	if ( ! is_null( $client ) ) {
 		return $client;
@@ -893,7 +922,7 @@ function mailster_remove_notice( $key ) {
 		return update_option( 'mailster_notices', $mailster_notices );
 	}
 
-	return false;
+	return true;
 
 }
 

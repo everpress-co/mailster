@@ -360,6 +360,17 @@ else :
 		</fieldset>
 
 		<fieldset>
+			<legend><?php esc_html_e( 'Tags Options', 'mailster' ); ?></legend>
+				<p><?php esc_html_e( 'Assign following tags to subscribers who signup via this form.', 'mailster' ); ?></p>
+				<select multiple name="mailster_tags[]" class="tags-input hide-if-js">
+					 <option></option>
+				<?php foreach ( mailster( 'tags' )->get() as $tag ) : ?>
+					<option value="<?php echo esc_attr( $tag->ID ); ?>" <?php selected( in_array( $tag->ID, $form->tags ) ); ?>><?php echo esc_html( $tag->name ); ?></option>
+				<?php endforeach; ?>
+				</select>
+		</fieldset>
+
+		<fieldset>
 			<legend><?php esc_html_e( 'Double Opt In', 'mailster' ); ?></legend>
 
 				<p><label><input type="radio" name="mailster_data[doubleoptin]" class="double-opt-in" data-id="<?php echo $id; ?>" value="0" <?php checked( ! $form->doubleoptin ); ?>> [Single-Opt-In] <?php esc_html_e( 'new subscribers are subscribed instantly without confirmation.', 'mailster' ); ?></label>

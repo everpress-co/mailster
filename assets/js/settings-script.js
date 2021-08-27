@@ -155,6 +155,10 @@ mailster = (function (mailster, $, window, document) {
 		return false;
 	});
 
+	$('.toggle-auto_send_at_once').on('change', function () {
+		$('input[name="mailster_options[send_at_once]"]').prop('disabled', $(this).is(':checked'));
+	});
+
 
 	$('#bounce_active').on('change', function () {
 		($(this).is(':checked')) ?

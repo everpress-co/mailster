@@ -167,7 +167,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		dataType = dataType ? dataType : "JSON";
-		$.ajax({
+		return $.ajax({
 			type: 'POST',
 			url: mailster.ajaxurl,
 			data: $.extend({
@@ -239,11 +239,15 @@ mailster = (function (mailster, $, window, document) {
 	mailster.util.isMSIE = (/msie|trident/i).test(navigator.userAgent);
 	mailster.util.isTouchDevice = 'ontouchstart' in document.documentElement;
 
-	mailster.util.CodeMirror = null;
-
-	mailster.events.push('documentReady', function () {
-		mailster.util.CodeMirror = wp.CodeMirror || window.CodeMirror;
-	});
+	mailster.util.codemirrorargs = {
+		mode: {
+			name: "htmlmixed"
+		},
+		tabMode: "indent",
+		lineNumbers: true,
+		viewportMargin: Infinity,
+		autofocus: true
+	};
 
 	mailster.util.top = function () {
 		return $('html,body').scrollTop() || document.scrollingElement.scrollTop;
@@ -362,7 +366,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	mailster.events.push('documentReady', function () {
-		window.tb_position = mailster.util.tb_position;
+		//window.tb_position = mailster.util.tb_position;
 		for (var i in mailster.$) {
 			mailster.dom[i] = mailster.$[i][0];
 		}

@@ -700,7 +700,7 @@ class MailsterNotification {
 							break;
 						case 'date':
 							echo $subscriber->{$id} && is_integer( strtotime( $subscriber->{$id} ) )
-							? date( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$id} ) )
+							? date_i18n( mailster( 'helper' )->dateformat(), strtotime( $subscriber->{$id} ) )
 							: $subscriber->{$id};
 							break;
 						default:
@@ -776,7 +776,7 @@ class MailsterNotification {
 		global $wpdb;
 
 		// should be odd
-		$limit = apply_filters( 'mymail_subscriber_notification_subscriber_limit', apply_filters( 'mailster_subscriber_notification_subscriber_limit', 7 ) );
+		$limit = apply_filters( 'mailster_subscriber_notification_subscriber_limit', 7 );
 
 		$delay = mailster_option( 'subscriber_notification_delay' );
 		if ( ! $delay ) {
@@ -810,7 +810,7 @@ class MailsterNotification {
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
-				<h2><?php printf( esc_html__( 'You have %1$s new subscribers since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date( $date_format, $timestamp + $gmt_offset ) ); ?></h2>
+				<h2><?php printf( esc_html__( 'You have %1$s new subscribers since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date_i18n( $date_format, $timestamp + $gmt_offset ) ); ?></h2>
 				<?php printf( esc_html__( 'You have now %s subscribers in total.', 'mailster' ), '<strong>' . number_format_i18n( $total ) . '</strong>' ); ?>
 			</td>
 			</tr>
@@ -1064,7 +1064,7 @@ endforeach;
 		global $wpdb;
 
 		// should be odd
-		$limit = apply_filters( 'mymail_subscriber_unsubscribe_notification_subscriber_limit', apply_filters( 'mailster_subscriber_unsubscribe_notification_subscriber_limit', 7 ) );
+		$limit = apply_filters( 'mailster_subscriber_unsubscribe_notification_subscriber_limit', 7 );
 
 		$delay = mailster_option( 'unsubscribe_notification_delay' );
 		if ( ! $delay ) {
@@ -1074,7 +1074,7 @@ endforeach;
 		// get timestamp in UTC
 		$timestamp = mailster( 'helper' )->get_timestamp_by_string( $delay, true );
 
-		$sql = $wpdb->prepare( "SELECT a.ID FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_actions AS b ON a.ID = b.subscriber_ID AND b.type = 4 WHERE b.timestamp >= %d AND a.status = 2 GROUP BY a.ID ORDER BY b.timestamp DESC, a.signup DESC", $timestamp );
+		$sql = $wpdb->prepare( "SELECT a.ID FROM {$wpdb->prefix}mailster_subscribers AS a LEFT JOIN {$wpdb->prefix}mailster_action_unsubs AS b ON a.ID = b.subscriber_ID WHERE b.timestamp >= %d AND a.status = 2 GROUP BY a.ID ORDER BY b.timestamp DESC, a.signup DESC", $timestamp );
 
 		$subscribers = $wpdb->get_results( $sql );
 
@@ -1098,7 +1098,7 @@ endforeach;
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 			<td valign="top" align="center">
-				<h2><?php printf( esc_html__( 'You have %1$s cancellations since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date( $date_format, $timestamp + $gmt_offset ) ); ?></h2>
+				<h2><?php printf( esc_html__( 'You have %1$s cancellations since %2$s.', 'mailster' ), '<strong>' . number_format_i18n( $count ) . '</strong>', date_i18n( $date_format, $timestamp + $gmt_offset ) ); ?></h2>
 				<?php printf( esc_html__( 'You have now %s subscribers in total.', 'mailster' ), '<strong>' . number_format_i18n( $total ) . '</strong>' ); ?>
 			</td>
 			</tr>

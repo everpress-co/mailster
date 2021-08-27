@@ -2,8 +2,8 @@
 /*
 Plugin Name: Mailster - Email Newsletter Plugin for WordPress
 Plugin URI: https://mailster.co
-Description: The Ultimate Newsletter Plugin.
-Version: 2.4.20
+Description: Send Beautiful Email Newsletters in WordPress.
+Version: 3.0
 Author: EverPress
 Author URI: https://everpress.co
 Text Domain: mailster
@@ -13,9 +13,9 @@ if ( defined( 'MAILSTER_VERSION' ) || ! defined( 'ABSPATH' ) ) {
 	return;
 }
 
-define( 'MAILSTER_VERSION', '2.4.20' );
+define( 'MAILSTER_VERSION', '3.0' );
 define( 'MAILSTER_BUILT', 0000000000 );
-define( 'MAILSTER_DBVERSION', 20200910 );
+define( 'MAILSTER_DBVERSION', 20210901 );
 define( 'MAILSTER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MAILSTER_URI', plugin_dir_url( __FILE__ ) );
 define( 'MAILSTER_FILE', __FILE__ );

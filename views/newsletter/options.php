@@ -62,7 +62,7 @@ if ( isset( $_GET['showstats'] ) && $_GET['showstats'] ) {
 	<p>
 		<label><?php esc_html_e( 'Colors Schemas', 'mailster' ); ?></label>
 		<?php
-		$customcolors = get_option( 'mailster_colors' );
+		$customcolors = get_option( 'mailster_colors', array() );
 		if ( isset( $customcolors[ $this->get_template() ] ) ) :
 			?>
 			<a class="colorschema-delete-all"><?php esc_html_e( 'Delete all custom schemas', 'mailster' ); ?></a>

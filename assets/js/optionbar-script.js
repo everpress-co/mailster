@@ -3,23 +3,7 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
-	var codemirror,
-		codemirrorargs = {
-			mode: {
-				name: "htmlmixed",
-				scriptTypes: [{
-					matches: /\/x-handlebars-template|\/x-mustache/i,
-					mode: null
-				}, {
-					matches: /(text|application)\/(x-)?vb(a|script)/i,
-					mode: "vbscript"
-				}]
-			},
-			tabMode: "indent",
-			lineNumbers: true,
-			viewportMargin: Infinity,
-			autofocus: true
-		};
+	var codeeditor;
 
 	mailster.optionbar = {};
 
@@ -85,12 +69,20 @@ mailster = (function (mailster, $, window, document) {
 					head: structure.head
 				},
 				function (response) {
+
 					mailster.$.optionbar.find('a.code').addClass('active').removeClass('loading');
 					mailster.$.html.hide();
 					mailster.$.content.val(response.content);
+					if (wp.codeEditor) {
+						codeeditor = wp.codeEditor.initialize(mailster.$.content, {
+							codemirror: mailster.util.codemirrorargs
+						});
+					} else {
+						codeeditor = {
+							codemirror: window.CodeMirror.fromTextArea(mailster.$.content.get(0), mailster.util.codemirrorargs)
+						};
+					}
 					mailster.$.optionbar.find('a').not('a.redo, a.undo, a.code').addClass('disabled');
-
-					codemirror = mailster.util.CodeMirror.fromTextArea(mailster.$.content.get(0), codemirrorargs);
 
 				},
 				function (jqXHR, textStatus, errorThrown) {
@@ -101,8 +93,8 @@ mailster = (function (mailster, $, window, document) {
 
 		} else {
 
-			structure = mailster.editor.getStructure(codemirror.getValue());
-			codemirror.clearHistory();
+			structure = mailster.editor.getStructure(codeeditor.codemirror.getValue());
+			codeeditor.codemirror.clearHistory();
 
 			mailster.$.optionbar.find('a.code').addClass('loading');
 			mailster.trigger('disable');
@@ -142,14 +134,14 @@ mailster = (function (mailster, $, window, document) {
 			mailster.$.html.hide();
 			mailster.$.excerpt.show();
 			mailster.$.plaintext.show();
-			mailster.$.optionbar.find('a').not('a.redo, a.undo, a.plaintext, a.preview').addClass('disabled');
+			mailster.$.optionbar.find('a').not('a.redo, a.undo, a.plaintext, a.precheck').addClass('disabled');
 
 		} else {
 
 			mailster.$.html.show();
 			mailster.$.plaintext.hide();
 			mailster.$.optionbar.find('a.plaintext').removeClass('active');
-			mailster.$.optionbar.find('a').not('a.redo, a.undo, a.plaintext, a.preview').removeClass('disabled');
+			mailster.$.optionbar.find('a').not('a.redo, a.undo, a.plaintext, a.precheck').removeClass('disabled');
 
 			mailster.trigger('refresh');
 
@@ -163,36 +155,16 @@ mailster = (function (mailster, $, window, document) {
 		$('#new_template_name').focus().select();
 	};
 
-	mailster.optionbar.preview = function () {
+	mailster.optionbar.precheck = function () {
 
-		if (mailster.$.optionbar.find('a.preview').is('.loading')) {
+		if (mailster.$.optionbar.find('a.precheck').is('.loading')) {
 			return false;
 		}
-
-		mailster.trigger('save');
-
-		mailster.$.optionbar.find('a.preview').addClass('loading');
-		mailster.util.ajax(
-			'set_preview', {
-				id: mailster.campaign_id,
-				content: mailster.editor.getContent(),
-				head: mailster.$.head.val(),
-				issue: $('#mailster_autoresponder_issue').val(),
-				subject: mailster.details.$.subject.val(),
-				preheader: mailster.details.$.preheader.val()
-			},
-			function (response) {
-
-				mailster.$.optionbar.find('a.preview').removeClass('loading');
-				mailster.thickbox.$.preview.attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
-				tb_show((mailster.$.title.val() ? mailster.util.sprintf(mailster.l10n.campaigns.preview_for, '"' + mailster.$.title.val() + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' + response.hash + '&_wpnonce=' + response.nonce + '&width=' + (Math.min(1200, mailster.$.window.width() - 50)) + '&height=' + (mailster.$.window.height() - 100) + '&inlineId=mailster_campaign_preview', null);
-
-			},
-			function (jqXHR, textStatus, errorThrown) {
-				mailster.$.optionbar.find('a.preview').removeClass('loading');
-			}
-		);
-
+		mailster.$.optionbar.find('a.precheck').addClass('loading');
+		mailster.precheck.open(function () {
+			mailster.$.optionbar.find('a.precheck').removeClass('loading');
+		});
+		return;
 	}
 
 	mailster.optionbar.dfw = function (event) {
@@ -225,7 +197,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', 'a', false)
 		.on('click', 'a.save-template', mailster.optionbar.openSaveDialog)
 		.on('click', 'a.clear-modules', mailster.optionbar.removeModules)
-		.on('click', 'a.preview', mailster.optionbar.preview)
+		.on('click', 'a.precheck', mailster.optionbar.precheck)
 		.on('click', 'a.undo', mailster.optionbar.undo)
 		.on('click', 'a.redo', mailster.optionbar.redo)
 		.on('click', 'a.code', mailster.optionbar.codeView)
@@ -252,6 +224,7 @@ mailster = (function (mailster, $, window, document) {
 		if (!mailster.dom.template) return 0;
 		return mailster.$.template.offset().top;
 	}
+
 
 	function togglefix() {
 		var scrolltop = mailster.util.top();

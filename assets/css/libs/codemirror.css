@@ -1,13 +1,5 @@
 /* BASICS */
 
-.CodeMirror {
-  /* Set height, width, borders, and global font properties here */
-  font-family: 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', 'Monaco', Courier, monospace !important;
-  color: black;
-  height: auto;
-  width: 100%;
-  direction: ltr;
-}
 
 /* PADDING */
 
@@ -254,10 +246,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   word-break: normal;
 }
 
-.CodeMirror-code {
-  background-image:url(../../img/pre_bg.png);
-  background-attachment:scroll;
-}
+
 .CodeMirror-code pre {
   border-right: 30px solid transparent;
   width: -webkit-fit-content;
