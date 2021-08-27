@@ -12,7 +12,7 @@ function mailster( $subclass = null ) {
 	$args     = func_get_args();
 	$subclass = array_shift( $args );
 
-	if ( is_null( $subclass ) ) {
+	if ( is_null( $subclass ) || ! is_string( $subclass ) ) {
 		return $mailster;
 	}
 

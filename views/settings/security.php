@@ -2,22 +2,23 @@
 	<tr valign="top" class="settings-row settings-row-general-checks">
 		<th scope="row"><?php esc_html_e( 'General Checks', 'mailster' ); ?></th>
 		<td>
-		<p><label><input type="hidden" name="mailster_options[check_mx]" value=""><input type="checkbox" name="mailster_options[check_mx]" value="1" <?php checked( mailster_option( 'check_mx' ) ); ?>><?php esc_html_e( 'Check MX record', 'mailster' ); ?></label><p class="description"><?php esc_html_e( 'Check the domain for an existing MX record. A missing MX record often indicates that there\'s no email server setup for the domain.', 'mailster' ); ?></p>
+		<p><label><input type="hidden" name="mailster_options[check_mx]" value=""><input type="checkbox" name="mailster_options[check_mx]" value="1" <?php checked( mailster_option( 'check_mx' ) ); ?>><?php esc_html_e( 'Check MX record', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Check the domain for an existing MX record. A missing MX record often indicates that there\'s no email server setup for the domain.', 'mailster' ); ?></span>
 		</p>
-		<p><label><input type="hidden" name="mailster_options[check_smtp]" value=""><input type="checkbox" name="mailster_options[check_smtp]" value="1" <?php checked( mailster_option( 'check_smtp' ) ); ?>><?php esc_html_e( 'Validate via SMTP', 'mailster' ); ?></label><p class="description"><?php esc_html_e( 'Connects the domain\'s SMTP server to check if the address really exists.', 'mailster' ); ?></p></p>
+		<p><label><input type="hidden" name="mailster_options[check_smtp]" value=""><input type="checkbox" name="mailster_options[check_smtp]" value="1" <?php checked( mailster_option( 'check_smtp' ) ); ?>><?php esc_html_e( 'Validate via SMTP', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Connects the domain\'s SMTP server to check if the address really exists.', 'mailster' ); ?></p></span>
 		<?php if ( class_exists( 'AKISMET' ) ) : ?>
-		<p><label><input type="hidden" name="mailster_options[check_akismet]" value=""><input type="checkbox" name="mailster_options[check_akismet]" value="1" <?php checked( mailster_option( 'check_akismet' ) ); ?> ><?php esc_html_e( 'Check via Akismet', 'mailster' ); ?></label><p class="description"><?php esc_html_e( 'Checks via your Akismet installation.', 'mailster' ); ?></p>
+		<p><label><input type="hidden" name="mailster_options[check_akismet]" value=""><input type="checkbox" name="mailster_options[check_akismet]" value="1" <?php checked( mailster_option( 'check_akismet' ) ); ?> ><?php esc_html_e( 'Check via Akismet', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Checks via your Akismet installation.', 'mailster' ); ?></p>
 		</p>
 		<?php endif; ?>
-		<p><label><input type="hidden" name="mailster_options[check_honeypot]" value=""><input type="checkbox" name="mailster_options[check_honeypot]" value="1" <?php checked( mailster_option( 'check_honeypot' ) ); ?> ><?php esc_html_e( 'Honeypot', 'mailster' ); ?></label><p class="description"><?php esc_html_e( 'Add an invisible input field to trick bots during signup.', 'mailster' ); ?></p>
+		<p><label><input type="hidden" name="mailster_options[check_honeypot]" value=""><input type="checkbox" name="mailster_options[check_honeypot]" value="1" <?php checked( mailster_option( 'check_honeypot' ) ); ?> ><?php esc_html_e( 'Honeypot', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Add an invisible input field to trick bots during signup.', 'mailster' ); ?></span>
 		</p>
-		<p><label><input type="hidden" name="mailster_options[check_ip]" value=""><input type="checkbox" name="mailster_options[check_ip]" value="1" <?php checked( mailster_option( 'check_ip' ) ); ?> ><?php esc_html_e( 'IP Check', 'mailster' ); ?></label><p class="description"><?php esc_html_e( 'This prevents a signup from an IP if there\'s already a pending subscriber with the same IP address. Most bots signup with the same IP address so if this checked an additional signup can only be made once the previous email has been confirmed.', 'mailster' ); ?> <?php esc_html_e( 'Only works if double-opt-in is enabled and the user is not logged in.', 'mailster' ); ?></p>
+		<p><label><input type="hidden" name="mailster_options[check_ip]" value=""><input type="checkbox" name="mailster_options[check_ip]" value="1" <?php checked( mailster_option( 'check_ip' ) ); ?> ><?php esc_html_e( 'IP Check', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'This prevents a signup from an IP if there\'s already a pending subscriber with the same IP address. Most bots signup with the same IP address so if this checked an additional signup can only be made once the previous email has been confirmed.', 'mailster' ); ?> <?php esc_html_e( 'Only works if double-opt-in is enabled and the user is not logged in.', 'mailster' ); ?></span>
 		</p>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-antiflood">
 		<th scope="row"><?php esc_html_e( 'Antiflood', 'mailster' ); ?></th>
-			<td><p><input type="text" name="mailster_options[antiflood]" value="<?php echo mailster_option( 'antiflood' ); ?>" class="small-text"> <?php esc_html_e( 'seconds', 'mailster' ); ?></p><p class="description"><?php esc_html_e( 'Prevent repeated subscriptions from the same IP address for the given time frame.', 'mailster' ); ?></p>
+			<td><p><input type="text" name="mailster_options[antiflood]" value="<?php echo mailster_option( 'antiflood' ); ?>" class="small-text"> <?php esc_html_e( 'seconds', 'mailster' ); ?><br><span class="description"><?php esc_html_e( 'Prevent repeated subscriptions from the same IP address for the given time frame.', 'mailster' ); ?></span>
+			</p>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-auto-click-prevention">

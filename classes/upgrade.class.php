@@ -1039,6 +1039,11 @@ class MailsterUpgrade {
 		}
 		if ( ! ( $total = get_transient( 'mailster_update_action_table_total_' . $table ) ) ) {
 			$total = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_actions` AS a WHERE a.type IN($type)" );
+			$moved = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_action_$table`" );
+			if ( $moved >= $total ) {
+				echo 'Table "' . $table . '" finished.' . "\n";
+				return true;
+			}
 			set_transient( 'mailster_update_action_table_total_' . $table, $total, HOUR_IN_SECONDS );
 		}
 		if ( ! ( $total_actions = get_transient( 'mailster_update_action_table_total' ) ) ) {

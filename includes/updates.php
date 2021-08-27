@@ -604,17 +604,17 @@ if ( $old_version ) {
 		case '2.4.18':
 		case '2.4.19':
 		case '2.4.20':
-			// move to "default" or after latest release versions
-			$mailster_options['db_update_required'] = true;
-			$mailster_options['auto_send_at_once']  = false;
+			$mailster_options['auto_send_at_once'] = false;
+			$mailster_options['antiflood']         = 10;
+
+			$mailster_options['db_update_required']   = true;
+			$mailster_options['_flush_rewrite_rules'] = true;
 
 		case '3.0':
-			if ( version_compare( $old_version, '3.0-beta.1', '<=' ) ) {
-				$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_action_sent DROP INDEX id" );
-				$wpdb->query( "ALTER TABLE {$wpdb->prefix}mailster_action_opens DROP INDEX id" );
-				mailster()->dbstructure();
+			// beta users do not need to run the update process again
+			if ( $old_version_sanitized == '3.0' ) {
+				$mailster_options['db_update_required'] = false;
 			}
-			$mailster_options['_flush_rewrite_rules'] = true;
 
 		default:
 			// reset translations
