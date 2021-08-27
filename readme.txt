@@ -190,11 +190,11 @@ Get professional development help from our expert support partner *Codeable* for
 
 * new: Test the Email Quality with the built in Pre-check Feature.
 * new: Tag you subscriber with Tags fro better segmentation.
-* new: improved security with a dedicate security settings page.
-* new: automatic batch size settings to calculate your optimal sending rate.
-* new: option to create new campaigns on action hook based auto responders.
-* new: updated add ons page to browse and install even more integrations.
-* new: updated templates page now lists over 400 free and premium templates.
+* new: Improved security with a dedicate security settings page.
+* new: Automatic batch size settings to calculate your optimal sending rate.
+* new: Option to create new campaigns on action hook based auto responders.
+* new: Updated add ons page to browse and install even more integrations.
+* new: Updated templates page now lists over 400 free and premium templates.
 * new: UI update with new icons based on SVG.
 * new: Auto click prevention to prevent bots auto clicking and messing up your stats.
 * new: Sending warmup if you send from a new IP address or domain.

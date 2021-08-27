@@ -56,8 +56,6 @@ class MailsterActions {
 		// track clients only on explicit opens
 		if ( $explicit && $client = mailster_get_user_client() ) {
 
-			mailster_notice( '<pre>' . print_r( date( 'r' ), true ) . '</pre>' . '<pre>' . print_r( date( func_get_args() ), true ) . '</pre>' . '<pre>' . print_r( $client, true ) . '</pre>' . '<pre>' . print_r( $_SERVER, true ) . '</pre>' );
-
 			switch ( $client->client ) {
 				// remove meta info if client is Gmail (GoogleImageProxyy)
 				case 'Gmail':

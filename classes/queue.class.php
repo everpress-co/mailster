@@ -152,18 +152,19 @@ class MailsterQueue {
 
 		$campaign_id = (int) $campaign_id;
 		$subscribers = array_filter( $subscribers, 'is_numeric' );
+		if ( empty( $subscribers ) ) {
+			return true;
+		}
 
 		if ( ! empty( $tags ) ) {
 			$tags = maybe_serialize( $tags );
 		} else {
 			$tags = '';
 		}
-		if ( $options ) {
+		if ( ! empty( $options ) ) {
 			$options = maybe_serialize( $options );
-		}
-
-		if ( empty( $subscribers ) ) {
-			return true;
+		} else {
+			$options = '';
 		}
 
 		$inserts = array();

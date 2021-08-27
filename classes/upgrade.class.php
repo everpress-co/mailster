@@ -222,7 +222,7 @@ class MailsterUpgrade {
 			$db_version = 0;
 		}
 
-		if ( $db_version < 20140924 || false ) {
+		if ( $db_version < 20140924 ) {
 			$actions = wp_parse_args(
 				array(
 					'update_lists'           => 'updating Lists',
@@ -239,7 +239,7 @@ class MailsterUpgrade {
 			);
 		}
 
-		if ( $db_version < 20150924 || false ) {
+		if ( $db_version < 20150924 ) {
 			$actions = wp_parse_args(
 				array(
 					'update_forms' => 'updating Forms',
@@ -248,7 +248,7 @@ class MailsterUpgrade {
 			);
 		}
 
-		if ( $db_version < 20151218 || false ) {
+		if ( $db_version < 20151218 ) {
 			$actions = wp_parse_args(
 				array(
 					'update_db_structure' => 'Changes in DB structure',
@@ -257,7 +257,7 @@ class MailsterUpgrade {
 			);
 		}
 
-		if ( $db_version < 20160105 || false ) {
+		if ( $db_version < 20160105 ) {
 			$actions = wp_parse_args(
 				array(
 					'remove_old_data' => 'Removing MyMail 1.x data',
@@ -266,11 +266,11 @@ class MailsterUpgrade {
 			);
 		}
 
-		if ( $db_version < 20170201 || false ) {
+		if ( $db_version < 20170201 ) {
 			$actions = wp_parse_args( array(), $actions );
 		}
 
-		if ( $db_version < 20210131 ) {
+		if ( $db_version < 20210901 ) {
 			unset( $actions['db_structure'] );
 			$actions = wp_parse_args(
 				array(
@@ -285,16 +285,8 @@ class MailsterUpgrade {
 					'update_action_table_bounce_msg' => 'Update Bounce Messages',
 					'update_action_table_errors'     => 'Update Action Table - Errors',
 					'update_action_table_errors_msg' => 'Update Errors Messages',
+					'maybe_fix_indexes'              => 'Fix indexes',
 					// 'delete_legacy_action_table'      => 'Remove Legacy Table',
-				),
-				$actions
-			);
-		}
-
-		if ( $db_version < 20210601 ) {
-			$actions = wp_parse_args(
-				array(
-					'maybe_fix_indexes' => 'Fix indexes',
 				),
 				$actions
 			);

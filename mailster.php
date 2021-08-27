@@ -15,7 +15,7 @@ if ( defined( 'MAILSTER_VERSION' ) || ! defined( 'ABSPATH' ) ) {
 
 define( 'MAILSTER_VERSION', '3.0' );
 define( 'MAILSTER_BUILT', 0000000000 );
-define( 'MAILSTER_DBVERSION', 20210602 );
+define( 'MAILSTER_DBVERSION', 20210901 );
 define( 'MAILSTER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MAILSTER_URI', plugin_dir_url( __FILE__ ) );
 define( 'MAILSTER_FILE', __FILE__ );
@@ -45,23 +45,4 @@ if ( ! $mailster->wp_mail && mailster_option( 'system_mail' ) == 1 ) {
 	function wp_mail( $to, $subject, $message, $headers = '', $attachments = array(), $file = null, $template = null ) {
 		return mailster()->wp_mail( $to, $subject, $message, $headers, $attachments, $file, $template );
 	}
-}
-
-// change only within 30 days after BUILT
-if ( time() < MAILSTER_BUILT + MONTH_IN_SECONDS ) {
-	add_filter(
-		'pre_http_request',
-		function( $bool, $r, $url ) {
-
-			if ( false !== strpos( $url, '//mailster.co' ) ) {
-				$url = str_replace( '//mailster.co', '//staging.mailster.co', $url );
-
-				return wp_remote_request( $url, $r );
-			}
-
-			return $bool;
-		},
-		100,
-		3
-	);
 }

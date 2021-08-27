@@ -69,11 +69,11 @@
 		</div>
 		<div class="col">
 			<div class="media-container">
-				<img src="https://static.mailster.co/welcome/subscriber-tags.png">
+				<img src="https://static.mailster.co/welcome/addons.png">
 			</div>
 			<h3>Add Ons</h3>
 			<p>Next to the tempate section we have also updated the add ons page. Find great extensions is now easier.</p>
-			<div class="return-to-dashboard"><a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_addons&browse=new' ); ?>">Browse Add Ons</a></div>
+			<div class="return-to-dashboard"><a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_addons&browse=all' ); ?>">Browse Add Ons</a></div>
 		</div>
 	</div>
 
