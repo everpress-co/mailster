@@ -1474,58 +1474,28 @@ class MailsterHelper {
 
 	public function in_timeframe( $timestamp = null ) {
 
-		if ( is_null( $timestamp ) ) {
-			$timestamp = time();
-		}
-
-		$gmt_offset = $this->gmt_offset();
-		// get the date with gmt offset
-		$day  = date( 'w', $timestamp + ( $gmt_offset * HOUR_IN_SECONDS ) );
-		$days = mailster_option( 'time_frame_day' );
-
-		// no weekday at all or current day is not in the list
-		if ( empty( $days ) || ! in_array( $day, $days ) ) {
-			return false;
-		}
-
 		$from = mailster_option( 'time_frame_from', 0 );
 		$to   = mailster_option( 'time_frame_to', 0 );
+		$days = mailster_option( 'time_frame_day' );
+		if ( is_null( $timestamp ) ) {
+			$timestamp = current_time( 'timestamp' );
+		}
+		$hour = date( 'G', $timestamp );
+		$day  = date( 'w', $timestamp );
 
 		// further check if not 24h
 		if ( abs( $from - $to ) ) {
-
-			// we need GMT
-			$from_gmt = $from - $gmt_offset;
-			if ( $from_gmt < 0 ) {
-				$from_gmt += 24;
+			if ( $to < $from ) {
+				$to += 24;
 			}
-			$to_gmt = $to - $gmt_offset;
-			if ( $to_gmt < 0 ) {
-				$to_gmt += 24;
-			}
-
-			$t_from = strtotime( $from_gmt . ':00' );
-			$t_to   = strtotime( $to_gmt . ':00' );
-			$hour   = date( 'G', $timestamp );
-
-			// current hour is smaller as the requested from one => set it to yesterday
-			if ( $hour < $from_gmt ) {
-				$t_from = strtotime( 'yesterday ' . $from_gmt . ':00' );
-
-				// to is smaller as from so after midnight => set as tomorrow
-			} elseif ( $to_gmt < $from_gmt ) {
-				$t_to = strtotime( 'tomorrow ' . $to_gmt . ':00' );
-			}
-
-			// check if its in the range
-			if ( $t_from > $timestamp || $timestamp > $t_to ) {
+			if ( $from > $hour || $hour >= $to ) {
 				return false;
 			}
 		}
-
-		return true;
+		return ! is_array( $days ) || in_array( $day, $days );
 
 	}
+
 	/**
 	 *
 	 *
