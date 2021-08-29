@@ -6,6 +6,7 @@ Tested up to: 5.8
 Stable tag: 3.0
 Author: EverPress
 Author URI: https://everpress.co
+License: GPLv2 or later
 Requires PHP: 5.3.6
 
 == Description ==
