@@ -138,7 +138,7 @@ foreach ( $deliverymethods as $id => $name ) {
 	?>
 	<a class="<?php echo implode( ' ', $classes ); ?>" href="#<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $name ); ?></a>
 	<?php } ?>
-	<a href="plugin-install.php?tab=search&s=mailster+everpress&plugin-search-input=Search+Plugins" class="alignright"><?php esc_html_e( 'search for more delivery methods', 'mailster' ); ?></a>
+	<a href="<?php echo admin_url( 'edit.php?post_type=newsletter&page=mailster_addons&browse=delivery' ); ?>" class="button button-small alignright"><?php esc_html_e( 'More Delivery Methods', 'mailster' ); ?></a>
 </div>
 
 <input type="hidden" name="mailster_options[deliverymethod]" id="deliverymethod" value="<?php echo esc_attr( $method ); ?>" class="regular-text">

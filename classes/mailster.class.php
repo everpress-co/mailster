@@ -1689,10 +1689,6 @@ class Mailster {
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
 		}
-		$max = max( (int) ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
-		if ( $max < 128 ) {
-			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
-		}
 
 		$errors->error_count   = count( $errors->errors->errors );
 		$errors->warning_count = count( $errors->warnings->errors );
@@ -2117,7 +2113,7 @@ class Mailster {
 		);
 
 		// Display width specification for integer data types was deprecated in MySQL 8.0.17 (https://stackoverflow.com/questions/60892749/mysql-8-ignoring-integer-lengths)
-		if ( version_compare( $wpdb->db_version(), '8.0.17', '>=' ) ) {
+		if ( version_compare( $wpdb->db_version(), '8.0.17', '>=' ) && version_compare( $wpdb->db_version(), '10.3', '<=' ) ) {
 			$table_structure = array_map(
 				function( $table ) {
 					return preg_replace( '/ (bigint|int|tinyint)\((\d+)\)/', ' $1', $table );
@@ -2813,7 +2809,12 @@ class Mailster {
 
 		$verified = $this->get_verfied_object( $force );
 
-		return is_array( $verified ) && isset( $verified['email_verfied'] ) && $verified['email_verfied'];
+		if ( is_array( $verified ) && isset( $verified['email_verfied'] ) ) {
+			 return (bool) $verified['email_verfied'];
+		}
+
+		return true;
+
 	}
 
 	private function get_verfied_object( $force = false ) {

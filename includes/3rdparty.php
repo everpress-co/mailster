@@ -93,3 +93,23 @@ function mailster_pre_update_option_cornerstone_settings( $settings ) {
 
 	return $settings;
 };
+
+// support for Offload Media Lite
+add_action( 'as3cf_init', 'mailster_fix_for_as3cf' );
+function mailster_fix_for_as3cf( $as3cf ) {
+
+	// this removes a filter which replaces amazon links back to local ones in campaigns
+	add_filter(
+		'pre_post_content',
+		function( $value ) use ( $as3cf ) {
+
+			if ( 'newsletter' == get_post_type() ) {
+				remove_filter( 'content_save_pre', array( $as3cf->filter_provider, 'filter_post' ) );
+			}
+
+			return $value;
+
+		}
+	);
+
+}
