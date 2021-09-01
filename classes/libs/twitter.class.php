@@ -2,13 +2,13 @@
 
 class TwitterApiClass {
 
-	private $token = '';
-	private $token_secret = '';
-	private $consumer_key = '';
+	private $token           = '';
+	private $token_secret    = '';
+	private $consumer_key    = '';
 	private $consumer_secret = '';
 
-	private $host = 'api.twitter.com';
-	private $method = 'GET';
+	private $host    = 'api.twitter.com';
+	private $method  = 'GET';
 	private $version = '1.1';
 
 	/**
@@ -20,9 +20,9 @@ class TwitterApiClass {
 	 * @param unknown $consumer_secret
 	 */
 	public function __construct( $token, $token_secret, $consumer_key, $consumer_secret ) {
-		$this->token = $token;
-		$this->token_secret = $token_secret;
-		$this->consumer_key = $consumer_key;
+		$this->token           = $token;
+		$this->token_secret    = $token_secret;
+		$this->consumer_key    = $consumer_key;
 		$this->consumer_secret = $consumer_secret;
 	}
 
@@ -36,16 +36,16 @@ class TwitterApiClass {
 	public function query( $method = 'statuses/user_timeline', $query = array() ) {
 
 		$oauth = array(
-			'oauth_consumer_key' => $this->consumer_key,
-			'oauth_token' => $this->token,
-			'oauth_nonce' => (string) mt_rand(), // a stronger nonce is recommended
-			'oauth_timestamp' => time(),
+			'oauth_consumer_key'     => $this->consumer_key,
+			'oauth_token'            => $this->token,
+			'oauth_nonce'            => (string) mt_rand(), // a stronger nonce is recommended
+			'oauth_timestamp'        => time(),
 			'oauth_signature_method' => 'HMAC-SHA1',
-			'oauth_version' => '1.0',
+			'oauth_version'          => '1.0',
 		);
 
-		$oauth = array_map( "rawurlencode", $oauth ); // must be encoded before sorting
-		$query = array_map( "rawurlencode", $query );
+		$oauth = array_map( 'rawurlencode', $oauth ); // must be encoded before sorting
+		$query = array_map( 'rawurlencode', $query );
 
 		$arr = array_merge( $oauth, $query ); // combine the values THEN sort
 
@@ -57,25 +57,24 @@ class TwitterApiClass {
 		// the encoding step
 		$querystring = urldecode( http_build_query( $arr, '', '&' ) );
 
-		$url = "https://" . $this->host . '/' . $this->version . '/' . $method . ".json";
+		$url = 'https://' . $this->host . '/' . $this->version . '/' . $method . '.json';
 
 		// mash everything together for the text to hash
-		$base_string = $this->method . "&" . rawurlencode( $url ) . "&" . rawurlencode( $querystring );
+		$base_string = $this->method . '&' . rawurlencode( $url ) . '&' . rawurlencode( $querystring );
 
 		// same with the key
-		$key = rawurlencode( $this->consumer_secret ) . "&" . rawurlencode( $this->token_secret );
+		$key = rawurlencode( $this->consumer_secret ) . '&' . rawurlencode( $this->token_secret );
 
 		// generate the hash
 		$signature = rawurlencode( base64_encode( hash_hmac( 'sha1', $base_string, $key, true ) ) );
 
 		// this time we're using a normal GET query, and we're only encoding the query params
 		// (without the oauth params)
-		$url .= "?" . http_build_query( $query );
-		$url = str_replace( "&amp;", "&", $url ); //Patch by @Frewuill
+		$url .= '?' . http_build_query( $query );
+		$url  = str_replace( '&amp;', '&', $url ); // Patch by @Frewuill
 
 		$oauth['oauth_signature'] = $signature; // don't want to abandon all that work!
 		ksort( $oauth ); // probably not necessary, but twitter's demo does it
-
 
 		/**
 		 * also not necessary, but twitter's demo does this too
@@ -83,19 +82,23 @@ class TwitterApiClass {
 		 * @param unknown $str
 		 * @return unknown
 		 */
-		function add_quotes( $str ) {return '"' . $str . '"';}
+		function add_quotes( $str ) {
+			return '"' . $str . '"';
+		}
 
-
-		$oauth = array_map( "add_quotes", $oauth );
+		$oauth = array_map( 'add_quotes', $oauth );
 
 		// this is the full value of the Authorization line
-		$auth = "OAuth " . urldecode( http_build_query( $oauth, '', ', ' ) );
+		$auth = 'OAuth ' . urldecode( http_build_query( $oauth, '', ', ' ) );
 
-		$result = wp_remote_get( $url, array(
+		$result = wp_remote_get(
+			$url,
+			array(
 				'sslverify' => false,
-				'headers' => array( 'Authorization' => $auth ),
-				'method' => $this->method,
-			) );
+				'headers'   => array( 'Authorization' => $auth ),
+				'method'    => $this->method,
+			)
+		);
 
 		$code = wp_remote_retrieve_response_code( $result );
 		$body = wp_remote_retrieve_body( $response );
@@ -113,6 +116,5 @@ class TwitterApiClass {
 		}
 
 	}
-
 
 }

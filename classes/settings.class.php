@@ -92,11 +92,10 @@ class MailsterSettings {
 			'charset'                            => 'UTF-8',
 			'encoding'                           => '8bit',
 			'post_count'                         => 30,
-			'autoupdate'                         => 'minor',
 
 			'system_mail'                        => false,
 
-			'default_template'                   => 'mymail',
+			'default_template'                   => 'mailster',
 			'logo_link'                          => get_bloginfo( 'url' ),
 			'high_dpi'                           => true,
 
@@ -128,6 +127,8 @@ class MailsterSettings {
 			'unsubscribe_notification_template'  => 'notification.html',
 			'track_users'                        => false,
 			'do_not_track'                       => false,
+			'antiflood'                          => 60,
+			'reject_dep'                         => true,
 			'list_based_opt_in'                  => true,
 			'single_opt_out'                     => false,
 			'mail_opt_out'                       => true,
@@ -161,8 +162,9 @@ class MailsterSettings {
 
 			'tweet_cache_time'                   => 60,
 
-			'interval'                           => 5,
+			'interval'                           => 2,
 			'send_at_once'                       => 20,
+			'auto_send_at_once'                  => false,
 			'send_limit'                         => 10000,
 			'send_period'                        => 24,
 			'time_frame_from'                    => 0,
@@ -209,6 +211,7 @@ class MailsterSettings {
 
 			'usage_tracking'                     => false,
 			'ask_usage_tracking'                 => true,
+			'mailster_branding'                  => true,
 			'disable_cache'                      => false,
 			'shortcodes'                         => false,
 			'remove_data'                        => false,
@@ -369,9 +372,6 @@ class MailsterSettings {
 	public function scripts_styles() {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		wp_enqueue_style( 'thickbox' );
-		wp_enqueue_script( 'thickbox' );
 
 		wp_enqueue_style( 'mailster-settings-style', MAILSTER_URI . 'assets/css/settings-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
@@ -736,7 +736,10 @@ class MailsterSettings {
 		$options['bounce_check'] = max( 1, (int) $options['bounce_check'] );
 		$options['bounce_delay'] = max( 1, (int) $options['bounce_delay'] );
 
-		if ( ! $options['send_at_once'] ) {
+		if ( $options['auto_send_at_once'] ) {
+			$options['send_at_once'] = $old_options['send_at_once'];
+
+		} elseif ( ! $options['send_at_once'] ) {
 			$options['send_at_once'] = 10;
 		}
 
@@ -886,6 +889,14 @@ class MailsterSettings {
 					}
 					break;
 
+				case 'blocked_domains':
+				case 'safe_domains':
+					$value = strtolower( $value );
+				case 'blocked_ips':
+				case 'blocked_emails':
+					$value = trim( $value );
+					break;
+
 				case 'interval':
 					$value = max( 0.1, $value );
 					if ( $old != $value ) {
@@ -926,7 +937,9 @@ class MailsterSettings {
 							case 'file':
 								$lockfiles = glob( MAILSTER_UPLOAD_DIR . '/CRON_*.lockfile' );
 								foreach ( $lockfiles as $lockfile ) {
-									unlink( $lockfile );
+									if ( file_exists( $lockfile ) ) {
+										unlink( $lockfile );
+									}
 								}
 								break;
 							case 'db':
@@ -1000,7 +1013,7 @@ class MailsterSettings {
 						if ( $value ) {
 
 							$timestamp = mailster( 'helper' )->get_timestamp_by_string( $value );
-							$timestamp = apply_filters( 'mymail_subscriber_notification_delay', apply_filters( 'mailster_subscriber_notification_delay', $timestamp ) );
+							$timestamp = apply_filters( 'mailster_subscriber_notification_delay', $timestamp );
 							wp_schedule_single_event( $timestamp, 'mailster_subscriber_notification' );
 						}
 					}
@@ -1017,7 +1030,7 @@ class MailsterSettings {
 						if ( $value ) {
 
 							$timestamp = mailster( 'helper' )->get_timestamp_by_string( $value );
-							$timestamp = apply_filters( 'mymail_subscriber_unsubscribe_notification_delay', apply_filters( 'mailster_subscriber_unsubscribe_notification_delay', $timestamp ) );
+							$timestamp = apply_filters( 'mailster_subscriber_unsubscribe_notification_delay', $timestamp );
 							wp_schedule_single_event( $timestamp, 'mailster_unsubscribe_notification' );
 						}
 					}
@@ -1198,6 +1211,24 @@ class MailsterSettings {
 
 					break;
 
+				case 'check_mx':
+					if ( $old != $value ) {
+						if ( $value && ! function_exists( 'checkdnsrr' ) || ! checkdnsrr( 'google.com', 'MX' ) ) {
+							$this->add_settings_error( esc_html__( 'Your server is not able to do a DNS lookup. MX check disabled.', 'mailster' ), 'dkim' );
+							$value = false;
+						}
+					}
+					break;
+
+				case 'check_smtp':
+					if ( $old != $value ) {
+						if ( $value && ! mailster( 'security' )->smtp_check( 'hello@google.com' ) ) {
+							$this->add_settings_error( esc_html__( 'Your server is not able to validate via SMTP. SMTP check disabled.', 'mailster' ), 'dkim' );
+							$value = false;
+						}
+					}
+					break;
+
 			}
 
 			$options[ $id ] = $value;
@@ -1212,7 +1243,7 @@ class MailsterSettings {
 		// clear everything thats cached
 		mailster_clear_cache();
 
-		$options = apply_filters( 'mymail_verify_options', apply_filters( 'mailster_verify_options', $options ) );
+		$options = apply_filters( 'mailster_verify_options', $options );
 
 		return $options;
 
@@ -1249,7 +1280,7 @@ class MailsterSettings {
 
 		}
 
-		return apply_filters( 'mymail_verify_texts', apply_filters( 'mailster_verify_texts', $texts ) );
+		return apply_filters( 'mailster_verify_texts', $texts );
 
 	}
 
@@ -1455,7 +1486,7 @@ class MailsterSettings {
 			'HOME_URL'                 => home_url(),
 			'--',
 			'Mailster Version'         => MAILSTER_VERSION,
-			'Updated From'             => get_option( 'mailster_version_old', 'N/A' ) . ' (' . date( 'r', get_option( 'mailster_updated' ) ) . ')',
+			'Updated From'             => get_option( 'mailster_version_old', 'N/A' ) . ' (' . date_i18n( 'r', get_option( 'mailster_updated' ) ) . ')',
 			'Mailster Hash'            => mailster()->get_plugin_hash( true ),
 			'WordPress Version'        => get_bloginfo( 'version' ),
 			'Mailster DB Version'      => $db_version,
@@ -1546,7 +1577,7 @@ class MailsterSettings {
 			$settings['CURRENT THEME'] = $theme_data['Name'] . ': ' . $theme_data['Version'] . "\n" . str_repeat( ' ', $space ) . $theme_data['Author'] . ' (' . $theme_data['AuthorURI'] . ')';
 		}
 
-		return apply_filters( 'mymail_system_info', apply_filters( 'mailster_system_info', $settings ) );
+		return apply_filters( 'mailster_system_info', $settings );
 
 	}
 

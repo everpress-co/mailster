@@ -82,6 +82,7 @@
 			</div>
 			<div id="image_button" class="tab">
 			<?php $this->templateobj->buttons(); ?>
+			<?php $this->templateobj->buttons( MAILSTER_DIR . 'assets/img/social/' ); ?>
 			<div class="clearfix">
 					<label class="block"><div class="left"><?php esc_html_e( 'Alt Text', 'mailster' ); ?></div><div class="right"><input type="text" class="input buttonalt" value="" placeholder="<?php esc_attr_e( 'image description', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'Alternative Text', 'mailster' ); ?>"></div></label>
 			</div>
@@ -108,7 +109,7 @@
 	add_filter(
 		'quicktags_settings',
 		function( $qtint, $editor_id ) {
-			$qtint['buttons'] = apply_filters( 'mymail_editor_quicktags', apply_filters( 'mailster_editor_quicktags', 'strong,em,link,block,del,img,ul,ol,li,spell,close' ) );
+			$qtint['buttons'] = apply_filters( 'mailster_editor_quicktags', 'strong,em,link,block,del,img,ul,ol,li,spell,close' );
 			return $qtint;
 
 		},
@@ -116,9 +117,9 @@
 		2
 	);
 
-	$toolbar1 = (string) apply_filters( 'mymail_editor_toolbar1', apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat' ) );
-	$toolbar2 = (string) apply_filters( 'mymail_editor_toolbar2', apply_filters( 'mailster_editor_toolbar2', '' ) );
-	$toolbar3 = (string) apply_filters( 'mymail_editor_toolbar3', apply_filters( 'mailster_editor_toolbar3', '' ) );
+	$toolbar1 = (string) apply_filters( 'mailster_editor_toolbar1', 'bold,italic,underline,strikethrough,|,mailster_mce_button,|,bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify,|,forecolor,backcolor,|,undo,redo,|,link,unlink,|,removeformat' );
+	$toolbar2 = (string) apply_filters( 'mailster_editor_toolbar2', '' );
+	$toolbar3 = (string) apply_filters( 'mailster_editor_toolbar3', '' );
 
 	if ( ( $toolbar2 || $toolbar3 ) && false === strpos( $toolbar1, 'wp_adv' ) ) {
 		$toolbar1 .= ',|,wp_adv';
@@ -338,7 +339,7 @@
 			<label class="highdpi-checkbox" title="<?php esc_attr_e( 'use HighDPI/Retina ready images if available', 'mailster' ); ?>">
 				<input type="checkbox" class="highdpi" <?php checked( mailster_option( 'high_dpi' ) ); ?> aria-label="<?php esc_attr_e( 'use High DPI image', 'mailster' ); ?>"> <?php esc_html_e( 'HighDPI/Retina ready', 'mailster' ); ?>
 			</label>
-			<a class="remove mailster-icon" title="<?php esc_attr_e( 'remove element', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'remove element', 'mailster' ); ?>"></a>
+			<a class="remove button button-small button-link-delete" title="<?php esc_attr_e( 'remove element', 'mailster' ); ?>" aria-label="<?php esc_attr_e( 'remove element', 'mailster' ); ?>"><?php esc_html_e( 'Remove Element', 'mailster' ); ?></a>
 		</div>
 		<input type="hidden" class="factor" value="1">
 

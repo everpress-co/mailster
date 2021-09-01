@@ -140,7 +140,6 @@ class MailsterTranslations {
 				'set'     => null,
 			);
 
-			// $object['expires'] = $now + 20;
 			$file    = 'mailster-' . $locale;
 			$url     = $this->endpoint . '/api/projects/mailster';
 			$package = $this->endpoint . '/api/get/mailster/' . $locale;

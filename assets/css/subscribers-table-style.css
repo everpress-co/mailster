@@ -19,20 +19,21 @@
 .widefat .column-signup{width: 130px;}
 .mailster-avatar{
 	display: inline-block;
-	transform: translateY(6px);
 	margin-right: 8px;
+	padding: 2px;
 	vertical-align: top;
+}
+.mailster-avatar a{
+	display: block;
 }
 .mailster-avatar-40{
 	display: block;
-	width: 40px;
-	height: 40px;
+	width: 60px;
+	height: 60px;
 	padding: 2px;
-	_border: 1px solid #D3D6DB;
-	_background-color: #FFF;
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-size: 40px 40px;
+	background-size: 60px 60px;
 	margin-bottom: 4px;
 }
 .mailster-name{
@@ -42,11 +43,23 @@
 }
 .userrating .mailster-icon:before{
 	margin: 0;
-	color: #ccc;
+	width: 20px;
+	height: 20px;
+	background-size: 18px 18px;
+}
+.userrating .mailster-icon.mailster-icon-star:before{
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path stroke="%23ffb900" fill="%23ffb900" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.458 20.86l2.81526e-08-1.51005e-08c-.584032.313263-1.31143.093761-1.6247-.490271 -.126301-.23547-.170399-.506358-.125305-.769729l.868-5.023 -3.676-3.559 4.32484e-08 4.2531e-08c-.472532-.464694-.478886-1.22447-.0141923-1.697 .183566-.186662.42314-.308172.682192-.346003l5.082-.733 2.27-4.574 3.97642e-08-7.94342e-08c.299141-.597572 1.02607-.839499 1.62364-.540358 .233761.117019.423339.306597.540358.540358l2.27 4.574 5.082.733 1.00541e-07 1.46825e-08c.655786.0957675 1.10977.705022 1.014 1.36081 -.0378307.259052-.159341.498626-.346003.682192l-3.678 3.557 .868 5.023 2.1535e-08 1.2438e-07c.113064.653026-.324662 1.27406-.977688 1.38713 -.264187.045741-.536083.00168883-.772312-.125129l-4.544-2.369Z"></path></g></svg>');
+}
+.userrating .mailster-icon.mailster-icon-star-half:before{
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path stroke="%23ffb900" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.458 20.86l2.81526e-08-1.51005e-08c-.584032.313263-1.31143.093761-1.6247-.490271 -.126301-.23547-.170399-.506358-.125305-.769729l.868-5.023 -3.676-3.559 4.32484e-08 4.2531e-08c-.472532-.464694-.478886-1.22447-.0141923-1.697 .183566-.186662.42314-.308172.682192-.346003l5.082-.733 2.27-4.574 3.97642e-08-7.94342e-08c.299141-.597572 1.02607-.839499 1.62364-.540358 .233761.117019.423339.306597.540358.540358l2.27 4.574 5.082.733 1.00541e-07 1.46825e-08c.655786.0957675 1.10977.705022 1.014 1.36081 -.0378307.259052-.159341.498626-.346003.682192l-3.678 3.557 .868 5.023 2.1535e-08 1.2438e-07c.113064.653026-.324662 1.27406-.977688 1.38713 -.264187.045741-.536083.00168883-.772312-.125129l-4.544-2.369Z"></path></g></svg>');
+}
+.userrating .mailster-icon.mailster-icon-star-empty:before{
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path stroke="%23cfcfcf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.458 20.86l2.81526e-08-1.51005e-08c-.584032.313263-1.31143.093761-1.6247-.490271 -.126301-.23547-.170399-.506358-.125305-.769729l.868-5.023 -3.676-3.559 4.32484e-08 4.2531e-08c-.472532-.464694-.478886-1.22447-.0141923-1.697 .183566-.186662.42314-.308172.682192-.346003l5.082-.733 2.27-4.574 3.97642e-08-7.94342e-08c.299141-.597572 1.02607-.839499 1.62364-.540358 .233761.117019.423339.306597.540358.540358l2.27 4.574 5.082.733 1.00541e-07 1.46825e-08c.655786.0957675 1.10977.705022 1.014 1.36081 -.0378307.259052-.159341.498626-.346003.682192l-3.678 3.557 .868 5.023 2.1535e-08 1.2438e-07c.113064.653026-.324662 1.27406-.977688 1.38713 -.264187.045741-.536083.00168883-.772312-.125129l-4.544-2.369Z"></path></g></svg>');
 }
 .wp-list-table tr:hover .userrating .mailster-icon:before{
 	color: #e6b800;
 }
+
 table.fixed.wp-list-table{
 	table-layout: auto;
 }
@@ -57,11 +70,12 @@ table.fixed.wp-list-table{
 .mailster-avatar-40.wp-user:before{
 	font-family: 'dashicons';
 	content: '\f120';
-	margin-left: 28px;
-	line-height: 69px;
+	margin-left: 38px;
+	line-height: 99px;
 	font-size: 100%;
 	background-color: rgba(255,255,255,0.9);
 	border-radius: 50%;
+	font-size: 180%;
 }
 .not-confirmed{
 	font-style: italic;
@@ -89,6 +103,18 @@ a.email{
 	overflow: hidden;
 	width: 100%;
 	display: inline-block;
+}
+.mailster-tag{
+	padding: 0.1em 0.5em;
+	box-sizing: border-box;
+	margin-right:4px;
+	margin-top:4px;
+	background: #ddd;
+	text-decoration: none;
+	border-radius: 3px;
+	display: block;
+	font-size: 11px;
+	float: left;
 }
 @media screen and (max-width: 782px){
 
