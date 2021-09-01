@@ -88,9 +88,8 @@
 								<ul class="social-services">
 								<?php foreach ( $services as $service ) : ?>
 									<?php if ( isset( $social_services[ $service ] ) ) : ?>
-
-									<li style="background-image: url('data:image/svg+xml;base64,<?php echo base64_encode( $social_services[ $service ]['icon'] ); ?>');">
-										<a title="<?php printf( esc_html__( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ); ?>" class="<?php echo $service; ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? (int) $social_services[ $service ]['width'] : 650; ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? (int) $social_services[ $service ]['height'] : 405; ?>" >
+									<li>
+										<a style="background-image: url('data:image/svg+xml;base64,<?php echo base64_encode( $social_services[ $service ]['icon'] ); ?>');" title="<?php printf( esc_html__( 'Share this via %s', 'mailster' ), $social_services[ $service ]['name'] ); ?>" class="<?php echo $service; ?>" href="<?php echo str_replace( '%title', urlencode( $title ), str_replace( '%url', urlencode( $permalink ), htmlentities( $social_services[ $service ]['url'] ) ) ); ?>" data-width="<?php echo isset( $social_services[ $service ]['width'] ) ? (int) $social_services[ $service ]['width'] : 650; ?>" data-height="<?php echo isset( $social_services[ $service ]['height'] ) ? (int) $social_services[ $service ]['height'] : 405; ?>" >
 											<?php echo esc_html( $social_services[ $service ]['name'] ); ?>
 										</a>
 									</li>
