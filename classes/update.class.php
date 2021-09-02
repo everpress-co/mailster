@@ -234,8 +234,8 @@ class MailsterUpdate {
 
 	public function add_css_for_information_screen() {
 
-		// remove ugly h2 headline in plugin info screen for Mailster only
-		if ( isset( $_GET['plugin'] ) && 'mailster' == $_GET['plugin'] ) {
+		// remove ugly h2 headline in plugin info screen for all mailster plugins
+		if ( isset( $_GET['plugin'] ) && false !== strpos( $_GET['plugin'], 'mailster' ) ) {
 			wp_add_inline_style( 'common', '#plugin-information #plugin-information-title h2{display: none;}' );
 		}
 	}

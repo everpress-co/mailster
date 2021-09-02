@@ -274,7 +274,7 @@ class MailsterUpgrade {
 			unset( $actions['db_structure'] );
 			$actions = wp_parse_args(
 				array(
-					'legacy_action_cleanup'          => 'Legacy Action Table cleanup',
+					//'legacy_action_cleanup'          => 'Legacy Action Table cleanup',
 					'create_primary_keys'            => 'Create primary keys',
 					'db_structure'                   => 'Checking DB structure',
 					'update_action_table_sent'       => 'Update Action Table - Sent',
@@ -1300,25 +1300,15 @@ class MailsterUpgrade {
 
 			$moved = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_action_$table`" );
 
-			if ( ! $moved ) {
-				$last_moved = get_transient( 'mailster_update_action_last_moved_' . $table );
-				if ( ! ( $last_moved = get_transient( 'mailster_update_action_last_moved_' . $table ) ) ) {
-					set_transient( 'mailster_update_action_last_moved_' . $table, $method, HOUR_IN_SECONDS );
-				}
-			}
-
 			echo number_format( $count ) . ' moved.' . "\n";
-
 			echo number_format( $moved ) . ' of ' . number_format( $total ) . ' (' . number_format( $moved / $total * 100, 2 ) . '%) in total from table ' . $table . ".\n";
 			if ( $moved < $total ) {
 				// get the limit from the 10th of the total within a range
 				$limit = max( 1000, min( 50000, round( $total / 10 ) ) );
 				set_transient( 'mailster_update_action_table_' . $table, $limit );
-				set_transient( 'mailster_update_action_last_moved_' . $table, $moved );
 				return false;
 			}
 			delete_transient( 'mailster_update_action_table_start_id_' . $table );
-			delete_transient( 'mailster_update_action_last_moved_' . $table );
 			delete_transient( 'mailster_update_action_table_' . $table );
 
 		}
