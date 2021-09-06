@@ -214,6 +214,11 @@ class MailsterForms {
 
 		if ( isset( $_GET['ID'] ) || isset( $_GET['new'] ) ) :
 
+			wp_register_style( 'mailster-form-blocks', MAILSTER_URI . 'assets/css/form-blocks-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_register_script( 'mailster-form-blocks', MAILSTER_URI . 'assets/js/form-blocks-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+
+			return;
+
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'jquery-ui-sortable' );
 			wp_enqueue_script( 'jquery-touch-punch' );
@@ -493,7 +498,7 @@ class MailsterForms {
 
 		if ( isset( $_GET['ID'] ) || isset( $_GET['new'] ) ) :
 
-			include MAILSTER_DIR . 'views/forms/detail.php';
+			include MAILSTER_DIR . 'views/forms/blocks.php';
 
 		else :
 
