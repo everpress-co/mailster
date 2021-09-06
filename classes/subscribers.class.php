@@ -146,7 +146,7 @@ class MailsterSubscribers {
 			$columns[ $key ] = strip_tags( $field['name'] );
 		}
 
-		$columns['lists']  = esc_html__( 'Lists', 'mailster' );
+		$columns['lists']  = esc_html__( 'Lists & Tags', 'mailster' );
 		$columns['emails'] = esc_html__( 'Emails', 'mailster' );
 		$columns['status'] = esc_html__( 'Status', 'mailster' );
 		$columns['signup'] = esc_html__( 'Subscribed', 'mailster' );
@@ -2871,7 +2871,7 @@ class MailsterSubscribers {
 			$sql .= ' AND (IFNULL( confirmation.meta_value, 0 ) <= forms.resend_count)';
 			$sql .= ' AND (forms.resend = 1 OR IFNULL( confirmation.meta_value, 0 ) = 0)';
 			// at least one minute old to not send confirmations more than once
-			$sql .= ' AND subscribers.signup < ' . ( time() + MINUTE_IN_SECONDS );
+			$sql .= ' AND subscribers.signup < ' . ( time() - MINUTE_IN_SECONDS );
 		}
 
 		if ( ! is_null( $ids ) ) {

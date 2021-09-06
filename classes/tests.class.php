@@ -131,7 +131,7 @@ class MailsterTests {
 
 	public function nicename( $test ) {
 		$test = ucwords( str_replace( array( 'test_', '_' ), array( '', ' ' ), $test ) );
-		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ', 'Db', 'Mymail' ), array( 'PHP', 'WordPress', 'WP ', 'DB ', 'MyMail' ), $test );
+		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ', 'Db', 'Mymail', 'Wpmail' ), array( 'PHP', 'WordPress', 'WP ', 'DB ', 'MyMail', 'wpmail()' ), $test );
 		return $test;
 	}
 
@@ -291,6 +291,60 @@ class MailsterTests {
 			$this->success( 'You have version ' . $current );
 
 		}
+	}
+	private function test_database_structure() {
+
+		global $wpdb;
+
+		$set_charset = true;
+		$result      = mailster()->dbstructure( false, true, $set_charset, false );
+
+		if ( false !== strpos( $result, 'Unknown character set:' ) ) {
+			$set_charset = false;
+			$result      = mailster()->dbstructure( false, true, $set_charset, false );
+		}
+
+		if ( false !== strpos( $result, 'Key column \'ID\' doesn\'t exist in table' ) ) {
+			if ( $text = mailster( 'upgrade' )->create_primary_keys() ) {
+				$this->notice( $text );
+				$result = mailster()->dbstructure( false, true, $set_charset, false );
+			}
+		}
+
+		if ( true !== $result ) {
+			$second_result = mailster()->dbstructure( false, true, $set_charset, false );
+			if ( $result === $second_result ) {
+				$this->error( $result );
+			} else {
+				$this->notice( $result );
+			}
+		}
+
+		if ( false === mailster( 'subscribers' )->wp_id() ) {
+			$status = $wpdb->get_row( $wpdb->prepare( 'SHOW TABLE STATUS LIKE %s', $wpdb->users ) );
+			if ( isset( $status->Collation ) ) {
+				$tables = mailster()->get_tables( true );
+
+				foreach ( $tables as $table ) {
+					$sql = $wpdb->prepare( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
+					if ( false !== $wpdb->query( $sql ) ) {
+						$this->notice( "'$table' converted to {$status->Collation}" );
+					}
+				}
+			}
+		}
+
+		// reset auto increments
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_subscribers AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_forms AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_lists AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_links AUTO_INCREMENT = %d", 1 ) );
+
+		// remove temp table
+		delete_option( 'mailster_bulk_import' );
+		delete_option( 'mailster_bulk_import_errors' );
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
+
 	}
 	private function test_verfied_installation() {
 
@@ -468,60 +522,7 @@ class MailsterTests {
 			$this->warning( 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank" rel="noopener">fsockopen</a>.' );
 		}
 	}
-	private function test_database_structure() {
 
-		global $wpdb;
-
-		$set_charset = true;
-		$result      = mailster()->dbstructure( false, true, $set_charset, false );
-
-		if ( false !== strpos( $result, 'Unknown character set:' ) ) {
-			$set_charset = false;
-			$result      = mailster()->dbstructure( false, true, $set_charset, false );
-		}
-
-		if ( false !== strpos( $result, 'Key column \'ID\' doesn\'t exist in table' ) ) {
-			if ( $text = mailster( 'upgrade' )->create_primary_keys() ) {
-				$this->notice( $text );
-				$result = mailster()->dbstructure( false, true, $set_charset, false );
-			}
-		}
-
-		if ( true !== $result ) {
-			$second_result = mailster()->dbstructure( false, true, $set_charset, false );
-			if ( $result === $second_result ) {
-				$this->error( $result );
-			} else {
-				$this->notice( $result );
-			}
-		}
-
-		if ( false === mailster( 'subscribers' )->wp_id() ) {
-			$status = $wpdb->get_row( $wpdb->prepare( 'SHOW TABLE STATUS LIKE %s', $wpdb->users ) );
-			if ( isset( $status->Collation ) ) {
-				$tables = mailster()->get_tables( true );
-
-				foreach ( $tables as $table ) {
-					$sql = $wpdb->prepare( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
-					if ( false !== $wpdb->query( $sql ) ) {
-						$this->notice( "'$table' converted to {$status->Collation}" );
-					}
-				}
-			}
-		}
-
-		// reset auto increments
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_subscribers AUTO_INCREMENT = %d", 1 ) );
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_forms AUTO_INCREMENT = %d", 1 ) );
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_lists AUTO_INCREMENT = %d", 1 ) );
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_links AUTO_INCREMENT = %d", 1 ) );
-
-		// remove temp table
-		delete_option( 'mailster_bulk_import' );
-		delete_option( 'mailster_bulk_import_errors' );
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
-
-	}
 	private function test_memory_limit() {
 		$max = max( (int) ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
 		if ( $max < 128 ) {

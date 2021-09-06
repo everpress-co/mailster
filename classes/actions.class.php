@@ -45,9 +45,43 @@ class MailsterActions {
 	 * @param unknown $subscriber_id
 	 * @param unknown $campaign_id
 	 * @param unknown $index         (optional)
+	 * @param unknown $explicit      (optional)
 	 * @return unknown
 	 */
-	public function open( $subscriber_id, $campaign_id, $index = null ) {
+	public function open( $subscriber_id, $campaign_id, $index = null, $explicit = true ) {
+
+		$user_meta    = array();
+		$geo_tracking = $explicit;
+
+		// track clients only on explicit opens
+		if ( $explicit && $client = mailster_get_user_client() ) {
+
+			switch ( $client->client ) {
+				// remove meta info if client is Gmail (GoogleImageProxyy)
+				case 'Gmail':
+					// Gmail downloads images as soon as received => do not open
+					if ( 'http://mail.google.com/' == wp_get_raw_referer() ) {
+						return;
+					}
+				case 'Yahoo':
+					$geo_tracking = false;
+					break;
+				case 'Apple Device':
+					$geo_tracking = false;
+					break;
+
+			}
+
+			if ( $client->client ) {
+				$user_meta['client'] = $client->client;
+			}
+			if ( $client->version ) {
+				$user_meta['clientversion'] = $client->version;
+			}
+			if ( $client->type ) {
+				$user_meta['clienttype'] = $client->type;
+			}
+		}
 
 		return $this->add_subscriber_action(
 			array(
@@ -55,25 +89,10 @@ class MailsterActions {
 				'campaign_id'   => $campaign_id,
 				'i'             => $index,
 				'type'          => 'opens',
-			)
+			),
+			$user_meta,
+			$geo_tracking
 		);
-
-	}
-
-
-	/**
-	 *
-	 *
-	 * @param unknown $subscriber_id
-	 * @param unknown $campaign_id
-	 * @param unknown $index         (optional)
-	 * @return unknown
-	 */
-	private function maybe_open( $subscriber_id, $campaign_id, $index = null ) {
-
-		if ( ! $this->get_timestamp( 'opens', $subscriber_id, $campaign_id, $index ) ) {
-			$this->open( $subscriber_id, $campaign_id, $index );
-		}
 
 	}
 
@@ -90,7 +109,10 @@ class MailsterActions {
 	 */
 	public function click( $subscriber_id, $campaign_id, $link, $linkindex = 0, $index = null ) {
 
-		$this->maybe_open( $subscriber_id, $campaign_id, $index );
+		// open if not already opened once
+		if ( ! $this->get_timestamp( 'opens', $subscriber_id, $campaign_id, $index ) ) {
+			$this->open( $subscriber_id, $campaign_id, $index, false );
+		}
 
 		$link_id = $this->get_link_id( $link, $linkindex );
 
@@ -204,47 +226,20 @@ class MailsterActions {
 	 *
 	 * @param unknown $args
 	 */
-	private function add_subscriber_action( $args ) {
+	private function add_subscriber_action( $args, $user_meta = array(), $geo_tracking = true ) {
 
 		if ( mailster_option( 'do_not_track' ) && isset( $_SERVER['HTTP_DNT'] ) && $_SERVER['HTTP_DNT'] == 1 ) {
 			return;
 		}
 
-		$user_meta = array(
-			'ip' => mailster_get_ip(),
-		);
+		$user_meta = wp_parse_args( $user_meta, array( 'ip' => mailster_get_ip() ) );
 
-		if ( 'unknown' !== ( $geo = mailster_ip2City() ) ) {
+		if ( $geo_tracking && 'unknown' !== ( $geo = mailster_ip2City() ) ) {
 
 			$user_meta['geo'] = $geo->country_code . '|' . $geo->city;
 			if ( $geo->city ) {
 				$user_meta['coords']     = (float) $geo->latitude . ',' . (float) $geo->longitude;
 				$user_meta['timeoffset'] = (int) $geo->timeoffset;
-			}
-		}
-
-		// only explicitly opened
-		if ( 'opens' == $args['type'] ) {
-
-			if ( $client = mailster_get_user_client() ) {
-
-				switch ( $client->client ) {
-					// remove meta info if client is Gmail (GoogleImageProxyy)
-					case 'Gmail':
-						// Gmail downloads images as soon as recevied
-						if ( 'http://mail.google.com/' == wp_get_raw_referer() ) {
-							return;
-						}
-						// remove meta info if client is Yahoo (YahooMailProxy)
-					case 'Yahoo':
-						$user_meta = array();
-						break;
-
-				}
-
-				$user_meta['client']        = $client->client;
-				$user_meta['clientversion'] = $client->version;
-				$user_meta['clienttype']    = $client->type;
 			}
 		}
 

@@ -983,14 +983,19 @@ class Mailster {
 
 		} elseif ( $post ) {
 
-			if ( ! $post->post_excerpt ) {
-				if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
-					$content            = explode( $matches[0], $post->post_content, 2 );
-					$post->post_excerpt = trim( $content[0] );
-				}
+			$length = apply_filters( 'mailster_excerpt_length', null );
+
+			if ( empty( $post->post_excerpt ) && preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
+				$content            = explode( $matches[0], $post->post_content, 2 );
+				$post->post_excerpt = trim( $content[0] );
+				$post->post_excerpt = mailster_remove_block_comments( $post->post_excerpt );
 			}
 
-			$post->post_excerpt = mailster( 'helper' )->get_excerpt( ( ! empty( $post->post_excerpt ) ? $post->post_excerpt : $post->post_content ), apply_filters( 'mailster_excerpt_length', null ) );
+			if ( empty( $post->post_excerpt ) ) {
+				$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content, $length );
+			} elseif ( $length ) {
+				$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );
+			}
 
 			$post->post_content = mailster( 'helper' )->handle_shortcodes( $post->post_content );
 
@@ -1686,10 +1691,6 @@ class Mailster {
 		if ( ! is_dir( $content_dir ) || ! wp_is_writable( $content_dir ) ) {
 			$errors->warnings->add( 'writeable', sprintf( 'Your content folder in %s is not writeable.', '"' . $content_dir . '"' ) );
 		}
-		$max = max( (int) ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
-		if ( $max < 128 ) {
-			$errors->warnings->add( 'menorylimit', 'Your Memory Limit is ' . size_format( $max * 1048576 ) . ', Mailster recommends at least 128 MB' );
-		}
 
 		$errors->error_count   = count( $errors->errors->errors );
 		$errors->warning_count = count( $errors->warnings->errors );
@@ -2043,6 +2044,7 @@ class Mailster {
 			"CREATE TABLE {$wpdb->prefix}mailster_tags_subscribers (
                 `tag_id` bigint(20) unsigned NOT NULL,
                 `subscriber_id` bigint(20) unsigned NOT NULL,
+                `added` int(11) unsigned NOT NULL,
                 UNIQUE KEY id (`tag_id`,`subscriber_id`),
                 KEY `tag_id` (`tag_id`),
                 KEY `subscriber_id` (`subscriber_id`)
@@ -2113,7 +2115,7 @@ class Mailster {
 		);
 
 		// Display width specification for integer data types was deprecated in MySQL 8.0.17 (https://stackoverflow.com/questions/60892749/mysql-8-ignoring-integer-lengths)
-		if ( version_compare( $wpdb->db_version(), '8.0.17', '>=' ) ) {
+		if ( version_compare( $wpdb->db_version(), '8.0.17', '>=' ) && version_compare( $wpdb->db_version(), '10.3', '<=' ) ) {
 			$table_structure = array_map(
 				function( $table ) {
 					return preg_replace( '/ (bigint|int|tinyint)\((\d+)\)/', ' $1', $table );
@@ -2809,7 +2811,12 @@ class Mailster {
 
 		$verified = $this->get_verfied_object( $force );
 
-		return is_array( $verified ) && isset( $verified['email_verfied'] ) && $verified['email_verfied'];
+		if ( is_array( $verified ) && isset( $verified['email_verfied'] ) ) {
+			 return (bool) $verified['email_verfied'];
+		}
+
+		return true;
+
 	}
 
 	private function get_verfied_object( $force = false ) {

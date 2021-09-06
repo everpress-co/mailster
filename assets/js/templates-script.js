@@ -127,6 +127,7 @@ mailster = (function (mailster, $, window, document) {
 					template = $('[data-slug="' + template + '"]');
 				}
 				if (!template || !template.length) return false;
+				overlay.addClass('loading');
 				overlay.find('.theme-screenshots img').hide();
 				overlay.find('.theme-screenshots iframe').hide();
 				overlay.removeAttr('class');
@@ -164,7 +165,6 @@ mailster = (function (mailster, $, window, document) {
 				nextbtn.prop('disabled', !nextTemplate.length)[!nextTemplate.length ? 'addClass' : 'removeClass']('disabled');
 				overlay.show();
 				setQueryStringParameter('template', data.slug);
-				overlay.removeClass('loading');
 			},
 
 			close = function () {
@@ -234,6 +234,7 @@ mailster = (function (mailster, $, window, document) {
 
 			file = function () {
 
+				overlay.addClass('loading');
 				overlay.find('.theme-screenshots iframe').attr('src', data.files[$(this).val()].src);
 
 			},
@@ -246,7 +247,12 @@ mailster = (function (mailster, $, window, document) {
 				defaultbtn.on('click', makedefault);
 				campaignbtn.on('click', campaign);
 				overlay.on('change', '.theme-file-selector', file);
+				overlay.on('click', '.theme-description a', function (event) {
+					event.preventDefault();
+					window.open(this.href);
+					return false;
 
+				});
 				overlay.find('.theme-screenshots iframe').on('load', function () {
 					overlay.removeClass('loading');
 				})

@@ -1445,7 +1445,7 @@ class MailsterAjax {
 							$asp           = $post->width / $post->height;
 							$thumb_src     = add_query_arg( $unsplash_args, $post->urls->thumb );
 							$title         = isset( $post->alt_description ) ? $post->alt_description : $post->id;
-							$title        .= ' ' . sprintf( esc_html__( 'by %s', 'mailster' ), $post->user->name . ' (' . $post->user->links->html . ')' );
+							$title        .= ' ' . sprintf( esc_html__( 'by %s', 'mailster' ), $post->user->name . ' (@' . $post->user->username . ')' );
 							$class         = 'is-unsplash';
 						} else {
 							$post_id   = $post->ID;
@@ -1555,19 +1555,20 @@ class MailsterAjax {
 			$expects = isset( $_POST['expect'] ) ? (array) $_POST['expect'] : array();
 
 			if ( $post ) {
-				if ( ! $post->post_excerpt ) {
-					if ( preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
-						$content            = explode( $matches[0], $post->post_content, 2 );
-						$post->post_excerpt = trim( $content[0] );
-					}
-					if ( ! $post->post_excerpt ) {
-						$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content );
-					}
+
+				$length = apply_filters( 'mailster_excerpt_length', null );
+				if ( empty( $post->post_excerpt ) && preg_match( '/<!--more(.*?)?-->/', $post->post_content, $matches ) ) {
+					$content            = explode( $matches[0], $post->post_content, 2 );
+					$post->post_excerpt = trim( $content[0] );
+					$post->post_excerpt = mailster_remove_block_comments( $post->post_excerpt );
 				}
 
-				if ( $length = apply_filters( 'mailster_excerpt_length', false ) ) {
+				if ( empty( $post->post_excerpt ) ) {
+					$post->post_excerpt = mailster( 'helper' )->get_excerpt( $post->post_content, $length );
+				} elseif ( $length ) {
 					$post->post_excerpt = wp_trim_words( $post->post_excerpt, $length );
 				}
+
 				$post->post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 				$link               = get_permalink( $post->ID );
 

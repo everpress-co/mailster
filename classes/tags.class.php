@@ -139,6 +139,57 @@ class MailsterTags {
 	/**
 	 *
 	 *
+	 * @param unknown $names
+	 * @param unknown $create_if_missing   (optional)
+	 * @return unknown
+	 */
+	private function get_ids_by_names( $names, $create_if_missing = false ) {
+		if ( ! is_array( $names ) ) {
+			$names = array( $names );
+		}
+
+		$ids = array();
+		foreach ( $names as $name ) {
+			if ( $tag_id = $this->get_id_by_name( $name, $create_if_missing ) ) {
+				$ids[] = $tag_id;
+			}
+		}
+
+		return $ids;
+
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $names
+	 * @param unknown $create_if_missing   (optional)
+	 * @return unknown
+	 */
+	private function get_id_by_name( $name, $create_if_missing = false ) {
+
+		$tag_id = $this->get_by_name( $name, 'ID' );
+
+		if ( ! $tag_id && ! $create_if_missing ) {
+			return false;
+		}
+
+		if ( ! $tag_id ) {
+			$tag_id = $this->add( $name );
+			if ( is_wp_error( $tag_id ) ) {
+				return false;
+			}
+			return $tag_id;
+		}
+
+		return $tag_id;
+
+	}
+
+
+	/**
+	 *
+	 *
 	 * @param unknown $ids
 	 * @param unknown $subscriber_ids
 	 * @param unknown $remove_old     (optional)
@@ -149,14 +200,24 @@ class MailsterTags {
 		global $wpdb;
 
 		if ( ! is_array( $ids ) ) {
-			$ids = array( (int) $ids );
+			$ids = array( $ids );
+		}
+
+		$ids      = array_filter( $ids );
+		$real_ids = array_values( array_filter( $ids, 'is_numeric' ) );
+		$names    = array_values( array_diff( $ids, $real_ids ) );
+		$ids      = $real_ids;
+
+		foreach ( $names as $name ) {
+			if ( $tag_id = $this->get_id_by_name( $name, true ) ) {
+				$ids[] = $tag_id;
+			}
 		}
 
 		if ( ! is_array( $subscriber_ids ) ) {
 			$subscriber_ids = array( (int) $subscriber_ids );
 		}
 
-		$ids            = array_filter( $ids );
 		$subscriber_ids = array_filter( $subscriber_ids );
 
 		if ( $remove_old ) {
@@ -165,8 +226,11 @@ class MailsterTags {
 
 		$inserts = array();
 		foreach ( $ids as $tag_id ) {
+			if ( ! $tag_id ) {
+				continue;
+			}
 			foreach ( $subscriber_ids as $subscriber_id ) {
-				$inserts[] = $wpdb->prepare( '(%d, %d)', $tag_id, $subscriber_id );
+				$inserts[] = $wpdb->prepare( '(%d, %d, %d)', $tag_id, $subscriber_id, time() );
 			}
 		}
 
@@ -179,7 +243,7 @@ class MailsterTags {
 		$success = true;
 
 		foreach ( $chunks as $insert ) {
-			$sql = "INSERT INTO {$wpdb->prefix}mailster_tags_subscribers (tag_id, subscriber_id) VALUES ";
+			$sql = "INSERT INTO {$wpdb->prefix}mailster_tags_subscribers (tag_id, subscriber_id, added) VALUES ";
 
 			$sql .= ' ' . implode( ',', $insert );
 
@@ -206,7 +270,18 @@ class MailsterTags {
 		global $wpdb;
 
 		if ( ! is_array( $ids ) ) {
-			$ids = array( (int) $ids );
+			$ids = array( $ids );
+		}
+
+		$ids      = array_filter( $ids );
+		$real_ids = array_values( array_filter( $ids, 'is_numeric' ) );
+		$names    = array_values( array_diff( $ids, $real_ids ) );
+		$ids      = $real_ids;
+
+		foreach ( $names as $name ) {
+			if ( $tag_id = $this->get_id_by_name( $name, true ) ) {
+				$ids[] = $tag_id;
+			}
 		}
 
 		if ( ! is_array( $subscriber_ids ) ) {

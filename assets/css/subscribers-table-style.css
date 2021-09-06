@@ -104,6 +104,18 @@ a.email{
 	width: 100%;
 	display: inline-block;
 }
+.mailster-tag{
+	padding: 0.1em 0.5em;
+	box-sizing: border-box;
+	margin-right:4px;
+	margin-top:4px;
+	background: #ddd;
+	text-decoration: none;
+	border-radius: 3px;
+	display: block;
+	font-size: 11px;
+	float: left;
+}
 @media screen and (max-width: 782px){
 
 .widefat .column-emails{width: 50px;text-align: left;}

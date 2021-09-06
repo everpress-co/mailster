@@ -64,7 +64,7 @@ class MailsterFrontpage {
 
 			$rules[ '(index\.php/)?(' . preg_quote( $pagename ) . ')/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
-			$rules['^(index\.php/)?(mailster|mymail)/(subscribe)/?$']                              = 'index.php?_mailster=$matches[3]';
+			$rules['^(index\.php/)?(mailster)/(subscribe)/?$']                                     = 'index.php?_mailster=$matches[3]';
 			$rules[ '(index\.php/)?(mailster)/(' . $slugs . ')/?([a-f0-9]{32})?/?([a-z0-9/-]*)?' ] = 'index.php?pagename=' . preg_replace( '#\.html$#', '', $pagename ) . '&_mailster_page=$matches[3]&_mailster_hash=$matches[4]&_mailster_extra=$matches[5]';
 
 			if ( get_option( 'page_on_front' ) == $homepage && get_option( 'show_on_front' ) == 'page' ) {
@@ -72,7 +72,7 @@ class MailsterFrontpage {
 			}
 		}
 
-		$rules['^(index\.php/)?(mailster|mymail)/([0-9-]+)/([a-f0-9]{32})/?([a-zA-Z0-9=_+]+)?/?([0-9]+)?/?'] = 'index.php?_mailster=$matches[3]&_mailster_hash=$matches[4]&_mailster_page=$matches[5]&_mailster_extra=$matches[6]';
+		$rules['^(index\.php/)?(mailster)/([0-9-]+)/([a-f0-9]{32})/?([a-zA-Z0-9=_+]+)?/?([0-9]+)?/?'] = 'index.php?_mailster=$matches[3]&_mailster_hash=$matches[4]&_mailster_page=$matches[5]&_mailster_extra=$matches[6]';
 
 		if ( $secret = mailster_option( 'cron_secret' ) ) {
 			$rules[ '^(index\.php/)?mailster/(' . $secret . ')/?([0-9a-z]+)?/?$' ] = 'index.php?_mailster_cron=$matches[2]&_mailster_extra=$matches[3]';
@@ -411,7 +411,7 @@ class MailsterFrontpage {
 				if ( mailster_option( 'autoclickprevention' ) && ! isset( $_GET['autoclickprevention'] ) && time() - mailster( 'actions' )->get_timestamp( 'sent', $subscriber->ID, $campaign_id, $index ) < MINUTE_IN_SECONDS * 5 ) {
 					$redirect_url = esc_url( add_query_arg( array( 'autoclickprevention' => 'redirect' ) ) );
 					wp_die(
-						esc_html__( 'You are being redirected...', 'mailster' ) . '<meta http-equiv="Refresh" content="1; URL=' . esc_url( $redirect_url ) . '">',
+						esc_html__( 'You are being redirected...', 'mailster' ) . '<meta http-equiv="Refresh" content="0; URL=' . esc_url( $redirect_url ) . '">',
 						esc_html__( 'You are being redirected...', 'mailster' ),
 						array(
 							'link_url'  => $redirect_url,
@@ -507,7 +507,7 @@ class MailsterFrontpage {
 				if ( strpos( $unsubscribe_url, $wp->request ) === false ) {
 					$this->setcookie( get_query_var( '_mailster_hash' ) );
 					$redirect_to = $this->get_link( 'unsubscribe', get_query_var( '_mailster_hash' ), get_query_var( '_mailster_extra' ) );
-					wp_redirect( $redirect_to, 301 );
+					wp_redirect( $redirect_to, 307 );
 					exit;
 				}
 
@@ -522,7 +522,7 @@ class MailsterFrontpage {
 				if ( strpos( $profile_url, $wp->request ) === false ) {
 					$this->setcookie( get_query_var( '_mailster_hash' ) );
 					$redirect_to = $this->get_link( 'profile', md5( wp_create_nonce( 'mailster_nonce' ) . get_query_var( '_mailster_hash' ) ), get_query_var( '_mailster_extra' ) );
-					wp_redirect( $redirect_to, 301 );
+					wp_redirect( $redirect_to, 307 );
 					exit;
 				}
 
@@ -541,7 +541,7 @@ class MailsterFrontpage {
 
 					if ( empty( $hash ) ) {
 
-						wp_redirect( $this->get_link(), 301 );
+						wp_redirect( $this->get_link(), 307 );
 						exit;
 					}
 				}
@@ -555,9 +555,11 @@ class MailsterFrontpage {
 				// redirect if no such subscriber
 				if ( ! $subscriber ) {
 
-					wp_redirect( $this->get_link(), 301 );
+					wp_redirect( $this->get_link(), 307 );
 					exit;
 				}
+
+				$this->setcookie( get_query_var( '_mailster_hash' ) );
 
 				$extra = explode( '/', get_query_var( '_mailster_extra' ) );
 				if ( isset( $extra[0] ) ) {
@@ -611,7 +613,7 @@ class MailsterFrontpage {
 						}
 					} else {
 
-						wp_redirect( $this->get_link(), 301 );
+						wp_redirect( $this->get_link(), 307 );
 						exit;
 					}
 				}
@@ -620,7 +622,7 @@ class MailsterFrontpage {
 
 				$redirect_to = apply_filters( 'mailster_confirm_target', $target, $subscriber->ID );
 
-				wp_redirect( $redirect_to, 301 );
+				wp_redirect( $redirect_to, 307 );
 				exit;
 			break;
 

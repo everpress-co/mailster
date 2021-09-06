@@ -152,18 +152,19 @@ class MailsterQueue {
 
 		$campaign_id = (int) $campaign_id;
 		$subscribers = array_filter( $subscribers, 'is_numeric' );
+		if ( empty( $subscribers ) ) {
+			return true;
+		}
 
 		if ( ! empty( $tags ) ) {
 			$tags = maybe_serialize( $tags );
 		} else {
 			$tags = '';
 		}
-		if ( $options ) {
+		if ( ! empty( $options ) ) {
 			$options = maybe_serialize( $options );
-		}
-
-		if ( empty( $subscribers ) ) {
-			return true;
+		} else {
+			$options = '';
 		}
 
 		$inserts = array();
@@ -1092,6 +1093,7 @@ class MailsterQueue {
 		$max_bounces        = mailster_option( 'bounce_attempts' );
 		$max_execution_time = mailster_option( 'max_execution_time', 0 );
 		$delay_time         = 0;
+		$in_timeframe       = mailster( 'helper' )->in_timeframe();
 
 		$sent_this_turn       = 0;
 		$send_delay           = mailster_option( 'send_delay', 0 ) / 1000;
@@ -1129,7 +1131,11 @@ class MailsterQueue {
 			$send_at_once_limit = $send_at_once;
 		}
 
-		if ( $to_send ) {
+		if ( $to_send && ! $in_timeframe ) {
+			$this->cron_log( 'System Error', '<span class="error">' . esc_html__( 'Not in time frame!', 'mailster' ) . '</span><br><span class="error">' . sprintf( esc_html__( 'Please check the %s on the delivery tab.', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' ) . '" target="_blank">' . esc_html__( 'time frame settings', 'mailster' ) . '</a>' ) . '</span>' );
+		}
+
+		if ( $in_timeframe && $to_send ) {
 
 			$sql = 'SELECT queue.campaign_id, queue.count AS _count, queue.requeued AS _requeued, queue.options AS _options, queue.tags AS _tags, queue.priority AS _priority, subscribers.ID AS subscriber_id, subscribers.status, subscribers.email, subscribers.rating';
 
@@ -1219,7 +1225,7 @@ class MailsterQueue {
 
 				} elseif ( $data->_options ) {
 
-					if ( $options = @unserialize( $data->_options ) ) {
+					if ( $options = maybe_unserialize( $data->_options ) ) {
 						$result = mailster( 'notification' )->send( $data->subscriber_id, $options );
 					} else {
 						continue;
