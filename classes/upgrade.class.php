@@ -4,6 +4,7 @@ class MailsterUpgrade {
 
 	private $performance = 1;
 	private $starttime;
+	private $stop_process = false;
 
 
 	public function __construct() {
@@ -125,15 +126,12 @@ class MailsterUpgrade {
 
 		$this->starttime = microtime( true );
 
-		$return['success'] = false;
-
 		$id                = $_POST['id'];
 		$this->performance = isset( $_POST['performance'] ) ? (int) $_POST['performance'] : $this->performance;
 
 		$actions = $this->get_actions();
 
 		if ( method_exists( $this, 'do_' . $id ) ) {
-			$return['success'] = true;
 			ob_start();
 			$return[ $id ] = $this->{'do_' . $id}();
 			$output        = ob_get_contents();
@@ -147,9 +145,13 @@ class MailsterUpgrade {
 				// $return['output']  .= str_repeat('―', 80)."\n";
 
 			}
+			if ( $this->stop_process ) {
+				wp_send_json_error( $return );
+			}
+			wp_send_json_success( $return );
+		} else {
+			wp_send_json_error( $return );
 		}
-
-		wp_send_json( $return );
 
 	}
 
@@ -274,7 +276,7 @@ class MailsterUpgrade {
 			unset( $actions['db_structure'] );
 			$actions = wp_parse_args(
 				array(
-					//'legacy_action_cleanup'          => 'Legacy Action Table cleanup',
+					'legacy_cleanup'                 => 'Legacy Table cleanup',
 					'create_primary_keys'            => 'Create primary keys',
 					'db_structure'                   => 'Checking DB structure',
 					'update_action_table_sent'       => 'Update Action Table - Sent',
@@ -348,6 +350,7 @@ class MailsterUpgrade {
 		<div id="mailster-update-info" style="display: none;">
 			<div class="notice-error error inline"><p>Make sure to create a backup before run the Mailster Batch Update. If you experience any issues upgrading please reach out to us via our member area <a href="https://mailster.co/go/register" class="external">here</a>.<br>
 			<strong>Important: No data can get lost thanks to our smart upgrade process.</strong></p></div>
+			<p>Built: <?php echo MAILSTER_BUILT; ?></p>
 			<?php if ( $count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}mailster_actions" ) ) : ?>
 			<p>Action Table: <?php echo number_format( $count ); ?> entries</p>
 			<?php endif; ?>
@@ -921,15 +924,27 @@ class MailsterUpgrade {
 	}
 
 
-	private function do_legacy_action_cleanup() {
+	private function do_legacy_cleanup() {
 
 		global $wpdb;
 
-		if ( ! $this->table_exists( "{$wpdb->prefix}mailster_actions" ) ) {
-			return true;
+		if ( $this->table_exists( "{$wpdb->prefix}mailster_actions" ) ) {
+			if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a WHERE campaign_id IS NULL" ) ) {
+				echo 'Removed ' . number_format( $count ) . " actions where's no campaign\n";
+				return false;
+
+			}
+			if ( $campaing_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_type = 'newsletter'" ) ) {
+				if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a WHERE campaign_id NOT IN (" . implode( ',', $campaing_ids ) . ')' ) ) {
+					echo 'Removed ' . number_format( $count ) . " actions where's no campaign\n";
+					return false;
+
+				}
+			}
 		}
-		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_actions AS a JOIN (SELECT b.campaign_id, b.subscriber_id FROM {$wpdb->prefix}mailster_actions AS b LEFT JOIN {$wpdb->posts} AS p ON p.ID = b.campaign_id WHERE p.ID IS NULL ORDER BY b.campaign_id LIMIT 1000) AS ab ON (a.campaign_id = ab.campaign_id AND a.subscriber_id = ab.subscriber_id)" ) ) {
-			echo 'Removed ' . number_format( $count ) . " actions where's no campaign\n";
+
+		if ( $count = $wpdb->query( "DELETE a FROM {$wpdb->prefix}mailster_subscriber_meta AS a WHERE a.meta_value = '' OR a.subscriber_id = 0" ) ) {
+			echo 'Removed ' . number_format( $count ) . " rows of unassigned subscriber meta\n";
 			return false;
 		}
 
@@ -1054,9 +1069,8 @@ class MailsterUpgrade {
 
 				// echo "DROP TABLE {$table}_old;" . "\n";
 
-				sleep( MINUTE_IN_SECONDS );
-				break;
-
+				$this->die();
+				return false;
 		}
 
 		return $wpdb->get_var( "SHOW INDEXES FROM {$table} WHERE Key_name = 'PRIMARY'" );
@@ -1150,11 +1164,6 @@ class MailsterUpgrade {
 		}
 
 		if ( ! ( $method = get_transient( 'mailster_update_action_table_method_' . $table ) ) ) {
-			$method = 1;
-			set_transient( 'mailster_update_action_table_method_' . $table, $method, HOUR_IN_SECONDS );
-		}
-		// for larger tables (over 700K) use the method 2
-		if ( $total_actions > 700000 ) {
 			$method = 2;
 			set_transient( 'mailster_update_action_table_method_' . $table, $method, HOUR_IN_SECONDS );
 		}
@@ -1172,7 +1181,12 @@ class MailsterUpgrade {
 						return false;
 					}
 
-					$sql = "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON a.subscriber_id <=> b.subscriber_id AND a.campaign_id <=> b.campaign_id AND a.timestamp <=> b.timestamp WHERE b.ID IS NULL AND a.type IN ($type) AND a.ID > %d ORDER BY a.ID ASC LIMIT 1";
+					$compare = '';
+					foreach ( $fields as $field ) {
+						$compare .= ' AND a.' . $field . ' <=> b.' . $field;
+					}
+
+					$sql = "SELECT a.ID FROM `{$wpdb->prefix}mailster_actions` AS a LEFT JOIN `{$wpdb->prefix}mailster_action_$table` AS b ON 1 {$compare} WHERE b.ID IS NULL AND a.type IN ($type) AND a.ID > %d ORDER BY a.ID ASC LIMIT 1";
 
 					// get first missing primary key
 					if ( $key = $wpdb->get_var( $wpdb->prepare( $sql, $start_id ) ) ) {
@@ -1211,7 +1225,10 @@ class MailsterUpgrade {
 						}
 						unset( $data['type'] );
 
-						$insert_data[] = "('" . implode( "', '", array_values( $data ) ) . "')";
+						$string = "('" . implode( "', '", array_values( $data ) ) . "')";
+						$string = str_replace( "''", 'NULL', $string );
+
+						$insert_data[] = $string;
 
 					}
 
@@ -1247,7 +1264,10 @@ class MailsterUpgrade {
 						}
 						unset( $data['type'] );
 
-						$insert_data[] = "('" . implode( "', '", array_values( $data ) ) . "')";
+						$string = "('" . implode( "', '", array_values( $data ) ) . "')";
+						$string = str_replace( "''", 'NULL', $string );
+
+						$insert_data[] = $string;
 
 					}
 
@@ -1299,9 +1319,12 @@ class MailsterUpgrade {
 			}
 
 			$moved = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}mailster_action_$table`" );
+			$moved = min( $moved, $total );
+
+			$p = min( 1, $moved / $total );
 
 			echo number_format( $count ) . ' moved.' . "\n";
-			echo number_format( $moved ) . ' of ' . number_format( $total ) . ' (' . number_format( $moved / $total * 100, 2 ) . '%) in total from table ' . $table . ".\n";
+			echo number_format( $moved ) . ' of ' . number_format( $total ) . ' (' . number_format( $p * 100, 2 ) . '%) in total from table ' . $table . ".\n";
 			if ( $moved < $total ) {
 				// get the limit from the 10th of the total within a range
 				$limit = max( 1000, min( 50000, round( $total / 10 ) ) );
@@ -2236,6 +2259,12 @@ class MailsterUpgrade {
 		global $mailster_batch_update_output;
 
 		$mailster_batch_update_output[] = $content;
+
+	}
+
+	private function die() {
+
+		$this->stop_process = true;
 
 	}
 
