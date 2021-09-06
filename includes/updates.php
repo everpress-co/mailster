@@ -6,6 +6,8 @@ This runs if an update was done.
 
 global $wpdb;
 
+$wpdb->suppress_errors();
+
 $mailster_options = mailster_options();
 $mailster_texts   = mailster_texts();
 
@@ -600,9 +602,19 @@ if ( $old_version ) {
 
 		case '2.4.17':
 		case '2.4.18':
-			// move to "default" or after latests release versions
-			$mailster_options['db_update_required'] = true;
-			$mailster_options['auto_send_at_once']  = false;
+		case '2.4.19':
+		case '2.4.20':
+			$mailster_options['auto_send_at_once'] = false;
+			$mailster_options['antiflood']         = 10;
+
+			$mailster_options['db_update_required']   = true;
+			$mailster_options['_flush_rewrite_rules'] = true;
+
+		case '3.0':
+			// beta users do not need to run the update process again
+			if ( $old_version_sanitized == '3.0' ) {
+				$mailster_options['db_update_required'] = false;
+			}
 
 		default:
 			// reset translations

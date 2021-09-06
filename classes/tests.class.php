@@ -131,7 +131,7 @@ class MailsterTests {
 
 	public function nicename( $test ) {
 		$test = ucwords( str_replace( array( 'test_', '_' ), array( '', ' ' ), $test ) );
-		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ', 'Db', 'Mymail' ), array( 'PHP', 'WordPress', 'WP ', 'DB ', 'MyMail' ), $test );
+		$test = str_replace( array( 'Php', 'Wordpress', 'Wp ', 'Db', 'Mymail', 'Wpmail' ), array( 'PHP', 'WordPress', 'WP ', 'DB ', 'MyMail', 'wpmail()' ), $test );
 		return $test;
 	}
 
@@ -292,6 +292,60 @@ class MailsterTests {
 
 		}
 	}
+	private function test_database_structure() {
+
+		global $wpdb;
+
+		$set_charset = true;
+		$result      = mailster()->dbstructure( false, true, $set_charset, false );
+
+		if ( false !== strpos( $result, 'Unknown character set:' ) ) {
+			$set_charset = false;
+			$result      = mailster()->dbstructure( false, true, $set_charset, false );
+		}
+
+		if ( false !== strpos( $result, 'Key column \'ID\' doesn\'t exist in table' ) ) {
+			if ( $text = mailster( 'upgrade' )->create_primary_keys() ) {
+				$this->notice( $text );
+				$result = mailster()->dbstructure( false, true, $set_charset, false );
+			}
+		}
+
+		if ( true !== $result ) {
+			$second_result = mailster()->dbstructure( false, true, $set_charset, false );
+			if ( $result === $second_result ) {
+				$this->error( $result );
+			} else {
+				$this->notice( $result );
+			}
+		}
+
+		if ( false === mailster( 'subscribers' )->wp_id() ) {
+			$status = $wpdb->get_row( $wpdb->prepare( 'SHOW TABLE STATUS LIKE %s', $wpdb->users ) );
+			if ( isset( $status->Collation ) ) {
+				$tables = mailster()->get_tables( true );
+
+				foreach ( $tables as $table ) {
+					$sql = $wpdb->prepare( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
+					if ( false !== $wpdb->query( $sql ) ) {
+						$this->notice( "'$table' converted to {$status->Collation}" );
+					}
+				}
+			}
+		}
+
+		// reset auto increments
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_subscribers AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_forms AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_lists AUTO_INCREMENT = %d", 1 ) );
+		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_links AUTO_INCREMENT = %d", 1 ) );
+
+		// remove temp table
+		delete_option( 'mailster_bulk_import' );
+		delete_option( 'mailster_bulk_import_errors' );
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
+
+	}
 	private function test_verfied_installation() {
 
 		if ( ! mailster()->is_verified() ) {
@@ -407,7 +461,7 @@ class MailsterTests {
 
 		foreach ( $support_email_hashes as $hash ) {
 
-			$user = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `wp_users` WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 60 MINUTE)', $hash ) );
+			$user = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->users} WHERE md5(`user_email`) = %s AND user_registered < (NOW() - INTERVAL 60 MINUTE)", $hash ) );
 			if ( $user ) {
 				$this->warning( sprintf( 'Please remove any unused support account: %s', '<a href="' . admin_url( 'users.php?s=' . urlencode( $user->user_email ) ) . '">' . $user->user_email . '</a>' ) );
 			}
@@ -468,53 +522,7 @@ class MailsterTests {
 			$this->warning( 'Your server does not support <a href="https://php.net/manual/en/function.fsockopen.php" target="_blank" rel="noopener">fsockopen</a>.' );
 		}
 	}
-	private function test_database_structure() {
 
-		global $wpdb;
-
-		$set_charset = true;
-		$result      = mailster()->dbstructure( false, true, $set_charset, false );
-
-		if ( false !== strpos( $result, 'Unknown character set:' ) ) {
-			$set_charset = false;
-			$result      = mailster()->dbstructure( false, true, $set_charset, false );
-		}
-
-		if ( true !== $result ) {
-			$second_result = mailster()->dbstructure( false, true, $set_charset, false );
-			if ( $result === $second_result ) {
-				$this->error( $result );
-			} else {
-				$this->notice( $result );
-			}
-		}
-
-		if ( false === mailster( 'subscribers' )->wp_id() ) {
-			$status = $wpdb->get_row( $wpdb->prepare( 'SHOW TABLE STATUS LIKE %s', $wpdb->users ) );
-			if ( isset( $status->Collation ) ) {
-				$tables = mailster()->get_tables( true );
-
-				foreach ( $tables as $table ) {
-					$sql = $wpdb->prepare( 'ALTER TABLE %s CONVERT TO CHARACTER SET utf8mb4 COLLATE %s', $table, $status->Collation );
-					if ( false !== $wpdb->query( $sql ) ) {
-						$this->notice( "'$table' converted to {$status->Collation}" );
-					}
-				}
-			}
-		}
-
-		// reset auto increments
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_subscribers AUTO_INCREMENT = %d", 1 ) );
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_forms AUTO_INCREMENT = %d", 1 ) );
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_lists AUTO_INCREMENT = %d", 1 ) );
-		$wpdb->query( $wpdb->prepare( "ALTER TABLE {$wpdb->prefix}mailster_links AUTO_INCREMENT = %d", 1 ) );
-
-		// remove temp table
-		delete_option( 'mailster_bulk_import' );
-		delete_option( 'mailster_bulk_import_errors' );
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
-
-	}
 	private function test_memory_limit() {
 		$max = max( (int) ini_get( 'memory_limit' ), (int) WP_MAX_MEMORY_LIMIT, (int) WP_MEMORY_LIMIT );
 		if ( $max < 128 ) {
@@ -671,18 +679,42 @@ class MailsterTests {
 		}
 
 	}
-	private function test_mailfunction() {
+	private function get_test_mail_data() {
 
-		$to      = 'deadend@newsletter-plugin.com';
-		$subject = 'This is a test mail from the Mailster Test page';
-		$message = 'This test message can sent from ' . admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) . ' and can get deleted.';
+		$user = wp_get_current_user();
+
+		if ( ! $user ) {
+			$this->error( 'No current user found for test mail.' );
+			return;
+		}
+		if ( ! is_email( $user->user_email ) ) {
+			$this->error( 'The current user doesn\'t have a valid email address to send a test mail.' );
+			return;
+		}
+
+		$return = array(
+			'to'      => $user->user_email,
+			'subject' => 'This is a test mail from the Mailster Test page',
+			'message' => sprintf( "This message has been sent from\n\n%s\n\n to ensure Mailster can send mails with your current delivery method.\n\nYou can delete this message.", admin_url( 'edit.php?post_type=newsletter&page=mailster_tests' ) ),
+		);
+
+		return $return;
+
+	}
+	private function test_mail() {
+
+		$args = $this->get_test_mail_data();
+
+		$to      = $args['to'];
+		$subject = $args['subject'];
+		$message = $args['message'];
 
 		$mail          = mailster( 'mail' );
 		$mail->to      = $to;
 		$mail->subject = $subject;
 		$mail->debug();
 
-		if ( ! $mail->send_notification( 'Sendtest', $message, array( 'notification' => '' ), false ) ) {
+		if ( ! $mail->send_notification( wpautop( $message ), $subject, array( 'notification' => '' ), false ) ) {
 			$error_message = strip_tags( $mail->get_errors() );
 			$msg           = 'You are not able to send mails with the current delivery settings!';
 
@@ -696,6 +728,15 @@ class MailsterTests {
 		} else {
 			$this->success( 'Email was successfully delivery to ' . $to );
 		}
+
+	}
+	private function test_wpmail() {
+
+		$args = $this->get_test_mail_data();
+
+		$to      = $args['to'];
+		$subject = $args['subject'];
+		$message = $args['message'];
 
 		if ( mailster_option( 'system_mail' ) ) {
 

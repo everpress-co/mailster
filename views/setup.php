@@ -207,7 +207,7 @@ $utm = array(
 				<?php $url = trailingslashit( get_bloginfo( 'url' ) ); ?>
 				<label><?php echo esc_html_x( 'Location', 'the URL not the place', 'mailster' ); ?>:</label>
 				<span>
-					<a href="<?php echo $url . sanitize_title( $homepage['post_name'] ); ?>" class="external"><?php echo $url; ?><strong><?php echo sanitize_title( $homepage['post_name'] ); ?></strong>/</a>
+					<a href="<?php echo $url . sanitize_title( $homepage['post_name'] ); ?>" class="external"><?php echo esc_url( $url ); ?><strong><?php echo sanitize_title( $homepage['post_name'] ); ?></strong>/</a>
 					<a class="button button-small hide-if-no-js edit-slug"><?php echo esc_html__( 'Edit', 'mailster' ); ?></a>
 				</span>
 				<span class="edit-slug-area">
@@ -256,7 +256,8 @@ $utm = array(
 				<a class="nav-tab<?php echo 'sparkpost' == $method ? ' nav-tab-active' : ''; ?>" href="#sparkpost">SparkPost</a>
 				<a class="nav-tab<?php echo 'mailgun' == $method ? ' nav-tab-active' : ''; ?>" href="#mailgun">Mailgun</a>
 				<a class="nav-tab<?php echo 'sendgrid' == $method ? ' nav-tab-active' : ''; ?>" href="#sendgrid">SendGrid</a>
-				<a class="nav-tab<?php echo 'mandrill' == $method ? ' nav-tab-active' : ''; ?>" href="#mandrill">Mandrill</a>
+				<a class="nav-tab<?php echo 'mailersend' == $method ? ' nav-tab-active' : ''; ?>" href="#mailersend">MailerSend</a>
+				<a class="nav-tab<?php echo 'mailjet' == $method ? ' nav-tab-active' : ''; ?>" href="#mailjet">MailJet</a>
 				<a class="nav-tab<?php echo 'dummymailer' == $method ? ' nav-tab-active' : ''; ?>" href="#dummymailer">DummyMailer</a>
 			</div>
 
@@ -276,7 +277,7 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-gmail/" class="external">
-					<img src="//ps.w.org/mailster-gmail/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
+					<img src="https://ps.w.org/mailster-gmail/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 					<span>Mailster Gmail Integration</span>
 				</a>
 				</div>
@@ -293,7 +294,7 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-amazonses/" class="external">
-					<img src="//ps.w.org/mailster-amazonses/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
+					<img src="https://ps.w.org/mailster-amazonses/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 					<span>Mailster Amazon SES Integration</span>
 				</a>
 				</div>
@@ -310,7 +311,7 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-sparkpost/" class="external">
-					<img src="//ps.w.org/mailster-sparkpost/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
+					<img src="https://ps.w.org/mailster-sparkpost/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 					<span>Mailster SparkPost Integration</span>
 				</a>
 				</div>
@@ -327,7 +328,7 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-mailgun/" class="external">
-					<img src="//ps.w.org/mailster-mailgun/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
+					<img src="https://ps.w.org/mailster-mailgun/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 					<span>Mailster Mailgun Integration</span>
 				</a>
 				</div>
@@ -344,7 +345,7 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-sendgrid/" class="external">
-					<img src="//ps.w.org/mailster-sendgrid/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
+					<img src="https://ps.w.org/mailster-sendgrid/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 					<span>Mailster SendGrid Integration</span>
 				</a>
 				</div>
@@ -353,20 +354,37 @@ $utm = array(
 				</a>
 				<?php endif; ?>
 			</div>
-			<div class="deliverytab" id="deliverytab-mandrill"<?php echo 'mandrill' == $method ? ' style="display:block"' : ''; ?>>
+			<div class="deliverytab" id="deliverytab-mailersend"<?php echo 'mailersend' == $method ? ' style="display:block"' : ''; ?>>
 				<?php
-				if ( in_array( 'mailster-mandrill', $active_pluginslugs ) ) :
-					do_action( 'mailster_deliverymethod_tab_mandrill' );
+				if ( in_array( 'mailster-mailersend', $active_pluginslugs ) ) :
+					do_action( 'mailster_deliverymethod_tab_mailersend' );
 				else :
 					?>
 				<div class="wp-plugin">
-				<a href="https://wordpress.org/plugins/mailster-mandrill/" class="external">
-					<img src="//ps.w.org/mailster-mandrill/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster Mandrill Integration</span>
+				<a href="https://wordpress.org/plugins/mailster-mailersend/" class="external">
+					<img src="https://ps.w.org/mailster-mailersend/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
+					<span>Mailster MailerSend Integration</span>
 				</a>
 				</div>
-				<a class="button button-primary quick-install" data-plugin="mailster-mandrill" data-method="mandrill">
-					<?php echo in_array( 'mailster-mandrill', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'Mandrill' ); ?>
+				<a class="button button-primary quick-install" data-plugin="mailster-mailersend" data-method="mailersend">
+					<?php echo in_array( 'mailster-mailersend', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'MailerSend' ); ?>
+				</a>
+				<?php endif; ?>
+			</div>
+			<div class="deliverytab" id="deliverytab-mailjet"<?php echo 'mailjet' == $method ? ' style="display:block"' : ''; ?>>
+				<?php
+				if ( in_array( 'mailster-mailjet', $active_pluginslugs ) ) :
+					do_action( 'mailster_deliverymethod_tab_mailjet' );
+				else :
+					?>
+				<div class="wp-plugin">
+				<a href="https://wordpress.org/plugins/mailster-mailjet/" class="external">
+					<img src="https://ps.w.org/mailster-mailjet/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
+					<span>Mailster MailJet Integration</span>
+				</a>
+				</div>
+				<a class="button button-primary quick-install" data-plugin="mailster-mailjet" data-method="mailjet">
+					<?php echo in_array( 'mailster-mailjet', $pluginslugs ) ? esc_html__( 'Activate Plugin', 'mailster' ) : sprintf( esc_html__( 'Install %s Extension', 'mailster' ), 'MailJet' ); ?>
 				</a>
 				<?php endif; ?>
 			</div>
@@ -378,7 +396,7 @@ $utm = array(
 					?>
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-dummy-mailer/" class="external">
-					<img src="//ps.w.org/mailster-dummy-mailer/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
+					<img src="https://ps.w.org/mailster-dummy-mailer/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
 					<span>Mailster Dummy Mailer</span>
 				</a>
 				</div>

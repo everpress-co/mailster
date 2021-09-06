@@ -3,23 +3,7 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
-	var codemirror,
-		codemirrorargs = {
-			mode: {
-				name: "htmlmixed",
-				scriptTypes: [{
-					matches: /\/x-handlebars-template|\/x-mustache/i,
-					mode: null
-				}, {
-					matches: /(text|application)\/(x-)?vb(a|script)/i,
-					mode: "vbscript"
-				}]
-			},
-			tabMode: "indent",
-			lineNumbers: true,
-			viewportMargin: Infinity,
-			autofocus: true
-		};
+	var codeeditor;
 
 	mailster.optionbar = {};
 
@@ -85,12 +69,20 @@ mailster = (function (mailster, $, window, document) {
 					head: structure.head
 				},
 				function (response) {
+
 					mailster.$.optionbar.find('a.code').addClass('active').removeClass('loading');
 					mailster.$.html.hide();
 					mailster.$.content.val(response.content);
+					if (wp.codeEditor) {
+						codeeditor = wp.codeEditor.initialize(mailster.$.content, {
+							codemirror: mailster.util.codemirrorargs
+						});
+					} else {
+						codeeditor = {
+							codemirror: window.CodeMirror.fromTextArea(mailster.$.content.get(0), mailster.util.codemirrorargs)
+						};
+					}
 					mailster.$.optionbar.find('a').not('a.redo, a.undo, a.code').addClass('disabled');
-
-					codemirror = mailster.util.CodeMirror.fromTextArea(mailster.$.content.get(0), codemirrorargs);
 
 				},
 				function (jqXHR, textStatus, errorThrown) {
@@ -101,8 +93,8 @@ mailster = (function (mailster, $, window, document) {
 
 		} else {
 
-			structure = mailster.editor.getStructure(codemirror.getValue());
-			codemirror.clearHistory();
+			structure = mailster.editor.getStructure(codeeditor.codemirror.getValue());
+			codeeditor.codemirror.clearHistory();
 
 			mailster.$.optionbar.find('a.code').addClass('loading');
 			mailster.trigger('disable');
@@ -215,7 +207,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', 'a.file', changeTemplate);
 
 	mailster.editable && mailster.$.window
-		//.on('scroll.optionbar', mailster.util.throttle(togglefix, 100))
+		.on('scroll.optionbar', togglefix)
 		.on('resize.optionbar', function () {
 			mailster.$.window.trigger('scroll.optionbar');
 		});
@@ -237,7 +229,7 @@ mailster = (function (mailster, $, window, document) {
 	function togglefix() {
 		var scrolltop = mailster.util.top();
 
-		if (scrolltop < containerOffset() || scrolltop > containerOffset() + mailster.$.template.height() - 120) {
+		if (scrolltop < containerOffset() || scrolltop > containerOffset() + mailster.$.template.height() - 0) {
 			if (/fixed-optionbar/.test(mailster.dom.body.className)) {
 				mailster.$.body.removeClass('fixed-optionbar');
 				mailster.$.optionbar.width('auto');

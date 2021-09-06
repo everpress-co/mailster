@@ -15,6 +15,7 @@ class MailsterForm {
 	private $form          = null;
 	private $formkey       = null;
 	private $campaignID    = null;
+	private $campaignIndex = null;
 	private $hash          = null;
 	private $profile       = false;
 	private $unsubscribe   = false;
@@ -538,13 +539,13 @@ class MailsterForm {
 			unset( $fields['_submit'] );
 		}
 
-		$fields = apply_filters( 'mymail_form_fields', apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form ), $this->ID, $this->form );
+		$fields = apply_filters( 'mailster_form_fields', $fields, $this->ID, $this->form );
 
 		if ( ! is_admin() && apply_filters( 'mailster_honeypot', mailster_option( 'check_honeypot' ) ) ) {
 			// place honeypot after email field
 			$position = array_search( 'email', array_keys( $fields ) ) + 1;
 			$fields   = array_slice( $fields, 0, $position, true ) +
-				array( '_honeypot' => '<label style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'mailster_honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="noton" autofill="off"></label>' ) +
+				array( '_honeypot' => '<div style="position:absolute;top:-99999px;' . ( is_rtl() ? 'right' : 'left' ) . ':-99999px;z-index:-99;"><input name="n_' . wp_create_nonce( 'mailster_honeypot' ) . '_email" type="email" tabindex="-1" autocomplete="noton" autofill="off"></div>' ) +
 				array_slice( $fields, $position, null, true );
 		}
 
@@ -567,7 +568,7 @@ class MailsterForm {
 			$html = apply_filters( 'mailster_unsubscribe_form', $html, $this->ID, $this->form );
 		}
 
-		$html = apply_filters( 'mymail_form', apply_filters( 'mailster_form', $html, $this->ID, $this->form ), $this->ID, $this->form );
+		$html = apply_filters( 'mailster_form', $html, $this->ID, $this->form );
 
 		if ( ! $echo ) {
 			return $html;
@@ -617,6 +618,9 @@ class MailsterForm {
 
 		if ( $this->action ) {
 			$html .= '<input name="_action" type="hidden" value="' . esc_attr( $this->action ) . '">' . "\n";
+			if ( 'subscribe' == $this->action ) {
+				$html .= '<input name="_timestamp" type="hidden" value="' . time() . '">' . "\n";
+			}
 		}
 
 		if ( $this->redirect ) {
@@ -637,6 +641,10 @@ class MailsterForm {
 
 		if ( $this->campaignID ) {
 			$html .= '<input name="_campaign_id" type="hidden" value="' . esc_attr( $this->campaignID ) . '">' . "\n";
+		}
+
+		if ( $this->campaignIndex ) {
+			$html .= '<input name="_campaign_index" type="hidden" value="' . esc_attr( absint( $this->campaignIndex ) ) . '">' . "\n";
 		}
 
 		if ( $nonce = $this->get_nonce() ) {
@@ -719,8 +727,9 @@ class MailsterForm {
 	 *
 	 * @param unknown $ID
 	 */
-	public function campaign_id( $ID ) {
-		$this->campaignID = (int) $ID;
+	public function campaign_id( $ID, $index = null ) {
+		$this->campaignID    = (int) $ID;
+		$this->campaignIndex = $index;
 	}
 
 
@@ -846,7 +855,7 @@ class MailsterForm {
 		}
 		$html .= '</form>';
 
-		return apply_filters( 'mymail_unsubscribe_form', apply_filters( 'mailster_unsubscribe_form', $html, $this->campaignID ), $this->campaignID );
+		return apply_filters( 'mailster_unsubscribe_form', $html, $this->campaignID );
 	}
 
 
@@ -902,6 +911,7 @@ class MailsterForm {
 		}
 
 		$this->id( isset( $_BASE['formid'] ) ? (int) $_BASE['formid'] : 1, $form_args );
+		$this->campaign_id( isset( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null, isset( $_BASE['_campaign_index'] ) ? (int) $_BASE['_campaign_index'] : 0 );
 
 		$double_opt_in = $this->form->doubleoptin;
 		$overwrite     = $this->form->overwrite;
@@ -909,7 +919,7 @@ class MailsterForm {
 		$customfields = mailster()->get_custom_fields();
 
 		$formdata = stripslashes_deep( isset( $_BASE['userdata'] ) ? $_BASE['userdata'] : $_BASE );
-		$formdata = apply_filters( 'mymail_pre_submit', apply_filters( 'mailster_pre_submit', $formdata, $this->form ), $this->form );
+		$formdata = apply_filters( 'mailster_pre_submit', $formdata, $this->form );
 
 		foreach ( $this->form->fields as $field_id => $field ) {
 
@@ -965,13 +975,27 @@ class MailsterForm {
 			$honeypot      = isset( $_BASE[ 'n_' . $honeypotnonce . '_email' ] ) ? $_BASE[ 'n_' . $honeypotnonce . '_email' ] : null;
 
 			if ( ! empty( $honeypot ) ) {
-				$this->object['errors']['_honeypot'] = esc_html__( 'Honeypot is for bears only!', 'mailster' );
+				$this->object['errors']['_honeypot'] = esc_html__( 'Please leave the honeypot field empty.', 'mailster' );
+			}
+		}
+
+		if ( ! is_admin() && ! is_user_logged_in() && isset( $_BASE['_timestamp'] ) && $this->valid() ) {
+
+			/**
+			* Seconds to prevent forms being submitted
+			*
+			* @param int $time_in_seconds the time in seconds (default:4)
+			*/
+			$time_check_value = apply_filters( 'mailster_time_check_value', 4 );
+
+			if ( isset( $_BASE['_timestamp'] ) && time() - $_BASE['_timestamp'] <= $time_check_value ) {
+				$this->object['errors']['_timestamp'] = sprintf( esc_html__( 'Please wait at least %d seconds before submitting the form.', 'mailster' ), $time_check_value );
 			}
 		}
 
 		// to hook into the system
-		$this->object = apply_filters( 'mymail_submit', apply_filters( 'mailster_submit', $this->object ) );
-		$this->object = apply_filters( 'mymail_submit_' . $this->ID, apply_filters( 'mailster_submit_' . $this->ID, $this->object ) );
+		$this->object = apply_filters( 'mailster_submit', $this->object );
+		$this->object = apply_filters( 'mailster_submit_' . $this->ID, $this->object );
 
 		if ( $this->valid() ) {
 
@@ -1029,8 +1053,9 @@ class MailsterForm {
 					break;
 
 				case 'unsubscribe':
-					$campaign_id   = ! empty( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null;
-					$subscriber_id = $subscriber = null;
+					$campaign_id    = ! empty( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null;
+					$campaign_index = isset( $_BASE['_campaign_index'] ) ? (int) $_BASE['_campaign_index'] : null;
+					$subscriber_id  = $subscriber = null;
 
 					if ( isset( $_BASE['email'] ) ) {
 						if ( ! empty( $_BASE['email'] ) ) {
@@ -1049,7 +1074,7 @@ class MailsterForm {
 
 					if ( $subscriber ) {
 						$subscriber_id = $subscriber->ID;
-						if ( ! ( $return['success'] = mailster( 'subscribers' )->unsubscribe( $subscriber_id, $campaign_id, $type ) ) ) {
+						if ( ! ( $return['success'] = mailster( 'subscribers' )->unsubscribe( $subscriber_id, $campaign_id, $type, $campaign_index ) ) ) {
 							$this->object['errors']['email'] = mailster_text( 'unsubscribeerror' );
 						} else {
 							$message = 'unsubscribe';
@@ -1087,16 +1112,16 @@ class MailsterForm {
 						// change status if other than pending, subscribed or unsubscribed
 						$status = $subscriber->status >= 3 ? 1 : $subscriber->status;
 						if ( isset( $_BASE['_status'] ) ) {
-							if ( $status == 0 && (int) $_BASE['_status'] == 1 ) {
-
-								if ( mailster_option( 'track_users' ) ) {
-									$ip                  = mailster_get_ip();
-									$entry['ip']         = $ip;
-									$entry['ip_confirm'] = $ip;
+							if ( $status !== (int) $_BASE['_status'] ) {
+								if ( $status == 0 && (int) $_BASE['_status'] == 1 ) {
+									$entry['confirm'] = time();
 								}
-								$entry['confirm'] = time();
 
+								if ( 2 == (int) $_BASE['_status'] ) {
+									mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $this->campaignID, 'profile_unsubscribe' );
+								}
 							}
+
 							$status = (int) $_BASE['_status'];
 						}
 
@@ -1105,6 +1130,11 @@ class MailsterForm {
 							$subscriber_notification = true;
 						}
 
+						if ( mailster_option( 'track_users' ) ) {
+							$ip                  = mailster_get_ip();
+							$entry['ip']         = $ip;
+							$entry['ip_confirm'] = $ip;
+						}
 						$entry = wp_parse_args(
 							array(
 								'status' => $status,
@@ -1188,8 +1218,8 @@ class MailsterForm {
 
 			}
 
-			$this->object = apply_filters( 'mymail_post_submit', apply_filters( 'mailster_post_submit', $this->object ) );
-			$this->object = apply_filters( 'mymail_post_submit_' . $this->ID, apply_filters( 'mailster_post_submit_' . $this->ID, $this->object ) );
+			$this->object = apply_filters( 'mailster_post_submit', $this->object );
+			$this->object = apply_filters( 'mailster_post_submit_' . $this->ID, $this->object );
 
 			if ( $this->valid() ) {
 				$return = array(
@@ -1353,7 +1383,7 @@ class MailsterForm {
 
 			$html .= '<ul>';
 			foreach ( $this->object[ $type ] as $field => $name ) {
-				$html .= '<li>' . apply_filters( 'mymail_error_output_' . $field, apply_filters( 'mailster_error_output_' . $field, $name, $this->object ), $this->object ) . '</li>';
+				$html .= '<li>' . apply_filters( 'mailster_error_output_' . $field, $name, $this->object ) . '</li>';
 			}
 			$html .= '</ul>';
 		}

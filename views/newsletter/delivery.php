@@ -81,7 +81,9 @@ $sent = $this->get_sent( $post->ID );
 		$pg     = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 		?>
 		<p>
-			<div class="progress paused"><span class="bar" style="width:<?php echo $p; ?>%"><span>&nbsp;<?php echo $pg; ?></span></span><span>&nbsp;<?php echo $pg; ?></span><var><?php echo $p; ?>%</var></div>
+			<div class="progress paused">
+				<span class="bar" style="width:<?php echo esc_attr( $p ); ?>%"><span>&nbsp;<?php echo esc_attr( $pg ); ?></span></span><span>&nbsp;<?php echo esc_attr( $pg ); ?></span><var><?php echo esc_attr( $p ); ?>%</var>
+			</div>
 		</p>
 	<?php endif; ?>
 
@@ -278,19 +280,17 @@ $sent = $this->get_sent( $post->ID );
 			<p>
 				<?php
 
-				global $wp_locale;
-
 				esc_html_e( 'send campaigns only on these weekdays', 'mailster' );
 				echo '<br>';
 				$start_at = get_option( 'start_of_week' );
 
 				for ( $i = $start_at; $i < 7 + $start_at; $i++ ) {
 					$j = $i;
-					if ( ! isset( $wp_locale->weekday[ $j ] ) ) {
+					if ( $j > 7 ) {
 						$j = $j - 7;
 					}
 
-					echo '<label title="' . $wp_locale->weekday[ $j ] . '" class="weekday"><input name="mailster_data[autoresponder][weekdays][]" type="checkbox" value="' . $j . '" ' . checked( ( in_array( $j, $autoresponderdata['weekdays'] ) || ! $autoresponderdata['weekdays'] ), true, false ) . '>' . $wp_locale->weekday_initial[ $wp_locale->weekday[ $j ] ] . '&nbsp;</label> ';
+					echo '<label title="' . date_i18n( 'l', strtotime( 'sunday +' . $j . ' days' ) ) . '" class="weekday"><input name="mailster_data[autoresponder][weekdays][]" type="checkbox" value="' . $j . '" ' . checked( ( in_array( $j, $autoresponderdata['weekdays'] ) || ! $autoresponderdata['weekdays'] ), true, false ) . '>' . date_i18n( 'D', strtotime( 'sunday +' . $j . ' days' ) ) . '&nbsp;</label> ';
 				}
 				?>
 			</p>
@@ -382,7 +382,7 @@ $sent = $this->get_sent( $post->ID );
 					$uservalue .= '<option value="-1">--</option>';
 
 					foreach ( $customfields as $key => $data ) {
-						$uservalue .= '<option value="' . $key . '"' . selected( $autoresponderdata['uservalue'], $key, false ) . '>' . $data['name'] . '</option>';
+						$uservalue .= '<option value="' . $key . '"' . selected( $autoresponderdata['uservalue'], $key, false ) . '>' . esc_html( $data['name'] ) . '</option>';
 					}
 					$uservalue .= '</select>';
 					?>
@@ -390,21 +390,11 @@ $sent = $this->get_sent( $post->ID );
 			<p id="userexactdate">
 				<label>
 					<input type="radio" class="userexactdate" name="mailster_data[autoresponder][userexactdate]" value="0" <?php checked( ! $autoresponderdata['userexactdate'] ); ?>>
-					<span
-					<?php
-					if ( $autoresponderdata['userexactdate'] ) {
-						echo ' class="disabled"'; }
-					?>
-					><?php printf( esc_html__( 'every %1$s %2$s', 'mailster' ), $amount, $unit ); ?></span>
+					<span <?php echo ( $autoresponderdata['userexactdate'] ) ? ' class="disabled"' : ''; ?>><?php printf( esc_html__( 'every %1$s %2$s', 'mailster' ), $amount, $unit ); ?></span>
 				</label><br>
 				<label>
 					<input type="radio" class="userexactdate" name="mailster_data[autoresponder][userexactdate]" value="1" <?php checked( $autoresponderdata['userexactdate'] ); ?>>
-					<span
-					<?php
-					if ( ! $autoresponderdata['userexactdate'] ) {
-						echo ' class="disabled"'; }
-					?>
-					><?php esc_html_e( 'on the exact date', 'mailster' ); ?></span>
+					<span <?php echo ( ! $autoresponderdata['userexactdate'] ) ? ' class="disabled"' : ''; ?>><?php esc_html_e( 'on the exact date', 'mailster' ); ?></span>
 				</label>
 			</p>
 			<p>
@@ -433,12 +423,7 @@ $sent = $this->get_sent( $post->ID );
 		</div>
 		<div class="mailster_autoresponder_more autoresponderfield-mailster_autoresponder_followup">
 				<?php
-				if ( $all_campaigns = $this->get_campaigns(
-					array(
-						'post__not_in' => array( $post->ID ),
-						'orderby'      => 'post_title',
-					)
-				) ) :
+				if ( $all_campaigns = $this->get_campaigns( 'post__not_in[]=' . $post->ID . '&orderby=post_title' ) ) :
 
 					// bypass post_status sort limitation.
 					$all_campaigns_stati = wp_list_pluck( $all_campaigns, 'post_status' );
@@ -469,7 +454,7 @@ $sent = $this->get_sent( $post->ID );
 							$status = $c->post_status;
 						}
 						?>
-					<option value="<?php echo $c->ID; ?>" <?php selected( $post->post_parent, $c->ID ); ?>><?php echo $c->post_title ? $c->post_title : '[' . esc_html__( 'no title', 'mailster' ) . ']'; ?></option>
+					<option value="<?php echo esc_attr( $c->ID ); ?>" <?php selected( $post->post_parent, $c->ID ); ?>><?php echo $c->post_title ? esc_html( $c->post_title ) : '[' . esc_html__( 'no title', 'mailster' ) . ']'; ?></option>
 						<?php
 					endforeach;
 					?>
@@ -494,13 +479,7 @@ $sent = $this->get_sent( $post->ID );
 					<?php esc_html_e( 'whenever the action hook', 'mailster' ); ?>
 				</label>
 			</div>
-				<?php
-				$hooks = apply_filters( 'mailster_action_hooks', array() );
-				if ( $autoresponderdata['hook'] && ! isset( $hooks[ $autoresponderdata['hook'] ] ) ) {
-					// $hooks[ $autoresponderdata['hook'] ] = $autoresponderdata['hook'];
-				}
-				?>
-			<?php if ( $hooks ) : ?>
+			<?php if ( $hooks = apply_filters( 'mailster_action_hooks', array() ) ) : ?>
 			<p>
 				<label>
 					<select class="widefat mailster-action-hooks">
@@ -513,7 +492,7 @@ $sent = $this->get_sent( $post->ID );
 			</p>
 				<?php endif; ?>
 			<p>
-				<input type="text" class="widefat code mailster-action-hook" name="mailster_data[autoresponder][hook]" value="<?php echo $autoresponderdata['hook']; ?>" placeholder="hook_name">
+				<input type="text" class="widefat code mailster-action-hook" name="mailster_data[autoresponder][hook]" value="<?php echo esc_attr( $autoresponderdata['hook'] ); ?>" placeholder="hook_name">
 			</p>
 			<div>
 				<label>
@@ -558,6 +537,7 @@ $sent = $this->get_sent( $post->ID );
 		?>
 		<input type="text" value="<?php echo esc_attr( $test_email ); ?>" placeholder="<?php echo esc_attr( $current_user->user_email ); ?>" autocomplete="off" id="mailster_testmail" class="widefat" aria-label="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>">
 		<span class="spinner" id="delivery-ajax-loading"></span>
+		<input type="button" value="<?php esc_attr_e( 'Run Precheck', 'mailster' ); ?>" class="button mailster_precheck">
 		<input type="button" value="<?php esc_attr_e( 'Send Test', 'mailster' ); ?>" class="button mailster_sendtest">
 		<div class="clear"></div>
 
@@ -581,7 +561,7 @@ $sent = $this->get_sent( $post->ID );
 		$pg     = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 		?>
 		<div class="progress">
-			<span class="bar" style="width:<?php echo $p; ?>%"><span>&nbsp;<?php echo $pg; ?></span></span><span>&nbsp;<?php echo $pg; ?></span><var><?php echo $p; ?>%</var>
+			<span class="bar" style="width:<?php echo esc_attr( $p ); ?>%"><span>&nbsp;<?php echo esc_attr( $pg ); ?></span></span><span>&nbsp;<?php echo esc_attr( $pg ); ?></span><var><?php echo esc_attr( $p ); ?>%</var>
 		</div>
 
 		<?php if ( $p ) : ?>
@@ -606,7 +586,7 @@ $sent = $this->get_sent( $post->ID );
 		$pg     = sprintf( esc_html__( '%1$s of %2$s sent', 'mailster' ), number_format_i18n( $sent ), number_format_i18n( $totals ) );
 	?>
 	<div class="progress paused">
-		<span class="bar" style="width:<?php echo $p; ?>%"><span>&nbsp;<?php echo $pg; ?></span></span><span>&nbsp;<?php echo $pg; ?></span><var><?php echo $p; ?>%</var>
+		<span class="bar" style="width:<?php echo esc_attr( $p ); ?>%"><span>&nbsp;<?php echo esc_attr( $pg ); ?></span></span><span>&nbsp;<?php echo esc_attr( $pg ); ?></span><var><?php echo esc_attr( $p ); ?>%</var>
 	</div>
 <?php endif; ?>
 

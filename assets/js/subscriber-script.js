@@ -91,7 +91,7 @@ mailster = (function (mailster, $, window, document) {
 	email
 		.on('blur', function () {
 			var _this = $(this),
-				email = $.trim(_this.val());
+				email = mailster.util.trim(_this.val());
 
 			$(this).val(email);
 
@@ -113,7 +113,7 @@ mailster = (function (mailster, $, window, document) {
 			var _this = $(this);
 			clearTimeout(timeout);
 			timeout = setTimeout(function () {
-				var email = $.trim(_this.val());
+				var email = mailster.util.trim(_this.val());
 
 				mailster.util.ajax('check_email', {
 					email: email,

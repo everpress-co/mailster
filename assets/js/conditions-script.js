@@ -13,7 +13,7 @@ mailster = (function (mailster, $, window, document) {
 
 		groups.eq(0).appendTo(_self.find('.mailster-condition-container'));
 
-		!$.trim(conditions.html()) && conditions.empty();
+		!mailster.util.trim(conditions.html()) && conditions.empty();
 
 		datepicker();
 

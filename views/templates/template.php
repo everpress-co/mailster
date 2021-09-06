@@ -26,14 +26,14 @@ if ( $item['envato_item_id'] ) {
 		<?php endif; ?>
 		<img loading="lazy" alt="" class="theme-screenshot-img" srcset="<?php echo esc_attr( $item['image'] ); ?> 1x, <?php echo esc_attr( $item['imagex2'] ); ?> 2x" src="<?php echo esc_attr( $item['image'] ); ?>" >
 	</div>
-	<div class="notice update-message notice-success notice-alt"></div>
-	<div class="notice update-message notice-warning notice-alt"></div>
-	<div class="notice update-message notice-error notice-alt"></div>
+	<div class="notice inline update-message notice-success notice-alt"></div>
+	<div class="notice inline update-message notice-warning notice-alt"></div>
+	<div class="notice inline update-message notice-error notice-alt"></div>
 	<?php if ( ! $item['is_supported'] ) : ?>
-	<div class="notice update-message notice-error notice-alt"><p><?php printf( esc_html__( 'This template requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>
+	<div class="notice inline update-message notice-error notice-alt"><p><?php printf( esc_html__( 'This template requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>
 	<?php endif; ?>
 	<?php if ( $item['update_available'] ) : ?>
-	<div class="update-message notice inline notice-warning notice-alt theme-has-update">
+	<div class="notice inline update-message notice-warning notice-alt theme-has-update">
 		<p><?php esc_html_e( 'New version available.', 'mailster' ); ?>
 		<?php if ( $item['download_url'] ) : ?>
 		<a class="button-link update" data-width="800" data-height="80%" href="<?php echo esc_url( $item['download_url'] ); ?>"><?php esc_html_e( 'Update now', 'mailster' ); ?></a>
@@ -60,15 +60,13 @@ if ( $item['envato_item_id'] ) {
 		<h3 class="theme-name">
 			<?php echo esc_html( $item['name'] ); ?>
 			<?php if ( $item['is_default'] ) : ?>
-			<span class="theme-badge theme-default-badge"><?php esc_html_e( 'Current', 'mailster' ); ?></a>
+			<span class="theme-badge theme-default-badge"><?php esc_html_e( 'Current', 'mailster' ); ?></span>
 			<?php elseif ( $item['installed'] ) : ?>
-			<span class="theme-badge theme-installed-badge"><?php esc_html_e( 'Installed', 'mailster' ); ?></a>
+			<span class="theme-badge theme-installed-badge"><?php esc_html_e( 'Installed', 'mailster' ); ?></span>
 			<?php endif; ?>
 		</h3>
 		<div class="theme-actions">
-			<?php if ( $item['installed'] ) : ?>
 			<a class="button button-primary create-campaign" href="<?php echo admin_url( 'post-new.php?post_type=newsletter&template=' . esc_attr( $slug ) ); ?>" aria-label="<?php esc_attr_e( 'Create Campaign', 'mailster' ); ?>"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
-			<?php endif; ?>
 			<?php if ( $item['download_url'] ) : ?>
 			<a class="button button-primary download" data-width="800" data-height="80%" href="<?php echo esc_url( $item['download_url'] ); ?>"><?php esc_html_e( 'Download', 'mailster' ); ?></a>
 			<?php elseif ( $item['download'] ) : ?>

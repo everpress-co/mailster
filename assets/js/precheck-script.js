@@ -112,18 +112,16 @@ mailster = (function (mailster, $, window, document) {
 					checkTest(1);
 				}, 3000);
 			} else {
+				error(response.msg);
 				loader(false);
 				runbtn.prop('disabled', false);
 			}
 
 		}, function (jqXHR, textStatus, errorThrown) {
-
 			loader(false);
 			runbtn.prop('disabled', false);
 
 		});
-
-		return false;
 
 	};
 
@@ -155,7 +153,7 @@ mailster = (function (mailster, $, window, document) {
 					$('.precheck-status-icon').html(mailster.util.sprintf('%s of 100', 100));
 
 					$.when.apply($, [
-							getResult('blacklist'),
+							getResult('blocklist'),
 							getResult('spam_report'),
 							getResult('authentication'),
 							getResult('message'),
@@ -412,6 +410,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 		mailster.util.ajax('precheck_agree', function (response) {
 			precheck.addClass('precheck-terms-agreed');
+			mailster.precheck.terms_accepted = true;
 		});
 
 	};
@@ -424,6 +423,9 @@ mailster = (function (mailster, $, window, document) {
 		loadPreview(cb);
 
 	};
+
+	mailster.precheck.start = initTest;
+	mailster.precheck.terms_accepted = !!$('.precheck-terms-agreed').length;
 
 
 	return mailster;

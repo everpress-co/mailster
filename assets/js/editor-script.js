@@ -114,17 +114,17 @@ mailster = (function (mailster, $, window, document) {
 		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button, .a11y-speak-intro-text').remove();
 
 		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
-		content = $.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
+		content = mailster.util.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 
 		bodyattributes = body.attributes || [];
 		attrcount = bodyattributes.length;
 
 		if (attrcount) {
 			while (attrcount--) {
-				s = ' ' + bodyattributes[attrcount].name + '="' + $.trim(bodyattributes[attrcount].value) + '"' + s;
+				s = ' ' + bodyattributes[attrcount].name + '="' + mailster.util.trim(bodyattributes[attrcount].value) + '"' + s;
 			}
 		}
-		s = $.trim(
+		s = mailster.util.trim(
 			s
 			.replace(/(webkit |wp\-editor|mceContentBody|position: relative;|cursor: auto;|modal-open| spellcheck="(true|false)")/g, '')
 			.replace(/(class="(\s*)"|style="(\s*)")/g, '')
@@ -146,7 +146,7 @@ mailster = (function (mailster, $, window, document) {
 		return {
 			parts: parts ? parts : ['', '', '', '<multi>' + html + '</multi>'],
 			content: parts ? parts[3] : '<multi>' + html + '</multi>',
-			head: parts ? $.trim(parts[1]) : '',
+			head: parts ? mailster.util.trim(parts[1]) : '',
 			bodyattributes: parts ? $('<div' + (parts[2] || '') + '></div>')[0].attributes : ''
 		};
 	}
@@ -780,7 +780,7 @@ mailster = (function (mailster, $, window, document) {
 					delay, height;
 
 				try {
-					response = $.parseJSON(response.response);
+					response = JSON.parse(response.response);
 
 					source._previewtext.html(mailster.l10n.campaigns.ready);
 					source._element.on('load', function () {
@@ -844,7 +844,7 @@ mailster = (function (mailster, $, window, document) {
 	function paste_preprocess(pl, o) {
 
 		var str = o.content,
-			allowed_tags = '<a><br><i><em><u><p><h1><h2><h3><h4><h5><h6><ul><ol><li>',
+			allowed_tags = '<a><br><i><em><strong><u><p><h1><h2><h3><h4><h5><h6><ul><ol><li>',
 			key = '',
 			allowed = false,
 			matches = [],

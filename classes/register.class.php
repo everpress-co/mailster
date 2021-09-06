@@ -111,6 +111,7 @@ class MailsterRegister {
 		update_option( 'mailster_license', $purchasecode );
 		delete_transient( 'mailster_verified' );
 		mailster_remove_notice( 'verify' );
+		mailster_update_option( 'mailster_branding', false );
 
 	}
 

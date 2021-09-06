@@ -188,10 +188,17 @@ class MailsterTemplate {
 			}
 		}
 
-		if ( $logo_id = mailster_option( 'logo' ) ) {
+		$logo_id = mailster_option( 'logo' );
+		if ( ! $logo_id ) {
+			$logo_id = get_theme_mod( 'custom_logo' );
+		}
+
+		if ( $logo_id && $metadata = wp_get_attachment_metadata( $logo_id ) ) {
 			$logos     = $xpath->query( '//*/img[@label="Logo" or @label="logo" or @label="Your Logo"]' );
 			$high_dpi  = mailster_option( 'high_dpi' ) ? 2 : 1;
 			$logo_link = mailster_option( 'logo_link' );
+
+			$use_height = $metadata['height'] >= $metadata['width'];
 
 			foreach ( $logos as $logo ) {
 
@@ -203,17 +210,34 @@ class MailsterTemplate {
 					continue;
 				}
 
-				$new_logo = mailster( 'helper' )->create_image( $logo_id, null, $width * $high_dpi, null, false );
+				if ( $use_height ) {
+					$new_logo = mailster( 'helper' )->create_image( $logo_id, null, null, $height * $high_dpi, false );
+				} else {
+					$new_logo = mailster( 'helper' )->create_image( $logo_id, null, $width * $high_dpi, null, false );
+				}
 
 				if ( ! $new_logo ) {
 					continue;
 				}
 				$logo->setAttribute( 'data-id', $new_logo['id'] );
-				$logo->setAttribute( 'width', $width );
-				if ( $new_logo['asp'] ) {
-					$logo->setAttribute( 'height', round( $width / $new_logo['asp'] ) );
+
+				if ( $use_height ) {
+					$logo->setAttribute( 'height', $height );
+					if ( $new_logo['asp'] ) {
+						$logo->setAttribute( 'width', round( $height * $new_logo['asp'] ) );
+					}
+				} else {
+					$logo->setAttribute( 'width', $width );
+					if ( $new_logo['asp'] ) {
+						$logo->setAttribute( 'height', round( $width / $new_logo['asp'] ) );
+					}
 				}
+
 				$logo->setAttribute( 'src', $new_logo['url'] );
+				$alt = $logo->getAttribute( 'alt' );
+				if ( empty( $alt ) ) {
+					$logo->setAttribute( 'alt', __( 'Logo', 'mailster' ) );
+				}
 
 				if ( $logo_link ) {
 					$link = $doc->createElement( 'a' );
@@ -224,7 +248,13 @@ class MailsterTemplate {
 			}
 		}
 
-		$services = mailster_option( 'services', array() );
+		$services = mailster_option(
+			'services',
+			array(
+				'twitter'  => '',
+				'facebook' => '',
+			)
+		);
 
 		$buttons = $xpath->query( '//*/a[@label="Social Media Button"]' );
 
@@ -261,16 +291,19 @@ class MailsterTemplate {
 				}
 
 				$dimensions = getimagesize( $icon );
-
 				if ( ! $dimensions ) {
 					continue;
 				}
 
+				if ( ! ( $width = $buttons->item( 0 )->firstChild->getAttribute( 'width' ) ) ) {
+					$width = round( $width / $high_dpi );
+				}
+				if ( ! ( $height = $buttons->item( 0 )->firstChild->getAttribute( 'height' ) ) ) {
+					$height = round( $height / $high_dpi );
+				}
+
 				$img  = $doc->createElement( 'img' );
 				$link = $doc->createElement( 'a' );
-
-				$width  = round( $dimensions[0] / $high_dpi );
-				$height = round( $dimensions[1] / $high_dpi );
 
 				$img->setAttribute( 'src', str_replace( $base_path, $base_url, $icon ) );
 				$img->setAttribute( 'width', $width );

@@ -15,8 +15,8 @@ class MailsterBounceHandler {
 	public function __construct( $service = 'pop3' ) {
 
 		$this->bounce_delete = mailster_option( 'bounce_delete' );
-		$this->MID = mailster_option( 'ID' );
-		$this->service = $service;
+		$this->MID           = mailster_option( 'ID' );
+		$this->service       = $service;
 
 	}
 
@@ -44,8 +44,8 @@ class MailsterBounceHandler {
 	public function connect( $server, $user, $pwd, $port = 110, $secure = false, $timeout = 60 ) {
 
 		$securepath = '';
-		if($secure){
-			$securepath = '/'.$secure;
+		if ( $secure ) {
+			$securepath = '/' . $secure;
 		}
 
 		$path = '{' . $server . ':' . $port . '/' . $this->service . $securepath . '/novalidate-cert}INBOX';
@@ -80,20 +80,27 @@ class MailsterBounceHandler {
 		foreach ( $messages as $id => $message ) {
 
 			preg_match( '#X-(Mailster|MyMail): ([a-f0-9]{32})#i', $message, $hash );
-			preg_match( '#X-(Mailster|MyMail)-Campaign: (\d+)#i', $message, $camp );
+			preg_match( '#X-(Mailster|MyMail)-Campaign: ([0-9-]+)#i', $message, $camp );
 
 			$bouncehandler = new Bouncehandler();
-			$bounceresult = $bouncehandler->parse_email( $message );
+			$bounceresult  = $bouncehandler->parse_email( $message );
 
 			if ( ! empty( $bounceresult ) ) {
 				$bounceresult = (object) $bounceresult[0];
-				$action = $bounceresult->action;
-				$status = $bounceresult->status;
+				$action       = $bounceresult->action;
+				$status       = $bounceresult->status;
 			} else {
 				$action = 'unsubscribe';
 			}
 
-			$subscriber = mailster( 'subscribers' )->get_by_hash( $hash[2], false );
+			$subscriber     = mailster( 'subscribers' )->get_by_hash( $hash[2], false );
+			$campaign_index = 0;
+
+			// get the campaign index
+			if ( false !== strpos( $camp[2], '-' ) ) {
+				$campaign_index = absint( strrchr( $camp[2], '-' ) );
+			}
+
 			$campaign = ! empty( $camp ) ? mailster( 'campaigns' )->get( (int) $camp[2] ) : null;
 
 			if ( $subscriber ) {
@@ -101,21 +108,21 @@ class MailsterBounceHandler {
 				$campaign_id = $campaign ? $campaign->ID : 0;
 				switch ( $action ) {
 					case 'success':
-					break;
+						break;
 
 					case 'unsubscribe':
 						// unsubscribe
-						mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $campaign_id, 'list_unsubscribe' );
-					break;
+						mailster( 'subscribers' )->unsubscribe( $subscriber->ID, $campaign_id, 'list_unsubscribe', $campaign_index );
+						break;
 					case 'failed':
 						// hardbounce
-						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, true, $status );
-					break;
+						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, true, $status, $campaign_index );
+						break;
 
 					case 'transient':
 					default:
 						// softbounce
-						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, false, $status );
+						mailster( 'subscribers' )->bounce( $subscriber->ID, $campaign_id, false, $status, $campaign_index );
 
 				}
 			}
@@ -133,9 +140,7 @@ class MailsterBounceHandler {
 	 * @param unknown $id
 	 */
 	protected function delete_message( $id ) {
-
 		$this->mailbox->deleteMail( $id );
-
 	}
 
 
@@ -218,11 +223,11 @@ class MailsterBounceLegacyHandler extends MailsterBounceHandler {
 	public function connect( $server, $user, $pwd, $port = 110, $secure = false, $timeout = 60 ) {
 
 		require_once ABSPATH . WPINC . '/class-pop3.php';
-		$this->mailbox = new POP3();
+		$this->mailbox          = new POP3();
 		$this->mailbox->TIMEOUT = (int) $timeout;
 
-		if($secure){
-			$server = $secure.'://' . $server;
+		if ( $secure ) {
+			$server = $secure . '://' . $server;
 		}
 
 		$this->mailbox->connect( $server, $port );

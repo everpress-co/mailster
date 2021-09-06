@@ -19,7 +19,6 @@ mailster = (function (mailster, $, window, document) {
 		searchtype = typeselector.val(),
 		templates = [],
 		busy = false,
-		gumloaded = false,
 		current_slug = false;
 
 	filterlinks
@@ -61,25 +60,6 @@ mailster = (function (mailster, $, window, document) {
 			$(this).addClass('updating-message');
 			downloadTemplateFromUrl(this.href, $(this).closest('.theme').data('slug'));
 		})
-		.on('click', '.buy-gumroad', function (event) {
-			var _self = $(this);
-			event.preventDefault();
-			_self.addClass('updating-message');
-
-			current_slug = $(this).closest('.theme').data('slug');
-
-			!gumloaded && $.getScript('https://gumroad.com/js/gumroad.js', function () {
-				var t = setInterval(function () {
-					if (typeof createGumroadOverlay == 'function') {
-						clearInterval(t);
-						gumloaded = true;
-						createGumroadOverlay();
-						_self.click();
-						_self.removeClass('updating-message');
-					}
-				}, 100)
-			});
-		})
 		.on('click', '.popup', function () {
 			var href = this.href;
 
@@ -116,24 +96,6 @@ mailster = (function (mailster, $, window, document) {
 	})
 
 	mailster.$.window
-		.on('message', function (e) {
-
-			if (!e.originalEvent.data) return;
-			var data = typeof e.originalEvent.data === 'string' ? $.parseJSON(e.originalEvent.data.replace('/*framebus*/', '')) : e.originalEvent.data;
-
-			if (data.post_message_name === "sale") {
-				if (data.custom_delivery_url) {
-					GumroadOverlay.redirect = function () {
-						GumroadOverlay.minimizeIframe();
-						downloadTemplateFromUrl(data.custom_delivery_url, current_slug);
-					};
-				}
-
-			}
-		})
-		.on('popstate', function (event) {
-			//updateState(event);
-		})
 		.on('click', '.upload-template', function () {
 			$('.upload-field').show();
 		});
@@ -165,6 +127,7 @@ mailster = (function (mailster, $, window, document) {
 					template = $('[data-slug="' + template + '"]');
 				}
 				if (!template || !template.length) return false;
+				overlay.addClass('loading');
 				overlay.find('.theme-screenshots img').hide();
 				overlay.find('.theme-screenshots iframe').hide();
 				overlay.removeAttr('class');
@@ -202,7 +165,6 @@ mailster = (function (mailster, $, window, document) {
 				nextbtn.prop('disabled', !nextTemplate.length)[!nextTemplate.length ? 'addClass' : 'removeClass']('disabled');
 				overlay.show();
 				setQueryStringParameter('template', data.slug);
-				overlay.removeClass('loading');
 			},
 
 			close = function () {
@@ -272,6 +234,7 @@ mailster = (function (mailster, $, window, document) {
 
 			file = function () {
 
+				overlay.addClass('loading');
 				overlay.find('.theme-screenshots iframe').attr('src', data.files[$(this).val()].src);
 
 			},
@@ -284,7 +247,12 @@ mailster = (function (mailster, $, window, document) {
 				defaultbtn.on('click', makedefault);
 				campaignbtn.on('click', campaign);
 				overlay.on('change', '.theme-file-selector', file);
+				overlay.on('click', '.theme-description a', function (event) {
+					event.preventDefault();
+					window.open(this.href);
+					return false;
 
+				});
 				overlay.find('.theme-screenshots iframe').on('load', function () {
 					overlay.removeClass('loading');
 				})
@@ -362,7 +330,7 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function search() {
-		searchquery = $.trim(searchfield.val());
+		searchquery = mailster.util.trim(searchfield.val());
 		// Escape the term string for RegExp meta characters.
 		searchquery = searchquery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
@@ -415,10 +383,7 @@ mailster = (function (mailster, $, window, document) {
 		}, function (response) {
 
 			if (response.success) {
-				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>Downloaded!</p>');
-				setFilter('installed', function () {
-					$('[data-slug="' + slug + '"]').prependTo(templatebrowser).find('.notice-success').html('<p>' + response.msg + '</p>');
-				});
+				template.addClass('is-installed').find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>' + mailster.l10n.templates.downloaded + '</p>');
 				template.find('.notice-error').empty();
 			} else {
 				template.find('.notice-error').html('<p>' + response.msg + '</p>');
@@ -444,7 +409,7 @@ mailster = (function (mailster, $, window, document) {
 		}, function (response) {
 
 			if (response.success) {
-				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>Updated!</p>');
+				template.find('.notice-warning').removeClass('updating-message notice-warning').addClass('notice-success').html('<p>' + mailster.l10n.templates.updated + '</p>');
 				template.find('.notice-error').empty();
 				var updatebadge = $('#menu-posts-newsletter').find('.current').find('.update-plugins');
 				if (updatebadge) {
@@ -483,11 +448,15 @@ mailster = (function (mailster, $, window, document) {
 				cb();
 			} else {
 				template.animate({
-					width: 0,
-					'margin-right': 0
+					opacity: 0,
 				}, function () {
-					template.remove();
-					busy = false;
+					template.animate({
+						width: 0,
+						'margin-right': 0
+					}, function () {
+						template.remove();
+						busy = false;
+					});
 				});
 			}
 
@@ -610,7 +579,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 		uploader.bind('FileUploaded', function (up, file, response) {
-			response = $.parseJSON(response.response);
+			response = JSON.parse(response.response);
 			if (response.success) {
 				location.reload();
 			} else {

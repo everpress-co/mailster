@@ -4,9 +4,9 @@
 		<td>
 		<p><label><input type="hidden" name="mailster_options[check_mx]" value=""><input type="checkbox" name="mailster_options[check_mx]" value="1" <?php checked( mailster_option( 'check_mx' ) ); ?>><?php esc_html_e( 'Check MX record', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Check the domain for an existing MX record. A missing MX record often indicates that there\'s no email server setup for the domain.', 'mailster' ); ?></span>
 		</p>
-		<p><label><input type="hidden" name="mailster_options[check_smtp]" value=""><input type="checkbox" name="mailster_options[check_smtp]" value="1" <?php checked( mailster_option( 'check_smtp' ) ); ?>><?php esc_html_e( 'Validate via SMTP', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Connects the domain\'s SMTP server to check if the address really exists.', 'mailster' ); ?></span></p>
+		<p><label><input type="hidden" name="mailster_options[check_smtp]" value=""><input type="checkbox" name="mailster_options[check_smtp]" value="1" <?php checked( mailster_option( 'check_smtp' ) ); ?>><?php esc_html_e( 'Validate via SMTP', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Connects the domain\'s SMTP server to check if the address really exists.', 'mailster' ); ?></p></span>
 		<?php if ( class_exists( 'AKISMET' ) ) : ?>
-		<p><label><input type="hidden" name="mailster_options[check_akismet]" value=""><input type="checkbox" name="mailster_options[check_akismet]" value="1" <?php checked( mailster_option( 'check_akismet' ) ); ?> ><?php esc_html_e( 'Check via Akismet', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Checks via your Akismet installation.', 'mailster' ); ?></span>
+		<p><label><input type="hidden" name="mailster_options[check_akismet]" value=""><input type="checkbox" name="mailster_options[check_akismet]" value="1" <?php checked( mailster_option( 'check_akismet' ) ); ?> ><?php esc_html_e( 'Check via Akismet', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Checks via your Akismet installation.', 'mailster' ); ?></p>
 		</p>
 		<?php endif; ?>
 		<p><label><input type="hidden" name="mailster_options[check_honeypot]" value=""><input type="checkbox" name="mailster_options[check_honeypot]" value="1" <?php checked( mailster_option( 'check_honeypot' ) ); ?> ><?php esc_html_e( 'Honeypot', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Add an invisible input field to trick bots during signup.', 'mailster' ); ?></span>
@@ -17,7 +17,14 @@
 	</tr>
 	<tr valign="top" class="settings-row settings-row-antiflood">
 		<th scope="row"><?php esc_html_e( 'Antiflood', 'mailster' ); ?></th>
-			<td><p><input type="text" name="mailster_options[antiflood]" value="<?php echo mailster_option( 'antiflood' ); ?>" class="small-text"> <?php esc_html_e( 'seconds', 'mailster' ); ?></p><p class="description"><?php esc_html_e( 'Prevent repeated subscriptions from the same IP address.', 'mailster' ); ?></p>
+			<td><p><input type="text" name="mailster_options[antiflood]" value="<?php echo mailster_option( 'antiflood' ); ?>" class="small-text"> <?php esc_html_e( 'seconds', 'mailster' ); ?><br><span class="description"><?php esc_html_e( 'Prevent repeated subscriptions from the same IP address for the given time frame.', 'mailster' ); ?></span>
+			</p>
+		</td>
+	</tr>
+	<tr valign="top" class="settings-row settings-row-auto-click-prevention">
+		<th scope="row"><?php esc_html_e( 'Auto Click Prevention', 'mailster' ); ?> <a class="infolink external" href="https://kb.mailster.co/prevent-spam-filters-automatically-opening-and-clicking-through-links-in-your-campaigns/" title="<?php esc_attr_e( 'More info on our knowledge base.', 'mailster' ); ?>"></a></th>
+		<td>
+		<p><label><input type="hidden" name="mailster_options[autoclickprevention]" value=""><input type="checkbox" name="mailster_options[autoclickprevention]" value="1" <?php checked( mailster_option( 'autoclickprevention' ) ); ?>><?php esc_html_e( 'Prevent automated clicks from email servers.', 'mailster' ); ?></label><br><span class="description"><?php esc_html_e( 'Some Email Security Servers automatically click on one ore more links in your campaigns which can cause wrong open and click rates.', 'mailster' ); ?> <?php esc_html_e( 'Enable this option to add an additional redirect for clicks which happens after a short time after sending.', 'mailster' ); ?></span></p>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-disposable-email-provider">

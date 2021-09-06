@@ -67,7 +67,7 @@ mailster = (function (mailster, $, window, document) {
 			});
 
 			uploader.bind('FileUploaded', function (up, file, response) {
-				response = $.parseJSON(response.response);
+				response = JSON.parse(response.response);
 				importidentifier = response.identifier;
 				if (!response.success) {
 					importstatus.html(response.message);
@@ -95,6 +95,7 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.do-import', function () {
 
 			var lists = $('#lists').serialize(),
+				tags = $('#tags').serialize(),
 				order = $('#subscriber-table').serialize();
 
 			if (!/%5D=email/.test(order)) {
@@ -121,8 +122,6 @@ mailster = (function (mailster, $, window, document) {
 				identifier = $('#identifier').val(),
 				performance = $('#performance').is(':checked');
 
-
-
 			progress.removeClass('hidden');
 			progressbar.stop().width(0);
 			$('.step1').slideUp();
@@ -134,6 +133,7 @@ mailster = (function (mailster, $, window, document) {
 				identifier: identifier,
 				order: order,
 				lists: lists,
+				tags: tags,
 				status: status,
 				keepstatus: keepstatus,
 				existing: existing,
@@ -179,7 +179,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('blur', function () {
 			$(this).removeClass('focus');
-			var value = $.trim($(this).val());
+			var value = mailster.util.trim($(this).val());
 
 			if (value) {
 				mailster.util.ajax('import_subscribers_upload_handler', {
@@ -495,6 +495,12 @@ mailster = (function (mailster, $, window, document) {
 				dateFormat: 'yy-mm-dd',
 				showAnim: 'fadeIn',
 				onClose: function () {}
+			});
+
+			$.fn.select2 && $('.tags-input').select2({
+				placeholder: mailster.l10n.manage.choose_tags,
+				tags: true,
+				theme: 'mailster'
 			});
 
 			importstatus.html('');

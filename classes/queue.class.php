@@ -152,18 +152,19 @@ class MailsterQueue {
 
 		$campaign_id = (int) $campaign_id;
 		$subscribers = array_filter( $subscribers, 'is_numeric' );
+		if ( empty( $subscribers ) ) {
+			return true;
+		}
 
 		if ( ! empty( $tags ) ) {
 			$tags = maybe_serialize( $tags );
 		} else {
 			$tags = '';
 		}
-		if ( $options ) {
+		if ( ! empty( $options ) ) {
 			$options = maybe_serialize( $options );
-		}
-
-		if ( empty( $subscribers ) ) {
-			return true;
+		} else {
+			$options = '';
 		}
 
 		$inserts = array();
@@ -630,7 +631,7 @@ class MailsterQueue {
 									$new_campaign = mailster( 'campaigns' )->get( $new_id );
 									$autoresponder_meta['issue']++;
 
-									mailster_notice( sprintf( __( 'New campaign %1$s has been created and is going to be sent on %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . esc_attr( $new_campaign->ID ) . '&action=edit">' . esc_html( $new_campaign->post_title ) . '</a>"</strong>', '<strong>' . date( mailster( 'helper' )->timeformat(), $now + $send_offset + $timeoffset ) . '</strong>' ), 'info', true );
+									mailster_notice( sprintf( __( 'New campaign %1$s has been created and is going to be sent on %2$s.', 'mailster' ), '<strong>"<a href="post.php?post=' . esc_attr( $new_campaign->ID ) . '&action=edit">' . esc_html( $new_campaign->post_title ) . '</a>"</strong>', '<strong>' . date_i18n( mailster( 'helper' )->timeformat(), $now + $send_offset + $timeoffset ) . '</strong>' ), 'info', true );
 
 									do_action( 'mailster_autoresponder_post_published', $campaign->ID, $new_id );
 
@@ -919,17 +920,16 @@ class MailsterQueue {
 
 			$conditions[] = array( $cond );
 
-			$subscribers = mailster( 'subscribers' )->query(
-				array(
-					'fields'        => array( 'ID', $autoresponder_meta['uservalue'] ),
-					'lists'         => $lists,
-					'conditions'    => $conditions,
-					'sent__not_in'  => $once ? $campaign->ID : false,
-					'queue__not_in' => $campaign->ID,
-					'orderby'       => $autoresponder_meta['uservalue'],
-				),
-				$campaign->ID
+			$query_args = array(
+				'fields'        => array( 'ID', $autoresponder_meta['uservalue'] ),
+				'lists'         => $lists,
+				'conditions'    => $conditions,
+				'sent__not_in'  => $once ? $campaign->ID : false,
+				'queue__not_in' => $campaign->ID,
+				'orderby'       => $autoresponder_meta['uservalue'],
 			);
+
+			$subscribers = mailster( 'subscribers' )->query( $query_args, $campaign->ID );
 
 			foreach ( $subscribers as $subscriber ) {
 
@@ -1039,9 +1039,9 @@ class MailsterQueue {
 			}
 
 			// unlock?
-			$unlock = apply_filters( 'mymail_unlock_cron', apply_filters( 'mailster_unlock_cron', false ) );
+			$unlock = apply_filters( 'mailster_unlock_cron', false );
 
-			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] && ! get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
+			if ( $last_hit && $last_hit['time'] && mailster_option( 'auto_send_at_once' ) && ! get_transient( 'mailster_cron_lock_triggered_' . $process_id ) ) {
 				set_transient( 'mailster_cron_lock_triggered_' . $process_id, time() );
 			}
 
@@ -1093,12 +1093,13 @@ class MailsterQueue {
 		$max_bounces        = mailster_option( 'bounce_attempts' );
 		$max_execution_time = mailster_option( 'max_execution_time', 0 );
 		$delay_time         = 0;
+		$in_timeframe       = mailster( 'helper' )->in_timeframe();
 
 		$sent_this_turn       = 0;
 		$send_delay           = mailster_option( 'send_delay', 0 ) / 1000;
 		$mail_send_time       = 0;
 		$MID                  = mailster_option( 'ID' );
-		$unsubscribe_homepage = apply_filters( 'mymail_unsubscribe_link', apply_filters( 'mailster_unsubscribe_link', ( get_page( mailster_option( 'homepage' ) ) ? get_permalink( mailster_option( 'homepage' ) ) : get_bloginfo( 'url' ) ) ) );
+		$unsubscribe_homepage = apply_filters( 'mailster_unsubscribe_link', ( get_page( mailster_option( 'homepage' ) ) ? get_permalink( mailster_option( 'homepage' ) ) : get_bloginfo( 'url' ) ) );
 
 		$campaign_errors = array();
 
@@ -1115,9 +1116,26 @@ class MailsterQueue {
 
 		$this->cron_log( 'max_execution_time', '<strong>' . $max_execution_time_ini . ' seconds</strong>' );
 		$this->cron_log( 'queue size', '<strong>' . number_format_i18n( $to_send ) . ' mails</strong>' );
-		$this->cron_log( 'send max at once', '<strong>' . number_format_i18n( $send_at_once ) . '</strong>' );
 
-		if ( $to_send ) {
+		if ( $warmup = mailster_option( 'warmup' ) ) {
+			$diff_day = ( $warmup - time() ) / DAY_IN_SECONDS;
+			$p_days   = min( 1, 1 - $diff_day / 30 );
+			if ( $p_days == 1 ) {
+				mailster_force_update_option( 'warmup', false );
+			}
+			$send_at_once_limit = ceil( $send_at_once * $p_days );
+			$this->cron_log( 'send max at once', '<strong>' . number_format_i18n( $send_at_once_limit ) . '</strong> (' . ( round( 100 * $p_days ) ) . '% of ' . $send_at_once . ') Warmup ends in ' . human_time_diff( $warmup ) );
+		} else {
+			$p_days = 1;
+			$this->cron_log( 'send max at once', '<strong>' . number_format_i18n( $send_at_once ) . '</strong>' );
+			$send_at_once_limit = $send_at_once;
+		}
+
+		if ( $to_send && ! $in_timeframe ) {
+			$this->cron_log( 'System Error', '<span class="error">' . esc_html__( 'Not in time frame!', 'mailster' ) . '</span><br><span class="error">' . sprintf( esc_html__( 'Please check the %s on the delivery tab.', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_settings#delivery' ) . '" target="_blank">' . esc_html__( 'time frame settings', 'mailster' ) . '</a>' ) . '</span>' );
+		}
+
+		if ( $in_timeframe && $to_send ) {
 
 			$sql = 'SELECT queue.campaign_id, queue.count AS _count, queue.requeued AS _requeued, queue.options AS _options, queue.tags AS _tags, queue.priority AS _priority, subscribers.ID AS subscriber_id, subscribers.status, subscribers.email, subscribers.rating';
 
@@ -1141,17 +1159,18 @@ class MailsterQueue {
 				$sql        .= ' AND queue.campaign_id IN (' . implode( ', ', $campaign_id ) . ')';
 			}
 
-			$sql .= ' ORDER BY queue.priority DESC, subscribers.rating DESC';
+			$sql .= ' ORDER BY queue.priority DESC, subscribers.rating DESC, queue.ID';
 
 			$sql .= ! mailster_option( 'split_campaigns' ) ? ', queue.campaign_id ASC' : '';
 
-			$sql .= " LIMIT $send_at_once";
+			$sql .= " LIMIT $send_at_once_limit";
 
 			$queue_result = $wpdb->get_results( $sql );
 
 			if ( $wpdb->last_error ) {
 				$this->cron_log( 'DB Error', '&nbsp;<span class="error">' . $wpdb->last_error . '</span>' );
 			}
+
 			$queue_result_count = count( $queue_result );
 
 			$this->cron_log( 'subscribers found', '<strong>' . number_format_i18n( $queue_result_count ) . '</strong>' );
@@ -1183,7 +1202,7 @@ class MailsterQueue {
 
 					if ( ! $data->_requeued ) {
 						// prevent to send duplicates within one minute
-						if ( $duplicate = $wpdb->get_results( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_action_sent WHERE campaign_id = %d AND subscriber_id = %d && `timestamp` > %d", $data->campaign_id, $data->subscriber_id, time() - 60 ) ) ) {
+						if ( false && $duplicate = $wpdb->get_results( $wpdb->prepare( "SELECT subscriber_id FROM {$wpdb->prefix}mailster_action_sent WHERE campaign_id = %d AND subscriber_id = %d && `timestamp` > %d", $data->campaign_id, $data->subscriber_id, time() - 60 ) ) ) {
 							$this->cron_log( '', '&nbsp;<span class="error">' . $data->subscriber_id . ' ' . $data->email . '<br>' . esc_html__( 'Prevent to send duplicate within one minute.', 'mailster' ) . '</span>', $data->campaign_id, $data->_count, '' );
 							continue;
 						}
@@ -1206,7 +1225,7 @@ class MailsterQueue {
 
 				} elseif ( $data->_options ) {
 
-					if ( $options = @unserialize( $data->_options ) ) {
+					if ( $options = maybe_unserialize( $data->_options ) ) {
 						$result = mailster( 'notification' )->send( $data->subscriber_id, $options );
 					} else {
 						continue;
@@ -1330,7 +1349,8 @@ class MailsterQueue {
 			$last_hit['timemax'] = max( $last_hit['timemax'], $took );
 			$last_hit['mail']    = $mailtook;
 
-			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] ) {
+			// if auto is enabled, has been triggered before and send the max amount possible
+			if ( mailster_option( 'auto_send_at_once' ) && $last_hit['time'] && $sent_this_turn == $send_at_once_limit ) {
 
 				$percentage = 0.9;
 

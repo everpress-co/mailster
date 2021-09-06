@@ -204,13 +204,18 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 			case 'lists':
 				$lists = mailster( 'subscribers' )->get_lists( $item->ID );
+				$tags  = mailster( 'subscribers' )->get_tags( $item->ID );
 
-				$elements = array();
+				$list_elements = array();
+				$tag_elements  = array();
 
 				foreach ( $lists as $i => $list ) {
-					$elements[] = '<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '" title="' . ( $list->confirmed ? esc_attr__( 'confirmed', 'mailster' ) : esc_attr__( 'not confirmed', 'mailster' ) ) . '" class="' . ( $list->confirmed ? 'confirmed' : 'not-confirmed' ) . '">' . esc_html( $list->name ) . '</a>';
+					$list_elements[] = '<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '" title="' . ( $list->confirmed ? esc_attr__( 'confirmed', 'mailster' ) : esc_attr__( 'not confirmed', 'mailster' ) ) . '" class="' . ( $list->confirmed ? 'confirmed' : 'not-confirmed' ) . '">' . esc_html( $list->name ) . '</a>';
 				}
-				return '<div class="table-data">' . implode( ', ', $elements ) . '</div>';
+				foreach ( $tags as $i => $tag ) {
+					$tag_elements[] = '<span class="mailster-tag">' . esc_html( $tag->name ) . '</span>';
+				}
+				return '<div class="table-data">' . implode( ', ', $list_elements ) . '</div><div class="table-data">' . implode( ' ', $tag_elements ) . '</div>';
 
 			case 'emails':
 				return '<div class="table-data">' . number_format_i18n( mailster( 'subscribers' )->get_sent( $item->ID, true ) ) . '</div>';
@@ -272,7 +277,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	public function get_bulk_actions() {
 		$actions = array(
 			'delete'         => esc_html__( 'Delete', 'mailster' ),
-			'delete_actions' => esc_html__( 'Delete (with Actions)', 'mailster' ),
+			'delete_actions' => esc_html__( 'Delete (with Activities)', 'mailster' ),
 			'send_campaign'  => esc_html__( 'Send new Campaign', 'mailster' ),
 			'confirmation'   => esc_html__( 'Resend Confirmation', 'mailster' ),
 			'verify'         => esc_html__( 'Verify', 'mailster' ),

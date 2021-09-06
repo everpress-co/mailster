@@ -1,21 +1,6 @@
 <?php
 
-if ( $phpmailerversion = mailster_option( 'php_mailer' ) ) :
-
-	if ( ! class_exists( 'PHPMailer_mailster' ) ) {
-		require_once MAILSTER_DIR . 'classes/libs/phpmailer/class.phpmailer.php';
-	}
-
-	if ( ! class_exists( 'SMTP_mailster' ) ) {
-		require_once MAILSTER_DIR . 'classes/libs/phpmailer/class.smtp.php';
-	}
-
-	class _mailster_SMTP extends SMTP_mailster {};
-	class _mailster_mail_helper extends PHPMailer_mailster {};
-	class _mailster_phpmailerException extends phpmailerException_mailster{};
-
-	// since WordPress 5.5
-elseif ( file_exists( ABSPATH . WPINC . '/PHPMailer/PHPMailer.php' ) ) :
+if ( file_exists( ABSPATH . WPINC . '/PHPMailer/PHPMailer.php' ) ) :
 
 	require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
 	require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
@@ -59,7 +44,7 @@ class mailster_mail_helper extends _mailster_mail_helper {
 		$this->XMailer     = 'Mailster ' . MAILSTER_VERSION . ' (' . $this->Version . ')';
 		$this->CharSet     = mailster_option( 'charset', 'UTF-8' );
 		$this->Encoding    = mailster_option( 'encoding', '8bit' );
-		$this->Ical        = apply_filters( 'mymail_ical', apply_filters( 'mailster_ical', '' ) );
+		$this->Ical        = apply_filters( 'mailster_ical', '' );
 		$this->SMTPDebug   = 0; // 0 = off, 1 = commands, 2 = commands and data
 		$this->SMTPOptions = apply_filters(
 			'mymail_smtp_options',

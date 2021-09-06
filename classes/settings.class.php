@@ -211,6 +211,7 @@ class MailsterSettings {
 
 			'usage_tracking'                     => false,
 			'ask_usage_tracking'                 => true,
+			'mailster_branding'                  => true,
 			'disable_cache'                      => false,
 			'shortcodes'                         => false,
 			'remove_data'                        => false,
@@ -371,9 +372,6 @@ class MailsterSettings {
 	public function scripts_styles() {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-		wp_enqueue_style( 'thickbox' );
-		wp_enqueue_script( 'thickbox' );
 
 		wp_enqueue_style( 'mailster-settings-style', MAILSTER_URI . 'assets/css/settings-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-settings-script', MAILSTER_URI . 'assets/js/settings-script' . $suffix . '.js', array( 'mailster-script', 'mailster-clipboard-script' ), MAILSTER_VERSION, true );
@@ -1015,7 +1013,7 @@ class MailsterSettings {
 						if ( $value ) {
 
 							$timestamp = mailster( 'helper' )->get_timestamp_by_string( $value );
-							$timestamp = apply_filters( 'mymail_subscriber_notification_delay', apply_filters( 'mailster_subscriber_notification_delay', $timestamp ) );
+							$timestamp = apply_filters( 'mailster_subscriber_notification_delay', $timestamp );
 							wp_schedule_single_event( $timestamp, 'mailster_subscriber_notification' );
 						}
 					}
@@ -1032,7 +1030,7 @@ class MailsterSettings {
 						if ( $value ) {
 
 							$timestamp = mailster( 'helper' )->get_timestamp_by_string( $value );
-							$timestamp = apply_filters( 'mymail_subscriber_unsubscribe_notification_delay', apply_filters( 'mailster_subscriber_unsubscribe_notification_delay', $timestamp ) );
+							$timestamp = apply_filters( 'mailster_subscriber_unsubscribe_notification_delay', $timestamp );
 							wp_schedule_single_event( $timestamp, 'mailster_unsubscribe_notification' );
 						}
 					}
@@ -1245,7 +1243,7 @@ class MailsterSettings {
 		// clear everything thats cached
 		mailster_clear_cache();
 
-		$options = apply_filters( 'mymail_verify_options', apply_filters( 'mailster_verify_options', $options ) );
+		$options = apply_filters( 'mailster_verify_options', $options );
 
 		return $options;
 
@@ -1282,7 +1280,7 @@ class MailsterSettings {
 
 		}
 
-		return apply_filters( 'mymail_verify_texts', apply_filters( 'mailster_verify_texts', $texts ) );
+		return apply_filters( 'mailster_verify_texts', $texts );
 
 	}
 
@@ -1488,7 +1486,7 @@ class MailsterSettings {
 			'HOME_URL'                 => home_url(),
 			'--',
 			'Mailster Version'         => MAILSTER_VERSION,
-			'Updated From'             => get_option( 'mailster_version_old', 'N/A' ) . ' (' . date( 'r', get_option( 'mailster_updated' ) ) . ')',
+			'Updated From'             => get_option( 'mailster_version_old', 'N/A' ) . ' (' . date_i18n( 'r', get_option( 'mailster_updated' ) ) . ')',
 			'Mailster Hash'            => mailster()->get_plugin_hash( true ),
 			'WordPress Version'        => get_bloginfo( 'version' ),
 			'Mailster DB Version'      => $db_version,
@@ -1579,7 +1577,7 @@ class MailsterSettings {
 			$settings['CURRENT THEME'] = $theme_data['Name'] . ': ' . $theme_data['Version'] . "\n" . str_repeat( ' ', $space ) . $theme_data['Author'] . ' (' . $theme_data['AuthorURI'] . ')';
 		}
 
-		return apply_filters( 'mymail_system_info', apply_filters( 'mailster_system_info', $settings ) );
+		return apply_filters( 'mailster_system_info', $settings );
 
 	}
 

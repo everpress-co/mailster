@@ -83,7 +83,6 @@ class MailsterConditions {
 				'firstname' => array( 'name' => mailster_text( 'firstname' ) ),
 				'lastname'  => array( 'name' => mailster_text( 'lastname' ) ),
 				'rating'    => array( 'name' => esc_html__( 'Rating', 'mailster' ) ),
-				// 'tag'       => array( 'name' => esc_html__( 'Tag', 'mailster' ) ),
 			)
 		);
 
@@ -448,7 +447,7 @@ class MailsterConditions {
 			case 'value':
 				if ( in_array( $field, $this->time_fields ) ) {
 					if ( $string ) {
-						return date( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+						return date_i18n( mailster( 'helper' )->dateformat(), strtotime( $string ) );
 					} else {
 						return '';
 					}

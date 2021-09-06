@@ -1,12 +1,6 @@
-.btn-widget.design-minimal .btn{
-	font-weight: bold;
-	background: #eee;
-	padding: 0 3px 0 0;
-}
-.btn-widget.design-minimal .btn:before {
-	font-size: 110%;
-	background: #f33;
-	padding: 3px;
+.btn-widget.design-minimal .btn {
+	background-color: #f33;
+	padding: 0 5px 0 22px;
 	color: #fff;
 }
 .btn-widget.design-minimal .btn:focus, .btn-widget.design-minimal .btn:hover, .btn-widget.design-minimal .btn:active {

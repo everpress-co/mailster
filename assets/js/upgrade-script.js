@@ -23,7 +23,7 @@ mailster = (function (mailster, $, window, document) {
 	});
 
 	mailster.$.document.ajaxError(function () {
-		$error.append('script paused...continues in 5 seconds<br>');
+		$error.append('Script paused...continues in 5 seconds...<br>');
 		setTimeout(function () {
 			$error.empty();
 			run(current_i, true);
@@ -37,8 +37,8 @@ mailster = (function (mailster, $, window, document) {
 		$('#mailster-update-info').show();
 		$('#mailster-start-upgrade')
 			.one('click', function () {
-				$('#mailster-update-process').slideDown(200);
-				$('#mailster-update-info').slideUp(200);
+				$('#mailster-update-process').show();
+				$('#mailster-update-info').hide();
 				run(0);
 			});
 	}
@@ -60,7 +60,7 @@ mailster = (function (mailster, $, window, document) {
 			return
 		}
 
-		if (!nooutput) output(id, '<span>' + current + '</span> ...', true);
+		if (!nooutput) output(id, '<span>' + current + '</span> ...', true, 0);
 
 		do_update(id, function () {
 			setTimeout(function () {
@@ -79,15 +79,15 @@ mailster = (function (mailster, $, window, document) {
 			performance: performance
 		}, function (response) {
 
-			if (response && response.success) {
+			if (response.data.output) textoutput(response.data.output);
 
-				if (response.output) textoutput(response.output);
+			if (response.success) {
 
 				if (skipit) {
 					output(id, ' &otimes;', false);
 					skipit = false;
 					onsuccess && onsuccess();
-				} else if (response[id]) {
+				} else if (response.data[id]) {
 					output(id, ' &#10004;', false);
 					onsuccess && onsuccess();
 				} else {
@@ -116,7 +116,7 @@ mailster = (function (mailster, $, window, document) {
 
 		window.onbeforeunload = null;
 
-		output('error', 'error', true);
+		output('error', 'Error ', true);
 
 	}
 
@@ -134,13 +134,18 @@ mailster = (function (mailster, $, window, document) {
 	function output(id, content, newline, round, nobox) {
 
 		if (!$('#output_' + id).length) {
-			$('<div class="' + (nobox ? '' : 'notice notice-info inline') + '" style="padding: 0.5em 6px;word-wrap: break-word;"><div id="output_' + id + '"></div></div>').appendTo($output);
+			$('<div class="' + (nobox ? '' : 'notice notice-info inline active ' + id) + '" style="padding: 0.5em 6px;word-wrap: break-word;"><div id="output_' + id + '"></div></div>').appendTo($output);
 		}
 
 		var el = $('#output_' + id);
 
 		el.append(content);
-		round > 100 ? el.append(skip.show()) : skip.hide();
+
+		if (typeof round === 'undefined') {
+			el.parent().removeClass('active');
+		}
+
+		round > 50 ? el.append(skip.show()) : skip.hide();
 
 	}
 
@@ -151,7 +156,7 @@ mailster = (function (mailster, $, window, document) {
 
 		content = curr_content + content;
 
-		textarea.val($.trim(content) + "\n\n");
+		textarea.val(mailster.util.trim(content) + "\n\n");
 
 		textarea.scrollTop(textarea[0].scrollHeight);
 

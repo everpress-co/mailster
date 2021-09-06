@@ -214,4 +214,4 @@ $mailster_capabilities = array(
 
 );
 
-$mailster_capabilities = apply_filters( 'mymail_capabilities', apply_filters( 'mailster_capabilities', $mailster_capabilities ) );
+$mailster_capabilities = apply_filters( 'mailster_capabilities', $mailster_capabilities );
