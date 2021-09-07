@@ -120,3 +120,83 @@ a.email{
 
 .widefat .column-emails{width: 50px;text-align: left;}
 }
+
+.subsubsub{
+	clear: both;
+}
+#mailster-filter-wrap{
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-start;
+	margin: 0.6em 0;
+	float: left;
+}
+#mailster-filter-wrap a{
+	margin-left: 0.6em;
+	right: 0.6em;
+}
+
+#mailster-conditions-render{
+	overflow: hidden;
+	display: inline-block;
+
+}
+#mailster-conditions-render .mailster-condition-render-group{
+	display: inline-block;
+	margin-right:.2em;
+	__min-height: 40px;
+}
+.mailster-condition-operators:not(.mailster-condition-type) {
+	display: none;
+	border: 1px solid #CCD0D4;
+	position: absolute;
+	border-radius: 2px;
+	background: inherit;
+	padding: 0.2em;
+	transform: translate(-100%, 22%);
+	left: 3px;
+}
+
+
+#TB_ajaxContent{
+	padding: 0 !important;
+	min-width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+.rtl #TB_ajaxContent{
+	text-align: right;
+}
+.mailster-subscriber-conditions-thickbox{
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	bottom: 10px;
+}
+.mailster-subscriber-conditions-thickbox .inner {
+	position: relative;
+	padding: 0 20px;
+	height: 70%;
+	height: calc(100% - 50px);
+	overflow: auto;
+}
+.mailster-subscriber-conditions-thickbox .foot {
+	padding: 10px 20px;
+	border-top: 1px solid #DFDFDF;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+.mailster-subscriber-conditions-thickbox .foot button{
+	float: right;
+	margin-left: 6px;
+}
+.rtl .mailster-subscriber-conditions-thickbox .foot button{
+	margin-left: 0px;
+	margin-right: 6px;
+	float: left;
+}

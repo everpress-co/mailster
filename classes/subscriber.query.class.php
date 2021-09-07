@@ -971,6 +971,7 @@ class MailsterSubscriberQuery {
 
 		$limit = '';
 		if ( $this->args['page'] ) {
+			error_log( print_r( $this->args['page'], true ) );
 			$this->args['offset'] = $this->args['limit'] * ( $this->args['page'] - 1 );
 		}
 		if ( $this->args['limit'] && ! $this->args['return_count'] ) {
@@ -993,7 +994,7 @@ class MailsterSubscriberQuery {
 
 		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql, $this->args, $campaign_id );
 
-		// error_log( $sql );
+		error_log( $sql );
 		if ( $this->args['return_sql'] ) {
 			$result            = $this->last_query = $sql;
 			$this->last_error  = null;

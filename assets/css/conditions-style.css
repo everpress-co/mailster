@@ -198,3 +198,61 @@
 .mailster-conditions-wrap .mailster-conditions-value-field-multiselect:first-child a.mailster-condition-remove-multiselect{
 	visibility: hidden !important;
 }
+
+.mailster-conditions-render:empty:before{
+	content: attr(data-emptytext);
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	color: #999;
+}
+.mailster-condition .mailster-rating span{
+	color: #e6b800;
+	display: inline-block;
+	font-size: 16px;
+	cursor: pointer;
+	padding: 3px 0;
+}
+.mailster-conditions-render:empty{
+	border: 1px solid #CCD0D4;
+	border-radius: 2px;
+	padding: 10px 6px;
+	min-height: 18px;
+}
+.dark-mode .mailster-conditions-render:empty{
+	border-color: #191f25;
+}
+.mailster-conditions-render:empty:before, .mailster-conditions .mailster-conditions-wrap:empty:before{
+	content: attr(data-emptytext);
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	text-align: center;
+	color: #999;
+	white-space: nowrap;
+}
+.mailster-condition-render-group{
+	border: 1px solid #CCD0D4;
+	padding: 3px 6px;
+	border-radius: 2px;
+	background: #fdfdfd;
+	vertical-align: top;
+	position: relative;
+}
+.mailster-condition-operators{
+	color: #989898;
+	font-size: 12px;
+}
+.mailster-condition-render{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.mailster-condition-render .mailster-condition-operators{
+	font-size: 10px;
+}
