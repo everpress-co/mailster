@@ -214,8 +214,8 @@ class MailsterForms {
 
 		if ( isset( $_GET['ID'] ) || isset( $_GET['new'] ) ) :
 
-			wp_register_style( 'mailster-form-blocks', MAILSTER_URI . 'assets/css/form-blocks-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_register_script( 'mailster-form-blocks', MAILSTER_URI . 'assets/js/form-blocks-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+			wp_register_style( 'mailster-form-blocks-style', MAILSTER_URI . 'assets/css/form-blocks-style' . $suffix . '.css', array('block-editor', 'editor-css'), MAILSTER_VERSION );
+			wp_register_script( 'mailster-form-blocks-script', MAILSTER_URI . 'assets/js/form-blocks-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
 
 			return;
 
