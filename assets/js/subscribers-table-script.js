@@ -14,7 +14,7 @@ mailster = (function (mailster, $, window, document) {
 			var query = mailster.conditions.serialize();
 			var search = new URLSearchParams(window.location.search);
 			var params = Object.fromEntries(search.entries());
-			var filtererd = getFilteredParams(params);
+			var filtererd = getFilteredParams(params, 'conditions');
 			var queryString = Object.keys(filtererd).map(key => key + '=' + filtererd[key]).join('&');
 
 			if (search.toString() != queryString + '&' + query) {

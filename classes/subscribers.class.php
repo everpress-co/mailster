@@ -1987,8 +1987,6 @@ class MailsterSubscribers {
 			$args
 		);
 
-		error_log( print_r( $args, true ) );
-
 		return $this->query( $args );
 
 	}

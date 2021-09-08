@@ -114,9 +114,9 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		<div id="mailster-filter-wrap" class="align-right clear">
 			<div id="mailster-conditions-render">
 				<?php mailster( 'conditions' )->render( $_GET['conditions'] ); ?>
-			</div>
 			<a href="<?php echo remove_query_arg( 'conditions' ); ?>" class="button button-small"><?php esc_html_e( 'Clear Filters', 'mailster' ); ?></a>
 			<a href="<?php echo add_query_arg( array( 'conditions' => $this->conditions ), admin_url( 'post-new.php?post_type=newsletter' ) ); ?>" class="button button-small"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
+			</div>
 		</div>
 
 	<?php endif; ?>
@@ -196,7 +196,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -212,7 +211,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 			case 'name':
 				if ( get_option( 'show_avatars' ) ) {
-					$avatar = '<div class="mailster-avatar"><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '"><span class="mailster-avatar-40' . ( $item->wp_id ? ' wp-user' : '' ) . '" style="background-image:url(' . mailster( 'subscribers' )->get_gravatar_uri( $item->email, 80 ) . ')"></span></a></div>';
+					$initials = trim( preg_replace( '/[^A-Z]+/', '', ucwords( $data['fullname'] ) ) );
+					$avatar   = '<div class="mailster-avatar"><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '"><span class="mailster-avatar-40' . ( $item->wp_id ? ' wp-user' : '' ) . '" style="background-image:url(' . mailster( 'subscribers' )->get_gravatar_uri( $item->email, 80 ) . ')"></span></a></div>';
 				} else {
 					$avatar = '';
 				}
