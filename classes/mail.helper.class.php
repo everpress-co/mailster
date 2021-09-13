@@ -2,13 +2,19 @@
 
 if ( file_exists( ABSPATH . WPINC . '/PHPMailer/PHPMailer.php' ) ) :
 
-	require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
-	require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
-	require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
+	if ( ! class_exists( 'PHPMailer', false ) ) {
+		require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+		class_alias( PHPMailer\PHPMailer\PHPMailer::class, 'PHPMailer' );
+	}
+	if ( ! class_exists( 'phpmailerException', false ) ) {
+		require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
+		class_alias( PHPMailer\PHPMailer\Exception::class, 'phpmailerException' );
+	}
 
-	class_alias( PHPMailer\PHPMailer\PHPMailer::class, 'PHPMailer' );
-	class_alias( PHPMailer\PHPMailer\Exception::class, 'phpmailerException' );
-	class_alias( PHPMailer\PHPMailer\SMTP::class, 'SMTP' );
+	if ( ! class_exists( 'SMTP', false ) ) {
+		require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
+		class_alias( PHPMailer\PHPMailer\SMTP::class, 'SMTP' );
+	}
 
 	class _mailster_SMTP extends SMTP {};
 	class _mailster_mail_helper extends PHPMailer {};

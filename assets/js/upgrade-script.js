@@ -84,7 +84,7 @@ mailster = (function (mailster, $, window, document) {
 			if (response.success) {
 
 				if (skipit) {
-					output(id, ' &otimes;', false);
+					output(id, ' &times;', false);
 					skipit = false;
 					onsuccess && onsuccess();
 				} else if (response.data[id]) {
