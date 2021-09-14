@@ -18,9 +18,9 @@ $current_screen->is_block_editor( true );
 $block_editor_context = new WP_Block_Editor_Context();
 
 // $preload_paths = array(
-// 	array( '/wp/v2/media', 'OPTIONS' ),
-// 	'/wp/v2/sidebars?context=edit&per_page=-1',
-// 	'/wp/v2/widgets?context=edit&per_page=-1&_embed=about',
+// array( '/wp/v2/media', 'OPTIONS' ),
+// '/wp/v2/sidebars?context=edit&per_page=-1',
+// '/wp/v2/widgets?context=edit&per_page=-1&_embed=about',
 // );
 // block_editor_rest_api_preload( $preload_paths, $block_editor_context );
 
@@ -43,22 +43,22 @@ wp_add_inline_script(
 	)
 );
 
-error_log( print_r($editor_settings, true) );
+error_log( print_r( $editor_settings, true ) );
 // // Preload server-registered block schemas.
 // wp_add_inline_script(
-// 	'wp-blocks',
-// 	'wp.blocks.unstable__bootstrapServerSideBlockDefinitions(' . wp_json_encode( get_block_editor_server_block_settings() ) . ');'
+// 'wp-blocks',
+// 'wp.blocks.unstable__bootstrapServerSideBlockDefinitions(' . wp_json_encode( get_block_editor_server_block_settings() ) . ');'
 // );
 
 // wp_add_inline_script(
-// 	'wp-blocks',
-// 	sprintf( 'wp.blocks.setCategories( %s );', wp_json_encode( get_block_categories( 'mailster-form-editor' ) ) ),
-// 	'after'
+// 'wp-blocks',
+// sprintf( 'wp.blocks.setCategories( %s );', wp_json_encode( get_block_categories( 'mailster-form-editor' ) ) ),
+// 'after'
 // );
 
 wp_enqueue_script( 'wp-edit-widgets' );
-//wp_enqueue_style( 'mailster-form-blocks-style' );
-wp_enqueue_style( 'mailster-form-blocks-style', MAILSTER_URI . 'assets/css/form-blocks-style.css', array('block-editor', 'editor-css'), MAILSTER_VERSION );
+// wp_enqueue_style( 'mailster-form-blocks-style' );
+wp_enqueue_style( 'mailster-form-blocks-style', MAILSTER_URI . 'assets/css/form-blocks-style.css', array( 'block-editor', 'editor-css' ), MAILSTER_VERSION );
 
 ?>
 

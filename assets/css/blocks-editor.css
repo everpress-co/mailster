@@ -5,6 +5,12 @@
  */
 
 
+.editor-styles-wrapper .is-root-container {
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	margin: 1vh 0 0;
+	padding: 2em;
+}
 .list-mover{
 	position: absolute;
 	right: 10px;

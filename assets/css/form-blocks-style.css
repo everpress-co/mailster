@@ -76,7 +76,7 @@
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   :root {
-    --wp-admin-border-width-focus: 1.5px;
+	--wp-admin-border-width-focus: 1.5px;
   }
 }
 
@@ -92,7 +92,7 @@
 }
 @media (min-width: 782px) {
   .components-panel__header.interface-complementary-area-header__small {
-    display: none;
+	display: none;
   }
 }
 
@@ -109,7 +109,7 @@
 }
 @media (min-width: 782px) {
   .interface-complementary-area-header .components-button.has-icon {
-    display: flex;
+	display: flex;
   }
 }
 
@@ -119,12 +119,12 @@
 }
 @media (min-width: 600px) {
   .interface-complementary-area {
-    -webkit-overflow-scrolling: touch;
+	-webkit-overflow-scrolling: touch;
   }
 }
 @media (min-width: 782px) {
   .interface-complementary-area {
-    width: 280px;
+	width: 280px;
   }
 }
 .interface-complementary-area .components-panel {
@@ -142,7 +142,7 @@
 }
 @media (min-width: 782px) {
   .interface-complementary-area .components-panel__header.edit-post-sidebar__panel-tabs {
-    top: 0;
+	top: 0;
   }
 }
 .interface-complementary-area p {
@@ -177,16 +177,16 @@
 
 @media (min-width: 782px) {
   body.js.is-fullscreen-mode {
-    margin-top: -32px;
-    height: calc(100% + 32px);
+	margin-top: -32px;
+	height: calc(100% + 32px);
   }
   body.js.is-fullscreen-mode #adminmenumain,
 body.js.is-fullscreen-mode #wpadminbar {
-    display: none;
+	display: none;
   }
   body.js.is-fullscreen-mode #wpcontent,
 body.js.is-fullscreen-mode #wpfooter {
-    margin-left: 0;
+	margin-left: 0;
   }
 }
 
@@ -196,8 +196,8 @@ html.interface-interface-skeleton__html-container {
 }
 @media (min-width: 782px) {
   html.interface-interface-skeleton__html-container {
-    position: initial;
-    width: initial;
+	position: initial;
+	width: initial;
   }
 }
 
@@ -214,10 +214,10 @@ html.interface-interface-skeleton__html-container {
 }
 @media (min-width: 783px) {
   .interface-interface-skeleton {
-    top: 32px;
+	top: 32px;
   }
   .is-fullscreen-mode .interface-interface-skeleton {
-    top: 0;
+	top: 0;
   }
 }
 
@@ -234,7 +234,7 @@ html.interface-interface-skeleton__html-container {
 }
 @media (min-width: 783px) {
   .interface-interface-skeleton {
-    left: 160px;
+	left: 160px;
   }
 }
 
@@ -243,12 +243,12 @@ html.interface-interface-skeleton__html-container {
 }
 @media (min-width: 783px) {
   .auto-fold .interface-interface-skeleton {
-    left: 36px;
+	left: 36px;
   }
 }
 @media (min-width: 961px) {
   .auto-fold .interface-interface-skeleton {
-    left: 160px;
+	left: 160px;
   }
 }
 
@@ -258,7 +258,7 @@ html.interface-interface-skeleton__html-container {
 }
 @media (min-width: 783px) {
   .folded .interface-interface-skeleton {
-    left: 36px;
+	left: 36px;
   }
 }
 
@@ -274,7 +274,7 @@ body.is-fullscreen-mode .interface-interface-skeleton {
 }
 @media (min-width: 782px) {
   .has-footer .interface-interface-skeleton__body {
-    padding-bottom: 25px;
+	padding-bottom: 25px;
   }
 }
 
@@ -302,9 +302,9 @@ body.is-fullscreen-mode .interface-interface-skeleton {
 @media (min-width: 782px) {
   .interface-interface-skeleton__secondary-sidebar,
 .interface-interface-skeleton__sidebar {
-    position: relative !important;
-    z-index: 90;
-    width: auto;
+	position: relative !important;
+	z-index: 90;
+	width: auto;
   }
 }
 
@@ -313,13 +313,13 @@ body.is-fullscreen-mode .interface-interface-skeleton {
 }
 @media (min-width: 782px) {
   .interface-interface-skeleton__sidebar {
-    border-left: 1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
   }
 }
 
 @media (min-width: 782px) {
   .interface-interface-skeleton__secondary-sidebar {
-    border-right: 1px solid #e0e0e0;
+	border-right: 1px solid #e0e0e0;
   }
 }
 
@@ -346,7 +346,7 @@ body.is-fullscreen-mode .interface-interface-skeleton {
 }
 @media (min-width: 782px) {
   .interface-interface-skeleton__footer {
-    display: flex;
+	display: flex;
   }
 }
 .interface-interface-skeleton__footer .block-editor-block-breadcrumb {
@@ -382,7 +382,7 @@ body.is-fullscreen-mode .interface-interface-skeleton {
 }
 @media (min-width: 600px) {
   .interface-pinned-items .components-button:not(:first-child) {
-    display: flex;
+	display: flex;
   }
 }
 .interface-pinned-items .components-button {
@@ -449,7 +449,7 @@ body.is-dragging-components-draggable .wp-block[data-type="core/widget-area"] .c
 }
 @media (min-width: 600px) {
   .edit-widgets-header {
-    overflow: visible;
+	overflow: visible;
   }
 }
 
@@ -473,7 +473,7 @@ body.is-dragging-components-draggable .wp-block[data-type="core/widget-area"] .c
 }
 @media (min-width: 600px) {
   .edit-widgets-header__actions .components-button {
-    margin-right: 12px;
+	margin-right: 12px;
   }
 }
 .edit-widgets-header__actions .edit-widgets-more-menu .components-button,
@@ -510,8 +510,8 @@ body.is-dragging-components-draggable .wp-block[data-type="core/widget-area"] .c
 }
 @media (min-width: 600px) {
   .edit-widgets-header-toolbar__inserter-toggle.edit-widgets-header-toolbar__inserter-toggle {
-    padding-left: 12px;
-    padding-right: 12px;
+	padding-left: 12px;
+	padding-right: 12px;
   }
 }
 .edit-widgets-header-toolbar__inserter-toggle.edit-widgets-header-toolbar__inserter-toggle::after {
@@ -578,10 +578,10 @@ body.is-dragging-components-draggable .wp-block[data-type="core/widget-area"] .c
 }
 @media (min-width: 600px) {
   .edit-widgets-more-menu {
-    margin-left: 0;
+	margin-left: 0;
   }
   .edit-widgets-more-menu .components-button {
-    padding: 0 4px;
+	padding: 0 4px;
   }
 }
 
@@ -590,8 +590,8 @@ body.is-dragging-components-draggable .wp-block[data-type="core/widget-area"] .c
 }
 @media (min-width: 480px) {
   .edit-widgets-more-menu__content .components-popover__content {
-    width: auto;
-    max-width: 480px;
+	width: auto;
+	max-width: 480px;
   }
 }
 .edit-widgets-more-menu__content .components-popover__content .components-dropdown-menu__menu {
@@ -621,7 +621,7 @@ body.is-dragging-components-draggable .wp-block[data-type="core/widget-area"] .c
 }
 @media (min-width: 782px) {
   .components-panel__header.edit-widgets-sidebar__panel-tabs .components-button.has-icon {
-    display: flex;
+	display: flex;
   }
 }
 
@@ -690,7 +690,7 @@ body.is-dragging-components-draggable .wp-block[data-type="core/widget-area"] .c
 }
 @media (min-width: 783px) {
   .edit-widgets-notices__snackbar {
-    left: 160px;
+	left: 160px;
   }
 }
 
@@ -699,12 +699,12 @@ body.is-dragging-components-draggable .wp-block[data-type="core/widget-area"] .c
 }
 @media (min-width: 783px) {
   .auto-fold .edit-widgets-notices__snackbar {
-    left: 36px;
+	left: 36px;
   }
 }
 @media (min-width: 961px) {
   .auto-fold .edit-widgets-notices__snackbar {
-    left: 160px;
+	left: 160px;
   }
 }
 
@@ -714,7 +714,7 @@ body.is-dragging-components-draggable .wp-block[data-type="core/widget-area"] .c
 }
 @media (min-width: 783px) {
   .folded .edit-widgets-notices__snackbar {
-    left: 36px;
+	left: 36px;
   }
 }
 
@@ -752,7 +752,7 @@ body.is-fullscreen-mode .edit-widgets-notices__snackbar {
 }
 @media (min-width: 782px) {
   .edit-widgets-layout__inserter-panel-header {
-    display: none;
+	display: none;
   }
 }
 
@@ -761,7 +761,7 @@ body.is-fullscreen-mode .edit-widgets-notices__snackbar {
 }
 @media (min-width: 782px) {
   .edit-widgets-layout__inserter-panel-content {
-    height: 100%;
+	height: 100%;
   }
 }
 
@@ -823,7 +823,7 @@ body.appearance_page_gutenberg-widgets,
 body.widgets-php {
   background: #fff;
   /* We hide legacy notices in Gutenberg Based Pages, because they were not designed in a way that scaled well.
-     Plugins can use Gutenberg notices if they need to pass on information to the user when they are editing. */
+	 Plugins can use Gutenberg notices if they need to pass on information to the user when they are editing. */
 }
 body.appearance_page_gutenberg-widgets #wpcontent,
 body.widgets-php #wpcontent {
@@ -873,17 +873,17 @@ body.widgets-php .media-frame select.attachment-filters:last-of-type {
 
 @media (min-width: 600px) {
   .blocks-widgets-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    min-height: calc(100vh - 46px);
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	min-height: calc(100vh - 46px);
   }
 }
 @media (min-width: 782px) {
   .blocks-widgets-container {
-    min-height: calc(100vh - 32px);
+	min-height: calc(100vh - 32px);
   }
 }
 .blocks-widgets-container .interface-interface-skeleton__content {
@@ -911,7 +911,7 @@ body.admin-color-light {
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   body.admin-color-light {
-    --wp-admin-border-width-focus: 1.5px;
+	--wp-admin-border-width-focus: 1.5px;
   }
 }
 
@@ -923,7 +923,7 @@ body.admin-color-modern {
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   body.admin-color-modern {
-    --wp-admin-border-width-focus: 1.5px;
+	--wp-admin-border-width-focus: 1.5px;
   }
 }
 
@@ -935,7 +935,7 @@ body.admin-color-blue {
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   body.admin-color-blue {
-    --wp-admin-border-width-focus: 1.5px;
+	--wp-admin-border-width-focus: 1.5px;
   }
 }
 
@@ -947,7 +947,7 @@ body.admin-color-coffee {
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   body.admin-color-coffee {
-    --wp-admin-border-width-focus: 1.5px;
+	--wp-admin-border-width-focus: 1.5px;
   }
 }
 
@@ -959,7 +959,7 @@ body.admin-color-ectoplasm {
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   body.admin-color-ectoplasm {
-    --wp-admin-border-width-focus: 1.5px;
+	--wp-admin-border-width-focus: 1.5px;
   }
 }
 
@@ -971,7 +971,7 @@ body.admin-color-midnight {
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   body.admin-color-midnight {
-    --wp-admin-border-width-focus: 1.5px;
+	--wp-admin-border-width-focus: 1.5px;
   }
 }
 
@@ -983,7 +983,7 @@ body.admin-color-ocean {
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   body.admin-color-ocean {
-    --wp-admin-border-width-focus: 1.5px;
+	--wp-admin-border-width-focus: 1.5px;
   }
 }
 
@@ -995,6 +995,6 @@ body.admin-color-sunrise {
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   body.admin-color-sunrise {
-    --wp-admin-border-width-focus: 1.5px;
+	--wp-admin-border-width-focus: 1.5px;
   }
 }

@@ -4,16 +4,25 @@ class MailsterBlocks {
 
 	private $blocks = array( 'input' );
 
-	public function __construct() {
+public function __construct() {
 
-		if ( ! function_exists( 'register_block_type' ) ) {
-			return;
+	if ( ! function_exists( 'register_block_type' ) ) {
+		return;
+	}
+	add_action( 'init', array( &$this, 'register_blocks' ) );
+	// add_action( 'block_categories', array( &$this, 'block_categories' ), 10, 2 );
+	// add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 10, 2 );	}
+
+	public function allowed_block_types( $allowed_block_types, $post ) {
+
+		if ( 'newsletter_form' != get_post_type( $post ) ) {
+			return $allowed_block_types;
+
 		}
-		add_action( 'init', array( &$this, 'register_blocks' ) );
-		add_action( 'block_categories', array( &$this, 'block_categories' ), 10, 2 );
+
+		return array( 'mailster/form', 'mailster/field-firstname', 'mailster/field-lastname' );
 
 	}
-
 
 	public function block_categories( $categories, $post ) {
 		return array_merge(
@@ -28,13 +37,14 @@ class MailsterBlocks {
 		);
 	}
 
-
 	public function register_blocks() {
 
+		return;
+
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_register_script( 'mailster-form-block-editor', MAILSTER_URI . 'assets/js/blocks' . $suffix . '.js', array( 'wp-blocks', 'wp-i18n', 'wp-element' ), MAILSTER_VERSION );
-		wp_register_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_register_style( 'mailster-form-block', MAILSTER_URI . 'assets/css/blocks-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		// wp_register_script( 'mailster-form-block-editor', MAILSTER_URI . 'assets/js/blocks' . $suffix . '.js', array( 'wp-blocks', 'wp-i18n', 'wp-element' ), MAILSTER_VERSION );
+		// wp_register_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
+		// wp_register_style( 'mailster-form-block', MAILSTER_URI . 'assets/css/blocks-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		$lists       = mailster( 'lists' )->get_simple();
 		$lists_order = array_keys( $lists );
@@ -203,7 +213,7 @@ class MailsterBlocks {
 				),
 				'icon'            => 'smiley',
 				'title'           => $name,
-				'parent'          => array( 'mailster/form' ),
+				// 'parent'          => array( 'mailster/form' ),
 				'category'        => 'mailster-form-fields',
 				'render_callback' => is_callable( array( &$this, 'render_field_' . $id ) ) ? array( &$this, 'render_field_' . $id ) : array( &$this, 'render_field_input' ),
 				'attributes'      => $attributes,
@@ -274,12 +284,7 @@ class MailsterBlocks {
 
 	public function render_field_input( $attr, $content ) {
 
-		$attr = wp_parse_args(
-			array(
-				'type' => 'text',
-			),
-			$attr
-		);
+		$attr = wp_parse_args( array( 'type' => 'text' ), $attr );
 		return $this->render_field( 'input', $attr );
 
 	}
