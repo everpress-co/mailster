@@ -10,6 +10,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	public $total_pages;
 	public $per_page;
 	public $conditions;
+	public $lists;
 	public $status;
 	public $search;
 
@@ -27,6 +28,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		add_filter( 'manage_newsletter_page_mailster_subscribers_columns', array( &$this, 'get_columns' ) );
 
 		$this->conditions = isset( $_GET['conditions'] ) ? (array) $_GET['conditions'] : null;
+		$this->lists      = isset( $_GET['lists'] ) ? (array) $_GET['lists'] : false;
 		$this->status     = isset( $_GET['status'] ) ? (int) $_GET['status'] : null;
 		$this->search     = isset( $_GET['s'] ) ? (string) $_GET['s'] : null;
 
@@ -44,6 +46,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			false,
 			array(
 				'conditions' => $this->conditions,
+				'lists'      => $this->lists,
 				's'          => $this->search,
 			)
 		);
@@ -57,10 +60,11 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				$id,
 				array(
 					'conditions' => $this->conditions,
+					'lists'      => $this->lists,
 					's'          => $this->search,
 				)
 			) ) {
-				$views[ 'view-status-' . $id ] = '<a href="' . add_query_arg( array( 'status' => $id ) ) . '" class="' . ( $this->status == $id ? 'current' : '' ) . '">' . $status . ' <span class="count">(' . number_format_i18n( $count ) . ')</span></a>';
+				$views[ 'view-status-' . $id ] = '<a href="' . add_query_arg( array( 'status' => $id ) ) . '" class="' . ( $this->status === $id ? 'current' : '' ) . '">' . esc_html( $status ) . ' <span class="count">(' . number_format_i18n( $count ) . ')</span></a>';
 			}
 		}
 

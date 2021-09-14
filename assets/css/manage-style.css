@@ -119,6 +119,9 @@ span.error{
 .mailster-conditions{
 	width: 720px;
 }
+.mailster-manage .mailster-conditions-render:empty:before,.mailster-manage .mailster-conditions .mailster-conditions-wrap:empty:before{
+	content: '';
+}
 .export-order-wrap{
 	overflow: hidden;
 }

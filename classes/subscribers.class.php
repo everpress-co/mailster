@@ -131,6 +131,7 @@ class MailsterSubscribers {
 				array(
 					'onbeforeunload' => esc_html__( 'Bulk process in progress!', 'mailster' ),
 					'initprogess'    => sprintf( esc_html__( 'processing page %d', 'mailster' ), 1 ),
+					'filters'    =>  esc_html__( 'Add filters', 'mailster' ),
 				)
 			);
 			mailster_localize_script(
