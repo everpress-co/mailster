@@ -7,7 +7,7 @@ if ( $item['is_default'] ) {
 if ( $item['installed'] ) {
 	$classes[] = 'is-installed';
 }
-if ( ! $item['is_supported'] ) {
+if ( ! $item['is_supported'] && ! $item['installed'] ) {
 	$classes[] = 'not-supported';
 }
 if ( $item['update_available'] ) {
@@ -29,7 +29,7 @@ if ( $item['envato_item_id'] ) {
 	<div class="notice inline update-message notice-success notice-alt"></div>
 	<div class="notice inline update-message notice-warning notice-alt"></div>
 	<div class="notice inline update-message notice-error notice-alt"></div>
-	<?php if ( ! $item['is_supported'] ) : ?>
+	<?php if ( ! $item['is_supported'] && ! $item['installed'] ) : ?>
 	<div class="notice inline update-message notice-error notice-alt"><p><?php printf( esc_html__( 'This template requires Mailster version %s or above. Please update first.', 'mailster' ), '<strong>' . $item['requires'] . '</strong>' ); ?></p></div>
 	<?php endif; ?>
 	<?php if ( $item['update_available'] ) : ?>

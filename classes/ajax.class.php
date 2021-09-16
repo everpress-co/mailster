@@ -72,6 +72,7 @@ class MailsterAjax {
 		'download_template',
 		'default_template',
 		'template_endpoint',
+		'load_template_file',
 
 		'query_addons',
 
@@ -2596,6 +2597,25 @@ class MailsterAjax {
 
 		wp_redirect( $location );
 		exit;
+
+	}
+
+	private function load_template_file() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$template = basename( $_POST['template'] );
+		$file     = basename( $_POST['file'] );
+		$t        = mailster()->template( $template, $file );
+
+		if ( $t->exists ) {
+			$return['success'] = true;
+			$return['html']    = $t->raw;
+		}
+
+		wp_send_json( $return );
 
 	}
 
