@@ -365,7 +365,7 @@ mailster = (function (mailster, $, window, document) {
 		h = h || imageheight.val() || Math.round(w / 1.6);
 		c = typeof c == 'undefined' ? imagecrop.prop(':checked') : c;
 		o = typeof o == 'undefined' ? original.prop(':checked') : o;
-		if (/^\{([a-z0-9-_,;:|~]+)\}$/.test(val)) {
+		if (/^\{(.+)\}$/.test(val)) {
 			var f = factor.val();
 			val = mailster.ajaxurl + '?action=mailster_image_placeholder&tag=' + val.replace('{', '').replace('}', '') + '&w=' + Math.abs(w) + '&h=' + Math.abs(h) + '&c=' + (c ? 1 : 0) + '&o=' + (o ? 1 : 0) + '&f=' + f;
 		}
