@@ -256,24 +256,13 @@ class MailsterHelper {
 	 */
 	public function install_plugin( $plugin ) {
 
-		$plugins     = array_keys( get_plugins() );
-		$pluginslugs = preg_replace( '/^(.*)\/.*$/', '$1', $plugins );
-
 		include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+		include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 
 		$api = plugins_api( 'plugin_information', array( 'slug' => $plugin ) );
-
-		$title        = esc_html__( 'Plugin Install', 'mailster' );
-		$parent_file  = 'plugins.php';
-		$submenu_file = 'plugin-install.php';
-
-		$title = sprintf( esc_html__( 'Installing Plugin: %s', 'mailster' ), $api->name . ' ' . $api->version );
-		$nonce = 'install-plugin_' . $plugin;
-		$url   = 'update.php?action=install-plugin&plugin=' . urlencode( $plugin );
-
-		$type = 'web'; // Install plugin type, From Web or an Upload.
-
-		include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		if ( is_wp_error( $api ) ) {
+			return $api;
+		}
 
 		$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
 		return $upgrader->install( $api->download_link );
