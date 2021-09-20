@@ -187,6 +187,17 @@ Get professional development help from our expert support partner *Codeable* for
 
 == Changelog ==
 
+= 3.0.1 =
+
+* added: editing templates on the templates page is back
+* fixed: mergetags now work correctly in image URL field if fallback is present
+* fixed: draft campaigns can now get duplicated
+* fixed: install plugins on addon page is working
+* fixed: problem if PHPMailer is loaded in another plugin
+* fixed: installed templates were not access able when no required Mailster version was set
+* improved upgrade process from 2.4.x
+* smaller bug fixes
+
 = 3.0 =
 
 * new: Test the Email Quality with the built in Pre-check Feature.
