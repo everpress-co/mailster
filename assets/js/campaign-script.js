@@ -1214,7 +1214,7 @@ mailster = (function (mailster, $, window, document) {
 
 				loader(false);
 				$this.prop('disabled', false);
-				mailster.util.tempMsg(rtextStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $this.parent());
+				mailster.util.tempMsg(textStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $this.parent());
 
 			})
 		})
@@ -1503,7 +1503,7 @@ mailster = (function (mailster, $, window, document) {
 					mailster.util.tempMsg(response.msg, (!response.success ? 'error' : 'updated'), $('.create-new-list-wrap'));
 				}, function (jqXHR, textStatus, errorThrown) {
 					loader(false);
-					mailster.util.tempMsg(rtextStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $('.create-new-list-wrap'));
+					mailster.util.tempMsg(textStatus + ' ' + jqXHR.status + ': ' + errorThrown, 'error', $('.create-new-list-wrap'));
 				});
 			}
 

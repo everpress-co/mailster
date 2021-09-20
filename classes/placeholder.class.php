@@ -818,6 +818,8 @@ class MailsterPlaceholder {
 									$src = array( $src, $width, $height );
 								}
 								$org_src = $src;
+							} else {
+								$org_src = array( '{' . $query['tag'] . '}', $width, $height );
 							}
 						}
 

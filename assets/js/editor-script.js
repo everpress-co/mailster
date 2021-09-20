@@ -33,7 +33,7 @@ mailster = (function (mailster, $, window, document) {
 				event.preventDefault();
 			})
 			.on('click', function (event) {
-				mailster.modules.selected && mailster.modules.selected.removeAttr('selected');
+				mailster.modules.selected && mailster.modules.selected.removeAttr('active');
 			})
 			.on('click', 'module', function (event) {
 				if ('MODULE' == event.target.nodeName) {
@@ -113,7 +113,7 @@ mailster = (function (mailster, $, window, document) {
 
 		clone.find('.mce-tinymce, .mce-widget, .mce-toolbar-grp, .mce-container, .screen-reader-text, .ui-helper-hidden-accessible, .wplink-autocomplete, modulebuttons, mailster, #mailster-editorimage-upload-button, button, .a11y-speak-intro-text').remove();
 
-		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class selected');
+		clone.find('single, multi, module, modules, buttons').removeAttr('contenteditable spellcheck id dir style class active');
 		content = mailster.util.trim(clone.html().replace(/\u200c/g, '&zwnj;').replace(/\u200d/g, '&zwj;'));
 
 		bodyattributes = body.attributes || [];
@@ -642,10 +642,10 @@ mailster = (function (mailster, $, window, document) {
 			return;
 		}
 		if (mailster.modules.selected) {
-			mailster.modules.selected.removeAttr('selected');
+			mailster.modules.selected.removeAttr('active');
 		}
 		mailster.modules.selected = module;
-		mailster.modules.selected.attr('selected', true);
+		mailster.modules.selected.attr('active', true);
 	}
 
 	function upload() {

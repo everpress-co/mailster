@@ -33,7 +33,6 @@ class MailsterTemplates {
 		'author'           => null,
 		'author_profile'   => null,
 		'requires'         => '3.0',
-		'requires'         => MAILSTER_VERSION,
 		'is_default'       => null,
 		'is_supported'     => null,
 		'author_profile'   => null,
@@ -725,6 +724,13 @@ class MailsterTemplates {
 		wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 		wp_enqueue_script( 'mailster-templates', MAILSTER_URI . 'assets/js/templates-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
+		if ( function_exists( 'wp_enqueue_code_editor' ) ) {
+			wp_enqueue_code_editor( array( 'type' => 'htmlmixed' ) );
+		} else {
+			wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
+			wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
+		}
+
 		mailster_localize_script(
 			'templates',
 			array(
@@ -738,6 +744,7 @@ class MailsterTemplates {
 				'confirm_delete'       => esc_html__( 'You are about to delete this template %s.', 'mailster' ),
 				'confirm_delete_file'  => esc_html__( 'You are about to delete file %1$s from template %2$s.', 'mailster' ),
 				'confirm_default'      => esc_html__( 'You are about to make %s your default template.', 'mailster' ),
+				'editing'              => esc_html__( 'Editing template file %1$s for %2$s', 'mailster' ),
 				'update_note'          => esc_html__( 'You are about to update your exiting template files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Old template files will be preserved in the templates folder.', 'mailster' ),
 			)
 		);

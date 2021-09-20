@@ -95,6 +95,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	height: 570px;
 	font-family: "Courier New",Courier,monospace;
 	background-image: url(../img/pre_bg.png);
+	background-size: 100% 36px;
 	background-attachment: scroll;
 	overflow: auto;
 	line-height: 19px;
@@ -1283,17 +1284,17 @@ a.mailster-btn.editbutton {
 	display: block;
 }
 .CodeMirror {
-  font-family: monospace;
-  color: black;
-  height: auto;
-  width: 100%;
-  direction: ltr;
-  border: 1px solid #CCD0D4;
-
+	font-family: monospace;
+	color: black;
+	height: auto;
+	width: 100%;
+	direction: ltr;
+	border: 1px solid #CCD0D4;
 }
 .CodeMirror-code {
-  background-image:url(../img/pre_bg.png);
-  background-attachment:scroll;
+	background-image:url(../img/pre_bg.png);
+	background-size: 100% 36px;
+	background-attachment:scroll;
 }
 
 .dark-mode #mailster_template a.toggle-modules{

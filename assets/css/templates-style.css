@@ -178,6 +178,8 @@
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 20px 20px;
+}
+.theme-overlay.loading .theme-screenshots{
 	background-image: url(../img/loading.gif) !important;
 }
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
@@ -185,8 +187,7 @@
 	only screen and (min--moz-device-pixel-ratio: 1.5),
 	only screen and (min-device-pixel-ratio: 1.5) {
 
-
-	.theme-overlay .theme-screenshots{
+	.theme-overlay.loading .theme-screenshots{
 		background-image: url(../img/loading_2x.gif) !important;
 	}
 }
@@ -260,7 +261,16 @@
 .wp-core-ui .theme-overlay.is-installed .button.default{
 	display: inline-block;
 }
+.wp-core-ui .theme-overlay.is-installed .button.edit{
+	display: inline-block;
+}
 .wp-core-ui .theme-overlay.is-installed .button.campaign{
+	display: inline-block;
+}
+.wp-core-ui .theme-overlay.is-installed.is-editor .button{
+	display: none;
+}
+.wp-core-ui .theme-overlay.is-installed.is-editor .button.save{
 	display: inline-block;
 }
 .wp-core-ui .theme-overlay.is-installed .button.buy{
@@ -271,6 +281,44 @@
 }
 .wp-core-ui .theme-overlay.is-default .button.default{
 	display: none;
+}
+.wp-core-ui .theme-overlay .codeeditor{
+	display: none;
+}
+.wp-core-ui .theme-overlay .codeeditor h3{
+	padding: 20px;
+	margin: 0;
+	text-align: left;
+}
+.wp-core-ui .theme-overlay .codeeditor .CodeMirror {
+	font-family: monospace;
+	color: black;
+	height: 100%;
+	width: 100%;
+	direction: ltr;
+}
+.wp-core-ui .theme-overlay .codeeditor .CodeMirror-code {
+	background-image:url(../img/pre_bg.png);
+	background-size: 100% 36px;
+	background-position: 0 1px;
+	background-attachment:scroll;
+}
+.wp-core-ui .theme-overlay.is-editor .codeeditor{
+	display: block;
+}
+.wp-core-ui .theme-overlay.is-editor iframe{
+	display: none;
+}
+.wp-core-ui .theme-overlay.is-editor .theme-screenshots{
+	width: 100%;
+	max-width: none;
+}
+.wp-core-ui .theme-overlay.is-editor .theme-info{
+	display: none;
+	width: 0%;
+}
+.wp-core-ui .theme-overlay.is-editor .screenshot:after{
+	padding-top: 0;
 }
 
 

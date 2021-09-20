@@ -159,14 +159,14 @@ class MailsterTemplate {
 		$doc->formatOutput    = true;
 
 		if ( file_exists( $file ) ) {
-			$data = file_get_contents( $file );
-			$data = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $data );
+			$raw = file_get_contents( $file );
+			$raw = str_replace( '//dummy.newsletter-plugin.com/', '//dummy.mailster.co/', $raw );
 		} else {
-			$data = '{headline}<br>{content}';
+			$raw = '{headline}<br>{content}';
 		}
 
 		$i_error = libxml_use_internal_errors( true );
-		$doc->loadHTML( $data );
+		$doc->loadHTML( $raw );
 		libxml_clear_errors();
 		libxml_use_internal_errors( $i_error );
 
@@ -321,11 +321,9 @@ class MailsterTemplate {
 			}
 		}
 
-		$raw  = $doc->saveHTML();
-		$data = $this->get_template_data( $file );
-		if ( $data && $data['name'] ) {
-			$raw        = preg_replace( '#<!--(.*?)-->#s', '', $raw, 1 );
-			$this->data = $data;
+		$template_data = $this->get_template_data( $file );
+		if ( $template_data && $template_data['name'] ) {
+			$this->data = $template_data;
 		}
 
 		$this->slug   = $slug;

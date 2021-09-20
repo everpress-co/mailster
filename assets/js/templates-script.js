@@ -119,7 +119,11 @@ mailster = (function (mailster, $, window, document) {
 			closebtn = overlay.find('.close'),
 			defaultbtn = overlay.find('.default'),
 			campaignbtn = overlay.find('.campaign'),
+			editbtn = overlay.find('.edit'),
+			savebtn = overlay.find('.save'),
 			deletebtn = overlay.find('.delete-theme'),
+			codeeditor,
+			codecontent = overlay.find('.codeeditor textarea'),
 			data = {};
 
 		var open = function (template) {
@@ -127,6 +131,7 @@ mailster = (function (mailster, $, window, document) {
 					template = $('[data-slug="' + template + '"]');
 				}
 				if (!template || !template.length) return false;
+				overlay.addClass('loading');
 				overlay.find('.theme-screenshots img').hide();
 				overlay.find('.theme-screenshots iframe').hide();
 				overlay.removeAttr('class');
@@ -164,7 +169,6 @@ mailster = (function (mailster, $, window, document) {
 				nextbtn.prop('disabled', !nextTemplate.length)[!nextTemplate.length ? 'addClass' : 'removeClass']('disabled');
 				overlay.show();
 				setQueryStringParameter('template', data.slug);
-				overlay.removeClass('loading');
 			},
 
 			close = function () {
@@ -232,9 +236,66 @@ mailster = (function (mailster, $, window, document) {
 				return false;
 			},
 
+			edit = function () {
+
+				mailster.util.ajax(
+					'load_template_file', {
+						template: data.slug,
+						file: overlay.find('.theme-file-selector').val()
+					},
+					function (response) {
+
+						overlay.addClass('is-editor');
+						overlay.find('.codeeditor h3').html(mailster.util.sprintf(mailster.l10n.templates.editing, overlay.find('.theme-file-selector').val(), '"' + data.name + '"'));
+						$('.CodeMirror').remove();
+						codecontent.val(response.html);
+						if (wp.codeEditor) {
+							codeeditor = wp.codeEditor.initialize(codecontent, {
+								codemirror: mailster.util.codemirrorargs
+							});
+						} else {
+							codeeditor = {
+								codemirror: window.CodeMirror.fromTextArea(codecontent.get(0), mailster.util.codemirrorargs)
+							};
+						}
+
+					},
+					function (jqXHR, textStatus, errorThrown) {}
+				);
+
+				return false;
+			},
+
+			save = function () {
+
+				mailster.util.ajax(
+					'set_template_html', {
+						content: codeeditor.codemirror.getValue(),
+						slug: data.slug,
+						file: overlay.find('.theme-file-selector').val()
+					},
+					function (response) {
+
+						overlay.removeClass('is-editor');
+						$('.CodeMirror').remove();
+						codecontent.val('');
+						overlay.find('.theme-screenshots iframe').attr('src', overlay.find('.theme-screenshots iframe').attr('src'));
+
+					},
+					function (jqXHR, textStatus, errorThrown) {}
+				);
+
+
+				return false;
+			},
+
 			file = function () {
 
+				overlay.addClass('loading');
 				overlay.find('.theme-screenshots iframe').attr('src', data.files[$(this).val()].src);
+				if (overlay.is('.is-editor')) {
+					edit();
+				}
 
 			},
 
@@ -245,8 +306,15 @@ mailster = (function (mailster, $, window, document) {
 				deletebtn.on('click', remove);
 				defaultbtn.on('click', makedefault);
 				campaignbtn.on('click', campaign);
+				editbtn.on('click', edit);
+				savebtn.on('click', save);
 				overlay.on('change', '.theme-file-selector', file);
+				overlay.on('click', '.theme-description a', function (event) {
+					event.preventDefault();
+					window.open(this.href);
+					return false;
 
+				});
 				overlay.find('.theme-screenshots iframe').on('load', function () {
 					overlay.removeClass('loading');
 				})
