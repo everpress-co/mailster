@@ -86,8 +86,6 @@
 
 			var a = select('core/editor').getEditedPostAttribute('meta');
 
-			console.log(a);
-
 			return [
 				el(PluginDocumentSettingPanel, {
 						title: __('Options', 'mailster'),

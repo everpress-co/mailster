@@ -42,17 +42,6 @@ class MailsterForms {
 	}
 
 
-	public function meta_boxes() {
-		add_meta_box( 'mailster_form_asd', 'mailster_form_asd', array( &$this, 'meta_box_asd' ), 'newsletter_form', 'side', 'default', null );
-		add_meta_box( 'mailster_form_asd2', 'mailster_form_asd2', array( &$this, 'meta_box_asd' ), 'newsletter_form', 'side', 'default', null );
-	}
-
-	public function meta_box_asd() {
-
-		echo 'Asdasd';
-	}
-
-
 	public function allowed_block_types( $allowed_block_types, $post ) {
 
 		if ( 'newsletter_form' != get_post_type( $post ) ) {
@@ -135,7 +124,6 @@ class MailsterForms {
 			'rewrite'              => false,
 			'capabilities'         => $capabilities,
 			'show_in_rest'         => true,
-			'register_meta_box_cb' => array( $this, 'meta_boxes' ),
 		);
 		register_post_type( 'newsletter_form', $args );
 
