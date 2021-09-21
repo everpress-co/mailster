@@ -9,20 +9,24 @@ class MailsterBlocks {
 		if ( ! function_exists( 'register_block_type' ) ) {
 			return;
 		}
-		add_action( 'init', array( &$this, 'register_blocks' ) );
+		add_action( 'plugins_loaded', array( &$this, 'register_blocks' ) );
+		add_action( 'admin_enqueue_scripts', array( &$this, 'block_script_styles' ) );
 		// add_action( 'block_categories', array( &$this, 'block_categories' ), 10, 2 );
-		// add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 10, 2 );	}
-		//
+
+		if ( function_exists( 'get_allowed_block_types' ) ) {
+			add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ) );
+		} else {
+			add_filter( 'allowed_block_types', array( &$this, 'allowed_block_types' ) );
+		}
 	}
 
-	public function allowed_block_types( $allowed_block_types, $post ) {
+	public function allowed_block_types( $allowed_block_types ) {
 
-		if ( 'newsletter_form' != get_post_type( $post ) ) {
+		if ( 'newsletter_form' != get_post_type() ) {
 			return $allowed_block_types;
-
 		}
 
-		return array( 'mailster/form', 'mailster/field-firstname', 'mailster/field-lastname' );
+		return array( 'mailster/input', 'core/_archives', 'core/_audio', 'core/button', 'core/_categories', 'core/code', 'core/column', 'core/columns', 'core/coverImage', 'core/_embed', 'core/_file', 'core/freeform', 'core/_gallery', 'core/heading', 'core/html', 'core/image', 'core/_latestComments', 'core/_latestPosts', 'core/_list', 'core/_more', 'core/nextpage', 'core/paragraph', 'core/preformatted', 'core/pullquote', 'core/quote', 'core/_reusableBlock', 'core/separator', 'core/shortcode', 'core/spacer', 'core/subhead', 'core/table', 'core/textColumns', 'core/verse', 'core/video' );
 
 	}
 
@@ -39,7 +43,22 @@ class MailsterBlocks {
 		);
 	}
 
+	public function block_script_styles() {
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_register_script( 'mailster-form-detail', MAILSTER_URI . 'assets/js/form-script' . $suffix . '.js', array( 'mailster-script', 'jquery' ), MAILSTER_VERSION );
+
+		wp_register_script( 'mailster-form-block-editor', MAILSTER_URI . 'assets/js/blocks' . $suffix . '.js', array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+	}
+
 	public function register_blocks() {
+
+		// register_block_type( 'mailster/base', [
+		// 'editor_script' => 'mailster-form-detail',
+		// ] );
+
+		require_once MAILSTER_DIR . 'blocks/base.php';
+		require_once MAILSTER_DIR . 'blocks/input.php';
 
 		return;
 

@@ -12,7 +12,6 @@ class MailsterForms {
 		add_action( 'init', array( &$this, 'post_type_template' ) );
 		add_action( 'after_setup_theme', array( &$this, 'remove_editor_styles' ), 9999 );
 		add_action( 'admin_enqueue_scripts', array( &$this, 'block_script_styles' ) );
-		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 10, 2 );
 
 	}
 
@@ -42,16 +41,6 @@ class MailsterForms {
 	}
 
 
-	public function allowed_block_types( $allowed_block_types, $post ) {
-
-		if ( 'newsletter_form' != get_post_type( $post ) ) {
-			return $allowed_block_types;
-
-		}
-
-		return array( 'mailster/form', 'mailster/field-firstname', 'mailster/field-lastname' );
-
-	}
 
 	public function remove_editor_styles() {
 
@@ -107,23 +96,23 @@ class MailsterForms {
 			'read_private_posts' => 'mailster_read_private_forms',
 		);
 		$args         = array(
-			'label'                => __( 'Form', 'mailster' ),
-			'description'          => __( 'Newsletter Form', 'mailster' ),
-			'labels'               => $labels,
-			'supports'             => array( 'title', 'editor', 'revisions', 'custom-fields' ),
-			'hierarchical'         => true,
-			'public'               => false,
-			'show_ui'              => true,
-			'show_in_menu'         => 'edit.php?post_type=newsletter',
-			'show_in_admin_bar'    => false,
-			'show_in_nav_menus'    => true,
-			'can_export'           => false,
-			'has_archive'          => false,
-			'exclude_from_search'  => true,
-			'publicly_queryable'   => false,
-			'rewrite'              => false,
-			'capabilities'         => $capabilities,
-			'show_in_rest'         => true,
+			'label'               => __( 'Form', 'mailster' ),
+			'description'         => __( 'Newsletter Form', 'mailster' ),
+			'labels'              => $labels,
+			'supports'            => array( 'title', 'editor', 'revisions', 'custom-fields' ),
+			'hierarchical'        => true,
+			'public'              => false,
+			'show_ui'             => true,
+			'show_in_menu'        => 'edit.php?post_type=newsletter',
+			'show_in_admin_bar'   => false,
+			'show_in_nav_menus'   => true,
+			'can_export'          => false,
+			'has_archive'         => false,
+			'exclude_from_search' => true,
+			'publicly_queryable'  => false,
+			'rewrite'             => false,
+			'capabilities'        => $capabilities,
+			'show_in_rest'        => true,
 		);
 		register_post_type( 'newsletter_form', $args );
 
@@ -389,11 +378,8 @@ class MailsterForms {
 
 		if ( 'post-new.php' == $hook || 'post.php' == $hook ) {
 
-			$suffix = SCRIPT_DEBUG ? '' : '.min';
-
-			wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . 'assets/js/blocks' . $suffix . '.js', array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
-			wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
-			wp_enqueue_style( 'mailster-form-block', MAILSTER_URI . 'assets/css/blocks-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+			// wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
+			// wp_enqueue_style( 'mailster-form-block', MAILSTER_URI . 'assets/css/blocks-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 		}
 
