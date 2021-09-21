@@ -234,6 +234,7 @@ div.mainnav li a{
 }
 textarea.code {
 	background-image: url(../img/pre_bg.png);
+	background-size: 100% 36px;
 	background-attachment: scroll;
 	background-position: 0 2px;
 	line-height: 19px;

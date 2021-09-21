@@ -141,7 +141,7 @@ modulebuttons {
 module.ui-sortable-fly-over modulebuttons button{
 	pointer-events: none;
 }
-module[selected] modulebuttons{
+module[active] modulebuttons{
 	transform: translateY(-35px);
 }
 [mailster-is-rtl] modulebuttons {
@@ -184,7 +184,7 @@ modulebuttons input.modulelabel {
 	margin: 0;
 	text-align: right;
 }
-module[selected] input.modulelabel {
+module[active] input.modulelabel {
 }
 [mailster-is-rtl] modulebuttons input.modulelabel {
 	float: right;
@@ -216,19 +216,19 @@ elseif {
 else {
 	color: #ccc;
 }
-module:hover, module[selected] {
+module:hover, module[active] {
 	background-color: rgba(43, 179, 231, 0.1);
 	box-shadow: 0px 0px 0px 2px rgba(43, 179, 231, 0.8);
 	z-index: 9100;
 }
-module[selected] {
+module[active] {
 	background-color: rgba(43, 179, 231, 0.2);
 }
 module:hover [area]{
 	outline:1px dotted #2BB3E7;
 }
 module[label]:before,
-module[label][selected]:before,
+module[label][active]:before,
 multi[label]:before,
 single[label]:before,
 img[editable][label]:before,
@@ -236,7 +236,7 @@ a[editable][label]:before,
 td[background][label]:before,
 th[background][label]:before,
 module[data-rss]:after,
-module[data-rss][selected]:after {
+module[data-rss][active]:after {
 	content: attr(label);
 	display: block;
 	opacity: 0;
@@ -269,7 +269,7 @@ th[background][label]:before{
 	display: inline-block;
 }
 [mailster-is-rtl] module[label]:before,
-[mailster-is-rtl] module[label][selected]:before,
+[mailster-is-rtl] module[label][active]:before,
 [mailster-is-rtl] multi[label]:before,
 [mailster-is-rtl] single[label]:before,
 [mailster-is-rtl] img[editable][label]:before,
@@ -277,7 +277,7 @@ th[background][label]:before{
 [mailster-is-rtl] td[background][label]:before,
 [mailster-is-rtl] th[background][label]:before,
 [mailster-is-rtl] module[data-rss]:before,
-[mailster-is-rtl] module[data-rss][selected]:before,
+[mailster-is-rtl] module[data-rss][active]:before,
 [mailster-is-rtl] multi[data-rss]:before,
 [mailster-is-rtl] single[data-rss]:before,
 [mailster-is-rtl] img[editable][data-rss]:before,
@@ -290,13 +290,13 @@ th[background][label]:before{
 	right: 0;
 }
 module[data-rss]:after,
-module[data-rss][selected]:after{
+module[data-rss][active]:after{
 	content:"RSS: " attr(data-rss);
 	top: 18px;
 	z-index: 100;
 }
 module[label]:hover:before,
-module[label][selected]:before,
+module[label][active]:before,
 multi[label]:hover:before,
 single[label]:hover:before,
 img[editable][label]:hover:before,
@@ -304,14 +304,14 @@ a[editable][label]:hover:before,
 td[background][label]:hover:before,
 th[background][label]:hover:before,
 module[data-rss]:hover:after,
-module[data-rss][selected]:after{
+module[data-rss][active]:after{
 	-webkit-transform: translate(-2px, -17px);
 	-ms-transform: translate(-2px, -17px);
 	transform: translate(-2px, -17px);
 	opacity: 1;
 }
 [mailster-is-rtl] module[label]:hover:before,
-[mailster-is-rtl] module[label][selected]:before,
+[mailster-is-rtl] module[label][active]:before,
 [mailster-is-rtl] multi[label]:hover:before,
 [mailster-is-rtl] single[label]:hover:before,
 [mailster-is-rtl] img[editable][label]:hover:before,
@@ -319,7 +319,7 @@ module[data-rss][selected]:after{
 [mailster-is-rtl] td[background][label]:hover:before,
 [mailster-is-rtl] th[background][label]:hover:before,
 [mailster-is-rtl] module[data-rss]:hover:after,
-[mailster-is-rtl] module[data-rss][selected]:after {
+[mailster-is-rtl] module[data-rss][active]:after {
 	-webkit-transform: translate(2px, -17px);
 	-ms-transform: translate(2px, -17px);
 	transform: translate(2px, -17px);
@@ -336,23 +336,23 @@ module[data-rss]:after {
 	-ms-transform: translate(6px, -1px);
 	transform: translate(6px, -1px);
 }
-module[label]:hover:before, module[label][selected]:before,
-module[data-rss]:hover:after, module[data-rss][selected]:after {
+module[label]:hover:before, module[label][active]:before,
+module[data-rss]:hover:after, module[data-rss][active]:after {
 	opacity: 0.9;
 	-webkit-transform: translate(-1px, -1px);
 	-ms-transform: translate(-1px, -1px);
 	transform: translate(-1px, -1px);
 }
-[mailster-is-rtl] module[label]:hover:before, [mailster-is-rtl] module[label][selected]:before,
-[mailster-is-rtl] module[data-rss]:hover:after, [mailster-is-rtl] module[data-rss][selected]:after {
+[mailster-is-rtl] module[label]:hover:before, [mailster-is-rtl] module[label][active]:before,
+[mailster-is-rtl] module[data-rss]:hover:after, [mailster-is-rtl] module[data-rss][active]:after {
 	-webkit-transform: translate(1px, -1px);
 	-ms-transform: translate(1px, -1px);
 	transform: translate(1px, -1px);
 }
-module:hover modulebuttons,module[selected] modulebuttons,.ie module modulebuttons {
+module:hover modulebuttons,module[active] modulebuttons,.ie module modulebuttons {
 	opacity: 1;
 }
-[mailster-is-rtl] module:hover modulebuttons, [mailster-is-rtl] module[selected] modulebuttons {
+[mailster-is-rtl] module:hover modulebuttons, [mailster-is-rtl] module[active] modulebuttons {
 	right: inherit;
 }
 module:first-child modulebuttons button.up, module:last-child modulebuttons button.down {
@@ -514,11 +514,11 @@ body.drag-active modules dropzone.visible{
 	line-height: 80px;
 	opacity: 0.6;
 }
-body.drag-active modules module:hover, body.drag-active modules module[selected] {
+body.drag-active modules module:hover, body.drag-active modules module[active] {
 	box-shadow: none;
 	background-image: none;
 }
-body.drag-active modules module:hover modulebuttons, body.drag-active modules module[selected] modulebuttons, body.drag-active.ie modules module modulebuttons {
+body.drag-active modules module:hover modulebuttons, body.drag-active modules module[active] modulebuttons, body.drag-active.ie modules module modulebuttons {
 	display: none;
 }
 modules.ui-sortable module{
