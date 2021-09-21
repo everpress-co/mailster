@@ -42,6 +42,17 @@ class MailsterForms {
 	}
 
 
+	public function meta_boxes() {
+		add_meta_box( 'mailster_form_asd', 'mailster_form_asd', array( &$this, 'meta_box_asd' ), 'newsletter_form', 'side', 'default', null );
+		add_meta_box( 'mailster_form_asd2', 'mailster_form_asd2', array( &$this, 'meta_box_asd' ), 'newsletter_form', 'side', 'default', null );
+	}
+
+	public function meta_box_asd() {
+
+		echo 'Asdasd';
+	}
+
+
 	public function allowed_block_types( $allowed_block_types, $post ) {
 
 		if ( 'newsletter_form' != get_post_type( $post ) ) {
@@ -107,23 +118,24 @@ class MailsterForms {
 			'read_private_posts' => 'mailster_read_private_forms',
 		);
 		$args         = array(
-			'label'               => __( 'Form', 'mailster' ),
-			'description'         => __( 'Newsletter Form', 'mailster' ),
-			'labels'              => $labels,
-			'supports'            => array( 'title', 'editor', 'revisions', 'custom-fields' ),
-			'hierarchical'        => true,
-			'public'              => false,
-			'show_ui'             => true,
-			'show_in_menu'        => 'edit.php?post_type=newsletter',
-			'show_in_admin_bar'   => false,
-			'show_in_nav_menus'   => true,
-			'can_export'          => false,
-			'has_archive'         => false,
-			'exclude_from_search' => true,
-			'publicly_queryable'  => false,
-			'rewrite'             => false,
-			'capabilities'        => $capabilities,
-			'show_in_rest'        => true,
+			'label'                => __( 'Form', 'mailster' ),
+			'description'          => __( 'Newsletter Form', 'mailster' ),
+			'labels'               => $labels,
+			'supports'             => array( 'title', 'editor', 'revisions', 'custom-fields' ),
+			'hierarchical'         => true,
+			'public'               => false,
+			'show_ui'              => true,
+			'show_in_menu'         => 'edit.php?post_type=newsletter',
+			'show_in_admin_bar'    => false,
+			'show_in_nav_menus'    => true,
+			'can_export'           => false,
+			'has_archive'          => false,
+			'exclude_from_search'  => true,
+			'publicly_queryable'   => false,
+			'rewrite'              => false,
+			'capabilities'         => $capabilities,
+			'show_in_rest'         => true,
+			'register_meta_box_cb' => array( $this, 'meta_boxes' ),
 		);
 		register_post_type( 'newsletter_form', $args );
 
@@ -155,8 +167,16 @@ class MailsterForms {
 
 	public function register_post_meta() {
 
-		$lists       = mailster( 'lists' )->get_simple();
-		$lists_order = array_keys( $lists );
+		// register_meta( 'newsletter_form', 'prefill', array(
+		// 'auth_callback' => '__return_true',
+		// 'show_in_rest' => true,
+		// 'type'         => 'boolean',
+		// 'sanitize_callback' => 'sanitize_text_field',
+		// 'single'       => true,
+		// 'default'      => true,
+		// ) );
+
+		// $lists       = mailster( 'lists' )->get_simple();
 
 		$form_attributes = array(
 			'formColor'      => '',
@@ -192,8 +212,8 @@ class MailsterForms {
 			'successMessage' => mailster_text( 'success' ),
 			'errorMessage'   => mailster_text( 'error' ),
 			'lists_selected' => array( 3 ),
-			'lists_order'    => $lists_order,
-			'lists'          => $lists,
+			// 'lists_order'    => $lists_order,
+			// 'lists'          => $lists,
 			'lists_a'        => array(),
 		);
 
@@ -212,10 +232,12 @@ class MailsterForms {
 			}
 
 			$args = array(
-				'show_in_rest' => $show_in_rest,
-				'type'         => gettype( $value ),
-				'single'       => true,
-				'default'      => $value,
+				'auth_callback'     => '__return_true',
+				'show_in_rest'      => $show_in_rest,
+				'type'              => gettype( $value ),
+				'sanitize_callback' => 'sanitize_text_field',
+				'single'            => true,
+				'default'           => $value,
 			);
 
 			register_post_meta( 'newsletter_form', $key, $args );
@@ -381,7 +403,7 @@ class MailsterForms {
 
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-			wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . 'assets/js/blocks' . $suffix . '.js', array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins' ), MAILSTER_VERSION );
+			wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . 'assets/js/blocks' . $suffix . '.js', array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
 			wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_style( 'mailster-form-block', MAILSTER_URI . 'assets/css/blocks-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 

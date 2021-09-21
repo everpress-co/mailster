@@ -4,14 +4,16 @@ class MailsterBlocks {
 
 	private $blocks = array( 'input' );
 
-public function __construct() {
+	public function __construct() {
 
-	if ( ! function_exists( 'register_block_type' ) ) {
-		return;
+		if ( ! function_exists( 'register_block_type' ) ) {
+			return;
+		}
+		add_action( 'init', array( &$this, 'register_blocks' ) );
+		// add_action( 'block_categories', array( &$this, 'block_categories' ), 10, 2 );
+		// add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 10, 2 );	}
+		//
 	}
-	add_action( 'init', array( &$this, 'register_blocks' ) );
-	// add_action( 'block_categories', array( &$this, 'block_categories' ), 10, 2 );
-	// add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 10, 2 );	}
 
 	public function allowed_block_types( $allowed_block_types, $post ) {
 
