@@ -53,6 +53,35 @@ class MailsterUpdate {
 	}
 
 
+	public function ask_for_auto_update() {
+
+		if ( ! $this->is_auto_update() && mailster()->is_verified() ) {
+
+			$query_args = array(
+				'action' => 'enable-auto-update',
+				'plugin' => MAILSTER_SLUG,
+				's'      => MAILSTER_SLUG,
+			);
+
+			$url = add_query_arg( $query_args, 'plugins.php' );
+
+			$link = sprintf( '<a href="%s" class="button button-primary">%s</a>', wp_nonce_url( $url, 'updates' ), esc_html__( 'Enable Auto Updates for Mailster', 'mailster' ) );
+
+			mailster_notice( '<p><strong>' . esc_html__( 'Automatic Updates are not enabled for Mailster!', 'mailster' ) . '</strong></p>' . $link, 'info', 20, 'ask_for_auto_update' );
+
+		}
+
+	}
+
+	public function is_auto_update() {
+
+		$auto_updates = (array) get_site_option( 'auto_update_plugins', array() );
+
+		return function_exists( 'wp_ajax_toggle_auto_updates' ) && in_array( MAILSTER_SLUG, array( $auto_updates ) );
+
+	}
+
+
 	public function tracker( $method = null, $args = array() ) {
 		if ( ! $this->tracker_obj ) {
 
