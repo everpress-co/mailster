@@ -194,7 +194,6 @@ Get professional development help from our expert support partner *Codeable* for
 * improved: database errors during cron tried to get fixed automatically.
 * added: reminder to enable auto updates after a Mailster update.
 
-
 = 3.0.1 =
 
 * added: editing templates on the templates page is back
