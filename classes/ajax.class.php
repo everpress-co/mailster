@@ -595,7 +595,7 @@ class MailsterAjax {
 		$to           = trim( stripslashes( $_POST['to'] ) );
 		$current_user = wp_get_current_user();
 
-		if ( ! empty( $to ) && $to != $current_user->user_email ) {
+		if ( ! empty( $to ) ) {
 			update_user_meta( $current_user->ID, '_mailster_test_email', $to );
 		}
 
@@ -2612,7 +2612,7 @@ class MailsterAjax {
 
 		if ( $t->exists ) {
 			$return['success'] = true;
-			$return['html']    = $t->raw;
+			$return['html']    = $t->get_raw_template( $file );
 		}
 
 		wp_send_json( $return );

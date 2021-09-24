@@ -1054,12 +1054,19 @@ class MailsterSettings {
 					break;
 
 				case 'send_at_once':
-					if ( $old != $value ) {
-						// at least 1
-						$value = max( (int) $value, 1 );
-						if ( $value >= 200 ) {
-							$this->add_settings_error( sprintf( esc_html__( 'sending %s emails at once can cause problems with statistics cause of a server timeout or to much memory usage! You should decrease it if you have problems!', 'mailster' ), number_format_i18n( $value ) ), 'send_at_once' );
+					$value          = max( (int) $value, 1 );
+					$last_hit       = get_option( 'mailster_cron_lasthit' );
+					$interval       = $options['interval'] * MINUTE_IN_SECONDS;
+					$try_per_second = floor( $value / $interval );
+					if ( $last_hit && $last_hit['mail'] ) {
+						$throughput    = $last_hit['mail'];
+						$interval      = $last_hit['timestamp'] - $last_hit['oldtimestamp'];
+						$mails_per_sec = round( 1 / $throughput, 2 );
+						if ( $try_per_second > $mails_per_sec ) {
+							$this->add_settings_error( sprintf( esc_html__( 'You are trying to send %1$s mails per seconds (%2$s within %3$s) but your current throughput rate is %4$s mails per second. ', 'mailster' ), $try_per_second, number_format_i18n( $value ), human_time_diff( time() + round( $interval ) ), $mails_per_sec ) . '<br>' . sprintf( esc_html__( 'Please either lower the %s or increase your Cron Interval.', 'mailster' ), '"' . esc_html( 'Number of mails sent', 'mailster' ) . '"' ), 'send_to_fast' );
 						}
+					} elseif ( $try_per_second > 3 ) {
+						$this->add_settings_error( sprintf( esc_html__( 'You are trying to send %1$s mails per seconds (%2$s every %3$s).', 'mailster' ), $try_per_second, number_format_i18n( $value ), human_time_diff( time() + round( $interval ) ) ) . '<br>' . sprintf( esc_html__( 'Please either lower the %s or increase the Cron Interval.', 'mailster' ), '"' . esc_html( 'Number of mails sent', 'mailster' ) . '"' ), 'send_to_fast' );
 					}
 
 					break;

@@ -326,6 +326,12 @@ class MailsterTemplate {
 			$this->data = $template_data;
 		}
 
+		$raw = $doc->saveHTML();
+		if ( preg_match( '#<!--(.*?)-->#s', $raw, $match ) ) {
+			$header = $match[0];
+			$raw    = $header . "\n" . str_replace( $header, '', $raw );
+		}
+
 		$this->slug   = $slug;
 		$this->doc    = $doc;
 		$this->raw    = $raw;
