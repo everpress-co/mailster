@@ -35,15 +35,15 @@ $currentstep = isset( $_GET['step'] ) ? (int) $_GET['step'] : 1;
 
 <?php if ( 'import' == $currentpage && current_user_can( 'mailster_import_subscribers' ) ) : ?>
 
-	<?php include MAILSTER_DIR.'views/manage/import.php' ?>
+	<?php include MAILSTER_DIR . 'views/manage/import.php'; ?>
 
 <?php elseif ( 'export' == $currentpage && current_user_can( 'mailster_export_subscribers' ) ) : ?>
 
-	<?php include MAILSTER_DIR.'views/manage/export.php' ?>
+	<?php include MAILSTER_DIR . 'views/manage/export.php'; ?>
 
 <?php elseif ( 'delete' == $currentpage && current_user_can( 'mailster_bulk_delete_subscribers' ) ) : ?>
 
-	<?php include MAILSTER_DIR.'views/manage/delete.php' ?>
+	<?php include MAILSTER_DIR . 'views/manage/delete.php'; ?>
 
 <?php else : ?>
 

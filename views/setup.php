@@ -23,6 +23,7 @@ $utm = array(
 	<ol class="mailster-setup-steps-nav">
 		<li><a href="#basics"><?php esc_html_e( 'Basics', 'mailster' ); ?></a></li>
 		<li><a href="#homepage"><?php esc_html_e( 'Homepage', 'mailster' ); ?></a></li>
+		<li><a href="#subscribers"><?php esc_html_e( 'Subscribers', 'mailster' ); ?></a></li>
 		<li><a href="#delivery"><?php esc_html_e( 'Delivery', 'mailster' ); ?></a></li>
 		<li><a href="#privacy"><?php esc_html_e( 'Privacy', 'mailster' ); ?></a></li>
 		<li><a href="#validation"><?php esc_html_e( 'Validation', 'mailster' ); ?></a></li>
@@ -35,7 +36,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_start">
 
-			<h2><?php esc_html_e( 'Welcome to Mailster', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Welcome to Mailster', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -88,7 +89,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_basics">
 
-			<h2><?php esc_html_e( 'Basic Information', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Basic Information', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -178,7 +179,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_homepage">
 
-			<h2><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Newsletter Homepage', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -229,8 +230,30 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
+				<a class="button button-large skip-step" href="#subscribers"><?php esc_html_e( 'Skip this Step', 'mailster' ); ?></a>
+				<a class="button button-large button-primary next-step" href="#subscribers"><?php echo esc_html( $buttontext ); ?></a>
+
+			</div>
+
+		</div>
+
+		<div class="mailster-setup-step" id="step_subscribers">
+
+			<h2 class="section-title"><?php esc_html_e( 'Subscribers', 'mailster' ); ?></h2>
+
+			<div class="mailster-setup-step-body">
+
+				<?php require MAILSTER_DIR . 'views/manage/import.php'; ?>
+
+			</div>
+
+			<div class="mailster-setup-step-buttons">
+
+				<span class="alignleft status"></span>
+				<i class="spinner"></i>
+
 				<a class="button button-large skip-step" href="#delivery"><?php esc_html_e( 'Skip this Step', 'mailster' ); ?></a>
-				<a class="button button-large button-primary next-step" href="#delivery"><?php echo esc_html( $buttontext ); ?></a>
+				<a class="button button-large button-primary next-step" href="#delivery"><?php echo esc_html_e( 'Next Step', 'mailster' ); ?></a>
 
 			</div>
 
@@ -238,7 +261,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_delivery">
 
-			<h2><?php esc_html_e( 'Delivery', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Delivery', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -424,7 +447,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_privacy">
 
-			<h2><?php esc_html_e( 'Privacy', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Privacy', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -454,7 +477,7 @@ $utm = array(
 
 		<div class="mailster-setup-step" id="step_validation">
 
-			<h2><?php esc_html_e( 'Validation', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Validation', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 
@@ -480,7 +503,7 @@ $utm = array(
 
 			<form class="mailster-setup-step-form">
 
-			<h2><?php esc_html_e( 'Great, you\'re done!', 'mailster' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Great, you\'re done!', 'mailster' ); ?></h2>
 
 			<div class="mailster-setup-step-body">
 

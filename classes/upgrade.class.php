@@ -1153,7 +1153,7 @@ class MailsterUpgrade {
 		}
 
 		if ( ! ( $method = get_transient( 'mailster_update_action_table_method_' . $table ) ) ) {
-			$method = 2;
+			$method = 1;
 			set_transient( 'mailster_update_action_table_method_' . $table, $method, HOUR_IN_SECONDS );
 		}
 

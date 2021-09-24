@@ -11,17 +11,38 @@ class MailsterManage {
 
 	public function init() {
 
-		if ( is_admin() ) {
-			add_action( 'admin_menu', array( &$this, 'add_menu' ), 40 );
-			add_action( 'wp_ajax_mailster_import_subscribers_upload_handler', array( &$this, 'ajax_import_subscribers_upload_handler' ) );
-			add_action( 'wp_ajax_mailster_get_import_data', array( &$this, 'ajax_get_import_data' ) );
-			add_action( 'wp_ajax_mailster_do_import', array( &$this, 'ajax_do_import' ) );
-			add_action( 'wp_ajax_mailster_export_contacts', array( &$this, 'ajax_export_contacts' ) );
-			add_action( 'wp_ajax_mailster_do_export', array( &$this, 'ajax_do_export' ) );
-			add_action( 'wp_ajax_mailster_download_export_file', array( &$this, 'ajax_download_export_file' ) );
-			add_action( 'wp_ajax_mailster_delete_contacts', array( &$this, 'ajax_delete_contacts' ) );
-			add_action( 'wp_ajax_mailster_delete_old_bulk_jobs', array( &$this, 'ajax_delete_old_bulk_jobs' ) );
-		}
+		add_action( 'admin_menu', array( &$this, 'add_menu' ), 40 );
+		add_action( 'wp_ajax_mailster_import_subscribers_upload_handler', array( &$this, 'ajax_import_subscribers_upload_handler' ) );
+		add_action( 'wp_ajax_mailster_get_import_data', array( &$this, 'ajax_get_import_data' ) );
+		add_action( 'wp_ajax_mailster_do_import', array( &$this, 'ajax_do_import' ) );
+		add_action( 'wp_ajax_mailster_export_contacts', array( &$this, 'ajax_export_contacts' ) );
+		add_action( 'wp_ajax_mailster_do_export', array( &$this, 'ajax_do_export' ) );
+		add_action( 'wp_ajax_mailster_download_export_file', array( &$this, 'ajax_download_export_file' ) );
+		add_action( 'wp_ajax_mailster_delete_contacts', array( &$this, 'ajax_delete_contacts' ) );
+		add_action( 'wp_ajax_mailster_delete_old_bulk_jobs', array( &$this, 'ajax_delete_old_bulk_jobs' ) );
+
+		add_action( 'mailster_import_method', array( &$this, 'display_import_method' ) );
+
+		add_action( 'admin_init', array( &$this, 'admin_enqueue_scripts' ) );
+
+	}
+
+
+	public function admin_enqueue_scripts() {
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_register_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
+		wp_register_script( 'mailster-import-script', MAILSTER_URI . 'assets/js/import-script' . $suffix . '.js', array( 'mailster-script', 'plupload-all' ), MAILSTER_VERSION, true );
+		wp_register_script( 'mailster-export-script', MAILSTER_URI . 'assets/js/export-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		wp_register_script( 'mailster-delete-script', MAILSTER_URI . 'assets/js/delete-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+
+		wp_register_style( 'mailster-manage-style', MAILSTER_URI . 'assets/css/manage-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+		wp_register_style( 'mailster-import-style', MAILSTER_URI . 'assets/css/import-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_register_style( 'mailster-export-style', MAILSTER_URI . 'assets/css/export-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_register_style( 'mailster-delete-style', MAILSTER_URI . 'assets/css/delete-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 
 	}
 
@@ -38,7 +59,8 @@ class MailsterManage {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		wp_enqueue_script( 'mailster-manage-script' );
+		wp_enqueue_script( 'mailster-import-script' );
 
 		global $wp_locale;
 
@@ -58,8 +80,6 @@ class MailsterManage {
 			array(
 				'select_status'        => esc_html__( 'Please select the status for the importing contacts!', 'mailster' ),
 				'select_emailcolumn'   => esc_html__( 'Please select at least the column with the email addresses!', 'mailster' ),
-				'prepare_data'         => esc_html__( 'Preparing Data', 'mailster' ),
-				'uploading'            => esc_html__( 'Uploading...%s', 'mailster' ),
 				'import_contacts'      => esc_html__( 'Importing Contacts...%s', 'mailster' ),
 				'prepare_import'       => esc_html__( 'Preparing Import...', 'mailster' ),
 				'current_stats'        => esc_html__( 'Currently %1$s of %2$s imported with %3$s errors. %4$s memory usage', 'mailster' ),
@@ -80,15 +100,22 @@ class MailsterManage {
 				'onbeforeunloadexport' => esc_html__( 'Your download is preparing! If you leave this page the progress will abort!', 'mailster' ),
 			)
 		);
+		mailster_localize_script(
+			'import',
+			array(
+				'prepare_data' => esc_html__( 'Preparing Data', 'mailster' ),
+				'uploading'    => esc_html__( 'Uploading...%s', 'mailster' ),
+			)
+		);
 
 		wp_enqueue_style( 'mailster-select2', MAILSTER_URI . 'assets/css/libs/select2' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_enqueue_style( 'mailster-select2-theme', MAILSTER_URI . 'assets/css/select2' . $suffix . '.css', array( 'mailster-select2' ), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
-		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_script( 'jquery-touch-punch' );
-		wp_enqueue_style( 'mailster-manage-style', MAILSTER_URI . 'assets/css/manage-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_style( 'mailster-manage-style' );
+		wp_enqueue_style( 'mailster-import-style' );
 
 		wp_enqueue_style( 'jquery-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css' );
 		wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css' );
@@ -100,9 +127,6 @@ class MailsterManage {
 
 	public function subscriber_manage() {
 
-		remove_action( 'post-plupload-upload-ui', 'media_upload_flash_bypass' );
-		wp_enqueue_script( 'plupload-all' );
-
 		include MAILSTER_DIR . 'views/manage.php';
 	}
 
@@ -113,6 +137,7 @@ class MailsterManage {
 
 		$memory_limit       = ini_get( 'memory_limit' );
 		$max_execution_time = ini_get( 'max_execution_time' );
+		$header             = false;
 
 		set_time_limit( 0 );
 
@@ -181,9 +206,23 @@ class MailsterManage {
 
 			$users = $wpdb->get_results( $sql );
 
-			$raw_data = '<b>' . mailster_text( 'email' ) . '</b>;<b>' . mailster_text( 'firstname' ) . '</b>;<b>' . mailster_text( 'lastname' ) . '</b>;<b>' . esc_html__( 'nickname', 'mailster' ) . '</b>;<b>' . esc_html__( 'display name', 'mailster' ) . '</b>;<b>' . esc_html__( 'registered', 'mailster' ) . '</b>;<b>' . implode( '</b>;<b>', $meta_values ) . "</b>;\n";
+			$header = array_merge(
+				array(
+					mailster_text( 'email' ),
+					mailster_text( 'firstname' ),
+					mailster_text( 'lastname' ),
+					esc_html__( 'nickname', 'mailster' ),
+					esc_html__( 'display name', 'mailster' ),
+					esc_html__( 'registered', 'mailster' ),
+				),
+				$meta_values
+			);
+
+			$raw_data = '';
 
 			foreach ( $users as $user ) {
+
+				$line = '';
 
 				// no role set and roles is a must
 				if ( ! $user->_role && ! $no_role ) {
@@ -201,13 +240,13 @@ class MailsterManage {
 					}
 
 					if ( $key == 'firstname' && ! $data ) {
-						$data = $user->display_name;
+						$line = $user->display_name;
 					}
 
-					$raw_data .= $data . ';';
+					$line .= $data . ';';
 				}
 
-				$raw_data .= "\n";
+				$raw_data .= substr( $line, 0, -1 ) . "\n";
 
 			}
 		} else {
@@ -238,6 +277,7 @@ class MailsterManage {
 			'encoding'  => $encoding,
 			'parts'     => $partcount,
 			'lines'     => count( $lines ),
+			'header'    => $header,
 			'separator' => $this->get_separator( implode( $parts[0] ) ),
 		);
 
@@ -319,6 +359,7 @@ class MailsterManage {
 		$data         = explode( $return['data']['separator'], $first[ count( $first ) - 1 ] );
 		$cols         = count( $data );
 		$contactcount = $return['data']['lines'];
+		$header       = $return['data']['header'];
 
 		$custom_fields = mailster()->get_custom_fields();
 
@@ -354,22 +395,24 @@ class MailsterManage {
 		$html      .= '<thead><tr><td style="width:20px;">#</td>';
 		$emailfield = false;
 		for ( $i = 0; $i < $cols; $i++ ) {
-			$ismail  = mailster_is_email( trim( $data[ $i ] ) );
-			$select  = '<select name="order[]">';
-			$select .= '<option value="-1">' . esc_html__( 'Ignore column', 'mailster' ) . '</option>';
-			$select .= '<option value="-1">----------</option>';
-			$select .= '<optgroup label="' . esc_html__( 'Basic', 'mailster' ) . '">';
+			$ismail     = mailster_is_email( trim( $data[ $i ] ) );
+			$header_col = ( $header && isset( $header[ $i ] ) ) ? $header[ $i ] : '';
+			$select     = '<select name="order[]">';
+			$select    .= '<option value="-1">' . esc_html__( 'Ignore column', 'mailster' ) . '</option>';
+			$select    .= '<option value="-1">----------</option>';
+			$select    .= '<optgroup label="' . esc_html__( 'Basic', 'mailster' ) . '">';
 			foreach ( $fields as $key => $value ) {
 				$is_selected = ( ( $ismail && $key == 'email' && ! $emailfield && $emailfield = true ) ||
-					( strip_tags( $firstline[ $i ] ) == mailster_text( 'firstname' ) && $key == 'firstname' ) ||
-					( strip_tags( $firstline[ $i ] ) == mailster_text( 'lastname' ) && $key == 'lastname' ) );
-				$select     .= '<option value="' . $key . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . $value . '</option>';
+					( strip_tags( $header_col ) == mailster_text( 'firstname' ) && $key == 'firstname' ) ||
+					( strip_tags( $header_col ) == mailster_text( 'lastname' ) && $key == 'lastname' ) );
+
+				$select .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}
 			$select .= '</optgroup>';
 			if ( ! empty( $custom_fields ) ) {
 				$select .= '<optgroup label="' . esc_html__( 'Custom Fields', 'mailster' ) . '">';
 				foreach ( $custom_fields as $key => $d ) {
-					$select .= '<option value="' . $key . '">' . $d['name'] . '</option>';
+					$select .= '<option value="' . esc_attr( $key ) . '">' . $d['name'] . '</option>';
 				}
 				$select .= '</optgroup>';
 			} else {
@@ -379,19 +422,19 @@ class MailsterManage {
 			$select .= '<optgroup label="' . esc_html__( 'Time Options', 'mailster' ) . '">';
 			foreach ( $meta_dates as $key => $value ) {
 				$is_selected = ( ( strip_tags( $firstline[ $i ] ) == esc_html__( 'registered', 'mailster' ) && $key == '_signup' ) );
-				$select     .= '<option value="' . $key . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . $value . '</option>';
+				$select     .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}
 			$select .= '</optgroup>';
 			$select .= '<optgroup label="' . esc_html__( 'IP Options', 'mailster' ) . '">';
 			foreach ( $meta_ips as $key => $value ) {
 				$is_selected = ( ( strip_tags( $firstline[ $i ] ) == esc_html__( 'registered', 'mailster' ) && $key == '_signup' ) );
-				$select     .= '<option value="' . $key . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . $value . '</option>';
+				$select     .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}
 			$select .= '</optgroup>';
 			$select .= '<optgroup label="' . esc_html__( 'Other Meta', 'mailster' ) . '">';
 			foreach ( $meta_other as $key => $value ) {
 				$is_selected = ( ( strip_tags( $firstline[ $i ] ) == esc_html__( 'registered', 'mailster' ) && $key == '_signup' ) );
-				$select     .= '<option value="' . $key . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . $value . '</option>';
+				$select     .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}
 			$select .= '</optgroup>';
 			$select .= '</select>';
@@ -404,7 +447,7 @@ class MailsterManage {
 			$data  = explode( $return['data']['separator'], ( $first[ $i ] ) );
 			$html .= '<tr class="' . ( $i % 2 ? '' : 'alternate' ) . '"><td>' . number_format_i18n( $i + 1 ) . '</td>';
 			foreach ( $data as $cell ) {
-				$html .= '<td title="' . strip_tags( $cell ) . '">' . ( $cell ) . '</td>';
+				$html .= '<td title="' . strip_tags( $cell ) . '">' . esc_html( $cell ) . '</td>';
 			}
 			$html .= '<tr>';
 		}
@@ -414,7 +457,7 @@ class MailsterManage {
 			$data  = explode( $return['data']['separator'], array_pop( $last ) );
 			$html .= '<tr><td>' . number_format_i18n( $contactcount ) . '</td>';
 			foreach ( $data as $cell ) {
-				$html .= '<td title="' . strip_tags( $cell ) . '">' . ( $cell ) . '</td>';
+				$html .= '<td title="' . strip_tags( $cell ) . '">' . esc_html( $cell ) . '</td>';
 			}
 			$html .= '<tr>';
 		}
@@ -428,7 +471,7 @@ class MailsterManage {
 		$lists = mailster( 'lists' )->get( null, null, true );
 		if ( $lists && ! is_wp_error( $lists ) ) {
 			foreach ( $lists as $list ) {
-				$html .= '<li><label><input name="lists[]" value="' . $list->name . '" type="checkbox"> ' . $list->name . ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ')</span></label></li>';
+				$html .= '<li><label><input name="lists[]" value="' . esc_attr( $list->name ) . '" type="checkbox"> ' . esc_html( $list->name ) . ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ')</span></label></li>';
 			}
 		}
 		$html .= '</ul></form>';
@@ -453,7 +496,7 @@ class MailsterManage {
 				continue;
 			}
 
-			$html .= '<label><input type="radio" name="status" value="' . $i . '" ' . checked( 1, $i, false ) . '> ' . $name . ' </label>';
+			$html .= '<label><input type="radio" name="status" value="' . (int) $i . '" ' . checked( 1, $i, false ) . '> ' . esc_html( $name ) . ' </label>';
 		}
 		$html .= '</p>';
 		$html .= '<p class="description">' . esc_html__( 'The status will be applied to contacts if no other is defined via the columns.', 'mailster' ) . '</p>';
@@ -464,7 +507,7 @@ class MailsterManage {
 		$html .= '<p><label><input type="checkbox" id="signup" name="signup" checked>' . esc_html__( 'Use a signup date if not defined', 'mailster' ) . ': <input type="text" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate"></label>';
 		$html .= '<br><span class="description">' . esc_html__( 'Some Auto responder require a signup date. Define it here if it is not set or missing', 'mailster' ) . '</span></p>';
 		$html .= '<p><label><input type="checkbox" id="performance" name="performance"> ' . esc_html__( 'Low memory usage (slower)', 'mailster' ) . '</label></p>';
-		$html .= '<input type="hidden" id="identifier" value="' . $identifier . '">';
+		$html .= '<input type="hidden" id="identifier" value="' . esc_attr( $identifier ) . '">';
 		$html .= '</div>';
 
 		$return['html'] = $html;
@@ -1419,124 +1462,20 @@ class MailsterManage {
 	}
 
 
-	/**
-	 *
-	 *
-	 * @param unknown $errors (optional)
-	 */
-	public function media_upload_form( $errors = null ) {
 
-		global $type, $tab, $pagenow, $is_IE, $is_opera;
+	public function display_import_method( $id ) {
 
-		if ( function_exists( '_device_can_upload' ) && ! _device_can_upload() ) {
-			echo '<p>' . esc_html__( 'The web browser on your device cannot be used to upload files. You may be able to use the <a href="http://wordpress.org/extend/mobile/">native app for your device</a> instead.', 'mailster' ) . '</p>';
-			return;
-		}
-
-		$upload_size_unit = $max_upload_size = wp_max_upload_size();
-		$sizes            = array( 'KB', 'MB', 'GB' );
-
-		for ( $u = -1; $upload_size_unit > 1024 && $u < count( $sizes ) - 1; $u++ ) {
-			$upload_size_unit /= 1024;
-		}
-
-		if ( $u < 0 ) {
-			$upload_size_unit = 0;
-			$u                = 0;
-		} else {
-			$upload_size_unit = (int) $upload_size_unit;
-		}
-		?>
-
-	<div id="media-upload-notice">
-		<?php
-
-		if ( isset( $errors['upload_notice'] ) ) {
-			echo $errors['upload_notice'];
-		}
-
-		?>
-		</div>
-	<div id="media-upload-error">
-		<?php
-
-		if ( isset( $errors['upload_error'] ) && is_wp_error( $errors['upload_error'] ) ) {
-			echo $errors['upload_error']->get_error_message();
-		}
-
-		?>
-		</div>
-		<?php
-		if ( is_multisite() && ! is_upload_space_available() ) {
-			return;
-		}
-
-		$post_params       = array(
-			'action'   => 'mailster_import_subscribers_upload_handler',
-			'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
-		);
-		$upload_action_url = admin_url( 'admin-ajax.php' );
-
-		$plupload_init = array(
-			'runtimes'            => 'html5,silverlight,flash,html4',
-			'browse_button'       => 'plupload-browse-button',
-			'container'           => 'plupload-upload-ui',
-			'drop_element'        => 'drag-drop-area',
-			'file_data_name'      => 'async-upload',
-			'multiple_queues'     => true,
-			'max_file_size'       => $max_upload_size . 'b',
-			'url'                 => $upload_action_url,
-			'flash_swf_url'       => includes_url( 'js/plupload/plupload.flash.swf' ),
-			'silverlight_xap_url' => includes_url( 'js/plupload/plupload.silverlight.xap' ),
-			'filters'             => array(
-				array(
-					'title'      => esc_html__( 'Comma-separated values (CSV)', 'mailster' ),
-					'extensions' => 'csv',
-				),
-			),
-			'multipart'           => true,
-			'urlstream_upload'    => true,
-			'multipart_params'    => $post_params,
-			'multi_selection'     => false,
+		$plugins = array(
+			'mailpoet'  => 'mailster-mailpoet/mailster-mailpoet.php',
+			'mailchimp' => 'mailster-mailchimp/mailster-mailchimp.php',
 		);
 
-		?>
-
-	<script type="text/javascript">
-	var wpUploaderInit = <?php echo json_encode( $plupload_init ); ?>;
-	</script>
-
-	<div id="plupload-upload-ui" class="hide-if-no-js">
-	<div id="drag-drop-area">
-		<div class="drag-drop-inside">
-		<p class="drag-drop-info"><?php esc_html_e( 'Drop your list here', 'mailster' ); ?></p>
-		<p><?php echo esc_html_x( 'or', 'Uploader: Drop files here - or - Select Files', 'mailster' ); ?></p>
-		<p class="drag-drop-buttons"><input id="plupload-browse-button" type="button" value="<?php esc_attr_e( 'Select File', 'mailster' ); ?>" class="button" /></p>
-		</div>
-	</div>
-	</div>
-
-	<div id="html-upload-ui" class="hide-if-js">
-		<p id="async-upload-wrap">
-			<label class="screen-reader-text" for="async-upload"><?php esc_html_e( 'Upload', 'mailster' ); ?></label>
-			<input type="file" name="async-upload" id="async-upload" />
-			<?php submit_button( esc_html__( 'Upload', 'mailster' ), 'button', 'html-upload', false ); ?>
-			<a href="#" onclick="try{top.tb_remove();}catch(e){}; return false;"><?php esc_html_e( 'Cancel', 'mailster' ); ?></a>
-		</p>
-		<div class="clear"></div>
-	</div>
-
-	<p class="max-upload-size"><?php printf( esc_html__( 'Maximum upload file size: %s.', 'mailster' ), esc_html( $upload_size_unit . $sizes[ $u ] ) ); ?> <?php esc_html_e( 'Split your lists into max 50.000 subscribers each.', 'mailster' ); ?></p>
-	<p class="max-upload-size"><?php esc_html_e( 'Try pasting your data into the textarea on the right if you have troubles with special characters.', 'mailster' ); ?></p>
-		<?php
-		if ( ( $is_IE || $is_opera ) && $max_upload_size > 100 * 1024 * 1024 ) {
-			?>
-		<span class="big-file-warning"><?php esc_html_e( 'Your browser has some limitations uploading large files with the multi-file uploader. Please use the browser uploader for files over 100MB.', 'mailster' ); ?></span>
-			<?php
+		if ( isset( $plugins[ $id ] ) && ! is_plugin_active( $plugins[ $id ] ) ) {
+			echo '<p>' . sprintf( esc_html__( 'To import subscribers from %s you need an additional addon.', 'mailster' ), ucwords( $id ) ) . '</p>';
+			echo '<a class="button button-primary install-addon" data-slug="' . esc_attr( $plugins[ $id ] ) . '">' . esc_html__( 'Install Addon' ) . '</a>';
 		}
 
 	}
-
 
 	/**
 	 *

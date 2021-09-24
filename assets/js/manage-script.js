@@ -2,6 +2,8 @@ mailster = (function (mailster, $, window, document) {
 
 	"use strict";
 
+	return mailster;
+
 	var importstatus = $('.import-status'),
 		exportstatus = $('.export-status'),
 		progress = $('#progress'),

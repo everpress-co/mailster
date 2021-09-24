@@ -29,18 +29,9 @@ span.error{
 }
 #paste-import{
 	resize: none;
-	font-style: italic;
-	color: #ccc;
 }
-#paste-import.focus{
-	position: absolute;
-	font-style: inherit;
-	color: inherit;
-	left: -10px;
-	margin-top: -40px;
-	padding-bottom: 10px;
-	z-index: 1;
-}
+
+
 #subscriber-table{
 	width: 100%;
 	overflow: auto;
