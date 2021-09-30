@@ -4,6 +4,8 @@ mailster = (function (mailster, $, window, document) {
 
 	var uploader,
 		uploadinfo = $('.uploadinfo'),
+		importstatus = $('.status'),
+		importstarttime,
 		importidentifier;
 
 
@@ -12,22 +14,13 @@ mailster = (function (mailster, $, window, document) {
 
 			var value = mailster.util.trim($('#paste-import').val());
 
+			$(this).prop('readonly', true).css('opacity', 0.8);
+
+			importstatus.addClass('progress spinner').html(mailster.l10n.manage.prepare_import);
+
 			if (value) {
-				mailster.util.ajax('import_subscribers_upload_handler', {
+				prepare_import({
 					data: value
-				}, function (response) {
-
-					if (response.success) {
-						importidentifier = response.identifier;
-						$('#wordpress-users').fadeOut();
-						get_import_data();
-					} else {
-						importstatus.html(response.message);
-						progress.addClass('error');
-					}
-				}, function () {
-
-					importstatus.html('Error');
 				});
 			}
 
@@ -37,25 +30,82 @@ mailster = (function (mailster, $, window, document) {
 		.on('submit', '#import_wordpress', function () {
 
 			var data = $(this).serialize();
-			mailster.util.ajax('import_subscribers_upload_handler', {
-				wordpressusers: data
-			}, function (response) {
 
-				if (response.success) {
-					importidentifier = response.identifier;
-					$('#wordpress-users').fadeOut();
-					get_import_data();
-				} else {
-					importstatus.html(response.message);
-					progress.addClass('error');
-				}
-			}, function () {
+			$(this).prop('readonly', true).css('opacity', 0.8);
 
-				importstatus.html('Error');
-			});
+			importstatus.addClass('progress spinner').html(mailster.l10n.manage.prepare_import);
+
+			if (data) {
+				prepare_import({
+					wordpressusers: data
+				});
+			}
 
 			return false;
-		});
+		})
+		.on('change', '.column-selector', function () {
+			if ('_new' == $(this).val()) {
+				tb_show('', '#TB_inline?x=1&width=480&height=320&inlineId=create-new-field', false);
+			}
+		})
+		.on('change', '#signup', function () {
+			$('#signupdate').prop('disabled', !$(this).is(':checked'));
+		})
+		.on('click', '.do-import', function () {
+
+			var data = $('#subscriber-table').serialize();
+
+			if (!/%5D=email/.test(data)) {
+				alert(mailster.l10n.manage.select_emailcolumn);
+				return false;
+			}
+			if (!$('input[name="status"]:checked').length) {
+				alert(mailster.l10n.manage.select_status);
+				return false;
+			}
+
+			if (!confirm(mailster.l10n.manage.confirm_import)) return false;
+
+
+			var _this = $(this).prop('disabled', true),
+				status = $('input[name="status"]:checked').val(),
+				existing = $('input[name="existing"]:checked').val(),
+				signup = $('#signup').is(':checked'),
+				signupdate = $('#signupdate').val(),
+				keepstatus = $('#keepstatus').is(':checked'),
+				loader = $('#import-ajax-loading').css({
+					'display': 'inline-block'
+				}),
+				identifier = $('#identifier').val(),
+				performance = $('#performance').is(':checked');
+
+			//$('.step1').slideUp();
+			//$('.step2-body').html('<br><br>').parent().show();
+
+			importstarttime = new Date();
+			importstatus.addClass('progress spinner').html(mailster.l10n.manage.prepare_import);
+
+			do_import(0, {
+				identifier: identifier,
+				data: data,
+				status: status,
+				keepstatus: keepstatus,
+				existing: existing,
+				signupdate: signup ? signupdate : null,
+				performance: performance
+			});
+
+			window.onbeforeunload = function () {
+				return mailster.l10n.manage.onbeforeunloadimport;
+			};
+
+
+		})
+		.on('click', '.install-addon', function () {
+			var slug = $(this).data('slug');
+			installAddon(slug);
+		})
+
 
 	typeof wpUploaderInit == 'object' && mailster.events.push('documentReady', function () {
 
@@ -126,12 +176,94 @@ mailster = (function (mailster, $, window, document) {
 	});
 
 
+	function prepare_import(data) {
+
+		mailster.util.ajax('import_subscribers_upload_handler', data, function (response) {
+
+			if (response.success) {
+				importidentifier = response.identifier;
+				if (response.finished) {
+					get_import_data();
+				} else {
+					data['offset'] = (data['offset'] || 0) + 1;
+					data['identifier'] = response.identifier;
+					prepare_import(data)
+				}
+			} else {
+				importstatus.html(response.message);
+			}
+			$(this).prop('readonly', false).css('opacity', 1);
+		}, function () {
+			importstatus.html('Error');
+			$(this).prop('readonly', false).css('opacity', 1);
+		});
+
+	};
+
+
+	function do_import(id, options) {
+
+		var percentage = 0,
+			finished;
+
+		if (!id) id = 0;
+
+		mailster.util.ajax('do_import', {
+			id: id,
+			options: options
+		}, function (response) {
+
+			percentage = (Math.min(1, (response.imported + response.errors) / response.total) * 100);
+
+			$('.import-result').html(get_stats(response.f_imported, response.f_errors, response.f_total, percentage, response.memoryusage));
+			//importerrors = 0;
+			finished = percentage >= 100;
+
+
+			if (response.success) {
+
+				if (!finished) do_import(id + 1, options);
+
+				if (finished) {
+					window.onbeforeunload = null;
+					console.log(response);
+				}
+				return;
+
+				progressbar.animate({
+					'width': (percentage) + '%'
+				}, {
+					duration: 1000,
+					easing: 'swing',
+					queue: false,
+					step: function (percentage) {
+						importstatus.html(mailster.util.sprintf(mailster.l10n.manage.import_contacts, Math.ceil(percentage) + '%'));
+					},
+					complete: function () {
+						importstatus.html(mailster.util.sprintf(mailster.l10n.manage.import_contacts, Math.ceil(percentage) + '%'));
+						if (finished) {
+							window.onbeforeunload = null;
+							progress.addClass('finished');
+							$('.step2-body').html(response.html).slideDown();
+
+						}
+					}
+				});
+			} else {
+				upload_error_handler(percentage, id, options);
+			}
+		}, function (jqXHR, textStatus, errorThrown) {
+
+			upload_error_handler(percentage, id, options);
+
+		});
+
+	}
+
 	function get_import_data() {
 		mailster.util.ajax('get_import_data', {
 			identifier: importidentifier
 		}, function (response) {
-
-			console.log(response);
 
 			$('.import-result').eq(0).html(response.html).show();
 			$('.import-wrap').hide();
@@ -147,22 +279,36 @@ mailster = (function (mailster, $, window, document) {
 				tags: true,
 				theme: 'mailster'
 			});
-			return;
 
-			progress.addClass('hidden');
+			importstatus = $('.status');
 
-			$('.step1').slideUp();
-			$('.step2-body').html(response.html).parent().show();
-
-
-
-
-			importstatus.html('');
-
-			importdata = response.data;
 		});
 	}
 
+	function get_stats(imported, errors, total, percentage, memoryusage) {
+
+		var timepast = new Date().getTime() - importstarttime.getTime(),
+			timeleft = Math.ceil(((100 - percentage) * (timepast / percentage)) / 60000);
+
+		return '<section>' + mailster.util.sprintf(mailster.l10n.manage.current_stats, '<strong>' + imported + '</strong>', '<strong>' + total + '</strong>', '<strong>' + errors + '</strong>', '<strong>' + memoryusage + '</strong>') + '<br>' +
+			mailster.util.sprintf(mailster.l10n.manage.estimate_time, timeleft) + '</section>';
+
+	}
+
+	function installAddon(slug) {
+
+		mailster.util.ajax('quick_install', {
+			plugin: slug,
+			step: 'install'
+		}, function (response) {
+
+			if (response.success) {} else {}
+
+			busy = false;
+
+		}, function (jqXHR, textStatus, errorThrown) {})
+
+	}
 	return mailster;
 
 }(mailster || {}, jQuery, window, document));

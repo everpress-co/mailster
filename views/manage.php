@@ -4,6 +4,7 @@ $currentpage = isset( $_GET['tab'] ) ? esc_attr( $_GET['tab'] ) : 'import';
 $currentstep = isset( $_GET['step'] ) ? (int) $_GET['step'] : 1;
 
 ?>
+
 <div class="wrap mailster-manage">
 <?php if ( 'import' == $currentpage ) : ?>
 <h1><?php esc_html_e( 'Import Subscribers', 'mailster' ); ?></h1>
@@ -14,22 +15,25 @@ $currentstep = isset( $_GET['step'] ) ? (int) $_GET['step'] : 1;
 <?php else : ?>
 <h1><?php esc_html_e( 'Manage Subscribers', 'mailster' ); ?></h1>
 <?php endif; ?>
+<div class="wp-filter">
 
-<h2 class="nav-tab-wrapper">
+	<ul class="filter-links">
+		<?php if ( current_user_can( 'mailster_import_subscribers' ) ) : ?>
+		<li><a class="<?php echo ( 'import' == $currentpage ) ? 'current' : ''; ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=import"><?php esc_html_e( 'Import', 'mailster' ); ?></a></li>
+		<?php endif; ?>
 
-	<?php if ( current_user_can( 'mailster_import_subscribers' ) ) : ?>
-	<a class="nav-tab <?php echo ( 'import' == $currentpage ) ? 'nav-tab-active' : ''; ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=import"><?php esc_html_e( 'Import', 'mailster' ); ?></a>
-	<?php endif; ?>
+		<?php if ( current_user_can( 'mailster_export_subscribers' ) ) : ?>
+		<li><a class="<?php echo ( 'export' == $currentpage ) ? 'current' : ''; ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export"><?php esc_html_e( 'Export', 'mailster' ); ?></a></li>
+		<?php endif; ?>
 
-	<?php if ( current_user_can( 'mailster_export_subscribers' ) ) : ?>
-	<a class="nav-tab <?php echo ( 'export' == $currentpage ) ? 'nav-tab-active' : ''; ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=export"><?php esc_html_e( 'Export', 'mailster' ); ?></a>
-	<?php endif; ?>
+		<?php if ( current_user_can( 'mailster_bulk_delete_subscribers' ) ) : ?>
+		<li><a class="<?php echo ( 'delete' == $currentpage ) ? 'current' : ''; ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=delete"><?php esc_html_e( 'Delete', 'mailster' ); ?></a></li>
+		<?php endif; ?>
 
-	<?php if ( current_user_can( 'mailster_bulk_delete_subscribers' ) ) : ?>
-	<a class="nav-tab <?php echo ( 'delete' == $currentpage ) ? 'nav-tab-active' : ''; ?>" href="edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=delete"><?php esc_html_e( 'Delete', 'mailster' ); ?></a>
-	<?php endif; ?>
+	</ul>
 
-</h2>
+</div>
+
 <div class="stuffbox">
 <?php wp_nonce_field( 'mailster_nonce', 'mailster_nonce', false ); ?>
 

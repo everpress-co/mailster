@@ -2324,7 +2324,8 @@ class MailsterAjax {
 
 		parse_str( $_POST['data'], $data );
 
-		$lists      = isset( $data['lists'] ) ? (array) $data['lists'] : -1;
+		$lists      = isset( $data['lists'] ) ? (array) $data['lists'] : array();
+		$nolists    = isset( $data['nolists'] ) ? (bool) $data['nolists'] : null;
 		$conditions = isset( $data['conditions'] ) ? array_values( $data['conditions'] ) : false;
 		$status     = isset( $data['status'] ) ? (array) $data['status'] : false;
 
@@ -2336,6 +2337,12 @@ class MailsterAjax {
 		);
 
 		$return['count'] = mailster( 'subscribers' )->query( $args );
+		if ( $nolists ) {
+			$args['lists']    = -1;
+			$return['count'] += mailster( 'subscribers' )->query( $args );
+		}
+
+		$return['count_formated'] = number_format_i18n( $return['count'] );
 
 		$return['success'] = true;
 

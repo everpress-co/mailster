@@ -59,4 +59,59 @@ details > div{
 }
 #subscriber-table{
 	padding: 0;
+	width: 100%;
+	overflow: auto;
+}
+#subscriber-table select{
+	width: 150px;
+}
+#subscriber-table table{
+	border: 0;
+}
+#subscriber-table table td{
+	max-height: 30px;
+	max-width: 150px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.table-wrap{
+	border: 1px solid #c3c4c7;
+	overflow: auto;
+}
+.table-wrap table.widefat{
+	border: 0;
+}
+.status{
+	padding-left: 2em;
+}
+.status.progress{
+	float: none;
+	visibility: visible;
+	width: auto;
+}
+
+#import_wordpress .inner{
+	display: flex;
+	flex-wrap: wrap
+}
+#import_wordpress div{
+	padding-right: 20px;
+}
+.import-wrap section.footer{
+	margin-left: -3em;
+	margin-right: -3em;
+	margin-bottom: -1em;
+	margin-top: 1em;
+	padding: 1em 3em;
+}
+
+#TB_window section.footer{
+	background: #f6f7f7;
+	border-top: 1px solid #dfdfdf;
+	padding: 0 1.5em;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
 }

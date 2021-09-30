@@ -1,6 +1,6 @@
 
 <div class="import-wrap">
-<h2><?php echo esc_html__( 'Where do you like to import your Subscribers from?', 'mailster' ); ?></h2>
+<h2><?php echo esc_html__( 'Where do you like to import your subscribers from?', 'mailster' ); ?></h2>
 
 <?php
 $methods = array(

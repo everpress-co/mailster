@@ -1,0 +1,8 @@
+.status{
+	padding-left: 2em;
+}
+.status.progress{
+	float: none;
+	visibility: visible;
+	width: auto;
+}
