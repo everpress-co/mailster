@@ -4,5 +4,7 @@
 .status.progress{
 	float: none;
 	visibility: visible;
+	vertical-align: baseline;
+	opacity: 1;
 	width: auto;
 }

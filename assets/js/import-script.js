@@ -48,8 +48,20 @@ mailster = (function (mailster, $, window, document) {
 				tb_show('', '#TB_inline?x=1&width=480&height=320&inlineId=create-new-field', false);
 			}
 		})
+		.on('click', '#addlist', function () {
+			var val = $('#new_list_name').val();
+			if (!val) return false;
+
+			$('<li><label><input name="lists[]" value="' + val + '" type="checkbox" checked> ' + val + ' </label></li>').appendTo('#section-lists > ul');
+			$('#new_list_name').val('');
+			return false;
+
+		})
 		.on('change', '#signup', function () {
 			$('#signupdate').prop('disabled', !$(this).is(':checked'));
+		})
+		.on('change', '.list-toggle', function () {
+			$(this).parent().parent().parent().find('ul input').prop('checked', $(this).prop('checked'));
 		})
 		.on('click', '.do-import', function () {
 
@@ -78,9 +90,6 @@ mailster = (function (mailster, $, window, document) {
 				}),
 				identifier = $('#identifier').val(),
 				performance = $('#performance').is(':checked');
-
-			//$('.step1').slideUp();
-			//$('.step2-body').html('<br><br>').parent().show();
 
 			importstarttime = new Date();
 			importstatus.addClass('progress spinner').html(mailster.l10n.manage.prepare_import);
@@ -149,7 +158,7 @@ mailster = (function (mailster, $, window, document) {
 		uploader.bind('UploadFile', function (up, file) {});
 
 		uploader.bind('UploadProgress', function (up, file) {
-			uploadinfo.html(mailster.util.sprintf(mailster.l10n.import.uploading, file.percent + '%'));
+			uploadinfo.html(mailster.util.sprintf(mailster.l10n.manage.uploading, file.percent + '%'));
 		});
 
 		uploader.bind('Error', function (up, err) {
@@ -159,17 +168,19 @@ mailster = (function (mailster, $, window, document) {
 
 		uploader.bind('FileUploaded', function (up, file, response) {
 			response = JSON.parse(response.response);
-			importidentifier = response.identifier;
-			if (!response.success) {
+			if (response.success) {
+				importidentifier = response.identifier;
+			} else {
 				uploadinfo.html(response.message);
 				up.refresh();
-				uploader.unbind('UploadComplete');
 			}
 		});
 
 		uploader.bind('UploadComplete', function (up, files) {
-			uploadinfo.html(mailster.l10n.import.prepare_data);
-			get_import_data();
+			if (importidentifier) {
+				uploadinfo.html(mailster.l10n.manage.prepare_data);
+				get_import_data();
+			}
 		});
 
 		uploader.init();
@@ -190,7 +201,7 @@ mailster = (function (mailster, $, window, document) {
 					prepare_import(data)
 				}
 			} else {
-				importstatus.html(response.message);
+				importstatus.html(response.message).removeClass('spinner');
 			}
 			$(this).prop('readonly', false).css('opacity', 1);
 		}, function () {
@@ -215,40 +226,21 @@ mailster = (function (mailster, $, window, document) {
 
 			percentage = (Math.min(1, (response.imported + response.errors) / response.total) * 100);
 
-			$('.import-result').html(get_stats(response.f_imported, response.f_errors, response.f_total, percentage, response.memoryusage));
-			//importerrors = 0;
-			finished = percentage >= 100;
+			importstatus.html(get_stats(response.f_imported, response.f_errors, response.f_total, percentage, response.memoryusage));
 
+			finished = percentage >= 100;
 
 			if (response.success) {
 
-				if (!finished) do_import(id + 1, options);
+				if (!finished) do_import(++id, options);
 
 				if (finished) {
 					window.onbeforeunload = null;
+					$('.import-result').html(response.html);
+					scroll_to_content_top();
 					console.log(response);
 				}
-				return;
 
-				progressbar.animate({
-					'width': (percentage) + '%'
-				}, {
-					duration: 1000,
-					easing: 'swing',
-					queue: false,
-					step: function (percentage) {
-						importstatus.html(mailster.util.sprintf(mailster.l10n.manage.import_contacts, Math.ceil(percentage) + '%'));
-					},
-					complete: function () {
-						importstatus.html(mailster.util.sprintf(mailster.l10n.manage.import_contacts, Math.ceil(percentage) + '%'));
-						if (finished) {
-							window.onbeforeunload = null;
-							progress.addClass('finished');
-							$('.step2-body').html(response.html).slideDown();
-
-						}
-					}
-				});
 			} else {
 				upload_error_handler(percentage, id, options);
 			}
@@ -260,10 +252,20 @@ mailster = (function (mailster, $, window, document) {
 
 	}
 
+	function scroll_to_content_top(pos) {
+		window.scroll({
+			top: pos || 125,
+			left: 0,
+			behavior: 'smooth'
+		});
+	}
+
 	function get_import_data() {
 		mailster.util.ajax('get_import_data', {
 			identifier: importidentifier
 		}, function (response) {
+
+			scroll_to_content_top();
 
 			$('.import-result').eq(0).html(response.html).show();
 			$('.import-wrap').hide();
@@ -290,8 +292,7 @@ mailster = (function (mailster, $, window, document) {
 		var timepast = new Date().getTime() - importstarttime.getTime(),
 			timeleft = Math.ceil(((100 - percentage) * (timepast / percentage)) / 60000);
 
-		return '<section>' + mailster.util.sprintf(mailster.l10n.manage.current_stats, '<strong>' + imported + '</strong>', '<strong>' + total + '</strong>', '<strong>' + errors + '</strong>', '<strong>' + memoryusage + '</strong>') + '<br>' +
-			mailster.util.sprintf(mailster.l10n.manage.estimate_time, timeleft) + '</section>';
+		return mailster.util.sprintf(mailster.l10n.manage.current_stats, '<strong>' + imported + '</strong>', '<strong>' + total + '</strong>', '<strong>' + errors + '</strong>', '<strong>' + memoryusage + '</strong>') + ' ' + mailster.util.sprintf(mailster.l10n.manage.estimate_time, timeleft);
 
 	}
 

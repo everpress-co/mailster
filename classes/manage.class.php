@@ -5,12 +5,6 @@ class MailsterManage {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-
-	}
-
-
-	public function init() {
-
 		add_action( 'admin_menu', array( &$this, 'add_menu' ), 40 );
 		add_action( 'wp_ajax_mailster_import_subscribers_upload_handler', array( &$this, 'ajax_import_subscribers_upload_handler' ) );
 		add_action( 'wp_ajax_mailster_get_import_data', array( &$this, 'ajax_get_import_data' ) );
@@ -22,8 +16,33 @@ class MailsterManage {
 		add_action( 'wp_ajax_mailster_delete_old_bulk_jobs', array( &$this, 'ajax_delete_old_bulk_jobs' ) );
 
 		add_action( 'mailster_import_method', array( &$this, 'display_import_method' ) );
-
 		add_action( 'admin_init', array( &$this, 'admin_enqueue_scripts' ) );
+
+		add_action( 'admin_init', array( &$this, 'load_integrations' ), 10 );
+
+	}
+
+
+	public function init() {
+
+	}
+
+	public function load_integrations() {
+
+		$integrations = apply_filters( 'mailster_importer', array() );
+
+		if ( empty( $integrations ) ) {
+			return;
+		}
+
+		foreach ( $integrations as $slug => $path ) {
+
+			if ( file_exists( $path ) ) {
+				require_once $path;
+			}
+		}
+
+		error_log( print_r( $integrations, true ) );
 
 	}
 
@@ -32,13 +51,13 @@ class MailsterManage {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		wp_register_script( 'mailster-manage-script', MAILSTER_URI . 'assets/js/manage-script' . $suffix . '.js', array( 'mailster-import-script', 'mailster-export-script', 'mailster-delete-script' ), MAILSTER_VERSION, true );
 
 		wp_register_script( 'mailster-import-script', MAILSTER_URI . 'assets/js/import-script' . $suffix . '.js', array( 'mailster-script', 'plupload-all', 'thickbox' ), MAILSTER_VERSION, true );
-		wp_register_script( 'mailster-export-script', MAILSTER_URI . 'assets/js/export-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		wp_register_script( 'mailster-export-script', MAILSTER_URI . 'assets/js/export-script' . $suffix . '.js', array( 'mailster-script', 'jquery-ui-sortable', 'jquery-touch-punch' ), MAILSTER_VERSION, true );
 		wp_register_script( 'mailster-delete-script', MAILSTER_URI . 'assets/js/delete-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 
-		wp_register_style( 'mailster-manage-style', MAILSTER_URI . 'assets/css/manage-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_register_style( 'mailster-manage-style', MAILSTER_URI . 'assets/css/manage-style' . $suffix . '.css', array( 'mailster-import-style', 'mailster-export-style', 'mailster-delete-style' ), MAILSTER_VERSION );
 
 		wp_register_style( 'mailster-import-style', MAILSTER_URI . 'assets/css/import-style' . $suffix . '.css', array( 'thickbox' ), MAILSTER_VERSION );
 		wp_register_style( 'mailster-export-style', MAILSTER_URI . 'assets/css/export-style' . $suffix . '.css', array(), MAILSTER_VERSION );
@@ -61,10 +80,6 @@ class MailsterManage {
 
 		wp_enqueue_script( 'mailster-manage-script' );
 
-		wp_enqueue_script( 'mailster-import-script' );
-		wp_enqueue_script( 'mailster-export-script' );
-		wp_enqueue_script( 'mailster-delete-script' );
-
 		global $wp_locale;
 
 		mailster_localize_script(
@@ -83,8 +98,6 @@ class MailsterManage {
 			array(
 				'select_status'        => esc_html__( 'Please select the status for the importing contacts!', 'mailster' ),
 				'select_emailcolumn'   => esc_html__( 'Please select at least the column with the email addresses!', 'mailster' ),
-				'import_contacts'      => esc_html__( 'Importing Contacts...%s', 'mailster' ),
-				'prepare_import'       => esc_html__( 'Preparing Import...', 'mailster' ),
 				'current_stats'        => esc_html__( 'Currently %1$s of %2$s imported with %3$s errors. %4$s memory usage', 'mailster' ),
 				'estimate_time'        => esc_html__( 'Estimate time left: %s minutes', 'mailster' ),
 				'continues_in'         => esc_html__( 'Continues in %s seconds', 'mailster' ),
@@ -102,13 +115,10 @@ class MailsterManage {
 				'delete_n_subscribers' => esc_html__( 'Delete %s Subscribers permanently', 'mailster' ),
 				'onbeforeunloadimport' => esc_html__( 'You are currently importing subscribers! If you leave the page all pending subscribers don\'t get imported!', 'mailster' ),
 				'onbeforeunloadexport' => esc_html__( 'Your download is preparing! If you leave this page the progress will abort!', 'mailster' ),
-			)
-		);
-		mailster_localize_script(
-			'import',
-			array(
-				'prepare_data' => esc_html__( 'Preparing Data', 'mailster' ),
-				'uploading'    => esc_html__( 'Uploading...%s', 'mailster' ),
+				'import_contacts'      => esc_html__( 'Importing Contacts...%s', 'mailster' ),
+				'prepare_import'       => esc_html__( 'Preparing Import...', 'mailster' ),
+				'prepare_data'         => esc_html__( 'Preparing Data', 'mailster' ),
+				'uploading'            => esc_html__( 'Uploading...%s', 'mailster' ),
 			)
 		);
 
@@ -116,12 +126,7 @@ class MailsterManage {
 		wp_enqueue_style( 'mailster-select2-theme', MAILSTER_URI . 'assets/css/select2' . $suffix . '.css', array( 'mailster-select2' ), MAILSTER_VERSION );
 		wp_enqueue_script( 'mailster-select2', MAILSTER_URI . 'assets/js/libs/select2' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 
-		wp_enqueue_script( 'jquery-ui-sortable' );
-		wp_enqueue_script( 'jquery-touch-punch' );
 		wp_enqueue_style( 'mailster-manage-style' );
-		wp_enqueue_style( 'mailster-import-style' );
-		wp_enqueue_style( 'mailster-export-style' );
-		wp_enqueue_style( 'mailster-delete-style' );
 
 		wp_enqueue_style( 'jquery-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css' );
 		wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css' );
@@ -230,9 +235,9 @@ class MailsterManage {
 						'orderby'  => 'ID',
 					)
 				);
-				$user_ids   = $user_query->get_results();
 
-				$total = $user_query->get_total();
+				$user_ids = $user_query->get_results();
+				$total    = $user_query->get_total();
 			} else {
 				$user_ids = array();
 			}
@@ -248,11 +253,15 @@ class MailsterManage {
 
 			$data = array();
 
+			$wp_roles = wp_list_pluck( wp_roles()->roles, 'name' );
+
 			foreach ( $user_ids as $user_id ) {
 				$user = get_user_by( 'ID', $user_id );
 				if ( ! $user ) {
 					continue;
 				}
+
+				$roles = array_intersect_key( $wp_roles, array_flip( $user->roles ) );
 				$entry = array(
 					$user->user_email,
 					get_user_meta( $user->ID, 'first_name', true ),
@@ -261,6 +270,7 @@ class MailsterManage {
 					$user->user_nicename,
 					$user->user_name,
 					$user->user_registered,
+					implode( ',', $roles ),
 				);
 				foreach ( $meta_values as $meta_value ) {
 					$entry[] = get_user_meta( $user_id, $meta_value, true );
@@ -278,6 +288,7 @@ class MailsterManage {
 					esc_html__( 'nickname', 'mailster' ),
 					esc_html__( 'display name', 'mailster' ),
 					esc_html__( 'registered', 'mailster' ),
+					esc_html__( 'roles', 'mailster' ),
 				),
 				$meta_values
 			);
@@ -309,7 +320,7 @@ class MailsterManage {
 			$collate = $wpdb->get_charset_collate();
 		}
 
-		if ( false !== $wpdb->query( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}mailster_temp_import (ID bigint(20) NOT NULL AUTO_INCREMENT, data longtext NOT NULL, identifier char(13) NOT NULL, PRIMARY KEY (ID) ) $collate" ) ) {
+		if ( $total && false !== $wpdb->query( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}mailster_temp_import (ID bigint(20) NOT NULL AUTO_INCREMENT, data longtext NOT NULL, identifier char(13) NOT NULL, PRIMARY KEY (ID) ) $collate" ) ) {
 			$return['identifier'] = $identifier;
 
 			foreach ( $parts as $i => $part ) {
@@ -322,10 +333,12 @@ class MailsterManage {
 
 			$return['success']     = true;
 			$return['memoryusage'] = size_format( memory_get_peak_usage( true ), 2 );
-			update_option( 'mailster_bulk_import', $bulkimport, '', 'no' );
+			update_option( 'mailster_bulk_import', $bulkimport, 'no' );
 			$return['total']       = $total;
 			$return['total_batch'] = $total_batch;
-			$return['finished']    = ! $total_batch;
+			$return['finished']    = $total == $total_batch || ! $total_batch;
+		} elseif ( ! $total ) {
+			$return['message'] = esc_html__( 'No valid email address where found!', 'mailster' );
 		} else {
 			$return['message'] = $wpdb->last_error;
 		}
@@ -500,11 +513,12 @@ class MailsterManage {
 			$html .= '<div class="pending-info error inline">';
 			$html .= '<p>' . sprintf( esc_html__( '%s entries without valid email address have been removed.', 'mailster' ), number_format_i18n( $removed ) ) . '</p>';
 			$html .= '</div>';
-		}       $html .= '</section>';
-		$html         .= '<h4>' . esc_html__( 'Add contacts to following lists', 'mailster' ) . ':</h4>';
-		$html         .= '<section>';
-		$html         .= '<ul>';
-		$lists         = mailster( 'lists' )->get( null, null, true );
+		}
+		$html .= '</section>';
+		$html .= '<h4>' . esc_html__( 'Add contacts to following lists', 'mailster' ) . ':</h4>';
+		$html .= '<section id="section-lists">';
+		$html .= '<ul>';
+		$lists = mailster( 'lists' )->get( null, null, true );
 		if ( $lists && ! is_wp_error( $lists ) ) {
 			foreach ( $lists as $list ) {
 				$html .= '<li><label><input name="lists[]" value="' . esc_attr( $list->name ) . '" type="checkbox"> ' . esc_html( $list->name ) . ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ')</span></label></li>';
@@ -515,7 +529,7 @@ class MailsterManage {
 
 		$html .= '</section>';
 		$html .= '<h4>' . esc_html__( 'Add contacts to following tags', 'mailster' ) . '</h4>';
-		$html .= '<section>';
+		$html .= '<section id="section-tags">';
 		$html .= '<p>';
 		$html .= '<select multiple name="tags[]" class="tags-input">';
 		$html .= '<option></option>';
@@ -544,19 +558,18 @@ class MailsterManage {
 
 		$html .= '</section>';
 		$html .= '<h4>' . esc_html__( 'Existing subscribers', 'mailster' ) . '</h4>';
-		$html .= '<section>';
+		$html .= '<section id="section-existing">';
 		$html .= '<p><label> <input type="radio" name="existing" value="skip" checked> ' . esc_html__( 'skip', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will skip the contact if the email address already exists. Status will not be changed.', 'mailster' ) . '</span><br> <label><input type="radio" name="existing" value="overwrite"> ' . esc_html__( 'overwrite', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will overwrite all values of the contact. Status will be overwritten.', 'mailster' ) . '</span><br><input type="radio" name="existing" value="merge"> ' . esc_html__( 'merge', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will overwrite only defined values and keep old ones. Status will not be changed unless defined via the columns.', 'mailster' ) . '</span></p>';
 		$html .= '</section>';
 		$html .= '<h4>' . esc_html__( 'Other', 'mailster' ) . '</h4>';
-		$html .= '<section>';
+		$html .= '<section id="section-other">';
 		$html .= '<p><label><input type="checkbox" id="signup" name="signup" checked>' . esc_html__( 'Use a signup date if not defined', 'mailster' ) . ': <input type="text" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate"></label>';
 		$html .= '<br><span class="description">' . esc_html__( 'Some Auto responder require a signup date. Define it here if it is not set or missing', 'mailster' ) . '</span></p>';
 		$html .= '<p><label><input type="checkbox" id="performance" name="performance"> ' . esc_html__( 'Low memory usage (slower)', 'mailster' ) . '</label></p>';
 		$html .= '<input type="hidden" id="identifier" value="' . esc_attr( $identifier ) . '">';
 		$html .= '</section>';
 		$html .= '<section class="footer alternate">';
-		$html .= '<p><input type="submit" class="do-import button button-primary" value="' . ( sprintf( esc_attr__( 'Import %s contacts', 'mailster' ), number_format_i18n( $contactcount ) ) ) . ' *"><span class="import-status wp-ui-text-icon"></span></p>';
-		$html .= '<p>* ' . esc_html__( 'Please make sure you have the permission to import these contacts!', 'mailster' ) . '</p>';
+		$html .= '<p><input type="submit" class="do-import button button-primary" value="' . ( sprintf( esc_attr__( 'Import %s contacts', 'mailster' ), number_format_i18n( $contactcount ) ) ) . '"><span class="status wp-ui-text-icon"></span></p>';
 		$html .= '</section>';
 		$html .= '</form>';
 
@@ -920,18 +933,26 @@ class MailsterManage {
 		$return['html'] = '';
 
 		if ( $bulkdata['imported'] + $bulkdata['errors'] >= $bulkdata['count'] ) {
-			$return['html'] .= '<p>' . sprintf( esc_html__( '%1$s of %2$s contacts imported', 'mailster' ), '<strong>' . number_format_i18n( $bulkdata['imported'] ) . '</strong>', '<strong>' . number_format_i18n( $bulkdata['count'] ) . '</strong>' ) . '<p>';
+			$return['html'] .= '<h2>' . sprintf( esc_html__( '%1$s of %2$s contacts imported.', 'mailster' ), '<strong>' . number_format_i18n( $bulkdata['imported'] ) . '</strong>', '<strong>' . number_format_i18n( $bulkdata['count'] ) . '</strong>' ) . '</h2>';
 			if ( $bulkdata['errors'] ) {
-				$i      = 0;
-				$table  = '<p>' . esc_html__( 'The following addresses were not imported', 'mailster' ) . ':</p>';
-				$table .= '<table class="wp-list-table widefat fixed">';
-				$table .= '<thead><tr><td width="5%">#</td><td>' . mailster_text( 'email' ) . '</td><td>' . esc_html__( 'Reason', 'mailster' ) . '</td></tr></thead><tbody>';
+				$i               = 0;
+				$return['html'] .= '<h4>' . esc_html__( 'The following addresses were not imported', 'mailster' ) . ':</h4>';
+				$return['html'] .= '<section>';
+				$return['html'] .= '<div class="table-wrap">';
+				$return['html'] .= '<table class="wp-list-table widefat">';
+				$return['html'] .= '<thead><tr><td width="5%">#</td><td>' . mailster_text( 'email' ) . '</td><td>' . esc_html__( 'Reason', 'mailster' ) . '</td></tr></thead><tbody>';
 				foreach ( $erroremails as $email => $reason ) {
-					$table .= '<tr' . ( $i % 2 ? '' : ' class="alternate"' ) . '><td>' . ( ++$i ) . '</td><td>' . esc_html( $email ) . '</td><td>' . esc_html( $reason ) . '</td></tr></thead>';
+					$return['html'] .= '<tr' . ( $i % 2 ? '' : ' class="alternate"' ) . '><td>' . ( ++$i ) . '</td><td>' . esc_html( $email ) . '</td><td>' . esc_html( $reason ) . '</td></tr></thead>';
 				}
-				$table          .= '</tbody></table>';
-				$return['html'] .= $table;
+				$return['html'] .= '</tbody></table>';
+				$return['html'] .= '</div>';
+				$return['html'] .= '</section>';
 			}
+
+			$return['html'] .= '<section>';
+			$return['html'] .= '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=import' ) . '" class="button button-primary">' . esc_html__( 'Import more Contacts', 'mailster' ) . '</a> ';
+			$return['html'] .= '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '" class="button">' . esc_html__( 'View your Subscribers', 'mailster' ) . '</a>';
+			$return['html'] .= '</section>';
 
 			delete_option( 'mailster_bulk_import' );
 			delete_option( 'mailster_bulk_import_errors' );
@@ -1440,63 +1461,70 @@ class MailsterManage {
 			wp_send_json( $return );
 		}
 
-		parse_str( $_POST['data'], $d );
+		parse_str( $_POST['data'], $args );
 
-		$count      = 0;
-		$listids    = isset( $d['lists'] ) ? array_filter( $d['lists'], 'is_numeric' ) : array();
-		$statuses   = isset( $d['status'] ) ? array_filter( $d['status'], 'is_numeric' ) : null;
-		$conditions = isset( $d['conditions'] ) ? $d['conditions'] : null;
+		unset( $args['_wpnonce'], $args['_wp_http_referer'] );
 
-		if ( isset( $d['nolists'] ) ) {
+		$count = $this->delete_contacts( $args );
 
-			$subscriber_ids = mailster( 'subscribers' )->query(
-				array(
-					'lists'      => -1,
-					'status'     => $statuses,
-					'conditions' => $conditions,
-					'return_ids' => true,
-				)
-			);
+		if ( $count ) {
 
-			$count += count( $subscriber_ids );
+			$return['success'] = true;
+			$return['msg']     = sprintf( esc_html__( _n( '%s Subscriber removed', '%s Subscribers removed', $count, 'mailster' ) ), number_format_i18n( $count ) );
 
-			$return['success'] = mailster( 'subscribers' )->remove( $subscriber_ids, $statuses, isset( $d['remove_actions'] ) );
+		} else {
 
+			$return['success'] = false;
+			$return['msg']     = esc_html__( 'No Subscribers removed', 'mailster' );
 		}
 
-		if ( ! empty( $listids ) ) {
+		wp_send_json( $return );
 
-			$subscriber_ids = mailster( 'subscribers' )->query(
-				array(
-					'lists'      => $listids,
-					'status'     => $statuses,
-					'conditions' => $conditions,
-					'return_ids' => true,
-				)
-			);
+	}
+
+	public function delete_contacts( $args ) {
+
+		$count          = 0;
+		$nolists        = isset( $args['nolists'] ) ? $args['nolists'] : null;
+		$remove_actions = isset( $args['remove_actions'] ) ? $args['remove_actions'] : null;
+		$remove_lists   = isset( $args['remove_lists'] ) ? $args['remove_lists'] : null;
+
+		$args = array(
+			'lists'      => isset( $args['lists'] ) ? array_filter( $args['lists'], 'is_numeric' ) : array(),
+			'status'     => isset( $args['status'] ) ? array_filter( $args['status'], 'is_numeric' ) : null,
+			'conditions' => isset( $args['conditions'] ) ? (array) $args['conditions'] : null,
+			'return_ids' => true,
+		);
+
+		$args = apply_filters( 'mailster_delete_args', $args );
+
+		if ( ! empty( $args['lists'] ) ) {
+
+			$subscriber_ids = mailster( 'subscribers' )->query( $args );
 
 			$count += count( $subscriber_ids );
 
-			$return['success'] = mailster( 'subscribers' )->remove( $subscriber_ids, $statuses, isset( $d['remove_actions'] ) );
+			$success = mailster( 'subscribers' )->remove( $subscriber_ids, $args['status'], $remove_actions );
 
-			if ( $return['success'] && ! empty( $listids ) && isset( $d['remove_lists'] ) ) {
+			if ( $success && $remove_lists ) {
 
-				mailster( 'lists' )->remove( $listids );
+				mailster( 'lists' )->remove( $args['lists'] );
 
 			}
 		}
 
-		if ( $return['success'] && $count ) {
+		if ( $nolists ) {
 
-			mailster()->optimize_tables( array( 'subscribers', 'lists' ) );
-			$return['msg'] = sprintf( esc_html__( _n( '%s Subscriber removed', '%s Subscribers removed', $count, 'mailster' ) ), number_format_i18n( $count ) );
+			$args['lists']  = -1;
+			$subscriber_ids = mailster( 'subscribers' )->query( $args );
 
-		} else {
+			$count += count( $subscriber_ids );
 
-			$return['msg'] = esc_html__( 'No Subscribers removed', 'mailster' );
+			$success = mailster( 'subscribers' )->remove( $subscriber_ids, $args['status'], $remove_actions );
+
 		}
 
-		wp_send_json( $return );
+		return $count;
 
 	}
 

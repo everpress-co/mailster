@@ -4,7 +4,7 @@
 		<div>
 			<p><strong><?php esc_html_e( 'WordPress users roles', 'mailster' ); ?></strong></p>
 			<p class="description"><?php esc_html_e( 'Select the user roles you like to import.', 'mailster' ); ?></p>
-			<p><label><input type="checkbox" class="wordpress-users-toggle" checked> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></p>
+			<p><label><input type="checkbox" class="list-toggle" checked> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></p>
 			<ul>
 			<?php
 			foreach ( $roles as $role_key => $role ) :
@@ -20,7 +20,7 @@
 			<?php $meta_values = mailster( 'helper' )->get_wpuser_meta_fields(); ?>
 			<p><strong><?php esc_html_e( 'Handle following meta values', 'mailster' ); ?></strong></p>
 			<p class="description"><?php esc_html_e( 'Select the meta fields you like to import.', 'mailster' ); ?></p>
-			<p><label><input type="checkbox" class="wordpress-users-toggle"> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></p>
+			<p><label><input type="checkbox" class="list-toggle"> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></p>
 			<ul>
 			<?php foreach ( $meta_values as $i => $meta_value ) : ?>
 				<li><label><input type="checkbox" name="meta_values[]" value="<?php echo esc_attr( $meta_value ); ?>"> <?php echo esc_html( $meta_value ); ?></label></li>

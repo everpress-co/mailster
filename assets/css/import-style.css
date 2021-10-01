@@ -76,11 +76,17 @@ details > div{
 	white-space: nowrap;
 }
 .table-wrap{
+	max-height: 500px;
 	border: 1px solid #c3c4c7;
 	overflow: auto;
 }
 .table-wrap table.widefat{
 	border: 0;
+}
+.table-wrap table thead{
+	background: #fff;
+	position: sticky;
+	top: 0;
 }
 .status{
 	padding-left: 2em;
@@ -88,6 +94,8 @@ details > div{
 .status.progress{
 	float: none;
 	visibility: visible;
+	vertical-align: baseline;
+	opacity: 1;
 	width: auto;
 }
 

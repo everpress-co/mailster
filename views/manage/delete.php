@@ -1,15 +1,14 @@
-<?php
+<?php if ( mailster( 'subscribers' )->get_count_by_status() ) : ?>
+	<?php
 
 	$lists   = mailster( 'lists' )->get( null, false );
 	$no_list = mailster( 'lists' )->count( false );
 
-?>
-	<?php if ( ! empty( $lists ) || $no_list ) : ?>
-
+	?>
 <h2><?php echo esc_html__( 'Which subscribers do you like to delete?', 'mailster' ); ?></h2>
 
 <form method="post" id="delete-subscribers">
-		<?php wp_nonce_field( 'mailster_nonce' ); ?>
+	<?php wp_nonce_field( 'mailster_nonce' ); ?>
 
 <h4><?php esc_html_e( 'Lists', 'mailster' ); ?></h4>
 <section>
@@ -46,7 +45,7 @@
 </section>
 <section class="footer alternate">
 <p>
-	<input id="delete-subscriber-button" class="button button-large button-primary" type="submit" value="<?php esc_attr_e( 'Delete Subscribers permanently', 'mailster' ); ?>" />
+	<input id="delete-subscriber-button" class="button button-primary" type="submit" value="<?php esc_attr_e( 'Delete Subscribers permanently', 'mailster' ); ?>" />
 	<span class="status wp-ui-text-icon spinner"></span>
 
 </p>
@@ -55,6 +54,6 @@
 
 <?php else : ?>
 
-<h4><?php esc_html_e( 'You have no subscribers to delete!', 'mailster' ); ?></h4>
+<h2><?php esc_html_e( 'You have no subscribers to delete!', 'mailster' ); ?></h2>
 
 <?php endif; ?>

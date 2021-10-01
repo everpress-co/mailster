@@ -2,6 +2,7 @@
 
 	$lists   = mailster( 'lists' )->get( null, false );
 	$no_list = mailster( 'lists' )->count( false );
+	$counts  = mailster( 'subscribers' )->get_count_by_status();
 
 	$user_settings = wp_parse_args(
 		get_user_option( 'mailster_export_settings' ),
@@ -27,7 +28,7 @@
 		$user_settings['lists'] = (array) $_GET['lists'];
 	}
 
-	if ( ! empty( $lists ) || $no_list ) :
+	if ( $counts ) :
 		?>
 <h2><?php echo esc_html__( 'Which subscribers do you like to export?', 'mailster' ); ?></h2>
 
@@ -128,7 +129,7 @@
 <h4><?php esc_html_e( 'Output Options', 'mailster' ); ?></h4>
 <section>
 	<p>
-		<label><input type="hidden" name="header" value="0"><input type="checkbox" name="header" value="1" <?php checked( $user_settings['header'] ); ?>> <?php esc_html_e( 'Include Header', 'mailster' ); ?> </label>
+		<label><span><?php esc_html_e( 'Header', 'mailster' ); ?></span><input type="hidden" name="header" value="0"><input type="checkbox" name="header" value="1" <?php checked( $user_settings['header'] ); ?>> <?php esc_html_e( 'Include Header in the output.', 'mailster' ); ?> </label>
 	</p>
 	<p>
 		<label><span><?php esc_html_e( 'Date Format', 'mailster' ); ?></span>
@@ -202,13 +203,13 @@
 		?>
 		<select name="encoding">
 			<?php foreach ( $charsets as $code => $region ) { ?>
-			<option value="<?php echo $code; ?>" <?php selected( $user_settings['encoding'], $code ); ?>><?php echo $code; ?> - <?php echo $region; ?></option>
+			<option value="<?php echo esc_attr( $code ); ?>" <?php selected( $user_settings['encoding'], $code ); ?>><?php echo $code; ?> - <?php echo $region; ?></option>
 			<?php } ?>
 		</select>
 		</label>
 	</p>
 	<p>
-		<label><span><?php esc_html_e( 'MySQL Server Performance', 'mailster' ); ?></span>
+		<label><span><?php esc_html_e( 'Server Performance', 'mailster' ); ?></span>
 		<select name="performance" class="performance">
 			<option value="100" <?php selected( $user_settings['performance'], '100' ); ?>><?php esc_html_e( 'low', 'mailster' ); ?></option>
 			<option value="1000" <?php selected( $user_settings['performance'], '1000' ); ?>><?php esc_html_e( 'normal', 'mailster' ); ?></option>
@@ -229,6 +230,6 @@
 
 <?php else : ?>
 
-<h4><?php esc_html_e( 'You have no subscribers to export!', 'mailster' ); ?></h4>
+<h2><?php esc_html_e( 'You have no subscribers to export!', 'mailster' ); ?></h2>
 
 <?php endif; ?>

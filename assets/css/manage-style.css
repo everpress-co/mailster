@@ -20,3 +20,6 @@ label > span{
 	width: 10vw;
 	min-width: 180px;
 }
+.mailster-conditions-wrap{
+	max-width: 740px;
+}
