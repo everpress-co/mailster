@@ -72,6 +72,7 @@ class MailsterAjax {
 		'download_template',
 		'default_template',
 		'template_endpoint',
+		'load_template_file',
 
 		'query_addons',
 
@@ -594,7 +595,7 @@ class MailsterAjax {
 		$to           = trim( stripslashes( $_POST['to'] ) );
 		$current_user = wp_get_current_user();
 
-		if ( ! empty( $to ) && $to != $current_user->user_email ) {
+		if ( ! empty( $to ) ) {
 			update_user_meta( $current_user->ID, '_mailster_test_email', $to );
 		}
 
@@ -2599,6 +2600,25 @@ class MailsterAjax {
 
 	}
 
+	private function load_template_file() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		$template = basename( $_POST['template'] );
+		$file     = basename( $_POST['file'] );
+		$t        = mailster()->template( $template, $file );
+
+		if ( $t->exists ) {
+			$return['success'] = true;
+			$return['html']    = $t->get_raw_template( $file );
+		}
+
+		wp_send_json( $return );
+
+	}
+
 	private function query_addons() {
 
 		$return['success'] = false;
@@ -2868,7 +2888,7 @@ class MailsterAjax {
 
 		$this->ajax_nonce( json_encode( $return ) );
 
-		$plugin = sanitize_key( basename( $_POST['plugin'] ) );
+		$plugin = sanitize_key( dirname( $_POST['plugin'] ) );
 		$step   = sanitize_key( $_POST['step'] );
 
 		switch ( $step ) {

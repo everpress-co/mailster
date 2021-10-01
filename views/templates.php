@@ -54,6 +54,10 @@
 			<div class="theme-screenshots">
 				<div class="theme-files nav-tab-wrapper nav-tab-small hide-if-no-js"></div>
 				<div class="screenshot">
+					<div class="codeeditor">
+						<h3></h3>
+						<textarea></textarea>
+					</div>
 					<img src="" alt="">
 					<iframe src="" allowTransparency="true" frameBorder="0" sandbox="allow-presentation"></iframe>
 				</div>
@@ -68,7 +72,9 @@
 
 		<div class="theme-actions">
 			<div>
-				<a href="" class="button default" aria-label="Activate Cayse"><?php esc_html_e( 'Use as default', 'mailster' ); ?></a>
+				<a href="" class="button default"><?php esc_html_e( 'Use as default', 'mailster' ); ?></a>
+				<a href="" class="button button-primary save"><?php esc_html_e( 'Save File', 'mailster' ); ?></a>
+				<a href="" class="button edit"><?php esc_html_e( 'Edit File', 'mailster' ); ?></a>
 				<a href="<?php echo admin_url( 'post-new.php?post_type=newsletter' ); ?>" class="button button-primary campaign"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
 			</div>
 			<a class="button delete-theme"><?php esc_html_e( 'Delete', 'mailster' ); ?></a>

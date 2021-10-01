@@ -204,14 +204,14 @@ class MailsterSecurity {
 	public function flood( $subscriber_id ) {
 		if ( ! is_admin() && $time = mailster_option( 'antiflood' ) ) {
 			$ip = mailster_get_ip();
-			set_transient( 'mailster_ip_check_' . md5( NONCE_SALT . ip2long( $ip ) ), time() + $time, $time );
+			set_transient( 'mailster_ip_check_' . md5( ip2long( $ip ) ), time() + $time, $time );
 		}
 	}
 
 
 	public function is_flood( $ip ) {
 
-		return get_transient( 'mailster_ip_check_' . md5( NONCE_SALT . ip2long( $ip ) ) );
+		return get_transient( 'mailster_ip_check_' . md5( ip2long( $ip ) ) );
 
 	}
 

@@ -1169,6 +1169,7 @@ class MailsterQueue {
 
 			if ( $wpdb->last_error ) {
 				$this->cron_log( 'DB Error', '&nbsp;<span class="error">' . $wpdb->last_error . '</span>' );
+				$this->dbstructure();
 			}
 
 			$queue_result_count = count( $queue_result );
