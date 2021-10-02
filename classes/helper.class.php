@@ -744,11 +744,7 @@ class MailsterHelper {
 		$offset = get_option( 'gmt_offset' );
 
 		if ( $offset == '' ) {
-			$tzstring = get_option( 'timezone_string' );
-			$current  = date_default_timezone_get();
-			date_default_timezone_set( $tzstring );
-			$offset = date( 'Z' ) / 3600;
-			date_default_timezone_set( $current );
+			$offset = $this->get_timezone_offset_by_string( get_option( 'timezone_string' ) );
 		}
 
 		// check if timestamp has DST
@@ -760,6 +756,24 @@ class MailsterHelper {
 		}
 
 		return $in_seconds ? $offset * 3600 : (int) $offset;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $string
+	 * @return unknown
+	 */
+	public function get_timezone_offset_by_string( $tzstring ) {
+
+		$current = date_default_timezone_get();
+		date_default_timezone_set( $tzstring );
+		$offset = date( 'Z' ) / 3600;
+		date_default_timezone_set( $current );
+
+		return $offset;
+
 	}
 
 

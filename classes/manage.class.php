@@ -42,8 +42,6 @@ class MailsterManage {
 			}
 		}
 
-		error_log( print_r( $integrations, true ) );
-
 	}
 
 
@@ -184,8 +182,11 @@ class MailsterManage {
 
 			$total_lines = substr_count( $raw_data, "\n" ) + 1;
 			$data        = $this->sanitize_raw_data( $raw_data );
-			$total       = $total_batch = count( $data );
-			$removed     = $total_lines - $total;
+			if ( isset( $data['header'] ) ) {
+				$header = array_shift( $data );
+			}
+			$total   = $total_batch = count( $data );
+			$removed = $total_lines - $total;
 
 		} elseif ( isset( $_POST['data'] ) ) {
 
@@ -203,13 +204,17 @@ class MailsterManage {
 
 			// single quotes cause problems
 			$raw_data = str_replace( '&#039;', "'", $raw_data );
+			$raw_data = str_replace( '&quot;', '"', $raw_data );
 
 			$raw_data = trim( $raw_data );
 
 			$total_lines = substr_count( $raw_data, "\n" ) + 1;
 			$data        = $this->sanitize_raw_data( $raw_data );
-			$total       = $total_batch = count( $data );
-			$removed     = $total_lines - $total;
+			if ( isset( $data['header'] ) ) {
+				$header = array_shift( $data );
+			}
+			$total   = $total_batch = count( $data );
+			$removed = $total_lines - $total;
 
 		} elseif ( isset( $_POST['wordpressusers'] ) ) {
 
@@ -410,10 +415,16 @@ class MailsterManage {
 			'_ip_all'            => esc_html__( 'all IP Addresses', 'mailster' ),
 		);
 		$meta_other = array(
-			'_lists'  => esc_html__( 'Lists', 'mailster' ) . ' (' . esc_html__( 'comma separated', 'mailster' ) . ')',
-			'_tags'   => esc_html__( 'Tags', 'mailster' ) . ' (' . esc_html__( 'comma separated', 'mailster' ) . ')',
-			'_status' => esc_html__( 'Status', 'mailster' ) . ' [0...6]',
-			'_lang'   => esc_html__( 'Language', 'mailster' ),
+			'_lists'      => esc_html__( 'Lists', 'mailster' ) . ' (' . esc_html__( 'comma separated', 'mailster' ) . ')',
+			'_tags'       => esc_html__( 'Tags', 'mailster' ) . ' (' . esc_html__( 'comma separated', 'mailster' ) . ')',
+			'_status'     => esc_html__( 'Status', 'mailster' ) . ' [0...6]',
+			'_lang'       => esc_html__( 'Language', 'mailster' ),
+			'_timeoffset' => esc_html__( 'Timeoffset to UTC', 'mailster' ),
+			'_timezone'   => esc_html__( 'Timezone', 'mailster' ),
+			'_lat'        => esc_html__( 'Latitude', 'mailster' ),
+			'_long'       => esc_html__( 'Longitude', 'mailster' ),
+			'_country'    => esc_html__( 'Country', 'mailster' ),
+			'_city'       => esc_html__( 'City', 'mailster' ),
 		);
 
 		$html       = '<form id="subscriber-table">';
@@ -719,6 +730,9 @@ class MailsterManage {
 					);
 
 					$insert      = array();
+					$meta        = array();
+					$geo         = array();
+					$coords      = array();
 					$statusnames = array_flip( mailster( 'subscribers' )->get_status( null, true ) );
 
 					// each column
@@ -776,7 +790,34 @@ class MailsterManage {
 								$insert['signup']  = $d;
 								$insert['confirm'] = $d;
 								break;
-
+							case '_timeoffset':
+								$meta[ substr( $order[ $col ], 1 ) ] = $d;
+								break;
+							case '_timezone':
+								$offset             = mailster( 'helper' )->get_timezone_offset_by_string( $d );
+								$meta['timeoffset'] = $offset;
+								break;
+							case '_country':
+								if ( $d ) {
+									$geo[0] = $d;
+									$geo[1] = isset($geo[1]) ? $geo[1] : '';
+								}
+								break;
+							case '_city':
+								if ( $d ) {
+									$geo[1] = $d;
+								}
+								break;
+							case '_long':
+								if ( $d ) {
+									$coords[0] = $d;
+								}
+								break;
+							case '_lat':
+								if ( $d ) {
+									$coords[1] = $d;
+								}
+								break;
 							case 'first_last':
 								$split               = explode( ' ', $d );
 								$insert['firstname'] = $split[0];
@@ -788,11 +829,19 @@ class MailsterManage {
 								$insert['lastname']  = $split[0];
 								break;
 							case '-1':
+							case '_new':
 								// ignored column
 								break;
 							default:
 								$insert[ $order[ $col ] ] = $d;
 						}
+					}
+
+					if ( ! empty( $geo ) ) {
+						$meta['geo'] = implode( '|', $geo );
+					}
+					if ( ! empty( $coords ) ) {
+						$meta['coords'] = implode( '|', $coords );
 					}
 
 					if ( ! mailster_is_email( $insert['email'] ) ) {
@@ -915,6 +964,8 @@ class MailsterManage {
 							$tag_ids = array_unique( $tag_ids );
 							mailster( 'subscribers' )->assign_tags( $subscriber_id, $tag_ids, $bulkdata['existing'] == 'overwrite' );
 						}
+
+						mailster( 'subscribers' )->update_meta( $subscriber_id, 0, $meta );
 
 						$bulkdata['imported']++;
 					}
@@ -1578,12 +1629,31 @@ class MailsterManage {
 		$lines     = explode( "\n", $raw_data );
 		$separator = $this->get_separator( $lines[0] );
 		$data      = array();
-		foreach ( $lines as $line ) {
+		$new_sep   = md5( uniqid() );
+		$temp_sep  = md5( uniqid() );
+
+		foreach ( $lines as $i => $line ) {
+
+			// handle if separator is used in a column
+			if ( preg_match_all( '/("([^"]*)")/', $line, $match ) ) {
+				foreach ( $match[0] as $value ) {
+					if ( false !== strpos( $value, $separator ) ) {
+						$line = str_replace( $value, str_replace( $separator, $temp_sep, $value ), $line );
+					}
+				}
+			}
+
+			$line = str_replace( $separator, $new_sep, $line );
+			$line = str_replace( $temp_sep, $separator, $line );
+
 			// cleanup quotes
-			$line      = str_replace( array( "'" . $separator . "'", '"' . $separator . '"' ), $separator, $line );
-			$line      = preg_replace( '#^("|\')#', '', $line );
-			$line      = preg_replace( '#("|\')$#', '', $line );
-			$line      = explode( $separator, $line );
+			$line = str_replace( array( "'" . $new_sep . "'", '"' . $new_sep . '"' ), $new_sep, $line );
+			$line = preg_replace( '#("|\')' . preg_quote( $new_sep ) . '#', $new_sep, $line );
+			$line = preg_replace( '#' . preg_quote( $new_sep ) . '("|\')#', $new_sep, $line );
+			$line = preg_replace( '#^("|\')#', '', $line );
+			$line = preg_replace( '#("|\')$#', '', $line );
+			$line = explode( $new_sep, $line );
+
 			$has_email = false;
 			foreach ( $line as $entry ) {
 				if ( mailster_is_email( $entry ) ) {
@@ -1591,8 +1661,11 @@ class MailsterManage {
 					break;
 				}
 			}
+			// only first row (header) or with email
 			if ( $has_email ) {
 				$data[] = $line;
+			} elseif ( ! $has_email && ! $i ) {
+				$data['header'] = $line;
 			}
 		}
 
