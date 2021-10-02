@@ -189,6 +189,7 @@ Get professional development help from our expert support partner *Codeable* for
 
 = 3.0.2 =
 
+* fixed: duplicating forms throw an error.
 * fixed: some notifications missed template defined settings.
 * change: optional warmup has been extended to 60 days.
 * improved: database errors during cron tried to get fixed automatically.
