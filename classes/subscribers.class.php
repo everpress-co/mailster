@@ -188,6 +188,7 @@ class MailsterSubscribers {
 
 		if ( isset( $_POST['all_subscribers'] ) && $_POST['all_subscribers'] ) {
 			$args = $_GET;
+			unset( $args['post_type'], $args['page'] );
 
 			$status  = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
 			$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
