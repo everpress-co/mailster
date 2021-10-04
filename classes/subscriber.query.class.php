@@ -742,6 +742,11 @@ class MailsterSubscriberQuery {
 			$wheres[] = 'AND queue.subscriber_id IS NULL';
 		}
 
+		// always exclude deleted if not defined
+		if ( ! $this->args['status'] ) {
+			$wheres[] = 'AND subscribers.status != 5';
+		}
+
 		if ( $this->args['s'] ) {
 
 			$raw_search       = addcslashes( trim( $this->args['s'] ), '%[]_' );
@@ -993,7 +998,7 @@ class MailsterSubscriberQuery {
 
 		$sql = apply_filters( 'mailster_subscriber_query_sql', $sql, $this->args, $campaign_id );
 
-		// error_log( $sql );
+		error_log( $sql );
 		if ( $this->args['return_sql'] ) {
 			$result            = $this->last_query = $sql;
 			$this->last_error  = null;

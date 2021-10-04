@@ -60,7 +60,12 @@
 	<p>
 	<input type="hidden" name="status[]" value="-1">
 		<?php foreach ( mailster( 'subscribers' )->get_status( null, true ) as $i => $name ) : ?>
-	<label><input type="checkbox" name="status[]" value="<?php echo $i; ?>" <?php checked( in_array( $i, $user_settings['status'] ) ); ?>> <?php echo $name; ?> </label>
+			<?php
+			if ( 5 == $i ) :
+				continue;
+			endif;
+			?>
+	<label><input type="checkbox" name="status[]" value="<?php echo $i; ?>" <?php checked( in_array( $i, $user_settings['status'] ) ); ?>> <?php echo esc_html( $name ); ?> </label>
 	<?php endforeach; ?>
 	</p>
 	<p class="howto"><?php esc_html_e( 'Choose the status of your subscribes you like to export.', 'mailster' ); ?></p>

@@ -99,6 +99,12 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		}
 
 		?>
+		<?php if ( isset( $_GET['status'] ) && 5 == $_GET['status'] ) : ?>
+		<div class="notice notice-error error">
+			<p><?php printf( esc_html__( 'This subscribers are marked as "deleted" and get removed within the next %d days.', 'mailster' ), 14 ); ?></p>
+		</div>
+		<?php endif; ?>
+
 	<form id="searchform" action method="get">
 		<?php if ( isset( $_GET['post_type'] ) ) : ?>
 			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>">

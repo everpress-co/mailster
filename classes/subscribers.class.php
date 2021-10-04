@@ -1523,9 +1523,10 @@ class MailsterSubscribers {
 	 * @param unknown $status         (optional)
 	 * @param unknown $remove_actions (optional)
 	 * @param unknown $remove_meta    (optional)
+	 * @param unknown $skip_trash     (optional)
 	 * @return unknown
 	 */
-	public function remove( $subscriber_ids, $status = null, $remove_actions = false, $remove_meta = true ) {
+	public function remove( $subscriber_ids, $status = null, $remove_actions = false, $remove_meta = true, $skip_trash = null ) {
 
 		global $wpdb;
 
@@ -1540,6 +1541,22 @@ class MailsterSubscribers {
 		}
 
 		if ( empty( $subscriber_ids ) ) {
+			return true;
+		}
+
+		if ( ! is_null( $skip_trash ) ) {
+			$skip_trash = true;
+		}
+
+		if ( $skip_trash ) {
+			$this->update_meta(
+				$subscriber_ids,
+				array(
+					'remove_actions' => $remove_actions,
+					'remove_meta'    => $remove_meta,
+				)
+			);
+			$this->change_status( $subscriber_ids, 5 );
 			return true;
 		}
 
@@ -1664,7 +1681,7 @@ class MailsterSubscribers {
 	 * @return unknown
 	 */
 	public function get_single_meta_keys() {
-		return array( 'ip', 'lang', 'timeoffset', 'form', 'update_rating' );
+		return array( 'ip', 'lang', 'timeoffset', 'form', 'update_rating', 'remove_meta', 'remove_actions' );
 	}
 
 
@@ -3797,6 +3814,7 @@ class MailsterSubscribers {
 				esc_html__( 'Unsubscribed', 'mailster' ),
 				esc_html__( 'Hardbounced', 'mailster' ),
 				esc_html__( 'Error', 'mailster' ),
+				esc_html__( 'Deleted', 'mailster' ),
 			);
 
 		} else {
@@ -3806,6 +3824,7 @@ class MailsterSubscribers {
 				'unsubscribed',
 				'hardbounced',
 				'error',
+				'deleted',
 			);
 		}
 

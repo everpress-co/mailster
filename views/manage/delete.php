@@ -34,6 +34,11 @@
 <section>
 	<p>
 		<?php foreach ( mailster( 'subscribers' )->get_status( null, true ) as $i => $name ) : ?>
+			<?php
+			if ( 5 == $i ) :
+				continue;
+		endif;
+			?>
 		<label><input type="checkbox" name="status[]" value="<?php echo (int) $i; ?>"> <?php echo esc_html( $name ); ?> </label>
 		<?php endforeach; ?>
 	</p>

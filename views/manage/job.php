@@ -2,7 +2,6 @@
 	$lists  = mailster( 'lists' )->get();
 	$lists  = wp_list_pluck( $lists, 'name', 'ID' );
 	$status = mailster( 'subscribers' )->get_status();
-	$i      = 0;
 ?>
 <ul>
 	<?php if ( isset( $job['status'] ) ) : ?>

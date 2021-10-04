@@ -1575,7 +1575,7 @@ class MailsterManage {
 		foreach ( $jobs = get_option( 'mailster_manage_jobs', array() ) as $id => $job ) {
 
 			// only jobs older than one hour
-			if ( time() - $job['timestamp'] > HOUR_IN_SECONDS ) {
+			if ( time() - $job['timestamp'] > MINUTE_IN_SECONDS ) {
 				$this->delete_contacts( $job, true );
 			}
 		}
@@ -1591,6 +1591,7 @@ class MailsterManage {
 		$remove_actions = isset( $args['remove_actions'] ) ? $args['remove_actions'] : null;
 		$remove_lists   = isset( $args['remove_lists'] ) ? $args['remove_lists'] : null;
 		$job            = $args;
+		$skip_trash     = null;
 
 		$subscribers = array();
 
@@ -1626,12 +1627,14 @@ class MailsterManage {
 			if ( $p * 100 > $min_p ) {
 				return false;
 			}
+
+			$skip_trash = false;
 		}
 
 		$success = true;
 
 		$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
-		$success        = mailster( 'subscribers' )->remove( $subscriber_ids, $args['status'], $remove_actions );
+		$success        = mailster( 'subscribers' )->remove( $subscriber_ids, $args['status'], $remove_actions, true, $skip_trash );
 
 		if ( $success && $remove_lists && ! empty( $args['lists'] ) ) {
 			mailster( 'lists' )->remove( $args['lists'] );
