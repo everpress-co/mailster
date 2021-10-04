@@ -16,7 +16,7 @@ mailster = (function (mailster, $, window, document) {
 
 			if ('delete' == input.toLowerCase()) {
 
-				var data = $(this).serialize();
+				var data = $('#delete-subscribers').serialize();
 
 				deletestatus.addClass('progress spinner');
 
@@ -31,6 +31,61 @@ mailster = (function (mailster, $, window, document) {
 					}
 					deletestatus.removeClass('spinner');
 					update_delete_count();
+
+				}, function (jqXHR, textStatus, errorThrown) {
+
+					deletestatus.html('[' + jqXHR.status + '] ' + errorThrown);
+
+				});
+
+			}
+
+			return false;
+		})
+		.on('click', '.remove-job', function () {
+
+			if (!confirm(mailster.l10n.manage.confirm_delete)) return false;
+
+			var job = $(this).closest('.manage-job');
+
+			mailster.util.ajax('delete_delete_job', {
+				id: job.data('id'),
+			}, function (response) {
+
+				if (response.success) {
+					job.slideUp();
+				}
+
+			}, function (jqXHR, textStatus, errorThrown) {
+
+			});
+
+			return false;
+		})
+		.on('click', '#schedule-delete-subscriber-button', function () {
+
+			var input = prompt(mailster.l10n.manage.confirm_delete, 'delete');
+
+			if (!input) return false;
+
+			if ('delete' == input.toLowerCase()) {
+
+				var data = $('#delete-subscribers').serialize();
+
+				deletestatus.addClass('progress spinner');
+
+				mailster.util.ajax('delete_contacts', {
+					'schedule': true,
+					data: data,
+				}, function (response) {
+
+					if (response.success) {
+						deletestatus.html(response.msg);
+					} else {
+						deletestatus.html(response.msg);
+					}
+					deletestatus.removeClass('spinner');
+					window.location.reload();
 
 				}, function (jqXHR, textStatus, errorThrown) {
 

@@ -8,3 +8,34 @@
 	opacity: 1;
 	width: auto;
 }
+.manage-job{
+	max-width: 740px;
+	border-radius: 3px;
+	margin: 0 0 12px;
+	padding: 0 10px 36px;
+	border: 1px solid #dfdfdf;
+	padding: 1em 1em;
+	position: relative;
+	background: #f6f7f7;
+	line-height: 1.3em;
+}
+.manage-job .remove-job {
+	float: right;
+	cursor: pointer;
+	visibility: hidden;
+	margin-bottom: 10px;
+	padding: 0 4px;
+}
+.manage-job:hover .remove-job {
+	visibility: visible;
+}
+.manage-job .job-id{
+	font-size: 20px;
+	color: #dfdfdf;
+	display: inline-block;
+}
+.manage-job span.mailster-icon-star:before, .manage-job span.mailster-icon-star-empty:before{
+	width: 16px;
+	height: 16px;
+	background-size: 16px 16px;
+}

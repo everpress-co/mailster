@@ -576,7 +576,7 @@ class MailsterSubscriberQuery {
 
 						} elseif ( 0 === strpos( $field, '_open' ) ) {
 
-							$join = "LEFT JOIN {$wpdb->prefix}mailster_action_opens AS `$alias` ON subscribers.ID = `$alias`.subscriber_id";
+							$join = "LEFT JOIN {$wpdb->prefix}mailster_action_opens AS `$alias` ON   = `$alias`.subscriber_id";
 							if ( ( '_open' === $field || '_open__not_in' === $field ) && $value && $value != -1 ) {
 								$join .= " AND `$alias`.campaign_id IN (" . implode( ',', array_filter( $value, 'is_numeric' ) ) . ')';
 							}

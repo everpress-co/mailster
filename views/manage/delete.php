@@ -27,20 +27,40 @@
 </section>
 <h4><?php esc_html_e( 'Conditions', 'mailster' ); ?></h4>
 <section>
+		<p class="howto"> <?php esc_html_e( 'Define conditions to segment your selection further.', 'mailster' ); ?> </p>
 		<?php mailster( 'conditions' )->view( array(), 'conditions' ); ?>
 </section>
 <h4><?php esc_html_e( 'Status', 'mailster' ); ?></h4>
 <section>
 	<p>
 		<?php foreach ( mailster( 'subscribers' )->get_status( null, true ) as $i => $name ) : ?>
-		<label><input type="checkbox" name="status[]" value="<?php echo (int) $i; ?>" checked> <?php echo esc_html( $name ); ?> </label>
+		<label><input type="checkbox" name="status[]" value="<?php echo (int) $i; ?>"> <?php echo esc_html( $name ); ?> </label>
 		<?php endforeach; ?>
 	</p>
 	<p>
 		<label><input type="checkbox" name="remove_lists" value="1"> <?php esc_html_e( 'Remove selected lists', 'mailster' ); ?> </label>
+		<br><span class="howto"> <?php esc_html_e( 'This will also remove selected lists.', 'mailster' ); ?></span>
 	</p>
 	<p>
 		<label><input type="checkbox" name="remove_actions" value="1"> <?php esc_html_e( 'Remove all actions from affected users', 'mailster' ); ?> </label>
+		<br><span class="howto"> <?php esc_html_e( 'This will remove all actions from the affected users as well which can change the stats of your campaigns.', 'mailster' ); ?></span>
+	</p>
+</section>
+<h4><?php esc_html_e( 'Automation', 'mailster' ); ?></h4>
+<section>
+	<?php if ( $jobs = get_option( 'mailster_manage_jobs', array() ) ) : ?>
+	<p class="howto"><?php esc_html_e( 'These jobs will run automatically.', 'mailster' ); ?> <?php printf( esc_html__( ' For safety Mailster will only run these jobs if they remove %s of your total subscribers.', 'mailster' ), '<strong>5 %</strong>' ); ?></p>
+		<?php foreach ( $jobs as $hash => $job ) : ?>
+	<div class="manage-job" data-id="<?php echo esc_attr( $hash ); ?>">
+	<a class="remove-job" title="<?php esc_html_e( 'Remove job', 'mailster' ); ?>">&#10005;</a>
+	<div><strong><?php esc_html_e( 'Delete all subscribers', 'mailster' ); ?></strong></div>
+			<?php include MAILSTER_DIR . 'views/manage/job.php'; ?>
+	</div>
+	<?php endforeach; ?>
+	<?php endif; ?>
+	<p class="howto"><?php esc_html_e( 'Mailster can perform this job on a regular basis to keep your list clean and healthy. Click this button to add a delete job with the current settings.', 'mailster' ); ?></p>
+	<p>
+		<input id="schedule-delete-subscriber-button" class="button" type="button" value="<?php esc_attr_e( 'Schedule Delete Job', 'mailster' ); ?>" />
 	</p>
 </section>
 <section class="footer alternate">

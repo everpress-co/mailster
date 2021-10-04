@@ -4,7 +4,6 @@ class MailsterManage {
 
 	public function __construct() {
 
-		add_action( 'plugins_loaded', array( &$this, 'init' ) );
 		add_action( 'admin_menu', array( &$this, 'add_menu' ), 40 );
 		add_action( 'wp_ajax_mailster_import_subscribers_upload_handler', array( &$this, 'ajax_import_subscribers_upload_handler' ) );
 		add_action( 'wp_ajax_mailster_get_import_data', array( &$this, 'ajax_get_import_data' ) );
@@ -13,19 +12,17 @@ class MailsterManage {
 		add_action( 'wp_ajax_mailster_do_export', array( &$this, 'ajax_do_export' ) );
 		add_action( 'wp_ajax_mailster_download_export_file', array( &$this, 'ajax_download_export_file' ) );
 		add_action( 'wp_ajax_mailster_delete_contacts', array( &$this, 'ajax_delete_contacts' ) );
-		add_action( 'wp_ajax_mailster_delete_old_bulk_jobs', array( &$this, 'ajax_delete_old_bulk_jobs' ) );
+		add_action( 'wp_ajax_mailster_delete_delete_job', array( &$this, 'ajax_delete_delete_job' ) );
 
 		add_action( 'mailster_import_method', array( &$this, 'display_import_method' ) );
 		add_action( 'admin_init', array( &$this, 'admin_enqueue_scripts' ) );
 
 		add_action( 'admin_init', array( &$this, 'load_integrations' ), 10 );
 
-	}
-
-
-	public function init() {
+		add_action( 'mailster_cron_worker', array( &$this, 'delete_job' ) );
 
 	}
+
 
 	public function load_integrations() {
 
@@ -800,7 +797,7 @@ class MailsterManage {
 							case '_country':
 								if ( $d ) {
 									$geo[0] = $d;
-									$geo[1] = isset($geo[1]) ? $geo[1] : '';
+									$geo[1] = isset( $geo[1] ) ? $geo[1] : '';
 								}
 								break;
 							case '_city':
@@ -1516,65 +1513,148 @@ class MailsterManage {
 
 		unset( $args['_wpnonce'], $args['_wp_http_referer'] );
 
-		$count = $this->delete_contacts( $args );
+		$schedule = isset( $_POST['schedule'] );
 
-		if ( $count ) {
+		if ( $schedule ) {
+			$jobs = get_option( 'mailster_manage_jobs', array() );
+
+			$jobs[ md5( serialize( $args ) ) ] = wp_parse_args( array( 'timestamp' => time() ), $args );
+
+			update_option( 'mailster_manage_jobs', $jobs );
 
 			$return['success'] = true;
-			$return['msg']     = sprintf( esc_html__( _n( '%s Subscriber removed', '%s Subscribers removed', $count, 'mailster' ) ), number_format_i18n( $count ) );
+			$return['msg']     = esc_html__( 'Job scheduled.', 'mailster' );
 
 		} else {
 
-			$return['success'] = false;
-			$return['msg']     = esc_html__( 'No Subscribers removed', 'mailster' );
+			if ( $count = $this->delete_contacts( $args ) ) {
+
+				$return['success'] = true;
+				$return['msg']     = sprintf( esc_html__( _n( '%s Subscriber removed.', '%s Subscribers removed.', $count, 'mailster' ) ), number_format_i18n( $count ) );
+
+			} else {
+
+				$return['success'] = false;
+				$return['msg']     = esc_html__( 'No Subscribers removed.', 'mailster' );
+			}
 		}
 
 		wp_send_json( $return );
 
 	}
 
-	public function delete_contacts( $args ) {
+	public function ajax_delete_delete_job() {
+
+		$return['success'] = false;
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		if ( ! current_user_can( 'mailster_bulk_delete_subscribers' ) ) {
+			$return['msg'] = 'no allowed';
+			wp_send_json( $return );
+		}
+
+		$id = $_POST['id'];
+
+		$jobs = get_option( 'mailster_manage_jobs', array() );
+
+		if ( isset( $jobs[ $id ] ) ) {
+			unset( $jobs[ $id ] );
+			update_option( 'mailster_manage_jobs', $jobs );
+		}
+
+		$return['success'] = true;
+		$return['msg']     = esc_html__( 'Job deleted.', 'mailster' );
+
+		wp_send_json( $return );
+
+	}
+
+	public function delete_job() {
+
+		foreach ( $jobs = get_option( 'mailster_manage_jobs', array() ) as $id => $job ) {
+
+			// only jobs older than one hour
+			if ( time() - $job['timestamp'] > HOUR_IN_SECONDS ) {
+				$this->delete_contacts( $job, true );
+			}
+		}
+
+	}
+
+	public function delete_contacts( $args, $check = false ) {
+
+		global $wpdb;
 
 		$count          = 0;
 		$nolists        = isset( $args['nolists'] ) ? $args['nolists'] : null;
 		$remove_actions = isset( $args['remove_actions'] ) ? $args['remove_actions'] : null;
 		$remove_lists   = isset( $args['remove_lists'] ) ? $args['remove_lists'] : null;
+		$job            = $args;
+
+		$subscribers = array();
 
 		$args = array(
 			'lists'      => isset( $args['lists'] ) ? array_filter( $args['lists'], 'is_numeric' ) : array(),
 			'status'     => isset( $args['status'] ) ? array_filter( $args['status'], 'is_numeric' ) : null,
 			'conditions' => isset( $args['conditions'] ) ? (array) $args['conditions'] : null,
-			'return_ids' => true,
 		);
 
 		$args = apply_filters( 'mailster_delete_args', $args );
 
 		if ( ! empty( $args['lists'] ) ) {
 
-			$subscriber_ids = mailster( 'subscribers' )->query( $args );
+			$subscribers = array_merge( mailster( 'subscribers' )->query( $args ), $subscribers );
 
-			$count += count( $subscriber_ids );
-
-			$success = mailster( 'subscribers' )->remove( $subscriber_ids, $args['status'], $remove_actions );
-
-			if ( $success && $remove_lists ) {
-
-				mailster( 'lists' )->remove( $args['lists'] );
-
-			}
 		}
 
 		if ( $nolists ) {
 
-			$args['lists']  = -1;
-			$subscriber_ids = mailster( 'subscribers' )->query( $args );
-
-			$count += count( $subscriber_ids );
-
-			$success = mailster( 'subscribers' )->remove( $subscriber_ids, $args['status'], $remove_actions );
+			$args['lists'] = -1;
+			$subscribers   = array_merge( mailster( 'subscribers' )->query( $args ), $subscribers );
 
 		}
 
+		$count = count( $subscribers );
+		if ( $check ) {
+			$total = mailster( 'subscribers' )->get_count( false, 1, null );
+			$total = array_sum( $total );
+			$p     = $count / $total;
+
+			$min_p = 5;
+
+			if ( $p * 100 > $min_p ) {
+				return false;
+			}
+		}
+
+		$success = true;
+
+		$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
+		$success        = mailster( 'subscribers' )->remove( $subscriber_ids, $args['status'], $remove_actions );
+
+		if ( $success && $remove_lists && ! empty( $args['lists'] ) ) {
+			mailster( 'lists' )->remove( $args['lists'] );
+		}
+
+		if ( $check && $success && $count ) {
+
+			$n = mailster( 'notification' );
+			$n->to( 'Xaver@revaxarts.com' );
+			$n->template( 'delete_job' );
+			$n->subject( 'delete_job' );
+			$n->replace( array( 'notification' => 'delete_job' ) );
+			$n->requeue( false );
+
+			$mail = $n->mail;
+
+			$return['success'] = $n->add(
+				array(
+					'subscribers' => $subscribers,
+					'job'         => $job,
+				)
+			);
+		}
 		return $count;
 
 	}

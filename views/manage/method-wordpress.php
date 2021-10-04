@@ -3,7 +3,7 @@
 	<div class="inner">
 		<div>
 			<p><strong><?php esc_html_e( 'WordPress users roles', 'mailster' ); ?></strong></p>
-			<p class="description"><?php esc_html_e( 'Select the user roles you like to import.', 'mailster' ); ?></p>
+			<p class="howto"><?php esc_html_e( 'Select the user roles you like to import.', 'mailster' ); ?></p>
 			<p><label><input type="checkbox" class="list-toggle" checked> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></p>
 			<ul>
 			<?php
@@ -19,7 +19,7 @@
 		<div>
 			<?php $meta_values = mailster( 'helper' )->get_wpuser_meta_fields(); ?>
 			<p><strong><?php esc_html_e( 'Handle following meta values', 'mailster' ); ?></strong></p>
-			<p class="description"><?php esc_html_e( 'Select the meta fields you like to import.', 'mailster' ); ?></p>
+			<p class="howto"><?php esc_html_e( 'Select the meta fields you like to import.', 'mailster' ); ?></p>
 			<p><label><input type="checkbox" class="list-toggle"> <?php esc_html_e( 'toggle all', 'mailster' ); ?></label></p>
 			<ul>
 			<?php foreach ( $meta_values as $i => $meta_value ) : ?>

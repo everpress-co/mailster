@@ -1533,7 +1533,7 @@ class MailsterSubscribers {
 		$statuses       = ! is_null( $status ) ? ( ! is_array( $status ) ? array( (int) $status ) : array_filter( $status, 'is_numeric' ) ) : null;
 
 		// reduce subscriber_ids if status is set
-		if ( $statuses ) {
+		if ( $subscriber_ids && $statuses ) {
 			$sql            = "SELECT subscribers.ID FROM {$wpdb->prefix}mailster_subscribers AS subscribers WHERE subscribers.ID IN (0," . implode( ',', $subscriber_ids ) . ')';
 			$sql           .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
 			$subscriber_ids = $wpdb->get_col( $sql );

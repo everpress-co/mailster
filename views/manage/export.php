@@ -52,6 +52,7 @@
 </section>
 <h4><?php esc_html_e( 'Conditions', 'mailster' ); ?></h4>
 <section>
+		<p class="howto"> <?php esc_html_e( 'Define conditions to segment your selection further.', 'mailster' ); ?> </p>
 		<?php mailster( 'conditions' )->view( $user_settings['conditions'], 'conditions' ); ?>
 </section>
 <h4><?php esc_html_e( 'Status', 'mailster' ); ?></h4>
@@ -62,7 +63,7 @@
 	<label><input type="checkbox" name="status[]" value="<?php echo $i; ?>" <?php checked( in_array( $i, $user_settings['status'] ) ); ?>> <?php echo $name; ?> </label>
 	<?php endforeach; ?>
 	</p>
-	<p class="description"><?php esc_html_e( 'Choose the status of your subscribes you like to export.', 'mailster' ); ?></p>
+	<p class="howto"><?php esc_html_e( 'Choose the status of your subscribes you like to export.', 'mailster' ); ?></p>
 </section>
 <h4><?php esc_html_e( 'Define order and included columns', 'mailster' ); ?></h4>
 <section>
@@ -211,18 +212,18 @@
 	<p>
 		<label><span><?php esc_html_e( 'Server Performance', 'mailster' ); ?></span>
 		<select name="performance" class="performance">
-			<option value="100" <?php selected( $user_settings['performance'], '100' ); ?>><?php esc_html_e( 'low', 'mailster' ); ?></option>
-			<option value="1000" <?php selected( $user_settings['performance'], '1000' ); ?>><?php esc_html_e( 'normal', 'mailster' ); ?></option>
-			<option value="5000" <?php selected( $user_settings['performance'], '5000' ); ?>><?php esc_html_e( 'high', 'mailster' ); ?></option>
-			<option value="20000" <?php selected( $user_settings['performance'], '20000' ); ?>><?php esc_html_e( 'super high', 'mailster' ); ?></option>
-			<option value="50000" <?php selected( $user_settings['performance'], '50000' ); ?>><?php esc_html_e( 'super extreme high', 'mailster' ); ?></option>
+			<option value="100" <?php selected( $user_settings['performance'], 100 ); ?>><?php esc_html_e( 'low', 'mailster' ); ?></option>
+			<option value="1000" <?php selected( $user_settings['performance'], 1000 ); ?>><?php esc_html_e( 'normal', 'mailster' ); ?></option>
+			<option value="5000" <?php selected( $user_settings['performance'], 5000 ); ?>><?php esc_html_e( 'high', 'mailster' ); ?></option>
+			<option value="20000" <?php selected( $user_settings['performance'], 20000 ); ?>><?php esc_html_e( 'super high', 'mailster' ); ?></option>
+			<option value="50000" <?php selected( $user_settings['performance'], 50000 ); ?>><?php esc_html_e( 'super extreme high', 'mailster' ); ?></option>
 		</select>
 		</label>
 	</p>
 </section>
 <section class="footer alternate">
 	<p>
-		<input id="export-subscriber-button" class="button button-large button-primary" type="submit" value="<?php esc_attr_e( 'Export Subscribers', 'mailster' ); ?>" />
+		<input id="export-subscriber-button" class="button button-primary" type="submit" value="<?php esc_attr_e( 'Export Subscribers', 'mailster' ); ?>" />
 		<span class="status wp-ui-text-icon spinner"></span>
 	</p>
 </section>

@@ -1,4 +1,4 @@
-<p class="description"><?php esc_html_e( 'Upload you subscribers as comma-separated list (CSV)', 'mailster' ); ?></p>
+<p class="howto"><?php esc_html_e( 'Upload you subscribers as comma-separated list (CSV)', 'mailster' ); ?></p>
 <form enctype="multipart/form-data" method="post" action="<?php echo admin_url( 'admin-ajax.php?action=mailster_import_subscribers_upload_handler' ); ?>">
 
 <?php
