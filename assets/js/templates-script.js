@@ -104,7 +104,10 @@ mailster = (function (mailster, $, window, document) {
 		uploader_init();
 		mailster.$.window.on('scroll.mailster', mailster.util.throttle(maybeLoadTemplates, 500))
 	});
-
+	mailster.events.push('windowLoad', function () {
+		//fixes update nag with Newspaper theme
+		$('body').off('mousedown');
+	});
 	var overlay = function () {
 
 		if (this === window) return new overlay();
