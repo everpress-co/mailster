@@ -127,6 +127,8 @@ class MailsterSettings {
 			'unsubscribe_notification_template'  => 'notification.html',
 			'track_users'                        => false,
 			'do_not_track'                       => false,
+			'check_honeypot'                     => true,
+			'check_ip'                           => true,
 			'antiflood'                          => 60,
 			'reject_dep'                         => true,
 			'list_based_opt_in'                  => true,
