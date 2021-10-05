@@ -42,7 +42,11 @@ if ( mailster()->is_verified() ) {
 <dl class="mailster-icon mailster-update update-not-available">
 	<dt><?php printf( esc_html__( 'Installed Version %s', 'mailster' ), MAILSTER_VERSION ); ?></dt>
 	<dd><?php esc_html_e( 'You have the latest version', 'mailster' ); ?></dd>
-	<dd><span class="lighter"><?php echo isset( $plugin_info->last_update ) ? sprintf( esc_html__( 'checked %s ago', 'mailster' ), '<span class="update-last-check">' . human_time_diff( $plugin_info->last_update ) . '</span>' ) . ' &ndash; ' : ''; ?></span> <span class="lighter"><a href="" class="check-for-update"><?php esc_html_e( 'Check Again', 'mailster' ); ?></a></span>
+	<?php if ( function_exists( 'wp_is_auto_update_enabled_for_type' ) && ! mailster( 'update' )->is_auto_update() ) : ?>
+	<dd><a href="<?php echo mailster( 'update' )->get_auto_update_url(); ?>" class="enable-auto-update"><?php esc_html_e( 'Enable Auto Update', 'mailster' ); ?></a></dd>
+	<?php endif; ?>
+	<dd><span class="lighter"><?php echo isset( $plugin_info->last_update ) ? sprintf( esc_html__( 'checked %s ago', 'mailster' ), '<span class="update-last-check">' . human_time_diff( $plugin_info->last_update ) . '</span>' ) . ' &ndash; ' : ''; ?></span>
+		<span class="lighter"><a href="" class="check-for-update"><?php esc_html_e( 'Check Again', 'mailster' ); ?></a></span>
 	</dd>
 </dl>
 <dl class="mailster-icon mailster-update update-available">

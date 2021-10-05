@@ -76,10 +76,18 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.locked', function () {
 			$('.purchasecode').focus().select();
 		})
+		.on('click', '.enable-auto-update', function () {
+			var _this = $(this);
+			_this.html(mailster.l10n.dashboard.checking);
+			$.get(this.href, function () {
+				_this.remove();
+			})
+			return false;
+		})
 		.on('click', '.check-for-update', function () {
 			var _this = $(this);
 			_this.html(mailster.l10n.dashboard.checking);
-			mailster.util.ajax('check_for_update', function (response) {
+			mailster.util.ajax('enable_auto_update', function (response) {
 				_this.html(mailster.l10n.dashboard.check_again);
 				if (response.success) {
 					_this.closest('.postbox')[response.update ? 'addClass' : 'removeClass']('has-update');

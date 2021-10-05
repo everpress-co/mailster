@@ -1075,7 +1075,7 @@ class MailsterUpgrade {
 
 				// echo "DROP TABLE {$table}_old;" . "\n";
 
-				$this->die();
+				$this->please_die();
 				return false;
 		}
 
@@ -2282,7 +2282,7 @@ class MailsterUpgrade {
 
 	}
 
-	private function die() {
+	private function please_die() {
 
 		$this->stop_process = true;
 
