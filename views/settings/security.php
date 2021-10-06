@@ -36,29 +36,47 @@
 	<tr valign="top" class="settings-row settings-row-blocked-email-addresses">
 		<th scope="row"><?php esc_html_e( 'Blocked Email Addresses', 'mailster' ); ?></th>
 		<td>
-		<p><?php esc_html_e( 'List of blocked email addresses. One email each line.', 'mailster' ); ?><br>
-		<textarea name="mailster_options[blocked_emails]" placeholder="<?php echo "john@blocked.com\njane@blocked.co.uk\nhans@blocked.de"; ?>" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_emails' ) ); ?></textarea></p>
+		<p class="howto"><?php esc_html_e( 'List of blocked email addresses. One email each line.', 'mailster' ); ?></p>
+		<textarea name="mailster_options[blocked_emails]" placeholder="john@blocked.com&#10;jane@blocked.co.uk&#10;hans@blocked.de';" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_emails' ) ); ?></textarea>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-blocked-domains">
 		<th scope="row"><?php esc_html_e( 'Blocked Domains', 'mailster' ); ?></th>
 		<td>
-		<p><?php esc_html_e( 'List of blocked domains. One domain each line.', 'mailster' ); ?><br>
-		<textarea name="mailster_options[blocked_domains]" placeholder="<?php echo "blocked.com\nblocked.co.uk\nblocked.de"; ?>" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_domains' ) ); ?></textarea></p>
+		<p class="howto"><?php esc_html_e( 'List of blocked domains. One domain each line.', 'mailster' ); ?></p>
+		<textarea name="mailster_options[blocked_domains]" placeholder="blocked.com&#10;blocked.co.uk&#10;blocked.de';" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_domains' ) ); ?></textarea>
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-blocked-ip-addresses">
 		<th scope="row"><?php esc_html_e( 'Blocked IP Addresses', 'mailster' ); ?></th>
 		<td>
-		<p><?php esc_html_e( 'List of blocked IP addresses. One domain each line.', 'mailster' ); ?><br>
-		<textarea name="mailster_options[blocked_ips]" placeholder="<?php echo "192.168.1.0-192.168.1.100\n192.168.*.*\n192.*.*.*\n192.168.0.0/16\n192.169.1.0/24\n192.168.1.95\n"; ?>" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_ips' ) ); ?></textarea></p>
+		<p class="howto"><?php esc_html_e( 'List of blocked IP addresses. One domain each line.', 'mailster' ); ?></p>
+		<textarea name="mailster_options[blocked_ips]" placeholder="192.168.1.0-192.168.1.100&#10;192.168.*.*&#10;192.*.*.*&#10;192.168.0.0/16&#10;192.169.1.0/24&#10;192.168.1.95';" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'blocked_ips' ) ); ?></textarea>
 		</td>
 	</tr>
+	<?php if ( mailster_option( 'track_location' ) ) : ?>
+	<tr valign="top" class="settings-row settings-row-blocked-countries">
+		<th scope="row"><?php esc_html_e( 'Blocked Countries', 'mailster' ); ?></th>
+		<td>
+		<p class="howto"><?php esc_html_e( 'Comma separated list of country codes to block.', 'mailster' ); ?> <?php esc_html_e( 'Leave empty to allow signups from all countries.', 'mailster' ); ?></p>
+		<p class="howto"><?php printf( esc_html__( 'Only use 2 digit country codes following the %s standard.', 'mailster' ), '<a href="https://wikipedia.org/wiki/ISO_3166-1_alpha-2" class="external">ISO-3166-1</a>' ); ?></p>
+		<textarea name="mailster_options[blocked_countries]" placeholder="US, UK, DE, AT, CH, BR" class="code large-text" rows="1"><?php esc_attr_e( mailster_option( 'blocked_countries' ) ); ?></textarea>
+		</td>
+	</tr>
+	<tr valign="top" class="settings-row settings-row-safe-countries">
+		<th scope="row"><?php esc_html_e( 'Allowed Countries', 'mailster' ); ?></th>
+		<td>
+		<p class="howto"><?php esc_html_e( 'Comma separated list of country codes to allow.', 'mailster' ); ?> <?php esc_html_e( 'Leave empty to allow signups from all countries.', 'mailster' ); ?></p>
+		<p class="howto"><?php esc_html_e( 'All above tests must still be passed.', 'mailster' ); ?> <?php printf( esc_html__( 'Only use 2 digit country codes following the %s standard.', 'mailster' ), '<a href="https://wikipedia.org/wiki/ISO_3166-1_alpha-2" class="external">ISO-3166-1</a>' ); ?></p>
+		<textarea name="mailster_options[allowed_countries]" placeholder="US, UK, DE, AT, CH, BR" class="code large-text" rows="1"><?php esc_attr_e( mailster_option( 'allowed_countries' ) ); ?></textarea>
+		</td>
+	</tr>
+	<?php endif; ?>
 	<tr valign="top" class="settings-row settings-row-safe-domains">
 		<th scope="row"><?php esc_html_e( 'Safe Domains', 'mailster' ); ?></th>
 		<td>
-		<p><?php esc_html_e( 'List domains which bypass the above rules. One domain each line.', 'mailster' ); ?><br>
-		<textarea name="mailster_options[safe_domains]" placeholder="<?php echo "safe.com\nsafe.co.uk\nsafe.de"; ?>" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'safe_domains' ) ); ?></textarea></p>
+		<p class="howto"><?php esc_html_e( 'List domains which bypass the above rules. One domain each line.', 'mailster' ); ?></p>
+		<textarea name="mailster_options[safe_domains]" placeholder="safe.com&#10;safe.co.uk&#10;safe.de';" class="code large-text" rows="10"><?php esc_attr_e( mailster_option( 'safe_domains' ) ); ?></textarea>
 		</td>
 	</tr>
 </table>

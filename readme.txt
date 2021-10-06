@@ -187,6 +187,10 @@ Get professional development help from our expert support partner *Codeable* for
 
 == Changelog ==
 
+= 3.0.3 =
+
+* added: option to block and allow people from certain countries to signup
+
 = 3.0.2 =
 
 * fixed: bulk options causes a subscriber query error.
