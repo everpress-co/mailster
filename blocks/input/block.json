@@ -1,8 +1,8 @@
 {
 	"apiVersion": 2,
-	"name": "mailster/form",
+	"name": "mailster/input",
 	"version": "0.1.0",
-	"title": "Mailster Form",
+	"title": "Mailster Form Input",
 	"category": "widgets",
 	"icon": "smiley",
 	"description": "Example block written with ESNext standard and JSX support – build step required.",
@@ -10,7 +10,7 @@
 		"html": false
 	},
 	"textdomain": "mailster",
-	"editorScript": "file:./../../build/form.js",
-	"editorStyle": "file:./../../build/form.css",
-	"style": "file:./../../build/style-form.css"
+	"editorScript": "file:./../../build/input.js",
+	"editorStyle": "file:./../../build/input.css",
+	"style": "file:./../../build/style-input.css"
 }

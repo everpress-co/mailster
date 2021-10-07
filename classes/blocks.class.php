@@ -21,9 +21,14 @@ class MailsterBlocks {
 		}
 	}
 
+	public function block_init() {
+		register_block_type( MAILSTER_DIR . 'blocks/form/' );
+		register_block_type( MAILSTER_DIR . 'blocks/input/' );
+	}
+
 	public function allowed_block_types( $allowed_block_types ) {
 
-		return array('core/paragraph', 'mailster/form');
+		return array( 'core/paragraph', 'mailster/form', 'mailster/input' );
 
 		if ( 'newsletter_form' != get_post_type() ) {
 			return $allowed_block_types;
@@ -31,10 +36,6 @@ class MailsterBlocks {
 
 		return array( 'mailster/input', 'core/_archives', 'core/_audio', 'core/button', 'core/_categories', 'core/code', 'core/column', 'core/columns', 'core/coverImage', 'core/_embed', 'core/_file', 'core/freeform', 'core/_gallery', 'core/heading', 'core/html', 'core/image', 'core/_latestComments', 'core/_latestPosts', 'core/_list', 'core/_more', 'core/nextpage', 'core/paragraph', 'core/preformatted', 'core/pullquote', 'core/quote', 'core/_reusableBlock', 'core/separator', 'core/shortcode', 'core/spacer', 'core/subhead', 'core/table', 'core/textColumns', 'core/verse', 'core/video' );
 
-	}
-
-	public function block_init() {
-		register_block_type( MAILSTER_DIR  .'blocks/form/');
 	}
 
 	public function block_categories( $categories, $post ) {

@@ -11,7 +11,6 @@
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
 		"start": "wp-scripts start",
-		"start:form": "wp-scripts start blocks/form/index.js --output-path=build/form",
 		"packages-update": "wp-scripts packages-update"
 	},
 	"dependencies": {

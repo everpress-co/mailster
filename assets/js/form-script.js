@@ -105,7 +105,9 @@ mailster = (function (mailster, $, window, document) {
 		render() {
 
 			return [
-				el(Fragment, {key: 'adasd'},
+				el(Fragment, {
+						key: 'adasd'
+					},
 					el(FormOptions),
 					el(FormDoubleOptIn)
 				)
