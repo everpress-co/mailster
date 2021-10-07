@@ -190,6 +190,7 @@ Get professional development help from our expert support partner *Codeable* for
 = 3.0.3 =
 
 * added: option to block and allow people from certain countries to signup
+* update: using `get_user_local()` instead of `get_locale()` when applicable.
 
 = 3.0.2 =
 
