@@ -3,7 +3,65 @@
 	float: right;
 	top: 15px;
 }
-html,body,div,span,applet,object,embed,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {
+html,
+body,
+div,
+span,
+applet,
+object,
+embed,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+font,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td {
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -14,10 +72,11 @@ html,body,div,span,applet,object,embed,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre
 	font-family: inherit;
 	vertical-align: baseline;
 }
-html,body {
+html,
+body {
 	font-size: 101%;
-	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-	color: #6F6F6F;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	color: #6f6f6f;
 	font-size: 12px;
 	-webkit-text-size-adjust: none;
 	overflow: hidden;
@@ -34,13 +93,13 @@ a {
 a:hover {
 	text-decoration: none;
 }
-:: -moz-selection {
+::-moz-selection {
 	background: #333;
-	color: #EEE;
+	color: #eee;
 }
 ::selection {
 	background: #333;
-	color: #EEE;
+	color: #eee;
 }
 #header {
 	position: relative;
@@ -72,7 +131,7 @@ iframe {
 	border: 0;
 }
 #header {
-	border-bottom: 1px solid #DFDFDF;
+	border-bottom: 1px solid #dfdfdf;
 }
 ul li {
 	list-style: none;
@@ -81,7 +140,7 @@ ul li {
 ul li.header {
 	position: relative;
 	float: left;
-	border-left: 1px solid #DFDFDF;
+	border-left: 1px solid #dfdfdf;
 }
 .rtl ul li.header {
 	float: right;
@@ -93,21 +152,21 @@ ul li.header > a {
 	padding: 16px 12px;
 	text-align: center;
 }
-ul li.header.subject > a{
+ul li.header.subject > a {
 	text-overflow: ellipsis;
 	max-width: 200px;
 	overflow: hidden;
 	white-space: nowrap;
 }
-ul li.header.next > a:before{
+ul li.header.next > a:before {
 	content: '❯';
 }
-ul li.header.previous > a:before{
+ul li.header.previous > a:before {
 	content: '❮';
 }
-ul li > a{
+ul li > a {
 	display: block;
-	transition: background-color .10s ease-in-out;
+	transition: background-color 0.1s ease-in-out;
 }
 ul li > a:hover {
 	background-color: #fff;
@@ -144,7 +203,7 @@ ul li.share div.sharebox {
 }
 ul li.share .sharebox-inner {
 	position: static;
-	border: 1px solid #DFDFDF;
+	border: 1px solid #dfdfdf;
 	background: #f9f9f9;
 	width: 326px;
 	background: #f9f9f9;
@@ -205,7 +264,7 @@ ul li.share .sharebox-inner .sharebox-panel-option ul li a {
 	opacity: 0.8;
 }
 ul li.share .sharebox-inner .sharebox-panel-option ul li a:hover {
-	outline: 1px solid #D3D6DB;
+	outline: 1px solid #d3d6db;
 	background-color: #fff;
 	opacity: 1;
 }
@@ -214,9 +273,10 @@ ul li.share .sharebox-inner label {
 	display: block;
 	margin: 0 3%;
 }
-ul li.share .sharebox-inner input,ul li.share .sharebox-inner textarea {
+ul li.share .sharebox-inner input,
+ul li.share .sharebox-inner textarea {
 	font-size: 12px;
-	border: 1px solid #FFF;
+	border: 1px solid #fff;
 	width: 90%;
 	padding: 2%;
 	margin: 1% 3%;
@@ -234,17 +294,17 @@ ul li.share .sharebox-inner input.button {
 	float: right;
 	margin: 3%;
 	width: auto;
-	border: 1px solid #D3D6DB;
+	border: 1px solid #d3d6db;
 	background: #f9f9f9;
 }
 .rtl ul li.share .sharebox-inner input.button {
 	float: left;
 }
 ul li.share .sharebox-inner input.button:hover {
-	border: 1px solid #B1B4B0;
+	border: 1px solid #b1b4b0;
 }
 ul li.share .sharebox-inner input.button:active {
-	border: 1px solid #B1B4B0;
+	border: 1px solid #b1b4b0;
 	background-color: #eee;
 }
 ul li.share .sharebox-inner p {
@@ -255,11 +315,13 @@ ul li.share .sharebox-inner p.info {
 	font-size: 11px;
 	margin: 0 3%;
 }
-ul li.share .sharebox-inner input:focus,ul li.share .sharebox-inner textarea:focus {
-	border: 1px solid #B1B4B0;
+ul li.share .sharebox-inner input:focus,
+ul li.share .sharebox-inner textarea:focus {
+	border: 1px solid #b1b4b0;
 	background-color: #fff;
 }
-ul li.share .sharebox-inner input.placeholder,ul li.share .sharebox-inner textarea.placeholder {
+ul li.share .sharebox-inner input.placeholder,
+ul li.share .sharebox-inner textarea.placeholder {
 	color: #999;
 }
 ul li.share .sharebox-inner span.status {
@@ -295,42 +357,40 @@ ul li.share .powered-by {
 .rtl ul li.share .powered-by {
 	text-align: left;
 }
-@media all and (max-width: 601px)  {
-
-	#header{
+@media all and (max-width: 601px) {
+	#header {
 		height: 30px;
 	}
-	ul li.header a{
+	ul li.header a {
 		padding: 7px 8px;
 		height: 15px;
 	}
-	#iframe-wrap{
+	#iframe-wrap {
 		top: 30px;
 	}
-	ul li.header.subject a{
+	ul li.header.subject a {
 		max-width: 160px;
 	}
 	ul li.share div.sharebox {
 		margin-top: 1px;
 	}
 }
-@media all and (max-width: 481px)  {
-
-	html,body {
+@media all and (max-width: 481px) {
+	html,
+	body {
 		font-size: 121%;
-
 	}
-	#header{
+	#header {
 		height: 27px;
 	}
-	ul li.header a{
+	ul li.header a {
 		height: 12px;
 		min-width: 10px;
 	}
-	#iframe-wrap{
+	#iframe-wrap {
 		top: 27px;
 	}
-	ul li.header.subject a{
+	ul li.header.subject a {
 		max-width: 105px;
 	}
 	ul li.share div.sharebox {
