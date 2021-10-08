@@ -1,11 +1,12 @@
-.wp-block-mailster-form.is-style-boxed{
+.wp-block-mailster-form.is-style-boxed {
 	padding: 2rem 2rem;
 	border-radius: 0.5rem;
 }
-.wp-block-mailster-form.is-style-boxed .mailster-form-fields{
+.wp-block-mailster-form.is-style-boxed .mailster-form-fields {
 }
-.wp-block-mailster-form.is-style-boxed .mailster-wrapper{
+.wp-block-mailster-form.is-style-boxed .mailster-wrapper {
 }
-.wp-block-mailster-form.is-style-boxed .wp-block-mailster-field-submit button, .wp-block-mailster-form.is-style-boxed .wp-block-button .wp-block-button__link{
+.wp-block-mailster-form.is-style-boxed .wp-block-mailster-field-submit button,
+.wp-block-mailster-form.is-style-boxed .wp-block-button .wp-block-button__link {
 	width: 100%;
 }

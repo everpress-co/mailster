@@ -1,34 +1,18 @@
 // block Blocks
 mailster = (function (mailster, $, window, document) {
-
-	"use strict";
+	'use strict';
 
 	mailster.blocks = mailster.blocks || {};
 	mailster.blocks.go = true;
 
 	var el = wp.element.createElement;
 
-	const {
-		__
-	} = wp.i18n;
-	const {
-		PluginSidebarMoreMenuItem,
-		PluginDocumentSettingPanel
-	} = wp.editPost;
-	const {
-		Component,
-		Fragment
-	} = wp.element;
-	const {
-		select,
-		withSelect,
-		dispatch,
-		withDispatch,
-	} = wp.data
-	const {
-		withState,
-		compose
-	} = wp.compose
+	const { __ } = wp.i18n;
+	const { PluginSidebarMoreMenuItem, PluginDocumentSettingPanel } =
+		wp.editPost;
+	const { Component, Fragment } = wp.element;
+	const { select, withSelect, dispatch, withDispatch } = wp.data;
+	const { withState, compose } = wp.compose;
 	const {
 		Disabled,
 		Buttons,
@@ -50,175 +34,179 @@ mailster = (function (mailster, $, window, document) {
 		Panel,
 		PanelHeader,
 		PanelBody,
-		PanelRow
+		PanelRow,
 	} = wp.components;
 
-	const {
-		InnerBlocks,
-		RichText,
-		InspectorControls,
-		PanelColorSettings,
-	} = wp.blockEditor;
+	const { InnerBlocks, RichText, InspectorControls, PanelColorSettings } =
+		wp.blockEditor;
 
 	var getAttribute = function (metaKey) {
 		select('core/editor').getEditedPostAttribute('meta')[metaKey];
-	}
+	};
 	var setAttribute = function (metaKey, value) {
 		console.log(metaKey, value);
 		dispatch('core/editor').editPost({
 			meta: {
-				[metaKey]: value
-			}
+				[metaKey]: value,
+			},
 		});
-	}
+	};
 
 	var myDispatch = function (dispatch, props) {
 		return {
 			setMetaValue: function (value) {
 				dispatch('core/editor').editPost({
 					meta: {
-						[props.metaKey]: value
-					}
+						[props.metaKey]: value,
+					},
 				});
-			}
-		}
-	}
+			},
+		};
+	};
 
 	var mySelect = function (select, props) {
 		return {
-			metaValue: select('core/editor').getEditedPostAttribute('meta')[props.metaKey]
-		}
-	}
+			metaValue:
+				select('core/editor').getEditedPostAttribute('meta')[
+					props.metaKey
+				],
+		};
+	};
 
-	var myToggle = compose(withDispatch(myDispatch), withSelect(mySelect))(function (props) {
+	var myToggle = compose(
+		withDispatch(myDispatch),
+		withSelect(mySelect)
+	)(function (props) {
 		return el(ToggleControl, {
 			label: props.label,
 			checked: props.metaValue,
 			onChange: (content) => {
-				props.setMetaValue(content)
+				props.setMetaValue(content);
 			},
 		});
 	});
 
 	class FormSidebar extends Component {
-
 		render() {
-
 			return [
-				el(Fragment, {
-						key: 'adasd'
+				el(
+					Fragment,
+					{
+						key: 'adasd',
 					},
 					el(FormOptions),
 					el(FormDoubleOptIn)
-				)
-			]
-
+				),
+			];
 		}
-
 	}
 
 	class FormPanel extends Component {
-
 		constructor() {
 			super();
 			this.state = {
-				x: 123
-			}
+				x: 123,
+			};
 		}
-
 	}
 
 	class FormOptions extends FormPanel {
-
 		render() {
-
 			var a = select('core/editor').getEditedPostAttribute('meta');
 
 			return [
-				el(PluginDocumentSettingPanel, {
+				el(
+					PluginDocumentSettingPanel,
+					{
 						title: __('Options', 'mailster'),
 						name: 'mailster-options',
 						key: 'mailster-options',
 						className: 'mailster-options',
 					},
 
-					el(Fragment, {},
+					el(
+						Fragment,
+						{},
 						el(myToggle, {
 							metaKey: 'prefill',
-							label: __('Fill fields with known data if user is logged in.', 'mailster')
+							label: __(
+								'Fill fields with known data if user is logged in.',
+								'mailster'
+							),
 						}),
 						el(myToggle, {
 							metaKey: 'overwrite',
-							label: __('Allow users to update their data with this form.', 'mailster')
+							label: __(
+								'Allow users to update their data with this form.',
+								'mailster'
+							),
 						}),
-						a.prefill && el(myToggle, {
-							metaKey: 'asterisk',
-							label: __('Show Asterisk', 'mailster')
-						}),
-					),
+						a.prefill &&
+							el(myToggle, {
+								metaKey: 'asterisk',
+								label: __('Show Asterisk', 'mailster'),
+							})
+					)
 				),
-			]
-
+			];
 		}
-
 	}
 
 	class FormDoubleOptIn extends FormPanel {
-
 		render() {
-
 			return [
-				el(PluginDocumentSettingPanel, {
+				el(
+					PluginDocumentSettingPanel,
+					{
 						title: __('Double Opt in', 'mailster'),
 						name: 'mailster-double-opt-in',
 						key: 'mailster-double-opt-in',
 						className: 'mailster-double-opt-in',
 					},
-					el(Fragment, {},
+					el(
+						Fragment,
+						{},
 						el(myToggle, {
 							metaKey: 'doubleoptin',
-							label: __('Send confirmation email on signup.', 'mailster'),
-						}),
-					),
-
+							label: __(
+								'Send confirmation email on signup.',
+								'mailster'
+							),
+						})
+					)
 				),
-			]
-
+			];
 		}
-
 	}
 
-
 	class Input extends Component {
-
 		constructor() {
 			super(...arguments);
 			this.type = 'text';
 			this.parentBlock;
 			this.state = {
 				width: 100,
-			}
+			};
 		}
 
 		componentDidMount() {
-			this.parentBlock = document.getElementById('block-' + this.props.clientId);
+			this.parentBlock = document.getElementById(
+				'block-' + this.props.clientId
+			);
 			this.updateBlock();
 		}
 
 		updateBlock(value) {
-
-			this.props.clientId && (this.parentBlock.style.width = this.parentBlock.style.maxWidth = (value || this.props.attributes.width) + '%');
+			this.props.clientId &&
+				(this.parentBlock.style.width =
+					this.parentBlock.style.maxWidth =
+						(value || this.props.attributes.width) + '%');
 		}
 
 		render() {
 			// Setup the attributes
-			let {
-				attributes,
-				setAttributes,
-				className,
-				name,
-				clientId,
-			} = this.props;
+			let { attributes, setAttributes, className, name, clientId } =
+				this.props;
 
 			// const {
 			// 	Disabled,
@@ -248,7 +236,7 @@ mailster = (function (mailster, $, window, document) {
 				checked: attributes.required,
 				onChange: function (value) {
 					setAttributes({
-						required: value
+						required: value,
 					});
 				},
 			});
@@ -260,7 +248,9 @@ mailster = (function (mailster, $, window, document) {
 			if (attributes.required) className += ' is-required';
 
 			return [
-				el('div', {
+				el(
+					'div',
+					{
 						className: className,
 						key: 'input-' + this.type,
 						onLoad: () => {
@@ -276,27 +266,37 @@ mailster = (function (mailster, $, window, document) {
 						tagName: 'label',
 						className: 'mailster-label',
 						value: attributes.label,
-						allowedFormats: ['core/bold', 'core/italic', 'core/link'],
+						allowedFormats: [
+							'core/bold',
+							'core/italic',
+							'core/link',
+						],
 						onChange: (value) => {
 							setAttributes({
-								label: value
+								label: value,
 							});
 						},
 					}),
 					el('input', {
 						type: 'text',
 						className: 'mailster-input mailster-input-' + name,
-					}),
+					})
 				),
 
-				el(Fragment, {
-						key: 'inspector-input-' + this.type
+				el(
+					Fragment,
+					{
+						key: 'inspector-input-' + this.type,
 					},
-					el(InspectorControls, {},
+					el(
+						InspectorControls,
+						{},
 
-						el(PanelBody, {
+						el(
+							PanelBody,
+							{
 								title: __('Options', 'mailster'),
-								initialOpen: true
+								initialOpen: true,
 							},
 
 							el(Fragment, {}, requiredToggle),
@@ -311,7 +311,9 @@ mailster = (function (mailster, $, window, document) {
 							// 	},
 
 							// })),
-							el(Fragment, {},
+							el(
+								Fragment,
+								{},
 								el(RangeControl, {
 									label: __('Width', 'mailster'),
 									value: attributes.width,
@@ -320,7 +322,7 @@ mailster = (function (mailster, $, window, document) {
 									icon: 'dashicons-sticky',
 									onChange: (value) => {
 										setAttributes({
-											width: value
+											width: value,
 										});
 										this.updateBlock(value);
 									},
@@ -343,20 +345,16 @@ mailster = (function (mailster, $, window, document) {
 									value: attributes.label,
 									onChange: (value) => {
 										setAttributes({
-											label: value
+											label: value,
 										});
 									},
-								}),
-							),
-
-						),
-
-					),
+								})
+							)
+						)
+					)
 				),
-
 			];
 		}
-
 	}
 	mailster.components = {
 		FormSidebar: FormSidebar,
@@ -364,9 +362,8 @@ mailster = (function (mailster, $, window, document) {
 		FormOptions: FormOptions,
 		FormDoubleOptIn: FormDoubleOptIn,
 		Input: Input,
-	}
+	};
 
 	return mailster;
-
-}(mailster || {}, jQuery, window, document));
+})(mailster || {}, jQuery, window, document);
 // end Blocks

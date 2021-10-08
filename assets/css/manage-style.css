@@ -1,15 +1,15 @@
-.nav-tab-wrapper a:focus{
+.nav-tab-wrapper a:focus {
 	box-shadow: none;
 }
-.upload-method{
+.upload-method {
 	width: 47%;
 	float: left;
 	height: 300px;
 	padding: 0;
 }
-.upload-method h2{
+.upload-method h2 {
 }
-.upload-method-or{
+.upload-method-or {
 	width: 6%;
 	float: left;
 	height: 290px;
@@ -17,22 +17,22 @@
 	text-align: center;
 	line-height: 11em;
 }
-.count{
+.count {
 	color: #999;
 	font-size: 90%;
 }
-span.error{
+span.error {
 	color: #f33;
 }
-.step1 .import-status{
+.step1 .import-status {
 	margin-top: 80px;
 }
-#paste-import{
+#paste-import {
 	resize: none;
 	font-style: italic;
 	color: #ccc;
 }
-#paste-import.focus{
+#paste-import.focus {
 	position: absolute;
 	font-style: inherit;
 	color: inherit;
@@ -41,112 +41,112 @@ span.error{
 	padding-bottom: 10px;
 	z-index: 1;
 }
-#subscriber-table{
+#subscriber-table {
 	width: 100%;
 	overflow: auto;
 }
-#subscriber-table select{
+#subscriber-table select {
 	width: 150px;
 }
-#subscriber-table table{
+#subscriber-table table {
 	border: 0;
 }
-#subscriber-table table tbody td{
+#subscriber-table table tbody td {
 	max-height: 30px;
 	max-width: 150px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-#wordpress-users{
+#wordpress-users {
 	border-top: 1px solid #ccc;
 	margin-top: 20px;
 	padding-top: 20px;
 }
-#wordpress-users ul{
+#wordpress-users ul {
 	float: left;
 	margin-right: 10px;
 }
-.rtl #wordpress-users ul{
+.rtl #wordpress-users ul {
 	float: right;
 	margin-right: 0;
 	margin-left: 10px;
 }
-#wordpress-user-roles{
+#wordpress-user-roles {
 	float: left;
 	border-right: 1px solid #ccc;
 	margin-right: 20px;
 	width: 25%;
 }
-.rtl #wordpress-user-roles{
+.rtl #wordpress-user-roles {
 	float: right;
 	margin-right: 0;
 	margin-left: 20px;
 	border-right: 0;
 	border-left: 1px solid #ccc;
 }
-#wordpress-user-meta{
+#wordpress-user-meta {
 	float: left;
 	width: 40%;
 }
-.rtl #wordpress-user-meta{
+.rtl #wordpress-user-meta {
 	float: right;
 }
-#signupdate{
+#signupdate {
 	width: 90px;
 }
-.step2{
+.step2 {
 	display: none;
 }
-.step2 h3{
+.step2 h3 {
 	margin-bottom: 0px;
 }
-.step2 .import-options{
+.step2 .import-options {
 	padding: 20px 20px 10px;
 	margin-top: 6px;
 	font-weight: normal;
 	overflow: hidden;
 }
-.step2 .pending-info{
+.step2 .pending-info {
 	display: none;
 }
-.step2 .do-import{
+.step2 .do-import {
 	font-size: 120%;
 }
-.submit-button-box{
+.submit-button-box {
 	text-align: right;
 }
-.mailster-conditions{
+.mailster-conditions {
 	width: 720px;
 }
-.export-order-wrap{
+.export-order-wrap {
 	overflow: hidden;
 }
-.export-order-middle{
+.export-order-middle {
 	float: left;
 	overflow: hidden;
 	transform: translateY(100%);
 	padding: 10px;
 }
-.export-order-middle button{
+.export-order-middle button {
 	display: block !important;
 	width: 35px;
 	margin: 4px 0;
 }
-.export-order{
+.export-order {
 	float: left;
 	overflow: auto;
 	border-radius: 2px;
-	border: 1px solid #DFDFDF;
+	border: 1px solid #dfdfdf;
 	width: 200px;
 	padding: 10px;
 	height: 300px;
 }
-.export-order li{
+.export-order li {
 	padding: 6px 9px;
 	background: #fff;
 	border-radius: 2px;
-	border: 1px solid #DFDFDF;
+	border: 1px solid #dfdfdf;
 	display: block;
 	margin: 4px 1px;
 	cursor: we-resize;
@@ -159,30 +159,30 @@ span.error{
 	white-space: nowrap;
 	overflow: hidden;
 }
-.dark-mode .export-order li{
+.dark-mode .export-order li {
 	border-color: #191f25;
 	background: #23282d;
 }
-.rtl .export-order li{
+.rtl .export-order li {
 	float: right;
 }
-.export-order li:hover{
+.export-order li:hover {
 	border: 1px solid #ccc;
-	color: #D54E21;
+	color: #d54e21;
 }
-.export-order li.ui-sortable-helper{
+.export-order li.ui-sortable-helper {
 	cursor: grabbing;
 	cursor: -moz-grabbing;
 	cursor: -webkit-grabbing;
 	border: 1px solid #ccc;
 }
-.mailster-manage .stuffbox{
+.mailster-manage .stuffbox {
 	padding: 20px;
 	margin-top: 12px;
 	font-weight: normal;
 	overflow: hidden;
 }
-.progress{
+.progress {
 	width: 100%;
 	height: 40px;
 	background: #efefef;
@@ -194,10 +194,10 @@ span.error{
 	margin-top: 24px;
 	border-radius: 2px;
 }
-.dark-mode .progress{
+.dark-mode .progress {
 	background: #50626f;
 }
-.progress span.bar{
+.progress span.bar {
 	display: block;
 	position: absolute;
 	line-height: 2.6em;
@@ -209,14 +209,14 @@ span.error{
 	border-radius: 2px;
 	overflow: hidden;
 }
-.progress span.bar{
-	background: #2BB3E7;
+.progress span.bar {
+	background: #2bb3e7;
 }
 .progress.paused span.bar,
-.progress.error span.bar{
-	background: #D54E21;
+.progress.error span.bar {
+	background: #d54e21;
 	opacity: 0.8;
 }
-.progress.finished{
+.progress.finished {
 	display: none;
 }

@@ -1,6 +1,5 @@
 mailster = (function (mailster, $, window, document) {
-
-	"use strict";
+	'use strict';
 
 	mailster.events.push('documentReady', function () {
 		var clipboard = new ClipboardJS('.clipboard');
@@ -14,8 +13,7 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 		clipboard.on('error', function (e) {});
-	})
+	});
 
 	return mailster;
-
-}(mailster || {}, jQuery, window, document));
+})(mailster || {}, jQuery, window, document);
