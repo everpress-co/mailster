@@ -4,10 +4,12 @@
 	"version": "0.1.0",
 	"title": "Mailster Form",
 	"category": "widgets",
-	"icon": "smiley",
-	"description": "Example block written with ESNext standard and JSX support – build step required.",
+	"icon": "email",
 	"supports": {
 		"html": false
+	},
+	"providesContext": {
+		"mailster/input": "input"
 	},
 	"textdomain": "mailster",
 	"editorScript": "file:./../../build/form.js",

@@ -9,6 +9,14 @@
 	"supports": {
 		"html": false
 	},
+	"attributes": {
+		"label": {
+			"type": "string",
+			"source": "html",
+			"selector": "label"
+		}
+	},
+	"usesContext": ["input"],
 	"textdomain": "mailster",
 	"editorScript": "file:./../../build/input.js",
 	"editorStyle": "file:./../../build/input.css",

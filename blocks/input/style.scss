@@ -6,7 +6,8 @@
  */
 
 .wp-block-mailster-input {
-	background-color: #21759b;
-	color: #f00;
 	padding: 2px;
+}
+.wp-block-mailster-input label {
+	display: block;
 }
