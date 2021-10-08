@@ -29,7 +29,8 @@ mailster = (function (mailster, $, window, document) {
 			}
 			tb_remove();
 		})
-		.on('click', '#close-filter', tb_remove)
+		.on('click', '#close-filter', tb_remove);
+	$('#subscribers-overview-form')
 		.on('change', '#cb-select-all-1, #cb-select-all-2', function () {
 			var $input = $('#all_subscribers'),
 				label = $input.data('label'),

@@ -207,6 +207,8 @@ class MailsterSubscribers {
 		$message_postfix = '';
 
 		if ( isset( $_POST['all_subscribers'] ) && $_POST['all_subscribers'] ) {
+			$args = $_GET;
+			unset( $args['post_type'], $args['page'] );
 
 			$status     = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
 			$conditions = isset( $_GET['conditions'] ) ? (array) $_GET['conditions'] : null;

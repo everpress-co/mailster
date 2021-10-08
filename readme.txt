@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 4.6
 Tested up to: 5.8
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 Author: EverPress
 Author URI: https://everpress.co
 License: GPLv2 or later
@@ -187,8 +187,15 @@ Get professional development help from our expert support partner *Codeable* for
 
 == Changelog ==
 
+= 3.0.3 =
+
+* added: option to block and allow people from certain countries to signup
+* update: using `get_user_local()` instead of `get_locale()` when applicable.
+
 = 3.0.2 =
 
+* fixed: bulk options causes a subscriber query error.
+* fixed: duplicating forms throw an error.
 * fixed: some notifications missed template defined settings.
 * change: optional warmup has been extended to 60 days.
 * improved: database errors during cron tried to get fixed automatically.

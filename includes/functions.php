@@ -1261,6 +1261,15 @@ function mailster_require_filesystem( $redirect = '', $method = '', $showform = 
 
 }
 
+if ( ! function_exists( 'get_user_locale' ) ) :
+
+	// for WP < 4.7
+	function get_user_locale() {
+		return get_locale();
+	}
+
+endif;
+
 
 if ( ! function_exists( 'http_negotiate_language' ) ) :
 

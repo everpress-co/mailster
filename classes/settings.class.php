@@ -127,6 +127,8 @@ class MailsterSettings {
 			'unsubscribe_notification_template'  => 'notification.html',
 			'track_users'                        => false,
 			'do_not_track'                       => false,
+			'check_honeypot'                     => true,
+			'check_ip'                           => true,
 			'antiflood'                          => 60,
 			'reject_dep'                         => true,
 			'list_based_opt_in'                  => true,
@@ -895,6 +897,12 @@ class MailsterSettings {
 				case 'blocked_ips':
 				case 'blocked_emails':
 					$value = trim( $value );
+					break;
+				case 'blocked_countries':
+				case 'allowed_countries':
+					$value = explode( ',', strtoupper( trim( $value ) ) );
+					$value = preg_grep( '/([A-Z]{2})/', $value );
+					$value = implode( ', ', array_map( 'trim', $value ) );
 					break;
 
 				case 'interval':
