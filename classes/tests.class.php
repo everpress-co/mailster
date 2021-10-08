@@ -481,7 +481,7 @@ class MailsterTests {
 
 	}
 	private function test_custom_language() {
-		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_locale() . '.mo' ) ) {
+		if ( file_exists( $custom = MAILSTER_UPLOAD_DIR . '/languages/mailster-' . get_user_locale() . '.mo' ) ) {
 			$this->notice( sprintf( 'Custom Language file found in %s', $custom ) );
 		}
 	}

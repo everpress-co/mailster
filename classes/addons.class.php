@@ -259,23 +259,16 @@ class MailsterAddons {
 		mailster_localize_script(
 			'addons',
 			array(
-				'delete_addon_file'   => esc_html__( 'Do you really like to remove file %1$s from addon %2$s?', 'mailster' ),
-				'enter_addon_name'    => esc_html__( 'Please enter the name of the new addon.', 'mailster' ),
-				'uploading'           => esc_html__( 'uploading zip file %s', 'mailster' ),
-				'downloading'         => esc_html__( 'Downloading...', 'mailster' ),
-				'installing'          => esc_html__( 'Installing...', 'mailster' ),
-				'activating'          => esc_html__( 'Activating...', 'mailster' ),
-				'deactivating'        => esc_html__( 'Deactivating...', 'mailster' ),
-				'updating'            => esc_html__( 'Updating...', 'mailster' ),
-				'downloaded'          => esc_html__( 'Add-on loaded!', 'mailster' ),
-				'installed'           => esc_html__( 'Add-on installed!', 'mailster' ),
-				'activated'           => esc_html__( 'Add-on activated!', 'mailster' ),
-				'deactivated'         => esc_html__( 'Add-on deactivated!', 'mailster' ),
-				'updated'             => esc_html__( 'Add-on has been updated!', 'mailster' ),
-				'confirm_delete'      => esc_html__( 'You are about to delete this addon %s.', 'mailster' ),
-				'confirm_delete_file' => esc_html__( 'You are about to delete file %1$s from addon %2$s.', 'mailster' ),
-				'confirm_default'     => esc_html__( 'You are about to make %s your default addon.', 'mailster' ),
-				'update_note'         => esc_html__( 'You are about to update your exiting addon files with a new version!', 'mailster' ) . "\n\n" . esc_html__( 'Old addon files will be preserved in the addons folder.', 'mailster' ),
+				'downloading'  => esc_html__( 'Downloading...', 'mailster' ),
+				'installing'   => esc_html__( 'Installing...', 'mailster' ),
+				'activating'   => esc_html__( 'Activating...', 'mailster' ),
+				'deactivating' => esc_html__( 'Deactivating...', 'mailster' ),
+				'updating'     => esc_html__( 'Updating...', 'mailster' ),
+				'downloaded'   => esc_html__( 'Add-on loaded!', 'mailster' ),
+				'installed'    => esc_html__( 'Add-on installed!', 'mailster' ),
+				'activated'    => esc_html__( 'Add-on activated!', 'mailster' ),
+				'deactivated'  => esc_html__( 'Add-on deactivated!', 'mailster' ),
+				'updated'      => esc_html__( 'Add-on has been updated!', 'mailster' ),
 			)
 		);
 
