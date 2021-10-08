@@ -1,11 +1,9 @@
 mailster = (function (mailster, $, window, document) {
-
-	"use strict";
+	'use strict';
 
 	mailster.dialog = mailster.dialog || {};
 
-	var current,
-		dialog;
+	var current, dialog;
 
 	mailster.$.document
 		.on('click', '.notification-dialog-dismiss', function (event) {
@@ -31,8 +29,7 @@ mailster = (function (mailster, $, window, document) {
 
 	function close() {
 		dialog.addClass('hidden');
-		mailster.$.document
-			.off('keyup.mailster_dialog');
+		mailster.$.document.off('keyup.mailster_dialog');
 		current = null;
 	}
 
@@ -40,12 +37,11 @@ mailster = (function (mailster, $, window, document) {
 		dialog = $('.mailster-' + id);
 		current = id;
 		dialog.removeClass('hidden');
-		mailster.$.document
-			.on('keyup.mailster_dialog', function (event) {
-				if (event.which == 27) {
-					cancel();
-				}
-			});
+		mailster.$.document.on('keyup.mailster_dialog', function (event) {
+			if (event.which == 27) {
+				cancel();
+			}
+		});
 	}
 
 	mailster.dialog.current = current;
@@ -53,5 +49,4 @@ mailster = (function (mailster, $, window, document) {
 	mailster.dialog.open = open;
 
 	return mailster;
-
-}(mailster || {}, jQuery, window, document));
+})(mailster || {}, jQuery, window, document);

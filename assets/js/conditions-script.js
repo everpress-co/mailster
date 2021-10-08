@@ -1,11 +1,9 @@
 mailster = (function (mailster, $, window, document) {
-
-	"use strict";
+	'use strict';
 
 	mailster.conditions = mailster.conditions || {};
 
 	$.each($('.mailster-conditions'), function () {
-
 		var _self = $(this),
 			conditions = _self.find('.mailster-conditions-wrap'),
 			groups = _self.find('.mailster-condition-group'),
@@ -22,11 +20,17 @@ mailster = (function (mailster, $, window, document) {
 				var id = groups.length,
 					clone = groups.eq(0).clone();
 
-				clone.removeAttr('id').appendTo(conditions).data('id', id).show();
+				clone
+					.removeAttr('id')
+					.appendTo(conditions)
+					.data('id', id)
+					.show();
 				$.each(clone.find('input, select'), function () {
 					var _this = $(this),
 						name = _this.attr('name');
-					_this.attr('name', name.replace(/\[\d+\]/, '[' + id + ']')).prop('disabled', false);
+					_this
+						.attr('name', name.replace(/\[\d+\]/, '[' + id + ']'))
+						.prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
 				datepicker();
@@ -38,11 +42,22 @@ mailster = (function (mailster, $, window, document) {
 					id = cont.find('.mailster-condition').last().data('id'),
 					clone = cond.eq(0).clone();
 
-				clone.removeAttr('id').appendTo(cont).data('id', ++id);
+				clone
+					.removeAttr('id')
+					.appendTo(cont)
+					.data('id', ++id);
 				$.each(clone.find('input, select'), function () {
 					var _this = $(this),
 						name = _this.attr('name');
-					_this.attr('name', name.replace(/\[\d+\]\[\d+\]/, '[' + cont.data('id') + '][' + id + ']')).prop('disabled', false);
+					_this
+						.attr(
+							'name',
+							name.replace(
+								/\[\d+\]\[\d+\]/,
+								'[' + cont.data('id') + '][' + id + ']'
+							)
+						)
+						.prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
 				datepicker();
@@ -61,32 +76,63 @@ mailster = (function (mailster, $, window, document) {
 				});
 			})
 			.on('change', '.condition-field', function () {
-
 				var condition = $(this).closest('.mailster-condition'),
 					field = $(this).val(),
-					operator_field, value_field;
+					operator_field,
+					value_field;
 
-				condition.find('div.mailster-conditions-value-field').removeClass('active').find('.condition-value').prop('disabled', true);
-				condition.find('div.mailster-conditions-operator-field').removeClass('active').find('.condition-operator').prop('disabled', true);
+				condition
+					.find('div.mailster-conditions-value-field')
+					.removeClass('active')
+					.find('.condition-value')
+					.prop('disabled', true);
+				condition
+					.find('div.mailster-conditions-operator-field')
+					.removeClass('active')
+					.find('.condition-operator')
+					.prop('disabled', true);
 
-				value_field = condition.find('div.mailster-conditions-value-field[data-fields*=",' + field + ',"]').addClass('active').find('.condition-value').prop('disabled', false);
-				operator_field = condition.find('div.mailster-conditions-operator-field[data-fields*=",' + field + ',"]').addClass('active').find('.condition-operator').prop('disabled', false);
+				value_field = condition
+					.find(
+						'div.mailster-conditions-value-field[data-fields*=",' +
+							field +
+							',"]'
+					)
+					.addClass('active')
+					.find('.condition-value')
+					.prop('disabled', false);
+				operator_field = condition
+					.find(
+						'div.mailster-conditions-operator-field[data-fields*=",' +
+							field +
+							',"]'
+					)
+					.addClass('active')
+					.find('.condition-operator')
+					.prop('disabled', false);
 
 				if (!value_field.length) {
-					value_field = condition.find('div.mailster-conditions-value-field-default').addClass('active').find('.condition-value').prop('disabled', false);
+					value_field = condition
+						.find('div.mailster-conditions-value-field-default')
+						.addClass('active')
+						.find('.condition-value')
+						.prop('disabled', false);
 				}
 				if (!operator_field.length) {
-					operator_field = condition.find('div.mailster-conditions-operator-field-default').addClass('active').find('.condition-operator').prop('disabled', false);
+					operator_field = condition
+						.find('div.mailster-conditions-operator-field-default')
+						.addClass('active')
+						.find('.condition-operator')
+						.prop('disabled', false);
 				}
 
 				if (!value_field.val()) {
 					if (value_field.is('.hasDatepicker')) {
-						value_field.datepicker("setDate", "yy-mm-dd");;
+						value_field.datepicker('setDate', 'yy-mm-dd');
 					}
 				}
 
 				mailster.trigger('updateCount');
-
 			})
 			.on('change', '.condition-operator', function () {
 				mailster.trigger('updateCount');
@@ -95,7 +141,13 @@ mailster = (function (mailster, $, window, document) {
 				mailster.trigger('updateCount');
 			})
 			.on('click', '.mailster-condition-add-multiselect', function () {
-				$(this).parent().clone().insertAfter($(this).parent()).find('.condition-value').select().focus();
+				$(this)
+					.parent()
+					.clone()
+					.insertAfter($(this).parent())
+					.find('.condition-value')
+					.select()
+					.focus();
 				return false;
 			})
 			.on('click', '.mailster-condition-remove-multiselect', function () {
@@ -103,18 +155,37 @@ mailster = (function (mailster, $, window, document) {
 				mailster.trigger('updateCount');
 				return false;
 			})
-			.on('change', '.mailster-conditions-value-field-multiselect > .condition-value', function () {
-				if (0 == $(this).val() && $(this).parent().parent().find('.condition-value').size() > 1) $(this).parent().remove();
-			})
+			.on(
+				'change',
+				'.mailster-conditions-value-field-multiselect > .condition-value',
+				function () {
+					if (
+						0 == $(this).val() &&
+						$(this)
+							.parent()
+							.parent()
+							.find('.condition-value')
+							.size() > 1
+					)
+						$(this).parent().remove();
+				}
+			)
 			.on('click', '.mailster-rating > span', function (event) {
 				var _this = $(this),
 					_prev = _this.prevAll(),
 					_all = _this.siblings();
 				_all.removeClass('enabled');
 				_prev.add(_this).addClass('enabled');
-				_this.parent().parent().find('.condition-value').val((_prev.length + 1) / 5).trigger('change');
+				_this
+					.parent()
+					.parent()
+					.find('.condition-value')
+					.val((_prev.length + 1) / 5)
+					.trigger('change');
 			})
-			.find('.condition-field').prop('disabled', false).trigger('change');
+			.find('.condition-field')
+			.prop('disabled', false)
+			.trigger('change');
 
 		mailster.trigger('updateCount');
 
@@ -139,7 +210,9 @@ mailster = (function (mailster, $, window, document) {
 				listinputs = $('#list-checkboxes').find('input.list'),
 				extra = $('#list_extra'),
 				data = {},
-				groups = $('.mailster-conditions-wrap > .mailster-condition-group'),
+				groups = $(
+					'.mailster-conditions-wrap > .mailster-condition-group'
+				),
 				i = 0;
 
 			$.each(listinputs, function () {
@@ -157,13 +230,20 @@ mailster = (function (mailster, $, window, document) {
 					var _this = $(this),
 						value,
 						field = _this.find('.condition-field').val(),
-						operator = _this.find('.mailster-conditions-operator-field.active').find('.condition-operator').val();
+						operator = _this
+							.find('.mailster-conditions-operator-field.active')
+							.find('.condition-operator')
+							.val();
 
 					if (!operator || !field) return;
 
-					value = _this.find('.mailster-conditions-value-field.active').find('.condition-value').map(function () {
-						return $(this).val();
-					}).toArray();
+					value = _this
+						.find('.mailster-conditions-value-field.active')
+						.find('.condition-value')
+						.map(function () {
+							return $(this).val();
+						})
+						.toArray();
 					if (value.length == 1) {
 						value = value[0];
 					}
@@ -188,9 +268,7 @@ mailster = (function (mailster, $, window, document) {
 			}
 
 			return data;
-
 		}
-
 	});
 
 	function get_conditions(args) {
@@ -218,13 +296,20 @@ mailster = (function (mailster, $, window, document) {
 				var _this = $(this),
 					value,
 					field = _this.find('.condition-field').val(),
-					operator = _this.find('.mailster-conditions-operator-field.active').find('.condition-operator').val();
+					operator = _this
+						.find('.mailster-conditions-operator-field.active')
+						.find('.condition-operator')
+						.val();
 
 				if (!operator || !field) return;
 
-				value = _this.find('.mailster-conditions-value-field.active').find('.condition-value').map(function () {
-					return $(this).val();
-				}).toArray();
+				value = _this
+					.find('.mailster-conditions-value-field.active')
+					.find('.condition-value')
+					.map(function () {
+						return $(this).val();
+					})
+					.toArray();
 				if (value.length == 1) {
 					value = value[0];
 				}
@@ -249,15 +334,12 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		return data;
-
 	}
-
 
 	function serialize(prefix) {
 		var params = get_conditions();
 
 		return _map_object(params.conditions, prefix || 'conditions');
-
 	}
 
 	function _map_object(obj, prefix) {
@@ -265,17 +347,20 @@ mailster = (function (mailster, $, window, document) {
 			p;
 		for (p in obj) {
 			if (obj.hasOwnProperty(p)) {
-				var k = prefix ? prefix + "[" + p + "]" : p,
+				var k = prefix ? prefix + '[' + p + ']' : p,
 					v = obj[p];
-				str.push((v !== null && typeof v === "object") ? _map_object(v, k) : encodeURIComponent(k) + "=" + encodeURIComponent(v));
+				str.push(
+					v !== null && typeof v === 'object'
+						? _map_object(v, k)
+						: encodeURIComponent(k) + '=' + encodeURIComponent(v)
+				);
 			}
 		}
-		return str.join("&");
+		return str.join('&');
 	}
 
 	mailster.conditions.get = get_conditions;
 	mailster.conditions.serialize = serialize;
 
 	return mailster;
-
-}(mailster || {}, jQuery, window, document));
+})(mailster || {}, jQuery, window, document);
