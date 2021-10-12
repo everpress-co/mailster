@@ -1,0 +1,16 @@
+{
+	"apiVersion": 2,
+	"name": "mailster/button",
+	"version": "0.1.0",
+	"title": "Mailster button",
+	"category": "mailster-form-fields",
+	"icon": "smiley",
+	"description": "Example block written with ESNext standard and JSX support – build step required.",
+	"supports": {
+		"html": false
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./../../build/button.js",
+	"editorStyle": "file:./../../build/button.css",
+	"style": "file:./../../build/style-button.css"
+}

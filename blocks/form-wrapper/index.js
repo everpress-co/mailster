@@ -38,7 +38,5 @@ registerBlockType(name, {
 	/**
 	 * @see ./save.js
 	 */
-	save: () => {
-		return null;
-	},
+	save,
 });

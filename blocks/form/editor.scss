@@ -5,5 +5,44 @@
  */
 
 .wp-block-mailster-form {
-	border: 11px dashed red;
+	.placeholder-buttons-wrap {
+		width: 100%;
+	}
+
+	.update-form-button {
+		display: none;
+		position: absolute;
+		left: 50%;
+		top: 45%;
+		transform: translate(-50%, -50%);
+		z-index: 100;
+	}
+
+	.mailster-form-editor-wrap {
+	}
+	.mailster-form-editor-wrap::before {
+		content: '';
+		display: block;
+		height: 100%;
+		width: 100%;
+		position: absolute;
+		opacity: 0;
+		background-color: rgba(255, 255, 255, 0.95);
+		z-index: 100;
+	}
+	@supports (backdrop-filter: blur(2px)) {
+		.mailster-form-editor-wrap::before {
+			background-color: rgba(255, 255, 255, 0.6);
+			-webkit-backdrop-filter: blur(2px);
+			backdrop-filter: blur(2px);
+		}
+	}
+}
+.wp-block-mailster-form.is-selected:hover {
+	.update-form-button {
+		display: block;
+	}
+	.mailster-form-editor-wrap::before {
+		opacity: 1;
+	}
 }

@@ -2,18 +2,26 @@
 	"apiVersion": 2,
 	"name": "mailster/input",
 	"version": "0.1.0",
-	"title": "Mailster Form Input",
-	"category": "widgets",
+	"title": "Input Field",
+	"category": "mailster-form-fields",
+	"keywords": ["container", "wrapper", "row", "section"],
 	"icon": "smiley",
-	"description": "Example block written with ESNext standard and JSX support – build step required.",
+	"description": "Simple Input Field for your Mailster Form",
+	"_parent": ["mailster/form-wrapper"],
 	"supports": {
 		"html": false
 	},
 	"attributes": {
+		"blockId": {
+			"type": "string"
+		},
 		"label": {
 			"type": "string",
-			"source": "html",
-			"selector": "label"
+			"default": ""
+		},
+		"inline": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"usesContext": ["input"],

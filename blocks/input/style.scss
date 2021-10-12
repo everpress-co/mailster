@@ -5,9 +5,17 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.wp-block-mailster-input {
+.wp-block.wp-block-mailster-input {
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-right: 0;
 	padding: 2px;
+	max-width: 100%;
+	width: 100%;
 }
-.wp-block-mailster-input label {
+.wp-block.wp-block-mailster-input > * {
+}
+.wp-block.wp-block-mailster-input label {
 	display: block;
 }

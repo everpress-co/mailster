@@ -22,25 +22,13 @@ import { useBlockProps } from '@wordpress/block-editor';
  *
  * @return {WPElement} Element to render.
  */
-export default function save(props) {
-	const { attributes, setAttributes, isSelected } = props;
-
+export default function save() {
 	return (
-		<div {...useBlockProps.save()}>
-			{!attributes.inline && (
-				<label for={attributes.blockId}>{attributes.label}</label>
+		<p {...useBlockProps.save()}>
+			{__(
+				'BUTTON HERE! Mailster – hello from the saved content!',
+				'mailster'
 			)}
-			<input
-				name="email"
-				type="email"
-				id={attributes.blockId}
-				value=""
-				placeholder={attributes.inline && attributes.label}
-				className="input mailster-email mailster-required"
-				ariaRequired="true"
-				ariaLabel="Email"
-				spellcheck="false"
-			/>
-		</div>
+		</p>
 	);
 }

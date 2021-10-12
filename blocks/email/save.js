@@ -25,6 +25,8 @@ import { useBlockProps } from '@wordpress/block-editor';
 export default function save(props) {
 	const { attributes, setAttributes, isSelected } = props;
 
+	console.warn('attributes', attributes);
+	console.warn('props', props);
 	return (
 		<div {...useBlockProps.save()}>
 			{!attributes.inline && (

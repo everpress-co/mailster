@@ -1,0 +1,30 @@
+{
+	"apiVersion": 2,
+	"name": "mailster/form-wrapper",
+	"version": "0.1.0",
+	"title": "Mailster Form Wrapper",
+	"category": "widgets",
+	"icon": "smiley",
+	"description": "Example block written with ESNext standard and JSX support – build step required.",
+	"supports": {
+		"html": false,
+		"inserter": false,
+		"align": true,
+		"alignWide": true,
+		"anchor": true,
+		"multiple": false,
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"color": {
+			"text": true,
+			"background": true,
+			"gradients": true
+		}
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./../../build/form-wrapper.js",
+	"editorStyle": "file:./../../build/form-wrapper.css",
+	"style": "file:./../../build/style-form-wrapper.css"
+}

@@ -6,10 +6,21 @@
 	"category": "widgets",
 	"icon": "email",
 	"supports": {
-		"html": false
+		"html": false,
+		"anchor": true,
+		"align": true,
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
 	},
 	"providesContext": {
 		"mailster/input": "input"
+	},
+	"attributes": {
+		"id": {
+			"type": "string"
+		}
 	},
 	"textdomain": "mailster",
 	"editorScript": "file:./../../build/form.js",

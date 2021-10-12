@@ -24,23 +24,5 @@ import { useBlockProps } from '@wordpress/block-editor';
  */
 export default function save(props) {
 	const { attributes, setAttributes, isSelected } = props;
-
-	return (
-		<div {...useBlockProps.save()}>
-			{!attributes.inline && (
-				<label for={attributes.blockId}>{attributes.label}</label>
-			)}
-			<input
-				name="email"
-				type="email"
-				id={attributes.blockId}
-				value=""
-				placeholder={attributes.inline && attributes.label}
-				className="input mailster-email mailster-required"
-				ariaRequired="true"
-				ariaLabel="Email"
-				spellcheck="false"
-			/>
-		</div>
-	);
+	return null;
 }

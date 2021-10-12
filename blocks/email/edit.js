@@ -36,7 +36,7 @@ import { more } from '@wordpress/icons';
  */
 import './editor.scss';
 
-import InputFieldInspectorControls from '../input/inspector.js';
+import InputFieldInspectorControls from '../input/inspector';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -50,8 +50,9 @@ import InputFieldInspectorControls from '../input/inspector.js';
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 	const { blockId } = attributes;
-	let placeholder = attributes.label || __('Enter Label', 'mailster');
-
+	if (!blockId) {
+		setAttributes({ blockId: clientId });
+	}
 	return (
 		<Fragment>
 			<div {...useBlockProps({ className: 'mailster-wrapper' })}>
@@ -60,16 +61,16 @@ export default function Edit(props) {
 					value={!attributes.inline && attributes.label}
 					onChange={(val) => setAttributes({ label: val })}
 					allowedFormats={[]}
-					placeholder={!attributes.inline && placeholder}
+					placeholder={
+						!attributes.inline &&
+						isSelected &&
+						__('Enter Label', 'mailster')
+					}
 				/>
 				<TextControl
-					style={{
-						color: attributes.color,
-						borderColor: attributes.borderColor,
-						backgroundColor: attributes.backgroundColor,
-					}}
-					disabled={true}
-					value={attributes.inline && placeholder}
+					value=""
+					disabled="{true}"
+					placeholder={attributes.inline && attributes.label}
 				/>
 			</div>
 			<InputFieldInspectorControls {...props} />

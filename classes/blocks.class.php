@@ -2,54 +2,216 @@
 
 class MailsterBlocks {
 
-	private $blocks = array( 'input' );
+	private $blocks__ = array( 'form-wrapper', 'input', 'email', 'button' );
+	private $blocks   = array( 'input' );
 
 	public function __construct() {
 
-		if ( ! function_exists( 'register_block_type' ) ) {
+		// since 5.8
+		if ( ! function_exists( 'get_allowed_block_types' ) ) {
 			return;
 		}
-		// add_action( 'plugins_loaded', array( &$this, 'register_blocks' ) );
-		add_action( 'admin_enqueue_scripts', array( &$this, 'block_script_styles' ) );
-		add_action( 'init', array( &$this, 'block_init' ) );
 
-		// add_action( 'block_categories', array( &$this, 'block_categories' ), 10, 2 );
-		if ( function_exists( 'get_allowed_block_types' ) ) {
-			add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ) );
-		} else {
-			add_filter( 'allowed_block_types', array( &$this, 'allowed_block_types' ) );
-		}
+		add_action( 'enqueue_block_editor_assets', array( &$this, 'register_sidebar_script' ) );
+		add_action( 'init', array( &$this, 'block_init' ) );
+		add_action( 'rest_api_init', array( &$this, 'api_init' ) );
+		// add_action( 'init', array( &$this, 'register_sidebar_script' ) );
+
+		add_action(
+			'save_post',
+			function( $post_id, $post ) {
+
+				error_log( print_r( $post->post_content, true ) );
+			},
+			10,
+			2
+		);
+
+		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 10, 2 );
+		add_filter( 'block_categories_all', array( &$this, 'block_categories' ) );
+
+		add_action( 'init', array( &$this, 'post_type_template' ) );
+
 	}
 
 	public function block_init() {
-		register_block_type( MAILSTER_DIR . 'blocks/form/' );
-		register_block_type( MAILSTER_DIR . 'blocks/input/' );
+
+		register_block_type( MAILSTER_DIR . 'blocks/form/', array( 'render_callback' => array( $this, 'render_form' ) ) );
+
+		// from https://www.designbombs.com/registering-gutenberg-blocks-for-custom-post-type/
+		if ( is_admin() ) {
+			global $pagenow;
+			$typenow = '';
+			if ( 'post-new.php' === $pagenow ) {
+				if ( isset( $_REQUEST['post_type'] ) && post_type_exists( $_REQUEST['post_type'] ) ) {
+					  $typenow = $_REQUEST['post_type'];
+				};
+			} elseif ( 'post.php' === $pagenow ) {
+				if ( isset( $_GET['post'] ) && isset( $_POST['post_ID'] ) && (int) $_GET['post'] !== (int) $_POST['post_ID'] ) {
+					// Do nothing
+				} elseif ( isset( $_GET['post'] ) ) {
+					$post_id = (int) $_GET['post'];
+				} elseif ( isset( $_POST['post_ID'] ) ) {
+					$post_id = (int) $_POST['post_ID'];
+				}
+				if ( $post_id ) {
+					if ( $post = get_post( $post_id ) ) {
+						$typenow = $post->post_type;
+					}
+				}
+			}
+			if ( $typenow != 'newsletter_form' ) {
+				return;
+			}
+
+			remove_editor_styles();
+		}
+
+		foreach ( $this->blocks as $block ) {
+
+			$args = array();
+
+			if ( method_exists( $this, 'render_' . $block ) ) {
+				$args['render_callback'] = array( $this, 'render_' . $block );
+			}
+			register_block_type( MAILSTER_DIR . 'blocks/' . $block . '/', $args );
+		}
+
 	}
 
-	public function allowed_block_types( $allowed_block_types ) {
+	public function api_init() {
+		register_rest_route(
+			'mailster/v1',
+			'/lists',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_lists' ),
+				'permission_callback' => '__return_true',
+			)
+		);
 
-		return array( 'core/paragraph', 'mailster/form', 'mailster/input' );
+	}
 
+
+	public function post_type_template() {
+		// return;
+		// if ( $page_type_object = get_post_type_object( 'newsletter_form' ) ) {
+		// $page_type_object->template_lock = 'removal';
+		// $page_type_object->template      = array(
+		// array(
+		// 'mailster/form-wrapper',
+		// array(),
+		// array(
+		// array( 'mailster/email' ),
+		// ),
+		// ),
+		// );
+		// }
+		return;
+		if ( $page_type_object = get_post_type_object( 'newsletter_form' ) ) {
+			// $page_type_object->template_lock = 'removal';
+			$page_type_object->template = array(
+				array(
+					'mailster/email',
+					array(),
+					array(),
+				),
+				array(
+					'mailster/button',
+					array(),
+					array(),
+				),
+			);
+		}
+	}
+
+
+	public function render_form( $args ) {
+
+		if ( empty( $args ) ) {
+			return;
+		}
+
+		$post = get_post( $args['id'] );
+
+		$output = apply_filters( 'the_content', $post->post_content );
+
+		return $output;
+		return get_the_content( null, false, get_post( $args['id'] ) );
+
+	}
+
+	public function get_lists( WP_REST_Request $request ) {
+
+		$query = get_posts(
+			array(
+				'post_type' => 'newsletter_form',
+
+			)
+		);
+
+		$return = array();
+
+		foreach ( $query as $list ) {
+			$return[] = array(
+				'label' => $list->post_title,
+				'value' => (int) $list->ID,
+			);
+		}
+
+		return $return;
+
+	}
+
+	public function allowed_block_types( $allowed_block_types, $block_editor_context ) {
+
+		// just skip if not on our cpt
 		if ( 'newsletter_form' != get_post_type() ) {
 			return $allowed_block_types;
 		}
 
-		return array( 'mailster/input', 'core/_archives', 'core/_audio', 'core/button', 'core/_categories', 'core/code', 'core/column', 'core/columns', 'core/coverImage', 'core/_embed', 'core/_file', 'core/freeform', 'core/_gallery', 'core/heading', 'core/html', 'core/image', 'core/_latestComments', 'core/_latestPosts', 'core/_list', 'core/_more', 'core/nextpage', 'core/paragraph', 'core/preformatted', 'core/pullquote', 'core/quote', 'core/_reusableBlock', 'core/separator', 'core/shortcode', 'core/spacer', 'core/subhead', 'core/table', 'core/textColumns', 'core/verse', 'core/video' );
+		$types = array( 'core/paragraph', 'core/image', 'core/heading', 'core/gallery', 'core/list', 'core/quote', 'core/shortcode', 'core/archives', 'core/audio', 'core/button', 'core/buttons', 'core/calendar', 'core/categories', 'core/code', 'core/columns', 'core/column', 'core/cover', 'core/embed', 'core/file', 'core/group', 'core/freeform', 'core/html', 'core/media-text', 'core/latest-comments', 'core/latest-posts', 'core/missing', 'core/more', 'core/nextpage', 'core/page-list', 'core/preformatted', 'core/pullquote', 'core/rss', 'core/search', 'core/separator', 'core/block', 'core/social-links', 'core/social-link', 'core/spacer', 'core/table', 'core/tag-cloud', 'core/text-columns', 'core/verse', 'core/video', 'core/site-logo', 'core/site-tagline', 'core/site-title', 'core/query', 'core/post-template', 'core/query-title', 'core/query-pagination', 'core/query-pagination-next', 'core/query-pagination-numbers', 'core/query-pagination-previous', 'core/post-title', 'core/post-content', 'core/post-date', 'core/post-excerpt', 'core/post-featured-image', 'core/post-terms', 'core/loginout' );
+
+		$types = array( 'core/paragraph' );
+
+		foreach ( $this->blocks as $block ) {
+			$types[] = 'mailster/' . $block;
+		}
+
+		return $types;
 
 	}
 
-	public function block_categories( $categories, $post ) {
+	public function block_categories( $categories ) {
+
+		if ( 'newsletter_form' != get_post_type() ) {
+			return $categories;
+		}
+
 		return array_merge(
-			$categories,
 			array(
 				array(
 					'slug'  => 'mailster-form-fields',
 					'title' => __( 'Newsletter Form Fields', 'mailster' ),
 				),
 
-			)
+			),
+			$categories,
 		);
 	}
+
+
+
+	public function register_sidebar_script() {
+
+		if ( 'newsletter_form' != get_post_type() ) {
+			return false;
+		}
+
+		wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . '/build/form-inspector.js', array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+	}
+
+
 
 	public function block_script_styles() {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
@@ -250,7 +412,7 @@ class MailsterBlocks {
 		);
 	}
 
-	public function render_form( $attr, $content ) {
+	public function _render_form( $attr, $content ) {
 
 		$classes      = array( 'mailster-form' );
 		$formstyles   = array();
@@ -311,14 +473,14 @@ class MailsterBlocks {
 
 	}
 
-	public function render_field_input( $attr, $content ) {
+	public function _render_field_input( $attr, $content ) {
 
 		$attr = wp_parse_args( array( 'type' => 'text' ), $attr );
 		return $this->render_field( 'input', $attr );
 
 	}
 
-	public function render_field_email( $attr, $content ) {
+	public function _render_field_email( $attr, $content ) {
 
 		$attr = wp_parse_args(
 			array(
@@ -332,7 +494,7 @@ class MailsterBlocks {
 
 	}
 
-	private function render_field( $name, $attr ) {
+	private function _render_field( $name, $attr ) {
 
 		$name = sanitize_key( $name );
 		$id   = uniqid( $name . '-' );

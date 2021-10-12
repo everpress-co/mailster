@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
-import { useBlockProps } from '@wordpress/block-editor';
+import { InnerBlocks, useBlockProps } from '@wordpress/block-editor';
 
 /**
  * The save function defines the way in which the different attributes should
@@ -22,25 +22,10 @@ import { useBlockProps } from '@wordpress/block-editor';
  *
  * @return {WPElement} Element to render.
  */
-export default function save(props) {
-	const { attributes, setAttributes, isSelected } = props;
-
+export default function save() {
 	return (
 		<div {...useBlockProps.save()}>
-			{!attributes.inline && (
-				<label for={attributes.blockId}>{attributes.label}</label>
-			)}
-			<input
-				name="email"
-				type="email"
-				id={attributes.blockId}
-				value=""
-				placeholder={attributes.inline && attributes.label}
-				className="input mailster-email mailster-required"
-				ariaRequired="true"
-				ariaLabel="Email"
-				spellcheck="false"
-			/>
+			<InnerBlocks.Content />
 		</div>
 	);
 }

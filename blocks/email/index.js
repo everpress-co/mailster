@@ -30,6 +30,7 @@ const { name, ...settings } = json;
  */
 registerBlockType(name, {
 	...settings,
+
 	/**
 	 * @see ./edit.js
 	 */
@@ -38,7 +39,5 @@ registerBlockType(name, {
 	/**
 	 * @see ./save.js
 	 */
-	save: () => {
-		return null;
-	},
+	save,
 });

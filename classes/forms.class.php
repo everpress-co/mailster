@@ -9,8 +9,6 @@ class MailsterForms {
 		add_action( 'plugins_loaded', array( &$this, 'init' ) );
 		add_action( 'init', array( &$this, 'register_post_type' ) );
 		add_action( 'init', array( &$this, 'register_post_meta' ) );
-		add_action( 'init', array( &$this, 'post_type_template' ) );
-		add_action( 'after_setup_theme', array( &$this, 'remove_editor_styles' ), 9999 );
 		add_action( 'admin_enqueue_scripts', array( &$this, 'block_script_styles' ) );
 
 	}
@@ -40,27 +38,6 @@ class MailsterForms {
 
 	}
 
-
-
-	public function remove_editor_styles() {
-
-		remove_editor_styles();
-		if ( 'newsletter_form' == get_post_type() ) {
-		}
-
-	}
-
-	public function post_type_template() {
-		$page_type_object           = get_post_type_object( 'newsletter_form' );
-		$page_type_object->template = array(
-			array(
-				'core/group',
-				array(),
-				array(
-					array( 'core/paragraph' ),
-				),
-			),
-		);  }
 
 
 	public function register_post_type() {
@@ -154,6 +131,68 @@ class MailsterForms {
 		// ) );
 
 		// $lists       = mailster( 'lists' )->get_simple();
+
+		// register_post_meta(
+		// 'newsletter_form',
+		// 'doubleoptin',
+		// array(
+		// 'type'              => 'string',
+		// 'description'       => 'Enables a confirmation message for this form',
+		// 'single'            => true,
+		// 'sanitize_callback' => 'is_string',
+		// 'show_in_rest'      => true,
+		// 'auth_callback' => function() {
+		// return current_user_can( 'edit_posts' );
+		// },
+		// )
+		// );
+		register_post_meta(
+			'newsletter_form',
+			'doubleoptin',
+			array(
+				'type'         => 'boolean',
+				'description'  => 'Enables a confirmation message for this form',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => true,
+
+			)
+		);
+		register_post_meta(
+			'newsletter_form',
+			'subject',
+			array(
+				'type'         => 'string',
+				'description'  => 'Enables a confirmation message for this form',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => '',
+			)
+		);
+		register_post_meta(
+			'newsletter_form',
+			'headline',
+			array(
+				'type'         => 'string',
+				'description'  => 'Enables a confirmation message for this form',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => '',
+			)
+		);
+
+		register_post_meta(
+			'newsletter_form',
+			'content',
+			array(
+				'type'         => 'string',
+				'description'  => 'Enables a confirmation message for this form',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => '',
+			)
+		);
+		return;
 
 		$form_attributes = array(
 			'formColor'      => '',
