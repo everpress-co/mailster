@@ -37,6 +37,12 @@
 			backdrop-filter: blur(2px);
 		}
 	}
+
+	.mailster-form {
+		max-width: 100%;
+		background-size: cover;
+		background-color: #fff;
+	}
 }
 .wp-block-mailster-form.is-selected:hover {
 	.update-form-button {

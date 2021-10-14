@@ -3,7 +3,7 @@
 class MailsterBlocks {
 
 	private $blocks__ = array( 'form-wrapper', 'input', 'email', 'button' );
-	private $blocks   = array( 'input' );
+	private $blocks   = array( 'input', 'button' );
 
 	public function __construct() {
 
@@ -60,11 +60,10 @@ class MailsterBlocks {
 					}
 				}
 			}
+
 			if ( $typenow != 'newsletter_form' ) {
 				return;
 			}
-
-			remove_editor_styles();
 		}
 
 		foreach ( $this->blocks as $block ) {
@@ -126,18 +125,76 @@ class MailsterBlocks {
 	}
 
 
-	public function render_form( $args ) {
+	public function render_form( $args, $content, WP_Block $block ) {
 
 		if ( empty( $args ) ) {
 			return;
 		}
 
-		$post = get_post( $args['id'] );
+		if ( ! ( $post = get_post( $args['id'] ) ) ) {
+			return;
+		}
 
-		$output = apply_filters( 'the_content', $post->post_content );
+		$stylesheets = array( 'style-form.css', 'style-input.css' );
 
-		return $output;
-		return get_the_content( null, false, get_post( $args['id'] ) );
+		$output  = apply_filters( 'the_content', $post->post_content );
+		$classes = array( 'mailster-form' );
+		if ( isset( $block->attributes['className'] ) ) {
+			$classes[] = $block->attributes['className'];
+		}
+
+		$output     = '<div class=" ' . implode( ' ', $classes ) . '">' . $output . '</div>';
+		$stylesheet = '';
+
+		foreach ( $stylesheets as $s ) {
+			if ( file_exists( MAILSTER_DIR . 'build/' . $s ) ) {
+				$stylesheet .= file_get_contents( MAILSTER_DIR . 'build/' . $s );
+			}
+		}
+
+		$stylesheet .= '.mailster-form{';
+		$style       = get_post_meta( $post->ID, 'style', true );
+		foreach ( $style as $key => $value ) {
+			$key = strtolower( preg_replace( '/([A-Z])+/', '-$1', $key ) );
+			switch ( $key ) {
+				case 'padding':
+					$value = json_decode( $value );
+					foreach ( $value as $pk => $pv ) {
+						$stylesheet .= $key . '-' . $pk . ':' . $pv . ';';
+					}
+					break;
+				case 'background-position':
+					$value       = json_decode( $value );
+					$stylesheet .= $key . ':' . ( $value->x * 100 ) . '% ' . ( $value->y * 100 ) . '%;';
+					break;
+				case 'background-image':
+					$value = 'url(\'' . $value . '\')';
+				default:
+					$stylesheet .= $key . ':' . $value . ';';
+					break;
+			}
+		}
+		$stylesheet .= '}';
+
+		require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
+
+		$i_error = libxml_use_internal_errors( true );
+		$htmldoc = new \InlineStyle\InlineStyle( $output );
+
+		$htmldoc->applyStylesheet( $stylesheet );
+
+		$html = $htmldoc->getHTML();
+		libxml_clear_errors();
+		libxml_use_internal_errors( $i_error );
+
+		preg_match( '#<body([^>]*)>(.*)<\/body>#is', $html, $matches );
+		if ( ! empty( $matches ) ) {
+			$html = trim( $matches[2] );
+		}
+
+		error_log( print_r( $html, true ) );
+
+		return $html;
 
 	}
 
@@ -172,7 +229,7 @@ class MailsterBlocks {
 
 		$types = array( 'core/paragraph', 'core/image', 'core/heading', 'core/gallery', 'core/list', 'core/quote', 'core/shortcode', 'core/archives', 'core/audio', 'core/button', 'core/buttons', 'core/calendar', 'core/categories', 'core/code', 'core/columns', 'core/column', 'core/cover', 'core/embed', 'core/file', 'core/group', 'core/freeform', 'core/html', 'core/media-text', 'core/latest-comments', 'core/latest-posts', 'core/missing', 'core/more', 'core/nextpage', 'core/page-list', 'core/preformatted', 'core/pullquote', 'core/rss', 'core/search', 'core/separator', 'core/block', 'core/social-links', 'core/social-link', 'core/spacer', 'core/table', 'core/tag-cloud', 'core/text-columns', 'core/verse', 'core/video', 'core/site-logo', 'core/site-tagline', 'core/site-title', 'core/query', 'core/post-template', 'core/query-title', 'core/query-pagination', 'core/query-pagination-next', 'core/query-pagination-numbers', 'core/query-pagination-previous', 'core/post-title', 'core/post-content', 'core/post-date', 'core/post-excerpt', 'core/post-featured-image', 'core/post-terms', 'core/loginout' );
 
-		$types = array( 'core/paragraph' );
+		// $types = array( 'core/paragraph' );
 
 		foreach ( $this->blocks as $block ) {
 			$types[] = 'mailster/' . $block;

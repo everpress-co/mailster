@@ -55,21 +55,23 @@ export default function Edit(props) {
 	return (
 		<Fragment>
 			<div {...useBlockProps({ className: 'mailster-wrapper' })}>
-				<RichText
-					tagName="label"
-					value={!attributes.inline && attributes.label}
-					onChange={(val) => setAttributes({ label: val })}
-					allowedFormats={[]}
-					placeholder={!attributes.inline && placeholder}
-				/>
-				<TextControl
+				{!attributes.inline && placeholder && (
+					<RichText
+						tagName="label"
+						value={!attributes.inline && attributes.label}
+						onChange={(val) => setAttributes({ label: val })}
+						allowedFormats={[]}
+						placeholder={placeholder}
+					/>
+				)}
+				<input
 					style={{
 						color: attributes.color,
 						borderColor: attributes.borderColor,
 						backgroundColor: attributes.backgroundColor,
 					}}
-					disabled={true}
-					value={attributes.inline && placeholder}
+					onChange={() => {}}
+					value={(attributes.inline && placeholder) || ''}
 				/>
 			</div>
 			<InputFieldInspectorControls {...props} />

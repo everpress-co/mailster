@@ -18,12 +18,13 @@ import { registerPlugin } from '@wordpress/plugins';
 /**
  * Internal dependencies
  */
-import { Fragment, Component, useState } from '@wordpress/element';
+import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 
 import Doubleoptin from './Doubleoptin';
 import Lists from './Lists';
+import Styling from './Styling';
 
 function PluginDocumentSettingPanelDemo() {
 	const [meta, setMeta] = useEntityProp(
@@ -32,12 +33,22 @@ function PluginDocumentSettingPanelDemo() {
 		'meta'
 	);
 
-	console.warn(meta);
+	useEffect(() => {
+		console.warn('ONCE');
+	}, []);
+
+	console.warn('META', meta);
 
 	return (
 		<Fragment>
-			<PluginDocumentSettingPanel name="doubleoptin" title="Double OptIn">
+			<PluginDocumentSettingPanel
+				name="doubleoptin"
+				title={meta.doubleoptin ? 'Double Opt In ' : 'Single Opt In'}
+			>
 				<Doubleoptin {...meta} setMeta={setMeta} />
+			</PluginDocumentSettingPanel>
+			<PluginDocumentSettingPanel name="lists" title="Styling">
+				<Styling {...meta} setMeta={setMeta} />
 			</PluginDocumentSettingPanel>
 			<PluginDocumentSettingPanel name="lists" title="Lists Options">
 				<Lists {...meta} setMeta={setMeta} />

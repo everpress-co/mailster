@@ -4,9 +4,16 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.editor-styles-wrapper {
+.is-root-container .wp-block-mailster-input.wp-block {
+	margin-top: 0;
+	margin-bottom: 0;
 }
-
-.wp-block-mailster-input {
-	outline: 1px dotted #f00;
+.wp-block-mailster-input input {
+	pointer-events: none;
+}
+.wp-block-mailster-input .rich-text span:empty {
+	visibility: hidden;
+}
+.wp-block-mailster-input:hover .rich-text span:empty {
+	visibility: visible;
 }

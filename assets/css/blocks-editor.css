@@ -3,115 +3,44 @@
  *
  * Replace them with your own styles or remove the file completely.
  */
-
-.editor-styles-wrapper .is-root-container {
-	border-top: 1px solid #ccc;
-	border-bottom: 1px solid #ccc;
-	margin: 1vh 0 0;
-	padding: 2em;
+.edit-post-visual-editor {
+	background: url('data:image/svg+xml,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 100 100" xml:space="preserve"><style>.st0{fill:%23fafafa}</style><path class="st0" d="M0 0h50v50H0zM50.5 49.5h50v50h-50z"/></svg>')
+		white !important;
+	background-repeat: repeat;
+	background-size: 25px !important;
 }
-.list-mover {
-	position: absolute;
-	right: 10px;
-	cursor: pointer;
+.edit-post-visual-editor__content-area > div {
+	background: none !important;
 }
-.list-mover .list-mover-is-hidden {
-	visibility: hidden;
+.edit-post-visual-editor__content-area .editor-styles-wrapper {
+	background-color: transparent;
 }
-.wp-block-mailster-form {
-}
-.wp-block-mailster-form .mailster-required-toggle {
-	float: right;
-	opacity: 0;
-}
-.wp-block-mailster-form:hover .mailster-required-toggle {
-	opacity: 0.4;
-}
-.wp-block-mailster-form
-	.wp-block-mailster-field:hover
-	.mailster-required-toggle {
-	opacity: 1;
-}
-.wp-block-mailster-form .wp-block-mailster-field {
-	_width: calc(6 * (100vw / 12));
-}
-.wp-block-mailster-form .wp-block-mailster-field input.mailster-input {
-	pointer-events: none;
-	padding: 10px 8px;
-	border-radius: inherit;
-	border-color: inherit;
-	margin: 0;
-}
-.wp-block-mailster-form .gdpr-line {
-	width: 100%;
-	overflow: hidden;
-	display: block;
-	padding: 2px 0;
-	margin-bottom: 1em;
-}
-
-.wp-block-mailster-form .gdpr-line div {
-	display: inline;
-}
-
-.wp-block-mailster-form .block-list-appender .block-editor-inserter button {
-	background: none;
-	outline: none;
-}
-.wp-block-mailster-form
-	.mailster-form-fields
-	.wp-block-mailster-field
-	label.mailster-label {
-	display: inline-block;
-	white-space: nowrap !important;
-	text-overflow: ellipsis;
-	overflow: hidden;
+.edit-post-visual-editor__content-area
+	.editor-styles-wrapper
+	.is-root-container
+	.wp-block {
 	max-width: 100%;
 }
-.wp-block-mailster-form
-	.mailster-form-fields
-	.is-selected
-	.wp-block-mailster-field
-	label.mailster-label {
-	white-space: nowrap;
-	overflow: visible;
+.edit-post-visual-editor__content-area
+	.editor-styles-wrapper
+	.is-root-container {
+	margin: 1vh auto 0;
+	box-shadow: 0 1.5vw 3vw -0.7vw rgb(0 0 0 / 13%);
+	background-size: cover;
+	background-color: #fff;
+	max-width: 100%;
+	width: 900px;
 }
-.wp-block-mailster-form
-	.mailster-form-fields
-	.block-editor-block-list__block.wp-block {
-	margin-top: 0;
-	margin-bottom: 0;
-	margin-left: 0;
-	margin-right: 0;
-	width: unset;
+
+.editor-styles-wrapper
+	.wp-block.editor-post-title__block
+	.editor-post-title__input {
+	all: unset !important;
+	font-size: 30px !important;
 }
-.wp-block-mailster-form .mailster-form-fields .wp-block-mailster-field {
-	padding-top: 0.3rem;
-	padding-bottom: 0.3rem;
-	padding-left: 0.3rem;
-	padding-right: 0.3rem;
+.edit-post-visual-editor p[data-empty='true'] {
+	_display: none;
 }
-.editor-block-list__block[data-align='wide']
-	> .editor-block-list__block-edit
-	.wp-block-mailster-form
-	.block-editor-block-list__block {
-	margin: 0;
-}
-.editor-block-list__block[data-align='wide']
-	> .editor-block-list__block-edit
-	.wp-block-mailster-form
-	.wp-block {
-	max-width: 1200px;
-}
-.editor-block-list__block[data-align='full']
-	> .editor-block-list__block-edit
-	.wp-block-mailster-form
-	.block-editor-block-list__block {
-	margin: 0;
-}
-.editor-block-list__block[data-align='full']
-	> .editor-block-list__block-edit
-	.wp-block-mailster-form
-	.wp-block {
-	max-width: none;
+.edit-post-visual-editor:hover p[data-empty='true'] {
+	_display: block;
 }

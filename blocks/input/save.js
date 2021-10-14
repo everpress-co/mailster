@@ -28,7 +28,9 @@ export default function save(props) {
 	return (
 		<div {...useBlockProps.save()}>
 			{!attributes.inline && (
-				<label for={attributes.blockId}>{attributes.label}</label>
+				<label for={attributes.blockId}>
+					{attributes.label || '&nbsp;'}
+				</label>
 			)}
 			<input
 				name="email"

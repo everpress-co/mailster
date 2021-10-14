@@ -5,17 +5,27 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.wp-block.wp-block-mailster-input {
+.wp-block-mailster-input {
 	margin-top: 0;
 	margin-bottom: 0;
 	margin-left: 0;
 	margin-right: 0;
-	padding: 2px;
 	max-width: 100%;
 	width: 100%;
 }
-.wp-block.wp-block-mailster-input > * {
+.wp-block-mailster-input input,
+.wp-block-mailster-input input.components-text-control__input {
+	width: 100%;
+	padding: 0.6rem 1rem;
+	margin: 0;
+	border: 4px solid black;
+	border-radius: 0;
+	font-size: 18px;
+	box-sizing: border-box;
+	background-color: #fff;
 }
-.wp-block.wp-block-mailster-input label {
+.wp-block-mailster-input > * {
+}
+.wp-block-mailster-input label {
 	display: block;
 }

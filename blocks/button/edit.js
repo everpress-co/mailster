@@ -33,7 +33,7 @@ import './editor.scss';
 export default function Edit() {
 	return (
 		<div {...useBlockProps({ className: 'mailster-wrapper' })}>
-			<Button>
+			<Button variant="secondary">
 				{__('Mailster – hello from the editor!', 'mailster')}
 			</Button>
 		</div>

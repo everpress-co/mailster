@@ -25,7 +25,7 @@ import { Icons, email, screenoptions } from '@wordpress/components';
  */
 import './editor.scss';
 
-import { Fragment, useState, Component } from '@wordpress/element';
+import { Fragment, useState, Component, useEffect } from '@wordpress/element';
 
 import { Button, DropdownMenu, SelectControl } from '@wordpress/components';
 
@@ -125,37 +125,37 @@ class MailsterFormSelector extends Component {
  */
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	let blockContent;
+	const { id } = attributes;
 
-	if (parseInt(attributes.id) > 0) {
-		blockContent = (
-			<div className="mailster-form-editor-wrap">
-				<div className="update-form-button">
-					<Button
-						icon={screenoptions}
-						href={'post.php?post=' + attributes.id + '&action=edit'}
-						target={'edit_form_' + attributes.id}
-						text={__('Update Form', 'mailster')}
-					/>{' '}
-					<Button
-						icon={screenoptions}
-						href={'post.php?post=' + attributes.id + '&action=edit'}
-						target={'edit_form_' + attributes.id}
-						text={__('Reload Form', 'mailster')}
-					/>
-				</div>
-				<ServerSideRender
-					block="mailster/form"
-					attributes={attributes}
-				/>
-			</div>
-		);
-	} else {
-		blockContent = <MailsterFormPlaceholder {...props} />;
-	}
+	const blockProps = useBlockProps();
+
 	return (
 		<Fragment>
-			<div {...useBlockProps()}>{blockContent}</div>
+			<div {...blockProps}>
+				{parseInt(id) > 0 && (
+					<div className="mailster-form-editor-wrap">
+						<div className="update-form-button">
+							<Button
+								variant="primary"
+								href={'post.php?post=' + id + '&action=edit'}
+								target={'edit_form_' + id}
+								text={__('Update Form', 'mailster')}
+							/>{' '}
+							<Button
+								variant="primary"
+								href={'post.php?post=' + id + '&action=edit'}
+								target={'edit_form_' + id}
+								text={__('Reload Form', 'mailster')}
+							/>
+						</div>
+						<ServerSideRender
+							block="mailster/form"
+							attributes={attributes}
+						/>
+					</div>
+				)}
+				{!id && <MailsterFormPlaceholder {...props} />}
+			</div>
 			<InspectorControls>
 				<Panel>
 					<PanelBody

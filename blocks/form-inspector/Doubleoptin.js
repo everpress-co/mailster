@@ -46,11 +46,18 @@ export default function Doubleoptin({
 	content,
 	setMeta,
 }) {
+	const [isValidContent, setValidContent] = useState(false);
+
+	function setContent(value) {}
+
+	useEffect(() => {
+		setValidContent(/{link}/.test(content));
+	}, [content]);
+
 	return (
 		<Fragment>
 			<CheckboxControl
-				label="Enable Double Opt in for this form"
-				help="Is the user a author or not?"
+				label="Send a confirmation message"
 				checked={!!doubleoptin}
 				onChange={() => setMeta({ doubleoptin: !doubleoptin })}
 			/>
@@ -70,8 +77,13 @@ export default function Doubleoptin({
 					/>
 					<TextareaControl
 						label="Content"
+						className={isValidContent ? '' : 'error-message'}
 						value={content}
-						help="Helptext"
+						help={
+							isValidContent
+								? ''
+								: 'Make sure this field contain a {link} tag.'
+						}
 						onChange={(value) => setMeta({ content: value })}
 					/>
 				</>

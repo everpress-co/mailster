@@ -24,5 +24,5 @@ import { useBlockProps } from '@wordpress/block-editor';
  */
 export default function save(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	return null;
+	return <div {...useBlockProps.save()}></div>;
 }
