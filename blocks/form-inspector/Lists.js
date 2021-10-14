@@ -28,6 +28,7 @@ import {
 import { Fragment, Component, useState } from '@wordpress/element';
 
 import { more } from '@wordpress/icons';
+import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -40,10 +41,10 @@ import { more } from '@wordpress/icons';
 
 export default function Lists() {
 	return (
-		<Fragment>
+		<PluginDocumentSettingPanel name="lists" title="Lists Options">
 			<PanelRow>Lists</PanelRow>
 			<PanelRow>ooo</PanelRow>
 			<PanelRow>uuu</PanelRow>
-		</Fragment>
+		</PluginDocumentSettingPanel>
 	);
 }

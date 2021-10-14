@@ -5,26 +5,34 @@
 	"title": "Input Field",
 	"category": "mailster-form-fields",
 	"keywords": ["container", "wrapper", "row", "section"],
-	"icon": "smiley",
+	"icon": "button",
 	"description": "Simple Input Field for your Mailster Form",
-	"_parent": ["mailster/form-wrapper"],
+	"parent": ["mailster/form-wrapper"],
 	"supports": {
 		"html": false
 	},
 	"attributes": {
-		"blockId": {
-			"type": "string"
-		},
 		"label": {
 			"type": "string",
 			"default": ""
 		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"optionalRequired": {
+			"type": "boolean",
+			"default": true
+		},
 		"inline": {
 			"type": "boolean",
 			"default": false
+		},
+		"type": {
+			"type": "string",
+			"default": "text"
 		}
 	},
-	"usesContext": ["input"],
 	"textdomain": "mailster",
 	"editorScript": "file:./../../build/input.js",
 	"editorStyle": "file:./../../build/input.css",

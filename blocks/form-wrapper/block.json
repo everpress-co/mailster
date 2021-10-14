@@ -2,16 +2,13 @@
 	"apiVersion": 2,
 	"name": "mailster/form-wrapper",
 	"version": "0.1.0",
-	"title": "Mailster Form Wrapper",
+	"title": "Mailster Form",
 	"category": "widgets",
 	"icon": "smiley",
-	"description": "Example block written with ESNext standard and JSX support – build step required.",
+	"description": "Define the look of your form here.",
 	"supports": {
 		"html": false,
 		"inserter": false,
-		"align": true,
-		"alignWide": true,
-		"anchor": true,
 		"multiple": false,
 		"spacing": {
 			"margin": true,
@@ -20,7 +17,36 @@
 		"color": {
 			"text": true,
 			"background": true,
-			"gradients": true
+			"gradients": true,
+			"__experimentalDuotone": "> .faux-bg"
+		}
+	},
+	"attributes": {
+		"style": {
+			"type": "object",
+			"default": {
+				"color": {},
+				"width": null,
+				"height": null,
+				"padding": {
+					"top": "1em",
+					"left": "1em",
+					"right": "1em",
+					"bottom": "1em"
+				}
+			}
+		},
+		"background": {
+			"type": "object",
+			"default": {
+				"opacity": "100%",
+				"size": "cover",
+				"image": "",
+				"position": {
+					"x": 0.5,
+					"y": 0.5
+				}
+			}
 		}
 	},
 	"textdomain": "mailster",

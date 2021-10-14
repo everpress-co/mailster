@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
-import { useBlockProps } from '@wordpress/block-editor';
+import { useBlockProps, BlockEdit } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
 
 /**
@@ -30,12 +30,24 @@ import './editor.scss';
  *
  * @return {WPElement} Element to render.
  */
-export default function Edit() {
+export default function Edit(props) {
+	const { attributes, setAttributes, isSelected, clientId } = props;
+
 	return (
 		<div {...useBlockProps({ className: 'mailster-wrapper' })}>
-			<Button variant="secondary">
-				{__('Mailster – hello from the editor!', 'mailster')}
-			</Button>
+			<BlockEdit
+				name="core/buttons"
+				attributes={attributes}
+				setAttributes={setAttributes}
+				clientId={clientId}
+				isSelected={isSelected}
+			>
+				<BlockEdit
+					name="core/button"
+					attributes={attributes}
+					setAttributes={setAttributes}
+				/>
+			</BlockEdit>
 		</div>
 	);
 }

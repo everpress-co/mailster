@@ -3,7 +3,7 @@
 class MailsterBlocks {
 
 	private $blocks__ = array( 'form-wrapper', 'input', 'email', 'button' );
-	private $blocks   = array( 'input', 'button' );
+	private $blocks   = array( 'form-wrapper', 'input', 'button' );
 
 	public function __construct() {
 
@@ -31,6 +31,9 @@ class MailsterBlocks {
 		add_filter( 'block_categories_all', array( &$this, 'block_categories' ) );
 
 		add_action( 'init', array( &$this, 'post_type_template' ) );
+
+		add_action( 'init', array( &$this, 'register_block_pattern' ) );
+		add_action( 'init', array( &$this, 'register_block_pattern_category' ) );
 
 	}
 
@@ -64,6 +67,9 @@ class MailsterBlocks {
 			if ( $typenow != 'newsletter_form' ) {
 				return;
 			}
+
+			$this->register_block_pattern();
+			$this->register_block_pattern_category();
 		}
 
 		foreach ( $this->blocks as $block ) {
@@ -93,35 +99,57 @@ class MailsterBlocks {
 
 
 	public function post_type_template() {
-		// return;
-		// if ( $page_type_object = get_post_type_object( 'newsletter_form' ) ) {
-		// $page_type_object->template_lock = 'removal';
-		// $page_type_object->template      = array(
-		// array(
-		// 'mailster/form-wrapper',
-		// array(),
-		// array(
-		// array( 'mailster/email' ),
-		// ),
-		// ),
-		// );
-		// }
+
 		return;
 		if ( $page_type_object = get_post_type_object( 'newsletter_form' ) ) {
 			// $page_type_object->template_lock = 'removal';
 			$page_type_object->template = array(
 				array(
-					'mailster/email',
+					'mailster/form-wrapper',
 					array(),
-					array(),
+					array(
+						array( 'mailster/input' ),
+						array( 'mailster/button' ),
+					),
 				),
+			);
+		}
+
+		return;
+
+		if ( $page_type_object = get_post_type_object( 'newsletter_form' ) ) {
+			// $page_type_object->template_lock = 'removal';
+			$page_type_object->template = array(
 				array(
-					'mailster/button',
+					'mailster/form-wrapper',
 					array(),
 					array(),
 				),
 			);
 		}
+	}
+
+	public function register_block_pattern_category() {
+		register_block_pattern_category( 'forms', array( 'label' => __( 'Forms', 'mailster' ) ) );
+	}
+
+	public function register_block_pattern() {
+
+		$WP_Block_Patterns_Registry = WP_Block_Patterns_Registry::get_instance();
+		$registered                 = wp_list_pluck( $WP_Block_Patterns_Registry->get_all_registered(), 'name' );
+
+		foreach ( $registered as $pattern ) {
+			unregister_block_pattern( $pattern );
+		}
+		register_block_pattern(
+			'mailster/simplepatter',
+			array(
+				'title'       => __( 'Simple form', 'mailster' ),
+				'description' => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+				'categories'  => array( 'forms' ),
+				'content'     => "<!-- wp:mailster/form-wrapper {\"style\":{\"padding\":{\"top\":\"1em\",\"left\":\"1em\",\"right\":\"1em\",\"bottom\":\"1em\"}},\"backgroundColor\":\"light-background\",\"textColor\":\"buttons-text\"} -->\n<div class=\"wp-block-mailster-form-wrapper has-buttons-text-color has-light-background-background-color has-text-color has-background\"><!-- wp:mailster/input {\"label\":\"Email\",\"optionalRequired\":false,\"type\":\"email\"} -->\n<div class=\"wp-block-mailster-input\"><label>Email</label><input name=\"asdads\" type=\"email\" value=\"\" class=\"input mailster-email mailster-required\" arialabel=\"Email\" spellcheck=\"false\"/></div>\n<!-- /wp:mailster/input -->\n\n<!-- wp:mailster/button /--></div>\n<!-- /wp:mailster/form-wrapper -->",
+			)
+		);
 	}
 
 
@@ -131,19 +159,35 @@ class MailsterBlocks {
 			return;
 		}
 
-		if ( ! ( $post = get_post( $args['id'] ) ) ) {
+		if ( ! ( $form = get_post( $args['id'] ) ) ) {
 			return;
 		}
 
+		$blocks = parse_blocks( $form->post_content );
+		$output = '';
+		foreach ( $blocks as $block ) {
+			if ( $block['blockName'] == 'mailster/form-wrapper' ) {
+
+				echo '<pre>' . esc_html( print_r( render_block( $block ), true ) ) . '</pre>';
+				$output .= render_block( $block );
+
+			}
+			error_log( print_r( $block, true ) );
+			// code...
+		}
+
+		error_log( print_r( $output, true ) );
+
 		$stylesheets = array( 'style-form.css', 'style-input.css' );
 
-		$output  = apply_filters( 'the_content', $post->post_content );
-		$classes = array( 'mailster-form' );
+		// $output  = apply_filters( 'the_content', $form->post_content );
+
+		$classes = array( 'wp-block-mailster-form-wrapper' );
 		if ( isset( $block->attributes['className'] ) ) {
 			$classes[] = $block->attributes['className'];
 		}
 
-		$output     = '<div class=" ' . implode( ' ', $classes ) . '">' . $output . '</div>';
+		// $output     = '<div class=" ' . implode( ' ', $classes ) . '">' . $output . '</div>';
 		$stylesheet = '';
 
 		foreach ( $stylesheets as $s ) {
@@ -152,23 +196,30 @@ class MailsterBlocks {
 			}
 		}
 
-		$stylesheet .= '.mailster-form{';
-		$style       = get_post_meta( $post->ID, 'style', true );
+		$stylesheet .= '.wp-block-mailster-form-wrapper{';
+		$style       = get_post_meta( $form->ID, 'style', true );
+		$style       = $block['attrs']['style'];
 		foreach ( $style as $key => $value ) {
 			$key = strtolower( preg_replace( '/([A-Z])+/', '-$1', $key ) );
 			switch ( $key ) {
 				case 'padding':
-					$value = json_decode( $value );
+					// $value = json_decode( $value );
 					foreach ( $value as $pk => $pv ) {
 						$stylesheet .= $key . '-' . $pk . ':' . $pv . ';';
 					}
 					break;
 				case 'background-position':
-					$value       = json_decode( $value );
+					// $value       = json_decode( $value );
 					$stylesheet .= $key . ':' . ( $value->x * 100 ) . '% ' . ( $value->y * 100 ) . '%;';
 					break;
 				case 'background-image':
-					$value = 'url(\'' . $value . '\')';
+					$value       = 'url(\'' . $value . '\')';
+					$stylesheet .= $key . ':' . $value . ';';
+					break;
+				case 'width':
+				case 'height':
+					// $stylesheet .= $key . ':' . $value . ';';
+					break;
 				default:
 					$stylesheet .= $key . ':' . $value . ';';
 					break;

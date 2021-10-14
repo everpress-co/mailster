@@ -1,0 +1,85 @@
+/**
+ * Retrieves the translation of text.
+ *
+ * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
+ */
+import { __ } from '@wordpress/i18n';
+/**
+ * Registers a new block provided a unique name and an object defining its behavior.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
+ */
+import { registerBlockVariation } from '@wordpress/blocks';
+
+/**
+ * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
+ * All files containing `style` keyword are bundled together. The code used
+ * gets applied both to the front of your site and to the editor.
+ *
+ * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
+ */
+
+/**
+ * Internal dependencies
+ */
+
+/**
+ * Every block starts by registering a new block type definition.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
+ */
+registerBlockVariation('mailster/input', {
+	name: 'input',
+	isDefault: true,
+	title: 'Input Field',
+	description: 'Code is poetry!',
+	scope: ['inserter', 'block', 'transform'],
+	icon: {
+		background: '#f00',
+		src: 'button',
+	},
+	supports: {
+		multiple: false,
+	},
+	attributes: {
+		type: 'email',
+		label: 'Email',
+		requried: true,
+		optionalRequired: false,
+	},
+});
+
+registerBlockVariation('mailster/input', {
+	name: 'email',
+	title: 'Email Field',
+	description: 'Code is poetry!',
+	scope: ['inserter', 'block', 'transform'],
+	icon: {
+		background: '#f00',
+		src: 'button',
+	},
+	supports: {
+		multiple: false,
+	},
+	attributes: {
+		type: 'email',
+		label: 'Email',
+		requried: true,
+		optionalRequired: false,
+	},
+});
+
+registerBlockVariation('mailster/input', {
+	name: 'date',
+	title: 'Date Field',
+	description: 'Code is poetry!',
+	scope: ['inserter', 'block', 'transform'],
+	icon: {
+		background: '#f00',
+		src: 'button',
+	},
+	attributes: {
+		type: 'text',
+		label: 'Date',
+	},
+});

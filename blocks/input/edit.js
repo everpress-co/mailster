@@ -49,29 +49,25 @@ import InputFieldInspectorControls from '../input/inspector.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { blockId } = attributes;
-	let placeholder = attributes.label || __('Enter Label', 'mailster');
+	const { label, type, inline } = attributes;
+	let placeholder = label || __('Enter Label', 'mailster');
 
 	return (
 		<Fragment>
 			<div {...useBlockProps({ className: 'mailster-wrapper' })}>
-				{!attributes.inline && placeholder && (
+				{!inline && placeholder && (
 					<RichText
 						tagName="label"
-						value={!attributes.inline && attributes.label}
+						value={!inline && label}
 						onChange={(val) => setAttributes({ label: val })}
 						allowedFormats={[]}
 						placeholder={placeholder}
 					/>
 				)}
 				<input
-					style={{
-						color: attributes.color,
-						borderColor: attributes.borderColor,
-						backgroundColor: attributes.backgroundColor,
-					}}
 					onChange={() => {}}
-					value={(attributes.inline && placeholder) || ''}
+					type={type}
+					value={(inline && placeholder) || ''}
 				/>
 			</div>
 			<InputFieldInspectorControls {...props} />

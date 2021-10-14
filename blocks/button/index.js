@@ -13,7 +13,17 @@ import { registerBlockType } from '@wordpress/blocks';
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
 import './style.scss';
-
+const { addFilter } = wp.hooks;
+const filterBlocks = (settings) => {
+	// we need to pass along the settings object
+	// even if we haven't modified them!
+	return settings;
+};
+addFilter(
+	'blocks.registerBlockType', // hook name, very important!
+	'mailster/button', // your name, very arbitrary!
+	filterBlocks // function to run
+);
 /**
  * Internal dependencies
  */
@@ -38,5 +48,7 @@ registerBlockType(name, {
 	/**
 	 * @see ./save.js
 	 */
-	save,
+	save: () => {
+		return null;
+	},
 });

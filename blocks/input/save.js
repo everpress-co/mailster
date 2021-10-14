@@ -23,24 +23,23 @@ import { useBlockProps } from '@wordpress/block-editor';
  * @return {WPElement} Element to render.
  */
 export default function save(props) {
-	const { attributes, setAttributes, isSelected } = props;
+	const { attributes, setAttributes, isSelected, clientId } = props;
+	const { label, type, inline, requried } = attributes;
+
+	console.warn(attributes);
 
 	return (
 		<div {...useBlockProps.save()}>
-			{!attributes.inline && (
-				<label for={attributes.blockId}>
-					{attributes.label || '&nbsp;'}
-				</label>
-			)}
+			{!inline && <label for={clientId}>{label || '&nbsp;'}</label>}
 			<input
-				name="email"
-				type="email"
-				id={attributes.blockId}
+				name="asdads"
+				type={type}
 				value=""
-				placeholder={attributes.inline && attributes.label}
+				id={clientId}
+				placeholder={inline && label}
 				className="input mailster-email mailster-required"
-				ariaRequired="true"
-				ariaLabel="Email"
+				ariaRequired={requried}
+				ariaLabel={label}
 				spellcheck="false"
 			/>
 		</div>

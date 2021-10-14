@@ -46,9 +46,8 @@ export default function InputFieldInspectorControls({
 	setAttributes,
 	isSelected,
 }) {
-	const { label, inline } = attributes;
+	const { label, inline, required } = attributes;
 
-	console.warn('INLINE', inline);
 	return (
 		<InspectorControls>
 			<Panel>
@@ -68,6 +67,15 @@ export default function InputFieldInspectorControls({
 							label={__('Inline Labels', 'mailster')}
 							checked={inline}
 							onChange={() => setAttributes({ inline: !inline })}
+						/>
+					</PanelRow>{' '}
+					<PanelRow>
+						<CheckboxControl
+							label={__('Required Labels', 'mailster')}
+							checked={required}
+							onChange={() =>
+								setAttributes({ required: !required })
+							}
 						/>
 					</PanelRow>
 				</PanelBody>

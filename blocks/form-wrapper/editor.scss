@@ -4,7 +4,7 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.wp-block-mailster-form-wrapper {
+._wp-block-mailster-form-wrapper {
 	max-width: 840px;
 	margin: 0 auto;
 	box-shadow: 0 1.5vw 3vw -0.7vw rgb(0 0 0 / 13%);
@@ -15,4 +15,30 @@
 	flex-direction: row;
 	flex-wrap: wrap;
 	flex-direction: column;
+}
+
+.wp-block-mailster-form-wrapper {
+	box-shadow: 0 1.5vw 3vw -0.7vw rgb(0 0 0 / 13%);
+	box-shadow: 0 1.5vw 3vw -0.7vw rgb(0 0 0 / 99%);
+	box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px,
+		rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px,
+		rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+	background-color: #fff;
+	width: 50rem;
+
+	> button {
+		z-index: 100;
+		position: relative;
+	}
+	button.style-form {
+		visibility: hidden;
+		position: absolute;
+		right: 0;
+		top: -51px;
+	}
+}
+.editor-styles-wrapper:hover {
+	button.style-form {
+		visibility: visible;
+	}
 }

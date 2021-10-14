@@ -5,5 +5,12 @@
  */
 
 .wp-block-mailster-button {
-	border: 1px dashed red;
+	.block-list-appender {
+		display: none;
+	}
+}
+.wp-block-buttons {
+	.block-list-appender {
+		display: none;
+	}
 }

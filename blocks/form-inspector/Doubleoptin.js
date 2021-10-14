@@ -27,6 +27,7 @@ import {
 } from '@wordpress/components';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
+import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 import { more } from '@wordpress/icons';
 
@@ -39,13 +40,10 @@ import { more } from '@wordpress/icons';
  * @return {WPElement} Element to render.
  */
 
-export default function Doubleoptin({
-	doubleoptin,
-	subject,
-	headline,
-	content,
-	setMeta,
-}) {
+export default function Doubleoptin(props) {
+	const { doubleoptin, subject, headline, content, setMeta, isSelected } =
+		props;
+
 	const [isValidContent, setValidContent] = useState(false);
 
 	function setContent(value) {}
@@ -55,7 +53,10 @@ export default function Doubleoptin({
 	}, [content]);
 
 	return (
-		<Fragment>
+		<PluginDocumentSettingPanel
+			name="doubleoptin"
+			title={doubleoptin ? 'Double Opt In ' : 'Single Opt In'}
+		>
 			<CheckboxControl
 				label="Send a confirmation message"
 				checked={!!doubleoptin}
@@ -88,6 +89,6 @@ export default function Doubleoptin({
 					/>
 				</>
 			)}
-		</Fragment>
+		</PluginDocumentSettingPanel>
 	);
 }

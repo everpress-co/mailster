@@ -66,7 +66,7 @@ class MailsterForms {
 		$capabilities = array(
 			'edit_post'          => 'mailster_edit_form',
 			'read_post'          => 'mailster_read_form',
-			'delete_post'        => 'mailster_delete_form',
+			'delete_post'        => 'mailster_delete_forms',
 			'edit_posts'         => 'mailster_edit_forms',
 			'edit_others_posts'  => 'mailster_edit_others_forms',
 			'publish_posts'      => 'mailster_publish_forms',
@@ -205,10 +205,10 @@ class MailsterForms {
 			'color'              => array(
 				'type' => 'string',
 			),
-			'minWidth'              => array(
+			'minWidth'           => array(
 				'type' => 'string',
 			),
-			'minHeight'             => array(
+			'minHeight'          => array(
 				'type' => 'string',
 			),
 		);

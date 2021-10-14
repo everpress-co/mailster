@@ -24,12 +24,10 @@
 .edit-post-visual-editor__content-area
 	.editor-styles-wrapper
 	.is-root-container {
-	margin: 1vh auto 0;
-	box-shadow: 0 1.5vw 3vw -0.7vw rgb(0 0 0 / 13%);
-	background-size: cover;
-	background-color: #fff;
+	margin: 1vh 0 0;
+	background-color: none;
 	max-width: 100%;
-	width: 900px;
+	width: 100%;
 }
 
 .editor-styles-wrapper
@@ -43,4 +41,7 @@
 }
 .edit-post-visual-editor:hover p[data-empty='true'] {
 	_display: block;
+}
+.is-root-container > .block-list-appender {
+	display: none;
 }

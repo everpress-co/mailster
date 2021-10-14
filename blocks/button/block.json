@@ -4,10 +4,16 @@
 	"version": "0.1.0",
 	"title": "Mailster button",
 	"category": "mailster-form-fields",
-	"icon": "smiley",
+	"icon": "button",
 	"description": "Example block written with ESNext standard and JSX support – build step required.",
 	"supports": {
 		"html": false
+	},
+	"attributes": {
+		"content": {
+			"type": "string",
+			"default": "Subscribe"
+		}
 	},
 	"textdomain": "mailster",
 	"editorScript": "file:./../../build/button.js",
