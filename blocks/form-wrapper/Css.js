@@ -26,7 +26,7 @@ import {
 	PanelBody,
 	PanelRow,
 	CheckboxControl,
-	TextControl,
+	TextareaControl,
 	Card,
 	CardBody,
 	CardMedia,
@@ -52,35 +52,48 @@ import { more } from '@wordpress/icons';
  * @return {WPElement} Element to render.
  */
 
-export default function Styling(props) {
-	const { attributes, setAttributes, isSelected, setStyle } = props;
+export default function Css(props) {
+	const { attributes, setAttributes, isSelected, setCss } = props;
 
-	const { width, height, padding } = attributes.style;
+	const { css } = attributes;
+
+	const codeEditor = wp.CodeMirror;
+
+	const initCodeMirror = (isOpened) => {
+		if (!isOpened || !codeEditor) return;
+		setTimeout(() => {
+			wp.CodeMirror.fromTextArea(
+				document.getElementById('custom-css-textarea'),
+				{
+					tabMode: 'indent',
+					lineNumbers: true,
+					autofocus: true,
+					type: 'text/css',
+					lineWrapping: true,
+				}
+			).on('change', function (editor) {
+				console.warn('change');
+				setCss(editor.getValue());
+			});
+		}, 0);
+
+		return;
+	};
 
 	return (
-		<PanelBody name="styling" title="Styling" initialOpen={false}>
+		<PanelBody
+			name="css"
+			title="Custom CSS"
+			initialOpen={false}
+			onToggle={initCodeMirror}
+		>
 			<PanelRow>
-				<BoxControl
-					label="Padding"
-					values={padding}
-					onChange={(value) => setStyle('padding', value)}
+				<TextareaControl
+					id="custom-css-textarea"
+					help="Enter your custom CSS here. Every declaration will get prefixed to work only for this specific form."
+					value={css}
+					onChange={(value) => codeEditor && setCss(value)}
 				/>
-			</PanelRow>
-			<PanelRow>
-				<Grid columns={2}>
-					<UnitControl
-						onChange={(value) => setStyle('width', value)}
-						label="Width"
-						isUnitSelectTabbable
-						value={width}
-					/>
-					<UnitControl
-						onChange={(value) => setStyle('height', value)}
-						label="Height"
-						isUnitSelectTabbable
-						value={height}
-					/>
-				</Grid>
 			</PanelRow>
 		</PanelBody>
 	);

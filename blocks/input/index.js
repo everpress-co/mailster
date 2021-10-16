@@ -21,9 +21,9 @@ import edit from './edit';
 import save from './save';
 import json from './block.json';
 
-import './variantions';
-
 const { name, ...settings } = json;
+
+import './variantions';
 
 /**
  * Every block starts by registering a new block type definition.

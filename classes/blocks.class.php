@@ -32,9 +32,6 @@ class MailsterBlocks {
 
 		add_action( 'init', array( &$this, 'post_type_template' ) );
 
-		add_action( 'init', array( &$this, 'register_block_pattern' ) );
-		add_action( 'init', array( &$this, 'register_block_pattern_category' ) );
-
 	}
 
 	public function block_init() {
@@ -70,6 +67,13 @@ class MailsterBlocks {
 
 			$this->register_block_pattern();
 			$this->register_block_pattern_category();
+
+			if ( function_exists( 'wp_enqueue_code_editor' ) ) {
+				wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
+			} else {
+				wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
+				wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
+			}
 		}
 
 		foreach ( $this->blocks as $block ) {
@@ -141,15 +145,23 @@ class MailsterBlocks {
 		foreach ( $registered as $pattern ) {
 			unregister_block_pattern( $pattern );
 		}
-		register_block_pattern(
-			'mailster/simplepatter',
-			array(
-				'title'       => __( 'Simple form', 'mailster' ),
-				'description' => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
-				'categories'  => array( 'forms' ),
-				'content'     => "<!-- wp:mailster/form-wrapper {\"style\":{\"padding\":{\"top\":\"1em\",\"left\":\"1em\",\"right\":\"1em\",\"bottom\":\"1em\"}},\"backgroundColor\":\"light-background\",\"textColor\":\"buttons-text\"} -->\n<div class=\"wp-block-mailster-form-wrapper has-buttons-text-color has-light-background-background-color has-text-color has-background\"><!-- wp:mailster/input {\"label\":\"Email\",\"optionalRequired\":false,\"type\":\"email\"} -->\n<div class=\"wp-block-mailster-input\"><label>Email</label><input name=\"asdads\" type=\"email\" value=\"\" class=\"input mailster-email mailster-required\" arialabel=\"Email\" spellcheck=\"false\"/></div>\n<!-- /wp:mailster/input -->\n\n<!-- wp:mailster/button /--></div>\n<!-- /wp:mailster/form-wrapper -->",
-			)
-		);
+
+		include MAILSTER_DIR . 'includes/form-pattern.php';
+
+		foreach ( $patterns as $key => $pattern ) {
+
+			$args = wp_parse_args(
+				$pattern,
+				array(
+					'keywords'      => array( 'mailster-form' ),
+					'viewportWidth' => 600,
+				)
+			);
+
+			$args['categories'] = array( 'mailster-forms' );
+			register_block_pattern( 'mailster/' . $key, $args );
+		}
+
 	}
 
 
@@ -163,31 +175,27 @@ class MailsterBlocks {
 			return;
 		}
 
-		$blocks = parse_blocks( $form->post_content );
-		$output = '';
-		foreach ( $blocks as $block ) {
-			if ( $block['blockName'] == 'mailster/form-wrapper' ) {
+		$blockattributes = $block->attributes;
 
-				echo '<pre>' . esc_html( print_r( render_block( $block ), true ) ) . '</pre>';
-				$output .= render_block( $block );
-
+		$innerblocks = parse_blocks( $form->post_content );
+		$output      = '';
+		foreach ( $innerblocks as $innerblock ) {
+			if ( $innerblock['blockName'] == 'mailster/form-wrapper' ) {
+				$output .= render_block( $innerblock );
 			}
-			error_log( print_r( $block, true ) );
-			// code...
 		}
-
-		error_log( print_r( $output, true ) );
 
 		$stylesheets = array( 'style-form.css', 'style-input.css' );
 
-		// $output  = apply_filters( 'the_content', $form->post_content );
-
-		$classes = array( 'wp-block-mailster-form-wrapper' );
-		if ( isset( $block->attributes['className'] ) ) {
-			$classes[] = $block->attributes['className'];
+		$classes = array( 'wp-block-mailster-form-outer-wrapper' );
+		if ( isset( $blockattributes['align'] ) ) {
+			$classes[] = 'align' . $blockattributes['align'];
+		}
+		if ( isset( $innerblock->attributes['className'] ) ) {
+			$classes[] = $innerblock->attributes['className'];
 		}
 
-		// $output     = '<div class=" ' . implode( ' ', $classes ) . '">' . $output . '</div>';
+		$output     = '<div class=" ' . implode( ' ', $classes ) . '">' . $output . '</div>';
 		$stylesheet = '';
 
 		foreach ( $stylesheets as $s ) {
@@ -198,7 +206,8 @@ class MailsterBlocks {
 
 		$stylesheet .= '.wp-block-mailster-form-wrapper{';
 		$style       = get_post_meta( $form->ID, 'style', true );
-		$style       = $block['attrs']['style'];
+		$style       = $innerblock['attrs']['style'];
+
 		foreach ( $style as $key => $value ) {
 			$key = strtolower( preg_replace( '/([A-Z])+/', '-$1', $key ) );
 			switch ( $key ) {
@@ -218,6 +227,7 @@ class MailsterBlocks {
 					break;
 				case 'width':
 				case 'height':
+				case 'color':
 					// $stylesheet .= $key . ':' . $value . ';';
 					break;
 				default:
@@ -226,6 +236,10 @@ class MailsterBlocks {
 			}
 		}
 		$stylesheet .= '}';
+
+		if ( isset( $innerblock['attrs']['css'] ) ) {
+			$stylesheet .= $innerblock['attrs']['css'];
+		}
 
 		require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 

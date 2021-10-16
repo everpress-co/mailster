@@ -20,6 +20,7 @@ import {
 	MediaUploadCheck,
 	MediaReplaceFlow,
 	ColorPaletteControl,
+	PanelColorSettings,
 } from '@wordpress/block-editor';
 import {
 	Panel,
@@ -52,35 +53,62 @@ import { more } from '@wordpress/icons';
  * @return {WPElement} Element to render.
  */
 
-export default function Styling(props) {
-	const { attributes, setAttributes, isSelected, setStyle } = props;
-
-	const { width, height, padding } = attributes.style;
+export default function Messages(props) {
+	const {
+		attributes,
+		setAttributes,
+		isSelected,
+		setMessages,
+		displayMessages,
+		setDisplayMessages,
+	} = props;
+	const { success, error } = attributes.messages;
 
 	return (
-		<PanelBody name="styling" title="Styling" initialOpen={false}>
+		<PanelColorSettings
+			title={__('Messages')}
+			initialOpen={false}
+			opened={displayMessages}
+			onToggle={() => setDisplayMessages(!displayMessages)}
+			colorSettings={[
+				{
+					value: success,
+					onChange: (value) => setMessages('success', value),
+					label: __('Success Color'),
+				},
+				{
+					value: error,
+					onChange: (value) => setMessages('error', value),
+					label: __('Error Color'),
+				},
+				{
+					value: error,
+					onChange: (value) => setMessages('error', value),
+					label: __('Error2 Color'),
+				},
+			]}
+		></PanelColorSettings>
+	);
+
+	return (
+		<PanelBody
+			name="background"
+			title="Messages"
+			initialOpen={false}
+			opened={displayMessages}
+			onToggle={() => setDisplayMessages(!displayMessages)}
+		>
 			<PanelRow>
-				<BoxControl
-					label="Padding"
-					values={padding}
-					onChange={(value) => setStyle('padding', value)}
+				<ColorPaletteControl
+					value={success}
+					onChange={(value) => setMessages('success', value)}
 				/>
 			</PanelRow>
 			<PanelRow>
-				<Grid columns={2}>
-					<UnitControl
-						onChange={(value) => setStyle('width', value)}
-						label="Width"
-						isUnitSelectTabbable
-						value={width}
-					/>
-					<UnitControl
-						onChange={(value) => setStyle('height', value)}
-						label="Height"
-						isUnitSelectTabbable
-						value={height}
-					/>
-				</Grid>
+				<ColorPaletteControl
+					value={error}
+					onChange={(value) => setMessages('error', value)}
+				/>
 			</PanelRow>
 		</PanelBody>
 	);

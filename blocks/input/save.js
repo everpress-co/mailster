@@ -26,8 +26,6 @@ export default function save(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 	const { label, type, inline, requried } = attributes;
 
-	console.warn(attributes);
-
 	return (
 		<div {...useBlockProps.save()}>
 			{!inline && <label for={clientId}>{label || '&nbsp;'}</label>}

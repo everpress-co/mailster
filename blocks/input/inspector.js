@@ -68,7 +68,7 @@ export default function InputFieldInspectorControls({
 							checked={inline}
 							onChange={() => setAttributes({ inline: !inline })}
 						/>
-					</PanelRow>{' '}
+					</PanelRow>
 					<PanelRow>
 						<CheckboxControl
 							label={__('Required Labels', 'mailster')}

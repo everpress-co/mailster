@@ -52,35 +52,19 @@ import { more } from '@wordpress/icons';
  * @return {WPElement} Element to render.
  */
 
-export default function Styling(props) {
-	const { attributes, setAttributes, isSelected, setStyle } = props;
+export default function Inputs(props) {
+	const { attributes, setAttributes, isSelected, setInputs } = props;
 
-	const { width, height, padding } = attributes.style;
+	const { padding } = attributes.inputs;
 
 	return (
-		<PanelBody name="styling" title="Styling" initialOpen={false}>
+		<PanelBody name="styling" title="Input Fields" initialOpen={false}>
 			<PanelRow>
 				<BoxControl
 					label="Padding"
 					values={padding}
-					onChange={(value) => setStyle('padding', value)}
+					onChange={(value) => setInputs('padding', value)}
 				/>
-			</PanelRow>
-			<PanelRow>
-				<Grid columns={2}>
-					<UnitControl
-						onChange={(value) => setStyle('width', value)}
-						label="Width"
-						isUnitSelectTabbable
-						value={width}
-					/>
-					<UnitControl
-						onChange={(value) => setStyle('height', value)}
-						label="Height"
-						isUnitSelectTabbable
-						value={height}
-					/>
-				</Grid>
 			</PanelRow>
 		</PanelBody>
 	);

@@ -53,6 +53,7 @@ export default function Edit(props) {
 	if (!blockId) {
 		setAttributes({ blockId: clientId });
 	}
+
 	return (
 		<Fragment>
 			<div {...useBlockProps({ className: 'mailster-wrapper' })}>

@@ -49,8 +49,17 @@ import InputFieldInspectorControls from '../input/inspector.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, type, inline } = attributes;
+	const { label, type, inline, style } = attributes;
 	let placeholder = label || __('Enter Label', 'mailster');
+
+	const styleSheets = {
+		width: style.width,
+		minHeight: style.height,
+		paddingTop: style.padding.top,
+		paddingLeft: style.padding.left,
+		paddingRight: style.padding.right,
+		paddingBottom: style.padding.bottom,
+	};
 
 	return (
 		<Fragment>
@@ -65,9 +74,11 @@ export default function Edit(props) {
 					/>
 				)}
 				<input
+					style={styleSheets}
+					className="input"
 					onChange={() => {}}
 					type={type}
-					value={(inline && placeholder) || ''}
+					value={(inline && placeholder) || 'Lorem Ipsum '}
 				/>
 			</div>
 			<InputFieldInspectorControls {...props} />

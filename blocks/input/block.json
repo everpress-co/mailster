@@ -7,7 +7,7 @@
 	"keywords": ["container", "wrapper", "row", "section"],
 	"icon": "button",
 	"description": "Simple Input Field for your Mailster Form",
-	"parent": ["mailster/form-wrapper"],
+	"_parent": ["mailster/form-wrapper", "core/column"],
 	"supports": {
 		"html": false
 	},
@@ -31,6 +31,19 @@
 		"type": {
 			"type": "string",
 			"default": "text"
+		},
+		"style": {
+			"type": "object",
+			"default": {
+				"width": null,
+				"height": null,
+				"padding": {
+					"top": "0",
+					"left": "8px",
+					"right": "8px",
+					"bottom": "0"
+				}
+			}
 		}
 	},
 	"textdomain": "mailster",

@@ -57,8 +57,13 @@ export default function Background(props) {
 
 	const { image, position, opacity, size } = attributes.background;
 
+	const units = [
+		{ value: 'px', label: 'px', default: 0 },
+		{ value: '%', label: '%', default: 10 },
+	];
+
 	return (
-		<PanelBody name="background" title="Background">
+		<PanelBody name="background" title="Background" initialOpen={false}>
 			{image && (
 				<>
 					<PanelRow>
@@ -77,11 +82,8 @@ export default function Background(props) {
 									setBackground('opacity', value)
 								}
 								label={__('Opacity', 'mailster')}
-								isUnitSelectTabbable
 								value={opacity}
-								units={[
-									{ value: '%', label: '%', default: 100 },
-								]}
+								units={units}
 							/>
 							<SelectControl
 								label={__('Position', 'mailster')}

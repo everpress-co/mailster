@@ -6,9 +6,11 @@
 	"category": "widgets",
 	"icon": "smiley",
 	"description": "Define the look of your form here.",
+
 	"supports": {
 		"html": false,
 		"inserter": false,
+		"reusable": false,
 		"multiple": false,
 		"spacing": {
 			"margin": true,
@@ -46,6 +48,28 @@
 					"x": 0.5,
 					"y": 0.5
 				}
+			}
+		},
+		"inputs": {
+			"type": "object",
+			"default": {
+				"padding": {
+					"top": "1em",
+					"left": "1em",
+					"right": "1em",
+					"bottom": "1em"
+				}
+			}
+		},
+		"css": {
+			"type": "string",
+			"default": ""
+		},
+		"messages": {
+			"type": "object",
+			"default": {
+				"success": "#0f0",
+				"error": "#f00"
 			}
 		}
 	},

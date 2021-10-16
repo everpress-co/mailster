@@ -22,9 +22,14 @@ import { InnerBlocks, useBlockProps } from '@wordpress/block-editor';
  *
  * @return {WPElement} Element to render.
  */
-export default function save() {
+export default function save(props) {
+	const { attributes } = props;
 	return (
-		<div {...useBlockProps.save()}>
+		<div
+			{...useBlockProps.save({
+				className: 'mailster-form',
+			})}
+		>
 			<InnerBlocks.Content />
 		</div>
 	);

@@ -1,0 +1,172 @@
+/**
+ * Retrieves the translation of text.
+ *
+ * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * React hook that is used to mark the block wrapper element.
+ * It provides all the necessary props like the class name.
+ *
+ * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
+ */
+import {
+	useBlockProps,
+	InspectorControls,
+	RichText,
+	PlainText,
+	BlockPatternList,
+	BlockPreview,
+} from '@wordpress/block-editor';
+import {
+	Panel,
+	PanelBody,
+	PanelRow,
+	CheckboxControl,
+	TextControl,
+	TextareaControl,
+	CardMedia,
+	Card,
+	CardHeader,
+	CardBody,
+	CardDivider,
+	CardFooter,
+	__experimentalGrid as Grid,
+} from '@wordpress/components';
+
+import { Fragment, Component, useState, useEffect } from '@wordpress/element';
+import { useSelect, select, dispatch } from '@wordpress/data';
+
+import { Modal, Button, Tooltip } from '@wordpress/components';
+
+import { more } from '@wordpress/icons';
+
+const editor = select('core/editor');
+const blockEditor = select('core/block-editor');
+
+const EmptyEditor = () => {
+	if (editor.isEditedPostEmpty()) {
+		return true;
+	}
+
+	if (
+		editor
+			.getEditedPostContent()
+			.indexOf('<!-- /wp:mailster/form-wrapper -->') !== 0
+	) {
+		return false;
+	}
+
+	return true;
+};
+
+const ModalContent = ({ setOpen }) => {
+	const { __experimentalBlockPatterns } = wp.data
+		.select('core/block-editor')
+		.getSettings();
+
+	const patterns = __experimentalBlockPatterns.filter((pattern) =>
+		pattern.categories.includes('mailster-forms')
+	);
+
+	if (!patterns.length) {
+		return <></>;
+	}
+
+	const setPattern = (pattern, block) => {
+		wp.data.dispatch('core/block-editor').resetBlocks(block);
+		setOpen(false);
+	};
+
+	return (
+		<>
+			<Grid columns={3}>
+				{patterns.map((pattern, i) => {
+					const block = wp.blocks.parse(pattern.content);
+					return (
+						<Card
+							key={'form_pattern_' + i}
+							onClick={() => setPattern(pattern, block)}
+						>
+							<Tooltip
+								text={pattern.description}
+								position="center"
+							>
+								<CardBody size="small">
+									<BlockPreview
+										blocks={block}
+										viewportWidth={pattern.viewportWidth}
+									/>
+								</CardBody>
+								<CardFooter>{pattern.title}</CardFooter>
+							</Tooltip>
+						</Card>
+					);
+				})}
+			</Grid>
+		</>
+	);
+};
+
+export default function FormModal(props) {
+	const { isSelected } = props;
+
+	let isEmptyEditor = EmptyEditor();
+
+	const [isOpen, setOpen] = useState(false);
+
+	const [isEmpty, setEmpty] = useState(isEmptyEditor);
+
+	const openModal = () => setOpen(true);
+
+	const closeModal = () => {
+		setOpen(false);
+		if (isEmptyEditor) {
+			var content = 'Test content';
+			var name = 'mailster/form-wrapper';
+			var attributes = {
+				content: content,
+			};
+			var innerblocks = [];
+			var insertedBlock = wp.blocks.createBlock(
+				name,
+				attributes,
+				innerblocks
+			);
+			wp.data.dispatch('core/block-editor').resetBlocks([insertedBlock]);
+		}
+	};
+
+	wp.data.subscribe(() => {
+		const newRequireModal = EmptyEditor();
+
+		if (newRequireModal !== isEmptyEditor) {
+			isEmptyEditor = newRequireModal;
+			setEmpty(isEmptyEditor);
+		}
+	});
+
+	useEffect(() => {
+		setOpen(isEmpty);
+	}, [isEmpty]);
+
+	const modalStyle = {
+		width: '66vw',
+	};
+
+	return (
+		<>
+			{isOpen && (
+				<Modal
+					title="Please select a form to start with"
+					className="form-select-modal"
+					onRequestClose={closeModal}
+					style={modalStyle}
+				>
+					<ModalContent setOpen={setOpen} />
+				</Modal>
+			)}
+		</>
+	);
+}
