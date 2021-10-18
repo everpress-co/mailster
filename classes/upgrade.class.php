@@ -950,12 +950,12 @@ class MailsterUpgrade {
 	}
 
 
-	public function create_primary_keys() {
+	public function create_primary_keys( $tables = null ) {
 
 		$return = '';
 
 		ob_start();
-		while ( ! $this->do_create_primary_keys() ) {
+		while ( ! $this->do_create_primary_keys( $tables ) ) {
 		}
 		$return .= ob_get_contents();
 		ob_end_clean();
@@ -965,10 +965,14 @@ class MailsterUpgrade {
 	}
 
 
-	private function do_create_primary_keys() {
+	private function do_create_primary_keys( $tables = null ) {
 
 		global $wpdb;
-		$tables = mailster()->get_tables();
+
+		if ( is_null( $tables ) ) {
+			$tables = mailster()->get_tables();
+		}
+		$tables = (array) $tables;
 
 		foreach ( $tables as $table ) {
 			$tablename = $wpdb->prefix . 'mailster_' . $table;
