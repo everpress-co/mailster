@@ -47,10 +47,36 @@ $patterns = apply_filters(
 		'simpleform3' => array(
 			'title'       => __( 'Simple form 3', 'mailster' ),
 			'description' => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
-			'content'     => '<!-- wp:mailster/form-wrapper {"style":{"color":{},"width":null,"height":null,"padding":{"top":"20em","left":"2em","right":"2em","bottom":"2em"}},"background":{"opacity":"100%","size":"cover","image":"https://dummy.mailster.co/800x400.jpg","position":{"x":0.5,"y":0.5}}} -->
-<div class="wp-block-mailster-form-wrapper mailster-form"><!-- wp:mailster/input {"label":"Email","optionalRequired":false,"type":"email"} -->
+			'content'     => '<!-- wp:mailster/form-wrapper {"style":{"color":{},"width":null,"height":null,"padding":{"top":"3em","left":"3em","right":"3em","bottom":"3em"}},"background":{"opacity":"100%","size":"cover","image":"https://dev.local/wp-content/uploads/2021/10/leone-venter-VieM9BdZKFo-unsplash-scaled.jpg","position":{"x":0.5,"y":0.5}},"css":".mailster-form {\n  padding:40px;\n}\n.mailster-form .mailster-faux-bg {\n  outline:1px solid black;\n  padding:40px;\noutline-offset:-20px;\n}\nlabel{\n  font-size:10px;\n  text-transform:uppercase;\n}\n.input{\n  background:none;\n  border:none;\n  border-radius:0;\n  border-bottom:2px solid;\n  padding:0 1;\n}\n  \n\n"} -->
+<div class="wp-block-mailster-form-wrapper mailster-form"><!-- wp:columns -->
+<div class="wp-block-columns"><!-- wp:column {"width":"33.33%"} -->
+<div class="wp-block-column" style="flex-basis:33.33%"><!-- wp:heading {"level":1} -->
+<h1>Hello</h1>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Join [shortcode]</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:mailster/input {"label":"Email","optionalRequired":false,"type":"email"} -->
 <div class="wp-block-mailster-input"><label>Email</label><input name="asdads" type="email" value="" class="input mailster-email mailster-required" arialabel="Email" spellcheck="false"/></div>
-<!-- /wp:mailster/input --></div>
+<!-- /wp:mailster/input -->
+
+<!-- wp:mailster/input {"label":"Email","optionalRequired":false,"type":"email"} -->
+<div class="wp-block-mailster-input"><label>Email</label><input name="asdads" type="email" value="" class="input mailster-email mailster-required" arialabel="Email" spellcheck="false"/></div>
+<!-- /wp:mailster/input -->
+
+<!-- wp:mailster/button /-->
+
+<!-- wp:paragraph -->
+<p></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:column -->
+
+<!-- wp:column {"width":"66.66%"} -->
+<div class="wp-block-column" style="flex-basis:66.66%"></div>
+<!-- /wp:column --></div>
+<!-- /wp:columns --></div>
 <!-- /wp:mailster/form-wrapper -->',
 
 		),

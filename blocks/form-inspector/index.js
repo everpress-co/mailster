@@ -3,7 +3,10 @@
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import {
+	PluginDocumentSettingPanel,
+	PluginPrePublishPanel,
+} from '@wordpress/edit-post';
 import { registerPlugin } from '@wordpress/plugins';
 
 /**
@@ -21,11 +24,31 @@ import { registerPlugin } from '@wordpress/plugins';
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { useSelect, select, dispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
+import { registerBlockVariation } from '@wordpress/blocks';
 
 import FormModal from './FormModal';
 import Doubleoptin from './Doubleoptin';
 import Lists from './Lists';
 import Placement from './Placement';
+
+console.warn('xxx', window.xxxx);
+
+registerBlockVariation('mailster/input', {
+	name: 'date2',
+	title: 'Date Field',
+	description: 'Code is poetry!',
+	scope: ['inserter', 'block', 'transform'],
+	icon: {
+		background: '#f00',
+		src: 'button',
+	},
+	attributes: {
+		type: 'text',
+		label: 'Date',
+		requried: false,
+		forceRequired: false,
+	},
+});
 
 function SettingsPanelPlugin() {
 	const [meta, setMeta] = useEntityProp(
@@ -38,21 +61,26 @@ function SettingsPanelPlugin() {
 		console.warn('ONCE');
 	}, []);
 
+	// wp.data.dispatch('core/editor').lockPostSaving();
+	// //do stuff
+	// wp.data.dispatch('core/editor').unlockPostSaving();
+	//
 	return (
 		<>
-			<FormModal />;
+			<PluginPrePublishPanel
+				className="my-plugin-publish-panel"
+				title="Panel title"
+				initialOpen={true}
+			>
+				PluginPrePublishPanel
+			</PluginPrePublishPanel>
+			<FormModal />
 			<Doubleoptin {...meta} setMeta={setMeta} />
 			<Lists {...meta} setMeta={setMeta} />
 			<Placement {...meta} setMeta={setMeta} />
 		</>
 	);
 }
-
-/**
- * Every block starts by registering a new block type definition.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
- */
 
 registerPlugin('mailster-form-settings-panel', {
 	render: SettingsPanelPlugin,

@@ -210,7 +210,7 @@ export default function Edit(props) {
 		}
 
 		//make sure the root element is not prefixed
-		rules = rules.replace(
+		rules = rules.replaceAll(
 			className + ' .mailster-form',
 			className + '.mailster-form'
 		);

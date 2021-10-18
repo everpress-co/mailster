@@ -28,11 +28,12 @@ import { registerBlockVariation } from '@wordpress/blocks';
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-registerBlockVariation('mailster/input', {
+
+const defaultAttributes = {
 	name: 'input',
-	isDefault: true,
 	title: 'Input Field',
 	description: 'Code is poetry!',
+	keywords: ['mailster', 'input', 'field'],
 	scope: ['inserter', 'block', 'transform'],
 	icon: {
 		background: '#f00',
@@ -43,43 +44,54 @@ registerBlockVariation('mailster/input', {
 	},
 	attributes: {
 		type: 'email',
-		label: 'Email',
-		requried: true,
-		optionalRequired: false,
+		label: 'Input',
+		requried: false,
+		forceRequired: false,
+	},
+};
+
+registerBlockVariation('mailster/input', {
+	...defaultAttributes,
+	...{
+		name: 'email',
+		title: 'Email Field',
+		description: 'Code is poetry!',
+		attributes: {
+			type: 'email',
+			label: 'Email',
+			requried: true,
+			forceRequired: true,
+		},
 	},
 });
 
 registerBlockVariation('mailster/input', {
-	name: 'email',
-	title: 'Email Field',
-	description: 'Code is poetry!',
-	scope: ['inserter', 'block', 'transform'],
-	icon: {
-		background: '#f00',
-		src: 'button',
-	},
-	supports: {
-		multiple: false,
-	},
-	attributes: {
-		type: 'email',
-		label: 'Email',
-		requried: true,
-		optionalRequired: false,
+	...defaultAttributes,
+	...{
+		name: 'input',
+		isDefault: true,
+		title: 'Input Field',
+		description: 'Code is poetry!',
+		attributes: {
+			type: 'input',
+			label: 'Input',
+			requried: false,
+			forceRequired: false,
+		},
 	},
 });
 
 registerBlockVariation('mailster/input', {
-	name: 'date',
-	title: 'Date Field',
-	description: 'Code is poetry!',
-	scope: ['inserter', 'block', 'transform'],
-	icon: {
-		background: '#f00',
-		src: 'button',
-	},
-	attributes: {
-		type: 'text',
-		label: 'Date',
+	...defaultAttributes,
+	...{
+		name: 'date',
+		title: 'Date Field',
+		description: 'Code is poetry!',
+		attributes: {
+			type: 'input',
+			label: 'Date',
+			requried: false,
+			forceRequired: false,
+		},
 	},
 });

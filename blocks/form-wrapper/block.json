@@ -19,8 +19,7 @@
 		"color": {
 			"text": true,
 			"background": true,
-			"gradients": true,
-			"__experimentalDuotone": "> .faux-bg"
+			"gradients": true
 		}
 	},
 	"attributes": {

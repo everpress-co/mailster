@@ -330,7 +330,15 @@ class MailsterBlocks {
 			return false;
 		}
 
-		wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . '/build/form-inspector.js', array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . '/build/form-inspector.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+
+		wp_localize_script(
+			'mailster-form-block-editor',
+			'xxxx',
+			array(
+				'fields' => array( 'asda' => 'Asdsfd' ),
+			)
+		);
 	}
 
 
