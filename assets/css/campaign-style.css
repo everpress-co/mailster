@@ -1,99 +1,110 @@
-.mailster-btn{
+.mailster-btn {
 	cursor: pointer !important;
 }
 .nowrap {
 	white-space: nowrap !important;
 }
-.count{
+.count {
 	color: #999;
 	font-size: 90%;
 }
-.help{
+.help {
 	cursor: help;
 }
-.postbox{
+.postbox {
 	display: none;
 }
-[id^="mailster_"].postbox, #postimagediv.postbox, #authordiv.postbox {
+[id^='mailster_'].postbox,
+#postimagediv.postbox,
+#authordiv.postbox {
 	display: inherit;
 }
-[id^="wpseo"], .yoast-seo-score{
+[id^='wpseo'],
+.yoast-seo-score {
 	display: none;
 }
-#mailster_submitdiv.postbox .inside{
+#mailster_submitdiv.postbox .inside {
 	padding: 0;
 }
-#mailster_submitdiv.postbox .inside #misc-publishing-actions{
+#mailster_submitdiv.postbox .inside #misc-publishing-actions {
 	padding: 0 12px 12px;
 }
-.focus-on #normal-sortables, .focus-on #normal-sortables div#mailster_template, .focus-on #normal-sortables div#mailster_template > *, .focus-on div.updated, .focus-on .postbox-container > *{
+.focus-on #normal-sortables,
+.focus-on #normal-sortables div#mailster_template,
+.focus-on #normal-sortables div#mailster_template > *,
+.focus-on div.updated,
+.focus-on .postbox-container > * {
 	opacity: 1;
 }
-.focus-on div.postbox, .focus-on div.updated{
+.focus-on div.postbox,
+.focus-on div.updated {
 	opacity: 0;
-	transition: opacity .6s ease-in-out;
+	transition: opacity 0.6s ease-in-out;
 }
-div.postbox{
-	transition: height .25s ease;
+div.postbox {
+	transition: height 0.25s ease;
 }
-a{
+a {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
 	outline: none;
 }
-#publishing-action{
+#publishing-action {
 	text-align: left;
 	float: none;
 }
-#publishing-action .spinner{
+#publishing-action .spinner {
 	vertical-align: middle;
 	display: block;
 	float: left;
 	margin-top: 4px;
 	margin-right: 3px;
 }
-#publishing-action .button-primary{
+#publishing-action .button-primary {
 	float: right;
 	margin-left: 4px;
 }
-.rtl #publishing-action .button-primary{
+.rtl #publishing-action .button-primary {
 	float: left;
 	margin-left: 0;
 	margin-right: 4px;
 }
-#publishing-action .button{
+#publishing-action .button {
 	float: right;
 }
-.rtl #publishing-action .button{
+.rtl #publishing-action .button {
 	float: left;
 }
-#publishing-action .button.statistics{
+#publishing-action .button.statistics {
 	float: left;
 }
-.rtl #publishing-action .button.statistics{
+.rtl #publishing-action .button.statistics {
 	float: right;
 }
-#publishing-action #draft{
+#publishing-action #draft {
 	float: left;
 }
-.rtl #publishing-action #draft{
+.rtl #publishing-action #draft {
 	float: right;
 }
-#publishing-action #password-wrap{
+#publishing-action #password-wrap {
 	display: block;
 }
 .postbox .spinner {
 	visibility: visible;
 	display: none;
 }
-#postimagediv.postbox .spinner{
+#postimagediv.postbox .spinner {
 	display: inline-block;
 }
-textarea#content, textarea#excerpt, textarea#modules, textarea#head {
+textarea#content,
+textarea#excerpt,
+textarea#modules,
+textarea#head {
 	width: 100%;
 	height: 570px;
-	font-family: "Courier New",Courier,monospace;
+	font-family: 'Courier New', Courier, monospace;
 	background-image: url(../img/pre_bg.png);
 	background-size: 100% 36px;
 	background-attachment: scroll;
@@ -102,10 +113,13 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	padding: 0;
 	resize: none;
 }
-textarea#content, textarea#excerpt, textarea#modules, textarea#head {
+textarea#content,
+textarea#excerpt,
+textarea#modules,
+textarea#head {
 	display: none;
 }
-#plain-text-wrap{
+#plain-text-wrap {
 	display: none;
 	width: 100%;
 }
@@ -137,21 +151,21 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	right: auto;
 	left: 0;
 }
-.post-type-newsletter #TB_ajaxContent{
+.post-type-newsletter #TB_ajaxContent {
 	padding: 0 !important;
 	min-width: 100%;
 	max-width: 100%;
 	box-sizing: border-box;
 	overflow: hidden;
 }
-.rtl #TB_ajaxContent{
+.rtl #TB_ajaxContent {
 	text-align: right;
 }
 /*----------------------------------------------------------------------*/
 /* Table
 /*----------------------------------------------------------------------*/
 #mailster_details .red {
-	color: #D8605F;
+	color: #d8605f;
 }
 #mailster_details table {
 	border-collapse: collapse;
@@ -160,15 +174,18 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 #mailster_details table .spinner {
 	margin: 0 5px 0 0;
 }
-#mailster_details table td,#mailster_details table th {
+#mailster_details table td,
+#mailster_details table th {
 	vertical-align: text-top;
 	padding: 7px;
-	border-bottom: 1px solid #CCD0D4;
+	border-bottom: 1px solid #ccd0d4;
 }
-.dark-mode #mailster_details table td,.dark-mode #mailster_details table th{
+.dark-mode #mailster_details table td,
+.dark-mode #mailster_details table th {
 	border-color: #191f25;
 }
-#mailster_details table .geolocation td,#mailster_details table .geolocation th {
+#mailster_details table .geolocation td,
+#mailster_details table .geolocation th {
 	padding-bottom: 0px;
 	border-bottom: 0;
 }
@@ -194,7 +211,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	width: calc(100% - 45px);
 }
 #mailster_details .emoji-selector button {
-	transition: filter .15s ease;
+	transition: filter 0.15s ease;
 	width: 10%;
 	width: calc(40px);
 	font-size: 19px;
@@ -229,7 +246,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M16,14l-4,-4l-4,4" stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
 }
 #mailster_details .ajax-list {
-	border: 1px solid #CCD0D4;
+	border: 1px solid #ccd0d4;
 	border-bottom: 0;
 	margin-top: 5px;
 	display: none;
@@ -238,21 +255,21 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	padding: 0;
 }
 .dark-mode #mailster_details .ajax-list {
-	border:0;
-}
-#mailster_details .ajax-list table{
 	border: 0;
 }
-#mailster_details .ajax-list table td{
+#mailster_details .ajax-list table {
+	border: 0;
+}
+#mailster_details .ajax-list table td {
 	border: 0;
 	display: table-cell;
 }
-#recipients-list{
+#recipients-list {
 }
-#recipients-list .receiver-detail{
+#recipients-list .receiver-detail {
 	display: none;
 }
-.ajax-list-header{
+.ajax-list-header {
 	position: absolute;
 	border-top: 0;
 	height: 21px;
@@ -261,17 +278,17 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	white-space: nowrap;
 	z-index: 1;
 }
-.dark-mode .ajax-list-header{
+.dark-mode .ajax-list-header {
 	background-color: rgba(35, 40, 45, 0.9);
 }
-.ajax-list-header label{
+.ajax-list-header label {
 	padding-right: 10px;
 }
-.ajax-list-header select{
+.ajax-list-header select {
 	line-height: 1em;
 	max-width: 100px;
 }
-.ajax-list-header a.recipients-order{
+.ajax-list-header a.recipients-order {
 	cursor: pointer;
 	outline: 0;
 	vertical-align: middle;
@@ -279,22 +296,22 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	height: 24px;
 	display: inline-block;
 }
-.ajax-list-header a.recipients-order.asc:before{
+.ajax-list-header a.recipients-order.asc:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"><line x1="18" x2="18" y1="3" y2="20"></line><line x1="3" x2="12" y1="20" y2="20"></line><line x1="5" x2="12" y1="16" y2="16"></line><line x1="7" x2="12" y1="12" y2="12"></line><line x1="8.4" x2="12" y1="8" y2="8"></line><polyline points="15.5,5.5 18,3 20.5,5.5"></polyline></g><rect width="24" height="24" fill="none"></rect></svg>');
 	font-size: 16px;
 	vertical-align: middle;
 }
-.ajax-list-header a.recipients-order.desc:before{
+.ajax-list-header a.recipients-order.desc:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"><line x1="18" x2="18" y1="21" y2="4"></line><line x1="3" x2="12" y1="4" y2="4"></line><line x1="5" x2="12" y1="8" y2="8"></line><line x1="7" x2="12" y1="12" y2="12"></line><line x1="8.4" x2="12" y1="16" y2="16"></line><line x1="18" x2="20.5" y1="21" y2="18.5"></line><line x1="15.5" x2="18" y1="18.5" y2="21"></line></g><rect width="24" height="24" fill="none"></rect></svg>');
 	vertical-align: inherit;
 }
-#recipients-list table{
+#recipients-list table {
 	margin-top: 40px;
 }
-#recipients-list table td{
+#recipients-list table td {
 	white-space: nowrap;
 }
-#recipients-list .show-receiver-detail{
+#recipients-list .show-receiver-detail {
 	cursor: pointer;
 	text-overflow: ellipsis;
 	display: block;
@@ -307,52 +324,54 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	background-repeat: no-repeat;
 	background-image: url(../img/loading.gif) !important;
 }
-#recipients-list .receiver-detail td{
+#recipients-list .receiver-detail td {
 	border-top: 0;
 }
-#recipients-list .receiver-detail div.receiver-detail-body{
+#recipients-list .receiver-detail div.receiver-detail-body {
 	padding: 0 0 10px;
 	display: none;
 	overflow: hidden;
 }
-#recipients-list .receiver-detail div.receiver-detail-body label{
+#recipients-list .receiver-detail div.receiver-detail-body label {
 	display: inline-block;
 	width: 120px;
 	font-weight: 700;
 }
-#recipients-list .receiver-detail div.receiver-detail-body ul{
+#recipients-list .receiver-detail div.receiver-detail-body ul {
 	width: auto;
 }
-#recipients-list .mailster-icon:before{
+#recipients-list .mailster-icon:before {
 }
-#recipients-list .mailster-icon.mailster-icon-open:before, #recipients-list .mailster-icon.mailster-icon-unopen:before{
+#recipients-list .mailster-icon.mailster-icon-open:before,
+#recipients-list .mailster-icon.mailster-icon-unopen:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0,0.028h24v24h-24v-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3,9.703v9.297c0,1.105 0.895,2 2,2h13.999c1.105,0 2,-0.895 2,-2v-9.297"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.12,14.88l-5.53,5.53"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.41,20.41l-5.53,-5.53"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6,6.622l-2.114,1.422c-1.178,0.792 -1.178,2.526 0,3.319l5.874,3.952c1.354,0.911 3.124,0.911 4.478,0l5.874,-3.952c1.178,-0.793 1.178,-2.526 0,-3.319l-2.112,-1.422"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18,12.785v-8.883c0,-0.552 -0.448,-1 -1,-1h-10c-0.552,0 -1,0.448 -1,1v8.883"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9,6.5h6"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9,10h6"></path></g></svg>');
 }
-#recipients-list .mailster-icon.mailster-icon-unopen:before{
+#recipients-list .mailster-icon.mailster-icon-unopen:before {
 	opacity: 0.2;
 }
-#recipients-list .mailster-icon.mailster-icon-click:before,#recipients-list .mailster-icon.mailster-icon-noclick:before{
+#recipients-list .mailster-icon.mailster-icon-click:before,
+#recipients-list .mailster-icon.mailster-icon-noclick:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0,0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.197,15.932v0l1.976,1.976c0.436,0.436 0.436,1.144 0,1.58l-1.186,1.186c-0.436,0.436 -1.144,0.436 -1.58,0l-1.976,-1.976l-1.489,1.489c-0.294,0.294 -0.794,0.176 -0.925,-0.218l-2.872,-8.617c-0.146,-0.437 0.27,-0.852 0.707,-0.707l8.617,2.872c0.394,0.131 0.512,0.631 0.218,0.925l-1.49,1.49"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.78,10.93h-2.28"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.44,6.94l-1.62,-1.62"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.4,14.96l-1.62,1.62"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.43,5.28v-2.28"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.46,6.9l1.62,-1.62"></path></g></svg>');
- }
-#recipients-list .mailster-icon.mailster-icon-noclick:before{
+}
+#recipients-list .mailster-icon.mailster-icon-noclick:before {
 	opacity: 0.2;
 }
-#recipients-list .mailster-icon.mailster-icon-unsubscribe:before{
+#recipients-list .mailster-icon.mailster-icon-unsubscribe:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.163 21l4.444-.988c.814-.18 1.393-.902 1.393-1.735v-12.511c0-.833-.579-1.555-1.392-1.735l-4.444-.988c-1.111-.247-2.164.598-2.164 1.736v14.486c0 1.137 1.053 1.982 2.163 1.735Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10.98v2"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v2.042c0 1.105.895 2 2 2h3"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8v-2c0-1.105.895-2 2-2h3"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 12h5"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 14l2-2 -2-2"></path></g></svg>');
 }
-#recipients-list .mailster-icon.mailster-icon-bounce:before{
+#recipients-list .mailster-icon.mailster-icon-bounce:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M-0.01,0h24v24h-24v-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.99,11.028v-4.989"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.99,17l-2,2l2,2"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.989,4.028h-12.978c-1.111,0 -2.011,0.9 -2.011,2.011v0c0,0.667 0.331,1.29 0.883,1.664l5.357,3.631c1.365,0.925 3.157,0.925 4.522,0l5.356,-3.63c0.551,-0.374 0.882,-0.998 0.882,-1.664v-0.001c0,-1.111 -0.9,-2.011 -2.011,-2.011Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11,17.028h-6c-1.105,0 -2,-0.895 -2,-2v-8.989"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18,15.028h1c1.105,0 2,0.895 2,2v0c0,1.105 -0.895,2 -2,2h-0.49h0.49h-5.01"></path></g></svg>');
 }
-#recipients-list .mailster-icon.mailster-icon-bounce.hard:before{
+#recipients-list .mailster-icon.mailster-icon-bounce.hard:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M-0.01,0h24v24h-24v-24Z"></path><path stroke="%23D8605F" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.99,11.028v-4.989"></path><path stroke="%23D8605F" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.99,17l-2,2l2,2"></path><path stroke="%23D8605F" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.989,4.028h-12.978c-1.111,0 -2.011,0.9 -2.011,2.011v0c0,0.667 0.331,1.29 0.883,1.664l5.357,3.631c1.365,0.925 3.157,0.925 4.522,0l5.356,-3.63c0.551,-0.374 0.882,-0.998 0.882,-1.664v-0.001c0,-1.111 -0.9,-2.011 -2.011,-2.011Z"></path><path stroke="%23D8605F" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11,17.028h-6c-1.105,0 -2,-0.895 -2,-2v-8.989"></path><path stroke="%23D8605F" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18,15.028h1c1.105,0 2,0.895 2,2v0c0,1.105 -0.895,2 -2,2h-0.49h0.49h-5.01"></path></g></svg>');
 }
-#recipients-list tr.expanded td{
+#recipients-list tr.expanded td {
 	border-bottom: 0 !important;
 }
 #recipients-list .bounce-indicator {
 	cursor: pointer;
 }
-#recipients-list .user_image{
+#recipients-list .user_image {
 	width: 120px;
 	height: 120px;
 	padding: 5px;
@@ -361,24 +380,25 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	background-repeat: no-repeat;
 	background-size: 120px 120px;
 }
-#recipients-list .receiver-detail-data.has-avatar{
+#recipients-list .receiver-detail-data.has-avatar {
 	margin-left: 150px;
 }
-#recipients-list .receiver-detail-data h4{
+#recipients-list .receiver-detail-data h4 {
 	font-size: 16px;
 	margin: 0.3em 0 0.3em;
 }
-#recipients-list .receiver-detail-data h4 a{
+#recipients-list .receiver-detail-data h4 a {
 	visibility: hidden;
 	font-size: 10px;
 }
-#recipients-list .receiver-detail-body:hover h4 a{
+#recipients-list .receiver-detail-body:hover h4 a {
 	visibility: visible;
 }
-#recipients-list .receiver-detail-data ul li{
+#recipients-list .receiver-detail-data ul li {
 	white-space: pre-line;
 }
-#click-list, #error-list{
+#click-list,
+#error-list {
 	margin-top: 5px;
 	display: none;
 }
@@ -413,20 +433,20 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	cursor: default;
 }
 #mailster_details .geolocation .big {
-	width: 100px
+	width: 100px;
 }
 #mailster_details .verybold {
 	font-size: 20px;
 	font-weight: 700;
 }
-#mailster_details .environment label{
+#mailster_details .environment label {
 	margin-right: 5%;
 }
-#mailster_details .client-type{
+#mailster_details .client-type {
 	width: 20px;
 }
 
-#mailster_details .mailster-icon:before{
+#mailster_details .mailster-icon:before {
 	width: 20px;
 	height: 20px;
 	background-size: 20px 20px;
@@ -434,19 +454,19 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	background-position: center;
 	vertical-align: middle;
 }
-#mailster_details .showdetails.mailster-icon:before{
+#mailster_details .showdetails.mailster-icon:before {
 }
 
-#mailster_details .mailster-icon.client-desktop:before{
+#mailster_details .mailster-icon.client-desktop:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0,0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19,17h-14c-1.105,0 -2,-0.895 -2,-2v-10c0,-1.105 0.895,-2 2,-2h14c1.105,0 2,0.895 2,2v10c0,1.105 -0.895,2 -2,2Z"></path><path stroke="%23335454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14,17l0.5,4"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10,17l-0.5,4"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.2,21h9.6"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21,13.5h-18"></path></g></svg>');
 }
-#mailster_details .mailster-icon.client-mobile:before{
+#mailster_details .mailster-icon.client-mobile:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.5 3v1.8l-3.03311e-08 3.6816e-07c-.0249563.302922.197544.569922.5.6h4l-3.08771e-09 3.07058e-10c.302457-.030078.524956-.297078.5-.6v-1.8"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 18h4"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 21h-8l-8.74228e-08-3.55271e-15c-1.10457-4.82823e-08-2-.895431-2-2 0 0 0 0 0 0v-14l2.30926e-14 3.01992e-07c-1.66785e-07-1.10457.89543-2 2-2h8l-8.74228e-08 1.77636e-15c1.10457-4.82823e-08 2 .89543 2 2v14l-3.55271e-15 2.13163e-14c0 1.10457-.89543 2-2 2Z"></path></g></svg>');
 }
-#mailster_details .mailster-icon.client-webmail:before{
+#mailster_details .mailster-icon.client-webmail:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"><path d="M19.5 21h-15c-1.105 0-2-.895-2-2v-14c0-1.105.895-2 2-2h15c1.105 0 2 .895 2 2v14c0 1.105-.895 2-2 2Z"></path><path d="M2.5 8h19"></path><path d="M5.505 5.49c-.003 0-.005.002-.005.005 0 .003.002.005.005.005 .003 0 .005-.002.005-.005 0-.003-.002-.005-.005-.005"></path><path d="M8.048 5.49c-.003 0-.005.002-.005.005 0 .003.002.005.005.005 .003 0 .005-.002.005-.005 0-.003-.002-.005-.005-.005"></path><path d="M10.588 5.49c-.003 0-.005.002-.005.005 0 .003.002.005.005.005 .003 0 .005-.002.005-.005 0-.003-.003-.005-.005-.005"></path></g><path fill="none" d="M0 0h24v24h-24Z"></path></svg>');
 }
-.clicked-link{
+.clicked-link {
 	max-width: 400px;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -454,10 +474,10 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	display: block;
 	margin-right: 5px;
 }
-.clicked-link:hover{
+.clicked-link:hover {
 	overflow: visible;
 }
-.receiver-detail-data .clicked-link{
+.receiver-detail-data .clicked-link {
 	float: left;
 }
 #mailster_details .piechart {
@@ -465,28 +485,28 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	height: 75px;
 	display: inline-block;
 }
-#mailster_details table .countries{
+#mailster_details table .countries {
 	overflow: hidden;
 	border: 0;
-	border-top: 1px solid #CCD0D4;
+	border-top: 1px solid #ccd0d4;
 	margin-top: 0;
 }
-#mailster_details table .countries .big{
+#mailster_details table .countries .big {
 	width: 70px;
 }
-#mailster_details table .countries tr{
-	border-left: 1px solid #CCD0D4;
-	border-right: 1px solid #CCD0D4;
+#mailster_details table .countries tr {
+	border-left: 1px solid #ccd0d4;
+	border-right: 1px solid #ccd0d4;
 }
-#mailster_details table .countries td{
+#mailster_details table .countries td {
 	padding-top: 0;
 	padding-bottom: 0;
-	border-bottom: 1px solid #CCD0D4;
+	border-bottom: 1px solid #ccd0d4;
 }
-#mailster_details table .countries td .mailster-flag-24{
+#mailster_details table .countries td .mailster-flag-24 {
 	margin-top: 5px;
 }
-#mailster_details #countries_wrap{
+#mailster_details #countries_wrap {
 	position: relative;
 }
 #mailster_details #countries_map {
@@ -495,7 +515,7 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	width: 69%;
 	height: 428px;
 }
-#mailster_details #countries_map td{
+#mailster_details #countries_map td {
 	border-bottom: 0;
 }
 #mailster_details a.zoomout {
@@ -518,21 +538,23 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	display: none;
 	right: 31%;
 }
-#google-visualization-errors-all-1,#google-visualization-errors-all-2,#google-visualization-errors-all-3{
+#google-visualization-errors-all-1,
+#google-visualization-errors-all-2,
+#google-visualization-errors-all-3 {
 	position: absolute;
 	right: 0;
 	z-index: 1;
 }
 #google-visualization-errors-all-1 div > span,
 #google-visualization-errors-all-2 div > span,
-#google-visualization-errors-all-3 div > span{
+#google-visualization-errors-all-3 div > span {
 	padding: 7px 10px !important;
 	background-color: #777;
 	display: block;
 }
 #google-visualization-errors-all-1 div span,
 #google-visualization-errors-all-2 div span,
-#google-visualization-errors-all-3 div span{
+#google-visualization-errors-all-3 div span {
 	color: white !important;
 }
 #mailster_details #countries_table {
@@ -575,12 +597,14 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 /*----------------------------------------------------------------------*/
 /* Delivery
 /*----------------------------------------------------------------------*/
-.active_wrap, .autoresponder_active_wrap {
+.active_wrap,
+.autoresponder_active_wrap {
 	position: relative;
 	padding: 4px;
 	margin-top: 4px;
 }
-.active_wrap .active_overlay, .autoresponder_active_wrap .autoresponder_active_overlay {
+.active_wrap .active_overlay,
+.autoresponder_active_wrap .autoresponder_active_overlay {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -593,81 +617,90 @@ textarea#content, textarea#excerpt, textarea#modules, textarea#head {
 	text-decoration: line-through;
 	color: #ccc;
 }
-.active_wrap.disabled .active_overlay, .autoresponder_active_wrap.disabled .autoresponder_active_overlay {
+.active_wrap.disabled .active_overlay,
+.autoresponder_active_wrap.disabled .autoresponder_active_overlay {
 	display: none;
 }
-.tabs-panel{
-	border: 1px solid #CCD0D4;
+.tabs-panel {
+	border: 1px solid #ccd0d4;
 	padding: 0.5em 5px;
 	overflow: hidden;
 }
-.dark-mode .tabs-panel{
+.dark-mode .tabs-panel {
 	border-color: #191f25;
 }
-.mailster_autoresponder_more, .autoresponder_before_after{
+.mailster_autoresponder_more,
+.autoresponder_before_after {
 	display: none;
 }
-.autoresponder-mailster_subscriber_insert .autoresponderfield-mailster_subscriber_insert,
-.autoresponder-mailster_subscriber_unsubscribed .autoresponderfield-mailster_subscriber_unsubscribed,
-.autoresponder-mailster_post_published .autoresponderfield-mailster_post_published,
-.autoresponder-mailster_autoresponder_timebased .autoresponderfield-mailster_autoresponder_timebased,
-.autoresponder-mailster_autoresponder_usertime .autoresponderfield-mailster_autoresponder_usertime,
-.autoresponder-mailster_autoresponder_hook .autoresponderfield-mailster_autoresponder_hook,
-.autoresponder-mailster_autoresponder_followup .autoresponderfield-mailster_autoresponder_followup
-{
+.autoresponder-mailster_subscriber_insert
+	.autoresponderfield-mailster_subscriber_insert,
+.autoresponder-mailster_subscriber_unsubscribed
+	.autoresponderfield-mailster_subscriber_unsubscribed,
+.autoresponder-mailster_post_published
+	.autoresponderfield-mailster_post_published,
+.autoresponder-mailster_autoresponder_timebased
+	.autoresponderfield-mailster_autoresponder_timebased,
+.autoresponder-mailster_autoresponder_usertime
+	.autoresponderfield-mailster_autoresponder_usertime,
+.autoresponder-mailster_autoresponder_hook
+	.autoresponderfield-mailster_autoresponder_hook,
+.autoresponder-mailster_autoresponder_followup
+	.autoresponderfield-mailster_autoresponder_followup {
 	display: block;
 }
-.autoresponder-mailster_autoresponder_usertime .autoresponder_before_after{
+.autoresponder-mailster_autoresponder_usertime .autoresponder_before_after {
 	display: inline;
 }
-.autoresponder-mailster_autoresponder_usertime .autoresponder_after{
+.autoresponder-mailster_autoresponder_usertime .autoresponder_after {
 	display: none;
 }
-.autoresponder_before{
+.autoresponder_before {
 	display: none;
 }
-.autoresponder-mailster_autoresponder_timebased .autoresponder_time{
+.autoresponder-mailster_autoresponder_timebased .autoresponder_time {
 	display: none;
 }
-.autoresponder_time select{
+.autoresponder_time select {
 	width: 85px;
 }
-.mailster_autoresponder_condition{
-	border: 1px solid #CCD0D4;
+.mailster_autoresponder_condition {
+	border: 1px solid #ccd0d4;
 	border-radius: 3px;
 	margin: 3px 0;
 	padding: 5px;
 	overflow: hidden;
 }
-#mailster_autoresponder_condition_0 .remove-condition{
+#mailster_autoresponder_condition_0 .remove-condition {
 	display: none;
 }
-.mailster_autoresponder_condition select{
+.mailster_autoresponder_condition select {
 	margin: 3px 0;
 	width: 49%;
 }
-.mailster_autoresponder_condition input{
+.mailster_autoresponder_condition input {
 	margin: 3px 0;
 	width: 95%;
-	border-color: #CCD0D4;
+	border-color: #ccd0d4;
 }
-.mailster-conditions-wrap:empty:before{
+.mailster-conditions-wrap:empty:before {
 	content: attr(data-emptytext);
 	display: block;
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%,-50%);
+	transform: translate(-50%, -50%);
 	text-align: center;
 	color: #999;
 }
-.mailster_sendtest{
+.mailster_sendtest {
 	float: right;
 }
-.rtl .mailster_sendtest{
+.rtl .mailster_sendtest {
 	float: left;
 }
-input.deliverydate,input.deliverytime {
+input.deliverydate,
+input.deliverytime {
 	width: 94px;
 	font-size: 16px;
 	padding: 3px 1px;
@@ -675,14 +708,15 @@ input.deliverydate,input.deliverytime {
 	cursor: pointer;
 	text-align: center;
 }
-input.deliverydate.inactive,input.deliverytime.inactive {
+input.deliverydate.inactive,
+input.deliverytime.inactive {
 	color: #585858;
 	background: #fff;
 	padding: 4px 2px 3px;
 	border: 0;
 	border-bottom: 1px dotted #999;
 }
-.utcoffset{
+.utcoffset {
 	white-space: nowrap;
 	font-size: 10px;
 	letter-spacing: -0.05em;
@@ -690,38 +724,41 @@ input.deliverydate.inactive,input.deliverytime.inactive {
 input.deliverytime {
 	width: 50px;
 }
-.deliverydate.inactive:hover,.deliverytime.inactive:hover {
+.deliverydate.inactive:hover,
+.deliverytime.inactive:hover {
 	color: #333;
 	border-bottom: 1px dotted #585858;
 }
 #ui-datepicker-div {
 	display: none;
 }
-label.weekday input{
+label.weekday input {
 	margin-right: 1px;
 }
-#userexactdate span.disabled, #userexactdate span.disabled input, #userexactdate span.disabled select{
+#userexactdate span.disabled,
+#userexactdate span.disabled input,
+#userexactdate span.disabled select {
 	color: #ccc;
 	opacity: 0.6;
 }
-#mailster_testmail{
+#mailster_testmail {
 	margin: 0.3em 0;
 }
-.mailster-total{
+.mailster-total {
 	text-indent: -99999px;
 	font-size: 16px;
 	font-weight: 700;
 	visibility: visible;
 	cursor: pointer;
 }
-.mailster-total.loading{
+.mailster-total.loading {
 	height: auto;
 	opacity: 0.5;
 }
-.rtl .mailster-total{
+.rtl .mailster-total {
 	text-indent: 99999px;
 }
-.progress{
+.progress {
 	width: 100%;
 	height: 20px;
 	background: #efefef;
@@ -732,20 +769,20 @@ label.weekday input{
 	line-height: 20px;
 	border-radius: 2px;
 }
-.dark-mode .progress{
+.dark-mode .progress {
 	background: #50626f;
 }
-.progress var{
+.progress var {
 	padding-right: 2px;
 	font-style: normal;
 	visibility: hidden;
 	position: relative;
 	z-index: 2;
 }
-.progress:hover var{
+.progress:hover var {
 	visibility: visible;
 }
-.progress span{
+.progress span {
 	display: block;
 	position: absolute;
 	line-height: 1.6em;
@@ -754,23 +791,23 @@ label.weekday input{
 	bottom: 0;
 	white-space: nowrap;
 }
-.progress span.bar{
+.progress span.bar {
 	transition: width 1.25s ease;
 	overflow: visible;
 	border-radius: 2px;
 }
-.progress span.bar{
+.progress span.bar {
 	text-shadow: none;
-	background: #2BB3E7;
-	_background: -webkit-linear-gradient(to right, #084067, #2BB3E7);
-	_background: linear-gradient(to right, #084067, #2BB3E7);
+	background: #2bb3e7;
+	_background: -webkit-linear-gradient(to right, #084067, #2bb3e7);
+	_background: linear-gradient(to right, #084067, #2bb3e7);
 	z-index: 1;
 	overflow: hidden;
 }
-.progress span.bar span{
+.progress span.bar span {
 	color: #fff !important;
 }
-.progress.paused span.bar{
+.progress.paused span.bar {
 	background: #8a8a8a;
 	_background: -webkit-linear-gradient(to right, #383838, #8a8a8a);
 	_background: linear-gradient(to right, #383838, #8a8a8a);
@@ -779,11 +816,12 @@ label.weekday input{
 /* Lists
 /*----------------------------------------------------------------------*/
 
-#mailster_receivers{}
-#mailster_receivers ul.children{
+#mailster_receivers {
+}
+#mailster_receivers ul.children {
 	margin: 5px 0 5px 10px;
 }
-#mailster_receivers ul label{
+#mailster_receivers ul label {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	display: inline-block;
@@ -791,117 +829,120 @@ label.weekday input{
 	white-space: nowrap;
 	padding: 2px;
 }
-.mailster_list_condition{
-	border: 1px solid #CCD0D4;
+.mailster_list_condition {
+	border: 1px solid #ccd0d4;
 	border-radius: 3px;
 	margin: 3px 0;
 	padding: 5px;
 	position: relative;
 }
-.mailster-conditions-render:empty:before{
+.mailster-conditions-render:empty:before {
 	content: attr(data-emptytext);
 	display: block;
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%,-50%);
+	transform: translate(-50%, -50%);
 	text-align: center;
 	color: #999;
 }
-.mailster-condition .mailster-rating span{
+.mailster-condition .mailster-rating span {
 	color: #e6b800;
 	display: inline-block;
 	font-size: 16px;
 	cursor: pointer;
 	padding: 3px 0;
 }
-.mailster-condition .mailster-rating span:before, span.mailster-icon-star-empty:before{
+.mailster-condition .mailster-rating span:before,
+span.mailster-icon-star-empty:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path stroke="%23cfcfcf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.458 20.86l2.81526e-08-1.51005e-08c-.584032.313263-1.31143.093761-1.6247-.490271 -.126301-.23547-.170399-.506358-.125305-.769729l.868-5.023 -3.676-3.559 4.32484e-08 4.2531e-08c-.472532-.464694-.478886-1.22447-.0141923-1.697 .183566-.186662.42314-.308172.682192-.346003l5.082-.733 2.27-4.574 3.97642e-08-7.94342e-08c.299141-.597572 1.02607-.839499 1.62364-.540358 .233761.117019.423339.306597.540358.540358l2.27 4.574 5.082.733 1.00541e-07 1.46825e-08c.655786.0957675 1.10977.705022 1.014 1.36081 -.0378307.259052-.159341.498626-.346003.682192l-3.678 3.557 .868 5.023 2.1535e-08 1.2438e-07c.113064.653026-.324662 1.27406-.977688 1.38713 -.264187.045741-.536083.00168883-.772312-.125129l-4.544-2.369Z"></path></g></svg>');
 	width: 20px;
 	height: 20px;
 	background-size: 20px 20px;
-
 }
-.mailster-condition .mailster-rating span.enabled:before, span.mailster-icon-star:before{
+.mailster-condition .mailster-rating span.enabled:before,
+span.mailster-icon-star:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path stroke="%23ffb900" fill="%23ffb900" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.458 20.86l2.81526e-08-1.51005e-08c-.584032.313263-1.31143.093761-1.6247-.490271 -.126301-.23547-.170399-.506358-.125305-.769729l.868-5.023 -3.676-3.559 4.32484e-08 4.2531e-08c-.472532-.464694-.478886-1.22447-.0141923-1.697 .183566-.186662.42314-.308172.682192-.346003l5.082-.733 2.27-4.574 3.97642e-08-7.94342e-08c.299141-.597572 1.02607-.839499 1.62364-.540358 .233761.117019.423339.306597.540358.540358l2.27 4.574 5.082.733 1.00541e-07 1.46825e-08c.655786.0957675 1.10977.705022 1.014 1.36081 -.0378307.259052-.159341.498626-.346003.682192l-3.678 3.557 .868 5.023 2.1535e-08 1.2438e-07c.113064.653026-.324662 1.27406-.977688 1.38713 -.264187.045741-.536083.00168883-.772312-.125129l-4.544-2.369Z"></path></g></svg>');
 	width: 20px;
 	height: 20px;
 	background-size: 20px 20px;
 }
 
-#mailster_list_condition_0 .remove-condition, #mailster_list_condition_0 div.mailster-list-operator{
+#mailster_list_condition_0 .remove-condition,
+#mailster_list_condition_0 div.mailster-list-operator {
 	display: none;
 }
-#mailster_receivers p.lists strong:after{
+#mailster_receivers p.lists strong:after {
 	content: ',';
 	display: inline-block;
 }
-#mailster_receivers p.lists strong:last-child:after{
+#mailster_receivers p.lists strong:last-child:after {
 	content: '';
 }
-.mailster_list_condition select{
+.mailster_list_condition select {
 	margin: 3px 0;
 	width: 46%;
 }
-.mailster_list_condition input{
+.mailster_list_condition input {
 	margin: 3px 0;
 	width: 95%;
-	border-color: #CCD0D4;
+	border-color: #ccd0d4;
 }
-#mailster_conditions_render{
+#mailster_conditions_render {
 	position: relative;
 }
-#mailster_conditions_render .mailster-conditions-render:empty{
-	border: 1px solid #CCD0D4;
+#mailster_conditions_render .mailster-conditions-render:empty {
+	border: 1px solid #ccd0d4;
 	border-radius: 2px;
 	padding: 10px 6px;
 	min-height: 18px;
 }
-.dark-mode #mailster_conditions_render .mailster-conditions-render:empty{
+.dark-mode #mailster_conditions_render .mailster-conditions-render:empty {
 	border-color: #191f25;
 }
 
-#mailster_conditions_render .mailster-conditions-render:empty:before, .mailster-conditions .mailster-conditions-wrap:empty:before{
+#mailster_conditions_render .mailster-conditions-render:empty:before,
+.mailster-conditions .mailster-conditions-wrap:empty:before {
 	content: attr(data-emptytext);
 	display: block;
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%,-50%);
+	transform: translate(-50%, -50%);
 	text-align: center;
 	color: #999;
 	white-space: nowrap;
 }
-.mailster-condition-render-group{
-	border: 1px solid #CCD0D4;
+.mailster-condition-render-group {
+	border: 1px solid #ccd0d4;
 	padding: 3px 6px;
 	border-radius: 2px;
 	background: #fdfdfd;
 	margin: 1px 0 2px;
 }
-.mailster-condition-operators{
+.mailster-condition-operators {
 	color: #989898;
 	font-size: 12px;
 }
-.mailster-condition-render{
+.mailster-condition-render {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.mailster-condition-render .mailster-condition-operators{
+.mailster-condition-render .mailster-condition-operators {
 	font-size: 10px;
 }
 
-.create-new-list-wrap{
+.create-new-list-wrap {
 	display: none;
-	border-top: 1px solid #CCD0D4;
+	border-top: 1px solid #ccd0d4;
 }
-div.mailster-list-operator{
+div.mailster-list-operator {
 	position: absolute;
 	top: -12px;
 	left: 50%;
 }
-div.mailster-list-operator span{
+div.mailster-list-operator span {
 	transform: translateX(-50%);
 	position: absolute;
 	background-color: #fff;
@@ -912,14 +953,18 @@ div.mailster-list-operator span{
 	display: none;
 	line-height: 100%;
 }
-#mailster_list_conditions.operator-is-OR div.mailster-list-operator span.operator-or{
+#mailster_list_conditions.operator-is-OR
+	div.mailster-list-operator
+	span.operator-or {
 	display: block;
 }
-#mailster_list_conditions.operator-is-AND div.mailster-list-operator span.operator-and{
+#mailster_list_conditions.operator-is-AND
+	div.mailster-list-operator
+	span.operator-and {
 	display: block;
 }
 
-.mailster-receivers-thickbox{
+.mailster-receivers-thickbox {
 	overflow: hidden;
 	position: relative;
 	width: 100%;
@@ -934,30 +979,30 @@ div.mailster-list-operator span{
 	height: calc(100% - 50px);
 	overflow: auto;
 }
-.mailster-receivers-thickbox #new_template_name{
+.mailster-receivers-thickbox #new_template_name {
 	font-size: 1.8em;
 }
-.mailster-receivers-thickbox #new_template_saveas_dropdown{
+.mailster-receivers-thickbox #new_template_saveas_dropdown {
 	width: 280px;
 }
-.mailster-receivers-thickbox #new_template-ajax-loading{
+.mailster-receivers-thickbox #new_template-ajax-loading {
 	visibility: visible;
 	display: none;
 	float: right;
 }
 .mailster-receivers-thickbox .foot {
 	padding: 10px 20px;
-	border-top: 1px solid #DFDFDF;
+	border-top: 1px solid #dfdfdf;
 	position: absolute;
 	bottom: 0;
 	left: 0;
 	right: 0;
 }
-.mailster-receivers-thickbox .foot button{
+.mailster-receivers-thickbox .foot button {
 	float: right;
 	margin-left: 6px;
 }
-.rtl .mailster-receivers-thickbox .foot button{
+.rtl .mailster-receivers-thickbox .foot button {
 	margin-left: 0px;
 	margin-right: 6px;
 	float: left;
@@ -970,7 +1015,7 @@ div.mailster-list-operator span{
 	clear: both;
 	float: none;
 }
-.fixed-optionbar.focus-on div#mailster_options{
+.fixed-optionbar.focus-on div#mailster_options {
 	opacity: 0.5;
 }
 .focus-on div#mailster_options {
@@ -983,7 +1028,7 @@ div.mailster-list-operator span{
 .focus-on div#mailster_options:hover {
 	opacity: 1;
 }
-.wp-picker-holder{
+.wp-picker-holder {
 	position: absolute;
 	z-index: 1000;
 }
@@ -1005,7 +1050,7 @@ ul.colors li {
 	box-sizing: border-box;
 	display: inline-block;
 }
-ul.colors .default-value{
+ul.colors .default-value {
 	display: none;
 }
 ul.colors.has-labels li {
@@ -1020,13 +1065,14 @@ input.color {
 	font-size: 10px;
 	text-transform: uppercase;
 }
-a.savecolorschema, a.colorschema-delete-all {
+a.savecolorschema,
+a.colorschema-delete-all {
 	cursor: pointer;
 	font-size: 10px;
 }
 ul.colorschema {
 	margin: 5px 0;
-	border: 1px solid #CCD0D4;
+	border: 1px solid #ccd0d4;
 	overflow: hidden;
 	display: inline-block !important;
 	max-width: 234px;
@@ -1040,16 +1086,16 @@ ul.colorschema.custom:hover {
 ul.colorschema:hover {
 	border: 1px solid #606064;
 }
-ul.colorschema .colorschema-delete-field{
+ul.colorschema .colorschema-delete-field {
 	display: none;
 }
-ul.colorschema:hover .colorschema-delete-field{
+ul.colorschema:hover .colorschema-delete-field {
 	display: block;
 }
 ul.colorschema.finished:hover {
-	border: 1px solid #CCD0D4;
+	border: 1px solid #ccd0d4;
 }
-ul.colorschema li{
+ul.colorschema li {
 	cursor: pointer;
 	position: relative;
 	height: 13px;
@@ -1079,7 +1125,7 @@ ul.colorschema li:last-child {
 	border-top-right-radius: 2px;
 	border-bottom-right-radius: 2px;
 }
-ul.colorschema li a.colorschema-delete{
+ul.colorschema li a.colorschema-delete {
 	font-size: 13px;
 	line-height: 1em;
 	display: block;
@@ -1089,29 +1135,30 @@ ul.colorschema li a.colorschema-delete{
 /* Attachments
 /*----------------------------------------------------------------------*/
 
-.mailster-attachments{
+.mailster-attachments {
 	overflow: hidden;
 	margin: 0;
 }
-.mailster-attachments.is-editable .mailster-attachment:first-child{
+.mailster-attachments.is-editable .mailster-attachment:first-child {
 	display: none;
 }
-.mailster-attachments .mailster-attachment{
+.mailster-attachments .mailster-attachment {
 	width: 47%;
 	margin-right: 2%;
 	height: 110px;
 	position: relative;
-	box-shadow: inset 0 0 15px rgba( 0, 0, 0, 0.1 ), inset 0 0 0 1px rgba( 0, 0, 0, 0.05 );
+	box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1),
+		inset 0 0 0 1px rgba(0, 0, 0, 0.05);
 	background: #eee;
 	float: left;
 	overflow: hidden;
 }
-.rtl .mailster-attachments .mailster-attachment{
+.rtl .mailster-attachments .mailster-attachment {
 	margin-right: 0;
 	margin-left: 2%;
 	float: right;
 }
-.mailster-attachments .mailster-attachment .delete-attachment{
+.mailster-attachments .mailster-attachment .delete-attachment {
 	position: absolute;
 	top: 1px;
 	right: 1px;
@@ -1122,10 +1169,12 @@ ul.colorschema li a.colorschema-delete{
 	text-align: center;
 	z-index: 1;
 }
-.mailster-attachments.is-editable .mailster-attachment:hover .delete-attachment{
+.mailster-attachments.is-editable
+	.mailster-attachment:hover
+	.delete-attachment {
 	display: block;
 }
-.mailster-attachments .mailster-attachment img{
+.mailster-attachments .mailster-attachment img {
 	margin: auto;
 	display: block;
 	top: 40%;
@@ -1140,7 +1189,7 @@ ul.colorschema li a.colorschema-delete{
 	max-width: 100%;
 	height: auto;
 }
-.mailster-attachments .mailster-attachment div.mailster-attachment-label{
+.mailster-attachments .mailster-attachment div.mailster-attachment-label {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -1150,8 +1199,8 @@ ul.colorschema li a.colorschema-delete{
 	font-weight: 600;
 	font-size: 12px;
 	padding: 5px 10px;
-	background: rgba( 255, 255, 255, 0.8 );
-	box-shadow: inset 0 0 0 1px rgba( 0, 0, 0, 0.15 );
+	background: rgba(255, 255, 255, 0.8);
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
 /*----------------------------------------------------------------------*/
 /* Stuff
@@ -1169,41 +1218,49 @@ a.mailster-btn.editbutton {
 	animation: blink 1s steps(5, start) infinite;
 }
 @-webkit-keyframes blink {
-	to { visibility: hidden; }
+	to {
+		visibility: hidden;
+	}
 }
 @-moz-keyframes blink {
-	to { visibility: hidden; }
+	to {
+		visibility: hidden;
+	}
 }
 @-o-keyframes blink {
-	to { visibility: hidden; }
+	to {
+		visibility: hidden;
+	}
 }
 @keyframes blink {
-	to { visibility: hidden; }
+	to {
+		visibility: hidden;
+	}
 }
 /*----------------------------------------------------------------------*/
 /* Clickbadge
 /*----------------------------------------------------------------------*/
-#clickmap-stats{
+#clickmap-stats {
 	background: #fff;
 	padding: 6px 10px;
-	box-shadow: 1px 1px 3px 0 rgba(0,0,0,0.5);
+	box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.5);
 	position: absolute;
 	display: none;
 	z-index: 10000;
 }
-#clickmap-stats .piechart{
+#clickmap-stats .piechart {
 	float: left;
 }
-#clickmap-stats .piechart.easyPieChart span{
+#clickmap-stats .piechart.easyPieChart span {
 	font-weight: normal;
 }
-#clickmap-stats p{
+#clickmap-stats p {
 	margin: 0;
 	padding: 7px 2px 2px 10px;
 	font-size: 12px;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	white-space: nowrap: ;
+	white-space: nowrap;
 }
 .clickbadge {
 	display: block;
@@ -1241,23 +1298,23 @@ a.mailster-btn.editbutton {
 .clickbadge.clickbadge-outside span {
 	text-indent: -9999px;
 }
-#ui-datepicker-div{
+#ui-datepicker-div {
 	width: 230px;
 }
-.fixed-optionbar #iframe-wrap{
+.fixed-optionbar #iframe-wrap {
 	margin-top: 42px;
 }
 #mailster_template #iframe-wrap {
-	transition: margin-right .15s ease-in-out;
+	transition: margin-right 0.15s ease-in-out;
 	margin-right: 0px;
 	margin-top: 12px;
-	border: 1px solid #CCD0D4;
+	border: 1px solid #ccd0d4;
 }
 #mailster_template .is-editable #iframe-wrap {
 	margin-top: 0;
 }
 .rtl #mailster_template #iframe-wrap {
-	transition: margin-left .15s ease-in-out;
+	transition: margin-left 0.15s ease-in-out;
 	margin-left: 0px;
 }
 .dark-mode #mailster_template #iframe-wrap {
@@ -1270,10 +1327,10 @@ a.mailster-btn.editbutton {
 	margin-right: 0px;
 	margin-left: 170px;
 }
-#mailster_template a.toggle-modules{
-	transition: margin-left .15s ease-in-out;
+#mailster_template a.toggle-modules {
+	transition: margin-left 0.15s ease-in-out;
 	border: 1px solid;
-	border-color: #fff #fff #CCD0D4 #CCD0D4;
+	border-color: #fff #fff #ccd0d4 #ccd0d4;
 	background: #fff;
 	padding: 5px;
 	z-index: 98;
@@ -1289,56 +1346,56 @@ a.mailster-btn.editbutton {
 	height: auto;
 	width: 100%;
 	direction: ltr;
-	border: 1px solid #CCD0D4;
+	border: 1px solid #ccd0d4;
 }
 .CodeMirror-code {
-	background-image:url(../img/pre_bg.png);
+	background-image: url(../img/pre_bg.png);
 	background-size: 100% 36px;
-	background-attachment:scroll;
+	background-attachment: scroll;
 }
 
-.dark-mode #mailster_template a.toggle-modules{
+.dark-mode #mailster_template a.toggle-modules {
 	background: #32373c;
 	border-color: #32373c #32373c #191f25 #191f25;
 }
-#mailster_template .show-modules a.toggle-modules{
+#mailster_template .show-modules a.toggle-modules {
 	display: none !important;
 }
-#module-selector:hover a.toggle-modules{
+#module-selector:hover a.toggle-modules {
 	display: block !important;
 }
-.rtl #mailster_template a.toggle-modules{
-	transition: margin-right .15s ease-in-out;
-	border-color: #fff #CCD0D4 #CCD0D4 #fff;
+.rtl #mailster_template a.toggle-modules {
+	transition: margin-right 0.15s ease-in-out;
+	border-color: #fff #ccd0d4 #ccd0d4 #fff;
 	margin-left: 0;
 	margin-right: -40px;
 }
-#mailster_template a.toggle-modules:hover{
+#mailster_template a.toggle-modules:hover {
 	color: #686868;
 }
-#mailster_template .show-modules a.toggle-modules{
+#mailster_template .show-modules a.toggle-modules {
 	margin-left: -31px;
 }
-.rtl #mailster_template .show-modules a.toggle-modules{
+.rtl #mailster_template .show-modules a.toggle-modules {
 	margin-left: 0;
 	margin-right: -30px;
 }
-#mailster_template a.toggle-modules:before{
+#mailster_template a.toggle-modules:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M14,8l-4,4l4,4" stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
 	background-size: 20px 20px;
 	background-position: center;
 }
-#mailster_template .show-modules a.toggle-modules:before{
+#mailster_template .show-modules a.toggle-modules:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 16l4-4 -4-4"></path></g></svg>');
 }
-.rtl #mailster_template a.toggle-modules:before{
+.rtl #mailster_template a.toggle-modules:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23545454" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 16l4-4 -4-4"></path></g></svg>');
 }
-.rtl #mailster_template .show-modules a.toggle-modules:before{
+.rtl #mailster_template .show-modules a.toggle-modules:before {
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M14,8l-4,4l4,4" stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
 }
 #mailster_template .inside iframe#mailster_iframe {
-	transition: height .25s ease-in-out;
+	transition: height 0.25s ease-in-out;
 	margin-top: 0px;
 	margin-bottom: -4px;
 }
@@ -1349,17 +1406,20 @@ a.mailster-btn.editbutton {
 	-webkit-filter: blur(3px);
 	filter: blur(3px);
 }
-#mailster_template .inside #template-wrap.load{
+#mailster_template .inside #template-wrap.load {
 	cursor: progress !important;
 }
 #mailster_template a.mailster-btn {
 	display: none;
 }
-#mailster_template:hover a.mailster-btn,.ie #mailster_template a.mailster-btn, .touch #mailster_template a.mailster-btn,.ie #mailster_template .show-modules #module-selector {
+#mailster_template:hover a.mailster-btn,
+.ie #mailster_template a.mailster-btn,
+.touch #mailster_template a.mailster-btn,
+.ie #mailster_template .show-modules #module-selector {
 	display: block;
 }
-#module-selector{
-	transition: width .15s ease-in-out;
+#module-selector {
+	transition: width 0.15s ease-in-out;
 	right: 0;
 	position: absolute;
 	z-index: 99;
@@ -1367,10 +1427,10 @@ a.mailster-btn.editbutton {
 	top: 40px;
 	background: #fff;
 }
-.dark-mode #module-selector{
+.dark-mode #module-selector {
 	background: #32373c;
 }
-.rtl #module-selector{
+.rtl #module-selector {
 	left: 0;
 	right: initial;
 }
@@ -1380,49 +1440,50 @@ a.mailster-btn.editbutton {
 #mailster_template #module-selector {
 	width: 0;
 }
-#module-selector .inner{
+#module-selector .inner {
 	position: relative;
 	overflow: hidden;
 	height: 94%;
 	height: calc(100% - 45px);
 }
-#module-selector .inner:hover{
+#module-selector .inner:hover {
 	overflow: scroll;
 	overflow-y: auto;
 	overflow-x: hidden;
 }
-#mailster_template .inner #template-wrap.load, #mailster_template .inner #template-wrap.load *{
+#mailster_template .inner #template-wrap.load,
+#mailster_template .inner #template-wrap.load * {
 	cursor: progress !important;
 }
-.fixed-optionbar #module-selector{
+.fixed-optionbar #module-selector {
 	right: 321px;
 	top: 92px;
 	position: fixed;
 }
-.rtl.fixed-optionbar #module-selector{
+.rtl.fixed-optionbar #module-selector {
 	left: 321px;
 	right: initial;
 }
-.fixed-optionbar #post-body.columns-1 #module-selector{
+.fixed-optionbar #post-body.columns-1 #module-selector {
 	right: 21px;
 }
-.rtl.fixed-optionbar #post-body.columns-1 #module-selector{
+.rtl.fixed-optionbar #post-body.columns-1 #module-selector {
 	left: 21px;
 	right: initial;
 }
-.show-modules #module-selector #module-search-wrap{
+.show-modules #module-selector #module-search-wrap {
 	width: 170px;
 }
-#module-selector #module-search-wrap{
-	transition: width .15s ease-in-out;
+#module-selector #module-search-wrap {
+	transition: width 0.15s ease-in-out;
 	width: 0;
 	overflow: hidden;
 }
-#module-selector #module-search-wrap #module-search{
+#module-selector #module-search-wrap #module-search {
 	margin: 1px 11px;
 	width: 158px;
 }
-#module-selector #module-search-wrap #module-search-remove{
+#module-selector #module-search-wrap #module-search-remove {
 	text-decoration: none;
 	position: absolute;
 	right: 14px;
@@ -1430,11 +1491,11 @@ a.mailster-btn.editbutton {
 	padding: 2px;
 	display: none;
 }
-.rtl #module-selector #module-search-wrap #module-search-remove{
-	right:inherit;
+.rtl #module-selector #module-search-wrap #module-search-remove {
+	right: inherit;
 	left: 14px;
 }
-#module-selector #module-search-wrap:hover #module-search-remove{
+#module-selector #module-search-wrap:hover #module-search-remove {
 	display: block;
 }
 
@@ -1451,8 +1512,8 @@ a.mailster-btn.editbutton {
 	float: none;
 }
 #module-selector ul li a.mailster-btn {
-	border: 1px solid #CCD0D4;
-	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+	border: 1px solid #ccd0d4;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 	display: block;
 	position: static;
 	padding: 0 3px;
@@ -1488,18 +1549,20 @@ a.mailster-btn.editbutton {
 	border-radius: 0 0 2px 2px;
 	line-height: 22px;
 	opacity: 0;
-	transition: all .25s ease;
+	transition: all 0.25s ease;
 }
 #module-selector ul li:hover a.mailster-btn.has-screenshot span {
 	opacity: 1;
 }
-#module-selector ul li:hover a.mailster-btn, #module-selector ul li a.mailster-btn:focus {
+#module-selector ul li:hover a.mailster-btn,
+#module-selector ul li a.mailster-btn:focus {
 	background-color: #fafafa !important;
 	border: 1px solid #999;
 	color: #23282d;
-	box-shadow: inset 0 1px 0 rgba( 255,255,255, 0.2 ), 0 1px 0 rgba( 0, 0, 0, 0.08 );
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+		0 1px 0 rgba(0, 0, 0, 0.08);
 }
-#module-selector ul li.ui-draggable-dragging{
+#module-selector ul li.ui-draggable-dragging {
 	background-color: red;
 }
 #module-selector ul li.ui-draggable-dragging a.mailster-btn {
@@ -1507,18 +1570,18 @@ a.mailster-btn.editbutton {
 	width: 200px;
 	padding-top: 40px;
 }
-@media only screen and (max-width: 850px){
-	#mailster_template a.toggle-modules{
+@media only screen and (max-width: 850px) {
+	#mailster_template a.toggle-modules {
 		margin-left: -32px;
 		margin-top: 0;
 	}
-	#module-selector{
-		border-left: 1px solid #CCD0D4;
+	#module-selector {
+		border-left: 1px solid #ccd0d4;
 		border-right: 0;
 		right: 10px;
 		top: 42px;
 	}
-	.fixed-optionbar #module-selector{
+	.fixed-optionbar #module-selector {
 		right: 28px;
 	}
 	#module-selector ul li a.mailster-btn {
@@ -1526,19 +1589,18 @@ a.mailster-btn.editbutton {
 	}
 }
 @media screen and (max-width: 782px) {
-
-	.fixed-optionbar #mailster_template a.toggle-modules{
+	.fixed-optionbar #mailster_template a.toggle-modules {
 		margin-left: -27px;
 	}
 	#mailster_details #stats li.receivers {
 		line-height: 220px;
 		height: 140px;
 	}
-	#mailster_details #stats li label{
+	#mailster_details #stats li label {
 		max-width: 20%;
 		min-width: 80px;
 	}
-	#mailster_details table th{
+	#mailster_details table th {
 		display: block;
 		width: auto;
 		border-bottom: 0;
@@ -1547,7 +1609,7 @@ a.mailster-btn.editbutton {
 		display: block;
 		width: auto;
 	}
-	#recipients-list .show-receiver-detail{
+	#recipients-list .show-receiver-detail {
 		width: 120px;
 	}
 	#recipients-list table {
@@ -1556,7 +1618,7 @@ a.mailster-btn.editbutton {
 	#recipients-list .receiver-detail-data {
 		margin-left: 80px;
 	}
-	#recipients-list .user_image{
+	#recipients-list .user_image {
 		width: 50px;
 		height: 50px;
 		background-size: 50px 50px;
@@ -1570,31 +1632,31 @@ a.mailster-btn.editbutton {
 		height: auto;
 		background-color: #fff;
 	}
-	.filter-list label{
+	.filter-list label {
 		padding: 3px 0;
 		display: block;
 	}
-	.ajax-list-header a.recipients-order{
+	.ajax-list-header a.recipients-order {
 		position: absolute;
 		top: 10px;
 		right: 10px;
 	}
-	#mailster_details .environment label{
+	#mailster_details .environment label {
 		margin-right: 0;
 		padding: 3px 0;
 		display: block;
 	}
-	#mailster_details .showdetails{
+	#mailster_details .showdetails {
 		margin-top: -20px;
 		font-size: 130%;
 	}
-	#countries_table span.country{
+	#countries_table span.country {
 		display: none;
 	}
-	#mailster_details .geolocation label:last-child{
+	#mailster_details .geolocation label:last-child {
 		display: none;
 	}
-	#mailster_details #countries_table tbody tr td{
+	#mailster_details #countries_table tbody tr td {
 		padding: 6px;
 	}
 }
@@ -1602,13 +1664,10 @@ a.mailster-btn.editbutton {
 	only screen and (-o-min-device-pixel-ratio: 32),
 	only screen and (min--moz-device-pixel-ratio: 1.5),
 	only screen and (min-device-pixel-ratio: 1.5) {
-
-
 	#recipients-list td.loading {
 		-webkit-background-size: 20px 20px;
 		-moz-background-size: 20px 20px;
 		background-size: 20px 20px;
 		background-image: url(../img/loading_2x.gif) !important;
 	}
-
 }

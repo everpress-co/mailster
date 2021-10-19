@@ -898,6 +898,12 @@ class MailsterSettings {
 				case 'blocked_emails':
 					$value = trim( $value );
 					break;
+				case 'blocked_countries':
+				case 'allowed_countries':
+					$value = explode( ',', strtoupper( trim( $value ) ) );
+					$value = preg_grep( '/([A-Z]{2})/', $value );
+					$value = implode( ', ', array_map( 'trim', $value ) );
+					break;
 
 				case 'interval':
 					$value = max( 0.1, $value );

@@ -64,7 +64,7 @@ class MailsterSecurity {
 		}
 
 		// check for domains
-		if ( $this->match( $ip, mailster_option( 'blocked_ips' ), true ) ) {
+		if ( $this->match( $ip, mailster_option( 'blocked_ips' ), "\n", true ) ) {
 			return new WP_Error( 'error_blocked', esc_html__( 'Sorry, you cannot signup right now.', 'mailster' ), 'email' );
 		}
 
@@ -103,6 +103,21 @@ class MailsterSecurity {
 			return new WP_Error( 'error_antiflood', sprintf( esc_html__( 'Please wait %s for the next signup.', 'mailster' ), $t ), 'email' );
 		}
 
+		// check country
+		if ( mailster_option( 'track_location' ) ) {
+
+			$country = mailster_ip2Country();
+
+			// it's blocked
+			if ( $this->match( $country, mailster_option( 'blocked_countries' ), ',' ) ) {
+				return new WP_Error( 'error_dep', esc_html__( 'Sorry, you cannot signup with right now.', 'mailster' ), 'email' );
+			}
+
+			if ( mailster_option( 'allowed_countries' ) && ! $this->match( $country, mailster_option( 'allowed_countries' ), ',' ) ) {
+				return new WP_Error( 'error_dep', esc_html__( 'Sorry, you cannot signup with right now.', 'mailster' ), 'email' );
+			}
+		}
+
 		return true;
 
 	}
@@ -116,11 +131,11 @@ class MailsterSecurity {
 	 * @param unknown $check (optional)
 	 * @return unknown
 	 */
-	public function match( $string, $haystack, $net_match = false ) {
+	private function match( $string, $haystack, $separator = "\n", $net_match = false ) {
 		if ( empty( $haystack ) ) {
 			return false;
 		}
-		$lines = is_array( $haystack ) ? $haystack : explode( "\n", $haystack );
+		$lines = is_array( $haystack ) ? $haystack : explode( $separator, $haystack );
 		foreach ( $lines as $line ) {
 			$line = trim( $line );
 			if ( '' === $line ) {
@@ -141,7 +156,7 @@ class MailsterSecurity {
 		return false;
 	}
 
-	public function net_match( $network, $ip ) {
+	private function net_match( $network, $ip ) {
 		$network      = trim( $network );
 		$orig_network = $network;
 		$ip           = trim( $ip );

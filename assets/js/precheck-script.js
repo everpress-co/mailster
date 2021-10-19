@@ -1,6 +1,5 @@
 mailster = (function (mailster, $, window, document) {
-
-	"use strict";
+	'use strict';
 
 	var api = {},
 		id,
@@ -14,7 +13,8 @@ mailster = (function (mailster, $, window, document) {
 		imagebtn = $('.precheck-toggle-images'),
 		$iframe = $('.mailster-preview-iframe'),
 		$iframebody,
-		$hx, $hy,
+		$hx,
+		$hy,
 		started = 0,
 		images = true,
 		structure = false;
@@ -31,18 +31,23 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.change-receiver', showSubscriberInput)
 		.on('click', '#precheck-agree', agreeTerms);
 
-	$(".precheck-subscriber")
+	$('.precheck-subscriber')
 		.on('focus', function () {
 			$(this).select();
 		})
 		.autocomplete({
 			source: function (request, response) {
-				mailster.util.ajax('search_subscribers', {
-					id: mailster.campaign_id,
-					term: request.term,
-				}, function (data) {
-					response(data);
-				}, function (jqXHR, textStatus, errorThrown) {});
+				mailster.util.ajax(
+					'search_subscribers',
+					{
+						id: mailster.campaign_id,
+						term: request.term,
+					},
+					function (data) {
+						response(data);
+					},
+					function (jqXHR, textStatus, errorThrown) {}
+				);
 			},
 			appendTo: '.precheck-emailheader',
 			minLength: 3,
@@ -55,36 +60,49 @@ mailster = (function (mailster, $, window, document) {
 					$('#subscriber_id').val(0);
 					loadPreview();
 				}
-			}
+			},
 		});
 
 	function status(id, append) {
 		var msg = mailster.l10n.precheck[id] || id;
-		$score.removeAttr('class').addClass('precheck-score precheck-status-' + id);
+		$score
+			.removeAttr('class')
+			.addClass('precheck-score precheck-status-' + id);
 		if (append) {
 			$status.html($status.html() + msg);
 		} else {
 			$status.html(msg);
 		}
-	};
+	}
 
 	function error(msg) {
-		var box = $('<div class="error"><p><strong>' + msg + '</strong></p></div>').hide().appendTo($('.score-message')).slideDown(200).delay(200).fadeIn().delay(8000).fadeTo(200, 0).delay(1500).slideUp(200, function () {
-			box.remove();
-		});
+		var box = $(
+			'<div class="error"><p><strong>' + msg + '</strong></p></div>'
+		)
+			.hide()
+			.appendTo($('.score-message'))
+			.slideDown(200)
+			.delay(200)
+			.fadeIn()
+			.delay(8000)
+			.fadeTo(200, 0)
+			.delay(1500)
+			.slideUp(200, function () {
+				box.remove();
+			});
 		mailster.error(msg);
-	};
+	}
 
 	function loader(enable) {
 		$loader.css('visibility', enable ? 'visible' : 'hidden');
-	};
+	}
 
 	function switchPane() {
 		var dimensions = $(this).data('dimensions');
 		$('.device.desktop').width(dimensions.w).height(dimensions.h);
 		$('.precheck-resize').find('.button').removeClass('active');
 		$(this).addClass('active');
-	};
+	}
 
 	function initTest() {
 		clear();
@@ -94,45 +112,44 @@ mailster = (function (mailster, $, window, document) {
 		started = 0;
 		$('.precheck-status-icon').html('');
 
-		mailster.util.ajax('send_test', {
-			precheck: true,
-			subscriber_id: $('#subscriber_id').val(),
-			formdata: $('#post').serialize(),
-			to: $('#mailster_testmail').val(),
-			content: mailster.$.content.val(),
-			head: mailster.$.head.val(),
-			plaintext: mailster.$.excerpt.val()
-
-		}, function (response) {
-
-			if (response.success) {
-				id = response.id;
-				setTimeout(function () {
-					status('checking');
-					checkTest(1);
-				}, 3000);
-			} else {
-				error(response.msg);
+		mailster.util.ajax(
+			'send_test',
+			{
+				precheck: true,
+				subscriber_id: $('#subscriber_id').val(),
+				formdata: $('#post').serialize(),
+				to: $('#mailster_testmail').val(),
+				content: mailster.$.content.val(),
+				head: mailster.$.head.val(),
+				plaintext: mailster.$.excerpt.val(),
+			},
+			function (response) {
+				if (response.success) {
+					id = response.id;
+					setTimeout(function () {
+						status('checking');
+						checkTest(1);
+					}, 3000);
+				} else {
+					error(response.msg);
+					loader(false);
+					runbtn.prop('disabled', false);
+				}
+			},
+			function (jqXHR, textStatus, errorThrown) {
 				loader(false);
 				runbtn.prop('disabled', false);
 			}
-
-		}, function (jqXHR, textStatus, errorThrown) {
-			loader(false);
-			runbtn.prop('disabled', false);
-
-		});
-
-	};
+		);
+	}
 
 	function clear() {
 		precheck.find('summary').removeAttr('class');
 		precheck.find('.precheck-result').empty();
 		status('ready');
-	};
+	}
 
 	function checkTest(tries) {
-
 		if (tries > 10) {
 			error(mailster.l10n.precheck.email_not_sent);
 			loader(false);
@@ -140,47 +157,52 @@ mailster = (function (mailster, $, window, document) {
 			return;
 		}
 
-		mailster.util.ajax('precheck', {
-			id: id,
-		}, function (response) {
-			if (response.success) {
-				if (!response.ready) {
-					setTimeout(function () {
-						checkTest(++tries);
-					}, 3000);
-				} else {
-					status('collecting');
-					$('.precheck-status-icon').html(mailster.util.sprintf('%s of 100', 100));
+		mailster.util.ajax(
+			'precheck',
+			{
+				id: id,
+			},
+			function (response) {
+				if (response.success) {
+					if (!response.ready) {
+						setTimeout(function () {
+							checkTest(++tries);
+						}, 3000);
+					} else {
+						status('collecting');
+						$('.precheck-status-icon').html(
+							mailster.util.sprintf('%s of 100', 100)
+						);
 
-					$.when.apply($, [
-							getResult('blocklist'),
-							getResult('spam_report'),
-							getResult('authentication'),
-							getResult('message'),
-							getResult('links', 'tests/links'),
-							getResult('images', 'tests/images'),
-						])
-						.done(function (r) {
-							//console.log(r);
-							status('finished');
-							loader(false);
-							runbtn.prop('disabled', false);
-						});
+						$.when
+							.apply($, [
+								getResult('blocklist'),
+								getResult('spam_report'),
+								getResult('authentication'),
+								getResult('message'),
+								getResult('links', 'tests/links'),
+								getResult('images', 'tests/images'),
+							])
+							.done(function (r) {
+								//console.log(r);
+								status('finished');
+								loader(false);
+								runbtn.prop('disabled', false);
+							});
+					}
 				}
-			}
-			if (response.error) {
-				error(response.error);
+				if (response.error) {
+					error(response.error);
+					loader(false);
+					runbtn.prop('disabled', false);
+				}
+			},
+			function (jqXHR, textStatus, errorThrown) {
 				loader(false);
 				runbtn.prop('disabled', false);
 			}
-
-
-		}, function (jqXHR, textStatus, errorThrown) {
-			loader(false);
-			runbtn.prop('disabled', false);
-
-		})
-	};
+		);
+	}
 
 	function getResult(part, endpoint) {
 		var base = $('#precheck-' + part),
@@ -197,74 +219,83 @@ mailster = (function (mailster, $, window, document) {
 					promises.push(getEndpoint(child_part, endpoint));
 				}
 			}
-
 		} else {
 			if (!endpoint) endpoint = part;
 			promises.push(getEndpoint(part, endpoint));
 		}
 
-		return $.when.apply($, promises)
-			.done(function () {
-				var s, statuses = {
-					'error': 0,
-					'warning': 0,
-					'notice': 0,
-					'success': 0,
+		return $.when.apply($, promises).done(function () {
+			var s,
+				statuses = {
+					error: 0,
+					warning: 0,
+					notice: 0,
+					success: 0,
 				};
-				if (typeof arguments[1] != 'string') {
-					for (i in arguments) {
-						arguments[i] && statuses[arguments[i][0].status]++;
-					}
-					if (statuses.error) {
-						s = 'error';
-					} else if (statuses.warning) {
-						s = 'warning';
-					} else if (statuses.notice) {
-						s = 'notice';
-					} else {
-						s = 'success';
-					}
-					$('#precheck-' + part).find('summary').eq(0).removeClass('loading').addClass('loaded is-' + s);
+			if (typeof arguments[1] != 'string') {
+				for (i in arguments) {
+					arguments[i] && statuses[arguments[i][0].status]++;
 				}
-			});
-
-	};
+				if (statuses.error) {
+					s = 'error';
+				} else if (statuses.warning) {
+					s = 'warning';
+				} else if (statuses.notice) {
+					s = 'notice';
+				} else {
+					s = 'success';
+				}
+				$('#precheck-' + part)
+					.find('summary')
+					.eq(0)
+					.removeClass('loading')
+					.addClass('loaded is-' + s);
+			}
+		});
+	}
 
 	function getEndpoint(part, endpoint) {
-
 		var base = $('#precheck-' + part),
-			summary = base.find('summary').eq(0).removeAttr('class').addClass('loading'),
+			summary = base
+				.find('summary')
+				.eq(0)
+				.removeAttr('class')
+				.addClass('loading'),
 			body = base.find('.precheck-result');
 
-		return mailster.util.ajax('precheck_result', {
-			id: id,
-			endpoint: endpoint,
-		}, function (response) {
-
-			if (response.success) {
-				summary.removeClass('loading').addClass('loaded is-' + response.status);
-				if ('error' == response.status) {
-					//base.prop('open', true);
+		return mailster.util.ajax(
+			'precheck_result',
+			{
+				id: id,
+				endpoint: endpoint,
+			},
+			function (response) {
+				if (response.success) {
+					summary
+						.removeClass('loading')
+						.addClass('loaded is-' + response.status);
+					if ('error' == response.status) {
+						//base.prop('open', true);
+					}
+					//summary.find('.precheck-penality').html(response.penalty);
+					$('.precheck-status-icon').html(
+						mailster.util.sprintf('%s of 100', response.points)
+					);
+					body.html(response.html);
 				}
-				//summary.find('.precheck-penality').html(response.penalty);
-				$('.precheck-status-icon').html(mailster.util.sprintf('%s of 100', response.points));
-				body.html(response.html)
-			}
 
-			if (response.error) {
-				error(response.error);
+				if (response.error) {
+					error(response.error);
+					loader(false);
+					runbtn.prop('disabled', false);
+				}
+			},
+			function (jqXHR, textStatus, errorThrown) {
 				loader(false);
 				runbtn.prop('disabled', false);
 			}
-
-
-		}, function (jqXHR, textStatus, errorThrown) {
-			loader(false);
-			runbtn.prop('disabled', false);
-
-		})
-
-	};
+		);
+	}
 
 	function showSubscriberInput() {
 		$('.precheck-to').hide();
@@ -278,10 +309,9 @@ mailster = (function (mailster, $, window, document) {
 		$hy = $iframebody.find('highlightery');
 		images = true;
 		mailster.trigger('enable');
-	};
+	}
 
 	function loadPreview(cb) {
-
 		if (!mailster.editor || !mailster.editor.loaded) {
 			mailster.events.push('editorLoaded', function () {
 				loadPreview(cb);
@@ -303,30 +333,52 @@ mailster = (function (mailster, $, window, document) {
 		clear();
 		$('.precheck-status-icon').html('');
 
-		mailster.util.ajax('set_preview', args, function (response) {
-			$iframe.one('load', initFrame).attr('src', ajaxurl + '?action=mailster_get_preview&hash=' + response.hash + '&_wpnonce=' + response.nonce);
-			imagebtn.addClass('active');
-			strcturebtn.removeClass('active');
-			tb_show((title ? mailster.util.sprintf(mailster.l10n.campaigns.precheck, '"' + title + '"') : mailster.l10n.campaigns.preview), '#TB_inline?hash=' +
-				response.hash +
-				'&_wpnonce=' + response.nonce +
-				'&width=' + (Math.min(1440, mailster.$.window.width() - 50)) +
-				'&height=' + (mailster.$.window.height() - 100) +
-				'&inlineId=mailster_precheck_wrap', null);
-			$('.precheck-subject').html(response.subject);
-			$('.precheck-subscriber').val(response.to);
-			$('.precheck-to').text(response.to);
-			cb && cb();
-
-		}, function (jqXHR, textStatus, errorThrown) {
-			mailster.trigger('enable');
-		});
-
-	};
-
+		mailster.util.ajax(
+			'set_preview',
+			args,
+			function (response) {
+				$iframe
+					.one('load', initFrame)
+					.attr(
+						'src',
+						ajaxurl +
+							'?action=mailster_get_preview&hash=' +
+							response.hash +
+							'&_wpnonce=' +
+							response.nonce
+					);
+				imagebtn.addClass('active');
+				strcturebtn.removeClass('active');
+				tb_show(
+					title
+						? mailster.util.sprintf(
+								mailster.l10n.campaigns.precheck,
+								'"' + title + '"'
+						  )
+						: mailster.l10n.campaigns.preview,
+					'#TB_inline?hash=' +
+						response.hash +
+						'&_wpnonce=' +
+						response.nonce +
+						'&width=' +
+						Math.min(1440, mailster.$.window.width() - 50) +
+						'&height=' +
+						(mailster.$.window.height() - 100) +
+						'&inlineId=mailster_precheck_wrap',
+					null
+				);
+				$('.precheck-subject').html(response.subject);
+				$('.precheck-subscriber').val(response.to);
+				$('.precheck-to').text(response.to);
+				cb && cb();
+			},
+			function (jqXHR, textStatus, errorThrown) {
+				mailster.trigger('enable');
+			}
+		);
+	}
 
 	function toggleStructure() {
-
 		if (structure) {
 			$iframebody.removeClass('precheck-structure-enabled');
 		} else {
@@ -334,7 +386,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 		strcturebtn.toggleClass('active');
 		structure = !structure;
-	};
+	}
 
 	function toggleImages() {
 		var img = $iframebody.find('img');
@@ -352,7 +404,7 @@ mailster = (function (mailster, $, window, document) {
 		}
 		imagebtn.toggleClass('active');
 		images = !images;
-	};
+	}
 
 	function highlightElement(event) {
 		var t = $(this),
@@ -365,7 +417,9 @@ mailster = (function (mailster, $, window, document) {
 				tag = d.tag,
 				attr = d.attr,
 				index = d.index,
-				el = $iframe.contents().find(tag + '[' + attr + '="' + url + '"]')[index];
+				el = $iframe
+					.contents()
+					.find(tag + '[' + attr + '="' + url + '"]')[index];
 			t.data('el', el);
 		} else {
 			el = d.el;
@@ -383,27 +437,35 @@ mailster = (function (mailster, $, window, document) {
 		}
 
 		el.scrollIntoView({
-			behavior: "smooth",
-			block: "center"
+			behavior: 'smooth',
+			block: 'center',
 		});
 
 		var rect = el.getBoundingClientRect();
 
 		$hx.css({
-			'transform': 'translate(' + (rect.x) + 'px, ' + (rect.y + $iframebody.scrollTop()) + 'px)',
-			'width': rect.width,
-			'height': rect.height,
-		})
+			transform:
+				'translate(' +
+				rect.x +
+				'px, ' +
+				(rect.y + $iframebody.scrollTop()) +
+				'px)',
+			width: rect.width,
+			height: rect.height,
+		});
 		$hy.css({
-			'transform': 'translate(' + (rect.x) + 'px, ' + (rect.y + $iframebody.scrollTop()) + 'px)',
-			'width': rect.width,
-			'height': rect.height,
-		})
-
-	};
+			transform:
+				'translate(' +
+				rect.x +
+				'px, ' +
+				(rect.y + $iframebody.scrollTop()) +
+				'px)',
+			width: rect.width,
+			height: rect.height,
+		});
+	}
 
 	function agreeTerms() {
-
 		if (!$('#precheck-agree-checkbox').is(':checked')) {
 			alert(mailster.l10n.campaigns.agree_precheck_terms);
 			return false;
@@ -412,8 +474,7 @@ mailster = (function (mailster, $, window, document) {
 			precheck.addClass('precheck-terms-agreed');
 			mailster.precheck.terms_accepted = true;
 		});
-
-	};
+	}
 
 	mailster.precheck.open = function (cb) {
 		mailster.trigger('save');
@@ -421,13 +482,10 @@ mailster = (function (mailster, $, window, document) {
 
 		$('.precheck-from').html($('#mailster_from-name').val());
 		loadPreview(cb);
-
 	};
 
 	mailster.precheck.start = initTest;
 	mailster.precheck.terms_accepted = !!$('.precheck-terms-agreed').length;
 
-
 	return mailster;
-
-}(mailster || {}, jQuery, window, document));
+})(mailster || {}, jQuery, window, document);
