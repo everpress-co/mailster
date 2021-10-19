@@ -3,25 +3,29 @@
  *
  * Replace them with your own styles or remove the file completely.
  */
-.edit-post-visual-editor {
+.post-type-newsletter_form .edit-post-visual-editor {
 	background: url('data:image/svg+xml,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 100 100" xml:space="preserve"><style>.st0{fill:%23fafafa}</style><path class="st0" d="M0 0h50v50H0zM50.5 49.5h50v50h-50z"/></svg>')
 		white !important;
 	background-repeat: repeat;
 	background-size: 25px !important;
 }
-.edit-post-visual-editor__content-area > div {
+.post-type-newsletter_form .edit-post-visual-editor__content-area > div {
 	background: none !important;
 }
-.edit-post-visual-editor__content-area .editor-styles-wrapper {
+.post-type-newsletter_form
+	.edit-post-visual-editor__content-area
+	.editor-styles-wrapper {
 	background-color: transparent;
 }
-.edit-post-visual-editor__content-area
+.post-type-newsletter_form
+	.edit-post-visual-editor__content-area
 	.editor-styles-wrapper
 	.is-root-container
 	.wp-block {
 	max-width: 100%;
 }
-.edit-post-visual-editor__content-area
+.post-type-newsletter_form
+	.edit-post-visual-editor__content-area
 	.editor-styles-wrapper
 	.is-root-container {
 	margin: 1vh 0 0;
@@ -30,18 +34,19 @@
 	width: 100%;
 }
 
-.editor-styles-wrapper
+.post-type-newsletter_form
+	.editor-styles-wrapper
 	.wp-block.editor-post-title__block
 	.editor-post-title__input {
 	all: unset !important;
 	font-size: 30px !important;
 }
-.edit-post-visual-editor p[data-empty='true'] {
+.post-type-newsletter_form .edit-post-visual-editor p[data-empty='true'] {
 	_display: none;
 }
-.edit-post-visual-editor:hover p[data-empty='true'] {
+.post-type-newsletter_form .edit-post-visual-editor:hover p[data-empty='true'] {
 	_display: block;
 }
-.is-root-container > .block-list-appender {
+.post-type-newsletter_form .is-root-container > .block-list-appender {
 	display: none;
 }

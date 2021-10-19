@@ -6,7 +6,9 @@
 	"category": "widgets",
 	"icon": "smiley",
 	"description": "Define the look of your form here.",
-
+	"transforms": {
+		"to": []
+	},
 	"supports": {
 		"html": false,
 		"inserter": false,
@@ -40,7 +42,9 @@
 		"background": {
 			"type": "object",
 			"default": {
-				"opacity": "100%",
+				"opacity": 100,
+				"fixed": false,
+				"repeat": false,
 				"size": "cover",
 				"image": "",
 				"position": {

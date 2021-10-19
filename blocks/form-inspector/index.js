@@ -31,25 +31,6 @@ import Doubleoptin from './Doubleoptin';
 import Lists from './Lists';
 import Placement from './Placement';
 
-console.warn('xxx', window.xxxx);
-
-registerBlockVariation('mailster/input', {
-	name: 'date2',
-	title: 'Date Field',
-	description: 'Code is poetry!',
-	scope: ['inserter', 'block', 'transform'],
-	icon: {
-		background: '#f00',
-		src: 'button',
-	},
-	attributes: {
-		type: 'text',
-		label: 'Date',
-		requried: false,
-		forceRequired: false,
-	},
-});
-
 function SettingsPanelPlugin() {
 	const [meta, setMeta] = useEntityProp(
 		'postType',

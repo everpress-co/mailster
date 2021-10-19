@@ -110,7 +110,9 @@ export default function Edit(props) {
 	};
 
 	const styleBackground = {
-		opacity: background.opacity,
+		opacity: background.opacity + '%',
+		backgroundAttachment: background.fixed ? 'fixed' : null,
+		backgroundRepeat: background.repeat ? 'repeat' : 'no-repeat',
 		backgroundSize: background.size,
 		backgroundImage: background.image
 			? 'url(' + background.image + ')'

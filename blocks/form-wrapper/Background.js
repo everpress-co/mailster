@@ -34,6 +34,7 @@ import {
 	RangeControl,
 	FocalPointPicker,
 	SelectControl,
+	ToggleControl,
 	__experimentalBoxControl as BoxControl,
 	__experimentalUnitControl as UnitControl,
 	__experimentalGrid as Grid,
@@ -55,58 +56,82 @@ import { more } from '@wordpress/icons';
 export default function Background(props) {
 	const { attributes, setAttributes, isSelected, setBackground } = props;
 
-	const { image, position, opacity, size } = attributes.background;
-
-	const units = [
-		{ value: 'px', label: 'px', default: 0 },
-		{ value: '%', label: '%', default: 10 },
-	];
+	const { image, position, opacity, size, fixed, repeat } =
+		attributes.background;
 
 	return (
 		<PanelBody name="background" title="Background" initialOpen={false}>
 			{image && (
 				<>
 					<PanelRow>
-						<FocalPointPicker
-							url={image}
-							value={position}
-							onChange={(value) =>
-								setBackground('position', value)
-							}
+						<SelectControl
+							label={__('Position', 'mailster')}
+							labelPosition="side"
+							className="widefat"
+							value={size}
+							onChange={(value) => {
+								setBackground('size', value);
+							}}
+							options={[
+								{ value: 'auto', label: 'Auto' },
+								{ value: 'contain', label: 'Contain' },
+								{ value: 'cover', label: 'Cover' },
+							]}
 						/>
 					</PanelRow>
 					<PanelRow>
-						<Grid columns={2}>
-							<UnitControl
+						<ToggleControl
+							label="Fixed background"
+							checked={fixed}
+							onChange={(value) => {
+								setBackground('fixed', value);
+							}}
+						/>
+					</PanelRow>
+					<PanelRow>
+						<ToggleControl
+							label="Repeated Background"
+							checked={repeat}
+							onChange={(value) => {
+								setBackground('repeat', value);
+							}}
+						/>
+					</PanelRow>
+					{!fixed && (
+						<PanelRow>
+							<FocalPointPicker
+								url={image}
+								value={position}
 								onChange={(value) =>
-									setBackground('opacity', value)
+									setBackground('position', value)
 								}
-								label={__('Opacity', 'mailster')}
-								value={opacity}
-								units={units}
 							/>
-							<SelectControl
-								label={__('Position', 'mailster')}
-								value={size}
-								onChange={(value) => {
-									setBackground('size', value);
-								}}
-								options={[
-									{ value: 'auto', label: 'Auto' },
-									{ value: 'contain', label: 'Contain' },
-									{ value: 'cover', label: 'Cover' },
-								]}
-							/>
-						</Grid>
+						</PanelRow>
+					)}
+					<PanelRow>
+						<RangeControl
+							label={__('Opacity', 'mailster')}
+							value={opacity}
+							className="widefat"
+							onChange={(value) =>
+								setBackground('opacity', value)
+							}
+							min={0}
+							max={100}
+							step={10}
+							required
+						/>
 					</PanelRow>
 					<PanelRow>
 						<Button
 							variant="secondary"
+							isSmall
+							className="block-library-cover__reset-button"
 							onClick={() => {
 								setBackground('image', '');
 							}}
 						>
-							Remove Background Image
+							{__('Clear Media', 'mailster')}
 						</Button>
 					</PanelRow>
 				</>
