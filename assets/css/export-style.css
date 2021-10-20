@@ -1,26 +1,26 @@
-.export-order-wrap{
+.export-order-wrap {
 	display: flex;
 	align-items: flex-start;
 }
-.export-order-middle{
+.export-order-middle {
 	overflow: hidden;
 	transform: translateY(100%);
 	padding: 10px;
 }
-.export-order-middle button{
+.export-order-middle button {
 	display: block !important;
 	width: 5vw;
 	margin: 4px 0;
 }
-.export-order{
+.export-order {
 	overflow: auto;
-	border: 1px solid #DFDFDF;
+	border: 1px solid #dfdfdf;
 	width: 40vw;
 	height: 300px;
 }
-.export-order li{
+.export-order li {
 	padding: 1em;
-	border-bottom: 1px solid #DFDFDF;
+	border-bottom: 1px solid #dfdfdf;
 	display: block;
 	cursor: we-resize;
 	cursor: hand;
@@ -33,33 +33,33 @@
 	overflow: hidden;
 	margin: 0;
 }
-.export-order li.ui-sortable-helper{
+.export-order li.ui-sortable-helper {
 	background: #fff;
 }
-.export-order li:last-child{
-	border-bottom:0;
+.export-order li:last-child {
+	border-bottom: 0;
 }
-.dark-mode .export-order li{
+.dark-mode .export-order li {
 	border-color: #191f25;
 	background: #23282d;
 }
-.rtl .export-order li{
+.rtl .export-order li {
 	float: right;
 }
-.export-order li:hover{
-	color: #D54E21;
+.export-order li:hover {
+	color: #d54e21;
 	font-size: bold;
 }
-.export-order li.ui-sortable-helper{
+.export-order li.ui-sortable-helper {
 	cursor: grabbing;
 	cursor: -moz-grabbing;
 	cursor: -webkit-grabbing;
 	border: 1px solid #ccc;
 }
-.status{
+.status {
 	padding-left: 2em;
 }
-.status.progress{
+.status.progress {
 	float: none;
 	visibility: visible;
 	vertical-align: baseline;

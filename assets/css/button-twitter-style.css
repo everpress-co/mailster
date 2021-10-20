@@ -1,4 +1,4 @@
-.btn-widget.design-twitter .btn{
+.btn-widget.design-twitter .btn {
 	background-color: #1b95e0;
 	border-radius: 3px;
 	font-weight: 500;
@@ -8,7 +8,9 @@
 .btn-widget.design-twitter .btn:before {
 	color: #28b4e9;
 }
-.btn-widget.design-twitter .btn:focus, .btn-widget.design-twitter .btn:hover, .btn-widget.design-twitter .btn:active {
+.btn-widget.design-twitter .btn:focus,
+.btn-widget.design-twitter .btn:hover,
+.btn-widget.design-twitter .btn:active {
 	color: #fff;
 	background-color: #0c7abf;
 	box-shadow: none;
@@ -20,10 +22,10 @@
 .btn-widget.design-twitter .btn:focus {
 	border-color: #28b4e9;
 }
-.btn-widget.design-twitter .btn-count a{
+.btn-widget.design-twitter .btn-count a {
 	color: #292f33;
 }
-.btn-widget.design-twitter .btn-count{
+.btn-widget.design-twitter .btn-count {
 	border-color: #8799a6;
 }
 .btn-widget.design-twitter .btn-count i {

@@ -1,16 +1,16 @@
-html{
+html {
 	width: auto !important;
 	max-width: 100% !important;
 	background: url(../img/trans_bg.png) repeat left top #fff !important;
 }
-body.reload-page{
-	border:2px solid red;
+body.reload-page {
+	border: 2px solid red;
 }
-html.mailster-loading{
-	 -webkit-filter: blur(3px);
-	 filter: blur(3px);
+html.mailster-loading {
+	-webkit-filter: blur(3px);
+	filter: blur(3px);
 }
-html.mailster-loading:before{
+html.mailster-loading:before {
 	content: '';
 	text-decoration: inherit;
 	font-weight: normal;
@@ -28,26 +28,30 @@ html.mailster-loading:before{
 	cursor: progress !important;
 	z-index: 1000000;
 }
-body{
+body {
 	min-height: 1px;
 	overflow: auto;
 }
-body.drag-active.drag-over{
+body.drag-active.drag-over {
 }
-body.drag-active modules module{
+body.drag-active modules module {
 	padding-top: 0px;
 	padding-bottom: 0px;
 	margin-top: 0px;
 	margin-bottom: 0px;
 	box-shadow: none;
 }
-body:hover module[condition],body:hover single[condition],body:hover multi[condition]{
+body:hover module[condition],
+body:hover single[condition],
+body:hover multi[condition] {
 	outline: 1px dotted blue;
 }
-module{
+module {
 	position: relative;
 }
-button.mailster-btn,button.mailster-btn:hover,button.mailster-btn:active{
+button.mailster-btn,
+button.mailster-btn:hover,
+button.mailster-btn:active {
 	color: #eaeaea;
 	cursor: pointer;
 	text-decoration: none;
@@ -58,46 +62,84 @@ button.mailster-btn,button.mailster-btn:hover,button.mailster-btn:active{
 button.mailster-btn:hover {
 	color: #fff;
 }
-button.mailster-btn.codeview { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.78 4l-3.56 16"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 8l4 4 -4 4"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 16l-4-4 4-4"></path></g></svg>'); }
-button.mailster-btn.codeview:hover { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.78 4l-3.56 16"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 8l4 4 -4 4"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 16l-4-4 4-4"></path></g></svg>'); }
-button.mailster-btn.auto { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path fill-rule="evenodd" d="M4.205,21.207l-1.412,-1.413c-0.391,-0.391 -0.391,-1.024 0,-1.415l9.577,-9.581c0.391,-0.391 1.024,-0.391 1.414,0l1.412,1.413c0.391,0.391 0.391,1.024 0,1.415l-9.577,9.581c-0.39,0.391 -1.023,0.391 -1.414,0Z"></path><path fill-rule="evenodd" d="M13.2,13.62l-2.83,-2.82"></path></g><path fill="none" d="M0,0h24v24h-24Z"></path></svg>'); background-position: center 4px; }
-button.mailster-btn.auto:hover { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path d="M18.63,5.37l0.72,-0.72"></path><path d="M19.37,14.39l-0.76,-0.77"></path><path d="M10.36,5.37l-0.72,-0.72"></path><path fill-rule="evenodd" d="M4.205,21.207l-1.412,-1.413c-0.391,-0.391 -0.391,-1.024 0,-1.415l9.577,-9.581c0.391,-0.391 1.024,-0.391 1.414,0l1.412,1.413c0.391,0.391 0.391,1.024 0,1.415l-9.577,9.581c-0.39,0.391 -1.023,0.391 -1.414,0Z"></path><path fill-rule="evenodd" d="M13.2,13.62l-2.83,-2.82"></path><path d="M14.49,3.52v-1.02"></path><path d="M20.48,9.51h1.02"></path></g><path fill="none" d="M0,0h24v24h-24Z"></path></svg>'); }
-button.mailster-btn.add { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path stroke="%23eaeaea" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>'); }
-button.mailster-btn.duplicate { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path fill="none" stroke="%23fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M11,18H5 c-1.1,0-2-0.9-2-2V5c0-1.1,0.9-2,2-2h7c1.1,0,2,0.9,2,2v1"/><path fill="none" stroke="%23fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M11,13V8 c0-1.1,0.9-2,2-2h6c1.1,0,2,0.9,2,2v11c0,1.1-0.9,2-2,2h-6c-1.1,0-2-0.9-2-2V13"/></g><path fill="none" d="M24,24H0V0h24V24z"/></svg>'); }
-button.mailster-btn.duplicate:hover { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path d="M16.263 13.421h-7.474c-1.105 0-2-.895-2-2v-2.737"></path><path d="M11 18h-6c-1.105 0-2-.895-2-2v-11c0-1.105.895-2 2-2h7c1.105 0 2 .895 2 2v1"></path><path d="M11 11v-3c0-1.105.895-2 2-2h6c1.105 0 2 .895 2 2v11c0 1.105-.895 2-2 2h-6c-1.105 0-2-.895-2-2v-3"></path><polyline points="14.368,15.316 16.263,13.421 14.368,11.526"></polyline></g><path fill="none" d="M24 24h-24v-24h24v24Z"></path></svg>'); }
-button.mailster-btn.up { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M16,14l-4,-4l-4,4" stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>'); }
-button.mailster-btn.up:hover { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M16,12l-4,-4l-4,4" stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>'); }
-button.mailster-btn.down { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M8,10l4,4l4,-4" stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>'); }
-button.mailster-btn.down:hover { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M8,12l4,4l4,-4" stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>'); }
-button.mailster-btn.remove { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.54143,21H8.45857A2.25,2.25,0,0,1,6.2152,18.92257L5.25,6.375h13.5l-.9652,12.54757A2.25,2.25,0,0,1,15.54143,21Z" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="20" y1="6.375" x2="4" y2="6.375" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M9.1875,3h5.625a1.125,1.125,0,0,1,1.125,1.125v2.25a0,0,0,0,1,0,0H8.0625a0,0,0,0,1,0,0V4.125A1.125,1.125,0,0,1,9.1875,3Z" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="13.96875" y1="10.875" x2="13.96875" y2="16.5" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="10.03125" y1="10.875" x2="10.03125" y2="16.5" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><rect width="24" height="24" fill="none"/></svg>'); }
-button.mailster-btn.remove:hover { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.54143,21H8.45857A2.25,2.25,0,0,1,6.2152,18.92257L5.25,6.375h13.5l-.9652,12.54757A2.25,2.25,0,0,1,15.54143,21Z" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="20" y1="6.375" x2="4" y2="6.375" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M9.1875,3h5.625a1.125,1.125,0,0,1,1.125,1.125v2.25a0,0,0,0,1,0,0H8.0625a0,0,0,0,1,0,0V4.125A1.125,1.125,0,0,1,9.1875,3Z" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="13.96875" y1="10.875" x2="13.96875" y2="16.5" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="10.03125" y1="10.875" x2="10.03125" y2="16.5" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><rect width="24" height="24" fill="none"/></svg>'); }
-button.mailster-btn.editbutton { background-image: url('data:image/svg+xml;utf8,svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.54 10.12l-3.66-3.66"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.251 21h-3.251v-3.251c0-.265.105-.52.293-.707l13.334-13.335c.391-.391 1.024-.391 1.414-8.88178e-16l2.251 2.251c.391.391.391 1.024 0 1.414l-13.334 13.335c-.187.188-.442.293-.707.293Z"></path></g></svg>'); }
-button.mailster-btn.addbutton { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v8"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12h-8"></path></g></svg>'); }
-button.mailster-btn.addrepeater { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v8"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12h-8"></path></g></svg>'); }
-button.mailster-btn.removerepeater { background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12h-8"></path></g></svg>'); }
+button.mailster-btn.codeview {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.78 4l-3.56 16"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 8l4 4 -4 4"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 16l-4-4 4-4"></path></g></svg>');
+}
+button.mailster-btn.codeview:hover {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.78 4l-3.56 16"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 8l4 4 -4 4"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 16l-4-4 4-4"></path></g></svg>');
+}
+button.mailster-btn.auto {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path fill-rule="evenodd" d="M4.205,21.207l-1.412,-1.413c-0.391,-0.391 -0.391,-1.024 0,-1.415l9.577,-9.581c0.391,-0.391 1.024,-0.391 1.414,0l1.412,1.413c0.391,0.391 0.391,1.024 0,1.415l-9.577,9.581c-0.39,0.391 -1.023,0.391 -1.414,0Z"></path><path fill-rule="evenodd" d="M13.2,13.62l-2.83,-2.82"></path></g><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
+	background-position: center 4px;
+}
+button.mailster-btn.auto:hover {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path d="M18.63,5.37l0.72,-0.72"></path><path d="M19.37,14.39l-0.76,-0.77"></path><path d="M10.36,5.37l-0.72,-0.72"></path><path fill-rule="evenodd" d="M4.205,21.207l-1.412,-1.413c-0.391,-0.391 -0.391,-1.024 0,-1.415l9.577,-9.581c0.391,-0.391 1.024,-0.391 1.414,0l1.412,1.413c0.391,0.391 0.391,1.024 0,1.415l-9.577,9.581c-0.39,0.391 -1.023,0.391 -1.414,0Z"></path><path fill-rule="evenodd" d="M13.2,13.62l-2.83,-2.82"></path><path d="M14.49,3.52v-1.02"></path><path d="M20.48,9.51h1.02"></path></g><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
+}
+button.mailster-btn.add {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path stroke="%23eaeaea" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>');
+}
+button.mailster-btn.duplicate {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path fill="none" stroke="%23fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M11,18H5 c-1.1,0-2-0.9-2-2V5c0-1.1,0.9-2,2-2h7c1.1,0,2,0.9,2,2v1"/><path fill="none" stroke="%23fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M11,13V8 c0-1.1,0.9-2,2-2h6c1.1,0,2,0.9,2,2v11c0,1.1-0.9,2-2,2h-6c-1.1,0-2-0.9-2-2V13"/></g><path fill="none" d="M24,24H0V0h24V24z"/></svg>');
+}
+button.mailster-btn.duplicate:hover {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"><path d="M16.263 13.421h-7.474c-1.105 0-2-.895-2-2v-2.737"></path><path d="M11 18h-6c-1.105 0-2-.895-2-2v-11c0-1.105.895-2 2-2h7c1.105 0 2 .895 2 2v1"></path><path d="M11 11v-3c0-1.105.895-2 2-2h6c1.105 0 2 .895 2 2v11c0 1.105-.895 2-2 2h-6c-1.105 0-2-.895-2-2v-3"></path><polyline points="14.368,15.316 16.263,13.421 14.368,11.526"></polyline></g><path fill="none" d="M24 24h-24v-24h24v24Z"></path></svg>');
+}
+button.mailster-btn.up {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M16,14l-4,-4l-4,4" stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
+}
+button.mailster-btn.up:hover {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M16,12l-4,-4l-4,4" stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
+}
+button.mailster-btn.down {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M8,10l4,4l4,-4" stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
+}
+button.mailster-btn.down:hover {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M8,12l4,4l4,-4" stroke-linecap="round" stroke-width="1.5" stroke="%23fff" fill="none" stroke-linejoin="round"></path><path fill="none" d="M0,0h24v24h-24Z"></path></svg>');
+}
+button.mailster-btn.remove {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.54143,21H8.45857A2.25,2.25,0,0,1,6.2152,18.92257L5.25,6.375h13.5l-.9652,12.54757A2.25,2.25,0,0,1,15.54143,21Z" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="20" y1="6.375" x2="4" y2="6.375" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M9.1875,3h5.625a1.125,1.125,0,0,1,1.125,1.125v2.25a0,0,0,0,1,0,0H8.0625a0,0,0,0,1,0,0V4.125A1.125,1.125,0,0,1,9.1875,3Z" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="13.96875" y1="10.875" x2="13.96875" y2="16.5" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="10.03125" y1="10.875" x2="10.03125" y2="16.5" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><rect width="24" height="24" fill="none"/></svg>');
+}
+button.mailster-btn.remove:hover {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.54143,21H8.45857A2.25,2.25,0,0,1,6.2152,18.92257L5.25,6.375h13.5l-.9652,12.54757A2.25,2.25,0,0,1,15.54143,21Z" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="20" y1="6.375" x2="4" y2="6.375" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><path d="M9.1875,3h5.625a1.125,1.125,0,0,1,1.125,1.125v2.25a0,0,0,0,1,0,0H8.0625a0,0,0,0,1,0,0V4.125A1.125,1.125,0,0,1,9.1875,3Z" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="13.96875" y1="10.875" x2="13.96875" y2="16.5" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><line x1="10.03125" y1="10.875" x2="10.03125" y2="16.5" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/><rect width="24" height="24" fill="none"/></svg>');
+}
+button.mailster-btn.editbutton {
+	background-image: url('data:image/svg+xml;utf8,svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.54 10.12l-3.66-3.66"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.251 21h-3.251v-3.251c0-.265.105-.52.293-.707l13.334-13.335c.391-.391 1.024-.391 1.414-8.88178e-16l2.251 2.251c.391.391.391 1.024 0 1.414l-13.334 13.335c-.187.188-.442.293-.707.293Z"></path></g></svg>');
+}
+button.mailster-btn.addbutton {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v8"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12h-8"></path></g></svg>');
+}
+button.mailster-btn.addrepeater {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v8"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12h-8"></path></g></svg>');
+}
+button.mailster-btn.removerepeater {
+	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g fill="none"><path d="M0 0h24v24h-24Z"></path><path stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12h-8"></path></g></svg>');
+}
 
+button.mailster-btn {
+	padding: 1px 4px;
+}
 
-button.mailster-btn { padding: 1px 4px; }
-
-buttons{
+buttons {
 	position: relative;
 	min-height: 1em;
 	min-width: 1em;
 }
-buttons:hover{
+buttons:hover {
 	padding-right: 22px;
 }
-[align="right"] > div > buttons:hover, [align="right"] > buttons:hover{
+[align='right'] > div > buttons:hover,
+[align='right'] > buttons:hover {
 	-webkit-transform: translate(22px, 0);
 	-ms-transform: translate(22px, 0);
 	transform: translate(22px, 0);
 }
-[align="center"] > div > buttons:hover, [align="center"] > buttons:hover{
+[align='center'] > div > buttons:hover,
+[align='center'] > buttons:hover {
 	-webkit-transform: translate(11px, 0);
 	-ms-transform: translate(11px, 0);
 	transform: translate(11px, 0);
 }
-button.mailster-btn.mailster-btn-inline{
+button.mailster-btn.mailster-btn-inline {
 	box-sizing: border-box;
 	position: absolute;
 	padding: 0px 0px;
@@ -105,31 +147,31 @@ button.mailster-btn.mailster-btn-inline{
 	text-indent: 0px;
 	display: none;
 }
-button.mailster-btn.mailster-btn-inline:focus{
+button.mailster-btn.mailster-btn-inline:focus {
 	outline: none;
 }
-buttons button.mailster-btn.mailster-btn-inline{
+buttons button.mailster-btn.mailster-btn-inline {
 	top: 50%;
 	-webkit-transform: translate(0, -12px);
 	-ms-transform: translate(0, -12px);
 	transform: translate(0, -12px);
 	right: 0;
 }
-buttons:hover button.mailster-btn.mailster-btn-inline{
+buttons:hover button.mailster-btn.mailster-btn-inline {
 	display: block;
 }
-[repeatable]{
+[repeatable] {
 	position: relative;
 }
-[repeatable]:hover{
+[repeatable]:hover {
 	outline: 1px solid rgba(43, 179, 231, 0.3);
 	outline-offset: -1px;
 }
-module [repeatable]:hover button.mailster-btn.mailster-btn-inline{
+module [repeatable]:hover button.mailster-btn.mailster-btn-inline {
 	display: block;
 }
 modulebuttons {
-	transition: all .15s ease-in-out;
+	transition: all 0.15s ease-in-out;
 	opacity: 0;
 	position: absolute;
 	right: 0px;
@@ -138,10 +180,10 @@ modulebuttons {
 	display: block;
 	line-height: 100%;
 }
-module.ui-sortable-fly-over modulebuttons button{
+module.ui-sortable-fly-over modulebuttons button {
 	pointer-events: none;
 }
-module[active] modulebuttons{
+module[active] modulebuttons {
 	transform: translateY(-35px);
 }
 [mailster-is-rtl] modulebuttons {
@@ -166,7 +208,7 @@ button.mailster-btn {
 	-moz-appearance: none;
 	appearance: none;
 	text-indent: -5px;
-	}
+}
 modulebuttons:hover button.mailster-btn {
 	background-color: rgb(43, 179, 231);
 }
@@ -190,23 +232,30 @@ module[active] input.modulelabel {
 	float: right;
 	text-align: left;
 }
-modulebuttons input.modulelabel:hover, modulebuttons input.modulelabel:focus {
+modulebuttons input.modulelabel:hover,
+modulebuttons input.modulelabel:focus {
 	color: #333;
 }
-[mailster-is-rtl] modulebuttons input.modulelabel:hover, [mailster-is-rtl] modulebuttons input.modulelabel:focus {
+[mailster-is-rtl] modulebuttons input.modulelabel:hover,
+[mailster-is-rtl] modulebuttons input.modulelabel:focus {
 	right: inherit;
 	left: 0;
 }
-modules, module, multi {
+modules,
+module,
+multi {
 	display: block;
 }
 buttons {
 	display: inline-block;
 }
-if, elseif, else {
+if,
+elseif,
+else {
 	display: inline-block;
 }
-elseif, else {
+elseif,
+else {
 	opacity: 0.5;
 	font-size: smaller;
 }
@@ -216,7 +265,8 @@ elseif {
 else {
 	color: #ccc;
 }
-module:hover, module[active] {
+module:hover,
+module[active] {
 	background-color: rgba(43, 179, 231, 0.1);
 	box-shadow: 0px 0px 0px 2px rgba(43, 179, 231, 0.8);
 	z-index: 9100;
@@ -224,8 +274,8 @@ module:hover, module[active] {
 module[active] {
 	background-color: rgba(43, 179, 231, 0.2);
 }
-module:hover [area]{
-	outline:1px dotted #2BB3E7;
+module:hover [area] {
+	outline: 1px dotted #2bb3e7;
 }
 module[label]:before,
 module[label][active]:before,
@@ -240,10 +290,10 @@ module[data-rss][active]:after {
 	content: attr(label);
 	display: block;
 	opacity: 0;
-	background-color: #2BB3E7;
+	background-color: #2bb3e7;
 	color: #fff;
 	position: absolute;
-	transition: all .15s linear;
+	transition: all 0.15s linear;
 	-webkit-transform: translate(4px, -15px);
 	-ms-transform: translate(4px, -15px);
 	transform: translate(4px, -15px);
@@ -265,7 +315,7 @@ single[label]:before,
 img[editable][label]:before,
 a[editable][label]:before,
 td[background][label]:before,
-th[background][label]:before{
+th[background][label]:before {
 	display: inline-block;
 }
 [mailster-is-rtl] module[label]:before,
@@ -290,8 +340,8 @@ th[background][label]:before{
 	right: 0;
 }
 module[data-rss]:after,
-module[data-rss][active]:after{
-	content:"RSS: " attr(data-rss);
+module[data-rss][active]:after {
+	content: 'RSS: ' attr(data-rss);
 	top: 18px;
 	z-index: 100;
 }
@@ -304,7 +354,7 @@ a[editable][label]:hover:before,
 td[background][label]:hover:before,
 th[background][label]:hover:before,
 module[data-rss]:hover:after,
-module[data-rss][active]:after{
+module[data-rss][active]:after {
 	-webkit-transform: translate(-2px, -17px);
 	-ms-transform: translate(-2px, -17px);
 	transform: translate(-2px, -17px);
@@ -336,50 +386,72 @@ module[data-rss]:after {
 	-ms-transform: translate(6px, -1px);
 	transform: translate(6px, -1px);
 }
-module[label]:hover:before, module[label][active]:before,
-module[data-rss]:hover:after, module[data-rss][active]:after {
+module[label]:hover:before,
+module[label][active]:before,
+module[data-rss]:hover:after,
+module[data-rss][active]:after {
 	opacity: 0.9;
 	-webkit-transform: translate(-1px, -1px);
 	-ms-transform: translate(-1px, -1px);
 	transform: translate(-1px, -1px);
 }
-[mailster-is-rtl] module[label]:hover:before, [mailster-is-rtl] module[label][active]:before,
-[mailster-is-rtl] module[data-rss]:hover:after, [mailster-is-rtl] module[data-rss][active]:after {
+[mailster-is-rtl] module[label]:hover:before,
+[mailster-is-rtl] module[label][active]:before,
+[mailster-is-rtl] module[data-rss]:hover:after,
+[mailster-is-rtl] module[data-rss][active]:after {
 	-webkit-transform: translate(1px, -1px);
 	-ms-transform: translate(1px, -1px);
 	transform: translate(1px, -1px);
 }
-module:hover modulebuttons,module[active] modulebuttons,.ie module modulebuttons {
+module:hover modulebuttons,
+module[active] modulebuttons,
+.ie module modulebuttons {
 	opacity: 1;
 }
-[mailster-is-rtl] module:hover modulebuttons, [mailster-is-rtl] module[active] modulebuttons {
+[mailster-is-rtl] module:hover modulebuttons,
+[mailster-is-rtl] module[active] modulebuttons {
 	right: inherit;
 }
-module:first-child modulebuttons button.up, module:last-child modulebuttons button.down {
+module:first-child modulebuttons button.up,
+module:last-child modulebuttons button.down {
 	display: none;
 }
-module[condition]{
+module[condition] {
 	margin-right: 1px;
 }
-.mailster-highlight, a.mailster-highlight img {
+.mailster-highlight,
+a.mailster-highlight img {
 	overflow: visible;
 	outline: 1px dotted red;
 }
 a.mailster-highlight {
 	outline: none;
 }
-multi, single, module, img[editable], a[editable] img, .textbutton a[editable], td[background]{
+multi,
+single,
+module,
+img[editable],
+a[editable] img,
+.textbutton a[editable],
+td[background] {
 	webkit-transform-style: preserve-3d;
 	transform-style: preserve-3d;
 	-webkit-backface-visibility: hidden; /* Chrome, Safari, Opera */
 	backface-visibility: hidden;
 }
-multi:hover, single:hover, img[editable]:hover, a[editable]:hover img, .textbutton a[editable]:hover, module table td[background]:hover, module table th[background]:hover{
-	box-shadow: 0px 0px 0px 2px #2BB3E7;
+multi:hover,
+single:hover,
+img[editable]:hover,
+a[editable]:hover img,
+.textbutton a[editable]:hover,
+module table td[background]:hover,
+module table th[background]:hover {
+	box-shadow: 0px 0px 0px 2px #2bb3e7;
 	cursor: pointer;
 	z-index: 11;
 }
-td[background]:before, th[background]:before{
+td[background]:before,
+th[background]:before {
 	content: '';
 	display: none;
 	position: absolute;
@@ -400,71 +472,81 @@ td[background]:before, th[background]:before{
 	background-repeat: no-repeat;
 	background-position: center;
 }
-[mailster-is-rtl] td[background]:before, [mailster-is-rtl] th[background]:before {
+[mailster-is-rtl] td[background]:before,
+[mailster-is-rtl] th[background]:before {
 	left: auto;
 	right: 0px;
 }
-td[background]:hover:before, th[background]:hover:before{
+td[background]:hover:before,
+th[background]:hover:before {
 	display: block;
 }
-multi, single, img[editable], a[editable] img, .textbutton a[editable]{
+multi,
+single,
+img[editable],
+a[editable] img,
+.textbutton a[editable] {
 	position: relative;
 }
-multi[contenteditable], single[contenteditable]{
+multi[contenteditable],
+single[contenteditable] {
 	cursor: text;
 }
-multi[contenteditable]:focus, single[contenteditable]:focus, a[editable]:focus{
+multi[contenteditable]:focus,
+single[contenteditable]:focus,
+a[editable]:focus {
 	outline: none;
 }
-body:hover single:empty{
-	outline: 1px dotted #2BB3E7;
+body:hover single:empty {
+	outline: 1px dotted #2bb3e7;
 	display: inline-block;
 	min-width: 15px;
 }
-body:hover single:empty:after{
+body:hover single:empty:after {
 	content_: '\00A0';
 }
-img[editable]{
+img[editable] {
 	z-index: 10;
 }
-modules.ui-sortable module{
-	transition: padding .25s ease-in-out, margin .25s ease-in-out;
+modules.ui-sortable module {
+	transition: padding 0.25s ease-in-out, margin 0.25s ease-in-out;
 }
-body.drag-active modules.ui-sortable module{
-	transition: transform .25s ease-in-out;
+body.drag-active modules.ui-sortable module {
+	transition: transform 0.25s ease-in-out;
 }
-modules.ui-sortable module.ui-sortable-fly-under{
-	transition: transform .25s ease-in-out;
+modules.ui-sortable module.ui-sortable-fly-under {
+	transition: transform 0.25s ease-in-out;
 	z-index: 1;
 }
-modules.ui-sortable module.ui-sortable-fly-over{
-	transition: transform .25s ease-in-out;
+modules.ui-sortable module.ui-sortable-fly-over {
+	transition: transform 0.25s ease-in-out;
 	z-index: 2;
 }
-modules.ui-sortable.dragging module{
+modules.ui-sortable.dragging module {
 	padding-top: 3px;
 	padding-bottom: 3px;
 	margin-top: 2px;
 	margin-bottom: 2px;
 }
-module.drag-up{
+module.drag-up {
 	-webkit-transform: translateY(-80px);
 	-ms-transform: translateY(-80px);
 	transform: translateY(-80px);
 }
-module.drag-down{
+module.drag-down {
 	-webkit-transform: translateY(80px);
 	-ms-transform: translateY(80px);
 	transform: translateY(80px);
 }
-modules:empty:after, dropzone{
-	content: "";
+modules:empty:after,
+dropzone {
+	content: '';
 	display: block;
 	opacity: 0;
 	font-size: 0;
 	height: 0;
 	margin-top: 0;
-	transition: all .15s linear;
+	transition: all 0.15s linear;
 	background-color: #fff;
 	outline: 1px solid rgba(43, 179, 231, 0.3);
 	outline-offset: -1px;
@@ -472,143 +554,152 @@ modules:empty:after, dropzone{
 	position: relative;
 	margin: 0;
 }
-body.drag-active modules:empty:after, body.drag-active modules dropzone:before{
-	content: "";
+body.drag-active modules:empty:after,
+body.drag-active modules dropzone:before {
+	content: '';
 	height: 80px;
 	opacity: 0.8;
 	margin: 0;
-	transition: all .15s linear;
-
+	transition: all 0.15s linear;
 }
-modules:empty:after, dropzone, body.drag-active modules:empty:after, body.drag-active modules dropzone:before{
+modules:empty:after,
+dropzone,
+body.drag-active modules:empty:after,
+body.drag-active modules dropzone:before {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 24px 24px;
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"><path d="M12 15v-14"></path><path d="M21 19c0 2.209-1.791 4-4 4h-10c-2.209 0-4-1.791-4-4"></path><path d="M17 10l-5.001 5.001 -5-5.001"></path></g><path fill="none" d="M0 0h24v24h-24Z"></path></svg>');
 }
-body.drag-active modules dropzone.drag-over{
-	outline: 2px solid #2BB3E7;
+body.drag-active modules dropzone.drag-over {
+	outline: 2px solid #2bb3e7;
 	outline-offset: -2px;
 	background-color: rgba(43, 179, 231, 0.3);
 	opacity: 1;
 	background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke-linecap="round" stroke-width="1.5" stroke="%23545454" fill="none" stroke-linejoin="round"><path d="M12 17v-14"></path><path d="M21 17c0 2.209-1.791 4-4 4h-10c-2.209 0-4-1.791-4-4"></path><path d="M17 12l-5.001 5.001 -5-5.001"></path></g><path fill="none" d="M0 0h24v24h-24Z"></path></svg>');
 }
-body.drag-active modules dropzone.drag-over:before{
+body.drag-active modules dropzone.drag-over:before {
 	font-size: 24px;
 	opacity: 1;
 }
-body.drag-active modules dropzone:first-child{
+body.drag-active modules dropzone:first-child {
 	margin-top: -80px;
 }
-body.drag-active modules dropzone{
-	transition: all .15s linear;
+body.drag-active modules dropzone {
+	transition: all 0.15s linear;
 	height: 0px;
 	position: absolute;
 	width: 100%;
-	left: 0
+	left: 0;
 	right: 0;
 }
-body.drag-active modules dropzone.visible{
+body.drag-active modules dropzone.visible {
 	font-size: 2em;
 	height: 80px;
 	line-height: 80px;
 	opacity: 0.6;
 }
-body.drag-active modules module:hover, body.drag-active modules module[active] {
+body.drag-active modules module:hover,
+body.drag-active modules module[active] {
 	box-shadow: none;
 	background-image: none;
 }
-body.drag-active modules module:hover modulebuttons, body.drag-active modules module[active] modulebuttons, body.drag-active.ie modules module modulebuttons {
+body.drag-active modules module:hover modulebuttons,
+body.drag-active modules module[active] modulebuttons,
+body.drag-active.ie modules module modulebuttons {
 	display: none;
 }
-modules.ui-sortable module{
+modules.ui-sortable module {
 	cursor: ns-resize;
 	cursor: hand;
 	cursor: grab;
 	cursor: -webkit-grab;
 }
-modules.ui-sortable module table{
+modules.ui-sortable module table {
 	cursor: inherit !important;
 }
-modules.ui-sortable module.ui-draggable-dragging, modules.ui-sortable module.ui-sortable-helper{
+modules.ui-sortable module.ui-draggable-dragging,
+modules.ui-sortable module.ui-sortable-helper {
 	cursor: grabbing;
 	cursor: -webkit-grabbing;
 }
-.ui-dragging img[editable]{
+.ui-dragging img[editable] {
 	outline: 3px dashed #b1b1b1;
 	opacity: 0.7;
 }
-.ui-dragging img[editable].ui-drag-over, img[editable].ui-drag-over-file{
-	outline: 3px dashed #2BB3E7;
+.ui-dragging img[editable].ui-drag-over,
+img[editable].ui-drag-over-file {
+	outline: 3px dashed #2bb3e7;
 	opacity: 1;
 }
-img[editable].ui-drag-over-file.ui-drag-over-file-alt{
+img[editable].ui-drag-over-file.ui-drag-over-file-alt {
 	outline: 3px dashed gray;
 	opacity: 1;
 }
-.ui-dragging img[editable].ui-draggable-dragging{
+.ui-dragging img[editable].ui-draggable-dragging {
 	outline: 0;
-	box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5),0px 0px 13px rgba(0, 0, 0, 0.8);
+	box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5), 0px 0px 13px rgba(0, 0, 0, 0.8);
 	-webkit-transform: scale(1.03);
 	-ms-transform: scale(1.03);
 	transform: scale(1.03);
 }
-.ui-draggable-dragging{
+.ui-draggable-dragging {
 	transition: none !important;
 }
-.sortable-placeholder{
-	outline: 2px dotted #2BB3E7;
+.sortable-placeholder {
+	outline: 2px dotted #2bb3e7;
 	outline-offset: -2px;
 	background-color: rgba(43, 179, 231, 0.3);
 }
-img{
-	transition: height .25s ease-in-out, width .25s ease-in-out;
+img {
+	transition: height 0.25s ease-in-out, width 0.25s ease-in-out;
 }
-img.mailster-loading{
+img.mailster-loading {
 	opacity: 0.7;
 	-webkit-filter: blur(2px);
 	filter: blur(2px);
 }
-modules.ui-sortable.dragging module.ui-sortable-helper, module.ui-sortable-fly-over{
-	box-shadow: 0 5px 18px rgba(0,0,0,.22),0 9px 45px rgba(0,0,0,.25);
+modules.ui-sortable.dragging module.ui-sortable-helper,
+module.ui-sortable-fly-over {
+	box-shadow: 0 5px 18px rgba(0, 0, 0, 0.22), 0 9px 45px rgba(0, 0, 0, 0.25);
 	-webkit-transform: scale(1.03) translateZ(0px);
 	-ms-transform: scale(1.03) translateZ(0px);
 	transform: scale(1.03) translateZ(0px);
 }
-modules.ui-sortable.dragging module.ui-sortable-helper{
+modules.ui-sortable.dragging module.ui-sortable-helper {
 	opacity: 0.9;
 	filter: alpha(90);
 }
-modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons{
+modules.ui-sortable.dragging module.ui-sortable-helper modulebuttons {
 	display: none;
 }
-upload{
+upload {
 	display: block;
 	position: relative;
 }
-upload .mailster-upload-info{
+upload .mailster-upload-info {
 	position: absolute;
 	height: 100%;
 	width: 100%;
 	z-index: 20;
 	overflow: hidden;
-	transition: height .25s ease-in-out, width .25s ease-in-out;
+	transition: height 0.25s ease-in-out, width 0.25s ease-in-out;
 }
-upload .mailster-upload-info .mailster-upload-info-bar{
+upload .mailster-upload-info .mailster-upload-info-bar {
 	position: absolute;
 	top: 0;
 	left: 0;
 	bottom: 0;
 	width: 1px;
 	height: 100%;
-	background-color: rgba(0,0,0,0.6);
+	background-color: rgba(0, 0, 0, 0.6);
 	_background-size: cover;
 	background-repeat: no-repeat;
 	-webkit-filter: blur(2px) grayscale(50%);
 	filter: blur(2px) grayscale(50%);
 }
-upload .mailster-upload-info .mailster-upload-info-text{
-	font: 20px "Helvetica Neue",Helvetica,Arial,sans-serif;
+upload .mailster-upload-info .mailster-upload-info-text {
+	font: 20px 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	font-weight: 400;
 	position: absolute;
 	display: inline-block;
@@ -621,15 +712,17 @@ upload .mailster-upload-info .mailster-upload-info-text{
 	right: 50%;
 	top: 50%;
 	color: #fff;
-	text-shadow: -1px -1px 0 #333,1px -1px 0 #333,-1px 1px 0 #333,1px 1px 0 #333;
+	text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333,
+		1px 1px 0 #333;
 }
-upload .mailster-upload-info.error .mailster-upload-info-text{
+upload .mailster-upload-info.error .mailster-upload-info-text {
 	background: #f33;
 }
-.mce-notification-error{
+.mce-notification-error {
 	display: none;
 }
-.mce-ico.mailster-tags-icon:before, .mce-ico.mailster-remove-icon:before {
+.mce-ico.mailster-tags-icon:before,
+.mce-ico.mailster-remove-icon:before {
 	content: '';
 	display: inline-block;
 	width: 20px;
@@ -642,7 +735,8 @@ upload .mailster-upload-info.error .mailster-upload-info-text{
 .mce-ico.mailster-remove-icon:before {
 	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.54143,21H8.45857A2.25,2.25,0,0,1,6.2152,18.92257L5.25,6.375h13.5l-.9652,12.54757A2.25,2.25,0,0,1,15.54143,21Z" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0"/><line x1="20" y1="6.375" x2="4" y2="6.375" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0"/><path d="M9.1875,3h5.625a1.125,1.125,0,0,1,1.125,1.125v2.25a0,0,0,0,1,0,0H8.0625a0,0,0,0,1,0,0V4.125A1.125,1.125,0,0,1,9.1875,3Z" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0"/><line x1="13.96875" y1="10.875" x2="13.96875" y2="16.5" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0"/><line x1="10.03125" y1="10.875" x2="10.03125" y2="16.5" fill="none" stroke="%23f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.0"/><rect width="24" height="24" fill="none"/></svg>');
 }
-.ui-helper-hidden-accessible, .screen-reader-text{
+.ui-helper-hidden-accessible,
+.screen-reader-text {
 	border: 0;
 	clip: rect(0 0 0 0);
 	height: 1px;
@@ -664,9 +758,9 @@ div.wp-link-preview {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-div.wp-link-input input[type="text"] {
+div.wp-link-input input[type='text'] {
 	border: 1px solid #ddd;
-	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.07 );
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
 	background-color: #fff;
 	color: #32373c;
 	outline: none;
@@ -678,6 +772,6 @@ div.wp-link-input input[type="text"] {
 	height: 15px;
 	vertical-align: sub;
 }
-ul.ui-autocomplete{
-	font: 14px "Helvetica Neue",Helvetica,Arial,sans-serif;
+ul.ui-autocomplete {
+	font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }

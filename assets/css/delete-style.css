@@ -1,14 +1,14 @@
-.status{
+.status {
 	padding-left: 2em;
 }
-.status.progress{
+.status.progress {
 	float: none;
 	visibility: visible;
 	vertical-align: baseline;
 	opacity: 1;
 	width: auto;
 }
-.manage-job{
+.manage-job {
 	max-width: 740px;
 	border-radius: 3px;
 	margin: 0 0 12px;
@@ -29,12 +29,13 @@
 .manage-job:hover .remove-job {
 	visibility: visible;
 }
-.manage-job .job-id{
+.manage-job .job-id {
 	font-size: 20px;
 	color: #dfdfdf;
 	display: inline-block;
 }
-.manage-job span.mailster-icon-star:before, .manage-job span.mailster-icon-star-empty:before{
+.manage-job span.mailster-icon-star:before,
+.manage-job span.mailster-icon-star-empty:before {
 	width: 16px;
 	height: 16px;
 	background-size: 16px 16px;

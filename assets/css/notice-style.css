@@ -1,10 +1,10 @@
-.rtl div.mailster-notice{
+.rtl div.mailster-notice {
 	padding: 0.7em 19px 0.9em 0;
 }
-.wrap div.mailster-notice{
+.wrap div.mailster-notice {
 	display: block;
 }
-div.mailster-notice{
+div.mailster-notice {
 	word-wrap: break-word;
 	position: relative;
 	padding: 0.7em 0 0.9em 19px;
@@ -12,44 +12,44 @@ div.mailster-notice{
 	max-height: 280px;
 	overflow: auto;
 }
-div.mailster-notice.idle{
+div.mailster-notice.idle {
 	opacity: 0.5;
 }
-div.mailster-notice h2{
+div.mailster-notice h2 {
 	margin: 0.5em 0 0;
 	font-size: 1.6em;
 	font-weight: 400;
 	line-height: 1.2;
 }
-div.mailster-notice h3{
+div.mailster-notice h3 {
 	margin: 17px 0 0;
 	font-size: 1.2em;
 	line-height: 1.4;
 }
-div.mailster-notice > p{
+div.mailster-notice > p {
 	font-size: 1.2em;
 	color: #72777c;
 }
-div.mailster-notice > hr{
+div.mailster-notice > hr {
 	margin: 20px -23px 0 -23px;
 	border-top: 1px solid #f3f4f5;
 	border-bottom: none;
 }
-div.mailster-notice.mailster-notice-dismissable > hr{
+div.mailster-notice.mailster-notice-dismissable > hr {
 	margin-right: -100px;
 }
-.rtl div.mailster-notice.mailster-notice-dismissable > hr{
+.rtl div.mailster-notice.mailster-notice-dismissable > hr {
 	margin-right: -23px;
 	margin-left: -100px;
 }
-div.mailster-notice.mailster-notice-dismissable{
+div.mailster-notice.mailster-notice-dismissable {
 	padding-right: 100px;
 }
-.rtl div.mailster-notice.mailster-notice-dismissable{
+.rtl div.mailster-notice.mailster-notice-dismissable {
 	padding-right: 19px;
 	padding-left: 100px;
 }
-div.mailster-notice pre{
+div.mailster-notice pre {
 	word-wrap: break-word;
 	white-space: pre-wrap;
 }
@@ -84,6 +84,6 @@ div.mailster-notice .notice-dismiss:before {
 	margin-left: 1px;
 	float: left;
 }
-div.mailster-notice#mailster-notice-info-screen{
-	border-width:0;
+div.mailster-notice#mailster-notice-info-screen {
+	border-width: 0;
 }

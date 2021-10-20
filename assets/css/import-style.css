@@ -1,7 +1,16 @@
-summary, details { display: block; }
-details {visibility: hidden;}
-details > summary { visibility:  visible; }
-details details { visibility:  visible; }
+summary,
+details {
+	display: block;
+}
+details {
+	visibility: hidden;
+}
+details > summary {
+	visibility: visible;
+}
+details details {
+	visibility: visible;
+}
 details > summary:before {
 	content: '';
 	display: inline-block;
@@ -11,27 +20,40 @@ details > summary:before {
 	transition: transform 0.3s;
 	width: 20px;
 	height: 20px;
-
 }
 .rtl details > summary:before {
 	margin: 0 -14px 0 8px;
 	transform: rotate(180deg);
 }
-details[open] > summary:before { transform: rotate(90deg); }
-details[open] { visibility: visible; }
-details summary { cursor: pointer; }
-summary:hover { cursor: pointer; }
-details a { display: block; }
-summary:focus {outline:none}
-details summary::-webkit-details-marker { display:none; }
+details[open] > summary:before {
+	transform: rotate(90deg);
+}
+details[open] {
+	visibility: visible;
+}
+details summary {
+	cursor: pointer;
+}
+summary:hover {
+	cursor: pointer;
+}
+details a {
+	display: block;
+}
+summary:focus {
+	outline: none;
+}
+details summary::-webkit-details-marker {
+	display: none;
+}
 
-summary{
+summary {
 	border-top: 1px solid #dfdfdf;
 	padding: 1em 2em;
 	font-weight: bold;
 	line-height: 1.5em;
 }
-details summary.loading{
+details summary.loading {
 	background-position: 94% center;
 	background-repeat: no-repeat;
 	background-size: 20px 20px;
@@ -41,57 +63,55 @@ details summary.loading{
 	only screen and (-o-min-device-pixel-ratio: 32),
 	only screen and (min--moz-device-pixel-ratio: 1.5),
 	only screen and (min-device-pixel-ratio: 1.5) {
-
-	details summary.loading{
+	details summary.loading {
 		background-image: url(../img/loading_2x.gif) !important;
 	}
-
 }
-details summary.loaded{
+details summary.loaded {
 	color: inherit;
 }
-details > div{
-	padding:0.5em 3em 1em;
+details > div {
+	padding: 0.5em 3em 1em;
 }
 .drag-drop #drag-drop-area {
 	border: 4px dashed #c3c4c7;
 	height: 200px;
 }
-#subscriber-table{
+#subscriber-table {
 	padding: 0;
 	width: 100%;
 	overflow: auto;
 }
-#subscriber-table select{
+#subscriber-table select {
 	width: 150px;
 }
-#subscriber-table table{
+#subscriber-table table {
 	border: 0;
 }
-#subscriber-table table td{
+#subscriber-table table td {
 	max-height: 30px;
 	max-width: 150px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.table-wrap{
+.table-wrap {
 	max-height: 500px;
 	border: 1px solid #c3c4c7;
 	overflow: auto;
 }
-.table-wrap table.widefat{
+.table-wrap table.widefat {
 	border: 0;
 }
-.table-wrap table thead{
+.table-wrap table thead {
 	background: #fff;
 	position: sticky;
 	top: 0;
 }
-.status{
+.status {
 	padding-left: 2em;
 }
-.status.progress{
+.status.progress {
 	float: none;
 	visibility: visible;
 	vertical-align: baseline;
@@ -99,14 +119,14 @@ details > div{
 	width: auto;
 }
 
-#import_wordpress .inner{
+#import_wordpress .inner {
 	display: flex;
-	flex-wrap: wrap
+	flex-wrap: wrap;
 }
-#import_wordpress div{
+#import_wordpress div {
 	padding-right: 20px;
 }
-.import-wrap section.footer{
+.import-wrap section.footer {
 	margin-left: -3em;
 	margin-right: -3em;
 	margin-bottom: -1em;
@@ -114,7 +134,7 @@ details > div{
 	padding: 1em 3em;
 }
 
-#TB_window section.footer{
+#TB_window section.footer {
 	background: #f6f7f7;
 	border-top: 1px solid #dfdfdf;
 	padding: 0 1.5em;
