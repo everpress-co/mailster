@@ -116,9 +116,6 @@ div.mainnav li a {
 	padding-left: 16px;
 	outline: none;
 }
-.nav-tab-wrapper {
-	border-bottom: 1px solid #ccc;
-}
 .dark-mnode .nav-tab-wrapper {
 	border-color: #32373c;
 }
@@ -130,9 +127,13 @@ div.mainnav li a {
 	margin-right: 0;
 }
 .nav-tab-wrapper .nav-tab-active,
+.nav-tab-wrapper .nav-tab-active:focus {
+	background: #fafafa;
+	border-bottom: 1px solid #fafafa;
+}
 .nav-tab-wrapper .nav-tab-active:hover {
 	background: #fff;
-	border-bottom: 1px solid #fff;
+	border-bottom: 1px solid #fafafa;
 }
 .update-translation-available {
 	display: inline-block;
@@ -150,7 +151,7 @@ div.mainnav li a {
 }
 #deliverynav {
 	display: block;
-	margin-bottom: 0;
+	margin: 0 5px 0;
 }
 #mailster-settings-form div.loading,
 #mailster-settings-form span.loading {
@@ -237,6 +238,9 @@ div.mainnav li a {
 	display: none;
 	border: 1px solid #ccc;
 	border-top: 0;
+	background: #fafafa;
+	box-shadow: 0 1px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 3%);
+	border-radius: 6px;
 }
 .sendmailpath {
 	margin-left: 15px;
