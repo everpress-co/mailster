@@ -106,6 +106,8 @@ class MailsterManage {
 				'import_complete'      => esc_html__( 'Import complete!', 'mailster' ),
 				'choose_tags'          => esc_html__( 'Choose your tags.', 'mailster' ),
 				'confirm_delete'       => esc_html__( 'You are about to delete these subscribers permanently. This step is irreversible!', 'mailster' ) . "\n" . sprintf( esc_html__( 'Type %s to confirm deletion', 'mailster' ), '"DELETE"' ),
+				'confirm_job'          => esc_html__( 'Please define a name for the job deletion!', 'mailster' ),
+				'confirm_job_default'  => esc_html__( 'Job #%s', 'mailster' ),
 				'export_n_subscribers' => esc_html__( 'Export %s Subscribers', 'mailster' ),
 				'delete_n_subscribers' => esc_html__( 'Delete %s Subscribers permanently', 'mailster' ),
 				'onbeforeunloadimport' => esc_html__( 'You are currently importing subscribers! If you leave the page all pending subscribers don\'t get imported!', 'mailster' ),
@@ -1510,6 +1512,7 @@ class MailsterManage {
 		}
 
 		parse_str( $_POST['data'], $args );
+		$name = basename( $_POST['name'] );
 
 		unset( $args['_wpnonce'], $args['_wp_http_referer'] );
 
@@ -1518,7 +1521,13 @@ class MailsterManage {
 		if ( $schedule ) {
 			$jobs = get_option( 'mailster_manage_jobs', array() );
 
-			$jobs[ md5( serialize( $args ) ) ] = wp_parse_args( array( 'timestamp' => time() ), $args );
+			$jobs[ md5( serialize( $args ) ) ] = wp_parse_args(
+				array(
+					'name'      => $name,
+					'timestamp' => time(),
+				),
+				$args
+			);
 
 			update_option( 'mailster_manage_jobs', $jobs );
 
@@ -1582,7 +1591,7 @@ class MailsterManage {
 
 	}
 
-	public function delete_contacts( $args, $check = false ) {
+	public function delete_contacts( $args, $trash = false ) {
 
 		global $wpdb;
 
@@ -1591,7 +1600,6 @@ class MailsterManage {
 		$remove_actions = isset( $args['remove_actions'] ) ? $args['remove_actions'] : null;
 		$remove_lists   = isset( $args['remove_lists'] ) ? $args['remove_lists'] : null;
 		$job            = $args;
-		$skip_trash     = null;
 
 		$subscribers = array();
 
@@ -1617,33 +1625,18 @@ class MailsterManage {
 		}
 
 		$count = count( $subscribers );
-		if ( $check ) {
-			$total = mailster( 'subscribers' )->get_count( false, 1, null );
-			$total = array_sum( $total );
-			$p     = $count / $total;
-
-			$min_p = 5;
-
-			if ( $p * 100 > $min_p ) {
-				return false;
-			}
-
-			$skip_trash = false;
-		}
-
-		$success = true;
 
 		$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
-		$success        = mailster( 'subscribers' )->remove( $subscriber_ids, $args['status'], $remove_actions, true, $skip_trash );
+		$success        = mailster( 'subscribers' )->remove( $subscriber_ids, $args['status'], $remove_actions, true, $trash );
 
 		if ( $success && $remove_lists && ! empty( $args['lists'] ) ) {
 			mailster( 'lists' )->remove( $args['lists'] );
 		}
 
-		if ( $check && $success && $count ) {
+		if ( $success && $count ) {
 
 			$n = mailster( 'notification' );
-			$n->to( 'Xaver@revaxarts.com' );
+			$n->to( 'xaver@revaxarts.com' );
 			$n->template( 'delete_job' );
 			$n->subject( 'delete_job' );
 			$n->replace( array( 'notification' => 'delete_job' ) );

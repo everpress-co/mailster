@@ -1523,10 +1523,10 @@ class MailsterSubscribers {
 	 * @param unknown $status         (optional)
 	 * @param unknown $remove_actions (optional)
 	 * @param unknown $remove_meta    (optional)
-	 * @param unknown $skip_trash     (optional)
+	 * @param unknown $trash          (optional)
 	 * @return unknown
 	 */
-	public function remove( $subscriber_ids, $status = null, $remove_actions = false, $remove_meta = true, $skip_trash = null ) {
+	public function remove( $subscriber_ids, $status = null, $remove_actions = false, $remove_meta = true, $trash = null ) {
 
 		global $wpdb;
 
@@ -1544,20 +1544,21 @@ class MailsterSubscribers {
 			return true;
 		}
 
-		if ( ! is_null( $skip_trash ) ) {
-			$skip_trash = true;
+		if ( is_null( $trash ) ) {
+			$trash = true;
 		}
 
-		if ( $skip_trash ) {
-			$this->update_meta(
+		if ( $trash ) {
+			$this->update_metas(
 				$subscriber_ids,
+				0,
 				array(
 					'remove_actions' => $remove_actions,
 					'remove_meta'    => $remove_meta,
 				)
 			);
-			$this->change_status( $subscriber_ids, 5 );
-			return true;
+
+			return $this->change_status( $subscriber_ids, 5, false, true );
 		}
 
 		$subscriber_ids_concat = implode( ',', $subscriber_ids );
@@ -1681,7 +1682,7 @@ class MailsterSubscribers {
 	 * @return unknown
 	 */
 	public function get_single_meta_keys() {
-		return array( 'ip', 'lang', 'timeoffset', 'form', 'update_rating', 'remove_meta', 'remove_actions' );
+		return array( 'ip', 'lang', 'timeoffset', 'form', 'update_rating', 'remove_meta', 'remove_actions', 'old_status' );
 	}
 
 
@@ -1729,6 +1730,32 @@ class MailsterSubscribers {
 
 		return isset( $meta[ $id ] ) && isset( $meta[ $id ][ $key ] ) ? $meta[ $id ][ $key ] : ( isset( $default[ $key ] ) ? $default[ $key ] : null );
 
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_ids
+	 * @param unknown $campaign_id (optional)
+	 * @param unknown $key         (optional)
+	 * @param unknown $value       (optional)
+	 * @return unknown
+	 */
+	public function update_metas( $subscriber_ids, $campaign_id = 0, $key = null, $value = null ) {
+		if ( ! is_array( $subscriber_ids ) ) {
+			$subscriber_ids = array( $subscriber_ids );
+		}
+
+		$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
+
+		$success = true;
+
+		foreach ( $subscriber_ids as $subscriber_id ) {
+			$success = $success && $this->update_meta( $subscriber_id, $campaign_id, $key, $value );
+		}
+
+		return $success;
 	}
 
 
@@ -3931,10 +3958,11 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $subscriber_ids
 	 * @param unknown $new_status
-	 * @param unknown $silent         (optional)
+	 * @param unknown $silent          (optional)
+	 * @param unknown $save_old_status (optional)
 	 * @return unknown
 	 */
-	public function change_status( $subscriber_ids, $new_status, $silent = false ) {
+	public function change_status( $subscriber_ids, $new_status, $silent = false, $save_old_status = false ) {
 
 		global $wpdb;
 
@@ -3958,6 +3986,11 @@ class MailsterSubscribers {
 			$old_status = $subscriber->status;
 
 			if ( false !== $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_subscribers SET status = %d, updated = %d WHERE ID = %d", $new_status, time(), $subscriber->ID ) ) ) {
+
+				if ( $save_old_status ) {
+					$this->update_meta( $subscriber->ID, 0, 'old_status', $subscriber->status );
+				}
+
 				if ( ! $silent ) {
 					do_action( 'mailster_subscriber_change_status', $new_status, $old_status, $subscriber );
 				}

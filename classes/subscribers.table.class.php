@@ -10,6 +10,17 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	public $total_pages;
 	public $per_page;
 
+	private $post_type;
+	private $page;
+	private $paged;
+	private $status;
+	private $lists;
+	private $search;
+	private $conditions;
+	private $orderby;
+	private $order;
+	private $since;
+
 	public function __construct() {
 
 		parent::__construct(
@@ -22,6 +33,18 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 		add_action( 'admin_footer', array( &$this, 'script' ) );
 		add_filter( 'manage_newsletter_page_mailster_subscribers_columns', array( &$this, 'get_columns' ) );
+
+		$this->post_type  = isset( $_GET['post_type'] ) ? $_GET['post_type'] : null;
+		$this->page       = isset( $_GET['page'] ) ? (int) $_GET['page'] : null;
+		$this->paged      = isset( $_GET['paged'] ) ? (int) $_GET['paged'] - 1 : null;
+		$this->status     = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
+		$this->lists      = isset( $_GET['lists'] ) ? array_filter( (array) $_GET['lists'], 'is_numeric' ) : null;
+		$this->search     = isset( $_GET['s'] ) ? $_GET['s'] : null;
+		$this->strict     = isset( $_GET['strict'] ) ? $_GET['strict'] : null;
+		$this->conditions = isset( $_GET['conditions'] ) ? (array) $_GET['conditions'] : null;
+		$this->orderby    = isset( $_GET['orderby'] ) ? $_GET['orderby'] : 'id';
+		$this->order      = isset( $_GET['order'] ) ? $_GET['order'] : 'DESC';
+		$this->since      = isset( $_GET['since'] ) ? strtotime( $_GET['since'] ) : null;
 
 	}
 
@@ -55,9 +78,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 	public function no_items() {
 
-		$status = isset( $_GET['status'] ) ? (int) $_GET['status'] : null;
-
-		switch ( $status ) {
+		switch ( $this->status ) {
 			case '0': // pending
 				esc_html_e( 'No pending subscribers found', 'mailster' );
 				break;
@@ -90,42 +111,42 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	public function search_box( $text, $input_id ) {
 
-		if ( ! count( $this->items ) && ! isset( $_GET['s'] ) ) {
+		if ( ! count( $this->items ) && ! isset( $$this->search ) ) {
 			return;
 		}
 
-		if ( isset( $_GET['conditions'] ) ) {
-			mailster( 'conditions' )->render( $_GET['conditions'] );
+		if ( $this->conditions ) {
+			mailster( 'conditions' )->render( $this->conditions );
 		}
 
 		?>
-		<?php if ( isset( $_GET['status'] ) && 5 == $_GET['status'] ) : ?>
+		<?php if ( 5 == $this->status ) : ?>
 		<div class="notice notice-error error">
 			<p><?php printf( esc_html__( 'This subscribers are marked as "deleted" and get removed within the next %d days.', 'mailster' ), 14 ); ?></p>
 		</div>
 		<?php endif; ?>
 
 	<form id="searchform" action method="get">
-		<?php if ( isset( $_GET['post_type'] ) ) : ?>
-			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>">
+		<?php if ( $this->post_type ) : ?>
+			<input type="hidden" name="post_type" value="<?php echo esc_attr( $this->post_type ); ?>">
 		<?php endif; ?>
-		<?php if ( isset( $_GET['page'] ) ) : ?>
-			<input type="hidden" name="page" value="<?php echo esc_attr( $_GET['page'] ); ?>">
+		<?php if ( $this->page ) : ?>
+			<input type="hidden" name="page" value="<?php echo esc_attr( $this->page ); ?>">
 		<?php endif; ?>
-		<?php if ( isset( $_GET['paged'] ) ) : ?>
-			<input type="hidden" name="_paged" value="<?php echo esc_attr( $_GET['paged'] ); ?>">
+		<?php if ( $this->paged ) : ?>
+			<input type="hidden" name="_paged" value="<?php echo esc_attr( $this->paged ); ?>">
 		<?php endif; ?>
-		<?php if ( isset( $_GET['status'] ) ) : ?>
-			<input type="hidden" name="status" value="<?php echo esc_attr( $_GET['status'] ); ?>">
+		<?php if ( $this->status ) : ?>
+			<input type="hidden" name="status" value="<?php echo esc_attr( $this->status ); ?>">
 		<?php endif; ?>
-		<?php if ( isset( $_GET['lists'] ) ) : ?>
-			<?php foreach ( array_filter( (array) $_GET['lists'], 'is_numeric' ) as $list_id ) : ?>
-				<input type="hidden" name="lists[]" value="<?php echo $list_id; ?>">
+		<?php if ( $this->lists ) : ?>
+			<?php foreach ( $this->lists as $list_id ) : ?>
+				<input type="hidden" name="lists[]" value="<?php echo esc_attr( $list_id ); ?>">
 			<?php endforeach ?>
 		<?php endif; ?>
 	<p class="search-box">
 		<label class="screen-reader-text" for="sa-search-input"><?php echo esc_html( $text ); ?></label>
-		<input type="search" id="<?php echo $input_id; ?>" name="s" value="<?php echo isset( $_GET['s'] ) ? esc_attr( $_GET['s'] ) : ''; ?>">
+		<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php esc_attr( $this->search ); ?>">
 		<input type="submit" name="" id="search-submit" class="button" value="<?php echo esc_attr( $text ); ?>">
 	</p>
 	</form>
@@ -152,8 +173,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	private function searchmark( $string, $search = null ) {
 
-		if ( is_null( $search ) && isset( $_GET['s'] ) ) {
-			$search = stripslashes( $_GET['s'] );
+		if ( is_null( $search ) && isset( $this->search ) ) {
+			$search = stripslashes( $this->search );
 		}
 
 		if ( empty( $search ) ) {
@@ -390,11 +411,11 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
 		$args = array(
-			'status'     => isset( $_GET['status'] ) ? (int) $_GET['status'] : false,
-			's'          => isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : null,
-			'strict'     => isset( $_GET['strict'] ) ? boolval( $_GET['strict'] ) : false,
-			'lists'      => isset( $_GET['lists'] ) ? ( $_GET['lists'] ) : false,
-			'conditions' => isset( $_GET['conditions'] ) ? $_GET['conditions'] : array(),
+			'status'     => $this->status,
+			's'          => $this->search,
+			'strict'     => $this->strict,
+			'lists'      => $this->lists,
+			'conditions' => $this->conditions,
 		);
 
 		// How many to display per page?
@@ -402,11 +423,14 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			$this->per_page = 50;
 		}
 
-		$offset  = isset( $_GET['paged'] ) ? ( (int) $_GET['paged'] - 1 ) * $this->per_page : 0;
-		$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'id';
-		$order   = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
-		$fields  = array( 'ID', 'email', 'rating', 'wp_id', 'status', 'signup' );
-		$since   = ! empty( $_GET['since'] ) ? strtotime( $_GET['since'] ) : null;
+		$fields = array( 'ID', 'email', 'rating', 'wp_id', 'status', 'signup' );
+
+		// $offset  = isset( $_GET['paged'] ) ? ( (int) $_GET['paged'] - 1 ) * $this->per_page : 0;
+		$offset = $this->paged * $this->per_page;
+
+		$orderby = $this->orderby;
+		$order   = $this->order;
+		$since   = $this->since;
 
 		if ( isset( $custom_fields[ $orderby ] ) ) {
 			$fields[] = $orderby;

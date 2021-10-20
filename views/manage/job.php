@@ -4,6 +4,7 @@
 	$status = mailster( 'subscribers' )->get_status();
 ?>
 <ul>
+	<?php esc_html_e( 'Delete all subscribers', 'mailster' ); ?>
 	<?php if ( isset( $job['status'] ) ) : ?>
 	<li><?php printf( esc_html__( 'with a status of %s', 'mailster' ), '<strong>' . implode( ', ', array_intersect_key( $status, array_flip( $job['status'] ) ) ) . '</strong>' ); ?></li>
 	<?php endif; ?>
@@ -15,7 +16,6 @@
 	<?php if ( isset( $job['nolists'] ) && $job['nolists'] ) : ?>
 	<li><?php esc_html_e( 'and assigned to no list.', 'mailster' ); ?></li>
 	<?php endif; ?>
-
 
 	<?php if ( isset( $job['conditions'] ) ) : ?>
 	<li><?php mailster( 'conditions' )->render( $job['conditions'] ); ?></li>

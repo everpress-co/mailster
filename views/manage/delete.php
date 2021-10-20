@@ -54,11 +54,11 @@
 <h4><?php esc_html_e( 'Automation', 'mailster' ); ?></h4>
 <section>
 	<?php if ( $jobs = get_option( 'mailster_manage_jobs', array() ) ) : ?>
-	<p class="howto"><?php esc_html_e( 'These jobs will run automatically.', 'mailster' ); ?> <?php printf( esc_html__( ' For safety Mailster will only run these jobs if they remove %s of your total subscribers.', 'mailster' ), '<strong>5 %</strong>' ); ?></p>
+	<p class="howto"><?php esc_html_e( 'These jobs will run automatically.', 'mailster' ); ?></p>
 		<?php foreach ( $jobs as $hash => $job ) : ?>
 	<div class="manage-job" data-id="<?php echo esc_attr( $hash ); ?>">
 	<a class="remove-job" title="<?php esc_html_e( 'Remove job', 'mailster' ); ?>">&#10005;</a>
-	<div><strong><?php esc_html_e( 'Delete all subscribers', 'mailster' ); ?></strong></div>
+	<h4><?php echo esc_html( $job['name'] ); ?> <span class="info"><?php printf( esc_html__( 'Created %s', 'mailster' ), wp_date( get_option( 'date_format' ), $job->timestamp ) ); ?></span></h4>
 			<?php include MAILSTER_DIR . 'views/manage/job.php'; ?>
 	</div>
 	<?php endforeach; ?>
