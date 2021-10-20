@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 4.6
 Tested up to: 5.8
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 Author: EverPress
 Author URI: https://everpress.co
 License: GPLv2 or later
@@ -187,8 +187,11 @@ Get professional development help from our expert support partner *Codeable* for
 
 == Changelog ==
 
-= 3.0.3 =
+= 3.0.4 =
 
+* fixed: timeframe settings spanning over midnight
+* fixed: layout issue on form/lists overview on smaller screens
+* fixed: missing dbstructure method on queue process
 * added: option to block and allow people from certain countries to signup
 * update: using `get_user_local()` instead of `get_locale()` when applicable.
 

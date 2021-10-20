@@ -547,6 +547,9 @@ function mailster_ip2Country( $ip = '', $get = 'code' ) {
 			$ip = mailster_get_ip();
 		}
 
+		if ( mailster_is_local( $ip ) ) {
+			return 'unknown';
+		}
 		$ip2Country = mailster( 'geo' )->Ip2Country();
 
 		$code = $ip2Country->get( $ip, $get );
@@ -617,7 +620,11 @@ function mailster_get_ip() {
  *
  * @return unknown
  */
-function mailster_is_local() {
+function mailster_is_local( $ip = null ) {
+
+	if ( is_null( $ip ) ) {
+		$ip = mailster_get_ip();
+	}
 
 	return ! filter_var( mailster_get_ip(), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
 
@@ -630,7 +637,11 @@ function mailster_is_local() {
  * @param unknown $ip
  * @return unknown
  */
-function mailster_validate_ip( $ip ) {
+function mailster_validate_ip( $ip = null ) {
+
+	if ( is_null( $ip ) ) {
+		$ip = mailster_get_ip();
+	}
 
 	if ( strtolower( $ip ) === 'unknown' ) {
 		return false;
