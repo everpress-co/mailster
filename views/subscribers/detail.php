@@ -318,7 +318,7 @@ if ( $is_new ) {
 							'size'           => '300x250',
 							'visual_refresh' => true,
 							'scale'          => 2,
-							'language'       => get_locale(),
+							'language'       => get_user_locale(),
 							'key'            => mailster_option( 'google_api_key' ),
 						),
 						'//maps.googleapis.com/maps/api/staticmap'
@@ -343,7 +343,7 @@ if ( $is_new ) {
 							'size'           => '300x250',
 							'visual_refresh' => true,
 							'scale'          => 2,
-							'language'       => get_locale(),
+							'language'       => get_user_locale(),
 							'key'            => mailster_option( 'google_api_key' ),
 						),
 						'//maps.googleapis.com/maps/api/staticmap'

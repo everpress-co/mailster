@@ -737,7 +737,7 @@ class MailsterNotification {
 					'size'           => '276x200',
 					'visual_refresh' => true,
 					'scale'          => 2,
-					'language'       => get_locale(),
+					'language'       => get_user_locale(),
 					'key'            => mailster_option( 'google_api_key' ),
 				),
 				'https://maps.googleapis.com/maps/api/staticmap'

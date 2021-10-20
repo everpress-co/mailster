@@ -2739,7 +2739,7 @@ class MailsterAjax {
 			}
 			$return['html'] .= ' <a class="load-language" href="#">' . esc_html__( 'load it', 'mailster' ) . '</a>';
 
-		} elseif ( null === $return['language'] && get_locale() != 'en_US' ) {
+		} elseif ( null === $return['language'] && get_user_locale() != 'en_US' ) {
 				$return['html'] = esc_html__( 'Mailster is not available in your languages!', 'mailster' );
 
 		} else {

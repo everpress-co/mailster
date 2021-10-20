@@ -414,7 +414,7 @@ class MailsterManage {
 		$meta_other = array(
 			'_lists'      => esc_html__( 'Lists', 'mailster' ) . ' (' . esc_html__( 'comma separated', 'mailster' ) . ')',
 			'_tags'       => esc_html__( 'Tags', 'mailster' ) . ' (' . esc_html__( 'comma separated', 'mailster' ) . ')',
-			'_status'     => esc_html__( 'Status', 'mailster' ) . ' [0...6]',
+			'_status'     => esc_html__( 'Status', 'mailster' ) . ' [0...4]',
 			'_lang'       => esc_html__( 'Language', 'mailster' ),
 			'_timeoffset' => esc_html__( 'Timeoffset to UTC', 'mailster' ),
 			'_timezone'   => esc_html__( 'Timezone', 'mailster' ),

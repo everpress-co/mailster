@@ -1451,9 +1451,12 @@ class MailsterHelper {
 
 		// further check if not 24h
 		if ( abs( $from - $to ) ) {
+
+			// set from to the previous date.
 			if ( $to < $from ) {
-				$to += 24;
+				$from -= 24;
 			}
+
 			if ( $from > $hour || $hour >= $to ) {
 				return false;
 			}
