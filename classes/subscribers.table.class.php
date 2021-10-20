@@ -111,7 +111,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	public function search_box( $text, $input_id ) {
 
-		if ( ! count( $this->items ) && ! isset( $$this->search ) ) {
+		if ( ! count( $this->items ) && ! isset( $this->search ) ) {
 			return;
 		}
 
@@ -122,7 +122,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		?>
 		<?php if ( 5 == $this->status ) : ?>
 		<div class="notice notice-error error">
-			<p><?php printf( esc_html__( 'This subscribers are marked as "deleted" and get removed within the next %d days.', 'mailster' ), 14 ); ?></p>
+			<p><strong><?php printf( esc_html__( 'These subscribers are marked as "deleted" and will be removed automatically after %d days at the earliest.', 'mailster' ), 14 ); ?></strong></p>
 		</div>
 		<?php endif; ?>
 
@@ -303,6 +303,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		$actions = array(
+			'empty_trash'    => esc_html__( 'Permanently Delete', 'mailster' ),
+			'restore'        => esc_html__( 'Restore', 'mailster' ),
 			'delete'         => esc_html__( 'Delete', 'mailster' ),
 			'delete_actions' => esc_html__( 'Delete (with Activities)', 'mailster' ),
 			'send_campaign'  => esc_html__( 'Send new Campaign', 'mailster' ),
@@ -310,9 +312,13 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 			'verify'         => esc_html__( 'Verify', 'mailster' ),
 		);
 
-		if ( ! current_user_can( 'mailster_delete_subscribers' ) ) {
+		if ( ! current_user_can( 'mailster_delete_subscribers' ) || 5 == $this->status ) {
 			unset( $actions['delete'] );
 			unset( $actions['delete_actions'] );
+		}
+		if ( 5 != $this->status ) {
+			unset( $actions['empty_trash'] );
+			unset( $actions['restore'] );
 		}
 
 		return $actions;
@@ -356,6 +362,10 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		}
 
 		echo str_replace( '</select>', '<optgroup label="' . esc_html__( 'add to list', 'mailster' ) . '">' . $add . '</optgroup><optgroup label="' . esc_html__( 'remove from list', 'mailster' ) . '">' . $remove . '</optgroup><optgroup label="' . esc_html__( 'confirm list', 'mailster' ) . '">' . $confirm . '</optgroup><optgroup label="' . esc_html__( 'unconfirm list', 'mailster' ) . '">' . $unconfirm . '</optgroup></select>', $actions );
+
+		if ( 5 == $this->status ) {
+			echo submit_button( __( 'Permanently remove all deleted Subscribers', 'mailster' ), 'action', 'empty_trash', false );
+		}
 
 	}
 

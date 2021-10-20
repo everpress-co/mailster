@@ -19,7 +19,8 @@ class MailsterManage {
 
 		add_action( 'admin_init', array( &$this, 'load_integrations' ), 10 );
 
-		add_action( 'mailster_cron_worker', array( &$this, 'delete_job' ) );
+		add_action( 'mailster_cron_cleanup', array( &$this, 'delete_job' ) );
+		add_action( 'mailster_cron_cleanup', array( &$this, 'empty_trash' ) );
 
 	}
 
@@ -106,7 +107,8 @@ class MailsterManage {
 				'import_complete'      => esc_html__( 'Import complete!', 'mailster' ),
 				'choose_tags'          => esc_html__( 'Choose your tags.', 'mailster' ),
 				'confirm_delete'       => esc_html__( 'You are about to delete these subscribers permanently. This step is irreversible!', 'mailster' ) . "\n" . sprintf( esc_html__( 'Type %s to confirm deletion', 'mailster' ), '"DELETE"' ),
-				'confirm_job'          => esc_html__( 'Please define a name for the job deletion!', 'mailster' ),
+				'confirm_job'          => esc_html__( 'Please define a name for this job!', 'mailster' ),
+				'confirm_job_delete'   => esc_html__( 'Do you like to delete this job?', 'mailster' ),
 				'confirm_job_default'  => esc_html__( 'Job #%s', 'mailster' ),
 				'export_n_subscribers' => esc_html__( 'Export %s Subscribers', 'mailster' ),
 				'delete_n_subscribers' => esc_html__( 'Delete %s Subscribers permanently', 'mailster' ),
@@ -1523,6 +1525,7 @@ class MailsterManage {
 
 			$jobs[ md5( serialize( $args ) ) ] = wp_parse_args(
 				array(
+					'user_id'   => get_current_user_id(),
 					'name'      => $name,
 					'timestamp' => time(),
 				),
@@ -1598,8 +1601,8 @@ class MailsterManage {
 		$count          = 0;
 		$nolists        = isset( $args['nolists'] ) ? $args['nolists'] : null;
 		$remove_actions = isset( $args['remove_actions'] ) ? $args['remove_actions'] : null;
-		$remove_lists   = isset( $args['remove_lists'] ) ? $args['remove_lists'] : null;
 		$job            = $args;
+		$current_filter = current_filter();
 
 		$subscribers = array();
 
@@ -1609,6 +1612,11 @@ class MailsterManage {
 			'conditions' => isset( $args['conditions'] ) ? (array) $args['conditions'] : null,
 		);
 
+		if ( $current_filter == 'mailster_cron_cleanup' ) {
+			// do not delete to fast (at least one hour ago)
+			$args['updated_before'] = strtotime( '-1 hour' );
+
+		}
 		$args = apply_filters( 'mailster_delete_args', $args );
 
 		if ( ! empty( $args['lists'] ) ) {
@@ -1629,20 +1637,19 @@ class MailsterManage {
 		$subscriber_ids = wp_list_pluck( $subscribers, 'ID' );
 		$success        = mailster( 'subscribers' )->remove( $subscriber_ids, $args['status'], $remove_actions, true, $trash );
 
-		if ( $success && $remove_lists && ! empty( $args['lists'] ) ) {
-			mailster( 'lists' )->remove( $args['lists'] );
-		}
-
 		if ( $success && $count ) {
 
-			$n = mailster( 'notification' );
-			$n->to( 'xaver@revaxarts.com' );
-			$n->template( 'delete_job' );
-			$n->subject( 'delete_job' );
-			$n->replace( array( 'notification' => 'delete_job' ) );
-			$n->requeue( false );
+			if ( $current_filter == 'mailster_cron_cleanup' ) {
 
-			$mail = $n->mail;
+				// send notification to the user who created the job
+				if ( $user = get_user_by( 'id', $job['user_id'] ) ) {
+					$n = mailster( 'notification' );
+					$n->to( $user->user_email );
+					$n->template( 'delete_job' );
+					$n->requeue( false );
+					$mail = $n->mail;
+				}
+			}
 
 			$return['success'] = $n->add(
 				array(
@@ -1652,6 +1659,18 @@ class MailsterManage {
 			);
 		}
 		return $count;
+
+	}
+
+
+
+	public function empty_trash() {
+
+		return mailster( 'subscribers' )->empty_trash(
+			$args = array(
+				'updated_before' => strtotime( '-14 days' ),
+			)
+		);
 
 	}
 
@@ -1741,7 +1760,8 @@ class MailsterManage {
 			if ( $has_email ) {
 				$data[] = $line;
 			} elseif ( ! $has_email && ! $i ) {
-				$data['header'] = $line;
+				// still can contain a double quote
+				$data['header'] = str_replace( '"', '', $line );
 			}
 		}
 

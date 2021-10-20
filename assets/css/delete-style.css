@@ -33,11 +33,13 @@
 	margin: -1em -1em 1em -1em;
 	padding: 1em;
 }
-.mailster-manage .manage-job h4 .info {
-	color: #ccc;
+.mailster-manage .manage-job .howto {
+	color: #a7aaad;
 	font-weight: normal;
 	font-style: italic;
+	margin-top: 2em;
 }
+
 .manage-job:hover .remove-job {
 	visibility: visible;
 }

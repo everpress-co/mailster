@@ -1024,57 +1024,42 @@ endforeach;
 		$job         = $options['job'];
 		$count       = count( $subscribers );
 		$limit       = 100;
-		?>
 
-		<table style="width:100%;table-layout:fixed"><tr><td valign="top">&nbsp;</td></tr></table>
+		$this->subject( sprintf( esc_html__( _n( '%s Subscriber was marked for deletion', '%s Subscribers were marked for deletion', $count, 'mailster' ) ), number_format_i18n( $count ) ) );
+		$this->replace( array( 'notification' => sprintf( esc_html__( 'You can update these jobs on the %s.', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_manage_subscribers&tab=delete' ) . '">' . esc_html__( 'Delete Subscribers page', 'mailster' ) . '</a>' ) ) );
+
+		?>
 
 		<table style="width:100%;table-layout:fixed">
 			<tr>
 				<td valign="top" align="left">
-				<h2><?php printf( esc_html__( _n( '%s Subscriber were automatically deleted', '%s Subscribers were automatically deleted', $count, 'mailster' ) ), number_format_i18n( $count ) ); ?></h2>
+				<h3><?php printf( _n( '%1$s removed %2$s Subscriber.', '%1$s removed %2$s Subscribers.', $count, 'mailster' ), '"' . $job['name'] . '"', number_format_i18n( $count ) ); ?></h3>
 				</td>
 			</tr>
-		</table>
-		<table style="width:100%;table-layout:fixed">
 			<tr>
 				<td valign="top" align="left">
 				<?php include MAILSTER_DIR . 'views/manage/job.php'; ?>
 				</td>
 			</tr>
 		</table>
+		<table style="width:100%;table-layout:fixed">
+			<tr>
+				<td valign="top" align="left">
+				<p><?php printf( esc_html__( 'You can find these subscribers on the %s.', 'mailster' ), '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&status=5' ) . '">' . esc_html__( 'Deleted Subscribers page', 'mailster' ) . '</a>' ); ?></p>
+				</td>
+			</tr>
+		</table>
 		<table cellpadding="0" cellspacing="0" class="o-fix">
 		<tr>
-
 			<td width="552" valign="top" align="center" style="border-top:1px solid #ccc;">
 		<?php foreach ( $subscribers as $i => $subscriber ) : ?>
 			<?php
 			if ( $i >= $limit ) {
 				break;
 			}
-			$link = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
+			$subscriber = mailster( 'subscribers' )->get( $subscriber->ID, true );
+			$link       = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $subscriber->ID );
 			?>
-		<table cellpadding="0" cellspacing="0" align="<?php echo ! ( $i % 2 ) ? 'left' : 'right'; ?>">
-			<tr>
-				<td width="264" valign="top" align="left" class="m-b">
-				<table cellpadding="0" cellspacing="0">
-				<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
-				<tr>
-				<?php if ( get_option( 'show_avatars' ) ) : ?>
-				<td valign="top" align="center" width="80">
-					<div style="border-radius:50%;width:60px;height:60px;background-color:#fafafa">
-					<img src="<?php echo mailster( 'subscribers' )->get_gravatar_uri( $subscriber->email, 120 ); ?>" width="60" style="border-radius:50%;display:block;width:60px;overflow:hidden">
-					</div>
-				</td>
-				<?php endif; ?>
-				<td valign="top" align="left">
-					<small><?php echo esc_html( $subscriber->email ); ?></small>
-				</td>
-				</tr>
-				<tr><td width="80">&nbsp;</td><td>&nbsp;</td></tr>
-				</table>
-				</td>
-			</tr>
-		</table>
 
 		<table cellpadding="0" cellspacing="0" align="<?php echo ! ( $i % 2 ) ? 'left' : 'right'; ?>">
 			<tr>

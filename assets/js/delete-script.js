@@ -46,7 +46,7 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		})
 		.on('click', '.remove-job', function () {
-			if (!confirm(mailster.l10n.manage.confirm_delete)) return false;
+			if (!confirm(mailster.l10n.manage.confirm_job_delete)) return false;
 
 			var job = $(this).closest('.manage-job');
 

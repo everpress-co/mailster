@@ -43,11 +43,7 @@
 		<?php endforeach; ?>
 	</p>
 	<p>
-		<label><input type="checkbox" name="remove_lists" value="1"> <?php esc_html_e( 'Remove selected lists', 'mailster' ); ?> </label>
-		<br><span class="howto"> <?php esc_html_e( 'This will also remove selected lists.', 'mailster' ); ?></span>
-	</p>
-	<p>
-		<label><input type="checkbox" name="remove_actions" value="1"> <?php esc_html_e( 'Remove all actions from affected users', 'mailster' ); ?> </label>
+		<label><input type="checkbox" name="remove_actions" value="1" checked> <?php esc_html_e( 'Remove all actions from affected users', 'mailster' ); ?> </label>
 		<br><span class="howto"> <?php esc_html_e( 'This will remove all actions from the affected users as well which can change the stats of your campaigns.', 'mailster' ); ?></span>
 	</p>
 </section>
@@ -58,12 +54,12 @@
 		<?php foreach ( $jobs as $hash => $job ) : ?>
 	<div class="manage-job" data-id="<?php echo esc_attr( $hash ); ?>">
 	<a class="remove-job" title="<?php esc_html_e( 'Remove job', 'mailster' ); ?>">&#10005;</a>
-	<h4><?php echo esc_html( $job['name'] ); ?> <span class="info"><?php printf( esc_html__( 'Created %s', 'mailster' ), wp_date( get_option( 'date_format' ), $job->timestamp ) ); ?></span></h4>
+	<h4><?php echo esc_html( $job['name'] ); ?></h4>
 			<?php include MAILSTER_DIR . 'views/manage/job.php'; ?>
 	</div>
 	<?php endforeach; ?>
 	<?php endif; ?>
-	<p class="howto"><?php esc_html_e( 'Mailster can perform this job on a regular basis to keep your list clean and healthy. Click this button to add a delete job with the current settings.', 'mailster' ); ?></p>
+	<p class="howto"><?php esc_html_e( 'Mailster can perform this job on a regular basis to keep your list clean and healthy. Click this button to add a new job with the current settings.', 'mailster' ); ?></p>
 	<p>
 		<input id="schedule-delete-subscriber-button" class="button" type="button" value="<?php esc_attr_e( 'Schedule Delete Job', 'mailster' ); ?>" />
 	</p>

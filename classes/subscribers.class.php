@@ -186,7 +186,9 @@ class MailsterSubscribers {
 		$error_message   = '';
 		$message_postfix = '';
 
-		if ( isset( $_POST['all_subscribers'] ) && $_POST['all_subscribers'] ) {
+		if ( isset( $_POST['empty_trash'] ) ) {
+			$action = 'empty_trash_all';
+		} elseif ( isset( $_POST['all_subscribers'] ) && $_POST['all_subscribers'] ) {
 			$args = $_GET;
 			unset( $args['post_type'], $args['page'] );
 
@@ -201,6 +203,8 @@ class MailsterSubscribers {
 					$args['status__not_in'] = $this->get_status_by_name( $action );
 				}
 			} elseif ( 'delete' == $action ) {
+				$offset = 0;
+			} elseif ( 'empty_trash' == $action ) {
 				$offset = 0;
 			}
 
@@ -231,6 +235,23 @@ class MailsterSubscribers {
 		}
 
 		switch ( $action ) {
+
+			case 'empty_trash_all':
+					$redirect = remove_query_arg( 'status' );
+			case 'empty_trash':
+				if ( current_user_can( 'mailster_delete_subscribers' ) ) {
+					$args = array( 'include' => $subscriber_ids );
+					if ( $count = $this->empty_trash( $args ) ) {
+						$success_message = sprintf( esc_html__( '%d Subscribers permanently deleted.', 'mailster' ), $count );
+					}
+				}
+				break;
+
+			case 'restore':
+				if ( $count = $this->restore( $subscriber_ids ) ) {
+					$success_message = sprintf( esc_html__( '%d Subscribers have been restored.', 'mailster' ), $count );
+				}
+				break;
 
 			case 'delete':
 			case 'delete_actions':
@@ -1545,7 +1566,7 @@ class MailsterSubscribers {
 		}
 
 		if ( is_null( $trash ) ) {
-			$trash = true;
+			$trash = true; // default trash mode
 		}
 
 		if ( $trash ) {
@@ -1553,8 +1574,8 @@ class MailsterSubscribers {
 				$subscriber_ids,
 				0,
 				array(
-					'remove_actions' => $remove_actions,
-					'remove_meta'    => $remove_meta,
+					'_remove_actions' => $remove_actions,
+					'_remove_meta'    => $remove_meta,
 				)
 			);
 
@@ -1627,6 +1648,83 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $user_id
 	 */
+	public function empty_trash( $args = array() ) {
+
+		$args['status'] = 5;
+		$args['meta']   = array( '_remove_meta', '_remove_actions' );
+
+		$subscribers = $this->query( $args );
+
+		if ( empty( $subscribers ) ) {
+			return 0;
+		}
+
+		$count = count( $subscribers );
+
+		// split them up
+		$remove_both    = array();
+		$remove_none    = array();
+		$remove_meta    = array();
+		$remove_actions = array();
+
+		foreach ( $subscribers as $subscriber ) {
+			if ( $subscriber->_remove_meta && $subscriber->_remove_actions ) {
+				$remove_both[] = $subscriber->ID;
+
+			} elseif ( ! $subscriber->_remove_meta && ! $subscriber->_remove_actions ) {
+				$remove_none[] = $subscriber->ID;
+
+			} elseif ( $subscriber->_remove_meta ) {
+				$remove_meta[] = $subscriber->ID;
+
+			} elseif ( $subscriber->_remove_actions ) {
+				$remove_actions[] = $subscriber->ID;
+
+			}
+		}
+
+		$this->remove( $remove_both, null, true, true, false );
+		$this->remove( $remove_none, null, false, false, false );
+		$this->remove( $remove_meta, null, false, true, false );
+		$this->remove( $remove_actions, null, true, false, false );
+
+		return $count;
+
+	}
+
+	public function restore( $ids = array() ) {
+
+		$args = array(
+			'status'  => 5,
+			'include' => (array) $ids,
+			'meta'    => array( '_old_status' ),
+		);
+
+		$subscribers = $this->query( $args );
+
+		if ( empty( $subscribers ) ) {
+			return 0;
+		}
+
+		$count = count( $subscribers );
+
+		foreach ( $subscribers as $subscriber ) {
+			if ( $subscriber->_old_status == '' ) {
+				$subscriber->_old_status = 4; // set error as status if not known
+			}
+			$this->change_status( $subscriber->ID, $subscriber->_old_status );
+		}
+
+		return $count;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $user_id
+	 */
 	public function delete_subscriber_from_wpuser( $user_id ) {
 
 		$subscriber = $this->get_by_wpid( $user_id );
@@ -1653,7 +1751,7 @@ class MailsterSubscribers {
 	 *
 	 * @return unknown
 	 */
-	public function get_meta_keys( $keys_only = false ) {
+	public function get_meta_keys( $keys_only = false, $private = false ) {
 		$meta_keys = array(
 			'bounce'        => esc_html__( 'Bounce', 'mailster' ),
 			'geo'           => esc_html__( 'Location', 'mailster' ),
@@ -1673,6 +1771,13 @@ class MailsterSubscribers {
 			'tags'          => esc_html__( 'Tags', 'mailster' ),
 			'formkey'       => esc_html__( 'Form Key', 'mailster' ),
 		);
+
+		if ( $private ) {
+			$meta_keys['_remove_meta']    = esc_html__( 'Remove Meta', 'mailster' );
+			$meta_keys['_remove_actions'] = esc_html__( 'Remove Actions', 'mailster' );
+			$meta_keys['_old_status']     = esc_html__( 'Old Status', 'mailster' );
+		}
+
 		return $keys_only ? array_keys( $meta_keys ) : $meta_keys;
 	}
 
@@ -1682,7 +1787,7 @@ class MailsterSubscribers {
 	 * @return unknown
 	 */
 	public function get_single_meta_keys() {
-		return array( 'ip', 'lang', 'timeoffset', 'form', 'update_rating', 'remove_meta', 'remove_actions', 'old_status' );
+		return array( 'ip', 'lang', 'timeoffset', 'form', 'update_rating', '_remove_meta', '_remove_actions', '_old_status' );
 	}
 
 
@@ -3138,7 +3243,7 @@ class MailsterSubscribers {
 		if ( is_null( $status ) ) {
 			$status = array( 1 );
 		} elseif ( $status === false ) {
-			$status = array( 0, 1, 2, 3, 4, 5, 6 );
+			$status = array( 0, 1, 2, 3, 4 );
 		}
 		$statuses = ! is_array( $status ) ? array( $status ) : $status;
 		$statuses = array_filter( $statuses, 'is_numeric' );
@@ -3988,7 +4093,7 @@ class MailsterSubscribers {
 			if ( false !== $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_subscribers SET status = %d, updated = %d WHERE ID = %d", $new_status, time(), $subscriber->ID ) ) ) {
 
 				if ( $save_old_status ) {
-					$this->update_meta( $subscriber->ID, 0, 'old_status', $subscriber->status );
+					$this->update_meta( $subscriber->ID, 0, '_old_status', $subscriber->status );
 				}
 
 				if ( ! $silent ) {

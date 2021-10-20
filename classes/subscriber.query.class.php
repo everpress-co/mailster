@@ -63,6 +63,8 @@ class MailsterSubscriberQuery {
 		'signup_before'       => null,
 		'confirm_after'       => null,
 		'confirm_before'      => null,
+		'updated_after'       => null,
+		'updated_before'      => null,
 
 		'sent'                => null,
 		'sent__not_in'        => null,
@@ -257,16 +259,22 @@ class MailsterSubscriberQuery {
 		}
 
 		if ( $this->args['signup_after'] ) {
-			$this->add_condition( 'signup', '>=', $this->get_timestamp( $this->args['signup_after'] ) );
+			$this->add_condition( 'signup', '>', $this->args['signup_after'] );
 		}
 		if ( $this->args['signup_before'] ) {
-			$this->add_condition( 'signup', '<=', $this->get_timestamp( $this->args['signup_before'] ) );
+			$this->add_condition( 'signup', '<', $this->args['signup_before'] );
 		}
 		if ( $this->args['confirm_after'] ) {
-			$this->add_condition( 'confirm', '>=', $this->get_timestamp( $this->args['confirm_after'] ) );
+			$this->add_condition( 'confirm', '>', $this->args['confirm_after'] );
 		}
 		if ( $this->args['confirm_before'] ) {
-			$this->add_condition( 'confirm', '<=', $this->get_timestamp( $this->args['signup_before'] ) );
+			$this->add_condition( 'confirm', '<', $this->args['confirm_before'] );
+		}
+		if ( $this->args['updated_after'] ) {
+			$this->add_condition( 'updated', '>', $this->args['updated_after'] );
+		}
+		if ( $this->args['updated_before'] ) {
+			$this->add_condition( 'updated', '<', $this->args['updated_before'] );
 		}
 
 		if ( $this->args['sent'] ) {
@@ -1142,9 +1150,6 @@ class MailsterSubscriberQuery {
 					$f = "`field_$field`.meta_value";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
 					$f = "`meta_$field`.meta_value";
-				} elseif ( in_array( $field, $this->time_fields ) ) {
-					$f     = "subscribers.$field";
-					$value = $this->get_timestamp( $value, 'Y-m-d' );
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
 					if ( $field == 'wp_capabilities' ) {
@@ -1156,6 +1161,9 @@ class MailsterSubscriberQuery {
 					$f = '`' . substr( $field, 1 ) . '`.count';
 				} else {
 					$f = "subscribers.$field";
+					if ( in_array( $field, $this->time_fields ) ) {
+						$value = $this->get_timestamp( $value );
+					}
 				}
 
 				if ( in_array( $field, $this->custom_date_fields ) ) {
@@ -1163,8 +1171,6 @@ class MailsterSubscriberQuery {
 					if ( ! $is_empty ) {
 						$f = "STR_TO_DATE($f,'%Y-%m-%d')";
 					}
-				} elseif ( in_array( $field, $this->time_fields ) ) {
-					$f = "FROM_UNIXTIME($f, '%Y-%m-%d')";
 				}
 
 				$c = $f . ' ' . ( $positive ? '=' : '!=' ) . " '$value'";
@@ -1279,9 +1285,6 @@ class MailsterSubscriberQuery {
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
 					$f     = "`meta_$field`.meta_value";
 					$value = is_numeric( $value ) ? (float) $value : "'$value'";
-				} elseif ( in_array( $field, $this->time_fields ) ) {
-					$f     = "subscribers.$field";
-					$value = "'" . $this->get_timestamp( $value, 'Y-m-d' ) . "'";
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
 					if ( $field == 'wp_capabilities' ) {
@@ -1290,16 +1293,18 @@ class MailsterSubscriberQuery {
 				} elseif ( in_array( $field, $this->action_tables ) ) {
 					$f = '`' . substr( $field, 1 ) . '`.count';
 				} else {
-					$f     = "subscribers.$field";
-					$value = (float) $value;
+					$f = "subscribers.$field";
+					if ( in_array( $field, $this->time_fields ) ) {
+						$value = $this->get_timestamp( $value );
+					} else {
+						$value = (float) $value;
+					}
 				}
 
 				if ( in_array( $field, $this->custom_date_fields ) ) {
 					if ( ! $is_empty ) {
 						$f = "STR_TO_DATE($f,'%Y-%m-%d')";
 					}
-				} elseif ( in_array( $field, $this->time_fields ) ) {
-					$f = "FROM_UNIXTIME($f, '%Y-%m-%d')";
 				}
 
 				$c = $f . ' ' . ( in_array( $operator, array( 'is_greater', 'is_greater_equal', '>', '>=' ) ) ? '>' . $extra : '<' . $extra ) . " $value";
@@ -1434,13 +1439,13 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_time_fields() {
-		$time_fields = array( 'added', 'updated', 'signup', 'confirm', 'gdpr' );
+		$time_fields = array( 'added', 'updated', 'signup', 'confirm' );
 
 		return $time_fields;
 	}
 
 	private function get_meta_fields() {
-		$meta_fields = mailster( 'subscribers' )->get_meta_keys( true );
+		$meta_fields = mailster( 'subscribers' )->get_meta_keys( true, true );
 
 		return $meta_fields;
 	}
