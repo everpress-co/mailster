@@ -915,11 +915,10 @@ span.mailster-icon-star:before {
 }
 .mailster-condition-render-group {
 	border: 1px solid #ccd0d4;
-	padding: 0.5em 1em;
-	margin: 0.5em 0 0.5em;
-	background: #fafafa;
-	box-shadow: 0 1px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 3%);
-	border-radius: 6px;
+	padding: 3px 6px;
+	border-radius: 2px;
+	background: #fdfdfd;
+	margin: 1px 0 2px;
 }
 .mailster-condition-operators {
 	color: #989898;
