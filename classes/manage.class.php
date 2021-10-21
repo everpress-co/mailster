@@ -393,6 +393,7 @@ class MailsterManage {
 		$contactcount = $return['data']['count'];
 		$removed      = $return['data']['removed'];
 		$header       = $return['data']['header'];
+		$emailfield   = false;
 
 		$custom_fields = mailster()->get_custom_fields();
 
@@ -428,16 +429,20 @@ class MailsterManage {
 			'_city'       => esc_html__( 'City', 'mailster' ),
 		);
 
-		$html       = '<form id="subscriber-table">';
-		$html      .= '<h2>' . esc_html__( 'Specify your Import', 'mailster' ) . '</h2>';
-		$html      .= '<h4>' . esc_html__( 'Select columns', 'mailster' ) . '</h4>';
-		$html      .= '<section>';
-		$html      .= '<p class="description">' . esc_html__( 'Define which column represents which field', 'mailster' ) . '</p>';
-		$html      .= '<div class="table-wrap">';
-		$html      .= '<table class="wp-list-table widefat">';
-		$html      .= '<thead>';
-		$emailfield = false;
-		$html      .= '<tr><td style="width:20px;">#</td>';
+		$html  = '<form id="subscriber-table">';
+		$html .= '<h2>' . esc_html__( 'Specify your Import', 'mailster' ) . '</h2>';
+		$html .= '<h4>' . esc_html__( 'Select the fields to match to the data', 'mailster' ) . '</h4>';
+		$html .= '<section>';
+		$html .= '<p class="howto">' . esc_html__( 'Match column labels to contact information. Each column can represent one field. You can ignore columns which you like to skip.', 'mailster' ) . '</p>';
+		if ( ! empty( $removed ) ) {
+			$html .= '<div class="pending-info error inline">';
+			$html .= '<p>' . sprintf( esc_html__( '%s entries without valid email address have been removed.', 'mailster' ), number_format_i18n( $removed ) ) . '</p>';
+			$html .= '</div>';
+		}
+		$html .= '<div class="table-wrap">';
+		$html .= '<table class="wp-list-table widefat">';
+		$html .= '<thead>';
+		$html .= '<tr><td style="width:20px;">#</td>';
 		for ( $i = 0; $i < $cols; $i++ ) {
 			$ismail     = mailster_is_email( trim( $data[ $i ] ) );
 			$header_col = ( $header && isset( $header[ $i ] ) ) ? strip_tags( $header[ $i ] ) : '';
@@ -521,11 +526,6 @@ class MailsterManage {
 		$html .= '</tbody>';
 		$html .= '</table>';
 		$html .= '</div>';
-		if ( ! empty( $removed ) ) {
-			$html .= '<div class="pending-info error inline">';
-			$html .= '<p>' . sprintf( esc_html__( '%s entries without valid email address have been removed.', 'mailster' ), number_format_i18n( $removed ) ) . '</p>';
-			$html .= '</div>';
-		}
 		$html .= '</section>';
 		$html .= '<h4>' . esc_html__( 'Add contacts to following lists', 'mailster' ) . ':</h4>';
 		$html .= '<section id="section-lists">';
@@ -694,8 +694,6 @@ class MailsterManage {
 		$sql = "SELECT data FROM {$wpdb->prefix}mailster_temp_import WHERE identifier = %s ORDER BY ID ASC LIMIT %d, $parts_at_once";
 
 		$raw_list_data = $wpdb->get_col( $wpdb->prepare( $sql, $bulkdata['identifier'], $bulkdata['current'] * $parts_at_once ) );
-
-		$return['sql'] = $wpdb->prepare( $sql, $bulkdata['identifier'], $bulkdata['current'] * $parts_at_once );
 
 		if ( $raw_list_data ) {
 
