@@ -53,12 +53,14 @@ abstract class MailsterImport {
 
 			$this->get_sample_data( $data['lists'] );
 
+			mailster( 'manage' )->import_handler( $slug );
+
 			$return['html'] = 'OK';
 
 		} else {
 			ob_start();
 
-			$this->check_credentials( $data );
+			$this->import_options( $data );
 
 			$output = ob_get_contents();
 
@@ -72,51 +74,155 @@ abstract class MailsterImport {
 
 	}
 
-	protected function check_credentials( $data ) {
 
-		$this->update_credentials( $data );
-
-		$this->import_options();
-
+	protected function valid_credentials( $data ) {
+		return true;
 	}
 
-	abstract protected function get_lists();
+	abstract protected function get_import_part( $import_data);
+	abstract protected function get_import_data();
 
-	abstract protected function get_fields();
+	public function import_options( $data = null ) {
 
-	abstract protected function get_sample_data( $lists);
+		?><form class="importer-form" data-slug="<?php echo esc_attr( $this->slug ); ?>">
+		<?php
 
-	public function import_options() {
+		if ( $data ) {
+			$valid = $this->valid_credentials( $data );
+
+			if ( is_wp_error( $valid ) ) {
+				printf( '<div class="error"><p>%s</p></div>', $valid->get_error_message() );
+			} else {
+				$this->update_credentials( $data );
+			}
+		}
 
 		// get credentials form if we need it
-		if ( method_exists( $this, 'credentials_form' ) && ! $this->get_credentials() ) : ?>
+		if ( method_exists( $this, 'credentials_form' ) && ! $this->get_credentials() ) :
 
-		<form class="importer-form" data-slug="<?php echo esc_attr( $this->slug ); ?>">
-			<?php
-			$this->credentials_form();
-			submit_button( __( 'Next Step', 'mailster' ) . '  &#x2192;', 'primary', 'submit' );
-			?>
-		</form>
-			<?php
+				$this->credentials_form();
+				submit_button( __( 'Next Step', 'mailster' ) . '  &#x2192;', 'primary', 'submit' );
+
 		else :
 
 			$lists = $this->get_lists();
 			?>
-		<form class="importer-form" data-slug="<?php echo esc_attr( $this->slug ); ?>">
 		  <ul>
 			<?php foreach ( $lists as $list ) : ?>
 			  <li><label><input type="checkbox" name="lists[]" value="<?php echo esc_attr( $list['id'] ); ?>" checked> <?php echo esc_html( $list['name'] ); ?></label></li>
 			<?php endforeach; ?>
 		  </ul>
 			<?php submit_button( __( 'Next Step', 'mailster' ) . '  &#x2192;', 'primary', 'submit' ); ?>
-		</form>
 
-			<?php
-		endif;
+		<?php endif; ?>
+		</form>
+		<?php
 	}
 
 	protected function map_meta_fields( $meta_fields, $field_map ) {
 
 	}
 
+
+
+	public function sanitize_raw_data( $raw_data, $offset = 0, $limit = null, $include_header = true ) {
+
+		$raw_data = ( trim( str_replace( array( "\r", "\r\n", "\n\n" ), "\n", $raw_data ) ) );
+
+		if ( function_exists( 'mb_convert_encoding' ) ) {
+			$encoding = mb_detect_encoding( $raw_data, 'auto' );
+		} else {
+			$encoding = 'UTF-8';
+		}
+		if ( $encoding != 'UTF-8' ) {
+			$raw_data = utf8_encode( $raw_data );
+			$encoding = mb_detect_encoding( $raw_data, 'auto' );
+		}
+		$lines = explode( "\n", $raw_data );
+		if ( is_null( $limit ) ) {
+			$limit = count( $lines );
+		} else {
+			$limit = min( $limit, $lines );
+		}
+		$separator = $this->get_separator( $lines[0] );
+		$data      = array();
+		$new_sep   = md5( uniqid() );
+		$temp_sep  = md5( uniqid() );
+
+		for ( $i = $offset; $i < $offset + $limit; $i++ ) {
+
+			if ( ! isset( $lines[ $i ] ) ) {
+				continue;
+			}
+			$line = $lines[ $i ];
+
+			// handle if separator is used in a column
+			if ( preg_match_all( '/("([^"]*)")/', $line, $match ) ) {
+				foreach ( $match[0] as $value ) {
+					if ( false !== strpos( $value, $separator ) ) {
+						$line = str_replace( $value, str_replace( $separator, $temp_sep, $value ), $line );
+					}
+				}
+			}
+
+			$line = str_replace( $separator, $new_sep, $line );
+			$line = str_replace( $temp_sep, $separator, $line );
+
+			// cleanup quotes
+			$line = str_replace( array( "'" . $new_sep . "'", '"' . $new_sep . '"' ), $new_sep, $line );
+			$line = preg_replace( '#("|\')' . preg_quote( $new_sep ) . '#', $new_sep, $line );
+			$line = preg_replace( '#' . preg_quote( $new_sep ) . '("|\')#', $new_sep, $line );
+			$line = preg_replace( '#^("|\')#', '', $line );
+			$line = preg_replace( '#("|\')$#', '', $line );
+			$line = explode( $new_sep, $line );
+
+			$has_email = false;
+			foreach ( $line as $entry ) {
+				if ( mailster_is_email( $entry ) ) {
+					$has_email = true;
+					break;
+				}
+			}
+			// only first row (header) or with email
+			if ( $has_email ) {
+				$data[] = $line;
+			} elseif ( ! isset( $data['header'] ) && ! $has_email && ! $offset && $include_header ) {
+				// add one row if there's a header
+				if ( $limit ) {
+					$limit++;
+				}
+				// still can contain a double quote
+				$data['header'] = str_replace( '"', '', $line );
+
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $string
+	 * @param unknown $fallback (optional)
+	 * @return unknown
+	 */
+	private function get_separator( $string, $fallback = ';' ) {
+		$seps      = array( ';', ',', '|', "\t" );
+		$max       = 0;
+		$separator = false;
+		foreach ( $seps as $sep ) {
+			$count = substr_count( $string, $sep );
+			if ( $count > $max ) {
+				$separator = $sep;
+				$max       = $count;
+			}
+		}
+
+		if ( $separator ) {
+			return $separator;
+		}
+
+		return $fallback;
+	}
 }

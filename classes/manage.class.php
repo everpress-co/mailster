@@ -7,7 +7,7 @@ class MailsterManage {
 	public function __construct() {
 
 		add_action( 'admin_menu', array( &$this, 'add_menu' ), 40 );
-		add_action( 'wp_ajax_mailster_import_subscribers_upload_handler', array( &$this, 'ajax_import_subscribers_upload_handler' ) );
+		add_action( 'wp_ajax_mailster_import_subscribers_upload_handler', array( &$this, 'import_handler' ) );
 		add_action( 'wp_ajax_mailster_get_import_data', array( &$this, 'ajax_get_import_data' ) );
 		add_action( 'wp_ajax_mailster_do_import', array( &$this, 'ajax_do_import' ) );
 		add_action( 'wp_ajax_mailster_export_contacts', array( &$this, 'ajax_export_contacts' ) );
@@ -29,11 +29,14 @@ class MailsterManage {
 
 	public function load_integrations() {
 
-		$importer = apply_filters( 'mailster_importer', array() );
-
-		if ( empty( $importer ) ) {
-			return;
-		}
+		$importer = apply_filters(
+			'mailster_importer',
+			array(
+				'MailsterImportUpload'    => MAILSTER_DIR . 'classes/manage.import.upload.php',
+				'MailsterImportPaste'     => MAILSTER_DIR . 'classes/manage.import.paste.php',
+				'MailsterImportWordPress' => MAILSTER_DIR . 'classes/manage.import.wordpress.php',
+			)
+		);
 
 		include_once MAILSTER_DIR . 'classes/manage.import.abstract.php';
 
@@ -149,217 +152,28 @@ class MailsterManage {
 
 
 
-	public function ajax_import_subscribers_upload_handler() {
 
-		global $wpdb;
+	public function import_handler( $type = null ) {
 
-		$memory_limit       = ini_get( 'memory_limit' );
-		$max_execution_time = ini_get( 'max_execution_time' );
-		$header             = false;
-		$encoding           = null;
-		$removed            = 0;
-		$identifier         = isset( $_POST['identifier'] ) ? $_POST['identifier'] : uniqid();
-		$total              = 0;
-		$total_batch        = 0;
+		$type       = isset( $_POST['type'] ) ? basename( $_POST['type'] ) : $type;
+		$identifier = isset( $_POST['identifier'] ) ? basename( $_POST['identifier'] ) : uniqid();
 
-		set_time_limit( 0 );
-
-		if ( (int) $max_execution_time < 300 ) {
-			ini_set( 'max_execution_time', 300 );
-		}
-		if ( (int) $memory_limit < 256 ) {
-			ini_set( 'memory_limit', '256M' );
-		}
-
-		if ( isset( $_FILES['async-upload'] ) ) {
-
-			if ( ! current_user_can( 'mailster_import_subscribers' ) ) {
-				die( 'not allowed' );
-			}
-
-			$file     = $_FILES['async-upload'];
-			$raw_data = ( file_get_contents( $file['tmp_name'] ) );
-
-			$encoding = mb_detect_encoding( $raw_data, 'auto' );
-
-			if ( function_exists( 'mb_convert_encoding' ) ) {
-				$raw_data = mb_convert_encoding( $raw_data, 'UTF-8', mb_detect_encoding( $raw_data, 'UTF-8, ISO-8859-1', true ) );
-			}
-
-			$raw_data = trim( $raw_data );
-
-			$total_lines = substr_count( $raw_data, "\n" ) + 1;
-			$data        = $this->sanitize_raw_data( $raw_data );
-			if ( isset( $data['header'] ) ) {
-				$header = array_shift( $data );
-			}
-			$total   = $total_batch = count( $data );
-			$removed = $total_lines - $total;
-
-		} elseif ( isset( $_POST['data'] ) ) {
-
-			$return['success'] = false;
-
-			$this->ajax_nonce( json_encode( $return ) );
-
-			if ( ! current_user_can( 'mailster_import_subscribers' ) ) {
-				wp_send_json( $return );
-			}
-
-			$raw_data = esc_textarea( stripslashes( $_POST['data'] ) );
-
-			$encoding = mb_detect_encoding( $raw_data, 'auto' );
-
-			// single quotes cause problems
-			$raw_data = str_replace( '&#039;', "'", $raw_data );
-			$raw_data = str_replace( '&quot;', '"', $raw_data );
-
-			$raw_data = trim( $raw_data );
-
-			$total_lines = substr_count( $raw_data, "\n" ) + 1;
-			$data        = $this->sanitize_raw_data( $raw_data );
-			if ( isset( $data['header'] ) ) {
-				$header = array_shift( $data );
-			}
-			$total   = $total_batch = count( $data );
-			$removed = $total_lines - $total;
-
-		} elseif ( isset( $_POST['wordpressusers'] ) ) {
-
-			if ( ! current_user_can( 'mailster_import_wordpress_users' ) ) {
-				wp_send_json( $return );
-			}
-
-			parse_str( $_POST['wordpressusers'], $data );
-
-			$roles       = isset( $data['roles'] ) ? (array) $data['roles'] : array();
-			$no_role     = isset( $data['no_role'] );
-			$meta_values = isset( $data['meta_values'] ) ? (array) $data['meta_values'] : array();
-			$offset      = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
-			$limit       = 1000;
-
-			if ( ! empty( $roles ) ) {
-				$user_query = new WP_User_Query(
-					array(
-						'role__in' => $roles,
-						'fields'   => 'ID',
-						'number'   => $limit,
-						'offset'   => $offset * $limit,
-						'orderby'  => 'ID',
-					)
-				);
-
-				$user_ids = $user_query->get_results();
-				$total    = $user_query->get_total();
-			} else {
-				$user_ids = array();
-			}
-
-			// add users without a role only on the first run
-			if ( ! $offset && $no_role ) {
-				$no_roles = wp_get_users_with_no_role();
-				$user_ids = array_merge( $user_ids, $no_roles );
-				$total   += count( $no_roles );
-			}
-
-			$total_batch = count( $user_ids );
-
-			$data = array();
-
-			$wp_roles = wp_list_pluck( wp_roles()->roles, 'name' );
-
-			foreach ( $user_ids as $user_id ) {
-				$user = get_user_by( 'ID', $user_id );
-				if ( ! $user ) {
-					continue;
-				}
-
-				$roles = array_intersect_key( $wp_roles, array_flip( $user->roles ) );
-				$entry = array(
-					$user->user_email,
-					get_user_meta( $user->ID, 'first_name', true ),
-					get_user_meta( $user->ID, 'last_name', true ),
-					$user->user_login,
-					$user->user_nicename,
-					$user->user_name,
-					$user->user_registered,
-					implode( ',', $roles ),
-				);
-				foreach ( $meta_values as $meta_value ) {
-					$entry[] = get_user_meta( $user_id, $meta_value, true );
-				}
-
-				$data[] = $entry;
-			}
-
-			$header = array_merge(
-				array(
-					mailster_text( 'email' ),
-					mailster_text( 'firstname' ),
-					mailster_text( 'lastname' ),
-					esc_html__( 'login', 'mailster' ),
-					esc_html__( 'nickname', 'mailster' ),
-					esc_html__( 'display name', 'mailster' ),
-					esc_html__( 'registered', 'mailster' ),
-					esc_html__( 'roles', 'mailster' ),
-				),
-				$meta_values
-			);
-
-		} else {
-
-			die( 'not allowed' );
-
-		}
-
-		$parts     = array_chunk( $data, max( 50, round( count( $data ) / 200 ) ) );
-		$partcount = count( $parts );
-
-		$bulkimport = array(
-			'identifier' => $identifier,
-			'ids'        => array(),
-			'imported'   => 0,
-			'errors'     => 0,
-			'encoding'   => $encoding,
-			'parts'      => $partcount,
-			'removed'    => $removed,
-			'count'      => $total,
-			'header'     => $header,
+		$import_data = wp_parse_args(
+			$this->integrations[ $type ]->get_import_data(),
+			array(
+				'insert' => array(),
+			)
 		);
 
-		$collate = '';
+		$import_data['type']       = $type;
+		$import_data['identifier'] = $identifier;
+		$import_data['part']       = 0;
 
-		if ( $wpdb->has_cap( 'collation' ) ) {
-			$collate = $wpdb->get_charset_collate();
-		}
+		update_option( 'mailster_bulk_import_' . $identifier, $import_data, 'no' );
+		$return['success']    = true;
+		$return['identifier'] = $identifier;
 
-		if ( $total && false !== $wpdb->query( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}mailster_temp_import (ID bigint(20) NOT NULL AUTO_INCREMENT, data longtext NOT NULL, identifier char(13) NOT NULL, PRIMARY KEY (ID) ) $collate" ) ) {
-			$return['identifier'] = $identifier;
-
-			foreach ( $parts as $i => $part ) {
-				$new_value = base64_encode( serialize( $part ) );
-
-				$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->prefix}mailster_temp_import (data, identifier) VALUES (%s, %s)", $new_value, $identifier ) );
-
-				$bulkimport['ids'][] = $i;
-			}
-
-			$return['success']     = true;
-			$return['memoryusage'] = size_format( memory_get_peak_usage( true ), 2 );
-			update_option( 'mailster_bulk_import', $bulkimport, 'no' );
-			$return['total']       = $total;
-			$return['total_batch'] = $total_batch;
-			$return['finished']    = $total == $total_batch || ! $total_batch;
-		} elseif ( ! $total ) {
-			$return['message'] = esc_html__( 'No valid email address where found!', 'mailster' );
-		} else {
-			$return['message'] = $wpdb->last_error;
-		}
-
-		if ( isset( $return ) ) {
-
-			wp_send_json( $return );
-		}
+		wp_send_json( $return );
 
 	}
 
@@ -379,27 +193,19 @@ class MailsterManage {
 
 		$return['identifier'] = $identifier = $_POST['identifier'];
 
-		$return['data'] = get_option( 'mailster_bulk_import' );
+		$import_data = get_option( 'mailster_bulk_import_' . $identifier );
 
-		// get first and last entry
-		$entries = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT
-(SELECT data FROM {$wpdb->prefix}mailster_temp_import WHERE identifier = %s ORDER BY ID ASC LIMIT 1) AS first, (SELECT data FROM {$wpdb->prefix}mailster_temp_import WHERE identifier = %s ORDER BY ID DESC LIMIT 1) AS last",
-				$identifier,
-				$identifier
-			)
-		);
-
-		$first = unserialize( base64_decode( $entries->first ) );
-		$last  = unserialize( base64_decode( $entries->last ) );
+		$data  = $import_data['sample'];
+		$first = $data[0];
+		$last  = end( $data );
+		reset( $data );
 
 		$firstline    = $first[0];
-		$data         = $first[ count( $first ) - 1 ];
-		$cols         = count( $data );
-		$contactcount = $return['data']['count'];
-		$removed      = $return['data']['removed'];
-		$header       = $return['data']['header'];
+		$cols         = count( $first );
+		$contactcount = $import_data['total'];
+		$samplecount  = count( $data );
+		$removed      = $import_data['removed'];
+		$header       = $import_data['header'];
 		$emailfield   = false;
 
 		$custom_fields = mailster()->get_custom_fields();
@@ -451,7 +257,7 @@ class MailsterManage {
 		$html .= '<thead>';
 		$html .= '<tr><td style="width:20px;">#</td>';
 		for ( $i = 0; $i < $cols; $i++ ) {
-			$ismail     = mailster_is_email( trim( $data[ $i ] ) );
+			$ismail     = mailster_is_email( trim( $first[ $i ] ) );
 			$header_col = ( $header && isset( $header[ $i ] ) ) ? strip_tags( $header[ $i ] ) : '';
 			$select     = '<select name="order[]" class="column-selector">';
 			$select    .= '<option value="-1">' . esc_html__( 'Ignore column', 'mailster' ) . '</option>';
@@ -512,23 +318,23 @@ class MailsterManage {
 		}
 		$html .= '</thead>';
 		$html .= '<tbody>';
-		for ( $i = 0; $i < min( 10, $contactcount ); $i++ ) {
-			$data  = $first[ $i ];
+		for ( $i = 0; $i < min( $samplecount, $contactcount ); $i++ ) {
 			$html .= '<tr class="' . ( $i % 2 ? '' : 'alternate' ) . '"><td>' . number_format_i18n( $i + 1 ) . '</td>';
-			foreach ( $data as $cell ) {
-				$html .= '<td title="' . strip_tags( $cell ) . '">' . esc_html( $cell ) . '</td>';
+			foreach ( $data[ $i ] as $cell ) {
+				$html .= '<td title="' . esc_attr( strip_tags( $cell ) ) . '">' . esc_html( $cell ) . '</td>';
 			}
 			$html .= '<tr>';
 		}
-		if ( $contactcount > 10 ) {
-			$html .= '<tr class="alternate"><td>&nbsp;</td><td colspan="' . ( $cols ) . '"><i>&hellip;' . sprintf( esc_html__( '%s contacts are hidden', 'mailster' ), number_format_i18n( $contactcount - 11 ) ) . '&hellip;</i></td>';
+		if ( $contactcount > $samplecount ) {
+			$html .= '<tr class="' . ( $i++ % 2 ? '' : 'alternate' ) . '"><td>&nbsp;</td><td colspan="' . ( $cols ) . '"><i>&hellip;' . sprintf( esc_html__( '%s contacts are hidden', 'mailster' ), number_format_i18n( $contactcount - $samplecount - 1 ) ) . '&hellip;</i></td></tr>';
 
-			$data  = $last[ count( $last ) - 1 ];
-			$html .= '<tr><td>' . number_format_i18n( $contactcount ) . '</td>';
-			foreach ( $data as $cell ) {
-				$html .= '<td title="' . strip_tags( $cell ) . '">' . esc_html( $cell ) . '</td>';
+			if ( isset( $import_data['sample_last'] ) ) {
+				$html .= '<tr class="' . ( $i++ % 2 ? '' : 'alternate' ) . '"><td>' . number_format_i18n( $contactcount ) . '</td>';
+				foreach ( $import_data['sample_last'] as $cell ) {
+					$html .= '<td title="' . esc_attr( strip_tags( $cell ) ) . '">' . esc_html( $cell ) . '</td>';
+				}
+				$html .= '<tr>';
 			}
-			$html .= '<tr>';
 		}
 		$html .= '</tbody>';
 		$html .= '</table>';
@@ -616,7 +422,36 @@ class MailsterManage {
 
 		global $wpdb;
 
+		$return['success'] = false;
+
 		define( 'MAILSTER_DO_BULKIMPORT', true );
+
+		$this->ajax_nonce( json_encode( $return ) );
+
+		if ( ! current_user_can( 'mailster_import_subscribers' ) ) {
+			wp_send_json( $return );
+		}
+
+		parse_str( $_POST['options']['data'], $import_options );
+
+		$identifier = $_POST['options']['identifier'];
+
+		$import_data = wp_parse_args(
+			get_option( 'mailster_bulk_import_' . $identifier, array() ),
+			array(
+				'lists'       => isset( $import_options['lists'] ) ? (array) $import_options['lists'] : array(),
+				'tags'        => isset( $import_options['tags'] ) ? (array) $import_options['tags'] : array(),
+				'order'       => isset( $import_options['order'] ) ? (array) $import_options['order'] : array(),
+				'signupdate'  => $import_options['signupdate'],
+				'existing'    => $import_options['existing'],
+				'status'      => $import_options['status'],
+				'part'        => 0,
+				'errors'      => 0,
+				'imported'    => 0,
+				'encoding'    => null,
+				'performance' => ! ! ( $_POST['options']['performance'] === 'true' ),
+			),
+		);
 
 		$memory_limit       = ini_get( 'memory_limit' );
 		$max_execution_time = ini_get( 'max_execution_time' );
@@ -632,33 +467,12 @@ class MailsterManage {
 			ini_set( 'memory_limit', '256M' );
 		}
 
-		$return['success'] = false;
-
-		$this->ajax_nonce( json_encode( $return ) );
-
-		if ( ! current_user_can( 'mailster_import_subscribers' ) ) {
-			wp_send_json( $return );
-		}
-
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
-		$bulkdata    = wp_parse_args( $_POST['options'], get_option( 'mailster_bulk_import' ) );
-		$erroremails = get_option( 'mailster_bulk_import_errors', array() );
-
-		$bulkdata['existing']    = esc_attr( $bulkdata['existing'] );
-		$bulkdata['keepstatus']  = ! ! ( $bulkdata['keepstatus'] === 'true' );
-		$bulkdata['performance'] = ! ! ( $bulkdata['performance'] === 'true' );
-		$bulkdata['signupdate']  = $bulkdata['signupdate'];
-
-		parse_str( $bulkdata['data'], $data );
-		$order = isset( $data['order'] ) ? (array) $data['order'] : array();
-		$lists = isset( $data['lists'] ) ? (array) $data['lists'] : array();
-		$tags  = isset( $data['tags'] ) ? (array) $data['tags'] : array();
+		$erroremails = get_option( 'mailster_bulk_import_errors_' . $identifier, array() );
 
 		$option_list_ids = array();
-		$option_tag_ids  = array();
-
-		foreach ( (array) $lists as $list ) {
+		foreach ( $import_data['lists'] as $list ) {
 
 			$list_id = mailster( 'lists' )->get_by_name( $list, 'ID' );
 
@@ -672,7 +486,8 @@ class MailsterManage {
 			$option_list_ids[] = $list_id;
 		}
 
-		foreach ( (array) $tags as $tag ) {
+		$option_tag_ids = array();
+		foreach ( $import_data['tags'] as $tag ) {
 
 			if ( is_numeric( $tag ) ) {
 				$tag_id = mailster( 'tags' )->get( $tag );
@@ -693,305 +508,279 @@ class MailsterManage {
 			$option_tag_ids[] = $tag_id;
 		}
 
-		$parts_at_once = $bulkdata['performance'] ? 2 : 8;
-		$list_cache    = array();
+		// get chunk of import based on the part section
+		$parts = $this->integrations[ $import_data['type'] ]->get_import_part( $import_data );
 
-		$bulkdata['current'] = (int) $_POST['id'];
+		if ( $parts === $import_data ) {
+			$return['success'] = false;
+			$return['msg']     = 'Cannot handle import';
+			wp_send_json( $return );
+			exit;
+		}
 
-		$sql = "SELECT data FROM {$wpdb->prefix}mailster_temp_import WHERE identifier = %s ORDER BY ID ASC LIMIT %d, $parts_at_once";
+		$statusnames = array_flip( mailster( 'subscribers' )->get_status( null, true ) );
 
-		$raw_list_data = $wpdb->get_col( $wpdb->prepare( $sql, $bulkdata['identifier'], $bulkdata['current'] * $parts_at_once ) );
+		foreach ( $parts as $part ) {
 
-		if ( $raw_list_data ) {
+			$list_array = array();
+			$tag_array  = array();
+			$list_ids   = $option_list_ids;
+			$tag_ids    = $option_tag_ids;
 
-			foreach ( $raw_list_data as $raw_list ) {
+			$data       = $part;
+			$line_count = count( $data );
 
-				$raw_list = unserialize( base64_decode( $raw_list ) );
+			$insert = (array) $import_data['insert'];
+			$meta   = array();
+			$geo    = array();
+			$coords = array();
 
-				// each entry
-				foreach ( $raw_list as $line ) {
+			// each column
+			for ( $col = 0; $col < $line_count; $col++ ) {
 
-					$list_array = array();
-					$tag_array  = array();
-					$list_ids   = $option_list_ids;
-					$tag_ids    = $option_tag_ids;
+				$d     = isset( $data[ $col ] ) ? trim( $data[ $col ] ) : null;
+				$order = isset( $import_data['order'][ $col ] ) ? $import_data['order'][ $col ] : '-1';
 
-					if ( empty( $line ) ) {
-						$bulkdata['lines']--;
-						continue;
-					}
+				switch ( $order ) {
 
-					set_time_limit( 10 );
-
-					$data       = $line;
-					$line_count = count( $data );
-
-					$insert = array(
-						'signup'     => 0,
-						'confirm'    => 0,
-						'ip'         => '',
-						'ip_signup'  => '',
-						'ip_confirm' => '',
-						'lang'       => '',
-					);
-
-					$insert      = array();
-					$meta        = array();
-					$geo         = array();
-					$coords      = array();
-					$statusnames = array_flip( mailster( 'subscribers' )->get_status( null, true ) );
-
-					// each column
-					for ( $col = 0; $col < $line_count; $col++ ) {
-
-						$d = trim( $data[ $col ] );
-						if ( ! isset( $order[ $col ] ) ) {
-							continue;
+					case 'email':
+						$insert[ $order ] = strtolower( $d );
+						break;
+					case '_signup':
+					case '_confirm':
+						if ( ! is_numeric( $d ) && ! empty( $d ) ) {
+							$d = strtotime( $d );
 						}
-						switch ( $order[ $col ] ) {
 
-							case 'email':
-								$insert[ $order[ $col ] ] = strtolower( $d );
-								break;
-							case '_signup':
-							case '_confirm':
-								if ( ! is_numeric( $d ) && ! empty( $d ) ) {
-									$d = strtotime( $d );
-								}
-
-							case '_ip':
-							case '_ip_signup':
-							case '_ip_confirm':
-							case '_lang':
-								$insert[ substr( $order[ $col ], 1 ) ] = $d;
-								break;
-							case '_status':
-								if ( is_numeric( $d ) ) {
-									$insert[ substr( $order[ $col ], 1 ) ] = $d;
-								} elseif ( is_string( $d ) && isset( $statusnames[ $d ] ) ) {
-									$insert[ substr( $order[ $col ], 1 ) ] = $statusnames[ $d ];
-								}
-								break;
-							case '_lists':
-								$list_array = explode( ',', $d );
-								$list_array = array_map( 'trim', $list_array );
-
-								break;
-							case '_tags':
-								$tag_array = explode( ',', $d );
-								$tag_array = array_map( 'trim', $tag_array );
-
-								break;
-							case '_ip_all':
-								$insert['ip'] = $d;
-							case '_ip_confirm_signup':
-								$insert['ip_signup']  = $d;
-								$insert['ip_confirm'] = $d;
-								break;
-							case '_confirm_signup':
-								if ( ! is_numeric( $d ) && ! empty( $d ) ) {
-									$d = strtotime( $d );
-								}
-
-								$insert['signup']  = $d;
-								$insert['confirm'] = $d;
-								break;
-							case '_timeoffset':
-								$meta[ substr( $order[ $col ], 1 ) ] = $d;
-								break;
-							case '_timezone':
-								$offset             = mailster( 'helper' )->get_timezone_offset_by_string( $d );
-								$meta['timeoffset'] = $offset;
-								break;
-							case '_country':
-								if ( $d ) {
-									$geo[0] = $d;
-									$geo[1] = isset( $geo[1] ) ? $geo[1] : '';
-								}
-								break;
-							case '_city':
-								if ( $d ) {
-									$geo[1] = $d;
-								}
-								break;
-							case '_long':
-								if ( $d ) {
-									$coords[0] = $d;
-								}
-								break;
-							case '_lat':
-								if ( $d ) {
-									$coords[1] = $d;
-								}
-								break;
-							case 'first_last':
-								$split               = explode( ' ', $d );
-								$insert['firstname'] = $split[0];
-								$insert['lastname']  = $split[1];
-								break;
-							case 'last_first':
-								$split               = explode( ' ', $d );
-								$insert['firstname'] = $split[1];
-								$insert['lastname']  = $split[0];
-								break;
-							case '-1':
-							case '_new':
-								// ignored column
-								break;
-							default:
-								$insert[ $order[ $col ] ] = $d;
+					case '_ip':
+					case '_ip_signup':
+					case '_ip_confirm':
+					case '_lang':
+						$insert[ substr( $order, 1 ) ] = $d;
+						break;
+					case '_status':
+						if ( is_numeric( $d ) ) {
+							$insert[ substr( $order, 1 ) ] = $d;
+						} elseif ( is_string( $d ) && isset( $statusnames[ $d ] ) ) {
+							$insert[ substr( $order, 1 ) ] = $statusnames[ $d ];
 						}
-					}
+						break;
+					case '_lists':
+						$list_array = explode( ',', $d );
+						$list_array = array_map( 'trim', $list_array );
 
-					if ( ! empty( $geo ) ) {
-						$meta['geo'] = implode( '|', $geo );
-					}
-					if ( ! empty( $coords ) ) {
-						$meta['coords'] = implode( '|', $coords );
-					}
+						break;
+					case '_tags':
+						$tag_array = explode( ',', $d );
+						$tag_array = array_map( 'trim', $tag_array );
 
-					if ( ! mailster_is_email( $insert['email'] ) ) {
-						$erroremails[ $insert['email'] ] = esc_html__( 'Email address is invalid.', 'mailster' );
-						$bulkdata['errors']++;
-						continue;
-					}
+						break;
+					case '_ip_all':
+						$insert['ip'] = $d;
+					case '_ip_confirm_signup':
+						$insert['ip_signup']  = $d;
+						$insert['ip_confirm'] = $d;
+						break;
+					case '_confirm_signup':
+						if ( ! is_numeric( $d ) && ! empty( $d ) ) {
+							$d = strtotime( $d );
+						}
 
-					if ( ! isset( $insert['signup'] ) || empty( $insert['signup'] ) ) {
-						$insert['signup'] = $bulkdata['signupdate'] ? strtotime( $bulkdata['signupdate'] ) - $timeoffset : 0;
-					}
+						$insert['signup']  = $d;
+						$insert['confirm'] = $d;
+						break;
+					case '_timeoffset':
+						$meta[ substr( $order, 1 ) ] = $d;
+						break;
+					case '_timezone':
+						$offset             = mailster( 'helper' )->get_timezone_offset_by_string( $d );
+						$meta['timeoffset'] = $offset;
+						break;
+					case '_country':
+						if ( $d ) {
+							$geo[0] = $d;
+							$geo[1] = isset( $geo[1] ) ? $geo[1] : '';
+						}
+						break;
+					case '_city':
+						if ( $d ) {
+							$geo[1] = $d;
+						}
+						break;
+					case '_long':
+						if ( $d ) {
+							$coords[0] = $d;
+						}
+						break;
+					case '_lat':
+						if ( $d ) {
+							$coords[1] = $d;
+						}
+						break;
+					case 'first_last':
+						$split               = explode( ' ', $d );
+						$insert['firstname'] = $split[0];
+						$insert['lastname']  = $split[1];
+						break;
+					case 'last_first':
+						$split               = explode( ' ', $d );
+						$insert['firstname'] = $split[1];
+						$insert['lastname']  = $split[0];
+						break;
+					case '-1':
+					case '_new':
+						// ignored column
+						break;
+					default:
+						$insert[ $order ] = $d;
+				}
+			}
 
-					if ( empty( $insert['signup'] ) && 'merge' == $bulkdata['existing'] ) {
-						unset( $insert['signup'] );
-					}
+			if ( ! empty( $geo ) ) {
+				$meta['geo'] = implode( '|', $geo );
+			}
+			if ( ! empty( $coords ) ) {
+				$meta['coords'] = implode( '|', $coords );
+			}
 
-					if ( ! isset( $insert['confirm'] ) ) {
-						$insert['confirm'] = 0;
-					}
+			if ( ! mailster_is_email( $insert['email'] ) ) {
+				$erroremails[ $insert['email'] ] = esc_html__( 'Email address is invalid.', 'mailster' );
+				$import_data['errors']++;
+				continue;
+			}
 
-					$insert['referer'] = 'import';
+			if ( ! isset( $insert['signup'] ) || empty( $insert['signup'] ) ) {
+				$insert['signup'] = $import_data['signupdate'] ? strtotime( $import_data['signupdate'] ) - $timeoffset : 0;
+			}
 
-					switch ( $bulkdata['existing'] ) {
-						case 'merge':
-							if ( $exists = mailster( 'subscribers' )->get_by_mail( $insert['email'] ) ) {
+			if ( empty( $insert['signup'] ) && 'merge' == $import_data['existing'] ) {
+				unset( $insert['signup'] );
+			}
 
-								$insert['ID'] = $exists->ID;
-								if ( ! isset( $insert['status'] ) ) {
-									$insert['status'] = $exists->status;
-								}
-								$subscriber_id = mailster( 'subscribers' )->update( $insert, true, true );
+			if ( ! isset( $insert['confirm'] ) ) {
+				$insert['confirm'] = 0;
+			}
 
-							} else {
+			switch ( $import_data['existing'] ) {
+				case 'merge':
+					if ( $exists = mailster( 'subscribers' )->get_by_mail( $insert['email'] ) ) {
 
-								if ( ! isset( $insert['status'] ) ) {
-									$insert['status'] = $bulkdata['status'];
-								}
+						$insert['ID'] = $exists->ID;
+						if ( ! isset( $insert['status'] ) ) {
+							$insert['status'] = $exists->status;
+						}
+						$subscriber_id = mailster( 'subscribers' )->update( $insert, true, true );
 
-								$subscriber_id = mailster( 'subscribers' )->add( $insert, false );
-							}
-
-							break;
-						case 'overwrite':
-							if ( ! isset( $insert['status'] ) ) {
-								$insert['status'] = $bulkdata['status'];
-							}
-							$subscriber_id = mailster( 'subscribers' )->add( $insert, true );
-							break;
-						case 'skip':
-							if ( ! isset( $insert['status'] ) ) {
-								$insert['status'] = $bulkdata['status'];
-							}
-							$subscriber_id = mailster( 'subscribers' )->add( $insert, false );
-							break;
-					}
-
-					if ( is_wp_error( $subscriber_id ) ) {
-						$erroremails[ $insert['email'] ] = $subscriber_id->get_error_message();
-						$bulkdata['errors']++;
 					} else {
 
-						foreach ( $list_array as $list ) {
-
-							if ( empty( $list ) ) {
-								continue;
-							}
-
-							if ( isset( $list_cache[ $list ] ) ) {
-								$list_id = $list_cache[ $list ];
-							} else {
-								$list_id = mailster( 'lists' )->get_by_name( $list, 'ID' );
-							}
-
-							if ( ! $list_id ) {
-								$list_id = mailster( 'lists' )->add( $list );
-								if ( is_wp_error( $list_id ) ) {
-									continue;
-								}
-								$list_cache[ $list ] = $list_id;
-							}
-
-							$list_ids[] = $list_id;
-
+						if ( ! isset( $insert['status'] ) ) {
+							$insert['status'] = $import_data['status'];
 						}
 
-						if ( ! empty( $list_ids ) ) {
-							$list_ids = array_unique( $list_ids );
-							$added    = null;
-							if ( $insert['status'] != 0 ) {
-								$added = isset( $insert['signup'] ) ? $insert['signup'] : time();
-							}
-							mailster( 'subscribers' )->assign_lists( $subscriber_id, $list_ids, $bulkdata['existing'] == 'overwrite', $added );
-						}
-
-						foreach ( $tag_array as $tag ) {
-
-							if ( empty( $tag ) ) {
-								continue;
-							}
-
-							if ( isset( $tag_cache[ $tag ] ) ) {
-								$tag_id = $tag_cache[ $tag ];
-							} else {
-								$tag_id = mailster( 'tags' )->get_by_name( $tag, 'ID' );
-							}
-
-							if ( ! $tag_id ) {
-								$tag_id = mailster( 'tags' )->add( $tag );
-								if ( is_wp_error( $tag_id ) ) {
-									continue;
-								}
-								$tag_cache[ $tag ] = $tag_id;
-							}
-
-							$tag_ids[] = $tag_id;
-
-						}
-
-						if ( ! empty( $tag_ids ) ) {
-							$tag_ids = array_unique( $tag_ids );
-							mailster( 'subscribers' )->assign_tags( $subscriber_id, $tag_ids, $bulkdata['existing'] == 'overwrite' );
-						}
-
-						mailster( 'subscribers' )->update_meta( $subscriber_id, 0, $meta );
-
-						$bulkdata['imported']++;
+						$subscriber_id = mailster( 'subscribers' )->add( $insert, false );
 					}
+
+					break;
+				case 'overwrite':
+					if ( ! isset( $insert['status'] ) ) {
+						$insert['status'] = $import_data['status'];
+					}
+					$subscriber_id = mailster( 'subscribers' )->add( $insert, true );
+					break;
+				case 'skip':
+					if ( ! isset( $insert['status'] ) ) {
+						$insert['status'] = $import_data['status'];
+					}
+					$subscriber_id = mailster( 'subscribers' )->add( $insert, false );
+					break;
+			}
+
+			if ( is_wp_error( $subscriber_id ) ) {
+				$erroremails[ $insert['email'] ] = $subscriber_id->get_error_message();
+				$import_data['errors']++;
+			} else {
+
+				foreach ( $list_array as $list ) {
+
+					if ( empty( $list ) ) {
+						continue;
+					}
+
+					if ( isset( $list_cache[ $list ] ) ) {
+						$list_id = $list_cache[ $list ];
+					} else {
+						$list_id = mailster( 'lists' )->get_by_name( $list, 'ID' );
+					}
+
+					if ( ! $list_id ) {
+						$list_id = mailster( 'lists' )->add( $list );
+						if ( is_wp_error( $list_id ) ) {
+							continue;
+						}
+						$list_cache[ $list ] = $list_id;
+					}
+
+					$list_ids[] = $list_id;
+
 				}
+
+				if ( ! empty( $list_ids ) ) {
+					$list_ids = array_unique( $list_ids );
+					$added    = null;
+					if ( $insert['status'] != 0 ) {
+						$added = isset( $insert['signup'] ) ? $insert['signup'] : time();
+					}
+					mailster( 'subscribers' )->assign_lists( $subscriber_id, $list_ids, $import_data['existing'] == 'overwrite', $added );
+				}
+
+				foreach ( $tag_array as $tag ) {
+
+					if ( empty( $tag ) ) {
+						continue;
+					}
+
+					if ( isset( $tag_cache[ $tag ] ) ) {
+						$tag_id = $tag_cache[ $tag ];
+					} else {
+						$tag_id = mailster( 'tags' )->get_by_name( $tag, 'ID' );
+					}
+
+					if ( ! $tag_id ) {
+						$tag_id = mailster( 'tags' )->add( $tag );
+						if ( is_wp_error( $tag_id ) ) {
+							continue;
+						}
+						$tag_cache[ $tag ] = $tag_id;
+					}
+
+					$tag_ids[] = $tag_id;
+
+				}
+
+				if ( ! empty( $tag_ids ) ) {
+					$tag_ids = array_unique( $tag_ids );
+					mailster( 'subscribers' )->assign_tags( $subscriber_id, $tag_ids, $import_data['existing'] == 'overwrite' );
+				}
+
+				mailster( 'subscribers' )->update_meta( $subscriber_id, 0, $meta );
+
+				$import_data['imported']++;
 			}
 		}
 
 		$return['memoryusage'] = size_format( memory_get_peak_usage( true ), 2 );
-		$return['errors']      = ( $bulkdata['errors'] );
-		$return['imported']    = ( $bulkdata['imported'] );
-		$return['total']       = ( $bulkdata['count'] );
-		$return['f_errors']    = number_format_i18n( $bulkdata['errors'] );
-		$return['f_imported']  = number_format_i18n( $bulkdata['imported'] );
-		$return['f_total']     = number_format_i18n( $bulkdata['count'] );
+		$return['errors']      = ( $import_data['errors'] );
+		$return['imported']    = ( $import_data['imported'] );
+		$return['total']       = ( $import_data['total'] );
+		$return['f_errors']    = number_format_i18n( $import_data['errors'] );
+		$return['f_imported']  = number_format_i18n( $import_data['imported'] );
+		$return['f_total']     = number_format_i18n( $import_data['total'] );
 
 		$return['html'] = '';
 
-		if ( $bulkdata['imported'] + $bulkdata['errors'] >= $bulkdata['count'] ) {
-			$return['html'] .= '<h2>' . sprintf( esc_html__( '%1$s of %2$s contacts imported.', 'mailster' ), '<strong>' . number_format_i18n( $bulkdata['imported'] ) . '</strong>', '<strong>' . number_format_i18n( $bulkdata['count'] ) . '</strong>' ) . '</h2>';
-			if ( $bulkdata['errors'] ) {
+		if ( $import_data['imported'] + $import_data['errors'] >= $import_data['total'] ) {
+			$return['html'] .= '<h2>' . sprintf( esc_html__( '%1$s of %2$s contacts imported.', 'mailster' ), '<strong>' . number_format_i18n( $import_data['imported'] ) . '</strong>', '<strong>' . number_format_i18n( $import_data['total'] ) . '</strong>' ) . '</h2>';
+			if ( $import_data['errors'] ) {
 				$i               = 0;
 				$return['html'] .= '<h4>' . esc_html__( 'The following addresses were not imported', 'mailster' ) . ':</h4>';
 				$return['html'] .= '<section>';
@@ -1011,15 +800,17 @@ class MailsterManage {
 			$return['html'] .= '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '" class="button">' . esc_html__( 'View your Subscribers', 'mailster' ) . '</a>';
 			$return['html'] .= '</section>';
 
-			delete_option( 'mailster_bulk_import' );
-			delete_option( 'mailster_bulk_import_errors' );
-			$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mailster_temp_import" );
+			delete_option( 'mailster_bulk_import' . $identifier );
+			delete_option( 'mailster_bulk_import_errors_' . $identifier );
 			$return['wpusers'] = mailster( 'subscribers' )->wp_id();
 
 		} else {
 
-			update_option( 'mailster_bulk_import', $bulkdata );
-			update_option( 'mailster_bulk_import_errors', $erroremails );
+			// increase this for the next batch
+			$import_data['part']++;
+
+			update_option( 'mailster_bulk_import_' . $identifier, $import_data );
+			update_option( 'mailster_bulk_import_errors_' . $identifier, $erroremails );
 
 		}
 		$return['success'] = true;
@@ -1706,6 +1497,11 @@ class MailsterManage {
 			'mailchimp' => 'mailster-mailchimp/mailster-mailchimp.php',
 		);
 
+		if ( isset( $this->integrations[ $id ] ) ) {
+			$this->integrations[ $id ]->import_options();
+			return;
+		}
+
 		if ( ! isset( $plugins[ $id ] ) ) {
 			printf( esc_html__( 'No Importer for %s found.', 'mailster' ), ucwords( $id ) );
 			return;
@@ -1718,95 +1514,8 @@ class MailsterManage {
 			echo '<a class="button button-primary install-addon" data-slug="' . esc_attr( $slug ) . '">' . esc_html__( 'Install Addon' ) . '</a>';
 		} else {
 
-			$this->integrations[$id]->import_options();
 		}
 
-	}
-
-	private function sanitize_raw_data( $raw_data ) {
-
-		$raw_data = ( trim( str_replace( array( "\r", "\r\n", "\n\n" ), "\n", $raw_data ) ) );
-
-		if ( function_exists( 'mb_convert_encoding' ) ) {
-			$encoding = mb_detect_encoding( $raw_data, 'auto' );
-		} else {
-			$encoding = 'UTF-8';
-		}
-		if ( $encoding != 'UTF-8' ) {
-			$raw_data = utf8_encode( $raw_data );
-			$encoding = mb_detect_encoding( $raw_data, 'auto' );
-		}
-		$lines     = explode( "\n", $raw_data );
-		$separator = $this->get_separator( $lines[0] );
-		$data      = array();
-		$new_sep   = md5( uniqid() );
-		$temp_sep  = md5( uniqid() );
-
-		foreach ( $lines as $i => $line ) {
-
-			// handle if separator is used in a column
-			if ( preg_match_all( '/("([^"]*)")/', $line, $match ) ) {
-				foreach ( $match[0] as $value ) {
-					if ( false !== strpos( $value, $separator ) ) {
-						$line = str_replace( $value, str_replace( $separator, $temp_sep, $value ), $line );
-					}
-				}
-			}
-
-			$line = str_replace( $separator, $new_sep, $line );
-			$line = str_replace( $temp_sep, $separator, $line );
-
-			// cleanup quotes
-			$line = str_replace( array( "'" . $new_sep . "'", '"' . $new_sep . '"' ), $new_sep, $line );
-			$line = preg_replace( '#("|\')' . preg_quote( $new_sep ) . '#', $new_sep, $line );
-			$line = preg_replace( '#' . preg_quote( $new_sep ) . '("|\')#', $new_sep, $line );
-			$line = preg_replace( '#^("|\')#', '', $line );
-			$line = preg_replace( '#("|\')$#', '', $line );
-			$line = explode( $new_sep, $line );
-
-			$has_email = false;
-			foreach ( $line as $entry ) {
-				if ( mailster_is_email( $entry ) ) {
-					$has_email = true;
-					break;
-				}
-			}
-			// only first row (header) or with email
-			if ( $has_email ) {
-				$data[] = $line;
-			} elseif ( ! $has_email && ! $i ) {
-				// still can contain a double quote
-				$data['header'] = str_replace( '"', '', $line );
-			}
-		}
-
-		return $data;
-	}
-
-	/**
-	 *
-	 *
-	 * @param unknown $string
-	 * @param unknown $fallback (optional)
-	 * @return unknown
-	 */
-	private function get_separator( $string, $fallback = ';' ) {
-		$seps      = array( ';', ',', '|', "\t" );
-		$max       = 0;
-		$separator = false;
-		foreach ( $seps as $sep ) {
-			$count = substr_count( $string, $sep );
-			if ( $count > $max ) {
-				$separator = $sep;
-				$max       = $count;
-			}
-		}
-
-		if ( $separator ) {
-			return $separator;
-		}
-
-		return $fallback;
 	}
 
 

@@ -19,6 +19,7 @@ mailster = (function (mailster, $, window, document) {
 
 			if (value) {
 				prepare_import({
+					type: 'paste',
 					data: value,
 				});
 			}
@@ -36,7 +37,8 @@ mailster = (function (mailster, $, window, document) {
 
 			if (data) {
 				prepare_import({
-					wordpressusers: data,
+					type: 'wordpress',
+					data: data,
 				});
 			}
 
@@ -109,14 +111,14 @@ mailster = (function (mailster, $, window, document) {
 				return false;
 			}
 
-			if (!confirm(mailster.l10n.manage.confirm_import)) return false;
+			//if (!confirm(mailster.l10n.manage.confirm_import)) return false;
 
 			var _this = $(this).prop('disabled', true),
 				status = $('input[name="status"]:checked').val(),
 				existing = $('input[name="existing"]:checked').val(),
 				signup = $('#signup').is(':checked'),
 				signupdate = $('#signupdate').val(),
-				keepstatus = $('#keepstatus').is(':checked'),
+				//keepstatus = $('#keepstatus').is(':checked'),
 				loader = $('#import-ajax-loading').css({
 					display: 'inline-block',
 				}),
@@ -132,12 +134,15 @@ mailster = (function (mailster, $, window, document) {
 				identifier: identifier,
 				data: data,
 				status: status,
-				keepstatus: keepstatus,
-				existing: existing,
-				signupdate: signup ? signupdate : null,
+				//keepstatus: keepstatus,
+				//existing: existing,
+				//signupdate: signup ? signupdate : null,
 				performance: performance,
 			});
 
+			$(this).prop('disabled', false);
+
+			return false;
 			window.onbeforeunload = function () {
 				return mailster.l10n.manage.onbeforeunloadimport;
 			};
@@ -233,8 +238,11 @@ mailster = (function (mailster, $, window, document) {
 			'import_subscribers_upload_handler',
 			data,
 			function (response) {
+				console.warn(response);
+				importidentifier = response.identifier;
+				get_import_data();
+				return;
 				if (response.success) {
-					importidentifier = response.identifier;
 					if (response.finished) {
 						get_import_data();
 					} else {

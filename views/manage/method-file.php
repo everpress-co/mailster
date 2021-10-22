@@ -49,6 +49,7 @@ if ( $u < 0 ) {
 
 		$post_params       = array(
 			'action'   => 'mailster_import_subscribers_upload_handler',
+			'type'     => 'upload',
 			'_wpnonce' => wp_create_nonce( 'mailster_nonce' ),
 		);
 		$upload_action_url = admin_url( 'admin-ajax.php' );
