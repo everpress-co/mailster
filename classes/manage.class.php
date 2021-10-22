@@ -2,6 +2,8 @@
 
 class MailsterManage {
 
+	private $integrations = array();
+
 	public function __construct() {
 
 		add_action( 'admin_menu', array( &$this, 'add_menu' ), 40 );
@@ -27,20 +29,25 @@ class MailsterManage {
 
 	public function load_integrations() {
 
-		$integrations = apply_filters( 'mailster_importer', array() );
+		$importer = apply_filters( 'mailster_importer', array() );
 
-		if ( empty( $integrations ) ) {
+		if ( empty( $importer ) ) {
 			return;
 		}
 
-		foreach ( $integrations as $slug => $path ) {
+		include_once MAILSTER_DIR . 'classes/manage.import.abstract.php';
 
+		foreach ( $importer as $classname => $path ) {
 			if ( file_exists( $path ) ) {
-				require_once $path;
+				include_once $path;
+				$integration_class = new $classname();
+
+				$this->integrations[ $integration_class->get_slug() ] = $integration_class;
 			}
 		}
 
 	}
+
 
 
 	public function admin_enqueue_scripts() {
@@ -1699,9 +1706,19 @@ class MailsterManage {
 			'mailchimp' => 'mailster-mailchimp/mailster-mailchimp.php',
 		);
 
-		if ( isset( $plugins[ $id ] ) && ! is_plugin_active( $plugins[ $id ] ) ) {
+		if ( ! isset( $plugins[ $id ] ) ) {
+			printf( esc_html__( 'No Importer for %s found.', 'mailster' ), ucwords( $id ) );
+			return;
+		}
+
+		$slug = $plugins[ $id ];
+
+		if ( ! is_plugin_active( $slug ) ) {
 			echo '<p>' . sprintf( esc_html__( 'To import subscribers from %s you need an additional addon.', 'mailster' ), ucwords( $id ) ) . '</p>';
-			echo '<a class="button button-primary install-addon" data-slug="' . esc_attr( $plugins[ $id ] ) . '">' . esc_html__( 'Install Addon' ) . '</a>';
+			echo '<a class="button button-primary install-addon" data-slug="' . esc_attr( $slug ) . '">' . esc_html__( 'Install Addon' ) . '</a>';
+		} else {
+
+			$this->integrations[$id]->import_options();
 		}
 
 	}

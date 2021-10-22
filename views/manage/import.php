@@ -4,11 +4,11 @@
 
 <?php
 $methods = array(
+	'mailpoet'  => esc_html__( 'Import from MailPoet', 'mailster' ),
+	'mailchimp' => esc_html__( 'Import from MailChimp', 'mailster' ),
 	'file'      => esc_html__( 'Upload a CSV file', 'mailster' ),
 	'paste'     => esc_html__( 'Paste the data from your spreadsheet app', 'mailster' ),
 	'wordpress' => esc_html__( 'Import from your WordPress Users', 'mailster' ),
-	'mailpoet'  => esc_html__( 'Import from MailPoet', 'mailster' ),
-	'mailchimp' => esc_html__( 'Import from MailChimp', 'mailster' ),
 );
 
 $methods = apply_filters( 'mailster_import_methods', $methods );

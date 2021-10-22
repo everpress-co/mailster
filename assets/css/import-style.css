@@ -37,9 +37,6 @@ details summary {
 summary:hover {
 	cursor: pointer;
 }
-details a {
-	display: block;
-}
 summary:focus {
 	outline: none;
 }

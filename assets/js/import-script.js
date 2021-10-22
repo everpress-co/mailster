@@ -42,6 +42,27 @@ mailster = (function (mailster, $, window, document) {
 
 			return false;
 		})
+		.on('submit', '.importer-form', function () {
+			var form = $(this);
+			var data = form.serialize();
+			var slug = form.data('slug');
+
+			form.prop('readonly', true).css('opacity', 0.8);
+
+			mailster.util.ajax(
+				'importer_form_submit',
+				{
+					data: data,
+					slug: slug,
+				},
+				function (response) {
+					form.prop('readonly', false).css('opacity', 1);
+					form.replaceWith(response.html);
+				}
+			);
+
+			return false;
+		})
 		.on('change', '.column-selector', function () {
 			if ('_new' == $(this).val()) {
 				tb_show(
