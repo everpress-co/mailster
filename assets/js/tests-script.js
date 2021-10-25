@@ -53,8 +53,8 @@ mailster = (function (mailster, $, window, document) {
 			if (mailster.util.trim(textarea.val())) return;
 			textarea.val('...');
 			mailster.util.ajax('get_system_info', function (response) {
-				if (response.log) mailster.log(response.log);
-				textarea.val(response.msg);
+				if (response.data.log) mailster.log(response.data.log);
+				textarea.val(response.data.msg);
 			});
 		}
 		return false;
@@ -76,24 +76,24 @@ mailster = (function (mailster, $, window, document) {
 				test_id: test_id,
 			},
 			function (response) {
-				errors['error'] += response.errors.error;
-				errors['warning'] += response.errors.warning;
-				errors['notice'] += response.errors.notice;
-				errors['success'] += response.errors.success;
+				errors['error'] += response.data.errors.error;
+				errors['warning'] += response.data.errors.warning;
+				errors['notice'] += response.data.errors.notice;
+				errors['success'] += response.data.errors.success;
 
-				$(response.message.html).appendTo(output);
-				textoutput.val(textoutput.val() + response.message.text);
+				$(response.data.message.html).appendTo(output);
+				textoutput.val(textoutput.val() + response.data.message.text);
 
-				if (response.nexttest && !single_test) {
+				if (response.data.nexttest && !single_test) {
 					progressbar.width(
-						(++tests_run / response.total) * 100 + '%'
+						(++tests_run / response.data.total) * 100 + '%'
 					);
 					testinfo.html(
 						mailster.util.sprintf(
 							mailster.l10n.tests.running_test,
 							tests_run,
-							response.total,
-							response.next
+							response.data.total,
+							response.data.next
 						)
 					);
 				} else {
@@ -115,9 +115,9 @@ mailster = (function (mailster, $, window, document) {
 					}, 500);
 				}
 
-				if (response.nexttest && !single_test) {
+				if (response.data.nexttest && !single_test) {
 					setTimeout(function () {
-						test(response.nexttest);
+						test(response.data.nexttest);
 					}, 100);
 				} else {
 				}

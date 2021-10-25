@@ -197,7 +197,7 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				loader(false);
 				if (response.success) {
-					cats.html(response.html);
+					cats.html(response.data.html);
 					if (currenttag && currenttag.terms) {
 						var taxonomies = cats.find(
 							'.dynamic_embed_options_taxonomy_wrap'
@@ -405,16 +405,16 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					loader(false);
 					if (response.success) {
-						currenttext = response.pattern;
+						currenttext = response.data.pattern;
 						$('#dynamic_embed_options')
 							.find('h4.current-match')
-							.html(response.title);
+							.html(response.data.title);
 						$('#dynamic_embed_options')
 							.find('div.current-tag')
 							.text(
-								response.pattern.title +
+								response.data.pattern.title +
 									'\n\n' +
-									response.pattern[content]
+									response.data.pattern[content]
 							);
 					}
 				},
@@ -565,16 +565,16 @@ mailster = (function (mailster, $, window, document) {
 						loader(false);
 
 						if (response.success) {
-							imagepreview.attr('src', response.image.url);
+							imagepreview.attr('src', response.data.image.url);
 
-							response.image.width =
-								(response.image.width || currentimage.width) /
-								f;
-							response.image.height =
-								response.image.width / currentimage.asp;
-							response.image.asp = currentimage.asp;
+							response.data.image.width =
+								(response.data.image.width ||
+									currentimage.width) / f;
+							response.data.image.height =
+								response.data.image.width / currentimage.asp;
+							response.data.image.asp = currentimage.asp;
 
-							currentimage = response.image;
+							currentimage = response.data.image;
 							currentimage.name = imagealt.val();
 
 							if (is_img) {
@@ -586,7 +586,7 @@ mailster = (function (mailster, $, window, document) {
 												mailster.util.sprintf(
 													mailster.l10n.campaigns
 														.invalid_image,
-													response.image.url
+													response.data.image.url
 												)
 											);
 										}
@@ -909,9 +909,10 @@ mailster = (function (mailster, $, window, document) {
 														'data-id':
 															currenttext.image
 																.id,
-														src: response.image.url,
+														src: response.data.image
+															.url,
 														width: Math.round(
-															response.image
+															response.data.image
 																.width / f
 														),
 														alt:
@@ -931,7 +932,7 @@ mailster = (function (mailster, $, window, document) {
 													_this.attr(
 														'height',
 														Math.round(
-															response.image
+															response.data.image
 																.height / f
 														)
 													);
@@ -957,7 +958,8 @@ mailster = (function (mailster, $, window, document) {
 															currenttext.image
 																.id,
 														background:
-															response.image.url,
+															response.data.image
+																.url,
 													})
 													.data(
 														'id',
@@ -968,7 +970,7 @@ mailster = (function (mailster, $, window, document) {
 													mailster.util.replace(
 														current.element.html(),
 														orgurl,
-														response.image.url
+														response.data.image.url
 													)
 												);
 
@@ -1258,7 +1260,7 @@ mailster = (function (mailster, $, window, document) {
 					base.find('li.selected').removeClass('selected');
 					_this.addClass('selected');
 					if (response.success) {
-						currenttext = response.pattern;
+						currenttext = response.data.pattern;
 						base.find('.editbarinfo').html(
 							mailster.l10n.campaigns.curr_selected +
 								': <span>' +
@@ -1722,8 +1724,8 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				loader(false);
 				if (response.success) {
-					itemcount = response.itemcount;
-					displayPosts(response.html, true);
+					itemcount = response.data.itemcount;
+					displayPosts(response.data.html, true);
 					callback && callback();
 				}
 			},
@@ -1757,9 +1759,9 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				loader(false);
 				if (response.success) {
-					itemcount = response.itemcount;
+					itemcount = response.data.itemcount;
 					$this.remove();
-					displayPosts(response.html, false);
+					displayPosts(response.data.html, false);
 				}
 			},
 			function (jqXHR, textStatus, errorThrown) {

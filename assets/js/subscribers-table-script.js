@@ -69,18 +69,18 @@ mailster = (function (mailster, $, window, document) {
 				count: count,
 			},
 			function (response) {
-				bulk_update_info.html(response.message);
+				bulk_update_info.html(response.data.message);
 				if (response.success_message)
 					mailster.log(response.success_message);
-				if (response.error_message)
-					mailster.log(response.error_message, 'error');
+				if (response.data.error_message)
+					mailster.log(response.data.error_message, 'error');
 
-				if (!response.finished) {
+				if (!response.data.finished) {
 					setTimeout(
 						function () {
-							do_batch(data, response.page, cb);
+							do_batch(data, response.data.page, cb);
 						},
-						response.delay ? response.delay : 300
+						response.data.delay ? response.data.delay : 300
 					);
 				} else {
 					cb && cb();

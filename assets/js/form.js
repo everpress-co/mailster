@@ -28,13 +28,13 @@ jQuery(document).ready(function ($) {
 
 					try {
 						response = JSON.parse(jqXHR.responseText);
-						if (!response.html) {
+						if (!response.data.html) {
 							response = {
 								html:
 									'There was an error with the response:<br><code>[' +
-									response.code +
+									response.data.code +
 									'] ' +
-									response.message +
+									response.data.message +
 									'</code>',
 								success: false,
 							};
@@ -68,7 +68,7 @@ jQuery(document).ready(function ($) {
 
 				form.find('.submit-button').prop('disabled', false);
 
-				if (response.html) info.html(response.html);
+				if (response.data.html) info.html(response.data.html);
 				if ($(document).scrollTop() < form.offset().top) {
 					info.prependTo(form);
 				} else {
@@ -85,12 +85,12 @@ jQuery(document).ready(function ($) {
 							.filter('.input')
 							.val('');
 
-					response.redirect
-						? (location.href = response.redirect)
+					response.data.redirect
+						? (location.href = response.data.redirect)
 						: info.show().addClass('success');
 				} else {
-					if (response.fields)
-						$.each(response.fields, function (field) {
+					if (response.data.fields)
+						$.each(response.data.fields, function (field) {
 							form.addClass('has-errors')
 								.find('.mailster-' + field + '-wrapper')
 								.addClass('error');
