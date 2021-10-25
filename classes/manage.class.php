@@ -161,15 +161,18 @@ class MailsterManage {
 		$import_data = wp_parse_args(
 			$this->integrations[ $type ]->get_import_data(),
 			array(
-				'insert' => array(),
+				'header'    => null,
+				'removed'   => 0,
+				'extra_map' => array(),
 			)
 		);
 
 		$import_data['type']       = $type;
 		$import_data['identifier'] = $identifier;
-		$import_data['part']       = 0;
+		$import_data['page']       = 1;
 
 		update_option( 'mailster_bulk_import_' . $identifier, $import_data, 'no' );
+
 		$return['success']    = true;
 		$return['identifier'] = $identifier;
 
@@ -205,8 +208,8 @@ class MailsterManage {
 		$contactcount = $import_data['total'];
 		$samplecount  = count( $data );
 		$removed      = $import_data['removed'];
-		$header       = $import_data['header'];
-		$emailfield   = false;
+		$header       = is_array( $import_data['header'] ) ? array_values( $import_data['header'] ) : null;
+		$map          = is_array( $import_data['header'] ) ? array_keys( $import_data['header'] ) : null;
 
 		$custom_fields = mailster()->get_custom_fields();
 
@@ -257,19 +260,14 @@ class MailsterManage {
 		$html .= '<thead>';
 		$html .= '<tr><td style="width:20px;">#</td>';
 		for ( $i = 0; $i < $cols; $i++ ) {
-			$ismail     = mailster_is_email( trim( $first[ $i ] ) );
-			$header_col = ( $header && isset( $header[ $i ] ) ) ? strip_tags( $header[ $i ] ) : '';
-			$select     = '<select name="order[]" class="column-selector">';
-			$select    .= '<option value="-1">' . esc_html__( 'Ignore column', 'mailster' ) . '</option>';
-			$select    .= '<option value="-1">----------</option>';
-			$select    .= '<option value="_new">' . esc_html__( 'Create new Field', 'mailster' ) . '</option>';
-			$select    .= '<option value="-1">----------</option>';
-			$select    .= '<optgroup label="' . esc_html__( 'Basic', 'mailster' ) . '">';
+			$select  = '<select name="_order[]" class="column-selector">';
+			$select .= '<option value="-1">' . esc_html__( 'Ignore column', 'mailster' ) . '</option>';
+			$select .= '<option value="-1">----------</option>';
+			$select .= '<option value="_new">' . esc_html__( 'Create new Field', 'mailster' ) . '</option>';
+			$select .= '<option value="-1">----------</option>';
+			$select .= '<optgroup label="' . esc_html__( 'Basic', 'mailster' ) . '">';
 			foreach ( $fields as $key => $value ) {
-				$is_selected = ( ( $ismail && $key == 'email' && ! $emailfield && $emailfield = true ) ||
-					( $header_col == mailster_text( 'firstname' ) && $key == 'firstname' ) ||
-					( $header_col == mailster_text( 'lastname' ) && $key == 'lastname' ) ||
-					( $header_col == 'registered' && $key == '_signup' ) );
+				$is_selected = ( ( $map && $key === $map[ $i ] ) || $key == 'email' && mailster_is_email( $first[ $i ] ) );
 
 				$select .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}
@@ -289,19 +287,19 @@ class MailsterManage {
 			}
 			$select .= '<optgroup label="' . esc_html__( 'Time Options', 'mailster' ) . '">';
 			foreach ( $meta_dates as $key => $value ) {
-				$is_selected = ( ( strip_tags( $firstline[ $i ] ) == esc_html__( 'registered', 'mailster' ) && $key == '_signup' ) );
+				$is_selected = $map && $key === $map[ $i ];
 				$select     .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}
 			$select .= '</optgroup>';
 			$select .= '<optgroup label="' . esc_html__( 'IP Options', 'mailster' ) . '">';
 			foreach ( $meta_ips as $key => $value ) {
-				$is_selected = ( ( strip_tags( $firstline[ $i ] ) == esc_html__( 'registered', 'mailster' ) && $key == '_signup' ) );
+				$is_selected = $map && $key === $map[ $i ];
 				$select     .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}
 			$select .= '</optgroup>';
 			$select .= '<optgroup label="' . esc_html__( 'Other Meta', 'mailster' ) . '">';
 			foreach ( $meta_other as $key => $value ) {
-				$is_selected = ( ( strip_tags( $firstline[ $i ] ) == esc_html__( 'registered', 'mailster' ) && $key == '_signup' ) );
+				$is_selected = $map && $key === $map[ $i ];
 				$select     .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}
 			$select .= '</optgroup>';
@@ -346,7 +344,7 @@ class MailsterManage {
 		$lists = mailster( 'lists' )->get( null, null, true );
 		if ( $lists && ! is_wp_error( $lists ) ) {
 			foreach ( $lists as $list ) {
-				$html .= '<li><label><input name="lists[]" value="' . esc_attr( $list->name ) . '" type="checkbox"> ' . esc_html( $list->name ) . ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ')</span></label></li>';
+				$html .= '<li><label><input name="_lists[]" value="' . esc_attr( $list->name ) . '" type="checkbox"> ' . esc_html( $list->name ) . ' <span class="count">(' . number_format_i18n( $list->subscribers ) . ')</span></label></li>';
 			}
 		}
 		$html .= '</ul>';
@@ -356,7 +354,7 @@ class MailsterManage {
 		$html .= '<h4>' . esc_html__( 'Add contacts to following tags', 'mailster' ) . '</h4>';
 		$html .= '<section id="section-tags">';
 		$html .= '<p>';
-		$html .= '<select multiple name="tags[]" class="tags-input">';
+		$html .= '<select multiple name="_tags[]" class="tags-input">';
 		$html .= '<option></option>';
 		$tags  = mailster( 'tags' )->get();
 		foreach ( $tags as $tag ) :
@@ -439,13 +437,13 @@ class MailsterManage {
 		$import_data = wp_parse_args(
 			get_option( 'mailster_bulk_import_' . $identifier, array() ),
 			array(
-				'lists'       => isset( $import_options['lists'] ) ? (array) $import_options['lists'] : array(),
-				'tags'        => isset( $import_options['tags'] ) ? (array) $import_options['tags'] : array(),
-				'order'       => isset( $import_options['order'] ) ? (array) $import_options['order'] : array(),
+				'lists'       => isset( $import_options['_lists'] ) ? (array) $import_options['_lists'] : array(),
+				'tags'        => isset( $import_options['_tags'] ) ? (array) $import_options['_tags'] : array(),
+				'order'       => isset( $import_options['_order'] ) ? (array) $import_options['_order'] : array(),
 				'signupdate'  => $import_options['signupdate'],
 				'existing'    => $import_options['existing'],
 				'status'      => $import_options['status'],
-				'part'        => 0,
+				'page'        => 1,
 				'errors'      => 0,
 				'imported'    => 0,
 				'encoding'    => null,
@@ -513,12 +511,20 @@ class MailsterManage {
 
 		if ( $parts === $import_data ) {
 			$return['success'] = false;
-			$return['msg']     = 'Cannot handle import';
+			$return['msg']     = sprintf( esc_html__( 'No Integration for %s found.', 'mailster' ), $import_data['type'] );
 			wp_send_json( $return );
 			exit;
 		}
 
-		$statusnames = array_flip( mailster( 'subscribers' )->get_status( null, true ) );
+		if ( is_wp_error( $parts ) ) {
+			$return['success'] = false;
+			$return['msg']     = $parts->get_error_message();
+			wp_send_json( $return );
+			exit;
+		}
+
+		$statusnames_nice = array_flip( mailster( 'subscribers' )->get_status( null, true ) );
+		$statusnames      = array_flip( mailster( 'subscribers' )->get_status() );
 
 		foreach ( $parts as $part ) {
 
@@ -530,7 +536,7 @@ class MailsterManage {
 			$data       = $part;
 			$line_count = count( $data );
 
-			$insert = (array) $import_data['insert'];
+			$insert = isset( $import_data['extra_map'] ) ? (array) $import_data['extra_map'] : array();
 			$meta   = array();
 			$geo    = array();
 			$coords = array();
@@ -563,6 +569,8 @@ class MailsterManage {
 							$insert[ substr( $order, 1 ) ] = $d;
 						} elseif ( is_string( $d ) && isset( $statusnames[ $d ] ) ) {
 							$insert[ substr( $order, 1 ) ] = $statusnames[ $d ];
+						} elseif ( is_string( $d ) && isset( $statusnames_nice[ $d ] ) ) {
+							$insert[ substr( $order, 1 ) ] = $statusnames_nice[ $d ];
 						}
 						break;
 					case '_lists':
@@ -593,8 +601,10 @@ class MailsterManage {
 						$meta[ substr( $order, 1 ) ] = $d;
 						break;
 					case '_timezone':
-						$offset             = mailster( 'helper' )->get_timezone_offset_by_string( $d );
-						$meta['timeoffset'] = $offset;
+						if ( $d ) {
+							$offset             = mailster( 'helper' )->get_timezone_offset_by_string( $d );
+							$meta['timeoffset'] = $offset;
+						}
 						break;
 					case '_country':
 						if ( $d ) {
@@ -619,13 +629,13 @@ class MailsterManage {
 						break;
 					case 'first_last':
 						$split               = explode( ' ', $d );
-						$insert['firstname'] = $split[0];
-						$insert['lastname']  = $split[1];
+						$insert['firstname'] = isset( $split[0] ) ? $split[0] : null;
+						$insert['lastname']  = isset( $split[1] ) ? $split[1] : null;
 						break;
 					case 'last_first':
 						$split               = explode( ' ', $d );
-						$insert['firstname'] = $split[1];
-						$insert['lastname']  = $split[0];
+						$insert['firstname'] = isset( $split[1] ) ? $split[1] : null;
+						$insert['lastname']  = isset( $split[0] ) ? $split[0] : null;
 						break;
 					case '-1':
 					case '_new':
@@ -807,7 +817,7 @@ class MailsterManage {
 		} else {
 
 			// increase this for the next batch
-			$import_data['part']++;
+			$import_data['page']++;
 
 			update_option( 'mailster_bulk_import_' . $identifier, $import_data );
 			update_option( 'mailster_bulk_import_errors_' . $identifier, $erroremails );

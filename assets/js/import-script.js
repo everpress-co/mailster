@@ -59,7 +59,13 @@ mailster = (function (mailster, $, window, document) {
 				},
 				function (response) {
 					form.prop('readonly', false).css('opacity', 1);
-					form.replaceWith(response.html);
+					if (response.html) {
+						form.replaceWith(response.html);
+					}
+					if (response.identifier) {
+						importidentifier = response.identifier;
+						get_import_data();
+					}
 				}
 			);
 
@@ -76,7 +82,9 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '#addlist', function () {
 			var val = $('#new_list_name').val();
-			if (!val) return false;
+			if (!val) {
+				return false;
+			}
 
 			$(
 				'<li><label><input name="lists[]" value="' +
@@ -111,14 +119,14 @@ mailster = (function (mailster, $, window, document) {
 				return false;
 			}
 
-			//if (!confirm(mailster.l10n.manage.confirm_import)) return false;
+			// if (!confirm(mailster.l10n.manage.confirm_import)) return false;
 
 			var _this = $(this).prop('disabled', true),
 				status = $('input[name="status"]:checked').val(),
 				existing = $('input[name="existing"]:checked').val(),
 				signup = $('#signup').is(':checked'),
 				signupdate = $('#signupdate').val(),
-				//keepstatus = $('#keepstatus').is(':checked'),
+				// keepstatus = $('#keepstatus').is(':checked'),
 				loader = $('#import-ajax-loading').css({
 					display: 'inline-block',
 				}),
@@ -180,7 +188,9 @@ mailster = (function (mailster, $, window, document) {
 					$('#drag-drop-area').unbind('.wp-uploader');
 				}
 
-				if (up.runtime == 'html4') $('.upload-flash-bypass').hide();
+				if (up.runtime == 'html4') {
+					$('.upload-flash-bypass').hide();
+				}
 			});
 
 			uploader.bind('FilesAdded', function (up, files) {
@@ -266,7 +276,9 @@ mailster = (function (mailster, $, window, document) {
 		var percentage = 0,
 			finished;
 
-		if (!id) id = 0;
+		if (!id) {
+			id = 0;
+		}
 
 		mailster.util.ajax(
 			'do_import',
@@ -275,41 +287,45 @@ mailster = (function (mailster, $, window, document) {
 				options: options,
 			},
 			function (response) {
-				percentage =
-					Math.min(
-						1,
-						(response.imported + response.errors) / response.total
-					) * 100;
-
-				importstatus.html(
-					get_stats(
-						response.f_imported,
-						response.f_errors,
-						response.f_total,
-						percentage,
-						response.memoryusage
-					)
-				);
-
-				finished = percentage >= 100;
-
 				if (response.success) {
-					if (!finished) do_import(++id, options);
+					percentage =
+						Math.min(
+							1,
+							(response.imported + response.errors) /
+								response.total
+						) * 100;
 
+					importstatus.html(
+						get_stats(
+							response.f_imported,
+							response.f_errors,
+							response.f_total,
+							percentage,
+							response.memoryusage
+						)
+					);
+
+					finished = percentage >= 100;
 					if (finished) {
 						window.onbeforeunload = null;
 						$('.import-result').html(response.html);
 						scroll_to_content_top();
 						console.log(response);
+					} else {
+						do_import(++id, options);
 					}
 				} else {
-					upload_error_handler(percentage, id, options);
+					upload_error_handler(response.msg);
 				}
 			},
 			function (jqXHR, textStatus, errorThrown) {
-				upload_error_handler(percentage, id, options);
+				upload_error_handler(textStatus);
 			}
 		);
+	}
+
+	function upload_error_handler(errormsg) {
+		importstatus.removeClass('progress spinner').html(errormsg);
 	}
 
 	function scroll_to_content_top(pos) {

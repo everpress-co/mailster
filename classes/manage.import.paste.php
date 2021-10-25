@@ -14,12 +14,12 @@ class MailsterImportPaste extends MailsterImport {
 	function init() {}
 
 
-	public function get_import_part( $import_data ) {
+	public function get_import_part( &$import_data ) {
 
 		$raw_data = file_get_contents( $import_data['file'] );
 		$data     = maybe_unserialize( $raw_data );
 		$limit    = $import_data['performance'] ? 10 : 100;
-		$offset   = $import_data['part'] * $limit;
+		$offset   = ( $import_data['page'] - 1 ) * $limit;
 
 		return array_slice( $data, $offset, $limit );
 
@@ -42,10 +42,11 @@ class MailsterImportPaste extends MailsterImport {
 		$total_lines = substr_count( $raw_data, "\n" ) + 1;
 		$data        = $this->sanitize_raw_data( $raw_data );
 
-		error_log( print_r( $data, true ) );
 		if ( isset( $data['header'] ) ) {
 			$total_lines--;
-			$header = array_shift( $data );
+			$header = $data['header'];
+			unset( $data['header'] );
+			$data = array_values( $data );
 		}
 		$total   = $total_batch = count( $data );
 		$removed = $total_lines - $total;
@@ -63,7 +64,7 @@ class MailsterImportPaste extends MailsterImport {
 			'sample'      => $sample,
 			'sample_last' => end( $data ),
 			'encoding'    => $encoding,
-			'insert'      => array(
+			'extra_map'   => array(
 				'referer' => 'import',
 			),
 		);

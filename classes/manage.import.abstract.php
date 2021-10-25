@@ -16,11 +16,11 @@ abstract class MailsterImport {
 	abstract protected function init();
 
 	public function get_slug() {
-		return $this->slug;
+		return strtolower( $this->slug );
 	}
 
 	protected function update_credentials( $data ) {
-		set_transient( 'mailster_importer_credentials_' . $this->slug, $data, 16 );
+		set_transient( 'mailster_importer_credentials_' . $this->slug, $data, 360 );
 		$this->credentials = $data;
 	}
 
@@ -51,7 +51,7 @@ abstract class MailsterImport {
 
 		if ( isset( $data['lists'] ) ) {
 
-			$this->get_sample_data( $data['lists'] );
+			// $this->get_sample_data( $data['lists'] );
 
 			mailster( 'manage' )->import_handler( $slug );
 
@@ -79,7 +79,7 @@ abstract class MailsterImport {
 		return true;
 	}
 
-	abstract protected function get_import_part( $import_data);
+	abstract protected function get_import_part( &$import_data );
 	abstract protected function get_import_data();
 
 	public function import_options( $data = null ) {
@@ -100,18 +100,26 @@ abstract class MailsterImport {
 		// get credentials form if we need it
 		if ( method_exists( $this, 'credentials_form' ) && ! $this->get_credentials() ) :
 
-				$this->credentials_form();
-				submit_button( __( 'Next Step', 'mailster' ) . '  &#x2192;', 'primary', 'submit' );
+			$this->credentials_form();
+			submit_button( __( 'Next Step', 'mailster' ) . '  &#x2192;', 'primary', 'submit' );
 
 		else :
 
-			$lists = $this->get_lists();
+			$lists    = $this->get_lists();
+			$statuses = $this->get_statuses();
 			?>
-		  <ul>
+			<p><strong><?php esc_html_e( 'Please select the lists you like to import.', 'mailster' ); ?></strong></p>
+			<ul>
 			<?php foreach ( $lists as $list ) : ?>
-			  <li><label><input type="checkbox" name="lists[]" value="<?php echo esc_attr( $list['id'] ); ?>" checked> <?php echo esc_html( $list['name'] ); ?></label></li>
+				<li><label><input type="checkbox" name="lists[]" value="<?php echo esc_attr( $list['id'] ); ?>" checked> <?php echo esc_html( $list['name'] ); ?></label></li>
 			<?php endforeach; ?>
-		  </ul>
+			</ul>
+			<p><strong><?php esc_html_e( 'Please select the statuses you like to import.', 'mailster' ); ?></strong></p>
+			<ul>
+			<?php foreach ( $statuses as $status ) : ?>
+				<li><label><input type="checkbox" name="statuses[]" value="<?php echo esc_attr( $status['id'] ); ?>" checked> <?php echo esc_html( $status['name'] ); ?></label></li>
+			<?php endforeach; ?>
+			</ul>
 			<?php submit_button( __( 'Next Step', 'mailster' ) . '  &#x2192;', 'primary', 'submit' ); ?>
 
 		<?php endif; ?>
@@ -125,7 +133,7 @@ abstract class MailsterImport {
 
 
 
-	public function sanitize_raw_data( $raw_data, $offset = 0, $limit = null, $include_header = true ) {
+	public function sanitize_raw_data( $raw_data, $offset = 0, $limit = null ) {
 
 		$raw_data = ( trim( str_replace( array( "\r", "\r\n", "\n\n" ), "\n", $raw_data ) ) );
 
@@ -154,7 +162,7 @@ abstract class MailsterImport {
 			if ( ! isset( $lines[ $i ] ) ) {
 				continue;
 			}
-			$line = $lines[ $i ];
+			$line = trim( $lines[ $i ] );
 
 			// handle if separator is used in a column
 			if ( preg_match_all( '/("([^"]*)")/', $line, $match ) ) {
@@ -183,20 +191,13 @@ abstract class MailsterImport {
 					break;
 				}
 			}
-			// only first row (header) or with email
-			if ( $has_email ) {
-				$data[] = $line;
-			} elseif ( ! isset( $data['header'] ) && ! $has_email && ! $offset && $include_header ) {
-				// add one row if there's a header
-				if ( $limit ) {
-					$limit++;
-				}
-				// still can contain a double quote
-				$data['header'] = str_replace( '"', '', $line );
 
+			if ( $i == 0 && ! $has_email ) {
+				$data['header'] = $line;
+			} elseif ( $has_email ) {
+				$data[] = $line;
 			}
 		}
-
 		return $data;
 	}
 

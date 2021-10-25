@@ -14,10 +14,10 @@ class MailsterImportWordPress extends MailsterImport {
 	function init() {}
 
 
-	public function get_import_part( $import_data ) {
+	public function get_import_part( &$import_data ) {
 
 		$limit  = $import_data['performance'] ? 10 : 500;
-		$offset = $import_data['part'];
+		$offset = $import_data['page'] - 1;
 
 		$result = $this->query(
 			array(
@@ -51,25 +51,24 @@ class MailsterImportWordPress extends MailsterImport {
 
 		$header = array_merge(
 			array(
-				mailster_text( 'email' ),
-				mailster_text( 'firstname' ),
-				mailster_text( 'lastname' ),
+				'email'           => mailster_text( 'email' ),
+				'firstname'       => mailster_text( 'firstname' ),
+				'lastname'        => mailster_text( 'lastname' ),
 				esc_html__( 'login', 'mailster' ),
 				esc_html__( 'nickname', 'mailster' ),
 				esc_html__( 'display name', 'mailster' ),
-				esc_html__( 'registered', 'mailster' ),
+				'_confirm_signup' => esc_html__( 'registered', 'mailster' ),
 				esc_html__( 'roles', 'mailster' ),
 			),
 			$meta_values
 		);
 
 		return array(
-			'total'   => $result['total'],
-			'removed' => 0,
-			'header'  => $header,
-			'sample'  => $result['data'],
-			'extra'   => $data,
-			'insert'  => array(
+			'total'     => $result['total'],
+			'header'    => $header,
+			'sample'    => $result['data'],
+			'extra'     => $data,
+			'extra_map' => array(
 				'referer' => 'wpuser',
 			),
 		);
