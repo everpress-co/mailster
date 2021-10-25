@@ -74,11 +74,11 @@ class MailsterSubscribers {
 
 	public function script_styles() {
 
+		global $wp_locale;
+
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		if ( isset( $_GET['ID'] ) || isset( $_GET['new'] ) ) :
-
-			global $wp_locale;
 
 			wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 			wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
@@ -115,6 +115,15 @@ class MailsterSubscribers {
 
 		else :
 
+			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+			wp_enqueue_script( 'jquery' );
+			wp_enqueue_script( 'jquery-ui-datepicker' );
+
+			wp_enqueue_style( 'thickbox' );
+			wp_enqueue_script( 'thickbox' );
+
 			wp_enqueue_style( 'mailster-subscribers-table', MAILSTER_URI . 'assets/css/subscribers-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-subscribers-table', MAILSTER_URI . 'assets/js/subscribers-table-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 			mailster_localize_script(
@@ -122,9 +131,20 @@ class MailsterSubscribers {
 				array(
 					'onbeforeunload' => esc_html__( 'Bulk process in progress!', 'mailster' ),
 					'initprogess'    => sprintf( esc_html__( 'processing page %d', 'mailster' ), 1 ),
+					'filters'        => esc_html__( 'Add filters', 'mailster' ),
 				)
 			);
-
+			mailster_localize_script(
+				'conditions',
+				array(
+					'next'          => esc_html__( 'next', 'mailster' ),
+					'prev'          => esc_html__( 'prev', 'mailster' ),
+					'start_of_week' => get_option( 'start_of_week' ),
+					'day_names'     => $wp_locale->weekday,
+					'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
+					'month_names'   => array_values( $wp_locale->month ),
+				)
+			);
 		endif;
 
 	}
@@ -192,10 +212,11 @@ class MailsterSubscribers {
 			$args = $_GET;
 			unset( $args['post_type'], $args['page'] );
 
-			$status  = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
-			$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
-			$order   = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
-			$offset  = $page * $limit;
+			$status     = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
+			$conditions = isset( $_GET['conditions'] ) ? (array) $_GET['conditions'] : null;
+			$orderby    = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
+			$order      = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
+			$offset     = $page * $limit;
 
 			if ( in_array( $action, array( 'subscribed', 'unsubscribed', 'pending' ) ) ) {
 				$offset = 0;
@@ -206,19 +227,17 @@ class MailsterSubscribers {
 				$offset = 0;
 			}
 
-			$subscriber_ids = mailster( 'subscribers' )->query(
-				wp_parse_args(
-					$args,
-					array(
-						'status'     => $status,
-						'limit'      => $limit,
-						'offset'     => $offset,
-						'orderby'    => $orderby,
-						'order'      => $order,
-						'return_ids' => true,
-					)
-				)
+			$query_args = array(
+				'status'     => $status,
+				'conditions' => $conditions,
+				'limit'      => $limit,
+				'offset'     => $offset,
+				'orderby'    => $orderby,
+				'order'      => $order,
+				'return_ids' => true,
 			);
+
+			$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
 
 			$page++;
 			$finished = ( $page == ceil( $total / $limit ) );
@@ -2108,41 +2127,21 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $status (optional)
+	 * @param unknown $status
+	 * @param unknown $args (optional)
 	 * @return unknown
 	 */
-	public function get_count_by_status( $status = null ) {
+	public function get_count_by_status( $status, $args = array() ) {
 
-		global $wpdb;
+		$args = wp_parse_args(
+			array(
+				'status'       => $status,
+				'return_count' => true,
+			),
+			$args
+		);
 
-		if ( false === ( $counts = mailster_cache_get( 'get_count_by_status' ) ) ) {
-
-			$sql = "SELECT status, COUNT( a.ID ) AS count FROM {$wpdb->prefix}mailster_subscribers AS a GROUP BY status";
-
-			$sql = apply_filters( 'mailster_subscribers_get_count_by_status', $sql );
-
-			$result = $wpdb->get_results( $sql );
-
-			$counts = array();
-
-			foreach ( $result as $row ) {
-				$counts[ $row->status ] = $row->count;
-			}
-
-			mailster_cache_add( 'get_count_by_status', $counts );
-
-		}
-
-		if ( is_string( $status ) ) {
-			$status = $this->get_status_by_name( $status );
-		}
-
-		// return all
-		return ( is_null( $status ) ) ? $counts :
-		// only defined ones (array)
-		( is_array( $status ) ? array_intersect_key( $counts, array_flip( $status ) ) :
-			// only a specific if set
-			( isset( $counts[ $status ] ) ? $counts[ $status ] : 0 ) );
+		return $this->query( $args );
 
 	}
 

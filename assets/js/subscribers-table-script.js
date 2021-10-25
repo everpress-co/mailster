@@ -6,6 +6,30 @@ mailster = (function (mailster, $, window, document) {
 		count,
 		per_page;
 
+	mailster.$.document
+		.on('click', '#filter, .mailster-condition-render-group', function () {
+			tb_show(
+				mailster.l10n.subscribers.filters,
+				'#TB_inline?x=1&width=720&height=520&inlineId=mailster-subscriber-conditions',
+				null
+			);
+			return false;
+		})
+		.on('click', '#apply-filter', function () {
+			var query = mailster.conditions.serialize();
+			var search = new URLSearchParams(window.location.search);
+			var params = Object.fromEntries(search.entries());
+			var filtererd = getFilteredParams(params, 'conditions');
+			var queryString = Object.keys(filtererd)
+				.map((key) => key + '=' + filtererd[key])
+				.join('&');
+
+			if (search.toString() != queryString + '&' + query) {
+				window.location.search = queryString + '&' + query;
+			}
+			tb_remove();
+		})
+		.on('click', '#close-filter', tb_remove);
 	$('#subscribers-overview-form')
 		.on('change', '#cb-select-all-1, #cb-select-all-2', function () {
 			var $input = $('#all_subscribers'),
@@ -26,7 +50,7 @@ mailster = (function (mailster, $, window, document) {
 				subscriber_cb.prop('disabled', false);
 			}
 		})
-		.on('submit', function (event) {
+		.on('submit', '#subscribers-overview-form', function (event) {
 			var $this = $(this),
 				$input = $('#all_subscribers');
 
@@ -55,6 +79,28 @@ mailster = (function (mailster, $, window, document) {
 				});
 			}
 		});
+
+	function getFilteredParams(params, filteredString) {
+		let obj = {};
+		for (const key in params) {
+			if (key.indexOf(filteredString) == -1) {
+				obj[key] = params[key];
+			}
+		}
+		return obj;
+	}
+
+	function removeURLParameter(param, url) {
+		url = url.split('?');
+		var path = url.length == 1 ? '' : url[1];
+		path = path.replace(
+			new RegExp('&?' + param + '\\[\\d*\\]=[\\w]+', 'g'),
+			''
+		);
+		path = path.replace(new RegExp('&?' + param + '=[\\w]+', 'g'), '');
+		path = path.replace(/^&/, '');
+		return url[0] + (path.length ? '?' + path : '');
+	}
 
 	function do_batch(data, page, cb) {
 		if (!page) page = 0;

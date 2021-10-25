@@ -56,16 +56,30 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	public function get_views() {
 
-		$counts        = mailster( 'subscribers' )->get_count_by_status();
-		$statuses      = mailster( 'subscribers' )->get_status();
-		$statuses_nice = mailster( 'subscribers' )->get_status( null, true );
-		$link          = admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' );
-		$views         = array(
-			'view-all' => '<a href="' . remove_query_arg( 'status', $link ) . '">' . esc_html__( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( array_sum( $counts ) ) . ')</span></a>',
+		$total    = mailster( 'subscribers' )->get_count_by_status(
+			false,
+			array(
+				'conditions' => $this->conditions,
+				'lists'      => $this->lists,
+				's'          => $this->search,
+			)
+		);
+		$statuses = mailster( 'subscribers' )->get_status( null, true );
+		$views    = array(
+			'view-status-all' => '<a href="' . remove_query_arg( 'status' ) . '" class="' . ( $this->status === null ? 'current' : '' ) . '">' . esc_html__( 'All', 'mailster' ) . ' <span class="count">(' . number_format_i18n( $total ) . ')</span></a>',
 		);
 
-		foreach ( $counts as $id => $count ) {
-			$views[ 'view-' . $statuses[ $id ] ] = '<a href="' . add_query_arg( array( 'status' => $id ), $link ) . '">' . $statuses_nice[ $id ] . ' <span class="count">(' . number_format_i18n( $count ) . ')</span></a>';
+		foreach ( $statuses as $id => $status ) {
+			if ( $count = mailster( 'subscribers' )->get_count_by_status(
+				$id,
+				array(
+					'conditions' => $this->conditions,
+					'lists'      => $this->lists,
+					's'          => $this->search,
+				)
+			) ) {
+				$views[ 'view-status-' . $id ] = '<a href="' . add_query_arg( array( 'status' => $id ) ) . '" class="' . ( $this->status === $id ? 'current' : '' ) . '">' . esc_html( $status ) . ' <span class="count">(' . number_format_i18n( $count ) . ')</span></a>';
+			}
 		}
 
 		return $views;
@@ -110,16 +124,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 * @param unknown $input_id
 	 */
 	public function search_box( $text, $input_id ) {
-
-		if ( ! count( $this->items ) && ! isset( $this->search ) ) {
-			return;
-		}
-
-		if ( $this->conditions ) {
-			mailster( 'conditions' )->render( $this->conditions );
-		}
-
 		?>
+
 		<?php if ( 5 == $this->status ) : ?>
 		<div class="notice notice-error error">
 			<p><strong><?php printf( esc_html__( 'These subscribers are marked as "deleted" and will be removed automatically after %d days at the earliest.', 'mailster' ), 14 ); ?></strong></p>
@@ -127,8 +133,22 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		<?php endif; ?>
 
 	<form id="searchform" action method="get">
+
 		<?php if ( $this->post_type ) : ?>
 			<input type="hidden" name="post_type" value="<?php echo esc_attr( $this->post_type ); ?>">
+		<?php endif; ?>
+		<?php if ( $this->conditions ) : ?>
+		<div id="mailster-filter-wrap" class="align-right clear">
+			<div id="mailster-conditions-render">
+				<?php mailster( 'conditions' )->render( $_GET['conditions'] ); ?>
+			<a href="<?php echo remove_query_arg( 'conditions' ); ?>" class="button button-small"><?php esc_html_e( 'Clear Filters', 'mailster' ); ?></a>
+			<a href="<?php echo add_query_arg( array( 'conditions' => $this->conditions ), admin_url( 'post-new.php?post_type=newsletter' ) ); ?>" class="button button-small"><?php esc_html_e( 'Create Campaign', 'mailster' ); ?></a>
+			</div>
+		</div>
+
+	<?php endif; ?>
+		<?php if ( isset( $_GET['post_type'] ) ) : ?>
+			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>">
 		<?php endif; ?>
 		<?php if ( $this->page ) : ?>
 			<input type="hidden" name="page" value="<?php echo esc_attr( $this->page ); ?>">
@@ -144,12 +164,27 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				<input type="hidden" name="lists[]" value="<?php echo esc_attr( $list_id ); ?>">
 			<?php endforeach ?>
 		<?php endif; ?>
-	<p class="search-box">
-		<label class="screen-reader-text" for="sa-search-input"><?php echo esc_html( $text ); ?></label>
-		<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php esc_attr( $this->search ); ?>">
-		<input type="submit" name="" id="search-submit" class="button" value="<?php echo esc_attr( $text ); ?>">
-	</p>
+
+		<p class="search-box">
+			<label class="screen-reader-text" for="sa-search-input"><?php echo esc_html( $text ); ?></label>
+			<input type="search" id="<?php echo $input_id; ?>" name="s" value="<?php echo esc_attr( $this->search ); ?>">
+			<input type="submit" name="" id="search-submit" class="button" value="<?php echo esc_attr( $text ); ?>">
+			<a id="filter" class="button"><?php esc_html_e( 'Filter', 'mailster' ); ?></a>
+		</p>
+
 	</form>
+
+	<div id="mailster-subscriber-conditions" style="display:none;">
+		<div class="mailster-subscriber-conditions-thickbox">
+				<div class="inner">
+					<?php mailster( 'conditions' )->view( $this->conditions ); ?>
+				</div>
+				<div class="foot">
+					<button class="button button-primary" id="apply-filter"><?php esc_html_e( 'Filter', 'mailster' ); ?></button>
+					<button class="button" id="close-filter"><?php esc_html_e( 'Close', 'mailster' ); ?></button>
+				</div>
+		</div>
+	</div>
 		<?php
 	}
 
@@ -173,7 +208,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 */
 	private function searchmark( $string, $search = null ) {
 
-		if ( is_null( $search ) && isset( $this->search ) ) {
+		if ( is_null( $search ) && $this->search ) {
 			$search = stripslashes( $this->search );
 		}
 
@@ -190,7 +225,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 	}
 
-
 	/**
 	 *
 	 *
@@ -206,7 +240,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 			case 'name':
 				if ( get_option( 'show_avatars' ) ) {
-					$avatar = '<div class="mailster-avatar"><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '"><span class="mailster-avatar-40' . ( $item->wp_id ? ' wp-user' : '' ) . '" style="background-image:url(' . mailster( 'subscribers' )->get_gravatar_uri( $item->email, 80 ) . ')"></span></a></div>';
+					$initials = trim( preg_replace( '/[^A-Z]+/', '', ucwords( $data['fullname'] ) ) );
+					$avatar   = '<div class="mailster-avatar"><a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers&ID=' . $item->ID ) . '"><span class="mailster-avatar-40' . ( $item->wp_id ? ' wp-user' : '' ) . '" style="background-image:url(' . mailster( 'subscribers' )->get_gravatar_uri( $item->email, 80 ) . ')"></span></a></div>';
 				} else {
 					$avatar = '';
 				}
@@ -233,11 +268,13 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 				$lists = mailster( 'subscribers' )->get_lists( $item->ID );
 				$tags  = mailster( 'subscribers' )->get_tags( $item->ID );
 
+				$lists_get = isset( $_GET['lists'] ) ? (array) $_GET['lists'] : array();
+
 				$list_elements = array();
 				$tag_elements  = array();
 
 				foreach ( $lists as $i => $list ) {
-					$list_elements[] = '<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '" title="' . ( $list->confirmed ? esc_attr__( 'confirmed', 'mailster' ) : esc_attr__( 'not confirmed', 'mailster' ) ) . '" class="' . ( $list->confirmed ? 'confirmed' : 'not-confirmed' ) . '">' . esc_html( $list->name ) . '</a>';
+					$list_elements[] = '<a href="edit.php?post_type=newsletter&page=mailster_lists&ID=' . $list->ID . '" title="' . ( $list->confirmed ? sprintf( esc_attr__( 'confirmed %s ago', 'mailster' ), human_time_diff( $list->confirmed ) ) : esc_attr__( 'not confirmed', 'mailster' ) ) . '" class="' . ( $list->confirmed ? 'confirmed' : 'not-confirmed' ) . '">' . ( in_array( $list->ID, $lists_get ) ? '<span class="highlight wp-ui-text-highlight">' . esc_html( $list->name ) . '</span>' : esc_html( $list->name ) ) . '</a>';
 				}
 				foreach ( $tags as $i => $tag ) {
 					$tag_elements[] = '<span class="mailster-tag">' . esc_html( $tag->name ) . '</span>';

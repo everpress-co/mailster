@@ -202,7 +202,165 @@ mailster = (function (mailster, $, window, document) {
 				showAnim: 'fadeIn',
 			});
 		}
+
+		function get_conditions(args) {
+			var lists = [],
+				conditions = [],
+				inputs = $('#list-checkboxes').find('input, select'),
+				listinputs = $('#list-checkboxes').find('input.list'),
+				extra = $('#list_extra'),
+				data = {},
+				groups = $(
+					'.mailster-conditions-wrap > .mailster-condition-group'
+				),
+				i = 0;
+
+			$.each(listinputs, function () {
+				var id = $(this).val();
+				if ($(this).is(':checked')) lists.push(id);
+			});
+
+			data.id = mailster.campaign_id;
+			data.lists = lists;
+			data.ignore_lists = $('#ignore_lists').is(':checked');
+
+			$.each(groups, function () {
+				var c = $(this).find('.mailster-condition');
+				$.each(c, function () {
+					var _this = $(this),
+						value,
+						field = _this.find('.condition-field').val(),
+						operator = _this
+							.find('.mailster-conditions-operator-field.active')
+							.find('.condition-operator')
+							.val();
+
+					if (!operator || !field) return;
+
+					value = _this
+						.find('.mailster-conditions-value-field.active')
+						.find('.condition-value')
+						.map(function () {
+							return $(this).val();
+						})
+						.toArray();
+					if (value.length == 1) {
+						value = value[0];
+					}
+					if (!conditions[i]) {
+						conditions[i] = [];
+					}
+
+					conditions[i].push({
+						field: field,
+						operator: operator,
+						value: value,
+					});
+				});
+				i++;
+			});
+
+			data.operator = $('select.mailster-list-operator').val();
+			data.conditions = conditions;
+
+			if (args) {
+				data = $.extend(args, data);
+			}
+
+			return data;
+		}
 	});
+
+	function get_conditions(args) {
+		var lists = [],
+			conditions = [],
+			inputs = $('#list-checkboxes').find('input, select'),
+			listinputs = $('#list-checkboxes').find('input.list'),
+			extra = $('#list_extra'),
+			data = {},
+			groups = $('.mailster-conditions-wrap > .mailster-condition-group'),
+			i = 0;
+
+		$.each(listinputs, function () {
+			var id = $(this).val();
+			if ($(this).is(':checked')) lists.push(id);
+		});
+
+		data.id = mailster.campaign_id;
+		data.lists = lists;
+		data.ignore_lists = $('#ignore_lists').is(':checked');
+
+		$.each(groups, function () {
+			var c = $(this).find('.mailster-condition');
+			$.each(c, function () {
+				var _this = $(this),
+					value,
+					field = _this.find('.condition-field').val(),
+					operator = _this
+						.find('.mailster-conditions-operator-field.active')
+						.find('.condition-operator')
+						.val();
+
+				if (!operator || !field) return;
+
+				value = _this
+					.find('.mailster-conditions-value-field.active')
+					.find('.condition-value')
+					.map(function () {
+						return $(this).val();
+					})
+					.toArray();
+				if (value.length == 1) {
+					value = value[0];
+				}
+				if (!conditions[i]) {
+					conditions[i] = [];
+				}
+
+				conditions[i].push({
+					field: field,
+					operator: operator,
+					value: value,
+				});
+			});
+			i++;
+		});
+
+		data.operator = $('select.mailster-list-operator').val();
+		data.conditions = conditions;
+
+		if (args) {
+			data = $.extend(args, data);
+		}
+
+		return data;
+	}
+
+	function serialize(prefix) {
+		var params = get_conditions();
+
+		return _map_object(params.conditions, prefix || 'conditions');
+	}
+
+	function _map_object(obj, prefix) {
+		var str = [],
+			p;
+		for (p in obj) {
+			if (obj.hasOwnProperty(p)) {
+				var k = prefix ? prefix + '[' + p + ']' : p,
+					v = obj[p];
+				str.push(
+					v !== null && typeof v === 'object'
+						? _map_object(v, k)
+						: encodeURIComponent(k) + '=' + encodeURIComponent(v)
+				);
+			}
+		}
+		return str.join('&');
+	}
+
+	mailster.conditions.get = get_conditions;
+	mailster.conditions.serialize = serialize;
 
 	return mailster;
 })(mailster || {}, jQuery, window, document);
