@@ -35,7 +35,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		add_filter( 'manage_newsletter_page_mailster_subscribers_columns', array( &$this, 'get_columns' ) );
 
 		$this->post_type  = isset( $_GET['post_type'] ) ? $_GET['post_type'] : null;
-		$this->page       = isset( $_GET['page'] ) ? (int) $_GET['page'] : null;
+		$this->page       = isset( $_GET['page'] ) ? $_GET['page'] : null;
 		$this->paged      = isset( $_GET['paged'] ) ? (int) $_GET['paged'] - 1 : null;
 		$this->status     = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
 		$this->lists      = isset( $_GET['lists'] ) ? array_filter( (array) $_GET['lists'], 'is_numeric' ) : null;

@@ -49,7 +49,7 @@ mailster = (function (mailster, $, window, document) {
 			var data = form.serialize();
 			var slug = form.data('slug');
 
-			form.prop('readonly', true).css('opacity', 0.8);
+			form.prop('readonly', true).addClass('loading');
 
 			mailster.util.ajax(
 				'importer_form_submit',
@@ -58,13 +58,15 @@ mailster = (function (mailster, $, window, document) {
 					slug: slug,
 				},
 				function (response) {
-					form.prop('readonly', false).css('opacity', 1);
-					if (response.html) {
-						form.replaceWith(response.html);
-					}
-					if (response.identifier) {
-						importidentifier = response.identifier;
-						get_import_data();
+					form.prop('readonly', false).removeClass('loading');
+					if (response.success) {
+						if (response.data.html) {
+							form.replaceWith(response.data.html);
+						}
+						if (response.data.identifier) {
+							importidentifier = response.data.identifier;
+							get_import_data();
+						}
 					}
 				}
 			);
@@ -226,9 +228,9 @@ mailster = (function (mailster, $, window, document) {
 			uploader.bind('FileUploaded', function (up, file, response) {
 				response = JSON.parse(response.response);
 				if (response.success) {
-					importidentifier = response.identifier;
+					importidentifier = response.data.identifier;
 				} else {
-					uploadinfo.html(response.message);
+					uploadinfo.html(response.data.message);
 					up.refresh();
 				}
 			});
@@ -248,22 +250,10 @@ mailster = (function (mailster, $, window, document) {
 			'import_subscribers_upload_handler',
 			data,
 			function (response) {
-				console.warn(response);
-				importidentifier = response.identifier;
-				get_import_data();
-				return;
 				if (response.success) {
-					if (response.finished) {
-						get_import_data();
-					} else {
-						data['offset'] = (data['offset'] || 0) + 1;
-						data['identifier'] = response.identifier;
-						prepare_import(data);
-					}
-				} else {
-					importstatus.html(response.message).removeClass('spinner');
+					importidentifier = response.data.identifier;
+					get_import_data();
 				}
-				$(this).prop('readonly', false).css('opacity', 1);
 			},
 			function () {
 				importstatus.html('Error');
@@ -291,31 +281,30 @@ mailster = (function (mailster, $, window, document) {
 					percentage =
 						Math.min(
 							1,
-							(response.imported + response.errors) /
-								response.total
+							(response.data.imported + response.data.errors) /
+								response.data.total
 						) * 100;
 
 					importstatus.html(
 						get_stats(
-							response.f_imported,
-							response.f_errors,
-							response.f_total,
+							response.data.f_imported,
+							response.data.f_errors,
+							response.data.f_total,
 							percentage,
-							response.memoryusage
+							response.data.memoryusage
 						)
 					);
 
 					finished = percentage >= 100;
 					if (finished) {
 						window.onbeforeunload = null;
-						$('.import-result').html(response.html);
+						$('.import-result').html(response.data.html);
 						scroll_to_content_top();
-						console.log(response);
 					} else {
 						do_import(++id, options);
 					}
 				} else {
-					upload_error_handler(response.msg);
+					upload_error_handler(response.data.msg);
 				}
 			},
 			function (jqXHR, textStatus, errorThrown) {
@@ -343,25 +332,27 @@ mailster = (function (mailster, $, window, document) {
 				identifier: importidentifier,
 			},
 			function (response) {
-				scroll_to_content_top();
+				if (response.success) {
+					scroll_to_content_top();
 
-				$('.import-result').eq(0).html(response.html).show();
-				$('.import-wrap').hide();
+					$('.import-result').eq(0).html(response.data.html).show();
+					$('.import-wrap').hide();
 
-				$('input.datepicker').datepicker({
-					dateFormat: 'yy-mm-dd',
-					showAnim: 'fadeIn',
-					onClose: function () {},
-				});
-
-				$.fn.select2 &&
-					$('.tags-input').select2({
-						placeholder: mailster.l10n.manage.choose_tags,
-						tags: true,
-						theme: 'mailster',
+					$('input.datepicker').datepicker({
+						dateFormat: 'yy-mm-dd',
+						showAnim: 'fadeIn',
+						onClose: function () {},
 					});
 
-				importstatus = $('.status');
+					$.fn.select2 &&
+						$('.tags-input').select2({
+							placeholder: mailster.l10n.manage.choose_tags,
+							tags: true,
+							theme: 'mailster',
+						});
+
+					importstatus = $('.status');
+				}
 			}
 		);
 	}
@@ -393,11 +384,10 @@ mailster = (function (mailster, $, window, document) {
 				step: 'install',
 			},
 			function (response) {
+				console.warn(response);
 				if (response.success) {
 				} else {
 				}
-
-				busy = false;
 			},
 			function (jqXHR, textStatus, errorThrown) {}
 		);

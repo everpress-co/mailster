@@ -70,7 +70,7 @@ abstract class MailsterImport {
 
 		}
 
-		wp_send_json( $return );
+		wp_send_json_success( $return );
 
 	}
 

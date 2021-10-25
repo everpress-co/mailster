@@ -202,9 +202,7 @@ class MailsterSubscribers {
 				if ( ! $status ) {
 					$args['status__not_in'] = $this->get_status_by_name( $action );
 				}
-			} elseif ( 'delete' == $action ) {
-				$offset = 0;
-			} elseif ( 'empty_trash' == $action ) {
+			} elseif ( in_array( $action, array( 'delete', 'delete_actions', 'empty_trash' ) ) ) {
 				$offset = 0;
 			}
 
@@ -240,7 +238,11 @@ class MailsterSubscribers {
 					$redirect = remove_query_arg( 'status' );
 			case 'empty_trash':
 				if ( current_user_can( 'mailster_delete_subscribers' ) ) {
-					$args = array( 'include' => $subscriber_ids );
+					if ( ! empty( $subscriber_ids ) ) {
+						$args = array( 'include' => $subscriber_ids );
+					} else {
+						$args = array();
+					}
 					if ( $count = $this->empty_trash( $args ) ) {
 						$success_message = sprintf( esc_html__( '%d Subscribers permanently deleted.', 'mailster' ), $count );
 					}

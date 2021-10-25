@@ -140,3 +140,25 @@ details > div {
 	left: 0;
 	right: 0;
 }
+
+.importer-form {
+	position: relative;
+}
+
+.importer-form.loading {
+	opacity: 0.8;
+}
+
+.importer-form.loading:before {
+	content: '';
+	position: absolute;
+	left: -1em;
+	right: 0;
+	display: block;
+	bottom: 0;
+	top: 0;
+	background-position: 10% center;
+	background-repeat: no-repeat;
+	background-image: url(../img/loading.gif) !important;
+	background-color: rgba(255, 255, 255, 0.7);
+}

@@ -158,12 +158,26 @@ class MailsterManage {
 		$type       = isset( $_POST['type'] ) ? basename( $_POST['type'] ) : $type;
 		$identifier = isset( $_POST['identifier'] ) ? basename( $_POST['identifier'] ) : uniqid();
 
+		$import_data = $this->integrations[ $type ]->get_import_data();
+		if ( is_wp_error( $import_data ) ) {
+			$return['msg'] = $import_data->get_error_message();
+			wp_send_json_error( $return );
+			exit;
+		}
+
+		if ( ! isset( $import_data['sample'] ) || empty( $import_data['sample'] ) ) {
+			$return['msg'] = esc_html__( 'Your selection doesn\'t contain any subscriber', 'mailster' );
+			wp_send_json_error( $return );
+			exit;
+		}
+
 		$import_data = wp_parse_args(
-			$this->integrations[ $type ]->get_import_data(),
+			$import_data,
 			array(
 				'header'    => null,
 				'removed'   => 0,
 				'extra_map' => array(),
+				'defaults'  => array(),
 			)
 		);
 
@@ -171,12 +185,21 @@ class MailsterManage {
 		$import_data['identifier'] = $identifier;
 		$import_data['page']       = 1;
 
+		$import_data['defaults'] = wp_parse_args(
+			$import_data['defaults'],
+			array(
+				'status'      => 1,
+				'existing'    => 'skip',
+				'signup'      => true,
+				'performance' => false,
+			)
+		);
+
 		update_option( 'mailster_bulk_import_' . $identifier, $import_data, 'no' );
 
-		$return['success']    = true;
 		$return['identifier'] = $identifier;
 
-		wp_send_json( $return );
+		wp_send_json_success( $return );
 
 	}
 
@@ -185,22 +208,19 @@ class MailsterManage {
 
 		global $wpdb;
 
-		$return['success'] = false;
-
-		$this->ajax_nonce( json_encode( $return ) );
+		$this->ajax_nonce();
 
 		if ( ! current_user_can( 'mailster_import_subscribers' ) ) {
 
-			wp_send_json( $return );
+			wp_send_json_error( $return );
 		}
 
 		$return['identifier'] = $identifier = $_POST['identifier'];
 
 		$import_data = get_option( 'mailster_bulk_import_' . $identifier );
-
-		$data  = $import_data['sample'];
-		$first = $data[0];
-		$last  = end( $data );
+		$data        = $import_data['sample'];
+		$first       = $data[0];
+		$last        = end( $data );
 		reset( $data );
 
 		$firstline    = $first[0];
@@ -208,6 +228,7 @@ class MailsterManage {
 		$contactcount = $import_data['total'];
 		$samplecount  = count( $data );
 		$removed      = $import_data['removed'];
+		$defaults     = $import_data['defaults'];
 		$header       = is_array( $import_data['header'] ) ? array_values( $import_data['header'] ) : null;
 		$map          = is_array( $import_data['header'] ) ? array_keys( $import_data['header'] ) : null;
 
@@ -235,7 +256,7 @@ class MailsterManage {
 		$meta_other = array(
 			'_lists'      => esc_html__( 'Lists', 'mailster' ) . ' (' . esc_html__( 'comma separated', 'mailster' ) . ')',
 			'_tags'       => esc_html__( 'Tags', 'mailster' ) . ' (' . esc_html__( 'comma separated', 'mailster' ) . ')',
-			'_status'     => esc_html__( 'Status', 'mailster' ) . ' [0...4]',
+			'_status'     => esc_html__( 'Status', 'mailster' ),
 			'_lang'       => esc_html__( 'Language', 'mailster' ),
 			'_timeoffset' => esc_html__( 'Timeoffset to UTC', 'mailster' ),
 			'_timezone'   => esc_html__( 'Timezone', 'mailster' ),
@@ -323,7 +344,9 @@ class MailsterManage {
 			}
 			$html .= '<tr>';
 		}
-		if ( $contactcount > $samplecount ) {
+		error_log( print_r( $contactcount, true ) );
+		error_log( print_r( $samplecount, true ) );
+		if ( $contactcount > $samplecount + 1 ) {
 			$html .= '<tr class="' . ( $i++ % 2 ? '' : 'alternate' ) . '"><td>&nbsp;</td><td colspan="' . ( $cols ) . '"><i>&hellip;' . sprintf( esc_html__( '%s contacts are hidden', 'mailster' ), number_format_i18n( $contactcount - $samplecount - 1 ) ) . '&hellip;</i></td></tr>';
 
 			if ( isset( $import_data['sample_last'] ) ) {
@@ -331,8 +354,10 @@ class MailsterManage {
 				foreach ( $import_data['sample_last'] as $cell ) {
 					$html .= '<td title="' . esc_attr( strip_tags( $cell ) ) . '">' . esc_html( $cell ) . '</td>';
 				}
-				$html .= '<tr>';
+				$html .= '</tr>';
 			}
+		} else {
+			$html .= '<tr class="' . ( $i++ % 2 ? '' : 'alternate' ) . '"><td>&nbsp;</td><td colspan="' . ( $cols ) . '"><i>&hellip;' . sprintf( esc_html__( '%s total contacts', 'mailster' ), number_format_i18n( $contactcount ) ) . '&hellip;</i></td></tr>';
 		}
 		$html .= '</tbody>';
 		$html .= '</table>';
@@ -340,6 +365,7 @@ class MailsterManage {
 		$html .= '</section>';
 		$html .= '<h4>' . esc_html__( 'Add contacts to following lists', 'mailster' ) . ':</h4>';
 		$html .= '<section id="section-lists">';
+		$html .= '<p class="howto">' . esc_html__( 'Lists can also be matched above.', 'mailster' ) . '</p>';
 		$html .= '<ul>';
 		$lists = mailster( 'lists' )->get( null, null, true );
 		if ( $lists && ! is_wp_error( $lists ) ) {
@@ -369,11 +395,11 @@ class MailsterManage {
 		$html    .= '<p>';
 		$statuses = mailster( 'subscribers' )->get_status( null, true );
 		foreach ( $statuses as $i => $name ) {
-			if ( in_array( $i, array( 4, 5, 6 ) ) ) {
+			if ( in_array( $i, array( 4, 5 ) ) ) {
 				continue;
 			}
 
-			$html .= '<label><input type="radio" name="status" value="' . (int) $i . '" ' . checked( 1, $i, false ) . '> ' . esc_html( $name ) . ' </label>';
+			$html .= '<label><input type="radio" name="status" value="' . (int) $i . '" ' . checked( $defaults['status'], $i, false ) . '> ' . esc_html( $name ) . ' </label>';
 		}
 		$html .= '</p>';
 		$html .= '<p class="description">' . esc_html__( 'The status will be applied to contacts if no other is defined via the columns.', 'mailster' ) . '</p>';
@@ -382,13 +408,17 @@ class MailsterManage {
 		$html .= '</section>';
 		$html .= '<h4>' . esc_html__( 'Existing subscribers', 'mailster' ) . '</h4>';
 		$html .= '<section id="section-existing">';
-		$html .= '<p><label> <input type="radio" name="existing" value="skip" checked> ' . esc_html__( 'skip', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will skip the contact if the email address already exists. Status will not be changed.', 'mailster' ) . '</span><br> <label><input type="radio" name="existing" value="overwrite"> ' . esc_html__( 'overwrite', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will overwrite all values of the contact. Status will be overwritten.', 'mailster' ) . '</span><br><input type="radio" name="existing" value="merge"> ' . esc_html__( 'merge', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will overwrite only defined values and keep old ones. Status will not be changed unless defined via the columns.', 'mailster' ) . '</span></p>';
+		$html .= '<p>';
+		$html .= '<label> <input type="radio" name="existing" value="skip" ' . checked( $defaults['existing'], 'skip', false ) . '> ' . esc_html__( 'skip', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will skip the contact if the email address already exists. Status will not be changed.', 'mailster' ) . '</span><br>';
+		$html .= '<label><input type="radio" name="existing" value="overwrite" ' . checked( $defaults['existing'], 'overwrite', false ) . '> ' . esc_html__( 'overwrite', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will overwrite all values of the contact. Status will be overwritten.', 'mailster' ) . '</span><br>';
+		$html .= '<label><input type="radio" name="existing" value="merge" ' . checked( $defaults['existing'], 'merge', false ) . '> ' . esc_html__( 'merge', 'mailster' ) . '</label> &mdash; <span class="description">' . esc_html__( 'will overwrite only defined values and keep old ones. Status will not be changed unless defined via the columns.', 'mailster' ) . '</span>';
+		$html .= '</p>';
 		$html .= '</section>';
 		$html .= '<h4>' . esc_html__( 'Other', 'mailster' ) . '</h4>';
 		$html .= '<section id="section-other">';
-		$html .= '<p><label><input type="checkbox" id="signup" name="signup" checked>' . esc_html__( 'Use a signup date if not defined', 'mailster' ) . ': <input type="text" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate"></label>';
+		$html .= '<p><label><input type="checkbox" id="signup" name="signup" ' . checked( $defaults['signup'], true, false ) . '>' . esc_html__( 'Use a signup date if not defined', 'mailster' ) . ': <input type="text" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate"></label>';
 		$html .= '<br><span class="description">' . esc_html__( 'Some Auto responder require a signup date. Define it here if it is not set or missing', 'mailster' ) . '</span></p>';
-		$html .= '<p><label><input type="checkbox" id="performance" name="performance"> ' . esc_html__( 'Low memory usage (slower)', 'mailster' ) . '</label></p>';
+		$html .= '<p><label><input type="checkbox" id="performance" name="performance" ' . checked( $defaults['performance'], true, false ) . '> ' . esc_html__( 'Low memory usage (slower)', 'mailster' ) . '</label></p>';
 		$html .= '<input type="hidden" id="identifier" value="' . esc_attr( $identifier ) . '">';
 		$html .= '</section>';
 		$html .= '<section class="footer alternate">';
@@ -411,7 +441,7 @@ class MailsterManage {
 
 		$return['html'] = $html;
 
-		wp_send_json( $return );
+		wp_send_json_success( $return );
 
 	}
 
@@ -420,14 +450,12 @@ class MailsterManage {
 
 		global $wpdb;
 
-		$return['success'] = false;
-
 		define( 'MAILSTER_DO_BULKIMPORT', true );
 
-		$this->ajax_nonce( json_encode( $return ) );
+		$this->ajax_nonce();
 
 		if ( ! current_user_can( 'mailster_import_subscribers' ) ) {
-			wp_send_json( $return );
+			wp_send_json_error( $return );
 		}
 
 		parse_str( $_POST['options']['data'], $import_options );
@@ -510,16 +538,14 @@ class MailsterManage {
 		$parts = $this->integrations[ $import_data['type'] ]->get_import_part( $import_data );
 
 		if ( $parts === $import_data ) {
-			$return['success'] = false;
-			$return['msg']     = sprintf( esc_html__( 'No Integration for %s found.', 'mailster' ), $import_data['type'] );
-			wp_send_json( $return );
+			$return['msg'] = sprintf( esc_html__( 'No Integration for %s found.', 'mailster' ), $import_data['type'] );
+			wp_send_json_error( $return );
 			exit;
 		}
 
 		if ( is_wp_error( $parts ) ) {
-			$return['success'] = false;
-			$return['msg']     = $parts->get_error_message();
-			wp_send_json( $return );
+			$return['msg'] = $parts->get_error_message();
+			wp_send_json_error( $return );
 			exit;
 		}
 
@@ -593,7 +619,6 @@ class MailsterManage {
 						if ( ! is_numeric( $d ) && ! empty( $d ) ) {
 							$d = strtotime( $d );
 						}
-
 						$insert['signup']  = $d;
 						$insert['confirm'] = $d;
 						break;
@@ -823,23 +848,20 @@ class MailsterManage {
 			update_option( 'mailster_bulk_import_errors_' . $identifier, $erroremails );
 
 		}
-		$return['success'] = true;
 
-		wp_send_json( $return );
+		wp_send_json_success( $return );
 	}
 
 
 	public function ajax_export_contacts() {
 
 		global $wpdb, $wp_filesystem;
-		$return['success'] = false;
 
 		$this->ajax_nonce( json_encode( $return ) );
 
 		if ( ! current_user_can( 'mailster_export_subscribers' ) ) {
 			$return['msg'] = esc_html__( 'You are not allowed to export subscribers!', 'mailster' );
-
-			wp_send_json( $return );
+			wp_send_json_error( $return );
 		}
 
 		parse_str( $_POST['data'], $d );
@@ -892,22 +914,23 @@ class MailsterManage {
 				);
 				mailster_require_filesystem();
 
-				if ( ! ( $return['success'] = $wp_filesystem->put_contents( $filename, '', FS_CHMOD_FILE ) ) ) {
+				if ( ! ( $wp_filesystem->put_contents( $filename, '', FS_CHMOD_FILE ) ) ) {
 					$return['msg'] = sprintf( esc_html__( 'Not able to create file in %s. Please make sure WordPress can write files to your filesystem!', 'mailster' ), MAILSTER_UPLOAD_DIR );
 				} else {
 
 				}
 			} catch ( Exception $e ) {
 
-				$return['success'] = false;
-				$return['msg']     = $e->getMessage();
+				$return['msg'] = $e->getMessage();
+
+				wp_send_json_error( $return );
 			}
 		} else {
 
 			$return['msg'] = esc_html__( 'No Subscribers found!', 'mailster' );
 		}
 
-		wp_send_json( $return );
+		wp_send_json_success( $return );
 
 	}
 
@@ -916,14 +939,12 @@ class MailsterManage {
 
 		global $wpdb;
 
-		$return['success'] = false;
-
 		$this->ajax_nonce( json_encode( $return ) );
 
 		if ( ! current_user_can( 'mailster_export_subscribers' ) ) {
 			$return['msg'] = esc_html__( 'You are not allowed to export subscribers!', 'mailster' );
 
-			wp_send_json( $return );
+			wp_send_json_error( $return );
 		}
 
 		$filename = get_option( 'mailster_export_filename' );
@@ -1214,14 +1235,13 @@ class MailsterManage {
 				mailster( 'helper' )->file_put_contents( $filename, $output, 'a' );
 				$file_size = @filesize( $filename );
 
-				$return['success'] = true;
 			} else {
 				$return['finished'] = true;
 
 				$finalname = MAILSTER_UPLOAD_DIR . '/mailster_export_' . date( 'Y-m-d-H-i-s' ) . '.' . $outputformat;
 				if ( file_exists( $filename ) ) {
-					$return['success'] = copy( $filename, $finalname );
-					$file_size         = filesize( $filename );
+					copy( $filename, $finalname );
+					$file_size = filesize( $filename );
 					update_option( 'mailster_export_filename', $finalname );
 					unlink( $filename );
 				}
@@ -1232,12 +1252,12 @@ class MailsterManage {
 
 		} catch ( Exception $e ) {
 
-			$return['success'] = false;
-			$return['msg']     = $e->getMessage();
+			$return['msg'] = $e->getMessage();
+			wp_send_json_error( $return );
 
 		}
 
-		wp_send_json( $return );
+		wp_send_json_scucess( $return );
 	}
 
 
@@ -1309,14 +1329,12 @@ class MailsterManage {
 
 	public function ajax_delete_contacts() {
 
-		$return['success'] = false;
-
 		$this->ajax_nonce( json_encode( $return ) );
 
 		if ( ! current_user_can( 'mailster_bulk_delete_subscribers' ) ) {
 			$return['msg'] = 'no allowed';
 
-			wp_send_json( $return );
+			wp_send_json_error( $return );
 		}
 
 		parse_str( $_POST['data'], $args );
@@ -1340,36 +1358,32 @@ class MailsterManage {
 
 			update_option( 'mailster_manage_jobs', $jobs );
 
-			$return['success'] = true;
-			$return['msg']     = esc_html__( 'Job scheduled.', 'mailster' );
+			$return['msg'] = esc_html__( 'Job scheduled.', 'mailster' );
 
 		} else {
 
 			if ( $count = $this->delete_contacts( $args ) ) {
 
-				$return['success'] = true;
-				$return['msg']     = sprintf( esc_html__( _n( '%s Subscriber removed.', '%s Subscribers removed.', $count, 'mailster' ) ), number_format_i18n( $count ) );
+				$return['msg'] = sprintf( esc_html__( _n( '%s Subscriber removed.', '%s Subscribers removed.', $count, 'mailster' ) ), number_format_i18n( $count ) );
 
 			} else {
 
-				$return['success'] = false;
-				$return['msg']     = esc_html__( 'No Subscribers removed.', 'mailster' );
+				$return['msg'] = esc_html__( 'No Subscribers removed.', 'mailster' );
+				wp_send_json_error( $return );
 			}
 		}
 
-		wp_send_json( $return );
+		wp_send_json_success( $return );
 
 	}
 
 	public function ajax_delete_delete_job() {
 
-		$return['success'] = false;
-
 		$this->ajax_nonce( json_encode( $return ) );
 
 		if ( ! current_user_can( 'mailster_bulk_delete_subscribers' ) ) {
 			$return['msg'] = 'no allowed';
-			wp_send_json( $return );
+			wp_send_json_error( $return );
 		}
 
 		$id = $_POST['id'];
@@ -1381,10 +1395,9 @@ class MailsterManage {
 			update_option( 'mailster_manage_jobs', $jobs );
 		}
 
-		$return['success'] = true;
-		$return['msg']     = esc_html__( 'Job deleted.', 'mailster' );
+		$return['msg'] = esc_html__( 'Job deleted.', 'mailster' );
 
-		wp_send_json( $return );
+		wp_send_json_success( $return );
 
 	}
 
@@ -1457,13 +1470,14 @@ class MailsterManage {
 				}
 			}
 
-			$return['success'] = $n->add(
+			$n->add(
 				array(
 					'subscribers' => $subscribers,
 					'job'         => $job,
 				)
 			);
 		}
+
 		return $count;
 
 	}
