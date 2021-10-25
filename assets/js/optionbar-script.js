@@ -78,7 +78,7 @@ mailster = (function (mailster, $, window, document) {
 						.addClass('active')
 						.removeClass('loading');
 					mailster.$.html.hide();
-					mailster.$.content.val(response.content);
+					mailster.$.content.val(response.data.content);
 					if (wp.codeEditor) {
 						codeeditor = wp.codeEditor.initialize(
 							mailster.$.content,
@@ -125,10 +125,10 @@ mailster = (function (mailster, $, window, document) {
 				},
 				function (response) {
 					mailster.editor.setContent(
-						response.content,
+						response.data.content,
 						100,
 						true,
-						response.style
+						response.data.style
 					);
 					mailster.$.html.show();
 					mailster.$.content.hide();
@@ -325,9 +325,9 @@ mailster = (function (mailster, $, window, document) {
 						window.wp = null;
 					}
 					window.onbeforeunload = null;
-					window.location = response.url;
+					window.location = response.data.url;
 				} else {
-					alert(response.msg);
+					alert(response.data.msg);
 				}
 			},
 			function (jqXHR, textStatus, errorThrown) {

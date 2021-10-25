@@ -178,7 +178,7 @@ mailster = (function (mailster, $, window, document) {
 				if (textStatus == 'error' && !errorThrown) return;
 				mailster.log(response, 'error');
 				if ('JSON' == dataType) {
-					var maybe_json = response.match(/{(.*)}$/);
+					var maybe_json = response.data.match(/{(.*)}$/);
 					if (maybe_json && callback) {
 						try {
 							callback.call(this, JSON.parse(maybe_json[0]));
