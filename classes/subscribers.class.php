@@ -356,7 +356,7 @@ class MailsterSubscribers {
 
 		if ( isset( $is_ajax ) ) {
 
-			wp_send_json(
+			wp_send_json_success(
 				array(
 					'finished'        => $finished,
 					'total'           => $total,

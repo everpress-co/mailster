@@ -84,15 +84,14 @@ mailster = (function (mailster, $, window, document) {
 				performance: performance,
 			},
 			function (response) {
-				if (response.data.data.output)
-					textoutput(response.data.data.output);
+				if (response.data.output) textoutput(response.data.output);
 
 				if (response.success) {
 					if (skipit) {
 						output(id, ' &times;', false);
 						skipit = false;
 						onsuccess && onsuccess();
-					} else if (response.data.data[id]) {
+					} else if (response.data[id]) {
 						output(id, ' &#10004;', false);
 						onsuccess && onsuccess();
 					} else {

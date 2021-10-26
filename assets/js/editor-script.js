@@ -971,7 +971,7 @@ mailster = (function (mailster, $, window, document) {
 					height;
 
 				try {
-					response = JSON.parse(response.data.response);
+					response = JSON.parse(response.response);
 
 					source._previewtext.html(mailster.l10n.campaigns.ready);
 					source._element.on('load', function () {

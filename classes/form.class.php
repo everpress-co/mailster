@@ -1074,7 +1074,7 @@ class MailsterForm {
 
 					if ( $subscriber ) {
 						$subscriber_id = $subscriber->ID;
-						if ( ! ( $return['success'] = mailster( 'subscribers' )->unsubscribe( $subscriber_id, $campaign_id, $type, $campaign_index ) ) ) {
+						if ( ! ( $success = mailster( 'subscribers' )->unsubscribe( $subscriber_id, $campaign_id, $type, $campaign_index ) ) ) {
 							$this->object['errors']['email'] = mailster_text( 'unsubscribeerror' );
 						} else {
 							$message = 'unsubscribe';
@@ -1222,17 +1222,17 @@ class MailsterForm {
 			$this->object = apply_filters( 'mailster_post_submit_' . $this->ID, $this->object );
 
 			if ( $this->valid() ) {
-				$return = array(
-					'action'  => $submissiontype,
-					'success' => true,
-					'html'    => '<p>' . mailster_text( $message ) . '</p>',
+				$success = true;
+				$return  = array(
+					'action' => $submissiontype,
+					'html'   => '<p>' . mailster_text( $message ) . '</p>',
 				);
 			} else {
-				$return = array(
-					'action'  => $submissiontype,
-					'success' => false,
-					'fields'  => $this->object['errors'],
-					'html'    => '<p>' . $this->get_message( 'errors', true ) . '</p>',
+				$success = false;
+				$return  = array(
+					'action' => $submissiontype,
+					'fields' => $this->object['errors'],
+					'html'   => '<p>' . $this->get_message( 'errors', true ) . '</p>',
 				);
 			}
 
@@ -1243,11 +1243,11 @@ class MailsterForm {
 			// an error occurred
 		} else {
 
-			$return = array(
-				'action'  => $submissiontype,
-				'success' => false,
-				'fields'  => $this->object['errors'],
-				'html'    => $this->get_message(),
+			$success = false;
+			$return  = array(
+				'action' => $submissiontype,
+				'fields' => $this->object['errors'],
+				'html'   => $this->get_message(),
 			);
 
 		}
@@ -1255,13 +1255,17 @@ class MailsterForm {
 		// ajax request
 		if ( ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) :
 
-			wp_send_json( $return );
+			if ( ! $success ) {
+				wp_send_json_error( $return );
+			}
+
+			wp_send_json_success( $return );
 
 		endif;
 
 		if ( $this->is_extern() ) {
 
-			if ( ! $return['success'] ) {
+			if ( ! $success ) {
 				wp_die( $return['html'] . '<a href="javascript:history.back()">' . esc_html__( 'Go back', 'mailster' ) . '</a>' );
 				exit;
 			}
@@ -1270,7 +1274,7 @@ class MailsterForm {
 
 		} else {
 
-			if ( ! $return['success'] ) {
+			if ( ! $success ) {
 				wp_die( $return['html'] . '<a href="javascript:history.back()">' . esc_html__( 'Go back', 'mailster' ) . '</a>' );
 				exit;
 			}
@@ -1287,8 +1291,7 @@ class MailsterForm {
 
 	public function unsubscribe() {
 
-		$return['action']  = 'unsubscribe';
-		$return['success'] = false;
+		$return['action'] = 'unsubscribe';
 
 		$_BASE = $_POST;
 
@@ -1299,32 +1302,32 @@ class MailsterForm {
 		$campaign_id = ! empty( $_BASE['_campaign_id'] ) ? (int) $_BASE['_campaign_id'] : null;
 
 		if ( isset( $_BASE['email'] ) ) {
-			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id, 'email_unsubscribe' );
+			$success = mailster( 'subscribers' )->unsubscribe_by_mail( $_BASE['email'], $campaign_id, 'email_unsubscribe' );
 		} elseif ( isset( $_BASE['hash'] ) ) {
-			$return['success'] = mailster( 'subscribers' )->unsubscribe_by_hash( $_BASE['hash'], $campaign_id, 'link_unsubscribe' );
+			$success = mailster( 'subscribers' )->unsubscribe_by_hash( $_BASE['hash'], $campaign_id, 'link_unsubscribe' );
+		} else {
+			$success = false;
 		}
 
 		// redirect if no ajax request
 		if ( ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) {
 
-			$return['html'] = $return['success']
-				? mailster_text( 'unsubscribe' )
-				: ( empty( $_POST['email'] )
-				? mailster_text( 'enter_email' )
-				: mailster_text( 'unsubscribeerror' ) );
-
-			wp_send_json( $return );
-
-		} else {
-
-			if ( $return['success'] ) {
-				wp_die( $return['html'] . '<a href="javascript:history.back()">' . mailster_text( 'unsubscribe' ) . '</a>' );
-			} else {
-				wp_die( $return['html'] . '<a href="javascript:history.back()">' . ( empty( $_POST['email'] ) ? mailster_text( 'enter_email' ) : mailster_text( 'unsubscribeerror' ) ) . '</a>' );
+			if ( ! $success ) {
+				$return['html'] = empty( $_POST['email'] ) ? mailster_text( 'enter_email' ) : mailster_text( 'unsubscribeerror' );
+				wp_send_json_error( $return );
 			}
-			exit;
+
+			$return['html'] = mailster_text( 'unsubscribe' );
+
+			wp_send_json_success( $return );
 
 		}
+
+		if ( ! $success ) {
+			wp_die( $return['html'] . '<a href="javascript:history.back()">' . esc_html( empty( $_POST['email'] ) ? mailster_text( 'enter_email' ) : mailster_text( 'unsubscribeerror' ) ) . '</a>' );
+		}
+
+		wp_die( $return['html'] . '<a href="javascript:history.back()">' . esc_html( mailster_text( 'unsubscribe' ) ) . '</a>' );
 
 	}
 

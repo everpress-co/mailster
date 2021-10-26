@@ -265,12 +265,18 @@ mailster = (function (mailster, $, window, document) {
 			scrolltop < containerOffset() ||
 			scrolltop > containerOffset() + mailster.$.template.height() - 0
 		) {
-			if (/fixed-optionbar/.test(mailster.dom.body.className)) {
+			if (
+				mailster.dom.body &&
+				/fixed-optionbar/.test(mailster.dom.body.className)
+			) {
 				mailster.$.body.removeClass('fixed-optionbar');
 				mailster.$.optionbar.width('auto');
 			}
 		} else {
-			if (!/fixed-optionbar/.test(mailster.dom.body.className)) {
+			if (
+				mailster.dom.body &&
+				!/fixed-optionbar/.test(mailster.dom.body.className)
+			) {
 				mailster.$.body.addClass('fixed-optionbar');
 				mailster.$.optionbar.width(mailster.$.template.width() - 22);
 			}

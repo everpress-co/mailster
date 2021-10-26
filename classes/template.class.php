@@ -423,10 +423,17 @@ class MailsterTemplate {
 			$filename = str_replace( '.html', '-' . uniqid() . '.html', $filename );
 		}
 
+		if ( preg_match( '#<!--(.*?)-->#s', $content, $match ) ) {
+			$header  = $match[0];
+			$content = str_replace( $header, '', $content );
+		}
+
 		$pre = '<!--' . "\n\n";
 
-		foreach ( $this->data as $k => $v ) {
-			$pre .= "\t" . $this->headers[ $k ] . ': ' . ( $k == 'label' ? $name : $v ) . "\n";
+		foreach ( $this->headers as $k => $v ) {
+			if ( isset( $this->data[ $k ] ) ) {
+				$pre .= "\t" . $this->headers[ $k ] . ': ' . ( $k == 'label' ? $name : $this->data[ $k ] ) . "\n";
+			}
 		}
 
 		$pre .= "\n-->\n";
@@ -447,6 +454,8 @@ class MailsterTemplate {
 
 		}
 
+		$content = trim( $content );
+
 		// remove absolute path to images from the template
 		$content = str_replace( 'src="' . $this->url . '/' . $this->slug . '/', 'src="', $content );
 
@@ -458,6 +467,7 @@ class MailsterTemplate {
 		mailster_require_filesystem();
 
 		if ( $wp_filesystem->put_contents( $this->templatepath . '/' . $filename, $pre . $content, FS_CHMOD_FILE ) ) {
+			mailster( 'templates' )->reset_query_cache();
 			return $filename;
 		}
 
