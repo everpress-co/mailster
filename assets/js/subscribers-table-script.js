@@ -21,7 +21,9 @@ mailster = (function (mailster, $, window, document) {
 			var params = Object.fromEntries(search.entries());
 			var filtererd = getFilteredParams(params, 'conditions');
 			var queryString = Object.keys(filtererd)
-				.map((key) => key + '=' + filtererd[key])
+				.map(function (key) {
+					return key + '=' + filtererd[key];
+				})
 				.join('&');
 
 			if (search.toString() != queryString + '&' + query) {
@@ -29,8 +31,7 @@ mailster = (function (mailster, $, window, document) {
 			}
 			tb_remove();
 		})
-		.on('click', '#close-filter', tb_remove);
-	$('#subscribers-overview-form')
+		.on('click', '#close-filter', tb_remove)
 		.on('change', '#cb-select-all-1, #cb-select-all-2', function () {
 			var $input = $('#all_subscribers'),
 				label = $input.data('label'),
@@ -81,8 +82,8 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 	function getFilteredParams(params, filteredString) {
-		let obj = {};
-		for (const key in params) {
+		var obj = {};
+		for (var key in params) {
 			if (key.indexOf(filteredString) == -1) {
 				obj[key] = params[key];
 			}
