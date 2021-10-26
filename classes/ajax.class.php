@@ -143,6 +143,7 @@ class MailsterAjax {
 		$args        = func_get_args();
 
 		if ( method_exists( $this, $method_name ) ) {
+			error_log( print_r( 'AJAX: ' . $method_name, true ) );
 			call_user_func_array( array( $this, $method_name ), $args );
 		} else {
 			die( "Method $method does not exist!" );
@@ -1709,7 +1710,7 @@ class MailsterAjax {
 			'notification' => sprintf( esc_html__( '%1$s is forwarding this mail to you via %2$s', 'mailster' ), $data['sendername'] . ' (<a href="mailto:' . esc_attr( $data['sender'] ) . '">' . esc_attr( $data['sender'] ) . '</a>)', '<a href="' . get_bloginfo( 'url' ) . '">' . get_bloginfo( 'name' ) . '</a>' ),
 		);
 
-		if ( $mail->send_notification( $message, $mail->subject, $replace ) ) {
+		if ( !$mail->send_notification( $message, $mail->subject, $replace ) ) {
 			$return['msg'] = esc_html__( 'Sorry, we couldn\'t deliver your message. Please try again later!', 'mailster' );
 			wp_send_json_error( $return );
 		}
@@ -1739,44 +1740,6 @@ class MailsterAjax {
 	}
 
 
-
-	private function get_file_list() {
-		$this->ajax_nonce();
-
-		$return['slug'] = $_POST['slug'];
-
-		$return['files'] = mailster( 'templates' )->get_files( $return['slug'] );
-
-		if ( ! count( $return['files'] ) ) {
-			wp_send_json_error( $return );
-		}
-
-		$return['base'] = trailingslashit( mailster( 'templates' )->get_url() ) . $return['slug'];
-
-		foreach ( $return['files'] as $file => $data ) {
-			$return['files'][ $file ]['screenshot'] = mailster( 'templates' )->get_screenshot( $return['slug'], $file );
-		}
-
-		wp_send_json_success( $return );
-	}
-
-
-	private function get_template_html() {
-
-		$this->ajax_nonce();
-
-		$return['slug'] = dirname( $_POST['href'] );
-		$return['file'] = basename( $_POST['href'] );
-		$file           = mailster( 'templates' )->get_path() . '/' . $return['slug'] . '/' . $return['file'];
-
-		$return['files'] = mailster( 'templates' )->get_files( $return['slug'], true );
-
-		if ( file_exists( $file ) ) {
-			$return['html'] = file_get_contents( $file );
-		}
-
-		wp_send_json_success( $return );
-	}
 
 
 	private function set_template_html() {
@@ -1893,7 +1856,7 @@ class MailsterAjax {
 			mailster_remove_notice( $_POST['id'] );
 		}
 
-		wp_send_json_success( $return );
+		wp_send_json_success();
 	}
 
 
@@ -2094,6 +2057,8 @@ class MailsterAjax {
 
 		$this->ajax_nonce();
 
+		$return = array();
+
 		if ( $spf_domain = mailster_option( 'spf_domain' ) ) {
 			$records = mailster( 'helper' )->dns_query( $spf_domain, 'TXT' );
 
@@ -2144,6 +2109,8 @@ class MailsterAjax {
 	private function dkim_check() {
 
 		$this->ajax_nonce();
+
+		$return = array();
 
 		if ( $dkim_domain = mailster_option( 'dkim_domain' ) ) {
 			$dkim_selector = mailster_option( 'dkim_selector' );
@@ -2414,7 +2381,7 @@ class MailsterAjax {
 
 		mailster_notice( sprintf( esc_html__( 'Template %s has been uploaded', 'mailster' ), '"' . $result['name'] . ' ' . $result['version'] . '"' ), 'success', true );
 
-		wp_send_json_success( $return );
+		wp_send_json_success();
 
 	}
 
@@ -2456,9 +2423,10 @@ class MailsterAjax {
 			$return['html']      = mailster( 'templates' )->result_to_html( $result );
 			$return['templates'] = $result['items'];
 			$return['error']     = $result['error'];
+			wp_send_json_error( $return );
 		}
 
-		wp_send_json_success( $return );
+		wp_send_json_success( );
 	}
 
 
