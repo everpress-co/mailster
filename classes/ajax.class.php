@@ -1710,7 +1710,7 @@ class MailsterAjax {
 			'notification' => sprintf( esc_html__( '%1$s is forwarding this mail to you via %2$s', 'mailster' ), $data['sendername'] . ' (<a href="mailto:' . esc_attr( $data['sender'] ) . '">' . esc_attr( $data['sender'] ) . '</a>)', '<a href="' . get_bloginfo( 'url' ) . '">' . get_bloginfo( 'name' ) . '</a>' ),
 		);
 
-		if ( !$mail->send_notification( $message, $mail->subject, $replace ) ) {
+		if ( ! $mail->send_notification( $message, $mail->subject, $replace ) ) {
 			$return['msg'] = esc_html__( 'Sorry, we couldn\'t deliver your message. Please try again later!', 'mailster' );
 			wp_send_json_error( $return );
 		}
@@ -2419,7 +2419,7 @@ class MailsterAjax {
 			wp_send_json_error( $return );
 		}
 
-		wp_send_json_success( );
+		wp_send_json_success();
 	}
 
 

@@ -202,6 +202,8 @@ class MailsterSubscribers {
 				}
 			} elseif ( 'delete' == $action ) {
 				$offset = 0;
+			} elseif ( 'delete_actions' == $action ) {
+				$offset = 0;
 			}
 
 			$subscriber_ids = mailster( 'subscribers' )->query(
