@@ -190,6 +190,7 @@ Get professional development help from our expert support partner *Codeable* for
 = 3.0.4 =
 
 * fixed: saving template from editor messed up template header
+* fixed: bulk deletion with actions working again
 * fixed: timeframe settings spanning over midnight
 * fixed: layout issue on form/lists overview on smaller screens
 * fixed: missing dbstructure method on queue process

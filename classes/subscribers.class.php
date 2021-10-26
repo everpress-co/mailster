@@ -225,6 +225,8 @@ class MailsterSubscribers {
 				}
 			} elseif ( in_array( $action, array( 'delete', 'delete_actions', 'empty_trash' ) ) ) {
 				$offset = 0;
+			} elseif ( 'delete_actions' == $action ) {
+				$offset = 0;
 			}
 
 			$query_args = array(
