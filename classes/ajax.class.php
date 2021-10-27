@@ -143,7 +143,6 @@ class MailsterAjax {
 		$args        = func_get_args();
 
 		if ( method_exists( $this, $method_name ) ) {
-			error_log( print_r( 'AJAX: ' . $method_name, true ) );
 			call_user_func_array( array( $this, $method_name ), $args );
 		} else {
 			die( "Method $method does not exist!" );
