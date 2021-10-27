@@ -121,6 +121,8 @@ class MailsterManage {
 				'confirm_job_delete'   => esc_html__( 'Do you like to delete this job?', 'mailster' ),
 				'confirm_job_default'  => esc_html__( 'Job #%s', 'mailster' ),
 				'export_n_subscribers' => esc_html__( 'Export %s Subscribers', 'mailster' ),
+				'list_required'        => esc_html__( 'Select at least one list!', 'mailster' ),
+				'status_required'      => esc_html__( 'Select at least one status!', 'mailster' ),
 				'delete_n_subscribers' => esc_html__( 'Delete %s Subscribers permanently', 'mailster' ),
 				'onbeforeunloadimport' => esc_html__( 'You are currently importing subscribers! If you leave the page all pending subscribers don\'t get imported!', 'mailster' ),
 				'onbeforeunloadexport' => esc_html__( 'Your download is preparing! If you leave this page the progress will abort!', 'mailster' ),
@@ -267,15 +269,16 @@ class MailsterManage {
 		);
 
 		$html  = '<form id="subscriber-table">';
-		$html .= '<h2>' . esc_html__( 'Specify your Import', 'mailster' ) . '</h2>';
-		$html .= '<h4>' . esc_html__( 'Select the fields to match to the data', 'mailster' ) . '</h4>';
-		$html .= '<section>';
-		$html .= '<p class="howto">' . esc_html__( 'Match column labels to contact information. Each column can represent one field. You can ignore columns which you like to skip.', 'mailster' ) . '</p>';
+		$html .= '<h2>';
+		$html .= sprintf( esc_html__( _n( '%s contact to import!', '%s contacts to import!', $contactcount, 'mailster' ) ), number_format_i18n( $contactcount ) );
 		if ( ! empty( $removed ) ) {
-			$html .= '<div class="pending-info error inline">';
-			$html .= '<p>' . sprintf( esc_html__( '%s entries without valid email address have been removed.', 'mailster' ), number_format_i18n( $removed ) ) . '</p>';
-			$html .= '</div>';
+			$html .= ' <span class="howto">(' . sprintf( esc_html__( _n( '%s entry without valid email address has been removed.', '%s entries without valid email address have been removed.', $removed, 'mailster' ) ), number_format_i18n( $removed ) ) . ')</span>';
 		}
+		$html .= '</h2>';
+		$html .= '<h4>' . esc_html__( 'Match column labels to contact information. Each column can represent one field. You can ignore columns which you like to skip.', 'mailster' ) . '</h4>';
+		$html .= '<section>';
+		// $html .= '<p class="howto">' . esc_html__( 'Match column labels to contact information. Each column can represent one field. You can ignore columns which you like to skip.', 'mailster' ) . '</p>';
+
 		$html .= '<div class="table-wrap">';
 		$html .= '<table class="wp-list-table widefat">';
 		$html .= '<thead>';
@@ -344,8 +347,6 @@ class MailsterManage {
 			}
 			$html .= '<tr>';
 		}
-		error_log( print_r( $contactcount, true ) );
-		error_log( print_r( $samplecount, true ) );
 		if ( $contactcount > $samplecount + 1 ) {
 			$html .= '<tr class="' . ( $i++ % 2 ? '' : 'alternate' ) . '"><td>&nbsp;</td><td colspan="' . ( $cols ) . '"><i>&hellip;' . sprintf( esc_html__( '%s contacts are hidden', 'mailster' ), number_format_i18n( $contactcount - $samplecount - 1 ) ) . '&hellip;</i></td></tr>';
 
@@ -363,7 +364,7 @@ class MailsterManage {
 		$html .= '</table>';
 		$html .= '</div>';
 		$html .= '</section>';
-		$html .= '<h4>' . esc_html__( 'Add contacts to following lists', 'mailster' ) . ':</h4>';
+		$html .= '<h4>' . esc_html__( 'Add contacts to following lists', 'mailster' ) . '</h4>';
 		$html .= '<section id="section-lists">';
 		$html .= '<p class="howto">' . esc_html__( 'Lists can also be matched above.', 'mailster' ) . '</p>';
 		$html .= '<ul>';
@@ -857,7 +858,7 @@ class MailsterManage {
 
 		global $wpdb, $wp_filesystem;
 
-		$this->ajax_nonce( json_encode( $return ) );
+		$this->ajax_nonce();
 
 		if ( ! current_user_can( 'mailster_export_subscribers' ) ) {
 			$return['msg'] = esc_html__( 'You are not allowed to export subscribers!', 'mailster' );
@@ -939,7 +940,7 @@ class MailsterManage {
 
 		global $wpdb;
 
-		$this->ajax_nonce( json_encode( $return ) );
+		$this->ajax_nonce();
 
 		if ( ! current_user_can( 'mailster_export_subscribers' ) ) {
 			$return['msg'] = esc_html__( 'You are not allowed to export subscribers!', 'mailster' );
@@ -1329,7 +1330,7 @@ class MailsterManage {
 
 	public function ajax_delete_contacts() {
 
-		$this->ajax_nonce( json_encode( $return ) );
+		$this->ajax_nonce();
 
 		if ( ! current_user_can( 'mailster_bulk_delete_subscribers' ) ) {
 			$return['msg'] = 'no allowed';
@@ -1338,16 +1339,22 @@ class MailsterManage {
 		}
 
 		parse_str( $_POST['data'], $args );
-		$name = basename( $_POST['name'] );
 
 		unset( $args['_wpnonce'], $args['_wp_http_referer'] );
 
 		$schedule = isset( $_POST['schedule'] );
 
 		if ( $schedule ) {
+			$name = basename( $_POST['name'] );
 			$jobs = get_option( 'mailster_manage_jobs', array() );
+			$key  = md5( serialize( $args ) );
 
-			$jobs[ md5( serialize( $args ) ) ] = wp_parse_args(
+			if ( isset( $jobs[ $key ] ) ) {
+				$return['msg'] = sprintf( esc_html__( 'The same job has been scheduled already (%s).', 'mailster' ), $jobs[ $key ]['name'] );
+				wp_send_json_error( $return );
+			}
+
+			$jobs[ $key ] = wp_parse_args(
 				array(
 					'user_id'   => get_current_user_id(),
 					'name'      => $name,
@@ -1359,19 +1366,16 @@ class MailsterManage {
 			update_option( 'mailster_manage_jobs', $jobs );
 
 			$return['msg'] = esc_html__( 'Job scheduled.', 'mailster' );
+			wp_send_json_success( $return );
 
-		} else {
-
-			if ( $count = $this->delete_contacts( $args ) ) {
-
-				$return['msg'] = sprintf( esc_html__( _n( '%s Subscriber removed.', '%s Subscribers removed.', $count, 'mailster' ) ), number_format_i18n( $count ) );
-
-			} else {
-
-				$return['msg'] = esc_html__( 'No Subscribers removed.', 'mailster' );
-				wp_send_json_error( $return );
-			}
 		}
+
+		if ( ! ( $count = $this->delete_contacts( $args ) ) ) {
+			$return['msg'] = esc_html__( 'No Subscribers removed.', 'mailster' );
+			wp_send_json_error( $return );
+
+		}
+		$return['msg'] = sprintf( esc_html__( _n( '%s Subscriber removed.', '%s Subscribers removed.', $count, 'mailster' ) ), number_format_i18n( $count ) );
 
 		wp_send_json_success( $return );
 
@@ -1379,7 +1383,7 @@ class MailsterManage {
 
 	public function ajax_delete_delete_job() {
 
-		$this->ajax_nonce( json_encode( $return ) );
+		$this->ajax_nonce();
 
 		if ( ! current_user_can( 'mailster_bulk_delete_subscribers' ) ) {
 			$return['msg'] = 'no allowed';
@@ -1466,16 +1470,15 @@ class MailsterManage {
 					$n->to( $user->user_email );
 					$n->template( 'delete_job' );
 					$n->requeue( false );
-					$mail = $n->mail;
+					// $mail = $n->mail;
+					$n->add(
+						array(
+							'subscribers' => $subscribers,
+							'job'         => $job,
+						)
+					);
 				}
 			}
-
-			$n->add(
-				array(
-					'subscribers' => $subscribers,
-					'job'         => $job,
-				)
-			);
 		}
 
 		return $count;

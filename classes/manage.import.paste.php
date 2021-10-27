@@ -18,7 +18,7 @@ class MailsterImportPaste extends MailsterImport {
 
 		$raw_data = file_get_contents( $import_data['file'] );
 		$data     = maybe_unserialize( $raw_data );
-		$limit    = $import_data['performance'] ? 10 : 100;
+		$limit    = $import_data['performance'] ? 10 : 250;
 		$offset   = ( $import_data['page'] - 1 ) * $limit;
 
 		return array_slice( $data, $offset, $limit );

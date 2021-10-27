@@ -81,9 +81,9 @@ mailster = (function (mailster, $, window, document) {
 
 						var limit = $('.performance').val();
 						exportstatus.addClass('progress');
-						do_export(0, limit, response.count, data);
+						do_export(0, limit, response.data.count, data);
 					} else {
-						alert(response.msg);
+						alert(response.data.msg);
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {
@@ -113,7 +113,7 @@ mailster = (function (mailster, $, window, document) {
 				data: data,
 			},
 			function (response) {
-				var finished = percentage >= 100 && response.finished;
+				var finished = percentage >= 100 && response.data.finished;
 
 				if (response.success) {
 					if (!finished) do_export(offset + 1, limit, count, data);
@@ -137,17 +137,17 @@ mailster = (function (mailster, $, window, document) {
 								count
 							)
 						);
-						if (response.filename) {
+						if (response.data.filename) {
 							setTimeout(function () {
 								exportstatus.removeClass('progress');
-								document.location = response.filename;
+								document.location = response.data.filename;
 							}, 2000);
 						}
 					} else {
 						exportstatus.html(
 							mailster.util.sprintf(
 								mailster.l10n.manage.write_file,
-								response.total,
+								response.data.total,
 								Math.ceil(percentage) + '%'
 							)
 						);
@@ -155,7 +155,7 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 					window.onbeforeunload = null;
 					exportstatus.html(mailster.l10n.manage.error_export);
-					alert(response.msg);
+					alert(response.data.msg);
 				}
 			},
 			function (jqXHR, textStatus, errorThrown) {}
@@ -178,10 +178,10 @@ mailster = (function (mailster, $, window, document) {
 							.val(
 								mailster.util.sprintf(
 									mailster.l10n.manage.export_n_subscribers,
-									response.count_formated
+									response.data.count_formated
 								)
 							)
-							.prop('disabled', !response.count);
+							.prop('disabled', !response.data.count);
 					}
 				}
 			);

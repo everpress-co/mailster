@@ -92,23 +92,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 	public function no_items() {
 
-		switch ( $this->status ) {
-			case '0': // pending
-				esc_html_e( 'No pending subscribers found', 'mailster' );
-				break;
-			case '2': // unsubscribed
-				esc_html_e( 'No unsubscribed subscribers found', 'mailster' );
-				break;
-			case '3': // hardbounced
-				esc_html_e( 'No hardbounced subscribers found', 'mailster' );
-				break;
-			case '4': // error
-				esc_html_e( 'No subscriber with delivery errors found', 'mailster' );
-				break;
-			default:
-				esc_html_e( 'No subscribers found', 'mailster' );
-
-		}
+		esc_html_e( 'No subscribers found', 'mailster' );
 
 		if ( current_user_can( 'mailster_add_subscribers' ) ) {
 			echo ' <a href="edit.php?post_type=newsletter&page=mailster_subscribers&new">' . esc_html__( 'Add New', 'mailster' ) . '</a>';
@@ -177,13 +161,13 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 	<div id="mailster-subscriber-conditions" style="display:none;">
 		<div class="mailster-subscriber-conditions-thickbox">
-				<div class="inner">
-					<?php mailster( 'conditions' )->view( $this->conditions ); ?>
-				</div>
-				<div class="foot">
-					<button class="button button-primary" id="apply-filter"><?php esc_html_e( 'Filter', 'mailster' ); ?></button>
-					<button class="button" id="close-filter"><?php esc_html_e( 'Close', 'mailster' ); ?></button>
-				</div>
+			<div class="inner">
+				<?php mailster( 'conditions' )->view( $this->conditions ); ?>
+			</div>
+			<div class="foot">
+				<button class="button button-primary" id="apply-filter"><?php esc_html_e( 'Filter', 'mailster' ); ?></button>
+				<button class="button" id="close-filter"><?php esc_html_e( 'Close', 'mailster' ); ?></button>
+			</div>
 		</div>
 	</div>
 		<?php

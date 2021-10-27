@@ -95,7 +95,7 @@
 .mailster-conditions-wrap {
 	height: 80%;
 	overflow: auto;
-	padding: 1em;
+	padding-bottom: 1em;
 }
 .mailster-condition-container {
 	display: none;
@@ -264,8 +264,8 @@ span.mailster-icon-star:before {
 .dark-mode .mailster-conditions-render:empty {
 	border-color: #191f25;
 }
-.mailster-conditions-render:empty:before,
-.mailster-conditions .mailster-conditions-wrap:empty:before {
+_.mailster-conditions-render:empty:before,
+_.mailster-conditions .mailster-conditions-wrap:empty:before {
 	content: attr(data-emptytext);
 	display: block;
 	position: absolute;

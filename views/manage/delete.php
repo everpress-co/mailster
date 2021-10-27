@@ -50,7 +50,6 @@
 <h4><?php esc_html_e( 'Automation', 'mailster' ); ?></h4>
 <section>
 	<?php if ( $jobs = get_option( 'mailster_manage_jobs', array() ) ) : ?>
-	<p class="howto"><?php esc_html_e( 'These jobs will run automatically.', 'mailster' ); ?></p>
 		<?php foreach ( $jobs as $hash => $job ) : ?>
 	<div class="manage-job" data-id="<?php echo esc_attr( $hash ); ?>">
 	<a class="remove-job" title="<?php esc_html_e( 'Remove job', 'mailster' ); ?>">&#10005;</a>
@@ -60,6 +59,7 @@
 	<?php endforeach; ?>
 	<?php endif; ?>
 	<p class="howto"><?php esc_html_e( 'Mailster can perform this job on a regular basis to keep your list clean and healthy. Click this button to add a new job with the current settings.', 'mailster' ); ?></p>
+	<p class="howto"><?php esc_html_e( 'These jobs will run automatically.', 'mailster' ); ?> <?php printf( esc_html__( 'Deleted contacts will get marked as deleted first and will get permanently removed after %d days.', 'mailster' ), 14 ); ?></p>
 	<p>
 		<input id="schedule-delete-subscriber-button" class="button" type="button" value="<?php esc_attr_e( 'Schedule Delete Job', 'mailster' ); ?>" />
 	</p>

@@ -28,9 +28,9 @@ mailster = (function (mailster, $, window, document) {
 					},
 					function (response) {
 						if (response.success) {
-							deletestatus.html(response.msg);
+							deletestatus.html(response.data.msg);
 						} else {
-							deletestatus.html(response.msg);
+							deletestatus.html(response.data.msg);
 						}
 						deletestatus.removeClass('spinner');
 						update_delete_count();
@@ -57,7 +57,9 @@ mailster = (function (mailster, $, window, document) {
 				},
 				function (response) {
 					if (response.success) {
-						job.slideUp();
+						job.slideUp(function () {
+							job.remove();
+						});
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {}
@@ -66,6 +68,16 @@ mailster = (function (mailster, $, window, document) {
 			return false;
 		})
 		.on('click', '#schedule-delete-subscriber-button', function () {
+			var data = $('#delete-subscribers').serialize();
+			if (!/&list%5B%5D/.test(data) && !/&nolist/.test(data)) {
+				alert(mailster.l10n.manage.list_required);
+				return false;
+			}
+			if (!/&status%5B%5D/.test(data)) {
+				alert(mailster.l10n.manage.status_required);
+				return false;
+			}
+
 			var name = prompt(
 				mailster.l10n.manage.confirm_job,
 				mailster.util.sprintf(
@@ -75,8 +87,6 @@ mailster = (function (mailster, $, window, document) {
 			);
 
 			if (!name) return false;
-
-			var data = $('#delete-subscribers').serialize();
 
 			deletestatus.addClass('progress spinner');
 
@@ -88,13 +98,13 @@ mailster = (function (mailster, $, window, document) {
 					data: data,
 				},
 				function (response) {
-					if (response.success) {
-						deletestatus.html(response.msg);
-					} else {
-						deletestatus.html(response.msg);
-					}
 					deletestatus.removeClass('spinner');
-					window.location.reload();
+					if (response.success) {
+						deletestatus.html(response.data.msg);
+						window.location.reload();
+					} else {
+						deletestatus.html(response.data.msg);
+					}
 				},
 				function (jqXHR, textStatus, errorThrown) {
 					deletestatus.html('[' + jqXHR.status + '] ' + errorThrown);
@@ -120,10 +130,10 @@ mailster = (function (mailster, $, window, document) {
 							.val(
 								mailster.util.sprintf(
 									mailster.l10n.manage.delete_n_subscribers,
-									response.count_formated
+									response.data.count_formated
 								)
 							)
-							.prop('disabled', !response.count);
+							.prop('disabled', !response.data.count);
 					}
 				}
 			);

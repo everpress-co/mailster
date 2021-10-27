@@ -141,6 +141,11 @@ details > div {
 	right: 0;
 }
 
+h2 span.howto {
+	padding-top: 1em;
+	font-size: small;
+}
+
 .importer-form {
 	position: relative;
 }

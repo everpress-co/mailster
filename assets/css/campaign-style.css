@@ -683,6 +683,9 @@ textarea#head {
 	width: 95%;
 	border-color: #ccd0d4;
 }
+.mailster-conditions-wrap {
+	padding: 1em;
+}
 .mailster-conditions-wrap:empty:before {
 	content: attr(data-emptytext);
 	display: block;

@@ -202,7 +202,7 @@ a.email {
 }
 .mailster-subscriber-conditions-thickbox .inner {
 	position: relative;
-	padding: 0;
+	padding: 1em;
 	height: 70%;
 	height: calc(100% - 50px);
 	overflow: auto;

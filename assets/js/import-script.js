@@ -121,7 +121,7 @@ mailster = (function (mailster, $, window, document) {
 				return false;
 			}
 
-			// if (!confirm(mailster.l10n.manage.confirm_import)) return false;
+			if (!confirm(mailster.l10n.manage.confirm_import)) return false;
 
 			var _this = $(this).prop('disabled', true),
 				status = $('input[name="status"]:checked').val(),
