@@ -2,7 +2,7 @@
 
 	$lists   = mailster( 'lists' )->get( null, false );
 	$no_list = mailster( 'lists' )->count( false );
-	$counts  = mailster( 'subscribers' )->get_count_by_status();
+	$counts  = mailster( 'subscribers' )->get_count_by_status( null );
 
 	$user_settings = wp_parse_args(
 		get_user_option( 'mailster_export_settings' ),

@@ -122,7 +122,20 @@ class Mailster_Lists_Table extends WP_List_Table {
 
 			case 'subscribers':
 				$total = mailster( 'lists' )->get_member_count( $item->ID );
-				$url   = add_query_arg( array( 'lists' => array( $item->ID ) ), admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' ) );
+				$url   = add_query_arg(
+					array(
+						'conditions' => array(
+							array(
+								array(
+									'field'    => '_lists__in',
+									'operator' => 'is',
+									'value'    => $item->ID,
+								),
+							),
+						),
+					),
+					admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' )
+				);
 				$count = '<a href="' . $url . '">' . number_format_i18n( $total ) . '</a>';
 				if ( $total ) {
 					$subscribed = mailster( 'lists' )->get_member_count( $item->ID, 1 );

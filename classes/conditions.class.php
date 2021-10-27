@@ -20,6 +20,10 @@ class MailsterConditions {
 
 	public function view( $conditions = array(), $inputname = null ) {
 
+		if ( empty( $conditions ) ) {
+			$conditions = array();
+		}
+
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'mailster-conditions', MAILSTER_URI . 'assets/css/conditions-style' . $suffix . '.css', array(), MAILSTER_VERSION );

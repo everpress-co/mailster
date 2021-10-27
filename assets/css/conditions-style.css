@@ -15,7 +15,7 @@
 	right: 0;
 	bottom: 56px;
 	overflow: hidden;
-	padding: 10px 20px;
+	padding: 0;
 }
 .mailster-conditions-thickbox .foot {
 	padding: 16px 20px 20px;
@@ -25,14 +25,20 @@
 	left: 0;
 	right: 0;
 }
-.mailster-conditions-thickbox .button {
-	float: right;
-	margin-left: 6px;
+.mailster-conditions-thickbox .button.add-condition {
+	position: absolute;
+	bottom: 2em;
+	right: 1em;
 }
-.rtl .mailster-conditions-thickbox .button {
+.rtl .mailster-conditions-thickbox .button.add-condition {
+	right: auto;
+	left: 1em;
+}
+.close-conditions {
+	float: right;
+}
+.rtl .close-conditions {
 	float: left;
-	margin-left: 0;
-	margin-right: 6px;
 }
 .mailster-conditions-saved {
 	text-align: right;
@@ -42,12 +48,15 @@
 }
 .mailster-conditions-wrap .mailster-condition-group {
 	border: 1px solid #dfdfdf;
-	background: #fdfdfd;
+	background: #fafafa;
 	border-radius: 3px;
 	margin: 8px 0 25px;
 	padding: 0 10px 36px;
 	display: block;
 	position: relative;
+	border: 1 px solid #d6d6d6;
+	box-shadow: 0 2px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 5%);
+	border-radius: 4px;
 }
 .mailster-conditions-wrap .mailster-condition-group:after,
 .mailster-conditions-wrap .mailster-condition:after {
@@ -64,9 +73,9 @@
 	bottom: -25px;
 }
 .mailster-conditions-wrap .mailster-condition:after {
-	background-color: #fff;
+	background-color: #fafafa;
 	font-size: 14px;
-	bottom: -10px;
+	bottom: -0.8em;
 	left: 20px;
 }
 .mailster-conditions-wrap .mailster-condition-group:last-child:after,
@@ -80,14 +89,13 @@
 .mailster-conditions-wrap .mailster-condition,
 .mailster-conditions-wrap .mailster-condition-empty {
 	border-bottom: 1px dotted #dfdfdf;
-	background-color: #fff;
 	position: relative;
-	padding: 10px 0 10px;
+	padding: 1em 0 1em;
 }
 .mailster-conditions-wrap {
-	margin: 10px 0;
-	height: 83%;
+	height: 80%;
 	overflow: auto;
+	padding: 1em;
 }
 .mailster-condition-container {
 	display: none;
@@ -270,11 +278,12 @@ span.mailster-icon-star:before {
 }
 .mailster-condition-render-group {
 	border: 1px solid #ccd0d4;
-	padding: 3px 6px;
-	border-radius: 2px;
-	background: #fdfdfd;
+	padding: 0.8em 0.8em;
+	background: #fafafa;
 	vertical-align: top;
 	position: relative;
+	box-shadow: 0 2px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 5%);
+	border-radius: 4px;
 }
 .mailster-condition-operators {
 	color: #989898;

@@ -170,7 +170,6 @@ a.email {
 #mailster-conditions-render .mailster-condition-render-group {
 	display: inline-block;
 	margin-right: 0.2em;
-	padding: 9px 12px;
 }
 .mailster-condition-operators:not(.mailster-condition-type) {
 	display: none;
@@ -203,7 +202,7 @@ a.email {
 }
 .mailster-subscriber-conditions-thickbox .inner {
 	position: relative;
-	padding: 0 20px;
+	padding: 0;
 	height: 70%;
 	height: calc(100% - 50px);
 	overflow: auto;
@@ -215,6 +214,9 @@ a.email {
 	bottom: 0;
 	left: 0;
 	right: 0;
+}
+.mailster-subscriber-conditions-thickbox .button.add-condition {
+	margin: 1em;
 }
 .mailster-subscriber-conditions-thickbox .foot button {
 	float: right;

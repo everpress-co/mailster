@@ -124,6 +124,7 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 	 * @param unknown $input_id
 	 */
 	public function search_box( $text, $input_id ) {
+
 		?>
 
 		<?php if ( 5 == $this->status ) : ?>

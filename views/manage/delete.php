@@ -1,4 +1,4 @@
-<?php if ( mailster( 'subscribers' )->get_count_by_status() ) : ?>
+<?php if ( mailster( 'subscribers' )->get_count_by_status( null ) ) : ?>
 	<?php
 
 	$lists   = mailster( 'lists' )->get( null, false );
