@@ -28,9 +28,13 @@ mailster = (function (mailster, $, window, document) {
 				$.each(clone.find('input, select'), function () {
 					var _this = $(this),
 						name = _this.attr('name');
-					_this
-						.attr('name', name.replace(/\[\d+\]/, '[' + id + ']'))
-						.prop('disabled', false);
+					name &&
+						_this
+							.attr(
+								'name',
+								name.replace(/\[\d+\]/, '[' + id + ']')
+							)
+							.prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
 				datepicker();
@@ -49,15 +53,16 @@ mailster = (function (mailster, $, window, document) {
 				$.each(clone.find('input, select'), function () {
 					var _this = $(this),
 						name = _this.attr('name');
-					_this
-						.attr(
-							'name',
-							name.replace(
-								/\[\d+\]\[\d+\]/,
-								'[' + cont.data('id') + '][' + id + ']'
+					name &&
+						_this
+							.attr(
+								'name',
+								name.replace(
+									/\[\d+\]\[\d+\]/,
+									'[' + cont.data('id') + '][' + id + ']'
+								)
 							)
-						)
-						.prop('disabled', false);
+							.prop('disabled', false);
 				});
 				clone.find('.condition-field').val('').focus();
 				datepicker();
@@ -134,8 +139,50 @@ mailster = (function (mailster, $, window, document) {
 
 				mailster.trigger('updateCount');
 			})
+			.on('change', '.relative-datepicker', function () {
+				var field = $(this).closest('.mailster-conditions-value-field');
+				var count = field.find('input.relative-datepicker').val();
+				var multi = field.find('select.relative-datepicker').val();
+				field.find('input.datepicker').val(count * multi);
+				mailster.trigger('updateCount');
+			})
 			.on('change', '.condition-operator', function () {
 				mailster.trigger('updateCount');
+			})
+			.on('change', '.condition-operator-time', function () {
+				var operator = $(this).val(),
+					is_relative = /(is_older|is_younger)/.test(operator),
+					input = $(this)
+						.closest('.mailster-condition')
+						.toggleClass('is-relative', is_relative)
+						.find('.mailster-conditions-value-field.active')
+						.find('.condition-value'),
+					val = input.val(),
+					midnight = new Date(),
+					mod = /(smaller)/.test(operator) ? -1 : 1,
+					is_numeric = !isNaN(parseFloat(val)) && isFinite(val);
+
+				var midnight = new Date();
+				midnight.setUTCHours(0, 0, 0, 0);
+				if (is_relative && !is_numeric) {
+					var values = get_relative_values(
+						Math.round(
+							Math.abs(
+								midnight.getTime() - new Date(val).getTime()
+							) / 1000
+						)
+					);
+					input
+						.next('input.relative-datepicker')
+						.val(values.count)
+						.next('select.relative-datepicker')
+						.val(values.multi)
+						.trigger('change');
+				} else if (!is_relative && is_numeric) {
+					midnight.setSeconds(midnight.getSeconds() + val * mod);
+
+					input.val(midnight.toISOString().slice(0, 10));
+				}
 			})
 			.on('change', '.condition-value', function () {
 				mailster.trigger('updateCount');
@@ -188,6 +235,21 @@ mailster = (function (mailster, $, window, document) {
 			.trigger('change');
 
 		mailster.trigger('updateCount');
+
+		conditions.find('.is-relative').each(function () {
+			var values = get_relative_values(
+				$(this)
+					.find(
+						'.mailster-conditions-value-field.active .condition-value'
+					)
+					.val()
+			);
+			$(this)
+				.find('input.relative-datepicker')
+				.val(values.count)
+				.next('select.relative-datepicker')
+				.val(values.multi);
+		});
 
 		function datepicker() {
 			conditions.find('.datepicker').datepicker({
@@ -357,6 +419,35 @@ mailster = (function (mailster, $, window, document) {
 			}
 		}
 		return str.join('&');
+	}
+
+	function get_relative_values(val) {
+		var multi = 60,
+			count = 10;
+
+		val = parseInt(val, 10);
+
+		if (!((val / 2628000) % 1)) {
+			multi = 2628000;
+			count = val / multi;
+		} else if (!((val / 604800) % 1)) {
+			multi = 604800;
+			count = val / multi;
+		} else if (!((val / 86400) % 1)) {
+			multi = 86400;
+			count = val / multi;
+		} else if (!((val / 3600) % 1)) {
+			multi = 3600;
+			count = val / multi;
+		} else if (!((val / 60) % 1)) {
+			multi = 60;
+			count = Math.round(val / multi);
+		}
+
+		return {
+			multi: multi,
+			count: count,
+		};
 	}
 
 	mailster.conditions.get = get_conditions;

@@ -237,6 +237,13 @@ class MailsterConditions {
 		);
 
 	}
+	private function get_relative_date_operators() {
+		return array(
+			'is_older'   => esc_html__( 'is older then', 'mailster' ),
+			'is_younger' => esc_html__( 'is younger then', 'mailster' ),
+		);
+
+	}
 	private function get_special_campaigns() {
 		return array(
 			'_last_5'       => esc_html__( 'Any of the Last 5 Campaigns', 'mailster' ),
@@ -438,6 +445,9 @@ class MailsterConditions {
 				if ( in_array( $field, $this->time_fields ) && isset( $this->date_operators[ $string ] ) ) {
 					return $this->date_operators[ $string ];
 				}
+				if ( in_array( $field, $this->time_fields ) && isset( $this->relative_date_operators[ $string ] ) ) {
+					return $this->relative_date_operators[ $string ];
+				}
 				if ( isset( $this->operators[ $string ] ) ) {
 					return $this->operators[ $string ];
 				}
@@ -450,8 +460,10 @@ class MailsterConditions {
 				break;
 			case 'value':
 				if ( in_array( $field, $this->time_fields ) ) {
-					if ( $string ) {
+					if ( preg_match( '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $string ) ) {
 						return date_i18n( mailster( 'helper' )->dateformat(), strtotime( $string ) );
+					} elseif ( $string ) {
+						return human_time_diff( time() + (int) $string );
 					} else {
 						return '';
 					}

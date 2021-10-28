@@ -130,6 +130,7 @@
 .mailster-conditions-wrap select,
 .mailster-conditions-wrap input {
 	max-width: 100%;
+	vertical-align: middle;
 }
 .mailster-conditions-wrap .mailster-condition-empty {
 	background-color: none;
@@ -163,6 +164,13 @@
 .mailster-condition .mailster-conditions-value-field p,
 .mailster-condition .mailster-conditions-value-field ul {
 	margin: 0;
+}
+.mailster-condition .relative-datepicker,
+.mailster-condition.is-relative .datepicker {
+	_display: none;
+}
+.mailster-condition.is-relative .relative-datepicker {
+	_display: inline;
 }
 .mailster-condition-render span.mailster-condition-type {
 	float: left;
@@ -247,6 +255,7 @@ span.mailster-icon-star:before {
 	transform: translate(-50%, -50%);
 	text-align: center;
 	color: #999;
+	white-space: nowrap;
 }
 .mailster-condition .mailster-rating span {
 	color: #e6b800;

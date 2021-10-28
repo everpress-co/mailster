@@ -42,8 +42,9 @@
 				$value          = $condition['value'];
 				$field          = $condition['field'];
 				$field_operator = $this->get_field_operator( $condition['operator'] );
+				$is_relative    = in_array( $field_operator, array( 'is_older', 'is_younger' ) ) && is_numeric( $value );
 				?>
-		<div class="mailster-condition" data-id="<?php echo $j; ?>" data-operator="<?php esc_attr_e( 'or', 'mailster' ); ?>">
+		<div class="mailster-condition<?php echo $is_relative ? ' is-relative' : ''; ?>" data-id="<?php echo $j; ?>" data-operator="<?php esc_attr_e( 'or', 'mailster' ); ?>">
 			<a class="remove-condition" title="<?php esc_attr_e( 'remove condition', 'mailster' ); ?>">&#10005;</a>
 			<div class="mailster-conditions-field-fields">
 				<select name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][field]" class="condition-field" disabled>
@@ -141,13 +142,23 @@
 						</select>
 					</div>
 					<div class="mailster-conditions-operator-field" data-fields=",<?php echo implode( ',', $this->time_fields ); ?>,">
-						<select name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled>
+						<select name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][operator]" class="condition-operator condition-operator-time" disabled>
+						<optgroup label="<?php esc_attr_e( 'absolute', 'mailster' ); ?>">
 						<?php
 						foreach ( $this->date_operators as $key => $name ) :
 							echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
 						endforeach;
 						?>
+						</optgroup>
+						<optgroup label="<?php esc_attr_e( 'relative', 'mailster' ); ?>">
+						<?php
+						foreach ( $this->relative_date_operators as $key => $name ) :
+							echo '<option value="' . $key . '"' . selected( $field_operator, $key, false ) . '>' . $name . '</option>';
+						endforeach;
+						?>
+						</optgroup>
 						</select>
+
 					</div>
 					<div class="mailster-conditions-operator-field" data-fields=",_sent,_sent__not_in,_open,_open__not_in,_click,_click__not_in,_click_link,_click_link__not_in,_lists__not_in,_lists__in,_tags__not_in,_tags__in,">
 						<input type="hidden" name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][operator]" class="condition-operator" disabled value="is">
@@ -183,7 +194,15 @@
 					<input type="hidden" class="condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value]">
 					</div>
 					<div class="mailster-conditions-value-field" data-fields=",<?php echo implode( ',', $this->time_fields ); ?>,">
-					<input type="text" class="regular-text datepicker condition-value" disabled autocomplete="off" value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value]">
+						<input type="text" class="regular-text datepicker condition-value" disabled autocomplete="off" value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value]">
+						<input type="number" class="small-text relative-datepicker" autocomplete="off" value="" min="1">
+						<select class="relative-datepicker">
+							<option value="60"><?php esc_html_e( 'minute(s)', 'mailster' ); ?></option>
+							<option value="3600"><?php esc_html_e( 'hour(s)', 'mailster' ); ?></option>
+							<option value="86400"><?php esc_html_e( 'day(s)', 'mailster' ); ?></option>
+							<option value="604800"><?php esc_html_e( 'week(s)', 'mailster' ); ?></option>
+							<option value="2628000"><?php esc_html_e( 'month(s)', 'mailster' ); ?></option>
+						</select>
 					</div>
 					<div class="mailster-conditions-value-field" data-fields=",id,wp_id,">
 					<input type="text" class="regular-text condition-value" disabled value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value]">

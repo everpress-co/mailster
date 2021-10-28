@@ -1258,7 +1258,7 @@ class MailsterManage {
 
 		}
 
-		wp_send_json_scucess( $return );
+		wp_send_json_success( $return );
 	}
 
 
@@ -1411,6 +1411,7 @@ class MailsterManage {
 
 			// only jobs older than one hour
 			if ( time() - $job['timestamp'] > MINUTE_IN_SECONDS ) {
+
 				$this->delete_contacts( $job, true );
 			}
 		}
