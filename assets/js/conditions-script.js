@@ -141,9 +141,9 @@ mailster = (function (mailster, $, window, document) {
 			})
 			.on('change', '.relative-datepicker', function () {
 				var field = $(this).closest('.mailster-conditions-value-field');
-				var count = field.find('input.relative-datepicker').val();
+				var count = field.find('input.relative-datepicker').val() * -1;
 				var multi = field.find('select.relative-datepicker').val();
-				field.find('input.datepicker').val(count * multi);
+				field.find('input.datepicker').val(count + ' ' + multi);
 				mailster.trigger('updateCount');
 			})
 			.on('change', '.condition-operator', function () {
@@ -157,31 +157,19 @@ mailster = (function (mailster, $, window, document) {
 						.toggleClass('is-relative', is_relative)
 						.find('.mailster-conditions-value-field.active')
 						.find('.condition-value'),
-					val = input.val(),
-					midnight = new Date(),
-					mod = /(smaller)/.test(operator) ? -1 : 1,
-					is_numeric = !isNaN(parseFloat(val)) && isFinite(val);
+					val = input.val();
 
-				var midnight = new Date();
-				midnight.setUTCHours(0, 0, 0, 0);
-				if (is_relative && !is_numeric) {
-					var values = get_relative_values(
-						Math.round(
-							Math.abs(
-								midnight.getTime() - new Date(val).getTime()
-							) / 1000
-						)
-					);
+				if (is_relative) {
+					var values = get_relative_values(val);
 					input
 						.next('input.relative-datepicker')
-						.val(values.count)
+						.val(values[0])
 						.next('select.relative-datepicker')
-						.val(values.multi)
+						.val(values[1])
 						.trigger('change');
-				} else if (!is_relative && is_numeric) {
-					midnight.setSeconds(midnight.getSeconds() + val * mod);
-
-					input.val(midnight.toISOString().slice(0, 10));
+				} else {
+					if (!val.match(/^(\d{4})-(\d{2})-(\d{2})$/))
+						input.val(new Date().toISOString().slice(0, 10));
 				}
 			})
 			.on('change', '.condition-value', function () {
@@ -246,9 +234,9 @@ mailster = (function (mailster, $, window, document) {
 			);
 			$(this)
 				.find('input.relative-datepicker')
-				.val(values.count)
+				.val(values[0])
 				.next('select.relative-datepicker')
-				.val(values.multi);
+				.val(values[1]);
 		});
 
 		function datepicker() {
@@ -422,32 +410,38 @@ mailster = (function (mailster, $, window, document) {
 	}
 
 	function get_relative_values(val) {
-		var multi = 60,
-			count = 10;
-
-		val = parseInt(val, 10);
-
-		if (!((val / 2628000) % 1)) {
-			multi = 2628000;
-			count = val / multi;
-		} else if (!((val / 604800) % 1)) {
-			multi = 604800;
-			count = val / multi;
-		} else if (!((val / 86400) % 1)) {
-			multi = 86400;
-			count = val / multi;
-		} else if (!((val / 3600) % 1)) {
-			multi = 3600;
-			count = val / multi;
-		} else if (!((val / 60) % 1)) {
-			multi = 60;
-			count = Math.round(val / multi);
+		if (!isNaN(parseFloat(val)) && isFinite(val)) {
+			return val;
 		}
+		var m;
 
-		return {
-			multi: multi,
-			count: count,
-		};
+		if ((m = val.match(/^(\d{4})-(\d{2})-(\d{2})$/))) {
+			var midnight = new Date();
+			midnight.setHours(0, 0, 0, 0);
+			val = midnight.getTime() - new Date(m[1], m[2] - 1, m[3]).getTime();
+			val = Math.abs(val) / 1000;
+			val = Math.round(val);
+			if (!val) {
+				return [1, 'days'];
+			}
+
+			if (!((val / 2628000) % 1)) {
+				val = [val / 2628000, 'months'];
+			} else if (!((val / 604800) % 1)) {
+				val = [val / 604800, 'weeks'];
+			} else if (!((val / 86400) % 1)) {
+				val = [val / 86400, 'days'];
+			} else if (!((val / 3600) % 1)) {
+				val = [val / 3600, 'hours'];
+			} else if (!((val / 60) % 1)) {
+				val = [Math.ceil(val / 60), 'minutes'];
+			}
+		} else {
+			val = val.split(' ');
+		}
+		val[0] = Math.abs(val[0]);
+
+		return val;
 	}
 
 	mailster.conditions.get = get_conditions;

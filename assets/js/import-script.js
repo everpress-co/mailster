@@ -89,11 +89,11 @@ mailster = (function (mailster, $, window, document) {
 			}
 
 			$(
-				'<li><label><input name="lists[]" value="' +
-					val +
-					'" type="checkbox" checked> ' +
-					val +
-					' </label></li>'
+				mailster.util.sprintf(
+					'<li><label><input name="_lists[]" value="%s" type="checkbox" checked> %s </label></li>',
+					val,
+					val
+				)
 			).appendTo('#section-lists > ul');
 			$('#new_list_name').val('');
 			return false;

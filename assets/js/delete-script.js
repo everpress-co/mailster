@@ -69,7 +69,7 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '#schedule-delete-subscriber-button', function () {
 			var data = $('#delete-subscribers').serialize();
-			if (!/&list%5B%5D/.test(data) && !/&nolist/.test(data)) {
+			if (!/&lists%5B%5D/.test(data) && !/&nolist/.test(data)) {
 				alert(mailster.l10n.manage.list_required);
 				return false;
 			}

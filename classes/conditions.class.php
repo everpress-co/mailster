@@ -463,7 +463,7 @@ class MailsterConditions {
 					if ( preg_match( '/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $string ) ) {
 						return date_i18n( mailster( 'helper' )->dateformat(), strtotime( $string ) );
 					} elseif ( $string ) {
-						return human_time_diff( time() + (int) $string );
+						return human_time_diff( strtotime( $string ) );
 					} else {
 						return '';
 					}

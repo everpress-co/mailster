@@ -271,7 +271,7 @@ class MailsterSubscribers {
 				break;
 
 			case 'restore':
-				if ( $count = $this->restore( $subscriber_ids ) ) {
+				if ( current_user_can( 'mailster_restore_subscribers' ) && $count = $this->restore( $subscriber_ids ) ) {
 					$success_message = sprintf( esc_html__( '%d Subscribers have been restored.', 'mailster' ), $count );
 				}
 				break;
@@ -1674,13 +1674,16 @@ class MailsterSubscribers {
 	public function empty_trash( $args = array() ) {
 
 		$args['status'] = 5;
-		$args['meta']   = array( '_remove_meta', '_remove_actions' );
 
 		$subscribers = $this->query( $args );
 
 		if ( empty( $subscribers ) ) {
 			return 0;
 		}
+
+		$args['meta'] = array( '_remove_meta', '_remove_actions' );
+
+		$subscribers = $this->query( $args );
 
 		$count = count( $subscribers );
 

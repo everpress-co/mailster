@@ -167,10 +167,10 @@
 }
 .mailster-condition .relative-datepicker,
 .mailster-condition.is-relative .datepicker {
-	_display: none;
+	display: none;
 }
 .mailster-condition.is-relative .relative-datepicker {
-	_display: inline;
+	display: inline;
 }
 .mailster-condition-render span.mailster-condition-type {
 	float: left;

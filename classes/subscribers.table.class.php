@@ -119,9 +119,6 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 
 	<form id="searchform" action method="get">
 
-		<?php if ( $this->post_type ) : ?>
-			<input type="hidden" name="post_type" value="<?php echo esc_attr( $this->post_type ); ?>">
-		<?php endif; ?>
 		<?php if ( $this->conditions ) : ?>
 		<div id="mailster-filter-wrap" class="align-right clear">
 			<div id="mailster-conditions-render">
@@ -132,8 +129,8 @@ class Mailster_Subscribers_Table extends WP_List_Table {
 		</div>
 
 	<?php endif; ?>
-		<?php if ( isset( $_GET['post_type'] ) ) : ?>
-			<input type="hidden" name="post_type" value="<?php echo esc_attr( $_GET['post_type'] ); ?>">
+		<?php if ( $this->post_type ) : ?>
+			<input type="hidden" name="post_type" value="<?php echo esc_attr( $this->post_type ); ?>">
 		<?php endif; ?>
 		<?php if ( $this->page ) : ?>
 			<input type="hidden" name="page" value="<?php echo esc_attr( $this->page ); ?>">

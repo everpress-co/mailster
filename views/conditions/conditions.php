@@ -42,7 +42,7 @@
 				$value          = $condition['value'];
 				$field          = $condition['field'];
 				$field_operator = $this->get_field_operator( $condition['operator'] );
-				$is_relative    = in_array( $field_operator, array( 'is_older', 'is_younger' ) ) && is_numeric( $value );
+				$is_relative    = in_array( $field_operator, array( 'is_older', 'is_younger' ) );
 				?>
 		<div class="mailster-condition<?php echo $is_relative ? ' is-relative' : ''; ?>" data-id="<?php echo $j; ?>" data-operator="<?php esc_attr_e( 'or', 'mailster' ); ?>">
 			<a class="remove-condition" title="<?php esc_attr_e( 'remove condition', 'mailster' ); ?>">&#10005;</a>
@@ -179,10 +179,10 @@
 				</div>
 				<div class="mailster-conditions-value-field" data-fields=",rating,">
 					<?php
-							$stars = ( round( $this->sanitize_rating( $value ) / 10, 2 ) * 50 );
-							$full  = max( 0, min( 5, floor( $stars ) ) );
-							$half  = max( 0, min( 5, round( $stars - $full ) ) );
-							$empty = max( 0, min( 5, 5 - $full - $half ) );
+						$stars = ( round( $this->sanitize_rating( (float) $value ) / 10, 2 ) * 50 );
+						$full  = max( 0, min( 5, floor( $stars ) ) );
+						$half  = max( 0, min( 5, round( $stars - $full ) ) );
+						$empty = max( 0, min( 5, 5 - $full - $half ) );
 					?>
 					<div class="mailster-rating">
 					<?php
@@ -197,11 +197,11 @@
 						<input type="text" class="regular-text datepicker condition-value" disabled autocomplete="off" value="<?php echo esc_attr( $value ); ?>" name="<?php echo $inputname; ?>[<?php echo $i; ?>][<?php echo $j; ?>][value]">
 						<input type="number" class="small-text relative-datepicker" autocomplete="off" value="" min="1">
 						<select class="relative-datepicker">
-							<option value="60"><?php esc_html_e( 'minute(s)', 'mailster' ); ?></option>
-							<option value="3600"><?php esc_html_e( 'hour(s)', 'mailster' ); ?></option>
-							<option value="86400"><?php esc_html_e( 'day(s)', 'mailster' ); ?></option>
-							<option value="604800"><?php esc_html_e( 'week(s)', 'mailster' ); ?></option>
-							<option value="2628000"><?php esc_html_e( 'month(s)', 'mailster' ); ?></option>
+							<option value="minutes"><?php esc_html_e( 'minute(s)', 'mailster' ); ?></option>
+							<option value="hours"><?php esc_html_e( 'hour(s)', 'mailster' ); ?></option>
+							<option value="days"><?php esc_html_e( 'day(s)', 'mailster' ); ?></option>
+							<option value="weeks"><?php esc_html_e( 'week(s)', 'mailster' ); ?></option>
+							<option value="months"><?php esc_html_e( 'month(s)', 'mailster' ); ?></option>
 						</select>
 					</div>
 					<div class="mailster-conditions-value-field" data-fields=",id,wp_id,">

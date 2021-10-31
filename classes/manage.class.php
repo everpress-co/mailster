@@ -1408,12 +1408,7 @@ class MailsterManage {
 	public function delete_job() {
 
 		foreach ( $jobs = get_option( 'mailster_manage_jobs', array() ) as $id => $job ) {
-
-			// only jobs older than one hour
-			if ( time() - $job['timestamp'] > MINUTE_IN_SECONDS ) {
-
-				$this->delete_contacts( $job, true );
-			}
+			$this->delete_contacts( $job, true );
 		}
 
 	}

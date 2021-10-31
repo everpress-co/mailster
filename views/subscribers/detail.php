@@ -72,7 +72,7 @@ if ( $is_new ) {
 			<?php if ( ! $is_new && current_user_can( 'mailster_delete_subscribers' ) ) : ?>
 			<input type="submit" name="delete" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Subscriber', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
 			<input type="submit" name="delete_actions" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Subscriber and Activities', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
-		<?php endif; ?>
+			<?php endif; ?>
 		<?php endif; ?>
 		<input type="submit" name="save" class="button button-primary button-large" value="<?php esc_attr_e( 'Save', 'mailster' ); ?>">
 	</span>

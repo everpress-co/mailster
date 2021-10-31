@@ -1283,10 +1283,8 @@ class MailsterSubscriberQuery {
 			case 'is_younger':
 				if ( $f ) {
 				} elseif ( in_array( $field, $this->custom_date_fields ) ) {
-					$f = "`field_$field`.meta_value";
-					if ( is_numeric( $value ) ) {
-						$value = $this->get_timestamp( time() - $value, 'Y-m-d' );
-					}
+					$f     = "`field_$field`.meta_value";
+					$value = $this->get_timestamp( $value, 'Y-m-d' );
 					$value = "'$value'";
 
 				} elseif ( in_array( $field, $this->custom_fields ) ) {
@@ -1305,12 +1303,7 @@ class MailsterSubscriberQuery {
 				} else {
 					$f = "subscribers.$field";
 					if ( in_array( $field, $this->time_fields ) ) {
-							// relative formats
-						if ( is_numeric( $value ) ) {
-							$value = time() - $value;
-						} else {
-							$value = $this->get_timestamp( $value );
-						}
+						$value = $this->get_timestamp( $value );
 					} else {
 						$value = (float) $value;
 					}
