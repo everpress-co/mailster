@@ -1,5 +1,6 @@
 <form id="import_wordpress" method="post">
 	<?php $roles = get_editable_roles(); ?>
+	<p class="howto"><?php printf( esc_html__( 'Import your exciting WordPress users here. You can define how Mailster should handle future users on the %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings#wordpress-users">' . esc_html__( 'Settings page', 'mailster' ) . '</a>' ); ?></p>
 	<div class="inner">
 		<div>
 			<p><strong><?php esc_html_e( 'WordPress users roles', 'mailster' ); ?></strong></p>

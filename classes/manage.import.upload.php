@@ -62,9 +62,6 @@ class MailsterImportUpload extends MailsterImport {
 			'sample'      => $sample,
 			'sample_last' => end( $data ),
 			'encoding'    => $encoding,
-			'extra_map'   => array(
-				'referer' => 'import',
-			),
 		);
 
 	}
@@ -74,6 +71,11 @@ class MailsterImportUpload extends MailsterImport {
 		include MAILSTER_DIR . '/views/manage/method-file.php';
 	}
 
+	public function filter( $insert, $data, $import_data ) {
 
+		$insert['referer'] = 'import';
+
+		return $insert;
+	}
 
 }

@@ -12,7 +12,7 @@ mailster = (function (mailster, $, window, document) {
 			update_delete_count
 		)
 		.on('submit', '#delete-subscribers', function () {
-			var input = prompt(mailster.l10n.manage.confirm_delete, 'delete');
+			var input = prompt(mailster.l10n.manage.confirm_delete);
 
 			if (!input) return false;
 
@@ -69,7 +69,8 @@ mailster = (function (mailster, $, window, document) {
 		})
 		.on('click', '#schedule-delete-subscriber-button', function () {
 			var data = $('#delete-subscribers').serialize();
-			if (!/&lists%5B%5D/.test(data) && !/&nolist/.test(data)) {
+
+			if (!/&lists%5B%5D/.test(data) && !/&nolists=1/.test(data)) {
 				alert(mailster.l10n.manage.list_required);
 				return false;
 			}

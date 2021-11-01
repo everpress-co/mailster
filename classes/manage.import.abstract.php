@@ -131,6 +131,9 @@ abstract class MailsterImport {
 
 	}
 
+	public function filter( $insert, $data, $import_data ) {
+		return $insert;
+	}
 
 
 	public function sanitize_raw_data( $raw_data, $offset = 0, $limit = null ) {

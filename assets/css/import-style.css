@@ -146,15 +146,15 @@ h2 span.howto {
 	font-size: small;
 }
 
-.importer-form {
+.import-wrap form {
 	position: relative;
 }
 
-.importer-form.loading {
+.import-wrap form.loading {
 	opacity: 0.8;
 }
 
-.importer-form.loading:before {
+.import-wrap form.loading:before {
 	content: '';
 	position: absolute;
 	left: -1em;

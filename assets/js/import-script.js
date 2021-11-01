@@ -5,7 +5,8 @@ mailster = (function (mailster, $, window, document) {
 		uploadinfo = $('.uploadinfo'),
 		importstatus = $('.status'),
 		importstarttime,
-		importidentifier;
+		importidentifier,
+		newCustomFields = {};
 
 	mailster.$.document
 		.on('submit', '#import_paste', function () {
@@ -73,13 +74,30 @@ mailster = (function (mailster, $, window, document) {
 
 			return false;
 		})
+		.on('submit', '.importer-quickinstall-form', function () {
+			var form = $(this);
+			var data = form.serialize();
+			var slug = form.data('slug');
+			var id = form.data('id');
+
+			form.prop('readonly', true).addClass('loading');
+
+			quickInstall(id, slug, 'install');
+
+			return false;
+		})
 		.on('change', '.column-selector', function () {
 			if ('_new' == $(this).val()) {
-				tb_show(
-					'',
-					'#TB_inline?x=1&width=480&height=320&inlineId=create-new-field',
-					false
+				var name = prompt(
+					mailster.l10n.manage.define_custom_field,
+					mailster.l10n.manage.my_custom_field
 				);
+
+				if (!name) return false;
+
+				var id = addCustomField(name);
+
+				$(this).val(id);
 			}
 		})
 		.on('click', '#addlist', function () {
@@ -125,10 +143,6 @@ mailster = (function (mailster, $, window, document) {
 
 			var _this = $(this).prop('disabled', true),
 				status = $('input[name="status"]:checked').val(),
-				existing = $('input[name="existing"]:checked').val(),
-				signup = $('#signup').is(':checked'),
-				signupdate = $('#signupdate').val(),
-				// keepstatus = $('#keepstatus').is(':checked'),
 				loader = $('#import-ajax-loading').css({
 					display: 'inline-block',
 				}),
@@ -144,22 +158,16 @@ mailster = (function (mailster, $, window, document) {
 				identifier: identifier,
 				data: data,
 				status: status,
-				//keepstatus: keepstatus,
-				//existing: existing,
-				//signupdate: signup ? signupdate : null,
 				performance: performance,
+				customfields: newCustomFields,
 			});
 
 			$(this).prop('disabled', false);
 
-			return false;
 			window.onbeforeunload = function () {
 				return mailster.l10n.manage.onbeforeunloadimport;
 			};
-		})
-		.on('click', '.install-addon', function () {
-			var slug = $(this).data('slug');
-			installAddon(slug);
+			return false;
 		});
 
 	typeof wpUploaderInit == 'object' &&
@@ -270,6 +278,7 @@ mailster = (function (mailster, $, window, document) {
 			id = 0;
 		}
 
+		console.warn(options);
 		mailster.util.ajax(
 			'do_import',
 			{
@@ -376,21 +385,47 @@ mailster = (function (mailster, $, window, document) {
 		);
 	}
 
-	function installAddon(slug) {
+	function quickInstall(id, slug, action, context) {
+		var el = $('#manage-import-' + id).find('.manage-import-body');
+
 		mailster.util.ajax(
 			'quick_install',
 			{
 				plugin: slug,
-				step: 'install',
+				step: action,
+				context: context,
 			},
 			function (response) {
-				console.warn(response);
 				if (response.success) {
+					if (response.data.next) {
+						quickInstall(id, slug, response.data.next, [
+							'import_method',
+							id,
+						]);
+					} else if (response.data.content) {
+						el.html(response.data.content);
+					}
 				} else {
 				}
 			},
 			function (jqXHR, textStatus, errorThrown) {}
 		);
 	}
+
+	function addCustomField(name) {
+		var id = mailster.util.sanitizeTag(name);
+		$('#subscriber-table')
+			.find('.custom-fields-select')
+			.each(function () {
+				$('<option value="' + id + '">' + name + '</option>').appendTo(
+					$(this)
+				);
+			});
+
+		newCustomFields[id] = name;
+
+		return id;
+	}
+
 	return mailster;
 })(mailster || {}, jQuery, window, document);

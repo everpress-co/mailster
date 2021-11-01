@@ -256,6 +256,13 @@ class MailsterHelper {
 	 */
 	public function install_plugin( $plugin ) {
 
+		$installed_plugins = array_keys( get_plugins() );
+
+		$is_installed = array_values( preg_grep( '/^' . preg_quote( $plugin ) . '\/.*$/', $installed_plugins ) );
+		if ( ! empty( $is_installed ) ) {
+			return true;
+		}
+
 		include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 		include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 
@@ -280,7 +287,7 @@ class MailsterHelper {
 
 		$plugins = array_keys( get_plugins() );
 
-		$plugin = array_values( preg_grep( '/^' . $plugin . '\/.*$/', $plugins ) );
+		$plugin = array_values( preg_grep( '/^' . preg_quote( $plugin ) . '\/.*$/', $plugins ) );
 		if ( empty( $plugin ) ) {
 			return false;
 		}

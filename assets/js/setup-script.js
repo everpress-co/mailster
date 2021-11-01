@@ -60,7 +60,17 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.quick-install', function () {
 			var _this = $(this);
 
-			install(_this.data('plugin'), _this.data('method'), _this.parent());
+			quickInstall(
+				_this.data('method'),
+				_this.data('plugin'),
+				'install',
+				null,
+				function () {
+					status.html('');
+					spinner.css('visibility', 'hidden');
+					deliverynav.find('a.nav-tab-active').trigger('click');
+				}
+			);
 		})
 		.on('click', '.edit-slug', function () {
 			$(this)
@@ -167,47 +177,36 @@ mailster = (function (mailster, $, window, document) {
 		}
 	}
 
-	function install(plugin, method, element, callback) {
+	function quickInstall(id, slug, action, context, cb) {
 		status.html(mailster.l10n.setup.install_addon);
 		spinner.css('visibility', 'visible');
+		var el = $('#deliverytab-' + id);
 
 		mailster.util.ajax(
 			'quick_install',
 			{
-				plugin: plugin,
-				method: method,
-				step: 'install',
+				plugin: slug,
+				step: action,
+				context: context,
 			},
 			function (response) {
-				status.html(mailster.l10n.setup.activate_addon);
-				mailster.util.ajax(
-					'quick_install',
-					{
-						plugin: plugin,
-						method: method,
-						step: 'activate',
-					},
-					function (response) {
-						status.html(mailster.l10n.setup.receiving_content);
-						mailster.util.ajax(
-							'quick_install',
-							{
-								plugin: plugin,
-								method: method,
-								step: 'content',
-							},
-							function (response) {
-								status.html('');
-								spinner.css('visibility', 'hidden');
-								element.html(response.data.content);
-								deliverynav
-									.find('a.nav-tab-active')
-									.trigger('click');
-							}
+				if (response.success) {
+					if (response.data.next) {
+						quickInstall(
+							id,
+							slug,
+							response.data.next,
+							['deliverymethod_tab_' + id],
+							cb
 						);
+					} else if (response.data.content) {
+						el.html(response.data.content);
+						cb && cb(response);
 					}
-				);
-			}
+				} else {
+				}
+			},
+			function (jqXHR, textStatus, errorThrown) {}
 		);
 	}
 

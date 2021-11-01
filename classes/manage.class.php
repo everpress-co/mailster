@@ -115,6 +115,8 @@ class MailsterManage {
 				'error_export'         => esc_html__( 'There was an error while exporting', 'mailster' ),
 				'confirm_import'       => esc_html__( 'Do you really like to import these contacts?', 'mailster' ),
 				'import_complete'      => esc_html__( 'Import complete!', 'mailster' ),
+				'define_custom_field'  => esc_html__( 'Give you custom field a name', 'mailster' ),
+				'my_custom_field'      => esc_html__( 'My Custom Field', 'mailster' ),
 				'choose_tags'          => esc_html__( 'Choose your tags.', 'mailster' ),
 				'confirm_delete'       => esc_html__( 'You are about to delete these subscribers permanently. This step is irreversible!', 'mailster' ) . "\n" . sprintf( esc_html__( 'Type %s to confirm deletion', 'mailster' ), '"DELETE"' ),
 				'confirm_job'          => esc_html__( 'Please define a name for this job!', 'mailster' ),
@@ -197,7 +199,17 @@ class MailsterManage {
 			)
 		);
 
-		update_option( 'mailster_bulk_import_' . $identifier, $import_data, 'no' );
+		set_transient( '_mailster_bulk_import_' . $identifier, $import_data, DAY_IN_SECONDS );
+
+		$user_data = $this->integrations[ $type ]->get_import_data();
+
+		update_user_option(
+			get_current_user_id(),
+			'mailster_import_settings',
+			array(
+				'method' => $type,
+			)
+		);
 
 		$return['identifier'] = $identifier;
 
@@ -219,7 +231,7 @@ class MailsterManage {
 
 		$return['identifier'] = $identifier = $_POST['identifier'];
 
-		$import_data = get_option( 'mailster_bulk_import_' . $identifier );
+		$import_data = get_transient( '_mailster_bulk_import_' . $identifier );
 		$data        = $import_data['sample'];
 		$first       = $data[0];
 		$last        = end( $data );
@@ -231,7 +243,7 @@ class MailsterManage {
 		$samplecount  = count( $data );
 		$removed      = $import_data['removed'];
 		$defaults     = $import_data['defaults'];
-		$header       = is_array( $import_data['header'] ) ? array_values( $import_data['header'] ) : null;
+		$header       = is_array( $import_data['header'] ) ? array_values( $import_data['header'] ) : array();
 		$map          = is_array( $import_data['header'] ) ? array_keys( $import_data['header'] ) : null;
 
 		$custom_fields = mailster()->get_custom_fields();
@@ -270,9 +282,9 @@ class MailsterManage {
 
 		$html  = '<form id="subscriber-table">';
 		$html .= '<h2>';
-		$html .= sprintf( esc_html__( _n( '%s contact to import!', '%s contacts to import!', $contactcount, 'mailster' ) ), number_format_i18n( $contactcount ) );
+		$html .= sprintf( esc_html__( _n( '%s contact to import.', '%s contacts to import.', $contactcount, 'mailster' ) ), number_format_i18n( $contactcount ) );
 		if ( ! empty( $removed ) ) {
-			$html .= ' <span class="howto">(' . sprintf( esc_html__( _n( '%s entry without valid email address has been removed.', '%s entries without valid email address have been removed.', $removed, 'mailster' ) ), number_format_i18n( $removed ) ) . ')</span>';
+			$html .= ' <span class="howto">' . sprintf( esc_html__( _n( '%s entry without valid email address has been removed.', '%s entries without valid email address have been removed.', $removed, 'mailster' ) ), number_format_i18n( $removed ) ) . '</span>';
 		}
 		$html .= '</h2>';
 		$html .= '<h4>' . esc_html__( 'Match column labels to contact information. Each column can represent one field. You can ignore columns which you like to skip.', 'mailster' ) . '</h4>';
@@ -297,12 +309,10 @@ class MailsterManage {
 			}
 			$select .= '</optgroup>';
 			if ( ! empty( $custom_fields ) ) {
-				$select .= '<optgroup label="' . esc_html__( 'Custom Fields', 'mailster' ) . '">';
+				$select .= '<optgroup label="' . esc_html__( 'Custom Fields', 'mailster' ) . '" class="custom-fields-select">';
 				foreach ( $custom_fields as $key => $d ) {
 					$select .= '<option value="' . esc_attr( $key ) . '">' . $d['name'] . '</option>';
 				}
-				$select .= '<option value="-1">----------</option>';
-				$select .= '<option value="_new">' . esc_html__( 'Create new Field', 'mailster' ) . '</option>';
 				$select .= '</optgroup>';
 			} else {
 				$select .= '<optgroup label="' . esc_html__( 'no Custom Fields defined!', 'mailster' ) . '">';
@@ -326,15 +336,15 @@ class MailsterManage {
 				$is_selected = $map && $key === $map[ $i ];
 				$select     .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}
-			$select .= '</optgroup>';
-			$select .= '</select>';
-			$html   .= '<td>' . $select . '</td>';
+			$select   .= '</optgroup>';
+			$select   .= '</select>';
+				$html .= '<td>' . $select . '</td>';
 		}
 		$html .= '</tr>';
 		if ( ! empty( $header ) ) {
 			$html .= '<tr><td style="width:20px;">&nbsp;</td>';
 			for ( $i = 0; $i < $cols; $i++ ) {
-				$html .= '<td>' . esc_html( $header[ $i ] ) . '</td>';
+					$html .= '<td>' . esc_html( $header[ $i ] ) . '</td>';
 			}
 			$html .= '</tr>';
 		}
@@ -342,8 +352,8 @@ class MailsterManage {
 		$html .= '<tbody>';
 		for ( $i = 0; $i < min( $samplecount, $contactcount ); $i++ ) {
 			$html .= '<tr class="' . ( $i % 2 ? '' : 'alternate' ) . '"><td>' . number_format_i18n( $i + 1 ) . '</td>';
-			foreach ( $data[ $i ] as $cell ) {
-				$html .= '<td title="' . esc_attr( strip_tags( $cell ) ) . '">' . esc_html( $cell ) . '</td>';
+			foreach ( $data[ $i ] as $j => $cell ) {
+					$html .= '<td title="' . esc_attr( strip_tags( $cell ) ) . '">' . esc_html( $cell ) . '</td>';
 			}
 			$html .= '<tr>';
 		}
@@ -378,7 +388,7 @@ class MailsterManage {
 		$html .= '<p><label for="new_list_name">' . esc_html__( 'Add new list', 'mailster' ) . ': </label><input type="text" id="new_list_name" value=""> <button class="button" id="addlist">' . esc_html__( 'Add', 'mailster' ) . '</button></p>';
 
 		$html .= '</section>';
-		$html .= '<h4>' . esc_html__( 'Add contacts to following tags', 'mailster' ) . '</h4>';
+		$html .= '<h4>' . esc_html__( 'Assign following tags to these contacts', 'mailster' ) . '</h4>';
 		$html .= '<section id="section-tags">';
 		$html .= '<p>';
 		$html .= '<select multiple name="_tags[]" class="tags-input">';
@@ -427,19 +437,6 @@ class MailsterManage {
 		$html .= '</section>';
 		$html .= '</form>';
 
-		$html .= '<div id="create-new-field" style="display:none"><div>';
-		$html .= '<h3>Create a new Custom field for this column</h3>';
-		$html .= '<p>Create a new Custom field for this column</p>';
-		$html .= '<form id="new-custom-field">';
-		$html .= '<section>';
-		$html .= '<p><label><input type="checkbox" id="signup" name="signup" checked>' . esc_html__( 'Use a signup date if not defined', 'mailster' ) . ': <input type="text" value="' . date( 'Y-m-d' ) . '" class="datepicker" id="signupdate" name="signupdate"></label>';
-		$html .= '</section>';
-		$html .= '<section class="footer alternate">';
-		$html .= '<p class="alignright"><input type="submit" class="do-import button button-primary" value="' . esc_attr__( 'Create Field ', 'mailster' ) . '"></p>';
-		$html .= '</section>';
-		$html .= '</from>';
-		$html .= '</div></div>';
-
 		$return['html'] = $html;
 
 		wp_send_json_success( $return );
@@ -461,10 +458,12 @@ class MailsterManage {
 
 		parse_str( $_POST['options']['data'], $import_options );
 
-		$identifier = $_POST['options']['identifier'];
-
-		$import_data = wp_parse_args(
-			get_option( 'mailster_bulk_import_' . $identifier, array() ),
+		$identifier        = $_POST['options']['identifier'];
+		$new_custom_fields = isset( $_POST['options']['customfields'] ) ? (array) $_POST['options']['customfields'] : null;
+		$imported          = 0;
+		$errors            = 0;
+		$import_data       = wp_parse_args(
+			get_transient( '_mailster_bulk_import_' . $identifier ),
 			array(
 				'lists'       => isset( $import_options['_lists'] ) ? (array) $import_options['_lists'] : array(),
 				'tags'        => isset( $import_options['_tags'] ) ? (array) $import_options['_tags'] : array(),
@@ -496,7 +495,24 @@ class MailsterManage {
 
 		$timeoffset = mailster( 'helper' )->gmt_offset( true );
 
-		$erroremails = get_option( 'mailster_bulk_import_errors_' . $identifier, array() );
+		if ( ! ( $erroremails = get_transient( '_mailster_bulk_import_errors_' . $identifier ) ) ) {
+			$erroremails = array();
+
+		}
+
+		if ( ! empty( $new_custom_fields ) && 1 == $import_data['page'] ) {
+
+			// is it used?
+			$custom_fields = mailster()->get_custom_fields( true );
+
+			$used = array_intersect( $import_data['order'], array_flip( $new_custom_fields ) );
+
+			$used = array_values( array_diff( $used, $custom_fields ) );
+
+			foreach ( $used as $id ) {
+				mailster()->add_custom_field( $new_custom_fields[ $id ], null, null, null, $id );
+			}
+		}
 
 		$option_list_ids = array();
 		foreach ( $import_data['lists'] as $list ) {
@@ -563,7 +579,7 @@ class MailsterManage {
 			$data       = $part;
 			$line_count = count( $data );
 
-			$insert = isset( $import_data['extra_map'] ) ? (array) $import_data['extra_map'] : array();
+			$insert = array();
 			$meta   = array();
 			$geo    = array();
 			$coords = array();
@@ -680,8 +696,11 @@ class MailsterManage {
 			}
 
 			if ( ! mailster_is_email( $insert['email'] ) ) {
-				$erroremails[ $insert['email'] ] = esc_html__( 'Email address is invalid.', 'mailster' );
-				$import_data['errors']++;
+				$erroremails[] = array(
+					'email'  => $insert['email'],
+					'reason' => esc_html__( 'Email address is invalid.', 'mailster' ),
+				);
+				$errors++;
 				continue;
 			}
 
@@ -696,6 +715,8 @@ class MailsterManage {
 			if ( ! isset( $insert['confirm'] ) ) {
 				$insert['confirm'] = 0;
 			}
+
+			$insert = $this->integrations[ $import_data['type'] ]->filter( $insert, $part, $import_data );
 
 			switch ( $import_data['existing'] ) {
 				case 'merge':
@@ -732,99 +753,109 @@ class MailsterManage {
 			}
 
 			if ( is_wp_error( $subscriber_id ) ) {
-				$erroremails[ $insert['email'] ] = $subscriber_id->get_error_message();
-				$import_data['errors']++;
-			} else {
-
-				foreach ( $list_array as $list ) {
-
-					if ( empty( $list ) ) {
-						continue;
-					}
-
-					if ( isset( $list_cache[ $list ] ) ) {
-						$list_id = $list_cache[ $list ];
-					} else {
-						$list_id = mailster( 'lists' )->get_by_name( $list, 'ID' );
-					}
-
-					if ( ! $list_id ) {
-						$list_id = mailster( 'lists' )->add( $list );
-						if ( is_wp_error( $list_id ) ) {
-							continue;
-						}
-						$list_cache[ $list ] = $list_id;
-					}
-
-					$list_ids[] = $list_id;
-
-				}
-
-				if ( ! empty( $list_ids ) ) {
-					$list_ids = array_unique( $list_ids );
-					$added    = null;
-					if ( $insert['status'] != 0 ) {
-						$added = isset( $insert['signup'] ) ? $insert['signup'] : time();
-					}
-					mailster( 'subscribers' )->assign_lists( $subscriber_id, $list_ids, $import_data['existing'] == 'overwrite', $added );
-				}
-
-				foreach ( $tag_array as $tag ) {
-
-					if ( empty( $tag ) ) {
-						continue;
-					}
-
-					if ( isset( $tag_cache[ $tag ] ) ) {
-						$tag_id = $tag_cache[ $tag ];
-					} else {
-						$tag_id = mailster( 'tags' )->get_by_name( $tag, 'ID' );
-					}
-
-					if ( ! $tag_id ) {
-						$tag_id = mailster( 'tags' )->add( $tag );
-						if ( is_wp_error( $tag_id ) ) {
-							continue;
-						}
-						$tag_cache[ $tag ] = $tag_id;
-					}
-
-					$tag_ids[] = $tag_id;
-
-				}
-
-				if ( ! empty( $tag_ids ) ) {
-					$tag_ids = array_unique( $tag_ids );
-					mailster( 'subscribers' )->assign_tags( $subscriber_id, $tag_ids, $import_data['existing'] == 'overwrite' );
-				}
-
-				mailster( 'subscribers' )->update_meta( $subscriber_id, 0, $meta );
-
-				$import_data['imported']++;
+				$erroremails[] = array(
+					'email'  => $insert['email'],
+					'reason' => $subscriber_id->get_error_message(),
+				);
+				$errors++;
+				continue;
 			}
+			foreach ( $list_array as $list ) {
+
+				if ( empty( $list ) ) {
+					continue;
+				}
+
+				if ( isset( $list_cache[ $list ] ) ) {
+					$list_id = $list_cache[ $list ];
+				} else {
+					$list_id = mailster( 'lists' )->get_by_name( $list, 'ID' );
+				}
+
+				if ( ! $list_id ) {
+					$list_id = mailster( 'lists' )->add( $list );
+					if ( is_wp_error( $list_id ) ) {
+						continue;
+					}
+					$list_cache[ $list ] = $list_id;
+				}
+
+				$list_ids[] = $list_id;
+
+			}
+
+			if ( ! empty( $list_ids ) ) {
+				$list_ids = array_unique( $list_ids );
+				$added    = null;
+				if ( $insert['status'] != 0 ) {
+					$added = isset( $insert['signup'] ) ? $insert['signup'] : time();
+				}
+				mailster( 'subscribers' )->assign_lists( $subscriber_id, $list_ids, $import_data['existing'] == 'overwrite', $added );
+			}
+
+			foreach ( $tag_array as $tag ) {
+
+				if ( empty( $tag ) ) {
+					continue;
+				}
+
+				if ( isset( $tag_cache[ $tag ] ) ) {
+					$tag_id = $tag_cache[ $tag ];
+				} else {
+					$tag_id = mailster( 'tags' )->get_by_name( $tag, 'ID' );
+				}
+
+				if ( ! $tag_id ) {
+					$tag_id = mailster( 'tags' )->add( $tag );
+					if ( is_wp_error( $tag_id ) ) {
+						continue;
+					}
+					$tag_cache[ $tag ] = $tag_id;
+				}
+
+				$tag_ids[] = $tag_id;
+
+			}
+
+			if ( ! empty( $tag_ids ) ) {
+				$tag_ids = array_unique( $tag_ids );
+				mailster( 'subscribers' )->assign_tags( $subscriber_id, $tag_ids, $import_data['existing'] == 'overwrite' );
+			}
+
+			mailster( 'subscribers' )->update_meta( $subscriber_id, 0, $meta );
+
+			$imported++;
+
 		}
 
-		$return['memoryusage'] = size_format( memory_get_peak_usage( true ), 2 );
-		$return['errors']      = ( $import_data['errors'] );
-		$return['imported']    = ( $import_data['imported'] );
-		$return['total']       = ( $import_data['total'] );
-		$return['f_errors']    = number_format_i18n( $import_data['errors'] );
-		$return['f_imported']  = number_format_i18n( $import_data['imported'] );
-		$return['f_total']     = number_format_i18n( $import_data['total'] );
+		$import_data['imported'] += $imported;
+		$import_data['errors']   += $errors;
+
+		$return['memoryusage']   = size_format( memory_get_peak_usage( true ), 2 );
+		$return['errors']        = $import_data['errors'];
+		$return['errors_turn']   = $errors;
+		$return['imported']      = $import_data['imported'];
+		$return['imported_turn'] = $imported;
+		$return['total']         = $import_data['total'];
+		$return['p']             = ( $import_data['imported'] ) / $import_data['total'];
+		$return['p_total']       = ( $import_data['imported'] + $import_data['errors'] ) / $import_data['total'];
+		$return['f_p']           = round( $return['p'] * 100, 1 );
+		$return['f_errors']      = number_format_i18n( $import_data['errors'] );
+		$return['f_imported']    = number_format_i18n( $import_data['imported'] );
+		$return['f_total']       = number_format_i18n( $import_data['total'] );
 
 		$return['html'] = '';
 
 		if ( $import_data['imported'] + $import_data['errors'] >= $import_data['total'] ) {
-			$return['html'] .= '<h2>' . sprintf( esc_html__( '%1$s of %2$s contacts imported.', 'mailster' ), '<strong>' . number_format_i18n( $import_data['imported'] ) . '</strong>', '<strong>' . number_format_i18n( $import_data['total'] ) . '</strong>' ) . '</h2>';
+			$return['html'] .= '<h2>' . sprintf( esc_html__( '%1$s of %2$s contacts imported.', 'mailster' ), '<strong>' . number_format_i18n( $import_data['imported'] ) . '</strong>', '<strong>' . number_format_i18n( $import_data['total'] ) . '</strong>' ) . ' (' . ( $return['f_p'] ) . '%)</h2>';
 			if ( $import_data['errors'] ) {
-				$i               = 0;
-				$return['html'] .= '<h4>' . esc_html__( 'The following addresses were not imported', 'mailster' ) . ':</h4>';
+				$return['html'] .= '<h4>' . sprintf( esc_html__( 'Following %s contacts were not imported', 'mailster' ), count( $erroremails ) ) . '</h4>';
 				$return['html'] .= '<section>';
 				$return['html'] .= '<div class="table-wrap">';
 				$return['html'] .= '<table class="wp-list-table widefat">';
 				$return['html'] .= '<thead><tr><td width="5%">#</td><td>' . mailster_text( 'email' ) . '</td><td>' . esc_html__( 'Reason', 'mailster' ) . '</td></tr></thead><tbody>';
-				foreach ( $erroremails as $email => $reason ) {
-					$return['html'] .= '<tr' . ( $i % 2 ? '' : ' class="alternate"' ) . '><td>' . ( ++$i ) . '</td><td>' . esc_html( $email ) . '</td><td>' . esc_html( $reason ) . '</td></tr></thead>';
+				foreach ( $erroremails as $i => $contacts ) {
+					$return['html'] .= '<tr' . ( $i % 2 ? '' : ' class="alternate"' ) . '><td>' . ( ++$i ) . '</td><td>' . esc_html( $contacts['email'] ) . '</td><td>' . esc_html( $contacts['reason'] ) . '</td></tr></thead>';
 				}
 				$return['html'] .= '</tbody></table>';
 				$return['html'] .= '</div>';
@@ -836,8 +867,8 @@ class MailsterManage {
 			$return['html'] .= '<a href="' . admin_url( 'edit.php?post_type=newsletter&page=mailster_subscribers' ) . '" class="button">' . esc_html__( 'View your Subscribers', 'mailster' ) . '</a>';
 			$return['html'] .= '</section>';
 
-			delete_option( 'mailster_bulk_import' . $identifier );
-			delete_option( 'mailster_bulk_import_errors_' . $identifier );
+			delete_transient( 'mailster_bulk_import' . $identifier );
+			delete_transient( '_mailster_bulk_import_errors_' . $identifier );
 			$return['wpusers'] = mailster( 'subscribers' )->wp_id();
 
 		} else {
@@ -845,8 +876,8 @@ class MailsterManage {
 			// increase this for the next batch
 			$import_data['page']++;
 
-			update_option( 'mailster_bulk_import_' . $identifier, $import_data );
-			update_option( 'mailster_bulk_import_errors_' . $identifier, $erroremails );
+			set_transient( '_mailster_bulk_import_' . $identifier, $import_data, DAY_IN_SECONDS );
+			set_transient( '_mailster_bulk_import_errors_' . $identifier, $erroremails, DAY_IN_SECONDS );
 
 		}
 
@@ -1530,16 +1561,20 @@ class MailsterManage {
 			return;
 		}
 
-		$slug = $plugins[ $id ];
+		$slug      = $plugins[ $id ];
+		$installed = get_plugins();
 
-		if ( ! is_plugin_active( $slug ) ) {
-			echo '<p>' . sprintf( esc_html__( 'To import subscribers from %s you need an additional addon.', 'mailster' ), ucwords( $id ) ) . '</p>';
-			echo '<a class="button button-primary install-addon" data-slug="' . esc_attr( $slug ) . '">' . esc_html__( 'Install Addon' ) . '</a>';
-		} else {
-
-		}
+		?>
+		<form class="importer-quickinstall-form" data-slug="<?php echo esc_attr( $slug ); ?>" data-id="<?php echo esc_attr( $id ); ?>">
+		<p><?php printf( esc_html__( 'To import subscribers from %s you need an additional addon.', 'mailster' ), ucwords( $id ) ); ?></p>
+		<?php if ( isset( $installed[ $slug ] ) ) : ?>
+			<?php submit_button( esc_html__( 'Activate Addon', 'mailster' ) ); ?>
+		<?php elseif ( ! is_plugin_active( $slug ) ) : ?>
+			<?php submit_button( esc_html__( 'Install Addon', 'mailster' ) ); ?>
+		<?php endif; ?>
+		</form>
+		<?php
 
 	}
-
 
 }
