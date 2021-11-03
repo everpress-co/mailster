@@ -101,16 +101,16 @@ mailster = (function (mailster, $, window, document) {
 		.on('click', '.check-for-update', function () {
 			var _this = $(this);
 			_this.html(mailster.l10n.dashboard.checking);
-			mailster.util.ajax('enable_auto_update', function (response) {
+			mailster.util.ajax('check_for_update', function (response) {
 				_this.html(mailster.l10n.dashboard.check_again);
 				if (response.success) {
 					_this
 						.closest('.postbox')
-						[response.update ? 'addClass' : 'removeClass'](
+						[response.data.update ? 'addClass' : 'removeClass'](
 							'has-update'
 						);
-					$('.update-version').html(response.version);
-					$('.update-last-check').html(response.last_update);
+					$('.update-version').html(response.data.version);
+					$('.update-last-check').html(response.data.last_update);
 				}
 			});
 			return false;
@@ -187,7 +187,7 @@ mailster = (function (mailster, $, window, document) {
 					id: ID,
 				},
 				function (response) {
-					var data = response.data;
+					var data = response.data.data;
 
 					link.html(data.name)
 						.removeAttr('class')
@@ -236,7 +236,7 @@ mailster = (function (mailster, $, window, document) {
 				if (!chart) {
 					chart = new Chart(ctx, {
 						type: 'line',
-						data: response.chart,
+						data: response.data.chart,
 						options: chartoptions,
 					});
 				}

@@ -731,7 +731,7 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					$this.addClass('open');
 					loader.hide();
-					list.html(response.html).slideDown(100);
+					list.html(response.data.html).slideDown(100);
 				},
 				function (jqXHR, textStatus, errorThrown) {
 					loader.hide();
@@ -759,7 +759,7 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					$this.addClass('open');
 					loader.hide();
-					list.html(response.html).slideDown(100);
+					list.html(response.data.html).slideDown(100);
 				},
 				function (jqXHR, textStatus, errorThrown) {
 					loader.hide();
@@ -787,7 +787,7 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					$this.addClass('open');
 					loader.hide();
-					list.html(response.html).slideDown(100);
+					list.html(response.data.html).slideDown(100);
 				},
 				function (jqXHR, textStatus, errorThrown) {
 					loader.hide();
@@ -816,10 +816,10 @@ mailster = (function (mailster, $, window, document) {
 					$this.addClass('open');
 					loader.hide();
 
-					googledata.geodata = response.geodata;
-					googledata.unknown_cities = response.unknown_cities;
+					googledata.geodata = response.data.geodata;
+					googledata.unknown_cities = response.data.unknown_cities;
 
-					list.html(response.html).slideDown(100, function () {
+					list.html(response.data.html).slideDown(100, function () {
 						google.load('visualization', '1.0', {
 							packages: ['geochart', 'corechart'],
 							mapsApiKey: mailster.l10n.google
@@ -834,7 +834,7 @@ mailster = (function (mailster, $, window, document) {
 									);
 								google.countrydata =
 									google.visualization.arrayToDataTable(
-										response.countrydata
+										response.data.countrydata
 									);
 
 								if (
@@ -901,7 +901,7 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					$this.addClass('open');
 					loader.hide();
-					list.html(response.html).slideDown(100);
+					list.html(response.data.html).slideDown(100);
 				},
 				function (jqXHR, textStatus, errorThrown) {
 					loader.hide();
@@ -933,7 +933,7 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					loader.hide();
 					if (response.success) {
-						$this.parent().parent().replaceWith(response.html);
+						$this.parent().parent().replaceWith(response.data.html);
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {
@@ -979,7 +979,7 @@ mailster = (function (mailster, $, window, document) {
 					function (response) {
 						loader.hide();
 						$('input.recipients-limit').prop('disabled', false);
-						list.html(response.html).slideDown(100);
+						list.html(response.data.html).slideDown(100);
 					},
 					function (jqXHR, textStatus, errorThrown) {
 						loader.hide();
@@ -1012,7 +1012,7 @@ mailster = (function (mailster, $, window, document) {
 					if (response.success) {
 						detailbox
 							.find('div.receiver-detail-body')
-							.html(response.html)
+							.html(response.data.html)
 							.slideDown(100);
 					}
 				},
@@ -1378,7 +1378,7 @@ mailster = (function (mailster, $, window, document) {
 				},
 				function (response) {
 					if (response.success) {
-						cats.html(response.html);
+						cats.html(response.data.html);
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {
@@ -1421,7 +1421,7 @@ mailster = (function (mailster, $, window, document) {
 					loader(false);
 					$this.prop('disabled', false);
 					mailster.util.tempMsg(
-						response.msg,
+						response.data.msg,
 						!response.success ? 'error' : 'updated',
 						$this.parent()
 					);
@@ -1771,7 +1771,7 @@ mailster = (function (mailster, $, window, document) {
 					function (response) {
 						loader(false);
 						mailster.util.tempMsg(
-							response.msg,
+							response.data.msg,
 							!response.success ? 'error' : 'updated',
 							$('.create-new-list-wrap')
 						);
@@ -1809,7 +1809,7 @@ mailster = (function (mailster, $, window, document) {
 				},
 				function (response) {
 					listtype.prop('disabled', false);
-					loader(false, response.count);
+					loader(false, response.data.count);
 				},
 				function (jqXHR, textStatus, errorThrown) {
 					listtype.prop('disabled', false);
@@ -1830,15 +1830,15 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					var title = mailster.$.title.val();
 					mailster.trigger('enable');
-					loader(false, response.totalformatted);
+					loader(false, response.data.totalformatted);
 					mailster.receivers.$.receiverslist
 						.find('.inner')
-						.html(response.html);
+						.html(response.data.html);
 					tb_show(
 						title
 							? mailster.util.sprintf(
 									mailster.l10n.campaigns.receivers,
-									response.totalformatted,
+									response.data.totalformatted,
 									'"' + title + '"'
 							  )
 							: mailster.l10n.campaigns.preview,
@@ -1877,7 +1877,7 @@ mailster = (function (mailster, $, window, document) {
 				function (response) {
 					loader.hide();
 					if (response.success) {
-						$this.parent().parent().replaceWith(response.html);
+						$this.parent().parent().replaceWith(response.data.html);
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {}
@@ -1920,9 +1920,9 @@ mailster = (function (mailster, $, window, document) {
 					get_conditions(),
 					function (response) {
 						mailster.trigger('enable');
-						loader(false, response.totalformatted);
+						loader(false, response.data.totalformatted);
 						mailster.receivers.$.conditionsOutput.html(
-							response.conditions
+							response.data.conditions
 						);
 					},
 					function (jqXHR, textStatus, errorThrown) {
@@ -2066,7 +2066,7 @@ mailster = (function (mailster, $, window, document) {
 					if (response.success) {
 						$('.colorschema')
 							.last()
-							.after($(response.html).hide().fadeIn());
+							.after($(response.data.html).hide().fadeIn());
 					}
 				},
 				function (jqXHR, textStatus, errorThrown) {

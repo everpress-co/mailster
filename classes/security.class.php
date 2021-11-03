@@ -106,12 +106,14 @@ class MailsterSecurity {
 		// check country
 		if ( mailster_option( 'track_location' ) ) {
 
+			$country = mailster_ip2Country();
+
 			// it's blocked
-			if ( $this->match( mailster_ip2Country(), mailster_option( 'blocked_countries' ), ',' ) ) {
+			if ( $this->match( $country, mailster_option( 'blocked_countries' ), ',' ) ) {
 				return new WP_Error( 'error_dep', esc_html__( 'Sorry, you cannot signup with right now.', 'mailster' ), 'email' );
 			}
 
-			if ( mailster_option( 'allowed_countries' ) && ! $this->match( mailster_ip2Country(), mailster_option( 'allowed_countries' ), ',' ) ) {
+			if ( mailster_option( 'allowed_countries' ) && ! $this->match( $country, mailster_option( 'allowed_countries' ), ',' ) ) {
 				return new WP_Error( 'error_dep', esc_html__( 'Sorry, you cannot signup with right now.', 'mailster' ), 'email' );
 			}
 		}

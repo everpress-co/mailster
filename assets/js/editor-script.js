@@ -594,13 +594,14 @@ mailster = (function (mailster, $, window, document) {
 															'title'
 														),
 														alt: target.attr('alt'),
-														src: response.image.url,
+														src: response.data.image
+															.url,
 														width: Math.round(
-															response.image
+															response.data.image
 																.width / org_f
 														),
 														height: Math.round(
-															response.image
+															response.data.image
 																.height / org_f
 														),
 													})
@@ -662,14 +663,15 @@ mailster = (function (mailster, $, window, document) {
 															'title'
 														),
 														alt: org.attr('alt'),
-														src: response.image.url,
+														src: response.data.image
+															.url,
 														width: Math.round(
-															response.image
+															response.data.image
 																.width /
 																target_f
 														),
 														height: Math.round(
-															response.image
+															response.data.image
 																.height /
 																target_f
 														),
@@ -982,17 +984,17 @@ mailster = (function (mailster, $, window, document) {
 					});
 
 					height = Math.round(
-						source._element.width() / response.image.asp
+						source._element.width() / response.data.image.asp
 					);
 
 					source._element
 						.attr({
-							src: response.image.url,
-							alt: response.name,
+							src: response.data.image.url,
+							alt: response.data.name,
 							height: height,
-							'data-id': response.image.id || 0,
+							'data-id': response.data.image.id || 0,
 						})
-						.data('id', response.image.id || 0);
+						.data('id', response.data.image.id || 0);
 
 					source._preview.height(height);
 

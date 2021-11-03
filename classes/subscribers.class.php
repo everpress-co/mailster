@@ -202,6 +202,8 @@ class MailsterSubscribers {
 				}
 			} elseif ( 'delete' == $action ) {
 				$offset = 0;
+			} elseif ( 'delete_actions' == $action ) {
+				$offset = 0;
 			}
 
 			$subscriber_ids = mailster( 'subscribers' )->query(
@@ -356,7 +358,7 @@ class MailsterSubscribers {
 
 		if ( isset( $is_ajax ) ) {
 
-			wp_send_json(
+			wp_send_json_success(
 				array(
 					'finished'        => $finished,
 					'total'           => $total,

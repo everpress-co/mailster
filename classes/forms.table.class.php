@@ -51,6 +51,15 @@ class Mailster_Forms_Table extends WP_List_Table {
 
 	}
 
+	public function get_table_classes() {
+
+		$classes = parent::get_table_classes();
+
+		// remove fixed class
+		$classes = array_diff( $classes, array( 'fixed' ) );
+
+		return $classes;
+	}
 
 	/**
 	 *

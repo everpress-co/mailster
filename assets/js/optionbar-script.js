@@ -78,7 +78,7 @@ mailster = (function (mailster, $, window, document) {
 						.addClass('active')
 						.removeClass('loading');
 					mailster.$.html.hide();
-					mailster.$.content.val(response.content);
+					mailster.$.content.val(response.data.content);
 					if (wp.codeEditor) {
 						codeeditor = wp.codeEditor.initialize(
 							mailster.$.content,
@@ -125,10 +125,10 @@ mailster = (function (mailster, $, window, document) {
 				},
 				function (response) {
 					mailster.editor.setContent(
-						response.content,
+						response.data.content,
 						100,
 						true,
-						response.style
+						response.data.style
 					);
 					mailster.$.html.show();
 					mailster.$.content.hide();
@@ -265,12 +265,18 @@ mailster = (function (mailster, $, window, document) {
 			scrolltop < containerOffset() ||
 			scrolltop > containerOffset() + mailster.$.template.height() - 0
 		) {
-			if (/fixed-optionbar/.test(mailster.dom.body.className)) {
+			if (
+				mailster.dom.body &&
+				/fixed-optionbar/.test(mailster.dom.body.className)
+			) {
 				mailster.$.body.removeClass('fixed-optionbar');
 				mailster.$.optionbar.width('auto');
 			}
 		} else {
-			if (!/fixed-optionbar/.test(mailster.dom.body.className)) {
+			if (
+				mailster.dom.body &&
+				!/fixed-optionbar/.test(mailster.dom.body.className)
+			) {
 				mailster.$.body.addClass('fixed-optionbar');
 				mailster.$.optionbar.width(mailster.$.template.width() - 22);
 			}
@@ -325,9 +331,9 @@ mailster = (function (mailster, $, window, document) {
 						window.wp = null;
 					}
 					window.onbeforeunload = null;
-					window.location = response.url;
+					window.location = response.data.url;
 				} else {
-					alert(response.msg);
+					alert(response.data.msg);
 				}
 			},
 			function (jqXHR, textStatus, errorThrown) {

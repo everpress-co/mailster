@@ -314,13 +314,15 @@ mailster = (function (mailster, $, window, document) {
 								setFilter('installed', function () {
 									$('[data-slug="' + data.slug + '"]')
 										.find('.notice-success')
-										.html('<p>' + response.msg + '</p>');
+										.html(
+											'<p>' + response.data.msg + '</p>'
+										);
 								});
 								addon.find('.notice-error').empty();
 							} else {
 								addon
 									.find('.notice-error')
-									.html('<p>' + response.msg + '</p>');
+									.html('<p>' + response.data.msg + '</p>');
 							}
 
 							addon
@@ -498,7 +500,7 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 					addon
 						.find('.notice-error')
-						.html('<p>' + response.msg + '</p>');
+						.html('<p>' + response.data.msg + '</p>');
 				}
 
 				addon
@@ -545,7 +547,7 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 					addon
 						.find('.notice-error')
-						.html('<p>' + response.msg + '</p>');
+						.html('<p>' + response.data.msg + '</p>');
 				}
 
 				addon
@@ -587,7 +589,7 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 					addon
 						.find('.notice-error')
-						.html('<p>' + response.msg + '</p>');
+						.html('<p>' + response.data.msg + '</p>');
 				}
 
 				addon
@@ -631,7 +633,7 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 					addon
 						.find('.notice-error')
-						.html('<p>' + response.msg + '</p>');
+						.html('<p>' + response.data.msg + '</p>');
 				}
 
 				addon
@@ -686,7 +688,7 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 					addon
 						.find('.notice-error')
-						.html('<p>' + response.msg + '</p>');
+						.html('<p>' + response.data.msg + '</p>');
 				}
 
 				addon
@@ -768,15 +770,15 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				if (currentpage == 1) {
 					$('body').removeClass('loading-content');
-					$('.theme-count').html(response.total);
-					total = response.total;
+					$('.theme-count').html(response.data.total);
+					total = response.data.total;
 				}
-				addons.concat(response.addons);
-				addonbrowser.append(response.html);
+				addons.concat(response.data.addons);
+				addonbrowser.append(response.data.html);
 				currentdisplayed = $('.theme').length;
 
-				if (response.error) {
-					alert(response.error);
+				if (response.data.error) {
+					alert(response.data.error);
 					$('body').addClass('no-results');
 				} else if (!currentdisplayed) {
 					$('body').addClass('no-results');
