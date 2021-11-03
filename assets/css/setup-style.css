@@ -177,26 +177,12 @@
 	margin-bottom: 20px;
 }
 #mailster-setup .wp-plugin a {
-	display: block;
+	display: inline-block;
 	position: relative;
+	box-shadow: 0 1px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 3%);
 }
-#mailster-setup .wp-plugin span {
-	font-family: 'Open Sans', sans-serif;
-	line-height: 1.4em;
-	position: absolute;
-	font-size: 30px;
-	max-width: 682px;
-	position: absolute;
-	left: 30px;
-	bottom: 20px;
-	padding: 5px 15px;
-	font-weight: bold;
-	margin-bottom: 4px;
-	color: #fff;
-	background: rgba(30, 30, 30, 0.9);
-	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-	box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-	border-radius: 8px;
+#mailster-setup .wp-plugin a img {
+	vertical-align: middle;
 }
 #mailster-setup #load_location_db {
 	display: none;

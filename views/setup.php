@@ -310,7 +310,6 @@ $utm = array(
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-gmail/" class="external">
 					<img src="https://ps.w.org/mailster-gmail/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster Gmail Integration</span>
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-gmail/mailster-gmail.php" data-method="gmail">
@@ -327,7 +326,6 @@ $utm = array(
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-amazonses/" class="external">
 					<img src="https://ps.w.org/mailster-amazonses/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster Amazon SES Integration</span>
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-amazonses/mailster-amazonses.php" data-method="amazonses">
@@ -344,7 +342,6 @@ $utm = array(
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-sparkpost/" class="external">
 					<img src="https://ps.w.org/mailster-sparkpost/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster SparkPost Integration</span>
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-sparkpost/mailster-sparkpost.php" data-method="sparkpost">
@@ -361,7 +358,6 @@ $utm = array(
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-mailgun/" class="external">
 					<img src="https://ps.w.org/mailster-mailgun/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster Mailgun Integration</span>
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-mailgun/mailster-mailgun.php" data-method="mailgun">
@@ -378,7 +374,6 @@ $utm = array(
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-sendgrid/" class="external">
 					<img src="https://ps.w.org/mailster-sendgrid/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster SendGrid Integration</span>
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-sendgrid/mailster-sendgrid.php" data-method="sendgrid">
@@ -395,7 +390,6 @@ $utm = array(
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-mailersend/" class="external">
 					<img src="https://ps.w.org/mailster-mailersend/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster MailerSend Integration</span>
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-mailersend/mailster-mailersend.php" data-method="mailersend">
@@ -412,7 +406,6 @@ $utm = array(
 				<div class="wp-plugin">
 				<a href="https://wordpress.org/plugins/mailster-mailjet/" class="external">
 					<img src="https://ps.w.org/mailster-mailjet/assets/banner-772x250.png?v=<?php echo MAILSTER_VERSION; ?>" width="772" height="250">
-					<span>Mailster MailJet Integration</span>
 				</a>
 				</div>
 				<a class="button button-primary quick-install" data-plugin="mailster-mailjet/mailster-mailjet.php" data-method="mailjet">
