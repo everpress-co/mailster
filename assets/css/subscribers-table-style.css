@@ -227,3 +227,7 @@ a.email {
 	margin-right: 6px;
 	float: left;
 }
+/* hide WPML language switcher */
+.wrap .icl_subsubsub {
+	display: none !important;
+}

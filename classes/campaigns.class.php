@@ -4752,6 +4752,11 @@ class MailsterCampaigns {
 					continue;
 				}
 
+				// skip if post has been published before the date in the auto responder
+				if ( $meta['since'] && $meta['since'] > strtotime( $post->post_date_gmt ) ) {
+					continue;
+				}
+
 				$meta['post_count_status']++;
 
 				// if post count is reached
