@@ -191,10 +191,14 @@ Get professional development help from our expert support partner *Codeable* for
 
 * fixed: saving template from editor messed up template header
 * fixed: bulk deletion with actions working again
+* fixed: autoresonder no longer triggered if post is published in the past
+* improved: ajax handler
+
+= 3.0.3 =
+
 * fixed: timeframe settings spanning over midnight
 * fixed: layout issue on form/lists overview on smaller screens
 * fixed: missing dbstructure method on queue process
-* improved: ajax handler
 * added: option to block and allow people from certain countries to signup
 * update: using `get_user_local()` instead of `get_locale()` when applicable.
 
