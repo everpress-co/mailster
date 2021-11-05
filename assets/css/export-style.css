@@ -20,7 +20,6 @@
 }
 .export-order li {
 	padding: 1em;
-	border-bottom: 1px solid #dfdfdf;
 	display: block;
 	cursor: we-resize;
 	cursor: hand;
@@ -34,7 +33,11 @@
 	margin: 0;
 }
 .export-order li.ui-sortable-helper {
+	cursor: grabbing;
+	cursor: -moz-grabbing;
+	cursor: -webkit-grabbing;
 	background: #fff;
+	box-shadow: 0 1px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 3%);
 }
 .export-order li:last-child {
 	border-bottom: 0;
@@ -49,12 +52,6 @@
 .export-order li:hover {
 	color: #d54e21;
 	font-size: bold;
-}
-.export-order li.ui-sortable-helper {
-	cursor: grabbing;
-	cursor: -moz-grabbing;
-	cursor: -webkit-grabbing;
-	border: 1px solid #ccc;
 }
 .status {
 	padding-left: 2em;

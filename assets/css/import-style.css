@@ -167,3 +167,82 @@ h2 span.howto {
 	background-image: url(../img/loading.gif) !important;
 	background-color: rgba(255, 255, 255, 0.7);
 }
+
+.import-process-wrap {
+	background-color: rgba(0, 0, 0, 0.8);
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 20000;
+	display: flex;
+	justify-content: center;
+	display: none;
+	backdrop-filter: blur(3px);
+}
+
+.import-process-wrap .import-process {
+	position: fixed;
+	z-index: 1000;
+	width: 50vw;
+	height: 50vh;
+	max-width: 500px;
+	max-height: 210px;
+	top: 33%;
+	background: #fff;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	box-shadow: 0 1px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 3%);
+	border-radius: 6px;
+	padding: 2em;
+}
+.import-process-wrap .import-process h2 {
+	padding: 0;
+	margin-bottom: 2em;
+}
+.import-process-wrap .import-process .progress {
+	padding: 0;
+	background: #efefef;
+	border-radius: 2px;
+}
+.import-process-wrap .import-process .progress .bar {
+	width: 0px;
+	position: relative;
+	height: 20px;
+	display: block;
+	background: #2bb3e7;
+	border-radius: 2px;
+	overflow: hidden;
+}
+.import-process-wrap .import-process.paused .progress .bar {
+	background: #8a8a8a;
+}
+.import-process-wrap .import-process.paused .progress .bar:before {
+	content: none;
+}
+.import-process-wrap .import-process.paused .pause-import,
+.import-process-wrap .import-process:not(.paused) .resume-import {
+	display: none;
+}
+
+.import-process-wrap .import-percentage {
+	font-size: 3em;
+	font-weight: bold;
+	padding-bottom: 0.1em;
+}
+.import-process-wrap .import-stats {
+	font-weight: bold;
+	display: flex;
+	justify-content: space-between;
+	text-transform: uppercase;
+	font-size: 0.9em;
+}
+.import-process-wrap .import-stats span {
+	padding-top: 0.8em;
+	padding-bottom: 0.8em;
+	font-weight: bold;
+}
+.import-process-wrap .import-stats span:last-child {
+	font-weight: bold;
+}

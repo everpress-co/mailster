@@ -1291,8 +1291,12 @@ class MailsterSubscriberQuery {
 					$f     = "`field_$field`.meta_value";
 					$value = is_numeric( $value ) ? (float) $value : "'$value'";
 				} elseif ( in_array( $field, $this->meta_fields ) ) {
-					$f     = "`meta_$field`.meta_value";
-					$value = is_numeric( $value ) ? (float) $value : "'$value'";
+					$f = "`meta_$field`.meta_value";
+					if ( in_array( $field, $this->time_fields ) ) {
+						$value = $this->get_timestamp( $value );
+					} else {
+						$value = is_numeric( $value ) ? (float) $value : "'$value'";
+					}
 				} elseif ( in_array( $field, $this->wp_user_meta ) ) {
 					$f = "`meta_wp_$field`.meta_value";
 					if ( $field == 'wp_capabilities' ) {
@@ -1455,7 +1459,7 @@ class MailsterSubscriberQuery {
 	}
 
 	private function get_time_fields() {
-		$time_fields = array( 'added', 'updated', 'signup', 'confirm' );
+		$time_fields = array( 'added', 'updated', 'signup', 'confirm', 'gdpr' );
 
 		return $time_fields;
 	}

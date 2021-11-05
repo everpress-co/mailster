@@ -20,7 +20,7 @@ abstract class MailsterImport {
 	}
 
 	protected function update_credentials( $data ) {
-		set_transient( 'mailster_importer_credentials_' . $this->slug, $data, 360 );
+		set_transient( 'mailster_importer_credentials_' . $this->slug, $data, DAY_IN_SECONDS );
 		$this->credentials = $data;
 	}
 

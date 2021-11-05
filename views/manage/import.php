@@ -1,6 +1,6 @@
 
 <div class="import-wrap">
-<h2><?php echo esc_html__( 'Where do you like to import your subscribers from?', 'mailster' ); ?></h2>
+<h2><?php esc_html_e( 'Where do you like to import your subscribers from?', 'mailster' ); ?></h2>
 
 <?php
 $methods = array(
@@ -17,7 +17,8 @@ if ( ! current_user_can( 'mailster_import_wordpress_users' ) ) {
 	unset( $methods['wordpress'] );
 }
 
-$user_settings = wp_parse_args(	get_user_option( 'mailster_import_settings' ),
+$user_settings = wp_parse_args(
+	get_user_option( 'mailster_import_settings' ),
 	array(
 		'method' => null,
 	)
@@ -35,3 +36,21 @@ $current       = isset( $_GET['method'] ) ? $_GET['method'] : $user_settings['me
 <?php endforeach; ?>
 </div>
 <div class="import-result"></div>
+
+<div class="import-process-wrap">
+	<div class="import-process">
+		<h2><?php esc_html_e( 'Importing Contacts', 'mailster' ); ?>…</h2>
+		<div class="import-percentage">0%</div>
+		<div id="progress" class="progress"><span class="bar"><span></span></span></div>
+		<div class="import-stats howto">
+			<span class="import-imported">&nbsp;</span>
+			<span class="import-errors" title="<?php esc_attr_e( 'Number of failed contacts', 'mailster' ); ?>">&nbsp;</span>
+			<span class="import-memory" title="<?php esc_attr_e( 'Current memory usage', 'mailster' ); ?>">&nbsp;</span>
+			<span class="import-time" title="<?php esc_attr_e( 'Estimated time left', 'mailster' ); ?>">&nbsp;</span></div>
+		<p>
+			<a class="button pause-import"><?php esc_html_e( 'Pause', 'mailster' ); ?></a>
+			<a class="button resume-import"><?php esc_html_e( 'Resume', 'mailster' ); ?></a>
+			<a class="button cancel-import"><?php esc_html_e( 'Cancel', 'mailster' ); ?></a>
+		</p>
+	</div>
+</div>

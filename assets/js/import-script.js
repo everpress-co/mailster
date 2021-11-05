@@ -6,6 +6,10 @@ mailster = (function (mailster, $, window, document) {
 		importstatus = $('.status'),
 		importstarttime,
 		importidentifier,
+		importpaused = false,
+		importcanceled = false,
+		importoptions = {},
+		importstep = 0,
 		newCustomFields = {};
 
 	mailster.$.document
@@ -150,23 +154,44 @@ mailster = (function (mailster, $, window, document) {
 				performance = $('#performance').is(':checked');
 
 			importstarttime = new Date();
-			importstatus
-				.addClass('progress spinner')
-				.html(mailster.l10n.manage.prepare_import);
 
-			do_import(0, {
+			$('.import-process-wrap').show();
+
+			importoptions = {
 				identifier: identifier,
 				data: data,
 				status: status,
 				performance: performance,
 				customfields: newCustomFields,
-			});
+			};
+
+			do_import();
 
 			$(this).prop('disabled', false);
 
 			window.onbeforeunload = function () {
 				return mailster.l10n.manage.onbeforeunloadimport;
 			};
+			return false;
+		})
+		.on('click', '.pause-import', function () {
+			$('.import-process').addClass('paused');
+			importpaused = true;
+			return false;
+		})
+		.on('click', '.resume-import', function () {
+			$('.import-process').removeClass('paused');
+			importpaused = false;
+			do_import();
+			return false;
+		})
+		.on('click', '.cancel-import', function () {
+			if (!confirm(mailster.l10n.manage.cancel_import)) return false;
+			importcanceled = true;
+			if (importpaused) {
+				importpaused = false;
+				do_import();
+			}
 			return false;
 		});
 
@@ -270,47 +295,72 @@ mailster = (function (mailster, $, window, document) {
 		);
 	}
 
-	function do_import(id, options) {
+	function do_import() {
 		var percentage = 0,
-			finished;
+			finished,
+			bar = $('.import-process').find('.bar'),
+			t = new Date().getTime();
 
-		if (!id) {
-			id = 0;
+		if (importpaused) {
+			console.warn('paused');
+			return false;
 		}
 
-		console.warn(options);
+		if (!importstep) {
+			get_stats(0, 0, 0, percentage, 0);
+			bar.width(0);
+		}
+
 		mailster.util.ajax(
 			'do_import',
 			{
-				id: id,
-				options: options,
+				id: importstep,
+				options: importoptions,
+				canceled: importcanceled,
 			},
 			function (response) {
 				if (response.success) {
-					percentage =
-						Math.min(
-							1,
-							(response.data.imported + response.data.errors) /
-								response.data.total
-						) * 100;
+					percentage = response.data.p_total * 100;
 
-					importstatus.html(
-						get_stats(
-							response.data.f_imported,
-							response.data.f_errors,
-							response.data.f_total,
-							percentage,
-							response.data.memoryusage
-						)
+					get_stats(
+						response.data.f_imported,
+						response.data.f_errors,
+						response.data.f_total,
+						percentage,
+						response.data.memoryusage
 					);
 
 					finished = percentage >= 100;
-					if (finished) {
-						window.onbeforeunload = null;
-						$('.import-result').html(response.data.html);
-						scroll_to_content_top();
+					if (finished || response.data.canceled) {
+						bar.stop().animate(
+							{
+								width: response.data.canceled
+									? percentage + '%'
+									: '100%',
+							},
+							{
+								duration: 1000,
+								easing: 'linear',
+								complete: function () {
+									window.onbeforeunload = null;
+									$('.import-result').html(
+										response.data.html
+									);
+									$('.import-process-wrap').hide();
+									scroll_to_content_top();
+								},
+							}
+						);
 					} else {
-						do_import(++id, options);
+						bar.stop().animate(
+							{ width: percentage + '%' },
+							{
+								duration: new Date().getTime() - t,
+								easing: 'linear',
+							}
+						);
+						++importstep;
+						do_import();
 					}
 				} else {
 					upload_error_handler(response.data.msg);
@@ -360,7 +410,7 @@ mailster = (function (mailster, $, window, document) {
 							theme: 'mailster',
 						});
 
-					importstatus = $('.status');
+					importstatus = $('.import-process').find('.import-status');
 				}
 			}
 		);
@@ -369,20 +419,36 @@ mailster = (function (mailster, $, window, document) {
 	function get_stats(imported, errors, total, percentage, memoryusage) {
 		var timepast = new Date().getTime() - importstarttime.getTime(),
 			timeleft = Math.ceil(
-				((100 - percentage) * (timepast / percentage)) / 60000
+				((100 - percentage) * (timepast / percentage)) / 1000
 			);
+		var t = new Date(timeleft * 1000),
+			h = t.getHours() - 1,
+			m = t.getMinutes(),
+			s = t.getSeconds(),
+			o =
+				(timeleft >= 3600 ? (h < 10 ? '0' + h : h) + ':' : '') +
+				((m < 10 ? '0' + m : m) + ':') +
+				(s < 10 ? '0' + s : s);
 
-		return (
-			mailster.util.sprintf(
-				mailster.l10n.manage.current_stats,
-				'<strong>' + imported + '</strong>',
-				'<strong>' + total + '</strong>',
-				'<strong>' + errors + '</strong>',
-				'<strong>' + memoryusage + '</strong>'
-			) +
-			' ' +
-			mailster.util.sprintf(mailster.l10n.manage.estimate_time, timeleft)
-		);
+		$('.import-percentage').html(Math.floor(percentage) + '%');
+
+		imported &&
+			$('.import-imported').html(
+				mailster.util.sprintf(
+					mailster.l10n.manage.import_imported,
+					imported,
+					total
+				)
+			);
+		errors &&
+			$('.import-errors').html(
+				mailster.util.sprintf(
+					mailster.l10n.manage.import_errors,
+					errors
+				)
+			);
+		imported && $('.import-memory').html(memoryusage);
+		imported && $('.import-time').html(o);
 	}
 
 	function quickInstall(id, slug, action, context) {
