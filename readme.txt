@@ -193,6 +193,7 @@ Get professional development help from our expert support partner *Codeable* for
 * fixed: bulk deletion with actions working again
 * fixed: auto responder no longer triggered if post is published in the past
 * fixed: shortcodes are now handled properly on the web version
+* added: text strings for error messages defined by the security settings page
 * improved: ajax handler
 
 = 3.0.3 =

@@ -60,7 +60,7 @@
 		<td>
 		<p class="howto"><?php esc_html_e( 'Comma separated list of country codes to block.', 'mailster' ); ?> <?php esc_html_e( 'Leave empty to allow signups from all countries.', 'mailster' ); ?></p>
 		<p class="howto"><?php printf( esc_html__( 'Only use 2 digit country codes following the %s standard.', 'mailster' ), '<a href="https://wikipedia.org/wiki/ISO_3166-1_alpha-2" class="external">ISO-3166-1</a>' ); ?></p>
-		<textarea name="mailster_options[blocked_countries]" placeholder="US, UK, DE, AT, CH, BR" class="code large-text" rows="1"><?php esc_attr_e( mailster_option( 'blocked_countries' ) ); ?></textarea>
+		<input type="text" name="mailster_options[blocked_countries]" placeholder="US, UK, DE, AT, CH, BR" value="<?php echo esc_attr( mailster_option( 'blocked_countries' ) ); ?>" class="large-text">
 		</td>
 	</tr>
 	<tr valign="top" class="settings-row settings-row-safe-countries">
@@ -68,7 +68,7 @@
 		<td>
 		<p class="howto"><?php esc_html_e( 'Comma separated list of country codes to allow.', 'mailster' ); ?> <?php esc_html_e( 'Leave empty to allow signups from all countries.', 'mailster' ); ?></p>
 		<p class="howto"><?php esc_html_e( 'All above tests must still be passed.', 'mailster' ); ?> <?php printf( esc_html__( 'Only use 2 digit country codes following the %s standard.', 'mailster' ), '<a href="https://wikipedia.org/wiki/ISO_3166-1_alpha-2" class="external">ISO-3166-1</a>' ); ?></p>
-		<textarea name="mailster_options[allowed_countries]" placeholder="US, UK, DE, AT, CH, BR" class="code large-text" rows="1"><?php esc_attr_e( mailster_option( 'allowed_countries' ) ); ?></textarea>
+		<input type="text" name="mailster_options[allowed_countries]" placeholder="US, UK, DE, AT, CH, BR" value="<?php echo esc_attr( mailster_option( 'allowed_countries' ) ); ?>" class="large-text">
 		</td>
 	</tr>
 	<?php endif; ?>
