@@ -2,7 +2,7 @@
 
 abstract class MailsterImport {
 
-	protected $slug;
+	protected $type;
 
 	private $credentials;
 
@@ -15,18 +15,18 @@ abstract class MailsterImport {
 
 	abstract protected function init();
 
-	public function get_slug() {
-		return strtolower( $this->slug );
+	public function get_type() {
+		return strtolower( $this->type );
 	}
 
 	protected function update_credentials( $data ) {
-		set_transient( 'mailster_importer_credentials_' . $this->slug, $data, DAY_IN_SECONDS );
+		set_transient( 'mailster_importer_credentials_' . $this->type, $data, 30 );
 		$this->credentials = $data;
 	}
 
 	protected function get_credentials() {
 		if ( ! $this->credentials ) {
-			$this->credentials = get_transient( 'mailster_importer_credentials_' . $this->slug );
+			$this->credentials = get_transient( 'mailster_importer_credentials_' . $this->type );
 		}
 
 		return $this->credentials;
@@ -40,9 +40,9 @@ abstract class MailsterImport {
 
 		$this->ajax_nonce();
 
-		$slug = basename( $_POST['slug'] );
+		$type = basename( $_POST['type'] );
 
-		if ( $slug != $this->slug ) {
+		if ( $type != $this->type ) {
 			return;
 		}
 
@@ -53,7 +53,7 @@ abstract class MailsterImport {
 
 			// $this->get_sample_data( $data['lists'] );
 
-			mailster( 'manage' )->import_handler( $slug );
+			mailster( 'manage' )->import_handler( $type );
 
 			$return['html'] = 'OK';
 
@@ -75,16 +75,28 @@ abstract class MailsterImport {
 	}
 
 
-	protected function valid_credentials( $data ) {
+	public function valid_credentials() {
 		return true;
 	}
 
 	abstract protected function get_import_part( &$import_data );
 	abstract protected function get_import_data();
 
+	public function get_import_options( $data = null ) {
+		ob_start();
+
+		$this->import_options( $data );
+
+		$output = ob_get_contents();
+
+		ob_end_clean();
+
+		return $output;
+	}
+
 	public function import_options( $data = null ) {
 
-		?><form class="importer-form" data-slug="<?php echo esc_attr( $this->slug ); ?>">
+		?><form class="importer-form" data-type="<?php echo esc_attr( $this->type ); ?>">
 		<?php
 
 		if ( $data ) {
@@ -101,8 +113,12 @@ abstract class MailsterImport {
 		if ( method_exists( $this, 'credentials_form' ) && ! $this->get_credentials() ) :
 
 			$this->credentials_form();
-			submit_button( __( 'Next Step', 'mailster' ) . '  &#x2192;', 'primary', 'submit' );
-
+			?>
+			<section class="footer alternate">
+				<input type="hidden" name="credentials" value="1">
+				<p><?php submit_button( __( 'Next Step', 'mailster' ) . '  &#x2192;', 'primary', 'submit', false ); ?></p>
+			</section>
+			<?php
 		else :
 
 			$lists    = $this->get_lists();
@@ -120,15 +136,13 @@ abstract class MailsterImport {
 				<li><label><input type="checkbox" name="statuses[]" value="<?php echo esc_attr( $status['id'] ); ?>" checked> <?php echo esc_html( $status['name'] ); ?></label></li>
 			<?php endforeach; ?>
 			</ul>
-			<?php submit_button( __( 'Next Step', 'mailster' ) . '  &#x2192;', 'primary', 'submit' ); ?>
+			<section class="footer alternate">
+				<p><?php submit_button( __( 'Next Step', 'mailster' ) . '  &#x2192;', 'primary', 'submit', false ); ?></p>
+			</section>
 
 		<?php endif; ?>
 		</form>
 		<?php
-	}
-
-	protected function map_meta_fields( $meta_fields, $field_map ) {
-
 	}
 
 	public function filter( $insert, $data, $import_data ) {

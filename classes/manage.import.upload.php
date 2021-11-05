@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class MailsterImportUpload extends MailsterImport {
 
-	protected $slug = 'upload';
+	protected $type = 'upload';
 	protected $name = 'Upload';
 
 	private $api;
@@ -68,7 +68,7 @@ class MailsterImportUpload extends MailsterImport {
 
 
 	public function import_options( $data = null ) {
-		include MAILSTER_DIR . '/views/manage/method-file.php';
+		include MAILSTER_DIR . '/views/manage/method-upload.php';
 	}
 
 	public function filter( $insert, $data, $import_data ) {

@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class MailsterImportWordPress extends MailsterImport {
 
-	protected $slug = 'WordPress';
+	protected $type = 'WordPress';
 	protected $name = 'WordPress';
 
 	function init() {}

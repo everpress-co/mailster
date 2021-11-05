@@ -13,66 +13,46 @@ mailster = (function (mailster, $, window, document) {
 		newCustomFields = {};
 
 	mailster.$.document
-		.on('submit', '#import_paste', function () {
-			var value = mailster.util.trim($('#paste-import').val());
-
-			$(this).prop('readonly', true).css('opacity', 0.8);
-
-			importstatus
-				.addClass('progress spinner')
-				.html(mailster.l10n.manage.prepare_import);
-
-			if (value) {
-				prepare_import({
-					type: 'paste',
-					data: value,
-				});
-			}
-
-			return false;
-		})
-		.on('submit', '#import_wordpress', function () {
-			var data = $(this).serialize();
-
-			$(this).prop('readonly', true).css('opacity', 0.8);
-
-			importstatus
-				.addClass('progress spinner')
-				.html(mailster.l10n.manage.prepare_import);
-
-			if (data) {
-				prepare_import({
-					type: 'wordpress',
-					data: data,
-				});
-			}
-
-			return false;
-		})
 		.on('submit', '.importer-form', function () {
 			var form = $(this);
 			var data = form.serialize();
-			var slug = form.data('slug');
+			var type = form.data('type');
+			importstatus = form.find('.status');
 
 			form.prop('readonly', true).addClass('loading');
 
+			importstatus
+				.addClass('progress spinner')
+				.html(mailster.l10n.manage.prepare_import);
+
 			mailster.util.ajax(
-				'importer_form_submit',
+				'import_handler',
 				{
+					type: type,
 					data: data,
-					slug: slug,
 				},
 				function (response) {
-					form.prop('readonly', false).removeClass('loading');
 					if (response.success) {
 						if (response.data.html) {
-							form.replaceWith(response.data.html);
+							form.html(response.data.html);
 						}
 						if (response.data.identifier) {
 							importidentifier = response.data.identifier;
 							get_import_data();
 						}
+					} else {
+						importstatus
+							.html(response.data.msg)
+							.removeClass('spinner');
 					}
+					form.prop('readonly', false)
+						.css('opacity', 1)
+						.removeClass('loading');
+				},
+				function () {
+					form.prop('readonly', false)
+						.css('opacity', 1)
+						.removeClass('loading');
 				}
 			);
 
@@ -277,23 +257,6 @@ mailster = (function (mailster, $, window, document) {
 
 			uploader.init();
 		});
-
-	function prepare_import(data) {
-		mailster.util.ajax(
-			'import_subscribers_upload_handler',
-			data,
-			function (response) {
-				if (response.success) {
-					importidentifier = response.data.identifier;
-					get_import_data();
-				}
-			},
-			function () {
-				importstatus.html('Error');
-				$(this).prop('readonly', false).css('opacity', 1);
-			}
-		);
-	}
 
 	function do_import() {
 		var percentage = 0,

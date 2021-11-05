@@ -23,3 +23,7 @@ label > span {
 .mailster-conditions-wrap {
 	max-width: 740px;
 }
+.import-wrap .footer p {
+	margin-left: 1.5em;
+	margin-right: 1.5em;
+}

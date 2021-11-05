@@ -1,4 +1,4 @@
-<form id="import_wordpress" method="post">
+<form id="import_wordpress" method="post" class="importer-form" data-type="wordpress">
 	<?php $roles = get_editable_roles(); ?>
 	<p class="howto"><?php printf( esc_html__( 'Import your exciting WordPress users here. You can define how Mailster should handle future users on the %s.', 'mailster' ), '<a href="edit.php?post_type=newsletter&page=mailster_settings#wordpress-users">' . esc_html__( 'Settings page', 'mailster' ) . '</a>' ); ?></p>
 	<div class="inner">
@@ -31,7 +31,7 @@
 	</div>
 	<section class="footer alternate">
 		<p>
-			<input type="submit" class="button button-primary button-large" value="<?php esc_attr_e( 'Next Step', 'mailster' ); ?> &#x2192;">
+			<?php submit_button( esc_html__( 'Next Ste', 'mailster' ) . ' &#x2192;', 'primary', 'submit', false ); ?>
 			<span class="status wp-ui-text-icon"></span>
 		</p>
 	</section>

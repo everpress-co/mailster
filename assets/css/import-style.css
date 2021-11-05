@@ -157,10 +157,10 @@ h2 span.howto {
 .import-wrap form.loading:before {
 	content: '';
 	position: absolute;
-	left: -1em;
+	left: -2em;
 	right: 0;
 	display: block;
-	bottom: 0;
+	bottom: 92px;
 	top: 0;
 	background-position: 10% center;
 	background-repeat: no-repeat;

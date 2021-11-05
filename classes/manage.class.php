@@ -7,7 +7,7 @@ class MailsterManage {
 	public function __construct() {
 
 		add_action( 'admin_menu', array( &$this, 'add_menu' ), 40 );
-		add_action( 'wp_ajax_mailster_import_subscribers_upload_handler', array( &$this, 'import_handler' ) );
+		add_action( 'wp_ajax_mailster_import_handler', array( &$this, 'import_handler' ) );
 		add_action( 'wp_ajax_mailster_get_import_data', array( &$this, 'ajax_get_import_data' ) );
 		add_action( 'wp_ajax_mailster_do_import', array( &$this, 'ajax_do_import' ) );
 		add_action( 'wp_ajax_mailster_export_contacts', array( &$this, 'ajax_export_contacts' ) );
@@ -45,7 +45,7 @@ class MailsterManage {
 				include_once $path;
 				$integration_class = new $classname();
 
-				$this->integrations[ $integration_class->get_slug() ] = $integration_class;
+				$this->integrations[ $integration_class->get_type() ] = $integration_class;
 			}
 		}
 
@@ -163,7 +163,17 @@ class MailsterManage {
 		$type       = isset( $_POST['type'] ) ? basename( $_POST['type'] ) : $type;
 		$identifier = isset( $_POST['identifier'] ) ? basename( $_POST['identifier'] ) : uniqid();
 
+		$integration = $this->integrations[ $type ];
+		$valid       = $integration->valid_credentials();
+
+		if ( is_wp_error( $valid ) ) {
+			$return['html'] = $integration->get_import_options();
+			wp_send_json_success( $return );
+			exit;
+		}
+
 		$import_data = $this->integrations[ $type ]->get_import_data();
+
 		if ( is_wp_error( $import_data ) ) {
 			$return['msg'] = $import_data->get_error_message();
 			wp_send_json_error( $return );
@@ -434,7 +444,8 @@ class MailsterManage {
 		$html .= '<input type="hidden" id="identifier" value="' . esc_attr( $identifier ) . '">';
 		$html .= '</section>';
 		$html .= '<section class="footer alternate">';
-		$html .= '<p><input type="submit" class="do-import button button-primary" value="' . ( sprintf( esc_attr__( 'Import %s contacts', 'mailster' ), number_format_i18n( $contactcount ) ) ) . '"><span class="status wp-ui-text-icon"></span></p>';
+
+		$html .= '<p><input type="submit" class="do-import button button-primary" value="' . ( sprintf( _n( 'Import %s contact', 'Import %s contacts', $contactcount, 'mailster' ), number_format_i18n( $contactcount ) ) ) . '"><span class="status wp-ui-text-icon"></span></p>';
 		$html .= '</section>';
 		$html .= '</form>';
 
@@ -854,7 +865,7 @@ class MailsterManage {
 			$return['html'] .= '<h2>';
 			$return['html'] .= sprintf( esc_html__( '%1$s of %2$s contacts imported.', 'mailster' ), '<strong>' . number_format_i18n( $import_data['imported'] ) . '</strong>', '<strong>' . number_format_i18n( $import_data['total'] ) . '</strong>' ) . ' (' . ( $return['f_p'] ) . '%)';
 			if ( $canceled ) {
-				$return['html'] .= '<span class="howto">' . sprintf( esc_html__( '%s contacts were skipped because you\'ve canceld the import.', 'mailster' ), '<strong>' . number_format_i18n( $import_data['total'] - $import_data['imported'] ) . '</strong>' ) . '</span>';
+				$return['html'] .= '<span class="howto">' . sprintf( esc_html__( '%s contacts were skipped because you\'ve canceled the import.', 'mailster' ), '<strong>' . number_format_i18n( $import_data['total'] - $import_data['imported'] ) . '</strong>' ) . '</span>';
 			}
 
 			$return['html'] .= '</h2>';
@@ -1578,11 +1589,15 @@ class MailsterManage {
 		?>
 		<form class="importer-quickinstall-form" data-slug="<?php echo esc_attr( $slug ); ?>" data-id="<?php echo esc_attr( $id ); ?>">
 		<p><?php printf( esc_html__( 'To import subscribers from %s you need an additional addon.', 'mailster' ), ucwords( $id ) ); ?></p>
-		<?php if ( isset( $installed[ $slug ] ) ) : ?>
-			<?php submit_button( esc_html__( 'Activate Addon', 'mailster' ) ); ?>
-		<?php elseif ( ! is_plugin_active( $slug ) ) : ?>
-			<?php submit_button( esc_html__( 'Install Addon', 'mailster' ) ); ?>
-		<?php endif; ?>
+		<section class="footer alternate">
+		<p>
+			<?php if ( isset( $installed[ $slug ] ) ) : ?>
+				<?php submit_button( esc_html__( 'Activate Addon', 'mailster' ), 'primary', 'submit', false ); ?>
+			<?php elseif ( ! is_plugin_active( $slug ) ) : ?>
+				<?php submit_button( esc_html__( 'Install Addon', 'mailster' ), 'primary', 'submit', false ); ?>
+			<?php endif; ?>
+		</p>
+		</section>
 		</form>
 		<?php
 

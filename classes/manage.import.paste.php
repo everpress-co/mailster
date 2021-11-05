@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class MailsterImportPaste extends MailsterImport {
 
-	protected $slug = 'paste';
+	protected $type = 'paste';
 	protected $name = 'Paste';
 
 	private $api;
@@ -27,7 +27,9 @@ class MailsterImportPaste extends MailsterImport {
 
 	public function get_import_data() {
 
-		$raw_data    = esc_textarea( stripslashes( $_POST['data'] ) );
+		parse_str( $_POST['data'], $data );
+
+		$raw_data    = esc_textarea( stripslashes( $data['paste'] ) );
 		$header      = null;
 		$sample_size = 10;
 
