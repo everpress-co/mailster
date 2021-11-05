@@ -191,7 +191,8 @@ Get professional development help from our expert support partner *Codeable* for
 
 * fixed: saving template from editor messed up template header
 * fixed: bulk deletion with actions working again
-* fixed: autoresonder no longer triggered if post is published in the past
+* fixed: auto responder no longer triggered if post is published in the past
+* fixed: shortcodes are now handled properly on the web version
 * improved: ajax handler
 
 = 3.0.3 =

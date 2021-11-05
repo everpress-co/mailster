@@ -761,6 +761,7 @@ class MailsterFrontpage {
 						$content = str_replace( '</head>', "<meta name='robots' content='noindex,nofollow' />\n</head>", $content );
 					}
 					$content = mailster( 'helper' )->add_mailster_styles( $content );
+					$content = mailster( 'helper' )->handle_shortcodes( $content );
 
 					echo $content;
 
