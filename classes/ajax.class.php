@@ -2194,7 +2194,7 @@ class MailsterAjax {
 		$lists      = isset( $data['lists'] ) ? (array) $data['lists'] : array();
 		$nolists    = isset( $data['nolists'] ) ? (bool) $data['nolists'] : null;
 		$conditions = isset( $data['conditions'] ) ? array_values( $data['conditions'] ) : false;
-		$status     = isset( $data['status'] ) ? (array) $data['status'] : false;
+		$status     = isset( $data['status'] ) ? (array) $data['status'] : -1;
 
 		$args = array(
 			'return_count' => true,

@@ -164,13 +164,8 @@ class MailsterManage {
 		$identifier = isset( $_POST['identifier'] ) ? basename( $_POST['identifier'] ) : uniqid();
 
 		$integration = $this->integrations[ $type ];
-		$valid       = $integration->valid_credentials();
 
-		if ( is_wp_error( $valid ) ) {
-			$return['html'] = $integration->get_import_options();
-			wp_send_json_success( $return );
-			exit;
-		}
+		$integration->valid_credentials();
 
 		$import_data = $this->integrations[ $type ]->get_import_data();
 

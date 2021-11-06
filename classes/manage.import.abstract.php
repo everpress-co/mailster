@@ -9,7 +9,6 @@ abstract class MailsterImport {
 	public function __construct() {
 
 		$this->init();
-		add_action( 'wp_ajax_mailster_importer_form_submit', array( $this, 'ajax_importer_form_submit' ) );
 
 	}
 
@@ -19,8 +18,12 @@ abstract class MailsterImport {
 		return strtolower( $this->type );
 	}
 
-	protected function update_credentials( $data ) {
-		set_transient( 'mailster_importer_credentials_' . $this->type, $data, 30 );
+	protected function update_credentials( $data, $expiration = null ) {
+
+		if ( is_null( $expiration ) ) {
+			$expiration = DAY_IN_SECONDS;
+		}
+		set_transient( 'mailster_importer_credentials_' . $this->type, $data, $expiration );
 		$this->credentials = $data;
 	}
 
@@ -34,44 +37,6 @@ abstract class MailsterImport {
 
 	private function ajax_nonce( $return = null, $nonce = 'mailster_nonce' ) {
 		mailster( 'ajax' )->ajax_nonce( $return, $nonce );
-	}
-
-	public function ajax_importer_form_submit() {
-
-		$this->ajax_nonce();
-
-		$type = basename( $_POST['type'] );
-
-		if ( $type != $this->type ) {
-			return;
-		}
-
-		parse_str( $_POST['data'], $data );
-		$return = array();
-
-		if ( isset( $data['lists'] ) ) {
-
-			// $this->get_sample_data( $data['lists'] );
-
-			mailster( 'manage' )->import_handler( $type );
-
-			$return['html'] = 'OK';
-
-		} else {
-			ob_start();
-
-			$this->import_options( $data );
-
-			$output = ob_get_contents();
-
-			ob_end_clean();
-
-			$return['html'] = $output;
-
-		}
-
-		wp_send_json_success( $return );
-
 	}
 
 

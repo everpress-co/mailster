@@ -10,6 +10,7 @@ mailster = (function (mailster, $, window, document) {
 		importcanceled = false,
 		importoptions = {},
 		importstep = 0,
+		importpercentage = 0,
 		newCustomFields = {};
 
 	mailster.$.document
@@ -259,18 +260,22 @@ mailster = (function (mailster, $, window, document) {
 		});
 
 	function do_import() {
-		var percentage = 0,
+		var percentage = importpercentage,
+			p_diff,
+			p_delta,
+			p_abs1,
+			p_abs2,
 			finished,
 			bar = $('.import-process').find('.bar'),
+			$p = $('.import-percentage'),
 			t = new Date().getTime();
 
 		if (importpaused) {
-			console.warn('paused');
 			return false;
 		}
 
 		if (!importstep) {
-			get_stats(0, 0, 0, percentage, 0);
+			get_stats(0, 0, 0, 0, 0);
 			bar.width(0);
 		}
 
@@ -284,6 +289,12 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				if (response.success) {
 					percentage = response.data.p_total * 100;
+					finished =
+						response.data.p_total >= 1 || response.data.canceled;
+
+					p_diff = percentage - importpercentage;
+					p_delta = importpercentage;
+					importpercentage = percentage;
 
 					get_stats(
 						response.data.f_imported,
@@ -293,35 +304,31 @@ mailster = (function (mailster, $, window, document) {
 						response.data.memoryusage
 					);
 
-					finished = percentage >= 100;
-					if (finished || response.data.canceled) {
-						bar.stop().animate(
-							{
-								width: response.data.canceled
-									? percentage + '%'
-									: '100%',
+					bar.stop(true, true).animate(
+						{ width: percentage + '%' },
+						{
+							duration: new Date().getTime() - t,
+							easing: 'linear',
+							progress: function (a, p) {
+								p_abs1 = Math.floor(p_delta + p_diff * p);
+								if (p_abs1 != p_abs2) {
+									$p.html(p_abs1 + '%');
+									p_abs2 = p_abs1;
+								}
 							},
-							{
-								duration: 1000,
-								easing: 'linear',
-								complete: function () {
+							complete: function () {
+								if (finished) {
 									window.onbeforeunload = null;
 									$('.import-result').html(
 										response.data.html
 									);
-									$('.import-process-wrap').hide();
 									scroll_to_content_top();
-								},
-							}
-						);
-					} else {
-						bar.stop().animate(
-							{ width: percentage + '%' },
-							{
-								duration: new Date().getTime() - t,
-								easing: 'linear',
-							}
-						);
+									$('.import-process-wrap').hide();
+								}
+							},
+						}
+					);
+					if (!finished) {
 						++importstep;
 						do_import();
 					}
@@ -392,8 +399,6 @@ mailster = (function (mailster, $, window, document) {
 				(timeleft >= 3600 ? (h < 10 ? '0' + h : h) + ':' : '') +
 				((m < 10 ? '0' + m : m) + ':') +
 				(s < 10 ? '0' + s : s);
-
-		$('.import-percentage').html(Math.floor(percentage) + '%');
 
 		imported &&
 			$('.import-imported').html(
