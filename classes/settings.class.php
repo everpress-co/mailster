@@ -261,6 +261,12 @@ class MailsterSettings {
 			'enter_email'           => esc_html__( 'Please enter your email address', $domain ),
 			'gdpr_text'             => esc_html__( 'I agree to the privacy policy and terms.', $domain ),
 			'gdpr_error'            => esc_html__( 'You have to agree to the privacy policy and terms!', $domain ),
+			'general_checks'        => esc_html__( 'Sorry, you cannot signup with this email address.', $domain ),
+			'smtp_mx_check'         => esc_html__( 'We weren\'t able to check your email address.', $domain ),
+			'blocked_email'         => esc_html__( 'Sorry, your email address is not accepted!', $domain ),
+			'blocked_domain'        => esc_html__( 'Sorry, you are not allowed to signup with this domain.', $domain ),
+			'blocked_ip'            => esc_html__( 'Sorry, your IP address has been blocked from signing up.', $domain ),
+			'blocked_country'       => esc_html__( 'Sorry, your country has been blocked from signing up.', $domain ),
 		);
 
 	}
