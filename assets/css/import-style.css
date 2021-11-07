@@ -81,6 +81,7 @@ details > div {
 }
 #subscriber-table select {
 	width: 150px;
+	word-wrap: normal;
 }
 #subscriber-table table {
 	border: 0;
@@ -169,17 +170,16 @@ h2 span.howto {
 }
 
 .import-process-wrap {
-	background-color: rgba(0, 0, 0, 0.8);
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
+	backdrop-filter: blur(2px);
+	background-color: rgba(0, 0, 0, 0.35);
 	bottom: 0;
-	z-index: 20000;
 	display: flex;
-	justify-content: center;
 	display: none;
-	backdrop-filter: blur(3px);
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: 100000;
 }
 
 .import-process-wrap .import-process {
@@ -193,8 +193,8 @@ h2 span.howto {
 	background: #fff;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	box-shadow: 0 1px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 3%);
-	border-radius: 6px;
+	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.25);
+	border-radius: 2px;
 	padding: 2em;
 }
 .import-process-wrap .import-process h2 {
