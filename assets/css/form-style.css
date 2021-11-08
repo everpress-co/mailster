@@ -134,19 +134,16 @@ textarea {
 	min-height: 70px;
 }
 .form-order li {
+	padding: 3px 5px;
+	background: #fff;
+	border-radius: 2px;
+	border: 1px solid #dfdfdf;
 	display: block;
 	transition: margin-bottom 0.25s ease-in-out, margin-top 0.25s ease-in-out,
 		height 0.25s ease-in-out;
 	box-sizing: border-box;
 	float: left;
 	width: 100%;
-	border: 1px solid #dfdfdf;
-	padding: 1em 1em;
-	position: relative;
-	background: #fafafa;
-	line-height: 1.3em;
-	box-shadow: 0 1px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 3%);
-	border-radius: 6px;
 }
 .dark-mode .form-order li {
 	border-color: #191f25;
@@ -178,7 +175,7 @@ textarea {
 	cursor: grabbing;
 	cursor: -moz-grab;
 	cursor: -webkit-grab;
-	height: 50px;
+	height: 35px;
 }
 #form-builder #form-structure .form-order.sortable li {
 	min-height: 100px;
