@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 4.6
 Tested up to: 5.8
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 Author: EverPress
 Author URI: https://everpress.co
 License: GPLv2 or later
@@ -186,6 +186,15 @@ Get professional development help from our expert support partner *Codeable* for
 == Changelog ==
 
 == Changelog ==
+
+= 3.0.4 =
+
+* fixed: saving template from editor messed up template header
+* fixed: bulk deletion with actions working again
+* fixed: auto responder no longer triggered if post is published in the past
+* fixed: shortcodes are now handled properly on the web version
+* added: text strings for error messages defined by the security settings page
+* improved: ajax handler
 
 = 3.0.3 =
 

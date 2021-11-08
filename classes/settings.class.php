@@ -261,6 +261,12 @@ class MailsterSettings {
 			'enter_email'           => esc_html__( 'Please enter your email address', $domain ),
 			'gdpr_text'             => esc_html__( 'I agree to the privacy policy and terms.', $domain ),
 			'gdpr_error'            => esc_html__( 'You have to agree to the privacy policy and terms!', $domain ),
+			'general_checks'        => esc_html__( 'Sorry, you cannot signup with this email address.', $domain ),
+			'smtp_mx_check'         => esc_html__( 'We weren\'t able to check your email address.', $domain ),
+			'blocked_email'         => esc_html__( 'Sorry, your email address is not accepted!', $domain ),
+			'blocked_domain'        => esc_html__( 'Sorry, you are not allowed to signup with this domain.', $domain ),
+			'blocked_ip'            => esc_html__( 'Sorry, your IP address has been blocked from signing up.', $domain ),
+			'blocked_country'       => esc_html__( 'Sorry, your country has been blocked from signing up.', $domain ),
 		);
 
 	}
@@ -1062,19 +1068,22 @@ class MailsterSettings {
 					break;
 
 				case 'send_at_once':
-					$value          = max( (int) $value, 1 );
-					$last_hit       = get_option( 'mailster_cron_lasthit' );
-					$interval       = $options['interval'] * MINUTE_IN_SECONDS;
-					$try_per_second = floor( $value / $interval );
-					if ( $last_hit && $last_hit['mail'] ) {
-						$throughput    = $last_hit['mail'];
-						$interval      = $last_hit['timestamp'] - $last_hit['oldtimestamp'];
-						$mails_per_sec = round( 1 / $throughput, 2 );
-						if ( $try_per_second > $mails_per_sec ) {
-							$this->add_settings_error( sprintf( esc_html__( 'You are trying to send %1$s mails per seconds (%2$s within %3$s) but your current throughput rate is %4$s mails per second. ', 'mailster' ), $try_per_second, number_format_i18n( $value ), human_time_diff( time() + round( $interval ) ), $mails_per_sec ) . '<br>' . sprintf( esc_html__( 'Please either lower the %s or increase your Cron Interval.', 'mailster' ), '"' . esc_html( 'Number of mails sent', 'mailster' ) . '"' ), 'send_to_fast' );
+					$value = max( (int) $value, 1 );
+
+					if ( ! $options['auto_send_at_once'] ) {
+						$last_hit       = get_option( 'mailster_cron_lasthit' );
+						$interval       = $options['interval'] * MINUTE_IN_SECONDS;
+						$try_per_second = floor( $value / $interval );
+						if ( $last_hit && $last_hit['mail'] ) {
+							$throughput    = $last_hit['mail'];
+							$interval      = $last_hit['timestamp'] - $last_hit['oldtimestamp'];
+							$mails_per_sec = round( 1 / $throughput, 2 );
+							if ( $try_per_second > $mails_per_sec ) {
+								$this->add_settings_error( sprintf( esc_html__( 'You are trying to send %1$s mails per seconds (%2$s within %3$s) but your current throughput rate is %4$s mails per second. ', 'mailster' ), $try_per_second, number_format_i18n( $value ), human_time_diff( time() + round( $interval ) ), $mails_per_sec ) . '<br>' . sprintf( esc_html__( 'Please either lower the %s or increase your Cron Interval.', 'mailster' ), '"' . esc_html( 'Number of mails sent', 'mailster' ) . '"' ), 'send_to_fast' );
+							}
+						} elseif ( $try_per_second > 3 ) {
+							$this->add_settings_error( sprintf( esc_html__( 'You are trying to send %1$s mails per seconds (%2$s every %3$s).', 'mailster' ), $try_per_second, number_format_i18n( $value ), human_time_diff( time() + round( $interval ) ) ) . '<br>' . sprintf( esc_html__( 'Please either lower the %s or increase the Cron Interval.', 'mailster' ), '"' . esc_html( 'Number of mails sent', 'mailster' ) . '"' ), 'send_to_fast' );
 						}
-					} elseif ( $try_per_second > 3 ) {
-						$this->add_settings_error( sprintf( esc_html__( 'You are trying to send %1$s mails per seconds (%2$s every %3$s).', 'mailster' ), $try_per_second, number_format_i18n( $value ), human_time_diff( time() + round( $interval ) ) ) . '<br>' . sprintf( esc_html__( 'Please either lower the %s or increase the Cron Interval.', 'mailster' ), '"' . esc_html( 'Number of mails sent', 'mailster' ) . '"' ), 'send_to_fast' );
 					}
 
 					break;

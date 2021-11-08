@@ -116,9 +116,6 @@ div.mainnav li a {
 	padding-left: 16px;
 	outline: none;
 }
-.nav-tab-wrapper {
-	border-bottom: 1px solid #ccc;
-}
 .dark-mnode .nav-tab-wrapper {
 	border-color: #32373c;
 }
@@ -250,16 +247,16 @@ textarea.code {
 	padding: 0;
 	resize: vertical;
 }
-textarea.code::-webkit-input-placeholder {
+.code::-webkit-input-placeholder {
 	color: #ccc;
 }
-textarea.code:-ms-input-placeholder {
+.code:-ms-input-placeholder {
 	color: #ccc;
 }
-textarea.code::placeholder {
+.code::placeholder {
 	color: #ccc;
 }
-textarea.code.large-text {
+.code.large-text {
 	width: 100%;
 }
 #tab-subscribers .customfield {

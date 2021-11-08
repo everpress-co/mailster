@@ -148,3 +148,7 @@ a.email {
 		text-align: left;
 	}
 }
+/* hide WPML language switcher */
+.wrap .icl_subsubsub {
+	display: none !important;
+}

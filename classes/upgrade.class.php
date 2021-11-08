@@ -148,10 +148,9 @@ class MailsterUpgrade {
 			if ( $this->stop_process ) {
 				wp_send_json_error( $return );
 			}
-			wp_send_json_success( $return );
-		} else {
-			wp_send_json_error( $return );
 		}
+
+		wp_send_json_success( $return );
 
 	}
 

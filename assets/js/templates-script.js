@@ -307,13 +307,15 @@ mailster = (function (mailster, $, window, document) {
 								setFilter('installed', function () {
 									$('[data-slug="' + data.slug + '"]')
 										.find('.notice-success')
-										.html('<p>' + response.msg + '</p>');
+										.html(
+											'<p>' + response.data.msg + '</p>'
+										);
 								});
 								template.find('.notice-error').empty();
 							} else {
 								template
 									.find('.notice-error')
-									.html('<p>' + response.msg + '</p>');
+									.html('<p>' + response.data.msg + '</p>');
 							}
 
 							template
@@ -357,7 +359,7 @@ mailster = (function (mailster, $, window, document) {
 								)
 							);
 						$('.CodeMirror').remove();
-						codecontent.val(response.html);
+						codecontent.val(response.data.html);
 						if (wp.codeEditor) {
 							codeeditor = wp.codeEditor.initialize(codecontent, {
 								codemirror: mailster.util.codemirrorargs,
@@ -597,7 +599,7 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 					template
 						.find('.notice-error')
-						.html('<p>' + response.msg + '</p>');
+						.html('<p>' + response.data.msg + '</p>');
 				}
 
 				template
@@ -652,7 +654,7 @@ mailster = (function (mailster, $, window, document) {
 				} else {
 					template
 						.find('.notice-error')
-						.html('<p>' + response.msg + '</p>');
+						.html('<p>' + response.data.msg + '</p>');
 				}
 
 				template
@@ -734,15 +736,15 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				if (currentpage == 1) {
 					$('body').removeClass('loading-content');
-					$('.theme-count').html(response.total);
-					total = response.total;
+					$('.theme-count').html(response.data.total);
+					total = response.data.total;
 				}
-				templates.concat(response.templates);
-				templatebrowser.append(response.html);
+				templates.concat(response.data.templates);
+				templatebrowser.append(response.data.html);
 				currentdisplayed = $('.theme').length;
 
-				if (response.error) {
-					alert(response.error);
+				if (response.data.error) {
+					alert(response.data.error);
 					$('body').addClass('no-results');
 				} else if (!currentdisplayed) {
 					$('body').addClass('no-results');
@@ -841,7 +843,7 @@ mailster = (function (mailster, $, window, document) {
 			if (response.success) {
 				location.reload();
 			} else {
-				uploadinfo.html(response.error);
+				uploadinfo.html(response.data.error);
 			}
 		});
 

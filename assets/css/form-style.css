@@ -178,9 +178,7 @@ textarea {
 	height: 35px;
 }
 #form-builder #form-structure .form-order.sortable li {
-	min-height: 74px;
-}
-#form-structure:hover .form-order.sortable li.ui-sortable-helper {
+	min-height: 100px;
 }
 #form-fields .form-order li {
 	display: inline;
@@ -211,7 +209,7 @@ textarea {
 .form-order li input.label.error-msg {
 	font-weight: normal;
 }
-#form-structure:hover .form-order li input.label {
+#form-structure .form-order li input.label {
 	border: 1px solid #dfdfdf;
 }
 .form-order li span.required-field {

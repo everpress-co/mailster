@@ -90,14 +90,14 @@ mailster = (function (mailster, $, window, document) {
 				loader.css({
 					visibility: 'hidden',
 				});
-				$this.prop('disabled', false).html(response.buttontext);
-				if (response.update)
-					$('#location_last_update').html(response.update);
+				$this.prop('disabled', false).html(response.data.buttontext);
+				if (response.data.update)
+					$('#location_last_update').html(response.data.update);
 				var msg = $(
 					'<div class="' +
 						(!response.success ? 'error' : 'updated') +
 						'"><p>' +
-						response.msg +
+						response.data.msg +
 						'</p></div>'
 				)
 					.hide()
@@ -292,10 +292,10 @@ mailster = (function (mailster, $, window, document) {
 				to: to,
 			},
 			function (response) {
-				if (response.log)
+				if (response.data.log)
 					response.success
-						? mailster.log(response.log)
-						: mailster.log(response.log, 'error');
+						? mailster.log(response.data.log)
+						: mailster.log(response.data.log, 'error');
 
 				loader.css({
 					visibility: 'hidden',
@@ -305,7 +305,7 @@ mailster = (function (mailster, $, window, document) {
 					'<div class="' +
 						(!response.success ? 'error' : 'updated') +
 						'"><p>' +
-						response.msg +
+						response.data.msg +
 						'</p></div>'
 				)
 					.hide()
@@ -366,7 +366,7 @@ mailster = (function (mailster, $, window, document) {
 			},
 			function (response) {
 				bounce_test_check(
-					response.identifier,
+					response.data.identifier,
 					1,
 					formdata,
 					function () {
@@ -518,8 +518,10 @@ mailster = (function (mailster, $, window, document) {
 				},
 				function (response) {
 					$('.sync-button').prop('disabled', false);
-					if (response.success && response.count) {
-						_this.data('offset', response.offset).trigger('click');
+					if (response.success && response.data.count) {
+						_this
+							.data('offset', response.data.offset)
+							.trigger('click');
 					} else {
 						loader.css({
 							visibility: 'hidden',
@@ -558,8 +560,10 @@ mailster = (function (mailster, $, window, document) {
 				},
 				function (response) {
 					$('.sync-button').prop('disabled', false);
-					if (response.success && response.count) {
-						_this.data('offset', response.offset).trigger('click');
+					if (response.success && response.data.count) {
+						_this
+							.data('offset', response.data.offset)
+							.trigger('click');
 					} else {
 						loader.css({
 							visibility: 'hidden',
@@ -691,9 +695,9 @@ mailster = (function (mailster, $, window, document) {
 				formdata: formdata,
 			},
 			function (response) {
-				status.html(response.msg);
+				status.html(response.data.msg);
 
-				if (response.complete) {
+				if (response.data.complete) {
 					loader.css({
 						visibility: 'hidden',
 					});
@@ -731,8 +735,10 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				if (response.success) {
 					loader
-						.html(response.message)
-						.addClass(response.found ? 'verified' : 'not-verified')
+						.html(response.data.message)
+						.addClass(
+							response.data.found ? 'verified' : 'not-verified'
+						)
 						.removeClass('spinner');
 				} else {
 				}
@@ -753,8 +759,10 @@ mailster = (function (mailster, $, window, document) {
 			function (response) {
 				if (response.success) {
 					loader
-						.html(response.message)
-						.addClass(response.found ? 'verified' : 'not-verified')
+						.html(response.data.message)
+						.addClass(
+							response.data.found ? 'verified' : 'not-verified'
+						)
 						.removeClass('spinner');
 				} else {
 				}

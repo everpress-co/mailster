@@ -49,7 +49,7 @@ mailster = (function (mailster, $, window, document) {
 			spinner.css('visibility', 'visible');
 			mailster.util.ajax('load_language', function (response) {
 				spinner.css('visibility', 'hidden');
-				status.html(response.html);
+				status.html(response.data.html);
 				if (response.success) {
 					location.reload();
 				}
@@ -150,7 +150,7 @@ mailster = (function (mailster, $, window, document) {
 
 		mailster.util.ajax('check_language', function (response) {
 			spinner.css('visibility', 'hidden');
-			status.html(response.html);
+			status.html(response.data.html);
 			if (response.success) {
 			}
 		});
@@ -199,7 +199,7 @@ mailster = (function (mailster, $, window, document) {
 							function (response) {
 								status.html('');
 								spinner.css('visibility', 'hidden');
-								element.html(response.content);
+								element.html(response.data.content);
 								deliverynav
 									.find('a.nav-tab-active')
 									.trigger('click');

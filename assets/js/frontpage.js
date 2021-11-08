@@ -120,7 +120,7 @@ jQuery(document).ready(function ($) {
 				loader.css({
 					visibility: 'hidden',
 				});
-				_this.find('.status').html(response.msg);
+				_this.find('.status').html(response.data.msg);
 				if (!response.success)
 					_this.find('input.button').prop('disabled', false);
 			},

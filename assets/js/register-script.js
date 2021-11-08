@@ -44,10 +44,10 @@ mailster = (function (mailster, $, window, document) {
 					if (response.success) {
 						wrap.addClass('step-2').removeClass('step-1');
 					} else {
-						error = response.error;
+						error = response.data.error;
 						error +=
 							' <a href="https://evp.to/error-' +
-							response.code +
+							response.data.code +
 							'" target="_blank" rel="noopener">' +
 							mailster.l10n.register.help +
 							'</a>';
@@ -90,25 +90,25 @@ mailster = (function (mailster, $, window, document) {
 					if (response.success) {
 						wrap.addClass('step-3').removeClass('step-2');
 						mailster.$.document.trigger('verified.' + slug, [
-							response.purchasecode,
-							response.username,
-							response.email,
+							response.data.purchasecode,
+							response.data.username,
+							response.data.email,
 						]);
 					} else {
 						if (
-							response.code == 406 ||
-							response.code == 679 ||
-							response.code == 680
+							response.data.code == 406 ||
+							response.data.code == 679 ||
+							response.data.code == 680
 						) {
 							form = wrap.find('.register_form');
 							form.parent()
 								.removeClass('step-2')
 								.addClass('step-1');
 						}
-						error = response.error;
+						error = response.data.error;
 						error +=
 							' (<a href="https://evp.to/error-' +
-							response.code +
+							response.data.code +
 							'" target="_blank" rel="noopener">' +
 							mailster.l10n.register.help +
 							'</a>)';
