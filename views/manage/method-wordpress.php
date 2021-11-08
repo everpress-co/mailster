@@ -31,7 +31,7 @@
 	</div>
 	<section class="footer alternate">
 		<p>
-			<?php submit_button( esc_html__( 'Next Ste', 'mailster' ) . ' &#x2192;', 'primary', 'submit', false ); ?>
+			<?php submit_button( esc_html__( 'Next Step', 'mailster' ) . ' &#x2192;', 'primary', 'submit', false ); ?>
 			<span class="status wp-ui-text-icon"></span>
 		</p>
 	</section>

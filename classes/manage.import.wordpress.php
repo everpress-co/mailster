@@ -65,12 +65,12 @@ class MailsterImportWordPress extends MailsterImport {
 				'email'           => mailster_text( 'email' ),
 				'firstname'       => mailster_text( 'firstname' ),
 				'lastname'        => mailster_text( 'lastname' ),
-				esc_html__( 'login', 'mailster' ),
-				esc_html__( 'nickname', 'mailster' ),
-				esc_html__( 'user url', 'mailster' ),
-				esc_html__( 'display name', 'mailster' ),
-				'_confirm_signup' => esc_html__( 'registered', 'mailster' ),
-				esc_html__( 'roles', 'mailster' ),
+				esc_html__( 'Login', 'mailster' ),
+				esc_html__( 'Nickname', 'mailster' ),
+				esc_html__( 'User URL', 'mailster' ),
+				esc_html__( 'Display Name', 'mailster' ),
+				'_confirm_signup' => esc_html__( 'Registered', 'mailster' ),
+				esc_html__( 'Roles', 'mailster' ),
 			),
 			$meta_values
 		);

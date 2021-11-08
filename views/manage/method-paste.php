@@ -4,7 +4,7 @@
 <textarea name="paste" class="widefat code" rows="13" placeholder="<?php echo 'justin.case@' . $_SERVER['HTTP_HOST'] . ' Justin; Case; Custom;&#10;john.doe@' . $_SERVER['HTTP_HOST'] . ' John; Doe;;&#10;jane.roe@' . $_SERVER['HTTP_HOST'] . ' Jane; Roe;;'; ?>"></textarea>
 	<section class="footer alternate">
 		<p>
-			<?php submit_button( esc_html__( 'Next Ste', 'mailster' ) . ' &#x2192;', 'primary', 'submit', false ); ?>
+			<?php submit_button( esc_html__( 'Next Step', 'mailster' ) . ' &#x2192;', 'primary', 'submit', false ); ?>
 			<span class="status wp-ui-text-icon"></span>
 		</p>
 	</section>

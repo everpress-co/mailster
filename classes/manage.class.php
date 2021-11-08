@@ -302,14 +302,14 @@ class MailsterManage {
 		$html .= '<thead>';
 		$html .= '<tr><td style="width:20px;">#</td>';
 		for ( $i = 0; $i < $cols; $i++ ) {
-			$select  = '<select name="_order[]" class="column-selector">';
+			$select  = '<select name="_order[]" class="column-selector" data-for="' . ( ! empty( $header[ $i ] ) ? $header[ $i ] : '' ) . '">';
 			$select .= '<option value="-1">' . esc_html__( 'Ignore column', 'mailster' ) . '</option>';
 			$select .= '<option value="-1">----------</option>';
 			$select .= '<option value="_new">' . esc_html__( 'Create new Field', 'mailster' ) . '</option>';
 			$select .= '<option value="-1">----------</option>';
 			$select .= '<optgroup label="' . esc_html__( 'Basic', 'mailster' ) . '">';
 			foreach ( $fields as $key => $value ) {
-				$is_selected = ( ( $map && $key === $map[ $i ] ) || $key == 'email' && mailster_is_email( $first[ $i ] ) );
+				$is_selected = ( $map && $key === $map[ $i ] );
 
 				$select .= '<option value="' . esc_attr( $key ) . '" ' . ( $is_selected ? 'selected' : '' ) . '>' . esc_html( $value ) . '</option>';
 			}

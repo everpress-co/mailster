@@ -75,7 +75,7 @@ mailster = (function (mailster, $, window, document) {
 			if ('_new' == $(this).val()) {
 				var name = prompt(
 					mailster.l10n.manage.define_custom_field,
-					mailster.l10n.manage.my_custom_field
+					$(this).data('for') || mailster.l10n.manage.my_custom_field
 				);
 
 				if (!name) return false;
