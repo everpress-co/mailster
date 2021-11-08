@@ -247,27 +247,23 @@ textarea.code {
 	padding: 0;
 	resize: vertical;
 }
-textarea.code::-webkit-input-placeholder {
+.code::-webkit-input-placeholder {
 	color: #ccc;
 }
-textarea.code:-ms-input-placeholder {
+.code:-ms-input-placeholder {
 	color: #ccc;
 }
-textarea.code::placeholder {
+.code::placeholder {
 	color: #ccc;
 }
-textarea.code.large-text {
+.code.large-text {
 	width: 100%;
 }
 #tab-subscribers .customfield {
 	border: 1px solid #dfdfdf;
 	border-radius: 3px;
-	margin-bottom: 0.6em;
-	padding: 1em 1em;
-	background: #fafafa;
-	line-height: 1.3em;
-	box-shadow: 0 1px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 3%);
-	border-radius: 6px;
+	margin: 3px 0;
+	padding: 5px;
 }
 .dark-mode #tab-subscribers .customfield {
 	border-color: #32373c;
@@ -283,14 +279,10 @@ table.form-table th {
 	margin-bottom: 40px;
 }
 #social-services li {
-	display: block;
 	border: 1px solid #dfdfdf;
-	padding: 1em 1em;
-	background: #fafafa;
-	line-height: 1.3em;
-	box-shadow: 0 1px 8px 0 rgb(0 0 0 / 5%), 0 2px 1px 0 rgb(0 0 0 / 3%);
-	border-radius: 6px;
-	margin-bottom: 0.6em;
+	border-radius: 3px;
+	display: block;
+	padding: 5px;
 }
 .dark-mode #social-services li {
 	border-color: #32373c;
