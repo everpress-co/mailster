@@ -60,13 +60,6 @@ export default function Styling(props) {
 	return (
 		<PanelBody name="styling" title="Styling" initialOpen={false}>
 			<PanelRow>
-				<BoxControl
-					label="Padding"
-					values={padding}
-					onChange={(value) => setStyle('padding', value)}
-				/>
-			</PanelRow>
-			<PanelRow>
 				<Grid columns={2}>
 					<UnitControl
 						onChange={(value) => setStyle('width', value)}

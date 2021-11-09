@@ -12,7 +12,6 @@ import { __ } from '@wordpress/i18n';
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
 import { useBlockProps, BlockEdit } from '@wordpress/block-editor';
-import { Button } from '@wordpress/components';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -34,20 +33,23 @@ export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 
 	return (
-		<div {...useBlockProps({ className: 'mailster-wrapper' })}>
-			<BlockEdit
-				name="core/buttons"
-				attributes={attributes}
-				setAttributes={setAttributes}
-				clientId={clientId}
-				isSelected={isSelected}
-			>
+		<div
+			{...useBlockProps({
+				className: 'yyyyyy wp-block-buttons mailster-wrapper',
+			})}
+		>
+			<div className="zzzzz">
 				<BlockEdit
 					name="core/button"
+					className="xxxxxx wp-block-button"
 					attributes={attributes}
 					setAttributes={setAttributes}
-				/>
-			</BlockEdit>
+					clientId={clientId}
+					isSelected={isSelected}
+				>
+					asdada
+				</BlockEdit>
+			</div>
 		</div>
 	);
 }

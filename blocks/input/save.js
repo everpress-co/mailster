@@ -24,19 +24,33 @@ import { useBlockProps } from '@wordpress/block-editor';
  */
 export default function save(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, type, inline, requried } = attributes;
+	const { label, type, inline, required, style } = attributes;
+	const className = ['mailster-wrapper'];
 
+	if (required) className.push('mailster-wrapper-required');
+	if (inline) className.push('mailster-wrapper-inline');
+	const styleSheets = {
+		width: style.width + '%',
+		minHeight: style.height,
+		//paddingTop: style.padding.top,
+		//paddingLeft: style.padding.left,
+		//paddingRight: style.padding.right,
+		//paddingBottom: style.padding.bottom,
+	};
 	return (
-		<div {...useBlockProps.save()}>
-			{!inline && <label for={clientId}>{label || '&nbsp;'}</label>}
+		<div
+			{...useBlockProps.save({ className: className })}
+			data-label={label}
+			style={styleSheets}
+		>
+			<label for={clientId}>{label || '&nbsp;'}</label>
 			<input
-				name="asdads"
+				name="input_name"
 				type={type}
 				value=""
 				id={clientId}
-				placeholder={inline && label}
 				className="input mailster-email mailster-required"
-				ariaRequired={requried}
+				ariaRequired={required}
 				ariaLabel={label}
 				spellcheck="false"
 			/>

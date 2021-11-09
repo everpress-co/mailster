@@ -4,10 +4,6 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.is-root-container .wp-block-mailster-input.wp-block {
-	_margin-top: 0;
-	_margin-bottom: 0;
-}
 .wp-block-mailster-input input {
 	pointer-events: none;
 }
@@ -16,4 +12,21 @@
 }
 .wp-block-mailster-input:hover .rich-text span:empty {
 	visibility: visible;
+}
+
+.mailster-wrapper {
+	label {
+		font-family: revert;
+		font-weight: revert;
+	}
+}
+.mailster-wrapper-inline {
+	label {
+		pointer-events: all !important;
+	}
+	:focus-within {
+		label {
+			display: block !important;
+		}
+	}
 }

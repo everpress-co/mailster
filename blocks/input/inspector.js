@@ -46,8 +46,15 @@ export default function InputFieldInspectorControls({
 	setAttributes,
 	isSelected,
 }) {
-	const { label, inline, required } = attributes;
+	const { label, inline, required, style } = attributes;
 
+	const [width, setWidth] = useState(100);
+
+	function setStyle(prop, data) {
+		var newStyle = { ...style };
+		newStyle[prop] = data;
+		setAttributes({ style: newStyle });
+	}
 	return (
 		<InspectorControls>
 			<Panel>
@@ -76,6 +83,15 @@ export default function InputFieldInspectorControls({
 							onChange={() =>
 								setAttributes({ required: !required })
 							}
+						/>
+					</PanelRow>{' '}
+					<PanelRow>
+						<RangeControl
+							label="Width"
+							value={style.width}
+							onChange={(value) => setStyle('width', value)}
+							min={2}
+							max={100}
 						/>
 					</PanelRow>
 				</PanelBody>

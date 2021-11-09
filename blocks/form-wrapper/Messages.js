@@ -62,54 +62,38 @@ export default function Messages(props) {
 		displayMessages,
 		setDisplayMessages,
 	} = props;
-	const { success, error } = attributes.messages;
+	const { success, successBackground, error, errorBackground } =
+		attributes.messages;
 
 	return (
 		<PanelColorSettings
-			title={__('Messages')}
+			title={__('Messages', 'mailster')}
 			initialOpen={false}
 			opened={displayMessages}
 			onToggle={() => setDisplayMessages(!displayMessages)}
 			colorSettings={[
+				{
+					value: successBackground,
+					onChange: (value) =>
+						setMessages('successBackground', value),
+					label: __('successBackground Color'),
+				},
 				{
 					value: success,
 					onChange: (value) => setMessages('success', value),
 					label: __('Success Color'),
 				},
 				{
-					value: error,
-					onChange: (value) => setMessages('error', value),
-					label: __('Error Color'),
+					value: errorBackground,
+					onChange: (value) => setMessages('errorBackground', value),
+					label: __('errorBackground Color'),
 				},
 				{
 					value: error,
 					onChange: (value) => setMessages('error', value),
-					label: __('Error2 Color'),
+					label: __('Error Color'),
 				},
 			]}
 		></PanelColorSettings>
-	);
-
-	return (
-		<PanelBody
-			name="background"
-			title="Messages"
-			initialOpen={false}
-			opened={displayMessages}
-			onToggle={() => setDisplayMessages(!displayMessages)}
-		>
-			<PanelRow>
-				<ColorPaletteControl
-					value={success}
-					onChange={(value) => setMessages('success', value)}
-				/>
-			</PanelRow>
-			<PanelRow>
-				<ColorPaletteControl
-					value={error}
-					onChange={(value) => setMessages('error', value)}
-				/>
-			</PanelRow>
-		</PanelBody>
 	);
 }

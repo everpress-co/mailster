@@ -41,7 +41,12 @@
 	.mailster-form {
 		max-width: 100%;
 		background-size: cover;
-		background-color: #fff;
+		background-color: transparent;
+		position: relative;
+	}
+
+	.wp-block-mailster-form-wrapper > * {
+		position: relative;
 	}
 }
 .wp-block-mailster-form.is-selected:hover {

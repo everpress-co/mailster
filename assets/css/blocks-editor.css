@@ -23,6 +23,8 @@
 	.is-root-container
 	.wp-block {
 	max-width: 100%;
+	_margin-left: auto;
+	_margin-right: auto;
 }
 .post-type-newsletter_form
 	.edit-post-visual-editor__content-area
@@ -32,6 +34,10 @@
 	background-color: none;
 	max-width: 100%;
 	width: 100%;
+}
+
+button[name='link'] {
+	display: none;
 }
 
 .post-type-newsletter_form

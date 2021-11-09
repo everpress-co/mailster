@@ -41,15 +41,12 @@ class MailsterFormPlaceholder extends Component {
 	};
 
 	render() {
-		const abc = {
-			foo: 'bar',
-		};
 		return (
 			<Placeholder
 				icon={screenoptions}
 				label={__('Mailster Subscription Form', 'mailster')}
 			>
-				<MailsterFormSelector {...this.props} abc={abc} />
+				<MailsterFormSelector {...this.props} />
 
 				<div className="placeholder-buttons-wrap">
 					<Button

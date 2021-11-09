@@ -46,8 +46,6 @@ export default function Doubleoptin(props) {
 
 	const [isValidContent, setValidContent] = useState(false);
 
-	function setContent(value) {}
-
 	useEffect(() => {
 		setValidContent(/{link}/.test(content));
 	}, [content]);

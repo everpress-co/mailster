@@ -49,37 +49,37 @@ import InputFieldInspectorControls from '../input/inspector.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, type, inline, style } = attributes;
-	let placeholder = label || __('Enter Label', 'mailster');
+	const { label, type, inline, required, style } = attributes;
+	const className = ['mailster-wrapper'];
+
+	if (required) className.push('mailster-wrapper-required');
+	if (inline) className.push('mailster-wrapper-inline');
 
 	const styleSheets = {
-		width: style.width,
+		width: style.width + '%',
 		minHeight: style.height,
-		paddingTop: style.padding.top,
-		paddingLeft: style.padding.left,
-		paddingRight: style.padding.right,
-		paddingBottom: style.padding.bottom,
+		//paddingTop: style.padding.top,
+		//paddingLeft: style.padding.left,
+		//paddingRight: style.padding.right,
+		//paddingBottom: style.padding.bottom,
 	};
+
+	console.warn(style);
 
 	return (
 		<Fragment>
-			<div {...useBlockProps({ className: 'mailster-wrapper' })}>
-				{!inline && placeholder && (
-					<RichText
-						tagName="label"
-						value={!inline && label}
-						onChange={(val) => setAttributes({ label: val })}
-						allowedFormats={[]}
-						placeholder={placeholder}
-					/>
-				)}
-				<input
-					style={styleSheets}
-					className="input"
-					onChange={() => {}}
-					type={type}
-					value={(inline && placeholder) || 'Lorem Ipsum '}
+			<div
+				{...useBlockProps({ className: className })}
+				style={styleSheets}
+			>
+				<RichText
+					tagName="label"
+					value={label}
+					onChange={(val) => setAttributes({ label: val })}
+					allowedFormats={[]}
+					placeholder={__('Enter Label', 'mailster')}
 				/>
+				<input className="input" onChange={() => {}} type={type} />
 			</div>
 			<InputFieldInspectorControls {...props} />
 		</Fragment>

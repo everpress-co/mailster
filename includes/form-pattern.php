@@ -6,9 +6,13 @@ $patterns = apply_filters(
 		'simpleform'  => array(
 			'title'       => __( 'Simple form', 'mailster' ),
 			'description' => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
-			'content'     => '<!-- wp:mailster/form-wrapper {"id":"bfd88770","css":".input{\nborder:1px solid red\n}\n.mailster-form{\nborder:10px solid red;\n}"} -->
-<div class="wp-block-mailster-form-wrapper mailster-form mailster-form-bfd88770"><!-- wp:mailster/input {"label":"Email","optionalRequired":false,"type":"email"} -->
+			'content'     => '<!-- wp:mailster/form-wrapper {"inputs":{"padding":{"top":"0.5em","left":"0.5em","right":"0.5em","bottom":"0.5em"}},"css":".mailster-form{\n   \n}","className":"mailster-form-bfd88770"} -->
+<div class="wp-block-mailster-form-wrapper mailster-form mailster-form-bfd88770"><!-- wp:mailster/input {"label":"Email","type":"email"} -->
 <div class="wp-block-mailster-input"><label>Email</label><input name="asdads" type="email" value="" class="input mailster-email mailster-required" arialabel="Email" spellcheck="false"/></div>
+<!-- /wp:mailster/input -->
+
+<!-- wp:mailster/input {"label":"Firstname"} -->
+<div class="wp-block-mailster-input"><label>Firstname</label><input name="asdads" type="text" value="" class="input mailster-email mailster-required" arialabel="Firstname" spellcheck="false"/></div>
 <!-- /wp:mailster/input --></div>
 <!-- /wp:mailster/form-wrapper -->',
 
@@ -83,7 +87,7 @@ $patterns = apply_filters(
 	)
 );
 
-$patterns_ = array();
+$patterns = array();
 
 
 

@@ -39,7 +39,7 @@ function SettingsPanelPlugin() {
 	);
 
 	useEffect(() => {
-		console.warn('ONCE');
+		//console.warn('ONCE');
 	}, []);
 
 	// wp.data.dispatch('core/editor').lockPostSaving();

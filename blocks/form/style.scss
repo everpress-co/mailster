@@ -4,6 +4,98 @@
  *
  * Replace them with your own styles or remove the file completely.
  */
+.mailster-form.wp-block-mailster-form-wrapper::before {
+	position: absolute;
+	background-repeat: no-repeat;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+.mailster-form {
+	border: 3px solid red !important;
+}
+.mailster-form.wp-block-mailster-form-wrapper {
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	overflow: hidden;
 
-.wp-block-mailster-form {
+	> * {
+		width: 100%;
+	}
+	> div {
+		position: relative;
+	}
+
+	.mailster-form-info > div {
+		padding: 0.5em 1em;
+		margin-bottom: 0.5em;
+	}
+	.mailster-wrapper {
+		margin-top: 0;
+		margin-left: 0;
+		margin-right: 0;
+		margin-bottom: 0.5em;
+		max-width: 100%;
+		width: 100%;
+
+		label {
+			z-index: 1;
+			display: block;
+			margin: 0;
+			font-size: 0.9em;
+		}
+
+		input.input {
+			width: 100%;
+			max-width: 100%;
+			margin: 0;
+			box-sizing: border-box;
+
+			// border: var(--form--border-width) solid var(--form--border-color);
+			// border-radius: var(--form--border-radius);
+			// color: var(--form--color-text);
+			// line-height: var(--global--line-height-body);
+			// padding: var(--form--spacing-unit);
+			// margin: 0 2px;
+			// add some default style here
+		}
+	}
+	.mailster-wrapper-required {
+		label::after {
+			content: '*';
+			display: inline-block;
+			padding-left: 0.2rem;
+			padding-right: 0.2rem;
+			color: var(--wp--preset--color--vivid-red);
+		}
+	}
+	.mailster-wrapper-inline {
+		label {
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			display: flex;
+			align-items: center;
+			pointer-events: none;
+			padding-left: 1rem;
+			padding-right: 1rem;
+		}
+		// content: attr(data-label);
+		// display: flex;
+		// width: 100%;
+		// height: 100%;
+		// align-items: center;
+		// padding-left: 1em;
+		// padding-right: 1em;
+		// pointer-events: none;
+	}
+	.mailster-wrapper-inline:focus-within {
+		label {
+			display: none;
+		}
+	}
 }

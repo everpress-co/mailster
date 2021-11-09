@@ -43,7 +43,7 @@ const defaultAttributes = {
 		multiple: false,
 	},
 	attributes: {
-		type: 'email',
+		type: 'text',
 		label: 'Input',
 		requried: false,
 		forceRequired: false,
@@ -73,7 +73,7 @@ registerBlockVariation('mailster/input', {
 		title: 'Input Field',
 		description: 'Code is poetry!',
 		attributes: {
-			type: 'input',
+			type: 'text',
 			label: 'Input',
 			requried: false,
 			forceRequired: false,
@@ -88,7 +88,7 @@ registerBlockVariation('mailster/input', {
 		title: 'Date Field',
 		description: 'Code is poetry!',
 		attributes: {
-			type: 'input',
+			type: 'text',
 			label: 'Date',
 			requried: false,
 			forceRequired: false,

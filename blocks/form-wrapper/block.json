@@ -15,7 +15,6 @@
 		"reusable": false,
 		"multiple": false,
 		"spacing": {
-			"margin": true,
 			"padding": true
 		},
 		"color": {
@@ -30,13 +29,7 @@
 			"default": {
 				"color": {},
 				"width": null,
-				"height": null,
-				"padding": {
-					"top": "1em",
-					"left": "1em",
-					"right": "1em",
-					"bottom": "1em"
-				}
+				"height": null
 			}
 		},
 		"background": {
@@ -53,17 +46,6 @@
 				}
 			}
 		},
-		"inputs": {
-			"type": "object",
-			"default": {
-				"padding": {
-					"top": "1em",
-					"left": "1em",
-					"right": "1em",
-					"bottom": "1em"
-				}
-			}
-		},
 		"css": {
 			"type": "string",
 			"default": ""
@@ -71,8 +53,10 @@
 		"messages": {
 			"type": "object",
 			"default": {
-				"success": "#0f0",
-				"error": "#f00"
+				"success": "#ffffff",
+				"successBackground": "#6fbf4d",
+				"error": "#ffffff",
+				"errorBackground": "#bf4d4d"
 			}
 		}
 	},

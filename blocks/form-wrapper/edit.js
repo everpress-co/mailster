@@ -17,6 +17,10 @@ import {
 	InspectorControls,
 	RichText,
 	PlainText,
+	VisuallyHidden,
+	__experimentalUseBorderProps as useBorderProps,
+	__experimentalUseColorProps as useColorProps,
+	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
 } from '@wordpress/block-editor';
 import { Button, PanelBody, ResizableBox } from '@wordpress/components';
 
@@ -42,7 +46,6 @@ import './editor.scss';
 import Styling from './Styling';
 import Messages from './Messages';
 import Background from './Background';
-import Inputs from './Inputs';
 import Css from './Css';
 
 // const getBlockList = () => select('core/block-editor').getBlocks();
@@ -92,43 +95,23 @@ import Css from './Css';
 export default function Edit(props) {
 	const { attributes, setAttributes, toggleSelection, isSelected, clientId } =
 		props;
-	const { style, background, inputs, css, messages } = attributes;
+	const { style, background, inputs, messages } = attributes;
+	let { css } = attributes;
 
 	const [displayMessages, setDisplayMessages] = useState(false);
+	const [inputStyles, setinputStyles] = useState('');
 
-	const styleSheets = {
-		width: style.width,
-		minHeight: style.height,
-		paddingTop: style.padding.top,
-		paddingLeft: style.padding.left,
-		paddingRight: style.padding.right,
-		paddingBottom: style.padding.bottom,
-		background: attributes.backgroundColor
-			? null
-			: style.color.background || style.color.gradient || null,
-		color: attributes.textColor ? null : style.color.text || null,
-	};
-
-	const styleBackground = {
-		opacity: background.opacity + '%',
-		backgroundAttachment: background.fixed ? 'fixed' : null,
-		backgroundRepeat: background.repeat ? 'repeat' : 'no-repeat',
-		backgroundSize: background.size,
-		backgroundImage: background.image
-			? 'url(' + background.image + ')'
-			: '',
-		backgroundPosition:
-			background.position.x * 100 +
-			'%  ' +
-			background.position.y * 100 +
-			'%',
-	};
+	const borderProps = useBorderProps(attributes);
+	const colorProps = useColorProps(attributes);
+	const spacingProps = useSpacingProps(attributes);
 
 	const styleSuccessMessage = {
-		backgroundColor: messages.success,
+		color: messages.success,
+		backgroundColor: messages.successBackground,
 	};
 	const styleErrorMessage = {
-		backgroundColor: messages.error,
+		color: messages.error,
+		backgroundColor: messages.errorBackground,
 	};
 
 	function setStyle(prop, data) {
@@ -145,19 +128,6 @@ export default function Edit(props) {
 		var newMessages = { ...messages };
 		newMessages[prop] = data;
 		setAttributes({ messages: newMessages });
-	}
-	function setInputs(prop, data) {
-		var newInputs = { ...inputs };
-		newInputs[prop] = data;
-		setAttributes({ inputs: newInputs });
-		select('core/editor')
-			.getBlocksByClientId(clientId)[0]
-			.innerBlocks.forEach(function (block) {
-				if (block.name != 'mailster/input') return;
-				dispatch('core/editor').updateBlockAttributes(block.clientId, {
-					style: newInputs,
-				});
-			});
 	}
 	function setCss(css) {
 		setAttributes({ css: css });
@@ -220,46 +190,128 @@ export default function Edit(props) {
 		return rules;
 	}
 
+	css += '';
+
+	const mediaPosition = ({ x, y }) => {
+		return `${Math.round(x * 100)}% ${Math.round(y * 100)}%`;
+	};
+
+	if (background.image && inputStyles) {
+		css += '.mailster-form::before{';
+		css += "content:'';";
+		css += 'background-image: url(' + background.image + ');';
+		if (background.fixed) css += 'background-attachment:fixed;';
+		if (background.repeat) css += 'background-repeat:repeat;';
+		css += 'background-size:' + background.size + ';';
+		css +=
+			'background-position:' + mediaPosition(background.position) + ';';
+		css += 'opacity:' + background.opacity + '%;';
+		css += '}';
+	}
+
+	const getInputStyles = () => {
+		setinputStyles(
+			getStyles(
+				document
+					.getElementById('inputStylesIframe')
+					.contentWindow.document.querySelector(
+						'.mailster-form .input'
+					),
+				'color',
+				'padding',
+				'height',
+				'border',
+				'border-radius',
+				'background',
+				'box-shadow',
+				'line-height',
+				'appearance',
+				'-webkit-appearance',
+				'outline'
+			)
+		);
+	};
+
+	const convertRestArgsIntoStylesArr = ([...args]) => {
+		return args.slice(1);
+	};
+	const getStyles = function () {
+		const args = [...arguments];
+		const [element] = args;
+		let s = '';
+
+		let stylesProps =
+			[...args][1] instanceof Array
+				? args[1]
+				: convertRestArgsIntoStylesArr(args);
+
+		const styles = window.getComputedStyle(element);
+		stylesProps.reduce((acc, v) => {
+			const x = styles.getPropertyValue(v);
+			if (x) {
+				s += v + ': ' + x + ';';
+			}
+		}, {});
+
+		return s;
+	};
+
+	if (inputStyles) {
+		css += '.mailster-wrapper .input{' + inputStyles + '}';
+	}
+
 	const prefixedCss = useMemo(() => {
 		return prefixCss(css, '.mailster-form-' + clientId);
 	}, [css]);
 
 	return (
 		<>
+			{!inputStyles && (
+				<iframe
+					src="/sample-page/"
+					id="inputStylesIframe"
+					onLoad={getInputStyles}
+				></iframe>
+			)}
 			<div
 				{...useBlockProps({
 					className: 'mailster-form mailster-form-' + clientId,
 				})}
-				style={styleSheets}
+				style={{
+					...borderProps.style,
+					...colorProps.style,
+					...spacingProps.style,
+				}}
 			>
-				{prefixedCss && <style scoped>{prefixedCss}</style>}
-				<div className="mailster-faux-bg" style={styleBackground} />
+				{prefixedCss && <style>{prefixedCss}</style>}
 				{displayMessages && (
 					<div className="mailster-form-info">
 						<div
 							className="mailster-form-info-success"
 							style={styleSuccessMessage}
 						>
-							message
+							{__('This is a success message', 'mailster')}
 						</div>
 						<div
 							className=" mailster-form-info-error"
 							style={styleErrorMessage}
 						>
-							Errormessage
+							{__(
+								'Following fields are missing or incorrect. This is an error message',
+								'mailster'
+							)}
 						</div>
 					</div>
 				)}
-				<InnerBlocks test="test" />
+				<InnerBlocks />
 				{!isSelected && (
-					<Button icon={brush} className="style-form">
-						Style this form
+					<Button icon={brush} className="style-form" isPrimary>
+						{__('Style this form', 'mailster')}
 					</Button>
 				)}
 			</div>
 
 			<InspectorControls>
-				<Styling {...props} setStyle={setStyle} />
 				<Messages
 					{...props}
 					setMessages={setMessages}
@@ -267,7 +319,6 @@ export default function Edit(props) {
 					setDisplayMessages={setDisplayMessages}
 				/>
 				<Background {...props} setBackground={setBackground} />
-				<Inputs {...props} setInputs={setInputs} />
 				<Css {...props} setCss={setCss} />
 			</InspectorControls>
 		</>
