@@ -31,15 +31,13 @@ export default function save(props) {
 	if (inline) className.push('mailster-wrapper-inline');
 	const styleSheets = {
 		width: style.width + '%',
-		minHeight: style.height,
-		//paddingTop: style.padding.top,
-		//paddingLeft: style.padding.left,
-		//paddingRight: style.padding.right,
-		//paddingBottom: style.padding.bottom,
 	};
+
 	return (
 		<div
-			{...useBlockProps.save({ className: className })}
+			{...useBlockProps.save({
+				className: className.join(' '),
+			})}
 			data-label={label}
 			style={styleSheets}
 		>

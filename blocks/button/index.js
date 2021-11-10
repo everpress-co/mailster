@@ -3,10 +3,13 @@
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
+import { __ } from '@wordpress/i18n';
+
 import { registerBlockType, unregisterBlockType } from '@wordpress/blocks';
 
 import { __experimentalGetCoreBlocks as coreBlocks } from '@wordpress/block-library';
 import { useBlockProps, BlockEdit } from '@wordpress/block-editor';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -15,7 +18,6 @@ import { useBlockProps, BlockEdit } from '@wordpress/block-editor';
  *
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
-import './style.scss';
 
 /**
  * Internal dependencies
@@ -75,9 +77,7 @@ settings.supports = {
 	...settings.supports,
 };
 
-settings.attributes.text.default = 'HELLO';
-
-console.warn(settings);
+settings.attributes.text.default = __('Subscribe', 'mailster');
 
 /**
  * Every block starts by registering a new block type definition.
@@ -90,8 +90,14 @@ registerBlockType(name, {
 	 * @see ./edit.js
 	 */
 	edit: (props) => {
+		const { attributes, setAttributes } = props;
+
+		useEffect(() => {
+			setAttributes({ url: '' });
+		}, [attributes.url]);
+
 		return (
-			<div className="wp-block-buttons mailster-wrapper">
+			<div className="wp-block-buttons mailster-wrapper mailster-submit-wrapper">
 				{edit(props)}
 			</div>
 		);
@@ -99,7 +105,7 @@ registerBlockType(name, {
 
 	save: (props) => {
 		return (
-			<div className="wp-block-buttons mailster-wrapper">
+			<div className="wp-block-buttons mailster-wrapper mailster-submit-wrapper">
 				{save(props)}
 			</div>
 		);

@@ -9,7 +9,7 @@ const entry = glob.sync('./blocks/**/index.js').reduce((acc, path) => {
 	return acc;
 }, {});
 
-entry['form-inspector'] = './blocks/form-inspector/index.js';
+entry['form-inspector'] = './blocks/form-inspector';
 
 module.exports = {
 	...defaultConfig,

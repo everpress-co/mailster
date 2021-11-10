@@ -22,7 +22,12 @@ import {
 	__experimentalUseColorProps as useColorProps,
 	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
 } from '@wordpress/block-editor';
-import { Button, PanelBody, ResizableBox } from '@wordpress/components';
+import {
+	Button,
+	PanelBody,
+	ResizableBox,
+	Snackbar,
+} from '@wordpress/components';
 
 import { brush } from '@wordpress/icons';
 
@@ -99,7 +104,9 @@ export default function Edit(props) {
 	let { css } = attributes;
 
 	const [displayMessages, setDisplayMessages] = useState(false);
-	const [inputStyles, setinputStyles] = useState('');
+	const [inputStyles, setinputStyles] = useState(
+		select('core/editor').getEditedPostAttribute('meta').input_styles
+	);
 
 	const borderProps = useBorderProps(attributes);
 	const colorProps = useColorProps(attributes);
@@ -210,26 +217,37 @@ export default function Edit(props) {
 	}
 
 	const getInputStyles = () => {
-		setinputStyles(
-			getStyles(
-				document
-					.getElementById('inputStylesIframe')
-					.contentWindow.document.querySelector(
-						'.mailster-form .input'
-					),
-				'color',
-				'padding',
-				'height',
-				'border',
-				'border-radius',
-				'background',
-				'box-shadow',
-				'line-height',
-				'appearance',
-				'-webkit-appearance',
-				'outline'
-			)
+		const styles = getStyles(
+			document
+				.getElementById('inputStylesIframe')
+				.contentWindow.document.querySelector('.mailster-form .input'),
+			'color',
+			'padding',
+			'height',
+			'border',
+			'border-radius',
+			'background',
+			'box-shadow',
+			'line-height',
+			'appearance',
+			'-webkit-appearance',
+			'outline'
 		);
+
+		if (styles != inputStyles) {
+			dispatch('core/editor').editPost({
+				meta: { input_styles: styles },
+			});
+			setinputStyles(styles);
+			dispatch('core/notices').createNotice(
+				'success',
+				__('Input field styles have been updated.', 'mailster'),
+				{
+					type: 'snackbar',
+					isDismissible: true,
+				}
+			);
+		}
 	};
 
 	const convertRestArgsIntoStylesArr = ([...args]) => {
@@ -266,13 +284,12 @@ export default function Edit(props) {
 
 	return (
 		<>
-			{!inputStyles && (
-				<iframe
-					src="/sample-page/"
-					id="inputStylesIframe"
-					onLoad={getInputStyles}
-				></iframe>
-			)}
+			<iframe
+				src="/sample-page/"
+				id="inputStylesIframe"
+				onLoad={getInputStyles}
+			></iframe>
+
 			<div
 				{...useBlockProps({
 					className: 'mailster-form mailster-form-' + clientId,
@@ -293,7 +310,7 @@ export default function Edit(props) {
 							{__('This is a success message', 'mailster')}
 						</div>
 						<div
-							className=" mailster-form-info-error"
+							className="mailster-form-info-error"
 							style={styleErrorMessage}
 						>
 							{__(

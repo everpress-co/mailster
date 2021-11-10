@@ -63,5 +63,5 @@
 	"textdomain": "mailster",
 	"editorScript": "file:./../../build/form-wrapper.js",
 	"editorStyle": "file:./../../build/form-wrapper.css",
-	"style": "file:./../../build/style-form-wrapper.css"
+	"style": "file:./../../build/style-form.css"
 }

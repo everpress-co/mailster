@@ -11,6 +11,8 @@ class MailsterForms {
 		add_action( 'init', array( &$this, 'register_post_meta' ) );
 		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ) );
 
+		add_action( 'wp_enqueue_scripts', array( &$this, 'wp_enqueue_scripts' ) );
+
 	}
 
 
@@ -29,12 +31,20 @@ class MailsterForms {
 
 		} else {
 
-			add_action( 'mailster_form_header', array( &$this, 'set_form_request' ) );
-			add_action( 'mailster_form_head', array( &$this, 'form_head' ) );
-			add_action( 'mailster_form_body', array( &$this, 'form_body' ) );
-			add_action( 'mailster_form_footer', array( &$this, 'form_footer' ) );
+			// add_action( 'mailster_form_header', array( &$this, 'set_form_request' ) );
+			// add_action( 'mailster_form_head', array( &$this, 'form_head' ) );
+			// add_action( 'mailster_form_body', array( &$this, 'form_body' ) );
+			// add_action( 'mailster_form_footer', array( &$this, 'form_footer' ) );
 
 		}
+
+	}
+
+
+
+	public function wp_enqueue_scripts() {
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+		wp_register_script( 'mailster-form', MAILSTER_URI . 'assets/js/form' . $suffix . '.js', array(), MAILSTER_VERSION );
 
 	}
 
@@ -121,7 +131,7 @@ class MailsterForms {
 
 	public function register_post_meta() {
 
-		// register_meta( 'newsletter_form', 'prefill', array(
+			// register_meta( 'newsletter_form', 'prefill', array(
 		// 'auth_callback' => '__return_true',
 		// 'show_in_rest' => true,
 		// 'type'         => 'boolean',
@@ -186,6 +196,17 @@ class MailsterForms {
 				'show_in_rest' => true,
 				'single'       => true,
 				'default'      => 'asdasd',
+			)
+		);
+
+		register_post_meta(
+			'newsletter_form',
+			'input_styles',
+			array(
+				'type'         => 'string',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => '',
 			)
 		);
 
@@ -309,6 +330,8 @@ class MailsterForms {
 
 
 	public function form_head() {
+
+		// return;
 
 		extract( $this->request );
 
@@ -446,8 +469,6 @@ class MailsterForms {
 
 
 	public function block_script_styles( $hook ) {
-		error_log( print_r( 'adasd', true ) );
-		error_log( print_r( $hook, true ) );
 
 		if ( 'newsletter_form' != get_post_type() ) {
 			// return;

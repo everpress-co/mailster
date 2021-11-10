@@ -10,11 +10,10 @@
 		"html": false
 	},
 	"attributes": {
-		"url": { "type": "string" }
+		"url": { "type": "string" },
+		"text": { "type": "string" }
 	},
 	"parent": null,
 	"textdomain": "mailster",
-	"editorScript": "file:./../../build/button.js",
-	"editorStyle": "file:./../../build/button.css",
-	"style": "file:./../../build/style-button.css"
+	"editorScript": "file:./../../build/button.js"
 }

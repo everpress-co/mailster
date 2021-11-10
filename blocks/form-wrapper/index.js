@@ -12,7 +12,8 @@ import { registerBlockType } from '@wordpress/blocks';
  *
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
-import './../form/style.scss';
+//import './style.scss';
+//import './../form/style.scss';
 
 /**
  * Internal dependencies

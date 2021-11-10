@@ -43,7 +43,7 @@ class MailsterFormPlaceholder extends Component {
 	render() {
 		return (
 			<Placeholder
-				icon={screenoptions}
+				icon={email}
 				label={__('Mailster Subscription Form', 'mailster')}
 			>
 				<MailsterFormSelector {...this.props} />
@@ -56,7 +56,7 @@ class MailsterFormPlaceholder extends Component {
 					/>
 					<Button
 						variant="primary"
-						icon={screenoptions}
+						icon={email}
 						className="is-primary"
 						onClick={this.updateFormList.bind(this)}
 						text={__('Update lists', 'mailster')}
@@ -124,11 +124,32 @@ export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
 	const { id } = attributes;
 
-	const blockProps = useBlockProps();
+	const [displayForm, setDisplayForm] = useState(true);
+
+	const EmptyResponsePlaceholder = () => {
+		return (
+			<Placeholder
+				icon={screenoptions}
+				label={__('Mailster Subscription Form', 'mailster')}
+			>
+				<p>
+					<Spinner />
+					{__('Loading your Form', 'mailster')}
+				</p>
+			</Placeholder>
+		);
+	};
+
+	const reloadForm = () => {
+		setDisplayForm(false);
+		setTimeout(() => {
+			setDisplayForm(true);
+		}, 1);
+	};
 
 	return (
 		<Fragment>
-			<div {...blockProps}>
+			<div {...useBlockProps()}>
 				{parseInt(id) > 0 && (
 					<div className="mailster-form-editor-wrap">
 						<div className="update-form-button">
@@ -140,18 +161,45 @@ export default function Edit(props) {
 							/>{' '}
 							<Button
 								variant="primary"
-								href={'post.php?post=' + id + '&action=edit'}
-								target={'edit_form_' + id}
+								onClick={reloadForm}
 								text={__('Reload Form', 'mailster')}
 							/>
 						</div>
-						<ServerSideRender
-							block="mailster/form"
-							attributes={attributes}
-						/>
+						{displayForm && (
+							<ServerSideRender
+								block="mailster/form"
+								attributes={attributes}
+								EmptyResponsePlaceholder={
+									EmptyResponsePlaceholder
+								}
+							/>
+						)}
 					</div>
 				)}
-				{!id && <MailsterFormPlaceholder {...props} />}
+				{!id && (
+					<Placeholder
+						icon={email}
+						label={__('Mailster Subscription Form', 'mailster')}
+					>
+						<MailsterFormSelector {...props} />
+
+						<div className="placeholder-buttons-wrap">
+							<Button
+								variant="link"
+								href={'post-new.php?post_type=newsletter_form'}
+								target={'edit_form_new'}
+								text={__('create new form', 'mailster')}
+							/>
+							<Button
+								variant="primary"
+								icon={email}
+								className="is-primary"
+								onClick={reloadForm}
+								text={__('Update lists', 'mailster')}
+							/>
+						</div>
+					</Placeholder>
+				)}
 			</div>
 			<InspectorControls>
 				<Panel>
@@ -161,7 +209,7 @@ export default function Edit(props) {
 					>
 						<MailsterFormSelector {...props} />
 					</PanelBody>
-				</Panel>{' '}
+				</Panel>
 				<Panel>
 					<PanelBody
 						title={__('Field Settings', 'mailster')}

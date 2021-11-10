@@ -22,11 +22,13 @@
 }
 .mailster-wrapper-inline {
 	label {
-		pointer-events: all !important;
 	}
-	:focus-within {
-		label {
-			display: block !important;
-		}
-	}
+}
+.mailster-form.wp-block-mailster-form-wrapper .mailster-wrapper-inline label {
+	_pointer-events: inherit;
+}
+.mailster-form.wp-block-mailster-form-wrapper
+	.mailster-wrapper-inline:focus-within
+	label {
+	display: flex;
 }

@@ -36,7 +36,7 @@ import {
 } from '@wordpress/components';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
-import { useSelect, select, dispatch } from '@wordpress/data';
+import { useSelect, select, dispatch, subscribe } from '@wordpress/data';
 
 import { Modal, Button, Tooltip } from '@wordpress/components';
 
@@ -62,9 +62,7 @@ const EmptyEditor = () => {
 };
 
 const ModalContent = ({ setOpen }) => {
-	const { __experimentalBlockPatterns } = wp.data
-		.select('core/block-editor')
-		.getSettings();
+	const { __experimentalBlockPatterns } = blockEditor.getSettings();
 
 	const patterns = __experimentalBlockPatterns.filter((pattern) =>
 		pattern.categories.includes('mailster-forms')
@@ -75,7 +73,7 @@ const ModalContent = ({ setOpen }) => {
 	}
 
 	const setPattern = (pattern, block) => {
-		wp.data.dispatch('core/block-editor').resetBlocks(block);
+		dispatch('core/block-editor').resetBlocks(block);
 		setOpen(false);
 	};
 
@@ -122,24 +120,26 @@ export default function FormModal(props) {
 	const openModal = () => setOpen(true);
 
 	const closeModal = () => {
-		setOpen(false);
+		console.warn('isEmptyEditor', isEmptyEditor);
 		if (isEmptyEditor) {
-			var content = 'Test content';
-			var name = 'mailster/form-wrapper';
-			var attributes = {
-				content: content,
-			};
-			var innerblocks = [];
+			var innerblocks = [
+				wp.blocks.createBlock('mailster/input', {
+					//label: 'Email',
+					type: 'email',
+				}),
+				wp.blocks.createBlock('mailster/button'),
+			];
 			var insertedBlock = wp.blocks.createBlock(
-				name,
-				attributes,
+				'mailster/form-wrapper',
+				{},
 				innerblocks
 			);
-			wp.data.dispatch('core/block-editor').resetBlocks([insertedBlock]);
+			dispatch('core/block-editor').resetBlocks([insertedBlock]);
 		}
+		setOpen(false);
 	};
 
-	wp.data.subscribe(() => {
+	subscribe(() => {
 		const newRequireModal = EmptyEditor();
 
 		if (newRequireModal !== isEmptyEditor) {

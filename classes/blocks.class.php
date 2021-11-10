@@ -36,8 +36,6 @@ class MailsterBlocks {
 
 	public function block_init() {
 
-		register_block_type( MAILSTER_DIR . 'blocks/form/', array( 'render_callback' => array( $this, 'render_form' ) ) );
-
 		// from https://www.designbombs.com/registering-gutenberg-blocks-for-custom-post-type/
 		if ( is_admin() ) {
 			global $pagenow;
@@ -61,30 +59,31 @@ class MailsterBlocks {
 				}
 			}
 
-			if ( $typenow != 'newsletter_form' ) {
+			if ( $typenow == 'newsletter_form' ) {
+				$this->register_block_pattern();
+				$this->register_block_pattern_category();
+
+				if ( function_exists( 'wp_enqueue_code_editor' ) ) {
+					wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
+				} else {
+					wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
+					wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
+				}
+				foreach ( $this->blocks as $block ) {
+
+					$args = array();
+
+					if ( method_exists( $this, 'render_' . $block ) ) {
+						$args['render_callback'] = array( $this, 'render_' . $block );
+					}
+					register_block_type( MAILSTER_DIR . 'blocks/' . $block . '/', $args );
+				}
+
 				return;
 			}
-
-			$this->register_block_pattern();
-			$this->register_block_pattern_category();
-
-			if ( function_exists( 'wp_enqueue_code_editor' ) ) {
-				wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
-			} else {
-				wp_enqueue_script( 'mailster-codemirror', MAILSTER_URI . 'assets/js/libs/codemirror' . $suffix . '.js', array(), MAILSTER_VERSION );
-				wp_enqueue_style( 'mailster-codemirror', MAILSTER_URI . 'assets/css/libs/codemirror' . $suffix . '.css', array(), MAILSTER_VERSION );
-			}
 		}
 
-		foreach ( $this->blocks as $block ) {
-
-			$args = array();
-
-			if ( method_exists( $this, 'render_' . $block ) ) {
-				$args['render_callback'] = array( $this, 'render_' . $block );
-			}
-			register_block_type( MAILSTER_DIR . 'blocks/' . $block . '/', $args );
-		}
+		register_block_type( MAILSTER_DIR . 'blocks/form/', array( 'render_callback' => array( $this, 'render_form' ) ) );
 
 	}
 
@@ -176,6 +175,14 @@ class MailsterBlocks {
 		}
 
 		$blockattributes = $block->attributes;
+		// is on a page in the backend and loaded via the REST API
+		$is_backend = defined( 'REST_REQUEST' ) && REST_REQUEST;
+
+		if ( ! $is_backend ) {
+			wp_enqueue_script( 'mailster-form' );
+		}
+
+		$uniqid = uniqid();
 
 		$innerblocks = parse_blocks( $form->post_content );
 		$output      = '';
@@ -185,9 +192,12 @@ class MailsterBlocks {
 			}
 		}
 
-		$stylesheets = array( 'style-form.css', 'style-input.css' );
+		$stylesheets = array();
+		if ( is_admin() ) {
+			$stylesheets = array( 'style-form.css', 'style-input.css' );
+		}
 
-		$classes = array( 'wp-block-mailster-form-outer-wrapper' );
+		$classes = array( 'wp-block-mailster-form-outer-wrapper wp-block-mailster-form-outside-wrapper-' . $uniqid );
 		if ( isset( $blockattributes['align'] ) ) {
 			$classes[] = 'align' . $blockattributes['align'];
 		}
@@ -195,7 +205,7 @@ class MailsterBlocks {
 			$classes[] = $innerblock->attributes['className'];
 		}
 
-		$output     = '<form class="' . implode( ' ', $classes ) . '">' . $output . '</form>';
+		$output     = '<div class="' . implode( ' ', $classes ) . '">' . $output . '</div>';
 		$stylesheet = '';
 
 		foreach ( $stylesheets as $s ) {
@@ -206,62 +216,67 @@ class MailsterBlocks {
 
 		$style = get_post_meta( $form->ID, 'style', true );
 
-		$emded_style = '';
+		$embeded_style = '';
 
 		if ( isset( $innerblock['attrs']['background'] ) ) {
-			$emded_style .= '.wp-block-mailster-form-wrapper::before{';
-			$emded_style .= 'content:"";';
-			$emded_style .= 'background-image:url(' . $innerblock['attrs']['background']['image'] . ');';
-			$emded_style .= 'opacity:' . $innerblock['attrs']['background']['opacity'] . '%;';
-			$emded_style .= 'background-size:' . $innerblock['attrs']['background']['size'] . ';';
+			$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .wp-block-mailster-form-wrapper::before{';
+			$embeded_style .= 'content:"";background-image:url(' . $innerblock['attrs']['background']['image'] . ');';
+			$embeded_style .= 'opacity:' . $innerblock['attrs']['background']['opacity'] . '%;';
+			$embeded_style .= 'background-size:' . $innerblock['attrs']['background']['size'] . ';';
 			if ( $innerblock['attrs']['background']['fixed'] ) {
-				$emded_style .= 'background-attachment:fixed;';
+				$embeded_style .= 'background-attachment:fixed;';
 			}
 			if ( $innerblock['attrs']['background']['repeat'] ) {
-				$emded_style .= 'background-repeat:repeat;';
+				$embeded_style .= 'background-repeat:repeat;';
 			} else {
-				$emded_style .= 'background-repeat:no-repeat;';
+				$embeded_style .= 'background-repeat:no-repeat;';
 			}
-			$emded_style .= 'background-position:' . ( $innerblock['attrs']['background']['position']['x'] * 100 ) . '% ' . ( $innerblock['attrs']['background']['position']['y'] * 100 ) . '%;';
-			// $emded_style .= 'z-index:-1;';
-			$emded_style .= '}';
+			$embeded_style .= 'background-position:' . ( $innerblock['attrs']['background']['position']['x'] * 100 ) . '% ' . ( $innerblock['attrs']['background']['position']['y'] * 100 ) . '%;';
+			$embeded_style .= 'position: absolute;background-repeat: no-repeat;top: 0;left: 0;bottom: 0;right: 0;';
+			$embeded_style .= '}';
 
 		}
 
-		$stylesheet .= '.wp-block-mailster-form-wrapper{';
+		if ( $is_backend && $input_styles = get_post_meta( $form->ID, 'input_styles', true ) ) {
+			$stylesheet .= ' .wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .input{';
+			$stylesheet .= $input_styles;
+			$stylesheet .= '}';
+		}
+
 		if ( isset( $innerblock['attrs']['style'] ) ) {
-			$style = $innerblock['attrs']['style'];
+			if ( $style = $innerblock['attrs']['style'] ) {
 
-			foreach ( $style as $key => $value ) {
-				$key = strtolower( preg_replace( '/([A-Z])+/', '-$1', $key ) );
-				switch ( $key ) {
-					case 'padding':
-						// $value = json_decode( $value );
-						foreach ( $value as $pk => $pv ) {
-							$stylesheet .= $key . '-' . $pk . ':' . $pv . ';';
-						}
-						break;
-					case 'background-position':
-						// $value       = json_decode( $value );
-						$stylesheet .= $key . ':' . ( $value->x * 100 ) . '% ' . ( $value->y * 100 ) . '%;';
-						break;
-					case 'background-image':
-						$value       = 'url(\'' . $value . '\')';
-						$stylesheet .= $key . ':' . $value . ';';
-						break;
-					case 'width':
-					case 'height':
-					case 'color':
-						// $stylesheet .= $key . ':' . $value . ';';
-						break;
-					default:
-						$stylesheet .= $key . ':' . $value . ';';
-						break;
+				$stylesheet .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . '{';
+				foreach ( $style as $key => $value ) {
+					$key = strtolower( preg_replace( '/([A-Z])+/', '-$1', $key ) );
+					switch ( $key ) {
+						case 'padding':
+							// $value = json_decode( $value );
+							foreach ( $value as $pk => $pv ) {
+								$stylesheet .= $key . '-' . $pk . ':' . $pv . ';';
+							}
+							break;
+						case 'background-position':
+							// $value       = json_decode( $value );
+							$stylesheet .= $key . ':' . ( $value->x * 100 ) . '% ' . ( $value->y * 100 ) . '%;';
+							break;
+						case 'background-image':
+							$value       = 'url(\'' . $value . '\')';
+							$stylesheet .= $key . ':' . $value . ';';
+							break;
+						case 'width':
+						case 'height':
+						case 'color':
+							// $stylesheet .= $key . ':' . $value . ';';
+							break;
+						default:
+							$stylesheet .= $key . ':' . $value . ';';
+							break;
+					}
 				}
+				$stylesheet .= '}';
 			}
 		}
-
-		$stylesheet .= '}';
 
 		if ( isset( $innerblock['attrs']['css'] ) ) {
 			$stylesheet .= $innerblock['attrs']['css'];
@@ -283,13 +298,15 @@ class MailsterBlocks {
 			$html = trim( $matches[2] );
 		}
 
-		if ( ! empty( $emded_style ) ) {
-			$html = '<style>' . $emded_style . '</style>' . $html;
+		if ( ! empty( $embeded_style ) ) {
+			$html = '<style>' . $embeded_style . '</style>' . $html;
 		}
 
-		error_log( print_r( $html, true ) );
+		if ( $is_backend ) {
+			$html = do_shortcode( $html );
+		}
 
-		return $html;
+		return ( $html );
 
 	}
 

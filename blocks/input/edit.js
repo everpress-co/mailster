@@ -57,19 +57,14 @@ export default function Edit(props) {
 
 	const styleSheets = {
 		width: style.width + '%',
-		minHeight: style.height,
-		//paddingTop: style.padding.top,
-		//paddingLeft: style.padding.left,
-		//paddingRight: style.padding.right,
-		//paddingBottom: style.padding.bottom,
 	};
-
-	console.warn(style);
 
 	return (
 		<Fragment>
 			<div
-				{...useBlockProps({ className: className })}
+				{...useBlockProps.save({
+					className: className.join(' '),
+				})}
 				style={styleSheets}
 			>
 				<RichText

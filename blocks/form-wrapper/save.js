@@ -24,13 +24,43 @@ import { InnerBlocks, useBlockProps } from '@wordpress/block-editor';
  */
 export default function save(props) {
 	const { attributes } = props;
+	const { messages } = attributes;
+
+	const styleSuccessMessage = {
+		color: messages.success,
+		backgroundColor: messages.successBackground,
+	};
+	const styleErrorMessage = {
+		color: messages.error,
+		backgroundColor: messages.errorBackground,
+	};
+
 	return (
-		<div
+		<form
+			method="post"
+			novalidate
+			action="/mailster/subscribe"
 			{...useBlockProps.save({
 				className: 'mailster-form',
 			})}
 		>
+			<div className="mailster-form-info">
+				<div
+					className="mailster-form-info-success"
+					style={styleSuccessMessage}
+				>
+					This is a success message
+				</div>
+				<div
+					className="mailster-form-info-error"
+					style={styleErrorMessage}
+				>
+					Following fields are missing or incorrect. This is an error
+					message
+				</div>
+			</div>
 			<InnerBlocks.Content />
-		</div>
+			<input type="submit" style={{ display: 'none !important' }} />
+		</form>
 	);
 }
