@@ -15,6 +15,7 @@
 		"reusable": false,
 		"multiple": false,
 		"spacing": {
+			"margin": ["top", "bottom"],
 			"padding": true
 		},
 		"color": {

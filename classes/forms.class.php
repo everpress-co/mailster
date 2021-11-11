@@ -44,7 +44,7 @@ class MailsterForms {
 
 	public function wp_enqueue_scripts() {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_register_script( 'mailster-form', MAILSTER_URI . 'assets/js/form' . $suffix . '.js', array(), MAILSTER_VERSION );
+		wp_register_script( 'mailster-form-block', MAILSTER_URI . 'assets/js/form-block' . $suffix . '.js', array(), MAILSTER_VERSION );
 
 	}
 
@@ -165,6 +165,27 @@ class MailsterForms {
 				'single'       => true,
 				'default'      => true,
 
+			)
+		);
+		register_post_meta(
+			'newsletter_form',
+			'gdpr',
+			array(
+				'type'         => 'boolean',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => true,
+
+			)
+		);
+		register_post_meta(
+			'newsletter_form',
+			'gdpr_text',
+			array(
+				'type'         => 'string',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => 'GDPR TEXT DEFAULT',
 			)
 		);
 		register_post_meta(

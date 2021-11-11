@@ -24,13 +24,11 @@ import {
 	PanelRow,
 	CheckboxControl,
 	TextControl,
-	SelectControl,
 	RangeControl,
 	ColorPalette,
 } from '@wordpress/components';
 
 import { Fragment, Component, useState } from '@wordpress/element';
-import apiFetch from '@wordpress/api-fetch';
 
 import { more } from '@wordpress/icons';
 
@@ -42,65 +40,12 @@ import { more } from '@wordpress/icons';
  *
  * @return {WPElement} Element to render.
  */
-class MailsterFieldSelector extends Component {
-	constructor() {
-		super(...arguments);
 
-		this.state = {
-			fields: [{ label: __('Loading Fields', 'mailster'), value: false }],
-		};
-	}
-
-	componentDidMount() {
-		this.updateFormList();
-	}
-
-	updateFormList = () => {
-		apiFetch({ path: '/mailster/v1/fields' }).then((data) => {
-			if (data.length)
-				data.unshift({
-					label: __('Select a Mailster form', 'mailster'),
-					value: false,
-				});
-			this.setState({
-				fields: data.map((field) => {
-					return {
-						label: field.name,
-						value: field.id,
-						type: field.type || 'text',
-					};
-				}),
-			});
-		});
-	};
-
-	render() {
-		return (
-			<Fragment>
-				{this.state.fields.length > 0 && (
-					<SelectControl
-						value={this.props.attributes.field}
-						options={this.state.fields}
-						onChange={(val) =>
-							this.props.setAttributes({ field: val })
-						}
-					/>
-				)}
-				{this.state.fields.length < 1 && (
-					<p>
-						{__(
-							"There's currently no fields available.",
-							'mailster'
-						)}
-					</p>
-				)}
-			</Fragment>
-		);
-	}
-}
-
-export default function InputFieldInspectorControls(props) {
-	const { attributes, setAttributes, isSelected } = props;
+export default function InputFieldInspectorControls({
+	attributes,
+	setAttributes,
+	isSelected,
+}) {
 	const { label, inline, required, style } = attributes;
 
 	const [width, setWidth] = useState(100);
@@ -123,9 +68,6 @@ export default function InputFieldInspectorControls(props) {
 							value={label}
 							onChange={(val) => setAttributes({ label: val })}
 						/>
-					</PanelRow>
-					<PanelRow>
-						<MailsterFieldSelector {...props} />
 					</PanelRow>
 					<PanelRow>
 						<CheckboxControl

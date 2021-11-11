@@ -1,0 +1,25 @@
+{
+	"apiVersion": 2,
+	"name": "mailster/gdpr",
+	"version": "0.1.0",
+	"title": "GDPR Field",
+	"category": "mailster-form-fields",
+	"keywords": ["container", "wrapper", "row", "section"],
+	"icon": "button",
+	"description": "Simple Input Field for your Mailster Form",
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"inserter": false,
+		"multiple": false
+	},
+	"attributes": {
+		"content": {
+			"type": "string"
+		}
+	},
+	"textdomain": "mailster",
+	"editorScript": "file:./../../build/gdpr.js",
+	"editorStyle": "file:./../../build/gdpr.css",
+	"style": "file:./../../build/style-gdpr.css"
+}

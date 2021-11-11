@@ -28,6 +28,7 @@ import { registerBlockVariation } from '@wordpress/blocks';
 
 import FormModal from './FormModal';
 import Doubleoptin from './Doubleoptin';
+import Gdpr from './Gdpr';
 import Lists from './Lists';
 import Placement from './Placement';
 
@@ -57,6 +58,7 @@ function SettingsPanelPlugin() {
 			</PluginPrePublishPanel>
 			<FormModal />
 			<Doubleoptin {...meta} setMeta={setMeta} />
+			<Gdpr {...meta} setMeta={setMeta} />
 			<Lists {...meta} setMeta={setMeta} />
 			<Placement {...meta} setMeta={setMeta} />
 		</>

@@ -3,7 +3,7 @@
 class MailsterBlocks {
 
 	private $blocks__ = array( 'form-wrapper', 'input', 'email', 'button' );
-	private $blocks   = array( 'form-wrapper', 'input', 'button' );
+	private $blocks   = array( 'form-wrapper', 'input', 'button', 'gdpr' );
 
 	public function __construct() {
 
@@ -90,10 +90,20 @@ class MailsterBlocks {
 	public function api_init() {
 		register_rest_route(
 			'mailster/v1',
-			'/lists',
+			'/forms',
 			array(
 				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_lists' ),
+				'callback'            => array( $this, 'get_forms' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+
+		register_rest_route(
+			'mailster/v1',
+			'/fields',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_fields' ),
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -179,7 +189,7 @@ class MailsterBlocks {
 		$is_backend = defined( 'REST_REQUEST' ) && REST_REQUEST;
 
 		if ( ! $is_backend ) {
-			wp_enqueue_script( 'mailster-form' );
+			wp_enqueue_script( 'mailster-form-block' );
 		}
 
 		$uniqid = uniqid();
@@ -191,6 +201,11 @@ class MailsterBlocks {
 				$output .= render_block( $innerblock );
 			}
 		}
+
+		$inject  = '';
+		$inject .= '<input name="_nonce" type="hidden" value="' . esc_attr( wp_create_nonce( 'mailster-form-nonce' ) ) . '">' . "\n";
+
+		$output = str_replace( '</form>', $inject . '</form>', $output );
 
 		$stylesheets = array();
 		if ( is_admin() ) {
@@ -310,7 +325,7 @@ class MailsterBlocks {
 
 	}
 
-	public function get_lists( WP_REST_Request $request ) {
+	public function get_forms( WP_REST_Request $request ) {
 
 		$query = get_posts(
 			array(
@@ -321,14 +336,37 @@ class MailsterBlocks {
 
 		$return = array();
 
-		foreach ( $query as $list ) {
+		foreach ( $query as $form ) {
 			$return[] = array(
-				'label' => $list->post_title,
-				'value' => (int) $list->ID,
+				'label' => $form->post_title,
+				'value' => (int) $form->ID,
 			);
 		}
 
 		return $return;
+
+	}
+
+	public function get_fields( WP_REST_Request $request ) {
+
+		$custom_fields = array_values( mailster()->get_custom_fields() );
+
+		$fields = array(
+			array(
+				'name' => 'Email',
+				'id'   => 'email',
+			),
+			array(
+				'name' => 'First Name',
+				'id'   => 'firstname',
+			),
+			array(
+				'name' => 'Last name',
+				'id'   => 'lastname',
+			),
+		);
+
+		return array_merge( $fields, $custom_fields );
 
 	}
 

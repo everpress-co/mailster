@@ -16,6 +16,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"field": {
+			"type": "string",
+			"default": ""
+		},
 		"required": {
 			"type": "boolean",
 			"default": false

@@ -36,15 +36,9 @@
 }
 
 #inputStylesIframe {
-	display: none;
+	_display: none;
 }
 
-._mailster-form-info {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-}
 .is-root-container .wp-block-mailster-input.wp-block,
 .is-root-container
 	.editor-styles-wrapper
@@ -62,6 +56,14 @@
 	background-color: #fff;
 	width: 50rem;
 
+	.mailster-form-info {
+		height: auto;
+		transform: scale(1);
+	}
+
+	.mailster-form-info > div {
+		display: block !important;
+	}
 	> button {
 		z-index: 100;
 		position: relative;
@@ -111,6 +113,7 @@
 	text-align: center;
 	display: block;
 	font-size: 12px;
+	margin-top: 1em;
 }
 
 .editor-styles-wrapper.wp-embed-responsive {

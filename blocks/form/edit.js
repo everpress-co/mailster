@@ -29,81 +29,43 @@ import { Fragment, useState, Component, useEffect } from '@wordpress/element';
 
 import { Button, DropdownMenu, SelectControl } from '@wordpress/components';
 
-class MailsterFormPlaceholder extends Component {
-	constructor() {
-		super(...arguments);
-	}
-
-	updateFormList = () => {
-		apiFetch({ path: '/wp/v2/users/1' }).then((data) => {
-			console.warn(data);
-		});
-	};
-
-	render() {
-		return (
-			<Placeholder
-				icon={email}
-				label={__('Mailster Subscription Form', 'mailster')}
-			>
-				<MailsterFormSelector {...this.props} />
-
-				<div className="placeholder-buttons-wrap">
-					<Button
-						variant="link"
-						href="https://google.com"
-						text={__('create new form', 'mailster')}
-					/>
-					<Button
-						variant="primary"
-						icon={email}
-						className="is-primary"
-						onClick={this.updateFormList.bind(this)}
-						text={__('Update lists', 'mailster')}
-					/>
-				</div>
-			</Placeholder>
-		);
-	}
-}
-
 class MailsterFormSelector extends Component {
 	constructor() {
 		super(...arguments);
 
 		this.state = {
-			lists: [{ label: __('Loading Forms', 'mailster'), value: false }],
+			forms: [{ label: __('Loading Forms', 'mailster'), value: false }],
 		};
 	}
 
 	componentDidMount() {
-		this.updateFormList();
+		this.updateFormForm();
 	}
 
-	updateFormList = () => {
-		apiFetch({ path: '/mailster/v1/lists' }).then((data) => {
+	updateFormForm = () => {
+		apiFetch({ path: '/mailster/v1/forms' }).then((data) => {
 			if (data.length)
 				data.unshift({
 					label: __('Select a Mailster form', 'mailster'),
 					value: false,
 				});
-			this.setState({ lists: data });
+			this.setState({ forms: data });
 		});
 	};
 
 	render() {
 		return (
 			<Fragment>
-				{this.state.lists.length > 0 && (
+				{this.state.forms.length > 0 && (
 					<SelectControl
 						value={this.props.attributes.id}
-						options={this.state.lists}
+						options={this.state.forms}
 						onChange={(val) =>
 							this.props.setAttributes({ id: val })
 						}
 					/>
 				)}
-				{this.state.lists.length < 1 && (
+				{this.state.forms.length < 1 && (
 					<p>
 						{__("There's currently no form available.", 'mailster')}
 					</p>
@@ -195,7 +157,7 @@ export default function Edit(props) {
 								icon={email}
 								className="is-primary"
 								onClick={reloadForm}
-								text={__('Update lists', 'mailster')}
+								text={__('Update Forms', 'mailster')}
 							/>
 						</div>
 					</Placeholder>

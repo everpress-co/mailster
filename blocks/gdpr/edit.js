@@ -36,7 +36,7 @@ import { more } from '@wordpress/icons';
  */
 import './editor.scss';
 
-import InputFieldInspectorControls from '../input/inspector.js';
+//import InputFieldInspectorControls from '../input/inspector.js';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -48,16 +48,12 @@ import InputFieldInspectorControls from '../input/inspector.js';
  */
 
 export default function Edit(props) {
-	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, field, type, inline, required, style } = attributes;
-	const className = ['mailster-wrapper'];
+	const { attributes, setAttributes, isSelected } = props;
+	const { content } = attributes;
+	const className = ['mailster-wrapper mailster-wrapper-_gdpr'];
 
-	if (required) className.push('mailster-wrapper-required');
-	if (inline) className.push('mailster-wrapper-inline');
-
-	const styleSheets = {
-		width: style.width + '%',
-	};
+	//if (required) className.push('mailster-wrapper-required');
+	//if (inline) className.push('mailster-wrapper-inline');
 
 	return (
 		<Fragment>
@@ -65,19 +61,17 @@ export default function Edit(props) {
 				{...useBlockProps({
 					className: className.join(' '),
 				})}
-				style={styleSheets}
 			>
-				<RichText
-					tagName="label"
-					value={label}
-					onChange={(val) => setAttributes({ label: val })}
-					allowedFormats={[]}
-					className="mailster-label"
-					placeholder={__('Enter Label', 'mailster')}
-				/>
-				<input className="input" onChange={() => {}} type={type} />
+				<label>
+					<input type="checkbox" name="_gdpr" value="1" disabled />
+					<RichText
+						tagName="span"
+						value={content}
+						onChange={(val) => setAttributes({ content: val })}
+						placeholder={__('Enter Label', 'mailster')}
+					/>
+				</label>
 			</div>
-			<InputFieldInspectorControls {...props} />
 		</Fragment>
 	);
 }

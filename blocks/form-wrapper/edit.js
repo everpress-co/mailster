@@ -20,7 +20,7 @@ import {
 	VisuallyHidden,
 	__experimentalUseBorderProps as useBorderProps,
 	__experimentalUseColorProps as useColorProps,
-	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
+	//__experimentalGetSpacingClassesAndStyles as useSpacingProps,
 } from '@wordpress/block-editor';
 import {
 	Button,
@@ -39,6 +39,7 @@ import {
 	useEffect,
 	useMemo,
 } from '@wordpress/element';
+import { useEntityProp } from '@wordpress/core-data';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -103,14 +104,18 @@ export default function Edit(props) {
 	const { style, background, inputs, messages } = attributes;
 	let { css } = attributes;
 
-	const [displayMessages, setDisplayMessages] = useState(false);
-	const [inputStyles, setinputStyles] = useState(
-		select('core/editor').getEditedPostAttribute('meta').input_styles
+	const [meta, setMeta] = useEntityProp(
+		'postType',
+		'newsletter_form',
+		'meta'
 	);
+
+	const [displayMessages, setDisplayMessages] = useState(false);
+	const [inputStyles, setinputStyles] = useState(meta.input_styles);
 
 	const borderProps = useBorderProps(attributes);
 	const colorProps = useColorProps(attributes);
-	const spacingProps = useSpacingProps(attributes);
+	//const spacingProps = useSpacingProps(attributes);
 
 	const styleSuccessMessage = {
 		color: messages.success,
@@ -217,22 +222,46 @@ export default function Edit(props) {
 	}
 
 	const getInputStyles = () => {
-		const styles = getStyles(
-			document
-				.getElementById('inputStylesIframe')
-				.contentWindow.document.querySelector('.mailster-form .input'),
-			'color',
-			'padding',
-			'height',
-			'border',
-			'border-radius',
-			'background',
-			'box-shadow',
-			'line-height',
-			'appearance',
-			'-webkit-appearance',
-			'outline'
+		const iframe = document.getElementById('inputStylesIframe'),
+			doc = iframe.contentWindow.document,
+			//get a couple of possible DOM elements
+			el =
+				doc.getElementsByClassName('entry-content')[0] ||
+				doc.getElementById('page') ||
+				doc.getElementsByTagName('body')[0],
+			selectors = [
+				'input.input',
+				'input[type="checkbox"]',
+				'label.mailster-label',
+			];
+
+		wp.element.render(
+			<form className="mailster-form">
+				<label className="mailster-label">This is my Label</label>
+				<input type="checkbox" className="" />
+				<input type="text" className="input input-style-selector" />
+			</form>,
+			el
 		);
+
+		const styles = selectors
+			.map((selector, i) => {
+				const style = getStyles(doc.querySelector(selector), [
+					'color',
+					'padding',
+					'height',
+					'border',
+					'border-radius',
+					'background',
+					'box-shadow',
+					'line-height',
+					'appearance',
+					'-webkit-appearance',
+					'outline',
+				]);
+				return '.mailster-form ' + selector + '{' + style + '}';
+			})
+			.join('');
 
 		if (styles != inputStyles) {
 			dispatch('core/editor').editPost({
@@ -275,21 +304,35 @@ export default function Edit(props) {
 	};
 
 	if (inputStyles) {
-		css += '.mailster-wrapper .input{' + inputStyles + '}';
+		css += inputStyles;
 	}
 
 	const prefixedCss = useMemo(() => {
 		return prefixCss(css, '.mailster-form-' + clientId);
 	}, [css]);
 
+	useEffect(() => {
+		const all = select('core/block-editor').getBlocks(clientId);
+		const exists = all.filter((block) => {
+			return block.name == 'mailster/gdpr';
+		});
+
+		if (exists.length && !meta.gdpr) {
+			dispatch('core/block-editor').removeBlock(exists[0].clientId);
+		} else if (!exists.length && meta.gdpr) {
+			const block = wp.blocks.createBlock('mailster/gdpr', {
+				content: 'I agree to the privacy policy and terms.',
+			});
+			dispatch('core/block-editor').insertBlock(
+				block,
+				all.length,
+				clientId
+			);
+		}
+	}, [meta.gdpr]);
+
 	return (
 		<>
-			<iframe
-				src="/sample-page/"
-				id="inputStylesIframe"
-				onLoad={getInputStyles}
-			></iframe>
-
 			<div
 				{...useBlockProps({
 					className: 'mailster-form mailster-form-' + clientId,
@@ -297,7 +340,7 @@ export default function Edit(props) {
 				style={{
 					...borderProps.style,
 					...colorProps.style,
-					...spacingProps.style,
+					//...spacingProps.style,
 				}}
 			>
 				{prefixedCss && <style>{prefixedCss}</style>}
@@ -327,7 +370,12 @@ export default function Edit(props) {
 					</Button>
 				)}
 			</div>
-
+			<iframe
+				src="../"
+				id="inputStylesIframe"
+				onLoad={getInputStyles}
+				sandbox="allow-scripts allow-same-origin"
+			></iframe>
 			<InspectorControls>
 				<Messages
 					{...props}
