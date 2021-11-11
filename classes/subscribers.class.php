@@ -34,7 +34,7 @@ class MailsterSubscribers {
 		add_action( 'comment_post', array( &$this, 'comment_post' ), 10, 2 );
 		add_action( 'wp_set_comment_status', array( &$this, 'wp_set_comment_status' ), 10, 2 );
 
-		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 20 );
+		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 5 );
 
 		add_action( 'mailster_update_rating', array( &$this, 'update_rating' ) );
 

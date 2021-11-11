@@ -41,7 +41,7 @@ import { more } from '@wordpress/icons';
  */
 
 export default function Gdpr(props) {
-	const { gdpr, gdpr_text, setMeta, isSelected } = props;
+	const { gdpr, setMeta, isSelected } = props;
 
 	return (
 		<PluginDocumentSettingPanel name="gdpr" title="GDPR">
@@ -49,12 +49,6 @@ export default function Gdpr(props) {
 				label="Send a confirmation message"
 				checked={!!gdpr}
 				onChange={() => setMeta({ gdpr: !gdpr })}
-			/>
-			<TextareaControl
-				label="Content"
-				value={gdpr_text}
-				help="GDPR text."
-				onChange={(value) => setMeta({ gdpr_text: value })}
 			/>
 		</PluginDocumentSettingPanel>
 	);

@@ -36,7 +36,7 @@ class MailsterCampaigns {
 		add_action( 'mailster_auto_post_thumbnail', array( &$this, 'get_post_thumbnail' ), 10, 2 );
 
 		add_action( 'admin_menu', array( &$this, 'remove_meta_boxs' ) );
-		add_action( 'admin_menu', array( &$this, 'autoresponder_menu' ), 20 );
+		add_action( 'admin_menu', array( &$this, 'autoresponder_menu' ), 1 );
 		add_filter( 'display_post_states', array( &$this, 'display_post_states' ), 10, 2 );
 
 		add_action( 'save_post', array( &$this, 'save_campaign' ), 10, 3 );

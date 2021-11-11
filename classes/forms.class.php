@@ -7,17 +7,13 @@ class MailsterForms {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( &$this, 'init' ) );
-		add_action( 'init', array( &$this, 'register_post_type' ) );
-		add_action( 'init', array( &$this, 'register_post_meta' ) );
-		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ) );
-
-		add_action( 'wp_enqueue_scripts', array( &$this, 'wp_enqueue_scripts' ) );
 
 	}
 
 
 	public function init() {
 
+		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 20 );
 		add_action( 'wp', array( &$this, 'form' ) );
 
 		if ( is_admin() ) {
@@ -31,79 +27,15 @@ class MailsterForms {
 
 		} else {
 
-			// add_action( 'mailster_form_header', array( &$this, 'set_form_request' ) );
-			// add_action( 'mailster_form_head', array( &$this, 'form_head' ) );
-			// add_action( 'mailster_form_body', array( &$this, 'form_body' ) );
-			// add_action( 'mailster_form_footer', array( &$this, 'form_footer' ) );
+			add_action( 'mailster_form_header', array( &$this, 'set_form_request' ) );
+			add_action( 'mailster_form_head', array( &$this, 'form_head' ) );
+			add_action( 'mailster_form_body', array( &$this, 'form_body' ) );
+			add_action( 'mailster_form_footer', array( &$this, 'form_footer' ) );
 
 		}
 
 	}
 
-
-
-	public function wp_enqueue_scripts() {
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_register_script( 'mailster-form-block', MAILSTER_URI . 'assets/js/form-block' . $suffix . '.js', array(), MAILSTER_VERSION );
-
-	}
-
-
-
-	public function register_post_type() {
-
-		$labels       = array(
-			'name'                  => _x( 'Forms', 'Post Type General Name', 'mailster' ),
-			'singular_name'         => _x( 'Form', 'Post Type Singular Name', 'mailster' ),
-			'menu_name'             => __( 'Forms', 'mailster' ),
-			'attributes'            => __( 'Form Attributes', 'mailster' ),
-			'all_items'             => __( 'Forms', 'mailster' ),
-			'add_new_item'          => __( 'Add New Form', 'mailster' ),
-			'add_new'               => __( 'Add New', 'mailster' ),
-			'new_item'              => __( 'New Form', 'mailster' ),
-			'edit_item'             => __( 'Edit Form', 'mailster' ),
-			'update_item'           => __( 'Update Form', 'mailster' ),
-			'view_item'             => __( 'View Form', 'mailster' ),
-			'view_items'            => __( 'View Forms', 'mailster' ),
-			'search_items'          => __( 'Search Form', 'mailster' ),
-			'not_found'             => __( 'Not found', 'mailster' ),
-			'not_found_in_trash'    => __( 'Not found in Trash', 'mailster' ),
-			'uploaded_to_this_item' => __( 'Uploaded to this form', 'mailster' ),
-			'items_list'            => __( 'Forms list', 'mailster' ),
-			'items_list_navigation' => __( 'Forms list navigation', 'mailster' ),
-			'filter_items_list'     => __( 'Filter forms list', 'mailster' ),
-		);
-		$capabilities = array(
-			'edit_post'          => 'mailster_edit_form',
-			'read_post'          => 'mailster_read_form',
-			'delete_post'        => 'mailster_delete_forms',
-			'edit_posts'         => 'mailster_edit_forms',
-			'edit_others_posts'  => 'mailster_edit_others_forms',
-			'publish_posts'      => 'mailster_publish_forms',
-			'read_private_posts' => 'mailster_read_private_forms',
-		);
-		$args         = array(
-			'label'               => __( 'Form', 'mailster' ),
-			'description'         => __( 'Newsletter Form', 'mailster' ),
-			'labels'              => $labels,
-			'supports'            => array( 'title', 'editor', 'revisions', 'custom-fields' ),
-			'hierarchical'        => true,
-			'public'              => false,
-			'show_ui'             => true,
-			'show_in_menu'        => 'edit.php?post_type=newsletter',
-			'show_in_admin_bar'   => false,
-			'show_in_nav_menus'   => true,
-			'can_export'          => false,
-			'has_archive'         => false,
-			'exclude_from_search' => true,
-			'publicly_queryable'  => false,
-			'rewrite'             => false,
-			'capabilities'        => $capabilities,
-			'show_in_rest'        => true,
-		);
-		register_post_type( 'newsletter_form', $args );
-
-	}
 
 	public function set_form_request() {
 
@@ -129,217 +61,6 @@ class MailsterForms {
 	}
 
 
-	public function register_post_meta() {
-
-			// register_meta( 'newsletter_form', 'prefill', array(
-		// 'auth_callback' => '__return_true',
-		// 'show_in_rest' => true,
-		// 'type'         => 'boolean',
-		// 'sanitize_callback' => 'sanitize_text_field',
-		// 'single'       => true,
-		// 'default'      => true,
-		// ) );
-
-		// $lists       = mailster( 'lists' )->get_simple();
-
-		// register_post_meta(
-		// 'newsletter_form',
-		// 'doubleoptin',
-		// array(
-		// 'type'              => 'string',
-		// 'description'       => 'Enables a confirmation message for this form',
-		// 'single'            => true,
-		// 'sanitize_callback' => 'is_string',
-		// 'show_in_rest'      => true,
-		// 'auth_callback' => function() {
-		// return current_user_can( 'edit_posts' );
-		// },
-		// )
-		// );
-		register_post_meta(
-			'newsletter_form',
-			'doubleoptin',
-			array(
-				'type'         => 'boolean',
-				'show_in_rest' => true,
-				'single'       => true,
-				'default'      => true,
-
-			)
-		);
-		register_post_meta(
-			'newsletter_form',
-			'gdpr',
-			array(
-				'type'         => 'boolean',
-				'show_in_rest' => true,
-				'single'       => true,
-				'default'      => true,
-
-			)
-		);
-		register_post_meta(
-			'newsletter_form',
-			'gdpr_text',
-			array(
-				'type'         => 'string',
-				'show_in_rest' => true,
-				'single'       => true,
-				'default'      => 'GDPR TEXT DEFAULT',
-			)
-		);
-		register_post_meta(
-			'newsletter_form',
-			'subject',
-			array(
-				'type'         => 'string',
-				'show_in_rest' => true,
-				'single'       => true,
-				'default'      => '',
-			)
-		);
-		register_post_meta(
-			'newsletter_form',
-			'headline',
-			array(
-				'type'         => 'string',
-				'show_in_rest' => true,
-				'single'       => true,
-				'default'      => '',
-			)
-		);
-
-		register_post_meta(
-			'newsletter_form',
-			'content',
-			array(
-				'type'         => 'string',
-				'show_in_rest' => true,
-				'single'       => true,
-				'default'      => 'asdasd',
-			)
-		);
-
-		register_post_meta(
-			'newsletter_form',
-			'input_styles',
-			array(
-				'type'         => 'string',
-				'show_in_rest' => true,
-				'single'       => true,
-				'default'      => '',
-			)
-		);
-
-		$style_properties = array(
-			'backgroundImage'    => array(
-				'type' => 'string',
-			),
-			'padding'            => array(
-				'type' => 'string',
-			),
-			'backgroundPosition' => array(
-				'type' => 'string',
-			),
-			'backgroundColor'    => array(
-				'type' => 'string',
-			),
-			'color'              => array(
-				'type' => 'string',
-			),
-			'minWidth'           => array(
-				'type' => 'string',
-			),
-			'minHeight'          => array(
-				'type' => 'string',
-			),
-		);
-
-		register_post_meta(
-			'newsletter_form',
-			'style',
-			array(
-				'type'         => 'object',
-				'single'       => true,
-				'show_in_rest' => array(
-					'schema' => array(
-						'type'       => 'object',
-						'properties' => $style_properties,
-					),
-				),
-			),
-		);
-
-			return;
-
-		$form_attributes = array(
-			'formColor'      => '',
-			'formBGColor'    => '',
-			'buttonColor'    => '',
-			'buttonBGColor'  => '',
-			'align'          => '',
-			'align'          => '',
-			'className'      => '',
-			'name'           => 'Form',
-			'submit'         => 'Subscribe',
-			'submittype'     => 'button',
-			'doubleoptin'    => false,
-			'dropdown'       => false,
-			'asterisk'       => true,
-			'prefill'        => false,
-			'overwrite'      => false,
-			'userchoice'     => false,
-			'inline'         => false,
-			'custom_style'   => '',
-			'subject'        => esc_html__( 'Please confirm', 'mailster' ),
-			'headline'       => esc_html__( 'Please confirm your Email Address', 'mailster' ),
-			'link'           => esc_html__( 'Click here to confirm', 'mailster' ),
-			'content'        => sprintf( esc_html__( 'You have to confirm your email address. Please click the link below to confirm. %s', 'mailster' ), "\n{link}" ),
-			'gdpr'           => (bool) mailster_option( 'gdpr' ),
-			'gdpr_text'      => esc_html__( 'I agree to the privacy policy and terms.', 'mailster' ),
-			'gdpr_error'     => esc_html__( 'You have to agree to the privacy policy and terms!', 'mailster' ),
-			'errorColor'     => '',
-			'errorBGColor'   => '',
-			'successColor'   => '',
-			'successBGColor' => '',
-			'confirmMessage' => mailster_text( 'confirmation' ),
-			'successMessage' => mailster_text( 'success' ),
-			'errorMessage'   => mailster_text( 'error' ),
-			'lists_selected' => array( 3 ),
-			// 'lists_order'    => $lists_order,
-			// 'lists'          => $lists,
-			'lists_a'        => array(),
-		);
-
-		foreach ( $form_attributes as $key => $value ) {
-			$type         = gettype( $value );
-			$show_in_rest = true;
-			if ( $type == 'array' ) {
-				$show_in_rest = array(
-					'schema' => array(
-						'type'  => $type,
-						'items' => array(
-							'type' => gettype( current( $value ) ),
-						),
-					),
-				);
-			}
-
-			$args = array(
-				'auth_callback'     => '__return_true',
-				'show_in_rest'      => $show_in_rest,
-				'type'              => gettype( $value ),
-				'sanitize_callback' => 'sanitize_text_field',
-				'single'            => true,
-				'default'           => $value,
-			);
-
-			register_post_meta( 'newsletter_form', $key, $args );
-		}
-
-	}
-
-
 	public function form() {
 
 		if ( get_query_var( '_mailster_form' ) ) {
@@ -351,8 +72,6 @@ class MailsterForms {
 
 
 	public function form_head() {
-
-		// return;
 
 		extract( $this->request );
 
@@ -468,7 +187,7 @@ class MailsterForms {
 	}
 
 
-	public function admin_menu__OLD() {
+	public function admin_menu() {
 
 		$page = add_submenu_page( 'edit.php?post_type=newsletter', esc_html__( 'Forms', 'mailster' ), esc_html__( 'Forms', 'mailster' ), 'mailster_edit_forms', 'mailster_forms', array( &$this, 'view_forms' ) );
 
@@ -478,42 +197,22 @@ class MailsterForms {
 
 			add_action( 'load-' . $page, array( &$this, 'edit_entry' ), 99 );
 
-			else :
+		else :
 
-				add_action( 'load-' . $page, array( &$this, 'bulk_actions' ), 99 );
-				add_action( 'load-' . $page, array( &$this, 'screen_options' ) );
-				add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
+			add_action( 'load-' . $page, array( &$this, 'bulk_actions' ), 99 );
+			add_action( 'load-' . $page, array( &$this, 'screen_options' ) );
+			add_filter( 'manage_' . $page . '_columns', array( &$this, 'get_columns' ) );
 
-			endif;
+		endif;
 
 	}
 
 
-	public function block_script_styles( $hook ) {
-
-		if ( 'newsletter_form' != get_post_type() ) {
-			// return;
-		}
-
-		// if ( 'post-new.php' == $hook || 'post.php' == $hook ) {
-
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
-		// wp_enqueue_style( 'mailster-form-block', MAILSTER_URI . 'assets/css/blocks-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-
-		// }
-	}
-
-	public function script_styles__OLD() {
+	public function script_styles() {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		if ( isset( $_GET['ID'] ) || isset( $_GET['new'] ) ) :
-
-			wp_register_style( 'mailster-form-blocks-style', MAILSTER_URI . 'assets/css/form-blocks-style' . $suffix . '.css', array( 'block-editor', 'editor-css' ), MAILSTER_VERSION );
-			wp_register_script( 'mailster-form-blocks-script', MAILSTER_URI . 'assets/js/form-blocks-script' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
-
-			return;
 
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script( 'jquery-ui-sortable' );
@@ -570,6 +269,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -587,6 +287,7 @@ class MailsterForms {
 		);
 
 	}
+
 
 	public function bulk_actions() {
 
@@ -785,13 +486,14 @@ class MailsterForms {
 
 	}
 
+
 	public function view_forms() {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		if ( isset( $_GET['ID'] ) || isset( $_GET['new'] ) ) :
 
-			include MAILSTER_DIR . 'views/forms/blocks.php';
+			include MAILSTER_DIR . 'views/forms/detail.php';
 
 		else :
 
@@ -800,6 +502,7 @@ class MailsterForms {
 		endif;
 
 	}
+
 
 	/**
 	 *
@@ -810,6 +513,7 @@ class MailsterForms {
 
 		include MAILSTER_DIR . 'views/forms/edit.php';
 	}
+
 
 	public function screen_options() {
 
@@ -827,6 +531,7 @@ class MailsterForms {
 		);
 
 	}
+
 
 	/**
 	 *
@@ -846,6 +551,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -862,6 +568,7 @@ class MailsterForms {
 		return apply_filters( 'mailster_form_url', add_query_arg( $args, $endpoint ) );
 
 	}
+
 
 	/**
 	 *
@@ -914,6 +621,7 @@ class MailsterForms {
 		}
 
 	}
+
 
 	/**
 	 *
@@ -986,6 +694,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1043,6 +752,7 @@ class MailsterForms {
 		return false;
 	}
 
+
 	/**
 	 *
 	 *
@@ -1097,6 +807,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1138,6 +849,7 @@ class MailsterForms {
 		return false;
 
 	}
+
 
 	/**
 	 *
@@ -1193,6 +905,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1235,6 +948,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1250,6 +964,7 @@ class MailsterForms {
 		return $this->update_fields( $form_id, array( $field => $value ), ( $required ? array( $field ) : array() ), array( $field => $error_msg ) );
 
 	}
+
 
 	/**
 	 *
@@ -1281,6 +996,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1308,6 +1024,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1329,6 +1046,7 @@ class MailsterForms {
 		return false !== $wpdb->query( $sql );
 
 	}
+
 
 	/**
 	 *
@@ -1354,6 +1072,7 @@ class MailsterForms {
 		return $success;
 
 	}
+
 
 	/**
 	 *
@@ -1424,6 +1143,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1436,6 +1156,7 @@ class MailsterForms {
 		return $this->get( null, $fields, $lists );
 
 	}
+
 
 	/**
 	 *
@@ -1461,6 +1182,7 @@ class MailsterForms {
 		return $return;
 
 	}
+
 
 	/**
 	 *
@@ -1516,6 +1238,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1544,6 +1267,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1562,6 +1286,7 @@ class MailsterForms {
 		return $form;
 
 	}
+
 
 	/**
 	 *
@@ -1621,6 +1346,7 @@ class MailsterForms {
 
 	}
 
+
 	/**
 	 *
 	 *
@@ -1634,6 +1360,8 @@ class MailsterForms {
 		return $wpdb->get_var( $sql );
 
 	}
+
+
 
 	/**
 	 *
@@ -1658,6 +1386,7 @@ class MailsterForms {
 
 		echo $this->get_subscribe_button( $form_id, $args );
 	}
+
 
 	/**
 	 *
@@ -1700,6 +1429,7 @@ class MailsterForms {
 		return $html . $script;
 	}
 
+
 	/**
 	 *
 	 *
@@ -1730,6 +1460,7 @@ class MailsterForms {
 		return $button;
 	}
 
+
 	/**
 	 *
 	 *
@@ -1748,6 +1479,7 @@ class MailsterForms {
 		$text .= 'END:VCARD' . "\n";
 		return $text;
 	}
+
 
 	/**
 	 *
@@ -1796,6 +1528,7 @@ class MailsterForms {
 		}
 
 	}
+
 
 	public function use_it_form_tab_intro( $form ) {
 		?>
@@ -1940,5 +1673,6 @@ class MailsterForms {
 		</div>
 		<?php
 	}
+
 
 }

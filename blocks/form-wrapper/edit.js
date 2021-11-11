@@ -251,6 +251,7 @@ export default function Edit(props) {
 					'padding',
 					'height',
 					'border',
+					'font',
 					'border-radius',
 					'background',
 					'box-shadow',
@@ -287,7 +288,9 @@ export default function Edit(props) {
 		const [element] = args;
 		let s = '';
 
-		let stylesProps =
+		if (!element) return s;
+
+		const stylesProps =
 			[...args][1] instanceof Array
 				? args[1]
 				: convertRestArgsIntoStylesArr(args);
@@ -295,9 +298,7 @@ export default function Edit(props) {
 		const styles = window.getComputedStyle(element);
 		stylesProps.reduce((acc, v) => {
 			const x = styles.getPropertyValue(v);
-			if (x) {
-				s += v + ': ' + x + ';';
-			}
+			if (x) s += v + ': ' + x + ';';
 		}, {});
 
 		return s;
@@ -375,6 +376,7 @@ export default function Edit(props) {
 				id="inputStylesIframe"
 				onLoad={getInputStyles}
 				sandbox="allow-scripts allow-same-origin"
+				hidden
 			></iframe>
 			<InspectorControls>
 				<Messages

@@ -11,7 +11,14 @@
 		"html": false,
 		"reusable": false,
 		"inserter": false,
-		"multiple": false
+		"multiple": false,
+		"align": ["left", "right", "center"],
+		"color": {
+			"link": true,
+			"background": false,
+			"text": true,
+			"fontSize": true
+		}
 	},
 	"attributes": {
 		"content": {
