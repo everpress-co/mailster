@@ -110,7 +110,9 @@ body::before {
 			font-size: 0.9em;
 		}
 
-		input.input {
+		input.input,
+		textarea.input,
+		select.input {
 			width: 100%;
 			max-width: 100%;
 			margin: 0;
@@ -144,13 +146,15 @@ body::before {
 			display: none;
 		}
 	}
-	.mailster-wrapper-_gdpr {
-		input[type='checkbox'] {
+	.mailster-wrapper {
+		input[type='checkbox'],
+		input[type='radio'] {
 			vertical-align: middle;
 		}
 		span {
 			vertical-align: middle;
 			padding-left: 0.5em;
+			padding-right: 0.5em;
 		}
 	}
 }

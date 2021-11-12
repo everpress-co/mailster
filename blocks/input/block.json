@@ -7,7 +7,7 @@
 	"keywords": ["container", "wrapper", "row", "section"],
 	"icon": "button",
 	"description": "Simple Input Field for your Mailster Form",
-	"_parent": ["mailster/form-wrapper", "core/column"],
+	"parent": ["mailster/form-wrapper", "core/column"],
 	"supports": {
 		"html": false
 	},
@@ -16,17 +16,13 @@
 			"type": "string",
 			"default": ""
 		},
-		"field": {
+		"id": {
 			"type": "string",
 			"default": ""
 		},
 		"required": {
 			"type": "boolean",
 			"default": false
-		},
-		"optionalRequired": {
-			"type": "boolean",
-			"default": true
 		},
 		"inline": {
 			"type": "boolean",
@@ -36,17 +32,17 @@
 			"type": "string",
 			"default": "text"
 		},
+		"values": {
+			"type": "array"
+		},
+		"native": {
+			"type": "boolean",
+			"default": false
+		},
 		"style": {
 			"type": "object",
 			"default": {
-				"width": 100,
-				"height": null,
-				"padding": {
-					"top": "0",
-					"left": "8px",
-					"right": "8px",
-					"bottom": "0"
-				}
+				"width": 100
 			}
 		}
 	},

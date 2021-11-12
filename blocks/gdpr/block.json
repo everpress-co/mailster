@@ -6,6 +6,7 @@
 	"category": "mailster-form-fields",
 	"keywords": ["container", "wrapper", "row", "section"],
 	"icon": "button",
+	"parent": ["mailster/form-wrapper", "core/column"],
 	"description": "Simple Input Field for your Mailster Form",
 	"supports": {
 		"html": false,

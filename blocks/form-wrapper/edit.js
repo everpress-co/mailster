@@ -228,39 +228,65 @@ export default function Edit(props) {
 			el =
 				doc.getElementsByClassName('entry-content')[0] ||
 				doc.getElementById('page') ||
+				doc.getElementById('site-content') ||
 				doc.getElementsByTagName('body')[0],
 			selectors = [
-				'input.input',
+				'input[type="text"]',
+				'input[type="email"]',
+				'input[type="date"]',
 				'input[type="checkbox"]',
+				'input[type="radio"]',
+				'select',
 				'label.mailster-label',
 			];
 
 		wp.element.render(
 			<form className="mailster-form">
 				<label className="mailster-label">This is my Label</label>
-				<input type="checkbox" className="" />
-				<input type="text" className="input input-style-selector" />
+				<select className="input">
+					<option>This is a select</option>
+				</select>
+				<input type="checkbox" />
+				<input type="radio" />
+				<input
+					type="text"
+					placeholder="This is a input"
+					className="input"
+				/>
+				<input
+					type="email"
+					placeholder="This is a email"
+					className="input"
+				/>
+				<input
+					type="date"
+					placeholder="This is a date"
+					className="input "
+				/>
 			</form>,
 			el
 		);
 
 		const styles = selectors
 			.map((selector, i) => {
-				const style = getStyles(doc.querySelector(selector), [
-					'color',
-					'padding',
-					'height',
-					'border',
-					'font',
-					'border-radius',
-					'background',
-					'box-shadow',
-					'line-height',
-					'appearance',
-					'-webkit-appearance',
-					'outline',
-				]);
-				return '.mailster-form ' + selector + '{' + style + '}';
+				const style = getStyles(
+					doc.querySelector('.mailster-form ' + selector),
+					[
+						'color',
+						'padding',
+						'height',
+						'border',
+						'font',
+						'border-radius',
+						'background',
+						'box-shadow',
+						'line-height',
+						'appearance',
+						'-webkit-appearance',
+						'outline',
+					]
+				);
+				return '.mailster-form ' + selector + '{' + style + '}' + '\n';
 			})
 			.join('');
 
@@ -376,7 +402,6 @@ export default function Edit(props) {
 				id="inputStylesIframe"
 				onLoad={getInputStyles}
 				sandbox="allow-scripts allow-same-origin"
-				hidden
 			></iframe>
 			<InspectorControls>
 				<Messages

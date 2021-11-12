@@ -12,6 +12,7 @@ import { __ } from '@wordpress/i18n';
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
 import { useBlockProps } from '@wordpress/block-editor';
+import FormElement from './FormElement.js';
 
 /**
  * The save function defines the way in which the different attributes should
@@ -24,7 +25,7 @@ import { useBlockProps } from '@wordpress/block-editor';
  */
 export default function save(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, field, type, inline, required, style } = attributes;
+	const { label, id, type, inline, required, style } = attributes;
 	const className = ['mailster-wrapper'];
 
 	if (required) className.push('mailster-wrapper-required');
@@ -45,16 +46,7 @@ export default function save(props) {
 			<label for={clientId} className="mailster-label">
 				{label || '&nbsp;'}
 			</label>
-			<input
-				name={field}
-				type={type}
-				value=""
-				id={clientId}
-				className="input mailster-email mailster-required"
-				ariaRequired={required}
-				ariaLabel={label}
-				spellcheck="false"
-			/>
+			<FormElement {...props} />
 		</div>
 	);
 }

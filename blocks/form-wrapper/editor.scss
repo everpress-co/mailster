@@ -35,11 +35,10 @@
 	}
 }
 
-.is-root-container .wp-block-mailster-input.wp-block,
-.is-root-container
-	.editor-styles-wrapper
-	.mailster-wrapper
-	.wp-block-mailster-input.wp-block {
+.editor-styles-wrapper
+	.is-root-container
+	.mailster-form
+	.wp-block.mailster-wrapper {
 	margin-top: 0 !important;
 	margin-bottom: 0.5em !important;
 }
@@ -51,6 +50,7 @@
 		rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
 	background-color: #fff;
 	width: 50rem;
+	min-height: 5rem;
 
 	.mailster-form-info {
 		height: auto;
@@ -71,6 +71,14 @@
 		right: 0;
 		top: -51px;
 		width: auto;
+	}
+
+	.mailster-wrapper {
+		input[type='checkbox'],
+		input[type='radio'] {
+			_height: 1.2em !important;
+			_width: 1.2em !important;
+		}
 	}
 }
 .editor-styles-wrapper:hover {

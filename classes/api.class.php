@@ -2,6 +2,9 @@
 
 class MailsterApi {
 
+	private $base    = 'mailster';
+	private $version = 'v1';
+
 	public function __construct() {
 
 		add_action( 'rest_api_init', array( &$this, 'init' ) );
@@ -10,50 +13,27 @@ class MailsterApi {
 
 	public function init() {
 
-		register_rest_route(
-			'mailster/v1',
-			'/forms',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_forms' ),
-				'permission_callback' => '__return_true',
-			)
-		);
+		$routes = $this->get_routes();
 
-		register_rest_route(
-			'mailster/v1',
-			'/fields',
-			array(
+		foreach ( $routes as $route => $args ) {
+			register_rest_route( $this->base . '/' . $this->version, $route, $args );
+		}
+
+	}
+
+
+	public function get_routes() {
+		$routes = array(
+			'/fields' => array(
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'get_fields' ),
 				'permission_callback' => '__return_true',
-			)
+			),
 		);
 
+		return apply_filters( 'mailster_api_routes', $routes );
 	}
 
-
-	public function get_forms( WP_REST_Request $request ) {
-
-		$query = get_posts(
-			array(
-				'post_type' => 'newsletter_form',
-
-			)
-		);
-
-		$return = array();
-
-		foreach ( $query as $form ) {
-			$return[] = array(
-				'label' => $form->post_title,
-				'value' => (int) $form->ID,
-			);
-		}
-
-		return $return;
-
-	}
 
 	public function get_fields( WP_REST_Request $request ) {
 
@@ -61,15 +41,16 @@ class MailsterApi {
 
 		$fields = array(
 			array(
-				'name' => 'Email',
+				'name' => mailster_text( 'email' ),
 				'id'   => 'email',
+				'type' => 'email',
 			),
 			array(
-				'name' => 'First Name',
+				'name' => mailster_text( 'firstname' ),
 				'id'   => 'firstname',
 			),
 			array(
-				'name' => 'Last name',
+				'name' => mailster_text( 'lastname' ),
 				'id'   => 'lastname',
 			),
 		);

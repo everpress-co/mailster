@@ -43,13 +43,20 @@ class MailsterFormSelector extends Component {
 	}
 
 	updateFormForm = () => {
-		apiFetch({ path: '/mailster/v1/forms' }).then((data) => {
+		apiFetch({ path: '/wp/v2/newsletter_form' }).then((data) => {
+			const forms = data.map((form) => {
+				return {
+					label: form.title.rendered,
+					value: form.id,
+				};
+			});
 			if (data.length)
-				data.unshift({
+				forms.unshift({
 					label: __('Select a Mailster form', 'mailster'),
 					value: false,
 				});
-			this.setState({ forms: data });
+
+			this.setState({ forms: forms });
 		});
 	};
 

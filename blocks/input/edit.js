@@ -37,6 +37,7 @@ import { more } from '@wordpress/icons';
 import './editor.scss';
 
 import InputFieldInspectorControls from '../input/inspector.js';
+import FormElement from './FormElement.js';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -49,7 +50,7 @@ import InputFieldInspectorControls from '../input/inspector.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, field, type, inline, required, style } = attributes;
+	const { label, id, type, values, inline, required, style } = attributes;
 	const className = ['mailster-wrapper'];
 
 	if (required) className.push('mailster-wrapper-required');
@@ -75,7 +76,7 @@ export default function Edit(props) {
 					className="mailster-label"
 					placeholder={__('Enter Label', 'mailster')}
 				/>
-				<input className="input" onChange={() => {}} type={type} />
+				<FormElement {...props} />
 			</div>
 			<InputFieldInspectorControls {...props} />
 		</Fragment>
