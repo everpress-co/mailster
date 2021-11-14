@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
-import { useBlockProps } from '@wordpress/block-editor';
+import { useBlockProps, RichText } from '@wordpress/block-editor';
 import FormElement from './FormElement.js';
 
 /**
@@ -28,12 +28,23 @@ export default function save(props) {
 	const { label, id, type, inline, required, style } = attributes;
 	const className = ['mailster-wrapper'];
 
+	const hasLabel = !['radio', 'checkbox'].includes(type);
+
 	if (required) className.push('mailster-wrapper-required');
 	if (inline) className.push('mailster-wrapper-inline');
 
 	const styleSheets = {
 		width: style.width + '%',
 	};
+
+	const labelElement = (
+		<RichText.Content
+			tagName="label"
+			htmlFor={'mailster-' + id}
+			className="mailster-label"
+			value={label}
+		/>
+	);
 
 	return (
 		<div
@@ -43,10 +54,9 @@ export default function save(props) {
 			data-label={label}
 			style={styleSheets}
 		>
-			<label for={clientId} className="mailster-label">
-				{label || '&nbsp;'}
-			</label>
+			{hasLabel && label && !inline && labelElement}
 			<FormElement {...props} />
+			{hasLabel && label && inline && labelElement}
 		</div>
 	);
 }

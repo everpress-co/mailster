@@ -15,13 +15,9 @@
 }
 
 .mailster-wrapper {
-	label {
-		font-family: revert;
-		font-weight: revert;
-	}
-}
-.mailster-wrapper-inline {
-	label {
+	label.mailster-label {
+		pointer-events: all !important;
+		white-space: nowrap !important;
 	}
 }
 .mailster-form.wp-block-mailster-form-wrapper .mailster-wrapper-inline label {

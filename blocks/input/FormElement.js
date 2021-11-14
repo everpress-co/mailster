@@ -61,11 +61,12 @@ export default function FormElement(props) {
 	const htmlAttributes = {
 		name: id,
 		type: native ? type : 'text',
-		id: clientId,
+		id: 'mailster-' + id,
 		className: 'input mailster-required',
 		'aria-required': required,
 		'aria-label': label,
 		spellCheck: false,
+		placeholder: ' ',
 		required: required,
 	};
 
@@ -75,7 +76,7 @@ export default function FormElement(props) {
 				<>
 					{values.map((value, i) => {
 						return (
-							<label key={i}>
+							<label key={i} className="mailster-label">
 								<input
 									{...htmlAttributes}
 									type="radio"
@@ -89,7 +90,7 @@ export default function FormElement(props) {
 			);
 		case 'checkbox':
 			return (
-				<label>
+				<label className="mailster-label">
 					<input
 						{...htmlAttributes}
 						type="checkbox"

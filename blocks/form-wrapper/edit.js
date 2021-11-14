@@ -54,42 +54,6 @@ import Messages from './Messages';
 import Background from './Background';
 import Css from './Css';
 
-// const getBlockList = () => select('core/block-editor').getBlocks();
-// let blockList = getBlockList();
-// subscribe(() => {
-// 	const newBlockList = getBlockList();
-
-// 	return;
-
-// 	//no more than one root block
-// 	if (newBlockList.length > 1) {
-// 		alert('You cannot insert an additional block here!');
-// 		dispatch('core/block-editor').resetBlocks(blockList);
-
-// 		//not remove the root block
-// 	} else if (
-// 		false &&
-// 		newBlockList.length < blockList.length &&
-// 		blockList.some((block) => block.name === 'mailster/form-wrapper') &&
-// 		newBlockList.every((block) => block.name !== 'mailster/form-wrapper')
-// 	) {
-// 		alert('This Block cannot get removed!');
-// 		dispatch('core/block-editor').resetBlocks(blockList);
-
-// 		//do not add form inside form
-// 	} else if (
-// 		newBlockList.length &&
-// 		newBlockList[0].innerBlocks.some(
-// 			(block) => block.name === 'mailster/form-wrapper'
-// 		)
-// 	) {
-// 		alert('You cannot insert an additional form here!');
-// 		dispatch('core/block-editor').resetBlocks(blockList);
-// 	}
-
-// 	blockList = newBlockList;
-// });
-
 /**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
@@ -229,16 +193,31 @@ export default function Edit(props) {
 				doc.getElementsByClassName('entry-content')[0] ||
 				doc.getElementById('page') ||
 				doc.getElementById('site-content') ||
+				doc.getElementById('content') ||
 				doc.getElementsByTagName('body')[0],
-			selectors = [
-				'input[type="text"]',
-				'input[type="email"]',
-				'input[type="date"]',
-				'input[type="checkbox"]',
-				'input[type="radio"]',
-				'select',
-				'label.mailster-label',
-			];
+			properties = [
+				'color',
+				'padding',
+				'border',
+				'font',
+				'border-radius',
+				'background',
+				'box-shadow',
+				'line-height',
+				'appearance',
+				'outline',
+				'text-transform',
+				'letter-spacing',
+			],
+			selectors = {
+				'input[type="text"]': [],
+				'input[type="email"]': [],
+				'input[type="date"]': [],
+				'input[type="checkbox"]': ['width', 'height'],
+				'input[type="radio"]': ['width', 'height'],
+				select: [],
+				'label.mailster-label': [],
+			};
 
 		wp.element.render(
 			<form className="mailster-form">
@@ -248,43 +227,18 @@ export default function Edit(props) {
 				</select>
 				<input type="checkbox" />
 				<input type="radio" />
-				<input
-					type="text"
-					placeholder="This is a input"
-					className="input"
-				/>
-				<input
-					type="email"
-					placeholder="This is a email"
-					className="input"
-				/>
-				<input
-					type="date"
-					placeholder="This is a date"
-					className="input "
-				/>
+				<input type="text" className="input" />
+				<input type="email" className="input" />
+				<input type="date" className="input " />
 			</form>,
 			el
 		);
 
-		const styles = selectors
+		const styles = Object.keys(selectors)
 			.map((selector, i) => {
 				const style = getStyles(
 					doc.querySelector('.mailster-form ' + selector),
-					[
-						'color',
-						'padding',
-						'height',
-						'border',
-						'font',
-						'border-radius',
-						'background',
-						'box-shadow',
-						'line-height',
-						'appearance',
-						'-webkit-appearance',
-						'outline',
-					]
+					[...properties, ...selectors[selector]]
 				);
 				return '.mailster-form ' + selector + '{' + style + '}' + '\n';
 			})

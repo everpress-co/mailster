@@ -53,6 +53,8 @@ export default function Edit(props) {
 	const { label, id, type, values, inline, required, style } = attributes;
 	const className = ['mailster-wrapper'];
 
+	const hasLabel = !['radio', 'checkbox'].includes(type);
+
 	if (required) className.push('mailster-wrapper-required');
 	if (inline) className.push('mailster-wrapper-inline');
 
@@ -68,14 +70,16 @@ export default function Edit(props) {
 				})}
 				style={styleSheets}
 			>
-				<RichText
-					tagName="label"
-					value={label}
-					onChange={(val) => setAttributes({ label: val })}
-					allowedFormats={[]}
-					className="mailster-label"
-					placeholder={__('Enter Label', 'mailster')}
-				/>
+				{hasLabel && label && (
+					<RichText
+						tagName="label"
+						value={label}
+						onChange={(val) => setAttributes({ label: val })}
+						//allowedFormats={[]}
+						className="mailster-label"
+						placeholder={__('Enter Label', 'mailster')}
+					/>
+				)}
 				<FormElement {...props} />
 			</div>
 			<InputFieldInspectorControls {...props} />

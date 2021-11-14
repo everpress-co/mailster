@@ -48,6 +48,7 @@ export default function InputFieldInspectorControls(props) {
 	const { label, inline, required, native, type, style, id } = attributes;
 
 	const [width, setWidth] = useState(100);
+	const hasLabel = !['radio', 'checkbox'].includes(type);
 
 	function setStyle(prop, data) {
 		var newStyle = { ...style };
@@ -61,13 +62,17 @@ export default function InputFieldInspectorControls(props) {
 					title={__('Field Settings', 'mailster')}
 					initialOpen={true}
 				>
-					<PanelRow>
-						<TextControl
-							label={__('Label', 'mailster')}
-							value={label}
-							onChange={(val) => setAttributes({ label: val })}
-						/>
-					</PanelRow>
+					{hasLabel && (
+						<PanelRow>
+							<TextControl
+								label={__('Label', 'mailster')}
+								value={label}
+								onChange={(val) =>
+									setAttributes({ label: val })
+								}
+							/>
+						</PanelRow>
+					)}
 					<PanelRow>
 						<CheckboxControl
 							label={__('Inline Labels', 'mailster')}
@@ -105,7 +110,7 @@ export default function InputFieldInspectorControls(props) {
 							label="Width"
 							value={style.width}
 							onChange={(value) => setStyle('width', value)}
-							min={2}
+							min={10}
 							max={100}
 						/>
 					</PanelRow>

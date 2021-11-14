@@ -62,8 +62,8 @@ export default function Edit(props) {
 					className: className.join(' '),
 				})}
 			>
-				<label>
-					<input type="checkbox" name="_gdpr" value="1" disabled />
+				<label className="mailster-label">
+					<input type="checkbox" name="_gdpr" value="1" />
 					<RichText
 						tagName="span"
 						value={content}
