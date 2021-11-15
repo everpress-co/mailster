@@ -120,12 +120,11 @@ export default function FormModal(props) {
 	const openModal = () => setOpen(true);
 
 	const closeModal = () => {
-		console.warn('isEmptyEditor', isEmptyEditor);
 		if (isEmptyEditor) {
 			var innerblocks = [
-				wp.blocks.createBlock('mailster/input', {
+				wp.blocks.createBlock('mailster/field-email', {
 					//label: 'Email',
-					type: 'email',
+					//type: 'email',
 				}),
 				wp.blocks.createBlock('mailster/button'),
 			];

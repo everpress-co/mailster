@@ -127,7 +127,6 @@ body::before {
 			bottom: 0;
 			padding-left: 1rem;
 			padding-right: 1rem;
-			transition: all 0.3s ease;
 			pointer-events: none;
 			display: flex;
 			align-items: center;
@@ -141,10 +140,10 @@ body::before {
 			display: none;
 		}
 
-		input.input:placeholder {
+		input.input::placeholder {
 			visibility: hidden;
 		}
-		input.input::-webkit-input-placeholder {
+		input.input::placeholder {
 			/* Chrome/Opera/Safari */
 			color: transparent;
 		}
@@ -154,6 +153,11 @@ body::before {
 			content: ' - Error';
 			color: red;
 			font-weight: bold;
+		}
+	}
+	.mailster-wrapper-inline.mailster-wrapper-type-radio {
+		label.mailster-label {
+			display: none;
 		}
 	}
 	.mailster-wrapper {

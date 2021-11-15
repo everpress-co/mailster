@@ -50,10 +50,14 @@ import FormElement from './FormElement.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, id, type, values, inline, required, style } = attributes;
-	const className = ['mailster-wrapper'];
+	const { label, id, name, type, values, inline, required, style } =
+		attributes;
+	const className = ['mailster-wrapper', 'mailster-wrapper-type-' + type];
 
-	const hasLabel = !['radio', 'checkbox'].includes(type);
+	if (!id) {
+		setAttributes({ id: 'mailster-field-' + clientId.substring(0, 8) });
+	}
+	const hasLabel = !['checkbox'].includes(type);
 
 	if (required) className.push('mailster-wrapper-required');
 	if (inline) className.push('mailster-wrapper-inline');
@@ -63,14 +67,14 @@ export default function Edit(props) {
 	};
 
 	return (
-		<Fragment>
+		<>
 			<div
 				{...useBlockProps({
 					className: className.join(' '),
 				})}
 				style={styleSheets}
 			>
-				{hasLabel && label && (
+				{hasLabel && (
 					<RichText
 						tagName="label"
 						value={label}
@@ -83,6 +87,6 @@ export default function Edit(props) {
 				<FormElement {...props} />
 			</div>
 			<InputFieldInspectorControls {...props} />
-		</Fragment>
+		</>
 	);
 }

@@ -3,8 +3,7 @@
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-import { registerBlockType } from '@wordpress/blocks';
-import { registerBlockVariation } from '@wordpress/blocks';
+import { registerBlockType, createBlock } from '@wordpress/blocks';
 import apiFetch from '@wordpress/api-fetch';
 
 /**
@@ -19,9 +18,6 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import edit from './edit';
 import save from './save';
-import json from './block.json';
-
-const { name, ...settings } = json;
 
 /**
  * Every block starts by registering a new block type definition.
@@ -29,38 +25,95 @@ const { name, ...settings } = json;
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
 
-apiFetch({ path: '/mailster/v1/fields' }).then((data) => {
-	data.map((field) => {
-		registerBlockVariation('mailster/input', {
-			name: field.id,
+window.mailster_fields &&
+	window.mailster_fields.map((field) => {
+		registerBlockType('mailster/field-' + field.id, {
+			apiVersion: 2,
 			title: field.name,
-			example: undefined,
 			keywords: ['mailster', field.name, field.id],
-			description: field.name + 'Description',
+			category: 'mailster-form-fields',
+			description: field.name + ' Description',
+			parent: ['mailster/form-wrapper', 'core/column'],
+			transforms: {
+				to: window.mailster_fields.map((tofields) => {
+					return {
+						type: 'block',
+						blocks: ['mailster/field-' + tofields.id],
+						transform: (attributes, innerBlocks) => {
+							return createBlock(
+								'mailster/field-' + tofields.id,
+								{
+									id: attributes.id,
+									inline: attributes.inline,
+									style: attributes.style,
+									values: attributes.values,
+								},
+								innerBlocks
+							);
+						},
+					};
+				}),
+			},
+			supports: {
+				html: false,
+				multiple: false,
+			},
 			icon: {
 				background: '#ff0',
 				src: 'button',
 			},
 			attributes: {
-				id: field.id,
-				type: field.type,
-				label: field.name,
-				requried: field.id == 'email',
-				values: field.values || [],
+				label: {
+					type: 'string',
+					default: field.name,
+					source: 'html',
+					selector: 'label.mailster-label',
+				},
+				name: {
+					type: 'string',
+					default: field.id,
+				},
+				id: {
+					type: 'string',
+					source: 'attribute',
+					selector: '.input',
+					attribute: 'id',
+				},
+				required: {
+					type: 'boolean',
+					default: field.id == 'email',
+					source: 'attribute',
+					selector: '.input',
+					attribute: 'required',
+				},
+				inline: {
+					type: 'boolean',
+					default: false,
+				},
+				type: {
+					type: 'string',
+					default: field.type,
+				},
+				values: {
+					type: 'array',
+					default: field.values || [],
+				},
+				selected: {
+					type: 'string',
+					default: field.default || null,
+				},
+				native: {
+					type: 'boolean',
+					default: true,
+				},
+				style: {
+					type: 'object',
+					default: {
+						width: 100,
+					},
+				},
 			},
+			edit,
+			save,
 		});
 	});
-});
-
-registerBlockType(name, {
-	...settings,
-	/**
-	 * @see ./edit.js
-	 */
-	edit,
-
-	/**
-	 * @see ./save.js
-	 */
-	save,
-});

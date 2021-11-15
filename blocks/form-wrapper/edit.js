@@ -356,6 +356,7 @@ export default function Edit(props) {
 				id="inputStylesIframe"
 				onLoad={getInputStyles}
 				sandbox="allow-scripts allow-same-origin"
+				hidden
 			></iframe>
 			<InspectorControls>
 				<Messages

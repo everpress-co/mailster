@@ -12,7 +12,7 @@ class MailsterBlockForms {
 		add_action( 'init', array( &$this, 'register_post_meta' ) );
 		add_action( 'init', array( &$this, 'block_init' ) );
 
-		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ) );
+		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
 
 		add_action( 'wp_enqueue_scripts', array( &$this, 'wp_enqueue_scripts' ) );
 
@@ -226,9 +226,34 @@ class MailsterBlockForms {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . '/build/form-inspector.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
-			wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . 'build/form-inspector.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+		wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
+		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_fields = ' . json_encode( array_values( $this->get_custom_fields() ) ) );
 
+	}
+
+	public function get_custom_fields() {
+		$custom_fields = mailster()->get_custom_fields();
+
+		$fields = array(
+			'email'     => array(
+				'name' => mailster_text( 'email' ),
+				'id'   => 'email',
+				'type' => 'email',
+			),
+			'firstname' => array(
+				'name' => mailster_text( 'firstname' ),
+				'id'   => 'firstname',
+				'type' => 'text',
+			),
+			'lastname'  => array(
+				'name' => mailster_text( 'lastname' ),
+				'id'   => 'lastname',
+				'type' => 'text',
+			),
+		);
+
+		return array_merge( $fields, $custom_fields );
 	}
 
 	public function allowed_block_types( $allowed_block_types, $block_editor_context ) {
@@ -240,7 +265,7 @@ class MailsterBlockForms {
 
 		$types = array( 'core/paragraph', 'core/image', 'core/heading', 'core/gallery', 'core/list', 'core/quote', 'core/shortcode', 'core/archives', 'core/audio', 'core/button', 'core/buttons', 'core/calendar', 'core/categories', 'core/code', 'core/columns', 'core/column', 'core/cover', 'core/embed', 'core/file', 'core/group', 'core/freeform', 'core/html', 'core/media-text', 'core/latest-comments', 'core/latest-posts', 'core/missing', 'core/more', 'core/nextpage', 'core/page-list', 'core/preformatted', 'core/pullquote', 'core/rss', 'core/search', 'core/separator', 'core/block', 'core/social-links', 'core/social-link', 'core/spacer', 'core/table', 'core/tag-cloud', 'core/text-columns', 'core/verse', 'core/video', 'core/site-logo', 'core/site-tagline', 'core/site-title', 'core/query', 'core/post-template', 'core/query-title', 'core/query-pagination', 'core/query-pagination-next', 'core/query-pagination-numbers', 'core/query-pagination-previous', 'core/post-title', 'core/post-content', 'core/post-date', 'core/post-excerpt', 'core/post-featured-image', 'core/post-terms', 'core/loginout' );
 
-		$types  = array( 'core/paragraph' );
+		// $types  = array( 'core/paragraph' );
 		$blocks = $this->get_blocks();
 
 		foreach ( $blocks as $block ) {
@@ -249,6 +274,17 @@ class MailsterBlockForms {
 
 			$types[] = 'mailster/' . $block_name;
 		}
+
+		$custom_fields = array_keys( $this->get_custom_fields() );
+		foreach ( $custom_fields as $block ) {
+
+			$types[] = 'mailster/field-' . $block;
+		}
+
+		error_log( print_r( $custom_fields, true ) );
+			// $types[] = 'mailster/*';
+
+		error_log( print_r( $types, true ) );
 
 		return $types;
 

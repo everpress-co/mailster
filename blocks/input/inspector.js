@@ -24,15 +24,24 @@ import {
 	PanelRow,
 	CheckboxControl,
 	TextControl,
+	RadioControl,
 	SelectControl,
 	RangeControl,
 	ColorPalette,
+	MenuGroup,
+	MenuItem,
+	Draggable,
+	IconButton,
+	Flex,
+	FlexItem,
+	FlexBlock,
+	Button,
 } from '@wordpress/components';
 
 import { Fragment, Component, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
-import { more } from '@wordpress/icons';
+import { Icon, arrowUp, arrowDown, trash } from '@wordpress/icons';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -45,16 +54,52 @@ import { more } from '@wordpress/icons';
 
 export default function InputFieldInspectorControls(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	const { label, inline, required, native, type, style, id } = attributes;
+	const {
+		label,
+		inline,
+		required,
+		native,
+		name,
+		type,
+		selected,
+		style,
+		id,
+		values,
+	} = attributes;
 
 	const [width, setWidth] = useState(100);
-	const hasLabel = !['radio', 'checkbox'].includes(type);
+	const hasLabel = !['checkbox'].includes(type);
+	const hasValues = ['radio', 'dropdown'].includes(type);
 
 	function setStyle(prop, data) {
 		var newStyle = { ...style };
 		newStyle[prop] = data;
 		setAttributes({ style: newStyle });
 	}
+
+	function updateValue(i, val) {
+		var newvalues = [...values];
+		newvalues[i] = val;
+		setAttributes({ values: newvalues });
+	}
+	function moveValue(i, delta) {
+		var newvalues = [...values];
+		var element = newvalues[i];
+		newvalues.splice(i, 1);
+		newvalues.splice(i + delta, 0, element);
+		setAttributes({ values: newvalues });
+	}
+	function removeValue(i) {
+		var newvalues = [...values];
+		newvalues.splice(i, 1);
+		setAttributes({ values: newvalues });
+	}
+	function addValue() {
+		var newvalues = [...values];
+		newvalues.push(__('Value', 'mailster'));
+		setAttributes({ values: newvalues });
+	}
+
 	return (
 		<InspectorControls>
 			<Panel>
@@ -63,28 +108,36 @@ export default function InputFieldInspectorControls(props) {
 					initialOpen={true}
 				>
 					{hasLabel && (
-						<PanelRow>
-							<TextControl
-								label={__('Label', 'mailster')}
-								value={label}
-								onChange={(val) =>
-									setAttributes({ label: val })
-								}
-							/>
-						</PanelRow>
+						<>
+							<PanelRow>
+								<TextControl
+									label={__('Label', 'mailster')}
+									help={__(
+										'Define a label for your field',
+										'mailster'
+									)}
+									value={label}
+									onChange={(val) =>
+										setAttributes({ label: val })
+									}
+								/>
+							</PanelRow>
+							<PanelRow>
+								<CheckboxControl
+									label={__('Inline Labels', 'mailster')}
+									checked={inline}
+									onChange={() =>
+										setAttributes({ inline: !inline })
+									}
+								/>
+							</PanelRow>
+						</>
 					)}
 					<PanelRow>
 						<CheckboxControl
-							label={__('Inline Labels', 'mailster')}
-							checked={inline}
-							onChange={() => setAttributes({ inline: !inline })}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<CheckboxControl
-							label={__('Required Labels', 'mailster')}
-							checked={required || id == 'email'}
-							disabled={id == 'email'}
+							label={__('Required Field', 'mailster')}
+							checked={required || name == 'email'}
+							disabled={name == 'email'}
 							onChange={() =>
 								setAttributes({ required: !required })
 							}
@@ -94,10 +147,10 @@ export default function InputFieldInspectorControls(props) {
 						<PanelRow>
 							<CheckboxControl
 								label={__(
-									'Use Native form element',
+									'Use native form element',
 									'mailster'
 								)}
-								help="native form elements provide a better user experience but often miss some styling."
+								help="Native form elements provide a better user experience but often miss some styling."
 								checked={native}
 								onChange={() =>
 									setAttributes({ native: !native })
@@ -114,6 +167,85 @@ export default function InputFieldInspectorControls(props) {
 							max={100}
 						/>
 					</PanelRow>
+					{hasValues && (
+						<>
+							<PanelRow>
+								<Flex
+									className="mailster-value-options"
+									justify="flex-end"
+									style={{ flexWrap: 'wrap' }}
+								>
+									{values.map((value, i) => {
+										return (
+											<Flex
+												key={i}
+												style={{ flexShrink: 0 }}
+											>
+												<FlexItem>
+													<input
+														type="radio"
+														value={value}
+														name="default-values"
+														checked={
+															selected === value
+														}
+														onChange={() => {
+															setAttributes({
+																selected: value,
+															});
+														}}
+														title={__(
+															'Use as default',
+															'mailster'
+														)}
+													/>
+												</FlexItem>
+												<FlexBlock>
+													<TextControl
+														autoFocus
+														value={value}
+														onChange={(val) => {
+															updateValue(i, val);
+														}}
+													/>
+												</FlexBlock>
+												<FlexItem>
+													<IconButton
+														disabled={!i}
+														icon={arrowUp}
+														onClick={(val) => {
+															moveValue(i, -1);
+														}}
+													/>
+													<IconButton
+														disabled={
+															i + 1 ==
+															values.length
+														}
+														icon={arrowDown}
+														onClick={(val) => {
+															moveValue(i, 1);
+														}}
+													/>
+													<IconButton
+														icon={trash}
+														onClick={(val) => {
+															removeValue(i);
+														}}
+													/>
+												</FlexItem>
+											</Flex>
+										);
+									})}
+								</Flex>
+							</PanelRow>
+							<PanelRow>
+								<Button variant="link" onClick={addValue}>
+									{__('Add new Value', 'mailster')}
+								</Button>
+							</PanelRow>
+						</>
+					)}
 				</PanelBody>
 			</Panel>
 		</InspectorControls>

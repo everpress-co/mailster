@@ -73,6 +73,10 @@
 		width: auto;
 	}
 
+	.input {
+		pointer-events: none;
+	}
+
 	.mailster-wrapper {
 		input[type='checkbox'],
 		input[type='radio'] {

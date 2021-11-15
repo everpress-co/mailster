@@ -12,7 +12,12 @@
 		"multiple": false
 	},
 	"attributes": {
-		"url": { "type": "string" },
+		"url": {
+			"type": "string",
+			"source": "attribute",
+			"selector": ".wp-block-button__link",
+			"attribute": "href"
+		},
 		"text": { "type": "string" }
 	},
 	"parent": null,

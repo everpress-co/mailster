@@ -55,54 +55,80 @@ import { more } from '@wordpress/icons';
 
 export default function FormElement(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, id, type, inline, required, native, style, values } =
-		attributes;
-
-	const htmlAttributes = {
-		name: id,
-		type: native ? type : 'text',
-		id: 'mailster-' + id,
-		className: 'input mailster-required',
-		'aria-required': required,
-		'aria-label': label,
-		spellCheck: false,
-		placeholder: ' ',
-		required: required,
-	};
+	const {
+		label,
+		name,
+		id,
+		selected,
+		type,
+		inline,
+		required,
+		native,
+		style,
+		values,
+	} = attributes;
 
 	switch (type) {
 		case 'radio':
 			return (
-				<>
+				<div className="_mailster-div">
 					{values.map((value, i) => {
 						return (
-							<label key={i} className="mailster-label">
+							<label key={i}>
 								<input
-									{...htmlAttributes}
+									name={name}
+									aria-required={required}
+									aria-label={label.replace(/<[^>]+>/g, '')}
+									spellCheck={false}
+									required={required}
 									type="radio"
-									className=""
+									checked={selected == value}
+									onChange={(event) => {
+										console.warn(event);
+										setAttributes({
+											selected: event.target.value,
+										});
+									}}
 								/>
 								<span>{value}</span>
 							</label>
 						);
 					})}
-				</>
+				</div>
 			);
 		case 'checkbox':
 			return (
-				<label className="mailster-label">
+				<div className="_mailster-div">
 					<input
-						{...htmlAttributes}
+						name={name}
+						id={id}
+						aria-required={required}
+						aria-label={label.replace(/<[^>]+>/g, '')}
+						spellCheck={false}
+						required={required}
 						type="checkbox"
-						className=""
 						defaultChecked={true}
 					/>
-					<span>{label}</span>
-				</label>
+					<label>{label}</label>
+				</div>
 			);
 		case 'dropdown':
 			return (
-				<select {...htmlAttributes}>
+				<select
+					name={name}
+					id={id}
+					className="input"
+					aria-required={required}
+					aria-label={label.replace(/<[^>]+>/g, '')}
+					spellCheck={false}
+					required={required}
+					value={selected}
+					onChange={(event) => {
+						setAttributes({
+							selected: event.target.value,
+						});
+					}}
+				>
 					{values.map((value, i) => {
 						return (
 							<option key={i} value={value}>
@@ -116,7 +142,17 @@ export default function FormElement(props) {
 		default:
 			return (
 				<>
-					<input {...htmlAttributes} />
+					<input
+						name={name}
+						id={id}
+						type={native ? type : 'text'}
+						aria-required={required}
+						aria-label={label.replace(/<[^>]+>/g, '')}
+						spellCheck={false}
+						required={required}
+						className="input"
+						placeholder=" "
+					/>
 				</>
 			);
 	}

@@ -25,22 +25,20 @@ import FormElement from './FormElement.js';
  */
 export default function save(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, id, type, inline, required, style } = attributes;
-	const className = ['mailster-wrapper'];
+	const { label, id, name, type, inline, required, style } = attributes;
+	const className = ['mailster-wrapper', 'mailster-wrapper-type-' + type];
 
-	const hasLabel = !['radio', 'checkbox'].includes(type);
+	const hasLabel = !['checkbox'].includes(type);
 
 	if (required) className.push('mailster-wrapper-required');
 	if (inline) className.push('mailster-wrapper-inline');
-
 	const styleSheets = {
 		width: style.width + '%',
 	};
-
 	const labelElement = (
 		<RichText.Content
 			tagName="label"
-			htmlFor={'mailster-' + id}
+			htmlFor={type != 'radio' ? id : null}
 			className="mailster-label"
 			value={label}
 		/>
@@ -51,7 +49,7 @@ export default function save(props) {
 			{...useBlockProps.save({
 				className: className.join(' '),
 			})}
-			data-label={label}
+			//data-label={label}
 			style={styleSheets}
 		>
 			{hasLabel && label && !inline && labelElement}

@@ -23,7 +23,9 @@
 	},
 	"attributes": {
 		"content": {
-			"type": "string"
+			"type": "string",
+			"source": "html",
+			"selector": "span"
 		}
 	},
 	"textdomain": "mailster",
