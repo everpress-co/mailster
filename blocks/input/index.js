@@ -4,7 +4,6 @@
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
 import { registerBlockType, createBlock } from '@wordpress/blocks';
-import apiFetch from '@wordpress/api-fetch';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -79,6 +78,12 @@ window.mailster_fields &&
 					selector: '.input',
 					attribute: 'id',
 				},
+				pattern: {
+					type: 'string',
+					source: 'attribute',
+					selector: '.input',
+					attribute: 'pattern',
+				},
 				required: {
 					type: 'boolean',
 					default: field.id == 'email',
@@ -104,7 +109,7 @@ window.mailster_fields &&
 				},
 				native: {
 					type: 'boolean',
-					default: true,
+					default: field.type != 'textfield',
 				},
 				style: {
 					type: 'object',

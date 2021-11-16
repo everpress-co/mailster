@@ -153,6 +153,59 @@ class MailsterBlockForms {
 			)
 		);
 
+		register_post_meta(
+			'newsletter_form',
+			'posts',
+			array(
+				'type'         => 'array',
+				'show_in_rest' => array(
+					'schema' => array(
+						'type'  => 'array',
+						'items' => array(
+							'type' => 'number',
+						),
+					),
+				),
+				'single'       => true,
+				'default'      => array(),
+			)
+		);
+
+		register_post_meta(
+			'newsletter_form',
+			'categories',
+			array(
+				'type'         => 'array',
+				'show_in_rest' => array(
+					'schema' => array(
+						'type'  => 'array',
+						'items' => array(
+							'type' => 'number',
+						),
+					),
+				),
+				'single'       => true,
+				'default'      => array(),
+			)
+		);
+		register_post_meta(
+			'newsletter_form',
+			'tags',
+			array(
+				'type'         => 'array',
+				'show_in_rest' => array(
+					'schema' => array(
+						'type'  => 'array',
+						'items' => array(
+							'type' => 'number',
+						),
+					),
+				),
+				'single'       => true,
+				'default'      => array(),
+			)
+		);
+
 	}
 
 	public function block_init() {

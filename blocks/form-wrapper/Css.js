@@ -72,7 +72,6 @@ export default function Css(props) {
 					lineWrapping: true,
 				}
 			).on('change', function (editor) {
-				console.warn('change');
 				setCss(editor.getValue());
 			});
 		}, 0);

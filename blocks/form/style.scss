@@ -147,13 +147,6 @@ body::before {
 			/* Chrome/Opera/Safari */
 			color: transparent;
 		}
-		input.input:invalid:not(:placeholder-shown)
-			+ label.mailster-label
-			b:after {
-			content: ' - Error';
-			color: red;
-			font-weight: bold;
-		}
 	}
 	.mailster-wrapper-inline.mailster-wrapper-type-radio {
 		label.mailster-label {

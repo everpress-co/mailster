@@ -20,7 +20,7 @@ import {
 	VisuallyHidden,
 	__experimentalUseBorderProps as useBorderProps,
 	__experimentalUseColorProps as useColorProps,
-	//__experimentalGetSpacingClassesAndStyles as useSpacingProps,
+	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
 } from '@wordpress/block-editor';
 import {
 	Button,
@@ -79,7 +79,7 @@ export default function Edit(props) {
 
 	const borderProps = useBorderProps(attributes);
 	const colorProps = useColorProps(attributes);
-	//const spacingProps = useSpacingProps(attributes);
+	const spacingProps = useSpacingProps(attributes);
 
 	const styleSuccessMessage = {
 		color: messages.success,
@@ -245,9 +245,7 @@ export default function Edit(props) {
 			.join('');
 
 		if (styles != inputStyles) {
-			dispatch('core/editor').editPost({
-				meta: { input_styles: styles },
-			});
+			setMeta({ input_styles: styles });
 			setinputStyles(styles);
 			dispatch('core/notices').createNotice(
 				'success',
@@ -321,8 +319,9 @@ export default function Edit(props) {
 				style={{
 					...borderProps.style,
 					...colorProps.style,
-					//...spacingProps.style,
+					...spacingProps.style,
 				}}
+				data-class=".mailster-form"
 			>
 				{prefixedCss && <style>{prefixedCss}</style>}
 				{displayMessages && (

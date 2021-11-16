@@ -56,7 +56,6 @@ function SettingsPanelPlugin() {
 			>
 				PluginPrePublishPanel
 			</PluginPrePublishPanel>
-			<div>adasd</div>
 			<FormModal />
 			<Doubleoptin {...meta} setMeta={setMeta} />
 			<Gdpr {...meta} setMeta={setMeta} />

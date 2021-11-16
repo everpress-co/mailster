@@ -36,6 +36,7 @@ import {
 	FlexItem,
 	FlexBlock,
 	Button,
+	BaseControl,
 } from '@wordpress/components';
 
 import { Fragment, Component, useState } from '@wordpress/element';
@@ -65,6 +66,7 @@ export default function InputFieldInspectorControls(props) {
 		style,
 		id,
 		values,
+		pattern,
 	} = attributes;
 
 	const [width, setWidth] = useState(100);
@@ -107,32 +109,24 @@ export default function InputFieldInspectorControls(props) {
 					title={__('Field Settings', 'mailster')}
 					initialOpen={true}
 				>
-					{hasLabel && (
-						<>
-							<PanelRow>
-								<TextControl
-									label={__('Label', 'mailster')}
-									help={__(
-										'Define a label for your field',
-										'mailster'
-									)}
-									value={label}
-									onChange={(val) =>
-										setAttributes({ label: val })
-									}
-								/>
-							</PanelRow>
-							<PanelRow>
-								<CheckboxControl
-									label={__('Inline Labels', 'mailster')}
-									checked={inline}
-									onChange={() =>
-										setAttributes({ inline: !inline })
-									}
-								/>
-							</PanelRow>
-						</>
-					)}
+					<PanelRow>
+						<TextControl
+							label={__('Label', 'mailster')}
+							help={__(
+								'Define a label for your field',
+								'mailster'
+							)}
+							value={label}
+							onChange={(val) => setAttributes({ label: val })}
+						/>
+					</PanelRow>
+					<PanelRow>
+						<CheckboxControl
+							label={__('Inline Labels', 'mailster')}
+							checked={inline}
+							onChange={() => setAttributes({ inline: !inline })}
+						/>
+					</PanelRow>
 					<PanelRow>
 						<CheckboxControl
 							label={__('Required Field', 'mailster')}
@@ -170,82 +164,120 @@ export default function InputFieldInspectorControls(props) {
 					{hasValues && (
 						<>
 							<PanelRow>
-								<Flex
-									className="mailster-value-options"
-									justify="flex-end"
-									style={{ flexWrap: 'wrap' }}
+								<BaseControl
+									id="mailster-values"
+									label={__('Values', 'mailster')}
+									help={__(
+										'Define options for this input field',
+										'mailster'
+									)}
 								>
-									{values.map((value, i) => {
-										return (
-											<Flex
-												key={i}
-												style={{ flexShrink: 0 }}
-											>
-												<FlexItem>
-													<input
-														type="radio"
-														value={value}
-														name="default-values"
-														checked={
-															selected === value
-														}
-														onChange={() => {
-															setAttributes({
-																selected: value,
-															});
-														}}
-														title={__(
-															'Use as default',
-															'mailster'
-														)}
-													/>
-												</FlexItem>
-												<FlexBlock>
-													<TextControl
-														autoFocus
-														value={value}
-														onChange={(val) => {
-															updateValue(i, val);
-														}}
-													/>
-												</FlexBlock>
-												<FlexItem>
-													<IconButton
-														disabled={!i}
-														icon={arrowUp}
-														onClick={(val) => {
-															moveValue(i, -1);
-														}}
-													/>
-													<IconButton
-														disabled={
-															i + 1 ==
-															values.length
-														}
-														icon={arrowDown}
-														onClick={(val) => {
-															moveValue(i, 1);
-														}}
-													/>
-													<IconButton
-														icon={trash}
-														onClick={(val) => {
-															removeValue(i);
-														}}
-													/>
-												</FlexItem>
-											</Flex>
-										);
-									})}
-								</Flex>
-							</PanelRow>
-							<PanelRow>
-								<Button variant="link" onClick={addValue}>
-									{__('Add new Value', 'mailster')}
-								</Button>
+									<Flex
+										className="mailster-value-options"
+										justify="flex-end"
+										id="mailster-values"
+										style={{ flexWrap: 'wrap' }}
+									>
+										{values.map((value, i) => {
+											return (
+												<Flex
+													key={i}
+													style={{ flexShrink: 0 }}
+												>
+													<FlexItem>
+														<RadioControl
+															selected={selected}
+															options={[
+																{
+																	value: value,
+																},
+															]}
+															onChange={() => {
+																setAttributes({
+																	selected:
+																		value,
+																});
+															}}
+														/>
+													</FlexItem>
+													<FlexBlock>
+														<TextControl
+															autoFocus
+															value={value}
+															onChange={(val) => {
+																updateValue(
+																	i,
+																	val
+																);
+															}}
+														/>
+													</FlexBlock>
+													<FlexItem>
+														<IconButton
+															disabled={!i}
+															icon={arrowUp}
+															isSmall={true}
+															label={__(
+																'move up',
+																'mailster'
+															)}
+															onClick={(val) => {
+																moveValue(
+																	i,
+																	-1
+																);
+															}}
+														/>
+														<IconButton
+															disabled={
+																i + 1 ==
+																values.length
+															}
+															icon={arrowDown}
+															isSmall={true}
+															label={__(
+																'move down',
+																'mailster'
+															)}
+															onClick={(val) => {
+																moveValue(i, 1);
+															}}
+														/>
+														<IconButton
+															icon={trash}
+															isSmall={true}
+															label={__(
+																'Trash',
+																'mailster'
+															)}
+															onClick={(val) => {
+																removeValue(i);
+															}}
+														/>
+													</FlexItem>
+												</Flex>
+											);
+										})}
+									</Flex>{' '}
+									<Button variant="link" onClick={addValue}>
+										{__('Add new Value', 'mailster')}
+									</Button>
+								</BaseControl>
 							</PanelRow>
 						</>
 					)}
+					<PanelRow>
+						<TextControl
+							label={__('Pattern', 'mailster')}
+							help={__(
+								'Define a pattern for your field',
+								'mailster'
+							)}
+							value={pattern}
+							className="code"
+							onChange={(val) => setAttributes({ pattern: val })}
+						/>
+					</PanelRow>
 				</PanelBody>
 			</Panel>
 		</InspectorControls>

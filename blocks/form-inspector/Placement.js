@@ -61,24 +61,41 @@ export default function Placement(props) {
 
 	return (
 		<PluginDocumentSettingPanel name="placement" title="Placement">
-			<Grid columns={2}>
+			<Grid columns={1}>
 				<PlacementOption
 					{...props}
-					title="Below pages"
+					title="In Content"
+					type="content"
 					image={PopupIcon}
 				/>
-				<PlacementOption
-					{...props}
-					title="Fixed bar"
-					image={PopupIcon}
-				/>
-				<PlacementOption {...props} title="Popup" image={PopupIcon} />
-				<PlacementOption
-					{...props}
-					title="Slide-in"
-					image={PopupIcon}
-				/>
-				<PlacementOption {...props} title="Other" image={PopupIcon} />
+				{false && (
+					<>
+						<PlacementOption
+							{...props}
+							title="Fixed bar"
+							type="bar"
+							image={PopupIcon}
+						/>
+						<PlacementOption
+							{...props}
+							title="Popup"
+							type="popup"
+							image={PopupIcon}
+						/>
+						<PlacementOption
+							{...props}
+							title="Slide-in"
+							type="side"
+							image={PopupIcon}
+						/>
+						<PlacementOption
+							{...props}
+							title="Other"
+							type="other"
+							image={PopupIcon}
+						/>
+					</>
+				)}
 			</Grid>
 		</PluginDocumentSettingPanel>
 	);

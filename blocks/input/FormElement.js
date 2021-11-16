@@ -66,6 +66,7 @@ export default function FormElement(props) {
 		native,
 		style,
 		values,
+		pattern,
 	} = attributes;
 
 	switch (type) {
@@ -84,7 +85,6 @@ export default function FormElement(props) {
 									type="radio"
 									checked={selected == value}
 									onChange={(event) => {
-										console.warn(event);
 										setAttributes({
 											selected: event.target.value,
 										});
@@ -109,7 +109,9 @@ export default function FormElement(props) {
 						type="checkbox"
 						defaultChecked={true}
 					/>
-					<label>{label}</label>
+					<label className="mailster-label" htmlFor={id}>
+						{label}
+					</label>
 				</div>
 			);
 		case 'dropdown':
@@ -151,6 +153,7 @@ export default function FormElement(props) {
 						spellCheck={false}
 						required={required}
 						className="input"
+						pattern={pattern}
 						placeholder=" "
 					/>
 				</>
