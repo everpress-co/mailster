@@ -26,6 +26,7 @@ import {
 	PanelBody,
 	PanelRow,
 	CheckboxControl,
+	RadioControl,
 	TextControl,
 	CardMedia,
 	Card,
@@ -39,6 +40,12 @@ import {
 	RangeControl,
 	FormTokenField,
 	Flex,
+	FlexItem,
+	FlexBlock,
+	BaseControl,
+	SelectControl,
+	useCopyToClipboard,
+	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
@@ -59,24 +66,21 @@ import { select, dispatch, subscribe } from '@wordpress/data';
  */
 
 const PostTokenField = (props) => {
-	const { type } = props;
+	const { entity, meta, setMeta, type, title, options, setOptions } = props;
 
 	const [selectedTokens, setSelectedTokens] = useState([]);
 	const [suggestions, setSuggestions] = useState([]);
 
 	const sug = mapResult(suggestions);
-	const [meta, setMeta] = useEntityProp(
-		'postType',
-		'newsletter_form',
-		'meta'
-	);
 
-	const [posts, setTokensState] = useState(meta[type]);
+	const [posts, setTokensState] = useState(options[entity]);
 
 	useEffect(() => {
-		posts.length &&
+		posts &&
+			posts.length &&
 			apiFetch({
-				path: 'wp/v2/' + type + '?include=' + posts.join(','),
+				path:
+					getEndPointByEntity(entity) + '?include=' + posts.join(','),
 			}).then(
 				(result) => {
 					setSelectedTokens(mapResult(result));
@@ -85,10 +89,22 @@ const PostTokenField = (props) => {
 			);
 	}, []);
 
+	function getEndPointByEntity(entity) {
+		switch (entity) {
+			case 'category':
+				entity = 'categories';
+				break;
+			case 'post_tag':
+				entity = 'tags';
+				break;
+		}
+		return 'wp/v2/' + entity;
+	}
+
 	function mapResult(result) {
-		switch (type) {
-			case 'categories':
-			case 'tags':
+		switch (entity) {
+			case 'category':
+			case 'post_tag':
 				return result.map((s, i) => {
 					return '(#' + s.id + ') ' + s.name;
 				});
@@ -101,7 +117,7 @@ const PostTokenField = (props) => {
 
 	function searchTokens(token) {
 		apiFetch({
-			path: 'wp/v2/' + type + '?search=' + token,
+			path: getEndPointByEntity(entity) + '?search=' + token,
 		}).then(
 			(result) => {
 				setSuggestions(result);
@@ -121,108 +137,276 @@ const PostTokenField = (props) => {
 			return parseInt(post.match(/^\(#([0-9]+)\)/)[1], 10);
 		});
 		setSelectedTokens(tokens);
+		var newPlacement = { ...options };
 
-		switch (type) {
-			case 'tags':
-				setMeta({ tags: newTokens });
-				break;
-			case 'categories':
-				setMeta({ categories: newTokens });
-				break;
-			case 'posts':
-				setMeta({ posts: newTokens });
-				break;
+		newPlacement[entity] = newTokens;
+		if (newTokens.length) {
+			newPlacement['all'] = false;
 		}
+		setOptions(newPlacement);
 	}
 
 	return (
-		<FormTokenField
-			value={selectedTokens}
-			saveTransform={(token) => {
-				return token;
-			}}
-			suggestions={sug}
-			onInputChange={(tokens) => searchTokensDebounce(tokens)}
-			onChange={(tokens) => setTokens(tokens)}
-			__experimentalValidateInput={(tokens) => validateInput(tokens)}
-		/>
+		<BaseControl id={'form-token-field-' + entity} label={title}>
+			<FormTokenField
+				id={'form-token-field-' + entity}
+				value={selectedTokens}
+				saveTransform={(token) => {
+					return token;
+				}}
+				suggestions={sug}
+				onInputChange={(tokens) => searchTokensDebounce(tokens)}
+				onChange={(tokens) => setTokens(tokens)}
+				__experimentalValidateInput={(tokens) => validateInput(tokens)}
+			/>
+		</BaseControl>
 	);
 };
 
 export default function PlacementOption(props) {
-	const { attributes, setAttributes, title, type, image, isSelected } = props;
+	const { meta, setMeta, type, image, title } = props;
+	const { placements } = meta;
+
 	const [isOpen, setOpen] = useState(false);
-	const [isChecked, setChecked] = useState(false);
+	const [isEnabled, setEnabled] = useState(false);
+
+	const options = meta['placement_' + type];
+
+	function setOptions(options) {
+		var newOptions = { ...meta['placement_' + type] };
+		newOptions = { ...newOptions, ...options };
+		setMeta({ ['placement_' + type]: newOptions });
+	}
 
 	const openModal = () => setOpen(true);
 	const closeModal = () => setOpen(false);
 
-	const MyIcon = () => <Icon icon={settings} />;
-	const post_types = select('core').getPostTypes() || [];
+	const className = ['placement-option'];
+
+	placements.includes(type) && className.push('enabled');
+
+	function setPlacements(placement, add) {
+		var newPlacements = [...placements];
+		if (add) {
+			newPlacements.push(placement);
+		} else {
+			newPlacements = newPlacements.filter((el) => {
+				return el != placement;
+			});
+		}
+
+		setMeta({ placements: newPlacements });
+	}
+
+	const currentPostId = select('core/editor').getCurrentPostId();
 
 	return (
-		<Card size="small" elevation={5}>
-			<CardHeader>
-				<Flex>
-					<CheckboxControl
-						label="Enabled"
-						checked={isChecked}
-						onChange={setChecked}
-					/>
-					<Button
-						variant="secondary"
-						onClick={openModal}
-						icon={MyIcon}
-					/>
-				</Flex>
-			</CardHeader>
-			<CardMedia>
-				<img src={image} alt="React Logo" />
-			</CardMedia>
-			<CardFooter>{title}</CardFooter>
+		<>
+			<Card size="small" className={className.join(' ')}>
+				<CardHeader>
+					<Flex align="center">
+						{'other' != type && (
+							<CheckboxControl
+								value={type}
+								checked={placements.includes(type)}
+								onChange={(val) => {
+									setPlacements(type, val);
+								}}
+							/>
+						)}
+						<Button
+							variant="link"
+							onClick={openModal}
+							icon={<Icon icon={settings} />}
+							isSmall={true}
+						/>
+					</Flex>
+				</CardHeader>
+				<CardMedia onClick={openModal}>{image}</CardMedia>
+				<CardFooter>{title}</CardFooter>
+			</Card>
 			{isOpen && (
 				<Modal
-					title="Display this form on your pages"
+					title={'Display this form on your pages ' + type}
 					onRequestClose={closeModal}
 				>
-					<p>
-						This form placement allows you to add this form at the
-						end of all the pages or posts, below the content.
-					</p>
-					<CheckboxControl
-						label="Display on all pages"
-						checked={isChecked}
-						onChange={setChecked}
-					/>
-					<h3>Post types</h3>
-					<Flex justify="flex-start">
-						{post_types.map((post_type) => {
-							return (
-								post_type.viewable &&
-								post_type.slug != 'attachment' && (
+					{'other' == type ? (
+						<div>
+							<h4>PHP</h4>
+							<p>
+								<code id={'form-php-' + currentPostId}>
+									{'<?php echo mailster_form( ' +
+										currentPostId +
+										'); ?>'}
+								</code>
+							</p>
+							<p>
+								<code id="form-php-2">
+									{'echo mailster_form( ' +
+										currentPostId +
+										');'}
+								</code>
+							</p>
+							<p>
+								<code id="form-php-3">
+									{'<?php $form_html = mailster_form( ' +
+										currentPostId +
+										'); ?>'}
+								</code>
+							</p>
+						</div>
+					) : (
+						<>
+							{!placements.includes(type) && (
+								<>
+									<p>
+										{__(
+											'Please enable this option to define further settings.',
+											'mailster'
+										)}
+									</p>
 									<CheckboxControl
-										key={post_type.slug}
-										label={post_type.name}
-										value={post_type.slug}
-										checked={isChecked}
-										onChange={setChecked}
+										label={__('Enabled', 'mailster')}
+										value={type}
+										checked={placements.includes(type)}
+										onChange={(val) => {
+											setPlacements(type, val);
+										}}
 									/>
-								)
-							);
-						})}
+								</>
+							)}
+							{placements.includes(type) && (
+								<>
+									<CheckboxControl
+										label={__(
+											'Display on all pages',
+											'mailster'
+										)}
+										checked={options.all}
+										onChange={(val) => {
+											setOptions({ all: val });
+										}}
+									/>
+									{!options.all && (
+										<>
+											<PostTokenField
+												{...props}
+												entity="posts"
+												options={options}
+												setOptions={setOptions}
+												title={__(
+													'Display on following posts/pages.',
+													'mailster'
+												)}
+											/>
+											<PostTokenField
+												{...props}
+												entity="category"
+												options={options}
+												setOptions={setOptions}
+												title={__(
+													'Display on posts/pages with these categories.',
+													'mailster'
+												)}
+											/>
+											<PostTokenField
+												{...props}
+												entity="post_tag"
+												options={options}
+												setOptions={setOptions}
+												title={__(
+													'Display on posts/pages with these tags.',
+													'mailster'
+												)}
+											/>
+										</>
+									)}
+									{'content' == type && (
+										<BaseControl
+											id={'extra-options-' + type}
+											label={__(
+												'Display options',
+												'mailster'
+											)}
+										>
+											<div id={'extra-options-' + type}>
+												<RadioControl
+													selected={options.pos}
+													options={[
+														{
+															label: 'Start of content',
+															value: '0',
+														},
+														{
+															label: 'End of content',
+															value: '-1',
+														},
+													]}
+													onChange={(val) =>
+														setOptions({ pos: val })
+													}
+												/>
+
+												<Flex align="start">
+													<FlexItem>
+														{__(
+															'Display form after:',
+															'mailster'
+														)}
+													</FlexItem>
+													<FlexItem>
+														<NumberControl
+															onChange={(val) =>
+																setOptions({
+																	pos: val,
+																})
+															}
+															isDragEnabled
+															isShiftStepEnabled
+															shiftStep={10}
+															step={1}
+															value={options.pos}
+														/>
+													</FlexItem>
+													<FlexBlock>
+														<SelectControl
+															value={options.tag}
+															onChange={(val) =>
+																setOptions({
+																	tag: val,
+																})
+															}
+															options={[
+																{
+																	value: 'p',
+																	label: 'Paragraph',
+																},
+																{
+																	value: 'h2',
+																	label: 'Heading 2',
+																},
+																{
+																	value: 'h3',
+																	label: 'Heading 3',
+																},
+															]}
+														/>
+													</FlexBlock>
+												</Flex>
+											</div>
+										</BaseControl>
+									)}
+								</>
+							)}
+						</>
+					)}
+					<Flex style={{ marginTop: '2em' }}>
+						<Button variant="secondary" onClick={closeModal}>
+							Close
+						</Button>
 					</Flex>
-					<PostTokenField {...props} type="posts" />
-					<PostTokenField {...props} type="categories" />
-					<PostTokenField {...props} type="tags" />
-					<p>
-						lorem Lorem ipsum dolor sit amet, consectetur adipiscing
-						elit. Praesent fringilla mollis tortor a scelerisque.
-					</p>
-					<Button variant="secondary" onClick={closeModal}>
-						Close
-					</Button>
 				</Modal>
 			)}
-		</Card>
+		</>
 	);
 }

@@ -58,7 +58,7 @@ export default function FormElement(props) {
 	const {
 		label,
 		name,
-		id,
+
 		selected,
 		type,
 		inline,
@@ -72,7 +72,7 @@ export default function FormElement(props) {
 	switch (type) {
 		case 'radio':
 			return (
-				<div className="_mailster-div">
+				<div className="mailster-group mailster-group-radio">
 					{values.map((value, i) => {
 						return (
 							<label key={i}>
@@ -98,10 +98,9 @@ export default function FormElement(props) {
 			);
 		case 'checkbox':
 			return (
-				<div className="_mailster-div">
+				<div className="mailster-group mailster-group-checkbox">
 					<input
 						name={name}
-						id={id}
 						aria-required={required}
 						aria-label={label.replace(/<[^>]+>/g, '')}
 						spellCheck={false}
@@ -109,16 +108,13 @@ export default function FormElement(props) {
 						type="checkbox"
 						defaultChecked={true}
 					/>
-					<label className="mailster-label" htmlFor={id}>
-						{label}
-					</label>
+					<label className="mailster-label">{label}</label>
 				</div>
 			);
 		case 'dropdown':
 			return (
 				<select
 					name={name}
-					id={id}
 					className="input"
 					aria-required={required}
 					aria-label={label.replace(/<[^>]+>/g, '')}
@@ -146,7 +142,6 @@ export default function FormElement(props) {
 				<>
 					<input
 						name={name}
-						id={id}
 						type={native ? type : 'text'}
 						aria-required={required}
 						aria-label={label.replace(/<[^>]+>/g, '')}

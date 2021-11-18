@@ -3,21 +3,14 @@
 	"name": "mailster/form-wrapper",
 	"version": "0.1.0",
 	"title": "Mailster Form",
+	"icon": "email",
 	"category": "widgets",
-	"icon": "smiley",
 	"description": "Define the look of your form here.",
-	"transforms": {
-		"to": []
-	},
 	"supports": {
 		"html": false,
 		"inserter": false,
 		"reusable": false,
 		"multiple": false,
-		"spacing": {
-			"margin": ["top", "bottom"],
-			"padding": true
-		},
 		"color": {
 			"text": true,
 			"background": true,

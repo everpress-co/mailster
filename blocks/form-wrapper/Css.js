@@ -34,12 +34,14 @@ import {
 	RangeControl,
 	FocalPointPicker,
 	SelectControl,
+	ComboboxControl,
 	__experimentalBoxControl as BoxControl,
 	__experimentalUnitControl as UnitControl,
 	__experimentalGrid as Grid,
 } from '@wordpress/components';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
+import { useDebounce } from '@wordpress/compose';
 
 import { more } from '@wordpress/icons';
 
@@ -53,16 +55,23 @@ import { more } from '@wordpress/icons';
  */
 
 export default function Css(props) {
-	const { attributes, setAttributes, isSelected, setCss } = props;
+	const { attributes, setAttributes, isSelected, setCss, setShowClasses } =
+		props;
 
 	const { css } = attributes;
 
-	const codeEditor = wp.CodeMirror;
+	let codeEditor;
+
+	const setCssDebounce = useDebounce(setCss, 500);
+
+	const placeholder =
+		'.mailster-form{\n}\n.mailster-form .mailster-wrapper{\n}';
 
 	const initCodeMirror = (isOpened) => {
-		if (!isOpened || !codeEditor) return;
+		setShowClasses(isOpened);
+		if (!isOpened || !wp.CodeMirror) return;
 		setTimeout(() => {
-			wp.CodeMirror.fromTextArea(
+			codeEditor = wp.CodeMirror.fromTextArea(
 				document.getElementById('custom-css-textarea'),
 				{
 					tabMode: 'indent',
@@ -70,9 +79,10 @@ export default function Css(props) {
 					autofocus: true,
 					type: 'text/css',
 					lineWrapping: true,
+					placeholder: placeholder,
 				}
 			).on('change', function (editor) {
-				setCss(editor.getValue());
+				setCssDebounce(editor.getValue());
 			});
 		}, 0);
 
@@ -91,7 +101,7 @@ export default function Css(props) {
 					id="custom-css-textarea"
 					help="Enter your custom CSS here. Every declaration will get prefixed to work only for this specific form."
 					value={css}
-					onChange={(value) => codeEditor && setCss(value)}
+					onChange={(value) => wp.CodeMirror && setCssDebounce(value)}
 				/>
 			</PanelRow>
 		</PanelBody>

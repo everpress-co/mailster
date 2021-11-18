@@ -25,7 +25,7 @@ import FormElement from './FormElement.js';
  */
 export default function save(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, id, name, type, inline, required, style } = attributes;
+	const { label, name, type, inline, required, style } = attributes;
 	const className = ['mailster-wrapper', 'mailster-wrapper-type-' + type];
 
 	const hasLabel = !['checkbox'].includes(type);
@@ -35,10 +35,11 @@ export default function save(props) {
 	const styleSheets = {
 		width: style.width + '%',
 	};
+
 	const labelElement = (
 		<RichText.Content
 			tagName="label"
-			htmlFor={type != 'radio' ? id : null}
+			//htmlFor={type != 'radio' ? id : null}
 			className="mailster-label"
 			value={label}
 		/>

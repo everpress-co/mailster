@@ -16,7 +16,6 @@ import { registerPlugin } from '@wordpress/plugins';
  *
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
-//import './style.scss';
 
 /**
  * Internal dependencies
@@ -57,10 +56,10 @@ function SettingsPanelPlugin() {
 				PluginPrePublishPanel
 			</PluginPrePublishPanel>
 			<FormModal />
-			<Doubleoptin {...meta} setMeta={setMeta} />
-			<Gdpr {...meta} setMeta={setMeta} />
-			<Lists {...meta} setMeta={setMeta} />
-			<Placement {...meta} setMeta={setMeta} />
+			<Doubleoptin meta={meta} setMeta={setMeta} />
+			<Gdpr meta={meta} setMeta={setMeta} />
+			<Lists meta={meta} setMeta={setMeta} />
+			<Placement meta={meta} setMeta={setMeta} />
 		</>
 	);
 }

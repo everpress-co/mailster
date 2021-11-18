@@ -64,7 +64,7 @@ export default function InputFieldInspectorControls(props) {
 		type,
 		selected,
 		style,
-		id,
+
 		values,
 		pattern,
 	} = attributes;
@@ -120,13 +120,17 @@ export default function InputFieldInspectorControls(props) {
 							onChange={(val) => setAttributes({ label: val })}
 						/>
 					</PanelRow>
-					<PanelRow>
-						<CheckboxControl
-							label={__('Inline Labels', 'mailster')}
-							checked={inline}
-							onChange={() => setAttributes({ inline: !inline })}
-						/>
-					</PanelRow>
+					{type != 'checkbox' && (
+						<PanelRow>
+							<CheckboxControl
+								label={__('Inline Labels', 'mailster')}
+								checked={inline}
+								onChange={() =>
+									setAttributes({ inline: !inline })
+								}
+							/>
+						</PanelRow>
+					)}
 					<PanelRow>
 						<CheckboxControl
 							label={__('Required Field', 'mailster')}
@@ -258,7 +262,7 @@ export default function InputFieldInspectorControls(props) {
 												</Flex>
 											);
 										})}
-									</Flex>{' '}
+									</Flex>
 									<Button variant="link" onClick={addValue}>
 										{__('Add new Value', 'mailster')}
 									</Button>

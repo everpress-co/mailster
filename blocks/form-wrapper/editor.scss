@@ -4,18 +4,6 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-._wp-block-mailster-form-wrapper {
-	max-width: 840px;
-	margin: 0 auto;
-	box-shadow: 0 1.5vw 3vw -0.7vw rgb(0 0 0 / 13%);
-	width: 100%;
-	height: 200px;
-	column-gap: 0.5em;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	flex-direction: column;
-}
 .block-editor-inner-blocks {
 	width: 100%;
 }
@@ -43,27 +31,38 @@
 	margin-bottom: 0.5em !important;
 }
 
-.editor-styles-wrapper .is-root-container {
-	[data-class]::before {
-		content: attr(data-class);
-		position: absolute;
-		background: var(--wp-admin-theme-color);
-		font-size: 12px;
-		color: #fff;
-		padding: 0.1em 0.3em;
-		bottom: auto;
-		right: auto;
-	}
+.CodeMirror pre.CodeMirror-placeholder {
+	color: #ccc;
 }
-.wp-block-mailster-form-wrapper {
-	box-shadow: 0 1.5vw 3vw -0.7vw rgb(0 0 0 / 13%);
-	box-shadow: 0 1.5vw 3vw -0.7vw rgb(0 0 0 / 99%);
+
+.editor-styles-wrapper
+	.is-root-container
+	.mailster-form.show-classes[data-class]:hover::before,
+.editor-styles-wrapper
+	.is-root-container
+	.mailster-form.show-classes
+	[data-class]:hover::before {
+	content: attr(data-class);
+	position: absolute;
+	background: var(--wp-admin-theme-color);
+	font-size: 12px;
+	color: #fff;
+	padding: 0.1em 0.3em;
+	bottom: auto;
+	right: auto;
+	z-index: 1;
+}
+.editor-styles-wrapper .is-root-container .mailster-form.show-classes {
+	pointer-events: none !important;
+}
+.mailster-form.wp-block-mailster-form-wrapper {
 	box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px,
 		rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px,
 		rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
 	background-color: #fff;
 	width: 50rem;
 	min-height: 5rem;
+	overflow: visible !important;
 
 	.mailster-form-info {
 		height: auto;
@@ -77,12 +76,12 @@
 		z-index: 100;
 		position: relative;
 	}
-	button.style-form {
-		z-index: 0;
-		visibility: hidden;
-		position: absolute;
+	.style-form {
+		z-index: 31;
+		_visibility: hidden;
+		position: absolute !important;
 		right: 0;
-		top: -51px;
+		top: -72px;
 		width: auto;
 	}
 
@@ -93,8 +92,8 @@
 	}
 }
 .editor-styles-wrapper:hover {
-	button.style-form {
-		visibility: visible;
+	.style-form {
+		_visibility: visible;
 	}
 }
 
@@ -108,8 +107,7 @@
 	.block-editor-block-preview__container .wp-block {
 		max-width: 100%;
 	}
-	.block-editor-block-preview__container.editor-styles-wrapper
-		button.style-form {
+	.block-editor-block-preview__container.editor-styles-wrapper .style-form {
 		display: none;
 	}
 	.components-card {
@@ -131,7 +129,20 @@
 	margin-top: 1em;
 }
 
+.is-mobile-preview,
+.is-tablet-preview {
+	border: none !important;
+}
+
+.editor-styles-wrapper.wp-embed-responsive::after {
+	content: unset;
+}
+
 .editor-styles-wrapper.wp-embed-responsive {
+	background-color: unset;
+	h1.wp-block-post-title {
+		display: none;
+	}
 	.wp-block-mailster-form-wrapper {
 		max-width: 100%;
 		transform: scale(0.95);
@@ -141,8 +152,16 @@
 	.wp-block {
 		max-width: 100%;
 	}
-	// .block-editor-block-preview__container.editor-styles-wrapper
-	// 	button.style-form {
-	// 	display: none;
-	// }
+	.block-list-appender {
+		display: none;
+	}
+
+	.style-form {
+		display: none;
+	}
 }
+
+// .block-editor-block-preview__container.editor-styles-wrapper
+// 	.style-form {
+// 	display: none;
+// }

@@ -41,8 +41,8 @@ import { more } from '@wordpress/icons';
  */
 
 export default function Doubleoptin(props) {
-	const { doubleoptin, subject, headline, content, setMeta, isSelected } =
-		props;
+	const { meta, setMeta } = props;
+	const { doubleoptin, subject, headline, link, content } = meta;
 
 	const [isValidContent, setValidContent] = useState(false);
 
@@ -76,14 +76,19 @@ export default function Doubleoptin(props) {
 					/>
 					<TextareaControl
 						label="Content"
-						className={isValidContent ? '' : 'error-message'}
+						className={!isValidContent && 'error-message'}
 						value={content}
 						help={
-							isValidContent
-								? ''
-								: 'Make sure this field contain a {link} tag.'
+							!isValidContent &&
+							'Make sure this field contain a {link} tag.'
 						}
 						onChange={(value) => setMeta({ content: value })}
+					/>{' '}
+					<TextControl
+						label="Linktext"
+						value={link}
+						help="Helptext"
+						onChange={(value) => setMeta({ link: value })}
 					/>
 				</>
 			)}

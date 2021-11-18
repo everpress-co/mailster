@@ -34,6 +34,7 @@ import {
 	RangeControl,
 	FocalPointPicker,
 	SelectControl,
+	BaseControl,
 	__experimentalBoxControl as BoxControl,
 	__experimentalUnitControl as UnitControl,
 	__experimentalGrid as Grid,
@@ -45,7 +46,7 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { more } from '@wordpress/icons';
 
 import PlacementOption from './PlacementOption';
-import PopupIcon from './svg/popup.svg';
+import PlacementIcons from './PlacementIcons';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -57,45 +58,50 @@ import PopupIcon from './svg/popup.svg';
  */
 
 export default function Placement(props) {
-	const { setMeta, isSelected } = props;
+	const { meta, setMeta } = props;
 
 	return (
 		<PluginDocumentSettingPanel name="placement" title="Placement">
-			<Grid columns={1}>
+			<PanelRow>
+				<BaseControl
+					id={'extra-options-'}
+					label={__(
+						'Define where you like to display thus form',
+						'mailster'
+					)}
+				></BaseControl>
+			</PanelRow>
+			<Grid columns={2}>
 				<PlacementOption
 					{...props}
 					title="In Content"
 					type="content"
-					image={PopupIcon}
+					image={PlacementIcons.content}
 				/>
-				{false && (
-					<>
-						<PlacementOption
-							{...props}
-							title="Fixed bar"
-							type="bar"
-							image={PopupIcon}
-						/>
-						<PlacementOption
-							{...props}
-							title="Popup"
-							type="popup"
-							image={PopupIcon}
-						/>
-						<PlacementOption
-							{...props}
-							title="Slide-in"
-							type="side"
-							image={PopupIcon}
-						/>
-						<PlacementOption
-							{...props}
-							title="Other"
-							type="other"
-							image={PopupIcon}
-						/>
-					</>
-				)}
+				<PlacementOption
+					{...props}
+					title="Fixed bar"
+					type="bar"
+					image={PlacementIcons.bar}
+				/>
+				<PlacementOption
+					{...props}
+					title="Popup"
+					type="popup"
+					image={PlacementIcons.popup}
+				/>
+				<PlacementOption
+					{...props}
+					title="Slide-in"
+					type="side"
+					image={PlacementIcons.other}
+				/>
+				<PlacementOption
+					{...props}
+					title="Other"
+					type="other"
+					image={PlacementIcons.other}
+				/>
 			</Grid>
 		</PluginDocumentSettingPanel>
 	);

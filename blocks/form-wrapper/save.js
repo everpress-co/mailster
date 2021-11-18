@@ -38,7 +38,6 @@ export default function save(props) {
 	return (
 		<form
 			method="post"
-			novalidate
 			action="/mailster/subscribe"
 			{...useBlockProps.save({
 				className: 'mailster-form',
@@ -48,16 +47,11 @@ export default function save(props) {
 				<div
 					className="mailster-form-info-success"
 					style={styleSuccessMessage}
-				>
-					This is a success message
-				</div>
+				></div>
 				<div
 					className="mailster-form-info-error"
 					style={styleErrorMessage}
-				>
-					Following fields are missing or incorrect. This is an error
-					message
-				</div>
+				></div>
 			</div>
 			<InnerBlocks.Content />
 			<input type="submit" style={{ display: 'none !important' }} />

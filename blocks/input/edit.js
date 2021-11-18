@@ -50,13 +50,9 @@ import FormElement from './FormElement.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { label, id, name, type, values, inline, required, style } =
-		attributes;
+	const { label, name, type, values, inline, required, style } = attributes;
 	const className = ['mailster-wrapper', 'mailster-wrapper-type-' + type];
 
-	if (!id) {
-		setAttributes({ id: 'mailster-field-' + clientId.substring(0, 8) });
-	}
 	const hasLabel = !['checkbox'].includes(type);
 
 	if (required) className.push('mailster-wrapper-required');

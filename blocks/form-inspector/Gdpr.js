@@ -41,8 +41,8 @@ import { more } from '@wordpress/icons';
  */
 
 export default function Gdpr(props) {
-	const { gdpr, setMeta, isSelected } = props;
-
+	const { meta, setMeta } = props;
+	const { gdpr } = meta;
 	return (
 		<PluginDocumentSettingPanel name="gdpr" title="GDPR">
 			<CheckboxControl

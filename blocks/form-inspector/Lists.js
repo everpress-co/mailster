@@ -39,7 +39,8 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
  * @return {WPElement} Element to render.
  */
 
-export default function Lists() {
+export default function Lists(props) {
+	const { meta, setMeta } = props;
 	return (
 		<PluginDocumentSettingPanel name="lists" title="Lists Options">
 			<PanelRow>Lists</PanelRow>

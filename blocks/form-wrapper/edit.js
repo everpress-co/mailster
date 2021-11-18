@@ -18,6 +18,7 @@ import {
 	RichText,
 	PlainText,
 	VisuallyHidden,
+	BlockControls,
 	__experimentalUseBorderProps as useBorderProps,
 	__experimentalUseColorProps as useColorProps,
 	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
@@ -27,6 +28,8 @@ import {
 	PanelBody,
 	ResizableBox,
 	Snackbar,
+	ToolbarGroup,
+	ToolbarButton,
 } from '@wordpress/components';
 
 import { brush } from '@wordpress/icons';
@@ -52,6 +55,8 @@ import './editor.scss';
 import Styling from './Styling';
 import Messages from './Messages';
 import Background from './Background';
+import BlockRecovery from './BlockRecovery';
+
 import Css from './Css';
 
 /**
@@ -67,6 +72,7 @@ export default function Edit(props) {
 		props;
 	const { style, background, inputs, messages } = attributes;
 	let { css } = attributes;
+	let backgroundStyles = '';
 
 	const [meta, setMeta] = useEntityProp(
 		'postType',
@@ -76,10 +82,15 @@ export default function Edit(props) {
 
 	const [displayMessages, setDisplayMessages] = useState(false);
 	const [inputStyles, setinputStyles] = useState(meta.input_styles);
+	const [showClasses, setShowClasses] = useState(false);
 
 	const borderProps = useBorderProps(attributes);
 	const colorProps = useColorProps(attributes);
 	const spacingProps = useSpacingProps(attributes);
+
+	const className = ['mailster-form', 'mailster-form-' + clientId];
+
+	showClasses && className.push('show-classes');
 
 	const styleSuccessMessage = {
 		color: messages.success,
@@ -172,22 +183,26 @@ export default function Edit(props) {
 		return `${Math.round(x * 100)}% ${Math.round(y * 100)}%`;
 	};
 
-	if (background.image && inputStyles) {
-		css += '.mailster-form::before{';
-		css += "content:'';";
-		css += 'background-image: url(' + background.image + ');';
-		if (background.fixed) css += 'background-attachment:fixed;';
-		if (background.repeat) css += 'background-repeat:repeat;';
-		css += 'background-size:' + background.size + ';';
-		css +=
+	if (background.image) {
+		backgroundStyles += '.mailster-form::before{';
+		backgroundStyles += "content:'';";
+		backgroundStyles += 'background-image: url(' + background.image + ');';
+		if (background.fixed)
+			backgroundStyles += 'background-attachment:fixed;';
+		if (background.repeat) backgroundStyles += 'background-repeat:repeat;';
+		backgroundStyles += 'background-size:' + background.size + ';';
+		backgroundStyles +=
 			'background-position:' + mediaPosition(background.position) + ';';
-		css += 'opacity:' + background.opacity + '%;';
-		css += '}';
+		backgroundStyles += 'opacity:' + background.opacity + '%;';
+		backgroundStyles += '}';
 	}
 
 	const getInputStyles = () => {
-		const iframe = document.getElementById('inputStylesIframe'),
-			doc = iframe.contentWindow.document,
+		const iframe = document.getElementById('inputStylesIframe');
+
+		if (!iframe) return;
+
+		const doc = iframe.contentWindow.document,
 			//get a couple of possible DOM elements
 			el =
 				doc.getElementsByClassName('entry-content')[0] ||
@@ -282,10 +297,6 @@ export default function Edit(props) {
 		return s;
 	};
 
-	if (inputStyles) {
-		css += inputStyles;
-	}
-
 	const prefixedCss = useMemo(() => {
 		return prefixCss(css, '.mailster-form-' + clientId);
 	}, [css]);
@@ -314,7 +325,7 @@ export default function Edit(props) {
 		<>
 			<div
 				{...useBlockProps({
-					className: 'mailster-form mailster-form-' + clientId,
+					className: className.join(' '),
 				})}
 				style={{
 					...borderProps.style,
@@ -323,7 +334,15 @@ export default function Edit(props) {
 				}}
 				data-class=".mailster-form"
 			>
-				{prefixedCss && <style>{prefixedCss}</style>}
+				{prefixedCss && (
+					<style id="mailster-custom-styles">{prefixedCss}</style>
+				)}
+				{inputStyles && (
+					<style id="mailster-inline-styles">{inputStyles}</style>
+				)}
+				{backgroundStyles && (
+					<style id="mailster-bg-styles">{backgroundStyles}</style>
+				)}
 				{displayMessages && (
 					<div className="mailster-form-info">
 						<div
@@ -343,11 +362,22 @@ export default function Edit(props) {
 						</div>
 					</div>
 				)}
+				<BlockRecovery {...props} />
 				<InnerBlocks />
 				{!isSelected && (
-					<Button icon={brush} className="style-form" isPrimary>
-						{__('Style this form', 'mailster')}
-					</Button>
+					<ToolbarGroup className="style-form">
+						<ToolbarButton
+							icon={brush}
+							label="Style"
+							onClick={() => {
+								dispatch('core/block-editor').selectBlock(
+									clientId
+								);
+							}}
+						>
+							{__('Style this form', 'mailster')}
+						</ToolbarButton>
+					</ToolbarGroup>
 				)}
 			</div>
 			<iframe
@@ -357,6 +387,17 @@ export default function Edit(props) {
 				sandbox="allow-scripts allow-same-origin"
 				hidden
 			></iframe>
+			<BlockControls>
+				<ToolbarGroup>
+					<ToolbarButton
+						icon={brush}
+						label="Style"
+						onClick={() => {
+							dispatch('core/block-editor').selectBlock(clientId);
+						}}
+					/>
+				</ToolbarGroup>
+			</BlockControls>
 			<InspectorControls>
 				<Messages
 					{...props}
@@ -365,7 +406,11 @@ export default function Edit(props) {
 					setDisplayMessages={setDisplayMessages}
 				/>
 				<Background {...props} setBackground={setBackground} />
-				<Css {...props} setCss={setCss} />
+				<Css
+					{...props}
+					setCss={setCss}
+					setShowClasses={setShowClasses}
+				/>
 			</InspectorControls>
 		</>
 	);
