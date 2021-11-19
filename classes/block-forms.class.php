@@ -718,7 +718,7 @@ class MailsterBlockForms {
 
 		}
 
-		if ( $is_backend && $input_styles = get_post_meta( $form->ID, 'input_styles', true ) ) {
+		if ( $is_backend && $input_styles = get_option( 'mailster_inline_styles' ) ) {
 			$stylesheet .= ' .wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .input{';
 			$stylesheet .= $input_styles;
 			$stylesheet .= '}';
