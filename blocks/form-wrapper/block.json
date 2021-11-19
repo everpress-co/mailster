@@ -41,8 +41,12 @@
 			}
 		},
 		"css": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {
+				"general": "",
+				"tablet": "",
+				"mobile": ""
+			}
 		},
 		"messages": {
 			"type": "object",

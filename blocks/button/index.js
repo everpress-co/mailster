@@ -97,10 +97,7 @@ registerBlockType(name, {
 		}, [attributes.url]);
 
 		return (
-			<div
-				className="wp-block-buttons mailster-wrapper mailster-submit-wrapper"
-				data-class="wp-block-buttons mailster-wrapper mailster-submit-wrapper"
-			>
+			<div className="wp-block-buttons mailster-wrapper mailster-submit-wrapper">
 				{edit(props)}
 			</div>
 		);

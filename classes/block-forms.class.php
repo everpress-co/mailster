@@ -26,6 +26,17 @@ class MailsterBlockForms {
 		add_filter( 'the_content', array( &$this, 'maybe_add_form_to_content' ) );
 		add_filter( 'wp_footer', array( &$this, 'maybe_add_form_to_footer' ) );
 
+		add_action( 'save_post_newsletter_form', array( &$this, 'clear_cache' ), 10, 2 );
+
+		add_action(
+			'__save_post_newsletter_form',
+			function( $post_id, $post ) {
+
+				error_log( print_r( $post->post_content, true ) );
+			},
+			10,
+			2
+		);
 	}
 
 
@@ -505,7 +516,8 @@ class MailsterBlockForms {
 
 		wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . 'build/form-inspector.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
 		wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_fields = ' . json_encode( array_values( $this->get_custom_fields() ) ) );
+		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_fields = ' . json_encode( array_values( $this->get_custom_fields() ) ) . ';' );
+		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_inline_styles = ' . json_encode( get_option( 'mailster_inline_styles' ) ) . ';' );
 
 	}
 
@@ -638,15 +650,18 @@ class MailsterBlockForms {
 			return;
 		}
 
-		$blockattributes = $block->attributes;
 		// is on a page in the backend and loaded via the REST API
 		$is_backend = defined( 'REST_REQUEST' ) && REST_REQUEST;
 
 		if ( ! $is_backend ) {
 			wp_enqueue_script( 'mailster-form-block' );
+			if ( $cached = get_post_meta( $form->ID, '_cached', true ) ) {
+				return $cached;
+			}
 		}
 
-		$uniqid = uniqid();
+		$blockattributes = $block->attributes;
+		$uniqid          = uniqid();
 
 		$innerblocks = parse_blocks( $form->post_content );
 		$output      = '';
@@ -662,7 +677,7 @@ class MailsterBlockForms {
 		$output = str_replace( '</form>', $inject . '</form>', $output );
 
 		$stylesheets = array();
-		if ( is_admin() ) {
+		if ( $is_backend ) {
 			$stylesheets = array( 'style-form.css', 'style-input.css' );
 		}
 
@@ -681,8 +696,6 @@ class MailsterBlockForms {
 				$stylesheet .= file_get_contents( MAILSTER_DIR . 'build/' . $s );
 			}
 		}
-
-		$style = get_post_meta( $form->ID, 'style', true );
 
 		$embeded_style = '';
 
@@ -711,55 +724,54 @@ class MailsterBlockForms {
 			$stylesheet .= '}';
 		}
 
-		if ( isset( $innerblock['attrs']['style'] ) ) {
-			if ( $style = $innerblock['attrs']['style'] ) {
+		require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
-				$stylesheet .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . '{';
-				foreach ( $style as $key => $value ) {
-					$key = strtolower( preg_replace( '/([A-Z])+/', '-$1', $key ) );
-					switch ( $key ) {
-						case 'padding':
-							// $value = json_decode( $value );
-							foreach ( $value as $pk => $pv ) {
-								$stylesheet .= $key . '-' . $pk . ':' . $pv . ';';
-							}
-							break;
-						case 'background-position':
-							// $value       = json_decode( $value );
-							$stylesheet .= $key . ':' . ( $value->x * 100 ) . '% ' . ( $value->y * 100 ) . '%;';
-							break;
-						case 'background-image':
-							$value       = 'url(\'' . $value . '\')';
-							$stylesheet .= $key . ':' . $value . ';';
-							break;
-						case 'width':
-						case 'height':
-						case 'color':
-							// $stylesheet .= $key . ':' . $value . ';';
-							break;
-						default:
-							$stylesheet .= $key . ':' . $value . ';';
-							break;
+		$i_error = libxml_use_internal_errors( true );
+		$htmldoc = new \InlineStyle\InlineStyle();
+
+		if ( isset( $innerblock['attrs']['css'] ) ) {
+			foreach ( $innerblock['attrs']['css'] as $name => $css ) {
+				if ( empty( $css ) ) {
+					continue;
+				}
+				$parsed = $htmldoc->parseStylesheet( $css );
+				$css    = '';
+				foreach ( $parsed as $rule ) {
+					$selector = array_shift( $rule );
+					if ( ! empty( $rule ) ) {
+						$css .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' ' . $selector . '{' . implode( ';', $rule ) . '}';
 					}
 				}
-				$stylesheet .= '}';
+
+				switch ( $name ) {
+					case 'tablet':
+						$embeded_style .= '@media only screen and (max-width: 800px) {' . $css . '}';
+						break;
+					case 'mobile':
+						$embeded_style .= '@media only screen and (max-width: 400px) {' . $css . '}';
+						break;
+					default:
+						$embeded_style .= $css;
+						break;
+				}
 			}
 		}
 
-		if ( isset( $innerblock['attrs']['css'] ) ) {
-			$stylesheet .= $innerblock['attrs']['css'];
+		$parsed = $htmldoc->parseStylesheet( $stylesheet );
+		foreach ( $parsed as $rule ) {
+			$selector = array_shift( $rule );
+			if ( ! empty( $rule ) && preg_match( '(::?(after|before))', $selector ) ) {
+				$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' ' . $selector . '{' . implode( ';', $rule ) . '}';
+			}
 		}
 
 		if ( ! empty( $embeded_style ) ) {
 			$output = '<style>' . $embeded_style . '</style>' . $output;
 		}
 
-		$output = '<div class="' . implode( ' ', $classes ) . '">' . $output . '</div>';
+		$output = $uniqid . '<div class="' . implode( ' ', $classes ) . '">' . $output . '</div>';
 
-		require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
-
-		$i_error = libxml_use_internal_errors( true );
-		$htmldoc = new \InlineStyle\InlineStyle( $output );
+		$htmldoc->loadHTML( $output );
 
 		$htmldoc->applyStylesheet( $stylesheet );
 
@@ -776,7 +788,17 @@ class MailsterBlockForms {
 			$html = do_shortcode( $html );
 		}
 
+		if ( ! $is_backend ) {
+			update_post_meta( $form->ID, '_cached', $html, true );
+		}
+
 		return ( $html );
+
+	}
+
+	public function clear_cache( $post_id, $post ) {
+
+		delete_post_meta( $post_id, '_cached' );
 
 	}
 }

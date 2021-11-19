@@ -6,10 +6,11 @@ class MailsterSettings {
 
 		add_action( 'admin_init', array( &$this, 'admin_init' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ), 70 );
-		add_action( 'admin_init', array( &$this, 'register_settings' ) );
 		add_action( 'admin_init', array( &$this, 'actions' ) );
 		add_action( 'admin_init', array( &$this, 'maybe_create_homepage' ) );
 
+		add_action( 'admin_init', array( &$this, 'register_settings' ) );
+		add_action( 'rest_api_init', array( &$this, 'register_settings' ) );
 	}
 
 
@@ -422,8 +423,24 @@ class MailsterSettings {
 	public function register_settings() {
 
 		// General
-		register_setting( 'mailster_settings', 'mailster_options', array( &$this, 'verify' ) );
-		register_setting( 'mailster_settings', 'mailster_texts', array( &$this, 'verify_texts' ) );
+		register_setting(
+			'mailster_settings',
+			'mailster_options',
+			array(
+				'sanitize_callback' => array( &$this, 'verify' ),
+
+			)
+		);
+		register_setting( 'mailster_settings', 'mailster_texts', array( 'sanitize_callback' => array( &$this, 'verify_texts' ) ) );
+		register_setting(
+			'mailster_settings',
+			'mailster_inline_styles',
+			array(
+				'description'  => 'contains the styles of your sites input fields',
+				'show_in_rest' => true,
+				'type'         => 'string',
+			)
+		);
 
 	}
 

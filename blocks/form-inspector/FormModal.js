@@ -103,7 +103,6 @@ const ModalContent = ({ setOpen }) => {
 					);
 				})}
 			</Grid>
-			<div>adsad</div>
 		</>
 	);
 };
@@ -111,27 +110,20 @@ const ModalContent = ({ setOpen }) => {
 export default function FormModal(props) {
 	const { isSelected } = props;
 
-	let isEmptyEditor = EmptyEditor();
-
 	const [isOpen, setOpen] = useState(false);
-
-	const [isEmpty, setEmpty] = useState(isEmptyEditor);
+	const [isEmpty, setEmpty] = useState(EmptyEditor());
 
 	const openModal = () => setOpen(true);
 
 	const closeModal = () => {
-		if (isEmptyEditor) {
-			var innerblocks = [
-				wp.blocks.createBlock('mailster/field-email', {
-					//label: 'Email',
-					//type: 'email',
-				}),
-				wp.blocks.createBlock('mailster/button'),
-			];
-			var insertedBlock = wp.blocks.createBlock(
+		if (isEmpty) {
+			const insertedBlock = wp.blocks.createBlock(
 				'mailster/form-wrapper',
 				{},
-				innerblocks
+				[
+					wp.blocks.createBlock('mailster/field-email'),
+					wp.blocks.createBlock('mailster/button'),
+				]
 			);
 			dispatch('core/block-editor').resetBlocks([insertedBlock]);
 		}
@@ -140,10 +132,8 @@ export default function FormModal(props) {
 
 	subscribe(() => {
 		const newRequireModal = EmptyEditor();
-
-		if (newRequireModal !== isEmptyEditor) {
-			isEmptyEditor = newRequireModal;
-			setEmpty(isEmptyEditor);
+		if (newRequireModal !== isEmpty) {
+			setEmpty(newRequireModal);
 		}
 	});
 

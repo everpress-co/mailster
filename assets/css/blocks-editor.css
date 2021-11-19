@@ -3,6 +3,10 @@
  *
  * Replace them with your own styles or remove the file completely.
  */
+
+.post-type-newsletter_form .edit-post-layout__metaboxes {
+	display: none;
+}
 .post-type-newsletter_form .edit-post-visual-editor {
 	background: url('data:image/svg+xml,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 100 100" xml:space="preserve"><style>.st0{fill:%23fafafa}</style><path class="st0" d="M0 0h50v50H0zM50.5 49.5h50v50h-50z"/></svg>')
 		white !important;

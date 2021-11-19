@@ -58,7 +58,6 @@ export default function FormElement(props) {
 	const {
 		label,
 		name,
-
 		selected,
 		type,
 		inline,

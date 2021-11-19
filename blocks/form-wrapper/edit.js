@@ -43,6 +43,7 @@ import {
 	useMemo,
 } from '@wordpress/element';
 import { useEntityProp } from '@wordpress/core-data';
+import apiFetch from '@wordpress/api-fetch';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -81,7 +82,9 @@ export default function Edit(props) {
 	);
 
 	const [displayMessages, setDisplayMessages] = useState(false);
-	const [inputStyles, setinputStyles] = useState(meta.input_styles);
+	const [inputStyles, setinputStyles] = useState(
+		window.mailster_inline_styles
+	);
 	const [showClasses, setShowClasses] = useState(false);
 
 	const borderProps = useBorderProps(attributes);
@@ -116,11 +119,13 @@ export default function Edit(props) {
 		newMessages[prop] = data;
 		setAttributes({ messages: newMessages });
 	}
-	function setCss(css) {
-		setAttributes({ css: css });
+	function setCss(name, data) {
+		var newCss = { ...css };
+		newCss[name] = data;
+		setAttributes({ css: newCss });
 	}
 
-	function prefixCss(css, className) {
+	function prefixCss(css, className, type) {
 		if (!css) return css;
 
 		var classLen = className.length,
@@ -174,10 +179,14 @@ export default function Edit(props) {
 			className + '.mailster-form'
 		);
 
+		if ('tablet' == type) {
+			rules = '@media only screen and (max-width: 800px) {' + rules + '}';
+		} else if ('mobile' == type) {
+			rules = '@media only screen and (max-width: 400px) {' + rules + '}';
+		}
+
 		return rules;
 	}
-
-	css += '';
 
 	const mediaPosition = ({ x, y }) => {
 		return `${Math.round(x * 100)}% ${Math.round(y * 100)}%`;
@@ -260,16 +269,21 @@ export default function Edit(props) {
 			.join('');
 
 		if (styles != inputStyles) {
-			setMeta({ input_styles: styles });
+			apiFetch({
+				path: '/wp/v2/settings',
+				method: 'POST',
+				data: { mailster_inline_styles: styles },
+			}).then((settings) => {
+				dispatch('core/notices').createNotice(
+					'success',
+					__('Input field styles have been updated.', 'mailster'),
+					{
+						type: 'snackbar',
+						isDismissible: true,
+					}
+				);
+			});
 			setinputStyles(styles);
-			dispatch('core/notices').createNotice(
-				'success',
-				__('Input field styles have been updated.', 'mailster'),
-				{
-					type: 'snackbar',
-					isDismissible: true,
-				}
-			);
 		}
 	};
 
@@ -298,7 +312,13 @@ export default function Edit(props) {
 	};
 
 	const prefixedCss = useMemo(() => {
-		return prefixCss(css, '.mailster-form-' + clientId);
+		return Object.keys(css).map((name, b) => {
+			return prefixCss(
+				css[name],
+				'.wp-block-mailster-form-wrapper.mailster-form-' + clientId,
+				name
+			);
+		});
 	}, [css]);
 
 	useEffect(() => {
@@ -313,11 +333,18 @@ export default function Edit(props) {
 			const block = wp.blocks.createBlock('mailster/gdpr', {
 				content: 'I agree to the privacy policy and terms.',
 			});
-			dispatch('core/block-editor').insertBlock(
-				block,
-				all.length,
-				clientId
-			);
+			const submit = all.filter((block) => {
+				return block.name == 'mailster/button';
+			});
+
+			const pos = submit.length
+				? select('core/block-editor').getBlockIndex(
+						submit[0].clientId,
+						clientId
+				  )
+				: all.length;
+
+			dispatch('core/block-editor').insertBlock(block, pos, clientId);
 		}
 	}, [meta.gdpr]);
 
@@ -332,7 +359,6 @@ export default function Edit(props) {
 					...colorProps.style,
 					...spacingProps.style,
 				}}
-				data-class=".mailster-form"
 			>
 				{prefixedCss && (
 					<style id="mailster-custom-styles">{prefixedCss}</style>

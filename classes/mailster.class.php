@@ -32,7 +32,6 @@ class Mailster {
 		require_once MAILSTER_DIR . 'classes/templates.class.php';
 		require_once MAILSTER_DIR . 'classes/addons.class.php';
 		require_once MAILSTER_DIR . 'classes/widget.class.php';
-		require_once MAILSTER_DIR . 'classes/blocks.class.php';
 		require_once MAILSTER_DIR . 'classes/frontpage.class.php';
 		require_once MAILSTER_DIR . 'classes/statistics.class.php';
 		require_once MAILSTER_DIR . 'classes/ajax.class.php';
@@ -65,7 +64,6 @@ class Mailster {
 			'precheck'     => new MailsterPrecheck(),
 			'manage'       => new MailsterManage(),
 			'templates'    => new MailsterTemplates(),
-			'blocks'       => new MailsterBlocks(),
 			'addons'       => new MailsterAddons(),
 			'frontpage'    => new MailsterFrontpage(),
 			'statistics'   => new MailsterStatistics(),

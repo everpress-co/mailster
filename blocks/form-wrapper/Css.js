@@ -35,6 +35,7 @@ import {
 	FocalPointPicker,
 	SelectControl,
 	ComboboxControl,
+	TabPanel,
 	__experimentalBoxControl as BoxControl,
 	__experimentalUnitControl as UnitControl,
 	__experimentalGrid as Grid,
@@ -60,17 +61,29 @@ export default function Css(props) {
 
 	const { css } = attributes;
 
+	const tabs = {
+		general: __('General', 'mailster'),
+		tablet: __('Tablet', 'mailster'),
+		mobile: __('Mobile', 'mailster'),
+	};
+
+	//const [css, setCss2] = useState(attributes.css);
+
 	let codeEditor;
 
 	const setCssDebounce = useDebounce(setCss, 500);
 
-	const placeholder =
-		'.mailster-form{\n}\n.mailster-form .mailster-wrapper{\n}';
-
-	const initCodeMirror = (isOpened) => {
+	const initCodeMirror = (isOpened, name) => {
+		const placeholder = '/* Style for ' + tabs[name] + ' /*';
 		setShowClasses(isOpened);
 		if (!isOpened || !wp.CodeMirror) return;
 		setTimeout(() => {
+			if (
+				document
+					.querySelector('.custom-css-tabs')
+					.querySelector('.CodeMirror')
+			)
+				return;
 			codeEditor = wp.CodeMirror.fromTextArea(
 				document.getElementById('custom-css-textarea'),
 				{
@@ -82,11 +95,34 @@ export default function Css(props) {
 					placeholder: placeholder,
 				}
 			).on('change', function (editor) {
-				setCssDebounce(editor.getValue());
+				setCssDebounce(name, editor.getValue());
 			});
 		}, 0);
 
 		return;
+	};
+
+	const addSelector = (selector) => {
+		if (!selector) return;
+
+		const editor = document
+				.querySelector('.custom-css-tabs')
+				.querySelector('.CodeMirror').CodeMirror,
+			placeholder = '/*' + __('Your CSS Rules', 'mailster') + '*/',
+			value =
+				editor.getValue() +
+				selector +
+				'{\n    ' +
+				placeholder +
+				'\n}\n',
+			lines = value.match(/(\n)/g).length;
+
+		editor.setValue(value);
+		editor.focus();
+		editor.setSelection(
+			{ line: lines - 2, ch: 4 },
+			{ line: lines - 2, ch: placeholder.length + 4 }
+		);
 	};
 
 	return (
@@ -94,15 +130,97 @@ export default function Css(props) {
 			name="css"
 			title="Custom CSS"
 			initialOpen={false}
-			onToggle={initCodeMirror}
+			onToggle={(isOpen) => {
+				initCodeMirror(isOpen, 'general');
+			}}
 		>
 			<PanelRow>
-				<TextareaControl
-					id="custom-css-textarea"
+				<TabPanel
+					className="custom-css-tabs"
+					activeClass="is-active"
+					orientation="horizontal"
+					initialTabName="general"
+					onSelect={(tabName) => {
+						initCodeMirror(true, tabName);
+					}}
+					tabs={Object.keys(tabs).map((tab) => {
+						return {
+							name: tab,
+							title: tabs[tab],
+						};
+					})}
+				>
+					{(tab) => (
+						<>
+							<TextareaControl
+								id="custom-css-textarea"
+								help="Enter your custom CSS here. Every declaration will get prefixed to work only for this specific form."
+								value={css[tab.name]}
+								onChange={(value) =>
+									wp.CodeMirror &&
+									setCssDebounce(tab.name, name)
+								}
+							/>
+						</>
+					)}
+				</TabPanel>
+			</PanelRow>
+			<PanelRow>
+				<SelectControl
+					label={__('Choose a Selector:', 'mailster')}
 					help="Enter your custom CSS here. Every declaration will get prefixed to work only for this specific form."
-					value={css}
-					onChange={(value) => wp.CodeMirror && setCssDebounce(value)}
-				/>
+					onChange={addSelector}
+				>
+					<option value="">{__('Choose', 'mailster')}</option>
+					<option value=".mailster-form">
+						{__('Form selector', 'mailster')}
+					</option>
+					<option value=".mailster-wrapper">
+						{__('Field wrapper', 'mailster')}
+					</option>
+					<option value=".mailster-wrapper .input">
+						{__('Input fields', 'mailster')}
+					</option>
+					<option value=".mailster-wrapper label.mailster-label">
+						{__('Labels', 'mailster')}
+					</option>
+					<optgroup
+						label={__('Custom Field Wrapper divs', 'mailster')}
+					>
+						{[].map((el) => {
+							return (
+								<option
+									value={' .mailster-' + key + '-wrapper'}
+								>
+									{field}
+								</option>
+							);
+						})}
+					</optgroup>
+					<optgroup label={__('Custom Field Inputs', 'mailster')}>
+						{[].map((el) => {
+							return (
+								<option
+									value={
+										' .mailster-' +
+										key +
+										'-wrapper input.input'
+									}
+								>
+									{field}
+								</option>
+							);
+						})}
+					</optgroup>
+					<optgroup label={__('Other', 'mailster')}>
+						<option value=".mailster-wrapper-required label.mailster-label::after">
+							{__('Required Asterisk', 'mailster')}
+						</option>
+						<option value=".mailster-submit-wrapper .wp-block-button__link">
+							{__('Submit Button', 'mailster')}
+						</option>
+					</optgroup>
+				</SelectControl>
 			</PanelRow>
 		</PanelBody>
 	);

@@ -6,37 +6,25 @@ $patterns = apply_filters(
 		'simpleform' => array(
 			'title'       => __( 'Simple form', 'mailster' ),
 			'description' => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
-			'content'     => '<!-- wp:mailster/form-wrapper {"style":{"width":"30px","height":"40px"},"background":{"opacity":10,"fixed":false,"repeat":false,"size":"cover","image":"https://dev.local/wp-content/uploads/2021/11/rawpixel-589084-unsplash.jpg","position":{"x":"0.92","y":"0.17"}},"css":".mailster-form{\n   outline:4px solid #121212;\n  outline-offset:-20px;\n  padding:3em;\n  border-radius:30px\n}"} -->
-<form class="wp-block-mailster-form-wrapper mailster-form"><!-- wp:heading {"textAlign":"center","level":3,"style":{"typography":{"fontWeight":"700"}},"fontSize":"larger"} -->
-<h3 class="has-text-align-center has-larger-font-size" id="signup-to-our-newsletter" style="font-weight:700">Signup to our  Newsletter!</h3>
-<!-- /wp:heading -->
+			'content'     => '<!-- wp:mailster/form-wrapper -->
+<form method="post" action="/mailster/subscribe" class="wp-block-mailster-form-wrapper mailster-form"><div class="mailster-form-info"><div class="mailster-form-info-success" style="color:#ffffff;background-color:#6fbf4d"></div><div class="mailster-form-info-error" style="color:#ffffff;background-color:#bf4d4d"></div></div><!-- wp:mailster/field-email -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-type-email mailster-wrapper-required" style="width:100%"><label class="mailster-label">Email</label><input name="email" type="email" aria-required="true" aria-label="Email" spellcheck="false" required class="input" placeholder=" "/></div>
+<!-- /wp:mailster/field-email -->
 
-<!-- wp:paragraph {"align":"center"} -->
-<p class="has-text-align-center">Join our community with over [newsletter_subscribers round=100] total.</p>
-<!-- /wp:paragraph -->
+<!-- wp:mailster/gdpr -->
+<div class="wp-block-mailster-gdpr mailster-wrapper mailster-wrapper-_gdpr"><label><input type="hidden" name="_gdpr" value="0"/><input type="checkbox" name="_gdpr" value="1"/><span>I agree to the privacy policy and terms.</span></label></div>
+<!-- /wp:mailster/gdpr -->
 
-<!-- wp:mailster/input {"label":"Email","inline":true,"type":"email","style":{"width":100,"height":null,"padding":{"top":"0","left":"8px","right":"8px","bottom":"0"}},"className":"mailster-wrapper mailster-wrapper-required"} -->
-<div class="wp-block-mailster-input mailster-wrapper mailster-wrapper-inline mailster-wrapper-required" data-label="Email" style="width:100%"><label>Email</label><input name="input_name" type="email" value="" class="input mailster-email mailster-required" arialabel="Email" spellcheck="false"/></div>
-<!-- /wp:mailster/input -->
-
-<!-- wp:mailster/input {"label":"Firstname","required":true,"inline":true,"style":{"width":49,"height":null,"padding":{"top":"0","left":"8px","right":"8px","bottom":"0"}},"className":"mailster-wrapper"} -->
-<div class="wp-block-mailster-input mailster-wrapper mailster-wrapper-required mailster-wrapper-inline" data-label="Firstname" style="width:49%"><label>Firstname</label><input name="input_name" type="text" value="" class="input mailster-email mailster-required" arialabel="Firstname" spellcheck="false"/></div>
-<!-- /wp:mailster/input -->
-
-<!-- wp:mailster/input {"label":"Lastname","required":true,"inline":true,"style":{"width":49,"height":null,"padding":{"top":"0","left":"8px","right":"8px","bottom":"0"}},"className":"mailster-wrapper"} -->
-<div class="wp-block-mailster-input mailster-wrapper mailster-wrapper-required mailster-wrapper-inline" data-label="Lastname" style="width:49%"><label>Lastname</label><input name="input_name" type="text" value="" class="input mailster-email mailster-required" arialabel="Lastname" spellcheck="false"/></div>
-<!-- /wp:mailster/input -->
-
-<!-- wp:mailster/button {"width":100,"className":"is-style-outline"} -->
-<div class="wp-block-buttons mailster-wrapper"><div class="wp-block-button has-custom-width wp-block-button__width-100 is-style-outline"><a class="wp-block-button__link">Get the latest news</a></div></div>
-<!-- /wp:mailster/button --></form>
+<!-- wp:mailster/button -->
+<div class="wp-block-buttons mailster-wrapper mailster-submit-wrapper"><div class="wp-block-button"><a class="wp-block-button__link" href="">Subscribe</a></div></div>
+<!-- /wp:mailster/button --><input type="submit" style="display:none !important"/></form>
 <!-- /wp:mailster/form-wrapper -->',
 
 		),
 	)
 );
 
-$patterns = array();
+// $patterns = array();
 
 
 

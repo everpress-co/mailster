@@ -19,6 +19,22 @@
 		background-color: #fff;
 	}
 }
+@media only screen and (max-width: 800px) {
+	.mailster-form-type-popup,
+	.mailster-form-type-bar {
+		.mailster-form {
+			width: 70vw;
+		}
+	}
+}
+@media only screen and (max-width: 400px) {
+	.mailster-form-type-popup,
+	.mailster-form-type-bar {
+		.mailster-form {
+			width: 95vw;
+		}
+	}
+}
 .mailster-form-type-popup {
 	display: flex;
 	justify-content: center;
@@ -45,7 +61,7 @@
 	bottom: 0;
 	right: 0;
 }
-body::before {
+_body::before {
 	content: 'STYLE LOADED';
 	font-size: 10px;
 	position: fixed;
@@ -103,20 +119,12 @@ body::before {
 	flex-wrap: wrap;
 	align-items: flex-end;
 	justify-content: space-between;
-
 	> * {
 		width: 100%;
 	}
 	> div {
 		position: relative;
 	}
-
-	.mailster-form-info {
-		height: 0px;
-		transition: all 0.2s;
-		transform: scale(0);
-	}
-
 	.mailster-form-info > div {
 		padding: 0.5em 1em;
 		margin-bottom: 0.5em;
@@ -140,6 +148,14 @@ body::before {
 			// add some default style here
 		}
 	}
+}
+.mailster-form {
+	.mailster-form-info {
+		height: 0px;
+		transition: all 0.2s;
+		transform: scale(0);
+	}
+
 	.mailster-wrapper-required {
 		label.mailster-label::after {
 			content: '*';

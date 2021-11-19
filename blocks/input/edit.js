@@ -68,7 +68,6 @@ export default function Edit(props) {
 				{...useBlockProps({
 					className: className.join(' '),
 				})}
-				data-class={'.' + className.join('.')}
 				style={styleSheets}
 			>
 				{hasLabel && (
