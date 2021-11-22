@@ -270,7 +270,7 @@ class MailsterBlockForms {
 				'type'         => 'boolean',
 				'show_in_rest' => true,
 				'single'       => true,
-				'default'      => true,
+				'default'      => (bool) mailster_option( 'gdpr_forms' ),
 
 			)
 		);

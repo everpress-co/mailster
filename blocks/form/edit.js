@@ -29,6 +29,8 @@ import { Fragment, useState, Component, useEffect } from '@wordpress/element';
 
 import { Button, DropdownMenu, SelectControl } from '@wordpress/components';
 
+import InlineStyles from '../form/InlineStyles';
+
 class MailsterFormSelector extends Component {
 	constructor() {
 		super(...arguments);
@@ -120,30 +122,35 @@ export default function Edit(props) {
 		<Fragment>
 			<div {...useBlockProps()}>
 				{parseInt(id) > 0 && (
-					<div className="mailster-form-editor-wrap">
-						<div className="update-form-button">
-							<Button
-								variant="primary"
-								href={'post.php?post=' + id + '&action=edit'}
-								target={'edit_form_' + id}
-								text={__('Update Form', 'mailster')}
-							/>{' '}
-							<Button
-								variant="primary"
-								onClick={reloadForm}
-								text={__('Reload Form', 'mailster')}
-							/>
+					<>
+						<InlineStyles enableStyleBlock={true} />
+						<div className="mailster-form-editor-wrap">
+							<div className="update-form-button">
+								<Button
+									variant="primary"
+									href={
+										'post.php?post=' + id + '&action=edit'
+									}
+									target={'edit_form_' + id}
+									text={__('Update Form', 'mailster')}
+								/>{' '}
+								<Button
+									variant="primary"
+									onClick={reloadForm}
+									text={__('Reload Form', 'mailster')}
+								/>
+							</div>
+							{displayForm && (
+								<ServerSideRender
+									block="mailster/form"
+									attributes={attributes}
+									EmptyResponsePlaceholder={
+										EmptyResponsePlaceholder
+									}
+								/>
+							)}
 						</div>
-						{displayForm && (
-							<ServerSideRender
-								block="mailster/form"
-								attributes={attributes}
-								EmptyResponsePlaceholder={
-									EmptyResponsePlaceholder
-								}
-							/>
-						)}
-					</div>
+					</>
 				)}
 				{!id && (
 					<Placeholder

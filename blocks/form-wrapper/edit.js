@@ -57,7 +57,6 @@ import Styling from './Styling';
 import Messages from './Messages';
 import Background from './Background';
 import BlockRecovery from './BlockRecovery';
-
 import Css from './Css';
 
 /**
@@ -82,9 +81,7 @@ export default function Edit(props) {
 	);
 
 	const [displayMessages, setDisplayMessages] = useState(false);
-	const [inputStyles, setinputStyles] = useState(
-		window.mailster_inline_styles
-	);
+
 	const [showClasses, setShowClasses] = useState(false);
 
 	const borderProps = useBorderProps(attributes);
@@ -206,111 +203,6 @@ export default function Edit(props) {
 		backgroundStyles += '}';
 	}
 
-	const getInputStyles = () => {
-		const iframe = document.getElementById('inputStylesIframe');
-
-		if (!iframe) return;
-
-		const doc = iframe.contentWindow.document,
-			//get a couple of possible DOM elements
-			el =
-				doc.getElementsByClassName('entry-content')[0] ||
-				doc.getElementById('page') ||
-				doc.getElementById('site-content') ||
-				doc.getElementById('content') ||
-				doc.getElementsByTagName('body')[0],
-			properties = [
-				'color',
-				'padding',
-				'border',
-				'font',
-				'border-radius',
-				'background',
-				'box-shadow',
-				'line-height',
-				'appearance',
-				'outline',
-				'text-transform',
-				'letter-spacing',
-			],
-			selectors = {
-				'input[type="text"]': [],
-				'input[type="email"]': [],
-				'input[type="date"]': [],
-				'input[type="checkbox"]': ['width', 'height'],
-				'input[type="radio"]': ['width', 'height'],
-				select: [],
-				'label.mailster-label': [],
-			};
-
-		wp.element.render(
-			<form className="mailster-form">
-				<label className="mailster-label">This is my Label</label>
-				<select className="input">
-					<option>This is a select</option>
-				</select>
-				<input type="checkbox" />
-				<input type="radio" />
-				<input type="text" className="input" />
-				<input type="email" className="input" />
-				<input type="date" className="input " />
-			</form>,
-			el
-		);
-
-		const styles = Object.keys(selectors)
-			.map((selector, i) => {
-				const style = getStyles(
-					doc.querySelector('.mailster-form ' + selector),
-					[...properties, ...selectors[selector]]
-				);
-				return '.mailster-form ' + selector + '{' + style + '}' + '\n';
-			})
-			.join('');
-
-		if (styles != inputStyles) {
-			apiFetch({
-				path: '/wp/v2/settings',
-				method: 'POST',
-				data: { mailster_inline_styles: styles },
-			}).then((settings) => {
-				dispatch('core/notices').createNotice(
-					'success',
-					__('Input field styles have been updated.', 'mailster'),
-					{
-						type: 'snackbar',
-						isDismissible: true,
-					}
-				);
-			});
-			setinputStyles(styles);
-		}
-	};
-
-	const convertRestArgsIntoStylesArr = ([...args]) => {
-		return args.slice(1);
-	};
-	const getStyles = function () {
-		const args = [...arguments];
-		const [element] = args;
-		let s = '';
-
-		if (!element) return s;
-
-		const stylesProps =
-			[...args][1] instanceof Array
-				? args[1]
-				: convertRestArgsIntoStylesArr(args);
-
-		const styles = window.getComputedStyle(element);
-		stylesProps.reduce((acc, v) => {
-			const x = styles.getPropertyValue(v);
-			if (x) s += v + ': ' + x + ';';
-		}, {});
-
-		return s;
-	};
-
 	const prefixedCss = useMemo(() => {
 		return Object.keys(css).map((name, b) => {
 			return prefixCss(
@@ -348,6 +240,32 @@ export default function Edit(props) {
 		}
 	}, [meta.gdpr]);
 
+	useEffect(() => {
+		if (!select('core/block-editor').getBlocks().length) return;
+		const el = document.getElementsByClassName(
+			'edit-post-header__toolbar'
+		)[0];
+		const div = document.createElement('div');
+		div.classList.add('edit-post-header__settings');
+		el.parentNode.insertBefore(div, el.nextSibling);
+
+		wp.element.render(
+			<Button
+				id="Asda"
+				icon={brush}
+				label="Style"
+				variant="tertiary"
+				onClick={() => {
+					dispatch('core/block-editor').clearSelectedBlock(clientId);
+					dispatch('core/block-editor').selectBlock(clientId);
+				}}
+			>
+				{__('Style this form', 'mailster')}
+			</Button>,
+			div
+		);
+	}, []);
+
 	return (
 		<>
 			<div
@@ -360,14 +278,20 @@ export default function Edit(props) {
 					...spacingProps.style,
 				}}
 			>
-				{prefixedCss && (
-					<style id="mailster-custom-styles">{prefixedCss}</style>
+				{window.mailster_inline_styles && (
+					<style className="mailster-inline-styles">
+						{window.mailster_inline_styles}
+					</style>
 				)}
-				{inputStyles && (
-					<style id="mailster-inline-styles">{inputStyles}</style>
+				{prefixedCss && (
+					<style className="mailster-custom-styles">
+						{prefixedCss}
+					</style>
 				)}
 				{backgroundStyles && (
-					<style id="mailster-bg-styles">{backgroundStyles}</style>
+					<style className="mailster-bg-styles">
+						{backgroundStyles}
+					</style>
 				)}
 				{displayMessages && (
 					<div className="mailster-form-info">
@@ -390,40 +314,7 @@ export default function Edit(props) {
 				)}
 				<BlockRecovery {...props} />
 				<InnerBlocks />
-				{!isSelected && (
-					<ToolbarGroup className="style-form">
-						<ToolbarButton
-							icon={brush}
-							label="Style"
-							onClick={() => {
-								dispatch('core/block-editor').selectBlock(
-									clientId
-								);
-							}}
-						>
-							{__('Style this form', 'mailster')}
-						</ToolbarButton>
-					</ToolbarGroup>
-				)}
 			</div>
-			<iframe
-				src="../"
-				id="inputStylesIframe"
-				onLoad={getInputStyles}
-				sandbox="allow-scripts allow-same-origin"
-				hidden
-			></iframe>
-			<BlockControls>
-				<ToolbarGroup>
-					<ToolbarButton
-						icon={brush}
-						label="Style"
-						onClick={() => {
-							dispatch('core/block-editor').selectBlock(clientId);
-						}}
-					/>
-				</ToolbarGroup>
-			</BlockControls>
 			<InspectorControls>
 				<Messages
 					{...props}

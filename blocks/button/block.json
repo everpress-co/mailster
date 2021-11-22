@@ -1,26 +1,38 @@
 {
 	"apiVersion": 2,
 	"name": "mailster/button",
-	"title": "Button",
+	"version": "0.1.0",
+	"title": "Input Field",
 	"category": "mailster-form-fields",
-	"keywords": ["mailster", "button"],
+	"keywords": ["container", "wrapper", "row", "section"],
 	"icon": "button",
-	"description": "Submit button for your Mailster form.",
+	"description": "Simple Input Field for your Mailster Form",
 	"parent": ["mailster/form-wrapper", "core/column"],
 	"supports": {
 		"html": false,
 		"multiple": false
 	},
-	"attributes": {
-		"url": {
-			"type": "string",
-			"source": "attribute",
-			"selector": ".wp-block-button__link",
-			"attribute": "href"
-		},
-		"text": { "type": "string" }
+	"icon": {
+		"background": "#ff0",
+		"src": "button"
 	},
-	"parent": null,
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": "Submit",
+			"source": "attribute",
+			"selector": "input",
+			"attribute": "value"
+		},
+		"style": {
+			"type": "object",
+			"default": {
+				"width": 100
+			}
+		}
+	},
 	"textdomain": "mailster",
-	"editorScript": "file:./../../build/button.js"
+	"editorScript": "file:./../../build/button.js",
+	"editorStyle": "file:./../../build/button.css",
+	"style": "file:./../../build/style-button.css"
 }

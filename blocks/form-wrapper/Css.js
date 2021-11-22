@@ -125,11 +125,14 @@ export default function Css(props) {
 		);
 	};
 
+	useEffect(() => {
+		initCodeMirror(true, 'general');
+	}, []);
+
 	return (
 		<PanelBody
 			name="css"
 			title="Custom CSS"
-			initialOpen={false}
 			onToggle={(isOpen) => {
 				initCodeMirror(isOpen, 'general');
 			}}

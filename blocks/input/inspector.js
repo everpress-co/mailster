@@ -64,9 +64,7 @@ export default function InputFieldInspectorControls(props) {
 		type,
 		selected,
 		style,
-
 		values,
-		pattern,
 	} = attributes;
 
 	const [width, setWidth] = useState(100);
@@ -120,7 +118,7 @@ export default function InputFieldInspectorControls(props) {
 							onChange={(val) => setAttributes({ label: val })}
 						/>
 					</PanelRow>
-					{type != 'checkbox' && (
+					{typeof type !== 'undefined' && type != 'checkbox' && (
 						<PanelRow>
 							<CheckboxControl
 								label={__('Inline Labels', 'mailster')}
@@ -131,16 +129,18 @@ export default function InputFieldInspectorControls(props) {
 							/>
 						</PanelRow>
 					)}
-					<PanelRow>
-						<CheckboxControl
-							label={__('Required Field', 'mailster')}
-							checked={required || name == 'email'}
-							disabled={name == 'email'}
-							onChange={() =>
-								setAttributes({ required: !required })
-							}
-						/>
-					</PanelRow>
+					{typeof required !== 'undefined' && (
+						<PanelRow>
+							<CheckboxControl
+								label={__('Required Field', 'mailster')}
+								checked={required || name == 'email'}
+								disabled={name == 'email'}
+								onChange={() =>
+									setAttributes({ required: !required })
+								}
+							/>
+						</PanelRow>
+					)}
 					{(type == 'email' || type == 'date') && (
 						<PanelRow>
 							<CheckboxControl
@@ -158,6 +158,7 @@ export default function InputFieldInspectorControls(props) {
 					)}
 					<PanelRow>
 						<RangeControl
+							className="widefat"
 							label="Width"
 							value={style.width}
 							onChange={(value) => setStyle('width', value)}
@@ -270,18 +271,6 @@ export default function InputFieldInspectorControls(props) {
 							</PanelRow>
 						</>
 					)}
-					<PanelRow>
-						<TextControl
-							label={__('Pattern', 'mailster')}
-							help={__(
-								'Define a pattern for your field',
-								'mailster'
-							)}
-							value={pattern}
-							className="code"
-							onChange={(val) => setAttributes({ pattern: val })}
-						/>
-					</PanelRow>
 				</PanelBody>
 			</Panel>
 		</InspectorControls>

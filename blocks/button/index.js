@@ -3,13 +3,7 @@
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-import { __ } from '@wordpress/i18n';
-
-import { registerBlockType, unregisterBlockType } from '@wordpress/blocks';
-
-import { __experimentalGetCoreBlocks as coreBlocks } from '@wordpress/block-library';
-import { useBlockProps, BlockEdit } from '@wordpress/block-editor';
-import { useEffect } from '@wordpress/element';
+import { registerBlockType, createBlock } from '@wordpress/blocks';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -18,100 +12,30 @@ import { useEffect } from '@wordpress/element';
  *
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
-
 /**
  * Internal dependencies
  */
-
-const { addFilter } = wp.hooks;
-
-addFilter(
-	'blocks.registerBlockType',
-	'mailster/buttonABC',
-	(settings, name) => {
-		if ('mailster/button' == name) {
-		}
-		// we need to pass along the settings object
-		// even if we haven't modified them!
-		return settings;
-	}
-);
-addFilter(
-	'blocks.getSaveElement',
-	'mailster/buttonABCed',
-	(element, blockType, attributes) => {
-		if (blockType.name !== 'mailster/button') {
-			return element;
-		}
-
-		return element;
-	}
-);
-// add class from core block to get styles working
-addFilter(
-	'blocks.getBlockDefaultClassName',
-	'mailster/set-block-custom-class-name',
-	(className, blockName) => {
-		return blockName === 'mailster/button' ? 'wp-block-button' : className;
-	}
-);
-
+import edit from './edit';
+import save from './save';
 import json from './block.json';
 
-const coreButton = coreBlocks().filter((block) => {
-	return block.name == 'core/button';
-})[0];
-
-const edit = coreButton.settings.edit;
-const save = coreButton.settings.save;
-
-const { name, ...settings } = { ...coreButton.metadata, ...json };
-
-settings.attributes = {
-	...coreButton.metadata.attributes,
-	...settings.attributes,
-};
-
-settings.supports = {
-	...coreButton.metadata.supports,
-	...settings.supports,
-};
-
-settings.attributes.text.default = __('Subscribe', 'mailster');
+const { name, ...settings } = json;
 
 /**
  * Every block starts by registering a new block type definition.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
+
 registerBlockType(name, {
 	...settings,
 	/**
 	 * @see ./edit.js
 	 */
-	edit: (props) => {
-		const { attributes, setAttributes } = props;
+	edit,
 
-		useEffect(() => {
-			setAttributes({ url: '' });
-		}, [attributes.url]);
-
-		return (
-			<div className="wp-block-buttons mailster-wrapper mailster-submit-wrapper">
-				{edit(props)}
-			</div>
-		);
-	},
-
-	save: (props) => {
-		return (
-			<div className="wp-block-buttons mailster-wrapper mailster-submit-wrapper">
-				{save(props)}
-			</div>
-		);
-	},
-});
-
-wp.domReady(function () {
-	unregisterBlockType('core/button');
+	/**
+	 * @see ./save.js
+	 */
+	save,
 });

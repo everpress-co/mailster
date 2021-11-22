@@ -59,7 +59,7 @@ import { getBlockType, createBlock, rawHandler } from '@wordpress/blocks';
 export default function BlockRecovery(props) {
 	const { attributes, setAttributes, clientId } = props;
 
-	const [hasBrokenBlocks, setHasBrokenBlocks] = useState(false);
+	const [hasBrokenBlocks, setHasBrokenBlocks] = useState(0);
 
 	const getBrokenBlocks = () => {
 		const all = select('core/block-editor').getBlocks(clientId);
@@ -79,7 +79,7 @@ export default function BlockRecovery(props) {
 			);
 			dispatch('core/block-editor').replaceBlock(block.clientId, b);
 		});
-		setHasBrokenBlocks(false);
+		setHasBrokenBlocks(0);
 	};
 	const removeBlock = () => {
 		const broken = getBrokenBlocks();
@@ -88,17 +88,17 @@ export default function BlockRecovery(props) {
 			dispatch('core/block-editor').removeBlock(block.clientId);
 		});
 
-		setHasBrokenBlocks(false);
+		setHasBrokenBlocks(0);
 	};
 
 	useEffect(() => {
 		const broken = getBrokenBlocks();
-		setHasBrokenBlocks(!!broken.length);
+		setHasBrokenBlocks(broken.length);
 	}, [hasBrokenBlocks]);
 
 	return (
 		<>
-			{hasBrokenBlocks && (
+			{hasBrokenBlocks > 1 && (
 				<Warning
 					actions={[
 						<Button onClick={recoverAllBlocks} isPrimary>

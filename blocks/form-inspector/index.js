@@ -21,15 +21,17 @@ import { registerPlugin } from '@wordpress/plugins';
  * Internal dependencies
  */
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
-import { useSelect, select, dispatch } from '@wordpress/data';
+import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { registerBlockVariation } from '@wordpress/blocks';
 
-import FormModal from './FormModal';
 import Doubleoptin from './Doubleoptin';
 import Gdpr from './Gdpr';
 import Lists from './Lists';
+import WelcomeGuide from './WelcomeGuide';
 import Placement from './Placement';
+
+import InlineStyles from '../form/InlineStyles';
 
 function SettingsPanelPlugin() {
 	const [meta, setMeta] = useEntityProp(
@@ -42,10 +44,6 @@ function SettingsPanelPlugin() {
 		//console.warn('ONCE');
 	}, []);
 
-	// wp.data.dispatch('core/editor').lockPostSaving();
-	// //do stuff
-	// wp.data.dispatch('core/editor').unlockPostSaving();
-	//
 	return (
 		<>
 			<PluginPrePublishPanel
@@ -55,7 +53,8 @@ function SettingsPanelPlugin() {
 			>
 				PluginPrePublishPanel
 			</PluginPrePublishPanel>
-			<FormModal />
+			<InlineStyles />
+			<WelcomeGuide />
 			<Doubleoptin meta={meta} setMeta={setMeta} />
 			<Gdpr meta={meta} setMeta={setMeta} />
 			<Lists meta={meta} setMeta={setMeta} />

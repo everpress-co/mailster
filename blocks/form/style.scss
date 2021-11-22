@@ -140,12 +140,18 @@ _body::before {
 
 		input.input,
 		textarea.input,
-		select.input {
+		select.input,
+		input[type='submit'] {
 			width: 100%;
 			max-width: 100%;
 			margin: 0;
 			box-sizing: border-box;
 			// add some default style here
+		}
+
+		input[type='submit'] {
+			appearance: none;
+			//border: unset;
 		}
 	}
 }
