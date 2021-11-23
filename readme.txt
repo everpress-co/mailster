@@ -187,6 +187,10 @@ Get professional development help from our expert support partner *Codeable* for
 
 == Changelog ==
 
+= 3.0.5 =
+
+* fixed: add trailing space to preheaders to prevent unintentional line breaks in previews.
+
 = 3.0.4 =
 
 * fixed: saving template from editor messed up template header
