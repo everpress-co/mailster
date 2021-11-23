@@ -11,6 +11,8 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
+
+const { pick, kebabCase } = lodash;
 import {
 	InnerBlocks,
 	useBlockProps,
@@ -73,6 +75,7 @@ export default function Edit(props) {
 	const { style, background, inputs, messages } = attributes;
 	let { css } = attributes;
 	let backgroundStyles = '';
+	let inputStyle = '';
 
 	const [meta, setMeta] = useEntityProp(
 		'postType',
@@ -190,7 +193,10 @@ export default function Edit(props) {
 	};
 
 	if (background.image) {
-		backgroundStyles += '.mailster-form::before{';
+		backgroundStyles +=
+			'.wp-block-mailster-form-wrapper.mailster-form-' +
+			clientId +
+			'::before{';
 		backgroundStyles += "content:'';";
 		backgroundStyles += 'background-image: url(' + background.image + ');';
 		if (background.fixed)
@@ -202,6 +208,23 @@ export default function Edit(props) {
 		backgroundStyles += 'opacity:' + background.opacity + '%;';
 		backgroundStyles += '}';
 	}
+
+	const filteredInputStyles = Object.fromEntries(
+		Object.entries(style).filter(([k, v]) => v)
+	);
+
+	Object.entries(filteredInputStyles).map(([k, v]) => {
+		inputStyle +=
+			'.wp-block-mailster-form-wrapper.mailster-form-' + clientId;
+		if (k == 'labelColor') {
+			inputStyle += ' .mailster-label{';
+			inputStyle += 'color:' + v + ';';
+		} else {
+			inputStyle += ' .input{';
+			inputStyle += kebabCase(k) + ':' + v + ';';
+		}
+		inputStyle += '}';
+	});
 
 	const prefixedCss = useMemo(() => {
 		return Object.keys(css).map((name, b) => {
@@ -241,7 +264,11 @@ export default function Edit(props) {
 	}, [meta.gdpr]);
 
 	useEffect(() => {
-		if (!select('core/block-editor').getBlocks().length) return;
+		if (
+			!select('core/block-editor').getBlocks().length ||
+			document.getElementById('style-this-form')
+		)
+			return;
 		const el = document.getElementsByClassName(
 			'edit-post-header__toolbar'
 		)[0];
@@ -251,7 +278,7 @@ export default function Edit(props) {
 
 		wp.element.render(
 			<Button
-				id="Asda"
+				id="style-this-form"
 				icon={brush}
 				label="Style"
 				variant="tertiary"
@@ -292,6 +319,11 @@ export default function Edit(props) {
 					<style className="mailster-bg-styles">
 						{backgroundStyles}
 					</style>
+				)}{' '}
+				{inputStyle && (
+					<style className="mailster-inline-styles">
+						{inputStyle}
+					</style>
 				)}
 				{displayMessages && (
 					<div className="mailster-form-info">
@@ -316,6 +348,7 @@ export default function Edit(props) {
 				<InnerBlocks />
 			</div>
 			<InspectorControls>
+				<Styling {...props} />
 				<Messages
 					{...props}
 					setMessages={setMessages}

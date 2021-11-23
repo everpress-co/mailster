@@ -53,7 +53,7 @@ export default function Edit(props) {
 	const className = ['mailster-wrapper', 'mailster-wrapper-submit'];
 
 	const styleSheets = {
-		width: style.width + '%',
+		width: style.width ? style.width + '%' : undefined,
 	};
 
 	return (

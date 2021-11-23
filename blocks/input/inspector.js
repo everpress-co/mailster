@@ -44,6 +44,8 @@ import apiFetch from '@wordpress/api-fetch';
 
 import { Icon, arrowUp, arrowDown, trash } from '@wordpress/icons';
 
+import Styles from './Styles';
+
 /**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
@@ -102,6 +104,7 @@ export default function InputFieldInspectorControls(props) {
 
 	return (
 		<InspectorControls>
+			<Styles {...props} />
 			<Panel>
 				<PanelBody
 					title={__('Field Settings', 'mailster')}
@@ -161,6 +164,8 @@ export default function InputFieldInspectorControls(props) {
 							className="widefat"
 							label="Width"
 							value={style.width}
+							allowReset={true}
+							initialPosition={100}
 							onChange={(value) => setStyle('width', value)}
 							min={10}
 							max={100}

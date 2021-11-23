@@ -33,13 +33,14 @@ export default function save(props) {
 	if (required) className.push('mailster-wrapper-required');
 	if (inline) className.push('mailster-wrapper-inline');
 	const styleSheets = {
-		width: style.width + '%',
+		width: style.width ? style.width + '%' : undefined,
 	};
 
 	const labelElement = (
 		<RichText.Content
 			tagName="label"
 			//htmlFor={type != 'radio' ? id : null}
+			style={{ color: style.labelColor }}
 			className="mailster-label"
 			value={label}
 		/>

@@ -479,7 +479,12 @@ class MailsterBlockForms {
 			$this->register_block_pattern();
 			$this->register_block_pattern_category();
 
-			wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
+			wp_enqueue_code_editor(
+				array(
+					'type'       => 'text/css',
+					'codemirror' => array( 'lint' => true ),
+				)
+			);
 
 			$blocks = $this->get_blocks();
 
@@ -656,7 +661,7 @@ class MailsterBlockForms {
 		if ( ! $is_backend ) {
 			wp_enqueue_script( 'mailster-form-block' );
 			if ( $cached = get_post_meta( $form->ID, '_cached', true ) ) {
-				return $cached;
+				// return $cached;
 			}
 		}
 
@@ -714,6 +719,15 @@ class MailsterBlockForms {
 			}
 			$embeded_style .= 'background-position:' . ( $innerblock['attrs']['background']['position']['x'] * 100 ) . '% ' . ( $innerblock['attrs']['background']['position']['y'] * 100 ) . '%;';
 			$embeded_style .= 'position: absolute;background-repeat: no-repeat;top: 0;left: 0;bottom: 0;right: 0;';
+			$embeded_style .= '}';
+
+		}
+
+		if ( isset( $innerblock['attrs']['style'] ) ) {
+			$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .wp-block-mailster-form-wrapper .input{';
+			foreach ( $innerblock['attrs']['style'] as $key => $value ) {
+				$embeded_style .= strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
+			}
 			$embeded_style .= '}';
 
 		}

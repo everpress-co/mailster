@@ -68,6 +68,14 @@ export default function FormElement(props) {
 		pattern,
 	} = attributes;
 
+	const inputStyle = {
+		color: style.color,
+		backgroundColor: style.backgroundColor,
+		borderColor: style.borderColor,
+		borderWidth: style.borderWidth,
+		borderRadius: style.borderRadius,
+	};
+
 	switch (type) {
 		case 'radio':
 			return (
@@ -83,6 +91,7 @@ export default function FormElement(props) {
 									required={required}
 									type="radio"
 									checked={selected == value}
+									style={inputStyle}
 									onChange={(event) => {
 										setAttributes({
 											selected: event.target.value,
@@ -98,16 +107,19 @@ export default function FormElement(props) {
 		case 'checkbox':
 			return (
 				<div className="mailster-group mailster-group-checkbox">
-					<input
-						name={name}
-						aria-required={required}
-						aria-label={label.replace(/<[^>]+>/g, '')}
-						spellCheck={false}
-						required={required}
-						type="checkbox"
-						defaultChecked={true}
-					/>
-					<label className="mailster-label">{label}</label>
+					<label>
+						<input
+							name={name}
+							aria-required={required}
+							aria-label={label.replace(/<[^>]+>/g, '')}
+							spellCheck={false}
+							required={required}
+							type="checkbox"
+							style={inputStyle}
+							defaultChecked={true}
+						/>
+						<span className="mailster-label">{label}</span>
+					</label>
 				</div>
 			);
 		case 'dropdown':
@@ -120,6 +132,7 @@ export default function FormElement(props) {
 					spellCheck={false}
 					required={required}
 					value={selected}
+					style={inputStyle}
 					onChange={(event) => {
 						setAttributes({
 							selected: event.target.value,
@@ -148,6 +161,7 @@ export default function FormElement(props) {
 						required={required}
 						className="input"
 						pattern={pattern}
+						style={inputStyle}
 						placeholder=" "
 					/>
 				</>

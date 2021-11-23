@@ -66,7 +66,7 @@ window.mailster_fields &&
 					type: 'string',
 					default: field.name,
 					source: 'html',
-					selector: 'label.mailster-label',
+					selector: '.mailster-label',
 				},
 				name: {
 					type: 'string',
@@ -114,7 +114,13 @@ window.mailster_fields &&
 				style: {
 					type: 'object',
 					default: {
-						width: 100,
+						width: undefined,
+						color: undefined,
+						backgroundColor: undefined,
+						borderColor: undefined,
+						labelColor: undefined,
+						borderWidth: undefined,
+						borderRadius: undefined,
 					},
 				},
 			},

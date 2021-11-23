@@ -59,7 +59,7 @@ export default function Edit(props) {
 	if (inline) className.push('mailster-wrapper-inline');
 
 	const styleSheets = {
-		width: style.width + '%',
+		width: style.width ? style.width + '%' : undefined,
 	};
 
 	return (
@@ -76,6 +76,7 @@ export default function Edit(props) {
 						value={label}
 						onChange={(val) => setAttributes({ label: val })}
 						//allowedFormats={[]}
+						style={{ color: style.labelColor }}
 						className="mailster-label"
 						placeholder={__('Enter Label', 'mailster')}
 					/>

@@ -34,6 +34,9 @@
 .CodeMirror pre.CodeMirror-placeholder {
 	color: #ccc;
 }
+.CodeMirror {
+	border: 1px solid #e0e0e0;
+}
 
 .editor-styles-wrapper .is-root-container .mailster-form.show-classes {
 	pointer-events: none !important;
@@ -64,6 +67,12 @@
 		.input {
 			pointer-events: none;
 		}
+	}
+}
+
+.css-modal {
+	.custom-css-tabs {
+		width: 100%;
 	}
 }
 

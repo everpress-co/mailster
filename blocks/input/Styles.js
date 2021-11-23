@@ -64,9 +64,36 @@ export default function Styles(props) {
 		setAttributes({ style: newStyle });
 	}
 
+	function applyStyle() {
+		const root = select('core/block-editor').getBlocks();
+		var newStyle = { ...style };
+		root.map((block) => {
+			console.warn(block);
+
+			var style = {
+				...select('core/block-editor').getBlockAttributes(
+					block.clientId
+				).style,
+			};
+
+			dispatch('core/block-editor').updateBlockAttributes(
+				block.clientId,
+				{ style: { ...style, ...newStyle } }
+			);
+
+			dispatch('core/block-editor').clearSelectedBlock(block.clientId);
+			dispatch('core/block-editor').selectBlock(block.clientId);
+		});
+
+		dispatch('core/block-editor').updateBlockAttributes(clientId, {
+			style: {},
+		});
+	}
+
 	return (
 		<PanelColorSettings
 			title={__('Styles', 'mailster')}
+			initialOpen={false}
 			colorSettings={[
 				{
 					value: style.color,
@@ -94,7 +121,7 @@ export default function Styles(props) {
 				<RangeControl
 					className="widefat"
 					label="borderWidth"
-					value={parseInt(style.borderWidth, 10)}
+					value={parseInt(style.borderWidth || 0, 10)}
 					allowReset={true}
 					onChange={(value) => setStyle('borderWidth', value + 'px')}
 					min={0}
@@ -105,12 +132,17 @@ export default function Styles(props) {
 				<RangeControl
 					className="widefat"
 					label="borderRadius"
-					value={parseInt(style.borderRadius, 10)}
+					value={parseInt(style.borderRadius || 0, 10)}
 					allowReset={true}
 					onChange={(value) => setStyle('borderRadius', value + 'px')}
 					min={0}
 					max={50}
 				/>
+			</PanelRow>
+			<PanelRow>
+				<Button onClick={applyStyle} variant="primary" icon={external}>
+					{__('Apply to all input fields', 'mailster')}
+				</Button>
 			</PanelRow>
 		</PanelColorSettings>
 	);

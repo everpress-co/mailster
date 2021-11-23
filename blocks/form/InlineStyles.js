@@ -93,7 +93,6 @@ export default function InlineStyles(props) {
 				doc.getElementById('content') ||
 				doc.getElementsByTagName('body')[0],
 			properties = [
-				'color',
 				'padding',
 				'border',
 				'font',
