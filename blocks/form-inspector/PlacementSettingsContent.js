@@ -3,7 +3,7 @@
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
  */
-import { __ } from '@wordpress/i18n';
+import { isRTL, __ } from '@wordpress/i18n';
 
 /**
  * React hook that is used to mark the block wrapper element.
@@ -50,7 +50,7 @@ import {
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 
-import { settings } from '@wordpress/icons';
+import { undo, chevronRight, chevronLeft } from '@wordpress/icons';
 import apiFetch from '@wordpress/api-fetch';
 import { useDebounce } from '@wordpress/compose';
 import { useEntityProp } from '@wordpress/core-data';
@@ -62,7 +62,10 @@ import {
 } from '@wordpress/components';
 
 import NavigatorButton from './NavigatorButton';
-
+import {
+	__experimentalItemGroup as ItemGroup,
+	__experimentalItem as Item,
+} from '@wordpress/components';
 /**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
@@ -72,7 +75,7 @@ import NavigatorButton from './NavigatorButton';
  * @return {WPElement} Element to render.
  */
 
-export default function PlacementOption(props) {
+export default function PlacementSettingsContent(props) {
 	const { meta, setMeta, type, image, title } = props;
 	const { placements } = meta;
 
@@ -84,58 +87,67 @@ export default function PlacementOption(props) {
 		setMeta({ ['placement_' + type]: newOptions });
 	}
 
-	const className = ['placement-option'];
-
-	placements.includes(type) && className.push('enabled');
-
-	function setPlacements(placement, add) {
-		var newPlacements = [...placements];
-		if (add) {
-			newPlacements.push(placement);
-		} else {
-			newPlacements = newPlacements.filter((el) => {
-				return el != placement;
-			});
-		}
-
-		setMeta({ placements: newPlacements });
-	}
-
-	const enabled = 'other' == type || placements.includes(type);
-
 	return (
-		<NavigatorScreen path="/">
-			<Card size="small" className={className.join(' ')}>
-				<CardHeader>
-					<Flex align="center">
-						{'other' != type && (
-							<CheckboxControl
-								value={type}
-								checked={enabled}
-								onChange={(val) => {
-									setPlacements(type, val);
-								}}
-							/>
-						)}
-
-						<NavigatorButton
-							variant="link"
-							disabled={!enabled}
-							path={'/' + type}
-							icon={<Icon icon={settings} />}
-							isSmall={true}
+		<ItemGroup isBordered={false} isSeparated size="small">
+			<Item>
+				<RadioControl
+					selected={options.pos}
+					options={[
+						{
+							label: 'Start of content',
+							value: '0',
+						},
+						{
+							label: 'End of content',
+							value: '-1',
+						},
+					]}
+					onChange={(val) => setOptions({ pos: val })}
+				/>
+			</Item>
+			<Item>
+				{__('Display form after:', 'mailster')}
+				<Flex>
+					<FlexBlock>
+						<NumberControl
+							onChange={(val) =>
+								setOptions({
+									pos: val,
+								})
+							}
+							isDragEnabled
+							isShiftStepEnabled
+							shiftStep={10}
+							step={1}
+							value={options.pos}
 						/>
-					</Flex>
-				</CardHeader>
-				<NavigatorButton
-					as={CardMedia}
-					path={'/' + type}
-					disabled={!enabled}
-				>
-					{image}
-				</NavigatorButton>
-				<CardFooter>{title}</CardFooter>
-			</Card>
-		</NavigatorScreen>
+					</FlexBlock>
+					<FlexItem>
+						<SelectControl
+							value={options.tag}
+							onChange={(val) =>
+								setOptions({
+									tag: val,
+								})
+							}
+							options={[
+								{
+									value: 'p',
+									label: 'Paragraph',
+								},
+								{
+									value: 'h2',
+									label: 'Heading 2',
+								},
+								{
+									value: 'h3',
+									label: 'Heading 3',
+								},
+							]}
+						/>
+					</FlexItem>
+				</Flex>
+			</Item>
+		</ItemGroup>
 	);
 }

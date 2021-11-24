@@ -34,10 +34,9 @@ import { more } from '@wordpress/icons';
  *
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
-import './editor.scss';
 
 import InputFieldInspectorControls from '../input/inspector.js';
-import FormElement from './FormElement.js';
+import FormElement from './FormElement';
 
 /**
  * The edit function describes the structure of your block in the context of the

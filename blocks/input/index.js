@@ -56,6 +56,7 @@ window.mailster_fields &&
 			supports: {
 				html: false,
 				multiple: false,
+				fontSize: true,
 			},
 			icon: {
 				background: '#ff0',
@@ -121,6 +122,7 @@ window.mailster_fields &&
 						labelColor: undefined,
 						borderWidth: undefined,
 						borderRadius: undefined,
+						fontSize: undefined,
 					},
 				},
 			},

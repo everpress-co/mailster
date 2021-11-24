@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
 import { useBlockProps, RichText } from '@wordpress/block-editor';
-import FormElement from './FormElement.js';
+import FormElement from './FormElement';
 
 /**
  * The save function defines the way in which the different attributes should

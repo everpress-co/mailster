@@ -94,9 +94,20 @@ export default function Styles(props) {
 				<RangeControl
 					className="widefat"
 					label="borderWidth"
-					value={parseInt(style.borderWidth, 10)}
+					value={
+						style.borderWidth
+							? parseInt(style.borderWidth, 10)
+							: null
+					}
 					allowReset={true}
-					onChange={(value) => setStyle('borderWidth', value + 'px')}
+					onChange={(value) =>
+						setStyle(
+							'borderWidth',
+							typeof value !== 'undefined'
+								? value + 'px'
+								: undefined
+						)
+					}
 					min={0}
 					max={10}
 				/>
@@ -105,9 +116,20 @@ export default function Styles(props) {
 				<RangeControl
 					className="widefat"
 					label="borderRadius"
-					value={parseInt(style.borderRadius, 10)}
+					value={
+						style.borderRadius
+							? parseInt(style.borderRadius, 10)
+							: null
+					}
 					allowReset={true}
-					onChange={(value) => setStyle('borderRadius', value + 'px')}
+					onChange={(value) =>
+						setStyle(
+							'borderRadius',
+							typeof value !== 'undefined'
+								? value + 'px'
+								: undefined
+						)
+					}
 					min={0}
 					max={50}
 				/>

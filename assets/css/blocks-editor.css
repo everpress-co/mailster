@@ -44,9 +44,17 @@ button[name='link'] {
 	display: none;
 }
 
+.components-navigator-provider {
+	width: 100%;
+}
+.components-navigator-screen {
+	overflow: visible;
+	padding: 4px;
+}
+
 .placement-option:hover {
-	box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--wp-admin-theme-color);
-	outline: 2px solid transparent;
+	_box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--wp-admin-theme-color);
+	__outline: 2px solid transparent;
 }
 .placement-option .components-card-header {
 	padding: 0.6em;

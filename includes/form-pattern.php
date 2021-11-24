@@ -41,8 +41,7 @@ $patterns = apply_filters(
 		),
 	)
 );
-
-// $patterns = array();
+$patterns = array();
 
 
 

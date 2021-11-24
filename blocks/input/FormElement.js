@@ -70,6 +70,7 @@ export default function FormElement(props) {
 
 	const inputStyle = {
 		color: style.color,
+		fontSize: style.fontSize,
 		backgroundColor: style.backgroundColor,
 		borderColor: style.borderColor,
 		borderWidth: style.borderWidth,

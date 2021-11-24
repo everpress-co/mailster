@@ -62,7 +62,7 @@ class MailsterBlockForms {
 
 
 	public function check_validity( $form_id, $context = null ) {
-		$options = get_post_meta( $form_id, 'placement_content', true );
+		$options = get_post_meta( $form_id, 'placement_' . $context, true );
 
 		if ( isset( $options['all'] ) && $options['all'] ) {
 			return $options;
@@ -138,6 +138,9 @@ class MailsterBlockForms {
 		}
 		if ( isset( $this->forms['bar'] ) ) {
 			foreach ( $this->forms['bar'] as $form ) {
+				if ( ! ( $option = $this->check_validity( $form, 'bar' ) ) ) {
+					continue;
+				}
 				echo $this->render_form_byid( $form, array( 'mailster-form-type-bar' ) );
 			}
 		}
@@ -413,25 +416,31 @@ class MailsterBlockForms {
 						'schema' => array(
 							'type'       => 'object',
 							'properties' => array(
-								'all'        => array(
+								'all'           => array(
 									'type' => 'boolean',
 								),
-								'post_types' => array(
+								'triggers'      => array(
 									'type' => 'array',
 								),
-								'posts'      => array(
+								'trigger_delay' => array(
+									'type' => 'integer',
+								),
+								'post_types'    => array(
 									'type' => 'array',
 								),
-								'category'   => array(
+								'posts'         => array(
 									'type' => 'array',
 								),
-								'post_tag'   => array(
+								'category'      => array(
 									'type' => 'array',
 								),
-								'tag'        => array(
+								'post_tag'      => array(
+									'type' => 'array',
+								),
+								'tag'           => array(
 									'type' => 'string',
 								),
-								'pos'        => array(
+								'pos'           => array(
 									'type' => 'integer',
 								),
 							),
@@ -520,6 +529,8 @@ class MailsterBlockForms {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . 'build/form-inspector.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-form-field-block-editor', MAILSTER_URI . 'build/input.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+
 		wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_fields = ' . json_encode( array_values( $this->get_custom_fields() ) ) . ';' );
 		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_inline_styles = ' . json_encode( get_option( 'mailster_inline_styles' ) ) . ';' );
@@ -729,7 +740,6 @@ class MailsterBlockForms {
 				$embeded_style .= strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
 			}
 			$embeded_style .= '}';
-
 		}
 
 		if ( $is_backend && $input_styles = get_option( 'mailster_inline_styles' ) ) {

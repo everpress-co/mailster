@@ -35,6 +35,7 @@ import {
 	RangeControl,
 	FocalPointPicker,
 	SelectControl,
+	FontSizePicker,
 	__experimentalBoxControl as BoxControl,
 	__experimentalUnitControl as UnitControl,
 	__experimentalGrid as Grid,
@@ -66,10 +67,8 @@ export default function Styles(props) {
 
 	function applyStyle() {
 		const root = select('core/block-editor').getBlocks();
-		var newStyle = { ...style };
+		const { width, ...newStyle } = style;
 		root.map((block) => {
-			console.warn(block);
-
 			var style = {
 				...select('core/block-editor').getBlockAttributes(
 					block.clientId
@@ -86,9 +85,25 @@ export default function Styles(props) {
 		});
 
 		dispatch('core/block-editor').updateBlockAttributes(clientId, {
-			style: {},
+			style: {
+				width,
+			},
 		});
 	}
+
+	const fontSizes = [
+		{
+			name: __('Small'),
+			slug: 'small',
+			size: 12,
+		},
+		{
+			name: __('Big'),
+			slug: 'big',
+			size: 26,
+		},
+	];
+	const fallbackFontSize = 16;
 
 	return (
 		<PanelColorSettings
@@ -121,9 +136,20 @@ export default function Styles(props) {
 				<RangeControl
 					className="widefat"
 					label="borderWidth"
-					value={parseInt(style.borderWidth || 0, 10)}
+					value={
+						style.borderWidth
+							? parseInt(style.borderWidth, 10)
+							: null
+					}
 					allowReset={true}
-					onChange={(value) => setStyle('borderWidth', value + 'px')}
+					onChange={(value) =>
+						setStyle(
+							'borderWidth',
+							typeof value !== 'undefined'
+								? value + 'px'
+								: undefined
+						)
+					}
 					min={0}
 					max={10}
 				/>
@@ -132,11 +158,31 @@ export default function Styles(props) {
 				<RangeControl
 					className="widefat"
 					label="borderRadius"
-					value={parseInt(style.borderRadius || 0, 10)}
+					value={
+						style.borderRadius
+							? parseInt(style.borderRadius, 10)
+							: null
+					}
 					allowReset={true}
-					onChange={(value) => setStyle('borderRadius', value + 'px')}
+					onChange={(value) =>
+						setStyle(
+							'borderRadius',
+							typeof value !== 'undefined'
+								? value + 'px'
+								: undefined
+						)
+					}
 					min={0}
 					max={50}
+				/>
+			</PanelRow>
+			<PanelRow>
+				<FontSizePicker
+					fontSizes={fontSizes}
+					value={style.fontSize}
+					fallbackFontSize={fallbackFontSize}
+					onChange={(value) => setStyle('fontSize', value)}
+					withSlider
 				/>
 			</PanelRow>
 			<PanelRow>

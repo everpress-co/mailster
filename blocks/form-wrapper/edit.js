@@ -216,13 +216,17 @@ export default function Edit(props) {
 	Object.entries(filteredInputStyles).map(([k, v]) => {
 		inputStyle +=
 			'.wp-block-mailster-form-wrapper.mailster-form-' + clientId;
-		if (k == 'labelColor') {
-			inputStyle += ' .mailster-label{';
-			inputStyle += 'color:' + v + ';';
-		} else {
-			inputStyle += ' .input{';
-			inputStyle += kebabCase(k) + ':' + v + ';';
+
+		switch (k) {
+			case 'labelColor':
+				inputStyle += ' .mailster-label{';
+				inputStyle += 'color:' + v + ';';
+				break;
+			default:
+				inputStyle += ' .input{';
+				inputStyle += kebabCase(k) + ':' + v + ';';
 		}
+
 		inputStyle += '}';
 	});
 

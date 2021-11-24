@@ -11,16 +11,7 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
-import {
-	useBlockProps,
-	InspectorControls,
-	RichText,
-	MediaPlaceholder,
-	MediaUpload,
-	MediaUploadCheck,
-	MediaReplaceFlow,
-	ColorPaletteControl,
-} from '@wordpress/block-editor';
+
 import {
 	Panel,
 	PanelBody,
@@ -44,9 +35,16 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 import { more } from '@wordpress/icons';
+import {
+	__experimentalNavigatorProvider as NavigatorProvider,
+	__experimentalNavigatorScreen as NavigatorScreen,
+	__experimentalUseNavigator as useNavigator,
+} from '@wordpress/components';
 
 import PlacementOption from './PlacementOption';
+import PlacementSettings from './PlacementSettings';
 import PlacementIcons from './PlacementIcons';
+import NavigatorButton from './NavigatorButton';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -57,52 +55,69 @@ import PlacementIcons from './PlacementIcons';
  * @return {WPElement} Element to render.
  */
 
+const placements = [
+	{
+		title: 'In Content',
+		type: 'content',
+		image: PlacementIcons.content,
+	},
+	{
+		title: 'Fixed bar',
+		type: 'bar',
+		image: PlacementIcons.bar,
+	},
+	{
+		title: 'Popup',
+		type: 'popup',
+		image: PlacementIcons.popup,
+	},
+	{
+		title: 'Slide-in',
+		type: 'side',
+		image: PlacementIcons.other,
+	},
+	{
+		title: 'Other',
+		type: 'other',
+		image: PlacementIcons.other,
+	},
+];
+
 export default function Placement(props) {
 	const { meta, setMeta } = props;
 
 	return (
 		<PluginDocumentSettingPanel name="placement" title="Placement">
 			<PanelRow>
-				<BaseControl
-					id={'extra-options-'}
-					label={__(
-						'Define where you like to display thus form',
-						'mailster'
-					)}
-				></BaseControl>
+				<NavigatorProvider initialPath="/">
+					<BaseControl id={'extra-options-'} label="">
+						<Grid columns={2}>
+							{placements.map((placement) => {
+								return (
+									<PlacementOption
+										{...props}
+										key={placement.type}
+										title={placement.title}
+										type={placement.type}
+										image={placement.image}
+									/>
+								);
+							})}
+						</Grid>
+					</BaseControl>
+					{placements.map((placement) => {
+						return (
+							<PlacementSettings
+								{...props}
+								key={placement.type}
+								title={placement.title}
+								type={placement.type}
+								image={placement.image}
+							/>
+						);
+					})}
+				</NavigatorProvider>
 			</PanelRow>
-			<Grid columns={2}>
-				<PlacementOption
-					{...props}
-					title="In Content"
-					type="content"
-					image={PlacementIcons.content}
-				/>
-				<PlacementOption
-					{...props}
-					title="Fixed bar"
-					type="bar"
-					image={PlacementIcons.bar}
-				/>
-				<PlacementOption
-					{...props}
-					title="Popup"
-					type="popup"
-					image={PlacementIcons.popup}
-				/>
-				<PlacementOption
-					{...props}
-					title="Slide-in"
-					type="side"
-					image={PlacementIcons.other}
-				/>
-				<PlacementOption
-					{...props}
-					title="Other"
-					type="other"
-					image={PlacementIcons.other}
-				/>
-			</Grid>
 		</PluginDocumentSettingPanel>
 	);
 }
