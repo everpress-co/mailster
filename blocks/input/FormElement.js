@@ -15,10 +15,6 @@ import {
 	useBlockProps,
 	InspectorControls,
 	RichText,
-	MediaPlaceholder,
-	MediaUpload,
-	MediaUploadCheck,
-	MediaReplaceFlow,
 	ColorPaletteControl,
 } from '@wordpress/block-editor';
 import {

@@ -34,7 +34,6 @@ import { more } from '@wordpress/icons';
  *
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
-import './editor.scss';
 
 //import InputFieldInspectorControls from '../input/inspector.js';
 
