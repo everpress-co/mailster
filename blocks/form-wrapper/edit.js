@@ -249,13 +249,10 @@ export default function Edit(props) {
 		if (exists.length && !meta.gdpr) {
 			dispatch('core/block-editor').removeBlock(exists[0].clientId);
 		} else if (!exists.length && meta.gdpr) {
-			const block = wp.blocks.createBlock('mailster/gdpr', {
-				content: 'I agree to the privacy policy and terms.',
-			});
+			const block = wp.blocks.createBlock('mailster/gdpr');
 			const submit = all.filter((block) => {
-				return block.name == 'mailster/button';
+				return block.name == 'mailster/field-submit';
 			});
-
 			const pos = submit.length
 				? select('core/block-editor').getBlockIndex(
 						submit[0].clientId,
@@ -309,11 +306,6 @@ export default function Edit(props) {
 					...spacingProps.style,
 				}}
 			>
-				{window.mailster_inline_styles && (
-					<style className="mailster-inline-styles">
-						{window.mailster_inline_styles}
-					</style>
-				)}
 				{prefixedCss && (
 					<style className="mailster-custom-styles">
 						{prefixedCss}

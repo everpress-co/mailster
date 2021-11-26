@@ -108,7 +108,9 @@ const ModalContent = ({ setOpen }) => {
 };
 
 export default function FormModal(props) {
-	const { isSelected } = props;
+	const { meta, setMeta } = props;
+
+	console.warn(meta, props);
 
 	const [isOpen, setOpen] = useState(false);
 	const [isEmpty, setEmpty] = useState(EmptyEditor());
@@ -120,10 +122,12 @@ export default function FormModal(props) {
 			const insertedBlock = wp.blocks.createBlock(
 				'mailster/form-wrapper',
 				{},
-				[
-					wp.blocks.createBlock('mailster/field-email'),
-					wp.blocks.createBlock('mailster/button'),
-				]
+				['field-email', 'gdpr', 'field-submit'].flatMap((field) => {
+					if (false) {
+						return [];
+					}
+					return wp.blocks.createBlock('mailster/' + field);
+				})
 			);
 			dispatch('core/block-editor').resetBlocks([insertedBlock]);
 		}

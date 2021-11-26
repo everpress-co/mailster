@@ -67,10 +67,10 @@ export default function InputFieldInspectorControls(props) {
 		selected,
 		style,
 		values,
+		hasLabel,
 	} = attributes;
 
 	const [width, setWidth] = useState(100);
-	const hasLabel = !['checkbox'].includes(type);
 	const hasValues = ['radio', 'dropdown'].includes(type);
 
 	function setStyle(prop, data) {
@@ -121,7 +121,7 @@ export default function InputFieldInspectorControls(props) {
 							onChange={(val) => setAttributes({ label: val })}
 						/>
 					</PanelRow>
-					{typeof type !== 'undefined' && type != 'checkbox' && (
+					{typeof type !== 'undefined' && hasLabel && (
 						<PanelRow>
 							<CheckboxControl
 								label={__('Inline Labels', 'mailster')}
@@ -223,7 +223,7 @@ export default function InputFieldInspectorControls(props) {
 														/>
 													</FlexBlock>
 													<FlexItem>
-														<IconButton
+														<Button
 															disabled={!i}
 															icon={arrowUp}
 															isSmall={true}
@@ -238,7 +238,7 @@ export default function InputFieldInspectorControls(props) {
 																);
 															}}
 														/>
-														<IconButton
+														<Button
 															disabled={
 																i + 1 ==
 																values.length
@@ -253,7 +253,7 @@ export default function InputFieldInspectorControls(props) {
 																moveValue(i, 1);
 															}}
 														/>
-														<IconButton
+														<Button
 															icon={trash}
 															isSmall={true}
 															label={__(

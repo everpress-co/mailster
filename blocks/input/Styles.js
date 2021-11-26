@@ -57,7 +57,7 @@ import { select, dispatch } from '@wordpress/data';
 
 export default function Styles(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
-	const { style } = attributes;
+	const { style, type, hasLabel } = attributes;
 
 	function setStyle(prop, data) {
 		var newStyle = { ...style };
@@ -105,33 +105,54 @@ export default function Styles(props) {
 	];
 	const fallbackFontSize = 16;
 
+	const colorSettings = [
+		{
+			id: 'color',
+			label: __('color Color', 'mailster'),
+		},
+		{
+			id: 'backgroundColor',
+			label: __('BackgroundColor Color', 'mailster'),
+		},
+		{
+			id: 'borderColor',
+			label: __('borderColor Color', 'mailster'),
+		},
+		{
+			id: 'labelColor',
+			label: __('labelColor Color', 'mailster'),
+		},
+	];
+
 	return (
 		<PanelColorSettings
 			title={__('Styles', 'mailster')}
 			initialOpen={false}
-			colorSettings={[
-				{
-					value: style.color,
-					onChange: (value) => setStyle('color', value),
-					label: __('color Color', 'mailster'),
-				},
-				{
-					value: style.backgroundColor,
-					onChange: (value) => setStyle('backgroundColor', value),
-					label: __('BackgroundColor Color', 'mailster'),
-				},
-				{
-					value: style.borderColor,
-					onChange: (value) => setStyle('borderColor', value),
-					label: __('borderColor Color', 'mailster'),
-				},
-				{
-					value: style.labelColor,
-					onChange: (value) => setStyle('labelColor', value),
-					label: __('labelColor Color', 'mailster'),
-				},
-			]}
+			colorSettings={colorSettings.flatMap((color) => {
+				if (color.id == 'labelColor' && !hasLabel) {
+					return [];
+				}
+				return {
+					value: style[color.id],
+					onChange: (value) => setStyle(color.id, value),
+					label: color.label,
+				};
+			})}
 		>
+			<PanelRow>
+				<SelectControl
+					label={__('Style', 'mailster')}
+					labelPosition="side"
+					className="widefat"
+					value={style.borderStyle}
+					onChange={(value) => setStyle('borderStyle', value)}
+					options={[
+						{ value: 'dashed', label: 'Dashed' },
+						{ value: 'dotted', label: 'Dotted' },
+						{ value: 'solid', label: 'Solid' },
+					]}
+				/>
+			</PanelRow>
 			<PanelRow>
 				<RangeControl
 					className="widefat"
@@ -185,11 +206,17 @@ export default function Styles(props) {
 					withSlider
 				/>
 			</PanelRow>
-			<PanelRow>
-				<Button onClick={applyStyle} variant="primary" icon={external}>
-					{__('Apply to all input fields', 'mailster')}
-				</Button>
-			</PanelRow>
+			{type !== 'submit' && (
+				<PanelRow>
+					<Button
+						onClick={applyStyle}
+						variant="primary"
+						icon={external}
+					>
+						{__('Apply to all input fields', 'mailster')}
+					</Button>
+				</PanelRow>
+			)}
 		</PanelColorSettings>
 	);
 }

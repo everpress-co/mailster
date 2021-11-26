@@ -26,7 +26,8 @@ class MailsterBlockForms {
 		add_filter( 'the_content', array( &$this, 'maybe_add_form_to_content' ) );
 		add_filter( 'wp_footer', array( &$this, 'maybe_add_form_to_footer' ) );
 
-		add_action( 'save_post_newsletter_form', array( &$this, 'clear_cache' ), 10, 2 );
+		add_action( 'save_post_newsletter_form', array( &$this, 'clear_cache' ) );
+		add_action( 'switch_theme', array( &$this, 'clear_inline_style' ) );
 
 		add_action(
 			'__save_post_newsletter_form',
@@ -532,15 +533,21 @@ class MailsterBlockForms {
 		wp_enqueue_script( 'mailster-form-field-block-editor', MAILSTER_URI . 'build/input.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
 
 		wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_fields = ' . json_encode( array_values( $this->get_custom_fields() ) ) . ';' );
+		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_fields = ' . json_encode( array_values( $this->get_fields() ) ) . ';' );
 		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_inline_styles = ' . json_encode( get_option( 'mailster_inline_styles' ) ) . ';' );
 
 	}
 
-	public function get_custom_fields() {
+	public function get_fields() {
 		$custom_fields = mailster()->get_custom_fields();
 
 		$fields = array(
+			'submit'    => array(
+				'name'    => __( 'Submit Button', 'mailster' ),
+				'id'      => 'submit',
+				'default' => mailster_text( 'submitbutton' ),
+				'type'    => 'submit',
+			),
 			'email'     => array(
 				'name' => mailster_text( 'email' ),
 				'id'   => 'email',
@@ -551,6 +558,7 @@ class MailsterBlockForms {
 				'id'   => 'firstname',
 				'type' => 'text',
 			),
+
 			'lastname'  => array(
 				'name' => mailster_text( 'lastname' ),
 				'id'   => 'lastname',
@@ -570,7 +578,7 @@ class MailsterBlockForms {
 
 		$types = array( 'core/paragraph', 'core/image', 'core/heading', 'core/gallery', 'core/list', 'core/quote', 'core/shortcode', 'core/archives', 'core/audio', 'core/button', 'core/buttons', 'core/calendar', 'core/categories', 'core/code', 'core/columns', 'core/column', 'core/cover', 'core/embed', 'core/file', 'core/group', 'core/freeform', 'core/html', 'core/media-text', 'core/latest-comments', 'core/latest-posts', 'core/missing', 'core/more', 'core/nextpage', 'core/page-list', 'core/preformatted', 'core/pullquote', 'core/rss', 'core/search', 'core/separator', 'core/block', 'core/social-links', 'core/social-link', 'core/spacer', 'core/table', 'core/tag-cloud', 'core/text-columns', 'core/verse', 'core/video', 'core/site-logo', 'core/site-tagline', 'core/site-title', 'core/query', 'core/post-template', 'core/query-title', 'core/query-pagination', 'core/query-pagination-next', 'core/query-pagination-numbers', 'core/query-pagination-previous', 'core/post-title', 'core/post-content', 'core/post-date', 'core/post-excerpt', 'core/post-featured-image', 'core/post-terms', 'core/loginout' );
 
-		// $types  = array( 'core/paragraph' );
+		$types  = array( 'core/paragraph' );
 		$blocks = $this->get_blocks();
 
 		foreach ( $blocks as $block ) {
@@ -580,11 +588,13 @@ class MailsterBlockForms {
 			$types[] = 'mailster/' . $block_name;
 		}
 
-		$custom_fields = array_keys( $this->get_custom_fields() );
+		$custom_fields = array_keys( $this->get_fields() );
 		foreach ( $custom_fields as $block ) {
 
 			$types[] = 'mailster/field-' . $block;
 		}
+
+		error_log( print_r( $types, true ) );
 
 		return $types;
 
@@ -740,12 +750,11 @@ class MailsterBlockForms {
 				$embeded_style .= strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
 			}
 			$embeded_style .= '}';
+			error_log( print_r( $embeded_style, true ) );
 		}
 
 		if ( $is_backend && $input_styles = get_option( 'mailster_inline_styles' ) ) {
-			$stylesheet .= ' .wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .input{';
-			$stylesheet .= $input_styles;
-			$stylesheet .= '}';
+			$embeded_style .= $input_styles;
 		}
 
 		require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
@@ -797,7 +806,7 @@ class MailsterBlockForms {
 
 		$htmldoc->loadHTML( $output );
 
-		$htmldoc->applyStylesheet( $stylesheet );
+		// $htmldoc->applyStylesheet( $stylesheet );
 
 		$html = $htmldoc->getHTML();
 		libxml_clear_errors();
@@ -820,9 +829,15 @@ class MailsterBlockForms {
 
 	}
 
-	public function clear_cache( $post_id, $post ) {
+	public function clear_cache( $post_id ) {
 
 		delete_post_meta( $post_id, '_cached' );
+
+	}
+
+	public function clear_inline_style() {
+
+		update_option( 'mailster_inline_styles', '', 'no' );
 
 	}
 }

@@ -31,7 +31,7 @@ import Lists from './Lists';
 import WelcomeGuide from './WelcomeGuide';
 import Placement from './Placement';
 
-import InlineStyles from '../form/InlineStyles';
+import InlineStyles from './InlineStyles';
 
 function SettingsPanelPlugin() {
 	const [meta, setMeta] = useEntityProp(
@@ -54,7 +54,7 @@ function SettingsPanelPlugin() {
 				PluginPrePublishPanel
 			</PluginPrePublishPanel>
 			<InlineStyles />
-			<WelcomeGuide />
+			<WelcomeGuide meta={meta} setMeta={setMeta} />
 			<Doubleoptin meta={meta} setMeta={setMeta} />
 			<Gdpr meta={meta} setMeta={setMeta} />
 			<Lists meta={meta} setMeta={setMeta} />

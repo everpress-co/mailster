@@ -23,12 +23,31 @@ import save from './save';
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-
 window.mailster_fields &&
 	window.mailster_fields.map((field) => {
+		let label = {
+			type: 'string',
+			default: field.default || field.name,
+			source: 'html',
+			selector: '.mailster-label',
+		};
+
+		switch (field.id) {
+			case 'submit':
+				label = {
+					...label,
+					...{
+						source: 'attribute',
+						selector: 'input',
+						attribute: 'value',
+					},
+				};
+				break;
+		}
+
 		registerBlockType('mailster/field-' + field.id, {
 			apiVersion: 2,
-			title: field.name,
+			title: field.name || field.id,
 			keywords: ['mailster', field.name, field.id],
 			category: 'mailster-form-fields',
 			description: field.name + ' Description',
@@ -63,11 +82,10 @@ window.mailster_fields &&
 				src: 'button',
 			},
 			attributes: {
-				label: {
-					type: 'string',
-					default: field.name,
-					source: 'html',
-					selector: '.mailster-label',
+				label: label,
+				hasLabel: {
+					type: 'boolean',
+					default: !['checkbox', 'submit'].includes(field.type),
 				},
 				name: {
 					type: 'string',
@@ -118,9 +136,10 @@ window.mailster_fields &&
 						width: undefined,
 						color: undefined,
 						backgroundColor: undefined,
-						borderColor: undefined,
 						labelColor: undefined,
+						borderColor: undefined,
 						borderWidth: undefined,
+						borderStyle: undefined,
 						borderRadius: undefined,
 						fontSize: undefined,
 					},

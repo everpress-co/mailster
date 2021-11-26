@@ -50,6 +50,7 @@ const STORAGENAME = 'mailsterFormsWelcomeGuide';
  */
 
 export default function WelcomeGuide(props) {
+	const { meta, setMeta } = props;
 	const [isOpen, setOpen] = useState(false);
 
 	const { toggleFeature } = useDispatch(myStore);
@@ -61,7 +62,7 @@ export default function WelcomeGuide(props) {
 	}, []);
 
 	if (isActive) {
-		return <FormModal />;
+		return <FormModal {...props} />;
 	}
 
 	return (

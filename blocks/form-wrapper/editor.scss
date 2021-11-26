@@ -64,6 +64,10 @@
 		.input {
 			pointer-events: none;
 		}
+		label.mailster-label {
+			pointer-events: all !important;
+			white-space: nowrap !important;
+		}
 	}
 }
 

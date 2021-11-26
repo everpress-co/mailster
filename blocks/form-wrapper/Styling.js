@@ -67,6 +67,7 @@ export default function Styles(props) {
 	return (
 		<PanelColorSettings
 			title={__('Styles', 'mailster')}
+			initialOpen={false}
 			colorSettings={[
 				{
 					value: style.color,

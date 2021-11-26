@@ -27,9 +27,12 @@ import './editor.scss';
 
 import { Fragment, useState, Component, useEffect } from '@wordpress/element';
 
-import { Button, DropdownMenu, SelectControl } from '@wordpress/components';
-
-import InlineStyles from '../form/InlineStyles';
+import {
+	Button,
+	ButtonGroup,
+	DropdownMenu,
+	SelectControl,
+} from '@wordpress/components';
 
 class MailsterFormSelector extends Component {
 	constructor() {
@@ -118,27 +121,29 @@ export default function Edit(props) {
 		}, 1);
 	};
 
+	const editForm = () => {
+		window.open('post.php?post=' + id + '&action=edit', 'edit_form_' + id);
+	};
+
 	return (
 		<Fragment>
 			<div {...useBlockProps()}>
 				{parseInt(id) > 0 && (
 					<>
-						<InlineStyles enableStyleBlock={true} />
 						<div className="mailster-form-editor-wrap">
 							<div className="update-form-button">
-								<Button
-									variant="primary"
-									href={
-										'post.php?post=' + id + '&action=edit'
-									}
-									target={'edit_form_' + id}
-									text={__('Update Form', 'mailster')}
-								/>{' '}
-								<Button
-									variant="primary"
-									onClick={reloadForm}
-									text={__('Reload Form', 'mailster')}
-								/>
+								<ButtonGroup>
+									<Button
+										variant="primary"
+										onClick={editForm}
+										text={__('Edit Form', 'mailster')}
+									/>
+									<Button
+										variant="primary"
+										onClick={reloadForm}
+										text={__('Reload Form', 'mailster')}
+									/>
+								</ButtonGroup>
 							</div>
 							{displayForm && (
 								<ServerSideRender

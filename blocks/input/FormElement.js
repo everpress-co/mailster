@@ -70,6 +70,7 @@ export default function FormElement(props) {
 		backgroundColor: style.backgroundColor,
 		borderColor: style.borderColor,
 		borderWidth: style.borderWidth,
+		borderStyle: style.borderStyle,
 		borderRadius: style.borderRadius,
 	};
 
@@ -146,6 +147,17 @@ export default function FormElement(props) {
 				</select>
 			);
 
+		case 'submit':
+			return (
+				<>
+					<input
+						name={name}
+						type={'submit'}
+						style={inputStyle}
+						value={label}
+					/>
+				</>
+			);
 		default:
 			return (
 				<>
@@ -157,7 +169,6 @@ export default function FormElement(props) {
 						spellCheck={false}
 						required={required}
 						className="input"
-						pattern={pattern}
 						style={inputStyle}
 						placeholder=" "
 					/>

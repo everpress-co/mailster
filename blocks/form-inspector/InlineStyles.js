@@ -37,6 +37,7 @@ import {
 	FocalPointPicker,
 	SelectControl,
 	Modal,
+	Popover,
 	__experimentalBoxControl as BoxControl,
 	__experimentalUnitControl as UnitControl,
 	__experimentalGrid as Grid,
@@ -74,11 +75,13 @@ const SAMPLEFORM = (
  */
 
 export default function InlineStyles(props) {
-	const { enableStyleBlock } = props;
-
+	const { meta, setMeta } = props;
 	const [inputStyles, setinputStyles] = useState(
 		window.mailster_inline_styles
 	);
+
+	const [render, setRender] = useState(true);
+
 	const getInputStyles = () => {
 		const iframe = document.getElementById('inputStylesIframe');
 
@@ -91,6 +94,7 @@ export default function InlineStyles(props) {
 				doc.getElementById('page') ||
 				doc.getElementById('site-content') ||
 				doc.getElementById('content') ||
+				doc.getElementsByClassName('wp-site-blocks')[0] ||
 				doc.getElementsByTagName('body')[0],
 			properties = [
 				'padding',
@@ -111,7 +115,7 @@ export default function InlineStyles(props) {
 				'input[type="date"]': [],
 				'input[type="checkbox"]': ['width', 'height'],
 				'input[type="radio"]': ['width', 'height'],
-				'input[type="submit"]': ['border', 'outline'],
+				'input[type="submit"]': ['border', 'outline', 'color'],
 				select: [],
 				'label.mailster-label': [],
 			};
@@ -134,18 +138,20 @@ export default function InlineStyles(props) {
 				method: 'POST',
 				data: { mailster_inline_styles: styles },
 			}).then((settings) => {
-				dispatch('core/notices').createNotice(
-					'success',
-					__('Input field styles have been updated.', 'mailster'),
-					{
-						type: 'snackbar',
-						isDismissible: true,
-					}
-				);
+				inputStyles &&
+					dispatch('core/notices').createNotice(
+						'success',
+						__('Input field styles have been updated.', 'mailster'),
+						{
+							type: 'snackbar',
+							isDismissible: true,
+						}
+					);
 			});
 			setinputStyles(styles);
 			window.mailster_inline_styles = styles;
 		}
+		setRender(false);
 	};
 
 	const convertRestArgsIntoStylesArr = ([...args]) => {
@@ -175,19 +181,23 @@ export default function InlineStyles(props) {
 	return (
 		<>
 			{inputStyles && (
-				<>
-					<style className="mailster-inline-styles">
-						{inputStyles}
-					</style>
-				</>
+				<style className="mailster-inline-styles">{inputStyles}</style>
 			)}
-			<iframe
-				src="../"
-				id="inputStylesIframe"
-				onLoad={getInputStyles}
-				sandbox="allow-scripts allow-same-origin"
-				hidden
-			></iframe>
+			{render && (
+				<Popover>
+					<iframe
+						src="../"
+						id="inputStylesIframe"
+						style={{
+							width: screen.width,
+							zIndex: -1,
+							position: 'absolute',
+						}}
+						onLoad={getInputStyles}
+						sandbox="allow-scripts allow-same-origin"
+					></iframe>
+				</Popover>
+			)}
 		</>
 	);
 }
