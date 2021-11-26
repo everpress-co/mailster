@@ -1,8 +1,8 @@
 {
 	"apiVersion": 2,
-	"name": "mailster/gdpr",
+	"name": "mailster/lists",
 	"version": "0.1.0",
-	"title": "GDPR Field",
+	"title": "Lists Field",
 	"category": "mailster-form-fields",
 	"keywords": ["container", "wrapper", "row", "section"],
 	"icon": "button",
@@ -30,5 +30,5 @@
 		}
 	},
 	"textdomain": "mailster",
-	"editorScript": "file:./../../build/gdpr.js"
+	"editorScript": "file:./../../build/lists.js"
 }

@@ -281,6 +281,36 @@ class MailsterBlockForms {
 
 		register_post_meta(
 			'newsletter_form',
+			'userschoice',
+			array(
+				'type'         => 'boolean',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => false,
+
+			)
+		);
+
+		register_post_meta(
+			'newsletter_form',
+			'lists',
+			array(
+				'type'         => 'array',
+				'show_in_rest' => array(
+					'schema' => array(
+						'type'  => 'array',
+						'items' => array(
+							'type' => 'number',
+						),
+					),
+				),
+				'single'       => true,
+				'default'      => array(),
+			)
+		);
+
+		register_post_meta(
+			'newsletter_form',
 			'subject',
 			array(
 				'type'         => 'string',

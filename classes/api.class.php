@@ -29,6 +29,11 @@ class MailsterApi {
 				'callback'            => array( $this, 'get_fields' ),
 				'permission_callback' => '__return_true',
 			),
+			'/lists'  => array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_lists' ),
+				'permission_callback' => '__return_true',
+			),
 		);
 
 		return apply_filters( 'mailster_api_routes', $routes );
@@ -57,6 +62,20 @@ class MailsterApi {
 
 		return array_merge( $fields, $custom_fields );
 
+	}
+
+	public function get_lists( WP_REST_Request $request ) {
+
+		$lists = mailster( 'lists' )->get();
+
+		foreach ( $lists as $i => $list ) {
+			$lists[ $i ]->ID        = (int) $list->ID;
+			$lists[ $i ]->added     = (int) $list->added;
+			$lists[ $i ]->updated   = (int) $list->updated;
+			$lists[ $i ]->parent_id = (int) $list->parent_id;
+		}
+
+		return $lists;
 	}
 
 

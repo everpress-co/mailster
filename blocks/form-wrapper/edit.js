@@ -265,6 +265,30 @@ export default function Edit(props) {
 	}, [meta.gdpr]);
 
 	useEffect(() => {
+		const all = select('core/block-editor').getBlocks(clientId);
+		const exists = all.filter((block) => {
+			return block.name == 'mailster/lists';
+		});
+
+		if (exists.length && !meta.userschoice) {
+			dispatch('core/block-editor').removeBlock(exists[0].clientId);
+		} else if (!exists.length && meta.userschoice) {
+			const block = wp.blocks.createBlock('mailster/lists');
+			const submit = all.filter((block) => {
+				return block.name == 'mailster/field-submit';
+			});
+			const pos = submit.length
+				? select('core/block-editor').getBlockIndex(
+						submit[0].clientId,
+						clientId
+				  )
+				: all.length;
+
+			dispatch('core/block-editor').insertBlock(block, pos, clientId);
+		}
+	}, [meta.userschoice]);
+
+	useEffect(() => {
 		if (
 			!select('core/block-editor').getBlocks().length ||
 			document.getElementById('style-this-form')

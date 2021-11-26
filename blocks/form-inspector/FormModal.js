@@ -110,8 +110,6 @@ const ModalContent = ({ setOpen }) => {
 export default function FormModal(props) {
 	const { meta, setMeta } = props;
 
-	console.warn(meta, props);
-
 	const [isOpen, setOpen] = useState(false);
 	const [isEmpty, setEmpty] = useState(EmptyEditor());
 
