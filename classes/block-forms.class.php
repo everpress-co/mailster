@@ -20,7 +20,9 @@ class MailsterBlockForms {
 
 		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 10, 2 );
 		add_filter( 'block_categories_all', array( &$this, 'block_categories' ) );
-		add_filter( 'block_categories_all', array( &$this, 'block_categories' ) );
+
+		add_filter( 'manage_newsletter_form_posts_columns', array( &$this, 'columns' ), 1 );
+		add_action( 'manage_newsletter_form_posts_custom_column', array( &$this, 'custom_column' ), 10, 2 );
 
 		add_filter( 'template_redirect', array( &$this, 'prepare_forms' ) );
 		add_filter( 'the_content', array( &$this, 'maybe_add_form_to_content' ) );
@@ -39,6 +41,41 @@ class MailsterBlockForms {
 			2
 		);
 	}
+
+
+	public function columns( $columns ) {
+
+		$columns = array(
+			'cb'              => '<input type="checkbox" />',
+			'title'           => esc_html__( 'Title', 'mailster' ),
+			'impressions'     => esc_html__( 'Impressions', 'mailster' ),
+			'conversions'     => esc_html__( 'Conversions', 'mailster' ),
+			'conversion_rate' => esc_html__( 'Conversion Rate', 'mailster' ),
+			'date'            => esc_html__( 'Date', 'mailster' ),
+		);
+		return $columns;
+	}
+
+
+	public function custom_column( $column, $post_id ) {
+
+		switch ( $column ) {
+			case 'impressions':
+				echo '0';
+				break;
+			case 'conversions':
+				echo '0';
+				break;
+			case 'conversion_rate':
+				echo '0%';
+				break;
+			default:
+				break;
+		}
+
+	}
+
+
 
 
 	public function prepare_forms() {
@@ -608,7 +645,7 @@ class MailsterBlockForms {
 
 		$types = array( 'core/paragraph', 'core/image', 'core/heading', 'core/gallery', 'core/list', 'core/quote', 'core/shortcode', 'core/archives', 'core/audio', 'core/button', 'core/buttons', 'core/calendar', 'core/categories', 'core/code', 'core/columns', 'core/column', 'core/cover', 'core/embed', 'core/file', 'core/group', 'core/freeform', 'core/html', 'core/media-text', 'core/latest-comments', 'core/latest-posts', 'core/missing', 'core/more', 'core/nextpage', 'core/page-list', 'core/preformatted', 'core/pullquote', 'core/rss', 'core/search', 'core/separator', 'core/block', 'core/social-links', 'core/social-link', 'core/spacer', 'core/table', 'core/tag-cloud', 'core/text-columns', 'core/verse', 'core/video', 'core/site-logo', 'core/site-tagline', 'core/site-title', 'core/query', 'core/post-template', 'core/query-title', 'core/query-pagination', 'core/query-pagination-next', 'core/query-pagination-numbers', 'core/query-pagination-previous', 'core/post-title', 'core/post-content', 'core/post-date', 'core/post-excerpt', 'core/post-featured-image', 'core/post-terms', 'core/loginout' );
 
-		$types  = array( 'core/paragraph' );
+		// $types  = array( 'core/paragraph' );
 		$blocks = $this->get_blocks();
 
 		foreach ( $blocks as $block ) {
@@ -623,8 +660,6 @@ class MailsterBlockForms {
 
 			$types[] = 'mailster/field-' . $block;
 		}
-
-		error_log( print_r( $types, true ) );
 
 		return $types;
 
@@ -649,7 +684,7 @@ class MailsterBlockForms {
 	}
 
 	public function register_block_pattern_category() {
-		register_block_pattern_category( 'forms', array( 'label' => __( 'Forms', 'mailster' ) ) );
+		register_block_pattern_category( 'mailster-forms', array( 'label' => __( 'Mailster Forms', 'mailster' ) ) );
 	}
 
 	public function register_block_pattern() {
@@ -673,7 +708,10 @@ class MailsterBlockForms {
 				)
 			);
 
-			$args['categories'] = array( 'mailster-forms' );
+			$args['categories'] = array( 'featured', 'mailster-forms' );
+
+			error_log( print_r( $key, true ) );
+			error_log( print_r( $pattern, true ) );
 			register_block_pattern( 'mailster/' . $key, $args );
 		}
 

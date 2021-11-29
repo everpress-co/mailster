@@ -241,6 +241,29 @@ export default function Edit(props) {
 	}, [css]);
 
 	useEffect(() => {
+		const all = select('core/block-editor').getBlocks(),
+			count = all.length;
+
+		if (count > 1) {
+			const inserted = select('core/block-editor').getBlock(clientId);
+			const current = all.find(
+				(block) =>
+					block.name == 'mailster/form-wrapper' &&
+					block.clientId != clientId
+			);
+			if (
+				confirm(
+					'This will replace your current form with the selected one. Continue?'
+				)
+			) {
+				dispatch('core/block-editor').removeBlock(current.clientId);
+			} else {
+				dispatch('core/block-editor').removeBlock(inserted.clientId);
+			}
+		}
+	}, []);
+
+	useEffect(() => {
 		const all = select('core/block-editor').getBlocks(clientId);
 		const exists = all.filter((block) => {
 			return block.name == 'mailster/gdpr';
@@ -292,8 +315,9 @@ export default function Edit(props) {
 		if (
 			!select('core/block-editor').getBlocks().length ||
 			document.getElementById('style-this-form')
-		)
+		) {
 			return;
+		}
 		const el = document.getElementsByClassName(
 			'edit-post-header__toolbar'
 		)[0];
@@ -330,6 +354,11 @@ export default function Edit(props) {
 					...spacingProps.style,
 				}}
 			>
+				{window.mailster_inline_styles && (
+					<style className="mailster-custom-styles">
+						{window.mailster_inline_styles}
+					</style>
+				)}
 				{prefixedCss && (
 					<style className="mailster-custom-styles">
 						{prefixedCss}

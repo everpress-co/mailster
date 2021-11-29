@@ -6,6 +6,7 @@
 	"icon": "email",
 	"category": "widgets",
 	"description": "Define the look of your form here.",
+	"parent": ["core/post-content"],
 	"supports": {
 		"html": false,
 		"inserter": false,
