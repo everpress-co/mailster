@@ -1423,8 +1423,8 @@ class MailsterForm {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_register_script( 'mailster-form', MAILSTER_URI . 'assets/js/form' . $suffix . '.js', apply_filters( 'mailster_no_jquery', array( 'jquery' ) ), MAILSTER_VERSION, true );
-		wp_register_script( 'mailster-form-placeholder', MAILSTER_URI . 'assets/js/placeholder-fix' . $suffix . '.js', apply_filters( 'mailster_no_jquery', array( 'jquery' ) ), MAILSTER_VERSION, true );
+		wp_register_script( 'mailster-form', MAILSTER_URI . 'assets/js/form' . $suffix . '.js', array(), MAILSTER_VERSION, true );
+		wp_register_script( 'mailster-form-placeholder', MAILSTER_URI . 'assets/js/placeholder-fix' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 
 		global $is_IE;
 
