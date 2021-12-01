@@ -27,12 +27,13 @@ import {
 	MenuItem,
 	createSlotFill,
 	MenuGroup,
+	Button,
 } from '@wordpress/components';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
-import { store as myStore } from '@wordpress/edit-post';
+import { store as Store } from '@wordpress/edit-post';
 
 import { more } from '@wordpress/icons';
 
@@ -53,13 +54,29 @@ export default function WelcomeGuide(props) {
 	const { meta, setMeta } = props;
 	const [isOpen, setOpen] = useState(false);
 
-	const { toggleFeature } = useDispatch(myStore);
+	const { toggleFeature, togglePublishSidebar } = useDispatch(Store);
+
+	const { showGeneralBlockWelcomeGuide } = useSelect((select) => {
+		return {
+			showGeneralBlockWelcomeGuide:
+				select(Store).isFeatureActive('welcomeGuide'),
+		};
+	}, []);
 
 	const { isActive } = useSelect((select) => {
 		return {
-			isActive: select(myStore).isFeatureActive(STORAGENAME),
+			isActive: select(Store).isFeatureActive(STORAGENAME),
 		};
 	}, []);
+
+	// show native block editor welcome screen first
+	if (showGeneralBlockWelcomeGuide) {
+		toggleFeature('welcomeGuide');
+		if (isActive) {
+			toggleFeature(STORAGENAME);
+		}
+		return;
+	}
 
 	if (isActive) {
 		return <FormModal {...props} />;
@@ -69,6 +86,47 @@ export default function WelcomeGuide(props) {
 		<Guide
 			onFinish={() => toggleFeature(STORAGENAME)}
 			pages={[
+				{
+					image: (
+						<video
+							width="680"
+							loop
+							muted
+							preload="auto"
+							autoPlay
+							src="https://mailster.github.io/videos/mailster_editor.mp4"
+							poster="https://mailster.github.io/videos/mailster_editor.png"
+						>
+							<source
+								src="https://mailster.github.io/videos/mailster_editor.mp4"
+								type="video/mp4"
+							/>
+						</video>
+					),
+					content: (
+						<>
+							<h1 className="edit-post-welcome-guide__heading">
+								{__(
+									'Welcome to the Mailster Form Builder',
+									'mailster'
+								)}
+							</h1>
+							<p className="edit-post-welcome-guide__text">
+								{__(
+									'In the WordPress editor, each paragraph, image, or video is presented as a distinct “block” of content.',
+									'mailster'
+								)}
+							</p>
+							<Button
+								onClick={() =>
+									togglePublishSidebar(STORAGENAME)
+								}
+							>
+								Go
+							</Button>
+						</>
+					),
+				},
 				{
 					image: <img src="https://dummy.mailster.co/500x200.jpg" />,
 					content: (
@@ -86,6 +144,22 @@ export default function WelcomeGuide(props) {
 					),
 				},
 				{
+					image: (
+						<video
+							width="680"
+							loop
+							muted
+							preload="auto"
+							autoPlay
+							src="https://mailster.github.io/videos/mailster_editor.mp4"
+							poster="https://mailster.github.io/videos/mailster_editor.png"
+						>
+							<source
+								src="https://mailster.github.io/videos/mailster_editor.mp4"
+								type="video/mp4"
+							/>
+						</video>
+					),
 					content: (
 						<>
 							<h1 className="edit-post-welcome-guide__heading">

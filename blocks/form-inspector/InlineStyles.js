@@ -184,7 +184,7 @@ export default function InlineStyles(props) {
 				<style className="mailster-inline-styles">{inputStyles}</style>
 			)}
 			{render && (
-				<Popover>
+				<div id="mycustomstyles">
 					<iframe
 						src="../"
 						id="inputStylesIframe"
@@ -192,11 +192,15 @@ export default function InlineStyles(props) {
 							width: screen.width,
 							zIndex: -1,
 							position: 'absolute',
+							left: 0,
+							right: 0,
+							bottom: 0,
+							top: 0,
 						}}
 						onLoad={getInputStyles}
 						sandbox="allow-scripts allow-same-origin"
 					></iframe>
-				</Popover>
+				</div>
 			)}
 		</>
 	);

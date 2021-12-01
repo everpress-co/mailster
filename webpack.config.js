@@ -7,8 +7,6 @@ const glob = require('glob');
 const path = require('path');
 const cp = require('child_process');
 
-let myErrors = [];
-
 const entry = glob.sync('./blocks/**/index.js').reduce((acc, path) => {
 	const entry = path.replace('./blocks/', '').replace('/index.js', '');
 	acc[entry] = path.replace('/index.js', '');
@@ -24,12 +22,42 @@ const soundPluginOptions = {
 	notifications: {
 		done(stats) {
 			if (stats.hasErrors()) {
-				myErrors = stats.compilation.errors;
 				this.play('warning');
-				const message = myErrors
+				let message = stats.compilation.errors
 					.join('')
-					.split('\n')[1]
-					.replace(path.resolve(__dirname), '');
+					.split('\n')
+					.slice(-1)
+					.join('');
+
+				if (message) {
+					message = message.replace(path.resolve(__dirname), '');
+				}
+
+				var ls = cp.spawnSync(
+					'osascript',
+					[
+						'-e',
+						'display notification "' +
+							message +
+							'" with title "Error while building" subtitle "More text"',
+					],
+					{
+						encoding: 'utf8',
+					}
+				);
+			}
+			if (stats.hasWarnings()) {
+				this.play('warning');
+
+				let message = stats.compilation.warnings
+					.join('')
+					.split('\n')
+					.slice(-1)
+					.join('');
+
+				if (message) {
+					message = message.replace(path.resolve(__dirname), '');
+				}
 
 				var ls = cp.spawnSync(
 					'osascript',

@@ -32,6 +32,8 @@ import { Fragment, Component, useState } from '@wordpress/element';
 
 import { more } from '@wordpress/icons';
 
+import ListsPanel from '../form-inspector/ListsPanel';
+
 /**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
@@ -41,59 +43,12 @@ import { more } from '@wordpress/icons';
  * @return {WPElement} Element to render.
  */
 
-export default function InputFieldInspectorControls({
-	attributes,
-	setAttributes,
-	isSelected,
-}) {
-	const { label, inline, required, style } = attributes;
-
-	const [width, setWidth] = useState(100);
-
-	function setStyle(prop, data) {
-		var newStyle = { ...style };
-		newStyle[prop] = data;
-		setAttributes({ style: newStyle });
-	}
+export default function InputFieldInspectorControls(props) {
 	return (
 		<InspectorControls>
 			<Panel>
-				<PanelBody
-					title={__('Field Settings', 'mailster')}
-					initialOpen={true}
-				>
-					<PanelRow>
-						<TextControl
-							label={__('Label', 'mailster')}
-							value={label}
-							onChange={(val) => setAttributes({ label: val })}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<CheckboxControl
-							label={__('Inline Labels', 'mailster')}
-							checked={inline}
-							onChange={() => setAttributes({ inline: !inline })}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<CheckboxControl
-							label={__('Required Labels', 'mailster')}
-							checked={required}
-							onChange={() =>
-								setAttributes({ required: !required })
-							}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<RangeControl
-							label="Width"
-							value={style.width}
-							onChange={(value) => setStyle('width', value)}
-							min={2}
-							max={100}
-						/>
-					</PanelRow>
+				<PanelBody title={__('List Settings', 'mailster')}>
+					<ListsPanel {...props} />
 				</PanelBody>
 			</Panel>
 		</InspectorControls>

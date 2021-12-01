@@ -36,7 +36,7 @@ import {
 
 import { brush } from '@wordpress/icons';
 
-import { select, dispatch, subscribe } from '@wordpress/data';
+import { select, dispatch, subscribe, useDispatch } from '@wordpress/data';
 import {
 	Fragment,
 	Component,
@@ -46,6 +46,8 @@ import {
 } from '@wordpress/element';
 import { useEntityProp } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
+
+import { store as editPostStore } from '@wordpress/edit-post';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -82,6 +84,11 @@ export default function Edit(props) {
 		'newsletter_form',
 		'meta'
 	);
+
+	const styleForm = () => {
+		dispatch('core/block-editor').clearSelectedBlock(clientId);
+		dispatch('core/block-editor').selectBlock(clientId);
+	};
 
 	const [displayMessages, setDisplayMessages] = useState(false);
 
@@ -271,6 +278,7 @@ export default function Edit(props) {
 
 		if (exists.length && !meta.gdpr) {
 			dispatch('core/block-editor').removeBlock(exists[0].clientId);
+			dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
 		} else if (!exists.length && meta.gdpr) {
 			const block = wp.blocks.createBlock('mailster/gdpr');
 			const submit = all.filter((block) => {
@@ -295,6 +303,7 @@ export default function Edit(props) {
 
 		if (exists.length && !meta.userschoice) {
 			dispatch('core/block-editor').removeBlock(exists[0].clientId);
+			dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
 		} else if (!exists.length && meta.userschoice) {
 			const block = wp.blocks.createBlock('mailster/lists');
 			const submit = all.filter((block) => {
@@ -331,10 +340,7 @@ export default function Edit(props) {
 				icon={brush}
 				label="Style"
 				variant="tertiary"
-				onClick={() => {
-					dispatch('core/block-editor').clearSelectedBlock(clientId);
-					dispatch('core/block-editor').selectBlock(clientId);
-				}}
+				onClick={styleForm}
 			>
 				{__('Style this form', 'mailster')}
 			</Button>,

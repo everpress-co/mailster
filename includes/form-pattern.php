@@ -3,6 +3,19 @@
 $patterns = apply_filters(
 	'mailster_form_patterns',
 	array(
+		'basic'      => array(
+			'title'       => __( 'A minimal basic form', 'mailster' ),
+			'description' => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
+			'content'     => '<!-- wp:mailster/form-wrapper -->
+<form method="post" action="/mailster/subscribe" class="wp-block-mailster-form-wrapper mailster-form"><div class="mailster-form-info"><div class="mailster-form-info-success" style="color:#ffffff;background-color:#6fbf4d"></div><div class="mailster-form-info-error" style="color:#ffffff;background-color:#bf4d4d"></div></div><!-- wp:mailster/field-email -->
+<div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-type-email mailster-wrapper-required"><label class="mailster-label">Email</label><input name="email" type="email" aria-required="true" aria-label="Email" spellcheck="false" required class="input" placeholder=" "/></div>
+<!-- /wp:mailster/field-email -->
+<!-- wp:mailster/field-submit -->
+<div class="wp-block-mailster-field-submit mailster-wrapper mailster-wrapper-type-submit"><input name="submit" type="submit" value="Subscribe"/></div>
+<!-- /wp:mailster/field-submit --><input type="submit" style="display:none !important"/></form>
+<!-- /wp:mailster/form-wrapper -->',
+
+		),
 		'simpleform' => array(
 			'title'       => __( 'Simple form', 'mailster' ),
 			'description' => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),

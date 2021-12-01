@@ -26,6 +26,7 @@ import {
 } from '@wordpress/components';
 import { Fragment, useState } from '@wordpress/element';
 import { useEntityProp } from '@wordpress/core-data';
+import { useSelect } from '@wordpress/data';
 
 import { more } from '@wordpress/icons';
 
@@ -36,7 +37,7 @@ import { more } from '@wordpress/icons';
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
 
-//import InputFieldInspectorControls from '../input/inspector.js';
+import InputFieldInspectorControls from './inspector.js';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -58,6 +59,18 @@ export default function Edit(props) {
 		'meta'
 	);
 
+	const allLists = useSelect(
+		(select) => select('mailster/form').getLists(),
+		[]
+	);
+
+	const getList = (id) => {
+		const list = allLists.filter((list) => {
+			return list.ID == id;
+		});
+		return list.length ? list[0] : null;
+	};
+
 	//if (required) className.push('mailster-wrapper-required');
 	//if (inline) className.push('mailster-wrapper-inline');
 
@@ -68,19 +81,25 @@ export default function Edit(props) {
 					className: className.join(' '),
 				})}
 			>
-				{meta.lists.map((list, i) => {
-					return (
-						<div
-							key={i}
-							className="mailster-group mailster-group-checkbox"
-						>
-							<label>
-								<input type="checkbox" />
-								<span className="mailster-label">{list}</span>
-							</label>
-						</div>
-					);
-				})}
+				{allLists &&
+					meta.lists.map((list_id, i) => {
+						const list = getList(list_id);
+						if (!list) return;
+						return (
+							<div
+								key={i}
+								className="mailster-group mailster-group-checkbox"
+							>
+								<label>
+									<input type="checkbox" />
+									<span className="mailster-label">
+										{list.name}
+									</span>
+								</label>
+							</div>
+						);
+					})}
+				<InputFieldInspectorControls meta={meta} setMeta={setMeta} />
 			</div>
 		</Fragment>
 	);
