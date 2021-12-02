@@ -14,7 +14,15 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import ServerSideRender from '@wordpress/server-side-render';
 import apiFetch from '@wordpress/api-fetch';
-import { Panel, PanelBody, Placeholder, Spinner } from '@wordpress/components';
+import {
+	Panel,
+	PanelBody,
+	Placeholder,
+	Spinner,
+	Flex,
+	FlexItem,
+	FlexBlock,
+} from '@wordpress/components';
 import { Icons, email, screenoptions } from '@wordpress/components';
 
 /**
@@ -96,11 +104,22 @@ class MailsterFormSelector extends Component {
  */
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	const { id } = attributes;
+	const { id, height } = attributes;
 
 	const [displayForm, setDisplayForm] = useState(true);
 
 	const EmptyResponsePlaceholder = () => {
+		return (
+			<Flex
+				justify="center"
+				style={{
+					backgroundColor: '#fafafa',
+					minHeight: '200px',
+				}}
+			>
+				<Spinner />
+			</Flex>
+		);
 		return (
 			<Placeholder
 				icon={screenoptions}
@@ -118,7 +137,7 @@ export default function Edit(props) {
 		setDisplayForm(false);
 		setTimeout(() => {
 			setDisplayForm(true);
-		}, 1);
+		}, 0);
 	};
 
 	const editForm = () => {

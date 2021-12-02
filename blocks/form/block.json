@@ -20,6 +20,9 @@
 	"attributes": {
 		"id": {
 			"type": "string"
+		},
+		"height": {
+			"type": "integer"
 		}
 	},
 	"textdomain": "mailster",
