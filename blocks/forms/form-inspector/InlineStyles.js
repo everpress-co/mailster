@@ -37,6 +37,7 @@ import {
 	FocalPointPicker,
 	SelectControl,
 	Modal,
+	Notice,
 	Popover,
 	__experimentalBoxControl as BoxControl,
 	__experimentalUnitControl as UnitControl,
@@ -50,6 +51,8 @@ import { more } from '@wordpress/icons';
 import { getBlockType, createBlock, rawHandler } from '@wordpress/blocks';
 import apiFetch from '@wordpress/api-fetch';
 
+import { PluginPostStatusInfo } from '@wordpress/edit-post';
+
 const SAMPLEFORM = (
 	<form className="mailster-form">
 		<label className="mailster-label">This is my Label</label>
@@ -60,19 +63,84 @@ const SAMPLEFORM = (
 		<input type="radio" />
 		<input type="text" className="input" />
 		<input type="email" className="input" />
-		<input type="date" className="input " />
-		<input type="submit" />
+		<input type="date" className="input" />
+		<input type="submit" className="wp-block-button__link" />
 	</form>
 );
 
-/**
- * The edit function describes the structure of your block in the context of the
- * editor. This represents what the editor will render when the block is used.
- *
- * @see https://developer.wordpress.org/block-editor/developers/block-api/block-edit-save/#edit
- *
- * @return {WPElement} Element to render.
- */
+const convertRestArgsIntoStylesArr = ([...args]) => {
+	return args.slice(1);
+};
+const getStyles = function () {
+	const args = [...arguments];
+	const [element] = args;
+	let s = '';
+
+	if (!element) return s;
+
+	const stylesProps =
+		[...args][1] instanceof Array
+			? args[1]
+			: convertRestArgsIntoStylesArr(args);
+
+	const styles = window.getComputedStyle(element);
+	stylesProps.reduce((acc, v) => {
+		const x = styles.getPropertyValue(v);
+		if (x) s += v + ': ' + x + ';';
+	}, {});
+
+	return s;
+};
+const getInputStyles = () => {
+	const iframe = document.getElementById('inputStylesIframe');
+
+	if (!iframe) return;
+
+	const doc = iframe.contentWindow.document,
+		//get a couple of possible DOM elements
+		el =
+			doc.getElementsByClassName('entry-content')[0] ||
+			doc.getElementById('page') ||
+			doc.getElementById('site-content') ||
+			doc.getElementById('content') ||
+			doc.getElementsByClassName('wp-site-blocks')[0] ||
+			doc.getElementsByTagName('body')[0],
+		properties = [
+			'padding',
+			'border',
+			'font',
+			'border-radius',
+			'background',
+			'box-shadow',
+			'line-height',
+			'appearance',
+			'outline',
+			'text-transform',
+			'letter-spacing',
+		],
+		selectors = {
+			'input[type="text"]': [],
+			'input[type="email"]': [],
+			'input[type="date"]': [],
+			'input[type="checkbox"]': ['width', 'height'],
+			'input[type="radio"]': ['width', 'height'],
+			'input[type="submit"]': ['border', 'outline', 'color'],
+			select: [],
+			'label.mailster-label': [],
+		};
+
+	wp.element.render(SAMPLEFORM, el);
+
+	return Object.keys(selectors)
+		.map((selector, i) => {
+			const style = getStyles(
+				doc.querySelector('.mailster-form ' + selector),
+				[...properties, ...selectors[selector]]
+			);
+			return '.mailster-form ' + selector + '{' + style + '}';
+		})
+		.join('');
+};
 
 export default function InlineStyles(props) {
 	const { meta, setMeta } = props;
@@ -82,100 +150,27 @@ export default function InlineStyles(props) {
 
 	const [render, setRender] = useState(true);
 
-	const getInputStyles = () => {
-		const iframe = document.getElementById('inputStylesIframe');
-
-		if (!iframe) return;
-
-		const doc = iframe.contentWindow.document,
-			//get a couple of possible DOM elements
-			el =
-				doc.getElementsByClassName('entry-content')[0] ||
-				doc.getElementById('page') ||
-				doc.getElementById('site-content') ||
-				doc.getElementById('content') ||
-				doc.getElementsByClassName('wp-site-blocks')[0] ||
-				doc.getElementsByTagName('body')[0],
-			properties = [
-				'padding',
-				'border',
-				'font',
-				'border-radius',
-				'background',
-				'box-shadow',
-				'line-height',
-				'appearance',
-				'outline',
-				'text-transform',
-				'letter-spacing',
-			],
-			selectors = {
-				'input[type="text"]': [],
-				'input[type="email"]': [],
-				'input[type="date"]': [],
-				'input[type="checkbox"]': ['width', 'height'],
-				'input[type="radio"]': ['width', 'height'],
-				'input[type="submit"]': ['border', 'outline', 'color'],
-				select: [],
-				'label.mailster-label': [],
-			};
-
-		wp.element.render(SAMPLEFORM, el);
-
-		const styles = Object.keys(selectors)
-			.map((selector, i) => {
-				const style = getStyles(
-					doc.querySelector('.mailster-form ' + selector),
-					[...properties, ...selectors[selector]]
-				);
-				return '.mailster-form ' + selector + '{' + style + '}';
-			})
-			.join('');
-
+	const updateStyles = () => {
+		const styles = getInputStyles();
 		if (styles != inputStyles) {
 			apiFetch({
 				path: '/wp/v2/settings',
 				method: 'POST',
 				data: { mailster_inline_styles: styles },
 			}).then((settings) => {
-				inputStyles &&
-					dispatch('core/notices').createNotice(
-						'success',
-						__('Input field styles have been updated.', 'mailster'),
-						{
-							type: 'snackbar',
-							isDismissible: true,
-						}
-					);
+				dispatch('core/notices').createNotice(
+					'success',
+					__('Input field styles have been updated.', 'mailster'),
+					{
+						type: 'snackbar',
+						isDismissible: true,
+					}
+				);
 			});
 			setinputStyles(styles);
 			window.mailster_inline_styles = styles;
 		}
-		setRender(false);
-	};
-
-	const convertRestArgsIntoStylesArr = ([...args]) => {
-		return args.slice(1);
-	};
-	const getStyles = function () {
-		const args = [...arguments];
-		const [element] = args;
-		let s = '';
-
-		if (!element) return s;
-
-		const stylesProps =
-			[...args][1] instanceof Array
-				? args[1]
-				: convertRestArgsIntoStylesArr(args);
-
-		const styles = window.getComputedStyle(element);
-		stylesProps.reduce((acc, v) => {
-			const x = styles.getPropertyValue(v);
-			if (x) s += v + ': ' + x + ';';
-		}, {});
-
-		return s;
+		//setRender(false);
 	};
 
 	return (
@@ -184,7 +179,7 @@ export default function InlineStyles(props) {
 				<style className="mailster-inline-styles">{inputStyles}</style>
 			)}
 			{render && (
-				<div id="mycustomstyles">
+				<PluginPostStatusInfo className="my-plugin-post-status-info">
 					<iframe
 						src="../"
 						id="inputStylesIframe"
@@ -192,15 +187,13 @@ export default function InlineStyles(props) {
 							width: screen.width,
 							zIndex: -1,
 							position: 'absolute',
-							left: 0,
-							right: 0,
-							bottom: 0,
 							top: 0,
+							visibility: 'hidden',
 						}}
-						onLoad={getInputStyles}
+						onLoad={updateStyles}
 						sandbox="allow-scripts allow-same-origin"
 					></iframe>
-				</div>
+				</PluginPostStatusInfo>
 			)}
 		</>
 	);

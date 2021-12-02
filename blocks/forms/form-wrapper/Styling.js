@@ -54,6 +54,25 @@ import { select, dispatch } from '@wordpress/data';
  * @return {WPElement} Element to render.
  */
 
+const colorSettings = [
+	{
+		id: 'color',
+		label: __('Input Font Color', 'mailster'),
+	},
+	{
+		id: 'backgroundColor',
+		label: __('Input Background Color', 'mailster'),
+	},
+	{
+		id: 'borderColor',
+		label: __('Input Border Color', 'mailster'),
+	},
+	{
+		id: 'labelColor',
+		label: __('Label Color', 'mailster'),
+	},
+];
+
 export default function Styles(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 	const { style } = attributes;
@@ -68,33 +87,18 @@ export default function Styles(props) {
 		<PanelColorSettings
 			title={__('Styles', 'mailster')}
 			initialOpen={false}
-			colorSettings={[
-				{
-					value: style.color,
-					onChange: (value) => setStyle('color', value),
-					label: __('color Color', 'mailster'),
-				},
-				{
-					value: style.backgroundColor,
-					onChange: (value) => setStyle('backgroundColor', value),
-					label: __('BackgroundColor Color', 'mailster'),
-				},
-				{
-					value: style.borderColor,
-					onChange: (value) => setStyle('borderColor', value),
-					label: __('borderColor Color', 'mailster'),
-				},
-				{
-					value: style.labelColor,
-					onChange: (value) => setStyle('labelColor', value),
-					label: __('labelColor Color', 'mailster'),
-				},
-			]}
+			colorSettings={colorSettings.flatMap((color) => {
+				return {
+					value: style[color.id],
+					onChange: (value) => setStyle(color.id, value),
+					label: color.label,
+				};
+			})}
 		>
 			<PanelRow>
 				<RangeControl
 					className="widefat"
-					label="borderWidth"
+					label={__('Border Width', 'mailster')}
 					value={
 						style.borderWidth
 							? parseInt(style.borderWidth, 10)
@@ -110,13 +114,13 @@ export default function Styles(props) {
 						)
 					}
 					min={0}
-					max={10}
+					max={12}
 				/>
 			</PanelRow>
 			<PanelRow>
 				<RangeControl
 					className="widefat"
-					label="borderRadius"
+					label={__('Border Radius', 'mailster')}
 					value={
 						style.borderRadius
 							? parseInt(style.borderRadius, 10)
@@ -132,7 +136,7 @@ export default function Styles(props) {
 						)
 					}
 					min={0}
-					max={50}
+					max={60}
 				/>
 			</PanelRow>
 		</PanelColorSettings>

@@ -54,6 +54,37 @@ import { select, dispatch } from '@wordpress/data';
  *
  * @return {WPElement} Element to render.
  */
+const colorSettings = [
+	{
+		id: 'color',
+		label: __('Font Color', 'mailster'),
+	},
+	{
+		id: 'backgroundColor',
+		label: __('Background Color', 'mailster'),
+	},
+	{
+		id: 'borderColor',
+		label: __('Border Color', 'mailster'),
+	},
+	{
+		id: 'labelColor',
+		label: __('Label Color', 'mailster'),
+	},
+];
+const fontSizes = [
+	{
+		name: __('Small'),
+		slug: 'small',
+		size: 12,
+	},
+	{
+		name: __('Big'),
+		slug: 'big',
+		size: 26,
+	},
+];
+const fallbackFontSize = 16;
 
 export default function Styles(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
@@ -91,39 +122,6 @@ export default function Styles(props) {
 		});
 	}
 
-	const fontSizes = [
-		{
-			name: __('Small'),
-			slug: 'small',
-			size: 12,
-		},
-		{
-			name: __('Big'),
-			slug: 'big',
-			size: 26,
-		},
-	];
-	const fallbackFontSize = 16;
-
-	const colorSettings = [
-		{
-			id: 'color',
-			label: __('color Color', 'mailster'),
-		},
-		{
-			id: 'backgroundColor',
-			label: __('BackgroundColor Color', 'mailster'),
-		},
-		{
-			id: 'borderColor',
-			label: __('borderColor Color', 'mailster'),
-		},
-		{
-			id: 'labelColor',
-			label: __('labelColor Color', 'mailster'),
-		},
-	];
-
 	return (
 		<PanelColorSettings
 			title={__('Styles', 'mailster')}
@@ -141,12 +139,13 @@ export default function Styles(props) {
 		>
 			<PanelRow>
 				<SelectControl
-					label={__('Style', 'mailster')}
+					label={__('Border Style', 'mailster')}
 					labelPosition="side"
 					className="widefat"
 					value={style.borderStyle}
 					onChange={(value) => setStyle('borderStyle', value)}
 					options={[
+						{ value: null, label: 'not set' },
 						{ value: 'dashed', label: 'Dashed' },
 						{ value: 'dotted', label: 'Dotted' },
 						{ value: 'solid', label: 'Solid' },
@@ -156,7 +155,7 @@ export default function Styles(props) {
 			<PanelRow>
 				<RangeControl
 					className="widefat"
-					label="borderWidth"
+					label={__('Border Width', 'mailster')}
 					value={
 						style.borderWidth
 							? parseInt(style.borderWidth, 10)
@@ -178,7 +177,7 @@ export default function Styles(props) {
 			<PanelRow>
 				<RangeControl
 					className="widefat"
-					label="borderRadius"
+					label={__('Border Radius', 'mailster')}
 					value={
 						style.borderRadius
 							? parseInt(style.borderRadius, 10)
@@ -199,11 +198,12 @@ export default function Styles(props) {
 			</PanelRow>
 			<PanelRow>
 				<FontSizePicker
-					fontSizes={fontSizes}
+					//fontSizes={fontSizes}
 					value={style.fontSize}
 					fallbackFontSize={fallbackFontSize}
 					onChange={(value) => setStyle('fontSize', value)}
 					withSlider
+					withReset
 				/>
 			</PanelRow>
 			{type !== 'submit' && (

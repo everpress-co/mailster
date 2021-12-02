@@ -54,7 +54,6 @@ export default function save(props) {
 				></div>
 			</div>
 			<InnerBlocks.Content />
-			<input type="submit" style={{ display: 'none !important' }} />
 		</form>
 	);
 }

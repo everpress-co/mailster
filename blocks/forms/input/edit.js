@@ -37,6 +37,7 @@ import { more } from '@wordpress/icons';
 
 import InputFieldInspectorControls from '../input/inspector.js';
 import FormElement from './FormElement';
+import InputBlockControls from './InputBlockControls';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -55,6 +56,7 @@ export default function Edit(props) {
 
 	if (required) className.push('mailster-wrapper-required');
 	if (inline) className.push('mailster-wrapper-inline');
+	if ('submit' == type) className.push('wp-block-button');
 
 	const styleSheets = {
 		width: style.width ? style.width + '%' : undefined,
@@ -81,6 +83,7 @@ export default function Edit(props) {
 				)}
 				<FormElement {...props} />
 			</div>
+			<InputBlockControls {...props} />
 			<InputFieldInspectorControls {...props} />
 		</>
 	);

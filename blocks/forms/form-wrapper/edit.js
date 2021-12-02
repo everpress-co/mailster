@@ -92,15 +92,11 @@ export default function Edit(props) {
 
 	const [displayMessages, setDisplayMessages] = useState(false);
 
-	const [showClasses, setShowClasses] = useState(false);
-
 	const borderProps = useBorderProps(attributes);
 	const colorProps = useColorProps(attributes);
 	const spacingProps = useSpacingProps(attributes);
 
-	const className = ['mailster-form', 'mailster-form-' + clientId];
-
-	showClasses && className.push('show-classes');
+	let className = ['mailster-form', 'mailster-form-' + clientId];
 
 	const styleSuccessMessage = {
 		color: messages.success,
@@ -411,11 +407,7 @@ export default function Edit(props) {
 					setDisplayMessages={setDisplayMessages}
 				/>
 				<Background {...props} setBackground={setBackground} />
-				<Css
-					{...props}
-					setCss={setCss}
-					setShowClasses={setShowClasses}
-				/>
+				<Css {...props} setCss={setCss} />
 			</InspectorControls>
 		</>
 	);

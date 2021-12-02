@@ -270,7 +270,7 @@ class MailsterBlockForms {
 			'labels'              => $labels,
 			'supports'            => array( 'title', 'editor', 'revisions', 'custom-fields' ),
 			'hierarchical'        => true,
-			'public'              => true,
+			'public'              => false,
 			'show_ui'             => true,
 			'show_in_menu'        => 'edit.php?post_type=newsletter',
 			'show_in_admin_bar'   => false,
@@ -386,17 +386,6 @@ class MailsterBlockForms {
 				'show_in_rest' => true,
 				'single'       => true,
 				'default'      => esc_html__( 'Click here to confirm', 'mailster' ),
-			)
-		);
-
-		register_post_meta(
-			'newsletter_form',
-			'input_styles',
-			array(
-				'type'         => 'string',
-				'show_in_rest' => true,
-				'single'       => true,
-				'default'      => '',
 			)
 		);
 
@@ -525,8 +514,8 @@ class MailsterBlockForms {
 		register_block_type(
 			MAILSTER_DIR . 'blocks/form/',
 			array(
+				'api_version'     => 2,
 				'render_callback' => array( $this, 'render_form' ),
-
 			)
 		);
 		if ( ! is_admin() ) {

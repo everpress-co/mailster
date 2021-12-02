@@ -22,11 +22,21 @@
 		}
 	},
 	"attributes": {
-		"content": {
-			"type": "string",
-			"default": "I agree to the privacy policy and terms.",
-			"source": "html",
-			"selector": "span"
+		"labels": {
+			"type": "array",
+			"source": "query",
+			"selector": "span",
+			"query": {
+				"id": {
+					"type": "integer",
+					"source": "attribute",
+					"attribute": "listid"
+				},
+				"name": {
+					"type": "string",
+					"source": "html"
+				}
+			}
 		}
 	},
 	"textdomain": "mailster",

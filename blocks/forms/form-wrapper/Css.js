@@ -73,8 +73,7 @@ const Wrapper = ({ children, isCSSModal, setCSSModal }) => {
 	);
 };
 export default function Css(props) {
-	const { attributes, setAttributes, isSelected, setCss, setShowClasses } =
-		props;
+	const { attributes, setAttributes, isSelected, setCss } = props;
 
 	const { css } = attributes;
 
@@ -92,8 +91,8 @@ export default function Css(props) {
 
 	const initCodeMirror = (isOpened, name) => {
 		const placeholder = '/* Style for ' + tabs[name] + ' /*';
-		setShowClasses(isOpened);
 		if (!isOpened || !wp.CodeMirror) return;
+
 		setTimeout(() => {
 			if (
 				document
@@ -154,6 +153,7 @@ export default function Css(props) {
 		<PanelBody
 			name="css"
 			title="Custom CSS"
+			initialOpen={false}
 			onToggle={(isOpen) => {
 				initCodeMirror(isOpen, 'general');
 			}}

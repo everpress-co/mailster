@@ -91,6 +91,10 @@ window.mailster_fields &&
 					type: 'string',
 					default: field.id,
 				},
+				align: {
+					type: 'string',
+					default: '',
+				},
 				id: {
 					type: 'string',
 					source: 'attribute',

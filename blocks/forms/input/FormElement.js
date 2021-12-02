@@ -80,7 +80,7 @@ export default function FormElement(props) {
 				<div className="mailster-group mailster-group-radio">
 					{values.map((value, i) => {
 						return (
-							<label key={i}>
+							<label key={i} className="mailster-wrapper-options">
 								<input
 									name={name}
 									aria-required={required}
@@ -105,7 +105,7 @@ export default function FormElement(props) {
 		case 'checkbox':
 			return (
 				<div className="mailster-group mailster-group-checkbox">
-					<label>
+					<label className="mailster-wrapper-options">
 						<input
 							name={name}
 							aria-required={required}

@@ -51,9 +51,7 @@ import { useSelect } from '@wordpress/data';
 
 export default function ListsPanel(props) {
 	const { meta, setMeta } = props;
-	const { userschoice } = meta;
-
-	const [lists, setLists] = useState(meta.lists);
+	const { userschoice, lists } = meta;
 
 	const allLists = useSelect(
 		(select) => select('mailster/form').getLists(),
@@ -70,16 +68,7 @@ export default function ListsPanel(props) {
 			});
 		}
 
-		// if (allLists) {
-		// 	newLists = allLists.map((el) => {
-		// 		if (newLists.includes(el.ID)) {
-		// 			return el.ID;
-		// 		}
-		// 	});
-		// }
-
 		setMeta({ lists: newLists });
-		setLists(newLists);
 	}
 
 	function moveValue(i, delta) {
@@ -87,8 +76,10 @@ export default function ListsPanel(props) {
 		var element = newLists[i];
 		newLists.splice(i, 1);
 		newLists.splice(i + delta, 0, element);
+
+		console.warn(i, delta);
+
 		setMeta({ lists: newLists });
-		setLists(newLists);
 	}
 	const getList = (id) => {
 		const list = allLists.filter((list) => {
