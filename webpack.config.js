@@ -7,13 +7,11 @@ const glob = require('glob');
 const path = require('path');
 const cp = require('child_process');
 
-const entry = glob.sync('./blocks/**/index.js').reduce((acc, path) => {
-	const entry = path.replace('./blocks/', '').replace('/index.js', '');
-	acc[entry] = path.replace('/index.js', '');
+const entry = glob.sync('./blocks/**/index.js').reduce((acc, p) => {
+	const entry = p.replace('./blocks/', '').replace('/index.js', '');
+	acc[entry] = p.replace('/index.js', '');
 	return acc;
 }, {});
-
-entry['form-inspector'] = './blocks/form-inspector';
 
 const soundPluginOptions = {
 	sounds: {
@@ -78,9 +76,10 @@ const soundPluginOptions = {
 
 module.exports = {
 	...defaultConfig,
-	entry,
+
+	entry: { ...entry },
 	output: {
-		filename: './[name].js',
+		filename: '[name]/index.js',
 		path: path.resolve(__dirname) + '/build',
 	},
 	module: {

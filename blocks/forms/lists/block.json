@@ -30,5 +30,5 @@
 		}
 	},
 	"textdomain": "mailster",
-	"editorScript": "file:./../../build/lists.js"
+	"editorScript": "file:./../../../build/forms/lists/index.js"
 }

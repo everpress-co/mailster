@@ -30,5 +30,5 @@
 		}
 	},
 	"textdomain": "mailster",
-	"editorScript": "file:./../../build/gdpr.js"
+	"editorScript": "file:./../../../build/forms/gdpr/index.js"
 }

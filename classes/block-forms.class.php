@@ -522,7 +522,13 @@ class MailsterBlockForms {
 
 	public function block_init() {
 
-		register_block_type( MAILSTER_DIR . 'blocks/form/', array( 'render_callback' => array( $this, 'render_form' ) ) );
+		register_block_type(
+			MAILSTER_DIR . 'blocks/form/',
+			array(
+				'render_callback' => array( $this, 'render_form' ),
+
+			)
+		);
 		if ( ! is_admin() ) {
 			return;
 		}
@@ -570,10 +576,6 @@ class MailsterBlockForms {
 
 				$block_name = str_replace( '-', '_', basename( dirname( $block ) ) );
 
-				if ( 'form' == $block_name ) {
-					continue;
-				}
-
 				if ( method_exists( $this, 'render_' . $block_name ) ) {
 					$args['render_callback'] = array( $this, 'render_' . $block_name );
 				}
@@ -585,7 +587,8 @@ class MailsterBlockForms {
 	}
 
 	private function get_blocks() {
-		return glob( MAILSTER_DIR . 'blocks/*/block.json' );
+		$blocks = glob( MAILSTER_DIR . 'blocks/forms/*/block.json' );
+		return $blocks;
 	}
 
 	public function block_script_styles( $hook ) {
@@ -596,8 +599,8 @@ class MailsterBlockForms {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . 'build/form-inspector.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-form-field-block-editor', MAILSTER_URI . 'build/input.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-form-block-editor', MAILSTER_URI . 'build/forms/form-inspector/index.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-form-field-block-editor', MAILSTER_URI . 'build/forms/input/index.js', array( 'mailster-script', 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-plugins', 'wp-edit-post' ), MAILSTER_VERSION );
 
 		wp_enqueue_style( 'mailster-form-block-editor', MAILSTER_URI . 'assets/css/blocks-editor' . $suffix . '.css', array(), MAILSTER_VERSION );
 		wp_add_inline_script( 'mailster-form-block-editor', 'var mailster_fields = ' . json_encode( array_values( $this->get_fields() ) ) . ';' );
@@ -710,8 +713,6 @@ class MailsterBlockForms {
 
 			$args['categories'] = array( 'featured', 'mailster-forms' );
 
-			error_log( print_r( $key, true ) );
-			error_log( print_r( $pattern, true ) );
 			register_block_pattern( 'mailster/' . $key, $args );
 		}
 
@@ -818,7 +819,6 @@ class MailsterBlockForms {
 				$embeded_style .= strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
 			}
 			$embeded_style .= '}';
-			error_log( print_r( $embeded_style, true ) );
 		}
 
 		if ( $is_backend && $input_styles = get_option( 'mailster_inline_styles' ) ) {

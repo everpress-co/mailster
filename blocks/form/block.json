@@ -26,7 +26,7 @@
 		}
 	},
 	"textdomain": "mailster",
-	"editorScript": "file:./../../build/form.js",
+	"editorScript": "file:./../../build/form/index.js",
 	"editorStyle": "file:./../../build/form.css",
 	"style": "file:./../../build/style-form.css"
 }
