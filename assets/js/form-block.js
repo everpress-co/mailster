@@ -1,6 +1,8 @@
 (function () {
 	'use strict';
 
+	alert('LOADED');
+
 	console.warn('FORM BLOCK INIT');
 	var forms = document.querySelectorAll('form.mailster-form');
 

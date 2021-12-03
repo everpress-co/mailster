@@ -227,6 +227,7 @@ class MailsterBlockForms {
 
 
 	public function wp_enqueue_scripts() {
+
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 		wp_register_script( 'mailster-form-block', MAILSTER_URI . 'assets/js/form-block' . $suffix . '.js', array(), MAILSTER_VERSION );
 	}
@@ -516,6 +517,8 @@ class MailsterBlockForms {
 			array(
 				'api_version'     => 2,
 				'render_callback' => array( $this, 'render_form' ),
+				'textdomain'      => 'mailster',
+				'script'          => 'mailster-form-block',
 			)
 		);
 		if ( ! is_admin() ) {
@@ -738,9 +741,10 @@ class MailsterBlockForms {
 		$is_backend = defined( 'REST_REQUEST' ) && REST_REQUEST;
 
 		if ( ! $is_backend ) {
+			$suffix = SCRIPT_DEBUG ? '' : '.min';
 			wp_enqueue_script( 'mailster-form-block' );
 			if ( $cached = get_post_meta( $form->ID, '_cached', true ) ) {
-				// return $cached;
+				return $cached;
 			}
 		}
 
@@ -879,7 +883,7 @@ class MailsterBlockForms {
 		}
 
 		if ( ! $is_backend ) {
-			update_post_meta( $form->ID, '_cached', $html, true );
+			// update_post_meta( $form->ID, '_cached', $html, true );
 		}
 
 		return ( $html );

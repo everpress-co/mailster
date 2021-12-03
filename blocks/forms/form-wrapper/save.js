@@ -38,7 +38,7 @@ export default function save(props) {
 	return (
 		<form
 			method="post"
-			action="/mailster/subscribe"
+			action="/wp-json/mailster/v1/subscribe"
 			{...useBlockProps.save({
 				className: 'mailster-form',
 			})}

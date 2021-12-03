@@ -13,6 +13,14 @@ const entry = glob.sync('./blocks/**/index.js').reduce((acc, p) => {
 	return acc;
 }, {});
 
+const publicentry = glob.sync('./blocks/**/public.js').reduce((acc, p) => {
+	const entry = p.replace('./blocks/', '').replace('/public.js', '');
+	acc[entry + '/public'] = p;
+	return acc;
+}, {});
+
+console.warn(publicentry);
+
 const soundPluginOptions = {
 	sounds: {
 		warning: '/System/Library/Sounds/Basso.aiff',
@@ -77,7 +85,7 @@ const soundPluginOptions = {
 module.exports = {
 	...defaultConfig,
 
-	entry: { ...entry },
+	entry: { ...entry, ...publicentry },
 	output: {
 		filename: '[name]/index.js',
 		path: path.resolve(__dirname) + '/build',
