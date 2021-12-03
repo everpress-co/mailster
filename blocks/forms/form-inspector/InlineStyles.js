@@ -54,7 +54,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { PluginPostStatusInfo } from '@wordpress/edit-post';
 
 const SAMPLEFORM = (
-	<form className="mailster-form">
+	<form className="mailster-block-form">
 		<label className="mailster-label">This is my Label</label>
 		<select className="input">
 			<option>This is a select</option>
@@ -134,10 +134,10 @@ const getInputStyles = () => {
 	return Object.keys(selectors)
 		.map((selector, i) => {
 			const style = getStyles(
-				doc.querySelector('.mailster-form ' + selector),
+				doc.querySelector('.mailster-block-form ' + selector),
 				[...properties, ...selectors[selector]]
 			);
-			return '.mailster-form ' + selector + '{' + style + '}';
+			return '.mailster-block-form ' + selector + '{' + style + '}';
 		})
 		.join('');
 };

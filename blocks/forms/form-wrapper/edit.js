@@ -125,7 +125,7 @@ export default function Edit(props) {
 	const colorProps = useColorProps(attributes);
 	const spacingProps = useSpacingProps(attributes);
 
-	let className = ['mailster-form', 'mailster-form-' + clientId];
+	let className = ['mailster-block-form', 'mailster-block-form-' + clientId];
 
 	const styleSuccessMessage = {
 		color: messages.success,
@@ -207,8 +207,8 @@ export default function Edit(props) {
 
 		//make sure the root element is not prefixed
 		rules = rules.replaceAll(
-			className + ' .mailster-form',
-			className + '.mailster-form'
+			className + ' .mailster-block-form',
+			className + '.mailster-block-form'
 		);
 
 		if ('tablet' == type) {
@@ -226,7 +226,7 @@ export default function Edit(props) {
 
 	if (background.image) {
 		backgroundStyles +=
-			'.wp-block-mailster-form-wrapper.mailster-form-' +
+			'.wp-block-mailster-form-wrapper.mailster-block-form-' +
 			clientId +
 			'::before{';
 		backgroundStyles += "content:'';";
@@ -247,7 +247,7 @@ export default function Edit(props) {
 
 	Object.entries(filteredInputStyles).map(([k, v]) => {
 		inputStyle +=
-			'.wp-block-mailster-form-wrapper.mailster-form-' + clientId;
+			'.wp-block-mailster-form-wrapper.mailster-block-form-' + clientId;
 
 		switch (k) {
 			case 'labelColor':
@@ -266,7 +266,8 @@ export default function Edit(props) {
 		return Object.keys(css).map((name, b) => {
 			return prefixCss(
 				css[name],
-				'.wp-block-mailster-form-wrapper.mailster-form-' + clientId,
+				'.wp-block-mailster-form-wrapper.mailster-block-form-' +
+					clientId,
 				name
 			);
 		});
@@ -406,15 +407,15 @@ export default function Edit(props) {
 					</style>
 				)}
 				{displayMessages && (
-					<div className="mailster-form-info">
+					<div className="mailster-block-form-info">
 						<div
-							className="mailster-form-info-success"
+							className="mailster-block-form-info-success"
 							style={styleSuccessMessage}
 						>
 							{__('This is a success message', 'mailster')}
 						</div>
 						<div
-							className="mailster-form-info-error"
+							className="mailster-block-form-info-error"
 							style={styleErrorMessage}
 						>
 							{__(

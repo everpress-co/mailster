@@ -65,7 +65,7 @@ const ModalContent = ({ setOpen }) => {
 	const { __experimentalBlockPatterns } = blockEditor.getSettings();
 
 	const patterns = __experimentalBlockPatterns.filter((pattern) =>
-		pattern.categories.includes('mailster-forms')
+		pattern.categories.includes('mailster-block-forms')
 	);
 
 	if (!patterns.length) {

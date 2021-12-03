@@ -5,55 +5,55 @@
  * It' used to define the general style of the form. Used "every were"
  */
 
-.mailster-form-type-popup,
-.mailster-form-type-bar {
+.mailster-block-form-type-popup,
+.mailster-block-form-type-bar {
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
 	_display: none;
-	.mailster-form {
+	.mailster-block-form {
 		width: 50vw;
 		max-width: 100vw;
 		background-color: #fff;
 	}
 }
 @media only screen and (max-width: 800px) {
-	.mailster-form-type-popup,
-	.mailster-form-type-bar {
-		.mailster-form {
+	.mailster-block-form-type-popup,
+	.mailster-block-form-type-bar {
+		.mailster-block-form {
 			width: 70vw;
 		}
 	}
 }
 @media only screen and (max-width: 400px) {
-	.mailster-form-type-popup,
-	.mailster-form-type-bar {
-		.mailster-form {
+	.mailster-block-form-type-popup,
+	.mailster-block-form-type-bar {
+		.mailster-block-form {
 			width: 95vw;
 		}
 	}
 }
-.mailster-form-type-popup {
+.mailster-block-form-type-popup {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.5);
 }
-.mailster-form-type-bar {
-	.mailster-form {
+.mailster-block-form-type-bar {
+	.mailster-block-form {
 		width: 100vw;
 	}
 }
 @supports (backdrop-filter: blur(6px)) {
-	.mailster-form-type-popup {
+	.mailster-block-form-type-popup {
 		background-color: rgba(0, 0, 0, 0.6);
 		-webkit-backdrop-filter: blur(6px);
 		backdrop-filter: blur(6px);
 	}
 }
-.mailster-form.wp-block-mailster-form-wrapper::before {
+.mailster-block-form.wp-block-mailster-form-wrapper::before {
 	position: absolute;
 	background-repeat: no-repeat;
 	top: 0;
@@ -70,7 +70,7 @@ _body::before {
 	background: red;
 	color: #fff;
 }
-.mailster-form.loading::after {
+.mailster-block-form.loading::after {
 	content: '';
 	position: absolute;
 	height: 40px;
@@ -113,7 +113,7 @@ _body::before {
 		transform: rotate(-720deg);
 	}
 }
-.mailster-form.wp-block-mailster-form-wrapper {
+.mailster-block-form.wp-block-mailster-form-wrapper {
 	position: relative;
 	display: flex;
 	flex-wrap: wrap;
@@ -125,7 +125,7 @@ _body::before {
 	> div {
 		position: relative;
 	}
-	.mailster-form-info > div {
+	.mailster-block-form-info > div {
 		padding: 0.5em 1em;
 		margin-bottom: 0.5em;
 		display: none;
@@ -159,8 +159,8 @@ _body::before {
 		}
 	}
 }
-.mailster-form {
-	.mailster-form-info {
+.mailster-block-form {
+	.mailster-block-form-info {
 		height: 0px;
 		transition: all 0.2s;
 		transform: scale(0);
@@ -233,30 +233,30 @@ _body::before {
 	}
 }
 @media only screen and (max-width: 400px) {
-	.mailster-form.wp-block-mailster-form-wrapper {
+	.mailster-block-form.wp-block-mailster-form-wrapper {
 		.mailster-wrapper {
 			min-width: 100%;
 		}
 	}
 }
-.mailster-form.wp-block-mailster-form-wrapper.has-error {
-	.mailster-form-info {
+.mailster-block-form.wp-block-mailster-form-wrapper.has-error {
+	.mailster-block-form-info {
 		height: auto;
 		transform: scale(1);
-		.mailster-form-info-error {
+		.mailster-block-form-info-error {
 			display: block;
 		}
 	}
 }
-.mailster-form.wp-block-mailster-form-wrapper.has-success {
-	.mailster-form-info {
+.mailster-block-form.wp-block-mailster-form-wrapper.has-success {
+	.mailster-block-form-info {
 		height: auto;
 		transform: scale(1);
-		.mailster-form-info-success {
+		.mailster-block-form-info-success {
 			display: block;
 		}
 	}
 }
-.mailster-form.wp-block-mailster-form-wrapper.loading {
+.mailster-block-form.wp-block-mailster-form-wrapper.loading {
 	opacity: 0.4;
 }

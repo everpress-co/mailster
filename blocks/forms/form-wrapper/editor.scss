@@ -7,7 +7,15 @@
 .block-editor-inner-blocks {
 	width: 100%;
 }
-
+_body::before {
+	content: 'EDITOR STYLE LOADED';
+	font-size: 10px;
+	position: fixed;
+	top: 0;
+	z-index: 100000;
+	background: red;
+	color: #fff;
+}
 .block-editor-block-list__layout {
 	position: relative;
 	display: flex;
@@ -28,12 +36,12 @@
 }
 .editor-styles-wrapper
 	.is-root-container
-	.mailster-form
+	.mailster-block-form
 	.wp-block.mailster-wrapper {
 	margin-top: 0 !important;
 	margin-bottom: 0.5em !important;
 }
-.editor-styles-wrapper .mailster-form .wp-block {
+.editor-styles-wrapper .mailster-block-form .wp-block {
 	margin-left: 0;
 	margin-right: 0;
 }
@@ -44,8 +52,7 @@
 .CodeMirror {
 	border: 1px solid #e0e0e0;
 }
-
-.mailster-form.wp-block-mailster-form-wrapper {
+.mailster-block-form.wp-block-mailster-form-wrapper {
 	box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px,
 		rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px,
 		rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
@@ -55,12 +62,12 @@
 	min-height: 5rem;
 	overflow: visible !important;
 
-	.mailster-form-info {
+	.mailster-block-form-info {
 		height: auto;
 		transform: scale(1);
 	}
 
-	.mailster-form-info > div {
+	.mailster-block-form-info > div {
 		display: block !important;
 	}
 	> button {
@@ -163,7 +170,7 @@
 	.block-list-appender {
 		display: none;
 	}
-	.mailster-form.wp-block-mailster-form-wrapper {
+	.mailster-block-form.wp-block-mailster-form-wrapper {
 		box-shadow: none;
 	}
 }

@@ -5,7 +5,7 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.wp-block-mailster-form {
+.wp-block-mailster-block-form {
 	.placeholder-buttons-wrap {
 		width: 100%;
 	}
@@ -18,9 +18,9 @@
 		transform: translate(-50%, -50%);
 		z-index: 100;
 	}
-	.mailster-form-editor-wrap {
+	.mailster-block-form-editor-wrap {
 	}
-	.mailster-form-editor-wrap::before {
+	.mailster-block-form-editor-wrap::before {
 		content: '';
 		display: block;
 		height: 100%;
@@ -31,14 +31,14 @@
 		z-index: 100;
 	}
 	@supports (backdrop-filter: blur(2px)) {
-		.mailster-form-editor-wrap::before {
+		.mailster-block-form-editor-wrap::before {
 			background-color: rgba(255, 255, 255, 0.6);
 			-webkit-backdrop-filter: blur(2px);
 			backdrop-filter: blur(2px);
 		}
 	}
 
-	.mailster-form {
+	.mailster-block-form {
 		max-width: 100%;
 		background-size: cover;
 		background-color: transparent;
@@ -49,11 +49,11 @@
 		position: relative;
 	}
 }
-.wp-block-mailster-form.is-selected:hover {
+.wp-block-mailster-block-form.is-selected:hover {
 	.update-form-button {
 		display: block;
 	}
-	.mailster-form-editor-wrap::before {
+	.mailster-block-form-editor-wrap::before {
 		opacity: 1;
 	}
 }

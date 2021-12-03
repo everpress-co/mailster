@@ -204,7 +204,7 @@ export default function Css(props) {
 						onChange={addSelector}
 					>
 						<option value="">{__('Choose', 'mailster')}</option>
-						<option value=".mailster-form">
+						<option value=".mailster-block-form">
 							{__('Form selector', 'mailster')}
 						</option>
 						<option value=".mailster-wrapper">

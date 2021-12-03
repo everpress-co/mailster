@@ -149,7 +149,7 @@ export default function Edit(props) {
 			<div {...useBlockProps()}>
 				{parseInt(id) > 0 && (
 					<>
-						<div className="mailster-form-editor-wrap">
+						<div className="mailster-block-form-editor-wrap">
 							<div className="update-form-button">
 								<ButtonGroup>
 									<Button

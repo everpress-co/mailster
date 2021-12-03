@@ -40,16 +40,16 @@ export default function save(props) {
 			method="post"
 			action="/wp-json/mailster/v1/subscribe"
 			{...useBlockProps.save({
-				className: 'mailster-form',
+				className: 'mailster-block-form',
 			})}
 		>
-			<div className="mailster-form-info">
+			<div className="mailster-block-form-info">
 				<div
-					className="mailster-form-info-success"
+					className="mailster-block-form-info-success"
 					style={styleSuccessMessage}
 				></div>
 				<div
-					className="mailster-form-info-error"
+					className="mailster-block-form-info-error"
 					style={styleErrorMessage}
 				></div>
 			</div>

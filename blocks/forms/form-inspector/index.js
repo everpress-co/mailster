@@ -87,7 +87,7 @@ function SettingsPanelPlugin() {
 	);
 }
 
-registerPlugin('mailster-form-settings-panel', {
+registerPlugin('mailster-block-form-settings-panel', {
 	render: SettingsPanelPlugin,
 	icon: false,
 });
