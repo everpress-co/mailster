@@ -54,7 +54,7 @@ class Mailster_REST_Subscribe_Controller extends WP_REST_Controller {
 	 * @return bool|WP_Error
 	 */
 	public function create_item_permissions_check( $request ) {
-		if (false &&  ! current_user_can( 'read' ) ) {
+		if ( false && ! current_user_can( 'read' ) ) {
 			return new WP_Error( 'rest_forbidden', esc_html__( 'You cannot view this resource.' ), array( 'status' => $this->authorization_status_code() ) );
 		}
 		return true;
@@ -63,7 +63,7 @@ class Mailster_REST_Subscribe_Controller extends WP_REST_Controller {
 
 	public function create_item( $request ) {
 
-		error_log( print_r($request, true) );
+		error_log( print_r( $request, true ) );
 
 		$data = array();
 
