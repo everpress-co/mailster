@@ -1,27 +1,18 @@
 (function () {
 	'use strict';
 
-	var forms = document.querySelectorAll('.mailster-form');
-
-	console.warn(forms);
+	var forms = document.querySelectorAll('.mailster-block-form');
 
 	Array.prototype.forEach.call(forms, function (form, i) {
 		form.addEventListener('submit', function (event) {
 			event.preventDefault();
 
-			var data = serializeForm(form),
-				c,
-				info = form.querySelector('.mailster-form-info');
+			var data = new FormData(form),
+				info = form.querySelector('.mailster-block-form-info');
 
 			if (!info) {
 				info = document.createElement('div');
-				info.classList.add('mailster-form-info');
-			}
-
-			if ('function' === typeof window.mailster_pre_submit) {
-				c = window.mailster_pre_submit.call(this, data);
-				if (c === false) return false;
-				if (typeof c !== 'undefined') data = c;
+				info.classList.add('mailster-block-form-info');
 			}
 
 			form.classList.add('loading');
@@ -30,20 +21,17 @@
 			fetch(form.getAttribute('action'), {
 				method: 'POST',
 				headers: {
-					'x-requested-with': 'XMLHttpRequest', // backwards compatibility
-					'Content-Type':
-						'application/x-www-form-urlencoded; charset=UTF-8',
+					//'Content-Type': 'application/json',
+					//'X-WP-Nonce': data.get('_nonce'), // <- here, send the nonce via the header
 				},
 				body: data,
 			})
 				.then(function (response) {
-					if (response.ok) {
-						return response.json();
-					}
-					return Promise.reject(response);
+					return response.json();
 				})
 				.then(handlerResponse)
 				.catch(function (error) {
+					console.warn('xxx', error);
 					var response;
 					try {
 						response = JSON.parse(error);
@@ -72,35 +60,35 @@
 						};
 					}
 					handlerResponse(response);
+				})
+				.finally(function () {
+					console.warn('FIN');
+					form.classList.remove('loading');
+					form.classList.remove('has-errors');
+					form.removeAttribute('disabled');
+					form.querySelector('.submit-button').removeAttribute(
+						'disabled'
+					);
+
+					[].forEach.call(
+						document.querySelectorAll('div.mailster-wrapper'),
+						function (wrapper) {
+							wrapper.classList.remove('error');
+						}
+					);
+
+					//info.remove();
+					//info.classList.remove('error');
+					//info.classList.remove('success');
 				});
 
 			function handlerResponse(response) {
-				form.classList.remove('loading');
-				form.classList.remove('has-errors');
-				form.removeAttribute('disabled');
-				form.querySelector('.submit-button').removeAttribute(
-					'disabled'
-				);
-
-				[].forEach.call(
-					document.querySelectorAll('div.mailster-wrapper'),
-					function (wrapper) {
-						wrapper.classList.remove('error');
-					}
-				);
-
-				info.remove();
-				info.classList.remove('error');
-				info.classList.remove('success');
-
-				if ('function' === typeof window.mailster_post_submit) {
-					c = window.mailster_post_submit.call(form[0], response);
-					if (c === false) return false;
-					if (typeof c !== 'undefined') response = c;
+				console.warn('HAN');
+				if (200 !== response.data.status) {
 				}
-
-				if (response.data.html) {
-					info.innerHTML = response.data.html;
+				console.warn(response);
+				if (response.message) {
+					info.innerHTML = response.message;
 				}
 
 				if (

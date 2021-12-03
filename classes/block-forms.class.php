@@ -760,7 +760,7 @@ class MailsterBlockForms {
 		}
 
 		$inject  = '';
-		$inject .= '<input name="_nonce" type="hidden" value="' . esc_attr( wp_create_nonce( 'mailster-form-nonce' ) ) . '">' . "\n";
+		$inject .= '<input name="_formid" type="" value="' . esc_attr( $form->ID ) . '">' . "\n";
 
 		$output = str_replace( '</form>', $inject . '</form>', $output );
 

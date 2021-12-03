@@ -54,18 +54,33 @@ class Mailster_REST_Subscribe_Controller extends WP_REST_Controller {
 	 * @return bool|WP_Error
 	 */
 	public function create_item_permissions_check( $request ) {
+
 		if ( false && ! current_user_can( 'read' ) ) {
 			return new WP_Error( 'rest_forbidden', esc_html__( 'You cannot view this resource.' ), array( 'status' => $this->authorization_status_code() ) );
 		}
+
+		$post_nonce = mailster_option( 'post_nonce' );
+		$form_id    = $request->get_param( '_form_id' );
+
 		return true;
 	}
 
 
 	public function create_item( $request ) {
+		$data    = $request->get_params();
+		$headers = $request->get_headers();
+		$referer = $request->get_header( 'referer' );
 
-		error_log( print_r( $request, true ) );
+		$entry = mailster( 'subscribers' )->verify( $data, true );
+		if ( is_wp_error( $entry ) ) {
+			return $entry;
+		}
 
-		$data = array();
+		error_log( print_r( $entry, true ) );
+
+		error_log( print_r( $data, true ) );
+		error_log( print_r( $headers, true ) );
+		return new WP_Error( 'rest_forbidden', esc_html__( 'xxYou cannot view this resource.' ), array( 'status' => $this->authorization_status_code() ) );
 
 		// Return all of our comment response data.
 		return rest_ensure_response( $data );

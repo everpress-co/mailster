@@ -152,10 +152,10 @@ export default function FormElement(props) {
 				<>
 					<input
 						name={name}
-						type={'submit'}
+						type="submit"
 						style={inputStyle}
 						value={label}
-						className="wp-block-button__link"
+						className="wp-block-button__link submit-button"
 					/>
 				</>
 			);
