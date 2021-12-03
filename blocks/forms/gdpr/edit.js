@@ -24,7 +24,8 @@ import {
 	CheckboxControl,
 	TextControl,
 } from '@wordpress/components';
-import { Fragment, useState } from '@wordpress/element';
+import { Fragment, useState, useEffect } from '@wordpress/element';
+import { useEntityProp } from '@wordpress/core-data';
 
 import { more } from '@wordpress/icons';
 
@@ -51,8 +52,18 @@ export default function Edit(props) {
 	const { content } = attributes;
 	const className = ['mailster-wrapper mailster-wrapper-_gdpr'];
 
-	//if (required) className.push('mailster-wrapper-required');
-	//if (inline) className.push('mailster-wrapper-inline');
+	const [meta, setMeta] = useEntityProp(
+		'postType',
+		'newsletter_form',
+		'meta'
+	);
+
+	useEffect(() => {
+		setMeta({ gdpr: true });
+		return () => {
+			setMeta({ gdpr: false });
+		};
+	}, []);
 
 	return (
 		<Fragment>

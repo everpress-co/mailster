@@ -63,6 +63,35 @@ import Background from './Background';
 import BlockRecovery from './BlockRecovery';
 import Css from './Css';
 
+// const getCurrentPostAttribute = select('core/editor').getCurrentPostAttribute;
+// const getBlocks = select('core/editor').getBlocks;
+
+// let blockList = getBlocks();
+
+// subscribe(() => {
+// 	const newBlockList = getBlocks();
+
+// 	console.warn(newBlockList);
+
+// 	// get the current postFormat
+// 	const meta = getCurrentPostAttribute('meta');
+// 	if (meta) {
+// 		console.warn(meta);
+// 	}
+
+// 	// only do something if postFormat has changed.
+// 	// if (postFormat !== newPostFormat) {
+// 	// 	// Do whatever you want after postFormat has changed
+// 	// 	if (newPostFormat == 'gallery') {
+// 	// 		$('#blockAudio, #blockVideo, #blockGallery').hide();
+// 	// 		$('#blockGallery').fadeIn();
+// 	// 	}
+// 	// }
+
+// 	// // update the postFormat variable.
+// 	// postFormat = newPostFormat;
+// });
+
 /**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.

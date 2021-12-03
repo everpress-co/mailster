@@ -11,30 +11,24 @@
 	"supports": {
 		"html": false,
 		"reusable": false,
-		"inserter": false,
-		"multiple": false,
-		"align": ["left", "right", "center"],
-		"color": {
-			"link": true,
-			"background": false,
-			"text": true,
-			"fontSize": true
-		}
+		"multiple": false
 	},
 	"attributes": {
-		"labels": {
+		"lists": {
 			"type": "array",
 			"source": "query",
-			"selector": "span",
+			"selector": "input",
+			"default": [],
 			"query": {
 				"id": {
 					"type": "integer",
 					"source": "attribute",
-					"attribute": "listid"
+					"attribute": "value"
 				},
-				"name": {
+				"label": {
 					"type": "string",
-					"source": "html"
+					"source": "attribute",
+					"attribute": "aria-label"
 				}
 			}
 		}

@@ -46,7 +46,7 @@ export default function Gdpr(props) {
 	return (
 		<PluginDocumentSettingPanel name="gdpr" title="GDPR">
 			<CheckboxControl
-				label="Send a confirmation message"
+				label="Users must check a checkbox to submt tge form"
 				checked={!!gdpr}
 				onChange={() => setMeta({ gdpr: !gdpr })}
 			/>

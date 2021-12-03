@@ -18,6 +18,7 @@ import {
 	PlainText,
 } from '@wordpress/block-editor';
 import {
+	Button,
 	Panel,
 	PanelBody,
 	PanelRow,
@@ -26,7 +27,7 @@ import {
 } from '@wordpress/components';
 import { Fragment, useState, useEffect } from '@wordpress/element';
 import { useEntityProp } from '@wordpress/core-data';
-import { useSelect } from '@wordpress/data';
+import { useSelect, select } from '@wordpress/data';
 
 import { more } from '@wordpress/icons';
 
@@ -50,7 +51,7 @@ import InputFieldInspectorControls from './inspector.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	const { labels = [] } = attributes;
+	const { lists } = attributes;
 	const className = ['mailster-wrapper mailster-wrapper-_lists'];
 
 	const [meta, setMeta] = useEntityProp(
@@ -59,63 +60,47 @@ export default function Edit(props) {
 		'meta'
 	);
 
-	useEffect(() => {
-		if (!meta.lists) return;
-		console.warn('EFFECT', meta.lists);
-		var newLabels = labels.sort(function (a, b) {
-			return (
-				meta.lists.indexOf(parseInt(a.id, 10)) -
-				meta.lists.indexOf(parseInt(b.id, 10))
-			);
-		});
-
-		console.warn(newLabels, labels);
-		setAttributes({ labels: newLabels });
-	}, [meta.lists]);
-
 	const allLists = useSelect(
 		(select) => select('mailster/form').getLists(),
 		[]
 	);
+	useEffect(() => {
+		return () => {
+			setMeta({ userschoice: false });
+		};
+	}, []);
 
-	const getList = (list_id, i) => {
-		const list2 = labels.filter((list) => {
+	useEffect(() => {
+		if (!meta.lists || !allLists) return;
+
+		var newLists = meta.lists.map((list_id, i) => {
+			return {
+				id: list_id.toString(),
+				label: getLabelFromListId(list_id, i),
+			};
+		});
+
+		setAttributes({ lists: newLists });
+	}, [meta.lists, allLists]);
+
+	const getLabelFromListId = (list_id, i) => {
+		const labelList = lists.filter((list) => {
 			return list.id == list_id;
 		});
-		if (list2.length) {
-			return {
-				id: list_id,
-				name: list2[0].name,
-			};
+		if (labelList.length) {
+			return labelList[0].label;
 		}
 		const list = allLists.filter((list) => {
 			return list.ID == list_id;
 		});
 
-		if (list.length) {
-			return {
-				id: list_id,
-				name: list[0].name,
-			};
-		}
-
-		return null;
+		return list[0].name;
 	};
 
-	const setLabel = (label, list_id) => {
-		const i = labels.findIndex((list) => {
-			return list.id == list_id;
-		});
-		var newLabels = [...labels];
-		if (!newLabels[i]) {
-			newLabels[i] = {
-				id: list_id,
-				name: label,
-			};
-		} else {
-			newLabels[i].name = label;
-		}
-		setAttributes({ labels: newLabels });
+	const setLabel = (label, list_id, i) => {
+		var newLists = [...lists];
+		newLists[i].label = label;
+		setAttributes({ label: newLists });
 	};
 
 	return (
@@ -125,8 +110,7 @@ export default function Edit(props) {
 			})}
 		>
 			{allLists &&
-				meta.lists.map((list_id, i) => {
-					const label = getList(list_id, i);
+				lists.map((list, i) => {
 					return (
 						<div
 							key={i}
@@ -134,12 +118,14 @@ export default function Edit(props) {
 						>
 							<label>
 								<input type="checkbox" />
-								{label.id}
+								{list.id}
 								<RichText
 									tagName="span"
-									value={label.name}
-									onChange={(val) => setLabel(val, label.id)}
-									//allowedFormats={[]}
+									value={list.label}
+									onChange={(val) =>
+										setLabel(val, list.id, i)
+									}
+									allowedFormats={[]}
 									className="mailster-label"
 									placeholder={__('Enter Label', 'mailster')}
 								/>
@@ -149,47 +135,5 @@ export default function Edit(props) {
 				})}
 			<InputFieldInspectorControls meta={meta} setMeta={setMeta} />
 		</div>
-	);
-
-	//if (required) className.push('mailster-wrapper-required');
-	//if (inline) className.push('mailster-wrapper-inline');
-
-	return (
-		<Fragment>
-			<div
-				{...useBlockProps({
-					className: className.join(' '),
-				})}
-			>
-				{allLists &&
-					meta.lists.map((list_id, i) => {
-						const list = getList(list_id, i);
-						console.warn(list);
-						if (!list) return;
-						return (
-							<div
-								key={i}
-								className="mailster-group mailster-group-checkbox"
-							>
-								<label>
-									<input type="checkbox" />
-									<RichText
-										tagName="span"
-										value={list.label}
-										onChange={(val) => setLabel(val, i)}
-										//allowedFormats={[]}
-										className="mailster-label"
-										placeholder={__(
-											'Enter Label',
-											'mailster'
-										)}
-									/>
-								</label>
-							</div>
-						);
-					})}
-				<InputFieldInspectorControls meta={meta} setMeta={setMeta} />
-			</div>
-		</Fragment>
 	);
 }

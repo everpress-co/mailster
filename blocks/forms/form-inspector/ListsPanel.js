@@ -96,6 +96,14 @@ export default function ListsPanel(props) {
 
 	return (
 		<>
+			<PanelRow>
+				<CheckboxControl
+					label="Users Choice"
+					checked={!!meta.userschoice}
+					onChange={() => setMeta({ userschoice: !meta.userschoice })}
+					help="Users decide which list they subscribe to"
+				/>
+			</PanelRow>
 			{!allLists && <Spinner />}
 			{allLists && lists.length > 0 && (
 				<PanelRow>

@@ -39,7 +39,13 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { more } from '@wordpress/icons';
 import apiFetch from '@wordpress/api-fetch';
 import { Icon, arrowUp, arrowDown, trash } from '@wordpress/icons';
-import { useSelect } from '@wordpress/data';
+import {
+	useSelect,
+	select,
+	dispatch,
+	subscribe,
+	useDispatch,
+} from '@wordpress/data';
 
 import ListsPanel from './ListsPanel';
 
@@ -53,16 +59,10 @@ import ListsPanel from './ListsPanel';
  */
 
 export default function Lists(props) {
+	console.warn('LISTS');
+
 	return (
 		<PluginDocumentSettingPanel name="userschoice" title="Lists">
-			<CheckboxControl
-				label="Users Choice"
-				checked={!!props.meta.userschoice}
-				onChange={() =>
-					props.setMeta({ userschoice: !props.meta.userschoice })
-				}
-				help="Users decide which list they subscribe to"
-			/>
 			<ListsPanel {...props} />
 		</PluginDocumentSettingPanel>
 	);

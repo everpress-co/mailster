@@ -11,15 +11,7 @@
 	"supports": {
 		"html": false,
 		"reusable": false,
-		"inserter": false,
-		"multiple": false,
-		"align": ["left", "right", "center"],
-		"color": {
-			"link": true,
-			"background": false,
-			"text": true,
-			"fontSize": true
-		}
+		"multiple": false
 	},
 	"attributes": {
 		"content": {

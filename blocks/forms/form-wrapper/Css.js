@@ -94,12 +94,7 @@ export default function Css(props) {
 		if (!isOpened || !wp.CodeMirror) return;
 
 		setTimeout(() => {
-			if (
-				document
-					.querySelector('.custom-css-tabs')
-					.querySelector('.CodeMirror')
-			)
-				return;
+			if (!document || document.querySelector('.CodeMirror')) return;
 
 			const settings = {
 				...wp.codeEditor.defaultSettings.codemirror,
