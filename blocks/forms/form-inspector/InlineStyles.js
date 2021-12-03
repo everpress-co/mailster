@@ -170,7 +170,7 @@ export default function InlineStyles(props) {
 			setinputStyles(styles);
 			window.mailster_inline_styles = styles;
 		}
-		//setRender(false);
+		setRender(false);
 	};
 
 	return (

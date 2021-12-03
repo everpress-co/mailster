@@ -31,6 +31,7 @@ import {
 	FlexItem,
 	FlexBlock,
 	Spinner,
+	Tip,
 } from '@wordpress/components';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
@@ -207,6 +208,16 @@ export default function ListsPanel(props) {
 							})}
 						</Flex>
 					</BaseControl>
+				</PanelRow>
+			)}
+			{meta.userschoice && lists.length > 0 && (
+				<PanelRow>
+					<Tip>
+						{__(
+							'You can update the list names and the precheck status in the editor.',
+							'mailster'
+						)}
+					</Tip>
 				</PanelRow>
 			)}
 		</>

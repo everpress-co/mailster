@@ -5,7 +5,6 @@
 	"title": "Lists Field",
 	"category": "mailster-form-fields",
 	"keywords": ["container", "wrapper", "row", "section"],
-	"icon": "button",
 	"parent": ["mailster/form-wrapper", "core/column"],
 	"description": "Simple Input Field for your Mailster Form",
 	"supports": {
@@ -21,14 +20,19 @@
 			"default": [],
 			"query": {
 				"id": {
-					"type": "integer",
+					"type": "string",
 					"source": "attribute",
 					"attribute": "value"
 				},
-				"label": {
+				"name": {
 					"type": "string",
 					"source": "attribute",
 					"attribute": "aria-label"
+				},
+				"checked": {
+					"type": "string",
+					"source": "attribute",
+					"attribute": "checked"
 				}
 			}
 		}

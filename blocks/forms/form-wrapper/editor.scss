@@ -78,6 +78,9 @@
 		}
 		.mailster-group-checkbox {
 			pointer-events: none;
+			input {
+				pointer-events: all;
+			}
 		}
 	}
 }

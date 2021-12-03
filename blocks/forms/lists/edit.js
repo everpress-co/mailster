@@ -60,6 +60,8 @@ export default function Edit(props) {
 		'meta'
 	);
 
+	console.warn(attributes);
+
 	const allLists = useSelect(
 		(select) => select('mailster/form').getLists(),
 		[]
@@ -73,34 +75,42 @@ export default function Edit(props) {
 	useEffect(() => {
 		if (!meta.lists || !allLists) return;
 
-		var newLists = meta.lists.map((list_id, i) => {
+		var newLists = meta.lists.map((list_id) => {
 			return {
 				id: list_id.toString(),
-				label: getLabelFromListId(list_id, i),
+				name: getFromListId(list_id).name,
+				checked: !!getFromListId(list_id).checked,
 			};
 		});
 
 		setAttributes({ lists: newLists });
 	}, [meta.lists, allLists]);
 
-	const getLabelFromListId = (list_id, i) => {
+	const getFromListId = (list_id) => {
 		const labelList = lists.filter((list) => {
 			return list.id == list_id;
 		});
 		if (labelList.length) {
-			return labelList[0].label;
+			return labelList[0];
 		}
 		const list = allLists.filter((list) => {
 			return list.ID == list_id;
 		});
 
-		return list[0].name;
+		return list[0];
 	};
 
-	const setLabel = (label, list_id, i) => {
+	const setLabel = (label, i) => {
 		var newLists = [...lists];
-		newLists[i].label = label;
-		setAttributes({ label: newLists });
+		newLists[i].name = label;
+		setAttributes({ lists: newLists });
+	};
+
+	const setChecked = (label, i) => {
+		console.warn(label);
+		var newLists = [...lists];
+		newLists[i].checked = label;
+		setAttributes({ lists: newLists });
 	};
 
 	return (
@@ -117,14 +127,19 @@ export default function Edit(props) {
 							className="mailster-group mailster-group-checkbox"
 						>
 							<label>
-								<input type="checkbox" />
-								{list.id}
+								<input
+									type="checkbox"
+									value={list.id}
+									checked={list.checked || false}
+									aria-label={list.name}
+									onChange={() =>
+										setChecked(!list.checked, i)
+									}
+								/>
 								<RichText
 									tagName="span"
-									value={list.label}
-									onChange={(val) =>
-										setLabel(val, list.id, i)
-									}
+									value={list.name}
+									onChange={(val) => setLabel(val, i)}
 									allowedFormats={[]}
 									className="mailster-label"
 									placeholder={__('Enter Label', 'mailster')}

@@ -17,6 +17,7 @@ import { registerBlockType, createBlock } from '@wordpress/blocks';
  */
 import edit from './edit';
 import save from './save';
+import Icons from './Icons';
 
 /**
  * Every block starts by registering a new block type definition.
@@ -78,8 +79,7 @@ window.mailster_fields &&
 				fontSize: true,
 			},
 			icon: {
-				background: '#ff0',
-				src: 'button',
+				src: Icons[field.id] || Icons.default,
 			},
 			attributes: {
 				label: label,

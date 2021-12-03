@@ -29,6 +29,10 @@ export default function save(props) {
 	const { lists } = attributes;
 	const className = ['mailster-wrapper mailster-wrapper-_lists'];
 
+	if (lists.length == 0) {
+		return <></>;
+	}
+
 	return (
 		<div
 			{...useBlockProps.save({
@@ -44,12 +48,14 @@ export default function save(props) {
 						<label>
 							<input
 								type="checkbox"
+								name="_lists[]"
 								value={list.id}
-								aria-label={list.label}
+								checked={list.checked}
+								aria-label={list.name}
 							/>
 							<RichText.Content
 								tagName="span"
-								value={list.label}
+								value={list.name}
 								className="mailster-label"
 							/>
 						</label>

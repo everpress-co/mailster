@@ -59,9 +59,11 @@ export default function Edit(props) {
 	);
 
 	useEffect(() => {
+		console.warn(meta.gdpr);
 		setMeta({ gdpr: true });
 		return () => {
-			setMeta({ gdpr: false });
+			//need to check if in the main editor
+			//setMeta({ gdpr: false });
 		};
 	}, []);
 
