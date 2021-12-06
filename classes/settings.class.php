@@ -241,7 +241,7 @@ class MailsterSettings {
 		return array(
 			'confirmation'          => esc_html__( 'Please confirm your subscription!', $domain ),
 			'success'               => esc_html__( 'Thanks for your interest!', $domain ),
-			'error'                 => esc_html__( 'Following fields are missing or incorrect', $domain ),
+			'error'                 => esc_html__( 'There was a problem submitting the form:', $domain ),
 			'newsletter_signup'     => esc_html__( 'Sign up to our newsletter', $domain ),
 			'unsubscribe'           => esc_html__( 'You have successfully unsubscribed!', $domain ),
 			'unsubscribeerror'      => esc_html__( 'An error occurred! Please try again later!', $domain ),

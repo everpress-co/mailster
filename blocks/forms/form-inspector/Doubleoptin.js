@@ -42,7 +42,8 @@ import { more } from '@wordpress/icons';
 
 export default function Doubleoptin(props) {
 	const { meta, setMeta } = props;
-	const { doubleoptin, subject, headline, link, content } = meta;
+	const { doubleoptin, subject, headline, link, content, confirmredirect } =
+		meta;
 
 	const [isValidContent, setValidContent] = useState(false);
 
@@ -83,12 +84,24 @@ export default function Doubleoptin(props) {
 							'Make sure this field contain a {link} tag.'
 						}
 						onChange={(value) => setMeta({ content: value })}
-					/>{' '}
+					/>
 					<TextControl
 						label="Linktext"
 						value={link}
 						help="Helptext"
 						onChange={(value) => setMeta({ link: value })}
+					/>
+					<TextControl
+						label={__('Redirect after confirm', 'mailster')}
+						help={__(
+							'Redirect subscribers after they have confirmed their subscription',
+							'mailster'
+						)}
+						value={confirmredirect}
+						onChange={(value) =>
+							setMeta({ confirmredirect: value })
+						}
+						type="url"
 					/>
 				</>
 			)}

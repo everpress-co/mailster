@@ -13,6 +13,10 @@
 		"multiple": false
 	},
 	"attributes": {
+		"dropdown": {
+			"type": "boolean",
+			"default": false
+		},
 		"lists": {
 			"type": "array",
 			"source": "query",

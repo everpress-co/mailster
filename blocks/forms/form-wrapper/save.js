@@ -26,32 +26,18 @@ export default function save(props) {
 	const { attributes } = props;
 	const { messages } = attributes;
 
-	const styleSuccessMessage = {
-		color: messages.success,
-		backgroundColor: messages.successBackground,
-	};
-	const styleErrorMessage = {
-		color: messages.error,
-		backgroundColor: messages.errorBackground,
-	};
-
 	return (
 		<form
 			method="post"
 			action="/wp-json/mailster/v1/subscribe"
+			novalidate
 			{...useBlockProps.save({
 				className: 'mailster-block-form',
 			})}
 		>
 			<div className="mailster-block-form-info">
-				<div
-					className="mailster-block-form-info-success"
-					style={styleSuccessMessage}
-				></div>
-				<div
-					className="mailster-block-form-info-error"
-					style={styleErrorMessage}
-				></div>
+				<div className="mailster-block-form-info-success"></div>
+				<div className="mailster-block-form-info-error"></div>
 			</div>
 			<InnerBlocks.Content />
 		</form>

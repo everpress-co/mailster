@@ -130,6 +130,7 @@ _body::before {
 		margin-bottom: 0.5em;
 		display: none;
 	}
+
 	.mailster-wrapper {
 		margin-top: 0;
 		margin-left: 0;
@@ -165,6 +166,38 @@ _body::before {
 		transition: all 0.2s;
 		transform: scale(0);
 	}
+	.mailster-block-form-info.error,
+	.mailster-block-form-info.success {
+		height: 100%;
+		transform: scale(1);
+	}
+
+	.mailster-block-form-info.error .mailster-block-form-info-error,
+	.mailster-block-form-info.success .mailster-block-form-info-success {
+		display: block;
+	}
+
+	.mailster-block-form-info-success {
+		color: #fff;
+		color: var(--mailster--color--success, #fff);
+		background-color: #6fbf4d;
+		background-color: var(--mailster--color--success-background, #6fbf4d);
+	}
+	.mailster-block-form-info-error {
+		color: #fff;
+		color: var(--mailster--color--error, #fff);
+		background-color: #bf4d4d;
+		background-color: var(--mailster--color--error-background, #bf4d4d);
+	}
+
+	.mailster-wrapper.error {
+		input,
+		select,
+		textarea {
+			outline: 2px solid var(--mailster--color--error-background, #bf4d4d);
+			border-color: var(--mailster--color--error-background, #bf4d4d);
+		}
+	}
 
 	.mailster-wrapper-required {
 		label.mailster-label::after {
@@ -172,7 +205,8 @@ _body::before {
 			display: inline-block;
 			padding-left: 0.2rem;
 			padding-right: 0.2rem;
-			color: var(--wp--preset--color--vivid-red);
+			color: #bf4d4d;
+			color: var(--wp--preset--color--vivid-red, #bf4d4d);
 		}
 	}
 	.mailster-wrapper-inline {

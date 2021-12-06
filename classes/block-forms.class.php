@@ -331,6 +331,42 @@ class MailsterBlockForms {
 
 		register_post_meta(
 			'newsletter_form',
+			'redirect',
+			array(
+				'type'         => 'string',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => '',
+
+			)
+		);
+
+		register_post_meta(
+			'newsletter_form',
+			'confirmredirect',
+			array(
+				'type'         => 'string',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => '',
+
+			)
+		);
+
+		register_post_meta(
+			'newsletter_form',
+			'overwrite',
+			array(
+				'type'         => 'string',
+				'show_in_rest' => true,
+				'single'       => true,
+				'default'      => '',
+
+			)
+		);
+
+		register_post_meta(
+			'newsletter_form',
 			'lists',
 			array(
 				'type'         => 'array',
@@ -741,26 +777,20 @@ class MailsterBlockForms {
 		$is_backend = defined( 'REST_REQUEST' ) && REST_REQUEST;
 
 		if ( ! $is_backend ) {
-			$suffix = SCRIPT_DEBUG ? '' : '.min';
-			wp_enqueue_script( 'mailster-form-block' );
 			if ( $cached = get_post_meta( $form->ID, '_cached', true ) ) {
 				return $cached;
 			}
 		}
 
 		$blockattributes = $block->attributes;
-		$uniqid          = uniqid();
+		$uniqid          = substr( uniqid(), 8, 5 );
 
-		$innerblocks = parse_blocks( $form->post_content );
-		$output      = '';
-		foreach ( $innerblocks as $innerblock ) {
-			if ( $innerblock['blockName'] == 'mailster/form-wrapper' ) {
-				$output .= render_block( $innerblock );
-			}
-		}
+		$form_block = $this->get_form_block( $form );
+		$output     = render_block( $form_block );
 
 		$inject  = '';
-		$inject .= '<input name="_formid" type="" value="' . esc_attr( $form->ID ) . '">' . "\n";
+		$inject .= '<input name="_formid" type="_hidden" value="' . esc_attr( $form->ID ) . '">' . "\n";
+		$inject .= '<input name="_timestamp" type="_hidden" value="' . esc_attr( time() ) . '">' . "\n";
 
 		$output = str_replace( '</form>', $inject . '</form>', $output );
 
@@ -773,8 +803,18 @@ class MailsterBlockForms {
 		if ( isset( $blockattributes['align'] ) ) {
 			$classes[] = 'align' . $blockattributes['align'];
 		}
-		if ( isset( $innerblock->attributes['className'] ) ) {
-			$classes[] = $innerblock->attributes['className'];
+		$embeded_style = '';
+
+		if ( isset( $form_block['attrs']['messages'] ) ) {
+			$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . '{';
+			foreach ( $form_block['attrs']['messages'] as $key => $value ) {
+				$embeded_style .= '--mailster--color--' . strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
+			}
+			$embeded_style .= '}';
+		}
+
+		if ( isset( $form_block['attrs']['className'] ) ) {
+			$classes[] = $form_block['attrs']['className'];
 		}
 
 		$stylesheet = '';
@@ -785,30 +825,28 @@ class MailsterBlockForms {
 			}
 		}
 
-		$embeded_style = '';
-
-		if ( isset( $innerblock['attrs']['background'] ) ) {
+		if ( isset( $form_block['attrs']['background'] ) ) {
 			$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .wp-block-mailster-form-wrapper::before{';
-			$embeded_style .= 'content:"";background-image:url(' . $innerblock['attrs']['background']['image'] . ');';
-			$embeded_style .= 'opacity:' . $innerblock['attrs']['background']['opacity'] . '%;';
-			$embeded_style .= 'background-size:' . $innerblock['attrs']['background']['size'] . ';';
-			if ( $innerblock['attrs']['background']['fixed'] ) {
+			$embeded_style .= 'content:"";background-image:url(' . $form_block['attrs']['background']['image'] . ');';
+			$embeded_style .= 'opacity:' . $form_block['attrs']['background']['opacity'] . '%;';
+			$embeded_style .= 'background-size:' . $form_block['attrs']['background']['size'] . ';';
+			if ( $form_block['attrs']['background']['fixed'] ) {
 				$embeded_style .= 'background-attachment:fixed;';
 			}
-			if ( $innerblock['attrs']['background']['repeat'] ) {
+			if ( $form_block['attrs']['background']['repeat'] ) {
 				$embeded_style .= 'background-repeat:repeat;';
 			} else {
 				$embeded_style .= 'background-repeat:no-repeat;';
 			}
-			$embeded_style .= 'background-position:' . ( $innerblock['attrs']['background']['position']['x'] * 100 ) . '% ' . ( $innerblock['attrs']['background']['position']['y'] * 100 ) . '%;';
+			$embeded_style .= 'background-position:' . ( $form_block['attrs']['background']['position']['x'] * 100 ) . '% ' . ( $form_block['attrs']['background']['position']['y'] * 100 ) . '%;';
 			$embeded_style .= 'position: absolute;background-repeat: no-repeat;top: 0;left: 0;bottom: 0;right: 0;';
 			$embeded_style .= '}';
 
 		}
 
-		if ( isset( $innerblock['attrs']['style'] ) ) {
+		if ( isset( $form_block['attrs']['style'] ) ) {
 			$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .wp-block-mailster-form-wrapper .input{';
-			foreach ( $innerblock['attrs']['style'] as $key => $value ) {
+			foreach ( $form_block['attrs']['style'] as $key => $value ) {
 				$embeded_style .= strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
 			}
 			$embeded_style .= '}';
@@ -823,7 +861,7 @@ class MailsterBlockForms {
 		$i_error = libxml_use_internal_errors( true );
 		$htmldoc = new \InlineStyle\InlineStyle();
 
-		if ( isset( $innerblock['attrs']['css'] ) ) {
+		if ( isset( $form_block['attrs']['css'] ) ) {
 			foreach ( $innerblock['attrs']['css'] as $name => $css ) {
 				if ( empty( $css ) ) {
 					continue;
@@ -888,6 +926,42 @@ class MailsterBlockForms {
 
 		return ( $html );
 
+	}
+
+	public function get_required_fields( $form ) {
+
+		if ( ! ( $form = get_post( $form ) ) ) {
+			return;
+		}
+
+		$fields = array();
+
+		$form_block   = $this->get_form_block( $form );
+		$inner_blocks = wp_list_pluck( $form_block['innerBlocks'], 'innerHTML', 'blockName' );
+
+		foreach ( $form_block['innerBlocks'] as $block ) {
+
+			if ( false !== strpos( $block['innerHTML'], 'aria-required="true"' ) ) {
+				$fields[] = str_replace( 'mailster/field-', '', $block['blockName'] );
+			}
+		}
+
+		return $fields;
+
+	}
+
+	private function get_form_block( $form ) {
+
+		$form = get_post( $form );
+
+		$parsed = parse_blocks( $form->post_content );
+		foreach ( $parsed as $innerblock ) {
+			if ( $innerblock['blockName'] == 'mailster/form-wrapper' ) {
+				return $innerblock;
+			}
+		}
+
+		return null;
 	}
 
 	public function clear_cache( $post_id ) {

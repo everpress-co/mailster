@@ -50,7 +50,7 @@ import { more } from '@wordpress/icons';
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
 	const { content } = attributes;
-	const className = ['mailster-wrapper mailster-wrapper-_gdpr'];
+	const className = ['mailster-wrapper'];
 
 	const [meta, setMeta] = useEntityProp(
 		'postType',

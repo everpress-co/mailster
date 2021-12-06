@@ -25,7 +25,7 @@ import { useBlockProps, RichText } from '@wordpress/block-editor';
 export default function save(props) {
 	const { attributes, setAttributes, isSelected } = props;
 	const { content } = attributes;
-	const className = ['mailster-wrapper mailster-wrapper-_gdpr'];
+	const className = ['mailster-wrapper'];
 
 	//if (required) className.push('mailster-wrapper-required');
 	//if (inline) className.push('mailster-wrapper-inline');
@@ -37,7 +37,6 @@ export default function save(props) {
 			})}
 		>
 			<label>
-				<input type="hidden" name="_gdpr" value="0" />
 				<input type="checkbox" name="_gdpr" value="1" />
 				<RichText.Content tagName="span" value={content} />
 			</label>

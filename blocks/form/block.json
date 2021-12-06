@@ -27,7 +27,6 @@
 	},
 	"textdomain": "mailster",
 	"editorScript": "file:./../../build/form/index.js",
-	"viewScript": ["mailster-form-block"],
 	"editorStyle": "file:./../../build/form.css",
 	"style": "file:./../../build/style-form.css"
 }

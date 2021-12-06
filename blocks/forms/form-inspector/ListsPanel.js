@@ -51,7 +51,7 @@ import { useSelect } from '@wordpress/data';
  */
 
 export default function ListsPanel(props) {
-	const { meta, setMeta } = props;
+	const { meta, setMeta, attributes, setAttributes } = props;
 	const { userschoice, lists } = meta;
 
 	const allLists = useSelect(
@@ -202,14 +202,33 @@ export default function ListsPanel(props) {
 				</PanelRow>
 			)}
 			{meta.userschoice && lists.length > 0 && (
-				<PanelRow>
-					<Tip>
-						{__(
-							'You can update the list names and the precheck status in the editor.',
-							'mailster'
-						)}
-					</Tip>
-				</PanelRow>
+				<>
+					{setAttributes && (
+						<PanelRow>
+							<CheckboxControl
+								label={__('Display as dropdown', 'mailster')}
+								help={__(
+									'Let users only choose a single list.',
+									'mailster'
+								)}
+								checked={!!attributes.dropdown}
+								onChange={() =>
+									setAttributes({
+										dropdown: !attributes.dropdown,
+									})
+								}
+							/>
+						</PanelRow>
+					)}
+					<PanelRow>
+						<Tip>
+							{__(
+								'You can update the list names and the precheck status in the editor.',
+								'mailster'
+							)}
+						</Tip>
+					</PanelRow>
+				</>
 			)}
 		</>
 	);

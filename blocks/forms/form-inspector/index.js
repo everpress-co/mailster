@@ -36,6 +36,8 @@ import {
 import { useEntityProp } from '@wordpress/core-data';
 import { registerBlockVariation } from '@wordpress/blocks';
 
+import Styles from './Styles';
+import Options from './Options';
 import Doubleoptin from './Doubleoptin';
 import Gdpr from './Gdpr';
 import Lists from './Lists';
@@ -54,9 +56,36 @@ function SettingsPanelPlugin() {
 		'meta'
 	);
 
+	const blocks = useSelect((select) => select('core/editor').getBlocks(), []);
+
+	const [attributes, setInitialAttributes] = useState(false);
+	const [root, setRoot] = useState(false);
+
 	useEffect(() => {
-		//console.warn('ONCE');
-	}, []);
+		//console.warn(blocks);
+		const root = blocks.find((block) => {
+			return block.name == 'mailster/form-wrapper';
+		});
+
+		if (root) {
+			setRoot(root);
+			setInitialAttributes(
+				select('core/block-editor').getBlockAttributes(root.clientId)
+			);
+		}
+	}, [blocks]);
+
+	const setAttributes = (obj = {}) => {
+		const attr = {
+			...select('core/editor').getBlockAttributes(root.clientId),
+			...obj,
+		};
+		console.warn(attr);
+
+		dispatch('core/editor').updateBlockAttributes(root.clientId, attr);
+	};
+
+	useEffect(() => {}, []);
 
 	return (
 		<>
@@ -79,6 +108,13 @@ function SettingsPanelPlugin() {
 			</PluginPostStatusInfo>
 			<InlineStyles />
 			<WelcomeGuide meta={meta} setMeta={setMeta} />
+			<Styles
+				meta={meta}
+				setMeta={setMeta}
+				attributes={attributes}
+				setAttributes={setAttributes}
+			/>
+			<Options meta={meta} setMeta={setMeta} />
 			<Doubleoptin meta={meta} setMeta={setMeta} />
 			<Gdpr meta={meta} setMeta={setMeta} />
 			<Lists meta={meta} setMeta={setMeta} />

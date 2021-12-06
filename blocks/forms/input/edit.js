@@ -52,7 +52,7 @@ export default function Edit(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 	const { label, name, type, values, inline, required, style, hasLabel } =
 		attributes;
-	const className = ['mailster-wrapper', 'mailster-wrapper-type-' + type];
+	const className = ['mailster-wrapper'];
 
 	if (required) className.push('mailster-wrapper-required');
 	if (inline) className.push('mailster-wrapper-inline');

@@ -85,6 +85,7 @@ const placements = [
 
 export default function Placement(props) {
 	const { meta, setMeta } = props;
+
 	return (
 		<PluginDocumentSettingPanel name="placement" title="Placement">
 			<PanelRow>

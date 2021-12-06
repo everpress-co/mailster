@@ -89,6 +89,10 @@ _body::before {
 				pointer-events: all;
 			}
 		}
+		// remove some default style
+		input[type='checkbox']:checked::before,
+		input[type='radio']:checked::before {
+		}
 	}
 }
 

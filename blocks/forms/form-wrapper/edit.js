@@ -23,7 +23,7 @@ import {
 	BlockControls,
 	__experimentalUseBorderProps as useBorderProps,
 	__experimentalUseColorProps as useColorProps,
-	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
+	//__experimentalGetSpacingClassesAndStyles as useSpacingProps,
 } from '@wordpress/block-editor';
 import {
 	Button,
@@ -183,7 +183,7 @@ export default function Edit(props) {
 
 	const borderProps = useBorderProps(attributes);
 	const colorProps = useColorProps(attributes);
-	const spacingProps = useSpacingProps(attributes);
+	//const spacingProps = useSpacingProps(attributes);
 
 	let className = ['mailster-block-form', 'mailster-block-form-' + clientId];
 
@@ -285,16 +285,16 @@ export default function Edit(props) {
 		});
 
 		if (gdprBlock && !meta.gdpr) {
-			dispatch('core/block-editor').removeBlock(exists[0].clientId);
+			dispatch('core/block-editor').removeBlock(gdprBlock.clientId);
 			dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
 		} else if (!gdprBlock && meta.gdpr) {
 			const block = wp.blocks.createBlock('mailster/gdpr');
-			const submit = all.filter((block) => {
+			const submit = all.find((block) => {
 				return block.name == 'mailster/field-submit';
 			});
-			const pos = submit.length
+			const pos = submit
 				? select('core/block-editor').getBlockIndex(
-						submit[0].clientId,
+						submit.clientId,
 						clientId
 				  )
 				: all.length;
@@ -305,21 +305,21 @@ export default function Edit(props) {
 
 	useEffect(() => {
 		const all = select('core/block-editor').getBlocks(clientId);
-		const exists = all.filter((block) => {
+		const listBlock = all.find((block) => {
 			return block.name == 'mailster/lists';
 		});
 
-		if (exists.length && !meta.userschoice) {
-			dispatch('core/block-editor').removeBlock(exists[0].clientId);
+		if (listBlock && !meta.userschoice) {
+			dispatch('core/block-editor').removeBlock(listBlock.clientId);
 			dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
-		} else if (!exists.length && meta.userschoice) {
+		} else if (!listBlock && meta.userschoice) {
 			const block = wp.blocks.createBlock('mailster/lists');
-			const submit = all.filter((block) => {
+			const submit = all.find((block) => {
 				return block.name == 'mailster/field-submit';
 			});
-			const pos = submit.length
+			const pos = submit
 				? select('core/block-editor').getBlockIndex(
-						submit[0].clientId,
+						submit.clientId,
 						clientId
 				  )
 				: all.length;
@@ -365,7 +365,7 @@ export default function Edit(props) {
 				style={{
 					...borderProps.style,
 					...colorProps.style,
-					...spacingProps.style,
+					//...spacingProps.style,
 				}}
 			>
 				{window.mailster_inline_styles && (

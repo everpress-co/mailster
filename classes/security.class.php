@@ -46,6 +46,14 @@ class MailsterSecurity {
 		$email = $entry['email'];
 		$ip    = mailster_get_ip();
 
+		// handled in subscriber class
+		if ( empty( $email ) ) {
+			return true;
+		}
+		if ( ! mailster_is_email( $email ) ) {
+			return new WP_Error( 'error_blocked', sprintf( esc_html__( '%s is not a valid email address', 'mailster' ), '"' . $email . '"' ), array( 'status' => 401 ) );
+		}
+
 		list( $user, $domain ) = explode( '@', $email );
 
 		// check for email addresses

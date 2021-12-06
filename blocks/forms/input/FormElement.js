@@ -84,12 +84,12 @@ export default function FormElement(props) {
 								<input
 									name={name}
 									aria-required={required}
-									aria-label={label.replace(/<[^>]+>/g, '')}
-									spellCheck={false}
+									aria-label={label}
 									required={required}
 									type="radio"
 									checked={selected == value}
 									style={inputStyle}
+									value={value}
 									onChange={(event) => {
 										setAttributes({
 											selected: event.target.value,
@@ -109,7 +109,7 @@ export default function FormElement(props) {
 						<input
 							name={name}
 							aria-required={required}
-							aria-label={label.replace(/<[^>]+>/g, '')}
+							aria-label={label}
 							spellCheck={false}
 							required={required}
 							type="checkbox"
@@ -126,7 +126,7 @@ export default function FormElement(props) {
 					name={name}
 					className="input"
 					aria-required={required}
-					aria-label={label.replace(/<[^>]+>/g, '')}
+					aria-label={label}
 					spellCheck={false}
 					required={required}
 					value={selected}
@@ -166,7 +166,7 @@ export default function FormElement(props) {
 						name={name}
 						type={native ? type : 'text'}
 						aria-required={required}
-						aria-label={label.replace(/<[^>]+>/g, '')}
+						aria-label={label}
 						spellCheck={false}
 						required={required}
 						className="input"

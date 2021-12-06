@@ -51,7 +51,7 @@ import InputFieldInspectorControls from './inspector.js';
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	const { lists } = attributes;
+	const { lists, dropdown } = attributes;
 	const className = ['mailster-wrapper mailster-wrapper-_lists'];
 
 	const [meta, setMeta] = useEntityProp(
@@ -116,36 +116,58 @@ export default function Edit(props) {
 				className: className.join(' '),
 			})}
 		>
-			{allLists &&
-				lists.map((list, i) => {
-					return (
-						<div
-							key={i}
-							className="mailster-group mailster-group-checkbox"
-						>
-							<label>
-								<input
-									type="checkbox"
-									value={list.id}
-									checked={list.checked || false}
-									aria-label={list.name}
-									onChange={() =>
-										setChecked(!list.checked, i)
-									}
-								/>
-								<RichText
-									tagName="span"
-									value={list.name}
-									onChange={(val) => setLabel(val, i)}
-									allowedFormats={[]}
-									className="mailster-label"
-									placeholder={__('Enter Label', 'mailster')}
-								/>
-							</label>
-						</div>
-					);
-				})}
-			<InputFieldInspectorControls meta={meta} setMeta={setMeta} />
+			{dropdown ? (
+				<select className="input">
+					{lists.map((list, i) => {
+						return (
+							<option key={i} value={list.ID}>
+								{list.name}
+							</option>
+						);
+					})}
+				</select>
+			) : (
+				<>
+					{lists.map((list, i) => {
+						return (
+							<div
+								key={i}
+								className="mailster-group mailster-group-checkbox"
+							>
+								<label>
+									<input
+										type="checkbox"
+										value={list.id}
+										checked={list.checked || false}
+										aria-label={list.name}
+										onChange={() =>
+											setChecked(!list.checked, i)
+										}
+									/>
+									<RichText
+										tagName="span"
+										value={list.name}
+										onChange={(val) => setLabel(val, i)}
+										allowedFormats={[]}
+										className="mailster-label"
+										placeholder={__(
+											'Enter Label',
+											'mailster'
+										)}
+									/>
+								</label>
+							</div>
+						);
+					})}
+				</>
+			)}
+
+			<InputFieldInspectorControls
+				meta={meta}
+				setMeta={setMeta}
+				attributes={attributes}
+				setAttributes={setAttributes}
+			/>
 		</div>
 	);
 }
