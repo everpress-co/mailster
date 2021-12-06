@@ -38,7 +38,7 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 
 import { more } from '@wordpress/icons';
 import apiFetch from '@wordpress/api-fetch';
-import { Icon, arrowUp, arrowDown, trash } from '@wordpress/icons';
+import { Icon, chevronUp, chevronDown, trash } from '@wordpress/icons';
 import { useSelect } from '@wordpress/data';
 
 /**
@@ -72,16 +72,14 @@ export default function ListsPanel(props) {
 		setMeta({ lists: newLists });
 	}
 
-	function moveValue(i, delta) {
+	function move(i, delta) {
 		var newLists = [...lists];
 		var element = newLists[i];
 		newLists.splice(i, 1);
 		newLists.splice(i + delta, 0, element);
-
-		console.warn(i, delta);
-
 		setMeta({ lists: newLists });
 	}
+
 	const getList = (id) => {
 		const list = allLists.filter((list) => {
 			return list.ID == id;
@@ -94,6 +92,43 @@ export default function ListsPanel(props) {
 				return !lists.includes(list.ID);
 		  })
 		: [];
+
+	const listItem = (list, i) => (
+		<Flex key={i} style={{ flexShrink: 0 }}>
+			<FlexItem>
+				<CheckboxControl
+					checked={true}
+					value={list.ID}
+					onChange={(checked) => {
+						setList(list.ID, checked);
+					}}
+					label={list.name}
+				/>
+			</FlexItem>
+			{lists.length > 1 && (
+				<FlexItem>
+					<Button
+						disabled={!i}
+						icon={chevronUp}
+						isSmall={true}
+						label={__('move up', 'mailster')}
+						onClick={() => {
+							move(i, -1);
+						}}
+					/>
+					<Button
+						disabled={i + 1 == lists.length}
+						icon={chevronDown}
+						isSmall={true}
+						label={__('move down', 'mailster')}
+						onClick={() => {
+							move(i, 1);
+						}}
+					/>
+				</FlexItem>
+			)}
+		</Flex>
+	);
 
 	return (
 		<>
@@ -125,51 +160,7 @@ export default function ListsPanel(props) {
 						>
 							{lists.map((list_id, i) => {
 								const list = getList(list_id);
-								if (!list) return;
-								return (
-									<Flex key={i} style={{ flexShrink: 0 }}>
-										<FlexItem>
-											<CheckboxControl
-												checked={true}
-												value={list.ID}
-												onChange={(checked) => {
-													setList(list.ID, checked);
-												}}
-												label={list.name}
-											/>
-										</FlexItem>
-										{lists.length > 1 && (
-											<FlexItem>
-												<Button
-													disabled={!i}
-													icon={arrowUp}
-													isSmall={true}
-													label={__(
-														'move up',
-														'mailster'
-													)}
-													onClick={(val) => {
-														moveValue(i, -1);
-													}}
-												/>
-												<Button
-													disabled={
-														i + 1 == lists.length
-													}
-													icon={arrowDown}
-													isSmall={true}
-													label={__(
-														'move down',
-														'mailster'
-													)}
-													onClick={(val) => {
-														moveValue(i, 1);
-													}}
-												/>
-											</FlexItem>
-										)}
-									</Flex>
-								);
+								return list && listItem(list, i);
 							})}
 						</Flex>
 					</BaseControl>

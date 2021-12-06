@@ -42,7 +42,7 @@ import {
 import { Fragment, Component, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
-import { Icon, arrowUp, arrowDown, trash } from '@wordpress/icons';
+import { Icon, chevronUp, chevronDown, trash } from '@wordpress/icons';
 
 import Styles from './Styles';
 
@@ -225,7 +225,7 @@ export default function InputFieldInspectorControls(props) {
 													<FlexItem>
 														<Button
 															disabled={!i}
-															icon={arrowUp}
+															icon={chevronUp}
 															isSmall={true}
 															label={__(
 																'move up',
@@ -243,7 +243,7 @@ export default function InputFieldInspectorControls(props) {
 																i + 1 ==
 																values.length
 															}
-															icon={arrowDown}
+															icon={chevronDown}
 															isSmall={true}
 															label={__(
 																'move down',

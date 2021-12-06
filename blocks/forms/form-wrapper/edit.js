@@ -92,6 +92,66 @@ import Css from './Css';
 // 	// postFormat = newPostFormat;
 // });
 
+const prefixCss = (css, className, type) => {
+	if (!css) return css;
+
+	var classLen = className.length,
+		char,
+		nextChar,
+		isAt,
+		isIn,
+		rules = css;
+
+	// removes comments
+	rules = rules.replace(/\/\*(?:(?!\*\/)[\s\S])*\*\/|[\r\n\t]+/g, '');
+
+	// makes sure nextChar will not target a space
+	rules = rules.replace(/}(\s*)@/g, '}@');
+	rules = rules.replace(/}(\s*)}/g, '}}');
+
+	for (var i = 0; i < rules.length - 2; i++) {
+		char = rules[i];
+		nextChar = rules[i + 1];
+
+		if (char === '@' && nextChar !== 'f') isAt = true;
+		if (!isAt && char === '{') isIn = true;
+		if (isIn && char === '}') isIn = false;
+
+		if (
+			!isIn &&
+			nextChar !== '@' &&
+			nextChar !== '}' &&
+			(char === '}' ||
+				char === ',' ||
+				((char === '{' || char === ';') && isAt))
+		) {
+			rules =
+				rules.slice(0, i + 1) + className + ' ' + rules.slice(i + 1);
+			i += classLen;
+			isAt = false;
+		}
+	}
+
+	// prefix the first select if it is not `@media` and if it is not yet prefixed
+	if (rules.indexOf(className) !== 0 && rules.indexOf('@') !== 0) {
+		rules = className + ' ' + rules;
+	}
+
+	//make sure the root element is not prefixed
+	rules = rules.replaceAll(
+		className + ' .mailster-block-form',
+		className + '.mailster-block-form'
+	);
+
+	if ('tablet' == type) {
+		rules = '@media only screen and (max-width: 800px) {' + rules + '}';
+	} else if ('mobile' == type) {
+		rules = '@media only screen and (max-width: 400px) {' + rules + '}';
+	}
+
+	return rules;
+};
+
 /**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
@@ -136,88 +196,10 @@ export default function Edit(props) {
 		backgroundColor: messages.errorBackground,
 	};
 
-	function setStyle(prop, data) {
-		var newStyle = { ...style };
-		newStyle[prop] = data;
-		setAttributes({ style: newStyle });
-	}
-	function setBackground(prop, data) {
-		var newBackground = { ...background };
-		newBackground[prop] = data;
-		setAttributes({ background: newBackground });
-	}
 	function setMessages(prop, data) {
 		var newMessages = { ...messages };
 		newMessages[prop] = data;
 		setAttributes({ messages: newMessages });
-	}
-	function setCss(name, data) {
-		var newCss = { ...css };
-		newCss[name] = data;
-		setAttributes({ css: newCss });
-	}
-
-	function prefixCss(css, className, type) {
-		if (!css) return css;
-
-		var classLen = className.length,
-			char,
-			nextChar,
-			isAt,
-			isIn,
-			rules = css;
-
-		// removes comments
-		rules = rules.replace(/\/\*(?:(?!\*\/)[\s\S])*\*\/|[\r\n\t]+/g, '');
-
-		// makes sure nextChar will not target a space
-		rules = rules.replace(/}(\s*)@/g, '}@');
-		rules = rules.replace(/}(\s*)}/g, '}}');
-
-		for (var i = 0; i < rules.length - 2; i++) {
-			char = rules[i];
-			nextChar = rules[i + 1];
-
-			if (char === '@' && nextChar !== 'f') isAt = true;
-			if (!isAt && char === '{') isIn = true;
-			if (isIn && char === '}') isIn = false;
-
-			if (
-				!isIn &&
-				nextChar !== '@' &&
-				nextChar !== '}' &&
-				(char === '}' ||
-					char === ',' ||
-					((char === '{' || char === ';') && isAt))
-			) {
-				rules =
-					rules.slice(0, i + 1) +
-					className +
-					' ' +
-					rules.slice(i + 1);
-				i += classLen;
-				isAt = false;
-			}
-		}
-
-		// prefix the first select if it is not `@media` and if it is not yet prefixed
-		if (rules.indexOf(className) !== 0 && rules.indexOf('@') !== 0) {
-			rules = className + ' ' + rules;
-		}
-
-		//make sure the root element is not prefixed
-		rules = rules.replaceAll(
-			className + ' .mailster-block-form',
-			className + '.mailster-block-form'
-		);
-
-		if ('tablet' == type) {
-			rules = '@media only screen and (max-width: 800px) {' + rules + '}';
-		} else if ('mobile' == type) {
-			rules = '@media only screen and (max-width: 400px) {' + rules + '}';
-		}
-
-		return rules;
 	}
 
 	const mediaPosition = ({ x, y }) => {
@@ -298,14 +280,14 @@ export default function Edit(props) {
 
 	useEffect(() => {
 		const all = select('core/block-editor').getBlocks(clientId);
-		const exists = all.filter((block) => {
+		const gdprBlock = all.find((block) => {
 			return block.name == 'mailster/gdpr';
 		});
 
-		if (exists.length && !meta.gdpr) {
+		if (gdprBlock && !meta.gdpr) {
 			dispatch('core/block-editor').removeBlock(exists[0].clientId);
 			dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
-		} else if (!exists.length && meta.gdpr) {
+		} else if (!gdprBlock && meta.gdpr) {
 			const block = wp.blocks.createBlock('mailster/gdpr');
 			const submit = all.filter((block) => {
 				return block.name == 'mailster/field-submit';
@@ -400,7 +382,7 @@ export default function Edit(props) {
 					<style className="mailster-bg-styles">
 						{backgroundStyles}
 					</style>
-				)}{' '}
+				)}
 				{inputStyle && (
 					<style className="mailster-inline-styles">
 						{inputStyle}
@@ -436,8 +418,8 @@ export default function Edit(props) {
 					displayMessages={displayMessages}
 					setDisplayMessages={setDisplayMessages}
 				/>
-				<Background {...props} setBackground={setBackground} />
-				<Css {...props} setCss={setCss} />
+				<Background {...props} />
+				<Css {...props} />
 			</InspectorControls>
 		</>
 	);

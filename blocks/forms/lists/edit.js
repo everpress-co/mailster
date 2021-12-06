@@ -60,8 +60,6 @@ export default function Edit(props) {
 		'meta'
 	);
 
-	console.warn(attributes);
-
 	const allLists = useSelect(
 		(select) => select('mailster/form').getLists(),
 		[]
@@ -87,17 +85,17 @@ export default function Edit(props) {
 	}, [meta.lists, allLists]);
 
 	const getFromListId = (list_id) => {
-		const labelList = lists.filter((list) => {
+		const labelList = lists.find((list) => {
 			return list.id == list_id;
 		});
-		if (labelList.length) {
-			return labelList[0];
+		if (labelList) {
+			return labelList;
 		}
-		const list = allLists.filter((list) => {
+		const list = allLists.find((list) => {
 			return list.ID == list_id;
 		});
 
-		return list[0];
+		return list;
 	};
 
 	const setLabel = (label, i) => {
@@ -107,7 +105,6 @@ export default function Edit(props) {
 	};
 
 	const setChecked = (label, i) => {
-		console.warn(label);
 		var newLists = [...lists];
 		newLists[i].checked = label;
 		setAttributes({ lists: newLists });

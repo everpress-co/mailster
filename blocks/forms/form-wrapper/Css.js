@@ -73,7 +73,7 @@ const Wrapper = ({ children, isCSSModal, setCSSModal }) => {
 	);
 };
 export default function Css(props) {
-	const { attributes, setAttributes, isSelected, setCss } = props;
+	const { attributes, setAttributes, isSelected } = props;
 
 	const { css } = attributes;
 
@@ -83,9 +83,13 @@ export default function Css(props) {
 		mobile: __('Mobile', 'mailster'),
 	};
 
-	//const [css, setCss2] = useState(attributes.css);
-
 	let codeEditor;
+
+	function setCss(name, data) {
+		var newCss = { ...css };
+		newCss[name] = data;
+		setAttributes({ css: newCss });
+	}
 
 	const setCssDebounce = useDebounce(setCss, 500);
 

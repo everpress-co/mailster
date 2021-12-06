@@ -54,10 +54,16 @@ import { more } from '@wordpress/icons';
  */
 
 export default function Background(props) {
-	const { attributes, setAttributes, isSelected, setBackground } = props;
+	const { attributes, setAttributes, isSelected } = props;
 
 	const { image, position, opacity, size, fixed, repeat } =
 		attributes.background;
+
+	function setBackground(prop, data) {
+		var newBackground = { ...background };
+		newBackground[prop] = data;
+		setAttributes({ background: newBackground });
+	}
 
 	return (
 		<PanelBody name="background" title="Background" initialOpen={false}>

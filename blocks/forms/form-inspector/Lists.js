@@ -59,8 +59,6 @@ import ListsPanel from './ListsPanel';
  */
 
 export default function Lists(props) {
-	console.warn('LISTS');
-
 	return (
 		<PluginDocumentSettingPanel name="userschoice" title="Lists">
 			<ListsPanel {...props} />
