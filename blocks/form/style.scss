@@ -12,7 +12,10 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	_display: none;
+	opacity: 0;
+	visibility: hidden;
+	transition: visibility 0s, opacity 0.5s linear;
+	pointer-events: none;
 	.mailster-block-form {
 		width: 50vw;
 		max-width: 100vw;
@@ -36,11 +39,17 @@
 	}
 }
 .mailster-block-form-type-popup {
-	display: flex;
 	justify-content: center;
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.5);
 }
+.mailster-block-form-type-popup.active {
+	pointer-events: inherit;
+	display: flex;
+	visibility: visible;
+	opacity: 1;
+}
+
 .mailster-block-form-type-bar {
 	.mailster-block-form {
 		width: 100vw;

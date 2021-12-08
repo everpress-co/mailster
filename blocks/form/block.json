@@ -19,7 +19,7 @@
 	},
 	"attributes": {
 		"id": {
-			"type": "string"
+			"type": "integer"
 		},
 		"height": {
 			"type": "integer"

@@ -102,6 +102,10 @@ class MailsterBlockForms {
 	public function check_validity( $form_id, $context = null ) {
 		$options = get_post_meta( $form_id, 'placement_' . $context, true );
 
+		if ( $context ) {
+			$options['classes'] = array( 'mailster-block-form-type-' . $context );
+		}
+
 		if ( isset( $options['all'] ) && $options['all'] ) {
 			return $options;
 		}
@@ -142,7 +146,7 @@ class MailsterBlockForms {
 						return $content;
 					}
 
-					$form_html = $this->render_form_byid( $form_id );
+					$form_html = $this->render_form_with_options( $form_id, $option );
 
 					$tag = $option['tag'];
 					$pos = $option['pos'];
@@ -174,8 +178,7 @@ class MailsterBlockForms {
 				if ( ! ( $option = $this->check_validity( $form, 'popup' ) ) ) {
 					continue;
 				}
-				error_log( print_r( $option, true ) );
-				echo $this->render_form_byid( $form, array( 'mailster-block-form-type-popup' ) );
+				echo $this->render_form_with_options( $form, $option );
 			}
 		}
 		if ( isset( $this->forms['bar'] ) ) {
@@ -183,7 +186,7 @@ class MailsterBlockForms {
 				if ( ! ( $option = $this->check_validity( $form, 'bar' ) ) ) {
 					continue;
 				}
-				echo $this->render_form_byid( $form, array( 'mailster-block-form-type-bar' ) );
+				echo $this->render_form_with_options( $form, $option );
 			}
 		}
 
@@ -752,18 +755,19 @@ class MailsterBlockForms {
 
 	}
 
-	public function render_form_byid( $id, $classes = array() ) {
+	public function render_form_with_options( $form, $options = array() ) {
 
-		if ( get_post_type( $id ) != 'newsletter_form' ) {
+		$form = get_post( $form );
+
+		if ( get_post_type( $form ) != 'newsletter_form' ) {
 			return '';
 		}
-		$block = parse_blocks( '<!-- wp:mailster/form {"id":"' . $id . '"} /-->' );
+
+		$options['id'] = $form->ID;
+
+		$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );
 
 		$html = render_block( $block[0] );
-
-		if ( ! empty( $classes ) ) {
-			$html = str_replace( 'class="wp-block-mailster-form-outer-wrapper', 'class="wp-block-mailster-form-outer-wrapper ' . implode( ' ', (array) $classes ), $html );
-		}
 
 		return $html;
 	}
@@ -778,6 +782,14 @@ class MailsterBlockForms {
 		if ( ! ( $form = get_post( $args['id'] ) ) ) {
 			return;
 		}
+
+		$args = wp_parse_args(
+			$args,
+			array(
+				'identifier' => hash( 'crc32', md5( serialize( $args ) ) ),
+				'classes'    => array(),
+			)
+		);
 
 		// is on a page in the backend and loaded via the REST API
 		$is_backend = defined( 'REST_REQUEST' ) && REST_REQUEST;
@@ -795,6 +807,8 @@ class MailsterBlockForms {
 		$output     = render_block( $form_block );
 
 		$inject  = '';
+		$inject .= json_encode( $args );
+		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $args ) . '</script>';
 		$inject .= '<input name="_formid" type="_hidden" value="' . esc_attr( $form->ID ) . '">' . "\n";
 		$inject .= '<input name="_timestamp" type="_hidden" value="' . esc_attr( time() ) . '">' . "\n";
 
@@ -805,9 +819,12 @@ class MailsterBlockForms {
 			$stylesheets = array( 'style-form.css', 'style-input.css' );
 		}
 
-		$classes = array( 'wp-block-mailster-form-outer-wrapper wp-block-mailster-form-outside-wrapper-' . $uniqid . ' wp-block-mailster-form-outside-wrapper-' . $form->ID );
+		$args['classes'][] = 'wp-block-mailster-form-outer-wrapper';
+		$args['classes'][] = 'wp-block-mailster-form-outside-wrapper-' . $uniqid;
+		$args['classes'][] = 'wp-block-mailster-form-outside-wrapper-' . $form->ID;
+
 		if ( isset( $blockattributes['align'] ) ) {
-			$classes[] = 'align' . $blockattributes['align'];
+			$args['classes'][] = 'align' . $blockattributes['align'];
 		}
 		$embeded_style = '';
 
@@ -820,7 +837,7 @@ class MailsterBlockForms {
 		}
 
 		if ( isset( $form_block['attrs']['className'] ) ) {
-			$classes[] = $form_block['attrs']['className'];
+			$args['classes'][] = $form_block['attrs']['className'];
 		}
 
 		$stylesheet = '';
@@ -889,7 +906,6 @@ class MailsterBlockForms {
 			$embeded_style .= '}';
 		}
 
-		echo '<pre>' . print_r( $custom_styles, true ) . '</pre>';
 		if ( $is_backend && $input_styles = get_option( 'mailster_inline_styles' ) ) {
 			$embeded_style .= $input_styles;
 		}
@@ -939,7 +955,7 @@ class MailsterBlockForms {
 			$output = '<style>' . $embeded_style . '</style>' . $output;
 		}
 
-		$output = $uniqid . '<div class="' . implode( ' ', $classes ) . '">' . $output . '</div>';
+		$output = $uniqid . '<div class="' . implode( ' ', $args['classes'] ) . '">' . $output . '</div>';
 
 		$htmldoc->loadHTML( $output );
 
