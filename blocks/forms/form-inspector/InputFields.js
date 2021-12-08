@@ -31,7 +31,7 @@ import { PanelColorSettings } from '@wordpress/block-editor';
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
-import { more } from '@wordpress/icons';
+import { brush } from '@wordpress/icons';
 
 import { StylesContent, colorSettings } from '../shared/StylesContent';
 
@@ -52,6 +52,7 @@ export default function InputFields(props) {
 			name="input-fields"
 			title={__('Input Fields', 'mailster')}
 			initialOpen={false}
+			icon={brush}
 		>
 			{!attributes && <Spinner />}
 			{attributes && (

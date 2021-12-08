@@ -171,7 +171,11 @@ class MailsterBlockForms {
 
 		if ( isset( $this->forms['popup'] ) ) {
 			foreach ( $this->forms['popup'] as $form ) {
-				echo $this->render_form_byid( $form, array( 'mailster-form-type-popup' ) );
+				if ( ! ( $option = $this->check_validity( $form, 'popup' ) ) ) {
+					continue;
+				}
+				error_log( print_r( $option, true ) );
+				echo $this->render_form_byid( $form, array( 'mailster-block-form-type-popup' ) );
 			}
 		}
 		if ( isset( $this->forms['bar'] ) ) {
@@ -179,7 +183,7 @@ class MailsterBlockForms {
 				if ( ! ( $option = $this->check_validity( $form, 'bar' ) ) ) {
 					continue;
 				}
-				echo $this->render_form_byid( $form, array( 'mailster-form-type-bar' ) );
+				echo $this->render_form_byid( $form, array( 'mailster-block-form-type-bar' ) );
 			}
 		}
 
@@ -230,6 +234,7 @@ class MailsterBlockForms {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 		wp_register_script( 'mailster-form-block', MAILSTER_URI . 'assets/js/form-block' . $suffix . '.js', array(), MAILSTER_VERSION );
+		wp_register_style( 'mailster-form-block', MAILSTER_URI . 'build/style-form.css', array(), MAILSTER_VERSION );
 	}
 
 
@@ -555,6 +560,7 @@ class MailsterBlockForms {
 				'render_callback' => array( $this, 'render_form' ),
 				'textdomain'      => 'mailster',
 				'script'          => 'mailster-form-block',
+				'style'           => 'mailster-form-block',
 			)
 		);
 		if ( ! is_admin() ) {
@@ -827,7 +833,16 @@ class MailsterBlockForms {
 
 		$custom_styles = array();
 
-		if ( isset( $form_block['attrs']['background'] ) ) {
+		if ( isset( $form_block['attrs']['padding'] ) ) {
+			$custom_styles[''][] = 'padding:' . $form_block['attrs']['padding'] . 'px';
+		}
+		if ( isset( $form_block['attrs']['color'] ) ) {
+			$custom_styles[''][] = 'color:' . $form_block['attrs']['color'];
+		}
+		if ( isset( $form_block['attrs']['borderRadius'] ) ) {
+			$custom_styles[''][] = 'border-radius:' . $form_block['attrs']['borderRadius'];
+		}
+		if ( isset( $form_block['attrs']['background']['image'] ) ) {
 
 			$background = $form_block['attrs']['background'];
 

@@ -31,9 +31,9 @@ import { PanelColorSettings } from '@wordpress/block-editor';
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
-import { more } from '@wordpress/icons';
+import { brush } from '@wordpress/icons';
 
-import { StylesContent, colorSettings } from '../shared/StylesContent';
+import { BackgroundContent } from '../shared/BackgroundContent';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -50,12 +50,13 @@ export default function Styles(props) {
 	return (
 		<PluginDocumentSettingPanel
 			name="styling"
-			title="Styles"
+			title={__('Form Styles', 'mailster')}
 			initialOpen={false}
+			icon={brush}
 		>
 			{!attributes && <Spinner />}
 			{attributes && (
-				<StylesContent
+				<BackgroundContent
 					attributes={attributes}
 					setAttributes={setAttributes}
 				/>

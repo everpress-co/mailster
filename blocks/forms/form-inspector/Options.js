@@ -42,28 +42,57 @@ import { more } from '@wordpress/icons';
 
 export default function Options(props) {
 	const { meta, setMeta } = props;
-	const { redirect, overwrite } = meta;
+	const { redirect, overwrite, gdpr, doubleoptin } = meta;
 	return (
-		<PluginDocumentSettingPanel name="options" title="Options">
-			<TextControl
-				label={__('Redirect after submit', 'mailster')}
-				help={__(
-					'Redirect subscribers after they submit the form',
-					'mailster'
-				)}
-				value={redirect}
-				onChange={(value) => setMeta({ redirect: value })}
-				type="url"
-			/>
-			<CheckboxControl
-				label={__('Merge Data', 'mailster')}
-				help={__(
-					'Allow users to update their data with this form. Data like tags and lists will get merged together.',
-					'mailster'
-				)}
-				checked={!!overwrite}
-				onChange={() => setMeta({ overwrite: !overwrite })}
-			/>
+		<PluginDocumentSettingPanel
+			name="options"
+			title={__('Options', 'mailster')}
+		>
+			<PanelRow>
+				<CheckboxControl
+					label={__('Enable double opt in', 'mailster')}
+					checked={!!doubleoptin}
+					onChange={() => setMeta({ doubleoptin: !doubleoptin })}
+					help={__(
+						'New subscribers must confirm their subscription.',
+						'mailster'
+					)}
+				/>
+			</PanelRow>
+			<PanelRow>
+				<CheckboxControl
+					label={__('GDPR compliant', 'mailster')}
+					help={__(
+						'Users must check a checkbox to submit the form',
+						'mailster'
+					)}
+					checked={!!gdpr}
+					onChange={() => setMeta({ gdpr: !gdpr })}
+				/>
+			</PanelRow>
+			<PanelRow>
+				<CheckboxControl
+					label={__('Merge Data', 'mailster')}
+					help={__(
+						'Allow users to update their data with this form. Data like tags and lists will get merged together.',
+						'mailster'
+					)}
+					checked={!!overwrite}
+					onChange={() => setMeta({ overwrite: !overwrite })}
+				/>
+			</PanelRow>
+			<PanelRow>
+				<TextControl
+					label={__('Redirect after submit', 'mailster')}
+					help={__(
+						'Redirect subscribers after they submit the form',
+						'mailster'
+					)}
+					value={redirect}
+					onChange={(value) => setMeta({ redirect: value })}
+					type="url"
+				/>
+			</PanelRow>
 		</PluginDocumentSettingPanel>
 	);
 }

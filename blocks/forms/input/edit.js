@@ -27,6 +27,7 @@ import {
 import { Fragment, useState } from '@wordpress/element';
 
 import { more } from '@wordpress/icons';
+import { useSelect, select } from '@wordpress/data';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.

@@ -72,26 +72,4 @@ export default function Styles(props) {
 			/>
 		</PanelBody>
 	);
-
-	//old
-	return (
-		<PanelColorSettings
-			title={__('Styles', 'mailster')}
-			initialOpen={false}
-			colorSettings={colorSettings.flatMap((color) => {
-				return {
-					value: style[color.id],
-					onChange: (value) => setStyle(color.id, value),
-					label: color.label,
-				};
-			})}
-		>
-			<StylesContent
-				meta={meta}
-				setMeta={setMeta}
-				attributes={attributes}
-				setAttributes={setAttributes}
-			/>
-		</PanelColorSettings>
-	);
 }

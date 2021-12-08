@@ -31,6 +31,10 @@ export default function save(props) {
 			method="post"
 			action="/wp-json/mailster/v1/subscribe"
 			novalidate
+			style={{
+				...{ color: attributes.color },
+				...{ backgroundColor: attributes.backgroundColor },
+			}}
 			{...useBlockProps.save({
 				className: 'mailster-block-form',
 			})}

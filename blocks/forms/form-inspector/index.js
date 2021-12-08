@@ -37,9 +37,10 @@ import { useEntityProp } from '@wordpress/core-data';
 import { registerBlockVariation } from '@wordpress/blocks';
 
 import InputFields from './InputFields';
+import Styles from './Styles';
+import Css from './Css';
 import Options from './Options';
 import Doubleoptin from './Doubleoptin';
-import Gdpr from './Gdpr';
 import Lists from './Lists';
 import WelcomeGuide from './WelcomeGuide';
 import Placement from './Placement';
@@ -74,16 +75,11 @@ function SettingsPanelPlugin() {
 		}
 	}, [blocks]);
 
-	const setAttributes = (obj = {}) => {
-		console.warn('setAttributes', obj);
-		const attr = {
+	const setAttributes = (attributes = {}) => {
+		dispatch('core/block-editor').updateBlockAttributes(root.clientId, {
 			...select('core/block-editor').getBlockAttributes(root.clientId),
-			...obj,
-		};
-		dispatch('core/block-editor').updateBlockAttributes(
-			root.clientId,
-			attr
-		);
+			...attributes,
+		});
 	};
 
 	useEffect(() => {}, []);
@@ -109,16 +105,27 @@ function SettingsPanelPlugin() {
 			</PluginPostStatusInfo>
 			<InlineStyles />
 			<WelcomeGuide meta={meta} setMeta={setMeta} />
+			<Options meta={meta} setMeta={setMeta} />
+			<Doubleoptin meta={meta} setMeta={setMeta} />
+			<Lists meta={meta} setMeta={setMeta} />
+			<Styles
+				meta={meta}
+				setMeta={setMeta}
+				attributes={attributes}
+				setAttributes={setAttributes}
+			/>
 			<InputFields
 				meta={meta}
 				setMeta={setMeta}
 				attributes={attributes}
 				setAttributes={setAttributes}
 			/>
-			<Options meta={meta} setMeta={setMeta} />
-			<Doubleoptin meta={meta} setMeta={setMeta} />
-			<Gdpr meta={meta} setMeta={setMeta} />
-			<Lists meta={meta} setMeta={setMeta} />
+			<Css
+				meta={meta}
+				setMeta={setMeta}
+				attributes={attributes}
+				setAttributes={setAttributes}
+			/>
 			<Placement meta={meta} setMeta={setMeta} />
 		</>
 	);

@@ -44,6 +44,8 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 
 import { more } from '@wordpress/icons';
 
+import { BackgroundContent } from '../shared/BackgroundContent';
+
 /**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
@@ -54,106 +56,19 @@ import { more } from '@wordpress/icons';
  */
 
 export default function Background(props) {
-	const { attributes, setAttributes, isSelected } = props;
-
-	const { image, position, opacity, size, fixed, repeat } =
-		attributes.background;
-
-	function setBackground(prop, data) {
-		var newBackground = { ...background };
-		newBackground[prop] = data;
-		setAttributes({ background: newBackground });
-	}
+	const { attributes, setAttributes, meta, setMeta, isSelected, clientId } =
+		props;
 
 	return (
-		<PanelBody name="background" title="Background" initialOpen={false}>
-			{image && (
-				<>
-					<PanelRow>
-						<SelectControl
-							label={__('Position', 'mailster')}
-							labelPosition="side"
-							className="widefat"
-							value={size}
-							onChange={(value) => {
-								setBackground('size', value);
-							}}
-							options={[
-								{ value: 'auto', label: 'Auto' },
-								{ value: 'contain', label: 'Contain' },
-								{ value: 'cover', label: 'Cover' },
-							]}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label="Fixed background"
-							checked={fixed}
-							onChange={(value) => {
-								setBackground('fixed', value);
-							}}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label="Repeated Background"
-							checked={repeat}
-							onChange={(value) => {
-								setBackground('repeat', value);
-							}}
-						/>
-					</PanelRow>
-					{!fixed && (
-						<PanelRow>
-							<FocalPointPicker
-								url={image}
-								value={position}
-								onChange={(value) =>
-									setBackground('position', value)
-								}
-							/>
-						</PanelRow>
-					)}
-					<PanelRow>
-						<RangeControl
-							label={__('Opacity', 'mailster')}
-							value={opacity}
-							className="widefat"
-							onChange={(value) =>
-								setBackground('opacity', value)
-							}
-							min={0}
-							max={100}
-							step={10}
-							required
-						/>
-					</PanelRow>
-					<PanelRow>
-						<Button
-							variant="secondary"
-							isSmall
-							className="block-library-cover__reset-button"
-							onClick={() => {
-								setBackground('image', '');
-							}}
-						>
-							{__('Clear Media', 'mailster')}
-						</Button>
-					</PanelRow>
-				</>
-			)}
-			{!image && (
-				<PanelRow>
-					<MediaPlaceholder
-						onSelect={(el) => {
-							setBackground('image', el.url);
-						}}
-						allowedTypes={['image']}
-						multiple={false}
-						labels={{ title: 'Background Image' }}
-					></MediaPlaceholder>
-				</PanelRow>
-			)}
+		<PanelBody
+			name="background"
+			title={__('Background', 'mailster')}
+			initialOpen={false}
+		>
+			<BackgroundContent
+				attributes={attributes}
+				setAttributes={setAttributes}
+			/>
 		</PanelBody>
 	);
 }

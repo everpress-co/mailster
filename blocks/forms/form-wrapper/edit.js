@@ -217,8 +217,11 @@ export default function Edit(props) {
 			backgroundStyles += 'background-attachment:fixed;';
 		if (background.repeat) backgroundStyles += 'background-repeat:repeat;';
 		backgroundStyles += 'background-size:' + background.size + ';';
-		backgroundStyles +=
-			'background-position:' + mediaPosition(background.position) + ';';
+		if (background.position)
+			backgroundStyles +=
+				'background-position:' +
+				mediaPosition(background.position) +
+				';';
 		backgroundStyles += 'opacity:' + background.opacity + '%;';
 		backgroundStyles += '}';
 	}
@@ -363,6 +366,13 @@ export default function Edit(props) {
 					...borderProps.style,
 					...colorProps.style,
 					//...spacingProps.style,
+					...{
+						color: attributes.color,
+						backgroundColor: attributes.backgroundColor,
+						fontSize: attributes.fontSize,
+						padding: attributes.padding,
+						borderRadius: attributes.borderRadius,
+					},
 				}}
 			>
 				{window.mailster_inline_styles && (

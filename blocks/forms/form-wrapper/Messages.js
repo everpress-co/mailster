@@ -70,7 +70,9 @@ export default function Messages(props) {
 			title={__('Messages', 'mailster')}
 			initialOpen={false}
 			opened={displayMessages}
-			onToggle={() => setDisplayMessages(!displayMessages)}
+			onToggle={() => {
+				setDisplayMessages(!displayMessages);
+			}}
 			colorSettings={[
 				{
 					value: successBackground,

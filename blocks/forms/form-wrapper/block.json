@@ -14,13 +14,20 @@
 		"multiple": false
 	},
 	"attributes": {
-		"style": {
-			"type": "object",
-			"default": {
-				"color": {},
-				"width": null,
-				"height": null
-			}
+		"color": {
+			"type": "string"
+		},
+		"backgroundColor": {
+			"type": "string"
+		},
+		"fontSize": {
+			"type": "integer"
+		},
+		"padding": {
+			"type": "integer"
+		},
+		"borderRadius": {
+			"type": "string"
 		},
 		"background": {
 			"type": "object",

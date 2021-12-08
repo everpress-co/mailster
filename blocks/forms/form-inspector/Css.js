@@ -24,12 +24,16 @@ import {
 	CheckboxControl,
 	TextControl,
 	TextareaControl,
+	Spinner,
 } from '@wordpress/components';
+import { PanelColorSettings } from '@wordpress/block-editor';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
-import { more } from '@wordpress/icons';
+import { brush } from '@wordpress/icons';
+
+import { CssContent } from '../shared/CssContent';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -40,16 +44,23 @@ import { more } from '@wordpress/icons';
  * @return {WPElement} Element to render.
  */
 
-export default function Gdpr(props) {
-	const { meta, setMeta } = props;
-	const { gdpr } = meta;
+export default function Css(props) {
+	const { attributes, setAttributes, meta, setMeta } = props;
+
 	return (
-		<PluginDocumentSettingPanel name="gdpr" title="GDPR">
-			<CheckboxControl
-				label="Users must check a checkbox to submt tge form"
-				checked={!!gdpr}
-				onChange={() => setMeta({ gdpr: !gdpr })}
-			/>
+		<PluginDocumentSettingPanel
+			name="custom-css"
+			title={__('Custom Css', 'mailster')}
+			initialOpen={false}
+			icon={brush}
+		>
+			{!attributes && <Spinner />}
+			{attributes && (
+				<CssContent
+					attributes={attributes}
+					setAttributes={setAttributes}
+				/>
+			)}
 		</PluginDocumentSettingPanel>
 	);
 }
