@@ -36,7 +36,7 @@ import {
 import { useEntityProp } from '@wordpress/core-data';
 import { registerBlockVariation } from '@wordpress/blocks';
 
-import Styles from './Styles';
+import InputFields from './InputFields';
 import Options from './Options';
 import Doubleoptin from './Doubleoptin';
 import Gdpr from './Gdpr';
@@ -62,7 +62,6 @@ function SettingsPanelPlugin() {
 	const [root, setRoot] = useState(false);
 
 	useEffect(() => {
-		//console.warn(blocks);
 		const root = blocks.find((block) => {
 			return block.name == 'mailster/form-wrapper';
 		});
@@ -76,13 +75,15 @@ function SettingsPanelPlugin() {
 	}, [blocks]);
 
 	const setAttributes = (obj = {}) => {
+		console.warn('setAttributes', obj);
 		const attr = {
-			...select('core/editor').getBlockAttributes(root.clientId),
+			...select('core/block-editor').getBlockAttributes(root.clientId),
 			...obj,
 		};
-		console.warn(attr);
-
-		dispatch('core/editor').updateBlockAttributes(root.clientId, attr);
+		dispatch('core/block-editor').updateBlockAttributes(
+			root.clientId,
+			attr
+		);
 	};
 
 	useEffect(() => {}, []);
@@ -108,7 +109,7 @@ function SettingsPanelPlugin() {
 			</PluginPostStatusInfo>
 			<InlineStyles />
 			<WelcomeGuide meta={meta} setMeta={setMeta} />
-			<Styles
+			<InputFields
 				meta={meta}
 				setMeta={setMeta}
 				attributes={attributes}

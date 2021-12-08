@@ -19,35 +19,21 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Panel,
-	Button,
 	PanelBody,
 	PanelRow,
 	CheckboxControl,
 	TextControl,
 	TextareaControl,
-	BaseControl,
-	RadioControl,
-	Flex,
-	FlexItem,
-	FlexBlock,
 	Spinner,
 } from '@wordpress/components';
+import { PanelColorSettings } from '@wordpress/block-editor';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 import { more } from '@wordpress/icons';
-import apiFetch from '@wordpress/api-fetch';
-import { Icon, arrowUp, arrowDown, trash } from '@wordpress/icons';
-import {
-	useSelect,
-	select,
-	dispatch,
-	subscribe,
-	useDispatch,
-} from '@wordpress/data';
 
-import ListsPanel from './ListsPanel';
+import { StylesContent, colorSettings } from '../shared/StylesContent';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -58,13 +44,22 @@ import ListsPanel from './ListsPanel';
  * @return {WPElement} Element to render.
  */
 
-export default function Lists(props) {
+export default function InputFields(props) {
+	const { attributes, setAttributes, meta, setMeta } = props;
+
 	return (
 		<PluginDocumentSettingPanel
-			name="userschoice"
-			title={__('Lists', 'mailster')}
+			name="input-fields"
+			title={__('Input Fields', 'mailster')}
+			initialOpen={false}
 		>
-			<ListsPanel {...props} />
+			{!attributes && <Spinner />}
+			{attributes && (
+				<StylesContent
+					attributes={attributes}
+					setAttributes={setAttributes}
+				/>
+			)}
 		</PluginDocumentSettingPanel>
 	);
 }

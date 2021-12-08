@@ -26,11 +26,14 @@ import {
 	TextareaControl,
 	Spinner,
 } from '@wordpress/components';
+import { PanelColorSettings } from '@wordpress/block-editor';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 import { more } from '@wordpress/icons';
+
+import { StylesContent, colorSettings } from '../shared/StylesContent';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -42,21 +45,20 @@ import { more } from '@wordpress/icons';
  */
 
 export default function Styles(props) {
-	const { attributes, setAttributes, isSelected, clientId } = props;
+	const { attributes, setAttributes, meta, setMeta } = props;
 
 	return (
-		<PluginDocumentSettingPanel name="styling" title="Styles">
-			<div>Styles</div>
+		<PluginDocumentSettingPanel
+			name="styling"
+			title="Styles"
+			initialOpen={false}
+		>
 			{!attributes && <Spinner />}
 			{attributes && (
-				<PanelRow>
-					<TextControl
-						label={__('Border Style', 'mailster')}
-						className="widefat"
-						value={attributes.dummy}
-						onChange={(value) => setAttributes({ dummy: value })}
-					/>
-				</PanelRow>
+				<StylesContent
+					attributes={attributes}
+					setAttributes={setAttributes}
+				/>
 			)}
 		</PluginDocumentSettingPanel>
 	);

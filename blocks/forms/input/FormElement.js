@@ -127,7 +127,6 @@ export default function FormElement(props) {
 					className="input"
 					aria-required={required}
 					aria-label={label}
-					spellCheck={false}
 					required={required}
 					value={selected}
 					style={inputStyle}
@@ -149,31 +148,27 @@ export default function FormElement(props) {
 
 		case 'submit':
 			return (
-				<>
-					<input
-						name={name}
-						type="submit"
-						style={inputStyle}
-						value={label}
-						className="wp-block-button__link submit-button"
-					/>
-				</>
+				<input
+					name={name}
+					type="submit"
+					style={inputStyle}
+					value={label}
+					className="wp-block-button__link submit-button"
+				/>
 			);
 		default:
 			return (
-				<>
-					<input
-						name={name}
-						type={native ? type : 'text'}
-						aria-required={required}
-						aria-label={label}
-						spellCheck={false}
-						required={required}
-						className="input"
-						style={inputStyle}
-						placeholder=" "
-					/>
-				</>
+				<input
+					name={name}
+					type={native ? type : 'text'}
+					aria-required={required}
+					aria-label={label}
+					spellCheck={false}
+					required={required}
+					className="input"
+					style={inputStyle}
+					placeholder=" "
+				/>
 			);
 	}
 }

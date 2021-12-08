@@ -825,33 +825,56 @@ class MailsterBlockForms {
 			}
 		}
 
-		if ( isset( $form_block['attrs']['background'] ) ) {
-			$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .wp-block-mailster-form-wrapper::before{';
-			$embeded_style .= 'content:"";background-image:url(' . $form_block['attrs']['background']['image'] . ');';
-			$embeded_style .= 'opacity:' . $form_block['attrs']['background']['opacity'] . '%;';
-			$embeded_style .= 'background-size:' . $form_block['attrs']['background']['size'] . ';';
-			if ( $form_block['attrs']['background']['fixed'] ) {
-				$embeded_style .= 'background-attachment:fixed;';
-			}
-			if ( $form_block['attrs']['background']['repeat'] ) {
-				$embeded_style .= 'background-repeat:repeat;';
-			} else {
-				$embeded_style .= 'background-repeat:no-repeat;';
-			}
-			$embeded_style .= 'background-position:' . ( $form_block['attrs']['background']['position']['x'] * 100 ) . '% ' . ( $form_block['attrs']['background']['position']['y'] * 100 ) . '%;';
-			$embeded_style .= 'position: absolute;background-repeat: no-repeat;top: 0;left: 0;bottom: 0;right: 0;';
-			$embeded_style .= '}';
+		$custom_styles = array();
 
+		if ( isset( $form_block['attrs']['background'] ) ) {
+
+			$background = $form_block['attrs']['background'];
+
+			$custom_styles['::before'] = array(
+				'content:"";position: absolute;background-repeat: no-repeat;top: 0;left: 0;bottom: 0;right: 0;',
+				'background-image:url(' . $background['image'] . ')',
+				'opacity:' . $background['opacity'] . '%',
+				'background-size:' . $background['size'],
+				'background-position:' . ( $background['position']['x'] * 100 ) . '% ' . ( $background['position']['y'] * 100 ) . '%',
+			);
+			if ( $background['fixed'] ) {
+				$custom_styles['::before'][] = 'background-attachment:fixed';
+			}
+			if ( $background['repeat'] ) {
+				$custom_styles['::before'][] = 'background-repeat:repeat';
+			} else {
+				$custom_styles['::before'][] = 'background-repeat:no-repeat';
+			}
 		}
 
 		if ( isset( $form_block['attrs']['style'] ) ) {
-			$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .wp-block-mailster-form-wrapper .input{';
+			$custom_styles[' .mailster-label'] = array();
+			$custom_styles[' .input']          = array();
+
+			// $embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .wp-block-mailster-form-wrapper .input{';
 			foreach ( $form_block['attrs']['style'] as $key => $value ) {
-				$embeded_style .= strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
+				if ( $value ) {
+					switch ( $key ) {
+						case 'labelColor':
+							$custom_styles[' .mailster-label'][] = 'color:' . $value;
+							break;
+
+						default:
+							$custom_styles[' .input'][] = strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ':' . $value;
+							break;
+					}
+				}
 			}
+		}
+
+		foreach ( $custom_styles as $selector => $property ) {
+			$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' .wp-block-mailster-form-wrapper' . $selector . '{';
+			$embeded_style .= implode( ';', $property );
 			$embeded_style .= '}';
 		}
 
+		echo '<pre>' . print_r( $custom_styles, true ) . '</pre>';
 		if ( $is_backend && $input_styles = get_option( 'mailster_inline_styles' ) ) {
 			$embeded_style .= $input_styles;
 		}

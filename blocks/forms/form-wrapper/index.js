@@ -21,9 +21,8 @@ import { registerBlockType } from '@wordpress/blocks';
 import edit from './edit';
 import save from './save';
 import json from './block.json';
-//import './variantions';
 
-const { name, ...settings } = json;
+const { name, attributes, ...settings } = json;
 
 /**
  * Every block starts by registering a new block type definition.
@@ -32,6 +31,23 @@ const { name, ...settings } = json;
  */
 registerBlockType(name, {
 	...settings,
+	attributes: {
+		...attributes,
+		style: {
+			type: 'object',
+			default: {
+				width: undefined,
+				color: undefined,
+				backgroundColor: undefined,
+				labelColor: undefined,
+				borderColor: undefined,
+				borderWidth: undefined,
+				borderStyle: undefined,
+				borderRadius: undefined,
+				fontSize: undefined,
+			},
+		},
+	},
 	/**
 	 * @see ./edit.js
 	 */

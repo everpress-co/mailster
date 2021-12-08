@@ -46,6 +46,8 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { more, external } from '@wordpress/icons';
 import { select, dispatch } from '@wordpress/data';
 
+import { StylesContent, colorSettings } from '../shared/StylesContent';
+
 /**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
@@ -54,47 +56,10 @@ import { select, dispatch } from '@wordpress/data';
  *
  * @return {WPElement} Element to render.
  */
-const colorSettings = [
-	{
-		id: 'color',
-		label: __('Font Color', 'mailster'),
-	},
-	{
-		id: 'backgroundColor',
-		label: __('Background Color', 'mailster'),
-	},
-	{
-		id: 'borderColor',
-		label: __('Border Color', 'mailster'),
-	},
-	{
-		id: 'labelColor',
-		label: __('Label Color', 'mailster'),
-	},
-];
-const fontSizes = [
-	{
-		name: __('Small'),
-		slug: 'small',
-		size: 12,
-	},
-	{
-		name: __('Big'),
-		slug: 'big',
-		size: 26,
-	},
-];
-const fallbackFontSize = 16;
 
 export default function Styles(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;
 	const { style, type, hasLabel } = attributes;
-
-	function setStyle(prop, data) {
-		var newStyle = { ...style };
-		newStyle[prop] = data;
-		setAttributes({ style: newStyle });
-	}
 
 	function applyStyle() {
 		const root = select('core/block-editor').getBlocks();
@@ -122,6 +87,31 @@ export default function Styles(props) {
 		});
 	}
 
+	return (
+		<PanelBody
+			name="styles"
+			title={__('Styles', 'mailster')}
+			initialOpen={false}
+		>
+			<StylesContent
+				attributes={attributes}
+				setAttributes={setAttributes}
+			/>
+			{type !== 'submit' && (
+				<PanelRow>
+					<Button
+						onClick={applyStyle}
+						variant="primary"
+						icon={external}
+					>
+						{__('Apply to all input fields', 'mailster')}
+					</Button>
+				</PanelRow>
+			)}
+		</PanelBody>
+	);
+
+	//OLD
 	return (
 		<PanelColorSettings
 			title={__('Styles', 'mailster')}

@@ -14,10 +14,6 @@
 		"multiple": false
 	},
 	"attributes": {
-		"dummy": {
-			"type": "string",
-			"default": ""
-		},
 		"style": {
 			"type": "object",
 			"default": {
@@ -55,17 +51,6 @@
 				"successBackground": "#6fbf4d",
 				"error": "#ffffff",
 				"errorBackground": "#bf4d4d"
-			}
-		},
-		"style": {
-			"type": "object",
-			"default": {
-				"color": null,
-				"backgroundColor": null,
-				"borderColor": null,
-				"labelColor": null,
-				"borderWidth": null,
-				"borderRadius": null
 			}
 		}
 	},

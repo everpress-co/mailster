@@ -57,7 +57,7 @@ import { store as editPostStore } from '@wordpress/edit-post';
  */
 import './editor.scss';
 
-import Styling from './Styling';
+import Styles from './Styles';
 import Messages from './Messages';
 import Background from './Background';
 import BlockRecovery from './BlockRecovery';
@@ -223,11 +223,8 @@ export default function Edit(props) {
 		backgroundStyles += '}';
 	}
 
-	const filteredInputStyles = Object.fromEntries(
-		Object.entries(style).filter(([k, v]) => v)
-	);
-
-	Object.entries(filteredInputStyles).map(([k, v]) => {
+	Object.entries(style).map(([k, v]) => {
+		if (!v) return;
 		inputStyle +=
 			'.wp-block-mailster-form-wrapper.mailster-block-form-' + clientId;
 
@@ -411,7 +408,7 @@ export default function Edit(props) {
 				<InnerBlocks />
 			</div>
 			<InspectorControls>
-				<Styling {...props} />
+				<Styles {...props} meta={meta} setMeta={setMeta} />
 				<Messages
 					{...props}
 					setMessages={setMessages}
