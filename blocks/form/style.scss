@@ -13,6 +13,7 @@
 	right: 0;
 	bottom: 0;
 	opacity: 0;
+	display: flex;
 	visibility: hidden;
 	transition: visibility 0s, opacity 0.5s linear;
 	pointer-events: none;
@@ -45,7 +46,6 @@
 }
 .mailster-block-form-type-popup.active {
 	pointer-events: inherit;
-	display: flex;
 	visibility: visible;
 	opacity: 1;
 }

@@ -66,13 +66,16 @@ button[name='link'] {
 .placement-option .components-card-media {
 	padding: 1em;
 }
-.placement-option .components-card-media svg path {
+.placement-option .components-card-media svg * {
 	filter: grayscale(1);
-	opacity: 0.3;
 }
 
-.placement-option.enabled .components-card-media svg path,
-.placement-option:hover .components-card-media svg path {
+.placement-option .components-card-media svg animate {
+	display: none;
+}
+
+.placement-option.enabled .components-card-media svg *,
+.placement-option:hover .components-card-media svg * {
 	opacity: 1;
 	filter: initial;
 }

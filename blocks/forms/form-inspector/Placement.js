@@ -74,7 +74,7 @@ const placements = [
 	{
 		title: 'Slide-in',
 		type: 'side',
-		image: PlacementIcons.other,
+		image: PlacementIcons.side,
 	},
 	{
 		title: 'Other',
