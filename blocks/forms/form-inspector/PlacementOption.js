@@ -73,7 +73,7 @@ import NavigatorButton from './NavigatorButton';
  */
 
 export default function PlacementOption(props) {
-	const { meta, setMeta, type, image, title } = props;
+	const { meta, setMeta, setOpen, type, image, title } = props;
 	const { placements } = meta;
 
 	const options = meta['placement_' + type];
@@ -104,38 +104,32 @@ export default function PlacementOption(props) {
 	const enabled = 'other' == type || placements.includes(type);
 
 	return (
-		<NavigatorScreen path="/">
-			<Card size="small" className={className.join(' ')}>
-				<CardHeader>
-					<Flex align="center">
-						{'other' != type && (
-							<CheckboxControl
-								value={type}
-								checked={enabled}
-								onChange={(val) => {
-									setPlacements(type, val);
-								}}
-							/>
-						)}
-
-						<NavigatorButton
-							variant="link"
-							disabled={!enabled}
-							path={'/' + type}
-							icon={<Icon icon={settings} />}
-							isSmall={true}
+		<Card size="small" className={className.join(' ')}>
+			<CardHeader>
+				<Flex align="center">
+					{'other' != type && (
+						<CheckboxControl
+							value={type}
+							checked={enabled}
+							onChange={(val) => {
+								setPlacements(type, val);
+							}}
 						/>
-					</Flex>
-				</CardHeader>
-				<NavigatorButton
-					as={CardMedia}
-					path={'/' + type}
-					disabled={!enabled}
-				>
-					{image}
-				</NavigatorButton>
-				<CardFooter>{title}</CardFooter>
-			</Card>
-		</NavigatorScreen>
+					)}
+
+					<Button
+						variant="link"
+						disabled={!enabled}
+						onClick={() => setOpen(true)}
+						icon={<Icon icon={settings} />}
+						isSmall={true}
+					/>
+				</Flex>
+			</CardHeader>
+			<CardMedia path={'/' + type} disabled={!enabled}>
+				{image}
+			</CardMedia>
+			<CardFooter>{title}</CardFooter>
+		</Card>
 	);
 }

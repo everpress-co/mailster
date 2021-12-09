@@ -111,17 +111,10 @@ export default function PlacementSettings(props) {
 		setMeta({ placements: newPlacements });
 	}
 
-	return (
-		<NavigatorScreen path={'/' + type}>
-			<NavigatorButton
-				className="widefat"
-				variant="link"
-				path={'/'}
-				icon={<Icon icon={isRTL() ? chevronRight : chevronLeft} />}
-			>
-				Go back
-			</NavigatorButton>
+	const closeModal = () => {};
 
+	return (
+		<>
 			{'other' == type ? (
 				<ItemGroup isBordered={false} isSeparated size="small">
 					<Item>PHP</Item>
@@ -238,7 +231,7 @@ export default function PlacementSettings(props) {
 					)}
 				</>
 			)}
-		</NavigatorScreen>
+		</>
 	);
 }
 

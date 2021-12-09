@@ -1,6 +1,7 @@
 (function () {
 	'use strict';
 
+	alert('Adasd');
 	var forms = document.querySelectorAll('.mailster-block-form');
 
 	function hasBeendShown(identifier, delay) {

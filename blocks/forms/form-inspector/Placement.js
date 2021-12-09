@@ -45,6 +45,7 @@ import PlacementOption from './PlacementOption';
 import PlacementSettings from './PlacementSettings';
 import PlacementIcons from './PlacementIcons';
 import NavigatorButton from './NavigatorButton';
+import PreviewModal from './PreviewModal';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -86,37 +87,39 @@ const placements = [
 export default function Placement(props) {
 	const { meta, setMeta } = props;
 
+	const [isOpen, setOpen] = useState(true);
+
+	const openModal = () => setOpen(true);
+
+	const closeModal = () => {
+		setOpen(false);
+	};
+
 	return (
 		<PluginDocumentSettingPanel name="placement" title="Placement">
+			<PreviewModal
+				{...props}
+				isOpen={isOpen}
+				setOpen={setOpen}
+				placements={placements}
+			/>
 			<PanelRow>
-				<NavigatorProvider initialPath="/">
-					<BaseControl id={'extra-options-'} label="">
-						<Grid columns={2}>
-							{placements.map((placement) => {
-								return (
-									<PlacementOption
-										{...props}
-										key={placement.type}
-										title={placement.title}
-										type={placement.type}
-										image={placement.image}
-									/>
-								);
-							})}
-						</Grid>
-					</BaseControl>
-					{placements.map((placement) => {
-						return (
-							<PlacementSettings
-								{...props}
-								key={placement.type}
-								title={placement.title}
-								type={placement.type}
-								image={placement.image}
-							/>
-						);
-					})}
-				</NavigatorProvider>
+				<BaseControl className="widefat">
+					<Grid columns={2}>
+						{placements.map((placement) => {
+							return (
+								<PlacementOption
+									{...props}
+									key={placement.type}
+									title={placement.title}
+									type={placement.type}
+									image={placement.image}
+									setOpen={setOpen}
+								/>
+							);
+						})}
+					</Grid>
+				</BaseControl>
 			</PanelRow>
 		</PluginDocumentSettingPanel>
 	);

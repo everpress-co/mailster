@@ -24,9 +24,24 @@ class MailsterBlockForms {
 		add_filter( 'manage_newsletter_form_posts_columns', array( &$this, 'columns' ), 1 );
 		add_action( 'manage_newsletter_form_posts_custom_column', array( &$this, 'custom_column' ), 10, 2 );
 
-		add_filter( 'template_redirect', array( &$this, 'prepare_forms' ) );
-		add_filter( 'the_content', array( &$this, 'maybe_add_form_to_content' ) );
-		add_filter( 'wp_footer', array( &$this, 'maybe_add_form_to_footer' ) );
+		// enter preview mode
+		if ( isset( $_GET['mailster-block-preview'] ) ) {
+
+			$data = json_decode( $_GET['mailster-block-preview'], true );
+
+			error_log( print_r( $data, true ) );
+			$this->data = $data;
+			//add_filter( 'the_content', array( &$this, 'add_form_to_content' ) );
+			add_filter( 'wp_footer', array( &$this, 'add_form_to_footer' ) );
+
+			if ( ! $data['user'] ) {
+				add_filter( 'determine_current_user', '__return_false', 99999 );
+			}
+		} else {
+			add_filter( 'template_redirect', array( &$this, 'prepare_forms' ) );
+			add_filter( 'the_content', array( &$this, 'maybe_add_form_to_content' ) );
+			add_filter( 'wp_footer', array( &$this, 'maybe_add_form_to_footer' ) );
+		}
 
 		add_action( 'save_post_newsletter_form', array( &$this, 'clear_cache' ) );
 		add_action( 'switch_theme', array( &$this, 'clear_inline_style' ) );
@@ -80,19 +95,23 @@ class MailsterBlockForms {
 
 	public function prepare_forms() {
 
-		global $wp_query;
-
 		if ( $forms = $this->query_forms() ) {
 
-			foreach ( $forms as $form ) {
-				$placements = get_post_meta( $form, 'placements', false );
+			foreach ( $forms as $form_id ) {
+				$this->prepare_form( $form_id );
+			}
+		}
 
-				foreach ( $placements as $placement ) {
+	}
 
-					if ( $placement ) {
-						$this->forms[ $placement ][] = $form;
-					}
-				}
+	public function prepare_form( $form_id ) {
+
+		$placements = get_post_meta( $form_id, 'placements', false );
+
+		foreach ( $placements as $placement ) {
+
+			if ( $placement ) {
+				$this->forms[ $placement ][] = $form_id;
 			}
 		}
 
@@ -135,6 +154,34 @@ class MailsterBlockForms {
 	}
 
 
+	public function add_form_to_content( $content ) {
+
+		$data = $this->data;
+		$option = $data['options'];
+		$form_id = $data['form_id'];
+
+		$form_html = $this->render_form_with_options( $form_id, $option );
+
+		$tag = $option['tag'];
+		$pos = $option['pos'];
+
+		$chunks = explode( '</' . $tag . '>', $content );
+
+		if ( $pos < 0 ) {
+			$pos = max( 0, count( $chunks ) + $pos );
+		}
+
+		if ( isset( $chunks[ $pos ] ) ) {
+			$chunks[ $pos ] = $form_html . $chunks[ $pos ];
+			$content        = implode( '</' . $tag . '>', $chunks );
+		} else {
+			$content .= $form_html;
+		}
+
+		return $content;
+	}
+
+
 	public function maybe_add_form_to_content( $content ) {
 
 		if ( isset( $this->forms['content'] ) ) {
@@ -168,6 +215,18 @@ class MailsterBlockForms {
 		}
 
 		return $content;
+
+	}
+
+	public function add_form_to_footer() {
+
+		$data = $this->data;
+		$option = $data['options'];
+		$form_id = $data['form_id'];
+
+		echo $this->render_form_with_options( $form_id, $option );
+
+
 
 	}
 
@@ -320,7 +379,7 @@ class MailsterBlockForms {
 				'type'         => 'boolean',
 				'show_in_rest' => true,
 				'single'       => true,
-				'default'      => (bool) mailster_option( 'gdpr_forms' ),
+				'default'      => false,
 
 			)
 		);
@@ -806,11 +865,11 @@ class MailsterBlockForms {
 		$form_block = $this->get_form_block( $form );
 		$output     = render_block( $form_block );
 
-		$inject  = '';
+		$inject = '';
 		$inject .= json_encode( $args );
 		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $args ) . '</script>';
-		$inject .= '<input name="_formid" type="_hidden" value="' . esc_attr( $form->ID ) . '">' . "\n";
-		$inject .= '<input name="_timestamp" type="_hidden" value="' . esc_attr( time() ) . '">' . "\n";
+		$inject .= '<input name="_formid" type="hidden" value="' . esc_attr( $form->ID ) . '">' . "\n";
+		$inject .= '<input name="_timestamp" type="hidden" value="' . esc_attr( time() ) . '">' . "\n";
 
 		$output = str_replace( '</form>', $inject . '</form>', $output );
 
@@ -856,9 +915,7 @@ class MailsterBlockForms {
 		if ( isset( $form_block['attrs']['color'] ) ) {
 			$custom_styles[''][] = 'color:' . $form_block['attrs']['color'];
 		}
-		if ( isset( $form_block['attrs']['borderRadius'] ) ) {
-			$custom_styles[''][] = 'border-radius:' . $form_block['attrs']['borderRadius'];
-		}
+
 		if ( isset( $form_block['attrs']['background']['image'] ) ) {
 
 			$background = $form_block['attrs']['background'];
@@ -879,7 +936,10 @@ class MailsterBlockForms {
 				$custom_styles['::before'][] = 'background-repeat:no-repeat';
 			}
 		}
-
+		if ( isset( $form_block['attrs']['borderRadius'] ) ) {
+			$custom_styles[''][]         = 'border-radius:' . $form_block['attrs']['borderRadius'];
+			$custom_styles['::before'][] = 'border-radius:' . $form_block['attrs']['borderRadius'];
+		}
 		if ( isset( $form_block['attrs']['style'] ) ) {
 			$custom_styles[' .mailster-label'] = array();
 			$custom_styles[' .input']          = array();

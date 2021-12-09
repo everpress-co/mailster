@@ -36,7 +36,6 @@ import {
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 
-import { more } from '@wordpress/icons';
 import apiFetch from '@wordpress/api-fetch';
 import { Icon, chevronUp, chevronDown, trash } from '@wordpress/icons';
 import { useSelect } from '@wordpress/data';

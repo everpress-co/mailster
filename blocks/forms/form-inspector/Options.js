@@ -28,6 +28,8 @@ import {
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
+import { select, useSelect, useDispatch } from '@wordpress/data';
+import { useEntityProp } from '@wordpress/core-data';
 
 import { more } from '@wordpress/icons';
 
@@ -43,11 +45,27 @@ import { more } from '@wordpress/icons';
 export default function Options(props) {
 	const { meta, setMeta } = props;
 	const { redirect, overwrite, gdpr, doubleoptin } = meta;
+
+	const [title, setTitle] = useEntityProp(
+		'postType',
+		'newsletter_form',
+		'title'
+	);
+
 	return (
 		<PluginDocumentSettingPanel
 			name="options"
 			title={__('Options', 'mailster')}
 		>
+			<PanelRow>
+				<TextControl
+					label={__('Form Name', 'mailster')}
+					value={title}
+					onChange={(value) => setTitle(value)}
+					help={__('Define a name for your form.', 'mailster')}
+					palceholder={__('Add title', 'mailster')}
+				/>
+			</PanelRow>
 			<PanelRow>
 				<CheckboxControl
 					label={__('Enable double opt in', 'mailster')}

@@ -7,6 +7,9 @@
 .post-type-newsletter_form .edit-post-layout__metaboxes {
 	_display: none;
 }
+.edit-post-visual-editor__post-title-wrapper {
+	display: none;
+}
 .post-type-newsletter_form .edit-post-visual-editor {
 	background: url('data:image/svg+xml,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 100 100" xml:space="preserve"><style>.st0{fill:%23fafafa}</style><path class="st0" d="M0 0h50v50H0zM50.5 49.5h50v50h-50z"/></svg>')
 		white !important;
@@ -34,7 +37,7 @@
 	.edit-post-visual-editor__content-area
 	.editor-styles-wrapper
 	.is-root-container {
-	margin: 1vh 0 0;
+	margin: 10% 0 0;
 	background-color: none;
 	max-width: 100%;
 	width: 100%;
@@ -78,6 +81,28 @@ button[name='link'] {
 .placement-option:hover .components-card-media svg * {
 	opacity: 1;
 	filter: initial;
+}
+
+.preview-modal .components-modal__content {
+	padding: 0;
+}
+.preview-modal .components-grid {
+	gap: 0;
+	grid-template-columns: 6fr 3fr;
+	height: 96%;
+}
+.preview-modal .components-grid .preview-pane {
+	border: 1px solid #e0e0e0;
+}
+
+.preview-modal .components-grid .preview-pane-info {
+	height: 100%;
+	background-color: #f0f0f0;
+	padding: 8px 0;
+	text-align: center;
+}
+.preview-modal .preview-sidebar > .components-base-control {
+	padding: 16px;
 }
 
 .post-type-newsletter_form

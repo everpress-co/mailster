@@ -223,6 +223,10 @@ export default function Edit(props) {
 				mediaPosition(background.position) +
 				';';
 		backgroundStyles += 'opacity:' + background.opacity + '%;';
+		if (attributes.borderRadius) {
+			backgroundStyles +=
+				'border-radius:' + attributes.borderRadius + ';';
+		}
 		backgroundStyles += '}';
 	}
 
@@ -370,7 +374,7 @@ export default function Edit(props) {
 						color: attributes.color,
 						backgroundColor: attributes.backgroundColor,
 						fontSize: attributes.fontSize,
-						padding: attributes.padding,
+						padding: attributes.padding / 10 + 'rem',
 						borderRadius: attributes.borderRadius,
 					},
 				}}
