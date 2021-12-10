@@ -35,11 +35,7 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 import { more } from '@wordpress/icons';
-import {
-	__experimentalNavigatorProvider as NavigatorProvider,
-	__experimentalNavigatorScreen as NavigatorScreen,
-	__experimentalUseNavigator as useNavigator,
-} from '@wordpress/components';
+import { select, dispatch, subscribe } from '@wordpress/data';
 
 import PlacementOption from './PlacementOption';
 import PlacementSettings from './PlacementSettings';
@@ -87,9 +83,7 @@ const placements = [
 export default function Placement(props) {
 	const { meta, setMeta } = props;
 
-	const [isOpen, setOpen] = useState(true);
-
-	const openModal = () => setOpen(true);
+	const [isOpen, setOpen] = useState(false);
 
 	const closeModal = () => {
 		setOpen(false);
@@ -102,6 +96,7 @@ export default function Placement(props) {
 				isOpen={isOpen}
 				setOpen={setOpen}
 				placements={placements}
+				initialType={isOpen}
 			/>
 			<PanelRow>
 				<BaseControl className="widefat">

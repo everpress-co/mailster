@@ -86,7 +86,7 @@ export default function PlacementSettings(props) {
 	const { meta, setMeta, type, image, title } = props;
 	const { placements } = meta;
 
-	const options = meta['placement_' + type];
+	const options = meta['placement_' + type] || {};
 
 	function setOptions(options) {
 		var newOptions = { ...meta['placement_' + type] };
@@ -140,26 +140,19 @@ export default function PlacementSettings(props) {
 				</ItemGroup>
 			) : (
 				<>
-					{!placements.includes(type) && (
-						<ItemGroup isBordered={false} isSeparated size="small">
-							<Item>
-								<p>
-									{__(
-										'Please enable this option to define further settings.',
-										'mailster'
-									)}
-								</p>
-								<CheckboxControl
-									label={__('Enabled', 'mailster')}
-									value={type}
-									checked={placements.includes(type)}
-									onChange={(val) => {
-										setPlacements(type, val);
-									}}
-								/>
-							</Item>
-						</ItemGroup>
-					)}
+					<ItemGroup isBordered={false} isSeparated size="small">
+						<Item>
+							<CheckboxControl
+								label={__('Enabled', 'mailster')}
+								value={type}
+								checked={placements.includes(type)}
+								onChange={(val) => {
+									setPlacements(type, val);
+								}}
+							/>
+						</Item>
+					</ItemGroup>
+
 					{placements.includes(type) && (
 						<>
 							<ItemGroup

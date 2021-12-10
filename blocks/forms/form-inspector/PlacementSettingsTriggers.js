@@ -56,7 +56,7 @@ export default function PlacementSettingsTriggers(props) {
 	const { meta, setMeta, type, image, title } = props;
 	const { placements } = meta;
 
-	const options = meta['placement_' + type];
+	const options = meta['placement_' + type] || {};
 	const triggers = options.triggers || [];
 
 	function setOptions(options) {
@@ -86,6 +86,10 @@ export default function PlacementSettingsTriggers(props) {
 					onChange={(val) => {
 						setTriggers('delay', val);
 					}}
+					help={__(
+						'Mailster will show this popup after a give time. The preview will always trigger after 2 seconds.',
+						'mailster'
+					)}
 				/>
 			</Item>
 			{triggers.includes('delay') && (
@@ -101,7 +105,7 @@ export default function PlacementSettingsTriggers(props) {
 						isShiftStepEnabled
 						step={1}
 						min={1}
-						value={options.trigger_delay || 1}
+						value={options.trigger_delay}
 						label={__('Delay in Seconds', 'mailster')}
 						labelPosition="edge"
 					/>
@@ -114,6 +118,10 @@ export default function PlacementSettingsTriggers(props) {
 					onChange={(val) => {
 						setTriggers('inactive', val);
 					}}
+					help={__(
+						"Mailster will show this popup when the user doesn't do any interaction with the website. The preview will always trigger after 4 seconds.",
+						'mailster'
+					)}
 				/>
 			</Item>
 			{triggers.includes('inactive') && (
@@ -129,7 +137,7 @@ export default function PlacementSettingsTriggers(props) {
 						isShiftStepEnabled
 						step={1}
 						min={1}
-						value={options.trigger_inactive || 1}
+						value={options.trigger_inactive}
 						label={__('Inactive for x Seconds', 'mailster')}
 						labelPosition="edge"
 					/>
@@ -137,22 +145,37 @@ export default function PlacementSettingsTriggers(props) {
 			)}
 			<Item>
 				<CheckboxControl
-					label={__('Trigger after bottom', 'mailster')}
-					checked={triggers.includes('bottom')}
-					onChange={(val) => {
-						setTriggers('bottom', val);
-					}}
-				/>
-			</Item>
-			<Item>
-				<CheckboxControl
 					label={__('Trigger after scroll', 'mailster')}
 					checked={triggers.includes('scroll')}
 					onChange={(val) => {
 						setTriggers('scroll', val);
 					}}
+					help={__(
+						'Mailster will show this popup once the user scrolls to a certain position on your website.',
+						'mailster'
+					)}
 				/>
 			</Item>
+			{triggers.includes('scroll') && (
+				<Item>
+					<NumberControl
+						className="small-text"
+						onChange={(val) =>
+							setOptions({
+								trigger_scroll: val,
+							})
+						}
+						isDragEnabled
+						isShiftStepEnabled
+						step={1}
+						min={1}
+						min={100}
+						value={options.trigger_scroll}
+						label={__('Scroll Position in %', 'mailster')}
+						labelPosition="edge"
+					/>
+				</Item>
+			)}
 			<Item>
 				<CheckboxControl
 					label={__('Trigger after click', 'mailster')}
@@ -160,6 +183,37 @@ export default function PlacementSettingsTriggers(props) {
 					onChange={(val) => {
 						setTriggers('click', val);
 					}}
+					help={__(
+						'Show the form once the user clicks on specific element on the website.',
+						'mailster'
+					)}
+				/>
+			</Item>
+			{triggers.includes('click') && (
+				<Item>
+					<TextControl
+						className="small-text"
+						onChange={(val) =>
+							setOptions({
+								trigger_click: val,
+							})
+						}
+						value={options.trigger_click}
+						label={__('Selector', 'mailster')}
+					/>
+				</Item>
+			)}
+			<Item>
+				<CheckboxControl
+					label={__('Trigger after exit intent', 'mailster')}
+					checked={triggers.includes('exit')}
+					onChange={(val) => {
+						setTriggers('exit', val);
+					}}
+					help={__(
+						"Mailster will show this popup once the user tries to move away from the site. This doens't work on mobile.",
+						'mailster'
+					)}
 				/>
 			</Item>
 		</ItemGroup>

@@ -91,63 +91,83 @@ export default function PlacementSettingsContent(props) {
 		<ItemGroup isBordered={false} isSeparated size="small">
 			<Item>
 				<RadioControl
-					selected={options.pos}
+					selected={options.display}
 					options={[
 						{
 							label: 'Start of content',
-							value: '0',
+							value: 'start',
 						},
 						{
 							label: 'End of content',
-							value: '-1',
+							value: 'end',
+						},
+						{
+							label: 'After',
+							value: 'after',
 						},
 					]}
-					onChange={(val) => setOptions({ pos: val })}
+					onChange={(val) => setOptions({ display: val })}
 				/>
 			</Item>
-			<Item>
-				{__('Display form after:', 'mailster')}
-				<Flex>
-					<FlexBlock>
-						<NumberControl
-							onChange={(val) =>
-								setOptions({
-									pos: val,
-								})
-							}
-							isDragEnabled
-							isShiftStepEnabled
-							shiftStep={10}
-							step={1}
-							value={options.pos}
-						/>
-					</FlexBlock>
-					<FlexItem>
-						<SelectControl
-							value={options.tag}
-							onChange={(val) =>
-								setOptions({
-									tag: val,
-								})
-							}
-							options={[
-								{
-									value: 'p',
-									label: 'Paragraph',
-								},
-								{
-									value: 'h2',
-									label: 'Heading 2',
-								},
-								{
-									value: 'h3',
-									label: 'Heading 3',
-								},
-							]}
-						/>
-					</FlexItem>
-				</Flex>
-			</Item>
+			{options.display == 'after' && (
+				<Item>
+					{__('Display form after:', 'mailster')}
+					<Flex align="flexStart">
+						<FlexItem>
+							<NumberControl
+								onChange={(val) =>
+									setOptions({
+										pos: val,
+									})
+								}
+								min={0}
+								step={1}
+								disabled={options.tag == 'more'}
+								value={options.pos}
+								labelPosition="edge"
+							/>
+						</FlexItem>
+						<FlexBlock>
+							<SelectControl
+								value={options.tag}
+								onChange={(val) =>
+									setOptions({
+										tag: val,
+									})
+								}
+								options={[
+									{
+										value: 'p',
+										label: 'Paragraph',
+									},
+									{
+										value: 'more',
+										label: 'More Tag',
+									},
+									{
+										value: 'h2',
+										label: 'Heading 2',
+									},
+									{
+										value: 'h3',
+										label: 'Heading 3',
+									},
+									{
+										value: 'h4',
+										label: 'Heading 3',
+									},
+								]}
+							/>
+						</FlexBlock>
+					</Flex>
+					<div>
+						{__(
+							'Form will be displayed at the very bottom if no matching elements were found.',
+							'mailster'
+						)}
+					</div>
+				</Item>
+			)}
 		</ItemGroup>
 	);
 }

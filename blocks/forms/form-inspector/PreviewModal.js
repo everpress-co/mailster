@@ -36,6 +36,10 @@ import {
 	Spinner,
 	Flex,
 	FlexItem,
+	Toolbar,
+	ToolbarGroup,
+	ToolbarItem,
+	ToolbarButton,
 	__experimentalGrid as Grid,
 } from '@wordpress/components';
 
@@ -51,8 +55,9 @@ import {
 import { useFocusableIframe } from '@wordpress/compose';
 
 import { Modal, Button, Tooltip } from '@wordpress/components';
+import { useDebounce } from '@wordpress/compose';
 
-import { more } from '@wordpress/icons';
+import { check, desktop, tablet, mobile, update } from '@wordpress/icons';
 import { useEntityProp } from '@wordpress/core-data';
 
 import PlacementSettings from './PlacementSettings';
@@ -60,21 +65,24 @@ import PlacementSettingsContent from './PlacementSettingsContent';
 import PlacementSettingsTriggers from './PlacementSettingsTriggers';
 
 const ModalContent = (props) => {
-	const { setOpen, placements, meta } = props;
+	const { setOpen, placements, meta, initialType } = props;
 
-	const [section, setSection] = useState('content');
+	const [type, setSection] = useState(initialType);
 	const [url, setUrl] = useState('');
+	const [displayUrl, setDisplayUrl] = useState('');
 	const [urlLoggedIn, setUrlLoggedIn] = useState(false);
+	const [device, setDevice] = useState('desktop');
+	const [siteUrl] = useEntityProp('root', 'site', 'url');
 
 	const [currentPage, setCurrentPage] = useState(false);
 
-	const placement_options = section ? meta['placement_' + section] || {} : [];
+	const placement_options = type ? meta['placement_' + type] || {} : [];
+
+	const typeActive = meta.placements.includes(type);
 
 	const categories = placement_options.category || undefined;
 	const tags = placement_options.tags || undefined;
 	const all = placement_options.all;
-
-	const [siteUrl] = useEntityProp('root', 'site', 'url');
 
 	const formId = useSelect(
 		(select) => select('core/editor').getCurrentPostId(),
@@ -91,7 +99,6 @@ const ModalContent = (props) => {
 		return select('core').getEntityRecords('postType', 'post', postQuery);
 	});
 
-	// Set up the isLoading.
 	const isLoading = useSelect((select) => {
 		return select('core/data').isResolving('core', 'getEntityRecords', [
 			'postType',
@@ -99,18 +106,7 @@ const ModalContent = (props) => {
 			postQuery,
 		]);
 	});
-
-	// useEffect(() => {
-	// 	console.warn('new cats', categories);
-	// 	invalidateResolver();
-	// }, [categories]);
-
-	const { invalidateResolution } = useDispatch('core/data');
-
-	// Create a custom function for the button so we can trigger this on click.
-	const invalidateResolver = () => {
-		invalidateResolution('core', 'getEntityRecords', postQuery);
-	};
+	const setUrlDebounce = useDebounce(setUrl, 1000);
 
 	useEffect(() => {
 		if (!posts) {
@@ -119,7 +115,7 @@ const ModalContent = (props) => {
 		if (!posts.length) {
 			return;
 		}
-		if (!section) {
+		if (!type) {
 			return;
 		}
 		if (!siteUrl) {
@@ -132,9 +128,9 @@ const ModalContent = (props) => {
 			? placement_options.posts[0]
 			: post.id;
 
-		//const tempId = getPostIdFromOptions(placement_options);
+		setDisplayUrl(post.link);
 
-		setUrl(mapUrl(siteUrl, id));
+		setUrlDebounce(mapUrl(siteUrl, id));
 	}, [posts, placement_options, urlLoggedIn]);
 
 	function mapUrl(url, postId) {
@@ -144,10 +140,16 @@ const ModalContent = (props) => {
 			placement_options;
 
 		const obj = {
-			section: section,
+			type: type,
 			user: urlLoggedIn,
-			options: options,
+			options: {
+				...options,
+				all: true,
+				trigger_delay: 2,
+				trigger_inactive: 4,
+			}, //all => display always as its a preview
 			form_id: formId,
+			post_content: select('core/editor').getEditedPostContent(),
 		};
 
 		postId && myurl.searchParams.set('p', postId);
@@ -157,71 +159,102 @@ const ModalContent = (props) => {
 	}
 
 	function displayIframe(event) {
-		event.target.contentWindow.document
-			.querySelector('.wp-block-mailster-form-outside-wrapper-147')
-			.scrollIntoView({
+		const form = event.target.contentWindow.document.querySelector(
+			'.wp-block-mailster-form-outside-wrapper-' + formId
+		);
+
+		if (form && 'content' == type) {
+			form.scrollIntoView({
 				//behavior: 'smooth',
 				block: 'center',
 				inline: 'nearest',
 			});
+		}
 	}
 
-	function getPostIdFromOptions(options, fallback) {
-		if (options.posts?.length) {
-			return options.posts[0];
-		}
-		if (options.category?.length) {
-			//setCategories(options.category);
-		}
-		if (options.tags?.length) {
-			//setTags(options.tags);
-		}
-		return fallback;
+	function reload() {
+		const currentUrl = url;
+		setUrl('');
+		setTimeout(() => {
+			setUrl(currentUrl);
+		}, 1);
 	}
-
-	console.warn('Xxx', meta);
 
 	return (
 		<>
 			<Grid columns={2}>
 				<div className="preview-pane">
-					{!section && (
+					<div
+						className="interface-interface-skeleton__header"
+						role="region"
+						tabIndex="-1"
+					>
+						<Toolbar
+							label="Options"
+							className="preview-pane-toolbar widefat"
+						>
+							<ToolbarGroup>
+								<ToolbarButton
+									icon={desktop}
+									label="Edit"
+									isDisabled={device == 'desktop' || !url}
+									onClick={() => setDevice('desktop')}
+								/>
+								<ToolbarButton
+									icon={tablet}
+									label="Edit"
+									isDisabled={device == 'tablet' || !url}
+									onClick={() => setDevice('tablet')}
+								/>
+								<ToolbarButton
+									icon={mobile}
+									label="More"
+									isDisabled={device == 'mobile' || !url}
+									onClick={() => setDevice('mobile')}
+								/>
+							</ToolbarGroup>
+							<ToolbarGroup className="preview-pane-url">
+								<TextControl
+									className="widefat"
+									value={displayUrl}
+									readOnly
+								/>
+							</ToolbarGroup>
+							<ToolbarButton
+								icon={update}
+								label="reload"
+								isDisabled={!url}
+								onClick={reload}
+								isBusy={isLoading}
+							/>
+						</Toolbar>
+					</div>
+					{typeActive ? (
+						<div
+							className={
+								'preview-pane-iframe preview-pane-iframe-' +
+								device
+							}
+						>
+							<iframe
+								src={url}
+								onLoad={displayIframe}
+								id="preview-pane-iframe"
+								sandbox="allow-scripts allow-same-origin"
+								hidden={!url}
+							/>
+						</div>
+					) : (
 						<Flex className="preview-pane-info" justify="center">
 							<FlexItem>
 								<h3>
 									{__(
-										'Please choose a Placement option on the right',
+										'Please enable a Placement option on the right',
 										'mailster'
 									)}
 								</h3>
 							</FlexItem>
 						</Flex>
-					)}
-					{section && isLoading && (
-						<Flex className="preview-pane-info" justify="center">
-							<FlexItem>
-								<h3>
-									{__(
-										'Please wait while the preview is loading.',
-										'mailster'
-									)}
-								</h3>
-								<Spinner />
-							</FlexItem>
-						</Flex>
-					)}
-					{section && !isLoading && (
-						<iframe
-							src={url}
-							style={{
-								width: '100%',
-								height: '100%',
-							}}
-							onLoad={displayIframe}
-							id="preview-pane-iframe"
-							sandbox="allow-scripts allow-same-origin"
-							onFocus={() => console.log('iframe is focused')}
-						/>
 					)}
 				</div>
 				<div className="preview-sidebar">
@@ -231,7 +264,11 @@ const ModalContent = (props) => {
 								key={placement.type}
 								name={'placement-' + placement.type}
 								title={placement.title}
-								opened={section == placement.type}
+								icon={
+									meta.placements.includes(placement.type) &&
+									check
+								}
+								opened={type == placement.type}
 								onToggle={(v) => {
 									if (v) {
 										setSection(placement.type);
@@ -252,10 +289,13 @@ const ModalContent = (props) => {
 					<BaseControl className="widefat">
 						<PanelRow>
 							<CheckboxControl
-								label="User logged in"
+								label={__('Stay logged in', 'mailster')}
 								checked={urlLoggedIn}
 								onChange={() => setUrlLoggedIn(!urlLoggedIn)}
-								help="Users decide which list they subscribe to"
+								help={__(
+									'Show the preview as currently logged in user.',
+									'mailster'
+								)}
 							/>
 						</PanelRow>
 					</BaseControl>

@@ -1,44 +1,36 @@
 (function () {
 	'use strict';
 
-	alert('Adasd');
-	var forms = document.querySelectorAll('.mailster-block-form');
+	console.warn('FORM SCRIPT LOADED!');
 
-	function hasBeendShown(identifier, delay) {
-		return !(get(identifier, 0) < +new Date() - delay * 1000);
-	}
+	var forms = document.querySelectorAll('.mailster-block-form');
+	var cookieTime = 10;
 
 	Array.prototype.forEach.call(forms, function (form, i) {
 		var placement = form.querySelector('.mailster-block-form-data');
+
 		if (placement) {
 			placement = JSON.parse(placement.textContent);
-
 			if (placement.triggers) {
-				var timeout;
-
 				// trigger only if never displayed or already 60 seconds ago
-				if (!hasBeendShown(placement.identifier, 10)) {
+				if (
+					placement.isPreview ||
+					!hasBeendShown(placement.identifier)
+				) {
 					if (-1 !== placement.triggers.indexOf('delay')) {
-						initDelay(
-							form,
-							placement.identifier,
-							placement.trigger_delay,
-							timeout
-						);
+						initDelay(form, placement);
 					}
 					if (-1 !== placement.triggers.indexOf('inactive')) {
-						initInactive(
-							form,
-							placement.identifier,
-							placement.trigger_delay,
-							timeout
-						);
+						initInactive(form, placement);
 					}
 					if (-1 !== placement.triggers.indexOf('scroll')) {
-						initScroll(form, placement.identifier, 100);
+						initScroll(form, placement);
 					}
 					if (-1 !== placement.triggers.indexOf('click')) {
-						initClick(form, placement.identifier, 'p');
+						initClick(form, placement);
+					}
+					if (-1 !== placement.triggers.indexOf('exit')) {
+						initExit(form, placement);
 					}
 				}
 			}
@@ -151,26 +143,25 @@
 		});
 	});
 
-	function openForm(form, identifier) {
-		if (hasBeendShown(identifier, 10)) {
-			return;
-		}
-		var wrap = form.closest('.wp-block-mailster-form-outer-wrapper');
+	function openForm(form, placement) {
+		if (placement.isPreview || !hasBeendShown(placement.identifier)) {
+			var wrap = form.closest('.wp-block-mailster-form-outer-wrapper');
 
-		wrap.addEventListener(
-			'click',
-			function (event) {
-				closeForm(form, identifier);
-			},
-			{
-				once: true,
-			}
-		);
-		form.addEventListener('click', function (event) {
-			event.stopPropagation();
-		});
-		wrap.classList.add('active');
-		form.querySelector('input.input').focus();
+			wrap.addEventListener(
+				'click',
+				function (event) {
+					closeForm(form, identifier);
+				},
+				{
+					once: true,
+				}
+			);
+			form.addEventListener('click', function (event) {
+				event.stopPropagation();
+			});
+			wrap.classList.add('active');
+			//form.querySelector('input.input').focus();
+		}
 	}
 
 	function closeForm(form, identifier) {
@@ -210,36 +201,39 @@
 			.join('&');
 	}
 
-	function initDelay(form, identifier, delay, timeout) {
-		timeout = setTimeout(function () {
-			openForm(form, identifier);
-		}, delay * 1000);
+	function initDelay(form, placement) {
+		return setTimeout(function () {
+			openForm(form, placement);
+		}, placement.trigger_delay * 1000);
 	}
 
-	function initInactive(form, identifier, delay, timeout) {
+	function initInactive(form, placement) {
+		var timeout;
 		function resetTimer() {
 			clearTimeout(timeout);
 			timeout = setTimeout(function () {
-				openForm(form, identifier);
-			}, delay * 1000);
+				openForm(form, placement);
+			}, placement.trigger_inactive * 1000);
 		}
 
 		['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(
 			function (name) {
-				window.addEventListener(name, debounce(resetTimer, 500), true);
+				window.addEventListener(
+					name,
+					debounce(resetTimer, 200, true),
+					true
+				);
 			}
 		);
 		resetTimer();
-
-		return timeout;
 	}
 
-	function initScroll(form, identifier, threshold, timeout) {
+	function initScroll(form, placement) {
 		var el = document.documentElement,
 			body = document.body,
 			st = 'scrollTop',
 			sh = 'scrollHeight',
-			t = threshold / 100,
+			t = placement.trigger_scroll / 100,
 			triggered = false;
 
 		function getScrollPercent() {
@@ -250,7 +244,7 @@
 
 		function check() {
 			if (!triggered && getScrollPercent() >= t) {
-				openForm(form, identifier);
+				openForm(form, placement);
 				triggered = true;
 			}
 		}
@@ -262,23 +256,33 @@
 		return timeout;
 	}
 
-	function initClick(form, identifier, selector) {
-		var elements = document.querySelectorAll(selector);
+	function initClick(form, placement) {
+		var elements = document.querySelectorAll(placement.trigger_click);
 		Array.prototype.forEach.call(elements, function (element, i) {
 			element.addEventListener('click', function (event) {
-				openForm(form, identifier);
+				openForm(form, placement);
 			});
 		});
 	}
 
-	function initExit(form, identifier) {
-		setTimeout(function () {
-			document.addEventListener('mouseout', function (event) {
-				if (!event.toElement && !event.relatedTarget) {
-					openForm(form, identifier);
-				}
-			});
-		}, 5000);
+	function initExit(form, placement) {
+		setTimeout(
+			function () {
+				document.addEventListener('mouseout', function (event) {
+					if (!event.toElement && !event.relatedTarget) {
+						openForm(form, placement);
+					}
+				});
+			},
+			placement.isPreview ? 0 : 5000
+		);
+	}
+
+	function hasBeendShown(identifier, delay) {
+		return !(
+			get(identifier, 0) <
+			+new Date() - (delay ? delay : cookieTime) * 1000
+		);
 	}
 
 	function debounce(func, wait, immediate) {

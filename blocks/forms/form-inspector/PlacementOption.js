@@ -120,7 +120,7 @@ export default function PlacementOption(props) {
 					<Button
 						variant="link"
 						disabled={!enabled}
-						onClick={() => setOpen(true)}
+						onClick={() => setOpen(type)}
 						icon={<Icon icon={settings} />}
 						isSmall={true}
 					/>

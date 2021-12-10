@@ -2,7 +2,9 @@
 
 class MailsterBlockForms {
 
+
 	private $forms = array();
+	private $preview_data;
 
 	public function __construct() {
 
@@ -10,6 +12,8 @@ class MailsterBlockForms {
 		if ( ! function_exists( 'get_allowed_block_types' ) ) {
 			return;
 		}
+		add_action( 'plugins_loaded', array( &$this, 'maybe_preview' ) );
+
 		add_action( 'init', array( &$this, 'register_post_type' ) );
 		add_action( 'init', array( &$this, 'register_post_meta' ) );
 		add_action( 'init', array( &$this, 'block_init' ) );
@@ -24,24 +28,7 @@ class MailsterBlockForms {
 		add_filter( 'manage_newsletter_form_posts_columns', array( &$this, 'columns' ), 1 );
 		add_action( 'manage_newsletter_form_posts_custom_column', array( &$this, 'custom_column' ), 10, 2 );
 
-		// enter preview mode
-		if ( isset( $_GET['mailster-block-preview'] ) ) {
-
-			$data = json_decode( $_GET['mailster-block-preview'], true );
-
-			error_log( print_r( $data, true ) );
-			$this->data = $data;
-			//add_filter( 'the_content', array( &$this, 'add_form_to_content' ) );
-			add_filter( 'wp_footer', array( &$this, 'add_form_to_footer' ) );
-
-			if ( ! $data['user'] ) {
-				add_filter( 'determine_current_user', '__return_false', 99999 );
-			}
-		} else {
-			add_filter( 'template_redirect', array( &$this, 'prepare_forms' ) );
-			add_filter( 'the_content', array( &$this, 'maybe_add_form_to_content' ) );
-			add_filter( 'wp_footer', array( &$this, 'maybe_add_form_to_footer' ) );
-		}
+		add_filter( 'template_redirect', array( &$this, 'prepare_forms' ) );
 
 		add_action( 'save_post_newsletter_form', array( &$this, 'clear_cache' ) );
 		add_action( 'switch_theme', array( &$this, 'clear_inline_style' ) );
@@ -55,6 +42,21 @@ class MailsterBlockForms {
 			10,
 			2
 		);
+	}
+
+
+	public function maybe_preview() {
+		// enter preview mode
+		if ( isset( $_GET['mailster-block-preview'] ) ) {
+
+			$data = json_decode( $_GET['mailster-block-preview'], true );
+			if ( json_last_error() === JSON_ERROR_NONE ) {
+				$this->preview_data = $data;
+				if ( ! $data['user'] ) {
+					add_filter( 'determine_current_user', '__return_false', PHP_INT_MAX );
+				}
+			}
+		}
 	}
 
 
@@ -95,30 +97,62 @@ class MailsterBlockForms {
 
 	public function prepare_forms() {
 
-		if ( $forms = $this->query_forms() ) {
+		if ( $this->preview_data ) {
+
+			$options = $this->preview_data['options'];
+
+			$this->forms[ $this->preview_data['type'] ][ $this->preview_data['form_id'] ] = $options;
+
+		} elseif ( $forms = $this->query_forms() ) {
 
 			foreach ( $forms as $form_id ) {
-				$this->prepare_form( $form_id );
+				$placements = (array) get_post_meta( $form_id, 'placements', false );
+				foreach ( $placements as $placement ) {
+					$placement_options = get_post_meta( $form_id, 'placement_' . $placement, true );
+					if ( $placement_options ) {
+						$this->forms[ $placement ][ $form_id ] = $placement_options;
+					}
+				}
 			}
+		}
+		if ( isset( $this->forms['popup'] ) || isset( $this->forms['bar'] ) || isset( $this->forms['side'] ) ) {
+			add_filter( 'wp_footer', array( &$this, 'maybe_add_form_to_footer' ) );
+		}
+		if ( isset( $this->forms['content'] ) ) {
+			add_filter( 'the_content', array( &$this, 'maybe_add_form_to_content' ) );
 		}
 
 	}
 
-	public function prepare_form( $form_id ) {
 
-		$placements = get_post_meta( $form_id, 'placements', false );
+	public function check_validity( $options = array() ) {
 
-		foreach ( $placements as $placement ) {
+		if ( $options['all'] ) {
+			return true;
+		}
 
-			if ( $placement ) {
-				$this->forms[ $placement ][] = $form_id;
+		$current_id = get_the_ID();
+
+		if ( in_array( $current_id, $options['posts'] ) ) {
+			return true;
+		}
+
+		if ( ! empty( $options['category'] ) && $categories = get_the_terms( $current_id, 'category' ) ) {
+			$cats = wp_list_pluck( $categories, 'term_id' );
+			if ( array_intersect( $options['category'], $cats ) ) {
+				return true;
 			}
 		}
 
-	}
+		if ( ! empty( $options['post_tag'] ) && $tags = get_the_terms( $current_id, 'post_tag' ) ) {
+			$cats = wp_list_pluck( $tags, 'term_id' );
+			if ( array_intersect( $options['post_tag'], $cats ) ) {
+				return true;
+			}
+		}
 
+		return false;
 
-	public function check_validity( $form_id, $context = null ) {
 		$options = get_post_meta( $form_id, 'placement_' . $context, true );
 
 		if ( $context ) {
@@ -154,98 +188,76 @@ class MailsterBlockForms {
 	}
 
 
-	public function add_form_to_content( $content ) {
-
-		$data = $this->data;
-		$option = $data['options'];
-		$form_id = $data['form_id'];
-
-		$form_html = $this->render_form_with_options( $form_id, $option );
-
-		$tag = $option['tag'];
-		$pos = $option['pos'];
-
-		$chunks = explode( '</' . $tag . '>', $content );
-
-		if ( $pos < 0 ) {
-			$pos = max( 0, count( $chunks ) + $pos );
-		}
-
-		if ( isset( $chunks[ $pos ] ) ) {
-			$chunks[ $pos ] = $form_html . $chunks[ $pos ];
-			$content        = implode( '</' . $tag . '>', $chunks );
-		} else {
-			$content .= $form_html;
-		}
-
-		return $content;
-	}
-
 
 	public function maybe_add_form_to_content( $content ) {
 
 		if ( isset( $this->forms['content'] ) ) {
 
-			if ( is_page() || is_singular() ) {
-				foreach ( $this->forms['content'] as $form_id ) {
+			foreach ( $this->forms['content'] as $form_id => $options ) {
+				if ( isset( $displayed[ $form_id ] ) ) {
+					continue;
+				}
+				if ( $form_html = $this->render_form_with_options( $form_id, $options ) ) {
+					$display = $options['display'];
 
-					if ( ! ( $option = $this->check_validity( $form_id, 'content' ) ) ) {
-						return $content;
-					}
-
-					$form_html = $this->render_form_with_options( $form_id, $option );
-
-					$tag = $option['tag'];
-					$pos = $option['pos'];
-
-					$chunks = explode( '</' . $tag . '>', $content );
-
-					if ( $pos < 0 ) {
-						$pos = max( 0, count( $chunks ) + $pos );
-					}
-
-					if ( isset( $chunks[ $pos ] ) ) {
-						$chunks[ $pos ] = $form_html . $chunks[ $pos ];
-						$content        = implode( '</' . $tag . '>', $chunks );
+					if ( 'start' == $display ) {
+						$content = $form_html . $content;
+					} elseif ( 'end' == $display ) {
+						$content = $content . $form_html;
 					} else {
-						$content .= $form_html;
+						$tag = $options['tag'];
+						$pos = $options['pos'];
+
+						if ( 'more' == $tag ) {
+							$split_at = '<span id="more-' . get_the_ID() . '"></span>';
+							$pos      = 1;
+						} else {
+							$split_at = '</' . $tag . '>';
+						}
+
+						$chunks = explode( $split_at, $content );
+
+						if ( isset( $chunks[ $pos ] ) ) {
+							$chunks[ $pos ] = $form_html . $chunks[ $pos ];
+							$content        = implode( $split_at, $chunks );
+						} else {
+							$content .= $form_html;
+						}
 					}
 				}
 			}
 		}
 
 		return $content;
-
-	}
-
-	public function add_form_to_footer() {
-
-		$data = $this->data;
-		$option = $data['options'];
-		$form_id = $data['form_id'];
-
-		echo $this->render_form_with_options( $form_id, $option );
-
-
 
 	}
 
 	public function maybe_add_form_to_footer() {
 
 		if ( isset( $this->forms['popup'] ) ) {
-			foreach ( $this->forms['popup'] as $form ) {
-				if ( ! ( $option = $this->check_validity( $form, 'popup' ) ) ) {
-					continue;
+			foreach ( $this->forms['popup'] as $form_id => $options ) {
+				$options['classes'] = array( 'mailster-block-form-type-popup' );
+				if ( $form_html = $this->render_form_with_options( $form_id, $options ) ) {
+					echo $form_html;
 				}
-				echo $this->render_form_with_options( $form, $option );
 			}
 		}
+
 		if ( isset( $this->forms['bar'] ) ) {
-			foreach ( $this->forms['bar'] as $form ) {
-				if ( ! ( $option = $this->check_validity( $form, 'bar' ) ) ) {
-					continue;
+			foreach ( $this->forms['bar'] as $form_id => $options ) {
+				$options['classes'] = array( 'mailster-block-form-type-bar' );
+				if ( $form_html = $this->render_form_with_options( $form_id, $options ) ) {
+					echo $form_html;
 				}
-				echo $this->render_form_with_options( $form, $option );
+			}
+		}
+
+		if ( isset( $this->forms['side'] ) ) {
+			foreach ( $this->forms['side'] as $form_id => $options ) {
+				$options['classes'] = array( 'mailster-block-form-type-side' );
+				if ( $form_html = $this->render_form_with_options( $form_id, $options ) ) {
+					echo $form_html;
+				}
 			}
 		}
 
@@ -424,10 +436,10 @@ class MailsterBlockForms {
 			'newsletter_form',
 			'overwrite',
 			array(
-				'type'         => 'string',
+				'type'         => 'boolean',
 				'show_in_rest' => true,
 				'single'       => true,
-				'default'      => '',
+				'default'      => false,
 
 			)
 		);
@@ -553,7 +565,6 @@ class MailsterBlockForms {
 				'type'         => 'string',
 				'show_in_rest' => true,
 				'single'       => false,
-				'default'      => '',
 			)
 		);
 
@@ -565,44 +576,57 @@ class MailsterBlockForms {
 					'single'       => true,
 					'type'         => 'object',
 					'default'      => array(
-						'all'        => false,
-						'post_types' => array(),
-						'posts'      => array(),
-						'category'   => array(),
-						'post_tag'   => array(),
-						'tag'        => 'p',
-						'pos'        => 0,
+						'all'              => false,
+						'tag'              => 'p',
+						'pos'              => 0,
+						'trigger_delay'    => 120,
+						'trigger_inactive' => 120,
+						'trigger_click'    => '',
+						'trigger_scroll'   => 66,
+						'display'          => 'start',
 					),
 					'show_in_rest' => array(
 						'schema' => array(
 							'type'       => 'object',
 							'properties' => array(
-								'all'           => array(
+								'all'              => array(
 									'type' => 'boolean',
 								),
-								'triggers'      => array(
+								'triggers'         => array(
 									'type' => 'array',
 								),
-								'trigger_delay' => array(
-									'type' => 'integer',
-								),
-								'post_types'    => array(
+								'post_types'       => array(
 									'type' => 'array',
 								),
-								'posts'         => array(
+								'posts'            => array(
 									'type' => 'array',
 								),
-								'category'      => array(
+								'category'         => array(
 									'type' => 'array',
 								),
-								'post_tag'      => array(
+								'post_tag'         => array(
 									'type' => 'array',
 								),
-								'tag'           => array(
+								'tag'              => array(
 									'type' => 'string',
 								),
-								'pos'           => array(
+								'pos'              => array(
 									'type' => 'integer',
+								),
+								'trigger_delay'    => array(
+									'type' => 'integer',
+								),
+								'trigger_inactive' => array(
+									'type' => 'integer',
+								),
+								'trigger_click'    => array(
+									'type' => 'string',
+								),
+								'trigger_scroll'   => array(
+									'type' => 'integer',
+								),
+								'display'          => array(
+									'type' => 'string',
 								),
 							),
 						),
@@ -816,10 +840,14 @@ class MailsterBlockForms {
 
 	public function render_form_with_options( $form, $options = array() ) {
 
+		if ( ! $this->check_validity( $options ) ) {
+			return '';
+		}
+
 		$form = get_post( $form );
 
 		if ( get_post_type( $form ) != 'newsletter_form' ) {
-			return '';
+			// return '';
 		}
 
 		$options['id'] = $form->ID;
@@ -838,8 +866,16 @@ class MailsterBlockForms {
 			return;
 		}
 
-		if ( ! ( $form = get_post( $args['id'] ) ) ) {
+		if ( ! ( $form = $original_form = get_post( $args['id'] ) ) ) {
 			return;
+		}
+
+		// further checks for revisions
+		if ( get_post_type( $form ) == 'revision' ) {
+			$original_form = get_post( $form->post_parent );
+			if ( get_post_type( $original_form ) != 'newsletter_form' ) {
+				return;
+			}
 		}
 
 		$args = wp_parse_args(
@@ -859,6 +895,10 @@ class MailsterBlockForms {
 			}
 		}
 
+		if ( $this->preview_data ) {
+			$args['isPreview'] = true;
+		}
+
 		$blockattributes = $block->attributes;
 		$uniqid          = substr( uniqid(), 8, 5 );
 
@@ -866,9 +906,9 @@ class MailsterBlockForms {
 		$output     = render_block( $form_block );
 
 		$inject = '';
-		$inject .= json_encode( $args );
+		// $inject .= json_encode( $args );
 		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $args ) . '</script>';
-		$inject .= '<input name="_formid" type="hidden" value="' . esc_attr( $form->ID ) . '">' . "\n";
+		$inject .= '<input name="_formid" type="hidden" value="' . esc_attr( $original_form->ID ) . '">' . "\n";
 		$inject .= '<input name="_timestamp" type="hidden" value="' . esc_attr( time() ) . '">' . "\n";
 
 		$output = str_replace( '</form>', $inject . '</form>', $output );
@@ -880,7 +920,7 @@ class MailsterBlockForms {
 
 		$args['classes'][] = 'wp-block-mailster-form-outer-wrapper';
 		$args['classes'][] = 'wp-block-mailster-form-outside-wrapper-' . $uniqid;
-		$args['classes'][] = 'wp-block-mailster-form-outside-wrapper-' . $form->ID;
+		$args['classes'][] = 'wp-block-mailster-form-outside-wrapper-' . $original_form->ID;
 
 		if ( isset( $blockattributes['align'] ) ) {
 			$args['classes'][] = 'align' . $blockattributes['align'];
@@ -976,7 +1016,7 @@ class MailsterBlockForms {
 		$htmldoc = new \InlineStyle\InlineStyle();
 
 		if ( isset( $form_block['attrs']['css'] ) ) {
-			foreach ( $innerblock['attrs']['css'] as $name => $css ) {
+			foreach ( $form_block['attrs']['css'] as $name => $css ) {
 				if ( empty( $css ) ) {
 					continue;
 				}
@@ -1035,7 +1075,7 @@ class MailsterBlockForms {
 		}
 
 		if ( ! $is_backend ) {
-			// update_post_meta( $form->ID, '_cached', $html, true );
+			// update_post_meta( $original_form->ID, '_cached', $html, true );
 		}
 
 		return ( $html );
@@ -1066,9 +1106,14 @@ class MailsterBlockForms {
 
 	private function get_form_block( $form ) {
 
-		$form = get_post( $form );
+		if ( isset( $this->preview_data['post_content'] ) ) {
+			$content = $this->preview_data['post_content'];
+		} else {
+			$form    = get_post( $form );
+			$content = $form->post_content;
+		}
 
-		$parsed = parse_blocks( $form->post_content );
+		$parsed = parse_blocks( $content );
 		foreach ( $parsed as $innerblock ) {
 			if ( $innerblock['blockName'] == 'mailster/form-wrapper' ) {
 				return $innerblock;

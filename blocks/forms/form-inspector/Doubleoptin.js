@@ -57,26 +57,26 @@ export default function Doubleoptin(props) {
 			title={doubleoptin ? 'Double Opt In ' : 'Single Opt In'}
 		>
 			<CheckboxControl
-				label={('Enable double opt in', 'mailster')}
+				label={__('Enable double opt in', 'mailster')}
 				checked={!!doubleoptin}
 				onChange={() => setMeta({ doubleoptin: !doubleoptin })}
 			/>
 			{doubleoptin && (
 				<>
 					<TextControl
-						label={('Subject', 'mailster')}
+						label={__('Subject', 'mailster')}
 						value={subject}
 						help="Helptext"
 						onChange={(value) => setMeta({ subject: value })}
 					/>
 					<TextControl
-						label={('Headline', 'mailster')}
+						label={__('Headline', 'mailster')}
 						value={headline}
 						help="Helptext"
 						onChange={(value) => setMeta({ headline: value })}
 					/>
 					<TextareaControl
-						label={('Content', 'mailster')}
+						label={__('Content', 'mailster')}
 						className={!isValidContent && 'error-message'}
 						value={content}
 						help={
@@ -86,7 +86,7 @@ export default function Doubleoptin(props) {
 						onChange={(value) => setMeta({ content: value })}
 					/>
 					<TextControl
-						label={('Linktext', 'mailster')}
+						label={__('Linktext', 'mailster')}
 						value={link}
 						help="Helptext"
 						onChange={(value) => setMeta({ link: value })}

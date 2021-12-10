@@ -94,6 +94,35 @@ button[name='link'] {
 .preview-modal .components-grid .preview-pane {
 	border: 1px solid #e0e0e0;
 }
+.preview-modal .components-grid .preview-pane .preview-pane-iframe {
+	width: 100%;
+	height: 95%;
+	transition: all 0.2s ease-in-out;
+	margin: auto;
+}
+.preview-modal .components-grid .preview-pane .preview-pane-iframe iframe {
+	width: 100%;
+	height: 100%;
+}
+.preview-modal .components-grid .preview-pane .preview-pane-iframe-tablet {
+	width: 800px;
+	height: 580px;
+}
+.preview-modal .components-grid .preview-pane .preview-pane-iframe-mobile {
+	width: 400px;
+	height: 680px;
+}
+.preview-modal .components-grid .preview-pane .preview-pane-toolbar {
+	border-width: 0;
+}
+.preview-modal
+	.components-grid
+	.preview-pane
+	.preview-pane-toolbar
+	.preview-pane-url {
+	flex-grow: 1;
+	padding: 9px 9px 0;
+}
 
 .preview-modal .components-grid .preview-pane-info {
 	height: 100%;
