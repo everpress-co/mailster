@@ -11,7 +11,11 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
  */
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	InspectorControls,
+	BlockControls,
+} from '@wordpress/block-editor';
 import ServerSideRender from '@wordpress/server-side-render';
 import apiFetch from '@wordpress/api-fetch';
 import {
@@ -22,9 +26,19 @@ import {
 	Flex,
 	FlexItem,
 	FlexBlock,
+	Toolbar,
+	ToolbarGroup,
+	ToolbarItem,
+	ToolbarButton,
 } from '@wordpress/components';
 import { Icons, email, screenoptions } from '@wordpress/components';
-
+import {
+	useSelect,
+	select,
+	useDispatch,
+	dispatch,
+	subscribe,
+} from '@wordpress/data';
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
  * Those files can contain any CSS code that gets applied to the editor.
@@ -34,6 +48,7 @@ import { Icons, email, screenoptions } from '@wordpress/components';
 import './editor.scss';
 
 import { Fragment, useState, Component, useEffect } from '@wordpress/element';
+import { check, edit, tablet, mobile, update } from '@wordpress/icons';
 
 import {
 	Button,
@@ -42,57 +57,42 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 
-class MailsterFormSelector extends Component {
-	constructor() {
-		super(...arguments);
+function MailsterFormSelector(props) {
+	const { attributes, setAttributes, isSelected } = props;
+	const { id } = attributes;
 
-		this.state = {
-			forms: [{ label: __('Loading Forms', 'mailster'), value: false }],
-		};
-	}
+	const forms = useSelect((select) => {
+		return select('core').getEntityRecords('postType', 'newsletter_form');
+	});
 
-	componentDidMount() {
-		this.updateFormForm();
-	}
+	const isLoading = useSelect((select) => {
+		return select('core/data').isResolving('core', 'getEntityRecords', [
+			'postType',
+			'newsletter_form',
+		]);
+	});
 
-	updateFormForm = () => {
-		apiFetch({ path: '/wp/v2/newsletter_form' }).then((data) => {
-			const forms = data.map((form) => {
-				return {
-					label: form.title.rendered,
-					value: form.id,
-				};
-			});
-			if (data.length)
-				forms.unshift({
-					label: __('Select a Mailster form', 'mailster'),
-					value: false,
-				});
+	if (isLoading) return <Spinner />;
 
-			this.setState({ forms: forms });
-		});
-	};
-
-	render() {
-		return (
-			<Fragment>
-				{this.state.forms.length > 0 && (
-					<SelectControl
-						value={this.props.attributes.id}
-						options={this.state.forms}
-						onChange={(val) =>
-							this.props.setAttributes({ id: val })
-						}
-					/>
-				)}
-				{this.state.forms.length < 1 && (
-					<p>
-						{__("There's currently no form available.", 'mailster')}
-					</p>
-				)}
-			</Fragment>
-		);
-	}
+	return (
+		<>
+			{forms && (
+				<SelectControl
+					value={id}
+					onChange={(val) => setAttributes({ id: parseInt(val, 10) })}
+				>
+					<option value={0}>Choose</option>
+					{forms.map((form) => {
+						return (
+							<option key={form.id} value={form.id}>
+								{form.title.rendered}
+							</option>
+						);
+					})}
+				</SelectControl>
+			)}
+		</>
+	);
 }
 /**
  * The edit function describes the structure of your block in the context of the
@@ -120,17 +120,6 @@ export default function Edit(props) {
 				<Spinner />
 			</Flex>
 		);
-		return (
-			<Placeholder
-				icon={screenoptions}
-				label={__('Mailster Subscription Form', 'mailster')}
-			>
-				<p>
-					<Spinner />
-					{__('Loading your Form', 'mailster')}
-				</p>
-			</Placeholder>
-		);
 	};
 
 	const reloadForm = () => {
@@ -145,25 +134,35 @@ export default function Edit(props) {
 	};
 
 	return (
-		<Fragment>
+		<>
 			<div {...useBlockProps()}>
 				{parseInt(id) > 0 && (
 					<>
 						<div className="mailster-block-form-editor-wrap">
-							<div className="update-form-button">
-								<ButtonGroup>
+							<Flex
+								className="update-form-button"
+								justify="space-evenly"
+							>
+								<h4 className="align-center">
+									Please click on the edit button in the
+									toolbar to edit this form.
+								</h4>
+							</Flex>
+							<BlockControls>
+								<Toolbar>
 									<Button
-										variant="primary"
-										onClick={editForm}
-										text={__('Edit Form', 'mailster')}
-									/>
-									<Button
-										variant="primary"
+										label={__('Reload Form', 'mailster')}
+										icon={update}
 										onClick={reloadForm}
-										text={__('Reload Form', 'mailster')}
 									/>
-								</ButtonGroup>
-							</div>
+									<Button
+										label={__('Edit Form', 'mailster')}
+										icon={edit}
+										onClick={editForm}
+									/>
+								</Toolbar>
+							</BlockControls>
+
 							{displayForm && (
 								<ServerSideRender
 									block="mailster/form"
@@ -217,6 +216,6 @@ export default function Edit(props) {
 					></PanelBody>
 				</Panel>
 			</InspectorControls>
-		</Fragment>
+		</>
 	);
 }

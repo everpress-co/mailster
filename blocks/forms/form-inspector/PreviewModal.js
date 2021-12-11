@@ -181,7 +181,7 @@ const ModalContent = (props) => {
 	}
 
 	return (
-		<>
+		<div className="preview-pane-grid-wrap">
 			<Grid columns={2}>
 				<div className="preview-pane">
 					<div
@@ -301,18 +301,14 @@ const ModalContent = (props) => {
 					</BaseControl>
 				</div>
 			</Grid>
-		</>
+		</div>
 	);
 };
 
 export default function PreviewModal(props) {
 	const { meta, setMeta, setOpen, isOpen } = props;
 
-	const modalStyle = {
-		width: '96vw',
-		height: '96vh',
-		maxHeight: '96vh',
-	};
+	const modalStyle = {};
 
 	return (
 		<>

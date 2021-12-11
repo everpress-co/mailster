@@ -103,6 +103,8 @@ class MailsterBlockForms {
 
 			$this->forms[ $this->preview_data['type'] ][ $this->preview_data['form_id'] ] = $options;
 
+			error_log( print_r( $options, true ) );
+
 		} elseif ( $forms = $this->query_forms() ) {
 
 			foreach ( $forms as $form_id ) {
@@ -133,7 +135,7 @@ class MailsterBlockForms {
 
 		$current_id = get_the_ID();
 
-		if ( in_array( $current_id, $options['posts'] ) ) {
+		if ( isset( $options['posts'] ) && in_array( $current_id, $options['posts'] ) ) {
 			return true;
 		}
 
@@ -191,7 +193,7 @@ class MailsterBlockForms {
 
 	public function maybe_add_form_to_content( $content ) {
 
-		if ( isset( $this->forms['content'] ) ) {
+		if ( isset( $this->forms['content'] ) && is_singular() ) {
 
 			foreach ( $this->forms['content'] as $form_id => $options ) {
 				if ( isset( $displayed[ $form_id ] ) ) {
@@ -579,6 +581,7 @@ class MailsterBlockForms {
 						'all'              => false,
 						'tag'              => 'p',
 						'pos'              => 0,
+						'triggers'         => array( 'delay' ),
 						'trigger_delay'    => 120,
 						'trigger_inactive' => 120,
 						'trigger_click'    => '',
@@ -628,6 +631,12 @@ class MailsterBlockForms {
 								'display'          => array(
 									'type' => 'string',
 								),
+								'align'            => array(
+									'type' => 'string',
+								),
+								'width'            => array(
+									'type' => 'integer',
+								),
 							),
 						),
 					),
@@ -646,7 +655,7 @@ class MailsterBlockForms {
 				'render_callback' => array( $this, 'render_form' ),
 				'textdomain'      => 'mailster',
 				'script'          => 'mailster-form-block',
-				'style'           => 'mailster-form-block',
+				// 'style'           => 'mailster-form-block',
 			)
 		);
 		if ( ! is_admin() ) {
@@ -954,6 +963,9 @@ class MailsterBlockForms {
 		}
 		if ( isset( $form_block['attrs']['color'] ) ) {
 			$custom_styles[''][] = 'color:' . $form_block['attrs']['color'];
+		}
+		if ( isset( $args['width'] ) ) {
+			$custom_styles[''][] = 'width:' . $args['width'] . 'vw';
 		}
 
 		if ( isset( $form_block['attrs']['background']['image'] ) ) {

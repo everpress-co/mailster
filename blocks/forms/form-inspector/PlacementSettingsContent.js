@@ -20,6 +20,7 @@ import {
 	MediaUploadCheck,
 	MediaReplaceFlow,
 	ColorPaletteControl,
+	BlockAlignmentToolbar,
 } from '@wordpress/block-editor';
 import {
 	Panel,
@@ -168,6 +169,10 @@ export default function PlacementSettingsContent(props) {
 					</div>
 				</Item>
 			)}
+			<BlockAlignmentToolbar
+				value={options.align}
+				onChange={(val) => setOptions({ align: val })}
+			/>
 		</ItemGroup>
 	);
 }

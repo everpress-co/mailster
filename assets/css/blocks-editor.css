@@ -86,17 +86,25 @@ button[name='link'] {
 .preview-modal .components-modal__content {
 	padding: 0;
 }
+.preview-modal ._preview-pane-grid-wrap {
+	position: absolute;
+	left: 0;
+	top: 59px;
+	right: 0;
+	bottom: 0;
+	border: 1px solid red;
+}
 .preview-modal .components-grid {
 	gap: 0;
 	grid-template-columns: 6fr 3fr;
-	height: 96%;
+	height: 100%;
 }
 .preview-modal .components-grid .preview-pane {
 	border: 1px solid #e0e0e0;
 }
 .preview-modal .components-grid .preview-pane .preview-pane-iframe {
 	width: 100%;
-	height: 95%;
+	height: 100%;
 	transition: all 0.2s ease-in-out;
 	margin: auto;
 }

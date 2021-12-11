@@ -78,22 +78,18 @@ export default function PlacementSettingsTriggers(props) {
 	}
 
 	return (
-		<ItemGroup isBordered={false} isSeparated size="small">
-			<Item>
+		<>
+			<PanelRow>
 				<CheckboxControl
 					label={__('Trigger after delay', 'mailster')}
 					checked={triggers.includes('delay')}
 					onChange={(val) => {
 						setTriggers('delay', val);
 					}}
-					help={__(
-						'Mailster will show this popup after a give time. The preview will always trigger after 2 seconds.',
-						'mailster'
-					)}
 				/>
-			</Item>
+			</PanelRow>
 			{triggers.includes('delay') && (
-				<Item>
+				<PanelRow>
 					<NumberControl
 						className="small-text"
 						onChange={(val) => {
@@ -109,9 +105,17 @@ export default function PlacementSettingsTriggers(props) {
 						label={__('Delay in Seconds', 'mailster')}
 						labelPosition="edge"
 					/>
-				</Item>
+				</PanelRow>
 			)}
-			<Item>
+			<PanelRow>
+				<p className="help">
+					{__(
+						'Mailster will show this popup after a give time. The preview will always trigger after 2 seconds.',
+						'mailster'
+					)}
+				</p>
+			</PanelRow>
+			<PanelRow>
 				<CheckboxControl
 					label={__('Trigger after inactive', 'mailster')}
 					checked={triggers.includes('inactive')}
@@ -123,9 +127,9 @@ export default function PlacementSettingsTriggers(props) {
 						'mailster'
 					)}
 				/>
-			</Item>
+			</PanelRow>
 			{triggers.includes('inactive') && (
-				<Item>
+				<PanelRow>
 					<NumberControl
 						className="small-text"
 						onChange={(val) =>
@@ -141,9 +145,9 @@ export default function PlacementSettingsTriggers(props) {
 						label={__('Inactive for x Seconds', 'mailster')}
 						labelPosition="edge"
 					/>
-				</Item>
+				</PanelRow>
 			)}
-			<Item>
+			<PanelRow>
 				<CheckboxControl
 					label={__('Trigger after scroll', 'mailster')}
 					checked={triggers.includes('scroll')}
@@ -155,9 +159,9 @@ export default function PlacementSettingsTriggers(props) {
 						'mailster'
 					)}
 				/>
-			</Item>
+			</PanelRow>
 			{triggers.includes('scroll') && (
-				<Item>
+				<PanelRow>
 					<NumberControl
 						className="small-text"
 						onChange={(val) =>
@@ -174,9 +178,9 @@ export default function PlacementSettingsTriggers(props) {
 						label={__('Scroll Position in %', 'mailster')}
 						labelPosition="edge"
 					/>
-				</Item>
+				</PanelRow>
 			)}
-			<Item>
+			<PanelRow>
 				<CheckboxControl
 					label={__('Trigger after click', 'mailster')}
 					checked={triggers.includes('click')}
@@ -188,9 +192,9 @@ export default function PlacementSettingsTriggers(props) {
 						'mailster'
 					)}
 				/>
-			</Item>
+			</PanelRow>
 			{triggers.includes('click') && (
-				<Item>
+				<PanelRow>
 					<TextControl
 						className="small-text"
 						onChange={(val) =>
@@ -201,9 +205,9 @@ export default function PlacementSettingsTriggers(props) {
 						value={options.trigger_click}
 						label={__('Selector', 'mailster')}
 					/>
-				</Item>
+				</PanelRow>
 			)}
-			<Item>
+			<PanelRow>
 				<CheckboxControl
 					label={__('Trigger after exit intent', 'mailster')}
 					checked={triggers.includes('exit')}
@@ -215,7 +219,22 @@ export default function PlacementSettingsTriggers(props) {
 						'mailster'
 					)}
 				/>
-			</Item>
-		</ItemGroup>
+			</PanelRow>
+			<PanelRow>
+				<RangeControl
+					className="widefat"
+					label="Width"
+					value={options.width}
+					allowReset={true}
+					onChange={(val) =>
+						setOptions({
+							width: val,
+						})
+					}
+					min={10}
+					max={100}
+				/>
+			</PanelRow>
+		</>
 	);
 }

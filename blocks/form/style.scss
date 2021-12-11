@@ -91,7 +91,7 @@
 	bottom: 0;
 	right: 0;
 }
-_body::before {
+body::before {
 	content: 'STYLE LOADED';
 	font-size: 10px;
 	position: fixed;

@@ -14,9 +14,6 @@
 			"padding": true
 		}
 	},
-	"providesContext": {
-		"mailster/input": "input"
-	},
 	"attributes": {
 		"id": {
 			"type": "integer"
