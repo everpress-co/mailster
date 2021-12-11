@@ -914,20 +914,12 @@ class MailsterBlockForms {
 		$form_block = $this->get_form_block( $form );
 		$output     = render_block( $form_block );
 
-		$inject = '';
-		// $inject .= json_encode( $args );
-		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $args ) . '</script>';
-		$inject .= '<input name="_formid" type="hidden" value="' . esc_attr( $original_form->ID ) . '">' . "\n";
-		$inject .= '<input name="_timestamp" type="hidden" value="' . esc_attr( time() ) . '">' . "\n";
-
-		$output = str_replace( '</form>', $inject . '</form>', $output );
-
 		$stylesheets = array();
 		if ( $is_backend ) {
 			$stylesheets = array( 'style-form.css', 'style-input.css' );
 		}
 
-		$args['classes'][] = 'wp-block-mailster-form-outer-wrapper';
+		$args['classes'][] = 'wp-block-mailster-form-outside-wrapper';
 		$args['classes'][] = 'wp-block-mailster-form-outside-wrapper-' . $uniqid;
 		$args['classes'][] = 'wp-block-mailster-form-outside-wrapper-' . $original_form->ID;
 
@@ -973,7 +965,7 @@ class MailsterBlockForms {
 			$background = $form_block['attrs']['background'];
 
 			$custom_styles['::before'] = array(
-				'content:"";position: absolute;background-repeat: no-repeat;top: 0;left: 0;bottom: 0;right: 0;',
+				'content:"";position: absolute;top: 0;left: 0;bottom: 0;right: 0;',
 				'background-image:url(' . $background['image'] . ')',
 				'opacity:' . $background['opacity'] . '%',
 				'background-size:' . $background['size'],
@@ -1089,6 +1081,14 @@ class MailsterBlockForms {
 		if ( ! $is_backend ) {
 			// update_post_meta( $original_form->ID, '_cached', $html, true );
 		}
+
+		$inject = '';
+		// $inject .= json_encode( $args );
+		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $args ) . '</script>';
+		$inject .= '<input name="_formid" type="hidden" value="' . esc_attr( $original_form->ID ) . '">' . "\n";
+		$inject .= '<input name="_timestamp" type="hidden" value="' . esc_attr( time() ) . '">' . "\n";
+
+		$html = str_replace( '</form>', $inject . '</form>', $html );
 
 		return ( $html );
 

@@ -182,7 +182,7 @@ const ModalContent = (props) => {
 
 	return (
 		<div className="preview-pane-grid-wrap">
-			<Grid columns={2}>
+			<Flex columns={2}>
 				<div className="preview-pane">
 					<div
 						className="interface-interface-skeleton__header"
@@ -193,33 +193,35 @@ const ModalContent = (props) => {
 							label="Options"
 							className="preview-pane-toolbar widefat"
 						>
-							<ToolbarGroup>
-								<ToolbarButton
-									icon={desktop}
-									label="Edit"
-									isDisabled={device == 'desktop' || !url}
-									onClick={() => setDevice('desktop')}
-								/>
-								<ToolbarButton
-									icon={tablet}
-									label="Edit"
-									isDisabled={device == 'tablet' || !url}
-									onClick={() => setDevice('tablet')}
-								/>
-								<ToolbarButton
-									icon={mobile}
-									label="More"
-									isDisabled={device == 'mobile' || !url}
-									onClick={() => setDevice('mobile')}
-								/>
-							</ToolbarGroup>
-							<ToolbarGroup className="preview-pane-url">
+							<ToolbarButton
+								icon={desktop}
+								label="Edit"
+								isDisabled={device == 'desktop' || !url}
+								isPressed={device == 'desktop'}
+								onClick={() => setDevice('desktop')}
+							/>
+							<ToolbarButton
+								icon={tablet}
+								label="Edit"
+								isDisabled={device == 'tablet' || !url}
+								isPressed={device == 'tablet'}
+								onClick={() => setDevice('tablet')}
+							/>
+							<ToolbarButton
+								icon={mobile}
+								label="More"
+								isDisabled={device == 'mobile' || !url}
+								isPressed={device == 'mobile'}
+								onClick={() => setDevice('mobile')}
+							/>
+
+							<div className="preview-pane-url">
 								<TextControl
 									className="widefat"
 									value={displayUrl}
 									readOnly
 								/>
-							</ToolbarGroup>
+							</div>
 							<ToolbarButton
 								icon={update}
 								label="reload"
@@ -300,7 +302,7 @@ const ModalContent = (props) => {
 						</PanelRow>
 					</BaseControl>
 				</div>
-			</Grid>
+			</Flex>
 		</div>
 	);
 };
