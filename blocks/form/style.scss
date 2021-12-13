@@ -13,10 +13,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	opacity: 0;
-	display: flex;
-	visibility: hidden;
-	transition: visibility 0s, opacity 0.5s linear;
+	display: none;
 	pointer-events: none;
 	justify-content: center;
 	z-index: 100000;
@@ -52,12 +49,11 @@
 .mailster-block-form-type-popup {
 	justify-content: center;
 	align-items: center;
-	background-color: rgba(0, 0, 0, 0.5);
+	__background-color: rgba(0, 0, 0, 0.5);
 }
 .mailster-block-form-type-popup.active {
 	pointer-events: inherit;
-	visibility: visible;
-	opacity: 1;
+	display: flex;
 }
 .mailster-block-form-type-bar.active {
 	pointer-events: inherit;
@@ -191,6 +187,27 @@ body::before {
 	}
 }
 .mailster-block-form {
+	.mailster-block-form-close {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 25px;
+		height: 25px;
+		transition: opacity 0.2s;
+		transform: translate(0%, -100%);
+		fill: #fff;
+		stroke-width: 1em;
+		padding: 2px;
+		stroke: #000;
+		opacity: 0.7;
+		z-index: 1000;
+		background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 52.1c54.9 0 106.1 21.4 144.3 59.6 38.2 39.1 59.6 90.3 59.6 144.3s-21.4 106.1-59.6 144.3c-39.1 38.2-90.3 59.6-144.3 59.6s-106.1-21.4-144.3-59.6C73.5 361.2 52.1 310 52.1 256s21.4-106.1 59.6-144.3c38.2-39.1 89.4-59.6 144.3-59.6M256 0C114.5 0 0 114.5 0 256s114.5 256 256 256 256-114.5 256-256S397.5 0 256 0z" /><path d="m384.5 348.2-36.3 36.3-92.2-93.1-92.2 93.1-35.3-36.3 92.1-92.2-92.1-92.2 35.3-35.3 92.2 92.1 92.2-92.1 36.3 35.3-93.1 92.2z" /></svg>');
+		animation: mailster-showlate 1.5s 1 linear;
+	}
+
+	.mailster-block-form-close:hover {
+		opacity: 1;
+	}
 	.mailster-block-form-info {
 		height: 0px;
 		transition: all 0.2s;
@@ -323,4 +340,178 @@ body::before {
 }
 .mailster-block-form.wp-block-mailster-form-wrapper.loading {
 	opacity: 0.4;
+}
+
+.wp-block-mailster-form-outside-wrapper.has-animation {
+	animation: mailster-fadein 0.2s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-fadein
+	.mailster-block-form {
+	animation: mailster-fadein 1s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-shake
+	.mailster-block-form {
+	animation: mailster-shake 1s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-heartbeat
+	.mailster-block-form {
+	animation: mailster-heartbeat 1.3s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-swing
+	.mailster-block-form {
+	transform-origin: top center;
+	animation: mailster-swing 1s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-tada
+	.mailster-block-form {
+	animation: mailster-tada 1s 1 ease-in-out;
+}
+.wp-block-mailster-form-outside-wrapper.has-animation.animation-wobble
+	.mailster-block-form {
+	animation: mailster-wobble 1s 1 ease-in-out;
+}
+
+@keyframes mailster-fadein {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes mailster-showlate {
+	0%,
+	95% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes mailster-shake {
+	0% {
+		transform: translateX(0);
+	}
+
+	6.5% {
+		transform: translateX(-6px) rotateY(-9deg);
+	}
+
+	18.5% {
+		transform: translateX(5px) rotateY(7deg);
+	}
+
+	31.5% {
+		transform: translateX(-3px) rotateY(-5deg);
+	}
+
+	43.5% {
+		transform: translateX(2px) rotateY(3deg);
+	}
+
+	50% {
+		transform: translateX(0);
+	}
+}
+
+@keyframes mailster-swing {
+	20% {
+		transform: rotate3d(0, 0, 1, 15deg);
+	}
+
+	40% {
+		transform: rotate3d(0, 0, 1, -10deg);
+	}
+
+	60% {
+		transform: rotate3d(0, 0, 1, 5deg);
+	}
+
+	80% {
+		transform: rotate3d(0, 0, 1, -5deg);
+	}
+
+	to {
+		transform: rotate3d(0, 0, 1, 0deg);
+	}
+}
+@keyframes mailster-heartbeat {
+	0% {
+		transform: scale(1);
+	}
+
+	14% {
+		transform: scale(1.1);
+	}
+
+	28% {
+		transform: scale(1);
+	}
+
+	42% {
+		transform: scale(1.1);
+	}
+
+	70% {
+		transform: scale(1);
+	}
+}
+@keyframes mailster-tada {
+	from {
+		transform: scale3d(1, 1, 1);
+	}
+
+	10%,
+	20% {
+		transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+	}
+
+	30%,
+	50%,
+	70%,
+	90% {
+		transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+	}
+
+	40%,
+	60%,
+	80% {
+		transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+	}
+
+	to {
+		transform: scale3d(1, 1, 1);
+	}
+}
+@keyframes mailster-wobble {
+	from {
+		transform: translate3d(0, 0, 0);
+	}
+
+	15% {
+		transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+	}
+
+	30% {
+		transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+	}
+
+	45% {
+		transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+	}
+
+	60% {
+		transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+	}
+
+	75% {
+		transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+	}
+
+	to {
+		transform: translate3d(0, 0, 0);
+	}
 }

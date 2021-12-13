@@ -67,7 +67,7 @@ import PlacementSettingsTriggers from './PlacementSettingsTriggers';
 const ModalContent = (props) => {
 	const { setOpen, placements, meta, initialType } = props;
 
-	const [type, setSection] = useState(initialType);
+	const [type, setType] = useState(initialType);
 	const [url, setUrl] = useState('');
 	const [displayUrl, setDisplayUrl] = useState('');
 	const [urlLoggedIn, setUrlLoggedIn] = useState(false);
@@ -76,24 +76,25 @@ const ModalContent = (props) => {
 
 	const [currentPage, setCurrentPage] = useState(false);
 
-	const placement_options = type ? meta['placement_' + type] || {} : [];
+	const options = meta['placement_' + type] || {};
+	const isOther = type == 'other';
 
-	const typeActive = meta.placements.includes(type);
+	const typeActive = meta.placements.includes(type) || isOther;
 
-	const categories = placement_options.category || undefined;
-	const tags = placement_options.tags || undefined;
-	const all = placement_options.all;
-
-	const formId = useSelect(
-		(select) => select('core/editor').getCurrentPostId(),
-		[]
-	);
+	const categories = options.category || undefined;
+	const tags = options.tags || undefined;
+	const all = options.all;
 
 	const postQuery = {
 		per_page: 1,
 		categories: !all ? categories : undefined,
 		tags: !all ? tags : undefined,
 	};
+
+	const formId = useSelect(
+		(select) => select('core/editor').getCurrentPostId(),
+		[]
+	);
 
 	const posts = useSelect((select) => {
 		return select('core').getEntityRecords('postType', 'post', postQuery);
@@ -107,6 +108,8 @@ const ModalContent = (props) => {
 		]);
 	});
 	const setUrlDebounce = useDebounce(setUrl, 1000);
+
+	console.warn(siteUrl, isOther);
 
 	useEffect(() => {
 		if (!posts) {
@@ -124,20 +127,27 @@ const ModalContent = (props) => {
 
 		const post = posts[0];
 
-		const id = placement_options.posts?.length
-			? placement_options.posts[0]
-			: post.id;
+		const id = options.posts?.length ? options.posts[0] : post.id;
 
-		setDisplayUrl(post.link);
+		const newUrl = isOther
+			? siteUrl + '/wp-content/plugins/mailster/form.php?id=' + formId
+			: post.link;
 
-		setUrlDebounce(mapUrl(siteUrl, id));
-	}, [posts, placement_options, urlLoggedIn]);
+		setDisplayUrl(newUrl);
 
+		setUrlDebounce(mapUrl(newUrl, id));
+	}, [posts, options, urlLoggedIn]);
+
+	function setOptions(options) {
+		var newOptions = { ...meta['placement_' + type] };
+		newOptions = { ...newOptions, ...options };
+		setMeta({ ['placement_' + type]: newOptions });
+	}
 	function mapUrl(url, postId) {
 		const myurl = new URL(url);
 		//remove them from the options to prevent reloads
 		const { post_types, posts, category, post_tag, ...options } =
-			placement_options;
+			meta['placement_' + type] || {};
 
 		const obj = {
 			type: type,
@@ -149,8 +159,10 @@ const ModalContent = (props) => {
 				trigger_inactive: 4,
 			}, //all => display always as its a preview
 			form_id: formId,
-			post_content: select('core/editor').getEditedPostContent(),
+			//post_content: select('core/editor').getEditedPostContent(),
 		};
+
+		console.warn(obj);
 
 		postId && myurl.searchParams.set('p', postId);
 		myurl.searchParams.set('mailster-block-preview', JSON.stringify(obj));
@@ -158,7 +170,7 @@ const ModalContent = (props) => {
 		return myurl.toString();
 	}
 
-	function displayIframe(event) {
+	function onIframeLoaded(event) {
 		const form = event.target.contentWindow.document.querySelector(
 			'.wp-block-mailster-form-outside-wrapper-' + formId
 		);
@@ -171,6 +183,8 @@ const ModalContent = (props) => {
 			});
 		}
 	}
+
+	console.warn(type);
 
 	function reload() {
 		const currentUrl = url;
@@ -240,9 +254,9 @@ const ModalContent = (props) => {
 						>
 							<iframe
 								src={url}
-								onLoad={displayIframe}
+								onLoad={onIframeLoaded}
 								id="preview-pane-iframe"
-								sandbox="allow-scripts allow-same-origin"
+								_sandbox="allow-scripts allow-same-origin"
 								hidden={!url}
 							/>
 						</div>
@@ -273,9 +287,9 @@ const ModalContent = (props) => {
 								opened={type == placement.type}
 								onToggle={(v) => {
 									if (v) {
-										setSection(placement.type);
+										setType(placement.type);
 									} else {
-										setSection(false);
+										setType(false);
 									}
 								}}
 							>

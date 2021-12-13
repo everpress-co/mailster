@@ -53,29 +53,7 @@ import {
  */
 
 export default function PlacementSettingsTriggers(props) {
-	const { meta, setMeta, type, image, title } = props;
-	const { placements } = meta;
-
-	const options = meta['placement_' + type] || {};
-	const triggers = options.triggers || [];
-
-	function setOptions(options) {
-		var newOptions = { ...meta['placement_' + type] };
-		newOptions = { ...newOptions, ...options };
-		setMeta({ ['placement_' + type]: newOptions });
-	}
-
-	function setTriggers(trigger, add) {
-		var newTriggers = [...triggers];
-		if (add) {
-			newTriggers.push(trigger);
-		} else {
-			newTriggers = newTriggers.filter((el) => {
-				return el != trigger;
-			});
-		}
-		setOptions({ triggers: newTriggers });
-	}
+	const { options, setOptions, triggers, setTriggers } = props;
 
 	return (
 		<>
@@ -218,21 +196,6 @@ export default function PlacementSettingsTriggers(props) {
 						"Mailster will show this popup once the user tries to move away from the site. This doens't work on mobile.",
 						'mailster'
 					)}
-				/>
-			</PanelRow>
-			<PanelRow>
-				<RangeControl
-					className="widefat"
-					label="Width"
-					value={options.width}
-					allowReset={true}
-					onChange={(val) =>
-						setOptions({
-							width: val,
-						})
-					}
-					min={10}
-					max={100}
 				/>
 			</PanelRow>
 		</>

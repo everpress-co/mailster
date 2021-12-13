@@ -3,34 +3,101 @@
 
 	var forms = document.querySelectorAll('.mailster-block-form');
 	var cookieTime = 10;
+	var timeouts = [];
+
+	var triggerMethods = {
+		delay: function (form, placement) {
+			timeouts[placement.identifier].push(
+				setTimeout(function () {
+					openForm(form, placement);
+				}, placement.trigger_delay * 1000)
+			);
+		},
+		inactive: function (form, placement) {
+			var timeoutIndex = timeouts.length;
+			function resetTimer() {
+				clearTimeout(timeouts[timeoutIndex]);
+				timeouts[timeoutIndex] = setTimeout(function () {
+					openForm(form, placement);
+				}, placement.trigger_inactive * 1000 - 500);
+			}
+
+			[
+				'mousedown',
+				'mousemove',
+				'keypress',
+				'scroll',
+				'touchstart',
+			].forEach(function (name) {
+				window.addEventListener(name, debounce(resetTimer, 500), true);
+			});
+			resetTimer();
+		},
+		scroll: function (form, placement) {
+			var el = document.documentElement,
+				body = document.body,
+				st = 'scrollTop',
+				sh = 'scrollHeight',
+				t = placement.trigger_scroll / 100,
+				triggered = false;
+
+			function getScrollPercent() {
+				return (
+					(el[st] || body[st]) /
+					((el[sh] || body[sh]) - el.clientHeight)
+				);
+			}
+
+			function check() {
+				if (!triggered && getScrollPercent() >= t) {
+					openForm(form, placement);
+					triggered = true;
+				}
+			}
+
+			['scroll', 'touchstart'].forEach(function (name) {
+				window.addEventListener(name, debounce(check, 50), true);
+			});
+		},
+		click: function (form, placement) {
+			var elements = document.querySelectorAll(placement.trigger_click);
+			Array.prototype.forEach.call(elements, function (element, i) {
+				element.addEventListener('click', function (event) {
+					openForm(form, placement);
+				});
+			});
+		},
+		exit: function (form, placement) {
+			timeouts[placement.identifier].push(
+				setTimeout(
+					function () {
+						document.addEventListener('mouseout', function (event) {
+							if (!event.toElement && !event.relatedTarget) {
+								openForm(form, placement);
+							}
+						});
+					},
+					placement.isPreview ? 0 : 3000
+				)
+			);
+		},
+	};
 
 	Array.prototype.forEach.call(forms, function (form, i) {
 		var placement = form.querySelector('.mailster-block-form-data');
 
 		if (placement) {
 			placement = JSON.parse(placement.textContent);
-			if (placement.trigger) {
-				console.warn(forms, placement, placement.triggers);
-				// trigger only if never displayed or already 60 seconds ago
-				if (!hasBeendShown(placement)) {
-					if (-1 !== placement.triggers.indexOf('delay')) {
-						initDelay(form, placement);
-					}
-					if (-1 !== placement.triggers.indexOf('inactive')) {
-						initInactive(form, placement);
-					}
-					if (-1 !== placement.triggers.indexOf('scroll')) {
-						initScroll(form, placement);
-					}
-					if (-1 !== placement.triggers.indexOf('click')) {
-						initClick(form, placement);
-					}
-					if (-1 !== placement.triggers.indexOf('exit')) {
-						initExit(form, placement);
-					}
-				}
+			if (placement.triggers) {
+				timeouts[placement.identifier] = [];
+				placement.triggers.forEach(function (trigger) {
+					triggerMethods[trigger] &&
+						triggerMethods[trigger].call(this, form, placement);
+				});
 			}
 		}
+
+		add(form, 'submit');
 
 		form.addEventListener('submit', function (event) {
 			event.preventDefault();
@@ -138,31 +205,62 @@
 		});
 	});
 
+	function hasBeendShown(placement, delay) {
+		if (placement.isPreview) return false;
+		return !(
+			get(placement.identifier, 0) <
+			+new Date() - (delay ? delay : cookieTime) * 1000
+		);
+	}
+
 	function openForm(form, placement) {
 		if (!hasBeendShown(placement)) {
-			var wrap = form.closest('.wp-block-mailster-form-outside-wrapper');
+			var wrap = form.closest('.wp-block-mailster-form-outside-wrapper'),
+				closeButton = wrap.querySelector('.mailster-block-form-close');
 
-			wrap.addEventListener(
-				'click',
-				function (event) {
-					closeForm(form, identifier);
-				},
-				{
-					once: true,
-				}
-			);
-			form.addEventListener('click', function (event) {
-				event.stopPropagation();
-			});
-			wrap.classList.add('active');
-			//form.querySelector('input.input').focus();
+			if (wrap && !wrap.classList.contains('active')) {
+				setTimeout(function () {
+					wrap.addEventListener(
+						'click',
+						function (event) {
+							closeForm(form, placement);
+						},
+						{
+							once: true,
+						}
+					);
+				}, 2000);
+				closeButton.addEventListener(
+					'click',
+					function (event) {
+						closeForm(form, placement);
+					},
+					{
+						once: true,
+					}
+				);
+				document.addEventListener('keyup', function (event) {
+					if (event.keyCode == 27) {
+						closeForm(form, placement);
+					}
+					console.warn(event);
+				});
+				form.addEventListener('click', function (event) {
+					event.stopPropagation();
+				});
+				wrap.classList.add('active');
+				//form.querySelector('input.input').focus();
+			}
 		}
 	}
 
-	function closeForm(form, identifier) {
+	function closeForm(form, placement) {
 		var wrap = form.closest('.wp-block-mailster-form-outside-wrapper');
 		wrap.classList.remove('active');
-		set(identifier, +new Date());
+		set(placement.identifier, +new Date());
+		timeouts[placement.identifier].forEach(function (timeout) {
+			clearTimeout(timeout);
+		});
 	}
 
 	function set(key, value) {
@@ -194,91 +292,6 @@
 				return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]);
 			})
 			.join('&');
-	}
-
-	function initDelay(form, placement) {
-		return setTimeout(function () {
-			openForm(form, placement);
-		}, placement.trigger_delay * 1000);
-	}
-
-	function initInactive(form, placement) {
-		var timeout;
-		function resetTimer() {
-			clearTimeout(timeout);
-			timeout = setTimeout(function () {
-				openForm(form, placement);
-			}, placement.trigger_inactive * 1000);
-		}
-
-		['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(
-			function (name) {
-				window.addEventListener(
-					name,
-					debounce(resetTimer, 200, true),
-					true
-				);
-			}
-		);
-		resetTimer();
-	}
-
-	function initScroll(form, placement) {
-		var el = document.documentElement,
-			body = document.body,
-			st = 'scrollTop',
-			sh = 'scrollHeight',
-			t = placement.trigger_scroll / 100,
-			triggered = false;
-
-		function getScrollPercent() {
-			return (
-				(el[st] || body[st]) / ((el[sh] || body[sh]) - el.clientHeight)
-			);
-		}
-
-		function check() {
-			if (!triggered && getScrollPercent() >= t) {
-				openForm(form, placement);
-				triggered = true;
-			}
-		}
-
-		['scroll', 'touchstart'].forEach(function (name) {
-			window.addEventListener(name, debounce(check, 100), true);
-		});
-
-		return timeout;
-	}
-
-	function initClick(form, placement) {
-		var elements = document.querySelectorAll(placement.trigger_click);
-		Array.prototype.forEach.call(elements, function (element, i) {
-			element.addEventListener('click', function (event) {
-				openForm(form, placement);
-			});
-		});
-	}
-
-	function initExit(form, placement) {
-		setTimeout(
-			function () {
-				document.addEventListener('mouseout', function (event) {
-					if (!event.toElement && !event.relatedTarget) {
-						openForm(form, placement);
-					}
-				});
-			},
-			placement.isPreview ? 0 : 5000
-		);
-	}
-
-	function hasBeendShown(placement, delay) {
-		if (placement.isPreview) return false;
-		return !(
-			get(placement.identifier, 0) <
-			+new Date() - (delay ? delay : cookieTime) * 1000
-		);
 	}
 
 	function debounce(func, wait, immediate) {

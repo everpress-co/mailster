@@ -77,16 +77,7 @@ import {
  */
 
 export default function PlacementSettingsContent(props) {
-	const { meta, setMeta, type, image, title } = props;
-	const { placements } = meta;
-
-	const options = meta['placement_' + type];
-
-	function setOptions(options) {
-		var newOptions = { ...meta['placement_' + type] };
-		newOptions = { ...newOptions, ...options };
-		setMeta({ ['placement_' + type]: newOptions });
-	}
+	const { options, setOptions, triggers, setTriggers } = props;
 
 	return (
 		<ItemGroup isBordered={false} isSeparated size="small">

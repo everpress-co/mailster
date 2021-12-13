@@ -76,14 +76,6 @@ export default function PlacementOption(props) {
 	const { meta, setMeta, setOpen, type, image, title } = props;
 	const { placements } = meta;
 
-	const options = meta['placement_' + type];
-
-	function setOptions(options) {
-		var newOptions = { ...meta['placement_' + type] };
-		newOptions = { ...newOptions, ...options };
-		setMeta({ ['placement_' + type]: newOptions });
-	}
-
 	const className = ['placement-option'];
 
 	placements.includes(type) && className.push('enabled');

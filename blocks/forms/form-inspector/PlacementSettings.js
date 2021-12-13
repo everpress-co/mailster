@@ -111,6 +111,34 @@ export default function PlacementSettings(props) {
 		setMeta({ placements: newPlacements });
 	}
 
+	const triggers = options.triggers || [];
+
+	function setTriggers(trigger, add) {
+		var newTriggers = [...triggers];
+		if (add) {
+			newTriggers.push(trigger);
+		} else {
+			newTriggers = newTriggers.filter((el) => {
+				return el != trigger;
+			});
+		}
+		setOptions({ triggers: newTriggers });
+	}
+
+	const closeMethods = options.close || [];
+
+	function setCloseMethods(method, add) {
+		var newMethods = [...closeMethods];
+		if (add) {
+			newMethods.push(method);
+		} else {
+			newMethods = newMethods.filter((el) => {
+				return el != method;
+			});
+		}
+		setOptions({ close: newMethods });
+	}
+
 	const closeModal = () => {};
 
 	return (
@@ -215,11 +243,72 @@ export default function PlacementSettings(props) {
 								</ItemGroup>
 							)}
 							{'content' == type && (
-								<PlacementSettingsContent {...props} />
+								<PlacementSettingsContent
+									{...props}
+									setOptions={setOptions}
+									options={options}
+									setTriggers={setTriggers}
+									triggers={triggers}
+								/>
 							)}
 							{'content' != type && (
-								<PlacementSettingsTriggers {...props} />
+								<>
+									<PlacementSettingsTriggers
+										{...props}
+										setOptions={setOptions}
+										options={options}
+										setTriggers={setTriggers}
+										triggers={triggers}
+									/>
+									<ItemGroup isBordered={false} size="small">
+										<SelectControl
+											label={__('Animation', 'mailster')}
+											value={options.animation}
+											onChange={(val) => {
+												setOptions({ animation: val });
+											}}
+										>
+											<option value="fadein">
+												{__('FadeIn', 'mailster')}
+											</option>
+											<option value="shake">
+												{__('Shake', 'mailster')}
+											</option>
+											<option value="swing">
+												{__('Swing', 'mailster')}
+											</option>
+											<option value="heartbeat">
+												{__('Heart Beat', 'mailster')}
+											</option>
+											<option value="tada">
+												{__('Tada', 'mailster')}
+											</option>
+											<option value="wobble">
+												{__('Wobble', 'mailster')}
+											</option>
+										</SelectControl>
+									</ItemGroup>
+								</>
 							)}
+							<PanelRow>
+								<RangeControl
+									className="widefat"
+									label={__('Width', 'mailster')}
+									help={__(
+										'Set the with of your form in %',
+										'mailster'
+									)}
+									value={options.width}
+									allowReset={true}
+									onChange={(val) =>
+										setOptions({
+											width: val,
+										})
+									}
+									min={10}
+									max={100}
+								/>
+							</PanelRow>
 						</>
 					)}
 				</>
