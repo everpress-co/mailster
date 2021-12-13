@@ -36,7 +36,13 @@ import {
 
 import { brush } from '@wordpress/icons';
 
-import { select, dispatch, subscribe, useDispatch } from '@wordpress/data';
+import {
+	useSelect,
+	select,
+	useDispatch,
+	dispatch,
+	subscribe,
+} from '@wordpress/data';
 import {
 	Fragment,
 	Component,
@@ -167,6 +173,16 @@ export default function Edit(props) {
 	let { css } = attributes;
 	let backgroundStyles = '';
 	let inputStyle = '';
+
+	const [siteUrl] = useEntityProp('root', 'site', 'url');
+
+	useEffect(() => {
+		if (!siteUrl) return;
+		const actionUrl = siteUrl + '/wp-json/mailster/v1/subscribe';
+
+		if (actionUrl != attributes.action)
+			setAttributes({ action: actionUrl });
+	}, [siteUrl]);
 
 	const [meta, setMeta] = useEntityProp(
 		'postType',

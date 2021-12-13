@@ -856,10 +856,13 @@ class MailsterBlockForms {
 		$form = get_post( $form );
 
 		if ( get_post_type( $form ) != 'newsletter_form' ) {
-			// return '';
+			return '';
 		}
 
 		$options['id'] = $form->ID;
+		if ( 'the_content' == current_filter() && isset( $options['triggers'] ) ) {
+			unset( $options['triggers'] );
+		}
 
 		$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );
 
@@ -1081,10 +1084,21 @@ class MailsterBlockForms {
 		if ( ! $is_backend ) {
 			// update_post_meta( $original_form->ID, '_cached', $html, true );
 		}
+		$form_args = array(
+			'id'         => $args['id'],
+			'identifier' => $args['identifier'],
+		);
 
-		$inject = '';
-		// $inject .= json_encode( $args );
-		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $args ) . '</script>';
+		if ( isset( $args['triggers'] ) ) {
+			$form_args['trigger'] = $args['triggers'][0];
+			foreach ( $args['triggers'] as $trigger ) {
+				$form_args[ 'trigger_' . $trigger ] = $args[ 'trigger_' . $trigger ];
+			}
+		}
+
+		$inject  = '';
+		$inject .= json_encode( $form_args );
+		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $form_args ) . '</script>';
 		$inject .= '<input name="_formid" type="hidden" value="' . esc_attr( $original_form->ID ) . '">' . "\n";
 		$inject .= '<input name="_timestamp" type="hidden" value="' . esc_attr( time() ) . '">' . "\n";
 

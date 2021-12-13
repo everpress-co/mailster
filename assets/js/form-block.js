@@ -1,8 +1,6 @@
 (function () {
 	'use strict';
 
-	console.warn('FORM SCRIPT LOADED!');
-
 	var forms = document.querySelectorAll('.mailster-block-form');
 	var cookieTime = 10;
 
@@ -11,12 +9,10 @@
 
 		if (placement) {
 			placement = JSON.parse(placement.textContent);
-			if (placement.triggers) {
+			if (placement.trigger) {
+				console.warn(forms, placement, placement.triggers);
 				// trigger only if never displayed or already 60 seconds ago
-				if (
-					placement.isPreview ||
-					!hasBeendShown(placement.identifier)
-				) {
+				if (!hasBeendShown(placement)) {
 					if (-1 !== placement.triggers.indexOf('delay')) {
 						initDelay(form, placement);
 					}
@@ -116,7 +112,6 @@
 						info.classList.add('error');
 					}, 10);
 				} else {
-					console.warn('handlerResponse', response, message);
 					// for css transition use timeout
 					infoSuccess.innerHTML = message;
 					setTimeout(function () {
@@ -144,8 +139,8 @@
 	});
 
 	function openForm(form, placement) {
-		if (placement.isPreview || !hasBeendShown(placement.identifier)) {
-			var wrap = form.closest('.wp-block-mailster-form-outer-wrapper');
+		if (!hasBeendShown(placement)) {
+			var wrap = form.closest('.wp-block-mailster-form-outside-wrapper');
 
 			wrap.addEventListener(
 				'click',
@@ -165,7 +160,7 @@
 	}
 
 	function closeForm(form, identifier) {
-		var wrap = form.closest('.wp-block-mailster-form-outer-wrapper');
+		var wrap = form.closest('.wp-block-mailster-form-outside-wrapper');
 		wrap.classList.remove('active');
 		set(identifier, +new Date());
 	}
@@ -278,9 +273,10 @@
 		);
 	}
 
-	function hasBeendShown(identifier, delay) {
+	function hasBeendShown(placement, delay) {
+		if (placement.isPreview) return false;
 		return !(
-			get(identifier, 0) <
+			get(placement.identifier, 0) <
 			+new Date() - (delay ? delay : cookieTime) * 1000
 		);
 	}

@@ -29,7 +29,7 @@ export default function save(props) {
 	return (
 		<form
 			method="post"
-			action="/wp-json/mailster/v1/subscribe"
+			action={attributes.action}
 			novalidate
 			style={{
 				...{ color: attributes.color },

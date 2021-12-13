@@ -143,7 +143,6 @@ button[name='link'] {
 	iframe {
 	width: 800px;
 	height: 580px;
-	transform: scale(0.8);
 	box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--wp-admin-theme-color);
 }
 .preview-modal
@@ -153,7 +152,6 @@ button[name='link'] {
 	iframe {
 	width: 400px;
 	height: 680px;
-	transform: scale(0.8);
 	box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--wp-admin-theme-color);
 }
 .preview-modal .components-flex .preview-pane .preview-pane-toolbar {

@@ -14,6 +14,12 @@
 		"multiple": false
 	},
 	"attributes": {
+		"action": {
+			"type": "string",
+			"source": "attribute",
+			"selector": "form",
+			"attribute": "action"
+		},
 		"color": {
 			"type": "string"
 		},
