@@ -19,8 +19,6 @@ const publicentry = glob.sync('./blocks/**/public.js').reduce((acc, p) => {
 	return acc;
 }, {});
 
-console.warn(publicentry);
-
 const soundPluginOptions = {
 	sounds: {
 		warning: '/System/Library/Sounds/Basso.aiff',

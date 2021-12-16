@@ -103,7 +103,8 @@ class MailsterBlockForms {
 
 			$this->forms[ $this->preview_data['type'] ][ $this->preview_data['form_id'] ] = $options;
 
-			wp_enqueue_script( 'mailster-form-block-preview', MAILSTER_URI . 'assets/js/form-block-preview' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION );
+			$suffix = SCRIPT_DEBUG ? '' : '.min';
+			wp_enqueue_script( 'mailster-form-block-preview', MAILSTER_URI . 'assets/js/form-block-preview' . $suffix . '.js', array( 'wp-api-fetch', 'wp-polyfill', 'jquery' ), MAILSTER_VERSION );
 			// wp_register_style( 'mailster-form-block', MAILSTER_URI . 'build/style-form.css', array(), MAILSTER_VERSION );
 
 		} elseif ( $forms = $this->query_forms() ) {
@@ -589,7 +590,6 @@ class MailsterBlockForms {
 						'trigger_click'    => '',
 						'trigger_scroll'   => 66,
 						'display'          => 'start',
-						'animation'        => 'fadein',
 					),
 					'show_in_rest' => array(
 						'schema' => array(
@@ -638,6 +638,9 @@ class MailsterBlockForms {
 									'type' => 'string',
 								),
 								'width'            => array(
+									'type' => 'integer',
+								),
+								'padding'          => array(
 									'type' => 'integer',
 								),
 								'animation'        => array(
@@ -871,9 +874,14 @@ class MailsterBlockForms {
 			unset( $options['triggers'] );
 		}
 
-		$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );
+		if ( isset( $this->preview_data ) ) {
 
-		$html = render_block( $block[0] );
+			$html = '<div class="wp-block-mailster-form-outside-wrapper-' . $options['id'] . ' wp-block-mailster-form-outside-wrapper-placeholder">' . esc_html__( 'Loading your form...', 'mailster' ) . '</div>';
+		} else {
+			$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );
+
+			$html = render_block( $block[0] );
+		}
 
 		return $html;
 	}
@@ -921,9 +929,19 @@ class MailsterBlockForms {
 		$blockattributes = $block->attributes;
 		$uniqid          = substr( uniqid(), 8, 5 );
 
-		$form_block = $this->get_form_block( $form );
-		$output     = render_block( $form_block );
-		$inject     = '';
+		// in preview mode check for content here
+		$request_body = file_get_contents( 'php://input' );
+		if ( ! empty( $request_body ) ) {
+			$data       = json_decode( $request_body, true );
+			$blocks     = parse_blocks( $data['post_content'] );
+			$args       = wp_parse_args( $data['args'], $args );
+			$form_block = $blocks[0];
+		} else {
+			$form_block = $this->get_form_block( $form );
+		}
+
+		$output = render_block( $form_block );
+		$inject = '';
 
 		$stylesheets = array();
 		if ( $is_backend ) {
@@ -969,6 +987,9 @@ class MailsterBlockForms {
 		}
 		if ( isset( $args['width'] ) ) {
 			$custom_styles[''][] = 'width:' . $args['width'] . 'vw';
+		}
+		if ( isset( $args['padding'] ) ) {
+			$custom_styles[''][] = 'padding:' . $args['padding'] . 'em';
 		}
 
 		$inject .= '<a class="mailster-block-form-close" href="#"></a>';
@@ -1076,7 +1097,7 @@ class MailsterBlockForms {
 			$output = '<style>' . $embeded_style . '</style>' . $output;
 		}
 
-		$output = $uniqid . '<div class="' . implode( ' ', $args['classes'] ) . '" role="dialog" id="dialog1" aria-labelledby="dialog1_label" aria-modal="true">' . $output . '</div>';
+		$output = '<div class="' . implode( ' ', $args['classes'] ) . '" role="dialog" id="dialog1" aria-labelledby="dialog1_label" aria-modal="true">' . $output . '</div>';
 
 		$htmldoc->loadHTML( $output );
 
@@ -1145,12 +1166,8 @@ class MailsterBlockForms {
 
 	private function get_form_block( $form ) {
 
-		if ( isset( $this->preview_data['post_content'] ) ) {
-			$content = $this->preview_data['post_content'];
-		} else {
-			$form    = get_post( $form );
-			$content = $form->post_content;
-		}
+		$form    = get_post( $form );
+		$content = $form->post_content;
 
 		$parsed = parse_blocks( $content );
 		foreach ( $parsed as $innerblock ) {

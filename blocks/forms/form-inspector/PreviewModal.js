@@ -43,7 +43,13 @@ import {
 	__experimentalGrid as Grid,
 } from '@wordpress/components';
 
-import { Fragment, Component, useState, useEffect } from '@wordpress/element';
+import {
+	Fragment,
+	Component,
+	useState,
+	useEffect,
+	useRef,
+} from '@wordpress/element';
 import {
 	useSelect,
 	select,
@@ -79,6 +85,8 @@ const ModalContent = (props) => {
 	const options = meta['placement_' + type] || {};
 	const isOther = type == 'other';
 
+	const myIframe = useRef(null);
+
 	const typeActive = meta.placements.includes(type) || isOther;
 
 	const categories = options.category || undefined;
@@ -96,20 +104,26 @@ const ModalContent = (props) => {
 		[]
 	);
 
+	const postContent = useSelect((select) => {
+		return select('core/editor').getEditedPostContent();
+	});
+
 	const posts = useSelect((select) => {
 		return select('core').getEntityRecords('postType', 'post', postQuery);
 	});
 
-	const isLoading = useSelect((select) => {
-		return select('core/data').isResolving('core', 'getEntityRecords', [
-			'postType',
-			'post',
-			postQuery,
-		]);
-	});
-	const setUrlDebounce = useDebounce(setUrl, 1000);
+	const [isLoading, setIsLoading] = useState(
+		useSelect((select) => {
+			return select('core/data').isResolving('core', 'getEntityRecords', [
+				'postType',
+				'post',
+				postQuery,
+			]);
+		})
+	);
 
-	console.warn(siteUrl, isOther);
+	const setUrlDebounce = useDebounce(setUrl, 1000);
+	const setPreviewOptionsDebounce = useDebounce(setPreviewOptions, 1000);
 
 	useEffect(() => {
 		if (!posts) {
@@ -138,17 +152,68 @@ const ModalContent = (props) => {
 		setUrlDebounce(mapUrl(newUrl, id));
 	}, [posts, options, urlLoggedIn]);
 
+	useEffect(() => {
+		if (!options || Object.keys(options).length === 0) {
+			return;
+		}
+
+		setIsLoading(true);
+		setPreviewOptions();
+
+		console.warn('options ', options);
+	}, [options]);
+
+	useEffect(() => {
+		window.addEventListener('message', function (event) {
+			var data = JSON.parse(event.data);
+			console.warn(data);
+			setIsLoading(false);
+			const form = myIframe.current.contentWindow.document.querySelector(
+				'.wp-block-mailster-form-outside-wrapper-' + formId
+			);
+
+			if (form && 'content' == type) {
+				form.scrollIntoView({
+					behavior: 'smooth',
+					block: 'center',
+					inline: 'nearest',
+				});
+			}
+		});
+	}, []);
+
 	function setOptions(options) {
 		var newOptions = { ...meta['placement_' + type] };
 		newOptions = { ...newOptions, ...options };
 		setMeta({ ['placement_' + type]: newOptions });
 	}
-	function mapUrl(url, postId) {
-		const myurl = new URL(url);
-		//remove them from the options to prevent reloads
-		const { post_types, posts, category, post_tag, ...options } =
-			meta['placement_' + type] || {};
 
+	console.warn('isLoading', isLoading);
+
+	function mapUrl(url, postId) {
+		const newUrl = new URL(url);
+
+		const { display, pos, tag } = meta['placement_' + type] || {};
+
+		const obj = {
+			type: type,
+			user: urlLoggedIn,
+			options: {
+				all: true, //all => display always as its a preview
+				display: display,
+				pos: pos,
+				tag: tag,
+			},
+			form_id: formId,
+		};
+
+		postId && newUrl.searchParams.set('p', postId);
+		newUrl.searchParams.set('mailster-block-preview', JSON.stringify(obj));
+
+		return newUrl.toString();
+	}
+
+	function setPreviewOptions() {
 		const obj = {
 			type: type,
 			user: urlLoggedIn,
@@ -159,39 +224,21 @@ const ModalContent = (props) => {
 				trigger_inactive: 4,
 			}, //all => display always as its a preview
 			form_id: formId,
-			//post_content: select('core/editor').getEditedPostContent(),
+			post_content: postContent,
 		};
-
-		console.warn(obj);
-
-		postId && myurl.searchParams.set('p', postId);
-		myurl.searchParams.set('mailster-block-preview', JSON.stringify(obj));
-
-		return myurl.toString();
-	}
-
-	function onIframeLoaded(event) {
-		const form = event.target.contentWindow.document.querySelector(
-			'.wp-block-mailster-form-outside-wrapper-' + formId
-		);
-
-		if (form && 'content' == type) {
-			form.scrollIntoView({
-				//behavior: 'smooth',
-				block: 'center',
-				inline: 'nearest',
-			});
+		if (myIframe.current) {
+			setIsLoading(true);
+			myIframe.current.contentWindow.postMessage(
+				JSON.stringify(obj),
+				siteUrl
+			);
 		}
 	}
-
-	console.warn(type);
 
 	function reload() {
 		const currentUrl = url;
 		setUrl('');
-		setTimeout(() => {
-			setUrl(currentUrl);
-		}, 1);
+		setUrlDebounce(currentUrl);
 	}
 
 	return (
@@ -253,9 +300,9 @@ const ModalContent = (props) => {
 							}
 						>
 							<iframe
+								ref={myIframe}
 								src={url}
-								onLoad={onIframeLoaded}
-								id="preview-pane-iframe"
+								onLoad={setPreviewOptionsDebounce}
 								_sandbox="allow-scripts allow-same-origin"
 								hidden={!url}
 							/>

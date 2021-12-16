@@ -268,6 +268,9 @@ export default function PlacementSettings(props) {
 												setOptions({ animation: val });
 											}}
 										>
+											<option value="">
+												{__('None', 'mailster')}
+											</option>
 											<option value="fadein">
 												{__('FadeIn', 'mailster')}
 											</option>
@@ -307,6 +310,26 @@ export default function PlacementSettings(props) {
 									}
 									min={10}
 									max={100}
+								/>
+							</PanelRow>
+							<PanelRow>
+								<RangeControl
+									className="widefat"
+									label={__('Padding', 'mailster')}
+									help={__(
+										'Set the padding of your form in %',
+										'mailster'
+									)}
+									value={options.padding}
+									allowReset={true}
+									onChange={(val) =>
+										setOptions({
+											padding: val,
+										})
+									}
+									initialPosition={0}
+									min={0}
+									max={10}
 								/>
 							</PanelRow>
 						</>
