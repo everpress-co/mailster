@@ -83,7 +83,7 @@ export default function PlacementSettingsContent(props) {
 		<ItemGroup isBordered={false} isSeparated size="small">
 			<Item>
 				<RadioControl
-					selected={options.display}
+					selected={options.display || 'after'}
 					options={[
 						{
 							label: 'Start of content',
@@ -115,13 +115,13 @@ export default function PlacementSettingsContent(props) {
 								min={0}
 								step={1}
 								disabled={options.tag == 'more'}
-								value={options.pos}
+								value={options.pos || 0}
 								labelPosition="edge"
 							/>
 						</FlexItem>
 						<FlexBlock>
 							<SelectControl
-								value={options.tag}
+								value={options.tag || 'p'}
 								onChange={(val) =>
 									setOptions({
 										tag: val,

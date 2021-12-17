@@ -62,6 +62,7 @@ _body::before {
 	width: 50rem;
 	min-height: 5rem;
 	overflow: visible !important;
+	flex-basis: auto;
 
 	.mailster-block-form-info {
 		height: auto;

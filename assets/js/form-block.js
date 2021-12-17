@@ -97,8 +97,6 @@
 			}
 		}
 
-		add(form, 'submit');
-
 		form.addEventListener('submit', function (event) {
 			event.preventDefault();
 
@@ -113,8 +111,6 @@
 				);
 
 			form.classList.remove('has-errors');
-			info.classList.remove('error');
-			info.classList.remove('success');
 			[].forEach.call(
 				document.querySelectorAll('div.mailster-wrapper.error'),
 				function (wrapper) {
@@ -128,8 +124,8 @@
 			fetch(form.getAttribute('action'), {
 				method: 'POST',
 				headers: {
-					//'Content-Type': 'application/json',
-					//'X-WP-Nonce': data.get('_nonce'), // <- here, send the nonce via the header
+					// 'Content-Type': 'application/json',
+					// 'X-WP-Nonce': data.get('_nonce'), // <- here, send the nonce via the header
 				},
 				body: data,
 			})
@@ -153,7 +149,9 @@
 					window.pageYOffset || document.documentElement.scrollTop;
 
 				if (200 !== response.data.status) {
-					if (message && console) console.error(message);
+					if (message && console) {
+						console.error(message);
+					}
 					if (response.data.fields) {
 						form.classList.add('has-errors');
 						Object.keys(response.data.fields).map(function (
@@ -197,7 +195,10 @@
 				}
 
 				if (true || scrollPosition < form.getBoundingClientRect().top) {
-					form.insertBefore(info, form.firstChild);
+					form.insertBefore(
+						info,
+						form.querySelector('.mailster-wrapper')
+					);
 				} else {
 					form.insertBefore(info, form.lastChild);
 				}
@@ -206,7 +207,9 @@
 	});
 
 	function hasBeendShown(placement, delay) {
-		if (placement.isPreview) return false;
+		if (placement.isPreview) {
+			return false;
+		}
 		return !(
 			get(placement.identifier, 0) <
 			+new Date() - (delay ? delay : cookieTime) * 1000
@@ -249,7 +252,7 @@
 					event.stopPropagation();
 				});
 				wrap.classList.add('active');
-				//form.querySelector('input.input').focus();
+				// form.querySelector('input.input').focus();
 			}
 		}
 	}
@@ -276,7 +279,9 @@
 		if (!key) {
 			return store;
 		}
-		if (store[key]) return store[key];
+		if (store[key]) {
+			return store[key];
+		}
 		return fallback;
 	}
 
@@ -303,7 +308,9 @@
 
 			var later = function () {
 				timeout = null;
-				if (!immediate) func.apply(context, args);
+				if (!immediate) {
+					func.apply(context, args);
+				}
 			};
 
 			var callNow = immediate && !timeout;
@@ -312,7 +319,9 @@
 
 			timeout = setTimeout(later, wait);
 
-			if (callNow) func.apply(context, args);
+			if (callNow) {
+				func.apply(context, args);
+			}
 		};
 	}
 })();

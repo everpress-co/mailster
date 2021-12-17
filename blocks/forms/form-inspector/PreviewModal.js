@@ -85,7 +85,7 @@ const ModalContent = (props) => {
 	const options = meta['placement_' + type] || {};
 	const isOther = type == 'other';
 
-	const myIframe = useRef(null);
+	const iframeRef = useRef(null);
 
 	const typeActive = meta.placements.includes(type) || isOther;
 
@@ -159,8 +159,6 @@ const ModalContent = (props) => {
 
 		setIsLoading(true);
 		setPreviewOptions();
-
-		console.warn('options ', options);
 	}, [options]);
 
 	useEffect(() => {
@@ -168,10 +166,9 @@ const ModalContent = (props) => {
 			var data = JSON.parse(event.data);
 			console.warn(data);
 			setIsLoading(false);
-			const form = myIframe.current.contentWindow.document.querySelector(
+			const form = iframeRef.current.contentWindow.document.querySelector(
 				'.wp-block-mailster-form-outside-wrapper-' + formId
 			);
-
 			if (form && 'content' == type) {
 				form.scrollIntoView({
 					behavior: 'smooth',
@@ -188,12 +185,12 @@ const ModalContent = (props) => {
 		setMeta({ ['placement_' + type]: newOptions });
 	}
 
-	console.warn('isLoading', isLoading);
+	console.warn('options', options.padding);
 
 	function mapUrl(url, postId) {
 		const newUrl = new URL(url);
 
-		const { display, pos, tag } = meta['placement_' + type] || {};
+		const { display, pos, tag, triggers } = meta['placement_' + type] || {};
 
 		const obj = {
 			type: type,
@@ -203,6 +200,7 @@ const ModalContent = (props) => {
 				display: display,
 				pos: pos,
 				tag: tag,
+				triggers: triggers,
 			},
 			form_id: formId,
 		};
@@ -226,9 +224,9 @@ const ModalContent = (props) => {
 			form_id: formId,
 			post_content: postContent,
 		};
-		if (myIframe.current) {
+		if (iframeRef.current) {
 			setIsLoading(true);
-			myIframe.current.contentWindow.postMessage(
+			iframeRef.current.contentWindow.postMessage(
 				JSON.stringify(obj),
 				siteUrl
 			);
@@ -300,7 +298,7 @@ const ModalContent = (props) => {
 							}
 						>
 							<iframe
-								ref={myIframe}
+								ref={iframeRef}
 								src={url}
 								onLoad={setPreviewOptionsDebounce}
 								_sandbox="allow-scripts allow-same-origin"

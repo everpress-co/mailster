@@ -20,8 +20,6 @@ class MailsterBlockForms {
 
 		add_action( 'enqueue_block_editor_assets', array( &$this, 'block_script_styles' ), 1 );
 
-		add_action( 'wp_enqueue_scripts', array( &$this, 'wp_enqueue_scripts' ) );
-
 		add_filter( 'allowed_block_types_all', array( &$this, 'allowed_block_types' ), 10, 2 );
 		add_filter( 'block_categories_all', array( &$this, 'block_categories' ) );
 
@@ -308,10 +306,10 @@ class MailsterBlockForms {
 
 
 
-	public function wp_enqueue_scripts() {
+	public function wp_register_scripts() {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_register_script( 'mailster-form-block', MAILSTER_URI . 'assets/js/form-block' . $suffix . '.js', array(), MAILSTER_VERSION );
+		wp_register_script( 'mailster-form-block', MAILSTER_URI . 'assets/js/form-block' . $suffix . '.js', array(), MAILSTER_VERSION, true );
 		wp_register_style( 'mailster-form-block', MAILSTER_URI . 'build/style-form.css', array(), MAILSTER_VERSION );
 
 	}
@@ -581,15 +579,15 @@ class MailsterBlockForms {
 					'single'       => true,
 					'type'         => 'object',
 					'default'      => array(
-						'all'              => false,
-						'tag'              => 'p',
-						'pos'              => 0,
+						// 'all'              => false,
+						// 'tag'              => 'p',
+						// 'pos'              => 0,
 						'triggers'         => array( 'delay' ),
 						'trigger_delay'    => 120,
 						'trigger_inactive' => 120,
 						'trigger_click'    => '',
 						'trigger_scroll'   => 66,
-						'display'          => 'start',
+						// 'display'          => 'start',
 					),
 					'show_in_rest' => array(
 						'schema' => array(
@@ -641,7 +639,10 @@ class MailsterBlockForms {
 									'type' => 'integer',
 								),
 								'padding'          => array(
-									'type' => 'integer',
+									'type'                 => 'object',
+									'additionalProperties' => array(
+										'type' => 'string',
+									),
 								),
 								'animation'        => array(
 									'type' => 'string',
@@ -658,6 +659,9 @@ class MailsterBlockForms {
 
 	public function block_init() {
 
+		// add_action( 'wp_enqueue_scripts', array( &$this, 'wp_register_scripts' ) );
+		$this->wp_register_scripts();
+
 		register_block_type(
 			MAILSTER_DIR . 'blocks/form/',
 			array(
@@ -668,6 +672,7 @@ class MailsterBlockForms {
 				// 'style'           => 'mailster-form-block',
 			)
 		);
+		error_log( print_r( 'block_init', true ) );
 		if ( ! is_admin() ) {
 			return;
 		}
@@ -909,7 +914,8 @@ class MailsterBlockForms {
 			$args,
 			array(
 				'identifier' => hash( 'crc32', md5( serialize( $args ) ) ),
-				'classes'    => array(),
+				'classes'    => array( 'mailster-block-form-type-content active' ), // gets overwritten by other types
+				'isPreview'  => false,
 			)
 		);
 
@@ -920,10 +926,6 @@ class MailsterBlockForms {
 			if ( $cached = get_post_meta( $form->ID, '_cached', true ) ) {
 				return $cached;
 			}
-		}
-
-		if ( $this->preview_data ) {
-			$args['isPreview'] = true;
 		}
 
 		$blockattributes = $block->attributes;
@@ -980,16 +982,19 @@ class MailsterBlockForms {
 		$custom_styles = array();
 
 		if ( isset( $form_block['attrs']['padding'] ) ) {
+
 			$custom_styles[''][] = 'padding:' . $form_block['attrs']['padding'] . 'px';
 		}
 		if ( isset( $form_block['attrs']['color'] ) ) {
 			$custom_styles[''][] = 'color:' . $form_block['attrs']['color'];
 		}
 		if ( isset( $args['width'] ) ) {
-			$custom_styles[''][] = 'width:' . $args['width'] . 'vw';
+			$custom_styles['.mailster-block-form'][] = 'flex-basis:' . $args['width'] . '%';
 		}
 		if ( isset( $args['padding'] ) ) {
-			$custom_styles[''][] = 'padding:' . $args['padding'] . 'em';
+			foreach ( $args['padding'] as $key => $value ) {
+				$custom_styles['.mailster-block-form'][] = 'padding-' . $key . ':' . $value;
+			}
 		}
 
 		$inject .= '<a class="mailster-block-form-close" href="#"></a>';
@@ -1122,6 +1127,7 @@ class MailsterBlockForms {
 		$form_args = array(
 			'id'         => $args['id'],
 			'identifier' => $args['identifier'],
+			'isPreview'  => $args['isPreview'],
 		);
 
 		if ( isset( $args['triggers'] ) ) {

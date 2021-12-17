@@ -48,6 +48,7 @@ import {
 	SelectControl,
 	useCopyToClipboard,
 	__experimentalNumberControl as NumberControl,
+	__experimentalBoxControl as BoxControl,
 } from '@wordpress/components';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
@@ -139,8 +140,7 @@ export default function PlacementSettings(props) {
 		setOptions({ close: newMethods });
 	}
 
-	const closeModal = () => {};
-
+	console.warn(options);
 	return (
 		<>
 			{'other' == type ? (
@@ -296,7 +296,7 @@ export default function PlacementSettings(props) {
 							<PanelRow>
 								<RangeControl
 									className="widefat"
-									label={__('Width', 'mailster')}
+									label={__('Form Width', 'mailster')}
 									help={__(
 										'Set the with of your form in %',
 										'mailster'
@@ -313,23 +313,24 @@ export default function PlacementSettings(props) {
 								/>
 							</PanelRow>
 							<PanelRow>
-								<RangeControl
-									className="widefat"
-									label={__('Padding', 'mailster')}
+								<BoxControl
+									label={__('Form Padding', 'mailster')}
+									values={options.padding}
 									help={__(
 										'Set the padding of your form in %',
 										'mailster'
 									)}
-									value={options.padding}
-									allowReset={true}
+									resetValues={{
+										top: undefined,
+										left: undefined,
+										right: undefined,
+										bottom: undefined,
+									}}
 									onChange={(val) =>
 										setOptions({
 											padding: val,
 										})
 									}
-									initialPosition={0}
-									min={0}
-									max={10}
 								/>
 							</PanelRow>
 						</>
