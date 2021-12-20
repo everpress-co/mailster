@@ -111,14 +111,13 @@ export default function PlacementOption(props) {
 
 					<Button
 						variant="link"
-						disabled={!enabled}
 						onClick={() => setOpen(type)}
 						icon={<Icon icon={settings} />}
 						isSmall={true}
 					/>
 				</Flex>
 			</CardHeader>
-			<CardMedia path={'/' + type} disabled={!enabled}>
+			<CardMedia disabled={!enabled} onClick={() => setOpen(type)}>
 				{image}
 			</CardMedia>
 			<CardFooter>{title}</CardFooter>

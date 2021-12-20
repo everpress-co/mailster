@@ -9,25 +9,25 @@
 .mailster-block-form-type-bar,
 .mailster-block-form-type-side {
 	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
 	display: none;
 	pointer-events: none;
 	justify-content: center;
 	z-index: 100000;
 	.mailster-block-form {
 		width: 50vw;
-		max-width: 900px;
 		background-color: #fff;
 	}
+}
+.mailster-block-form-type-popup {
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 }
 .mailster-block-form-type-bar {
 	bottom: unset;
 	background-color: #fff;
 	.mailster-block-form {
-		max-width: 900px;
 	}
 }
 @media only screen and (max-width: 800px) {
@@ -46,6 +46,7 @@
 		}
 	}
 }
+
 .mailster-block-form-type-popup {
 	justify-content: center;
 	align-items: center;
@@ -59,12 +60,23 @@
 	pointer-events: inherit;
 	visibility: visible;
 	opacity: 1;
+	right: 0;
+	left: 0;
+	top: 0;
+	display: flex;
 }
 .mailster-block-form-type-side.active {
-	border: 1px solid red;
 	pointer-events: inherit;
 	visibility: visible;
 	opacity: 1;
+	align-items: flex-end;
+	justify-content: flex-end;
+	position: fixed;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	display: flex;
+	pointer-events: none;
 }
 
 .mailster-block-form-type-bar {
@@ -83,6 +95,12 @@
 .mailster-block-form-type-content .mailster-block-form-close {
 	display: none;
 }
+.mailster-block-form-type-popup .mailster-block-form-close {
+	transform: translate(0%, -130%);
+}
+.mailster-block-form-type-bar .mailster-block-form-close {
+	transform: translate(150%, 120%);
+}
 
 .wp-block-mailster-form-outside-wrapper-placeholder {
 	background-color: #fafafa;
@@ -99,7 +117,7 @@
 
 .wp-block-mailster-form-outside-wrapper.active {
 	display: flex;
-	justify-content: center;
+	_justify-content: center;
 }
 .mailster-block-form.wp-block-mailster-form-wrapper::before {
 	position: absolute;
@@ -128,6 +146,7 @@ body::before {
 	flex-shrink: 0;
 	flex-basis: 100%;
 	text-align: left;
+	pointer-events: all;
 	> * {
 		width: 100%;
 	}
@@ -170,7 +189,7 @@ body::before {
 	}
 }
 .mailster-block-form {
-	max-width: 100%;
+	max-width: 98vw;
 	.mailster-block-form-close {
 		position: absolute;
 		top: 0;
@@ -178,7 +197,6 @@ body::before {
 		width: 25px;
 		height: 25px;
 		transition: opacity 0.2s;
-		transform: translate(0%, -100%);
 		fill: #fff;
 		stroke-width: 1em;
 		padding: 2px;

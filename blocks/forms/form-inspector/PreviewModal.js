@@ -3,7 +3,7 @@
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * React hook that is used to mark the block wrapper element.
@@ -156,16 +156,18 @@ const ModalContent = (props) => {
 		if (!options || Object.keys(options).length === 0) {
 			return;
 		}
-
 		setIsLoading(true);
 		setPreviewOptions();
 	}, [options]);
 
 	useEffect(() => {
 		window.addEventListener('message', function (event) {
+			if (!event.data) return;
 			var data = JSON.parse(event.data);
-			console.warn(data);
+
 			setIsLoading(false);
+
+			if (!iframeRef.current) return;
 			const form = iframeRef.current.contentWindow.document.querySelector(
 				'.wp-block-mailster-form-outside-wrapper-' + formId
 			);
@@ -184,8 +186,6 @@ const ModalContent = (props) => {
 		newOptions = { ...newOptions, ...options };
 		setMeta({ ['placement_' + type]: newOptions });
 	}
-
-	console.warn('options', options.padding);
 
 	function mapUrl(url, postId) {
 		const newUrl = new URL(url);
@@ -241,7 +241,7 @@ const ModalContent = (props) => {
 
 	return (
 		<div className="preview-pane-grid-wrap">
-			<Flex columns={2}>
+			<Flex align="stretch">
 				<div className="preview-pane">
 					<div
 						className="interface-interface-skeleton__header"
@@ -306,7 +306,11 @@ const ModalContent = (props) => {
 							/>
 						</div>
 					) : (
-						<Flex className="preview-pane-info" justify="center">
+						<Flex
+							className="preview-pane-info"
+							justify="center"
+							align="center"
+						>
 							<FlexItem>
 								<h3>
 									{__(
@@ -319,6 +323,16 @@ const ModalContent = (props) => {
 					)}
 				</div>
 				<div className="preview-sidebar">
+					<BaseControl className="widefat">
+						<PanelRow>
+							<p>
+								{__(
+									'Choose were you like to display the forms.',
+									'mailster'
+								)}
+							</p>
+						</PanelRow>
+					</BaseControl>
 					{placements.map((placement) => {
 						return (
 							<PanelBody
@@ -331,11 +345,7 @@ const ModalContent = (props) => {
 								}
 								opened={type == placement.type}
 								onToggle={(v) => {
-									if (v) {
-										setType(placement.type);
-									} else {
-										setType(false);
-									}
+									setType(v ? placement.type : false);
 								}}
 							>
 								<PlacementSettings

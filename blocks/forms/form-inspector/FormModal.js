@@ -65,7 +65,7 @@ const ModalContent = ({ setOpen }) => {
 	const { __experimentalBlockPatterns } = blockEditor.getSettings();
 
 	const patterns = __experimentalBlockPatterns.filter((pattern) =>
-		pattern.categories.includes('mailster-block-forms')
+		pattern.categories.includes('mailster-forms')
 	);
 
 	if (!patterns.length) {
@@ -143,18 +143,14 @@ export default function FormModal(props) {
 		setOpen(isEmpty);
 	}, [isEmpty]);
 
-	const modalStyle = {
-		width: '66vw',
-	};
-
 	return (
 		<>
 			{isOpen && (
 				<Modal
 					title="Please select a form to start with"
 					className="form-select-modal"
+					isFullScreen
 					onRequestClose={closeModal}
-					style={modalStyle}
 				>
 					<ModalContent setOpen={setOpen} />
 				</Modal>

@@ -57,7 +57,10 @@ function SettingsPanelPlugin() {
 		'meta'
 	);
 
-	const blocks = useSelect((select) => select('core/editor').getBlocks(), []);
+	const blocks = useSelect(
+		(select) => select('core/block-editor').getBlocks(),
+		[]
+	);
 
 	const [attributes, setInitialAttributes] = useState(false);
 	const [root, setRoot] = useState(false);

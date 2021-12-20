@@ -104,7 +104,7 @@ export default function PlacementSettingsContent(props) {
 			{options.display == 'after' && (
 				<Item>
 					{__('Display form after:', 'mailster')}
-					<Flex align="flexStart">
+					<Flex align="flex-start">
 						<FlexItem>
 							<NumberControl
 								onChange={(val) =>

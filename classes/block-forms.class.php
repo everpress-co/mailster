@@ -579,15 +579,15 @@ class MailsterBlockForms {
 					'single'       => true,
 					'type'         => 'object',
 					'default'      => array(
-						// 'all'              => false,
-						// 'tag'              => 'p',
-						// 'pos'              => 0,
+						'all'              => false,
+						'tag'              => 'p',
+						'pos'              => 0,
 						'triggers'         => array( 'delay' ),
 						'trigger_delay'    => 120,
 						'trigger_inactive' => 120,
 						'trigger_click'    => '',
 						'trigger_scroll'   => 66,
-						// 'display'          => 'start',
+						'display'          => 'start',
 					),
 					'show_in_rest' => array(
 						'schema' => array(
@@ -672,7 +672,6 @@ class MailsterBlockForms {
 				// 'style'           => 'mailster-form-block',
 			)
 		);
-		error_log( print_r( 'block_init', true ) );
 		if ( ! is_admin() ) {
 			return;
 		}
@@ -1137,7 +1136,7 @@ class MailsterBlockForms {
 			}
 		}
 
-		$inject .= json_encode( $form_args );
+		$inject .= '<div style="font-size:10px;opacity:0.5">' . json_encode( $form_args ) . '</div>';
 		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $form_args ) . '</script>';
 		$inject .= '<input name="_formid" type="hidden" value="' . esc_attr( $original_form->ID ) . '">' . "\n";
 		$inject .= '<input name="_timestamp" type="hidden" value="' . esc_attr( time() ) . '">' . "\n";

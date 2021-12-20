@@ -4,12 +4,44 @@ jQuery(document).ready(function ($) {
 	var oldUrl;
 	var lastanimation = '';
 
-	console.warn('BLOCK PREVIEW!', wp.apiFetch);
+	var infoScreen = $('<div />')
+		.css({
+			position: 'fixed',
+			top: 0,
+			right: 0,
+		})
+		.html('0')
+		.appendTo('body');
+
+	var el = document.documentElement,
+		body = document.body,
+		st = 'scrollTop',
+		sh = 'scrollHeight';
+
+	function getScrollPercent() {
+		var x = (el[st] || body[st]) / ((el[sh] || body[sh]) - el.clientHeight);
+		return (x * 100).toFixed();
+	}
+
+	var form = $('.wp-block-mailster-form-outside-wrapper-placeholder');
+
+	var siblings = form.siblings('h2, p').css({ outline: '1px dotted red' });
+
+	console.warn(siblings);
+
+	['scroll', 'touchstart'].forEach(function (name) {
+		window.addEventListener(
+			name,
+			debounce(function () {
+				infoScreen.html(getScrollPercent());
+			}, 5),
+			true
+		);
+	});
 
 	window.addEventListener('message', function (event) {
 		var data = JSON.parse(event.data),
 			source = event;
-		//alert(JSON.parse(event.data));
 
 		console.warn(data);
 
@@ -40,7 +72,7 @@ jQuery(document).ready(function ($) {
 				path: url,
 				data: { post_content: data.post_content, args: args },
 			})
-				.then((post) => {
+				.then(function (post) {
 					$(
 						'.wp-block-mailster-form-outside-wrapper-' +
 							data.form_id
@@ -50,7 +82,7 @@ jQuery(document).ready(function ($) {
 
 					return post;
 				})
-				.catch((err) => {
+				.catch(function (err) {
 					$('.wp-block-mailster-form-outside-wrapper-' + data.form_id)
 						.addClass('has-error')
 						.html(err.message);
@@ -112,4 +144,30 @@ jQuery(document).ready(function ($) {
 			reloadFormScript();
 		}
 	});
+
+	function debounce(func, wait, immediate) {
+		var timeout;
+
+		return function executedFunction() {
+			var context = this;
+			var args = arguments;
+
+			var later = function () {
+				timeout = null;
+				if (!immediate) {
+					func.apply(context, args);
+				}
+			};
+
+			var callNow = immediate && !timeout;
+
+			clearTimeout(timeout);
+
+			timeout = setTimeout(later, wait);
+
+			if (callNow) {
+				func.apply(context, args);
+			}
+		};
+	}
 });
