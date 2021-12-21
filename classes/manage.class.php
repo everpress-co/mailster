@@ -1564,7 +1564,6 @@ class MailsterManage {
 	public function display_import_method( $id ) {
 
 		$plugins = array(
-			'mailpoet'  => 'mailster-mailpoet/mailster-mailpoet.php',
 			'mailchimp' => 'mailster-mailchimp/mailster-mailchimp.php',
 		);
 

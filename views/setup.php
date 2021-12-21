@@ -23,7 +23,6 @@ $utm = array(
 	<ol class="mailster-setup-steps-nav">
 		<li><a href="#basics"><?php esc_html_e( 'Basics', 'mailster' ); ?></a></li>
 		<li><a href="#homepage"><?php esc_html_e( 'Homepage', 'mailster' ); ?></a></li>
-		<li><a href="#subscribers"><?php esc_html_e( 'Subscribers', 'mailster' ); ?></a></li>
 		<li><a href="#delivery"><?php esc_html_e( 'Delivery', 'mailster' ); ?></a></li>
 		<li><a href="#privacy"><?php esc_html_e( 'Privacy', 'mailster' ); ?></a></li>
 		<li><a href="#validation"><?php esc_html_e( 'Validation', 'mailster' ); ?></a></li>
@@ -55,10 +54,6 @@ $utm = array(
 			<dl>
 				<dt><?php esc_html_e( 'Newsletter Homepage Setup', 'mailster' ); ?></dt>
 				<dd><?php esc_html_e( 'This is where your subscribers signup, manage or cancel their subscriptions.', 'mailster' ); ?></dd>
-			</dl>
-			<dl>
-				<dt><?php esc_html_e( 'Importing Contacts', 'mailster' ); ?></dt>
-				<dd><?php esc_html_e( 'Import your existing contacts into Mailster.', 'mailster' ); ?></dd>
 			</dl>
 			<dl>
 				<dt><?php esc_html_e( 'Delivery Options', 'mailster' ); ?></dt>
@@ -234,8 +229,8 @@ $utm = array(
 				<span class="alignleft status"></span>
 				<i class="spinner"></i>
 
-				<a class="button button-large skip-step" href="#subscribers"><?php esc_html_e( 'Skip this Step', 'mailster' ); ?></a>
-				<a class="button button-large button-primary next-step" href="#subscribers"><?php echo esc_html( $buttontext ); ?></a>
+				<a class="button button-large skip-step" href="#delivery"><?php esc_html_e( 'Skip this Step', 'mailster' ); ?></a>
+				<a class="button button-large button-primary next-step" href="#delivery"><?php echo esc_html( $buttontext ); ?></a>
 
 			</div>
 
