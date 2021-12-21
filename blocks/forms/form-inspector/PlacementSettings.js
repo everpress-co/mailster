@@ -310,6 +310,7 @@ export default function PlacementSettings(props) {
 									}
 									min={10}
 									max={100}
+									initialPosition={100}
 								/>
 							</PanelRow>
 							<PanelRow>

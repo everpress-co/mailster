@@ -63,7 +63,7 @@ export default function Options(props) {
 					value={title}
 					onChange={(value) => setTitle(value)}
 					help={__('Define a name for your form.', 'mailster')}
-					palceholder={__('Add title', 'mailster')}
+					placeholder={__('Add title', 'mailster')}
 				/>
 			</PanelRow>
 			<PanelRow>

@@ -588,6 +588,12 @@ class MailsterBlockForms {
 						'trigger_click'    => '',
 						'trigger_scroll'   => 66,
 						'display'          => 'start',
+						'padding'          => array(
+							'top'    => '1em',
+							'right'  => '1em',
+							'bottom' => '1em',
+							'left'   => '1em',
+						),
 					),
 					'show_in_rest' => array(
 						'schema' => array(

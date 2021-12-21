@@ -96,10 +96,15 @@
 	display: none;
 }
 .mailster-block-form-type-popup .mailster-block-form-close {
-	transform: translate(0%, -130%);
+	transform: translate(50%, -50%);
 }
 .mailster-block-form-type-bar .mailster-block-form-close {
 	transform: translate(150%, 120%);
+}
+.mailster-block-form-type-side .mailster-block-form-close {
+	left: 0;
+	right: auto;
+	transform: translate(-50%, -50%);
 }
 
 .wp-block-mailster-form-outside-wrapper-placeholder {

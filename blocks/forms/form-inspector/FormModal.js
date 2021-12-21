@@ -37,6 +37,7 @@ import {
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { useSelect, select, dispatch, subscribe } from '@wordpress/data';
+import { useEntityProp } from '@wordpress/core-data';
 
 import { Modal, Button, Tooltip } from '@wordpress/components';
 
@@ -77,8 +78,21 @@ const ModalContent = ({ setOpen }) => {
 		setOpen(false);
 	};
 
+	const [title, setTitle] = useEntityProp(
+		'postType',
+		'newsletter_form',
+		'title'
+	);
+
 	return (
 		<>
+			<TextControl
+				label={__('Form Name', 'mailster')}
+				value={title}
+				onChange={(value) => setTitle(value)}
+				help={__('Define a name for your form.', 'mailster')}
+				placeholder={__('Add title', 'mailster')}
+			/>
 			<Grid columns={3}>
 				{patterns.map((pattern, i) => {
 					const block = wp.blocks.parse(pattern.content);
