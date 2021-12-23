@@ -137,7 +137,7 @@ class MailsterCron {
 			wp_schedule_event( floor( time() / 300 ) * 300, 'mailster_cron_interval', 'mailster_cron_worker' );
 		}
 		if ( ! wp_next_scheduled( 'mailster_cron_cleanup' ) ) {
-			wp_schedule_event( strtotime( 'midnight' ) - 180, 'hourly', 'mailster_cron_cleanup' );
+			wp_schedule_event( strtotime( 'midnight' ) - 180, 'daily', 'mailster_cron_cleanup' );
 		}
 	}
 

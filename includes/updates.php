@@ -619,6 +619,10 @@ if ( $old_version ) {
 		case '3.0.1':
 		case '3.0.2':
 		case '3.0.3':
+		case '3.0.4':
+
+			mailster( 'cron' )->unschedule( );
+
 		default:
 			// reset translations
 			update_option( 'mailster_translation', '' );
