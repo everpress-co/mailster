@@ -224,6 +224,7 @@ const ModalContent = (props) => {
 			form_id: formId,
 			post_content: postContent,
 		};
+
 		if (iframeRef.current) {
 			setIsLoading(true);
 			iframeRef.current.contentWindow.postMessage(

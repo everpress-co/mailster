@@ -572,29 +572,39 @@ class MailsterBlockForms {
 		);
 
 		foreach ( array( 'content', 'bar', 'popup', 'side', 'other' ) as $placement_type ) {
+
+			if ( 'content' == $placement_type ) {
+				$default = array(
+					'all'     => false,
+					'tag'     => 'p',
+					'pos'     => 0,
+					'display' => 'start',
+				);
+			} else {
+				$default = array(
+					'all'              => false,
+					'triggers'         => array( 'delay' ),
+					'trigger_delay'    => 120,
+					'trigger_inactive' => 120,
+					'trigger_click'    => '',
+					'trigger_scroll'   => 66,
+					'width'            => 70,
+					'padding'          => array(
+						'top'    => '1em',
+						'right'  => '1em',
+						'bottom' => '1em',
+						'left'   => '1em',
+					),
+				);
+			}
+
 			register_post_meta(
 				'newsletter_form',
 				'placement_' . $placement_type,
 				array(
 					'single'       => true,
 					'type'         => 'object',
-					'default'      => array(
-						'all'              => false,
-						'tag'              => 'p',
-						'pos'              => 0,
-						'triggers'         => array( 'delay' ),
-						'trigger_delay'    => 120,
-						'trigger_inactive' => 120,
-						'trigger_click'    => '',
-						'trigger_scroll'   => 66,
-						'display'          => 'start',
-						'padding'          => array(
-							'top'    => '1em',
-							'right'  => '1em',
-							'bottom' => '1em',
-							'left'   => '1em',
-						),
-					),
+					'default'      => $default,
 					'show_in_rest' => array(
 						'schema' => array(
 							'type'       => 'object',
@@ -919,7 +929,7 @@ class MailsterBlockForms {
 			$args,
 			array(
 				'identifier' => hash( 'crc32', md5( serialize( $args ) ) ),
-				'classes'    => array( 'mailster-block-form-type-content active' ), // gets overwritten by other types
+				'classes'    => array( 'mailster-block-form-type-content' ), // gets overwritten by other types
 				'isPreview'  => false,
 			)
 		);

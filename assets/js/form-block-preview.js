@@ -4,46 +4,9 @@ jQuery(document).ready(function ($) {
 	var oldUrl;
 	var lastanimation = '';
 
-	var infoScreen = $('<div />')
-		.css({
-			position: 'fixed',
-			top: 0,
-			right: 0,
-		})
-		.html('0')
-		.appendTo('body');
-
-	var el = document.documentElement,
-		body = document.body,
-		st = 'scrollTop',
-		sh = 'scrollHeight';
-
-	function getScrollPercent() {
-		var x = (el[st] || body[st]) / ((el[sh] || body[sh]) - el.clientHeight);
-		return (x * 100).toFixed();
-	}
-
-	var form = $('.wp-block-mailster-form-outside-wrapper-placeholder');
-
-	var siblings = form.siblings('h2, p').css({ outline: '1px dotted red' });
-
-	console.warn(siblings);
-
-	['scroll', 'touchstart'].forEach(function (name) {
-		window.addEventListener(
-			name,
-			debounce(function () {
-				infoScreen.html(getScrollPercent());
-			}, 5),
-			true
-		);
-	});
-
 	window.addEventListener('message', function (event) {
 		var data = JSON.parse(event.data),
 			source = event;
-
-		console.warn(data);
 
 		var params = new URLSearchParams();
 
@@ -56,14 +19,18 @@ jQuery(document).ready(function ($) {
 		var args = {
 			width: data.options.width,
 			padding: data.options.padding,
-			triggers: data.options.triggers,
-			trigger_delay: 2,
-			trigger_inactive: 4,
-			trigger_scroll: data.options.trigger_scroll,
 			classes: ['mailster-block-form-type-' + data.type],
 			isPreview: true,
 		};
 
+		//if (data.type != 'content') {
+		args['triggers'] = data.options.triggers;
+		args['trigger_delay'] = 2;
+		args['trigger_inactive'] = 4;
+		args['trigger_scroll'] = data.options.trigger_scroll;
+		//	}
+
+		console.warn(args);
 		var url = 'wp/v2/block-renderer/mailster/form?' + params.toString();
 
 		if (url != oldUrl) {
@@ -91,9 +58,7 @@ jQuery(document).ready(function ($) {
 						event.origin
 					);
 				})
-				.finally(function () {
-					console.warn('FINALLY');
-				});
+				.finally(function () {});
 		} else {
 			updateForm();
 		}
@@ -105,10 +70,10 @@ jQuery(document).ready(function ($) {
 				? data.options.width + '%'
 				: '100%';
 			if (data.options.padding) {
-				css['paddingTop'] = data.options.padding.top;
-				css['paddingRight'] = data.options.padding.right;
-				css['paddingBottom'] = data.options.padding.bottom;
-				css['paddingLeft'] = data.options.padding.left;
+				css['paddingTop'] = data.options.padding.top || 0;
+				css['paddingRight'] = data.options.padding.right || 0;
+				css['paddingBottom'] = data.options.padding.bottom || 0;
+				css['paddingLeft'] = data.options.padding.left || 0;
 			}
 
 			return css;
@@ -133,6 +98,7 @@ jQuery(document).ready(function ($) {
 				);
 				lastanimation = data.options.animation;
 			}
+
 			form.find('.mailster-block-form').css(getCSS());
 
 			oldUrl = url;
@@ -144,6 +110,44 @@ jQuery(document).ready(function ($) {
 			reloadFormScript();
 		}
 	});
+
+	function info() {
+		var infoScreen = $('<div />')
+			.css({
+				position: 'fixed',
+				top: 0,
+				right: 0,
+			})
+			.html('0')
+			.appendTo('body');
+
+		var el = document.documentElement,
+			body = document.body,
+			st = 'scrollTop',
+			sh = 'scrollHeight';
+
+		function getScrollPercent() {
+			var x =
+				(el[st] || body[st]) / ((el[sh] || body[sh]) - el.clientHeight);
+			return (x * 100).toFixed();
+		}
+
+		var form = $('.wp-block-mailster-form-outside-wrapper-placeholder');
+
+		var siblings = form
+			.siblings('h2, p')
+			.css({ outline: '1px dotted red' });
+
+		['scroll', 'touchstart'].forEach(function (name) {
+			window.addEventListener(
+				name,
+				debounce(function () {
+					infoScreen.html(getScrollPercent());
+				}, 5),
+				true
+			);
+		});
+	}
 
 	function debounce(func, wait, immediate) {
 		var timeout;

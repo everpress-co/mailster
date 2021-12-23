@@ -140,7 +140,6 @@ export default function PlacementSettings(props) {
 		setOptions({ close: newMethods });
 	}
 
-	console.warn(options);
 	return (
 		<>
 			{'other' == type ? (

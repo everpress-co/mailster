@@ -120,7 +120,8 @@
 	color: #cc1818;
 }
 
-.wp-block-mailster-form-outside-wrapper.active {
+.wp-block-mailster-form-outside-wrapper.active,
+.wp-block-mailster-form-outside-wrapper.mailster-block-form-type-content {
 	display: flex;
 	_justify-content: center;
 }

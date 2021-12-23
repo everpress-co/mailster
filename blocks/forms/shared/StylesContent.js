@@ -77,7 +77,6 @@ export const StylesContent = (props) => {
 	function setStyle(prop, data) {
 		var newStyle = { ...style };
 		newStyle[prop] = data;
-		console.warn(newStyle);
 		setAttributes({ style: newStyle });
 	}
 
