@@ -91,6 +91,34 @@ class MailsterCron {
 
 	/**
 	 *
+	 * Run cron in a given interval
+	 *
+	 * @param unknown $hourly_only (optional)
+	 * @return unknown
+	 */
+	public function run( $action, $interval = 0 ) {
+
+		if ( is_string( $interval ) ) {
+			$schedules = wp_get_schedules();
+			if ( isset( $schedules[ $interval ] ) ) {
+				$interval = $schedules[ $interval ]['interval'];
+			}
+		}
+
+		if ( ! $interval || false === get_transient( 'mailster_cron_' . $action ) ) {
+
+			do_action( $action );
+
+			if ( $interval ) {
+				set_transient( 'mailster_cron_' . $action, true, $interval );
+			}
+		}
+
+	}
+
+
+	/**
+	 *
 	 *
 	 * @param unknown $hourly_only (optional)
 	 * @return unknown

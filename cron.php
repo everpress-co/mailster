@@ -111,13 +111,13 @@ if ( ( isset( $_GET[ $secret ] ) ) ||
 			$worker = get_query_var( '_mailster_extra' );
 		}
 		if ( empty( $worker ) ) {
-			do_action( 'mailster_cron_autoresponder' );
-			do_action( 'mailster_cron_worker' );
-			do_action( 'mailster_cron_bounce' );
-			do_action( 'mailster_cron_cleanup' );
+			mailster( 'cron' )->run( 'mailster_cron_autoresponder' );
+			mailster( 'cron' )->run( 'mailster_cron_worker' );
+			mailster( 'cron' )->run( 'mailster_cron_bounce', 'mailster_cron_interval' );
+			mailster( 'cron' )->run( 'mailster_cron_cleanup', 'daily' );
 		} elseif ( in_array( $worker, apply_filters( 'mailster_cron_workers', array( 'autoresponder', 'worker', 'bounce', 'cleanup' ) ) ) ) {
 			echo '<h2>' . esc_html__( 'Single Cron', 'mailster' ) . ': ' . ucwords( $worker ) . '</h2>';
-			do_action( 'mailster_cron_' . $worker );
+			mailster( 'cron' )->run( 'mailster_cron_' . $worker );
 		} else {
 			echo '<h2>' . esc_html__( 'Invalid Cron Worker!', 'mailster' ) . '</h2>';
 		}
