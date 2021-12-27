@@ -146,7 +146,7 @@ export default function PlacementSettingsContent(props) {
 									},
 									{
 										value: 'h4',
-										label: 'Heading 3',
+										label: 'Heading 4',
 									},
 								]}
 							/>

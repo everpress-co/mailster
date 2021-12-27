@@ -31,6 +31,11 @@ class MailsterBlockForms {
 		add_action( 'save_post_newsletter_form', array( &$this, 'clear_cache' ) );
 		add_action( 'switch_theme', array( &$this, 'clear_inline_style' ) );
 
+		add_action( 'mailster_block_form_header', array( &$this, 'prepare_forms' ) );
+		add_action( 'mailster_block_form_head', array( &$this, 'form_head' ) );
+		add_action( 'mailster_block_form_body', array( &$this, 'form_body' ) );
+		// add_action( 'mailster_block_form_footer', array( &$this, 'form_footer' ) );
+
 		add_action(
 			'__save_post_newsletter_form',
 			function( $post_id, $post ) {
@@ -44,6 +49,7 @@ class MailsterBlockForms {
 
 
 	public function maybe_preview() {
+
 		// enter preview mode
 		if ( isset( $_GET['mailster-block-preview'] ) ) {
 
@@ -54,6 +60,36 @@ class MailsterBlockForms {
 					add_filter( 'determine_current_user', '__return_false', PHP_INT_MAX );
 				}
 			}
+		}
+	}
+
+
+	public function form_head() {
+
+		$form_id = isset( $_GET['id'] ) ? (int) $_GET['id'] : null;
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+		wp_register_style( 'mailster-form-default-style', MAILSTER_URI . 'assets/css/form-default-style' . $suffix . '.css', array(), MAILSTER_VERSION );
+		if ( isset( $_GET['style'] ) ) {
+			wp_register_style( 'mailster-theme-style', get_template_directory_uri() . '/style.css', array(), MAILSTER_VERSION );
+			wp_print_styles( 'mailster-theme-style' );
+		}
+		wp_print_styles( 'mailster-form-block' );
+		wp_print_scripts( 'mailster-form-block-preview' );
+		wp_print_scripts( 'mailster-form-block' );
+
+	}
+
+	public function form_body() {
+
+		$form_id = isset( $_GET['id'] ) ? (int) $_GET['id'] : null;
+
+		$options = $this->preview_data['options'];
+
+		$options['classes'] = array( 'mailster-block-form-type-embed' );
+		if ( $form_html = $this->render_form_with_options( $form_id, $options ) ) {
+			echo $form_html;
 		}
 	}
 
@@ -580,6 +616,8 @@ class MailsterBlockForms {
 					'pos'     => 0,
 					'display' => 'start',
 				);
+			} elseif ( 'other' == $placement_type ) {
+				$default = array();
 			} else {
 				$default = array(
 					'all'              => false,

@@ -57,13 +57,7 @@ import { undo, chevronRight, chevronLeft } from '@wordpress/icons';
 import apiFetch from '@wordpress/api-fetch';
 import { useDebounce } from '@wordpress/compose';
 import { useEntityProp } from '@wordpress/core-data';
-import { select, dispatch, subscribe } from '@wordpress/data';
-import {
-	__experimentalNavigatorProvider as NavigatorProvider,
-	__experimentalNavigatorScreen as NavigatorScreen,
-	__experimentalUseNavigator as useNavigator,
-} from '@wordpress/components';
-
+import { select, useSelect, dispatch, subscribe } from '@wordpress/data';
 import NavigatorButton from './NavigatorButton';
 import PlacementSettingsContent from './PlacementSettingsContent';
 import PlacementSettingsTriggers from './PlacementSettingsTriggers';
@@ -81,10 +75,16 @@ import {
  * @return {WPElement} Element to render.
  */
 
-const currentPostId = select('core/editor').getCurrentPostId();
-
 export default function PlacementSettings(props) {
-	const { meta, setMeta, type, image, title } = props;
+	const {
+		meta,
+		setMeta,
+		type,
+		image,
+		title,
+		useThemeStyle,
+		setUseThemeStyle,
+	} = props;
 	const { placements } = meta;
 
 	const options = meta['placement_' + type] || {};
@@ -96,6 +96,11 @@ export default function PlacementSettings(props) {
 	}
 
 	const className = ['placement-option'];
+
+	const currentPostId = useSelect(
+		(select) => select('core/editor').getCurrentPostId(),
+		[]
+	);
 
 	placements.includes(type) && className.push('enabled');
 
@@ -143,26 +148,35 @@ export default function PlacementSettings(props) {
 	return (
 		<>
 			{'other' == type ? (
-				<ItemGroup isBordered={false} isSeparated size="small">
+				<ItemGroup isBordered={false} size="small">
 					<Item>PHP</Item>
 					<Item>
 						<code id={'form-php-' + currentPostId}>
 							{'<?php echo mailster_form( ' +
 								currentPostId +
-								'); ?>'}
+								' ); ?>'}
 						</code>
 					</Item>
 					<Item>
 						<code id="form-php-2">
-							{'echo mailster_form( ' + currentPostId + ');'}
+							{'echo mailster_form( ' + currentPostId + ' );'}
 						</code>
 					</Item>
 					<Item>
 						<code id="form-php-3">
 							{'<?php $form_html = mailster_form( ' +
 								currentPostId +
-								'); ?>'}
+								' ); ?>'}
 						</code>
+					</Item>
+					<Item>
+						<CheckboxControl
+							label={__('useThemeStyle', 'mailster')}
+							checked={useThemeStyle}
+							onChange={(val) => {
+								setUseThemeStyle(!useThemeStyle);
+							}}
+						/>
 					</Item>
 				</ItemGroup>
 			) : (

@@ -77,6 +77,7 @@ const ModalContent = (props) => {
 	const [url, setUrl] = useState('');
 	const [displayUrl, setDisplayUrl] = useState('');
 	const [urlLoggedIn, setUrlLoggedIn] = useState(false);
+	const [useThemeStyle, setUseThemeStyle] = useState(true);
 	const [device, setDevice] = useState('desktop');
 	const [siteUrl] = useEntityProp('root', 'site', 'url');
 
@@ -143,14 +144,21 @@ const ModalContent = (props) => {
 
 		const id = options.posts?.length ? options.posts[0] : post.id;
 
-		const newUrl = isOther
-			? siteUrl + '/wp-content/plugins/mailster/form.php?id=' + formId
-			: post.link;
+		let newUrl = new URL(post.link);
 
-		setDisplayUrl(newUrl);
+		if (isOther) {
+			const formendpoint = new URL(
+				siteUrl + '/wp-content/plugins/mailster/block-form.php'
+			);
 
-		setUrlDebounce(mapUrl(newUrl, id));
-	}, [posts, options, urlLoggedIn]);
+			formendpoint.searchParams.set('id', formId);
+			useThemeStyle && formendpoint.searchParams.set('style', 1);
+
+			newUrl = formendpoint;
+		}
+		setDisplayUrl(newUrl.toString());
+		setUrlDebounce(mapUrl(newUrl.toString(), id));
+	}, [posts, options, urlLoggedIn, useThemeStyle]);
 
 	useEffect(() => {
 		if (!options || Object.keys(options).length === 0) {
@@ -354,6 +362,8 @@ const ModalContent = (props) => {
 									title={placement.title}
 									type={placement.type}
 									image={placement.image}
+									useThemeStyle={useThemeStyle}
+									setUseThemeStyle={setUseThemeStyle}
 								/>
 							</PanelBody>
 						);

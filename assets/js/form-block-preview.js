@@ -8,6 +8,8 @@ jQuery(document).ready(function ($) {
 		var data = JSON.parse(event.data),
 			source = event;
 
+		console.warn(data);
+
 		var params = new URLSearchParams();
 
 		params.set('context', 'edit');
@@ -23,14 +25,13 @@ jQuery(document).ready(function ($) {
 			isPreview: true,
 		};
 
-		//if (data.type != 'content') {
-		args['triggers'] = data.options.triggers;
-		args['trigger_delay'] = 2;
-		args['trigger_inactive'] = 4;
-		args['trigger_scroll'] = data.options.trigger_scroll;
-		//	}
+		if (data.type != 'content') {
+			args['triggers'] = data.options.triggers;
+			args['trigger_delay'] = 2;
+			args['trigger_inactive'] = 4;
+			args['trigger_scroll'] = data.options.trigger_scroll;
+		}
 
-		console.warn(args);
 		var url = 'wp/v2/block-renderer/mailster/form?' + params.toString();
 
 		if (url != oldUrl) {

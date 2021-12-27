@@ -143,10 +143,12 @@ export default function Edit(props) {
 								className="update-form-button"
 								justify="space-evenly"
 							>
-								<h4 className="align-center">
-									Please click on the edit button in the
-									toolbar to edit this form.
-								</h4>
+								<strong className="align-center">
+									{__(
+										'Please click on the edit button in the toolbar to edit this form.',
+										'mailster'
+									)}
+								</strong>
 							</Flex>
 							<BlockControls>
 								<Toolbar>

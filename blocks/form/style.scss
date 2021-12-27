@@ -92,7 +92,8 @@
 	}
 }
 
-.mailster-block-form-type-content .mailster-block-form-close {
+.mailster-block-form-type-content .mailster-block-form-close,
+.mailster-block-form-type-other .mailster-block-form-close {
 	display: none;
 }
 .mailster-block-form-type-popup .mailster-block-form-close {
@@ -121,7 +122,8 @@
 }
 
 .wp-block-mailster-form-outside-wrapper.active,
-.wp-block-mailster-form-outside-wrapper.mailster-block-form-type-content {
+.wp-block-mailster-form-outside-wrapper.mailster-block-form-type-content,
+.wp-block-mailster-form-outside-wrapper.mailster-block-form-type-other {
 	display: flex;
 	_justify-content: center;
 }
