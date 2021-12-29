@@ -27,7 +27,7 @@ import {
 	Spinner,
 } from '@wordpress/components';
 import { PanelColorSettings } from '@wordpress/block-editor';
-
+import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
@@ -46,6 +46,16 @@ import { BackgroundContent } from '../shared/BackgroundContent';
 
 export default function Styles(props) {
 	const { attributes, setAttributes, meta, setMeta } = props;
+
+	const blocks = useSelect(
+		(select) =>
+			select('core/edit-post').isEditorPanelOpened(
+				'plugin-document-setting-panel-demo/styling'
+			),
+		[]
+	);
+
+	console.warn('asdas', blocks);
 
 	return (
 		<PluginDocumentSettingPanel

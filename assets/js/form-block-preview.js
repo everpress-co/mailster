@@ -38,7 +38,7 @@ jQuery(document).ready(function ($) {
 			wp.apiFetch({
 				method: 'POST',
 				path: url,
-				data: { post_content: data.post_content, args: args },
+				data: { block_form_content: data.post_content, args: args },
 			})
 				.then(function (post) {
 					$(

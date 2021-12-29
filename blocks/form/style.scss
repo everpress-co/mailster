@@ -330,7 +330,7 @@ body::before {
 	}
 }
 .mailster-block-form.has-errors {
-	animation: mailster-shake 0.4s 1 linear;
+	animation: mailster-shake 0.3s 1 linear;
 	.mailster-block-form-info {
 		height: auto;
 		transform: scale(1);
@@ -383,7 +383,7 @@ body::before {
 }
 .wp-block-mailster-form-outside-wrapper.has-animation.animation-shake
 	.mailster-block-form {
-	animation: mailster-shake 1s 1 ease-in-out;
+	animation: mailster-shake 0.5s 1 ease-in-out;
 }
 .wp-block-mailster-form-outside-wrapper.has-animation.animation-heartbeat
 	.mailster-block-form {
@@ -424,28 +424,20 @@ body::before {
 }
 
 @keyframes mailster-shake {
-	0% {
-		transform: translateX(0);
+	from,
+	to {
+		transform: translate3d(0, 0, 0);
 	}
 
-	6.5% {
-		transform: translateX(-6px) rotateY(-9deg);
+	10%,
+	50%,
+	90% {
+		transform: translate3d(-6px, 0, 0);
 	}
 
-	18.5% {
-		transform: translateX(5px) rotateY(7deg);
-	}
-
-	31.5% {
-		transform: translateX(-3px) rotateY(-5deg);
-	}
-
-	43.5% {
-		transform: translateX(2px) rotateY(3deg);
-	}
-
-	50% {
-		transform: translateX(0);
+	30%,
+	70% {
+		transform: translate3d(6px, 0, 0);
 	}
 }
 

@@ -63,7 +63,7 @@
 			var elements = document.querySelectorAll(placement.trigger_click);
 			Array.prototype.forEach.call(elements, function (element, i) {
 				element.addEventListener('click', function (event) {
-					openForm(form, placement);
+					openForm(form, placement, true);
 				});
 			});
 		},
@@ -117,6 +117,9 @@
 					wrapper.classList.remove('error');
 				}
 			);
+
+			info.classList.remove('success');
+			info.classList.remove('error');
 
 			form.classList.add('loading');
 			form.setAttribute('disabled', true);
@@ -216,8 +219,8 @@
 		);
 	}
 
-	function openForm(form, placement) {
-		if (!hasBeendShown(placement)) {
+	function openForm(form, placement, explicit) {
+		if (explicit || !hasBeendShown(placement)) {
 			var wrap = form.closest('.wp-block-mailster-form-outside-wrapper'),
 				closeButton = wrap.querySelector('.mailster-block-form-close');
 
@@ -226,7 +229,8 @@
 					wrap.addEventListener(
 						'click',
 						function (event) {
-							closeForm(form, placement);
+							event.preventDefault();
+							closeForm(form, placement, explicit);
 						},
 						{
 							once: true,
@@ -236,7 +240,8 @@
 				closeButton.addEventListener(
 					'click',
 					function (event) {
-						closeForm(form, placement);
+						event.preventDefault();
+						closeForm(form, placement, explicit);
 					},
 					{
 						once: true,
@@ -244,9 +249,8 @@
 				);
 				document.addEventListener('keyup', function (event) {
 					if (event.keyCode == 27) {
-						closeForm(form, placement);
+						closeForm(form, placement, explicit);
 					}
-					console.warn(event);
 				});
 				form.addEventListener('click', function (event) {
 					event.stopPropagation();
@@ -257,10 +261,12 @@
 		}
 	}
 
-	function closeForm(form, placement) {
+	function closeForm(form, placement, explicit) {
 		var wrap = form.closest('.wp-block-mailster-form-outside-wrapper');
 		wrap.classList.remove('active');
-		set(placement.identifier, +new Date());
+		if (!explicit) {
+			set(placement.identifier, +new Date());
+		}
 		timeouts[placement.identifier].forEach(function (timeout) {
 			clearTimeout(timeout);
 		});

@@ -987,10 +987,14 @@ class MailsterBlockForms {
 		// in preview mode check for content here
 		$request_body = file_get_contents( 'php://input' );
 		if ( ! empty( $request_body ) ) {
-			$data       = json_decode( $request_body, true );
-			$blocks     = parse_blocks( $data['post_content'] );
-			$args       = wp_parse_args( $data['args'], $args );
-			$form_block = $blocks[0];
+			$data = json_decode( $request_body, true );
+			if ( isset( $data['block_form_content'] ) ) {
+				$blocks     = parse_blocks( $data['block_form_content'] );
+				$args       = wp_parse_args( $data['args'], $args );
+				$form_block = $blocks[0];
+			} else {
+				$form_block = $this->get_form_block( $form );
+			}
 		} else {
 			$form_block = $this->get_form_block( $form );
 		}
@@ -1028,7 +1032,7 @@ class MailsterBlockForms {
 
 		foreach ( $stylesheets as $s ) {
 			if ( file_exists( MAILSTER_DIR . 'build/' . $s ) ) {
-				$stylesheet .= file_get_contents( MAILSTER_DIR . 'build/' . $s );
+				// $stylesheet .= file_get_contents( MAILSTER_DIR . 'build/' . $s );
 			}
 		}
 
@@ -1186,14 +1190,16 @@ class MailsterBlockForms {
 		if ( isset( $args['triggers'] ) ) {
 			$form_args['triggers'] = $args['triggers'];
 			foreach ( $args['triggers'] as $trigger ) {
-				$form_args[ 'trigger_' . $trigger ] = $args[ 'trigger_' . $trigger ];
+				if ( isset( $args[ 'trigger_' . $trigger ] ) ) {
+					$form_args[ 'trigger_' . $trigger ] = $args[ 'trigger_' . $trigger ];
+				}
 			}
 		}
 
-		$inject .= '<div style="font-size:10px;opacity:0.5">' . json_encode( $form_args ) . '</div>';
 		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $form_args ) . '</script>';
 		$inject .= '<input name="_formid" type="hidden" value="' . esc_attr( $original_form->ID ) . '">' . "\n";
 		$inject .= '<input name="_timestamp" type="hidden" value="' . esc_attr( time() ) . '">' . "\n";
+		$inject .= '<div style="font-size:10px;opacity:0.5">' . json_encode( $form_args ) . '</div>';
 
 		$html = str_replace( '</form>', $inject . '</form>', $html );
 
