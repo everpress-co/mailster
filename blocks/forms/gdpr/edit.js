@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -30,7 +26,9 @@ import { useEntityProp } from '@wordpress/core-data';
 
 import { more } from '@wordpress/icons';
 
-//import InputFieldInspectorControls from '../input/inspector.js';
+/**
+ * Internal dependencies
+ */
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;

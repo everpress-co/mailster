@@ -5,14 +5,13 @@
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
+import { useBlockProps, RichText } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
  */
 
-import { __ } from '@wordpress/i18n';
-
-import { useBlockProps, RichText } from '@wordpress/block-editor';
 import FormElement from './FormElement';
 
 export default function save(props) {

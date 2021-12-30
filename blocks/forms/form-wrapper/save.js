@@ -6,13 +6,12 @@
  * WordPress dependencies
  */
 
+import { __ } from '@wordpress/i18n';
+import { InnerBlocks, useBlockProps } from '@wordpress/block-editor';
+
 /**
  * Internal dependencies
  */
-
-import { __ } from '@wordpress/i18n';
-
-import { InnerBlocks, useBlockProps } from '@wordpress/block-editor';
 
 export default function save(props) {
 	const { attributes } = props;

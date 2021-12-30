@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -36,6 +32,10 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 import { more } from '@wordpress/icons';
 import { select, dispatch, subscribe } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 
 import PlacementOption from './placement-option';
 import PlacementIcons from './placement-icons';

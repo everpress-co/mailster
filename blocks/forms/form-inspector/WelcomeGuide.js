@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -37,6 +33,10 @@ import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
 import { store as Store } from '@wordpress/edit-post';
 
 import { more } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 
 import FormModal from './FormModal';
 

@@ -2,15 +2,13 @@
  * External dependencies
  */
 
+import Select from 'react-select';
+
 /**
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */ import { __, sprintf } from '@wordpress/i18n';
-
-import Select from 'react-select';
+import { __, sprintf } from '@wordpress/i18n';
 
 import {
 	useBlockProps,
@@ -64,6 +62,10 @@ import {
 	__experimentalItemGroup as ItemGroup,
 	__experimentalItem as Item,
 } from '@wordpress/components';
+
+/**
+ * Internal dependencies
+ */
 
 export default function PostTokenField(props) {
 	const { postType, taxonomy = false, options, setOptions } = props;
@@ -127,8 +129,6 @@ export default function PostTokenField(props) {
 				return a.value - b.value;
 			});
 	}
-
-	console.warn(taxonomy);
 
 	function searchTokens(token) {
 		const endpoint =

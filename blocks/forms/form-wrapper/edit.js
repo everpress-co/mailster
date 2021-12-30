@@ -2,17 +2,14 @@
  * External dependencies
  */
 
+const { kebabCase } = lodash;
+
 /**
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
-const { pick, kebabCase } = lodash;
 import {
 	InnerBlocks,
 	useBlockProps,
@@ -54,6 +51,10 @@ import { useEntityProp } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 
 import { store as editPostStore } from '@wordpress/edit-post';
+
+/**
+ * Internal dependencies
+ */
 
 import './editor.scss';
 

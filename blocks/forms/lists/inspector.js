@@ -5,11 +5,6 @@
 /**
  * WordPress dependencies
  */
-
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -28,10 +23,13 @@ import {
 	RangeControl,
 	ColorPalette,
 } from '@wordpress/components';
-
 import { Fragment, Component, useState } from '@wordpress/element';
 
 import { more } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 
 import ListsPanel from '../form-inspector/ListsPanel';
 

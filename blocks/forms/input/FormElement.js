@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -40,6 +36,10 @@ import {
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 
 import { more } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 
 export default function FormElement(props) {
 	const { attributes, setAttributes, isSelected, clientId } = props;

@@ -6,15 +6,13 @@
  * WordPress dependencies
  */
 
+import { __ } from '@wordpress/i18n';
+import { useBlockProps, RichText } from '@wordpress/block-editor';
+import { useEntityProp } from '@wordpress/core-data';
+
 /**
  * Internal dependencies
  */
-
-import { __ } from '@wordpress/i18n';
-
-import { useBlockProps, RichText } from '@wordpress/block-editor';
-import { useSelect, select } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
 
 export default function save(props) {
 	const { attributes, setAttributes, isSelected } = props;

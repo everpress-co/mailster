@@ -5,11 +5,6 @@
 /**
  * WordPress dependencies
  */
-
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -52,6 +47,10 @@ import {
 	DropdownMenu,
 	SelectControl,
 } from '@wordpress/components';
+
+/**
+ * Internal dependencies
+ */
 
 function MailsterFormSelector(props) {
 	const { attributes, setAttributes, isSelected } = props;

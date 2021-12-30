@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -46,6 +42,10 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 
 import { more, external } from '@wordpress/icons';
 import { select, dispatch } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 
 import { StylesContent, colorSettings } from '../shared/StylesContent';
 

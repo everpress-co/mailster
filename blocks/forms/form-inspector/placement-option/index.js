@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -56,6 +52,10 @@ import apiFetch from '@wordpress/api-fetch';
 import { useDebounce } from '@wordpress/compose';
 import { useEntityProp } from '@wordpress/core-data';
 import { select, dispatch, subscribe } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 
 export default function PlacementOption(props) {
 	const { meta, setMeta, setOpen, placement, setPlacements } = props;

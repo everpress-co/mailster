@@ -5,11 +5,6 @@
 /**
  * WordPress dependencies
  */
-
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -53,6 +48,10 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 import { more, external } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 
 const Wrapper = ({ children, isCSSModal, setCSSModal }) => {
 	return isCSSModal ? (

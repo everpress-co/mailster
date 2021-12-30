@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -29,6 +25,10 @@ import { Fragment, useState } from '@wordpress/element';
 
 import { more } from '@wordpress/icons';
 import { useSelect, select } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 
 import InputFieldInspectorControls from '../input/inspector.js';
 import FormElement from './FormElement';

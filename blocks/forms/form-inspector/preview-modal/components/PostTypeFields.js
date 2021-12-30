@@ -6,11 +6,7 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */ import { __, sprintf } from '@wordpress/i18n';
-
-import Select from 'react-select';
+import { __, sprintf } from '@wordpress/i18n';
 
 import {
 	useBlockProps,
@@ -64,6 +60,10 @@ import {
 	__experimentalItemGroup as ItemGroup,
 	__experimentalItem as Item,
 } from '@wordpress/components';
+
+/**
+ * Internal dependencies
+ */
 
 import PostTokenFields from './PostTokenFields';
 

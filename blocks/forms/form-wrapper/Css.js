@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -47,6 +43,10 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { useDebounce } from '@wordpress/compose';
 
 import { more, external } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 
 import { CssContent } from '../shared/CssContent';
 

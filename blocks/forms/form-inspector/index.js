@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -20,17 +16,6 @@ import {
 } from '@wordpress/edit-post';
 import { registerPlugin } from '@wordpress/plugins';
 
-/**
- * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
- * All files containing `style` keyword are bundled together. The code used
- * gets applied both to the front of your site and to the editor.
- *
- * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
- */
-
-/**
- * Internal dependencies
- */
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import {
 	useSelect,
@@ -41,6 +26,10 @@ import {
 } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { registerBlockVariation } from '@wordpress/blocks';
+
+/**
+ * Internal dependencies
+ */
 
 import InputFields from './InputFields';
 import Styles from './Styles';

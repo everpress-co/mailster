@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -40,6 +36,10 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { Icon, chevronUp, chevronDown, trash } from '@wordpress/icons';
 import { useSelect } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 
 export default function ListsPanel(props) {
 	const { meta, setMeta, attributes, setAttributes } = props;

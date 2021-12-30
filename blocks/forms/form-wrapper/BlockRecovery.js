@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -48,6 +44,10 @@ import { select, dispatch, subscribe } from '@wordpress/data';
 
 import { more } from '@wordpress/icons';
 import { getBlockType, createBlock, rawHandler } from '@wordpress/blocks';
+
+/**
+ * Internal dependencies
+ */
 
 export default function BlockRecovery(props) {
 	const { attributes, setAttributes, clientId } = props;

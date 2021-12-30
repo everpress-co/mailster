@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -34,6 +30,10 @@ import {
 	dispatch,
 	subscribe,
 } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 
 let locked = false;
 

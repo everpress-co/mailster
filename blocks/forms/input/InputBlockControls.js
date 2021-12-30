@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -44,6 +40,10 @@ import { Fragment, Component, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
 import { Icon, arrowUp, arrowDown, trash } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 
 export default function InputBlockControls(props) {
 	const { attributes, setAttributes, isSelected } = props;

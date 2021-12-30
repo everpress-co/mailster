@@ -5,11 +5,6 @@
 /**
  * WordPress dependencies
  */
-
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -49,6 +44,10 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 import { more } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 
 export const BackgroundContent = (props) => {
 	const { attributes, setAttributes } = props;

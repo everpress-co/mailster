@@ -6,10 +6,11 @@
  * WordPress dependencies
  */
 
+import { registerBlockType } from '@wordpress/blocks';
+
 /**
  * Internal dependencies
  */
-import { registerBlockType } from '@wordpress/blocks';
 
 import edit from './edit';
 import save from './save';

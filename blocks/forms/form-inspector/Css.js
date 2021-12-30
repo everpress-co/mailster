@@ -5,11 +5,6 @@
 /**
  * WordPress dependencies
  */
-
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -35,6 +30,10 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { brush } from '@wordpress/icons';
 
 import { CssContent } from '../shared/CssContent';
+
+/**
+ * Internal dependencies
+ */
 
 export default function Css(props) {
 	const { attributes, setAttributes, meta, setMeta } = props;

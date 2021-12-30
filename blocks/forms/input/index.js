@@ -6,16 +6,15 @@
  * WordPress dependencies
  */
 
+import { registerBlockType, createBlock } from '@wordpress/blocks';
+
 /**
  * Internal dependencies
  */
-import { registerBlockType, createBlock } from '@wordpress/blocks';
 
 import edit from './edit';
 import save from './save';
 import Icons from './Icons';
-
-import blo from './Icons';
 
 window.mailster_fields &&
 	window.mailster_fields.map((field) => {

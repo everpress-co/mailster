@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -49,6 +45,10 @@ import {
 } from '@wordpress/data';
 
 import ListsPanel from './ListsPanel';
+
+/**
+ * Internal dependencies
+ */
 
 export default function Lists(props) {
 	return (

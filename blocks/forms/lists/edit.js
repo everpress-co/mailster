@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -31,6 +27,10 @@ import { useEntityProp } from '@wordpress/core-data';
 import { useSelect, select } from '@wordpress/data';
 
 import { more } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 
 import InputFieldInspectorControls from './inspector.js';
 

@@ -6,9 +6,7 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */ import { isRTL, __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 import {
 	useBlockProps,
@@ -60,6 +58,10 @@ import {
 	__experimentalItemGroup as ItemGroup,
 	__experimentalItem as Item,
 } from '@wordpress/components';
+
+/**
+ * Internal dependencies
+ */
 
 export default function PlacementSettingsContent(props) {
 	const { options, setOptions, triggers, setTriggers } = props;
