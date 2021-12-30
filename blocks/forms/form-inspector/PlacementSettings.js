@@ -134,16 +134,6 @@ export default function PlacementSettings(props) {
 		meta.placements && setIsEnabled(meta.placements.includes(type));
 	}, [meta.placements]);
 
-	const [isDisplayed, setIsDisplayed] = useState(false);
-	useEffect(() => {
-		setIsDisplayed(
-			isEnabled &&
-				(options.all.length ||
-					options.posts.length ||
-					options.taxonomies.length)
-		);
-	}, [isEnabled, options.all, options.posts, options.taxonomies]);
-
 	return (
 		<Panel>
 			{'other' == type ? (
@@ -153,13 +143,17 @@ export default function PlacementSettings(props) {
 						isBordered={false}
 						size="medium"
 					>
-						<Item>PHP</Item>
 						<Item>
-							<code id={'form-php-' + currentPostId}>
-								{'<?php echo mailster_form( ' +
-									currentPostId +
-									' ); ?>'}
-							</code>
+							<h3>PHP</h3>
+						</Item>
+						<Item>
+							<pre>
+								<code id={'form-php-' + currentPostId}>
+									{'<?php echo mailster_form( ' +
+										currentPostId +
+										' ); ?>'}
+								</code>
+							</pre>
 						</Item>
 						<Item>
 							<code id="form-php-2">
@@ -206,7 +200,7 @@ export default function PlacementSettings(props) {
 						<>
 							<PanelBody
 								title="Display Options"
-								initialOpen={false}
+								initialOpen={true}
 							>
 								<PostTypeFields
 									options={options}
@@ -341,11 +335,6 @@ export default function PlacementSettings(props) {
 					)}
 				</>
 			)}
-			{!isDisplayed && (
-				<Notice status="warning" isDismissible={false}>
-					This form is currently not displayed anywhere.
-				</Notice>
-			)}{' '}
 		</Panel>
 	);
 }
@@ -385,9 +374,8 @@ const PostTypeFields = (props) => {
 		<>
 			{postTypes.map((postType) => {
 				return (
-					<PanelRow>
+					<PanelRow key={postType.slug}>
 						<ItemGroup
-							key={postType.slug}
 							isBordered={true}
 							className="widefat"
 							size="medium"
@@ -441,8 +429,7 @@ const PostTokenFields = (props) => {
 				options={options}
 				setOptions={setOptions}
 			/>
-			{false &&
-				taxonomies &&
+			{taxonomies &&
 				taxonomies
 					.filter((taxonomy) => {
 						return postType.taxonomies.includes(taxonomy.slug);
@@ -496,11 +483,6 @@ const PostTokenField = (props) => {
 			);
 		});
 
-	//return only valid tokens
-	function getTokensFromIds(ids) {
-		console.warn('idsToTokens', ids, mapResult(entries));
-	}
-
 	const isLoading = useSelect((select) => {
 		return select('core/data').isResolving('core', 'getEntityRecords', [
 			taxonomy ? 'taxonomy' : 'postType',
@@ -513,43 +495,6 @@ const PostTokenField = (props) => {
 		entries && setSelectedTokens(mapResult(entries));
 	}, [entries]);
 
-	if (taxonomy) {
-		//console.warn('entries', entries);
-	}
-
-	getTokensFromIds(ids);
-
-	// useEffect(() => {
-	// 	ids &&
-	// 		ids.length &&
-	// 		apiFetch({
-	// 			path:
-	// 				getEndPointByEntity(entity) +
-	// 				'?include=' +
-	// 				ids.join(','),
-	// 		}).then(
-	// 			(result) => {
-	// 				setLoading(false);
-	// 				const r = mapResult(result);
-	// 				setSelectedTokens(r);
-	// 				setCurrentPosts(r);
-	// 			},
-	// 			(error) => {}
-	// 		) &&
-	// 		setLoading(true);
-	// }, []);
-
-	// useEffect(() => {
-	// 	specifcTax && setSuggestions(mapResult(specifcTax));
-	// }, [specifcTax]);
-
-	// function getEndPointByEntity(entity) {
-	// 	if (taxonomy) {
-	// 		entity = 'taxonomies';
-	// 	}
-	// 	return 'wp/v2/' + entity;
-	// }
-
 	function mapResult(result) {
 		if (!result) {
 			return [];
@@ -559,17 +504,19 @@ const PostTokenField = (props) => {
 			.map((s, i) => {
 				return {
 					value: s.id,
-					label: s.id + ' ' + (s.name || s.title.rendered),
+					label: s.name || s.title.rendered,
 				};
 			})
 			.sort((a, b) => {
-				return b.id - a.id;
+				return a.value - b.value;
 			});
 	}
 
+	console.warn(taxonomy);
+
 	function searchTokens(token) {
 		const endpoint =
-			'wp/v2/' + (taxonomy ? taxonomy.name : postType.rest_base);
+			'wp/v2/' + (taxonomy ? taxonomy.rest_base : postType.rest_base);
 		token &&
 			apiFetch({
 				path:
@@ -590,17 +537,32 @@ const PostTokenField = (props) => {
 	const searchTokensDebounce = useDebounce(searchTokens, 500);
 
 	function setTokens(tokens) {
-		var newTokens = tokens.map((token) => {
-			return parseInt(token.value, 10);
-		});
-		var newPlacement = { ...options };
+		let newTokens = tokens.map((token) => {
+				return token.value;
+			}),
+			oldTokens = selectedTokens.map((token) => {
+				return token.value;
+			}),
+			newPlacement = { ...options },
+			difference,
+			intersection;
 
-		newPlacement[storeKey] = newTokens;
-		//newPlacement[storeKey] = [224, 2, 3, 1];
+		//token added
+		if (newTokens.length > oldTokens.length) {
+			difference = newTokens.filter((x) => !oldTokens.includes(x));
+			intersection = [...ids, ...difference];
 
-		if (newTokens.length) {
+			//token removed
+		} else {
+			difference = oldTokens.filter((x) => !newTokens.includes(x));
+			intersection = ids.filter((x) => !difference.includes(x));
+		}
+		newPlacement[storeKey] = intersection;
+
+		if (intersection.length) {
 			newPlacement['all'] = [];
 		}
+
 		setSelectedTokens(tokens);
 		setOptions(newPlacement);
 	}

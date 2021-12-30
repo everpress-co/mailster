@@ -177,52 +177,11 @@ class MailsterBlockForms {
 			return true;
 		}
 
-		// get all assigned term ids of this post
-		$terms = wp_get_object_terms( $current_id, get_object_taxonomies( 'post' ), array( 'fields' => 'ids' ) );
-
-		if ( ! empty( $options['category'] ) && $categories = get_the_terms( $current_id, 'category' ) ) {
-			$cats = wp_list_pluck( $categories, 'term_id' );
-			if ( array_intersect( $options['category'], $cats ) ) {
+		if ( ! empty( $options['taxonomies'] ) ) {
+			// get all assigned term ids of this post
+			$terms = wp_get_object_terms( $current_id, get_object_taxonomies( get_post_type() ), array( 'fields' => 'ids' ) );
+			if ( array_intersect( $options['taxonomies'], $terms ) ) {
 				return true;
-			}
-		}
-
-		if ( ! empty( $options['post_tag'] ) && $tags = get_the_terms( $current_id, 'post_tag' ) ) {
-			$cats = wp_list_pluck( $tags, 'term_id' );
-			if ( array_intersect( $options['post_tag'], $cats ) ) {
-				return true;
-			}
-		}
-
-		return false;
-
-		$options = get_post_meta( $form_id, 'placement_' . $context, true );
-
-		if ( $context ) {
-			$options['classes'] = array( 'mailster-block-form-type-' . $context );
-		}
-
-		if ( isset( $options['all'] ) && $options['all'] ) {
-			return $options;
-		}
-
-		$current_id = get_the_ID();
-
-		if ( in_array( $current_id, $options['posts'] ) ) {
-			return $options;
-		}
-
-		if ( ! empty( $options['category'] ) && $categories = get_the_terms( $current_id, 'category' ) ) {
-			$cats = wp_list_pluck( $categories, 'term_id' );
-			if ( array_intersect( $options['category'], $cats ) ) {
-				return $options;
-			}
-		}
-
-		if ( ! empty( $options['post_tag'] ) && $tags = get_the_terms( $current_id, 'post_tag' ) ) {
-			$cats = wp_list_pluck( $tags, 'term_id' );
-			if ( array_intersect( $options['post_tag'], $cats ) ) {
-				return $options;
 			}
 		}
 

@@ -118,18 +118,43 @@ const ModalContent = (props) => {
 	});
 
 	const posts = useSelect((select) => {
-		return select('core').getEntityRecords('postType', 'post', postQuery);
+		return select('core').getEntityRecords(
+			'postType',
+			all[0] || 'post',
+			postQuery
+		);
 	});
 
 	const [isLoading, setIsLoading] = useState(
 		useSelect((select) => {
 			return select('core/data').isResolving('core', 'getEntityRecords', [
 				'postType',
-				'post',
+				all[0] || 'post',
 				postQuery,
 			]);
 		})
 	);
+
+	const [isDisplayed, setIsDisplayed] = useState(false);
+	useEffect(() => {
+		if (isOther) {
+			setIsDisplayed(true);
+		} else if (
+			options.all?.length ||
+			options.posts?.length ||
+			options.taxonomies?.length
+		) {
+			if (type == 'content') {
+				setIsDisplayed(true);
+			} else if (options.triggers?.length) {
+				setIsDisplayed(true);
+			} else {
+				setIsDisplayed(false);
+			}
+		} else {
+			setIsDisplayed(false);
+		}
+	}, [options.all, options.posts, options.taxonomies, options.triggers]);
 
 	const setUrlDebounce = useDebounce(setUrl, 1000);
 	const setPreviewOptionsDebounce = useDebounce(setPreviewOptions, 1000);
@@ -172,7 +197,7 @@ const ModalContent = (props) => {
 		if (!options || Object.keys(options).length === 0) {
 			return;
 		}
-		setIsLoading(true);
+		typeActive && isDisplayed && setIsLoading(true);
 		setPreviewOptions();
 	}, [options]);
 
@@ -241,7 +266,7 @@ const ModalContent = (props) => {
 			post_content: postContent,
 		};
 
-		if (iframeRef.current) {
+		if (iframeRef.current && isDisplayed) {
 			setIsLoading(true);
 			iframeRef.current.contentWindow.postMessage(
 				JSON.stringify(obj),
@@ -304,6 +329,7 @@ const ModalContent = (props) => {
 									'Show the preview as currently logged in user.',
 									'mailster'
 								)}
+								isDisabled={isOther}
 								isPressed={!urlLoggedIn}
 								onClick={() => setUrlLoggedIn(!urlLoggedIn)}
 								showTooltip={true}
@@ -317,7 +343,7 @@ const ModalContent = (props) => {
 							/>
 						</Toolbar>
 					</div>
-					{typeActive ? (
+					{typeActive && isDisplayed ? (
 						<div
 							className={
 								'preview-pane-iframe preview-pane-iframe-' +
@@ -340,10 +366,15 @@ const ModalContent = (props) => {
 						>
 							<FlexItem>
 								<h3>
-									{__(
-										'Please enable a Placement option on the right',
-										'mailster'
-									)}
+									{isDisplayed
+										? __(
+												'Please enable a Placement option on the right',
+												'mailster'
+										  )
+										: __(
+												'This form is currently not displayed anywhere.',
+												'mailster'
+										  )}
 								</h3>
 							</FlexItem>
 						</Flex>
@@ -355,7 +386,7 @@ const ModalContent = (props) => {
 						activeClass="is-active"
 						orientation="horizontal"
 						initialTabName={initialType}
-						onSelect={(tabName) => {}}
+						onSelect={(tabName) => setType(tabName)}
 						tabs={placements.map((placement) => {
 							return {
 								name: placement.type,
