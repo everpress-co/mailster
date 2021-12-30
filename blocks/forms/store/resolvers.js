@@ -1,9 +1,14 @@
 /**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
+ * External dependencies
  */
 
+/**
+ * WordPress dependencies
+ */
+
+/**
+ * Internal dependencies
+ */
 import * as actions from './actions';
 
 export function* getLists() {

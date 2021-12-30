@@ -1,7 +1,13 @@
 /**
- * Registers a new block provided a unique name and an object defining its behavior.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
+ * External dependencies
+ */
+
+/**
+ * WordPress dependencies
+ */
+
+/**
+ * Internal dependencies
  */
 
 import { __ } from '@wordpress/i18n';

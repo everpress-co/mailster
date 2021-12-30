@@ -1,8 +1,11 @@
 /**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
+ * External dependencies
  */
+
+/**
+ * WordPress dependencies
+ */
+
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -38,16 +41,11 @@ import apiFetch from '@wordpress/api-fetch';
 
 import { Icon, chevronUp, chevronDown, trash } from '@wordpress/icons';
 
-import Styles from './Styles';
-
 /**
- * The edit function describes the structure of your block in the context of the
- * editor. This represents what the editor will render when the block is used.
- *
- * @see https://developer.wordpress.org/block-editor/developers/block-api/block-edit-save/#edit
- *
- * @return {WPElement} Element to render.
+ * Internal dependencies
  */
+
+import Styles from './Styles';
 
 export default function InputFieldInspectorControls(props) {
 	const { attributes, setAttributes, isSelected } = props;

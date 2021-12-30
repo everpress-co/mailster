@@ -1,8 +1,15 @@
 /**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
+ * External dependencies
  */
+
+/**
+ * WordPress dependencies
+ */
+
+/**
+ * Internal dependencies
+ */
+
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -39,15 +46,6 @@ import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { more } from '@wordpress/icons';
 
 import { BackgroundContent } from '../shared/BackgroundContent';
-
-/**
- * The edit function describes the structure of your block in the context of the
- * editor. This represents what the editor will render when the block is used.
- *
- * @see https://developer.wordpress.org/block-editor/developers/block-api/block-edit-save/#edit
- *
- * @return {WPElement} Element to render.
- */
 
 export default function Background(props) {
 	const { attributes, setAttributes, meta, setMeta, isSelected, clientId } =

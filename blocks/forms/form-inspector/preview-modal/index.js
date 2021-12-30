@@ -1,9 +1,14 @@
 /**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
+ * External dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * WordPress dependencies
+ */
+
+/**
+ * Internal dependencies
+ */ import { __, sprintf } from '@wordpress/i18n';
 
 import {
 	useBlockProps,
