@@ -83,7 +83,20 @@ const placements = [
 export default function Placement(props) {
 	const { meta, setMeta } = props;
 
-	const [isOpen, setOpen] = useState(false);
+	const [isOpen, setOpen] = useState('popup');
+
+	function setPlacements(placement, add) {
+		var newPlacements = [...meta.placements];
+		if (add) {
+			newPlacements.push(placement);
+		} else {
+			newPlacements = newPlacements.filter((el) => {
+				return el != placement;
+			});
+		}
+
+		setMeta({ placements: newPlacements });
+	}
 
 	const closeModal = () => {
 		setOpen(false);
@@ -96,6 +109,7 @@ export default function Placement(props) {
 				isOpen={isOpen}
 				setOpen={setOpen}
 				placements={placements}
+				setPlacements={setPlacements}
 				initialType={isOpen}
 			/>
 			<PanelRow>
@@ -106,9 +120,8 @@ export default function Placement(props) {
 								<PlacementOption
 									{...props}
 									key={placement.type}
-									title={placement.title}
-									type={placement.type}
-									image={placement.image}
+									placement={placement}
+									setPlacements={setPlacements}
 									setOpen={setOpen}
 								/>
 							);

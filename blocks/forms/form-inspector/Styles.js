@@ -55,8 +55,6 @@ export default function Styles(props) {
 		[]
 	);
 
-	console.warn('asdas', blocks);
-
 	return (
 		<PluginDocumentSettingPanel
 			name="styling"

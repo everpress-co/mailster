@@ -3,7 +3,7 @@
  *
  * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
  */
-import { isRTL, __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 import Select from 'react-select';
 
@@ -46,14 +46,16 @@ import {
 	FlexBlock,
 	BaseControl,
 	SelectControl,
+	Spinner,
+	Notice,
 	useCopyToClipboard,
 	__experimentalNumberControl as NumberControl,
 	__experimentalBoxControl as BoxControl,
+	__experimentalFormGroup as FormGroup,
 } from '@wordpress/components';
-
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 
-import { undo, chevronRight, chevronLeft } from '@wordpress/icons';
+import { undo, chevronRight, chevronLeft, helpFilled } from '@wordpress/icons';
 import apiFetch from '@wordpress/api-fetch';
 import { useDebounce } from '@wordpress/compose';
 import { useEntityProp } from '@wordpress/core-data';
@@ -79,13 +81,12 @@ export default function PlacementSettings(props) {
 	const {
 		meta,
 		setMeta,
-		type,
-		image,
-		title,
+		placement,
+		setPlacements,
 		useThemeStyle,
 		setUseThemeStyle,
 	} = props;
-	const { placements } = meta;
+	const { type, title } = placement;
 
 	const options = meta['placement_' + type] || {};
 
@@ -95,27 +96,10 @@ export default function PlacementSettings(props) {
 		setMeta({ ['placement_' + type]: newOptions });
 	}
 
-	const className = ['placement-option'];
-
 	const currentPostId = useSelect(
 		(select) => select('core/editor').getCurrentPostId(),
 		[]
 	);
-
-	placements.includes(type) && className.push('enabled');
-
-	function setPlacements(placement, add) {
-		var newPlacements = [...placements];
-		if (add) {
-			newPlacements.push(placement);
-		} else {
-			newPlacements = newPlacements.filter((el) => {
-				return el != placement;
-			});
-		}
-
-		setMeta({ placements: newPlacements });
-	}
 
 	const triggers = options.triggers || [];
 
@@ -145,125 +129,99 @@ export default function PlacementSettings(props) {
 		setOptions({ close: newMethods });
 	}
 
+	const [isEnabled, setIsEnabled] = useState(meta.placements.includes(type));
+	useEffect(() => {
+		meta.placements && setIsEnabled(meta.placements.includes(type));
+	}, [meta.placements]);
+
+	const [isDisplayed, setIsDisplayed] = useState(false);
+	useEffect(() => {
+		setIsDisplayed(
+			isEnabled &&
+				(options.all.length ||
+					options.posts.length ||
+					options.taxonomies.length)
+		);
+	}, [isEnabled, options.all, options.posts, options.taxonomies]);
+
 	return (
-		<>
+		<Panel>
 			{'other' == type ? (
-				<ItemGroup isBordered={false} size="small">
-					<Item>PHP</Item>
-					<Item>
-						<code id={'form-php-' + currentPostId}>
-							{'<?php echo mailster_form( ' +
-								currentPostId +
-								' ); ?>'}
-						</code>
-					</Item>
-					<Item>
-						<code id="form-php-2">
-							{'echo mailster_form( ' + currentPostId + ' );'}
-						</code>
-					</Item>
-					<Item>
-						<code id="form-php-3">
-							{'<?php $form_html = mailster_form( ' +
-								currentPostId +
-								' ); ?>'}
-						</code>
-					</Item>
-					<Item>
-						<CheckboxControl
-							label={__('useThemeStyle', 'mailster')}
-							checked={useThemeStyle}
-							onChange={(val) => {
-								setUseThemeStyle(!useThemeStyle);
-							}}
-						/>
-					</Item>
-				</ItemGroup>
-			) : (
-				<>
-					<ItemGroup isBordered={false} isSeparated size="small">
+				<PanelRow>
+					<ItemGroup
+						className="widefat"
+						isBordered={false}
+						size="medium"
+					>
+						<Item>PHP</Item>
+						<Item>
+							<code id={'form-php-' + currentPostId}>
+								{'<?php echo mailster_form( ' +
+									currentPostId +
+									' ); ?>'}
+							</code>
+						</Item>
+						<Item>
+							<code id="form-php-2">
+								{'echo mailster_form( ' + currentPostId + ' );'}
+							</code>
+						</Item>
+						<Item>
+							<code id="form-php-3">
+								{'<?php $form_html = mailster_form( ' +
+									currentPostId +
+									' ); ?>'}
+							</code>
+						</Item>
 						<Item>
 							<CheckboxControl
-								label={__('Enabled', 'mailster')}
-								value={type}
-								checked={placements.includes(type)}
+								label={__('useThemeStyle', 'mailster')}
+								checked={useThemeStyle}
 								onChange={(val) => {
-									setPlacements(type, val);
+									setUseThemeStyle(!useThemeStyle);
 								}}
 							/>
 						</Item>
 					</ItemGroup>
+				</PanelRow>
+			) : (
+				<>
+					<PanelBody opened={true}>
+						<PanelRow>
+							<CheckboxControl
+								label={sprintf(
+									__('Enabled this form for %s.', 'mailster'),
+									title
+								)}
+								value={type}
+								checked={isEnabled}
+								onChange={(val) => {
+									setPlacements(type, val);
+								}}
+							/>
+						</PanelRow>
+					</PanelBody>
 
-					{placements.includes(type) && (
+					{isEnabled && (
 						<>
-							<ItemGroup
-								isBordered={false}
-								isSeparated
-								size="small"
+							<PanelBody
+								title="Display Options"
+								initialOpen={false}
 							>
-								<Item>
-									<CheckboxControl
-										label={__(
-											'Display on all pages',
-											'mailster'
-										)}
-										checked={options.all}
-										onChange={(val) => {
-											setOptions({ all: val });
-										}}
-									/>
-								</Item>
-							</ItemGroup>
-							{!options.all && (
-								<ItemGroup
-									isBordered={false}
-									isSeparated
-									size="small"
-								>
-									<PostTokenField
-										{...props}
-										entity="posts"
-										options={options}
-										setOptions={setOptions}
-										title={__('Posts/Pages', 'mailster')}
-										help={__(
-											'Display on following posts/pages.',
-											'mailster'
-										)}
-									/>
-									<PostTokenField
-										{...props}
-										entity="category"
-										options={options}
-										setOptions={setOptions}
-										title={__('Categories', 'mailster')}
-										help={__(
-											'Display on posts/pages with these categories.',
-											'mailster'
-										)}
-									/>
-									<PostTokenField
-										{...props}
-										entity="post_tag"
-										options={options}
-										setOptions={setOptions}
-										title={__('Tags', 'mailster')}
-										help={__(
-											'Display on posts/pages with these tags.',
-											'mailster'
-										)}
-									/>
-								</ItemGroup>
-							)}
-							{'content' == type && (
-								<PlacementSettingsContent
-									{...props}
-									setOptions={setOptions}
+								<PostTypeFields
 									options={options}
-									setTriggers={setTriggers}
-									triggers={triggers}
+									setOptions={setOptions}
 								/>
-							)}
+								{'content' == type && (
+									<PlacementSettingsContent
+										{...props}
+										setOptions={setOptions}
+										options={options}
+										setTriggers={setTriggers}
+										triggers={triggers}
+									/>
+								)}
+							</PanelBody>
 							{'content' != type && (
 								<>
 									<PlacementSettingsTriggers
@@ -273,145 +231,353 @@ export default function PlacementSettings(props) {
 										setTriggers={setTriggers}
 										triggers={triggers}
 									/>
-									<ItemGroup isBordered={false} size="small">
-										<SelectControl
-											label={__('Animation', 'mailster')}
-											value={options.animation}
-											onChange={(val) => {
-												setOptions({ animation: val });
-											}}
-										>
-											<option value="">
-												{__('None', 'mailster')}
-											</option>
-											<option value="fadein">
-												{__('FadeIn', 'mailster')}
-											</option>
-											<option value="shake">
-												{__('Shake', 'mailster')}
-											</option>
-											<option value="swing">
-												{__('Swing', 'mailster')}
-											</option>
-											<option value="heartbeat">
-												{__('Heart Beat', 'mailster')}
-											</option>
-											<option value="tada">
-												{__('Tada', 'mailster')}
-											</option>
-											<option value="wobble">
-												{__('Wobble', 'mailster')}
-											</option>
-										</SelectControl>
-									</ItemGroup>
+									<PanelBody
+										title="Extra"
+										initialOpen={false}
+									>
+										<PanelRow>
+											<ItemGroup
+												isBordered={false}
+												size="small"
+											>
+												<SelectControl
+													label={__(
+														'Animation',
+														'mailster'
+													)}
+													value={options.animation}
+													onChange={(val) => {
+														setOptions({
+															animation: val,
+														});
+													}}
+												>
+													<option value="">
+														{__('None', 'mailster')}
+													</option>
+													<option value="fadein">
+														{__(
+															'FadeIn',
+															'mailster'
+														)}
+													</option>
+													<option value="shake">
+														{__(
+															'Shake',
+															'mailster'
+														)}
+													</option>
+													<option value="swing">
+														{__(
+															'Swing',
+															'mailster'
+														)}
+													</option>
+													<option value="heartbeat">
+														{__(
+															'Heart Beat',
+															'mailster'
+														)}
+													</option>
+													<option value="tada">
+														{__('Tada', 'mailster')}
+													</option>
+													<option value="wobble">
+														{__(
+															'Wobble',
+															'mailster'
+														)}
+													</option>
+												</SelectControl>
+											</ItemGroup>
+										</PanelRow>
+									</PanelBody>
 								</>
 							)}
-							<PanelRow>
-								<RangeControl
-									className="widefat"
-									label={__('Form Width', 'mailster')}
-									help={__(
-										'Set the with of your form in %',
-										'mailster'
-									)}
-									value={options.width}
-									allowReset={true}
-									onChange={(val) =>
-										setOptions({
-											width: val,
-										})
-									}
-									min={10}
-									max={100}
-									initialPosition={100}
-								/>
-							</PanelRow>
-							<PanelRow>
-								<BoxControl
-									label={__('Form Padding', 'mailster')}
-									values={options.padding}
-									help={__(
-										'Set the padding of your form in %',
-										'mailster'
-									)}
-									resetValues={{
-										top: undefined,
-										left: undefined,
-										right: undefined,
-										bottom: undefined,
-									}}
-									onChange={(val) =>
-										setOptions({
-											padding: val,
-										})
-									}
-								/>
-							</PanelRow>
+							<PanelBody title="Style" initialOpen={false}>
+								<PanelRow>
+									<RangeControl
+										className="widefat"
+										label={__('Form Width', 'mailster')}
+										help={__(
+											'Set the with of your form in %',
+											'mailster'
+										)}
+										value={options.width}
+										allowReset={true}
+										onChange={(val) =>
+											setOptions({
+												width: val,
+											})
+										}
+										min={10}
+										max={100}
+										initialPosition={100}
+									/>
+								</PanelRow>
+								<PanelRow>
+									<BoxControl
+										label={__('Form Padding', 'mailster')}
+										values={options.padding}
+										help={__(
+											'Set the padding of your form in %',
+											'mailster'
+										)}
+										resetValues={{
+											top: undefined,
+											left: undefined,
+											right: undefined,
+											bottom: undefined,
+										}}
+										onChange={(val) =>
+											setOptions({
+												padding: val,
+											})
+										}
+									/>
+								</PanelRow>
+							</PanelBody>
 						</>
 					)}
 				</>
 			)}
-		</>
+			{!isDisplayed && (
+				<Notice status="warning" isDismissible={false}>
+					This form is currently not displayed anywhere.
+				</Notice>
+			)}{' '}
+		</Panel>
 	);
 }
 
-const PostTokenField = (props) => {
-	const { entity, meta, setMeta, type, title, help, options, setOptions } =
-		props;
+const PostTypeFields = (props) => {
+	const { options, setOptions } = props;
 
-	const [selectedTokens, setSelectedTokens] = useState([]);
-	const [suggestions, setSuggestions] = useState([]);
-	const [loading, setLoading] = useState(false);
+	const postTypes = useSelect((select) => {
+		const result = select('core').getEntityRecords('root', 'postType');
+		return !result
+			? []
+			: result.filter((type) => {
+					return (
+						type.viewable &&
+						!['attachment', 'custom-post-type_', 'post_'].includes(
+							type.slug
+						)
+					);
+			  });
+	});
 
-	const [posts, setTokensState] = useState(options[entity]);
+	const alls = options.all || [];
 
-	useEffect(() => {
-		posts &&
-			posts.length &&
-			apiFetch({
-				path:
-					getEndPointByEntity(entity) + '?include=' + posts.join(','),
-			}).then(
-				(result) => {
-					setLoading(false);
-					const r = mapResult(result);
-					setSelectedTokens(r);
-				},
-				(error) => {}
-			) &&
-			setLoading(true);
-	}, []);
-
-	function getEndPointByEntity(entity) {
-		switch (entity) {
-			case 'category':
-				entity = 'categories';
-				break;
-			case 'post_tag':
-				entity = 'tags';
-				break;
+	function setAll(all, add) {
+		var newAlls = [...alls];
+		if (add) {
+			newAlls.push(all);
+		} else {
+			newAlls = newAlls.filter((el) => {
+				return el != all;
+			});
 		}
-		return 'wp/v2/' + entity;
+		setOptions({ all: newAlls });
 	}
 
+	return (
+		<>
+			{postTypes.map((postType) => {
+				return (
+					<PanelRow>
+						<ItemGroup
+							key={postType.slug}
+							isBordered={true}
+							className="widefat"
+							size="medium"
+						>
+							<Item>
+								<CheckboxControl
+									label={__(
+										'Display on all ' + postType.name,
+										'mailster'
+									)}
+									checked={alls.includes(postType.slug)}
+									onChange={(val) => {
+										setAll(postType.slug, val);
+									}}
+								/>
+							</Item>
+
+							{!alls.includes(postType.slug) && (
+								<PostTokenFields
+									options={options}
+									setOptions={setOptions}
+									postType={postType}
+								/>
+							)}
+						</ItemGroup>
+					</PanelRow>
+				);
+			})}
+		</>
+	);
+};
+
+const PostTokenFields = (props) => {
+	const { postType, taxonomy, options, setOptions } = props;
+
+	const taxonomies = useSelect((select) => {
+		return select('core').getEntityRecords('root', 'taxonomy');
+	});
+
+	// const specifcTax = useSelect((select) => {
+	// 	return select('core').getEntityRecords('taxonomy', taxonomy);
+	// });
+
+	// const tax = useSelect((select) => {
+	// 	return select('core').getEntityRecords('root', 'taxonomy');
+	// });
+	return (
+		<>
+			<PostTokenField
+				postType={postType}
+				options={options}
+				setOptions={setOptions}
+			/>
+			{false &&
+				taxonomies &&
+				taxonomies
+					.filter((taxonomy) => {
+						return postType.taxonomies.includes(taxonomy.slug);
+					})
+					.map((taxonomy) => {
+						return (
+							<PostTokenField
+								key={taxonomy.slug}
+								postType={postType}
+								taxonomy={taxonomy}
+								options={options}
+								setOptions={setOptions}
+							/>
+						);
+					})}
+		</>
+	);
+};
+
+const PostTokenField = (props) => {
+	const { postType, taxonomy = false, options, setOptions } = props;
+
+	const [selectedTokens, setSelectedTokens] = useState([]);
+	const [loading, setLoading] = useState(false);
+
+	const storeKey = taxonomy ? 'taxonomies' : 'posts';
+	const ids = options[storeKey] || [];
+
+	const [currentPosts, setCurrentPosts] = useState([]);
+	const [suggestions, setSuggestions] = useState([]);
+
+	const title = !taxonomy
+		? sprintf(__('Select %s…', 'mailster'), postType.name)
+		: sprintf(__('Select %s…', 'mailster'), taxonomy.name);
+
+	const help = !taxonomy
+		? sprintf(__('Display on these %s', 'mailster'), postType.name)
+		: sprintf(
+				__('Display on these %s with these %s', 'mailster'),
+				postType.name,
+				taxonomy.name
+		  );
+
+	const entries =
+		ids &&
+		useSelect((select) => {
+			return select('core').getEntityRecords(
+				taxonomy ? 'taxonomy' : 'postType',
+				taxonomy ? taxonomy.slug : postType.slug,
+				{ include: ids }
+			);
+		});
+
+	//return only valid tokens
+	function getTokensFromIds(ids) {
+		console.warn('idsToTokens', ids, mapResult(entries));
+	}
+
+	const isLoading = useSelect((select) => {
+		return select('core/data').isResolving('core', 'getEntityRecords', [
+			taxonomy ? 'taxonomy' : 'postType',
+			taxonomy ? taxonomy.slug : postType.slug,
+			{ include: ids },
+		]);
+	});
+
+	useEffect(() => {
+		entries && setSelectedTokens(mapResult(entries));
+	}, [entries]);
+
+	if (taxonomy) {
+		//console.warn('entries', entries);
+	}
+
+	getTokensFromIds(ids);
+
+	// useEffect(() => {
+	// 	ids &&
+	// 		ids.length &&
+	// 		apiFetch({
+	// 			path:
+	// 				getEndPointByEntity(entity) +
+	// 				'?include=' +
+	// 				ids.join(','),
+	// 		}).then(
+	// 			(result) => {
+	// 				setLoading(false);
+	// 				const r = mapResult(result);
+	// 				setSelectedTokens(r);
+	// 				setCurrentPosts(r);
+	// 			},
+	// 			(error) => {}
+	// 		) &&
+	// 		setLoading(true);
+	// }, []);
+
+	// useEffect(() => {
+	// 	specifcTax && setSuggestions(mapResult(specifcTax));
+	// }, [specifcTax]);
+
+	// function getEndPointByEntity(entity) {
+	// 	if (taxonomy) {
+	// 		entity = 'taxonomies';
+	// 	}
+	// 	return 'wp/v2/' + entity;
+	// }
+
 	function mapResult(result) {
-		switch (entity) {
-			case 'category':
-			case 'post_tag':
-				return result.map((s, i) => {
-					return { value: s.id, label: s.name };
-				});
-			case 'posts':
-				return result.map((s, i) => {
-					return { value: s.id, label: s.title.rendered };
-				});
+		if (!result) {
+			return [];
 		}
+
+		return result
+			.map((s, i) => {
+				return {
+					value: s.id,
+					label: s.id + ' ' + (s.name || s.title.rendered),
+				};
+			})
+			.sort((a, b) => {
+				return b.id - a.id;
+			});
 	}
 
 	function searchTokens(token) {
+		const endpoint =
+			'wp/v2/' + (taxonomy ? taxonomy.name : postType.rest_base);
 		token &&
 			apiFetch({
-				path: getEndPointByEntity(entity) + '?search=' + token,
+				path:
+					endpoint +
+					'?search=' +
+					token +
+					'&type=' +
+					postType.rest_base,
 			}).then(
 				(result) => {
 					setLoading(false);
@@ -421,22 +587,19 @@ const PostTokenField = (props) => {
 			) &&
 			setLoading(true);
 	}
-
-	function validateInput(token) {
-		return sug.includes(token);
-	}
-
 	const searchTokensDebounce = useDebounce(searchTokens, 500);
 
 	function setTokens(tokens) {
-		var newTokens = tokens.map((post) => {
-			return parseInt(post.value, 10);
+		var newTokens = tokens.map((token) => {
+			return parseInt(token.value, 10);
 		});
 		var newPlacement = { ...options };
 
-		newPlacement[entity] = newTokens;
+		newPlacement[storeKey] = newTokens;
+		//newPlacement[storeKey] = [224, 2, 3, 1];
+
 		if (newTokens.length) {
-			newPlacement['all'] = false;
+			newPlacement['all'] = [];
 		}
 		setSelectedTokens(tokens);
 		setOptions(newPlacement);
@@ -444,11 +607,11 @@ const PostTokenField = (props) => {
 
 	return (
 		<Item>
-			<BaseControl id={'form-token-field-' + entity} label={help}>
+			<BaseControl label={help}>
 				<Select
 					options={suggestions}
 					value={selectedTokens}
-					placeholder={__('Select ' + title + '…', 'mailster')}
+					placeholder={isLoading ? 'Loading' : title}
 					onInputChange={(tokens) => searchTokensDebounce(tokens)}
 					onChange={(tokens) => setTokens(tokens)}
 					isMulti

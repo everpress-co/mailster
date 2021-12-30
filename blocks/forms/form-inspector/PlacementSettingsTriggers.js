@@ -36,8 +36,10 @@ import {
 	BaseControl,
 	SelectControl,
 	useCopyToClipboard,
+	Tooltip,
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
+import { undo, chevronRight, chevronLeft, helpFilled } from '@wordpress/icons';
 
 import {
 	__experimentalItemGroup as ItemGroup,
@@ -56,7 +58,7 @@ export default function PlacementSettingsTriggers(props) {
 	const { options, setOptions, triggers, setTriggers } = props;
 
 	return (
-		<>
+		<PanelBody title="Triggers">
 			<PanelRow>
 				<CheckboxControl
 					label={__('Trigger after delay', 'mailster')}
@@ -65,6 +67,14 @@ export default function PlacementSettingsTriggers(props) {
 						setTriggers('delay', val);
 					}}
 				/>
+				<Tooltip
+					text={__(
+						'Mailster will show this popup after a give time. The preview will always trigger after 2 seconds.',
+						'mailster'
+					)}
+				>
+					<Icon icon="editor-help" />
+				</Tooltip>
 			</PanelRow>
 			{triggers.includes('delay') && (
 				<PanelRow>
@@ -86,25 +96,21 @@ export default function PlacementSettingsTriggers(props) {
 				</PanelRow>
 			)}
 			<PanelRow>
-				<p className="help">
-					{__(
-						'Mailster will show this popup after a give time. The preview will always trigger after 2 seconds.',
-						'mailster'
-					)}
-				</p>
-			</PanelRow>
-			<PanelRow>
 				<CheckboxControl
 					label={__('Trigger after inactive', 'mailster')}
 					checked={triggers.includes('inactive')}
 					onChange={(val) => {
 						setTriggers('inactive', val);
 					}}
-					help={__(
+				/>
+				<Tooltip
+					text={__(
 						"Mailster will show this popup when the user doesn't do any interaction with the website. The preview will always trigger after 4 seconds.",
 						'mailster'
 					)}
-				/>
+				>
+					<Icon icon="editor-help" />
+				</Tooltip>
 			</PanelRow>
 			{triggers.includes('inactive') && (
 				<PanelRow>
@@ -132,11 +138,15 @@ export default function PlacementSettingsTriggers(props) {
 					onChange={(val) => {
 						setTriggers('scroll', val);
 					}}
-					help={__(
+				/>
+				<Tooltip
+					text={__(
 						'Mailster will show this popup once the user scrolls to a certain position on your website.',
 						'mailster'
 					)}
-				/>
+				>
+					<Icon icon="editor-help" />
+				</Tooltip>
 			</PanelRow>
 			{triggers.includes('scroll') && (
 				<PanelRow>
@@ -165,11 +175,15 @@ export default function PlacementSettingsTriggers(props) {
 					onChange={(val) => {
 						setTriggers('click', val);
 					}}
-					help={__(
+				/>
+				<Tooltip
+					text={__(
 						'Show the form once the user clicks on specific element on the website.',
 						'mailster'
 					)}
-				/>
+				>
+					<Icon icon="editor-help" />
+				</Tooltip>
 			</PanelRow>
 			{triggers.includes('click') && (
 				<PanelRow>
@@ -192,12 +206,16 @@ export default function PlacementSettingsTriggers(props) {
 					onChange={(val) => {
 						setTriggers('exit', val);
 					}}
-					help={__(
+				/>
+				<Tooltip
+					text={__(
 						"Mailster will show this popup once the user tries to move away from the site. This doens't work on mobile.",
 						'mailster'
 					)}
-				/>
+				>
+					<Icon icon="editor-help" />
+				</Tooltip>
 			</PanelRow>
-		</>
+		</PanelBody>
 	);
 }

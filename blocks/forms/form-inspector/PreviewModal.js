@@ -36,6 +36,7 @@ import {
 	Spinner,
 	Flex,
 	FlexItem,
+	TabPanel,
 	Toolbar,
 	ToolbarGroup,
 	ToolbarItem,
@@ -63,7 +64,14 @@ import { useFocusableIframe } from '@wordpress/compose';
 import { Modal, Button, Tooltip } from '@wordpress/components';
 import { useDebounce } from '@wordpress/compose';
 
-import { check, desktop, tablet, mobile, update } from '@wordpress/icons';
+import {
+	check,
+	desktop,
+	tablet,
+	mobile,
+	update,
+	login,
+} from '@wordpress/icons';
 import { useEntityProp } from '@wordpress/core-data';
 
 import PlacementSettings from './PlacementSettings';
@@ -71,7 +79,7 @@ import PlacementSettingsContent from './PlacementSettingsContent';
 import PlacementSettingsTriggers from './PlacementSettingsTriggers';
 
 const ModalContent = (props) => {
-	const { setOpen, placements, meta, initialType } = props;
+	const { placements, meta, initialType } = props;
 
 	const [type, setType] = useState(initialType);
 	const [url, setUrl] = useState('');
@@ -291,6 +299,16 @@ const ModalContent = (props) => {
 								/>
 							</div>
 							<ToolbarButton
+								icon={login}
+								label={__(
+									'Show the preview as currently logged in user.',
+									'mailster'
+								)}
+								isPressed={!urlLoggedIn}
+								onClick={() => setUrlLoggedIn(!urlLoggedIn)}
+								showTooltip={true}
+							/>
+							<ToolbarButton
 								icon={update}
 								label="reload"
 								isDisabled={!url}
@@ -332,55 +350,29 @@ const ModalContent = (props) => {
 					)}
 				</div>
 				<div className="preview-sidebar">
-					<BaseControl className="widefat">
-						<PanelRow>
-							<p>
-								{__(
-									'Choose were you like to display the forms.',
-									'mailster'
-								)}
-							</p>
-						</PanelRow>
-					</BaseControl>
-					{placements.map((placement) => {
-						return (
-							<PanelBody
-								key={placement.type}
-								name={'placement-' + placement.type}
-								title={placement.title}
-								icon={
-									meta.placements.includes(placement.type) &&
-									check
-								}
-								opened={type == placement.type}
-								onToggle={(v) => {
-									setType(v ? placement.type : false);
-								}}
-							>
-								<PlacementSettings
-									{...props}
-									title={placement.title}
-									type={placement.type}
-									image={placement.image}
-									useThemeStyle={useThemeStyle}
-									setUseThemeStyle={setUseThemeStyle}
-								/>
-							</PanelBody>
-						);
-					})}
-					<BaseControl className="widefat">
-						<PanelRow>
-							<CheckboxControl
-								label={__('Stay logged in', 'mailster')}
-								checked={urlLoggedIn}
-								onChange={() => setUrlLoggedIn(!urlLoggedIn)}
-								help={__(
-									'Show the preview as currently logged in user.',
-									'mailster'
-								)}
+					<TabPanel
+						className="placement-tabs"
+						activeClass="is-active"
+						orientation="horizontal"
+						initialTabName={initialType}
+						onSelect={(tabName) => {}}
+						tabs={placements.map((placement) => {
+							return {
+								name: placement.type,
+								title: placement.title,
+								type: placement.type,
+							};
+						})}
+					>
+						{(placement) => (
+							<PlacementSettings
+								{...props}
+								placement={placement}
+								useThemeStyle={useThemeStyle}
+								setUseThemeStyle={setUseThemeStyle}
 							/>
-						</PanelRow>
-					</BaseControl>
+						)}
+					</TabPanel>
 				</div>
 			</Flex>
 		</div>
@@ -388,9 +380,7 @@ const ModalContent = (props) => {
 };
 
 export default function PreviewModal(props) {
-	const { meta, setMeta, setOpen, isOpen } = props;
-
-	const modalStyle = {};
+	const { setOpen, isOpen } = props;
 
 	return (
 		<>
@@ -399,7 +389,6 @@ export default function PreviewModal(props) {
 					title={__('Define your placement options', 'mailster')}
 					className="preview-modal"
 					onRequestClose={() => setOpen(false)}
-					style={modalStyle}
 					shouldCloseOnClickOutside={false}
 					isFullScreen={true}
 				>

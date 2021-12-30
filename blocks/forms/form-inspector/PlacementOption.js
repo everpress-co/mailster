@@ -73,27 +73,14 @@ import NavigatorButton from './NavigatorButton';
  */
 
 export default function PlacementOption(props) {
-	const { meta, setMeta, setOpen, type, image, title } = props;
-	const { placements } = meta;
+	const { meta, setMeta, setOpen, placement, setPlacements } = props;
+	const { type, image, title } = placement;
 
 	const className = ['placement-option'];
 
-	placements.includes(type) && className.push('enabled');
+	meta.placements.includes(type) && className.push('enabled');
 
-	function setPlacements(placement, add) {
-		var newPlacements = [...placements];
-		if (add) {
-			newPlacements.push(placement);
-		} else {
-			newPlacements = newPlacements.filter((el) => {
-				return el != placement;
-			});
-		}
-
-		setMeta({ placements: newPlacements });
-	}
-
-	const enabled = 'other' == type || placements.includes(type);
+	const enabled = 'other' == type || meta.placements.includes(type);
 
 	return (
 		<Card size="small" className={className.join(' ')}>

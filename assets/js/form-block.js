@@ -118,9 +118,6 @@
 				}
 			);
 
-			info.classList.remove('success');
-			info.classList.remove('error');
-
 			form.classList.add('loading');
 			form.setAttribute('disabled', true);
 
@@ -175,16 +172,12 @@
 						});
 					}
 					infoError.innerHTML = message;
-					// for css transition use timeout
-					setTimeout(function () {
-						info.classList.add('error');
-					}, 10);
+					info.classList.remove('success');
+					info.classList.add('error');
 				} else {
-					// for css transition use timeout
 					infoSuccess.innerHTML = message;
-					setTimeout(function () {
-						info.classList.add('success');
-					}, 10);
+					info.classList.remove('error');
+					info.classList.add('success');
 
 					if (response.data.redirect) {
 						window.location.href = response.data.redirect;

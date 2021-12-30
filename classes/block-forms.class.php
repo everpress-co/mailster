@@ -131,6 +131,8 @@ class MailsterBlockForms {
 
 	public function prepare_forms() {
 
+		// $terms = wp_get_object_terms( get_the_ID(), get_object_taxonomies('post'), array('fields' => 'ids') );
+
 		if ( $this->preview_data ) {
 
 			$options = $this->preview_data['options'];
@@ -174,6 +176,9 @@ class MailsterBlockForms {
 		if ( isset( $options['posts'] ) && in_array( $current_id, $options['posts'] ) ) {
 			return true;
 		}
+
+		// get all assigned term ids of this post
+		$terms = wp_get_object_terms( $current_id, get_object_taxonomies( 'post' ), array( 'fields' => 'ids' ) );
 
 		if ( ! empty( $options['category'] ) && $categories = get_the_terms( $current_id, 'category' ) ) {
 			$cats = wp_list_pluck( $categories, 'term_id' );
@@ -546,41 +551,6 @@ class MailsterBlockForms {
 
 		register_post_meta(
 			'newsletter_form',
-			'posts',
-			array(
-				'type'         => 'array',
-				'show_in_rest' => array(
-					'schema' => array(
-						'type'  => 'array',
-						'items' => array(
-							'type' => 'number',
-						),
-					),
-				),
-				'single'       => true,
-				'default'      => array(),
-			)
-		);
-
-		register_post_meta(
-			'newsletter_form',
-			'categories',
-			array(
-				'type'         => 'array',
-				'show_in_rest' => array(
-					'schema' => array(
-						'type'  => 'array',
-						'items' => array(
-							'type' => 'number',
-						),
-					),
-				),
-				'single'       => true,
-				'default'      => array(),
-			)
-		);
-		register_post_meta(
-			'newsletter_form',
 			'tags',
 			array(
 				'type'         => 'array',
@@ -611,7 +581,7 @@ class MailsterBlockForms {
 
 			if ( 'content' == $placement_type ) {
 				$default = array(
-					'all'     => false,
+					'all'     => array( 'post' ),
 					'tag'     => 'p',
 					'pos'     => 0,
 					'display' => 'start',
@@ -620,7 +590,7 @@ class MailsterBlockForms {
 				$default = array();
 			} else {
 				$default = array(
-					'all'              => false,
+					'all'              => array( 'post' ),
 					'triggers'         => array( 'delay' ),
 					'trigger_delay'    => 120,
 					'trigger_inactive' => 120,
@@ -648,7 +618,7 @@ class MailsterBlockForms {
 							'type'       => 'object',
 							'properties' => array(
 								'all'              => array(
-									'type' => 'boolean',
+									'type' => 'array',
 								),
 								'triggers'         => array(
 									'type' => 'array',
@@ -659,10 +629,7 @@ class MailsterBlockForms {
 								'posts'            => array(
 									'type' => 'array',
 								),
-								'category'         => array(
-									'type' => 'array',
-								),
-								'post_tag'         => array(
+								'taxonomies'       => array(
 									'type' => 'array',
 								),
 								'tag'              => array(
@@ -1028,14 +995,6 @@ class MailsterBlockForms {
 			$args['classes'][] = $form_block['attrs']['className'];
 		}
 
-		$stylesheet = '';
-
-		foreach ( $stylesheets as $s ) {
-			if ( file_exists( MAILSTER_DIR . 'build/' . $s ) ) {
-				// $stylesheet .= file_get_contents( MAILSTER_DIR . 'build/' . $s );
-			}
-		}
-
 		$custom_styles = array();
 
 		if ( isset( $form_block['attrs']['padding'] ) ) {
@@ -1114,10 +1073,10 @@ class MailsterBlockForms {
 			$embeded_style .= $input_styles;
 		}
 
-		require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
+		// require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
-		$i_error = libxml_use_internal_errors( true );
-		$htmldoc = new \InlineStyle\InlineStyle();
+		// $i_error = libxml_use_internal_errors( true );
+		// $htmldoc = new \InlineStyle\InlineStyle();
 
 		if ( isset( $form_block['attrs']['css'] ) ) {
 			foreach ( $form_block['attrs']['css'] as $name => $css ) {
@@ -1147,13 +1106,13 @@ class MailsterBlockForms {
 			}
 		}
 
-		$parsed = $htmldoc->parseStylesheet( $stylesheet );
-		foreach ( $parsed as $rule ) {
-			$selector = array_shift( $rule );
-			if ( ! empty( $rule ) && preg_match( '(::?(after|before))', $selector ) ) {
-				$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' ' . $selector . '{' . implode( ';', $rule ) . '}';
-			}
-		}
+		// $parsed = $htmldoc->parseStylesheet( $stylesheet );
+		// foreach ( $parsed as $rule ) {
+		// $selector = array_shift( $rule );
+		// if ( ! empty( $rule ) && preg_match( '(::?(after|before))', $selector ) ) {
+		// $embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' ' . $selector . '{' . implode( ';', $rule ) . '}';
+		// }
+		// }
 
 		if ( ! empty( $embeded_style ) ) {
 			$output = '<style>' . $embeded_style . '</style>' . $output;
@@ -1161,18 +1120,19 @@ class MailsterBlockForms {
 
 		$output = '<div class="' . implode( ' ', $args['classes'] ) . '" role="dialog" id="dialog1" aria-labelledby="dialog1_label" aria-modal="true">' . $output . '</div>';
 
-		$htmldoc->loadHTML( $output );
+		// $htmldoc->loadHTML( $output );
 
 		// $htmldoc->applyStylesheet( $stylesheet );
 
-		$html = $htmldoc->getHTML();
-		libxml_clear_errors();
-		libxml_use_internal_errors( $i_error );
+		// $html = $htmldoc->getHTML();
+		$html = $output;
+		// libxml_clear_errors();
+		// libxml_use_internal_errors( $i_error );
 
-		preg_match( '#<body([^>]*)>(.*)<\/body>#is', $html, $matches );
-		if ( ! empty( $matches ) ) {
-			$html = trim( $matches[2] );
-		}
+		// preg_match( '#<body([^>]*)>(.*)<\/body>#is', $html, $matches );
+		// if ( ! empty( $matches ) ) {
+		// $html = trim( $matches[2] );
+		// }
 
 		if ( $is_backend ) {
 			$html = do_shortcode( $html );
@@ -1199,7 +1159,9 @@ class MailsterBlockForms {
 		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $form_args ) . '</script>';
 		$inject .= '<input name="_formid" type="hidden" value="' . esc_attr( $original_form->ID ) . '">' . "\n";
 		$inject .= '<input name="_timestamp" type="hidden" value="' . esc_attr( time() ) . '">' . "\n";
-		$inject .= '<div style="font-size:10px;opacity:0.5">' . json_encode( $form_args ) . '</div>';
+		if ( is_user_logged_in() ) {
+			$inject .= '<div style="font-size:10px;opacity:0.5">' . json_encode( $form_args ) . '</div>';
+		}
 
 		$html = str_replace( '</form>', $inject . '</form>', $html );
 
