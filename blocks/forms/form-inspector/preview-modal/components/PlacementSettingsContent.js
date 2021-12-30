@@ -5,12 +5,6 @@
  */
 import { isRTL, __ } from '@wordpress/i18n';
 
-/**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
- */
 import {
 	useBlockProps,
 	InspectorControls,
@@ -56,13 +50,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { useDebounce } from '@wordpress/compose';
 import { useEntityProp } from '@wordpress/core-data';
 import { select, dispatch, subscribe } from '@wordpress/data';
-import {
-	__experimentalNavigatorProvider as NavigatorProvider,
-	__experimentalNavigatorScreen as NavigatorScreen,
-	__experimentalUseNavigator as useNavigator,
-} from '@wordpress/components';
 
-import NavigatorButton from './NavigatorButton';
 import {
 	__experimentalItemGroup as ItemGroup,
 	__experimentalItem as Item,

@@ -5,12 +5,6 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 
-/**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
- */
 import {
 	useBlockProps,
 	InspectorControls,
@@ -74,9 +68,9 @@ import {
 } from '@wordpress/icons';
 import { useEntityProp } from '@wordpress/core-data';
 
-import PlacementSettings from './PlacementSettings';
-import PlacementSettingsContent from './PlacementSettingsContent';
-import PlacementSettingsTriggers from './PlacementSettingsTriggers';
+import PlacementSettings from './components/PlacementSettings';
+import PlacementSettingsContent from './components/PlacementSettingsContent';
+import PlacementSettingsTriggers from './components/PlacementSettingsTriggers';
 
 const ModalContent = (props) => {
 	const { placements, meta, initialType } = props;
