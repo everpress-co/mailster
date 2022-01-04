@@ -1,11 +1,3 @@
-.wp-block-mailster-form-outside-wrapper-placeholder {
-	_background-color: #fafafa;
-	_min-height: 200px;
-	_justify-content: center;
-	_align-items: center;
-	_font-style: italic;
-	_outline: 3px dotted #ccc !important;
-}
 .wp-block-mailster-form-outside-wrapper-placeholder *,
 .wp-block-mailster-form-outside-wrapper-placeholder *::before,
 .wp-block-mailster-form-outside-wrapper-placeholder *::after {
@@ -31,7 +23,7 @@
 .wp-block-mailster-form-outside-wrapper-placeholder .mailster-label,
 .wp-block-mailster-form-outside-wrapper-placeholder
 	.mailster-block-form-inner
-	> *:not(.mailster-wrapper) {
+	*:not(.mailster-wrapper) {
 	background: none;
 	animation: mailster-placeholder 1s linear infinite reverse !important;
 	background-image: linear-gradient(

@@ -94,6 +94,8 @@
 					triggerMethods[trigger] &&
 						triggerMethods[trigger].call(this, form, placement);
 				});
+			} else {
+				console.warn('CONTENT');
 			}
 		}
 
@@ -104,10 +106,10 @@
 				info = form.querySelector('.mailster-block-form-info'),
 				submit = form.querySelector('.submit-button'),
 				infoSuccess = info.querySelector(
-					'.mailster-block-form-info-success'
+					'.mailster-block-form-info-success .mailster-block-form-info-extra'
 				),
 				infoError = info.querySelector(
-					'.mailster-block-form-info-error'
+					'.mailster-block-form-info-error .mailster-block-form-info-extra'
 				);
 
 			form.classList.remove('has-errors');
@@ -144,7 +146,7 @@
 				});
 
 			function handlerResponse(response) {
-				let message = response.message ? response.message : '';
+				let message = [];
 				const scrollPosition =
 					window.pageYOffset || document.documentElement.scrollTop;
 
@@ -157,7 +159,7 @@
 						Object.keys(response.data.fields).map(function (
 							fieldid
 						) {
-							message += '<br>' + response.data.fields[fieldid];
+							message.push(response.data.fields[fieldid]);
 							console.error(
 								'[' + fieldid + ']',
 								response.data.fields[fieldid]
@@ -171,11 +173,11 @@
 							field && field.classList.add('error');
 						});
 					}
-					infoError.innerHTML = message;
+					infoError.innerHTML = message.join('<br>');
 					info.classList.remove('success');
 					info.classList.add('error');
 				} else {
-					infoSuccess.innerHTML = message;
+					infoError.innerHTML = message.join('<br>');
 					info.classList.remove('error');
 					info.classList.add('success');
 

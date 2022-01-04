@@ -10,9 +10,16 @@
 	"supports": {
 		"html": false,
 		"reusable": false,
-		"multiple": false
+		"multiple": false,
+		"inserter": false
 	},
 	"attributes": {
+		"lock": {
+			"type": "object",
+			"default": {
+				"remove": true
+			}
+		},
 		"dropdown": {
 			"type": "boolean",
 			"default": false

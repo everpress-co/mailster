@@ -14,7 +14,7 @@ import { useBlockProps, RichText } from '@wordpress/block-editor';
  */
 
 export default function save(props) {
-	const { attributes, setAttributes, isSelected } = props;
+	const { attributes, setAttributes } = props;
 	const { content } = attributes;
 	const className = ['mailster-wrapper'];
 

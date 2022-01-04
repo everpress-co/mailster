@@ -105,10 +105,6 @@ class Mailster_REST_Subscribe_Controller extends WP_REST_Controller {
 		$data  = array_intersect_key( $data, array_flip( preg_grep( '/^_/', array_keys( $data ), PREG_GREP_INVERT ) ) );
 		$entry = mailster( 'subscribers' )->verify( $data, true );
 
-		error_log( print_r( $entry, true ) );
-
-		error_log( print_r( $fields_errors, true ) );
-
 		if ( is_wp_error( $entry ) ) {
 			$fields_errors[ $entry->get_error_code() ] = $entry->get_error_message();
 			return new WP_Error( 'rest_forbidden', mailster_text( 'error' ), $this->response_data( array( 'fields' => $fields_errors ) ) );

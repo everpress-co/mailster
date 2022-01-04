@@ -15,6 +15,7 @@ import {
 	PlainText,
 } from '@wordpress/block-editor';
 import {
+	Button,
 	Panel,
 	PanelBody,
 	PanelRow,
@@ -25,7 +26,7 @@ import {
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
-import { select, useSelect, useDispatch } from '@wordpress/data';
+import { select, dispatch, useSelect, useDispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 
 import { more } from '@wordpress/icons';
@@ -43,6 +44,19 @@ export default function Options(props) {
 		'newsletter_form',
 		'title'
 	);
+
+	const editMessages = () => {
+		const mblock = select('core/block-editor')
+			.getBlocks()
+			.find((block) => {
+				return block.name == 'mailster/form-wrapper';
+			})
+			?.innerBlocks.find((block) => {
+				return block.name == 'mailster/messages';
+			});
+
+		if (mblock) dispatch('core/block-editor').selectBlock(mblock.clientId);
+	};
 
 	return (
 		<PluginDocumentSettingPanel
@@ -102,6 +116,11 @@ export default function Options(props) {
 					onChange={(value) => setMeta({ redirect: value })}
 					type="url"
 				/>
+			</PanelRow>
+			<PanelRow>
+				<Button variant="secondary" onClick={editMessages}>
+					{__('Edit Error/Success Messages', 'mailster')}
+				</Button>
 			</PanelRow>
 		</PluginDocumentSettingPanel>
 	);

@@ -144,7 +144,12 @@ body::before {
 	background: red;
 	color: #fff;
 }
+
 .mailster-block-form.wp-block-mailster-form-wrapper {
+	position: relative;
+}
+
+.mailster-block-form.wp-block-mailster-form-wrapper .mailster-block-form-inner {
 	position: relative;
 	display: flex;
 	flex-wrap: wrap;
@@ -163,11 +168,13 @@ body::before {
 	}
 	.wp-block {
 		margin: 0;
+		width: 100%;
+		max-width: 100%;
 	}
 	.mailster-block-form-info > div {
 		padding: 0.5em 1em;
 		margin-bottom: 0.5em;
-		display: none;
+		_display: none;
 	}
 
 	.mailster-wrapper {
@@ -231,6 +238,7 @@ body::before {
 		opacity: 1;
 	}
 	.mailster-block-form-info {
+		max-width: 100%;
 		display: none;
 		transition: transform 2.2s;
 	}
@@ -240,6 +248,10 @@ body::before {
 		animation: mailster-fadein 0.2s 1 ease-in-out;
 	}
 
+	.mailster-block-form-info .mailster-block-form-info-error,
+	.mailster-block-form-info .mailster-block-form-info-success {
+		display: none;
+	}
 	.mailster-block-form-info.error .mailster-block-form-info-error,
 	.mailster-block-form-info.success .mailster-block-form-info-success {
 		display: block;
@@ -342,7 +354,7 @@ body::before {
 		}
 	}
 }
-.mailster-block-form.has-errors {
+.mailster-block-form.has-errors .mailster-block-form-inner {
 	animation: mailster-shake 0.3s 1 linear;
 	.mailster-block-form-info {
 		height: auto;
@@ -352,7 +364,7 @@ body::before {
 		}
 	}
 }
-.mailster-block-form.has-success {
+.mailster-block-form.has-success .mailster-block-form-inner {
 	.mailster-block-form-info {
 		height: auto;
 		transform: scale(1);

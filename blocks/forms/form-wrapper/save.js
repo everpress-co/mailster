@@ -15,7 +15,6 @@ import { InnerBlocks, useBlockProps } from '@wordpress/block-editor';
 
 export default function save(props) {
 	const { attributes } = props;
-	const { messages } = attributes;
 
 	return (
 		<form
@@ -31,10 +30,6 @@ export default function save(props) {
 			})}
 		>
 			<div className="mailster-block-form-inner">
-				<div className="mailster-block-form-info">
-					<div className="mailster-block-form-info-success"></div>
-					<div className="mailster-block-form-info-error"></div>
-				</div>
 				<InnerBlocks.Content />
 			</div>
 		</form>

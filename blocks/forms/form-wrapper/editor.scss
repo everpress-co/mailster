@@ -52,7 +52,11 @@ _body::before {
 	border: 1px solid #e0e0e0;
 }
 
-.mailster-block-form .mailster-block-form-info {
+.editor-styles-wrapper .mailster-block-form .mailster-block-form-info {
+	max-width: 100%;
+}
+.wp-block-mailster-form-wrapper.is-selected .wp-block-mailster-messages,
+.wp-block-mailster-messages.is-selected {
 	display: block;
 }
 .mailster-block-form.wp-block-mailster-form-wrapper {

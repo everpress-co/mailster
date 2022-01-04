@@ -949,12 +949,17 @@ class MailsterBlockForms {
 		}
 		$embeded_style = '';
 
-		if ( isset( $form_block['attrs']['messages'] ) ) {
-			$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . '{';
-			foreach ( $form_block['attrs']['messages'] as $key => $value ) {
-				$embeded_style .= '--mailster--color--' . strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
+		foreach ( $form_block['innerBlocks'] as $block ) {
+
+			if ( 'mailster/messages' == $block['blockName'] ) {
+				$embeded_style .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . '{';
+				foreach ( $block['attrs'] as $key => $value ) {
+					if ( ! is_array( $value ) ) {
+						$embeded_style .= '--mailster--color--' . strtolower( preg_replace( '/([a-z])([A-Z])/', '$1-$2', $key ) ) . ': ' . $value . ';';
+					}
+				}
+				$embeded_style .= '}';
 			}
-			$embeded_style .= '}';
 		}
 
 		if ( isset( $form_block['attrs']['className'] ) ) {

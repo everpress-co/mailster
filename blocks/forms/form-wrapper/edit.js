@@ -59,7 +59,6 @@ import { store as editPostStore } from '@wordpress/edit-post';
 import './editor.scss';
 
 import Styles from './Styles';
-import Messages from './Messages';
 import Background from './Background';
 import BlockRecovery from './BlockRecovery';
 import Css from './Css';
@@ -127,10 +126,7 @@ const prefixCss = (css, className, type) => {
 export default function Edit(props) {
 	const { attributes, setAttributes, toggleSelection, isSelected, clientId } =
 		props;
-	const { style, background, inputs, messages } = attributes;
-	let { css } = attributes;
-	let backgroundStyles = '';
-	let inputStyle = '';
+	const { css, style, background, inputs } = attributes;
 
 	const [siteUrl] = useEntityProp('root', 'site', 'url');
 
@@ -148,82 +144,69 @@ export default function Edit(props) {
 		'meta'
 	);
 
-	const styleForm = () => {
-		dispatch('core/block-editor').clearSelectedBlock(clientId);
-		dispatch('core/block-editor').selectBlock(clientId);
-	};
-
-	const [displayMessages, setDisplayMessages] = useState(false);
-
 	const borderProps = useBorderProps(attributes);
 	const colorProps = useColorProps(attributes);
 	//const spacingProps = useSpacingProps(attributes);
 
 	let className = ['mailster-block-form', 'mailster-block-form-' + clientId];
 
-	const styleSuccessMessage = {
-		color: messages.success,
-		backgroundColor: messages.successBackground,
-	};
-	const styleErrorMessage = {
-		color: messages.error,
-		backgroundColor: messages.errorBackground,
-	};
-
-	function setMessages(prop, data) {
-		var newMessages = { ...messages };
-		newMessages[prop] = data;
-		setAttributes({ messages: newMessages });
-	}
-
 	const mediaPosition = ({ x, y }) => {
 		return `${Math.round(x * 200) - 50}% ${Math.round(y * 100)}%`;
 	};
 
-	if (background.image) {
-		backgroundStyles +=
-			'.wp-block-mailster-form-wrapper.mailster-block-form-' +
-			clientId +
-			'::before{';
-		backgroundStyles += "content:'';";
-		backgroundStyles += 'background-image: url(' + background.image + ');';
-		if (background.fixed)
-			backgroundStyles += 'background-attachment:fixed;';
-		if (background.repeat) backgroundStyles += 'background-repeat:repeat;';
-		backgroundStyles +=
-			'background-size:' +
-			(isNaN(background.size) ? background.size : background.size + '%') +
-			';';
-		if (background.position)
-			backgroundStyles +=
-				'background-position:' +
-				mediaPosition(background.position) +
+	const backgroundStyles = useMemo(() => {
+		let style = '';
+		if (background.image) {
+			style +=
+				'.wp-block-mailster-form-wrapper.mailster-block-form-' +
+				clientId +
+				'::before{';
+			style += "content:'';";
+			style += 'background-image: url(' + background.image + ');';
+			if (background.fixed) style += 'background-attachment:fixed;';
+			if (background.repeat) style += 'background-repeat:repeat;';
+			style +=
+				'background-size:' +
+				(isNaN(background.size)
+					? background.size
+					: background.size + '%') +
 				';';
-		backgroundStyles += 'opacity:' + background.opacity + '%;';
-		if (attributes.borderRadius) {
-			backgroundStyles +=
-				'border-radius:' + attributes.borderRadius + ';';
+			if (background.position)
+				style +=
+					'background-position:' +
+					mediaPosition(background.position) +
+					';';
+			style += 'opacity:' + background.opacity + '%;';
+			if (attributes.borderRadius) {
+				style += 'border-radius:' + attributes.borderRadius + ';';
+			}
+			style += '}';
 		}
-		backgroundStyles += '}';
-	}
+		return style;
+	}, [background, attributes.borderRadius]);
 
-	Object.entries(style).map(([k, v]) => {
-		if (!v) return;
-		inputStyle +=
-			'.wp-block-mailster-form-wrapper.mailster-block-form-' + clientId;
+	const inputStyle = useMemo(() => {
+		let s = '';
+		Object.entries(style).map(([k, v]) => {
+			if (!v) return;
+			s +=
+				'.wp-block-mailster-form-wrapper.mailster-block-form-' +
+				clientId;
 
-		switch (k) {
-			case 'labelColor':
-				inputStyle += ' .mailster-label{';
-				inputStyle += 'color:' + v + ';';
-				break;
-			default:
-				inputStyle += ' .input{';
-				inputStyle += kebabCase(k) + ':' + v + ';';
-		}
+			switch (k) {
+				case 'labelColor':
+					s += ' .mailster-label{';
+					s += 'color:' + v + ';';
+					break;
+				default:
+					s += ' .input{';
+					s += kebabCase(k) + ':' + v + ';';
+			}
 
-		inputStyle += '}';
-	});
+			s += '}';
+		});
+		return s;
+	}, [style]);
 
 	const prefixedCss = useMemo(() => {
 		return Object.keys(css).map((name, b) => {
@@ -286,6 +269,20 @@ export default function Edit(props) {
 
 	useEffect(() => {
 		const all = select('core/block-editor').getBlocks(clientId);
+		const messagesBlock = all.find((block) => {
+			return block.name == 'mailster/messages';
+		});
+
+		if (!messagesBlock) {
+			const block = wp.blocks.createBlock('mailster/messages');
+			const pos = 0;
+
+			dispatch('core/block-editor').insertBlock(block, pos, clientId);
+		}
+	}, []);
+
+	useEffect(() => {
+		const all = select('core/block-editor').getBlocks(clientId);
 		const listBlock = all.find((block) => {
 			return block.name == 'mailster/lists';
 		});
@@ -323,6 +320,10 @@ export default function Edit(props) {
 		const div = document.createElement('div');
 		div.classList.add('edit-post-header__settings');
 		el.parentNode.insertBefore(div, el.nextSibling);
+		const styleForm = () => {
+			dispatch('core/block-editor').clearSelectedBlock(clientId);
+			dispatch('core/block-editor').selectBlock(clientId);
+		};
 
 		wp.element.render(
 			<Button
@@ -378,37 +379,12 @@ export default function Edit(props) {
 					</style>
 				)}
 				<div className="mailster-block-form-inner">
-					{displayMessages && (
-						<div className="mailster-block-form-info">
-							<div
-								className="mailster-block-form-info-success"
-								style={styleSuccessMessage}
-							>
-								{__('This is a success message', 'mailster')}
-							</div>
-							<div
-								className="mailster-block-form-info-error"
-								style={styleErrorMessage}
-							>
-								{__(
-									'Following fields are missing or incorrect. This is an error message',
-									'mailster'
-								)}
-							</div>
-						</div>
-					)}
 					<InnerBlocks />
 				</div>
 				<BlockRecovery {...props} />
 			</div>
 			<InspectorControls>
 				<Styles {...props} meta={meta} setMeta={setMeta} />
-				<Messages
-					{...props}
-					setMessages={setMessages}
-					displayMessages={displayMessages}
-					setDisplayMessages={setDisplayMessages}
-				/>
 				<Background {...props} />
 				<Css {...props} />
 			</InspectorControls>

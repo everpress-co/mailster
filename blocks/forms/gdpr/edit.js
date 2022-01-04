@@ -50,12 +50,12 @@ export default function Edit(props) {
 	}, []);
 
 	return (
-		<Fragment>
-			<div
-				{...useBlockProps({
-					className: className.join(' '),
-				})}
-			>
+		<div
+			{...useBlockProps({
+				className: className.join(' '),
+			})}
+		>
+			{meta.gdpr ? (
 				<label className="mailster-label">
 					<input type="checkbox" name="_gdpr" value="1" />
 					<RichText
@@ -65,7 +65,9 @@ export default function Edit(props) {
 						placeholder={__('Enter Label', 'mailster')}
 					/>
 				</label>
-			</div>
-		</Fragment>
+			) : (
+				<></>
+			)}
+		</div>
 	);
 }
