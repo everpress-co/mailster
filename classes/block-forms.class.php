@@ -141,6 +141,7 @@ class MailsterBlockForms {
 
 			$suffix = SCRIPT_DEBUG ? '' : '.min';
 			wp_enqueue_script( 'mailster-form-block-preview', MAILSTER_URI . 'assets/js/form-block-preview' . $suffix . '.js', array( 'wp-api-fetch', 'wp-polyfill', 'jquery' ), MAILSTER_VERSION );
+			wp_enqueue_style( 'mailster-form-block-preview', MAILSTER_URI . 'assets/css/form-block-preview' . $suffix . '.css', array(), MAILSTER_VERSION );
 			// wp_register_style( 'mailster-form-block', MAILSTER_URI . 'build/style-form.css', array(), MAILSTER_VERSION );
 
 		} elseif ( $forms = $this->query_forms() ) {
@@ -543,7 +544,7 @@ class MailsterBlockForms {
 					'all'     => array( 'post' ),
 					'tag'     => 'p',
 					'pos'     => 0,
-					'display' => 'start',
+					'display' => 'end',
 				);
 			} elseif ( 'other' == $placement_type ) {
 				$default = array();
@@ -862,12 +863,8 @@ class MailsterBlockForms {
 
 			$options['classes'][] = 'wp-block-mailster-form-outside-wrapper-placeholder';
 
-			error_log( print_r( $options, true ) );
-
 			$html  = '<div class="wp-block-mailster-form-outside-wrapper-' . $options['id'] . ' wp-block-mailster-form-outside-wrapper-placeholder">' . esc_html__( 'Loading your form...', 'mailster' ) . '</div>';
 			$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );
-
-			error_log( print_r( $block, true ) );
 
 			$html = render_block( $block[0] );
 		} else {
@@ -996,8 +993,8 @@ class MailsterBlockForms {
 				'content:"";position: absolute;top: 0;left: 0;bottom: 0;right: 0;',
 				'background-image:url(' . $background['image'] . ')',
 				'opacity:' . $background['opacity'] . '%',
-				'background-size:' . $background['size'],
-				'background-position:' . ( $background['position']['x'] * 100 ) . '% ' . ( $background['position']['y'] * 100 ) . '%',
+				'background-size:' . ( ! is_numeric( $background['size'] ) ? $background['size'] : $background['size'] . '%' ),
+				'background-position:' . ( $background['position']['x'] * 200 - 50 ) . '% ' . ( $background['position']['y'] * 100 ) . '%',
 			);
 			if ( $background['fixed'] ) {
 				$custom_styles['::before'][] = 'background-attachment:fixed';
@@ -1044,7 +1041,7 @@ class MailsterBlockForms {
 
 		require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
-		$i_error = libxml_use_internal_errors( true );
+		// $i_error = libxml_use_internal_errors( true );
 		$htmldoc = new \InlineStyle\InlineStyle();
 
 		if ( isset( $form_block['attrs']['css'] ) ) {
@@ -1057,7 +1054,7 @@ class MailsterBlockForms {
 				foreach ( $parsed as $rule ) {
 					$selector = array_shift( $rule );
 					if ( ! empty( $rule ) ) {
-						$css .= '.wp-block-mailster-form-outside-wrapper-' . $uniqid . ' ' . $selector . '{' . implode( ';', $rule ) . '}';
+						$css .= 'div.wp-block-mailster-form-outside-wrapper-' . $uniqid . '.wp-block-mailster-form-outside-wrapper-' . $form->ID . ' ' . $selector . '{' . implode( ';', $rule ) . '}';
 					}
 				}
 

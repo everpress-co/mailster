@@ -111,8 +111,8 @@ const prefixCss = (css, className, type) => {
 
 	//make sure the root element is not prefixed
 	rules = rules.replaceAll(
-		className + ' .mailster-block-form',
-		className + '.mailster-block-form'
+		className + ' .mailster-block-form{',
+		className + '.mailster-block-form{'
 	);
 
 	if ('tablet' == type) {
@@ -177,7 +177,7 @@ export default function Edit(props) {
 	}
 
 	const mediaPosition = ({ x, y }) => {
-		return `${Math.round(x * 200) - 50}% ${Math.round(y * 200) - 50}%`;
+		return `${Math.round(x * 200) - 50}% ${Math.round(y * 100)}%`;
 	};
 
 	if (background.image) {
@@ -190,7 +190,10 @@ export default function Edit(props) {
 		if (background.fixed)
 			backgroundStyles += 'background-attachment:fixed;';
 		if (background.repeat) backgroundStyles += 'background-repeat:repeat;';
-		backgroundStyles += 'background-size:' + background.size + ';';
+		backgroundStyles +=
+			'background-size:' +
+			(isNaN(background.size) ? background.size : background.size + '%') +
+			';';
 		if (background.position)
 			backgroundStyles +=
 				'background-position:' +
@@ -374,27 +377,29 @@ export default function Edit(props) {
 						{inputStyle}
 					</style>
 				)}
-				{displayMessages && (
-					<div className="mailster-block-form-info">
-						<div
-							className="mailster-block-form-info-success"
-							style={styleSuccessMessage}
-						>
-							{__('This is a success message', 'mailster')}
+				<div className="mailster-block-form-inner">
+					{displayMessages && (
+						<div className="mailster-block-form-info">
+							<div
+								className="mailster-block-form-info-success"
+								style={styleSuccessMessage}
+							>
+								{__('This is a success message', 'mailster')}
+							</div>
+							<div
+								className="mailster-block-form-info-error"
+								style={styleErrorMessage}
+							>
+								{__(
+									'Following fields are missing or incorrect. This is an error message',
+									'mailster'
+								)}
+							</div>
 						</div>
-						<div
-							className="mailster-block-form-info-error"
-							style={styleErrorMessage}
-						>
-							{__(
-								'Following fields are missing or incorrect. This is an error message',
-								'mailster'
-							)}
-						</div>
-					</div>
-				)}
+					)}
+					<InnerBlocks />
+				</div>
 				<BlockRecovery {...props} />
-				<InnerBlocks />
 			</div>
 			<InspectorControls>
 				<Styles {...props} meta={meta} setMeta={setMeta} />

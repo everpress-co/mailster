@@ -249,6 +249,9 @@
 					event.stopPropagation();
 				});
 				wrap.classList.add('active');
+				document
+					.querySelector('body')
+					.classList.add('mailster-form-active');
 				// form.querySelector('input.input').focus();
 			}
 		}
@@ -263,6 +266,7 @@
 		timeouts[placement.identifier].forEach(function (timeout) {
 			clearTimeout(timeout);
 		});
+		document.querySelector('body').classList.remove('mailster-form-active');
 	}
 
 	function set(key, value) {

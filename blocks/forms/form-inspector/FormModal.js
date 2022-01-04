@@ -75,6 +75,9 @@ const ModalContent = ({ setOpen }) => {
 	}
 
 	const setPattern = (pattern, block) => {
+		if (!title) {
+			setTitle(pattern.title);
+		}
 		dispatch('core/block-editor').resetBlocks(block);
 		setOpen(false);
 	};
@@ -100,7 +103,7 @@ const ModalContent = ({ setOpen }) => {
 					const block = wp.blocks.parse(pattern.content);
 					return (
 						<Card
-							key={'form_pattern_' + i}
+							key={i}
 							onClick={() => setPattern(pattern, block)}
 						>
 							<Tooltip

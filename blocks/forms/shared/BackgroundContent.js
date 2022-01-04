@@ -71,7 +71,7 @@ export const BackgroundContent = (props) => {
 		borderRadius,
 		background,
 	} = attributes;
-	const { image, position, opacity, size, fixed, repeat } = background;
+	const { image, position, opacity, scale, size, fixed, repeat } = background;
 
 	function setBackground(prop, data) {
 		var newBackground = { ...background };
@@ -99,20 +99,40 @@ export const BackgroundContent = (props) => {
 				<>
 					<PanelRow>
 						<SelectControl
-							label={__('Position', 'mailster')}
+							label={__('Size', 'mailster')}
 							labelPosition="side"
 							className="widefat"
-							value={size || 'cover'}
+							value={isNaN(size) ? size : size || 'cover'}
 							onChange={(value) => {
 								setBackground('size', value);
 							}}
 							options={[
+								{
+									value: isNaN(size) ? 100 : size,
+									label: 'Scale',
+								},
 								{ value: 'auto', label: 'Auto' },
 								{ value: 'contain', label: 'Contain' },
 								{ value: 'cover', label: 'Cover' },
 							]}
 						/>
 					</PanelRow>
+					{!isNaN(size) && (
+						<PanelRow>
+							<RangeControl
+								value={size}
+								className="widefat"
+								onChange={(value) =>
+									setBackground('size', value)
+								}
+								min={0}
+								max={200}
+								initialPosition={100}
+								step={1}
+								required
+							/>
+						</PanelRow>
+					)}
 					<PanelRow>
 						<ToggleControl
 							label="Fixed background"
@@ -163,19 +183,6 @@ export const BackgroundContent = (props) => {
 							className="block-library-cover__reset-button"
 							onClick={() => {
 								setBackground('image', undefined);
-
-								return;
-
-								setAttributes({
-									background: {
-										image: undefined,
-										opacity: undefined,
-										fixed: undefined,
-										repeat: undefined,
-										size: undefined,
-										position: undefined,
-									},
-								});
 							}}
 						>
 							{__('Clear Media', 'mailster')}

@@ -30,11 +30,13 @@ export default function save(props) {
 				className: 'mailster-block-form',
 			})}
 		>
-			<div className="mailster-block-form-info">
-				<div className="mailster-block-form-info-success"></div>
-				<div className="mailster-block-form-info-error"></div>
+			<div className="mailster-block-form-inner">
+				<div className="mailster-block-form-info">
+					<div className="mailster-block-form-info-success"></div>
+					<div className="mailster-block-form-info-error"></div>
+				</div>
+				<InnerBlocks.Content />
 			</div>
-			<InnerBlocks.Content />
 		</form>
 	);
 }
