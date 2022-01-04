@@ -208,78 +208,15 @@ export default function PlacementSettings(props) {
 								)}
 							</PanelBody>
 							{'content' != type && (
-								<>
-									<PlacementSettingsTriggers
-										{...props}
-										setOptions={setOptions}
-										options={options}
-										setTriggers={setTriggers}
-										triggers={triggers}
-									/>
-									<PanelBody
-										title="Extra"
-										initialOpen={false}
-									>
-										<PanelRow>
-											<ItemGroup
-												isBordered={false}
-												size="small"
-											>
-												<SelectControl
-													label={__(
-														'Animation',
-														'mailster'
-													)}
-													value={options.animation}
-													onChange={(val) => {
-														setOptions({
-															animation: val,
-														});
-													}}
-												>
-													<option value="">
-														{__('None', 'mailster')}
-													</option>
-													<option value="fadein">
-														{__(
-															'FadeIn',
-															'mailster'
-														)}
-													</option>
-													<option value="shake">
-														{__(
-															'Shake',
-															'mailster'
-														)}
-													</option>
-													<option value="swing">
-														{__(
-															'Swing',
-															'mailster'
-														)}
-													</option>
-													<option value="heartbeat">
-														{__(
-															'Heart Beat',
-															'mailster'
-														)}
-													</option>
-													<option value="tada">
-														{__('Tada', 'mailster')}
-													</option>
-													<option value="wobble">
-														{__(
-															'Wobble',
-															'mailster'
-														)}
-													</option>
-												</SelectControl>
-											</ItemGroup>
-										</PanelRow>
-									</PanelBody>
-								</>
+								<PlacementSettingsTriggers
+									{...props}
+									setOptions={setOptions}
+									options={options}
+									setTriggers={setTriggers}
+									triggers={triggers}
+								/>
 							)}
-							<PanelBody title="Style" initialOpen={false}>
+							<PanelBody title="Appearance" initialOpen={false}>
 								<PanelRow>
 									<RangeControl
 										className="widefat"
@@ -321,6 +258,52 @@ export default function PlacementSettings(props) {
 										}
 									/>
 								</PanelRow>
+								{'content' != type && (
+									<PanelRow>
+										<ItemGroup
+											isBordered={false}
+											size="small"
+										>
+											<SelectControl
+												label={__(
+													'Animation',
+													'mailster'
+												)}
+												value={options.animation}
+												onChange={(val) => {
+													setOptions({
+														animation: val,
+													});
+												}}
+											>
+												<option value="">
+													{__('None', 'mailster')}
+												</option>
+												<option value="fadein">
+													{__('FadeIn', 'mailster')}
+												</option>
+												<option value="shake">
+													{__('Shake', 'mailster')}
+												</option>
+												<option value="swing">
+													{__('Swing', 'mailster')}
+												</option>
+												<option value="heartbeat">
+													{__(
+														'Heart Beat',
+														'mailster'
+													)}
+												</option>
+												<option value="tada">
+													{__('Tada', 'mailster')}
+												</option>
+												<option value="wobble">
+													{__('Wobble', 'mailster')}
+												</option>
+											</SelectControl>
+										</ItemGroup>
+									</PanelRow>
+								)}
 							</PanelBody>
 						</>
 					)}

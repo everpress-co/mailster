@@ -4,11 +4,14 @@ jQuery(document).ready(function ($) {
 	var oldUrl;
 	var lastanimation = '';
 
+	$('.wp-block-mailster-form-outside-wrapper-placeholder')[0].scrollIntoView({
+		behavior: 'smooth',
+		block: 'center',
+		inline: 'nearest',
+	});
 	window.addEventListener('message', function (event) {
 		var data = JSON.parse(event.data),
 			source = event;
-
-		console.warn(data);
 
 		var params = new URLSearchParams();
 
@@ -41,6 +44,7 @@ jQuery(document).ready(function ($) {
 				data: { block_form_content: data.post_content, args: args },
 			})
 				.then(function (post) {
+					//return post;
 					$(
 						'.wp-block-mailster-form-outside-wrapper-' +
 							data.form_id

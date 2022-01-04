@@ -5,7 +5,7 @@
 	"title": "Lists Field",
 	"category": "mailster-form-fields",
 	"keywords": ["container", "wrapper", "row", "section"],
-	"parent": ["mailster/form-wrapper", "core/column"],
+	"parent": ["mailster/form-wrapper", "core/column", "core/group"],
 	"description": "Simple Input Field for your Mailster Form",
 	"supports": {
 		"html": false,

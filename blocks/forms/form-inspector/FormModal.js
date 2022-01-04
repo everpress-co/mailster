@@ -6,10 +6,6 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
 import {
@@ -43,6 +39,10 @@ import { useEntityProp } from '@wordpress/core-data';
 import { Modal, Button, Tooltip } from '@wordpress/components';
 
 import { more } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 
 const editor = select('core/editor');
 const blockEditor = select('core/block-editor');
@@ -89,6 +89,7 @@ const ModalContent = ({ setOpen }) => {
 		<>
 			<TextControl
 				label={__('Form Name', 'mailster')}
+				className="form-title"
 				value={title}
 				onChange={(value) => setTitle(value)}
 				help={__('Define a name for your form.', 'mailster')}

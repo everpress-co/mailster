@@ -44,7 +44,7 @@ window.mailster_fields &&
 			keywords: ['mailster', field.name, field.id],
 			category: 'mailster-form-fields',
 			description: field.name + ' Description',
-			parent: ['mailster/form-wrapper', 'core/column'],
+			parent: ['mailster/form-wrapper', 'core/column', 'core/group'],
 			transforms: {
 				to: window.mailster_fields.map((tofields) => {
 					return {

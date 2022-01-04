@@ -177,7 +177,7 @@ export default function Edit(props) {
 	}
 
 	const mediaPosition = ({ x, y }) => {
-		return `${Math.round(x * 100)}% ${Math.round(y * 100)}%`;
+		return `${Math.round(x * 200) - 50}% ${Math.round(y * 200) - 50}%`;
 	};
 
 	if (background.image) {
@@ -226,7 +226,7 @@ export default function Edit(props) {
 		return Object.keys(css).map((name, b) => {
 			return prefixCss(
 				css[name],
-				'.wp-block-mailster-form-wrapper.mailster-block-form-' +
+				'.editor-styles-wrapper div.wp-block-mailster-form-wrapper.mailster-block-form-' +
 					clientId,
 				name
 			);
@@ -307,6 +307,7 @@ export default function Edit(props) {
 	}, [meta.userschoice]);
 
 	useEffect(() => {
+		return;
 		if (
 			!select('core/block-editor').getBlocks().length ||
 			document.getElementById('style-this-form')

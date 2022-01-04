@@ -860,8 +860,18 @@ class MailsterBlockForms {
 
 		if ( isset( $this->preview_data ) ) {
 
-			$html = '<div class="wp-block-mailster-form-outside-wrapper-' . $options['id'] . ' wp-block-mailster-form-outside-wrapper-placeholder">' . esc_html__( 'Loading your form...', 'mailster' ) . '</div>';
+			$options['classes'][] = 'wp-block-mailster-form-outside-wrapper-placeholder';
+
+			error_log( print_r( $options, true ) );
+
+			$html  = '<div class="wp-block-mailster-form-outside-wrapper-' . $options['id'] . ' wp-block-mailster-form-outside-wrapper-placeholder">' . esc_html__( 'Loading your form...', 'mailster' ) . '</div>';
+			$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );
+
+			error_log( print_r( $block, true ) );
+
+			$html = render_block( $block[0] );
 		} else {
+
 			$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );
 
 			$html = render_block( $block[0] );
@@ -1032,10 +1042,10 @@ class MailsterBlockForms {
 			$embeded_style .= $input_styles;
 		}
 
-		// require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
+		require MAILSTER_DIR . 'classes/libs/InlineStyle/autoload.php';
 
-		// $i_error = libxml_use_internal_errors( true );
-		// $htmldoc = new \InlineStyle\InlineStyle();
+		$i_error = libxml_use_internal_errors( true );
+		$htmldoc = new \InlineStyle\InlineStyle();
 
 		if ( isset( $form_block['attrs']['css'] ) ) {
 			foreach ( $form_block['attrs']['css'] as $name => $css ) {
@@ -1115,7 +1125,9 @@ class MailsterBlockForms {
 			}
 		}
 
-		$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $form_args ) . '</script>';
+		if ( ! $this->preview_data ) {
+			$inject .= '<script class="mailster-block-form-data" type="application/json">' . json_encode( $form_args ) . '</script>';
+		}
 		$inject .= '<input name="_formid" type="hidden" value="' . esc_attr( $original_form->ID ) . '">' . "\n";
 		$inject .= '<input name="_timestamp" type="hidden" value="' . esc_attr( time() ) . '">' . "\n";
 		if ( is_user_logged_in() ) {
