@@ -23,7 +23,10 @@ import {
 	TextareaControl,
 	Spinner,
 } from '@wordpress/components';
-import { PanelColorSettings } from '@wordpress/block-editor';
+import {
+	PanelColorSettings,
+	__experimentalPanelColorGradientSettings as PanelColorGradientSettings,
+} from '@wordpress/block-editor';
 import { useSelect, select, useDispatch, dispatch } from '@wordpress/data';
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
@@ -46,21 +49,19 @@ export default function Styles(props) {
 			),
 		[]
 	);
-
+	const colorValue1 = '#ff0000';
+	const gradientValue1 = undefined;
 	return (
 		<PluginDocumentSettingPanel
+			className="with-panel"
 			name="styling"
-			title={__('Form Styles', 'mailster')}
-			initialOpen={false}
-			icon={brush}
+			initialOpen={true}
+			open={true}
 		>
-			{!attributes && <Spinner />}
-			{attributes && (
-				<BackgroundContent
-					attributes={attributes}
-					setAttributes={setAttributes}
-				/>
-			)}
+			<BackgroundContent
+				attributes={attributes}
+				setAttributes={setAttributes}
+			/>
 		</PluginDocumentSettingPanel>
 	);
 }

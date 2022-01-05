@@ -54,9 +54,10 @@ export default function Styles(props) {
 
 	return (
 		<PanelBody
-			name="styles"
-			title={__('Styles', 'mailster')}
-			initialOpen={false}
+			className="with-panel"
+			name="styling"
+			initialOpen={true}
+			open={true}
 		>
 			<StylesContent
 				attributes={attributes}

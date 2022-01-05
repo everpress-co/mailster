@@ -38,6 +38,7 @@ import {
 import {
 	PanelColorSettings,
 	__experimentalColorGradientControl as ColorGradientControl,
+	__experimentalPanelColorGradientSettings as PanelColorGradientSettings,
 } from '@wordpress/block-editor';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
@@ -50,7 +51,7 @@ import { more } from '@wordpress/icons';
  */
 
 export const BackgroundContent = (props) => {
-	const { attributes, setAttributes } = props;
+	const { attributes, setAttributes, children } = props;
 
 	if (!attributes) {
 		return <Spinner />;
@@ -80,21 +81,24 @@ export const BackgroundContent = (props) => {
 	}
 
 	return (
-		<>
-			<ColorGradientControl
-				colorValue={color}
-				disableCustomGradients={true}
-				label={__('Color', 'mailster')}
-				onColorChange={(value) => setAttributes({ color: value })}
-			/>
-			<ColorGradientControl
-				colorValue={backgroundColor}
-				disableCustomGradients={true}
-				label={__('Background Color', 'mailster')}
-				onColorChange={(value) =>
-					setAttributes({ backgroundColor: value })
-				}
-			/>
+		<PanelColorGradientSettings
+			title={__('Form Style', 'mailster')}
+			settings={[
+				{
+					colorValue: color,
+					disableCustomGradients: true,
+					label: __('Color', 'mailster'),
+					onColorChange: (value) => setAttributes({ color: value }),
+				},
+				{
+					colorValue: backgroundColor,
+					disableCustomGradients: true,
+					label: __('Background Color', 'mailster'),
+					onColorChange: (value) =>
+						setAttributes({ backgroundColor: value }),
+				},
+			]}
+		>
 			{image && (
 				<>
 					<PanelRow>
@@ -254,6 +258,7 @@ export const BackgroundContent = (props) => {
 					max={60}
 				/>
 			</PanelRow>
-		</>
+			{!!children && <>{children}</>}
+		</PanelColorGradientSettings>
 	);
 };

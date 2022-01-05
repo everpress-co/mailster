@@ -72,7 +72,11 @@ const Wrapper = ({ children, isCSSModal, setCSSModal }) => {
 };
 
 export const CssContent = (props) => {
-	const { attributes, setAttributes, isSelected } = props;
+	const { attributes, setAttributes, children } = props;
+
+	if (!attributes) {
+		return <Spinner />;
+	}
 
 	const { css } = attributes;
 
@@ -250,6 +254,7 @@ export const CssContent = (props) => {
 						</optgroup>
 					</SelectControl>
 				</PanelRow>
+				{!!children && <>{children}</>}
 			</Wrapper>
 		</>
 	);

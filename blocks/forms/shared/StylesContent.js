@@ -26,6 +26,7 @@ import {
 import {
 	PanelColorSettings,
 	__experimentalColorGradientControl as ColorGradientControl,
+	__experimentalPanelColorGradientSettings as PanelColorGradientSettings,
 } from '@wordpress/block-editor';
 
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
@@ -57,7 +58,7 @@ export const colorSettings = [
 ];
 
 export const StylesContent = (props) => {
-	const { attributes, setAttributes } = props;
+	const { attributes, setAttributes, children } = props;
 
 	if (!attributes) {
 		return <Spinner />;
@@ -72,19 +73,17 @@ export const StylesContent = (props) => {
 	}
 
 	return (
-		<>
-			{colorSettings.flatMap((color, i) => {
-				return (
-					<ColorGradientControl
-						key={i}
-						colorValue={style[color.id]}
-						disableCustomGradients={true}
-						label={color.label}
-						onColorChange={(value) => setStyle(color.id, value)}
-					/>
-				);
+		<PanelColorGradientSettings
+			title={__('Input Fields', 'mailster')}
+			settings={colorSettings.flatMap((color, i) => {
+				return {
+					colorValue: style[color.id],
+					disableCustomGradients: true,
+					label: color.label,
+					onColorChange: (value) => setStyle(color.id, value),
+				};
 			})}
-
+		>
 			<PanelRow>
 				<RangeControl
 					className="widefat"
@@ -129,6 +128,7 @@ export const StylesContent = (props) => {
 					max={60}
 				/>
 			</PanelRow>
-		</>
+			{!!children && <>{children}</>}
+		</PanelColorGradientSettings>
 	);
 };

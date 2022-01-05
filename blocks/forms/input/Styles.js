@@ -60,124 +60,27 @@ export default function Styles(props) {
 
 	return (
 		<PanelBody
+			className="with-panel"
 			name="styles"
-			title={__('Styles', 'mailster')}
-			initialOpen={false}
+			initialOpen={true}
+			open={true}
 		>
 			<StylesContent
 				attributes={attributes}
 				setAttributes={setAttributes}
-			/>
-			{type !== 'submit' && (
-				<PanelRow>
-					<Button
-						onClick={applyStyle}
-						variant="primary"
-						icon={external}
-					>
-						{__('Apply to all input fields', 'mailster')}
-					</Button>
-				</PanelRow>
-			)}
+			>
+				{type !== 'submit' && (
+					<PanelRow>
+						<Button
+							onClick={applyStyle}
+							variant="primary"
+							icon={external}
+						>
+							{__('Apply to all input fields', 'mailster')}
+						</Button>
+					</PanelRow>
+				)}
+			</StylesContent>
 		</PanelBody>
-	);
-
-	//OLD
-	return (
-		<PanelColorSettings
-			title={__('Styles', 'mailster')}
-			initialOpen={false}
-			colorSettings={colorSettings.flatMap((color) => {
-				if (color.id == 'labelColor' && !hasLabel) {
-					return [];
-				}
-				return {
-					value: style[color.id],
-					onChange: (value) => setStyle(color.id, value),
-					label: color.label,
-				};
-			})}
-		>
-			<PanelRow>
-				<SelectControl
-					label={__('Border Style', 'mailster')}
-					labelPosition="side"
-					className="widefat"
-					value={style.borderStyle}
-					onChange={(value) => setStyle('borderStyle', value)}
-					options={[
-						{ value: null, label: 'not set' },
-						{ value: 'dashed', label: 'Dashed' },
-						{ value: 'dotted', label: 'Dotted' },
-						{ value: 'solid', label: 'Solid' },
-					]}
-				/>
-			</PanelRow>
-			<PanelRow>
-				<RangeControl
-					className="widefat"
-					label={__('Border Width', 'mailster')}
-					value={
-						style.borderWidth
-							? parseInt(style.borderWidth, 10)
-							: null
-					}
-					allowReset={true}
-					onChange={(value) =>
-						setStyle(
-							'borderWidth',
-							typeof value !== 'undefined'
-								? value + 'px'
-								: undefined
-						)
-					}
-					min={0}
-					max={10}
-				/>
-			</PanelRow>
-			<PanelRow>
-				<RangeControl
-					className="widefat"
-					label={__('Border Radius', 'mailster')}
-					value={
-						style.borderRadius
-							? parseInt(style.borderRadius, 10)
-							: null
-					}
-					allowReset={true}
-					onChange={(value) =>
-						setStyle(
-							'borderRadius',
-							typeof value !== 'undefined'
-								? value + 'px'
-								: undefined
-						)
-					}
-					min={0}
-					max={50}
-				/>
-			</PanelRow>
-			<PanelRow>
-				<FontSizePicker
-					//fontSizes={fontSizes}
-					value={style.fontSize}
-					fallbackFontSize={fallbackFontSize}
-					onChange={(value) => setStyle('fontSize', value)}
-					withSlider
-					withReset
-				/>
-			</PanelRow>
-			{type !== 'submit' && (
-				<PanelRow>
-					<Button
-						onClick={applyStyle}
-						variant="primary"
-						icon={external}
-					>
-						{__('Apply to all input fields', 'mailster')}
-					</Button>
-				</PanelRow>
-			)}
-		</PanelColorSettings>
 	);
 }

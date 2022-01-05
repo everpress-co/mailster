@@ -53,9 +53,10 @@ export default function Background(props) {
 
 	return (
 		<PanelBody
+			className="with-panel"
 			name="background"
-			title={__('Background', 'mailster')}
-			initialOpen={false}
+			initialOpen={true}
+			open={true}
 		>
 			<BackgroundContent
 				attributes={attributes}

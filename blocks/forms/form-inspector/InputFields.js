@@ -41,17 +41,14 @@ export default function InputFields(props) {
 	return (
 		<PluginDocumentSettingPanel
 			name="input-fields"
-			title={__('Input Fields', 'mailster')}
-			initialOpen={false}
-			icon={brush}
+			className="with-panel"
+			initialOpen={true}
+			open={true}
 		>
-			{!attributes && <Spinner />}
-			{attributes && (
-				<StylesContent
-					attributes={attributes}
-					setAttributes={setAttributes}
-				/>
-			)}
+			<StylesContent
+				attributes={attributes}
+				setAttributes={setAttributes}
+			/>
 		</PluginDocumentSettingPanel>
 	);
 }

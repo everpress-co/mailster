@@ -55,6 +55,11 @@ button[name='link'] {
 	padding: 4px;
 }
 
+.components-panel__body.with-panel {
+	padding: 0;
+	border: none;
+}
+
 .placement-option:hover {
 	_box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--wp-admin-theme-color);
 	__outline: 2px solid transparent;
