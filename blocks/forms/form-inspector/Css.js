@@ -41,7 +41,7 @@ export default function Css(props) {
 	return (
 		<PluginDocumentSettingPanel
 			name="custom-css"
-			title={__('Custom Css', 'mailster')}
+			title={__('Custom CSS', 'mailster')}
 			initialOpen={false}
 			icon={brush}
 		>

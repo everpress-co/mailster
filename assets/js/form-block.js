@@ -95,6 +95,19 @@
 						triggerMethods[trigger].call(this, form, placement);
 				});
 			} else {
+				var observer = new IntersectionObserver(
+					function (entries) {
+						if (entries[0].isIntersecting) {
+							countImpression(entries[0].target, placement);
+							observer.unobserve(entries[0].target);
+						}
+					},
+					{
+						threshold: 1,
+					}
+				);
+
+				observer.observe(form);
 				console.warn('CONTENT');
 			}
 		}
@@ -208,8 +221,12 @@
 		if (placement.isPreview) {
 			return false;
 		}
+		return inTimeFrame(placement.identifier, 'shown');
+	}
+
+	function inTimeFrame(identifier, key, delay) {
 		return !(
-			get(placement.identifier, 0) <
+			get(identifier, key, 0) <
 			+new Date() - (delay ? delay : cookieTime) * 1000
 		);
 	}
@@ -255,6 +272,7 @@
 					.querySelector('body')
 					.classList.add('mailster-form-active');
 				// form.querySelector('input.input').focus();
+				countImpression(form, placement);
 			}
 		}
 	}
@@ -263,7 +281,7 @@
 		var wrap = form.closest('.wp-block-mailster-form-outside-wrapper');
 		wrap.classList.remove('active');
 		if (!explicit) {
-			set(placement.identifier, +new Date());
+			set(placement.identifier, 'shown');
 		}
 		timeouts[placement.identifier].forEach(function (timeout) {
 			clearTimeout(timeout);
@@ -271,15 +289,18 @@
 		document.querySelector('body').classList.remove('mailster-form-active');
 	}
 
-	function set(key, value) {
-		var data = get();
-		data[key] = value;
-		localStorage.setItem('mailster-block-forms', JSON.stringify(data));
+	function set(identifier, key, value) {
+		var data = get(identifier);
+		data[key] = value || +new Date();
+		localStorage.setItem(
+			'mailster-form-' + identifier,
+			JSON.stringify(data)
+		);
 		return true;
 	}
 
-	function get(key, fallback = null) {
-		var store = localStorage.getItem('mailster-block-forms');
+	function get(identifier, key, fallback = null) {
+		var store = localStorage.getItem('mailster-form-' + identifier);
 		store = store ? JSON.parse(store) : {};
 		if (!key) {
 			return store;
@@ -302,6 +323,43 @@
 				return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]);
 			})
 			.join('&');
+	}
+
+	function countImpression(form, placement) {
+		if (placement.isPreview) {
+			return false;
+		}
+		if (!inTimeFrame(placement.identifier, 'impression', 30)) {
+			console.warn('IMPRESSION', placement);
+
+			set(placement.identifier, 'impression');
+
+			var url = form
+				.getAttribute('action')
+				.replace(/subscribe/, 'form/' + placement.id + '/impression');
+
+			console.warn(url);
+
+			fetch(url, {
+				method: 'POST',
+				headers: {
+					// 'Content-Type': 'application/json',
+					// 'X-WP-Nonce': data.get('_nonce'), // <- here, send the nonce via the header
+				},
+				body: JSON.stringify(placement),
+			})
+				.then(function (response) {
+					console.warn(response);
+					return response.json();
+				})
+				.then(function (response) {
+					console.warn(response);
+				})
+				.catch(function (error) {
+					console.error(error);
+				})
+				.finally(function () {});
+		}
 	}
 
 	function debounce(func, wait, immediate) {

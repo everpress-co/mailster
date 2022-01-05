@@ -56,7 +56,7 @@ export default function Background(props) {
 			className="with-panel"
 			name="background"
 			initialOpen={true}
-			open={true}
+			opened={true}
 		>
 			<BackgroundContent
 				attributes={attributes}

@@ -57,7 +57,7 @@ export default function Styles(props) {
 			className="with-panel"
 			name="styling"
 			initialOpen={true}
-			open={true}
+			opened={true}
 		>
 			<StylesContent
 				attributes={attributes}

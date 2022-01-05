@@ -45,7 +45,12 @@ export default function Doubleoptin(props) {
 	return (
 		<PluginDocumentSettingPanel
 			name="doubleoptin"
-			title={doubleoptin ? 'Double Opt In ' : 'Single Opt In'}
+			initialOpen={false}
+			title={
+				doubleoptin
+					? __('Double Opt In', 'mailster')
+					: __('Single Opt In', 'mailster')
+			}
 		>
 			<CheckboxControl
 				label={__('Enable double opt in', 'mailster')}

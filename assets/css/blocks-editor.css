@@ -57,7 +57,12 @@ button[name='link'] {
 
 .components-panel__body.with-panel {
 	padding: 0;
+}
+.components-panel__body.with-panel.is-opened {
 	border: none;
+}
+.components-panel__body.with-panel.is-opened > .components-panel__body-title {
+	display: none;
 }
 
 .placement-option:hover {

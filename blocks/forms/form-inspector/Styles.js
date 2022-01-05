@@ -42,21 +42,13 @@ import { BackgroundContent } from '../shared/BackgroundContent';
 export default function Styles(props) {
 	const { attributes, setAttributes, meta, setMeta } = props;
 
-	const blocks = useSelect(
-		(select) =>
-			select('core/edit-post').isEditorPanelOpened(
-				'plugin-document-setting-panel-demo/styling'
-			),
-		[]
-	);
-	const colorValue1 = '#ff0000';
-	const gradientValue1 = undefined;
 	return (
 		<PluginDocumentSettingPanel
 			className="with-panel"
-			name="styling"
+			name="form-fields"
+			title={__('Form Style', 'mailster')}
 			initialOpen={true}
-			open={true}
+			opened={true}
 		>
 			<BackgroundContent
 				attributes={attributes}

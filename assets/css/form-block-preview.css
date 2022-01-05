@@ -3,9 +3,6 @@
 .wp-block-mailster-form-outside-wrapper-placeholder *::after {
 	pointer-events: none !important;
 }
-.wp-block-mailster-form-outside-wrapper-placeholder label,
-.wp-block-mailster-form-outside-wrapper-placeholder .mailster-label {
-}
 .wp-block-mailster-form-outside-wrapper-placeholder.active {
 	display: flex;
 }

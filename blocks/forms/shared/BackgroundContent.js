@@ -82,7 +82,9 @@ export const BackgroundContent = (props) => {
 
 	return (
 		<PanelColorGradientSettings
-			title={__('Form Style', 'mailster')}
+			title={__('Form Style inner', 'mailster')}
+			initialOpen={false}
+			name="form-style-panel"
 			settings={[
 				{
 					colorValue: color,

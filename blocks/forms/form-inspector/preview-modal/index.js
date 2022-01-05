@@ -189,7 +189,7 @@ const ModalContent = (props) => {
 			newUrl = formendpoint;
 		}
 		setDisplayUrl(newUrl.toString());
-		setUrlDebounce(mapUrl(newUrl.toString(), id));
+		setUrlDebounce(mapUrl(newUrl.toString(), post));
 	}, [posts, options, urlLoggedIn, useThemeStyle]);
 
 	useEffect(() => {
@@ -227,7 +227,7 @@ const ModalContent = (props) => {
 		setMeta({ ['placement_' + type]: newOptions });
 	}
 
-	function mapUrl(url, postId) {
+	function mapUrl(url, post) {
 		const newUrl = new URL(url);
 
 		const { display, pos, tag, triggers } = meta['placement_' + type] || {};
@@ -236,7 +236,7 @@ const ModalContent = (props) => {
 			type: type,
 			user: urlLoggedIn,
 			options: {
-				all: true, //all => display always as its a preview
+				all: post && [post.type],
 				display: display,
 				pos: pos,
 				tag: tag,
@@ -245,7 +245,7 @@ const ModalContent = (props) => {
 			form_id: formId,
 		};
 
-		postId && newUrl.searchParams.set('p', postId);
+		post && newUrl.searchParams.set('p', post.id);
 		newUrl.searchParams.set('mailster-block-preview', JSON.stringify(obj));
 
 		return newUrl.toString();

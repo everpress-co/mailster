@@ -147,6 +147,7 @@ body::before {
 
 .mailster-block-form.wp-block-mailster-form-wrapper {
 	position: relative;
+	flex-basis: 100%;
 }
 
 .mailster-block-form.wp-block-mailster-form-wrapper .mailster-block-form-inner {
@@ -174,6 +175,7 @@ body::before {
 	.mailster-block-form-info > div {
 		padding: 0.5em 1em;
 		margin-bottom: 0.5em;
+		box-sizing: border-box;
 		_display: none;
 	}
 

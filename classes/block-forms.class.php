@@ -148,6 +148,7 @@ class MailsterBlockForms {
 
 			foreach ( $forms as $form_id ) {
 				$placements = (array) get_post_meta( $form_id, 'placements', false );
+				// TODO check for A/B Test
 				foreach ( $placements as $placement ) {
 					$placement_options = get_post_meta( $form_id, 'placement_' . $placement, true );
 					if ( $placement_options ) {
@@ -168,7 +169,8 @@ class MailsterBlockForms {
 
 	public function check_validity( $options = array() ) {
 
-		if ( $options['all'] ) {
+		$post_type = get_post_type();
+		if ( ! empty( $options['all'] ) && in_array( $post_type, $options['all'] ) ) {
 			return true;
 		}
 
@@ -180,7 +182,7 @@ class MailsterBlockForms {
 
 		if ( ! empty( $options['taxonomies'] ) ) {
 			// get all assigned term ids of this post
-			$terms = wp_get_object_terms( $current_id, get_object_taxonomies( get_post_type() ), array( 'fields' => 'ids' ) );
+			$terms = wp_get_object_terms( $current_id, get_object_taxonomies( $post_type ), array( 'fields' => 'ids' ) );
 			if ( array_intersect( $options['taxonomies'], $terms ) ) {
 				return true;
 			}
@@ -353,7 +355,7 @@ class MailsterBlockForms {
 			'description'         => __( 'Newsletter Form', 'mailster' ),
 			'labels'              => $labels,
 			'supports'            => array( 'title', 'editor', 'revisions', 'custom-fields' ),
-			'hierarchical'        => true,
+			'hierarchical'        => false,
 			'public'              => false,
 			'show_ui'             => true,
 			'show_in_menu'        => 'edit.php?post_type=newsletter',

@@ -40,15 +40,18 @@ export default function InputFields(props) {
 
 	return (
 		<PluginDocumentSettingPanel
-			name="input-fields"
 			className="with-panel"
+			name="input-fields"
+			title={__('Input Fields', 'mailster')}
 			initialOpen={true}
-			open={true}
+			opened={true}
 		>
-			<StylesContent
-				attributes={attributes}
-				setAttributes={setAttributes}
-			/>
+			{attributes && (
+				<StylesContent
+					attributes={attributes}
+					setAttributes={setAttributes}
+				/>
+			)}
 		</PluginDocumentSettingPanel>
 	);
 }
