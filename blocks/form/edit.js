@@ -38,7 +38,13 @@ import {
 
 import './editor.scss';
 
-import { Fragment, useState, Component, useEffect } from '@wordpress/element';
+import {
+	Fragment,
+	useState,
+	Component,
+	useEffect,
+	useRef,
+} from '@wordpress/element';
 import { check, edit, tablet, mobile, update } from '@wordpress/icons';
 
 import {
@@ -96,13 +102,18 @@ export default function Edit(props) {
 
 	const [displayForm, setDisplayForm] = useState(true);
 
-	const EmptyResponsePlaceholder = () => {
+	const serverSideRender = useRef();
+
+	console.warn(serverSideRender);
+
+	const Placeholder = () => {
 		return (
 			<Flex
 				justify="center"
 				style={{
 					backgroundColor: '#fafafa',
 					minHeight: '200px',
+					zIndex: 10,
 				}}
 			>
 				<Spinner />
@@ -155,11 +166,11 @@ export default function Edit(props) {
 
 							{displayForm && (
 								<ServerSideRender
+									ref={serverSideRender}
 									block="mailster/form"
 									attributes={attributes}
-									EmptyResponsePlaceholder={
-										EmptyResponsePlaceholder
-									}
+									LoadingResponsePlaceholder={Placeholder}
+									EmptyResponsePlaceholder={Placeholder}
 								/>
 							)}
 						</div>

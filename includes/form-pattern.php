@@ -6,15 +6,15 @@ $patterns = apply_filters(
 		'basic'      => array(
 			'title'       => __( 'A minimal basic form', 'mailster' ),
 			'description' => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
-			'content'     => '<!-- wp:mailster/form-wrapper {"css":{"general":".input{\n\theight:66px\n}","tablet":"","mobile":""},"className":"mailster-form"} -->
+			'content'     => '<!-- wp:mailster/form-wrapper {"css":{"general":".input, .submit-button{\n\theight:66px;\n}","tablet":"","mobile":""},"style":{"borderRadius":"0px"}} -->
 <form method="post" action="" novalidate class="wp-block-mailster-form-wrapper mailster-block-form"><div class="mailster-block-form-inner">
 
 <!-- wp:mailster/field-email {"inline":true,"style":{"width":60},"className":"mailster-wrapper-type-email"} -->
 <div class="wp-block-mailster-field-email mailster-wrapper mailster-wrapper-required mailster-wrapper-inline mailster-wrapper-type-email" style="width:60%"><input name="email" type="email" aria-required="true" aria-label="Email" spellcheck="false" required class="input" placeholder=" "/><label class="mailster-label">Email</label></div>
 <!-- /wp:mailster/field-email -->
 
-<!-- wp:mailster/field-submit {"style":{"width":40,"color":"#39414D","backgroundColor":"#D1E4DD"},"className":"mailster-wrapper-type-submit"} -->
-<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button mailster-wrapper-type-submit" style="width:40%"><input name="submit" type="submit" style="color:#39414D;background-color:#D1E4DD" value="Subscribe" class="wp-block-button__link submit-button"/></div>
+<!-- wp:mailster/field-submit {"style":{"width":40,"borderRadius":"0px"},"className":"mailster-wrapper-type-submit"} -->
+<div class="wp-block-mailster-field-submit mailster-wrapper wp-block-button mailster-wrapper-type-submit" style="width:40%"><input name="submit" type="submit" style="border-radius:0px" value="Subscribe" class="wp-block-button__link submit-button"/></div>
 <!-- /wp:mailster/field-submit --></div></form>
 <!-- /wp:mailster/form-wrapper -->',
 

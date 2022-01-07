@@ -6,53 +6,18 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */
-
 import { __ } from '@wordpress/i18n';
 
-import {
-	useBlockProps,
-	InspectorControls,
-	RichText,
-	MediaPlaceholder,
-	MediaUpload,
-	MediaUploadCheck,
-	MediaReplaceFlow,
-	ColorPaletteControl,
-	PanelColorSettings,
-	Warning,
-} from '@wordpress/block-editor';
-import {
-	Panel,
-	PanelBody,
-	PanelRow,
-	CheckboxControl,
-	TextControl,
-	Card,
-	CardBody,
-	CardMedia,
-	Button,
-	RangeControl,
-	FocalPointPicker,
-	SelectControl,
-	Modal,
-	Notice,
-	Popover,
-	__experimentalBoxControl as BoxControl,
-	__experimentalUnitControl as UnitControl,
-	__experimentalGrid as Grid,
-} from '@wordpress/components';
+import { useState } from '@wordpress/element';
+import { dispatch } from '@wordpress/data';
 
-import { Fragment, Component, useState, useEffect } from '@wordpress/element';
-import { select, dispatch, subscribe } from '@wordpress/data';
-
-import { more } from '@wordpress/icons';
-import { getBlockType, createBlock, rawHandler } from '@wordpress/blocks';
 import apiFetch from '@wordpress/api-fetch';
 
 import { PluginPostStatusInfo } from '@wordpress/edit-post';
+
+/**
+ * Internal dependencies
+ */
 
 const SAMPLEFORM = (
 	<form className="mailster-block-form">
@@ -152,6 +117,7 @@ export default function InlineStyles(props) {
 	const [render, setRender] = useState(true);
 
 	const updateStyles = () => {
+		console.warn('UPDATE');
 		const styles = getInputStyles();
 		if (styles != inputStyles) {
 			apiFetch({
