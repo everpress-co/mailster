@@ -38,7 +38,7 @@
 	.editor-styles-wrapper
 	.is-root-container {
 	margin: 10% 0 0;
-	background-color: none;
+	background-color: transparent;
 	max-width: 100%;
 	width: 100%;
 }

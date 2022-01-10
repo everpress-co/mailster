@@ -134,7 +134,7 @@
 	z-index: -1;
 }
 body::before {
-	content: 'STYLE LOADED';
+	_content: 'STYLE LOADED';
 	font-size: 10px;
 	position: fixed;
 	top: 0;
