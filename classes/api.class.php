@@ -22,6 +22,11 @@ class MailsterApi {
 		$controller = new Mailster_REST_Subscribe_Controller();
 		$controller->register_routes();
 
+		require MAILSTER_DIR . 'classes/rest-controller/rest.form.class.php';
+
+		$controller = new Mailster_REST_Form_Controller();
+		$controller->register_routes();
+
 	}
 
 }

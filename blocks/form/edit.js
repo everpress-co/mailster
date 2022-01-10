@@ -15,6 +15,7 @@ import {
 import ServerSideRender from '@wordpress/server-side-render';
 import apiFetch from '@wordpress/api-fetch';
 import {
+	Disabled,
 	Panel,
 	PanelBody,
 	Placeholder,
@@ -82,7 +83,7 @@ function MailsterFormSelector(props) {
 					value={id}
 					onChange={(val) => setAttributes({ id: parseInt(val, 10) })}
 				>
-					<option value={0}>Choose</option>
+					<option value={0}>{__('Choose a form', 'mailster')}</option>
 					{forms.map((form) => {
 						return (
 							<option key={form.id} value={form.id}>
@@ -98,21 +99,19 @@ function MailsterFormSelector(props) {
 
 export default function Edit(props) {
 	const { attributes, setAttributes, isSelected } = props;
-	const { id, height } = attributes;
+	const { id = false, height = 200 } = attributes;
 
-	const [displayForm, setDisplayForm] = useState(true);
+	const [displayForm, setDisplayForm] = useState(false);
 
-	const serverSideRender = useRef();
+	const blockRef = useRef();
 
-	console.warn(serverSideRender);
-
-	const Placeholder = () => {
+	const EmptyPlaceholder = () => {
 		return (
 			<Flex
 				justify="center"
 				style={{
 					backgroundColor: '#fafafa',
-					minHeight: '200px',
+					minHeight: height + 'px',
 					zIndex: 10,
 				}}
 			>
@@ -120,6 +119,33 @@ export default function Edit(props) {
 			</Flex>
 		);
 	};
+
+	useEffect(() => {
+		if (!blockRef.current) return;
+		const observer = new MutationObserver((entries) => {
+			entries.forEach((entry) => {
+				if (
+					entry.addedNodes.length > 0 &&
+					height != entry.addedNodes[0].offsetHeight &&
+					entry.addedNodes[0].classList.contains(
+						'mailster-block-form-editor-wrap-inner'
+					)
+				) {
+					setAttributes({
+						height: entry.addedNodes[0].offsetHeight,
+					});
+				}
+			});
+		});
+
+		observer.observe(blockRef.current, {
+			childList: true,
+		});
+	}, [blockRef, id]);
+
+	useEffect(() => {
+		setDisplayForm(!!id);
+	}, [id]);
 
 	const reloadForm = () => {
 		setDisplayForm(false);
@@ -135,46 +161,30 @@ export default function Edit(props) {
 	return (
 		<>
 			<div {...useBlockProps()}>
-				{parseInt(id) > 0 && (
-					<>
-						<div className="mailster-block-form-editor-wrap">
-							<Flex
-								className="update-form-button"
-								justify="space-evenly"
-							>
-								<strong className="align-center">
-									{__(
-										'Please click on the edit button in the toolbar to edit this form.',
-										'mailster'
-									)}
-								</strong>
-							</Flex>
-							<BlockControls>
-								<Toolbar>
-									<Button
-										label={__('Reload Form', 'mailster')}
-										icon={update}
-										onClick={reloadForm}
-									/>
-									<Button
-										label={__('Edit Form', 'mailster')}
-										icon={edit}
-										onClick={editForm}
-									/>
-								</Toolbar>
-							</BlockControls>
+				{id && (
+					<div
+						className="mailster-block-form-editor-wrap"
+						ref={blockRef}
+					>
+						<Flex
+							className="update-form-button"
+							justify="space-evenly"
+						>
+							<strong className="align-center">
+								{__(
+									'Please click on the edit button in the toolbar to edit this form.',
+									'mailster'
+								)}
+							</strong>
+						</Flex>
 
-							{displayForm && (
-								<ServerSideRender
-									ref={serverSideRender}
-									block="mailster/form"
-									attributes={attributes}
-									LoadingResponsePlaceholder={Placeholder}
-									EmptyResponsePlaceholder={Placeholder}
-								/>
-							)}
-						</div>
-					</>
+						<ServerSideRender
+							className="mailster-block-form-editor-wrap-inner"
+							block="mailster/form"
+							attributes={attributes}
+							EmptyResponsePlaceholder={EmptyPlaceholder}
+						/>
+					</div>
 				)}
 				{!id && (
 					<Placeholder
@@ -182,7 +192,6 @@ export default function Edit(props) {
 						label={__('Mailster Subscription Form', 'mailster')}
 					>
 						<MailsterFormSelector {...props} />
-
 						<div className="placeholder-buttons-wrap">
 							<Button
 								variant="link"
@@ -201,6 +210,20 @@ export default function Edit(props) {
 					</Placeholder>
 				)}
 			</div>
+			<BlockControls>
+				<ToolbarGroup>
+					<ToolbarButton
+						label={__('Reload Form', 'mailster')}
+						icon={update}
+						onClick={reloadForm}
+					/>
+					<ToolbarButton
+						label={__('Edit Form', 'mailster')}
+						icon={edit}
+						onClick={editForm}
+					/>
+				</ToolbarGroup>
+			</BlockControls>
 			<InspectorControls>
 				<Panel>
 					<PanelBody

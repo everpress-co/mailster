@@ -49,6 +49,7 @@ import {
 	useState,
 	useEffect,
 	useRef,
+	useMemo,
 } from '@wordpress/element';
 import {
 	useSelect,
@@ -57,6 +58,8 @@ import {
 	dispatch,
 	subscribe,
 } from '@wordpress/data';
+
+import apiFetch from '@wordpress/api-fetch';
 
 import { useFocusableIframe } from '@wordpress/compose';
 
@@ -97,44 +100,18 @@ const ModalContent = (props) => {
 
 	const typeActive = meta.placements.includes(type) || isOther;
 
-	const categories = options.category || undefined;
-	const tags = options.tags || undefined;
-	const all = options.all;
-
-	const postQuery = {
-		per_page: 1,
-		categories: !all ? categories : undefined,
-		tags: !all ? tags : undefined,
-	};
-
-	const formId = useSelect(
-		(select) => select('core/editor').getCurrentPostId(),
-		[]
+	const formId = useSelect((select) =>
+		select('core/editor').getCurrentPostId()
 	);
 
-	const postContent = useSelect((select) => {
-		return select('core/editor').getEditedPostContent();
-	});
-
-	const posts = useSelect((select) => {
-		return select('core').getEntityRecords(
-			'postType',
-			all[0] || 'post',
-			postQuery
-		);
-	});
-
-	const [isLoading, setIsLoading] = useState(
-		useSelect((select) => {
-			return select('core/data').isResolving('core', 'getEntityRecords', [
-				'postType',
-				all[0] || 'post',
-				postQuery,
-			]);
-		})
+	const postContent = useSelect((select) =>
+		select('core/editor').getEditedPostContent()
 	);
+
+	const [isLoading, setIsLoading] = useState(true);
 
 	const [isDisplayed, setIsDisplayed] = useState(false);
+
 	useEffect(() => {
 		if (isOther) {
 			setIsDisplayed(true);
@@ -155,28 +132,15 @@ const ModalContent = (props) => {
 		}
 	}, [options.all, options.posts, options.taxonomies, options.triggers]);
 
-	const setUrlDebounce = useDebounce(setUrl, 1000);
-	const setPreviewOptionsDebounce = useDebounce(setPreviewOptions, 1000);
+	const setUrlDebounce = useDebounce(setUrl, 100);
+	const setPreviewOptionsDebounce = useDebounce(setPreviewOptions, 100);
 
 	useEffect(() => {
-		if (!posts) {
-			return;
-		}
-		if (!posts.length) {
-			return;
-		}
-		if (!type) {
-			return;
-		}
-		if (!siteUrl) {
+		if (!type || !siteUrl) {
 			return;
 		}
 
-		const post = posts[0];
-
-		const id = options.posts?.length ? options.posts[0] : post.id;
-
-		let newUrl = new URL(post.link);
+		let newUrl = new URL(siteUrl);
 
 		if (isOther) {
 			const formendpoint = new URL(
@@ -187,10 +151,16 @@ const ModalContent = (props) => {
 			useThemeStyle && formendpoint.searchParams.set('style', 1);
 
 			newUrl = formendpoint;
+		} else if (
+			!options.all?.length &&
+			!options.posts?.length &&
+			!options.taxonomies?.length
+		) {
+			return;
 		}
-		setDisplayUrl(newUrl.toString());
-		setUrlDebounce(mapUrl(newUrl.toString(), post));
-	}, [posts, options, urlLoggedIn, useThemeStyle]);
+
+		setUrlDebounce(mapUrl(newUrl.toString()));
+	}, [options, siteUrl, urlLoggedIn, useThemeStyle]);
 
 	useEffect(() => {
 		if (!options || Object.keys(options).length === 0) {
@@ -204,6 +174,8 @@ const ModalContent = (props) => {
 		window.addEventListener('message', function (event) {
 			if (!event.data) return;
 			var data = JSON.parse(event.data);
+
+			setDisplayUrl(data.location);
 
 			setIsLoading(false);
 
@@ -227,7 +199,7 @@ const ModalContent = (props) => {
 		setMeta({ ['placement_' + type]: newOptions });
 	}
 
-	function mapUrl(url, post) {
+	function mapUrl(url) {
 		const newUrl = new URL(url);
 
 		const { display, pos, tag, triggers } = meta['placement_' + type] || {};
@@ -235,17 +207,10 @@ const ModalContent = (props) => {
 		const obj = {
 			type: type,
 			user: urlLoggedIn,
-			options: {
-				all: post && [post.type],
-				display: display,
-				pos: pos,
-				tag: tag,
-				triggers: triggers,
-			},
+			options: options,
 			form_id: formId,
 		};
 
-		post && newUrl.searchParams.set('p', post.id);
 		newUrl.searchParams.set('mailster-block-preview', JSON.stringify(obj));
 
 		return newUrl.toString();
@@ -318,7 +283,7 @@ const ModalContent = (props) => {
 							<div className="preview-pane-url">
 								<TextControl
 									className="widefat"
-									value={displayUrl}
+									value={isDisplayed ? displayUrl : ''}
 									readOnly
 								/>
 							</div>

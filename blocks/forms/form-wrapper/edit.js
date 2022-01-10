@@ -124,19 +124,16 @@ const prefixCss = (css, className, type) => {
 };
 
 export default function Edit(props) {
-	const { attributes, setAttributes, toggleSelection, isSelected, clientId } =
-		props;
+	const {
+		attributes,
+		setAttributes,
+		toggleSelection,
+		isSelected,
+		clientId,
+	} = props;
 	const { css, style, background, inputs } = attributes;
 
 	const [siteUrl] = useEntityProp('root', 'site', 'url');
-
-	useEffect(() => {
-		if (!siteUrl) return;
-		const actionUrl = siteUrl + '/wp-json/mailster/v1/subscribe';
-
-		if (actionUrl != attributes.action)
-			setAttributes({ action: actionUrl });
-	}, [siteUrl]);
 
 	const [meta, setMeta] = useEntityProp(
 		'postType',
@@ -220,6 +217,14 @@ export default function Edit(props) {
 	}, [css]);
 
 	useEffect(() => {
+		if (!siteUrl) return;
+		const actionUrl = siteUrl + '/wp-json/mailster/v1/subscribe';
+
+		if (actionUrl != attributes.action)
+			setAttributes({ action: actionUrl });
+	}, [siteUrl]);
+
+	useEffect(() => {
 		const all = select('core/block-editor').getBlocks(),
 			count = all.length;
 
@@ -275,7 +280,16 @@ export default function Edit(props) {
 
 		if (!messagesBlock) {
 			const block = wp.blocks.createBlock('mailster/messages');
-			const pos = 0;
+			const first = all.find((block) => {
+				return /mailster\//.test(block.name);
+				return block.name == 'mailster/field-submit';
+			});
+			const pos = first
+				? select('core/block-editor').getBlockIndex(
+						first.clientId,
+						clientId
+				  )
+				: 0;
 
 			dispatch('core/block-editor').insertBlock(block, pos, clientId);
 		}
@@ -305,39 +319,6 @@ export default function Edit(props) {
 			dispatch('core/block-editor').insertBlock(block, pos, clientId);
 		}
 	}, [meta.userschoice]);
-
-	useEffect(() => {
-		return;
-		if (
-			!select('core/block-editor').getBlocks().length ||
-			document.getElementById('style-this-form')
-		) {
-			return;
-		}
-		const el = document.getElementsByClassName(
-			'edit-post-header__toolbar'
-		)[0];
-		const div = document.createElement('div');
-		div.classList.add('edit-post-header__settings');
-		el.parentNode.insertBefore(div, el.nextSibling);
-		const styleForm = () => {
-			dispatch('core/block-editor').clearSelectedBlock(clientId);
-			dispatch('core/block-editor').selectBlock(clientId);
-		};
-
-		wp.element.render(
-			<Button
-				id="style-this-form"
-				icon={brush}
-				label="Style"
-				variant="tertiary"
-				onClick={styleForm}
-			>
-				{__('Style this form', 'mailster')}
-			</Button>,
-			div
-		);
-	}, []);
 
 	return (
 		<>

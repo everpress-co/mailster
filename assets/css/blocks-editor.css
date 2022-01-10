@@ -184,8 +184,9 @@ button[name='link'] {
 	padding: 8px 0;
 	text-align: center;
 }
-.preview-modal .preview-sidebar > .components-base-control {
-	padding: 16px;
+
+.preview-modal .preview-sidebar .components-base-control input:focus {
+	box-shadow: none;
 }
 
 .post-type-newsletter_form

@@ -53,7 +53,22 @@ class MailsterBlockForms {
 		// enter preview mode
 		if ( isset( $_GET['mailster-block-preview'] ) ) {
 
-			$data = json_decode( $_GET['mailster-block-preview'], true );
+			$data = json_decode( stripcslashes( $_GET['mailster-block-preview'] ), true );
+
+			if ( ! isset( $data['p'] ) && 'other' != $data['type'] ) {
+				$data['p'] = $this->get_preview_page( $data );
+				$redirect  = add_query_arg(
+					array(
+						'mailster-block-preview' => rawurlencode( json_encode( $data ) ),
+						'p'                      => $data['p'],
+					),
+					home_url()
+				);
+
+				wp_redirect( $redirect );
+				exit;
+			}
+
 			if ( json_last_error() === JSON_ERROR_NONE ) {
 				$this->preview_data = $data;
 				if ( ! $data['user'] ) {
@@ -61,6 +76,29 @@ class MailsterBlockForms {
 				}
 			}
 		}
+	}
+
+
+	public function get_preview_page( $data ) {
+
+		global $wpdb;
+
+		$sql = "SELECT wp_posts.ID FROM {$wpdb->posts} AS wp_posts";
+
+		if ( ! empty( $data['options']['all'] ) ) {
+			$sql .= ' WHERE wp_posts.post_type IN ("' . implode( '", "', $data['options']['all'] ) . '")';
+		} elseif ( ! empty( $data['options']['posts'] ) ) {
+			$sql .= ' WHERE wp_posts.ID IN (' . implode( ', ', $data['options']['posts'] ) . ')';
+		} elseif ( ! empty( $data['options']['taxonomies'] ) ) {
+			$sql .= " LEFT JOIN {$wpdb->term_relationships} AS terms ON terms.object_id = wp_posts.ID WHERE terms.term_taxonomy_id IN (" . implode( ', ', $data['options']['taxonomies'] ) . ')';
+		} else {
+			$sql .= ' WHERE 1=1';
+		}
+
+		$sql .= " AND (wp_posts.post_status = 'publish') ORDER BY wp_posts.post_date DESC LIMIT 0, 1";
+
+		return $wpdb->get_var( $sql );
+
 	}
 
 
@@ -88,7 +126,8 @@ class MailsterBlockForms {
 		$options = $this->preview_data['options'];
 
 		$options['classes'] = array( 'mailster-block-form-type-embed' );
-		if ( $form_html = $this->render_form_with_options( $form_id, $options ) ) {
+
+		if ( $form_html = $this->render_form_with_options( $form_id, $options, false ) ) {
 			echo $form_html;
 		}
 	}
@@ -170,6 +209,7 @@ class MailsterBlockForms {
 	public function check_validity( $options = array() ) {
 
 		$post_type = get_post_type();
+
 		if ( ! empty( $options['all'] ) && in_array( $post_type, $options['all'] ) ) {
 			return true;
 		}
@@ -655,6 +695,8 @@ class MailsterBlockForms {
 				// 'style'           => 'mailster-form-block',
 			)
 		);
+		register_block_type( MAILSTER_DIR . 'blocks/homepage/', array() );
+
 		if ( ! is_admin() ) {
 			return;
 		}
@@ -685,6 +727,7 @@ class MailsterBlockForms {
 
 			// not in use on the form edit page
 			unregister_block_type( 'mailster/form' );
+			unregister_block_type( 'mailster/homepage' );
 			$this->register_block_pattern();
 			$this->register_block_pattern_category();
 
@@ -844,9 +887,9 @@ class MailsterBlockForms {
 
 	}
 
-	public function render_form_with_options( $form, $options = array() ) {
+	public function render_form_with_options( $form, $options = array(), $check_validity = true ) {
 
-		if ( ! $this->check_validity( $options ) ) {
+		if ( $check_validity && ! $this->check_validity( $options ) ) {
 			return '';
 		}
 

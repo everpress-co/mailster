@@ -9,6 +9,7 @@ jQuery(document).ready(function ($) {
 		block: 'center',
 		inline: 'nearest',
 	});
+
 	window.addEventListener('message', function (event) {
 		var data = JSON.parse(event.data),
 			source = event;
@@ -59,7 +60,11 @@ jQuery(document).ready(function ($) {
 						.addClass('has-error')
 						.html(err.message);
 					event.source.postMessage(
-						JSON.stringify({ success: false, error: err }),
+						JSON.stringify({
+							success: false,
+							error: err,
+							location: location.origin + location.pathname,
+						}),
 						event.origin
 					);
 				})
@@ -108,7 +113,10 @@ jQuery(document).ready(function ($) {
 
 			oldUrl = url;
 			event.source.postMessage(
-				JSON.stringify({ success: true }),
+				JSON.stringify({
+					success: true,
+					location: location.origin + location.pathname,
+				}),
 				event.origin
 			);
 

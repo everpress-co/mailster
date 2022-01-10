@@ -117,7 +117,6 @@ export default function InlineStyles(props) {
 	const [render, setRender] = useState(true);
 
 	const updateStyles = () => {
-		console.warn('UPDATE');
 		const styles = getInputStyles();
 		if (styles != inputStyles) {
 			apiFetch({
