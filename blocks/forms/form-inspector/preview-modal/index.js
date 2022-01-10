@@ -160,7 +160,14 @@ const ModalContent = (props) => {
 		}
 
 		setUrlDebounce(mapUrl(newUrl.toString()));
-	}, [options, siteUrl, urlLoggedIn, useThemeStyle]);
+	}, [
+		options.all,
+		options.posts,
+		options.taxonomies,
+		siteUrl,
+		urlLoggedIn,
+		useThemeStyle,
+	]);
 
 	useEffect(() => {
 		if (!options || Object.keys(options).length === 0) {

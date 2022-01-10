@@ -101,7 +101,6 @@ export default function PlacementSettingsContent(props) {
 												pos: val,
 											})
 										}
-										min={0}
 										step={1}
 										disabled={options.tag == 'more'}
 										value={options.pos || 0}

@@ -261,6 +261,9 @@ class MailsterBlockForms {
 						}
 
 						$chunks = explode( $split_at, $content );
+						if ( $pos < 0 ) {
+							$pos = max( 0, count( $chunks ) + $pos );
+						}
 
 						if ( isset( $chunks[ $pos ] ) ) {
 							$chunks[ $pos ] = $form_html . $chunks[ $pos ];
@@ -906,12 +909,15 @@ class MailsterBlockForms {
 
 		if ( isset( $this->preview_data ) ) {
 
-			$options['classes'][] = 'wp-block-mailster-form-outside-wrapper-placeholder';
+			$html = '<div class="wp-block-mailster-form-outside-wrapper-' . $options['id'] . ' wp-block-mailster-form-outside-wrapper-placeholder is-empty">' . esc_html__( 'Loading your form...', 'mailster' ) . '</div>';
 
-			$html  = '<div class="wp-block-mailster-form-outside-wrapper-' . $options['id'] . ' wp-block-mailster-form-outside-wrapper-placeholder">' . esc_html__( 'Loading your form...', 'mailster' ) . '</div>';
-			$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );
+			if ( $form->post_status != 'auto-draft' ) {
+				$options['classes'][] = 'wp-block-mailster-form-outside-wrapper-placeholder';
 
-			$html = render_block( $block[0] );
+				$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );
+
+				$html = render_block( $block[0] );
+			}
 		} else {
 
 			$block = parse_blocks( '<!-- wp:mailster/form ' . json_encode( $options ) . ' /-->' );

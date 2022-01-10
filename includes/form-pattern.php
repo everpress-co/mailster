@@ -6,7 +6,7 @@ $patterns = apply_filters(
 		'basic'      => array(
 			'title'       => __( 'A minimal basic form', 'mailster' ),
 			'description' => _x( 'Two horizontal buttons, the left button is filled in, and the right button is outlined.', 'Block pattern description', 'mailster' ),
-			'content'     => '<!-- wp:mailster/form-wrapper {"css":{"general":".input, .submit-button{\n\theight:66px;\n}","tablet":"","mobile":""},"style":{"borderRadius":"0px"}} -->
+			'content'     => '<!-- wp:mailster/form-wrapper {"css":{"general":".input, .submit-button{\n\theight:66px;\n}\n.mailster-wrapper{\n    margin:0 !important;\n}\n","tablet":"","mobile":""},"style":{"borderRadius":"0px"}} -->
 <form method="post" action="" novalidate class="wp-block-mailster-form-wrapper mailster-block-form"><div class="mailster-block-form-inner">
 
 <!-- wp:mailster/field-email {"inline":true,"style":{"width":60},"className":"mailster-wrapper-type-email"} -->
