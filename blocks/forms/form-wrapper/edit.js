@@ -58,10 +58,7 @@ import { store as editPostStore } from '@wordpress/edit-post';
 
 import './editor.scss';
 
-import Styles from './Styles';
-import Background from './Background';
 import BlockRecovery from './BlockRecovery';
-import Css from './Css';
 
 const prefixCss = (css, className, type) => {
 	if (!css) return css;
@@ -124,13 +121,8 @@ const prefixCss = (css, className, type) => {
 };
 
 export default function Edit(props) {
-	const {
-		attributes,
-		setAttributes,
-		toggleSelection,
-		isSelected,
-		clientId,
-	} = props;
+	const { attributes, setAttributes, toggleSelection, isSelected, clientId } =
+		props;
 	const { css, style, background, inputs } = attributes;
 
 	const [siteUrl] = useEntityProp('root', 'site', 'url');
@@ -321,54 +313,41 @@ export default function Edit(props) {
 	}, [meta.userschoice]);
 
 	return (
-		<>
-			<div
-				{...useBlockProps({
-					className: className.join(' '),
-				})}
-				style={{
-					...borderProps.style,
-					...colorProps.style,
-					//...spacingProps.style,
-					...{
-						color: attributes.color,
-						backgroundColor: attributes.backgroundColor,
-						fontSize: attributes.fontSize,
-						padding: attributes.padding / 10 + 'rem',
-						borderRadius: attributes.borderRadius,
-					},
-				}}
-			>
-				{window.mailster_inline_styles && (
-					<style className="mailster-custom-styles">
-						{window.mailster_inline_styles}
-					</style>
-				)}
-				{prefixedCss && (
-					<style className="mailster-custom-styles">
-						{prefixedCss}
-					</style>
-				)}
-				{backgroundStyles && (
-					<style className="mailster-bg-styles">
-						{backgroundStyles}
-					</style>
-				)}
-				{inputStyle && (
-					<style className="mailster-inline-styles">
-						{inputStyle}
-					</style>
-				)}
-				<div className="mailster-block-form-inner">
-					<InnerBlocks />
-				</div>
-				<BlockRecovery {...props} />
+		<div
+			{...useBlockProps({
+				className: className.join(' '),
+			})}
+			style={{
+				...borderProps.style,
+				...colorProps.style,
+				//...spacingProps.style,
+				...{
+					color: attributes.color,
+					backgroundColor: attributes.backgroundColor,
+					fontSize: attributes.fontSize,
+					padding: attributes.padding / 10 + 'rem',
+					borderRadius: attributes.borderRadius,
+				},
+			}}
+		>
+			{window.mailster_inline_styles && (
+				<style className="mailster-custom-styles">
+					{window.mailster_inline_styles}
+				</style>
+			)}
+			{prefixedCss && (
+				<style className="mailster-custom-styles">{prefixedCss}</style>
+			)}
+			{backgroundStyles && (
+				<style className="mailster-bg-styles">{backgroundStyles}</style>
+			)}
+			{inputStyle && (
+				<style className="mailster-inline-styles">{inputStyle}</style>
+			)}
+			<div className="mailster-block-form-inner">
+				<InnerBlocks />
 			</div>
-			<InspectorControls>
-				<Styles {...props} meta={meta} setMeta={setMeta} />
-				<Background {...props} />
-				<Css {...props} />
-			</InspectorControls>
-		</>
+			<BlockRecovery {...props} />
+		</div>
 	);
 }

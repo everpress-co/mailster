@@ -31,8 +31,8 @@ import { registerBlockVariation } from '@wordpress/blocks';
  * Internal dependencies
  */
 
-import InputFields from './InputFields';
-import Styles from './Styles';
+import InputStyles from './InputStyles';
+import FormStyles from './FormStyles';
 import Css from './Css';
 import Options from './Options';
 import Doubleoptin from './Doubleoptin';
@@ -44,6 +44,9 @@ import PublishChecks from './PublishChecks';
 import InlineStyles from './InlineStyles';
 
 import '../store';
+
+const MAILSTER_PLUGIN_FORM_SETTINGS_PANEL =
+	'mailster-block-form-settings-panel';
 
 function SettingsPanelPlugin() {
 	const [meta, setMeta] = useEntityProp(
@@ -80,8 +83,6 @@ function SettingsPanelPlugin() {
 		});
 	};
 
-	useEffect(() => {}, []);
-
 	return (
 		<>
 			<PluginPrePublishPanel
@@ -106,13 +107,13 @@ function SettingsPanelPlugin() {
 			<Options meta={meta} setMeta={setMeta} />
 			<Doubleoptin meta={meta} setMeta={setMeta} />
 			<Lists meta={meta} setMeta={setMeta} />
-			<Styles
+			<FormStyles
 				meta={meta}
 				setMeta={setMeta}
 				attributes={attributes}
 				setAttributes={setAttributes}
 			/>
-			<InputFields
+			<InputStyles
 				meta={meta}
 				setMeta={setMeta}
 				attributes={attributes}

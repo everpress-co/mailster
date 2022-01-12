@@ -1,11 +1,13 @@
+document.documentElement.setAttribute('hidden', true);
 jQuery(document).ready(function ($) {
 	'use strict';
 
 	var oldUrl;
 	var lastanimation = '';
 
+	document.documentElement.removeAttribute('hidden', true);
 	$('.wp-block-mailster-form-outside-wrapper-placeholder')[0].scrollIntoView({
-		behavior: 'smooth',
+		behavior: 'auto',
 		block: 'center',
 		inline: 'nearest',
 	});
@@ -45,7 +47,6 @@ jQuery(document).ready(function ($) {
 				data: { block_form_content: data.post_content, args: args },
 			})
 				.then(function (post) {
-					//return post;
 					$(
 						'.wp-block-mailster-form-outside-wrapper-' +
 							data.form_id
@@ -124,6 +125,21 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
+	function getScrollPercent() {
+		var el = document.documentElement,
+			body = document.body,
+			st = 'scrollTop',
+			sh = 'scrollHeight';
+		var x = (el[st] || body[st]) / ((el[sh] || body[sh]) - el.clientHeight);
+		return parseFloat((x * 100).toFixed());
+	}
+
+	function getScrollPosition() {
+		return (
+			document.documentElement['scrollTop'] || document.body['scrollTop']
+		);
+	}
+
 	function info() {
 		var infoScreen = $('<div />')
 			.css({
@@ -133,17 +149,6 @@ jQuery(document).ready(function ($) {
 			})
 			.html('0')
 			.appendTo('body');
-
-		var el = document.documentElement,
-			body = document.body,
-			st = 'scrollTop',
-			sh = 'scrollHeight';
-
-		function getScrollPercent() {
-			var x =
-				(el[st] || body[st]) / ((el[sh] || body[sh]) - el.clientHeight);
-			return (x * 100).toFixed();
-		}
 
 		var form = $('.wp-block-mailster-form-outside-wrapper-placeholder');
 

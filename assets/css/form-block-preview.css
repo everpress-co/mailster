@@ -1,3 +1,6 @@
+html {
+	scroll-behavior: unset !important;
+}
 .wp-block-mailster-form-outside-wrapper-placeholder *,
 .wp-block-mailster-form-outside-wrapper-placeholder *::before,
 .wp-block-mailster-form-outside-wrapper-placeholder *::after {

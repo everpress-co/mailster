@@ -50,7 +50,7 @@ import { more } from '@wordpress/icons';
  * Internal dependencies
  */
 
-export const BackgroundContent = (props) => {
+export const FormStylesPanel = (props) => {
 	const { attributes, setAttributes, children } = props;
 
 	if (!attributes) {
@@ -82,9 +82,9 @@ export const BackgroundContent = (props) => {
 
 	return (
 		<PanelColorGradientSettings
-			title={__('Form Style inner', 'mailster')}
+			title={__('Form Styles', 'mailster')}
+			name="form-styles-panel"
 			initialOpen={false}
-			name="form-style-panel"
 			settings={[
 				{
 					colorValue: color,

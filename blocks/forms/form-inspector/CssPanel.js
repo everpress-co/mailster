@@ -71,7 +71,7 @@ const Wrapper = ({ children, isCSSModal, setCSSModal }) => {
 	);
 };
 
-export const CssContent = (props) => {
+export const CssPanel = (props) => {
 	const { attributes, setAttributes, children } = props;
 
 	if (!attributes) {

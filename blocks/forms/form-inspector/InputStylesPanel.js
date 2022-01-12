@@ -57,7 +57,7 @@ export const colorSettings = [
 	},
 ];
 
-export const StylesContent = (props) => {
+export const InputStylesPanel = (props) => {
 	const { attributes, setAttributes, children } = props;
 
 	if (!attributes) {
@@ -74,9 +74,9 @@ export const StylesContent = (props) => {
 
 	return (
 		<PanelColorGradientSettings
-			title={__('Input Fields inner', 'mailster')}
+			title={__('Input Styles', 'mailster')}
+			name="input-styles-panel"
 			initialOpen={false}
-			name="input-style-panel"
 			settings={colorSettings.flatMap((color, i) => {
 				return {
 					colorValue: style[color.id],

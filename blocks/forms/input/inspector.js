@@ -45,7 +45,10 @@ import { Icon, chevronUp, chevronDown, trash } from '@wordpress/icons';
  * Internal dependencies
  */
 
-import Styles from './Styles';
+import {
+	InputStylesPanel,
+	colorSettings,
+} from '../form-inspector/InputStylesPanel';
 
 export default function InputFieldInspectorControls(props) {
 	const { attributes, setAttributes, isSelected } = props;
@@ -96,7 +99,7 @@ export default function InputFieldInspectorControls(props) {
 
 	return (
 		<InspectorControls>
-			<Styles {...props} />
+			<InputStylesPanel {...props} />
 			<Panel>
 				<PanelBody
 					title={__('Field Settings', 'mailster')}
