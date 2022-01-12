@@ -288,6 +288,7 @@ _.mailster-conditions .mailster-conditions-wrap:empty:before {
 .mailster-condition-render-group {
 	border: 1px solid #ccd0d4;
 	padding: 0.8em 0.8em;
+	margin: 0 0 0.8em;
 	background: #fafafa;
 	vertical-align: top;
 	position: relative;
