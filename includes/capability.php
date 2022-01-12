@@ -83,6 +83,11 @@ $mailster_capabilities = array(
 		'roles' => array( 'editor' ),
 	),
 
+	'mailster_restore_subscribers'        => array(
+		'title' => esc_html__( 'restore subscribers', 'mailster' ),
+		'roles' => array( 'editor' ),
+	),
+
 	'mailster_edit_form'                  => array(
 		'title' => esc_html__( 'edit form', 'mailster' ),
 		'roles' => array( 'editor' ),

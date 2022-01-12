@@ -52,6 +52,8 @@ if ( $is_new ) {
 	printf( esc_html__( 'Edit %s', 'mailster' ), '<strong>' . esc_html( $nicename ) . '</strong>' );
 	if ( $subscriber->status == 4 ) {
 		echo '<div class="error"><p>' . sprintf( esc_html__( 'This subscriber has caused an error: %s', 'mailster' ), '<strong>' . ( $meta->error ? $meta->error : esc_html__( 'unknown', 'mailster' ) ) . '</strong>' ) . '</p></div>';
+	} elseif ( $subscriber->status == 5 ) {
+		echo '<div class="error"><p>' . sprintf( esc_html__( 'This subscriber is marked as deleted and will get permanently deleted in approx. %s.', 'mailster' ), '<strong>' . human_time_diff( $subscriber->updated + strtotime( '14 days' ) - time() ) . '</strong>' ) . '</p></div>';
 	}
 	?>
 	<?php if ( current_user_can( 'mailster_add_subscribers' ) ) : ?>
@@ -66,9 +68,11 @@ if ( $is_new ) {
 		<?php if ( ! $is_new && $subscriber->status == 0 ) : ?>
 			<input type="submit" name="confirmation" class="button button-large" value="<?php esc_attr_e( 'Resend Confirmation', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to resend the confirmation?', 'mailster' ); ?>');">
 		<?php endif; ?>
-		<?php if ( ! $is_new && current_user_can( 'mailster_delete_subscribers' ) ) : ?>
+		<?php if ( $subscriber->status != 5 ) : ?>
+			<?php if ( ! $is_new && current_user_can( 'mailster_delete_subscribers' ) ) : ?>
 			<input type="submit" name="delete" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Subscriber', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
 			<input type="submit" name="delete_actions" class="button button-link-delete" value="<?php esc_attr_e( 'Delete Subscriber and Activities', 'mailster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Do you really like to remove this subscriber?', 'mailster' ); ?>');">
+			<?php endif; ?>
 		<?php endif; ?>
 		<input type="submit" name="save" class="button button-primary button-large" value="<?php esc_attr_e( 'Save', 'mailster' ); ?>">
 	</span>
@@ -138,7 +142,7 @@ if ( $is_new ) {
 						<?php
 						$statuses = $this->get_status( null, true );
 						foreach ( $statuses as $id => $status ) :
-							if ( $id == 4 && $subscriber->status != 4 ) {
+							if ( $id >= 4 && $subscriber->status != $id ) {
 								continue;
 							}
 							?>

@@ -883,7 +883,7 @@ class MailsterLists {
 			if ( is_null( $status ) ) {
 				$status = array( 1 );
 			} elseif ( $status === false ) {
-				$status = array( 0, 1, 2, 3, 4, 5, 6 );
+				$status = array( 0, 1, 2, 3, 4 );
 			}
 			$statuses = ! is_array( $status ) ? array( $status ) : $status;
 			$statuses = array_filter( $statuses, 'is_numeric' );

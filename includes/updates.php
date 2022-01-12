@@ -619,6 +619,9 @@ if ( $old_version ) {
 		case '3.0.1':
 		case '3.0.2':
 		case '3.0.3':
+		case '3.0.4':
+			mailster( 'cron' )->unschedule();
+
 			// this option should be autoloaded
 			update_option( 'mailster_inline_styles', '', 'no' );
 

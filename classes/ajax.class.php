@@ -2191,9 +2191,10 @@ class MailsterAjax {
 
 		parse_str( $_POST['data'], $data );
 
-		$lists      = isset( $data['lists'] ) ? (array) $data['lists'] : -1;
+		$lists      = isset( $data['lists'] ) ? (array) $data['lists'] : array();
+		$nolists    = isset( $data['nolists'] ) ? (bool) $data['nolists'] : null;
 		$conditions = isset( $data['conditions'] ) ? array_values( $data['conditions'] ) : false;
-		$status     = isset( $data['status'] ) ? (array) $data['status'] : false;
+		$status     = isset( $data['status'] ) ? (array) $data['status'] : -1;
 
 		$args = array(
 			'return_count' => true,
@@ -2203,6 +2204,12 @@ class MailsterAjax {
 		);
 
 		$return['count'] = mailster( 'subscribers' )->query( $args );
+		if ( $nolists ) {
+			$args['lists']    = -1;
+			$return['count'] += mailster( 'subscribers' )->query( $args );
+		}
+
+		$return['count_formated'] = number_format_i18n( $return['count'] );
 
 		wp_send_json_success( $return );
 
@@ -2728,19 +2735,23 @@ class MailsterAjax {
 
 		switch ( $step ) {
 			case 'install':
-				$success = mailster( 'helper' )->install_plugin( $plugin );
+				$success        = mailster( 'helper' )->install_plugin( $plugin );
+				$return['next'] = 'activate';
 				break;
 			case 'activate':
-				$success = mailster( 'helper' )->activate_plugin( $plugin );
+				$success        = mailster( 'helper' )->activate_plugin( $plugin );
+				$return['next'] = 'content';
 				break;
 			case 'deactivate':
 				$success = mailster( 'helper' )->deactivate_plugin( $plugin );
 				break;
 			case 'content':
-				ob_start();
+				$context = (array) $_POST['context'];
+				$action  = array_shift( $context );
+				$args    = array_values( $context );
 
-				$method = sanitize_key( $_POST['method'] );
-				do_action( "mailster_deliverymethod_tab_{$method}" );
+				ob_start();
+				do_action_ref_array( "mailster_{$action}", $args );
 
 				$content = ob_get_contents();
 
