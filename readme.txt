@@ -193,9 +193,6 @@ Get professional development help from our expert support partner *Codeable* for
 * new: Relative conditions for date fields
 * new: filters in the subscriber overview
 * updated: Manage Subscribers page
-
-= 3.0.5 =
-
 * fixed: add trailing space to preheaders to prevent unintentional line breaks in previews.
 
 = 3.0.4 =
