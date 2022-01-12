@@ -216,6 +216,7 @@ export default function Edit(props) {
 			setAttributes({ action: actionUrl });
 	}, [siteUrl]);
 
+	//enter the root wrapper or replace it with a new one
 	useEffect(() => {
 		const all = select('core/block-editor').getBlocks(),
 			count = all.length;
@@ -284,6 +285,10 @@ export default function Edit(props) {
 				: 0;
 
 			dispatch('core/block-editor').insertBlock(block, pos, clientId);
+			//clear any selected block
+			dispatch('core/block-editor').clearSelectedBlock();
+			// select "Form" in side panel
+			dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
 		}
 	}, []);
 

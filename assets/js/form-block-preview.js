@@ -5,12 +5,19 @@ jQuery(document).ready(function ($) {
 	var oldUrl;
 	var lastanimation = '';
 
-	document.documentElement.removeAttribute('hidden', true);
+	document.documentElement.removeAttribute('hidden');
 	$('.wp-block-mailster-form-outside-wrapper-placeholder')[0].scrollIntoView({
 		behavior: 'auto',
 		block: 'center',
 		inline: 'nearest',
 	});
+
+	$('a[href]')
+		.css({ cursor: 'not-allowed' })
+		.on('click', function (event) {
+			event.preventDefault();
+			return false;
+		});
 
 	window.addEventListener('message', function (event) {
 		var data = JSON.parse(event.data),

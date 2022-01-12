@@ -9,13 +9,11 @@
 import { __ } from '@wordpress/i18n';
 
 import {
-	PluginDocumentSettingPanel,
 	PluginPrePublishPanel,
 	PluginPostPublishPanel,
 	PluginPostStatusInfo,
 } from '@wordpress/edit-post';
 import { registerPlugin } from '@wordpress/plugins';
-
 import { Fragment, Component, useState, useEffect } from '@wordpress/element';
 import {
 	useSelect,
@@ -44,9 +42,6 @@ import PublishChecks from './PublishChecks';
 import InlineStyles from './InlineStyles';
 
 import '../store';
-
-const MAILSTER_PLUGIN_FORM_SETTINGS_PANEL =
-	'mailster-block-form-settings-panel';
 
 function SettingsPanelPlugin() {
 	const [meta, setMeta] = useEntityProp(
@@ -107,24 +102,12 @@ function SettingsPanelPlugin() {
 			<Options meta={meta} setMeta={setMeta} />
 			<Doubleoptin meta={meta} setMeta={setMeta} />
 			<Lists meta={meta} setMeta={setMeta} />
-			<FormStyles
-				meta={meta}
-				setMeta={setMeta}
-				attributes={attributes}
-				setAttributes={setAttributes}
-			/>
+			<FormStyles attributes={attributes} setAttributes={setAttributes} />
 			<InputStyles
-				meta={meta}
-				setMeta={setMeta}
 				attributes={attributes}
 				setAttributes={setAttributes}
 			/>
-			<Css
-				meta={meta}
-				setMeta={setMeta}
-				attributes={attributes}
-				setAttributes={setAttributes}
-			/>
+			<Css attributes={attributes} setAttributes={setAttributes} />
 			<Placement meta={meta} setMeta={setMeta} />
 		</>
 	);

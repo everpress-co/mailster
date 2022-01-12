@@ -54,7 +54,7 @@ export const FormStylesPanel = (props) => {
 	const { attributes, setAttributes, children } = props;
 
 	if (!attributes) {
-		return <Spinner />;
+		return null;
 	}
 
 	const [values, setValues] = useState({

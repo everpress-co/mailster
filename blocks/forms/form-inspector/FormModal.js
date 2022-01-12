@@ -146,6 +146,7 @@ export default function FormModal(props) {
 					return wp.blocks.createBlock('mailster/' + field);
 				})
 			);
+			//insert block
 			dispatch('core/block-editor').resetBlocks([insertedBlock]);
 		}
 		setOpen(false);

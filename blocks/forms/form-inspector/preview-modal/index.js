@@ -6,9 +6,7 @@
  * WordPress dependencies
  */
 
-/**
- * Internal dependencies
- */ import { __, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 import {
 	useBlockProps,
@@ -75,6 +73,12 @@ import {
 	login,
 } from '@wordpress/icons';
 import { useEntityProp } from '@wordpress/core-data';
+
+/**
+ * Internal dependencies
+ */
+
+import { useEventListener } from '../../util';
 
 import PlacementSettings from './components/PlacementSettings';
 import PlacementSettingsContent from './components/PlacementSettingsContent';
@@ -180,28 +184,26 @@ const ModalContent = (props) => {
 		setPreviewOptions();
 	}, [options]);
 
-	useEffect(() => {
-		window.addEventListener('message', function (event) {
-			if (!event.data) return;
-			var data = JSON.parse(event.data);
+	useEventListener('message', (e) => {
+		if (!e.data) return;
+		if (!iframeRef.current) return;
 
-			setDisplayUrl(data.location);
+		const data = JSON.parse(e.data);
 
-			setIsLoading(false);
+		setDisplayUrl(data.location);
+		setIsLoading(false);
 
-			if (!iframeRef.current) return;
-			const form = iframeRef.current.contentWindow.document.querySelector(
-				'.wp-block-mailster-form-outside-wrapper-' + formId
-			);
-			if (form && 'content' == type) {
-				form.scrollIntoView({
-					behavior: 'smooth',
-					block: 'center',
-					inline: 'nearest',
-				});
-			}
-		});
-	}, []);
+		const form = iframeRef.current.contentWindow.document.querySelector(
+			'.wp-block-mailster-form-outside-wrapper-' + formId
+		);
+		if (form && 'content' == type) {
+			form.scrollIntoView({
+				behavior: 'smooth',
+				block: 'center',
+				inline: 'nearest',
+			});
+		}
+	});
 
 	function setOptions(options) {
 		var newOptions = { ...meta['placement_' + type] };
