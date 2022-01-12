@@ -74,11 +74,11 @@ class MailsterSubscribers {
 
 	public function script_styles() {
 
+		global $wp_locale;
+
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
 		if ( isset( $_GET['ID'] ) || isset( $_GET['new'] ) ) :
-
-			global $wp_locale;
 
 			wp_enqueue_script( 'easy-pie-chart', MAILSTER_URI . 'assets/js/libs/easy-pie-chart' . $suffix . '.js', array( 'jquery' ), MAILSTER_VERSION, true );
 			wp_enqueue_style( 'easy-pie-chart', MAILSTER_URI . 'assets/css/libs/easy-pie-chart' . $suffix . '.css', array(), MAILSTER_VERSION );
@@ -115,6 +115,15 @@ class MailsterSubscribers {
 
 		else :
 
+			wp_enqueue_style( 'jquery-ui-style', MAILSTER_URI . 'assets/css/libs/jquery-ui' . $suffix . '.css', array(), MAILSTER_VERSION );
+			wp_enqueue_style( 'jquery-datepicker', MAILSTER_URI . 'assets/css/datepicker' . $suffix . '.css', array(), MAILSTER_VERSION );
+
+			wp_enqueue_script( 'jquery' );
+			wp_enqueue_script( 'jquery-ui-datepicker' );
+
+			wp_enqueue_style( 'thickbox' );
+			wp_enqueue_script( 'thickbox' );
+
 			wp_enqueue_style( 'mailster-subscribers-table', MAILSTER_URI . 'assets/css/subscribers-table-style' . $suffix . '.css', array(), MAILSTER_VERSION );
 			wp_enqueue_script( 'mailster-subscribers-table', MAILSTER_URI . 'assets/js/subscribers-table-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
 			mailster_localize_script(
@@ -122,9 +131,20 @@ class MailsterSubscribers {
 				array(
 					'onbeforeunload' => esc_html__( 'Bulk process in progress!', 'mailster' ),
 					'initprogess'    => sprintf( esc_html__( 'processing page %d', 'mailster' ), 1 ),
+					'filters'        => esc_html__( 'Add filters', 'mailster' ),
 				)
 			);
-
+			mailster_localize_script(
+				'conditions',
+				array(
+					'next'          => esc_html__( 'next', 'mailster' ),
+					'prev'          => esc_html__( 'prev', 'mailster' ),
+					'start_of_week' => get_option( 'start_of_week' ),
+					'day_names'     => $wp_locale->weekday,
+					'day_names_min' => array_values( $wp_locale->weekday_abbrev ),
+					'month_names'   => array_values( $wp_locale->month ),
+				)
+			);
 		endif;
 
 	}
@@ -186,39 +206,40 @@ class MailsterSubscribers {
 		$error_message   = '';
 		$message_postfix = '';
 
-		if ( isset( $_POST['all_subscribers'] ) && $_POST['all_subscribers'] ) {
+		if ( isset( $_POST['empty_trash'] ) ) {
+			$action = 'empty_trash_all';
+		} elseif ( isset( $_POST['all_subscribers'] ) && $_POST['all_subscribers'] ) {
 			$args = $_GET;
 			unset( $args['post_type'], $args['page'] );
 
-			$status  = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
-			$orderby = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
-			$order   = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
-			$offset  = $page * $limit;
+			$status     = isset( $_GET['status'] ) ? (int) $_GET['status'] : false;
+			$conditions = isset( $_GET['conditions'] ) ? (array) $_GET['conditions'] : null;
+			$orderby    = ! empty( $_GET['orderby'] ) ? esc_sql( $_GET['orderby'] ) : 'ID';
+			$order      = ! empty( $_GET['order'] ) ? esc_sql( $_GET['order'] ) : 'DESC';
+			$offset     = $page * $limit;
 
 			if ( in_array( $action, array( 'subscribed', 'unsubscribed', 'pending' ) ) ) {
 				$offset = 0;
 				if ( ! $status ) {
 					$args['status__not_in'] = $this->get_status_by_name( $action );
 				}
-			} elseif ( 'delete' == $action ) {
+			} elseif ( in_array( $action, array( 'delete', 'delete_actions', 'empty_trash' ) ) ) {
 				$offset = 0;
 			} elseif ( 'delete_actions' == $action ) {
 				$offset = 0;
 			}
 
-			$subscriber_ids = mailster( 'subscribers' )->query(
-				wp_parse_args(
-					$args,
-					array(
-						'status'     => $status,
-						'limit'      => $limit,
-						'offset'     => $offset,
-						'orderby'    => $orderby,
-						'order'      => $order,
-						'return_ids' => true,
-					)
-				)
+			$query_args = array(
+				'status'     => $status,
+				'conditions' => $conditions,
+				'limit'      => $limit,
+				'offset'     => $offset,
+				'orderby'    => $orderby,
+				'order'      => $order,
+				'return_ids' => true,
 			);
+
+			$subscriber_ids = mailster( 'subscribers' )->query( $query_args );
 
 			$page++;
 			$finished = ( $page == ceil( $total / $limit ) );
@@ -233,6 +254,27 @@ class MailsterSubscribers {
 		}
 
 		switch ( $action ) {
+
+			case 'empty_trash_all':
+					$redirect = remove_query_arg( 'status' );
+			case 'empty_trash':
+				if ( current_user_can( 'mailster_delete_subscribers' ) ) {
+					if ( ! empty( $subscriber_ids ) ) {
+						$args = array( 'include' => $subscriber_ids );
+					} else {
+						$args = array();
+					}
+					if ( $count = $this->empty_trash( $args ) ) {
+						$success_message = sprintf( esc_html__( '%d Subscribers permanently deleted.', 'mailster' ), $count );
+					}
+				}
+				break;
+
+			case 'restore':
+				if ( current_user_can( 'mailster_restore_subscribers' ) && $count = $this->restore( $subscriber_ids ) ) {
+					$success_message = sprintf( esc_html__( '%d Subscribers have been restored.', 'mailster' ), $count );
+				}
+				break;
 
 			case 'delete':
 			case 'delete_actions':
@@ -1525,9 +1567,10 @@ class MailsterSubscribers {
 	 * @param unknown $status         (optional)
 	 * @param unknown $remove_actions (optional)
 	 * @param unknown $remove_meta    (optional)
+	 * @param unknown $trash          (optional)
 	 * @return unknown
 	 */
-	public function remove( $subscriber_ids, $status = null, $remove_actions = false, $remove_meta = true ) {
+	public function remove( $subscriber_ids, $status = null, $remove_actions = false, $remove_meta = true, $trash = null ) {
 
 		global $wpdb;
 
@@ -1535,7 +1578,7 @@ class MailsterSubscribers {
 		$statuses       = ! is_null( $status ) ? ( ! is_array( $status ) ? array( (int) $status ) : array_filter( $status, 'is_numeric' ) ) : null;
 
 		// reduce subscriber_ids if status is set
-		if ( $statuses ) {
+		if ( $subscriber_ids && $statuses ) {
 			$sql            = "SELECT subscribers.ID FROM {$wpdb->prefix}mailster_subscribers AS subscribers WHERE subscribers.ID IN (0," . implode( ',', $subscriber_ids ) . ')';
 			$sql           .= ' AND subscribers.status IN (' . implode( ',', $statuses ) . ')';
 			$subscriber_ids = $wpdb->get_col( $sql );
@@ -1543,6 +1586,23 @@ class MailsterSubscribers {
 
 		if ( empty( $subscriber_ids ) ) {
 			return true;
+		}
+
+		if ( is_null( $trash ) ) {
+			$trash = true; // default trash mode
+		}
+
+		if ( $trash ) {
+			$this->update_metas(
+				$subscriber_ids,
+				0,
+				array(
+					'_remove_actions' => $remove_actions,
+					'_remove_meta'    => $remove_meta,
+				)
+			);
+
+			return $this->change_status( $subscriber_ids, 5, false, true );
 		}
 
 		$subscriber_ids_concat = implode( ',', $subscriber_ids );
@@ -1611,6 +1671,86 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $user_id
 	 */
+	public function empty_trash( $args = array() ) {
+
+		$args['status'] = 5;
+
+		$subscribers = $this->query( $args );
+
+		if ( empty( $subscribers ) ) {
+			return 0;
+		}
+
+		$args['meta'] = array( '_remove_meta', '_remove_actions' );
+
+		$subscribers = $this->query( $args );
+
+		$count = count( $subscribers );
+
+		// split them up
+		$remove_both    = array();
+		$remove_none    = array();
+		$remove_meta    = array();
+		$remove_actions = array();
+
+		foreach ( $subscribers as $subscriber ) {
+			if ( $subscriber->_remove_meta && $subscriber->_remove_actions ) {
+				$remove_both[] = $subscriber->ID;
+
+			} elseif ( ! $subscriber->_remove_meta && ! $subscriber->_remove_actions ) {
+				$remove_none[] = $subscriber->ID;
+
+			} elseif ( $subscriber->_remove_meta ) {
+				$remove_meta[] = $subscriber->ID;
+
+			} elseif ( $subscriber->_remove_actions ) {
+				$remove_actions[] = $subscriber->ID;
+
+			}
+		}
+
+		$this->remove( $remove_both, null, true, true, false );
+		$this->remove( $remove_none, null, false, false, false );
+		$this->remove( $remove_meta, null, false, true, false );
+		$this->remove( $remove_actions, null, true, false, false );
+
+		return $count;
+
+	}
+
+	public function restore( $ids = array() ) {
+
+		$args = array(
+			'status'  => 5,
+			'include' => (array) $ids,
+			'meta'    => array( '_old_status' ),
+		);
+
+		$subscribers = $this->query( $args );
+
+		if ( empty( $subscribers ) ) {
+			return 0;
+		}
+
+		$count = count( $subscribers );
+
+		foreach ( $subscribers as $subscriber ) {
+			if ( $subscriber->_old_status == '' ) {
+				$subscriber->_old_status = 4; // set error as status if not known
+			}
+			$this->change_status( $subscriber->ID, $subscriber->_old_status );
+		}
+
+		return $count;
+
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $user_id
+	 */
 	public function delete_subscriber_from_wpuser( $user_id ) {
 
 		$subscriber = $this->get_by_wpid( $user_id );
@@ -1637,7 +1777,7 @@ class MailsterSubscribers {
 	 *
 	 * @return unknown
 	 */
-	public function get_meta_keys( $keys_only = false ) {
+	public function get_meta_keys( $keys_only = false, $private = false ) {
 		$meta_keys = array(
 			'bounce'        => esc_html__( 'Bounce', 'mailster' ),
 			'geo'           => esc_html__( 'Location', 'mailster' ),
@@ -1657,6 +1797,13 @@ class MailsterSubscribers {
 			'tags'          => esc_html__( 'Tags', 'mailster' ),
 			'formkey'       => esc_html__( 'Form Key', 'mailster' ),
 		);
+
+		if ( $private ) {
+			$meta_keys['_remove_meta']    = esc_html__( 'Remove Meta', 'mailster' );
+			$meta_keys['_remove_actions'] = esc_html__( 'Remove Actions', 'mailster' );
+			$meta_keys['_old_status']     = esc_html__( 'Old Status', 'mailster' );
+		}
+
 		return $keys_only ? array_keys( $meta_keys ) : $meta_keys;
 	}
 
@@ -1666,7 +1813,7 @@ class MailsterSubscribers {
 	 * @return unknown
 	 */
 	public function get_single_meta_keys() {
-		return array( 'ip', 'lang', 'timeoffset', 'form', 'update_rating' );
+		return array( 'ip', 'lang', 'timeoffset', 'form', 'update_rating', '_remove_meta', '_remove_actions', '_old_status' );
 	}
 
 
@@ -1714,6 +1861,32 @@ class MailsterSubscribers {
 
 		return isset( $meta[ $id ] ) && isset( $meta[ $id ][ $key ] ) ? $meta[ $id ][ $key ] : ( isset( $default[ $key ] ) ? $default[ $key ] : null );
 
+	}
+
+
+	/**
+	 *
+	 *
+	 * @param unknown $subscriber_ids
+	 * @param unknown $campaign_id (optional)
+	 * @param unknown $key         (optional)
+	 * @param unknown $value       (optional)
+	 * @return unknown
+	 */
+	public function update_metas( $subscriber_ids, $campaign_id = 0, $key = null, $value = null ) {
+		if ( ! is_array( $subscriber_ids ) ) {
+			$subscriber_ids = array( $subscriber_ids );
+		}
+
+		$subscriber_ids = array_filter( $subscriber_ids, 'is_numeric' );
+
+		$success = true;
+
+		foreach ( $subscriber_ids as $subscriber_id ) {
+			$success = $success && $this->update_meta( $subscriber_id, $campaign_id, $key, $value );
+		}
+
+		return $success;
 	}
 
 
@@ -1959,41 +2132,21 @@ class MailsterSubscribers {
 	/**
 	 *
 	 *
-	 * @param unknown $status (optional)
+	 * @param unknown $status
+	 * @param unknown $args (optional)
 	 * @return unknown
 	 */
-	public function get_count_by_status( $status = null ) {
+	public function get_count_by_status( $status, $args = array() ) {
 
-		global $wpdb;
+		$args = wp_parse_args(
+			array(
+				'status'       => $status,
+				'return_count' => true,
+			),
+			$args
+		);
 
-		if ( false === ( $counts = mailster_cache_get( 'get_count_by_status' ) ) ) {
-
-			$sql = "SELECT status, COUNT( a.ID ) AS count FROM {$wpdb->prefix}mailster_subscribers AS a GROUP BY status";
-
-			$sql = apply_filters( 'mailster_subscribers_get_count_by_status', $sql );
-
-			$result = $wpdb->get_results( $sql );
-
-			$counts = array();
-
-			foreach ( $result as $row ) {
-				$counts[ $row->status ] = $row->count;
-			}
-
-			mailster_cache_add( 'get_count_by_status', $counts );
-
-		}
-
-		if ( is_string( $status ) ) {
-			$status = $this->get_status_by_name( $status );
-		}
-
-		// return all
-		return ( is_null( $status ) ) ? $counts :
-		// only defined ones (array)
-		( is_array( $status ) ? array_intersect_key( $counts, array_flip( $status ) ) :
-			// only a specific if set
-			( isset( $counts[ $status ] ) ? $counts[ $status ] : 0 ) );
+		return $this->query( $args );
 
 	}
 
@@ -3096,7 +3249,7 @@ class MailsterSubscribers {
 		if ( is_null( $status ) ) {
 			$status = array( 1 );
 		} elseif ( $status === false ) {
-			$status = array( 0, 1, 2, 3, 4, 5, 6 );
+			$status = array( 0, 1, 2, 3, 4 );
 		}
 		$statuses = ! is_array( $status ) ? array( $status ) : $status;
 		$statuses = array_filter( $statuses, 'is_numeric' );
@@ -3799,6 +3952,7 @@ class MailsterSubscribers {
 				esc_html__( 'Unsubscribed', 'mailster' ),
 				esc_html__( 'Hardbounced', 'mailster' ),
 				esc_html__( 'Error', 'mailster' ),
+				esc_html__( 'Deleted', 'mailster' ),
 			);
 
 		} else {
@@ -3808,6 +3962,7 @@ class MailsterSubscribers {
 				'unsubscribed',
 				'hardbounced',
 				'error',
+				'deleted',
 			);
 		}
 
@@ -3914,10 +4069,11 @@ class MailsterSubscribers {
 	 *
 	 * @param unknown $subscriber_ids
 	 * @param unknown $new_status
-	 * @param unknown $silent         (optional)
+	 * @param unknown $silent          (optional)
+	 * @param unknown $save_old_status (optional)
 	 * @return unknown
 	 */
-	public function change_status( $subscriber_ids, $new_status, $silent = false ) {
+	public function change_status( $subscriber_ids, $new_status, $silent = false, $save_old_status = false ) {
 
 		global $wpdb;
 
@@ -3941,6 +4097,11 @@ class MailsterSubscribers {
 			$old_status = $subscriber->status;
 
 			if ( false !== $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}mailster_subscribers SET status = %d, updated = %d WHERE ID = %d", $new_status, time(), $subscriber->ID ) ) ) {
+
+				if ( $save_old_status ) {
+					$this->update_meta( $subscriber->ID, 0, '_old_status', $subscriber->status );
+				}
+
 				if ( ! $silent ) {
 					do_action( 'mailster_subscriber_change_status', $new_status, $old_status, $subscriber );
 				}

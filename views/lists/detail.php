@@ -68,7 +68,7 @@ else :
 		<td>
 			<h3 class="detail">
 				<ul class="click-to-edit">
-					<li><?php echo esc_attr( $list->name ); ?>&nbsp;</li>
+					<li><?php echo esc_html( $list->name ); ?>&nbsp;</li>
 					<li><input id="name" class="widefat" type="text" name="mailster_data[name]" value="<?php echo esc_attr( $list->name ); ?>" placeholder="<?php esc_attr_e( 'Name of the List', 'mailster' ); ?>" autofocus></li>
 				</ul>
 			</h3>
@@ -79,7 +79,7 @@ else :
 		<td>
 			<div class="detail">
 				<ul class="click-to-edit">
-					<li><?php echo $list->description ? esc_attr( $list->description ) : '<span class="description">' . esc_html__( 'no description', 'mailster' ) . '</span>'; ?></li>
+					<li><?php echo $list->description ? esc_html( $list->description ) : '<span class="description">' . esc_html__( 'no description', 'mailster' ) . '</span>'; ?></li>
 					<li><textarea id="description" class="widefat" type="text" name="mailster_data[description]"><?php echo esc_textarea( $list->description ); ?></textarea></li>
 				</ul>
 			</div>

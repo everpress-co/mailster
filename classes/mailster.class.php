@@ -1371,8 +1371,8 @@ class Mailster {
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array(), MAILSTER_VERSION );
-		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script' ), MAILSTER_VERSION, true );
+		wp_enqueue_style( 'mailster-setup', MAILSTER_URI . 'assets/css/setup-style' . $suffix . '.css', array( 'mailster-import-style' ), MAILSTER_VERSION );
+		wp_enqueue_script( 'mailster-setup', MAILSTER_URI . 'assets/js/setup-script' . $suffix . '.js', array( 'mailster-script', 'mailster-import-script' ), MAILSTER_VERSION, true );
 
 		mailster_localize_script(
 			'setup',
@@ -1385,6 +1385,35 @@ class Mailster {
 				'activate_addon'     => esc_html__( 'Activating Add on', 'mailster' ),
 				'receiving_content'  => esc_html__( 'Receiving Content', 'mailster' ),
 				'skip_validation'    => esc_html__( 'Without Registration you are not able to get automatic update or support!', 'mailster' ),
+			)
+		);
+
+		mailster_localize_script(
+			'manage',
+			array(
+				'select_status'        => esc_html__( 'Please select the status for the importing contacts!', 'mailster' ),
+				'select_emailcolumn'   => esc_html__( 'Please select at least the column with the email addresses!', 'mailster' ),
+				'current_stats'        => esc_html__( 'Currently %1$s of %2$s imported with %3$s errors. %4$s memory usage', 'mailster' ),
+				'estimate_time'        => esc_html__( 'Estimate time left: %s minutes', 'mailster' ),
+				'continues_in'         => esc_html__( 'Continues in %s seconds', 'mailster' ),
+				'error_importing'      => esc_html__( 'There was a problem during importing contacts. Please check the error logs for more information!', 'mailster' ),
+				'prepare_download'     => esc_html__( 'Preparing Download for %1$s Subscribers...%2$s', 'mailster' ),
+				'write_file'           => esc_html__( 'Writing file: %1$s (%2$s)', 'mailster' ),
+				'export_finished'      => esc_html__( 'Export finished', 'mailster' ),
+				'downloading'          => esc_html__( 'Downloading %s Subscribers...', 'mailster' ),
+				'error_export'         => esc_html__( 'There was an error while exporting', 'mailster' ),
+				'confirm_import'       => esc_html__( 'Do you really like to import these contacts?', 'mailster' ),
+				'import_complete'      => esc_html__( 'Import complete!', 'mailster' ),
+				'choose_tags'          => esc_html__( 'Choose your tags.', 'mailster' ),
+				'confirm_delete'       => esc_html__( 'You are about to delete these subscribers permanently. This step is irreversible!', 'mailster' ) . "\n" . sprintf( esc_html__( 'Type %s to confirm deletion', 'mailster' ), '"DELETE"' ),
+				'export_n_subscribers' => esc_html__( 'Export %s Subscribers', 'mailster' ),
+				'delete_n_subscribers' => esc_html__( 'Delete %s Subscribers permanently', 'mailster' ),
+				'onbeforeunloadimport' => esc_html__( 'You are currently importing subscribers! If you leave the page all pending subscribers don\'t get imported!', 'mailster' ),
+				'onbeforeunloadexport' => esc_html__( 'Your download is preparing! If you leave this page the progress will abort!', 'mailster' ),
+				'import_contacts'      => esc_html__( 'Importing Contacts...%s', 'mailster' ),
+				'prepare_import'       => esc_html__( 'Preparing Import...', 'mailster' ),
+				'prepare_data'         => esc_html__( 'Preparing Data', 'mailster' ),
+				'uploading'            => esc_html__( 'Uploading...%s', 'mailster' ),
 			)
 		);
 

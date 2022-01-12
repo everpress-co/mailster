@@ -224,6 +224,17 @@ mailster = (function (mailster, $, window, document) {
 			.replace(/[^a-z0-9_-]*/g, '');
 	};
 
+	mailster.util.sanitizeTag = function (string) {
+		var tag = mailster.util
+			.trim(string)
+			.toLowerCase()
+			.replace(/ /g, '-')
+			.replace(/[^a-z0-9_-]*/g, '')
+			.replace(/^[_]*/, '')
+			.replace(/[_]*$/, '');
+		return tag;
+	};
+
 	mailster.util.sprintf = function () {
 		var a = Array.prototype.slice.call(arguments),
 			str = a.shift(),

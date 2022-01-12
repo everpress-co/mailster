@@ -3,7 +3,7 @@ Contributors: EverPress
 Tags: email newsletter, newsletter, newsletter signup, email signup, email marketing
 Requires at least: 4.6
 Tested up to: 5.8
-Stable tag: 3.0.5
+Stable tag: 3.1
 Author: EverPress
 Author URI: https://everpress.co
 License: GPLv2 or later
@@ -186,6 +186,13 @@ Get professional development help from our expert support partner *Codeable* for
 == Changelog ==
 
 == Changelog ==
+
+= 3.1 =
+
+* new: Remove inactive Subscribers automatically
+* new: Relative conditions for date fields
+* new: filters in the subscriber overview
+* updated: Manage Subscribers page
 
 = 3.0.5 =
 
